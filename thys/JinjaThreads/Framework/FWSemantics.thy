@@ -21,7 +21,7 @@ where
 inductive_simps redT_upd_simps [simp]:
   "redT_upd s t ta x' m' s'"
 
-definition redT_acq :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>\<^isub>f nat) \<Rightarrow> ('l,'t,'x,'m,'w) state"
+definition redT_acq :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>f nat) \<Rightarrow> ('l,'t,'x,'m,'w) state"
 where
   "redT_acq s t ln = (acquire_all (locks s) t ln, ((thr s)(t \<mapsto> (fst (the (thr s t)), no_wait_locks)), shr s), wset s, interrupts s)"
 
@@ -164,9 +164,9 @@ where
 
 | redT_acquire:
   "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t);
-     may_acquire_all (locks s) t ln; ln\<^sub>f n > 0;
+     may_acquire_all (locks s) t ln; ln $ n > 0;
      s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
-  \<Longrightarrow> s -t\<triangleright>((\<lambda>\<^isup>f []), [], [], [], [], convert_RA ln)\<rightarrow> s'"
+  \<Longrightarrow> s -t\<triangleright>((K$ []), [], [], [], [], convert_RA ln)\<rightarrow> s'"
 
 abbreviation
   redT_syntax2 :: "('l,'t) locks \<Rightarrow> ('l,'t,'x) thread_info \<times> 'm \<Rightarrow> ('w,'t) wait_sets \<Rightarrow> 't interrupts
@@ -190,10 +190,10 @@ lemma redT_elims [consumes 1, case_names normal acquire]:
     and "s' = (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'), ws', redT_updIs (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>)"
   | (acquire) x ln n
     where "thr s t = \<lfloor>(x, ln)\<rfloor>" 
-    and "ta = (\<lambda>\<^isup>f [], [], [], [], [], convert_RA ln)"
+    and "ta = (K$ [], [], [], [], [], convert_RA ln)"
     and "\<not> waiting (wset s t)"
     and "may_acquire_all (locks s) t ln"
-    and "ln\<^sub>f n > 0"
+    and "ln $ n > 0"
     and "s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)"
 using red
 proof cases
@@ -254,12 +254,12 @@ by(rule RedTI)(rule rtrancl3p_refl)
 
 lemma redT_has_locks_inv:
   "\<lbrakk> \<langle>ls, (ts, m), ws, is\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws', is'\<rangle>; t \<noteq> t' \<rbrakk> \<Longrightarrow>
-  has_locks (ls\<^sub>f l) t' = has_locks (ls'\<^sub>f l) t'"
+  has_locks (ls $ l) t' = has_locks (ls' $ l) t'"
 by(auto elim!: redT.cases intro: redT_updLs_has_locks[THEN sym, simplified] may_acquire_all_has_locks_acquire_locks[symmetric])
 
 lemma redT_has_lock_inv:
   "\<lbrakk> \<langle>ls, (ts, m), ws, is\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws', is'\<rangle>; t \<noteq> t' \<rbrakk>
-  \<Longrightarrow> has_lock (ls'\<^sub>f l) t' = has_lock (ls\<^sub>f l) t'"
+  \<Longrightarrow> has_lock (ls' $ l) t' = has_lock (ls $ l) t'"
 by(auto simp add: redT_has_locks_inv)
 
 lemma redT_ts_Some_inv:

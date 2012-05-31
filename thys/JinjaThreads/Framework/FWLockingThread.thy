@@ -23,17 +23,17 @@ lemma upd_threadRs_append [simp]:
   "upd_threadRs n l t (las @ las') = upd_threadRs (upd_threadRs n l t las) (upd_locks l t las) t las'"
 by(induct las arbitrary: n l, auto)
 
-definition redT_updLns :: "('l,'t) locks \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>\<^isub>f nat) \<Rightarrow> 'l lock_actions \<Rightarrow> ('l \<Rightarrow>\<^isub>f nat)"
-where "redT_updLns ls t ln las = (\<lambda>(l, n, la). upd_threadRs n l t la) \<circ>\<^isub>f (ls, (ln, las)\<^sup>f)\<^sup>f"
+definition redT_updLns :: "('l,'t) locks \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>f nat) \<Rightarrow> 'l lock_actions \<Rightarrow> ('l \<Rightarrow>f nat)"
+where "redT_updLns ls t ln las = (\<lambda>(l, n, la). upd_threadRs n l t la) \<circ>$ ($ls, ($ln, las$)$)"
 
 lemma redT_updLns_iff [simp]:
-  "(redT_updLns ls t ln las)\<^sub>f l = upd_threadRs (ln\<^sub>f l) (ls\<^sub>f l) t (las\<^sub>f l)"
+  "redT_updLns ls t ln las $ l = upd_threadRs (ln $ l) (ls $ l) t (las $ l)"
 by(simp add: redT_updLns_def)
 
-lemma upd_threadRs_comp_empty [simp]: "(\<lambda>(l, n, las). upd_threadRs n l t las) \<circ>\<^isub>f (ls, (lns, \<lambda>\<^isup>f [])\<^sup>f)\<^sup>f = lns"
+lemma upd_threadRs_comp_empty [simp]: "(\<lambda>(l, n, las). upd_threadRs n l t las) \<circ>$ ($ls, ($lns, K$ []$)$) = lns"
 by(auto intro!: finfun_ext)
 
-lemma redT_updLs_empty [simp]: "redT_updLs ls t (\<lambda>\<^isup>f []) = ls"
+lemma redT_updLs_empty [simp]: "redT_updLs ls t (K$ []) = ls"
 by(simp add: redT_updLs_def)
 
 end

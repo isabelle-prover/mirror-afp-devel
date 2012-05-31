@@ -38,10 +38,10 @@ datatype 't interrupt_action
   | Interrupt 't
   | ClearInterrupt 't
 
-type_synonym 'l lock_actions = "'l \<Rightarrow>\<^isub>f lock_action list"
+type_synonym 'l lock_actions = "'l \<Rightarrow>f lock_action list"
 
 translations
-  (type) "'l lock_actions" <= (type) "'l \<Rightarrow>\<^isub>f lock_action list"
+  (type) "'l lock_actions" <= (type) "'l \<Rightarrow>f lock_action list"
 
 type_synonym
   ('l,'t,'x,'m,'w,'o) thread_action =
@@ -107,7 +107,7 @@ lemma obs_a_conv [simp]: "obs_a (ls, nts, js, wss, is, obs) = obs"
 by(simp add: obs_a_def)
 
 fun ta_update_locks :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> lock_action \<Rightarrow> 'l \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action" where
-  "ta_update_locks (ls, nts, js, wss, obs) lta l = (ls(\<^sup>f l := ls\<^sub>f l @ [lta]), nts, js, wss, obs)"
+  "ta_update_locks (ls, nts, js, wss, obs) lta l = (ls(l $:= ls $ l @ [lta]), nts, js, wss, obs)"
 
 fun ta_update_NewThread :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action" where
   "ta_update_NewThread (ls, nts, js, wss, is, obs) nt = (ls, nts @ [nt], js, wss, is, obs)"
@@ -128,14 +128,14 @@ where
   "ta_update_obs (ls, nts, js, wss, is, obs) ob = (ls, nts, js, wss, is, obs @ [ob])"
 
 abbreviation empty_ta :: "('l,'t,'x,'m,'w,'o) thread_action" where
-  "empty_ta \<equiv> (\<lambda>\<^isup>f [], [], [], [], [], [])"
+  "empty_ta \<equiv> (K$ [], [], [], [], [], [])"
 
 notation (input) empty_ta ("\<epsilon>")
 
 text {*
   Pretty syntax for specifying thread actions:
   Write @{text "\<lbrace> Lock\<rightarrow>l, Unlock\<rightarrow>l, Suspend w, Interrupt t\<rbrace>"} instead of
-  @{term "((\<lambda>\<^isup>f [])(\<^sup>f l := [Lock, Unlock]), [], [Suspend w], [Interrupt t], [])"}.
+  @{term "((K$ [])(l $:= [Lock, Unlock]), [], [Suspend w], [Interrupt t], [])"}.
 
   @{text "thread_action'"} is a type that contains of all basic thread actions.
   Automatically coerce basic thread actions into that type and then dispatch to the right
@@ -203,7 +203,7 @@ lemma ta_upd_proj_simps [simp]:
   "\<lbrace>ta_update_obs ta obs\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta_update_obs ta obs\<rbrace>\<^bsub>t\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" "\<lbrace>ta_update_obs ta obs\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" 
   "\<lbrace>ta_update_obs ta obs\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" "\<lbrace>ta_update_obs ta obs\<rbrace>\<^bsub>i\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>" "\<lbrace>ta_update_obs ta obs\<rbrace>\<^bsub>o\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> @ [obs]"
   and ta_lock_proj_simps:
-  "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>l\<^esub> = (let ls = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> in ls(\<^sup>f l := ls\<^sub>f l @ [x]))"
+  "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>l\<^esub> = (let ls = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> in ls(l $:= ls $ l @ [x]))"
   "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>t\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" 
   "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>i\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>" "\<lbrace>ta_update_locks ta x l\<rbrace>\<^bsub>o\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
   and ta_thread_proj_simps:
@@ -286,16 +286,16 @@ datatype 'w wait_set_status =
 | PostWS wake_up_status
 
 type_synonym 't lock = "('t \<times> nat) option"
-type_synonym ('l,'t) locks = "'l \<Rightarrow>\<^isub>f 't lock"
-type_synonym 'l released_locks = "'l \<Rightarrow>\<^isub>f nat"
+type_synonym ('l,'t) locks = "'l \<Rightarrow>f 't lock"
+type_synonym 'l released_locks = "'l \<Rightarrow>f nat"
 type_synonym ('l,'t,'x) thread_info = "'t \<rightharpoonup> ('x \<times> 'l released_locks)"
 type_synonym ('w,'t) wait_sets = "'t \<rightharpoonup> 'w wait_set_status"
 type_synonym 't interrupts = "'t set"
 type_synonym ('l,'t,'x,'m,'w) state = "('l,'t) locks \<times> (('l,'t,'x) thread_info \<times> 'm) \<times> ('w,'t) wait_sets \<times> 't interrupts"
 
 translations
-  (type) "('l, 't) locks" <= (type) "'l \<Rightarrow>\<^isub>f ('t \<times> nat) option"
-  (type) "('l, 't, 'x) thread_info" <= (type) "'t \<rightharpoonup> ('x \<times> ('l \<Rightarrow>\<^isub>f nat))"
+  (type) "('l, 't) locks" <= (type) "'l \<Rightarrow>f ('t \<times> nat) option"
+  (type) "('l, 't, 'x) thread_info" <= (type) "'t \<rightharpoonup> ('x \<times> ('l \<Rightarrow>f nat))"
 
 (* pretty printing for state type *)
 print_translation {*
@@ -324,15 +324,15 @@ print_translation {*
 typ "('l,'t,'x,'m,'w) state"
 
 
-abbreviation no_wait_locks :: "'l \<Rightarrow>\<^isub>f nat"
-where "no_wait_locks \<equiv> (\<lambda>\<^isup>f 0)"
+abbreviation no_wait_locks :: "'l \<Rightarrow>f nat"
+where "no_wait_locks \<equiv> (K$ 0)"
 
 lemma neq_no_wait_locks_conv:
-  "ln \<noteq> no_wait_locks \<longleftrightarrow> (\<exists>l. ln\<^sub>f l > 0)"
+  "ln \<noteq> no_wait_locks \<longleftrightarrow> (\<exists>l. ln $ l > 0)"
 by(auto simp add: expand_finfun_eq fun_eq_iff)
 
 lemma neq_no_wait_locksE:
-  assumes "ln \<noteq> no_wait_locks" obtains l where "ln\<^sub>f l > 0"
+  assumes "ln \<noteq> no_wait_locks" obtains l where "ln $ l > 0"
 using assms
 by(auto simp add: neq_no_wait_locks_conv)
 

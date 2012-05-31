@@ -456,10 +456,10 @@ proof -
       from `t' \<in> r1.deadlocked s1 \<or> r1.final_thread s1 t'`
       have "(t' \<in> r1.deadlocked s1 \<or> t' \<in> r2.deadlocked ?s2) \<or> r2.final_thread ?s2 t'" by(blast dest: fin')
       moreover
-      from mbisim `has_lock ((locks s1)\<^sub>f l) t'`
-      have "has_lock ((locks ?s2)\<^sub>f l) t'" by(simp add: mbisim_def)
+      from mbisim `has_lock (locks s1 $ l) t'`
+      have "has_lock (locks ?s2 $ l) t'" by(simp add: mbisim_def)
       ultimately have ?Acquire
-        using `0 < ln\<^sub>f l` `t \<noteq> t'` `\<not> waiting (wset s1 t)` mbisim
+        using `0 < ln $ l` `t \<noteq> t'` `\<not> waiting (wset s1 t)` mbisim
         by(auto simp add: mbisim_def)
       thus ?thesis by blast
     qed
@@ -601,10 +601,10 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
     note dead moreover
     from mbisim `thr ?s2 t = \<lfloor>(x2, ln)\<rfloor>`
     obtain x1 where "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" by(auto dest: mbisim_thrD2)
-    moreover note `0 < ln\<^sub>f l`
+    moreover note `0 < ln $ l`
     moreover from `\<not> waiting (wset ?s2 t)` mbisim
     have "\<not> waiting (wset s1 t)" by(simp add: mbisim_def)
-    ultimately obtain l' t' where "0 < ln\<^sub>f l'" "t \<noteq> t'" "thr s1 t' \<noteq> None" "has_lock ((locks s1)\<^sub>f l') t'"
+    ultimately obtain l' t' where "0 < ln $ l'" "t \<noteq> t'" "thr s1 t' \<noteq> None" "has_lock (locks s1 $ l') t'"
       by(rule r1.deadlockD2)
     thus ?case using mbisim_thrNone_eq[OF mbisim, of t'] mbisim by(auto simp add: mbisim_def)
   next

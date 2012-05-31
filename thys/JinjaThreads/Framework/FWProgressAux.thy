@@ -13,7 +13,7 @@ abbreviation collect_waits :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> (
 where "collect_waits ta \<equiv> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
 
 lemma collect_waits_unfold:
-  "collect_waits ta = {l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)} <+> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>} <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
+  "collect_waits ta = {l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)} <+> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>} <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
 by(simp add: collect_locks_def)
 
 context multithreaded_base begin

@@ -73,21 +73,21 @@ proof -
   from ndead
   have "\<exists>t x ln l. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> 
           (wset s t = None \<and> ln = no_wait_locks \<and> \<not> final x \<and> (\<exists>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<and> (\<forall>lt \<in> LT. \<not> must_wait s t lt (dom (thr s)))) \<or>
-           \<not> waiting (wset s t) \<and> ln\<^sub>f l > 0 \<and> (\<forall>l. ln\<^sub>f l > 0 \<longrightarrow> may_lock ((locks s)\<^sub>f l) t) \<or>
+           \<not> waiting (wset s t) \<and> ln $ l > 0 \<and> (\<forall>l. ln $ l > 0 \<longrightarrow> may_lock (locks s $ l) t) \<or>
           (\<exists>w. ln = no_wait_locks \<and> wset s t = \<lfloor>PostWS w\<rfloor>))"
     by(rule contrapos_np)(blast intro!: all_waiting_implies_deadlock[OF lok] intro: must_syncI[OF wf_progress_satisfiable[OF wfs]])
   then obtain t x ln l
     where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
     and a: "wset s t = None \<and> ln = no_wait_locks \<and> \<not> final x \<and> 
               (\<exists>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<and> (\<forall>lt \<in> LT. \<not> must_wait s t lt (dom (thr s)))) \<or>
-            \<not> waiting (wset s t) \<and> ln\<^sub>f l > 0 \<and> (\<forall>l. ln\<^sub>f l > 0 \<longrightarrow> may_lock ((locks s)\<^sub>f l) t) \<or>
+            \<not> waiting (wset s t) \<and> ln $ l > 0 \<and> (\<forall>l. ln $ l > 0 \<longrightarrow> may_lock (locks s $ l) t) \<or>
             (\<exists>w. ln = no_wait_locks \<and> wset s t = \<lfloor>PostWS w\<rfloor>)"
     by blast
   from a have cases[case_names normal acquire wakeup]:
     "\<And>thesis. 
         \<lbrakk> \<And>LT. \<lbrakk> wset s t = None; ln = no_wait_locks; \<not> final x; t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong>; 
                  \<And>lt. lt \<in> LT \<Longrightarrow> \<not> must_wait s t lt (dom (thr s)) \<rbrakk> \<Longrightarrow> thesis;
-          \<lbrakk> \<not> waiting (wset s t); ln\<^sub>f l > 0; \<And>l. ln\<^sub>f l > 0 \<Longrightarrow> may_lock ((locks s)\<^sub>f l) t \<rbrakk> \<Longrightarrow> thesis;
+          \<lbrakk> \<not> waiting (wset s t); ln $ l > 0; \<And>l. ln $ l > 0 \<Longrightarrow> may_lock (locks s $ l) t \<rbrakk> \<Longrightarrow> thesis;
           \<And>w. \<lbrakk> ln = no_wait_locks; wset s t = \<lfloor>PostWS w\<rfloor> \<rbrakk> \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
     by auto
   show ?thesis
@@ -122,15 +122,15 @@ proof -
         assume "Inl l \<in> LT"
         { fix t'
           assume "t \<noteq> t'"
-          have "\<not> has_lock ((locks s)\<^sub>f l) t'"
+          have "\<not> has_lock (locks s $ l) t'"
           proof
-            assume "has_lock ((locks s)\<^sub>f l) t'"
+            assume "has_lock (locks s $ l) t'"
             moreover with lok have "thr s t' \<noteq> None" by(auto dest: lock_thread_okD)
             ultimately have "must_wait s t (Inl l) (dom (thr s))" using `t \<noteq> t'` by(auto)
             moreover from `Inl l \<in> LT` have "\<not> must_wait s t (Inl l) (dom (thr s))" by(rule mw)
             ultimately show False by contradiction
           qed }
-        hence "may_lock ((locks s)\<^sub>f l) t"
+        hence "may_lock (locks s $ l) t"
 	  by-(rule classical, auto simp add: not_may_lock_conv) }
       note mayl = this
       { fix t'
@@ -151,7 +151,7 @@ proof -
           by(rule contrapos_np)(fastforce intro: all_final_exceptI simp add: not_final_thread_iff) }
       note interrupt = this
       from aos L mayl
-      have "\<And>l. l \<in> collect_locks' \<lbrace>ta''\<rbrace>\<^bsub>l\<^esub> \<Longrightarrow> may_lock ((locks s)\<^sub>f l) t" by auto
+      have "\<And>l. l \<in> collect_locks' \<lbrace>ta''\<rbrace>\<^bsub>l\<^esub> \<Longrightarrow> may_lock (locks s $ l) t" by auto
       with aok' have "lock_ok_las (locks s) t \<lbrace>ta''\<rbrace>\<^bsub>l\<^esub>" by(auto intro: lock_ok_las'_into_lock_on_las)
       moreover
       from mayj aos L
@@ -172,8 +172,8 @@ proof -
     thus ?thesis by blast
   next
     case acquire
-    hence "may_acquire_all (locks s) t ln" by(auto intro: may_acquire_allI)
-    with tst `\<not> waiting (wset s t)` `0 < ln\<^sub>f l`
+    hence "may_acquire_all (locks s) t ln" by(auto)
+    with tst `\<not> waiting (wset s t)` `0 < ln $ l`
     show ?thesis by(fastforce intro: redT_acquire)
   next
     case (wakeup w)

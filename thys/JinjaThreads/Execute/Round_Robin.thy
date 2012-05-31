@@ -188,7 +188,7 @@ qed
 lemma round_robin_reschedule_Some_NoneD:
   assumes rrr: "round_robin_reschedule t0 queue n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
   and t0: "t0 \<in> set queue"
-  shows "\<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln"
+  shows "\<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln"
 using t0 rrr
 proof(induct queue rule: round_robin_reschedule_induct)
   case head thus ?case by(simp add: round_robin_reschedule_Cons)
@@ -327,7 +327,7 @@ qed
 
 lemma round_robin_Some_NoneD:
   assumes rr: "round_robin n0 \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
-  shows "\<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln"
+  shows "\<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln"
 proof -
   obtain queue n where \<sigma>: "\<sigma> = (queue, n)" by(cases \<sigma>)
   with rr have "queue \<noteq> []" by clarsimp
@@ -769,7 +769,7 @@ next
     and invar: "round_robin_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   from round_robin_correct[OF det, OF invar, of n0] rr
   have rr': "\<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) = \<lfloor>(t, None, round_robin_\<alpha> \<sigma>')\<rfloor>" by simp
-  then show "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> 0 < ln\<^sub>f n \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
+  then show "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> 0 < ln $ n \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
     by(rule \<alpha>.round_robin_Some_NoneD[where s="state_\<alpha> s", unfolded state_\<alpha>_conv])
 next
   fix \<sigma> s t ta x' m' \<sigma>'

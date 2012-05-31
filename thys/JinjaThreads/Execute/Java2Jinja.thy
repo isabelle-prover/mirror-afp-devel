@@ -47,10 +47,10 @@ definition shr' where "shr' = shr"
 definition heap_toString :: "heap \<Rightarrow> String.literal"
 where "heap_toString = toString"
 
-definition thread_toString :: "(thread_id, (addr expr \<times> addr locals) \<times> (addr \<Rightarrow>\<^isub>f nat)) rbt \<Rightarrow> String.literal"
+definition thread_toString :: "(thread_id, (addr expr \<times> addr locals) \<times> (addr \<Rightarrow>f nat)) rbt \<Rightarrow> String.literal"
 where "thread_toString = toString"
 
-definition thread_toString' :: "(thread_id, addr jvm_thread_state' \<times> (addr \<Rightarrow>\<^isub>f nat)) rbt \<Rightarrow> String.literal"
+definition thread_toString' :: "(thread_id, addr jvm_thread_state' \<times> (addr \<Rightarrow>f nat)) rbt \<Rightarrow> String.literal"
 where "thread_toString' = toString"
 
 definition trace_toString :: "thread_id \<times> (addr, thread_id) obs_event list \<Rightarrow> String.literal"

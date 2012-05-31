@@ -61,7 +61,7 @@ locale scheduler_spec =
   \<Longrightarrow> \<alpha>.active_threads (state_\<alpha> s) = {}"
   and schedule_Some_NoneD:
   "\<lbrakk> schedule \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>; state_invar s; \<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s))); state_\<alpha> s \<in> invariant \<rbrakk> 
-  \<Longrightarrow> \<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
+  \<Longrightarrow> \<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
   and schedule_Some_SomeD:
   "\<lbrakk> schedule \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>; state_invar s; \<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s))); state_\<alpha> s \<in> invariant \<rbrakk> 
   \<Longrightarrow> \<exists>x. thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> Predicate.eval (r t (x, shr s)) (ta, x', m') \<and> 
@@ -301,7 +301,7 @@ where
      case tax'm' of
        None \<Rightarrow> 
        (let (x, ln) = the (thr_lookup t (thr s));
-            ta = (\<lambda>\<^isup>f [], [], [], [], [], convert_RA ln);
+            ta = (K$ [], [], [], [], [], convert_RA ln);
             s' = (acquire_all (locks s) t ln, (thr_update t (x, no_wait_locks) (thr s), shr s), wset s, interrupts s)
         in \<lfloor>(\<sigma>', t, ta, s')\<rfloor>)
      | \<lfloor>(ta, x', m')\<rfloor> \<Rightarrow> \<lfloor>(\<sigma>', t, ta, exec_upd \<sigma> s t ta x' m')\<rfloor>
@@ -667,12 +667,12 @@ proof -
   proof(cases "fst (snd (the (schedule \<sigma> s)))")
     case None
     with exec invar have schedule: "schedule \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
-      and ta: "ta = (\<lambda>\<^isup>f [], [], [], [], [], convert_RA (snd (the (thr_\<alpha> (thr s) t))))"
+      and ta: "ta = (K$ [], [], [], [], [], convert_RA (snd (the (thr_\<alpha> (thr s) t))))"
       and s': "s' = (acquire_all (locks s) t (snd (the (thr_\<alpha> (thr s) t))), (thr_update t (fst (the (thr_\<alpha> (thr s) t)), no_wait_locks) (thr s), shr s), wset s, interrupts s)"
       by(auto simp add: execT_def Option_bind_eq_Some_conv thr.lookup_correct split_beta split del: option.split_asm)
     from schedule_Some_NoneD[OF schedule invar]
     obtain x ln n where t: "thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor>"
-      and "0 < ln\<^sub>f n" "\<not> waiting (ws_\<alpha> (wset s) t)" "may_acquire_all (locks s) t ln" by blast
+      and "0 < ln $ n" "\<not> waiting (ws_\<alpha> (wset s) t)" "may_acquire_all (locks s) t ln" by blast
     hence ?thesis1 using ta s' invar by(auto intro: \<alpha>.redT.redT_acquire simp add: thr.update_correct)
     moreover from invar s' have "?thesis2" by(simp add: thr.update_correct)
     moreover from t s' invar have "dom (thr_\<alpha> (thr s')) = dom (thr_\<alpha> (thr s))" by(auto simp add: thr.update_correct)
@@ -1012,7 +1012,7 @@ where
         else
           None
       else if may_acquire_all (locks s) t ln \<and> \<not> waiting (wset s t) then 
-        \<lfloor>(t, None, update_state ((\<lambda>\<^isup>f []), [], [], [], [], convert_RA ln))\<rfloor>
+        \<lfloor>(t, None, update_state (K$ [], [], [], [], [], convert_RA ln))\<rfloor>
       else
         None
     | None \<Rightarrow> None)"
@@ -1042,7 +1042,7 @@ declare actions_ok.cases [rule del]
 
 lemma step_thread_Some_NoneD:
   "step_thread update_state s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>
-  \<Longrightarrow> \<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state ((\<lambda>\<^isup>f []), [], [], [], [], convert_RA ln)"
+  \<Longrightarrow> \<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state (K$ [], [], [], [], [], convert_RA ln)"
 unfolding step_thread_def
 by(auto split: split_if_asm simp add: split_beta elim!: neq_no_wait_locksE)
 
@@ -1078,7 +1078,7 @@ where
           else
             None
       else if may_acquire_all (locks s) t ln \<and> \<not> waiting (ws_lookup t (wset s)) then 
-        \<lfloor>(t, None, update_state ((\<lambda>\<^isup>f []), [], [], [], [],convert_RA ln))\<rfloor>
+        \<lfloor>(t, None, update_state (K$ [], [], [], [], [],convert_RA ln))\<rfloor>
       else
         None
     | None \<Rightarrow> None)"
@@ -1130,7 +1130,7 @@ proof -
       with rrs invar have ?thesis1
         by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: split_if_asm)
       moreover {
-        let ?ta = "((\<lambda>\<^isup>f []), [], [], [], [], convert_RA (snd (the (thr_lookup t (thr s)))))"
+        let ?ta = "(K$ [], [], [], [], [], convert_RA (snd (the (thr_lookup t (thr s)))))"
         assume "?tso ?ta \<longrightarrow> ?inv ?ta"
         hence ?thesis2 using None rrs
           by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: split_if_asm) }
@@ -1164,7 +1164,7 @@ lemma step_thread_Some_NoneD:
   assumes det: "\<alpha>.deterministic I"
   and step: "step_thread update_state s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>"
   and invar: "state_invar s" "state_\<alpha> s \<in> I"
-  shows "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln\<^sub>f n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state ((\<lambda>\<^isup>f []), [], [], [], [], convert_RA ln)"
+  shows "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state (K$ [], [], [], [], [], convert_RA ln)"
 using assms step_thread_correct(1)[OF det _ invar(1), of "\<lambda>_ _. True", of id update_state t']
 by(fastforce simp add: option_map_id dest: \<alpha>.step_thread_Some_NoneD[OF sym])
 

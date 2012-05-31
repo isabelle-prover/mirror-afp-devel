@@ -13,7 +13,7 @@ begin
 
 lemma lock_ok_ls_Some_ex_ts_not_final:
   assumes lock: "lock_ok ls ts"
-  and hl: "has_lock (ls\<^sub>f l) t"
+  and hl: "has_lock (ls $ l) t"
   shows "\<exists>e x ln. ts t = \<lfloor>((e, x), ln)\<rfloor> \<and> \<not> final e"
 proof -
   from lock have "lock_thread_ok ls ts"
@@ -23,7 +23,7 @@ proof -
     by(auto dest!: lock_thread_okD)
   { assume "final e"
     hence "expr_locks e l = 0" by(rule final_locks)
-    with lock tst have "has_locks (ls\<^sub>f l) t = 0"
+    with lock tst have "has_locks (ls $ l) t = 0"
       by(auto dest: lock_okD2[rule_format, where l=l])
     with hl have False by simp }
   with tst show ?thesis by auto
@@ -269,7 +269,7 @@ lemma assumes wf: "wf_prog wf_md P"
   shows red_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; 
     sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l;
+     \<forall>l. has_locks (ls $ l) t \<ge> expr_locks e l;
      ws t = None \<or> 
      (\<exists>a vs w T Ts Tr D. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees wait: Ts\<rightarrow>Tr = Native in D \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
     \<Longrightarrow> \<exists>e'' s'' ta'. P,t \<turnstile> \<langle>e, s\<rangle> -ta'\<rightarrow> \<langle>e'',s''\<rangle> \<and> 
@@ -279,7 +279,7 @@ lemma assumes wf: "wf_prog wf_md P"
     and reds_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta;
      sync_oks es; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_lockss es l;
+     \<forall>l. has_locks (ls $ l) t \<ge> expr_lockss es l;
      ws t = None \<or> 
      (\<exists>a vs w T Ts T Tr D. calls es = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees wait: Ts\<rightarrow>Tr = Native in D \<and> ws t = \<lfloor>PostWS w\<rfloor>) \<rbrakk>
     \<Longrightarrow> \<exists>es'' s'' ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es'',s''\<rangle> \<and> 
@@ -296,13 +296,13 @@ proof -
   proof(induct rule: red_reds.inducts)
     case (SynchronizedRed2 e s ta e' s' a)
     note IH = `\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-              \<forall>l. expr_locks e l \<le> has_locks (ls\<^sub>f l) t; ?wakeup e s\<rbrakk>
+              \<forall>l. expr_locks e l \<le> has_locks (ls $ l) t; ?wakeup e s\<rbrakk>
               \<Longrightarrow> ?concl e s ta`
     note `\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta`
     moreover from `sync_ok (insync(a) e)` have "sync_ok e" by simp
     moreover note `hconf (hp s)` `P,hp s \<turnstile> t \<surd>t`
-    moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls\<^sub>f l) t`
-    have "\<forall>l. expr_locks e l \<le> has_locks (ls\<^sub>f l) t" by(force split: split_if_asm)
+    moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls $ l) t`
+    have "\<forall>l. expr_locks e l \<le> has_locks (ls $ l) t" by(force split: split_if_asm)
     moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
     ultimately have "?concl e s ta" by(rule IH)
     thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
@@ -332,14 +332,14 @@ proof -
     thus ?case ..
   next
     case (UnlockSynchronized a v s)
-    from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls\<^sub>f l) t`
-    have "has_lock (ls\<^sub>f a) t" by(force split: split_if_asm)
+    from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls $ l) t`
+    have "has_lock (ls $ a) t" by(force split: split_if_asm)
     with UnlockSynchronized have False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
     thus ?case ..
   next
     case (SynchronizedThrow2 a ad s)
-    from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls\<^sub>f l) t`
-    have "has_lock (ls\<^sub>f a) t" by(force split: split_if_asm)
+    from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls $ l) t`
+    have "has_lock (ls $ a) t" by(force split: split_if_asm)
     with SynchronizedThrow2 have False
       by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
     thus ?case ..
@@ -359,7 +359,7 @@ lemma shows red_ta_satisfiable:
   and reds_ta_satisfiable:
   "P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> \<exists>s. red_mthr.actions_ok s t ta"
 apply(induct rule: red_reds.inducts)
-apply(fastforce simp add: lock_ok_las_def finfun_upd_apply intro: exI[where x="\<lambda>\<^isup>f None"] exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] may_lock.intros dest: red_external_ta_satisfiable[where final="final_expr :: ('addr expr \<times> 'addr locals) \<Rightarrow> bool"])+
+apply(fastforce simp add: lock_ok_las_def finfun_upd_apply intro: exI[where x="K$ None"] exI[where x="K$ \<lfloor>(t, 0)\<rfloor>"] may_lock.intros dest: red_external_ta_satisfiable[where final="final_expr :: ('addr expr \<times> 'addr locals) \<Rightarrow> bool"])+
 done
 
 end
@@ -439,7 +439,7 @@ next
   next
     case False
     from lock_okD2[OF lockok, OF tst[unfolded ex]]
-    have locks: "\<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l" by simp
+    have locks: "\<forall>l. has_locks (ls $ l) t \<ge> expr_locks e l" by simp
     have "ws t = None \<or> (\<exists>a vs w T Ts Tr D. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp (m, x)) a = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T sees wait: Ts\<rightarrow>Tr = Native in D \<and> ws t = \<lfloor>PostWS w\<rfloor>)"
     proof(cases "ws t")
       case None thus ?thesis ..
@@ -589,11 +589,11 @@ proof -
     have "ln' = no_wait_locks"
     proof(rule ccontr)
       assume "ln' \<noteq> no_wait_locks"
-      then obtain l where "ln'\<^sub>f l > 0"
+      then obtain l where "ln' $ l > 0"
 	by(auto simp add: neq_no_wait_locks_conv)
-      from lock' es't have "has_locks (ls'\<^sub>f l) t + ln'\<^sub>f l = expr_locks e' l"
+      from lock' es't have "has_locks (ls' $ l) t + ln' $ l = expr_locks e' l"
 	by(auto dest: lock_okD2)
-      with `ln'\<^sub>f l > 0` have "expr_locks e' l > 0" by simp
+      with `ln' $ l > 0` have "expr_locks e' l > 0" by simp
       moreover from `final e'` have "expr_locks e' l = 0" by(rule final_locks)
       ultimately show False by simp
     qed }

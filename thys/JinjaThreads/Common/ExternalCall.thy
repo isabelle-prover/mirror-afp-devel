@@ -263,7 +263,7 @@ where
 
 | RedClone:
   "heap_clone P h a h' \<lfloor>(obs, a')\<rfloor> 
-    \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>clone([]), h\<rangle> -(\<lambda>\<^isup>f [], [], [], [], [], obs)\<rightarrow>ext \<langle>RetVal (Addr a'), h'\<rangle>"
+    \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>clone([]), h\<rangle> -(K$ [], [], [], [], [], obs)\<rightarrow>ext \<langle>RetVal (Addr a'), h'\<rangle>"
 
 | RedCloneFail:
   "heap_clone P h a h' None \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>clone([]), h\<rangle> -\<epsilon>\<rightarrow>ext \<langle>RetEXC OutOfMemory, h'\<rangle>"
@@ -305,7 +305,7 @@ where
     else if M = notifyAll then {(\<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
                                 (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, RetEXC IllegalMonitorState, h)}
     else if M = clone then
-       {((\<lambda>\<^isup>f [], [], [], [], [], obs), RetVal (Addr a'), h')|obs a' h'. heap_clone P h a h' \<lfloor>(obs, a')\<rfloor>}
+       {((K$ [], [], [], [], [], obs), RetVal (Addr a'), h')|obs a' h'. heap_clone P h a h' \<lfloor>(obs, a')\<rfloor>}
        \<union> {(\<lbrace>\<rbrace>, RetEXC OutOfMemory, h')|h'. heap_clone P h a h' None}
     else if M = hashcode then {(\<lbrace>\<rbrace>, RetVal (Intg (word_of_int (hash_addr a))), h)}
     else if M = print then {(\<lbrace>ExternalCall a M vs Unit\<rbrace>, RetVal Unit, h)}

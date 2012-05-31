@@ -55,7 +55,7 @@ definition start_state :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Ri
 where
   "start_state f P C M vs \<equiv>
    let (D, Ts, T, m) = method P C M
-   in (\<lambda>\<^isup>f None, ([start_tid \<mapsto> (f D M Ts T (the m) vs, no_wait_locks)], start_heap), empty, {})"
+   in (K$ None, ([start_tid \<mapsto> (f D M Ts T (the m) vs, no_wait_locks)], start_heap), empty, {})"
 
 lemma create_initial_object_simps:
   "create_initial_object (h, ads, b) C = 

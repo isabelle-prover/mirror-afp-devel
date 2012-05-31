@@ -447,7 +447,7 @@ proof -
       apply(cases "instrs_of P C M ! pc")
       apply(auto simp add: exec_1_iff lock_ok_las_def finfun_upd_apply split_beta final_thread.actions_ok_iff split: split_if_asm dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
       apply(fastforce simp add: final_thread.actions_ok_iff lock_ok_las_def dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
-      apply(fastforce simp add: finfun_upd_apply intro: exI[where x="\<lambda>\<^isup>f None"] exI[where x="\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>"] may_lock.intros)+
+      apply(fastforce simp add: finfun_upd_apply intro: exI[where x="K$ None"] exI[where x="K$ \<lfloor>(t, 0)\<rfloor>"] may_lock.intros)+
       done
   qed
 qed
@@ -625,7 +625,7 @@ next
 	  where "(?ta', \<sigma>') \<in> exec P t (xcp, h, f # Frs)" by auto
 	with check have "P,t \<turnstile> Normal (xcp, h, (stk, loc, C, M, pc) # Frs) -?ta'-jvmd\<rightarrow> Normal \<sigma>'"
 	  by -(rule exec_1_d.exec_1_d_NormalI, auto simp add: exec_d_def)
-	moreover from False ta have "has_locks (ls\<^sub>f a) t = 0"
+	moreover from False ta have "has_locks (ls $ a) t = 0"
           by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
 	hence "final_thread.actions_ok' (ls, (ts, h), ws, is) t ?ta'"
 	  by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
@@ -639,7 +639,7 @@ next
 	  where "(?ta', \<sigma>') \<in> exec P t (xcp, h, f # Frs)" by auto
 	with check have "P,t \<turnstile> Normal (xcp, h, (stk, loc, C, M, pc) # Frs) -?ta'-jvmd\<rightarrow> Normal \<sigma>'"
 	  by -(rule exec_1_d.exec_1_d_NormalI, auto simp add: exec_d_def)
-	moreover from False ta have "has_lock (ls\<^sub>f a) t"
+	moreover from False ta have "has_lock (ls $ a) t"
           by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
 	hence "final_thread.actions_ok' (ls, (ts, h), ws, is) t ?ta'"
 	  by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
@@ -868,7 +868,7 @@ proof -
 qed
 
 theorem mexecd_TypeSafety:
-  fixes ln :: "'addr \<Rightarrow>\<^isub>f nat"
+  fixes ln :: "'addr \<Rightarrow>f nat"
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and s: "s \<in> execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>)"
   and Exec: "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'"
@@ -901,7 +901,7 @@ proof -
 qed
 
 theorem mexec_TypeSafety:
-  fixes ln :: "'addr \<Rightarrow>\<^isub>f nat"
+  fixes ln :: "'addr \<Rightarrow>f nat"
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and s: "s \<in> exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>)"
   and Exec: "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'"

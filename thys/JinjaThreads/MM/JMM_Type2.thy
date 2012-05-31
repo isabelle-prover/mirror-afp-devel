@@ -20,11 +20,11 @@ by(auto intro!: ext split: addr.split)
 
 instantiation addr :: addr begin
 definition "hash_addr (a :: addr) = (case a of Address ht n \<Rightarrow> int n)"
-definition "monitor_finfun_to_list (ls :: addr \<Rightarrow>\<^isub>f nat) = (SOME xs. set xs = {x. (finfun_dom ls)\<^sub>f x })"
+definition "monitor_finfun_to_list (ls :: addr \<Rightarrow>f nat) = (SOME xs. set xs = {x. finfun_dom ls $ x })"
 instance
 proof
-  fix ls :: "addr \<Rightarrow>\<^isub>f nat"
-  show "set (monitor_finfun_to_list ls) = Collect (finfun_dom ls)\<^sub>f"
+  fix ls :: "addr \<Rightarrow>f nat"
+  show "set (monitor_finfun_to_list ls) = Collect (op $ (finfun_dom ls))"
     unfolding monitor_finfun_to_list_addr_def
     using finite_list[OF finite_finfun_dom, where ?f.1 = "ls"]
     by(rule someI_ex)

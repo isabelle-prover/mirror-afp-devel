@@ -38,7 +38,7 @@ HOL-Word:
 
 $(SESSION-NAME)-Basic: HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz: $(IMAGE) ROOT-Basic.ML ../Coinductive/*.thy ../FinFun/*.thy Basic/*.thy
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Basic.gz: $(IMAGE) ROOT-Basic.ML ../Coinductive/*.thy Basic/*.thy
 	$(USEDIR_NO_DOCUMENT) -b -f ROOT-Basic.ML $(IMAGE) $(IMAGE_BASE_NAME)-Basic
 
 $(SESSION-NAME)-Common: $(SESSION-NAME)-Basic $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME)-Common.gz

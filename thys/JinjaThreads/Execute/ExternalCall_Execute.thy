@@ -107,7 +107,7 @@ lemma red_external_aggr_code:
        do {
          (h', obsa) \<leftarrow> heap_clone P h a;
          {case obsa of None \<Rightarrow> (\<epsilon>, execute.RetEXC OutOfMemory, h')
-           | Some (obs, a') \<Rightarrow> ((\<lambda>\<^isup>f [], [], [], [], [], obs), RetVal (Addr a'), h')}
+           | Some (obs, a') \<Rightarrow> ((K$ [], [], [], [], [], obs), RetVal (Addr a'), h')}
        }
     else if M = hashcode then {(\<epsilon>, RetVal (Intg (word_of_int (hash_addr a))), h)}
     else if M = print then {(\<lbrace>ExternalCall a M vs Unit\<rbrace>, RetVal Unit, h)}

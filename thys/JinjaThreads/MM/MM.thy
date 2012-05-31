@@ -22,7 +22,7 @@ where "thread_id2addr \<equiv> \<lambda>x. x"
 
 instantiation nat :: addr begin
 definition "hash_addr \<equiv> int"
-definition "monitor_finfun_to_list \<equiv> (finfun_to_list :: nat \<Rightarrow>\<^isub>f nat \<Rightarrow> nat list)"
+definition "monitor_finfun_to_list \<equiv> (finfun_to_list :: nat \<Rightarrow>f nat \<Rightarrow> nat list)"
 instance
 by(intro_classes)(simp add: monitor_finfun_to_list_nat_def)
 end

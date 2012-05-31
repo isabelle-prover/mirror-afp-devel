@@ -31,7 +31,7 @@ next
     by(fastforce simp del: split_paired_Ex dest: red_external_ta_satisfiable[where final="final_expr1 :: ('addr expr1 \<times> 'addr val list) \<times> ('addr expr1 \<times> 'addr val list) list \<Rightarrow> bool"] intro: red1_reds1.Red1CallExternal)
 next
   case Lock1Synchronized thus ?case
-    by(auto intro!: exI exI[where x="(\<lambda>\<^isup>f None, (empty, undefined), empty, {})"] red1_reds1.Lock1Synchronized simp del: split_paired_Ex simp add: lock_ok_las_def finfun_upd_apply may_lock.intros(1))
+    by(auto intro!: exI exI[where x="(K$ None, (empty, undefined), empty, {})"] red1_reds1.Lock1Synchronized simp del: split_paired_Ex simp add: lock_ok_las_def finfun_upd_apply may_lock.intros(1))
 next
   case (Synchronized1Red2 e s ta e' s' V a)
   then obtain e' ta' s'
@@ -44,16 +44,16 @@ next
   thus ?case using L aok by blast
 next
   case Unlock1Synchronized thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply)
 next
   case Unlock1SynchronizedFail thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: split_if_asm)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: split_if_asm)
 next
   case Synchronized1Throw2 thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply)
 next
   case Synchronized1Throw2Fail thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(\<lambda>\<^isup>f \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: split_if_asm)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: split_if_asm)
 qed(fastforce intro: red1_reds1.intros)+
 
 lemma IUF_Red1_taD:
@@ -128,8 +128,8 @@ proof(rule iffI)
     qed
   next
     fix t x ln l
-    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln\<^sub>f l" "\<not> waiting (wset s t)"
-    thus "\<exists>l t'. 0 < ln\<^sub>f l \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t'"
+    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln $ l" "\<not> waiting (wset s t)"
+    thus "\<exists>l t'. 0 < ln $ l \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s) $ l) t'"
       by(rule Red1_mthr.deadlockD2[OF dead]) blast
   next
     fix t x w
@@ -175,8 +175,8 @@ next
     qed
   next
     fix t x ln l
-    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln\<^sub>f l" "\<not> waiting (wset s t)"
-    thus "\<exists>l t'. 0 < ln\<^sub>f l \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t'"
+    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln $ l" "\<not> waiting (wset s t)"
+    thus "\<exists>l t'. 0 < ln $ l \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s) $ l) t'"
       by(rule Red1_mthr.deadlockD2[OF dead]) blast
   next
     fix t x w

@@ -98,11 +98,11 @@ end
 
 instantiation finfun :: ("{toString, card_UNIV, equal, linorder}", toString) toString begin
 definition [code]: 
-  "toString (f :: 'a \<Rightarrow>\<^isub>f 'b) = 
+  "toString (f :: 'a \<Rightarrow>f 'b) = 
    Aux.concat 
      (STR ''('' 
      # toString (finfun_default f) 
-     # concat (map (\<lambda>x. [STR '','', toString x, STR ''|->'', toString (f\<^sub>f x)]) (finfun_to_list f)) 
+     # concat (map (\<lambda>x. [STR '','', toString x, STR ''|->'', toString (f $ x)]) (finfun_to_list f)) 
      @ [STR '')''])"
 instance proof qed
 end

@@ -110,7 +110,7 @@ locale \<tau>multithreaded_wf =
   assumes silent_tl: "\<tau>move s ta s' \<Longrightarrow> ta = \<epsilon>"
 begin
 
-lemma m\<tau>move_silentD: "m\<tau>move s (t, ta) s' \<Longrightarrow> ta = (\<lambda>\<^isup>f [], [], [], [], [], [])"
+lemma m\<tau>move_silentD: "m\<tau>move s (t, ta) s' \<Longrightarrow> ta = (K$ [], [], [], [], [], [])"
 by(auto elim!: m\<tau>move.cases dest: silent_tl)
 
 lemma m\<tau>move_heap: 
@@ -148,7 +148,7 @@ proof -
   next
     case (acquire x ln n)
     with tst s show ?thesis
-      unfolding `\<epsilon> = (\<lambda>\<^isup>f [], [], [], [], [], convert_RA ln)`
+      unfolding `\<epsilon> = (K$ [], [], [], [], [], convert_RA ln)`
       by -(rule redT_acquire, auto intro: fun_upd_twist)
   qed
   moreover from red tst s have tt': "t \<noteq> t'" by(cases) auto
