@@ -103,10 +103,10 @@ proof(rule cfun_eqI)
     proof
       fix s s' assume "?R s s'"
       then obtain f where fs:  "s = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))"
-	              and fs': "s' = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats"
+                      and fs': "s' = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats"
         by blast
       have "?R (unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))) (smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats)"
-	by ( rule exI[where x="f oo (\<Lambda> x. 1 + x)"]
+        by ( rule exI[where x="f oo (\<Lambda> x. 1 + x)"]
            , subst unwrapS.unfold, subst nats.unfold, simp add: smap_smap)
       with fs fs'
       show "(s = \<bottom> \<and> s' = \<bottom>)

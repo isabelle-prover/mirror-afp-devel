@@ -91,6 +91,12 @@
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
 </div>
 
+<h3>Process Calculi</h3>
+
+<div class="list">
+<a href="entries/Circus.shtml">Circus</a> &nbsp;
+</div>
+
 <h3>Programming Languages</h3>
 
 <div class="list">
@@ -110,7 +116,8 @@
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-<strong>Logics:</strong>&nbsp;<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
+<strong>Logics:</strong>&nbsp;<a href="entries/Circus.shtml">Circus</a> &nbsp;
+<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
 <a href="entries/MonoBoolTranAlgebra.shtml">MonoBoolTranAlgebra</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 <a href="entries/Separation_Algebra.shtml">Separation_Algebra</a> &nbsp;
