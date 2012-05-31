@@ -2040,8 +2040,8 @@ lemma findMin_correct:
   apply auto
 proof -
   case goal1
-  from goal1(3) have "(y,eprio y) \<in># queue_to_multiset_aux q"
-    apply (auto elim!: in_image_msetE)
+  from goal1(3) have "(a,eprio a) \<in># queue_to_multiset_aux q"
+    apply -
     apply (frule bsmap_fs_dep)
     apply simp
     done
@@ -2119,7 +2119,7 @@ lemma level_measure:
   "x \<in> set_of (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
   "x \<in># (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
   apply (case_tac [!] x)
-  apply (auto dest: level_m)
+  apply (auto dest: level_m simp del: set_of_image_mset)
   done
 
 text {*
@@ -2230,7 +2230,7 @@ proof -
   from findMin_correct[OF IQ NE] have
     FMIQ: "findMin q \<in># queue_to_multiset q" and
     FMIN: "!!y. y\<in>#(queue_to_multiset q) \<Longrightarrow> eprio (findMin q) \<le> eprio y"
-    by auto
+    by (auto simp del: set_of_image_mset)
   from FMIQ I have FMEI: "elem_invar (findMin q)" by auto
   from I have FEI: "!!y. y\<in>#(queue_to_multiset q) \<Longrightarrow> elem_invar y" by auto
   
