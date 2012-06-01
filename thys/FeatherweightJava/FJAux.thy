@@ -156,7 +156,7 @@ next
       assume "length (h1 # t1) = length l2"  
       hence "length l2 = Suc (length t1)" by auto
       then obtain h2 t2 where l2_def:"l2 = h2#t2" by (auto simp add: length_Suc_conv)
-      hence "lookup2 (h1 # t1) l2 f = Some (l2 ! 0)" using asm by(auto simp: add lookup2.simps)
+      hence "lookup2 (h1 # t1) l2 f = Some (l2 ! 0)" using asm by(auto simp add: lookup2.simps)
     }
     ultimately have ?case by auto
   } moreover { 
@@ -175,7 +175,7 @@ next
       then obtain h2 t2 where l2_def:"l2 = h2#t2" by (auto simp add: length_Suc_conv)
       hence "lookup2 t1 t2 f = Some (t2 ! i)" using ih l2_def lens by auto
       hence "lookup2 (h1 # t1) l2 f = Some (l2!(Suc i))" 
-        using asm l2_def by(auto simp: add lookup2.simps)
+        using asm l2_def by(auto simp add: lookup2.simps)
     }
     ultimately have ?case by auto
   }

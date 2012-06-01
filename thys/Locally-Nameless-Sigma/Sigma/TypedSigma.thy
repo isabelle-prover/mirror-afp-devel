@@ -756,7 +756,7 @@ proof (intro strip, elim conjE)
   moreover
   from `t = {Suc n \<rightarrow> [Fvar s,Fvar p]} t'` sopen_commute[of 0 "Suc n" sa pa s p t']
   have "(t\<^bsup>[Fvar sa,Fvar pa]\<^esup>) = {Suc n \<rightarrow> [Fvar s,Fvar p]} (t'\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
-    by (simp add: add openz_def)
+    by (simp add: openz_def)
   moreover
   from 
     subst_add[of p sa "env'\<lparr>s:A\<rparr>" B T] subst_add[of s sa env' A T]

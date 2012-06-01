@@ -3105,7 +3105,7 @@ apply (simp add:Zero_ant_def)
 done
 
 lemma aless_zless: "(ant m < ant n) = (m<n)"
-by (simp add: ale add ant_def linorder_not_le [symmetric]) 
+by (simp add: ale ant_def linorder_not_le [symmetric]) 
 
 lemma a0_less_int_conv [simp]: "(0 < ant n) = (0 < n)"
 apply (simp add:Zero_ant_def)

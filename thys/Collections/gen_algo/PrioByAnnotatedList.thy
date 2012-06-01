@@ -305,7 +305,7 @@ lemma alprio_insert_correct:
   shows "prio_insert (alprio_\<alpha> \<alpha>) (alprio_invar \<alpha> invar) (alprio_insert consl)"
 proof -
   interpret al_consl \<alpha> invar consl by fact
-  show ?thesis by unfold_locales (auto simp:add alprio_defs consl_correct)
+  show ?thesis by unfold_locales (auto simp add: alprio_defs consl_correct)
 qed
 
 

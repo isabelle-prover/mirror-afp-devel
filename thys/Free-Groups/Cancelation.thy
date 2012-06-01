@@ -432,10 +432,10 @@ trivially cancled from itself.
 *}
 
 lemma empty_canceled[simp]: "canceled []"
-by(auto simp:add canceled_def cancels_to_1_def cancels_to_1_at_def)
+by(auto simp add: canceled_def cancels_to_1_def cancels_to_1_at_def)
 
 lemma singleton_canceled[simp]: "canceled [a]"
-by(auto simp:add canceled_def cancels_to_1_def cancels_to_1_at_def)
+by(auto simp add: canceled_def cancels_to_1_def cancels_to_1_at_def)
 
 lemma cons_canceled:
   assumes "canceled (a#x)"
