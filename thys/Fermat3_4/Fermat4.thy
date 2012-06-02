@@ -417,7 +417,7 @@ proof -
         hence "\<alpha>=0" by arith
         with albega0 show False by simp
       qed
-      hence "?g>0" by (auto simp only: zgcd_geq_zero less_int_def)
+      hence "?g>0" by (auto simp only: zgcd_geq_zero less_le)
       with gnot1 show ?thesis by simp
     qed
     moreover have "?g dvd zgcd k l"
@@ -467,7 +467,7 @@ proof -
       from uv0 have v2non0: "0 \<noteq> v^2" 
         by (auto simp add: power2_eq_square zero_le_power2)
       have "0 \<le> v^2" by (rule zero_le_power2)
-      with v2non0 have "0 < v^2" by (auto simp add: less_int_def)
+      with v2non0 have "0 < v^2" by (auto simp add: less_le)
       thus ?thesis by auto
     qed
     also with uvabc have "\<dots> \<le> \<bar>c\<bar>" by auto

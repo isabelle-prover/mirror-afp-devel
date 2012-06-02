@@ -82,7 +82,7 @@ proof -
     also with t have "\<dots> = s^2 + 1" by simp
     also have "\<dots> \<le> ?p*(?p - 1) - ?p + 2"
     proof -
-      from s0p have "s \<le> ?p - 1" by (auto simp add: less_int_def)
+      from s0p have "s \<le> ?p - 1" by (auto simp add: less_le)
       with s0p have "s^2 \<le> (?p - 1)^2" by (simp only: power_mono)
       also have "\<dots> = ?p*(?p - 1) - 1*(?p - 1)" 
         by (simp only: power2_eq_square left_diff_distrib)
@@ -101,7 +101,7 @@ proof -
       with p0 have "?p*t < ?p*0" by (simp only: zmult_zless_mono2)
       with t have "s^2 + 1 < 0" by auto }
     moreover have "s^2 \<ge> 0" by (simp only: zero_le_power2)
-    ultimately show False by (auto simp add: less_int_def)
+    ultimately show False by (auto simp add: less_le)
   qed
   moreover
   { assume "t = 1" 
@@ -255,7 +255,7 @@ proof -
       with qf1pt show False by simp
     qed
     hence ?thesis by (unfold is_sum2sq_def sum2sq_def, auto) }
-  ultimately show ?thesis by (auto simp add: less_int_def)
+  ultimately show ?thesis by (auto simp add: less_le)
 qed
 
 end
