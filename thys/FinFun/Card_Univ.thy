@@ -1,3 +1,11 @@
+(*
+=============================================================================
+FinFun is now part of the Isabelle distribution. The entry is kept for
+archival; maintained but not developed further. Use the Isabelle distribution
+version instead.
+=============================================================================
+*)
+
 (* Author: Andreas Lochbihler, KIT *)
 
 header {* A type class for computing the cardinality of a type's universe *}

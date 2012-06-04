@@ -1,3 +1,10 @@
+(*
+=============================================================================
+FinFun is now part of the Isabelle distribution. The entry is kept for
+archival; maintained but not developed further. Use the Isabelle distribution
+version instead.
+=============================================================================
+*)
 
 (* Author: Andreas Lochbihler, Uni Karlsruhe *)
 

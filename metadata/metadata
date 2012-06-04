@@ -383,7 +383,7 @@ title = Code Generation for Functions as Data
 author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
 date = 2009-05-06
 topic = Computer Science/Data Structures
-abstract = FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.
+abstract = <b>FinFun is now part of the Isabelle distribution. The entry is kept for archival; maintained but not developed further. Use the Isabelle distribution version instead.</b><p>FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.</p>
 extra-history =
   Change history:
   [2010-08-13]:
