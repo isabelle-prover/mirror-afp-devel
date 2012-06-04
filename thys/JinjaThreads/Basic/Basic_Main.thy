@@ -9,7 +9,6 @@ imports Main
   "~~/src/HOL/Library/Dlist"
   Set_without_equal
   Set_Monad
-  "../../FinFun/FinFun"
   "../../Coinductive/Lazy_TLList"
   "../../Collections/impl/ListSetImpl_Invar"
   "../../Collections/impl/RBTSetImpl"
