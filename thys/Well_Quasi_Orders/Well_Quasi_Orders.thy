@@ -750,14 +750,37 @@ lemma emb_suffixeq:
   shows "emb P xs ys"
   using assms(1) and emb_suffix[OF assms(2)] by (auto simp: suffixeq_def)
 
+fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
+  "minimal_bad_seq A f 0 = A f 0"
+| "minimal_bad_seq A f (Suc n) = (
+    let g = minimal_bad_seq A f n in
+    repl (Suc n) g (A g n))"
 
-subsection {* Higman's Lemma *}
+lemma choice2:
+  "\<forall>x y. P x y \<longrightarrow> (\<exists>z. Q x y z) \<Longrightarrow> \<exists>f. \<forall>x y. P x y \<longrightarrow> Q x y (f x y)"
+  using bchoice[of "{(x, y). P x y}" "\<lambda>(x, y) z. Q x y z"] by force
 
-lemma bad_emb_repl:
-  assumes "bad (emb P) f"
-    and "bad (emb P) g"
-    and "\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (g i) (f j)"
-  shows "bad (emb P) (repl n f g)" (is "bad ?P ?f")
+locale mbs =
+  fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
+    and weak :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
+    and vals :: "'a set \<Rightarrow> 'b set"
+    and setof :: "'b \<Rightarrow> 'a set"
+  assumes strong_weakeq: "strong P x y \<Longrightarrow> weak\<^sup>=\<^sup>= y z \<Longrightarrow> strong P x z"
+    and wf_weak: "wf {(x, y). weak x y}"
+    and weakeq_trans: "weak\<^sup>=\<^sup>= x y \<Longrightarrow> weak\<^sup>=\<^sup>= y z \<Longrightarrow> weak\<^sup>=\<^sup>= x z"
+    and weakeq_set_subset: "weak\<^sup>=\<^sup>= x y \<Longrightarrow> setof x \<subseteq> setof y"
+    and vals_eq_setof: "vals A = {x. setof x \<subseteq> A}"
+begin
+
+abbreviation weakeq where "weakeq \<equiv> weak\<^sup>=\<^sup>="
+
+text {*This lemma is the reason for the suffix condition that is used
+throughout.*}
+lemma bad_strong_repl:
+  assumes "bad (strong P) f"
+    and "bad (strong P) g"
+    and "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (g i) (f j)"
+  shows "bad (strong P) (repl n f g)" (is "bad ?P ?f")
 proof (rule ccontr)
   presume "goodp ?P ?f"
   then obtain i j where "i < j"
@@ -773,152 +796,148 @@ proof (rule ccontr)
     with assms(2) have False by (auto simp: goodp_def)
   } moreover {
     assume "i < n" and "n \<le> j"
-    with assms(3) obtain k where "k \<ge> n" and suffixeq: "suffixeq (g j) (f k)" by blast
+    with assms(3) obtain k where "k \<ge> n" and weakeq: "weakeq (g j) (f k)" by blast
     from `i < j` and `i < n` and `n \<le> j` and good
       have "?P (f i) (g j)" by auto
-    hence "?P (f i) (f k)"
-      using emb_suffixeq[OF suffixeq] by auto
+    from strong_weakeq [OF this weakeq] have "?P (f i) (f k)" .
     with `i < n` and `n \<le> k` and assms(1) have False by (auto simp: goodp_def)
   } ultimately show False using `i < j` by arith
 qed simp
 
-text {*A \emph{minimal bad prefix} of an infinite sequence, is a
-prefix of its first @{text n} elements, such that every subsequence (of subsets)
-starting with the same @{text n} elements is good, whenever the @{text n}-th
-element is replaced by a proper subset of itself.*}
-definition mbp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list seq \<Rightarrow> nat \<Rightarrow> bool" where
-  "mbp P f n \<equiv>
-    \<forall>g. (\<forall>i<n. g i = f i) \<and> suffix (g n) (f n) \<and> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (g i) (f j))
-    \<longrightarrow> goodp (emb P) g"
+
+text {*An infinite sequence, is minimal at position @{text n}, if
+every subsequence that coincides on the first @{text n} elements is good,
+whenever the @{text n}-th element is replaced by a smaller one.*}
+definition min_at :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b seq \<Rightarrow> nat \<Rightarrow> bool" where
+  "min_at P f n \<equiv>
+    \<forall>g. (\<forall>i<n. g i = f i) \<and> weak (g n) (f n) \<and> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (g i) (f j))
+    \<longrightarrow> goodp (strong P) g"
+
+lemma weak_induct [case_names IH]:
+  assumes "\<And>xs. (\<And>zs. weak zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
+  shows "P xs"
+  using wf_induct [OF wf_weak, of P xs] and assms by blast
+
+lemma weak_imp_weakeq: "weak x y \<Longrightarrow> weakeq x y" by auto
 
 lemma minimal_bad_element:
-  fixes f :: "'a list seq"
-  assumes "mbp P f n"
-    and "bad (emb P) f"
+  fixes f :: "'b seq"
+  assumes "min_at P f n"
+    and "bad (strong P) f"
   shows "\<exists>M.
     (\<forall>i\<le>n. M i = f i) \<and>
-    suffixeq (M (Suc n)) (f (Suc n)) \<and>
-    (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq ((repl (Suc n) f M) i) (f j)) \<and>
-    bad (emb P) (repl (Suc n) f M) \<and>
-    mbp P (repl (Suc n) f M) (Suc n)"
+    weakeq (M (Suc n)) (f (Suc n)) \<and>
+    (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq ((repl (Suc n) f M) i) (f j)) \<and>
+    bad (strong P) (repl (Suc n) f M) \<and>
+    min_at P (repl (Suc n) f M) (Suc n)"
 using assms
-proof (induct "f (Suc n)" arbitrary: f n rule: list_suffix_induct)
-  case (psuffix g)
+proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
+  case (IH g)
   show ?case
-  proof (cases "mbp P g (Suc n)")
+  proof (cases "min_at P g (Suc n)")
     case True
     let ?g = "repl (Suc n) g g"
     have "\<forall>i\<le>n. ?g i = g i" by simp
-    moreover have "suffixeq (g (Suc n)) (g (Suc n))" by simp
-    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq ((repl (Suc n) g g) i) (g j)" by auto
-    moreover from `bad (emb P) g`
-      have "bad (emb P) (repl (Suc n) g g)" by simp
-    moreover from True have "mbp P (repl (Suc n) g g) (Suc n)" by simp
+    moreover have "weakeq (g (Suc n)) (g (Suc n))" by simp
+    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq ((repl (Suc n) g g) i) (g j)" by auto
+    moreover from `bad (strong P) g`
+      have "bad (strong P) (repl (Suc n) g g)" by simp
+    moreover from True have "min_at P (repl (Suc n) g g) (Suc n)" by simp
     ultimately show ?thesis by blast
   next
     case False
     then obtain h where less: "\<forall>i<Suc n. h i = g i"
-      and suffix: "suffix (h (Suc n)) (g (Suc n))"
-      and greater: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (h i) (g j)"
-      and bad: "bad (emb P) h"
-      unfolding mbp_def by blast
+      and weak: "weak (h (Suc n)) (g (Suc n))"
+      and greater: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (h i) (g j)"
+      and bad: "bad (strong P) h"
+      unfolding min_at_def by blast
     let ?g = "repl (Suc n) g h"
-    from suffix have suffix': "suffix (?g (Suc n)) (g (Suc n))" by simp
-    have mbp: "mbp P ?g n"
-    proof (unfold mbp_def, intro allI impI, elim conjE)
+    from weak have weak': "weak (?g (Suc n)) (g (Suc n))" by simp
+    have min_at: "min_at P ?g n"
+    proof (unfold min_at_def, intro allI impI, elim conjE)
       fix e
       assume "\<forall>i<n. e i = ?g i"
       hence 1: "\<forall>i<n. e i = g i" by auto
-      assume "suffix (e n) (?g n)"
-      hence 2: "suffix (e n) (g n)" by auto
-      assume *: "\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (e i) (?g j)"
-      have 3: "\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (e i) (g j)"
+      assume "weak (e n) (?g n)"
+      hence 2: "weak (e n) (g n)" by auto
+      assume *: "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (e i) (?g j)"
+      have 3: "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (e i) (g j)"
       proof (intro allI impI)
         fix i assume "n \<le> i"
         with * obtain j where "j \<ge> n"
-          and **: "suffixeq (e i) (?g j)" by auto
-        show "\<exists>j\<ge>n. suffixeq (e i) (g j)"
+          and **: "weakeq (e i) (?g j)" by auto
+        show "\<exists>j\<ge>n. weakeq (e i) (g j)"
         proof (cases "j \<le> n")
           case True with ** show ?thesis
             using `j \<ge> n` by auto
         next
           case False
           with `j \<ge> n` have "j \<ge> Suc n" by auto
-          with ** have "suffixeq (e i) (h j)" by auto
+          with ** have "weakeq (e i) (h j)" by auto
           with greater obtain k where "k \<ge> Suc n"
-            and "suffixeq (h j) (g k)" using `j \<ge> Suc n` by auto
-          with `suffixeq (e i) (h j)` have "suffixeq (e i) (g k)" by (auto intro: suffixeq_trans)
+            and "weakeq (h j) (g k)" using `j \<ge> Suc n` by auto
+          with `weakeq (e i) (h j)` have "weakeq (e i) (g k)" using weakeq_trans by blast
           moreover from `k \<ge> Suc n` have "k \<ge> n" by auto
           ultimately show ?thesis by blast
         qed
       qed
-      from `mbp P g n`[unfolded mbp_def] and 1 and 2 and 3
-        show "goodp (emb P) e" by auto
+      from `min_at P g n`[unfolded min_at_def] and 1 and 2 and 3
+        show "goodp (strong P) e" by auto
     qed
-    have bad: "bad (emb P) ?g"
-      using bad_emb_repl[OF `bad (emb P) g` `bad (emb P) h`, of "Suc n", OF greater] .
+    have bad: "bad (strong P) ?g"
+      using bad_strong_repl[OF `bad (strong P) g` `bad (strong P) h`, of "Suc n", OF greater] .
     let ?g' = "repl (Suc n) g"
-    from psuffix(1)[of ?g n, OF suffix' mbp bad] obtain M
+    from IH(1)[of ?g n, OF weak' min_at bad] obtain M
       where "\<forall>i\<le>n. M i = g i"
-      and "suffixeq (M (Suc n)) (?g' h (Suc n))"
-      and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g' M i) (h j)"
-      and "bad (emb P) (?g' M)"
-      and "mbp P (?g' M) (Suc n)"
+      and "weakeq (M (Suc n)) (?g' h (Suc n))"
+      and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g' M i) (h j)"
+      and "bad (strong P) (?g' M)"
+      and "min_at P (?g' M) (Suc n)"
       unfolding ex_repl_conv by auto
-    moreover with suffix_imp_suffixeq[OF suffix]
-      have "suffixeq (M (Suc n)) (g (Suc n))" by (auto intro: suffixeq_trans)
-    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g' M i) (g j)"
+    moreover with weak_imp_weakeq [OF weak]
+      have "weakeq (M (Suc n)) (g (Suc n))" using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
+    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g' M i) (g j)"
     proof (intro allI impI)
       fix i assume "Suc n \<le> i"
-      with * obtain j where "j \<ge> Suc n" and "suffixeq (?g' M i) (h j)" by auto
+      with * obtain j where "j \<ge> Suc n" and "weakeq (?g' M i) (h j)" by auto
       hence "j \<ge> Suc n" by auto
       from greater and `j \<ge> Suc n` obtain k where "k \<ge> Suc n"
-        and "suffixeq (h j) (g k)" by auto
-      with `suffixeq (?g' M i) (h j)`
-        show "\<exists>j\<ge>Suc n. suffixeq (?g' M i) (g j)" by (blast intro: suffixeq_trans)
+        and "weakeq (h j) (g k)" by auto
+      with `weakeq (?g' M i) (h j)`
+        show "\<exists>j\<ge>Suc n. weakeq (?g' M i) (g j)" using weakeq_trans by blast
     qed
     ultimately show ?thesis by blast
   qed
 qed
 
-lemma choice2:
-  "\<forall>x y. P x y \<longrightarrow> (\<exists>z. Q x y z) \<Longrightarrow> \<exists>f. \<forall>x y. P x y \<longrightarrow> Q x y (f x y)"
-  using bchoice[of "{(x, y). P x y}" "\<lambda>(x, y) z. Q x y z"] by force
-
-fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
-  "minimal_bad_seq A f 0 = A f 0"
-| "minimal_bad_seq A f (Suc n) = (
-    let g = minimal_bad_seq A f n in
-    repl (Suc n) g (A g n))"
-
-lemma bad_imp_mbp:
-  assumes "bad (emb P) f"
-  shows "\<exists>g. (\<forall>i. \<exists>j. suffixeq (g i) (f j)) \<and> mbp P g 0 \<and> bad (emb P) g"
+lemma bad_imp_min_at:
+  assumes "bad (strong P) f"
+  shows "\<exists>g. (\<forall>i. \<exists>j. weakeq (g i) (f j)) \<and> min_at P g 0 \<and> bad (strong P) g"
 using assms
-proof (induct "f 0" arbitrary: f rule: list_suffix_induct)
-  case (psuffix g)
+proof (induct "f 0" arbitrary: f rule: weak_induct)
+  case (IH g)
   show ?case
-  proof (cases "mbp P g 0")
-    case True with psuffix show ?thesis by blast
+  proof (cases "min_at P g 0")
+    case True with IH show ?thesis by blast
   next
     case False
     then obtain h where less: "\<forall>i<0. h i = g i"
-      and suffix: "suffix (h 0) (g 0)"
-      and greater: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (h i) (g j)"
-      and bad: "bad (emb P) h"
-      unfolding mbp_def by auto
-    from psuffix(1)[of h, OF suffix bad] obtain e
-      where "\<forall>i. \<exists>j. suffixeq (e i) (h j)" and "mbp P e 0" and "bad (emb P) e"
+      and weak: "weak (h 0) (g 0)"
+      and greater: "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (h i) (g j)"
+      and bad: "bad (strong P) h"
+      unfolding min_at_def by auto
+    from IH(1) [of h, OF weak bad] obtain e
+      where "\<forall>i. \<exists>j. weakeq (e i) (h j)" and "min_at P e 0" and "bad (strong P) e"
       by auto
-    moreover with greater have "\<forall>i. \<exists>j. suffixeq (e i) (g j)" using suffixeq_trans by fast
+    moreover with greater have "\<forall>i. \<exists>j. weakeq (e i) (g j)" using weakeq_trans by fast
     ultimately show ?thesis by blast
   qed
 qed
 
-lemma iterated_subseq:
-  assumes "\<forall>n>0::nat. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (g n i) (g (n - 1) j)"
+lemma iterated_weakeq:
+  assumes "\<forall>n>0::nat. \<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (g n i) (g (n - 1) j)"
     and "m \<le> n"
-  shows "\<forall>i\<ge>n. \<exists>j\<ge>m. suffixeq (g n i) (g m j)"
+  shows "\<forall>i\<ge>n. \<exists>j\<ge>m. weakeq (g n i) (g m j)"
 using assms(2)
 proof (induct "n - m" arbitrary: n)
   case 0 thus ?case by auto
@@ -931,14 +950,258 @@ next
   proof (intro allI impI)
     fix i assume "i \<ge> n"
     with assms(1)[rule_format, OF `n > 0`] obtain j where "j \<ge> n"
-      and "suffixeq (g (Suc n') i) (g n' j)" by (auto simp: n)
+      and "weakeq (g (Suc n') i) (g n' j)" by (auto simp: n)
     with Suc(1)[OF `k = n' - m` `m \<le> n'`, THEN spec[of _ j]]
-      obtain k where "k \<ge> m" and "suffixeq (g n' j) (g m k)" by (auto simp: n)
-    with `suffixeq (g (Suc n') i) (g n' j)`
-      have "suffixeq (g n i) (g m k)" by (auto simp: n intro: suffixeq_trans)
-    thus "\<exists>j\<ge>m. suffixeq (g n i) (g m j)" using `k \<ge> m` by blast
+      obtain k where "k \<ge> m" and "weakeq (g n' j) (g m k)" by (auto simp: n)
+    with `weakeq (g (Suc n') i) (g n' j)`
+      have "weakeq (g n i) (g m k)" unfolding n using weakeq_trans by blast
+    thus "\<exists>j\<ge>m. weakeq (g n i) (g m j)" using `k \<ge> m` by blast
   qed
 qed
+
+lemma mbs:
+  assumes "\<forall>i. f i \<in> vals A" and "bad (strong P) f" (is "bad ?P f")
+  shows "\<exists>m.
+    bad (strong P) m \<and>
+    (\<forall>n. min_at P m n) \<and>
+    (\<forall>i. m i \<in> vals A)"
+proof -
+  from bad_imp_min_at[of P f, OF `bad ?P f`] obtain g
+    where "\<forall>i. \<exists>j. weakeq (g i) (f j)"
+    and "min_at P g 0"
+    and "bad ?P g"
+    by blast
+  with `\<forall>i. f i \<in> vals A`
+    have "\<And>i. g i \<in> vals A"
+    using weakeq_set_subset unfolding vals_eq_setof by blast
+  from minimal_bad_element [of P]
+    have "\<forall>f n.
+    min_at P f n \<and>
+    bad ?P f \<longrightarrow>
+    (\<exists>M.
+      (\<forall>i\<le>n. M i = f i) \<and>
+      weakeq (M (Suc n)) (f (Suc n)) \<and>
+      (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (repl (Suc n) f M i) (f j)) \<and>
+      bad ?P (repl (Suc n) f M) \<and>
+      min_at P (repl (Suc n) f M) (Suc n))"
+    (is "\<forall>f n. ?Q f n \<longrightarrow> (\<exists>M. ?Q' f n M)")
+    by blast
+  from choice2[OF this] obtain M
+    where *[rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
+  let ?g = "minimal_bad_seq M g"
+  let ?A = "\<lambda>i. ?g i i"
+  have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
+  proof
+    fix n
+    show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
+    proof (induction n)
+      case 0
+      have "min_at P g 0" by fact
+      moreover have "bad ?P g" by fact
+      ultimately
+        have [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
+        and "bad ?P (M g 0)" and "min_at P (M g 0) (Suc 0)"
+        and **: "\<forall>i\<ge>Suc 0. \<exists>j\<ge>Suc 0. weakeq (M g 0 i) (g j)"
+        using *[of g 0] by auto
+      moreover have "min_at P (M g 0) 0"
+      proof (unfold min_at_def, intro allI impI, elim conjE)
+        fix e :: "'b seq"
+        presume "weak (e 0) (g 0)" and *: "\<forall>i. \<exists>j\<ge>0. weakeq (e i) (M g 0 j)"
+        have "\<forall>i. \<exists>j\<ge>0::nat. weakeq (e i) (g j)"
+        proof (intro allI impI)
+          fix i
+          from * obtain j where "j \<ge> 0" and "weakeq (e i) (M g 0 j)" by auto
+          show "\<exists>j\<ge>0. weakeq (e i) (g j)"
+          proof (cases "j = 0")
+            case True
+            with `weakeq (e i) (M g 0 j)` have "weakeq (e i) (g 0)" by auto
+            thus ?thesis by auto
+          next
+            case False
+            hence "j \<ge> Suc 0" by auto
+            with ** obtain k where "k \<ge> Suc 0" and "weakeq (M g 0 j) (g k)" by auto
+            with `weakeq (e i) (M g 0 j)`
+              have "weakeq (e i) (g k)" using weakeq_trans by blast
+            moreover with `k \<ge> Suc 0` have "k \<ge> 0" by auto
+            ultimately show ?thesis by blast
+          qed
+        qed
+        with `min_at P g 0`[unfolded min_at_def]
+        show "goodp ?P e" using `weak (e 0) (g 0)` by (simp add: min_at_def)
+      qed auto
+      moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (?g 0 i) (g j)"
+      proof (intro allI impI)
+        fix i::nat
+        assume "i \<ge> 0"
+        hence "i = 0 \<or> i \<ge> Suc 0" by auto
+        thus "\<exists>j\<ge>0. weakeq (?g 0 i) (g j)"
+        proof
+          assume "i \<ge> Suc 0"
+          with ** obtain j where "j \<ge> Suc 0" and "weakeq (?g 0 i) (g j)" by auto
+          moreover from this have "j \<ge> 0" by auto
+          ultimately show "?thesis" by auto
+        next
+          assume "i = 0"
+          hence "weakeq (?g 0 i) (g 0)" by auto
+          thus ?thesis by blast
+        qed
+      qed
+      ultimately show ?case by simp
+    next
+      case (Suc n)
+      with *[of "?g n" n]
+        have eq: "\<forall>i\<le>n. ?A i = ?g n i"
+        and weak: "weakeq (?g (Suc n) (Suc n)) (?g n (Suc n))"
+        and subseq: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g (Suc n) i) (?g n j)"
+        and "bad ?P (?g (Suc n))"
+        and min_at: "min_at P (?g (Suc n)) (Suc n)"
+        by (simp_all add: Let_def)
+      moreover have *: "\<forall>i\<le>Suc n. ?A i = ?g (Suc n) i"
+      proof (intro allI impI)
+        fix i assume "i \<le> Suc n"
+        show "?A i = ?g (Suc n) i"
+        proof (cases "i = Suc n")
+          assume "i = Suc n"
+          thus ?thesis by simp
+        next
+          assume "i \<noteq> Suc n"
+          with `i \<le> Suc n` have "i < Suc n" by auto
+          thus ?thesis by (simp add: Let_def eq)
+        qed
+      qed
+      moreover have "\<forall>i\<le>Suc n. min_at P (?g (Suc n)) i"
+      proof (intro allI impI)
+        fix i assume "i \<le> Suc n"
+        show "min_at P (?g (Suc n)) i"
+        proof (cases "i = Suc n")
+          case True with min_at show ?thesis by simp
+        next
+          case False with `i \<le> Suc n` have le: "i \<le> Suc n" "i \<le> n" by auto
+          show ?thesis
+          proof (unfold min_at_def, intro allI impI, elim conjE)
+            fix e
+            note * = *[rule_format, symmetric] eq[rule_format, symmetric]
+            assume "\<forall>i'<i. e i' = ?g (Suc n) i'"
+            hence 1: "\<forall>i'<i. e i' = ?g n i'" using * and le by auto
+            assume "weak (e i) (?g (Suc n) i)"
+            hence 2: "weak (e i) (?g n i)" using * and le by simp
+            assume **: "\<forall>j\<ge>i. \<exists>k\<ge>i. weakeq (e j) (?g (Suc n) k)"
+            have 3: "\<forall>j\<ge>i. \<exists>k\<ge>i. weakeq (e j) (?g n k)"
+            proof (intro allI impI)
+              fix j assume "i \<le> j"
+              with ** obtain k where "k \<ge> i" and "weakeq (e j) (?g (Suc n) k)" by blast
+              show "\<exists>k\<ge>i. weakeq (e j) (?g n k)"
+              proof (cases "k \<le> n")
+                case True with `weakeq (e j) (?g (Suc n) k)`
+                  have "weakeq (e j) (?g n k)" using * by auto
+                thus ?thesis using `k \<ge> i` by auto
+              next
+                case False hence "k \<ge> Suc n" by auto
+                with subseq obtain l where "l \<ge> Suc n"
+                  and "weakeq (?g (Suc n) k) (?g n l)" by blast
+                with `weakeq (e j) (?g (Suc n) k)`
+                  have "weakeq (e j) (?g n l)" using weakeq_trans by blast
+                moreover from `i \<le> Suc n` and `l \<ge> Suc n` have "l \<ge> i" by auto
+                ultimately show ?thesis by blast
+              qed
+            qed
+            from 1 2 3 and Suc[THEN conjunct2, THEN conjunct2] and `i \<le> n`
+            show "goodp ?P e" unfolding min_at_def by blast
+          qed
+        qed
+      qed
+      ultimately show ?case by simp
+    qed
+  qed
+  hence 1: "\<forall>n. \<forall>i\<le>n. min_at P (?g n) i"
+    and 2: "\<forall>n. \<forall>i\<le>n. ?A i = ?g n i"
+    and 3: "\<forall>n. bad ?P (?g n)"
+    and 4: "\<forall>i. \<exists>j. weakeq (?g 0 i) (g j)"
+    and 5: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j)"
+    by auto
+  have ex_weakeq: "\<forall>n. \<forall>i. \<exists>j. weakeq (?g n i) (g j)"
+  proof
+    fix n show "\<forall>i. \<exists>j. weakeq (?g n i) (g j)"
+    proof (induct n)
+      case 0 with 4 show ?case by simp
+    next
+      case (Suc n)
+      show ?case
+      proof
+        fix i
+        have "i < Suc n \<or> i \<ge> Suc n" by auto
+        thus "\<exists>j. weakeq (?g (Suc n) i) (g j)"
+        proof
+          assume "i < Suc n" hence "i \<le> Suc n" and "i \<le> n" by auto
+          from `i \<le> Suc n` have "?g (Suc n) i = ?g i i" using 2 by auto
+          moreover from `i \<le> n` have "?g n i = ?g i i" using 2 by auto
+          ultimately have "?g (Suc n) i = ?g n i" by auto
+          with Suc show ?thesis by auto
+        next
+          assume "i \<ge> Suc n"
+          with 5 [THEN spec[of _ "Suc n"]]
+            obtain j where "j \<ge> Suc n"
+            and "weakeq (?g (Suc n) i) (?g n j)" by auto
+          moreover from Suc obtain k where "weakeq (?g n j) (g k)" by blast
+          ultimately show ?thesis using weakeq_trans by blast
+        qed
+      qed
+    qed
+  qed
+  have bad: "bad ?P ?A"
+  proof
+    assume "goodp ?P ?A"
+    then obtain i j :: nat where "i < j"
+      and "?P (?g i i) (?g j j)" unfolding goodp_def by auto
+    moreover with 2[rule_format, of i j]
+      have "?P (?g j i) (?g j j)" by auto
+    ultimately have "goodp ?P (?g j)" unfolding goodp_def by blast
+    with 3 show False by auto
+  qed
+  moreover have "\<forall>S n.
+    (\<forall>i<n. S i = ?A i) \<and>
+    weak (S n) (?A n) \<and>
+    (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (S i) (?A j)) \<longrightarrow> goodp ?P S"
+  proof (intro allI impI, elim conjE)
+    fix S n
+    assume *: "\<forall>i<n. S i = ?A i"
+      and "weak (S n) (?A n)"
+      and **: "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (S i) (?A j)"
+    from * have "\<forall>i<n. S i = ?g n i" using 2 by auto
+    moreover have "weak (S n) (?A n)" by fact
+    moreover have "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (S i) (?g n j)"
+      using iterated_weakeq [OF 5] and ** by (metis order_refl weakeq_trans)
+    ultimately show "goodp ?P S"
+      using 1 [rule_format, of n, OF le_refl, unfolded min_at_def] by auto
+  qed
+  moreover have "\<forall>i. ?A i \<in> vals A"
+    using `\<And>i. g i \<in> vals A` and ex_weakeq
+    using weakeq_set_subset unfolding vals_eq_setof by blast
+  ultimately show ?thesis unfolding min_at_def by blast
+qed
+
+end
+
+lemma suffix_reflclp_conv:
+  "suffix\<^sup>=\<^sup>= = suffixeq"
+  by (intro ext) (auto simp: suffixeq_def suffix_def)
+
+lemma wf_suffix:
+  "wf {(x, y). suffix x y}"
+  unfolding wf_def using list_suffix_induct by auto
+
+interpretation list_mbs: mbs emb suffix lists set
+apply (unfold_locales)
+unfolding suffix_reflclp_conv
+apply (simp add: emb_suffixeq)
+apply (simp add: wf_suffix)
+apply (blast intro: suffixeq_trans)
+apply (simp add: suffixeq_set_subset)
+apply blast
+done
+
+
+subsection {* Higman's Lemma *}
 
 lemma almost_full_on_lists:
   assumes "almost_full_on P A"
@@ -951,198 +1214,13 @@ proof -
     have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> goodp ?P f"
     proof (rule ccontr)
       assume "\<not> ?thesis"
-      then obtain f where "\<And>i. f i \<in> lists A" and "bad ?P f" by blast
-      from bad_imp_mbp[of P f, OF `bad ?P f`] obtain g
-        where "\<forall>i. \<exists>j. suffixeq (g i) (f j)"
-        and "mbp P g 0"
-        and "bad ?P g"
+      then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f" by blast
+      from list_mbs.mbs [OF this] obtain m where
+        bad: "bad ?P m" and
+        mb: "\<And>n. list_mbs.min_at P m n" and
+        in_lists: "\<And>i. m i \<in> lists A"
         by blast
-      with `\<And>i. f i \<in> lists A`
-        have "\<And>i. g i \<in> lists A" using suffixeq_set_subset by blast
-      from minimal_bad_element[of P]
-        have "\<forall>f n.
-        mbp P f n \<and>
-        bad ?P f \<longrightarrow>
-        (\<exists>M.
-          (\<forall>i\<le>n. M i = f i) \<and>
-          suffixeq (M (Suc n)) (f (Suc n)) \<and>
-          (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (repl (Suc n) f M i) (f j)) \<and>
-          bad ?P (repl (Suc n) f M) \<and>
-          mbp P (repl (Suc n) f M) (Suc n))"
-        (is "\<forall>f n. ?Q f n \<longrightarrow> (\<exists>M. ?Q' f n M)")
-        by blast
-      from choice2[OF this] obtain M
-        where *[rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
-      let ?g = "minimal_bad_seq M g"
-      let ?A = "\<lambda>i. ?g i i"
-      have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
-      proof
-        fix n
-        show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. mbp P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
-        proof (induction n)
-          case 0
-          have "mbp P g 0" by fact
-          moreover have "bad ?P g" by fact
-          ultimately
-            have [simp]: "M g 0 0 = g 0" and "suffixeq (M g 0 (Suc 0)) (g (Suc 0))"
-            and "bad ?P (M g 0)" and "mbp P (M g 0) (Suc 0)"
-            and **: "\<forall>i\<ge>Suc 0. \<exists>j\<ge>Suc 0. suffixeq (M g 0 i) (g j)"
-            using *[of g 0] by auto
-          moreover have "mbp P (M g 0) 0"
-          proof (unfold mbp_def, intro allI impI, elim conjE)
-            fix e :: "'a list seq"
-            presume "suffix (e 0) (g 0)" and *: "\<forall>i. \<exists>j\<ge>0. suffixeq (e i) (M g 0 j)"
-            have "\<forall>i. \<exists>j\<ge>0::nat. suffixeq (e i) (g j)"
-            proof (intro allI impI)
-              fix i
-              from * obtain j where "j \<ge> 0" and "suffixeq (e i) (M g 0 j)" by auto
-              show "\<exists>j\<ge>0. suffixeq (e i) (g j)"
-              proof (cases "j = 0")
-                case True
-                with `suffixeq (e i) (M g 0 j)` have "suffixeq (e i) (g 0)" by auto
-                thus ?thesis by auto
-              next
-                case False
-                hence "j \<ge> Suc 0" by auto
-                with ** obtain k where "k \<ge> Suc 0" and "suffixeq (M g 0 j) (g k)" by auto
-                with `suffixeq (e i) (M g 0 j)`
-                  have "suffixeq (e i) (g k)" by (auto intro: suffixeq_trans)
-                moreover with `k \<ge> Suc 0` have "k \<ge> 0" by auto
-                ultimately show ?thesis by blast
-              qed
-            qed
-            with `mbp P g 0`[unfolded mbp_def]
-            show "goodp ?P e" using `suffix (e 0) (g 0)` by (simp add: mbp_def)
-          qed auto
-          moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
-          proof (intro allI impI)
-            fix i::nat
-            assume "i \<ge> 0"
-            hence "i = 0 \<or> i \<ge> Suc 0" by auto
-            thus "\<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
-            proof
-              assume "i \<ge> Suc 0"
-              with ** obtain j where "j \<ge> Suc 0" and "suffixeq (?g 0 i) (g j)" by auto
-              moreover from this have "j \<ge> 0" by auto
-              ultimately show "?thesis" by auto
-            next
-              assume "i = 0"
-              hence "suffixeq (?g 0 i) (g 0)" by auto
-              thus ?thesis by blast
-            qed
-          qed
-          ultimately show ?case by simp
-        next
-          case (Suc n)
-          with *[of "?g n" n]
-            have eq: "\<forall>i\<le>n. ?A i = ?g n i"
-            and suffix: "suffixeq (?g (Suc n) (Suc n)) (?g n (Suc n))"
-            and subseq: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. suffixeq (?g (Suc n) i) (?g n j)"
-            and "bad ?P (?g (Suc n))"
-            and mbp: "mbp P (?g (Suc n)) (Suc n)"
-            by (simp_all add: Let_def)
-          moreover have *: "\<forall>i\<le>Suc n. ?A i = ?g (Suc n) i"
-          proof (intro allI impI)
-            fix i assume "i \<le> Suc n"
-            show "?A i = ?g (Suc n) i"
-            proof (cases "i = Suc n")
-              assume "i = Suc n"
-              thus ?thesis by simp
-            next
-              assume "i \<noteq> Suc n"
-              with `i \<le> Suc n` have "i < Suc n" by auto
-              thus ?thesis by (simp add: Let_def eq)
-            qed
-          qed
-          moreover have "\<forall>i\<le>Suc n. mbp P (?g (Suc n)) i"
-          proof (intro allI impI)
-            fix i assume "i \<le> Suc n"
-            show "mbp P (?g (Suc n)) i"
-            proof (cases "i = Suc n")
-              case True with mbp show ?thesis by simp
-            next
-              case False with `i \<le> Suc n` have le: "i \<le> Suc n" "i \<le> n" by auto
-              show ?thesis
-              proof (unfold mbp_def, intro allI impI, elim conjE)
-                fix e
-                note * = *[rule_format, symmetric] eq[rule_format, symmetric]
-                assume "\<forall>i'<i. e i' = ?g (Suc n) i'"
-                hence 1: "\<forall>i'<i. e i' = ?g n i'" using * and le by auto
-                assume "suffix (e i) (?g (Suc n) i)"
-                hence 2: "suffix (e i) (?g n i)" using * and le by simp
-                assume **: "\<forall>j\<ge>i. \<exists>k\<ge>i. suffixeq (e j) (?g (Suc n) k)"
-                have 3: "\<forall>j\<ge>i. \<exists>k\<ge>i. suffixeq (e j) (?g n k)"
-                proof (intro allI impI)
-                  fix j assume "i \<le> j"
-                  with ** obtain k where "k \<ge> i" and "suffixeq (e j) (?g (Suc n) k)" by blast
-                  show "\<exists>k\<ge>i. suffixeq (e j) (?g n k)"
-                  proof (cases "k \<le> n")
-                    case True with `suffixeq (e j) (?g (Suc n) k)`
-                      have "suffixeq (e j) (?g n k)" using * by auto
-                    thus ?thesis using `k \<ge> i` by auto
-                  next
-                    case False hence "k \<ge> Suc n" by auto
-                    with subseq obtain l where "l \<ge> Suc n"
-                      and "suffixeq (?g (Suc n) k) (?g n l)" by blast
-                    with `suffixeq (e j) (?g (Suc n) k)`
-                      have "suffixeq (e j) (?g n l)" by (auto intro: suffixeq_trans)
-                    moreover from `i \<le> Suc n` and `l \<ge> Suc n` have "l \<ge> i" by auto
-                    ultimately show ?thesis by blast
-                  qed
-                qed
-                from 1 2 3 and Suc[THEN conjunct2, THEN conjunct2] and `i \<le> n`
-                show "goodp ?P e" unfolding mbp_def by blast
-              qed
-            qed
-          qed
-          ultimately show ?case by simp
-        qed
-      qed
-      hence 1: "\<forall>n. \<forall>i\<le>n. mbp P (?g n) i"
-        and 2: "\<forall>n. \<forall>i\<le>n. ?A i = ?g n i"
-        and 3: "\<forall>n. bad ?P (?g n)"
-        and 4: "\<forall>i\<ge>0. \<exists>j\<ge>0. suffixeq (?g 0 i) (g j)"
-        and 5: "\<forall>n>0. \<forall>i\<ge>n. \<exists>j\<ge>n. suffixeq (?g n i) (?g (n - 1) j)"
-        by auto
-      have ex_suffixeq: "\<forall>n. \<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
-      proof
-        fix n show "\<forall>i. \<exists>j. suffixeq (?g n i) (g j)"
-        proof (induct n)
-          case 0 with 4 show ?case by simp
-        next
-          case (Suc n)
-          show ?case
-          proof
-            fix i
-            have "i < Suc n \<or> i \<ge> Suc n" by auto
-            thus "\<exists>j. suffixeq (?g (Suc n) i) (g j)"
-            proof
-              assume "i < Suc n" hence "i \<le> Suc n" and "i \<le> n" by auto
-              from `i \<le> Suc n` have "?g (Suc n) i = ?g i i" using 2 by auto
-              moreover from `i \<le> n` have "?g n i = ?g i i" using 2 by auto
-              ultimately have "?g (Suc n) i = ?g n i" by auto
-              with Suc show ?thesis by auto
-            next
-              assume "i \<ge> Suc n"
-              with 5 [THEN spec[of _ "Suc n"]]
-                obtain j where "j \<ge> Suc n"
-                and "suffixeq (?g (Suc n) i) (?g n j)" by auto
-              moreover from Suc obtain k where "suffixeq (?g n j) (g k)" by blast
-              ultimately show ?thesis by (blast intro: suffixeq_trans)
-            qed
-          qed
-        qed
-      qed
-      have bad: "bad ?P ?A"
-      proof
-        assume "goodp ?P ?A"
-        then obtain i j :: nat where "i < j"
-          and "?P (?g i i) (?g j j)" unfolding goodp_def by auto
-        moreover with 2[rule_format, of i j]
-          have "?P (?g j i) (?g j j)" by auto
-        ultimately have "goodp ?P (?g j)" unfolding goodp_def by blast
-        with 3 show False by auto
-      qed
+      let ?A = m
       have non_empty: "\<forall>i. ?A i \<noteq> []" using bad and bad_imp_not_Nil by auto
       then obtain a as where a: "\<forall>i. hd (?A i) = a i \<and> tl (?A i) = as i" by force
       let ?B = "\<lambda>i. tl (?A i)"
@@ -1173,23 +1251,20 @@ proof -
             ultimately have False using `bad ?P ?A` by (auto simp: goodp_def)
           } ultimately show False by arith
         qed
-        have "\<forall>i<f 0. ?C i = ?g (f 0) i" using 2 by auto
-        moreover have "suffix (?C (f 0)) (?g (f 0) (f 0))" using non_empty by auto
-        moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. suffixeq (?C i) (?g (f 0) j)"
+        have "\<forall>i<f 0. ?C i = ?A i" by auto
+        moreover have "suffix (?C (f 0)) (?A (f 0))" using non_empty by auto
+        moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (?A j)"
         proof (intro allI impI)
           fix i
           let ?i = "f (i - f 0)"
           assume "f 0 \<le> i"
           with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> ?i" by auto
           from `f 0 \<le> i` have "?C i = ?B ?i" by auto
-          with non_empty have "suffixeq (?C i) (?g ?i ?i)" by auto
-          from iterated_subseq [OF 5, of "f 0" "?i", THEN spec[of _ "?i"], OF `f 0 \<le> ?i`]
-            obtain j where "j \<ge> f 0" and "suffixeq (?g ?i ?i) (?g (f 0) j)" by blast
-          with `suffixeq (?C i) (?g ?i ?i)`
-            show "\<exists>j\<ge>f 0. suffixeq (?C i) (?g (f 0) j)" using suffixeq_trans by fast
+          with non_empty have "suffix\<^sup>=\<^sup>= (?C i) (?A ?i)" by auto
+          thus "\<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (?A j)" using `f 0 \<le> ?i` by auto
         qed
         ultimately have "goodp ?P ?C"
-          using 1[rule_format, of "f 0", OF le_refl, unfolded mbp_def] by auto
+          using mb [of "f 0", unfolded list_mbs.min_at_def, rule_format, of ?C] by blast
         with `bad ?P ?C` have False by blast
       }
       hence no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
@@ -1199,10 +1274,7 @@ proof -
         fix B assume "B \<in> ?B'"
         then obtain i where B: "B = ?B i" by auto
         hence "suffixeq B (?A i)" by simp
-        with ex_suffixeq[THEN spec[of _ i], THEN spec[of _ i]] obtain j
-          where "suffixeq B (g j)" by (blast intro: suffixeq_trans)
-        with `g j \<in> lists A`
-          show "B \<in> lists A" by (auto simp: suffixeq_def)
+        with in_lists [of i] show "B \<in> lists A" by (auto simp: suffixeq_def)
       qed
       have "almost_full_on ?P ?B'"
       proof
@@ -1217,8 +1289,7 @@ proof -
         fix x assume "x \<in> ?a'"
         then obtain i where x: "x = a i" by auto
         with a and non_empty have "a i \<in> set (?A i)" by (metis hd_in_set)
-        with ex_suffixeq and suffixeq_set_subset obtain j where "a i \<in> set (g j)" by blast
-        with `g j \<in> lists A` show "x \<in> A" unfolding x by auto
+        with in_lists [of i] show "x \<in> A" unfolding x by auto
       qed
       from almost_full_on_subset[OF this assms]
         have "almost_full_on P ?a'" .
