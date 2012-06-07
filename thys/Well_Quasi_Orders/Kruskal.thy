@@ -11,7 +11,7 @@ fun elts :: "'a tree \<Rightarrow> 'a set" where
 definition trees where
   "trees A \<equiv> {t. elts t \<subseteq> A}"
 
-lemma emb_mono [mono]:
+lemma emb_mono:
   assumes "\<And>x y. P x y \<longrightarrow> Q x y"
   shows "emb P s t \<longrightarrow> emb Q s t"
 proof
@@ -27,6 +27,7 @@ where
   hemb_Empty [intro, simp]: "hemb P Empty t" |
   hemb_Node [intro]: "hemb P s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> hemb P s (Node f ts)" |
   hemb_Node2 [intro]: "P f g \<Longrightarrow> emb (hemb P) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)"
+monos emb_mono
 
 lemma hemb_Empty2 [simp]:
   assumes "hemb P t Empty" shows "t = Empty"
