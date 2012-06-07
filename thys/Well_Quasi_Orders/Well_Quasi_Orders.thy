@@ -527,6 +527,24 @@ proof
   ultimately show False using assms(3) by (auto simp: goodp_def)
 qed
 
+
+lemma infinite_wo_prefix:
+  "infinite {j::nat. j > i}"
+proof -
+  {
+  fix m have "\<exists>n>m. i < n"
+  proof (cases "m > i")
+    case True thus ?thesis by auto
+  next
+    case False
+    hence "m \<le> i" by auto
+    hence "Suc i > m" and "i < Suc i" by auto
+    thus ?thesis by blast
+  qed
+  }
+  thus ?thesis unfolding infinite_nat_iff_unbounded by auto
+qed
+
 lemma no_bad_of_special_shape_imp_goodp:
   assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
     and refl: "reflp_on P {B i | i. True}"
@@ -548,21 +566,7 @@ proof (rule ccontr)
     hence "g ` ?I \<subseteq> {..<g 0}" unfolding image_subset_iff by auto
     moreover have "finite {..<g 0}" by auto
     ultimately have 1: "finite (g ` ?I)" using finite_subset by blast
-    have 2: "infinite ?I"
-    proof -
-      {
-      fix m have "\<exists>n>m. i < n"
-      proof (cases "m > i")
-        case True thus ?thesis by auto
-      next
-        case False
-        hence "m \<le> i" by auto
-        hence "Suc i > m" and "i < Suc i" by auto
-        thus ?thesis by blast
-      qed
-      }
-      thus ?thesis unfolding infinite_nat_iff_unbounded by auto
-    qed
+    have 2: "infinite ?I" by (rule infinite_wo_prefix)
     from pigeonhole_infinite[OF 2 1]
       obtain k where "k > i" and "infinite {j. j > i \<and> g j = g k}" by auto
     then obtain l where "k < l" and "g l = g k"
@@ -1217,7 +1221,7 @@ proof -
       then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f" by blast
       from list_mbs.mbs [OF this] obtain m where
         bad: "bad ?P m" and
-        mb: "\<And>n. list_mbs.min_at P m n" and
+        mb: "\<And>n. mbs.min_at emb suffix P m n" and
         in_lists: "\<And>i. m i \<in> lists A"
         by blast
       let ?A = m
