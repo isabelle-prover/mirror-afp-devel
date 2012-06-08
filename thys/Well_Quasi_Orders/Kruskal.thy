@@ -36,11 +36,10 @@ where
   step: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (Node x ts)"
 
 lemma emb_mono:
-  assumes "\<And>x y. P x y \<longrightarrow> Q x y"
+  assumes "\<And>s t. P s t \<longrightarrow> Q s t"
   shows "emb P s t \<longrightarrow> emb Q s t"
 proof
-  assume "emb P s t"
-  thus "emb Q s t"
+  assume "emb P s t" thus "emb Q s t"
     by (induct) (auto simp: assms)
 qed
 
@@ -127,7 +126,7 @@ proof
   thus "hemb P t t"
   proof (induct t)
     case (Node x ts)
-    hence "\<forall>t\<in>set ts. hemb P t t" and "x \<in> A" by (auto simp: trees_def)
+    hence "\<forall>t \<in> set ts. hemb P t t" and "x \<in> A" by (auto simp: trees_def)
     hence "reflp_on (hemb P) (set ts)" by (auto simp: reflp_on_def)
     from reflp_on_emb [OF this] have "emb (hemb P) ts ts" by (auto simp: reflp_on_def)
     moreover from assms and `x \<in> A` have "P x x" by (auto simp: reflp_on_def)

@@ -65,7 +65,7 @@ proof (rule ccontr)
   assume "\<not> ?thesis"
   then obtain Q x where *: "x \<in> Q" "Q \<subseteq> A"
     and "\<forall>z. \<exists>y. z \<in> Q \<longrightarrow> P y z \<and> y \<in> Q" by metis
-  from choice[OF this(3)] obtain f
+  from choice [OF this(3)] obtain f
     where **: "\<forall>x\<in>Q. P (f x) x \<and> f x \<in> Q" by blast
   let ?S = "\<lambda>i. (f ^^ i) x"
   have ***: "\<forall>i. ?S i \<in> Q"
@@ -173,7 +173,7 @@ lemma wfp_on_induct [consumes 2, case_names less]:
   assumes "wfp_on P A" and "x \<in> A"
     and "\<And>y. \<lbrakk> y \<in> A; \<And>x. \<lbrakk> x \<in> A; P x y \<rbrakk> \<Longrightarrow> Q x \<rbrakk> \<Longrightarrow> Q y"
   shows "Q x"
-  using assms and inductive_on_induct[of P A x]
+  using assms and inductive_on_induct [of P A x]
   unfolding wfp_on_iff_inductive_on by blast
 
 lemma wfp_on_UNIV [simp]:
