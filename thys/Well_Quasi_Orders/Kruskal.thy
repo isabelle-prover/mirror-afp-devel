@@ -49,9 +49,9 @@ inductive
   hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
   for P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  hemb_base [intro]: "t \<in> set ts \<Longrightarrow> hemb P s (Node f ts)" |
+  hemb_base [intro]: "t \<in> set ts \<Longrightarrow> hemb P t (Node f ts)" |
   hemb_emb [intro]: "P f g \<Longrightarrow> emb (hemb P) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)" |
-  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P u v"
+  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P s u"
 monos emb_mono
 
 abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
@@ -194,10 +194,10 @@ proof (rule ccontr)
     qed
     ultimately show False using `bad P f` by (auto simp: goodp_def)
   qed
-  from choice[OF this] obtain h
+  from choice [OF this] obtain h
     where "\<forall>i. (h i) > i" and *: "\<And>i. g (h i) \<ge> g 0" by blast
   hence "\<forall>i\<ge>0. (h i) > i" by auto
-  from funpow_mono[OF this] have **: "\<And>i j. i < j \<Longrightarrow> (h ^^ i) 0 < (h ^^ j) 0" by auto
+  from funpow_mono [OF this] have **: "\<And>i j. i < j \<Longrightarrow> (h ^^ i) 0 < (h ^^ j) 0" by auto
   let ?i = "\<lambda>i. (h ^^ i) 0"
   let ?f = "\<lambda>i. g (?i i)"
   let ?R = "\<lambda>i. f (?i i)"
@@ -211,7 +211,7 @@ proof (rule ccontr)
     assume "goodp P ?R"
     then obtain i j where "i < j" and "P (?R i) (?R j)" by (auto simp: goodp_def)
     hence "P (f (?i i)) (f (?i j))" by simp
-    moreover from **[OF `i < j`] have "?i i < ?i j" .
+    moreover from ** [OF `i < j`] have "?i i < ?i j" .
     ultimately show False using `bad P f` by (auto simp: goodp_def)
   qed
   ultimately have "(\<forall>i. ?R i \<in> ?B (?f i) \<and> ?f i \<ge> ?f 0) \<and> bad P ?R" by auto
@@ -271,7 +271,7 @@ proof -
             assume "i < f 0" and "f 0 \<le> j"
             with * have "?P (?A i) (R ?i)" by auto
             with subtree have "?P (?A i) (?A (f ?i))" using hemb_subtreeeq [of P] by blast
-            moreover from ge[THEN spec[of _ "?i"]] and `i < f 0` have "i < f ?i" by auto
+            moreover from ge [THEN spec [of _ "?i"]] and `i < f 0` have "i < f ?i" by auto
             ultimately have False using `bad ?P ?A` by (auto simp: goodp_def)
           } ultimately show False by arith
         qed
@@ -306,7 +306,7 @@ proof -
       qed
       have "almost_full_on ?P ?B'"
       proof
-        from reflp_on_subset[OF subset refl] have refl: "reflp_on ?P ?B'" .
+        from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
         fix f :: "'a tree seq" assume "\<forall>i. f i \<in> ?B'"
         from no_bad_of_special_shape_imp_goodp' [OF no_special_bad_seq refl this]
           show "goodp ?P f" .
@@ -320,7 +320,7 @@ proof -
           have "a i \<in> elts (?A i)" by (cases "m i") auto
         with in_trees [of i] show "x \<in> A" unfolding x by (auto simp: trees_def)
       qed
-      from almost_full_on_subset[OF this assms]
+      from almost_full_on_subset [OF this assms]
         have "almost_full_on P ?a'" .
 
       from almost_full_on_lists [OF `almost_full_on ?P ?B'`]
@@ -333,7 +333,7 @@ proof -
 
       let ?P' = "prod_le P (emb ?P)"
 
-      from almost_full_on_Sigma[OF `almost_full_on P ?a'` `almost_full_on (emb ?P) ?args`]
+      from almost_full_on_Sigma [OF `almost_full_on P ?a'` `almost_full_on (emb ?P) ?args`]
         have af: "almost_full_on ?P' (?a' \<times> ?args)" .
       
       let ?aB = "\<lambda>i. (a i, args (?A i))"
