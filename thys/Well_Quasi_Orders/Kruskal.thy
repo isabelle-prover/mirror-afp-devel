@@ -1,15 +1,39 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Kruskal's Tree Theorem *}
+
 theory Kruskal
 imports Well_Quasi_Orders
 begin
 
-datatype 'a tree = Empty | Node 'a "'a tree list"
+text {*A datatype of finite (non-empty) trees.*}
+datatype 'a tree = Node 'a "'a tree list"
+
+lemma
+  assumes "\<And>x ss. (\<And>s. s \<in> set ss \<Longrightarrow> P s) \<Longrightarrow> P (Node x ss)"
+  shows tree_induct [case_names Node, induct type: tree]: "P t"
+    and "\<And>t. t \<in> set ts \<Longrightarrow> P t"
+  using assms by (induct t and ts) auto
 
 fun elts :: "'a tree \<Rightarrow> 'a set" where
-  "elts Empty = {}" |
   "elts (Node x ts) = {x} \<union> \<Union>set(map elts ts)"
 
 definition trees where
   "trees A \<equiv> {t. elts t \<subseteq> A}"
+
+lemma trees_UNIV [simp]:
+  "trees UNIV = UNIV"
+  by (auto simp: trees_def)
+
+inductive
+  subtree :: "'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
+where
+  base: "s \<in> set ss \<Longrightarrow> subtree s (Node x ss)" |
+  step: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (Node x ts)"
 
 lemma emb_mono:
   assumes "\<And>x y. P x y \<longrightarrow> Q x y"
@@ -20,33 +44,22 @@ proof
     by (induct) (auto simp: assms)
 qed
 
+text {*Homomorphic embedding on trees.*}
 inductive
   hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
   for P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  hemb_Empty [intro, simp]: "hemb P Empty t" |
-  hemb_Node [intro]: "hemb P s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> hemb P s (Node f ts)" |
-  hemb_Node2 [intro]: "P f g \<Longrightarrow> emb (hemb P) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)"
+  hemb_base [intro]: "t \<in> set ts \<Longrightarrow> hemb P s (Node f ts)" |
+  hemb_emb [intro]: "P f g \<Longrightarrow> emb (hemb P) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)" |
+  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P u v"
 monos emb_mono
 
-lemma hemb_Empty2 [simp]:
-  assumes "hemb P t Empty" shows "t = Empty"
-  using assms by (cases rule: hemb.cases) auto
-
-lemma
-  assumes "P Empty"
-    and "\<And>x ss. (\<And>s. s \<in> set ss \<Longrightarrow> P s) \<Longrightarrow> P (Node x ss)"
-  shows tree_induct [case_names Empty Node, induct type: tree]: "P t"
-    and "\<And>t. t \<in> set ts \<Longrightarrow> P t"
-  using assms by (induct t and ts) auto
-
-inductive
-  subtree :: "'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
-where
-  base: "s \<in> set ss \<Longrightarrow> subtree s (Node x ss)" |
-  step: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (Node x ts)"
-
 abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
+
+lemma subtree_NodeE:
+  assumes "subtree s (Node x ts)"
+  obtains t where "t \<in> set ts" and "subtreeeq s t"
+  using assms by (cases) auto
 
 lemma subtree_trans:
   assumes "subtree s t" and "subtree t u" shows "subtree s u"
@@ -57,6 +70,10 @@ lemma hemb_subtree:
   assumes "hemb P s t" and "subtree t u" shows "hemb P s u"
   using assms(2, 1)
   by (induct rule: subtree.induct) auto
+
+lemma subtree_imp_hemb:
+  assumes "subtree s t" shows "hemb P s t"
+  using assms by (induct) auto
 
 lemma subtreeeq_trans:
   "subtreeeq s t \<Longrightarrow> subtreeeq t u \<Longrightarrow> subtreeeq s u"
@@ -109,8 +126,6 @@ proof
   assume "t \<in> trees A"
   thus "hemb P t t"
   proof (induct t)
-    case Empty show ?case by simp
-  next
     case (Node x ts)
     hence "\<forall>t\<in>set ts. hemb P t t" and "x \<in> A" by (auto simp: trees_def)
     hence "reflp_on (hemb P) (set ts)" by (auto simp: reflp_on_def)
@@ -120,33 +135,17 @@ proof
   qed
 qed
 
-lemma Empty_imp_goodp_hemb [simp]:
-  assumes "f i = Empty"
-  shows "goodp (hemb P) f"
-proof (rule ccontr)
-  assume "bad (hemb P) f"
-  moreover have "(hemb P) (f i) (f (Suc i))"
-    unfolding assms by auto
-  ultimately show False
-    unfolding goodp_def by auto
-qed
-
-lemma bad_imp_not_Empty:
-  "bad (hemb P) f \<Longrightarrow> f i \<noteq> Empty"
-  by auto
-
 fun root :: "'a tree \<Rightarrow> 'a" where
   "root (Node x ts) = x"
 
 fun args :: "'a tree \<Rightarrow> 'a tree list" where
-  "args Empty = []" |
   "args (Node x ts) = ts"
 
 lemma in_args_imp_subtree: "s \<in> set (args t) \<Longrightarrow> subtree s t"
   by (cases t) (auto intro: subtree.intros)
 
 lemma Node_root_args:
-  "t \<noteq> Empty \<Longrightarrow> Node (root t) (args t) = t"
+  "Node (root t) (args t) = t"
   by (cases t) auto
 
 lemma no_bad_of_special_shape_imp_goodp':
@@ -242,8 +241,7 @@ proof -
         in_trees: "\<And>i. m i \<in> trees A"
         by blast
       let ?A = m
-      have non_empty: "\<forall>i. ?A i \<noteq> Empty" using bad and bad_imp_not_Nil by auto
-      then obtain a as where a: "\<forall>i. root (?A i) = a i \<and> args (?A i) = as i" by force
+      obtain a as where a: "\<forall>i. root (?A i) = a i \<and> args (?A i) = as i" by force
       let ?B = "\<lambda>i. set (args (?A i))"
       {
         assume "\<exists>R f::nat seq. (\<forall>i. R i \<in> ?B (f i) \<and> f i \<ge> f 0) \<and> bad ?P R"
@@ -318,7 +316,7 @@ proof -
       proof
         fix x assume "x \<in> ?a'"
         then obtain i where x: "x = a i" by auto
-        with a [THEN spec [of _ i]] and non_empty [THEN spec [of _ i]]
+        with a [THEN spec [of _ i]]
           have "a i \<in> elts (?A i)" by (cases "m i") auto
         with in_trees [of i] show "x \<in> A" unfolding x by (auto simp: trees_def)
       qed
@@ -345,18 +343,32 @@ proof -
       then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
         by (auto simp: goodp_def almost_full_on_def)
 
-      from Node_root_args and non_empty
+      from Node_root_args
         have root_args: "Node (root (?A i)) (args (?A i)) = ?A i"
           "Node (root (?A j)) (args (?A j)) = ?A j" by force+
 
       from * have "P (a i) (a j)" and "emb ?P (args (?A i)) (args (?A j))"
         by (auto simp: prod_le_def)
-      from hemb_Node2 [OF this]
+      from hemb_emb [OF this]
         have "?P (?A i) (?A j)" using a and root_args by auto
       with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def almost_full_on_def)
     qed
   }
   with trans show ?thesis unfolding wqo_on_def almost_full_on_def by blast
+qed
+
+lemma wqo_on_trees:
+  assumes "wqo_on P A"
+  shows "wqo_on (hemb P) (trees A)"
+proof
+  from hemb_trans show "transp_on (hemb P) (trees A)"
+    by (auto simp: transp_on_def)
+next
+  fix f
+  assume *: "\<forall>i::nat. f i \<in> trees A"
+  from assms have "almost_full_on P A" by (auto simp: wqo_on_def)
+  from almost_full_on_trees [OF this]
+    show "goodp (hemb P) f" using * by (auto simp: almost_full_on_def)
 qed
 
 end
