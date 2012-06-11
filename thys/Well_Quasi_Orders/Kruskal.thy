@@ -165,11 +165,11 @@ lemma Node_root_args:
   "Node (root t) (args t) = t"
   by (cases t) auto
 
-lemma no_bad_of_special_shape_imp_goodp':
+lemma no_bad_of_special_shape_imp_good':
   assumes "\<not> (\<exists>R f::nat seq. (\<forall>i. R i \<in> set (B (f i)) \<and> f 0 \<le> f i) \<and> bad P R)"
     and refl: "reflp_on P {x. \<exists>i. x \<in> set (B i)}"
     and elts: "\<forall>i. f i \<in> {x. \<exists>i. x \<in> set (B i)}"
-  shows "goodp P f"
+  shows "good P f"
 proof (rule ccontr)
   let ?B = "\<lambda>i. set (B i)"
   assume "bad P f"
@@ -209,7 +209,7 @@ proof (rule ccontr)
       from refl and `x \<in> ?B (g k)` have "P x x" by (auto simp: reflp_on_def)
       thus ?thesis unfolding u v .
     qed
-    ultimately show False using `bad P f` by (auto simp: goodp_def)
+    ultimately show False using `bad P f` by (auto simp: good_def)
   qed
   from choice [OF this] obtain h
     where "\<forall>i. (h i) > i" and *: "\<And>i. g (h i) \<ge> g 0" by blast
@@ -225,11 +225,11 @@ proof (rule ccontr)
   qed
   moreover have "bad P ?R"
   proof
-    assume "goodp P ?R"
-    then obtain i j where "i < j" and "P (?R i) (?R j)" by (auto simp: goodp_def)
+    assume "good P ?R"
+    then obtain i j where "i < j" and "P (?R i) (?R j)" by (auto simp: good_def)
     hence "P (f (?i i)) (f (?i j))" by simp
     moreover from ** [OF `i < j`] have "?i i < ?i j" .
-    ultimately show False using `bad P f` by (auto simp: goodp_def)
+    ultimately show False using `bad P f` by (auto simp: good_def)
   qed
   ultimately have "(\<forall>i. ?R i \<in> ?B (?f i) \<and> ?f i \<ge> ?f 0) \<and> bad P ?R" by auto
   hence "\<exists>f. (\<forall>i. ?R i \<in> ?B (f i) \<and> f i \<ge> f 0) \<and> bad P ?R" by auto
@@ -248,7 +248,7 @@ proof -
   { from reflp_on_hemb [OF almost_full_on_imp_reflp_on [OF assms]] have "reflp_on ?P ?A" . }
   note refl = this
   {
-    have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> goodp ?P f"
+    have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> good ?P f"
     proof (rule ccontr)
       assume "\<not> ?thesis"
       then obtain f where "\<forall>i. f i \<in> trees A" and "bad ?P f" by blast
@@ -271,15 +271,15 @@ proof -
         have [simp]: "\<And>i. f 0 \<le> i \<Longrightarrow> ?C i = R (i - f 0)" by auto
         have "bad ?P ?C"
         proof
-          assume "goodp ?P ?C"
-          then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: goodp_def)
+          assume "good ?P ?C"
+          then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: good_def)
           {
             assume "j < f 0" with `i < j` and * have "?P (?A i) (?A j)" by simp
-            with `i < j` and `bad ?P ?A` have False by (auto simp: goodp_def)
+            with `i < j` and `bad ?P ?A` have False by (auto simp: good_def)
           } moreover {
             assume "f 0 \<le> i" with `i < j` and * have "?P (R (i - f 0)) (R (j - f 0))" by simp
             moreover with `i < j` and `f 0 \<le> i` have "i - (f 0) < j - (f 0)" by auto
-            ultimately have False using `bad ?P R` by (auto simp: goodp_def)
+            ultimately have False using `bad ?P R` by (auto simp: good_def)
           } moreover {
             let ?i = "j - f 0"
             from in_args have "R ?i \<in> ?B (f ?i)" by simp
@@ -289,7 +289,7 @@ proof -
             with * have "?P (?A i) (R ?i)" by auto
             with subtree have "?P (?A i) (?A (f ?i))" using hemb_subtreeeq [of P] by blast
             moreover from ge [THEN spec [of _ "?i"]] and `i < f 0` have "i < f ?i" by auto
-            ultimately have False using `bad ?P ?A` by (auto simp: goodp_def)
+            ultimately have False using `bad ?P ?A` by (auto simp: good_def)
           } ultimately show False by arith
         qed
         have "\<forall>i<f 0. ?C i = ?A i" by simp
@@ -306,7 +306,7 @@ proof -
             have "subtree\<^sup>=\<^sup>= (?C i) (?A (f ?i))" by auto
           thus "\<exists>j\<ge>f 0. subtree\<^sup>=\<^sup>= (?C i) (?A j)" using `f 0 \<le> f ?i` by auto
         qed
-        ultimately have "goodp ?P ?C"
+        ultimately have "good ?P ?C"
           using mb [of "f 0", unfolded tree_mbs.min_at_def, rule_format] by simp
         with `bad ?P ?C` have False by blast
       }
@@ -325,8 +325,8 @@ proof -
       proof
         from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
         fix f :: "'a tree seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_goodp' [OF no_special_bad_seq refl this]
-          show "goodp ?P f" .
+        from no_bad_of_special_shape_imp_good' [OF no_special_bad_seq refl this]
+          show "good ?P f" .
       qed
       let ?a' = "{a i | i. True}"
       have "?a' \<subseteq> A"
@@ -356,9 +356,9 @@ proof -
       let ?aB = "\<lambda>i. (a i, args (?A i))"
 
       have "\<forall>i. ?aB i \<in> (?a' \<times> ?args)" by auto
-      with af have "goodp ?P' ?aB" unfolding almost_full_on_def by auto
+      with af have "good ?P' ?aB" unfolding almost_full_on_def by auto
       then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
-        by (auto simp: goodp_def almost_full_on_def)
+        by (auto simp: good_def almost_full_on_def)
 
       from Node_root_args
         have root_args: "Node (root (?A i)) (args (?A i)) = ?A i"
@@ -368,7 +368,7 @@ proof -
         by (auto simp: prod_le_def)
       from hemb_emb' [OF this]
         have "?P (?A i) (?A j)" using a and root_args by auto
-      with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def almost_full_on_def)
+      with `i < j` and `bad ?P ?A` show False by (auto simp: good_def almost_full_on_def)
     qed
   }
   with trans show ?thesis unfolding wqo_on_def almost_full_on_def by blast
@@ -385,7 +385,7 @@ next
   assume *: "\<forall>i::nat. f i \<in> trees A"
   from assms have "almost_full_on P A" by (auto simp: wqo_on_def)
   from almost_full_on_trees [OF this]
-    show "goodp (hemb P) f" using * by (auto simp: almost_full_on_def)
+    show "good (hemb P) f" using * by (auto simp: almost_full_on_def)
 qed
 
 end

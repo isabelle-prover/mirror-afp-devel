@@ -62,9 +62,9 @@ proof -
   show "wf {(x, y). x \<preceq> y \<and> x \<noteq> y}" by (rule wf_subset)
 qed
 
-lemma emb2_goodp:
-  shows "goodp emb2 f"
-using wqo_on_imp_goodp[where f="f", OF wqo_on_lists_over_finite_sets]
+lemma emb2_good:
+  shows "good emb2 f"
+using wqo_on_imp_good[where f="f", OF wqo_on_lists_over_finite_sets]
 by simp
 
 lemma emb2_Higman_antichains:
@@ -74,9 +74,9 @@ proof (rule ccontr)
   assume "infinite A"
   then obtain f::"nat \<Rightarrow> 'a::finite list" where b: "inj f" and c: "range f \<subseteq> A"
     by (auto simp add: infinite_iff_countable_subset)
-  from emb2_goodp[where f="f"] 
+  from emb2_good[where f="f"] 
   obtain i j where d: "i < j" and e: "f i \<preceq> f j \<or> f i = f j" 
-    unfolding goodp_def
+    unfolding good_def
     by auto
   have "f i \<noteq> f j" using b d by (auto simp add: inj_on_def)
   moreover
