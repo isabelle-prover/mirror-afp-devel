@@ -43,15 +43,30 @@ proof
     by (induct) (auto simp: assms)
 qed
 
+lemma reflclp_mono:
+  assumes "\<And>s t. P s t \<longrightarrow> Q s t"
+  shows "P\<^sup>=\<^sup>= s t \<longrightarrow> Q\<^sup>=\<^sup>= s t"
+  using assms by auto
+
 text {*Homomorphic embedding on trees.*}
 inductive
   hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
   for P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 where
   hemb_base [intro]: "t \<in> set ts \<Longrightarrow> hemb P t (Node f ts)" |
-  hemb_emb [intro]: "P f g \<Longrightarrow> emb (hemb P) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)" |
-  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P s u"
-monos emb_mono
+  hemb_emb [intro]: "P f g \<Longrightarrow> emb ((hemb P)\<^sup>=\<^sup>=) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)" |
+  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P s u" |
+  hemb_ctxt [intro]: "hemb P s t \<Longrightarrow> hemb P (Node f (ss1 @ s # ss2)) (Node f (ss1 @ t # ss2))"
+monos emb_mono reflclp_mono
+
+lemma hemb_emb':
+  assumes "P f g" and "emb (hemb P) ss ts"
+  shows "hemb P (Node f ss) (Node g ts)"
+proof -
+  have "emb ((hemb P)\<^sup>=\<^sup>=) ss ts"
+    by (rule emb_mono [rule_format]) (insert assms(2), auto)
+  with `P f g` show ?thesis by auto
+qed
 
 abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
 
@@ -128,7 +143,10 @@ proof
     case (Node x ts)
     hence "\<forall>t \<in> set ts. hemb P t t" and "x \<in> A" by (auto simp: trees_def)
     hence "reflp_on (hemb P) (set ts)" by (auto simp: reflp_on_def)
-    from reflp_on_emb [OF this] have "emb (hemb P) ts ts" by (auto simp: reflp_on_def)
+    from reflp_on_emb [OF this]
+      have *: "emb (hemb P) ts ts" by (auto simp: reflp_on_def)
+    have "emb (hemb P)\<^sup>=\<^sup>= ts ts"
+      by (rule emb_mono [rule_format]) (insert *, auto)
     moreover from assms and `x \<in> A` have "P x x" by (auto simp: reflp_on_def)
     ultimately show ?case by auto
   qed
@@ -348,7 +366,7 @@ proof -
 
       from * have "P (a i) (a j)" and "emb ?P (args (?A i)) (args (?A j))"
         by (auto simp: prod_le_def)
-      from hemb_emb [OF this]
+      from hemb_emb' [OF this]
         have "?P (?A i) (?A j)" using a and root_args by auto
       with `i < j` and `bad ?P ?A` show False by (auto simp: goodp_def almost_full_on_def)
     qed
