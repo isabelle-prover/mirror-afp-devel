@@ -118,11 +118,11 @@ lemma transp_on_imp_transp_on_strict:
   "transp_on P A \<Longrightarrow> transp_on (strict P) A"
   unfolding transp_on_def by blast
 
-abbreviation chainp_on where
-  "chainp_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
+abbreviation chain_on where
+  "chain_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
 
-lemma chainp_on_transp_on_less:
-  assumes "chainp_on P f A" and "transp_on P A" and "i < j"
+lemma chain_on_transp_on_less:
+  assumes "chain_on P f A" and "transp_on P A" and "i < j"
   shows "P (f i) (f j)"
 using `i < j`
 proof (induct j)
@@ -153,7 +153,7 @@ proof (rule ccontr)
   assume "\<not> wfp_on ?P A"
   then obtain f where *: "\<forall>i. f i \<in> A"
     and **: "\<forall>i. ?P (f (Suc i)) (f i)" by (auto simp: wfp_on_def)
-  from chainp_on_transp_on_less [of f A"?P\<inverse>\<inverse>", OF _ `transp_on ?P\<inverse>\<inverse> A`] and * and **
+  from chain_on_transp_on_less [of f A"?P\<inverse>\<inverse>", OF _ `transp_on ?P\<inverse>\<inverse> A`] and * and **
     have "\<forall>i j. i < j \<longrightarrow> ?P (f j) (f i)" by auto
   with `irreflp_on ?P A` have "\<forall>i j. i < j \<longrightarrow> \<not> (P\<^sup>=\<^sup>= (f i) (f j))"
     unfolding irreflp_on_def using * by force
