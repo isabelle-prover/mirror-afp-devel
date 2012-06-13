@@ -4,6 +4,7 @@
 *)
 theory Coinductive imports
   Coinductive_List_Prefix
+  Coinductive_Streams
   Quotient_TLList
   Resumption
   Koenigslemma
