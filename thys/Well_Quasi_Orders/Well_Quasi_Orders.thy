@@ -774,7 +774,6 @@ for checking minimality. The required properties are:
 \item @{term "weak"} ahs to be well-founded
 \item @{term "weak\<^sup>=\<^sup>="} has to be transitive
 \item @{term "weak\<^sup>=\<^sup>="} has to be element preserving
-\item a value built over @{term A} does only contain elements from @{term A}
 \end{itemize}*}
 locale mbs =
   fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
