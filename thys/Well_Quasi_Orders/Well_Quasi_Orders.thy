@@ -864,7 +864,7 @@ qed simp
 
 
 text {*An infinite sequence, is minimal at position @{text n}, if
-every subsequence that coincides on the first @{text n} elements is good,
+every subsequence that coincides on the first @{text "n - 1"} elements is good,
 whenever the @{text n}-th element is replaced by a smaller one.*}
 definition min_at :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b seq \<Rightarrow> nat \<Rightarrow> bool" where
   "min_at P f n \<equiv>
