@@ -887,12 +887,12 @@ lemma minimal_bad_element:
   fixes f :: "'b seq"
   assumes "min_at P f n"
     and "bad (strong P) f"
-  shows "\<exists>M.
-    (\<forall>i\<le>n. M i = f i) \<and>
-    weakeq (M (Suc n)) (f (Suc n)) \<and>
-    (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)) \<and>
-    bad (strong P) (repl (Suc n) f M) \<and>
-    min_at P (repl (Suc n) f M) (Suc n)"
+  shows "\<exists>g.
+    (\<forall>i\<le>n. g i = f i) \<and>
+    weakeq (g (Suc n)) (f (Suc n)) \<and>
+    (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (g i) (f j)) \<and>
+    bad (strong P) (repl (Suc n) f g) \<and>
+    min_at P (repl (Suc n) f g) (Suc n)"
 using assms
 proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
   case (IH g)
