@@ -622,7 +622,7 @@ lemma emb_Nil2 [simp]:
   assumes "emb P xs []" shows "xs = []"
   using assms by (cases rule: emb.cases) auto
 
-lemma emb_suffix [intro]:
+lemma emb_append2 [intro]:
   "emb P xs ys \<Longrightarrow> emb P xs (zs @ ys)"
   by (induct zs) auto
 
@@ -652,7 +652,7 @@ next
   case (Cons x xs)
   then obtain us v vs where "zs = us @ v # vs"
     and "P x v" and "emb P (xs @ ys) vs" by (auto dest: emb_ConsD)
-  with Cons show ?case by (metis append_Cons append_assoc emb_Cons2 emb_suffix)
+  with Cons show ?case by (metis append_Cons append_assoc emb_Cons2 emb_append2)
 qed
 
 lemma transp_on_emb:
@@ -670,7 +670,7 @@ proof
     from emb_ConsD [OF `emb P (y#ys) zs`] obtain us v vs
       where zs: "zs = us @ v # vs" and "P y v" and "emb P ys vs" by blast
     hence "emb P ys (v#vs)" by blast
-    hence "emb P ys zs" unfolding zs by (rule emb_suffix)
+    hence "emb P ys zs" unfolding zs by (rule emb_append2)
     from emb_Cons.IH [OF this] and emb_Cons.prems show ?case by simp
   next
     case (emb_Cons2 x y xs ys)
@@ -685,7 +685,7 @@ proof
         unfolding transp_on_def by blast
     qed
     ultimately have "emb P (x#xs) (v#vs)" by blast
-    thus ?case unfolding zs by (rule emb_suffix)
+    thus ?case unfolding zs by (rule emb_append2)
   qed
 qed
 
@@ -718,12 +718,19 @@ definition suffixeq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
 definition suffix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
   "suffix xs ys \<equiv> \<exists>us. ys = us @ xs \<and> us \<noteq> []"
 
+lemma suffix_set_subset:
+  "suffix xs ys \<Longrightarrow> set xs \<subseteq> set ys" by (auto simp: suffix_def)
+
 lemma suffixeq_set_subset:
   "suffixeq xs ys \<Longrightarrow> set xs \<subseteq> set ys" by (auto simp: suffixeq_def)
 
 lemma suffixeq_refl [simp, intro]:
   "suffixeq xs xs"
   by (auto simp: suffixeq_def)
+
+lemma suffix_trans:
+  "suffix xs ys \<Longrightarrow> suffix ys zs \<Longrightarrow> suffix xs zs"
+  by (auto simp: suffix_def)
 
 lemma suffixeq_trans:
   "suffixeq xs ys \<Longrightarrow> suffixeq ys zs \<Longrightarrow> suffixeq xs zs"
@@ -749,10 +756,36 @@ lemma suffix_imp_suffixeq:
   "suffix xs ys \<Longrightarrow> suffixeq xs ys"
   by (auto simp: suffixeq_def suffix_def)
 
+lemma emb_suffix:
+  assumes "emb P xs ys" and "suffix ys zs"
+  shows "emb P xs zs"
+  using assms(2) and emb_append2 [OF assms(1)] by (auto simp: suffix_def)
+
+lemma suffixeq_suffix_reflclp_conv:
+  "suffixeq = suffix\<^sup>=\<^sup>="
+proof (intro ext iffI)
+  fix xs ys
+  assume "suffixeq xs ys"
+  show "suffix\<^sup>=\<^sup>= xs ys"
+  proof
+    assume "xs \<noteq> ys"
+    with `suffixeq xs ys` show "suffix xs ys" by (auto simp: suffixeq_def suffix_def)
+  qed
+next
+  fix xs ys
+  assume "suffix\<^sup>=\<^sup>= xs ys"
+  thus "suffixeq xs ys"
+  proof
+    assume "suffix xs ys" thus "suffixeq xs ys" by (rule suffix_imp_suffixeq)
+  next
+    assume "xs = ys" thus "suffixeq xs ys" by (auto simp: suffixeq_def)
+  qed
+qed
+
 lemma emb_suffixeq:
-  assumes "suffixeq zs ys" and "emb P xs zs"
-  shows "emb P xs ys"
-  using assms(1) and emb_suffix [OF assms(2)] by (auto simp: suffixeq_def)
+  assumes "emb P xs ys" and "suffixeq ys zs"
+  shows "emb P xs zs"
+  using assms and emb_suffix unfolding suffixeq_suffix_reflclp_conv by auto
 
 fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
   "minimal_bad_seq A f 0 = A f 0"
@@ -779,16 +812,25 @@ locale mbs =
   fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
     and weak :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
     and setof :: "'b \<Rightarrow> 'a set"
-  assumes strong_weakeq: "strong P x y \<Longrightarrow> weak\<^sup>=\<^sup>= y z \<Longrightarrow> strong P x z"
+  assumes strong_weak: "strong P x y \<Longrightarrow> weak y z \<Longrightarrow> strong P x z"
     and wf_weak: "wf {(x, y). weak x y}"
-    and weakeq_trans: "weak\<^sup>=\<^sup>= x y \<Longrightarrow> weak\<^sup>=\<^sup>= y z \<Longrightarrow> weak\<^sup>=\<^sup>= x z"
-    and weakeq_set_subset: "weak\<^sup>=\<^sup>= x y \<Longrightarrow> setof x \<subseteq> setof y"
+    and weak_trans: "weak x y \<Longrightarrow> weak y z \<Longrightarrow> weak x z"
+    and weak_set_subset: "weak x y \<Longrightarrow> setof x \<subseteq> setof y"
 begin
 
 definition vals where
   "vals A \<equiv> {x. setof x \<subseteq> A}"
 
 abbreviation weakeq where "weakeq \<equiv> weak\<^sup>=\<^sup>="
+
+lemma strong_weakeq: "strong P x y \<Longrightarrow> weakeq y z \<Longrightarrow> strong P x z"
+  using strong_weak by auto
+
+lemma weakeq_trans: "weakeq x y \<Longrightarrow> weakeq y z \<Longrightarrow> weakeq x z"
+  using weak_trans by auto
+
+lemma weakeq_set_subset: "weakeq x y \<Longrightarrow> setof x \<subseteq> setof y"
+  using weak_set_subset by auto
 
 text {*The following lemma is the reason for the suffix condition that
 is used throughout.*}
@@ -1222,8 +1264,8 @@ interpretation list_mbs: mbs emb suffix set
 proof -
   show "mbs emb suffix set"
     by (unfold_locales) (auto
-      simp: suffix_reflclp_conv emb_suffixeq wf_suffix suffixeq_set_subset
-      intro: suffixeq_trans)
+      simp: suffix_reflclp_conv emb_suffix wf_suffix suffix_set_subset
+      intro: suffix_trans)
   then interpret list_mbs: mbs emb suffix set .
   show "mbs.vals set A = lists A"
     unfolding list_mbs.vals_def lists_eq_set by (rule refl)
@@ -1275,7 +1317,7 @@ proof -
             have suffix: "suffixeq (?B (f (j - f 0))) (?A (f (j - f 0)))" by simp
             assume "i < f 0" and "f 0 \<le> j"
             with * have "?P (?A i) (?B (f (j - f 0)))" by auto
-            with suffix have "?P (?A i) (?A (f (j - f 0)))" using emb_suffixeq [of _ _ P] by blast
+            with suffix have "?P (?A i) (?A (f (j - f 0)))" using emb_suffixeq [of P] by blast
             moreover from ge [THEN spec [of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
             ultimately have False using `bad ?P ?A` by (auto simp: good_def)
           } ultimately show False by arith

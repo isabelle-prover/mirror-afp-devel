@@ -108,15 +108,13 @@ lemma subtree_size: "subtree t s \<Longrightarrow> size t < size s"
 lemma wf_subtree: "wf {(x, y). subtree x y}"
   by (rule wf_subset) (auto intro: subtree_size)
 
+lemma subtree_elts_subset:
+  assumes "subtree s t" shows "elts s \<subseteq> elts t"
+  using assms by (induct rule: subtree.induct) auto
+
 lemma subtreeeq_elts_subset:
   assumes "subtreeeq s t" shows "elts s \<subseteq> elts t"
-using assms
-proof
-  assume "s = t" thus ?thesis by simp
-next
-  assume "subtree s t" thus ?thesis
-    by (induct rule: subtree.induct) auto
-qed
+  using assms and subtree_elts_subset by auto
 
 lemma hemb_subtreeeq:
   assumes "hemb P s t" and "subtreeeq t u" shows "hemb P s u"
@@ -127,8 +125,8 @@ interpretation tree_mbs: mbs hemb subtree elts
 proof -
   show "mbs hemb subtree elts"
     by (unfold_locales) (force
-      simp: suffix_reflclp_conv hemb_subtreeeq wf_subtree
-      intro: subtree_trans elim!: subtreeeq_elts_subset)+
+      simp: suffix_reflclp_conv hemb_subtree wf_subtree
+      intro: subtree_trans elim!: subtree_elts_subset)+
   then interpret tree_mbs: mbs hemb subtree elts .
   show "mbs.vals elts A = trees A"
     unfolding tree_mbs.vals_def trees_def by (rule refl)
