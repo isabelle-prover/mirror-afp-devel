@@ -112,7 +112,7 @@ lemma subtreeeq_elts_subset:
   assumes "subtreeeq s t" shows "elts s \<subseteq> elts t"
 using assms
 proof
-  assume "s = t" thus ?thesis by auto
+  assume "s = t" thus ?thesis by simp
 next
   assume "subtree s t" thus ?thesis
     by (induct rule: subtree.induct) auto
@@ -122,15 +122,17 @@ lemma hemb_subtreeeq:
   assumes "hemb P s t" and "subtreeeq t u" shows "hemb P s u"
   using assms and hemb_subtree by auto
 
-interpretation tree_mbs: mbs hemb subtree trees elts
-apply (unfold_locales)
-unfolding suffix_reflclp_conv
-apply (simp add: hemb_subtreeeq)
-apply (simp add: wf_subtree)
-apply (metis subtreeeq_trans)
-apply (simp add: subtreeeq_elts_subset)
-apply (simp add: trees_def)
-done
+interpretation tree_mbs: mbs hemb subtree elts
+  where "tree_mbs.vals A = trees A"
+proof -
+  show "mbs hemb subtree elts"
+    by (unfold_locales) (force
+      simp: suffix_reflclp_conv hemb_subtreeeq wf_subtree
+      intro: subtree_trans elim!: subtreeeq_elts_subset)+
+  then interpret tree_mbs: mbs hemb subtree elts .
+  show "mbs.vals elts A = trees A"
+    unfolding tree_mbs.vals_def trees_def by (rule refl)
+qed
 
 lemma reflp_on_hemb:
   assumes "reflp_on P A"

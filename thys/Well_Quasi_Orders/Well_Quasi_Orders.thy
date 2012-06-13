@@ -779,14 +779,15 @@ for checking minimality. The required properties are:
 locale mbs =
   fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
     and weak :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
-    and vals :: "'a set \<Rightarrow> 'b set"
     and setof :: "'b \<Rightarrow> 'a set"
   assumes strong_weakeq: "strong P x y \<Longrightarrow> weak\<^sup>=\<^sup>= y z \<Longrightarrow> strong P x z"
     and wf_weak: "wf {(x, y). weak x y}"
     and weakeq_trans: "weak\<^sup>=\<^sup>= x y \<Longrightarrow> weak\<^sup>=\<^sup>= y z \<Longrightarrow> weak\<^sup>=\<^sup>= x z"
     and weakeq_set_subset: "weak\<^sup>=\<^sup>= x y \<Longrightarrow> setof x \<subseteq> setof y"
-    and vals_eq_setof: "vals A = {x. setof x \<subseteq> A}"
 begin
+
+definition vals where
+  "vals A \<equiv> {x. setof x \<subseteq> A}"
 
 abbreviation weakeq where "weakeq \<equiv> weak\<^sup>=\<^sup>="
 
@@ -1000,7 +1001,7 @@ proof -
     by blast
   with `\<forall>i. f i \<in> vals A`
     have "\<And>i. g i \<in> vals A"
-    using weakeq_set_subset unfolding vals_eq_setof by blast
+    using weakeq_set_subset unfolding vals_def by blast
   from minimal_bad_element [of P]
     have "\<forall>f n.
     min_at P f n \<and>
@@ -1203,7 +1204,7 @@ proof -
   qed
   moreover have "\<forall>i. ?A i \<in> vals A"
     using `\<And>i. g i \<in> vals A` and ex_weakeq
-    using weakeq_set_subset unfolding vals_eq_setof by blast
+    using weakeq_set_subset unfolding vals_def by blast
   ultimately show ?thesis unfolding min_at_def by blast
 qed
 
@@ -1217,15 +1218,17 @@ lemma wf_suffix:
   "wf {(x, y). suffix x y}"
   unfolding wf_def using list_suffix_induct by auto
 
-interpretation list_mbs: mbs emb suffix lists set
-apply (unfold_locales)
-unfolding suffix_reflclp_conv
-apply (simp add: emb_suffixeq)
-apply (simp add: wf_suffix)
-apply (blast intro: suffixeq_trans)
-apply (simp add: suffixeq_set_subset)
-apply blast
-done
+interpretation list_mbs: mbs emb suffix set
+  where "list_mbs.vals A = lists A"
+proof -
+  show "mbs emb suffix set"
+    by (unfold_locales) (auto
+      simp: suffix_reflclp_conv emb_suffixeq wf_suffix suffixeq_set_subset
+      intro: suffixeq_trans)
+  then interpret list_mbs: mbs emb suffix set .
+  show "mbs.vals set A = lists A"
+    unfolding list_mbs.vals_def lists_eq_set by (rule refl)
+qed
 
 
 subsection {* Higman's Lemma *}
