@@ -1030,10 +1030,10 @@ then there is a minimal (i.e., minimal at all positions) bad sequence
 over elements of @{term "vals A"}.*}
 lemma mbs:
   assumes "\<forall>i. f i \<in> vals A" and "bad (strong P) f" (is "bad ?P f")
-  shows "\<exists>m.
-    bad (strong P) m \<and>
-    (\<forall>n. min_at P m n) \<and>
-    (\<forall>i. m i \<in> vals A)"
+  shows "\<exists>g.
+    bad (strong P) g \<and>
+    (\<forall>n. min_at P g n) \<and>
+    (\<forall>i. g i \<in> vals A)"
 proof -
   from bad_imp_min_at_0 [of P f, OF `bad ?P f`] obtain g
     where "\<forall>i. \<exists>j. weakeq (g i) (f j)"
