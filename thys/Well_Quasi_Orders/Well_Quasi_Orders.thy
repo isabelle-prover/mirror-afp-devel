@@ -864,7 +864,7 @@ qed simp
 
 
 text {*An infinite sequence, is minimal at position @{text n}, if
-every subsequence that coincides on the first @{text n} elements is good,
+every subsequence that coincides on the first @{text "n - 1"} elements is good,
 whenever the @{text n}-th element is replaced by a smaller one.*}
 definition min_at :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b seq \<Rightarrow> nat \<Rightarrow> bool" where
   "min_at P f n \<equiv>
@@ -887,12 +887,12 @@ lemma minimal_bad_element:
   fixes f :: "'b seq"
   assumes "min_at P f n"
     and "bad (strong P) f"
-  shows "\<exists>M.
-    (\<forall>i\<le>n. M i = f i) \<and>
-    weakeq (M (Suc n)) (f (Suc n)) \<and>
-    (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)) \<and>
-    bad (strong P) (repl (Suc n) f M) \<and>
-    min_at P (repl (Suc n) f M) (Suc n)"
+  shows "\<exists>g.
+    (\<forall>i\<le>n. g i = f i) \<and>
+    weakeq (g (Suc n)) (f (Suc n)) \<and>
+    (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (g i) (f j)) \<and>
+    bad (strong P) (repl (Suc n) f g) \<and>
+    min_at P (repl (Suc n) f g) (Suc n)"
 using assms
 proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
   case (IH g)
@@ -1030,10 +1030,10 @@ then there is a minimal (i.e., minimal at all positions) bad sequence
 over elements of @{term "vals A"}.*}
 lemma mbs:
   assumes "\<forall>i. f i \<in> vals A" and "bad (strong P) f" (is "bad ?P f")
-  shows "\<exists>m.
-    bad (strong P) m \<and>
-    (\<forall>n. min_at P m n) \<and>
-    (\<forall>i. m i \<in> vals A)"
+  shows "\<exists>g.
+    bad (strong P) g \<and>
+    (\<forall>n. min_at P g n) \<and>
+    (\<forall>i. g i \<in> vals A)"
 proof -
   from bad_imp_min_at_0 [of P f, OF `bad ?P f`] obtain g
     where "\<forall>i. \<exists>j. weakeq (g i) (f j)"

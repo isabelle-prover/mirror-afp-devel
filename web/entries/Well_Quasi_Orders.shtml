@@ -43,15 +43,22 @@ Based on Isabelle/HOL's type class for preorders,
 we introduce a type class for well-quasi-orders (wqo)
 which is characterized by the absence of "bad" sequences
 (our proofs are along the lines of the proof of Nash-Williams,
-from which we also borrow terminology). Our two main results are
-instantiations for the product type and the list type, which (almost) directly
-follow from our proofs of (1) Dickson's Lemma and (2) Higman's Lemma. More
-concretely:
+from which we also borrow terminology). Our main results are
+instantiations for the product type, the list type, and a type of finite trees,
+which (almost) directly follow from our proofs of (1) Dickson's Lemma, (2)
+Higman's Lemma, and (3) Kruskal's Tree Theorem. More concretely:
 <ul>
 <li>If the sets A and B are wqo then their Cartesian product is wqo.</li>
 <li>If the set A is wqo then the set of finite lists over A is wqo.</li>
+<li>If the set A is wqo then the set of finite trees over A is wqo.</li>
 </ul>
 The research was funded by the Austrian Science Fund (FWF): J3202.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2012-06-11]: Added Kruskal's Tree Theorem
         </td></tr>
 
     <tr><td class="datahead">License:</td>
