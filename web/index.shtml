@@ -47,6 +47,27 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-05-29:
+<a href="entries/CCS.shtml">CCS in nominal logic</a>
+<br>Author:
+<a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-05-29:
+<a href="entries/Pi_Calculus.shtml">The pi-calculus in nominal logic</a>
+<br>Author:
+<a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-05-29:
+<a href="entries/Psi_Calculi.shtml">Psi-calculi in Isabelle</a>
+<br>Author:
+<a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
+</td></tr>
+
+<tr><td class="entry">
 2012-05-27:
 <a href="entries/Circus.shtml">Isabelle/Circus</a>
 <br>Author:

@@ -1,3 +1,42 @@
+[CCS]
+title = CCS in nominal logic
+author = Jesper Bengtson <http://www.itu.dk/people/jebe>
+base = HOL/HOL-Nominal
+date = 2012-05-29
+topic = Computer Science/Process Calculi
+abstract = We formalise a large portion of CCS as described in Milner's book 'Communication and Concurrency' using the nominal datatype package in Isabelle. Our results include many of the standard theorems of bisimulation equivalence and congruence, for both weak and strong versions. One main goal of this formalisation is to keep the machine-checked proofs as close to their pen-and-paper counterpart as possible.
+ <p>
+ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
+ 
+
+[Pi_Calculus]
+title = The pi-calculus in nominal logic
+author = Jesper Bengtson <http://www.itu.dk/people/jebe>
+base = HOL/HOL-Nominal
+date = 2012-05-29
+topic = Computer Science/Process Calculi
+abstract = We formalise the pi-calculus using the nominal datatype package, based on ideas from the nominal logic by Pitts et al., and demonstrate an implementation in Isabelle/HOL. The purpose is to derive powerful induction rules for the semantics in order to conduct machine checkable proofs, closely following the intuitive arguments found in manual proofs. In this way we have covered many of the standard theorems of bisimulation equivalence and congruence, both late and early, and both strong and weak in a uniform manner. We thus provide one of the most extensive formalisations of a the pi-calculus ever done inside a theorem prover.
+ <p>
+ A significant gain in our formulation is that agents are identified up to alpha-equivalence, thereby greatly reducing the arguments about bound names. This is a normal strategy for manual proofs about the pi-calculus, but that kind of hand waving has previously been difficult to incorporate smoothly in an interactive theorem prover. We show how the nominal logic formalism and its support in Isabelle accomplishes this and thus significantly reduces the tedium of conducting completely formal proofs. This improves on previous work using weak higher order abstract syntax since we do not need extra assumptions to filter out exotic terms and can keep all arguments within a familiar first-order logic.
+ <p>
+ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
+
+
+[Psi_Calculi]
+title = Psi-calculi in Isabelle
+author = Jesper Bengtson <http://www.itu.dk/people/jebe>
+base = HOL/HOL-Nominal
+date = 2012-05-29
+topic = Computer Science/Process Calculi
+abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
+ <p>
+ We have formalised psi-calculi in the interactive theorem prover Isabelle using its nominal datatype package. One distinctive feature is that the framework needs to treat binding sequences, as opposed to single binders, in an efficient way. While different methods for formalising single binder calculi have been proposed over the last decades, representations for such binding sequences are not very well explored.
+ <p>
+ The main effort in the formalisation is to keep the machine checked proofs as close to their pen-and-paper counterparts as possible. This includes treating all binding sequences as atomic elements, and creating custom induction and inversion rules that to remove the bulk of manual alpha-conversions.
+ <p>
+ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
+
+
 [Circus]
 title = Isabelle/Circus
 author = Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Marie-Claude Gaudel <mailto:mcg@lri.fr>
