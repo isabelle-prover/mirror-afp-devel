@@ -48,7 +48,7 @@ lemma reflclp_mono:
   shows "P\<^sup>=\<^sup>= s t \<longrightarrow> Q\<^sup>=\<^sup>= s t"
   using assms by auto
 
-text {*Homomorphic embedding on trees.*}
+text {*Homeomorphic embedding on trees.*}
 inductive
   hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
   for P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
