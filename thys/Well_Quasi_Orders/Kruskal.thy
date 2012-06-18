@@ -120,12 +120,18 @@ lemma hemb_subtreeeq:
   assumes "hemb P s t" and "subtreeeq t u" shows "hemb P s u"
   using assms and hemb_subtree by auto
 
+lemma wfp_on_subtree:
+  "wfp_on subtree (trees A)"
+  using wf_subtree [to_pred, unfolded wfp_on_UNIV [symmetric]]
+  using wfp_on_subset [of "trees A" UNIV]
+  by blast
+
 interpretation tree_mbs: mbs hemb subtree elts
   where "tree_mbs.vals A = trees A"
 proof -
   show "mbs hemb subtree elts"
     by (unfold_locales) (force
-      simp: suffix_reflclp_conv hemb_subtree wf_subtree
+      simp: suffix_reflclp_conv hemb_subtree wfp_on_subtree [unfolded trees_def]
       intro: subtree_trans elim!: subtree_elts_subset)+
   then interpret tree_mbs: mbs hemb subtree elts .
   show "mbs.vals elts A = trees A"
