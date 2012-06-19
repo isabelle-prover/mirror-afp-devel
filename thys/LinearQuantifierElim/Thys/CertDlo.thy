@@ -12,8 +12,7 @@ fun cyclerec :: "nat \<Rightarrow> nat \<Rightarrow> atom list \<Rightarrow> boo
 "cyclerec i j [] = (i=j)" |
 "cyclerec i j (Less m n # fs) = (j=m & cyclerec i n fs)" |
 "cyclerec i j (Eq m n # fs) = (if j=m then cyclerec i n fs
-                               else if j=n then cyclerec i m fs else False)" |
-"cyclerec i j fs = False"
+                               else if j=n then cyclerec i m fs else False)"
 
 definition cycle :: "atom list \<Rightarrow> nat list \<Rightarrow> bool" where
 "cycle fs is =
