@@ -6,7 +6,7 @@
 
 header {* Kruskal's Tree Theorem *}
 
-theory Kruskal
+theory Kruskal_Tree
 imports Well_Quasi_Orders
 begin
 
