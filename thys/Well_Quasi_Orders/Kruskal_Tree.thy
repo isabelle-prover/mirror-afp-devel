@@ -1,44 +1,146 @@
-theory Kruskal
-imports Finite_Tree
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Kruskal's Tree Theorem *}
+
+theory Kruskal_Tree
+imports Well_Quasi_Orders
 begin
 
-context finite_tree
-begin
+text {*A datatype of finite (non-empty) trees.*}
+datatype 'a tree = Node 'a "'a tree list"
 
-abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
+lemma
+  assumes "\<And>x ss. (\<And>s. s \<in> set ss \<Longrightarrow> P s) \<Longrightarrow> P (Node x ss)"
+  shows tree_induct [case_names Node, induct type: tree]: "P t"
+    and "\<And>t. t \<in> set ts \<Longrightarrow> P t"
+  using assms by (induct t and ts) auto
+
+fun elts :: "'a tree \<Rightarrow> 'a set" where
+  "elts (Node x ts) = {x} \<union> \<Union>set(map elts ts)"
+
+definition trees where
+  "trees A \<equiv> {t. elts t \<subseteq> A}"
+
+lemma trees_UNIV [simp]:
+  "trees UNIV = UNIV"
+  by (auto simp: trees_def)
+
+inductive
+  subtree :: "'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
+where
+  base: "s \<in> set ss \<Longrightarrow> subtree s (Node x ss)" |
+  step: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (Node x ts)"
+
+lemma emb_mono:
+  assumes "\<And>s t. P s t \<longrightarrow> Q s t"
+  shows "emb P s t \<longrightarrow> emb Q s t"
+proof
+  assume "emb P s t" thus "emb Q s t"
+    by (induct) (auto simp: assms)
+qed
+
+lemma reflclp_mono:
+  assumes "\<And>s t. P s t \<longrightarrow> Q s t"
+  shows "P\<^sup>=\<^sup>= s t \<longrightarrow> Q\<^sup>=\<^sup>= s t"
+  using assms by auto
+
+text {*Homeomorphic embedding on trees.*}
+inductive
+  hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> bool"
+  for P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+where
+  hemb_base [intro]: "t \<in> set ts \<Longrightarrow> hemb P t (Node f ts)" |
+  hemb_emb [intro]: "P f g \<Longrightarrow> emb ((hemb P)\<^sup>=\<^sup>=) ss ts \<Longrightarrow> hemb P (Node f ss) (Node g ts)" |
+  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P s u" |
+  hemb_ctxt [intro]: "hemb P s t \<Longrightarrow> hemb P (Node f (ss1 @ s # ss2)) (Node f (ss1 @ t # ss2))"
+monos emb_mono reflclp_mono
 
 lemma hemb_emb':
   assumes "P f g" and "emb (hemb P) ss ts"
-  shows "hemb P (mk f ss) (mk g ts)"
+  shows "hemb P (Node f ss) (Node g ts)"
 proof -
   have "emb ((hemb P)\<^sup>=\<^sup>=) ss ts"
     by (rule emb_mono [rule_format]) (insert assms(2), auto)
   with `P f g` show ?thesis by auto
 qed
 
-lemma subtreeeq_trees:
-  "subtreeeq s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
-  using subtree_trees by auto
+abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
 
-lemma trees_induct_aux:
-  assumes "\<And>x ts. x \<in> A \<Longrightarrow> (\<And>t. t \<in> set ts \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk x ts)"
-  shows "t \<in> trees A \<Longrightarrow> P t"
-    and "ts \<in> trees_list A \<Longrightarrow> \<forall>t\<in>set ts. P t"
-  using assms
-  by (induct t and ts rule: trees_trees_list.inducts)
-     (simp, simp, metis set_ConsD)
+lemma subtree_NodeE:
+  assumes "subtree s (Node x ts)"
+  obtains t where "t \<in> set ts" and "subtreeeq s t"
+  using assms by (cases) auto
 
-lemma trees_induct [case_names mk, induct set: trees]:
-  assumes "t \<in> trees A"
-    and "\<And>x ts. x \<in> A \<Longrightarrow> (\<And>t. t \<in> set ts \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk x ts)"  
-  shows "P t"
-  using assms and trees_induct_aux(1) [of A P t] by blast
+lemma subtree_trans:
+  assumes "subtree s t" and "subtree t u" shows "subtree s u"
+  using assms(2, 1)
+  by (induct rule: subtree.induct) (auto intro: subtree.intros)
 
-lemma trees_intros:
-  "x \<in> A \<Longrightarrow>
-    \<forall>t\<in>set ts. t \<in> trees A \<Longrightarrow>
-    mk x ts \<in> trees A"
-  by (induct ts) (auto intro: trees_trees_list.intros)
+lemma hemb_subtree:
+  assumes "hemb P s t" and "subtree t u" shows "hemb P s u"
+  using assms(2, 1)
+  by (induct rule: subtree.induct) auto
+
+lemma subtree_imp_hemb:
+  assumes "subtree s t" shows "hemb P s t"
+  using assms by (induct) auto
+
+lemma subtreeeq_trans:
+  "subtreeeq s t \<Longrightarrow> subtreeeq t u \<Longrightarrow> subtreeeq s u"
+  using subtree_trans [of s t u] by auto
+
+lemma size_simp1:
+  "s \<in> set ss \<Longrightarrow> subtree t s \<Longrightarrow> size t < size s \<Longrightarrow> size t < Suc (list_size size ss)"
+  by (induct ss) auto
+
+lemma size_simp2: "t \<in> set ts \<Longrightarrow> size t < Suc (list_size size ts)"
+  by (induct ts) auto
+
+lemmas size_simps = size_simp1 size_simp2
+
+lemma subtree_size: "subtree t s \<Longrightarrow> size t < size s"
+  by (induct rule: subtree.induct) (auto simp: size_simps)
+
+lemma wf_subtree: "wf {(x, y). subtree x y}"
+  by (rule wf_subset) (auto intro: subtree_size)
+
+lemma subtree_elts_subset:
+  assumes "subtree s t" shows "elts s \<subseteq> elts t"
+  using assms by (induct rule: subtree.induct) auto
+
+lemma subtreeeq_elts_subset:
+  assumes "subtreeeq s t" shows "elts s \<subseteq> elts t"
+  using assms and subtree_elts_subset by auto
+
+lemma hemb_subtreeeq:
+  assumes "hemb P s t" and "subtreeeq t u" shows "hemb P s u"
+  using assms and hemb_subtree by auto
+
+lemma wfp_on_subtree:
+  "wfp_on subtree (trees A)"
+  using wf_subtree [to_pred, unfolded wfp_on_UNIV [symmetric]]
+  using wfp_on_subset [of "trees A" UNIV]
+  by blast
+
+lemma trees_Node [iff]:
+  "Node x ts \<in> trees A \<longleftrightarrow> x \<in> A \<and> (\<forall>t\<in>set ts. t \<in> trees A)"
+  by (auto simp: trees_def)
+
+lemma subtree_trees:
+  "subtree s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
+  by (induct rule: subtree.induct) auto
+
+interpretation tree_mbs: mbs hemb subtree trees
+proof -
+  show "mbs hemb subtree trees"
+    by (unfold_locales) (force
+      simp: hemb_subtree wfp_on_subtree
+      intro: subtree_trans elim!: subtree_trees)+
+qed
 
 lemma reflp_on_hemb:
   assumes "reflp_on P A"
@@ -48,9 +150,8 @@ proof
   assume "t \<in> trees A"
   thus "hemb P t t"
   proof (induct t)
-    case (mk x ts)
-    hence "\<forall>t \<in> set ts. hemb P t t"
-      and "x \<in> A" by (auto simp: trees_def)
+    case (Node x ts)
+    hence "\<forall>t \<in> set ts. hemb P t t" and "x \<in> A" by (auto simp: trees_def)
     hence "reflp_on (hemb P) (set ts)" by (auto simp: reflp_on_def)
     from reflp_on_emb [OF this]
       have *: "emb (hemb P) ts ts" by (auto simp: reflp_on_def)
@@ -61,22 +162,18 @@ proof
   qed
 qed
 
-lemma trees_cases [consumes 1, cases set: trees]:
-  assumes "t \<in> trees A"
-    and "\<And>x ts. \<lbrakk>x \<in> A; \<forall>t\<in>set ts. t \<in> trees A; t = mk x ts\<rbrakk> \<Longrightarrow> P"
-  shows "P"
-  using assms by (induct) auto
+fun root :: "'a tree \<Rightarrow> 'a" where
+  "root (Node x ts) = x"
 
-lemma root_succs:
-  assumes "t \<in> trees A"
-  shows "mk (root t) (succs t) = t"
-  using assms by (cases t) simp_all
+fun args :: "'a tree \<Rightarrow> 'a tree list" where
+  "args (Node x ts) = ts"
 
-lemma in_succs_imp_subtree:
-  assumes "t \<in> trees A" and "s \<in> set (succs t)"
-  shows "subtree s t"
-  using assms
+lemma in_args_imp_subtree: "s \<in> set (args t) \<Longrightarrow> subtree s t"
   by (cases t) (auto intro: subtree.intros)
+
+lemma Node_root_args:
+  "Node (root t) (args t) = t"
+  by (cases t) auto
 
 lemma no_bad_of_special_shape_imp_good':
   assumes "\<not> (\<exists>R f::nat seq. (\<forall>i. R i \<in> set (B (f i)) \<and> f 0 \<le> f i) \<and> bad P R)"
@@ -150,10 +247,6 @@ proof (rule ccontr)
   with assms(1) show False by blast
 qed
 
-lemma hemb_subtreeeq:
-  assumes "hemb P s t" and "subtreeeq t u" shows "hemb P s u"
-  using assms and hemb_subtree by auto
-
 
 subsection {* Kruskal's Tree Theorem *}
 
@@ -162,13 +255,6 @@ lemma almost_full_on_trees:
   shows "almost_full_on (hemb P) (trees A)"
     (is "almost_full_on ?P ?A")
 proof -
-  interpret tree_mbs: mbs hemb subtree trees
-  proof -
-    show "mbs hemb subtree trees"
-      by (unfold_locales) (force
-        simp: hemb_subtree wfp_on_subtree
-        intro: subtree_trans elim!: subtree_trees)+
-  qed
   { from reflp_on_hemb [OF almost_full_on_imp_reflp_on [OF assms]] have "reflp_on ?P ?A" . }
   note refl = this
   {
@@ -182,13 +268,12 @@ proof -
         in_trees: "\<And>i. m i \<in> trees A"
         by blast
       let ?A = m
-      obtain a as
-        where a: "\<forall>i. root (?A i) = a i \<and> succs (?A i) = as i" by force
-      let ?B = "\<lambda>i. set (succs (?A i))"
+      obtain a as where a: "\<forall>i. root (?A i) = a i \<and> args (?A i) = as i" by force
+      let ?B = "\<lambda>i. set (args (?A i))"
       {
         assume "\<exists>R f::nat seq. (\<forall>i. R i \<in> ?B (f i) \<and> f i \<ge> f 0) \<and> bad ?P R"
         then obtain R and f :: "nat seq"
-          where in_succs: "\<forall>i. R i \<in> ?B (f i)"
+          where in_args: "\<forall>i. R i \<in> ?B (f i)"
           and ge: "\<forall>i. f i \<ge> f 0"
           and "bad ?P R" by auto
         let ?C = "\<lambda>i. if i < f 0 then ?A i else R (i - f 0)"
@@ -207,8 +292,8 @@ proof -
             ultimately have False using `bad ?P R` by (auto simp: good_def)
           } moreover {
             let ?i = "j - f 0"
-            from in_succs have "R ?i \<in> ?B (f ?i)" by simp
-            from in_succs_imp_subtree [OF in_trees this]
+            from in_args have "R ?i \<in> ?B (f ?i)" by simp
+            from in_args_imp_subtree [OF this]
               have subtree: "subtreeeq (R ?i) (?A (f ?i))" by auto
             assume "i < f 0" and "f 0 \<le> j"
             with * have "?P (?A i) (R ?i)" by auto
@@ -219,7 +304,7 @@ proof -
         qed
         have "\<forall>i<f 0. ?C i = ?A i" by simp
         moreover have "subtree (?C (f 0)) (?A (f 0))"
-          using in_succs_imp_subtree [OF in_trees in_succs [THEN spec, of 0]] by simp
+          using in_args_imp_subtree [OF in_args [THEN spec [of _ 0]]] by simp
         moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. subtree\<^sup>=\<^sup>= (?C i) (?A j)"
         proof (intro allI impI)
           fix i
@@ -227,7 +312,7 @@ proof -
           assume "f 0 \<le> i"
           with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> f ?i" by auto
           from `f 0 \<le> i` have "?C i = R ?i" by auto
-          with in_succs_imp_subtree [OF in_trees in_succs [THEN spec [of _ ?i]]]
+          with in_args_imp_subtree [OF in_args [THEN spec [of _ ?i]]]
             have "subtree\<^sup>=\<^sup>= (?C i) (?A (f ?i))" by auto
           thus "\<exists>j\<ge>f 0. subtree\<^sup>=\<^sup>= (?C i) (?A j)" using `f 0 \<le> f ?i` by auto
         qed
@@ -241,15 +326,15 @@ proof -
       proof
         fix x assume "x \<in> ?B'"
         then obtain i where B: "x \<in> ?B i" by auto
-        from in_succs_imp_subtree [OF in_trees this]
+        from in_args_imp_subtree [OF this]
           have "subtreeeq x (?A i)" by auto
         with in_trees [of i] show "x \<in> trees A"
-          using subtreeeq_trees by blast
+          using subtreeeq_elts_subset by (auto simp add: trees_def)
       qed
       have "almost_full_on ?P ?B'"
       proof
         from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
-        fix f :: "'a seq" assume "\<forall>i. f i \<in> ?B'"
+        fix f :: "'a tree seq" assume "\<forall>i. f i \<in> ?B'"
         from no_bad_of_special_shape_imp_good' [OF no_special_bad_seq refl this]
           show "good ?P f" .
       qed
@@ -258,8 +343,9 @@ proof -
       proof
         fix x assume "x \<in> ?a'"
         then obtain i where x: "x = a i" by auto
-        from in_trees [of i] and a [THEN spec [of _ i]]
-          show "x \<in> A" by (cases "m i") (simp add: x)
+        with a [THEN spec [of _ i]]
+          have "a i \<in> elts (?A i)" by (cases "m i") auto
+        with in_trees [of i] show "x \<in> A" unfolding x by (auto simp: trees_def)
       qed
       from almost_full_on_subset [OF this assms]
         have "almost_full_on P ?a'" .
@@ -267,31 +353,31 @@ proof -
       from almost_full_on_lists [OF `almost_full_on ?P ?B'`]
         have lists: "almost_full_on (emb ?P) (lists ?B')" .
 
-      let ?succs = "{succs (?A i) | i. True}"
-      have "?succs \<subseteq> lists ?B'" by auto
+      let ?args = "{args (?A i) | i. True}"
+      have "?args \<subseteq> lists ?B'" by auto
       from almost_full_on_subset [OF this lists]
-        have "almost_full_on (emb ?P) ?succs" .
+        have "almost_full_on (emb ?P) ?args" .
 
       let ?P' = "prod_le P (emb ?P)"
 
-      from almost_full_on_Sigma [OF `almost_full_on P ?a'` `almost_full_on (emb ?P) ?succs`]
-        have af: "almost_full_on ?P' (?a' \<times> ?succs)" .
+      from almost_full_on_Sigma [OF `almost_full_on P ?a'` `almost_full_on (emb ?P) ?args`]
+        have af: "almost_full_on ?P' (?a' \<times> ?args)" .
       
-      let ?aB = "\<lambda>i. (a i, succs (?A i))"
+      let ?aB = "\<lambda>i. (a i, args (?A i))"
 
-      have "\<forall>i. ?aB i \<in> (?a' \<times> ?succs)" by auto
+      have "\<forall>i. ?aB i \<in> (?a' \<times> ?args)" by auto
       with af have "good ?P' ?aB" unfolding almost_full_on_def by auto
       then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
         by (auto simp: good_def almost_full_on_def)
 
-      from root_succs and in_trees
-        have root_succs: "mk (root (?A i)) (succs (?A i)) = ?A i"
-          "mk (root (?A j)) (succs (?A j)) = ?A j" by force+
+      from Node_root_args
+        have root_args: "Node (root (?A i)) (args (?A i)) = ?A i"
+          "Node (root (?A j)) (args (?A j)) = ?A j" by force+
 
-      from * have "P (a i) (a j)" and "emb ?P (succs (?A i)) (succs (?A j))"
+      from * have "P (a i) (a j)" and "emb ?P (args (?A i)) (args (?A j))"
         by (auto simp: prod_le_def)
       from hemb_emb' [OF this]
-        have "?P (?A i) (?A j)" using a and root_succs by auto
+        have "?P (?A i) (?A j)" using a and root_args by auto
       with `i < j` and `bad ?P ?A` show False by (auto simp: good_def almost_full_on_def)
     qed
   }
@@ -311,48 +397,5 @@ next
   from almost_full_on_trees [OF this]
     show "good (hemb P) f" using * by (auto simp: almost_full_on_def)
 qed
-
-end
-
-datatype ('a, 'b) "term" = Var 'b | Fun 'a "('a, 'b) term list"
-
-fun rt where "rt (Fun x ts) = x"
-fun args where "args (Fun x ts) = ts"
-
-inductive_set gterms for A where
-  "x \<in> A \<Longrightarrow> \<forall>t\<in>set ts. t \<in> gterms A \<Longrightarrow> Fun x ts \<in> gterms A"
-
-text {*Ground-terms are finite trees.*}
-interpretation term_tree: finite_tree Fun rt args
-  by (unfold_locales) simp_all
-
-text {*The set @{term "finite_tree.trees Fun A"} is the same
-as the set of groun-terms over @{term A}.*}
-lemma "gterms A = term_tree.trees A"
-  (is "?lhs = ?rhs")
-proof
-
-  show "?lhs \<subseteq> ?rhs"
-  proof
-    fix t assume "t \<in> ?lhs" thus "t \<in> ?rhs"
-      by (induct) (rule term_tree.trees_intros, auto)
-  qed
-next
-  show "?rhs \<subseteq> ?lhs"
-  proof
-    fix t assume "t \<in> ?rhs" thus "t \<in> ?lhs"
-      by (induct) (auto intro: gterms.intros)
-  qed
-qed
-
-datatype 'a tree = Node 'a "'a tree list"
-
-fun root where "root (Node x ts) = x"
-fun succs where "succs (Node x ts) = ts"
-
-interpretation tree_finite_tree: finite_tree Node root succs
-  by (unfold_locales) simp_all
-
-thm tree_finite_tree.wqo_on_trees
 
 end

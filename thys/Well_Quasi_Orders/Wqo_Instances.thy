@@ -9,7 +9,7 @@ header {* Instances of Well-Quasi-Orders *}
 theory Wqo_Instances
 imports
   Well_Quasi_Orders
-  Kruskal
+  Kruskal_Tree
 begin
 
 subsection {* The Sum Type is Well-Quasi-Ordered *}

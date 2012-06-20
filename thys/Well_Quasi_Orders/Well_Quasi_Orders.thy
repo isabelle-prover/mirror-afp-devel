@@ -804,22 +804,19 @@ infinite sequence is bad (here @{term P} is an order on elements on which
 for checking minimality. The required properties are:
 \begin{itemize}
 \item @{term "weak\<^sup>=\<^sup>="} has to be right-compatible with @{term "strong P"}
-\item @{term "weak"} ahs to be well-founded
+\item @{term "weak"} has to be well-founded
 \item @{term "weak\<^sup>=\<^sup>="} has to be transitive
 \item @{term "weak\<^sup>=\<^sup>="} has to be element preserving
 \end{itemize}*}
 locale mbs =
   fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
     and weak :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
-    and setof :: "'b \<Rightarrow> 'a set"
+    and vals :: "'a set \<Rightarrow> 'b set"
   assumes strong_weak: "strong P x y \<Longrightarrow> weak y z \<Longrightarrow> strong P x z"
-    and wf_weak: "wf {(x, y). weak x y}"
+    and wfp_on_weak: "wfp_on weak (vals A)"
     and weak_trans: "weak x y \<Longrightarrow> weak y z \<Longrightarrow> weak x z"
-    and weak_set_subset: "weak x y \<Longrightarrow> setof x \<subseteq> setof y"
+    and weak_vals: "weak x y \<Longrightarrow> y \<in> vals A \<Longrightarrow> x \<in> vals A"
 begin
-
-definition vals where
-  "vals A \<equiv> {x. setof x \<subseteq> A}"
 
 abbreviation weakeq where "weakeq \<equiv> weak\<^sup>=\<^sup>="
 
@@ -829,8 +826,8 @@ lemma strong_weakeq: "strong P x y \<Longrightarrow> weakeq y z \<Longrightarrow
 lemma weakeq_trans: "weakeq x y \<Longrightarrow> weakeq y z \<Longrightarrow> weakeq x z"
   using weak_trans by auto
 
-lemma weakeq_set_subset: "weakeq x y \<Longrightarrow> setof x \<subseteq> setof y"
-  using weak_set_subset by auto
+lemma weakeq_vals: "weakeq x y \<Longrightarrow> y \<in> vals A \<Longrightarrow> x \<in> vals A"
+  using weak_vals by auto
 
 text {*The following lemma is the reason for the suffix condition that
 is used throughout.*}
@@ -871,10 +868,11 @@ definition min_at :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b 
     \<forall>g. (\<forall>i<n. g i = f i) \<and> weak (g n) (f n) \<and> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (g i) (f j))
     \<longrightarrow> good (strong P) g"
 
-lemma weak_induct [case_names IH]:
-  assumes "\<And>xs. (\<And>zs. weak zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
+lemma weak_induct [consumes 1, case_names IH]:
+  assumes "xs \<in> vals A"
+    and "\<And>xs. xs \<in> vals A \<Longrightarrow> (\<And>zs. zs \<in> vals A \<Longrightarrow> weak zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
   shows "P xs"
-  using wf_induct [OF wf_weak, of P xs] and assms by blast
+  using wfp_on_induct [OF wfp_on_weak, of xs A P] and assms by blast
 
 lemma weak_imp_weakeq: "weak x y \<Longrightarrow> weakeq x y" by auto
 
@@ -885,7 +883,8 @@ at @{term n} is preserved) and the remaining elements are weakly
 related to the remaining elements of the given sequence.*}
 lemma minimal_bad_element:
   fixes f :: "'b seq"
-  assumes "min_at P f n"
+  assumes "f (Suc n) \<in> vals A"
+    and "min_at P f n"
     and "bad (strong P) f"
   shows "\<exists>g.
     (\<forall>i\<le>n. g i = f i) \<and>
@@ -950,7 +949,8 @@ proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
     have bad: "bad (strong P) ?g"
       using bad_strong_repl [OF `bad (strong P) g` `bad (strong P) h`, of "Suc n", OF greater] .
     let ?g' = "repl (Suc n) g"
-    from IH(1) [of ?g n, OF weak' min_at bad] obtain M
+    have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
+    from IH(2) [of ?g n, OF this, OF weak' min_at bad] obtain M
       where "\<forall>i\<le>n. M i = g i"
       and "weakeq (M (Suc n)) (?g' h (Suc n))"
       and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g' M i) (h j)"
@@ -977,7 +977,8 @@ text {*If there is a bad sequence, then there is a bad sequence that is
 minimal at its first element (used for the base case of constructing a
 minimal bad sequence.*}
 lemma bad_imp_min_at_0:
-  assumes "bad (strong P) f"
+  assumes "f 0 \<in> vals A"
+    and "bad (strong P) f"
   shows "\<exists>g. (\<forall>i. \<exists>j. weakeq (g i) (f j)) \<and> min_at P g 0 \<and> bad (strong P) g"
 using assms
 proof (induct "f 0" arbitrary: f rule: weak_induct)
@@ -992,7 +993,9 @@ proof (induct "f 0" arbitrary: f rule: weak_induct)
       and greater: "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (h i) (g j)"
       and bad: "bad (strong P) h"
       unfolding min_at_def by auto
-    from IH(1) [of h, OF weak bad] obtain e
+    have "h 0 \<in> vals A"
+      using weak_vals [OF weak IH(1)] .
+    from IH(2) [of h, OF this weak bad] obtain e
       where "\<forall>i. \<exists>j. weakeq (e i) (h j)" and "min_at P e 0" and "bad (strong P) e"
       by auto
     moreover with greater have "\<forall>i. \<exists>j. weakeq (e i) (g j)" using weakeq_trans by fast
@@ -1035,16 +1038,18 @@ lemma mbs:
     (\<forall>n. min_at P g n) \<and>
     (\<forall>i. g i \<in> vals A)"
 proof -
-  from bad_imp_min_at_0 [of P f, OF `bad ?P f`] obtain g
+  from assms have "f 0 \<in> vals A" by simp
+  from bad_imp_min_at_0 [of f, OF this `bad ?P f`] obtain g
     where "\<forall>i. \<exists>j. weakeq (g i) (f j)"
     and "min_at P g 0"
     and "bad ?P g"
     by blast
   with `\<forall>i. f i \<in> vals A`
     have "\<And>i. g i \<in> vals A"
-    using weakeq_set_subset unfolding vals_def by blast
-  from minimal_bad_element [of P]
+    using weakeq_vals by blast
+  from minimal_bad_element [of _ _ _ P]
     have "\<forall>f n.
+    f (Suc n) \<in> vals A \<and>
     min_at P f n \<and>
     bad ?P f \<longrightarrow>
     (\<exists>M.
@@ -1059,19 +1064,23 @@ proof -
     where * [rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
   let ?g = "minimal_bad_seq M g"
   let ?A = "\<lambda>i. ?g i i"
-  have "\<forall>n. (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
+  have "\<forall>n. (\<forall>i\<ge>n. ?g n i \<in> vals A) \<and> (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
   proof
     fix n
-    show "(n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
+    show "(\<forall>i\<ge>n. ?g n i \<in> vals A) \<and> (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
     proof (induction n)
       case 0
-      have "min_at P g 0" by fact
+      have "\<forall>i\<ge>0. g i \<in> vals A" using `\<And>i. g i \<in> vals A` by auto
+      moreover have "min_at P g 0" by fact
       moreover have "bad ?P g" by fact
       ultimately
-        have [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
+        have M [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
         and "bad ?P (M g 0)" and "min_at P (M g 0) (Suc 0)"
         and **: "\<forall>i\<ge>Suc 0. \<exists>j\<ge>Suc 0. weakeq (M g 0 i) (g j)"
         using * [of g 0] by auto
+      moreover have "\<forall>i. ?g 0 i \<in> vals A"
+          using ** and weakeq_vals and `\<And>i. g i \<in> vals A`
+          by (auto) (metis M le_0_eq not_less_eq_eq)
       moreover have "min_at P (M g 0) 0"
       proof (unfold min_at_def, intro allI impI, elim conjE)
         fix e :: "'b seq"
@@ -1125,6 +1134,16 @@ proof -
         and "bad ?P (?g (Suc n))"
         and min_at: "min_at P (?g (Suc n)) (Suc n)"
         by (simp_all add: Let_def)
+      moreover have "\<forall>i\<ge>Suc n. ?g (Suc n) i \<in> vals A"
+      proof (intro allI impI)
+        fix i
+        assume "i \<ge> Suc n"
+        with subseq obtain j where "j \<ge> Suc n"
+          and "weakeq (?g (Suc n) i) (?g n j)" by auto
+        moreover with Suc have "?g n j \<in> vals A" by simp
+        ultimately show "?g (Suc n) i \<in> vals A"
+          using weakeq_vals by auto
+      qed
       moreover have *: "\<forall>i\<le>Suc n. ?A i = ?g (Suc n) i"
       proof (intro allI impI)
         fix i assume "i \<le> Suc n"
@@ -1174,8 +1193,8 @@ proof -
                 ultimately show ?thesis by blast
               qed
             qed
-            from 1 2 3 and Suc [THEN conjunct2, THEN conjunct2] and `i \<le> n`
-            show "good ?P e" unfolding min_at_def by blast
+            from 1 2 3 and Suc [THEN conjunct2, THEN conjunct2, THEN conjunct2] and `i \<le> n`
+              show "good ?P e" unfolding min_at_def by blast
           qed
         qed
       qed
@@ -1244,8 +1263,7 @@ proof -
       using 1 [rule_format, of n, OF le_refl, unfolded min_at_def] by auto
   qed
   moreover have "\<forall>i. ?A i \<in> vals A"
-    using `\<And>i. g i \<in> vals A` and ex_weakeq
-    using weakeq_set_subset unfolding vals_def by blast
+    using `\<And>i. g i \<in> vals A` and ex_weakeq and weakeq_vals by blast
   ultimately show ?thesis unfolding min_at_def by blast
 qed
 
@@ -1259,16 +1277,22 @@ lemma wf_suffix:
   "wf {(x, y). suffix x y}"
   unfolding wf_def using list_suffix_induct by auto
 
-interpretation list_mbs: mbs emb suffix set
-  where "list_mbs.vals A = lists A"
+lemma wfp_on_suffix:
+  "wfp_on suffix (lists A)"
+  using wf_suffix [to_pred, unfolded wfp_on_UNIV [symmetric]]
+  using wfp_on_subset [of "lists A" UNIV]
+  by blast
+
+lemma suffix_lists:
+  "suffix xs ys \<Longrightarrow> ys \<in> lists A \<Longrightarrow> xs \<in> lists A"
+  unfolding suffix_def by auto
+
+interpretation list_mbs: mbs emb suffix lists
 proof -
-  show "mbs emb suffix set"
+  show "mbs emb suffix lists"
     by (unfold_locales) (auto
-      simp: suffix_reflclp_conv emb_suffix wf_suffix suffix_set_subset
+      simp: emb_suffix wfp_on_suffix suffix_lists
       intro: suffix_trans)
-  then interpret list_mbs: mbs emb suffix set .
-  show "mbs.vals set A = lists A"
-    unfolding list_mbs.vals_def lists_eq_set by (rule refl)
 qed
 
 
