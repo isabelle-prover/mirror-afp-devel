@@ -126,16 +126,20 @@ lemma wfp_on_subtree:
   using wfp_on_subset [of "trees A" UNIV]
   by blast
 
-interpretation tree_mbs: mbs hemb subtree elts
-  where "tree_mbs.vals A = trees A"
+lemma trees_Node [iff]:
+  "Node x ts \<in> trees A \<longleftrightarrow> x \<in> A \<and> (\<forall>t\<in>set ts. t \<in> trees A)"
+  by (auto simp: trees_def)
+
+lemma subtree_trees:
+  "subtree s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
+  by (induct rule: subtree.induct) auto
+
+interpretation tree_mbs: mbs hemb subtree trees
 proof -
-  show "mbs hemb subtree elts"
+  show "mbs hemb subtree trees"
     by (unfold_locales) (force
-      simp: suffix_reflclp_conv hemb_subtree wfp_on_subtree [unfolded trees_def]
-      intro: subtree_trans elim!: subtree_elts_subset)+
-  then interpret tree_mbs: mbs hemb subtree elts .
-  show "mbs.vals elts A = trees A"
-    unfolding tree_mbs.vals_def trees_def by (rule refl)
+      simp: hemb_subtree wfp_on_subtree
+      intro: subtree_trans elim!: subtree_trees)+
 qed
 
 lemma reflp_on_hemb:

@@ -804,22 +804,19 @@ infinite sequence is bad (here @{term P} is an order on elements on which
 for checking minimality. The required properties are:
 \begin{itemize}
 \item @{term "weak\<^sup>=\<^sup>="} has to be right-compatible with @{term "strong P"}
-\item @{term "weak"} ahs to be well-founded
+\item @{term "weak"} has to be well-founded
 \item @{term "weak\<^sup>=\<^sup>="} has to be transitive
 \item @{term "weak\<^sup>=\<^sup>="} has to be element preserving
 \end{itemize}*}
 locale mbs =
   fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
     and weak :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
-    and setof :: "'b \<Rightarrow> 'a set"
+    and vals :: "'a set \<Rightarrow> 'b set"
   assumes strong_weak: "strong P x y \<Longrightarrow> weak y z \<Longrightarrow> strong P x z"
-    and wfp_on_weak: "wfp_on weak {x. setof x \<subseteq> A}"
+    and wfp_on_weak: "wfp_on weak (vals A)"
     and weak_trans: "weak x y \<Longrightarrow> weak y z \<Longrightarrow> weak x z"
-    and weak_set_subset: "weak x y \<Longrightarrow> setof x \<subseteq> setof y"
+    and weak_vals: "weak x y \<Longrightarrow> y \<in> vals A \<Longrightarrow> x \<in> vals A"
 begin
-
-definition vals where
-  "vals A \<equiv> {x. setof x \<subseteq> A}"
 
 abbreviation weakeq where "weakeq \<equiv> weak\<^sup>=\<^sup>="
 
@@ -829,8 +826,8 @@ lemma strong_weakeq: "strong P x y \<Longrightarrow> weakeq y z \<Longrightarrow
 lemma weakeq_trans: "weakeq x y \<Longrightarrow> weakeq y z \<Longrightarrow> weakeq x z"
   using weak_trans by auto
 
-lemma weakeq_set_subset: "weakeq x y \<Longrightarrow> setof x \<subseteq> setof y"
-  using weak_set_subset by auto
+lemma weakeq_vals: "weakeq x y \<Longrightarrow> y \<in> vals A \<Longrightarrow> x \<in> vals A"
+  using weak_vals by auto
 
 text {*The following lemma is the reason for the suffix condition that
 is used throughout.*}
@@ -875,8 +872,7 @@ lemma weak_induct [consumes 1, case_names IH]:
   assumes "xs \<in> vals A"
     and "\<And>xs. xs \<in> vals A \<Longrightarrow> (\<And>zs. zs \<in> vals A \<Longrightarrow> weak zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
   shows "P xs"
-  using wfp_on_induct [OF wfp_on_weak, of xs A P] and assms
-  unfolding vals_def by blast
+  using wfp_on_induct [OF wfp_on_weak, of xs A P] and assms by blast
 
 lemma weak_imp_weakeq: "weak x y \<Longrightarrow> weakeq x y" by auto
 
@@ -953,8 +949,7 @@ proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
     have bad: "bad (strong P) ?g"
       using bad_strong_repl [OF `bad (strong P) g` `bad (strong P) h`, of "Suc n", OF greater] .
     let ?g' = "repl (Suc n) g"
-    from IH(1) have "?g (Suc n) \<in> vals A"
-      using weak_set_subset [OF weak] by (simp add: vals_def)
+    have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
     from IH(2) [of ?g n, OF this, OF weak' min_at bad] obtain M
       where "\<forall>i\<le>n. M i = g i"
       and "weakeq (M (Suc n)) (?g' h (Suc n))"
@@ -998,8 +993,8 @@ proof (induct "f 0" arbitrary: f rule: weak_induct)
       and greater: "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (h i) (g j)"
       and bad: "bad (strong P) h"
       unfolding min_at_def by auto
-    from IH(1) have "h 0 \<in> vals A"
-      using weak_set_subset [OF weak] by (simp add: vals_def)
+    have "h 0 \<in> vals A"
+      using weak_vals [OF weak IH(1)] .
     from IH(2) [of h, OF this weak bad] obtain e
       where "\<forall>i. \<exists>j. weakeq (e i) (h j)" and "min_at P e 0" and "bad (strong P) e"
       by auto
@@ -1051,7 +1046,7 @@ proof -
     by blast
   with `\<forall>i. f i \<in> vals A`
     have "\<And>i. g i \<in> vals A"
-    using weakeq_set_subset unfolding vals_def by blast
+    using weakeq_vals by blast
   from minimal_bad_element [of _ _ _ P]
     have "\<forall>f n.
     f (Suc n) \<in> vals A \<and>
@@ -1079,15 +1074,13 @@ proof -
       moreover have "min_at P g 0" by fact
       moreover have "bad ?P g" by fact
       ultimately
-        have [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
+        have M [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
         and "bad ?P (M g 0)" and "min_at P (M g 0) (Suc 0)"
         and **: "\<forall>i\<ge>Suc 0. \<exists>j\<ge>Suc 0. weakeq (M g 0 i) (g j)"
         using * [of g 0] by auto
       moreover have "\<forall>i. ?g 0 i \<in> vals A"
-          using ** and weakeq_set_subset
-          and `\<And>i. g i \<in> vals A` unfolding vals_def
-          by (auto)
-             (metis calculation(1) le_0_eq not_less_eq_eq set_mp)
+          using ** and weakeq_vals and `\<And>i. g i \<in> vals A`
+          by (auto) (metis M le_0_eq not_less_eq_eq)
       moreover have "min_at P (M g 0) 0"
       proof (unfold min_at_def, intro allI impI, elim conjE)
         fix e :: "'b seq"
@@ -1149,7 +1142,7 @@ proof -
           and "weakeq (?g (Suc n) i) (?g n j)" by auto
         moreover with Suc have "?g n j \<in> vals A" by simp
         ultimately show "?g (Suc n) i \<in> vals A"
-          using weakeq_set_subset by (auto simp: vals_def)
+          using weakeq_vals by auto
       qed
       moreover have *: "\<forall>i\<le>Suc n. ?A i = ?g (Suc n) i"
       proof (intro allI impI)
@@ -1270,8 +1263,7 @@ proof -
       using 1 [rule_format, of n, OF le_refl, unfolded min_at_def] by auto
   qed
   moreover have "\<forall>i. ?A i \<in> vals A"
-    using `\<And>i. g i \<in> vals A` and ex_weakeq
-    using weakeq_set_subset unfolding vals_def by blast
+    using `\<And>i. g i \<in> vals A` and ex_weakeq and weakeq_vals by blast
   ultimately show ?thesis unfolding min_at_def by blast
 qed
 
@@ -1285,27 +1277,22 @@ lemma wf_suffix:
   "wf {(x, y). suffix x y}"
   unfolding wf_def using list_suffix_induct by auto
 
-lemma wfp_on_subset:
-  "A \<subseteq> B \<Longrightarrow> wfp_on P B \<Longrightarrow> wfp_on P A"
-  unfolding wfp_on_def
-  by (auto) (metis set_mp)
-
 lemma wfp_on_suffix:
   "wfp_on suffix (lists A)"
   using wf_suffix [to_pred, unfolded wfp_on_UNIV [symmetric]]
   using wfp_on_subset [of "lists A" UNIV]
   by blast
 
-interpretation list_mbs: mbs emb suffix set
-  where "list_mbs.vals A = lists A"
+lemma suffix_lists:
+  "suffix xs ys \<Longrightarrow> ys \<in> lists A \<Longrightarrow> xs \<in> lists A"
+  unfolding suffix_def by auto
+
+interpretation list_mbs: mbs emb suffix lists
 proof -
-  show "mbs emb suffix set"
+  show "mbs emb suffix lists"
     by (unfold_locales) (auto
-      simp: suffix_reflclp_conv emb_suffix wfp_on_suffix [unfolded lists_eq_set] suffix_set_subset
+      simp: emb_suffix wfp_on_suffix suffix_lists
       intro: suffix_trans)
-  then interpret list_mbs: mbs emb suffix set .
-  show "mbs.vals set A = lists A"
-    unfolding list_mbs.vals_def lists_eq_set by (rule refl)
 qed
 
 
