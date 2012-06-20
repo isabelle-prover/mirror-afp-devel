@@ -10,6 +10,9 @@ theory Restricted_Predicates
 imports Main
 begin
 
+definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" where
+  "restrict_to P A \<equiv> \<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y"
+
 definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "reflp_on P A \<equiv> \<forall>a\<in>A. P a a"
 
@@ -179,5 +182,71 @@ lemma wfp_on_induct [consumes 2, case_names less]:
 lemma wfp_on_UNIV [simp]:
   "wfp_on P UNIV \<longleftrightarrow> wfP P"
   unfolding wfp_on_iff_inductive_on inductive_on_def wfP_def wf_def by force
+
+subsection {*Measures on Sets (Instead of Full Types)*}
+
+definition
+  inv_image_betw ::
+    "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)"
+where
+  "inv_image_betw P f A B \<equiv> \<lambda>x y. x \<in> A \<and> y \<in> A \<and> f x \<in> B \<and> f y \<in> B \<and> P (f x) (f y)"
+
+definition
+  measure_on :: "('a \<Rightarrow> nat) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+where
+  "measure_on f A \<equiv> inv_image_betw (op <) f A UNIV"
+
+lemma in_inv_image_betw [simp]:
+  "inv_image_betw P f A B x y \<longleftrightarrow> x \<in> A \<and> y \<in> A \<and> f x \<in> B \<and> f y \<in> B \<and> P (f x) (f y)"
+  by (auto simp: inv_image_betw_def)
+
+lemma in_measure_on [simp, code_unfold]:
+  "measure_on f A x y \<longleftrightarrow> x \<in> A \<and> y \<in> A \<and> f x < f y"
+  by (simp add: measure_on_def)
+
+lemma wfp_on_eq_minimal:
+  "wfp_on P A \<longleftrightarrow> (\<forall>Q x.
+     x \<in> Q \<and> Q \<subseteq> A \<longrightarrow>
+     (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q))"
+  using wfp_on_imp_minimal [of P A]
+    and minimal_imp_inductive_on [of A P]
+    and inductive_on_imp_wfp_on [of P A]
+    by blast
+
+lemma wfp_on_inv_image_betw [simp, intro!]:
+  assumes "wfp_on P B"
+  shows "wfp_on (inv_image_betw P f A B) A"
+    (is "wfp_on ?P A")
+proof (rule ccontr)
+  assume "\<not> ?thesis"
+  then obtain g where "\<forall>i. g i \<in> A \<and> ?P (g (Suc i)) (g i)"
+    unfolding wfp_on_def by auto
+  with assms show False unfolding wfp_on_def by auto
+qed
+
+lemma wfp_less:
+  "wfp_on (op <) (UNIV :: nat set)"
+  using wf_less by (auto simp: wfP_def)
+
+lemma wfp_on_measure_on [iff]:
+  "wfp_on (measure_on f A) A"
+  unfolding measure_on_def
+  by (rule wfp_less [THEN wfp_on_inv_image_betw])
+
+lemma wfp_on_mono:
+  "A \<subseteq> B \<Longrightarrow> (\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> P x y \<Longrightarrow> Q x y) \<Longrightarrow> wfp_on Q B \<Longrightarrow> wfp_on P A"
+  unfolding wfp_on_def by (metis set_mp)
+
+lemma wfp_on_subset:
+  "A \<subseteq> B \<Longrightarrow> wfp_on P B \<Longrightarrow> wfp_on P A"
+  using wfp_on_mono by blast
+
+lemma restrict_to_iff [iff]:
+  "restrict_to P A x y \<longleftrightarrow> x \<in> A \<and> y \<in> A \<and> P x y"
+  by (simp add: restrict_to_def)
+
+lemma wfp_on_restrict_to [simp]:
+  "wfp_on (restrict_to P A) A = wfp_on P A"
+  unfolding wfp_on_def by auto
 
 end
