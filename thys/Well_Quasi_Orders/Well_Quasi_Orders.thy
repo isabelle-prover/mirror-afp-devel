@@ -797,16 +797,16 @@ lemma choice2:
   "\<forall>x y. P x y \<longrightarrow> (\<exists>z. Q x y z) \<Longrightarrow> \<exists>f. \<forall>x y. P x y \<longrightarrow> Q x y (f x y)"
   using bchoice [of "{(x, y). P x y}" "\<lambda>(x, y) z. Q x y z"] by force
 
-text {*A locale capturing the construction of minimal bad sequences.
-Where @{term "strong P"} is the order that is used to check whether an
-infinite sequence is bad (here @{term P} is an order on elements on which
-@{term "strong"} may rely), and @{term weak} is the order that is used
-for checking minimality. The required properties are:
+text {*A locale capturing the construction of minimal bad sequences over
+\emph{values} from @{term "vals A"}. Where @{term "strong P"} is the order
+that is used to check whether an infinite sequence is bad (here @{term P}
+is an order on elements on which @{term "strong"} may rely), and @{term weak}
+is the order that is used for checking minimality. The required properties are:
 \begin{itemize}
-\item @{term "weak\<^sup>=\<^sup>="} has to be right-compatible with @{term "strong P"}
-\item @{term "weak"} has to be well-founded
-\item @{term "weak\<^sup>=\<^sup>="} has to be transitive
-\item @{term "weak\<^sup>=\<^sup>="} has to be element preserving
+\item @{term "weak"} has to be right-compatible with @{term "strong P"}
+\item @{term "weak"} has to be well-founded on @{term "vals A"}
+\item @{term "weak"} has to be transitive
+\item @{term "weak"} reflects the property of being in @{term "vals A"}
 \end{itemize}*}
 locale mbs =
   fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
@@ -814,7 +814,7 @@ locale mbs =
     and vals :: "'a set \<Rightarrow> 'b set"
   assumes strong_weak: "strong P x y \<Longrightarrow> weak y z \<Longrightarrow> strong P x z"
     and wfp_on_weak: "wfp_on weak (vals A)"
-    and weak_trans: "weak x y \<Longrightarrow> weak y z \<Longrightarrow> weak x z"
+    and weak_trans: "weak x y \<Longrightarrow> weak y  z \<Longrightarrow> weak x z"
     and weak_vals: "weak x y \<Longrightarrow> y \<in> vals A \<Longrightarrow> x \<in> vals A"
 begin
 
