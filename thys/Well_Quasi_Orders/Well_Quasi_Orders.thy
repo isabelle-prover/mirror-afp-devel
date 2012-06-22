@@ -262,7 +262,7 @@ proof -
 qed
 
 
-subsection {* Disjoint Sum of Wqo Sets *}
+subsection {* Disjoint Union of Wqo Sets *}
 
 fun
   sum_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
