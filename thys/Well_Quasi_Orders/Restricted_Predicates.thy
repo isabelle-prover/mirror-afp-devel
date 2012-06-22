@@ -61,6 +61,9 @@ definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a 
 definition inductive_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "inductive_on P A \<equiv> \<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x)"
 
+text {*If @{term P} is well-founded on @{term A} then every non-empty subset @{term Q}
+of @{term A} has a minimal element @{term z} w.r.t. @{term P}, i.e., all elements
+that are @{term P}-smaller than @{term z} are not in @{term Q}.*}
 lemma wfp_on_imp_minimal:
   assumes "wfp_on P A"
   shows "\<forall>Q x. x \<in> Q \<and> Q \<subseteq> A \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q)"
