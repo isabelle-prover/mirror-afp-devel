@@ -50,6 +50,20 @@ for f g h where
     (ts, y') \<in> list_rec_set f g h \<Longrightarrow>
     (t # ts, h t ts y y') \<in> list_rec_set f g h"
 
+lemma rec_setD:
+  assumes "(mk x ts, y) \<in> rec_set f g h"
+  shows "\<exists>z. (ts, z) \<in> list_rec_set f g h \<and> y = f x ts z"
+  using assms
+  by (cases rule: rec_set.cases) (auto simp: inject)
+
+lemma list_rec_set_Nil [iff]:
+  "([], x) \<in> list_rec_set f g h \<longleftrightarrow> x = g" (is "?lhs = ?rhs")
+proof
+  assume ?lhs thus ?rhs by (cases) simp
+next
+  assume ?rhs thus ?lhs by (simp) (rule rec_set_list_rec_set.intros)
+qed
+
 lemma list_rec_set_ConsD:
   assumes "(t # ts, x) \<in> list_rec_set f g h"
   shows "\<exists>y z. (t, y) \<in> rec_set f g h \<and> (ts, z) \<in> list_rec_set f g h \<and>
@@ -58,13 +72,59 @@ lemma list_rec_set_ConsD:
   by (cases rule: list_rec_set.cases) auto
 
 lemma functional:
-  shows "t \<in> trees A \<Longrightarrow> \<exists>!y. (t, y) \<in> rec_set f g h"
-    and "ts \<in> trees_list A \<Longrightarrow> \<exists>!y. (ts, y) \<in> list_rec_set f g h"
-apply (induct t and ts rule: trees_trees_list.inducts)
-apply (auto intro: rec_set_list_rec_set.intros)
-apply (metis rec_set.simps root_mk succs_mk trees_trees_list.intros(2))
-apply (metis list.simps(3) list_rec_set.simps)
-by (metis list_rec_set_ConsD)
+  shows "t \<in> trees A \<Longrightarrow> \<exists>!y::'c. (t, y) \<in> rec_set f g h"
+    and "ts \<in> trees_list A \<Longrightarrow> \<exists>!y::'c. (ts, y) \<in> list_rec_set f g h"
+proof (induct t and ts rule: trees_trees_list.inducts)
+  fix x ts
+  assume 1: "x \<in> A" "ts \<in> trees_list A"
+    and "\<exists>!y. (ts, y) \<in> list_rec_set f g h"
+  then obtain y where 2: "(ts, y) \<in> list_rec_set f g h"
+    and 3: "\<forall>x. (ts, x) \<in> list_rec_set f g h \<longrightarrow> x = y" by auto
+  show "\<exists>!y. (mk x ts, y) \<in> rec_set f g h"
+  proof
+    show "(mk x ts, f x ts y) \<in> rec_set f g h"
+     using 1 and 2 by (rule rec_set_list_rec_set.intros)
+  next
+    fix z
+    assume "(mk x ts, z) \<in> rec_set f g h"
+    from rec_setD [OF this] obtain u where "(ts, u) \<in> list_rec_set f g h"
+      and "z = f x ts u" by auto
+    moreover with 3 have "u = y" by auto
+    ultimately show "z = f x ts y" by simp
+  qed
+next
+  fix t ts
+  assume 1: "t \<in> trees A"
+    and *: "\<exists>!y. (t, y) \<in> rec_set f g h"
+    and 3: "ts \<in> trees_list A"
+    and **: "\<exists>!y. (ts, y) \<in> list_rec_set f g h"
+  from * obtain u where 2: "(t, u) \<in> rec_set f g h"
+    and uniq1: "\<forall>a. (t, a) \<in> rec_set f g h \<longrightarrow> a = u" by auto
+  from ** obtain v where 4: "(ts, v) \<in> list_rec_set f g h"
+    and uniq2: "\<forall>a. (ts, a) \<in> list_rec_set f g h \<longrightarrow> a = v" by auto
+  show "\<exists>!y. (t # ts, y) \<in> list_rec_set f g h"
+  proof
+    show "(t # ts, h t ts u v) \<in> list_rec_set f g h"
+      using 1 2 3 4 by (rule rec_set_list_rec_set.intros)
+  next
+    fix z
+    assume "(t # ts, z) \<in> list_rec_set f g h"
+    from list_rec_set_ConsD [OF this] obtain a b where
+      "(t, a) \<in> rec_set f g h" and "(ts, b) \<in> list_rec_set f g h"
+      and "z = h t ts a b" by auto
+    moreover with uniq1 and uniq2 have "a = u" and "b = v" by auto
+    ultimately show "z = h t ts u v" by auto
+  qed
+next
+  show "\<exists>!y. ([], y) \<in> list_rec_set f g h"
+  proof
+    show "([], g) \<in> list_rec_set f g h" by simp
+  next
+    fix y
+    assume "([], y) \<in> list_rec_set f g h"
+    thus "y = g" by auto
+  qed
+qed
 
 definition
   rec ::
