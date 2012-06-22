@@ -175,6 +175,15 @@ lemma wfp_on_iff_inductive_on:
   "wfp_on P A \<longleftrightarrow> inductive_on P A"
   by (blast intro: inductive_on_imp_wfp_on wfp_on_imp_inductive_on)
 
+lemma wfp_on_iff_minimal:
+  "wfp_on P A \<longleftrightarrow> (\<forall>Q x.
+     x \<in> Q \<and> Q \<subseteq> A \<longrightarrow>
+     (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q))"
+  using wfp_on_imp_minimal [of P A]
+    and minimal_imp_inductive_on [of A P]
+    and inductive_on_imp_wfp_on [of P A]
+    by blast
+
 lemma wfp_on_induct [consumes 2, case_names less]:
   assumes "wfp_on P A" and "x \<in> A"
     and "\<And>y. \<lbrakk> y \<in> A; \<And>x. \<lbrakk> x \<in> A; P x y \<rbrakk> \<Longrightarrow> Q x \<rbrakk> \<Longrightarrow> Q y"
@@ -185,6 +194,7 @@ lemma wfp_on_induct [consumes 2, case_names less]:
 lemma wfp_on_UNIV [simp]:
   "wfp_on P UNIV \<longleftrightarrow> wfP P"
   unfolding wfp_on_iff_inductive_on inductive_on_def wfP_def wf_def by force
+
 
 subsection {*Measures on Sets (Instead of Full Types)*}
 
@@ -206,15 +216,6 @@ lemma in_inv_image_betw [simp]:
 lemma in_measure_on [simp, code_unfold]:
   "measure_on f A x y \<longleftrightarrow> x \<in> A \<and> y \<in> A \<and> f x < f y"
   by (simp add: measure_on_def)
-
-lemma wfp_on_eq_minimal:
-  "wfp_on P A \<longleftrightarrow> (\<forall>Q x.
-     x \<in> Q \<and> Q \<subseteq> A \<longrightarrow>
-     (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q))"
-  using wfp_on_imp_minimal [of P A]
-    and minimal_imp_inductive_on [of A P]
-    and inductive_on_imp_wfp_on [of P A]
-    by blast
 
 lemma wfp_on_inv_image_betw [simp, intro!]:
   assumes "wfp_on P B"
