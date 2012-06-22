@@ -262,6 +262,92 @@ proof -
 qed
 
 
+(*TODO: move to Option.thy of Isabelle/HOL?*)
+subsection {* Adding a Bottom Element to a Set *}
+
+definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000) where
+  "A\<^sub>\<bottom> \<equiv> {None} \<union> Some ` A"
+
+lemma SomeI [intro!]:
+  "x \<in> A \<Longrightarrow> Some x \<in> A\<^sub>\<bottom>"
+  by (simp add: with_bot_def)
+
+lemma NoneI [intro!]:
+  "None \<in> A\<^sub>\<bottom>"
+  by (simp add: with_bot_def)
+
+lemma with_botE [elim!]:
+  "u \<in> A\<^sub>\<bottom> \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> u = Some x \<Longrightarrow> P) \<Longrightarrow> (u = None \<Longrightarrow> P) \<Longrightarrow> P"
+  by (auto simp: with_bot_def)
+
+lemma with_bot_empty_conv [simp]:
+  "A\<^sub>\<bottom> = {None} \<longleftrightarrow> A = {}"
+  by auto
+
+lemma with_bot_UNIV [simp]:
+  "UNIV\<^sub>\<bottom> = UNIV"
+proof (rule set_eqI)
+  fix x :: "'a option"
+  show "x \<in> UNIV\<^sub>\<bottom> \<longleftrightarrow> x \<in> UNIV" by (cases x) auto
+qed
+
+subsection {* Adding a Bottom Element to a Wqo Set *}
+
+fun
+  option_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool"
+where
+  "option_le P None y = True" |
+  "option_le P (Some x) None = False" |
+  "option_le P (Some x) (Some y) = P x y"
+
+lemma almost_full_on_with_bot:
+  assumes "almost_full_on P A"
+  shows "almost_full_on (option_le P) A\<^sub>\<bottom>"
+    (is "almost_full_on ?P ?A")
+proof
+  fix f :: "'a option seq"
+  assume *: "\<forall>i. f i \<in> A\<^sub>\<bottom>"
+  show "good ?P f"
+  proof (rule ccontr)
+    assume "bad ?P f"
+    hence **: "\<And>i j. i < j \<Longrightarrow> \<not> ?P (f i) (f j)" by (auto simp: good_def)
+    let ?f = "\<lambda>i. Option.the (f i)"
+    have "\<forall>i j. i < j \<longrightarrow> \<not> P (?f i) (?f j)"
+    proof (intro allI impI)
+      fix i j :: nat
+      assume "i < j"
+      from ** [of i] and ** [of j] obtain x y where
+        "f i = Some x" and "f j = Some y" by force
+      with ** [OF `i < j`] show "\<not> P (?f i) (?f j)" by simp
+    qed
+    hence "bad P ?f" by (auto simp: good_def)
+    moreover have "\<forall>i. ?f i \<in> A"
+    proof
+      fix i :: nat
+      from ** [of i] obtain x where "f i = Some x" by force
+      with * [THEN spec, of i] show "?f i \<in> A" by auto
+    qed
+    ultimately show False using assms by (auto simp: almost_full_on_def)
+  qed
+qed
+
+lemma wqo_on_with_bot:
+  assumes "wqo_on P A"
+  shows "wqo_on (option_le P) A\<^sub>\<bottom>"
+    (is "wqo_on ?P ?A")
+proof -
+  {
+    from assms have trans [unfolded transp_on_def]: "transp_on P A"
+      by (auto simp: wqo_on_def)
+    have "transp_on ?P ?A"
+      unfolding transp_on_def by (auto, insert trans) (blast+)
+  } moreover {
+    from assms and almost_full_on_with_bot
+      have "almost_full_on ?P ?A" by (auto simp: wqo_on_def)
+  } ultimately show ?thesis by (auto simp: wqo_on_def)
+qed
+
+
 subsection {* Disjoint Union of Wqo Sets *}
 
 fun

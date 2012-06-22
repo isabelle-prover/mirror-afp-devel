@@ -12,6 +12,35 @@ imports
   Kruskal_Tree
 begin
 
+subsection {* The Option Type is Well-Quasi-Ordered *}
+
+instantiation option :: (wqo) wqo
+begin
+definition "x \<le> y \<longleftrightarrow> option_le (op \<le>) x y"
+definition "(x :: 'a option) < y \<longleftrightarrow> x \<le> y \<and> \<not> (y \<le> x)"
+
+instance proof (rule wqo_class.intro)
+  have 1: "wqo_on (op \<le>) (UNIV :: 'a set)"
+    using order_trans and good
+    by (auto simp: wqo_on_UNIV_conv class.wqo_def class.wqo_axioms_def class.preorder_def)
+  from wqo_on_with_bot [OF 1]
+    have wqo: "wqo_on (op \<le>) (UNIV :: ('a option) set)"
+      by (auto simp: less_eq_option_def [abs_def])  
+  hence "class.wqo (op \<le> :: 'a option \<Rightarrow> 'a option \<Rightarrow> bool) (op <)"
+    unfolding wqo_on_UNIV_conv less_option_def [abs_def] .
+  thus "class.wqo_axioms (op \<le> :: 'a option \<Rightarrow> 'a option \<Rightarrow> bool)" by (auto simp: class.wqo_def)
+
+  from wqo have refl: "reflp_on (op \<le>) (UNIV :: ('a option) set)" by (simp add: wqo_on_def almost_full_on_imp_reflp_on)
+  from wqo have trans: "transp_on (op \<le>) (UNIV :: ('a option) set)" by (simp add: wqo_on_def)
+
+  show "OFCLASS ('a option, preorder_class)"
+    by (intro_classes, simp add: less_option_def)
+       (insert refl, unfold reflp_on_def, force,
+        insert trans, unfold transp_on_def, blast)
+qed
+end
+
+
 subsection {* The Sum Type is Well-Quasi-Ordered *}
 
 instantiation sum :: (wqo, wqo) wqo
