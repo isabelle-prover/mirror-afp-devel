@@ -73,7 +73,7 @@ lemma list_rec_set_ConsD:
 
 lemma functional:
   shows "t \<in> trees A \<Longrightarrow> \<exists>!y::'c. (t, y) \<in> rec_set f g h"
-    and "ts \<in> trees_list A \<Longrightarrow> \<exists>!y::'c. (ts, y) \<in> list_rec_set f g h"
+    and "ts \<in> trees_list A \<Longrightarrow> \<exists>!y::'d. (ts, y) \<in> list_rec_set f g h"
 proof (induct t and ts rule: trees_trees_list.inducts)
   fix x ts
   assume 1: "x \<in> A" "ts \<in> trees_list A"
@@ -284,11 +284,8 @@ proof -
   have *: "wfp_on ?P (trees A)"
     by (rule wfp_on_restrict_to [THEN iffD1]) simp
   show ?thesis
-    apply (rule wfp_on_mono [OF subset_refl, of "trees A" "subtree" ?P])
-    apply (rule subtree_size [of _ _ A], assumption+)
-    apply (insert *)
-    apply assumption
-  done
+    by (auto simp: *
+      intro!: wfp_on_mono [OF subset_refl, of "trees A" subtree ?P] subtree_size)
 qed
 
 lemma subtree_trans:
