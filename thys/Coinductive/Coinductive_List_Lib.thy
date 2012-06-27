@@ -373,6 +373,18 @@ lemma lappend_llist_of_llist_of [simp]:
   "lappend (llist_of xs) (llist_of ys) = llist_of (xs @ ys)"
 by(induct xs) simp_all
 
+lemma lfinite_rev_induct [consumes 1, case_names Nil snoc]:
+  assumes fin: "lfinite xs"
+  and Nil: "P LNil"
+  and snoc: "\<And>x xs. \<lbrakk> lfinite xs; P xs \<rbrakk> \<Longrightarrow> P (lappend xs (LCons x LNil))"
+  shows "P xs"
+proof -
+  from fin obtain xs' where xs: "xs = llist_of xs'"
+    unfolding lfinite_eq_range_llist_of by blast
+  show ?thesis unfolding xs
+    by(induct xs' rule: rev_induct)(auto simp add: Nil lappend_llist_of_llist_of[symmetric] dest: snoc[rotated])
+qed
+
 lemma lappend_llist_of_LCons: 
   "lappend (llist_of xs) (LCons y ys) = lappend (llist_of (xs @ [y])) ys"
 by(induct xs) simp_all
@@ -2638,6 +2650,9 @@ by(simp_all add: ltl_def)
 lemma lhd_LCons_ltl: "xs \<noteq> LNil \<Longrightarrow> LCons (lhd xs) (ltl xs) = xs"
 by(auto simp add: neq_LNil_conv)
 
+lemma lhd_lmap: "xs \<noteq> LNil \<Longrightarrow> lhd (lmap f xs) = f (lhd xs)"
+by(cases xs) simp_all
+
 lemma lhd_iterates [simp]: "lhd (iterates f x) = x"
 by(subst iterates) simp
 
@@ -2658,13 +2673,22 @@ next
   thus ?case by simp
 qed
 
+lemma lhd_lzip: "\<lbrakk> xs \<noteq> LNil; ys \<noteq> LNil \<rbrakk> \<Longrightarrow> lhd (lzip xs ys) = (lhd xs, lhd ys)"
+by(clarsimp simp add: neq_LNil_conv)
+
 lemma ldropn_Suc: "ldropn (Suc n) xs = ldropn n (ltl xs)"
 by(simp add: ldropn.simps split: llist_split)
+
+lemma lfinite_ltl [simp]: "lfinite (ltl xs) = lfinite xs"
+by(cases xs) simp_all
 
 lemma ldrop_eSuc_ltl: "ldrop (eSuc n) xs = ldrop n (ltl xs)"
 by(simp add: eSuc_def ldropn_Suc split: enat.split)
 
 lemma llength_ltl: "llength (ltl xs) = llength xs - 1"
+by(cases xs) simp_all
+
+lemma ltl_lmap: "ltl (lmap f xs) = lmap f (ltl xs)"
 by(cases xs) simp_all
 
 lemma ltake_ltl: "ltake n (ltl xs) = ltl (ltake (eSuc n) xs)"
@@ -2697,6 +2721,9 @@ lemma ltl_take: "ltl (ltake n xs) = ltake (n - 1) (ltl xs)"
 apply(cases xs, simp_all)
 apply(cases n rule: enat_coexhaust, simp_all)
 done
+
+lemma ltl_lzip [simp]: "ltl (lzip xs ys) = lzip (ltl xs) (ltl ys)"
+by(cases xs ys rule: llist_cases[case_product llist_cases]) simp_all
 
 subsection {* The last element @{term "llast"} *}
 
@@ -4783,6 +4810,20 @@ proof
     from `LCons x xs = inf_llist f` inf_llist_rec[of f]
     have "xs = inf_llist (\<lambda>n. f (n + 1))" by simp
     thus ?case by(rule lfinite_LConsI)
+  qed
+qed
+
+lemma iterates_conv_inf_llist:
+  "iterates f a = inf_llist (\<lambda>n. (f ^^ n) a)" (is "?lhs a = ?rhs a")
+proof -
+  def lhs \<equiv> "?lhs a" and rhs \<equiv> "?rhs a"
+  hence "(lhs, rhs) \<in> {(?lhs a, ?rhs a)|a. True}" by auto
+  thus "lhs = rhs"
+  proof(coinduct rule: llist_equalityI)
+    case (Eqllist q)
+    hence ?EqLCons 
+      by(subst (asm) iterates)(subst (asm) inf_llist_rec, auto simp add: funpow_swap1)
+    thus ?case ..
   qed
 qed
 
