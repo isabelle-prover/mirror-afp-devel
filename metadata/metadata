@@ -476,7 +476,7 @@ title = Coinductive
 topic = Computer Science/Functional Programming
 author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
 date = 2010-02-12
-abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
+abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
 extra-history =
   Change history:
   [2010-06-10]:
@@ -498,6 +498,9 @@ extra-history =
   [2011-07-20]:
         new codatatype resumption
         (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/811364c776c7">811364c776c7</a>)<br>
+  [2012-06-27]:
+        new codatatype stream with operations (with contributions by Peter Gammie)
+        (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/dd789a56473c">dd789a56473c</a>)<br>
 
 [Stream-Fusion]
 title = Stream Fusion
