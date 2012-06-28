@@ -10,6 +10,16 @@ imports
   "~~/src/HOL/Library/Quotient_Set"
 begin
 
+definition "is_equality R \<longleftrightarrow> (R = (op =))" (* TODO: move to Transfer.thy *)
+
+lemma is_equality_intros [transfer_rule]:
+  "is_equality (op =)"
+  "is_equality A \<Longrightarrow> is_equality B \<Longrightarrow> is_equality (fun_rel A B)"
+  "is_equality A \<Longrightarrow> is_equality B \<Longrightarrow> is_equality (prod_rel A B)"
+  "is_equality A \<Longrightarrow> is_equality (set_rel A)"
+  unfolding is_equality_def
+  by (simp_all add: fun_rel_eq prod_rel_eq set_rel_eq)
+
 lemma id_power: "id ^^ n = id"
 by(induct n) auto
 
@@ -32,9 +42,12 @@ code_datatype SCons
 lemma SCons_inject [iff, induct_simp]: "(SCons x xs = SCons y ys) = (x = y \<and> xs = ys)"
 by transfer simp
 
-lemma SCons_prod_transfer [transfer_rule]:
-  "(prod_rel op = op = ===> cr_stream ===> cr_stream) LCons SCons"
-unfolding prod_rel_eq by(rule SCons.transfer)
+declare SCons.transfer [transfer_rule del]
+
+(* FIXME: generate rules in this new format automatically *)
+lemma SCons_transfer' [transfer_rule]:
+  "is_equality A \<Longrightarrow> (A ===> cr_stream ===> cr_stream) LCons SCons"
+  unfolding is_equality_def by (simp add: SCons.transfer)
 
 lemma stream_cases [cases type: stream]:
   obtains (SCons) x l' where "l = SCons x l'"
@@ -156,6 +169,19 @@ lift_definition sappend :: "'a list \<Rightarrow> 'a stream \<Rightarrow> 'a str
 lift_definition sset :: "'a stream \<Rightarrow> 'a set" is "lset" ..
 
 lift_definition szip :: "'a stream \<Rightarrow> 'b stream \<Rightarrow> ('a \<times> 'b) stream" is lzip by simp
+
+lemmas stream_old_transfers [transfer_rule del] =
+  shd.transfer snth.transfer smap.transfer sconst.transfer iterates.transfer
+
+(* FIXME: generate these rules automatically *)
+lemma stream_transfers [transfer_rule]:
+  "is_equality A \<Longrightarrow> (cr_stream ===> A) lhd shd"
+  "is_equality A \<Longrightarrow> (cr_stream ===> op = ===> A) lnth snth"
+  "is_equality A \<Longrightarrow> is_equality B \<Longrightarrow> ((A ===> B) ===> cr_stream ===> cr_stream) lmap smap"
+  "is_equality A \<Longrightarrow> (A ===> cr_stream) (Coinductive_List.iterates id) sconst"
+  "is_equality A \<Longrightarrow> ((A ===> A) ===> A ===> cr_stream)
+    Coinductive_List.iterates Coinductive_Stream.iterates"
+  by (simp_all add: is_equality_def stream_old_transfers)
 
 subsection {* Converting between streams and functions: @{term Stream} and @{term snth} *}
 
@@ -321,9 +347,6 @@ lemma szip_SCons [simp, code, nitpick_simp]:
   "szip (SCons x xs) (SCons y ys) = SCons (x, y) (szip xs ys)"
 by transfer simp
 
-lemma eq_prod2_eq_transfer [transfer_rule]: "(op = ===> prod_rel op = op = ===> op =) op = op ="
-  unfolding fun_rel_eq prod_rel_eq ..
-
 lemma shd_szip [simp]: "shd (szip xs ys) = (shd xs, shd ys)"
 by transfer (auto intro: lhd_lzip)
 
@@ -346,18 +369,7 @@ by(induct xs arbitrary: us)(auto simp add: Suc_length_conv)
 
 lemma szip_iterates:
   "szip (iterates f a) (iterates g b) = iterates (\<lambda>(a, b). (f a, g b)) (a, b)"
-  (is "?lhs a b = ?rhs a b")
-(* FIXME: Why does transfer not work here as expected? *)
-proof -
-  def lhs \<equiv> "?lhs a b" and rhs \<equiv> "?rhs a b"
-  hence "(lhs, rhs) \<in> {(?lhs a b, ?rhs a b)|a b. True}" by auto
-  thus "lhs = rhs"
-    by(coinduct rule: stream_equalityI)(subst (asm) (1 2 3) iterates, auto)
-qed
-
-lemma smap_prod_prod_transfer[transfer_rule]:
-  "((prod_rel op = op = ===> prod_rel op = op =) ===> cr_stream ===> cr_stream) lmap smap"
-unfolding prod_rel_eq by(rule smap.transfer)
+by transfer (rule lzip_iterates)
 
 lemma szip_smap1: "szip (smap f xs) ys = smap (\<lambda>(x, y). (f x, y)) (szip xs ys)"
 by transfer (simp add: lzip_lmap1)
@@ -366,11 +378,7 @@ lemma szip_smap2: "szip xs (smap g ys) = smap (\<lambda>(x, y). (x, g y)) (szip 
 by transfer (simp add: lzip_lmap2)
 
 lemma szip_smap [simp]: "szip (smap f xs) (smap g ys) = smap (\<lambda>(x, y). (f x, g y)) (szip xs ys)"
-by(simp add: szip_smap1 szip_smap2 smap_compose[symmetric] o_def split_def del: smap_compose)
-
-lemma smap_prod_transfer[transfer_rule]:
-  "((prod_rel op = op = ===> op =) ===> cr_stream ===> cr_stream) lmap smap"
-unfolding prod_rel_eq by(rule smap.transfer)
+by transfer (rule lzip_lmap)
 
 lemma smap_fst_szip [simp]: "smap fst (szip xs ys) = xs"
 by transfer (simp add: lmap_fst_lzip_conv_ltake not_lfinite_llength ltake_all)
