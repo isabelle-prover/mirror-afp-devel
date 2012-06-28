@@ -47,6 +47,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-06-26:
+<a href="entries/Tycon.shtml">Type Constructor Classes and Monad Transformers</a>
+<br>Author:
+Brian Huffman
+</td></tr>
+
+<tr><td class="entry">
 2012-05-29:
 <a href="entries/CCS.shtml">CCS in nominal logic</a>
 <br>Author:

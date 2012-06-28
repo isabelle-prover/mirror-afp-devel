@@ -546,6 +546,26 @@ date = 2009-04-29
 base = HOL/HOLCF
 abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://www.cse.unsw.edu.au/~dons/streams.html">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
 
+[Tycon]
+title = Type Constructor Classes and Monad Transformers
+author = Brian Huffman <mailto:huffman@in.tum.de>
+date = 2012-06-26
+base = HOL/HOLCF
+topic = Computer Science/Functional Programming
+abstract =
+ These theories contain a formalization of first class type constructors
+ and axiomatic constructor classes for HOLCF. This work is described
+ in detail in the ICFP 2012 paper <i>Formal Verification of Monad
+ Transformers</i> by the author. The formalization is a revised and
+ updated version of earlier joint work with Matthews and White.
+ <P>
+ Based on the hierarchy of type classes in Haskell, we define classes
+ for functors, monads, monad-plus, etc. Each one includes all the
+ standard laws as axioms. We also provide a new user command,
+ tycondef, for defining new type constructors in HOLCF. Using tycondef,
+ we instantiate the type class hierarchy with various monads and monad
+ transformers.
+
 [CoreC++]
 title = CoreC++
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
