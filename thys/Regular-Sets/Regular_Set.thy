@@ -11,9 +11,8 @@ type_synonym 'a lang = "'a list set"
 definition conc :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a lang" (infixr "@@" 75) where
 "A @@ B = {xs@ys | xs ys. xs:A & ys:B}"
 
-lemma [code]:
-  "A @@ B = (%(xs, ys). xs @ ys) ` (A \<times> B)"
-unfolding conc_def by auto
+text {* checks the code preprocessor for set comprehensions *}
+export_code conc checking SML
 
 overloading lang_pow == "compow :: nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 begin
