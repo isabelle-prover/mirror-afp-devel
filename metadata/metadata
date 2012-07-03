@@ -651,6 +651,23 @@ base = HOL/List-Infinite/Nat-Interval-Logic
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
 
+[PCF]
+title = Logical Relations for PCF
+author = Peter Gammie <mailto:peteg42@gmail.com>
+date = 2012-07-01
+base = HOL/HOLCF
+topic = Computer Science/Programming Languages/Lambda Calculi
+abstract = We apply Andy Pitts's methods of defining relations over domains to
+  several classical results in the literature. We show that the Y
+  combinator coincides with the domain-theoretic fixpoint operator,
+  that parallel-or and the Plotkin existential are not definable in
+  PCF, that the continuation semantics for PCF coincides with the
+  direct semantics, and that our domain-theoretic semantics for PCF is
+  adequate for reasoning about contextual equivalence in an
+  operational semantics. Our version of PCF is untyped and has both
+  strict and non-strict function abstractions. The development is
+  carried out in HOLCF.
+
 [POPLmark-deBruijn]
 title = POPLmark Challenge Via de Bruijn Indices 
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>

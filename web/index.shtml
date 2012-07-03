@@ -47,6 +47,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-07-01:
+<a href="entries/PCF.shtml">Logical Relations for PCF</a>
+<br>Author:
+Peter Gammie
+</td></tr>
+
+<tr><td class="entry">
 2012-06-26:
 <a href="entries/Tycon.shtml">Type Constructor Classes and Monad Transformers</a>
 <br>Author:
