@@ -1512,12 +1512,10 @@ unfolding quasi_commute_def proof (rule subsetI2)
   qed
 qed
 
-lemmas rev_SN_on_Image_rtrancl = SN_on_Image_rtrancl[COMP rev_contrapos]
-
 lemma steps_reflect_SN_on:
   assumes "\<not> SN_on r {b}" and "(a, b) \<in> r^*"
   shows "\<not> SN_on r {a}"
-  using rev_SN_on_Image_rtrancl[of r "{a}"]
+  using SN_on_Image_rtrancl[of r "{a}"]
   and assms and SN_on_subset2[of "{b}" "r^* `` {a}" r] by blast
 
 lemma chain_imp_not_SN_on:
