@@ -49,7 +49,8 @@ This is a library of constructions on regular expressions and languages. It prov
         <td class="abstract">
 
 [2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
-[2012-05-10]: Tobias Nipkow added extended regular expressions
+[2012-05-10]: Tobias Nipkow added extended regular expressions<br>
+[2012-05-10]: Tobias Nipkow added equivalence checking with partial derivatives
         </td></tr>
 
     <tr><td class="datahead">License:</td>
