@@ -225,6 +225,8 @@ lemma Deriv_empty[simp]:   "Deriv a {} = {}"
   and Deriv_union[simp]:   "Deriv a (A \<union> B) = Deriv a A \<union> Deriv a B"
   and Deriv_inter[simp]:   "Deriv a (A \<inter> B) = Deriv a A \<inter> Deriv a B"
   and Deriv_compl[simp]:   "Deriv a (-A) = - Deriv a A"
+  and Deriv_Union[simp]:   "Deriv a (Union M) = Union(Deriv a ` M)"
+  and Deriv_UN[simp]:      "Deriv a (UN x:I. S x) = (UN x:I. Deriv a (S x))"
 by (auto simp: Deriv_def)
 
 lemma Deriv_conc_subset: "Deriv a A @@ B \<subseteq> Deriv a (A @@ B)" (is "?L \<subseteq> ?R")

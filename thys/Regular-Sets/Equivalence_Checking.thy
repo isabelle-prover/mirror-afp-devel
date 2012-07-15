@@ -75,19 +75,7 @@ lemma lang_norm[simp]: "lang (norm r) = lang r"
 by (induct r) auto
 
 
-subsection {* Finality and Derivative *}
-
-primrec final :: "'a rexp \<Rightarrow> bool"
-where
-  "final Zero = False"
-| "final One = True"
-| "final (Atom _) = False"
-| "final (Plus r s) = (final r \<or> final s)"
-| "final (Times r s) = (final r \<and> final s)"
-| "final (Star _) = True"
-
-lemma lang_final: "final r = ([] \<in> lang r)"
-by (induct r) (auto simp: conc_def)
+subsection {* Derivative *}
 
 primrec ederiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
@@ -97,11 +85,11 @@ where
 | "ederiv a (Plus r s) = nPlus (ederiv a r) (ederiv a s)"
 | "ederiv a (Times r s) =
     (let r's = nTimes (ederiv a r) s
-     in if final r then nPlus r's (ederiv a s) else r's)"
+     in if nullable r then nPlus r's (ederiv a s) else r's)"
 | "ederiv a (Star r) = nTimes (ederiv a r) (Star r)"
 
 lemma lang_ederiv: "lang (ederiv a r) = Deriv a (lang r)"
-by (induct r) (auto simp: Let_def lang_final)
+by (induct r) (auto simp: Let_def nullable_iff)
 
 lemma deriv_no_occurrence: 
   "x \<notin> atoms r \<Longrightarrow> ederiv x r = Zero"
@@ -161,7 +149,7 @@ definition is_bisimulation ::
   "nat list \<Rightarrow> rexp_pairs \<Rightarrow> bool"
 where
 "is_bisimulation as ps =
-  (\<forall>(r,s)\<in> set ps. (atoms r \<union> atoms s \<subseteq> set as) \<and> (final r \<longleftrightarrow> final s) \<and>
+  (\<forall>(r,s)\<in> set ps. (atoms r \<union> atoms s \<subseteq> set as) \<and> (nullable r \<longleftrightarrow> nullable s) \<and>
     (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps))"
 
 lemma bisim_lang_eq:
@@ -183,9 +171,9 @@ proof -
     fix K L assume "?R K L"
     then obtain r s where rs: "(r, s) \<in> set ps'"
       and KL: "K = lang r" "L = lang s" by auto
-    with bisim' have "final r \<longleftrightarrow> final s"
+    with bisim' have "nullable r \<longleftrightarrow> nullable s"
       by (auto simp: is_bisimulation_def)
-    thus "[] \<in> K \<longleftrightarrow> [] \<in> L" by (auto simp: lang_final KL)
+    thus "[] \<in> K \<longleftrightarrow> [] \<in> L" by (auto simp: nullable_iff KL)
     fix a
     show "?R (Deriv a K) (Deriv a L)"
     proof cases
@@ -210,8 +198,8 @@ qed
 
 subsection {* Closure computation *}
 
-fun test :: "rexp_pairs * rexp_pairs \<Rightarrow> bool"
-where "test (ws, ps) = (case ws of [] \<Rightarrow>  False | (p,q)#_ \<Rightarrow> final p = final q)"
+fun test :: "rexp_pairs * rexp_pairs \<Rightarrow> bool" where
+"test (ws, ps) = (case ws of [] \<Rightarrow>  False | (p,q)#_ \<Rightarrow> nullable p = nullable q)"
 
 fun step :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> rexp_pairs * rexp_pairs"
 where "step as (ws,ps) =
@@ -233,7 +221,7 @@ where
 "pre_bisim as r s = (\<lambda>(ws,ps).
  ((r, s) \<in> set ws \<union> set ps) \<and>
  (\<forall>(r,s)\<in> set ws \<union> set ps. atoms r \<union> atoms s \<subseteq> set as) \<and>
- (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
+ (\<forall>(r,s)\<in> set ps. (nullable r \<longleftrightarrow> nullable s) \<and>
    (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps \<union> set ws)))"
 
 theorem closure_sound:
@@ -258,7 +246,7 @@ qed
 
 subsection {* The overall procedure *}
 
-primrec add_atoms :: "nat rexp \<Rightarrow> nat list \<Rightarrow> nat list"
+primrec add_atoms :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
   "add_atoms Zero = id"
 | "add_atoms One = id"
@@ -287,6 +275,7 @@ proof -
   thus "lang r = lang s" by simp
 qed
 
+text{* Test: *}
 lemma "check_eqv (Plus One (Times (Atom 0) (Star(Atom 0)))) (Star(Atom 0))"
 by eval
 

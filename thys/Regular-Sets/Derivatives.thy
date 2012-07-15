@@ -38,16 +38,13 @@ where
 | "derivs (c # s) r = derivs s (deriv c r)"
 
 
-lemma nullable_iff:
-  shows "nullable r \<longleftrightarrow> [] \<in> lang r"
+lemma nullable_iff: "nullable r \<longleftrightarrow> [] \<in> lang r"
 by (induct r) (auto simp add: conc_def split: if_splits)
 
-lemma Deriv_deriv:
-  shows "Deriv c (lang r) = lang (deriv c r)"
+lemma Deriv_deriv: "Deriv c (lang r) = lang (deriv c r)"
 by (induct r) (simp_all add: nullable_iff)
 
-lemma Derivs_derivs:
-  shows "Derivs s (lang r) = lang (derivs s r)"
+lemma Derivs_derivs: "Derivs s (lang r) = lang (derivs s r)"
 by (induct s arbitrary: r) (simp_all add: Deriv_deriv)
 
 
@@ -66,6 +63,16 @@ where
 | "pderiv c (Times r1 r2) = 
     (if nullable r1 then Timess (pderiv c r1) r2 \<union> pderiv c r2 else Timess (pderiv c r1) r2)"
 | "pderiv c (Star r) = Timess (pderiv c r) (Star r)"
+
+(* FIXME adjust def of Timess to make it executable and get rid of this: *)
+text{* For code generation only: *}
+lemma [code]: "pderiv c (Times r1 r2) = 
+  (if nullable r1 then (%r'. Times r' r2) ` pderiv c r1 \<union> pderiv c r2
+   else (%r'. Times r' r2) ` pderiv c r1)"
+by auto
+lemma [code]: "pderiv c (Star r) = (%r'. Times r' (Star r)) ` (pderiv c r)"
+by auto
+declare pderiv.simps(1-4)[code]
 
 fun
   pderivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> ('a rexp) set"

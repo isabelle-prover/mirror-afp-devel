@@ -124,7 +124,8 @@ abstract = This is a library of constructions on regular expressions and languag
 extra-history =
   Change history:
   [2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
-  [2012-05-10]: Tobias Nipkow added extended regular expressions
+  [2012-05-10]: Tobias Nipkow added extended regular expressions<br>
+  [2012-05-10]: Tobias Nipkow added equivalence checking with partial derivatives
 
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
