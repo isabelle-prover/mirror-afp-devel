@@ -1137,11 +1137,6 @@ by(simp add: upd_conv_take_nth_drop)
 
 
 subsubsection {* Map *}
-lemma map_eq_consE: "\<lbrakk>map f ls = fa#fl; !!a l. \<lbrakk> ls=a#l; f a=fa; map f l = fl \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by auto
-
-lemma map_eq_concE: "\<lbrakk>map f ls = fl@fl'; !!l l'. \<lbrakk> ls=l@l'; map f l=fl; map f l' = fl' \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (induct fl arbitrary: ls P) (simp, force)
 
 lemma map_fst_mk_snd[simp]: "map fst (map (\<lambda>x. (x,k)) l) = l" by (induct l) auto
 lemma map_snd_mk_fst[simp]: "map snd (map (\<lambda>x. (k,x)) l) = l" by (induct l) auto
@@ -1152,8 +1147,24 @@ lemma map_zip1: "map (\<lambda>x. (x,k)) l = zip l (replicate (length l) k)" by 
 lemma map_zip2: "map (\<lambda>x. (k,x)) l = zip (replicate (length l) k) l" by (induct l) auto
 lemmas map_zip=map_zip1 map_zip2
 
-lemma map_append_res: "\<lbrakk> map f l = m1@m2; !!l1 l2. \<lbrakk> l=l1@l2; map f l1 = m1; map f l2 = m2 \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (induct m1 arbitrary: l m2 P) (simp, force)
+lemma map_append_res:
+  assumes "map f l = m1@m2"
+  obtains l1 l2 where "l=l1@l2" "map f l1 = m1" "map f l2 = m2"
+  using assms
+proof (induct m1 arbitrary: l m2 thesis)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons fa m1)
+  then have "map f l = fa # m1 @ m2" by simp
+  then obtain a l' where l: "l = a # l'" and a: "f a = fa" and map_l': "map f l' = m1 @ m2"
+    by auto
+  obtain l1 l2 where l': "l' = l1 @ l2" and map_l1: "map f l1 = m1" and map_l2: "map f l2 = m2"
+    by (rule Cons(1)[OF _ map_l'])
+  let ?l1 = "a # l1"
+  have "l = ?l1 @ l2" "map f ?l1 = fa # m1" using a l l' map_l1 by simp_all
+  then show ?case using map_l2 by (rule Cons(2))
+qed
 
 lemma map_id[simp]: 
   "map id l = l" by (induct l, auto)
