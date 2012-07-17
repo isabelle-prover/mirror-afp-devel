@@ -120,36 +120,40 @@ where
  (\<forall>(R,S)\<in> set ps. (Nullable R \<longleftrightarrow> Nullable S) \<and>
    (\<forall>a\<in>set as. (Pderiv a R, Pderiv a S) \<in> set ps \<union> set ws)))"
 
+lemma step_set_eq: "\<lbrakk> test (ws,ps); step as (ws,ps) = (ws',ps') \<rbrakk>
+  \<Longrightarrow> set ws' \<union> set ps' =
+     set ws \<union> set ps
+     \<union> (\<Union>a\<in>set as. {(Pderiv a (fst(hd ws)), Pderiv a (snd(hd ws)))})"
+by(auto split: list.splits)
+
 theorem closure_sound:
 assumes result: "closure as ([(R,S)],[]) = Some([],ps)"
 and atoms: "Atoms R \<union> Atoms S \<subseteq> set as"
 shows "Lang R = Lang S"
-(*value [code] "closure [] ([({One},{})],[])"*)
 proof-
   { fix st
     have "pre_Bisim as R S st \<Longrightarrow> test st \<Longrightarrow> pre_Bisim as R S (step as st)"
-      unfolding pre_Bisim_def
-      apply(split prod.splits)
-      apply(elim prod_caseE conjE)
-      apply(intro allI impI conjI)
-      apply(auto split: list.splits)[1]
-
-      apply(rotate_tac -2)
-      apply(erule thin_rl)
-      apply(rotate_tac -2)
-      apply(erule thin_rl)
-      apply(clarsimp split: prod.splits list.splits)
-      apply(erule disjE)
-      apply blast
-      apply(erule disjE)
-      apply clarsimp
-      using Atoms_Pderiv
-      apply (metis (lifting) subset_trans)
-      apply (metis Un_iff)
-
-      apply(clarsimp simp: UN_subset_iff image_iff split: prod.splits list.splits)
-      apply metis
-      done
+    unfolding pre_Bisim_def
+    proof(split prod.splits, elim prod_caseE conjE, intro allI impI conjI)
+      case goal1 thus ?case by(auto split: list.splits)
+    next
+      case (goal2 ws ps ws' ps')
+      note goal2(2)[simp]
+      from `test st` obtain wstl R S where [simp]: "ws = (R,S)#wstl"
+        by (auto split: list.splits)
+      from `step as st = (ws',ps')` obtain P where [simp]: "ps' = (R,S) # ps"
+        and [simp]: "ws' = filter P (map (\<lambda>a. (Pderiv a R, Pderiv a S)) as) @ wstl"
+        by auto
+      have "\<forall>(R',S')\<in>set wstl \<union> set ps'. Atoms R' \<union> Atoms S' \<subseteq> set as"
+        using goal2(4) by auto
+      moreover
+      have "\<forall>a\<in>set as. Atoms(Pderiv a R) \<union> Atoms(Pderiv a S) \<subseteq> set as"
+        using goal2(4) by simp (metis (lifting) Atoms_Pderiv order_trans)
+      ultimately show ?case by simp blast
+    next
+      case goal3 thus ?case
+        by(clarsimp simp: image_iff split: prod.splits list.splits) metis
+    qed
   }
   moreover
   from atoms
