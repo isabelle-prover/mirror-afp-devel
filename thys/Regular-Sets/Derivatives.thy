@@ -51,7 +51,7 @@ by (induct s arbitrary: r) (simp_all add: Deriv_deriv)
 subsection {* Antimirov's partial derivatives *}
 
 abbreviation
-  "Timess rs r \<equiv> {Times r' r | r'. r' \<in> rs}"
+  "Timess rs r \<equiv> (\<Union>r' \<in> rs. {Times r' r})"
 
 fun
   pderiv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp set"
@@ -63,16 +63,6 @@ where
 | "pderiv c (Times r1 r2) = 
     (if nullable r1 then Timess (pderiv c r1) r2 \<union> pderiv c r2 else Timess (pderiv c r1) r2)"
 | "pderiv c (Star r) = Timess (pderiv c r) (Star r)"
-
-(* FIXME adjust def of Timess to make it executable and get rid of this: *)
-text{* For code generation only: *}
-lemma [code]: "pderiv c (Times r1 r2) = 
-  (if nullable r1 then (%r'. Times r' r2) ` pderiv c r1 \<union> pderiv c r2
-   else (%r'. Times r' r2) ` pderiv c r1)"
-by auto
-lemma [code]: "pderiv c (Star r) = (%r'. Times r' (Star r)) ` (pderiv c r)"
-by auto
-declare pderiv.simps(1-4)[code]
 
 fun
   pderivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> ('a rexp) set"
@@ -215,7 +205,7 @@ proof (induct s rule: rev_induct)
   have "pderivs (s @ [c]) (Times r1 r2) = pderiv_set c (pderivs s (Times r1 r2))" 
     by (simp add: pderivs_snoc)
   also have "\<dots> \<subseteq> pderiv_set c (Timess (pderivs s r1) r2 \<union> (pderivs_lang (PSuf s) r2))"
-    using ih by (auto) (blast)
+    using ih by fast
   also have "\<dots> = pderiv_set c (Timess (pderivs s r1) r2) \<union> pderiv_set c (pderivs_lang (PSuf s) r2)"
     by (simp)
   also have "\<dots> = pderiv_set c (Timess (pderivs s r1) r2) \<union> pderivs_lang (PSuf s @@ {[c]}) r2"
@@ -225,7 +215,7 @@ proof (induct s rule: rev_induct)
     by auto
   also 
   have "\<dots> \<subseteq> Timess (pderiv_set c (pderivs s r1)) r2 \<union> pderiv c r2 \<union> pderivs_lang (PSuf s @@ {[c]}) r2"
-    by (auto simp add: if_splits) (blast)
+    by (auto simp add: if_splits)
   also have "\<dots> = Timess (pderivs (s @ [c]) r1) r2 \<union> pderiv c r2 \<union> pderivs_lang (PSuf s @@ {[c]}) r2"
     by (simp add: pderivs_snoc)
   also have "\<dots> \<subseteq> Timess (pderivs (s @ [c]) r1) r2 \<union> pderivs_lang (PSuf (s @ [c])) r2"
@@ -262,9 +252,9 @@ proof (induct s rule: rev_induct)
   { assume asm: "s \<noteq> []"
     have "pderivs (s @ [c]) (Star r) = pderiv_set c (pderivs s (Star r))" by (simp add: pderivs_snoc)
     also have "\<dots> \<subseteq> pderiv_set c (Timess (pderivs_lang (PSuf s) r) (Star r))"
-      using ih[OF asm] by (auto) (blast)
+      using ih[OF asm] by fast
     also have "\<dots> \<subseteq> Timess (pderiv_set c (pderivs_lang (PSuf s) r)) (Star r) \<union> pderiv c (Star r)"
-      by (auto split: if_splits) (blast)+
+      by (auto split: if_splits)
     also have "\<dots> \<subseteq> Timess (pderivs_lang (PSuf (s @ [c])) r) (Star r) \<union> (Timess (pderiv c r) (Star r))"
       by (simp only: PSuf_snoc pderivs_lang_snoc pderivs_lang_union)
          (auto simp add: pderivs_lang_def)
@@ -274,11 +264,7 @@ proof (induct s rule: rev_induct)
   }
   moreover
   { assume asm: "s = []"
-    then have ?case
-      apply (auto simp add: pderivs_lang_def pderivs_snoc PSuf_def)
-      apply(rule_tac x = "[c]" in exI)
-      apply(auto)
-      done
+    then have ?case by (auto simp add: pderivs_lang_def pderivs_snoc PSuf_def)
   }
   ultimately show ?case by blast
 qed (simp)
