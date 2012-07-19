@@ -2,7 +2,7 @@ header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
 imports
-  Derivatives
+  Regular_Exp
   "~~/src/HOL/Library/While_Combinator"
 begin
 
@@ -77,22 +77,22 @@ by (induct r) auto
 
 subsection {* Derivative *}
 
-primrec ederiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
+primrec nderiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
-  "ederiv _ Zero = Zero"
-| "ederiv _ One = Zero"
-| "ederiv a (Atom b) = (if a = b then One else Zero)"
-| "ederiv a (Plus r s) = nPlus (ederiv a r) (ederiv a s)"
-| "ederiv a (Times r s) =
-    (let r's = nTimes (ederiv a r) s
-     in if nullable r then nPlus r's (ederiv a s) else r's)"
-| "ederiv a (Star r) = nTimes (ederiv a r) (Star r)"
+  "nderiv _ Zero = Zero"
+| "nderiv _ One = Zero"
+| "nderiv a (Atom b) = (if a = b then One else Zero)"
+| "nderiv a (Plus r s) = nPlus (nderiv a r) (nderiv a s)"
+| "nderiv a (Times r s) =
+    (let r's = nTimes (nderiv a r) s
+     in if nullable r then nPlus r's (nderiv a s) else r's)"
+| "nderiv a (Star r) = nTimes (nderiv a r) (Star r)"
 
-lemma lang_ederiv: "lang (ederiv a r) = Deriv a (lang r)"
+lemma lang_nderiv: "lang (nderiv a r) = Deriv a (lang r)"
 by (induct r) (auto simp: Let_def nullable_iff)
 
 lemma deriv_no_occurrence: 
-  "x \<notin> atoms r \<Longrightarrow> ederiv x r = Zero"
+  "x \<notin> atoms r \<Longrightarrow> nderiv x r = Zero"
 by (induct r) auto
 
 lemma atoms_nPlus[simp]: "atoms (nPlus r s) = atoms r \<union> atoms s"
@@ -104,7 +104,7 @@ by (induct r s rule: nTimes.induct) auto
 lemma atoms_norm: "atoms (norm r) \<subseteq> atoms r"
 by (induct r) (auto dest!:subsetD[OF atoms_nTimes])
 
-lemma atoms_ederiv: "atoms (ederiv a r) \<subseteq> atoms r"
+lemma atoms_nderiv: "atoms (nderiv a r) \<subseteq> atoms r"
 by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 
@@ -150,7 +150,7 @@ definition is_bisimulation ::
 where
 "is_bisimulation as ps =
   (\<forall>(r,s)\<in> set ps. (atoms r \<union> atoms s \<subseteq> set as) \<and> (nullable r \<longleftrightarrow> nullable s) \<and>
-    (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps))"
+    (\<forall>a\<in>set as. (nderiv a r, nderiv a s) \<in> set ps))"
 
 lemma bisim_lang_eq:
 assumes bisim: "is_bisimulation as ps"
@@ -179,18 +179,18 @@ proof -
     proof cases
       assume "a \<in> set as"
       with rs bisim'
-      have "(ederiv a r, ederiv a s) \<in> set ps'"
+      have "(nderiv a r, nderiv a s) \<in> set ps'"
         by (auto simp: is_bisimulation_def)
-      thus ?thesis by (force simp: KL lang_ederiv)
+      thus ?thesis by (force simp: KL lang_nderiv)
     next
       assume "a \<notin> set as"
       with bisim' rs
       have "a \<notin> atoms r" "a \<notin> atoms s" by (auto simp: is_bisimulation_def)
-      then have "ederiv a r = Zero" "ederiv a s = Zero"
+      then have "nderiv a r = Zero" "nderiv a s = Zero"
         by (auto intro: deriv_no_occurrence)
       then have "Deriv a K = lang Zero" 
         "Deriv a L = lang Zero" 
-        unfolding KL lang_ederiv[symmetric] by auto
+        unfolding KL lang_nderiv[symmetric] by auto
       thus ?thesis by (auto simp: ps'_def)
     qed
   qed  
@@ -206,7 +206,7 @@ where "step as (ws,ps) =
     (let 
       (r, s) = hd ws;
       ps' = (r, s) # ps;
-      succs = map (\<lambda>a. (ederiv a r, ederiv a s)) as;
+      succs = map (\<lambda>a. (nderiv a r, nderiv a s)) as;
       new = filter (\<lambda>p. p \<notin> set ps' \<union> set ws) succs
     in (new @ tl ws, ps'))"
 
@@ -222,7 +222,7 @@ where
  ((r, s) \<in> set ws \<union> set ps) \<and>
  (\<forall>(r,s)\<in> set ws \<union> set ps. atoms r \<union> atoms s \<subseteq> set as) \<and>
  (\<forall>(r,s)\<in> set ps. (nullable r \<longleftrightarrow> nullable s) \<and>
-   (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps \<union> set ws)))"
+   (\<forall>a\<in>set as. (nderiv a r, nderiv a s) \<in> set ps \<union> set ws)))"
 
 theorem closure_sound:
 assumes result: "closure as ([(r,s)],[]) = Some([],ps)"
@@ -232,7 +232,7 @@ proof-
   { fix st have "pre_bisim as r s st \<Longrightarrow> test st \<Longrightarrow> pre_bisim as r s (step as st)"
       unfolding pre_bisim_def
       by (cases st) (auto simp: split_def split: list.splits prod.splits
-        dest!: subsetD[OF atoms_ederiv]) }
+        dest!: subsetD[OF atoms_nderiv]) }
   moreover
   from atoms
   have "pre_bisim as r s ([(r,s)],[])" by (simp add: pre_bisim_def)

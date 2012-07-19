@@ -11,16 +11,6 @@ text{* This theory is based on work by Brozowski \cite{Brzozowski64} and Antimir
 subsection {* Brozowski's derivatives of regular expressions *}
 
 fun
-  nullable :: "'a rexp \<Rightarrow> bool"
-where
-  "nullable (Zero) = False"
-| "nullable (One) = True"
-| "nullable (Atom c) = False"
-| "nullable (Plus r1 r2) = (nullable r1 \<or> nullable r2)"
-| "nullable (Times r1 r2) = (nullable r1 \<and> nullable r2)"
-| "nullable (Star r) = True"
-
-fun
   deriv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "deriv c (Zero) = Zero"
@@ -38,14 +28,20 @@ where
 | "derivs (c # s) r = derivs s (deriv c r)"
 
 
-lemma nullable_iff: "nullable r \<longleftrightarrow> [] \<in> lang r"
-by (induct r) (auto simp add: conc_def split: if_splits)
-
 lemma Deriv_deriv: "Deriv c (lang r) = lang (deriv c r)"
 by (induct r) (simp_all add: nullable_iff)
 
 lemma Derivs_derivs: "Derivs s (lang r) = lang (derivs s r)"
 by (induct s arbitrary: r) (simp_all add: Deriv_deriv)
+
+text {* A regular expression matcher: *}
+
+definition matcher :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> bool" where
+"matcher r s = nullable (derivs s r)"
+
+lemma matcher_correctness: "matcher r s \<longleftrightarrow> s \<in> lang r"
+by (induct s arbitrary: r)
+   (simp_all add: nullable_iff Deriv_deriv[symmetric] matcher_def Deriv_def)
 
 
 subsection {* Antimirov's partial derivatives *}
@@ -305,19 +301,5 @@ by (simp add: finite_pderivs_lang_UNIV1)
 lemma finite_pderivs_lang:
   shows "finite (pderivs_lang A r)"
 by (metis finite_pderivs_lang_UNIV pderivs_lang_subset rev_finite_subset subset_UNIV)
-
-
-subsection {* A regular expression matcher based on Brozowski's derivatives *}
-
-fun
-  matcher :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> bool"
-where
-  "matcher r s = nullable (derivs s r)"
-
-lemma matcher_correctness:
-  shows "matcher r s \<longleftrightarrow> s \<in> lang r"
-by (induct s arbitrary: r)
-   (simp_all add: nullable_iff Deriv_deriv[symmetric] Deriv_def)
-
 
 end

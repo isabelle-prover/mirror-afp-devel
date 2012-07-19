@@ -1,7 +1,7 @@
 header {* Deciding Regular Expression Equivalence (2) *}
 
 theory pEquivalence_Checking
-imports Equivalence_Checking
+imports Equivalence_Checking Derivatives
 begin
 
 text{* \noindent Similar to theory @{theory Equivalence_Checking}, but

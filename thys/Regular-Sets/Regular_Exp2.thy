@@ -46,4 +46,17 @@ where
 lemma lang_subset_lists: "atoms r \<subseteq> S \<Longrightarrow> lang S r \<subseteq> lists S"
 by(induction r)(auto simp: conc_subset_lists star_subset_lists)
 
+primrec nullable :: "'a rexp \<Rightarrow> bool" where
+"nullable (Zero) = False" |
+"nullable (One) = True" |
+"nullable (Atom c) = False" |
+"nullable (Plus r1 r2) = (nullable r1 \<or> nullable r2)" |
+"nullable (Times r1 r2) = (nullable r1 \<and> nullable r2)" |
+"nullable (Star r) = True" |
+"nullable (Not r) = (\<not> (nullable r))" |
+"nullable (Inter r s) = (nullable r \<and> nullable s)"
+
+lemma nullable_iff: "nullable r \<longleftrightarrow> [] \<in> lang S r"
+by (induct r) (auto simp add: conc_def split: if_splits)
+
 end
