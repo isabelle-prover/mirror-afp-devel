@@ -28,11 +28,11 @@ where
 | "derivs (c # s) r = derivs s (deriv c r)"
 
 
-lemma Deriv_deriv: "Deriv c (lang r) = lang (deriv c r)"
+lemma lang_deriv: "lang (deriv c r) = Deriv c (lang r)"
 by (induct r) (simp_all add: nullable_iff)
 
-lemma Derivs_derivs: "Derivs s (lang r) = lang (derivs s r)"
-by (induct s arbitrary: r) (simp_all add: Deriv_deriv)
+lemma lang_derivs: "lang (derivs s r) = Derivs s (lang r)"
+by (induct s arbitrary: r) (simp_all add: lang_deriv)
 
 text {* A regular expression matcher: *}
 
@@ -41,7 +41,7 @@ definition matcher :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> bool" where
 
 lemma matcher_correctness: "matcher r s \<longleftrightarrow> s \<in> lang r"
 by (induct s arbitrary: r)
-   (simp_all add: nullable_iff Deriv_deriv[symmetric] matcher_def Deriv_def)
+   (simp_all add: nullable_iff lang_deriv matcher_def Deriv_def)
 
 
 subsection {* Antimirov's partial derivatives *}
@@ -119,11 +119,11 @@ subsection {* Relating derivatives and partial derivatives *}
 
 lemma deriv_pderiv:
   shows "(\<Union> lang ` (pderiv c r)) = lang (deriv c r)"
-unfolding Deriv_deriv[symmetric] Deriv_pderiv by simp
+unfolding lang_deriv Deriv_pderiv by simp
 
 lemma derivs_pderivs:
   shows "(\<Union> lang ` (pderivs s r)) = lang (derivs s r)"
-unfolding Derivs_derivs[symmetric] Derivs_pderivs by simp
+unfolding lang_derivs Derivs_pderivs by simp
 
 
 subsection {* Finiteness property of partial derivatives *}
