@@ -36,6 +36,14 @@ by(auto simp:pderiv_no_occurrence Atoms_def Pderiv_def)
 lemma Deriv_Lang: "Deriv c (Lang R) = Lang (Pderiv c R)"
 by(auto simp: Deriv_pderiv Pderiv_def Lang_def)
 
+lemma Nullable_pderiv[simp]: "Nullable(pderivs w r) = (w : lang r)"
+apply(induction w arbitrary: r)
+apply (simp add: Nullable_def nullable_iff singleton_iff)
+using eqset_imp_iff[OF Deriv_pderiv[where 'a = 'a]]
+apply (simp add: Nullable_def Deriv_def)
+done
+
+
 type_synonym 'a Rexp_pair = "'a rexp set * 'a rexp set"
 type_synonym 'a Rexp_pairs = "'a Rexp_pair list"
 
@@ -103,8 +111,8 @@ where "step as (ws,ps) =
       (R,S) = hd ws;
       ps' = (R,S) # ps;
       succs = map (\<lambda>a. (Pderiv a R, Pderiv a S)) as;
-      new = filter (\<lambda>p. p \<notin> set ps' \<union> set ws) succs
-    in (new @ tl ws, ps'))"
+      new = filter (\<lambda>p. p \<notin> set ps \<union> set ws) succs
+    in (remdups new @ tl ws, ps'))"
 
 definition closure ::
   "'a list \<Rightarrow> 'a Rexp_pairs * 'a Rexp_pairs
@@ -142,7 +150,7 @@ proof-
       from `test st` obtain wstl R S where [simp]: "ws = (R,S)#wstl"
         by (auto split: list.splits)
       from `step as st = (ws',ps')` obtain P where [simp]: "ps' = (R,S) # ps"
-        and [simp]: "ws' = filter P (map (\<lambda>a. (Pderiv a R, Pderiv a S)) as) @ wstl"
+        and [simp]: "ws' = remdups(filter P (map (\<lambda>a. (Pderiv a R, Pderiv a S)) as)) @ wstl"
         by auto
       have "\<forall>(R',S')\<in>set wstl \<union> set ps'. Atoms R' \<union> Atoms S' \<subseteq> set as"
         using goal2(4) by auto
@@ -191,32 +199,106 @@ lemma "check_eqv
   (Star(Atom(0::nat)))"
 by eval
 
-(* in progress
 
-fun Pderivs :: "'a list \<Rightarrow> 'a rexp set \<Rightarrow> 'a rexp set" where
-"Pderivs [] R = R" |
-"Pderivs (a#as) R = Pderivs as (Pderiv a R)"
+subsection "Termination and Completeness"
 
-lemma finite_pderiv: "finite(pderiv a r)"
-by(induction r) auto
+definition PDERIVS :: "'a rexp set => 'a rexp set" where
+"PDERIVS R = (UN r:R. pderivs_lang UNIV r)"
 
-lemma finite_Pderiv: "finite R \<Longrightarrow> finite(Pderiv a R)"
-by(simp add:Pderiv_def finite_pderiv)
+lemma PDERIVS_incr[simp]: "R \<subseteq> PDERIVS R"
+apply(auto simp add: PDERIVS_def pderivs_lang_def)
+by (metis pderivs.simps(1) insertI1)
 
-lemma assumes "ALL (R,S): set ws0 Un set bs0. finite R \<and> finite S"
- shows "EX p. closure as (ws0,bs0) = Some p"
-unfolding closure_def
-apply(rule wf_while_option_Some
-  [where P = "%(ws,bs). ALL (R,S) : set ws Un set bs. finite R \<and> finite S"])
-prefer 3 using assms apply simp
-prefer 2 apply (fastforce simp: image_iff finite_Pderiv split: prod.splits list.splits)
-term inv_image
-term lex_prod
-apply(rule wf_subset
-  [where r = "inv_image (op \<subset>) (%(ws,bs). (UN (R,S):set ws0 Un set bs0.
-                          UN xs. {(Pderivs xs R, Pderivs xs S)})
-                         - set ws Un set bs)"]); <*lex*>
-              (%(ws,bs). size ws)"])
-*)
+lemma Pderiv_PDERIVS: assumes "R' \<subseteq> PDERIVS R" shows "Pderiv a R' \<subseteq> PDERIVS R"
+proof
+  fix r assume "r : Pderiv a R'"
+  then obtain r' where "r' : R'" "r : pderiv a r'" by(auto simp: Pderiv_def)
+  from `r' : R'` `R' \<subseteq> PDERIVS R` obtain s w where "s : R" "r' : pderivs w s"
+    by(auto simp: PDERIVS_def pderivs_lang_def)
+  hence "r \<in> pderivs (w @ [a]) s" using `r : pderiv a r'` by(auto simp add:pderivs_snoc)
+  thus "r : PDERIVS R" using `s : R` by(auto simp: PDERIVS_def pderivs_lang_def)
+qed
+
+lemma finite_PDERIVS: "finite R \<Longrightarrow> finite(PDERIVS R)"
+by(simp add: PDERIVS_def finite_pderivs_lang_UNIV)
+
+lemma closure_Some: assumes "finite R0" "finite S0" shows "\<exists>p. closure as ([(R0,S0)],[]) = Some p"
+proof(unfold closure_def)
+  let ?Inv = "%(ws,bs).  distinct ws \<and> (ALL (R,S) : set ws. R \<subseteq> PDERIVS R0 \<and> S \<subseteq> PDERIVS S0 \<and> (R,S) \<notin> set bs)"
+  let ?m1 = "%bs. Pow(PDERIVS R0) \<times> Pow(PDERIVS S0) - set bs"
+  let ?m2 = "%(ws,bs). card(?m1 bs)"
+  have Inv0: "?Inv ([(R0, S0)], [])" by simp
+  { fix s assume "test s" "?Inv s"
+    obtain ws bs where [simp]: "s = (ws,bs)" by fastforce
+    from `test s` obtain R S ws' where [simp]: "ws = (R,S)#ws'"
+      by(auto split: prod.splits list.splits)
+    let ?bs' = "(R,S) # bs"
+    let ?succs = "map (\<lambda>a. (Pderiv a R, Pderiv a S)) as"
+    let ?new = "filter (\<lambda>p. p \<notin> set bs \<union> set ws) ?succs"
+    let ?ws' = "remdups ?new @ ws'"
+    have "?Inv (step as s)" and "?m2(step as s) < ?m2 s"
+    proof-
+      case goal1
+      from `?Inv s` have "distinct ?ws'" by auto
+      have "ALL (R,S) : set ?ws'. R \<subseteq> PDERIVS R0 \<and> S \<subseteq> PDERIVS S0 \<and> (R,S) \<notin> set ?bs'" using `?Inv s`
+        by(simp add: Ball_def image_iff) (metis Pderiv_PDERIVS)
+      with `distinct ?ws'` show ?case by(simp)
+    next
+      case goal2
+      have "finite(?m1 bs)"
+        by(metis assms finite_Diff finite_PDERIVS finite_cartesian_product finite_Pow_iff)
+      moreover have "?m2(step as s) < ?m2 s" using `?Inv s`
+        by(auto intro: psubset_card_mono[OF `finite(?m1 bs)`])
+      then show ?case using `?Inv s` by simp
+    qed
+  } note step = this
+  show "\<exists>p. while_option test (step as) ([(R0, S0)], []) = Some p" 
+    by(rule measure_while_option_Some [where P = ?Inv and f = ?m2, OF _ Inv0])(simp add: step)
+qed
+
+theorem closure_Some_Inv: assumes "closure as ([({r},{s})],[]) = Some p"
+shows "\<forall>(R,S)\<in>set(fst p). \<exists>w. R = pderivs w r \<and> S = pderivs w s" (is "?Inv p")
+proof-
+  from assms have 1: "while_option test (step as) ([({r},{s})],[]) = Some p"
+    by(simp add: closure_def)
+  have Inv0: "?Inv ([({r},{s})],[])" by simp (metis pderivs.simps(1))
+  { fix p assume "?Inv p" "test p"
+    obtain ws bs where [simp]: "p = (ws,bs)" by fastforce
+    from `test p` obtain R S ws' where [simp]: "ws = (R,S)#ws'"
+      by(auto split: prod.splits list.splits)
+    let ?succs = "map (\<lambda>a. (Pderiv a R, Pderiv a S)) as"
+    let ?new = "filter (\<lambda>p. p \<notin> set bs \<union> set ws) ?succs"
+    let ?ws' = "remdups ?new @ ws'"
+    from `?Inv p` obtain w where [simp]: "R = pderivs w r" "S = pderivs w s"
+      by auto
+    { fix x assume "x : set as"
+      have "EX w. Pderiv x R = pderivs w r \<and> Pderiv x S = pderivs w s"
+        by(rule_tac x="w@[x]" in exI)(simp add: pderivs_append Pderiv_def)
+    }
+    with `?Inv p` have "?Inv (step as p)" by auto
+  } note Inv_step = this
+  show ?thesis
+    apply(rule while_option_rule[OF _ 1])
+    apply(erule (1) Inv_step)
+    apply(rule Inv0)
+    done
+qed
+
+lemma closure_complete: assumes "lang r = lang s"
+ shows "EX bs. closure as ([({r},{s})],[]) = Some([],bs)" (is ?C)
+proof(rule ccontr)
+  assume "\<not> ?C"
+  then obtain R S ws bs
+    where cl: "closure as ([({r},{s})],[]) = Some((R,S)#ws,bs)"
+    using closure_Some[of "{r}" "{s}", simplified]
+    by (metis (hide_lams, no_types) list.exhaust prod.exhaust)
+  from assms closure_Some_Inv[OF this]
+    while_option_stop[OF cl[unfolded closure_def]]
+  show "False" by auto
+qed
+
+corollary completeness: "lang r = lang s \<Longrightarrow> check_eqv r s"
+by(auto simp add: check_eqv_def dest!: closure_complete
+      split: option.split list.split)
 
 end
