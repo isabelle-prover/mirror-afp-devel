@@ -1534,7 +1534,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
      then have "(\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms,0) \<in> derivable (ext R R2 M1 M2)" using a' by simp
      then have "([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms) \<in> ext R R2 M1 M2" by (cases) (auto)
      then have "\<exists> r S. extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms) \<and> (r \<in> Ax)"
-          using rules apply- apply (rule ext.cases) apply (auto simp add:extendRule_def extend_def)
+          using rules apply- apply (rule ext.cases [where 'a = 'a and 'b = 'b]) apply (auto simp add:extendRule_def extend_def)
           apply (rule_tac x=b in exI) apply (rule_tac x=seq in exI) apply auto apply (rule upRules.cases) apply auto
           apply (rule upRules.cases) apply auto apply (rule upRules.cases) apply auto
           apply (insert p_e_non_empty[where R=R2 and M=M1 and N=M2])
@@ -1919,7 +1919,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
      then have "(\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>,0) \<in> derivable (ext R R2 M1 M2)" using a' by simp
      then have "([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>) \<in> (ext R R2 M1 M2)" by (cases) (auto)
      then have "\<exists> r S. extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>) \<and> (r \<in> Ax)"
-          using rules apply- apply (rule ext.cases) apply (auto simp add:extendRule_def extend_def)
+          using rules apply- apply (rule ext.cases [where 'a = 'a and 'b = 'b]) apply (auto simp add:extendRule_def extend_def)
           apply (rule_tac x=b in exI) apply (rule_tac x=seq in exI) apply auto apply (rule upRules.cases) apply auto
           apply (rule upRules.cases) apply auto apply (rule upRules.cases) apply auto
           apply (insert p_e_non_empty[where R=R2 and M=M1 and N=M2])
