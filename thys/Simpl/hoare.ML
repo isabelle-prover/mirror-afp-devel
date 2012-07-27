@@ -1798,7 +1798,8 @@ fun mk_split_thms ctxt (vars as _::_)  =
 
     fun simp_all_tac ss simps = ALLGOALS (Simplifier.simp_tac (ss addsimps simps));
     fun prove_simp simps prop =
-      Goal.prove_global thy [] [] prop (K (simp_all_tac (HOL_basic_ss) simps));
+      let val ([prop'], _) = Variable.importT_terms [prop] ctxt
+      in Goal.prove_global thy [] [] prop' (K (simp_all_tac (HOL_basic_ss) simps)) end;
 
     val split_meta   = prove_simp [@{thm split_paired_all}] split_meta_prop;
     val split_object = prove_simp [@{thm split_paired_All}] split_object_prop;
