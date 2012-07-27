@@ -1061,7 +1061,7 @@ apply(clarsimp)
 apply(subgoal_tac "i < length (map (\<lambda>((y, y'), yy, ty). (y', ty)) (zip y_y'_list y_ty_list))")
  apply(frule_tac f = fst and xs = "map (\<lambda>((y, y'), yy, ty). (y', ty)) (zip y_y'_list y_ty_list)" in nth_map)
  apply(simp)
-apply(subgoal_tac "length (map (\<lambda>((y, y'), yy, ty). (y', ty)) list) = length list")
+apply(subgoal_tac "length (map (\<lambda>((y, y'), yy, ty). (y', ty)) ?list) = length ?list")
  apply(simp) apply(frule map_length_y') apply(simp)
 apply(simp only: map_length_list)
 done
