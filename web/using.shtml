@@ -26,6 +26,10 @@
 	<font class="first">E</font>ntries</h1>
 <p>&nbsp;</p>
 
+<table width="80%" class="descr">
+  <tbody>
+    <tr><td>
+
 <p>
 Once you have downloaded the AFP, you can include its articles and theories in
 your own developments. If you would like to make your work available to others
@@ -52,6 +56,10 @@ manner.</p>
 Example: you are using Isabelle2012, and have downloaded your afp directory to
 <code>~/isabelle/afp</code>. You would add the line
 <code>~/isabelle/afp</code> to the file <code>~/.isabelle/components</code>.
+
+</td></tr>
+</tbody>
+</table>
 
 </div>
 
