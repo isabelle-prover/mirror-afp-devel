@@ -41,7 +41,7 @@ AFP directory that you downloaded. Add <code>PATH</code> on a separate line to
 the file <code>~/.isabelle/IsabelleXYZ/etc/components</code>, where XYZ is the
 Isabelle release you are working with, for example XYZ=2012. (In case you are
 working with the development version of Isabelle, the file is simply
-~/.isabelle/etc/components). You may need to create this file.</p>
+<code>~/.isabelle/etc/components</code>). You may need to create this file.</p>
 
 <p>
 You can now refer to article <code>ABC</code> from the AFP in some theory of
