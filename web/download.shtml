@@ -41,7 +41,7 @@
 	href="http://sourceforge.net/project/showfiles.php?group_id=101909">sourceforge
 	download system</a> to access older versions of the archive.</td></tr>
 
-	<tr><td class="head">Development snapshot (for development snapshot
+		<tr><td class="head">Development snapshot (for development snapshot
 	of Isabelle):</td></tr>
 
 	<tr><td class="entry">
@@ -59,6 +59,9 @@
 	on sourceforge. You can also <a 
 	href="http://afp.hg.sourceforge.net/hgweb/afp/afp/">browse</a> the
 	development repository online.</td></tr>
+
+	<tr><td class="head">How to refer to AFP entries:</td></tr>	
+	<tr><td class="entry">You can refer to AFP entries by using the <a href="using.shtml">AFP as an Isabelle component</a>.</td></tr> 
 
 	</tbody></table></td> </tr> </table>
 </body>
