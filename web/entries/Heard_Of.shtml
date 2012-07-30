@@ -28,14 +28,14 @@
 <font class="first">A</font>lgorithms
 in
 the
-<font class="first">H</font>eard-of
+<font class="first">H</font>eard-Of
 <font class="first">M</font>odel
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Verifying Fault-Tolerant Distributed Algorithms in the Heard-of Model</td></tr>
+        <td class="data" width="80%">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data">Henri Debrat (henri /dot/ debrat /at/ loria /dot/ fr) and  <a href="http://www.loria.fr/~merz/">Stephan Merz</a></td></tr>
@@ -57,12 +57,14 @@ landmark theorem due to Fischer, Lynch, and Paterson shows that it is
 impossible to achieve Consensus among N asynchronously communicating
 nodes in the presence of even a single permanent failure. Existing
 solutions must rely on assumptions of "partial synchrony".
+<p>
 Indeed, there have been numerous misunderstandings on what exactly a given
 algorithm is supposed to realize in what kinds of environments. Moreover, the
 abundance of subtly different computational models complicates comparisons
 between different algorithms. Charron-Bost and Schiper introduced the Heard-Of
 model for representing algorithms and failure assumptions in a uniform
 framework, simplifying comparisons between algorithms.
+<p>
 In this contribution, we represent the Heard-Of model in Isabelle/HOL. We define
 two semantics of runs of algorithms with different unit of atomicity and relate
 these through a reduction theorem that allows us to verify algorithms in the
