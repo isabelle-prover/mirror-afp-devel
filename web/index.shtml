@@ -47,6 +47,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-07-27:
+<a href="entries/Heard_Of.shtml">Verifying Fault-Tolerant Distributed Algorithms in the Heard-of Model</a>
+<br>Author:
+Henri Debrat and 
+<a href="http://www.loria.fr/~merz/">Stephan Merz</a>
+</td></tr>
+
+<tr><td class="entry">
 2012-07-01:
 <a href="entries/PCF.shtml">Logical Relations for PCF</a>
 <br>Author:

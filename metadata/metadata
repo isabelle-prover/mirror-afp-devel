@@ -331,6 +331,38 @@ date = 2006-03-15
 topic = Computer Science/Algorithms/Distributed
 abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.shtml">GenClock</a> in AFP). 
 
+[Heard_Of]
+title = Verifying Fault-Tolerant Distributed Algorithms in the Heard-of Model
+date = 2012-07-27
+author = Henri Debrat <mailto:henri.debrat@loria.fr>, Stephan Merz <http://www.loria.fr/~merz/>
+topic = Computer Science/Algorithms/Distributed
+abstract =
+ Distributed computing is inherently based on replication, promising
+ increased tolerance to failures of individual computing nodes or
+ communication channels. Realizing this promise, however, involves
+ quite subtle algorithmic mechanisms, and requires precise statements
+ about the kinds and numbers of faults that an algorithm tolerates (such
+ as process crashes, communication faults or corrupted values).  The
+ landmark theorem due to Fischer, Lynch, and Paterson shows that it is
+ impossible to achieve Consensus among N asynchronously communicating
+ nodes in the presence of even a single permanent failure. Existing
+ solutions must rely on assumptions of "partial synchrony".
+
+ Indeed, there have been numerous misunderstandings on what exactly a given
+ algorithm is supposed to realize in what kinds of environments. Moreover, the
+ abundance of subtly different computational models complicates comparisons
+ between different algorithms. Charron-Bost and Schiper introduced the Heard-Of
+ model for representing algorithms and failure assumptions in a uniform
+ framework, simplifying comparisons between algorithms.
+
+ In this contribution, we represent the Heard-Of model in Isabelle/HOL. We define
+ two semantics of runs of algorithms with different unit of atomicity and relate
+ these through a reduction theorem that allows us to verify algorithms in the
+ coarse-grained semantics (where proofs are easier) and infer their correctness
+ for the fine-grained one (which corresponds to actual executions). We
+ instantiate the framework by verifying six Consensus algorithms that differ in
+ the underlying algorithmic mechanisms and the kinds of faults they tolerate.
+
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <mailto:viktor.kuncak@epfl.ch>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
