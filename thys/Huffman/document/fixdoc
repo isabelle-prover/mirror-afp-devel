@@ -1,5 +1,5 @@
 #!/bin/bash
-export HUFFMAN_TEX=generated/Huffman.tex
+export HUFFMAN_TEX=Huffman.tex
 perl -pi -i.bak -e 's/\{\\isacharprime\}a/\$\\alpha\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharprime\}b/\$\\beta\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharbraceleft\}\{\\isacharbraceright\}/\{\\ensuremath\{\\emptyset\}\}/g' $HUFFMAN_TEX

@@ -27,10 +27,7 @@ IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d false -P "http://isabelle.in.tum.de/library/" -D generated
-FIXDOC = fixdoc
-DOCUMENT = $(ISABELLE_TOOL) document -o pdf
-DOCUMENT_OUTLINE = $(ISABELLE_TOOL) document -n outline -o pdf -t "/proof,/ML"
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
 MAXTIME = 3600
@@ -42,11 +39,6 @@ $(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Huffman.thy document/root.tex 
 	(cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME))
-	./$(FIXDOC)
-	$(DOCUMENT) generated > /dev/null
-	mv document.pdf $(ISABELLE_BROWSER_INFO)/$(BASE-IMAGE)/$(SESSION-NAME)
-	$(DOCUMENT_OUTLINE) generated > /dev/null
-	mv outline.pdf $(ISABELLE_BROWSER_INFO)/$(BASE-IMAGE)/$(SESSION-NAME)
 
 
 ## clean
