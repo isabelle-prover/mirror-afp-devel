@@ -1,6 +1,7 @@
 syntax: glob
 
 *~
+.DS_Store
 
 thys/Tree-Automata/code/haskell/generated/Nat.hs
 thys/Tree-Automata/code/haskell/generated/Ta.hs
