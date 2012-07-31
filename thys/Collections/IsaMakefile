@@ -7,11 +7,10 @@ BASE-IMAGE = HOL
 
 default: $(SESSION-NAME)
 test: $(SESSION-NAME)
-userguide: generated/Userguide.pdf
 # usually empty:
 images:  
 
-all: images test userguide
+all: images test
 
 ## global settings
 SRC = $(ISABELLE_HOME)/src
@@ -25,7 +24,7 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -V userguide -d pdf -P "http://isabelle.in.tum.de/library/"
 
 # time limit (in sec)
 MAXTIME = 1200
@@ -44,21 +43,9 @@ impl/Impl_Overview.thy: scripts/doc.rb spec/*.thy impl/*.thy
 $(OUT)/$(SESSION-NAME): ROOT.ML document/*.tex document/*.bib *.thy common/*.thy spec/*.thy impl/*.thy gen_algo/*.thy iterator/*.thy gen_algo/StdInst.thy impl/Impl_Overview.thy
 	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
-generated/Userguide.pdf: $(OUT)/$(SESSION-NAME)
-	cd generated; \
-    $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
-    $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
-    $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
-    { [ ! -f root.bib ] || $(ISABELLE_TOOL) latex -o bbl "root_userguide.tex" >> userguide.log; } && \
-    { [ ! -f root.idx ] || $(ISABELLE_TOOL) latex -o idx "root_userguide.tex" >> userguide.log; } && \
-    $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
-    $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
-    mv root_userguide.pdf Userguide.pdf && \
-    echo "Userguide at ${PWD}/Userguide.pdf"; \
-
 
 ## clean
 
 clean:
 	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
-	@rm -rf generated
+

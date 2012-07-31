@@ -2,10 +2,6 @@ syntax: glob
 
 *~
 
-thys/Collections/generated
-thys/Refine_Monadic/generated
-thys/Refine_Monadic/Userguide.pdf
-
 thys/Tree-Automata/code/haskell/generated/Nat.hs
 thys/Tree-Automata/code/haskell/generated/Ta.hs
 thys/Tree-Automata/code/ml/generated/Ta.ML
