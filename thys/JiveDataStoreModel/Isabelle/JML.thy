@@ -7,7 +7,7 @@
 
 header {* The Formalization of JML Operators *}
 
-theory JML imports StoreProperties begin
+theory JML imports "../Isabelle_Store/StoreProperties" begin
 
 text {* JML operators that are to be used in Hoare formulae can be formalized here.
 *}

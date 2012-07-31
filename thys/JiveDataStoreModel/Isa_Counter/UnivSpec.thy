@@ -6,7 +6,7 @@
 
 header {* The Universal Specification *}
 
-theory UnivSpec imports JML  begin
+theory UnivSpec imports "../Isabelle/JML"  begin
 
 text {* This theory contains the Isabelle formalization of the
 program-dependent specification. This theory has to be provided by the user.
