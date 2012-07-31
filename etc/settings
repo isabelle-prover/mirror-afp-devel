@@ -1,3 +1,4 @@
+# -*- shell-script -*- :mode=shellscript:
 
 AFP_BASE="$COMPONENT"
 AFP="$AFP_BASE/thys"
