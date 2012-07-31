@@ -24,7 +24,7 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -V userguide -d pdf -P "http://isabelle.in.tum.de/library/"
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -V userguide -d pdf -P http://isabelle.in.tum.de/library/
 
 # time limit (in sec)
 MAXTIME = 1200
