@@ -25,7 +25,6 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-#USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" -D generated -g true 
 DOCFLAGS = -v true -i true -V outline=/proof,/ML -g true -d pdf -P "http://isabelle.in.tum.de/library/"
 USEDIR = $(ISABELLE_TOOL) usedir  $(DOCFLAGS)
 BUILD = $(ISABELLE_TOOL) usedir -b $(DOCFLAGS)
