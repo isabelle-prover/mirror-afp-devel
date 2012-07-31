@@ -2,8 +2,6 @@ syntax: glob
 
 *~
 
-thys/JinjaThreads/generated
-
 thys/Collections/generated
 thys/Refine_Monadic/generated
 thys/Refine_Monadic/Userguide.pdf
