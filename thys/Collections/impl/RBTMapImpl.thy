@@ -103,7 +103,7 @@ lemma rm_is_finite_map: "finite_map rm_\<alpha> rm_invar" by (unfold_locales) au
 lemma map_to_set_lookup_entries: 
    "rbt_sorted t \<Longrightarrow> map_to_set (rbt_lookup t) = set (RBT_Impl.entries t)"
 using RBT_Impl.map_of_entries[symmetric, of t]
-by (simp add: distinct_entries map_to_set_map_of)
+by (simp add: RBT_Impl.distinct_entries map_to_set_map_of)
 
 lemma rm_iterateoi_correct:
 fixes t::"('k::linorder, 'v) RBT_Impl.rbt"
@@ -171,8 +171,8 @@ proof
 next
   fix m:: "('a, 'b) rm"
   show "map_iterator_linord (RBTMapImpl.rm_iterateoi m) (rm_\<alpha> m)"
-    unfolding rm_\<alpha>_def RBTMapImpl.rm_iterateoi_def RBT.lookup_def
-    by (rule rm_iterateoi_correct) (simp)
+    unfolding rm_\<alpha>_def RBTMapImpl.rm_iterateoi_def
+    by transfer (simp add: rm_iterateoi_correct)
 qed
 
 lemma rm_reverse_iterateoi_correct:
@@ -241,8 +241,8 @@ proof
 next
   fix m:: "('a, 'b) rm"
   show "map_iterator_rev_linord (RBTMapImpl.rm_reverse_iterateoi m) (rm_\<alpha> m)"
-    unfolding rm_\<alpha>_def RBTMapImpl.rm_reverse_iterateoi_def RBT.lookup_def
-    by (rule rm_reverse_iterateoi_correct) (simp)
+    unfolding rm_\<alpha>_def RBTMapImpl.rm_reverse_iterateoi_def
+    by (transfer) (simp add: rm_reverse_iterateoi_correct)
 qed
 
 lemmas rm_iteratei_impl = MapGA.iti_by_itoi[OF rm_iterateoi_impl, folded rm_iteratei_def]
