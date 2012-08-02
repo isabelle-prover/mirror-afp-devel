@@ -1,3 +1,14 @@
+structure Product_Type : sig
+  val fst : 'a * 'b -> 'a
+  val snd : 'a * 'b -> 'b
+end = struct
+
+fun fst (a, b) = a;
+
+fun snd (a, b) = b;
+
+end; (*struct Product_Type*)
+
 structure HOL : sig
   type 'a equal
   val equal : 'a equal -> 'a -> 'a -> bool
@@ -20,30 +31,19 @@ fun member A_ [] y = false
 
 end; (*struct List*)
 
-structure Product_Type : sig
-  val fst : 'a * 'b -> 'a
-  val snd : 'a * 'b -> 'b
-end = struct
-
-fun fst (a, b) = a;
-
-fun snd (a, b) = b;
-
-end; (*struct Product_Type*)
-
 structure DFS : sig
-  val nexts : (int * int) list -> int -> int list
   val equal_node : int HOL.equal
+  val nexts : (int * int) list -> int -> int list
   val dfs : (int * int) list -> int list -> int list -> int list
   val dfs2 : (int * int) list -> int list -> int list -> int list
 end = struct
+
+val equal_node = {equal = (fn a => fn b => ((a : int) = b))} : int HOL.equal;
 
 fun nexts [] n = []
   | nexts (e :: es) n =
     (if (((Product_Type.fst e) : int) = n) then Product_Type.snd e :: nexts es n
       else nexts es n);
-
-val equal_node = {equal = (fn a => fn b => ((a : int) = b))} : int HOL.equal;
 
 fun dfs g [] ys = ys
   | dfs g (x :: xs) ys =
