@@ -5,6 +5,18 @@ session "AVL-Trees"! (AFP) = HOL +
   files
     "document/root.tex"
 
+session Abortable_Linearizable_Modules! (AFP) = HOLCF +
+  theories [document = false]
+    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/HOLCF/IOA/meta_theory/IOA"
+  theories
+    CompositionCorrectness
+  files
+    "document/abstract.tex"
+    "document/introduction.tex"
+    "document/root.bib"
+    "document/root.tex"
+
 session "Abstract-Hoare-Logics"! (AFP) = HOL +
   theories
     "While/HoareTotal"
@@ -35,6 +47,26 @@ session ArrowImpossibilityGS! (AFP) = HOL +
   theories
     "Thys/Arrow_Utility"
     "Thys/GS"
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+session "AutoFocus-Stream"! (AFP) = "Nat-Interval-Logic" +
+  options [document_graph]
+  theories
+    ListSlice
+    AF_Stream
+    AF_Stream_Exec
+    IL_AF_Stream
+    IL_AF_Stream_Exec
+  files
+    "document/root.tex"
+
+session BDD! (AFP) = Simpl +
+  options [document_graph]
+  theories
+    EvalProof
+    NormalizeTotalProof
   files
     "document/root.bib"
     "document/root.tex"
@@ -114,6 +146,32 @@ session Cauchy! (AFP) = HOL +
     CauchySchwarz
   files
     "document/root.tex"
+
+session Circus! (AFP) = HOLCF +
+  options [document_graph]
+  theories [document = false]
+    "~~/src/HOL/Library/List_Prefix"
+  theories
+    Refinement_Example
+  files
+    "document/acronym.sty"
+    "document/bigfoot.sty"
+    "document/circus.sty"
+    "document/comment.sty"
+    "document/csp.sty"
+    "document/fixme.sty"
+    "document/fmde-acronyms.sty"
+    "document/hol-ocl-isar.sty"
+    "document/lstisar-mbt.sty"
+    "document/marginnote.sty"
+    "document/perpage.sty"
+    "document/proof.sty"
+    "document/prooftree.sty"
+    "document/root.bib"
+    "document/root.tex"
+    "document/suffix.sty"
+    "document/xcolor.sty"
+    "document/zed.sty"
 
 session ClockSynchInst! (AFP) = HOL +
   theories
@@ -223,50 +281,8 @@ session Collections! (AFP) = HOL +
     "document/intro.tex"
     "document/root.bib"
     "document/root.tex"
+    "document/root_userguide.bib"
     "document/root_userguide.tex"
-
-session Refine_Monadic! (AFP) = Collections +
-  options [document_variants = "outline=/proof,/ML:userguide"]
-  theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Lattice_Syntax"
-    "~~/src/HOL/Library/Monad_Syntax"
-    "~~/src/HOL/Word/Word"
-  theories
-    Refine
-    Collection_Bindings
-    Autoref_Collection_Bindings
-    Refine_Userguide
-    "ex/Examples"
-  files
-    "document/railsetup.sty"
-    "document/root.bib"
-    "document/root.tex"
-    "document/root_userguide.tex"
-
-session Dijkstra_Shortest_Path! (AFP) = Refine_Monadic +
-  theories [document = false]
-    "../Collections/Collections"
-    "../Refine_Monadic/Refine"
-    "../Refine_Monadic/Collection_Bindings"
-    "../Refine_Monadic/Autoref_Collection_Bindings"
-    "~~/src/HOL/Library/Efficient_Nat"
-  theories
-    Introduction
-    Dijkstra_Misc
-    Graph
-    Weight
-    Dijkstra
-    GraphSpec
-    GraphGA
-    GraphByMap
-    HashGraphImpl
-    Dijkstra_Impl
-    Dijkstra_Impl_Adet
-    Test
-  files
-    "document/root.bib"
-    "document/root.tex"
 
 session "Compiling-Exceptions-Correctly"! (AFP) = HOL +
   theories
@@ -323,6 +339,30 @@ session "Depth-First-Search"! (AFP) = HOL +
   theories
     DFS
   files
+    "document/root.tex"
+
+session Dijkstra_Shortest_Path! (AFP) = Refine_Monadic +
+  theories [document = false]
+    "../Collections/Collections"
+    "../Refine_Monadic/Refine"
+    "../Refine_Monadic/Collection_Bindings"
+    "../Refine_Monadic/Autoref_Collection_Bindings"
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    Introduction
+    Dijkstra_Misc
+    Graph
+    Weight
+    Dijkstra
+    GraphSpec
+    GraphGA
+    GraphByMap
+    HashGraphImpl
+    Dijkstra_Impl
+    Dijkstra_Impl_Adet
+    Test
+  files
+    "document/root.bib"
     "document/root.tex"
 
 session DiskPaxos! (AFP) = HOL +
@@ -512,6 +552,13 @@ session "General-Triangle"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+session Girth_Chromatic! (AFP) = "HOL-Probability" +
+  theories
+    Girth_Chromatic
+  files
+    "document/root.bib"
+    "document/root.tex"
+
 session GraphMarkingIBP! (AFP) = HOL +
   theories [document = false]
     "../DataRefinementIBP/DataRefinement"
@@ -531,11 +578,9 @@ session "Group-Ring-Module"! (AFP) = HOL +
   files
     "document/root.tex"
 
-session Valuation! (AFP) = "Group-Ring-Module" +
-  theories [document = false]
-    "../Group-Ring-Module/Algebra9"
+session "HRB-Slicing"! (AFP) = Jinja +
   theories
-    Valuation3
+    HRBSlicing
   files
     "document/root.tex"
 
@@ -711,17 +756,12 @@ session Jinja! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-session "HRB-Slicing"! (AFP) = Jinja +
-  theories
-    HRBSlicing
-  files
-    "document/root.tex"
-
-session Slicing! (AFP) = Jinja +
+session JinjaThreads! (AFP_big) = "HOL-Word" +
   options [document_graph]
   theories
-    Slicing
+    JinjaThreads
   files
+    "document/root.bib"
     "document/root.tex"
 
 session JiveDataStoreModel! (AFP) = HOL +
@@ -767,25 +807,23 @@ session KBPs! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+session "Lam-ml-Normalization"! (AFP) = "HOL-Nominal" +
+  theories [document = false]
+    "~~/src/HOL/Library/LaTeXsugar"
+  theories
+    Lam_ml
+  files
+    "document/figureCR3.tex"
+    "document/figureLemma7.tex"
+    "document/mathpartir.sty"
+    "document/root.bib"
+    "document/root.tex"
+
 session LatticeProperties! (AFP) = HOL +
   theories
     Complete_Lattice_Prop
     Conj_Disj
     Lattice_Ordered_Group
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session MonoBoolTranAlgebra! (AFP) = LatticeProperties +
-  theories
-    Statements
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session PseudoHoops! (AFP) = LatticeProperties +
-  theories
-    Examples
   files
     "document/root.bib"
     "document/root.tex"
@@ -844,32 +882,34 @@ session "List-Infinite"! (AFP) = HOL +
   files
     "document/root.tex"
 
-session "Nat-Interval-Logic"! (AFP) = "List-Infinite" +
-  options [document_graph]
-  theories
-    IL_Interval
-    IL_IntervalOperators
-    IL_TemporalOperators
-  files
-    "document/root.tex"
-
-session "AutoFocus-Stream"! (AFP) = "Nat-Interval-Logic" +
-  options [document_graph]
-  theories
-    ListSlice
-    AF_Stream
-    AF_Stream_Exec
-    IL_AF_Stream
-    IL_AF_Stream_Exec
-  files
-    "document/root.tex"
-
 session "Locally-Nameless-Sigma"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Proofs/Lambda/Commutation"
   theories
     Locally_Nameless_Sigma
   files
+    "document/root.tex"
+
+session Lower_Semicontinuous! (AFP) = "HOL-Multivariate_Analysis" +
+  theories
+    Lower_Semicontinuous
+  files
+    "document/root.tex"
+
+session Markov_Models! (AFP) = "HOL-Probability" +
+  theories [document = false]
+    "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Monad_Syntax"
+  theories
+    Discrete_Time_Markov_Chain
+    Rewarded_DTMC
+    "ex/PCTL"
+    "ex/Zeroconf_Analysis"
+    "ex/Gossip_Broadcast"
+    "ex/Crowds_Protocol"
+  files
+    "document/root.bib"
     "document/root.tex"
 
 session Marriage! (AFP) = HOL +
@@ -911,6 +951,13 @@ Type inference for MiniML
     "document/root.bib"
     "document/root.tex"
 
+session MonoBoolTranAlgebra! (AFP) = LatticeProperties +
+  theories
+    Statements
+  files
+    "document/root.bib"
+    "document/root.tex"
+
 session MuchAdoAboutTwo! (AFP) = HOL +
   theories [document = false, quick_and_dirty]
     "~~/src/HOL/Library/Multiset"
@@ -935,6 +982,15 @@ session "Myhill-Nerode"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+session "Nat-Interval-Logic"! (AFP) = "List-Infinite" +
+  options [document_graph]
+  theories
+    IL_Interval
+    IL_IntervalOperators
+    IL_TemporalOperators
+  files
+    "document/root.tex"
+
 session NormByEval! (AFP) = HOL +
   theories
     NBE
@@ -956,6 +1012,26 @@ session Ordinals_and_Cardinals! (AFP) = HOL +
     Cardinal_Order_Relation
   files
     "document/intro.tex"
+    "document/root.bib"
+    "document/root.tex"
+
+session Ordinary_Differential_Equations! (AFP) = "HOL-Multivariate_Analysis" +
+  theories [document = false]
+    "~~/src/HOL/Library/Lattice_Algebras"
+  theories
+    "~~/src/HOL/Library/Float"
+  theories [document = false]
+    "~~/src/HOL/Decision_Procs/Approximation"
+    "~~/src/HOL/Library/FrechetDeriv"
+  theories
+    Bounded_Continuous_Function
+    Initial_Value_Problem
+    Picard_Lindeloef_Qualitative
+    One_Step_Method
+    Runge_Kutta
+    Runge_Kutta_Ex
+    Runge_Kutta_Ex2
+  files
     "document/root.bib"
     "document/root.tex"
 
@@ -1015,6 +1091,51 @@ session "Program-Conflict-Analysis"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+session PseudoHoops! (AFP) = LatticeProperties +
+  theories
+    Examples
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+session "RIPEMD-160-SPARK"! (AFP) = "HOL-Word" +
+  theories [document = false]
+    F_Spark_Declaration
+    K_L_Spark_Declaration
+    K_R_Spark_Declaration
+    R_L_Spark_Declaration
+    R_R_Spark_Declaration
+    S_L_Spark_Declaration
+    S_R_Spark_Declaration
+    Round_Declaration
+    Hash_Declaration
+  theories
+    RMD
+    Global_Specification
+    F_Spark_User
+    K_L_Spark_User
+    K_R_Spark_User
+    Global_User
+    R_L_Spark_User
+    R_R_Spark_User
+    S_L_Spark_User
+    S_R_Spark_User
+    Round_User
+    Hash_User
+  theories [document = false]
+    F_Spark_Obligation
+    K_L_Spark_Obligation
+    K_R_Spark_Obligation
+    R_L_Spark_Obligation
+    R_R_Spark_Obligation
+    S_L_Spark_Obligation
+    S_R_Spark_Obligation
+    Round_Obligation
+    Hash_Obligation
+  files
+    "document/root.bib"
+    "document/root.tex"
+
 session RSAPSS! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"
@@ -1038,6 +1159,37 @@ session "Recursion-Theory-I"! (AFP) = HOL +
   files
     "document/root.bib"
     "document/root.tex"
+
+session Refine_Monadic! (AFP) = Collections +
+  options [document_variants = "outline=/proof,/ML:userguide"]
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Lattice_Syntax"
+    "~~/src/HOL/Library/Monad_Syntax"
+    "~~/src/HOL/Word/Word"
+  theories
+    Refine
+    Collection_Bindings
+    Autoref_Collection_Bindings
+    Refine_Userguide
+    "ex/Examples"
+  files
+    "document/isabelle.sty"
+    "document/isabellesym.sty"
+    "document/pdfsetup.sty"
+    "document/railsetup.sty"
+    "document/root.bib"
+    "document/root.tex"
+    "document/root_userguide.aux"
+    "document/root_userguide.bbl"
+    "document/root_userguide.bib"
+    "document/root_userguide.blg"
+    "document/root_userguide.dvi"
+    "document/root_userguide.log"
+    "document/root_userguide.out"
+    "document/root_userguide.tex"
+    "document/root_userguide.tex.orig"
+    "document/root_userguide.toc"
 
 session "Regular-Sets"! (AFP) = HOL +
   theories [document = false]
@@ -1089,6 +1241,41 @@ session SenSocialChoice! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+session Separation_Algebra! (AFP) = "HOL-Word" +
+  theories
+    "ex/Simple_Separation_Example"
+    "ex/Sep_Tactics_Test"
+    "ex/VM_Example"
+    Sep_Eq
+    "ex/capDL/Separation_D"
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+session SequentInvertibility! (AFP) = "HOL-Nominal" +
+  theories [document = false]
+    "~~/src/HOL/Library/Multiset"
+  theories
+    SequentInvertibility
+  files
+    "document/llncs.cls"
+    "document/proof.sty"
+    "document/root.bib"
+    "document/root.tex"
+    "document/stmaryrd.dtx"
+
+session "Shivers-CFA"! (AFP) = HOLCF +
+  theories [document = false]
+    "~~/src/Tools/Adhoc_Overloading"
+  theories
+    Eval
+    AbsCFCorrect
+    ExCFSV
+    AbsCFComp
+  files
+    "document/root.bib"
+    "document/root.tex"
+
 session Simpl! (AFP) = HOL +
   options [document_graph]
   theories
@@ -1098,19 +1285,24 @@ session Simpl! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-session BDD! (AFP) = Simpl +
+session Slicing! (AFP) = Jinja +
   options [document_graph]
   theories
-    EvalProof
-    NormalizeTotalProof
+    Slicing
   files
-    "document/root.bib"
     "document/root.tex"
 
 session Statecharts! (AFP) = HOL +
   theories
     CarAudioSystem
   files
+    "document/root.tex"
+
+session "Stream-Fusion"! (AFP) = HOLCF +
+  theories
+    StreamFusion
+  files
+    "document/root.bib"
     "document/root.tex"
 
 session Stuttering_Equivalence! (AFP) = HOL +
@@ -1213,6 +1405,14 @@ session "Tree-Automata"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+session Valuation! (AFP) = "Group-Ring-Module" +
+  theories [document = false]
+    "../Group-Ring-Module/Algebra9"
+  theories
+    Valuation3
+  files
+    "document/root.tex"
+
 session "Verified-Prover"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Infinite_Set"
@@ -1241,193 +1441,6 @@ session Well_Quasi_Orders! (AFP) = HOL +
     Wqo_Instances
     Nash_Williams
     Kruskal_Tree
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session Lower_Semicontinuous! (AFP) = "HOL-Multivariate_Analysis" +
-  theories
-    Lower_Semicontinuous
-  files
-    "document/root.tex"
-
-session Ordinary_Differential_Equations! (AFP) = "HOL-Multivariate_Analysis" +
-  theories [document = false]
-    "~~/src/HOL/Library/Lattice_Algebras"
-  theories
-    "~~/src/HOL/Library/Float"
-  theories [document = false]
-    "~~/src/HOL/Decision_Procs/Approximation"
-    "~~/src/HOL/Library/FrechetDeriv"
-  theories
-    Bounded_Continuous_Function
-    Initial_Value_Problem
-    Picard_Lindeloef_Qualitative
-    One_Step_Method
-    Runge_Kutta
-    Runge_Kutta_Ex
-    Runge_Kutta_Ex2
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session "Lam-ml-Normalization"! (AFP) = "HOL-Nominal" +
-  theories [document = false]
-    "~~/src/HOL/Library/LaTeXsugar"
-  theories
-    Lam_ml
-  files
-    "document/figureCR3.tex"
-    "document/figureLemma7.tex"
-    "document/mathpartir.sty"
-    "document/root.bib"
-    "document/root.tex"
-
-session SequentInvertibility! (AFP) = "HOL-Nominal" +
-  theories [document = false]
-    "~~/src/HOL/Library/Multiset"
-  theories
-    SequentInvertibility
-  files
-    "document/llncs.cls"
-    "document/proof.sty"
-    "document/root.bib"
-    "document/root.tex"
-    "document/stmaryrd.dtx"
-
-session Girth_Chromatic! (AFP) = "HOL-Probability" +
-  theories
-    Girth_Chromatic
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session Markov_Models! (AFP) = "HOL-Probability" +
-  theories [document = false]
-    "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Monad_Syntax"
-  theories
-    Discrete_Time_Markov_Chain
-    Rewarded_DTMC
-    "ex/PCTL"
-    "ex/Zeroconf_Analysis"
-    "ex/Gossip_Broadcast"
-    "ex/Crowds_Protocol"
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session JinjaThreads! (AFP_big) = "HOL-Word" +
-  options [document_graph]
-  theories
-    JinjaThreads
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session "RIPEMD-160-SPARK"! (AFP) = "HOL-Word" +
-  theories [document = false]
-    F_Spark_Declaration
-    K_L_Spark_Declaration
-    K_R_Spark_Declaration
-    R_L_Spark_Declaration
-    R_R_Spark_Declaration
-    S_L_Spark_Declaration
-    S_R_Spark_Declaration
-    Round_Declaration
-    Hash_Declaration
-  theories
-    RMD
-    Global_Specification
-    F_Spark_User
-    K_L_Spark_User
-    K_R_Spark_User
-    Global_User
-    R_L_Spark_User
-    R_R_Spark_User
-    S_L_Spark_User
-    S_R_Spark_User
-    Round_User
-    Hash_User
-  theories [document = false]
-    F_Spark_Obligation
-    K_L_Spark_Obligation
-    K_R_Spark_Obligation
-    R_L_Spark_Obligation
-    R_R_Spark_Obligation
-    S_L_Spark_Obligation
-    S_R_Spark_Obligation
-    Round_Obligation
-    Hash_Obligation
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session Separation_Algebra! (AFP) = "HOL-Word" +
-  theories
-    "ex/Simple_Separation_Example"
-    "ex/Sep_Tactics_Test"
-    "ex/VM_Example"
-    Sep_Eq
-    "ex/capDL/Separation_D"
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session Abortable_Linearizable_Modules! (AFP) = HOLCF +
-  theories [document = false]
-    "~~/src/HOL/Library/List_Prefix"
-    "~~/src/HOL/HOLCF/IOA/meta_theory/IOA"
-  theories
-    CompositionCorrectness
-  files
-    "document/abstract.tex"
-    "document/introduction.tex"
-    "document/root.bib"
-    "document/root.tex"
-
-session Circus! (AFP) = HOLCF +
-  options [document_graph]
-  theories [document = false]
-    "~~/src/HOL/Library/List_Prefix"
-  theories
-    Refinement_Example
-  files
-    "document/acronym.sty"
-    "document/bigfoot.sty"
-    "document/circus.sty"
-    "document/comment.sty"
-    "document/csp.sty"
-    "document/fixme.sty"
-    "document/fmde-acronyms.sty"
-    "document/hol-ocl-isar.sty"
-    "document/lstisar-mbt.sty"
-    "document/marginnote.sty"
-    "document/perpage.sty"
-    "document/proof.sty"
-    "document/prooftree.sty"
-    "document/root.bib"
-    "document/root.tex"
-    "document/suffix.sty"
-    "document/xcolor.sty"
-    "document/zed.sty"
-
-session "Shivers-CFA"! (AFP) = HOLCF +
-  theories [document = false]
-    "~~/src/Tools/Adhoc_Overloading"
-  theories
-    Eval
-    AbsCFCorrect
-    ExCFSV
-    AbsCFComp
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session "Stream-Fusion"! (AFP) = HOLCF +
-  theories
-    StreamFusion
   files
     "document/root.bib"
     "document/root.tex"
