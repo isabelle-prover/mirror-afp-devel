@@ -1,0 +1,19 @@
+session Ordinary_Differential_Equations! (AFP) in "." = "HOL-Multivariate_Analysis" +
+  theories [document = false]
+    "~~/src/HOL/Library/Lattice_Algebras"
+  theories
+    "~~/src/HOL/Library/Float"
+  theories [document = false]
+    "~~/src/HOL/Decision_Procs/Approximation"
+    "~~/src/HOL/Library/FrechetDeriv"
+  theories
+    Bounded_Continuous_Function
+    Initial_Value_Problem
+    Picard_Lindeloef_Qualitative
+    One_Step_Method
+    Runge_Kutta
+    Runge_Kutta_Ex
+    Runge_Kutta_Ex2
+  files
+    "document/root.bib"
+    "document/root.tex"

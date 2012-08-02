@@ -1,0 +1,11 @@
+session "Shivers-CFA"! (AFP) in "." = HOLCF +
+  theories [document = false]
+    "~~/src/Tools/Adhoc_Overloading"
+  theories
+    Eval
+    AbsCFCorrect
+    ExCFSV
+    AbsCFComp
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,10 @@
+session "List-Infinite"! (AFP) in "." = HOL +
+  options [document_graph]
+  theories [document = false]
+    "~~/src/HOL/Library/Extended_Nat"
+    "~~/src/HOL/Library/Infinite_Set"
+    "~~/src/HOL/Library/List_Prefix"
+  theories
+    ListInfinite
+  files
+    "document/root.tex"

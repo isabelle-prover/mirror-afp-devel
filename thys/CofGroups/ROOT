@@ -1,0 +1,8 @@
+session CofGroups! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Nat_Bijection"
+  theories
+    CofGroups
+  files
+    "document/root.bib"
+    "document/root.tex"

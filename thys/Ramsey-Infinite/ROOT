@@ -1,0 +1,5 @@
+session "Ramsey-Infinite"! (AFP) in "." = HOL +
+  theories
+    Ramsey
+  files
+    "document/root.tex"

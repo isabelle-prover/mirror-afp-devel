@@ -1,0 +1,7 @@
+session FileRefinement! (AFP) in "." = HOL +
+  theories
+    FileRefinement
+  files
+    "document/introduction.tex"
+    "document/root.bib"
+    "document/root.tex"

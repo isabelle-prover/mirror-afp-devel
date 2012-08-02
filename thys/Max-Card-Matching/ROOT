@@ -1,0 +1,8 @@
+session "Max-Card-Matching"! (AFP) in "." = HOL +
+  theories [document = false]
+    Parity
+  theories
+    Matching
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,11 @@
+session "FOL-Fitting"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Infinite_Set"
+  theories
+    FOL_Fitting
+  files
+    "document/diag.eps"
+    "document/diag.fig"
+    "document/diag.pdf"
+    "document/root.bib"
+    "document/root.tex"

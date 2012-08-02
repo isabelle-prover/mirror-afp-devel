@@ -1,0 +1,7 @@
+session BytecodeLogicJmlTypes! (AFP) in "." = HOL +
+  theories
+    Sound
+    Cachera
+  files
+    "document/root.bib"
+    "document/root.tex"

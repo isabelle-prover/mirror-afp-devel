@@ -1,0 +1,5 @@
+session "DPT-SAT-Solver"! (AFP) in "." = HOL +
+  theories
+    DPT_SAT_Tests
+  files
+    "document/root.tex"

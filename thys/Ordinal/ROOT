@@ -1,0 +1,5 @@
+session Ordinal! (AFP) in "." = HOL +
+  theories
+    Ordinal
+  files
+    "document/root.tex"

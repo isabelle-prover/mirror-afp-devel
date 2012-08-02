@@ -1,0 +1,6 @@
+session Marriage! (AFP) in "." = HOL +
+  theories
+    Marriage
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,10 @@
+session Polynomials! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Abstract-Rewriting/SN_Orders"
+    "../Abstract-Rewriting/SN_Order_Carrier"
+  theories
+    Polynomial
+    NZM
+  files
+    "document/root.bib"
+    "document/root.tex"

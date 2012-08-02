@@ -1,0 +1,8 @@
+session "Verified-Prover"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Infinite_Set"
+  theories
+    Prover
+  files
+    "document/root.bib"
+    "document/root.tex"

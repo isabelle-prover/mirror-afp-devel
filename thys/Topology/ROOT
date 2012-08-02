@@ -1,0 +1,10 @@
+session Topology! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Zorn"
+    "../Lazy-Lists-II/LList2"
+  theories
+    LList_Topology
+  files
+    "document/root.bib"
+    "document/root.tex"

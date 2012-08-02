@@ -1,10 +1,4 @@
-session "AVL-Trees"! (AFP) = HOL +
-  theories
-    AVL
-    AVL2
-  files
-    "document/root.tex"
-
+(** !!! COPY of Abortable_Linearizable_Modules/ROOT !!! **)
 session Abortable_Linearizable_Modules! (AFP) = HOLCF +
   theories [document = false]
     "~~/src/HOL/Library/List_Prefix"
@@ -17,6 +11,7 @@ session Abortable_Linearizable_Modules! (AFP) = HOLCF +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Abstract-Hoare-Logics/ROOT !!! **)
 session "Abstract-Hoare-Logics"! (AFP) = HOL +
   theories
     "While/HoareTotal"
@@ -26,6 +21,7 @@ session "Abstract-Hoare-Logics"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Abstract-Rewriting/ROOT !!! **)
 session "Abstract-Rewriting"! (AFP) = HOL +
   theories [document = false]
     "../Transitive-Closure/Transitive_Closure_Impl"
@@ -40,6 +36,7 @@ session "Abstract-Rewriting"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of ArrowImpossibilityGS/ROOT !!! **)
 session ArrowImpossibilityGS! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
@@ -51,6 +48,7 @@ session ArrowImpossibilityGS! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of AutoFocus-Stream/ROOT !!! **)
 session "AutoFocus-Stream"! (AFP) = "Nat-Interval-Logic" +
   options [document_graph]
   theories
@@ -62,6 +60,15 @@ session "AutoFocus-Stream"! (AFP) = "Nat-Interval-Logic" +
   files
     "document/root.tex"
 
+(** !!! COPY of AVL-Trees/ROOT !!! **)
+session "AVL-Trees"! (AFP) = HOL +
+  theories
+    AVL
+    AVL2
+  files
+    "document/root.tex"
+
+(** !!! COPY of BDD/ROOT !!! **)
 session BDD! (AFP) = Simpl +
   options [document_graph]
   theories
@@ -71,6 +78,7 @@ session BDD! (AFP) = Simpl +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of BinarySearchTree/ROOT !!! **)
 session BinarySearchTree! (AFP) = HOL +
   theories
     BinaryTree
@@ -79,6 +87,7 @@ session BinarySearchTree! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Binomial-Heaps/ROOT !!! **)
 session "Binomial-Heaps"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
@@ -95,6 +104,7 @@ session "Binomial-Heaps"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Binomial-Queues/ROOT !!! **)
 session "Binomial-Queues"! (AFP) = HOL +
   theories
     PQ_Implementation
@@ -103,6 +113,7 @@ session "Binomial-Queues"! (AFP) = HOL +
     "document/llncs.cls"
     "document/root.tex"
 
+(** !!! COPY of BytecodeLogicJmlTypes/ROOT !!! **)
 session BytecodeLogicJmlTypes! (AFP) = HOL +
   theories
     Sound
@@ -111,6 +122,7 @@ session BytecodeLogicJmlTypes! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Category/ROOT !!! **)
 session Category! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
@@ -128,6 +140,7 @@ All files in this development of Category Theory are licensed under LGPL.*)
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Category2/ROOT !!! **)
 session Category2! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
@@ -140,6 +153,7 @@ session Category2! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Cauchy/ROOT !!! **)
 session Cauchy! (AFP) = HOL +
   theories [show_question_marks = false]
     CauchysMeanTheorem
@@ -147,6 +161,7 @@ session Cauchy! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Circus/ROOT !!! **)
 session Circus! (AFP) = HOLCF +
   options [document_graph]
   theories [document = false]
@@ -173,6 +188,7 @@ session Circus! (AFP) = HOLCF +
     "document/xcolor.sty"
     "document/zed.sty"
 
+(** !!! COPY of ClockSynchInst/ROOT !!! **)
 session ClockSynchInst! (AFP) = HOL +
   theories
     ICAInstance
@@ -195,6 +211,7 @@ session ClockSynchInst! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of CofGroups/ROOT !!! **)
 session CofGroups! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Nat_Bijection"
@@ -204,6 +221,7 @@ session CofGroups! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Coinductive/ROOT !!! **)
 session Coinductive! (AFP) = HOL +
   options [document_graph]
   theories [document = false]
@@ -220,6 +238,7 @@ session Coinductive! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Collections/ROOT !!! **)
 session Collections! (AFP) = HOL +
   options [document_variants = "outline=/proof,/ML:userguide"]
   theories [document = false]
@@ -284,6 +303,7 @@ session Collections! (AFP) = HOL +
     "document/root_userguide.bib"
     "document/root_userguide.tex"
 
+(** !!! COPY of Compiling-Exceptions-Correctly/ROOT !!! **)
 session "Compiling-Exceptions-Correctly"! (AFP) = HOL +
   theories
     Exceptions
@@ -291,6 +311,7 @@ session "Compiling-Exceptions-Correctly"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Completeness/ROOT !!! **)
 session Completeness! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Permutation"
@@ -308,6 +329,7 @@ session Completeness! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of CoreC++/ROOT !!! **)
 session "CoreC++"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
@@ -319,12 +341,7 @@ session "CoreC++"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-session "DPT-SAT-Solver"! (AFP) = HOL +
-  theories
-    DPT_SAT_Tests
-  files
-    "document/root.tex"
-
+(** !!! COPY of DataRefinementIBP/ROOT !!! **)
 session DataRefinementIBP! (AFP) = HOL +
   theories [document = false]
     "../LatticeProperties/Complete_Lattice_Prop"
@@ -335,12 +352,14 @@ session DataRefinementIBP! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Depth-First-Search/ROOT !!! **)
 session "Depth-First-Search"! (AFP) = HOL +
   theories
     DFS
   files
     "document/root.tex"
 
+(** !!! COPY of Dijkstra_Shortest_Path/ROOT !!! **)
 session Dijkstra_Shortest_Path! (AFP) = Refine_Monadic +
   theories [document = false]
     "../Collections/Collections"
@@ -365,6 +384,7 @@ session Dijkstra_Shortest_Path! (AFP) = Refine_Monadic +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of DiskPaxos/ROOT !!! **)
 session DiskPaxos! (AFP) = HOL +
   theories
     DiskPaxos
@@ -379,6 +399,14 @@ session DiskPaxos! (AFP) = HOL +
     "document/tla.sty"
     "document/tlaspec.tex"
 
+(** !!! COPY of DPT-SAT-Solver/ROOT !!! **)
+session "DPT-SAT-Solver"! (AFP) = HOL +
+  theories
+    DPT_SAT_Tests
+  files
+    "document/root.tex"
+
+(** !!! COPY of Efficient-Mergesort/ROOT !!! **)
 session "Efficient-Mergesort"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
@@ -387,6 +415,7 @@ session "Efficient-Mergesort"! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Example-Submission/ROOT !!! **)
 session "Example-Submission"! (AFP) = HOL +
   theories
     Submission
@@ -401,24 +430,7 @@ use_thys ["That_Theory1", "That_Theory2", "That_Theory3"];
     "document/root.bib"
     "document/root.tex"
 
-session FFT! (AFP) = HOL +
-  theories
-    FFT
-  files
-    "document/root.tex"
-
-session "FOL-Fitting"! (AFP) = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/Infinite_Set"
-  theories
-    FOL_Fitting
-  files
-    "document/diag.eps"
-    "document/diag.fig"
-    "document/diag.pdf"
-    "document/root.bib"
-    "document/root.tex"
-
+(** !!! COPY of FeatherweightJava/ROOT !!! **)
 session FeatherweightJava! (AFP) = HOL +
   theories
     Featherweight_Java
@@ -427,6 +439,7 @@ session FeatherweightJava! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Fermat3_4/ROOT !!! **)
 session Fermat3_4! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Old_Number_Theory/Factorization"
@@ -439,6 +452,14 @@ session Fermat3_4! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of FFT/ROOT !!! **)
+session FFT! (AFP) = HOL +
+  theories
+    FFT
+  files
+    "document/root.tex"
+
+(** !!! COPY of FileRefinement/ROOT !!! **)
 session FileRefinement! (AFP) = HOL +
   theories
     FileRefinement
@@ -447,6 +468,7 @@ session FileRefinement! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of FinFun/ROOT !!! **)
 session FinFun! (AFP) = HOL +
   options [document_graph]
   theories [document = false]
@@ -456,6 +478,7 @@ session FinFun! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Finger-Trees/ROOT !!! **)
 session "Finger-Trees"! (AFP) = HOL +
   theories
     FingerTree
@@ -469,6 +492,7 @@ session "Finger-Trees"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Flyspeck-Tame/ROOT !!! **)
 session "Flyspeck-Tame"! (AFP_big) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"
@@ -479,6 +503,20 @@ session "Flyspeck-Tame"! (AFP_big) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of FOL-Fitting/ROOT !!! **)
+session "FOL-Fitting"! (AFP) = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Infinite_Set"
+  theories
+    FOL_Fitting
+  files
+    "document/diag.eps"
+    "document/diag.fig"
+    "document/diag.pdf"
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of Free-Boolean-Algebra/ROOT !!! **)
 session "Free-Boolean-Algebra"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Lattice_Syntax"
@@ -487,6 +525,7 @@ session "Free-Boolean-Algebra"! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Free-Groups/ROOT !!! **)
 session "Free-Groups"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Algebra/Group"
@@ -501,20 +540,7 @@ session "Free-Groups"! (AFP) = HOL +
   files
     "document/root.tex"
 
-session FunWithFunctions! (AFP) = HOL +
-  theories
-    FunWithFunctions
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session FunWithTilings! (AFP) = HOL +
-  theories
-    Tilings
-  files
-    "document/root.bib"
-    "document/root.tex"
-
+(** !!! COPY of Functional-Automata/ROOT !!! **)
 session "Functional-Automata"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/List_Prefix"
@@ -531,12 +557,30 @@ session "Functional-Automata"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of FunWithFunctions/ROOT !!! **)
+session FunWithFunctions! (AFP) = HOL +
+  theories
+    FunWithFunctions
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of FunWithTilings/ROOT !!! **)
+session FunWithTilings! (AFP) = HOL +
+  theories
+    Tilings
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of Gauss-Jordan-Elim-Fun/ROOT !!! **)
 session "Gauss-Jordan-Elim-Fun"! (AFP) = HOL +
   theories
     Gauss_Jordan_Elim_Fun
   files
     "document/root.tex"
 
+(** !!! COPY of GenClock/ROOT !!! **)
 session GenClock! (AFP) = HOL +
   theories
     GenClock
@@ -545,6 +589,7 @@ session GenClock! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of General-Triangle/ROOT !!! **)
 session "General-Triangle"! (AFP) = HOL +
   theories
     GeneralTriangle
@@ -552,6 +597,7 @@ session "General-Triangle"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Girth_Chromatic/ROOT !!! **)
 session Girth_Chromatic! (AFP) = "HOL-Probability" +
   theories
     Girth_Chromatic
@@ -559,6 +605,7 @@ session Girth_Chromatic! (AFP) = "HOL-Probability" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of GraphMarkingIBP/ROOT !!! **)
 session GraphMarkingIBP! (AFP) = HOL +
   theories [document = false]
     "../DataRefinementIBP/DataRefinement"
@@ -568,6 +615,7 @@ session GraphMarkingIBP! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Group-Ring-Module/ROOT !!! **)
 session "Group-Ring-Module"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
@@ -578,12 +626,7 @@ session "Group-Ring-Module"! (AFP) = HOL +
   files
     "document/root.tex"
 
-session "HRB-Slicing"! (AFP) = Jinja +
-  theories
-    HRBSlicing
-  files
-    "document/root.tex"
-
+(** !!! COPY of HotelKeyCards/ROOT !!! **)
 session HotelKeyCards! (AFP) = HOL +
   theories [show_question_marks = false]
     Notation
@@ -600,6 +643,14 @@ session HotelKeyCards! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of HRB-Slicing/ROOT !!! **)
+session "HRB-Slicing"! (AFP) = Jinja +
+  theories
+    HRBSlicing
+  files
+    "document/root.tex"
+
+(** !!! COPY of Huffman/ROOT !!! **)
 session Huffman! (AFP) = HOL +
   theories [quick_and_dirty]
     Huffman
@@ -716,6 +767,7 @@ session Huffman! (AFP) = HOL +
     "document/tree-w2.pdf"
     "document/tree-w2.svg"
 
+(** !!! COPY of Inductive_Confidentiality/ROOT !!! **)
 session Inductive_Confidentiality! (AFP) = HOL +
   theories
     "DolevYao/Message"
@@ -733,6 +785,7 @@ session Inductive_Confidentiality! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Integration/ROOT !!! **)
 session Integration! (AFP) = HOL +
   theories
     Integral
@@ -743,6 +796,7 @@ session Integration! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Jinja/ROOT !!! **)
 session Jinja! (AFP) = HOL +
   options [document_graph]
   theories [document = false]
@@ -756,6 +810,7 @@ session Jinja! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of JinjaThreads/ROOT !!! **)
 session JinjaThreads! (AFP_big) = "HOL-Word" +
   options [document_graph]
   theories
@@ -764,6 +819,7 @@ session JinjaThreads! (AFP_big) = "HOL-Word" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of JiveDataStoreModel/ROOT !!! **)
 session JiveDataStoreModel! (AFP) = HOL +
   options [document_graph]
   theories
@@ -788,6 +844,7 @@ session JiveDataStoreModel! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of KBPs/ROOT !!! **)
 session KBPs! (AFP) = HOL +
   theories [document = false, show_question_marks = false, names_short]
     "~~/src/HOL/Library/LaTeXsugar"
@@ -807,6 +864,7 @@ session KBPs! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Lam-ml-Normalization/ROOT !!! **)
 session "Lam-ml-Normalization"! (AFP) = "HOL-Nominal" +
   theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
@@ -819,6 +877,7 @@ session "Lam-ml-Normalization"! (AFP) = "HOL-Nominal" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of LatticeProperties/ROOT !!! **)
 session LatticeProperties! (AFP) = HOL +
   theories
     Complete_Lattice_Prop
@@ -828,6 +887,7 @@ session LatticeProperties! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Lazy-Lists-II/ROOT !!! **)
 session "Lazy-Lists-II"! (AFP) = HOL +
   theories [document = false]
     "../Coinductive/Coinductive_List"
@@ -837,6 +897,7 @@ session "Lazy-Lists-II"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of LightweightJava/ROOT !!! **)
 session LightweightJava! (AFP) = HOL +
   theories
     Lightweight_Java_Proof
@@ -844,6 +905,7 @@ session LightweightJava! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of LinearQuantifierElim/ROOT !!! **)
 session LinearQuantifierElim! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
@@ -865,12 +927,14 @@ session LinearQuantifierElim! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of List-Index/ROOT !!! **)
 session "List-Index"! (AFP) = HOL +
   theories
     List_Index
   files
     "document/root.tex"
 
+(** !!! COPY of List-Infinite/ROOT !!! **)
 session "List-Infinite"! (AFP) = HOL +
   options [document_graph]
   theories [document = false]
@@ -882,6 +946,7 @@ session "List-Infinite"! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Locally-Nameless-Sigma/ROOT !!! **)
 session "Locally-Nameless-Sigma"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Proofs/Lambda/Commutation"
@@ -890,12 +955,14 @@ session "Locally-Nameless-Sigma"! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of Lower_Semicontinuous/ROOT !!! **)
 session Lower_Semicontinuous! (AFP) = "HOL-Multivariate_Analysis" +
   theories
     Lower_Semicontinuous
   files
     "document/root.tex"
 
+(** !!! COPY of Markov_Models/ROOT !!! **)
 session Markov_Models! (AFP) = "HOL-Probability" +
   theories [document = false]
     "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
@@ -912,6 +979,7 @@ session Markov_Models! (AFP) = "HOL-Probability" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Marriage/ROOT !!! **)
 session Marriage! (AFP) = HOL +
   theories
     Marriage
@@ -919,6 +987,7 @@ session Marriage! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Matrix/ROOT !!! **)
 session Matrix! (AFP) = HOL +
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"
@@ -928,6 +997,7 @@ session Matrix! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Max-Card-Matching/ROOT !!! **)
 session "Max-Card-Matching"! (AFP) = HOL +
   theories [document = false]
     Parity
@@ -937,6 +1007,7 @@ session "Max-Card-Matching"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of MiniML/ROOT !!! **)
 session MiniML! (AFP) = HOL +
   theories
     W
@@ -951,6 +1022,7 @@ Type inference for MiniML
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of MonoBoolTranAlgebra/ROOT !!! **)
 session MonoBoolTranAlgebra! (AFP) = LatticeProperties +
   theories
     Statements
@@ -958,6 +1030,7 @@ session MonoBoolTranAlgebra! (AFP) = LatticeProperties +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of MuchAdoAboutTwo/ROOT !!! **)
 session MuchAdoAboutTwo! (AFP) = HOL +
   theories [document = false, quick_and_dirty]
     "~~/src/HOL/Library/Multiset"
@@ -968,6 +1041,7 @@ session MuchAdoAboutTwo! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Myhill-Nerode/ROOT !!! **)
 session "Myhill-Nerode"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
@@ -982,6 +1056,7 @@ session "Myhill-Nerode"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Nat-Interval-Logic/ROOT !!! **)
 session "Nat-Interval-Logic"! (AFP) = "List-Infinite" +
   options [document_graph]
   theories
@@ -991,6 +1066,7 @@ session "Nat-Interval-Logic"! (AFP) = "List-Infinite" +
   files
     "document/root.tex"
 
+(** !!! COPY of NormByEval/ROOT !!! **)
 session NormByEval! (AFP) = HOL +
   theories
     NBE
@@ -998,12 +1074,14 @@ session NormByEval! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Ordinal/ROOT !!! **)
 session Ordinal! (AFP) = HOL +
   theories
     Ordinal
   files
     "document/root.tex"
 
+(** !!! COPY of Ordinals_and_Cardinals/ROOT !!! **)
 session Ordinals_and_Cardinals! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Zorn"
@@ -1015,6 +1093,7 @@ session Ordinals_and_Cardinals! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Ordinary_Differential_Equations/ROOT !!! **)
 session Ordinary_Differential_Equations! (AFP) = "HOL-Multivariate_Analysis" +
   theories [document = false]
     "~~/src/HOL/Library/Lattice_Algebras"
@@ -1035,17 +1114,7 @@ session Ordinary_Differential_Equations! (AFP) = "HOL-Multivariate_Analysis" +
     "document/root.bib"
     "document/root.tex"
 
-session "POPLmark-deBruijn"! (AFP) = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
-  theories
-    POPLmark
-    POPLmarkRecordCtxt
-    Execute
-  files
-    "document/root.bib"
-    "document/root.tex"
-
+(** !!! COPY of Perfect-Number-Thm/ROOT !!! **)
 session "Perfect-Number-Thm"! (AFP) = HOL +
   theories
     Perfect
@@ -1053,6 +1122,7 @@ session "Perfect-Number-Thm"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Polynomials/ROOT !!! **)
 session Polynomials! (AFP) = HOL +
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"
@@ -1064,6 +1134,19 @@ session Polynomials! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of POPLmark-deBruijn/ROOT !!! **)
+session "POPLmark-deBruijn"! (AFP) = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    POPLmark
+    POPLmarkRecordCtxt
+    Execute
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of Presburger-Automata/ROOT !!! **)
 session "Presburger-Automata"! (AFP) = HOL +
   theories [document = false]
     DFS
@@ -1079,6 +1162,7 @@ session "Presburger-Automata"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Program-Conflict-Analysis/ROOT !!! **)
 session "Program-Conflict-Analysis"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
@@ -1091,6 +1175,7 @@ session "Program-Conflict-Analysis"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of PseudoHoops/ROOT !!! **)
 session PseudoHoops! (AFP) = LatticeProperties +
   theories
     Examples
@@ -1098,6 +1183,56 @@ session PseudoHoops! (AFP) = LatticeProperties +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Ramsey-Infinite/ROOT !!! **)
+session "Ramsey-Infinite"! (AFP) = HOL +
+  theories
+    Ramsey
+  files
+    "document/root.tex"
+
+(** !!! COPY of Recursion-Theory-I/ROOT !!! **)
+session "Recursion-Theory-I"! (AFP) = HOL +
+  theories
+    RecEnSet
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of Refine_Monadic/ROOT !!! **)
+session Refine_Monadic! (AFP) = Collections +
+  options [document_variants = "outline=/proof,/ML:userguide"]
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Lattice_Syntax"
+    "~~/src/HOL/Library/Monad_Syntax"
+    "~~/src/HOL/Word/Word"
+  theories
+    Refine
+    Collection_Bindings
+    Autoref_Collection_Bindings
+    Refine_Userguide
+    "ex/Examples"
+  files
+    "document/railsetup.sty"
+    "document/root.bib"
+    "document/root.tex"
+    "document/root_userguide.bib"
+    "document/root_userguide.tex"
+
+(** !!! COPY of Regular-Sets/ROOT !!! **)
+session "Regular-Sets"! (AFP) = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Reflection"
+  theories
+    Regexp_Method
+    pEquivalence_Checking
+    Equivalence_Checking2
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of RIPEMD-160-SPARK/ROOT !!! **)
 session "RIPEMD-160-SPARK"! (AFP) = "HOL-Word" +
   theories [document = false]
     F_Spark_Declaration
@@ -1136,6 +1271,14 @@ session "RIPEMD-160-SPARK"! (AFP) = "HOL-Word" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Robbins-Conjecture/ROOT !!! **)
+session "Robbins-Conjecture"! (AFP) = HOL +
+  theories
+    Robbins_Conjecture
+  files
+    "document/root.tex"
+
+(** !!! COPY of RSAPSS/ROOT !!! **)
 session RSAPSS! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"
@@ -1147,68 +1290,7 @@ session RSAPSS! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-session "Ramsey-Infinite"! (AFP) = HOL +
-  theories
-    Ramsey
-  files
-    "document/root.tex"
-
-session "Recursion-Theory-I"! (AFP) = HOL +
-  theories
-    RecEnSet
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session Refine_Monadic! (AFP) = Collections +
-  options [document_variants = "outline=/proof,/ML:userguide"]
-  theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Lattice_Syntax"
-    "~~/src/HOL/Library/Monad_Syntax"
-    "~~/src/HOL/Word/Word"
-  theories
-    Refine
-    Collection_Bindings
-    Autoref_Collection_Bindings
-    Refine_Userguide
-    "ex/Examples"
-  files
-    "document/isabelle.sty"
-    "document/isabellesym.sty"
-    "document/pdfsetup.sty"
-    "document/railsetup.sty"
-    "document/root.bib"
-    "document/root.tex"
-    "document/root_userguide.aux"
-    "document/root_userguide.bbl"
-    "document/root_userguide.bib"
-    "document/root_userguide.blg"
-    "document/root_userguide.dvi"
-    "document/root_userguide.log"
-    "document/root_userguide.out"
-    "document/root_userguide.tex"
-    "document/root_userguide.tex.orig"
-    "document/root_userguide.toc"
-
-session "Regular-Sets"! (AFP) = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Reflection"
-  theories
-    Regexp_Method
-    pEquivalence_Checking
-    Equivalence_Checking2
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-session "Robbins-Conjecture"! (AFP) = HOL +
-  theories
-    Robbins_Conjecture
-  files
-    "document/root.tex"
-
+(** !!! COPY of SATSolverVerification/ROOT !!! **)
 session SATSolverVerification! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
@@ -1223,15 +1305,7 @@ session SATSolverVerification! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-session SIFPL! (AFP) = HOL +
-  theories
-    ContextVS
-    HuntSands
-    ContextOBJ
-  files
-    "document/root.bib"
-    "document/root.tex"
-
+(** !!! COPY of SenSocialChoice/ROOT !!! **)
 session SenSocialChoice! (AFP) = HOL +
   theories
     Arrow
@@ -1241,6 +1315,7 @@ session SenSocialChoice! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Separation_Algebra/ROOT !!! **)
 session Separation_Algebra! (AFP) = "HOL-Word" +
   theories
     "ex/Simple_Separation_Example"
@@ -1252,6 +1327,7 @@ session Separation_Algebra! (AFP) = "HOL-Word" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of SequentInvertibility/ROOT !!! **)
 session SequentInvertibility! (AFP) = "HOL-Nominal" +
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
@@ -1264,6 +1340,7 @@ session SequentInvertibility! (AFP) = "HOL-Nominal" +
     "document/root.tex"
     "document/stmaryrd.dtx"
 
+(** !!! COPY of Shivers-CFA/ROOT !!! **)
 session "Shivers-CFA"! (AFP) = HOLCF +
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"
@@ -1276,6 +1353,17 @@ session "Shivers-CFA"! (AFP) = HOLCF +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of SIFPL/ROOT !!! **)
+session SIFPL! (AFP) = HOL +
+  theories
+    ContextVS
+    HuntSands
+    ContextOBJ
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of Simpl/ROOT !!! **)
 session Simpl! (AFP) = HOL +
   options [document_graph]
   theories
@@ -1285,6 +1373,7 @@ session Simpl! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Slicing/ROOT !!! **)
 session Slicing! (AFP) = Jinja +
   options [document_graph]
   theories
@@ -1292,12 +1381,14 @@ session Slicing! (AFP) = Jinja +
   files
     "document/root.tex"
 
+(** !!! COPY of Statecharts/ROOT !!! **)
 session Statecharts! (AFP) = HOL +
   theories
     CarAudioSystem
   files
     "document/root.tex"
 
+(** !!! COPY of Stream-Fusion/ROOT !!! **)
 session "Stream-Fusion"! (AFP) = HOLCF +
   theories
     StreamFusion
@@ -1305,6 +1396,7 @@ session "Stream-Fusion"! (AFP) = HOLCF +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Stuttering_Equivalence/ROOT !!! **)
 session Stuttering_Equivalence! (AFP) = HOL +
   theories
     Samplers
@@ -1313,6 +1405,7 @@ session Stuttering_Equivalence! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of SumSquares/ROOT !!! **)
 session SumSquares! (AFP) = HOL +
   theories [document = false]
     "../Fermat3_4/IntNatAux"
@@ -1325,6 +1418,7 @@ session SumSquares! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of TLA/ROOT !!! **)
 session TLA! (AFP) = HOL +
   theories
     Sequence
@@ -1348,6 +1442,7 @@ session TLA! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Topology/ROOT !!! **)
 session Topology! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
@@ -1359,6 +1454,7 @@ session Topology! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Transitive-Closure/ROOT !!! **)
 session "Transitive-Closure"! (AFP) = HOL +
   theories [document = false]
     "../Collections/impl/RBTMapImpl"
@@ -1372,6 +1468,7 @@ session "Transitive-Closure"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Transitive-Closure-II/ROOT !!! **)
 session "Transitive-Closure-II"! (AFP) = HOL +
   theories [document = false]
     "../Regular-Sets/Regexp_Method"
@@ -1381,6 +1478,7 @@ session "Transitive-Closure-II"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Tree-Automata/ROOT !!! **)
 session "Tree-Automata"! (AFP) = HOL +
   theories [document = false]
     "../Collections/common/Misc"
@@ -1405,6 +1503,7 @@ session "Tree-Automata"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Valuation/ROOT !!! **)
 session Valuation! (AFP) = "Group-Ring-Module" +
   theories [document = false]
     "../Group-Ring-Module/Algebra9"
@@ -1413,6 +1512,7 @@ session Valuation! (AFP) = "Group-Ring-Module" +
   files
     "document/root.tex"
 
+(** !!! COPY of Verified-Prover/ROOT !!! **)
 session "Verified-Prover"! (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Infinite_Set"
@@ -1422,6 +1522,7 @@ session "Verified-Prover"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of VolpanoSmith/ROOT !!! **)
 session VolpanoSmith! (AFP) = HOL +
   theories
     secTypes
@@ -1430,6 +1531,7 @@ session VolpanoSmith! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of Well_Quasi_Orders/ROOT !!! **)
 session Well_Quasi_Orders! (AFP) = HOL +
   theories [document = false]
     "../Abstract-Rewriting/Seq"
@@ -1445,6 +1547,7 @@ session Well_Quasi_Orders! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of WorkerWrapper/ROOT !!! **)
 session WorkerWrapper! (AFP) = HOLCF +
   theories [document = false]
     LList
@@ -1467,3 +1570,4 @@ session WorkerWrapper! (AFP) = HOLCF +
     "document/mathpartir.sty"
     "document/root.bib"
     "document/root.tex"
+

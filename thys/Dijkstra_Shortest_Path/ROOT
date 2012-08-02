@@ -1,0 +1,23 @@
+session Dijkstra_Shortest_Path! (AFP) in "." = Refine_Monadic +
+  theories [document = false]
+    "../Collections/Collections"
+    "../Refine_Monadic/Refine"
+    "../Refine_Monadic/Collection_Bindings"
+    "../Refine_Monadic/Autoref_Collection_Bindings"
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    Introduction
+    Dijkstra_Misc
+    Graph
+    Weight
+    Dijkstra
+    GraphSpec
+    GraphGA
+    GraphByMap
+    HashGraphImpl
+    Dijkstra_Impl
+    Dijkstra_Impl_Adet
+    Test
+  files
+    "document/root.bib"
+    "document/root.tex"

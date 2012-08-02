@@ -1,0 +1,11 @@
+session Abortable_Linearizable_Modules! (AFP) in "." = HOLCF +
+  theories [document = false]
+    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/HOLCF/IOA/meta_theory/IOA"
+  theories
+    CompositionCorrectness
+  files
+    "document/abstract.tex"
+    "document/introduction.tex"
+    "document/root.bib"
+    "document/root.tex"

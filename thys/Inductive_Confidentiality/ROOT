@@ -1,0 +1,16 @@
+session Inductive_Confidentiality! (AFP) in "." = HOL +
+  theories
+    "DolevYao/Message"
+    "DolevYao/Event"
+    "DolevYao/Public"
+    "DolevYao/NS_Public_Bad"
+    "DolevYao/ConfidentialityDY"
+    "GeneralAttacker/MessageGA"
+    "GeneralAttacker/EventGA"
+    "GeneralAttacker/PublicGA"
+    "GeneralAttacker/NS_Public_Bad_GA"
+    "GeneralAttacker/ConfidentialityGA"
+    "GeneralAttacker/Knowledge"
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,6 @@
+session MonoBoolTranAlgebra! (AFP) in "." = LatticeProperties +
+  theories
+    Statements
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,7 @@
+session BinarySearchTree! (AFP) in "." = HOL +
+  theories
+    BinaryTree
+    BinaryTree_Map
+    BinaryTree_TacticStyle
+  files
+    "document/root.tex"

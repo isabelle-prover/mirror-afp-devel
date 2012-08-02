@@ -1,0 +1,6 @@
+session "General-Triangle"! (AFP) in "." = HOL +
+  theories
+    GeneralTriangle
+  files
+    "document/root.bib"
+    "document/root.tex"

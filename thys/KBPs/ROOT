@@ -1,0 +1,18 @@
+session KBPs! (AFP) in "." = HOL +
+  theories [document = false, show_question_marks = false, names_short]
+    "~~/src/HOL/Library/LaTeXsugar"
+    "~~/src/HOL/Library/OptionalSugar"
+    "~~/src/HOL/Library/AList"
+    Extra
+    List_local
+    "~~/src/HOL/Library/Mapping"
+    "~~/src/HOL/Library/Saturated"
+  theories [show_question_marks = false, names_short]
+    KBPs_Main
+  files
+    "document/MC.pdf"
+    "document/Robot.pdf"
+    "document/robot_clock.pdf"
+    "document/robot_spr.pdf"
+    "document/root.bib"
+    "document/root.tex"

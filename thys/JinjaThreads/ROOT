@@ -1,0 +1,7 @@
+session JinjaThreads! (AFP_big) in "." = "HOL-Word" +
+  options [document_graph]
+  theories
+    JinjaThreads
+  files
+    "document/root.bib"
+    "document/root.tex"

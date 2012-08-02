@@ -1,0 +1,63 @@
+session Collections! (AFP) in "." = HOL +
+  options [document_variants = "outline=/proof,/ML:userguide"]
+  theories [document = false]
+    "common/Misc"
+    "common/Assoc_List"
+    "common/RBT_add"
+    "common/Dlist_add"
+    "common/Array"
+    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/While_Combinator"
+    "../Binomial-Heaps/BinomialHeap"
+    "../Binomial-Heaps/SkewBinomialHeap"
+    "../Finger-Trees/FingerTree"
+  theories
+    "spec/Spec_Chapter"
+    "spec/MapSpec"
+    "spec/SetSpec"
+    "spec/ListSpec"
+    "spec/AnnotatedListSpec"
+    "spec/PrioSpec"
+    "spec/PrioUniqueSpec"
+    "gen_algo/Gen_Algo_Chapter"
+    "gen_algo/MapGA"
+    "gen_algo/SetGA"
+    "gen_algo/SetByMap"
+    "gen_algo/ListGA"
+    "gen_algo/SetIndex"
+    "gen_algo/Algos"
+    "gen_algo/PrioByAnnotatedList"
+    "gen_algo/PrioUniqueByAnnotatedList"
+    "impl/Impl_Chapter"
+    "impl/Impl_Overview"
+    "impl/MapStdImpl"
+    "impl/SetStdImpl"
+    "impl/Fifo"
+    "impl/BinoPrioImpl"
+    "impl/SkewPrioImpl"
+    "impl/FTAnnotatedListImpl"
+    "impl/FTPrioImpl"
+    "impl/FTPrioUniqueImpl"
+  theories [document = false]
+    "gen_algo/StdInst"
+  theories
+    Collections
+    Userguide
+    "examples/Examples_Chapter"
+    "examples/itp_2010"
+    "examples/Exploration"
+    "examples/Exploration_DFS"
+    "examples/All"
+(* FIXME *)
+(* Specifications *)
+(* Generic Algorithms *)
+(* Implementations *)
+(* Examples *)
+  files
+    "document/conclusion.tex"
+    "document/documentation.tex"
+    "document/intro.tex"
+    "document/root.bib"
+    "document/root.tex"
+    "document/root_userguide.bib"
+    "document/root_userguide.tex"

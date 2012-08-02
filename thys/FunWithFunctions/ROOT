@@ -1,0 +1,6 @@
+session FunWithFunctions! (AFP) in "." = HOL +
+  theories
+    FunWithFunctions
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,5 @@
+session Statecharts! (AFP) in "." = HOL +
+  theories
+    CarAudioSystem
+  files
+    "document/root.tex"

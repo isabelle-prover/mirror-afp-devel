@@ -1,0 +1,9 @@
+session "Group-Ring-Module"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Binomial"
+    "~~/src/HOL/Library/Zorn"
+  theories
+    Algebra9
+  files
+    "document/root.tex"

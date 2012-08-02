@@ -1,0 +1,12 @@
+session "Finger-Trees"! (AFP) in "." = HOL +
+  theories
+    FingerTree
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+    Test
+(* FIXME *)
+(* Finger Trees*)
+(* Do not remove this, as it serves to detect issues with the code generator *)
+  files
+    "document/root.bib"
+    "document/root.tex"

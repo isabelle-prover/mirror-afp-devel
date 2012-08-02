@@ -1,0 +1,8 @@
+session "Lazy-Lists-II"! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Coinductive/Coinductive_List"
+  theories
+    LList2
+  files
+    "document/root.bib"
+    "document/root.tex"

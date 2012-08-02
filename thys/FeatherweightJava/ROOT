@@ -1,0 +1,7 @@
+session FeatherweightJava! (AFP) in "." = HOL +
+  theories
+    Featherweight_Java
+  files
+    "document/fjsound.pdf"
+    "document/root.bib"
+    "document/root.tex"

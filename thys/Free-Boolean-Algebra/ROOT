@@ -1,0 +1,7 @@
+session "Free-Boolean-Algebra"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Lattice_Syntax"
+  theories
+    Free_Boolean_Algebra
+  files
+    "document/root.tex"

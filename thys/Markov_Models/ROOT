@@ -1,0 +1,15 @@
+session Markov_Models! (AFP) in "." = "HOL-Probability" +
+  theories [document = false]
+    "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Monad_Syntax"
+  theories
+    Discrete_Time_Markov_Chain
+    Rewarded_DTMC
+    "ex/PCTL"
+    "ex/Zeroconf_Analysis"
+    "ex/Gossip_Broadcast"
+    "ex/Crowds_Protocol"
+  files
+    "document/root.bib"
+    "document/root.tex"

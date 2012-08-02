@@ -1,0 +1,13 @@
+session "Myhill-Nerode"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/Library/Infinite_Set"
+    "../Regular-Sets/Regular_Set"
+    "../Regular-Sets/Regular_Exp"
+    "../Regular-Sets/Derivatives"
+  theories
+    Closures2
+  files
+    "document/root.bib"
+    "document/root.tex"

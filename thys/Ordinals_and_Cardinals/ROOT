@@ -1,0 +1,10 @@
+session Ordinals_and_Cardinals! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Zorn"
+    "~~/src/HOL/Library/Infinite_Set"
+  theories
+    Cardinal_Order_Relation
+  files
+    "document/intro.tex"
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,10 @@
+session "POPLmark-deBruijn"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    POPLmark
+    POPLmarkRecordCtxt
+    Execute
+  files
+    "document/root.bib"
+    "document/root.tex"

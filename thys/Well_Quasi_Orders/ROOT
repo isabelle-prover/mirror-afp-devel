@@ -1,0 +1,14 @@
+session Well_Quasi_Orders! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Abstract-Rewriting/Seq"
+  theories
+    Restricted_Predicates
+    Well_Quasi_Orders
+    Finite_Tree
+    Kruskal
+    Wqo_Instances
+    Nash_Williams
+    Kruskal_Tree
+  files
+    "document/root.bib"
+    "document/root.tex"

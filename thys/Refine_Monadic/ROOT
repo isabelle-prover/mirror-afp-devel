@@ -1,0 +1,19 @@
+session Refine_Monadic! (AFP) in "." = Collections +
+  options [document_variants = "outline=/proof,/ML:userguide"]
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Lattice_Syntax"
+    "~~/src/HOL/Library/Monad_Syntax"
+    "~~/src/HOL/Word/Word"
+  theories
+    Refine
+    Collection_Bindings
+    Autoref_Collection_Bindings
+    Refine_Userguide
+    "ex/Examples"
+  files
+    "document/railsetup.sty"
+    "document/root.bib"
+    "document/root.tex"
+    "document/root_userguide.bib"
+    "document/root_userguide.tex"

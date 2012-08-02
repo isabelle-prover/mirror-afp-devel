@@ -1,0 +1,7 @@
+session "Binomial-Queues"! (AFP) in "." = HOL +
+  theories
+    PQ_Implementation
+  files
+    "document/haftmann.sty"
+    "document/llncs.cls"
+    "document/root.tex"

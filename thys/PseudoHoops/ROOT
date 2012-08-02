@@ -1,0 +1,6 @@
+session PseudoHoops! (AFP) in "." = LatticeProperties +
+  theories
+    Examples
+  files
+    "document/root.bib"
+    "document/root.tex"

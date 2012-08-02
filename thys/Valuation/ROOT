@@ -1,0 +1,7 @@
+session Valuation! (AFP) in "." = "Group-Ring-Module" +
+  theories [document = false]
+    "../Group-Ring-Module/Algebra9"
+  theories
+    Valuation3
+  files
+    "document/root.tex"

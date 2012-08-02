@@ -1,0 +1,5 @@
+session "Gauss-Jordan-Elim-Fun"! (AFP) in "." = HOL +
+  theories
+    Gauss_Jordan_Elim_Fun
+  files
+    "document/root.tex"

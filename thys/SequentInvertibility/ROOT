@@ -1,0 +1,11 @@
+session SequentInvertibility! (AFP) in "." = "HOL-Nominal" +
+  theories [document = false]
+    "~~/src/HOL/Library/Multiset"
+  theories
+    SequentInvertibility
+  files
+    "document/llncs.cls"
+    "document/proof.sty"
+    "document/root.bib"
+    "document/root.tex"
+    "document/stmaryrd.dtx"

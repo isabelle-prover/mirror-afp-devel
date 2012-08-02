@@ -1,0 +1,5 @@
+session FFT! (AFP) in "." = HOL +
+  theories
+    FFT
+  files
+    "document/root.tex"

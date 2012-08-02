@@ -1,0 +1,8 @@
+session Matrix! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Abstract-Rewriting/SN_Orders"
+  theories
+    Matrix
+  files
+    "document/root.bib"
+    "document/root.tex"

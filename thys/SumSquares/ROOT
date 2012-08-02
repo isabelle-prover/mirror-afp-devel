@@ -1,0 +1,11 @@
+session SumSquares! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Fermat3_4/IntNatAux"
+    "~~/src/HOL/Old_Number_Theory/Euler"
+    "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity"
+  theories
+    TwoSquares
+    FourSquares
+  files
+    "document/root.bib"
+    "document/root.tex"

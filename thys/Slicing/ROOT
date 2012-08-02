@@ -1,0 +1,6 @@
+session Slicing! (AFP) in "." = Jinja +
+  options [document_graph]
+  theories
+    Slicing
+  files
+    "document/root.tex"

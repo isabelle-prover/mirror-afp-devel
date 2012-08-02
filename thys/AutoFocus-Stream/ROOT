@@ -1,0 +1,10 @@
+session "AutoFocus-Stream"! (AFP) in "." = "Nat-Interval-Logic" +
+  options [document_graph]
+  theories
+    ListSlice
+    AF_Stream
+    AF_Stream_Exec
+    IL_AF_Stream
+    IL_AF_Stream_Exec
+  files
+    "document/root.tex"

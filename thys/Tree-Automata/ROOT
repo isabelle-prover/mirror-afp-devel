@@ -1,0 +1,23 @@
+session "Tree-Automata"! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Collections/common/Misc"
+    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/While_Combinator"
+    "../Collections/Collections"
+    "../Collections/DatRef"
+    "../Collections/examples/Exploration"
+  theories
+    Tree
+    Ta
+    AbsAlgo
+    Ta_impl
+  theories [document = false]
+    Ta_impl_codegen
+(* FIXME *)
+(* Tree Automata *)
+(* Code Generation *)
+  files
+    "document/conclusion.tex"
+    "document/intro.tex"
+    "document/root.bib"
+    "document/root.tex"

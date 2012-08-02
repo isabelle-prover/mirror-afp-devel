@@ -1,0 +1,11 @@
+session "Program-Conflict-Analysis"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Multiset"
+    Misc
+    "~~/src/HOL/Library/Permutation"
+    Interleave
+  theories
+    MainResult
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,20 @@
+session LinearQuantifierElim! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Reflection"
+  theories
+    "Thys/QEdlo"
+    "Thys/QEdlo_ex"
+    "Thys/QEdlo_fr"
+    "Thys/QEdlo_inf"
+    "Thys/QElin_opt"
+    "Thys/FRE"
+    "Thys/QElin_inf"
+    "Thys/QEpres"
+    "Thys/Cooper"
+  theories [document = false]
+    "Thys/CertDlo"
+    "Thys/CertLin"
+  files
+    "document/root.bib"
+    "document/root.tex"

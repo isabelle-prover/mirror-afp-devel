@@ -1,0 +1,9 @@
+session "Flyspeck-Tame"! (AFP_big) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/While_Combinator"
+  theories
+    Completeness
+  files
+    "document/root.bib"
+    "document/root.tex"

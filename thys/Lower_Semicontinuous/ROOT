@@ -1,0 +1,5 @@
+session Lower_Semicontinuous! (AFP) in "." = "HOL-Multivariate_Analysis" +
+  theories
+    Lower_Semicontinuous
+  files
+    "document/root.tex"

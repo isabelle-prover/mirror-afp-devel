@@ -1,0 +1,10 @@
+session RSAPSS! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+    Word
+    "~~/src/HOL/Old_Number_Theory/Primes"
+  theories
+    RSAPSS
+  files
+    "document/root.bib"
+    "document/root.tex"

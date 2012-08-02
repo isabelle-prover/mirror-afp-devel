@@ -1,0 +1,8 @@
+session SenSocialChoice! (AFP) in "." = HOL +
+  theories
+    Arrow
+    Sen
+    May
+  files
+    "document/root.bib"
+    "document/root.tex"

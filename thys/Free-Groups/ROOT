@@ -1,0 +1,13 @@
+session "Free-Groups"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Algebra/Group"
+    "~~/src/HOL/Algebra/IntRing"
+    "~~/src/HOL/Algebra/Bij"
+    "~~/src/HOL/Proofs/Lambda/Commutation"
+    "../Ordinals_and_Cardinals/Cardinal_Order_Relation"
+  theories
+    FreeGroups
+    Isomorphisms
+    PingPongLemma
+  files
+    "document/root.tex"

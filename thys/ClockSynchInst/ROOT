@@ -1,0 +1,21 @@
+session ClockSynchInst! (AFP) in "." = HOL +
+  theories
+    ICAInstance
+    LynchInstance
+(* FIXME *)
+(*  Title:       Instances of Schneider's generalized protocol of clock synchronization
+    Author:      Damián Barsotti <damian@hal.famaf.unc.edu.ar>, 2006
+    Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
+*)
+  files
+    "document/abs_distrib_mult.cvc"
+    "document/abs_distrib_mult.ics"
+    "document/abs_distrib_mult2.cvc"
+    "document/accur_pres.cvc"
+    "document/accur_pres.ics"
+    "document/bound_prec_enh.cvc"
+    "document/bound_prec_enh.ics"
+    "document/bound_prec_enh4.cvc"
+    "document/bound_prec_enh7.cvc"
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,6 @@
+session "Recursion-Theory-I"! (AFP) in "." = HOL +
+  theories
+    RecEnSet
+  files
+    "document/root.bib"
+    "document/root.tex"

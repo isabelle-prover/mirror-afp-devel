@@ -1,0 +1,6 @@
+session Girth_Chromatic! (AFP) in "." = "HOL-Probability" +
+  theories
+    Girth_Chromatic
+  files
+    "document/root.bib"
+    "document/root.tex"

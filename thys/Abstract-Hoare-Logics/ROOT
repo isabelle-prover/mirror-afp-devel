@@ -1,0 +1,8 @@
+session "Abstract-Hoare-Logics"! (AFP) in "." = HOL +
+  theories
+    "While/HoareTotal"
+    "Proc/PHoareTotal"
+    "Procs/PsHoareTotal"
+  files
+    "document/root.bib"
+    "document/root.tex"

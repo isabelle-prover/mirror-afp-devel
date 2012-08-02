@@ -1,0 +1,7 @@
+session Stuttering_Equivalence! (AFP) in "." = HOL +
+  theories
+    Samplers
+    StutterEquivalence
+  files
+    "document/root.bib"
+    "document/root.tex"

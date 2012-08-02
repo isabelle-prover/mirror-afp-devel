@@ -1,0 +1,7 @@
+session VolpanoSmith! (AFP) in "." = HOL +
+  theories
+    secTypes
+    Execute
+  files
+    "document/root.bib"
+    "document/root.tex"

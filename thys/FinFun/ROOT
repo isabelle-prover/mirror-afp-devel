@@ -1,0 +1,8 @@
+session FinFun! (AFP) in "." = HOL +
+  options [document_graph]
+  theories [document = false]
+    "~~/src/HOL/Library/Infinite_Set"
+  theories
+    FinFunPred
+  files
+    "document/root.tex"

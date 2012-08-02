@@ -1,0 +1,5 @@
+session "Robbins-Conjecture"! (AFP) in "." = HOL +
+  theories
+    Robbins_Conjecture
+  files
+    "document/root.tex"

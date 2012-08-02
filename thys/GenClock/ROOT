@@ -1,0 +1,7 @@
+session GenClock! (AFP) in "." = HOL +
+  theories
+    GenClock
+  files
+    "document/fullpage.sty"
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,8 @@
+session "Nat-Interval-Logic"! (AFP) in "." = "List-Infinite" +
+  options [document_graph]
+  theories
+    IL_Interval
+    IL_IntervalOperators
+    IL_TemporalOperators
+  files
+    "document/root.tex"

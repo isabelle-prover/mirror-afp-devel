@@ -1,0 +1,8 @@
+session BDD! (AFP) in "." = Simpl +
+  options [document_graph]
+  theories
+    EvalProof
+    NormalizeTotalProof
+  files
+    "document/root.bib"
+    "document/root.tex"

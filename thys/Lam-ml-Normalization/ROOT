@@ -1,0 +1,11 @@
+session "Lam-ml-Normalization"! (AFP) in "." = "HOL-Nominal" +
+  theories [document = false]
+    "~~/src/HOL/Library/LaTeXsugar"
+  theories
+    Lam_ml
+  files
+    "document/figureCR3.tex"
+    "document/figureLemma7.tex"
+    "document/mathpartir.sty"
+    "document/root.bib"
+    "document/root.tex"

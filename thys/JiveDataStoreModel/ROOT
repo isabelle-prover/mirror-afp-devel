@@ -1,0 +1,23 @@
+session JiveDataStoreModel! (AFP) in "." = HOL +
+  options [document_graph]
+  theories
+    "Isa_Counter/TypeIds"
+    "Isabelle/JavaType"
+    "Isa_Counter/DirectSubtypes"
+    "Isabelle/Subtype"
+    "Isa_Counter_Store/Attributes"
+    "Isabelle_Store/AttributesIndep"
+    "Isabelle/Value"
+    "Isabelle_Store/Location"
+    "Isabelle_Store/Store"
+    "Isabelle_Store/StoreProperties"
+    "Isabelle/JML"
+    "Isa_Counter/UnivSpec"
+  files
+    "document/Counter.java"
+    "document/TypeHierarchy.eps"
+    "document/TypeHierarchy.pdf"
+    "document/my_logic.sty"
+    "document/prooftree.sty"
+    "document/root.bib"
+    "document/root.tex"

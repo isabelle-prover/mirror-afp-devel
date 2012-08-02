@@ -1,0 +1,9 @@
+session DataRefinementIBP! (AFP) in "." = HOL +
+  theories [document = false]
+    "../LatticeProperties/Complete_Lattice_Prop"
+    "../LatticeProperties/Conj_Disj"
+  theories
+    DataRefinement
+  files
+    "document/root.bib"
+    "document/root.tex"

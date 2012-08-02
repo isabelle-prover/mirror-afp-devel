@@ -1,0 +1,11 @@
+session "Regular-Sets"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Reflection"
+  theories
+    Regexp_Method
+    pEquivalence_Checking
+    Equivalence_Checking2
+  files
+    "document/root.bib"
+    "document/root.tex"

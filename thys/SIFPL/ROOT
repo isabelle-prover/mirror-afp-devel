@@ -1,0 +1,8 @@
+session SIFPL! (AFP) in "." = HOL +
+  theories
+    ContextVS
+    HuntSands
+    ContextOBJ
+  files
+    "document/root.bib"
+    "document/root.tex"

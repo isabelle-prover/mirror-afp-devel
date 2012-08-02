@@ -1,0 +1,5 @@
+session "HRB-Slicing"! (AFP) in "." = Jinja +
+  theories
+    HRBSlicing
+  files
+    "document/root.tex"

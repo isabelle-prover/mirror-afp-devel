@@ -1,0 +1,10 @@
+session "CoreC++"! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    "CoreC++"
+  files
+    "document/corec++.png"
+    "document/root.bib"
+    "document/root.tex"

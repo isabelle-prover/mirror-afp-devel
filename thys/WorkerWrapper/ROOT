@@ -1,0 +1,22 @@
+session WorkerWrapper! (AFP) in "." = HOLCF +
+  theories [document = false]
+    LList
+    Maybe
+    Nats
+  theories
+    FixedPointTheorems
+    WorkerWrapper
+    CounterExample
+    WorkerWrapperNew
+    Accumulator
+    UnboxedNats
+    Streams
+    Continuations
+    Backtracking
+    Nub
+    Last
+  files
+    "document/haskell.sty"
+    "document/mathpartir.sty"
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,5 @@
+session "List-Index"! (AFP) in "." = HOL +
+  theories
+    List_Index
+  files
+    "document/root.tex"

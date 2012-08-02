@@ -1,0 +1,13 @@
+session "Abstract-Rewriting"! (AFP) in "." = HOL +
+  theories [document = false]
+    "../Transitive-Closure/Transitive_Closure_Impl"
+    "../Regular-Sets/Regexp_Method"
+  theories
+    Seq
+    Abstract_Rewriting
+    Relative_Rewriting
+    SN_Orders
+    SN_Order_Carrier
+  files
+    "document/root.bib"
+    "document/root.tex"

@@ -1,0 +1,16 @@
+session Category! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/FuncSet"
+  theories
+    Cat
+    SetCat
+    Functors
+    HomFunctors
+    NatTrans
+    Yoneda
+(* FIXME *)
+(*License: LGPL
+All files in this development of Category Theory are licensed under LGPL.*)
+  files
+    "document/root.bib"
+    "document/root.tex"

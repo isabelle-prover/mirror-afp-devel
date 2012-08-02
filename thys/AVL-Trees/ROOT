@@ -1,0 +1,6 @@
+session "AVL-Trees"! (AFP) in "." = HOL +
+  theories
+    AVL
+    AVL2
+  files
+    "document/root.tex"

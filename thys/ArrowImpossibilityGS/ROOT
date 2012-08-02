@@ -1,0 +1,10 @@
+session ArrowImpossibilityGS! (AFP) in "." = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Zorn"
+  theories
+    "Thys/Arrow_Utility"
+    "Thys/GS"
+  files
+    "document/root.bib"
+    "document/root.tex"

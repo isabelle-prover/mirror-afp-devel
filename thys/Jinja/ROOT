@@ -1,0 +1,12 @@
+session Jinja! (AFP) in "." = HOL +
+  options [document_graph]
+  theories [document = false]
+    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    Jinja
+  files
+    "document/introduction.tex"
+    "document/root.bib"
+    "document/root.tex"

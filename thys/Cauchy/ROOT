@@ -1,0 +1,6 @@
+session Cauchy! (AFP) in "." = HOL +
+  theories [show_question_marks = false]
+    CauchysMeanTheorem
+    CauchySchwarz
+  files
+    "document/root.tex"
