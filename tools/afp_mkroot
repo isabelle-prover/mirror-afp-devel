@@ -37,6 +37,7 @@ function fail()
 (
   cd "$AFP" || fail "Bad directory: \"$AFP\""
   rm -f ROOT
+  export LC_COLLATE=C
   for DIR in *
   do
     if [ -f "$DIR/ROOT" ]; then

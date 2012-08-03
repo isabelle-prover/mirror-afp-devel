@@ -1,3 +1,11 @@
+(** !!! COPY of AVL-Trees/ROOT !!! **)
+session "AVL-Trees"! (AFP) = HOL +
+  theories
+    AVL
+    AVL2
+  files
+    "document/root.tex"
+
 (** !!! COPY of Abortable_Linearizable_Modules/ROOT !!! **)
 session Abortable_Linearizable_Modules! (AFP) = HOLCF +
   theories [document = false]
@@ -57,14 +65,6 @@ session "AutoFocus-Stream"! (AFP) = "Nat-Interval-Logic" +
     AF_Stream_Exec
     IL_AF_Stream
     IL_AF_Stream_Exec
-  files
-    "document/root.tex"
-
-(** !!! COPY of AVL-Trees/ROOT !!! **)
-session "AVL-Trees"! (AFP) = HOL +
-  theories
-    AVL
-    AVL2
   files
     "document/root.tex"
 
@@ -341,6 +341,13 @@ session "CoreC++"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of DPT-SAT-Solver/ROOT !!! **)
+session "DPT-SAT-Solver"! (AFP) = HOL +
+  theories
+    DPT_SAT_Tests
+  files
+    "document/root.tex"
+
 (** !!! COPY of DataRefinementIBP/ROOT !!! **)
 session DataRefinementIBP! (AFP) = HOL +
   theories [document = false]
@@ -399,13 +406,6 @@ session DiskPaxos! (AFP) = HOL +
     "document/tla.sty"
     "document/tlaspec.tex"
 
-(** !!! COPY of DPT-SAT-Solver/ROOT !!! **)
-session "DPT-SAT-Solver"! (AFP) = HOL +
-  theories
-    DPT_SAT_Tests
-  files
-    "document/root.tex"
-
 (** !!! COPY of Efficient-Mergesort/ROOT !!! **)
 session "Efficient-Mergesort"! (AFP) = HOL +
   theories [document = false]
@@ -430,6 +430,26 @@ use_thys ["That_Theory1", "That_Theory2", "That_Theory3"];
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of FFT/ROOT !!! **)
+session FFT! (AFP) = HOL +
+  theories
+    FFT
+  files
+    "document/root.tex"
+
+(** !!! COPY of FOL-Fitting/ROOT !!! **)
+session "FOL-Fitting"! (AFP) = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Infinite_Set"
+  theories
+    FOL_Fitting
+  files
+    "document/diag.eps"
+    "document/diag.fig"
+    "document/diag.pdf"
+    "document/root.bib"
+    "document/root.tex"
+
 (** !!! COPY of FeatherweightJava/ROOT !!! **)
 session FeatherweightJava! (AFP) = HOL +
   theories
@@ -450,13 +470,6 @@ session Fermat3_4! (AFP) = HOL +
     Fermat3
   files
     "document/root.bib"
-    "document/root.tex"
-
-(** !!! COPY of FFT/ROOT !!! **)
-session FFT! (AFP) = HOL +
-  theories
-    FFT
-  files
     "document/root.tex"
 
 (** !!! COPY of FileRefinement/ROOT !!! **)
@@ -503,19 +516,6 @@ session "Flyspeck-Tame"! (AFP_big) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-(** !!! COPY of FOL-Fitting/ROOT !!! **)
-session "FOL-Fitting"! (AFP) = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/Infinite_Set"
-  theories
-    FOL_Fitting
-  files
-    "document/diag.eps"
-    "document/diag.fig"
-    "document/diag.pdf"
-    "document/root.bib"
-    "document/root.tex"
-
 (** !!! COPY of Free-Boolean-Algebra/ROOT !!! **)
 session "Free-Boolean-Algebra"! (AFP) = HOL +
   theories [document = false]
@@ -540,6 +540,22 @@ session "Free-Groups"! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of FunWithFunctions/ROOT !!! **)
+session FunWithFunctions! (AFP) = HOL +
+  theories
+    FunWithFunctions
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of FunWithTilings/ROOT !!! **)
+session FunWithTilings! (AFP) = HOL +
+  theories
+    Tilings
+  files
+    "document/root.bib"
+    "document/root.tex"
+
 (** !!! COPY of Functional-Automata/ROOT !!! **)
 session "Functional-Automata"! (AFP) = HOL +
   theories [document = false]
@@ -553,22 +569,6 @@ session "Functional-Automata"! (AFP) = HOL +
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-(** !!! COPY of FunWithFunctions/ROOT !!! **)
-session FunWithFunctions! (AFP) = HOL +
-  theories
-    FunWithFunctions
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-(** !!! COPY of FunWithTilings/ROOT !!! **)
-session FunWithTilings! (AFP) = HOL +
-  theories
-    Tilings
   files
     "document/root.bib"
     "document/root.tex"
@@ -626,6 +626,13 @@ session "Group-Ring-Module"! (AFP) = HOL +
   files
     "document/root.tex"
 
+(** !!! COPY of HRB-Slicing/ROOT !!! **)
+session "HRB-Slicing"! (AFP) = Jinja +
+  theories
+    HRBSlicing
+  files
+    "document/root.tex"
+
 (** !!! COPY of HotelKeyCards/ROOT !!! **)
 session HotelKeyCards! (AFP) = HOL +
   theories [show_question_marks = false]
@@ -641,13 +648,6 @@ session HotelKeyCards! (AFP) = HOL +
     "document/conclu.tex"
     "document/intro.tex"
     "document/root.bib"
-    "document/root.tex"
-
-(** !!! COPY of HRB-Slicing/ROOT !!! **)
-session "HRB-Slicing"! (AFP) = Jinja +
-  theories
-    HRBSlicing
-  files
     "document/root.tex"
 
 (** !!! COPY of Huffman/ROOT !!! **)
@@ -1113,6 +1113,18 @@ session Ordinary_Differential_Equations! (AFP) = "HOL-Multivariate_Analysis" +
     "document/root.bib"
     "document/root.tex"
 
+(** !!! COPY of POPLmark-deBruijn/ROOT !!! **)
+session "POPLmark-deBruijn"! (AFP) = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+    POPLmark
+    POPLmarkRecordCtxt
+    Execute
+  files
+    "document/root.bib"
+    "document/root.tex"
+
 (** !!! COPY of Perfect-Number-Thm/ROOT !!! **)
 session "Perfect-Number-Thm"! (AFP) = HOL +
   theories
@@ -1129,18 +1141,6 @@ session Polynomials! (AFP) = HOL +
   theories
     Polynomial
     NZM
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-(** !!! COPY of POPLmark-deBruijn/ROOT !!! **)
-session "POPLmark-deBruijn"! (AFP) = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
-  theories
-    POPLmark
-    POPLmarkRecordCtxt
-    Execute
   files
     "document/root.bib"
     "document/root.tex"
@@ -1178,6 +1178,57 @@ session "Program-Conflict-Analysis"! (AFP) = HOL +
 session PseudoHoops! (AFP) = LatticeProperties +
   theories
     Examples
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of RIPEMD-160-SPARK/ROOT !!! **)
+session "RIPEMD-160-SPARK"! (AFP) = "HOL-Word" +
+  theories [document = false]
+    F_Spark_Declaration
+    K_L_Spark_Declaration
+    K_R_Spark_Declaration
+    R_L_Spark_Declaration
+    R_R_Spark_Declaration
+    S_L_Spark_Declaration
+    S_R_Spark_Declaration
+    Round_Declaration
+    Hash_Declaration
+  theories
+    RMD
+    Global_Specification
+    F_Spark_User
+    K_L_Spark_User
+    K_R_Spark_User
+    Global_User
+    R_L_Spark_User
+    R_R_Spark_User
+    S_L_Spark_User
+    S_R_Spark_User
+    Round_User
+    Hash_User
+  theories [document = false]
+    F_Spark_Obligation
+    K_L_Spark_Obligation
+    K_R_Spark_Obligation
+    R_L_Spark_Obligation
+    R_R_Spark_Obligation
+    S_L_Spark_Obligation
+    S_R_Spark_Obligation
+    Round_Obligation
+    Hash_Obligation
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of RSAPSS/ROOT !!! **)
+session RSAPSS! (AFP) = HOL +
+  theories [document = false]
+    "~~/src/HOL/Library/Efficient_Nat"
+    Word
+    "~~/src/HOL/Old_Number_Theory/Primes"
+  theories
+    RSAPSS
   files
     "document/root.bib"
     "document/root.tex"
@@ -1231,62 +1282,11 @@ session "Regular-Sets"! (AFP) = HOL +
     "document/root.bib"
     "document/root.tex"
 
-(** !!! COPY of RIPEMD-160-SPARK/ROOT !!! **)
-session "RIPEMD-160-SPARK"! (AFP) = "HOL-Word" +
-  theories [document = false]
-    F_Spark_Declaration
-    K_L_Spark_Declaration
-    K_R_Spark_Declaration
-    R_L_Spark_Declaration
-    R_R_Spark_Declaration
-    S_L_Spark_Declaration
-    S_R_Spark_Declaration
-    Round_Declaration
-    Hash_Declaration
-  theories
-    RMD
-    Global_Specification
-    F_Spark_User
-    K_L_Spark_User
-    K_R_Spark_User
-    Global_User
-    R_L_Spark_User
-    R_R_Spark_User
-    S_L_Spark_User
-    S_R_Spark_User
-    Round_User
-    Hash_User
-  theories [document = false]
-    F_Spark_Obligation
-    K_L_Spark_Obligation
-    K_R_Spark_Obligation
-    R_L_Spark_Obligation
-    R_R_Spark_Obligation
-    S_L_Spark_Obligation
-    S_R_Spark_Obligation
-    Round_Obligation
-    Hash_Obligation
-  files
-    "document/root.bib"
-    "document/root.tex"
-
 (** !!! COPY of Robbins-Conjecture/ROOT !!! **)
 session "Robbins-Conjecture"! (AFP) = HOL +
   theories
     Robbins_Conjecture
   files
-    "document/root.tex"
-
-(** !!! COPY of RSAPSS/ROOT !!! **)
-session RSAPSS! (AFP) = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
-    Word
-    "~~/src/HOL/Old_Number_Theory/Primes"
-  theories
-    RSAPSS
-  files
-    "document/root.bib"
     "document/root.tex"
 
 (** !!! COPY of SATSolverVerification/ROOT !!! **)
@@ -1300,6 +1300,16 @@ session SATSolverVerification! (AFP) = HOL +
     NieuwenhuisOliverasTinelli
     KrsticGoel
     FunctionalImplementation
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+(** !!! COPY of SIFPL/ROOT !!! **)
+session SIFPL! (AFP) = HOL +
+  theories
+    ContextVS
+    HuntSands
+    ContextOBJ
   files
     "document/root.bib"
     "document/root.tex"
@@ -1348,16 +1358,6 @@ session "Shivers-CFA"! (AFP) = HOLCF +
     AbsCFCorrect
     ExCFSV
     AbsCFComp
-  files
-    "document/root.bib"
-    "document/root.tex"
-
-(** !!! COPY of SIFPL/ROOT !!! **)
-session SIFPL! (AFP) = HOL +
-  theories
-    ContextVS
-    HuntSands
-    ContextOBJ
   files
     "document/root.bib"
     "document/root.tex"
