@@ -700,7 +700,6 @@ session Huffman! (AFP) = HOL +
   theories [quick_and_dirty]
     Huffman
   files
-    "document/b"
     "document/build"
     "document/forest-a.eps"
     "document/forest-a.pdf"
