@@ -655,8 +655,7 @@ session Huffman! (AFP) = HOL +
   theories [quick_and_dirty]
     Huffman
   files
-    "document/IsaMakefile"
-    "document/fixdoc"
+    "document/build"
     "document/forest-a.eps"
     "document/forest-a.pdf"
     "document/forest-a.svg"

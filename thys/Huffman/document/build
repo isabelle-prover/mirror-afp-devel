@@ -1,4 +1,8 @@
 #!/bin/bash
+
+FMT="$1"
+VARIANT="$2"
+
 export HUFFMAN_TEX=Huffman.tex
 perl -pi -i.bak -e 's/\{\\isacharprime\}a/\$\\alpha\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharprime\}b/\$\\beta\$/g' $HUFFMAN_TEX
@@ -24,3 +28,8 @@ mv $HUFFMAN_TEX.bak $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharcolon\}%/\{\\isacharcolon\}\\nopagebreak%/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\\isakeyword\{where\}/\\isakeyword\{where\}\\nopagebreak/' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/(\{\\isacharbrackleft\})(\{\\isacharbrackright\})/\1\\vthinspace\2/g' $HUFFMAN_TEX
+
+"$ISABELLE_TOOL" latex -o sty
+"$ISABELLE_TOOL" latex -o "$FMT"
+"$ISABELLE_TOOL" latex -o "$FMT"
+
