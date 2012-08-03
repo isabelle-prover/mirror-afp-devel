@@ -1,4 +1,5 @@
 session MonoBoolTranAlgebra! (AFP) in "." = LatticeProperties +
+  options [timeout = 3600]
   theories
     Statements
   files

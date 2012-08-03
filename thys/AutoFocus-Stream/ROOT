@@ -1,5 +1,5 @@
 session "AutoFocus-Stream"! (AFP) in "." = "Nat-Interval-Logic" +
-  options [document_graph]
+  options [timeout = 600, document_graph]
   theories
     ListSlice
     AF_Stream

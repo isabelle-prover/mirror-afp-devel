@@ -1,4 +1,5 @@
 session VolpanoSmith! (AFP) in "." = HOL +
+  options [timeout = 2000]
   theories
     secTypes
     Execute

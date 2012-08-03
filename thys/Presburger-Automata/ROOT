@@ -1,4 +1,5 @@
 session "Presburger-Automata"! (AFP) in "." = HOL +
+  options [timeout = 1000]
   theories [document = false]
     DFS
     "~~/src/HOL/Library/Nat_Bijection"

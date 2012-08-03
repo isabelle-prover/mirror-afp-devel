@@ -1,4 +1,5 @@
 session KBPs! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [document = false, show_question_marks = false, names_short]
     "~~/src/HOL/Library/LaTeXsugar"
     "~~/src/HOL/Library/OptionalSugar"

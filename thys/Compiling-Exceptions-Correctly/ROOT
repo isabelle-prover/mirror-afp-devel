@@ -1,4 +1,5 @@
 session "Compiling-Exceptions-Correctly"! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     Exceptions
   files

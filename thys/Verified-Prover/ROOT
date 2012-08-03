@@ -1,4 +1,5 @@
 session "Verified-Prover"! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Infinite_Set"
   theories

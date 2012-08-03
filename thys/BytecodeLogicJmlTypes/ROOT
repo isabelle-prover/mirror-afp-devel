@@ -1,4 +1,5 @@
 session BytecodeLogicJmlTypes! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     Sound
     Cachera

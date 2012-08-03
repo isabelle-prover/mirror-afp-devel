@@ -1,4 +1,5 @@
 session Marriage! (AFP) in "." = HOL +
+  options [timeout = 60]
   theories
     Marriage
   files

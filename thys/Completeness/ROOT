@@ -1,4 +1,5 @@
 session Completeness! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Permutation"
     "~~/src/HOL/Library/Multiset"

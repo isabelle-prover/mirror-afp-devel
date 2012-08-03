@@ -1,5 +1,5 @@
 session Refine_Monadic! (AFP) in "." = Collections +
-  options [document_variants = "outline=/proof,/ML:userguide"]
+  options [timeout = 3600, document_variants = "outline=/proof,/ML:userguide"]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Lattice_Syntax"

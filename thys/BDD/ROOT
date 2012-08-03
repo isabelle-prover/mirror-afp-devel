@@ -1,5 +1,5 @@
 session BDD! (AFP) in "." = Simpl +
-  options [document_graph]
+  options [timeout = 3600, document_graph]
   theories
     EvalProof
     NormalizeTotalProof

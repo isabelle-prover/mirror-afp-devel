@@ -1,4 +1,5 @@
 session LatticeProperties! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     Complete_Lattice_Prop
     Conj_Disj

@@ -1,4 +1,5 @@
 session PseudoHoops! (AFP) in "." = LatticeProperties +
+  options [timeout = 3600]
   theories
     Examples
   files

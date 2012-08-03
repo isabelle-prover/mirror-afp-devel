@@ -1,4 +1,5 @@
 session ClockSynchInst! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     ICAInstance
     LynchInstance

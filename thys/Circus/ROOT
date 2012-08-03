@@ -1,5 +1,5 @@
 session Circus! (AFP) in "." = HOLCF +
-  options [document_graph]
+  options [timeout = 3600, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/List_Prefix"
   theories

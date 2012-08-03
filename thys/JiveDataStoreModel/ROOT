@@ -1,5 +1,5 @@
 session JiveDataStoreModel! (AFP) in "." = HOL +
-  options [document_graph]
+  options [timeout = 3600, document_graph]
   theories
     "Isa_Counter/TypeIds"
     "Isabelle/JavaType"

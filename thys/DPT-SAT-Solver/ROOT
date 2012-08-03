@@ -1,4 +1,5 @@
 session "DPT-SAT-Solver"! (AFP) in "." = HOL +
+  options [timeout = 100]
   theories
     DPT_SAT_Tests
   files

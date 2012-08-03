@@ -1,5 +1,5 @@
 session Slicing! (AFP) in "." = Jinja +
-  options [document_graph]
+  options [timeout = 5400, document_graph]
   theories
     Slicing
   files

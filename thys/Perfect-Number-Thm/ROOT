@@ -1,4 +1,5 @@
 session "Perfect-Number-Thm"! (AFP) in "." = HOL +
+  options [timeout = 200]
   theories
     Perfect
   files

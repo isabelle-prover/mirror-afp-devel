@@ -1,4 +1,5 @@
 session "Binomial-Queues"! (AFP) in "." = HOL +
+  options [timeout = 300]
   theories
     PQ_Implementation
   files

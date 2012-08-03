@@ -1,5 +1,5 @@
 session "Nat-Interval-Logic"! (AFP) in "." = "List-Infinite" +
-  options [document_graph]
+  options [timeout = 300, document_graph]
   theories
     IL_Interval
     IL_IntervalOperators

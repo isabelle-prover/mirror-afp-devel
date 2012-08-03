@@ -1,4 +1,5 @@
 session NormByEval! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     NBE
   files

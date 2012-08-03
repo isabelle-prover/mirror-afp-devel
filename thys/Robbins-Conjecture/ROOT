@@ -1,4 +1,5 @@
 session "Robbins-Conjecture"! (AFP) in "." = HOL +
+  options [timeout = 100]
   theories
     Robbins_Conjecture
   files

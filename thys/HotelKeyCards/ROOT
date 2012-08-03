@@ -1,4 +1,5 @@
 session HotelKeyCards! (AFP) in "." = HOL +
+  options [timeout = 600]
   theories [show_question_marks = false]
     Notation
   theories [document = false, show_question_marks = false]

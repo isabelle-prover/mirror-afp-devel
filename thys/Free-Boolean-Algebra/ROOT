@@ -1,4 +1,5 @@
 session "Free-Boolean-Algebra"! (AFP) in "." = HOL +
+  options [timeout = 100]
   theories [document = false]
     "~~/src/HOL/Library/Lattice_Syntax"
   theories

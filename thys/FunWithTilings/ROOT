@@ -1,4 +1,5 @@
 session FunWithTilings! (AFP) in "." = HOL +
+  options [timeout = 100]
   theories
     Tilings
   files

@@ -1,4 +1,5 @@
 session "Finger-Trees"! (AFP) in "." = HOL +
+  options [timeout = 300]
   theories
     FingerTree
   theories [document = false]

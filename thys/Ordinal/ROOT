@@ -1,4 +1,5 @@
 session Ordinal! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     Ordinal
   files

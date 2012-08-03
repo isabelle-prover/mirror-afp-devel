@@ -1,4 +1,5 @@
 session "RIPEMD-160-SPARK"! (AFP) in "." = "HOL-Word" +
+  options [timeout = 3600]
   theories [document = false]
     F_Spark_Declaration
     K_L_Spark_Declaration

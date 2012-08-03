@@ -1,4 +1,5 @@
 session "Regular-Sets"! (AFP) in "." = HOL +
+  options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Reflection"

@@ -1,4 +1,5 @@
 session "Free-Groups"! (AFP) in "." = HOL +
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Algebra/Group"
     "~~/src/HOL/Algebra/IntRing"

@@ -1,4 +1,5 @@
 session WorkerWrapper! (AFP) in "." = HOLCF +
+  options [timeout = 400]
   theories [document = false]
     LList
     Maybe

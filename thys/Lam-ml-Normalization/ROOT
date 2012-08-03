@@ -1,4 +1,5 @@
 session "Lam-ml-Normalization"! (AFP) in "." = "HOL-Nominal" +
+  options [timeout = 100]
   theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
   theories

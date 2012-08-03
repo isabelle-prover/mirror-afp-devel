@@ -1,4 +1,5 @@
 session Cauchy! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [show_question_marks = false]
     CauchysMeanTheorem
     CauchySchwarz

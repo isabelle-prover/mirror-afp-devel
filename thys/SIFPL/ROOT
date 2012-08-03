@@ -1,4 +1,5 @@
 session SIFPL! (AFP) in "." = HOL +
+  options [timeout = 600]
   theories
     ContextVS
     HuntSands

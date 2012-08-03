@@ -1,5 +1,5 @@
 session FinFun! (AFP) in "." = HOL +
-  options [document_graph]
+  options [timeout = 3600, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/Infinite_Set"
   theories

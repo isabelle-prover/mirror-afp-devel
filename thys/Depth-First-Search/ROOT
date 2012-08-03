@@ -1,4 +1,5 @@
 session "Depth-First-Search"! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     DFS
   files

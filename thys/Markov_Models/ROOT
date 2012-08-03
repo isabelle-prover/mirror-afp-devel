@@ -1,4 +1,5 @@
 session Markov_Models! (AFP) in "." = "HOL-Probability" +
+  options [timeout = 400]
   theories [document = false]
     "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
     "~~/src/HOL/Library/While_Combinator"

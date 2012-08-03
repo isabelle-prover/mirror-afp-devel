@@ -1,4 +1,5 @@
 session "List-Index"! (AFP) in "." = HOL +
+  options [timeout = 100]
   theories
     List_Index
   files

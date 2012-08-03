@@ -1,4 +1,5 @@
 session Stuttering_Equivalence! (AFP) in "." = HOL +
+  options [timeout = 300]
   theories
     Samplers
     StutterEquivalence

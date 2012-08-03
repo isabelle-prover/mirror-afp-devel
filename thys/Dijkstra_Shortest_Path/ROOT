@@ -1,4 +1,5 @@
 session Dijkstra_Shortest_Path! (AFP) in "." = Refine_Monadic +
+  options [timeout = 3600]
   theories [document = false]
     "../Collections/Collections"
     "../Refine_Monadic/Refine"

@@ -1,4 +1,5 @@
 session Topology! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
     "~~/src/HOL/Library/Zorn"

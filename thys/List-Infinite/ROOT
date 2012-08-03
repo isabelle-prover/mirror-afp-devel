@@ -1,5 +1,5 @@
 session "List-Infinite"! (AFP) in "." = HOL +
-  options [document_graph]
+  options [timeout = 300, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/Extended_Nat"
     "~~/src/HOL/Library/Infinite_Set"

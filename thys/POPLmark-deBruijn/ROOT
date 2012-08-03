@@ -1,4 +1,5 @@
 session "POPLmark-deBruijn"! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"
   theories

@@ -1,4 +1,5 @@
 session "Program-Conflict-Analysis"! (AFP) in "." = HOL +
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
     Misc

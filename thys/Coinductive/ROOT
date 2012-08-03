@@ -1,5 +1,5 @@
 session Coinductive! (AFP) in "." = HOL +
-  options [document_graph]
+  options [timeout = 200, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/Extended_Nat"
     "~~/src/HOL/Library/List_Prefix"

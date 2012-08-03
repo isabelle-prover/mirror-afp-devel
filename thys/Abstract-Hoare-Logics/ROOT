@@ -1,4 +1,5 @@
 session "Abstract-Hoare-Logics"! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories
     "While/HoareTotal"
     "Proc/PHoareTotal"

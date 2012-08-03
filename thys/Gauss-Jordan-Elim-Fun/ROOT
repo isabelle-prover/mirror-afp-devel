@@ -1,4 +1,5 @@
 session "Gauss-Jordan-Elim-Fun"! (AFP) in "." = HOL +
+  options [timeout = 60]
   theories
     Gauss_Jordan_Elim_Fun
   files

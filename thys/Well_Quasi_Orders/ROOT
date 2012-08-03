@@ -1,4 +1,5 @@
 session Well_Quasi_Orders! (AFP) in "." = HOL +
+  options [timeout = 200]
   theories [document = false]
     "../Abstract-Rewriting/Seq"
   theories

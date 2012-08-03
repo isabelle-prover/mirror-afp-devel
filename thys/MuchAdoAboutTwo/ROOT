@@ -1,4 +1,5 @@
 session MuchAdoAboutTwo! (AFP) in "." = HOL +
+  options [timeout = 3600]
   theories [document = false, quick_and_dirty]
     "~~/src/HOL/Library/Multiset"
     "~~/src/HOL/Library/Permutation"

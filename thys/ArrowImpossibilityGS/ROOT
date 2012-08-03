@@ -1,4 +1,5 @@
 session ArrowImpossibilityGS! (AFP) in "." = HOL +
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"
     "~~/src/HOL/Library/Zorn"

@@ -1,4 +1,5 @@
 session "CoreC++"! (AFP) in "." = HOL +
+  options [timeout = 2000]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Efficient_Nat"

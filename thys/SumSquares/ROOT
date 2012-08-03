@@ -1,4 +1,5 @@
 session SumSquares! (AFP) in "." = HOL +
+  options [timeout = 600]
   theories [document = false]
     "../Fermat3_4/IntNatAux"
     "~~/src/HOL/Old_Number_Theory/Euler"
