@@ -29,6 +29,11 @@ IMAGE_BASIC = $(OUT)/$(IMAGE_BASE_NAME)-Basic
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML $(JINJATHREADS_OPTIONS)
 USEDIR_NO_DOCUMENT = $(ISABELLE_TOOL) usedir -v true -i false -g false -d false $(JINJATHREADS_OPTIONS)
 
+
+# time limit (in sec)
+MAXTIME = 14400
+
+
 ## dependencies
 
 # test run and proof document
