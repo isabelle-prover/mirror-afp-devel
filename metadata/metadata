@@ -520,7 +520,7 @@ abstract =
   datastructures---like balanced trees---demands that the type of keys is 
   linearly ordered.
   <p>
-  Our formalization was performed as part of the \isafor/\ceta{} project.
+  Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
   With our new tactic we could completely remove 
   tedious proofs for linear orders of two datatypes.
 
