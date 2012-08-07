@@ -505,6 +505,25 @@ date = 2004-12-09
 topic = Computer Science/Data Structures
 abstract = These theories illustrates the verification of basic file operations (file creation, file read and file write) in the Isabelle theorem prover. We describe a file at two levels of abstraction: an abstract file represented as a resizable array, and a concrete file represented using data blocks. 
 
+[Datatype_Order_Generator]
+title = Generating linear orders for datatypes
+author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+date = 2012-08-07
+topic = Computer Science/Data Structures
+abstract =
+  We provide a tactic which automatically synthesizes linear orders for 
+  datatypes as it is possible using Haskell's ``deriving Ord'' feature.
+  The tactic is able to handle datatypes with mutual or higher-order recursion,
+  if the nesting is not too complex. 
+  <p>
+  Our method complements the Isabelle Collection Framework which for some 
+  datastructures---like balanced trees---demands that the type of keys is 
+  linearly ordered.
+  <p>
+  Our formalization was performed as part of the \isafor/\ceta{} project.
+  With our new tactic we could completely remove 
+  tedious proofs for linear orders of two datatypes.
+
 [List-Index]
 title = List Index
 date = 2010-02-20
