@@ -1,4 +1,4 @@
-session Collections! (AFP) in "." = HOL +
+session Collections (AFP) = HOL +
   options [timeout = 1200, document_variants = "outline=/proof,/ML:userguide"]
   theories [document = false]
     "common/Misc"

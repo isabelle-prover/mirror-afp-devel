@@ -1,4 +1,4 @@
-session MonoBoolTranAlgebra! (AFP) in "." = LatticeProperties +
+session MonoBoolTranAlgebra (AFP) = LatticeProperties +
   options [timeout = 3600]
   theories
     Statements

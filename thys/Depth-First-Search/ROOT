@@ -1,4 +1,4 @@
-session "Depth-First-Search"! (AFP) in "." = HOL +
+session "Depth-First-Search" (AFP) = HOL +
   options [timeout = 3600]
   theories
     DFS

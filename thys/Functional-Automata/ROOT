@@ -1,4 +1,4 @@
-session "Functional-Automata"! (AFP) in "." = HOL +
+session "Functional-Automata" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/List_Prefix"

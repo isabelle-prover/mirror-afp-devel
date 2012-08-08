@@ -1,4 +1,4 @@
-session "Free-Groups"! (AFP) in "." = HOL +
+session "Free-Groups" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Algebra/Group"

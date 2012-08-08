@@ -1,4 +1,4 @@
-session Inductive_Confidentiality! (AFP) in "." = HOL +
+session Inductive_Confidentiality (AFP) = HOL +
   options [timeout = 300]
   theories
     "DolevYao/Message"

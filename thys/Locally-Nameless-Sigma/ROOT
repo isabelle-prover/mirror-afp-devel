@@ -1,4 +1,4 @@
-session "Locally-Nameless-Sigma"! (AFP) in "." = HOL +
+session "Locally-Nameless-Sigma" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Proofs/Lambda/Commutation"

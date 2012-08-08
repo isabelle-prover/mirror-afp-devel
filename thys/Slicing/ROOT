@@ -1,4 +1,4 @@
-session Slicing! (AFP) in "." = Jinja +
+session Slicing (AFP) = Jinja +
   options [timeout = 5400, document_graph]
   theories
     Slicing

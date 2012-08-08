@@ -1,4 +1,4 @@
-session "Recursion-Theory-I"! (AFP) in "." = HOL +
+session "Recursion-Theory-I" (AFP) = HOL +
   options [timeout = 3600]
   theories
     RecEnSet

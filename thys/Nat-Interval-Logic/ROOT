@@ -1,4 +1,4 @@
-session "Nat-Interval-Logic"! (AFP) in "." = "List-Infinite" +
+session "Nat-Interval-Logic" (AFP) = "List-Infinite" +
   options [timeout = 300, document_graph]
   theories
     IL_Interval

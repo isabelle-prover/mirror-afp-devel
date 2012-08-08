@@ -1,4 +1,4 @@
-session Completeness! (AFP) in "." = HOL +
+session Completeness (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Permutation"

@@ -1,4 +1,4 @@
-session "DPT-SAT-Solver"! (AFP) in "." = HOL +
+session "DPT-SAT-Solver" (AFP) = HOL +
   options [timeout = 100]
   theories
     DPT_SAT_Tests

@@ -1,4 +1,4 @@
-session JinjaThreads! (AFP_big) in "." = "HOL-Word" +
+session JinjaThreads (AFP_big) = "HOL-Word" +
   options [timeout = 14400, document_graph]
   theories
     JinjaThreads

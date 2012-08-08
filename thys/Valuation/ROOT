@@ -1,4 +1,4 @@
-session Valuation! (AFP) in "." = "Group-Ring-Module" +
+session Valuation (AFP) = "Group-Ring-Module" +
   options [timeout = 3600]
   theories [document = false]
     "../Group-Ring-Module/Algebra9"

@@ -1,4 +1,4 @@
-session FFT! (AFP) in "." = HOL +
+session FFT (AFP) = HOL +
   options [timeout = 3600]
   theories
     FFT

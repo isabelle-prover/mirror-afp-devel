@@ -1,4 +1,4 @@
-session RSAPSS! (AFP) in "." = HOL +
+session RSAPSS (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"

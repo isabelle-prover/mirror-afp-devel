@@ -1,4 +1,4 @@
-session "Finger-Trees"! (AFP) in "." = HOL +
+session "Finger-Trees" (AFP) = HOL +
   options [timeout = 300]
   theories
     FingerTree

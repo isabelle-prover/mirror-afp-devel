@@ -1,4 +1,4 @@
-session "FOL-Fitting"! (AFP) in "." = HOL +
+session "FOL-Fitting" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Infinite_Set"

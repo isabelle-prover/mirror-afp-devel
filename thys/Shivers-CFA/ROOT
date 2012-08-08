@@ -1,4 +1,4 @@
-session "Shivers-CFA"! (AFP) in "." = HOLCF +
+session "Shivers-CFA" (AFP) = HOLCF +
   options [timeout = 600]
   theories [document = false]
     "~~/src/Tools/Adhoc_Overloading"

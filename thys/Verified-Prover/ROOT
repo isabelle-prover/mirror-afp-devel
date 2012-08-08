@@ -1,4 +1,4 @@
-session "Verified-Prover"! (AFP) in "." = HOL +
+session "Verified-Prover" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Infinite_Set"

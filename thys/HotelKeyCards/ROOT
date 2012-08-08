@@ -1,4 +1,4 @@
-session HotelKeyCards! (AFP) in "." = HOL +
+session HotelKeyCards (AFP) = HOL +
   options [timeout = 600]
   theories [show_question_marks = false]
     Notation

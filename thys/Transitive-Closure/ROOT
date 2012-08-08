@@ -1,4 +1,4 @@
-session "Transitive-Closure"! (AFP) in "." = HOL +
+session "Transitive-Closure" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "../Collections/impl/RBTMapImpl"

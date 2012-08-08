@@ -1,4 +1,4 @@
-session "AVL-Trees"! (AFP) in "." = HOL +
+session "AVL-Trees" (AFP) = HOL +
   options [timeout = 3600]
   theories
     AVL

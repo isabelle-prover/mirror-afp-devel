@@ -1,4 +1,4 @@
-session Separation_Algebra! (AFP) in "." = "HOL-Word" +
+session Separation_Algebra (AFP) = "HOL-Word" +
   options [timeout = 3600]
   theories
     "ex/Simple_Separation_Example"

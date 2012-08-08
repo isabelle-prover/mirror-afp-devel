@@ -1,4 +1,4 @@
-session Matrix! (AFP) in "." = HOL +
+session Matrix (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"

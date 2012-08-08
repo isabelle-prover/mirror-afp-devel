@@ -1,4 +1,4 @@
-session Jinja! (AFP) in "." = HOL +
+session Jinja (AFP) = HOL +
   options [timeout = 5400, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/List_Prefix"

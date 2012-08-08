@@ -1,4 +1,4 @@
-session Circus! (AFP) in "." = HOLCF +
+session Circus (AFP) = HOLCF +
   options [timeout = 3600, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/List_Prefix"

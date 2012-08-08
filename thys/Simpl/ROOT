@@ -1,4 +1,4 @@
-session Simpl! (AFP) in "." = HOL +
+session Simpl (AFP) = HOL +
   options [timeout = 3600, document_graph]
   theories
     Simpl

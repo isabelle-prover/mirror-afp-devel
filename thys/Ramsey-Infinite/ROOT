@@ -1,4 +1,4 @@
-session "Ramsey-Infinite"! (AFP) in "." = HOL +
+session "Ramsey-Infinite" (AFP) = HOL +
   options [timeout = 3600]
   theories
     Ramsey

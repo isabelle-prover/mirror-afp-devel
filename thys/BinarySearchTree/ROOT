@@ -1,4 +1,4 @@
-session BinarySearchTree! (AFP) in "." = HOL +
+session BinarySearchTree (AFP) = HOL +
   options [timeout = 3600]
   theories
     BinaryTree

@@ -1,4 +1,4 @@
-session "CoreC++"! (AFP) in "." = HOL +
+session "CoreC++" (AFP) = HOL +
   options [timeout = 2000]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"

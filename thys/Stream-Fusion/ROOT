@@ -1,4 +1,4 @@
-session "Stream-Fusion"! (AFP) in "." = HOLCF +
+session "Stream-Fusion" (AFP) = HOLCF +
   options [timeout = 3600]
   theories
     StreamFusion

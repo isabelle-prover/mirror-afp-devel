@@ -1,4 +1,4 @@
-session ClockSynchInst! (AFP) in "." = HOL +
+session ClockSynchInst (AFP) = HOL +
   options [timeout = 3600]
   theories
     ICAInstance

@@ -1,4 +1,4 @@
-session DiskPaxos! (AFP) in "." = HOL +
+session DiskPaxos (AFP) = HOL +
   options [timeout = 3600]
   theories
     DiskPaxos

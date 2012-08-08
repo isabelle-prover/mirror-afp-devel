@@ -1,4 +1,4 @@
-session FunWithFunctions! (AFP) in "." = HOL +
+session FunWithFunctions (AFP) = HOL +
   options [timeout = 100]
   theories
     FunWithFunctions

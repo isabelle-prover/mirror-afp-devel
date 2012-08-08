@@ -1,4 +1,4 @@
-session MuchAdoAboutTwo! (AFP) in "." = HOL +
+session MuchAdoAboutTwo (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false, quick_and_dirty]
     "~~/src/HOL/Library/Multiset"

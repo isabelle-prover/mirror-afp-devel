@@ -1,4 +1,4 @@
-session "Max-Card-Matching"! (AFP) in "." = HOL +
+session "Max-Card-Matching" (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     Parity

@@ -1,4 +1,4 @@
-session Category! (AFP) in "." = HOL +
+session Category (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"

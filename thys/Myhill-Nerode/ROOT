@@ -1,4 +1,4 @@
-session "Myhill-Nerode"! (AFP) in "." = HOL +
+session "Myhill-Nerode" (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"

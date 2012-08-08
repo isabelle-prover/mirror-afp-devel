@@ -1,4 +1,4 @@
-session FileRefinement! (AFP) in "." = HOL +
+session FileRefinement (AFP) = HOL +
   options [timeout = 3600]
   theories
     FileRefinement

@@ -1,4 +1,4 @@
-session "Presburger-Automata"! (AFP) in "." = HOL +
+session "Presburger-Automata" (AFP) = HOL +
   options [timeout = 1000]
   theories [document = false]
     DFS

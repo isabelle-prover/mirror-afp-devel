@@ -1,4 +1,4 @@
-session Topology! (AFP) in "." = HOL +
+session Topology (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"

@@ -1,4 +1,4 @@
-session Refine_Monadic! (AFP) in "." = Collections +
+session Refine_Monadic (AFP) = Collections +
   options [timeout = 3600, document_variants = "outline=/proof,/ML:userguide"]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"

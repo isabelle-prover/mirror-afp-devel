@@ -1,4 +1,4 @@
-session "Gauss-Jordan-Elim-Fun"! (AFP) in "." = HOL +
+session "Gauss-Jordan-Elim-Fun" (AFP) = HOL +
   options [timeout = 60]
   theories
     Gauss_Jordan_Elim_Fun

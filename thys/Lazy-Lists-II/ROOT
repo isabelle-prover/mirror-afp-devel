@@ -1,4 +1,4 @@
-session "Lazy-Lists-II"! (AFP) in "." = HOL +
+session "Lazy-Lists-II" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "../Coinductive/Coinductive_List"

@@ -1,4 +1,4 @@
-session "Abstract-Rewriting"! (AFP) in "." = HOL +
+session "Abstract-Rewriting" (AFP) = HOL +
   options [timeout = 200]
   theories [document = false]
     "../Transitive-Closure/Transitive_Closure_Impl"

@@ -1,4 +1,4 @@
-session Fermat3_4! (AFP) in "." = HOL +
+session Fermat3_4 (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Old_Number_Theory/Factorization"

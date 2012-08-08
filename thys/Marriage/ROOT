@@ -1,4 +1,4 @@
-session Marriage! (AFP) in "." = HOL +
+session Marriage (AFP) = HOL +
   options [timeout = 60]
   theories
     Marriage

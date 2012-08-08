@@ -1,4 +1,4 @@
-session Girth_Chromatic! (AFP) in "." = "HOL-Probability" +
+session Girth_Chromatic (AFP) = "HOL-Probability" +
   options [timeout = 1000]
   theories
     Girth_Chromatic

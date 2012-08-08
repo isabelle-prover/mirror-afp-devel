@@ -1,4 +1,4 @@
-session Markov_Models! (AFP) in "." = "HOL-Probability" +
+session Markov_Models (AFP) = "HOL-Probability" +
   options [timeout = 400]
   theories [document = false]
     "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"

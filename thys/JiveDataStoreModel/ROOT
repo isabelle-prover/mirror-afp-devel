@@ -1,4 +1,4 @@
-session JiveDataStoreModel! (AFP) in "." = HOL +
+session JiveDataStoreModel (AFP) = HOL +
   options [timeout = 3600, document_graph]
   theories
     "Isa_Counter/TypeIds"

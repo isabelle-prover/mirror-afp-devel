@@ -1,4 +1,4 @@
-session Huffman! (AFP) in "." = HOL +
+session Huffman (AFP) = HOL +
   options [timeout = 3600]
   theories [quick_and_dirty]
     Huffman

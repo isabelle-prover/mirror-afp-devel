@@ -1,4 +1,4 @@
-session "General-Triangle"! (AFP) in "." = HOL +
+session "General-Triangle" (AFP) = HOL +
   options [timeout = 3600]
   theories
     GeneralTriangle

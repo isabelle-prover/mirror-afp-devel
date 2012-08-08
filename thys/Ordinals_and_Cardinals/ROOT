@@ -1,4 +1,4 @@
-session Ordinals_and_Cardinals! (AFP) in "." = HOL +
+session Ordinals_and_Cardinals (AFP) = HOL +
   options [timeout = 400]
   theories [document = false]
     "~~/src/HOL/Library/Zorn"

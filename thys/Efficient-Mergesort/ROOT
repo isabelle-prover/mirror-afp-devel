@@ -1,4 +1,4 @@
-session "Efficient-Mergesort"! (AFP) in "." = HOL +
+session "Efficient-Mergesort" (AFP) = HOL +
   options [timeout = 120]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"

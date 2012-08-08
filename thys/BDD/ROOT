@@ -1,4 +1,4 @@
-session BDD! (AFP) in "." = Simpl +
+session BDD (AFP) = Simpl +
   options [timeout = 3600, document_graph]
   theories
     EvalProof

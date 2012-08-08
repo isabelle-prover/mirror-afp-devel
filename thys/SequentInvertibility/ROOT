@@ -1,4 +1,4 @@
-session SequentInvertibility! (AFP) in "." = "HOL-Nominal" +
+session SequentInvertibility (AFP) = "HOL-Nominal" +
   options [timeout = 500]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"

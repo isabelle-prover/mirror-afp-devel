@@ -1,4 +1,4 @@
-session Cauchy! (AFP) in "." = HOL +
+session Cauchy (AFP) = HOL +
   options [timeout = 3600]
   theories [show_question_marks = false]
     CauchysMeanTheorem

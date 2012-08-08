@@ -1,4 +1,4 @@
-session "Regular-Sets"! (AFP) in "." = HOL +
+session "Regular-Sets" (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"

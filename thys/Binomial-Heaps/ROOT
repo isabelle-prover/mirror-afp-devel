@@ -1,4 +1,4 @@
-session "Binomial-Heaps"! (AFP) in "." = HOL +
+session "Binomial-Heaps" (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"

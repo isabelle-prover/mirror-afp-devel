@@ -1,4 +1,4 @@
-session MiniML! (AFP) in "." = HOL +
+session MiniML (AFP) = HOL +
   options [timeout = 3600]
   theories
     W

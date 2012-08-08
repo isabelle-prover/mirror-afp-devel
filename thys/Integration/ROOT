@@ -1,4 +1,4 @@
-session Integration! (AFP) in "." = HOL +
+session Integration (AFP) = HOL +
   options [timeout = 3600]
   theories
     Integral

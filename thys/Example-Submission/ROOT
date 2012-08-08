@@ -1,4 +1,4 @@
-session "Example-Submission"! (AFP) in "." = HOL +
+session "Example-Submission" (AFP) = HOL +
   options [timeout = 3600]
   theories
     Submission

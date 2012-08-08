@@ -1,4 +1,4 @@
-session "POPLmark-deBruijn"! (AFP) in "." = HOL +
+session "POPLmark-deBruijn" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"

@@ -1,4 +1,4 @@
-session FeatherweightJava! (AFP) in "." = HOL +
+session FeatherweightJava (AFP) = HOL +
   options [timeout = 3600]
   theories
     Featherweight_Java

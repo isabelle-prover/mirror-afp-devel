@@ -1,4 +1,4 @@
-session "Abstract-Hoare-Logics"! (AFP) in "." = HOL +
+session "Abstract-Hoare-Logics" (AFP) = HOL +
   options [timeout = 3600]
   theories
     "While/HoareTotal"

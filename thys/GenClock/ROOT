@@ -1,4 +1,4 @@
-session GenClock! (AFP) in "." = HOL +
+session GenClock (AFP) = HOL +
   options [timeout = 3600]
   theories
     GenClock

@@ -1,4 +1,4 @@
-session "List-Index"! (AFP) in "." = HOL +
+session "List-Index" (AFP) = HOL +
   options [timeout = 100]
   theories
     List_Index

@@ -1,4 +1,4 @@
-session Polynomials! (AFP) in "." = HOL +
+session Polynomials (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"

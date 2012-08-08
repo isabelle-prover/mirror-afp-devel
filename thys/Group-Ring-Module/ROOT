@@ -1,4 +1,4 @@
-session "Group-Ring-Module"! (AFP) in "." = HOL +
+session "Group-Ring-Module" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/FuncSet"

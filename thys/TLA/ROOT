@@ -1,4 +1,4 @@
-session TLA! (AFP) in "." = HOL +
+session TLA (AFP) = HOL +
   options [timeout = 600]
   theories
     Sequence

@@ -1,4 +1,4 @@
-session BytecodeLogicJmlTypes! (AFP) in "." = HOL +
+session BytecodeLogicJmlTypes (AFP) = HOL +
   options [timeout = 3600]
   theories
     Sound

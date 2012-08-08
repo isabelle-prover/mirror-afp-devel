@@ -1,4 +1,4 @@
-session SenSocialChoice! (AFP) in "." = HOL +
+session SenSocialChoice (AFP) = HOL +
   options [timeout = 600]
   theories
     Arrow

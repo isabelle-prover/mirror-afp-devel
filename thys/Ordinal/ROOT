@@ -1,4 +1,4 @@
-session Ordinal! (AFP) in "." = HOL +
+session Ordinal (AFP) = HOL +
   options [timeout = 3600]
   theories
     Ordinal

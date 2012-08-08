@@ -1,4 +1,4 @@
-session LatticeProperties! (AFP) in "." = HOL +
+session LatticeProperties (AFP) = HOL +
   options [timeout = 3600]
   theories
     Complete_Lattice_Prop

@@ -1,4 +1,4 @@
-session SATSolverVerification! (AFP) in "." = HOL +
+session SATSolverVerification (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Multiset"

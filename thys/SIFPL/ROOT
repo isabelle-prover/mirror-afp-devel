@@ -1,4 +1,4 @@
-session SIFPL! (AFP) in "." = HOL +
+session SIFPL (AFP) = HOL +
   options [timeout = 600]
   theories
     ContextVS

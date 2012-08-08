@@ -1,4 +1,4 @@
-session SumSquares! (AFP) in "." = HOL +
+session SumSquares (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "../Fermat3_4/IntNatAux"
