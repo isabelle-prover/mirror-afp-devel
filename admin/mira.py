@@ -8,21 +8,34 @@ from glob import glob
 import re
 
 from configurations import Isabelle as isabelle
+from mira import misc
 
 
-@configuration(repos = [Isabelle, AFP], deps = [(isabelle.AFP_images, [0])])
+
+afp_settings='''
+ML_PLATFORM=x86-linux
+ML_HOME="/home/polyml/polyml-svn/x86-linux"
+ML_SYSTEM="polyml-5.5.0"
+ML_OPTIONS="-H 1000"
+
+ISABELLE_BUILD_OPTIONS="threads=4 parallel_proofs=2"
+'''
+
+afp_jobs = "6" if 'lxbroy10' in misc.hostnames() else "2"
+
+@configuration(repos = [Isabelle, AFP], deps = [])
 def AFP(*args):
     """Main AFP test, excluding very large sessions"""
 
     afp_thys = path.join(args[2][1], 'thys')
-    return isabelle.isabelle_build(*(args + ("-j", "6", "-o", "threads=4", "-d", afp_thys, "-g", "AFP")), more_settings=isabelle.settings64)
+    return isabelle.isabelle_build(*(args + ("-j", afp_jobs, "-d", afp_thys, "-g", "AFP")), more_settings=afp_settings)
 
 @configuration(repos = [Isabelle, AFP], deps = [(AFP, [0, 1])])
 def AFP_big(*args):
     """Large Sessions from AFP"""
 
     afp_thys = path.join(args[2][1], 'thys')
-    return isabelle.isabelle_build(*(args + ("-j", "2", "-o", "threads=4", "-d", afp_thys, "-g", "AFP_big")), more_settings=isabelle.settings64)
+    return isabelle.isabelle_build(*(args + ("-j", afp_jobs, "-d", afp_thys, "-g", "AFP_big")), more_settings=afp_settings)
 
 
 # AFP-based Judgement Day configurations
