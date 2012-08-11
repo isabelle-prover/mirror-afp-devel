@@ -1,0 +1,110 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<h1><font class="first">G</font>enerating
+linear
+orders
+for
+datatypes
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Generating linear orders for datatypes</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Ren&eacute; Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2012-08-07</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We provide a tactic which automatically synthesizes linear orders for
+datatypes as it is possible using Haskell's ``deriving Ord'' feature.
+The tactic is able to handle datatypes with mutual or higher-order recursion,
+if the nesting is not too complex.
+<p>
+Our method complements the Isabelle Collection Framework which for some
+datastructures---like balanced trees---demands that the type of keys is
+linearly ordered.
+<p>
+Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
+With our new tactic we could completely remove
+tedious proofs for linear orders of two datatypes.
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Datatype_Order_Generator" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

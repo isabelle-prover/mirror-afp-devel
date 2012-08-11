@@ -62,6 +62,7 @@
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
 <a href="entries/ClockSynchInst.shtml">ClockSynchInst</a> &nbsp;
+<a href="entries/Heard_Of.shtml">Heard_Of</a> &nbsp;
 <a href="entries/Abortable_Linearizable_Modules.shtml">Abortable_Linearizable_Modules</a> &nbsp;
 </div>
 
@@ -77,6 +78,7 @@
 <a href="entries/FinFun.shtml">FinFun</a> &nbsp;
 <a href="entries/Collections.shtml">Collections</a> &nbsp;
 <a href="entries/FileRefinement.shtml">FileRefinement</a> &nbsp;
+<a href="entries/Datatype_Order_Generator.shtml">Datatype_Order_Generator</a> &nbsp;
 <a href="entries/List-Index.shtml">List-Index</a> &nbsp;
 <a href="entries/List-Infinite.shtml">List-Infinite</a> &nbsp;
 <a href="entries/Matrix.shtml">Matrix</a> &nbsp;
@@ -89,11 +91,15 @@
 <div class="list">
 <a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
+<a href="entries/Tycon.shtml">Tycon</a> &nbsp;
 </div>
 
 <h3>Process Calculi</h3>
 
 <div class="list">
+<a href="entries/CCS.shtml">CCS</a> &nbsp;
+<a href="entries/Pi_Calculus.shtml">Pi_Calculus</a> &nbsp;
+<a href="entries/Psi_Calculi.shtml">Psi_Calculi</a> &nbsp;
 <a href="entries/Circus.shtml">Circus</a> &nbsp;
 </div>
 
@@ -110,7 +116,8 @@
 <a href="entries/AutoFocus-Stream.shtml">AutoFocus-Stream</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
-<strong>Lambda Calculi:</strong>&nbsp;<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
+<strong>Lambda Calculi:</strong>&nbsp;<a href="entries/PCF.shtml">PCF</a> &nbsp;
+<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
 <a href="entries/Lam-ml-Normalization.shtml">Lam-ml-Normalization</a> &nbsp;
 
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
@@ -181,6 +188,7 @@
 <div class="list">
 <a href="entries/PseudoHoops.shtml">PseudoHoops</a> &nbsp;
 <a href="entries/LatticeProperties.shtml">LatticeProperties</a> &nbsp;
+<a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
 <a href="entries/Free-Groups.shtml">Free-Groups</a> &nbsp;
 <a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
@@ -223,6 +231,7 @@
 <h3>Geometry</h3>
 
 <div class="list">
+<a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/General-Triangle.shtml">General-Triangle</a> &nbsp;
 </div>
 

@@ -1,3 +1,42 @@
+[CCS]
+title = CCS in nominal logic
+author = Jesper Bengtson <http://www.itu.dk/people/jebe>
+base = HOL/HOL-Nominal
+date = 2012-05-29
+topic = Computer Science/Process Calculi
+abstract = We formalise a large portion of CCS as described in Milner's book 'Communication and Concurrency' using the nominal datatype package in Isabelle. Our results include many of the standard theorems of bisimulation equivalence and congruence, for both weak and strong versions. One main goal of this formalisation is to keep the machine-checked proofs as close to their pen-and-paper counterpart as possible.
+ <p>
+ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
+ 
+
+[Pi_Calculus]
+title = The pi-calculus in nominal logic
+author = Jesper Bengtson <http://www.itu.dk/people/jebe>
+base = HOL/HOL-Nominal
+date = 2012-05-29
+topic = Computer Science/Process Calculi
+abstract = We formalise the pi-calculus using the nominal datatype package, based on ideas from the nominal logic by Pitts et al., and demonstrate an implementation in Isabelle/HOL. The purpose is to derive powerful induction rules for the semantics in order to conduct machine checkable proofs, closely following the intuitive arguments found in manual proofs. In this way we have covered many of the standard theorems of bisimulation equivalence and congruence, both late and early, and both strong and weak in a uniform manner. We thus provide one of the most extensive formalisations of a the pi-calculus ever done inside a theorem prover.
+ <p>
+ A significant gain in our formulation is that agents are identified up to alpha-equivalence, thereby greatly reducing the arguments about bound names. This is a normal strategy for manual proofs about the pi-calculus, but that kind of hand waving has previously been difficult to incorporate smoothly in an interactive theorem prover. We show how the nominal logic formalism and its support in Isabelle accomplishes this and thus significantly reduces the tedium of conducting completely formal proofs. This improves on previous work using weak higher order abstract syntax since we do not need extra assumptions to filter out exotic terms and can keep all arguments within a familiar first-order logic.
+ <p>
+ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
+
+
+[Psi_Calculi]
+title = Psi-calculi in Isabelle
+author = Jesper Bengtson <http://www.itu.dk/people/jebe>
+base = HOL/HOL-Nominal
+date = 2012-05-29
+topic = Computer Science/Process Calculi
+abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
+ <p>
+ We have formalised psi-calculi in the interactive theorem prover Isabelle using its nominal datatype package. One distinctive feature is that the framework needs to treat binding sequences, as opposed to single binders, in an efficient way. While different methods for formalising single binder calculi have been proposed over the last decades, representations for such binding sequences are not very well explored.
+ <p>
+ The main effort in the formalisation is to keep the machine checked proofs as close to their pen-and-paper counterparts as possible. This includes treating all binding sequences as atomic elements, and creating custom induction and inversion rules that to remove the bulk of manual alpha-conversions.
+ <p>
+ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
+
+
 [Circus]
 title = Isabelle/Circus
 author = Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Marie-Claude Gaudel <mailto:mcg@lri.fr>
@@ -71,6 +110,14 @@ extra-history =
       Added a theory about well founded and transitive relations and a result about fixpoints in complete lattices and well founded relations.
       Moved the results about conjunctive and disjunctive functions to a new theory.
       Removed the syntactic classes for inf and sup which are in the standard library now. 
+
+[Impossible_Geometry]
+title = Proving the Impossibility of Trisecting an Angle and Doubling the Cube
+author = Ralph Romanos <mailto:ralph.romanos@student.ecp.fr>, Lawrence Paulson <http://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Algebra, Mathematics/Geometry
+base = HOL
+date = 2012-08-05
+abstract = Squaring the circle, doubling the cube and trisecting an angle, using a compass and straightedge alone, are classic unsolved problems first posed by the ancient Greeks. All three problems were proved to be impossible in the 19th century. The following document presents the proof of the impossibility of solving the latter two problems using Isabelle/HOL, following a proof by Carrega. The proof uses elementary methods: no Galois theory or field extensions. The set of points constructible using a compass and straightedge is defined inductively. Radical expressions, which involve only square roots and arithmetic of rational numbers, are defined, and we find that all constructive points have radical coordinates. Finally, doubling the cube and trisecting certain angles requires solving certain cubic equations that can be proved to have no rational roots. The Isabelle proofs require a great many detailed calculations.
 
 [KBPs]
 title = Knowledge-based programs
@@ -293,6 +340,38 @@ date = 2006-03-15
 topic = Computer Science/Algorithms/Distributed
 abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.shtml">GenClock</a> in AFP). 
 
+[Heard_Of]
+title = Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model
+date = 2012-07-27
+author = Henri Debrat <mailto:henri.debrat@loria.fr>, Stephan Merz <http://www.loria.fr/~merz/>
+topic = Computer Science/Algorithms/Distributed
+abstract =
+ Distributed computing is inherently based on replication, promising
+ increased tolerance to failures of individual computing nodes or
+ communication channels. Realizing this promise, however, involves
+ quite subtle algorithmic mechanisms, and requires precise statements
+ about the kinds and numbers of faults that an algorithm tolerates (such
+ as process crashes, communication faults or corrupted values).  The
+ landmark theorem due to Fischer, Lynch, and Paterson shows that it is
+ impossible to achieve Consensus among N asynchronously communicating
+ nodes in the presence of even a single permanent failure. Existing
+ solutions must rely on assumptions of "partial synchrony".
+ <p>
+ Indeed, there have been numerous misunderstandings on what exactly a given
+ algorithm is supposed to realize in what kinds of environments. Moreover, the
+ abundance of subtly different computational models complicates comparisons
+ between different algorithms. Charron-Bost and Schiper introduced the Heard-Of
+ model for representing algorithms and failure assumptions in a uniform
+ framework, simplifying comparisons between algorithms.
+ <p>
+ In this contribution, we represent the Heard-Of model in Isabelle/HOL. We define
+ two semantics of runs of algorithms with different unit of atomicity and relate
+ these through a reduction theorem that allows us to verify algorithms in the
+ coarse-grained semantics (where proofs are easier) and infer their correctness
+ for the fine-grained one (which corresponds to actual executions). We
+ instantiate the framework by verifying six Consensus algorithms that differ in
+ the underlying algorithmic mechanisms and the kinds of faults they tolerate.
+
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <mailto:viktor.kuncak@epfl.ch>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
@@ -427,6 +506,25 @@ date = 2004-12-09
 topic = Computer Science/Data Structures
 abstract = These theories illustrates the verification of basic file operations (file creation, file read and file write) in the Isabelle theorem prover. We describe a file at two levels of abstraction: an abstract file represented as a resizable array, and a concrete file represented using data blocks. 
 
+[Datatype_Order_Generator]
+title = Generating linear orders for datatypes
+author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+date = 2012-08-07
+topic = Computer Science/Data Structures
+abstract =
+  We provide a tactic which automatically synthesizes linear orders for 
+  datatypes as it is possible using Haskell's ``deriving Ord'' feature.
+  The tactic is able to handle datatypes with mutual or higher-order recursion,
+  if the nesting is not too complex. 
+  <p>
+  Our method complements the Isabelle Collection Framework which for some 
+  datastructures---like balanced trees---demands that the type of keys is 
+  linearly ordered.
+  <p>
+  Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
+  With our new tactic we could completely remove 
+  tedious proofs for linear orders of two datatypes.
+
 [List-Index]
 title = List Index
 date = 2010-02-20
@@ -510,6 +608,26 @@ topic = Computer Science/Functional Programming
 date = 2009-04-29
 base = HOL/HOLCF
 abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://www.cse.unsw.edu.au/~dons/streams.html">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
+
+[Tycon]
+title = Type Constructor Classes and Monad Transformers
+author = Brian Huffman <mailto:huffman@in.tum.de>
+date = 2012-06-26
+base = HOL/HOLCF
+topic = Computer Science/Functional Programming
+abstract =
+ These theories contain a formalization of first class type constructors
+ and axiomatic constructor classes for HOLCF. This work is described
+ in detail in the ICFP 2012 paper <i>Formal Verification of Monad
+ Transformers</i> by the author. The formalization is a revised and
+ updated version of earlier joint work with Matthews and White.
+ <P>
+ Based on the hierarchy of type classes in Haskell, we define classes
+ for functors, monads, monad-plus, etc. Each one includes all the
+ standard laws as axioms. We also provide a new user command,
+ tycondef, for defining new type constructors in HOLCF. Using tycondef,
+ we instantiate the type class hierarchy with various monads and monad
+ transformers.
 
 [CoreC++]
 title = CoreC++
@@ -595,6 +713,23 @@ date = 2011-02-23
 base = HOL/List-Infinite/Nat-Interval-Logic
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
+
+[PCF]
+title = Logical Relations for PCF
+author = Peter Gammie <mailto:peteg42@gmail.com>
+date = 2012-07-01
+base = HOL/HOLCF
+topic = Computer Science/Programming Languages/Lambda Calculi
+abstract = We apply Andy Pitts's methods of defining relations over domains to
+  several classical results in the literature. We show that the Y
+  combinator coincides with the domain-theoretic fixpoint operator,
+  that parallel-or and the Plotkin existential are not definable in
+  PCF, that the continuation semantics for PCF coincides with the
+  direct semantics, and that our domain-theoretic semantics for PCF is
+  adequate for reasoning about contextual equivalence in an
+  operational semantics. Our version of PCF is untyped and has both
+  strict and non-strict function abstractions. The development is
+  carried out in HOLCF.
 
 [POPLmark-deBruijn]
 title = POPLmark Challenge Via de Bruijn Indices 

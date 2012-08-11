@@ -47,6 +47,64 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2012-08-07:
+<a href="entries/Datatype_Order_Generator.shtml">Generating linear orders for datatypes</a>
+<br>Author:
+Ren&eacute; Thiemann
+</td></tr>
+
+<tr><td class="entry">
+2012-08-05:
+<a href="entries/Impossible_Geometry.shtml">Proving the Impossibility of Trisecting an Angle and Doubling the Cube</a>
+<br>Author:
+Ralph Romanos and 
+<a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence Paulson</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-07-27:
+<a href="entries/Heard_Of.shtml">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</a>
+<br>Author:
+Henri Debrat and 
+<a href="http://www.loria.fr/~merz/">Stephan Merz</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-07-01:
+<a href="entries/PCF.shtml">Logical Relations for PCF</a>
+<br>Author:
+Peter Gammie
+</td></tr>
+
+<tr><td class="entry">
+2012-06-26:
+<a href="entries/Tycon.shtml">Type Constructor Classes and Monad Transformers</a>
+<br>Author:
+Brian Huffman
+</td></tr>
+
+<tr><td class="entry">
+2012-05-29:
+<a href="entries/CCS.shtml">CCS in nominal logic</a>
+<br>Author:
+<a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-05-29:
+<a href="entries/Pi_Calculus.shtml">The pi-calculus in nominal logic</a>
+<br>Author:
+<a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
+</td></tr>
+
+<tr><td class="entry">
+2012-05-29:
+<a href="entries/Psi_Calculi.shtml">Psi-calculi in Isabelle</a>
+<br>Author:
+<a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
+</td></tr>
+
+<tr><td class="entry">
 2012-05-27:
 <a href="entries/Circus.shtml">Isabelle/Circus</a>
 <br>Author:
