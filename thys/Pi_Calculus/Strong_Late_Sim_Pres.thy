@@ -773,7 +773,7 @@ proof -
 	    by(blast dest: simE)
 
 	  from IH RBRQ `x \<sharp> R` have RTrans: "\<exists>R'. R \<longmapsto> a<x> \<prec> R' \<and> (R'[x::=b], Q''[x::=b]) \<in> bangRel Rel"
-	    by(fastsimp simp add: derivative_def residual.inject)
+	    by(fastforce simp add: derivative_def residual.inject)
 	  then obtain R' where RTrans: "R \<longmapsto> a<x> \<prec> R'" and R'RelQ'': "(R'[x::=b], Q''[x::=b]) \<in> bangRel Rel"
 	    by blast
 
@@ -798,7 +798,7 @@ proof -
 	proof(auto simp add: residual.inject)
 	  from PRelQ have "P \<leadsto>[Rel] Q" by(rule Sim)
 	  with QTrans xFreshP obtain P' where PTrans: "P \<longmapsto>a<x> \<prec> P'" and P'RelQ': "(P'[x::=y], Q'[x::=y]) \<in> Rel"
-	    by(fastsimp dest: simE simp add: derivative_def)
+	    by(fastforce dest: simE simp add: derivative_def)
 
 	   from RBRQ `y \<sharp> R` IH have "\<exists>R'. R \<longmapsto>a<\<nu>y> \<prec> R' \<and> (R', Q'') \<in> bangRel Rel"
 	     by(auto simp add: residual.inject derivative_def)
@@ -827,10 +827,10 @@ proof -
 	proof(auto simp add: residual.inject)
 	  from PRelQ have "P \<leadsto>[Rel] Q" by(rule Sim)
 	  with QTrans xFreshP obtain P' where PTrans: "P \<longmapsto>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
-	    by(fastsimp dest: simE simp add: derivative_def)
+	    by(fastforce dest: simE simp add: derivative_def)
 
 	  from RBRQ IH `y \<sharp> R` have "\<exists>R'.  R \<longmapsto>a<y> \<prec> R' \<and> (R'[y::=x], Q''[y::=x]) \<in> bangRel Rel"
-	    by(fastsimp simp add: derivative_def residual.inject)
+	    by(fastforce simp add: derivative_def residual.inject)
 	  then obtain R' where RTrans: "R \<longmapsto>a<y> \<prec> R'" and R'RelQ'': "(R'[y::=x], Q''[y::=x]) \<in> bangRel Rel"
 	    by blast
 

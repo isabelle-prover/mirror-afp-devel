@@ -272,7 +272,7 @@ proof -
       by(generate_fresh "name") auto
     ultimately have "Prop \<alpha> P'" using `bn \<alpha> = []` `xvec \<sharp>* \<Psi>``xvec \<sharp>* M` `xvec \<sharp>* \<alpha>` `xvec \<sharp>* P'` rInput
       apply(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ C x])  
-      by(fastsimp simp add: residualInject psi.inject inputChainFresh)+
+      by(fastforce simp add: residualInject psi.inject inputChainFresh)+
   }
   note Goal = this
   moreover obtain p :: "name prm" where "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* M" and "(p \<bullet> xvec) \<sharp>* N" and "(p \<bullet> xvec) \<sharp>* P"

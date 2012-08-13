@@ -115,7 +115,7 @@ proof -
   let ?X = "{(\<Psi>, \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) | \<Psi> P \<alpha> Q. True}"
   let ?Y = "{(\<Psi>, \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) | \<Psi> P \<alpha> Q. True}"
   from assms have "(\<Psi>, \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y" by auto
-  moreover have "eqvt(?X \<union> ?Y)" by(fastsimp simp add: eqvt_def eqvts)
+  moreover have "eqvt(?X \<union> ?Y)" by(fastforce simp add: eqvt_def eqvts)
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveCoinduct)
     case(cStatImp \<Psi> P Q)

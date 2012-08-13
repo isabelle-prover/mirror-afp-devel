@@ -21,7 +21,7 @@ lemma monotonic:
 
   shows "P \<leadsto>[B] P'"
 using assms
-by(fastsimp simp add: strongSimEarly_def)
+by(fastforce simp add: strongSimEarly_def)
 
 lemma freshUnit[simp]:
   fixes y :: name

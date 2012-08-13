@@ -27,7 +27,7 @@ lemma bisimSubstOutputPres:
 
   shows "\<Psi> \<rhd> M\<langle>N\<rangle>.P \<sim>\<^sub>s M\<langle>N\<rangle>.Q"
 using assms
-by(fastsimp intro: closeSubstI closeSubstE bisimOutputPres)
+by(fastforce intro: closeSubstI closeSubstE bisimOutputPres)
 
 
 lemma seqSubstInputChain[simp]:
@@ -187,7 +187,7 @@ proof -
 using `length CsP = length CsQ`
 proof(induct n=="length CsP" rule: nat.induct)
   case zero
-  thus ?case by(fastsimp intro: bisimSubstReflexive)
+  thus ?case by(fastforce intro: bisimSubstReflexive)
 next
   case(Suc n)
 next
@@ -210,7 +210,7 @@ lemma bisimSubstParPres:
 
   shows "\<Psi> \<rhd> P \<parallel> R \<sim>\<^sub>s Q \<parallel> R"
 using assms
-by(fastsimp intro: closeSubstI closeSubstE bisimParPres)
+by(fastforce intro: closeSubstI closeSubstE bisimParPres)
 
 lemma bisimSubstResPres:
   fixes \<Psi> :: 'b
@@ -253,7 +253,7 @@ lemma bisimSubstBangPres:
 
   shows "\<Psi> \<rhd> !P \<sim>\<^sub>s !Q"
 using assms
-by(fastsimp intro: closeSubstI closeSubstE bisimBangPres guardedSeqSubst)
+by(fastforce intro: closeSubstI closeSubstE bisimBangPres guardedSeqSubst)
 
 lemma substNil[simp]:
   fixes xvec :: "name list"
@@ -271,7 +271,7 @@ lemma bisimSubstParNil:
   and   P :: "('a, 'b, 'c) psi"
 
   shows "\<Psi> \<rhd> P \<parallel> \<zero> \<sim>\<^sub>s P" 
-by(fastsimp intro: closeSubstI bisimParNil)
+by(fastforce intro: closeSubstI bisimParNil)
 
 lemma bisimSubstParComm:
   fixes \<Psi> :: 'b
@@ -280,7 +280,7 @@ lemma bisimSubstParComm:
 
   shows "\<Psi> \<rhd> P \<parallel> Q \<sim>\<^sub>s Q \<parallel> P"
 apply(rule closeSubstI)
-by(fastsimp intro: closeSubstI bisimParComm)
+by(fastforce intro: closeSubstI bisimParComm)
 
 lemma bisimSubstParAssoc:
   fixes \<Psi> :: 'b
@@ -290,7 +290,7 @@ lemma bisimSubstParAssoc:
 
   shows "\<Psi> \<rhd> (P \<parallel> Q) \<parallel> R \<sim>\<^sub>s P \<parallel> (Q \<parallel> R)"
 apply(rule closeSubstI)
-by(fastsimp intro: closeSubstI bisimParAssoc)
+by(fastforce intro: closeSubstI bisimParAssoc)
 
 lemma bisimSubstResNil:
   fixes \<Psi> :: 'b
@@ -524,7 +524,7 @@ lemma bisimSubstExtBang:
 
   shows "\<Psi> \<rhd> !P \<sim>\<^sub>s P \<parallel> !P"
 using assms
-by(fastsimp intro: closeSubstI bangExt guardedSeqSubst)
+by(fastforce intro: closeSubstI bangExt guardedSeqSubst)
 
 lemma structCongBisimSubst:
   fixes P :: "('a, 'b, 'c) psi"  

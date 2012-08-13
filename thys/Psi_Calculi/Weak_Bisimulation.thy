@@ -556,7 +556,7 @@ proof -
     thus ?case by(blast dest: rStatImp weakBisimE(1) weakStatImpMonotonic)
   next
     case(cSim \<Psi> P Q)
-    thus ?case by(fastsimp intro: rSim weakBisimE(2) weakSimMonotonic bisimReflexive)
+    thus ?case by(fastforce intro: rSim weakBisimE(2) weakSimMonotonic bisimReflexive)
   next
     case(cExt \<Psi> P Q \<Psi>')
     thus ?case by(blast dest: weakBisimE rExt) 

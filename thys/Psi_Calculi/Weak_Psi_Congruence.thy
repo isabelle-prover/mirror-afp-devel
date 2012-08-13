@@ -125,7 +125,7 @@ lemma weakPsiCongReflexive:
 
 
   shows "\<Psi> \<rhd> P \<doteq> P"
-by(fastsimp intro: weakPsiCongI weakCongSimReflexive weakBisimReflexive)
+by(fastforce intro: weakPsiCongI weakCongSimReflexive weakBisimReflexive)
 
 lemma weakPsiCongClosed:
   fixes \<Psi> :: 'b

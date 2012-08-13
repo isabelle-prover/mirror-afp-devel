@@ -119,7 +119,7 @@ proof(induct \<Psi>=="\<Psi> \<otimes> \<Psi>\<^isub>Q" P P' rule: Tau_Chain.ind
   show ?case by(rule Tau_Chain.TauBase)
 next
   case(TauStep \<Psi>' P P' P'')
-  thus ?case by(fastsimp intro: Tau_Chain.TauStep Par1F dest: tauFreshChainDerivative)
+  thus ?case by(fastforce intro: Tau_Chain.TauStep Par1F dest: tauFreshChainDerivative)
 qed
 
 lemma tauChainPar2:
@@ -142,7 +142,7 @@ proof(induct \<Psi>=="\<Psi> \<otimes> \<Psi>\<^isub>P" Q Q' rule: Tau_Chain.ind
   show ?case by(rule Tau_Chain.TauBase)
 next
   case(TauStep \<Psi>' Q Q' Q'')
-  thus ?case by(fastsimp intro: Tau_Chain.TauStep Par2F dest: tauFreshChainDerivative)
+  thus ?case by(fastforce intro: Tau_Chain.TauStep Par2F dest: tauFreshChainDerivative)
 qed
 
 lemma tauChainCases:
@@ -1163,7 +1163,7 @@ lemma outputWeakOutput:
 
   shows "\<Psi> : Q \<rhd> P \<Longrightarrow>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
 using assms
-by(fastsimp intro: TauBase weakOutputTransitionI)
+by(fastforce intro: TauBase weakOutputTransitionI)
 
 lemma inputWeakInput:
   fixes \<Psi>  :: 'b
@@ -1178,7 +1178,7 @@ lemma inputWeakInput:
 
   shows "\<Psi> : Q \<rhd> P \<Longrightarrow>M\<lparr>N\<rparr> \<prec> P'"
 using assms
-by(fastsimp intro: TauBase weakInputTransitionI)
+by(fastforce intro: TauBase weakInputTransitionI)
 
 lemma weakPar1GuardedF:
   fixes \<Psi>  :: 'b

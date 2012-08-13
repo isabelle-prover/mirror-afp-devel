@@ -96,7 +96,7 @@ lemma freshBoundDerivative:
   and   "y \<noteq> x \<Longrightarrow> y \<sharp> P'"
 apply -
 using assms
-by(fastsimp dest: freshResidual simp add: abs_fresh)+
+by(fastforce dest: freshResidual simp add: abs_fresh)+
 
 lemma freshFreeDerivative:
   fixes P  :: pi
@@ -111,7 +111,7 @@ lemma freshFreeDerivative:
   and   "y \<sharp> P'"
 apply -
 using assms
-by(fastsimp dest: freshResidual)+
+by(fastforce dest: freshResidual)+
 
 lemma substTrans[simp]: 
   fixes b :: name

@@ -102,11 +102,11 @@ proof -
 	  show ?case by simp
 	next
 	  case(Step P' P'')
-	  thus ?case by(fastsimp simp add: weakTrans_def weakCongTrans_def)
+	  thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
 	qed
       next
 	case(Step P''' P'')
-	thus ?case by(fastsimp simp add: weakTrans_def weakCongTrans_def)
+	thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
       qed
       with `(P', Q') \<in> Rel` show ?case by blast
     next
@@ -161,7 +161,7 @@ lemma weakMonotonic:
 
   shows "P \<leadsto>\<^sup>^<B> Q"
 using assms
-by(fastsimp simp add: weakSimulation_def)
+by(fastforce simp add: weakSimulation_def)
 
 lemma simWeakSim:
   fixes P   :: ccs

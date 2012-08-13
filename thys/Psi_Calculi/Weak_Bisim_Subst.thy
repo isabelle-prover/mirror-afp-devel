@@ -38,7 +38,7 @@ lemma weakBisimSubstOutputPres:
 
   shows "\<Psi> \<rhd> M\<langle>N\<rangle>.P \<approx>\<^sub>s M\<langle>N\<rangle>.Q"
 using assms
-by(fastsimp intro: closeSubstI closeSubstE weakBisimOutputPres)
+by(fastforce intro: closeSubstI closeSubstE weakBisimOutputPres)
 
 lemma bisimSubstInputPres:
   fixes \<Psi>    :: 'b
@@ -193,7 +193,7 @@ proof -
 using `length CsP = length CsQ`
 proof(induct n=="length CsP" rule: nat.induct)
   case zero
-  thus ?case by(fastsimp intro: bisimSubstReflexive)
+  thus ?case by(fastforce intro: bisimSubstReflexive)
 next
   case(Suc n)
 next
@@ -216,7 +216,7 @@ lemma weakBisimSubstParPres:
 
   shows "\<Psi> \<rhd> P \<parallel> R \<approx>\<^sub>s Q \<parallel> R"
 using assms
-by(fastsimp intro: closeSubstI closeSubstE weakBisimParPres)
+by(fastforce intro: closeSubstI closeSubstE weakBisimParPres)
 
 lemma weakBisimSubstResPres:
   fixes \<Psi> :: 'b
@@ -258,7 +258,7 @@ lemma bisimSubstBangPres:
 
   shows "\<Psi> \<rhd> !P \<sim>\<^sub>s !Q"
 using assms
-by(fastsimp intro: bisimSubstI bisimSubstE bisimBangPres)
+by(fastforce intro: bisimSubstI bisimSubstE bisimBangPres)
 *)
 
 lemma weakBisimSubstParNil:

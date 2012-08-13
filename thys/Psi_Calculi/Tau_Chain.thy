@@ -1186,7 +1186,7 @@ lemma transitionWeakTransition:
 
   shows "\<Psi> : Q \<rhd> P \<Longrightarrow>\<alpha> \<prec> P'"
 using assms
-by(fastsimp intro: weakTransitionI)
+by(fastforce intro: weakTransitionI)
 
 lemma weakPar1Guarded:
   fixes \<Psi>  :: 'b

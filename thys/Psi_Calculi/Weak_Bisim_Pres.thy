@@ -26,7 +26,7 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cStatImp \<Psi> P Q)
-    thus ?case by(fastsimp intro: weakStatImpInputPres dest: weakBisimE(3))
+    thus ?case by(fastforce intro: weakStatImpInputPres dest: weakBisimE(3))
   next
     case(cSim \<Psi> P Q)
     thus ?case

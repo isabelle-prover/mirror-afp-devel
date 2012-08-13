@@ -206,7 +206,7 @@ proof -
       by(auto, rule_tac x="[]" in exI) (auto simp add: fresh_list_nil)
     moreover have "eqvt ?X"
       by(rule eqvtUnion)
-    (fastsimp simp add: eqvt_def eqvts pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst] pt_fresh_bij[OF pt_name_inst, OF at_name_inst])+
+    (fastforce simp add: eqvt_def eqvts pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst] pt_fresh_bij[OF pt_name_inst, OF at_name_inst])+
     ultimately have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(P \<parallel> Q) \<sim> P \<parallel> \<lparr>\<nu>x\<rparr>Q"
     proof(coinduct rule: transitiveCoinduct)
       case(cStatEq \<Psi> R T)
@@ -248,7 +248,7 @@ proof -
       proof -
 	fix \<Psi> R T y
 	assume "(\<Psi>, R, T) \<in> ?Y"
-	then obtain R' T' where "\<Psi> \<rhd> R \<sim> R'" and "(\<Psi>, R', T') \<in> (?X \<union> bisim)" and "\<Psi> \<rhd> T' \<sim> T" by fastsimp
+	then obtain R' T' where "\<Psi> \<rhd> R \<sim> R'" and "(\<Psi>, R', T') \<in> (?X \<union> bisim)" and "\<Psi> \<rhd> T' \<sim> T" by fastforce
 	assume "(y::name) \<sharp> \<Psi>" 
 	show "(\<Psi>, \<lparr>\<nu>y\<rparr>R, \<lparr>\<nu>y\<rparr>T) \<in> ?Y"
 	proof(case_tac "(\<Psi>, R', T') \<in> ?X")
@@ -486,7 +486,7 @@ proof -
     proof -
       fix \<Psi> T S yvec
       assume "(\<Psi>, T, S) \<in> ?Y"
-      then obtain T' S' where "\<Psi> \<rhd> T \<sim> T'" and "(\<Psi>, T', S') \<in> ?X" and "\<Psi> \<rhd> S' \<sim> S" by fastsimp
+      then obtain T' S' where "\<Psi> \<rhd> T \<sim> T'" and "(\<Psi>, T', S') \<in> ?X" and "\<Psi> \<rhd> S' \<sim> S" by fastforce
       assume "(yvec::name list) \<sharp>* \<Psi>" 
       from `(\<Psi>, T', S') \<in> ?X` obtain xvec P Q R where T'eq: "T' = \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R)" and S'eq: "S' = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))"
                                                   and "xvec \<sharp>* \<Psi>"
@@ -697,7 +697,7 @@ proof -
     next
       case(cSim \<Psi> Q R)
       thus ?case using `eqvt ?X`
-	by(fastsimp intro: outputPushResLeft outputPushResRight bisimReflexive)
+	by(fastforce intro: outputPushResLeft outputPushResRight bisimReflexive)
     next
       case(cExt \<Psi> Q R \<Psi>')
       show ?case
@@ -771,7 +771,7 @@ proof -
     next
       case(cSim \<Psi> Q R)
       thus ?case using `eqvt ?X`
-	by(fastsimp intro: inputPushResLeft inputPushResRight bisimReflexive)
+	by(fastforce intro: inputPushResLeft inputPushResRight bisimReflexive)
     next
       case(cExt \<Psi> Q R \<Psi>')
       show ?case
@@ -782,7 +782,7 @@ proof -
 	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P" and "y \<sharp> xvec"
 	  by(generate_fresh "name") (auto simp add: fresh_prod)
 	
-	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastsimp
+	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastforce
 	moreover from Qeq `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "Q = \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P))"
 	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts inputChainFresh)
 	moreover from Req `y \<sharp> P` have "R = M\<lparr>\<lambda>*xvec N \<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
@@ -796,7 +796,7 @@ proof -
 	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P" and "y \<sharp> xvec"
 	  by(generate_fresh "name") (auto simp add: fresh_prod)
 
-	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastsimp
+	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastforce
 	moreover from Req `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "R = \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P))"
 	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts inputChainFresh)
 	moreover from Qeq `y \<sharp> P` have "Q = M\<lparr>\<lambda>*xvec N \<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
@@ -863,7 +863,7 @@ proof -
     next
       case(cSim \<Psi> Q R)
       thus ?case using `eqvt ?X`
-	by(fastsimp intro: casePushResLeft casePushResRight bisimReflexive)
+	by(fastforce intro: casePushResLeft casePushResRight bisimReflexive)
     next
       case(cExt \<Psi> Q R \<Psi>')
       show ?case
@@ -937,7 +937,7 @@ proof -
     hence "\<langle>A\<^isub>P, \<Psi> \<otimes> SBottom'\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>P, \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> SBottom'\<rangle>"
       by(force intro: frameResChainPres)
     moreover from `A\<^isub>P \<sharp>* \<Psi>` have "\<langle>\<epsilon>, \<Psi> \<otimes> SBottom'\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>P, \<Psi> \<otimes> SBottom'\<rangle>"
-      by(rule_tac FrameStatEqSym) (fastsimp intro: frameResFreshChain)
+      by(rule_tac FrameStatEqSym) (fastforce intro: frameResFreshChain)
     ultimately show ?case using Eq `A\<^isub>P \<sharp>* \<Psi>` FrP
       by auto (blast dest: FrameStatEqTrans FrameStatEqSym)+
   next
@@ -1091,7 +1091,7 @@ proof -
     from `\<Psi> \<rhd> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''` `xvec \<sharp>* K` `\<Psi> \<rhd> P \<sim> Q` `xvec \<sharp>* \<Psi>` `xvec \<sharp>* P` `xvec \<sharp>* Q` `guarded Q`
     obtain Q'' T R where QTrans': "\<Psi> \<rhd> !Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q''" and "\<Psi> \<rhd> P'' \<sim> R \<parallel> !P" and "\<Psi> \<rhd> Q'' \<sim> T \<parallel> !Q" and "\<Psi> \<rhd> R \<sim> T"
                      and suppR: "((supp R)::name set) \<subseteq> supp P''" and suppT: "((supp T)::name set) \<subseteq> supp Q''" using cComm1
-      by fastsimp
+      by fastforce
     from QTrans' `\<Psi>\<^isub>Q \<simeq> SBottom'` have "\<Psi> \<otimes> \<Psi>\<^isub>Q \<rhd> !Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q''" 
       by(metis statEqTransition Identity compositionSym AssertionStatEqSym)
     moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^isub>Q \<simeq> SBottom'` have "\<Psi> \<otimes> \<Psi>\<^isub>Q \<otimes> SBottom' \<turnstile> M \<leftrightarrow> K" by(metis statEqEnt Identity compositionSym AssertionStatEqSym)
@@ -1124,7 +1124,7 @@ proof -
     from `\<Psi> \<rhd> !P \<longmapsto>K\<lparr>N\<rparr> \<prec> P''` `\<Psi> \<rhd> P \<sim> Q` `guarded Q`
    obtain Q'' T R where QTrans': "\<Psi> \<rhd> !Q \<longmapsto>K\<lparr>N\<rparr> \<prec> Q''" and "\<Psi> \<rhd> P'' \<sim> R \<parallel> !P" and "\<Psi> \<rhd> Q'' \<sim> T \<parallel> !Q" and "\<Psi> \<rhd> R \<sim> T"
                     and suppR: "((supp R)::name set) \<subseteq> supp P''" and suppT: "((supp T)::name set) \<subseteq> supp Q''" using cComm2
-     by fastsimp
+     by fastforce
     from QTrans' `\<Psi>\<^isub>Q \<simeq> SBottom'` have "\<Psi> \<otimes> \<Psi>\<^isub>Q \<rhd> !Q \<longmapsto>K\<lparr>N\<rparr> \<prec> Q''" 
       by(metis statEqTransition Identity compositionSym AssertionStatEqSym)
     moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^isub>Q \<simeq> SBottom'` have "\<Psi> \<otimes> \<Psi>\<^isub>Q \<otimes> SBottom' \<turnstile> M \<leftrightarrow> K" by(metis statEqEnt Identity compositionSym AssertionStatEqSym)
@@ -1185,7 +1185,7 @@ proof -
   moreover have "eqvt ?X" 
     apply(auto simp add: eqvt_def)
     apply(drule_tac p=p in bisimClosed)
-    by fastsimp
+    by fastforce
   ultimately have "\<Psi> \<rhd> \<zero> \<parallel> !P \<sim> \<zero> \<parallel> !Q"
   proof(coinduct rule: weakTransitiveCoinduct)
     case(cStatEq \<Psi> P Q)

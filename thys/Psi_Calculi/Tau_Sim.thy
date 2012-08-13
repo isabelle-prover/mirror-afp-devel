@@ -220,7 +220,7 @@ proof(induct rule: weakSimI[where C=Q])
     moreover from `length xvec = length Tvec` have "(\<Psi>, P[xvec::=Tvec], Q[xvec::=Tvec]) \<in> Rel" by(rule Subst)
     hence "(\<Psi> \<otimes> \<Psi>', P[xvec::=Tvec], Q[xvec::=Tvec]) \<in> Rel" by(rule rExt)
     with `\<Psi> \<otimes> \<Psi>' \<rhd> P[xvec::=Tvec] \<sim> P'` have "(\<Psi> \<otimes> \<Psi>', P', Q[xvec::=Tvec]) \<in> Rel" by(blast intro: bisimE C1 bisimReflexive)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   next
     case(cOutput M N K)
     note `\<Psi> \<turnstile> M \<leftrightarrow> K`
@@ -231,7 +231,7 @@ proof(induct rule: weakSimI[where C=Q])
     from PTrans have "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
     moreover from `(\<Psi>, P, Q) \<in> Rel` have "(\<Psi> \<otimes> \<Psi>', P, Q) \<in> Rel" by(rule rExt)
     with `\<Psi> \<otimes> \<Psi>' \<rhd> P \<sim> P'` have "(\<Psi> \<otimes> \<Psi>', P', Q) \<in> Rel" by(blast intro: bisimE C1 bisimReflexive)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   next
     case cTau
     with `\<tau> \<noteq> \<tau>` show ?case
@@ -251,10 +251,10 @@ next
       apply(drule_tac bisimE(2))
       apply(drule_tac simE, auto)
       by(metis bisimE)
-    from tPTrans P'Trans have "\<Psi> \<rhd> \<tau>.(\<tau>.(P)) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" by(fastsimp dest: tauActTauChain)
+    from tPTrans P'Trans have "\<Psi> \<rhd> \<tau>.(\<tau>.(P)) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" by(fastforce dest: tauActTauChain)
     moreover from `(\<Psi>, P, Q) \<in> Rel` `\<Psi> \<rhd> P \<sim> P''` `\<Psi> \<rhd> P'' \<sim> P'''` `\<Psi> \<rhd> Q \<sim> Q'` have "(\<Psi>, P''', Q') \<in> Rel"
       by(metis bisimTransitive C1 bisimSymmetric)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   qed
 qed
 
@@ -282,14 +282,14 @@ proof(induct rule: weakSimI[where C=Q])
       by(rule weakInput)
     moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> P[xvec::=Tvec] \<Longrightarrow>\<^sup>^\<^sub>\<tau> P[xvec::=Tvec]" by auto
     ultimately show ?case using Subst `length xvec=length Tvec` `distinct xvec`
-      by fastsimp
+      by fastforce
   next
     case(cOutput M N K)
     note `\<Psi> \<turnstile> M \<leftrightarrow> K`
     moreover have "insertAssertion (extractFrame (M\<langle>N\<rangle>.(\<tau>.(Q)))) \<Psi> \<hookrightarrow>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>" by auto
     ultimately have "\<Psi> : M\<langle>N\<rangle>.(\<tau>.(Q)) \<rhd> M\<langle>N\<rangle>.P \<Longrightarrow>K\<langle>N\<rangle> \<prec> P" by(rule weakOutput)
     moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P" by auto
-    ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', P, \<tau>.(Q)) \<in> Rel` by fastsimp
+    ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', P, \<tau>.(Q)) \<in> Rel` by fastforce
   next
     case cTau
     with `\<tau> \<noteq> \<tau>` show ?case by simp
@@ -304,7 +304,7 @@ next
     from PTrans have "\<Psi> \<rhd> \<tau>.(P) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
     moreover from `\<Psi> \<rhd> P \<sim> P'` `\<Psi> \<rhd> \<tau>.(Q) \<sim> Q'`  `(\<Psi>, P, \<tau>.(Q)) \<in> Rel`
     have "(\<Psi>, P', Q') \<in> Rel" by(metis bisimTransitive bisimSymmetric C1)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   qed
 qed
 
@@ -332,10 +332,10 @@ proof(induct rule: weakCongSimI)
       apply(drule_tac bisimE(2))
       apply(drule_tac simE, auto)
       by(metis bisimE)
-    from tPTrans P'Trans have "\<Psi> \<rhd> \<tau>.(\<tau>.(P)) \<Longrightarrow>\<^sub>\<tau> P'''" by(fastsimp dest: tauActTauStepChain)
+    from tPTrans P'Trans have "\<Psi> \<rhd> \<tau>.(\<tau>.(P)) \<Longrightarrow>\<^sub>\<tau> P'''" by(fastforce dest: tauActTauStepChain)
     moreover from `(\<Psi>, P, Q) \<in> Rel` `\<Psi> \<rhd> P \<sim> P''` `\<Psi> \<rhd> P'' \<sim> P'''` `\<Psi> \<rhd> Q \<sim> Q'` have "(\<Psi>, P''', Q') \<in> Rel"
       by(metis bisimTransitive C1 bisimSymmetric)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   qed
 qed
 
@@ -359,7 +359,7 @@ proof(induct rule: weakCongSimI)
     from PTrans have "\<Psi> \<rhd> \<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'" by(rule tauActTauStepChain)
     moreover from `\<Psi> \<rhd> P \<sim> P'` `\<Psi> \<rhd> \<tau>.(Q) \<sim> Q'`  `(\<Psi>, P, \<tau>.(Q)) \<in> Rel`
     have "(\<Psi>, P', Q') \<in> Rel" by(metis bisimTransitive bisimSymmetric C1)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   qed
 qed
 
@@ -543,7 +543,7 @@ proof(induct rule: weakSimI2)
     ultimately have "\<Psi> : (M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q)) \<rhd> (M\<lparr>\<lambda>*xvec N\<rparr>.P) \<oplus> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]"
       by(rule_tac weakTransitionI) auto
     moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P) \<oplus> Q)[xvec::=Tvec] \<Longrightarrow>\<^sup>^\<^sub>\<tau> (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]" by auto
-    ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', (\<tau>.(P) \<oplus> Q)[xvec::=Tvec], (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]) \<in> Rel` by fastsimp
+    ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', (\<tau>.(P) \<oplus> Q)[xvec::=Tvec], (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]) \<in> Rel` by fastforce
   next
     case(cOutput M N K)
     have "\<Psi> \<rhd> \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by auto
@@ -558,7 +558,7 @@ proof(induct rule: weakSimI2)
     ultimately have "\<Psi> : (M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<langle>N\<rangle>.P \<oplus> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<langle>N\<rangle> \<prec> (\<tau>.(P) \<oplus> Q)"
       by(rule_tac weakTransitionI) auto
     moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P) \<oplus> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<tau>.(P) \<oplus> Q" by auto
-    ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P) \<oplus> Q, \<tau>.(P) \<oplus> Q) \<in> Rel` by fastsimp
+    ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P) \<oplus> Q, \<tau>.(P) \<oplus> Q) \<in> Rel` by fastforce
   next
     case cTau
     from `\<tau> \<noteq> \<tau>` show ?case
@@ -575,7 +575,7 @@ next
     hence "\<Psi> \<rhd> (\<tau>.(P)) \<oplus> \<tau>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
     moreover from `\<Psi> \<rhd> \<tau>.(P) \<oplus> Q \<sim> P'` `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> Q'` have "\<Psi> \<rhd> P' \<sim> Q'" by(metis bisimSymmetric bisimTransitive)
     hence "(\<Psi>, P', Q') \<in> Rel" by(rule C1)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   qed
 qed
 
@@ -601,7 +601,7 @@ proof(induct rule: weakCongSimI)
     hence "\<Psi> \<rhd> (\<tau>.(P)) \<oplus> \<tau>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sub>\<tau> P'" by(rule tauActTauStepChain)
     moreover from `\<Psi> \<rhd> \<tau>.(P) \<oplus> Q \<sim> P'` `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> Q'` have "\<Psi> \<rhd> P' \<sim> Q'" by(metis bisimSymmetric bisimTransitive)
     hence "(\<Psi>, P', Q') \<in> Rel" by(rule C1)
-    ultimately show ?case by fastsimp
+    ultimately show ?case by fastforce
   qed
 qed
 
@@ -639,7 +639,7 @@ proof(induct rule: weakSimI2)
       with PTrans have "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P[xvec::=Tvec])) \<oplus> (Q[xvec::=Tvec]) \<longmapsto>\<tau> \<prec> P'" by(rule Sum1)
       hence "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P[xvec::=Tvec])) \<oplus> (Q[xvec::=Tvec]) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
       moreover from `\<Psi> \<otimes> \<Psi>' \<rhd> P[xvec::=Tvec] \<sim> P'` have "(\<Psi> \<otimes> \<Psi>', P', P[xvec::=Tvec]) \<in> Rel" by(metis bisimE C1)
-      ultimately show ?case by fastsimp
+      ultimately show ?case by fastforce
     next
       case(cOutput M N K)
       have "\<Psi> \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)" by auto
@@ -654,7 +654,7 @@ proof(induct rule: weakSimI2)
       with PTrans have "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P)) \<oplus> Q \<longmapsto>\<tau> \<prec> P'" by(rule Sum1)
       hence "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P)) \<oplus> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
       moreover from `\<Psi> \<otimes> \<Psi>' \<rhd> P \<sim> P'` have "(\<Psi> \<otimes> \<Psi>', P', P) \<in> Rel" by(metis bisimE C1)
-      ultimately show ?case by fastsimp 
+      ultimately show ?case by fastforce 
     next
       case cTau
       from `\<tau> \<noteq> \<tau>` show ?case by simp
@@ -677,7 +677,7 @@ proof(induct rule: weakSimI2)
 	by(rule_tac weakTransitionI) auto
       moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec]) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec])" by auto
       ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec]), \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec])) \<in> Rel` `length xvec = length Tvec` `distinct xvec`
-	by fastsimp
+	by fastforce
     next
       case(cOutput M N K)
       have "\<Psi> \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)" by auto
@@ -688,7 +688,7 @@ proof(induct rule: weakSimI2)
       ultimately have "\<Psi> : (M\<langle>N\<rangle>.P \<oplus> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<langle>N\<rangle> \<prec> (\<tau>.(P) \<oplus> Q)"
 	by(rule_tac weakTransitionI) auto
       moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P) \<oplus> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<tau>.(P) \<oplus> Q" by auto
-      ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P) \<oplus> Q, \<tau>.(P) \<oplus> Q) \<in> Rel` by fastsimp
+      ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P) \<oplus> Q, \<tau>.(P) \<oplus> Q) \<in> Rel` by fastforce
     next
       case cTau
       from `\<tau> \<noteq> \<tau>` show ?case by simp
@@ -712,11 +712,11 @@ next
 	apply(drule_tac bisimE(2))
 	apply(drule_tac simE)
 	by(auto dest: bisimE)
-      from PTrans P''Trans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" by(fastsimp dest: tauActTauChain)
+      from PTrans P''Trans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" by(fastforce dest: tauActTauChain)
       moreover from `\<Psi> \<rhd> P \<sim> PQ` `\<Psi> \<rhd> P'' \<sim> P'''` `\<Psi> \<rhd> P \<sim> P''` have "\<Psi> \<rhd> P''' \<sim> PQ"
 	by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P''', PQ) \<in> Rel" by(rule C1)
-      ultimately show ?case by fastsimp
+      ultimately show ?case by fastforce
     qed
   next
     case cSum2
@@ -729,7 +729,7 @@ next
       moreover from `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'` `\<Psi> \<rhd> \<tau>.(P) \<oplus> Q \<sim> PQ` have "\<Psi> \<rhd> P' \<sim> PQ"
 	by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P', PQ) \<in> Rel" by(rule C1)
-      ultimately show ?case by fastsimp
+      ultimately show ?case by fastforce
     qed
   qed
 qed
@@ -761,11 +761,11 @@ proof(induct rule: weakCongSimI)
 	apply(drule_tac bisimE(2))
 	apply(drule_tac simE)
 	by(auto dest: bisimE)
-      from PTrans P''Trans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sub>\<tau> P'''" by(fastsimp dest: tauActTauStepChain)
+      from PTrans P''Trans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sub>\<tau> P'''" by(fastforce dest: tauActTauStepChain)
       moreover from `\<Psi> \<rhd> P \<sim> PQ` `\<Psi> \<rhd> P'' \<sim> P'''` `\<Psi> \<rhd> P \<sim> P''` have "\<Psi> \<rhd> P''' \<sim> PQ"
 	by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P''', PQ) \<in> Rel" by(rule C1)
-      ultimately show ?case by fastsimp
+      ultimately show ?case by fastforce
     qed
   next
     case cSum2
@@ -778,7 +778,7 @@ proof(induct rule: weakCongSimI)
       moreover from `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'` `\<Psi> \<rhd> \<tau>.(P) \<oplus> Q \<sim> PQ` have "\<Psi> \<rhd> P' \<sim> PQ"
 	by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P', PQ) \<in> Rel" by(rule C1)
-      ultimately show ?case by fastsimp
+      ultimately show ?case by fastforce
     qed
   qed
 qed

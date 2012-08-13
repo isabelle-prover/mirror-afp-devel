@@ -39,8 +39,8 @@ proof -
 
   from p show ?thesis
     apply(coinduct, auto)
-    apply(fastsimp dest: rSim simp add: aux)
-    by(fastsimp dest: rSym)
+    apply(fastforce dest: rSim simp add: aux)
+    by(fastforce dest: rSym)
 qed
 
 lemma bisimE:
@@ -78,7 +78,7 @@ proof
     proof(coinduct rule: bisimCoinduct)
       case(cSim P Q)
       with `old_bisim Rel` show ?case
-        by(fastsimp simp add: old_bisim_def intro: Strong_Late_Sim.monotonic)
+        by(fastforce simp add: old_bisim_def intro: Strong_Late_Sim.monotonic)
     next
       case(cSym P Q)
       with `old_bisim Rel` show ?case
@@ -187,7 +187,7 @@ proof -
   proof(coinduct rule: bisimCoinduct)
     case(cSim P R)
     thus ?case
-      by(fastsimp intro: Strong_Late_Sim.transitive dest: bisimE simp add: eqvtTrans)
+      by(fastforce intro: Strong_Late_Sim.transitive dest: bisimE simp add: eqvtTrans)
   next
     case(cSym P R)
     thus ?case

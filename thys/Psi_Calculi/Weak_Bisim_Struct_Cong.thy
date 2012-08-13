@@ -277,13 +277,13 @@ proof -
   moreover from `\<Psi> \<rhd> !P \<longmapsto>\<alpha> \<prec> P'` `bn \<alpha> \<sharp>* subject \<alpha>` `\<alpha> \<noteq> \<tau>` `bn \<alpha> \<sharp>* P`  have "\<exists>Q. \<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> Q \<and> P' \<sim> Q \<parallel> !P"
   proof(nominal_induct rule: bangInduct')
     case(cAlpha \<alpha> P' p)
-    then obtain Q where "\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> Q" and "P' \<sim> Q \<parallel> (P \<parallel> !P)" by fastsimp
+    then obtain Q where "\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> Q" and "P' \<sim> Q \<parallel> (P \<parallel> !P)" by fastforce
     from `\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> Q` have "distinct(bn \<alpha>)" by(rule boundOutputDistinct)
     have S: "set p \<subseteq> set(bn \<alpha>) \<times> set(bn(p \<bullet> \<alpha>))" by fact
     from `\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> Q` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* P` `bn \<alpha> \<sharp>* subject \<alpha>` `distinct(bn \<alpha>)`
     have "bn(p \<bullet> \<alpha>) \<sharp>* Q" by(force dest: freeFreshChainDerivative)
     with `\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> Q` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` S `bn \<alpha> \<sharp>* subject \<alpha>` `distinct(bn \<alpha>)` have "\<Psi> \<rhd> P \<longmapsto>(p \<bullet> \<alpha>) \<prec> (p \<bullet> Q)"
-      by(fastsimp simp add: residualAlpha)
+      by(fastforce simp add: residualAlpha)
     moreover from `P' \<sim> Q \<parallel> (P \<parallel> !P)` have "(p \<bullet> \<one>) \<rhd> (p \<bullet> P') \<sim> (p \<bullet> (Q \<parallel> (P \<parallel> !P)))"
       by(rule bisimClosed)
     with `(bn \<alpha>) \<sharp>* P` `bn(p \<bullet> \<alpha>) \<sharp>* P` S have "(p \<bullet> P') \<sim> (p \<bullet> Q) \<parallel> (P \<parallel> !P)"
@@ -538,7 +538,7 @@ proof -
 
   from assms have "(\<Psi>, R \<parallel> !P, R \<parallel> !Q) \<in> ?X" by auto
   moreover have "eqvt ?X"
-    by(fastsimp simp add: eqvt_def intro: weakBisimClosed)
+    by(fastforce simp add: eqvt_def intro: weakBisimClosed)
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveCoinduct2)
     case(cStatImp \<Psi> P Q)
@@ -551,13 +551,13 @@ proof -
       moreover have "eqvt ?Y" 
 	apply(auto simp add: eqvt_def)
 	apply(rule_tac x="p \<bullet> (Ra \<parallel> !P)" in exI, auto)
-	apply(fastsimp dest: weakBisimClosed simp add: eqvts)
+	apply(fastforce dest: weakBisimClosed simp add: eqvts)
 	apply(rule_tac x="(p \<bullet> Ra) \<parallel> !(p \<bullet> Q)" in exI, auto)
 	apply(rule_tac x="p \<bullet> Ra" in exI)
 	apply(rule_tac x="p \<bullet> P" in exI, auto)
 	apply(rule_tac x="p \<bullet> Q" in exI, auto)
 	apply(blast intro: weakBisimClosed)
-	by(fastsimp dest: bisimClosed simp add: eqvts)
+	by(fastforce dest: bisimClosed simp add: eqvts)
       moreover assume "guarded P" and "guarded Q" 
       moreover note weakBisimClosed bisimClosed weakBisimE(3) bisimE(3) weakBisimE(2) weakBisimE(4) bisimE(4) statEqWeakBisim statEqBisim weakBisimTransitive bisimTransitive weakBisimParAssoc[THEN weakBisimE(4)] bisimParAssoc[THEN bisimE(4)] weakBisimParPres 
       moreover have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<approx> Q \<Longrightarrow> \<Psi> \<rhd> P \<parallel> P \<approx> Q \<parallel> Q"

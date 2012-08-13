@@ -110,13 +110,13 @@ next
 	  have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> P)) \<longmapsto>M\<lparr>\<nu>*(xvec1@x'#xvec2'@y'#yvec2)\<rparr>\<langle>N\<rangle> \<prec> P'"
 	    by(subst alphaRes[where y=x']) (simp add: calc_atm eqvts abs_fresh)+
 	  with Eq1 `y' \<sharp> \<lparr>\<nu>x\<rparr>P` `x \<noteq> y'` R1 show ?case
-	    by(fastsimp simp add: alphaRes abs_fresh)
+	    by(fastforce simp add: alphaRes abs_fresh)
 	next
 	  assume "\<not>x' mem yvec1"
 	  hence "x' \<sharp> yvec1" by(simp add: fresh_def)
 	  from `\<not>x' mem yvec1` `yvec1@yvec2 = xvec1@x'#xvec2`
 	  have "x' mem yvec2"
-	    by(fastsimp simp add: append_eq_append_conv2 append_eq_Cons_conv
+	    by(fastforce simp add: append_eq_append_conv2 append_eq_Cons_conv
                                   fresh_list_append fresh_list_cons)
 	  with `yvec1@yvec2 = xvec1@x'#xvec2` `distinct (yvec1@yvec2)`
 	  obtain xvec2' where Eq: "xvec1=yvec1@xvec2'"
@@ -132,7 +132,7 @@ next
 	  have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> P)) \<longmapsto>M\<lparr>\<nu>*((yvec1@y'#xvec2')@x'#xvec2)\<rparr>\<langle>N\<rangle> \<prec> P'"
 	    by(subst alphaRes[where y=x']) (simp add: calc_atm eqvts abs_fresh)+
 	  with Eq1 `y' \<sharp> \<lparr>\<nu>x\<rparr>P` `x \<noteq> y'` R1 show ?case
-	    by(fastsimp simp add: alphaRes abs_fresh)
+	    by(fastforce simp add: alphaRes abs_fresh)
 	qed
       next
 	case(cRes P')

@@ -140,7 +140,7 @@ proof(induct rule: simI[where C="(xvec, C)"])
   proof(cases rule: actionCases[where \<alpha>=\<alpha>])
     case(cInput M N)
     from `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha>=M\<lparr>N\<rparr>` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<longmapsto>(p \<bullet> (M\<lparr>N\<rparr> \<prec> Q'))"
-      by(fastsimp intro: semantics.eqvt)
+      by(fastforce intro: semantics.eqvt)
     with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` `xvec \<sharp>* Q` `(p \<bullet> xvec) \<sharp>* Q` S
     have QTrans: "\<Psi> \<rhd> Q \<longmapsto>(p \<bullet> M)\<lparr>(p \<bullet> N)\<rparr> \<prec> (p \<bullet> Q')"
       by(simp add: eqvts)
@@ -165,7 +165,7 @@ proof(induct rule: simI[where C="(xvec, C)"])
     case(cOutput M yvec N)
     from `distinct(bn \<alpha>)` `bn \<alpha> \<sharp>* subject \<alpha>` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` have "distinct yvec" and "yvec \<sharp>* M" by simp+
     from `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<longmapsto>(p \<bullet> (M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle> \<prec> Q'))"
-      by(fastsimp intro: semantics.eqvt)
+      by(fastforce intro: semantics.eqvt)
     with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` `xvec \<sharp>* Q` `(p \<bullet> xvec) \<sharp>* Q` S
     have QTrans: "\<Psi> \<rhd> Q \<longmapsto>(p \<bullet> M)\<lparr>\<nu>*(p \<bullet> yvec)\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> (p \<bullet> Q')"
       by(simp add: eqvts)

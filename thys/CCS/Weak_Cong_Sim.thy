@@ -167,6 +167,6 @@ lemma weakMonotonic:
 
   shows "P \<leadsto><B> Q"
 using assms
-by(fastsimp simp add: weakCongSimulation_def)
+by(fastforce simp add: weakCongSimulation_def)
 
 end

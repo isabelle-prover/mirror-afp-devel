@@ -164,7 +164,7 @@ lemma weakCongOutputPres:
 
   shows "M\<langle>N\<rangle>.P \<doteq>\<^sub>c M\<langle>N\<rangle>.Q"
 using assms
-by(fastsimp intro: weakCongI weakCongE weakPsiCongOutputPres)
+by(fastforce intro: weakCongI weakCongE weakPsiCongOutputPres)
 
 lemma weakCongInputPres:
   fixes \<Psi>    :: 'b
@@ -261,7 +261,7 @@ lemma weakCongParPres:
 
   shows "P \<parallel> R \<doteq>\<^sub>c Q \<parallel> R"
 using assms
-by(fastsimp intro: weakCongI weakCongE weakPsiCongParPres)
+by(fastforce intro: weakCongI weakCongE weakPsiCongParPres)
 
 lemma weakCongResPres:
   fixes P :: "('a, 'b, 'c) psi"
@@ -296,7 +296,7 @@ lemma weakCongBangPres:
 
   shows "!P \<doteq>\<^sub>c !Q"
 using assms
-by(fastsimp intro: weakCongI weakCongE weakPsiCongBangPres  guardedSeqSubst)
+by(fastforce intro: weakCongI weakCongE weakPsiCongBangPres  guardedSeqSubst)
 
 end
 

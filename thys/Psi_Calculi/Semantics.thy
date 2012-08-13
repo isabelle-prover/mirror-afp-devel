@@ -1834,7 +1834,7 @@ next
   have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) (p \<bullet> (M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle>)) (p \<bullet> P')"
     apply(rule_tac \<alpha>="M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle>" in rAlpha)
     apply(assumption | simp)+
-    apply(fastsimp simp add: fresh_star_def abs_fresh)
+    apply(fastforce simp add: fresh_star_def abs_fresh)
     by(assumption | simp)+
   with \<alpha>eq P'eq show ?case by simp
 next
@@ -2305,13 +2305,13 @@ proof -
     thus ?case by(simp add: action.inject)
   next
     case cOpen
-    thus ?case by(fastsimp intro: rOpen simp add: action.inject)
+    thus ?case by(fastforce intro: rOpen simp add: action.inject)
   next
     case cScope
-    thus ?case by(fastsimp intro: rScope)
+    thus ?case by(fastforce intro: rScope)
   next
     case cBang
-    thus ?case by(fastsimp intro: rBang)
+    thus ?case by(fastforce intro: rBang)
   qed
 qed
 
@@ -3281,7 +3281,7 @@ proof -
     hence "Prop C \<Psi> P M B A\<^isub>P \<Psi>\<^isub>P" using FrP `distinct A\<^isub>P`
     proof(nominal_induct \<Psi> P Rs=="ROut M B" A\<^isub>P \<Psi>\<^isub>P avoiding: C arbitrary: B rule: semanticsFrameInduct)
       case cAlpha
-      thus ?case by(fastsimp intro: rAlpha) 
+      thus ?case by(fastforce intro: rAlpha) 
     next
       case cInput 
       thus ?case by(simp add: residualInject)
@@ -3294,11 +3294,11 @@ proof -
     next
       case cPar1
       thus ?case
-	by(fastsimp intro: rPar1 simp add: residualInject)
+	by(fastforce intro: rPar1 simp add: residualInject)
     next
       case cPar2
       thus ?case
-	by(fastsimp intro: rPar2 simp add: residualInject)
+	by(fastforce intro: rPar2 simp add: residualInject)
     next
       case cComm1
       thus ?case by(simp add: residualInject)
@@ -3307,7 +3307,7 @@ proof -
       thus ?case by(simp add: residualInject)
     next
       case cOpen
-      thus ?case by(fastsimp intro: rOpen simp add: residualInject)
+      thus ?case by(fastforce intro: rOpen simp add: residualInject)
     next
       case cScope
       thus ?case by(force intro: rScope simp add: residualInject)
@@ -3591,7 +3591,7 @@ next
     thus ?case by(simp add: action.inject)
   next
     case cCase
-    thus ?case by(fastsimp simp add: action.inject dest: memFresh)
+    thus ?case by(fastforce simp add: action.inject dest: memFresh)
   next
     case cPar1
     thus ?case by simp
@@ -3675,11 +3675,11 @@ proof -
   next
     case cComm1
     thus ?case
-      by(fastsimp dest: inputFreshDerivative outputFreshDerivative simp add: resChainFresh)
+      by(fastforce dest: inputFreshDerivative outputFreshDerivative simp add: resChainFresh)
   next
     case cComm2
     thus ?case
-      by(fastsimp dest: inputFreshDerivative outputFreshDerivative simp add: resChainFresh)
+      by(fastforce dest: inputFreshDerivative outputFreshDerivative simp add: resChainFresh)
   next
     case cOpen
     thus ?case by simp
@@ -6061,8 +6061,8 @@ proof -
     apply(auto simp add: psi.inject)
     apply(force simp add: residualInject residualInject' intro: rPar1)
     apply(force simp add: residualInject residualInject' intro: rPar2)
-    apply(fastsimp simp add: residualInject residualInject' intro: rComm1)
-    by(fastsimp simp add: residualInject residualInject' intro: rComm2)
+    apply(fastforce simp add: residualInject residualInject' intro: rComm1)
+    by(fastforce simp add: residualInject residualInject' intro: rComm2)
 qed
 
 lemma parInputCases[consumes 1, case_names cPar1 cPar2]:
@@ -6233,12 +6233,12 @@ next
   case(cOpen \<Psi> P M xvec yvec N P' x A\<^isub>P \<Psi>\<^isub>P B)  
   then obtain K where "\<Psi> \<otimes> \<Psi>\<^isub>P \<turnstile> M \<leftrightarrow> K" and "B \<sharp>* K"
     apply(rule_tac cOpen) by force auto
-  thus ?case by(fastsimp intro: cOpen)
+  thus ?case by(fastforce intro: cOpen)
 next
   case(cScope \<Psi> P \<alpha> P' x A\<^isub>P \<Psi>\<^isub>P B)  
   then obtain M where "\<Psi> \<otimes> \<Psi>\<^isub>P \<turnstile> the(subject \<alpha>) \<leftrightarrow> M" and "B \<sharp>* M"
     by(rule_tac cScope) auto
-  thus ?case by(fastsimp intro: cScope)
+  thus ?case by(fastforce intro: cScope)
 next
   case(cBang \<Psi> P \<alpha> P' A\<^isub>P \<Psi>\<^isub>P B)
   then obtain K where "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<one> \<turnstile> the(subject \<alpha>) \<leftrightarrow> K" and "B \<sharp>* K"
@@ -6568,7 +6568,7 @@ proof -
     ultimately have "Prop \<alpha> P'" using `bn \<alpha> = []` `xvec \<sharp>* \<Psi>``xvec \<sharp>* M` `xvec \<sharp>* \<alpha>` `xvec \<sharp>* P'`
       apply(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ C x])  
       apply(force simp add: residualInject psi.inject rInput)
-      by(fastsimp simp add: residualInject psi.inject inputChainFresh)+
+      by(fastforce simp add: residualInject psi.inject inputChainFresh)+
   }
   note Goal = this
   moreover obtain p :: "name prm" where "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* M" and "(p \<bullet> xvec) \<sharp>* N" and "(p \<bullet> xvec) \<sharp>* P"
@@ -7458,7 +7458,7 @@ proof -
 	  by(rule_tac frameChainAlpha) (auto simp add: fresh_star_def frameResChainFresh)
 	hence "\<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>*(A\<^isub>P'@A\<^isub>Q')\<rparr>(FAssert (\<Psi>\<^isub>P' \<otimes> \<Psi>\<^isub>Q'))) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>*(A\<^isub>P'@A\<^isub>Q')\<rparr>(FAssert((p \<bullet> \<Psi>\<^isub>P') \<otimes> (p \<bullet> \<Psi>\<^isub>Q'))))"
 	  using `A\<^isub>P' \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^isub>P'` `A\<^isub>Q' \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^isub>Q'` S
-	  by(fastsimp simp add: eqvts)
+	  by(fastforce simp add: eqvts)
 	ultimately show ?thesis
 	  by(simp add: frameChainAppend)
       qed
@@ -7528,7 +7528,7 @@ proof -
 	  by(rule_tac frameChainAlpha) (auto simp add: fresh_star_def frameResChainFresh)
 	hence "\<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>*(A\<^isub>P'@A\<^isub>Q')\<rparr>(FAssert (\<Psi>\<^isub>P' \<otimes> \<Psi>\<^isub>Q'))) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>*(A\<^isub>P'@A\<^isub>Q')\<rparr>(FAssert((p \<bullet> \<Psi>\<^isub>P') \<otimes> (p \<bullet> \<Psi>\<^isub>Q'))))"
 	  using `A\<^isub>P' \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^isub>P'` `A\<^isub>Q' \<sharp>* xvec` `A\<^isub>Q' \<sharp>* (p \<bullet> xvec)` S
-	  by(fastsimp simp add: eqvts)
+	  by(fastforce simp add: eqvts)
 	ultimately show ?thesis
 	  by(simp add: frameChainAppend)
       qed
@@ -7720,7 +7720,7 @@ next
     by(metis frameIntCompositionSym Identity AssertionStatEqTrans AssertionStatEqSym)
   ultimately have "\<langle>A\<^isub>F, \<Psi>\<^isub>F \<otimes> \<Psi>\<^isub>P\<rangle> \<hookrightarrow>\<^sub>F \<langle>A\<^isub>G, \<Psi>\<^isub>G \<otimes> \<Psi>\<^isub>P\<rangle>"
     by(rule FrameStatEqImpCompose)
-  with cCase have "\<Psi>\<^isub>G \<rhd> P \<longmapsto> \<alpha> \<prec> P'" by(fastsimp dest: memFreshChain)
+  with cCase have "\<Psi>\<^isub>G \<rhd> P \<longmapsto> \<alpha> \<prec> P'" by(fastforce dest: memFreshChain)
   moreover note `(\<phi>, P) mem Cs` 
   moreover from `A\<^isub>F \<sharp>* (Cases Cs)``A\<^isub>G \<sharp>* (Cases Cs)` `(\<phi>, P) mem Cs` have "A\<^isub>F \<sharp>* \<phi>" and "A\<^isub>G \<sharp>* \<phi>"
     by(auto dest: memFreshChain)
@@ -7856,7 +7856,7 @@ next
     by(metis frameIntCompositionSym Identity AssertionStatEqTrans AssertionStatEqSym)
   ultimately have "\<langle>A\<^isub>F, \<Psi>\<^isub>F \<otimes> \<Psi>\<^isub>P\<rangle> \<hookrightarrow>\<^sub>F \<langle>A\<^isub>G, \<Psi>\<^isub>G \<otimes> \<Psi>\<^isub>P\<rangle>"
     by(rule FrameStatEqImpCompose)
-  with cCase have "\<Psi>\<^isub>G \<rhd> P \<longmapsto>\<tau> \<prec> P'" by(fastsimp dest: memFreshChain)
+  with cCase have "\<Psi>\<^isub>G \<rhd> P \<longmapsto>\<tau> \<prec> P'" by(fastforce dest: memFreshChain)
   moreover note `(\<phi>, P) mem Cs` 
   moreover from `A\<^isub>F \<sharp>* (Cases Cs)``A\<^isub>G \<sharp>* (Cases Cs)` `(\<phi>, P) mem Cs` have "A\<^isub>F \<sharp>* \<phi>" and "A\<^isub>G \<sharp>* \<phi>"
     by(auto dest: memFreshChain)
@@ -8824,7 +8824,7 @@ proof -
       moreover from MeqK' `\<Psi>\<^isub>R \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<one> \<turnstile> M \<leftrightarrow> K'"
 	by(metis Identity Commutativity statEqEnt AssertionStatEqSym Composition AssertionStatEqTrans)
       ultimately show ?case using `zvec \<sharp>* K'`
-	by fastsimp
+	by fastforce
     next
       case(cPar1 \<Psi>' \<Psi>\<^isub>R\<^isub>2 R\<^isub>1 M' xvec N' R\<^isub>1' A\<^isub>R\<^isub>2 R\<^isub>2 A\<^isub>R\<^isub>1 \<Psi>\<^isub>R\<^isub>1 \<Psi> P A\<^isub>P \<Psi>\<^isub>P A\<^isub>Q zvec yvec N R' M)
       have FrR2: "extractFrame R\<^isub>2 = \<langle>A\<^isub>R\<^isub>2, \<Psi>\<^isub>R\<^isub>2\<rangle>" by fact
@@ -8849,7 +8849,7 @@ proof -
 	apply(drule_tac sym)
 	by(rule_tac boundOutputPar1Dest') (assumption | simp | blast dest: sym)+
       ultimately have "\<exists>K'. (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>1 \<longmapsto>ROut K' (\<lparr>\<nu>*yvec\<rparr>N \<prec>' T) \<and> (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>1 \<turnstile> M \<leftrightarrow> K' \<and> (A\<^isub>R\<^isub>2@zvec) \<sharp>* K' \<and> A\<^isub>R\<^isub>1 \<sharp>* K'" using cPar1
-	apply(rule_tac cPar1(6)) by(assumption | simp | fastsimp)+
+	apply(rule_tac cPar1(6)) by(assumption | simp | fastforce)+
       then  obtain K' where RTrans: "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>1 \<longmapsto>K'\<lparr>\<nu>*xvec\<rparr>\<langle>N'\<rangle> \<prec> R\<^isub>1'"
                         and MeqK': "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>1 \<turnstile> M \<leftrightarrow> K'"  and "A\<^isub>R\<^isub>2 \<sharp>* K'" and "A\<^isub>R\<^isub>1 \<sharp>* K'" and "zvec \<sharp>* K'"
 	using `\<lparr>\<nu>*xvec\<rparr>N' \<prec>' R\<^isub>1' = \<lparr>\<nu>*yvec\<rparr>N \<prec>' T` by(auto simp add: residualInject)
@@ -8885,7 +8885,7 @@ proof -
 	apply(drule_tac sym)
 	by(rule_tac boundOutputPar2Dest') (assumption | simp | blast dest: sym)+
       ultimately have "\<exists>K'. (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>2 \<longmapsto>ROut K' (\<lparr>\<nu>*yvec\<rparr>N \<prec>' T) \<and> (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>2 \<turnstile> M \<leftrightarrow> K' \<and> (A\<^isub>R\<^isub>1@zvec) \<sharp>* K' \<and> A\<^isub>R\<^isub>2 \<sharp>* K'" using cPar2
-	by(rule_tac cPar2(6)) (assumption | simp | fastsimp)+
+	by(rule_tac cPar2(6)) (assumption | simp | fastforce)+
       then obtain K' where RTrans: "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>2 \<longmapsto>K'\<lparr>\<nu>*xvec\<rparr>\<langle>N'\<rangle> \<prec> R\<^isub>2'"
                         and MeqK': "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>2 \<turnstile> M \<leftrightarrow> K'"  and "A\<^isub>R\<^isub>1 \<sharp>* K'" and "zvec \<sharp>* K'" and "A\<^isub>R\<^isub>2 \<sharp>* K'" 
 	using `\<lparr>\<nu>*xvec\<rparr>N' \<prec>' R\<^isub>2' = \<lparr>\<nu>*yvec\<rparr>N \<prec>' T` by(auto simp add: residualInject)
@@ -9100,7 +9100,7 @@ proof -
       with S `A\<^isub>R \<sharp>* xvec` `(p \<bullet> A\<^isub>R) \<sharp>* xvec` have "xvec \<sharp>* (p \<bullet> M)" by simp
       ultimately obtain K' where "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> R \<longmapsto>K'\<lparr>N\<rparr> \<prec> R'" and "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R \<turnstile> (p \<bullet> M) \<leftrightarrow> K'" and "zvec \<sharp>* K'" and "A\<^isub>R \<sharp>* K'"
 	using cAlpha
-	by(fastsimp simp del: freshChainSimps)
+	by(fastforce simp del: freshChainSimps)
       from `\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> R \<longmapsto>K'\<lparr>N\<rparr> \<prec> R'` S `A\<^isub>R \<sharp>* R` `(p \<bullet> A\<^isub>R) \<sharp>* R` have "(p \<bullet> (\<Psi> \<otimes> \<Psi>\<^isub>P)) \<rhd> R \<longmapsto>(p \<bullet> K')\<lparr>N\<rparr> \<prec> R'"
 	by(rule_tac inputPermFrameSubject) auto
       with S `A\<^isub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* \<Psi>\<^isub>P` `(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>\<^isub>P` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> R \<longmapsto>(p \<bullet> K')\<lparr>N\<rparr> \<prec> R'"
@@ -9211,7 +9211,7 @@ proof -
 	moreover note `distinct xvec`
 
       ultimately have "\<exists>K'. (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>1 \<longmapsto>K'\<lparr>N\<rparr> \<prec> R\<^isub>1' \<and> (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>1 \<turnstile> M \<leftrightarrow> K' \<and> (A\<^isub>R\<^isub>2@zvec) \<sharp>* K' \<and> A\<^isub>R\<^isub>1 \<sharp>* K'" using cPar1
-	by(rule_tac cPar1(6)[where bf=xvec]) (assumption | simp | fastsimp)+
+	by(rule_tac cPar1(6)[where bf=xvec]) (assumption | simp | fastforce)+
       then  obtain K' where RTrans: "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>1 \<longmapsto>K'\<lparr>N\<rparr> \<prec> R\<^isub>1'"
                         and MeqK': "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>2) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>1 \<turnstile> M \<leftrightarrow> K'"  and "A\<^isub>R\<^isub>2 \<sharp>* K'" and "zvec \<sharp>* K'" and "A\<^isub>R\<^isub>1 \<sharp>* K'"
 	by force
@@ -9243,7 +9243,7 @@ proof -
       moreover from `A\<^isub>R\<^isub>1 \<sharp>* A\<^isub>P` `A\<^isub>R\<^isub>2 \<sharp>* A\<^isub>P` `A\<^isub>P \<sharp>* (R\<^isub>1 \<parallel> R\<^isub>2)` FrR1 `extractFrame R\<^isub>2 = \<langle>A\<^isub>R\<^isub>2, \<Psi>\<^isub>R\<^isub>2\<rangle>` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>R\<^isub>1" and "A\<^isub>P \<sharp>* \<Psi>\<^isub>R\<^isub>2"
 	by(force dest: extractFrameFreshChain)+
       ultimately have "\<exists>K'. (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>2 \<longmapsto>K'\<lparr>N\<rparr> \<prec> R\<^isub>2' \<and> (\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>2 \<turnstile> M \<leftrightarrow> K' \<and> (A\<^isub>R\<^isub>1@zvec) \<sharp>* K' \<and> A\<^isub>R\<^isub>2 \<sharp>* K'" using `distinct xvec` cPar2
-	by(rule_tac cPar2(6)) (assumption | simp | fastsimp)+
+	by(rule_tac cPar2(6)) (assumption | simp | fastforce)+
       then  obtain K' where RTrans: "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<rhd> R\<^isub>2 \<longmapsto>K'\<lparr>N\<rparr> \<prec> R\<^isub>2'"
                         and MeqK': "(\<Psi> \<otimes> \<Psi>\<^isub>R\<^isub>1) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<^isub>2 \<turnstile> M \<leftrightarrow> K'"  and "A\<^isub>R\<^isub>1 \<sharp>* K'" and "zvec \<sharp>* K'" and "A\<^isub>R\<^isub>2 \<sharp>* K'"
 	by force

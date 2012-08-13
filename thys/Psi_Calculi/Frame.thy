@@ -1509,7 +1509,7 @@ proof(auto simp add: FrameStatImp_def)
   with `y \<sharp> \<phi>` `A\<^isub>G \<sharp>* \<phi>` have "\<langle>(y#A\<^isub>G), [(x, y)] \<bullet> \<Psi>\<^isub>G\<rangle> \<turnstile>\<^sub>F \<phi>"
     by(force intro: frameImpI dest: frameImpE simp del: frameResChain.simps)
   with `y \<sharp> G` `x \<sharp> A\<^isub>G` `y \<sharp> A\<^isub>G` Geq show "\<lparr>\<nu>x\<rparr>G \<turnstile>\<^sub>F \<phi>"
-    by(subst alphaFrameRes) (fastsimp simp add: eqvts)+
+    by(subst alphaFrameRes) (fastforce simp add: eqvts)+
 qed
 
 lemma frameResPres:

@@ -27,7 +27,7 @@ lemma monotonic:
   shows "P \<leadsto>[B] P'"
 proof - 
   from prems show ?thesis apply(auto simp add: simulation_def derivative_def)
-    by(case_tac a) fastsimp+
+    by(case_tac a) fastforce+
 qed
 
 lemma derivativeMonotonic:

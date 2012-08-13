@@ -21,7 +21,7 @@ proof -
   proof(induct rule: simCasesCont[where C="(x, a, Q, P)"])
     case(Bound b y Q')
     have "x \<in> supp(P, Q, x)" by(simp add: supp_prod supp_atm)
-    with PRelQ have "(P, Q) \<in> Rel" by fastsimp
+    with PRelQ have "(P, Q) \<in> Rel" by fastforce
     have QTrans: "a<x>.Q \<longmapsto> b\<guillemotleft>y\<guillemotright> \<prec> Q'" by fact
     have "y \<sharp> (x, a, Q, P)" by fact
     hence "y \<noteq> a" and yineqx: "y \<noteq> x" and "y \<sharp> Q" and "y \<sharp> P" by(simp add: fresh_prod)+
@@ -82,15 +82,15 @@ proof -
     apply auto
     apply(drule_tac p=perma in bisimClosed)
     by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
-  from assms have "(a<x>.P, a<x>.Q) \<in> ?X" by fastsimp
+  from assms have "(a<x>.P, a<x>.Q) \<in> ?X" by fastforce
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim P Q)
     thus ?case using `eqvt ?X`
-      by(fastsimp intro: inputSuppPres)
+      by(fastforce intro: inputSuppPres)
   next
     case(cSym P Q)
-    thus ?case by(fastsimp simp add: supp_prod dest: symmetric)
+    thus ?case by(fastforce simp add: supp_prod dest: symmetric)
   qed
 qed
 
@@ -175,7 +175,7 @@ using assms
 apply(induct S=="expandSet P Q" rule: sumComposeSet.induct)
 apply auto
 apply(simp add: expandSet_def)
-apply fastsimp
+apply fastforce
 apply auto
 apply(clarify)
 *)

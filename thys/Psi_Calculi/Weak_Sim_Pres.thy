@@ -120,7 +120,7 @@ proof -
       from PSimQ `\<Psi> \<rhd> Q \<longmapsto>M\<lparr>\<nu>*(xvec1@xvec2)\<rparr>\<langle>([(x, y)] \<bullet> N)\<rangle> \<prec> ([(x, y)] \<bullet> Q')` `xvec1 \<sharp>* \<Psi>` `xvec2 \<sharp>* \<Psi>` `xvec1 \<sharp>* P` `xvec2 \<sharp>* P` `\<alpha> \<noteq> \<tau>`
       obtain P'' P' where PTrans: "\<Psi> : Q \<rhd> P \<Longrightarrow>M\<lparr>\<nu>*(xvec1@xvec2)\<rparr>\<langle>([(x, y)] \<bullet> N)\<rangle> \<prec> P''"
                       and P''Chain: "\<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>') \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" and P'RelQ': "(\<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>'), P', ([(x, y)] \<bullet> Q')) \<in> Rel"
-	by (fastsimp dest: weakSimE)
+	by (fastforce dest: weakSimE)
       from PTrans have "([(x, y)] \<bullet> \<Psi>) : ([(x, y)] \<bullet> Q) \<rhd> ([(x, y)] \<bullet> P) \<Longrightarrow>([(x, y)] \<bullet> (M\<lparr>\<nu>*(xvec1@xvec2)\<rparr>\<langle>([(x, y)] \<bullet> N)\<rangle>)) \<prec> ([(x, y)] \<bullet> P'')"
 	by(rule eqvts)
       with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec1` `y \<sharp> xvec1` `x \<sharp> xvec2` `y \<sharp> xvec2`
@@ -281,7 +281,7 @@ proof -
 
       from PTrans QTrans `A\<^isub>R \<sharp>* P` `A\<^isub>R \<sharp>* Q` `A\<^isub>R \<sharp>* \<alpha>` `bn \<alpha> \<sharp>* subject \<alpha>` `distinct(bn \<alpha>)` 
       have "A\<^isub>R \<sharp>* P''" and "A\<^isub>R \<sharp>* Q'"
-	by(fastsimp dest: weakFreshChainDerivative freeFreshChainDerivative)+
+	by(fastforce dest: weakFreshChainDerivative freeFreshChainDerivative)+
       with P''Chain have "A\<^isub>R \<sharp>* P'" by(force dest: tauChainFreshChain)
       
       from PTrans FrR `bn \<alpha> \<sharp>* R` `A\<^isub>R \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* P` `A\<^isub>R \<sharp>* \<alpha>` `A\<^isub>R \<sharp>* Q` 
@@ -510,7 +510,7 @@ proof -
       with `\<Psi>\<^isub>R \<otimes> \<Psi>' \<simeq> \<Psi>\<^isub>R'` have "\<Psi> \<otimes> \<Psi>\<^isub>R' \<rhd> P' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''" by(metis tauChainStatEq compositionSym)
       hence "\<Psi> \<rhd> P' \<parallel> R' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'' \<parallel> R'" using FrR' `A\<^isub>R' \<sharp>* \<Psi>` `A\<^isub>R' \<sharp>* P'` by(rule_tac tauChainPar1)
       ultimately have "\<Psi> \<rhd> P \<parallel> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> (P'' \<parallel> R')"
-	by(fastsimp dest: rtrancl_into_rtrancl)
+	by(fastforce dest: rtrancl_into_rtrancl)
 
       moreover from P'RelQ `\<Psi>\<^isub>R \<otimes> \<Psi>' \<simeq> \<Psi>\<^isub>R'` have "(\<Psi> \<otimes> \<Psi>\<^isub>R', P'', Q) \<in> Rel" by(blast intro: C3 Associativity compositionSym Sym)
       with FrR' `A\<^isub>R' \<sharp>* \<Psi>` `A\<^isub>R' \<sharp>* P''` `A\<^isub>R' \<sharp>* Q` have "(\<Psi>, P'' \<parallel> R', Q \<parallel> R') \<in> Rel'" by(rule_tac C1) 
@@ -568,7 +568,7 @@ proof -
       with QTrans obtain P' P'' where PTrans: "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R) : Q \<rhd> P \<Longrightarrow>(p \<bullet> M)\<lparr>N\<rparr> \<prec> P''"
                                   and P''Chain: "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R)) \<otimes> \<Psi>' \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'"
                                   and P'RelQ': "((\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R)) \<otimes> \<Psi>', P', Q') \<in> Rel"
-	by(fastsimp dest: weakSimE)
+	by(fastforce dest: weakSimE)
       from PTrans QTrans `A\<^isub>R' \<sharp>* P` `A\<^isub>R' \<sharp>* Q` `A\<^isub>R' \<sharp>* N` have "A\<^isub>R' \<sharp>* P''" and "A\<^isub>R' \<sharp>* Q'"
 	by(auto dest: weakInputFreshChainDerivative inputFreshChainDerivative)
 
@@ -613,7 +613,7 @@ proof -
       obtain P'' P' where PTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R : Q \<rhd> P \<Longrightarrow>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''"
                       and P''Chain: "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>' \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'"
                       and P'RelQ': "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>', P', Q') \<in> Rel"
-	by(fastsimp dest: weakSimE)
+	by(fastforce dest: weakSimE)
       from PTrans obtain P''' where PChain: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''"
                                 and QimpP''': "insertAssertion (extractFrame Q) (\<Psi> \<otimes> \<Psi>\<^isub>R) \<hookrightarrow>\<^sub>F insertAssertion (extractFrame P''') (\<Psi> \<otimes> \<Psi>\<^isub>R)"
                                 and P'''Trans: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P''' \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''"
@@ -903,10 +903,10 @@ next
     from `(\<Psi>, P, Q) \<in> Rel` have "(\<Psi> \<otimes> \<Psi>\<^isub>R, P, Q) \<in> Rel" by(rule cExt)
     moreover from `\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> !Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'` `guarded Q` `xvec \<sharp>* Q` `xvec \<sharp>* K`
     obtain S where QTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> S" and "(\<one>, Q', S \<parallel> !Q) \<in> Rel'"
-      by(fastsimp dest: rBangActE)
+      by(fastforce dest: rBangActE)
     ultimately obtain P' T where PTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R : Q \<rhd> P \<Longrightarrow>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'" and P'Chain: "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>' \<rhd> P' \<Longrightarrow>\<^sup>^\<^sub>\<tau> T" and "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>', T, S) \<in> Rel"
       using `xvec \<sharp>* \<Psi>` `xvec \<sharp>* \<Psi>\<^isub>R` `xvec \<sharp>* P`
-      by(fastsimp dest: cSim weakSimE)
+      by(fastforce dest: cSim weakSimE)
 
     from PTrans `A\<^isub>R \<sharp>* P` `A\<^isub>R \<sharp>* xvec` `A\<^isub>R' \<sharp>* P` `A\<^isub>R' \<sharp>* xvec` `xvec \<sharp>* K` `distinct xvec`
     have "A\<^isub>R \<sharp>* P'" and  "A\<^isub>R' \<sharp>* P'"
@@ -1057,11 +1057,11 @@ next
       by(rule_tac inputAlpha) auto
     then obtain S where QTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> Q \<longmapsto>K\<lparr>(p \<bullet> N)\<rparr> \<prec> S" and "(\<one>, (p \<bullet> Q'), S \<parallel> !Q) \<in> Rel'" 
       using `guarded Q`
-      by(fastsimp dest: rBangActE)
+      by(fastforce dest: rBangActE)
     ultimately obtain P' T where PTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R : Q \<rhd> P \<Longrightarrow>K\<lparr>(p \<bullet> N)\<rparr> \<prec> P'" 
                              and P'Chain: "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> (p \<bullet> \<Psi>') \<rhd> P' \<Longrightarrow>\<^sup>^\<^sub>\<tau> T" 
                              and "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> (p \<bullet> \<Psi>'), T, S) \<in> Rel"
-      by(fastsimp dest: cSim weakSimE)
+      by(fastforce dest: cSim weakSimE)
 
     from `A\<^isub>R' \<sharp>* N` `A\<^isub>R' \<sharp>* xvec` `A\<^isub>R' \<sharp>* (p \<bullet> xvec)` S have "A\<^isub>R' \<sharp>* (p \<bullet> N)"
       by(simp add: freshChainSimps)

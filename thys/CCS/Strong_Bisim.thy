@@ -17,7 +17,7 @@ lemma monotonic:
 
   shows "P \<leadsto>[B] Q"
 using assms
-by(fastsimp simp add: simulation_def)
+by(fastforce simp add: simulation_def)
 
 lemma monoCoinduct: "\<And>x y xa xb P Q.
                       x \<le> y \<Longrightarrow>

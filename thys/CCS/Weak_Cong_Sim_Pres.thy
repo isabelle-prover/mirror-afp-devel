@@ -17,7 +17,7 @@ lemma actPres:
 
   shows "\<alpha>.(P) \<leadsto><Rel> \<alpha>.(Q)"
 using assms
-by(fastsimp simp add: weakCongSimulation_def elim: actCases intro: weakCongAction)
+by(fastforce simp add: weakCongSimulation_def elim: actCases intro: weakCongAction)
 
 lemma sumPres:
   fixes P   :: ccs
@@ -83,7 +83,7 @@ lemma resPres:
 
   shows "\<lparr>\<nu>x\<rparr>P \<leadsto><Rel'> \<lparr>\<nu>x\<rparr>Q"
 using assms
-by(fastsimp simp add: weakCongSimulation_def elim: resCases intro: weakCongRes)
+by(fastforce simp add: weakCongSimulation_def elim: resCases intro: weakCongRes)
 
 lemma bangPres:
   fixes P    :: ccs

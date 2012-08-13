@@ -264,11 +264,11 @@ proof -
 
       from PSimQ QTrans obtain P' where PTrans: "P \<Longrightarrow>a<b> \<prec> P'"
                                     and P'RelQ': "(P', Q') \<in> Rel"
-	by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	by(fastforce dest: simE simp add: weakFreeTransition_def)
       
       from RSimT STrans obtain R' where RTrans: "R \<Longrightarrow>a[b] \<prec> R'"
                                     and RRel: "(R', S') \<in> Rel'"
-	by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	by(fastforce dest: simE simp add: weakFreeTransition_def)
       
       from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> P' \<parallel> R'" by(rule Weak_Early_Step_Semantics.Comm1)
       hence "P \<parallel> R \<Longrightarrow>\<^isup>^\<tau> \<prec> P' \<parallel> R'" 
@@ -282,11 +282,11 @@ proof -
       
       from PSimQ QTrans obtain P' where PTrans: "P \<Longrightarrow>a[b] \<prec> P'"
                                     and PRel: "(P', Q') \<in> Rel"
-	by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	by(fastforce dest: simE simp add: weakFreeTransition_def)
       
       from RSimT STrans obtain R' where RTrans: "R \<Longrightarrow>a<b> \<prec> R'"
                                    and R'Rel'T': "(R', S') \<in> Rel'"
-	by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	by(fastforce dest: simE simp add: weakFreeTransition_def)
       
       from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> P' \<parallel> R'" by(rule Weak_Early_Step_Semantics.Comm2)
       hence "P \<parallel> R \<Longrightarrow>\<^isup>^\<tau> \<prec> P' \<parallel> R'" 
@@ -301,7 +301,7 @@ proof -
       
       from PSimQ QTrans obtain P' where PTrans: "P \<Longrightarrow>a<x> \<prec> P'"
                                     and P'RelQ': "(P', Q') \<in> Rel"
-	by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	by(fastforce dest: simE simp add: weakFreeTransition_def)
       
       from RSimT STrans xFreshR obtain R' where RTrans: "R \<Longrightarrow>a<\<nu>x> \<prec> R'" 
                                             and R'Rel'T': "(R', S') \<in> Rel'"
@@ -326,7 +326,7 @@ proof -
       
       from RSimT STrans obtain R' where RTrans: "R \<Longrightarrow>a<x> \<prec> R'"
 	                            and R'Rel'T': "(R', S') \<in> Rel'"
-	by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	by(fastforce dest: simE simp add: weakFreeTransition_def)
       from PTrans RTrans xFreshR have Trans: "P \<parallel> R \<Longrightarrow>\<tau> \<prec> <\<nu>x>(P' \<parallel> R')"
 	by(rule Weak_Early_Step_Semantics.Close2)
       hence "P \<parallel> R \<Longrightarrow>\<^isup>^\<tau> \<prec> <\<nu>x>(P' \<parallel> R')" 
@@ -514,7 +514,7 @@ proof -
 	    by(blast dest: simE)
 	  from PTrans `y \<sharp> R` have "P \<parallel> R \<Longrightarrow>a<\<nu>y>\<prec> (P' \<parallel> R)" by(rule Weak_Early_Step_Semantics.Par1B)
 	  moreover from P'RelQ' RBangRelT BangRelRel' have "(P' \<parallel> R, ([(y, x)] \<bullet> Q') \<parallel> !Q) \<in> Rel'"
-	    by(fastsimp intro: Rel.BRPar simp add: name_swap) 
+	    by(fastforce intro: Rel.BRPar simp add: name_swap) 
 	  ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>a<\<nu>y> \<prec> P' \<and> (P', ([(y, x)] \<bullet> Q') \<parallel> !Q) \<in> Rel'" by blast
 	qed
       qed
@@ -569,7 +569,7 @@ proof -
 	  from RTrans `y \<sharp> P` have "P \<parallel> R \<Longrightarrow>a<\<nu>y> \<prec> (P \<parallel> R')"
 	    by(auto intro: Weak_Early_Step_Semantics.Par2B)
 	  moreover from PRelQ R'BangRelQ' have "(P \<parallel> R', Q \<parallel> ([(y, x)] \<bullet> Q')) \<in> Rel'"
-	    by(fastsimp intro: ParComp simp add: name_swap)
+	    by(fastforce intro: ParComp simp add: name_swap)
 	  ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>a<\<nu>y> \<prec> P' \<and> (P', Q \<parallel> ([(y, x)] \<bullet> Q')) \<in> Rel'" by blast
 	qed
       qed
@@ -604,12 +604,12 @@ proof -
 	proof(auto simp add: residual.inject)
 	  from PRelQ have "P \<leadsto><Rel> Q" by(rule Sim)
 	  with QTrans obtain P' where PTrans: "P \<Longrightarrow>a<b> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
-	    by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	    by(fastforce dest: simE simp add: weakFreeTransition_def)
 
 	  from RBangRelQ have "?Sim R (a[b] \<prec> Q'')" by(rule IH)
 	  then obtain R' where RTrans: "R \<Longrightarrow>a[b] \<prec> R'"
                            and R'RelQ'': "(R', Q'') \<in> Rel'"
-	    by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	    by(fastforce dest: simE simp add: weakFreeTransition_def)
  	  from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> (P' \<parallel> R')"
 	    by(rule Weak_Early_Step_Semantics.Comm1)
 	  hence "P \<parallel> R \<Longrightarrow>\<^isub>\<tau> P' \<parallel> R'" 
@@ -633,11 +633,11 @@ proof -
 	proof(auto simp add: residual.inject)
 	  from PRelQ have "P \<leadsto><Rel> Q" by(rule Sim)
 	  with QTrans obtain P' where PTrans: "P \<Longrightarrow>a[b] \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
-	    by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	    by(fastforce dest: simE simp add: weakFreeTransition_def)
 
 	  from RBangRelQ have "?Sim R (a<b> \<prec> Q'')" by(rule IH)
 	  then obtain R' where RTrans: "R \<Longrightarrow>a<b> \<prec> R'" and R'BangRelQ'': "(R', Q'') \<in> Rel'"
-	    by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	    by(fastforce dest: simE simp add: weakFreeTransition_def)
 	
 	  from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> (P' \<parallel> R')"
 	    by(rule Weak_Early_Step_Semantics.Comm2)
@@ -663,7 +663,7 @@ proof -
 	proof(auto simp add: residual.inject)
 	  from PRelQ have "P \<leadsto><Rel> Q" by(rule Sim)
 	  with QTrans obtain P' where PTrans: "P \<Longrightarrow>a<x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
-	    by(fastsimp dest: simE simp add: weakFreeTransition_def)
+	    by(fastforce dest: simE simp add: weakFreeTransition_def)
 	  
 	  from RBangRelQ have "?Sim R (a<\<nu>x> \<prec> Q'') " by(rule IH)
 	  with xFreshR obtain R' where RTrans: "R \<Longrightarrow>a<\<nu>x> \<prec> R'"
@@ -698,7 +698,7 @@ proof -
 	  from RBangRelQ have "?Sim R (a<x> \<prec> Q'')" by(rule IH)
 	  with xFreshR obtain R' where RTrans: "R \<Longrightarrow>a<x> \<prec> R'"
                                        and R'RelQ'': "(R', Q'') \<in> Rel'"
-	    by(fastsimp simp add: weakFreeTransition_def)
+	    by(fastforce simp add: weakFreeTransition_def)
 	  from PTrans RTrans xFreshR have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> <\<nu>x>(P' \<parallel> R')"
 	    by(rule Weak_Early_Step_Semantics.Close2)
 	  moreover from P'RelQ' R'RelQ'' have "(<\<nu>x>(P' \<parallel> R'), <\<nu>x>(Q' \<parallel> Q'')) \<in> Rel'"

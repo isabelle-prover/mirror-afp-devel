@@ -69,7 +69,7 @@ next
   case(cTau Q')
   from `(\<Psi>, P, Q) \<in> Rel` have "\<Psi> \<rhd> P \<leadsto>\<^sub>w<Rel'> Q" by(rule cSim)
   then obtain P' where "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'" and "(\<Psi>, P', Q') \<in> Rel'" using `\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'`
-    by(unfold weakenSimulation_def, fastsimp)
+    by(unfold weakenSimulation_def, fastforce)
   from `\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'` have "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(auto simp add: weakenTransition_def dest: tauActTauChain)
   with `(\<Psi>, P', Q') \<in> Rel'` show ?case by blast
 qed
@@ -113,7 +113,7 @@ proof(induct rule: weakenSimI)
       case(cStep P'''' P''')
       thus ?case 
 	apply(unfold weakenTransition_def)
-	by(rule_tac x=P' in exI) fastsimp
+	by(rule_tac x=P' in exI) fastforce
     qed
   qed
 qed

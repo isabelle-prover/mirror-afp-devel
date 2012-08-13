@@ -221,7 +221,7 @@ proof -
   have Res: "\<And>P Q x. (P, Q) \<in> ?X \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?X" by(blast intro: resChain.step[THEN sym])
 
   from `x \<sharp> P` have "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(blast intro: resChain.base[THEN sym])
-  moreover have EqvtX: "eqvt ?X" by(fastsimp simp add: eqvt_def name_fresh_left name_rev_per)
+  moreover have EqvtX: "eqvt ?X" by(fastforce simp add: eqvt_def name_fresh_left name_rev_per)
   ultimately show ?thesis
   proof(coinduct rule: bisimTransitiveCoinduct)
     case(cSim P Q)
@@ -236,7 +236,7 @@ proof -
 	fix P Q x y
 	have "<\<nu>x><\<nu>y>(P \<parallel> Q) \<sim> <\<nu>y><\<nu>x>(P \<parallel> Q)" by(rule resComm)
 	moreover assume "x \<sharp> P"
-	hence "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(fastsimp intro: resChain.base[THEN sym])
+	hence "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(fastforce intro: resChain.base[THEN sym])
 	hence "(<\<nu>y><\<nu>x>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?X" by(rule Res)
 	ultimately have  "(<\<nu>x><\<nu>y>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?Y" by(blast intro: reflexive)
       }
@@ -258,7 +258,7 @@ proof -
 	fix P Q x y
 	have "<\<nu>y><\<nu>x>(P \<parallel> Q) \<sim> <\<nu>x><\<nu>y>(P \<parallel> Q)" by(rule resComm)
 	moreover assume "x \<sharp> P"
-	hence "(P \<parallel> <\<nu>x>Q, <\<nu>x>(P \<parallel> Q)) \<in> ?X" by(fastsimp intro: resChain.base[THEN sym])
+	hence "(P \<parallel> <\<nu>x>Q, <\<nu>x>(P \<parallel> Q)) \<in> ?X" by(fastforce intro: resChain.base[THEN sym])
 	hence "(<\<nu>y>(P \<parallel> <\<nu>x>Q), <\<nu>y><\<nu>x>(P \<parallel> Q)) \<in> ?X" by(rule Res)
 	ultimately have  "(<\<nu>y>(P \<parallel> <\<nu>x>Q), <\<nu>x><\<nu>y>(P \<parallel> Q)) \<in> ?Y" by(blast intro: reflexive)
       }
@@ -313,7 +313,7 @@ proof -
     by(blast intro: resChain.step[symmetric] dest: resPres)
 
   have "((P \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?X" by(blast intro: resChain.base[symmetric])
-  moreover have "eqvt ?X" by(fastsimp simp add: eqvt_def) 
+  moreover have "eqvt ?X" by(fastforce simp add: eqvt_def) 
   ultimately show ?thesis
   proof(coinduct rule: bisimTransitiveCoinduct)
     case(cSim P Q)
@@ -387,9 +387,9 @@ proof -
   let ?X = "{(<\<nu>x>(P \<oplus> Q), <\<nu>x>P \<oplus> <\<nu>x>Q) | x P Q. True} \<union>
             {(<\<nu>x>P \<oplus> <\<nu>x>Q, <\<nu>x>(P \<oplus> Q)) | x P Q. True}"
   have "(<\<nu>x>(P \<oplus> Q), <\<nu>x>P \<oplus> <\<nu>x>Q) \<in> ?X" by auto
-  moreover have "eqvt ?X" by(fastsimp simp add: eqvt_def)
+  moreover have "eqvt ?X" by(fastforce simp add: eqvt_def)
   ultimately show ?thesis
-    by(coinduct rule: bisimCoinduct) (fastsimp intro: sumResLeft sumResRight reflexive)+
+    by(coinduct rule: bisimCoinduct) (fastforce intro: sumResLeft sumResRight reflexive)+
 qed
 
 
@@ -453,9 +453,9 @@ proof -
   let ?X = "{(<\<nu>x>a<y>.P, a<y>.(<\<nu>x>P)) | x a y P. x \<noteq> a \<and> x \<noteq> y} \<union>
             {(a<y>.(<\<nu>x>P), <\<nu>x>a<y>.P) | x a y P. x \<noteq> a \<and> x \<noteq> y}"
   from assms have "(<\<nu>x>a<y>.P, a<y>.(<\<nu>x>P)) \<in> ?X" by auto
-  moreover have "eqvt ?X" by(fastsimp simp add: eqvt_def pt_bij[OF pt_name_inst, OF at_name_inst])
+  moreover have "eqvt ?X" by(fastforce simp add: eqvt_def pt_bij[OF pt_name_inst, OF at_name_inst])
   ultimately show ?thesis
-    by(coinduct rule: bisimCoinduct) (fastsimp intro: resInputLeft reflexive resInputRight)+
+    by(coinduct rule: bisimCoinduct) (fastforce intro: resInputLeft reflexive resInputRight)+
 qed
 
 lemma resOutput:
@@ -472,9 +472,9 @@ proof -
   let ?X = "{(<\<nu>x>a{b}.P, a{b}.(<\<nu>x>P)) | x a b P. x \<noteq> a \<and> x \<noteq> b} \<union>
             {(a{b}.(<\<nu>x>P), <\<nu>x>a{b}.P) | x a b P. x \<noteq> a \<and> x \<noteq> b}"
   from assms have "(<\<nu>x>a{b}.P, a{b}.(<\<nu>x>P)) \<in> ?X" by blast
-  moreover have "eqvt ?X" by(fastsimp simp add: eqvt_def pt_bij[OF pt_name_inst, OF at_name_inst])
+  moreover have "eqvt ?X" by(fastforce simp add: eqvt_def pt_bij[OF pt_name_inst, OF at_name_inst])
   ultimately show ?thesis
-    by(coinduct rule: bisimCoinduct) (fastsimp intro: resOutputLeft resOutputRight reflexive)+
+    by(coinduct rule: bisimCoinduct) (fastforce intro: resOutputLeft resOutputRight reflexive)+
 qed
 
 lemma resTau:
@@ -486,7 +486,7 @@ proof -
   let ?X = "{(<\<nu>x>\<tau>.(P), \<tau>.(<\<nu>x>P)), (\<tau>.(<\<nu>x>P), <\<nu>x>\<tau>.(P))}"
   have "(<\<nu>x>\<tau>.(P), \<tau>.(<\<nu>x>P)) \<in> ?X" by auto
   thus ?thesis
-    by(coinduct rule: bisimCoinduct) (fastsimp intro: resTauLeft resTauRight reflexive)+
+    by(coinduct rule: bisimCoinduct) (fastforce intro: resTauLeft resTauRight reflexive)+
 qed
 
 inductive structCong :: "pi \<Rightarrow> pi \<Rightarrow> bool" ("_ \<equiv>\<^sub>s _" [70, 70] 70)

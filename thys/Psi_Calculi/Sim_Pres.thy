@@ -311,7 +311,7 @@ proof(induct rule: simI[of _ _ _ _ "()"])
 
     from FrP FrR `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* R` `A\<^isub>R \<sharp>* P` `A\<^isub>P \<sharp>* A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>P \<sharp>* xvec` `xvec \<sharp>* P`
     have "A\<^isub>P \<sharp>* \<Psi>\<^isub>R" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P" and  "A\<^isub>R \<sharp>* \<Psi>\<^isub>P" and "xvec \<sharp>* \<Psi>\<^isub>P"
-      by(fastsimp dest!: extractFrameFreshChain)+
+      by(fastforce dest!: extractFrameFreshChain)+
   
   from RTrans FrR `distinct A\<^isub>R` `A\<^isub>R \<sharp>* R` `A\<^isub>R \<sharp>* xvec` `xvec \<sharp>* R` `xvec \<sharp>* Q` `xvec \<sharp>* \<Psi>` `xvec \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>R \<sharp>* Q`
                   `A\<^isub>R \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* \<Psi>\<^isub>Q` `xvec \<sharp>* K` `A\<^isub>R \<sharp>* K` `A\<^isub>R \<sharp>* N` `A\<^isub>R \<sharp>* R` `xvec \<sharp>* R` `A\<^isub>R \<sharp>* P` `xvec \<sharp>* P` `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>P \<sharp>* xvec`
@@ -410,7 +410,7 @@ next
 
     from FrP FrR `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* R` `A\<^isub>R \<sharp>* P` `A\<^isub>P \<sharp>* A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>P \<sharp>* xvec` `xvec \<sharp>* P`
     have "A\<^isub>P \<sharp>* \<Psi>\<^isub>R" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P" and  "A\<^isub>R \<sharp>* \<Psi>\<^isub>P" and "xvec \<sharp>* \<Psi>\<^isub>P"
-      by(fastsimp dest!: extractFrameFreshChain)+
+      by(fastforce dest!: extractFrameFreshChain)+
 
     have QTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> Q \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'" by fact 
 
@@ -543,7 +543,7 @@ proof(induct rule: simI[of _ _ _ _ "()"])
     obtain P' S T where PTrans: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'" and "(\<Psi> \<otimes> \<Psi>\<^isub>R, P', T \<parallel> !P) \<in> Rel"
                     and "(\<Psi> \<otimes> \<Psi>\<^isub>R, Q', S \<parallel> !Q) \<in> Rel" and "(\<Psi> \<otimes> \<Psi>\<^isub>R, S, T) \<in> Rel"
                     and suppT: "((supp T)::name set) \<subseteq> supp P'" and suppS: "((supp S)::name set) \<subseteq> supp Q'"
-      by(drule_tac cSym) (fastsimp dest: Der intro: cExt)
+      by(drule_tac cSym) (fastforce dest: Der intro: cExt)
     note `\<Psi> \<otimes> \<Psi>\<^isub>R \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K`
     ultimately have "\<Psi> \<rhd> R \<parallel> !P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(R' \<parallel> P')" 
       using PTrans `\<Psi>\<^isub>Q = SBottom'` `xvec \<sharp>* R` `A\<^isub>R \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* R` `A\<^isub>R \<sharp>* M` `A\<^isub>R \<sharp>* P`

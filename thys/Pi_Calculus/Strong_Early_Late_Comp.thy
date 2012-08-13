@@ -433,7 +433,7 @@ proof -
     from PTrans P'eqP'' `x = y` show ?thesis by blast
   next
     case False
-    from PTrans `x \<noteq> y` `x \<sharp> P` have "x \<sharp> P''" by(fastsimp dest: freshBoundDerivative simp add: residual.inject)
+    from PTrans `x \<noteq> y` `x \<sharp> P` have "x \<sharp> P''" by(fastforce dest: freshBoundDerivative simp add: residual.inject)
     with PTrans have "P \<longmapsto>\<^isub>la<x> \<prec>\<^isub>l ([(x, y)] \<bullet> P'')"
       by(simp add: Late_Semantics.alphaBoundResidual)
     moreover from `x \<sharp> P''` have "P''[y::=u] = ([(x, y)] \<bullet> P'')[x::=u]" by(simp add: renaming name_swap)

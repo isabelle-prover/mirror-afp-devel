@@ -21,7 +21,7 @@ lemma weakStatImpInputPres:
 
   shows "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.P \<lessapprox><Rel> M\<lparr>\<lambda>*xvec N\<rparr>.Q"
 using assms
-by(fastsimp simp add: weakStatImp_def)
+by(fastforce simp add: weakStatImp_def)
 
 lemma weakStatImpOutputPres:
   fixes \<Psi>   :: 'b
@@ -35,7 +35,7 @@ lemma weakStatImpOutputPres:
 
   shows "\<Psi> \<rhd> M\<langle>N\<rangle>.P \<lessapprox><Rel> M\<langle>N\<rangle>.Q"
 using assms
-by(fastsimp simp add: weakStatImp_def)
+by(fastforce simp add: weakStatImp_def)
 (*
 lemma weakStatImpCasePres:
   fixes \<Psi>    :: 'b

@@ -18,7 +18,7 @@ lemma nilSim[dest]:
   shows "\<zero> \<leadsto>[Rel] \<tau>.(P) \<Longrightarrow> False"
   and   "\<zero> \<leadsto>[Rel] a<x>.P \<Longrightarrow> False"
   and   "\<zero> \<leadsto>[Rel] a{b}.P \<Longrightarrow> False"
-by(fastsimp simp add: simulation_def intro: Tau Input Output)+
+by(fastforce simp add: simulation_def intro: Tau Input Output)+
 
 lemma nilSimRight:
   fixes P   :: pi
@@ -49,7 +49,7 @@ lemma matchIdRight:
 
   shows "P \<leadsto>[Rel] [a\<frown>a]P"
 using assms
-by(fastsimp simp add: simulation_def elim: matchCases intro: derivativeReflexive)
+by(fastforce simp add: simulation_def elim: matchCases intro: derivativeReflexive)
 
 lemma matchNilLeft:
   fixes a :: name
@@ -75,7 +75,7 @@ lemma mismatchIdLeft:
 
   shows "[a\<noteq>b]P \<leadsto>[Rel] P"
 using assms
-by(fastsimp simp add: simulation_def intro: Mismatch dest: derivativeReflexive)
+by(fastforce simp add: simulation_def intro: Mismatch dest: derivativeReflexive)
 
 lemma mismatchIdRight:
   fixes P   :: pi
@@ -88,7 +88,7 @@ lemma mismatchIdRight:
 
   shows "P \<leadsto>[Rel] [a\<noteq>b]P"
 using assms
-by(fastsimp simp add: simulation_def elim: mismatchCases intro: derivativeReflexive)
+by(fastforce simp add: simulation_def elim: mismatchCases intro: derivativeReflexive)
 
 lemma mismatchNilLeft:
   fixes a :: name
@@ -108,7 +108,7 @@ lemma sumSym:
   
   shows "P \<oplus> Q \<leadsto>[Rel] Q \<oplus> P"
 using assms
-by(fastsimp simp add: simulation_def elim: sumCases intro: Sum1 Sum2 derivativeReflexive)
+by(fastforce simp add: simulation_def elim: sumCases intro: Sum1 Sum2 derivativeReflexive)
 
 lemma sumIdempLeft:
   fixes P :: pi
@@ -118,7 +118,7 @@ lemma sumIdempLeft:
 
   shows "P \<leadsto>[Rel] P \<oplus> P"
 using assms
-by(fastsimp simp add: simulation_def elim: sumCases intro: derivativeReflexive)
+by(fastforce simp add: simulation_def elim: sumCases intro: derivativeReflexive)
 
 lemma sumIdempRight:
   fixes P :: pi
@@ -128,7 +128,7 @@ lemma sumIdempRight:
 
   shows "P \<oplus> P \<leadsto>[Rel] P"
 using assms
-by(fastsimp simp add: simulation_def intro: Sum1 derivativeReflexive)
+by(fastforce simp add: simulation_def intro: Sum1 derivativeReflexive)
 
 lemma sumAssocLeft:
   fixes P   :: pi
@@ -140,7 +140,7 @@ lemma sumAssocLeft:
 
   shows "(P \<oplus> Q) \<oplus> R \<leadsto>[Rel] P \<oplus> (Q \<oplus> R)"
 using assms
-by(fastsimp simp add: simulation_def elim: sumCases intro: Sum1 Sum2 derivativeReflexive)
+by(fastforce simp add: simulation_def elim: sumCases intro: Sum1 Sum2 derivativeReflexive)
 
 lemma sumAssocRight:
   fixes P   :: pi
@@ -152,7 +152,7 @@ lemma sumAssocRight:
 
   shows "P \<oplus> (Q \<oplus> R) \<leadsto>[Rel] (P \<oplus> Q) \<oplus> R"
 using assms
-by(fastsimp simp add: simulation_def elim: sumCases intro: Sum1 Sum2 derivativeReflexive)
+by(fastforce simp add: simulation_def elim: sumCases intro: Sum1 Sum2 derivativeReflexive)
 
 lemma sumZeroLeft:
   fixes P   :: pi
@@ -162,7 +162,7 @@ lemma sumZeroLeft:
 
   shows "P \<oplus> \<zero> \<leadsto>[Rel] P"
 using assms
-by(fastsimp simp add: simulation_def intro: Sum1 derivativeReflexive)
+by(fastforce simp add: simulation_def intro: Sum1 derivativeReflexive)
 
 lemma sumZeroRight:
   fixes P   :: pi
@@ -172,7 +172,7 @@ lemma sumZeroRight:
 
   shows "P \<leadsto>[Rel] P \<oplus> \<zero>"
 using assms
-by(fastsimp simp add: simulation_def elim: sumCases intro: derivativeReflexive)
+by(fastforce simp add: simulation_def elim: sumCases intro: derivativeReflexive)
 
 lemma sumResLeft:
   fixes x   :: name
@@ -348,7 +348,7 @@ proof -
       by(case_tac a) (auto simp add: derivative_def)
   }
   thus ?thesis using assms
-    by(fastsimp simp add: simulation_def intro: Par1B Par1F)
+    by(fastforce simp add: simulation_def intro: Par1B Par1F)
 qed
 
 lemma parZeroRight:
@@ -365,7 +365,7 @@ proof -
       by(case_tac a) (auto simp add: derivative_def)
   }
   thus ?thesis using assms
-    by(fastsimp simp add: simulation_def elim: parCasesF parCasesB)+
+    by(fastforce simp add: simulation_def elim: parCasesF parCasesB)+
 qed
   
 lemma parSym:
@@ -1017,7 +1017,7 @@ lemma resNilRight:
   and   Rel :: "(pi \<times> pi) set"
 
   shows "\<zero> \<leadsto>[Rel] <\<nu>x>\<zero>"
-by(fastsimp simp add: simulation_def pi.inject alpha' elim: resCasesB' resCasesF)
+by(fastforce simp add: simulation_def pi.inject alpha' elim: resCasesB' resCasesF)
 
 lemma resComm:
   fixes a   :: name
@@ -1142,7 +1142,7 @@ lemma bangRightSC:
 
   shows "P \<parallel> !P \<leadsto>[Rel] !P"
 using assms
-by(fastsimp simp add: pi.inject simulation_def intro: derivativeReflexive elim: bangCases)
+by(fastforce simp add: pi.inject simulation_def intro: derivativeReflexive elim: bangCases)
 
 lemma resNilLeft:
   fixes x   :: name
@@ -1245,7 +1245,7 @@ lemma resOutputLeft:
 
   shows "<\<nu>x>a{b}.P \<leadsto>[Rel] a{b}.(<\<nu>x>P)"
 using assms
-by(fastsimp simp add: simulation_def elim: outputCases intro: Output ResF)
+by(fastforce simp add: simulation_def elim: outputCases intro: Output ResF)
 
 lemma resOutputRight:
   fixes x   :: name

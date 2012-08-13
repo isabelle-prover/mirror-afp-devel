@@ -224,10 +224,10 @@ proof -
   ultimately show ?thesis
   proof(coinduct rule: weakenTransitiveWeakCoinduct)
     case(cStatImp \<Psi> P Q)
-    thus ?case by(fastsimp intro: rStatImp weakenBisimE(1) weakenStatImpMonotonic)
+    thus ?case by(fastforce intro: rStatImp weakenBisimE(1) weakenStatImpMonotonic)
   next
     case(cSim \<Psi> P Q)
-    thus ?case by(fastsimp intro: rSim weakenBisimE(2) weakenSimMonotonic bisimReflexive)
+    thus ?case by(fastforce intro: rSim weakenBisimE(2) weakenSimMonotonic bisimReflexive)
   next
     case(cExt \<Psi> P Q \<Psi>')
     thus ?case by(blast dest: weakenBisimE rExt) 

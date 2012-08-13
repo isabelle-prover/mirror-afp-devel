@@ -63,7 +63,7 @@ lemma scopeExtLeft:
 
   shows "\<lparr>\<nu>x\<rparr>(P \<parallel> Q) \<leadsto>[Rel] P \<parallel> \<lparr>\<nu>x\<rparr>Q"
 using assms
-by(fastsimp elim: parCases resCases intro: Res C1 Par1 Par2 Comm dest: freshDerivative simp add: simulation_def)
+by(fastforce elim: parCases resCases intro: Res C1 Par1 Par2 Comm dest: freshDerivative simp add: simulation_def)
 
 lemma scopeExtRight:
   fixes x :: name
@@ -75,7 +75,7 @@ lemma scopeExtRight:
 
   shows "P \<parallel> \<lparr>\<nu>x\<rparr>Q \<leadsto>[Rel] \<lparr>\<nu>x\<rparr>(P \<parallel> Q)"
 using assms
-by(fastsimp elim: parCases resCases intro: Res C1 Par1 Par2 Comm dest: freshDerivative simp add: simulation_def)
+by(fastforce elim: parCases resCases intro: Res C1 Par1 Par2 Comm dest: freshDerivative simp add: simulation_def)
 
 lemma sumComm:
   fixes P :: ccs
@@ -127,7 +127,7 @@ lemma sumIdRight:
 
   shows "P \<leadsto>[Rel] P \<oplus> \<zero>"
 using assms
-by(fastsimp simp add: simulation_def elim: sumCases)
+by(fastforce simp add: simulation_def elim: sumCases)
 
 lemma parComm:
   fixes P :: ccs
@@ -136,7 +136,7 @@ lemma parComm:
   assumes C1: "\<And>R T. (R \<parallel> T, T \<parallel> R) \<in> Rel"
 
   shows "P \<parallel> Q \<leadsto>[Rel] Q \<parallel> P"
-by(fastsimp simp add: simulation_def elim: parCases intro: Par1 Par2 Comm C1)
+by(fastforce simp add: simulation_def elim: parCases intro: Par1 Par2 Comm C1)
 
 lemma parAssocLeft:
   fixes P :: ccs
@@ -146,7 +146,7 @@ lemma parAssocLeft:
   assumes C1: "\<And>S T U. ((S \<parallel> T) \<parallel> U, S \<parallel> (T \<parallel> U)) \<in> Rel"
 
   shows "(P \<parallel> Q) \<parallel> R \<leadsto>[Rel] P \<parallel> (Q \<parallel> R)"
-by(fastsimp simp add: simulation_def elim: parCases intro: Par1 Par2 Comm C1)
+by(fastforce simp add: simulation_def elim: parCases intro: Par1 Par2 Comm C1)
 
 lemma parAssocRight:
   fixes P :: ccs
@@ -156,7 +156,7 @@ lemma parAssocRight:
   assumes C1: "\<And>S T U. (S \<parallel> (T \<parallel> U), (S \<parallel> T) \<parallel> U) \<in> Rel"
 
   shows "P \<parallel> (Q \<parallel> R) \<leadsto>[Rel] (P \<parallel> Q) \<parallel> R"
-by(fastsimp simp add: simulation_def elim: parCases intro: Par1 Par2 Comm C1)
+by(fastforce simp add: simulation_def elim: parCases intro: Par1 Par2 Comm C1)
 
 lemma parIdLeft:
   fixes P   :: ccs
@@ -176,7 +176,7 @@ lemma parIdRight:
 
   shows "P \<leadsto>[Rel] P \<parallel> \<zero>"
 using assms
-by(fastsimp simp add: simulation_def elim: parCases)
+by(fastforce simp add: simulation_def elim: parCases)
 
 declare fresh_atm[simp]
 
@@ -190,7 +190,7 @@ lemma resActLeft:
 
   shows "\<lparr>\<nu>x\<rparr>(\<alpha>.(P)) \<leadsto>[Rel] (\<alpha>.(\<lparr>\<nu>x\<rparr>P))"
 using assms
-by(fastsimp simp add: simulation_def elim: actCases intro: Res Action) 
+by(fastforce simp add: simulation_def elim: actCases intro: Res Action) 
 
 lemma resActRight:
   fixes x :: name
@@ -202,7 +202,7 @@ lemma resActRight:
 
   shows "\<alpha>.(\<lparr>\<nu>x\<rparr>P) \<leadsto>[Rel] \<lparr>\<nu>x\<rparr>(\<alpha>.(P))"
 using assms
-by(fastsimp simp add: simulation_def elim: resCases actCases intro: Action) 
+by(fastforce simp add: simulation_def elim: resCases actCases intro: Action) 
 
 lemma resComm:
   fixes x :: name
@@ -213,7 +213,7 @@ lemma resComm:
 
   shows "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P) \<leadsto>[Rel] \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P)"
 using assms
-by(fastsimp simp add: simulation_def elim: resCases intro: Res)
+by(fastforce simp add: simulation_def elim: resCases intro: Res)
 
 inductive_cases bangCases[simplified ccs.distinct act.distinct]: "!P \<longmapsto>\<alpha> \<prec> P'"
 
@@ -224,7 +224,7 @@ lemma bangUnfoldLeft:
 
   shows "P \<parallel> !P \<leadsto>[Rel] !P"
 using assms
-by(fastsimp simp add: simulation_def ccs.inject elim: bangCases)
+by(fastforce simp add: simulation_def ccs.inject elim: bangCases)
 
 lemma bangUnfoldRight:
   fixes P :: ccs
@@ -233,7 +233,7 @@ lemma bangUnfoldRight:
 
   shows "!P \<leadsto>[Rel] P \<parallel> !P"
 using assms
-by(fastsimp simp add: simulation_def ccs.inject intro: Bang)
+by(fastforce simp add: simulation_def ccs.inject intro: Bang)
 
 end 
 

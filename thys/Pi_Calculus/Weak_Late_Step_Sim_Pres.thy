@@ -447,7 +447,7 @@ next
       ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R')\<rightarrow>a<x> \<prec> P' \<and>
                            (P', Q \<parallel> R'[x::=u]) \<in> Rel'" by blast
     qed
-    thus ?case using `x \<sharp> Q` by(fastsimp simp add: forget)
+    thus ?case using `x \<sharp> Q` by(fastforce simp add: forget)
   qed
 next
   case(Free QR' \<alpha>)

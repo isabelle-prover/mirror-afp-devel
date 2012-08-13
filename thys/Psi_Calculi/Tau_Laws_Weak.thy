@@ -39,7 +39,7 @@ proof -
         have "\<Psi> \<rhd> P \<lessapprox><weakBisim> P" using weakBisimReflexive
           by(rule weakBisimE)
         moreover have "\<And>\<Psi> P Q R. \<lbrakk>\<Psi> \<rhd> P \<approx> Q; \<Psi> \<rhd> Q \<sim> R\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?X \<union> ?Y \<union> weakBisim"
-          by(fastsimp intro: weakBisimTransitive strongBisimWeakBisim)
+          by(fastforce intro: weakBisimTransitive strongBisimWeakBisim)
         ultimately have  "\<Psi> \<rhd> P \<lessapprox><( ?X \<union> ?Y \<union> weakBisim)> \<tau>.(P)" by(rule tauLaw1StatImpRight)
         moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakBisim"
           by(auto dest: statEqWeakBisim)
@@ -121,7 +121,7 @@ proof -
   let ?Y = "({(\<Psi>, \<alpha>\<cdot>P, \<alpha>\<cdot>(\<tau>.(P))) | \<Psi> \<alpha> P. True})"
 
   have "(\<Psi>, \<alpha>\<cdot>(\<tau>.(P)), \<alpha>\<cdot>P) \<in> ?X \<union> ?Y" by blast
-  moreover have "eqvt(?X \<union> ?Y)" by(fastsimp simp add: eqvt_def simp add: eqvts)
+  moreover have "eqvt(?X \<union> ?Y)" by(fastforce simp add: eqvt_def simp add: eqvts)
   ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<approx>\<^sub>w \<alpha>\<cdot>P"
   proof(coinduct rule: weakenTransitiveCoinduct)
     case(cStatImp \<Psi> P Q)
@@ -133,7 +133,7 @@ proof -
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>(\<tau>.(P)), \<alpha>\<cdot>P) \<in> ?X \<union> ?Y \<union> weakenBisim" by auto
         hence "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<lessapprox><(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>P" by(rule tauLaw3StatImpLeft)
 	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim"
-	  by(fastsimp intro: statEqWeakBisim)
+	  by(fastforce intro: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>P" by(rule weakStatImpWeakenStatImp)
       }
       with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by blast
@@ -144,7 +144,7 @@ proof -
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>P, \<alpha>\<cdot>(\<tau>.(P))) \<in> ?X \<union> ?Y \<union> weakenBisim" by auto
         hence "\<Psi> \<rhd> \<alpha>\<cdot>P \<lessapprox><(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>(\<tau>.(P))" by(rule tauLaw3StatImpRight)
 	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim"
-	  by(fastsimp intro: statEqWeakBisim)
+	  by(fastforce intro: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>(\<tau>.(P))" by(rule weakStatImpWeakenStatImp)
       }
       moreover from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast

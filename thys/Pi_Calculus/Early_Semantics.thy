@@ -84,7 +84,7 @@ lemma freshOutputAction:
   shows "c \<noteq> a" and "c \<noteq> b" and "c \<sharp> P'"
 proof -
   from assms have "c \<noteq> a \<and> c \<noteq> b \<and> c \<sharp> P'"
-    by(nominal_induct x2=="a[b] \<prec> P'" arbitrary: P' rule: TransitionsEarly.strong_induct) (fastsimp simp add: residual.inject abs_fresh freeRes.inject)+
+    by(nominal_induct x2=="a[b] \<prec> P'" arbitrary: P' rule: TransitionsEarly.strong_induct) (fastforce simp add: residual.inject abs_fresh freeRes.inject)+
   thus "c \<noteq> a" and "c \<noteq> b" and "c \<sharp> P'"
     by blast+
 qed
@@ -133,7 +133,7 @@ lemma freshInputTransition:
   shows "c \<sharp> P'"
 using assms
 by(nominal_induct x2=="a<u> \<prec> P'" arbitrary: P' rule: TransitionsEarly.strong_induct)
-  (fastsimp simp add: residual.inject name_fresh_abs fresh_fact1 fresh_fact2)+
+  (fastforce simp add: residual.inject name_fresh_abs fresh_fact1 fresh_fact2)+
    
 lemma freshBoundOutputTransition:
   fixes P  :: pi
@@ -149,9 +149,9 @@ lemma freshBoundOutputTransition:
   shows "c \<sharp> P'"
 using assms
 apply(nominal_induct x2=="a<\<nu>x> \<prec> P'" avoiding: x arbitrary: P' rule: TransitionsEarly.strong_induct)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
 apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
 apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
 apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
@@ -161,10 +161,10 @@ apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm 
 apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
 apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
 apply(force simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction | simp | auto simp add: abs_fresh residual.inject alpha' calc_atm)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
-apply(fastsimp simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
+apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
 apply(auto simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
 apply force
 done
@@ -180,7 +180,7 @@ lemma freshTauTransition:
   shows "c \<sharp> P'"
 using assms
 apply(nominal_induct x2=="\<tau> \<prec> P'" arbitrary: P' rule: TransitionsEarly.strong_induct)
-by(fastsimp simp add: residual.inject abs_fresh dest: freshOutputAction freshInputTransition freshBoundOutputTransition)+
+by(fastforce simp add: residual.inject abs_fresh dest: freshOutputAction freshInputTransition freshBoundOutputTransition)+
 
 lemma freshFreeTransition:
   fixes P  :: pi

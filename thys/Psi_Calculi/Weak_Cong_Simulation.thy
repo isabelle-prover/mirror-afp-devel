@@ -206,7 +206,7 @@ lemma strongSimWeakCongSim:
   shows "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel'\<guillemotright> Q"
 using assms
 apply(auto simp add: simulation_def weakCongSimulation_def)
-by(erule_tac x=\<tau> in allE) fastsimp
+by(erule_tac x=\<tau> in allE) fastforce
 
 end
 
