@@ -465,19 +465,19 @@ proof -
     proof(case_tac "x = y")
       assume "x = y"
       with EQ have "inputChain xvec' M P = inputChain yvec' N Q"
-	by(simp add: alpha input.inject)
+        by(simp add: alpha input.inject)
       with IH `length xvec' = n` have "length xvec' = length yvec'"
-	by blast
+        by blast
       with `xvec = x#xvec'` `yvec=y#yvec'`
       show ?case by simp
     next
       assume "x \<noteq> y"
       with EQ have "inputChain xvec' M P = inputChain ([(x, y)] \<bullet> yvec') ([(x, y)] \<bullet> N) ([(x, y)] \<bullet> Q)"
-	by(simp add: alpha input.inject eqvts)
+        by(simp add: alpha input.inject eqvts)
       with IH `length xvec' = n` have "length xvec' = length ([(x, y)] \<bullet> yvec')"
-	by blast
+        by blast
       hence "length xvec' = length yvec'"
-	by simp
+        by simp
       with `xvec = x#xvec'` `yvec=y#yvec'`
       show ?case by simp
     qed
@@ -578,10 +578,10 @@ proof -
     proof(simp add: fresh_def, rule notI)
       assume "y \<in> supp yvec'"
       hence "y mem yvec'"
-	by(induct yvec') (auto simp add: supp_list_nil supp_list_cons supp_atm)
+        by(induct yvec') (auto simp add: supp_list_nil supp_list_cons supp_atm)
       moreover from xvecFreshN xEq xFreshxvec' have "xvec' \<sharp>* N" by simp
       ultimately have "y \<sharp> [yvec' xvec'] \<bullet>\<^sub>v  N" using L' xvec'Freshyvec' xvec'Dist
-	by(force intro: freshChainPerm simp add: freshChainSym)
+        by(force intro: freshChainPerm simp add: freshChainSym)
       with ySuppN show "False" by(simp add: fresh_def)
     qed
     with `distinct yvec'`  yEq show ?case by simp

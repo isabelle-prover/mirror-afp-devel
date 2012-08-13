@@ -24,18 +24,18 @@ proof -
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
       {
-	fix \<Psi> P
+        fix \<Psi> P
         have "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakBisim)> P" by(auto simp add: weakenStatImp_def intro: weakBisimReflexive)
         moreover have "(\<Psi>, \<tau>.(P), P) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
         ultimately have "\<Psi> \<rhd> \<tau>.(P) \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakBisim)> P"
-	  by(rule tauLaw1StatImpLeft)
+          by(rule tauLaw1StatImpLeft)
       }
       with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by auto 
     next
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
       {
-	fix \<Psi> P
+        fix \<Psi> P
         have "\<Psi> \<rhd> P \<lessapprox><weakBisim> P" using weakBisimReflexive
           by(rule weakBisimE)
         moreover have "\<And>\<Psi> P Q R. \<lbrakk>\<Psi> \<rhd> P \<approx> Q; \<Psi> \<rhd> Q \<sim> R\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?X \<union> ?Y \<union> weakBisim"
@@ -72,31 +72,31 @@ proof -
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
       {
-	fix P
-	have "\<Psi> \<rhd> P \<leadsto><?Z> P" using weakenBisimEqWeakBisim by(blast intro: weakSimReflexive weakBisimReflexive bisimReflexive)
-	moreover note `eqvt ?Z`
-	moreover have "\<And>\<Psi> P Q R. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?Z"
-	  by(blast intro: bisimTransitive)
-	ultimately have "\<Psi> \<rhd> \<tau>.(P) \<leadsto><?Z> P"
-	  by(rule tauLaw1SimLeft)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z"
-	  by simp (blast intro: statEqWeakBisim statEqBisim)
-	ultimately have "\<Psi> \<rhd> \<tau>.(P) \<leadsto>\<^sub>w<?Z> P" by(rule weakSimWeakenSim)
+        fix P
+        have "\<Psi> \<rhd> P \<leadsto><?Z> P" using weakenBisimEqWeakBisim by(blast intro: weakSimReflexive weakBisimReflexive bisimReflexive)
+        moreover note `eqvt ?Z`
+        moreover have "\<And>\<Psi> P Q R. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?Z"
+          by(blast intro: bisimTransitive)
+        ultimately have "\<Psi> \<rhd> \<tau>.(P) \<leadsto><?Z> P"
+          by(rule tauLaw1SimLeft)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z"
+          by simp (blast intro: statEqWeakBisim statEqBisim)
+        ultimately have "\<Psi> \<rhd> \<tau>.(P) \<leadsto>\<^sub>w<?Z> P" by(rule weakSimWeakenSim)
       }
       with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by auto
     next
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
       moreover {
-	fix P
-	note `eqvt ?Z`	
-	moreover have "(\<Psi>, P, P) \<in> ?Z" by simp (blast intro: weakBisimReflexive bisimReflexive)
-	moreover have "\<And>\<Psi> P Q R. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<rhd> Q \<sim> R\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?Z"
-	  by(blast intro: bisimTransitive)
-	ultimately have "\<Psi> \<rhd> P \<leadsto><?Z> \<tau>.(P)" by(rule tauLaw1SimRight)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z"
-	  by simp (blast intro: statEqWeakBisim statEqBisim)
-	ultimately have "\<Psi> \<rhd> P \<leadsto>\<^sub>w<?Z> \<tau>.(P)" by(rule weakSimWeakenSim)
+        fix P
+        note `eqvt ?Z`  
+        moreover have "(\<Psi>, P, P) \<in> ?Z" by simp (blast intro: weakBisimReflexive bisimReflexive)
+        moreover have "\<And>\<Psi> P Q R. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<rhd> Q \<sim> R\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?Z"
+          by(blast intro: bisimTransitive)
+        ultimately have "\<Psi> \<rhd> P \<leadsto><?Z> \<tau>.(P)" by(rule tauLaw1SimRight)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z"
+          by simp (blast intro: statEqWeakBisim statEqBisim)
+        ultimately have "\<Psi> \<rhd> P \<leadsto>\<^sub>w<?Z> \<tau>.(P)" by(rule weakSimWeakenSim)
       }
       ultimately show ?thesis by auto
     qed
@@ -129,22 +129,22 @@ proof -
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
       {
-	fix \<Psi> \<alpha> P
+        fix \<Psi> \<alpha> P
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>(\<tau>.(P)), \<alpha>\<cdot>P) \<in> ?X \<union> ?Y \<union> weakenBisim" by auto
         hence "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<lessapprox><(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>P" by(rule tauLaw3StatImpLeft)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim"
-	  by(fastforce intro: statEqWeakBisim)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim"
+          by(fastforce intro: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>P" by(rule weakStatImpWeakenStatImp)
       }
       with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by blast
     next
       case False
       {
-	fix \<Psi> \<alpha> P
+        fix \<Psi> \<alpha> P
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>P, \<alpha>\<cdot>(\<tau>.(P))) \<in> ?X \<union> ?Y \<union> weakenBisim" by auto
         hence "\<Psi> \<rhd> \<alpha>\<cdot>P \<lessapprox><(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>(\<tau>.(P))" by(rule tauLaw3StatImpRight)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim"
-	  by(fastforce intro: statEqWeakBisim)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> ?Y \<union> weakenBisim"
+          by(fastforce intro: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>(\<tau>.(P))" by(rule weakStatImpWeakenStatImp)
       }
       moreover from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
@@ -175,31 +175,31 @@ proof -
       case True
       note `(\<Psi>, P, Q) \<in> ?X`
       moreover {
-	fix \<Psi> P \<alpha>
-	note `eqvt ?Z`
-	moreover have "(\<Psi>, P, P) \<in> ?Z" using weakenBisimEqWeakBisim by(blast intro: weakBisimReflexive bisimReflexive)
-	moreover have "\<And>xvec Tvec. length xvec = length Tvec \<Longrightarrow> (\<Psi>, P[xvec::=Tvec], P[xvec::=Tvec]) \<in> ?Z"
-	   using weakenBisimEqWeakBisim by(blast intro: weakBisimReflexive bisimReflexive)
-	moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z" by(blast intro: bisimTransitive)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. (\<Psi>, P, Q) \<in> ?Z \<Longrightarrow> (\<Psi> \<otimes> \<Psi>', P, Q) \<in> ?Z" by(blast dest: weakenBisimE(3) bisimE(3))
-	ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<leadsto><?Z> \<alpha>\<cdot>P" by(rule tauLaw3SimLeft)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z" by simp (blast dest: statEqWeakBisim statEqBisim)
-	ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<leadsto>\<^sub>w<?Z> \<alpha>\<cdot>P" by(rule weakSimWeakenSim)
+        fix \<Psi> P \<alpha>
+        note `eqvt ?Z`
+        moreover have "(\<Psi>, P, P) \<in> ?Z" using weakenBisimEqWeakBisim by(blast intro: weakBisimReflexive bisimReflexive)
+        moreover have "\<And>xvec Tvec. length xvec = length Tvec \<Longrightarrow> (\<Psi>, P[xvec::=Tvec], P[xvec::=Tvec]) \<in> ?Z"
+           using weakenBisimEqWeakBisim by(blast intro: weakBisimReflexive bisimReflexive)
+        moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z" by(blast intro: bisimTransitive)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. (\<Psi>, P, Q) \<in> ?Z \<Longrightarrow> (\<Psi> \<otimes> \<Psi>', P, Q) \<in> ?Z" by(blast dest: weakenBisimE(3) bisimE(3))
+        ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<leadsto><?Z> \<alpha>\<cdot>P" by(rule tauLaw3SimLeft)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z" by simp (blast dest: statEqWeakBisim statEqBisim)
+        ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<leadsto>\<^sub>w<?Z> \<alpha>\<cdot>P" by(rule weakSimWeakenSim)
       }
       ultimately show ?thesis by auto
     next
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
       moreover {
-	fix \<Psi> P \<alpha>
-	note `eqvt ?Z`
-	moreover have "\<And>\<Psi> xvec Tvec. length xvec=length Tvec \<Longrightarrow> (\<Psi>, P[xvec::=Tvec], \<tau>.(P[xvec::=Tvec])) \<in> ?Z"
-	  by simp (blast intro: weakBisimE(4) bisimReflexive tauLaw1)
-	moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z" by(blast intro: bisimTransitive)
-	moreover have "\<And>\<Psi>. (\<Psi>, P, \<tau>.(P)) \<in> ?Z" by simp (blast intro: weakBisimE(4) bisimReflexive tauLaw1)
-	ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<leadsto><?Z> \<alpha>\<cdot>(\<tau>.(P))" by(rule tauLaw3SimRight)
-	moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z" by simp (blast dest: statEqWeakBisim statEqBisim)
-	ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<leadsto>\<^sub>w<?Z> \<alpha>\<cdot>(\<tau>.(P))" by(rule weakSimWeakenSim)
+        fix \<Psi> P \<alpha>
+        note `eqvt ?Z`
+        moreover have "\<And>\<Psi> xvec Tvec. length xvec=length Tvec \<Longrightarrow> (\<Psi>, P[xvec::=Tvec], \<tau>.(P[xvec::=Tvec])) \<in> ?Z"
+          by simp (blast intro: weakBisimE(4) bisimReflexive tauLaw1)
+        moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z" by(blast intro: bisimTransitive)
+        moreover have "\<And>\<Psi>. (\<Psi>, P, \<tau>.(P)) \<in> ?Z" by simp (blast intro: weakBisimE(4) bisimReflexive tauLaw1)
+        ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<leadsto><?Z> \<alpha>\<cdot>(\<tau>.(P))" by(rule tauLaw3SimRight)
+        moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?Z" by simp (blast dest: statEqWeakBisim statEqBisim)
+        ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<leadsto>\<^sub>w<?Z> \<alpha>\<cdot>(\<tau>.(P))" by(rule weakSimWeakenSim)
       }
       ultimately show ?thesis by auto
     qed

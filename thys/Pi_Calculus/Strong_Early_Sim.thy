@@ -62,7 +62,7 @@ proof -
     moreover have "([(y, c)] \<bullet> P', Q') \<in> Rel" (is "?goal")
     proof -
       from Eqvt P'RelQ' have "([(y, c)] \<bullet> P', [(y, c)] \<bullet> [(y, c)] \<bullet> Q') \<in> Rel"
-	by(rule eqvtRelI)
+        by(rule eqvtRelI)
       with cineqy show ?goal by(simp add: name_calc)
     qed
     ultimately show "\<exists>P'. P \<longmapsto>a<\<nu>y> \<prec> P' \<and> (P', Q') \<in> Rel" by blast

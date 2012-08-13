@@ -52,45 +52,45 @@ proof(auto simp add: simulation_def)
                  and xvecFreshxvec: "(p \<bullet> xvec) \<sharp>* xvec"
                  and S: "(set p) \<subseteq> (set xvec) \<times> (set(p \<bullet> xvec))"
                  and dpr: "distinctPerm p"
-	by(rule_tac xvec=xvec and c="(\<Psi>, M, Q, N, P, Q', xvec, C)" in name_list_avoiding)
+        by(rule_tac xvec=xvec and c="(\<Psi>, M, Q, N, P, Q', xvec, C)" in name_list_avoiding)
           (auto simp add: eqvts fresh_star_prod)
 
       from `(p \<bullet> xvec) \<sharp>* M` `distinctPerm p` have "xvec \<sharp>* (p \<bullet> M)"
-	by(subst pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst, where pi=p, symmetric]) simp
+        by(subst pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst, where pi=p, symmetric]) simp
 
       assume Trans: "\<Psi> \<rhd> Q \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'"
       with xvecFreshN xvecFreshQ' S
       have "\<Psi> \<rhd> Q \<longmapsto>M\<lparr>\<nu>*(p \<bullet> xvec)\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> (p \<bullet> Q')"
-	by(simp add: boundOutputChainAlpha'' residualInject)
+        by(simp add: boundOutputChainAlpha'' residualInject)
       moreover hence "distinct(p \<bullet> xvec)"  by(auto dest: boundOutputDistinct)
       
       moreover note xvecFreshPsi xvecFreshP xvecFreshQ xvecFreshM xvecFreshC
       ultimately obtain P' where PTrans: "\<Psi> \<rhd> P \<longmapsto>M\<lparr>\<nu>*(p \<bullet> xvec)\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> P'"
                             and P'RelQ': "(\<Psi>, P', p \<bullet> Q') \<in> Rel"
-	by(drule_tac Sim) auto
+        by(drule_tac Sim) auto
       hence "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto>(p \<bullet> (M\<lparr>\<nu>*(p \<bullet> xvec)\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> P'))"
-	by(rule_tac semantics.eqvt)
+        by(rule_tac semantics.eqvt)
       with `xvec \<sharp>* \<Psi>` xvecFreshPsi `xvec \<sharp>* P` xvecFreshP S dpr
       have "\<Psi> \<rhd> P \<longmapsto>(p \<bullet> M)\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (p \<bullet> P')"
-	by(simp add: eqvts name_set_fresh_fresh)
+        by(simp add: eqvts name_set_fresh_fresh)
       with `xvec \<sharp>* \<Psi>` xvecFreshPsi `xvec \<sharp>* P` xvecFreshP S `xvec \<sharp>* (p \<bullet> M)`
       have "\<Psi> \<rhd> P \<longmapsto>(p \<bullet> p \<bullet> M)\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (p \<bullet> P')"
        by(rule_tac outputPermSubject)
          (simp add: fresh_star_def | assumption)+
 
       with dpr have "\<Psi> \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (p \<bullet> P')"
-	by simp
+        by simp
 
       moreover from P'RelQ' Eqvt have "(p \<bullet> \<Psi>, p \<bullet> P', p \<bullet> p \<bullet> Q') \<in> Rel"
-	apply(simp add: eqvt_def eqvts)
-	apply(erule_tac x="(\<Psi>, P', p \<bullet> Q')" in ballE)
-	apply(erule_tac x="p" in allE)
-	by(auto simp add: eqvts)
+        apply(simp add: eqvt_def eqvts)
+        apply(erule_tac x="(\<Psi>, P', p \<bullet> Q')" in ballE)
+        apply(erule_tac x="p" in allE)
+        by(auto simp add: eqvts)
 
 
       with `xvec \<sharp>* \<Psi>` xvecFreshPsi S dpr have "(\<Psi>, p \<bullet> P', Q') \<in> Rel" by simp
       ultimately have "\<exists>P'. \<Psi> \<rhd> P \<longmapsto> M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P' \<and> (\<Psi>, P', Q') \<in> Rel"
-	by blast
+        by blast
     }
     ultimately show ?case by force
   next

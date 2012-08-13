@@ -625,16 +625,16 @@ proof(induct rule: weakSimI2)
       case(cInput M xvec N K Tvec)
       have "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q)" by auto
       moreover have "insertAssertion (extractFrame((M\<lparr>\<lambda>*xvec N\<rparr>.P) \<oplus> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q))) \<Psi>"
-	by auto
+        by auto
       moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `distinct xvec` `set xvec \<subseteq> supp N` `length xvec = length Tvec`
       have "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<longmapsto>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]" by(rule Input)
       ultimately have "\<Psi> : ((M\<lparr>\<lambda>*xvec N\<rparr>.P) \<oplus> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<lparr>(N[xvec::=Tvec])\<rparr>\<prec> (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]"
-	by(rule_tac weakTransitionI) auto
+        by(rule_tac weakTransitionI) auto
       with `length xvec = length Tvec` `distinct xvec`
       have "\<Psi> : ((M\<lparr>\<lambda>*xvec N\<rparr>.P) \<oplus> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> (\<tau>.(P[xvec::=Tvec]) \<oplus> Q[xvec::=Tvec])"
-	by auto
+        by auto
       moreover obtain P' where PTrans: "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P[xvec::=Tvec]) \<longmapsto>\<tau> \<prec> P'" and "\<Psi> \<otimes> \<Psi>' \<rhd> P[xvec::=Tvec] \<sim> P'" using tauActionI
-	by auto
+        by auto
       have "guarded(\<tau>.(P[xvec::=Tvec]))" by(rule guardedTau)
       with PTrans have "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P[xvec::=Tvec])) \<oplus> (Q[xvec::=Tvec]) \<longmapsto>\<tau> \<prec> P'" by(rule Sum1)
       hence "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P[xvec::=Tvec])) \<oplus> (Q[xvec::=Tvec]) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
@@ -644,12 +644,12 @@ proof(induct rule: weakSimI2)
       case(cOutput M N K)
       have "\<Psi> \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)" by auto
       moreover have "insertAssertion (extractFrame(M\<langle>N\<rangle>.P \<oplus> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q))) \<Psi>"
-	by auto
+        by auto
       moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` have "\<Psi> \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<longmapsto>K\<langle>N\<rangle> \<prec> (\<tau>.(P) \<oplus> Q)" by(rule Output)
       ultimately have "\<Psi> : (M\<langle>N\<rangle>.P \<oplus> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<langle>N\<rangle> \<prec> (\<tau>.(P) \<oplus> Q)"
-	by(rule_tac weakTransitionI) auto
+        by(rule_tac weakTransitionI) auto
       moreover obtain P' where PTrans: "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P) \<longmapsto>\<tau> \<prec> P'" and "\<Psi> \<otimes> \<Psi>' \<rhd> P \<sim> P'" using tauActionI
-	by auto
+        by auto
       have "guarded(\<tau>.(P))" by(rule guardedTau)
       with PTrans have "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P)) \<oplus> Q \<longmapsto>\<tau> \<prec> P'" by(rule Sum1)
       hence "\<Psi> \<otimes> \<Psi>' \<rhd> (\<tau>.(P)) \<oplus> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
@@ -666,27 +666,27 @@ proof(induct rule: weakSimI2)
       case(cInput M xvec N K Tvec)
       have "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q)" by auto
       moreover have "insertAssertion (extractFrame((M\<lparr>\<lambda>*xvec N\<rparr>.P) \<oplus> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q))) \<Psi>"
-	by auto
+        by auto
       moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `distinct xvec` `set xvec \<subseteq> supp N` `length xvec = length Tvec`
       have "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<longmapsto>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> (\<tau>.(P) \<oplus> Q)[xvec::=Tvec]"
-	by(rule Input)
+        by(rule Input)
       with `length xvec = length Tvec` `distinct xvec`
       have "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<longmapsto>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> (\<tau>.(P[xvec::=Tvec]) \<oplus> Q[xvec::=Tvec])"
-	by simp
+        by simp
       ultimately have "\<Psi> : ((M\<lparr>\<lambda>*xvec N\<rparr>.P) \<oplus> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> (\<tau>.(P[xvec::=Tvec]) \<oplus> Q[xvec::=Tvec])"
-	by(rule_tac weakTransitionI) auto
+        by(rule_tac weakTransitionI) auto
       moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec]) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec])" by auto
       ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec]), \<tau>.(P[xvec::=Tvec]) \<oplus> (Q[xvec::=Tvec])) \<in> Rel` `length xvec = length Tvec` `distinct xvec`
-	by fastforce
+        by fastforce
     next
       case(cOutput M N K)
       have "\<Psi> \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)" by auto
       moreover have "insertAssertion (extractFrame(M\<langle>N\<rangle>.P \<oplus> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q))) \<Psi>"
-	by auto
+        by auto
       moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` have "\<Psi> \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<longmapsto>K\<langle>N\<rangle> \<prec> (\<tau>.(P) \<oplus> Q)"
-	by(rule Output)
+        by(rule Output)
       ultimately have "\<Psi> : (M\<langle>N\<rangle>.P \<oplus> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q)) \<rhd> M\<langle>N\<rangle>.(\<tau>.(P) \<oplus> Q) \<Longrightarrow>K\<langle>N\<rangle> \<prec> (\<tau>.(P) \<oplus> Q)"
-	by(rule_tac weakTransitionI) auto
+        by(rule_tac weakTransitionI) auto
       moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> \<tau>.(P) \<oplus> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<tau>.(P) \<oplus> Q" by auto
       ultimately show ?case using `(\<Psi> \<otimes> \<Psi>', \<tau>.(P) \<oplus> Q, \<tau>.(P) \<oplus> Q) \<in> Rel` by fastforce
     next
@@ -703,18 +703,18 @@ next
     proof(induct rule: prefixTauCases)
       case cTau
       obtain P' where PTrans: "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<longmapsto>\<tau> \<prec> P'" and "\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'" using tauActionI
-	by auto
+        by auto
       obtain P'' where P'Trans: "\<Psi> \<rhd> \<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and "\<Psi> \<rhd> P \<sim> P''" using tauActionI
-	by auto
+        by auto
       from P'Trans have "\<Psi> \<rhd> \<tau>.(P) \<oplus> Q\<longmapsto>\<tau> \<prec> P''" by(rule_tac Sum1) (auto intro: guardedTau)
       with `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'` obtain P''' where P''Trans: "\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P'''" and "\<Psi> \<rhd> P'' \<sim> P'''"
-	apply(drule_tac bisimE(4))
-	apply(drule_tac bisimE(2))
-	apply(drule_tac simE)
-	by(auto dest: bisimE)
+        apply(drule_tac bisimE(4))
+        apply(drule_tac bisimE(2))
+        apply(drule_tac simE)
+        by(auto dest: bisimE)
       from PTrans P''Trans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" by(fastforce dest: tauActTauChain)
       moreover from `\<Psi> \<rhd> P \<sim> PQ` `\<Psi> \<rhd> P'' \<sim> P'''` `\<Psi> \<rhd> P \<sim> P''` have "\<Psi> \<rhd> P''' \<sim> PQ"
-	by(metis bisimSymmetric bisimTransitive)
+        by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P''', PQ) \<in> Rel" by(rule C1)
       ultimately show ?case by fastforce
     qed
@@ -724,10 +724,10 @@ next
     proof(induct rule: prefixTauCases)
       case cTau
       obtain P' where PTrans: "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<longmapsto>\<tau> \<prec> P'" and "\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'" using tauActionI
-	by auto
+        by auto
       from PTrans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule tauActTauChain)
       moreover from `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'` `\<Psi> \<rhd> \<tau>.(P) \<oplus> Q \<sim> PQ` have "\<Psi> \<rhd> P' \<sim> PQ"
-	by(metis bisimSymmetric bisimTransitive)
+        by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P', PQ) \<in> Rel" by(rule C1)
       ultimately show ?case by fastforce
     qed
@@ -752,18 +752,18 @@ proof(induct rule: weakCongSimI)
     proof(induct rule: prefixTauCases)
       case cTau
       obtain P' where PTrans: "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<longmapsto>\<tau> \<prec> P'" and "\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'" using tauActionI
-	by auto
+        by auto
       obtain P'' where P'Trans: "\<Psi> \<rhd> \<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and "\<Psi> \<rhd> P \<sim> P''" using tauActionI
-	by auto
+        by auto
       from P'Trans have "\<Psi> \<rhd> \<tau>.(P) \<oplus> Q\<longmapsto>\<tau> \<prec> P''" by(rule_tac Sum1) (auto intro: guardedTau)
       with `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'` obtain P''' where P''Trans: "\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P'''" and "\<Psi> \<rhd> P'' \<sim> P'''"
-	apply(drule_tac bisimE(4))
-	apply(drule_tac bisimE(2))
-	apply(drule_tac simE)
-	by(auto dest: bisimE)
+        apply(drule_tac bisimE(4))
+        apply(drule_tac bisimE(2))
+        apply(drule_tac simE)
+        by(auto dest: bisimE)
       from PTrans P''Trans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sub>\<tau> P'''" by(fastforce dest: tauActTauStepChain)
       moreover from `\<Psi> \<rhd> P \<sim> PQ` `\<Psi> \<rhd> P'' \<sim> P'''` `\<Psi> \<rhd> P \<sim> P''` have "\<Psi> \<rhd> P''' \<sim> PQ"
-	by(metis bisimSymmetric bisimTransitive)
+        by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P''', PQ) \<in> Rel" by(rule C1)
       ultimately show ?case by fastforce
     qed
@@ -773,10 +773,10 @@ proof(induct rule: weakCongSimI)
     proof(induct rule: prefixTauCases)
       case cTau
       obtain P' where PTrans: "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<longmapsto>\<tau> \<prec> P'" and "\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'" using tauActionI
-	by auto
+        by auto
       from PTrans have "\<Psi> \<rhd> \<tau>.((\<tau>.(P)) \<oplus> Q) \<Longrightarrow>\<^sub>\<tau> P'" by(rule tauActTauStepChain)
       moreover from `\<Psi> \<rhd> (\<tau>.(P)) \<oplus> Q \<sim> P'` `\<Psi> \<rhd> \<tau>.(P) \<oplus> Q \<sim> PQ` have "\<Psi> \<rhd> P' \<sim> PQ"
-	by(metis bisimSymmetric bisimTransitive)
+        by(metis bisimSymmetric bisimTransitive)
       hence "(\<Psi>, P', PQ) \<in> Rel" by(rule C1)
       ultimately show ?case by fastforce
     qed

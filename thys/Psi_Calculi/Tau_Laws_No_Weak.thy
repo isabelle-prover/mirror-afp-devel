@@ -28,7 +28,7 @@ proof -
       case True
       note `(\<Psi>, P, Q) \<in> ?X`
       moreover {
-	fix \<Psi> P
+        fix \<Psi> P
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', P \<oplus> \<tau>.(P), \<tau>.(P)) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
         hence "\<Psi> \<rhd> P \<oplus> \<tau>.(P) \<lessapprox><(?X \<union> ?Y \<union> weakBisim)> \<tau>.(P)" by(rule tauLaw2StatImpLeft)
       }
@@ -37,7 +37,7 @@ proof -
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
       moreover {
-	fix \<Psi> P
+        fix \<Psi> P
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<tau>.(P), P \<oplus> \<tau>.(P)) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
         hence "\<Psi> \<rhd> \<tau>.(P) \<lessapprox><(?X \<union> ?Y \<union> weakBisim)> P \<oplus> \<tau>.(P)" by(rule tauLaw2StatImpRight)
       }
@@ -52,20 +52,20 @@ proof -
       case True
       note `(\<Psi>, P, Q) \<in> ?X`
       moreover {
-	fix \<Psi> P
-	have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
-	moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z"
-	  by(blast intro: bisimTransitive dest: bisimE(4))
-	ultimately have "\<Psi> \<rhd> P \<oplus> \<tau>.(P) \<leadsto><?Z> \<tau>.(P)" by(rule tauLaw2SimLeft)
+        fix \<Psi> P
+        have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
+        moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z"
+          by(blast intro: bisimTransitive dest: bisimE(4))
+        ultimately have "\<Psi> \<rhd> P \<oplus> \<tau>.(P) \<leadsto><?Z> \<tau>.(P)" by(rule tauLaw2SimLeft)
       }
       ultimately show ?thesis by blast
     next
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
       moreover {
-	fix \<Psi> P
-	have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
-	hence "\<Psi> \<rhd> \<tau>.(P) \<leadsto><?Z> P \<oplus> \<tau>.(P)" by(rule tauLaw2SimRight)
+        fix \<Psi> P
+        have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
+        hence "\<Psi> \<rhd> \<tau>.(P) \<leadsto><?Z> P \<oplus> \<tau>.(P)" by(rule tauLaw2SimRight)
       }
       ultimately show ?thesis by blast
     qed
@@ -124,7 +124,7 @@ proof -
       case True
       note `(\<Psi>, P, Q) \<in> ?X`
       moreover {
-	fix \<Psi> \<alpha> P Q
+        fix \<Psi> \<alpha> P Q
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y \<union> weakBisim" by blast
         hence "\<Psi> \<rhd>  \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<lessapprox><(?X \<union> ?Y \<union> weakBisim)>  \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by(rule tauLaw4StatImpLeft)
       }
@@ -133,7 +133,7 @@ proof -
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
       moreover {
-	fix \<Psi> \<alpha> P Q
+        fix \<Psi> \<alpha> P Q
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
         hence "\<Psi> \<rhd>  \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<lessapprox><(?X \<union> ?Y \<union> weakBisim)> \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by(rule tauLaw4StatImpRight)
       }
@@ -147,20 +147,20 @@ proof -
       case True
       note `(\<Psi>, P, Q) \<in> ?X`
       moreover {
-	fix \<Psi> P \<alpha> Q
-	have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
-	moreover have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
-	ultimately have "\<Psi> \<rhd>  \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<leadsto><?Z>  \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by(rule tauLaw4SimLeft)
+        fix \<Psi> P \<alpha> Q
+        have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
+        moreover have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
+        ultimately have "\<Psi> \<rhd>  \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<leadsto><?Z>  \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by(rule tauLaw4SimLeft)
       }
       ultimately show ?thesis by blast
     next
       case False
       from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
       moreover {
-	fix \<Psi> P \<alpha> Q
-	have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
-	moreover have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
-	ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<leadsto><?Z> \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by(rule tauLaw4SimRight)
+        fix \<Psi> P \<alpha> Q
+        have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
+        moreover have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
+        ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q) \<leadsto><?Z> \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)" by(rule tauLaw4SimRight)
       }
       ultimately show ?thesis by blast
     qed

@@ -107,13 +107,13 @@ proof(induct rule: weakenSimI)
     proof(induct rule: weakenTransitionCases)
       case cBase 
       from `\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'` have "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'"
-	by(induct rule: tauChainInduct) (auto simp add: weakenTransition_def)
+        by(induct rule: tauChainInduct) (auto simp add: weakenTransition_def)
       with `(\<Psi>, P', Q') \<in> Rel` show ?case by blast
     next
       case(cStep P'''' P''')
       thus ?case 
-	apply(unfold weakenTransition_def)
-	by(rule_tac x=P' in exI) fastforce
+        apply(unfold weakenTransition_def)
+        by(rule_tac x=P' in exI) fastforce
     qed
   qed
 qed

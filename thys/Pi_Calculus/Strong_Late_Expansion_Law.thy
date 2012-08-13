@@ -367,45 +367,45 @@ next
     proof -
       assume Trans: "<\<nu>y>P \<longmapsto>a<\<nu>x> \<prec> P'"
       hence  aeqb: "a = b" using xineqy bineqy PeqP''
-	by(induct rule: resCasesB', auto elim: outputCases simp add: residual.inject alpha' abs_fresh pi.inject)
+        by(induct rule: resCasesB', auto elim: outputCases simp add: residual.inject alpha' abs_fresh pi.inject)
 
       have Goal: "\<And>x P'. \<lbrakk><\<nu>y>b{y}.P'' \<longmapsto>b<\<nu>x> \<prec> P'; x \<noteq> y; x \<noteq> b; x \<sharp> P''\<rbrakk> \<Longrightarrow>
                            <\<nu>x>b{x}.P' \<in> summands(<\<nu>y>b{y}.P'')"
       proof -
-	fix x P'
-	assume xFreshP'': "(x::name) \<sharp> P''" and xineqb: "x \<noteq> b"
-	assume "<\<nu>y>b{y}.P'' \<longmapsto>b<\<nu>x> \<prec> P'" and xineqy: "x \<noteq> y"
-	moreover from `x \<noteq> b` `x \<sharp> P''` `x \<noteq> y` have "x \<sharp> b{y}.P''" by simp
-	ultimately show "<\<nu>x>b{x}.P' \<in> summands (<\<nu>y>b{y}.P'')"
-	proof(induct rule: resCasesB)
-	  case(cOpen a P''')
-	  have "BoundOutputS b = BoundOutputS a" by fact hence beqa: "b = a" by simp
-	  have Trans: "b{y}.P'' \<longmapsto>a[y] \<prec> P'''" by fact
-	  with PeqP'' have P''eqP''': "P'' = P'''"
-	    by(force elim: outputCases simp add: residual.inject)
-	  with bineqy xineqy xFreshP'' have "y \<sharp> b{x}.([(x, y)] \<bullet> P''')"
-	    by(simp add: name_fresh_abs name_calc name_fresh_left)
-	  with bineqy Phnf PeqP'' P''eqP''' xineqb show ?case 
-	    by(simp only: alphaRes, simp add: name_calc)
-	next
-	  case(cRes P''')
-	  have "b{y}.P'' \<longmapsto>b<\<nu>x> \<prec> P'''" by fact
-	  hence False by auto
-	  thus ?case by simp
-	qed	
+        fix x P'
+        assume xFreshP'': "(x::name) \<sharp> P''" and xineqb: "x \<noteq> b"
+        assume "<\<nu>y>b{y}.P'' \<longmapsto>b<\<nu>x> \<prec> P'" and xineqy: "x \<noteq> y"
+        moreover from `x \<noteq> b` `x \<sharp> P''` `x \<noteq> y` have "x \<sharp> b{y}.P''" by simp
+        ultimately show "<\<nu>x>b{x}.P' \<in> summands (<\<nu>y>b{y}.P'')"
+        proof(induct rule: resCasesB)
+          case(cOpen a P''')
+          have "BoundOutputS b = BoundOutputS a" by fact hence beqa: "b = a" by simp
+          have Trans: "b{y}.P'' \<longmapsto>a[y] \<prec> P'''" by fact
+          with PeqP'' have P''eqP''': "P'' = P'''"
+            by(force elim: outputCases simp add: residual.inject)
+          with bineqy xineqy xFreshP'' have "y \<sharp> b{x}.([(x, y)] \<bullet> P''')"
+            by(simp add: name_fresh_abs name_calc name_fresh_left)
+          with bineqy Phnf PeqP'' P''eqP''' xineqb show ?case 
+            by(simp only: alphaRes, simp add: name_calc)
+        next
+          case(cRes P''')
+          have "b{y}.P'' \<longmapsto>b<\<nu>x> \<prec> P'''" by fact
+          hence False by auto
+          thus ?case by simp
+        qed     
       qed
       obtain z where zineqx: "z \<noteq> x" and zineqy: "z \<noteq> y" and zFreshP'': "z \<sharp> P''" 
                  and zineqb: "z \<noteq> b" and zFreshP': "z \<sharp> P'"
-	by(force intro: name_exists_fresh[of "(x, y, b, P'', P')"] simp add: fresh_prod)
+        by(force intro: name_exists_fresh[of "(x, y, b, P'', P')"] simp add: fresh_prod)
 
       from zFreshP' aeqb PeqP'' Trans have Trans': "<\<nu>y>b{y}.P'' \<longmapsto>b<\<nu>z> \<prec> [(z, x)] \<bullet> P'"
-	by(simp add: alphaBoundResidual name_swap)
+        by(simp add: alphaBoundResidual name_swap)
       hence "<\<nu>z>b{z}.([(z, x)] \<bullet> P') \<in> summands (<\<nu>y>b{y}.P'')" using zineqy zineqb zFreshP''
-	by(rule Goal)
+        by(rule Goal)
       moreover from bineqy zineqx zFreshP' aineqx aeqb have "x \<sharp> b{z}.([(z, x)] \<bullet> P')"
-	by(simp add: name_fresh_left name_calc)
+        by(simp add: name_fresh_left name_calc)
       ultimately have "<\<nu>x>b{x}.P' \<in> summands (<\<nu>y>b{y}.P'')" using zineqb
-	by(simp add: alphaRes name_calc)
+        by(simp add: alphaRes name_calc)
       with aeqb PeqP'' show ?thesis by blast
     qed
     moreover have "<\<nu>x>a{x}.P' \<in> summands(<\<nu>y>P) \<Longrightarrow> <\<nu>y>P \<longmapsto>a<\<nu>x> \<prec> P'"
@@ -413,12 +413,12 @@ next
       assume "<\<nu>x>a{x}.P' \<in> summands(<\<nu>y>P)"
       with PeqP'' have Summ: "<\<nu>x>a{x}.P' \<in> summands(<\<nu>y>b{y}.P'')" by simp
       moreover with bineqy xineqy have aeqb: "a = b" 
-	by(auto simp add: split_if pi.inject name_abs_eq name_fresh_fresh)
+        by(auto simp add: split_if pi.inject name_abs_eq name_fresh_fresh)
       from bineqy xineqy yFreshP' have "y \<sharp> b{x}.P'" by(simp add: name_calc)
       with Summ aeqb bineqy aineqx have "<\<nu>y>b{y}.([(x, y)] \<bullet> P') \<in> summands(<\<nu>y>b{y}.P'')"
-	by(simp only: alphaRes, simp add: name_calc)
+        by(simp only: alphaRes, simp add: name_calc)
       with aeqb PeqP'' have "<\<nu>y>P \<longmapsto>a<\<nu>y> \<prec> [(x, y)] \<bullet> P'"
-	by(auto intro: Open Output simp add: split_if pi.inject name_abs_eq)
+        by(auto intro: Open Output simp add: split_if pi.inject name_abs_eq)
       moreover from yFreshP' have "x \<sharp> [(x, y)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
       ultimately show ?thesis by(simp add: alphaBoundResidual name_swap)
     qed
@@ -524,7 +524,7 @@ proof -
   moreover have "finite {\<tau>.(P' \<parallel> (Q'[x::=b])) | b P' x Q'. \<exists>a. a{b}.P' \<in> summands P \<and> a<x>.Q' \<in> summands Q}"
   proof -
       have Aux: "\<And>a x P b Q. {\<tau>.(P' \<parallel> (Q'[x'::=b'])) | a' b' P' x' Q'. a'{b'}.P' = a{b}.P \<and> a'<x'>.Q' = a<x>.Q} = {\<tau>.(P \<parallel> (Q[x::=b]))}"
-	by(auto simp add: name_abs_eq pi.inject renaming)
+        by(auto simp add: name_abs_eq pi.inject renaming)
       have "\<And>a b P Q x. finite {\<tau>.(P' \<parallel> (Q'[x::=b'])) | a' b' P' x Q'. a'{b'}.P' = a{b}.P \<and> a'<x>.Q' \<in> summands Q}"
       apply(induct rule: pi.induct, simp_all)
       apply(case_tac "a=name1")
@@ -550,13 +550,13 @@ proof -
     proof -
       fix a x P Q
       show "finite {\<tau>.(<\<nu>y>(P'[x'::=y] \<parallel> Q')) | a' x' P' y Q'. a'<x'>.P' = a<x>.P \<and> <\<nu>y>a'{y}.Q' \<in> summands Q \<and> y \<sharp> a<x>.P}"
-	apply(nominal_induct Q avoiding: a P rule: pi.strong_induct, simp_all)
-	apply(simp add: Collect_ex_eq conj_disj_distribL conj_disj_distribR
+        apply(nominal_induct Q avoiding: a P rule: pi.strong_induct, simp_all)
+        apply(simp add: Collect_ex_eq conj_disj_distribL conj_disj_distribR
                         Collect_disj_eq UN_Un_distrib)
-	apply(clarsimp)
-	apply(case_tac "a=aa")
-	apply(insert Aux, auto)
-	by(simp add: pi.inject name_abs_eq name_calc)
+        apply(clarsimp)
+        apply(case_tac "a=aa")
+        apply(insert Aux, auto)
+        by(simp add: pi.inject name_abs_eq name_calc)
     qed
 
     have IH: "\<And>P P' Q. {\<tau>.(<\<nu>y>(P''[x::=y] \<parallel> Q')) | a x P'' y Q'. (a<x>.P'' \<in> summands P \<or> a<x>.P'' \<in> summands P') \<and> <\<nu>y>a{y}.Q' \<in> summands Q \<and> y \<sharp> P \<and> y \<sharp> P'} = {\<tau>.(<\<nu>y>(P''[x::=y] \<parallel> Q')) | a x P'' y Q'. a<x>.P'' \<in> summands P \<and> <\<nu>y>a{y}.Q' \<in> summands Q \<and> y \<sharp> P \<and> y \<sharp> P'} \<union> {\<tau>.(<\<nu>y>(P''[x::=y] \<parallel> Q')) | a x P'' y Q'. a<x>.P'' \<in> summands P' \<and> <\<nu>y>a{y}.Q' \<in> summands Q \<and> y \<sharp> P \<and> y \<sharp> P'}"
@@ -593,18 +593,18 @@ proof -
       fix a y P Q
       assume "(y::name) \<sharp> (Q::pi)" and "y \<noteq> a"
       thus "finite {\<tau>.(<\<nu>y'>(P' \<parallel> (Q'[x::=y']))) | a' y' P' x Q'. <\<nu>y'>a'{y'}.P' = <\<nu>y>a{y}.P \<and> a'<x>.Q' \<in> summands Q \<and> y' \<sharp> Q}"
-	apply(nominal_induct Q avoiding: y rule: pi.strong_induct, simp_all)
-	apply(case_tac "a=name1")
-	apply auto
-	apply(subgoal_tac "ya \<sharp> (pi::pi)")
-	apply(insert Aux)
-	apply auto
-	apply(simp add: name_fresh_abs)
-	apply(simp add: pi.inject name_abs_eq name_calc)
-	apply(insert IH)
-	apply auto
-	apply(blast intro: finite_subset[OF IH'])
-	by(blast intro: finite_subset[OF IH''])
+        apply(nominal_induct Q avoiding: y rule: pi.strong_induct, simp_all)
+        apply(case_tac "a=name1")
+        apply auto
+        apply(subgoal_tac "ya \<sharp> (pi::pi)")
+        apply(insert Aux)
+        apply auto
+        apply(simp add: name_fresh_abs)
+        apply(simp add: pi.inject name_abs_eq name_calc)
+        apply(insert IH)
+        apply auto
+        apply(blast intro: finite_subset[OF IH'])
+        by(blast intro: finite_subset[OF IH''])
     qed
     have "finite {\<tau>.(<\<nu>y>(P' \<parallel> (Q'[x::=y]))) | a y P' x Q'. <\<nu>y>a{y}.P' \<in> summands P \<and> a<x>.Q' \<in> summands Q \<and> y \<sharp> Q}"
 
@@ -765,7 +765,7 @@ proof -
       moreover from PTrans yFreshP have "y \<noteq> a" by(force dest: freshBoundDerivative)
       ultimately have "<\<nu>y>a{y}.Q' \<in> summands Q" using Qhnf by(simp add: summandTransition)
       with PSumm yFreshP have "\<tau>.(<\<nu>y>(P'[x::=y] \<parallel> Q')) \<in> expandSet P Q"
-	by(auto simp add: expandSet_def)
+        by(auto simp add: expandSet_def)
       moreover have "\<tau>.(<\<nu>y>(P'[x::=y] \<parallel> Q')) \<longmapsto>\<tau> \<prec> <\<nu>y>(P'[x::=y] \<parallel> Q')" by(rule Tau)
       ultimately show ?case using Exp by(blast intro: expandAction)
     next
@@ -778,7 +778,7 @@ proof -
       moreover from QTrans yFreshQ have "y \<noteq> a" by(force dest: freshBoundDerivative)
       ultimately have "<\<nu>y>a{y}.P' \<in> summands P" using Phnf by(simp add: summandTransition)
       with QSumm yFreshQ have "\<tau>.(<\<nu>y>(P' \<parallel> (Q'[x::=y]))) \<in> expandSet P Q"
-	by(simp add: expandSet_def, blast)
+        by(simp add: expandSet_def, blast)
       moreover have "\<tau>.(<\<nu>y>(P' \<parallel> (Q'[x::=y]))) \<longmapsto>\<tau> \<prec> <\<nu>y>(P' \<parallel> (Q'[x::=y]))" by(rule Tau)
       ultimately show ?case using Exp by(blast intro: expandAction)
     qed
@@ -887,7 +887,7 @@ next
       hence PQTrans: "P \<parallel> Q \<longmapsto>a'[b'] \<prec> P'' \<parallel> Q" by(rule Par1F)
       assume "a'{b'}.(P'' \<parallel> Q) \<longmapsto>a[b] \<prec> P'"
       hence "P' = P'' \<parallel> Q" and "a = a'" and "b = b'"
-	by(erule_tac outputCases, auto simp add: pi.inject residual.inject)+
+        by(erule_tac outputCases, auto simp add: pi.inject residual.inject)+
       with PQTrans show ?thesis by simp
     next
       fix a' b' Q'
@@ -896,7 +896,7 @@ next
       hence PQTrans: "P \<parallel> Q \<longmapsto>a'[b'] \<prec> P \<parallel> Q'" by(rule Par2F)
       assume "a'{b'}.(P \<parallel> Q') \<longmapsto>a[b] \<prec> P'"
       hence "P' = P \<parallel> Q'" and "a = a'" and "b = b'"
-	by(erule_tac outputCases, auto simp add: pi.inject residual.inject)+
+        by(erule_tac outputCases, auto simp add: pi.inject residual.inject)+
       with PQTrans show ?thesis by simp
     qed
   qed
@@ -908,21 +908,21 @@ next
       assume "P \<parallel> Q \<longmapsto>a<x> \<prec> P'" and "x \<sharp> P" and "x \<sharp> Q"
       hence "R \<longmapsto>a<x> \<prec> P'"
       proof(induct rule: parCasesB)
-	case(cPar1 P')
-	have "P \<longmapsto>a<x> \<prec> P'" by fact
-	with Phnf have "a<x>.P' \<in> summands P" by(simp add: summandTransition)
-	moreover have "x \<sharp> Q" by fact
-	ultimately have "a<x>.(P' \<parallel> Q) \<in> expandSet P Q" by(auto simp add: expandSet_def)
-	moreover have "a<x>.(P' \<parallel> Q) \<longmapsto>a<x> \<prec> (P' \<parallel> Q)" by(rule Input)
-	ultimately show ?case using Exp by(blast intro: expandAction)
+        case(cPar1 P')
+        have "P \<longmapsto>a<x> \<prec> P'" by fact
+        with Phnf have "a<x>.P' \<in> summands P" by(simp add: summandTransition)
+        moreover have "x \<sharp> Q" by fact
+        ultimately have "a<x>.(P' \<parallel> Q) \<in> expandSet P Q" by(auto simp add: expandSet_def)
+        moreover have "a<x>.(P' \<parallel> Q) \<longmapsto>a<x> \<prec> (P' \<parallel> Q)" by(rule Input)
+        ultimately show ?case using Exp by(blast intro: expandAction)
       next
-	case(cPar2 Q')
-	have "Q \<longmapsto>a<x> \<prec> Q'" by fact
-	with Qhnf have "a<x>.Q' \<in> summands Q" by(simp add: summandTransition)
-	moreover have "x \<sharp> P" by fact
-	ultimately have "a<x>.(P \<parallel> Q') \<in> expandSet P Q" by(simp add: expandSet_def, blast)
-	moreover have "a<x>.(P \<parallel> Q') \<longmapsto>a<x> \<prec> (P \<parallel> Q')" by(rule Input)
-	ultimately show ?case using Exp by(blast intro: expandAction)
+        case(cPar2 Q')
+        have "Q \<longmapsto>a<x> \<prec> Q'" by fact
+        with Qhnf have "a<x>.Q' \<in> summands Q" by(simp add: summandTransition)
+        moreover have "x \<sharp> P" by fact
+        ultimately have "a<x>.(P \<parallel> Q') \<in> expandSet P Q" by(simp add: expandSet_def, blast)
+        moreover have "a<x>.(P \<parallel> Q') \<longmapsto>a<x> \<prec> (P \<parallel> Q')" by(rule Input)
+        ultimately show ?case using Exp by(blast intro: expandAction)
       qed
     }
     moreover obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> P'"
@@ -945,7 +945,7 @@ next
       ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<y> \<prec> P'' \<parallel> Q" by(rule Par1B)
       assume "a'<y>.(P'' \<parallel> Q) \<longmapsto>a<x> \<prec> P'"
       hence "a<x> \<prec> P' = a'<y> \<prec> P'' \<parallel> Q" and "a = a'"
-	by(erule_tac inputCases', auto simp add: pi.inject residual.inject)+
+        by(erule_tac inputCases', auto simp add: pi.inject residual.inject)+
       with PQTrans show ?thesis by simp
     next
       fix a' y Q'
@@ -955,7 +955,7 @@ next
       ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<y> \<prec> P \<parallel> Q'" by(rule Par2B)
       assume "a'<y>.(P \<parallel> Q') \<longmapsto>a<x> \<prec> P'"
       hence "a<x> \<prec> P' = a'<y> \<prec> P \<parallel> Q'" and "a = a'"
-	by(erule_tac inputCases', auto simp add: pi.inject residual.inject)+
+        by(erule_tac inputCases', auto simp add: pi.inject residual.inject)+
       with PQTrans show ?thesis by simp
     qed
   qed
@@ -970,98 +970,98 @@ next
     show "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P' = R \<longmapsto> a<\<nu>x> \<prec> P'"
     proof(rule iffI)
       {
-	fix x P'
-	assume "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> P" and "x \<sharp> Q" and "a \<noteq> x"
-	hence "R \<longmapsto>a<\<nu>x> \<prec> P'"
-	proof(induct rule: parCasesB)
-	  case(cPar1 P')
-	  have "P \<longmapsto>a<\<nu>x> \<prec> P'" by fact
-	  with Phnf `a \<noteq> x` have "<\<nu>x>a{x}.P' \<in> summands P" by(simp add: summandTransition)
-	  moreover have "x \<sharp> Q" by fact
-	  ultimately have "<\<nu>x>a{x}.(P' \<parallel> Q) \<in> expandSet P Q" by(auto simp add: expandSet_def)
-	  moreover have "<\<nu>x>a{x}.(P' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> (P' \<parallel> Q)" using `a \<noteq> x`
-	    by(blast intro: Open Output)
-	  ultimately show ?case using Exp by(blast intro: expandAction)
-	next
-	  case(cPar2 Q')
-	  have "Q \<longmapsto>a<\<nu>x> \<prec> Q'" by fact
-	  with Qhnf `a \<noteq> x` have "<\<nu>x>a{x}.Q' \<in> summands Q" by(simp add: summandTransition)
-	  moreover have "x \<sharp> P" by fact
-	  ultimately have "<\<nu>x>a{x}.(P \<parallel> Q') \<in> expandSet P Q" by(simp add: expandSet_def, blast)
-	  moreover have "<\<nu>x>a{x}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> (P \<parallel> Q')" using `a \<noteq> x`
-	    by(blast intro: Open Output)
-	  ultimately show ?case using Exp by(blast intro: expandAction)
-	qed
+        fix x P'
+        assume "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> P" and "x \<sharp> Q" and "a \<noteq> x"
+        hence "R \<longmapsto>a<\<nu>x> \<prec> P'"
+        proof(induct rule: parCasesB)
+          case(cPar1 P')
+          have "P \<longmapsto>a<\<nu>x> \<prec> P'" by fact
+          with Phnf `a \<noteq> x` have "<\<nu>x>a{x}.P' \<in> summands P" by(simp add: summandTransition)
+          moreover have "x \<sharp> Q" by fact
+          ultimately have "<\<nu>x>a{x}.(P' \<parallel> Q) \<in> expandSet P Q" by(auto simp add: expandSet_def)
+          moreover have "<\<nu>x>a{x}.(P' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> (P' \<parallel> Q)" using `a \<noteq> x`
+            by(blast intro: Open Output)
+          ultimately show ?case using Exp by(blast intro: expandAction)
+        next
+          case(cPar2 Q')
+          have "Q \<longmapsto>a<\<nu>x> \<prec> Q'" by fact
+          with Qhnf `a \<noteq> x` have "<\<nu>x>a{x}.Q' \<in> summands Q" by(simp add: summandTransition)
+          moreover have "x \<sharp> P" by fact
+          ultimately have "<\<nu>x>a{x}.(P \<parallel> Q') \<in> expandSet P Q" by(simp add: expandSet_def, blast)
+          moreover have "<\<nu>x>a{x}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> (P \<parallel> Q')" using `a \<noteq> x`
+            by(blast intro: Open Output)
+          ultimately show ?case using Exp by(blast intro: expandAction)
+        qed
       }
       moreover obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> P'" and "y \<noteq> a"
-	by(generate_fresh "name") auto
+        by(generate_fresh "name") auto
       assume "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'"
       with `y \<sharp> P'` have "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
-	by(simp add: alphaBoundResidual)
+        by(simp add: alphaBoundResidual)
       ultimately have "R \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a`
-	by auto
+        by auto
       thus "R \<longmapsto>a<\<nu>x> \<prec> P'" using `y \<sharp> P'` by(simp add: alphaBoundResidual)
     next
       {
-	fix R x P'
-	assume "R \<longmapsto>a<\<nu>x> \<prec> P'" and "R \<in> expandSet P Q" and "x \<sharp> R" and "x \<sharp> P" and "x \<sharp> Q"
-	hence "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'" 
-	proof(auto simp add: expandSet_def)
-	  fix a' y P''
-	  assume "<\<nu>y>a'{y}.P'' \<in> summands P"
-	  moreover hence "a' \<noteq> y" by auto
-	  ultimately have "P \<longmapsto>a'<\<nu>y> \<prec> P''" using Phnf by(simp add: summandTransition)
-	  moreover assume "y \<sharp> Q"
-	  ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<\<nu>y> \<prec> P'' \<parallel> Q" by(rule Par1B)
-	  assume ResTrans: "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> [y].a'{y}.(P'' \<parallel> Q)"
-	  with ResTrans `a' \<noteq> y` `x \<sharp> P` `x \<sharp> Q` have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P'' \<parallel> Q"
-	    apply(case_tac "x=y")
-	    defer
-	    apply(erule_tac resCasesB)
-	    apply simp
-	    apply(simp add: abs_fresh)
-	    apply(auto simp add: residual.inject alpha' calc_atm fresh_left abs_fresh elim: outputCases)
-	    apply(ind_cases "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto> a<\<nu>y> \<prec> P'")
-	    apply(simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
-	    apply(auto elim: outputCases)
-	    apply(simp add: pi.inject residual.inject alpha' calc_atm)
-	    apply auto
-	    apply(ind_cases "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto> a<\<nu>y> \<prec> P'")
-	    apply(auto simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
-	    apply(auto elim: outputCases)
-	    apply(erule_tac outputCases)
-	    apply(auto simp add: freeRes.inject)
-	    apply(drule_tac pi="[(b, y)]" in pt_bij3)
-	    by simp
-	with PQTrans show ?thesis by simp
+        fix R x P'
+        assume "R \<longmapsto>a<\<nu>x> \<prec> P'" and "R \<in> expandSet P Q" and "x \<sharp> R" and "x \<sharp> P" and "x \<sharp> Q"
+        hence "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'" 
+        proof(auto simp add: expandSet_def)
+          fix a' y P''
+          assume "<\<nu>y>a'{y}.P'' \<in> summands P"
+          moreover hence "a' \<noteq> y" by auto
+          ultimately have "P \<longmapsto>a'<\<nu>y> \<prec> P''" using Phnf by(simp add: summandTransition)
+          moreover assume "y \<sharp> Q"
+          ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<\<nu>y> \<prec> P'' \<parallel> Q" by(rule Par1B)
+          assume ResTrans: "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> [y].a'{y}.(P'' \<parallel> Q)"
+          with ResTrans `a' \<noteq> y` `x \<sharp> P` `x \<sharp> Q` have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P'' \<parallel> Q"
+            apply(case_tac "x=y")
+            defer
+            apply(erule_tac resCasesB)
+            apply simp
+            apply(simp add: abs_fresh)
+            apply(auto simp add: residual.inject alpha' calc_atm fresh_left abs_fresh elim: outputCases)
+            apply(ind_cases "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto> a<\<nu>y> \<prec> P'")
+            apply(simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
+            apply(auto elim: outputCases)
+            apply(simp add: pi.inject residual.inject alpha' calc_atm)
+            apply auto
+            apply(ind_cases "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto> a<\<nu>y> \<prec> P'")
+            apply(auto simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
+            apply(auto elim: outputCases)
+            apply(erule_tac outputCases)
+            apply(auto simp add: freeRes.inject)
+            apply(drule_tac pi="[(b, y)]" in pt_bij3)
+            by simp
+        with PQTrans show ?thesis by simp
       next
-	fix a' y Q'
-	assume "<\<nu>y>a'{y}.Q' \<in> summands Q"
-	moreover hence "a' \<noteq> y" by auto
-	ultimately have "Q \<longmapsto>a'<\<nu>y> \<prec> Q'" using Qhnf by(simp add: summandTransition)
-	moreover assume "y \<sharp> P"
-	ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<\<nu>y> \<prec> P \<parallel> Q'" by(rule Par2B)
-	assume ResTrans: "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> [y].a'{y}.(P \<parallel> Q')"
-	with ResTrans `a' \<noteq> y` have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P \<parallel> Q'"
-	  apply(case_tac "x=y")
-	  defer
-	  apply(erule_tac resCasesB)
-	    apply simp
-	    apply(simp add: abs_fresh)
-	    apply(auto simp add: residual.inject alpha' calc_atm fresh_left abs_fresh elim: outputCases)
-	    apply(ind_cases "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto> a<\<nu>y> \<prec> P'")
-	    apply(simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
-	    apply(auto elim: outputCases)
-	    apply(simp add: pi.inject residual.inject alpha' calc_atm)
-	    apply auto
-	    apply(ind_cases "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto> a<\<nu>y> \<prec> P'")
-	    apply(auto simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
-	    apply(auto elim: outputCases)
-	    apply(erule_tac outputCases)
-	    apply(auto simp add: freeRes.inject)
-	    apply(drule_tac pi="[(b, y)]" in pt_bij3)
-	    by simp	  
-	with PQTrans show ?thesis by simp
+        fix a' y Q'
+        assume "<\<nu>y>a'{y}.Q' \<in> summands Q"
+        moreover hence "a' \<noteq> y" by auto
+        ultimately have "Q \<longmapsto>a'<\<nu>y> \<prec> Q'" using Qhnf by(simp add: summandTransition)
+        moreover assume "y \<sharp> P"
+        ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<\<nu>y> \<prec> P \<parallel> Q'" by(rule Par2B)
+        assume ResTrans: "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> [y].a'{y}.(P \<parallel> Q')"
+        with ResTrans `a' \<noteq> y` have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P \<parallel> Q'"
+          apply(case_tac "x=y")
+          defer
+          apply(erule_tac resCasesB)
+            apply simp
+            apply(simp add: abs_fresh)
+            apply(auto simp add: residual.inject alpha' calc_atm fresh_left abs_fresh elim: outputCases)
+            apply(ind_cases "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto> a<\<nu>y> \<prec> P'")
+            apply(simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
+            apply(auto elim: outputCases)
+            apply(simp add: pi.inject residual.inject alpha' calc_atm)
+            apply auto
+            apply(ind_cases "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto> a<\<nu>y> \<prec> P'")
+            apply(auto simp add: pi.inject alpha' residual.inject abs_fresh eqvts calc_atm)
+            apply(auto elim: outputCases)
+            apply(erule_tac outputCases)
+            apply(auto simp add: freeRes.inject)
+            apply(drule_tac pi="[(b, y)]" in pt_bij3)
+            by simp       
+        with PQTrans show ?thesis by simp
       qed
     }
     moreover assume "R \<longmapsto>a<\<nu>x> \<prec> P'"

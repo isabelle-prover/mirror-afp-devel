@@ -198,18 +198,18 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       from `P \<longmapsto>a[x] \<prec> PQ` `a \<noteq> x` have "<\<nu>x>P \<longmapsto>a<\<nu>x> \<prec> PQ" by(rule Open)
       hence "(<\<nu>x>P) \<oplus> (<\<nu>x>Q) \<longmapsto>a<\<nu>x> \<prec> PQ" by(rule Sum1)
       with `y \<sharp> PQ` have "(<\<nu>x>P) \<oplus> (<\<nu>x>Q) \<longmapsto>a<\<nu>y> \<prec> ([(y, x)] \<bullet> PQ)" 
-	by(simp add: alphaBoundResidual)
+        by(simp add: alphaBoundResidual)
       moreover from Id have "derivative ([(y, x)] \<bullet> PQ) ([(y, x)] \<bullet> PQ) (BoundOutputS a) y Rel"
-	by(force simp add: derivative_def)
+        by(force simp add: derivative_def)
       ultimately show ?case by blast
     next
       case cSum2
       from `Q \<longmapsto>a[x] \<prec> PQ` `a \<noteq> x` have "<\<nu>x>Q \<longmapsto>a<\<nu>x> \<prec> PQ" by(rule Open)
       hence "(<\<nu>x>P) \<oplus> (<\<nu>x>Q) \<longmapsto>a<\<nu>x> \<prec> PQ" by(rule Sum2)
       with `y \<sharp> PQ` have "(<\<nu>x>P) \<oplus> (<\<nu>x>Q) \<longmapsto>a<\<nu>y> \<prec> ([(y, x)] \<bullet> PQ)" 
-	by(simp add: alphaBoundResidual)
+        by(simp add: alphaBoundResidual)
       moreover from Id have "derivative ([(y, x)] \<bullet> PQ) ([(y, x)] \<bullet> PQ) (BoundOutputS a) y Rel"
-	by(force simp add: derivative_def)
+        by(force simp add: derivative_def)
       ultimately show ?case by blast
     qed
   next
@@ -220,14 +220,14 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       from `P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> PQ` `x \<sharp> a` `y \<noteq> x` have "<\<nu>x>P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>PQ" by(rule_tac ResB) auto
       hence "(<\<nu>x>P) \<oplus> (<\<nu>x>Q) \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>PQ" by(rule Sum1)
       moreover from Id have "derivative (<\<nu>x>PQ) (<\<nu>x>PQ) a y Rel"
-	by(cases a) (auto simp add: derivative_def)
+        by(cases a) (auto simp add: derivative_def)
       ultimately show ?case by blast
     next
       case cSum2
       from `Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> PQ` `x \<sharp> a` `y \<noteq> x` have "<\<nu>x>Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>PQ" by(rule_tac ResB) auto
       hence "(<\<nu>x>P) \<oplus> (<\<nu>x>Q) \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>PQ" by(rule Sum2)
       moreover from Id have "derivative (<\<nu>x>PQ) (<\<nu>x>PQ) a y Rel"
-	by(cases a) (auto simp add: derivative_def)
+        by(cases a) (auto simp add: derivative_def)
       ultimately show ?case by blast
     qed
   qed
@@ -276,14 +276,14 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       hence "<\<nu>x>(P \<oplus> Q) \<longmapsto>a<\<nu>x> \<prec> P'" using `a \<noteq> x` by(rule Open)
       with `y \<sharp> P'` have "<\<nu>x>(P \<oplus> Q) \<longmapsto>a<\<nu>y> \<prec> [(y, x)] \<bullet> P'" by(simp add: alphaBoundResidual)
       moreover from Id have "derivative ([(y, x)] \<bullet> P') ([(y, x)] \<bullet> P') (BoundOutputS a) y Rel"
-	by(force simp add: derivative_def)
+        by(force simp add: derivative_def)
       ultimately show ?case by blast
     next
       case(cRes P')
       from `P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P'` have "P \<oplus> Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P'" by(rule Sum1)
       hence "<\<nu>x>(P \<oplus> Q) \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>P'" using `x \<sharp> a` `y \<noteq> x` by(rule_tac ResB) auto
       moreover from Id have "derivative (<\<nu>x>P') (<\<nu>x>P') a y Rel"
-	by(cases a) (auto simp add: derivative_def)
+        by(cases a) (auto simp add: derivative_def)
       ultimately show ?case by blast
     qed
   next
@@ -297,14 +297,14 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       hence "<\<nu>x>(P \<oplus> Q) \<longmapsto>a<\<nu>x> \<prec> Q'" using `a \<noteq> x` by(rule Open)
       with `y \<sharp> Q'` have "<\<nu>x>(P \<oplus> Q) \<longmapsto>a<\<nu>y> \<prec> [(y, x)] \<bullet> Q'" by(simp add: alphaBoundResidual)
       moreover from Id have "derivative ([(y, x)] \<bullet> Q') ([(y, x)] \<bullet> Q') (BoundOutputS a) y Rel"
-	by(force simp add: derivative_def)
+        by(force simp add: derivative_def)
       ultimately show ?case by blast
     next
       case(cRes Q')
       from `Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> Q'` have "P \<oplus> Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> Q'" by(rule Sum2)
       hence "<\<nu>x>(P \<oplus> Q) \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>Q'" using `x \<sharp> a` `y \<noteq> x` by(rule_tac ResB) auto
       moreover from Id have "derivative (<\<nu>x>Q') (<\<nu>x>Q') a y Rel"
-	by(cases a) (auto simp add: derivative_def)
+        by(cases a) (auto simp add: derivative_def)
       ultimately show ?case by blast
     qed
   qed
@@ -466,14 +466,14 @@ proof(induct rule: simCases)
       from `Q \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> Q'` have "P \<parallel> Q \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> P \<parallel> Q'" using `x \<sharp> P` by(rule Par2B)
       hence "(P \<parallel> Q) \<parallel> R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> (P \<parallel> Q') \<parallel> R" using `x \<sharp> R`by(rule Par1B)
       moreover have "derivative ((P \<parallel> Q') \<parallel> R) (P \<parallel> (Q' \<parallel> R)) a x Rel"
-	by(cases a, auto intro: Ass simp add: derivative_def)
+        by(cases a, auto intro: Ass simp add: derivative_def)
       ultimately show ?case by blast
     next
       case(cPar2 R')
       from `R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> R'` have "(P \<parallel> Q) \<parallel> R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> (P \<parallel> Q) \<parallel> R'" using `x \<sharp> P` `x \<sharp> Q` 
-	by(rule_tac Par2B) auto
+        by(rule_tac Par2B) auto
       moreover have "derivative ((P \<parallel> Q) \<parallel> R') (P \<parallel> (Q \<parallel> R')) a x Rel"
-	by(cases a, auto intro: Ass simp add: derivative_def)
+        by(cases a, auto intro: Ass simp add: derivative_def)
       ultimately show ?case by blast
     qed
   qed
@@ -511,24 +511,24 @@ next
       case(cComm2 Q' R' a b x)
       from `Q \<longmapsto>a[b] \<prec> Q'` have "P \<parallel> Q \<longmapsto>a[b] \<prec> P \<parallel> Q'" by(rule Par2F)
       with `x \<sharp> P` `x \<sharp> Q` `R \<longmapsto>a<x> \<prec> R'` have "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> (P \<parallel> Q') \<parallel> R'[x::=b]"
-	by(force intro: Comm2)
+        by(force intro: Comm2)
       moreover from Ass have "((P \<parallel> Q') \<parallel> R'[x::=b], P \<parallel> (Q' \<parallel> R'[x::=b])) \<in> Rel" by blast
       ultimately show ?case by blast
     next
       case(cClose1 Q' R' a x y)
       from `Q \<longmapsto>a<x> \<prec> Q'` `x \<sharp> P` have "P \<parallel> Q \<longmapsto>a<x> \<prec> P \<parallel> Q'" by(rule Par2B)
       with `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` `R \<longmapsto>a<\<nu>y> \<prec> R'` have "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>((P \<parallel> Q')[x::=y] \<parallel> R')"
-	by(rule_tac Close1) auto
+        by(rule_tac Close1) auto
       with `x \<sharp> P` have "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>((P \<parallel> (Q'[x::=y])) \<parallel> R')" by(simp add: forget)
       moreover from `y \<sharp> P` have "(<\<nu>y>((P \<parallel> Q'[x::=y]) \<parallel> R'), P \<parallel> <\<nu>y>(Q'[x::=y] \<parallel> R')) \<in> Rel"
-	by(rule FreshExt)
+        by(rule FreshExt)
       ultimately show ?case by blast
     next
       case(cClose2 Q' R' a x y)
       from `Q \<longmapsto>a<\<nu>y> \<prec> Q'` `y \<sharp> P` have "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> P \<parallel> Q'" by(rule Par2B)
       hence Act: "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>((P \<parallel> Q') \<parallel> R'[x::=y])" using `R \<longmapsto>a<x> \<prec> R'` `y \<sharp> R` by(rule Close2)
       moreover from `y \<sharp> P` have "(<\<nu>y>((P \<parallel> Q') \<parallel> R'[x::=y]), P \<parallel> <\<nu>y>(Q' \<parallel> R'[x::=y])) \<in> Rel"
-	by(rule FreshExt)
+        by(rule FreshExt)
       ultimately show ?case by blast
     qed
   next
@@ -589,13 +589,13 @@ next
       from `P \<longmapsto>a<x> \<prec> P'` `Q \<longmapsto> a<\<nu>y> \<prec> Q'` `y \<sharp> P` have "P \<parallel> Q \<longmapsto> \<tau> \<prec> <\<nu>y>(P'[x::=y] \<parallel> Q')" by(rule Close1)
       hence "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> (<\<nu>y>(P'[x::=y] \<parallel> Q')) \<parallel> R" by(rule Par1F)
       moreover from `y \<sharp> R` have "((<\<nu>y>(P'[x::=y] \<parallel> Q')) \<parallel> R, <\<nu>y>(P'[x::=y] \<parallel> Q' \<parallel> R)) \<in> Rel"
-	by(rule FreshExt')
+        by(rule FreshExt')
       ultimately show ?case by blast
     next
       case(cPar2 R')
       from `P \<longmapsto>a<x> \<prec> P'` `x \<sharp> Q` have "P \<parallel> Q \<longmapsto> a<x> \<prec> P' \<parallel> Q" by(rule Par1B)
       with `R \<longmapsto> a<\<nu>y> \<prec> R'` `y \<sharp> P` `y \<sharp> Q` have "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>((P' \<parallel> Q)[x::=y] \<parallel> R')"
-	by(rule_tac Close1) auto
+        by(rule_tac Close1) auto
       with `x \<sharp> Q` have "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>((P'[x::=y] \<parallel> Q) \<parallel> R')" by(simp add: forget)
       moreover have "(<\<nu>y>((P'[x::=y] \<parallel> Q) \<parallel> R'), <\<nu>y>(P'[x::=y] \<parallel> (Q \<parallel> R'))) \<in> Rel" by(metis Ass Res)
       ultimately show ?case by blast
@@ -608,12 +608,12 @@ next
     proof(induct rule: parCasesB)
       case(cPar1 Q')
       from `P \<longmapsto>a<\<nu>y> \<prec> P'` `Q \<longmapsto>a<x> \<prec> Q'` have "P \<parallel> Q \<longmapsto> \<tau> \<prec> <\<nu>y>(P' \<parallel> Q'[x::=y])" using `y \<sharp> Q`
-	by(rule Close2)
+        by(rule Close2)
       hence "(P \<parallel> Q) \<parallel> R \<longmapsto> \<tau> \<prec> (<\<nu>y>(P' \<parallel> Q'[x::=y])) \<parallel> R" by(rule Par1F)
       moreover from `y \<sharp> R` have "((<\<nu>y>(P' \<parallel> Q'[x::=y])) \<parallel> R, <\<nu>y>(P' \<parallel>  (Q'[x::=y] \<parallel> R))) \<in> Rel"
-	by(rule FreshExt')
+        by(rule FreshExt')
       with `x \<sharp> R` have "((<\<nu>y>(P' \<parallel> Q'[x::=y])) \<parallel> R, <\<nu>y>(P' \<parallel>  (Q' \<parallel> R)[x::=y])) \<in> Rel"
-	by(simp add: forget)
+        by(simp add: forget)
       ultimately show ?case by blast
     next
       case(cPar2 R')
@@ -622,7 +622,7 @@ next
       moreover have "((P' \<parallel> Q) \<parallel> R'[x::=y], P' \<parallel> (Q \<parallel> R'[x::=y])) \<in> Rel" by(rule Ass)
       hence "(<\<nu>y>((P' \<parallel> Q) \<parallel> R'[x::=y]), <\<nu>y>(P' \<parallel> (Q \<parallel> R'[x::=y]))) \<in> Rel" by(rule Res) 
       hence "(<\<nu>y>((P' \<parallel> Q) \<parallel> R'[x::=y]), <\<nu>y>(P' \<parallel> (Q \<parallel> R')[x::=y])) \<in> Rel" using `x \<sharp> Q`
-	by(simp add: forget)
+        by(simp add: forget)
       ultimately show ?case by blast
     qed
   qed
@@ -673,21 +673,21 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
 
       show "((<\<nu>x>(P' \<parallel> Q))[y::=u],  P'[y::=u] \<parallel>  ((<\<nu>x>Q)[y::=u])) \<in> Rel"
       proof(cases "x=u")
-	case True
-	have "(<\<nu>x>(P' \<parallel> Q))[y::=x] = <\<nu>y>(([(y, x)] \<bullet> P') \<parallel> ([(y, x)] \<bullet> Q))"
-	  by(simp add: substRes3)
-	moreover from `x \<sharp> P'` have "P'[y::=x] = [(y, x)] \<bullet> P'" by(rule injPermSubst[THEN sym])
-	moreover have "(<\<nu>x>Q)[y::=x] = <\<nu>y>([(y, x)] \<bullet> Q)" by(rule substRes3)
-	moreover from `x \<sharp> P'` `y \<noteq> x` have "y \<sharp> [(y, x)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
-	ultimately show ?thesis using `x = u`by(force intro: Res)
+        case True
+        have "(<\<nu>x>(P' \<parallel> Q))[y::=x] = <\<nu>y>(([(y, x)] \<bullet> P') \<parallel> ([(y, x)] \<bullet> Q))"
+          by(simp add: substRes3)
+        moreover from `x \<sharp> P'` have "P'[y::=x] = [(y, x)] \<bullet> P'" by(rule injPermSubst[THEN sym])
+        moreover have "(<\<nu>x>Q)[y::=x] = <\<nu>y>([(y, x)] \<bullet> Q)" by(rule substRes3)
+        moreover from `x \<sharp> P'` `y \<noteq> x` have "y \<sharp> [(y, x)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
+        ultimately show ?thesis using `x = u`by(force intro: Res)
       next
-	case False
-	with `y \<noteq> x` have "(<\<nu>x>(P' \<parallel> Q))[y::=u] = <\<nu>x>(P'[y::=u] \<parallel> Q[y::=u])"
-	  by(simp add: fresh_prod name_fresh)
-	moreover from `x \<noteq> u` `y \<noteq> x` have "(<\<nu>x>Q)[y::=u] = <\<nu>x>(Q[y::=u])"
-	  by(simp add: fresh_prod name_fresh)
-	moreover from `x \<sharp> P'` `x \<noteq> u` have "x \<sharp> P'[y::=u]" by(simp add: fresh_fact1)
-	ultimately show ?thesis by(force intro: Res)
+        case False
+        with `y \<noteq> x` have "(<\<nu>x>(P' \<parallel> Q))[y::=u] = <\<nu>x>(P'[y::=u] \<parallel> Q[y::=u])"
+          by(simp add: fresh_prod name_fresh)
+        moreover from `x \<noteq> u` `y \<noteq> x` have "(<\<nu>x>Q)[y::=u] = <\<nu>x>(Q[y::=u])"
+          by(simp add: fresh_prod name_fresh)
+        moreover from `x \<sharp> P'` `x \<noteq> u` have "x \<sharp> P'[y::=u]" by(simp add: fresh_fact1)
+        ultimately show ?thesis by(force intro: Res)
       qed
     next
       from `x \<sharp> P'` show "(<\<nu>x>(P' \<parallel> Q), P' \<parallel> <\<nu>x>Q) \<in> Rel" by(rule Res)
@@ -704,42 +704,42 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       from `Q \<longmapsto> a[x] \<prec> Q'` have "P \<parallel> Q \<longmapsto> a[x] \<prec> P \<parallel> Q'" by(rule Par2F)
       hence "<\<nu>x>(P \<parallel> Q) \<longmapsto> a<\<nu>x> \<prec> P \<parallel> Q'" using `a \<noteq> x` by(rule Open)
       with `y \<sharp> P` `y \<sharp> Q'` have "<\<nu>x>(P \<parallel> Q) \<longmapsto> a<\<nu>y> \<prec> [(x, y)] \<bullet> (P \<parallel> Q')"
-	by(subst alphaBoundResidual[where x'=x]) (auto simp add: fresh_left calc_atm)
+        by(subst alphaBoundResidual[where x'=x]) (auto simp add: fresh_left calc_atm)
       with `y \<sharp> P` `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<longmapsto> a<\<nu>y> \<prec> P \<parallel> ([(x, y)] \<bullet> Q')"
-	by(simp add: name_fresh_fresh)
+        by(simp add: name_fresh_fresh)
 
       moreover have "derivative (P \<parallel> ([(x, y)] \<bullet> Q')) (P \<parallel> ([(y, x)] \<bullet> Q')) (BoundOutputS a) y Rel" using Id
-	by(auto simp add: derivative_def name_swap)
-	 
+        by(auto simp add: derivative_def name_swap)
+         
       ultimately show ?case by blast
     next
       case(cRes Q')
 
       from `Q \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> Q'` `y \<sharp> P` have "P \<parallel> Q \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> P \<parallel> Q'" by(rule Par2B)
       hence "<\<nu>x>(P \<parallel> Q) \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>(P \<parallel> Q')" using `x \<sharp> a` `y \<noteq> x`
-	by(rule_tac ResB) auto
+        by(rule_tac ResB) auto
       moreover have "derivative (<\<nu>x>(P \<parallel> Q')) (P \<parallel> <\<nu>x>Q') a y Rel"
       proof(cases a, auto simp add: derivative_def)
-	fix u
-	show "((<\<nu>x>(P \<parallel> Q'))[y::=u],  P[y::=u] \<parallel>  (<\<nu>x>Q')[y::=u]) \<in> Rel"
-	proof(cases "x=u")
-	  case True
-	  from `x \<sharp> P` `y \<sharp> P` have "(<\<nu>x>(P \<parallel> Q'))[y::=x] = <\<nu>y>(P \<parallel> ([(y, x)] \<bullet> Q'))"
-	    by(simp add: substRes3 perm_fresh_fresh)
-	  moreover from `y \<sharp> P` have "P[y::=x] = P" by(simp add: forget)
-	  moreover have "(<\<nu>x>Q')[y::=x] = <\<nu>y>([(y, x)] \<bullet> Q')" by(rule substRes3)
-	  ultimately show ?thesis using `x=u` `y \<sharp> P` by(force intro: Res)
-	next
-	  case False
-	  with `y \<noteq> x` have "(<\<nu>x>(P \<parallel> Q'))[y::=u] = <\<nu>x>((P \<parallel> Q')[y::=u])"
-	    by(simp add: fresh_prod name_fresh)
-	  moreover from `y \<noteq> x` `x \<noteq> u` have "(<\<nu>x>Q')[y::=u] = <\<nu>x>(Q'[y::=u])"
-	    by(simp add: fresh_prod name_fresh)
-	  moreover from `x \<sharp> P` `x \<noteq> u` have "x \<sharp> P[y::=u]" by(force simp add: fresh_fact1)
-	  ultimately show ?thesis by(force intro: Res)
-	qed
+        fix u
+        show "((<\<nu>x>(P \<parallel> Q'))[y::=u],  P[y::=u] \<parallel>  (<\<nu>x>Q')[y::=u]) \<in> Rel"
+        proof(cases "x=u")
+          case True
+          from `x \<sharp> P` `y \<sharp> P` have "(<\<nu>x>(P \<parallel> Q'))[y::=x] = <\<nu>y>(P \<parallel> ([(y, x)] \<bullet> Q'))"
+            by(simp add: substRes3 perm_fresh_fresh)
+          moreover from `y \<sharp> P` have "P[y::=x] = P" by(simp add: forget)
+          moreover have "(<\<nu>x>Q')[y::=x] = <\<nu>y>([(y, x)] \<bullet> Q')" by(rule substRes3)
+          ultimately show ?thesis using `x=u` `y \<sharp> P` by(force intro: Res)
+        next
+          case False
+          with `y \<noteq> x` have "(<\<nu>x>(P \<parallel> Q'))[y::=u] = <\<nu>x>((P \<parallel> Q')[y::=u])"
+            by(simp add: fresh_prod name_fresh)
+          moreover from `y \<noteq> x` `x \<noteq> u` have "(<\<nu>x>Q')[y::=u] = <\<nu>x>(Q'[y::=u])"
+            by(simp add: fresh_prod name_fresh)
+          moreover from `x \<sharp> P` `x \<noteq> u` have "x \<sharp> P[y::=u]" by(force simp add: fresh_fact1)
+          ultimately show ?thesis by(force intro: Res)
+        qed
       next
-	from `x \<sharp> P` show "(<\<nu>x>(P \<parallel> Q'), P \<parallel> <\<nu>x>Q') \<in> Rel" by(rule Res)
+        from `x \<sharp> P` show "(<\<nu>x>(P \<parallel> Q'), P \<parallel> <\<nu>x>Q') \<in> Rel" by(rule Res)
       qed
       ultimately show ?case by blast
     qed
@@ -805,26 +805,26 @@ next
       case(cOpen b Q')
       from `BoundOutputS a = BoundOutputS b` have "a = b" by simp
       with `Q \<longmapsto> b[x] \<prec> Q'` have "([(z, x)] \<bullet> Q) \<longmapsto> [(z, x)] \<bullet> (a[x] \<prec> Q')"
-	by(rule_tac transitions.eqvt) simp
+        by(rule_tac transitions.eqvt) simp
       with `b \<noteq> x` `z \<noteq> a` `a = b` `z \<noteq> x` have "([(z, x)] \<bullet> Q) \<longmapsto> a[z] \<prec> ([(z, x)] \<bullet> Q')"
-	by(simp add: name_calc eqvts)
+        by(simp add: name_calc eqvts)
       with `P \<longmapsto>a<y> \<prec> P'` have "P \<parallel> ([(z, x)] \<bullet> Q) \<longmapsto>\<tau> \<prec> P'[y::=z] \<parallel> ([(z, x)] \<bullet> Q')"
-	by(rule Comm1)
+        by(rule Comm1)
       hence "<\<nu>z>(P \<parallel> ([(x, z)] \<bullet> Q)) \<longmapsto> \<tau> \<prec> <\<nu>z>(P'[y::=z] \<parallel> ([(z, x)] \<bullet> Q'))"
-	by(rule_tac ResF) auto
+        by(rule_tac ResF) auto
       hence "<\<nu>x>(P \<parallel> Q) \<longmapsto> \<tau> \<prec> <\<nu>z>(P'[y::=z] \<parallel> ([(z, x)] \<bullet> Q'))" using `z \<sharp> P` `z \<sharp> Q` `x \<sharp> P`
-	by(subst alphaRes[where c=z]) auto
+        by(subst alphaRes[where c=z]) auto
       with Id show ?case by force
     next
       case(cRes Q')
       from `P \<longmapsto>a<y> \<prec> P'` `Q \<longmapsto>a<\<nu>z> \<prec> Q'` `z \<sharp> P` have "P \<parallel> Q \<longmapsto> \<tau> \<prec> <\<nu>z>(P'[y::=z] \<parallel> Q')"
-	by(rule Close1)
+        by(rule Close1)
       hence "<\<nu>x>(P \<parallel> Q) \<longmapsto> \<tau> \<prec> <\<nu>x><\<nu>z>(P'[y::=z] \<parallel> Q')" by(rule_tac ResF) auto
       moreover from `P \<longmapsto>a<y> \<prec> P'` `y \<noteq> x` `x \<sharp> P` have "x \<sharp> P'"
-	by(force dest: freshBoundDerivative)
+        by(force dest: freshBoundDerivative)
       with `z \<noteq> x` have "x \<sharp> P'[y::=z]" by(simp add: fresh_fact1)
       hence "(<\<nu>x><\<nu>z>(P'[y::=z] \<parallel> Q'), <\<nu>z>(P'[y::=z] \<parallel> <\<nu>x>Q')) \<in> Rel"
-	by(rule ScopeExt)
+        by(rule ScopeExt)
       ultimately show ?case by blast
     qed
   next
@@ -839,14 +839,14 @@ next
     next
       case(cRes Q')
       from `P \<longmapsto>a<\<nu>z> \<prec> P'` `Q \<longmapsto>a<y> \<prec> Q'` `z \<sharp> Q` have "P \<parallel> Q \<longmapsto> \<tau> \<prec> <\<nu>z>(P' \<parallel> Q'[y::=z])"
-	by(rule Close2)
+        by(rule Close2)
       hence "<\<nu>x>(P \<parallel> Q) \<longmapsto> \<tau> \<prec> <\<nu>x><\<nu>z>(P' \<parallel> (Q'[y::=z]))"
-	by(rule_tac ResF) auto
+        by(rule_tac ResF) auto
       moreover from `P \<longmapsto>a<\<nu>z> \<prec> P'` `x \<sharp> P` `z \<noteq> x` have "x \<sharp> P'" by(force dest: freshBoundDerivative)
       hence "(<\<nu>x><\<nu>z>(P' \<parallel> (Q'[y::=z])), <\<nu>z>(P' \<parallel> (<\<nu>x>(Q'[y::=z])))) \<in> Rel"
-	by(rule ScopeExt)
+        by(rule ScopeExt)
       with `z \<noteq> x` `y \<noteq> x` have "(<\<nu>x><\<nu>z>(P' \<parallel> (Q'[y::=z])), <\<nu>z>(P' \<parallel> (<\<nu>x>Q')[y::=z])) \<in> Rel"
-	by simp
+        by simp
       ultimately show ?case by blast
     qed
   qed
@@ -884,10 +884,10 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       from `Q \<longmapsto>a[x] \<prec> Q'` `a \<noteq> x` have "<\<nu>x>Q \<longmapsto>a<\<nu>x> \<prec> Q'" by(rule Open)
       hence "P \<parallel> <\<nu>x>Q \<longmapsto>a<\<nu>x> \<prec> P \<parallel> Q'" using `x \<sharp> P` by(rule Par2B)
       with `y \<sharp> P` `y \<sharp> Q'` `x \<sharp> P` have "P \<parallel> <\<nu>x>Q \<longmapsto>a<\<nu>y> \<prec> ([(y, x)] \<bullet> (P \<parallel> Q'))"
-	by(subst alphaBoundResidual[where x'=x]) (auto simp add: fresh_left calc_atm)
+        by(subst alphaBoundResidual[where x'=x]) (auto simp add: fresh_left calc_atm)
       moreover with Id have "derivative ([(y, x)] \<bullet> (P \<parallel>  Q'))
                                         ([(y, x)] \<bullet> (P \<parallel> Q')) (BoundOutputS a) y Rel"
-	by(auto simp add: derivative_def)
+        by(auto simp add: derivative_def)
       ultimately show ?case by blast
     next
       case(cComm1 P' Q' b c y)
@@ -911,39 +911,39 @@ proof(induct rule: simCasesCont[where C="(x, P, Q)"])
       from `y \<noteq> x` `x \<sharp> P` `P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P'` have "x \<sharp> P'" by(force dest: freshBoundDerivative)
       
       from `P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P'` `y \<sharp> Q` have "P \<parallel> <\<nu>x>Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P' \<parallel> <\<nu>x>Q"
-	by(rule_tac Par1B) (auto simp add: abs_fresh)
+        by(rule_tac Par1B) (auto simp add: abs_fresh)
       moreover have "derivative (P' \<parallel> <\<nu>x>Q) (<\<nu>x>(P' \<parallel> Q)) a y Rel"
       proof(cases a, auto simp add: derivative_def)
-	fix u::name
-	obtain z::name where "z \<sharp> Q" and "y \<noteq> z" and "z \<noteq> u" and "z \<sharp> P" and "z \<sharp> P'"
-	  by(generate_fresh "name") auto
-	thus "(P'[y::=u] \<parallel> (<\<nu>x>Q)[y::=u], (<\<nu>x>(P' \<parallel> Q))[y::=u]) \<in> Rel" using `x \<sharp> P'`
-	  by(subst alphaRes[where c=z and a=x], auto)
-	    (subst alphaRes[where c=z and a=x], auto intro: Res simp add: fresh_fact1)
+        fix u::name
+        obtain z::name where "z \<sharp> Q" and "y \<noteq> z" and "z \<noteq> u" and "z \<sharp> P" and "z \<sharp> P'"
+          by(generate_fresh "name") auto
+        thus "(P'[y::=u] \<parallel> (<\<nu>x>Q)[y::=u], (<\<nu>x>(P' \<parallel> Q))[y::=u]) \<in> Rel" using `x \<sharp> P'`
+          by(subst alphaRes[where c=z and a=x], auto)
+            (subst alphaRes[where c=z and a=x], auto intro: Res simp add: fresh_fact1)
       next
-	from `x \<sharp> P'` show "(P' \<parallel> <\<nu>x>Q, <\<nu>x>(P' \<parallel> Q)) \<in> Rel"
-	  by(rule Res)
+        from `x \<sharp> P'` show "(P' \<parallel> <\<nu>x>Q, <\<nu>x>(P' \<parallel> Q)) \<in> Rel"
+          by(rule Res)
       qed
 
       ultimately show ?case by blast
     next
       case(cPar2 Q')
       from `Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> Q'` have "<\<nu>x>Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> <\<nu>x>Q'" using `x \<sharp> a` `y \<noteq> x` 
-	by(rule_tac ResB) auto
+        by(rule_tac ResB) auto
       hence "P \<parallel> <\<nu>x>Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P \<parallel> <\<nu>x>Q'" using `y \<sharp> P` by(rule Par2B)
       
       moreover have "derivative (P \<parallel> <\<nu>x>Q') (<\<nu>x>(P \<parallel> Q')) a y Rel"
       proof(cases a, auto simp add: derivative_def)
-	fix u::name
-	obtain z::name where "z \<sharp> Q" and "z \<noteq> y" and "z \<noteq> u" and "z \<sharp> P" and "z \<sharp> Q'"
-	  by(generate_fresh "name") auto
-	
-	thus  "(P[y::=u] \<parallel> (<\<nu>x>Q')[y::=u], (<\<nu>x>(P \<parallel> Q'))[y::=u]) \<in> Rel" using `x \<sharp> P`
-	  by(subst alphaRes[where a=x and c=z], auto)
-	    (subst alphaRes[where a=x and c=z], auto intro: Res simp add: fresh_fact1)
+        fix u::name
+        obtain z::name where "z \<sharp> Q" and "z \<noteq> y" and "z \<noteq> u" and "z \<sharp> P" and "z \<sharp> Q'"
+          by(generate_fresh "name") auto
+        
+        thus  "(P[y::=u] \<parallel> (<\<nu>x>Q')[y::=u], (<\<nu>x>(P \<parallel> Q'))[y::=u]) \<in> Rel" using `x \<sharp> P`
+          by(subst alphaRes[where a=x and c=z], auto)
+            (subst alphaRes[where a=x and c=z], auto intro: Res simp add: fresh_fact1)
       next
-	from `x \<sharp> P` show "(P \<parallel> <\<nu>x>Q', <\<nu>x>(P \<parallel> Q')) \<in> Rel"
-	  by(rule Res)
+        from `x \<sharp> P` show "(P \<parallel> <\<nu>x>Q', <\<nu>x>(P \<parallel> Q')) \<in> Rel"
+          by(rule Res)
       qed
       
       ultimately show ?case by blast
@@ -972,18 +972,18 @@ next
       from `x \<sharp> P` `y \<sharp> x` `P \<longmapsto>a<y> \<prec> P'` have "x \<noteq> a" and "x \<sharp> P'" by(force dest: freshBoundDerivative)+
       show ?case
       proof(cases "b=x")
-	case True
-	from `Q \<longmapsto>a[b] \<prec> Q'` `x \<noteq> a` `b = x` have "<\<nu>x>Q \<longmapsto>a<\<nu>x> \<prec> Q'" by(rule_tac Open) auto
-	with `P \<longmapsto>a<y> \<prec> P'` have "P \<parallel> <\<nu>x>Q \<longmapsto>\<tau> \<prec> <\<nu>x>(P'[y::=x] \<parallel> Q')" using `x \<sharp> P` by(rule Close1)
-	moreover from Id have "(<\<nu>x>(P'[y::=b] \<parallel> Q'), <\<nu>x>(P'[y::=b] \<parallel> Q')) \<in> Rel" by blast
-	ultimately show ?thesis using `b=x` by blast
+        case True
+        from `Q \<longmapsto>a[b] \<prec> Q'` `x \<noteq> a` `b = x` have "<\<nu>x>Q \<longmapsto>a<\<nu>x> \<prec> Q'" by(rule_tac Open) auto
+        with `P \<longmapsto>a<y> \<prec> P'` have "P \<parallel> <\<nu>x>Q \<longmapsto>\<tau> \<prec> <\<nu>x>(P'[y::=x] \<parallel> Q')" using `x \<sharp> P` by(rule Close1)
+        moreover from Id have "(<\<nu>x>(P'[y::=b] \<parallel> Q'), <\<nu>x>(P'[y::=b] \<parallel> Q')) \<in> Rel" by blast
+        ultimately show ?thesis using `b=x` by blast
       next
-	case False
-	from `Q \<longmapsto>a[b] \<prec> Q'` `x \<noteq> a` `b \<noteq> x` have "<\<nu>x>Q \<longmapsto>a[b] \<prec> <\<nu>x>Q'" by(rule_tac ResF) auto
-	with `P \<longmapsto>a<y> \<prec> P'` have "P \<parallel> <\<nu>x>Q \<longmapsto>\<tau> \<prec> (P'[y::=b] \<parallel> <\<nu>x>Q')" by(rule Comm1)
-	moreover from `x \<sharp> P'` `b \<noteq> x` have "(P'[y::=b] \<parallel> <\<nu>x>Q', <\<nu>x>(P'[y::=b] \<parallel> Q')) \<in> Rel"
-	  by(force intro: Res simp add: fresh_fact1)
-	ultimately show ?thesis by blast
+        case False
+        from `Q \<longmapsto>a[b] \<prec> Q'` `x \<noteq> a` `b \<noteq> x` have "<\<nu>x>Q \<longmapsto>a[b] \<prec> <\<nu>x>Q'" by(rule_tac ResF) auto
+        with `P \<longmapsto>a<y> \<prec> P'` have "P \<parallel> <\<nu>x>Q \<longmapsto>\<tau> \<prec> (P'[y::=b] \<parallel> <\<nu>x>Q')" by(rule Comm1)
+        moreover from `x \<sharp> P'` `b \<noteq> x` have "(P'[y::=b] \<parallel> <\<nu>x>Q', <\<nu>x>(P'[y::=b] \<parallel> Q')) \<in> Rel"
+          by(force intro: Res simp add: fresh_fact1)
+        ultimately show ?thesis by blast
       qed
     next
       case(cComm2 P' Q' a b y)
@@ -998,14 +998,14 @@ next
       from `Q \<longmapsto>a<\<nu>z> \<prec> Q'` `z \<sharp> x` `x \<noteq> a` have "<\<nu>x>Q \<longmapsto>a<\<nu>z> \<prec> <\<nu>x>Q'" by(rule_tac ResB) auto
       with `P \<longmapsto>a<y> \<prec> P'` have "P \<parallel> <\<nu>x>Q \<longmapsto>\<tau> \<prec> <\<nu>z>(P'[y::=z] \<parallel> <\<nu>x>Q')" using `z \<sharp> P` by(rule Close1)
       moreover from `x \<sharp> P'` `z \<sharp> x` have "(<\<nu>z>(P'[y::=z] \<parallel> <\<nu>x>Q'), <\<nu>x>(<\<nu>z>(P'[y::=z] \<parallel> Q'))) \<in> Rel" 
-	by(rule_tac ScopeExt) (auto simp add: fresh_fact1)
+        by(rule_tac ScopeExt) (auto simp add: fresh_fact1)
       ultimately show ?case by blast
     next
       case(cClose2 P' Q' a y z)
       from `P \<longmapsto>a<\<nu>z> \<prec> P'` `x \<sharp> P` `z \<sharp> x` have "x \<noteq> a" and "x \<sharp> P'" by(force dest: freshBoundDerivative)+
       from `Q \<longmapsto>a<y> \<prec> Q'` `y \<sharp> x` `x \<noteq> a` have "<\<nu>x>Q \<longmapsto>a<y> \<prec> <\<nu>x>Q'" by(rule_tac ResB) auto
       with `P \<longmapsto>a<\<nu>z> \<prec> P'` have "P \<parallel> <\<nu>x>Q \<longmapsto>\<tau> \<prec> <\<nu>z>(P' \<parallel> (<\<nu>x>Q')[y::=z])" using `z \<sharp> Q`
-	by(rule_tac Close2) (auto simp add: abs_fresh)
+        by(rule_tac Close2) (auto simp add: abs_fresh)
       moreover from `x \<sharp> P'` have "(<\<nu>z>(P' \<parallel> <\<nu>x>(Q'[y::=z])), <\<nu>x><\<nu>z>(P' \<parallel> Q'[y::=z])) \<in> Rel" by(rule ScopeExt)
       ultimately show ?case using `z \<sharp> x` `y \<sharp> x` by force
     qed
@@ -1046,63 +1046,63 @@ next
       from `<\<nu>a>P \<longmapsto>c[b] \<prec> aP`
       show ?case
       proof(induct rule: resCasesF)
-	case(cRes P')
-	from `a \<sharp> c[b]` have "a \<noteq> c" and "a \<noteq> b" by simp+
-	from `x \<sharp> P` `P \<longmapsto>c[b] \<prec> P'` have "x \<noteq> c" and "x \<sharp> P'" by(force dest: freshFreeDerivative)+
-	from `P \<longmapsto> c[b] \<prec> P'` have "([(x, b)] \<bullet> P) \<longmapsto> [(x, b)] \<bullet> (c[b] \<prec> P')" by(rule transitions.eqvt)
-	with `x \<noteq> c` `c \<noteq> b` `x \<noteq> b` have "([(x, b)] \<bullet> P) \<longmapsto> c[x] \<prec> [(x, b)] \<bullet> P'" by(simp add: eqvts calc_atm)
-	hence "<\<nu>x>([(x, b)] \<bullet> P) \<longmapsto> c<\<nu>x> \<prec> [(x, b)] \<bullet> P'" using `x \<noteq> c` by(rule_tac Open) auto
-	with `x \<sharp> P` have "<\<nu>b>P \<longmapsto> c<\<nu>x> \<prec> [(x, b)] \<bullet> P'" by(simp add: alphaRes)
-	hence "<\<nu>a><\<nu>b>P \<longmapsto> c<\<nu>x> \<prec> <\<nu>a>([(x, b)] \<bullet> P')" using `a \<noteq> c` `x \<noteq> a`
-	  by(rule_tac ResB) auto
-	moreover from Id have "derivative (<\<nu>a>([(x, b)] \<bullet> P')) (<\<nu>a>([(x, b)] \<bullet> P')) (BoundOutputS c) x Rel"
-	  by(force simp add: derivative_def)
-	ultimately show ?case using `a \<noteq> b` `x \<noteq> a` `a \<noteq> c` by(force simp add: eqvts calc_atm)
+        case(cRes P')
+        from `a \<sharp> c[b]` have "a \<noteq> c" and "a \<noteq> b" by simp+
+        from `x \<sharp> P` `P \<longmapsto>c[b] \<prec> P'` have "x \<noteq> c" and "x \<sharp> P'" by(force dest: freshFreeDerivative)+
+        from `P \<longmapsto> c[b] \<prec> P'` have "([(x, b)] \<bullet> P) \<longmapsto> [(x, b)] \<bullet> (c[b] \<prec> P')" by(rule transitions.eqvt)
+        with `x \<noteq> c` `c \<noteq> b` `x \<noteq> b` have "([(x, b)] \<bullet> P) \<longmapsto> c[x] \<prec> [(x, b)] \<bullet> P'" by(simp add: eqvts calc_atm)
+        hence "<\<nu>x>([(x, b)] \<bullet> P) \<longmapsto> c<\<nu>x> \<prec> [(x, b)] \<bullet> P'" using `x \<noteq> c` by(rule_tac Open) auto
+        with `x \<sharp> P` have "<\<nu>b>P \<longmapsto> c<\<nu>x> \<prec> [(x, b)] \<bullet> P'" by(simp add: alphaRes)
+        hence "<\<nu>a><\<nu>b>P \<longmapsto> c<\<nu>x> \<prec> <\<nu>a>([(x, b)] \<bullet> P')" using `a \<noteq> c` `x \<noteq> a`
+          by(rule_tac ResB) auto
+        moreover from Id have "derivative (<\<nu>a>([(x, b)] \<bullet> P')) (<\<nu>a>([(x, b)] \<bullet> P')) (BoundOutputS c) x Rel"
+          by(force simp add: derivative_def)
+        ultimately show ?case using `a \<noteq> b` `x \<noteq> a` `a \<noteq> c` by(force simp add: eqvts calc_atm)
       qed
     next
       case(cRes aP)
       from `<\<nu>a>P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> aP` `x \<noteq> a` `x \<sharp> P` `b \<sharp> c` show ?case
       proof(induct rule: resCasesB)
-	case(cOpen c P')
-	from `P \<longmapsto>c[a] \<prec> P'` `x \<sharp> P` have "x \<sharp> P'" by(force intro: freshFreeDerivative)
-	from `b \<sharp> BoundOutputS c` have "b \<noteq> c" by simp
-	with `P \<longmapsto>c[a] \<prec> P'` `a \<noteq> b` have "<\<nu>b>P \<longmapsto> c[a] \<prec> <\<nu>b>P'" by(rule_tac ResF) auto
-	with `c \<noteq> a` have "<\<nu>a><\<nu>b>P \<longmapsto> c<\<nu>a> \<prec> <\<nu>b>P'" by(rule_tac Open) auto
-	hence "<\<nu>a><\<nu>b>P \<longmapsto>c<\<nu>x> \<prec> <\<nu>b>([(x, a)] \<bullet> P')" using `x \<noteq> b` `a \<noteq> b` `x \<sharp> P'`
-	  apply(subst alphaBoundResidual[where x'=a]) by(auto simp add: abs_fresh fresh_left calc_atm)
-	moreover have "derivative (<\<nu>b>([(x, a)] \<bullet> P')) (<\<nu>b>([(x, a)] \<bullet> P')) (BoundOutputS c) x Rel" using Id
-	  by(force simp add: derivative_def)
-	ultimately show ?case by blast
+        case(cOpen c P')
+        from `P \<longmapsto>c[a] \<prec> P'` `x \<sharp> P` have "x \<sharp> P'" by(force intro: freshFreeDerivative)
+        from `b \<sharp> BoundOutputS c` have "b \<noteq> c" by simp
+        with `P \<longmapsto>c[a] \<prec> P'` `a \<noteq> b` have "<\<nu>b>P \<longmapsto> c[a] \<prec> <\<nu>b>P'" by(rule_tac ResF) auto
+        with `c \<noteq> a` have "<\<nu>a><\<nu>b>P \<longmapsto> c<\<nu>a> \<prec> <\<nu>b>P'" by(rule_tac Open) auto
+        hence "<\<nu>a><\<nu>b>P \<longmapsto>c<\<nu>x> \<prec> <\<nu>b>([(x, a)] \<bullet> P')" using `x \<noteq> b` `a \<noteq> b` `x \<sharp> P'`
+          apply(subst alphaBoundResidual[where x'=a]) by(auto simp add: abs_fresh fresh_left calc_atm)
+        moreover have "derivative (<\<nu>b>([(x, a)] \<bullet> P')) (<\<nu>b>([(x, a)] \<bullet> P')) (BoundOutputS c) x Rel" using Id
+          by(force simp add: derivative_def)
+        ultimately show ?case by blast
       next
-	case(cRes P')
-	from `P \<longmapsto>c\<guillemotleft>x\<guillemotright> \<prec> P'` `b \<sharp> c` `x \<noteq> b` have "<\<nu>b>P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> <\<nu>b>P'" by(rule_tac ResB) auto
-	hence "<\<nu>a><\<nu>b>P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> <\<nu>a><\<nu>b>P'" using `a \<sharp> c` `x \<noteq> a` by(rule_tac ResB) auto
-	moreover have "derivative (<\<nu>a><\<nu>b>P') (<\<nu>b><\<nu>a>P') c x Rel"
-	proof(cases c, auto simp add: derivative_def)
-	  fix u::name
-	  show  "((<\<nu>a><\<nu>b>P')[x::=u],  (<\<nu>b><\<nu>a>P')[x::=u]) \<in> Rel"
-	  proof(cases "u=a")
-	    case True
-	    from `u = a` `a \<noteq> b` show ?thesis
-	      by(subst injPermSubst[symmetric], auto simp add: abs_fresh)
-	        (subst injPermSubst[symmetric], auto simp add: abs_fresh calc_atm intro: ResComm)
-	  next
-	    case False
-	    show ?thesis
-	    proof(cases "u=b")
-	      case True
-	      from `u = b` `u \<noteq> a` show ?thesis
-	      by(subst injPermSubst[symmetric], auto simp add: abs_fresh)
-	        (subst injPermSubst[symmetric], auto simp add: abs_fresh calc_atm intro: ResComm)
-	    next
-	      case False
-	      from `u \<noteq> a` `u \<noteq> b` `x \<noteq> a` `x \<noteq> b` show ?thesis by(auto intro: ResComm)
-	    qed
-	  qed
-	next
-	  show "(<\<nu>a><\<nu>b>P', <\<nu>b><\<nu>a>P') \<in> Rel" by(rule ResComm)
-	qed
-	ultimately show ?case by blast
+        case(cRes P')
+        from `P \<longmapsto>c\<guillemotleft>x\<guillemotright> \<prec> P'` `b \<sharp> c` `x \<noteq> b` have "<\<nu>b>P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> <\<nu>b>P'" by(rule_tac ResB) auto
+        hence "<\<nu>a><\<nu>b>P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> <\<nu>a><\<nu>b>P'" using `a \<sharp> c` `x \<noteq> a` by(rule_tac ResB) auto
+        moreover have "derivative (<\<nu>a><\<nu>b>P') (<\<nu>b><\<nu>a>P') c x Rel"
+        proof(cases c, auto simp add: derivative_def)
+          fix u::name
+          show  "((<\<nu>a><\<nu>b>P')[x::=u],  (<\<nu>b><\<nu>a>P')[x::=u]) \<in> Rel"
+          proof(cases "u=a")
+            case True
+            from `u = a` `a \<noteq> b` show ?thesis
+              by(subst injPermSubst[symmetric], auto simp add: abs_fresh)
+                (subst injPermSubst[symmetric], auto simp add: abs_fresh calc_atm intro: ResComm)
+          next
+            case False
+            show ?thesis
+            proof(cases "u=b")
+              case True
+              from `u = b` `u \<noteq> a` show ?thesis
+              by(subst injPermSubst[symmetric], auto simp add: abs_fresh)
+                (subst injPermSubst[symmetric], auto simp add: abs_fresh calc_atm intro: ResComm)
+            next
+              case False
+              from `u \<noteq> a` `u \<noteq> b` `x \<noteq> a` `x \<noteq> b` show ?thesis by(auto intro: ResComm)
+            qed
+          qed
+        next
+          show "(<\<nu>a><\<nu>b>P', <\<nu>b><\<nu>a>P') \<in> Rel" by(rule ResComm)
+        qed
+        ultimately show ?case by blast
       qed
     qed
   next
@@ -1112,11 +1112,11 @@ next
       case(cRes aP)
       from `<\<nu>a>P \<longmapsto> \<alpha> \<prec> aP` show ?case
       proof(induct rule: resCasesF)
-	case(cRes P')
-	from `P \<longmapsto> \<alpha> \<prec> P'` `b \<sharp> \<alpha>` have "<\<nu>b>P \<longmapsto> \<alpha> \<prec> <\<nu>b>P'" by(rule ResF)
-	hence "<\<nu>a><\<nu>b>P \<longmapsto> \<alpha> \<prec> <\<nu>a><\<nu>b>P'" using `a \<sharp> \<alpha>` by(rule ResF)
-	moreover have "(<\<nu>a><\<nu>b>P', <\<nu>b><\<nu>a>P') \<in> Rel" by(rule ResComm)
-	ultimately show ?case by blast
+        case(cRes P')
+        from `P \<longmapsto> \<alpha> \<prec> P'` `b \<sharp> \<alpha>` have "<\<nu>b>P \<longmapsto> \<alpha> \<prec> <\<nu>b>P'" by(rule ResF)
+        hence "<\<nu>a><\<nu>b>P \<longmapsto> \<alpha> \<prec> <\<nu>a><\<nu>b>P'" using `a \<sharp> \<alpha>` by(rule ResF)
+        moreover have "(<\<nu>a><\<nu>b>P', <\<nu>b><\<nu>a>P') \<in> Rel" by(rule ResComm)
+        ultimately show ?case by blast
       qed
     qed
   qed
@@ -1220,9 +1220,9 @@ proof(induct rule: simCasesCont[where C="(x, y, a, P)"])
       case cInput
       have "a<y>.(<\<nu>x>P) \<longmapsto>a<y> \<prec> (<\<nu>x>P)" by(rule Input)
       with `z \<sharp> P` `x \<noteq> y` `z \<noteq> x` have "a<y>.(<\<nu>x>P) \<longmapsto>a<z> \<prec> (<\<nu>x>([(y, z)] \<bullet> P))"
-	by(subst alphaBoundResidual[where x'=y]) (auto simp add: abs_fresh calc_atm fresh_left)
+        by(subst alphaBoundResidual[where x'=y]) (auto simp add: abs_fresh calc_atm fresh_left)
       moreover from Id have "derivative (<\<nu>x>([(y, z)] \<bullet> P)) (<\<nu>x>([(y, z)] \<bullet> P)) (InputS a) z Rel"
-	by(rule derivativeReflexive)
+        by(rule derivativeReflexive)
       ultimately show ?case by blast
     qed
   qed

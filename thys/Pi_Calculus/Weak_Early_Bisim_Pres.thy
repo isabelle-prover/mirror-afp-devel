@@ -72,11 +72,11 @@ proof -
     proof -
       fix y
       from A have "P[x::=(rev p \<bullet> y)] \<approx> Q[x::=(rev p \<bullet> y)]"
-	by blast
+        by blast
       hence "(p \<bullet> (P[x::=(rev p \<bullet> y)])) \<approx> p \<bullet> (Q[x::=(rev p \<bullet> y)])"
-	by(rule eqvts)
+        by(rule eqvts)
       thus "(p \<bullet> P)[(p \<bullet> x)::=y] \<approx> (p \<bullet> Q)[(p \<bullet> x)::=y]"
-	by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
+        by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
     qed
     hence "((p::name prm) \<bullet> axP, p \<bullet> axQ) \<in> ?X" using B C
       by auto
@@ -118,9 +118,9 @@ proof -
       moreover have "weakBisim \<subseteq> ?X \<union> weakBisim" by blast
       moreover have "eqvt weakBisim" by simp
       moreover have "eqvt (?X \<union> weakBisim)"
-	by(auto simp add: eqvt_def dest: Weak_Early_Bisim.eqvtI)+
+        by(auto simp add: eqvt_def dest: Weak_Early_Bisim.eqvtI)+
       ultimately have "<\<nu>x>P \<leadsto><(?X \<union> weakBisim)> <\<nu>x>Q"
-	by(rule Weak_Early_Sim_Pres.resPres)
+        by(rule Weak_Early_Sim_Pres.resPres)
     }
     with `(xP, xQ) \<in> ?X` show ?case by blast
   next
@@ -152,7 +152,7 @@ proof -
       moreover have "\<And>P Q a. P \<approx> Q \<Longrightarrow> [a\<frown>a]P \<approx> Q"
         by (metis (full_types) strongBisimWeakBisim Strong_Early_Bisim_SC.matchId Weak_Early_Bisim.transitive)
       ultimately have"[a\<frown>b]P \<leadsto><(?X \<union> weakBisim)> [a\<frown>b]Q" 
-	by(rule Weak_Early_Sim_Pres.matchPres)
+        by(rule Weak_Early_Sim_Pres.matchPres)
     }
     with `(abP, abQ) \<in> ?X` show ?case by blast
   next
@@ -184,7 +184,7 @@ proof -
       moreover have "\<And>P Q a b. \<lbrakk>P \<approx> Q; a \<noteq> b\<rbrakk> \<Longrightarrow> [a\<noteq>b]P \<approx> Q"
         by (metis (full_types) strongBisimWeakBisim Strong_Early_Bisim_SC.mismatchId Weak_Early_Bisim.transitive)
       ultimately have "[a\<noteq>b]P \<leadsto><(?X \<union> weakBisim)> [a\<noteq>b]Q"
-	by(rule Weak_Early_Sim_Pres.mismatchPres) 
+        by(rule Weak_Early_Sim_Pres.mismatchPres) 
     }
     with `(abP, abQ) \<in> ?X` show ?case by blast
   next
@@ -213,26 +213,26 @@ proof -
       assume "P \<approx> Q"
       moreover hence "P \<leadsto><weakBisim> Q" by(rule weakBisimE)
       moreover have "\<And>P Q R. P \<approx> Q \<Longrightarrow> (P \<parallel> R, Q \<parallel> R) \<in> ?X" using BC
-	by blast
+        by blast
       moreover {
-	fix PR QR x
-	assume "(PR, QR) \<in> ?X"
-	then obtain lst P Q R where "P \<approx> Q" and A: "PR = resChain lst (P \<parallel> R)" and B: "QR = resChain lst (Q \<parallel> R)"
-	  by auto
-	from A have "<\<nu>x>PR = resChain (x#lst) (P \<parallel> R)" by auto
-	moreover from B have "<\<nu>x>QR = resChain (x#lst) (Q \<parallel> R)" by auto
-	ultimately have "(<\<nu>x>PR, <\<nu>x>QR) \<in> ?X" using `P \<approx> Q`
-	  by blast
+        fix PR QR x
+        assume "(PR, QR) \<in> ?X"
+        then obtain lst P Q R where "P \<approx> Q" and A: "PR = resChain lst (P \<parallel> R)" and B: "QR = resChain lst (Q \<parallel> R)"
+          by auto
+        from A have "<\<nu>x>PR = resChain (x#lst) (P \<parallel> R)" by auto
+        moreover from B have "<\<nu>x>QR = resChain (x#lst) (Q \<parallel> R)" by auto
+        ultimately have "(<\<nu>x>PR, <\<nu>x>QR) \<in> ?X" using `P \<approx> Q`
+          by blast
       }
       note Res = this
       ultimately have "P \<parallel> R \<leadsto><?X> Q \<parallel> R"
-	by(rule_tac Weak_Early_Sim_Pres.parPres)
+        by(rule_tac Weak_Early_Sim_Pres.parPres)
       moreover have "eqvt ?X"
-	by(auto simp add: eqvt_def) (blast intro: eqvts)
+        by(auto simp add: eqvt_def) (blast intro: eqvts)
       ultimately have "resChain lst (P \<parallel> R) \<leadsto><?X> resChain lst (Q \<parallel> R)" using Res
-	by(rule_tac Weak_Early_Sim_Pres.resChainI)
+        by(rule_tac Weak_Early_Sim_Pres.resChainI)
       hence "resChain lst (P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> resChain lst (Q \<parallel> R)"
-	by(force intro: Weak_Early_Sim.monotonic)
+        by(force intro: Weak_Early_Sim.monotonic)
     }
     with `(PR, QR) \<in> ?X` show "PR \<leadsto><(?X \<union> weakBisim)> QR"
       by blast
@@ -279,19 +279,19 @@ proof -
     proof(auto)
       fix T' R'
       assume T'BisimT: "T' \<sim>\<^isub>e T" and RBisimR': "R \<sim>\<^isub>e R'"
-	 and R'BRT': "(R', T') \<in> bangRel weakBisim"
+         and R'BRT': "(R', T') \<in> bangRel weakBisim"
       have "P \<parallel> R \<sim>\<^isub>e P \<parallel> R'"
       proof -
-	from RBisimR' have "R \<parallel> P \<sim>\<^isub>e R' \<parallel> P" by(rule Strong_Early_Bisim_Pres.parPres)
-	moreover have "P \<parallel> R \<sim>\<^isub>e R \<parallel> P" and "R' \<parallel> P \<sim>\<^isub>e P \<parallel> R'" by(rule Strong_Early_Bisim_SC.parSym)+
-	ultimately show ?thesis by(blast intro: Strong_Early_Bisim.transitive)
+        from RBisimR' have "R \<parallel> P \<sim>\<^isub>e R' \<parallel> P" by(rule Strong_Early_Bisim_Pres.parPres)
+        moreover have "P \<parallel> R \<sim>\<^isub>e R \<parallel> P" and "R' \<parallel> P \<sim>\<^isub>e P \<parallel> R'" by(rule Strong_Early_Bisim_SC.parSym)+
+        ultimately show ?thesis by(blast intro: Strong_Early_Bisim.transitive)
       qed
       moreover from PBisimQ R'BRT' have "(P \<parallel> R', Q \<parallel> T') \<in> bangRel weakBisim" by(rule BRPar)
       moreover have "Q \<parallel> T' \<sim>\<^isub>e Q \<parallel> T"
       proof -
-	from T'BisimT have "T' \<parallel> Q \<sim>\<^isub>e T \<parallel> Q" by(rule Strong_Early_Bisim_Pres.parPres)
-	moreover have "Q \<parallel> T' \<sim>\<^isub>e T' \<parallel> Q" and "T \<parallel> Q \<sim>\<^isub>e Q \<parallel> T" by(rule Strong_Early_Bisim_SC.parSym)+
-	ultimately show ?thesis by(blast intro: Strong_Early_Bisim.transitive)
+        from T'BisimT have "T' \<parallel> Q \<sim>\<^isub>e T \<parallel> Q" by(rule Strong_Early_Bisim_Pres.parPres)
+        moreover have "Q \<parallel> T' \<sim>\<^isub>e T' \<parallel> Q" and "T \<parallel> Q \<sim>\<^isub>e Q \<parallel> T" by(rule Strong_Early_Bisim_SC.parSym)+
+        ultimately show ?thesis by(blast intro: Strong_Early_Bisim.transitive)
       qed
       ultimately show ?thesis by blast
     qed
@@ -313,7 +313,7 @@ proof -
       moreover from Strong_Early_Bisim.eqvt Weak_Early_Bisim.eqvt have "eqvt ?Y" by(blast intro: eqvtBangRel)
 
       ultimately show "!P \<leadsto><?Y> !Q" using ParCompose ResCong RelStay XsubY
-	by(rule_tac Weak_Early_Sim_Pres.bangPres, simp_all)
+        by(rule_tac Weak_Early_Sim_Pres.bangPres, simp_all)
     next
       case(BRPar P Q R T)
       have PBiSimQ: "P \<approx> Q" by fact
@@ -322,12 +322,12 @@ proof -
       moreover from PBiSimQ  have "P \<leadsto><weakBisim> Q" by(blast dest: weakBisimE)
       moreover from RBangRelT have "(R, T) \<in> ?Y" by(blast intro: Strong_Early_Bisim.reflexive)
       ultimately show "P \<parallel> R \<leadsto><?Y> Q \<parallel> T" using ParCompose ResCong eqvt eqvtY
-	by(rule_tac Weak_Early_Sim_Pres.parCompose)
+        by(rule_tac Weak_Early_Sim_Pres.parCompose)
     next
       case(BRRes P Q x)
       have "P \<leadsto><?Y> Q" by fact
       thus "<\<nu>x>P \<leadsto><?Y> <\<nu>x>Q" using ResCong eqvtY XsubY
-	by(rule_tac Weak_Early_Sim_Pres.resPres, simp_all)
+        by(rule_tac Weak_Early_Sim_Pres.resPres, simp_all)
     qed
   qed
 

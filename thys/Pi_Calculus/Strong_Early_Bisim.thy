@@ -101,11 +101,11 @@ proof -
       assume "P \<leadsto>[bisim] Q"
 
       moreover have "bisim \<subseteq> ?X"
-	by(auto, rule_tac x="[]" in exI) auto
+        by(auto, rule_tac x="[]" in exI) auto
       moreover have "eqvt ?X"
-	by(auto simp add: eqvt_def pt2[OF pt_name_inst, THEN sym]) blast
+        by(auto simp add: eqvt_def pt2[OF pt_name_inst, THEN sym]) blast
       ultimately have "(p \<bullet> P) \<leadsto>[?X] (p \<bullet> Q)"
-	by(rule Strong_Early_Sim.eqvtI)
+        by(rule Strong_Early_Sim.eqvtI)
     }
     ultimately show ?case by(blast dest: bisimE)
   next
@@ -147,12 +147,12 @@ proof -
       fix P Q R
       assume "P \<sim> Q" and "Q \<sim> R"
       hence "P \<leadsto>[bisim] Q" and "Q \<leadsto>[bisim] R"
-	by(metis bisimE)+
+        by(metis bisimE)+
       moreover from eqvt have "eqvt ?X" by(auto simp add: eqvtTrans)
       moreover have "bisim O bisim \<subseteq> ?X" by auto
 
       ultimately have "P \<leadsto>[?X] R"
-	by(rule Strong_Early_Sim.transitive)
+        by(rule Strong_Early_Sim.transitive)
     }
     ultimately show ?case by auto
   next

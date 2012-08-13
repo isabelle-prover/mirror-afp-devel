@@ -458,7 +458,7 @@ proof -
     proof(rule allI)
       fix u
       from PSim obtain P'' where P'Trans: "P' \<Longrightarrow>\<^isub>lu in P''' \<rightarrow> a<x> \<prec> P''" and P''RelQ': "(P'', Q'[x::=u]) \<in> Rel"
-	by blast
+        by blast
       from PChain P'Trans have "P \<Longrightarrow>\<^isub>lu in P''' \<rightarrow>a<x> \<prec> P''" by(rule Weak_Late_Step_Semantics.chainTransitionAppend)
       with P''RelQ' show "\<exists>P''. P \<Longrightarrow>\<^isub>lu in P''' \<rightarrow> a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"  by blast
     qed

@@ -168,15 +168,15 @@ proof -
       fix p :: "name prm"
       fix \<Psi> P Q
       have "eqvt ?X"
-	apply(auto simp add: eqvt_def)
-	apply(rule_tac x="pa@p" in exI)
-	by(auto simp add: pt2[OF pt_name_inst])
+        apply(auto simp add: eqvt_def)
+        apply(rule_tac x="pa@p" in exI)
+        by(auto simp add: pt2[OF pt_name_inst])
       moreover assume "\<Psi> \<rhd> P \<leadsto>[bisim] Q"
       hence "\<Psi> \<rhd> P \<leadsto>[?X] Q"
-	apply(rule_tac A=bisim in monotonic, auto)
-	by(rule_tac x="[]::name prm" in exI) auto
+        apply(rule_tac A=bisim in monotonic, auto)
+        by(rule_tac x="[]::name prm" in exI) auto
       ultimately have "((p::name prm) \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<leadsto>[?X] (p \<bullet> Q)"
-	by(rule_tac simClosed)
+        by(rule_tac simClosed)
     }
     with `(\<Psi>, P, Q) \<in> ?X` show ?case
       by(blast dest: bisimE)
@@ -187,9 +187,9 @@ proof -
       fix \<Psi> P Q \<Psi>'
       assume "\<forall>\<Psi>'. (\<Psi> \<otimes> \<Psi>', P, Q) \<in> bisim"
       hence "((p \<bullet> \<Psi>) \<otimes> \<Psi>', p \<bullet> P, p \<bullet> Q) \<in> ?X"  
-	apply(auto, rule_tac x=p in exI)
-	apply(rule_tac x="\<Psi> \<otimes> (rev p \<bullet> \<Psi>')" in exI)
-	by(auto simp add: eqvts)
+        apply(auto, rule_tac x=p in exI)
+        apply(rule_tac x="\<Psi> \<otimes> (rev p \<bullet> \<Psi>')" in exI)
+        by(auto simp add: eqvts)
     }
     with `(\<Psi>, P, Q) \<in> ?X` show ?case
       by(blast dest: bisimE)
@@ -287,11 +287,11 @@ proof -
       fix \<Psi> P Q R
       assume "\<Psi> \<rhd> P \<leadsto>[bisim] Q" and "\<Psi> \<rhd> Q \<leadsto>[bisim] R"
       moreover have "eqvt ?X"
-	by(force simp add: eqvt_def dest: bisimClosed)
+        by(force simp add: eqvt_def dest: bisimClosed)
       with bisimEqvt have "eqvt (?X \<union> bisim)" by blast
       moreover have "?X \<subseteq> ?X \<union> bisim" by auto
       ultimately have "\<Psi> \<rhd> P \<leadsto>[(?X \<union> bisim)] R"
-	by(force intro: transitive)
+        by(force intro: transitive)
     }
     with `(\<Psi>, P, R) \<in> ?X` show ?case
       by(blast dest: bisimE)
@@ -337,16 +337,16 @@ proof -
       moreover assume P'RelQ': "(\<Psi>, P', Q') \<in> X"
       hence "\<Psi> \<rhd> P' \<leadsto>[?X] Q'" by(rule rSim)
       moreover from `eqvt X` P'RelQ' have "eqvt ?X"
-	apply(auto simp add: eqvt_def)
-	apply(drule_tac p=p in bisimClosed)
-	apply(drule_tac p=p in bisimClosed)
-	apply(rule_tac x="p \<bullet> P'a" in exI, simp)
-	by(rule_tac x="p \<bullet> Q'a" in exI, auto)
+        apply(auto simp add: eqvt_def)
+        apply(drule_tac p=p in bisimClosed)
+        apply(drule_tac p=p in bisimClosed)
+        apply(rule_tac x="p \<bullet> P'a" in exI, simp)
+        by(rule_tac x="p \<bullet> Q'a" in exI, auto)
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q'"
-	by(force intro: transitive dest: bisimTransitive)
+        by(force intro: transitive dest: bisimTransitive)
       moreover assume "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q"
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using `eqvt ?X`
-	by(force intro: transitive dest: bisimTransitive)
+        by(force intro: transitive dest: bisimTransitive)
     }
     with `(\<Psi>, P, Q) \<in> ?X` show ?case
       by(blast dest: bisimE)
@@ -393,16 +393,16 @@ proof -
       moreover assume P'RelQ': "(\<Psi>, P', Q') \<in> X"
       hence "\<Psi> \<rhd> P' \<leadsto>[?X] Q'" by(rule rSim)
       moreover from `eqvt X` P'RelQ' have "eqvt ?X"
-	apply(auto simp add: eqvt_def)
-	apply(drule_tac p=p in bisimClosed)
-	apply(drule_tac p=p in bisimClosed)
-	apply(rule_tac x="p \<bullet> P'a" in exI, simp)
-	by(rule_tac x="p \<bullet> Q'a" in exI, auto)
+        apply(auto simp add: eqvt_def)
+        apply(drule_tac p=p in bisimClosed)
+        apply(drule_tac p=p in bisimClosed)
+        apply(rule_tac x="p \<bullet> P'a" in exI, simp)
+        by(rule_tac x="p \<bullet> Q'a" in exI, auto)
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q'"
-	by(force intro: transitive dest: bisimTransitive)
+        by(force intro: transitive dest: bisimTransitive)
       moreover assume "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q"
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using `eqvt ?X`
-	by(force intro: transitive dest: bisimTransitive)
+        by(force intro: transitive dest: bisimTransitive)
     }
     with `(\<Psi>, P, Q) \<in> ?X` show ?case
       by(blast dest: bisimE)
@@ -454,16 +454,16 @@ proof -
       moreover assume P'RelQ': "(\<Psi>, P', Q') \<in> X"
       hence "\<Psi> \<rhd> P' \<leadsto>[?X] Q'" by(rule rSim)
       moreover from `eqvt X` P'RelQ' have "eqvt ?X"
-	apply(auto simp add: eqvt_def)
-	apply(drule_tac p=p in bisimClosed)
-	apply(drule_tac p=p in bisimClosed)
-	apply(rule_tac x="p \<bullet> P'a" in exI, simp)
-	by(rule_tac x="p \<bullet> Q'a" in exI, auto)
+        apply(auto simp add: eqvt_def)
+        apply(drule_tac p=p in bisimClosed)
+        apply(drule_tac p=p in bisimClosed)
+        apply(rule_tac x="p \<bullet> P'a" in exI, simp)
+        by(rule_tac x="p \<bullet> Q'a" in exI, auto)
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q'"
-	by(force intro: transitive dest: bisimTransitive)
+        by(force intro: transitive dest: bisimTransitive)
       moreover assume "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q"
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using `eqvt ?X`
-	by(force intro: transitive dest: bisimTransitive)
+        by(force intro: transitive dest: bisimTransitive)
     }
     with `(\<Psi>, P, Q) \<in> ?X` show ?case
       by(blast dest: bisimE)

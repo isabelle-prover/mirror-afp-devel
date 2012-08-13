@@ -95,24 +95,24 @@ proof -
       case Base
       from PChain `P''' \<Longrightarrow>\<^sub>\<tau> P'` have "P \<Longrightarrow>\<^sup>^\<tau> \<prec> P'"
       proof(induct rule: tauChainInduct)
-	case Base
-	from `P \<Longrightarrow>\<^sub>\<tau> P'` show ?case
-	proof(induct rule: tauChainInduct)
-	  case Base
-	  show ?case by simp
-	next
-	  case(Step P' P'')
-	  thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
-	qed
+        case Base
+        from `P \<Longrightarrow>\<^sub>\<tau> P'` show ?case
+        proof(induct rule: tauChainInduct)
+          case Base
+          show ?case by simp
+        next
+          case(Step P' P'')
+          thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
+        qed
       next
-	case(Step P''' P'')
-	thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
+        case(Step P''' P'')
+        thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
       qed
       with `(P', Q') \<in> Rel` show ?case by blast
     next
       case Step
       thus ?case using `(P', Q') \<in> Rel` PChain
-	by(rule_tac x=P' in exI) (force simp add: weakTrans_def weakCongTrans_def)
+        by(rule_tac x=P' in exI) (force simp add: weakTrans_def weakCongTrans_def)
     qed
   qed
   ultimately show ?thesis

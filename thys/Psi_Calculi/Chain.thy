@@ -99,7 +99,7 @@ proof -
     next
       assume "x \<notin> supp y"
       with `x \<in> supp(insert y Xs)` have "x \<in> supp Xs"
-	by(simp add: supp_fin_insert[OF pt, OF at, OF fs, OF `finite Xs`])
+        by(simp add: supp_fin_insert[OF pt, OF at, OF fs, OF `finite Xs`])
       with `x \<in> supp Xs \<Longrightarrow> \<exists>X. X \<in> Xs \<and> x \<in> supp X`
       show ?case by force
     qed
@@ -274,7 +274,7 @@ next
       moreover
       have "y\<sharp>Ys" using e by simp
       ultimately show "[(pi\<bullet>x,y)]\<bullet>Ys = Ys" 
-	by (simp add: pt_fresh_fresh[OF pt_set_inst, OF at_pt_inst[OF at], OF at, OF at])
+        by (simp add: pt_fresh_fresh[OF pt_set_inst, OF at_pt_inst[OF at], OF at, OF at])
     qed
     have "(((pi\<bullet>x,y)#pi)\<bullet>({x}\<union>Xs)) = ([(pi\<bullet>x,y)]\<bullet>(pi\<bullet>({x}\<union>Xs)))"
       by (simp add: pt2[symmetric, OF pt_set_inst, OF at_pt_inst[OF at], OF at])
@@ -297,13 +297,13 @@ next
       fix a b
       assume "b \<sharp> pi" and "(a, b) \<in> set pi"
       thus False
-	by(induct pi)
+        by(induct pi)
           (auto simp add: supp_list_cons supp_prod at_supp[OF at] fresh_list_cons fresh_prod at_fresh[OF at])
     next
       fix a b
       assume "a \<sharp> pi" and "(a, b) \<in> set pi"
       thus False
-	by(induct pi)
+        by(induct pi)
           (auto simp add: supp_list_cons supp_prod at_supp[OF at] fresh_list_cons fresh_prod at_fresh[OF at])
     qed
   ultimately 
@@ -1090,16 +1090,16 @@ next
       assume "x mem xvec"
       with L yvecFreshp xvecFreshyvec yvecDist xFreshyvec
       have"x \<sharp> [xvec yvec] \<bullet>\<^sub>v p"
-	by(rule_tac freshChainPerm) (auto simp add: fresh_list_cons)
+        by(rule_tac freshChainPerm) (auto simp add: fresh_list_cons)
       moreover from yFreshxvec yFreshyvec yFreshp L
       have "y \<sharp> [xvec yvec] \<bullet>\<^sub>v p" by simp
       ultimately show ?thesis using IH
-	by(subst consPerm) (simp add: perm_fresh_fresh)
+        by(subst consPerm) (simp add: perm_fresh_fresh)
     next
       assume "\<not>(x mem xvec)"
       hence xFreshxvec: "x \<sharp> xvec" by simp
       from IH have "([(x, y)] \<bullet> xvec) \<sharp>* ([(x, y)] \<bullet> [xvec yvec] \<bullet>\<^sub>v p)"
-	by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+        by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
       with xFreshxvec yFreshxvec show ?thesis by simp
     qed
   qed

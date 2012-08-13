@@ -108,7 +108,7 @@ proof(auto simp add: eqvt_def)
       assume "P \<approx> Q"
       moreover have "P = ([]::name prm) \<bullet> P" and "Q = ([]::name prm) \<bullet> Q" by auto
       ultimately show "\<exists>P' Q'. P' \<approx> Q' \<and> (\<exists>(perm::name prm). P = perm \<bullet> P' \<and> Q = perm \<bullet> Q')"
-	by blast
+        by blast
     qed
 
     moreover have "eqvt ?X"
@@ -123,7 +123,7 @@ proof(auto simp add: eqvt_def)
 
       ultimately show "\<exists>P' Q'. P' \<approx> Q' \<and> (\<exists>(perm::name prm). perm1 \<bullet> perm2 \<bullet> P = perm \<bullet> P' \<and>
                                                               perm1 \<bullet> perm2 \<bullet> Q = perm \<bullet> Q')"
-	by blast
+        by blast
     qed
 
     ultimately show "(perm \<bullet> P) \<leadsto><?X> (perm \<bullet> Q)"
@@ -305,9 +305,9 @@ proof -
       proof -
         have "P' \<leadsto><?X> Q"
         proof -
-	  have "?X O bisim \<subseteq> ?X" by(blast intro: Strong_Early_Bisim.transitive)
-	  moreover from Strong_Early_Bisim.eqvt Eqvt have "eqvt ?X" by blast
-	  ultimately show ?thesis using P'SimQ' Q'SimQ 
+          have "?X O bisim \<subseteq> ?X" by(blast intro: Strong_Early_Bisim.transitive)
+          moreover from Strong_Early_Bisim.eqvt Eqvt have "eqvt ?X" by blast
+          ultimately show ?thesis using P'SimQ' Q'SimQ 
             by(rule_tac strongAppend)
         qed
         moreover have "eqvt bisim" by(rule Strong_Early_Bisim.eqvt)

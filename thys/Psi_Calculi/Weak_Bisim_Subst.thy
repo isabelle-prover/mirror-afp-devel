@@ -114,22 +114,22 @@ proof -
       fix \<phi> P
       assume "(\<phi>, P) mem (caseListSubst CsP xvec Tvec)"
       then obtain \<phi>' P' where "(\<phi>', P') mem CsP" and "\<phi> = substCond \<phi>' xvec Tvec" and PeqP': "P = (P'[xvec::=Tvec])"
-	by(induct CsP) force+
+        by(induct CsP) force+
       from `(\<phi>', P') mem CsP` obtain Q' where "(\<phi>', Q') mem CsQ" and "guarded Q'" and "\<Psi> \<rhd> P' \<sim>\<^sub>s Q'" by(blast dest: C1)
       from `(\<phi>', Q') mem CsQ` `\<phi> = substCond \<phi>' xvec Tvec` obtain Q where "(\<phi>, Q) mem (caseListSubst CsQ xvec Tvec)" and "Q = Q'[xvec::=Tvec]"
-	by(induct CsQ) auto
+        by(induct CsQ) auto
       with PeqP' `guarded Q'` `\<Psi> \<rhd> P' \<sim>\<^sub>s Q'` `length xvec = length Tvec` `distinct xvec` show "\<exists>Q. (\<phi>, Q) mem (caseListSubst CsQ xvec Tvec) \<and> guarded Q \<and> \<Psi> \<rhd> P \<sim> Q"
-	by(blast dest: bisimSubstE guardedSubst)
+        by(blast dest: bisimSubstE guardedSubst)
     next
       fix \<phi> Q
       assume "(\<phi>, Q) mem (caseListSubst CsQ xvec Tvec)"
       then obtain \<phi>' Q' where "(\<phi>', Q') mem CsQ" and "\<phi> = substCond \<phi>' xvec Tvec" and QeqQ': "Q = Q'[xvec::=Tvec]"
-	by(induct CsQ) force+
+        by(induct CsQ) force+
       from `(\<phi>', Q') mem CsQ` obtain P' where "(\<phi>', P') mem CsP" and "guarded P'" and "\<Psi> \<rhd> P' \<sim>\<^sub>s Q'" by(blast dest: C2)
       from `(\<phi>', P') mem CsP` `\<phi> = substCond \<phi>' xvec Tvec` obtain P where "(\<phi>, P) mem (caseListSubst CsP xvec Tvec)" and "P = P'[xvec::=Tvec]"
-	by(induct CsP) auto
+        by(induct CsP) auto
       with QeqQ' `guarded P'` `\<Psi> \<rhd> P' \<sim>\<^sub>s Q'` `length xvec = length Tvec` `distinct xvec` show "\<exists>P. (\<phi>, P) mem (caseListSubst CsP xvec Tvec) \<and> guarded P \<and> \<Psi> \<rhd> P \<sim> Q"
-	by(blast dest: bisimSubstE guardedSubst)
+        by(blast dest: bisimSubstE guardedSubst)
     qed
   }
   thus ?thesis

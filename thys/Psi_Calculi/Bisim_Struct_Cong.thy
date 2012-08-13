@@ -49,18 +49,18 @@ proof -
     proof -
       have "\<Psi> \<rhd> P \<parallel> Q \<leadsto>[?X] Q \<parallel> P"
       proof -
-	note `eqvt ?X`
-	moreover have "\<And>\<Psi> P Q. (\<Psi>, P \<parallel> Q, Q \<parallel> P) \<in> ?X"
-	  apply auto by(rule_tac x="[]" in exI) auto
-	moreover have "\<And>\<Psi> P Q xvec. \<lbrakk>(\<Psi>, P, Q) \<in> ?X; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>*xvec\<rparr>P, \<lparr>\<nu>*xvec\<rparr>Q) \<in> ?X"
-	  apply(induct xvec, auto)
-	  by(rule_tac x="xvec@xveca" in exI) (auto simp add: resChainAppend)
-	ultimately show ?thesis by(rule simParComm) 
+        note `eqvt ?X`
+        moreover have "\<And>\<Psi> P Q. (\<Psi>, P \<parallel> Q, Q \<parallel> P) \<in> ?X"
+          apply auto by(rule_tac x="[]" in exI) auto
+        moreover have "\<And>\<Psi> P Q xvec. \<lbrakk>(\<Psi>, P, Q) \<in> ?X; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>*xvec\<rparr>P, \<lparr>\<nu>*xvec\<rparr>Q) \<in> ?X"
+          apply(induct xvec, auto)
+          by(rule_tac x="xvec@xveca" in exI) (auto simp add: resChainAppend)
+        ultimately show ?thesis by(rule simParComm) 
       qed
       moreover note `eqvt ?X` `xvec \<sharp>* \<Psi>`
       moreover have "\<And>\<Psi> P Q x. \<lbrakk>(\<Psi>, P, Q) \<in> ?X; x \<sharp> \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>x\<rparr>Q) \<in> ?X"
-	apply auto
-	by(rule_tac x="x#xvec" in exI) auto
+        apply auto
+        by(rule_tac x="x#xvec" in exI) auto
       ultimately show ?thesis by(rule resChainPres) 
     qed
     ultimately show ?case by simp
@@ -119,7 +119,7 @@ next
       case(cStatEq \<Psi> xyP yxP)
       from `(\<Psi>, xyP, yxP) \<in> ?X` obtain x y P where "x \<sharp> \<Psi>" and "y \<sharp> \<Psi>" and "xyP = \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P)" and "yxP = \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P)" by auto
       moreover obtain A\<^isub>P \<Psi>\<^isub>P where "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>P" and "y \<sharp> A\<^isub>P"
-	by(rule_tac C="(x, y, \<Psi>)" in freshFrame) auto
+        by(rule_tac C="(x, y, \<Psi>)" in freshFrame) auto
       ultimately show ?case by(force intro: frameResComm FrameStatEqTrans)
     next
       case(cSim \<Psi> xyP yxP)
@@ -131,28 +131,28 @@ next
       moreover have "\<And>\<Psi> x y P. \<lbrakk>x \<sharp> \<Psi>; y \<sharp> \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P), \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P)) \<in> ?X \<union> bisim" by auto
       ultimately have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P) \<leadsto>[(?X \<union> bisim)] \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P)" by(rule resComm)
       with `xyP = \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P)` `yxP = \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P)` show ?case
-	by simp
+        by simp
     next
       case(cExt \<Psi> xyP yxP \<Psi>')
       from `(\<Psi>, xyP, yxP) \<in> ?X` obtain x y P where "x \<sharp> \<Psi>" and "y \<sharp> \<Psi>" and xyPeq: "xyP = \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P)" and yxPeq: "yxP = \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P)" by auto
       show ?case
       proof(case_tac "x=y")
-	assume "x = y"
-	with xyPeq yxPeq show ?case
-	  by(blast intro: bisimReflexive)
+        assume "x = y"
+        with xyPeq yxPeq show ?case
+          by(blast intro: bisimReflexive)
       next
-	assume "x \<noteq> y"
-	obtain x' where "x' \<sharp> \<Psi>" and "x' \<sharp> \<Psi>'" and "x' \<noteq> x" and "x' \<noteq> y" and "x' \<sharp> P" by(generate_fresh "name") (auto simp add: fresh_prod)
-	obtain y' where "y' \<sharp> \<Psi>" and "y' \<sharp> \<Psi>'" and "y' \<noteq> x" and "x' \<noteq> y'" and "y' \<noteq> y" and "y' \<sharp> P" by(generate_fresh "name") (auto simp add: fresh_prod)
-	with xyPeq `y' \<sharp> P` `x' \<sharp> P` `x \<noteq> y` `x' \<noteq> y` `y' \<noteq> x` have "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P) = \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P))"
-	  apply(subst alphaRes[of x']) apply(simp add: abs_fresh) by(subst alphaRes[of y' _ y]) (auto simp add: eqvts calc_atm)
-	moreover with yxPeq `y' \<sharp> P` `x' \<sharp> P` `x \<noteq> y` `x' \<noteq> y` `y' \<noteq> x` `x' \<noteq> y'` have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P) = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(y, y')] \<bullet> [(x, x')] \<bullet> P))"
-	  apply(subst alphaRes[of y']) apply(simp add: abs_fresh) by(subst alphaRes[of x' _ x]) (auto simp add: eqvts calc_atm)
-	with `x \<noteq> y` `x' \<noteq> y` `y' \<noteq> y` `x' \<noteq> x` `y' \<noteq> x` `x' \<noteq> y'` have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P) = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P))"
-	  by(subst perm_compose) (simp add: calc_atm)
-	moreover from `x' \<sharp> \<Psi>` `x' \<sharp> \<Psi>'` `y' \<sharp> \<Psi>` `y' \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P)), \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P))) \<in> ?X"
-	  by auto
-	ultimately show ?case using xyPeq yxPeq by simp
+        assume "x \<noteq> y"
+        obtain x' where "x' \<sharp> \<Psi>" and "x' \<sharp> \<Psi>'" and "x' \<noteq> x" and "x' \<noteq> y" and "x' \<sharp> P" by(generate_fresh "name") (auto simp add: fresh_prod)
+        obtain y' where "y' \<sharp> \<Psi>" and "y' \<sharp> \<Psi>'" and "y' \<noteq> x" and "x' \<noteq> y'" and "y' \<noteq> y" and "y' \<sharp> P" by(generate_fresh "name") (auto simp add: fresh_prod)
+        with xyPeq `y' \<sharp> P` `x' \<sharp> P` `x \<noteq> y` `x' \<noteq> y` `y' \<noteq> x` have "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P) = \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P))"
+          apply(subst alphaRes[of x']) apply(simp add: abs_fresh) by(subst alphaRes[of y' _ y]) (auto simp add: eqvts calc_atm)
+        moreover with yxPeq `y' \<sharp> P` `x' \<sharp> P` `x \<noteq> y` `x' \<noteq> y` `y' \<noteq> x` `x' \<noteq> y'` have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P) = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(y, y')] \<bullet> [(x, x')] \<bullet> P))"
+          apply(subst alphaRes[of y']) apply(simp add: abs_fresh) by(subst alphaRes[of x' _ x]) (auto simp add: eqvts calc_atm)
+        with `x \<noteq> y` `x' \<noteq> y` `y' \<noteq> y` `x' \<noteq> x` `y' \<noteq> x` `x' \<noteq> y'` have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P) = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P))"
+          by(subst perm_compose) (simp add: calc_atm)
+        moreover from `x' \<sharp> \<Psi>` `x' \<sharp> \<Psi>'` `y' \<sharp> \<Psi>` `y' \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P)), \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> P))) \<in> ?X"
+          by auto
+        ultimately show ?case using xyPeq yxPeq by simp
       qed
     next
       case(cSym \<Psi> xyP yxP)
@@ -212,33 +212,33 @@ proof -
       case(cStatEq \<Psi> R T)
       show ?case
       proof(case_tac "(\<Psi>, R, T) \<in> ?X1")
-	assume "(\<Psi>, R, T) \<in> ?X1"
-	then obtain xvec x P Q where "R = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and "T = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	  by auto
-	moreover obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>P" and "A\<^isub>P \<sharp>* Q"
-	  by(rule_tac C="(\<Psi>, x, Q)" in freshFrame) auto
-	moreover obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "A\<^isub>Q \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>Q" and "A\<^isub>Q \<sharp>* A\<^isub>P" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P"
-	  by(rule_tac C="(\<Psi>, x, A\<^isub>P, \<Psi>\<^isub>P)" in freshFrame) auto
-	moreover from FrQ `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* A\<^isub>P` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>Q"
-	  by(drule_tac extractFrameFreshChain) auto
-	moreover from `x \<sharp> P` `x \<sharp> A\<^isub>P` FrP have "x \<sharp> \<Psi>\<^isub>P" by(drule_tac extractFrameFresh) auto
-	ultimately show ?case
-	  by(force simp add: frameChainAppend intro: frameResComm' FrameStatEqTrans frameResChainPres)
+        assume "(\<Psi>, R, T) \<in> ?X1"
+        then obtain xvec x P Q where "R = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and "T = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+          by auto
+        moreover obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>P" and "A\<^isub>P \<sharp>* Q"
+          by(rule_tac C="(\<Psi>, x, Q)" in freshFrame) auto
+        moreover obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "A\<^isub>Q \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>Q" and "A\<^isub>Q \<sharp>* A\<^isub>P" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P"
+          by(rule_tac C="(\<Psi>, x, A\<^isub>P, \<Psi>\<^isub>P)" in freshFrame) auto
+        moreover from FrQ `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* A\<^isub>P` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>Q"
+          by(drule_tac extractFrameFreshChain) auto
+        moreover from `x \<sharp> P` `x \<sharp> A\<^isub>P` FrP have "x \<sharp> \<Psi>\<^isub>P" by(drule_tac extractFrameFresh) auto
+        ultimately show ?case
+          by(force simp add: frameChainAppend intro: frameResComm' FrameStatEqTrans frameResChainPres)
       next
-	assume "(\<Psi>, R, T) \<notin> ?X1"
-	with `(\<Psi>, R, T) \<in> ?X` have "(\<Psi>, R, T) \<in> ?X2" by blast
-	then obtain xvec x P Q where "T = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and "R = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	  by auto
-	moreover obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>P" and "A\<^isub>P \<sharp>* Q"
-	  by(rule_tac C="(\<Psi>, x, Q)" in freshFrame) auto
-	moreover obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "A\<^isub>Q \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>Q" and "A\<^isub>Q \<sharp>* A\<^isub>P" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P"
-	  by(rule_tac C="(\<Psi>, x, A\<^isub>P, \<Psi>\<^isub>P)" in freshFrame) auto
-	moreover from FrQ `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* A\<^isub>P` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>Q"
-	  by(drule_tac extractFrameFreshChain) auto
-	moreover from `x \<sharp> P` `x \<sharp> A\<^isub>P` FrP have "x \<sharp> \<Psi>\<^isub>P" by(drule_tac extractFrameFresh) auto
-	ultimately show ?case
-	  apply auto
-	  by(force simp add: frameChainAppend intro: frameResComm' FrameStatEqTrans frameResChainPres FrameStatEqSym)
+        assume "(\<Psi>, R, T) \<notin> ?X1"
+        with `(\<Psi>, R, T) \<in> ?X` have "(\<Psi>, R, T) \<in> ?X2" by blast
+        then obtain xvec x P Q where "T = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and "R = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+          by auto
+        moreover obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>P" and "A\<^isub>P \<sharp>* Q"
+          by(rule_tac C="(\<Psi>, x, Q)" in freshFrame) auto
+        moreover obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "A\<^isub>Q \<sharp>* \<Psi>" and "x \<sharp> A\<^isub>Q" and "A\<^isub>Q \<sharp>* A\<^isub>P" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P"
+          by(rule_tac C="(\<Psi>, x, A\<^isub>P, \<Psi>\<^isub>P)" in freshFrame) auto
+        moreover from FrQ `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* A\<^isub>P` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>Q"
+          by(drule_tac extractFrameFreshChain) auto
+        moreover from `x \<sharp> P` `x \<sharp> A\<^isub>P` FrP have "x \<sharp> \<Psi>\<^isub>P" by(drule_tac extractFrameFresh) auto
+        ultimately show ?case
+          apply auto
+          by(force simp add: frameChainAppend intro: frameResComm' FrameStatEqTrans frameResChainPres FrameStatEqSym)
       qed
     next
       case(cSim \<Psi> R T)
@@ -246,180 +246,180 @@ proof -
       from `eqvt ?X` have "eqvt ?Y" by blast
       have C1: "\<And>\<Psi> R T y. \<lbrakk>(\<Psi>, R, T) \<in> ?Y; (y::name) \<sharp> \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>y\<rparr>R, \<lparr>\<nu>y\<rparr>T) \<in> ?Y"
       proof -
-	fix \<Psi> R T y
-	assume "(\<Psi>, R, T) \<in> ?Y"
-	then obtain R' T' where "\<Psi> \<rhd> R \<sim> R'" and "(\<Psi>, R', T') \<in> (?X \<union> bisim)" and "\<Psi> \<rhd> T' \<sim> T" by fastforce
-	assume "(y::name) \<sharp> \<Psi>" 
-	show "(\<Psi>, \<lparr>\<nu>y\<rparr>R, \<lparr>\<nu>y\<rparr>T) \<in> ?Y"
-	proof(case_tac "(\<Psi>, R', T') \<in> ?X")
-	  assume "(\<Psi>, R', T') \<in> ?X"
-	  show ?thesis
-	  proof(case_tac "(\<Psi>, R', T') \<in> ?X1")
-	    assume "(\<Psi>, R', T') \<in> ?X1"
-	    then obtain xvec x P Q where R'eq: "R' = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and T'eq: "T' = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)"
+        fix \<Psi> R T y
+        assume "(\<Psi>, R, T) \<in> ?Y"
+        then obtain R' T' where "\<Psi> \<rhd> R \<sim> R'" and "(\<Psi>, R', T') \<in> (?X \<union> bisim)" and "\<Psi> \<rhd> T' \<sim> T" by fastforce
+        assume "(y::name) \<sharp> \<Psi>" 
+        show "(\<Psi>, \<lparr>\<nu>y\<rparr>R, \<lparr>\<nu>y\<rparr>T) \<in> ?Y"
+        proof(case_tac "(\<Psi>, R', T') \<in> ?X")
+          assume "(\<Psi>, R', T') \<in> ?X"
+          show ?thesis
+          proof(case_tac "(\<Psi>, R', T') \<in> ?X1")
+            assume "(\<Psi>, R', T') \<in> ?X1"
+            then obtain xvec x P Q where R'eq: "R' = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and T'eq: "T' = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)"
                                      and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	      by auto
-	    from `\<Psi> \<rhd> R \<sim> R'` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>R \<sim> \<lparr>\<nu>y\<rparr>R'" by(rule bisimResPres)
-	    moreover from `xvec \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `x \<sharp> P` `x \<sharp> \<Psi>` have "(\<Psi>, \<lparr>\<nu>*(y#xvec)\<rparr>\<lparr>\<nu>x\<rparr>(P \<parallel> Q), \<lparr>\<nu>*(y#xvec)\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?X1"
-	      by(force simp del: resChain.simps)
-	    with R'eq T'eq have "(\<Psi>, \<lparr>\<nu>y\<rparr>R', \<lparr>\<nu>y\<rparr>T') \<in> ?X \<union> bisim" by simp
-	    moreover from `\<Psi> \<rhd> T' \<sim> T` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>T' \<sim> \<lparr>\<nu>y\<rparr>T" by(rule bisimResPres)
-	    ultimately show ?thesis by blast
-	  next
-	    assume "(\<Psi>, R', T') \<notin> ?X1"
-	    with `(\<Psi>, R', T') \<in> ?X` have "(\<Psi>, R', T') \<in> ?X2" by blast
-	    then obtain xvec x P Q where T'eq: "T' = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and R'eq: "R' = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	      by auto
-	    from `\<Psi> \<rhd> R \<sim> R'` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>R \<sim> \<lparr>\<nu>y\<rparr>R'" by(rule bisimResPres)
-	    moreover from `xvec \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `x \<sharp> P` `x \<sharp> \<Psi>` have "(\<Psi>, \<lparr>\<nu>*(y#xvec)\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>*(y#xvec)\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))) \<in> ?X2"
-	      by(force simp del: resChain.simps)
-	    with R'eq T'eq have "(\<Psi>, \<lparr>\<nu>y\<rparr>R', \<lparr>\<nu>y\<rparr>T') \<in> ?X \<union> bisim" by simp
-	    moreover from `\<Psi> \<rhd> T' \<sim> T` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>T' \<sim> \<lparr>\<nu>y\<rparr>T" by(rule bisimResPres)
-	    ultimately show ?thesis by blast
-	  qed
-	next
-	  assume "(\<Psi>, R', T') \<notin> ?X"
-	  with `(\<Psi>, R', T') \<in> ?X \<union> bisim` have "\<Psi> \<rhd> R' \<sim> T'" by blast
-	  with `\<Psi> \<rhd> R \<sim> R'` `\<Psi> \<rhd> T' \<sim> T` `y \<sharp> \<Psi>` show ?thesis
-	    by(blast dest: bisimResPres)
-	qed
+              by auto
+            from `\<Psi> \<rhd> R \<sim> R'` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>R \<sim> \<lparr>\<nu>y\<rparr>R'" by(rule bisimResPres)
+            moreover from `xvec \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `x \<sharp> P` `x \<sharp> \<Psi>` have "(\<Psi>, \<lparr>\<nu>*(y#xvec)\<rparr>\<lparr>\<nu>x\<rparr>(P \<parallel> Q), \<lparr>\<nu>*(y#xvec)\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?X1"
+              by(force simp del: resChain.simps)
+            with R'eq T'eq have "(\<Psi>, \<lparr>\<nu>y\<rparr>R', \<lparr>\<nu>y\<rparr>T') \<in> ?X \<union> bisim" by simp
+            moreover from `\<Psi> \<rhd> T' \<sim> T` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>T' \<sim> \<lparr>\<nu>y\<rparr>T" by(rule bisimResPres)
+            ultimately show ?thesis by blast
+          next
+            assume "(\<Psi>, R', T') \<notin> ?X1"
+            with `(\<Psi>, R', T') \<in> ?X` have "(\<Psi>, R', T') \<in> ?X2" by blast
+            then obtain xvec x P Q where T'eq: "T' = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and R'eq: "R' = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+              by auto
+            from `\<Psi> \<rhd> R \<sim> R'` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>R \<sim> \<lparr>\<nu>y\<rparr>R'" by(rule bisimResPres)
+            moreover from `xvec \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `x \<sharp> P` `x \<sharp> \<Psi>` have "(\<Psi>, \<lparr>\<nu>*(y#xvec)\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>*(y#xvec)\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))) \<in> ?X2"
+              by(force simp del: resChain.simps)
+            with R'eq T'eq have "(\<Psi>, \<lparr>\<nu>y\<rparr>R', \<lparr>\<nu>y\<rparr>T') \<in> ?X \<union> bisim" by simp
+            moreover from `\<Psi> \<rhd> T' \<sim> T` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>T' \<sim> \<lparr>\<nu>y\<rparr>T" by(rule bisimResPres)
+            ultimately show ?thesis by blast
+          qed
+        next
+          assume "(\<Psi>, R', T') \<notin> ?X"
+          with `(\<Psi>, R', T') \<in> ?X \<union> bisim` have "\<Psi> \<rhd> R' \<sim> T'" by blast
+          with `\<Psi> \<rhd> R \<sim> R'` `\<Psi> \<rhd> T' \<sim> T` `y \<sharp> \<Psi>` show ?thesis
+            by(blast dest: bisimResPres)
+        qed
       qed
       
       show ?case
       proof(case_tac "(\<Psi>, R, T) \<in> ?X1")
-	assume "(\<Psi>, R, T) \<in> ?X1"
-	then obtain xvec x P Q where Req: "R = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Teq: "T = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	  by auto
-	have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q)) \<leadsto>[?Y] \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)"
-	proof -
-	  have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(P \<parallel> Q) \<leadsto>[?Y] P \<parallel> \<lparr>\<nu>x\<rparr>Q"
-	  proof -
-	    note `x \<sharp> P` `x \<sharp> \<Psi>` `eqvt ?Y`
-	    moreover have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Y" by(blast intro: bisimReflexive)
-	    moreover have "\<And>x \<Psi> P Q xvec. \<lbrakk>x \<sharp> \<Psi>; x \<sharp> P; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?Y"
-	    proof -
-	      fix x \<Psi> P Q xvec
-	      assume "(x::name) \<sharp> (\<Psi>::'b)" and "x \<sharp> (P::('a, 'b, 'c) psi)" and "(xvec::name list) \<sharp>* \<Psi>"
-	      from `x \<sharp> \<Psi>` `xvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<sim> \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))"
-		by(rule bisimResComm')
-	      moreover from `xvec \<sharp>* \<Psi>` `x \<sharp> \<Psi>` `x \<sharp> P` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q)), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?X \<union> bisim"
-		by blast
-	      ultimately show "(\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?Y" 
-		by(blast intro: bisimReflexive)
-	    qed
-	    moreover have "\<And>\<Psi> xvec P x. \<lbrakk>x \<sharp> \<Psi>; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>P), \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>P)) \<in> ?Y"
-	      by(blast intro: bisimResComm' bisimReflexive)
-	    ultimately show ?thesis by(rule scopeExtLeft)
-	  qed
-	  thus ?thesis using `eqvt ?Y` `xvec \<sharp>* \<Psi>` C1 
-	    by(rule resChainPres)
-	qed
-	with Req Teq show ?case by simp
+        assume "(\<Psi>, R, T) \<in> ?X1"
+        then obtain xvec x P Q where Req: "R = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Teq: "T = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+          by auto
+        have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q)) \<leadsto>[?Y] \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)"
+        proof -
+          have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(P \<parallel> Q) \<leadsto>[?Y] P \<parallel> \<lparr>\<nu>x\<rparr>Q"
+          proof -
+            note `x \<sharp> P` `x \<sharp> \<Psi>` `eqvt ?Y`
+            moreover have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Y" by(blast intro: bisimReflexive)
+            moreover have "\<And>x \<Psi> P Q xvec. \<lbrakk>x \<sharp> \<Psi>; x \<sharp> P; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?Y"
+            proof -
+              fix x \<Psi> P Q xvec
+              assume "(x::name) \<sharp> (\<Psi>::'b)" and "x \<sharp> (P::('a, 'b, 'c) psi)" and "(xvec::name list) \<sharp>* \<Psi>"
+              from `x \<sharp> \<Psi>` `xvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<sim> \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))"
+                by(rule bisimResComm')
+              moreover from `xvec \<sharp>* \<Psi>` `x \<sharp> \<Psi>` `x \<sharp> P` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q)), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?X \<union> bisim"
+                by blast
+              ultimately show "(\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)) \<in> ?Y" 
+                by(blast intro: bisimReflexive)
+            qed
+            moreover have "\<And>\<Psi> xvec P x. \<lbrakk>x \<sharp> \<Psi>; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>P), \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>P)) \<in> ?Y"
+              by(blast intro: bisimResComm' bisimReflexive)
+            ultimately show ?thesis by(rule scopeExtLeft)
+          qed
+          thus ?thesis using `eqvt ?Y` `xvec \<sharp>* \<Psi>` C1 
+            by(rule resChainPres)
+        qed
+        with Req Teq show ?case by simp
       next
-	assume "(\<Psi>, R, T) \<notin> ?X1"
-	with `(\<Psi>, R, T) \<in> ?X` have "(\<Psi>, R, T) \<in> ?X2" by blast
-	then obtain xvec x P Q where Teq: "T = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Req: "R = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	  by auto
-	have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q) \<leadsto>[?Y] \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))"
-	proof -
-	  have "\<Psi> \<rhd> P \<parallel> \<lparr>\<nu>x\<rparr>Q \<leadsto>[?Y] \<lparr>\<nu>x\<rparr>(P \<parallel> Q)"
-	  proof -
-	    note `x \<sharp> P` `x \<sharp> \<Psi>` `eqvt ?Y`
-	    moreover have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Y" by(blast intro: bisimReflexive)
-	    moreover have "\<And>x \<Psi> P Q xvec. \<lbrakk>x \<sharp> \<Psi>; x \<sharp> P; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))) \<in> ?Y"
-	    proof -
-	      fix x \<Psi> P Q xvec
-	      assume "(x::name) \<sharp> (\<Psi>::'b)" and "x \<sharp> (P::('a, 'b, 'c) psi)" and "(xvec::name list) \<sharp>* \<Psi>"
-	      from `xvec \<sharp>* \<Psi>` `x \<sharp> \<Psi>` `x \<sharp> P` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))) \<in> ?X \<union> bisim"
-		by blast
-	      moreover from `x \<sharp> \<Psi>` `xvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q)) \<sim> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))"
-		by(blast intro: bisimResComm' bisimE)
-	      ultimately show "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))) \<in> ?Y" 
-		by(blast intro: bisimReflexive)
-	    qed
-	    ultimately show ?thesis by(rule scopeExtRight)
-	  qed
-	  thus ?thesis using `eqvt ?Y` `xvec \<sharp>* \<Psi>` C1 
-	    by(rule resChainPres)
-	qed
-	with Req Teq show ?case by simp
+        assume "(\<Psi>, R, T) \<notin> ?X1"
+        with `(\<Psi>, R, T) \<in> ?X` have "(\<Psi>, R, T) \<in> ?X2" by blast
+        then obtain xvec x P Q where Teq: "T = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Req: "R = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+          by auto
+        have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q) \<leadsto>[?Y] \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))"
+        proof -
+          have "\<Psi> \<rhd> P \<parallel> \<lparr>\<nu>x\<rparr>Q \<leadsto>[?Y] \<lparr>\<nu>x\<rparr>(P \<parallel> Q)"
+          proof -
+            note `x \<sharp> P` `x \<sharp> \<Psi>` `eqvt ?Y`
+            moreover have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Y" by(blast intro: bisimReflexive)
+            moreover have "\<And>x \<Psi> P Q xvec. \<lbrakk>x \<sharp> \<Psi>; x \<sharp> P; xvec \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))) \<in> ?Y"
+            proof -
+              fix x \<Psi> P Q xvec
+              assume "(x::name) \<sharp> (\<Psi>::'b)" and "x \<sharp> (P::('a, 'b, 'c) psi)" and "(xvec::name list) \<sharp>* \<Psi>"
+              from `xvec \<sharp>* \<Psi>` `x \<sharp> \<Psi>` `x \<sharp> P` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))) \<in> ?X \<union> bisim"
+                by blast
+              moreover from `x \<sharp> \<Psi>` `xvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q)) \<sim> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))"
+                by(blast intro: bisimResComm' bisimE)
+              ultimately show "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q), \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))) \<in> ?Y" 
+                by(blast intro: bisimReflexive)
+            qed
+            ultimately show ?thesis by(rule scopeExtRight)
+          qed
+          thus ?thesis using `eqvt ?Y` `xvec \<sharp>* \<Psi>` C1 
+            by(rule resChainPres)
+        qed
+        with Req Teq show ?case by simp
       qed
     next
       case(cExt \<Psi> R T \<Psi>')
       show ?case
       proof(case_tac "(\<Psi>, R, T) \<in> ?X1")
-	assume "(\<Psi>, R, T) \<in> ?X1"
-	then obtain xvec x P Q where Req: "R = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Teq: "T = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	  by auto
-	obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> xvec" and "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'"
-	  by(generate_fresh "name", auto simp add: fresh_prod)
+        assume "(\<Psi>, R, T) \<in> ?X1"
+        then obtain xvec x P Q where Req: "R = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Teq: "T = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+          by auto
+        obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> xvec" and "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'"
+          by(generate_fresh "name", auto simp add: fresh_prod)
 
-	obtain p where "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* P" and "(p \<bullet> xvec) \<sharp>* Q" and "(p \<bullet> xvec) \<sharp>* \<Psi>'"
+        obtain p where "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* P" and "(p \<bullet> xvec) \<sharp>* Q" and "(p \<bullet> xvec) \<sharp>* \<Psi>'"
                   and "x \<sharp> (p \<bullet> xvec)" and "y \<sharp> (p \<bullet> xvec)"
                    and S: "(set p) \<subseteq> (set xvec) \<times> (set(p \<bullet> xvec))" and "distinctPerm p"
-	  by(rule_tac c="(\<Psi>, P, Q, x, y, \<Psi>')" in name_list_avoiding) auto
-	
-	
-	from `y \<sharp> P` have "(p \<bullet> y) \<sharp> (p \<bullet> P)" by(simp add: pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
-	with S `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` have "y \<sharp> (p \<bullet> P)" by simp
-	with `(p \<bullet> xvec) \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'` `y \<sharp> \<Psi>'`
-	have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q))), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (\<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q)))) \<in> ?X"
-	  by auto
-	moreover from Req `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
-	have "R = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q)))"
-	  apply(erule_tac rev_mp)
-	  apply(subst alphaRes[of y])
-	  apply(clarsimp simp add: eqvts)
-	  apply(subst resChainAlpha[of p])
-	  by(auto simp add: eqvts)
-	moreover from Teq `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
-	have "T = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> \<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q))"
-	  apply(erule_tac rev_mp)
-	  apply(subst alphaRes[of y])
-	  apply(clarsimp simp add: eqvts)
-	  apply(subst resChainAlpha[of p])
-	  by(auto simp add: eqvts)
-	ultimately show ?case
-	  by blast
+          by(rule_tac c="(\<Psi>, P, Q, x, y, \<Psi>')" in name_list_avoiding) auto
+        
+        
+        from `y \<sharp> P` have "(p \<bullet> y) \<sharp> (p \<bullet> P)" by(simp add: pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
+        with S `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` have "y \<sharp> (p \<bullet> P)" by simp
+        with `(p \<bullet> xvec) \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'` `y \<sharp> \<Psi>'`
+        have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q))), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (\<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q)))) \<in> ?X"
+          by auto
+        moreover from Req `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
+        have "R = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q)))"
+          apply(erule_tac rev_mp)
+          apply(subst alphaRes[of y])
+          apply(clarsimp simp add: eqvts)
+          apply(subst resChainAlpha[of p])
+          by(auto simp add: eqvts)
+        moreover from Teq `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
+        have "T = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> \<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q))"
+          apply(erule_tac rev_mp)
+          apply(subst alphaRes[of y])
+          apply(clarsimp simp add: eqvts)
+          apply(subst resChainAlpha[of p])
+          by(auto simp add: eqvts)
+        ultimately show ?case
+          by blast
       next
-	assume "(\<Psi>, R, T) \<notin> ?X1"
-	with `(\<Psi>, R, T) \<in> ?X` have "(\<Psi>, R, T) \<in> ?X2" by blast
-	then obtain xvec x P Q where Teq: "T = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Req: "R = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
-	  by auto
-	obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> xvec" and "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'"
-	  by(generate_fresh "name", auto simp add: fresh_prod)
+        assume "(\<Psi>, R, T) \<notin> ?X1"
+        with `(\<Psi>, R, T) \<in> ?X` have "(\<Psi>, R, T) \<in> ?X2" by blast
+        then obtain xvec x P Q where Teq: "T = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(P \<parallel> Q))" and Req: "R = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> \<lparr>\<nu>x\<rparr>Q)" and "xvec \<sharp>* \<Psi>" and "x \<sharp> P" and "x \<sharp> \<Psi>"
+          by auto
+        obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> xvec" and "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'"
+          by(generate_fresh "name", auto simp add: fresh_prod)
 
-	obtain p where "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* P" and "(p \<bullet> xvec) \<sharp>* Q" and "(p \<bullet> xvec) \<sharp>* \<Psi>'"
+        obtain p where "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* P" and "(p \<bullet> xvec) \<sharp>* Q" and "(p \<bullet> xvec) \<sharp>* \<Psi>'"
                    and "x \<sharp> (p \<bullet> xvec)" and "y \<sharp> (p \<bullet> xvec)"
                    and S: "(set p) \<subseteq> (set xvec) \<times> (set(p \<bullet> xvec))" and "distinctPerm p"
-	  by(rule_tac c="(\<Psi>, P, Q, x, y, \<Psi>')" in name_list_avoiding) auto
-	
-	from `y \<sharp> P` have "(p \<bullet> y) \<sharp> (p \<bullet> P)" by(simp add: pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
-	with S `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` have "y \<sharp> (p \<bullet> P)" by simp
-	with `(p \<bullet> xvec) \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'` `y \<sharp> \<Psi>'`
-	have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> \<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q)))) \<in> ?X2"
-	  by auto
-	moreover from Teq `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
-	have "T = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q)))"
-	  apply(erule_tac rev_mp)
-	  apply(subst alphaRes[of y])
-	  apply(clarsimp simp add: eqvts)
-	  apply(subst resChainAlpha[of p])
-	  by(auto simp add: eqvts)
-	moreover from Req `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
-	have "R = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> \<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q))"
-	  apply(erule_tac rev_mp)
-	  apply(subst alphaRes[of y])
-	  apply(clarsimp simp add: eqvts)
-	  apply(subst resChainAlpha[of p])
-	  by(auto simp add: eqvts)
-	ultimately show ?case
-	  by blast
+          by(rule_tac c="(\<Psi>, P, Q, x, y, \<Psi>')" in name_list_avoiding) auto
+        
+        from `y \<sharp> P` have "(p \<bullet> y) \<sharp> (p \<bullet> P)" by(simp add: pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
+        with S `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` have "y \<sharp> (p \<bullet> P)" by simp
+        with `(p \<bullet> xvec) \<sharp>* \<Psi>` `y \<sharp> \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'` `y \<sharp> \<Psi>'`
+        have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> \<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q)))) \<in> ?X2"
+          by auto
+        moreover from Teq `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
+        have "T = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(\<lparr>\<nu>y\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> [(x, y)] \<bullet> Q)))"
+          apply(erule_tac rev_mp)
+          apply(subst alphaRes[of y])
+          apply(clarsimp simp add: eqvts)
+          apply(subst resChainAlpha[of p])
+          by(auto simp add: eqvts)
+        moreover from Req `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* Q` `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` `x \<sharp> (p \<bullet> xvec)` `y \<sharp> P` `y \<sharp> Q` `x \<sharp> P` S
+        have "R = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> \<lparr>\<nu>y\<rparr>(p \<bullet> [(x, y)] \<bullet> Q))"
+          apply(erule_tac rev_mp)
+          apply(subst alphaRes[of y])
+          apply(clarsimp simp add: eqvts)
+          apply(subst resChainAlpha[of p])
+          by(auto simp add: eqvts)
+        ultimately show ?case
+          by blast
       qed
     next
       case(cSym \<Psi> P Q)
       thus ?case
-	by(blast dest: bisimE)
+        by(blast dest: bisimE)
     qed
   }
   moreover obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> P" "y \<sharp> Q"
@@ -490,10 +490,10 @@ proof -
       assume "(yvec::name list) \<sharp>* \<Psi>" 
       from `(\<Psi>, T', S') \<in> ?X` obtain xvec P Q R where T'eq: "T' = \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R)" and S'eq: "S' = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))"
                                                   and "xvec \<sharp>* \<Psi>"
-	by auto
+        by auto
       from `\<Psi> \<rhd> T \<sim> T'` `yvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>*yvec\<rparr>T \<sim> \<lparr>\<nu>*yvec\<rparr>T'" by(rule bisimResChainPres)
       moreover from `xvec \<sharp>* \<Psi>` `yvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*(yvec@xvec)\<rparr>((P \<parallel> Q) \<parallel> R), \<lparr>\<nu>*(yvec@xvec)\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?X"
-	by force
+        by force
       with T'eq S'eq have "(\<Psi>, \<lparr>\<nu>*yvec\<rparr>T', \<lparr>\<nu>*yvec\<rparr>S') \<in> ?X" by(simp add: resChainAppend)
       moreover from `\<Psi> \<rhd> S' \<sim> S` `yvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>*yvec\<rparr>S' \<sim> \<lparr>\<nu>*yvec\<rparr>S" by(rule bisimResChainPres)
       ultimately show "(\<Psi>, \<lparr>\<nu>*yvec\<rparr>T, \<lparr>\<nu>*yvec\<rparr>S) \<in> ?Y" by blast
@@ -505,42 +505,42 @@ proof -
     proof -
       have "\<Psi> \<rhd> (P \<parallel> Q) \<parallel> R \<leadsto>[?Y] P \<parallel> (Q \<parallel> R)" 
       proof -
-	note `eqvt ?Y`
-	moreover have "\<And>\<Psi> P Q R. (\<Psi>, (P \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?Y"
-	proof -
-	  fix \<Psi> P Q R
-	  have "(\<Psi>::'b, ((P::('a, 'b, 'c) psi) \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?X"
-	    by(auto, rule_tac x="[]" in exI) auto
-	  thus "(\<Psi>, (P \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?Y"
-	    by(blast intro: bisimReflexive)
-	qed
-	moreover have "\<And>xvec \<Psi> P Q R. \<lbrakk>xvec \<sharp>* \<Psi>; xvec \<sharp>* P\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), P \<parallel> (\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R))) \<in> ?Y"
-	proof -
-	  fix xvec \<Psi> P Q R
-	  assume "(xvec::name list) \<sharp>* (\<Psi>::'b)" and "xvec \<sharp>* (P::('a, 'b, 'c) psi)"
-	  from `xvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by blast
-	  moreover from `xvec \<sharp>* \<Psi>` `xvec \<sharp>* P` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R)) \<sim> P \<parallel> (\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R))"
-	    by(rule bisimScopeExtChain)
-	  ultimately show "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), P \<parallel> (\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R))) \<in> ?Y"
-	    by(blast intro: bisimReflexive)
-	qed
-	moreover have "\<And>xvec \<Psi> P Q R. \<lbrakk>xvec \<sharp>* \<Psi>; xvec \<sharp>* R\<rbrakk> \<Longrightarrow> (\<Psi>, (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<parallel> R, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?Y"
-	proof -
-	  fix xvec \<Psi> P Q R
-	  assume "(xvec::name list) \<sharp>* (\<Psi>::'b)" and "xvec \<sharp>* (R::('a, 'b, 'c) psi)"
-	  have "\<Psi> \<rhd> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<parallel> R \<sim> R \<parallel> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))" by(rule bisimParComm)
-	  moreover from `xvec \<sharp>* \<Psi>` `xvec \<sharp>* R` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(R \<parallel> (P \<parallel> Q)) \<sim> R \<parallel> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))" by(rule bisimScopeExtChain)
-	  hence "\<Psi> \<rhd> R \<parallel> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<sim> \<lparr>\<nu>*xvec\<rparr>(R \<parallel> (P \<parallel> Q))" by(rule bisimE)
-	  moreover from `xvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(R \<parallel> (P \<parallel> Q)) \<sim> \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R)"
-	    by(metis bisimResChainPres bisimParComm)
-	  moreover from `xvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by blast
-	  ultimately show "(\<Psi>, (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<parallel> R, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?Y"  by(blast dest: bisimTransitive intro: bisimReflexive)
-	qed
-	ultimately show ?thesis using C1
-	  by(rule parAssocLeft)
+        note `eqvt ?Y`
+        moreover have "\<And>\<Psi> P Q R. (\<Psi>, (P \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?Y"
+        proof -
+          fix \<Psi> P Q R
+          have "(\<Psi>::'b, ((P::('a, 'b, 'c) psi) \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?X"
+            by(auto, rule_tac x="[]" in exI) auto
+          thus "(\<Psi>, (P \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?Y"
+            by(blast intro: bisimReflexive)
+        qed
+        moreover have "\<And>xvec \<Psi> P Q R. \<lbrakk>xvec \<sharp>* \<Psi>; xvec \<sharp>* P\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), P \<parallel> (\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R))) \<in> ?Y"
+        proof -
+          fix xvec \<Psi> P Q R
+          assume "(xvec::name list) \<sharp>* (\<Psi>::'b)" and "xvec \<sharp>* (P::('a, 'b, 'c) psi)"
+          from `xvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by blast
+          moreover from `xvec \<sharp>* \<Psi>` `xvec \<sharp>* P` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R)) \<sim> P \<parallel> (\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R))"
+            by(rule bisimScopeExtChain)
+          ultimately show "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), P \<parallel> (\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R))) \<in> ?Y"
+            by(blast intro: bisimReflexive)
+        qed
+        moreover have "\<And>xvec \<Psi> P Q R. \<lbrakk>xvec \<sharp>* \<Psi>; xvec \<sharp>* R\<rbrakk> \<Longrightarrow> (\<Psi>, (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<parallel> R, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?Y"
+        proof -
+          fix xvec \<Psi> P Q R
+          assume "(xvec::name list) \<sharp>* (\<Psi>::'b)" and "xvec \<sharp>* (R::('a, 'b, 'c) psi)"
+          have "\<Psi> \<rhd> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<parallel> R \<sim> R \<parallel> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))" by(rule bisimParComm)
+          moreover from `xvec \<sharp>* \<Psi>` `xvec \<sharp>* R` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(R \<parallel> (P \<parallel> Q)) \<sim> R \<parallel> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q))" by(rule bisimScopeExtChain)
+          hence "\<Psi> \<rhd> R \<parallel> (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<sim> \<lparr>\<nu>*xvec\<rparr>(R \<parallel> (P \<parallel> Q))" by(rule bisimE)
+          moreover from `xvec \<sharp>* \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(R \<parallel> (P \<parallel> Q)) \<sim> \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R)"
+            by(metis bisimResChainPres bisimParComm)
+          moreover from `xvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by blast
+          ultimately show "(\<Psi>, (\<lparr>\<nu>*xvec\<rparr>(P \<parallel> Q)) \<parallel> R, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))) \<in> ?Y"  by(blast dest: bisimTransitive intro: bisimReflexive)
+        qed
+        ultimately show ?thesis using C1
+          by(rule parAssocLeft)
       qed
       thus ?thesis using `eqvt ?Y` `xvec \<sharp>* \<Psi>` C2
-	by(rule resChainPres)
+        by(rule resChainPres)
     qed
     with TEq SEq show ?case by simp
   next
@@ -592,17 +592,17 @@ proof -
       assume "(\<Psi>, Q, R) \<in> ?X1"
       then obtain P where "Q = P \<parallel> \<zero>" and "R = P" by auto
       moreover obtain A\<^isub>P \<Psi>\<^isub>P where "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>"
-	by(rule freshFrame)
+        by(rule freshFrame)
       ultimately show ?case
-	apply auto by(metis frameResChainPres frameNilStatEq Identity Associativity AssertionStatEqTrans Commutativity)
+        apply auto by(metis frameResChainPres frameNilStatEq Identity Associativity AssertionStatEqTrans Commutativity)
     next
       assume "(\<Psi>, Q, R) \<notin> ?X1"
       with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
       then obtain P where "Q = P" and "R = P \<parallel> \<zero>" by auto
       moreover obtain A\<^isub>P \<Psi>\<^isub>P where "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>"
-	by(rule freshFrame)
+        by(rule freshFrame)
       ultimately show ?case
-	apply auto by(metis frameResChainPres frameNilStatEq Identity Associativity AssertionStatEqTrans AssertionStatEqSym Commutativity)
+        apply auto by(metis frameResChainPres frameNilStatEq Identity Associativity AssertionStatEqTrans AssertionStatEqSym Commutativity)
     qed
   next
     case(cSim \<Psi> Q R)
@@ -635,32 +635,32 @@ proof -
       from `x \<sharp> \<Psi>` have "(\<Psi>, \<lparr>\<nu>x\<rparr>\<zero>, \<zero>) \<in> ?X" by auto
       thus ?thesis
       proof(coinduct rule: bisimWeakCoinduct)
-	case(cStatEq \<Psi> P Q)
-	thus ?case using freshComp by(force intro: frameResFresh FrameStatEqSym)
+        case(cStatEq \<Psi> P Q)
+        thus ?case using freshComp by(force intro: frameResFresh FrameStatEqSym)
       next
-	case(cSim \<Psi> P Q)
-	thus ?case
-	  by(force intro: resNilLeft resNilRight)
+        case(cSim \<Psi> P Q)
+        thus ?case
+          by(force intro: resNilLeft resNilRight)
       next
-	case(cExt \<Psi> P Q \<Psi>')
-	obtain y where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<noteq> x"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
-	show ?case
-	proof(case_tac "(\<Psi>, P, Q) \<in> ?X1")
-	  assume "(\<Psi>, P, Q) \<in> ?X1"
-	  then obtain x where "P = \<lparr>\<nu>x\<rparr>\<zero>" and "Q = \<zero>" by auto
-	  moreover have "\<lparr>\<nu>x\<rparr>\<zero> = \<lparr>\<nu>y\<rparr> \<zero>" by(subst alphaRes) auto
-	  ultimately show ?case using `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` by auto
-	next
-	  assume "(\<Psi>, P, Q) \<notin> ?X1"
-	  with `(\<Psi>, P, Q) \<in> ?X` have "(\<Psi>, P, Q) \<in> ?X2" by auto
-	  then obtain x where "Q = \<lparr>\<nu>x\<rparr>\<zero>" and "P = \<zero>" by auto
-	  moreover have "\<lparr>\<nu>x\<rparr>\<zero> = \<lparr>\<nu>y\<rparr> \<zero>" by(subst alphaRes) auto
-	  ultimately show ?case using `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` by auto
-	qed
+        case(cExt \<Psi> P Q \<Psi>')
+        obtain y where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<noteq> x"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
+        show ?case
+        proof(case_tac "(\<Psi>, P, Q) \<in> ?X1")
+          assume "(\<Psi>, P, Q) \<in> ?X1"
+          then obtain x where "P = \<lparr>\<nu>x\<rparr>\<zero>" and "Q = \<zero>" by auto
+          moreover have "\<lparr>\<nu>x\<rparr>\<zero> = \<lparr>\<nu>y\<rparr> \<zero>" by(subst alphaRes) auto
+          ultimately show ?case using `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` by auto
+        next
+          assume "(\<Psi>, P, Q) \<notin> ?X1"
+          with `(\<Psi>, P, Q) \<in> ?X` have "(\<Psi>, P, Q) \<in> ?X2" by auto
+          then obtain x where "Q = \<lparr>\<nu>x\<rparr>\<zero>" and "P = \<zero>" by auto
+          moreover have "\<lparr>\<nu>x\<rparr>\<zero> = \<lparr>\<nu>y\<rparr> \<zero>" by(subst alphaRes) auto
+          ultimately show ?case using `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` by auto
+        qed
       next
-	case(cSym \<Psi> P Q)
-	thus ?case by auto
+        case(cSym \<Psi> P Q)
+        thus ?case by auto
       qed
     qed
   }
@@ -697,35 +697,35 @@ proof -
     next
       case(cSim \<Psi> Q R)
       thus ?case using `eqvt ?X`
-	by(fastforce intro: outputPushResLeft outputPushResRight bisimReflexive)
+        by(fastforce intro: outputPushResLeft outputPushResRight bisimReflexive)
     next
       case(cExt \<Psi> Q R \<Psi>')
       show ?case
       proof(case_tac "(\<Psi>, Q, R) \<in> ?X1")
-	assume "(\<Psi>, Q, R) \<in> ?X1"
-	then obtain x M N P where Qeq: "Q = \<lparr>\<nu>x\<rparr>(M\<langle>N\<rangle>.P)" and Req: "R = M\<langle>N\<rangle>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>" and "x \<sharp> M" and "x \<sharp> N" by auto
-	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
-	
-	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P)), M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by auto
-	moreover from Qeq `x \<sharp> M` `y \<sharp> M` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "Q = \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P))"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	moreover from Req `y \<sharp> P` have "R = M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	ultimately show ?case by blast
+        assume "(\<Psi>, Q, R) \<in> ?X1"
+        then obtain x M N P where Qeq: "Q = \<lparr>\<nu>x\<rparr>(M\<langle>N\<rangle>.P)" and Req: "R = M\<langle>N\<rangle>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>" and "x \<sharp> M" and "x \<sharp> N" by auto
+        obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
+        
+        moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P)), M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by auto
+        moreover from Qeq `x \<sharp> M` `y \<sharp> M` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "Q = \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P))"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        moreover from Req `y \<sharp> P` have "R = M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        ultimately show ?case by blast
       next
-	assume "(\<Psi>, Q, R) \<notin> ?X1"
-	with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
-	then obtain x M N P where Req: "R = \<lparr>\<nu>x\<rparr>(M\<langle>N\<rangle>.P)" and Qeq: "Q = M\<langle>N\<rangle>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>" and "x \<sharp> M" and "x \<sharp> N" by auto
-	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
-	
-	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P)), M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by auto
-	moreover from Req `x \<sharp> M` `y \<sharp> M` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "R = \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P))"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	moreover from Qeq `y \<sharp> P` have "Q = M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	ultimately show ?case by blast
+        assume "(\<Psi>, Q, R) \<notin> ?X1"
+        with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
+        then obtain x M N P where Req: "R = \<lparr>\<nu>x\<rparr>(M\<langle>N\<rangle>.P)" and Qeq: "Q = M\<langle>N\<rangle>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>" and "x \<sharp> M" and "x \<sharp> N" by auto
+        obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
+        
+        moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P)), M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by auto
+        moreover from Req `x \<sharp> M` `y \<sharp> M` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "R = \<lparr>\<nu>y\<rparr>(M\<langle>N\<rangle>.([(x, y)] \<bullet> P))"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        moreover from Qeq `y \<sharp> P` have "Q = M\<langle>N\<rangle>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        ultimately show ?case by blast
       qed
     next
       case(cSym \<Psi> R Q)
@@ -771,37 +771,37 @@ proof -
     next
       case(cSim \<Psi> Q R)
       thus ?case using `eqvt ?X`
-	by(fastforce intro: inputPushResLeft inputPushResRight bisimReflexive)
+        by(fastforce intro: inputPushResLeft inputPushResRight bisimReflexive)
     next
       case(cExt \<Psi> Q R \<Psi>')
       show ?case
       proof(case_tac "(\<Psi>, Q, R) \<in> ?X1")
-	assume "(\<Psi>, Q, R) \<in> ?X1"
-	then obtain x M xvec N P where Qeq: "Q = \<lparr>\<nu>x\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.P)" and Req: "R = M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>"
+        assume "(\<Psi>, Q, R) \<in> ?X1"
+        then obtain x M xvec N P where Qeq: "Q = \<lparr>\<nu>x\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.P)" and Req: "R = M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>"
                                    and "x \<sharp> M" and "x \<sharp> xvec" and "x \<sharp> N" by auto
-	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P" and "y \<sharp> xvec"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
-	
-	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastforce
-	moreover from Qeq `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "Q = \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P))"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts inputChainFresh)
-	moreover from Req `y \<sharp> P` have "R = M\<lparr>\<lambda>*xvec N \<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	ultimately show ?case by blast
+        obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P" and "y \<sharp> xvec"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
+        
+        moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastforce
+        moreover from Qeq `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "Q = \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P))"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts inputChainFresh)
+        moreover from Req `y \<sharp> P` have "R = M\<lparr>\<lambda>*xvec N \<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        ultimately show ?case by blast
       next
-	assume "(\<Psi>, Q, R) \<notin> ?X1"
-	with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
-	then obtain x M xvec N P where Req: "R = \<lparr>\<nu>x\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.P)" and Qeq: "Q = M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>"
+        assume "(\<Psi>, Q, R) \<notin> ?X1"
+        with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
+        then obtain x M xvec N P where Req: "R = \<lparr>\<nu>x\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.P)" and Qeq: "Q = M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>x\<rparr>P" and "x \<sharp> \<Psi>"
                                    and "x \<sharp> M" and "x \<sharp> xvec" and "x \<sharp> N" by auto
-	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P" and "y \<sharp> xvec"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
+        obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> M" and "y \<sharp> N" and "y \<sharp> P" and "y \<sharp> xvec"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
 
-	moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastforce
-	moreover from Req `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "R = \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P))"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts inputChainFresh)
-	moreover from Qeq `y \<sharp> P` have "Q = M\<lparr>\<lambda>*xvec N \<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	ultimately show ?case by blast
+        moreover hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P)), M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)) \<in> ?X" by fastforce
+        moreover from Req `x \<sharp> M` `y \<sharp> M` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> N` `y \<sharp> N` `y \<sharp> P` have "R = \<lparr>\<nu>y\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.([(x, y)] \<bullet> P))"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts inputChainFresh)
+        moreover from Qeq `y \<sharp> P` have "Q = M\<lparr>\<lambda>*xvec N \<rparr>.\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        ultimately show ?case by blast
       qed
     next
       case(cSym \<Psi> R Q)
@@ -863,41 +863,41 @@ proof -
     next
       case(cSim \<Psi> Q R)
       thus ?case using `eqvt ?X`
-	by(fastforce intro: casePushResLeft casePushResRight bisimReflexive)
+        by(fastforce intro: casePushResLeft casePushResRight bisimReflexive)
     next
       case(cExt \<Psi> Q R \<Psi>')
       show ?case
       proof(case_tac "(\<Psi>, Q, R) \<in> ?X1")
-	assume "(\<Psi>, Q, R) \<in> ?X1"
-	then obtain x Cs where Qeq: "Q = \<lparr>\<nu>x\<rparr>(Cases Cs)" and Req: "R = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>x\<rparr>P)) Cs)"
+        assume "(\<Psi>, Q, R) \<in> ?X1"
+        then obtain x Cs where Qeq: "Q = \<lparr>\<nu>x\<rparr>(Cases Cs)" and Req: "R = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>x\<rparr>P)) Cs)"
                            and "x \<sharp> \<Psi>" and "x \<sharp> (map fst Cs)" by blast
-	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> Cs"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
-	from `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "y \<sharp> map fst ([(x, y)] \<bullet> Cs)" by(induct Cs) (auto simp add: fresh_list_cons fresh_list_nil)
+        obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> Cs"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
+        from `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "y \<sharp> map fst ([(x, y)] \<bullet> Cs)" by(induct Cs) (auto simp add: fresh_list_cons fresh_list_nil)
 
-	moreover with `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(Cases ([(x, y)] \<bullet> Cs)), Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))) \<in> ?X"
-	  by auto
-	moreover from Qeq `y \<sharp> Cs` have "Q = \<lparr>\<nu>y\<rparr>(Cases([(x, y)] \<bullet> Cs))"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	moreover from Req `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "R = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))" 
-	  by(induct Cs arbitrary: R) (auto simp add: fresh_list_cons fresh_prod alphaRes)
-	ultimately show ?case by blast
+        moreover with `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(Cases ([(x, y)] \<bullet> Cs)), Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))) \<in> ?X"
+          by auto
+        moreover from Qeq `y \<sharp> Cs` have "Q = \<lparr>\<nu>y\<rparr>(Cases([(x, y)] \<bullet> Cs))"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        moreover from Req `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "R = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))" 
+          by(induct Cs arbitrary: R) (auto simp add: fresh_list_cons fresh_prod alphaRes)
+        ultimately show ?case by blast
       next
-	assume "(\<Psi>, Q, R) \<notin> ?X1"
-	with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
-	then obtain x Cs where Req: "R = \<lparr>\<nu>x\<rparr>(Cases Cs)" and Qeq: "Q = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>x\<rparr>P)) Cs)"
+        assume "(\<Psi>, Q, R) \<notin> ?X1"
+        with `(\<Psi>, Q, R) \<in> ?X` have "(\<Psi>, Q, R) \<in> ?X2" by blast
+        then obtain x Cs where Req: "R = \<lparr>\<nu>x\<rparr>(Cases Cs)" and Qeq: "Q = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>x\<rparr>P)) Cs)"
                            and "x \<sharp> \<Psi>" and "x \<sharp> (map fst Cs)" by blast
-	obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> Cs"
-	  by(generate_fresh "name") (auto simp add: fresh_prod)
-	from `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "y \<sharp> map fst ([(x, y)] \<bullet> Cs)" by(induct Cs) (auto simp add: fresh_list_cons fresh_list_nil)
-	
-	moreover with `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(Cases ([(x, y)] \<bullet> Cs)), Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))) \<in> ?X"
-	  by auto
-	moreover from Req `y \<sharp> Cs` have "R = \<lparr>\<nu>y\<rparr>(Cases([(x, y)] \<bullet> Cs))"
-	  apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
-	moreover from Qeq `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "Q = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))" 
-	  by(induct Cs arbitrary: Q) (auto simp add: fresh_list_cons fresh_prod alphaRes)
-	ultimately show ?case by blast
+        obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> Cs"
+          by(generate_fresh "name") (auto simp add: fresh_prod)
+        from `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "y \<sharp> map fst ([(x, y)] \<bullet> Cs)" by(induct Cs) (auto simp add: fresh_list_cons fresh_list_nil)
+        
+        moreover with `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>(Cases ([(x, y)] \<bullet> Cs)), Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))) \<in> ?X"
+          by auto
+        moreover from Req `y \<sharp> Cs` have "R = \<lparr>\<nu>y\<rparr>(Cases([(x, y)] \<bullet> Cs))"
+          apply auto by(subst alphaRes[of y]) (auto simp add: eqvts)
+        moreover from Qeq `y \<sharp> Cs` `x \<sharp> (map fst Cs)` have "Q = Cases(map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) ([(x, y)] \<bullet> Cs))" 
+          by(induct Cs arbitrary: Q) (auto simp add: fresh_list_cons fresh_prod alphaRes)
+        ultimately show ?case by blast
       qed
     next
       case(cSym \<Psi> R Q)

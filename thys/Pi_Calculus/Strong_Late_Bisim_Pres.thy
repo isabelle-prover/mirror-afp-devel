@@ -41,11 +41,11 @@ proof -
     proof -
       fix y
       from A have "P[x::=(rev p \<bullet> y)] \<sim> Q[x::=(rev p \<bullet> y)]"
-	by blast
+        by blast
       hence "(p \<bullet> (P[x::=(rev p \<bullet> y)])) \<sim> p \<bullet> (Q[x::=(rev p \<bullet> y)])"
-	by(rule bisimClosed)
+        by(rule bisimClosed)
       thus "(p \<bullet> P)[(p \<bullet> x)::=y] \<sim> (p \<bullet> Q)[(p \<bullet> x)::=y]"
-	by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
+        by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
     qed
     hence "((p::name prm) \<bullet> axP, p \<bullet> axQ) \<in> ?X" using B C
       by auto
@@ -153,10 +153,10 @@ proof -
       moreover have "bisim \<subseteq> ?X \<union> bisim" by blast
       moreover have "eqvt bisim" by simp
       moreover have "eqvt ?X"
-	by(auto simp add: eqvt_def) (blast intro: bisimClosed)
+        by(auto simp add: eqvt_def) (blast intro: bisimClosed)
       hence "eqvt (?X \<union> bisim)" by auto
       ultimately have "<\<nu>a>P \<leadsto>[(?X \<union> bisim)] <\<nu>a>Q"
-	by(rule Strong_Late_Sim_Pres.resPres)
+        by(rule Strong_Late_Sim_Pres.resPres)
     }
     with `(xP, xQ) \<in> ?X` show ?case
       by(auto dest: bisimE)
@@ -189,27 +189,27 @@ proof -
       hence "P \<leadsto>[bisim] Q" by(rule bisimE)
       moreover note `P \<sim> Q`
       moreover have "\<And>P Q R. P \<sim> Q \<Longrightarrow> (P \<parallel> R, Q \<parallel> R) \<in> ?X"
-	by auto (blast intro: EmptyChain)
+        by auto (blast intro: EmptyChain)
       moreover 
       {
-	fix xP xQ x
-	assume "(xP, xQ) \<in> ?X"
-	then obtain P Q R lst 
-	  where "P \<sim> Q" and "xP = resChain lst (P \<parallel> R)" and xQeq: "xQ = resChain lst (Q \<parallel> R)"
-	  by auto
-	moreover hence "(resChain (x#lst) (P \<parallel> R), resChain (x#lst) (Q \<parallel> R)) \<in> ?X"
-	  by blast
-	ultimately have "(<\<nu>x>xP, <\<nu>x>xQ) \<in> ?X" by auto
+        fix xP xQ x
+        assume "(xP, xQ) \<in> ?X"
+        then obtain P Q R lst 
+          where "P \<sim> Q" and "xP = resChain lst (P \<parallel> R)" and xQeq: "xQ = resChain lst (Q \<parallel> R)"
+          by auto
+        moreover hence "(resChain (x#lst) (P \<parallel> R), resChain (x#lst) (Q \<parallel> R)) \<in> ?X"
+          by blast
+        ultimately have "(<\<nu>x>xP, <\<nu>x>xQ) \<in> ?X" by auto
       }
       note ResPres = this
       moreover have "eqvt bisim" by simp
       moreover have "eqvt ?X"
-	by(auto simp add: eqvt_def) (blast intro: bisimClosed)
+        by(auto simp add: eqvt_def) (blast intro: bisimClosed)
       ultimately have "P \<parallel> R \<leadsto>[(?X)] Q \<parallel> R" by(rule parPres)
       hence "resChain lst (P \<parallel> R) \<leadsto>[?X] (resChain lst (Q \<parallel> R))" using `eqvt ?X` ResPres 
-	by(rule resChainI)
+        by(rule resChainI)
       hence "resChain lst (P \<parallel> R) \<leadsto>[(?X \<union> bisim)] (resChain lst (Q \<parallel> R))"
-	by(force intro: Strong_Late_Sim.monotonic)
+        by(force intro: Strong_Late_Sim.monotonic)
     }
     with `(PR, QR) \<in> ?X` show ?case
       by auto
@@ -238,23 +238,23 @@ proof -
       assume "(P, Q) \<in> ?X"
       hence "P \<leadsto>[?X] Q"
       proof(induct)
-	fix P Q
-	assume "P \<sim> Q"
-	thus "!P \<leadsto>[?X] !Q" using bisimE bisimEqvt
-	  by(rule Strong_Late_Sim_Pres.bangPres)
+        fix P Q
+        assume "P \<sim> Q"
+        thus "!P \<leadsto>[?X] !Q" using bisimE bisimEqvt
+          by(rule Strong_Late_Sim_Pres.bangPres)
       next
-	fix P Q R T
-	assume RBiSimT: "R \<sim> T"
-	assume PBangRelQ: "(P, Q) \<in> ?X"
-	assume PSimQ: "P \<leadsto>[?X] Q"
-	from RBiSimT  have "R \<leadsto>[bisim] T" by(blast dest: bisimE)
-	thus "R \<parallel> P \<leadsto>[?X] T \<parallel> Q" using PSimQ RBiSimT PBangRelQ Rel.BRPar Rel.BRRes bisimEqvt eqvtBangRel
-	  by(blast intro: Strong_Late_Sim_Pres.parCompose)
+        fix P Q R T
+        assume RBiSimT: "R \<sim> T"
+        assume PBangRelQ: "(P, Q) \<in> ?X"
+        assume PSimQ: "P \<leadsto>[?X] Q"
+        from RBiSimT  have "R \<leadsto>[bisim] T" by(blast dest: bisimE)
+        thus "R \<parallel> P \<leadsto>[?X] T \<parallel> Q" using PSimQ RBiSimT PBangRelQ Rel.BRPar Rel.BRRes bisimEqvt eqvtBangRel
+          by(blast intro: Strong_Late_Sim_Pres.parCompose)
       next
-	fix P Q a
-	assume "P \<leadsto>[?X] Q"
-	moreover from eqvtBangRel bisimEqvt have "eqvt ?X" by blast 
-	ultimately show "<\<nu>a>P \<leadsto>[?X] <\<nu>a>Q" using Rel.BRRes by(blast intro: Strong_Late_Sim_Pres.resPres)
+        fix P Q a
+        assume "P \<leadsto>[?X] Q"
+        moreover from eqvtBangRel bisimEqvt have "eqvt ?X" by blast 
+        ultimately show "<\<nu>a>P \<leadsto>[?X] <\<nu>a>Q" using Rel.BRRes by(blast intro: Strong_Late_Sim_Pres.resPres)
       qed
       hence "P \<leadsto>[((bangRel bisim) \<union> bisim)] Q" by(rule_tac Strong_Late_Sim.monotonic) auto
     }

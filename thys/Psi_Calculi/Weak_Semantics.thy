@@ -651,7 +651,7 @@ proof -
     proof -
        from `guarded R` have "insertAssertion(extractFrame R) \<Psi> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>" by(rule insertGuardedAssertion)
        moreover from `guarded Q` have "\<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle> \<simeq>\<^sub>F insertAssertion(extractFrame Q) \<Psi>"
-	 by(metis insertGuardedAssertion FrameStatEqSym)
+         by(metis insertGuardedAssertion FrameStatEqSym)
        ultimately show ?thesis using QeqP'' by(metis FrameStatEq_def FrameStatImpTrans)
      qed
     ultimately show ?thesis using P''Trans by(rule weakOutputTransitionI)
@@ -697,7 +697,7 @@ proof -
     proof -
        from `guarded R` have "insertAssertion(extractFrame R) \<Psi> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>" by(rule insertGuardedAssertion)
        moreover from `guarded Q` have "\<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle> \<simeq>\<^sub>F insertAssertion(extractFrame Q) \<Psi>"
-	 by(metis insertGuardedAssertion FrameStatEqSym)
+         by(metis insertGuardedAssertion FrameStatEqSym)
        ultimately show ?thesis using QeqP'' by(metis FrameStatEq_def FrameStatImpTrans)
      qed
     ultimately show ?thesis using P''Trans by(rule weakInputTransitionI)
@@ -1229,9 +1229,9 @@ proof -
     have "insertAssertion(extractFrame R) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame(!P)) \<Psi>"
     proof -
       from `\<Psi>\<^isub>P \<simeq> \<one>` have "\<langle>A\<^isub>P, \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<one>\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>P, \<Psi> \<otimes> \<one>\<rangle>"
-	by(metis frameIntCompositionSym frameIntAssociativity frameIntCommutativity frameIntIdentity FrameStatEqTrans FrameStatEqSym)
+        by(metis frameIntCompositionSym frameIntAssociativity frameIntCommutativity frameIntIdentity FrameStatEqTrans FrameStatEqSym)
       moreover from `A\<^isub>P \<sharp>* \<Psi>` have "\<langle>A\<^isub>P, \<Psi> \<otimes> \<one>\<rangle> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>"
-	by(force intro: frameResFreshChain)
+        by(force intro: frameResFreshChain)
       ultimately show ?thesis using RimpP by(auto simp add: FrameStatEq_def dest: FrameStatImpTrans)
     qed
     moreover assume "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"

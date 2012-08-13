@@ -184,7 +184,7 @@ next
     thus ?case by(rule BF)
   qed
 qed
-	
+
 lemma simE:
   fixes P   :: pi
   and   Rel :: "(pi \<times> pi) set"

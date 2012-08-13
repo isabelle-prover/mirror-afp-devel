@@ -160,7 +160,7 @@ proof(simp add: weakStepSimAct_def fresh_prod, auto)
     moreover have "([(x, y)] \<bullet> P', Q'') \<in> Rel"
     proof -
       from EqvtRel P'RelQ' have "([(x, y)] \<bullet> P', [(x, y)] \<bullet> ([(x, y)] \<bullet> Q''))\<in> Rel"
-	by(rule eqvtRelI)
+        by(rule eqvtRelI)
       thus ?thesis by(simp add: name_calc)
     qed
 
@@ -186,11 +186,11 @@ next
       
       from Der obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>b<x> \<prec> P'"
                           and P'RelQ': "(P', ([(x, y)] \<bullet> Q'')[x::=u]) \<in> Rel"
-	by force
+        by force
       
       from PTrans yFreshP have "P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P'')\<rightarrow>b<y> \<prec> P'" by(rule alphaInput)
       moreover from xFreshQ'' P'RelQ' have "(P', Q''[y::=u]) \<in> Rel"
-	by(simp add: renaming)
+        by(simp add: renaming)
       ultimately show ?thesis by force
     qed
   qed
@@ -375,7 +375,7 @@ next
     proof -
       from P'RelQ' RelRel' have "(P', (rev perm \<bullet> Q')[(rev perm \<bullet> x)::=(rev perm \<bullet> u)]) \<in> Rel'" by blast
       with EqvtRel' have "(perm \<bullet> P', perm \<bullet> ((rev perm \<bullet> Q')[(rev perm \<bullet> x)::=(rev perm \<bullet> u)])) \<in> Rel'"
-	by(rule eqvtRelI)
+        by(rule eqvtRelI)
       thus ?thesis by(simp add: name_per_rev eqvt_subs[THEN sym] name_calc)
     qed
     ultimately show "\<exists>P'. (perm \<bullet> P) \<Longrightarrow>\<^isub>lu in (perm \<bullet> P'')\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'" by blast

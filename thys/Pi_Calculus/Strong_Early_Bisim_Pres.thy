@@ -42,11 +42,11 @@ proof -
     proof -
       fix y
       from A have "P[x::=(rev p \<bullet> y)] \<sim> Q[x::=(rev p \<bullet> y)]"
-	by blast
+        by blast
       hence "(p \<bullet> (P[x::=(rev p \<bullet> y)])) \<sim> p \<bullet> (Q[x::=(rev p \<bullet> y)])"
-	by(rule bisimClosed)
+        by(rule bisimClosed)
       thus "(p \<bullet> P)[(p \<bullet> x)::=y] \<sim> (p \<bullet> Q)[(p \<bullet> x)::=y]"
-	by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
+        by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
     qed
     hence "((p::name prm) \<bullet> axP, p \<bullet> axQ) \<in> ?X" using B C
       by auto
@@ -150,9 +150,9 @@ proof -
       moreover have "bisim \<subseteq> ?X \<union> bisim" by blast
       moreover have "eqvt bisim" by(rule eqvt)
       moreover have "eqvt (?X \<union> bisim)" using eqvts
-	by(auto simp add: eqvt_def) blast
+        by(auto simp add: eqvt_def) blast
       ultimately have "<\<nu>a>P \<leadsto>[(?X \<union> bisim)] <\<nu>a>Q"
-	by(rule Strong_Early_Sim_Pres.resPres)
+        by(rule Strong_Early_Sim_Pres.resPres)
     }
     ultimately show ?case by auto
   next
@@ -182,18 +182,18 @@ proof -
       assume "P \<sim> Q"
       have "eqvt ?X" using eqvts by(auto simp add: eqvt_def) blast
       moreover have Res: "\<And>P Q x. (P, Q) \<in> ?X \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?X"
-	by(auto, rule_tac x="x#lst" in exI) auto
+        by(auto, rule_tac x="x#lst" in exI) auto
       moreover {
-	from `P \<sim> Q` have "P \<leadsto>[bisim] Q" by(rule bisimE)
-	moreover note `P \<sim> Q`
-	moreover have "\<And>P Q R. P \<sim> Q \<Longrightarrow> (P \<parallel> R, Q \<parallel> R) \<in> ?X"
-	  by(blast intro: BC)
-	ultimately have "P \<parallel> R \<leadsto>[?X] Q \<parallel> R" using Res
-	  by(rule parPres)
+        from `P \<sim> Q` have "P \<leadsto>[bisim] Q" by(rule bisimE)
+        moreover note `P \<sim> Q`
+        moreover have "\<And>P Q R. P \<sim> Q \<Longrightarrow> (P \<parallel> R, Q \<parallel> R) \<in> ?X"
+          by(blast intro: BC)
+        ultimately have "P \<parallel> R \<leadsto>[?X] Q \<parallel> R" using Res
+          by(rule parPres)
       }
 
       ultimately have "resChain lst (P \<parallel> R) \<leadsto>[?X] resChain lst (Q \<parallel> R)"
-	by(rule resChainI)
+        by(rule resChainI)
     }
     ultimately show ?case by auto
   next
@@ -245,28 +245,28 @@ proof -
     proof(coinduct rule: bisimWeakCoinduct)
       case(cSim bP bQ)
       {
-	fix P Q
-	assume "(P, Q) \<in> ?X"
-	hence "P \<leadsto>[?X] Q"
-	proof(induct)
-	  fix P Q
-	  assume "P \<sim> Q"
-	  thus "!P \<leadsto>[?X] !Q" using bisimE(1) eqvt
-	    by(rule Strong_Early_Sim_Pres.bangPres)
-	next
-	  fix P Q R T
-	  assume RBiSimT: "R \<sim> T"
-	  assume PBangRelQ: "(P, Q) \<in> ?X"
-	  assume PSimQ: "P \<leadsto>[?X] Q"
-	  from RBiSimT  have "R \<leadsto>[bisim] T" by(blast dest: bisimE)
-	  thus "R \<parallel> P \<leadsto>[?X] T \<parallel> Q" using PSimQ RBiSimT PBangRelQ BRPar BRRes eqvt eqvtBangRel
-	    by(blast intro: Strong_Early_Sim_Pres.parCompose)
-	next
-	  fix P Q a
-	  assume "P \<leadsto>[?X] Q"
-	  moreover from eqvtBangRel eqvt have "eqvt ?X" by blast 
-	  ultimately show "<\<nu>a>P \<leadsto>[?X] <\<nu>a>Q" using BRRes by(blast intro: Strong_Early_Sim_Pres.resPres)
-	qed
+        fix P Q
+        assume "(P, Q) \<in> ?X"
+        hence "P \<leadsto>[?X] Q"
+        proof(induct)
+          fix P Q
+          assume "P \<sim> Q"
+          thus "!P \<leadsto>[?X] !Q" using bisimE(1) eqvt
+            by(rule Strong_Early_Sim_Pres.bangPres)
+        next
+          fix P Q R T
+          assume RBiSimT: "R \<sim> T"
+          assume PBangRelQ: "(P, Q) \<in> ?X"
+          assume PSimQ: "P \<leadsto>[?X] Q"
+          from RBiSimT  have "R \<leadsto>[bisim] T" by(blast dest: bisimE)
+          thus "R \<parallel> P \<leadsto>[?X] T \<parallel> Q" using PSimQ RBiSimT PBangRelQ BRPar BRRes eqvt eqvtBangRel
+            by(blast intro: Strong_Early_Sim_Pres.parCompose)
+        next
+          fix P Q a
+          assume "P \<leadsto>[?X] Q"
+          moreover from eqvtBangRel eqvt have "eqvt ?X" by blast 
+          ultimately show "<\<nu>a>P \<leadsto>[?X] <\<nu>a>Q" using BRRes by(blast intro: Strong_Early_Sim_Pres.resPres)
+        qed
       }
       with `(bP, bQ) \<in> ?X` show ?case by blast
     next

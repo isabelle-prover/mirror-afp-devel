@@ -453,7 +453,7 @@ proof -
     have P''eq: "P'' = ([(x, x')] \<bullet> P') \<parallel> Q"
     proof -
       from Eq xineqx' have "(P' \<parallel> Q) = [(x, x')] \<bullet> P''"
-	by(simp add: residualInject name_abs_eq)
+        by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P' \<parallel> Q)) = P''" by simp
       with `x' \<sharp> Q``x \<sharp> Q` show ?thesis by(simp add: name_fresh_fresh)
     qed
@@ -469,7 +469,7 @@ proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
       moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> ([(x, x')] \<bullet> P')"
-	by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
+        by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
       ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` by blast 
     qed
     moreover from PTrans `x' \<sharp> P` have "x' \<sharp> a" by(auto dest: freshBoundDerivative)
@@ -490,7 +490,7 @@ proof -
     have Q''eq: "Q'' = P \<parallel> ([(x, x')] \<bullet> Q')"
     proof -
       from Eq xineqx' have "(P \<parallel> Q') = [(x, x')] \<bullet> Q''"
-	by(simp add: residualInject name_abs_eq)
+        by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P \<parallel> Q')) = Q''" by simp
       with `x' \<sharp> P` `x \<sharp> P` show ?thesis by(simp add: name_fresh_fresh)
     qed
@@ -506,7 +506,7 @@ proof -
       fix C
       have "\<And>C a' x' Q''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<x'> \<prec> Q''; x' \<sharp> Q\<rbrakk> \<Longrightarrow> F C Q a' x' Q''" by fact
       moreover with aeqa' xineqx' `x' \<sharp> Q'` have "a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<x'> \<prec> ([(x, x')] \<bullet> Q')"
-	by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
+        by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
       ultimately show "F C Q a' x' ([(x, x')] \<bullet> Q')" using `x' \<sharp> Q`aeqa' by blast 
     qed
     moreover from QTrans `x' \<sharp> Q` have "x' \<sharp> a" by(force dest: freshBoundDerivative)
@@ -541,7 +541,7 @@ proof -
     have P''eq: "P'' = <\<nu>y>([(x, x')] \<bullet> P')"
     proof -
       from Eq xineqx' have "<\<nu>y>P' = [(x, x')] \<bullet> P''"
-	by(simp add: residualInject name_abs_eq)
+        by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (<\<nu>y>P')) = P''" by simp
       with yineqx' `y \<noteq> x` show ?thesis by(simp add: name_fresh_fresh)
     qed
@@ -557,7 +557,7 @@ proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
       moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> ([(x, x')] \<bullet> P')"
-	by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
+        by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
       ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` aeqa' by blast 
     qed
     ultimately have "F C (<\<nu>y>P) a' x' (<\<nu>y>([(x, x')] \<bullet> P'))" using yineqx' yineqa yFreshC aeqa'
@@ -649,7 +649,7 @@ proof -
     have P''eq: "P'' = ([(x, x')] \<bullet> P') \<parallel> Q"
     proof -
       from Eq xineqx' have "(P' \<parallel> Q) = [(x, x')] \<bullet> P''"
-	by(simp add: residualInject name_abs_eq)
+        by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P' \<parallel> Q)) = P''" by simp
       with `x' \<sharp> Q``x \<sharp> Q` show ?thesis by(simp add: name_fresh_fresh)
     qed
@@ -665,7 +665,7 @@ proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
       moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
-	by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
+        by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
       ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` aeqa' by blast 
     qed
     ultimately have "F C (P \<parallel> Q) a' x' (([(x, x')] \<bullet> P') \<parallel> Q)" using `x' \<sharp> Q`aeqa'
@@ -685,7 +685,7 @@ proof -
     have Q''eq: "Q'' = P \<parallel> ([(x, x')] \<bullet> Q')"
     proof -
       from Eq xineqx' have "(P \<parallel> Q') = [(x, x')] \<bullet> Q''"
-	by(simp add: residualInject name_abs_eq)
+        by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P \<parallel> Q')) = Q''" by simp
       with `x' \<sharp> P` `x \<sharp> P` show ?thesis by(simp add: name_fresh_fresh)
     qed
@@ -701,7 +701,7 @@ proof -
       fix C
       have "\<And>C a' x' Q''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<\<nu>x'> \<prec> Q''; x' \<sharp> Q\<rbrakk> \<Longrightarrow> F C Q a' x' Q''" by fact
       moreover with aeqa' xineqx' `x' \<sharp> Q'` have "a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> Q')"
-	by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
+        by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
       ultimately show "F C Q a' x' ([(x, x')] \<bullet> Q')" using `x' \<sharp> Q`aeqa' by blast 
     qed
     ultimately have "F C (P \<parallel> Q) a' x' (P \<parallel> ([(x, x')] \<bullet> Q'))" using `x' \<sharp> P`
@@ -735,7 +735,7 @@ proof -
     have P''eq: "P'' = <\<nu>y>([(x, x')] \<bullet> P')"
     proof -
       from Eq xineqx' have "<\<nu>y>P' = [(x, x')] \<bullet> P''"
-	by(simp add: residualInject name_abs_eq)
+        by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (<\<nu>y>P')) = P''" by simp
       with yineqx' `y \<noteq> x` show ?thesis by(simp add: name_fresh_fresh)
     qed
@@ -751,7 +751,7 @@ proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
       moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
-	by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
+        by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
       ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` aeqa' by blast 
     qed
     ultimately have "F C (<\<nu>y>P) a' x' (<\<nu>y>([(x, x')] \<bullet> P'))" using yineqx' `y \<sharp> a` yFreshC aeqa'
@@ -1348,98 +1348,98 @@ proof -
     proof(nominal_induct avoiding: C rule: transitions.strong_induct)
       case(Tau Pa)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (\<tau>.(Pa))")
+        apply -
+        by(ind_cases "bangPred P (\<tau>.(Pa))")
     next
       case(Input x a Pa)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (a<x>.Pa)")
+        apply -
+        by(ind_cases "bangPred P (a<x>.Pa)")
     next
       case(Output a b Pa)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (a{b}.Pa)")
+        apply -
+        by(ind_cases "bangPred P (a{b}.Pa)")
     next
       case(Match Pa Rs b)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P ([b\<frown>b]Pa)")
+        apply -
+        by(ind_cases "bangPred P ([b\<frown>b]Pa)")
     next
       case(Mismatch Pa Rs a b)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P ([a\<noteq>b]Pa)")
+        apply -
+        by(ind_cases "bangPred P ([a\<noteq>b]Pa)")
     next
       case(Open Pa a b Pa')
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (<\<nu>b>Pa)")
+        apply -
+        by(ind_cases "bangPred P (<\<nu>b>Pa)")
     next
       case(Sum1 Pa Rs Q)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<oplus> Q)")
+        apply -
+        by(ind_cases "bangPred P (Pa \<oplus> Q)")
     next
       case(Sum2 Q Rs Pa)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<oplus> Q)")
+        apply -
+        by(ind_cases "bangPred P (Pa \<oplus> Q)")
     next
       case(Par1B Pa a x Pa' Q )
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cPar1B simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cPar1B simp add: pi.inject)
     next
       case(Par1F Pa \<alpha> Pa' Q)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cPar1F simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cPar1F simp add: pi.inject)
     next
       case(Par2B Qa a x Qa' Pa)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Qa)", auto intro: cPar2B aux1 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Qa)", auto intro: cPar2B aux1 simp add: pi.inject)
     next
       case(Par2F Qa \<alpha> Qa' Pa)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Qa)", auto intro: cPar2F aux1 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Qa)", auto intro: cPar2F aux1 simp add: pi.inject)
     next
       case(Comm1 Pa a x Pa' Q b Q')
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cComm1 aux1 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cComm1 aux1 simp add: pi.inject)
     next
       case(Comm2 Pa a b Pa' Q x Q')
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cComm2 aux1 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cComm2 aux1 simp add: pi.inject)
     next
       case(Close1 Pa a x Pa' Q y Q')
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cClose1 aux1 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cClose1 aux1 simp add: pi.inject)
     next
       case(Close2 Pa a y Pa' Q x Q')
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cClose2 aux1 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (Pa \<parallel> Q)", auto intro: cClose2 aux1 simp add: pi.inject)
     next
       case(ResB Pa a x P' y)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (<\<nu>y>Pa)")
+        apply -
+        by(ind_cases "bangPred P (<\<nu>y>Pa)")
     next
       case(ResF Pa \<alpha> P' y)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (<\<nu>y>Pa)")
+        apply -
+        by(ind_cases "bangPred P (<\<nu>y>Pa)")
     next
       case(Bang Pa Rs)
       thus ?case
-	apply -
-	by(ind_cases "bangPred P (!Pa)", auto intro: cBang aux2 simp add: pi.inject)
+        apply -
+        by(ind_cases "bangPred P (!Pa)", auto intro: cBang aux2 simp add: pi.inject)
     qed
   qed
 

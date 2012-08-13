@@ -160,7 +160,7 @@ proof(simp add: weakSimAct_def fresh_prod, auto)
     moreover have "([(x, y)] \<bullet> P', Q'') \<in> Rel"
     proof -
       from EqvtRel P'RelQ' have "([(x, y)] \<bullet> P', [(x, y)] \<bullet> ([(x, y)] \<bullet> Q''))\<in> Rel"
-	by(rule eqvtRelI)
+        by(rule eqvtRelI)
       thus ?thesis by(simp add: name_calc)
     qed
 
@@ -185,11 +185,11 @@ next
       
       from Der obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>b<x> \<prec> P'"
                           and P'RelQ': "(P', ([(x, y)] \<bullet> Q'')[x::=u]) \<in> Rel"
-	by force
+        by force
       
       from PTrans yFreshP have "P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P'')\<rightarrow>b<y> \<prec> P'" by(rule alphaInput)
       moreover from xFreshQ'' P'RelQ' have "(P', Q''[y::=u]) \<in> Rel"
-	by(simp add: renaming)
+        by(simp add: renaming)
       ultimately show ?thesis by force
     qed
   qed
@@ -341,7 +341,7 @@ next
     have "Q \<Longrightarrow>\<^isub>l\<alpha> \<prec> Q'" by fact
     then obtain Q'' Q''' where QChain: "Q \<Longrightarrow>\<^isub>\<tau> Q''" 
                            and Q''Trans: "Q'' \<longmapsto>\<alpha> \<prec> Q'''"
-                           and Q'''Chain: "Q''' \<Longrightarrow>\<^isub>\<tau> Q'"	
+                           and Q'''Chain: "Q''' \<Longrightarrow>\<^isub>\<tau> Q'"  
       by(blast dest: Weak_Late_Step_Semantics.transitionE)
     
     from QChain PRelQ Sim have "\<exists>P''. P \<Longrightarrow>\<^isub>\<tau> P'' \<and> (P'', Q'') \<in> Rel"
@@ -440,11 +440,11 @@ proof -
       from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l(rev perm \<bullet> u) in P''\<rightarrow>(rev perm \<bullet> a)<(rev perm \<bullet> x)> \<prec> P'"
                           and P'RelQ': "(P', (rev perm \<bullet> Q')[(rev perm \<bullet> x)::=(rev perm \<bullet> u)]) \<in> Rel" by blast      
       from PTrans have "(perm \<bullet> P) \<Longrightarrow>\<^isub>l(perm \<bullet> (rev perm \<bullet> u)) in (perm \<bullet> P'')\<rightarrow>(perm \<bullet> rev perm \<bullet> a)<(perm \<bullet> rev perm \<bullet> x)> \<prec> (perm \<bullet> P')"
-	by(rule_tac Weak_Late_Step_Semantics.eqvtI, auto)
+        by(rule_tac Weak_Late_Step_Semantics.eqvtI, auto)
       hence L2: "(perm \<bullet> P) \<Longrightarrow>\<^isub>lu in (perm \<bullet> P'')\<rightarrow>a<x> \<prec> (perm \<bullet> P')" by(simp add: name_per_rev)
       from P'RelQ' RelRel' have "(P', (rev perm \<bullet> Q')[(rev perm \<bullet> x)::=(rev perm \<bullet> u)]) \<in> Rel'" by blast
       with EqvtRel' have "(perm \<bullet> P', perm \<bullet> ((rev perm \<bullet> Q')[(rev perm \<bullet> x)::=(rev perm \<bullet> u)])) \<in> Rel'"
-	by(rule eqvtRelI)
+        by(rule eqvtRelI)
       hence "(perm \<bullet> P', Q'[x::=u]) \<in> Rel'" by(simp add: name_per_rev eqvt_subs[THEN sym] name_calc)
       with L2 show "\<exists>P'. (perm \<bullet> P) \<Longrightarrow>\<^isub>lu in (perm \<bullet> P'')\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'" by blast
     qed
@@ -544,16 +544,16 @@ proof -
     proof(rule allI)
       fix u
       from L1 obtain Q' where Q''Chain: "Q''[x::=u] \<Longrightarrow>\<^isub>\<tau> Q'" and Q'RelR': "(Q', R'[x::=u]) \<in> Rel'"
-	by blast
+        by blast
       from L2 obtain P'' where P'''Trans: "P''' \<Longrightarrow>\<^isub>lu in P''''\<rightarrow>a<x> \<prec> P''"
                            and P''RelQ'': "(P'', Q''[x::=u]) \<in> Rel"
-	by blast
+        by blast
       from P''RelQ'' have "P'' \<leadsto>\<^isup>^<Rel> Q''[x::=u]" by(rule Sim)
       have "\<exists>P'. P'' \<Longrightarrow>\<^isub>\<tau> P' \<and> (P', Q') \<in> Rel" using Q''Chain P''RelQ'' Sim
-	by(rule weakSimTauChain)
+        by(rule weakSimTauChain)
       then obtain P' where P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
       from PChain P'''Trans P''Chain  have "P \<Longrightarrow>\<^isub>lu in P''''\<rightarrow>a<x> \<prec> P'"
-	by(blast dest: Weak_Late_Step_Semantics.chainTransitionAppend)
+        by(blast dest: Weak_Late_Step_Semantics.chainTransitionAppend)
       moreover from P'RelQ' Q'RelR' have "(P', R'[x::=u]) \<in> Rel''" by(insert Trans, auto)
       ultimately show "\<exists>P' Q'. P \<Longrightarrow>\<^isub>lu in P''''\<rightarrow>a<x> \<prec> P' \<and> (P', R'[x::=u]) \<in> Rel''" by blast
     qed
@@ -655,7 +655,7 @@ proof -
       fix u
       from L2 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'"
                           and P'RelQ': "(P', Q'[x::=u]) \<in> Rel"
-	by blast
+        by blast
       moreover from Q'Der have "(Q'[x::=u], R'[x::=u]) \<in> Rel'" by(simp add: derivative_def)
       ultimately show "\<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', R'[x::=u]) \<in> Rel''" using Trans by blast
     qed

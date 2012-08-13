@@ -130,7 +130,7 @@ proof -
     moreover have "derivative ([(y, c)] \<bullet> P') Q' a y Rel" (is "?goal")
     proof -
       from PDer Eqvt have "derivative ([(y, c)] \<bullet> P') ([(y, c)] \<bullet> [(y, c)] \<bullet> Q') a ([(y, c)] \<bullet> c) Rel"
-	by(rule derivativeEqvtI2)
+        by(rule derivativeEqvtI2)
       with cineqy show ?goal by(simp add: name_calc)
     qed
     ultimately show "\<exists>P'. P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P' \<and> derivative P' Q' a y Rel" by blast
@@ -174,26 +174,26 @@ proof -
     proof(induct rule: inputCases)
       assume "a'\<guillemotleft>y\<guillemotright> \<prec> Q' = a<x> \<prec> Q"
       with yineqx have aeqa': "InputS a = a'" and Q'eqQ: "Q' = [(y, x)] \<bullet> Q"
-	by(auto simp add: residual.inject name_abs_eq)
+        by(auto simp add: residual.inject name_abs_eq)
       obtain P' where PTrans: "P \<longmapsto>a<x> \<prec> P'" and P'RelQ: "(P', Q) \<in> Rel"
-	by(insert In) auto
+        by(insert In) auto
 
       have "P \<longmapsto>a<y> \<prec> [(y, x)] \<bullet> P'"
       proof -
-	from PTrans yFreshP yineqx have "y \<sharp> P'" by(force dest: freshTransition)
-	with PTrans show ?thesis by(simp add: alphaBoundResidual name_swap)
+        from PTrans yFreshP yineqx have "y \<sharp> P'" by(force dest: freshTransition)
+        with PTrans show ?thesis by(simp add: alphaBoundResidual name_swap)
       qed
       moreover from Eqvt P'RelQ have "([(y, x)] \<bullet> P', [(y, x)] \<bullet> Q) \<in> Rel"
-	by(rule eqvtRelI)
+        by(rule eqvtRelI)
       ultimately show ?thesis using aeqa' Q'eqQ SC
-	apply(auto simp add: derivative_def)
-	apply(auto simp add: substClosed_def)
-	apply(erule_tac x="[(y, u)]" in allE)
-	apply auto
-	apply blast
+        apply(auto simp add: derivative_def)
+        apply(auto simp add: substClosed_def)
+        apply(erule_tac x="[(y, u)]" in allE)
+        apply auto
+        apply blast
       proof -
-	apply(auto)
-	have
+        apply(auto)
+        have
       thus ?case
       
 *)
@@ -244,7 +244,7 @@ proof -
     qed
   qed
 qed
-	
+        
 lemma simE:
   fixes P   :: pi
   and   Rel :: "(pi \<times> pi) set"
@@ -375,7 +375,7 @@ proof(simp add: simAct_def, auto)
     moreover have "derivative ([(x, y)] \<bullet> P') Q'' b y Rel" (is ?goal)
     proof -
       from Der EqvtRel have "derivative ([(x, y)] \<bullet> P') ([(x, y)] \<bullet> ([(x, y)] \<bullet> Q'')) b ([(x, y)] \<bullet> x) Rel"
-	by(rule derivativeEqvtI2)
+        by(rule derivativeEqvtI2)
       thus ?goal by(simp add: name_calc)
     qed
 

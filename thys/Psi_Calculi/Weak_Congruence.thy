@@ -228,23 +228,23 @@ proof -
       fix \<phi> P
       assume "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)"
       then obtain \<phi>' P' where "(\<phi>', P') mem CsP" and "\<phi> = substCond.seqSubst \<phi>' \<sigma>" and PeqP': "P = (P'[<\<sigma>>])"
-	by(induct CsP) force+
+        by(induct CsP) force+
       from `(\<phi>', P') mem CsP` obtain Q' where "(\<phi>', Q') mem CsQ" and "guarded Q'" and "P' \<doteq>\<^sub>c Q'" by(blast dest: C1)
       from `(\<phi>', Q') mem CsQ` `\<phi> = substCond.seqSubst \<phi>' \<sigma>` obtain Q where "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)" and "Q = Q'[<\<sigma>>]"
-	by(induct CsQ) auto
+        by(induct CsQ) auto
       with PeqP' `guarded Q'` `P' \<doteq>\<^sub>c Q'` `wellFormedSubst \<sigma>` show "\<exists>Q. (\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>) \<and> guarded Q \<and> (\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q)"
-	by(blast dest: weakCongE guardedSeqSubst)
+        by(blast dest: weakCongE guardedSeqSubst)
     next
       fix \<phi> Q
       assume "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)"
       then obtain \<phi>' Q' where "(\<phi>', Q') mem CsQ" and "\<phi> = substCond.seqSubst \<phi>' \<sigma>" and QeqQ': "Q = Q'[<\<sigma>>]"
-	by(induct CsQ) force+
+        by(induct CsQ) force+
       from `(\<phi>', Q') mem CsQ` obtain P' where "(\<phi>', P') mem CsP" and "guarded P'" and "P' \<doteq>\<^sub>c Q'" by(blast dest: C2)
       from `(\<phi>', P') mem CsP` `\<phi> = substCond.seqSubst \<phi>' \<sigma>` obtain P where "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)" and "P = P'[<\<sigma>>]"
-	by(induct CsP) auto
+        by(induct CsP) auto
       with QeqQ' `guarded P'` `P' \<doteq>\<^sub>c Q'` `wellFormedSubst \<sigma>`
       show "\<exists>P. (\<phi>, P) mem (caseListSeqSubst CsP \<sigma>) \<and> guarded P \<and> (\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q)"
-	by(blast dest: weakCongE guardedSeqSubst)
+        by(blast dest: weakCongE guardedSeqSubst)
     qed
   }
   thus ?thesis

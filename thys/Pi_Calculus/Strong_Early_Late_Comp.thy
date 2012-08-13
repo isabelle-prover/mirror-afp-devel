@@ -391,7 +391,7 @@ proof -
       from PTrans cFreshP'' have "P \<longmapsto>\<^isub>la<c> \<prec> [(x, c)] \<bullet> P''" by(simp add: Late_Semantics.alphaBoundResidual)
       hence "P \<parallel> Q \<longmapsto>\<^isub>la<c> \<prec> ([(x, c)] \<bullet> P'') \<parallel> Q" using `c \<sharp> Q` by(rule Late_Semantics.Par1B)
       moreover from cFreshQ cFreshP'' P'eqP'' have "P' \<parallel> Q = (([(x, c)] \<bullet> P'') \<parallel> Q)[c::=u]"
-	by(simp add: forget renaming name_swap)
+        by(simp add: forget renaming name_swap)
       ultimately show ?case by blast
     next
       case(cPar2 Q a u Q' P)
@@ -402,7 +402,7 @@ proof -
       from QTrans cFreshQ'' have "Q \<longmapsto>\<^isub>la<c> \<prec> [(x, c)] \<bullet> Q''" by(simp add: Late_Semantics.alphaBoundResidual)
       hence "P \<parallel> Q \<longmapsto>\<^isub>la<c> \<prec> P \<parallel> ([(x, c)] \<bullet> Q'')" using `c \<sharp> P` by(rule Late_Semantics.Par2B)
       moreover from cFreshP cFreshQ'' Q'eqQ'' have "P \<parallel> Q' = (P \<parallel> ([(x, c)] \<bullet> Q''))[c::=u]"
-	by(simp add: forget renaming name_swap)
+        by(simp add: forget renaming name_swap)
       ultimately show ?case by blast
     next
       case(cRes P a u P' y)
@@ -414,9 +414,9 @@ proof -
       from PTrans cFreshP'' have "P \<longmapsto>\<^isub>la<c> \<prec> [(x, c)] \<bullet> P''" by(simp add: Late_Semantics.alphaBoundResidual)
       moreover have "y \<noteq> a" by fact
       ultimately have "<\<nu>y>P \<longmapsto>\<^isub>la<c> \<prec> <\<nu>y>(([(x, c)] \<bullet> P''))" using cineqy
-	by(force intro: Late_Semantics.ResB)
+        by(force intro: Late_Semantics.ResB)
       moreover from cineqy cFreshP'' P'eqP'' yinequ have "<\<nu>y>P' = (<\<nu>y>([(x, c)] \<bullet> P''))[c::=u]"
-	by(simp add: renaming name_swap)
+        by(simp add: renaming name_swap)
       ultimately show ?case by blast
     next
       case(cBang P a u P')
@@ -496,7 +496,7 @@ proof -
       from PTrans cFreshP'' have "P \<longmapsto>\<^isub>la<c> \<prec> [(x, c)] \<bullet> P''" by(simp add: Late_Semantics.alphaBoundResidual)
       hence "P \<parallel> Q \<longmapsto>\<^isub>la<c> \<prec> ([(x, c)] \<bullet> P'') \<parallel> Q" using `c \<sharp> Q` by(rule Late_Semantics.Par1B)
       moreover from cFreshQ cFreshP'' P'eqP'' have "P' \<parallel> Q = (([(x, c)] \<bullet> P'') \<parallel> Q)[c::=u]"
-	by(simp add: forget renaming name_swap)
+        by(simp add: forget renaming name_swap)
       ultimately show ?case by blast
     next
       case(cPar2 Q a u Q' P)
@@ -507,7 +507,7 @@ proof -
       from QTrans cFreshQ'' have "Q \<longmapsto>\<^isub>la<c> \<prec> [(x, c)] \<bullet> Q''" by(simp add: Late_Semantics.alphaBoundResidual)
       hence "P \<parallel> Q \<longmapsto>\<^isub>la<c> \<prec> P \<parallel> ([(x, c)] \<bullet> Q'')" using `c \<sharp> P` by(rule Late_Semantics.Par2B)
       moreover from cFreshP cFreshQ'' Q'eqQ'' have "P \<parallel> Q' = (P \<parallel> ([(x, c)] \<bullet> Q''))[c::=u]"
-	by(simp add: forget renaming name_swap)
+        by(simp add: forget renaming name_swap)
       ultimately show ?case by blast
     next
       case(cRes P a u P' y)
@@ -519,9 +519,9 @@ proof -
       from PTrans cFreshP'' have "P \<longmapsto>\<^isub>la<c> \<prec> [(x, c)] \<bullet> P''" by(simp add: Late_Semantics.alphaBoundResidual)
       moreover have "y \<noteq> a" by fact
       ultimately have "<\<nu>y>P \<longmapsto>\<^isub>la<c> \<prec> <\<nu>y>(([(x, c)] \<bullet> P''))" using cineqy
-	by(force intro: Late_Semantics.ResB)
+        by(force intro: Late_Semantics.ResB)
       moreover from cineqy cFreshP'' P'eqP'' yinequ have "<\<nu>y>P' = (<\<nu>y>([(x, c)] \<bullet> P''))[c::=u]"
-	by(simp add: renaming name_swap)
+        by(simp add: renaming name_swap)
       ultimately show ?case by blast
     next
       case(cBang P a u P')

@@ -191,12 +191,12 @@ proof -
       fix lst P Q
       have "\<And>P Q. (P \<parallel> Q, Q \<parallel> P) \<in> ?X \<union> bisim" by(blast intro: resChain.base[THEN sym])
       moreover have Res: "\<And>x P Q. (P, Q) \<in> ?X \<union> bisim \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?X \<union> bisim"
-	by(auto intro: resPres resChain.step[THEN sym])
+        by(auto intro: resPres resChain.step[THEN sym])
       ultimately have "P \<parallel> Q \<leadsto>[(?X \<union> bisim)] Q \<parallel> P" by(rule parSym)
       moreover have "eqvt ?X" by(force simp add: eqvt_def) 
       hence "eqvt(?X \<union> bisim)" by auto
       ultimately have "resChain lst (P \<parallel> Q) \<leadsto>[(?X \<union> bisim)] resChain lst (Q \<parallel> P)" using Res
-	by(rule resChainI)
+        by(rule resChainI)
     }
     with `(PQ, QP) \<in> ?X` show ?case by auto
   next
@@ -231,21 +231,21 @@ proof -
       moreover have "Id \<subseteq> ?Y" by(blast intro: reflexive)
       moreover from `eqvt ?X` bisimEqvt have "eqvt ?Y" by blast
       moreover have "\<And>P Q x. x \<sharp> P \<Longrightarrow> (<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?Y"
-	by(blast intro: resChain.base[THEN sym] reflexive)
+        by(blast intro: resChain.base[THEN sym] reflexive)
       moreover {
-	fix P Q x y
-	have "<\<nu>x><\<nu>y>(P \<parallel> Q) \<sim> <\<nu>y><\<nu>x>(P \<parallel> Q)" by(rule resComm)
-	moreover assume "x \<sharp> P"
-	hence "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(fastforce intro: resChain.base[THEN sym])
-	hence "(<\<nu>y><\<nu>x>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?X" by(rule Res)
-	ultimately have  "(<\<nu>x><\<nu>y>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?Y" by(blast intro: reflexive)
+        fix P Q x y
+        have "<\<nu>x><\<nu>y>(P \<parallel> Q) \<sim> <\<nu>y><\<nu>x>(P \<parallel> Q)" by(rule resComm)
+        moreover assume "x \<sharp> P"
+        hence "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(fastforce intro: resChain.base[THEN sym])
+        hence "(<\<nu>y><\<nu>x>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?X" by(rule Res)
+        ultimately have  "(<\<nu>x><\<nu>y>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?Y" by(blast intro: reflexive)
       }
       ultimately have "<\<nu>x>(P \<parallel> Q) \<leadsto>[?Y] (P \<parallel> <\<nu>x>Q)" by(rule scopeExtParLeft) 
       moreover note `eqvt ?Y`
       moreover from Res have "\<And>P Q x. (P, Q) \<in> ?Y \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?Y"
-	by(blast intro: resChain.step[THEN sym] dest: resPres)
+        by(blast intro: resChain.step[THEN sym] dest: resPres)
       ultimately have "resChain lst (<\<nu>x>(P \<parallel> Q)) \<leadsto>[?Y] resChain lst (P \<parallel> <\<nu>x>Q)" 
-	by(rule resChainI)
+        by(rule resChainI)
     }
     moreover {
       fix P Q lst x
@@ -253,22 +253,22 @@ proof -
       moreover have "Id \<subseteq> ?Y" by(blast intro: reflexive)
       moreover from `eqvt ?X` bisimEqvt have "eqvt ?Y" by blast
       moreover have "\<And>P Q x. x \<sharp> P \<Longrightarrow> (P \<parallel> <\<nu>x>Q, <\<nu>x>(P \<parallel> Q)) \<in> ?Y"
-	by(blast intro: resChain.base[THEN sym] reflexive)
+        by(blast intro: resChain.base[THEN sym] reflexive)
       moreover {
-	fix P Q x y
-	have "<\<nu>y><\<nu>x>(P \<parallel> Q) \<sim> <\<nu>x><\<nu>y>(P \<parallel> Q)" by(rule resComm)
-	moreover assume "x \<sharp> P"
-	hence "(P \<parallel> <\<nu>x>Q, <\<nu>x>(P \<parallel> Q)) \<in> ?X" by(fastforce intro: resChain.base[THEN sym])
-	hence "(<\<nu>y>(P \<parallel> <\<nu>x>Q), <\<nu>y><\<nu>x>(P \<parallel> Q)) \<in> ?X" by(rule Res)
-	ultimately have  "(<\<nu>y>(P \<parallel> <\<nu>x>Q), <\<nu>x><\<nu>y>(P \<parallel> Q)) \<in> ?Y" by(blast intro: reflexive)
+        fix P Q x y
+        have "<\<nu>y><\<nu>x>(P \<parallel> Q) \<sim> <\<nu>x><\<nu>y>(P \<parallel> Q)" by(rule resComm)
+        moreover assume "x \<sharp> P"
+        hence "(P \<parallel> <\<nu>x>Q, <\<nu>x>(P \<parallel> Q)) \<in> ?X" by(fastforce intro: resChain.base[THEN sym])
+        hence "(<\<nu>y>(P \<parallel> <\<nu>x>Q), <\<nu>y><\<nu>x>(P \<parallel> Q)) \<in> ?X" by(rule Res)
+        ultimately have  "(<\<nu>y>(P \<parallel> <\<nu>x>Q), <\<nu>x><\<nu>y>(P \<parallel> Q)) \<in> ?Y" by(blast intro: reflexive)
       }
       ultimately have "(P \<parallel> <\<nu>x>Q) \<leadsto>[?Y] <\<nu>x>(P \<parallel> Q)" 
-	by(rule scopeExtParRight) 
+        by(rule scopeExtParRight) 
       moreover note `eqvt ?Y`
       moreover from Res have "\<And>P Q x. (P, Q) \<in> ?Y \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?Y"
-	by(blast intro: resChain.step[THEN sym] dest: resPres)
+        by(blast intro: resChain.step[THEN sym] dest: resPres)
       ultimately have "resChain lst (P \<parallel> <\<nu>x>Q) \<leadsto>[?Y] resChain lst (<\<nu>x>(P \<parallel> Q))" 
-	by(rule resChainI)
+        by(rule resChainI)
     }
     ultimately show ?case using `(P, Q) \<in> ?X` by auto
   next
@@ -322,23 +322,23 @@ proof -
       have "\<And>P Q R. ((P \<parallel> Q) \<parallel> R, P \<parallel> (Q \<parallel> R)) \<in> ?Y" by(blast intro: reflexive resChain.base[symmetric])
       moreover have "\<And>P Q x. (P, Q) \<in> ?Y \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?Y" by(blast intro: resChain.step[symmetric] resPres)
       moreover {
-	fix P Q R x
-	have "(<\<nu>x>((P \<parallel> Q) \<parallel> R), <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by(rule_tac ResX) (blast intro: resChain.base[symmetric])
-	moreover assume "x \<sharp> P"
-	hence "<\<nu>x>(P \<parallel> (Q \<parallel> R)) \<sim> P \<parallel> <\<nu>x>(Q \<parallel> R)" by(rule scopeExtPar)
-	ultimately have "(<\<nu>x>((P \<parallel> Q) \<parallel> R), P \<parallel> <\<nu>x>(Q \<parallel> R)) \<in> ?Y" by(blast intro: reflexive)
+        fix P Q R x
+        have "(<\<nu>x>((P \<parallel> Q) \<parallel> R), <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by(rule_tac ResX) (blast intro: resChain.base[symmetric])
+        moreover assume "x \<sharp> P"
+        hence "<\<nu>x>(P \<parallel> (Q \<parallel> R)) \<sim> P \<parallel> <\<nu>x>(Q \<parallel> R)" by(rule scopeExtPar)
+        ultimately have "(<\<nu>x>((P \<parallel> Q) \<parallel> R), P \<parallel> <\<nu>x>(Q \<parallel> R)) \<in> ?Y" by(blast intro: reflexive)
       }
       moreover {
-	fix P Q R x
-	have "(<\<nu>x>((P \<parallel> Q) \<parallel> R), <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by(rule_tac ResX) (blast intro: resChain.base[symmetric])
-	moreover assume "x \<sharp> R"
-	hence "<\<nu>x>(P \<parallel> Q) \<parallel> R \<sim> <\<nu>x>((P \<parallel> Q) \<parallel> R)" by(metis scopeExtPar' symmetric)
-	ultimately have "(<\<nu>x>(P \<parallel> Q) \<parallel> R, <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?Y" by(blast intro: reflexive)
+        fix P Q R x
+        have "(<\<nu>x>((P \<parallel> Q) \<parallel> R), <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?X" by(rule_tac ResX) (blast intro: resChain.base[symmetric])
+        moreover assume "x \<sharp> R"
+        hence "<\<nu>x>(P \<parallel> Q) \<parallel> R \<sim> <\<nu>x>((P \<parallel> Q) \<parallel> R)" by(metis scopeExtPar' symmetric)
+        ultimately have "(<\<nu>x>(P \<parallel> Q) \<parallel> R, <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?Y" by(blast intro: reflexive)
       }
       ultimately have "(P \<parallel> Q) \<parallel> R \<leadsto>[?Y] P \<parallel> (Q \<parallel> R)" by(rule parAssocLeft)
       moreover from `eqvt ?X` bisimEqvt have "eqvt ?Y" by blast
       ultimately have "resChain lst ((P \<parallel> Q) \<parallel> R) \<leadsto>[?Y] resChain lst (P \<parallel> (Q \<parallel> R))" using ResY
-	by(rule resChainI)
+        by(rule resChainI)
     }
     with `(P, Q) \<in> ?X` show ?case by auto
   next
@@ -350,7 +350,7 @@ proof -
       moreover have "R \<parallel> (Q \<parallel> P) \<sim> (P \<parallel> Q) \<parallel> R" by(metis parPres parSym transitive)
       ultimately have "(P \<parallel> (Q \<parallel> R), (P \<parallel> Q) \<parallel> R) \<in> ?Y" by blast
       hence "(resChain lst (P \<parallel> (Q \<parallel> R)), resChain lst ((P \<parallel> Q) \<parallel> R)) \<in> ?Y" using ResY
-	by(induct lst) auto
+        by(induct lst) auto
     }
     with `(P, Q) \<in> ?X` show ?case by blast
   qed

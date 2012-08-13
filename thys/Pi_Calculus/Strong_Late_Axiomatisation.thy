@@ -31,24 +31,24 @@ proof -
       hence "a<x>.P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P)" using `y \<sharp> P` by(simp add: alphaInput)
       moreover have "derivative ([(x, y)] \<bullet> P) ([(x, y)] \<bullet> Q) (InputS a) y Rel"
       proof(auto simp add: derivative_def)
-	fix u
-	have "x \<in> supp(P, Q, x)" by(simp add: supp_prod supp_atm)
-	have "(P[x::=u], Q[x::=u]) \<in> Rel"
-	proof(cases "u \<in> supp(P, Q, x)")
-	  case True
-	  with PRelQ show ?thesis by auto
-	next
-	  case False
-	  hence "u \<sharp> P" and "u \<sharp> Q" by(auto simp add: fresh_def supp_prod)
-	  moreover from `eqvt Rel` `(P, Q) \<in> Rel` have "([(x, u)] \<bullet> P, [(x, u)] \<bullet> Q) \<in> Rel"
-	    by(rule eqvtRelI)
-	  ultimately show ?thesis by(simp only: injPermSubst)
-	qed
-	with `y \<sharp> P` `y \<sharp> Q` show "(([(x, y)] \<bullet> P)[y::=u], ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
-	  by(simp add: renaming)
+        fix u
+        have "x \<in> supp(P, Q, x)" by(simp add: supp_prod supp_atm)
+        have "(P[x::=u], Q[x::=u]) \<in> Rel"
+        proof(cases "u \<in> supp(P, Q, x)")
+          case True
+          with PRelQ show ?thesis by auto
+        next
+          case False
+          hence "u \<sharp> P" and "u \<sharp> Q" by(auto simp add: fresh_def supp_prod)
+          moreover from `eqvt Rel` `(P, Q) \<in> Rel` have "([(x, u)] \<bullet> P, [(x, u)] \<bullet> Q) \<in> Rel"
+            by(rule eqvtRelI)
+          ultimately show ?thesis by(simp only: injPermSubst)
+        qed
+        with `y \<sharp> P` `y \<sharp> Q` show "(([(x, y)] \<bullet> P)[y::=u], ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
+          by(simp add: renaming)
       qed
       ultimately show "\<exists>P'. a<x>.P \<longmapsto> a<y> \<prec> P' \<and> derivative P' ([(x, y)] \<bullet> Q) (InputS a) y Rel"
-	by blast
+        by blast
     qed
   next
     case(Free \<alpha> Q')
@@ -536,7 +536,7 @@ next
       assume "\<not>(\<exists>Q' \<in> summands Q. Q' \<equiv>\<^sub>e a{b}.P)"
       hence "\<forall>Q' \<in> summands Q. \<not>(Q' \<equiv>\<^sub>e a{b}.P)" by simp
       with Qhnf QineqNil have "uhnf (a{b}.P \<oplus> Q)"
-	by(force dest: Sym simp add: uhnf_def)
+        by(force dest: Sym simp add: uhnf_def)
       moreover from validQ validP have "valid(a{b}.P \<oplus> Q)"  by simp
       moreover have "a{b}.P \<oplus> Q \<equiv>\<^sub>e a{b}.P \<oplus> Q" by(rule Refl)
       moreover have "depth(a{b}.P \<oplus> Q) \<le> depth(a{b}.P \<oplus> Q)" by simp
@@ -568,7 +568,7 @@ next
       assume "\<not>(\<exists>Q' \<in> summands Q. Q' \<equiv>\<^sub>e \<tau>.(P))"
       hence "\<forall>Q' \<in> summands Q. \<not>(Q' \<equiv>\<^sub>e \<tau>.(P))" by simp
       with Qhnf QineqNil have "uhnf (\<tau>.(P) \<oplus> Q)"
-	by(force dest: Sym simp add: uhnf_def)
+        by(force dest: Sym simp add: uhnf_def)
       moreover from validP validQ have "valid(\<tau>.(P) \<oplus> Q)" by simp
       moreover have "\<tau>.(P) \<oplus> Q \<equiv>\<^sub>e \<tau>.(P) \<oplus> Q" by(rule Refl)
       moreover have "depth(\<tau>.(P) \<oplus> Q) \<le> depth(\<tau>.(P) \<oplus> Q)" by simp
@@ -600,7 +600,7 @@ next
       assume "\<not>(\<exists>Q' \<in> summands Q. Q' \<equiv>\<^sub>e a<x>.P)"
       hence "\<forall>Q' \<in> summands Q. \<not>(Q' \<equiv>\<^sub>e a<x>.P)" by simp
       with Qhnf QineqNil have "uhnf (a<x>.P \<oplus> Q)"
-	by(force dest: Sym simp add: uhnf_def)
+        by(force dest: Sym simp add: uhnf_def)
       moreover from validP validQ have "valid(a<x>.P \<oplus> Q)" by simp
       moreover have "a<x>.P \<oplus> Q \<equiv>\<^sub>e a<x>.P \<oplus> Q" by(rule Refl)
       moreover have "depth(a<x>.P \<oplus> Q) \<le> depth(a<x>.P \<oplus> Q)" by simp
@@ -684,7 +684,7 @@ next
       hence "\<forall>Q' \<in> summands Q. \<not>(Q' \<equiv>\<^sub>e <\<nu>x>P)" by simp
       moreover have "uhnf (<\<nu>x>P)" by fact
       ultimately have "uhnf (<\<nu>x>P \<oplus> Q)" using Qhnf QineqNil 
-	by(force dest: Sym simp add: uhnf_def)
+        by(force dest: Sym simp add: uhnf_def)
       moreover from validP validQ have "valid(<\<nu>x>P \<oplus> Q)" by simp
       moreover have "(<\<nu>x>P) \<oplus> Q \<equiv>\<^sub>e (<\<nu>x>P) \<oplus> Q" by(rule Refl)
       moreover have "depth((<\<nu>x>P) \<oplus> Q) \<le> depth((<\<nu>x>P) \<oplus> Q)" by simp
@@ -852,10 +852,10 @@ next
       moreover have "valid \<zero>" by simp
       moreover have "<\<nu>a><\<nu>y>a{y}.P' \<equiv>\<^sub>e \<zero>"
       proof -
-	have "<\<nu>a><\<nu>y>a{y}.P' \<equiv>\<^sub>e <\<nu>y><\<nu>a>a{y}.P'" by(rule ResComm)
-	moreover have "<\<nu>y><\<nu>a>a{y}.P' \<equiv>\<^sub>e \<zero>"
-	  by(blast intro: ResOutput' ResNil ResPres Trans)
-	ultimately show ?thesis by(blast intro: Trans)
+        have "<\<nu>a><\<nu>y>a{y}.P' \<equiv>\<^sub>e <\<nu>y><\<nu>a>a{y}.P'" by(rule ResComm)
+        moreover have "<\<nu>y><\<nu>a>a{y}.P' \<equiv>\<^sub>e \<zero>"
+          by(blast intro: ResOutput' ResNil ResPres Trans)
+        ultimately show ?thesis by(blast intro: Trans)
       qed
       moreover have "depth \<zero> \<le> depth(<\<nu>a><\<nu>y>a{y}.P')" by simp
       ultimately show ?case using PeqP' by blast
@@ -865,13 +865,13 @@ next
       moreover from validP PeqP' have "valid(<\<nu>y>a{y}.(<\<nu>x>P'))" by simp
       moreover have "<\<nu>x><\<nu>y>a{y}.P' \<equiv>\<^sub>e <\<nu>y>a{y}.(<\<nu>x>P')"
       proof -
-	have "<\<nu>x><\<nu>y>a{y}.P' \<equiv>\<^sub>e <\<nu>y><\<nu>x>a{y}.P'" by(rule ResComm)
-	moreover from xineqa xineqy have "<\<nu>y><\<nu>x>a{y}.P' \<equiv>\<^sub>e <\<nu>y>a{y}.(<\<nu>x>P')"
-	  by(blast intro: ResOutput ResPres Trans)
-	ultimately show ?thesis by(blast intro: Trans)
+        have "<\<nu>x><\<nu>y>a{y}.P' \<equiv>\<^sub>e <\<nu>y><\<nu>x>a{y}.P'" by(rule ResComm)
+        moreover from xineqa xineqy have "<\<nu>y><\<nu>x>a{y}.P' \<equiv>\<^sub>e <\<nu>y>a{y}.(<\<nu>x>P')"
+          by(blast intro: ResOutput ResPres Trans)
+        ultimately show ?thesis by(blast intro: Trans)
       qed
       moreover have "depth(<\<nu>y>a{y}.(<\<nu>x>P')) \<le> depth(<\<nu>x><\<nu>y>a{y}.P')"
-	by simp
+        by simp
       ultimately show ?case using PeqP' by blast
     qed
   qed
@@ -966,95 +966,95 @@ proof -
       then obtain P' where P'summR: "P' \<in> summands R" and P'eqP: "P' \<equiv>\<^sub>e P" by blast
       with IHR obtain R' where PR'eqR: "P' \<oplus> R' \<equiv>\<^sub>e R"
         and R'summR: "(summands R') = ((summands R) - {P'' |P''. P'' \<in> summands R \<and> P'' \<equiv>\<^sub>e P'})"
-	and R'hnf: "uhnf R'"
-	by blast
+        and R'hnf: "uhnf R'"
+        by blast
       
       have L1: "P \<oplus> (Q' \<oplus> R') \<equiv>\<^sub>e Q \<oplus> R"
       proof -
-	from P'eqP have "P \<oplus> (Q' \<oplus> R') \<equiv>\<^sub>e (P \<oplus> P') \<oplus> (Q' \<oplus> R')"
-	  by(blast intro: SumIdemp' SumPres Sym)
-	moreover have "(P \<oplus> P') \<oplus> (Q' \<oplus> R') \<equiv>\<^sub>e P \<oplus> (P' \<oplus> (Q' \<oplus> R'))" by(rule SumAssoc)
-	moreover have "P \<oplus> (P' \<oplus> (Q' \<oplus> R')) \<equiv>\<^sub>e P \<oplus> (P' \<oplus> (R' \<oplus> Q'))"
-	  by(blast intro: Refl SumPres' SumSym)
-	moreover have "P \<oplus> (P' \<oplus> (R' \<oplus> Q')) \<equiv>\<^sub>e P \<oplus> (P' \<oplus> R') \<oplus> Q'"
-	  by(blast intro: Refl SumPres' Sym SumAssoc)
-	moreover have "P \<oplus> (P' \<oplus> R') \<oplus> Q' \<equiv>\<^sub>e (P \<oplus> Q') \<oplus> (P' \<oplus> R')"
-	proof -
-	  have "P \<oplus> (P' \<oplus> R') \<oplus> Q' \<equiv>\<^sub>e P \<oplus> Q' \<oplus> (P' \<oplus> R')"
-	    by(blast intro: Refl SumPres' SumSym)
-	  thus ?thesis by(blast intro: Sym SumAssoc Trans)
-	qed
-	moreover from PQ'eqQ PR'eqR have "(P \<oplus> Q') \<oplus> (P' \<oplus> R') \<equiv>\<^sub>e Q \<oplus> R" by(rule SumPres')
-	ultimately show ?thesis by(blast intro!: Trans)
+        from P'eqP have "P \<oplus> (Q' \<oplus> R') \<equiv>\<^sub>e (P \<oplus> P') \<oplus> (Q' \<oplus> R')"
+          by(blast intro: SumIdemp' SumPres Sym)
+        moreover have "(P \<oplus> P') \<oplus> (Q' \<oplus> R') \<equiv>\<^sub>e P \<oplus> (P' \<oplus> (Q' \<oplus> R'))" by(rule SumAssoc)
+        moreover have "P \<oplus> (P' \<oplus> (Q' \<oplus> R')) \<equiv>\<^sub>e P \<oplus> (P' \<oplus> (R' \<oplus> Q'))"
+          by(blast intro: Refl SumPres' SumSym)
+        moreover have "P \<oplus> (P' \<oplus> (R' \<oplus> Q')) \<equiv>\<^sub>e P \<oplus> (P' \<oplus> R') \<oplus> Q'"
+          by(blast intro: Refl SumPres' Sym SumAssoc)
+        moreover have "P \<oplus> (P' \<oplus> R') \<oplus> Q' \<equiv>\<^sub>e (P \<oplus> Q') \<oplus> (P' \<oplus> R')"
+        proof -
+          have "P \<oplus> (P' \<oplus> R') \<oplus> Q' \<equiv>\<^sub>e P \<oplus> Q' \<oplus> (P' \<oplus> R')"
+            by(blast intro: Refl SumPres' SumSym)
+          thus ?thesis by(blast intro: Sym SumAssoc Trans)
+        qed
+        moreover from PQ'eqQ PR'eqR have "(P \<oplus> Q') \<oplus> (P' \<oplus> R') \<equiv>\<^sub>e Q \<oplus> R" by(rule SumPres')
+        ultimately show ?thesis by(blast intro!: Trans)
       qed
       
       show ?thesis
       proof(cases "Q' = \<zero>")
-	assume Q'eqNil: "Q' = \<zero>"
-	have "P \<oplus> R' \<equiv>\<^sub>e Q \<oplus> R"
-	proof -
-	  have "P \<oplus> R' \<equiv>\<^sub>e P \<oplus> (R' \<oplus> \<zero>)" by(blast intro: SumZero Refl Trans SumPres' Sym)
-	  moreover have "P \<oplus> (R' \<oplus> \<zero>) \<equiv>\<^sub>e P \<oplus> (\<zero> \<oplus> R')"
-	    by(blast intro: SumSym Trans SumPres' Refl)
-	  ultimately show ?thesis using L1 Q'eqNil by(blast intro: Trans)
-	qed
-	moreover from R'summR Q'summQ P'eqP Q'eqNil have "summands (R') = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
-	  by(auto intro: Sym Trans)
-	ultimately show ?thesis using R'hnf by blast
+        assume Q'eqNil: "Q' = \<zero>"
+        have "P \<oplus> R' \<equiv>\<^sub>e Q \<oplus> R"
+        proof -
+          have "P \<oplus> R' \<equiv>\<^sub>e P \<oplus> (R' \<oplus> \<zero>)" by(blast intro: SumZero Refl Trans SumPres' Sym)
+          moreover have "P \<oplus> (R' \<oplus> \<zero>) \<equiv>\<^sub>e P \<oplus> (\<zero> \<oplus> R')"
+            by(blast intro: SumSym Trans SumPres' Refl)
+          ultimately show ?thesis using L1 Q'eqNil by(blast intro: Trans)
+        qed
+        moreover from R'summR Q'summQ P'eqP Q'eqNil have "summands (R') = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
+          by(auto intro: Sym Trans)
+        ultimately show ?thesis using R'hnf by blast
       next
-	assume Q'ineqNil: "Q' \<noteq> \<zero>"
-	show ?thesis
-	proof(case_tac "R' = \<zero>")
-	  assume R'eqNil: "R' = \<zero>"
-	  have "P \<oplus> Q' \<equiv>\<^sub>e Q \<oplus> R"
-	  proof -
-	    have "P \<oplus> Q' \<equiv>\<^sub>e P \<oplus> (Q' \<oplus> \<zero>)" by(blast intro: SumZero Refl Trans SumPres' Sym)
-	    with L1 R'eqNil show ?thesis by(blast intro: Trans)
-	  qed
-	  moreover from R'summR Q'summQ P'eqP R'eqNil have "summands (Q') = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
-	    by(auto intro: Sym Trans)
-	  ultimately show ?thesis using Q'hnf by blast
-	next
-	  assume R'ineqNil: "R' \<noteq> \<zero>"
-	  
-	  from R'summR Q'summQ P'eqP have "summands (Q' \<oplus> R') = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
-	    by(auto intro: Sym Trans)
-	  moreover from QRhnf Q'hnf R'hnf R'summR Q'summQ Q'ineqNil R'ineqNil have "uhnf(Q' \<oplus> R')"
-	    by(auto simp add: uhnf_def)
-	  
-	  ultimately show ?thesis using L1 by blast
-	qed
+        assume Q'ineqNil: "Q' \<noteq> \<zero>"
+        show ?thesis
+        proof(case_tac "R' = \<zero>")
+          assume R'eqNil: "R' = \<zero>"
+          have "P \<oplus> Q' \<equiv>\<^sub>e Q \<oplus> R"
+          proof -
+            have "P \<oplus> Q' \<equiv>\<^sub>e P \<oplus> (Q' \<oplus> \<zero>)" by(blast intro: SumZero Refl Trans SumPres' Sym)
+            with L1 R'eqNil show ?thesis by(blast intro: Trans)
+          qed
+          moreover from R'summR Q'summQ P'eqP R'eqNil have "summands (Q') = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
+            by(auto intro: Sym Trans)
+          ultimately show ?thesis using Q'hnf by blast
+        next
+          assume R'ineqNil: "R' \<noteq> \<zero>"
+          
+          from R'summR Q'summQ P'eqP have "summands (Q' \<oplus> R') = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
+            by(auto intro: Sym Trans)
+          moreover from QRhnf Q'hnf R'hnf R'summR Q'summQ Q'ineqNil R'ineqNil have "uhnf(Q' \<oplus> R')"
+            by(auto simp add: uhnf_def)
+          
+          ultimately show ?thesis using L1 by blast
+        qed
       qed
     next
       assume "\<not>(\<exists>P' \<in> summands R. P' \<equiv>\<^sub>e P)"
       hence Case: "\<forall>P' \<in> summands R. \<not>(P' \<equiv>\<^sub>e P)" by simp
       show ?thesis
       proof(case_tac "Q' = \<zero>")
-	assume Q'eqNil: "Q' = \<zero>"
-	have "P \<oplus> R \<equiv>\<^sub>e Q \<oplus> R" 
-	proof -
+        assume Q'eqNil: "Q' = \<zero>"
+        have "P \<oplus> R \<equiv>\<^sub>e Q \<oplus> R" 
+        proof -
 
-	  have "P \<oplus> R \<equiv>\<^sub>e (P \<oplus> \<zero>) \<oplus> R" by(blast intro: SumZero Sym Trans SumPres)
-	  moreover from  PQ'eqQ have "P \<oplus> (Q' \<oplus> R) \<equiv>\<^sub>e Q \<oplus> R"
-	     by(blast intro: SumAssoc Trans Sym SumPres) 
-	   ultimately show ?thesis using Q'eqNil by(blast intro: SumAssoc Trans)
-	 qed
-	 
-	 moreover from Q'summQ Q'eqNil Case have "summands (R) = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
-	   by auto
-	 moreover from QRhnf have "uhnf R" by(simp add: uhnf_def)
+          have "P \<oplus> R \<equiv>\<^sub>e (P \<oplus> \<zero>) \<oplus> R" by(blast intro: SumZero Sym Trans SumPres)
+          moreover from  PQ'eqQ have "P \<oplus> (Q' \<oplus> R) \<equiv>\<^sub>e Q \<oplus> R"
+             by(blast intro: SumAssoc Trans Sym SumPres) 
+           ultimately show ?thesis using Q'eqNil by(blast intro: SumAssoc Trans)
+         qed
+         
+         moreover from Q'summQ Q'eqNil Case have "summands (R) = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
+           by auto
+         moreover from QRhnf have "uhnf R" by(simp add: uhnf_def)
 
-	 ultimately show ?thesis by blast      	
+         ultimately show ?thesis by blast       
        next
-	 assume Q'ineqNil: "Q' \<noteq> \<zero>"
-	 from PQ'eqQ have "P \<oplus> (Q' \<oplus> R) \<equiv>\<^sub>e Q \<oplus> R" 
-	   by(blast intro: SumAssoc Trans Sym SumPres) 
-	 
-	 moreover from Q'summQ Case have "summands (Q' \<oplus> R) = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
-	   by auto
-	 moreover from QRhnf Q'hnf Q'summQ Q'ineqNil have "uhnf (Q' \<oplus> R)"
-	   by(auto simp add: uhnf_def)
-	 ultimately show ?thesis by blast
+         assume Q'ineqNil: "Q' \<noteq> \<zero>"
+         from PQ'eqQ have "P \<oplus> (Q' \<oplus> R) \<equiv>\<^sub>e Q \<oplus> R" 
+           by(blast intro: SumAssoc Trans Sym SumPres) 
+         
+         moreover from Q'summQ Case have "summands (Q' \<oplus> R) = (summands (Q \<oplus> R) - {P' |P'. P' \<in> summands(Q \<oplus> R) \<and> P' \<equiv>\<^sub>e P})"
+           by auto
+         moreover from QRhnf Q'hnf Q'summQ Q'ineqNil have "uhnf (Q' \<oplus> R)"
+           by(auto simp add: uhnf_def)
+         ultimately show ?thesis by blast
        qed
      qed
    qed
@@ -1382,10 +1382,10 @@ proof -
     thus "valid P'"
       apply(nominal_induct rule: boundOutputInduct, auto)
       proof -
-	fix P a x P'
-	assume "P \<longmapsto>(a::name)[x] \<prec> P'" and "valid P"
-	thus "valid P'"
-	  by(nominal_induct rule: outputInduct, auto)
+        fix P a x P'
+        assume "P \<longmapsto>(a::name)[x] \<prec> P'" and "valid P"
+        thus "valid P'"
+          by(nominal_induct rule: outputInduct, auto)
       qed
   qed
   obtain y::name where yFreshP: "y \<sharp> P" and yFreshP': "y \<sharp> P'"
@@ -1554,17 +1554,17 @@ next
       assume QineqQ': "Q \<noteq> Q'"
       show ?case
       proof(case_tac "depth Q \<le> depth Q'")
-	assume "depth Q \<le> depth Q'"
-	with QineqQ' PQ'depth All Q'inS show ?thesis by force
+        assume "depth Q \<le> depth Q'"
+        with QineqQ' PQ'depth All Q'inS show ?thesis by force
       next
-	assume "\<not> depth Q \<le> depth Q'"
-	with QineqQ' PQ'depth All Q'inS QinS show ?thesis apply auto
-	  apply(rule_tac x=Q in bexI)
-	  apply auto
-	  apply(case_tac "R=Q")
-	  apply auto
-	  apply(erule_tac x=R in ballE)
-	  by auto
+        assume "\<not> depth Q \<le> depth Q'"
+        with QineqQ' PQ'depth All Q'inS QinS show ?thesis apply auto
+          apply(rule_tac x=Q in bexI)
+          apply auto
+          apply(case_tac "R=Q")
+          apply auto
+          apply(erule_tac x=R in ballE)
+          by auto
       qed
     qed
   qed
@@ -1620,7 +1620,7 @@ next
     assume "P \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> P" and "hnf P"
     thus "depth P' < depth P"
       by(nominal_induct rule: boundOutputInduct,
-	 auto elim: outputCases simp add: residual.inject)
+         auto elim: outputCases simp add: residual.inject)
   qed
   obtain y::name where yFreshP: "y \<sharp> P" and yFreshP': "y \<sharp> P'"
     by(rule_tac name_exists_fresh[of "(P, P')"], auto simp add: fresh_prod)
@@ -1845,8 +1845,8 @@ proof -
       moreover have "valid \<zero>" by simp
       moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>\<zero>"
       proof -
-	have "x \<sharp> \<zero>" by simp
-	thus ?thesis by(blast intro: Sym ResFresh)
+        have "x \<sharp> \<zero>" by simp
+        thus ?thesis by(blast intro: Sym ResFresh)
       qed
       moreover have "depth \<zero> \<le> depth (<\<nu>x>\<zero>)" by simp
       ultimately show ?case by blast
@@ -1856,30 +1856,30 @@ proof -
       hence validP: "valid P" by simp
       show ?case
       proof(case_tac "x=a")
-	assume "x = a"
-	moreover have "uhnf \<zero>" by(simp add: uhnf_def)
-	moreover have "valid \<zero>" by simp
-	moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>x{b}.P" by(blast intro: ResOutput' Sym)
-	moreover have "depth \<zero> \<le> depth(<\<nu>x>x{b}.P)" by simp
-	ultimately show ?case by blast
+        assume "x = a"
+        moreover have "uhnf \<zero>" by(simp add: uhnf_def)
+        moreover have "valid \<zero>" by simp
+        moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>x{b}.P" by(blast intro: ResOutput' Sym)
+        moreover have "depth \<zero> \<le> depth(<\<nu>x>x{b}.P)" by simp
+        ultimately show ?case by blast
       next
-	assume xineqa: "x \<noteq> a"
-	show ?case
-	proof(case_tac "x=b")
-	  assume "x=b"
-	  moreover from xineqa have "uhnf(<\<nu>x>a{x}.P)" by(force simp add: uhnf_def)
-	  moreover from validP have "valid(<\<nu>x>a{x}.P)" by simp
-	  moreover have "<\<nu>x>a{x}.P \<equiv>\<^sub>e <\<nu>x>a{x}.P" by(rule Refl)
-	  moreover have "depth(<\<nu>x>a{x}.P) \<le> depth(<\<nu>x>a{x}.P)" by simp
-	  ultimately show ?case by blast
-	next
-	  assume xineqb: "x \<noteq> b"
-	  have "uhnf(a{b}.(<\<nu>x>P))" by(simp add: uhnf_def)
-	  moreover from validP have "valid(a{b}.(<\<nu>x>P))" by simp
-	  moreover from xineqa xineqb have "a{b}.(<\<nu>x>P) \<equiv>\<^sub>e <\<nu>x>a{b}.P" by(blast intro: ResOutput Sym)
-	  moreover have "depth(a{b}.(<\<nu>x>P)) \<le> depth(<\<nu>x>a{b}.P)" by simp
-	  ultimately show ?case by blast
-	qed
+        assume xineqa: "x \<noteq> a"
+        show ?case
+        proof(case_tac "x=b")
+          assume "x=b"
+          moreover from xineqa have "uhnf(<\<nu>x>a{x}.P)" by(force simp add: uhnf_def)
+          moreover from validP have "valid(<\<nu>x>a{x}.P)" by simp
+          moreover have "<\<nu>x>a{x}.P \<equiv>\<^sub>e <\<nu>x>a{x}.P" by(rule Refl)
+          moreover have "depth(<\<nu>x>a{x}.P) \<le> depth(<\<nu>x>a{x}.P)" by simp
+          ultimately show ?case by blast
+        next
+          assume xineqb: "x \<noteq> b"
+          have "uhnf(a{b}.(<\<nu>x>P))" by(simp add: uhnf_def)
+          moreover from validP have "valid(a{b}.(<\<nu>x>P))" by simp
+          moreover from xineqa xineqb have "a{b}.(<\<nu>x>P) \<equiv>\<^sub>e <\<nu>x>a{b}.P" by(blast intro: ResOutput Sym)
+          moreover have "depth(a{b}.(<\<nu>x>P)) \<le> depth(<\<nu>x>a{b}.P)" by simp
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(Tau P)
@@ -1898,87 +1898,87 @@ proof -
       have "y \<sharp> x" by fact hence yineqx: "y \<noteq> x" by simp
       show ?case
       proof(case_tac "x=a")
-	assume "x = a"
-	moreover have "uhnf \<zero>" by(simp add: uhnf_def)
-	moreover have "valid \<zero>" by simp
-	moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>x<y>.P" by(blast intro: ResInput' Sym)
-	moreover have "depth \<zero> \<le> depth(<\<nu>x>x<y>.P)" by simp
-	ultimately show ?case by blast
+        assume "x = a"
+        moreover have "uhnf \<zero>" by(simp add: uhnf_def)
+        moreover have "valid \<zero>" by simp
+        moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>x<y>.P" by(blast intro: ResInput' Sym)
+        moreover have "depth \<zero> \<le> depth(<\<nu>x>x<y>.P)" by simp
+        ultimately show ?case by blast
       next
-	assume xineqa: "x \<noteq> a"
-	have "uhnf(a<y>.(<\<nu>x>P))" by(simp add: uhnf_def)
-	moreover from validP have "valid(a<y>.(<\<nu>x>P))" by simp
-	moreover from xineqa yineqx have "a<y>.(<\<nu>x>P) \<equiv>\<^sub>e <\<nu>x>a<y>.P" by(blast intro: ResInput Sym)
-	moreover have "depth(a<y>.(<\<nu>x>P)) \<le> depth(<\<nu>x>a<y>.P)" by simp
-	ultimately show ?case by blast
+        assume xineqa: "x \<noteq> a"
+        have "uhnf(a<y>.(<\<nu>x>P))" by(simp add: uhnf_def)
+        moreover from validP have "valid(a<y>.(<\<nu>x>P))" by simp
+        moreover from xineqa yineqx have "a<y>.(<\<nu>x>P) \<equiv>\<^sub>e <\<nu>x>a<y>.P" by(blast intro: ResInput Sym)
+        moreover have "depth(a<y>.(<\<nu>x>P)) \<le> depth(<\<nu>x>a<y>.P)" by simp
+        ultimately show ?case by blast
       qed
     next
       case(Match a b P x)
       have "valid([a\<frown>b]P)" by fact hence "valid P" by simp
       moreover have "\<And>x. valid P \<Longrightarrow> \<exists>Q. uhnf Q \<and> valid Q \<and> Q \<equiv>\<^sub>e <\<nu>x>P \<and> 
                                            depth Q \<le> depth(<\<nu>x>P)"
-	by fact
+        by fact
       ultimately obtain Q where Qhnf: "uhnf Q" and validQ: "valid Q"
                             and QeqP: "Q \<equiv>\<^sub>e (<\<nu>x>P)" 
                             and QPdepth: "depth Q \<le> depth(<\<nu>x>P)"
-	by blast
+        by blast
       show ?case
       proof(case_tac "a = b")
-	assume "a=b"
-	moreover have "Q \<equiv>\<^sub>e <\<nu>x>[a\<frown>a]P"
-	proof -
-	  have "P \<equiv>\<^sub>e [a\<frown>a]P" by(blast intro: equiv.Match Sym)
-	  hence "<\<nu>x>P \<equiv>\<^sub>e <\<nu>x>[a\<frown>a]P" by(rule ResPres)
-	  with QeqP show ?thesis by(blast intro: Trans)
-	qed
-	moreover from QPdepth have "depth Q \<le> depth(<\<nu>x>[a\<frown>a]P)" by simp
-	ultimately show ?case using Qhnf validQ by blast
+        assume "a=b"
+        moreover have "Q \<equiv>\<^sub>e <\<nu>x>[a\<frown>a]P"
+        proof -
+          have "P \<equiv>\<^sub>e [a\<frown>a]P" by(blast intro: equiv.Match Sym)
+          hence "<\<nu>x>P \<equiv>\<^sub>e <\<nu>x>[a\<frown>a]P" by(rule ResPres)
+          with QeqP show ?thesis by(blast intro: Trans)
+        qed
+        moreover from QPdepth have "depth Q \<le> depth(<\<nu>x>[a\<frown>a]P)" by simp
+        ultimately show ?case using Qhnf validQ by blast
       next
-	assume aineqb: "a\<noteq>b"
-	have "uhnf \<zero>" by(simp add: uhnf_def)
-	moreover have "valid \<zero>" by simp
-	moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<frown>b]P"
-	proof -
-	  from aineqb have "\<zero> \<equiv>\<^sub>e [a\<frown>b]P" by(blast intro: Match' Sym)
-	  hence "<\<nu>x>\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<frown>b]P" by(rule ResPres)
-	  thus ?thesis by(blast intro: ResNil Trans Sym)
-	qed
-	moreover have "depth \<zero> \<le> depth(<\<nu>x>[a\<frown>b]P)" by simp
-	ultimately show ?case by blast
+        assume aineqb: "a\<noteq>b"
+        have "uhnf \<zero>" by(simp add: uhnf_def)
+        moreover have "valid \<zero>" by simp
+        moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<frown>b]P"
+        proof -
+          from aineqb have "\<zero> \<equiv>\<^sub>e [a\<frown>b]P" by(blast intro: Match' Sym)
+          hence "<\<nu>x>\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<frown>b]P" by(rule ResPres)
+          thus ?thesis by(blast intro: ResNil Trans Sym)
+        qed
+        moreover have "depth \<zero> \<le> depth(<\<nu>x>[a\<frown>b]P)" by simp
+        ultimately show ?case by blast
       qed
     next
       case(Mismatch a b P x)
       have "valid([a\<noteq>b]P)" by fact hence "valid P" by simp
       moreover have "\<And>x. valid P \<Longrightarrow> \<exists>Q. uhnf Q \<and> valid Q \<and> Q \<equiv>\<^sub>e <\<nu>x>P \<and> 
                                            depth Q \<le> depth(<\<nu>x>P)"
-	by fact
+        by fact
       ultimately obtain Q where Qhnf: "uhnf Q" and validQ: "valid Q"
                             and QeqP: "Q \<equiv>\<^sub>e (<\<nu>x>P)" 
                             and QPdepth: "depth Q \<le> depth(<\<nu>x>P)"
-	by blast
+        by blast
       show ?case
       proof(case_tac "a = b")
-	assume "a=b"
-	moreover have "uhnf \<zero>" by(simp add: uhnf_def)
-	moreover have "valid \<zero>" by simp
-	moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<noteq>a]P"
-	proof -
-	  have "\<zero> \<equiv>\<^sub>e [a\<noteq>a]P" by(blast intro: Mismatch' Sym)
-	  hence "<\<nu>x>\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<noteq>a]P" by(rule ResPres)
-	  thus ?thesis by(blast intro: ResNil Trans Sym)
-	qed
-	moreover have "depth \<zero> \<le> depth(<\<nu>x>[a\<noteq>a]P)" by simp
-	ultimately show ?case by blast
+        assume "a=b"
+        moreover have "uhnf \<zero>" by(simp add: uhnf_def)
+        moreover have "valid \<zero>" by simp
+        moreover have "\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<noteq>a]P"
+        proof -
+          have "\<zero> \<equiv>\<^sub>e [a\<noteq>a]P" by(blast intro: Mismatch' Sym)
+          hence "<\<nu>x>\<zero> \<equiv>\<^sub>e <\<nu>x>[a\<noteq>a]P" by(rule ResPres)
+          thus ?thesis by(blast intro: ResNil Trans Sym)
+        qed
+        moreover have "depth \<zero> \<le> depth(<\<nu>x>[a\<noteq>a]P)" by simp
+        ultimately show ?case by blast
       next
-	assume aineqb: "a\<noteq>b"
-	have "Q \<equiv>\<^sub>e <\<nu>x>[a\<noteq>b]P"
-	proof -
-	  from aineqb have "P \<equiv>\<^sub>e [a\<noteq>b]P" by(blast intro: equiv.Mismatch Sym)
-	  hence "<\<nu>x>P \<equiv>\<^sub>e <\<nu>x>[a\<noteq>b]P" by(rule ResPres)
-	  with QeqP show ?thesis by(blast intro: Trans)
-	qed
-	moreover from QPdepth have "depth Q \<le> depth(<\<nu>x>[a\<noteq>b]P)" by simp
-	ultimately show ?case using Qhnf validQ by blast
+        assume aineqb: "a\<noteq>b"
+        have "Q \<equiv>\<^sub>e <\<nu>x>[a\<noteq>b]P"
+        proof -
+          from aineqb have "P \<equiv>\<^sub>e [a\<noteq>b]P" by(blast intro: equiv.Mismatch Sym)
+          hence "<\<nu>x>P \<equiv>\<^sub>e <\<nu>x>[a\<noteq>b]P" by(rule ResPres)
+          with QeqP show ?thesis by(blast intro: Trans)
+        qed
+        moreover from QPdepth have "depth Q \<le> depth(<\<nu>x>[a\<noteq>b]P)" by simp
+        ultimately show ?case using Qhnf validQ by blast
       qed
     next
       case(Sum P Q x)
@@ -1987,16 +1987,16 @@ proof -
 
       have "\<exists>P'. uhnf P' \<and> valid P' \<and> P' \<equiv>\<^sub>e <\<nu>x>P \<and> (depth P') \<le> (depth(<\<nu>x>P))"
       proof -
-	have "valid P \<Longrightarrow> \<exists>P'. uhnf P' \<and> valid P' \<and> P' \<equiv>\<^sub>e <\<nu>x>P \<and> (depth P') \<le> (depth (<\<nu>x>P))" by fact
-	with validP show ?thesis by simp
+        have "valid P \<Longrightarrow> \<exists>P'. uhnf P' \<and> valid P' \<and> P' \<equiv>\<^sub>e <\<nu>x>P \<and> (depth P') \<le> (depth (<\<nu>x>P))" by fact
+        with validP show ?thesis by simp
       qed
       then obtain P' where P'hnf: "uhnf P'" and P'eqP: "P' \<equiv>\<^sub>e <\<nu>x>P" and validP': "valid P'"
                        and P'depth: "(depth P') \<le> (depth(<\<nu>x>P))" by blast
 
       have "\<exists>Q'. uhnf Q' \<and> valid Q' \<and> Q' \<equiv>\<^sub>e <\<nu>x>Q \<and> (depth Q') \<le> (depth(<\<nu>x>Q))"
       proof -
-	have "valid Q \<Longrightarrow> \<exists>Q'. uhnf Q' \<and> valid Q' \<and> Q' \<equiv>\<^sub>e <\<nu>x>Q \<and> (depth Q') \<le> (depth(<\<nu>x>Q))" by fact
-	with validQ show ?thesis by simp
+        have "valid Q \<Longrightarrow> \<exists>Q'. uhnf Q' \<and> valid Q' \<and> Q' \<equiv>\<^sub>e <\<nu>x>Q \<and> (depth Q') \<le> (depth(<\<nu>x>Q))" by fact
+        with validQ show ?thesis by simp
       qed
 
       then obtain Q' where Q'hnf: "uhnf Q'" and Q'eqQ: "Q' \<equiv>\<^sub>e <\<nu>x>Q" and validQ': "valid Q'"
@@ -2005,7 +2005,7 @@ proof -
       from P'hnf Q'hnf validP' validQ' obtain R where Rhnf: "uhnf R" and validR: "valid R"
                                                 and P'Q'eqR: "P' \<oplus> Q' \<equiv>\<^sub>e R"
                                                 and Rdepth: "depth R \<le> depth(P' \<oplus> Q')"
-	apply(drule_tac uhnfSum) apply assumption+ by blast
+        apply(drule_tac uhnfSum) apply assumption+ by blast
       
       from P'eqP Q'eqQ P'Q'eqR have "<\<nu>x>(P \<oplus> Q) \<equiv>\<^sub>e R" by(blast intro: Sym SumPres' SumRes Trans)
       moreover from Rdepth P'depth Q'depth have "depth R \<le> depth(<\<nu>x>(P \<oplus> Q))" by auto
@@ -2017,12 +2017,12 @@ proof -
       hence validP: "valid P" and validQ: "valid Q" by simp+
       have "\<exists>P'. uhnf P' \<and> valid P' \<and> P' \<equiv>\<^sub>e P \<and> (depth P') \<le> (depth P)"
       proof -
-	obtain x::name where xFreshP: "x \<sharp> P" by(rule name_exists_fresh)
-	moreover have "\<And>x. valid P \<Longrightarrow> \<exists>P'. uhnf P' \<and> valid P' \<and> P' \<equiv>\<^sub>e (<\<nu>x>P) \<and> (depth P') \<le> (depth(<\<nu>x>P))" by fact
-	with validP obtain P' where "uhnf P'" and "valid P'" and P'eqP: "P' \<equiv>\<^sub>e (<\<nu>x>P)" and P'depth: "(depth P') \<le> (depth(<\<nu>x>P))" by blast
-	moreover from xFreshP P'eqP have "P' \<equiv>\<^sub>e P" by(blast intro: Trans ResFresh)
-	moreover with P'depth have "depth P' \<le> depth P" by simp
-	ultimately show ?thesis by blast
+        obtain x::name where xFreshP: "x \<sharp> P" by(rule name_exists_fresh)
+        moreover have "\<And>x. valid P \<Longrightarrow> \<exists>P'. uhnf P' \<and> valid P' \<and> P' \<equiv>\<^sub>e (<\<nu>x>P) \<and> (depth P') \<le> (depth(<\<nu>x>P))" by fact
+        with validP obtain P' where "uhnf P'" and "valid P'" and P'eqP: "P' \<equiv>\<^sub>e (<\<nu>x>P)" and P'depth: "(depth P') \<le> (depth(<\<nu>x>P))" by blast
+        moreover from xFreshP P'eqP have "P' \<equiv>\<^sub>e P" by(blast intro: Trans ResFresh)
+        moreover with P'depth have "depth P' \<le> depth P" by simp
+        ultimately show ?thesis by blast
       qed
 
       then obtain P' where P'hnf: "uhnf P'" and P'eqP: "P' \<equiv>\<^sub>e P" and validP': "valid P'"
@@ -2030,31 +2030,31 @@ proof -
 
       have "\<exists>Q'. uhnf Q' \<and> valid Q' \<and> Q' \<equiv>\<^sub>e Q \<and> (depth Q') \<le> (depth Q)"
       proof -
-	obtain x::name where xFreshQ: "x \<sharp> Q" by(rule name_exists_fresh)
-	moreover have "\<And>x. valid Q \<Longrightarrow> \<exists>Q'. uhnf Q' \<and> valid Q' \<and> Q' \<equiv>\<^sub>e (<\<nu>x>Q) \<and> (depth Q') \<le> (depth(<\<nu>x>Q))" by fact
-	with validQ obtain Q' where "uhnf Q'" and "valid Q'" and Q'eqQ: "Q' \<equiv>\<^sub>e (<\<nu>x>Q)" and Q'depth: "(depth Q') \<le> (depth(<\<nu>x>Q))" by blast
-	moreover from xFreshQ Q'eqQ have "Q' \<equiv>\<^sub>e Q" by(blast intro: Trans ResFresh)
-	moreover with Q'depth have "depth Q' \<le> depth Q" by simp
-	ultimately show ?thesis by blast
+        obtain x::name where xFreshQ: "x \<sharp> Q" by(rule name_exists_fresh)
+        moreover have "\<And>x. valid Q \<Longrightarrow> \<exists>Q'. uhnf Q' \<and> valid Q' \<and> Q' \<equiv>\<^sub>e (<\<nu>x>Q) \<and> (depth Q') \<le> (depth(<\<nu>x>Q))" by fact
+        with validQ obtain Q' where "uhnf Q'" and "valid Q'" and Q'eqQ: "Q' \<equiv>\<^sub>e (<\<nu>x>Q)" and Q'depth: "(depth Q') \<le> (depth(<\<nu>x>Q))" by blast
+        moreover from xFreshQ Q'eqQ have "Q' \<equiv>\<^sub>e Q" by(blast intro: Trans ResFresh)
+        moreover with Q'depth have "depth Q' \<le> depth Q" by simp
+        ultimately show ?thesis by blast
       qed
       
       then obtain Q' where Q'hnf: "uhnf Q'" and Q'eqQ: "Q' \<equiv>\<^sub>e Q" and validQ': "valid Q'"
                        and Q'depth: "(depth Q') \<le> (depth Q)" by blast
       
       from P'hnf Q'hnf obtain R where Exp: "(R, expandSet P' Q') \<in> sumComposeSet" and Rdepth: "depth R \<le> depth(P' \<parallel> Q')"
-	by(force dest: expandDepth' simp add: uhnf_def)
+        by(force dest: expandDepth' simp add: uhnf_def)
     
       from Exp P'hnf Q'hnf have P'Q'eqR: "P' \<parallel> Q' \<equiv>\<^sub>e R" by(force intro: Expand simp add: uhnf_def)
       from P'hnf Q'hnf validP' validQ' have "\<forall>P \<in> (expandSet P' Q'). uhnf P \<and> valid P" by(blast dest: validExpand)
       with Exp obtain R' where R'hnf: "uhnf R'" and validR': "valid R'"
                                                 and ReqR': "R \<equiv>\<^sub>e R'"
                                                 and R'depth: "depth R' \<le> depth R"
-	by(blast dest: expandHnf)
+        by(blast dest: expandHnf)
       
       from P'eqP Q'eqQ P'Q'eqR ReqR' have "P \<parallel> Q \<equiv>\<^sub>e R'" by(blast intro: Sym ParPres Trans)
       hence ResTrans: "<\<nu>x>(P \<parallel> Q) \<equiv>\<^sub>e <\<nu>x>R'" by(rule ResPres)
       from validR' R'hnf obtain R'' where R''hnf: "uhnf R''" and validR'': "valid R''" and R'eqR'': "<\<nu>x>R' \<equiv>\<^sub>e R''" and R''depth: "depth R'' \<le> depth(<\<nu>x>R')"
-	by(force dest: uhnfRes)
+        by(force dest: uhnfRes)
       from ResTrans R'eqR'' have "<\<nu>x>(P \<parallel> Q) \<equiv>\<^sub>e R''" by(rule Trans)
       moreover from Rdepth P'depth Q'depth R'depth R''depth have "depth R'' \<le> depth(<\<nu>x>(P \<parallel> Q))" by auto
       ultimately show ?case using validR'' R''hnf by(blast dest: Sym)
@@ -2062,13 +2062,13 @@ proof -
       case(Res y P x)
       have "valid(<\<nu>y>P)" by fact hence "valid P" by simp
       moreover have "\<And>x. valid P \<Longrightarrow> \<exists>Q. uhnf Q \<and> valid Q \<and> Q \<equiv>\<^sub>e <\<nu>x>P \<and> depth Q \<le> depth(<\<nu>x>P)"
-	by fact
+        by fact
       ultimately obtain Q where Qhnf: "uhnf Q" and validQ: "valid Q" and QeqP: "Q \<equiv>\<^sub>e <\<nu>y>P"
                             and QPdepth: "depth Q \<le> depth(<\<nu>y>P)" by blast
 
       from Qhnf validQ obtain Q' where Q'hnf: "uhnf Q'" and validQ': "valid Q'" and QeqQ': "<\<nu>x>Q \<equiv>\<^sub>e Q'"
                                    and Q'Qdepth: "depth Q' \<le> depth(<\<nu>x>Q)"
-	by(force dest: uhnfRes)
+        by(force dest: uhnfRes)
 
       from QeqP have "<\<nu>x>Q \<equiv>\<^sub>e <\<nu>x><\<nu>y>P" by(rule ResPres)
       with QeqQ' have "Q' \<equiv>\<^sub>e <\<nu>x><\<nu>y>P" by(blast intro: Trans Sym)
@@ -2153,39 +2153,39 @@ next
       have "a{b}.Q' \<in> summands Q" by fact
       with Qhnf have QTrans: "Q \<longmapsto>a[b] \<prec> Q'" by(simp add: summandTransition uhnf_def)
       with PSimQ obtain P' where PTrans: "P \<longmapsto>a[b] \<prec> P'" and P'BisimQ': "P' \<sim> Q'"
-	by(blast dest: simE)
+        by(blast dest: simE)
       
       from Phnf PTrans have "a{b}.P' \<in> summands P" by(simp add: summandTransition uhnf_def)
       moreover have "P' \<equiv>\<^sub>e Q'"
       proof -
-	from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
-	from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
-	
-	from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
+        from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
+        from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
+        
+        from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
                                   and P''eqP': "P'' \<equiv>\<^sub>e P'" and P''depth: "depth P'' \<le> depth P'"
-	  by(blast dest: validToHnf)
-	
-	from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
-	                          and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'" and Q''depth: "depth Q'' \<le> depth Q'"
-	  by(blast dest: validToHnf)
-	
-	have "depth P'' + depth Q'' \<le> n"
-	proof -
-	  from Phnf PTrans have "depth P' < depth P" 
-	    by(force intro: depthTransition simp add: uhnf_def)
-	  moreover from Qhnf QTrans have "depth Q' < depth Q"
-	    by(force intro: depthTransition simp add: uhnf_def)
-	  ultimately show ?thesis using PQdepth P''depth Q''depth by simp
-	qed
-	
-	moreover have "P'' \<sim> Q''"
-	proof -
-	  from P''eqP' have "P'' \<sim> P'" by(rule sound)
-	  moreover from Q''eqQ' have "Q'' \<sim> Q'" by(rule sound)
-	  ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
-	qed
-	ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
-	with P''eqP' Q''eqQ' show ?thesis by(blast intro: Sym Trans)
+          by(blast dest: validToHnf)
+        
+        from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
+                                  and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'" and Q''depth: "depth Q'' \<le> depth Q'"
+          by(blast dest: validToHnf)
+        
+        have "depth P'' + depth Q'' \<le> n"
+        proof -
+          from Phnf PTrans have "depth P' < depth P" 
+            by(force intro: depthTransition simp add: uhnf_def)
+          moreover from Qhnf QTrans have "depth Q' < depth Q"
+            by(force intro: depthTransition simp add: uhnf_def)
+          ultimately show ?thesis using PQdepth P''depth Q''depth by simp
+        qed
+        
+        moreover have "P'' \<sim> Q''"
+        proof -
+          from P''eqP' have "P'' \<sim> P'" by(rule sound)
+          moreover from Q''eqQ' have "Q'' \<sim> Q'" by(rule sound)
+          ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
+        qed
+        ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
+        with P''eqP' Q''eqQ' show ?thesis by(blast intro: Sym Trans)
       qed
       ultimately show ?case by(blast intro: Sym equiv.OutputPres)
     next
@@ -2195,39 +2195,39 @@ next
       have "\<tau>.(Q') \<in> summands Q" by fact
       with Qhnf have QTrans: "Q \<longmapsto>\<tau> \<prec> Q'" by(simp add: summandTransition uhnf_def)
       with PSimQ obtain P' where PTrans: "P \<longmapsto>\<tau> \<prec> P'" and P'BisimQ': "P' \<sim> Q'"
-	by(blast dest: simE)
+        by(blast dest: simE)
       
       from Phnf PTrans have "\<tau>.(P') \<in> summands P" by(simp add: summandTransition uhnf_def)
       moreover have "P' \<equiv>\<^sub>e Q'"
       proof -
-	from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
-	from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
-	
-	from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
+        from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
+        from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
+        
+        from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
                                   and P''eqP': "P'' \<equiv>\<^sub>e P'" and P''depth: "depth P'' \<le> depth P'"
-	  by(blast dest: validToHnf)
-	  
-	from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
-	                          and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'" and Q''depth: "depth Q'' \<le> depth Q'"
-	  by(blast dest: validToHnf)
-	
-	have "depth P'' + depth Q'' \<le> n"
-	proof -
-	  from Phnf PTrans have "depth P' < depth P"
-	    by(force intro: depthTransition simp add: uhnf_def)
-	  moreover from Qhnf QTrans have "depth Q' < depth Q" 
-	    by(force intro: depthTransition simp add: uhnf_def)
-	  ultimately show ?thesis using PQdepth P''depth Q''depth by simp
-	qed
-	
-	moreover have "P'' \<sim> Q''"
-	proof -
-	  from P''eqP' have "P'' \<sim> P'" by(rule sound)
-	  moreover from Q''eqQ' have "Q'' \<sim> Q'" by(rule sound)
-	  ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
-	qed
-	ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
-	with P''eqP' Q''eqQ' show ?thesis by(blast intro: Sym Trans)
+          by(blast dest: validToHnf)
+          
+        from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
+                                  and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'" and Q''depth: "depth Q'' \<le> depth Q'"
+          by(blast dest: validToHnf)
+        
+        have "depth P'' + depth Q'' \<le> n"
+        proof -
+          from Phnf PTrans have "depth P' < depth P"
+            by(force intro: depthTransition simp add: uhnf_def)
+          moreover from Qhnf QTrans have "depth Q' < depth Q" 
+            by(force intro: depthTransition simp add: uhnf_def)
+          ultimately show ?thesis using PQdepth P''depth Q''depth by simp
+        qed
+        
+        moreover have "P'' \<sim> Q''"
+        proof -
+          from P''eqP' have "P'' \<sim> P'" by(rule sound)
+          moreover from Q''eqQ' have "Q'' \<sim> Q'" by(rule sound)
+          ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
+        qed
+        ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
+        with P''eqP' Q''eqQ' show ?thesis by(blast intro: Sym Trans)
       qed
       ultimately show ?case by(blast intro: Sym equiv.TauPres)
     next
@@ -2238,61 +2238,61 @@ next
       with Qhnf have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" by(simp add: summandTransition uhnf_def)
       with PSimQ xFreshP obtain P' where PTrans: "P \<longmapsto>a<x> \<prec> P'"
                                      and P'derQ': "derivative P' Q' (InputS a) x bisim"
-	by(blast dest: simE)
+        by(blast dest: simE)
 
       from Phnf PTrans have "a<x>.P' \<in> summands P" by(simp add: summandTransition uhnf_def)
       moreover have "\<forall>y \<in> supp(P', Q', x). P'[x::=y] \<equiv>\<^sub>e Q'[x::=y]"
       proof(rule ballI)
-	fix y::name
-	assume ysupp: "y \<in> supp(P', Q', x)"
-	have validP': "valid(P'[x::=y])"
-	proof -
-	  from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
-	  thus ?thesis by simp
-	qed
-	have validQ': "valid(Q'[x::=y])"
-	proof -
-	  from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
-	  thus ?thesis by simp
-	qed
-	
-	from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
+        fix y::name
+        assume ysupp: "y \<in> supp(P', Q', x)"
+        have validP': "valid(P'[x::=y])"
+        proof -
+          from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
+          thus ?thesis by simp
+        qed
+        have validQ': "valid(Q'[x::=y])"
+        proof -
+          from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
+          thus ?thesis by simp
+        qed
+        
+        from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
                                   and P''eqP': "P'' \<equiv>\<^sub>e P'[x::=y]" and P''depth: "depth P'' \<le> depth(P'[x::=y])"
-	  by(blast dest: validToHnf)
-	
-	from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
-	                          and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'[x::=y]" and Q''depth: "depth Q'' \<le> depth(Q'[x::=y])"
-	  by(blast dest: validToHnf)
-	
-	have "depth P'' + depth Q'' \<le> n"
-	proof -
-	  from Phnf PTrans have "depth P' < depth P"
-	    by(force intro: depthTransition simp add: uhnf_def)
-	  moreover from Qhnf QTrans have "depth Q' < depth Q" 
-	    by(force intro: depthTransition simp add: uhnf_def)
-	  ultimately show ?thesis using PQdepth P''depth Q''depth by simp 
-	qed
-	  
-	moreover have "P'' \<sim> Q''"
-	proof -
-	  from P'derQ' have P'BisimQ': "P'[x::=y] \<sim> Q'[x::=y]" 
-	    by(auto simp add: derivative_def)
-	  from P''eqP' have "P'' \<sim> P'[x::=y]" by(rule sound)
-	  moreover from Q''eqQ' have "Q'' \<sim> Q'[x::=y]" by(rule sound)
-	  ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
-	qed
-	ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
-	with P''eqP' Q''eqQ' show "P'[x::=y] \<equiv>\<^sub>e Q'[x::=y]" by(blast intro: Sym Trans)
+          by(blast dest: validToHnf)
+        
+        from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
+                                  and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'[x::=y]" and Q''depth: "depth Q'' \<le> depth(Q'[x::=y])"
+          by(blast dest: validToHnf)
+        
+        have "depth P'' + depth Q'' \<le> n"
+        proof -
+          from Phnf PTrans have "depth P' < depth P"
+            by(force intro: depthTransition simp add: uhnf_def)
+          moreover from Qhnf QTrans have "depth Q' < depth Q" 
+            by(force intro: depthTransition simp add: uhnf_def)
+          ultimately show ?thesis using PQdepth P''depth Q''depth by simp 
+        qed
+          
+        moreover have "P'' \<sim> Q''"
+        proof -
+          from P'derQ' have P'BisimQ': "P'[x::=y] \<sim> Q'[x::=y]" 
+            by(auto simp add: derivative_def)
+          from P''eqP' have "P'' \<sim> P'[x::=y]" by(rule sound)
+          moreover from Q''eqQ' have "Q'' \<sim> Q'[x::=y]" by(rule sound)
+          ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
+        qed
+        ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
+        with P''eqP' Q''eqQ' show "P'[x::=y] \<equiv>\<^sub>e Q'[x::=y]" by(blast intro: Sym Trans)
       qed
       
       ultimately show ?case 
-	apply -
-	apply(rule_tac x="a<x>.P'" in bexI)
-	apply(rule equiv.InputPres)
-	apply(rule ballI)
-	apply(erule_tac x=y in ballE)
-	apply(blast dest: Sym)
-	by(auto simp add: supp_prod)
+        apply -
+        apply(rule_tac x="a<x>.P'" in bexI)
+        apply(rule equiv.InputPres)
+        apply(rule ballI)
+        apply(erule_tac x=y in ballE)
+        apply(blast dest: Sym)
+        by(auto simp add: supp_prod)
     next
       case(Match a b P' P)
       have "[a\<frown>b]P' \<in> summands Q" by fact
@@ -2320,48 +2320,48 @@ next
       have PQdepth: "depth P + depth Q \<le> Suc n" by fact
       have Q''summQ: "<\<nu>x>Q'' \<in> summands Q" by fact
       hence "\<exists>a Q'. a \<noteq> x \<and> Q'' = a{x}.Q'"
-	by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if pi.inject name_abs_eq name_calc)  
+        by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if pi.inject name_abs_eq name_calc)  
       then obtain a Q' where aineqx: "a \<noteq> x" and Q'eqQ'': "Q'' = a{x}.Q'"
-	by blast
+        by blast
       with Qhnf  Q''summQ have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" by(simp add: summandTransition uhnf_def)
       with PSimQ xFreshP obtain P' where PTrans: "P \<longmapsto>a<\<nu>x> \<prec> P'" and P'BisimQ': "P' \<sim> Q'"
-	by(force dest: simE simp add: derivative_def)
-	
+        by(force dest: simE simp add: derivative_def)
+        
       from Phnf PTrans aineqx have "(<\<nu>x>a{x}.P') \<in> summands P" by(simp add: summandTransition uhnf_def)
       moreover have "a{x}.P' \<equiv>\<^sub>e a{x}.Q'"
       proof -
-	have "P' \<equiv>\<^sub>e Q'"
-	proof -
-	  from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
-	  from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
-	
-	  from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
+        have "P' \<equiv>\<^sub>e Q'"
+        proof -
+          from validP PTrans have validP': "valid P'" by(blast intro: validTransition)
+          from validQ QTrans have validQ': "valid Q'" by(blast intro: validTransition)
+        
+          from validP' obtain P'' where P''hnf: "uhnf P''" and validP'': "valid P''"
                                     and P''eqP': "P'' \<equiv>\<^sub>e P'" and P''depth: "depth P'' \<le> depth P'"
-	    by(blast dest: validToHnf)
-	  
-	  from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
-	                            and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'" and Q'''depth: "depth Q'' \<le> depth Q'"
-	    by(blast dest: validToHnf)
-	    
-	  have "depth P'' + depth Q'' \<le> n"
-	  proof -
-	    from Phnf PTrans have "depth P' < depth P"
-	      by(force intro: depthTransition simp add: uhnf_def)
-	    moreover from Qhnf QTrans have "depth Q' < depth Q" 
-	      by(force intro: depthTransition simp add: uhnf_def)
-	    ultimately show ?thesis using PQdepth P''depth Q'''depth by simp
-	  qed
-	    
-	  moreover have "P'' \<sim> Q''"
-	  proof -
-	    from P''eqP' have "P'' \<sim> P'" by(rule sound)
-	    moreover from Q''eqQ' have "Q'' \<sim> Q'" by(rule sound)
-	    ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
-	  qed
-	  ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
-	  with P''eqP' Q''eqQ' show ?thesis by(blast intro: Sym Trans)
-	qed
-	thus ?thesis by(rule OutputPres)
+            by(blast dest: validToHnf)
+          
+          from validQ' obtain Q'' where Q''hnf: "uhnf Q''" and validQ'': "valid Q''"
+                                    and Q''eqQ': "Q'' \<equiv>\<^sub>e Q'" and Q'''depth: "depth Q'' \<le> depth Q'"
+            by(blast dest: validToHnf)
+            
+          have "depth P'' + depth Q'' \<le> n"
+          proof -
+            from Phnf PTrans have "depth P' < depth P"
+              by(force intro: depthTransition simp add: uhnf_def)
+            moreover from Qhnf QTrans have "depth Q' < depth Q" 
+              by(force intro: depthTransition simp add: uhnf_def)
+            ultimately show ?thesis using PQdepth P''depth Q'''depth by simp
+          qed
+            
+          moreover have "P'' \<sim> Q''"
+          proof -
+            from P''eqP' have "P'' \<sim> P'" by(rule sound)
+            moreover from Q''eqQ' have "Q'' \<sim> Q'" by(rule sound)
+            ultimately show ?thesis using P'BisimQ' by(blast dest: transitive symmetric)
+          qed
+          ultimately have "P'' \<equiv>\<^sub>e Q''" using validP'' validQ'' P''hnf Q''hnf by(rule_tac IH)
+          with P''eqP' Q''eqQ' show ?thesis by(blast intro: Sym Trans)
+        qed
+        thus ?thesis by(rule OutputPres)
       qed
       ultimately show ?case using Q'eqQ'' by(blast intro: Sym equiv.ResPres)
     next

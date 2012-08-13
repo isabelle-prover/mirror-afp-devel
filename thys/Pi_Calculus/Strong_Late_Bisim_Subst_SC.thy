@@ -83,9 +83,9 @@ next
       from cFreshP have "<\<nu>x>P = <\<nu>c>([(x, c)] \<bullet> P)" by(rule alphaRes)
       moreover from dFreshxP have "<\<nu>y><\<nu>x>P = <\<nu>d>([(y, d)] \<bullet> (<\<nu>x>P))" by(rule alphaRes)
       ultimately have "<\<nu>y><\<nu>x>P = <\<nu>d><\<nu>c>([(y, d)] \<bullet> [(x, c)] \<bullet> P)" using dineqc cineqy
-	by(simp add: name_calc)
+        by(simp add: name_calc)
       thus ?thesis using dineqx dineqc cineqy xineqy
-	by(subst name_perm_compose, simp add: name_calc)
+        by(subst name_perm_compose, simp add: name_calc)
     qed
 
     ultimately show "(<\<nu>x><\<nu>y>P)[<s>] \<sim> (<\<nu>y><\<nu>x>P)[<s>]" using cFreshs dFreshs

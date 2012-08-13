@@ -70,7 +70,7 @@ proof(induct rule: weakStatImpI)
   case(cStatImp \<Psi>')
   from PStatImpQ obtain Q' Q'' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
                                  and PimpQ': "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
-	                         and Q'Chain: "\<Psi> \<otimes> (rev(p::name prm) \<bullet> \<Psi>') \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "(\<Psi> \<otimes> (rev p \<bullet> \<Psi>'), P,  Q'') \<in> Rel"
+                                 and Q'Chain: "\<Psi> \<otimes> (rev(p::name prm) \<bullet> \<Psi>') \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "(\<Psi> \<otimes> (rev p \<bullet> \<Psi>'), P,  Q'') \<in> Rel"
     by(rule weakStatImpE)
   from QChain have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> (p \<bullet> Q')" by(rule tauChainEqvt)
   moreover from PimpQ' have "insertAssertion (extractFrame (p \<bullet> P)) (p \<bullet> \<Psi>) \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(p \<bullet> Q')) (p \<bullet> \<Psi>)"

@@ -64,23 +64,23 @@ proof -
     proof(induct rule: inputCases, auto simp add: subject.inject)
       have "\<forall>u. \<exists>P'. a<x>.P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> P' \<and> (P', ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
       proof(rule allI)
-	fix u
-	have "a<x>.P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> ([(x, y)] \<bullet> P)[y::=u]" (is "?goal")
-	proof -
-	  from yFreshP have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" by(rule Agent.alphaInput)
-	  moreover have "a<y>.([(x, y)] \<bullet> P) \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> ([(x, y)] \<bullet> P)[y::=u]" 
-	    by(rule Weak_Late_Step_Semantics.Input)
-	  ultimately show ?goal by(simp add: name_swap)
-	qed
+        fix u
+        have "a<x>.P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> ([(x, y)] \<bullet> P)[y::=u]" (is "?goal")
+        proof -
+          from yFreshP have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" by(rule Agent.alphaInput)
+          moreover have "a<y>.([(x, y)] \<bullet> P) \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> ([(x, y)] \<bullet> P)[y::=u]" 
+            by(rule Weak_Late_Step_Semantics.Input)
+          ultimately show ?goal by(simp add: name_swap)
+        qed
 
-	moreover have "(([(x, y)] \<bullet> P)[y::=u], ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
-	proof -
-	  from PRelQ have "(P[x::=u], Q[x::=u]) \<in> Rel" by auto
-	  with `y \<sharp> P` `y \<sharp> Q` show ?thesis by(simp add: renaming)
-	qed
-	
-	ultimately show "\<exists>P'. a<x>.P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> P' \<and> (P', ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel" 
-	  by blast
+        moreover have "(([(x, y)] \<bullet> P)[y::=u], ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
+        proof -
+          from PRelQ have "(P[x::=u], Q[x::=u]) \<in> Rel" by auto
+          with `y \<sharp> P` `y \<sharp> Q` show ?thesis by(simp add: renaming)
+        qed
+        
+        ultimately show "\<exists>P'. a<x>.P \<Longrightarrow>\<^isub>lu in ([(x, y)] \<bullet> P)\<rightarrow>a<y> \<prec> P' \<and> (P', ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel" 
+          by blast
       qed
       
       thus "\<exists>P''. \<forall>u. \<exists>P'. a<x>.P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<y> \<prec> P' \<and> (P', ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel" by blast
@@ -168,10 +168,10 @@ next
     proof(rule allI)
       fix u
       from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel"
-	by blast
+        by blast
       from PTrans have "[a\<frown>a]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Match)
       with P'RelQ' RelRel' show "\<exists>P'. [a\<frown>a]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'"
-	by blast
+        by blast
     qed
     thus ?case by blast
   qed
@@ -219,7 +219,7 @@ next
       have "Q \<longmapsto>c<\<nu>x> \<prec> Q'" by fact
       with PSimQ xFreshP obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lc<\<nu>x> \<prec> P'"
                                      and P'RelQ': "(P', Q') \<in> Rel"
-	by(blast dest: simE)
+        by(blast dest: simE)
       from PTrans aineqb have "[a\<noteq>b]P \<Longrightarrow>\<^isub>lc<\<nu>x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Mismatch)
       moreover from P'RelQ' RelRel' have "(P', Q') \<in> Rel'" by blast
       ultimately show ?case by blast
@@ -234,15 +234,15 @@ next
       case cMismatch
       have "Q \<longmapsto> c<x> \<prec> Q'" by fact
       with PSimQ xFreshP obtain P'' where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
-	by(blast dest: simE)
+        by(blast dest: simE)
       have "\<forall>u. \<exists>P'. [a\<noteq>b]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'"
       proof(rule allI)
-	fix u
-	from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel"
-	  by blast
-	from PTrans aineqb have "[a\<noteq>b]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Mismatch)
-	with P'RelQ' RelRel' show "\<exists>P'. [a\<noteq>b]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'"
-	  by blast
+        fix u
+        from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel"
+          by blast
+        from PTrans aineqb have "[a\<noteq>b]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Mismatch)
+        with P'RelQ' RelRel' show "\<exists>P'. [a\<noteq>b]P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>c<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'"
+          by blast
       qed
       thus ?case by blast
     qed
@@ -254,7 +254,7 @@ next
       case cMismatch
       have "Q \<longmapsto>\<alpha> \<prec> Q'" by fact
       with PSimQ obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'" and PRel: "(P', Q') \<in> Rel"
-	by(blast dest: simE)
+        by(blast dest: simE)
       from PTrans `a \<noteq> b` have "[a\<noteq>b]P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'" by(rule Weak_Late_Step_Semantics.Mismatch)
       with PRel RelRel' show ?case by blast
     qed
@@ -425,12 +425,12 @@ next
       from L1 obtain P' where PTrans:"P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'"
                           and P'RelQ': "(P', Q'[x::=u]) \<in> Rel" by blast
       from PTrans xFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x> \<prec> (P' \<parallel> R)"
-	by(rule Weak_Late_Step_Semantics.Par1B)
+        by(rule Weak_Late_Step_Semantics.Par1B)
       moreover from P'RelQ'  have "(P' \<parallel> R, Q'[x::=u] \<parallel> R) \<in> Rel'" 
-	by(rule Par)
+        by(rule Par)
       ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u] \<parallel> (R[x::=u])) \<in> Rel'"
-	using xFreshR
-	by(force simp add: forget)
+        using xFreshR
+        by(force simp add: forget)
     qed
     thus ?case by force
   next
@@ -440,9 +440,9 @@ next
     proof 
       fix u
       from RTrans have "R \<Longrightarrow>\<^isub>lu in R'\<rightarrow>a<x> \<prec> R'[x::=u]"
-	by(rule Weak_Late_Step_Semantics.singleActionChain)
+        by(rule Weak_Late_Step_Semantics.singleActionChain)
       hence "P \<parallel> R \<Longrightarrow>\<^isub>lu in P \<parallel> R'\<rightarrow>a<x> \<prec> P \<parallel> R'[x::=u]" using `x \<sharp> P`
-	by(rule Weak_Late_Step_Semantics.Par2B)
+        by(rule Weak_Late_Step_Semantics.Par2B)
       moreover from PRelQ have "(P \<parallel> R'[x::=u], Q \<parallel>  R'[x::=u]) \<in> Rel'" by(rule Par)
       ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R')\<rightarrow>a<x> \<prec> P' \<and>
                            (P', Q \<parallel> R'[x::=u]) \<in> Rel'" by blast
@@ -563,16 +563,16 @@ proof -
 
       from PSimQ QTrans obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la[x] \<prec> P'"
                                     and P'RelQ': "(P', Q') \<in> Rel"
-	by(blast dest: simE)
+        by(blast dest: simE)
 
       have "<\<nu>x>P \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> ([(y, x)] \<bullet> P')"
       proof -
-	from PTrans aineqx have "<\<nu>x>P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Open)
-	moreover from PTrans yFreshP have "y \<sharp> P'" by(force intro: Weak_Late_Step_Semantics.freshTransition)
-	ultimately show ?thesis by(simp add: alphaBoundResidual name_swap) 
+        from PTrans aineqx have "<\<nu>x>P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Open)
+        moreover from PTrans yFreshP have "y \<sharp> P'" by(force intro: Weak_Late_Step_Semantics.freshTransition)
+        ultimately show ?thesis by(simp add: alphaBoundResidual name_swap) 
       qed
       moreover from EqvtRel P'RelQ' RelRel' have "([(y, x)] \<bullet> P', [(y, x)] \<bullet> Q') \<in> Rel'"
-	by(blast intro: eqvtRelI)
+        by(blast intro: eqvtRelI)
       ultimately show ?case by blast
     next
       case(cRes Q')
@@ -581,11 +581,11 @@ proof -
 
       from PSimQ yFreshP QTrans obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> P'"
                                             and P'RelQ': "(P', Q') \<in> Rel"
-	by(blast dest: simE)
+        by(blast dest: simE)
       from PTrans `x \<noteq> a` yineqx yFreshP have ResTrans: "<\<nu>x>P \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> (<\<nu>x>P')"
-	by(blast intro: Weak_Late_Step_Semantics.ResB)
+        by(blast intro: Weak_Late_Step_Semantics.ResB)
       moreover from P'RelQ' have "((<\<nu>x>P'), (<\<nu>x>Q')) \<in> Rel'"
-	by(rule ResRel)
+        by(rule ResRel)
       ultimately show ?case by blast
     qed
   next
@@ -603,53 +603,53 @@ proof -
       from `x \<sharp> InputS a` have "x \<noteq> a" by simp
       
       from PSimQ QTrans yFreshP obtain P''
-	where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<y> \<prec> P' \<and> (P', Q'[y::=u]) \<in> Rel"
-	by(blast dest: simE)
+        where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<y> \<prec> P' \<and> (P', Q'[y::=u]) \<in> Rel"
+        by(blast dest: simE)
       have "\<forall>u. \<exists>P'. <\<nu>x>P \<Longrightarrow>\<^isub>lu in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> P' \<and> (P', (<\<nu>x>Q')[y::=u]) \<in> Rel'"
       proof(rule allI)
-	fix u
-	show "\<exists>P'. <\<nu>x>P \<Longrightarrow>\<^isub>lu in <\<nu>x>P''\<rightarrow>a<y> \<prec> P' \<and> (P', (<\<nu>x>Q')[y::=u]) \<in> Rel'"
-	proof(cases "x=u")
-	  assume xequ: "x=u"
+        fix u
+        show "\<exists>P'. <\<nu>x>P \<Longrightarrow>\<^isub>lu in <\<nu>x>P''\<rightarrow>a<y> \<prec> P' \<and> (P', (<\<nu>x>Q')[y::=u]) \<in> Rel'"
+        proof(cases "x=u")
+          assume xequ: "x=u"
 
-	  have "\<exists>c::name. c \<sharp> (P, P'', Q', x, y, a)" by(blast intro: name_exists_fresh)
-	  then obtain c::name where cFreshP: "c \<sharp> P" and cFreshP'': "c \<sharp> P''" and cFreshQ': "c \<sharp> Q'"
+          have "\<exists>c::name. c \<sharp> (P, P'', Q', x, y, a)" by(blast intro: name_exists_fresh)
+          then obtain c::name where cFreshP: "c \<sharp> P" and cFreshP'': "c \<sharp> P''" and cFreshQ': "c \<sharp> Q'"
                                 and cineqx: "c \<noteq> x" and cineqy: "c \<noteq> y" and cineqa: "c \<noteq> a"
-	    by(force simp add: fresh_prod)
-	
-	  from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lc in P''\<rightarrow>a<y> \<prec> P'"
+            by(force simp add: fresh_prod)
+        
+          from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lc in P''\<rightarrow>a<y> \<prec> P'"
                               and P'RelQ': "(P', Q'[y::=c]) \<in> Rel"
-	    by blast
-	  have "<\<nu>x>P \<Longrightarrow>\<^isub>lu in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> <\<nu>c>([(x, c)] \<bullet> P')"
-	  proof -
-	    from PTrans yineqx `x \<noteq> a` cineqx have "<\<nu>x>P \<Longrightarrow>\<^isub>lc in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> <\<nu>x>P'"
-	      by(blast intro: Weak_Late_Step_Semantics.ResB)
-	    hence "([(x, c)] \<bullet> <\<nu>x>P) \<Longrightarrow>\<^isub>l([(x, c)] \<bullet> c) in ([(x, c)] \<bullet> <\<nu>x>P'')\<rightarrow>([(x, c)] \<bullet> a)<([(x, c)] \<bullet> y)> \<prec> [(x, c)] \<bullet> <\<nu>x>P'"
-	      by(rule Weak_Late_Step_Semantics.eqvtI)
-	    moreover from cFreshP have "<\<nu>c>([(x, c)] \<bullet> P) = <\<nu>x>P" by(simp add: alphaRes)
-	    moreover from cFreshP'' have "<\<nu>c>([(x, c)] \<bullet> P'') = <\<nu>x>P''" by(simp add: alphaRes)
-	    ultimately show ?thesis using `x \<noteq> a` cineqa yineqx cineqy cineqx xequ by(simp add: name_calc)
-	  qed
-	  moreover have "(<\<nu>c>([(x, c)] \<bullet> P'), (<\<nu>x>Q')[y::=u]) \<in> Rel'"
-	  proof -
-	    from P'RelQ' have "(<\<nu>x>P', <\<nu>x>(Q'[y::=c])) \<in> Rel'" by(rule ResRel)
-	    with EqvtRel' have "([(x, c)] \<bullet> <\<nu>x>P', [(x, c)] \<bullet> <\<nu>x>(Q'[y::=c])) \<in> Rel'"  by(rule eqvtRelI)
-	    with cineqy yineqx cineqx have "(<\<nu>c>([(x, c)] \<bullet> P'), (<\<nu>c>([(x, c)] \<bullet> Q'))[y::=x]) \<in> Rel'"
-	      by(simp add: name_calc eqvt_subs)
-	    with cFreshQ' xequ show ?thesis by(simp add: alphaRes)
-	  qed
-	  ultimately show ?thesis by blast
-	next
-	  assume xinequ: "x \<noteq> u"
-	  from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<y> \<prec> P'"
+            by blast
+          have "<\<nu>x>P \<Longrightarrow>\<^isub>lu in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> <\<nu>c>([(x, c)] \<bullet> P')"
+          proof -
+            from PTrans yineqx `x \<noteq> a` cineqx have "<\<nu>x>P \<Longrightarrow>\<^isub>lc in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> <\<nu>x>P'"
+              by(blast intro: Weak_Late_Step_Semantics.ResB)
+            hence "([(x, c)] \<bullet> <\<nu>x>P) \<Longrightarrow>\<^isub>l([(x, c)] \<bullet> c) in ([(x, c)] \<bullet> <\<nu>x>P'')\<rightarrow>([(x, c)] \<bullet> a)<([(x, c)] \<bullet> y)> \<prec> [(x, c)] \<bullet> <\<nu>x>P'"
+              by(rule Weak_Late_Step_Semantics.eqvtI)
+            moreover from cFreshP have "<\<nu>c>([(x, c)] \<bullet> P) = <\<nu>x>P" by(simp add: alphaRes)
+            moreover from cFreshP'' have "<\<nu>c>([(x, c)] \<bullet> P'') = <\<nu>x>P''" by(simp add: alphaRes)
+            ultimately show ?thesis using `x \<noteq> a` cineqa yineqx cineqy cineqx xequ by(simp add: name_calc)
+          qed
+          moreover have "(<\<nu>c>([(x, c)] \<bullet> P'), (<\<nu>x>Q')[y::=u]) \<in> Rel'"
+          proof -
+            from P'RelQ' have "(<\<nu>x>P', <\<nu>x>(Q'[y::=c])) \<in> Rel'" by(rule ResRel)
+            with EqvtRel' have "([(x, c)] \<bullet> <\<nu>x>P', [(x, c)] \<bullet> <\<nu>x>(Q'[y::=c])) \<in> Rel'"  by(rule eqvtRelI)
+            with cineqy yineqx cineqx have "(<\<nu>c>([(x, c)] \<bullet> P'), (<\<nu>c>([(x, c)] \<bullet> Q'))[y::=x]) \<in> Rel'"
+              by(simp add: name_calc eqvt_subs)
+            with cFreshQ' xequ show ?thesis by(simp add: alphaRes)
+          qed
+          ultimately show ?thesis by blast
+        next
+          assume xinequ: "x \<noteq> u"
+          from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<y> \<prec> P'"
                              and P'RelQ': "(P', Q'[y::=u]) \<in> Rel" by blast
-	  
-	  from PTrans `x \<noteq> a` yineqx xinequ have "<\<nu>x>P \<Longrightarrow>\<^isub>lu in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> <\<nu>x>P'"
-	    by(blast intro: Weak_Late_Step_Semantics.ResB)
-	  moreover from P'RelQ' xinequ yineqx have "(<\<nu>x>P', (<\<nu>x>Q')[y::=u]) \<in> Rel'"
-	    by(force intro: ResRel)
-	  ultimately show ?thesis by blast
-	qed
+          
+          from PTrans `x \<noteq> a` yineqx xinequ have "<\<nu>x>P \<Longrightarrow>\<^isub>lu in (<\<nu>x>P'')\<rightarrow>a<y> \<prec> <\<nu>x>P'"
+            by(blast intro: Weak_Late_Step_Semantics.ResB)
+          moreover from P'RelQ' xinequ yineqx have "(<\<nu>x>P', (<\<nu>x>Q')[y::=u]) \<in> Rel'"
+            by(force intro: ResRel)
+          ultimately show ?thesis by blast
+        qed
       qed
       thus ?case by blast
     qed
@@ -662,12 +662,12 @@ proof -
       have "Q \<longmapsto>\<alpha> \<prec> Q'" by fact
       with PSimQ obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
                              and P'RelQ': "(P', Q') \<in> Rel"
-	by(blast dest: simE)
+        by(blast dest: simE)
       
       have "<\<nu>x>P \<Longrightarrow>\<^isub>l\<alpha> \<prec> <\<nu>x>P'"
       proof -
         have xFreshAlpha: "x \<sharp> \<alpha>" by fact
-	with PTrans show ?thesis by(rule Weak_Late_Step_Semantics.ResF)
+        with PTrans show ?thesis by(rule Weak_Late_Step_Semantics.ResF)
       qed
       moreover from P'RelQ' have "(<\<nu>x>P', <\<nu>x>Q') \<in> Rel'" by(rule ResRel)
       ultimately show ?case by blast
@@ -703,48 +703,48 @@ proof -
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" and "x \<sharp> P" by fact+
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	have "x \<sharp> P \<parallel> R" by fact
-	hence xFreshP: "x \<sharp> P" and xFreshR: "x \<sharp> R" by simp+
-	from PRelQ have PSimQ: "P \<leadsto><Rel'> Q" by(rule Sim)
-	from EqvtBangRel' show ?case
-	proof(induct rule: simActBoundCases)
-	  case(Input a)
-	  have "aa = InputS a" by fact
-	  with PSimQ QTrans xFreshP obtain P''
-	    where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'"
-	    by(blast dest: simE)
-	  have "\<forall>u. \<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x> \<prec> P' \<and> (P', (Q' \<parallel> !Q)[x::=u]) \<in> bangRel Rel'"
-	  proof(rule allI)
-	    fix u
-	    from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'"
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        have "x \<sharp> P \<parallel> R" by fact
+        hence xFreshP: "x \<sharp> P" and xFreshR: "x \<sharp> R" by simp+
+        from PRelQ have PSimQ: "P \<leadsto><Rel'> Q" by(rule Sim)
+        from EqvtBangRel' show ?case
+        proof(induct rule: simActBoundCases)
+          case(Input a)
+          have "aa = InputS a" by fact
+          with PSimQ QTrans xFreshP obtain P''
+            where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel'"
+            by(blast dest: simE)
+          have "\<forall>u. \<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x> \<prec> P' \<and> (P', (Q' \<parallel> !Q)[x::=u]) \<in> bangRel Rel'"
+          proof(rule allI)
+            fix u
+            from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'"
                                 and P'RelQ': "(P', Q'[x::=u]) \<in> Rel'"
-	      by blast
-	    from PTrans xFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x>\<prec> P' \<parallel> R"
-	      by(rule Weak_Late_Step_Semantics.Par1B)
-	    moreover have "(P' \<parallel> R, (Q' \<parallel> !Q)[x::=u]) \<in> bangRel Rel'"
-	    proof -
-	      from P'RelQ' RBangRelQ have "(P' \<parallel> R, Q'[x::=u] \<parallel> !Q) \<in> bangRel Rel'"
-		by(blast intro: BRelRel' Rel.BRPar)
-	      with xFreshQ show ?thesis by(force simp add: forget)
-	    qed
-	    ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x> \<prec> P' \<and>
+              by blast
+            from PTrans xFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x>\<prec> P' \<parallel> R"
+              by(rule Weak_Late_Step_Semantics.Par1B)
+            moreover have "(P' \<parallel> R, (Q' \<parallel> !Q)[x::=u]) \<in> bangRel Rel'"
+            proof -
+              from P'RelQ' RBangRelQ have "(P' \<parallel> R, Q'[x::=u] \<parallel> !Q) \<in> bangRel Rel'"
+                by(blast intro: BRelRel' Rel.BRPar)
+              with xFreshQ show ?thesis by(force simp add: forget)
+            qed
+            ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P'' \<parallel> R)\<rightarrow>a<x> \<prec> P' \<and>
                                   (P', (Q' \<parallel> !Q)[x::=u]) \<in> bangRel Rel'"
-	      by blast
-	  qed
-	  thus ?case by blast
-	next
-	  case(BoundOutput a)
-	  have "aa = BoundOutputS a" by fact
-	  with PSimQ QTrans xFreshP obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel'"
-	    by(force dest: simE)
-	  from PTrans xFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>la<\<nu>x>\<prec> P' \<parallel> R"
-	    by(rule Weak_Late_Step_Semantics.Par1B)
-	  moreover from P'RelQ' RBangRelQ have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> bangRel Rel'"
-	    by(blast intro: Rel.BRPar BRelRel')
-	  ultimately show ?case by blast
-	qed
+              by blast
+          qed
+          thus ?case by blast
+        next
+          case(BoundOutput a)
+          have "aa = BoundOutputS a" by fact
+          with PSimQ QTrans xFreshP obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel'"
+            by(force dest: simE)
+          from PTrans xFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>la<\<nu>x>\<prec> P' \<parallel> R"
+            by(rule Weak_Late_Step_Semantics.Par1B)
+          moreover from P'RelQ' RBangRelQ have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> bangRel Rel'"
+            by(blast intro: Rel.BRPar BRelRel')
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cPar1F \<alpha> Q' P)
@@ -752,20 +752,20 @@ proof -
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" by fact
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	show ?case
-	proof(induct rule: simActFreeCases)
-	  case Free
-	  from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
-	  with QTrans obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel'"
-	    by(blast dest: simE)
-	
-	  from PTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<alpha> \<prec> P' \<parallel> R" by(rule Weak_Late_Step_Semantics.Par1F)
-	  moreover from P'RelQ' RBangRelQ have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> bangRel Rel'"
-	    by(blast intro: BRelRel' Rel.BRPar)
-	  ultimately show ?case by blast
-	qed
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        show ?case
+        proof(induct rule: simActFreeCases)
+          case Free
+          from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
+          with QTrans obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel'"
+            by(blast dest: simE)
+        
+          from PTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<alpha> \<prec> P' \<parallel> R" by(rule Weak_Late_Step_Semantics.Par1F)
+          moreover from P'RelQ' RBangRelQ have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> bangRel Rel'"
+            by(blast intro: BRelRel' Rel.BRPar)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cPar2B aa x Q' P)
@@ -774,50 +774,50 @@ proof -
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" and "x \<sharp> P" by fact+
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	have "x \<sharp> P \<parallel> R" by fact
-	hence xFreshP: "x \<sharp> P" and xFreshR: "x \<sharp> R" by simp+
-	from RBangRelQ have IH: "weakStepSimAct R (aa\<guillemotleft>x\<guillemotright> \<prec> Q') R (bangRel Rel')" by(rule IH)
-	from EqvtBangRel' show ?case
-	proof(induct rule: simActBoundCases)
-	  case(Input a)
-	  have "aa = InputS a" by fact
-	  with xFreshR IH obtain  R'' where L1: "\<forall>u. \<exists>R'. R \<Longrightarrow>\<^isub>lu in R''\<rightarrow>a<x> \<prec> R' \<and>
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        have "x \<sharp> P \<parallel> R" by fact
+        hence xFreshP: "x \<sharp> P" and xFreshR: "x \<sharp> R" by simp+
+        from RBangRelQ have IH: "weakStepSimAct R (aa\<guillemotleft>x\<guillemotright> \<prec> Q') R (bangRel Rel')" by(rule IH)
+        from EqvtBangRel' show ?case
+        proof(induct rule: simActBoundCases)
+          case(Input a)
+          have "aa = InputS a" by fact
+          with xFreshR IH obtain  R'' where L1: "\<forall>u. \<exists>R'. R \<Longrightarrow>\<^isub>lu in R''\<rightarrow>a<x> \<prec> R' \<and>
                                                  (R', Q'[x::=u]) \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
-	  have "\<forall>u. \<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R'')\<rightarrow>a<x> \<prec> P' \<and> (P', (Q \<parallel> Q')[x::=u]) \<in> bangRel Rel'"
-	  proof(rule allI)
-	    fix u
-	    from L1 obtain R' where RTrans: "R \<Longrightarrow>\<^isub>lu in R''\<rightarrow>a<x> \<prec> R'"
+            by(simp add: weakStepSimAct_def, blast)
+          have "\<forall>u. \<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R'')\<rightarrow>a<x> \<prec> P' \<and> (P', (Q \<parallel> Q')[x::=u]) \<in> bangRel Rel'"
+          proof(rule allI)
+            fix u
+            from L1 obtain R' where RTrans: "R \<Longrightarrow>\<^isub>lu in R''\<rightarrow>a<x> \<prec> R'"
                                 and R'BangRelT': "(R', Q'[x::=u]) \<in> bangRel Rel'"
-	      by blast
-	    
-	    from RTrans xFreshP have "P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R'')\<rightarrow>a<x> \<prec> P \<parallel> R'"
-	      by(rule Weak_Late_Step_Semantics.Par2B)
-	    moreover have "(P \<parallel> R', (Q \<parallel> Q')[x::=u]) \<in> bangRel Rel'"
-	    proof -
-	      from PRelQ R'BangRelT' have "(P \<parallel> R', Q \<parallel> Q'[x::=u]) \<in> bangRel Rel'"
-		by(blast intro: RelRel' Rel.BRPar)
-	      with xFreshQ show ?thesis by(simp add: forget)
-	    qed
-	    ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R'')\<rightarrow>a<x> \<prec> P' \<and> (P', (Q \<parallel> Q')[x::=u]) \<in> bangRel Rel'"
-	      by blast
-	  qed
-	  thus ?case by blast
-	next
-	  case(BoundOutput a)
-	  have "aa = BoundOutputS a" by fact
-	  with IH xFreshR obtain R' where RTrans: "R \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> R'"
+              by blast
+            
+            from RTrans xFreshP have "P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R'')\<rightarrow>a<x> \<prec> P \<parallel> R'"
+              by(rule Weak_Late_Step_Semantics.Par2B)
+            moreover have "(P \<parallel> R', (Q \<parallel> Q')[x::=u]) \<in> bangRel Rel'"
+            proof -
+              from PRelQ R'BangRelT' have "(P \<parallel> R', Q \<parallel> Q'[x::=u]) \<in> bangRel Rel'"
+                by(blast intro: RelRel' Rel.BRPar)
+              with xFreshQ show ?thesis by(simp add: forget)
+            qed
+            ultimately show "\<exists>P'. P \<parallel> R \<Longrightarrow>\<^isub>lu in (P \<parallel> R'')\<rightarrow>a<x> \<prec> P' \<and> (P', (Q \<parallel> Q')[x::=u]) \<in> bangRel Rel'"
+              by blast
+          qed
+          thus ?case by blast
+        next
+          case(BoundOutput a)
+          have "aa = BoundOutputS a" by fact
+          with IH xFreshR obtain R' where RTrans: "R \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> R'"
                                       and R'BangRelT': "(R', Q') \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
+            by(simp add: weakStepSimAct_def, blast)
 
-	  from RTrans xFreshP have "P \<parallel> R \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P \<parallel> R'"
-	    by(auto intro: Weak_Late_Step_Semantics.Par2B)
-	  moreover from PRelQ R'BangRelT' have "(P \<parallel> R', Q \<parallel> Q') \<in> bangRel Rel'"
-	    by(blast intro: RelRel' Rel.BRPar)
-	  ultimately show ?case by blast
-	qed
+          from RTrans xFreshP have "P \<parallel> R \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P \<parallel> R'"
+            by(auto intro: Weak_Late_Step_Semantics.Par2B)
+          moreover from PRelQ R'BangRelT' have "(P \<parallel> R', Q \<parallel> Q') \<in> bangRel Rel'"
+            by(blast intro: RelRel' Rel.BRPar)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cPar2F \<alpha> Q')
@@ -825,20 +825,20 @@ proof -
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" by fact
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	show ?case
-	proof(induct rule: simActFreeCases)
-	  case Free
-	  from RBangRelQ have "weakStepSimAct R (\<alpha> \<prec> Q') R (bangRel Rel')" by(rule IH)
-	  then obtain R' where RTrans: "R \<Longrightarrow>\<^isub>l\<alpha> \<prec> R'" and R'BangRelQ': "(R', Q') \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        show ?case
+        proof(induct rule: simActFreeCases)
+          case Free
+          from RBangRelQ have "weakStepSimAct R (\<alpha> \<prec> Q') R (bangRel Rel')" by(rule IH)
+          then obtain R' where RTrans: "R \<Longrightarrow>\<^isub>l\<alpha> \<prec> R'" and R'BangRelQ': "(R', Q') \<in> bangRel Rel'"
+            by(simp add: weakStepSimAct_def, blast)
 
-	  from RTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<alpha> \<prec> P \<parallel> R'" by(rule Weak_Late_Step_Semantics.Par2F)
-	  moreover from PRelQ R'BangRelQ' have "(P \<parallel> R', Q \<parallel> Q') \<in> bangRel Rel'"
-	    by(blast intro: RelRel' Rel.BRPar)
-	  ultimately show ?case by blast
-	qed
+          from RTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<alpha> \<prec> P \<parallel> R'" by(rule Weak_Late_Step_Semantics.Par2F)
+          moreover from PRelQ R'BangRelQ' have "(P \<parallel> R', Q \<parallel> Q') \<in> bangRel Rel'"
+            by(blast intro: RelRel' Rel.BRPar)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cComm1 a x Q' b Q'' P)
@@ -847,177 +847,177 @@ proof -
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" and "x \<sharp> P" by fact+
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	have "x \<sharp> P \<parallel> R" by fact
-	hence xFreshP: "x \<sharp> P" by simp
-	show ?case
-	proof(induct rule: simActFreeCases)
-	  case Free
-	  from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
-	  with QTrans xFreshP obtain P' P'' where PTrans: "P \<Longrightarrow>\<^isub>lb in P''\<rightarrow>a<x> \<prec> P'"
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        have "x \<sharp> P \<parallel> R" by fact
+        hence xFreshP: "x \<sharp> P" by simp
+        show ?case
+        proof(induct rule: simActFreeCases)
+          case Free
+          from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
+          with QTrans xFreshP obtain P' P'' where PTrans: "P \<Longrightarrow>\<^isub>lb in P''\<rightarrow>a<x> \<prec> P'"
                                               and P'RelQ': "(P', Q'[x::=b]) \<in> Rel'"
-	    by(blast dest: simE)
-	
-	  from RBangRelQ have "weakStepSimAct R (a[b] \<prec> Q'') R (bangRel Rel')" by(rule IH)
-	  then obtain R' where RTrans: "R \<Longrightarrow>\<^isub>la[b] \<prec> R'"
+            by(blast dest: simE)
+        
+          from RBangRelQ have "weakStepSimAct R (a[b] \<prec> Q'') R (bangRel Rel')" by(rule IH)
+          then obtain R' where RTrans: "R \<Longrightarrow>\<^isub>la[b] \<prec> R'"
                            and R'RelT': "(R', Q'') \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
-	  from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> (P' \<parallel> R')"
-	    by(rule Weak_Late_Step_Semantics.Comm1)
-	  moreover from P'RelQ' R'RelT' have "(P' \<parallel> R', Q'[x::=b] \<parallel> Q'') \<in> bangRel Rel'"
-	    by(blast intro: RelRel' Rel.BRPar)
-	  ultimately show ?case by blast
-	qed
+            by(simp add: weakStepSimAct_def, blast)
+          from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> (P' \<parallel> R')"
+            by(rule Weak_Late_Step_Semantics.Comm1)
+          moreover from P'RelQ' R'RelT' have "(P' \<parallel> R', Q'[x::=b] \<parallel> Q'') \<in> bangRel Rel'"
+            by(blast intro: RelRel' Rel.BRPar)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cComm2 a b Q' x Q'' P)
       have QTrans: "Q \<longmapsto>a[b] \<prec> Q'" by fact
       have IH: "\<And>P. (P, !Q) \<in> bangRel Rel \<Longrightarrow> weakStepSimAct P (a<x> \<prec> Q'') P (bangRel Rel')"
-	by fact
+        by fact
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" and "x \<sharp> P" by fact+
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	have "x \<sharp> P \<parallel> R" by fact
-	hence xFreshR: "x \<sharp> R" by simp
-	show ?case
-	proof(induct rule: simActFreeCases)
-	  case Free
-	  
-	  from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
-	  with QTrans obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la[b] \<prec> P'"
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        have "x \<sharp> P \<parallel> R" by fact
+        hence xFreshR: "x \<sharp> R" by simp
+        show ?case
+        proof(induct rule: simActFreeCases)
+          case Free
+          
+          from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
+          with QTrans obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la[b] \<prec> P'"
                                   and P'RelQ': "(P', Q') \<in> Rel'"
-	    by(blast dest: simE)
-	
-	  from RBangRelQ have "weakStepSimAct R (a<x> \<prec> Q'') R (bangRel Rel')"
-	    by(rule IH)
-	  with xFreshR obtain R' R'' where RTrans: "R \<Longrightarrow>\<^isub>lb in R''\<rightarrow>a<x> \<prec> R'"
+            by(blast dest: simE)
+        
+          from RBangRelQ have "weakStepSimAct R (a<x> \<prec> Q'') R (bangRel Rel')"
+            by(rule IH)
+          with xFreshR obtain R' R'' where RTrans: "R \<Longrightarrow>\<^isub>lb in R''\<rightarrow>a<x> \<prec> R'"
                                        and R'BangRelQ'': "(R', Q''[x::=b]) \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
-	
-	  from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> (P' \<parallel> R')"
-	    by(rule Weak_Late_Step_Semantics.Comm2)
-	  moreover from P'RelQ' R'BangRelQ'' have "(P' \<parallel> R', Q' \<parallel> Q''[x::=b]) \<in> bangRel Rel'"
-	    by(rule Rel.BRPar)
-	  ultimately show ?case by blast
-	qed
+            by(simp add: weakStepSimAct_def, blast)
+        
+          from PTrans RTrans have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> (P' \<parallel> R')"
+            by(rule Weak_Late_Step_Semantics.Comm2)
+          moreover from P'RelQ' R'BangRelQ'' have "(P' \<parallel> R', Q' \<parallel> Q''[x::=b]) \<in> bangRel Rel'"
+            by(rule Rel.BRPar)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cClose1 a x Q' y Q'' P)
       have QTrans: "Q \<longmapsto> a<x> \<prec> Q'" by fact
       have IH: "\<And>P. (P, !Q) \<in> bangRel Rel \<Longrightarrow> weakStepSimAct P (a<\<nu>y> \<prec> Q'') P (bangRel Rel')"
-	by fact
+        by fact
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" and "x \<sharp> P" and "y \<sharp> P" by fact+
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	have "x \<sharp> P \<parallel> R" and "y \<sharp> P \<parallel> R" by fact+
-	hence xFreshP: "x \<sharp> P" and yFreshR: "y \<sharp> R" and yFreshP: "y \<sharp> P" by simp+
-	show ?case
-	proof(induct rule: simActFreeCases)
-	  case Free
-	  from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
-	  with QTrans xFreshP obtain P' P'' where PTrans: "P \<Longrightarrow>\<^isub>ly in P''\<rightarrow>a<x> \<prec> P'"
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        have "x \<sharp> P \<parallel> R" and "y \<sharp> P \<parallel> R" by fact+
+        hence xFreshP: "x \<sharp> P" and yFreshR: "y \<sharp> R" and yFreshP: "y \<sharp> P" by simp+
+        show ?case
+        proof(induct rule: simActFreeCases)
+          case Free
+          from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
+          with QTrans xFreshP obtain P' P'' where PTrans: "P \<Longrightarrow>\<^isub>ly in P''\<rightarrow>a<x> \<prec> P'"
                                               and P'RelQ': "(P', Q'[x::=y]) \<in> Rel'"
-	    by(blast dest: simE)
-	
-	  from RBangRelQ have "weakStepSimAct R (a<\<nu>y> \<prec> Q'') R (bangRel Rel')" by(rule IH)
-	  with yFreshR obtain R' where RTrans: "R \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> R'"
+            by(blast dest: simE)
+        
+          from RBangRelQ have "weakStepSimAct R (a<\<nu>y> \<prec> Q'') R (bangRel Rel')" by(rule IH)
+          with yFreshR obtain R' where RTrans: "R \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> R'"
                                    and R'BangRelQ'': "(R', Q'') \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
-	  from PTrans RTrans yFreshP yFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> <\<nu>y>(P' \<parallel> R')"
-	    by(rule Weak_Late_Step_Semantics.Close1)
-	  moreover from P'RelQ' R'BangRelQ'' have "(<\<nu>y>(P' \<parallel> R'), <\<nu>y>(Q'[x::=y] \<parallel> Q'')) \<in> bangRel Rel'"
-	    by(force intro: Rel.BRPar Rel.BRRes)
-	  ultimately show ?case by blast
-	qed
+            by(simp add: weakStepSimAct_def, blast)
+          from PTrans RTrans yFreshP yFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> <\<nu>y>(P' \<parallel> R')"
+            by(rule Weak_Late_Step_Semantics.Close1)
+          moreover from P'RelQ' R'BangRelQ'' have "(<\<nu>y>(P' \<parallel> R'), <\<nu>y>(Q'[x::=y] \<parallel> Q'')) \<in> bangRel Rel'"
+            by(force intro: Rel.BRPar Rel.BRRes)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cClose2 a y Q' x Q'')
       have QTrans: "Q \<longmapsto> a<\<nu>y> \<prec> Q'" by fact
       have IH: "\<And>P. (P, !Q) \<in> bangRel Rel \<Longrightarrow> weakStepSimAct P (a<x> \<prec> Q'') P (bangRel Rel')"
-	by fact
+        by fact
       have "(P, Q \<parallel> !Q) \<in> bangRel Rel" and "x \<sharp> P" and "y \<sharp> P" by fact+
       thus ?case
       proof(induct rule: BRParCases)
-	case(BRPar P R)
-	have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
-	have "x \<sharp> P \<parallel> R" and "y \<sharp> P \<parallel> R" by fact+
-	hence xFreshR: "x \<sharp> R" and yFreshR: "y \<sharp> R" and yFreshP: "y \<sharp> P" by simp+
-	show ?case
-	proof(induct rule: simActFreeCases)
-	  case Free
-	  from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
-	  with QTrans yFreshP obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> P'"
+        case(BRPar P R)
+        have PRelQ: "(P, Q) \<in> Rel" and RBangRelQ: "(R, !Q) \<in> bangRel Rel" by fact+
+        have "x \<sharp> P \<parallel> R" and "y \<sharp> P \<parallel> R" by fact+
+        hence xFreshR: "x \<sharp> R" and yFreshR: "y \<sharp> R" and yFreshP: "y \<sharp> P" by simp+
+        show ?case
+        proof(induct rule: simActFreeCases)
+          case Free
+          from PRelQ have "P \<leadsto><Rel'> Q" by(rule Sim)
+          with QTrans yFreshP obtain P' where PTrans: "P \<Longrightarrow>\<^isub>la<\<nu>y> \<prec> P'"
                                           and P'RelQ': "(P', Q') \<in> Rel'"
-	    by(blast dest: simE)
+            by(blast dest: simE)
 
-	  from RBangRelQ have "weakStepSimAct R (a<x> \<prec> Q'') R (bangRel Rel')"
-	    by(rule IH)
-	  with xFreshR obtain R' R'' where RTrans: "R \<Longrightarrow>\<^isub>ly in R''\<rightarrow>a<x> \<prec> R'"
+          from RBangRelQ have "weakStepSimAct R (a<x> \<prec> Q'') R (bangRel Rel')"
+            by(rule IH)
+          with xFreshR obtain R' R'' where RTrans: "R \<Longrightarrow>\<^isub>ly in R''\<rightarrow>a<x> \<prec> R'"
                                        and R'BangRelT': "(R', Q''[x::=y]) \<in> bangRel Rel'"
-	    by(simp add: weakStepSimAct_def, blast)
-	
-	  from PTrans RTrans yFreshP yFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> <\<nu>y>(P' \<parallel> R')"
-	    by(rule Weak_Late_Step_Semantics.Close2)
-	  moreover from P'RelQ' R'BangRelT' have "(<\<nu>y>(P' \<parallel> R'), <\<nu>y>(Q' \<parallel> Q''[x::=y])) \<in> bangRel Rel'"
-	    by(force intro: Rel.BRPar Rel.BRRes)
-	  ultimately show ?case by blast
-	qed
+            by(simp add: weakStepSimAct_def, blast)
+        
+          from PTrans RTrans yFreshP yFreshR have "P \<parallel> R \<Longrightarrow>\<^isub>l\<tau> \<prec> <\<nu>y>(P' \<parallel> R')"
+            by(rule Weak_Late_Step_Semantics.Close2)
+          moreover from P'RelQ' R'BangRelT' have "(<\<nu>y>(P' \<parallel> R'), <\<nu>y>(Q' \<parallel> Q''[x::=y])) \<in> bangRel Rel'"
+            by(force intro: Rel.BRPar Rel.BRRes)
+          ultimately show ?case by blast
+        qed
       qed
     next
       case(cBang Rs)
       have IH: "\<And>P. (P, Q \<parallel> !Q) \<in> bangRel Rel \<Longrightarrow> weakStepSimAct P Rs P (bangRel Rel')"
-	by fact
+        by fact
       have "(P, !Q) \<in> bangRel Rel" by fact
       thus ?case
       proof(induct rule: BRBangCases)
-	case(BRBang P)
-	have PRelQ: "(P, Q) \<in> Rel" by fact
-	hence "(!P, !Q) \<in> bangRel Rel" by(rule Rel.BRBang)
-	with PRelQ have "(P \<parallel> !P, Q \<parallel> !Q) \<in> bangRel Rel" by(rule Rel.BRPar)
-	hence "weakStepSimAct (P \<parallel> !P) Rs (P \<parallel> !P) (bangRel Rel')" by(rule IH)
-	thus ?case
-	proof(simp (no_asm) add: weakStepSimAct_def, auto)
-	  fix Q' a x
-	  assume "weakStepSimAct (P \<parallel> !P) (a<\<nu>x> \<prec> Q') (P \<parallel> !P) (bangRel Rel')" and "x \<sharp> P"
-	  then obtain P' where PTrans: "(P \<parallel> !P) \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
+        case(BRBang P)
+        have PRelQ: "(P, Q) \<in> Rel" by fact
+        hence "(!P, !Q) \<in> bangRel Rel" by(rule Rel.BRBang)
+        with PRelQ have "(P \<parallel> !P, Q \<parallel> !Q) \<in> bangRel Rel" by(rule Rel.BRPar)
+        hence "weakStepSimAct (P \<parallel> !P) Rs (P \<parallel> !P) (bangRel Rel')" by(rule IH)
+        thus ?case
+        proof(simp (no_asm) add: weakStepSimAct_def, auto)
+          fix Q' a x
+          assume "weakStepSimAct (P \<parallel> !P) (a<\<nu>x> \<prec> Q') (P \<parallel> !P) (bangRel Rel')" and "x \<sharp> P"
+          then obtain P' where PTrans: "(P \<parallel> !P) \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
                            and P'RelQ': "(P', Q') \<in> (bangRel Rel')"
-	    by(simp add: weakStepSimAct_def, blast)
-	  from PTrans have "!P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
-	    by(rule Weak_Late_Step_Semantics.Bang)
-	  with P'RelQ' show "\<exists>P'. !P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P' \<and> (P', Q') \<in> bangRel Rel'" by blast
-	next
-	  fix Q' a x
-	  assume "weakStepSimAct (P \<parallel> !P) (a<x> \<prec> Q') (P \<parallel> !P) (bangRel Rel')" and "x \<sharp> P"
-	  then obtain P'' where L1: "\<forall>u. \<exists>P'. P \<parallel> !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')"
-	    by(simp add: weakStepSimAct_def, blast)
-	  have "\<forall>u. \<exists>P'. !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')"
-	  proof(rule allI)
-	    fix u
-	    from L1 obtain P' where PTrans: "P \<parallel> !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'"
+            by(simp add: weakStepSimAct_def, blast)
+          from PTrans have "!P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
+            by(rule Weak_Late_Step_Semantics.Bang)
+          with P'RelQ' show "\<exists>P'. !P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P' \<and> (P', Q') \<in> bangRel Rel'" by blast
+        next
+          fix Q' a x
+          assume "weakStepSimAct (P \<parallel> !P) (a<x> \<prec> Q') (P \<parallel> !P) (bangRel Rel')" and "x \<sharp> P"
+          then obtain P'' where L1: "\<forall>u. \<exists>P'. P \<parallel> !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')"
+            by(simp add: weakStepSimAct_def, blast)
+          have "\<forall>u. \<exists>P'. !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')"
+          proof(rule allI)
+            fix u
+            from L1 obtain P' where PTrans: "P \<parallel> !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'"
                                 and P'RelQ': "(P', Q'[x::=u]) \<in> (bangRel Rel')"
-	      by blast
-	    from PTrans have "!P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Bang)
-	    with P'RelQ' show "\<exists>P'. !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')" by blast
-	  qed
-	  thus "\<exists>P''. \<forall>u. \<exists>P'. !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')" by blast
-	next
-	  fix Q' \<alpha>
-	  assume "weakStepSimAct (P \<parallel> !P) (\<alpha> \<prec> Q') (P \<parallel> !P) (bangRel Rel')"
-	  then obtain P' where PTrans: "(P \<parallel> !P) \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
+              by blast
+            from PTrans have "!P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'" by(rule Weak_Late_Step_Semantics.Bang)
+            with P'RelQ' show "\<exists>P'. !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')" by blast
+          qed
+          thus "\<exists>P''. \<forall>u. \<exists>P'. !P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> (bangRel Rel')" by blast
+        next
+          fix Q' \<alpha>
+          assume "weakStepSimAct (P \<parallel> !P) (\<alpha> \<prec> Q') (P \<parallel> !P) (bangRel Rel')"
+          then obtain P' where PTrans: "(P \<parallel> !P) \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
                            and P'RelQ': "(P', Q') \<in> (bangRel Rel')"
-	    by(simp add: weakStepSimAct_def, blast)
-	  from PTrans have "!P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
-	    by(rule Weak_Late_Step_Semantics.Bang)
-	  with P'RelQ' show "\<exists>P'. !P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P' \<and> (P', Q') \<in> (bangRel Rel')" by blast
-	qed
+            by(simp add: weakStepSimAct_def, blast)
+          from PTrans have "!P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
+            by(rule Weak_Late_Step_Semantics.Bang)
+          with P'RelQ' show "\<exists>P'. !P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P' \<and> (P', Q') \<in> (bangRel Rel')" by blast
+        qed
       qed
     qed
-  qed	
+  qed   
   moreover from PRelQ have "(!P, !Q) \<in> bangRel Rel" by(rule Rel.BRBang)
   ultimately show ?thesis by(simp add: weakStepSim_def)
 qed
