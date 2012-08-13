@@ -9,6 +9,7 @@ BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
 BytecodeLogicJmlTypes
+CCS
 Category
 Category2
 Cauchy
@@ -22,6 +23,7 @@ Completeness
 CoreC++
 DPT-SAT-Solver
 DataRefinementIBP
+Datatype_Order_Generator
 Depth-First-Search
 Dijkstra_Shortest_Path
 DiskPaxos
@@ -47,8 +49,10 @@ Girth_Chromatic
 GraphMarkingIBP
 Group-Ring-Module
 HRB-Slicing
+Heard_Of
 HotelKeyCards
 Huffman
+Impossible_Geometry
 Inductive_Confidentiality
 Integration
 Jinja
@@ -77,12 +81,15 @@ NormByEval
 Ordinal
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
+PCF
 POPLmark-deBruijn
 Perfect-Number-Thm
+Pi_Calculus
 Polynomials
 Presburger-Automata
 Program-Conflict-Analysis
 PseudoHoops
+Psi_Calculi
 RIPEMD-160-SPARK
 RSAPSS
 Ramsey-Infinite
@@ -107,6 +114,7 @@ Topology
 Transitive-Closure
 Transitive-Closure-II
 Tree-Automata
+Tycon
 Valuation
 Verified-Prover
 VolpanoSmith

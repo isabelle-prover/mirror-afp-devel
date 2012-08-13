@@ -1,0 +1,8 @@
+session Psi_Calculi (AFP) = "HOL-Nominal" +
+  options [timeout = 3600]
+  theories
+    Tau_Laws_Weak
+    Tau_Laws_No_Weak
+  files
+    "document/root.bib"
+    "document/root.tex"

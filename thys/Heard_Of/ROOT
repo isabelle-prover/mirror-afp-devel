@@ -1,0 +1,22 @@
+session Heard_Of (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "../Stuttering_Equivalence/StutterEquivalence"
+  theories
+    HOModel
+    Reduction
+    Majorities
+    "otr/OneThirdRuleProof"
+    "uv/UvProof"
+    "lastvoting/LastVotingProof"
+    "ute/UteProof"
+    "ate/AteProof"
+    "eigbyz/EigbyzProof"
+(* FIXME *)
+(* generic model and reduction theorem *)
+(* utility lemmas about majorities *)
+(* algorithms for benign faults *)
+(* algorithms for Byzantine faults *)
+  files
+    "document/root.bib"
+    "document/root.tex"
