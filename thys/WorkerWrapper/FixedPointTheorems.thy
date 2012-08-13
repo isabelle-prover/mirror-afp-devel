@@ -10,6 +10,11 @@ imports
   HOLCF
 begin
 
+setup {*
+  Thy_Output.antiquotation @{binding haskell} (Scan.lift Args.name)
+    (fn _ => fn s => "\\" ^ "<" ^ s ^ "\\>")
+*}
+
 (* LaTeXsugar fights with HOLCF syntax: at least cdot *)
 
 (* THEOREMS *)

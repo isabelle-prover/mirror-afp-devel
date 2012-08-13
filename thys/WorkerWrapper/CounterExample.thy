@@ -20,9 +20,9 @@ history of all definitions that have appeared during transformation,
 and the \textsf{fold} rule treats this as a set of rewrite rules
 oriented right-to-left. (The \textsf{unfold} rule treats the current
 working set of definitions as rewrite rules oriented left-to-right.)
-Hence as each definition \<f = body\> yields a rule of the form
-\<body\ \Longrightarrow\ f\>, one can always derive \<f =\
-f\>. Clearly this has dire implications for the preservation of
+Hence as each definition @{haskell "f = body"} yields a rule of the form
+@{haskell "body\\ \\Longrightarrow\\ f"}, one can always derive @{haskell "f =\\
+f"}. Clearly this has dire implications for the preservation of
 termination behaviour.
 
 \citet{Tullsen:PhDThesis} in his \S3.1.2 observes that the semantic
@@ -30,10 +30,10 @@ essence of the \textsf{fold} rule is Park induction:
 \begin{center}
   @{thm[mode=Rule] "fix_least"[where F=f]} {\texttt{fix\_least}}
 \end{center}
-viz that \<f\ x = x\> implies only the partially correct \<fix\ f
-\sqsubseteq x\>, and not the totally correct \<fix\ f = x\>. We use
-this characterisation to show that if \<unwrap\> is non-strict
-(i.e. \<unwrap \bot \neq \bot\>) then there are programs where
+viz that @{haskell "f\\ x = x"} implies only the partially correct @{haskell "fix\\ f
+\\sqsubseteq x"}, and not the totally correct @{haskell "fix\\ f = x"}. We use
+this characterisation to show that if @{haskell "unwrap"} is non-strict
+(i.e. @{haskell "unwrap \\bot \\neq \\bot"}) then there are programs where
 worker/wrapper fusion as used by Gill and Hutton need only be
 partially correct.
 

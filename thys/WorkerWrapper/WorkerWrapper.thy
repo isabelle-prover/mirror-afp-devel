@@ -18,10 +18,10 @@ text{*
 
 \begin{figure}[tb]
  \begin{center}
-  \fbox{\parbox{0.96\textwidth}{For a recursive definition \<comp =
-      \mathsf{fix}\ body\> for some \<body :: A \to A\> and a pair of
-      functions \<wrap :: B \to A\> and \<unwrap :: A \to B\> where
-      \<wrap \circ unwrap = id_A\>, we have:
+  \fbox{\parbox{0.96\textwidth}{For a recursive definition @{haskell "comp =
+      \\mathsf{fix}\\ body"} for some @{haskell "body :: A \\to A"} and a pair of
+      functions @{haskell "wrap :: B \\to A"} and @{haskell "unwrap :: A \\to B"} where
+      @{haskell "wrap \\circ unwrap = id_A"}, we have:
 
       \parbox{0.35\textwidth}{\begin{haskell}
         comp = wrap\ work\\

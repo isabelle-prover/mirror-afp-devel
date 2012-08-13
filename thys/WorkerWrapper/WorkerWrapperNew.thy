@@ -98,17 +98,17 @@ equational fusion rule.
 
 \begin{figure}[tb]
  \begin{center}
-  \fbox{\parbox{0.96\textwidth}{For a recursive definition \<comp =
-      body\> of type \<A\> and a pair of functions \<wrap :: B \to A\>
-      and \<unwrap :: A \to B\> where \<wrap \circ unwrap = id_A\> and
-      \<unwrap\ \bot = \bot\>, define:
+  \fbox{\parbox{0.96\textwidth}{For a recursive definition @{haskell "comp =
+      body"} of type @{haskell "A"} and a pair of functions @{haskell "wrap :: B \\to A"}
+      and @{haskell "unwrap :: A \\to B"} where @{haskell "wrap \\circ unwrap = id_A"} and
+      @{haskell "unwrap\\ \\bot = \\bot"}, define:
 
       \parbox{0.35\textwidth}{\begin{haskell}
         comp & = wrap\ work\\
         work & = unwrap\ (body[wrap\ work / comp])
       \end{haskell}}\hfill \textsf{(the worker/wrapper transformation)}
 
-    In the scope of \<work\>, the following rewrite is admissable:
+    In the scope of @{haskell "work"}, the following rewrite is admissable:
 
     \parbox{0.35\textwidth}{\begin{haskell}
         unwrap\ (wrap\ work) \Longrightarrow work
