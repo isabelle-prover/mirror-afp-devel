@@ -28,10 +28,12 @@ notation
   inf (infixl "\<sqinter>" 70)
   and sup (infixl "\<squnion>" 65)
 
+definition "MonoTran = {f::'a::order \<Rightarrow> 'a . mono f}"
 
-typedef ('a::order) MonoTran = "{f::'a \<Rightarrow> 'a . mono f}"
-  apply (rule_tac x = id in exI)
-  by (simp add: mono_def)
+typedef (open) 'a MonoTran = "MonoTran :: ('a::order \<Rightarrow> 'a) set"
+proof
+  show "id \<in> MonoTran" by (simp add: MonoTran_def mono_def)
+qed
 
 lemma [simp]: "Rep_MonoTran x \<in> MonoTran"
   by (rule Rep_MonoTran)
