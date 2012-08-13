@@ -2,7 +2,7 @@
    Title: The pi-calculus   
    Author/Maintainer: Jesper Bengtson (jebe.dk), 2012
 *)
-theory Late_Semantics'
+theory Late_Semantics1
   imports Late_Semantics
 begin
 

@@ -3,7 +3,7 @@
    Author/Maintainer: Jesper Bengtson (jebe.dk), 2012
 *)
 theory Late_Tau_Chain
-  imports Late_Semantics'
+  imports Late_Semantics1
 begin
 
 abbreviation "tauChain_judge" :: "pi \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^isub>\<tau> _" [80, 80] 80)
