@@ -77,7 +77,7 @@ proof -
   let ?mfr = "Max ?cards"
   have "\<forall>v. card (HOV msgs v) \<le> N" by (auto intro: card_mono)
   hence "?cards \<subseteq> { 0 .. N }" by auto
-  hence fin: "finite ?cards" by (auto elim: finite_subset)
+  hence fin: "finite ?cards" by (metis atLeast0AtMost finite_atMost finite_subset)
   hence "?mfr \<in> ?cards" by (rule Max_in) auto
   then obtain v where v: "?mfr = card (HOV msgs v)" by auto
   have "MFR msgs v"
