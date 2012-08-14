@@ -1,5 +1,5 @@
 session Collections (AFP) = HOL +
-  options [timeout = 1200, document_variants = "outline=/proof,/ML:userguide"]
+  options [timeout = 1200, document_variants = "document:outline=/proof,/ML:userguide"]
   theories [document = false]
     "common/Misc"
     "common/Assoc_List"
