@@ -1149,15 +1149,11 @@ shows "(abscissa X) \<in> radical_sqrt & (ordinate X) \<in> radical_sqrt"
 proof-
   have "(abscissa A - abscissa X) * (ordinate A - ordinate B) = (ordinate A - ordinate X) * (abscissa A - abscissa B)" 
     by (metis colin collinear_def parallel_def)    
-  hence "abscissa A *(ordinate A - ordinate B) - abscissa X * (ordinate A - ordinate B) = ordinate A * (abscissa A - abscissa B) - ordinate X * (abscissa A - abscissa B)" 
-    by (metis abscissa.simps add_0_left comm_semiring_1_class.normalizing_semiring_rules(7) diff_self mult_diff_mult mult_zero_right ordinate.simps point.exhaust point_abscissa_diff point_ordinate_diff)
   hence l3: "(- (ordinate A - ordinate B)) * abscissa X + (abscissa A - abscissa B) * ordinate X = (- abscissa A * (ordinate A - ordinate B) + ordinate A * (abscissa A - abscissa B))"
-    by (simp add: algebra_simps)
+    by algebra
   have "sqrt ((abscissa X - abscissa C)^2 + (ordinate X - ordinate C) ^2) = sqrt ((abscissa D - abscissa E)^2 + (ordinate D - ordinate E) ^2)" 
     using eqDist distance_def
     by (metis (no_types) minus_diff_eq point_abscissa_diff point_dist_def point_ordinate_diff power2_minus)
-  hence "(sqrt ((abscissa X - abscissa C)^2 + (ordinate X - ordinate C) ^2))^2 = (sqrt ((abscissa D - abscissa E)^2 + (ordinate D - ordinate E)^2)) ^2" 
-    by auto
   hence l6: "(abscissa X - abscissa C)^2 + (ordinate X - ordinate C) ^2 = (abscissa D - abscissa E)^2 + (ordinate D - ordinate E)^2"
     by auto
   have "\<not> (abscissa A = abscissa B & ordinate A = ordinate B)"
@@ -1297,7 +1293,7 @@ proof-
   hence "2 dvd ((fst p)^3)"
     using l8
     by (auto simp add: dvd_def)
-  hence l15: "2 dvd (fst p)"
+  hence two_dvd_fst: "2 dvd (fst p)"
     apply (auto simp add: dvd_def power_def)
     by (metis comm_semiring_1_class.normalizing_semiring_rules(7) even_equiv_def odd_pow power3_eq_cube)
   hence "8 dvd ((fst p)^3)"
@@ -1307,16 +1303,14 @@ proof-
     by auto
   hence "2 dvd ((snd p)^3)"
     by (auto simp add: dvd_def)
-  hence "2 dvd (snd p)"
+  hence two_dvd_snd: "2 dvd (snd p)"
     apply (auto simp add: dvd_def power_def)
     by (metis comm_semiring_1_class.normalizing_semiring_rules(7) even_equiv_def odd_pow power3_eq_cube)
-  hence l21: "2 dvd (snd p) & 2 dvd (fst p)"
-    using l15
-    by auto
   thus ?thesis 
     using hypsp
     apply (auto simp add: dvd_def)
-    by (metis l21 gcd_greatest_iff_int one_less_numeral_iff rel_simps(9) zdvd_not_zless zero_less_one)
+    by (metis gcd_greatest_int one_less_numeral_iff rel_simps(9) 
+              two_dvd_fst two_dvd_snd zdvd_not_zless zero_less_one)
 qed
 
 
