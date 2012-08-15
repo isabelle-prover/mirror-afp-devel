@@ -631,52 +631,36 @@ next
   case False
   have sl0: "v \<noteq> 0"
     by (metis False mult_eq_0_iff)
-  have l0: "(0=(u + v * s)^3 + a * (u + v * s)^2 + b * (u + v * s) + c)"
+  have l2: "(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) + (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * s = 0" 
     using eq0 z
-    by metis
-  hence "((u + v * s) * (u + v * s) * (u + v * s) + a * (u + v * s) * (u + v * s) + b * (u + v * s) + c = 0)"
-    by (simp add: power_def)
-  hence l2: "(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) + (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * s = 0" 
-    by (simp add: algebra_simps power_def)
+    by algebra
   show ?thesis
   proof (cases "3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v \<noteq> 0")
     case True
-    hence lcase: "3 * u *u * v + v *v*v * (s*s) + 2 * a * u * v + b * v \<noteq> 0"
-      by (simp add: power_def)
-    have "(3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * s = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) & 3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v \<noteq> 0" 
-      using l2 True
-      by (metis add_eq_0_iff)
-    hence "s * (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * (1 / (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1 / (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by (metis comm_semiring_1_class.normalizing_semiring_rules(7))
-    hence "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(17))
-    hence "s * (((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * 1)/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by (metis (no_types) times_divide_eq_right)
+    hence  "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
+      using l2
+      by algebra
     hence "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by (metis comm_semiring_1_class.normalizing_semiring_rules(11) comm_semiring_1_class.normalizing_semiring_rules(7))
+      by auto
+    hence "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
+      by auto
     hence "s * 1 = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
       by (metis (lifting) True divide_self_if)
     hence "s = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) * (1 /(3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
       by (metis mult_1_right)
     hence l10: "s = - (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) * (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v))"
       by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(18) power2_eq_square power3_eq_cube)
-    have "3*u*v*v*(s*s) \<in> P" 
-      using u v s Mult Nats
-      by auto
-    have " a * u *u + a * v*v * (s *s) \<in> P" 
-      using a u v s Mult Add
-      by auto
-    have " (3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v) \<in> P" 
+    have "(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v) \<in> P" 
       using a b u v s Nats Mult Add
       by auto 
     hence l103: " (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v)) \<in> P" 
-      using Inv lcase
+      using Inv True
       by auto
     have l104: "-(u *u *u + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) \<in> P" 
       using a b c u v s Mult Add Neg Nats
       by auto
-    have "- (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) * (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v)) \<in> P" 
-      using l104 l103 Mult
+    hence "- (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) * (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v)) \<in> P" 
+      using l103 Mult
       by metis
     hence "s \<in> P" 
       using l10
@@ -687,54 +671,18 @@ next
     thus ?thesis 
       using eq0
       by auto
-next
-  case False
-  hence l15: "(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) = 0" 
-    using l2
-    by auto
-  hence l16: "b * v = - (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v) " 
-    using False sl0
-    by auto
-  hence "b * v * (1/v) = - (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v) * (1/v)" 
-    using False sl0
-    by metis
-  hence " b = (- (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v)) /v"
-    by (metis eq_divide_eq l16 sl0) 
-  hence "b = (- (3 * u^2 * v + v^2 * v * s^2 + 2 * a * u* v)) /v"
-    by (simp add: power_def)
-  hence " b = (- (3 * u^2 * v+ v^2 * s^2 * v + 2 * a * u * v)) /v"
-    by auto
-  hence "b =(- ((3 * u^2 + v^2 * s^2 + 2 * a * u )* v)) /v"
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(1))
-  hence " b = (- (3 * u^2 + v^2 * s^2 + 2 * a * u)) * (v /v)"
-    by auto
-  hence l24: " b = (- (3 * u^2 + v^2 * s^2 + 2 * a * u))" 
-    using sl0
-    by auto
-  have "c = -(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u)" 
-    using l15
-    by auto
-  hence "c = -(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + (- (3 * u^2 + v^2 * s^2 + 2 * a * u)) * u)"
-    using l24
-    by auto
-  hence " c = - (u^3) - 3 * u * v^2 * s^2 - a * u^2 - a * v^2 * s^2 +  (3 * u^2 + v^2 * s^2 + 2 * a * u) * u"
-    by (simp add: algebra_simps)
-  hence l28: "c = - (u^3) - 3 * u * v^2 * s^2 - a * u^2 - a * v^2 * s^2 +  3 * u^3 + v^2 * s^2 * u + 2 * a * u^2"
-    by (simp add: algebra_simps power_def)
-  have l29: "(- a - 2 * u) \<in> P"
-    by (metis a u Add Mult Neg Nats diff_def mult_2)
-  have "(- a - 2 * u)^3 + a * (- a - 2 * u)^2 + b * ( - a - 2 * u) + c =
-        (- a - 2 * u)^3 + a * (- a - 2 * u)^2 + (- (3 * u^2 + v^2 * s^2 + 2 * a * u))* ( - a - 2 * u) + (- (u^3) - 3 * u * v^2 * s^2 - a * u^2 - a * v^2 * s^2 +  3 * u^3 + v^2 * s^2 * u + 2 * a * u^2) "
-    using l28 l24
-    by auto
-  also have "... = 0"
-    by (simp add: algebra_simps power_def)
-  finally show ?thesis 
-    using l29
-    by metis
+  next
+    case False
+    have "(- a - 2 * u)^3 + a * (- a - 2 * u)^2 + b * ( - a - 2 * u) + c =
+          (- a - 2 * u)^3 + a * (- a - 2 * u)^2 + (- (3 * u^2 + v^2 * s^2 + 2 * a * u))* ( - a - 2 * u) + (- (u^3) - 3 * u * v^2 * s^2 - a * u^2 - a * v^2 * s^2 +  3 * u^3 + v^2 * s^2 * u + 2 * a * u^2) "
+      using l2 False sl0
+      by algebra
+    also have "... = 0"
+      by (simp add: algebra_simps power_def)
+    finally show ?thesis 
+      by (metis a u Add Mult Neg Nats diff_def mult_2)
+  qed
 qed
-qed
-
 
 lemma cubic_root_radical_sqrt_steplemma_sqrt:
   assumes Nats [THEN set_mp, intro]: "Nats \<subseteq> P" 
