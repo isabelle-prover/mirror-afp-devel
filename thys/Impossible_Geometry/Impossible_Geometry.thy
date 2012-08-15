@@ -914,13 +914,8 @@ proof (cases "a=0")
     by (metis True add_0 eq0 mult_zero_left)
 next
   case False
-  hence l4: "(2*a*x+b)^2 = 4*a*(a*x^2+b*x)+b^2"  
-    by (simp add: power_def algebra_simps) 
-  have l6: "(- c) = a*x^2+b*x" using eq0
-    by auto
-  hence "(2*a*x+b)^2 = 4*a*(- c)+b^2" 
-    using l4
-    by (simp add: algebra_simps)
+  hence "(2*a*x+b)^2 = 4*a*(- c)+b^2" using eq0
+    by algebra
   hence "(b^2 - 4*a*c)\<ge>0 & (sqrt ((b^2 - 4*a*c)) = (2*a*x+b) | sqrt ((b^2 - 4*a*c)) = -(2*a*x+b))" 
     using sqrt_roots [of "2*a*x+b" "b^2 - 4*a*c"]
     by auto
@@ -966,27 +961,9 @@ proof (cases "d=0 & e=0")
     by (metis add_0 eq1 mult_zero_left NotNull)
 next
   case False
-  have "e^2 *((x-a)^2 + (y-b)^2) = e^2 * c" 
-    using eq0
-    by auto
-  hence "e^2 * (x^2 - 2*a*x +a^2) +e^2 *(y^2 - 2*b*y + b^2) = e^2 *c"
-    by (simp add: algebra_simps power_def)
-  hence l4: "e^2 * x^2 - 2*a*x*e^2 + a^2 * e^2 + (e*y)^2 - 2* e * (e * y) *b +b^2 * e^2 = e^2 *c"
-    by (simp add: algebra_simps power_def)
-  have "e*y = (f - d*x)" 
-    using eq1
-    by auto
-  hence "e^2 * x^2 - 2*a*x*e^2 + a^2 * e^2 + (f - d*x)^2 - 2* e * (f - d*x) *b +b^2 * e^2 = e^2 *c" 
-    using l4
-    by auto
-  hence "e^2 * x^2 - 2*a*x*e^2 + a^2 * e^2 + f^2 - 2*d*f*x + d^2 * x^2 - 2* e *b* (f - d*x) +b^2 * e^2 = e^2 *c"
-    by (simp add: algebra_simps power_def)
-  hence "e^2 * x^2 - 2*a*x*e^2 + a^2 * e^2 + f^2 - 2*d*f*x + d^2 * x^2 - 2* e *b* f +2*e*b*d*x +b^2 * e^2 = e^2 *c"
-    by (simp add: algebra_simps)
-  hence "(e^2 + d^2) * x^2 + (2*e*b*d - 2*a*e^2 - 2*d*f)*x + (a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2) = e^2 *c"
-    by (simp add: algebra_simps)
   hence l10: "(e^2 + d^2) * x^2 + (2*e*b*d - 2*a*e^2 - 2*d*f)*x + (a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c) = 0"
-    by auto
+     using eq0 eq1
+    by algebra
   have "\<not> (e^2 +d^2 =0)" 
     using False power_def
     by auto
@@ -1043,13 +1020,9 @@ next
     using e d f x False
   proof (cases "e = 0")
     case True
-    have "(x - a)^2 + (y - b)^2 = c" 
-      using eq0
-      by auto
-    hence "y^2 + (- 2* b*y) + (b^2 + (x - a)^2) = c"
-      by (simp add: algebra_simps power_def)
     hence l22: "1 * y^2 + (- 2* b) * y + (b^2 + (x - a)^2 - c) =0"
-      by auto
+      using eq0
+      by algebra
     have l24: "1 \<in> radical_sqrt"
       by (metis Rats_1 radical_sqrt.intros(1))
     have l25: "(- 2* b) \<in> radical_sqrt" 
