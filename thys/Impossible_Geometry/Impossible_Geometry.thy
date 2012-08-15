@@ -1384,10 +1384,8 @@ proof-
     by auto
   hence "Fract ((fst p)^3) ((snd p)^3) = Fract 2 1"
     by (metis rat_number_expand(3))
-  hence "((fst p) ^3 ) * 1 = ((snd p)^3) * 2"
-    by (simp add: algebra_simps Fract_def split: split_if_asm) 
-  hence l12: "(fst p) ^3 = ((snd p)^3) * 2"
-    by simp
+  hence l12: "(fst p) ^3 = ((snd p)^3) * 2" using hypsp
+    by (simp add: eq_rat)
   hence "2 dvd ((fst p)^3)"
     using l8
     by (auto simp add: dvd_def)
@@ -1495,9 +1493,8 @@ proof-
     by (simp add: algebra_simps) (metis hypsp zero_eq_power2 zero_less_power2) 
   hence "Fract ((((fst p)^3) - (3 * (fst p) * (snd p)^2))) ((snd p)^3) = Fract 1 1"
     by (metis l13)
-  hence l13xx: "(fst p)^3 - 3 * (fst p) * (snd p)^2 = (snd p)^3"
-    using Fract_def l7
-    by (simp add: algebra_simps) 
+  hence l13xx: "(fst p)^3 - 3 * (fst p) * (snd p)^2 = (snd p)^3" using hypsp
+    by (simp add: eq_rat ) 
   hence l14: "(fst p) * ((fst p)^2 - 3 * (snd p) ^2) = (snd p)^3"
     by (simp add: power_def algebra_simps)
   have l15: "(snd p) * ((snd p)^2 + 3 * (fst p) * (snd p)) = (fst p) ^3" 
