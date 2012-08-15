@@ -156,10 +156,8 @@ lemma real_sqrt_diff_squares_triangle_ineq:
   fixes a b c d :: real
   shows "sqrt ((a - c)^2 + (b - d)^2) \<le> sqrt (a^2 + b^2) + sqrt (c^2 + d^2)"
 proof -
-  have "sqrt ((a - c)^2 + (b - d)^2) = sqrt ((a + - c)^2 + (b + - d)^2)"
-    by (simp only: diff_minus)
-  also have "... \<le> sqrt (a^2 + b^2) + sqrt ((- c)^2 + (- d)^2)"
-    by (rule real_sqrt_sum_squares_triangle_ineq)
+  have "sqrt ((a - c)^2 + (b - d)^2) \<le> sqrt (a^2 + b^2) + sqrt ((-c)^2 + (-d)^2)"
+    by (metis diff_minus real_sqrt_sum_squares_triangle_ineq)
   also have "... = sqrt (a^2 + b^2) + sqrt (c^2 + d^2)"
     by simp
   finally show ?thesis .
@@ -622,15 +620,12 @@ lemma cubic_root_radical_sqrt_steplemma:
   shows "\<exists>w \<in> P. w^3 + a * w^2 + b * w + c = 0"
 proof (cases "v * s = 0")
   case True
-  have "z = u" 
-    using z
-    by (metis True add_0_iff)
   thus ?thesis
-    by (metis eq0 u)
+    by (metis eq0 u z add_0_iff)
 next
   case False
-  have sl0: "v \<noteq> 0"
-    by (metis False mult_eq_0_iff)
+  hence sl0: "v \<noteq> 0"
+    by (metis mult_eq_0_iff)
   have l2: "(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) + (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * s = 0" 
     using eq0 z
     by algebra
@@ -640,23 +635,24 @@ next
     hence  "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
       using l2
       by algebra
-    hence "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
+    hence "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) /
+                (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))
+           = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) *
+               (1 / (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
       by auto
-    hence "s * ((3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v)/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))= - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by auto
-    hence "s * 1 = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c)* (1/ (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by (metis (lifting) True divide_self_if)
-    hence "s = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) * (1 /(3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
-      by (metis mult_1_right)
-    hence l10: "s = - (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) * (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v))"
+    hence "s = - (u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) * 
+               (1 /(3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v))"
+      by (metis mult_1_right True divide_self_if)
+    hence l10: "s = - (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) *
+                (1 / (3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v))"
       by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(18) power2_eq_square power3_eq_cube)
-    have "(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v) \<in> P" 
+    have "(3*u*u * v + v*v*v * (s *s) + 2 * a * u * v + b * v) \<in> P" 
       using a b u v s Nats Mult Add
       by auto 
-    hence l103: " (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v)) \<in> P" 
+    hence l103: "1 / (3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v) \<in> P" 
       using Inv True
       by auto
-    have l104: "-(u *u *u + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) \<in> P" 
+    have "-(u*u*u + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) \<in> P" 
       using a b c u v s Mult Add Neg Nats
       by auto
     hence "- (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) * (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v)) \<in> P" 
@@ -674,13 +670,14 @@ next
   next
     case False
     have "(- a - 2 * u)^3 + a * (- a - 2 * u)^2 + b * ( - a - 2 * u) + c =
-          (- a - 2 * u)^3 + a * (- a - 2 * u)^2 + (- (3 * u^2 + v^2 * s^2 + 2 * a * u))* ( - a - 2 * u) + (- (u^3) - 3 * u * v^2 * s^2 - a * u^2 - a * v^2 * s^2 +  3 * u^3 + v^2 * s^2 * u + 2 * a * u^2) "
+          (- a - 2 * u)^3 + a * (- a - 2 * u)^2 + (- (3 * u^2 + v^2 * s^2 + 2 * a * u)) * 
+          ( - a - 2 * u) + (- (u^3) - 3 * u * v^2 * s^2 - a * u^2 - a * v^2 * s^2 + 3 * u^3 + v^2 * s^2 * u + 2 * a * u^2)"
       using l2 False sl0
       by algebra
     also have "... = 0"
       by (simp add: algebra_simps power_def)
     finally show ?thesis 
-      by (metis a u Add Mult Neg Nats diff_def mult_2)
+      by (metis a u Add Neg diff_def mult_2)
   qed
 qed
 
@@ -721,30 +718,29 @@ proof -
                     "r \<notin> radicals u \<union> radicals v" "r \<notin> radicals r" 
     using notEmpty radical_sqrt_normal_form [of e]
     by blast
-  have l1: "n \<in> Nats \<longrightarrow> (\<lbrace>Const (rat_of_nat (n::nat))\<rbrace> = n) & (radicals (Const (rat_of_nat (n))) \<subseteq> (radicals e)) & (r \<notin> radicals (Const (rat_of_nat (n))))"
-    by (metis empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) real_eq_of_nat translation.simps(1)) 
   let ?E = "{x. \<exists> ex. (\<lbrace>ex\<rbrace> = x) & ((radicals ex) \<subseteq> (radicals e)) & (r \<notin> (radicals ex))}"
-  have l21: "Nats \<subseteq> ?E" 
-    using l1
+  have "n \<in> Nats \<longrightarrow> (\<lbrace>Const (rat_of_nat (n::nat))\<rbrace> = n) & (radicals (Const (rat_of_nat (n))) \<subseteq> (radicals e)) & (r \<notin> radicals (Const (rat_of_nat (n))))"
+    by (metis empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) real_eq_of_nat translation.simps(1)) 
+  hence NatsE: "Nats \<subseteq> ?E" 
     apply auto
     apply (metis Nats_cases empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) translation.simps(1))
     by (metis Nats_cases empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) translation.simps(1))
-  have l22: "\<forall>x \<in> ?E. -x \<in> ?E" 
+  have negE: "\<forall>x \<in> ?E. -x \<in> ?E" 
     using hypsruv
     apply auto
     apply (rule_tac x = "Negation ex" in exI)
     by auto
-  have l23: "\<forall>x \<in> ?E. x \<noteq> 0 --> 1/x \<in> ?E" 
+  have invE: "\<forall>x \<in> ?E. x \<noteq> 0 --> 1/x \<in> ?E" 
     using hypsruv
     apply auto
     apply (rule_tac x = "Inverse ex" in exI)
     by auto
-  have l24: "\<forall>x \<in> ?E. \<forall>y \<in> ?E. x+y \<in> ?E"
+  have addE: "\<forall>x \<in> ?E. \<forall>y \<in> ?E. x+y \<in> ?E"
     using hypsruv
     apply auto
     apply (rule_tac x = "Addition exa ex" in exI)
     by auto
-  have l25: "\<forall>x \<in> ?E. \<forall>y \<in> ?E. x*y \<in> ?E"
+  have multE: "\<forall>x \<in> ?E. \<forall>y \<in> ?E. x*y \<in> ?E"
     using hypsruv
     apply auto
     apply (rule_tac x = "Multiplication exa ex" in exI)
@@ -764,7 +760,8 @@ proof -
     apply auto
     apply (rule_tac x = "Const rc" in exI)
     by auto
- with eq0 hypsruv l21 l22 l23 l24 l25 cubic_root_radical_sqrt_steplemma_sqrt [of "?E" "a" "b" "c" "\<lbrace>e\<rbrace>" "\<lbrace>u\<rbrace>" "\<lbrace>v\<rbrace>" "\<lbrace>r\<rbrace>"]
+ with eq0 hypsruv NatsE negE invE addE multE 
+      cubic_root_radical_sqrt_steplemma_sqrt [of "?E" a b c"\<lbrace>e\<rbrace>" "\<lbrace>u\<rbrace>" "\<lbrace>v\<rbrace>" "\<lbrace>r\<rbrace>"]
    obtain w where "w \<in> ?E & (w^3 + a * w^2 + b * w + c = 0)"
      by auto 
    then obtain e2
@@ -880,7 +877,7 @@ proof (cases "a*e - b*d =0")
     by (metis False comm_semiring_1_class.normalizing_semiring_rules(7) nonzero_divide_eq_eq) 
   hence "(a*e-b*d) * y = (a*f - d*c)" using eq0 eq1 
     by algebra
-  hence y:"y = (a*f-d*c)/(a*e-b*d)"
+  hence y: "y = (a*f-d*c)/(a*e-b*d)"
     by (metis False comm_semiring_1_class.normalizing_semiring_rules(7) nonzero_divide_eq_eq) 
   have ae_rad: "(a*e -b*d) \<in> radical_sqrt"
     using a e b d radical_sqrt.simps
@@ -964,10 +961,8 @@ next
   hence l10: "(e^2 + d^2) * x^2 + (2*e*b*d - 2*a*e^2 - 2*d*f)*x + (a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c) = 0"
      using eq0 eq1
     by algebra
-  have "\<not> (e^2 +d^2 =0)" 
+  have l12: "\<not> (e^2 +d^2 = 0 & 2*e*b*d - 2*a*e^2 - 2*d*f = 0 & a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c = 0)"
     using False power_def
-    by auto
-  hence l12: "\<not> (e^2 +d^2 =0 & 2*e*b*d - 2*a*e^2 - 2*d*f = 0 & a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c =0)"
     by auto
   have l13: "(e^2 +d^2) \<in> radical_sqrt" 
     using e d
@@ -1005,10 +1000,10 @@ next
   have sl6: "(a^2 * e^2 + f^2 + (- 2 * e *b* f) + b^2 * e^2 + (- c* e^2)) \<in> radical_sqrt" 
     using a e f b c sl6 sl7 sl8 sl9 sl10
     by (metis (hide_lams, no_types) power2_eq_square radical_sqrt.intros(4))
-  have sl7: "a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c = a^2 * e^2 + f^2 + (- 2 * e *b* f) + b^2 * e^2 + (- c* e^2)" 
+  have "a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c = a^2 * e^2 + f^2 + (- 2 * e *b* f) + b^2 * e^2 + (- c* e^2)" 
     by auto
-  have "(a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c) \<in> radical_sqrt"
-    using sl7 sl6
+  hence "(a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c) \<in> radical_sqrt"
+    using sl6
     by metis
   hence x: "x \<in> radical_sqrt"
     using radical_sqrt_quadratic_equation [of "e^2 +d^2" "2*e*b*d - 2*a*e^2 - 2*d*f" "a^2 * e^2 + f^2 - 2* e *b* f + b^2 * e^2 - e^2 *c" "x"] l13 l14 l12 l10
@@ -1046,7 +1041,7 @@ next
       by auto
   qed
   show ?thesis
-    by (intro conjI x y)
+    by (metis x y)
 qed
 
 lemma radical_sqrt_simultaneous_quadratic_quadratic:
@@ -1201,8 +1196,6 @@ proof-
     by auto
   have "sqrt ((abscissa X - abscissa D)^2 + (ordinate X - ordinate D) ^2) = sqrt ((abscissa E - abscissa F)^2 + (ordinate E - ordinate F) ^2)"
     by (metis (no_types) eqDist1 distance_def minus_diff_eq point_abscissa_diff point_dist_def point_ordinate_diff power2_minus)
-  hence "(sqrt ((abscissa X - abscissa D)^2 + (ordinate X - ordinate D) ^2))^2 = (sqrt ((abscissa E - abscissa F)^2 + (ordinate E - ordinate F)^2)) ^2"
-    by auto
   hence l3bis: "(abscissa X - abscissa D)^2 + (ordinate X - ordinate D) ^2 = (abscissa E - abscissa F)^2 + (ordinate E - ordinate F)^2"
     by auto
   have l4: "\<not> (abscissa A = abscissa D & ordinate A = ordinate D)"
@@ -1354,7 +1347,7 @@ lemma impossibility_of_trisecting_pi_over_3_lemma:
 proof-
   have "\<exists>x \<in> Rats. x^3 + (- 3) * x = (1::real)"
     using x_eqn cubic_root_radical_sqrt_rational [of 0 "- 3" "- 1"] x
-    by (force ) 
+    by force
   then obtain y::real where hypsy: "y: Rats & y^3 - 3 * y = 1"
     by (metis is_num_normalize(8) minus_mult_left)
    then obtain r where hypsr: "y = of_rat r" 
@@ -1396,26 +1389,24 @@ proof-
   hence "Fract ((((fst p)^3) - (3 * (fst p) * (snd p)^2))) ((snd p)^3) = Fract 1 1"
     by (metis l13)
   hence l13xx: "(fst p)^3 - 3 * (fst p) * (snd p)^2 = (snd p)^3" using hypsp
-    by (simp add: eq_rat ) 
-  hence l14: "(fst p) * ((fst p)^2 - 3 * (snd p) ^2) = (snd p)^3"
+    by (simp add: eq_rat) 
+  hence "(fst p) * ((fst p)^2 - 3 * (snd p) ^2) = (snd p)^3"
     by (simp add: power_def algebra_simps)
-  have l15: "(snd p) * ((snd p)^2 + 3 * (fst p) * (snd p)) = (fst p) ^3" 
-    using l13xx
-    by (simp add: power_def algebra_simps)
-  have l16: "(fst p) dvd ((snd p)^3)"
-    using l14
+  hence l16: "(fst p) dvd ((snd p)^3)"
     apply (auto simp add: dvd_def)
     apply (rule_tac x = "(fst p)^2 - 3 * (snd p) ^2" in exI)
+    by metis
+  have "(snd p) * ((snd p)^2 + 3 * (fst p) * (snd p)) = (fst p) ^3" 
+    using l13xx
+    by (simp add: power_def algebra_simps)
+  hence l16bis: "(snd p) dvd ((fst p)^3)"
+    apply (auto simp add: dvd_def)
+    apply (rule_tac x = "(snd p)^2 + 3 * (fst p) * (snd p)" in exI)
     by metis
   have "coprime (fst p) ((snd p)^3)" 
     by (metis hypsp coprime_exp_int)
   hence l18: "(fst p) = 1 | (fst p) = - 1" 
     using l16 by auto
-  have l16bis: "(snd p) dvd ((fst p)^3)"
-    using l15
-    apply (auto simp add: dvd_def)
-    apply (rule_tac x = "(snd p)^2 + 3 * (fst p) * (snd p)" in exI)
-    by metis
   have "coprime ((fst p)^3) (snd p)"
     by (metis hypsp coprime_exp_int gcd_commute_int)
   hence "(snd p) = 1"
