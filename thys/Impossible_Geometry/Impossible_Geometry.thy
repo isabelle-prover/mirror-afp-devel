@@ -874,16 +874,12 @@ lemma radical_sqrt_simultaneous_linear_equation:
   shows "x \<in> radical_sqrt & y \<in> radical_sqrt"
 proof (cases "a*e - b*d =0")
   case False
-  hence "e*(a*x+b*y) = e*c" "b*(d*x+e*y) = b*f" using eq0 eq1
-    by auto
-  hence "(a*e-b*d) * x = (e*c-b*f)"
-    by (simp add: algebra_simps)
+  hence "(a*e-b*d) * x = (e*c-b*f)" using eq0 eq1
+    by algebra
   hence x: "x = (e*c-b*f) / (a*e-b*d)"
     by (metis False comm_semiring_1_class.normalizing_semiring_rules(7) nonzero_divide_eq_eq) 
-  have "d*(a*x+b*y) = d*c" "a*(d*x+e*y) = a*f"using eq0 eq1
-    by auto
-  hence "(a*e-b*d) * y = (a*f - d*c)"
-    by (simp add: algebra_simps)
+  hence "(a*e-b*d) * y = (a*f - d*c)" using eq0 eq1 
+    by algebra
   hence y:"y = (a*f-d*c)/(a*e-b*d)"
     by (metis False comm_semiring_1_class.normalizing_semiring_rules(7) nonzero_divide_eq_eq) 
   have ae_rad: "(a*e -b*d) \<in> radical_sqrt"
@@ -895,11 +891,8 @@ proof (cases "a*e - b*d =0")
     by (simp add: x y)
 next
   case True
-  have "e*(a*x+b*y) = e*c" "b*(d*x+e*y) = b*f" "d*(a*x+b*y) = d*c" "a*(d*x+e*y) = a*f" 
-    using eq0 eq1
-    by auto
-  hence "(a*e-b*d) * x = (e*c-b*f)" "(a*e-b*d) * y = (a*f - d*c)"
-    by (auto simp add: algebra_simps)
+  hence "(a*e-b*d) * x = (e*c-b*f)" "(a*e-b*d) * y = (a*f - d*c)" using eq0 eq1
+    by algebra+
   thus ?thesis using NotNull True
     by simp
 qed
