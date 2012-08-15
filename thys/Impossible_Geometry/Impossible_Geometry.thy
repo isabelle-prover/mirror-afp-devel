@@ -1060,23 +1060,17 @@ lemma radical_sqrt_simultaneous_quadratic_quadratic:
   and eq0: "(x - a)^2 + (y - b)^2 = c" 
   and eq1: "(x - d)^2 + (y - e)^2 = f"
   shows "x \<in> radical_sqrt & y \<in> radical_sqrt"
-proof-
+proof -
   have "x^2 - 2*a*x + a^2 + y^2 - 2*y*b + b^2 = c & x^2 - 2*d*x + d^2 + y^2 - 2*y*e + e^2 = f" 
     using eq0 eq1
     by (simp add: algebra_simps power_def)
   hence "(x^2 - 2*a*x + a^2 + y^2 - 2*y*b + b^2) - (x^2 - 2*d*x + d^2 + y^2 - 2*y*e + e^2) = (c - f)"
     by auto
-  hence "(2*d - 2*a)*x + (2*e - 2*b)*y +(b^2 - e^2 + a^2 - d^2) = (c - f)"
-    by (simp add: algebra_simps)
   hence l4: "(2*d - 2*a)*x + (2*e - 2*b)*y +(b^2 - e^2 + a^2 - d^2 + f - c) = 0"
-    by simp
-  hence "2*(d - a)*x + 2* (e - b)*y +((b^2 - e^2) + (a^2 - d^2) + (f - c)) = 0"
-    by simp
-  have "\<not> (2*(d - a) =0 & 2*(e-b) = 0 & (b^2 - e^2) + (a^2 - d^2) + (f - c) = 0)"
-    using NotEqual
-    by auto
+    by algebra
   hence l6: "\<not> ((2*d - 2*a) = 0 & (2*e - 2*b) = 0 & (b^2 - e^2) + (a^2 - d^2) + (f - c) = 0)"
-    by auto
+    using NotEqual
+    by algebra
   have l7: "(2*d - 2*a) \<in> radical_sqrt"
     by (metis a d mult_2 radical_sqrt.intros(4) radical_sqrt_rule_subtraction)
   have l8: "(2*e - 2*b) \<in> radical_sqrt"
