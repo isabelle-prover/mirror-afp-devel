@@ -27,7 +27,6 @@ header {* Generating linear orders for datatypes *}
 theory Order_Generator
 imports Main
 keywords "derive_order" :: thy_decl
-uses ("order_generator.ML") 
 begin
 
 subsection Introduction
@@ -101,6 +100,6 @@ subsection "Installing the generator"
 
 lemma linear_cases: "(x :: 'a :: linorder) = y \<or> x < y \<or> y < x" by auto
 
-use "order_generator.ML" 
+ML_file "order_generator.ML" 
 
 end

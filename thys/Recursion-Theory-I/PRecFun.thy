@@ -6,7 +6,6 @@
 header {* Primitive recursive functions *}
 
 theory PRecFun imports CPair
-uses ("Utils.ML")
 begin
 
 text {*
@@ -77,7 +76,7 @@ lemmas pr_comp3_2 = PrimRec1_PrimRec2_PrimRec3.comp3_2
 lemmas pr_comp3_3 = PrimRec1_PrimRec2_PrimRec3.comp3_3
 lemmas pr_rec = PrimRec1_PrimRec2_PrimRec3.prim_rec
 
-use "Utils.ML"
+ML_file "Utils.ML"
 
 ML {*
 structure PRec = Named_Thms

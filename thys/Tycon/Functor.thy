@@ -3,7 +3,6 @@ header {* Functor Class *}
 theory Functor
 imports TypeApp Coerce
 keywords "tycondef" :: thy_decl and "\<cdot>"
-uses ("tycondef.ML")
 begin
 
 subsection {* Class definition *}
@@ -221,6 +220,6 @@ text {* We now set up a new type definition command, which is used for
   provide a proof of the composition law to obtain a @{text functor}
   class instance.) *}
 
-use "tycondef.ML"
+ML_file "tycondef.ML"
 
 end

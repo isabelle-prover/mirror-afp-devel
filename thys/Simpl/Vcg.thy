@@ -29,12 +29,11 @@ header {* Facilitating the Hoare Logic *}
 theory Vcg
 imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
 keywords "procedures" "hoarestate" :: thy_decl
-uses ("hoare.ML") ("hoare_syntax.ML")
 begin
 
 axiomatization NoBody::"('s,'p,'f) com"
 
-use "hoare.ML"
+ML_file "hoare.ML"
 setup Hoare.setup
 
 method_setup hoare = "Hoare.hoare"
@@ -427,7 +426,7 @@ translations
 definition Let':: "['a, 'a => 'b] => 'b"
   where "Let' = Let"
 
-use "hoare_syntax.ML"
+ML_file "hoare_syntax.ML"
 setup Hoare_Syntax.setup
 
 

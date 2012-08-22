@@ -7,8 +7,9 @@ header "Separation Logic Tactics"
 
 theory Sep_Tactics
 imports Separation_Algebra
-uses "sep_tactics.ML"
 begin
+
+ML_file "sep_tactics.ML"
 
 text {* A number of proof methods to assist with reasoning about separation logic. *}
 

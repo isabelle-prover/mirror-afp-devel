@@ -27,7 +27,6 @@ USA
 *)
 
 theory Generalise imports "~~/src/HOL/Statespace/DistinctTreeProver"
-uses ("generalise_state.ML")
 begin
 
 lemma protectRefl: "PROP prop (PROP C) \<Longrightarrow> PROP prop (PROP C)"
@@ -149,7 +148,7 @@ lemma generaliseImpl:
   qed
 
 
-use "generalise_state.ML"
+ML_file "generalise_state.ML"
 
 end
 

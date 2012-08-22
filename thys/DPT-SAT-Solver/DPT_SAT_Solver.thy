@@ -5,6 +5,8 @@
 
 theory DPT_SAT_Solver
 imports SAT
-uses "dpt_sat_solver.ML"
 begin
+
+ML_file "dpt_sat_solver.ML"
+
 end
