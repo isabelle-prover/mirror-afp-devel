@@ -1,7 +1,7 @@
 session "Functional-Automata" (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/Library/Sublist"
     "../Regular-Sets/Regular_Exp"
     "~~/src/HOL/Library/Quotient_Product"
   theories

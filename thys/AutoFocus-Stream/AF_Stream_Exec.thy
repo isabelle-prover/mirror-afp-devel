@@ -932,22 +932,22 @@ by (simp add: i_Exec_Stream_Init_nth_Suc_calc)
 text {* Basic results for stream prefices *}
 
 lemma f_Exec_Stream_prefix: "
-  xs \<le> ys \<Longrightarrow>
-  f_Exec_Comp_Stream trans_fun xs c \<le>
-  f_Exec_Comp_Stream trans_fun ys c"
-by (clarsimp simp: prefix_def f_Exec_Stream_append)
+  prefixeq xs ys \<Longrightarrow>
+  prefixeq (f_Exec_Comp_Stream trans_fun xs c)
+           (f_Exec_Comp_Stream trans_fun ys c)"
+by (clarsimp simp: prefixeq_def f_Exec_Stream_append)
 
 lemma i_Exec_Stream_prefix: "
  xs \<sqsubseteq> input \<Longrightarrow>
   f_Exec_Comp_Stream trans_fun xs c \<sqsubseteq>
   i_Exec_Comp_Stream trans_fun input c"
-by (simp add: prefix_def iprefix_eq_iprefix_take i_Exec_Stream_take)
+by (simp add: iprefix_eq_iprefix_take i_Exec_Stream_take)
 
 lemma f_Exec_N_prefix: "
-  \<lbrakk> n \<le> length xs; xs \<le> ys \<rbrakk> \<Longrightarrow>
+  \<lbrakk> n \<le> length xs; prefixeq xs ys \<rbrakk> \<Longrightarrow>
   f_Exec_Comp_N trans_fun n xs c = 
   f_Exec_Comp_N trans_fun n ys c"
-by (simp add: f_Exec_Comp_N_def prefix_imp_take_eq)
+by (simp add: f_Exec_Comp_N_def prefixeq_imp_take_eq)
 
 theorem f_Exec_Stream_prefix_causal[rule_format]:"
   n \<le> length (xs \<sqinter> ys) \<Longrightarrow>
@@ -958,10 +958,10 @@ thm f_Exec_Stream_prefix_causal
 thm f_Exec_Stream_prefix_causal[OF order_refl]
 
 lemma f_Exec_Stream_Init_prefix:"
-  xs \<le> ys \<Longrightarrow>
-  f_Exec_Comp_Stream_Init trans_fun xs c \<le>
-  f_Exec_Comp_Stream_Init trans_fun ys c"
-by (clarsimp simp: prefix_def f_Exec_Stream_Init_append)
+  prefixeq xs ys \<Longrightarrow>
+  prefixeq (f_Exec_Comp_Stream_Init trans_fun xs c)
+           (f_Exec_Comp_Stream_Init trans_fun ys c)"
+by (clarsimp simp: prefixeq_def f_Exec_Stream_Init_append)
 
 lemma i_Exec_Stream_Init_prefix: "
  xs \<sqsubseteq> input \<Longrightarrow>

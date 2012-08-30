@@ -3,7 +3,7 @@ session "List-Infinite" (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Extended_Nat"
     "~~/src/HOL/Library/Infinite_Set"
-    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/Library/Sublist"
   theories
     ListInfinite
   files

@@ -5,7 +5,7 @@
 *)
 
 theory Reactive_Processes
-imports Designs "~~/src/HOL/Library/List_Prefix"
+imports Designs "~~/src/HOL/Library/Sublist"
 begin
 
 subsection{* Reactive Processes \label{sec:UTP_Reactive_Processes} *}
@@ -135,13 +135,13 @@ satisfies some properties \cite{CW06}. *}
 
 
 definition R1::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
-where "R1 (P)  \<equiv>  \<lambda>(A, A'). (P (A, A')) \<and> (tr A \<le> tr A')"
+where "R1 (P)  \<equiv>  \<lambda>(A, A'). (P (A, A')) \<and> prefixeq (tr A) (tr A')"
 
 definition R2::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
-where "R2 (P)  \<equiv> \<lambda>(A, A'). (P (A\<lparr>tr:=[]\<rparr>,A'\<lparr>tr:= tr A' - tr A\<rparr>) \<and> tr A \<le> tr A')"
+where "R2 (P)  \<equiv> \<lambda>(A, A'). (P (A\<lparr>tr:=[]\<rparr>,A'\<lparr>tr:= tr A' - tr A\<rparr>) \<and> prefixeq (tr A) (tr A'))"
 
 definition \<Pi>rea   
-where "\<Pi>rea  \<equiv> \<lambda>(A, A'). (\<not>ok A \<and> tr A \<le> tr A') \<or> (ok A' \<and> tr A = tr A' 
+where "\<Pi>rea  \<equiv> \<lambda>(A, A'). (\<not>ok A \<and> prefixeq (tr A) (tr A')) \<or> (ok A' \<and> tr A = tr A' 
                             \<and> (wait A = wait A') \<and> ref A = ref A' \<and> more A = more A')"
 
 definition R3::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
@@ -213,7 +213,7 @@ lemma R1_R3_commute: "R1 o R3 = R3 o R1"
 by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
 
 lemma R2_R3_commute: "R2 o R3 = R3 o R2"
-by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits elim: prefixE)
+by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits elim: prefixeqE)
 
 lemma R_abs_R1: "R o R1 = R"
 apply (auto simp: R_def)
@@ -247,7 +247,7 @@ proof -
     using assms by (simp_all only: Healthy_def)
   moreover
   have "(R P) is R2 healthy"
-    by (auto simp add: design_defs rp_defs fun_eq_iff prefix_def split: cond_splits)
+    by (auto simp add: design_defs rp_defs fun_eq_iff prefixeq_def split: cond_splits)
   ultimately show ?thesis by simp
 qed
 
@@ -308,7 +308,7 @@ lemma J_is_R1: "J is R1 healthy"
   by (auto simp: rp_defs design_defs fun_eq_iff elim: alpha_d_more_eqE)
 
 lemma J_is_R2: "J is R2 healthy"
-  by (auto simp: rp_defs design_defs fun_eq_iff prefix_def
+  by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def
     elim!: alpha_d_more_eqE intro!: alpha_d_more_eqI)
 
 lemma R1_H2_commute2: "R1 (H2 P) = H2 (R1 P)"
@@ -319,9 +319,9 @@ lemma R1_H2_commute: "R1 o H2 = H2 o R1"
 by (auto simp: R1_H2_commute2)
 
 lemma R2_H2_commute2: "R2 (H2 P) = H2 (R2 P)"
-apply (auto simp add: fun_eq_iff rp_defs design_defs prefix_def)
+apply (auto simp add: fun_eq_iff rp_defs design_defs prefixeq_def)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro)
-apply (auto simp: fun_eq_iff prefix_def
+apply (auto simp: fun_eq_iff prefixeq_def
   elim!: alpha_d_more_eqE alpha_rp_eqE intro!: alpha_d_more_eqI alpha_rp.equality)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro,
   auto simp: elim: alpha_d_more_eqE alpha_rp_eqE intro: alpha_d_more_eqI alpha_rp.equality)
@@ -333,7 +333,7 @@ lemma R2_H2_commute: "R2 o H2 = H2 o R2"
 by (auto simp: R2_H2_commute2)
 
 lemma R3_H2_commute2: "R3 (H2 P) = H2 (R3 P)"
-apply (auto simp: fun_eq_iff rp_defs design_defs prefix_def 
+apply (auto simp: fun_eq_iff rp_defs design_defs prefixeq_def 
             elim: alpha_d_more_eqE split: cond_splits)
 apply (rule_tac b="b" in comp_intro, auto split: cond_splits)
 done

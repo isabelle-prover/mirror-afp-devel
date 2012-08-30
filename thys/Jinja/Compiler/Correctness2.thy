@@ -6,7 +6,7 @@
 header {* \isaheader{Correctness of Stage 2} *}
 
 theory Correctness2
-imports "~~/src/HOL/Library/List_Prefix" Compiler2
+imports "~~/src/HOL/Library/Sublist" Compiler2
 begin
 
 (*<*)hide_const (open) Throw(*>*)
@@ -19,7 +19,7 @@ counter. *}
 
 definition before :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr list \<Rightarrow> bool"
    ("(_,_,_,_/ \<rhd> _)" [51,0,0,0,51] 50) where
- "P,C,M,pc \<rhd> is \<longleftrightarrow> is \<le> drop pc (instrs_of P C M)"
+ "P,C,M,pc \<rhd> is \<longleftrightarrow> prefixeq is (drop pc (instrs_of P C M))"
 
 definition at :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr \<Rightarrow> bool"
    ("(_,_,_,_/ \<triangleright> _)" [51,0,0,0,51] 50) where
@@ -30,7 +30,7 @@ lemma [simp]: "P,C,M,pc \<rhd> []"
 
 
 lemma [simp]: "P,C,M,pc \<rhd> (i#is) = (P,C,M,pc \<triangleright> i \<and> P,C,M,pc + 1 \<rhd> is)"
-(*<*)by(fastforce simp add:before_def at_def prefix_def drop_Suc drop_tl)(*>*)
+(*<*)by(fastforce simp add:before_def at_def prefixeq_def drop_Suc drop_tl)(*>*)
 
 (*<*)
 declare drop_drop[simp del]
@@ -39,7 +39,7 @@ declare drop_drop[simp del]
 
 lemma [simp]: "P,C,M,pc \<rhd> (is\<^isub>1 @ is\<^isub>2) = (P,C,M,pc \<rhd> is\<^isub>1 \<and> P,C,M,pc + size is\<^isub>1 \<rhd> is\<^isub>2)"
 (*<*)
-apply(simp add:before_def prefix_def)
+apply(simp add:before_def prefixeq_def)
 apply(subst add_commute)
 apply(simp add: drop_drop[symmetric])
 apply fastforce

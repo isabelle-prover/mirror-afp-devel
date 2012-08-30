@@ -1,7 +1,7 @@
 session Circus (AFP) = HOLCF +
   options [timeout = 3600, document_graph]
   theories [document = false]
-    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/Library/Sublist"
   theories
     Refinement_Example
   files

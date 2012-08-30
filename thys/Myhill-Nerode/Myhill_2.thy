@@ -1,6 +1,6 @@
 (* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Myhill_2
-  imports Myhill_1 "~~/src/HOL/Library/List_Prefix"
+  imports Myhill_1 "~~/src/HOL/Library/Sublist"
 begin
 
 section {* Second direction of MN: @{text "regular language \<Rightarrow> finite partition"} *}
@@ -313,11 +313,11 @@ subsection {* Case for @{const "Star"} *}
 
 lemma star_partitions_elim:
   assumes "x @ z \<in> A\<star>" "x \<noteq> []"
-  shows "\<exists>(u, v) \<in> Partitions (x @ z). u < x \<and> u \<in> A\<star> \<and> v \<in> A\<star>"
+  shows "\<exists>(u, v) \<in> Partitions (x @ z). prefix u x \<and> u \<in> A\<star> \<and> v \<in> A\<star>"
 proof -
-  have "([], x @ z) \<in> Partitions (x @ z)" "[] < x" "[] \<in> A\<star>" "x @ z \<in> A\<star>"
-    using assms by (auto simp add: Partitions_def strict_prefix_def)
-  then show "\<exists>(u, v) \<in> Partitions (x @ z). u < x \<and> u \<in> A\<star> \<and> v \<in> A\<star>"
+  have "([], x @ z) \<in> Partitions (x @ z)" "prefix [] x" "[] \<in> A\<star>" "x @ z \<in> A\<star>"
+    using assms by (auto simp add: Partitions_def prefix_def)
+  then show "\<exists>(u, v) \<in> Partitions (x @ z). prefix u x \<and> u \<in> A\<star> \<and> v \<in> A\<star>"
     by blast
 qed
 
@@ -327,38 +327,38 @@ apply(induct rule:finite.induct)
 apply(simp)
 by (metis (no_types) all_not_in_conv insert_iff linorder_le_cases order_trans)
 
-lemma finite_strict_prefix_set: 
-  shows "finite {xa. xa < (x::'a list)}"
+lemma finite_prefix_set: 
+  shows "finite {xa. prefix xa (x::'a list)}"
 apply (induct x rule:rev_induct, simp)
-apply (subgoal_tac "{xa. xa < xs @ [x]} = {xa. xa < xs} \<union> {xs}")
-by (auto simp:strict_prefix_def)
+apply (subgoal_tac "{xa. prefix xa (xs @ [x])} = {xa. prefix xa xs} \<union> {xs}")
+by (auto simp:prefix_def)
 
 lemma append_eq_cases:
   assumes a: "x @ y = m @ n" "m \<noteq> []"  
-  shows "x \<le> m \<or> m < x"
-unfolding prefix_def strict_prefix_def using a
+  shows "prefixeq x m \<or> prefix m x"
+unfolding prefixeq_def prefix_def using a
 by (auto simp add: append_eq_append_conv2)
 
 lemma star_spartitions_elim2:
   assumes a: "x @ z \<in> A\<star>" 
   and     b: "x \<noteq> []"
-  shows "\<exists>(u, v) \<in> Partitions x. \<exists> (u', v') \<in> Partitions z. u < x \<and> u \<in> A\<star> \<and> v @ u' \<in> A \<and> v' \<in> A\<star>"
+  shows "\<exists>(u, v) \<in> Partitions x. \<exists> (u', v') \<in> Partitions z. prefix u x \<and> u \<in> A\<star> \<and> v @ u' \<in> A \<and> v' \<in> A\<star>"
 proof -
-  def S \<equiv> "{u | u v. (u, v) \<in> Partitions x \<and> u < x \<and> u \<in> A\<star> \<and> v @ z \<in> A\<star>}"
-  have "finite {u. u < x}" by (rule finite_strict_prefix_set)
+  def S \<equiv> "{u | u v. (u, v) \<in> Partitions x \<and> prefix u x \<and> u \<in> A\<star> \<and> v @ z \<in> A\<star>}"
+  have "finite {u. prefix u x}" by (rule finite_prefix_set)
   then have "finite S" unfolding S_def
     by (rule rev_finite_subset) (auto)
   moreover 
   have "S \<noteq> {}" using a b unfolding S_def Partitions_def
-    by (auto simp: strict_prefix_def)
+    by (auto simp: prefix_def)
   ultimately have "\<exists> u_max \<in> S. \<forall> u \<in> S. length u \<le> length u_max"  
     using finite_set_has_max2 by blast
   then obtain u_max v 
     where h0: "(u_max, v) \<in> Partitions x"
-    and h1: "u_max < x" 
+    and h1: "prefix u_max x" 
     and h2: "u_max \<in> A\<star>" 
     and h3: "v @ z \<in> A\<star>"  
-    and h4: "\<forall> u v. (u, v) \<in> Partitions x \<and> u < x \<and> u \<in> A\<star> \<and> v @ z \<in> A\<star> \<longrightarrow> length u \<le> length u_max"
+    and h4: "\<forall> u v. (u, v) \<in> Partitions x \<and> prefix u x \<and> u \<in> A\<star> \<and> v @ z \<in> A\<star> \<longrightarrow> length u \<le> length u_max"
     unfolding S_def Partitions_def by blast
   have q: "v \<noteq> []" using h0 h1 b unfolding Partitions_def by auto
   from h3 obtain a b
@@ -368,16 +368,16 @@ proof -
     and   i4: "a \<noteq> []"
     unfolding Partitions_def
     using q by (auto dest: star_decom)
-  have "v \<le> a"
+  have "prefixeq v a"
   proof (rule ccontr)
-    assume a: "\<not>(v \<le> a)"
+    assume a: "\<not>(prefixeq v a)"
     from i1 have i1': "a @ b = v @ z" unfolding Partitions_def by simp
-    then have "a \<le> v \<or> v < a" using append_eq_cases q by blast
-    then have q: "a < v" using a unfolding strict_prefix_def prefix_def by auto
-    then obtain as where eq: "a @ as = v" unfolding strict_prefix_def prefix_def by auto
+    then have "prefixeq a v \<or> prefix v a" using append_eq_cases q by blast
+    then have q: "prefix a v" using a unfolding prefix_def prefixeq_def by auto
+    then obtain as where eq: "a @ as = v" unfolding prefix_def prefixeq_def by auto
     have "(u_max @ a, as) \<in> Partitions x" using eq h0 unfolding Partitions_def by auto
     moreover
-    have "u_max @ a < x" using h0 eq q unfolding Partitions_def strict_prefix_def prefix_def by auto
+    have "prefix (u_max @ a) x" using h0 eq q unfolding Partitions_def prefix_def prefixeq_def by auto
     moreover
     have "u_max @ a \<in> A\<star>" using i2 h2 by simp
     moreover
@@ -391,14 +391,14 @@ proof -
     and   k4: "zb = b" 
     unfolding Partitions_def prefix_def
     by (auto simp add: append_eq_append_conv2)
-  show "\<exists> (u, v) \<in> Partitions x. \<exists> (u', v') \<in> Partitions z. u < x \<and> u \<in> A\<star> \<and> v @ u' \<in> A \<and> v' \<in> A\<star>"
+  show "\<exists> (u, v) \<in> Partitions x. \<exists> (u', v') \<in> Partitions z. prefix u x \<and> u \<in> A\<star> \<and> v @ u' \<in> A \<and> v' \<in> A\<star>"
     using h0 h1 h2 i2 i3 k1 k2 k4 unfolding Partitions_def by blast
 qed
 
 definition 
   tag_Star :: "'a lang \<Rightarrow> 'a list \<Rightarrow> ('a lang) set"
 where
-  "tag_Star A \<equiv> \<lambda>x. {\<approx>A `` {v} | u v. u < x \<and> u \<in> A\<star> \<and> (u, v) \<in> Partitions x}"
+  "tag_Star A \<equiv> \<lambda>x. {\<approx>A `` {v} | u v. prefix u x \<and> u \<in> A\<star> \<and> (u, v) \<in> Partitions x}"
 
 lemma tag_Star_non_empty_injI:
   assumes a: "tag_Star A x = tag_Star A y"
@@ -408,7 +408,7 @@ lemma tag_Star_non_empty_injI:
 proof -
   obtain u v u' v' 
     where a1: "(u,  v) \<in> Partitions x" "(u', v')\<in> Partitions z"
-    and   a2: "u < x"
+    and   a2: "prefix u x"
     and   a3: "u \<in> A\<star>"
     and   a4: "v @ u' \<in> A" 
     and   a5: "v' \<in> A\<star>"
@@ -437,7 +437,7 @@ lemma tag_Star_empty_injI:
 proof -
   from a have "{} = tag_Star A y" unfolding tag_Star_def using d by auto 
   then have "y = []"
-    unfolding tag_Star_def Partitions_def strict_prefix_def prefix_def
+    unfolding tag_Star_def Partitions_def prefix_def prefixeq_def
     by (auto) (metis Nil_in_star append_self_conv2)
   then show "y @ z \<in> A\<star>" using c d by simp
 qed

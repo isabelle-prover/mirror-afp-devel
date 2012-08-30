@@ -291,7 +291,7 @@ proof -
     apply (erule Set.imageE, simp add: relation_of)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (auto simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (auto simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)

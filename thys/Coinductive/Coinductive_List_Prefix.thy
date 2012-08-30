@@ -4,7 +4,7 @@
 *)
 theory Coinductive_List_Prefix imports
   Coinductive_List_Lib
-  "~~/src/HOL/Library/List_Prefix"
+  "~~/src/HOL/Library/Prefix_Order"
 begin
 
 section {* Prefix ordering on lazy lists as ordering for the type class order *}

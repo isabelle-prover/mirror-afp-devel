@@ -2,7 +2,7 @@ session "Myhill-Nerode" (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/List_Prefix"
+    "~~/src/HOL/Library/Sublist"
     "~~/src/HOL/Library/Infinite_Set"
     "../Regular-Sets/Regular_Set"
     "../Regular-Sets/Regular_Exp"

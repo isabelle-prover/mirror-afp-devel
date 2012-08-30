@@ -439,7 +439,7 @@ lemma mon_ww_of_foldl[simp]: "mon_w fg (foldl (op @) [] ww) = mon_ww fg ww"
 done
 
 lemma mon_ww_ileq: "w\<preceq>w' \<Longrightarrow> mon_ww fg w \<subseteq> mon_ww fg w'"
-  by (induct rule: less_eq_list.induct) auto
+  by (induct rule: less_eq_list_induct) auto
 
   (* TODO: Find some general statement about the property that monitors are computed element-wise and pslit this lemma and move the essential part to ConsInterleave.thy. Maybe the essential part is cil_set ?*)
 lemma mon_ww_cil: 
@@ -457,9 +457,9 @@ lemma mon_ww_of_le_rem:
   by (induct w) (auto split: el_step.split)
 
 lemma mon_env_ileq: "w\<preceq>w' \<Longrightarrow> mon_env fg w \<subseteq> mon_env fg w'"
-  by (induct rule: less_eq_list.induct) auto
+  by (induct rule: less_eq_list_induct) auto
 lemma mon_loc_ileq: "w\<preceq>w' \<Longrightarrow> mon_loc fg w \<subseteq> mon_loc fg w'"
-  by (induct rule: less_eq_list.induct) auto
+  by (induct rule: less_eq_list_induct) auto
 
 lemma mon_loc_map_loc[simp]: "mon_loc fg (map LOC w) = mon_ww fg w"
   by (unfold mon_loc_def) simp

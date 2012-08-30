@@ -498,12 +498,12 @@ proof  clarify
       assume "\<exists> c . phase s2 c \<noteq> Sleep"
       with `P4 (s1, s2)` have "initHists s2 \<noteq> {}" by (auto simp add:P4_def)
       with l_c_p_lemma[of "initHists s2" "hist s1"] and initHists_prop 
-      obtain rs where "l_c_p (initHists s2) = rs @ hist s1" by (auto simp add:postfix_def)
+      obtain rs where "l_c_p (initHists s2) = rs @ hist s1" by (auto simp add: suffixeq_def)
       moreover have "set rs \<subseteq> pendingReqs s1"
       proof -
         from `initHists s2 \<noteq> {}` obtain h where "h \<in> initHists s2" by auto
         with initHists_prop obtain h' where "h = h' @ (hist s1) \<and> set h' \<subseteq> pendingReqs s1" by auto
-        moreover from l_c_p_common_postfix[of "initHists s2"] and `h \<in> initHists s2` obtain h'' where "h = h'' @ (l_c_p (initHists s2))" by (auto simp add:common_postfix_p_def postfix_def)
+        moreover from l_c_p_common_postfix[of "initHists s2"] and `h \<in> initHists s2` obtain h'' where "h = h'' @ (l_c_p (initHists s2))" by (auto simp add:common_postfix_p_def suffixeq_def)
         moreover note `l_c_p (initHists s2) = rs @ hist s1`
         ultimately show ?thesis by auto
       qed
@@ -511,7 +511,7 @@ proof  clarify
       proof -
         from `initHists s2 \<noteq> {}` obtain h where "h \<in> initHists s2" by auto
         with initHists_prop obtain h' where "h = h' @ (hist s1)" and "distinct h'" by auto
-        with l_c_p_common_postfix[of "initHists s2"] and `h \<in> initHists s2` and `l_c_p (initHists s2) = rs @ hist s1` obtain h'' where "h' = h'' @ rs" apply (auto simp add:common_postfix_p_def postfix_def) by (metis `h = h' @ hist s1` append_assoc append_same_eq)
+        with l_c_p_common_postfix[of "initHists s2"] and `h \<in> initHists s2` and `l_c_p (initHists s2) = rs @ hist s1` obtain h'' where "h' = h'' @ rs" apply (auto simp add:common_postfix_p_def suffixeq_def) by (metis `h = h' @ hist s1` append_assoc append_same_eq)
         with `distinct h'` show ?thesis by auto
       qed
       ultimately show "\<exists>rs. l_c_p (initHists s2) = rs @ hist s1 \<and> set rs \<subseteq> pendingReqs s1 \<and> distinct rs" by auto
@@ -964,7 +964,7 @@ proof -
                     thus ?thesis
                     proof auto
                       assume case1_1:"initialized s2" and case1_2:"h : postfix_all (hist s2) (linearizations (pendingReqs s2))"
-                      hence "hist s2 >>= hist s1" using `P14 (s1, s2)` by (auto simp add:P14_def postfix_def)
+                      hence "suffixeq (hist s1) (hist s2)" using `P14 (s1, s2)` by (auto simp add:P14_def suffixeq_def)
                       show "h \<in> postfix_all (hist ?t) (linearizations (pendingReqs ?t))"
                       proof -
                         have "hist ?t = hist s2"
@@ -972,7 +972,7 @@ proof -
                           assume "hist s2 = []"
                           show "hist ?t = hist s2"
                           proof -
-                            from `hist s2 = []` and `hist s2 >>= hist s1` have "hist s1 = []" by (auto simp add:postfix_def)
+                            from `hist s2 = []` and `suffixeq (hist s1) (hist s2)` have "hist s1 = []" by (auto simp add:suffixeq_def)
                             with `hist s2 = []` show  "hist ?t = hist s2" by (auto simp add: ref_mapping_def)
                           qed
                         next
@@ -984,8 +984,8 @@ proof -
                           fix c
                           assume "pending s2 c \<notin> set (hist s2)" and "phase s2 c = Pending \<or> phase s2 c = Aborted"
                           moreover with `P6 (s1, s2)` have "phase s1 c = Aborted" by (auto simp add:P6_def)
-                          moreover note `hist s2 >>= hist s1`
-                          ultimately show "\<exists>ca. pending s2 c = pending ?t ca \<and> pending s2 c \<notin> set (hist ?t) \<and> (phase ?t ca = Pending \<or> phase ?t ca = Aborted)" apply (simp add:ref_mapping_def postfix_def) by (metis prefix_Nil prefix_def self_append_conv2)
+                          moreover note `suffixeq (hist s1) (hist s2)`
+                          ultimately show "\<exists>ca. pending s2 c = pending ?t ca \<and> pending s2 c \<notin> set (hist ?t) \<and> (phase ?t ca = Pending \<or> phase ?t ca = Aborted)" apply (simp add:ref_mapping_def suffixeq_def) by (metis prefixeq_Nil prefixeq_def self_append_conv2)
                         qed
                         moreover note  case1_2
                         ultimately show ?thesis by (auto simp add: linearizations_def postfix_all_def)
@@ -1060,7 +1060,7 @@ proof -
                     moreover have "pending ?t c \<in> set (hist ?t)"
                     proof -
                       from `initialized s2` and `P14 (s1, s2)` obtain rs3 where "hist s2 = rs3 @ (hist s1)" by (auto simp add:P14_def)
-                      with `pending s1 c \<in> set (hist s1)` and `hist s2 = rs3 @ (hist s1)` and `pending ?t c = pending s1 c` show "pending ?t c \<in> set (hist ?t)" by (auto simp add:ref_mapping_def postfix_def)
+                      with `pending s1 c \<in> set (hist s1)` and `hist s2 = rs3 @ (hist s1)` and `pending ?t c = pending s1 c` show "pending ?t c \<in> set (hist ?t)" by (auto simp add:ref_mapping_def suffixeq_def)
                     qed
                     moreover have "h = dropWhile (\<lambda> r . r \<noteq> pending ?t c) (hist ?t)"
                     proof -
@@ -1199,7 +1199,7 @@ proof -
                 moreover have "h \<in> postfix_all (hist ?t) (linearizations (pendingReqs ?t))"
                 proof -
                   from pre_s2 have "initialized s2" by auto
-                  hence "hist s2 >>= hist s1" using `P14 (s1, s2)` by (auto simp add:P14_def postfix_def)
+                  hence "suffixeq (hist s1) (hist s2)" using `P14 (s1, s2)` by (auto simp add:P14_def suffixeq_def)
                   hence "hist ?t = hist s2"  by (auto simp add:ref_mapping_def)
                   moreover have "pendingReqs s2 \<subseteq> pendingReqs ?t"
                   proof auto
@@ -1216,7 +1216,7 @@ proof -
               moreover have trans_t: "?t' = ?t\<lparr>hist := h\<rparr>"
               proof -
                 from pre_s2 and trans_s2 have "initialized s2'" by auto
-                hence "hist s2' >>= hist s1'"  using `P14 (s1', s2')` by (auto simp add:P14_def postfix_def)
+                hence "suffixeq (hist s1') (hist s2')"  using `P14 (s1', s2')` by (auto simp add:P14_def suffixeq_def)
                 hence "hist ?t' = hist s2'" by (auto simp add:ref_mapping_def)
                 with trans_s2 and `s1' = s1` show ?thesis by (auto simp add:ref_mapping_def fun_eq_iff)
               qed
@@ -1298,7 +1298,7 @@ proof -
               proof -
                 from pre_s2 have "\<exists> c . phase s2 c \<noteq> Sleep" by auto
                 with trans_s2 have "initialized s2'" and "\<exists> c . phase s2' c \<noteq> Sleep" by auto
-                hence "hist s2' >>= hist s1'" using `P14 (s1', s2')` by (auto simp add:P14_def postfix_def)
+                hence "suffixeq (hist s1') (hist s2')" using `P14 (s1', s2')` by (auto simp add:P14_def suffixeq_def)
                 hence "hist ?t' = hist s2'" by (auto simp add:ref_mapping_def)
                 with trans_s2 and `s1' = s1` show ?thesis by (auto simp add:ref_mapping_def fun_eq_iff)
               qed

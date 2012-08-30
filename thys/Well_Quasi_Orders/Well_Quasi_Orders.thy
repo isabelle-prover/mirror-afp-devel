@@ -686,14 +686,6 @@ qed
 
 subsection {* Embedding *}
 
-inductive
-  emb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
-  for P :: "('a \<Rightarrow> 'a \<Rightarrow> bool)"
-where
-  emb_Nil [intro, simp]: "emb P [] ys"
-| emb_Cons [intro] : "emb P xs ys \<Longrightarrow> emb P xs (y#ys)"
-| emb_Cons2 [intro]: "P x y \<Longrightarrow> emb P xs ys \<Longrightarrow> emb P (x#xs) (y#ys)"
-
 lemma reflp_on_emb:
   assumes "reflp_on P A"
   shows "reflp_on (emb P) (lists A)"
@@ -704,42 +696,6 @@ proof
     by (induct xs) (auto simp: reflp_on_def)
 qed
 
-lemma emb_Nil2 [simp]:
-  assumes "emb P xs []" shows "xs = []"
-  using assms by (cases rule: emb.cases) auto
-
-lemma emb_append2 [intro]:
-  "emb P xs ys \<Longrightarrow> emb P xs (zs @ ys)"
-  by (induct zs) auto
-
-lemma emb_prefix [intro]:
-  assumes "emb P xs ys" shows "emb P xs (ys @ zs)"
-  using assms
-  by (induct arbitrary: zs) auto
-
-lemma emb_ConsD:
-  assumes "emb P (x#xs) ys"
-  shows "\<exists>us v vs. ys = us @ v # vs \<and> P x v \<and> emb P xs vs"
-using assms
-proof (induct x\<equiv>"x#xs" y\<equiv>"ys" arbitrary: x xs ys)
-  case emb_Cons thus ?case by (metis append_Cons)
-next
-  case (emb_Cons2 x y xs ys)
-  thus ?case by (cases xs) (auto, blast+)
-qed
-
-lemma emb_appendD:
-  assumes "emb P (xs @ ys) zs"
-  shows "\<exists>us vs. zs = us @ vs \<and> emb P xs us \<and> emb P ys vs"
-using assms
-proof (induction xs arbitrary: ys zs)
-  case Nil thus ?case by auto
-next
-  case (Cons x xs)
-  then obtain us v vs where "zs = us @ v # vs"
-    and "P x v" and "emb P (xs @ ys) vs" by (auto dest: emb_ConsD)
-  with Cons show ?case by (metis append_Cons append_assoc emb_Cons2 emb_append2)
-qed
 
 lemma transp_on_emb:
   assumes "transp_on P A"
@@ -795,39 +751,6 @@ lemma bad_imp_not_Nil:
   "bad (emb P) f \<Longrightarrow> f i \<noteq> []"
   by auto
 
-
-subsection {* (Proper) Suffixes of Lists*}
-
-definition suffixeq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "suffixeq xs ys \<equiv> \<exists>us. ys = us @ xs"
-
-definition suffix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "suffix xs ys \<equiv> \<exists>us. ys = us @ xs \<and> us \<noteq> []"
-
-lemma suffix_set_subset:
-  "suffix xs ys \<Longrightarrow> set xs \<subseteq> set ys" by (auto simp: suffix_def)
-
-lemma suffixeq_set_subset:
-  "suffixeq xs ys \<Longrightarrow> set xs \<subseteq> set ys" by (auto simp: suffixeq_def)
-
-lemma suffixeq_refl [simp, intro]:
-  "suffixeq xs xs"
-  by (auto simp: suffixeq_def)
-
-lemma suffix_trans:
-  "suffix xs ys \<Longrightarrow> suffix ys zs \<Longrightarrow> suffix xs zs"
-  by (auto simp: suffix_def)
-
-lemma suffixeq_trans:
-  "suffixeq xs ys \<Longrightarrow> suffixeq ys zs \<Longrightarrow> suffixeq xs zs"
-  by (auto simp: suffixeq_def)
-
-lemma suffixeq_tl [simp]: "suffixeq (tl xs) xs"
-  by (induct xs) (auto simp: suffixeq_def)
-
-lemma suffix_tl [simp]: "xs \<noteq> [] \<Longrightarrow> suffix (tl xs) xs"
-  by (induct xs) (auto simp: suffix_def)
-
 lemma list_suffix_induct [case_names psuffix]:
   assumes "\<And>xs. (\<And>zs. suffix zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
   shows "P xs"
@@ -837,41 +760,6 @@ lemma list_suffix_induct [case_names psuffix]:
 lemma reflp_on_suffixeq:
   "suffixeq xs ys \<Longrightarrow> reflp_on P (set ys) \<Longrightarrow> reflp_on P (set xs)"
   using reflp_on_subset [OF suffixeq_set_subset] .
-
-lemma suffix_imp_suffixeq:
-  "suffix xs ys \<Longrightarrow> suffixeq xs ys"
-  by (auto simp: suffixeq_def suffix_def)
-
-lemma emb_suffix:
-  assumes "emb P xs ys" and "suffix ys zs"
-  shows "emb P xs zs"
-  using assms(2) and emb_append2 [OF assms(1)] by (auto simp: suffix_def)
-
-lemma suffixeq_suffix_reflclp_conv:
-  "suffixeq = suffix\<^sup>=\<^sup>="
-proof (intro ext iffI)
-  fix xs ys
-  assume "suffixeq xs ys"
-  show "suffix\<^sup>=\<^sup>= xs ys"
-  proof
-    assume "xs \<noteq> ys"
-    with `suffixeq xs ys` show "suffix xs ys" by (auto simp: suffixeq_def suffix_def)
-  qed
-next
-  fix xs ys
-  assume "suffix\<^sup>=\<^sup>= xs ys"
-  thus "suffixeq xs ys"
-  proof
-    assume "suffix xs ys" thus "suffixeq xs ys" by (rule suffix_imp_suffixeq)
-  next
-    assume "xs = ys" thus "suffixeq xs ys" by (auto simp: suffixeq_def)
-  qed
-qed
-
-lemma emb_suffixeq:
-  assumes "emb P xs ys" and "suffixeq ys zs"
-  shows "emb P xs zs"
-  using assms and emb_suffix unfolding suffixeq_suffix_reflclp_conv by auto
 
 fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
   "minimal_bad_seq A f 0 = A f 0"
@@ -1355,10 +1243,6 @@ qed
 
 end
 
-lemma suffix_reflclp_conv:
-  "suffix\<^sup>=\<^sup>= = suffixeq"
-  by (intro ext) (auto simp: suffixeq_def suffix_def)
-
 lemma wf_suffix:
   "wf {(x, y). suffix x y}"
   unfolding wf_def using list_suffix_induct by auto
@@ -1368,10 +1252,6 @@ lemma wfp_on_suffix:
   using wf_suffix [to_pred, unfolded wfp_on_UNIV [symmetric]]
   using wfp_on_subset [of "lists A" UNIV]
   by blast
-
-lemma suffix_lists:
-  "suffix xs ys \<Longrightarrow> ys \<in> lists A \<Longrightarrow> xs \<in> lists A"
-  unfolding suffix_def by auto
 
 interpretation list_mbs: mbs emb suffix lists
 proof -

@@ -7,7 +7,9 @@
 header {* Binary Predicates Restricted to Elements of a given Set *}
 
 theory Restricted_Predicates
-imports Main
+imports
+  Main
+  "~~/src/HOL/Library/Sublist"
 begin
 
 definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" where
@@ -19,13 +21,6 @@ definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> '
 lemma reflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> P a a) \<Longrightarrow> reflp_on P A"
   unfolding reflp_on_def by blast
-
-definition transp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "transp_on P A \<equiv> \<forall>a\<in>A. \<forall>b\<in>A. \<forall>c\<in>A. P a b \<and> P b c \<longrightarrow> P a c"
-
-lemma transp_onI [Pure.intro]:
-  "(\<And>a b c. \<lbrakk>a \<in> A; b \<in> A; c \<in> A; P a b; P b c\<rbrakk> \<Longrightarrow> P a c) \<Longrightarrow> transp_on P A"
-  unfolding transp_on_def by blast
 
 lemma reflp_on_reflclp [simp]:
   assumes "reflp_on P A" and "a \<in> A" and "b \<in> A"

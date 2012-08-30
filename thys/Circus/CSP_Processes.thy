@@ -20,7 +20,7 @@ subsubsection {* Definitions *}
 text {* We introduce here the definitions of the CSP healthiness conditions.*}
 
 definition CSP1::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
-where "CSP1 (P)  \<equiv>  P \<or> (\<lambda>(A, A'). \<not>ok A \<and> tr A \<le> tr A')"
+where "CSP1 (P)  \<equiv>  P \<or> (\<lambda>(A, A'). \<not>ok A \<and> prefixeq (tr A) (tr A'))"
 
 definition J_csp
 where "J_csp  \<equiv>  \<lambda>(A, A'). (ok A \<longrightarrow> ok A') \<and> tr A = tr A' \<and> wait A = wait A' 
@@ -197,7 +197,7 @@ proof -
     using assms by (simp_all only: Healthy_def)
   moreover
   have "(R P ;; R Q) is R healthy"
-    apply (auto simp add: design_defs rp_defs prefix_def fun_eq_iff split: cond_splits)
+    apply (auto simp add: design_defs rp_defs prefixeq_def fun_eq_iff split: cond_splits)
     apply (erule_tac x="zs @ zsa" in allE, auto split: cond_splits)+
     apply (rule_tac b=a in comp_intro, auto split: cond_splits)
     apply (rule_tac x="zs" in exI, auto split: cond_splits)
@@ -248,7 +248,7 @@ lemma rd_H1_H2: "(R((\<not> H1 (\<lambda> (A, A'). P (A, A'\<lparr>ok := False\<
                                   \<turnstile> H1 (\<lambda> (A, A'). P (A, A'\<lparr>ok := True\<rparr>)))) = 
                         (R((\<not>(H1 o H2) (\<lambda> (A, A'). P (A, A'\<lparr>ok := False\<rparr>))) 
                                   \<turnstile> (H1 o H2) (\<lambda> (A, A'). P (A, A'\<lparr>ok := True\<rparr>))))"
-apply (auto simp: design_defs rp_defs prefix_def fun_eq_iff split: cond_splits elim: alpha_d_more_eqE)
+apply (auto simp: design_defs rp_defs prefixeq_def fun_eq_iff split: cond_splits elim: alpha_d_more_eqE)
 apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = ba\<lparr>ok := False\<rparr>", auto intro: alpha_d.equality)
 apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = ba\<lparr>ok := False\<rparr>", auto intro: alpha_d.equality)
 apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = ba\<lparr>ok := False\<rparr>", auto intro: alpha_d.equality)

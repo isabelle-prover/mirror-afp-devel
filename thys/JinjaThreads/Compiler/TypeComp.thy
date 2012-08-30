@@ -9,7 +9,7 @@ imports
   Exception_Tables
   "J1WellForm"
   "../BV/BVSpec"
-  "~~/src/HOL/Library/List_Prefix"
+  "~~/src/HOL/Library/Sublist"
 begin
 
 (*<*)
