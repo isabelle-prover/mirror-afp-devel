@@ -9,7 +9,7 @@ imports
   Exception_Tables
   "J1WellForm"
   "../BV/BVSpec"
-  "~~/src/HOL/Library/Sublist"
+  "~~/src/HOL/Library/Prefix_Order"
 begin
 
 (*<*)
@@ -203,7 +203,7 @@ by(simp add:ty\<^isub>i'_def)
 
 lemma ty\<^isub>i'_antimono2:
  "\<lbrakk> E \<le> E'; A \<subseteq> A' \<rbrakk> \<Longrightarrow> P \<turnstile> ty\<^isub>i' ST E' \<lfloor>A'\<rfloor> \<le>' ty\<^isub>i' ST E \<lfloor>A\<rfloor>"
-by(auto simp:ty\<^isub>i'_def ty\<^isub>l_def list_all2_conv_all_nth prefix_def)
+by(auto simp:ty\<^isub>i'_def ty\<^isub>l_def list_all2_conv_all_nth less_eq_list_def prefixeq_def)
 
 declare ty\<^isub>i'_antimono [intro!] after_def[simp] pair_conv_ty\<^isub>i'[simp] pair_eq_ty\<^isub>i'_conv[simp]
 
@@ -553,7 +553,7 @@ corollary wt_instrs_ext_prefix [trans]:
   "\<lbrakk> \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau>s\<^isub>1@\<tau>s\<^isub>2; \<turnstile> is\<^isub>2,xt\<^isub>2 [::] \<tau>s\<^isub>3;
      size \<tau>s\<^isub>1 = size is\<^isub>1; \<tau>s\<^isub>3 \<le> \<tau>s\<^isub>2 \<rbrakk>
   \<Longrightarrow> \<turnstile> is\<^isub>1@is\<^isub>2, xt\<^isub>1 @ shift (size is\<^isub>1) xt\<^isub>2 [::] \<tau>s\<^isub>1@\<tau>s\<^isub>2"
-by(bestsimp simp:prefix_def elim: wt_instrs_ext dest:wt_instrs_extR)
+by(bestsimp simp:less_eq_list_def prefixeq_def elim: wt_instrs_ext dest:wt_instrs_extR)
 
 
 corollary wt_instrs_app:
@@ -861,17 +861,20 @@ next
   qed
 qed
 
+abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
+  "postfix xs ys \<equiv> suffixeq ys xs"
+
 notation (xsymbols) 
   postfix ("(_/ \<guillemotright>= _)" [51, 50] 50)
 
 lemma postfix_conv_eq_length_drop: 
   "ST' \<guillemotright>= ST \<longleftrightarrow> length ST \<le> length ST' \<and> drop (length ST' - length ST) ST' = ST"
 apply(auto)
-apply (metis append_eq_conv_conj append_take_drop_id diff_is_0_eq drop_0 linorder_not_less nat_le_linear postfix_take)
-apply (metis append_take_drop_id length_drop postfix_take same_append_eq size_list_def)
-by (metis postfix_drop)
+apply (metis append_eq_conv_conj append_take_drop_id diff_is_0_eq drop_0 linorder_not_less nat_le_linear suffixeq_take)
+apply (metis append_take_drop_id length_drop suffixeq_take same_append_eq size_list_def)
+by (metis suffixeq_drop)
 
-declare postfix_ConsI[simp]
+declare suffixeq_ConsI[simp]
 
 context TC0 begin
 
@@ -890,7 +893,7 @@ by(induct E A ST0 e and E A ST0 es rule: compT_compTs_induct) auto
 declare after_def[simp del] pair_eq_ty\<^isub>i'_conv[simp del]
 
 end
-declare postfix_ConsI[simp del]
+declare suffixeq_ConsI[simp del]
 
 (* FIXME *)
 lemma fun_of_simp [simp]: "fun_of S x y = ((x,y) \<in> S)" 
@@ -955,7 +958,7 @@ proof(induct E A ST e and E A ST es arbitrary: T and Ts rule: compT_compTs_induc
       by (fastforce simp add: ty\<^isub>i'_def hyperset_defs intro!: ty\<^isub>l_antimono)
     moreover { fix \<tau>
       assume \<tau>: "\<tau> \<in> set (compT E A ST e\<^isub>1)"
-      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<guillemotright>= ST" by(auto intro: compT_ST_prefix[OF postfix_refl])
+      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<guillemotright>= ST" by(auto intro: compT_ST_prefix[OF suffixeq_refl])
       with \<tau> have "?Q \<tau>" unfolding postfix_conv_eq_length_drop using `\<B> (try e\<^isub>1 catch(C i) e\<^isub>2) (length E)`
         by(fastforce dest!: compT_LT_prefix simp add: ty\<^isub>i'_def) }
     ultimately
@@ -1026,7 +1029,7 @@ next
       show "length ST \<le> length ST' \<and> P \<turnstile> \<lfloor>(drop (length ST' - length ST) ST',  LT')\<rfloor> \<le>' ty\<^isub>i' ST (E @ [Class Object]) ?A2"
       proof(cases "\<lfloor>(ST', LT')\<rfloor> \<in> set ?\<tau>s2")
 	case True
-        from compT_ST_prefix[OF postfix_refl this] compT_LT_prefix[OF this B2]
+        from compT_ST_prefix[OF suffixeq_refl this] compT_LT_prefix[OF this B2]
         show ?thesis unfolding postfix_conv_eq_length_drop by(simp add: ty\<^isub>i'_def)
       next
 	case False
