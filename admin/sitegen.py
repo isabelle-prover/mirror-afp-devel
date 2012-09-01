@@ -1,5 +1,15 @@
 #! /usr/bin/python
 
+##
+## Dependencies: Python 2 (tested with Python 2.6)
+## 
+## This script reads a metadata file and generates the topics.shtml,
+## index.shtml and the entry pages on afp.sf.net.
+## 
+## For meta data documentation see ../metadata/README
+## For adding new entries see ../doc/editors/new-entry-checkin.html
+## 
+
 from UserDict import DictMixin
 from optparse import OptionParser
 from sys import argv, stderr
