@@ -40,7 +40,7 @@ function usage()
   echo
   echo "  Runs testall from cron and logs output"
   echo
-  echo "Options: -f   only run test that are marked as frequent"
+  echo "Options: -f   only run tests that are marked as frequent"
   echo 
   exit 1
 }
