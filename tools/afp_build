@@ -33,8 +33,10 @@ function fail()
 
 ## process command line
 
-declare -a BUILD_OPTS=(-d "$AFP_BASE/thys"
-  -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML")
+eval "BUILD_OPTS=($AFP_BUILD_OPTIONS)"
+
+BUILD_OPTS["${#BUILD_OPTS[@]}"]="-d"
+BUILD_OPTS["${#BUILD_OPTS[@]}"]="$AFP"
 
 while getopts "AB" OPT
 do
