@@ -26,16 +26,18 @@ close IN;
 # parse log file
 for $i ( 0 .. $#lines) {
   $_ = $lines[$i];
-  if ( /^Testing \[([^\]]+)\]/ ) {
+  if ( /^Running ([^ ]+) \.\.\./ ) {
     $tests{$1} = 1;
   }
+# FIXME
+# no skipping in new build; check session list from afp_build? or drop?
   if ( /The following tests were skipped/ ) {
-    foreach $f (split (/[ \n]/,$lines[$i+1])) {
+    foreach $f (split (/[, \n]/,$lines[$i+1])) {
       $skipped{$f} = 1;
     }
   }
-  if ( /The following tests failed/ ) {
-    foreach $f (split (/[ \n]/,$lines[$i+1])) {
+  if ( /Unfinished session\(s\)/ ) {
+    foreach $f (split (/[, \n]/,$lines[$i])) {
       $fail{$f} = 1;
     }
   }
@@ -57,14 +59,14 @@ rename ($report, $report.".old");
 
 # write new report
 open (OUT,">$report") || die "could not open [$report] for writing.";
-foreach $t (keys tests) {
+foreach $t (keys %tests) {
   $status = $fail{$t} ? $FAIL : ($skipped{$t} ? $SKIPPED : $OK);
   print OUT "$t: $status\n";
 }
 close OUT;
 
 # output diff
-foreach $t (keys old_tests) {
+foreach $t (keys %old_tests) {
   $old_status = $old_fail{$t} ? $FAIL : ($old_skipped{$t} ? $SKIPPED : $OK);
   $new_status = $fail{$t} ? $FAIL : ($skipped{$t} ? $SKIPPED : $OK);
   if (!$tests{$t}) {
@@ -78,7 +80,7 @@ foreach $t (keys old_tests) {
   }
 }
 
-foreach $t (keys tests) {
+foreach $t (keys %tests) {
   if (!$old_tests{$t}) {
     $new_status = $fail{$t} ? $FAIL : ($skipped{$t} ? $SKIPPED : $OK);
     print "[$t] is new. Status is $new_status.\n";

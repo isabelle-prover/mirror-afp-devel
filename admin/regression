@@ -38,9 +38,9 @@ function usage()
   echo
   echo "Usage: $PRG [-f] [-|release_tag]"
   echo
-  echo "  Runs testall from cron and logs output"
+  echo "  Runs isabelle build on AFP sessions from cron and logs output"
   echo
-  echo "Options: -f   only run tests that are marked as frequent"
+  echo "Options: -f   run only small (frequent) sessions"
   echo 
   exit 1
 }
@@ -48,8 +48,10 @@ function usage()
 ## 
 
 if [ "$1" == "-f" ]; then
-	FRQ="-f"
-	shift
+    SESSIONS=(-g AFP)
+    shift
+else
+    SESSIONS=(-g AFP -g "AFP_big")
 fi
 
 [ "$#" != "1" -o "$1" = "-?" ] && usage
@@ -93,6 +95,11 @@ else
   ISABELLE_VER="release -- $($ISABELLE_TOOL version)"
 fi
 
+## AFP build settings
+. "$WORKING_COPY/etc/settings"
+eval "BUILD_OPTS=($AFP_BUILD_OPTIONS)"
+
+
 MAIL="$WORKING_COPY/admin/mail-attach"
 
 echo "Start test for $WORKING_COPY at `date`, $HOST" > $LOG
@@ -117,7 +124,7 @@ echo "$ISA_VERSION" >> $LOG
 echo >> $LOG
 
 # run test
-$WORKING_COPY/admin/testall $FRQ -t $ISABELLE_TOOL -c >> $LOG 2>&1
+$ISABELLE_TOOL build -c "${BUILD_OPTS[@]}" "${SESSIONS[@]}" >> $LOG 2>&1
 FAILURE=$?
 
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
