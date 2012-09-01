@@ -31,7 +31,10 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): $(BASE-IMAGE) $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(BASE-IMAGE):
+        cd $(ISABELLE_HOME)/src/HOL && $(ISABELLE_TOOL) make $(BASE-IMAGE)
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
