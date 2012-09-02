@@ -124,7 +124,7 @@ echo "$ISA_VERSION" >> $LOG
 echo >> $LOG
 
 # run test
-$ISABELLE_TOOL build -c "${BUILD_OPTS[@]}" "${SESSIONS[@]}" >> $LOG 2>&1
+$ISABELLE_TOOL build -c -d $WORKING_COPY/thys "${BUILD_OPTS[@]}" "${SESSIONS[@]}" >> $LOG 2>&1
 FAILURE=$?
 
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
