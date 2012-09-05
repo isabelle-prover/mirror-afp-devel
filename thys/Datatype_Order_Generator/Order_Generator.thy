@@ -1,4 +1,4 @@
-(*  Title:       Generating linear orders for datatypes
+(*  Title:       Deriving class instances for datatypes
     Author:      René Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  René Thiemann
     License:     LGPL
@@ -25,18 +25,18 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Generating linear orders for datatypes *}
 
 theory Order_Generator
-imports Main
-keywords "derive_order" :: thy_decl
+imports Derive_Manager
+uses ("order_generator.ML") 
 begin
 
 subsection Introduction
 
 text {*
 
-The order generator provides one major outer command: \begin{center}
-\texttt{derive-order "datatype-name"}
-\end{center}
-It automatically generates the two functions $\le$ and $<$ for some datatype 
+The order generator registers itself at the derive-manager for the classes \texttt{ord},
+\texttt{order}, and \texttt{linorder}.
+To be more precise,
+it automatically generates the two functions $\le$ and $<$ for some datatype 
 \texttt{dtyp} and
 proves the following instantiations.
 
@@ -57,6 +57,10 @@ datatype the \texttt{list} is used recursively.
 However, if we define \texttt{datatype tree = Leaf "nat list" | Node tree tree} then 
 \texttt{list} must
 provide the above instantiations.
+
+Note that when calling the generator for \texttt{linorder}, it will automatically also derive the instantiations 
+for \texttt{order}, which in turn invokes the generator for \texttt{ord}. A later invokation of \texttt{linorder}
+after \texttt{order} or \texttt{ord} is not possible.
 *}
 
 subsection "Implementation Notes"
@@ -90,16 +94,18 @@ For mutual recursive datatypes---like
 for the first mentioned datatype---here \texttt{a}---the instantiations of the order-classes are
 derived.
 
-Indirect recursion like in \texttt{datatype tree = Leaf nat | Node "tree list"} works fine, if
-there isn't too much indirect recursion. The exact limit is unknown and we refer to
-the example section for more details. 
-It remains as future work to detect the exact reason for this failure and fix it.
+Indirect recursion like in \texttt{datatype tree = Leaf nat | Node "tree list"} should work 
+without problems.
 *}
 
 subsection "Installing the generator"
 
 lemma linear_cases: "(x :: 'a :: linorder) = y \<or> x < y \<or> y < x" by auto
 
-ML_file "order_generator.ML" 
+use "order_generator.ML" 
+
+setup {*
+  Order_Generator.setup
+*}
 
 end

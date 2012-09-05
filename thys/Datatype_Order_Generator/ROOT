@@ -1,8 +1,8 @@
 session Datatype_Order_Generator (AFP) = HOL +
   options [timeout = 300]
   theories
-    Order_Generator
-    Order_Generator_Examples
+    Derive
+    Derive_Examples
   files
     "document/root.bib"
     "document/root.tex"

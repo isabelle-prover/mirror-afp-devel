@@ -33,19 +33,21 @@
 
 \begin{document}
 
-\title{Generating linear orders for datatypes.\footnote{Supported by FWF (Austrian Science Fund) project P22767-N13.}}
+\title{Deriving class instances for datatypes.\footnote{Supported by FWF (Austrian Science Fund) project P22767-N13.}}
 \author{Ren\'e Thiemann}
 \maketitle
 
 \begin{abstract}
-  We provide a tactic which automatically synthesizes linear orders for datatypes
-  as it is possible using Haskell's ``deriving Ord'' feature.
-  The tactic is able to handle datatypes with mutual or higher-order recursion,
-  if the nesting is not too complex. 
-
-  Our method complements the Isabelle Collection Framework which for some 
-  datastructures---like balanced trees---demands that the type of keys is 
-  linearly ordered \cite{rbt}.
+  We provide a framework for registering automatic methods 
+  to derive class instances 
+  of datatypes, 
+  as it is possible using Haskell's ``deriving Ord, Show, \ldots'' feature.
+  
+  We further implemented such automatic methods to derive (linear) orders or
+  hash-functions which are required in the 
+  Isabelle Collection Framework \cite{rbt}. Moreover, for the tactic of
+  Huffman and Krauss to show that a datatype is countable, we implemented a 
+  wrapper so that this tactic becomes accessible in our framework.
   
   Our formalization was performed as part of the \isafor/\ceta{} project%
   \footnote{\url{http://cl-informatik.uibk.ac.at/software/ceta}} \cite{CeTA}.
@@ -59,7 +61,19 @@
 % include generated text of all theories
 \input{session}
 
-
+\section{Acknowledgements}
+We thank 
+\begin{itemize}
+\item Lukas Bulwahn and Brian Huffman for the discussion on a generic derive command and 
+  the pointer to
+  the tactic for countability.
+\item Alexander Krauss for pointing me to the
+  recursors of the datatype package.
+\item Peter Lammich for the inspiration of developing a hash-function generator.
+\item Christian Urban for his cookbook about the ML-level of Isabelle.
+\item Stefan Berghofer, Cezary Kaliszyk, and Tobias Nipkow for their explanations
+  on several Isabelle related questions.
+\end{itemize}
 
 \bibliographystyle{abbrv}
 \bibliography{root}

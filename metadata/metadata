@@ -512,14 +512,12 @@ author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2012-08-07
 topic = Computer Science/Data Structures
 abstract =
-  We provide a tactic which automatically synthesizes linear orders for 
-  datatypes as it is possible using Haskell's ``deriving Ord'' feature.
-  The tactic is able to handle datatypes with mutual or higher-order recursion,
-  if the nesting is not too complex. 
+  We provide a framework for registering automatic methods to derive
+  class instances of datatypes, as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
   <p>
-  Our method complements the Isabelle Collection Framework which for some 
-  datastructures---like balanced trees---demands that the type of keys is 
-  linearly ordered.
+  We further implemented such automatic methods to derive (linear) orders or hash-functions which are 
+  required in the Isabelle Collection Framework. Moreover, for the tactic of Huffman and Krauss to show that a 
+  datatype is countable, we implemented a wrapper so that this tactic becomes accessible in our framework.
   <p>
   Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
   With our new tactic we could completely remove 
