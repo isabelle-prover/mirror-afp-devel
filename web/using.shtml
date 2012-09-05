@@ -33,7 +33,7 @@
 <p>
 Once you have downloaded the AFP, you can include its articles and theories in
 your own developments. If you would like to make your work available to others
-/without/ having to include the AFP articles you depend on, here is how to do it.
+<i>without</i> having to include the AFP articles you depend on, here is how to do it.
 </p>
 
 <p>Let <code>PATH</code> be the absolute path where you have put the unpacked
