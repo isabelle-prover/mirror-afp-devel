@@ -27,7 +27,6 @@ header {* Hash functions *}
 theory Hash_Generator
 imports "../Collections/common/HashCode"
   Derive_Manager
-uses ("hash_generator.ML")
 begin
 
 subsection "Introduction"
@@ -71,7 +70,7 @@ subsection "Installing the generator"
 
 lemma hash_mod_lemma: "1 < (n :: nat) \<Longrightarrow> x mod n < n" by auto
 
-use "hash_generator.ML"
+ML_file "hash_generator.ML"
 
 setup {*
   Hash_Generator.setup

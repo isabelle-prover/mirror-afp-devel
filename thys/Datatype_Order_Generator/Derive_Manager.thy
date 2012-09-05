@@ -28,8 +28,10 @@ theory Derive_Manager
 imports Main
 keywords "print_derives" :: diag
    and   "derive" :: thy_decl
-uses "derive_aux.ML" "derive_manager.ML"
 begin
+
+ML_file "derive_aux.ML" 
+ML_file "derive_manager.ML"
 
 text {*
 The derive manager allows to install various deriving-commands, e.g., to derive 
