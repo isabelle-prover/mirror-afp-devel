@@ -60,6 +60,7 @@ fun number_list xs = 0 upto (length xs - 1) ~~ xs
 fun split_last xs = (take (length xs - 1) xs, List.last xs)
 fun strip_cases ctac = ctac #> Seq.map snd
 
+(* FIXME: reconsolidate with similar functions in the Isabelle repository and move to HOLogic *)
 fun HOLogic_list_implies (prems,r) = fold_rev (fn r => fn p => HOLogic.mk_imp (r,p)) prems r
 fun HOLogic_list_conj [] = @{term true}
   | HOLogic_list_conj [x] = x
