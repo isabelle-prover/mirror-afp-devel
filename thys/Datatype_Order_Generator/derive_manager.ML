@@ -5,8 +5,7 @@ sig
   (* identifier, dtyp_name *)
   val derive : string -> string -> theory -> theory
   (* print all registered deriving-methods  *)
-  (* signature should be theory -> unit *)
-  val print_info : theory -> theory
+  val print_info : theory -> unit
 end
 
 structure Derive_Manager : DERIVE_MANAGER =
@@ -25,11 +24,10 @@ fun derive_options thy =
   Derive_Data.get thy |> Symtab.dest |> map (fn (id,(descr,_)) => (id,descr))
 
 (* FIXME: possibly use Pretty function for presentation. *)
-(* NB: Function does not have to return a theory *)
 fun print_info thy = let
   val _ = Output.writeln "The following sorts can be derived"
   val _ = derive_options thy |> map (fn (id,descr) => Output.writeln (id ^ ": " ^ descr)) 
-  in thy end
+  in () end
   
 
 fun register_derive id descr f thy =
@@ -54,7 +52,7 @@ val derive_cmd = gen_derive
      
 val _ =
   Outer_Syntax.command @{command_spec "print_derives"} "lists all registered sorts which can be derived"
-    (Scan.succeed (Toplevel.theory (print_info)))
+    (Scan.succeed (Toplevel.theory (tap print_info)))
 
 val _ = Outer_Syntax.command @{command_spec "derive"} "derives a sort for some datatype"
     (Parse.name -- Parse.type_const >> (fn (s, dtname) => Toplevel.theory (derive_cmd s dtname)))
