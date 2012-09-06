@@ -792,7 +792,7 @@ by(descending)(auto)
 subsection {* The length of a terminated lazy list @{term "tlength"} *}
 
 
-lemma [simp, code, nitpick_simp]:
+lemma [simp, nitpick_simp]:
   shows tlength_TNil: "tlength (TNil b) = 0"
   and tlength_TCons: "tlength (TCons x xs) = eSuc (tlength xs)"
  apply(descending, simp add: TNIL_def)
@@ -801,6 +801,17 @@ done
 
 lemma llength_llist_of_tllist [simp]: "llength (llist_of_tllist xs) = tlength xs"
 by descending auto
+
+definition gen_tlength :: "nat \<Rightarrow> ('a, 'b) tllist \<Rightarrow> enat"
+where "gen_tlength n xs = enat n + tlength xs"
+
+lemma gen_tlength_code [code]:
+  "gen_tlength n (TNil b) = enat n"
+  "gen_tlength n (TCons x xs) = gen_tlength (n + 1) xs"
+by(simp_all add: gen_tlength_def iadd_Suc eSuc_enat[symmetric] iadd_Suc_right)
+
+lemma tlength_code [code]: "tlength = gen_tlength 0"
+by(simp add: gen_tlength_def fun_eq_iff zero_enat_def)
 
 subsection {* @{term "tdropn"} *}
 

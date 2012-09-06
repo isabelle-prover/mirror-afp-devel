@@ -137,12 +137,12 @@ lemma tnth_Lazy_tllist [code]:
   (case xs () of Inr b \<Rightarrow> undefined n | Inl (x, ys) \<Rightarrow> if n = 0 then x else tnth ys (n - 1))"
 by(cases n)(auto simp add: tnth_TNil)
 
-declare tlength_TNil [code del] tlength_TCons [code del]
+declare gen_tlength_code [code del]
 
-lemma tlength_Lazy_tllist [code]:
-  "tlength (Lazy_tllist xs) =
-  (case xs () of Inr b \<Rightarrow> 0 | Inl (_, xs') \<Rightarrow> eSuc (tlength xs'))"
-by simp
+lemma gen_tlength_Lazy_tllist [code]:
+  "gen_tlength n (Lazy_tllist xs) =
+  (case xs () of Inr b \<Rightarrow> enat n | Inl (_, xs') \<Rightarrow> gen_tlength (n + 1) xs')"
+by(simp add: gen_tlength_code)
 
 declare tdropn_0 [code del] tdropn_TNil [code del] tdropn_Suc_TCons [code del]
 
