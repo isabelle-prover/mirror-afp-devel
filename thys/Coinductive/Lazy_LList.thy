@@ -100,10 +100,6 @@ lemma gen_llength_Lazy_llist [code]:
   "gen_llength n (Lazy_llist xs) = (case xs () of None \<Rightarrow> enat n | Some (_, ys) \<Rightarrow> gen_llength (n + 1) ys)"
 by(simp add: gen_llength_code)
 
-lemma llength_Lazy_llist [code]:
-  "llength (Lazy_llist xs) = (case xs () of None \<Rightarrow> 0 | Some (_, ys) \<Rightarrow> eSuc (llength ys))"
-by simp
-
 declare ltake_LNil [code del] ltake_LCons [code del]
 
 lemma ltake_Lazy_llist [code]:
