@@ -68,53 +68,66 @@ fun rulify_only_asm thm =
   |> (fn conj => (@{thm conjunct2} OF [conj])) (* drop conjunction again *)
 
 fun instantiate' thy sort vars thm = 
-  let val tvars = Thm.prop_of thm |> Term.add_tvars |> (fn x => x []) |> rev
-      val inst_tvars = map (fn (n,s) => TFree (fst n,sort) |> ctyp_of thy |> SOME) tvars
-      val cvars = map (cterm_of thy #> SOME) vars
+  let 
+    val tvars = Thm.prop_of thm |> Term.add_tvars |> (fn x => x []) |> rev
+    val inst_tvars = map (fn (n,s) => TFree (fst n,sort) |> ctyp_of thy |> SOME) tvars
+    val cvars = map (cterm_of thy #> SOME) vars
   in 
     Drule.instantiate' inst_tvars cvars thm
   end
 
 fun permute_for_ind_thm ps xs ind_thm =
-  let val n = length ps
-      val vs_p = prop_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev)
-      fun number_ih_vars i [] = []
-        | number_ih_vars i (P :: x :: pxs) = ((P,i) :: (x,i+n) :: number_ih_vars (i+1) pxs)
-      val vs_c = concl_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev) |> number_ih_vars 0
-      val permutation = map (AList.lookup (op =) vs_c #> the) vs_p
-   in map (nth (ps @ xs)) permutation end
+  let 
+    val n = length ps
+    val vs_p = prop_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev)
+    fun number_ih_vars i [] = []
+      | number_ih_vars i (P :: x :: pxs) = ((P,i) :: (x,i+n) :: number_ih_vars (i+1) pxs)
+    val vs_c = concl_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev) |> number_ih_vars 0
+    val permutation = map (AList.lookup (op =) vs_c #> the) vs_p
+  in 
+    map (nth (ps @ xs)) permutation 
+  end
 
 
 fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind_tac = 
-let val imps = imp_list
-       |> map (fn (imps,xs) => HOLogic_list_all (tl xs, HOLogic_list_implies (split_last imps)))
-    val ind_term = imps 
-       |> HOLogic_list_conj
-       |> HOLogic.mk_Trueprop
+  let 
+    val imps = map
+      (fn (imps,xs) => HOLogic_list_all (tl xs, HOLogic_list_implies (split_last imps)))
+      imp_list
+    val ind_term = 
+      HOLogic_list_conj imps
+      |> HOLogic.mk_Trueprop
     val nr_prems = length (hd imp_list |> fst) - 1
     val nr_arbi = length (hd imp_list |> snd) - 1
     val xs = map (snd #> hd) imp_list
-    val ps = (xs ~~ imps 
-           |> map (fn (x,imp) => lambda x imp))
+    val ps = xs ~~ imps 
+      |> map (fn (x,imp) => lambda x imp)
     val insts = permute_for_ind_thm ps xs ind_thm      
     val ind_thm_inst = instantiate' thy sort insts ind_thm 
     val ind_thm' = rulify_only_asm ind_thm_inst
     val xs_strings = map (dest_Free #> fst) xs
     val conjunctive_thm = Goal.prove_global thy xs_strings [] ind_term 
-       ((fn {context = ctxt, ...} => (
-         ((DETERM o strip_cases o Induct.induct_tac ctxt false [] [] [] (SOME [ind_thm']) []) : int -> tactic)
-       THEN_ALL_NEW 
-         (fn i => Subgoal.SUBPROOF (fn {context = ctxt, prems = prems, params = iparams, ...} => 
-           let val m = length prems - nr_prems
-               val ih_prems = drop m prems
-               val ih_hyps = take m prems
-               val tparams = map (snd #> term_of) iparams
-               val m' = length tparams - nr_arbi
-               val arbi_vars = drop m' tparams
-               val case_vars = take m' tparams
-            in ind_tac ctxt (i-1) ih_hyps ih_prems case_vars arbi_vars end
-         ) ctxt i)
-       ) 1 ))
+      (fn {context = ctxt, ...} => 
+        (
+          (DETERM o strip_cases o Induct.induct_tac ctxt false [] [] [] (SOME [ind_thm']) [])
+          THEN_ALL_NEW 
+          (fn i => Subgoal.SUBPROOF
+            (fn {context = ctxt, prems = prems, params = iparams, ...} => 
+              let 
+                val m = length prems - nr_prems
+                val ih_prems = drop m prems
+                val ih_hyps = take m prems
+                val tparams = map (snd #> term_of) iparams
+                val m' = length tparams - nr_arbi
+                val arbi_vars = drop m' tparams
+                val case_vars = take m' tparams
+              in 
+                ind_tac ctxt (i-1) ih_hyps ih_prems case_vars arbi_vars 
+              end
+            ) ctxt i
+          )
+        ) 1 
+      )
     (* extract first conjunct *)
     val first_conj = if length imp_list > 1 then @{thm conjunct1} OF [conjunctive_thm] else conjunctive_thm 
     (* and replace \<longrightarrow> and \<forall> by meta-logic (for those \<longrightarrow> and \<forall> which have been constructed) *)
@@ -123,21 +136,24 @@ let val imps = imp_list
   in elim_imp end 
 
 fun typ_subst_for_sort thy info sort =
-  let val spec = #descr info |> hd |> (fn (_,(dty_name,_,_)) => dty_name)
-        |> the_spec thy
-      val typ_subst = Term.typ_subst_atomic (spec |> fst |> map (fn (n,s) => (TFree (n,s), TFree (n,sort)))) 
+  let 
+    val spec = the_spec thy (#descr info |> hd |> (fn (_,(dty_name,_,_)) => dty_name))
+    val typ_subst = Term.typ_subst_atomic (spec |> fst |> map (fn (n,s) => (TFree (n,s), TFree (n,sort)))) 
   in typ_subst end
 
-fun dt_number_recs dtys = let 
+fun dt_number_recs dtys = 
+  let 
     fun dtrecs [] j = (j,[]) 
-    | dtrecs (DtTFree _ :: dtys) j = dtrecs dtys j
-    | dtrecs (DtRec i :: dtys) j = 
-       let val (j',ijs) = dtrecs dtys (j+1)
-       in (j',(i,j) :: ijs) end
-    | dtrecs (DtType (_,dtys1) :: dtys2) j = 
-       let val (j',ijs) = dtrecs dtys1 j
-           val (j'',ijs') = dtrecs dtys2 j'
-       in (j'',ijs @ ijs') end
+      | dtrecs (DtTFree _ :: dtys) j = dtrecs dtys j
+      | dtrecs (DtRec i :: dtys) j = 
+          let 
+            val (j',ijs) = dtrecs dtys (j+1)
+          in (j',(i,j) :: ijs) end
+      | dtrecs (DtType (_,dtys1) :: dtys2) j = 
+          let 
+            val (j',ijs) = dtrecs dtys1 j
+            val (j'',ijs') = dtrecs dtys2 j'
+          in (j'',ijs @ ijs') end
   in dtrecs dtys 0
 end
 

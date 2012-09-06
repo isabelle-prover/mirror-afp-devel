@@ -56,19 +56,22 @@ for class-instantiation.
 *}
 
 setup {*
-let 
-  fun derive dtyp_name thy = let
-    val base_name = Long_Name.base_name dtyp_name
-    val _ = Output.writeln ("proving that datatype " ^ base_name ^ " is countable")
-    val sort = @{sort countable}
-    val vs = let val i = Datatype.the_spec thy dtyp_name |> #1 in 
-        map (fn (n,_) => (n, sort)) i end
-    val thy' = Class.instantiation ([dtyp_name],vs,sort) thy
-            |> Class.prove_instantiation_exit (fn ctxt => countable_tac ctxt 1)
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class countable")
-    in thy' end
-  in Derive_Manager.register_derive "countable" "proves that a datatype is countable" derive 
-end
+  let 
+    fun derive dtyp_name thy = 
+      let
+        val base_name = Long_Name.base_name dtyp_name
+        val _ = Output.writeln ("proving that datatype " ^ base_name ^ " is countable")
+        val sort = @{sort countable}
+        val vs = 
+          let val i = Datatype.the_spec thy dtyp_name |> #1 
+          in map (fn (n,_) => (n, sort)) i end
+        val thy' = Class.instantiation ([dtyp_name],vs,sort) thy
+          |> Class.prove_instantiation_exit (fn ctxt => countable_tac ctxt 1)
+        val _ = Output.writeln ("registered " ^ base_name ^ " in class countable")
+      in thy' end
+  in 
+    Derive_Manager.register_derive "countable" "proves that a datatype is countable" derive 
+  end
 *}
 
 end

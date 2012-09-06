@@ -17,8 +17,10 @@ struct
 open Datatype_Aux; open Datatype; open Derive_Aux;
 
 val max_int = 2147483648 (* 2 ^^ 31 *)
-fun int_of_string s = (String.explode s 
-  |> fold (fn c => fn i => (1792318057 * i + Char.ord c) mod max_int))
+
+fun int_of_string s = fold
+  (fn c => fn i => (1792318057 * i + Char.ord c) mod max_int)
+  (String.explode s)
   0
 
 (* all numbers in int_of_string and create_factors are primes (31-bit) *)  
@@ -70,13 +72,13 @@ fun mk_hash thy info bounded =
                 val mult = mk_num (cons_hash cname idx i (j+1))
               in @{term "op * :: nat => nat => nat"} $ mult $ t |> bmod end
             fun hash_of_dty (i,DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
-              | hash_of_dty (i,_) = let
-                  val xi = x i
-                  val ty = Term.type_of xi
-                  val hash = Const (hash_name, ty --> @{typ nat}) $ xi
-                in hash |> multiply i end
-            val pre_rhs = dtysi
-              |> map_index hash_of_dty
+              | hash_of_dty (i,_) = 
+                  let
+                    val xi = x i
+                    val ty = Term.type_of xi
+                    val hash = Const (hash_name, ty --> @{typ nat}) $ xi
+                  in hash |> multiply i end
+            val pre_rhs = map_index hash_of_dty dtysi
               |> map_index I
               |> combine_dts
             val rhs = fold lambda (rev (lvars @ res_vars)) pre_rhs
@@ -96,58 +98,60 @@ fun mk_hash thy info bounded =
   in mk_rec 0 end
 
 
-fun derive dtyp_name thy = let
-  val tyco = dtyp_name
-
-  val base_name = Long_Name.base_name tyco
-  val _ = Output.writeln ("creating hashcode for datatype " ^ base_name)
-  val sort = @{sort hashable}
-  val info = Datatype.the_info thy tyco
-  val vs_of_sort = let val i = Datatype.the_spec thy tyco |> #1 in 
-     fn sort => map (fn (n,_) => (n, sort)) i end
-  val vs = vs_of_sort sort
-  val hash_rhs = mk_hash thy info false
-  val hashb_rhs = mk_hash thy info true
-  val ty = Term.fastype_of hash_rhs |> Term.dest_Type |> snd |> hd
-  val ty_it = Type ("itself", [ty])
-  val hashs_rhs = lambda (Free ("x",ty_it)) (HOLogic.mk_number @{typ nat} (create_def_size ty))
-
-  (* code copied from HOL/SPARK/TOOLS *)
-  fun mk_binrel_def T c rhs = Logic.mk_equals
-      (Const (c, T), rhs)
-  fun define_overloaded (def_name, eq) lthy =
-    let
-      val ((c, _), rhs) = eq |> Syntax.check_term lthy |>
-        Logic.dest_equals |>> dest_Free;
-      val ((_, (_, thm)), lthy') = Local_Theory.define
-        ((Binding.name c, NoSyn), ((Binding.name def_name, []), rhs)) lthy
-      val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy');
-      val thm' = singleton (Proof_Context.export lthy' ctxt_thy) thm
-    in (thm', lthy') end;
-
-  val hash_def = mk_binrel_def (ty --> @{typ nat}) @{const_name hashcode} hash_rhs
-  val hashb_def = mk_binrel_def (@{typ nat} --> ty --> @{typ nat}) @{const_name bounded_hashcode} hashb_rhs
-  val hashs_def = mk_binrel_def (ty_it --> @{typ nat}) @{const_name def_hashmap_size} hashs_rhs
-  val (((hash_thm , hashb_thm), hashs_thm),lthy) = Class.instantiation ([tyco],vs,sort) thy
+fun derive dtyp_name thy = 
+  let
+    val tyco = dtyp_name
+  
+    val base_name = Long_Name.base_name tyco
+    val _ = Output.writeln ("creating hashcode for datatype " ^ base_name)
+    val sort = @{sort hashable}
+    val info = Datatype.the_info thy tyco
+    val vs_of_sort = 
+      let val i = Datatype.the_spec thy tyco |> #1 
+      in fn sort => map (fn (n,_) => (n, sort)) i end
+    val vs = vs_of_sort sort
+    val hash_rhs = mk_hash thy info false
+    val hashb_rhs = mk_hash thy info true
+    val ty = Term.fastype_of hash_rhs |> Term.dest_Type |> snd |> hd
+    val ty_it = Type ("itself", [ty])
+    val hashs_rhs = lambda (Free ("x",ty_it)) (HOLogic.mk_number @{typ nat} (create_def_size ty))
+  
+    (* code copied from HOL/SPARK/TOOLS *)
+    fun mk_binrel_def T c rhs = Logic.mk_equals (Const (c, T), rhs)
+    fun define_overloaded (def_name, eq) lthy =
+      let
+        val ((c, _), rhs) = eq |> Syntax.check_term lthy |>
+          Logic.dest_equals |>> dest_Free;
+        val ((_, (_, thm)), lthy') = Local_Theory.define
+          ((Binding.name c, NoSyn), ((Binding.name def_name, []), rhs)) lthy
+        val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy');
+        val thm' = singleton (Proof_Context.export lthy' ctxt_thy) thm
+      in (thm', lthy') end;
+  
+    val hash_def = mk_binrel_def (ty --> @{typ nat}) @{const_name hashcode} hash_rhs
+    val hashb_def = mk_binrel_def (@{typ nat} --> ty --> @{typ nat}) @{const_name bounded_hashcode} hashb_rhs
+    val hashs_def = mk_binrel_def (ty_it --> @{typ nat}) @{const_name def_hashmap_size} hashs_rhs
+    val (((hash_thm , hashb_thm), hashs_thm),lthy) = Class.instantiation ([tyco],vs,sort) thy
       |> define_overloaded ("hashcode_" ^ base_name ^ "_def", hash_def)
       ||>> define_overloaded ("bounded_hashcode_" ^ base_name ^ "_def", hashb_def) 
       ||>> define_overloaded ("def_hashmap_size_" ^ base_name ^ "_def", hashs_def) 
-  val hash_thms = [hash_thm, hashb_thm, hashs_thm]
-
-  fun hash_tac ctxt = let 
-    val ss = simpset_of ctxt 
-    in (print_tac "enter hash " THEN
-       unfold_tac hash_thms ss THEN
-       print_tac "after unfolding" THEN
-       rtac @{thm hash_mod_lemma} 1 THEN atac 1 THEN
-       print_tac "after hash_mod" THEN
-       simp_tac ss 1
-       )
-    end
-  val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN hash_tac ctxt)) lthy
-  val _ = Output.writeln ("registered " ^ base_name ^ " in class hashable")
-
-in thy' end
+    val hash_thms = [hash_thm, hashb_thm, hashs_thm]
+  
+    fun hash_tac ctxt = 
+      let 
+        val ss = simpset_of ctxt 
+      in 
+        print_tac "enter hash " THEN
+        unfold_tac hash_thms ss THEN
+        print_tac "after unfolding" THEN
+        rtac @{thm hash_mod_lemma} 1 THEN atac 1 THEN
+        print_tac "after hash_mod" THEN
+        simp_tac ss 1
+      end
+    val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN hash_tac ctxt)) lthy
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class hashable")
+  
+  in thy' end
 
 val setup = Derive_Manager.register_derive "hashable" "derives a hash function for a datatype" derive
 

@@ -24,9 +24,10 @@ fun derive_options thy =
   Derive_Data.get thy |> Symtab.dest |> map (fn (id,(descr,_)) => (id,descr))
 
 (* FIXME: possibly use Pretty function for presentation. *)
-fun print_info thy = let
-  val _ = Output.writeln "The following sorts can be derived"
-  val _ = derive_options thy |> map (fn (id,descr) => Output.writeln (id ^ ": " ^ descr)) 
+fun print_info thy = 
+  let
+    val _ = Output.writeln "The following sorts can be derived"
+    val _ = derive_options thy |> map (fn (id,descr) => Output.writeln (id ^ ": " ^ descr)) 
   in () end
   
 
