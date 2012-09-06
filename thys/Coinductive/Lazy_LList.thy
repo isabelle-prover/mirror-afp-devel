@@ -94,11 +94,11 @@ lemma list_of_aux_Lazy_llist [code]:
   (case ys () of None \<Rightarrow> rev xs | Some (y, ys) \<Rightarrow> list_of_aux (y # xs) ys)"
 by(simp add: list_of_aux_code)
 
-declare llength_LNil [code del] llength_LCons [code del]
+declare gen_llength_code [code del]
 
-lemma llength_Lazy_llist [code]:
-  "llength (Lazy_llist xs) = (case xs () of None \<Rightarrow> 0 | Some (_, ys) \<Rightarrow> eSuc (llength ys))"
-by simp
+lemma gen_llength_Lazy_llist [code]:
+  "gen_llength n (Lazy_llist xs) = (case xs () of None \<Rightarrow> enat n | Some (_, ys) \<Rightarrow> gen_llength (n + 1) ys)"
+by(simp add: gen_llength_code)
 
 declare ltake_LNil [code del] ltake_LCons [code del]
 
@@ -136,12 +136,12 @@ lemma lzip_Lazy_llist [code]:
   Lazy_llist (\<lambda>_. Option.bind (xs ()) (\<lambda>(x, xs'). Option.map (\<lambda>(y, ys'). ((x, y), lzip xs' ys')) (ys ())))"
 by auto
 
-declare lset_LNil[code del] lset_LCons[code del]
+declare gen_lset_code[code del]
 
 lemma lset_Lazy_llist [code]:
-  "lset (Lazy_llist xs) =
-  (case xs () of None \<Rightarrow> {} | Some (y, ys) \<Rightarrow> insert y (lset ys))"
-by(auto)
+  "gen_lset A (Lazy_llist xs) =
+  (case xs () of None \<Rightarrow> A | Some (y, ys) \<Rightarrow> gen_lset (insert y A) ys)"
+by(auto simp add: gen_lset_code)
 
 declare llist_all2_code [code del]
 
@@ -164,7 +164,7 @@ lemma ltl_Lazy_llist [code]:
   "ltl (Lazy_llist xs) = Lazy_llist (\<lambda>_. case xs () of None \<Rightarrow> None | Some (x, ys) \<Rightarrow> force ys)"
 by(auto split: llist_split)
 
-declare llast_def [code del]
+declare llast_singleton [code del] llast_LCons2 [code del]
 
 lemma llast_Lazy_llist [code]:
   "llast (Lazy_llist xs) =
