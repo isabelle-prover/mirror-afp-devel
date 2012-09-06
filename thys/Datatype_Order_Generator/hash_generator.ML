@@ -55,11 +55,9 @@ fun mk_hash thy info bounded =
     fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
     fun mk_rhss (idx,(_,_,cons)) = 
       let
-        val ncons = number_list cons
         fun mk_rhs (i,(cname,dtysi)) = 
           let
-            val lvars = number_list dtysi
-              |> map (fn (i,dty) => mk_free_i "x_" i (typ_of dty))
+            val lvars = map_index (fn (i,dty) => mk_free_i "x_" i (typ_of dty)) dtysi
             fun res_var (_,oc) = mk_free_i "res_" oc (@{typ nat});
             val res_vars = dt_number_recs dtysi
               |> snd 
@@ -78,13 +76,12 @@ fun mk_hash thy info bounded =
                   val hash = Const (hash_name, ty --> @{typ nat}) $ xi
                 in hash |> multiply i end
             val pre_rhs = dtysi
-              |> number_list
-              |> map hash_of_dty
-              |> number_list
+              |> map_index hash_of_dty
+              |> map_index I
               |> combine_dts
             val rhs = fold lambda (rev (lvars @ res_vars)) pre_rhs
           in rhs end
-        val rec_args = map (fn (i,c) => (mk_rhs (i,c),i,idx)) ncons 
+        val rec_args = map_index (fn (i,c) => (mk_rhs (i,c),i,idx)) cons 
       in rec_args end
     val nrec_args = List.concat (map mk_rhss descr)
     val rec_args = map #1 nrec_args
