@@ -46,7 +46,7 @@ open Datatype_Aux; open Datatype; open Derive_Aux;
 
 fun strip_cases ctac = ctac #> Seq.map snd
 
-val less_name = @{term "op <"} |> Term.dest_Const |> fst
+val less_name = @{const_name "Orderings.less"}
 
 (* construct free variable x_i *)
 fun mk_free_tysubst_i typ_subst x i ty = Free (x ^ string_of_int i, ty |> typ_subst)
