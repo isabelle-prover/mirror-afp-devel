@@ -32,7 +32,7 @@ fun create_factor ty_name con_name idx i j =
 
 fun create_def_size _ = 10
 
-val hash_name = @{term "hashcode"} |> Term.dest_Const |> fst
+val hash_name = @{const_name "hashcode"}
 
 (* construct free variable x_i *)
 fun mk_free_tysubst_i typ_subst x i ty = Free (x ^ string_of_int i, ty |> typ_subst)
@@ -41,56 +41,58 @@ val mod_var = @{term "m :: nat"}
 fun mk_mod t = @{term "op mod :: nat => nat => nat"} $ t $ mod_var
 
 fun mk_hash thy info bounded =
-  let val sort = @{sort hashable}
-      val typ_subst = typ_subst_for_sort thy info sort 
-      val descr = #descr info
-      val ty_name = info |> #descr |> hd |> snd |> #1
-      val cons_hash = create_factor ty_name
-      val mk_num = HOLogic.mk_number @{typ nat}
-      fun bmod t = if bounded then mk_mod t else t 
-      fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
-      val rec_names = #rec_names info
-      val mk_free_i = mk_free_tysubst_i typ_subst
-      fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
-      fun mk_rhss (idx,(_,_,cons)) = 
-        let val ncons = number_list cons
-            fun mk_rhs (i,(cname,dtysi)) = 
-            let val lvars = number_list dtysi
-                         |> map (fn (i,dty) => mk_free_i "x_" i (typ_of dty))
-                fun res_var (_,oc) = mk_free_i "res_" oc (@{typ nat});
-                val res_vars = dt_number_recs dtysi
-                         |> snd 
-                         |> map res_var
-                val x = nth lvars
-                fun combine_dts [] = mk_num (cons_hash cname idx i 0)
-                  | combine_dts ((_,c) :: ics) = @{term "op + :: nat => nat => nat"} $ c $ combine_dts ics |> bmod
-                fun multiply j t = let
-                    val mult = mk_num (cons_hash cname idx i (j+1))
-                  in @{term "op * :: nat => nat => nat"} $ mult $ t |> bmod end
-                fun hash_of_dty (i,DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
-                  | hash_of_dty (i,_) = let
-                       val xi = x i
-                       val ty = Term.type_of xi
-                       val hash = Const (hash_name, ty --> @{typ nat}) $ xi
-                    in hash |> multiply i end
-                val pre_rhs = dtysi
-                        |> number_list
-                        |> map hash_of_dty
-                        |> number_list
-                        |> combine_dts
-                val rhs = fold lambda (rev (lvars @ res_vars)) pre_rhs
-            in rhs end
-            val rec_args = map (fn (i,c) => (mk_rhs (i,c),i,idx)) ncons 
-         in rec_args end
-      val nrec_args = List.concat (map mk_rhss descr)
-      val rec_args = map #1 nrec_args
-      fun mk_rec i = 
-      let val ty = typ_of (DtRec i)
-          val rec_ty = map type_of rec_args @ [ty] ---> @{typ nat}
-          val rec_name = nth rec_names i
-          val rhs = list_comb (Const (rec_name, rec_ty), rec_args)
-          val x = Free ("x", ty)
-       in if bounded then lambda mod_var (lambda x (rhs $ x |> bmod)) else rhs end
+  let
+    val sort = @{sort hashable}
+    val typ_subst = typ_subst_for_sort thy info sort 
+    val descr = #descr info
+    val ty_name = info |> #descr |> hd |> snd |> #1
+    val cons_hash = create_factor ty_name
+    val mk_num = HOLogic.mk_number @{typ nat}
+    fun bmod t = if bounded then mk_mod t else t 
+    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    val rec_names = #rec_names info
+    val mk_free_i = mk_free_tysubst_i typ_subst
+    fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
+    fun mk_rhss (idx,(_,_,cons)) = 
+      let
+        fun mk_rhs (i,(cname,dtysi)) = 
+          let
+            val lvars = map_index (fn (i,dty) => mk_free_i "x_" i (typ_of dty)) dtysi
+            fun res_var (_,oc) = mk_free_i "res_" oc (@{typ nat});
+            val res_vars = dt_number_recs dtysi
+              |> snd 
+              |> map res_var
+            val x = nth lvars
+            fun combine_dts [] = mk_num (cons_hash cname idx i 0)
+              | combine_dts ((_,c) :: ics) = @{term "op + :: nat => nat => nat"} $ c $ combine_dts ics |> bmod
+            fun multiply j t =
+              let
+                val mult = mk_num (cons_hash cname idx i (j+1))
+              in @{term "op * :: nat => nat => nat"} $ mult $ t |> bmod end
+            fun hash_of_dty (i,DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
+              | hash_of_dty (i,_) = let
+                  val xi = x i
+                  val ty = Term.type_of xi
+                  val hash = Const (hash_name, ty --> @{typ nat}) $ xi
+                in hash |> multiply i end
+            val pre_rhs = dtysi
+              |> map_index hash_of_dty
+              |> map_index I
+              |> combine_dts
+            val rhs = fold lambda (rev (lvars @ res_vars)) pre_rhs
+          in rhs end
+        val rec_args = map_index (fn (i,c) => (mk_rhs (i,c),i,idx)) cons 
+      in rec_args end
+    val nrec_args = List.concat (map mk_rhss descr)
+    val rec_args = map #1 nrec_args
+    fun mk_rec i = 
+      let
+        val ty = typ_of (DtRec i)
+        val rec_ty = map type_of rec_args @ [ty] ---> @{typ nat}
+        val rec_name = nth rec_names i
+        val rhs = list_comb (Const (rec_name, rec_ty), rec_args)
+        val x = Free ("x", ty)
+      in if bounded then lambda mod_var (lambda x (rhs $ x |> bmod)) else rhs end
   in mk_rec 0 end
 
 

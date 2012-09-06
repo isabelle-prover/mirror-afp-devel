@@ -46,7 +46,7 @@ open Datatype_Aux; open Datatype; open Derive_Aux;
 
 fun strip_cases ctac = ctac #> Seq.map snd
 
-val less_name = @{term "op <"} |> Term.dest_Const |> fst
+val less_name = @{const_name "Orderings.less"}
 
 (* construct free variable x_i *)
 fun mk_free_tysubst_i typ_subst x i ty = Free (x ^ string_of_int i, ty |> typ_subst)
@@ -62,17 +62,14 @@ fun mk_less_idx thy info sort =
         let val ty = typ_of (DtRec idx) 
             val linfo = the_info thy ty_name
             val case_name = #case_name linfo
-            val ncons = number_list cons
             fun mk_rhs (i,(_,dtysi)) = 
-            let val lvars = number_list dtysi
-                         |> map (fn (i,dty) => mk_free_i "x_" i (typ_of dty))
+            let val lvars = map_index (fn (i,dty) => mk_free_i "x_" i (typ_of dty)) dtysi
                 fun res_var (i,oc) = mk_free_i "res_" oc (typ_of (DtRec i) --> @{typ bool});
                 val res_vars = dt_number_recs dtysi
                          |> snd 
                          |> map res_var
                 fun mk_case (j,(_,dtysj)) = 
-                let val rvars = number_list dtysj
-                              |> map (fn (i,dty) => mk_free_i "y_" i (typ_of dty))
+                let val rvars = map_index (fn (i,dty) => mk_free_i "y_" i (typ_of dty)) dtysj
                     val x = nth lvars
                     val y = nth rvars                    
                     fun combine_dts [] = @{term False}
@@ -87,18 +84,17 @@ fun mk_less_idx thy info sort =
                     val rhs = if i < j then @{term True} 
                          else if i > j then @{term False}
                          else dtysi
-                            |> number_list
-                            |> map less_of_dty
-                            |> number_list
+                            |> map_index less_of_dty
+                            |> map_index I
                             |> combine_dts
                     val lam_rhs = fold lambda (rev rvars) rhs
                 in lam_rhs end
-                val cases = map mk_case ncons
+                val cases = map_index mk_case cons
                 val case_ty = (map type_of cases @ [ty]) ---> @{typ bool}
                 val rhs_case = list_comb (Const (case_name, case_ty), cases)
                 val rhs = fold lambda (rev (lvars @ res_vars)) rhs_case
             in rhs end
-            val rec_args = map (fn (i,c) => (mk_rhs (i,c),i,idx)) ncons 
+            val rec_args = map_index (fn (i,c) => (mk_rhs (i,c),i,idx)) cons 
          in rec_args end
       val nrec_args = List.concat (map mk_rhss descr)
       val rec_args = map #1 nrec_args
