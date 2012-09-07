@@ -1,6 +1,6 @@
 signature DERIVE_MANAGER =
 sig
-  (* identifier, description, (fn dtyp_name => register-method) *)
+  (* identifier, description, (fn dtyp_name => derive-method) *)
   val register_derive : string -> string -> (string -> theory -> theory) -> theory -> theory
   (* identifier, dtyp_name *)
   val derive : string -> string -> theory -> theory

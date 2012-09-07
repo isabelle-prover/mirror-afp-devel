@@ -70,7 +70,7 @@ fun rulify_only_asm thm =
 fun instantiate' thy sort vars thm = 
   let 
     val tvars = Thm.prop_of thm |> Term.add_tvars |> (fn x => x []) |> rev
-    val inst_tvars = map (fn (n,s) => TFree (fst n,sort) |> ctyp_of thy |> SOME) tvars
+    val inst_tvars = map (fn (n, _) => TFree (fst n,sort) |> ctyp_of thy |> SOME) tvars
     val cvars = map (cterm_of thy #> SOME) vars
   in 
     Drule.instantiate' inst_tvars cvars thm
@@ -80,8 +80,9 @@ fun permute_for_ind_thm ps xs ind_thm =
   let 
     val n = length ps
     val vs_p = prop_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev)
-    fun number_ih_vars i [] = []
+    fun number_ih_vars _ [] = []
       | number_ih_vars i (P :: x :: pxs) = ((P,i) :: (x,i+n) :: number_ih_vars (i+1) pxs)
+      | number_ih_vars _ _ = error "odd number of vars in ind-thm"
     val vs_c = concl_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev) |> number_ih_vars 0
     val permutation = map (AList.lookup (op =) vs_c #> the) vs_p
   in 
