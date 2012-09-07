@@ -87,7 +87,6 @@ derive hashable lab
 
 subsection "A complex datatype"
 text {*
-\label{countable problem}
 The following datatype has nested indirect recursion, mutual recursion and
 uses other datatypes.
 *}
@@ -99,7 +98,6 @@ and ('a,'b)complex2 = D1 "('a,'b)complex ttree"
 
 derive linorder complex
 derive hashable complex
-text {* Currently \texttt{derive countable complex} fails due to a problem of that tactic. 
-*}
+derive countable complex
 
 end

@@ -44,8 +44,7 @@ text {*
 We get similar limitation as for the order generator. 
 For mutual recursive datatypes, only
 for the first mentioned datatype the instantiations of the countable-class are
-derived. Moreover, for some complex datatypes, the tactic fails, 
-cf.\ the example in Section \ref{countable problem}.
+derived. 
 *}
 
 subsection "Installing the tactic"
