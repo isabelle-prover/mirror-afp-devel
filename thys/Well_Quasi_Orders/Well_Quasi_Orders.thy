@@ -141,6 +141,26 @@ next
   qed
 qed
 
+abbreviation incomparable where
+  "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
+
+abbreviation antichain_on where
+  "antichain_on P f A \<equiv> \<forall>(i::nat) j. f i \<in> A \<and> (i < j \<longrightarrow> incomparable P (f i) (f j))"
+
+text {*Almost full relations do not admit infinite antichains.*}
+lemma almost_full_on_imp_not_antichain_on:
+  assumes "almost_full_on P A"
+  shows "\<not> antichain_on P f A"
+proof
+  assume *: "antichain_on P f A"
+  hence "\<forall>i. f i \<in> A" by simp
+  with assms have "good P f" by (auto simp: almost_full_on_def)
+  then obtain i j where "i < j" and "P (f i) (f j)"
+    unfolding good_def by auto
+  moreover with * have "incomparable P (f i) (f j)" by auto
+  ultimately show False by blast
+qed
+
 lemma wqo_on_imp_wfp_on:
   assumes "wqo_on P A"
   shows "wfp_on (strict P) A"
