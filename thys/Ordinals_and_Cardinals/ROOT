@@ -1,11 +1,6 @@
-session Ordinals_and_Cardinals (AFP) = HOL +
+session Ordinals_and_Cardinals (AFP) = "HOL-Cardinals" +
   options [timeout = 400]
-  theories [document = false]
-    "~~/src/HOL/Library/Zorn"
-    "~~/src/HOL/Library/Infinite_Set"
   theories
-    Cardinal_Order_Relation
+    Cardinal_Order_Relation_discontinued
   files
-    "document/intro.tex"
-    "document/root.bib"
     "document/root.tex"
