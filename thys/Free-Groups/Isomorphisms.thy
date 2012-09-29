@@ -6,7 +6,7 @@ imports
    "~~/src/HOL/Algebra/IntRing"
    "FreeGroups"
    C2
-   "../Ordinals_and_Cardinals/Cardinal_Order_Relation"
+   "~~/src/HOL/Cardinals/Cardinal_Order_Relation"
 begin
 
 subsection {* The Free Group over the empty set *}

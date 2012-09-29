@@ -3,6 +3,6 @@ no_document use_thys [
   "~~/src/HOL/Algebra/IntRing",
   "~~/src/HOL/Algebra/Bij",
   "~~/src/HOL/Proofs/Lambda/Commutation",
-  "../Ordinals_and_Cardinals/Cardinal_Order_Relation"];
+  "~~/src/HOL/Cardinals/Cardinal_Order_Relation"];
 
 use_thys ["FreeGroups", "Isomorphisms", "PingPongLemma"];
