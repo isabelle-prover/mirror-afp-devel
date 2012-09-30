@@ -162,7 +162,7 @@ if [ "$FAILURE" != "0" ]; then
   echo "`date`, $HOST, $AFP_VER [afp: $AFP_HG_ID, isa: $ISABELLE_VER]: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
   for E in $FAIL; do
     (
-      . $WORKING_COPY/thys/$E/config || fail "error reading config for $E"
+      . "$WORKING_COPY/thys/$E/config" || fail "error reading config for $E"
       if [ "$FREQUENT" == "yes" ]; then
         cat > $TMP <<EOF
 Session [$E] in the automated afp test failed. 
