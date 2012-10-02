@@ -452,7 +452,7 @@ lemma tree_induct_consistent [consumes 1, case_names base step\<^isub>1 step\<^i
  P t a"
 
 txt {*
-The proof relies on the \textit{induct\_scheme} and
+The proof relies on the \textit{induction\_schema} and
 \textit{lexicographic\_order} tactics, which automate the most tedious
 aspects of deriving induction rules. The alternative would have been to perform
 a standard structural induction on @{term t} and proceed by cases, which is
@@ -468,7 +468,7 @@ apply induction_schema
 by lexicographic_order
 
 text {*
-The \textit{induct\_scheme} tactic reduces the putative induction rule to
+The \textit{induction\_schema} tactic reduces the putative induction rule to
 simpler proof obligations.
 Internally, it reuses the machinery that constructs the default induction
 rules. The resulting proof obligations concern (a)~case completeness,
@@ -2462,7 +2462,7 @@ predicate'' combination (@{typ "'a tree"} + @{const consistent}) and functions
 defined by sequential pattern matching (@{const sibling} and
 @{const mergeSibling}). Our experience suggests that such rules, which are
 uncommon in formalizations, are highly valuable and versatile. Moreover,
-Isabelle's \textit{induct\_scheme} and \textit{lexicographic\_order} tactics
+Isabelle's \textit{induction\_schema} and \textit{lexicographic\_order} tactics
 make these easy to prove.
 
 Formalizing the proof of Huffman's algorithm also led to a deeper
