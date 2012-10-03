@@ -1148,14 +1148,6 @@ fun apply_in_context thy lexp f t =
     |> (fn ctxt => f ctxt t)
   end;
 
-fun print_term thy t =
-  let
-    val ctxt = Syntax.init_pretty_global thy
-      |> Config.put show_sorts false
-      |> Config.put show_types false
-      |> Config.put show_markup false;
-  in Print_Mode.setmp [] (Syntax.string_of_term ctxt) t end;
-
 fun add_abbrev loc mode name spec thy =
   thy
   |> Named_Target.init I loc
@@ -1369,7 +1361,8 @@ fun procedures_definition locname procs thy =
            val Free (gamma,_) = read_term programN;
            val eq = HOLogic.Trueprop$
                      HOLogic.mk_eq (Free (gamma,fastype_of nt --> fastype_of rhs)$nt,rhs)
-           val eqs = print_term thy eq;   (* FIXME fragile *)
+           val eqs =
+             YXML.string_of_body (Term_XML.Encode.term (map_types (K dummyT) eq));
            val assms = Element.Assumes [((Binding.name (suffix bodyP name'), []),[(eqs,[])])]
          in [assms]
          end
