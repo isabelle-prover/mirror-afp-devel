@@ -25,7 +25,6 @@ proof -
   show "wf {(x, y). sub x y \<and> x \<noteq> y}" by (rule wf_subset)
 qed
 
-declare [[show_sorts]]
 lemma sub_good:
   shows "good sub (f :: nat \<Rightarrow> ('a::finite) list)"
 using wqo_on_imp_good[where f="f", OF wqo_on_lists_over_finite_sets]
