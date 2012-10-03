@@ -15,10 +15,9 @@ function usage()
   echo "Usage: isabelle $PRG [OPTIONS] -- [BUILD_ARGS ...]"
   echo
   echo "  Options are:"
-  echo "    -A           select regular AFP sessions"
-  echo "    -B           select big AFP sessions"
+  echo "    -A           select all AFP sessions"
   echo
-  echo "  Build and manage AFP sessions, as front-end for isabelle build."
+  echo "  Build AFP sessions, as front-end for isabelle build with AFP settings."
   echo "  Further options and arguments after \"--\" are passed to the latter."
   echo
   exit 1
@@ -44,10 +43,6 @@ do
     A)
       BUILD_OPTS["${#BUILD_OPTS[@]}"]="-g"
       BUILD_OPTS["${#BUILD_OPTS[@]}"]="AFP"
-      ;;
-    B)
-      BUILD_OPTS["${#BUILD_OPTS[@]}"]="-g"
-      BUILD_OPTS["${#BUILD_OPTS[@]}"]="AFP_big"
       ;;
     \?)
       usage

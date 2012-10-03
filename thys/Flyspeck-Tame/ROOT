@@ -1,4 +1,4 @@
-session "Flyspeck-Tame" (AFP_big) = HOL +
+session "Flyspeck-Tame" (AFP) = HOL +
   options [timeout = 86400]
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"
