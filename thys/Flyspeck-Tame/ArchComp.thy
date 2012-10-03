@@ -9,10 +9,9 @@ begin
 method_setup cond_eval = {*
   Scan.succeed (fn ctxt =>
     SIMPLE_METHOD'
-     (if getenv "FLYSPECK_SKIP_PROOFS" = "true" then
-       SELECT_GOAL (Skip_Proof.cheat_tac (Proof_Context.theory_of ctxt))
-      else eval_tac ctxt))
-*} "solve goal by evaluation (skipped if FLYSPECK_SKIP_PROOFS=true)"
+     (if getenv "ISABELLE_FULL_TEST" = "true" then eval_tac ctxt
+      else SELECT_GOAL (Skip_Proof.cheat_tac (Proof_Context.theory_of ctxt))))
+*} "solve goal by evaluation if ISABELLE_FULL_TEST=true)"
 
 
 subsection {* Proofs by evaluation using generated code *}
