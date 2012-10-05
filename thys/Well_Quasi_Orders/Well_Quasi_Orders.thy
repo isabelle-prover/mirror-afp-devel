@@ -1052,10 +1052,15 @@ proof -
     where * [rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
   let ?g = "minimal_bad_seq M g"
   let ?A = "\<lambda>i. ?g i i"
-  have "\<forall>n. (\<forall>i\<ge>n. ?g n i \<in> vals A) \<and> (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
+  have "\<forall>n. (\<forall>i\<ge>n. ?g n i \<in> vals A)
+    \<and> (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j)))
+    \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j)))
+    \<and> (\<forall>i\<le>n. min_at P (?g n) i)
+    \<and> (\<forall>i\<le>n. ?A i = ?g n i)
+    \<and> bad ?P (?g n)" (is "\<forall>n. ?Q n")
   proof
     fix n
-    show "(\<forall>i\<ge>n. ?g n i \<in> vals A) \<and> (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j))) \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j))) \<and> (\<forall>i\<le>n. min_at P (?g n) i) \<and> (\<forall>i\<le>n. ?A i = ?g n i) \<and> bad ?P (?g n)"
+    show "?Q n"
     proof (induction n)
       case 0
       have "\<forall>i\<ge>0. g i \<in> vals A" using `\<And>i. g i \<in> vals A` by auto
