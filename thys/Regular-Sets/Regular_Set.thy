@@ -229,16 +229,6 @@ lemma Deriv_empty[simp]:   "Deriv a {} = {}"
   and Deriv_UN[simp]:      "Deriv a (UN x:I. S x) = (UN x:I. Deriv a (S x))"
 by (auto simp: Deriv_def)
 
-lemma Deriv_conc_subset: "Deriv a A @@ B \<subseteq> Deriv a (A @@ B)" (is "?L \<subseteq> ?R")
-proof 
-  fix w assume "w \<in> ?L"
-  then obtain u v where "w = u @ v" "a # u \<in> A" "v \<in> B"
-    by (auto simp: Deriv_def)
-  then have "a # w \<in> A @@ B"
-    by (auto intro: concI[of "a # u", simplified])
-  thus "w \<in> ?R" by (auto simp: Deriv_def)
-qed
-
 lemma Der_conc [simp]: "Deriv c (A @@ B) = (Deriv c A) @@ B \<union> (if [] \<in> A then Deriv c B else {})"
 unfolding Deriv_def conc_def
 by (auto simp add: Cons_eq_append_conv)
