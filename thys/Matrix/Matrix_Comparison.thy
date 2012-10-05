@@ -2009,7 +2009,7 @@ proof -
     from n_pos obtain nn where n: "n = Suc nn" by (cases n, auto)
     have col: "col ?m 0 = map (f 0) [0 ..< n]" unfolding col_def using n_pos by simp
     also have "... = f 0 0 # map (\<lambda> i. f 0 (Suc i)) [0 ..< nn]"
-      unfolding n unfolding map_nth_Suc ..
+      unfolding n unfolding map_upt_Suc ..
     also have "... = e # replicate nn 0" unfolding f 
       by (simp add: map_replicate_trivial)
     also have "... = e # vec0 nn" unfolding vec0I_def ..

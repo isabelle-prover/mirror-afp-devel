@@ -209,7 +209,7 @@ next
   note IH = Cons(1)[OF mat]
   show ?case 
     unfolding snc 
-    unfolding map_nth_Suc
+    unfolding map_upt_Suc
     unfolding nth.simps nat.simps concat.simps
     unfolding IH v ..
 qed

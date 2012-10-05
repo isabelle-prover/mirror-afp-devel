@@ -53,8 +53,16 @@ proof -
   qed
 qed
 
-lemma map_nth_Suc: "map f [0 ..< Suc n] = f 0 # map (\<lambda> i. f (Suc i)) [0 ..< n]"
+lemma map_upt_Suc: "map f [0 ..< Suc n] = f 0 # map (\<lambda> i. f (Suc i)) [0 ..< n]"
   by (induct n arbitrary: f, auto)
+
+lemma map_upt_add: "map f [0 ..< n + m] = map f [0 ..< n] @ map (\<lambda> i. f (i + n)) [0 ..< m]"
+proof (induct n arbitrary: f)
+  case (Suc n f)
+  have "map f [0 ..< Suc n + m] = map f [0 ..< Suc (n+m)]" by simp
+  also have "\<dots> = f 0 # map (\<lambda> i. f (Suc i)) [0 ..< n + m]" unfolding map_upt_Suc ..
+  finally show ?case unfolding Suc map_upt_Suc by simp
+qed simp
 
 lemma all_Suc_conv:
   "(\<forall>i<Suc n. P i) \<longleftrightarrow> P 0 \<and> (\<forall>i<n. P (Suc i))" (is "?l = ?r")
@@ -121,7 +129,7 @@ proof (induct xs arbitrary: ys, simp)
   then obtain y yys where ys: "ys = y # yys" by (cases ys, auto)
   with Cons have len: "length xs = length yys" by simp
   show ?case unfolding ys 
-    by (simp del: upt_Suc add: map_nth_Suc, unfold Cons(1)[OF len], simp) 
+    by (simp del: upt_Suc add: map_upt_Suc, unfold Cons(1)[OF len], simp) 
 qed
 
 lemma nth_map_conv:
