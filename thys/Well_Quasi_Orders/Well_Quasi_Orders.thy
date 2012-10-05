@@ -964,21 +964,21 @@ qed
 text {*If there is a bad sequence, then there is a bad sequence that is
 minimal at its first element (used for the base case of constructing a
 minimal bad sequence.*}
-lemma bad_imp_min_at_0:
+lemma minimal_bad_0:
   assumes "f 0 \<in> vals A"
     and "bad (strong P) f"
   shows "\<exists>g. (\<forall>i. \<exists>j. weakeq (g i) (f j)) \<and> min_at P g 0 \<and> bad (strong P) g"
 using assms
-proof (induct "f 0" arbitrary: f rule: weak_induct)
-  case (IH g)
+proof (induct t\<equiv>"f 0" arbitrary: f rule: weak_induct)
+  case IH
   show ?case
-  proof (cases "min_at P g 0")
+  proof (cases "min_at P f 0")
     case True with IH show ?thesis by blast
   next
     case False
-    then obtain h where less: "\<forall>i<0. h i = g i"
-      and weak: "weak (h 0) (g 0)"
-      and greater: "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (h i) (g j)"
+    then obtain h where less: "\<forall>i<0. h i = f i"
+      and weak: "weak (h 0) (f 0)"
+      and greater: "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (h i) (f j)"
       and bad: "bad (strong P) h"
       unfolding min_at_def by auto
     have "h 0 \<in> vals A"
@@ -986,7 +986,7 @@ proof (induct "f 0" arbitrary: f rule: weak_induct)
     from IH(2) [of h, OF this weak bad] obtain e
       where "\<forall>i. \<exists>j. weakeq (e i) (h j)" and "min_at P e 0" and "bad (strong P) e"
       by auto
-    moreover with greater have "\<forall>i. \<exists>j. weakeq (e i) (g j)" using weakeq_trans by fast
+    moreover with greater have "\<forall>i. \<exists>j. weakeq (e i) (f j)" using weakeq_trans by fast
     ultimately show ?thesis by blast
   qed
 qed
@@ -1027,7 +1027,7 @@ lemma mbs:
     (\<forall>i. g i \<in> vals A)"
 proof -
   from assms have "f 0 \<in> vals A" by simp
-  from bad_imp_min_at_0 [of f, OF this `bad ?P f`] obtain g
+  from minimal_bad_0 [of f, OF this `bad ?P f`] obtain g
     where "\<forall>i. \<exists>j. weakeq (g i) (f j)"
     and "min_at P g 0"
     and "bad ?P g"
