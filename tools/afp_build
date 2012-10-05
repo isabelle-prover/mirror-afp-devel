@@ -37,7 +37,7 @@ eval "BUILD_OPTS=($AFP_BUILD_OPTIONS)"
 BUILD_OPTS["${#BUILD_OPTS[@]}"]="-d"
 BUILD_OPTS["${#BUILD_OPTS[@]}"]="$AFP"
 
-while getopts "AB" OPT
+while getopts "A" OPT
 do
   case "$OPT" in
     A)
