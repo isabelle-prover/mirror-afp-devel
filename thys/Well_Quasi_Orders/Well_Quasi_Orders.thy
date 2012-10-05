@@ -875,7 +875,7 @@ from a bad sequence that is minimal at @{term n}. Moreover, the first
 @{term n} elements coincide with the given sequence (hence minimality
 at @{term n} is preserved) and the remaining elements are weakly
 related to the remaining elements of the given sequence.*}
-lemma minimal_bad_element:
+lemma minimal_bad_Suc:
   fixes f :: "'b seq"
   assumes "f (Suc n) \<in> vals A"
     and "min_at P f n"
@@ -1035,7 +1035,7 @@ proof -
   with `\<forall>i. f i \<in> vals A`
     have "\<And>i. g i \<in> vals A"
     using weakeq_vals by blast
-  from minimal_bad_element [of _ _ _ P]
+  from minimal_bad_Suc [of _ _ _ P]
     have "\<forall>f n.
     f (Suc n) \<in> vals A \<and>
     min_at P f n \<and>
