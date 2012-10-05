@@ -887,42 +887,36 @@ lemma minimal_bad_element:
     bad (strong P) (repl (Suc n) f g) \<and>
     min_at P (repl (Suc n) f g) (Suc n)"
 using assms
-proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
-  case (IH g)
+proof (induct t\<equiv>"f (Suc n)" arbitrary: f n rule: weak_induct)
+  case IH
   show ?case
-  proof (cases "min_at P g (Suc n)")
+  proof (cases "min_at P f (Suc n)")
     case True
-    let ?g = "repl (Suc n) g g"
-    have "\<forall>i\<le>n. ?g i = g i" by simp
-    moreover have "weakeq (g (Suc n)) (g (Suc n))" by simp
-    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq ((repl (Suc n) g g) i) (g j)" by auto
-    moreover from `bad (strong P) g`
-      have "bad (strong P) (repl (Suc n) g g)" by simp
-    moreover from True have "min_at P (repl (Suc n) g g) (Suc n)" by simp
-    ultimately show ?thesis by blast
+    with `bad (strong P) f` show ?thesis
+      by (metis (full_types) repl_ident sup2CI)
   next
     case False
-    then obtain h where less: "\<forall>i<Suc n. h i = g i"
-      and weak: "weak (h (Suc n)) (g (Suc n))"
-      and greater: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (h i) (g j)"
+    then obtain h where less: "\<forall>i<Suc n. h i = f i"
+      and weak: "weak (h (Suc n)) (f (Suc n))"
+      and greater: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (h i) (f j)"
       and bad: "bad (strong P) h"
       unfolding min_at_def by blast
-    let ?g = "repl (Suc n) g h"
-    from weak have weak': "weak (?g (Suc n)) (g (Suc n))" by simp
+    let ?g = "repl (Suc n) f h"
+    from weak have weak': "weak (?g (Suc n)) (f (Suc n))" by simp
     have min_at: "min_at P ?g n"
     proof (unfold min_at_def, intro allI impI, elim conjE)
       fix e
       assume "\<forall>i<n. e i = ?g i"
-      hence 1: "\<forall>i<n. e i = g i" by auto
+      hence 1: "\<forall>i<n. e i = f i" by auto
       assume "weak (e n) (?g n)"
-      hence 2: "weak (e n) (g n)" by auto
+      hence 2: "weak (e n) (f n)" by auto
       assume *: "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (e i) (?g j)"
-      have 3: "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (e i) (g j)"
+      have 3: "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (e i) (f j)"
       proof (intro allI impI)
         fix i assume "n \<le> i"
         with * obtain j where "j \<ge> n"
           and **: "weakeq (e i) (?g j)" by auto
-        show "\<exists>j\<ge>n. weakeq (e i) (g j)"
+        show "\<exists>j\<ge>n. weakeq (e i) (f j)"
         proof (cases "j \<le> n")
           case True with ** show ?thesis
             using `j \<ge> n` by auto
@@ -931,37 +925,37 @@ proof (induct "f (Suc n)" arbitrary: f n rule: weak_induct)
           with `j \<ge> n` have "j \<ge> Suc n" by auto
           with ** have "weakeq (e i) (h j)" by auto
           with greater obtain k where "k \<ge> Suc n"
-            and "weakeq (h j) (g k)" using `j \<ge> Suc n` by auto
-          with `weakeq (e i) (h j)` have "weakeq (e i) (g k)" using weakeq_trans by blast
+            and "weakeq (h j) (f k)" using `j \<ge> Suc n` by auto
+          with `weakeq (e i) (h j)` have "weakeq (e i) (f k)" using weakeq_trans by blast
           moreover from `k \<ge> Suc n` have "k \<ge> n" by auto
           ultimately show ?thesis by blast
         qed
       qed
-      from `min_at P g n` [unfolded min_at_def] and 1 and 2 and 3
+      from `min_at P f n` [unfolded min_at_def] and 1 and 2 and 3
         show "good (strong P) e" by auto
     qed
     have bad: "bad (strong P) ?g"
-      using bad_strong_repl [OF `bad (strong P) g` `bad (strong P) h`, of "Suc n", OF greater] .
-    let ?g' = "repl (Suc n) g"
+      using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF greater] .
+    let ?g' = "repl (Suc n) f"
     have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
     from IH(2) [of ?g n, OF this, OF weak' min_at bad] obtain M
-      where "\<forall>i\<le>n. M i = g i"
+      where "\<forall>i\<le>n. M i = f i"
       and "weakeq (M (Suc n)) (?g' h (Suc n))"
       and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g' M i) (h j)"
       and "bad (strong P) (?g' M)"
       and "min_at P (?g' M) (Suc n)"
       unfolding ex_repl_conv by auto
     moreover with weak_imp_weakeq [OF weak]
-      have "weakeq (M (Suc n)) (g (Suc n))" using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
-    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (g j)"
+      have "weakeq (M (Suc n)) (f (Suc n))" using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
+    moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)"
     proof (intro allI impI)
       fix i assume "Suc n \<le> i"
       with * obtain j where "j \<ge> Suc n" and "weakeq (?g' M i) (h j)" by auto
       hence "weakeq (M i) (h j)" using `Suc n \<le> i` by auto
       from greater and `j \<ge> Suc n` obtain k where "k \<ge> Suc n"
-        and "weakeq (h j) (g k)" by auto
+        and "weakeq (h j) (f k)" by auto
       with `weakeq (M i) (h j)`
-        show "\<exists>j\<ge>Suc n. weakeq (M i) (g j)" using weakeq_trans by blast
+        show "\<exists>j\<ge>Suc n. weakeq (M i) (f j)" using weakeq_trans by blast
     qed
     ultimately show ?thesis by blast
   qed
