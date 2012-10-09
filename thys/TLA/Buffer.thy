@@ -297,8 +297,7 @@ locale DBuffer =
     and q1  :: "'a list statefun"  -- {* inner queue of first FIFO *}
     and q2  :: "'a list statefun"  -- {* inner queue of second FIFO *}
     and vars
-  defines
-    vars: "vars \<equiv> LIFT (inp,mid,out,q1,q2)"
+  defines "vars \<equiv> LIFT (inp,mid,out,q1,q2)"
   assumes DB_base: "basevars vars"
 begin
 
@@ -354,7 +353,7 @@ begin
 
 
   lemmas db_defs = buffer_defs DBSpec_def FullInit_def FullNxt_def FullSpec_def
-                   qc_def vars
+                   qc_def vars_def
 
   lemma DBSpec_stutinv: "STUTINV DBSpec"
     unfolding db_defs by (simp add: bothstutinvs livestutinv)
@@ -526,9 +525,9 @@ begin
   lemma Deq1_enabled: "\<turnstile> Enabled \<langle>Deq inp q1 mid\<rangle>_vars = ($q1 \<noteq> #[])"
   proof -
     have 1: "|~ \<langle>Deq inp q1 mid\<rangle>_vars = Deq inp q1 mid"
-      by (rule Deq_visible, auto simp: vars tla_defs)
+      by (rule Deq_visible, auto simp: vars_def tla_defs)
     have "\<turnstile> Enabled (Deq inp q1 mid) = ($q1 \<noteq> #[])"
-      by (force simp: Deq_def tla_defs vars
+      by (force simp: Deq_def tla_defs vars_def
                 intro: base_enabled[OF DB_base] elim!: enabledE)
     thus ?thesis by (simp add: 1[int_rewrite])
   qed
@@ -536,9 +535,9 @@ begin
   lemma Deq2_enabled: "\<turnstile> Enabled \<langle>Deq mid q2 out\<rangle>_vars = ($q2 \<noteq> #[])"
   proof -
     have 1: "|~ \<langle>Deq mid q2 out\<rangle>_vars = Deq mid q2 out"
-      by (rule Deq_visible, auto simp: vars tla_defs)
+      by (rule Deq_visible, auto simp: vars_def tla_defs)
     have "\<turnstile> Enabled (Deq mid q2 out) = ($q2 \<noteq> #[])"
-      by (force simp: Deq_def tla_defs vars
+      by (force simp: Deq_def tla_defs vars_def
                 intro: base_enabled[OF DB_base] elim!: enabledE)
     thus ?thesis by (simp add: 1[int_rewrite])
   qed
@@ -610,7 +609,7 @@ begin
           by (simp add: Deq1_enabled[int_rewrite])
       next
         show "|~ $q1 \<noteq> #[] \<and> Unchanged vars \<longrightarrow> \<circ>($q1 \<noteq> #[])"
-          by (auto simp: vars tla_defs)
+          by (auto simp: vars_def tla_defs)
       qed
       hence "\<turnstile> \<box>[FullNxt \<and> \<not>(Deq mid q2 out)]_vars 
                   \<and> WF(Deq inp q1 mid)_vars
