@@ -492,6 +492,62 @@ proof -
     by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def)
 qed
 
+lemma server_view_indep:
+  assumes l: "l \<in> jondos" and i: "i \<in> jondos - colls"
+  shows "\<PP>(\<omega> in \<P>. last_jondo \<omega> = l \<and> first_jondo \<omega> = i) =
+    \<PP>(\<omega> in \<P>. last_jondo \<omega> = l) * \<PP>(\<omega> in \<P>. first_jondo \<omega> = i)"
+proof -
+  let ?S = "\<lambda>n i :: nat. if n = i then {l} else jondos"
+  have 1: "
+    \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i)) =
+    \<PP>(\<omega> in \<P>. last_jondo \<omega> = l \<and> first_jondo \<omega> = i)"
+    using AE_term
+    apply (intro prob_eq_AE)
+    apply (elim AE_mp)
+    apply (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len first_jondo_def jondo_of_def
+            dest!: term_imp_len(2)
+             intro!: p_space_Collect AE_I2)
+    done
+  have 2: "(\<lambda>n. init i * p_f ^ n * (1 - p_f) * J) sums (init i * (1 / (1 - p_f)) * (1 - p_f) * J)"
+    using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
+  have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) sums
+    \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i))"
+    using l i by (intro prob_sums_cyl_init) auto
+  also have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) =
+    (\<lambda>n. init i * p_f ^ n * (1 - p_f) * J)"
+    using jondos_non_empty p_f
+    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
+  finally have *: "\<PP>(\<omega> in \<P>. last_jondo \<omega> = l \<and> first_jondo \<omega> = i) = init i * J"
+    unfolding 1 using jondos_non_empty p_f 2
+    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
+
+  let ?S = "\<lambda>n i :: nat. if n = i then {l} else jondos"
+  have 1: "
+    \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` jondos)) =
+    \<PP>(\<omega> in \<P>. first_jondo \<omega> = i)"
+    using AE_term
+    apply (intro prob_eq_AE)
+    apply (elim AE_mp)
+    apply (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len first_jondo_def jondo_of_def
+            dest!: term_imp_len(2)
+             intro!: p_space_Collect AE_I2)
+    done
+  have 2: "(\<lambda>n. init i * p_f ^ n * (1 - p_f)) sums (init i * (1 / (1 - p_f)) * (1 - p_f))"
+    using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
+  have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card jondos * J) * (p_f)^n * (1 - p_f)) sums
+    \<PP>(\<omega> in \<P>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` jondos))"
+    using l i by (intro prob_sums_cyl_init) auto
+  also have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card jondos * J) * (p_f)^n * (1 - p_f)) =
+    (\<lambda>n. init i * p_f ^ n * (1 - p_f))"
+    using jondos_non_empty p_f
+    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
+  finally have **: "\<PP>(\<omega> in \<P>. first_jondo \<omega> = i) = init i"
+    unfolding 1 using jondos_non_empty p_f 2
+    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
+  
+  from server_view1[OF l] * ** i show ?thesis by simp
+qed
+
 lemma server_view:
   shows "\<PP>(\<omega> in \<P>. last_jondo \<omega> = first_jondo \<omega>) = J"
 proof -
