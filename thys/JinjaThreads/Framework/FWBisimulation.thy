@@ -1565,17 +1565,17 @@ lemma mbisim_simulation_silent2:
 using FWdelay_bisimulation_diverge.mbisim_simulation_silent1[OF FWdelay_bisimulation_diverge_flip]
 unfolding flip_simps .
 
-lemma mbisim_simulation1:
+lemma mbisim_simulation1':
   assumes mbisim: "mbisim s1 s2" and "\<not> m\<tau>move1 s1 tl1 s1'" "r1.redT s1 tl1 s1'"
   shows "\<exists>s2' s2'' tl2. r2.mthr.silent_moves s2 s2' \<and> r2.redT s2' tl2 s2'' \<and>
                         \<not> m\<tau>move2 s2' tl2 s2'' \<and> mbisim s1' s2'' \<and> mta_bisim tl1 tl2"
 using mbisim_simulation1 assms .
 
-lemma mbisim_simulation2:
+lemma mbisim_simulation2':
   "\<lbrakk> mbisim s1 s2; r2.redT s2 tl2 s2'; \<not> m\<tau>move2 s2 tl2 s2' \<rbrakk>
   \<Longrightarrow> \<exists>s1' s1'' tl1. r1.mthr.silent_moves s1 s1' \<and> r1.redT s1' tl1 s1'' \<and> \<not> m\<tau>move1 s1' tl1 s1'' \<and>
                     mbisim s1'' s2' \<and> mta_bisim tl1 tl2"
-using FWdelay_bisimulation_diverge.mbisim_simulation1[OF FWdelay_bisimulation_diverge_flip]
+using FWdelay_bisimulation_diverge.mbisim_simulation1'[OF FWdelay_bisimulation_diverge_flip]
 unfolding flip_simps .
 
 lemma m\<tau>diverge_simulation1:
@@ -1654,10 +1654,10 @@ locale FWbisimulation = FWbisimulation_base _ _ _ r2 convert_RA bisim "\<lambda>
   and ex_final1_conv_ex_final2:
    "(\<exists>x1. final1 x1) \<longleftrightarrow> (\<exists>x2. final2 x2)"
 
-sublocale FWbisimulation < bisimulation "r1 t" "r2 t" "bisim t" "ta_bisim bisim" for t
+sublocale FWbisimulation < bisim: bisimulation "r1 t" "r2 t" "bisim t" "ta_bisim bisim" for t
 by(rule bisimulation_locale)
 
-sublocale FWbisimulation <
+sublocale FWbisimulation < bisim_diverge:
   FWdelay_bisimulation_diverge final1 r1 final2 r2 convert_RA bisim "\<lambda>x1 x2. True" "\<lambda>s ta s'. False" "\<lambda>s ta s'. False"
 proof -
   interpret biw: bisimulation_into_delay "r1 t" "r2 t" "bisim t" "ta_bisim bisim" "\<lambda>s ta s'. False" "\<lambda>s ta s'. False"
