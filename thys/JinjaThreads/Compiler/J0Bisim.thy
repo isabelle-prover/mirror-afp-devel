@@ -455,15 +455,6 @@ lemma \<tau>Red0t_preserves_wf_state:
   shows "\<lbrakk> \<tau>Red0t P t h (e, es) (e', es'); wf_state (e, es) \<rbrakk> \<Longrightarrow> wf_state (e', es')"
 by(induct rule: tranclp_induct2)(blast intro: \<tau>Red0_preserves_wf_state[OF wf])+
 
-lemma assumes nfin: "\<not> final e'"
- shows inline_call_\<tau>move0_inv: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<tau>move0 P h (inline_call e' e) = \<tau>move0 P h e'"
-  and inline_calls_\<tau>moves0_inv: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<tau>moves0 P h (inline_calls e' es) = \<tau>move0 P h e'"
-apply(induct e and es)
-apply(insert nfin)
-apply simp_all
-apply auto
-done
-
 lemma collapse_\<tau>move0_inv:
   "\<lbrakk> \<forall>e\<in>set es. is_call e; \<not> final e \<rbrakk> \<Longrightarrow> \<tau>move0 P h (collapse (e, es)) = \<tau>move0 P h e"
 proof(induction es arbitrary: e)
