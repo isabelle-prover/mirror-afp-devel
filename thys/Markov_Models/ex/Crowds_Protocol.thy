@@ -473,6 +473,25 @@ qed
 
 subsection {* Server gets no information *}
 
+lemma server_view1:
+  assumes j: "j : jondos"
+  shows "\<PP>(\<omega> in \<P>. last_jondo \<omega> = j) = J"
+proof -
+  let ?S = "% n i. if n = (i::nat) then {j} else jondos"
+
+  have "\<PP>(\<omega> in \<P>. last_jondo \<omega> = j) = \<PP>(\<omega> in \<P>. (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i))"
+    using AE_term
+    by (intro prob_eq_AE)
+       (auto simp: last_jondo_eq_iff term_imp_len intro!: p_space_Collect)
+  moreover have "(\<lambda>n. (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) sums \<dots>"
+    using j by (intro prob_sums_cyl) auto
+  moreover have "(\<lambda>n. p_f ^ n * (1 - p_f) * J) sums ((1 / (1 - p_f)) * (1 - p_f) * J)"
+    using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
+  ultimately show "\<PP>(\<omega> in \<P>. last_jondo \<omega> = j) = J"
+    using jondos_non_empty p_f
+    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def)
+qed
+
 lemma server_view:
   shows "\<PP>(\<omega> in \<P>. last_jondo \<omega> = first_jondo \<omega>) = J"
 proof -
