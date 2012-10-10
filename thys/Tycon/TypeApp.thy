@@ -48,7 +48,7 @@ represented by the given deflation. Note that in HOLCF, @{text
 function from the @{text domain} type class that yields the deflation
 representing the given type. \medskip *}
 
-domaindef (open) ('a,'t) app = "TC('t::tycon)\<cdot>DEFL('a::domain)"
+domaindef ('a,'t) app = "TC('t::tycon)\<cdot>DEFL('a::domain)"
 
 text {* We define the infix syntax @{text "'a\<cdot>'t"} for the type @{text
 "('a,'t) app"}. Note that for consistency with Isabelle's existing
