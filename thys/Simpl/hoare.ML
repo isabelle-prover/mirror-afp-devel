@@ -1133,7 +1133,7 @@ fun add_variable_statespaces (cname,pars as (inpars,outpars,locvars)) thy =
        thy
        |> StateSpace.define_statespace_i (SOME statetypeN) in_out_args parSP [] in_outs'
        |> StateSpace.define_statespace_i (SOME statetypeN)
-           var_args varSP [((map TFree in_out_env),parSP,[])] locs'
+           var_args varSP [((cname, false), ((map TFree in_out_env),parSP,[]))] locs'
   end;
 
 fun apply_in_context thy lexp f t =
