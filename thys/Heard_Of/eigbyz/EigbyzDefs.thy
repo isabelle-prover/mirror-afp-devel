@@ -46,8 +46,9 @@ text {*
   process identifiers and whose length is at most @{text "f+1"}.
 *}
 
-typedef Label = "{xs::Proc list. length xs \<le> Suc f \<and> distinct xs}"
-  by (auto intro: exI[where x= "[]"])  -- {* the empty list is a label *}
+definition "Label = {xs::Proc list. length xs \<le> Suc f \<and> distinct xs}"
+typedef (open) Label = Label
+  by (auto simp: Label_def intro: exI[where x= "[]"])  -- {* the empty list is a label *}
 
 text {* There is a finite number of different labels. *}
 
