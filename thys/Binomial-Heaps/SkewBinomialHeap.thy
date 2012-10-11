@@ -1642,30 +1642,37 @@ lemma in_image_msetE:
 
 text {* Multiset Union *}
 (*MOVE*)
-definition "mset_Union M = Multiset.fold op + {#} M"
+definition mset_Union :: "'a multiset multiset \<Rightarrow> 'a multiset"
+where
+  "mset_Union M = Multiset.fold op + {#} M"
 
-interpretation mplus_left_comm: comp_fun_commute 
-  "op + :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
-  by unfold_locales
-     (auto simp add: union_ac)
+lemma comp_fun_commute_mset_Union:
+  "comp_fun_commute (plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset)"
+proof qed (auto simp add: union_ac)
 
-lemma mset_Union_empty[simp]: "mset_Union {#} = {#}"
+lemma mset_Union_empty [simp]:
+  "mset_Union {#} = {#}"
   by (simp add: mset_Union_def)
 
-lemma mset_Union_insert: "mset_Union (A + {#x#}) = mset_Union A + x"
-  by (induct A)
-     (auto simp add: mset_Union_def union_ac)
+lemma mset_Union_single [simp]:
+  "mset_Union {#x#} = x"
+proof -
+  interpret comp_fun_commute "plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
+    by (fact comp_fun_commute_mset_Union)
+  show ?thesis by (simp add: mset_Union_def)
+qed
 
-lemma mset_Union_single[simp]: "mset_Union {#x#} = x"
-  by (simp add: mset_Union_def)
+lemma mset_Union_un [simp]:
+  "mset_Union (A + B) = mset_Union A + mset_Union B"
+proof -
+  interpret comp_fun_commute "plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
+    by (fact comp_fun_commute_mset_Union)
+  show ?thesis by (induct B) (auto simp add: mset_Union_def union_ac)
+qed
 
-lemma mset_Union_un[simp]: "mset_Union (A+B) = mset_Union A + mset_Union B"
-  apply (induct A)
-  apply (auto)
-  apply (subgoal_tac "A+{#x#}+B = (A+B) + {#x#}")
-  apply (simp add: mset_Union_insert)
-  apply (auto simp add: union_ac)
-  done
+corollary mset_Union_insert:
+  "mset_Union (A + {#x#}) = mset_Union A + x"
+  by simp
 
 lemma in_mset_UnionE:
   assumes "e\<in>#mset_Union M"
