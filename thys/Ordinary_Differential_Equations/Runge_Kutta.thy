@@ -191,7 +191,7 @@ locale euler_consistent =
   has_solution i +
   ivp_on_interval i T +
   global_lipschitz I D' f L + 
-  grid_from t t0 +
+  grid: grid_from t t0 +
   bounded_derivative I D f B f' B'
   for i::"real ivp" and t T D' L B f' B' +
   fixes r
@@ -307,7 +307,7 @@ sublocale euler_convergent \<subseteq>
 
 locale euler_on_strip = 
   unique_on_strip i T L + bounded_derivative I D f B f' B' +
-  grid_from t t0 +
+  grid: grid_from t t0 +
   max_step1 t T L B' r
   for i::"real ivp" and t T r L B f' B'
 
@@ -330,7 +330,7 @@ subsection {* Euler method on Rectangle is convergent *}
 text{*\label{sec:rk-euler-conv-on-rect}*}
 
 locale euler_on_rectangle =
-  unique_on_rectangle i T b B L "{ivp_x0 i - b - \<bar>r\<bar>..ivp_x0 i + b + \<bar>r\<bar>}" +
+  unique: unique_on_rectangle i T b B L "{ivp_x0 i - b - \<bar>r\<bar>..ivp_x0 i + b + \<bar>r\<bar>}" +
   bounded_derivative I D f B f' B' +
   grid_from t t0 +
   max_step1 t T L B' r
