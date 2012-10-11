@@ -1642,7 +1642,7 @@ lemma in_image_msetE:
 
 text {* Multiset Union *}
 (*MOVE*)
-definition "mset_Union M = fold_mset op + {#} M"
+definition "mset_Union M = Multiset.fold op + {#} M"
 
 interpretation mplus_left_comm: comp_fun_commute 
   "op + :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
@@ -2604,3 +2604,4 @@ text {*
 
 
 end
+
