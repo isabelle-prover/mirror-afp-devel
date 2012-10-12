@@ -16,7 +16,7 @@ Note that for the exact semantics, this is information is not used in any way an
 
 definition "contour = (UNIV::label list set)"
 
-typedef (open) contour = contour
+typedef contour = contour
   unfolding contour_def by auto
 
 definition initial_contour ("\<binit>")

@@ -101,7 +101,7 @@ where
 
 subsection {* Implementation type for tabulated lookup functions *}
 
-typedef (open) 'm prog_impl = "{P :: 'm prog_impl'. wf_prog_impl' P}"
+typedef 'm prog_impl = "{P :: 'm prog_impl'. wf_prog_impl' P}"
   morphisms impl_of ProgRefine 
 proof
   show "([], Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None)) \<in> ?prog_impl"

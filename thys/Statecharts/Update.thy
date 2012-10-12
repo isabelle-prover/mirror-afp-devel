@@ -22,7 +22,7 @@ by (unfold Update_def, auto)
 definition
   "update = { L | (L::(('d data) => ('d data))). Update L}"
 
-typedef (open) 'd update = "update :: ('d data => 'd data) set"
+typedef 'd update = "update :: ('d data => 'd data) set"
   unfolding update_def
   apply (rule exI)
   apply (rule Update_EmptySet)
@@ -78,7 +78,7 @@ by (unfold PUpdate_def, auto)
 
 definition "pupdate = { L | (L::(('d data) => ('d pdata))). PUpdate L}"
 
-typedef (open) 'd pupdate = "pupdate :: ('d data => 'd pdata) set" 
+typedef 'd pupdate = "pupdate :: ('d data => 'd pdata) set" 
   unfolding pupdate_def
   apply (rule exI)
   apply (rule PUpdate_EmptySet)

@@ -34,7 +34,7 @@ countable chains:
 definition admS :: "'a::pcpo set set" where
   "admS \<equiv> { R :: 'a set. \<bottom> \<in> R \<and> adm (\<lambda>x. x \<in> R) }"
 
-typedef (open) ('a::pcpo) admS = "{ x::'a::pcpo set . x \<in> admS }"
+typedef ('a::pcpo) admS = "{ x::'a::pcpo set . x \<in> admS }"
   morphisms unlr mklr unfolding admS_def by fastforce
 
 text{*
@@ -370,7 +370,7 @@ Pitts's technique is that this is straightforward to do.
 definition synlr :: "('d::pcpo \<times> 'a::type) set set" where
   "synlr \<equiv> { R :: ('d \<times> 'a) set. \<forall>a. { d. (d, a) \<in> R } \<in> admS }"
 
-typedef (open) ('d::pcpo, 'a::type) synlr = "{ x::('d \<times> 'a) set. x \<in> synlr }"
+typedef ('d::pcpo, 'a::type) synlr = "{ x::('d \<times> 'a) set. x \<in> synlr }"
   morphisms unsynlr mksynlr unfolding synlr_def by fastforce
 
 text{*

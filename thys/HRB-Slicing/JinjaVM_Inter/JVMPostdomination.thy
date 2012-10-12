@@ -958,7 +958,7 @@ definition
          (\<exists>as. CFG.valid_path' sourcenode targetnode kind (valid_edge (P, C0, Main))
                          (get_return_edges P) n as (ClassMain P, MethodMain P, None, Return)))}"
 
-typedef (open) cfg_wf_prog = cfg_wf_prog
+typedef cfg_wf_prog = cfg_wf_prog
   unfolding cfg_wf_prog_def
 proof
   let ?prog = "(Abs_wf_jvmprog (EP, Phi_EP), ''C'', ''M'')"

@@ -75,7 +75,7 @@ text {*
   @{const fba}.
 *}
 
-typedef (open) 'a formula = "fba :: 'a set set set"
+typedef 'a formula = "fba :: 'a set set set"
   by (auto intro: fba_empty)
 
 definition var :: "'a \<Rightarrow> 'a formula"

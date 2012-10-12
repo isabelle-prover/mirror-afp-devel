@@ -280,7 +280,7 @@ apply(frule (2) wf_ci_ins_jump_ok)
 apply(erule (2) wf_ciD3)
 done
 
-typedef (open) ('addr, 'heap) check_instr = "Collect wf_ci :: ('addr, 'heap) check_instr' set"
+typedef ('addr, 'heap) check_instr = "Collect wf_ci :: ('addr, 'heap) check_instr' set"
   morphisms ci_app Abs_check_instr
 by auto
 

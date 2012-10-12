@@ -88,7 +88,7 @@ definition "Store = {s. (\<forall> l. aliveImpl (vals s l) s) \<and>
                   (\<forall> l. \<not> aliveImpl (ref l) s \<longrightarrow> vals s l = init (ltype l)) \<and>
                   (\<forall> l. typeof (vals s l) \<le> ltype l)}"
 
-typedef (open) Store = Store
+typedef Store = Store
   unfolding Store_def
   apply (rule exI [where ?x="\<lparr> newOID = (\<lambda>C. 0),
                           newAID = (\<lambda>T. 0),

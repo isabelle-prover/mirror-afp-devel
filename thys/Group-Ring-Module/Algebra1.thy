@@ -1975,7 +1975,7 @@ definition
 
 definition "Ainteg = zag"
 
-typedef (open) ant = Ainteg
+typedef ant = Ainteg
   morphisms Rep_Ainteg Abs_Ainteg
   unfolding Ainteg_def
 proof

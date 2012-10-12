@@ -313,7 +313,7 @@ subsection "model, non empty set and positive atom valuation"
 
 definition "model = {z :: (object set * ([predicate,object list] => bool)). (fst z ~= {})}"
 
-typedef (open) model = model
+typedef model = model
   unfolding model_def by auto
 
 definition

@@ -121,7 +121,7 @@ subsection {* Abstract type definition *}
 
 definition "llist = LList (range Datatype.Leaf)"
 
-typedef (open) 'a llist = "llist :: 'a Datatype.item set"
+typedef 'a llist = "llist :: 'a Datatype.item set"
 proof
   show "NIL \<in> llist" unfolding llist_def ..
 qed

@@ -91,7 +91,7 @@ definition
         (G::('s ~=> (('s,'e,'d) seqauto) set)).
                                 HierAuto D F E G}"
 
-typedef (open) ('s,'e,'d) hierauto =
+typedef ('s,'e,'d) hierauto =
     "hierauto :: ('d data * ('s,'e,'d) seqauto set * 'e set * ('s ~=> ('s,'e,'d) seqauto set)) set"
   unfolding hierauto_def
   apply (rule exI)

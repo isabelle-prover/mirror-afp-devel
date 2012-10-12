@@ -25,7 +25,7 @@ by (unfold DataSpace_def, auto)
 
 definition "dataspace = { L | (L::('d set) list). DataSpace L}"
 
-typedef (open) 'd dataspace = "dataspace :: 'd set list set"
+typedef 'd dataspace = "dataspace :: 'd set list set"
   unfolding dataspace_def
   apply (rule exI)
   apply (rule DataSpace_EmptySet)

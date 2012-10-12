@@ -33,7 +33,7 @@ subsection "References"
 
 definition "ref = (UNIV::nat set)"
 
-typedef (open) ref = ref by (simp add: ref_def)
+typedef ref = ref by (simp add: ref_def)
 
 code_type ref
   (SML "int")

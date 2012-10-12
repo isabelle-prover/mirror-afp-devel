@@ -179,7 +179,7 @@ definition
   ord0rel :: "(ord0 \<times> ord0) set" where
   "ord0rel = {(x,y). x \<le> y \<and> y \<le> x}"
 
-typedef (open) ordinal = "(UNIV::ord0 set) // ord0rel"
+typedef ordinal = "(UNIV::ord0 set) // ord0rel"
 by (unfold quotient_def, auto)
 
 theorem Abs_ordinal_cases2 [case_names Abs_ordinal, cases type: ordinal]:

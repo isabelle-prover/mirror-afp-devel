@@ -37,7 +37,7 @@ definition
         (L::('s ~=> ('a  set))).
                       Kripke S S0 T L}"
 
-typedef (open) ('s,'a) kripke =
+typedef ('s,'a) kripke =
     "kripke :: ('s set * 's set * ('s * 's) set * ('s ~=> 'a set)) set"
   unfolding kripke_def
   apply (rule exI)

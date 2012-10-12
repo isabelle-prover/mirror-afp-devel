@@ -47,7 +47,7 @@ text {*
 *}
 
 definition "Label = {xs::Proc list. length xs \<le> Suc f \<and> distinct xs}"
-typedef (open) Label = Label
+typedef Label = Label
   by (auto simp: Label_def intro: exI[where x= "[]"])  -- {* the empty list is a label *}
 
 text {* There is a finite number of different labels. *}

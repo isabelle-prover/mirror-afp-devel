@@ -23,7 +23,7 @@ text {* The Circus actions type is defined as the set of all the CSP healthy rea
 
 definition "action = {p::('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
 
-typedef (open) ('\<theta>::"ev_eq",'\<sigma>) action =
+typedef ('\<theta>::"ev_eq",'\<sigma>) action =
   "action :: (('\<theta>, '\<sigma>) alpha_rp_scheme \<times> ('\<theta>, '\<sigma>) alpha_rp_scheme \<Rightarrow> bool) set"
   morphisms relation_of action_of
 proof -

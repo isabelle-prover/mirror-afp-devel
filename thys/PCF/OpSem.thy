@@ -940,7 +940,7 @@ to define a unique bottom element, which in this case is @{term "{\<bottom>} \<t
 
 *}
 
-typedef (open) Prog = "{ P. closed P }"
+typedef Prog = "{ P. closed P }"
   morphisms unProg mkProg by fastforce
 
 definition

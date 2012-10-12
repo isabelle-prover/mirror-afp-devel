@@ -314,7 +314,7 @@ subsection {* Type of well-formed programs *}
 
 definition "wf_prog = {(prog,procs). wf prog procs}"
 
-typedef (open) wf_prog = wf_prog
+typedef wf_prog = wf_prog
   unfolding wf_prog_def
   apply (rule_tac x="(Skip,[])" in exI)
   apply (simp add:wf_def well_formed_def)

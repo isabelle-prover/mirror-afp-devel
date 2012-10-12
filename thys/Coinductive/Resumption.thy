@@ -133,7 +133,7 @@ resumption_TERMINAL:
 
 subsection {* Definition of the codatatype as a type *}
 
-typedef (open) ('a,'b,'c,'d) resumption = "resumption :: ('c + 'b + 'a, 'd) Datatype.dtree set"
+typedef ('a,'b,'c,'d) resumption = "resumption :: ('c + 'b + 'a, 'd) Datatype.dtree set"
 proof
   show "TERMINAL undefined \<in> ?resumption" by(blast intro: resumption.intros)
 qed

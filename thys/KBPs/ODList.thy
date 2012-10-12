@@ -100,7 +100,7 @@ end (* context linorder *)
 
 section {* The @{term "odlist"} type *}
 
-typedef (open) ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
+typedef ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
   morphisms toList odlist_Abs by auto
 
 lemma distinct_toList[simp]: "distinct (toList xs)"

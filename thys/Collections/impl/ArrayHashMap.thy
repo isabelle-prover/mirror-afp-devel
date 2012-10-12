@@ -15,7 +15,7 @@ begin
 
 subsection {* Abstract type definition *}
 
-typedef (open) ('key :: hashable, 'val) hashmap =
+typedef ('key :: hashable, 'val) hashmap =
   "{hm :: ('key, 'val) ArrayHashMap_Impl.hashmap. ArrayHashMap_Impl.ahm_invar hm}"
   morphisms impl_of HashMap
 proof

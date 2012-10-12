@@ -30,7 +30,7 @@ notation
 
 definition "MonoTran = {f::'a::order \<Rightarrow> 'a . mono f}"
 
-typedef (open) 'a MonoTran = "MonoTran :: ('a::order \<Rightarrow> 'a) set"
+typedef 'a MonoTran = "MonoTran :: ('a::order \<Rightarrow> 'a) set"
 proof
   show "id \<in> MonoTran" by (simp add: MonoTran_def mono_def)
 qed

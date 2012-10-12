@@ -25,7 +25,7 @@ definition
                     sorted l
                     }"
 
-typedef (open) triangle = triangle
+typedef triangle = triangle
   unfolding triangle_def
   apply (rule_tac x = "[45,45,90]" in exI)
   apply auto

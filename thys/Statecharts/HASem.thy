@@ -89,7 +89,7 @@ definition
         (E::('e set))
         (D::'d data). Status HA C E D}"
 
-typedef (open) ('s,'e,'d) status =
+typedef ('s,'e,'d) status =
     "status :: (('s,'e,'d)hierauto * 's set * 'e set * 'd data) set"
   unfolding status_def
   apply (rule exI)

@@ -32,7 +32,7 @@ definition
              (D::('d dataspace)).
               Data L D }"
 
-typedef (open) 'd data = "data :: ('d list * 'd dataspace) set"
+typedef 'd data = "data :: ('d list * 'd dataspace) set"
   unfolding data_def
   apply (rule exI)
   apply (rule Data_EmptySet)
@@ -111,7 +111,7 @@ definition
              (D::('d dataspace)).
               PData L D }"
 
-typedef (open) 'd pdata = "pdata :: ('d option list * 'd dataspace) set"
+typedef 'd pdata = "pdata :: ('d option list * 'd dataspace) set"
   unfolding pdata_def
   apply (rule exI)
   apply (rule PData_EmptySet)

@@ -284,7 +284,7 @@ definition
          (\<exists>as. JVM_CFG_Interpret.path P (_Entry_) as n) \<and>
          (\<exists>as. JVM_CFG_Interpret.path P n as (_Exit_)))}"
 
-typedef (open) cfg_wf_prog = cfg_wf_prog
+typedef cfg_wf_prog = cfg_wf_prog
   unfolding cfg_wf_prog_def
 proof
   let ?prog = "((Abs_wf_jvmprog (EP, Phi_EP)), ''C'', ''M'')"

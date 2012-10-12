@@ -25,7 +25,7 @@ by(induct n) auto
 
 subsection {* Type definition *}
 
-typedef (open) 'a stream = "{xs :: 'a llist. \<not> lfinite xs}"
+typedef 'a stream = "{xs :: 'a llist. \<not> lfinite xs}"
 proof
   show "iterates undefined undefined \<in> ?stream" by simp
 qed

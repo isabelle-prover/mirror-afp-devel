@@ -14,7 +14,7 @@ by(auto intro: rev_image_eqI[where x="rev y", standard])
 
 subsection {* Abstract type definition *}
 
-typedef (open) ('key, 'val) trie = 
+typedef ('key, 'val) trie = 
   "{t :: ('key, 'val) Trie_Impl.trie. trie_invar t}"
   morphisms impl_of Trie
 proof

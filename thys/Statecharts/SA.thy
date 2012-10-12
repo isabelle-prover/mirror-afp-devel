@@ -31,7 +31,7 @@ definition
               (D::(('s,'e,'d)trans) set).
              SeqAuto S I L D}"
 
-typedef (open) ('s,'e,'d) seqauto =
+typedef ('s,'e,'d) seqauto =
     "seqauto :: ('s set * 's * (('s,'e,'d)label) set * (('s,'e,'d)trans) set) set"
   unfolding seqauto_def
   apply (rule exI)

@@ -88,7 +88,7 @@ by(cases ts)(auto split: split_if_asm)
 
 subsection {* Type @{text "('a, 'b) assoc_list" } *}
 
-typedef (open) ('k, 'v) assoc_list = "{xs :: ('k \<times> 'v) list. distinct (map fst xs)}"
+typedef ('k, 'v) assoc_list = "{xs :: ('k \<times> 'v) list. distinct (map fst xs)}"
 morphisms impl_of Assoc_List
 by(rule exI[where x="[]"]) simp
 

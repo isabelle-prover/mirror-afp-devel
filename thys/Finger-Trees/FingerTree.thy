@@ -2068,7 +2068,7 @@ text {*
 *}
 
 subsubsection "Datatype"
-typedef (open) ('e, 'a) FingerTree = 
+typedef ('e, 'a) FingerTree = 
   "{t :: ('e, 'a::monoid_add) FingerTreeStruc. FingerTreeStruc.ft_invar t}"
 proof -
   have "Empty \<in> ?FingerTree" by (simp)
@@ -2085,7 +2085,7 @@ lemma [simp]:
 lemma [simp, code abstype]: "Abs_FingerTree (Rep_FingerTree t) = t"
   by (rule Rep_FingerTree_inverse)
 
-typedef (open) ('e,'a) viewres =
+typedef ('e,'a) viewres =
   "{ r:: (('e \<times> 'a) \<times> ('e,'a::monoid_add) FingerTreeStruc) option . 
     case r of None \<Rightarrow> True | Some (a,t) \<Rightarrow> FingerTreeStruc.ft_invar t}"
   apply (rule_tac x=None in exI)
@@ -2121,7 +2121,7 @@ definition "extract_viewres r ==
     if extract_viewres_isNone r then None 
     else Some (extract_viewres_a r, extract_viewres_t r)"
 
-typedef (open) ('e,'a) splitres =
+typedef ('e,'a) splitres =
   "{ ((l,a,r):: (('e,'a) FingerTreeStruc \<times> ('e \<times> 'a) \<times> ('e,'a::monoid_add) FingerTreeStruc))
     | l a r.
         FingerTreeStruc.ft_invar l \<and> FingerTreeStruc.ft_invar r}"

@@ -1061,7 +1061,7 @@ interpretation BinomialHeapStruc: BinomialHeapStruc_loc .
 
 subsection "Hiding the Invariant"
 subsubsection "Datatype"
-typedef (open) ('e, 'a) BinomialHeap =
+typedef ('e, 'a) BinomialHeap =
   "{q :: ('e,'a::linorder) BinomialQueue_inv. BinomialHeapStruc.invar q }"
   apply (rule_tac x="Nil" in exI)
   apply auto
