@@ -541,27 +541,29 @@ lemma almost_full_on_Sigma:
     (is "almost_full_on ?P ?A")
 proof (rule ccontr)
   assume "\<not> almost_full_on ?P ?A"
-  then obtain g where g: "\<forall>i. g i \<in> ?A"
-    and bad: "bad ?P g" by (auto simp: almost_full_on_def)
-  let ?p = "\<lambda>i. fst (g i)"
-  let ?q = "\<lambda>i. snd (g i)"
-  from g have p: "\<forall>i. ?p i \<in> A1" and q: "\<forall>i. ?q i \<in> A2"
+  then obtain f where f: "\<forall>i. f i \<in> ?A"
+    and bad: "bad ?P f" by (auto simp: almost_full_on_def)
+  let ?W = "\<lambda>x y. \<not> P1 (fst x) (fst y)"
+  let ?B = "\<lambda>x y. \<not> P2 (snd x) (snd y)"
+  from f have fst: "\<forall>i. fst (f i) \<in> A1" and snd: "\<forall>i. snd (f i) \<in> A2"
     by (metis SigmaE fst_conv, metis SigmaE snd_conv)
-  from bad have "\<forall>i j. i < j \<longrightarrow> \<not> ?P (g i) (g j)" by (auto simp: good_def)
-  hence "\<forall>i j. i < j \<longrightarrow> \<not> P1 (?p i) (?p j) \<or> \<not> P2 (?q i) (?q j)"
+  from bad have "\<forall>i j. i < j \<longrightarrow> \<not> ?P (f i) (f j)" by (auto simp: good_def)
+  hence "\<forall>i j. i < j \<longrightarrow> ?W (f i) (f j) \<or> ?B (f i) (f j)"
     unfolding prod_le_def by (metis (lifting, mono_tags) prod_case_beta)
-  from trans_subseq [of "\<lambda>x y. \<not> P1 (fst x) (fst y)" _ "\<lambda>x y. \<not> P2 (snd x) (snd y)", OF this]
-    obtain f :: "nat seq" where mono: "\<forall>i j. i < j \<longrightarrow> f i < f j"
-      and or: "(\<forall>i j. i < j \<longrightarrow> \<not> P1 (?p (f i)) (?p (f j))) \<or> (\<forall>i j. i < j \<longrightarrow> \<not> P2 (?q (f i)) (?q (f j)))" by blast
+  from trans_subseq [of ?W _ ?B, OF this]
+    obtain g :: "nat seq" where mono: "\<forall>i j. i < j \<longrightarrow> g i < g j"
+      and or: "(\<forall>i j. i < j \<longrightarrow> ?W (f (g i)) (f (g j))) \<or>
+               (\<forall>i j. i < j \<longrightarrow> ?B (f (g i)) (f (g j)))"
+      by blast
   from or show False
   proof
-    assume "\<forall>i j. i < j \<longrightarrow> \<not> P1 (?p (f i)) (?p (f j))"
-    hence "bad P1 (?p \<circ> f)" by (auto simp: good_def)
-    with p and assms(1) show False by (auto simp: almost_full_on_def)
+    assume "\<forall>i j. i < j \<longrightarrow> ?W (f (g i)) (f (g j))"
+    hence "bad P1 (fst \<circ> f \<circ> g)" by (auto simp: good_def)
+    with fst and assms(1) show False by (auto simp: almost_full_on_def)
   next
-    assume "\<forall>i j. i < j \<longrightarrow> \<not> P2 (?q (f i)) (?q (f j))"
-    hence "bad P2 (?q \<circ> f)" by (auto simp: good_def)
-    with q and assms(2) show False by (auto simp: almost_full_on_def)
+    assume "\<forall>i j. i < j \<longrightarrow> ?B (f (g i)) (f (g j))"
+    hence "bad P2 (snd \<circ> f \<circ> g)" by (auto simp: good_def)
+    with snd and assms(2) show False by (auto simp: almost_full_on_def)
   qed
 qed
 
