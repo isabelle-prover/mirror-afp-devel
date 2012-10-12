@@ -42,13 +42,12 @@ fun define_singleton_type
     (typ : binding * (string * sort) list * mixfix)
     (thy : theory) : (string * Typedef.info) * theory =
   let
-    val opt_name = NONE
     val set = @{term "UNIV :: unit set"}
     val opt_morphs = NONE
     val tac = rtac UNIV_witness 1
-    val _ = writeln ("Defining type " ^ Binding.name_of (first typ)) 
+    val _ = writeln ("Defining type " ^ Binding.print (first typ))
   in
-    Typedef.add_typedef_global opt_name typ set opt_morphs tac thy
+    Typedef.add_typedef_global typ set opt_morphs tac thy
   end    
 
 (******************************************************************************)
