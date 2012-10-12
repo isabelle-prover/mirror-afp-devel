@@ -21,12 +21,15 @@ subsubsection {* Definitions *}
 
 text {* The Circus actions type is defined as the set of all the CSP healthy reactive processes. *}
 
-typedef ('\<theta>::"ev_eq",'\<sigma>)  "action" = "{p::('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
-    morphisms relation_of action_of
+definition "action = {p::('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
+
+typedef (open) ('\<theta>::"ev_eq",'\<sigma>) action =
+  "action :: (('\<theta>, '\<sigma>) alpha_rp_scheme \<times> ('\<theta>, '\<sigma>) alpha_rp_scheme \<Rightarrow> bool) set"
+  morphisms relation_of action_of
 proof -
    have "R (false \<turnstile> true) \<in> {p :: ('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
         by (auto intro: rd_is_CSP)
-   thus ?thesis by auto
+   thus ?thesis unfolding action_def by auto
 qed
 
 text {* The type-definition introduces a new type by stating a set. In our case, 

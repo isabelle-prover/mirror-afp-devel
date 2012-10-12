@@ -99,7 +99,6 @@ procedures
 definition mx:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "mx leq a b = (if leq a b then a else b)"
 
-ML "Toplevel.debug := false"
 procedures (imports compare_signature)
   Max (compare::string, n::nat, m::nat | k::nat)  
   where b::bool

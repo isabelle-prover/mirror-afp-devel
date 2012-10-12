@@ -820,8 +820,7 @@ qed (auto simp: cylinders_def)
 lemma path_space_eq_iterative_measure:
   assumes "s \<in> S" shows "path_space s = iterative_measure s"
 proof (rule measure_eqI_generator_eq[OF Int_stable_cylinders])
-  show "range (\<lambda>i. UNIV \<rightarrow>S ) \<subseteq> cylinders" "(\<Union>i. UNIV \<rightarrow> S) = (UNIV \<rightarrow> S)" "incseq (\<lambda>i. UNIV \<rightarrow> S)"
-    "cylinders \<subseteq> Pow (UNIV \<rightarrow> S)" "emeasure (path_space s) (UNIV \<rightarrow> S) \<noteq> \<infinity>"
+  show "range (\<lambda>i. UNIV \<rightarrow>S ) \<subseteq> cylinders"
     by (auto simp: cylinders_def)
   show "sets (path_space s) = sigma_sets (UNIV \<rightarrow> S) cylinders"
    "sets (iterative_measure s) = sigma_sets (UNIV \<rightarrow> S) cylinders"
@@ -857,7 +856,7 @@ proof (rule measure_eqI_generator_eq[OF Int_stable_cylinders])
         by (simp add: emeasure_eq_measure I.emeasure_eq_measure)
     qed
   qed simp
-qed
+qed (auto simp: cylinders_def)
 
 lemma prob_eq_sum:
   assumes s: "s \<in> S" and X: "X \<in> sets p_space"
@@ -1541,8 +1540,13 @@ qed
 
 subsection {* @{text Fair} *}
 
-definition "Fair sx tx \<omega> \<longleftrightarrow>
+definition "Fair s t \<omega> \<longleftrightarrow> finite {i. \<omega> i = s \<and> \<omega> (Suc i) = t} \<longrightarrow> finite {i. \<omega> i = s}"
+
+lemma Fair_eq: "Fair sx tx \<omega> \<longleftrightarrow>
   (\<exists>j. \<forall>i\<ge>j. \<omega> i \<noteq> sx) \<or> (\<forall>i. \<exists>j\<ge>i. \<omega> j = sx \<and> \<omega> (Suc j) = tx)"
+  unfolding Fair_def finite_nat_set_iff_bounded
+  unfolding disj_not2[symmetric]
+  by (simp add: not_le not_less) blast
 
 lemma AE_Fair:
   assumes "s \<in> S"
@@ -1801,7 +1805,7 @@ proof (intro finite_S AE_finite_allI AE_impI)
   note Never_eq_0 = this
 
   have sets_Fair: "{\<omega>\<in>UNIV\<rightarrow>S. Fair sx tx (nat_case s \<omega>) } \<in> sets p_space"
-    unfolding Fair_def by (auto intro!: p_space_Collect sets_nat_case)
+    unfolding Fair_eq by (auto intro!: p_space_Collect sets_nat_case)
   have sets_sN: "\<And>n. {\<omega>\<in>UNIV\<rightarrow>S. nat_case s \<omega> n = sx} \<inter> ((\<lambda>\<omega> i. \<omega> (i + n)) -` Never sx \<inter> space (path_space s)) \<in> sets p_space"
     (is "\<And>n. ?sN n \<in> _")
     by (auto intro!: sets_nat_case measurable_shift sets_Never p_space_Collect p_space_measurable
@@ -1840,7 +1844,7 @@ proof (intro finite_S AE_finite_allI AE_impI)
   proof (elim AE_mp, safe intro!: AE_I2)
     fix \<omega> assume \<omega>: "\<omega> \<in> space (path_space s)" "\<forall>n. \<omega> \<notin> ?sN n"
     show "Fair sx tx (nat_case s \<omega>)"
-      unfolding Fair_def
+      unfolding Fair_eq
     proof (safe, simp)
       fix i assume i: "\<forall>j. \<exists>i\<ge>j. nat_case s \<omega> i = sx"
       then obtain n where n: "i \<le> n" "nat_case s \<omega> n = sx" by auto
@@ -1930,7 +1934,7 @@ next
         by (intro less.hyps) auto
       from `Fair s' t \<omega>`
       show ?thesis
-        unfolding Fair_def
+        unfolding Fair_eq
       proof
         assume "\<exists>i. \<forall>j\<ge>i. \<omega> j \<noteq> s'" with H show ?thesis by auto
       next

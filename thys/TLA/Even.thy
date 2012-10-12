@@ -29,15 +29,16 @@ locale Program =
   and init :: "temporal"
   and act :: "temporal"
   and phi :: "temporal"
-  defines init: "init \<equiv> TEMP $x = # 0"
-  and act : "act \<equiv> TEMP x` = Suc<Suc<$x>>"
-  and phi:  "phi \<equiv> TEMP init \<and> \<box>[act]_x"
+  defines "init \<equiv> TEMP $x = # 0"
+  and "act \<equiv> TEMP x` = Suc<Suc<$x>>"
+  and "phi \<equiv> TEMP init \<and> \<box>[act]_x"
 
 lemma (in Program) stutinvprog: "STUTINV phi"
-  by (auto simp: phi init act stutinvs nstutinvs)
+  by (auto simp: phi_def init_def act_def stutinvs nstutinvs)
 
 lemma  (in Program) inveven: "\<turnstile> phi \<longrightarrow> \<box>($x \<in> # Even)"
-unfolding phi proof (rule invmono)
+  unfolding phi_def
+proof (rule invmono)
   show "\<turnstile> init \<longrightarrow> $x \<in> #Even"
     by (auto simp: init_def even_zero)
 next
