@@ -12,7 +12,7 @@ begin
 subsection {* The Sandwich Natural Transformation *}
 
 locale Yoneda = functor + into_set +
-  constrains AA :: "('o,'a,'m)category_scheme"
+  assumes "TERM (AA :: ('o,'a,'m)category_scheme)"
   fixes sandwich :: "['o,'a,'o] \<Rightarrow> 'a set_arrow"  ("\<sigma>'(_,_')")
   defines "sandwich A a \<equiv> (\<lambda>B\<in>Ob. \<lparr>
   set_dom=Hom A B,

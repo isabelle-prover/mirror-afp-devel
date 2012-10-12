@@ -11,8 +11,9 @@ theory HomFunctors
 imports SetCat Functors
 begin
 
-locale into_set = two_cats +
-  constrains AA :: "('o,'a,'m)category_scheme"
+locale into_set = two_cats AA BB
+    for AA :: "('o,'a,'m)category_scheme" (structure)
+    and BB (structure) +
   fixes U and Set 
   defines "U \<equiv> (UNIV::'a set)"
   defines "Set \<equiv> set_cat U"

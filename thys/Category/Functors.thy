@@ -26,30 +26,26 @@ abbreviation
   "F\<^sub>\<a> \<equiv> am F"
 
 locale two_cats = AA: category AA + BB: category BB
-    for AA (structure) and BB (structure) + 
-  constrains AA :: "('o1,'a1,'m1)category_scheme"
-  constrains BB :: "('o2,'a2,'m2)category_scheme"
+    for AA :: "('o1,'a1,'m1)category_scheme" (structure)
+    and BB :: "('o2,'a2,'m2)category_scheme" (structure) + 
   fixes preserves_dom  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
-  and  preserves_cod  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
-  and  preserves_id  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
-  and  preserves_comp  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
-  defines "preserves_dom G \<equiv>
-  \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Dom\<^bsub>AA\<^esub> f) = Dom\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
-  and "preserves_cod G \<equiv>
-  \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Cod\<^bsub>AA\<^esub> f) = Cod\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
-  and "preserves_id G \<equiv>
-  \<forall>A\<in>Ob\<^bsub>AA\<^esub>. G\<^sub>\<a> (Id\<^bsub>AA\<^esub> A) = Id\<^bsub>BB\<^esub> (G\<^sub>\<o> A)"
-  and "preserves_comp G \<equiv>
-  \<forall>f\<in>Ar\<^bsub>AA\<^esub>. \<forall>g\<in>Ar\<^bsub>AA\<^esub>. Cod\<^bsub>AA\<^esub> f = Dom\<^bsub>AA\<^esub> g \<longrightarrow> G\<^sub>\<a> (g \<bullet>\<^bsub>AA\<^esub> f) = (G\<^sub>\<a> g) \<bullet>\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
+    and preserves_cod  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
+    and preserves_id  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
+    and preserves_comp  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
+  defines "preserves_dom G \<equiv> \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Dom\<^bsub>AA\<^esub> f) = Dom\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
+    and "preserves_cod G \<equiv> \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Cod\<^bsub>AA\<^esub> f) = Cod\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
+    and "preserves_id G \<equiv> \<forall>A\<in>Ob\<^bsub>AA\<^esub>. G\<^sub>\<a> (Id\<^bsub>AA\<^esub> A) = Id\<^bsub>BB\<^esub> (G\<^sub>\<o> A)"
+    and "preserves_comp G \<equiv>
+      \<forall>f\<in>Ar\<^bsub>AA\<^esub>. \<forall>g\<in>Ar\<^bsub>AA\<^esub>. Cod\<^bsub>AA\<^esub> f = Dom\<^bsub>AA\<^esub> g \<longrightarrow> G\<^sub>\<a> (g \<bullet>\<^bsub>AA\<^esub> f) = (G\<^sub>\<a> g) \<bullet>\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
 
 locale functor = two_cats +
   fixes F (structure)
   assumes F_preserves_arrows: "F\<^sub>\<a> : Ar\<^bsub>AA\<^esub> \<rightarrow> Ar\<^bsub>BB\<^esub>"
-  and F_preserves_objects: "F\<^sub>\<o> : Ob\<^bsub>AA\<^esub> \<rightarrow> Ob\<^bsub>BB\<^esub>"
-  and F_preserves_dom: "preserves_dom F"
-  and F_preserves_cod: "preserves_cod F"
-  and F_preserves_id: "preserves_id F"
-  and F_preserves_comp: "preserves_comp F"
+    and F_preserves_objects: "F\<^sub>\<o> : Ob\<^bsub>AA\<^esub> \<rightarrow> Ob\<^bsub>BB\<^esub>"
+    and F_preserves_dom: "preserves_dom F"
+    and F_preserves_cod: "preserves_cod F"
+    and F_preserves_id: "preserves_id F"
+    and F_preserves_comp: "preserves_comp F"
 begin
 
 lemmas F_axioms = F_preserves_arrows F_preserves_objects F_preserves_dom 
