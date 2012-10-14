@@ -775,6 +775,21 @@ date = 2012-05-02
 topic = Computer Science/Security
 abstract = This document contains the full theory files accompanying article <i>Inductive Study of Confidentiality --- for Everyone</i> in <i>Formal Aspects of Computing</i>. They aim at an illustrative and didactic presentation of the Inductive Method of protocol analysis, focusing on the treatment of one of the main goals of security protocols: confidentiality against a threat model. The treatment of confidentiality, which in fact forms a key aspect of all protocol analysis tools, has been found cryptic by many learners of the Inductive Method, hence the motivation for this work. The theory files in this document guide the reader step by step towards design and proof of significant confidentiality theorems. These are developed against two threat models, the standard Dolev-Yao and a more audacious one, the General Attacker, which turns out to be particularly useful also for teaching purposes.
 
+[Possibilistic_Noninterference]
+title = Possibilistic Noninterference
+author = Andrei Popescu <mailto:uuomul@yahoo.com>, Johannes H&ouml;lzl <mailto:hoelzl@in.tum.de>
+date = 2012-09-10
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
+  notions for a while language with parallel composition.
+  We systematize and classify these notions according to
+  compositionality w.r.t. the language constructs. Compositionality
+  yields sound syntactic criteria (a.k.a. type systems) in a uniform way.
+  <p>
+  An <a href="http://www.in.tum.de/~nipkow/pubs/cpp12.html">article</a>
+  about these proofs is published in the proceedings
+  of the conference Certified Programs and Proofs 2012.
+
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
 author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php>, Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
