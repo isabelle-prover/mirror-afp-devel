@@ -18,6 +18,18 @@ definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow
 definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "reflp_on P A \<equiv> \<forall>a\<in>A. P a a"
 
+abbreviation strict where
+  "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
+
+abbreviation chain_on where
+  "chain_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
+
+abbreviation incomparable where
+  "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
+
+abbreviation antichain_on where
+  "antichain_on P f A \<equiv> \<forall>(i::nat) j. f i \<in> A \<and> (i < j \<longrightarrow> incomparable P (f i) (f j))"
+
 lemma reflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> P a a) \<Longrightarrow> reflp_on P A"
   unfolding reflp_on_def by blast
@@ -247,5 +259,33 @@ lemma restrict_to_iff [iff]:
 lemma wfp_on_restrict_to [simp]:
   "wfp_on (restrict_to P A) A = wfp_on P A"
   unfolding wfp_on_def by auto
+
+lemma reflp_on_imp_irreflp_on_strict:
+  "reflp_on P A \<Longrightarrow> irreflp_on (strict P) A"
+  by (auto simp: reflp_on_def irreflp_on_def)
+
+lemma transp_on_imp_transp_on_strict:
+  "transp_on P A \<Longrightarrow> transp_on (strict P) A"
+  unfolding transp_on_def by blast
+
+lemma chain_on_transp_on_less:
+  assumes "chain_on P f A" and "transp_on P A" and "i < j"
+  shows "P (f i) (f j)"
+using `i < j`
+proof (induct j)
+  case 0 thus ?case by simp
+next
+  case (Suc j)
+  show ?case
+  proof (cases "i = j")
+    case True
+    with Suc show ?thesis using assms(1) by simp
+  next
+    case False
+    with Suc have "P (f i) (f j)" by force
+    moreover from assms have "P (f j) (f (Suc j))" by auto
+    ultimately show ?thesis using assms(1, 2) unfolding transp_on_def by blast
+  qed
+qed
 
 end

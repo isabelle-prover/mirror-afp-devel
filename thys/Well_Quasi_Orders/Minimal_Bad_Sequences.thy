@@ -1,3 +1,11 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Constructing Minimal Bad Sequences *}
+
 theory Minimal_Bad_Sequences
 imports
   "../Abstract-Rewriting/Seq"
