@@ -128,9 +128,8 @@ proof (rule ccontr)
     with assms(1) have False using `i < j` by (auto simp: good_def)
   } moreover {
     assume "n \<le> i"
-    with `i < j` and good have "i - n < j - n"
-      and "?P (g i) (g j)" by auto
-    with assms(2) have False by (auto simp: good_def)
+    with `i < j` and good have "?P (g i) (g j)" by auto
+    with assms(2) have False using `i < j` by (auto simp: good_def)
   } moreover {
     assume "i < n" and "n \<le> j"
     with assms(3) obtain k where "k \<ge> n" and weakeq: "weakeq (g j) (f k)" by blast
