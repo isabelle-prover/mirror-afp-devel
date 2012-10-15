@@ -8,8 +8,6 @@ header {* Well-Quasi-Orders *}
 
 theory Well_Quasi_Orders
 imports
-  "../Abstract-Rewriting/Seq"
-  Restricted_Predicates
   "~~/src/HOL/Library/Ramsey"
   Minimal_Bad_Sequences
 begin
