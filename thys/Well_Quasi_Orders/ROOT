@@ -4,6 +4,8 @@ session Well_Quasi_Orders (AFP) = HOL +
     "../Abstract-Rewriting/Seq"
   theories
     Restricted_Predicates
+    Minimal_Bad_Sequences
+    Almost_Full_Relations
     Well_Quasi_Orders
     Finite_Tree
     Kruskal
