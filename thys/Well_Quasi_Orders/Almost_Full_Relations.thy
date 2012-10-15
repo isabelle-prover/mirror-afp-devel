@@ -395,75 +395,6 @@ proof (rule ccontr)
   qed
 qed
 
-lemma infinite_wo_prefix:
-  "infinite {j::nat. j > i}"
-proof -
-  {
-  fix m have "\<exists>n>m. i < n"
-  proof (cases "m > i")
-    case True thus ?thesis by auto
-  next
-    case False
-    hence "m \<le> i" by auto
-    hence "Suc i > m" and "i < Suc i" by auto
-    thus ?thesis by blast
-  qed
-  }
-  thus ?thesis unfolding infinite_nat_iff_unbounded by auto
-qed
-
-lemma no_bad_of_special_shape_imp_good:
-  assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
-    and refl: "reflp_on P {B i | i. True}"
-    and "\<forall>i. f i \<in> {B i | i. True}"
-  shows "good P f"
-proof (rule ccontr)
-  assume "bad P f"
-  from assms(3) have "\<forall>i. \<exists>j. f i = B j" by blast
-  from choice [OF this] obtain g where "\<And>i. f i = B (g i)" by blast
-  with `bad P f` have "bad P (B \<circ> g)" by (auto simp: good_def)
-  have "\<forall>i. \<exists>j>i. g j \<ge> g 0"
-  proof (rule ccontr)
-    assume "\<not> ?thesis"
-    then obtain i::nat where "\<forall>j>i. \<not> (g j \<ge> g 0)" by auto
-    hence *: "\<forall>j>i. g j < g 0" by auto
-    let ?I = "{j. j > i}"
-    from * have "\<forall>j>i. g j \<in> {..<g 0}" by auto
-    hence "\<forall>j\<in>?I. g j \<in> {..<g 0}" by auto
-    hence "g ` ?I \<subseteq> {..<g 0}" unfolding image_subset_iff by auto
-    moreover have "finite {..<g 0}" by auto
-    ultimately have 1: "finite (g ` ?I)" using finite_subset by blast
-    have 2: "infinite ?I" by (rule infinite_wo_prefix)
-    from pigeonhole_infinite [OF 2 1]
-      obtain k where "k > i" and "infinite {j. j > i \<and> g j = g k}" by auto
-    then obtain l where "k < l" and "g l = g k"
-      unfolding infinite_nat_iff_unbounded by auto
-    hence "P (B (g k)) (B (g l))" using refl by (auto simp: reflp_on_def)
-    with `k < l` and `bad P (B \<circ> g)` show False by (auto simp: good_def)
-  qed
-  from choice [OF this] obtain h
-    where "\<forall>i. (h i) > i" and *: "\<And>i. g (h i) \<ge> g 0" by blast
-  hence "\<forall>i\<ge>0. (h i) > i" by auto
-  from funpow_mono [OF this] have **: "\<And>i j. i < j \<Longrightarrow> (h ^^ i) 0 < (h ^^ j) 0" by auto
-  let ?i = "\<lambda>i. (h ^^ i) 0"
-  let ?f = "\<lambda>i. g (?i i)"
-  have "\<forall>i. ?f i \<ge> ?f 0"
-  proof
-    fix i show "?f i \<ge> ?f 0" using * by (induct i) auto
-  qed
-  moreover have "bad P (B \<circ> ?f)"
-  proof
-    assume "good P (B \<circ> ?f)"
-    then obtain i j where "i < j" and "P (B (?f i)) (B (?f j))" by (auto simp: good_def)
-    hence "P (B (g (?i i))) (B (g (?i j)))" by simp
-    moreover from ** [OF `i < j`] have "?i i < ?i j" .
-    ultimately show False using `bad P (B \<circ> g)` by (auto simp: good_def)
-  qed
-  ultimately have "(\<forall>i. ?f i \<ge> ?f 0) \<and> bad P (B \<circ> ?f)" by auto
-  hence "\<exists>f. (\<forall>i. f i \<ge> f 0) \<and> bad P (B \<circ> f)" by (rule exI [of _ ?f])
-  with assms(1) show False by blast
-qed
-
 
 subsection {* Embedding *}
 
@@ -561,6 +492,75 @@ qed
 
 
 subsection {* Higman's Lemma *}
+
+lemma infinite_wo_prefix:
+  "infinite {j::nat. j > i}"
+proof -
+  {
+  fix m have "\<exists>n>m. i < n"
+  proof (cases "m > i")
+    case True thus ?thesis by auto
+  next
+    case False
+    hence "m \<le> i" by auto
+    hence "Suc i > m" and "i < Suc i" by auto
+    thus ?thesis by blast
+  qed
+  }
+  thus ?thesis unfolding infinite_nat_iff_unbounded by auto
+qed
+
+lemma no_bad_of_special_shape_imp_good:
+  assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
+    and refl: "reflp_on P {B i | i. True}"
+    and "\<forall>i. f i \<in> {B i | i. True}"
+  shows "good P f"
+proof (rule ccontr)
+  assume "bad P f"
+  from assms(3) have "\<forall>i. \<exists>j. f i = B j" by blast
+  from choice [OF this] obtain g where "\<And>i. f i = B (g i)" by blast
+  with `bad P f` have "bad P (B \<circ> g)" by (auto simp: good_def)
+  have "\<forall>i. \<exists>j>i. g j \<ge> g 0"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then obtain i::nat where "\<forall>j>i. \<not> (g j \<ge> g 0)" by auto
+    hence *: "\<forall>j>i. g j < g 0" by auto
+    let ?I = "{j. j > i}"
+    from * have "\<forall>j>i. g j \<in> {..<g 0}" by auto
+    hence "\<forall>j\<in>?I. g j \<in> {..<g 0}" by auto
+    hence "g ` ?I \<subseteq> {..<g 0}" unfolding image_subset_iff by auto
+    moreover have "finite {..<g 0}" by auto
+    ultimately have 1: "finite (g ` ?I)" using finite_subset by blast
+    have 2: "infinite ?I" by (rule infinite_wo_prefix)
+    from pigeonhole_infinite [OF 2 1]
+      obtain k where "k > i" and "infinite {j. j > i \<and> g j = g k}" by auto
+    then obtain l where "k < l" and "g l = g k"
+      unfolding infinite_nat_iff_unbounded by auto
+    hence "P (B (g k)) (B (g l))" using refl by (auto simp: reflp_on_def)
+    with `k < l` and `bad P (B \<circ> g)` show False by (auto simp: good_def)
+  qed
+  from choice [OF this] obtain h
+    where "\<forall>i. (h i) > i" and *: "\<And>i. g (h i) \<ge> g 0" by blast
+  hence "\<forall>i\<ge>0. (h i) > i" by auto
+  from funpow_mono [OF this] have **: "\<And>i j. i < j \<Longrightarrow> (h ^^ i) 0 < (h ^^ j) 0" by auto
+  let ?i = "\<lambda>i. (h ^^ i) 0"
+  let ?f = "\<lambda>i. g (?i i)"
+  have "\<forall>i. ?f i \<ge> ?f 0"
+  proof
+    fix i show "?f i \<ge> ?f 0" using * by (induct i) auto
+  qed
+  moreover have "bad P (B \<circ> ?f)"
+  proof
+    assume "good P (B \<circ> ?f)"
+    then obtain i j where "i < j" and "P (B (?f i)) (B (?f j))" by (auto simp: good_def)
+    hence "P (B (g (?i i))) (B (g (?i j)))" by simp
+    moreover from ** [OF `i < j`] have "?i i < ?i j" .
+    ultimately show False using `bad P (B \<circ> g)` by (auto simp: good_def)
+  qed
+  ultimately have "(\<forall>i. ?f i \<ge> ?f 0) \<and> bad P (B \<circ> ?f)" by auto
+  hence "\<exists>f. (\<forall>i. f i \<ge> f 0) \<and> bad P (B \<circ> f)" by (rule exI [of _ ?f])
+  with assms(1) show False by blast
+qed
 
 lemma almost_full_on_lists:
   assumes "almost_full_on P A"
