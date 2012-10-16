@@ -1401,8 +1401,8 @@ fun procedures_definition locname procs thy =
              |> (fn thy => Expression.sublocale I parentN
                   (mk_loc_exp [Locale.intern thy implN]) [] thy)
              |> Proof.global_terminal_proof
-                 (Method.Basic (fn ctxt => Method.SIMPLE_METHOD
-                                 (Locale.intro_locales_tac false ctxt [])),NONE)
+                 ((Method.Basic (fn ctxt => Method.SIMPLE_METHOD
+                                 (Locale.intro_locales_tac false ctxt [])), Position.none), NONE)
              |> Proof_Context.theory_of
           end;
 
