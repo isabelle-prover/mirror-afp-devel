@@ -174,7 +174,7 @@ lemma minimal_bad_Suc:
     bad (strong P) (repl (Suc n) f g) \<and>
     min_at P (repl (Suc n) f g) (Suc n)"
 using assms
-proof (induct t\<equiv>"f (Suc n)" arbitrary: f n rule: weak_induct)
+proof (induct t\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
   case IH
   show ?case
   proof (cases "min_at P f (Suc n)")
@@ -225,7 +225,7 @@ proof (induct t\<equiv>"f (Suc n)" arbitrary: f n rule: weak_induct)
       using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF greater] .
     let ?g' = "repl (Suc n) f"
     have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
-    from IH(2) [of ?g n, OF this, OF weak' min_at bad] obtain M
+    from IH(2) [of ?g, OF this, OF weak' min_at bad] obtain M
       where "\<forall>i\<le>n. M i = f i"
       and "weakeq (M (Suc n)) (?g' h (Suc n))"
       and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g' M i) (h j)"
