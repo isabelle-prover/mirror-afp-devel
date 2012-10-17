@@ -174,7 +174,7 @@ lemma minimal_bad_Suc:
     bad (strong P) (repl (Suc n) f g) \<and>
     min_at P (repl (Suc n) f g) (Suc n)"
 using assms
-proof (induct t\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
+proof (induct x\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
   case IH
   show ?case
   proof (cases "min_at P f (Suc n)")
@@ -223,17 +223,18 @@ proof (induct t\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
     qed
     have bad: "bad (strong P) ?g"
       using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF greater] .
-    let ?g' = "repl (Suc n) f"
+    let ?g' = "repl (Suc n) ?g"
     have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
     from IH(2) [of ?g, OF this, OF weak' min_at bad] obtain M
-      where "\<forall>i\<le>n. M i = f i"
-      and "weakeq (M (Suc n)) (?g' h (Suc n))"
-      and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g' M i) (h j)"
+      where "\<forall>i\<le>n. M i = ?g i"
+      and "weakeq (M (Suc n)) (?g (Suc n))"
+      and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (?g j)"
       and "bad (strong P) (?g' M)"
       and "min_at P (?g' M) (Suc n)"
-      unfolding ex_repl_conv by auto
+      by auto
     moreover with weak_imp_weakeq [OF weak]
-      have "weakeq (M (Suc n)) (f (Suc n))" using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
+      have "weakeq (M (Suc n)) (f (Suc n))"
+      using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
     moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)"
     proof (intro allI impI)
       fix i assume "Suc n \<le> i"
@@ -244,7 +245,7 @@ proof (induct t\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
       with `weakeq (M i) (h j)`
         show "\<exists>j\<ge>Suc n. weakeq (M i) (f j)" using weakeq_trans by blast
     qed
-    ultimately show ?thesis by blast
+    ultimately show ?thesis by auto
   qed
 qed
 
