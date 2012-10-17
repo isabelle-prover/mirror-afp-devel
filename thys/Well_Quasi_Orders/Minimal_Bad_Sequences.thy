@@ -150,10 +150,10 @@ definition min_at :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b 
     \<longrightarrow> good (strong P) g"
 
 lemma weak_induct [consumes 1, case_names IH]:
-  assumes "xs \<in> vals A"
-    and "\<And>xs. xs \<in> vals A \<Longrightarrow> (\<And>zs. zs \<in> vals A \<Longrightarrow> weak zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
-  shows "P xs"
-  using wfp_on_induct [OF wfp_on_weak, of xs A P] and assms by blast
+  assumes "x \<in> vals A"
+    and "\<And>x. x \<in> vals A \<Longrightarrow> (\<And>y. y \<in> vals A \<Longrightarrow> weak y x \<Longrightarrow> P y) \<Longrightarrow> P x"
+  shows "P x"
+  using wfp_on_induct [OF wfp_on_weak, of x A P] and assms by blast
 
 lemma weak_imp_weakeq: "weak x y \<Longrightarrow> weakeq x y" by auto
 
