@@ -1402,7 +1402,7 @@ fun procedures_definition locname procs thy =
                   (mk_loc_exp [Locale.intern thy implN]) [] thy)
              |> Proof.global_terminal_proof
                  ((Method.Basic (fn ctxt => Method.SIMPLE_METHOD
-                                 (Locale.intro_locales_tac false ctxt [])), Position.none), NONE)
+                                 (Locale.intro_locales_tac false ctxt [])), Position.no_range), NONE)
              |> Proof_Context.theory_of
           end;
 
