@@ -163,7 +163,6 @@ from a bad sequence that is minimal at @{term n}. Moreover, the first
 at @{term n} is preserved) and the remaining elements are weakly
 related to the remaining elements of the given sequence.*}
 lemma minimal_bad_Suc:
-  fixes f :: "'b seq"
   assumes "f (Suc n) \<in> vals A"
     and "min_at P f n"
     and "bad (strong P) f"
