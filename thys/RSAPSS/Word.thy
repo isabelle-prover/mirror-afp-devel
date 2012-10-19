@@ -2228,7 +2228,7 @@ lemma fast_bv_to_nat_Cons1: "fast_bv_to_nat_helper (\<one>#bs) bin =
   by simp
 
 lemma mult_Bit0_left: "Num.Bit0 m * n = Num.Bit0 (m * n)"
-  by (simp add: num_eq_iff nat_of_num_mult left_distrib)
+  by (simp add: num_eq_iff nat_of_num_mult distrib_right)
 
 lemma fast_bv_to_nat_def:
   "bv_to_nat (\<one> # bs) == numeral (fast_bv_to_nat_helper bs Num.One)"

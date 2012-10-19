@@ -234,7 +234,7 @@ proof -
         "\<dots> =
          (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*
         ((((x\<^sub>k^2*y\<^sub>j^2) + (x\<^sub>j^2*y\<^sub>k^2))*2*(inverse 2) - 2*(x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))))"
-        by (auto simp add: left_distrib mult_assoc mult_ac)
+        by (auto simp add: distrib_right mult_assoc mult_ac)
       also have
         "\<dots> =
         (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*

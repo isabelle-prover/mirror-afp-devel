@@ -3353,7 +3353,7 @@ where
 
 lemma eval_dioph_mult:
   "eval_dioph ks xs * int n = eval_dioph ks (map (\<lambda>x. x * n) xs)"
-  by (induct ks xs rule: eval_dioph.induct) (simp_all add: left_distrib zmult_int)
+  by (induct ks xs rule: eval_dioph.induct) (simp_all add: distrib_right zmult_int)
 
 lemma eval_dioph_add_map:
   "eval_dioph ks (map f xs) + eval_dioph ks (map g xs) =
@@ -3365,7 +3365,7 @@ proof (induct ks xs rule: eval_dioph.induct)
     by simp
   also have "\<dots> = (k * int (f x) + k * int (g x)) + eval_dioph ks (map (\<lambda>x. f x + g x) xs)"
     by (simp add: 1)
-  finally show ?case by (simp add: add_ac right_distrib)
+  finally show ?case by (simp add: add_ac distrib_left)
 qed simp_all
 
 lemma eval_dioph_div_mult:

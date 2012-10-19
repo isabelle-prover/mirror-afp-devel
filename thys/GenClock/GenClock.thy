@@ -407,7 +407,7 @@ proof (rule ccontr)
         proof-
 
           have Eq1: "real i * rmin + rmin = (real i + 1)*rmin" 
-            by (simp add: left_distrib) 
+            by (simp add: distrib_right) 
           have Eq2: "real i + 1 = real (i+1)" by simp
           from Eq1 Eq2 
           have Eq3: "real i * rmin + rmin = real (i+1) * rmin"
@@ -546,7 +546,7 @@ proof-
     from posX posD A have absEq: "\<bar>?X - ?D\<bar> = ?X - ?D"
       by(simp add: abs_if)
     from bound1 have bound2: "?X - ?D \<le> ?D*\<rho>" 
-      by(simp add: mult_commute left_distrib)
+      by(simp add: mult_commute distrib_right)
     from D_beta absEq bound2 show ?thesis by simp
   next
     assume notA: "\<not> (?D \<le> ?X)"

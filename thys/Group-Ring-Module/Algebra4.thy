@@ -4026,7 +4026,7 @@ apply (rule conjI)
  apply (simp add:Zr_def Zset_def)
 apply (rule conjI,
        (rule allI, rule impI)+, simp add:Zr_def Zset_def)
- apply (simp add:right_distrib)
+ apply (simp add: distrib_left)
 apply (rule allI, rule impI)
   apply (simp add:Zr_def Zset_def)
 done

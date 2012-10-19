@@ -129,7 +129,7 @@ proof -
     hence bx1: "2*(x-b) < x" by auto
     from b have bx2: "b-x < 0" by auto
     obtain n where "n = m+1" by simp
-    hence "y - n*x = y - m*x - x" by (simp only: left_distrib mult_1_left)
+    hence "y - n*x = y - m*x - x" by (simp only: distrib_right mult_1_left)
     with m have n: "y - n*x = b-x" by simp
     with bx2 have pos: "-y + n*x > 0" by simp
     moreover from n bx1 have "2*(-y + n*x) < x" by simp

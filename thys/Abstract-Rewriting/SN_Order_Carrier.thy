@@ -214,7 +214,7 @@ lemma rat_gt_SN: assumes dpos: "\<delta> > 0" shows "SN {(x,y). 0 \<le> y \<and>
   from this obtain p where p: "?p = p + 1" and ppos: "0 \<le> p" by auto
   have id2: "\<And> n. n * numeratord * denom0 * (denomd * denom0) = n * ?p" by auto
   from contra square denomd denom0 show False 
-  proof (simp add: p id2, simp add: right_distrib left_distrib)
+  proof (simp add: p id2, simp add: distrib_left distrib_right)
     let ?r = "numerator0 * denomd * (denomd * denom0)"
     let ?rr = "?r - p - 1"
     assume ass: "\<And> n. p + int n * p + (1 + int n) \<le> ?r"

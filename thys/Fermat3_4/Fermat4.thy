@@ -521,7 +521,7 @@ proof (rule ccontr)
     have zgab: "z^4 = ?g^4 * (a^4+b^4)"
     proof -
       from ab ass have "z^4 = (?g*a)^4+(?g*b)^4" by simp
-      thus ?thesis by (simp only: power_mult_distrib right_distrib)
+      thus ?thesis by (simp only: power_mult_distrib distrib_left)
     qed
     have cgz: "z^2 = ?c * ?g^2" 
     proof -

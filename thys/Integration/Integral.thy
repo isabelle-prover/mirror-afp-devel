@@ -526,7 +526,7 @@ proof -
     also have "\<dots> = (\<Sum>i\<in>K. z1 i * \<chi> (C i) t + z2 i * \<chi> (C i) t)" 
       by (rule setsum_addf[THEN sym])
     also have "\<dots> = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" 
-      by (simp add: left_distrib)
+      by (simp add: distrib_right)
     finally have "f t + g t = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" .
   }
 
@@ -548,7 +548,7 @@ proof -
     by (auto simp add: sfis.base)
   also 
   from a2 b2 have "a+b = (\<Sum>i\<in>K. (z1 i + z2 i) * measure M (C i))" 
-    by (simp add: setsum_addf[THEN sym] left_distrib)
+    by (simp add: setsum_addf[THEN sym] distrib_right)
   ultimately show ?thesis by simp
 qed
 

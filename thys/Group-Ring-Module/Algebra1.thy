@@ -182,7 +182,7 @@ apply (simp add:int_mult_le)
 done
 
 lemma zmult_zminus_right:"(w::int) * (- z) = - (w * z)"
-apply (insert right_distrib[of "w" "z" "-z"]) 
+apply (insert distrib_left[of "w" "z" "-z"]) 
 apply simp
 done
 
@@ -2827,7 +2827,7 @@ apply (erule disjE, simp add:ant_0[THEN sym],
 apply (simp add:a_z_z, simp, 
        erule disjE, simp add:ant_0, simp add:ant_0[THEN sym] a_z_z,
       (erule disjE)+, (erule exE)+, simp add:a_zpz a_z_z,
-       simp add:left_distrib, erule exE, simp add:a_z_z,
+       simp add: distrib_right, erule exE, simp add:a_z_z,
        cut_tac less_linear[of "z" "0"], erule disjE, simp,
        erule disjE, simp add:ant_0, simp)
 apply (erule disjE, erule exE, simp, 
@@ -2924,10 +2924,10 @@ apply (erule disjE, erule exE, simp add:asprod_mult,
       simp add:Zero_ant_def asprod_mult)
 apply (simp, erule disjE, erule exE, simp,
       (erule disjE)+, erule exE, simp add:asprod_mult,
-      simp add:a_zpz, simp add:asprod_mult right_distrib,
+      simp add:a_zpz, simp add:asprod_mult distrib_left,
       simp add:asprod_mult)
 apply (erule disjE, erule exE, simp add:a_zpz asprod_mult,
-       simp add:right_distrib, simp add:asprod_mult,
+       simp add: distrib_left, simp add:asprod_mult,
       (erule disjE)+, erule exE, simp add:asprod_mult, simp,
       erule disjE, erule exE, simp add:asprod_mult, simp) 
 done
@@ -2945,7 +2945,7 @@ done
 lemma asprod_distrib2:"\<lbrakk>0 < i; 0 < j\<rbrakk> \<Longrightarrow> (i + j) *\<^sub>a x = (i *\<^sub>a x) + (j *\<^sub>a x)"
 by (cut_tac mem_ant[of "x"], erule disjE, simp,
        erule disjE, erule exE, simp add:asprod_mult,
-       simp add:left_distrib a_zpz, simp)
+       simp add: distrib_right a_zpz, simp)
 
 lemma asprod_minus:"x \<noteq> -\<infinity> \<and> x \<noteq> \<infinity> \<Longrightarrow> - z *\<^sub>a x = z *\<^sub>a (- x)"
 apply (cut_tac mem_ant[of "x"], erule disjE, simp+)
