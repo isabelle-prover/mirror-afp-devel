@@ -189,7 +189,7 @@ from a bad sequence that is minimal at @{term n}. Moreover, the first
 at @{term n} is preserved) and the remaining elements are weakly
 related to the remaining elements of the given sequence.*}
 (*same proof as for minimal_bad_Suc, but with explicit structure
-of recursion (better suited for textual explanation)*)
+of induction (better suited for textual explanation)*)
 lemma
   assumes "f (Suc n) \<in> vals A"
     and "min_at P f n"
@@ -206,11 +206,10 @@ proof -
     x = f (Suc n) \<and> x \<in> vals A \<and> min_at P f n \<and> bad ?P f \<longrightarrow> ?C f x"
   {
     fix x
-    assume *: "x = f (Suc n)"
-    have "?I x"
-    proof (rule weak_induct [of x A ?I])
-      from `f (Suc n) \<in> vals A` show "x \<in> vals A" by (simp add: *)
-    next
+    assume "x = f (Suc n)"
+    hence "x \<in> vals A" using assms by simp
+    hence "?I x"
+    proof (induct x rule: weak_induct)
       fix x
       assume "x \<in> vals A" and IH: "\<And>y. \<lbrakk>y \<in> vals A; weak y x\<rbrakk> \<Longrightarrow> ?I y"
       show "?I x"
