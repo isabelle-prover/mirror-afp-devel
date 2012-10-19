@@ -345,9 +345,8 @@ proof -
     thus ?case ..
   next
     case BlockRed thus ?case by(simp)(blast intro: red_reds.intros)
-    apply_end(simp_all add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs thread_action'_to_thread_action.simps red_mthr.actions_ok_iff split: split_if_asm del: split_paired_Ex)
-    apply_end(blast intro: red_reds.intros elim: add_leE)+
-  qed
+  qed (simp_all add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs thread_action'_to_thread_action.simps red_mthr.actions_ok_iff split: split_if_asm del: split_paired_Ex,
+    (blast intro: red_reds.intros elim: add_leE)+)
 qed
 
 end

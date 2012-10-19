@@ -157,8 +157,7 @@ case (Step abs_R)
    proof (cases state')
      case (Inl fstate) show ?thesis
      using Inl Discr state
-     proof (cases fstate rule:a_fstate_case)
-     apply_end(auto)
+     proof (cases fstate rule: a_fstate_case, auto)
      txt {* Case Lambda *}
      fix l vs c \<beta> as ve b
      assume "Discr (Inl (PC (Lambda l vs c, \<beta>), as, ve, b)) \<in> arg_poss p"
