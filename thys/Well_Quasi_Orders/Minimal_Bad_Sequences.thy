@@ -200,10 +200,10 @@ lemma
     (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (g i) (f j)) \<and>
     bad (strong P) (repl (Suc n) f g) \<and>
     min_at P (repl(Suc n) f g) (Suc n)"
-  (is "?C f (f (Suc n))")
+  (is "\<exists>g. ?C g f (f (Suc n))")
 proof -
   let ?I = "\<lambda>x. \<forall>f.
-    x = f (Suc n) \<and> x \<in> vals A \<and> min_at P f n \<and> bad ?P f \<longrightarrow> ?C f x"
+    x = f (Suc n) \<and> x \<in> vals A \<and> min_at P f n \<and> bad ?P f \<longrightarrow> (\<exists>g. ?C g f x)"
   {
     fix x
     assume "x = f (Suc n)"
@@ -217,7 +217,7 @@ proof -
         fix f
         assume x: "x = f (Suc n)" and "x \<in> vals A"
           and "min_at P f n" and "bad ?P f"
-        show "?C f x"
+        show "\<exists>g. ?C g f x"
         proof (cases "min_at P f (Suc n)")
           case True
           hence "min_at P (repl (Suc n) f f) (Suc n)" by simp
@@ -237,21 +237,16 @@ proof -
             and `min_at P f n` by (auto simp: min_at_def)
           have bad: "bad (strong P) ?g"
             using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF suffix] .
-          let ?g' = "repl (Suc n) ?g"
           have "?g (Suc n) \<in> vals A"
             using weak_vals [OF weak `x \<in> vals A` [unfolded x]] by simp
           from IH [unfolded x, OF this weak', THEN spec [of _ ?g]]
             and min_at and bad and this obtain M
-            where "\<forall>i\<le>n. M i = ?g i"
-            and "weakeq (M (Suc n)) (?g (Suc n))"
-            and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (?g j)"
-            and "bad (strong P) (?g' M)"
-            and "min_at P (?g' M) (Suc n)" by blast
+            where C: "?C M ?g (?g (Suc n))" by blast
           moreover with weak_imp_weakeq [OF weak]
             have "weakeq (M (Suc n)) (f (Suc n))"
             using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
           moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)"
-            by (rule suffix_repl [OF _ suffix *]) simp
+            using suffix_repl [OF _ suffix] and C by auto
           ultimately show ?thesis unfolding x by auto
         qed
       qed
@@ -272,6 +267,7 @@ lemma minimal_bad_Suc:
     (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (g i) (f j)) \<and>
     bad (strong P) (repl (Suc n) f g) \<and>
     min_at P (repl (Suc n) f g) (Suc n)"
+  (is "\<exists>g. ?C g f (f (Suc n))")
 using assms
 proof (induct x\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
   case IH show ?case
@@ -292,19 +288,14 @@ proof (induct x\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
       and `min_at P f n` by (auto simp: min_at_def)
     have bad: "bad (strong P) ?g"
       using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF suffix] .
-    let ?g' = "repl (Suc n) ?g"
     have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
     from IH(2) [of ?g, OF this, OF weak' min_at bad] obtain M
-      where "\<forall>i\<le>n. M i = ?g i"
-      and "weakeq (M (Suc n)) (?g (Suc n))"
-      and *: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (?g j)"
-      and "bad (strong P) (?g' M)"
-      and "min_at P (?g' M) (Suc n)" by auto
+      where C: "?C M ?g (?g (Suc n))" by blast
     moreover with weak_imp_weakeq [OF weak]
       have "weakeq (M (Suc n)) (f (Suc n))"
       using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
     moreover have "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)"
-      by (rule suffix_repl [OF _ suffix *]) simp
+      using suffix_repl [OF _ suffix] and C by auto
     ultimately show ?thesis by auto
   qed
 qed
