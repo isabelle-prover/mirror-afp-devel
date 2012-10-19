@@ -265,6 +265,12 @@ subsection {* @{term "wf_red"} *}
 
 context J_progress begin
 
+context begin
+
+declare red_mthr.actions_ok_iff [simp del]
+declare red_mthr.actions_ok.cases [rule del]
+declare red_mthr.actions_ok.intros [rule del]
+
 lemma assumes wf: "wf_prog wf_md P"
   shows red_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; 
@@ -275,7 +281,7 @@ lemma assumes wf: "wf_prog wf_md P"
     \<Longrightarrow> \<exists>e'' s'' ta'. P,t \<turnstile> \<langle>e, s\<rangle> -ta'\<rightarrow> \<langle>e'',s''\<rangle> \<and> 
         (red_mthr.actions_ok (ls, (ts, m), ws, is) t ta' \<or> 
          red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
-  (is "PROP ?thesis1")
+  (is "\<lbrakk> _; _; _; _; _; _; ?wakeup e s \<rbrakk> \<Longrightarrow> ?concl e s ta")
     and reds_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta;
      sync_oks es; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
@@ -285,69 +291,65 @@ lemma assumes wf: "wf_prog wf_md P"
     \<Longrightarrow> \<exists>es'' s'' ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es'',s''\<rangle> \<and> 
         (red_mthr.actions_ok (ls, (ts, m), ws, is) t ta' \<or> 
          red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
-  (is "PROP ?thesis2")
-proof -
-  note red_mthr.actions_ok_iff [simp del]
-  note red_mthr.actions_ok.cases [rule del]
-  note red_mthr.actions_ok.intros [rule del]
-
-  show "PROP ?thesis1" (is "\<lbrakk> _; _; _; _; _; _; ?wakeup e s \<rbrakk> \<Longrightarrow> ?concl e s ta")
-    and "PROP ?thesis2"
-  proof(induct rule: red_reds.inducts)
-    case (SynchronizedRed2 e s ta e' s' a)
-    note IH = `\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-              \<forall>l. expr_locks e l \<le> has_locks (ls $ l) t; ?wakeup e s\<rbrakk>
-              \<Longrightarrow> ?concl e s ta`
-    note `\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta`
-    moreover from `sync_ok (insync(a) e)` have "sync_ok e" by simp
-    moreover note `hconf (hp s)` `P,hp s \<turnstile> t \<surd>t`
-    moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls $ l) t`
-    have "\<forall>l. expr_locks e l \<le> has_locks (ls $ l) t" by(force split: split_if_asm)
-    moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
-    ultimately have "?concl e s ta" by(rule IH)
-    thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
-  next
-    case RedCall thus ?case
-      by(auto simp add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs dest: sees_method_fun)
-  next
-    case (RedCallExternal s a U M Ts T D vs ta va h' ta' e' s')
-    from `?wakeup (addr a\<bullet>M(map Val vs)) s`
-    have "wset (ls, (ts, m), ws, is) t = None \<or> (M = wait \<and> (\<exists>w. wset (ls, (ts, m), ws, is) t = \<lfloor>PostWS w\<rfloor>))" by auto
-    with wf  `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>` `P,hp s \<turnstile> t \<surd>t` `hconf (hp s)`
-    obtain ta'' va' h'' where red': "P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta''\<rightarrow>ext \<langle>va',h''\<rangle>"
-      and aok: "red_mthr.actions_ok (ls, (ts, m), ws, is) t ta'' \<or>
-                red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta'' \<and> final_thread.actions_subset ta'' ta"
-      by(rule red_external_wf_red)
-    from aok `ta' = extTA2J P ta`
-    have "red_mthr.actions_ok (ls, (ts, m), ws, is) t (extTA2J P ta'') \<or>
-          red_mthr.actions_ok' (ls, (ts, m), ws, is) t (extTA2J P ta'') \<and> red_mthr.actions_subset (extTA2J P ta'') ta'"
-      by(auto simp add: red_mthr.actions_ok'_convert_extTA red_mthr.actions_ok_iff elim: final_thread.actions_subset.cases del: subsetI)
-    moreover from red' `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = Native in D`
-    obtain s'' e'' where "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta''\<rightarrow> \<langle>e'',s''\<rangle>"
-      by(fastforce intro: red_reds.RedCallExternal)
-    ultimately show ?case by blast
-  next
-    case LockSynchronized
-    hence False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
-    thus ?case ..
-  next
-    case (UnlockSynchronized a v s)
-    from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls $ l) t`
-    have "has_lock (ls $ a) t" by(force split: split_if_asm)
-    with UnlockSynchronized have False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
-    thus ?case ..
-  next
-    case (SynchronizedThrow2 a ad s)
-    from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls $ l) t`
-    have "has_lock (ls $ a) t" by(force split: split_if_asm)
-    with SynchronizedThrow2 have False
-      by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
-    thus ?case ..
-  next
-    case BlockRed thus ?case by(simp)(blast intro: red_reds.intros)
-  qed (simp_all add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs thread_action'_to_thread_action.simps red_mthr.actions_ok_iff split: split_if_asm del: split_paired_Ex,
-    (blast intro: red_reds.intros elim: add_leE)+)
+proof(induct rule: red_reds.inducts)
+  case (SynchronizedRed2 e s ta e' s' a)
+  note IH = `\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
+            \<forall>l. expr_locks e l \<le> has_locks (ls $ l) t; ?wakeup e s\<rbrakk>
+            \<Longrightarrow> ?concl e s ta`
+  note `\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta`
+  moreover from `sync_ok (insync(a) e)` have "sync_ok e" by simp
+  moreover note `hconf (hp s)` `P,hp s \<turnstile> t \<surd>t`
+  moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls $ l) t`
+  have "\<forall>l. expr_locks e l \<le> has_locks (ls $ l) t" by(force split: split_if_asm)
+  moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
+  ultimately have "?concl e s ta" by(rule IH)
+  thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
+next
+  case RedCall thus ?case
+    by(auto simp add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs dest: sees_method_fun)
+next
+  case (RedCallExternal s a U M Ts T D vs ta va h' ta' e' s')
+  from `?wakeup (addr a\<bullet>M(map Val vs)) s`
+  have "wset (ls, (ts, m), ws, is) t = None \<or> (M = wait \<and> (\<exists>w. wset (ls, (ts, m), ws, is) t = \<lfloor>PostWS w\<rfloor>))" by auto
+  with wf  `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>` `P,hp s \<turnstile> t \<surd>t` `hconf (hp s)`
+  obtain ta'' va' h'' where red': "P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta''\<rightarrow>ext \<langle>va',h''\<rangle>"
+    and aok: "red_mthr.actions_ok (ls, (ts, m), ws, is) t ta'' \<or>
+              red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta'' \<and> final_thread.actions_subset ta'' ta"
+    by(rule red_external_wf_red)
+  from aok `ta' = extTA2J P ta`
+  have "red_mthr.actions_ok (ls, (ts, m), ws, is) t (extTA2J P ta'') \<or>
+        red_mthr.actions_ok' (ls, (ts, m), ws, is) t (extTA2J P ta'') \<and> red_mthr.actions_subset (extTA2J P ta'') ta'"
+    by(auto simp add: red_mthr.actions_ok'_convert_extTA red_mthr.actions_ok_iff elim: final_thread.actions_subset.cases del: subsetI)
+  moreover from red' `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = Native in D`
+  obtain s'' e'' where "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta''\<rightarrow> \<langle>e'',s''\<rangle>"
+    by(fastforce intro: red_reds.RedCallExternal)
+  ultimately show ?case by blast
+next
+  case LockSynchronized
+  hence False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
+  thus ?case ..
+next
+  case (UnlockSynchronized a v s)
+  from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls $ l) t`
+  have "has_lock (ls $ a) t" by(force split: split_if_asm)
+  with UnlockSynchronized have False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
+  thus ?case ..
+next
+  case (SynchronizedThrow2 a ad s)
+  from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls $ l) t`
+  have "has_lock (ls $ a) t" by(force split: split_if_asm)
+  with SynchronizedThrow2 have False
+    by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
+  thus ?case ..
+next
+  case BlockRed thus ?case by(simp)(blast intro: red_reds.intros)
 qed
+ (simp_all add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty
+   red_mthr.actions_ok'_ta_upd_obs thread_action'_to_thread_action.simps red_mthr.actions_ok_iff
+  split: split_if_asm del: split_paired_Ex,
+  (blast intro: red_reds.intros elim: add_leE)+)
+
+end
 
 end
 
