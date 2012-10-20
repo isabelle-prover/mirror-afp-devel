@@ -155,10 +155,10 @@ subsubsection {* @{typ "char"} *}
 
 lemma card_UNIV_char: "card (UNIV :: char set) = 256"
 proof -
-  from enum_distinct
-  have "card (set (Enum.enum :: char list)) = length (Enum.enum :: char list)"
+  from distinct_chars
+  have "card (set chars) = length chars"
     by (rule distinct_card)
-  then show ?thesis by (simp add: enum_UNIV) code_simp
+  then show ?thesis by (simp add: UNIV_set_chars) code_simp
 qed
 
 instantiation char :: card_UNIV begin
