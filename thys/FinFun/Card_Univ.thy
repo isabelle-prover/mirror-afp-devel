@@ -230,7 +230,7 @@ instance proof
       unfolding bs[symmetric] distinct_card[OF distb] ..
     have ca: "card (UNIV :: 'a set) = length as"
       unfolding as[symmetric] distinct_card[OF dista] ..
-    let ?xs = "map (\<lambda>ys. the o map_of (zip as ys)) (Enum.n_lists (length as) bs)"
+    let ?xs = "map (\<lambda>ys. the o map_of (zip as ys)) (List.n_lists (length as) bs)"
     have "UNIV = set ?xs"
     proof(rule UNIV_eq_I)
       fix f :: "'a \<Rightarrow> 'b"
@@ -241,8 +241,8 @@ instance proof
     moreover have "distinct ?xs" unfolding distinct_map
     proof(intro conjI distinct_n_lists distb inj_onI)
       fix xs ys :: "'b list"
-      assume xs: "xs \<in> set (Enum.n_lists (length as) bs)"
-        and ys: "ys \<in> set (Enum.n_lists (length as) bs)"
+      assume xs: "xs \<in> set (List.n_lists (length as) bs)"
+        and ys: "ys \<in> set (List.n_lists (length as) bs)"
         and eq: "the \<circ> map_of (zip as xs) = the \<circ> map_of (zip as ys)"
       from xs ys have [simp]: "length xs = length as" "length ys = length as"
         by(simp_all add: length_n_lists_elem)
