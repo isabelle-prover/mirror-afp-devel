@@ -202,29 +202,12 @@ using assms by (simp add: invariant_def)
 lemma finite_Trn:
   assumes fin: "finite rhs"
   shows "finite {r. Trn Y r \<in> rhs}"
-proof -
-  have "finite {Trn Y r | Y r. Trn Y r \<in> rhs}"
-    by (rule rev_finite_subset[OF fin]) (auto)
-  then have "finite ((\<lambda>(Y, r). Trn Y r) ` {(Y, r) | Y r. Trn Y r \<in> rhs})"
-    by (simp add: image_Collect)
-  then have "finite {(Y, r) | Y r. Trn Y r \<in> rhs}"
-    by (erule_tac finite_imageD) (simp add: inj_on_def)
-  then show "finite {r. Trn Y r \<in> rhs}"
-    by (erule_tac f="snd" in finite_surj) (auto simp add: image_def)
-qed
+using assms by (auto intro!: finite_vimageI simp add: inj_on_def)
 
 lemma finite_Lam:
   assumes fin: "finite rhs"
   shows "finite {r. Lam r \<in> rhs}"
-proof -
-  have "finite {Lam r | r. Lam r \<in> rhs}"
-    by (rule rev_finite_subset[OF fin]) (auto)
-  then show "finite {r. Lam r \<in> rhs}"
-    apply(simp add: image_Collect[symmetric])
-    apply(erule finite_imageD)
-    apply(auto simp add: inj_on_def)
-    done
-qed
+using assms by (auto intro!: finite_vimageI simp add: inj_on_def)
 
 lemma trm_soundness:
   assumes finite:"finite rhs"
