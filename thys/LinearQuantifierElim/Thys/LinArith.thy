@@ -128,12 +128,12 @@ lemma I_asubst:
 proof(cases a)
   case (Less r cs)
   thus ?thesis by(cases t, cases cs,
-    simp_all add:eval_def right_distrib iprod_left_add_distrib)
+    simp_all add:eval_def distrib_left iprod_left_add_distrib)
     arith
 next
   case (Eq r cs)
   thus ?thesis
-    by(cases t, cases cs, simp_all add:eval_def right_distrib iprod_left_add_distrib)
+    by(cases t, cases cs, simp_all add:eval_def distrib_left iprod_left_add_distrib)
       arith
 qed
 

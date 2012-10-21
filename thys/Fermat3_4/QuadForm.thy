@@ -172,11 +172,11 @@ proof -
   have a: "a = p*u + e*N*q*v"
   proof -
     have "(p*u + e*N*q*v)*?P = p*(?P*u) + (e*N*q)*(?P*v)" 
-      by (simp only: left_distrib mult_ac)
+      by (simp only: distrib_right mult_ac)
     also with v u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)" 
       by simp
     also have "\<dots> = a*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square right_distrib mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
     also with e2_1 have "\<dots> = a*?P" by simp
     finally have "(a-(p*u+e*N*q*v))*?P = 0" by auto
     moreover from ass have "?P \<noteq> 0" by (unfold zprime_def, auto)
@@ -188,7 +188,7 @@ proof -
       by (simp only: left_diff_distrib mult_ac)
     also with v u have "\<dots> = p*(b*p+e*a*q) - e*q*(a*p-e*N*b*q)" by simp
     also have "\<dots> = b*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square right_distrib mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
     also with e2_1 have "\<dots> = b * ?P" by simp
     finally have "(b-(p*v-e*q*u))*?P = 0" by auto
     moreover from ass have "?P \<noteq> 0" by (unfold zprime_def, auto)
@@ -238,7 +238,7 @@ proof -
       also have "\<dots> = b^2 * p^2 + b^2*N*q^2 - b^2*N*q^2 - a^2*q^2" 
         by (simp add: power_mult_distrib)
       also with ass have "\<dots> = b^2*P^n - q^2*A^n" 
-        by (simp only: mult_ac left_distrib right_distrib)
+        by (simp only: mult_ac distrib_right distrib_left)
       also with U have "\<dots> = (b^2-q^2*U)*P^n" by (simp only: left_diff_distrib)
       finally show ?thesis by (simp add: mult_ac)
     qed
@@ -353,11 +353,11 @@ proof -
   have a: "a = p*u + e*N*q*v"
   proof -
     from ass have "(p*u + e*N*q*v)*P^n = p*(P^n*u) + (e*N*q)*(P^n*v)" 
-      by (simp only: left_distrib mult_ac)
+      by (simp only: distrib_right mult_ac)
     also with v and u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)" 
       by simp
     also have "\<dots> = a*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square right_distrib mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
     also with e2_1 and ass have "\<dots> = a*P^n" by simp
     finally have "(a-(p*u+e*N*q*v))*P^n = 0" by auto
     moreover from ass have "P^n \<noteq> 0" 
@@ -370,7 +370,7 @@ proof -
       by (simp only: left_diff_distrib mult_ac)
     also with v u have "\<dots> = p*(b*p+e*a*q) - e*q*(a*p-e*N*b*q)" by simp
     also have "\<dots> = b*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square right_distrib mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
     also with e2_1 and ass have "\<dots> = b * P^n" by simp
     finally have "(b-(p*v-e*q*u))*P^n = 0" by auto
     moreover from ass have "P^n \<noteq> 0" 
@@ -795,10 +795,10 @@ proof -
   proof (rule ccontr, simp)
     assume efg: "e = f*g"
     with ab g have "a = f*p*p^2+f*N*p*q^2" by (auto simp add: power2_eq_square)
-    hence "a = (f*p)*?P" by (auto simp add: right_distrib mult_ac)
+    hence "a = (f*p)*?P" by (auto simp add: distrib_left mult_ac)
     hence Pa: "?P dvd a" by auto
     from efg f ab have "b = g*p^2*q+g*N*q*q^2" by (auto simp add: power2_eq_square)
-    hence "b = (g*q)*?P" by (auto simp add: right_distrib mult_ac)
+    hence "b = (g*q)*?P" by (auto simp add: distrib_left mult_ac)
     hence "?P dvd b" by auto
     with Pa have "?P dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass have "?P dvd 1" by auto
@@ -990,9 +990,9 @@ next
       by (simp only: zdiff_power2)
     also with abx M have "\<dots> = 
       x*M - x*(2*a*m + 3*2*b*n) + x^2*(m^2 + 3*n^2)" 
-      by (simp only: power_mult_distrib right_distrib mult_ac, auto)
+      by (simp only: power_mult_distrib distrib_left mult_ac, auto)
     finally show "?C = x*(M - (2*a*m + 3*2*b*n) + x*(m^2 + 3*n^2))" 
-      by (simp add: power2_eq_square right_distrib right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left right_diff_distrib)
   qed
   then obtain y where y: "?C = x*y" by (auto simp add: dvd_def)
   have yx: "y < x" 
@@ -1049,7 +1049,7 @@ next
   have CgE: "?C = ?g^2 * ?E"
   proof -
     have "?g^2 * ?E = (?g*e)^2 + 3*(?g*f)^2"
-      by (simp add: right_distrib power_mult_distrib)
+      by (simp add: distrib_left power_mult_distrib)
     with ef show ?thesis by simp
   qed
   hence "?g^2 dvd ?C" by (simp add: dvd_def)

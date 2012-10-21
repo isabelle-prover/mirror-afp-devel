@@ -909,12 +909,12 @@ next
       let ?uc = "scalar_prod u cc"
       let ?bca = "times (times b c) a"
       have "plus (times (plus (times b c) ?rv) a) (plus (times b ?uc) ?recl) = plus (plus ?bca (times ?rv a)) (plus (times b ?uc) ?recl)" 
-        by (simp add: left_distrib)
+        by (simp add: distrib_right)
       also have "\<dots> = plus (plus ?bca (times ?rv a)) (plus ?recl (times b ?uc))" by (simp add: add_commute)
       also have "\<dots> = plus ?bca (plus (plus (times ?rv a) ?recl) (times b ?uc))" by (simp add: add_assoc)
       also have "\<dots> = plus ?bca (plus ?recr (times b ?uc))" by (simp only: rec)
       also have "\<dots> = plus ?bca (plus (times b ?uc) ?recr)" by (simp add: add_commute)
-      also have "\<dots> = plus (times b (plus (times c a) ?uc)) ?recr" by (simp add: right_distrib mult_assoc add_assoc)
+      also have "\<dots> = plus (times b (plus (times c a) ?uc)) ?recr" by (simp add: distrib_left mult_assoc add_assoc)
       finally show "plus (times (plus (times b c) ?rv) a) (plus (times b ?uc) ?recl) = plus (times b (plus (times c a) ?uc)) ?recr" .
     qed
   qed
@@ -1016,7 +1016,7 @@ proof (induct nr arbitrary: u v w)
   from Suc obtain b vv where v: "v = b # vv" by (cases v, auto)
   from Suc obtain c ww where w: "w = c # ww" by (cases w, auto)
   from Suc u v w have lu: "length uu = n" and lv: "length vv = n" and lw: "length ww = n" by auto
-  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add_commute[of _ "times a c"] right_distrib add_assoc[symmetric])
+  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add_commute[of _ "times a c"] distrib_left add_assoc[symmetric])
 qed simp
 
 lemma scalar_vec_plus_distrib_left: 
@@ -1032,7 +1032,7 @@ proof (induct nr arbitrary: u v w)
   from Suc obtain b vv where v: "v = b # vv" by (cases v, auto)
   from Suc obtain c ww where w: "w = c # ww" by (cases w, auto)
   from Suc u v w have lu: "length uu = n" and lv: "length vv = n" and lw: "length ww = n" by auto
-  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add_commute[of _ "times b c"] left_distrib add_assoc[symmetric])
+  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add_commute[of _ "times b c"] distrib_right add_assoc[symmetric])
 qed simp
 
 lemma mat_mult_plus_distrib_right: 

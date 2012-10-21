@@ -178,7 +178,7 @@ next
         assume "?a = ?b"
         thus ?thesis using `d>0` Atom 1
           by(simp add:field_simps iprod_left_add_distrib)
-            (metis add_0_left add_less_cancel_right right_distrib mult_commute mult_strict_left_mono)
+            (metis add_0_left add_less_cancel_right distrib_left mult_commute mult_strict_left_mono)
       next
         assume "?a < ?b"
         { fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"

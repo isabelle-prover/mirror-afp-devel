@@ -567,7 +567,7 @@ proof (rule ccontr)
     have zgab: "z^3 = ?g^3 * (a^3+b^3)"
     proof -
       from ab and ass have "z^3 = (?g*a)^3+(?g*b)^3" by simp
-      thus ?thesis by (simp only: power_mult_distrib right_distrib)
+      thus ?thesis by (simp only: power_mult_distrib distrib_left)
     qed
     have cgz: "?c * ?g = z"
     proof - 

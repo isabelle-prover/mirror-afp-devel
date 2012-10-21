@@ -603,7 +603,7 @@ proof-
     fix d :: real
     assume dh: "0<=d"
     have "a * d - b * d = (a - b) * d "
-      by (auto simp add: left_distrib diff_minus)
+      by (auto simp add: distrib_right diff_minus)
     hence "\<bar>a * d - b * d\<bar> = \<bar>(a - b) * d\<bar>"
       by simp
     also with dh have
@@ -614,7 +614,7 @@ proof-
         .
     (* This sublemma is solved by ICS, file: abs_distrib_mult.ics *)
     (* It is not solved nor 
-       by (auto simp add: left_distrib diff_minus)(arith) 
+       by (auto simp add: distrib_right diff_minus)(arith) 
         in Isabelle  *)
   }
   with ch and divide_inverse show ?thesis

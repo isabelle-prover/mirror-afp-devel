@@ -628,7 +628,7 @@ qed(*>*)
 
 lemma realpow_two_binomial_iff: "(f+g::real)\<twosuperior> = f\<twosuperior> + 2*(f*g) + g\<twosuperior>"
   (*<*) 
-  by (simp add: power2_eq_square left_distrib right_distrib)(*>*) 
+  by (simp add: power2_eq_square distrib_right distrib_left)(*>*) 
 
 lemma times_iff_sum_squares: "f*g = (f+g)\<twosuperior>/4 - (f-g)\<twosuperior>/(4::real)"
 (*<*)proof -

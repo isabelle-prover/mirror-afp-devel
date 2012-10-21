@@ -717,7 +717,7 @@ apply (subst val_t2p[of v _ x], assumption+,
        rule Ring.npClose, assumption+,
        frule val_nonzero_z[of v x], assumption+,
               erule exE, simp add:asprod_mult a_zpz,
-       simp add:left_distrib)
+       simp add: distrib_right)
 done
 
 text{* exponent in a field *}

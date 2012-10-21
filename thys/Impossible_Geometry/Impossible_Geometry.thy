@@ -138,7 +138,7 @@ lemma real_sqrt_sum_squares_triangle_ineq:
   "sqrt ((a + c)^2 + (b + d)^2) \<le> sqrt (a^2 + b^2) + sqrt (c^2 + d^2)"
   apply (rule power2_le_imp_le, simp)
   apply (simp add: power2_sum)
-  apply (simp only: mult_assoc right_distrib [symmetric])
+  apply (simp only: mult_assoc distrib_left [symmetric])
   apply (rule mult_left_mono)
   apply (rule power2_le_imp_le)
   apply (simp add: power2_sum power_mult_distrib)

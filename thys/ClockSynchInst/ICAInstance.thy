@@ -87,12 +87,12 @@ lemma trans_inv':
         (\<Sum> l\<in>{..<np'}. fiX f p l) + real np' * x"
 apply (induct_tac np')
 apply (auto simp add: cfni_def  fiX_def real_of_nat_Suc 
-       left_distrib diff_minus lessThan_Suc)
+       distrib_right diff_minus lessThan_Suc)
 done
 
 theorem trans_inv: 
 "\<forall> p f x . cfni p (\<lambda> y. f y + x) = cfni p f + x"
-apply (auto simp add: cfni_def trans_inv' left_distrib 
+apply (auto simp add: cfni_def trans_inv' distrib_right 
        divide_inverse  constants_ax)
 done
 
@@ -143,7 +143,7 @@ next
     by auto
   also 
   have "... = real (Suc (card  F)) * b"
-    by (simp add: left_distrib  real_of_nat_Suc)
+    by (simp add: distrib_right  real_of_nat_Suc)
   also 
   from   finit xnotinF have "...= real (card (insert x F)) * b"
     by simp
@@ -500,7 +500,7 @@ proof-
   thus ?thesis
   proof-
     have "?dif_div_np = ?dif / real np"
-      by (auto simp add:  cfni_def left_distrib 
+      by (auto simp add:  cfni_def distrib_right 
         divide_inverse diff_minus)
     hence "\<bar> cfni p f - cfni q g \<bar> = \<bar>?dif\<bar> / real np"
       by force
@@ -523,7 +523,7 @@ case 0 thus ?case by simp
 next
 case (Suc n)
 thus ?case
-  by (auto simp: real_of_nat_Suc right_distrib lessThan_Suc) 
+  by (auto simp: real_of_nat_Suc distrib_left lessThan_Suc) 
 qed
 
 text {* Next, some lemmas about bounds that are used in the proof of Accuracy Preservation *}
@@ -650,7 +650,7 @@ have
     have
       "(cfni p f - f q) * real np = 
       (\<Sum>l\<in>{..<np}. fiX f p l) * real np / real np - f q * real np"
-      by (auto simp add:  cfni_def  diff_minus left_distrib)
+      by (auto simp add:  cfni_def  diff_minus distrib_right)
     also 
     have "... = 
       (\<Sum>l\<in>{..<np}. fiX f p l) - f q * real np"
