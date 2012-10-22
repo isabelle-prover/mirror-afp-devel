@@ -2051,11 +2051,12 @@ next
       using inj_onD[OF spr_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def
-      by (auto simp: trie_lookup_trie_update_with split: option.split split_split)
+      by (auto simp: lookup_update trie_lookup_trie_update_with split: option.split split_split)
   next
+    have *: "\<And> y ya. y \<noteq> ya \<Longrightarrow> Mapping.lookup (Mapping.update y e Mapping.empty) ya = None" by transfer simp
     case False thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def
-      by (auto dest: map_prod_eq simp: trie_lookup_trie_update_with split: option.split split_split)
+      by (auto dest: map_prod_eq simp: trie_lookup_trie_update_with split: option.split split_split intro!: lookup_update_neq *)
   qed
 qed
 
