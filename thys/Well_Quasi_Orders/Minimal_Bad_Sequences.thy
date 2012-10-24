@@ -415,48 +415,9 @@ proof -
           using ** and weakeq_vals and `\<And>i. g i \<in> vals A`
           by (auto) (metis M le_0_eq not_less_eq_eq)
       moreover have "min_at P (M g 0) 0"
-      proof (unfold min_at_def, intro allI impI, elim conjE)
-        fix e :: "'b seq"
-        presume "weak (e 0) (g 0)" and *: "\<forall>i. \<exists>j\<ge>0. weakeq (e i) (M g 0 j)"
-        have "\<forall>i. \<exists>j\<ge>0::nat. weakeq (e i) (g j)"
-        proof (intro allI impI)
-          fix i
-          from * obtain j where "j \<ge> 0" and "weakeq (e i) (M g 0 j)" by auto
-          show "\<exists>j\<ge>0. weakeq (e i) (g j)"
-          proof (cases "j = 0")
-            case True
-            with `weakeq (e i) (M g 0 j)` have "weakeq (e i) (g 0)" by auto
-            thus ?thesis by auto
-          next
-            case False
-            hence "j \<ge> Suc 0" by auto
-            with ** obtain k where "k \<ge> Suc 0" and "weakeq (M g 0 j) (g k)" by auto
-            with `weakeq (e i) (M g 0 j)`
-              have "weakeq (e i) (g k)" using weakeq_trans by blast
-            moreover with `k \<ge> Suc 0` have "k \<ge> 0" by auto
-            ultimately show ?thesis by blast
-          qed
-        qed
-        with `min_at P g 0` [unfolded min_at_def]
-        show "good ?P e" using `weak (e 0) (g 0)` by (simp add: min_at_def)
-      qed auto
+        using `min_at P g 0` and suffix_repl [of 0, OF _ **] by (auto simp: min_at_def)
       moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (?g 0 i) (g j)"
-      proof (intro allI impI)
-        fix i::nat
-        assume "i \<ge> 0"
-        hence "i = 0 \<or> i \<ge> Suc 0" by auto
-        thus "\<exists>j\<ge>0. weakeq (?g 0 i) (g j)"
-        proof
-          assume "i \<ge> Suc 0"
-          with ** obtain j where "j \<ge> Suc 0" and "weakeq (?g 0 i) (g j)" by auto
-          moreover from this have "j \<ge> 0" by auto
-          ultimately show "?thesis" by auto
-        next
-          assume "i = 0"
-          hence "weakeq (?g 0 i) (g 0)" by auto
-          thus ?thesis by blast
-        qed
-      qed
+        using suffix_repl [of 0, OF _ **] by auto
       ultimately show ?case by simp
     next
       case (Suc n)
@@ -480,15 +441,8 @@ proof -
       moreover have *: "\<forall>i\<le>Suc n. ?A i = ?g (Suc n) i"
       proof (intro allI impI)
         fix i assume "i \<le> Suc n"
-        show "?A i = ?g (Suc n) i"
-        proof (cases "i = Suc n")
-          assume "i = Suc n"
-          thus ?thesis by simp
-        next
-          assume "i \<noteq> Suc n"
-          with `i \<le> Suc n` have "i < Suc n" by auto
-          thus ?thesis by (simp add: Let_def eq)
-        qed
+        thus "?A i = ?g (Suc n) i"
+          by (cases "i = Suc n") (auto dest: neq_le_trans simp: Let_def eq)
       qed
       moreover have "\<forall>i\<le>Suc n. min_at P (?g (Suc n)) i"
       proof (intro allI impI)
