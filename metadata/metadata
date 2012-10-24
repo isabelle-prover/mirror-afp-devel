@@ -274,6 +274,9 @@ topic = Computer Science/Algorithms
 date = 2011-11-09
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>
 abstract = We provide a formalization of the mergesort algorithm as used in GHC's Data.List module, proving correctness and stability. Furthermore, experimental data suggests that generated (Haskell-)code for this algorithm is much faster than for previous algorithms available in the Isabelle distribution.
+extra-history =
+  Change history:
+  [2012-10-24]: Added reference to journal article
 
 [SATSolverVerification]
 title = Formal Verification of Modern SAT Solvers 

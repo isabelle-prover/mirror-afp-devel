@@ -6,6 +6,11 @@ theory Efficient_Sort
 imports "~~/src/HOL/Library/Multiset"
 begin
 
+text {*
+A high-level overview of this formalization as well as some experimental data is
+to be found in \cite{Sternagel2012}.
+*}
+
 section {* Chaining Lists by Predicates *}
 
 text {*
