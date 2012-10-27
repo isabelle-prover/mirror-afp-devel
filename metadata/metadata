@@ -1276,6 +1276,13 @@ extra-history =
   Change history:
   [2011-09-09]: Added Rado's proof
 
+[Bondy]
+title = Bondy's Theorem
+author = Jeremy Avigad <http://www.andrew.cmu.edu/user/avigad/>, Stefan Hetzl <http://www.logic.at/people/hetzl/>
+date = 2012-10-27
+topic = Mathematics/Combinatorics
+abstract = A proof of Bondy's theorem following B. Bollabas, Combinatorics, 1986, Cambridge University Press.
+
 [Ramsey-Infinite]
 title = Ramsey's theorem, infinitary version
 author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
