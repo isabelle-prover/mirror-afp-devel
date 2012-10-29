@@ -4,7 +4,7 @@
 *)
 header {* \isaheader{Additions to RB-Trees} *}
 theory RBT_add
-imports "~~/src/HOL/Library/RBT_Mapping" "../iterator/SetIteratorOperations"
+imports "~~/src/HOL/Library/RBT" "../iterator/SetIteratorOperations"
 begin
 text_raw {*\label{thy:RBT_add}*}
 
@@ -85,5 +85,8 @@ proof
 qed (simp add: equal_rbt_def RBT.impl_of_inject)
 
 end
+
+hide_const (open) impl_of lookup empty insert delete
+  entries keys bulkload map_entry map fold
 
 end
