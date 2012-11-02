@@ -178,6 +178,20 @@ definition orderp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 
 definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "irreflp_on P A \<equiv> \<forall>a\<in>A. \<not> P a a"
 
+lemma qo_on_imp_reflp_on:
+  "qo_on P A \<Longrightarrow> reflp_on P A"
+  by (auto simp: qo_on_def)
+
+lemma qo_on_imp_transp_on:
+  "qo_on P A \<Longrightarrow> transp_on P A"
+  by (auto simp: qo_on_def)
+
+lemma qo_on_subset:
+  "A \<subseteq> B \<Longrightarrow> qo_on P B \<Longrightarrow> qo_on P A"
+  unfolding qo_on_def
+  using reflp_on_subset
+    and transp_on_subset by blast
+
 lemma wfp_on_iff_inductive_on:
   "wfp_on P A \<longleftrightarrow> inductive_on P A"
   by (blast intro: inductive_on_imp_wfp_on wfp_on_imp_inductive_on)
@@ -190,6 +204,13 @@ lemma wfp_on_iff_minimal:
     and minimal_imp_inductive_on [of A P]
     and inductive_on_imp_wfp_on [of P A]
     by blast
+
+text {*Every non-empty well-founded set @{term A} has a minimal element, i.e., an
+element that is not greater than any other element.*}
+lemma wfp_on_imp_has_min_elt:
+  assumes "wfp_on (strict P) A" and "A \<noteq> {}"
+  shows "\<exists>x\<in>A. \<forall>y\<in>A. \<not> strict P y x"
+  using assms unfolding wfp_on_iff_minimal by force
 
 lemma wfp_on_induct [consumes 2, case_names less]:
   assumes "wfp_on P A" and "x \<in> A"
