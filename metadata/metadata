@@ -1290,6 +1290,13 @@ date = 2004-09-20
 topic = Mathematics/Combinatorics
 abstract = This formalization of Ramsey's theorem (infinitary version) is taken from Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26. It differs slightly from the text by assuming a slightly stronger hypothesis. In particular, the induction hypothesis is stronger, holding for any infinite subset of the naturals. This avoids the rather peculiar mapping argument between kj and aikj on p.263, which is unnecessary and slightly mars this really beautiful result. 
 
+[Open_Induction]
+title = Open Induction
+author = Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
+date = 2012-11-02
+topic = Mathematics/Combinatorics
+abstract = A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
+
 [Category]
 title = Category Theory to Yoneda's Lemma 
 author = Greg O'Keefe <http://users.rsise.anu.edu.au/~okeefe/>
