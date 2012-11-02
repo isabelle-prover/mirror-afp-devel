@@ -192,6 +192,21 @@ lemma qo_on_subset:
   using reflp_on_subset
     and transp_on_subset by blast
 
+text {*Quasi-orders are instances of the @{class preorder} class.*}
+lemma qo_on_UNIV_conv:
+  "qo_on P UNIV \<longleftrightarrow> class.preorder P (strict P)" (is "?lhs = ?rhs")
+proof
+  assume "?lhs" thus "?rhs"
+    unfolding qo_on_def class.preorder_def
+    using qo_on_imp_reflp_on [of P UNIV]
+      and qo_on_imp_transp_on [of P UNIV]
+    by (auto simp: reflp_on_def) (unfold transp_on_def, blast)
+next
+  assume "?rhs" thus "?lhs"
+    unfolding class.preorder_def
+    by (auto simp: qo_on_def reflp_on_def transp_on_def)
+qed
+
 lemma wfp_on_iff_inductive_on:
   "wfp_on P A \<longleftrightarrow> inductive_on P A"
   by (blast intro: inductive_on_imp_wfp_on wfp_on_imp_inductive_on)
