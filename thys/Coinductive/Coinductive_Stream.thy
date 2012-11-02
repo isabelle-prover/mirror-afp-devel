@@ -10,16 +10,6 @@ imports
   "~~/src/HOL/Library/Quotient_Set"
 begin
 
-definition "is_equality R \<longleftrightarrow> (R = (op =))" (* TODO: move to Transfer.thy *)
-
-lemma is_equality_intros [transfer_rule]:
-  "is_equality (op =)"
-  "is_equality A \<Longrightarrow> is_equality B \<Longrightarrow> is_equality (fun_rel A B)"
-  "is_equality A \<Longrightarrow> is_equality B \<Longrightarrow> is_equality (prod_rel A B)"
-  "is_equality A \<Longrightarrow> is_equality (set_rel A)"
-  unfolding is_equality_def
-  by (simp_all add: fun_rel_eq prod_rel_eq set_rel_eq)
-
 lemma id_power: "id ^^ n = id"
 by(induct n) auto
 
@@ -41,13 +31,6 @@ code_datatype SCons
 
 lemma SCons_inject [iff, induct_simp]: "(SCons x xs = SCons y ys) = (x = y \<and> xs = ys)"
 by transfer simp
-
-declare SCons.transfer [transfer_rule del]
-
-(* FIXME: generate rules in this new format automatically *)
-lemma SCons_transfer' [transfer_rule]:
-  "is_equality A \<Longrightarrow> (A ===> cr_stream ===> cr_stream) LCons SCons"
-  unfolding is_equality_def by (simp add: SCons.transfer)
 
 lemma stream_cases [cases type: stream]:
   obtains (SCons) x l' where "l = SCons x l'"
@@ -169,19 +152,6 @@ lift_definition sappend :: "'a list \<Rightarrow> 'a stream \<Rightarrow> 'a str
 lift_definition sset :: "'a stream \<Rightarrow> 'a set" is "lset" ..
 
 lift_definition szip :: "'a stream \<Rightarrow> 'b stream \<Rightarrow> ('a \<times> 'b) stream" is lzip by simp
-
-lemmas stream_old_transfers [transfer_rule del] =
-  shd.transfer snth.transfer smap.transfer sconst.transfer iterates.transfer
-
-(* FIXME: generate these rules automatically *)
-lemma stream_transfers [transfer_rule]:
-  "is_equality A \<Longrightarrow> (cr_stream ===> A) lhd shd"
-  "is_equality A \<Longrightarrow> (cr_stream ===> op = ===> A) lnth snth"
-  "is_equality A \<Longrightarrow> is_equality B \<Longrightarrow> ((A ===> B) ===> cr_stream ===> cr_stream) lmap smap"
-  "is_equality A \<Longrightarrow> (A ===> cr_stream) (Coinductive_List.iterates id) sconst"
-  "is_equality A \<Longrightarrow> ((A ===> A) ===> A ===> cr_stream)
-    Coinductive_List.iterates Coinductive_Stream.iterates"
-  by (simp_all add: is_equality_def stream_old_transfers)
 
 subsection {* Converting between streams and functions: @{term Stream} and @{term snth} *}
 

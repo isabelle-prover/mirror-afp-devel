@@ -9,7 +9,7 @@ header {* \isaheader{Tabulation for lookup functions} *}
 theory TypeRelRefine
 imports
   "../Common/TypeRel"
-  "~~/src/HOL/Library/AList_Mapping"
+  "workaround/AList_Mapping"
 begin
 
 subsection {* Auxiliary lemmata *}

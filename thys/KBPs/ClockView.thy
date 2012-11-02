@@ -1387,13 +1387,12 @@ next
       using inj_onD[OF clock_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def trie_odlist_lookup_def trie_odlist_update_with_def
-      by (auto simp: trie_lookup_trie_update_with split: option.split split_split)
+        by (simp add: trie_lookup_trie_update_with lookup_update split: option.split split_split) 
   next
     case False thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def trie_odlist_lookup_def trie_odlist_update_with_def
-      by (auto simp: trie_lookup_trie_update_with
-               dest: prod_eqI
-              split: option.split split_split)
+      by (cases "fst k = fst k'")
+       (auto simp add: lookup_empty lookup_update_neq prod_eq_iff trie_lookup_trie_update_with split: option.split split_split)
   qed
 qed
 
