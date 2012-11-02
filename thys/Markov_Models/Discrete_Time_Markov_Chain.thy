@@ -6,6 +6,17 @@ begin
 
 section {* Preparations *}
 
+lemma measurable_Least[measurable]:
+  assumes [measurable]: "(\<And>i::nat. (\<lambda>x. P i x) \<in> measurable M (count_space UNIV))" 
+  shows "(\<lambda>x. LEAST i. P i x) \<in> measurable M (count_space UNIV)"
+  unfolding measurable_def by (safe intro!: sets_Least) simp_all
+
+lemma measurable_real_of_nat[measurable]:
+  "real_of_nat \<in> borel_measurable (count_space UNIV)"
+  unfolding real_eq_of_nat[symmetric] by simp
+
+lemma sets_count_space'[measurable]: "s \<in> S \<Longrightarrow> A \<in> sets (count_space S) \<Longrightarrow> insert s A \<in> sets (count_space S)" by auto
+
 lemma zero_notin_Suc_image: "0 \<notin> Suc ` A" by auto
 
 lemma PiE_insert:
@@ -37,7 +48,7 @@ qed
 lemma (in preorder) atMost_not_empty[simp]: "{..a} \<noteq> {}"
   by (auto simp: atMost_def)
 
-lemma sets_Collect_eq:
+lemma sets_Collect_eq[measurable]:
   assumes f: "f \<in> measurable M N" "{i} \<in> sets N"
   shows "{x\<in>space M. f x = i} \<in> sets M"
 proof -
@@ -258,7 +269,7 @@ lemma positive_integral_nat_function:
     (\<Sum>t. emeasure M ((of_nat \<circ> f) -` {of_nat t::real <..} \<inter> space M))"
 proof -
   def F \<equiv> "\<lambda>i. (of_nat \<circ> f) -` {of_nat i::real <..} \<inter> space M"
-  with assms have [simp, intro]: "\<And>i. F i \<in> sets M"
+  with assms have [measurable]: "\<And>i. F i \<in> sets M"
     by (auto intro: measurable_sets)
 
   { fix x assume "x \<in> space M"
@@ -414,6 +425,9 @@ proof
   with s0 show "emeasure (state_space s) (space (state_space s)) = 1"
     by (cases "s \<in> S") (simp_all add: \<tau>_distr one_ereal_def)
 qed
+
+lemma measurable_S[measurable]: "{x \<in> space (count_space S). x \<in> \<Phi>} \<in> sets (count_space S)"
+  by auto
 
 subsection {* @{text path} *}
 
@@ -586,18 +600,6 @@ proof -
   finally show ?thesis by simp
 qed 
 
-lemma measurable_at_single[intro]:
-  fixes f :: "'s \<Rightarrow> real"
-  shows "(\<lambda>\<omega>. f (\<omega> i)) \<in> borel_measurable p_space"
-proof (unfold measurable_def space_path_space, safe)
-  fix i :: nat and A :: "real set" assume "A \<in> sets borel"
-  have "(\<lambda>\<omega>. f (\<omega> i)) -` A \<inter> (UNIV \<rightarrow> S) = {\<omega>\<in>UNIV\<rightarrow>S. \<forall>i\<in>{i}. \<omega> i \<in> f -` A}"
-    by auto
-  also have "\<dots> \<in> sets p_space"
-    by (rule in_path_space_in)
-  finally show "(\<lambda>\<omega>. f (\<omega> i)) -` A \<inter> space p_space \<in> sets p_space" by simp
-qed simp
-
 lemma restrict_UNIV: "restrict f UNIV = f" by auto
 
 lemma measurable_shift:
@@ -613,13 +615,11 @@ lemma nat_case_cylinder:
                              | Suc n \<Rightarrow> {X'\<in>UNIV \<rightarrow> S. \<forall>i\<le>n. X' i = X (Suc i)} else {})"
   by (auto split: nat.split simp: Pi_def)
 
-lemma measurable_nat_case:
+lemma measurable_nat_case[measurable]:
   "s' \<in> S \<Longrightarrow> nat_case s' \<in> measurable p_space p_space"
   apply (rule measurable_restrict[of "UNIV :: nat set", unfolded restrict_UNIV ])
   apply (case_tac i)
-  apply (simp_all del: measurable_count_space_eq2)
-  apply (rule measurable_component_singleton)
-  apply simp
+  apply simp_all
   done
 
 lemma path_space_1[simp]:
@@ -740,7 +740,7 @@ lemma emeasure_iterative_measure':
   apply (simp add: state_space_def emeasure_iterative_measure)
   apply (subst positive_integral_point_measure_finite)
   apply (simp_all add: emeasure_nonneg)
-  apply (simp add: emeasure_distr measurable_nat_case emeasure_eq_measure cong: measurable_cong')
+  apply (simp add: emeasure_distr measurable_nat_case emeasure_eq_measure cong: measurable_cong_sets)
   done
 
 lemma prob_space_iterative_measure: assumes "s \<in> S" shows "prob_space (iterative_measure s)"
@@ -1077,7 +1077,7 @@ lemma positive_integral_eq_sum:
   shows "(\<integral>\<^isup>+x. f x \<partial>path_space s) = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. f (nat_case s' x) \<partial>path_space s'))"
 proof -
   have f': "f \<in> borel_measurable (path_space s)"
-    using f by (simp cong: measurable_cong')
+    using f by (simp cong: measurable_cong_sets)
   from borel_measurable_implies_simple_function_sequence'[OF f']
   guess g . note g = this
   then have "(\<integral>\<^isup>+x. f x \<partial>path_space s) = (\<integral>\<^isup>+x. (SUP i. g i x) \<partial>path_space s)"
@@ -1091,18 +1091,18 @@ proof -
     using g `s \<in> S`
     by (intro SUPR_ereal_setsum incseq_cmult_ereal incseq_simple_integral g ereal_0_le_mult
               simple_function_comp2 measurable_nat_case incseq_comp simple_integral_positive)
-       (auto intro: measurable_nat_case cong: measurable_cong' simp: simple_function_def)
+       (auto intro: measurable_nat_case cong: measurable_cong_sets simp: simple_function_def)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (SUP i. \<integral>\<^isup>Sx. (g i \<circ> nat_case s') x \<partial>path_space s'))"
     using g `s \<in> S`
     by (intro setsum_cong refl SUPR_ereal_cmult simple_integral_positive
                  simple_function_comp2)
-       (auto intro: measurable_nat_case cong: measurable_cong' simp: simple_function_def)
+       (auto intro: measurable_nat_case cong: measurable_cong_sets simp: simple_function_def)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. (SUP i. (g i \<circ> nat_case s') x) \<partial>path_space s'))"
     using g `s \<in> S`
     apply (intro setsum_cong refl)
     apply (subst positive_integral_monotone_convergence_simple)
     apply (auto intro!: simple_function_comp2 measurable_nat_case simple_integral_positive incseq_comp
-                cong: measurable_cong')
+                cong: measurable_cong_sets)
     apply (simp add: simple_function_def)
     done
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. f (nat_case s' x) \<partial>path_space s'))"
@@ -2233,33 +2233,10 @@ subsection {* Hitting time *}
 definition hitting_time :: "'s set \<Rightarrow> (nat \<Rightarrow> 's) \<Rightarrow> nat" where 
   "hitting_time \<Phi> \<omega> = (LEAST i. \<omega> i \<in> \<Phi>)"
 
-lemma measurable_hitting_time:
-  "real_of_nat \<circ> hitting_time \<Phi> \<in> borel_measurable p_space"
-  unfolding borel_measurable_iff_le
-proof
-  fix c :: real
-  show "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> sets p_space"
-  proof cases
-    assume "0 \<le> c"
-    have "(\<lambda>x. LEAST j. x j \<in> \<Phi>) -` {.. natfloor c} \<inter> space p_space \<in> sets p_space"
-      by (rule measurable_Least) (auto simp: space_path_space)
-    also have "(\<lambda>x. LEAST j. x j \<in> \<Phi>) -` {.. natfloor c} \<inter> space p_space = 
-      {w \<in> space p_space. (real \<circ> hitting_time \<Phi>) w \<le> c}"
-      using `0 \<le> c` by (auto simp: hitting_time_def le_natfloor_eq not_le natfloor_neg less_imp_le)
-    finally show "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> sets p_space"
-      by (simp add: real_eq_of_nat)
-  next
-    assume *: "\<not> 0 \<le> c"
-    { fix x
-      have "c < 0" using * by auto
-      also have "0 \<le> real_of_nat (hitting_time \<Phi> x)" by simp
-      finally have "\<not> real_of_nat (hitting_time \<Phi> x) \<le> c" by (simp add: not_le) }
-    then have *: "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} = {}"
-      by auto
-    show "{w \<in> space p_space. (of_nat \<circ> hitting_time \<Phi>) w \<le> c} \<in> sets p_space"
-      unfolding * by simp
-  qed
-qed
+lemma measurable_hitting_time[measurable]:
+  "hitting_time \<Phi> \<in> measurable p_space (count_space UNIV)"
+  unfolding hitting_time_def[abs_def]
+  by measurable
 
 lemma positive_integral_hitting_time_finite:
   assumes "s \<in> S" "\<Phi> \<subseteq> S"
@@ -2566,18 +2543,17 @@ next
     by (auto simp: )
   ultimately have "(\<integral>\<^isup>+ \<omega>. ereal (of_nat (hitting_time \<Phi> \<omega>)) \<partial>path_space s) =
     (\<Sum>i. emeasure (path_space s) {\<omega>\<in>space (path_space s). real_of_nat i < real_of_nat (hitting_time \<Phi> \<omega>)})"
-    by (simp add: emeasure_nonneg cong: measurable_cong')
+    by (simp add: emeasure_nonneg cong: measurable_cong_sets)
   also have "\<dots> \<le> (\<Sum>i. emeasure (path_space s) (T i))"
     using measurable_hitting_time t_imp_T AE_space[of "path_space s"]
     by (intro suminf_le_pos emeasure_nonneg borel_measurable_less emeasure_mono_AE T_measurable)
-       (auto simp add: comp_def cong: measurable_cong')
+       (auto simp add: comp_def cong: measurable_cong_sets)
   also have "\<dots> < \<infinity>"
     using T_sums unfolding sums_iff by simp
   finally have "integral\<^isup>P (path_space s) (real_of_nat \<circ> hitting_time \<Phi>) \<noteq> \<infinity>"
     by simp
   then have "\<infinity> \<noteq> (\<integral>\<^isup>+ \<omega>. 1 + ereal (real_of_nat (hitting_time \<Phi> \<omega>)) \<partial>path_space s)"
-    using measurable_hitting_time 
-    by (subst positive_integral_add) (auto simp: comp_def cong: measurable_cong')
+    by (subst positive_integral_add)  (auto simp: comp_def cong: measurable_cong_sets)
   also have "(\<integral>\<^isup>+ \<omega>. 1 + ereal (real_of_nat (hitting_time \<Phi> \<omega>)) \<partial>path_space s) =
     (\<integral>\<^isup>+ \<omega>. real (hitting_time \<Phi> (nat_case s \<omega>)) \<partial>path_space s)"
     using until
@@ -2650,9 +2626,6 @@ syntax
 
 translations
   "\<PP>(x in M. P)" => "CONST measure M {x \<in> CONST space M. P}"
-
-definition
-  "cond_prob M P Q = \<PP>(\<omega> in M. P \<omega> \<and> Q \<omega>) / \<PP>(\<omega> in M. Q \<omega>)"
 
 syntax
   "_conditional_prob" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("('\<PP>'(_ in _. _ \<bar>/ _'))")
@@ -2772,79 +2745,5 @@ next
   show ?thesis
     unfolding cond_prob_def * by simp
 qed
-
-lemma (in prob_space) AE_E_prob:
-  assumes ae: "AE x in M. P x"
-  obtains S where "S \<subseteq> {x \<in> space M. P x}" "S \<in> events" "prob S = 1"
-proof -
-  from ae[THEN AE_E] guess N .
-  then show thesis
-    by (intro that[of "space M - N"])
-       (auto simp: prob_compl prob_space emeasure_eq_measure)
-qed
-
-lemma (in prob_space) prob_neg: "{x\<in>space M. P x} \<in> events \<Longrightarrow> \<PP>(x in M. \<not> P x) = 1 - \<PP>(x in M. P x)"
-  by (auto intro!: arg_cong[where f=prob] simp add: prob_compl[symmetric])
-
-lemma (in prob_space) prob_eq_AE:
-  "(AE x in M. P x \<longleftrightarrow> Q x) \<Longrightarrow> {x\<in>space M. P x} \<in> events \<Longrightarrow> {x\<in>space M. Q x} \<in> events \<Longrightarrow> \<PP>(x in M. P x) = \<PP>(x in M. Q x)"
-  by (rule finite_measure_eq_AE) auto
-
-lemma (in prob_space) prob_eq_0_AE:
-  assumes not: "AE x in M. \<not> P x" shows "\<PP>(x in M. P x) = 0"
-proof cases
-  assume "{x\<in>space M. P x} \<in> events"
-  with not have "\<PP>(x in M. P x) = \<PP>(x in M. False)"
-    by (intro prob_eq_AE) auto
-  then show ?thesis by simp
-qed (simp add: measure_notin_sets)
-
-lemma (in prob_space) prob_sums:
-  assumes P: "\<And>n. {x\<in>space M. P n x} \<in> events"
-  assumes Q: "{x\<in>space M. Q x} \<in> events"
-  assumes ae: "AE x in M. (\<forall>n. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n. P n x))"
-  shows "(\<lambda>n. \<PP>(x in M. P n x)) sums \<PP>(x in M. Q x)"
-proof -
-  from ae[THEN AE_E_prob] guess S . note S = this
-  then have disj: "disjoint_family (\<lambda>n. {x\<in>space M. P n x} \<inter> S)"
-    by (auto simp: disjoint_family_on_def)
-  from S have ae_S:
-    "AE x in M. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
-    "\<And>n. AE x in M. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
-    using ae by (auto dest!: AE_prob_1)
-  from ae_S have *:
-    "\<PP>(x in M. Q x) = prob (\<Union>n. {x\<in>space M. P n x} \<inter> S)"
-    using P Q S by (intro finite_measure_eq_AE) auto
-  from ae_S have **:
-    "\<And>n. \<PP>(x in M. P n x) = prob ({x\<in>space M. P n x} \<inter> S)"
-    using P Q S by (intro finite_measure_eq_AE) auto
-  show ?thesis
-    unfolding * ** using S P disj
-    by (intro finite_measure_UNION) auto
-qed
-
-lemma sets_Collect_Least:
-  assumes Q: "\<And>n::nat. {x\<in>space M. Q n x} \<in> sets M"
-  assumes P: "\<And>n::nat. {x\<in>space M. P n x} \<in> sets M"
-  shows "{x\<in>space M. P (LEAST n. Q n x) x} \<in> sets M"
-proof -
-  have "{x\<in>space M. P (LEAST n. Q n x) x} =
-    {x\<in>space M. \<forall>n. (LEAST n. Q n x) = n \<longrightarrow> P n x}" by auto
-  moreover
-  { fix n have "{x\<in>space M. (LEAST n. Q n x) = n} \<in> sets M"
-      using measurable_Least[of _ Q "{n}"] Q by (simp add: vimage_def Collect_Int) }
-  then have "{x\<in>space M. \<forall>n. (LEAST n. Q n x) = n \<longrightarrow> P n x} \<in> sets M"
-    using measurable_Least[of _ Q]
-    by (intro sets_Collect P) auto
-  ultimately show ?thesis
-    by simp
-qed
-
-lemma (in prob_space) cond_prob_eq_AE:
-  assumes P: "AE x in M. Q x \<longrightarrow> P x \<longleftrightarrow> P' x" "{x\<in>space M. P x} \<in> events" "{x\<in>space M. P' x} \<in> events"
-  assumes Q: "AE x in M. Q x \<longleftrightarrow> Q' x" "{x\<in>space M. Q x} \<in> events" "{x\<in>space M. Q' x} \<in> events"
-  shows "cond_prob M P Q = cond_prob M P' Q'"
-  using P Q
-  by (auto simp: cond_prob_def intro!: arg_cong2[where f="op /"] prob_eq_AE sets_Collect_conj)
 
 end

@@ -17,21 +17,31 @@ begin
 definition "reward_until \<Phi> \<omega> =
   (if \<exists>i. \<omega> i \<in> \<Phi> then \<Sum>i<hitting_time \<Phi> \<omega>. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i)) else \<infinity>)"
 
-lemma measurable_\<rho>[intro]: "(\<lambda>\<omega>. \<rho> (\<omega> i)) \<in> borel_measurable p_space"
-  by auto
+lemma measurable_\<rho>[measurable]:
+  "\<rho> \<in> borel_measurable (count_space S)"
+proof -
+  have "simple_function (count_space S) \<rho>"
+    using finite_S unfolding simple_function_count_space by auto
+  then show "\<rho> \<in> borel_measurable (count_space S) "
+    by simp
+qed
 
-lemma measurable_\<iota>[intro]: "\<And>i. (\<lambda>\<omega>. \<iota> (\<omega> i) (\<omega> (Suc i))) \<in> borel_measurable p_space"
-proof (unfold measurable_def space_path_space, safe)
-  fix i :: nat and A :: "real set" assume "A \<in> sets borel"
-  have "(\<lambda>\<omega>. \<iota> (\<omega> i) (\<omega> (Suc i))) -` A \<inter> (UNIV \<rightarrow> S) =
-    (\<Union>(s,s')\<in>{s \<in> S\<times>S. \<iota> (fst s) (snd s) \<in> A}. {\<omega>\<in>UNIV\<rightarrow>S. \<omega> i = s} \<inter> {\<omega>\<in>UNIV\<rightarrow>S. \<omega> (Suc i) = s'})"
-    by (auto simp: Pi_iff)
-  also have "\<dots> \<in> p_space"
-    by (auto intro!: finite_UN)
-  finally show "(\<lambda>\<omega>. \<iota> (\<omega> i) (\<omega> (Suc i))) -` A \<inter> space p_space \<in> sets p_space" by simp
+lemma measurable_\<iota>[measurable (raw)]: 
+  assumes f[measurable]: "f \<in> measurable M (count_space S)"
+  assumes g[measurable]: "g \<in> measurable M (count_space S)"
+  shows "(\<lambda>\<omega>. \<iota> (f \<omega>) (g \<omega>)) \<in> borel_measurable M"
+  unfolding measurable_def
+proof safe
+  fix A :: "real set" assume "A \<in> sets borel"
+  with finite_S have "{\<omega>\<in>space M. \<exists>s\<in>S. \<exists>s'\<in>S. f \<omega> = s \<and> g \<omega> = s' \<and> \<iota> s s' \<in> A} \<in> sets M"
+    by measurable
+  also have "{\<omega>\<in>space M. \<exists>s\<in>S. \<exists>s'\<in>S. f \<omega> = s \<and> g \<omega> = s' \<and> \<iota> s s' \<in> A} = 
+    (\<lambda>\<omega>. \<iota> (f \<omega>) (g \<omega>)) -` A \<inter> space M"
+    using measurable_space[OF f] measurable_space[OF g] by auto
+  finally show "(\<lambda>\<omega>. \<iota> (f \<omega>) (g \<omega>)) -` A \<inter> space M \<in> sets M" .
 qed simp
 
-lemma reward_until_measurable[intro]: "reward_until \<Phi> \<in> borel_measurable p_space"
+lemma reward_until_measurable[measurable]: "reward_until \<Phi> \<in> borel_measurable p_space"
 proof -
   have "(\<lambda>\<omega>. \<Sum>i<hitting_time \<Phi> \<omega>. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<in> borel_measurable p_space"
     unfolding hitting_time_def
@@ -80,7 +90,7 @@ proof (subst positive_integral_eq_sum)
       also have "\<dots> = (\<integral>\<^isup>+ \<omega>. \<rho> s + \<iota> s s' \<partial>path_space s') + (\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>path_space s')"
         using s s'
         by (intro positive_integral_add AE_I2 reward_until_positive add_nonneg_nonneg)
-           (auto cong: measurable_cong' intro: reward_next)
+           (auto cong: measurable_cong_sets intro: reward_next)
       finally have "(\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s (nat_case s' \<omega>)) \<partial>path_space s') =
         \<rho> s + \<iota> s s' + (\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>path_space s')"
         using s s' emeasure_space_1 by simp }
@@ -93,7 +103,7 @@ proof (subst positive_integral_eq_sum)
 qed
 
 lemma positive_integral_reward_until_finite:
-  assumes s: "s \<in> S" "\<Phi> \<subseteq> S"
+  assumes s[simp]: "s \<in> S" "\<Phi> \<subseteq> S"
     and ae: "AE \<omega> in path_space s. nat_case s \<omega> \<in> until S \<Phi>"
   shows "\<bar>\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>path_space s\<bar> \<noteq> \<infinity>"
     (is "\<bar>?R\<bar> \<noteq> \<infinity>")
@@ -103,9 +113,6 @@ proof (rule ereal_infinity_cases)
     by (auto intro!: Max_ge)
   from this[OF s0 s0] \<iota>_nneg[OF s0 s0] \<rho>_nneg[OF s0] have [arith]: "0 \<le> M"
     by auto
-
-  have meas: "(real_of_nat \<circ> hitting_time \<Phi>) \<circ> nat_case s \<in> borel_measurable p_space"
-    by (rule measurable_comp) (rule measurable_hitting_time measurable_nat_case `s \<in> S`)+
     
   have "?R \<le> (\<integral>\<^isup>+ \<omega>. M * hitting_time \<Phi> (nat_case s \<omega>) \<partial>path_space s)"
     using ae
@@ -119,9 +126,8 @@ proof (rule ereal_infinity_cases)
       by (simp add: real_eq_of_nat ac_simps)
   qed
   also have "\<dots> = M * (\<integral>\<^isup>+ \<omega>. hitting_time \<Phi> (nat_case s \<omega>) \<partial>path_space s)"
-    using meas
     by (subst positive_integral_cmult[symmetric])
-       (auto simp: comp_def real_eq_of_nat cong: measurable_cong')
+       (auto simp: comp_def real_eq_of_nat cong: measurable_cong_sets)
   also have "\<dots> < \<infinity>"
     using positive_integral_hitting_time_finite[OF s(1,2) ae]
     by (simp add: real_eq_of_nat)

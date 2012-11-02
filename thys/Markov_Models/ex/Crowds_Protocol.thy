@@ -316,14 +316,19 @@ proof (elim AE_mp, safe intro!: AE_I2)
     qed (insert \<omega>1, simp) }
 qed auto
 
+lemma measurable_len[measurable]:
+  shows "len \<in> measurable p_space (count_space UNIV)"
+  unfolding len_def[abs_def]
+  by simp
+
 lemma p_space_Collect_lenI[intro]:
-  "(\<And>n. {\<omega>\<in>UNIV\<rightarrow>valid_states. P \<omega> n} \<in> p_space) \<Longrightarrow> {\<omega>\<in>UNIV\<rightarrow>valid_states. P \<omega> (len \<omega>)} \<in> p_space"
-  unfolding len_def
-  using sets_Collect_Least[of p_space "\<lambda>n \<omega>. \<omega> n = End" "\<lambda>n \<omega>. P \<omega> (n - 2)"]
-  by (auto intro: p_space_Collect)
+  assumes P: "(\<And>n. {\<omega>\<in>UNIV\<rightarrow>valid_states. P \<omega> n} \<in> p_space)"
+  shows "{\<omega>\<in>UNIV\<rightarrow>valid_states. P \<omega>  (len \<omega>)} \<in> p_space"
+  using P unfolding space_p_space[symmetric]
+  by measurable
 
 lemma p_space_Collect_len[intro]: "{\<omega>\<in>UNIV \<rightarrow> valid_states. len \<omega> = n} \<in> sets p_space"
-  by (rule p_space_Collect_lenI) (auto intro: p_space_Collect)
+  unfolding space_p_space[symmetric] by measurable
 
 lemma jondo_events2:
   assumes "\<And>s. s \<in> valid_states \<Longrightarrow> {\<omega> \<in> UNIV \<rightarrow> valid_states. P \<omega> (jondo_of s)} \<in> sets p_space"
@@ -336,7 +341,7 @@ proof -
     by (intro p_space_Collect) auto
 qed
 
-lemma jondo_events[intro]:
+lemma jondo_events[intro, measurable]:
   "{\<omega> \<in> UNIV \<rightarrow> valid_states. P (jondo_of (\<omega> i))} \<in> sets p_space"
   by (rule jondo_events2) (auto intro!: p_space_Collect)
 
@@ -651,12 +656,9 @@ lemma events_hit_colls[intro]:
   by (auto simp: hit_colls_def intro!: p_space_Collect)
 
 lemma events_first_collI:
-  "(\<And>n. {\<omega>\<in>UNIV \<rightarrow> valid_states. P n \<omega>} \<in> sets p_space) \<Longrightarrow>
-    {\<omega>\<in>UNIV \<rightarrow> valid_states. P (first_coll \<omega>) \<omega>} \<in> sets p_space"
-  using assms unfolding first_coll_def
-  apply (rule sets_Collect_Least[of p_space, unfolded space_p_space])
-  apply (auto intro!: p_space_Collect)
-  done
+  assumes P: "(\<And>n. {\<omega>\<in>UNIV \<rightarrow> valid_states. P n \<omega>} \<in> sets p_space)"
+  shows "{\<omega>\<in>UNIV \<rightarrow> valid_states. P (first_coll \<omega>) \<omega>} \<in> sets p_space"
+  using assms unfolding first_coll_def space_p_space[symmetric] by measurable
 
 lemma events_first_coll[intro]:
   "{\<omega>\<in>UNIV \<rightarrow> valid_states. first_coll \<omega> = n} \<in> sets p_space"
