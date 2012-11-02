@@ -77,7 +77,7 @@ lemma emeasure_eq:
 lemma integrable_P[intro, simp]: "integrable P f"
   using finite_edges by (simp add: integrable_point_measure_finite P_def)
 
-lemma borel_measurable_P[intro, simp]: "f \<in> borel_measurable P"
+lemma borel_measurable_P[measurable]: "f \<in> borel_measurable P"
   unfolding P_def by simp
   
 lemma prob_space_P: "prob_space P"
