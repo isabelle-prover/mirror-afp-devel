@@ -1,0 +1,4 @@
+session Open_Induction (AFP) = HOL +
+  options [timeout = 400]
+  theories
+    Bondy
