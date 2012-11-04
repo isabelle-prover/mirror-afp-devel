@@ -1,0 +1,6 @@
+session Possibilistic_Noninterference (AFP) = HOL +
+  options [timeout = 400]
+  theories [document = false]
+    Interface
+  theories
+    Concrete
