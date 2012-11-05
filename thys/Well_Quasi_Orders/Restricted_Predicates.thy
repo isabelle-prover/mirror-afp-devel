@@ -131,25 +131,20 @@ lemma inductive_on_imp_wfp_on:
   shows "wfp_on P A"
 proof -
   let ?Q = "\<lambda>x. \<not> (\<exists>f. f 0 = x \<and> (\<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)))"
-  {
-    fix x
-    assume "x \<in> A"
-    with assms
-    have "?Q x"
+  { fix x assume "x \<in> A"
+    with assms have "?Q x"
     proof (induct rule: inductive_on_induct)
-      case (less y)
-      hence IH: "\<forall>x\<in>A. P x y \<longrightarrow> ?Q x" by auto
+      fix y assume "y \<in> A" and IH: "\<And>x. x \<in> A \<Longrightarrow> P x y \<Longrightarrow> ?Q x"
       show "?Q y"
       proof (rule ccontr)
         assume "\<not> ?Q y"
         then obtain f where *: "f 0 = y"
           "\<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)" by auto
         hence "P (f (Suc 0)) (f 0)" and "f (Suc 0) \<in> A" by auto
-        with IH have "?Q (f (Suc 0))" unfolding `f 0 = y` by auto
+        with IH and * have "?Q (f (Suc 0))" by auto
         with * show False by auto
       qed
-    qed
-  }
+    qed }
   thus ?thesis unfolding wfp_on_def by blast
 qed
 
