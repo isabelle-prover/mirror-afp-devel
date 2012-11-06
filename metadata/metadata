@@ -1292,7 +1292,7 @@ abstract = This formalization of Ramsey's theorem (infinitary version) is taken 
 
 [Open_Induction]
 title = Open Induction
-author = Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
+author = Mizuhito Ogawa, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
 date = 2012-11-02
 topic = Mathematics/Combinatorics
 abstract = A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
