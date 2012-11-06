@@ -153,14 +153,6 @@ end
 
 subsubsection {* @{typ "char"} *}
 
-lemma card_UNIV_char: "card (UNIV :: char set) = 256"
-proof -
-  from distinct_chars
-  have "card (set chars) = length chars"
-    by (rule distinct_card)
-  then show ?thesis by (simp add: UNIV_set_chars) code_simp
-qed
-
 instantiation char :: card_UNIV begin
 
 definition card_UNIV_char_def: 
