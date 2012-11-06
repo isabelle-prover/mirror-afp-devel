@@ -431,8 +431,7 @@ lift_definition finfun_default :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'b
 is "finfun_default_aux" ..
 
 lemma finite_finfun_default: "finite {a. Rep_finfun f a \<noteq> finfun_default f}"
-apply transfer apply (erule finite_finfun_default_aux)
-unfolding Rel_def fun_rel_def cr_finfun_def by simp
+by transfer (erule finite_finfun_default_aux)
 
 lemma finfun_default_const: "finfun_default ((\<lambda>\<^isup>f b) :: 'a \<Rightarrow>\<^isub>f 'b) = (if finite (UNIV :: 'a set) then undefined else b)"
 apply(transfer)
