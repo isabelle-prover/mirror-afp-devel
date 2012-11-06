@@ -1,0 +1,7 @@
+session Open_Induction (AFP) = HOL +
+  options [timeout = 400]
+  theories [document = false]
+    "~~/src/HOL/Library/Zorn"
+    "$AFP/Well_Quasi_Orders/Restricted_Predicates"
+  theories
+    Open_Induction
