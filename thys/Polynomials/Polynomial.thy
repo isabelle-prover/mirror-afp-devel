@@ -835,20 +835,22 @@ qed
 definition poly_vars_list :: "('v,'a)poly \<Rightarrow> 'v list"
 where "poly_vars_list p = remdups (concat (map (map fst o fst) p))"
 
-(* check whether a variable occurs in p *)
-definition poly_var :: "('v,'a)poly \<Rightarrow> 'v \<Rightarrow> bool"
-where "poly_var p v = (v \<in> set (concat (map (map fst o fst) p)))"
+definition poly_vars :: "('v,'a)poly \<Rightarrow> 'v set"
+where "poly_vars p = set (concat (map (map fst o fst) p))"
 
-lemma poly_vars_list: assumes eq: "\<And> w. w \<in> set (poly_vars_list p) \<Longrightarrow> f w = g w"
+lemma poly_vars_list[simp]: "set (poly_vars_list p) = poly_vars p" 
+  unfolding poly_vars_list_def poly_vars_def by auto
+
+lemma poly_vars: assumes eq: "\<And> w. w \<in> poly_vars p \<Longrightarrow> f w = g w"
   shows "poly_subst f p = poly_subst g p" 
 using eq
 proof (induct p)
   case (Cons mc p)
-  hence rec: "poly_subst f p = poly_subst g p" unfolding poly_vars_list_def by auto
+  hence rec: "poly_subst f p = poly_subst g p" unfolding poly_vars_def by auto
   show ?case
   proof (cases mc)
     case (Pair m c)
-    with Cons(2) have "\<And> w. w \<in> set (map fst m) \<Longrightarrow> f w = g w" unfolding poly_vars_list_def by auto
+    with Cons(2) have "\<And> w. w \<in> set (map fst m) \<Longrightarrow> f w = g w" unfolding poly_vars_def by auto
     hence "monom_subst f m = monom_subst g m"
     proof (induct m)
       case Nil thus ?case by (simp add: monom_subst.simps)
@@ -865,12 +867,36 @@ proof (induct p)
   qed
 qed simp
 
-lemma poly_var: assumes pv: "\<not> poly_var p v" and diff: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w"
+lemma poly_var: assumes pv: "v \<notin> poly_vars p" and diff: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w"
   shows "poly_subst f p = poly_subst g p"
-proof (rule poly_vars_list)
+proof (rule poly_vars)
   fix w
-  assume "w \<in> set (poly_vars_list p)"
-  thus "f w = g w" using pv diff unfolding poly_vars_list_def poly_var_def by (cases "v = w", auto)
+  assume "w \<in> poly_vars p"
+  thus "f w = g w" using pv diff by (cases "v = w", auto)
+qed
+
+lemma eval_poly_vars: assumes "\<And> x. x \<in> poly_vars p \<Longrightarrow> \<alpha> x = \<beta> x"
+  shows "eval_poly \<alpha> p = eval_poly \<beta> p"
+using assms
+proof (induct p)
+  case Nil thus ?case by simp
+next
+  case (Cons m p)
+  from Cons(2) have "\<And> x. x \<in> poly_vars p \<Longrightarrow> \<alpha> x = \<beta> x" unfolding poly_vars_def by auto
+  from Cons(1)[OF this] have IH: "eval_poly \<alpha> p = eval_poly \<beta> p" .
+  obtain xs c where m: "m = (xs,c)" by force
+  from Cons(2) have "\<And> x. x \<in> set (map fst xs) \<Longrightarrow> \<alpha> x = \<beta> x" unfolding poly_vars_def m by auto
+  hence "eval_monom \<alpha> xs = eval_monom \<beta> xs"
+  proof (induct xs)
+    case Nil thus ?case by simp
+  next
+    case (Cons xi xs)
+    hence IH: "eval_monom \<alpha> xs = eval_monom \<beta> xs" by auto
+    obtain x i where xi: "xi = (x,i)" by force
+    from Cons(2) xi have "\<alpha> x = \<beta> x" by auto
+    with IH show ?case unfolding xi by auto
+  qed
+  thus ?case unfolding eval_poly.simps IH m by auto
 qed
 
            
@@ -977,7 +1003,7 @@ definition poly_weak_mono :: "'w \<Rightarrow> ('v,'a :: poly_carrier)poly \<Rig
 where "poly_weak_mono type p v \<equiv> \<forall> f g :: ('v \<Rightarrow> ('w,'a)poly). (\<forall> w. (v \<noteq> w \<longrightarrow> f w = g w) \<and> g w \<ge>p zero_poly) \<and> (f v \<ge>p g v) \<longrightarrow> poly_subst f p \<ge>p poly_subst g p"
 
 lemma poly_weak_mono: fixes type :: 'w and p :: "('v,'a :: poly_carrier)poly"
-  assumes "\<And> v. v \<in> set (poly_vars_list p) \<Longrightarrow> poly_weak_mono type p v"
+  assumes "\<And> v. v \<in> poly_vars p \<Longrightarrow> poly_weak_mono type p v"
   shows "poly_weak_mono_all type p"
 unfolding poly_weak_mono_all_def
 proof (intro allI impI)
@@ -987,18 +1013,19 @@ proof (intro allI impI)
   let ?fg = "\<lambda> vs v. if (v \<in> set vs) then f v else g v"
   {
     fix vs :: "'v list"
-    assume "set vs \<subseteq> set (poly_vars_list p)"
+    assume "set vs \<subseteq> poly_vars p"
     hence "poly_subst (?fg vs) p \<ge>p poly_subst g p"
     proof (induct vs)
       case (Cons v vs)
-      hence subset: "set vs \<subseteq> set (poly_vars_list p)"  and v: "v \<in> set (poly_vars_list p)" by auto
+      hence subset: "set vs \<subseteq> poly_vars p"  and v: "v \<in> poly_vars p" by auto
       show ?case
         by (rule poly_ge_trans[OF _ Cons(1)[OF subset]], rule assms[OF v, unfolded poly_weak_mono_def, THEN spec, THEN spec, THEN mp], simp add: ge gz poly_ge_trans[OF ge gz])
     qed simp
   }
-  hence one: "poly_subst (?fg (poly_vars_list p)) p \<ge>p poly_subst g p" by simp
+  from this[of "poly_vars_list p"]
+  have one: "poly_subst (?fg (poly_vars_list p)) p \<ge>p poly_subst g p" by auto
   have two: "poly_subst (?fg (poly_vars_list p)) p = poly_subst f p" 
-    by (rule poly_vars_list, auto)
+    by (rule poly_vars, auto)
   show "poly_subst f p \<ge>p poly_subst g p" using one two by auto
 qed
   
@@ -1388,17 +1415,17 @@ next
   have m: "poly_weak_mono_all type p"
   proof (rule poly_weak_mono)
     fix v :: 'v
-    assume v: "v \<in> set (poly_vars_list p)"
+    assume v: "v \<in> poly_vars p"
     show "poly_weak_mono type p v"
-      by (rule check_poly_weak_mono_discrete[OF True], rule c[unfolded list_all_iff, THEN bspec[OF _ v]]) 
+      by (rule check_poly_weak_mono_discrete[OF True], insert c[unfolded list_all_iff] v, auto)  
   qed
   obtain vtype where "(vtype :: 'v) = vtype" by simp
   have m': "poly_weak_mono_all vtype p"
   proof (rule poly_weak_mono)
     fix v :: 'v
-    assume v: "v \<in> set (poly_vars_list p)"
+    assume v: "v \<in> poly_vars p"
     show "poly_weak_mono vtype p v"
-      by (rule check_poly_weak_mono_discrete[OF True], rule c[unfolded list_all_iff, THEN bspec[OF _ v]]) 
+      by (rule check_poly_weak_mono_discrete[OF True], insert c[unfolded list_all_iff] v, auto) 
   qed
   from poly_weak_mono_all_pos[OF g m'] m show ?thesis by auto
 qed
