@@ -1,7 +1,7 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
 theory Discrete_Time_Markov_Chain
-  imports Probability
+  imports "~~/src/HOL/Probability/Probability"
 begin
 
 section {* Preparations *}
@@ -196,19 +196,10 @@ lemma Collect_Int2: "{x\<in>S. P x} \<inter> A = {x\<in>S. x \<in> A \<and> P x}
 
 lemma borel_measurable_setsum_dependent_index:
   fixes f :: "'a \<Rightarrow> nat" and g :: "nat \<Rightarrow> 'a \<Rightarrow> real"
-  assumes "\<And>i. f -` {i} \<inter> space M \<in> sets M"
-  assumes "\<And>i. g i \<in> borel_measurable M"
-  shows "(\<lambda>x. \<Sum>i::nat<f x. g i x) \<in> borel_measurable M"
-proof (unfold measurable_def, safe)
-  fix A :: "real set" assume "A \<in> sets borel"
-  moreover def X \<equiv> "\<lambda>i. (\<lambda>x. \<Sum>i::nat<i. g i x) -` A \<inter> space M"
-  moreover note assms
-  ultimately have "(\<lambda>x. \<Sum>i::nat<f x. g i x) -` A \<inter> space M = (\<Union>i. (f -` {i} \<inter> space M) \<inter> X i)" "\<And>i. X i \<in> sets M"
-    by (auto intro!: measurable_sets)
-  moreover then have "(\<Union>i. (f -` {i} \<inter> space M) \<inter> X i) \<in> sets M"
-    using assms by blast
-  ultimately show "(\<lambda>x. \<Sum>i::nat<f x. g i x) -` A \<inter> space M \<in> sets M" by simp
-qed simp
+  assumes [measurable]: "f \<in> measurable M (count_space UNIV)"
+  assumes [measurable]: "\<And>i. g i \<in> borel_measurable M"
+  shows "(\<lambda>x. \<Sum>i<f x. g i x) \<in> borel_measurable M"
+  by measurable
 
 lemma Max_atMost_nat[simp]: "Max {..n::nat} = n"
   by (rule Max_eqI) auto
@@ -2647,11 +2638,11 @@ lemma (in Discrete_Time_Markov_Chain) prob_ball_cylinder:
     (\<Sum>\<omega>\<in>(\<Pi>\<^isub>E i\<in>{..Max I}. (if i \<in> I then Y i \<inter> S else S)). \<Prod>i\<le>Max I. \<tau> (nat_case s \<omega> i) (\<omega> i))"
   using assms
   by (subst prob_cylinder_eq_sum_prod'[symmetric])
-     (auto intro!: arg_cong[where f="prob s"] simp: space_path_space)
+     (auto intro!: arg_cong[where f="prob s"])
 
 lemma (in Discrete_Time_Markov_Chain) eq_sets_path_space[simp, intro]:
   "{X' \<in> space (path_space s). X' i = s'} \<in> events s"
-  by (simp add: space_path_space)
+  by simp
 
 lemma (in Discrete_Time_Markov_Chain) markov_property_with_\<tau>:
   assumes s: "s \<in> S" "\<And>i. i \<in> I \<Longrightarrow> t i \<in> S" "t (Suc (Max I)) \<in> S"
@@ -2713,7 +2704,7 @@ next
     then have cylinders:
       "{\<omega>\<in>space (path_space s). \<omega> (Suc (Max I)) = t (Suc (Max I)) \<and> (\<forall>i\<in>I. \<omega> i = t i) } = {}"
       "{\<omega>\<in>space (path_space s). \<omega> (Suc (Max I)) = t (Suc (Max I)) \<and> \<omega> (Max I) = t (Max I) } = {}"
-      by (auto simp: space_path_space Pi_iff) metis+
+      by (auto simp: Pi_iff) metis+
     show ?thesis
       unfolding cond_prob_def cylinders by simp
   next
@@ -2741,7 +2732,7 @@ proof cases
 next
   assume "\<not> (a \<in> S \<and> b \<in> S)"
   then have *: "\<And>i. {\<omega> \<in> space (path_space s). \<omega> (Suc i) = b \<and> \<omega> i = a } = {}"
-    by (auto simp: space_path_space)
+    by auto
   show ?thesis
     unfolding cond_prob_def * by simp
 qed

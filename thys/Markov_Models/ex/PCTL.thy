@@ -243,13 +243,7 @@ lemma pvalid_eq_until:
   done
 
 lemma reward_measurable: "reward F \<in> borel_measurable p_space"
-proof (cases F)
-  case (Future F)
-  then have "reward (Future F) = reward_until (svalid F)"
-    unfolding reward_until_def [abs_def] hitting_time_def [abs_def] by simp
-  with Future show ?thesis
-    by auto
-qed (auto intro!: borel_measurable_ereal borel_measurable_setsum)
+  by (cases F) simp_all
 
 subsection {* Implementation of @{text Sat} *}
 
@@ -993,8 +987,7 @@ next
     proof (induct k arbitrary: s)
       case 0 with emeasure_space_1 show ?case by simp
     next
-      case (Suc k) then show ?case
-        by (simp add: positive_integral_eq_sum borel_measurable_ereal measurable_\<rho>)
+      case (Suc k) then show ?case by (simp add: positive_integral_eq_sum[of s])
     qed }
   then show ?case by auto
 
