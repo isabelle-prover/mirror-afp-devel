@@ -37,9 +37,9 @@ lemma (in ShareReduceRepList_impl) ShareReduceRepList_modifies:
   apply (vcg spec=modifies)
   done
 
-lemma hd_filter_app: "\<And>n m.\<lbrakk>filter P xs \<noteq> []; zs=xs@ys\<rbrakk> \<Longrightarrow> 
+lemma hd_filter_app: "\<lbrakk>filter P xs \<noteq> []; zs=xs@ys\<rbrakk> \<Longrightarrow> 
        hd (filter P zs) =  hd (filter P xs)"
-  by (induct xs) auto
+  by (induct xs arbitrary: n m) auto
 
 
 lemma (in ShareReduceRepList_impl) ShareReduceRepList_spec_total: 

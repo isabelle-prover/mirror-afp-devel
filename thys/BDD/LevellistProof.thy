@@ -459,7 +459,7 @@ proof -
       with rt have high_p: "high p = a"
         by simp
       have s: "\<And>nexta. (\<forall>p. next p = nexta p) = (next = nexta)"
-        by (auto intro: ext)
+        by auto
       show ?thesis
         using size_rt_dec size_lt_dec rt_node lt_Tip Tip lt rt  
         apply (clarsimp simp del: set_of_Node split del: split_if simp add: s)
