@@ -69,11 +69,7 @@ lemma dfs_induct [consumes 2, case_names base step]:
   apply (rule disjI1)
   apply (simp add: rel_def finite_psubset_def)
   apply (rule conjI)
-  apply (auto simp add: ins_eq cong: conj_cong)
-  apply (subst Collect_conj_eq)
-  apply (rule finite_Int)
-  apply (rule disjI1)
-  apply (rule graph_finite)
+  apply (auto simp add: ins_eq graph_finite cong: conj_cong)
   done
 
 definition "succss xs = (\<Union>x\<in>xs. set (succs x))"

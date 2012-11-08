@@ -151,6 +151,7 @@ proof -
   thus ?thesis by simp
 qed
 
+declare [[simproc del: finite_Collect]]
 lemma prodsums_eq_sumprods:
 assumes "coprime p m"
 shows "(\<Sum>{p^f|f. f<=n})*(\<Sum>{b. b dvd m}) = (\<Sum> {p^f*b| f b. f <= n & b dvd m})"
@@ -161,6 +162,7 @@ proof-
     by(auto simp: imp_ex setsum_mult_setsum_if_inj[OF mult_inj_if_coprime_nat]
             intro!: arg_cong[where f = "setsum (%x. x)"])
 qed
+declare [[simproc add: finite_Collect]]
 
 lemma rewrite_for_sigma_semimultiplicative:
 assumes "prime p"

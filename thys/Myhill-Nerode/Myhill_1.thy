@@ -299,18 +299,7 @@ lemma finite_Init_rhs:
   fixes CS::"(('a::finite) lang) set"
   assumes finite: "finite CS"
   shows "finite (Init_rhs CS X)"
-proof-
-  def S \<equiv> "{(Y, c)| Y c::'a. Y \<in> CS \<and> Y \<cdot> {[c]} \<subseteq> X}" 
-  def h \<equiv> "\<lambda> (Y, c::'a). Trn Y (Atom c)"
-  have "finite (CS \<times> (UNIV::('a::finite) set))" using finite by auto
-  then have "finite S" using S_def 
-    by (rule_tac B = "CS \<times> UNIV" in finite_subset) (auto)
-  moreover have "{Trn Y (Atom c) |Y c::'a. Y \<in> CS \<and> Y \<cdot> {[c]} \<subseteq> X} = h ` S"
-    unfolding S_def h_def image_def by auto
-  ultimately
-  have "finite {Trn Y (Atom c) |Y c. Y \<in> CS \<and> Y \<cdot> {[c]} \<subseteq> X}" by auto
-  then show "finite (Init_rhs CS X)" unfolding Init_rhs_def transition_def by simp
-qed
+using assms unfolding Init_rhs_def transition_def by simp
 
 
 lemma Init_ES_satisfies_invariant:
@@ -428,15 +417,7 @@ by (auto simp: Subst_def Append_preserves_finite)
 lemma Subst_all_preserves_finite:
   assumes finite: "finite ES"
   shows "finite (Subst_all ES Y yrhs)"
-proof -
-  def eqns \<equiv> "{(X::'a lang, rhs) |X rhs. (X, rhs) \<in> ES}"
-  def h \<equiv> "\<lambda>(X::'a lang, rhs). (X, Subst rhs Y yrhs)"
-  have "finite (h ` eqns)" using finite h_def eqns_def by auto
-  moreover 
-  have "Subst_all ES Y yrhs = h ` eqns" unfolding h_def eqns_def Subst_all_def by auto
-  ultimately
-  show "finite (Subst_all ES Y yrhs)" by simp
-qed
+using assms unfolding Subst_all_def by simp
 
 lemma Subst_all_preserves_finite_rhs:
   "\<lbrakk>finite_rhs ES; finite yrhs\<rbrakk> \<Longrightarrow> finite_rhs (Subst_all ES Y yrhs)"
