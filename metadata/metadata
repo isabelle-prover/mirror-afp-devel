@@ -130,6 +130,25 @@ extra-history =
   Change history:
   [2012-03-06]: Add some more views and revive the code generation.
 
+[Tarskis_Geometry]
+title = The independence of Tarski's Euclidean axiom
+author = T. J. M. Makarios <mailto:tjm1983@gmail.com>
+topic = Mathematics/Geometry
+base = HOL
+date = 2012-10-30
+abstract =
+  Tarski's axioms of plane geomtry are formalized and, using the standard
+  real Cartesian model, shown to be consistent. A substantial theory of
+  the projective plane is developed. Building on this theory, the
+  Klein-Beltrami model of the hyperbolic plane is defined and shown to
+  satisfy all of Tarski's axioms except his Euclidean axiom; thus Tarski's
+  Euclidean axiom is shown to be independent of his other axioms of plane
+  geometry.
+  <p>
+  An earlier version of this work was the subject of the author's MSc
+  thesis, which contains natural-language explanations of some of the
+  more interesting proofs.
+
 [General-Triangle]
 title = The General Triangle Is Unique
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>

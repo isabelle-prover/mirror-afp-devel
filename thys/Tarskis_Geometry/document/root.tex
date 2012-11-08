@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+\newcommand{\isasymcongruent}{\isamath{\equiv}}
+\renewcommand{\isasymequiv}{\isamath{\triangleq}}
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{The independence of Tarski's Euclidean axiom}
+\author{T.~J.~M.~Makarios}
+\maketitle
+
+\begin{abstract}
+Tarski's axioms of plane geomtry are formalized and, using the standard real Cartesian model, shown to be consistent.
+A substantial theory of the projective plane is developed.
+Building on this theory, the Klein--Beltrami model of the hyperbolic plane is defined and shown to satisfy all of Tarski's axioms except his Euclidean axiom;
+thus Tarski's Euclidean axiom is shown to be independent of his other axioms of plane geometry.
+
+An earlier version of this work was the subject of the author's MSc thesis \cite{makarios}, which contains natural-language explanations of some of the more interesting proofs.
+\end{abstract}
+
+\tableofcontents
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
