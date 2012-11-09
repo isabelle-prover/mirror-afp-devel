@@ -137,7 +137,7 @@ topic = Mathematics/Geometry
 base = HOL
 date = 2012-10-30
 abstract =
-  Tarski's axioms of plane geomtry are formalized and, using the standard
+  Tarski's axioms of plane geometry are formalized and, using the standard
   real Cartesian model, shown to be consistent. A substantial theory of
   the projective plane is developed. Building on this theory, the
   Klein-Beltrami model of the hyperbolic plane is defined and shown to
@@ -145,8 +145,9 @@ abstract =
   Euclidean axiom is shown to be independent of his other axioms of plane
   geometry.
   <p>
-  An earlier version of this work was the subject of the author's MSc
-  thesis, which contains natural-language explanations of some of the
+  An earlier version of this work was the subject of the author's
+  <a href="http://researcharchive.vuw.ac.nz/handle/10063/2315">MSc thesis</a>,
+  which contains natural-language explanations of some of the
   more interesting proofs.
 
 [General-Triangle]
