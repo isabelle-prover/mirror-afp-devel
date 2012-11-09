@@ -19,16 +19,6 @@ text {*
   This is a monolithic formalization of AVL trees.
 *}
 
-subsection {* Declarations needed by the SMT stuff *}
-
-declare [[smt_certificates="AVL.certs"]]
-declare [[smt_read_only_certificates=true]]
-
-lemma [z3_rule]:
-    "(x = (if P1 then y1 else if P2 then y2 else y3)) =
-     (if P1 then x = y1 else if P2 then x = y2 else x = y3)"
-    by simp 
-
 subsection {* AVL tree type definition *}
 
 datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
@@ -49,7 +39,7 @@ primrec avl :: "'a tree \<Rightarrow> bool"
 where
 "avl ET = True" |
 "avl (MKT x l r h) =
- ((height l = height r \<or> height l = 1+height r \<or> height r = 1+height l) \<and> 
+ ((height l = height r \<or> height l = height r + 1 \<or> height r = height l + 1) \<and> 
   h = max (height l) (height r) + 1 \<and> avl l \<and> avl r)"
 
 primrec is_ord :: "('a::order) tree \<Rightarrow> bool"
@@ -166,7 +156,7 @@ lemma height_mkt_bal_r:
   shows "height (mkt_bal_r n l r) = height l + 2 \<or>
         height (mkt_bal_r n l r) = height l + 3"
 using assms
-by (cases r) (auto simp add:mkt_def split:tree.split, smt+)
+by (cases r) ((auto simp add:mkt_def split:tree.split), arith+)
 
 lemma [simp]:
   shows  "height(mkt x l r) = max (height l) (height r) + 1"
@@ -192,31 +182,41 @@ using assms
 by (cases l, cases r) simp_all
 
 lemma avl_mkt_bal_l: 
-  assumes "avl l" and "avl r" and "height l = height r \<or> height l = 1+height r 
-    \<or> height r = 1+height l \<or> height l = height r + 2" 
+  assumes a: "avl l" "avl r" and "height l = height r \<or> height l = height r + 1
+    \<or> height r = height l + 1 \<or> height l = height r + 2" 
   shows "avl(mkt_bal_l n l r)"
 proof(cases l)
   case ET
   with assms show ?thesis by (simp add: mkt_def)
 next
-  case (MKT n l r h)
+  case (MKT ln ll lr lh)
   with assms show ?thesis
-  by (simp add:avl_mkt split:tree.split) 
-    (smt avl.simps(2) avl_mkt height.simps(1) height.simps(2) mkt_def)
+  proof(cases "height l = height r + 2")
+    case True
+      from True MKT assms show ?thesis by (auto intro!: avl_mkt split: tree.split) arith+
+  next
+    case False
+      with assms show ?thesis by (simp add: avl_mkt)
+  qed
 qed
 
 lemma avl_mkt_bal_r: 
-  assumes "avl l" and "avl r" and "height l = height r \<or> height l = 1+height r 
-    \<or> height r = 1+height l \<or> height r = height l + 2" 
+  assumes "avl l" and "avl r" and "height l = height r \<or> height l = height r + 1
+    \<or> height r = height l + 1 \<or> height r = height l + 2" 
   shows "avl(mkt_bal_r n l r)"
 proof(cases r)
   case ET
   with assms show ?thesis by (simp add: mkt_def)
 next
-  case (MKT n l r h)
+  case (MKT rn rl rr rh)
   with assms show ?thesis
-  by (simp add:avl_mkt split:tree.split) 
-    (smt avl.simps(2) avl_mkt height.simps(1) height.simps(2) mkt_def)
+  proof(cases "height r = height l + 2")
+    case True
+      from True MKT assms show ?thesis by (auto intro!: avl_mkt split: tree.split) arith+
+  next
+    case False
+      with assms show ?thesis by (simp add: avl_mkt)
+  qed
 qed
 
 (* It apppears that these two properties need to be proved simultaneously: *)
@@ -227,8 +227,7 @@ theorem avl_insert_aux:
   assumes "avl t"
   shows "avl(insert x t)" "(height (insert x t) = height t \<or> height (insert x t) = height t + 1)"
 using assms
-using assms
-proof (induct t)
+proof (induction t)
   case (MKT n l r h)
   case 1
   with MKT show ?case
@@ -247,7 +246,7 @@ proof (induct t)
     qed
   qed
   case 2
-  with MKT show ?case
+  from 2 MKT show ?case
   proof(cases "x = n")
     case True
     with MKT 1 show ?thesis by simp
@@ -256,12 +255,38 @@ proof (induct t)
     with MKT 1 show ?thesis 
      proof(cases "x<n")
       case True
-      with MKT 2 show ?thesis 
-        by (smt avl.simps(2) height.simps(2) height_mkt_bal_l height_mkt_bal_l2 insert.simps(2))
+      with MKT 2 show ?thesis
+      proof(cases "height (AVL.insert x l) = height r + 2")
+        case False with MKT 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps simp: height_mkt_bal_l2)
+      next
+        case True 
+        then have "height (mkt_bal_l n (AVL.insert x l) r) = height r + 2 \<or> 
+              height (mkt_bal_l n (AVL.insert x l) r) = height r + 3" 
+          using MKT 2 by (intro height_mkt_bal_l) simp_all
+        then show ?thesis 
+        proof (rule disjE)
+          case goal1 with 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps)
+        next
+          case goal2 with True 1 MKT(2) `x < n` show ?thesis  by (simp del: mkt_bal_l.simps) arith
+        qed
+      qed
     next
       case False
       with MKT 2 show ?thesis 
-        by (smt avl.simps(2) height.simps(2) height_mkt_bal_r height_mkt_bal_r2 insert.simps(2))
+      proof(cases "height (AVL.insert x r) = height l + 2")
+        case False with MKT 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps simp: height_mkt_bal_r2)
+      next
+        case True 
+        then have "height (mkt_bal_r n l (AVL.insert x r)) = height l + 2 \<or> 
+              height (mkt_bal_r n l (AVL.insert x r)) = height l + 3" 
+          using MKT 2 by (intro height_mkt_bal_r) simp_all
+        then show ?thesis 
+        proof (rule disjE)
+          case goal1 with 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps)
+        next
+          case goal2 with True 1 MKT(4) `\<not>x < n` show ?thesis by (simp del: mkt_bal_r.simps) arith
+        qed
+      qed
     qed
   qed
 qed simp_all
@@ -280,7 +305,7 @@ proof (induct x rule: delete_max_induct)
   case 1
   with MKT have "avl l" "avl (snd (delete_max (MKT rn rl rr rh)))" by auto
   with 1 MKT have "avl (mkt_bal_l n l (snd (delete_max (MKT rn rl rr rh))))"
-    by (smt avl.simps(2) avl_mkt_bal_l tree.simps(3))
+    by (intro avl_mkt_bal_l) fastforce+
   then show ?case 
     by (auto simp: height_mkt_bal_l height_mkt_bal_l2
       linorder_class.min_max.sup_absorb1 linorder_class.min_max.sup_absorb2
@@ -292,7 +317,7 @@ next
   let ?r' = "snd (delete_max ?r)"
   from `avl x` MKT 2 have "avl l" and "avl ?r" by simp_all
   then show ?case using MKT 2 height_mkt_bal_l[of l ?r' n] height_mkt_bal_l2[of l ?r' n]
-    by (simp split:prod.splits del:avl.simps mkt_bal_l.simps, smt snd_conv)
+    apply (auto split:prod.splits simp del:avl.simps mkt_bal_l.simps) by arith+
 qed auto
 
 lemma avl_delete_root:
@@ -308,8 +333,8 @@ proof (cases t rule:delete_root_cases)
   from `avl t` and MKT_MKT have "avl ?l" by simp
   then have "avl(?l')" "height ?l = height(?l') \<or>
          height ?l = height(?l') + 1" by (rule avl_delete_max,simp)+
-  with `avl t` MKT_MKT have "height ?l' = height ?r \<or> height ?l' = 1+height ?r 
-            \<or> height ?r = 1+height ?l' \<or> height ?r = height ?l' + 2" by fastforce
+  with `avl t` MKT_MKT have "height ?l' = height ?r \<or> height ?l' = height ?r + 1
+            \<or> height ?r = height ?l' + 1 \<or> height ?r = height ?l' + 2" by fastforce
   with `avl ?l'` `avl ?r` have "avl(mkt_bal_r (fst(delete_max ?l)) ?l' ?r)"
     by (rule avl_mkt_bal_r)
   with MKT_MKT show ?thesis by (auto split:prod.splits simp del:mkt_bal_r.simps)
@@ -326,13 +351,25 @@ proof (cases t rule: delete_root_cases)
   let ?l' = "snd (delete_max ?l)"
   let ?t' = "mkt_bal_r (fst(delete_max ?l)) ?l' ?r"
   from `avl t` and MKT_MKT have "avl ?r" by simp
-  moreover
   from `avl t` and MKT_MKT have "avl ?l" by simp
-  moreover
   then have "avl(?l')"  by (rule avl_delete_max,simp)
-  ultimately have "height t = height ?t' \<or> height t = height ?t' + 1" using  `avl t` MKT_MKT
-    by (smt avl.simps(2) avl_delete_max(2) avl_mkt avl_mkt_bal_r height.simps(1) height.simps(2) 
-      height_mkt_bal_r height_mkt_bal_r2 ht.simps(2) mkt_def)
+  have l'_height: "height ?l = height ?l' \<or> height ?l = height ?l' + 1" using `avl ?l` by (intro avl_delete_max) auto
+  have t_height: "height t = 1 + max (height ?l) (height ?r)" using `avl t` MKT_MKT by simp
+  have "height t = height ?t' \<or> height t = height ?t' + 1" using  `avl t` MKT_MKT
+  proof(cases "height ?r = height ?l' + 2")
+    case False
+    show ?thesis using l'_height t_height False by (subst  height_mkt_bal_r2[OF `avl ?l'` `avl ?r` False])+ arith
+  next
+    case True
+    show ?thesis
+    proof(cases rule: disjE[OF height_mkt_bal_r[OF True `avl ?l'` `avl ?r`, of "fst (delete_max ?l)"]])
+      case 1
+      then show ?thesis using l'_height t_height True by arith
+    next
+      case 2
+      then show ?thesis using l'_height t_height True by arith
+    qed
+  qed
   thus ?thesis using MKT_MKT by (auto split:prod.splits simp del:mkt_bal_r.simps)
 qed simp_all
 
@@ -373,18 +410,38 @@ proof (induct t)
     with MKT 1 show ?thesis 
      proof(cases "x<n")
       case True
-      with MKT 1 have "height r = Suc (Suc (height (delete x l))) \<Longrightarrow>
-      height(mkt_bal_r n (delete x l) r) = height (delete x l) + 2 \<or> 
-      height(mkt_bal_r n (delete x l) r) = height (delete x l) + 3" by (subst height_mkt_bal_r,simp_all)
-      with MKT 1 `x < n` show ?thesis
-        by (smt False avl.simps(2) delete.simps(2) height.simps(2) height_mkt_bal_r2)
+      show ?thesis
+      proof(cases "height r = height (delete x l) + 2")
+        case False with MKT 1 `x < n` show ?thesis by auto
+      next
+        case True 
+        then have "height (mkt_bal_r n (delete x l) r) = height (delete x l) + 2 \<or>
+              height (mkt_bal_r n (delete x l) r) = height (delete x l) + 3" 
+              using MKT 2 by (intro height_mkt_bal_r) auto
+        then show ?thesis 
+        proof(rule disjE)
+          case goal1 with `x < n` MKT 2 show ?thesis by auto
+        next
+          case goal2 with `x < n` MKT 2 show ?thesis by auto
+        qed
+      qed
     next
       case False
-       with MKT 1 have "height l = Suc (Suc (height (delete x r))) \<Longrightarrow>
-      height(mkt_bal_l n l (delete x r)) = height (delete x r) + 2 \<or> 
-      height(mkt_bal_l n l (delete x r)) = height (delete x r) + 3" by (subst height_mkt_bal_l,simp_all)
-      with MKT 1 `\<not>x<n` `x \<noteq> n` show ?thesis 
-        by (smt avl.simps(2) delete.simps(2) height.simps(2) height_mkt_bal_l2)
+      show ?thesis
+      proof(cases "height l = height (delete x r) + 2")
+        case False with MKT 1 `\<not>x < n` `x \<noteq> n` show ?thesis by auto
+      next
+        case True 
+        then have "height (mkt_bal_l n l (delete x r)) = height (delete x r) + 2 \<or>
+              height (mkt_bal_l n l (delete x r)) = height (delete x r) + 3" 
+              using MKT 2 by (intro height_mkt_bal_l) auto
+        then show ?thesis 
+        proof(rule disjE)
+          case goal1 with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
+        next
+          case goal2 with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
+        qed
+      qed
     qed
   qed
 qed simp_all
