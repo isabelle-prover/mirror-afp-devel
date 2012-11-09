@@ -882,6 +882,8 @@ by (auto simp:length_Suc_conv)
 lemma max_length_finite_set:"finite F \<Longrightarrow> finite{xs. set xs <= F \<and> length xs = n}"
 by(induct n,simp add:empty_list_set, simp add:suc_n_union_of_union)
 
+declare [[simproc del: finite_Collect]]
+
 lemma path_length_n_finite_set:
 "wf_prog wf_md P \<Longrightarrow> finite{Cs. Subobjs P C Cs \<and> length Cs = n}"
 by (rule_tac B="{Cs. set Cs <= {C. is_class P C} \<and> length Cs = n}" in finite_subset,
@@ -892,14 +894,12 @@ lemma path_finite_leq:
   by (induct ("length P"), simp only:empty_path_empty_set,
     auto intro:path_length_n_finite_set simp:split_set_path_length)
 
-
-
 lemma path_finite:"wf_prog wf_md P \<Longrightarrow> finite{Cs. Subobjs P C Cs}"
 by (subgoal_tac "{Cs. Subobjs P C Cs} = 
   {Cs. Subobjs P C Cs \<and> length Cs \<le> length P}",
   auto intro:path_finite_leq path_length)
 
-
+declare [[simproc add: finite_Collect]]
 
 
 section{* Well-formedness and Path *}
