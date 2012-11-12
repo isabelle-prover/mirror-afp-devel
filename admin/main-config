@@ -2,7 +2,21 @@
 
 # Get email when automated build fails. May be empty.
 # values: "email1 email2 .. emailn"
-MAIN_NOTIFY="kleing@cse.unsw.edu.au nipkow@in.tum.de lp15@cam.ac.uk brianh@cs.pdx.edu bulwahn@in.tum.de krauss@in.tum.de"
+MAIN_NOTIFY="\
+kleing@cse.unsw.edu.au \
+nipkow@in.tum.de \
+berghofe@in.tum.de \
+lp15@cam.ac.uk \
+makarius@sketis.net \
+blanchet@in.tum.de \
+boehmes@in.tum.de \
+bulwahn@in.tum.de \
+hoelzl@in.tum.de \
+krauss@in.tum.de \
+noschinl@in.tum.de \
+kuncar@in.tum.de \
+ns441@cam.ac.uk \
+brianh@cs.pdx.edu"
 
 # settings for preparing an Isabelle development snapshot
 DISTSRC=~/isadist
