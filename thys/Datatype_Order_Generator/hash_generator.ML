@@ -141,11 +141,11 @@ fun derive dtyp_name thy =
       let 
         val ss = simpset_of ctxt 
       in 
-        print_tac "enter hash " THEN
+        my_print_tac "enter hash " THEN
         unfold_tac hash_thms ss THEN
-        print_tac "after unfolding" THEN
+        my_print_tac "after unfolding" THEN
         rtac @{thm hash_mod_lemma} 1 THEN atac 1 THEN
-        print_tac "after hash_mod" THEN
+        my_print_tac "after hash_mod" THEN
         simp_tac ss 1
       end
     val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN hash_tac ctxt)) lthy

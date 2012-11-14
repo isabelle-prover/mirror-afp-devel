@@ -45,12 +45,17 @@ sig
 (* identity and number recursive occurrences of datatypes *)
   val dt_number_recs : Datatype.dtyp list -> int * (int * int) list
 
+(* like print_tac, but is turned off by default to not exceed tracing limit *)
+  val my_print_tac : string -> tactic 
 end
 
 
 structure Derive_Aux : DERIVE_AUX =
 struct
 open Datatype_Aux; open Datatype;
+
+val printing = false
+val my_print_tac = if printing then print_tac else (fn _ => Seq.single) 
 
 fun split_last xs = (take (length xs - 1) xs, List.last xs)
 fun strip_cases ctac = ctac #> Seq.map snd

@@ -301,21 +301,21 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
                                 end;
                             val xy_case_tac = case_tac_disj xy xy_tac
                           in 
-                            K (print_tac ("another case: ") THEN xy_case_tac)
+                            K (my_print_tac ("another case: ") THEN xy_case_tac)
                           end
                   in 
-                    K (print_tac "recursive case: ") 
+                    K (my_print_tac "recursive case: ") 
                     THEN' solve_tac xy_disj yz_disj params_x params_y params_z pdtys [] hyps 
                   end
                 ) 1
               end              
           in 
-            print_tac ("consider constructor " ^ string_of_int k) THEN 
+            my_print_tac ("consider constructor " ^ string_of_int k) THEN 
             (if k >= j then case_tac ctxt z sub_sub_case_tac else 
                solve_with_tac [case_hyp_y,xy]) 
           end (* end sub_case tac *)
       in 
-        print_tac ("start induct " ^ string_of_int i) THEN case_tac ctxt y sub_case_tac 
+        my_print_tac ("start induct " ^ string_of_int i) THEN case_tac ctxt y sub_case_tac 
       end (* end ind_case tac *)
     val trans_thm =  trans_thm_of_tac ind_case_tac
     val (trans_eq_trm,vars) = mk_trans_eq_thm_trm thy info
@@ -355,17 +355,17 @@ fun mk_binary_thm thy (info : Datatype_Aux.info) prop_gen sort same_constructor_
             val case_hyp_y = hd prems 
           in 
             if not (j = k) 
-            then print_tac ("different constructors ") THEN solve_with_tac (case_hyp_y :: ihprems) (* different constructor *) 
+            then my_print_tac ("different constructors ") THEN solve_with_tac (case_hyp_y :: ihprems) (* different constructor *) 
             else
               let 
                 val params_y = map (snd #> term_of) iparams_y
                 val c_info = nth descr idx |> snd |> (fn (_,_,info) => nth info j)
               in 
-                print_tac ("consider constructor " ^ string_of_int k) 
+                my_print_tac ("consider constructor " ^ string_of_int k) 
                 THEN same_constructor_tac ctxt hyps ihprems case_hyp_y solve_with_tac j params_x params_y c_info mk_less
               end
           end
-      in print_tac ("start induct " ^ string_of_int i) THEN case_tac ctxt sub_case_tac end
+      in my_print_tac ("start induct " ^ string_of_int i) THEN case_tac ctxt sub_case_tac end
     val prop_thm = prop_thm_of_tac ind_case_tac
   in prop_thm end 
 
@@ -600,15 +600,15 @@ fun derive kind dtyp_name thy =
           val lthy = Class.instantiation ([tyco],vs,sort) thy'
         
           fun order_tac ctxt = 
-            print_tac "enter order" THEN
+            my_print_tac "enter order" THEN
             unfold_tac less_thms (simpset_of ctxt) THEN
-            print_tac "after unfolding" THEN
+            my_print_tac "after unfolding" THEN
             rtac less 1 THEN
-            print_tac "after less" THEN
+            my_print_tac "after less" THEN
             rtac refl 1 THEN
-            print_tac "after refl" THEN
+            my_print_tac "after refl" THEN
             rtac trans_eq 1 THEN atac 1 THEN atac 1 THEN
-            print_tac "after trans" THEN
+            my_print_tac "after trans" THEN
             rtac antisym 1 THEN atac 1 THEN atac 1
           val thy'' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
           val _ = Output.writeln ("registered " ^ base_name ^ " in class order")
