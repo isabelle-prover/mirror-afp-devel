@@ -123,7 +123,7 @@ fun derive dtyp_name thy =
         val ((c, _), rhs) = eq |> Syntax.check_term lthy |>
           Logic.dest_equals |>> dest_Free;
         val ((_, (_, thm)), lthy') = Local_Theory.define
-          ((Binding.name c, NoSyn), ((Binding.name def_name, []), rhs)) lthy
+          ((Binding.name c, NoSyn), ((Binding.name def_name, @{attributes [code]}), rhs)) lthy
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy');
         val thm' = singleton (Proof_Context.export lthy' ctxt_thy) thm
       in (thm', lthy') end;
