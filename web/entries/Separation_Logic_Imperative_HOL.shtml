@@ -1,0 +1,112 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<h1><font class="first">A</font>
+<font class="first">S</font>eparation
+<font class="first">L</font>ogic
+<font class="first">F</font>ramework
+for
+<font class="first">I</font>mperative
+<font class="first">H</font>OL
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">A Separation Logic Framework for Imperative HOL</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Peter Lammich (lammich /at/ in /dot/ tum /dot/ de) and  Rene Meis (rene /dot/ meis /at/ uni-due /dot/ de)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2012-11-14</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We provide a framework for separation-logic based correctness proofs of
+Imperative HOL programs. Our framework comes with a set of proof methods to
+automate canonical tasks such as verification condition generation and
+frame inference. Moreover, we provide a set of examples that show the
+applicability of our framework. The examples include algorithms on lists,
+hash-tables, and union-find trees. We also provide abstract interfaces for
+lists, maps, and sets, that allow to develop generic imperative algorithms
+and use data-refinement techniques.
+<br>
+As we target Imperative HOL, our programs can be translated to
+efficiently executable code in various target languages, including
+ML, OCaml, Haskell, and Scala.
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Separation_Logic_Imperative_HOL" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
