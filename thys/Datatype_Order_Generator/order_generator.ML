@@ -207,7 +207,8 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
           in Const (less_name, ty --> ty --> @{typ bool}) end;
     fun mk_less dty x y = mk_less_term dty $ x $ y;
     val ind_thm = #induct info
-    val solve_with_tac = (fn thms => mk_solve_with_tac thms (asm_full_simp_tac (simpset_of ctxt) 1))
+    val solve_with_tac = (fn thms => mk_solve_with_tac thms 
+      (asm_full_simp_tac (simpset_of ctxt delsimps @{thms Orderings.less_bool_def}) 1))
     val trans_thm_of_tac = inductive_thm thy trans_props ind_thm sort
     fun ind_case_tac ctxt i hyps [xy,yz] params_x [y,z] = 
       let 
@@ -344,7 +345,8 @@ fun mk_binary_thm thy (info : Datatype_Aux.info) prop_gen sort same_constructor_
     fun mk_less dty x y = mk_less_term dty $ x $ y;
     val ind_thm = #induct info
     val prop_thm_of_tac = inductive_thm thy prop_props ind_thm sort
-    val solve_with_tac = (fn thms => mk_solve_with_tac thms (force_tac ctxt 1))
+    val solve_with_tac = (fn thms => mk_solve_with_tac thms 
+      (force_tac (map_simpset (fn ss => ss delsimps @{thms Orderings.less_bool_def}) ctxt) 1))
     fun ind_case_tac ctxt i hyps ihprems params_x [y] =  
       let 
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
