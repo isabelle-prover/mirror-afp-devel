@@ -130,6 +130,26 @@ extra-history =
   Change history:
   [2012-03-06]: Add some more views and revive the code generation.
 
+[Tarskis_Geometry]
+title = The independence of Tarski's Euclidean axiom
+author = T. J. M. Makarios <mailto:tjm1983@gmail.com>
+topic = Mathematics/Geometry
+base = HOL
+date = 2012-10-30
+abstract =
+  Tarski's axioms of plane geometry are formalized and, using the standard
+  real Cartesian model, shown to be consistent. A substantial theory of
+  the projective plane is developed. Building on this theory, the
+  Klein-Beltrami model of the hyperbolic plane is defined and shown to
+  satisfy all of Tarski's axioms except his Euclidean axiom; thus Tarski's
+  Euclidean axiom is shown to be independent of his other axioms of plane
+  geometry.
+  <p>
+  An earlier version of this work was the subject of the author's
+  <a href="http://researcharchive.vuw.ac.nz/handle/10063/2315">MSc thesis</a>,
+  which contains natural-language explanations of some of the
+  more interesting proofs.
+
 [General-Triangle]
 title = The General Triangle Is Unique
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
@@ -770,6 +790,28 @@ topic = Computer Science/Programming Languages/Logics
 license = BSD
 base = HOL/HOL-Word
 abstract = We present a generic type class implementation of separation algebra for Isabelle/HOL as well as lemmas and generic tactics which can be used directly for any instantiation of the type class. <P> The ex directory contains example instantiations that include structures such as a heap or virtual memory. <P> The abstract separation algebra is based upon "Abstract Separation Logic" by Calcagno et al. These theories are also the basis of the ITP 2012 rough diamond "Mechanised Separation Algebra" by the authors. <P> The aim of this work is to support and significantly reduce the effort for future separation logic developments in Isabelle/HOL by factoring out the part of separation logic that can be treated abstractly once and for all. This includes developing typical default rule sets for reasoning as well as automated tactic support for separation logic.
+
+[Separation_Logic_Imperative_HOL]
+title = A Separation Logic Framework for Imperative HOL
+author = Peter Lammich <mailto:lammich@in.tum.de>, Rene Meis <mailto:rene.meis@uni-due.de>
+date = 2012-11-14
+topic = Computer Science/Programming Languages/Logics
+license = BSD
+base = HOL
+abstract =
+  We provide a framework for separation-logic based correctness proofs of 
+  Imperative HOL programs. Our framework comes with a set of proof methods to
+  automate canonical tasks such as verification condition generation and 
+  frame inference. Moreover, we provide a set of examples that show the 
+  applicability of our framework. The examples include algorithms on lists,
+  hash-tables, and union-find trees. We also provide abstract interfaces for
+  lists, maps, and sets, that allow to develop generic imperative algorithms 
+  and use data-refinement techniques.
+  <br>
+  As we target Imperative HOL, our programs can be translated to 
+  efficiently executable code in various target languages, including
+  ML, OCaml, Haskell, and Scala.
+
 
 [Inductive_Confidentiality]
 title = Inductive Study of Confidentiality
