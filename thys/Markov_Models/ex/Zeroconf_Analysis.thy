@@ -3,15 +3,15 @@
 header {* Formalizing the IPv4-address allocation in ZeroConf *}
 
 theory Zeroconf_Analysis
-  imports "../Rewarded_DTMC"
+  imports "../Discrete_Time_Markov_Chain"
 begin
 
 subsection {* Definition of a ZeroConf allocation run *}
 
 locale Zeroconf_Analysis =
-  fixes N :: nat and p q r E :: real
+  fixes N :: nat and p q r e :: real
   assumes p: "0 < p" "p < 1" and q: "0 < q" "q < 1"
-  assumes r: "0 \<le> r" and E: "0 \<le> E"
+  assumes r: "0 \<le> r" and e: "0 \<le> e"
 
 datatype zc_state = start 
                   | probe nat
@@ -32,7 +32,7 @@ primrec \<tau> where
 
 primrec \<rho> where
   "\<rho> start     = (\<lambda>_. 0) (probe 0 := r, ok := r * (N + 1))"
-| "\<rho> (probe n) = (if n < N then (\<lambda>_. 0) (probe (Suc n) := r) else (\<lambda>_. 0) (error := E))"
+| "\<rho> (probe n) = (if n < N then (\<lambda>_. 0) (probe (Suc n) := r) else (\<lambda>_. 0) (error := e))"
 | "\<rho> ok        = (\<lambda>_. 0) (ok := 0)"
 | "\<rho> error     = (\<lambda>_. 0) (error := 0)"
 
@@ -62,7 +62,7 @@ subsection {* The allocation run is a rewarded DTMC *}
 
 sublocale Zeroconf_Analysis \<subseteq> Rewarded_DTMC S start \<tau> \<rho> "\<lambda>s. 0"
   proof
-  qed (insert p q r E,
+  qed (insert p q r e,
        auto simp add: mult_nonneg_nonneg S_def \<rho>_def setsum_S setsum_cases field_simps elim!: SE)
 
 lemma if_mult:
@@ -72,6 +72,17 @@ lemma if_mult:
 
 context Zeroconf_Analysis
 begin
+
+lemma E_start_iff[simp]: "E start = {probe 0, ok}"
+  using q by (auto simp: E_iff dest!: E_D)
+
+lemma E_probe_iff[simp]:
+    "n \<le> N \<Longrightarrow> E (probe n) = (if n < N then {start, probe (Suc n)} else {start, error})"
+  using q p by (auto simp: E_iff dest!: E_D)
+
+lemma E_ok_iff[simp]: "E ok = {ok}" by (auto simp: E_iff dest!: E_D)
+
+lemma E_error_iff[simp]: "E error = {error}" by (auto simp: E_iff dest!: E_D)
 
 lemma pos_neg_q_pn: "0 < 1 - q * (1 - p^Suc N)"
 proof -
@@ -84,28 +95,28 @@ qed
 
 subsection {* Probability of a erroneous allocation *}
 
-definition "P_err s = prob s {\<omega>\<in>UNIV \<rightarrow> S. nat_case s \<omega> \<in> until S {error}}"
-
-lemma P_err_alt: "P_err s = prob s (nat_case s -` until S {error} \<inter> (UNIV \<rightarrow> S))"
-  unfolding P_err_def by (auto intro!: arg_cong2[where f=prob])
+definition "P_err s = \<P>(\<omega> in paths s. nat_case s \<omega> \<in> until S {error})"
 
 lemma P_err_ok: "P_err ok = 0"
 proof -
   have "reachable (S - {error}) ok \<subseteq> {ok}"
-    by (rule reachable_closed') auto
+    by (rule reachable_closed) auto
   then show "P_err ok = 0"
-    unfolding P_err_alt
-    by (subst until_eq_0_iff_not_reachable) auto
+    unfolding P_err_def 
+    by (subst prob_Collect_eq_0) (auto simp add: AE_nuntil_iff_not_reachable simp del: nat_case_until_iff)
 qed
 
 lemma P_err_error[simp]: "P_err error = 1"
   by (simp add: P_err_def)
 
+lemma P_err_sum': "s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> P_err s = (\<Sum>t\<in>S. \<tau> s t * P_err t)"
+  unfolding P_err_def
+  by (subst prob_eq_sum)
+     (auto intro!: setsum_cong arg_cong2[where f="op *"] arg_cong2[where f=measure] simp: space_PiM)
+
 lemma P_err_sum: "s \<in> S \<Longrightarrow> 
     P_err s = \<tau> s start * P_err start + \<tau> s error + (\<Sum>p\<le>N. \<tau> s (probe p) * P_err (probe p))"
-  using P_err_ok
-  by (cases "s = error")
-     (simp_all add: prob_eq_sum[of s] setsum_S until_Int_space_eq P_err_alt)
+  using P_err_ok by (cases "s = error") (simp_all add: P_err_sum'[of s] setsum_S)
 
 lemma P_err_last[simp]: "P_err (probe N) = p + (1 - p) * P_err start"
   by (subst P_err_sum) simp_all
@@ -130,75 +141,48 @@ lemma prob_until_error: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N
 subsection {* A allocation run terminates almost surely *}
 
 lemma reachable_probe_error:
-  assumes "n \<le> N"
-  shows "error \<in> reachable (S - {error, ok}) (probe n)"
-proof -
-  def \<omega> \<equiv> "\<lambda>i. if i < N - n then probe (Suc (i + n)) else error"
-  show ?thesis
-    unfolding reachable_def
-  proof (safe intro!: exI[of _ \<omega>]
-      exI[of _ "N - n"] del: notI)
-    fix i assume "i \<le> N - n"
-    with p `n \<le> N` show "\<tau> (nat_case (probe n) \<omega> i) (\<omega> i) \<noteq> 0"
-      by (auto simp: \<omega>_def split: nat.split)
-  qed (auto simp: \<omega>_def)
-qed
+  "n \<le> N \<Longrightarrow> error \<in> reachable (S - {error, ok}) (probe n)"
+proof (induct rule: inc_induct)
+  case (step n) 
+  then show ?case by (intro reachable_step_rev[of _ _ "probe (Suc n)" "probe n"]) auto
+qed (auto intro!: reachable.start)
 
 lemma reachable_start_error:
   "error \<in> reachable (S - {error, ok}) start"
-  using q
-  by (intro reachable_probe_error[THEN reachable_step]) auto
+  by (rule reachable_step_rev) (auto intro: reachable_probe_error)
 
 lemma AE_reaches_error_or_ok:
   assumes "s \<in> S"
-  shows "AE \<omega> in path_space s. nat_case s \<omega> \<in> until S {error, ok}"
-proof cases
-  assume s: "s \<in> {start} \<union> (probe ` {..N})"
-  have in_S: "s \<in> S" "S \<subseteq> S" "{error, ok} \<subseteq> S"
-    using s by (auto simp: S_def)
-  have "s \<notin> {error, ok}"
-    using s by auto
-  then show ?thesis
-    unfolding until_eq_1_if_reachable[OF in_S]
-    apply (simp add: insert_absorb)
-  proof (intro conjI ballI)
-    show "reachable (S - {error, ok}) s \<subseteq> S"
-      by (auto simp: reachable_def)
-    moreover
-    fix t assume "t \<in> insert s (reachable (S - {error, ok}) s) - {error, ok}"
-    with s have "(\<exists>n\<le>N. t = probe n) \<or> t = start"
-      unfolding reachable_def by (auto simp: S_def)
-    then show "error \<in> reachable (S - {error, ok}) t \<or>
-      ok \<in> reachable (S - {error, ok}) t"
-      using reachable_probe_error reachable_start_error by auto
-  qed (insert in_S(1), auto simp: S_def)
-next
-  assume s: "s \<notin> {start} \<union> (probe ` {..N})"
-  with assms have "s \<in> {error, ok}"
-    by (auto simp: S_def)
-  then show ?thesis
-    by (auto simp: Pi_iff)
-qed
+  shows "AE \<omega> in paths s. nat_case s \<omega> \<in> until S {error, ok}"
+  apply (subst AE_until_iff_reachable[OF `s \<in> S` finite_Diff, OF finite_S])
+proof (intro disjCI conjI `s\<in>S` ballI)
+  fix t assume "t \<in> reachable (S - {error, ok}) s \<union> {s} - {error, ok}"
+  with `s \<in> S` have "t \<in> S - {error, ok}" by auto
+  with `s \<in> S` have "t \<in> {start} \<union> (probe ` {..N})" by (auto simp: S_def)
+  with reachable_probe_error reachable_start_error
+  have "error \<in> reachable (S - {error, ok}) t" by auto
+  then show "reachable (S - {error, ok}) t \<inter> {error, ok} \<noteq> {}" by auto
+qed auto
 
 subsection {* Expected runtime of an allocation run *}
 
-definition "R \<equiv> \<lambda>s. \<integral>\<^isup>+ \<omega>. reward_until {error, ok} (nat_case s \<omega>) \<partial>path_space s"
+definition "R s = (\<integral>\<^isup>+ \<omega>. reward_until {error, ok} (nat_case s \<omega>) \<partial>paths s)"
 
 lemma cost_from_start:
   "(R start::ereal) =
-    (q * (r + p^Suc N * E + r * p * (1 - p^N) / (1 - p)) + (1 - q) * (r * Suc N)) /
+    (q * (r + p^Suc N * e + r * p * (1 - p^N) / (1 - p)) + (1 - q) * (r * Suc N)) /
     (1 - q + q * p^Suc N)"
 proof -
   have "\<forall>s\<in>S. \<exists>r. R s = ereal r"
     unfolding R_def
-    using positive_integral_reward_until_finite[OF _ _ AE_reaches_error_or_ok] by auto
+    using positive_integral_reward_until_finite[OF _ AE_reaches_error_or_ok] by auto
   from bchoice[OF this] obtain R' where R': "\<And>s. s\<in>S \<Longrightarrow> R s = ereal (R' s)" by auto
 
   have R_sum: "\<And>s. s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
     R s = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s s' + R s'))"
     using R' unfolding R_def
-    by (subst positive_integral_reward_until_real[OF _ _ _ AE_reaches_error_or_ok])
-       (simp_all add: until_Int_space_eq)
+    by (subst positive_integral_reward_until_real[OF _ _ AE_reaches_error_or_ok]) simp_all
+       
   then have R'_sum: "\<And>s. s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
     R' s = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s s' + R' s'))"
     using R' by simp
@@ -217,13 +201,13 @@ proof -
     by (subst R'_sum)
        (simp_all add: setsum_S setsum_addf field_simps if_mult setsum_cases)
 
-  have R'_N: "R' (probe N) = p * E + (1 - p) * R' start"
+  have R'_N: "R' (probe N) = p * e + (1 - p) * R' start"
     using R'_error by (subst R'_sum) (simp_all add: setsum_S field_simps)
 
   { fix n
     assume "n \<le> N"
     then have "R' (probe (N - n)) =
-      p ^ Suc n * E + (1 - p^n) * r * p / (1 - p) + (1 - p^Suc n) * R' start"
+      p ^ Suc n * e + (1 - p^n) * r * p / (1 - p) + (1 - p^Suc n) * R' start"
     proof (induct n)
       case 0 with R'_N show ?case by simp
     next
@@ -234,12 +218,12 @@ proof -
         by simp (simp add: field_simps)
     qed }
   from this[of N]
-  have "R' (probe 0) = p ^ Suc N * E + (1 - p^N) * r * p / (1 - p) + (1 - p^Suc N) * R' start"
+  have "R' (probe 0) = p ^ Suc N * e + (1 - p^N) * r * p / (1 - p) + (1 - p^Suc N) * R' start"
     by simp
   then have "R' start - q * (1 - p^Suc N) * R' start =
-    q * (r + p^Suc N * E + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * (N + 1))"
+    q * (r + p^Suc N * e + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * (N + 1))"
     by (subst R'_start) (simp, simp add: field_simps)
-  then have "R' start = (q * (r + p^Suc N * E + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * Suc N)) /
+  then have "R' start = (q * (r + p^Suc N * e + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * Suc N)) /
     (1 - q * (1 - p^Suc N))"
     using pos_neg_q_pn
     by (simp add: field_simps)

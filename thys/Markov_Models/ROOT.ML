@@ -5,8 +5,8 @@ no_document use_thys [
 ];
 
 use_thys [
+  "Discrete_Markov_Kernel",
   "Discrete_Time_Markov_Chain",
-  "Rewarded_DTMC",
   "ex/PCTL",
   "ex/Zeroconf_Analysis",
   "ex/Gossip_Broadcast",

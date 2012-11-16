@@ -3,8 +3,18 @@
 header {* Formalization of the Gossip-Broadcast *}
 
 theory Gossip_Broadcast
-  imports "../Rewarded_DTMC"
+  imports "../Discrete_Time_Markov_Chain"
 begin
+
+lemma inj_on_upd_PiE: 
+  assumes "i \<notin> I" shows "inj_on (\<lambda>(x,f). f(i := x)) (M \<times> (\<Pi>\<^isub>E i\<in>I. A i))"
+proof (safe intro!: inj_onI ext)
+  fix f g :: "'a \<Rightarrow> 'b" and x y :: 'b
+  assume *: "f(i := x) = g(i := y)" "f \<in> extensional I" "g \<in> extensional I"
+  then show "x = y" by (auto simp: fun_eq_iff split: split_if_asm)
+  fix i' from * `i \<notin> I` show "f i' = g i'"
+    by (cases "i' = i") (auto simp: fun_eq_iff extensional_def split: split_if_asm)
+qed
 
 lemma setsum_folded_product:
   fixes I :: "'i set" and f :: "'s \<Rightarrow> 'i \<Rightarrow> 'a::{semiring_0, comm_monoid_mult}"
@@ -86,7 +96,7 @@ next
   fix s assume "s \<in> states"
   show "(\<Sum>s'\<in>states. proto_trans s s') = 1"
     unfolding proto_trans_def states_def
-    by (subst setsum_folded_product) (simp_all add: node_trans_sum_eq_1 setprod_1)
+    by (subst setsum_folded_product) (simp_all add: node_trans_sum_eq_1)
 qed
 
 end
