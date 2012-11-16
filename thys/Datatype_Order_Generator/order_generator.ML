@@ -188,7 +188,12 @@ fun mk_less_disj mk_less px py dtys =
     HOLogic.mk_Trueprop (build_disj px py dtys)
   end;
 
+fun simps_of_info info = #case_rewrites info @ #rec_rewrites info @ #inject info @ #distinct info
 
+(* TODO: my_simp_set should be HOL_ss + the other simplification stuff for orders like simprocs, ... *)
+val my_simp_set = simpset_of @{context} 
+  delsimps (simpset_of @{context} |> dest_ss |> #simps |> map snd) 
+  addsimps @{thms HOL.simp_thms}
 
 fun mk_transitivity_thms thy (info : Datatype_Aux.info) = 
   let 
@@ -196,6 +201,7 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
     (* first prove transitivity of < *)
     val trans_props = mk_trans_thm_trm thy info
     val sort = @{sort "order"}
+    val simp_main = my_simp_set addsimps (simps_of_info info)
     val (mk_rec,nrec_args) = mk_less_idx thy info sort
     val typ_subst = typ_subst_for_sort thy info sort
     val descr = #descr info
@@ -207,13 +213,14 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
           in Const (less_name, ty --> ty --> @{typ bool}) end;
     fun mk_less dty x y = mk_less_term dty $ x $ y;
     val ind_thm = #induct info
-    val solve_with_tac = (fn thms => mk_solve_with_tac thms 
-      (asm_full_simp_tac (simpset_of ctxt delsimps @{thms Orderings.less_bool_def}) 1))
     val trans_thm_of_tac = inductive_thm thy trans_props ind_thm sort
     fun ind_case_tac ctxt i hyps [xy,yz] params_x [y,z] = 
       let 
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
         val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> the_info thy
+        val simp_side = simp_main addsimps (simps_of_info linfo)
+        val solve_with_tac = (fn thms => 
+          mk_solve_with_tac thms (asm_full_simp_tac (simp_side addsimps thms) 1))
         fun case_tac ctxt y_z = mk_case_tac ctxt [[SOME y_z]] (#exhaust linfo)
         fun sub_case_tac (ctxt,k,prems,iparams_y) = 
           let 
@@ -345,12 +352,13 @@ fun mk_binary_thm thy (info : Datatype_Aux.info) prop_gen sort same_constructor_
     fun mk_less dty x y = mk_less_term dty $ x $ y;
     val ind_thm = #induct info
     val prop_thm_of_tac = inductive_thm thy prop_props ind_thm sort
-    val solve_with_tac = (fn thms => mk_solve_with_tac thms 
-      (force_tac (map_simpset (fn ss => ss delsimps @{thms Orderings.less_bool_def}) ctxt) 1))
     fun ind_case_tac ctxt i hyps ihprems params_x [y] =  
       let 
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
         val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> the_info thy
+        val simp_set = my_simp_set addsimps (simps_of_info info) @ (simps_of_info linfo)
+        val solve_with_tac = (fn thms => mk_solve_with_tac thms 
+          (force_tac (map_simpset (K simp_set) ctxt) 1))
         fun case_tac ctxt = mk_case_tac ctxt [[SOME y]] (#exhaust linfo)
         fun sub_case_tac (ctxt,k,prems,iparams_y) = 
           let 
