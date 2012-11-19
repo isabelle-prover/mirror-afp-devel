@@ -79,12 +79,12 @@ lemma prob_K:
 lemma emeasure_eq_sum:
   assumes s[simp]: "s \<in> S" and X[measurable]: "X \<in> sets S_seq"
   shows "emeasure (paths s) X = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S)))"
-  by (simp add: prob_iterate measure_nonneg emeasure_eq_measure space_PiM integral_K)
+  by (simp add: prob_iterate measure_nonneg emeasure_eq_measure space_PiM PiE_def integral_K)
 
 lemma prob_eq_sum:
   assumes s[simp]: "s \<in> S" and X[measurable]: "X \<in> sets S_seq"
   shows "prob s X = (\<Sum>s'\<in>S. \<tau> s s' * prob s' (nat_case s' -` X \<inter> (UNIV \<rightarrow> S)))"
-  by (simp add: prob_iterate measure_nonneg space_PiM integral_K)
+  by (simp add: prob_iterate measure_nonneg space_PiM integral_K PiE_def)
 
 lemma positive_integral_eq_sum:
   assumes [simp]: "s \<in> S" and [measurable]: "f \<in> borel_measurable S_seq"
@@ -98,23 +98,23 @@ lemma integral_eq_sum:
   by (subst integral_iterate) (simp_all add: space_PiM integral_K positive_integral_positive f)
 
 lemma measure_space_S[simp]: "measure (paths s) (UNIV \<rightarrow> S) = 1"
-  using prob_space by (simp add: space_PiM)
+  using prob_space by (simp add: space_PiM PiE_def)
 
 lemma measure_space_S_seq[simp]: "measure (paths s) (space S_seq) = 1"
   using prob_space by simp
 
 lemma space_Int_subset[simp]: "X \<inter> (UNIV \<rightarrow> S) \<subseteq> space S_seq"
-  by (simp add: space_PiM) 
+  by (simp add: space_PiM PiE_def) 
 
 lemma space_in_S_seq[measurable]: "UNIV \<rightarrow> S \<in> sets S_seq"
-  using top[of S_seq] by (simp add: space_PiM) 
+  using top[of S_seq] by (simp add: space_PiM PiE_def) 
 
 lemma measurable_Collect_Pi[measurable (raw)]: 
   "Sigma_Algebra.pred S_seq P \<Longrightarrow> {\<omega>\<in>UNIV \<rightarrow> S. P \<omega>} \<in> sets S_seq"
-  unfolding pred_def by (simp add: space_PiM)
+  unfolding pred_def by (simp add: space_PiM PiE_def)
 
 lemma AE_all_in_S: "AE \<omega> in paths s. \<forall>i. \<omega> i \<in> S"
-  using AE_space[of "paths s"] by (auto simp: space_PiM Pi_iff)
+  using AE_space[of "paths s"] by (auto simp: space_PiM)
 
 lemma independent_cylinder:
   assumes s: "s \<in> S"
@@ -137,7 +137,7 @@ proof -
       also have "\<dots> = (\<Sum>a\<in>A i. p a i * \<P>(\<omega> in paths a. (\<forall>j\<in>{Suc i ..< n}. \<omega> (j - Suc i) \<in> A j)))"
         using A `i < n` p[of i s'] step.prems
         by (subst prob_eq_sum)
-           (auto simp: space_PiM
+           (auto simp: space_PiM PiE_def
                  intro!: setsum_mono_zero_cong_right arg_cong2[where f="op *"] arg_cong2[where f=measure])
       also have "\<dots> = (\<Sum>a\<in>A i. p a i * (\<Prod>i\<in>{Suc i ..< n}. (\<Sum>a\<in>A i. p a i)))"
         by (intro setsum_cong[OF refl], subst step(2)) auto
@@ -206,7 +206,7 @@ lemma positive_integral_reward_until_ereal:
    (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s'))"
 proof -
   have positive: "\<And>s. s \<in> S \<Longrightarrow> AE \<omega> in paths s. 0 \<le> reward_until \<Phi> (nat_case s \<omega>)"
-    by (auto intro!: reward_until_positive simp: space_PiM Pi_iff split: nat.split)
+    by (auto intro!: reward_until_positive simp: space_PiM PiE_iff split: nat.split)
 
   have "(\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
       (\<integral>\<^isup>+ \<omega>. \<rho> s + \<iota> s (\<omega> 0) + reward_until \<Phi> \<omega> \<partial>paths s)"

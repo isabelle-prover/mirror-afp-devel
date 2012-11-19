@@ -923,7 +923,7 @@ lemma simple_functionI:
   assumes [measurable]: "\<And>x. {\<omega>\<in>space S_seq. f \<omega> = x} \<in> sets S_seq"
   shows "simple_function C f"
   using assms unfolding simple_function_def C_def
-  by (simp add: vimage_def space_PiM)
+  by (simp add: vimage_def space_PiM PiE_def)
 
 subsection {* Estimate the information to the collaborateurs *}
 

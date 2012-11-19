@@ -8,6 +8,7 @@ begin
 
 lemma inj_on_upd_PiE: 
   assumes "i \<notin> I" shows "inj_on (\<lambda>(x,f). f(i := x)) (M \<times> (\<Pi>\<^isub>E i\<in>I. A i))"
+  unfolding PiE_def
 proof (safe intro!: inj_onI ext)
   fix f g :: "'a \<Rightarrow> 'b" and x y :: 'b
   assume *: "f(i := x) = g(i := y)" "f \<in> extensional I" "g \<in> extensional I"
@@ -25,7 +26,7 @@ using assms proof (induct I)
 next
   case (insert i I)
   have *: "Pi\<^isub>E (insert i I) S = (\<lambda>(x, f). f(i := x)) ` (S i \<times> Pi\<^isub>E I S)"
-    by (auto intro!: image_eqI ext[where 'a='i] dest: extensional_arb)
+    by (auto simp: PiE_def intro!: image_eqI ext dest: extensional_arb)
   have "(\<Sum>x\<in>Pi\<^isub>E (insert i I) S. \<Prod>i\<in>insert i I. f (x i) i) = 
     setsum ((\<lambda>x. \<Prod>i\<in>insert i I. f (x i) i) \<circ> ((\<lambda>(x, f). f(i := x)))) (S i \<times> Pi\<^isub>E I S)"
     unfolding * using insert by (intro setsum_reindex) (auto intro!: inj_on_upd_PiE)
@@ -84,9 +85,9 @@ subsection {* The Gossip-Broadcast forms a DTMC *}
 sublocale gossip_broadcast \<subseteq> Discrete_Time_Markov_Chain states proto_trans start
 proof
   show "finite states"
-    by (simp add: states_def)
+    by (simp add: states_def finite_PiE)
   show "start \<in> states"
-    using size by (auto simp: extensional_def start_def states_def)
+    using size by (auto simp: PiE_def extensional_def start_def states_def)
 next
   fix s s' assume "s \<in> states" "s' \<in> states"
   with p show "0 \<le> proto_trans s s'"

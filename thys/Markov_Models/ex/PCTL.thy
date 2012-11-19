@@ -708,7 +708,7 @@ lemma infinite_reward:
 proof -
   from s have "prob s (nat_case s -` until S ?F \<inter> space (paths s)) \<noteq> 1" "s \<in> S"
     unfolding Y_def N_def using svalid_subset_S
-    by (auto simp add: Prob1_iff space_PiM AE_in_set_eq_1[symmetric])
+    by (auto simp add: Prob1_iff space_PiM PiE_def AE_in_set_eq_1[symmetric])
   then have not_until: "\<not> (AE \<omega> in paths s. \<omega> \<in> nat_case s -` until S ?F \<inter> space (paths s))"
     by (subst AE_in_set_eq_1) (auto intro!: measurable_sets measurable_nat_case)
   let ?R = "reward (Future F)"
@@ -799,7 +799,7 @@ proof -
     (\<integral>\<^isup>+\<omega>. ?R \<omega> \<partial>paths s)"
     using `s \<in> S`
     by (subst positive_integral_add)
-       (auto simp add: space_PiM Pi_iff reward_nonneg simp del: reward.simps)
+       (auto simp add: space_PiM PiE_iff reward_nonneg simp del: reward.simps)
   also have "\<dots> = ereal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) +
     (\<integral>\<^isup>+\<omega>. ?R \<omega> \<partial>paths s)"
     using `s \<in> S`
@@ -877,7 +877,7 @@ proof (induct F rule: Sat.induct)
     with svalid_subset_S have "setsum (\<tau> q) (svalid F) = \<P>(\<omega> in paths q. \<omega> 0 \<in> svalid F)"
       by (subst prob_paths_0[OF `q\<in>S`]) (auto simp add: prob_K simp del: space_eq_S intro!: setsum_cong) }
   with 5 show ?case
-    by (auto simp: space_PiM split: split_option_bind_asm)
+    by (auto simp: space_PiM PiE_def split: split_option_bind_asm)
 
 next
   case (6 rel r k F1 F2)
@@ -1021,7 +1021,7 @@ proof (induct F rule: Sat.induct)
         with s show ?thesis
           by (simp del: pvalid.simps
                    add: emeasure_eq_measure single_l Prob0_iff svalid_subset_S pvalid_eq_until
-                        AE_iff_measurable[OF _ refl] space_PiM Int_def conj_commute)
+                        AE_iff_measurable[OF _ refl] space_PiM PiE_def Int_def conj_commute)
       next
         assume s_not_0: "s \<notin> Prob0 (svalid \<Phi>) (svalid \<Psi>)"
         { fix s' assume "s' \<in> S"

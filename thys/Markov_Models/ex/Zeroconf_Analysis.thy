@@ -112,7 +112,7 @@ lemma P_err_error[simp]: "P_err error = 1"
 lemma P_err_sum': "s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> P_err s = (\<Sum>t\<in>S. \<tau> s t * P_err t)"
   unfolding P_err_def
   by (subst prob_eq_sum)
-     (auto intro!: setsum_cong arg_cong2[where f="op *"] arg_cong2[where f=measure] simp: space_PiM)
+     (auto intro!: setsum_cong arg_cong2[where f="op *"] arg_cong2[where f=measure] simp: space_PiM PiE_def)
 
 lemma P_err_sum: "s \<in> S \<Longrightarrow> 
     P_err s = \<tau> s start * P_err start + \<tau> s error + (\<Sum>p\<le>N. \<tau> s (probe p) * P_err (probe p))"

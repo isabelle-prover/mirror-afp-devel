@@ -4,13 +4,18 @@ theory Discrete_Markov_Kernel
   imports "~~/src/HOL/Probability/Probability"
 begin
 
+lemma (in wellorder) smallest:
+  assumes "P i" obtains j where "P j" "\<And>i. i < j \<Longrightarrow> \<not> P i" "j \<le> i"
+proof
+  show "P (LEAST j. P j)" "\<And>i. i < (LEAST j. P j) \<Longrightarrow> \<not> P i" "(LEAST j. P j) \<le> i"
+    using `P i` LeastI2_wellorder[of P i "\<lambda>j. j \<le> i", OF `P i`]
+    by (auto intro: LeastI_ex dest: not_less_Least)
+qed
+
 lemma setsum_strict_mono_single: 
   fixes f :: "_ \<Rightarrow> 'a :: {comm_monoid_add,ordered_cancel_ab_semigroup_add}"
   shows "finite A \<Longrightarrow> a \<in> A \<Longrightarrow> f a < g a \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> f a \<le> g a) \<Longrightarrow> setsum f A < setsum g A"
   using setsum_strict_mono_ex1[of A f g] by auto
-
-lemma ereal_infinity_cases: "(a::ereal) \<noteq> \<infinity> \<Longrightarrow> a \<noteq> -\<infinity> \<Longrightarrow> \<bar>a\<bar> \<noteq> \<infinity>"
-  by auto
 
 lemma zero_notin_Suc_image: "0 \<notin> Suc ` A" by auto
 
@@ -19,35 +24,6 @@ lemma Ex_nat_case_eq: "(\<exists>n. P n (nat_case s f n)) \<longleftrightarrow> 
 
 lemma nat_case_in_funcset: "nat_case x f \<in> (UNIV \<rightarrow> X) \<longleftrightarrow> x \<in> X \<and> f \<in> UNIV \<rightarrow> X"
   by (auto simp: Pi_def split: nat.split)
-
-lemma suminf_ereal_eq_0:
-  fixes f :: "nat \<Rightarrow> ereal"
-  assumes nneg: "\<And>i. 0 \<le> f i"
-  shows "(\<Sum>i. f i) = 0 \<longleftrightarrow> (\<forall>i. f i = 0)"
-proof
-  assume "(\<Sum>i. f i) = 0"
-  { fix i assume "f i \<noteq> 0"
-    with nneg have "0 < f i" by (auto simp: less_le)
-    also have "f i = (\<Sum>j. if j = i then f i else 0)"
-      by (subst suminf_finite[where N="{i}"]) auto
-    also have "\<dots> \<le> (\<Sum>i. f i)"
-      using nneg by (auto intro!: suminf_le_pos)
-    finally have False using `(\<Sum>i. f i) = 0` by auto }
-  then show "\<forall>i. f i = 0" by auto
-qed simp
-
-lemma smallest:
-  fixes P :: "'a::wellorder \<Rightarrow> bool"
-  assumes "P i"
-  obtains j where "P j" "\<And>i. i < j \<Longrightarrow> \<not> P i" "j \<le> i"
-proof -
-  def j \<equiv> "LEAST j. P j"
-  from `P i` have "P j \<and> (\<forall>i<j. \<not> P i)"
-    unfolding j_def by (rule LeastI2_wellorder) auto
-  moreover then have "j \<le> i"
-    using `P i` by (auto simp: not_less[symmetric])
-  ultimately show thesis using that by auto
-qed
 
 lemma nat_case_idem: "nat_case (f 0) (\<lambda>x. f (Suc x)) = f"
   by (auto split: nat.split)
@@ -74,11 +50,6 @@ lemma nat_boundary_cases[case_names less add]:
   shows "(n < l \<Longrightarrow> P) \<Longrightarrow> (\<And>k. n = k + l \<Longrightarrow> P) \<Longrightarrow> P"
   using less_imp_add_positive[of l n]
   by (cases n l rule: linorder_cases) auto
-
-lemma ereal_left_mult_cong:
-  fixes a b c :: ereal
-  shows "(c \<noteq> 0 \<Longrightarrow> a = b) \<Longrightarrow> c * a = c * b"
-  by (cases "c = 0") simp_all
 
 definition countable_set :: "'a set \<Rightarrow> bool" where
   "countable_set S \<longleftrightarrow> (\<exists>f::nat \<Rightarrow> 'a. \<exists>C. bij_betw f C S)"
@@ -371,7 +342,7 @@ lemma measurable_paths2[simp]:
   "measurable M (paths s) = measurable M S_seq" by (simp add: measurable_def)
 
 lemma path_in_S: "x \<in> space D_seq \<Longrightarrow> path s x n \<in> S"
-  by (induct n) (auto simp: s0 space_PiM Pi_iff)
+  by (induct n) (auto simp: s0 space_PiM PiE_iff)
 
 lemma measurable_path:
   "path s \<in> measurable D_seq S_seq"
@@ -383,7 +354,7 @@ proof (rule measurable_PiM_single')
     show ?case
       unfolding path.simps by measurable
   qed (simp add: s0)
-qed (simp add: path_in_S)
+qed (simp add: path_in_S PiE_iff)
 
 lemma measurable_path'[measurable (raw)]:
   assumes f: "f \<in> measurable M (count_space S)" and g: "g \<in> measurable M D_seq"
@@ -572,7 +543,7 @@ lemma emeasure_split_Collect:
   using emeasure_split[OF assms, of i]
   using measurable_space[OF measurable_comb_seq, of _ "count_space S" i]
   by (auto intro!: positive_integral_cong arg_cong2[where f=emeasure]
-           simp: space_PiM `s \<in> S` Pi_iff space_pair_measure split: nat.split)
+           simp: space_PiM `s \<in> S` PiE_iff space_pair_measure split: nat.split)
 
 lemma prob_split:
   assumes "s \<in> S" and A: "A \<in> sets S_seq"
@@ -587,7 +558,7 @@ lemma prob_split_Collect:
   using prob_split[OF assms, of i]
   using measurable_space[OF measurable_comb_seq, of _ "count_space S" i]
   by (auto intro!: integral_cong arg_cong2[where f=measure]
-           simp: space_PiM `s \<in> S` Pi_iff space_pair_measure split: nat.split)
+           simp: space_PiM `s \<in> S` PiE_iff space_pair_measure split: nat.split)
 
 lemma AE_split:
   assumes [simp]: "s \<in> S" and P[measurable]: "{x\<in>space S_seq. P x} \<in> sets S_seq"
@@ -716,7 +687,7 @@ lemma prob_iterate_Collect:
   assumes "s \<in> S" and P: "{x\<in>space S_seq. P x} \<in> sets S_seq"
   shows "\<P>(x in paths s. P x) = (\<integral>s'. \<P>(x in paths s'. P (nat_case s' x)) \<partial>K s)"
   using prob_iterate[OF assms]
-  by (auto intro!: integral_cong arg_cong2[where f=measure] simp: space_PiM `s \<in> S` Pi_iff 
+  by (auto intro!: integral_cong arg_cong2[where f=measure] simp: space_PiM `s \<in> S` PiE_iff 
            split: nat.split)
 
 lemma AE_iterate:
@@ -900,7 +871,7 @@ proof -
       qed
       moreover
       have "comb_seq (i \<omega>) \<omega> \<omega>' \<in> space S_seq \<longleftrightarrow> \<omega>' \<in> space S_seq"
-        using \<omega> by (auto simp: space_PiM Pi_iff split: split_comb_seq)
+        using \<omega> by (auto simp: space_PiM PiE_iff split: split_comb_seq)
       ultimately
       have "comb_seq (i \<omega>) \<omega> \<omega>' \<in> unfair s' \<longleftrightarrow> ?t \<and> \<omega>' \<in> unfair s"
         by (auto simp: unfair_def)
@@ -948,7 +919,7 @@ proof -
   proof (rule, subst AE_split)
     fix n show "AE \<omega> in paths s'. AE \<omega>' in paths (nat_case s' \<omega> n). ?P s' n (comb_seq n \<omega> \<omega>')"
       by (rule AE_I2)
-         (insert AE_never, simp add: comb_seq_add nat_case_comb_seq space_PiM Pi_iff split: nat.split)
+         (insert AE_never, simp add: comb_seq_add nat_case_comb_seq space_PiM PiE_iff split: nat.split)
   qed simp_all
   then show ?thesis
   proof (eventually_elim, intro fairI)
@@ -1372,14 +1343,14 @@ next
           by (intro emeasure_mono) auto
         also have "\<dots> \<le> ereal (d^t) * indicator {\<omega>\<in>space (paths s'). \<forall>i<n. \<omega> i \<notin> \<Phi>} \<omega>"
           using Suc(1)[OF in_R] s \<omega>
-          by (auto simp: less_Suc_eq_le space_PiM Pi_iff split: split_indicator nat.split)
+          by (auto simp: less_Suc_eq_le space_PiM PiE_iff split: split_indicator nat.split)
         finally show "?M \<omega> (?A \<omega>) \<le> ereal (d^t) * indicator {\<omega>\<in>space (paths s'). \<forall>i<n. \<omega> i \<notin> \<Phi>} \<omega>" .
       qed
       also have "\<dots> = d^t * emeasure (paths s') {\<omega>\<in>space (paths s'). \<forall>i<n. \<omega> i \<notin> \<Phi>}"
         using `0 \<le> d` by (intro positive_integral_cmult_indicator) auto
       also have "\<dots> \<le> ereal (d^t) * d"
         using d[of s'] `0 \<le> d` Suc(2)
-        by (intro ereal_mult_left_mono) (auto simp add: emeasure_eq_measure space_PiM Pi_iff R_def cong: conj_cong)
+        by (intro ereal_mult_left_mono) (auto simp add: emeasure_eq_measure space_PiM PiE_iff R_def cong: conj_cong)
       finally show ?case
         by (simp add: ac_simps)
     qed (insert measure_le_1, simp add: one_ereal_def) }
