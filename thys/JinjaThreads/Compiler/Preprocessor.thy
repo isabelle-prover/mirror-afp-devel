@@ -39,7 +39,8 @@ apply(induct rule: Anno_Annos.inducts)
 apply(auto intro: Anno_Annos.intros simp del: fun_upd_apply dest: WT_compP simp add: compC_def)
 done
 
-lemma assumes wf: "wf_J_prog (annotate_prog_code P)"
+lemma annotate_prog_code_eq_annotate_prog:
+  assumes wf: "wf_J_prog (annotate_prog_code P)"
   shows "annotate_prog_code P = annotate_prog P"
 proof -
   let ?wf_md = "\<lambda>_ _ (_,_,_,_,body). set (block_types body) \<subseteq> types P"

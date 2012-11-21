@@ -13,6 +13,7 @@ begin
 locale J_heap_base = heap_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -22,6 +23,7 @@ locale J_heap_base = heap_base +
 locale J_heap = heap + 
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -34,6 +36,7 @@ sublocale J_heap < J_heap_base .
 locale J_heap_conf_base = heap_conf_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -49,6 +52,7 @@ locale J_heap_conf =
   heap_conf +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -65,6 +69,7 @@ locale J_progress =
   J_heap_conf_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -80,6 +85,7 @@ locale J_conf_read =
   J_heap_conf +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -96,6 +102,7 @@ locale J_typesafe =
   J_progress +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"

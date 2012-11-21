@@ -53,6 +53,8 @@ lemma exec_1_iff:
   "P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>' \<longleftrightarrow> (ta, \<sigma>') \<in> exec P t \<sigma>"
 by(auto intro: exec_1I elim: exec_1.cases)
 
+end
+
 text {*
   The start configuration of the JVM: in the start heap, we call a 
   method @{text m} of class @{text C} in program @{text P} with parameters @{term "vs"}. The 
@@ -60,11 +62,20 @@ text {*
   a static method invokation.
 *}
 
+abbreviation JVM_local_start ::
+  "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'addr jvm_method \<Rightarrow> 'addr val list
+  \<Rightarrow> 'addr jvm_thread_state"
+where
+  "JVM_local_start \<equiv> 
+   \<lambda>C M Ts T (mxs, mxl0, b) vs. 
+   (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)])"
+
+context JVM_heap_base begin
+
 abbreviation JVM_start_state :: 
   "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state"
 where
-  "JVM_start_state \<equiv>
-   start_state (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)]))"
+  "JVM_start_state \<equiv> start_state JVM_local_start"
 
 definition JVM_start_state' :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'heap) jvm_state"
 where

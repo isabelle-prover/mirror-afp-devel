@@ -67,6 +67,7 @@ locale J1_JVM_heap_base =
   JVM_heap_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -4826,19 +4827,23 @@ end
 locale J1_JVM_heap_conf_base =
   J1_JVM_heap_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
   +
   J1_heap_conf_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf P 
   +
   JVM_heap_conf_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP2 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -4942,15 +4947,18 @@ where "no_calls2 es pc \<longleftrightarrow> (pc \<le> length (compEs2 es)) \<an
 locale J1_JVM_conf_read =
   J1_JVM_heap_conf_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     hconf P 
   +
   JVM_conf_read
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP2 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -4962,15 +4970,18 @@ locale J1_JVM_conf_read =
 locale J1_JVM_heap_conf =
   J1_JVM_heap_conf_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf P 
   +
   JVM_heap_conf
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP2 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"

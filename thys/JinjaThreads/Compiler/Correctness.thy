@@ -19,14 +19,17 @@ begin
 locale J_JVM_heap_conf_base = 
   J0_J1_heap_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
   +
   J1_JVM_heap_conf_base 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP1 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -54,10 +57,12 @@ by(auto simp add: compP2_def compP_has_method)
 locale J_JVM_conf_read = 
   J1_JVM_conf_read
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf "compP1 P"
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -402,7 +407,6 @@ proof -
       hence "\<not> tfinite \<xi>" using tlsim by(blast dest: tllist_all2_tfiniteD) }
   ultimately show thesis by(rule that)
 qed
-
 
 end
 

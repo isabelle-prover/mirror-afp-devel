@@ -19,6 +19,7 @@ interpretation sc!:
   JVM_heap_execute
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -34,6 +35,7 @@ interpretation sc_execute!:
   JVM_conf_read
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -108,6 +110,7 @@ unfolding sc_scheduler_def
 apply(rule JVM_rr.round_robin_scheduler)
 apply(unfold eval_sc_mexec)
 apply(rule sc_execute.mexec_deterministic[OF assms sc_deterministic_heap_ops])
+apply(simp add: sc_spurious_wakeups)
 done
 
 subsection {* Random scheduler *}
@@ -145,6 +148,7 @@ unfolding sc_scheduler_def
 apply(rule JVM_rnd.random_scheduler_scheduler)
 apply(unfold eval_sc_mexec)
 apply(rule sc_execute.mexec_deterministic[OF assms sc_deterministic_heap_ops])
+apply(simp add: sc_spurious_wakeups)
 done
 
 ML {* @{code exec_JVM_rr} *}

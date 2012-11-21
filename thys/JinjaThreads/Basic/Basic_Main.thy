@@ -4,7 +4,6 @@ imports Main
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
-  "~~/src/HOL/Library/Zorn"
   "~~/src/HOL/Library/Wfrec"
   "~~/src/HOL/Library/Dlist"
   Set_without_equal

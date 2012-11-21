@@ -32,6 +32,12 @@ by(simp add: saction.simps fun_eq_iff)
 lemma sactions_compP [simp]: "sactions (compP f P) = sactions P"
 by(rule ext)(simp only: sactions_def, simp)
 
+lemma addr_locs_compP [simp]: "addr_locs (compP f P) = addr_locs P"
+by(rule ext)(case_tac x, simp_all)
+
+lemma syncronizes_with_compP [simp]: "synchronizes_with (compP f P) = synchronizes_with P"
+by(simp add: synchronizes_with.simps fun_eq_iff)
+
 lemma sync_order_compP [simp]: "sync_order (compP f P) = sync_order P"
 by(simp add: sync_order_def fun_eq_iff)
 
@@ -64,11 +70,45 @@ by(simp add: fun_eq_iff value_written.simps)
 lemma is_write_seen_compP [simp]: "is_write_seen (compP f P) = is_write_seen P"
 by(simp add: fun_eq_iff is_write_seen_def)
 
+lemma justification_well_formed_compP [simp]:
+  "justification_well_formed (compP f P) = justification_well_formed P"
+by(simp add: fun_eq_iff justification_well_formed_def)
+
+lemma happens_before_committed_compP [simp]:
+  "happens_before_committed (compP f P) = happens_before_committed P"
+by(simp add: fun_eq_iff happens_before_committed_def)
+
+lemma happens_before_committed_weak_compP [simp]:
+  "happens_before_committed_weak (compP f P) = happens_before_committed_weak P"
+by(simp add: fun_eq_iff happens_before_committed_weak_def)
+
+lemma sync_order_committed_compP [simp]:
+  "sync_order_committed (compP f P) = sync_order_committed P"
+by(simp add: fun_eq_iff sync_order_committed_def)
+
+lemma value_written_committed_compP [simp]:
+  "value_written_committed (compP f P) = value_written_committed P"
+by(simp add: fun_eq_iff value_written_committed_def)
+
+lemma uncommitted_reads_see_hb_compP [simp]:
+  "uncommitted_reads_see_hb (compP f P) = uncommitted_reads_see_hb P"
+by(simp add: fun_eq_iff uncommitted_reads_see_hb_def)
+
+lemma external_actions_committed_compP [simp]:
+  "external_actions_committed (compP f P) = external_actions_committed P"
+by(simp add: fun_eq_iff external_actions_committed_def)
+
 lemma is_justified_by_compP [simp]: "is_justified_by (compP f P) = is_justified_by P"
 by(simp add: fun_eq_iff is_justified_by.simps)
 
+lemma is_weakly_justified_by_compP [simp]: "is_weakly_justified_by (compP f P) = is_weakly_justified_by P"
+by(simp add: fun_eq_iff is_weakly_justified_by.simps)
+
 lemma legal_execution_compP: "legal_execution (compP f P) = legal_execution P"
-by(simp add: fun_eq_iff legal_execution_def)
+by(simp add: fun_eq_iff gen_legal_execution.simps)
+
+lemma weakly_legal_execution_compP: "weakly_legal_execution (compP f P) = weakly_legal_execution P"
+by(simp add: fun_eq_iff gen_legal_execution.simps)
 
 lemma most_recent_write_for_compP [simp]: 
   "most_recent_write_for (compP f P) = most_recent_write_for P"
@@ -78,13 +118,16 @@ lemma sequentially_consistent_compP [simp]:
   "sequentially_consistent (compP f P) = sequentially_consistent P"
 by(simp add: sequentially_consistent_def split_beta)
 
-lemma conflict_compP [simp]: "conflict (compP f P) = conflict P"
-by(simp add: fun_eq_iff conflict_def)
+lemma conflict_compP [simp]: "non_volatile_conflict (compP f P) = non_volatile_conflict P"
+by(simp add: fun_eq_iff non_volatile_conflict_def)
 
 lemma correctly_synchronized_compP [simp]: 
   "correctly_synchronized (compP f P) = correctly_synchronized P"
 by(simp add: fun_eq_iff correctly_synchronized_def)
 
+lemma (in heap_base) heap_read_typed_compP [simp]:
+  "heap_read_typed (compP f P) = heap_read_typed P"
+by(intro ext)(simp add: heap_read_typed_def)
 
 context J_JVM_heap_conf_base begin
 
@@ -244,6 +287,13 @@ theorem J2JVM_jmm_correct:
   shows "legal_execution P (J_\<E> P C M vs Running) (E, ws) \<longleftrightarrow> 
          legal_execution (J2JVM P) (JVMd_\<E> (J2JVM P) C M vs Running) (E, ws)"
 by(simp only: red_\<E>_eq_mexecd_\<E>[OF assms] J2JVM_def o_apply compP1_def compP2_def legal_execution_compP)
+
+theorem J2JVM_jmm_correct_weak:
+  assumes wf: "wf_J_prog P"
+  and wf_start: "wf_start_state P C M vs"
+  shows "weakly_legal_execution P (J_\<E> P C M vs Running) (E, ws) \<longleftrightarrow> 
+         weakly_legal_execution (J2JVM P) (JVMd_\<E> (J2JVM P) C M vs Running) (E, ws)"
+by(simp only: red_\<E>_eq_mexecd_\<E>[OF assms] J2JVM_def o_apply compP1_def compP2_def weakly_legal_execution_compP)
 
 theorem J2JVM_jmm_correctly_synchronized:
   assumes wf: "wf_J_prog P"

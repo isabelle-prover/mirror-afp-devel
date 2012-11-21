@@ -15,7 +15,8 @@ section {* Translated versions of external calls for the JVM *}
 locale heap_execute = addr_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
-  fixes empty_heap :: "'heap" 
+  fixes spurious_wakeups :: bool
+  and empty_heap :: "'heap" 
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val set" 
@@ -23,6 +24,7 @@ locale heap_execute = addr_base +
 
 sublocale heap_execute < execute!: heap_base
   addr2thread_id thread_id2addr 
+  spurious_wakeups
   empty_heap allocate typeof_addr
   "\<lambda>h a ad v. v \<in> heap_read h a ad" "\<lambda>h a ad v h'. h' \<in> heap_write h a ad v"
 .
@@ -96,7 +98,8 @@ lemma red_external_aggr_code:
           (\<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>, RetStaySame, h),
           (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h),
           (\<lbrace>Notified\<rbrace>, RetVal Unit, h),
-          (\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h)}
+          (\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>, execute.RetEXC InterruptedException, h)} \<union>
+          (if spurious_wakeups then {(\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>, RetVal Unit, h)} else {})
     else if M = notify then
        {(\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>, RetVal Unit, h),
         (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, execute.RetEXC IllegalMonitorState, h)}

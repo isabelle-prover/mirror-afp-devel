@@ -389,7 +389,6 @@ proof(intro exI conjI strip)
       with a a'_E' a_def obtain w where w: "w \<in> write_actions ?E''"
         and adal_w: "(ad, al) \<in> action_loc P ?E'' w"
         and written: "value_written P ?E'' w (ad, al) = v"
-(*        and lnth': "(E' @ list_of (ltake (enat (a' - length E')) E)) ! w = (t', NormalAction (WriteMem ad al v))" *)
         and hb: "P,?E'' \<turnstile> w \<le>hb a'"
         and in_between_so:
         "\<And>w'. \<lbrakk> w' \<in> write_actions ?E''; (ad, al) \<in> action_loc P ?E'' w'; 

@@ -210,6 +210,17 @@ lemma f_nth_set:
   "\<lbrakk> f (xs ! n) = v; n < length xs \<rbrakk> \<Longrightarrow> v \<in> f ` set xs"
 unfolding set_conv_nth by auto
 
+lemma nth_concat_eqI:
+  "\<lbrakk> n = listsum (map length (take i xss)) + k; i < length xss; k < length (xss ! i); x = xss ! i ! k \<rbrakk>
+  \<Longrightarrow> concat xss ! n = x"
+apply(induct xss arbitrary: n i k)
+ apply simp
+apply simp
+apply(case_tac i)
+ apply(simp add: nth_append)
+apply(simp add: nth_append)
+done
+
 lemma replicate_eq_append_conv: 
   "(replicate n x = xs @ ys) = (\<exists>m\<le>n. xs = replicate m x \<and> ys = replicate (n-m) x)"
 proof(induct n arbitrary: xs ys)
@@ -397,7 +408,7 @@ lemma option_case_conv_if:
   "(case v of None \<Rightarrow> f | Some x \<Rightarrow> g x) = (if \<exists>a. v = Some a then g (the v) else f)"
 by(simp)
 
-lemma LetI: "(\<And>x. x = t \<Longrightarrow> P x) \<Longrightarrow> let x = t in P x" -- "Move to Aux"
+lemma LetI: "(\<And>x. x = t \<Longrightarrow> P x) \<Longrightarrow> let x = t in P x"
 by(simp)
 
 (* rearrange parameters and premises to allow application of one-point-rules *)

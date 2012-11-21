@@ -20,6 +20,7 @@ text {*
 locale JVM_heap_execute = heap_execute +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap" 
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
@@ -28,6 +29,7 @@ locale JVM_heap_execute = heap_execute +
 
 sublocale JVM_heap_execute < execute!: JVM_heap_base
   addr2thread_id thread_id2addr 
+  spurious_wakeups
   empty_heap allocate typeof_addr
   "\<lambda>h a ad v. v \<in> heap_read h a ad" "\<lambda>h a ad v h'. h' \<in> heap_write h a ad v"
 .
@@ -184,15 +186,6 @@ apply(cases tas)
 apply(fastforce simp add: o_def jvm_thread_action'_of_jvm_thread_action_def jvm_thread_action'_ok_def intro!: map_idI[symmetric] map_idI convert_new_thread_action_eqI dest: bspec intro!: rev_image_eqI elim!: rev_iffD1[OF _ arg_cong[where f="\<lambda>x. x : A"]])
 done
 
-context heap_base begin -- "Move to ExternalCall"
-
-lemma red_external_aggr_new_thread_sub_thread':
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None; 
-     NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
-  \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
-by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
-
-end
 
 context JVM_heap_execute begin
 
@@ -373,11 +366,11 @@ proof -
     case Invoke
     thus ?thesis using assms 
       apply(cases m)
-      apply(auto simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread' sub_Thread_sees_run[OF wf])
-       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
+      apply(auto simp add: extNTA2JVM'_def dest: sees_method_idemp execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf])
+       apply(drule execute.red_external_aggr_new_thread_sub_thread, clarsimp, clarsimp, assumption, clarsimp)
        apply(drule sub_Thread_sees_run[OF wf], clarsimp)
        apply(fastforce dest: sees_method_idemp)
-      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
+      apply(drule execute.red_external_aggr_new_thread_sub_thread, clarsimp, clarsimp, assumption, clarsimp)
       apply(drule sub_Thread_sees_run[OF wf], clarsimp)
       apply(fastforce dest: sees_method_idemp)
       done
@@ -414,11 +407,11 @@ proof -
   next
     case Invoke thus ?thesis using assms
       apply(cases "m")
-      apply(auto intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread' sub_Thread_sees_run[OF wf] sees_method_idemp)
-       apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
+      apply(auto intro!: rev_bexI convert_new_thread_action_eqI simp add: extNTA2JVM'_def extNTA2JVM_def dest: execute.red_external_aggr_new_thread_sub_thread sub_Thread_sees_run[OF wf] sees_method_idemp)
+       apply(drule execute.red_external_aggr_new_thread_sub_thread, clarsimp, clarsimp, assumption, clarsimp)
        apply(drule sub_Thread_sees_run[OF wf], clarsimp)
        apply(fastforce dest: sees_method_idemp)
-      apply(drule execute.red_external_aggr_new_thread_sub_thread', clarsimp, clarsimp, assumption, clarsimp)
+      apply(drule execute.red_external_aggr_new_thread_sub_thread, clarsimp, clarsimp, assumption, clarsimp)
       apply(drule sub_Thread_sees_run[OF wf], clarsimp)
       apply(fastforce dest: sees_method_idemp)
       done
@@ -513,11 +506,13 @@ end
 locale JVM_heap_execute_conf_read = JVM_heap_execute +
   execute!: JVM_conf_read
     addr2thread_id thread_id2addr 
+    spurious_wakeups
     empty_heap allocate typeof_addr 
     "\<lambda>h a ad v. v \<in> heap_read h a ad" "\<lambda>h a ad v h'. h' \<in> heap_write h a ad v"
   +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap" 
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 

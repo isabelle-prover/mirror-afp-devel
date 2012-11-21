@@ -38,7 +38,8 @@ locale heap_base =
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   +
-  fixes empty_heap :: "'heap"
+  fixes spurious_wakeups :: bool
+  and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
@@ -76,7 +77,8 @@ definition deterministic_heap_ops :: bool
 where
   "deterministic_heap_ops \<longleftrightarrow>
   (\<forall>h ad al v v'. heap_read h ad al v \<longrightarrow> heap_read h ad al v' \<longrightarrow> v = v') \<and>
-  (\<forall>h ad al v h' h''. heap_write h ad al v h' \<longrightarrow> heap_write h ad al v h'' \<longrightarrow> h' = h'')"
+  (\<forall>h ad al v h' h''. heap_write h ad al v h' \<longrightarrow> heap_write h ad al v h'' \<longrightarrow> h' = h'') \<and>
+  \<not> spurious_wakeups"
 
 end
 
@@ -150,13 +152,18 @@ lemma addr_loc_type_fun:
   "\<lbrakk> P,h \<turnstile> a@al : T; P,h \<turnstile> a@al : T' \<rbrakk> \<Longrightarrow> T = T'"
 by(auto elim!: addr_loc_type.cases dest: has_field_fun)
 
+lemma THE_addr_loc_type:
+  "P,h \<turnstile> a@al : T \<Longrightarrow> (THE T. P,h \<turnstile> a@al : T) = T"
+by(rule the_equality)(auto dest: addr_loc_type_fun)
+
 lemma typeof_addr_locI [simp]:
   "P,h \<turnstile> a@al : T \<Longrightarrow> typeof_addr_loc P h a al = T"
 by(auto simp add: typeof_addr_loc_def dest: addr_loc_type_fun)
 
 lemma deterministic_heap_opsI:
   "\<lbrakk> \<And>h ad al v v'. \<lbrakk> heap_read h ad al v; heap_read h ad al v' \<rbrakk> \<Longrightarrow> v = v';
-     \<And>h ad al v h' h''. \<lbrakk> heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h''\<rbrakk>
+     \<And>h ad al v h' h''. \<lbrakk> heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h'';
+     \<not> spurious_wakeups \<rbrakk>
   \<Longrightarrow> deterministic_heap_ops"
 unfolding deterministic_heap_ops_def by blast
 
@@ -168,16 +175,22 @@ lemma deterministic_heap_ops_writeD:
   "\<lbrakk> deterministic_heap_ops; heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h''"
 unfolding deterministic_heap_ops_def by blast
 
+lemma deterministic_heap_ops_no_spurious_wakeups:
+  "deterministic_heap_ops \<Longrightarrow> \<not> spurious_wakeups"
+unfolding deterministic_heap_ops_def by blast
+
 end
 
 locale addr_conv =
   heap_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
   +
   prog P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -198,10 +211,12 @@ end
 locale heap =
   addr_conv
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"

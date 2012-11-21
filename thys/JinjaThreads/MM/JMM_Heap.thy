@@ -20,6 +20,7 @@ by(simp add: w_addrs_def)
 locale allocated_heap_base = heap_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -32,6 +33,7 @@ locale allocated_heap =
   heap +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -127,6 +129,15 @@ end
 
 context heap_base begin
 
+lemma addr_loc_default_conf:
+  "P \<turnstile> class_type_of CTn has F:T (fm) in C 
+  \<Longrightarrow> P,h \<turnstile> addr_loc_default P CTn (CField C F) :\<le> T"
+apply(cases CTn)
+ apply simp
+apply(frule has_field_decl_above)
+apply simp
+done
+
 definition vs_conf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('addr \<times> addr_loc \<Rightarrow> 'addr val set) \<Rightarrow> bool"
 where "vs_conf P h vs \<longleftrightarrow> (\<forall>ad al v. v \<in> vs (ad, al) \<longrightarrow> (\<exists>T. P,h \<turnstile> ad@al : T \<and> P,h \<turnstile> v :\<le> T))"
 
@@ -137,6 +148,11 @@ unfolding vs_conf_def by blast
 lemma vs_confD:
   "\<lbrakk> vs_conf P h vs; v \<in> vs (ad, al) \<rbrakk> \<Longrightarrow> \<exists>T. P,h \<turnstile> ad@al : T \<and> P,h \<turnstile> v :\<le> T"
 unfolding vs_conf_def by blast
+
+lemma vs_conf_insert_iff:
+  "vs_conf P h (vs((ad, al) := insert v (vs (ad, al)))) 
+  \<longleftrightarrow> vs_conf P h vs \<and> (\<exists>T. P,h \<turnstile> ad@al : T \<and> P,h \<turnstile> v :\<le> T)"
+by(auto 4 3 elim: vs_confD intro: vs_confI split: split_if_asm)
 
 end
 

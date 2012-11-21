@@ -31,6 +31,7 @@ locale heap_conf_base =
   heap_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -44,15 +45,18 @@ sublocale heap_conf_base < prog P .
 locale heap_conf = 
   heap
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     P
   +
   heap_conf_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     hconf P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -70,10 +74,12 @@ locale heap_conf =
 locale heap_progress =
   heap_conf
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     hconf P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -88,10 +94,12 @@ locale heap_progress =
 locale heap_conf_read =
   heap_conf
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     hconf P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -107,6 +115,7 @@ locale heap_typesafe =
   heap_progress +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"

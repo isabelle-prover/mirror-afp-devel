@@ -7,6 +7,7 @@ header {* \isaheader{JMM Instantiation with Jinja -- common parts} *}
 theory JMM_Common
 imports
   JMM_Framework
+  JMM_Typesafe
   "../Common/BinOp"
   "../Common/ExternalCallWF"
 begin
@@ -191,8 +192,7 @@ lemma heap_copy_loc_non_speculative_typeable:
   and vs: "vs_conf P h vs"
   and hconf: "hconf h"
   and wt: "P,h \<turnstile> ad@al : T" "P,h \<turnstile> ad'@al : T"
-  shows "heap_base.heap_copy_loc (heap_read_typed P) heap_write ad ad' al h obs h'" (is ?thesis1)
-  and "vs_conf P h' (w_values P vs (map NormalAction obs))" (is ?thesis2)
+  shows "heap_base.heap_copy_loc (heap_read_typed P) heap_write ad ad' al h obs h'"
 proof -
   from copy obtain v where obs: "obs = [ReadMem ad al v, WriteMem ad' al v]"
     and read: "heap_read h ad al v" and "write": "heap_write h ad' al v h'" by cases
@@ -200,13 +200,33 @@ proof -
   with vs wt have v: "P,h \<turnstile> v :\<le> T" by(blast dest: vs_confD addr_loc_type_fun)+
   with read wt have "heap_read_typed P h ad al v"
     by(auto intro: heap_read_typedI dest: addr_loc_type_fun)
-  thus ?thesis1 using "write" unfolding obs by(rule heap_base.heap_copy_loc.intros)
+  thus ?thesis using "write" unfolding obs by(rule heap_base.heap_copy_loc.intros)
+qed
 
+lemma heap_copy_loc_non_speculative_vs_conf:
+  assumes copy: "heap_copy_loc ad ad' al h obs h'"
+  and sc: "non_speculative P vs (llist_of (take n (map NormalAction obs)))"
+  and vs: "vs_conf P h vs"
+  and hconf: "hconf h"
+  and wt: "P,h \<turnstile> ad@al : T" "P,h \<turnstile> ad'@al : T"
+  shows "vs_conf P h' (w_values P vs (take n (map NormalAction obs)))"
+proof -
+  from copy obtain v where obs: "obs = [ReadMem ad al v, WriteMem ad' al v]"
+    and read: "heap_read h ad al v" and "write": "heap_write h ad' al v h'" by cases
   from "write" have hext: "h \<unlhd> h'" by(rule hext_heap_write)
-  with vs have "vs_conf P h' vs" by(rule vs_conf_hext)
-  moreover from hext wt v have "P,h' \<turnstile> ad'@al : T" "P,h' \<turnstile> v :\<le> T"
-    by(blast intro: addr_loc_type_hext_mono conf_hext)+
-  ultimately show ?thesis2 using obs by(auto intro!: vs_confI split: split_if_asm dest: vs_confD)
+  with vs have vs': "vs_conf P h' vs" by(rule vs_conf_hext)
+  show ?thesis
+  proof(cases "n > 0")
+    case True
+    with obs sc have "v \<in> vs (ad, al)" by(auto simp add: take_Cons')
+    with vs wt have v: "P,h \<turnstile> v :\<le> T" by(blast dest: vs_confD addr_loc_type_fun)+
+    with hext wt have "P,h' \<turnstile> ad'@al : T" "P,h' \<turnstile> v :\<le> T"
+      by(blast intro: addr_loc_type_hext_mono conf_hext)+
+    thus ?thesis using vs' obs
+      by(auto simp add: take_Cons' intro!: vs_confI split: split_if_asm dest: vs_confD)
+  next
+    case False thus ?thesis using vs' by simp
+  qed
 qed
 
 lemma heap_copies_non_speculative_typeable:
@@ -215,20 +235,16 @@ lemma heap_copies_non_speculative_typeable:
   and "vs_conf P h vs"
   and "hconf h"
   and "list_all2 (\<lambda>al T. P,h \<turnstile> ad@al : T) als Ts" "list_all2 (\<lambda>al T. P,h \<turnstile> ad'@al : T) als Ts"
-  shows "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' als h obs h'" (is ?thesis1)
-  and "vs_conf P h' (w_values P vs (map NormalAction obs))" (is ?thesis2)
+  shows "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' als h obs h'"
 using assms
 proof(induct arbitrary: Ts vs)
-  case Nil case 1 show ?case by(auto intro: heap_base.heap_copies.intros)
-next
-  case Nil case 2 thus ?case by simp
+  case Nil show ?case by(auto intro: heap_base.heap_copies.intros)
 next
   case (Cons al h ob h' als obs h'')
-  fix Ts vs
-  assume sc: "non_speculative P vs (llist_of (map NormalAction (ob @ obs)))"
-    and vs: "vs_conf P h vs"
-    and hconf: "hconf h"
-    and wt: "list_all2 (\<lambda>al T. P,h \<turnstile> ad@al : T) (al # als) Ts" "list_all2 (\<lambda>al T. P,h \<turnstile> ad'@al : T) (al # als) Ts"
+  note sc = `non_speculative P vs (llist_of (map NormalAction (ob @ obs)))`
+    and vs = `vs_conf P h vs`
+    and hconf = `hconf h`
+    and wt = `list_all2 (\<lambda>al T. P,h \<turnstile> ad@al : T) (al # als) Ts` `list_all2 (\<lambda>al T. P,h \<turnstile> ad'@al : T) (al # als) Ts`
   
   have sc1: "non_speculative P vs (llist_of (map NormalAction ob))" 
     and sc2: "non_speculative P (w_values P vs (map NormalAction ob)) (llist_of (map NormalAction obs))"
@@ -239,8 +255,10 @@ next
     by(auto simp add: list_all2_Cons1)
   from `heap_copy_loc ad ad' al h ob h'` sc1 vs hconf wt1
   have copy: "heap_base.heap_copy_loc (heap_read_typed P) heap_write ad ad' al h ob h'"
-    and vs': "vs_conf P h' (w_values P vs (map NormalAction ob))"
     by(rule heap_copy_loc_non_speculative_typeable)+
+  from heap_copy_loc_non_speculative_vs_conf[OF `heap_copy_loc ad ad' al h ob h'` _ vs hconf wt1, of "length ob"] sc1
+  have vs': "vs_conf P h' (w_values P vs (map NormalAction ob))" by simp
+
   from `heap_copy_loc ad ad' al h ob h'`
   have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
   with wt2 have wt2': "list_all2 (\<lambda>al T. P,h' \<turnstile> ad@al : T) als Ts'" "list_all2 (\<lambda>al T. P,h' \<turnstile> ad'@al : T) als Ts'"
@@ -249,14 +267,62 @@ next
   from copy hconf wt1 have hconf': "hconf h'"
     by(rule heap_conf_read.hconf_heap_copy_loc_mono[OF heap_conf_read_heap_read_typed])
   
-  { case 1
-    from sc2 vs' hconf' wt2' have "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' als h' obs h''" by(rule Cons)
-    with copy show ?case by(rule heap_base.heap_copies.Cons) }
+  from sc2 vs' hconf' wt2' have "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' als h' obs h''" by(rule Cons)
+  with copy show ?case by(rule heap_base.heap_copies.Cons)
+qed
 
-  (* case 2 *)
-  have "vs_conf P h'' (w_values P (w_values P vs (map NormalAction ob)) (map NormalAction obs))"
-    using sc2 vs' hconf' wt2' by(rule Cons)
-  thus "vs_conf P h'' (w_values P vs (map NormalAction (ob @ obs)))" by simp
+lemma heap_copies_non_speculative_vs_conf:
+  assumes "heap_copies ad ad' als h obs h'"
+  and "non_speculative P vs (llist_of (take n (map NormalAction obs)))"
+  and "vs_conf P h vs"
+  and "hconf h"
+  and "list_all2 (\<lambda>al T. P,h \<turnstile> ad@al : T) als Ts" "list_all2 (\<lambda>al T. P,h \<turnstile> ad'@al : T) als Ts"
+  shows "vs_conf P h' (w_values P vs (take n (map NormalAction obs)))"
+using assms
+proof(induction arbitrary: Ts vs n)
+  case Nil thus ?case by simp
+next
+  case (Cons al h ob h' als obs h'')
+  note sc = `non_speculative P vs (llist_of (take n (map NormalAction (ob @ obs))))`
+    and hcl = `heap_copy_loc ad ad' al h ob h'`
+    and vs = `vs_conf P h vs`
+    and hconf = `hconf h`
+    and wt = `list_all2 (\<lambda>al T. P,h \<turnstile> ad@al : T) (al # als) Ts` `list_all2 (\<lambda>al T. P,h \<turnstile> ad'@al : T) (al # als) Ts`
+  let ?vs' = "w_values P vs (take n (map NormalAction ob))"
+
+  from sc have sc1: "non_speculative P vs (llist_of (take n (map NormalAction ob)))"
+    and sc2: "non_speculative P ?vs' (llist_of (take (n - length ob) (map NormalAction obs)))"
+    by(simp_all add: lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: lappend_llist_of_llist_of)
+  
+  from wt obtain T Ts' where Ts: "Ts = T # Ts'" 
+    and wt1: "P,h \<turnstile> ad@al : T" "P,h \<turnstile> ad'@al : T"
+    and wt2: "list_all2 (\<lambda>al T. P,h \<turnstile> ad@al : T) als Ts'" "list_all2 (\<lambda>al T. P,h \<turnstile> ad'@al : T) als Ts'"
+    by(auto simp add: list_all2_Cons1)
+
+  from hcl sc1 vs hconf wt1 have vs': "vs_conf P h' ?vs'" by(rule heap_copy_loc_non_speculative_vs_conf)
+
+  show ?case
+  proof(cases "n < length ob")
+    case True
+    from `heap_copies ad ad' als h' obs h''` have "h' \<unlhd> h''" by(rule hext_heap_copies)
+    with vs' have "vs_conf P h'' ?vs'" by(rule vs_conf_hext)
+    thus ?thesis using True by simp
+  next
+    case False
+    note sc2 vs'
+    moreover from False sc1 have sc1': "non_speculative P vs (llist_of (map NormalAction ob))" by simp
+    with hcl have "heap_base.heap_copy_loc (heap_read_typed P) heap_write ad ad' al h ob h'"
+      using vs hconf wt1 by(rule heap_copy_loc_non_speculative_typeable)
+    hence "hconf h'" using hconf wt1
+      by(rule heap_conf_read.hconf_heap_copy_loc_mono[OF heap_conf_read_heap_read_typed])
+    moreover
+    from hcl have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
+    with wt2 have wt2': "list_all2 (\<lambda>al T. P,h' \<turnstile> ad@al : T) als Ts'" "list_all2 (\<lambda>al T. P,h' \<turnstile> ad'@al : T) als Ts'"
+      by -(erule list_all2_mono[OF _ addr_loc_type_hext_mono], assumption+)+
+    ultimately have "vs_conf P h'' (w_values P ?vs' (take (n - length ob) (map NormalAction obs)))"
+      by(rule Cons.IH)
+    with False show ?thesis by simp
+  qed
 qed
 
 lemma heap_clone_non_speculative_typeable_Some:
@@ -264,82 +330,164 @@ lemma heap_clone_non_speculative_typeable_Some:
   and sc: "non_speculative P vs (llist_of (map NormalAction obs))"
   and vs: "vs_conf P h vs"
   and hconf: "hconf h"
-  shows "heap_base.heap_clone allocate typeof_addr (heap_read_typed P) heap_write P h ad h' \<lfloor>(obs, ad')\<rfloor>" (is ?thesis1)
-  and "vs_conf P h' (w_values P vs (map NormalAction obs))" (is ?thesis2)
-proof -
-  have "?thesis1 \<and> ?thesis2" using clone
-  proof(cases)
-    case (ObjClone C h'' FDTs obs')
-    note FDTs = `P \<turnstile> C has_fields FDTs`
-      and obs = `obs = NewHeapElem ad' (Class_type C) # obs'`
-    let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
-    let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
-    let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Class_type C) :: ('addr, 'thread_id) obs_event))"
-    from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
-    hence type: "typeof_addr h'' ad = \<lfloor>Class_type C\<rfloor>" using `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` 
-      by(rule typeof_addr_hext_mono)
+  shows "heap_base.heap_clone allocate typeof_addr (heap_read_typed P) heap_write P h ad h' \<lfloor>(obs, ad')\<rfloor>"
+using clone
+proof(cases)
+  case (ObjClone C h'' FDTs obs')
+  note FDTs = `P \<turnstile> C has_fields FDTs`
+    and obs = `obs = NewHeapElem ad' (Class_type C) # obs'`
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
+  let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
+  let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Class_type C) :: ('addr, 'thread_id) obs_event))"
+  from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
+  hence type: "typeof_addr h'' ad = \<lfloor>Class_type C\<rfloor>" using `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` 
+    by(rule typeof_addr_hext_mono)
     
-    note `heap_copies ad ad' ?als h'' obs' h'`
-    moreover from sc have "non_speculative P ?vs (llist_of (map NormalAction obs'))"
-      by(simp add: obs)
-    moreover from `P \<turnstile> C has_fields FDTs`
-    have "is_class P C" by(rule has_fields_is_class)
-    hence "is_htype P (Class_type C)" by simp
-    with vs `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)`
-    have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
-    moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` hconf `is_htype P (Class_type C)`
-    have "hconf h''" by(rule hconf_allocate_mono)
-    moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-      unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-      by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
-    moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` `is_htype P (Class_type C)`
-    have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
-    with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
-      unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
-      by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
-    ultimately
-    have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h'' obs' h'"
-      and vs': "vs_conf P h' (w_values P ?vs (map NormalAction obs'))"
-      by(rule heap_copies_non_speculative_typeable)+
-    from `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` FDTs copy
-    have "?thesis1" unfolding obs by(rule heap_base.heap_clone.intros)
-    moreover from vs' obs have ?thesis2 by simp
-    ultimately show ?thesis ..
+  note `heap_copies ad ad' ?als h'' obs' h'`
+  moreover from sc have "non_speculative P ?vs (llist_of (map NormalAction obs'))"
+    by(simp add: obs)
+  moreover from `P \<turnstile> C has_fields FDTs`
+  have "is_class P C" by(rule has_fields_is_class)
+  hence "is_htype P (Class_type C)" by simp
+  with vs `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)`
+  have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
+  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` hconf `is_htype P (Class_type C)`
+  have "hconf h''" by(rule hconf_allocate_mono)
+  moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
+    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` `is_htype P (Class_type C)`
+  have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
+  with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
+    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+  ultimately
+  have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h'' obs' h'"
+    by(rule heap_copies_non_speculative_typeable)+
+  from `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` FDTs copy
+  show ?thesis unfolding obs by(rule heap_base.heap_clone.intros)
+next
+  case (ArrClone T n h'' FDTs obs')
+  note obs = `obs = NewHeapElem ad' (Array_type T n) # obs'`
+    and new = `allocate h (Array_type T n) = (h'', \<lfloor>ad'\<rfloor>)`
+    and FDTs = `P \<turnstile> Object has_fields FDTs`
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
+  let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate n T"
+  let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Array_type T n) :: ('addr, 'thread_id) obs_event))"
+  from new have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
+  hence type: "typeof_addr h'' ad = \<lfloor>Array_type T n\<rfloor>" using `typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>` 
+    by(rule typeof_addr_hext_mono)
+  
+  note `heap_copies ad ad' ?als h'' obs' h'`
+  moreover from sc have "non_speculative P ?vs (llist_of (map NormalAction obs'))" by(simp add: obs)
+  moreover from `typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>` `hconf h` have "is_htype P (Array_type T n)"
+    by(auto dest: typeof_addr_is_type)
+  with vs new have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
+  moreover from new hconf `is_htype P (Array_type T n)` have "hconf h''" by(rule hconf_allocate_mono)
+  moreover
+  from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+  moreover from new `is_htype P (Array_type T n)`
+  have "typeof_addr h'' ad' = \<lfloor>Array_type T n\<rfloor>"
+    by(auto dest: allocate_SomeD)
+  hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts" using FDTs
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+  ultimately have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h'' obs' h'"
+    by(rule heap_copies_non_speculative_typeable)+
+  from `typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>` new FDTs copy show ?thesis
+    unfolding obs by(rule heap_base.heap_clone.ArrClone)
+qed
+
+lemma heap_clone_non_speculative_vs_conf_Some:
+  assumes clone: "heap_clone P h ad h' \<lfloor>(obs, ad')\<rfloor>"
+  and sc: "non_speculative P vs (llist_of (take n (map NormalAction obs)))"
+  and vs: "vs_conf P h vs"
+  and hconf: "hconf h"
+  shows "vs_conf P h' (w_values P vs (take n (map NormalAction obs)))"
+using clone
+proof(cases)
+  case (ObjClone C h'' FDTs obs')
+  note FDTs = `P \<turnstile> C has_fields FDTs`
+    and obs = `obs = NewHeapElem ad' (Class_type C) # obs'`
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
+  let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
+  let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Class_type C) :: ('addr, 'thread_id) obs_event))"
+  from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
+  hence type: "typeof_addr h'' ad = \<lfloor>Class_type C\<rfloor>" using `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` 
+    by(rule typeof_addr_hext_mono)
+    
+  note `heap_copies ad ad' ?als h'' obs' h'`
+  moreover from sc have "non_speculative P ?vs (llist_of (take (n - 1) (map NormalAction obs')))"
+    by(simp add: obs take_Cons' split: split_if_asm)
+  moreover from `P \<turnstile> C has_fields FDTs`
+  have "is_class P C" by(rule has_fields_is_class)
+  hence "is_htype P (Class_type C)" by simp
+  with vs `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)`
+  have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
+  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` hconf `is_htype P (Class_type C)`
+  have "hconf h''" by(rule hconf_allocate_mono)
+  moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
+    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` `is_htype P (Class_type C)`
+  have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
+  with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
+    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
+  ultimately
+  have vs': "vs_conf P h' (w_values P ?vs (take (n - 1) (map NormalAction obs')))"
+    by(rule heap_copies_non_speculative_vs_conf)
+  show ?thesis
+  proof(cases "n > 0")
+    case True
+    with obs vs' show ?thesis by(simp add: take_Cons')
   next
-    case (ArrClone T n h'' FDTs obs')
-    note obs = `obs = NewHeapElem ad' (Array_type T n) # obs'`
-      and new = `allocate h (Array_type T n) = (h'', \<lfloor>ad'\<rfloor>)`
-      and FDTs = `P \<turnstile> Object has_fields FDTs`
-    let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
-    let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate n T"
-    let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Array_type T n) :: ('addr, 'thread_id) obs_event))"
-    from new have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
-    hence type: "typeof_addr h'' ad = \<lfloor>Array_type T n\<rfloor>" using `typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>` 
-      by(rule typeof_addr_hext_mono)
-    
-    note `heap_copies ad ad' ?als h'' obs' h'`
-    moreover from sc have "non_speculative P ?vs (llist_of (map NormalAction obs'))" by(simp add: obs)
-    moreover from `typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>` `hconf h` have "is_htype P (Array_type T n)"
-      by(auto dest: typeof_addr_is_type)
-    with vs new have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
-    moreover from new hconf `is_htype P (Array_type T n)` have "hconf h''" by(rule hconf_allocate_mono)
-    moreover
-    from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-      by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
-    moreover from new `is_htype P (Array_type T n)`
-    have "typeof_addr h'' ad' = \<lfloor>Array_type T n\<rfloor>"
-      by(auto dest: allocate_SomeD)
-    hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts" using FDTs
-      by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
-    ultimately have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h'' obs' h'"
-      and vs': "vs_conf P h' (w_values P ?vs (map NormalAction obs'))"
-      by(rule heap_copies_non_speculative_typeable)+
-    from `typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>` new FDTs copy have ?thesis1
-      unfolding obs by(rule heap_base.heap_clone.ArrClone)
-    moreover from vs' obs have ?thesis2 by simp
-    ultimately show ?thesis ..
+    case False
+    from `heap_copies ad ad' ?als h'' obs' h'` have "h'' \<unlhd> h'" by(rule hext_heap_copies)
+    with `h \<unlhd> h''` have "h \<unlhd> h'" by(rule hext_trans)
+    with vs have "vs_conf P h' vs" by(rule vs_conf_hext)
+    thus ?thesis using False by simp
   qed
-  thus ?thesis1 ?thesis2 by blast+
+next
+  case (ArrClone T N h'' FDTs obs')
+  note obs = `obs = NewHeapElem ad' (Array_type T N) # obs'`
+    and new = `allocate h (Array_type T N) = (h'', \<lfloor>ad'\<rfloor>)`
+    and FDTs = `P \<turnstile> Object has_fields FDTs`
+  let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<N]"
+  let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate N T"
+  let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Array_type T N) :: ('addr, 'thread_id) obs_event))"
+  from new have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
+  hence type: "typeof_addr h'' ad = \<lfloor>Array_type T N\<rfloor>" using `typeof_addr h ad = \<lfloor>Array_type T N\<rfloor>` 
+    by(rule typeof_addr_hext_mono)
+  
+  note `heap_copies ad ad' ?als h'' obs' h'`
+  moreover from sc have "non_speculative P ?vs (llist_of (take (n - 1) (map NormalAction obs')))"
+    by(simp add: obs take_Cons' split: split_if_asm)
+  moreover from `typeof_addr h ad = \<lfloor>Array_type T N\<rfloor>` `hconf h` have "is_htype P (Array_type T N)"
+    by(auto dest: typeof_addr_is_type)
+  with vs new have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
+  moreover from new hconf `is_htype P (Array_type T N)` have "hconf h''" by(rule hconf_allocate_mono)
+  moreover
+  from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+  moreover from new `is_htype P (Array_type T N)`
+  have "typeof_addr h'' ad' = \<lfloor>Array_type T N\<rfloor>"
+    by(auto dest: allocate_SomeD)
+  hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts" using FDTs
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+  ultimately have vs': "vs_conf P h' (w_values P ?vs (take (n - 1) (map NormalAction obs')))"
+    by(rule heap_copies_non_speculative_vs_conf)
+  show ?thesis
+  proof(cases "n > 0")
+    case True
+    with obs vs' show ?thesis by(simp add: take_Cons')
+  next
+    case False
+    from `heap_copies ad ad' ?als h'' obs' h'` have "h'' \<unlhd> h'" by(rule hext_heap_copies)
+    with `h \<unlhd> h''` have "h \<unlhd> h'" by(rule hext_trans)
+    with vs have "vs_conf P h' vs" by(rule vs_conf_hext)
+    thus ?thesis using False by simp
+  qed
 qed
 
 lemma heap_clone_non_speculative_typeable_None:
@@ -353,13 +501,18 @@ lemma red_external_non_speculative_typeable:
   and sc: "non_speculative P Vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
   and vs: "vs_conf P h Vs"
   and hconf: "hconf h"
-  shows "heap_base.red_external addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write P t h a M vs ta va h'" (is ?thesis1)
-  and "vs_conf P h' (w_values P Vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" (is ?thesis2)
-proof -
-  have "?thesis1 \<and> ?thesis2" using assms
-    by(cases)(auto intro: heap_base.red_external.intros heap_clone_non_speculative_typeable_None heap_clone_non_speculative_typeable_Some dest: hext_heap_clone elim: vs_conf_hext)
-  thus ?thesis1 ?thesis2 by(blast)+
-qed
+  shows "heap_base.red_external addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write P t h a M vs ta va h'"
+using assms
+by(cases)(auto intro: heap_base.red_external.intros heap_clone_non_speculative_typeable_None heap_clone_non_speculative_typeable_Some dest: hext_heap_clone elim: vs_conf_hext)
+
+lemma red_external_non_speculative_vs_conf:
+  assumes red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
+  and sc: "non_speculative P Vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+  and vs: "vs_conf P h Vs"
+  and hconf: "hconf h"
+  shows "vs_conf P h' (w_values P Vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+using assms
+by(cases)(auto intro: heap_base.red_external.intros heap_clone_non_speculative_vs_conf_Some dest: hext_heap_clone elim: vs_conf_hext simp add: take_Cons')
 
 lemma red_external_aggr_non_speculative_typeable:
   assumes red: "(ta, va, h') \<in> red_external_aggr P t a M vs h"
@@ -367,13 +520,19 @@ lemma red_external_aggr_non_speculative_typeable:
   and vs: "vs_conf P h Vs"
   and hconf: "hconf h"
   and native: "is_native P (the (typeof_addr h a)) M"
-  shows "(ta, va, h') \<in> heap_base.red_external_aggr addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write P t a M vs h" (is ?thesis1)
-  and "vs_conf P h' (w_values P Vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" (is ?thesis2)
-proof -
-  have "?thesis1 \<and> ?thesis2" using assms
-    by(cases "the (typeof_addr h a)")(auto 4 3 simp add: is_native.simps external_WT_defs.simps red_external_aggr_def heap_base.red_external_aggr_def split: split_if_asm split del: split_if del: disjCI intro: heap_clone_non_speculative_typeable_None heap_clone_non_speculative_typeable_Some dest: hext_heap_clone elim: vs_conf_hext dest: sees_method_decl_above)
-  thus ?thesis1 ?thesis2 by(blast)+
-qed
+  shows "(ta, va, h') \<in> heap_base.red_external_aggr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write P t a M vs h"
+using assms
+by(cases "the (typeof_addr h a)")(auto 4 3 simp add: is_native.simps external_WT_defs.simps red_external_aggr_def heap_base.red_external_aggr_def split: split_if_asm split del: split_if del: disjCI intro: heap_clone_non_speculative_typeable_None heap_clone_non_speculative_typeable_Some dest: sees_method_decl_above)
+
+lemma red_external_aggr_non_speculative_vs_conf:
+  assumes red: "(ta, va, h') \<in> red_external_aggr P t a M vs h"
+  and sc: "non_speculative P Vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+  and vs: "vs_conf P h Vs"
+  and hconf: "hconf h"
+  and native: "is_native P (the (typeof_addr h a)) M"
+  shows "vs_conf P h' (w_values P Vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+using assms
+by(cases "the (typeof_addr h a)")(auto 4 3 simp add: is_native.simps external_WT_defs.simps red_external_aggr_def heap_base.red_external_aggr_def take_Cons' split: split_if_asm split del: split_if del: disjCI intro: heap_clone_non_speculative_vs_conf_Some dest: hext_heap_clone elim: vs_conf_hext dest: sees_method_decl_above)
 
 end
 
@@ -482,8 +641,8 @@ next
       and ns'': "non_speculative P ?vs' (llist_of (map NormalAction (take ?i' obs)))"
       by(simp add: lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: lappend_llist_of_llist_of)
 
-    from copy ns' vs hconf type1' type2' have "vs_conf P h' ?vs'"
-      by(rule heap_copy_loc_non_speculative_typeable)
+    from heap_copy_loc_non_speculative_vs_conf[OF copy _ vs hconf type1' type2', where n="length ob"] ns'
+    have "vs_conf P h' ?vs'" by simp
     moreover
     from copy have hext: "h \<unlhd> h'" by(rule hext_heap_copy_loc)
     from type1'' have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) als Ts'"
@@ -834,6 +993,52 @@ lemma red_external_aggr_NewThread_idD:
   \<Longrightarrow> t' = addr2thread_id a \<and> a' = a"
 apply(auto simp add: red_external_aggr_def split: split_if_asm)
 done
+
+end
+
+locale heap'' = 
+  heap'
+    addr2thread_id thread_id2addr
+    spurious_wakeups
+    empty_heap allocate typeof_addr heap_read heap_write
+    P
+  for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
+  and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
+  and empty_heap :: "'heap"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and typeof_addr :: "'addr \<rightharpoonup> htype"
+  and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and P :: "'m prog"
+  +
+  assumes allocate_typeof_addr_SomeD: "\<lbrakk> allocate h hT = (h', \<lfloor>a\<rfloor>); typeof_addr a \<noteq> None \<rbrakk> \<Longrightarrow> typeof_addr a = \<lfloor>hT\<rfloor>"
+begin
+
+lemma heap_copy_loc_New_type_match:
+  "\<lbrakk> h.heap_copy_loc a a' al h obs h'; NewHeapElem ad CTn \<in> set obs; typeof_addr ad \<noteq> None \<rbrakk>
+  \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
+by(erule h.heap_copy_loc.cases) simp
+
+lemma heap_copies_New_type_match:
+  "\<lbrakk> h.heap_copies a a' als h obs h'; NewHeapElem ad CTn \<in> set obs; typeof_addr ad \<noteq> None \<rbrakk>
+  \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
+by(induct rule: h.heap_copies.induct)(auto dest: heap_copy_loc_New_type_match)
+
+lemma heap_clone_New_type_match:
+  "\<lbrakk> h.heap_clone P h a h' \<lfloor>(obs, a')\<rfloor>; NewHeapElem ad CTn \<in> set obs; typeof_addr ad \<noteq> None \<rbrakk>
+  \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
+by(erule h.heap_clone.cases)(auto dest: allocate_typeof_addr_SomeD heap_copies_New_type_match)
+
+lemma red_external_New_type_match:
+  "\<lbrakk> h.red_external P t a M vs h ta va h'; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; typeof_addr ad \<noteq> None \<rbrakk>
+  \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
+by(erule h.red_external.cases)(auto dest: heap_clone_New_type_match)
+
+lemma red_external_aggr_New_type_match:
+  "\<lbrakk> (ta, va, h') \<in> h.red_external_aggr P t a M vs h; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; typeof_addr ad \<noteq> None \<rbrakk>
+  \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
+by(auto simp add: h.red_external_aggr_def split: split_if_asm dest: heap_clone_New_type_match)
 
 end
 

@@ -140,6 +140,8 @@ inductive_cases sc_heap_write_cases [elim!]:
   "sc_heap_write h a (CField C F) v h'"
   "sc_heap_write h a (ACell n) v h'"
 
+consts sc_spurious_wakeups :: bool
+
 lemma new_Addr_SomeD: "new_Addr h = \<lfloor>a\<rfloor> \<Longrightarrow> rm_lookup a h = None"
 apply(simp add: new_Addr_def)
 apply(drule rm.max_None[OF TrueI])
@@ -157,6 +159,7 @@ interpretation sc!:
   heap_base
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -224,6 +227,7 @@ interpretation sc!:
   heap 
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -265,6 +269,7 @@ interpretation sc!:
   heap_conf_base  
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -422,6 +427,7 @@ interpretation sc!:
   heap_conf
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -491,6 +497,7 @@ interpretation sc!:
   heap_progress
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -518,6 +525,7 @@ interpretation sc!:
   heap_conf_read
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -528,7 +536,7 @@ interpretation sc!:
   for P
 by(rule sc_heap_conf_read)
 
-lemma sc_deterministic_heap_ops: sc.deterministic_heap_ops
+lemma sc_deterministic_heap_ops: "\<not> sc_spurious_wakeups \<Longrightarrow> sc.deterministic_heap_ops"
 by(rule sc.deterministic_heap_opsI)(auto elim: sc_heap_read.cases sc_heap_write.cases)
 
 subsection {* Code generation *}

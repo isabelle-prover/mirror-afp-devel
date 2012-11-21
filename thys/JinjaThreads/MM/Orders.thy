@@ -7,7 +7,6 @@ header {* \isaheader{Orders as predicates} *}
 theory Orders
 imports
   Main
-  "~~/src/HOL/Library/Zorn"
 begin
 
 section {* Preliminaries *}
@@ -411,6 +410,9 @@ lemma restrictPE [elim!]:
   obtains "r a b" "a \<in> A" "b \<in> A"
 using assms unfolding restrictP_def by simp
 
+lemma restrictP_empty [simp]: "R |` {} = (\<lambda>_ _. False)"
+by(simp add: restrictP_def[abs_def])
+
 lemma refl_on_restrictPI:
   "refl_onP A r \<Longrightarrow> refl_onP (A \<inter> B) (r |` B)"
 by(rule refl_onPI)(blast dest: refl_onPD1 refl_onPD2 refl_onPD)+
@@ -472,154 +474,6 @@ lemma restrictP_idem [simp]:
   fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
   shows "r |` A |` A = r |` A"
 by(simp add: restrictP_subsume1)
-
-section {* Order extensions *}
-
-text {* Every partial order can be extended to a total order *}
-
-lemma porder_extend_to_torder:
-  assumes r: "porder_on A r"
-  obtains s where "torder_on A s" "order_consistent r s"
-proof(atomize_elim)
-  def S \<equiv> "{s. porder_on A (\<lambda>x y. (x, y) \<in> s) \<and> (\<forall>x y. r x y \<longrightarrow> (x, y) \<in> s)}"
-  from r have r_in_S: "{(x, y). r x y} \<in> S" unfolding S_def by auto
-
-  have "\<exists>y\<in>S. \<forall>x\<in>S. y \<subseteq> x \<longrightarrow> y = x"
-  proof(rule Zorn_Lemma2[rule_format])
-    fix c
-    assume "c \<in> chain S"
-    hence "c \<subseteq> S" by(rule chainD2)
-
-    show "\<exists>y\<in>S. \<forall>x\<in>c. x \<subseteq> y"
-    proof(cases "c = {}")
-      case True
-      with r_in_S show ?thesis by blast
-    next
-      case False
-      then obtain s where "s \<in> c" by blast
-      hence s: "porder_on A (\<lambda>x y. (x, y) \<in> s)"
-        and r_in_s: "\<And>x y. r x y \<Longrightarrow> (x, y) \<in> s"
-        using `c \<subseteq> S` unfolding S_def by blast+
-
-      have "porder_on A (\<lambda>x y. (x, y) \<in> \<Union>c)"
-      proof(rule porder_onI)
-        show "refl_onP A (\<lambda>x y. (x, y) \<in> \<Union>c)"
-        proof(rule refl_onPI)
-          fix a a'
-          assume "(a, a') \<in> \<Union>c"
-          then obtain X where "X \<in> c" and "(a, a') \<in> X" by blast
-          from `X \<in> c` `c \<subseteq> S` have "X \<in> S" ..
-          hence "porder_on A (\<lambda>x y. (x, y) \<in> X)" unfolding S_def by simp
-          with `(a, a') \<in> X` show "a \<in> A \<and> a' \<in> A"
-            by(blast elim: porder_onE dest: refl_onPD1 refl_onPD2)
-        next
-          fix a
-          assume "a \<in> A"
-          with s have "(a, a) \<in> s"
-            by(blast elim: porder_onE dest: refl_onPD)
-          with `s \<in> c` show "(a, a) \<in> \<Union>c" by(rule UnionI)
-        qed
-
-        show "antisymP (\<lambda>x y. (x, y) \<in> \<Union>c)"
-        proof(rule antisymPI)
-          fix x y
-          assume "(x, y) \<in> \<Union>c" "(y, x) \<in> \<Union>c"
-          then obtain X Y where "X \<in> c" "Y \<in> c" "(x, y) \<in> X" "(y, x) \<in> Y" by blast
-          from `X \<in> c` `Y \<in> c` `c \<subseteq> S` have "antisym X" "antisym Y"
-            unfolding S_def by(auto elim!: porder_onE)
-          moreover from `c \<in> chain S` `X \<in> c` `Y \<in> c` 
-          have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainD)
-          ultimately show "x = y" using `(x, y) \<in> X` `(y, x) \<in> Y` 
-            by(auto dest: antisymD)
-        qed
-
-        show "transP (\<lambda>x y. (x, y) \<in> \<Union>c)"
-        proof(rule transPI)
-          fix x y z
-          assume "(x, y) \<in> \<Union>c" "(y, z) \<in> \<Union>c"
-          then obtain X Y where "X \<in> c" "Y \<in> c" "(x, y) \<in> X" "(y, z) \<in> Y" by blast
-          from `X \<in> c` `Y \<in> c` `c \<subseteq> S` have "trans X" "trans Y"
-            unfolding S_def by(auto elim!: porder_onE)
-          from `c \<in> chain S` `X \<in> c` `Y \<in> c` 
-          have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainD)
-          thus "(x, z) \<in> \<Union>c"
-          proof
-            assume "X \<subseteq> Y"
-            with `trans Y` `(x, y) \<in> X` `(y, z) \<in> Y`
-            have "(x, z) \<in> Y" by(blast dest: transD)
-            with `Y \<in> c` show ?thesis by(rule UnionI)
-          next
-            assume "Y \<subseteq> X"
-            with `trans X` `(x, y) \<in> X` `(y, z) \<in> Y`
-            have "(x, z) \<in> X" by(blast dest: transD)
-            with `X \<in> c` show ?thesis by(rule UnionI)
-          qed
-        qed
-      qed
-      moreover {
-        fix x y
-        assume "r x y"
-        hence "(x, y) \<in> s" by(rule r_in_s)
-        with `s \<in> c` have "(x, y) \<in> \<Union>c" by(rule UnionI) }
-      ultimately have "\<Union>c \<in> S" unfolding S_def by simp
-      thus ?thesis by blast
-    qed
-  qed
-  then obtain s where "s \<in> S" and y_max: "\<And>t. \<lbrakk> t \<in> S; s \<subseteq> t \<rbrakk> \<Longrightarrow> s = t" by blast
-
-  have "porder_on A (\<lambda>x y. (x, y) \<in> s)" using `s \<in> S`
-    unfolding S_def by simp
-  moreover
-  { fix x y
-    assume "r x y"
-    hence "(x, y) \<in> s" using `s \<in> S` unfolding S_def by blast }
-  note r_in_s = this
-
-  have "total_onP A (\<lambda>x y. (x, y) \<in> s)"
-  proof(rule total_onPI)
-    fix x y
-    assume "x \<in> A" "y \<in> A" 
-    show "(x, y) \<in> s \<or> x = y \<or> (y, x) \<in> s"
-    proof(rule ccontr)
-      assume "\<not> ?thesis"
-      hence xy: "(x, y) \<notin> s" "(y, x) \<notin> s" "x \<noteq> y" by simp_all
-
-      def s' \<equiv> "\<lambda>a b. a = x \<and> (b = y \<or> b = x) \<or> a = y \<and> b = y"
-      let ?s' = "(\<lambda>a b. (a, b) \<in> s \<or> s' a b)^++"
-      note `porder_on A (\<lambda>x y. (x, y) \<in> s)`
-      moreover have "torder_on {x, y} s'" unfolding s'_def
-        by(blast intro: torder_onI porder_onI refl_onPI antisymPI transPI total_onPI)
-      moreover have "order_consistent (\<lambda>x y. (x, y) \<in> s) s'"
-        unfolding s'_def using xy by(blast intro: order_consistentI)
-      moreover have "{x, y} \<subseteq> A" using `x \<in> A` `y \<in> A` by blast
-      ultimately have "porder_on A ?s'"
-        by(rule porder_on_torder_on_tranclp_porder_onI)
-      moreover {
-        fix x y
-        assume "r x y"
-        hence "(x, y) \<in> s" by(rule r_in_s)
-        hence "?s' x y"
-          by(blast intro: tranclp.r_into_trancl) }
-      ultimately have "{(a, b). ?s' a b} \<in> S"
-        unfolding S_def by simp
-      moreover have "s \<subseteq> {(a, b). ?s' a b}" by auto
-      ultimately have "s = {(a, b). ?s' a b}" by(rule y_max)
-      moreover have "(x, y) \<in> {(a, b). ?s' a b}"
-        by(auto simp add: s'_def)
-      ultimately show False using `(x, y) \<notin> s` by simp
-    qed
-  qed
-  ultimately have "torder_on A (\<lambda>x y. (x, y) \<in> s)" by(rule torder_onI)
-  moreover have "order_consistent r (\<lambda>x y. (x, y) \<in> s)"
-  proof(rule order_consistentI)
-    fix a a'
-    assume "r a a'" "(a', a) \<in> s"
-    from `r a a'` have "(a, a') \<in> s" by(rule r_in_s)
-    with `porder_on A (\<lambda>x y. (x, y) \<in> s)` `(a', a) \<in> s`
-    show "a = a'" by(blast elim: porder_onE dest: antisymPD)
-  qed
-  ultimately show "\<exists>s. torder_on A s \<and> order_consistent r s" by blast
-qed
 
 subsection {* Maximal elements w.r.t. a total order *}
 

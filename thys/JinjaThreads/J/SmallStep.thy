@@ -63,11 +63,19 @@ definition extNTA2J :: "'addr J_prog \<Rightarrow> (cname \<times> mname \<times
 where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,meth) = method P C M; (pns,body) = the meth
                                  in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, empty))"
 
+abbreviation J_local_start ::
+  "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'addr J_mb \<Rightarrow> 'addr val list
+  \<Rightarrow> 'addr expr \<times> 'addr locals"
+where
+  "J_local_start \<equiv> 
+  \<lambda>C M Ts T (pns, body) vs. 
+  (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty)"
+
 abbreviation (in J_heap_base) 
   J_start_state :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'thread_id, 'heap) J_state"
 where
-  "J_start_state \<equiv> 
-   start_state (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty))"
+  "J_start_state \<equiv> start_state J_local_start"
+
 
 lemma extNTA2J_iff [simp]:
   "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (the (snd (snd (snd (method P C M)))))}, empty)"
@@ -639,9 +647,9 @@ declare
 
 code_pred
   (modes:
-    J_heap_base.red: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool 
+    J_heap_base.red: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool 
    and
-    J_heap_base.reds: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+    J_heap_base.reds: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
   [detect_switches, skip_proof] -- "proofs are possible, but take veeerry long"
   J_heap_base.red
 proof -
@@ -660,19 +668,19 @@ proof -
     SynchronizedThrow2 SeqThrow CondThrow ThrowThrow])
 
     case (RedCall s a U M Ts T pns body D vs)
-    with RedCall_code[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body U T]
+    with RedCall_code[OF refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body U T]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallExternal s a U M Ts T D vs ta va h' ta' e' s')
-    with RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' U Ts T D]
+    with RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' U Ts T D]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallNull M vs s)
-    with RedCallNull_code[OF refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
+    with RedCallNull_code[OF refl refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
     show ?thesis by(simp add: o_def)
   next
     case (CallThrowParams es vs a es' v M s)
-    with CallThrowParams_code[OF refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
+    with CallThrowParams_code[OF refl refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
     show ?thesis 
       apply(auto simp add: is_Throws_conv)
       apply(erule meta_impE)
@@ -681,15 +689,15 @@ proof -
       done
   next
     case RedThrowNull thus ?thesis
-      by-(erule (4) RedThrowNull'[OF refl refl refl refl refl refl refl refl refl refl])
+      by-(erule (4) RedThrowNull'[OF refl refl refl refl refl refl refl refl refl refl refl])
   next
     case ThrowThrow thus ?thesis
-      by-(erule (4) ThrowThrow'[OF refl refl refl refl refl refl refl refl refl refl])
-  qed(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl])+
+      by-(erule (4) ThrowThrow'[OF refl refl refl refl refl refl refl refl refl refl refl])
+  qed(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl])+
 next
   case reds
   from reds.prems show thesis
-    by(rule J_heap_base.reds.cases)(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl])+
+    by(rule J_heap_base.reds.cases)(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl])+
 qed
 
 end

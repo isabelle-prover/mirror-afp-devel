@@ -19,6 +19,7 @@ interpretation sc!:
   JVM_heap_execute
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -34,6 +35,7 @@ interpretation sc!:
   JVM_heap_execute_conf_read
     "addr2thread_id"
     "thread_id2addr"
+    "sc_spurious_wakeups"
     "sc_empty"
     "sc_allocate P"
     "sc_typeof_addr"
@@ -198,7 +200,7 @@ lemma sc_exec_deterministic:
 proof -
   from assms sc_deterministic_heap_ops
   have det: "multithreaded_base.deterministic JVM_final (sc_execute_mexec P) convert_RA {s. sc.execute.correct_state_ts P \<Phi> (thr s) (shr s)}"
-    by(rule sc.execute.mexec_deterministic)
+    by(rule sc.execute.mexec_deterministic)(simp add: sc_spurious_wakeups)
   show ?thesis
   proof(rule multithreaded_base.determisticI)
     fix s t x ta' x' m' ta'' x'' m''

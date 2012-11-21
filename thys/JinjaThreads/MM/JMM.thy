@@ -10,6 +10,10 @@ imports
   DRF_JVM
   JMM_Type
   JMM_Interp
+  JMM_Typesafe
+  JMM_J_Typesafe
+  JMM_JVM_Typesafe
+  JMM_Compiler_Type2
 begin
 
 end

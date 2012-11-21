@@ -241,6 +241,7 @@ end
 locale JVM_allocated_heap = allocated_heap +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -337,6 +338,7 @@ end
 
 sublocale JVM_allocated_heap < execd_mthr!: allocated_multithreaded 
   addr2thread_id thread_id2addr 
+  spurious_wakeups
   empty_heap allocate typeof_addr heap_read heap_write allocated 
   JVM_final "mexecd P" 
   P
@@ -424,6 +426,7 @@ lemma JVM_conf_read_heap_read_typed:
 proof -
   interpret conf!: heap_conf_read
     addr2thread_id thread_id2addr 
+    spurious_wakeups
     empty_heap allocate typeof_addr "heap_read_typed P" heap_write hconf 
     P
     by(rule heap_conf_read_heap_read_typed)
@@ -454,18 +457,13 @@ lemma exec_instr_non_speculative_typeable:
   and sc: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
   and vs_conf: "vs_conf P h vs"
   and hconf: "hconf h"
-  shows "(ta, xcp', h', frs') \<in> JVM_heap_base.exec_instr addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write i P t h stk loc C M pc frs" (is ?thesis1)
-  and "vs_conf P h' (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" (is ?thesis2)
+  shows "(ta, xcp', h', frs') \<in> JVM_heap_base.exec_instr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write i P t h stk loc C M pc frs"
 proof -
   note [simp] = JVM_heap_base.exec_instr.simps
     and [split] = split_if_asm prod.split_asm sum.split_asm
     and [split del] = split_if
-  from assms have "?thesis1 \<and> ?thesis2"
+  from assms show "?thesis"
   proof(cases i)
-    case New with assms show ?thesis by(auto dest: hext_allocate vs_conf_allocate intro: vs_conf_hext)
-  next
-    case NewArray with assms show ?thesis by(auto dest: hext_allocate vs_conf_allocate intro: vs_conf_hext cong: if_cong)
-  next
     case ALoad with assms show ?thesis
       by(auto 4 3 intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
   next
@@ -474,6 +472,30 @@ proof -
   next
     case Invoke with assms show ?thesis
       by(fastforce dest: red_external_aggr_non_speculative_typeable simp add: has_method_def is_native.simps)
+  qed(auto)
+qed
+
+lemma exec_instr_non_speculative_vs_conf:
+  assumes exec: "(ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs"
+  and check: "check_instr i P h stk loc C M pc frs"
+  and sc: "non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+  and vs_conf: "vs_conf P h vs"
+  and hconf: "hconf h"
+  shows "vs_conf P h' (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+proof -
+  note [simp] = JVM_heap_base.exec_instr.simps take_Cons'
+    and [split] = split_if_asm prod.split_asm sum.split_asm
+    and [split del] = split_if
+  from assms show ?thesis
+  proof(cases i)
+    case New with assms show ?thesis
+      by(auto dest: hext_allocate vs_conf_allocate intro: vs_conf_hext)
+  next
+    case NewArray with assms show ?thesis
+      by(auto dest: hext_allocate vs_conf_allocate intro: vs_conf_hext cong: if_cong)
+  next
+    case Invoke with assms show ?thesis
+      by(fastforce dest: red_external_aggr_non_speculative_vs_conf simp add: has_method_def is_native.simps)
   next
     case AStore
     { 
@@ -495,16 +517,25 @@ proof -
     show ?thesis using assms Putfield
       by(auto intro!: vs_confI dest!: hext_heap_write)(blast intro: addr_loc_type.intros addr_loc_type_hext_mono typeof_addr_hext_mono has_field_mono[OF has_visible_field] conf_hext dest: vs_confD)+
   qed(auto)
-  thus ?thesis1 ?thesis2 by(rule conjunct1 conjunct2)+
 qed
 
 lemma mexecd_non_speculative_typeable:
   "\<lbrakk> P,t \<turnstile> Normal (xcp, h, stk) -ta-jvmd\<rightarrow> Normal (xcp', h', frs'); non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>));
     vs_conf P h vs; hconf h \<rbrakk>
-  \<Longrightarrow> JVM_heap_base.exec_1_d addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write P t (Normal (xcp, h, stk)) ta (Normal (xcp', h', frs')) \<and> vs_conf P h' (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+  \<Longrightarrow> JVM_heap_base.exec_1_d addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write P t (Normal (xcp, h, stk)) ta (Normal (xcp', h', frs'))"
 apply(erule jvmd_NormalE)
 apply(cases xcp)
 apply(auto intro!: JVM_heap_base.exec_1_d.intros simp add: JVM_heap_base.exec_d_def check_def JVM_heap_base.exec.simps intro: exec_instr_non_speculative_typeable)
+done
+
+lemma mexecd_non_speculative_vs_conf:
+  "\<lbrakk> P,t \<turnstile> Normal (xcp, h, stk) -ta-jvmd\<rightarrow> Normal (xcp', h', frs');
+    non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)));
+    vs_conf P h vs; hconf h \<rbrakk>
+  \<Longrightarrow> vs_conf P h' (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+apply(erule jvmd_NormalE)
+apply(cases xcp)
+apply(auto intro!: JVM_heap_base.exec_1_d.intros simp add: JVM_heap_base.exec_d_def check_def JVM_heap_base.exec.simps intro: exec_instr_non_speculative_vs_conf)
 done
 
 end
@@ -512,16 +543,19 @@ end
 locale JVM_allocated_heap_conf = 
   JVM_heap_conf 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write hconf
     P
   +
   JVM_allocated_heap 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     allocated
     P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -541,6 +575,7 @@ proof -
   then
   interpret known_addrs
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated jvm_known_addrs
     JVM_final "mexecd P" P
@@ -552,33 +587,39 @@ proof -
     assume "mexecd P t (x, m) ta (x', m')"
     thus "m \<unlhd> m'" by(auto simp add: split_beta intro: exec_1_d_hext)
   next
-    fix s t ta s' vs
-    assume exec: "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'"
-      and ts_ok: "correct_state_ts \<Phi> (thr s) (shr s)"
-      and vs: "vs_conf P (shr s) vs"
-      and sc: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
-    let ?mexecd = "JVM_heap_base.mexecd addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write P"
-    have "lifting_wf JVM_final ?mexecd (\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>)"
+    fix t x m ta x' m' vs
+    assume exec: "mexecd P t (x, m) ta (x', m')"
+      and ts_ok: "(\<lambda>(xcp, frstls) h. \<Phi> \<turnstile> t:(xcp, h, frstls) \<surd>) x m"
+      and vs: "vs_conf P m vs"
+      and ns: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+
+    let ?mexecd = "JVM_heap_base.mexecd addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write P"    
+    have lift: "lifting_wf JVM_final ?mexecd (\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>)"
       by(intro JVM_conf_read.lifting_wf_correct_state_d JVM_conf_read_heap_read_typed wf)
-    moreover
-    from exec have "multithreaded_base.redT JVM_final ?mexecd convert_RA s (t, ta) s'"
-    proof(cases)
-      case redT_normal thus ?thesis using sc vs ts_ok
-        by(auto simp add: split_beta correct_state_def intro!: multithreaded_base.redT.redT_normal dest!: ts_okD dest: mexecd_non_speculative_typeable)
-    qed(blast intro: multithreaded_base.redT.intros)
-    ultimately have "correct_state_ts \<Phi> (thr s') (shr s')" (is ?thesis1)
-      using ts_ok by(rule lifting_wf.redT_preserves)
-    moreover from exec have "vs_conf P (shr s') (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" (is ?thesis2)
-    proof(cases)
-      case redT_normal thus ?thesis using sc vs ts_ok
-        by(auto dest!: ts_okD simp add: correct_state_def dest: mexecd_non_speculative_typeable)
-    next
-      case (redT_acquire x ln l)
-      have "w_values P vs (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list)) = vs"
-        by(fastforce simp add: convert_RA_not_write intro!: w_values_no_write_unchanged del: equalityI)
-      thus ?thesis using vs redT_acquire by auto
-    qed
-    ultimately show "?thesis1 \<and> ?thesis2" ..
+
+    from exec ns vs ts_ok have exec': "?mexecd t (x, m) ta (x', m')"
+      by(auto simp add: split_beta correct_state_def dest: mexecd_non_speculative_typeable)
+    thus "(\<lambda>(xcp, frstls) h. \<Phi> \<turnstile> t:(xcp, h, frstls) \<surd>) x' m'" using ts_ok
+      by(rule lifting_wf.preserves_red[OF lift])
+    {
+      fix t'' x'' m''
+      assume New: "NewThread t'' x'' m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
+      with exec have "m'' = snd (x', m')" by(rule execd_mthr.new_thread_memory)
+      thus "(\<lambda>(xcp, frstls) h. \<Phi> \<turnstile> t'':(xcp, h, frstls) \<surd>) x'' m''"
+        using lifting_wf.preserves_NewThread[where ?r="?mexecd", OF lift exec' ts_ok] New
+        by auto }
+    { fix t'' x''
+      assume "(\<lambda>(xcp, frstls) h. \<Phi> \<turnstile> t'':(xcp, h, frstls) \<surd>) x'' m"
+      with lift exec' ts_ok show "(\<lambda>(xcp, frstls) h. \<Phi> \<turnstile> t'':(xcp, h, frstls) \<surd>) x'' m'"
+        by(rule lifting_wf.preserves_other) }
+  next
+    fix t x m ta x' m' vs n
+    assume exec: "mexecd P t (x, m) ta (x', m')"
+      and ts_ok: "(\<lambda>(xcp, frstls) h. \<Phi> \<turnstile> t:(xcp, h, frstls) \<surd>) x m"
+      and vs: "vs_conf P m vs"
+      and ns: "non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+    thus "vs_conf P m' (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+      by(auto simp add: correct_state_def dest: mexecd_non_speculative_vs_conf)
   next
     fix t x m ta x' m' ad al v
     assume "mexecd P t (x, m) ta (x', m')"
@@ -609,6 +650,7 @@ proof -
 
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated jvm_known_addrs
     JVM_final "mexecd P" "\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>" P
@@ -757,16 +799,19 @@ declare eq_upto_seq_inconsist_simps [simp del]
 locale JVM_allocated_progress = 
   JVM_progress
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write hconf
     P
   +
   JVM_allocated_heap_conf
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write hconf
     allocated
     P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -811,6 +856,7 @@ proof(rule execd_mthr.if.non_speculative_readI)
 
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated jvm_known_addrs
     JVM_final "mexecd P" "\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>"
@@ -889,6 +935,7 @@ proof -
 
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated jvm_known_addrs
     JVM_final "mexecd P" "\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>"
@@ -925,7 +972,7 @@ proof -
   from wf obtain wf_md where wf': "wf_prog wf_md P" by(blast dest: wt_jvm_progD)
   hence "wf_syscls P" by(rule wf_prog_wf_syscls)
   with JVM_cut_and_update[OF assms]
-  show ?thesis using ok
+  show ?thesis
   proof(rule known_addrs_typing.drf[OF mexecd_known_addrs_typing[OF wf ok]])
     from correct_jvm_state_initial[OF wf wf_start]
     show "correct_state_ts \<Phi> (thr (JVM_start_state P C M vs)) start_heap"
@@ -949,6 +996,7 @@ proof -
 
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated jvm_known_addrs
     JVM_final "mexecd P" "\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>"
@@ -972,7 +1020,7 @@ proof -
   ultimately have "execd_mthr.if.hb_completion ?start_state (lift_start_obs start_tid start_heap_obs)"
     by(rule non_speculative_read_into_hb_completion)
 
-  thus ?thesis using `wf_syscls P` ok
+  thus ?thesis using `wf_syscls P`
   proof(rule sc_legal)
     from correct_jvm_state_initial[OF wf wf_start]
     show "correct_state_ts \<Phi> (thr (JVM_start_state P C M vs)) start_heap"
@@ -1021,7 +1069,7 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-theorem J_consistent:
+theorem JVM_consistent:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"

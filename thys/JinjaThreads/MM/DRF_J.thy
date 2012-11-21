@@ -183,6 +183,7 @@ end
 locale J_allocated_heap = allocated_heap +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -242,6 +243,7 @@ end
 
 sublocale J_allocated_heap < red_mthr!: allocated_multithreaded 
   addr2thread_id thread_id2addr 
+  spurious_wakeups
   empty_heap allocate typeof_addr heap_read heap_write allocated 
   final_expr "mred P" 
   P
@@ -366,36 +368,22 @@ lemma J_conf_read_heap_read_typed:
 proof -
   interpret conf!: heap_conf_read
     addr2thread_id thread_id2addr 
+    spurious_wakeups
     empty_heap allocate typeof_addr "heap_read_typed P" heap_write hconf 
     P
     by(rule heap_conf_read_heap_read_typed)
   show ?thesis by(unfold_locales)
 qed
 
-lemma red_non_speculative_typeable:
+lemma red_non_speculative_vs_conf:
   "\<lbrakk> convert_extTA extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; P,E,hp s \<turnstile> e : T;
-    non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)); vs_conf P (hp s) vs; hconf (hp s) \<rbrakk>
-  \<Longrightarrow> J_heap_base.red addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write (convert_extTA extTA) P t e s ta e' s' \<and> vs_conf P (hp s') (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
-  and reds_non_speculative_typeable:
+    non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))); vs_conf P (hp s) vs; hconf (hp s) \<rbrakk>
+  \<Longrightarrow> vs_conf P (hp s') (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+  and reds_non_speculative_vs_conf:
   "\<lbrakk> convert_extTA extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; P,E,hp s \<turnstile> es [:] Ts;
-    non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)); vs_conf P (hp s) vs; hconf (hp s) \<rbrakk>
-  \<Longrightarrow> J_heap_base.reds addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write (convert_extTA extTA) P t es s ta es' s' \<and> vs_conf P (hp s') (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+    non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))); vs_conf P (hp s) vs; hconf (hp s) \<rbrakk>
+  \<Longrightarrow> vs_conf P (hp s') (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
-  case RedNew thus ?case
-    by(auto dest: vs_conf_allocate intro: J_heap_base.red_reds.intros)
-next
-  case RedNewFail thus ?case
-    by(auto dest: hext_allocate intro: vs_conf_hext intro: J_heap_base.red_reds.intros)
-next
-  case RedNewArray thus ?case
-    by(auto dest: vs_conf_allocate intro: J_heap_base.red_reds.intros)
-next
-  case RedNewArrayFail thus ?case
-    by(auto dest: hext_allocate intro: vs_conf_hext J_heap_base.red_reds.intros)
-next
-  case RedAAcc thus ?case
-    by(auto intro: J_heap_base.red_reds.RedAAcc intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
-next
   case (RedAAss h a U n i w V h' xs)
   from `sint i < int n` `0 <=s i` have "nat (sint i) < n"
     by (metis nat_less_iff sint_0 word_sle_def)
@@ -407,23 +395,31 @@ next
   with `h \<unlhd> h'` have "P,h' \<turnstile> w :\<le> U" by(rule conf_hext)
   ultimately have "\<exists>T. P,h' \<turnstile> a@ACell (nat (sint i)) : T \<and> P,h' \<turnstile> w :\<le> T" by blast 
   thus ?case using RedAAss
-    by(auto intro: J_heap_base.red_reds.intros intro!: vs_confI split: split_if_asm dest: vs_confD)(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
-next
-  case RedFAcc thus ?case
-    by(auto intro: J_heap_base.red_reds.RedFAcc intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
+    by(auto intro!: vs_confI split: split_if_asm dest: vs_confD simp add: take_Cons')(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
 next
   case (RedFAss h e D F v h' xs)
   hence "\<exists>T. P,h' \<turnstile> e@CField D F : T \<and> P,h' \<turnstile> v :\<le> T"
     by(force dest!: hext_heap_write intro!: addr_loc_type.intros intro: typeof_addr_hext_mono type_of_hext_type_of simp add: conf_def)
   thus ?case using RedFAss
-    by(auto intro: J_heap_base.red_reds.intros intro!: vs_confI split: split_if_asm dest: vs_confD)(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
+    by(auto intro!: vs_confI simp add: take_Cons' split: split_if_asm dest: vs_confD)(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
 next
-  case RedCall thus ?case
-    by(safe)((blast intro: J_heap_base.red_reds.RedCall)+, simp_all)
+  case RedCallExternal thus ?case by(auto intro: red_external_non_speculative_vs_conf)
+qed(auto dest: vs_conf_allocate hext_allocate intro: vs_conf_hext simp add: take_Cons')
+
+lemma red_non_speculative_typeable:
+  "\<lbrakk> convert_extTA extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; P,E,hp s \<turnstile> e : T;
+    non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)); vs_conf P (hp s) vs; hconf (hp s) \<rbrakk>
+  \<Longrightarrow> J_heap_base.red addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write (convert_extTA extTA) P t e s ta e' s'"
+  and reds_non_speculative_typeable:
+  "\<lbrakk> convert_extTA extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; P,E,hp s \<turnstile> es [:] Ts;
+    non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)); vs_conf P (hp s) vs; hconf (hp s) \<rbrakk>
+  \<Longrightarrow> J_heap_base.reds addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write (convert_extTA extTA) P t es s ta es' s'"
+proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
+  case RedCall thus ?case by(blast intro: J_heap_base.red_reds.RedCall)
 next
   case RedCallExternal thus ?case
     by(auto intro: J_heap_base.red_reds.RedCallExternal red_external_non_speculative_typeable)
-qed(auto intro: J_heap_base.red_reds.intros)
+qed(auto intro: J_heap_base.red_reds.intros intro!: heap_read_typedI dest: vs_confD addr_loc_type_fun)
 
 end
 
@@ -439,16 +435,19 @@ by(unfold_locales)
 locale J_allocated_heap_conf = 
   J_heap_conf 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write hconf
     P
   +
   J_allocated_heap 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     allocated
     P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -466,6 +465,7 @@ lemma mred_known_addrs_typing:
 proof -
   interpret known_addrs
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated J_known_addrs
     final_expr "mred P" P
@@ -477,40 +477,41 @@ proof -
     assume "mred P t (x, m) ta (x', m')"
     thus "m \<unlhd> m'" by(auto dest: red_hext_incr simp add: split_beta)
   next
-    fix s t ta s' vs
-    assume red: "P \<turnstile> s -t\<triangleright>ta\<rightarrow> s'"
-      and ts_ok: "ts_ok (\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h) (thr s) (shr s)"
-      and vs: "vs_conf P (shr s) vs"
-      and sc: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
-    let ?mred = "J_heap_base.mred addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write P"
-    have "lifting_inv final_expr ?mred sconf_type_ok"
+    fix t x m ta x' m' vs
+    assume red: "mred P t (x, m) ta (x', m')"
+      and ts_ok: "\<exists>ET. sconf_type_ok ET t x m"
+      and vs: "vs_conf P m vs"
+      and ns: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+    
+    let ?mred = "J_heap_base.mred addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write P"
+
+    have lift: "lifting_inv final_expr ?mred sconf_type_ok"
       by(intro J_conf_read.lifting_inv_sconf_subject_ok J_conf_read_heap_read_typed wf)
     moreover
-    from red have "multithreaded_base.redT final_expr ?mred convert_RA s (t, ta) s'"
-    proof(cases)
-      case redT_normal thus ?thesis using sc vs ts_ok
-        by(auto simp add: split_beta sconf_type_ok_def type_ok_def sconf_def intro!: multithreaded_base.redT.redT_normal)(auto dest!: ts_okD dest: red_non_speculative_typeable)
-    qed(blast intro: multithreaded_base.redT.intros)
-    moreover
-    from ts_ok_Ex_into_ts_inv[OF ts_ok[simplified split_def]] obtain ET
-      where tsinv: "ts_inv sconf_type_ok ET (thr s) (shr s)" by(auto)
-    ultimately
-    have "ts_inv sconf_type_ok (upd_invs ET sconf_type_ok \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) (thr s') (shr s')"
-      by(rule lifting_inv.redT_invariant)
-    hence "ts_ok (\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h) (thr s') (shr s')" (is ?thesis1)
-      by(rule ts_inv_into_ts_ok_Ex)
-    moreover from red have "vs_conf P (shr s') (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))" (is ?thesis2)
-    proof(cases)
-      case (redT_normal x x' m')
-      thus ?thesis using sc vs ts_ok
-        by(cases x)(auto dest!: ts_okD simp add: sconf_type_ok_def type_ok_def sconf_def dest: red_non_speculative_typeable)
-    next
-      case (redT_acquire x ln l)
-      have "w_values P vs (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list)) = vs"
-        by(fastforce simp add: convert_RA_not_write intro!: w_values_no_write_unchanged del: equalityI)
-      thus ?thesis using vs redT_acquire by auto
-    qed
-    ultimately show "?thesis1 \<and> ?thesis2" ..
+    from ts_ok obtain ET where type: "sconf_type_ok ET t x m" ..
+    with red vs ns have red': "?mred t (x, m) ta (x', m')"
+      by(auto simp add: split_beta sconf_type_ok_def sconf_def type_ok_def dest: red_non_speculative_typeable)
+    ultimately have "sconf_type_ok ET t x' m'" using type
+      by(rule lifting_inv.invariant_red[where r="?mred"])
+    thus "\<exists>ET. sconf_type_ok ET t x' m'" ..
+    { fix t'' x'' m''
+      assume New: "NewThread t'' x'' m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
+      with red have "m'' = snd (x', m')" by(rule red_mthr.new_thread_memory)
+      with lift red' type New
+      show "\<exists>ET. sconf_type_ok ET t'' x'' m''"
+        by-(rule lifting_inv.invariant_NewThread[where r="?mred"], simp_all) }
+    { fix t'' x''
+      assume "\<exists>ET. sconf_type_ok ET t'' x'' m"
+      with lifting_inv.invariant_other[where r="?mred", OF lift red' type]
+      show "\<exists>ET. sconf_type_ok ET t'' x'' m'" by blast }
+  next
+    fix t x m ta x' m' vs n
+    assume red: "mred P t (x, m) ta (x', m')"
+      and ts_ok: "\<exists>ET. sconf_type_ok ET t x m"
+      and vs: "vs_conf P m vs"
+      and ns: "non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+    thus "vs_conf P m' (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+      by(cases x)(auto dest: red_non_speculative_vs_conf simp add: sconf_type_ok_def type_ok_def sconf_def)
   next
     fix t x m ta x' m' ad al v
     assume "mred P t (x, m) ta (x', m')"
@@ -545,6 +546,7 @@ proof -
   
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated J_known_addrs
     final_expr "mred P" "\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h" P
@@ -725,16 +727,19 @@ declare eq_upto_seq_inconsist_simps [simp del]
 locale J_allocated_progress = 
   J_progress
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write hconf
     P
   +
   J_allocated_heap_conf
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write hconf
     allocated
     P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -778,6 +783,7 @@ proof(rule red_mthr.if.non_speculative_readI)
 
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated J_known_addrs
     final_expr "mred P" "\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h" P
@@ -857,6 +863,7 @@ proof -
 
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated J_known_addrs
     final_expr "mred P" "\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h" P
@@ -895,7 +902,7 @@ proof -
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
     and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts" by cases auto
 
-  from J_cut_and_update[OF assms] wf_prog_wf_syscls[OF wf] ok J_start_state_sconf_type_ok[OF wf wf_start] show ?thesis
+  from J_cut_and_update[OF assms] wf_prog_wf_syscls[OF wf] J_start_state_sconf_type_ok[OF wf wf_start] show ?thesis
   proof(rule known_addrs_typing.drf[OF mred_known_addrs_typing[OF wf ok]])
     from wf sees have "wf_mdecl wf_J_mdecl P D (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
     then obtain T' where len1: "length pns = length Ts" and wt: "P,[this\<mapsto>Class D,pns [\<mapsto>] Ts] \<turnstile> body :: T'"
@@ -919,6 +926,7 @@ proof -
     and conf: "P,start_heap \<turnstile> vs [:\<le>] Ts" by cases auto
   interpret known_addrs_typing
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated J_known_addrs
     final_expr "mred P" "\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h" P
@@ -945,7 +953,7 @@ proof -
   ultimately have "red_mthr.if.hb_completion ?start_state (lift_start_obs start_tid start_heap_obs)"
     by(rule non_speculative_read_into_hb_completion)
 
-  thus ?thesis using wf_prog_wf_syscls[OF wf] ok J_start_state_sconf_type_ok[OF wf wf_start]
+  thus ?thesis using wf_prog_wf_syscls[OF wf] J_start_state_sconf_type_ok[OF wf wf_start]
     by(rule sc_legal)(rule ka_allocated)
 qed
 

@@ -26,7 +26,7 @@ apply(clarsimp)
 apply(drule (1) sees_wf_native)
 apply(erule external_WT_defs.cases)
 apply(case_tac [!] hT)
-apply(auto 4 3 simp add: red_external_aggr_def widen_Class intro: red_external.intros split: split_if_asm dest: sees_method_decl_above)
+apply(auto 4 4 simp add: red_external_aggr_def widen_Class intro: red_external.intros heap_base.red_external.intros[where addr2thread_id=addr2thread_id and thread_id2addr=thread_id2addr and spurious_wakeups=True and empty_heap=empty_heap and allocate=allocate and typeof_addr=typeof_addr and heap_read=heap_read and heap_write=heap_write] heap_base.red_external.intros[where addr2thread_id=addr2thread_id and thread_id2addr=thread_id2addr and spurious_wakeups=False and empty_heap=empty_heap and allocate=allocate and typeof_addr=typeof_addr and heap_read=heap_read and heap_write=heap_write] split: split_if_asm dest: sees_method_decl_above)
 done
 
 lemma WT_red_external_list_conv:
@@ -578,6 +578,33 @@ proof(atomize_elim)
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
       next
+        case RedWaitSpurious
+        note ta = `ta = \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>`
+        from ta False None have hli: "\<not> has_lock (locks s $ a) t \<or> t \<in> interrupts s"
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+        show ?thesis
+        proof(cases "has_lock (locks s $ a) t")
+          case True
+          let ?ta' = "\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>"
+          from True hli have "t \<in> interrupts s" by simp
+          with True False have "final_thread.actions_ok final s t ?ta'" using None
+            by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps lock_ok_las_def finfun_upd_apply has_lock_may_lock)
+          moreover from RedWaitInterrupt RedWaitSpurious(1-5)
+          obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
+          ultimately show ?thesis by blast
+        next
+          case False
+          let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
+          from False have "final_thread.actions_ok' s t ?ta'" using None
+            by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+          moreover from ta have "final_thread.actions_subset ?ta' ta"
+	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+          moreover from RedWaitSpurious(1-5) RedWaitFail
+          obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
+          ultimately show ?thesis by blast
+        qed
+        
+      next
         case RedNotify
         note ta = `ta = \<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
@@ -729,6 +756,8 @@ apply(erule red_external.cases)
 apply(erule_tac [!] red_external.cases)
 apply simp_all
 apply(auto simp add: finfun_upd_apply wset_actions_ok_def dest: heap_clone_deterministic[OF det] split: split_if_asm)
+using deterministic_heap_ops_no_spurious_wakeups[OF det]
+apply simp_all
 done
 
 end

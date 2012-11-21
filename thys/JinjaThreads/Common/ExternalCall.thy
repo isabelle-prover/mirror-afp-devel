@@ -244,6 +244,17 @@ where
 | RedWaitInterrupted:
   "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>\<rightarrow>ext \<langle>RetEXC InterruptedException, h\<rangle>"
 
+    -- {* 
+    Calls to wait may decide to immediately wake up spuriously. This is 
+    indistinguishable from waking up spuriously any time before being 
+    notified or interrupted. Spurious wakeups are configured by the
+    @{term spurious_wakeup} parameter of the @{term heap_base} locale.
+    *}
+| RedWaitSpurious:
+  "spurious_wakeups \<Longrightarrow> 
+    P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace> \<rightarrow>ext
+          \<langle>RetVal Unit, h\<rangle>"
+
     -- {*
     @{term notify} and @{term notifyAll} do not perform synchronization inter-thread actions
     because they only tests whether the thread holds a lock, but do not change the lock state.
@@ -299,7 +310,8 @@ where
           (\<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>, RetStaySame, h),
           (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, RetEXC IllegalMonitorState, h),
           (\<lbrace>Notified\<rbrace>, RetVal Unit, h),
-          (\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>, RetEXC InterruptedException, h)}
+          (\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>, RetEXC InterruptedException, h)} \<union>
+         (if spurious_wakeups then {(\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>, RetVal Unit, h)} else {})
     else if M = notify then {(\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>, RetVal Unit, h),
                              (\<lbrace>UnlockFail\<rightarrow>a\<rbrace>, RetEXC IllegalMonitorState, h)}
     else if M = notifyAll then {(\<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
@@ -460,6 +472,7 @@ lemma red_external_aggr_new_thread_sub_thread:
   \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
 by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
 
+
 lemma heap_copy_loc_length:
   assumes "heap_copy_loc a a' al h obs h'"
   shows "length obs = 2"
@@ -568,16 +581,38 @@ proof -
     by(rule heap_base.heap_clone.cases)(erule (3) that[OF refl refl refl refl refl refl refl]|assumption)+
 qed
 
-declare heap_base.red_external.intros[code_pred_intro]
+
+text {* 
+  code\_pred in Isabelle2012 cannot handle boolean parameters as premises properly, 
+  so this replacement rule explicitly tests for @{term "True"}
+*}
+
+lemma (in heap_base) RedWaitSpurious_Code:
+  "spurious_wakeups = True \<Longrightarrow> 
+   P,t \<turnstile> \<langle>a\<bullet>wait([]),h\<rangle> -\<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>\<rightarrow>ext \<langle>RetVal Unit,h\<rangle>"
+by(rule RedWaitSpurious) simp
+
+lemmas [code_pred_intro] =
+  heap_base.RedNewThread heap_base.RedNewThreadFail 
+  heap_base.RedJoin heap_base.RedJoinInterrupt
+  heap_base.RedInterrupt heap_base.RedInterruptInexist heap_base.RedIsInterruptedTrue heap_base.RedIsInterruptedFalse
+  heap_base.RedWaitInterrupt heap_base.RedWait heap_base.RedWaitFail heap_base.RedWaitNotified heap_base.RedWaitInterrupted
+declare heap_base.RedWaitSpurious_Code [code_pred_intro RedWaitSpurious]
+lemmas [code_pred_intro] =
+  heap_base.RedNotify heap_base.RedNotifyFail heap_base.RedNotifyAll heap_base.RedNotifyAllFail 
+  heap_base.RedClone heap_base.RedCloneFail
+  heap_base.RedHashcode heap_base.RedPrint heap_base.RedCurrentThread 
+  heap_base.RedInterruptedTrue heap_base.RedInterruptedFalse
+  heap_base.RedYield
 
 code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
+  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
   heap_base.red_external
 proof -
   case red_external
   from red_external.prems show ?thesis
     apply(rule heap_base.red_external.cases)
-    apply(erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl]|assumption)+
+    apply(erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl refl]|assumption|erule eqTrueI)+
     done
 qed
 

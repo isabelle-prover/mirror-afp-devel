@@ -24,7 +24,7 @@ lemma init_fin_lift_state_start_state:
 by(simp add: start_state_def init_fin_lift_state_def split_beta fun_eq_iff)
 
 lemma non_speculative_start_heap_obs:
-  "non_speculative P (\<lambda>_. {}) (llist_of (map snd (lift_start_obs start_tid start_heap_obs)))"
+  "non_speculative P vs  (llist_of (map snd (lift_start_obs start_tid start_heap_obs)))"
 apply(rule non_speculative_nthI)
 using start_heap_obs_not_Read
 by(clarsimp simp add: lift_start_obs_def lnth_LCons o_def eSuc_enat[symmetric] in_set_conv_nth split: nat.split_asm)
@@ -393,12 +393,13 @@ end
 locale heap_multithreaded_base =
   heap_base
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
   +
   mthr!: multithreaded_base final r convert_RA
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
-
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -427,11 +428,13 @@ end
 locale heap_multithreaded =
   heap_multithreaded_base 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     final r convert_RA
   +
   heap
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     P 
   + 
@@ -439,7 +442,7 @@ locale heap_multithreaded =
 
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
-
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -456,17 +459,6 @@ by(unfold_locales)
 sublocale heap_multithreaded < "if"!: jmm_multithreaded
   mthr.init_fin_final mthr.init_fin "map NormalAction \<circ> convert_RA" P
 .
-
-lemma nth_concat_eqI: -- "Move to Aux"
-  "\<lbrakk> n = listsum (map length (take i xss)) + k; i < length xss; k < length (xss ! i); x = xss ! i ! k \<rbrakk>
-  \<Longrightarrow> concat xss ! n = x"
-apply(induct xss arbitrary: n i k)
- apply simp
-apply simp
-apply(case_tac i)
- apply(simp add: nth_append)
-apply(simp add: nth_append)
-done
 
 context heap_multithreaded begin
 
@@ -730,6 +722,7 @@ by(rule ta_hb_consistent_not_ReadI)(auto simp add: convert_RA_def)
 locale allocated_multithreaded =
   allocated_heap
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
     allocated
     P 
@@ -738,7 +731,7 @@ locale allocated_multithreaded =
 
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
-
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -765,6 +758,7 @@ locale allocated_multithreaded =
 
 sublocale allocated_multithreaded < heap_multithreaded
   addr2thread_id thread_id2addr
+  spurious_wakeups
   empty_heap allocate typeof_addr heap_read heap_write
   final r convert_RA P
 by(unfold_locales)
@@ -1203,6 +1197,7 @@ sublocale if_known_addrs_base < "if"!: known_addrs_base known_addrs_if .
 locale known_addrs =
   allocated_multithreaded (* Check why all the heap operations are necessary in this locale! *)
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     allocated
     final r
@@ -1212,7 +1207,7 @@ locale known_addrs =
 
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
-
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -1566,12 +1561,13 @@ end
 locale known_addrs_typing =
   known_addrs
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     allocated known_addrs
     final r P
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
-
+  and spurious_wakeups :: bool
   and empty_heap :: "'heap"
   and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
@@ -1585,57 +1581,88 @@ locale known_addrs_typing =
   and P :: "'md prog"
   +
   assumes wfs_non_speculative_invar:
-  "\<lbrakk> mthr.redT s (t, ta) s'; ts_ok wfx (thr s) (shr s); 
-     vs_conf P (shr s) vs; non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) \<rbrakk>
-  \<Longrightarrow> ts_ok wfx (thr s') (shr s') \<and> vs_conf P (shr s') (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+  "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m;
+     vs_conf P m vs; non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) \<rbrakk>
+  \<Longrightarrow> wfx t x' m'"
+  and wfs_non_speculative_spawn:
+  "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m;
+     vs_conf P m vs; non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>));
+     NewThread t'' x'' m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
+  \<Longrightarrow> wfx t'' x'' m''"
+  and wfs_non_speculative_other:
+  "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m;
+     vs_conf P m vs; non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>));
+     wfx t'' x'' m \<rbrakk>
+  \<Longrightarrow> wfx t'' x'' m'"
+  and wfs_non_speculative_vs_conf:
+  "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m;
+     vs_conf P m vs; non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))) \<rbrakk>
+  \<Longrightarrow> vs_conf P m' (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
   and red_read_typeable:
   "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk> 
   \<Longrightarrow> \<exists>T. P,m \<turnstile> ad@al : T"
   and red_NewHeapElemD:
   "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m; NewHeapElem ad hT \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> typeof_addr m' ad = \<lfloor>hT\<rfloor>"
-  and red_hext_incr: "t \<turnstile> (x, m) -ta\<rightarrow> (x', m') \<Longrightarrow> m \<unlhd> m'"
+  and red_hext_incr: 
+  "\<lbrakk> t \<turnstile> (x, m) -ta\<rightarrow> (x', m'); wfx t x m; 
+     vs_conf P m vs; non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) \<rbrakk>
+  \<Longrightarrow> m \<unlhd> m'"
 begin
 
-lemma init_fin_hext_incr:
-  assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
-  shows "m \<unlhd> m'"
-using assms
-by(cases)(auto intro: red_hext_incr)
+lemma redT_wfs_non_speculative_invar:
+  assumes redT: "mthr.redT s (t, ta) s'"
+  and wfx: "ts_ok wfx (thr s) (shr s)"
+  and vs: "vs_conf P (shr s) vs"
+  and ns: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+  shows "ts_ok wfx (thr s') (shr s')"
+using redT
+proof(cases)
+  case (redT_normal x x' m')
+  with vs wfx ns show ?thesis
+    apply(clarsimp intro!: ts_okI split: split_if_asm)
+     apply(erule wfs_non_speculative_invar, auto dest: ts_okD)
+    apply(rename_tac t' x' ln ws')
+    apply(case_tac "thr s t'")
+    apply(frule (2) redT_updTs_new_thread, clarify)
+    apply(frule (1) mthr.new_thread_memory)
+    apply(auto intro: wfs_non_speculative_other wfs_non_speculative_spawn dest: ts_okD simp add: redT_updTs_Some)
+    done
+next
+  case (redT_acquire x ln n)
+  thus ?thesis using wfx by(auto intro!: ts_okI dest: ts_okD split: split_if_asm)
+qed
 
-lemma init_fin_redT_hext_incr:
-  assumes "mthr.if.redT s (t, ta) s'"
-  shows "shr s \<unlhd> shr s'"
-using assms
-by(cases)(auto dest: init_fin_hext_incr)
-
-lemma init_fin_RedT_hext_incr:
-  assumes "mthr.if.RedT s ttas s'"
-  shows "shr s \<unlhd> shr s'"
-using assms
-by(induct rule: mthr.if.RedT_induct')(blast dest: init_fin_redT_hext_incr intro: hext_trans)+
-
-lemma init_fin_red_read_typeable:
-  assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
-  and "init_fin_lift wfx t x m" "NormalAction (ReadMem ad al v) \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
-  shows "\<exists>T. P,m \<turnstile> ad@al : T"
-using assms
-by cases(auto dest: red_read_typeable)
+lemma redT_wfs_non_speculative_vs_conf:
+  assumes redT: "mthr.redT s (t, ta) s'"
+  and wfx: "ts_ok wfx (thr s) (shr s)"
+  and conf: "vs_conf P (shr s) vs"
+  and ns: "non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+  shows "vs_conf P (shr s') (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
+using redT
+proof(cases)
+  case (redT_normal x x' m')
+  thus ?thesis using ns conf wfx by(auto dest: wfs_non_speculative_vs_conf ts_okD)
+next
+  case (redT_acquire x ln l)
+  have "w_values P vs (take n (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list))) = vs"
+    by(fastforce dest: in_set_takeD simp add: convert_RA_not_write intro!: w_values_no_write_unchanged del: equalityI)
+  thus ?thesis using conf redT_acquire by(auto)
+qed
 
 lemma if_redT_non_speculative_invar:
   assumes red: "mthr.if.redT s (t, ta) s'"
   and ts_ok: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
   and sc: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" 
   and vs: "vs_conf P (shr s) vs"
-  shows "ts_ok (init_fin_lift wfx) (thr s') (shr s')" (is ?thesis1)
-  and "vs_conf P (shr s') (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)" (is ?thesis2)
+  shows "ts_ok (init_fin_lift wfx) (thr s') (shr s')"
 proof -
   let ?s = "\<lambda>s. (locks s, (\<lambda>t. Option.map (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
   
   from ts_ok have ts_ok': "ts_ok wfx (thr (?s s)) (shr (?s s))" by(auto intro!: ts_okI dest: ts_okD)
   from vs have vs': "vs_conf P (shr (?s s)) vs" by simp
 
-  from red have "?thesis1 \<and> ?thesis2"
+  from red show ?thesis
   proof(cases)
     case (redT_normal x x' m)
     note tst = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
@@ -1653,8 +1680,8 @@ proof -
       moreover note ts_ok' vs'
       moreover from `ta = convert_TA_initial (convert_obs_initial TA)` have "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>" by(auto)
       with sc have "non_speculative P vs (llist_of (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>))" by simp
-      ultimately have "ts_ok wfx (thr (?s s')) (shr (?s s')) \<and> vs_conf P (shr (?s s')) (w_values P vs (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>))"
-        by(rule wfs_non_speculative_invar)
+      ultimately have "ts_ok wfx (thr (?s s')) (shr (?s s'))"
+        by(auto dest: redT_wfs_non_speculative_invar)
       thus ?thesis using `\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>` by(auto intro!: ts_okI dest: ts_okD)
     next
       case InitialThreadAction
@@ -1667,14 +1694,58 @@ proof -
     qed
   next
     case (redT_acquire x ln l)
-    have "w_values P vs (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list)) = vs"
-      by(fastforce simp add: convert_RA_not_write intro!: w_values_no_write_unchanged del: equalityI)
-    thus ?thesis using vs ts_ok redT_acquire by(auto 4 3 intro!: ts_okI dest: ts_okD split: split_if_asm)
+    thus ?thesis using vs ts_ok by(auto 4 3 intro!: ts_okI dest: ts_okD split: split_if_asm)
   qed
-  thus ?thesis1 ?thesis2 by(rule conjunct1 conjunct2)+
 qed
 
-     
+lemma if_redT_non_speculative_vs_conf:
+  assumes red: "mthr.if.redT s (t, ta) s'"
+  and ts_ok: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
+  and sc: "non_speculative P vs (llist_of (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+  and vs: "vs_conf P (shr s) vs"
+  shows "vs_conf P (shr s') (w_values P vs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+proof -
+  let ?s = "\<lambda>s. (locks s, (\<lambda>t. Option.map (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
+  
+  from ts_ok have ts_ok': "ts_ok wfx (thr (?s s)) (shr (?s s))" by(auto intro!: ts_okI dest: ts_okD)
+  from vs have vs': "vs_conf P (shr (?s s)) vs" by simp
+
+  from red show ?thesis
+  proof(cases)
+    case (redT_normal x x' m)
+    note tst = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+    from `t \<turnstile> (x, shr s) -ta\<rightarrow>i (x', m)`
+    show ?thesis 
+    proof(cases)
+      case (NormalAction X TA X')
+      from `ta = convert_TA_initial (convert_obs_initial TA)` `mthr.if.actions_ok s t ta`
+      have "mthr.actions_ok (?s s) t TA"
+        by(auto elim: rev_iffD1[OF _ thread_oks_ts_change] cond_action_oks_final_change)
+
+      with tst NormalAction `redT_upd s t ta x' m s'` have "mthr.redT (?s s) (t, TA) (?s s')"
+        using map_redT_updTs[of snd "thr s" "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"]
+        by(auto intro!: mthr.redT.intros simp add: split_def map_pair_def o_def fun_eq_iff)
+      moreover note ts_ok' vs'
+      moreover from `ta = convert_TA_initial (convert_obs_initial TA)` have "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>" by(auto)
+      with sc have "non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>)))" by simp
+      ultimately have "vs_conf P (shr (?s s')) (w_values P vs (take n (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>)))"
+        by(auto dest: redT_wfs_non_speculative_vs_conf)
+      thus ?thesis using `\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>` by(auto)
+    next
+      case InitialThreadAction
+      with redT_normal vs show ?thesis by(auto simp add: take_Cons')
+    next
+      case ThreadFinishAction
+      with redT_normal vs show ?thesis by(auto simp add: take_Cons')
+    qed
+  next
+    case (redT_acquire x ln l)
+    have "w_values P vs (take n (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list))) = vs"
+      by(fastforce simp add: convert_RA_not_write take_Cons' dest: in_set_takeD intro!: w_values_no_write_unchanged del: equalityI)
+    thus ?thesis using vs redT_acquire by auto 
+  qed
+qed
+
 lemma if_RedT_non_speculative_invar:
   assumes red: "mthr.if.RedT s ttas s'"
   and tsok: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
@@ -1696,7 +1767,7 @@ next
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
     unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def llist_of.simps lmap_LCons lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
-  from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] 1 step.hyps(3)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2
+  from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 1 step.hyps(3)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by simp
 
   case 2
@@ -1704,9 +1775,65 @@ next
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
     unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def llist_of.simps lmap_LCons lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
-  from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] 2 step.hyps(4)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2
+  from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 2 step.hyps(4)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by(simp add: tta o_def)
 qed
+
+lemma init_fin_hext_incr:
+  assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
+  and "init_fin_lift wfx t x m"
+  and "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+  and "vs_conf P m vs"
+  shows "m \<unlhd> m'"
+using assms
+by(cases)(auto intro: red_hext_incr)
+
+lemma init_fin_redT_hext_incr:
+  assumes "mthr.if.redT s (t, ta) s'"
+  and "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
+  and "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+  and "vs_conf P (shr s) vs"
+  shows "shr s \<unlhd> shr s'"
+using assms
+by(cases)(auto dest: init_fin_hext_incr ts_okD)
+
+lemma init_fin_RedT_hext_incr:
+  assumes "mthr.if.RedT s ttas s'"
+  and "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
+  and sc: "non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
+  and vs: "vs_conf P (shr s) vs"
+  shows "shr s \<unlhd> shr s'"
+using assms
+proof(induction rule: mthr.if.RedT_induct')
+  case refl thus ?case by simp
+next
+  case (step ttas s' t ta s'')
+  note ts_ok = `ts_ok (init_fin_lift wfx) (thr s) (shr s)`
+  from `non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta)]))))`
+  have ns: "non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
+    and ns': "non_speculative P (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+    by(simp_all add: lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: lappend_llist_of_llist_of)
+  from ts_ok ns have "shr s \<unlhd> shr s'" 
+    using `vs_conf P (shr s) vs` by(rule step.IH)
+  also have "ts_ok (init_fin_lift wfx) (thr s') (shr s')"
+    using `mthr.if.RedT s ttas s'` ts_ok ns `vs_conf P (shr s) vs`
+    by(rule if_RedT_non_speculative_invar)
+  with `mthr.if.redT s' (t, ta) s''` 
+  have "\<dots> \<unlhd> shr s''" using ns'
+  proof(rule init_fin_redT_hext_incr)
+    from `mthr.if.RedT s ttas s'` ts_ok ns `vs_conf P (shr s) vs`
+    show "vs_conf P (shr s') (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
+      by(rule if_RedT_non_speculative_invar)
+  qed
+  finally show ?case .
+qed
+
+lemma init_fin_red_read_typeable:
+  assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
+  and "init_fin_lift wfx t x m" "NormalAction (ReadMem ad al v) \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+  shows "\<exists>T. P,m \<turnstile> ad@al : T"
+using assms
+by cases(auto dest: red_read_typeable)
 
 lemma Ex_new_action_for:
   assumes wf: "wf_syscls P"
@@ -1834,6 +1961,7 @@ proof -
     from len have "Suc n \<in> actions E" unfolding E by(simp add: actions_def enat_less_enat_plusI)
     moreover
     from \<sigma>_\<sigma>' have hext: "start_heap \<unlhd> shr \<sigma>'" unfolding mthr.if.RedT_def[symmetric]
+      using wfx_start sc' vs_conf_start
       by(auto dest!: init_fin_RedT_hext_incr simp add: start_state_def split_beta init_fin_lift_state_conv_simps)
     
     from start have "typeof_addr start_heap ad = \<lfloor>CTn\<rfloor>"
@@ -1848,7 +1976,6 @@ proof -
     ultimately show ?thesis by blast
   next
     case (Red ttas' s'' t' ta' s''' ttas'' CTn)
-    from `mthr.if.RedT s''' ttas'' \<sigma>'` have hext: "shr s''' \<unlhd> shr \<sigma>'" by(rule init_fin_RedT_hext_incr)
     
     from `NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>`
     obtain obs obs' where obs: "\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = obs @ NormalAction (NewHeapElem ad CTn) # obs'"
@@ -1877,11 +2004,13 @@ proof -
       by(cases) fastforce+
 
     from sc'
-    have "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
+    have ns: "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
+      and ns': "non_speculative P (w_values P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
+      and ns'': "non_speculative P (w_values P (w_values P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'')))"
       unfolding `list_of (ltake (enat ra_m) E') = ttas' @ (t', ta') # ttas''`
-      by(simp add: lappend_llist_of_llist_of[symmetric] lmap_lappend_distrib non_speculative_lappend del: lappend_llist_of_llist_of)
-    with `mthr.if.RedT ?start_state ttas' s''` wfx_start 
-    have "ts_ok (init_fin_lift wfx) (thr s'') (shr s'')"
+      by(simp_all add: lappend_llist_of_llist_of[symmetric] lmap_lappend_distrib non_speculative_lappend del: lappend_llist_of_llist_of)
+    from `mthr.if.RedT ?start_state ttas' s''` wfx_start ns
+    have ts_ok'': "ts_ok (init_fin_lift wfx) (thr s'') (shr s'')"
       using vs_conf_start by(rule if_RedT_non_speculative_invar)
     with ts''t' have wfxt': "wfx t' (snd x_wa) (shr s'')" by(cases x_wa)(auto dest: ts_okD)
 
@@ -1911,6 +2040,20 @@ proof -
     }
     note wa_obs = this
     
+    from `mthr.if.RedT ?start_state ttas' s''` wfx_start ns vs_conf_start
+    have vs'': "vs_conf P (shr s'') (w_values P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
+      by(rule if_RedT_non_speculative_invar)
+    from if_redT_non_speculative_vs_conf[OF `mthr.if.redT s'' (t', ta') s'''` ts_ok'' _ vs'', of "length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"] ns'
+    have vs''': "vs_conf P (shr s''') (w_values P (w_values P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
+      by simp
+    
+    from `mthr.if.redT s'' (t', ta') s'''` ts_ok'' ns' vs''
+    have "ts_ok (init_fin_lift wfx) (thr s''') (shr s''')"
+      by(rule if_redT_non_speculative_invar)
+    with `mthr.if.RedT s''' ttas'' \<sigma>'`
+    have hext: "shr s''' \<unlhd> shr \<sigma>'" using ns'' vs'''
+      by(rule init_fin_RedT_hext_incr)
+
     from red_wa have "typeof_addr (shr s''') ad = \<lfloor>CTn\<rfloor>"
       using wfxt' `NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>` by cases(auto dest: red_NewHeapElemD)
     with hext have "typeof_addr (shr \<sigma>') ad = \<lfloor>CTn\<rfloor>" by(rule typeof_addr_hext_mono)
@@ -1939,298 +2082,6 @@ next
     and "non_speculative P (\<lambda>_. {}) (ltake (enat ra) (lmap snd E))"
   with assms show "\<exists>wa. wa \<in> new_actions_for P E adal \<and> wa < ra"
     by(rule Ex_new_action_for)
-qed
-
-lemma red_known_addrs_mrw_addrs_dom_vs:
-  assumes red: "t \<turnstile> (x, h) -ta\<rightarrow> (x', h')"
-  and sc: "non_speculative P vs (llist_of (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
-  and dom_vs: "(\<Union>a \<in> known_addrs t x \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,h \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}"
-  and dom_typeof_addr: "known_addrs t x \<union> w_addrs vs \<subseteq> dom (typeof_addr h)"
-  and wfx: "wfx t x h"
-  shows "(\<Union>a \<in> known_addrs t x' \<union> w_addrs (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)). {(a, al) | al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) adal \<noteq> {}}" (is ?thesis1)
-  and "known_addrs t x' \<union> w_addrs (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) \<subseteq> dom (typeof_addr h')" (is ?thesis2)
-proof -
-  from red have hext: "h \<unlhd> h'" by(rule red_hext_incr)
-
-  have dom_vs': "(\<Union>a \<in> known_addrs t x \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}"
-  proof(rule UN_least)
-    fix a
-    assume a: "a \<in> known_addrs t x \<union> w_addrs vs"
-    with dom_typeof_addr obtain T where "typeof_addr h a = \<lfloor>T\<rfloor>" by blast
-    hence "{(a, al)|al. \<exists>T. P,h' \<turnstile> a@al : T} = {(a, al)|al. \<exists>T. P,h \<turnstile> a@al : T}" using hext unfolding hext_def
-      by(fastforce elim!: addr_loc_type.cases intro: addr_loc_type.intros dest: map_le_SomeD)
-    also from dom_vs a have "\<dots> \<subseteq> {adal. vs adal \<noteq> {}}" by blast
-    finally show "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> {adal. vs adal \<noteq> {}}" .
-  qed
-
-  from dom_typeof_addr hext_dom_typeof_addr_subset[OF hext]
-  have dom_typeof_addr': "known_addrs t x \<union> w_addrs vs \<subseteq> dom (typeof_addr h')"
-    by(rule subset_trans)
-
-  { fix obs obs'
-    assume ta: "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = obs @ obs'"
-    hence "(\<Union>a \<in> new_obs_addrs obs \<union> w_addrs (w_values P vs (map NormalAction obs)). {(a, al) | al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs (map NormalAction obs) adal \<noteq> {}} \<and> new_obs_addrs obs \<union> w_addrs (w_values P vs (map NormalAction obs)) \<subseteq> dom (typeof_addr h')"
-      (is "?concl1 obs \<and> ?concl2 obs")
-    proof(induct obs arbitrary: obs' rule: rev_induct)
-      case Nil thus ?case using dom_vs' dom_typeof_addr' by(simp add: new_obs_addrs_def)
-    next
-      case (snoc ob obs)
-      let ?vs = "w_values P vs (map NormalAction obs)"
-      let ?vs' = "w_values P vs (map NormalAction (obs @ [ob]))"
-      from `\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = (obs @ [ob]) @ obs'` have ta: "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = obs @ ob # obs'" by simp
-      hence dom_vs: "?concl1 obs"
-        and dom_typeof_addr: "?concl2 obs" by(rule conjunct1[OF snoc.hyps] conjunct2[OF snoc.hyps])+
-      thus ?case
-      proof(cases "NormalAction ob" rule: w_value_cases)
-        case (1 ad al v)
-        hence ob: "ob = WriteMem ad al v" by simp
-        with ta have "write": "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! length obs = WriteMem ad al v" "length obs < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" by simp_all
-        from dom_vs have "(\<Union>a\<in>new_obs_addrs obs. {(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq> {adal. ?vs adal \<noteq> {}}" by simp
-        also have "\<dots> \<subseteq> {adal. ?vs' adal \<noteq> {}}"
-          using w_value_greater[of "w_values P vs (map NormalAction obs)" P "NormalAction ob"]
-          by(auto dest: le_funD)
-        also have "(\<Union>a\<in> w_addrs ?vs'. {(a, al) |al. \<exists>b. P,h' \<turnstile> a@al : b}) \<subseteq> {adal. ?vs' adal \<noteq> {}}" 
-        proof(rule UN_least)
-          fix a
-          assume "a \<in> w_addrs ?vs'"
-          hence "v = Addr a \<or> a \<in> w_addrs ?vs" using ob
-            by(auto simp add: w_addrs_def ran_def split: split_if_asm)
-          hence "{(a, al) |al. \<exists>b. P,h' \<turnstile> a@al : b} \<subseteq> {adal. ?vs adal \<noteq> {}}"
-          proof
-            assume v: "v = Addr a"
-            from red "write" have "a \<in> known_addrs t x \<or> a \<in> new_obs_addrs (take (length obs) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-              unfolding v by(rule red_write_knows_addr)
-            thus ?thesis
-            proof
-              assume "a \<in> known_addrs t x"
-              hence "{(a, al) |al. \<exists>b. P,h' \<turnstile> a@al : b} \<subseteq> {adal. vs adal \<noteq> {}}" using dom_vs' by blast
-              also have "\<dots> \<subseteq> {adal. ?vs adal \<noteq> {}}"
-                using w_values_greater[of vs P "map NormalAction obs"] by(auto dest: le_funD)
-              finally show ?thesis .
-            next
-              assume "a \<in> new_obs_addrs (take (length obs) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-              hence "a \<in> new_obs_addrs obs" by(simp add: ta)
-              with dom_vs show ?thesis by blast
-            qed
-          next
-            assume "a \<in> w_addrs (w_values P vs (map NormalAction obs))"
-            with dom_vs show ?thesis by blast
-          qed
-          also note `\<dots> \<subseteq> {adal. ?vs' adal \<noteq> {}}`
-          finally show "{(a, al) |al. \<exists>b. P,h' \<turnstile> a@al : b} \<subseteq> {adal. ?vs' adal \<noteq> {}}" .
-        qed
-        ultimately have "?concl1 (obs @ [ob])" by(simp add: ob new_obs_addrs_def del: fun_upd_apply)
-        moreover
-        have "w_addrs ?vs' \<subseteq> dom (typeof_addr h')"
-        proof
-          fix a
-          assume "a \<in> w_addrs ?vs'"
-          hence "v = Addr a \<or> a \<in> w_addrs ?vs" using ob
-            by(auto simp add: w_addrs_def split: split_if_asm)
-          thus "a \<in> dom (typeof_addr h')"
-          proof
-            assume v: "v = Addr a"
-            from red "write" have "a \<in> known_addrs t x \<or> a \<in> new_obs_addrs (take (length obs) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-              unfolding v by(rule red_write_knows_addr)
-            thus ?thesis using dom_typeof_addr' dom_typeof_addr by(auto simp add: ta)
-          next
-            assume "a \<in> w_addrs ?vs"
-            with dom_typeof_addr show ?thesis by blast
-          qed
-        qed
-        with dom_typeof_addr have "?concl2 (obs @ [ob])" by(simp add: ob new_obs_addrs_def del: fun_upd_apply)
-        ultimately show ?thesis ..
-      next
-        case (4 ad al v)
-        hence ob: "ob = ReadMem ad al v" by simp
-        with dom_vs dom_typeof_addr show ?thesis
-        proof(cases v)
-          case (Addr a)
-          from sc ta ob have "v \<in> ?vs (ad, al)"
-            by(auto simp add: lappend_llist_of_llist_of[symmetric] non_speculative_lappend simp del: lappend_llist_of_llist_of)
-          with Addr have a: "a \<in> w_addrs ?vs" by(auto simp add: w_addrs_def)
-          hence "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> {adal. ?vs adal \<noteq> {}}" using dom_vs by blast
-          also have "\<dots> \<subseteq> {adal. ?vs' adal \<noteq> {}}"
-            using w_value_greater[of "?vs" P "NormalAction ob"] by(auto dest: le_funD)
-          finally have "?concl1 (obs @ [ob])" using ob Addr dom_vs by(simp add: new_obs_addrs_def)
-          moreover
-          from a dom_typeof_addr have "?concl2 (obs @ [ob])" using ob Addr by(auto simp add: new_obs_addrs_def)
-          ultimately show ?thesis ..
-        qed(simp_all add: new_obs_addrs_def)
-      next
-        case (2 a CTn)
-        hence ob: "ob = NewHeapElem a CTn" by simp
-        with ta have "NewHeapElem a CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" by simp
-        with red wfx have a: "typeof_addr h' a = \<lfloor>CTn\<rfloor>" by(rule red_NewHeapElemD)
-        have "w_addrs ?vs' \<subseteq> w_addrs ?vs" unfolding ob
-          by(cases CTn)(auto simp add: w_addrs_def default_val_not_Addr Addr_not_default_val)
-        note Complete_Lattices.UN_mono[OF Un_mono[OF subset_refl this] subset_refl]
-        also note dom_vs
-        also have "{adal. ?vs adal \<noteq> {}} \<subseteq> {adal. ?vs' adal \<noteq> {}}"
-          using w_value_greater[of "?vs" P "NormalAction ob"] by(auto dest: le_funD)
-        also from a ob have "{(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T} \<subseteq> {adal. ?vs' adal \<noteq> {}}"
-          by(auto elim!: addr_loc_type.cases split: split_if_asm)
-        ultimately have "?concl1 (obs @ [ob])" using ob by(simp add: new_obs_addrs_def del: fun_upd_apply)
-        moreover {
-          note `w_addrs ?vs' \<subseteq> w_addrs ?vs`
-          also have "w_addrs ?vs \<subseteq> dom (typeof_addr h')" using dom_typeof_addr by blast
-          finally have "?concl2 (obs @ [ob])" using dom_typeof_addr a ob by(simp add: new_obs_addrs_def domIff)
-        }
-        ultimately show ?thesis ..
-      qed(simp_all add: new_obs_addrs_def)
-    qed }
-  note this[of "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" "[]", unfolded append_Nil2, OF refl]
-  note dom_vs'' = this[THEN conjunct1] and typeof_addr'' = this[THEN conjunct2]
-
-  have x': "known_addrs t x' \<subseteq> known_addrs t x \<union> new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
-    using red by(rule red_known_addrs_new)
-  hence "(\<Union>a\<in>known_addrs t x' \<union> w_addrs (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)). {(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq>
-  (\<Union>a\<in>known_addrs t x. {(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T}) \<union> (\<Union>a\<in>new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<union> w_addrs (w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)). {(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T})" by blast
-  also {
-    have "(\<Union>a\<in>known_addrs t x. {(a, al) |al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}" using dom_vs' by blast
-    also have "\<dots> \<subseteq> {adal. w_values P vs (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) adal \<noteq> {}}"
-      using w_values_greater[of vs P "map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] by(auto dest: le_funD)
-    also note Un_mono[OF calculation dom_vs''] }
-  also note Un_absorb
-  finally show ?thesis1 .
-
-  from x' dom_typeof_addr' typeof_addr'' show ?thesis2 by blast
-qed
-
-lemma init_fin_red_known_addrs_w_addrs_dom_vs:
-  assumes red: "t \<turnstile> (x, h) -ta\<rightarrow>i (x', h')"
-  and sc: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-  and dom_vs: "(\<Union>a \<in> known_addrs_if t x \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,h \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}"
-  and dom_typeof_addr: "known_addrs_if t x \<union> w_addrs vs \<subseteq> dom (typeof_addr h)"
-  and wfx: "init_fin_lift wfx t x h"
-  shows "(\<Union>a \<in> known_addrs_if t x' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>). {(a, al) | al. \<exists>T. P,h' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}" (is ?thesis1)
-  and "known_addrs_if t x' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<subseteq> dom (typeof_addr h')" (is ?thesis2)
-proof -
-  from red dom_vs dom_typeof_addr have "?thesis1 \<and> ?thesis2"
-  proof(cases)
-    case (NormalAction X TA X')
-    hence "t \<turnstile> \<langle>X, h\<rangle> -TA\<rightarrow> \<langle>X', h'\<rangle>" "non_speculative P vs (llist_of (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>))"
-      "(\<Union>a \<in> known_addrs t X \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,h \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}"
-      "known_addrs t X \<union> w_addrs vs \<subseteq> dom (typeof_addr h)"
-      "wfx t X h"
-      using sc dom_vs dom_typeof_addr wfx by simp_all
-    from red_known_addrs_mrw_addrs_dom_vs[OF this] NormalAction
-    show ?thesis by simp
-  qed auto
-  thus ?thesis1 ?thesis2 by(rule conjunct1 conjunct2)+
-qed
-
-lemma if_redT_known_addrs_w_addrs_dom_vs:
-  assumes redT: "mthr.if.redT s (t, ta) s'"
-  and sc: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-  and dom_vs: "(\<Union>a \<in> if.known_addrs_state s \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}"
-  and dom_typeof_addr: "if.known_addrs_state s \<union> w_addrs vs \<subseteq> dom (typeof_addr (shr s))"
-  and wt: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
-  shows "(\<Union>a \<in> if.known_addrs_state s' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>). {(a, al) | al. \<exists>T. P,shr s' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}" (is ?thesis1)
-  and "if.known_addrs_state s' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<subseteq> dom (typeof_addr (shr s'))" (is ?thesis2)
-proof -
-  note [iff del] = domIff
-
-  from redT dom_vs dom_typeof_addr have "?thesis1 \<and> ?thesis2"
-  proof(cases)
-    case (redT_normal x x' m')
-    note tst = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
-    note red = `t \<turnstile> (x, shr s) -ta\<rightarrow>i (x', m')`
-    note s' = `redT_upd s t ta x' m' s'`
-
-    from wt tst have wfx: "init_fin_lift wfx t x (shr s)" by(cases x)(auto dest!: ts_okD)
-
-    from tst have kasub: "known_addrs_if t x \<subseteq> if.known_addrs_state s" by(auto intro: if.known_addrs_stateI)
-    note Un_mono[OF this]
-    hence "(\<Union>a\<in>known_addrs_if t x \<union> w_addrs vs. {(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> (\<Union>a \<in> if.known_addrs_state s \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,shr s \<turnstile> a@al : T})"
-      by(rule Complete_Lattices.UN_mono) simp_all
-    also note dom_vs
-    finally have dom_vs': "(\<Union>a\<in>known_addrs_if t x \<union> w_addrs vs. {(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}" .
-    
-    from kasub dom_typeof_addr
-    have "known_addrs_if t x \<union> w_addrs vs \<subseteq> dom (typeof_addr (shr s))" by blast
-    with `mthr.init_fin t (x, shr s) ta (x', m')` sc dom_vs'
-    have dom_vs'': "(\<Union>a\<in>known_addrs_if t x' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>). {(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}"
-      and dom_typeof_addr'': "known_addrs_if t x' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<subseteq> dom (typeof_addr m')"
-      using wfx by(rule init_fin_red_known_addrs_w_addrs_dom_vs)+
-
-    from red have hext: "shr s \<unlhd> m'" by(rule init_fin_hext_incr)
-
-    have "(\<Union>a\<in>if.known_addrs_state s' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>). {(a, al) |al. \<exists>T. P,shr s' \<turnstile> a@al : T}) \<subseteq> (\<Union>a\<in>known_addrs_if t x' \<union> w_addrs (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<union> if.known_addrs_state s. {(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T})"
-      using init_fin_redT_known_addrs_subset[OF redT] s'
-      by-(rule Complete_Lattices.UN_mono, auto)
-    also note UN_Un
-    also note Un_mono[OF dom_vs'' subset_refl]
-    also have "(\<Union>a\<in>if.known_addrs_state s. {(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}" 
-    proof(rule UN_least)
-      fix a
-      assume a: "a \<in> if.known_addrs_state s"
-      with dom_typeof_addr obtain T where "typeof_addr (shr s) a = \<lfloor>T\<rfloor>" by(auto iff: domIff)
-      hence "{(a, al)|al. \<exists>T. P,m' \<turnstile> a@al : T} = {(a, al)|al. \<exists>T. P,shr s \<turnstile> a@al : T}" using hext unfolding hext_def
-        by(fastforce elim!: addr_loc_type.cases intro: addr_loc_type.intros dest: map_le_SomeD)
-      also from dom_vs a have "\<dots> \<subseteq> {adal. vs adal \<noteq> {}}" by blast
-      also have "\<dots> \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}"
-        using w_values_greater[of vs P "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] by(auto dest: le_funD)
-      finally show "{(a, al) |al. \<exists>T. P,m' \<turnstile> a@al : T} \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}" .
-    qed
-    note Un_mono[OF subset_refl this]
-    also note Un_absorb finally have ?thesis1 .
-    moreover
-    from init_fin_redT_known_addrs_subset[OF redT] s' dom_typeof_addr dom_typeof_addr'' 
-      hext_dom_typeof_addr_subset[OF hext]
-    have ?thesis2
-      by(auto simp add: if.known_addrs_state_def if.known_addrs_thr_def split: split_if_asm)(blast, drule subsetD, auto)
-    ultimately show ?thesis ..
-  next
-    case (redT_acquire x ln n)
-    have "{adal. vs adal \<noteq> {}} \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}"
-      using w_values_greater[of vs P "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] by(auto dest: le_funD)
-    with dom_vs
-    have "(\<Union>a\<in>if.known_addrs_state s \<union> w_addrs vs. {(a, al) |al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}"
-      by(rule subset_trans)
-    also have "if.known_addrs_state s = if.known_addrs_state s'"
-      using redT_acquire by(auto 4 3 simp add: if.known_addrs_thr_def if.known_addrs_state_def split: split_if_asm dest: bspec iff: domIff)
-    moreover have "vs = w_values P vs (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list))"
-      by(rule sym)(fastforce simp add: convert_RA_not_write intro!: w_values_no_write_unchanged del: equalityI)
-    ultimately show ?thesis using redT_acquire dom_typeof_addr by auto
-  qed
-  thus ?thesis1 ?thesis2 by(rule conjunct1 conjunct2)+
-qed
-
-lemma if_RedT_known_addrs_w_addrs_dom_vs:
-  assumes redT: "mthr.if.RedT s ttas s'"
-  and sc: "non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-  and dom_vs: "(\<Union>a \<in> if.known_addrs_state s \<union> w_addrs vs. {(a, al)|al. \<exists>T. P,shr s \<turnstile> a@al : T}) \<subseteq> {adal. vs adal \<noteq> {}}"
-  and dom_typeof_addr: "if.known_addrs_state s \<union> w_addrs vs \<subseteq> dom (typeof_addr (shr s))"
-  and wt: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"
-  and vs: "vs_conf P (shr s) vs"
-  shows "(\<Union>a \<in> if.known_addrs_state s' \<union> w_addrs (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))). {(a, al) | al. \<exists>T. P,shr s' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)) adal \<noteq> {}}" (is ?thesis1)
-  and "if.known_addrs_state s' \<union> w_addrs (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas))) \<subseteq> dom (typeof_addr (shr s'))" (is ?thesis2)
-proof -
-  from redT sc have "?thesis1 \<and> ?thesis2"
-  proof(induct rule: mthr.if.RedT_induct')
-    case refl thus ?case using dom_vs dom_typeof_addr wt by simp
-  next
-    case (step ttas s' t ta s'')
-    let ?vs = "w_values P vs (concat (map (\<lambda>(t, y). \<lbrace>y\<rbrace>\<^bsub>o\<^esub>) ttas))"
-    from `non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ [(t, ta)]))))`
-    have sc1: "non_speculative P vs (llist_of (concat (map (\<lambda>(t, a). \<lbrace>a\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-      and sc2: "non_speculative P ?vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
-      unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def lappend_llist_of_llist_of[symmetric] lmap_lappend_distrib
-      by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
-    note `mthr.if.redT s' (t, ta) s''` sc2
-    moreover
-    from sc1 have "(\<Union>a\<in>if.known_addrs_state s' \<union> w_addrs ?vs. {(a, al) |al. \<exists>T. P,shr s' \<turnstile> a@al : T}) \<subseteq> {adal. ?vs adal \<noteq> {}}"
-      and "if.known_addrs_state s' \<union> w_addrs ?vs \<subseteq> dom (typeof_addr (shr s'))"
-      by(rule conjunct1[OF step(2)] conjunct2[OF step(2)])+
-    moreover from `mthr.if.RedT s ttas s'` wt sc1 vs
-    have "ts_ok (init_fin_lift wfx) (thr s') (shr s')" by(rule if_RedT_non_speculative_invar)
-    ultimately have "(\<Union>a\<in>if.known_addrs_state s'' \<union> w_addrs (w_values P ?vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>). {(a, al) |al. \<exists>T. P,shr s'' \<turnstile> a@al : T}) \<subseteq> {adal. w_values P ?vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> adal \<noteq> {}}"
-      and "if.known_addrs_state s'' \<union> w_addrs (w_values P ?vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) \<subseteq> dom (typeof_addr (shr s''))"
-      by(rule if_redT_known_addrs_w_addrs_dom_vs)+
-    thus ?case by simp
-  qed
-  thus ?thesis1 ?thesis2 by(rule conjunct1 conjunct2)+
 qed
 
 lemma executions_aux:
@@ -2271,7 +2122,6 @@ lemma drf:
        (mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs)))"
     (is "if.cut_and_update ?start_state (mrw_values _ _ (map _ ?start_heap_obs))")
   and wf: "wf_syscls P"
-  and ok: "start_heap_ok"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   shows "drf (\<E>_start f P C M vs status) P" (is "drf ?\<E> _")
@@ -2517,17 +2367,11 @@ proof -
   qed(rule \<E>_new_actions_for_unique)
 qed
 
-end
-
-
-context known_addrs_typing begin 
-
 lemma sc_legal:
   assumes hb_completion:
     "if.hb_completion (init_fin_lift_state status (start_state f P C M vs)) (lift_start_obs start_tid start_heap_obs)"
     (is "if.hb_completion ?start_state ?start_heap_obs")
   and wf: "wf_syscls P"
-  and ok: "start_heap_ok"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   shows "sc_legal (\<E>_start f P C M vs status) P"
@@ -2997,7 +2841,11 @@ proof(cases rule: read_ex_NewHeapElem)
   then obtain n where n: "start_heap_obs ! n = NewHeapElem ad CTn"
     and len: "n < length start_heap_obs"
     unfolding in_set_conv_nth by blast
-  from RedT have hext: "start_heap \<unlhd> shr s'" unfolding s_def
+  from ns have "non_speculative P (w_values P (\<lambda>_. {}) (map snd E)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
+    unfolding lappend_llist_of_llist_of[symmetric]
+    by(simp add: non_speculative_lappend del: lappend_llist_of_llist_of)
+  with RedT wt have hext: "start_heap \<unlhd> shr s'"
+    unfolding s_def E_def using start_state_vs_conf[OF wf]
     by(auto dest!: init_fin_RedT_hext_incr simp add: start_state_def split_beta init_fin_lift_state_conv_simps)
   
   from start have "typeof_addr start_heap ad = \<lfloor>CTn\<rfloor>"
@@ -3011,7 +2859,6 @@ proof(cases rule: read_ex_NewHeapElem)
 next
   case (Red ttas' s'' t' ta' s''' ttas'' CTn)
   note ttas = `ttas = ttas' @ (t', ta') # ttas''`
-  from `mthr.if.RedT s''' ttas'' s'` have hext: "shr s''' \<unlhd> shr s'" by(rule init_fin_RedT_hext_incr)
   
   from `NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>`
   obtain obs obs' where obs: "\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> = obs @ NormalAction (NewHeapElem ad CTn) # obs'"
@@ -3039,13 +2886,30 @@ next
     by(simp add: init_fin_lift_state_conv_simps start_state_def split_def)
   
   from ns
-  have "non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
+  have ns: "non_speculative P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
+    and ns': "non_speculative P (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) (llist_of \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
+    and ns'': "non_speculative P (w_values P (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'')))"
     unfolding ttas vs_def
-    by(simp add: lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: lappend_llist_of_llist_of)
-  with `mthr.if.RedT (init_fin_lift_state status (start_state f P C M params)) ttas' s''` wt 
-  have "ts_ok (init_fin_lift wfx) (thr s'') (shr s'')" using vs unfolding vs_def s_def
+    by(simp_all add: lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: lappend_llist_of_llist_of)
+  from `mthr.if.RedT (init_fin_lift_state status (start_state f P C M params)) ttas' s''` wt ns
+  have ts_ok'': "ts_ok (init_fin_lift wfx) (thr s'') (shr s'')" using vs unfolding vs_def s_def
     by(rule if_RedT_non_speculative_invar)
   with ts''t' have wfxt': "wfx t' (snd x_wa) (shr s'')" by(cases x_wa)(auto dest: ts_okD)
+
+  from `mthr.if.RedT (init_fin_lift_state status (start_state f P C M params)) ttas' s''` wt ns
+  have vs'': "vs_conf P (shr s'') (w_values P (w_values P (\<lambda>_. {}) (map snd E)) (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')))"
+    unfolding s_def E_def vs_def
+    by(rule if_RedT_non_speculative_invar)(simp add: start_state_def split_beta init_fin_lift_state_conv_simps start_state_vs_conf[OF wf])
+  from if_redT_non_speculative_vs_conf[OF `mthr.if.redT s'' (t', ta') s'''` ts_ok'' _ vs'', of "length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"] ns'
+  have vs''': "vs_conf P (shr s''') (w_values P (w_values P vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas'))) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)"
+    by(simp add: vs_def)
+
+  from `mthr.if.redT s'' (t', ta') s'''` ts_ok'' ns' vs''
+  have "ts_ok (init_fin_lift wfx) (thr s''') (shr s''')" 
+    unfolding vs_def by(rule if_redT_non_speculative_invar)
+  with `mthr.if.RedT s''' ttas'' s'`
+  have hext: "shr s''' \<unlhd> shr s'" using ns'' vs'''
+    by(rule init_fin_RedT_hext_incr)
   
   from red_wa have "typeof_addr (shr s''') ad = \<lfloor>CTn\<rfloor>"
     using wfxt' `NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>` by cases(auto dest: red_NewHeapElemD)
@@ -3055,7 +2919,6 @@ next
     by(simp add: new_actions_for_def actions_def action_obs_def)
   thus ?thesis ..
 qed
-
 
 lemma non_speculative_read_into_cut_and_update:
   fixes status f C M params E
@@ -3479,7 +3342,7 @@ proof
                   obtain v'' where "action_obs (llist_of E') w'' = NormalAction (WriteMem ad al v'')"
                     by cases(auto elim: is_write_action.cases)
                   with ta''_j w'' j j' len len'
-                  have "(action_tid (llist_of E') w'', action_obs (llist_of E') w'') \<leadsto>sw (action_tid (llist_of E') (length EE), action_obs (llist_of E') (length EE))"
+                  have "P \<turnstile> (action_tid (llist_of E') w'', action_obs (llist_of E') w'') \<leadsto>sw (action_tid (llist_of E') (length EE), action_obs (llist_of E') (length EE))"
                     by(auto simp add: E'_def EE_def action_obs_def min_def nth_append Volatile)
                   with so' have "P,llist_of E' \<turnstile> w'' \<le>sw length EE" by(rule sync_withI)
                   thus ?thesis unfolding po_sw_def [abs_def] by(blast intro: tranclp.r_into_trancl)

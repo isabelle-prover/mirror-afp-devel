@@ -1,7 +1,7 @@
 (*  Title:      JinjaThreads/MM/JMM_Interp.thy
     Author:     Andreas Lochbihler
 
-    Interpret the language specific heap locales with the JMM memory model
+    Interpret the language specific heap locales with the Java memory model
 *)
 
 theory JMM_Interp imports
@@ -44,9 +44,17 @@ apply(rule JVM_conf_read.intro)
  apply unfold_locales
 done
 
+lemma jmm_J_allocated_progress:
+  "J_allocated_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) jmm_heap_read jmm_heap_write jmm_hconf jmm_allocated P"
+by unfold_locales
+
 lemma jmm'_J_allocated_progress:
   "J_allocated_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) (jmm_heap_read_typed P) jmm_heap_write jmm_hconf jmm_allocated P"
 by(unfold_locales)
+
+lemma jmm_JVM_allocated_progress:
+  "JVM_allocated_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) jmm_heap_read jmm_heap_write jmm_hconf jmm_allocated P"
+by unfold_locales
 
 lemma jmm'_JVM_allocated_progress:
   "JVM_allocated_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) (jmm_heap_read_typed P) jmm_heap_write jmm_hconf jmm_allocated P"

@@ -21,8 +21,8 @@ where
                                                    (action_obs E' (n - 1)) (action_obs E (n - 1)) \<and>
                                                 (\<forall>i < n - 1. i \<in> read_actions E  \<longrightarrow> ws' i = ws i)) \<and>
                                       (\<forall>r \<in> read_actions E'. n - 1 \<le> r \<longrightarrow> P,E' \<turnstile> ws' r \<le>hb r)
-      in ({..<n}, E', ws', id)
-    else (actions E, E, ws, id))"
+      in \<lparr>committed = {..<n}, justifying_exec = E', justifying_ws = ws', action_translation = id\<rparr>
+    else \<lparr>committed = actions E, justifying_exec = E, justifying_ws = ws, action_translation = id\<rparr>)"
 
 end
 
@@ -56,18 +56,25 @@ proof -
                          (\<forall>r \<in> read_actions E'. n - 1 \<le> r \<longrightarrow> P,E' \<turnstile> ws' r \<le>hb r)"
   def E' == "\<lambda>n. fst (Eps (?P n))" and ws' == "\<lambda>n. snd (Eps (?P n))"
   hence [simp]: 
-    "\<And>n. commit_for_sc P (E, ws) n = (if enat n \<le> llength E then ({..<n}, E' n, ws' n, id) else (actions E, E, ws, id))"
+    "\<And>n. commit_for_sc P (E, ws) n = 
+    (if enat n \<le> llength E
+     then \<lparr>committed = {..<n}, justifying_exec = E' n, justifying_ws = ws' n, action_translation = id\<rparr>
+     else \<lparr>committed = actions E, justifying_exec = E, justifying_ws = ws, action_translation = id\<rparr>)"
     by simp
   note [simp del] = commit_for_sc.simps
 
   have "(\<forall>n. ?thesis1 n) \<and> (\<forall>n. ?thesis2 n) \<and> (\<forall>n. ?thesis3 n) \<and> ?thesis4"
-    unfolding is_justified_by.simps
+    unfolding is_justified_by.simps is_commit_sequence_def justification_well_formed_def committed_subset_actions_def
+      happens_before_committed_def sync_order_committed_def value_written_committed_def uncommitted_reads_see_hb_def
+      committed_reads_see_committed_writes_def external_actions_committed_def wf_action_translations_def
+      write_seen_committed_def
   proof(intro conjI strip LetI)
 
     show "committed (?\<phi> 0) = {}"
       by(auto simp add: actions_def zero_enat_def[symmetric])
     show actions_E: "actions E = (\<Union>n. action_translation (?\<phi> n) ` committed (?\<phi> n))"
       by(auto simp add: actions_def less_le_trans[where y="enat n", standard] split: split_if_asm)
+    hence committed_subset_E: "\<And>n. action_translation (?\<phi> n) ` committed (?\<phi> n) \<subseteq> actions E" by fastforce
 
     { fix n
       have "?P n (Eps (?P n))"
@@ -257,7 +264,9 @@ proof -
           case False
           with w True have "w = n - 1" "n > 0" by auto
           moreover
-          from True w wf_action_translation_on_actionD[OF wfa, of w n] w'
+          with True have "w \<in> actions E"
+            by(simp add: actions_def)(metis Suc_ile_eq Suc_pred)
+          with True w wf_action_translation_on_actionD[OF wfa, of w n] w'
           have "w' \<in> write_actions E" 
             by(auto intro!: write_actions.intros elim!: write_actions.cases is_write_action.cases)
           hence "w' \<notin> read_actions E" by(blast dest: read_actions_not_write_actions)
@@ -270,7 +279,9 @@ proof -
       assume r': "r' \<in> read_actions (justifying_exec (commit_for_sc P (E, ws) n)) \<inter> committed (?\<phi> n)"
         and r: "r = action_translation (?\<phi> n) r'"
         and r'': "r'' = inv_into (actions (justifying_exec (?\<phi> (Suc n)))) (action_translation (?\<phi> (Suc n))) r"
-      from r' r have r_actions: "r \<in> read_actions E"
+      from r' r committed_subset[of n] have "r \<in> actions E"
+        by(auto split: split_if_asm elim!: read_actions.cases simp add: actions_def Suc_ile_eq less_trans[where y="enat n"])
+      with r' r have r_actions: "r \<in> read_actions E"
         by(fastforce dest: wf_action_translation_on_actionD[OF wfa] split: split_if_asm elim!: read_actions.cases intro: read_actions.intros)
       moreover from r' committed_subset[of n] committed_actions[of "Suc n"]
       have "r' \<in> actions (justifying_exec (?\<phi> (Suc n)))" by(auto split: split_if_asm elim: read_actions.cases)
@@ -346,8 +357,8 @@ proof -
         with len_E C_n have "?C_ws_n" by clarsimp (metis Suc_ile_eq linorder_le_cases order_less_irrefl order_trans)
         moreover
         from r' have "r' \<in> committed (?\<phi> (Suc n))" by blast
-        with r' r len_E wf_action_translation_on_actionD[OF wfa this]
-        have "r \<in> read_actions E" by(auto elim!: read_actions.cases intro: read_actions.intros)
+        with r' r len_E wf_action_translation_on_actionD[OF wfa this] committed_subset_E[of "Suc n"]
+        have "r \<in> read_actions E" by(fastforce elim!: read_actions.cases intro: read_actions.intros split: split_if_asm)
         with sc obtain "P,E \<turnstile> r \<leadsto>mrw ws r" by(rule sequentially_consistentE)
         with E wf have "ws r < r" by(rule mrw_before)(rule sequentially_consistentE[OF sc])
         with C_n len_E r have ?C_ws by(auto simp add: Suc_ile_eq)

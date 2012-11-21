@@ -50,6 +50,18 @@ abbreviation jmm_empty :: "JMM_heap" where "jmm_empty == (\<lambda>_. 0)"
 definition jmm_typeof_addr :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<rightharpoonup> htype"
 where "jmm_typeof_addr P h = (\<lambda>hT. if is_htype P hT then Some hT else None) \<circ> fst \<circ> the_Address"
 
+definition jmm_typeof_addr' :: "'m prog \<Rightarrow> addr \<rightharpoonup> htype"
+where "jmm_typeof_addr' P = (\<lambda>hT. if is_htype P hT then Some hT else None) \<circ> fst \<circ> the_Address"
+
+lemma jmm_typeof_addr'_conv_jmm_type_addr: "jmm_typeof_addr' P = jmm_typeof_addr P h"
+by(simp add: jmm_typeof_addr_def jmm_typeof_addr'_def)
+
+lemma jmm_typeof_addr'_conv_jmm_typeof_addr: "(\<lambda>_. jmm_typeof_addr' P) = jmm_typeof_addr P"
+by(simp add: jmm_typeof_addr_def jmm_typeof_addr'_def fun_eq_iff)
+
+lemma jmm_typeof_addr_conv_jmm_typeof_addr': "jmm_typeof_addr = (\<lambda>P _. jmm_typeof_addr' P)"
+by(simp add: jmm_typeof_addr'_conv_jmm_typeof_addr)
+
 definition jmm_heap_read :: "JMM_heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 where "jmm_heap_read h a ad v = True"
 
@@ -62,10 +74,13 @@ where "jmm_hconf h \<longleftrightarrow> True"
 definition jmm_allocated :: "JMM_heap \<Rightarrow> addr set"
 where "jmm_allocated h = {Address CTn n|CTn n. n < h CTn}"
 
+definition jmm_spurious_wakeups :: "bool"
+where "jmm_spurious_wakeups = True"
+
 lemmas jmm_heap_ops_defs =
   jmm_allocate_def jmm_typeof_addr_def 
   jmm_heap_read_def jmm_heap_write_def
-  jmm_allocated_def
+  jmm_allocated_def jmm_spurious_wakeups_def
 
 type_synonym thread_id = "addr"
 
@@ -77,6 +92,7 @@ where "thread_id2addr \<equiv> \<lambda>x. x"
 
 interpretation jmm!: heap_base
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write
   for P
 .
@@ -101,6 +117,7 @@ where "jmm_tconf P \<equiv> jmm.tconf TYPE('m) P P"
 
 interpretation jmm!: allocated_heap_base
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write
   jmm_allocated
   for P
@@ -116,6 +133,7 @@ where "jmm_heap_read_typed P \<equiv> jmm.heap_read_typed TYPE('m) P P"
 
 interpretation jmm'!: heap_base
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write
   for P .
 
@@ -159,6 +177,7 @@ qed simp
 
 interpretation jmm!: heap
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write
   P
   for P
@@ -170,6 +189,7 @@ lemmas jmm'_heap = jmm_heap
 
 interpretation jmm'!: heap
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write
   P
   for P
@@ -177,10 +197,16 @@ by(rule jmm'_heap)
 
 declare jmm'.typeof_addr_thread_id2_addr_addr2thread_id [simp del]
 
+lemma jmm_heap_read_typed_default_val:
+  "heap_base.heap_read_typed typeof_addr jmm_heap_read P h a al
+   (default_val (THE T. heap_base.addr_loc_type typeof_addr P h a al T))"
+by(rule heap_base.heap_read_typedI)(simp_all add: heap_base.THE_addr_loc_type jmm_heap_read_def heap_base.defval_conf)
+
 subsection {* Locale @{text "heap_conf"} *}
 
 interpretation jmm!: heap_conf_base
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write jmm_hconf
   P
   for P .
@@ -190,6 +216,7 @@ where "jmm'_hconf == jmm_hconf"
 
 interpretation jmm'!: heap_conf_base
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write jmm'_hconf
   P
   for P .
@@ -212,6 +239,7 @@ by(unfold_locales)(simp_all add: jmm_hconf_def jmm_heap_ops_defs split: split_if
 
 interpretation jmm!: heap_conf
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write jmm_hconf
   P
   for P
@@ -221,6 +249,7 @@ lemmas jmm'_heap_conf = jmm_heap_conf
 
 interpretation jmm'!: heap_conf
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write jmm'_hconf
   P
   for P
@@ -245,6 +274,7 @@ qed
 
 interpretation jmm!: heap_progress
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write jmm_hconf
   P
   for P
@@ -269,6 +299,7 @@ qed
 
 interpretation jmm'!: heap_progress
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write jmm'_hconf
   P
   for P
@@ -282,6 +313,7 @@ by(rule jmm.heap_conf_read_heap_read_typed)
 
 interpretation jmm'!: heap_conf_read
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write jmm'_hconf
   P
   for P
@@ -289,6 +321,7 @@ by(rule jmm'_heap_conf_read)
 
 interpretation jmm'!: heap_typesafe
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write jmm'_hconf
   P
   for P
@@ -318,6 +351,7 @@ qed
 
 interpretation jmm!: allocated_heap
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" jmm_heap_read jmm_heap_write
   jmm_allocated
   P
@@ -328,6 +362,7 @@ lemmas jmm'_allocated_heap = jmm_allocated_heap
 
 interpretation jmm'!: allocated_heap
   addr2thread_id thread_id2addr
+  jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write
   jmm_allocated
   P

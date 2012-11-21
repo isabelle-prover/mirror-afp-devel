@@ -7,19 +7,11 @@ begin
 sublocale J_heap_base < red_mthr!: 
   heap_multithreaded_base 
     addr2thread_id thread_id2addr
+    spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write
     "final_expr" "mred P" convert_RA
   for P
 .
-
--- "Move to SmallStep"
-abbreviation J_local_start ::
-  "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'addr J_mb \<Rightarrow> 'addr val list
-  \<Rightarrow> 'addr expr \<times> 'addr locals"
-where
-  "J_local_start \<equiv> 
-  \<lambda>C M Ts T (pns, body) vs. 
-  (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty)"
 
 context J_heap_base begin
 
