@@ -1587,6 +1587,10 @@ proof(rule ccontr)
   with `\<not> lprefix ys xs` show False by contradiction
 qed
 
+lemma lprefix_down_linear:
+  "\<lbrakk> lprefix xs zs; lprefix ys zs \<rbrakk> \<Longrightarrow> lprefix xs ys \<or> lprefix ys xs"
+by (metis (lifting) lprefix_def lprefix_lappendD)
+
 lemma lprefix_lappend_same [simp]:
   "lprefix (lappend xs ys) (lappend xs zs) \<longleftrightarrow> (lfinite xs \<longrightarrow> lprefix ys zs)"
   (is "?lhs \<longleftrightarrow> ?rhs")
