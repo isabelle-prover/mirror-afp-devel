@@ -818,7 +818,7 @@ lemma eval_poly_subst:
       assumes eq: "\<And> w. f w = eval_poly g (q w)"
       shows "eval_poly f p = eval_poly g (poly_subst q p)" 
 proof (induct p)
-  case Nil thus ?case by (simp add: poly_subst.simps zero_poly_def)
+  case Nil thus ?case by (simp add: zero_poly_def)
 next
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
@@ -830,7 +830,7 @@ next
       by (simp add: wp Cons eq)
   qed simp
   show ?case
-    by (simp add: mc Cons poly_subst.simps id, simp add: field_simps)
+    by (simp add: mc Cons id, simp add: field_simps)
 qed
 
 (* the list of variables occuring in p *)
@@ -986,7 +986,7 @@ using assms unfolding poly_gt_def using gt_trans by blast
 
 lemma poly_GT_SN: "SN poly_GT"
 proof
-  fix f
+  fix f :: "nat \<Rightarrow> ('c,'a)poly"
   assume f: "\<forall> i. (f i, f (Suc i)) \<in> poly_GT"
   have pos: "pos_assign ((\<lambda> x. 0) :: ('v,'a)assign)" (is "pos_assign ?ass") unfolding pos_assign_def using ge_refl by auto
   obtain g where g: "\<And> i. g i = eval_poly ?ass (f i)" by auto
@@ -1171,7 +1171,7 @@ proof (intro allI impI, simp)
     let ?z = "\<lambda> w. zero_poly"
     have "poly_subst ?id p \<ge>p poly_subst ?z p" 
       by (rule poly_weak_mono_all_E[OF mono],  
-        simp add: poly_ge_refl, simp add: poly_ge_def zero_poly_def pos_assign_def) 
+        simp, simp add: poly_ge_def zero_poly_def pos_assign_def) 
     hence "eval_poly \<alpha> (poly_subst ?id p) \<succeq> eval_poly \<alpha> (poly_subst ?z p)" unfolding poly_ge_def using pos by simp
     also have "\<dots> = eval_poly (\<lambda> w. 0) p" by (simp add: poly_subst zero_poly_def)
     also have "\<dots> \<succeq> 0" by (rule pos_at_zero)
@@ -1179,41 +1179,36 @@ proof (intro allI impI, simp)
   qed
 qed
 
-lemma monom_subst_mono: fixes \<alpha> :: "('v,'a :: poly_carrier)assign"
-  assumes pos: "pos_assign \<alpha>"
-  and fg: "\<And> v. f v \<ge>p g v"
-  and g: "\<And> v. g v \<ge>p zero_poly"
-  shows "eval_poly \<alpha> (monom_subst f m) \<succeq> eval_poly \<alpha> (monom_subst g m)" 
-proof -
-  let ?f = "\<lambda> v. eval_poly \<alpha> (f v)"
-  let ?g = "\<lambda> v. eval_poly \<alpha> (g v)"
-  have fg: "\<And> v. ?f v \<succeq> ?g v" and g: "\<And> v. ?g v \<succeq> 0"  using fg g pos unfolding poly_ge_def zero_poly_def by auto
-  have "eval_monom ?f m \<succeq> eval_monom ?g m \<and> eval_monom ?g m \<succeq> 0" 
-  proof (induct m)
-    case Nil thus ?case by (simp add: ge_refl one_ge_zero)
-  next
-    case (Cons vn m)
-    show ?case 
-    proof (cases vn)
-      case (Pair v n)
-      from Cons have one: "eval_monom ?f m \<succeq> eval_monom ?g m" and one': "eval_monom ?g m \<succeq> 0" by simp+
-      from pow_mono[OF fg g]
-      have two: "?f v^n \<succeq> ?g v^n" and two': "?g v^n \<succeq> 0" by auto
-      from times_left_mono[OF ge_trans[OF one one'] two] have "eval_monom ?f m * ?f v^n \<succeq> eval_monom ?f m * ?g v^n" by (auto simp: field_simps)
-      also have "\<dots> \<succeq> eval_monom ?g m * ?g v^n" using times_left_mono[OF two' one] .
-      finally have res1: "eval_monom ?f m * ?f v^n \<succeq> eval_monom ?g m * ?g v^n" .
-      from times_left_mono[OF two' one'] have res2: "eval_monom ?g m * ?g v^n \<succeq> 0" by simp
-      show ?thesis by (simp add: Pair res1 res2)
-    qed
-  qed
-  thus ?thesis by simp
-qed    
-
 context poly_order_carrier
 begin
 
-definition poly_strict_mono :: "'w \<Rightarrow> ('v,'a)poly \<Rightarrow> 'v \<Rightarrow> bool"
-  where "poly_strict_mono type p v \<equiv> \<forall> f g :: ('v \<Rightarrow> ('w,'a)poly). (\<forall> w. (v \<noteq> w \<longrightarrow> f w = g w) \<and> g w \<ge>p zero_poly) \<and> (f v >p g v) \<longrightarrow> poly_subst f p >p poly_subst g p"
+definition poly_strict_mono :: "('v,'a)poly \<Rightarrow> 'v \<Rightarrow> bool" where 
+  "poly_strict_mono p v \<equiv> \<forall> (\<alpha> :: ('v,'a)assign) \<beta>. (\<forall> x. (v \<noteq> x \<longrightarrow> \<alpha> x = \<beta> x)) \<longrightarrow> pos_assign \<beta> \<longrightarrow> \<alpha> v \<succ> \<beta> v \<longrightarrow> eval_poly \<alpha> p \<succ> eval_poly \<beta> p"
+
+lemma poly_strict_mono_E: assumes p: "poly_strict_mono p v"
+  and fgw: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w"
+  and g: "\<And> w. g w \<ge>p zero_poly" 
+  and fgv: "f v >p g v"
+  shows "poly_subst f p >p poly_subst g p"
+  unfolding poly_gt_def poly_subst
+proof (intro allI impI, rule p[unfolded poly_strict_mono_def, rule_format])
+  fix \<alpha> :: "('c,'a)assign"
+  show "pos_assign \<alpha> \<Longrightarrow> eval_poly \<alpha> (f v) \<succ> eval_poly \<alpha> (g v)" using fgv unfolding poly_gt_def by auto
+next
+  fix \<alpha> :: "('c,'a)assign"
+  assume alpha: "pos_assign \<alpha>"
+  show "pos_assign (\<lambda>v. eval_poly \<alpha> (g v))" 
+    unfolding pos_assign_def
+  proof
+    fix x
+    show "eval_poly \<alpha> (g x) \<succeq> 0"
+    using g[of x] unfolding poly_ge_def zero_poly_def using alpha by auto
+  qed
+next
+  fix \<alpha> :: "('c,'a)assign" and x
+  assume v: "v \<noteq> x"
+  show "pos_assign \<alpha> \<Longrightarrow> eval_poly \<alpha> (f x) = eval_poly \<alpha> (g x)" using fgw[OF v] unfolding poly_ge_def by auto
+qed
 
 lemma poly_add_gt_mono: assumes "p1 >p p2" shows "poly_add p1 q >p poly_add p2 q"
 using assms unfolding poly_gt_def by (auto simp: field_simps plus_gt_left_mono)
@@ -1334,7 +1329,7 @@ proof (induct p arbitrary: q)
   hence "\<forall> (n,d) \<in> set q. ge 0 d" using list_all_iff[of _ q] by auto
   hence "[] \<ge>p q" 
   proof (induct q)
-    case Nil thus ?case by (simp add: poly_ge_refl)
+    case Nil thus ?case by (simp)
   next
     case (Cons nd q)
     hence rec: "[] \<ge>p q" by simp
@@ -1684,57 +1679,59 @@ next
   from power_mono[OF True gt ge n] m show ?thesis by auto
 qed
 
-lemma check_poly_strict_mono: fixes type :: 'w
+lemma check_poly_strict_mono: 
   assumes check1: "check_poly_strict_mono power_mono p v"
   and check2: "check_poly_weak_mono_all p"
-  shows "poly_strict_mono type p v"
+  shows "poly_strict_mono p v"
 unfolding poly_strict_mono_def
-proof (intro allI impI, clarify)
-  fix f g :: "'b \<Rightarrow> ('w,'a)poly"
-  assume fgw: "\<forall> w. (v \<noteq> w \<longrightarrow> f w = g w) \<and> g w \<ge>p zero_poly" and fgv: "f v >p g v"
-  from fgw poly_gt_imp_poly_ge[OF fgv] have fgw2: "\<forall> w. f w \<ge>p g w \<and> g w \<ge>p zero_poly" using poly_ge_refl by force
-  show "poly_subst f p >p poly_subst g p"
-    unfolding poly_gt_def
-  proof (intro allI impI)
-    fix \<alpha> :: "('w,'a)assign"
-    assume pos: "pos_assign \<alpha>"
-    let ?e = "\<lambda> f p. eval_poly \<alpha> (poly_subst f p)"
-    show "?e f p \<succ> ?e g p"
-      using check1[unfolded check_poly_strict_mono_def, simplified list_ex_iff]
-        check2[unfolded check_poly_weak_mono_all_def, simplified list_all_iff, THEN bspec]
-    proof (induct p)
-      case (Cons mc p)
-      obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
-      show ?case 
-      proof (cases "c \<succeq> 1 \<and> check_monom_strict_mono power_mono m v")
-        case True
-        hence c: "c \<succeq> 1" and m: "check_monom_strict_mono power_mono m v" by blast+
-        have "eval_poly \<alpha> (monom_subst f m) \<succ> eval_poly \<alpha> (monom_subst g m)" (is "?emf \<succ> ?emg")
-          by (simp only: monom_subst, rule check_monom_strict_mono[OF m], 
-              rule fgv[unfolded poly_gt_def, THEN spec, THEN mp[OF _ pos]], 
-              rule fgw[unfolded poly_ge_def zero_poly_def, THEN spec, of v, simplified, THEN spec, THEN mp[OF _ pos]])
-        from times_gt_mono[OF this c] have gt: "c * ?emf \<succ> c * ?emg" by (auto simp: field_simps)
-        from Cons(3) have "check_poly_weak_mono_all p" unfolding check_poly_weak_mono_all_def list_all_iff by auto
-        from poly_weak_mono_all_E[OF check_poly_weak_mono_all[OF this]] fgw2
-        have ge: "poly_subst f p \<ge>p poly_subst g p" by auto
-        have "c * eval_poly \<alpha> (monom_subst f m) + eval_poly \<alpha> (poly_subst f p) \<succ> c * eval_poly \<alpha> (monom_subst g m) + eval_poly \<alpha> (poly_subst g p)"
-          by (rule compat2[OF plus_gt_left_mono[OF gt]],
-          simp only: add_commute[of "c * ?emg" _], rule plus_left_mono, rule ge[unfolded poly_ge_def, THEN spec, THEN mp[OF _ pos]])
-        thus ?thesis by (simp add: mc poly_subst.simps del: monom_subst)
-      next
-        case False
-        with Cons(2) mc have "\<exists> mc \<in> set p. (\<lambda> (m,c). c \<succeq> 1 \<and> check_monom_strict_mono power_mono m v) mc" by auto
-        from Cons(1)[OF this] Cons(3) have rec: "?e f p \<succ> ?e g p" by simp
-        from Cons(3) mc have c: "c \<succeq> 0" by auto
-        have "eval_poly \<alpha> (monom_subst f m) \<succeq> eval_poly \<alpha> (monom_subst g m)" (is "?emf \<succeq> ?emg")
-          using monom_subst_mono[OF pos, of f g] fgw2 by blast
-        from times_left_mono[OF c this] have ge: "c * ?emf \<succeq> c * ?emg" by (auto simp: field_simps)
-        have "eval_poly \<alpha> (poly_subst f p) + c * eval_poly \<alpha> (monom_subst f m) \<succ> eval_poly \<alpha> (poly_subst g p) + c * eval_poly \<alpha> (monom_subst g m)"
-          by (rule compat2[OF plus_gt_left_mono[OF rec] plus_left_mono[OF ge, simplified add_commute[of "c * ?emf"] add_commute[of "c * ?emg"]]])
-        thus ?thesis by (simp add: mc poly_subst.simps del: monom_subst, simp only: field_simps)
-      qed
-    qed simp
-  qed
+proof (intro allI impI)
+  fix f g :: "('b,'a)assign"
+  assume fgw: "\<forall> w. (v \<noteq> w \<longrightarrow> f w = g w)"
+  and pos: "pos_assign g"
+  and fgv: "f v \<succ> g v"
+  from pos[unfolded pos_assign_def] have g: "\<And> x. g x \<succeq> 0" ..
+  {
+    fix w
+    have "f w \<succeq> g w"
+    proof (cases "v = w")
+      case False
+      with fgw ge_refl show ?thesis by auto
+    next
+      case True
+      from fgv[unfolded True] show ?thesis by (rule gt_imp_ge)
+    qed
+  } note fgw2 = this
+  let ?e = "eval_poly"
+  show "?e f p \<succ> ?e g p"
+    using check1[unfolded check_poly_strict_mono_def, simplified list_ex_iff]
+      check2[unfolded check_poly_weak_mono_all_def, simplified list_all_iff, THEN bspec]
+  proof (induct p)
+    case Nil thus ?case by simp
+  next
+    case (Cons mc p)
+    obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
+    show ?case 
+    proof (cases "c \<succeq> 1 \<and> check_monom_strict_mono power_mono m v")
+      case True
+      hence c: "c \<succeq> 1" and m: "check_monom_strict_mono power_mono m v" by blast+
+      from times_gt_mono[OF check_monom_strict_mono[OF m, of f g, OF fgv g] c]
+      have gt: "eval_monom f m * c \<succ> eval_monom g m * c" .
+      from Cons(3) have "check_poly_weak_mono_all p" unfolding check_poly_weak_mono_all_def list_all_iff by auto
+      from check_poly_weak_mono_all[OF this, unfolded poly_weak_mono_all_def, rule_format, OF fgw2 pos]
+      have ge: "?e f p \<succeq> ?e g p" .
+      from compat2[OF plus_gt_left_mono[OF gt] plus_right_mono[OF ge]]
+      show ?thesis unfolding mc by simp
+    next
+      case False
+      with Cons(2) mc have "\<exists> mc \<in> set p. (\<lambda> (m,c). c \<succeq> 1 \<and> check_monom_strict_mono power_mono m v) mc" by auto
+      from Cons(1)[OF this] Cons(3) have rec: "?e f p \<succ> ?e g p" by simp
+      from Cons(3) mc have c: "c \<succeq> 0" by auto
+      from times_left_mono[OF c eval_monom_mono(1)[OF fgw2 g]] 
+      have ge: "eval_monom f m * c \<succeq> eval_monom g m * c" .
+      from compat2[OF plus_gt_left_mono[OF rec] plus_right_mono[OF ge]]
+      show ?thesis by (simp add: mc field_simps)
+    qed
+  qed 
 qed     
       
 
@@ -1756,101 +1753,87 @@ proof -
   qed
 qed
 
-
 lemma check_poly_strict_mono_discrete: 
-  fixes v :: 'v and type :: 'w
+  fixes v :: 'v and p :: "('v,'a)poly"
   assumes discrete and check: "check_poly_strict_mono_discrete gt p v"
-  shows "poly_strict_mono type p v"
+  shows "poly_strict_mono p v"
 unfolding poly_strict_mono_def 
 proof (intro allI impI)
-  fix f g :: "'v \<Rightarrow> ('w,'a)poly"
-  assume ass: "(\<forall> w. (v \<noteq> w \<longrightarrow> f w = g w) \<and> g w \<ge>p zero_poly) \<and> poly_gt (f v) (g v)"
+  fix f g :: "('v,'a)assign"
+  assume fgw: "\<forall> w. (v \<noteq> w \<longrightarrow> f w = g w)"
+  and gass: "pos_assign g"
+  and v: "f v \<succ> g v"
+  from gass have g: "\<And> x. g x \<succeq> 0" unfolding pos_assign_def ..
+  from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_gt have gt: "poly_gt (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_gt ?p1 p") unfolding check_poly_strict_mono_discrete_def by blast
-  show "poly_gt (poly_subst f p) (poly_subst g p)"
-    unfolding poly_gt_def
-  proof (intro allI impI, simp only: poly_subst)
-    fix \<alpha> :: "('w,'a)assign"
-    let ?fass = "\<lambda> w. eval_poly \<alpha> (f w)"
-    let ?gass = "\<lambda> w. eval_poly \<alpha> (g w)"
-    from ass have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by simp
-    assume "pos_assign \<alpha>"
-    with ass have v: "eval_poly \<alpha> (f v) \<succ> eval_poly \<alpha> (g v)" and gass: "pos_assign ?gass" unfolding poly_gt_def poly_ge_def zero_poly_def pos_assign_def by auto
-    have neq: "\<not> eval_poly \<alpha> (f v) = eval_poly \<alpha> (g v)"
-    proof  
-      assume "eval_poly \<alpha> (f v) = eval_poly \<alpha> (g v)"
-      with v have "eval_poly \<alpha> (g v) \<succ> eval_poly \<alpha> (g v)" by simp
-      with gass[unfolded pos_assign_def, THEN spec, of v] SN show False unfolding SN_defs by auto
-    qed
-    from discrete[OF `discrete` gt_imp_ge[OF v]] obtain k' where "eval_poly \<alpha> (f v) = ((op + 1)^^k')  (eval_poly \<alpha> (g v))" by auto
-    then obtain k where "eval_poly \<alpha> (f v) = ((op + 1)^^(Suc k))  (eval_poly \<alpha> (g v))" 
-      by (cases k', auto simp: neq)
-    with w gass show "eval_poly ?fass p \<succ> eval_poly ?gass p"
-    proof (induct k arbitrary: f g rule: less_induct)
-      case (less k)
-      show ?case 
-      proof (cases k)
-        case 0
-        with less have id0: "eval_poly \<alpha> (f v) = 1 + eval_poly \<alpha> (g v)" by simp
-        have id1: "eval_poly (\<lambda> w. eval_poly \<alpha> (f w)) p = eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) ?p1"
-        proof (rule eval_poly_subst)
-          fix w
-          show "eval_poly \<alpha> (f w) = eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) (poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w))"
-          proof (cases "w = v")
-            case True
-            show ?thesis by (simp add: True id0 zero_poly_def)
-          next
-            case False
-            with less have "f w = g w" by simp
-            thus ?thesis by (simp add: False)
-          qed
+  from discrete[OF `discrete` gt_imp_ge[OF v]] obtain k' where id: "f v = ((op + 1)^^k') (g v)" by auto
+  {
+    assume "k' = 0"
+    from v[unfolded id this] have "g v \<succ> g v" by simp
+    hence False using SN g[of v] unfolding SN_defs by auto
+  }
+  with id obtain k where id: "f v = ((op + 1)^^(Suc k)) (g v)" by (cases k', auto)
+  with w gass
+  show "eval_poly f p \<succ> eval_poly g p"
+  proof (induct k arbitrary: f g rule: less_induct)
+    case (less k)
+    show ?case
+    proof (cases k)
+      case 0
+      with less(4) have id0: "f v = 1 + g v" by simp
+      have id1: "eval_poly f p = eval_poly g ?p1"
+      proof (rule eval_poly_subst)
+        fix w
+        show "f w = eval_poly g (poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w))"
+        proof (cases "w = v")
+          case True
+          show ?thesis by (simp add: True id0 zero_poly_def)
+        next
+          case False
+          with less have "f w = g w" by simp
+          thus ?thesis by (simp add: False)
         qed
-        have "eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) ?p1 \<succ> eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) p" using gt less unfolding poly_gt_def by simp
-        with id1 show ?thesis by simp
-      next
-        case (Suc kk)
-        obtain g' where g': "g' = (\<lambda> w. if (w = v) then poly_add (poly_of (PNum 1)) (g w) else g w)" by auto
-        {
-          fix w
-          have "eval_poly \<alpha> (g' w) = (if v = w then 1 else 0) + eval_poly \<alpha> (g w)"
-            by (simp only: g', cases "v=w", auto)
-        } note g'eval = this
-        let ?g'ass = "\<lambda> w. eval_poly \<alpha> (g' w)"
-        have "(1 :: 'a) + eval_poly \<alpha> (g v) \<succeq> 1 + 0" 
-          by (rule plus_right_mono, simp add: less(3)[unfolded pos_assign_def])
-        also have "\<dots> = 1" by simp
-        also have "\<dots> \<succeq> 0" by (rule one_ge_zero)
-        finally have g'pos: "pos_assign ?g'ass" using less(3) unfolding pos_assign_def
-          by (simp add: g'eval)
-        {
-          fix w
-          assume "v \<noteq> w"
-          hence "f w = g' w"
-            unfolding g' by (simp add: less)
-        } note w = this
-        have eq: "eval_poly \<alpha> (f v) = (op + (1 :: 'a) ^^ Suc kk) (eval_poly \<alpha> (g' v))"
-          by (simp add: less(4) g'eval Suc, rule arg_cong[where f = "op + 1"], induct kk, auto)
-        from Suc have kk: "kk < k" by simp
-        from less(1)[OF kk w g'pos] eq
-        have rec1: "eval_poly (\<lambda> w. eval_poly \<alpha> (f w)) p \<succ> eval_poly (\<lambda> w. eval_poly \<alpha> (g' w)) p" by simp
-        { 
-          fix w
-          assume "v \<noteq> w"
-          hence "g' w = g w"
-            unfolding g' by simp
-        } note w = this
-        from Suc have z: "0 < k" by simp
-        from less(1)[OF z w less(3)] g'
-        have rec2: "eval_poly (\<lambda> w. eval_poly \<alpha> (g' w)) p \<succ> eval_poly (\<lambda> w. eval_poly \<alpha> (g w)) p" by simp
-        show ?thesis by (rule compat[OF gt_imp_ge[OF rec1] rec2])
       qed
+      have "eval_poly g ?p1 \<succ> eval_poly g p" using gt less unfolding poly_gt_def by simp
+      with id1 show ?thesis by simp
+    next
+      case (Suc kk)        
+      obtain g' where g': "g' = (\<lambda> w. if (w = v) then 1 + g w else g w)" by auto
+      have "(1 :: 'a) + g v \<succeq> 1 + 0" 
+        by (rule plus_right_mono, simp add: less(3)[unfolded pos_assign_def])
+      also have "\<dots> = 1" by simp
+      also have "\<dots> \<succeq> 0" by (rule one_ge_zero)
+      finally have g'pos: "pos_assign g'" using less(3) unfolding pos_assign_def 
+        by (simp add: g')
+      {
+        fix w
+        assume "v \<noteq> w"
+        hence "f w = g' w"
+          unfolding g' by (simp add: less)
+      } note w = this
+      have eq: "f v = (op + (1 :: 'a) ^^ Suc kk) ((g' v))"
+        by (simp add: less(4) g' Suc, rule arg_cong[where f = "op + 1"], induct kk, auto)
+      from Suc have kk: "kk < k" by simp
+      from less(1)[OF kk w g'pos] eq
+      have rec1: "eval_poly f p \<succ> eval_poly g' p" by simp
+      { 
+        fix w
+        assume "v \<noteq> w"
+        hence "g' w = g w"
+          unfolding g' by simp
+      } note w = this
+      from Suc have z: "0 < k" by simp
+      from less(1)[OF z w less(3)] g'
+      have rec2: "eval_poly g' p \<succ> eval_poly g p" by simp
+      show ?thesis by (rule gt_trans[OF rec1 rec2])
     qed
   qed
 qed
 
-lemma check_poly_strict_mono_smart: fixes type :: 'w
+lemma check_poly_strict_mono_smart: 
   assumes check1: "check_poly_strict_mono_smart discrete power_mono gt p v"
   and check2: "check_poly_weak_mono_and_pos discrete p"
-  shows "poly_strict_mono type p v"
+  shows "poly_strict_mono p v"
 proof (cases discrete)
   case True
   with check1[unfolded check_poly_strict_mono_smart_def]
