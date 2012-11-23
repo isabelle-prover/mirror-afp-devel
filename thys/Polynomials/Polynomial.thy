@@ -1614,7 +1614,7 @@ proof (intro allI impI)
 qed
 
 lemma check_poly_weak_mono_and_pos: 
-  fixes p :: "('v,'a)poly" and type :: 'w
+  fixes p :: "('v,'a)poly"
   assumes "check_poly_weak_mono_and_pos discrete p"
   shows "poly_weak_mono_all p \<and> (p \<ge>p zero_poly)"
 proof (cases discrete)
