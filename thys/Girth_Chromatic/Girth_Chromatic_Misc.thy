@@ -2,7 +2,7 @@ theory Girth_Chromatic_Misc
 imports
   "~~/src/HOL/Main"
   "~~/src/HOL/Library/Extended_Real"
-  "~~/src/HOL/Number_Theory/Binomial"
+  "~~/src/HOL/Library/Binomial"
 begin
 
 section {* Auxilliary lemmas and setup *}
@@ -23,9 +23,6 @@ text {*
 
 abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^isup>\<infinity>" 10) where
   "evseq P \<equiv> eventually P sequentially"
-
-text {* Remove non-standard induction rule for nat (installed by Cong (via Binomial)): *}
-declare Cong.induct'_nat[induct del]
 
 subsection {* Numbers *}
 
@@ -168,9 +165,13 @@ lemma choose_le_pow:
   assumes "r \<le> n" shows "n choose r \<le> n ^ r"
 proof -
   have "n choose r \<le> fact n div fact (n - r)"
-    using `r \<le> n` by (simp add: choose_altdef_nat div_le_mono2)
+    using `r \<le> n` by (subst binomial_fact_lemma[symmetric]) auto
   with fact_div_fact_le_pow[OF assms] show ?thesis by auto
 qed
+
+lemma choose_altdef_nat: "(k::nat) \<le> n \<Longrightarrow>
+    n choose k = fact n div (fact k * fact (n - k))"
+ by (subst binomial_fact_lemma[symmetric]) auto
 
 lemma n_choose_2_nat:
   fixes n :: nat shows "(n choose 2) = (n * (n - 1)) div 2"
@@ -184,7 +185,7 @@ proof -
       using `2 \<le> n` by (simp add: choose_altdef_nat
         div_mult2_eq[symmetric] nat_mult_commute numeral_2_eq_2)
     ultimately show ?thesis by (simp add: algebra_simps)
-  qed (auto simp: not_le)
+  qed (auto simp: binomial_eq_0)
 qed
 
 lemma powr_less_one:

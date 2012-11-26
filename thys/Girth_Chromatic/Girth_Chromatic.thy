@@ -2,9 +2,9 @@ theory Girth_Chromatic
 imports
   Ugraphs
   Girth_Chromatic_Misc
-  Probability
+  "~~/src/HOL/Probability/Probability"
 
-  "~~/src/HOL/Number_Theory/Binomial"
+  "~~/src/HOL/Library/Binomial"
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
@@ -326,7 +326,7 @@ proof -
   then have "prob ?L \<le> (\<Sum>vs \<in> ?k_sets. prob {es \<in> space P. vs \<in> independent_sets (edge_ugraph es)})"
     by (auto intro!: finite_measure_subadditive_finite simp: space_eq sets_eq)
   also have "\<dots> = (n choose k)*((1 - p) ^ (k choose 2))"
-    by (simp add: prob_k_indep real_eq_of_nat S_verts_def card_subsets_nat)
+    by (simp add: prob_k_indep real_eq_of_nat S_verts_def n_subsets)
   finally show ?thesis using `k \<ge> 2` by (simp add: le_\<alpha>_iff)
 qed
 
