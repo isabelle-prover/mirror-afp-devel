@@ -1,7 +1,7 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 header {* Discrete-time Markov processes constructed using Markov kernels *}
 theory Discrete_Markov_Kernel
-  imports "~~/src/HOL/Probability/Probability"
+  imports "~~/src/HOL/Probability/Probability" "~~/src/HOL/Library/Countable_Set"
 begin
 
 lemma (in wellorder) smallest:
@@ -51,49 +51,23 @@ lemma nat_boundary_cases[case_names less add]:
   using less_imp_add_positive[of l n]
   by (cases n l rule: linorder_cases) auto
 
-definition countable_set :: "'a set \<Rightarrow> bool" where
-  "countable_set S \<longleftrightarrow> (\<exists>f::nat \<Rightarrow> 'a. \<exists>C. bij_betw f C S)"
-
-lemma countable_setI_finite: "finite S \<Longrightarrow> countable_set S"
-  using ex_bij_betw_nat_finite[of S]
-  by (auto simp: countable_set_def)
-
-lemma countable_set:
-  assumes S: "countable_set S"
-  obtains f :: "nat \<Rightarrow> 'a" where "S \<subseteq> range f" "\<And>P. (\<forall>s\<in>S. P s) \<longleftrightarrow> (\<forall>n::nat. f n \<in> S \<longrightarrow> P (f n))"
-proof -
-  obtain f :: "nat \<Rightarrow> 'a" and C where "bij_betw f C S"
-    using S unfolding countable_set_def by auto
-  then have "S \<subseteq> range f"
-    unfolding bij_betw_def by auto
-  moreover then have "\<And>P. (\<forall>s\<in>S. P s) \<longleftrightarrow> (\<forall>n::nat. f n \<in> S \<longrightarrow> P (f n))"
-    by auto
-  ultimately show thesis using that by blast
-qed
-
-lemma countable_setE:
-  assumes S: "countable_set S"
-  obtains f :: "nat \<Rightarrow> 's" and C :: "nat set" where "bij_betw f C S"
-  using S unfolding countable_set_def by auto
-
 lemma
   fixes S :: "'s set"
-  assumes S: "countable_set S"
+  assumes S: "countable S"
   assumes P[measurable]: "\<And>s. s \<in> S \<Longrightarrow> Sigma_Algebra.pred M (P s)"
   shows sets_Collect_All_S[measurable (raw)]: "Sigma_Algebra.pred M (\<lambda>x. \<forall>s\<in>S. P s x)" (is ?ALL)
     and sets_Collect_Ex_S[measurable (raw)]: "Sigma_Algebra.pred M (\<lambda>x. \<exists>s\<in>S. P s x)" (is ?EX)
 proof -
-  obtain f :: "nat \<Rightarrow> 's" where "S \<subseteq> range f"
-    using S by (auto simp: bij_betw_def countable_set_def)
-  then have *: 
-    "\<And>x. (\<forall>s\<in>S. P s x) \<longleftrightarrow> (\<forall>n. f n \<in> S \<longrightarrow> P (if f n \<in> S then f n else undefined) x)"
-    "\<And>x. (\<exists>s\<in>S. P s x) \<longleftrightarrow> (\<exists>n. f n \<in> S \<and> P (if f n \<in> S then f n else undefined) x)"
-    by auto
-  from `S \<subseteq> range f` show ?ALL ?EX unfolding * by measurable
+  let ?f = "from_nat_into S"
+  have *: 
+    "\<And>x. (\<forall>s\<in>S. P s x) \<longleftrightarrow> (\<forall>n. ?f n \<in> S \<longrightarrow> P (if ?f n \<in> S then ?f n else undefined) x)"
+    "\<And>x. (\<exists>s\<in>S. P s x) \<longleftrightarrow> (\<exists>n. ?f n \<in> S \<and> P (if ?f n \<in> S then ?f n else undefined) x)"
+    using subset_range_from_nat_into[OF S] by auto
+  from subset_range_from_nat_into[OF S] show ?ALL ?EX unfolding * by measurable
 qed
 
-lemma measurable_compose_countable_set:
-  assumes S[simp]: "countable_set S"
+lemma measurable_compose_countable:
+  assumes S[simp]: "countable S"
   assumes g[measurable]: "g \<in> measurable M (count_space S)"
   assumes f[measurable]: "\<And>i. i \<in> S \<Longrightarrow> f i \<in> measurable M N"
   shows "(\<lambda>x. f (g x) x) \<in> measurable M N"
@@ -111,7 +85,7 @@ qed
 
 locale Discrete_Markov_Kernel =
   fixes S :: "'s set" and K :: "'s \<Rightarrow> 's measure"
-  assumes countable_space[simp]: "countable_set S"
+  assumes countable_space[simp]: "countable S"
   assumes non_empty_space: "S \<noteq> {}"
   assumes sets_eq_S[simp]: "\<And>s. s \<in> S \<Longrightarrow> sets (K s) = Pow S"
   assumes markov_kernel: "\<And>s. prob_space (K s)"
@@ -156,14 +130,8 @@ lemma K_measurable2_imp[measurable (raw)]:
   "s \<in> S \<Longrightarrow> f \<in> measurable M (count_space S) \<Longrightarrow> f \<in> measurable M (K s)"
   unfolding measurable_def by auto
 
-lemma AE_all_S:
-  assumes *: "\<And>s. s \<in> S \<Longrightarrow> AE x in M. P s x"
-  shows "AE x in M. \<forall>s\<in>S. P s x"
-proof -
-  from countable_space guess f by (rule countable_set)
-  then show ?thesis
-    using * by (auto intro!: AE_impI simp: AE_all_countable)
-qed
+lemma AE_all_S: "(\<And>s. s \<in> S \<Longrightarrow> AE x in M. P s x) \<Longrightarrow> AE x in M. \<forall>s\<in>S. P s x"
+  by (auto intro!: AE_impI simp: AE_all_countable countable_all[OF countable_space])
 
 section {* Enabled states *}
 
@@ -193,23 +161,22 @@ lemma AE_K_iff:
   assumes [simp]: "s \<in> S"
   shows "(AE t in K s. P t) \<longleftrightarrow> (\<forall>t\<in>E s. P t)"
 proof -
-  from countable_space guess f C by (rule countable_setE)
-  note f = this
+  let ?C = "to_nat_on S ` S" and ?f = "from_nat_into S"
   have "(AE t in K s. P t) \<longleftrightarrow> emeasure (K s) {t\<in>S. \<not> P t} = 0"
     by (rule AE_iff_measurable) auto
   also have "emeasure (K s) {t\<in>S. \<not> P t} =
-      (\<Sum>i. emeasure (K s) (if i \<in> C \<and> \<not> P (f i) then {f i} else {}))"
-    using f
-    by (subst suminf_emeasure)
-       (auto intro!: arg_cong2[where f=emeasure] dest: inj_onD
-             simp: bij_betw_def disjoint_family_on_def split: split_if_asm)
-  also have "(\<Sum>i. emeasure (K s) (if i \<in> C \<and> \<not> P (f i) then {f i} else {})) = 0 \<longleftrightarrow>
-      (\<forall>i. emeasure (K s) (if i \<in> C \<and> \<not> P (f i) then {f i} else {}) = 0)"
+      emeasure (K s) (\<Union>i. if i \<in> ?C \<and> \<not> P (?f i) then {?f i} else {})"
+    by (intro arg_cong2[where f=emeasure])
+       (auto split: split_if_asm cong: rev_conj_cong simp: eq_from_nat_into_iff)
+  also have "\<dots> =  (\<Sum>i. emeasure (K s) (if i \<in> ?C \<and> \<not> P (?f i) then {?f i} else {}))"
+    by (subst suminf_emeasure) (auto simp: disjoint_family_on_def)
+  also have "(\<Sum>i. emeasure (K s) (if i \<in> ?C \<and> \<not> P (?f i) then {?f i} else {})) = 0 \<longleftrightarrow>
+      (\<forall>i. emeasure (K s) (if i \<in> ?C \<and> \<not> P (?f i) then {?f i} else {}) = 0)"
     by (rule suminf_ereal_eq_0) auto
-  also have "\<dots> \<longleftrightarrow> (\<forall>i. f i \<in> S \<longrightarrow> f i \<in> E s \<longrightarrow> P (f i))"
-    using f by (auto simp add: E_def bij_betw_def)
+  also have "\<dots> \<longleftrightarrow> (\<forall>i. i \<in> ?C \<longrightarrow> ?f i \<in> E s \<longrightarrow> P (?f i))"
+    by (auto simp add: E_def)
   also have "\<dots> \<longleftrightarrow> (\<forall>t\<in>S. t \<in> E s \<longrightarrow> P t)"
-    using f by (auto simp: bij_betw_def) 
+    by (auto simp: bij_betw_def) 
   finally show ?thesis by auto
 qed
 
@@ -236,7 +203,8 @@ inductive_set reachable :: "'s set \<Rightarrow> 's \<Rightarrow> 's set" for \<
 lemma reachable_induct_trans[consumes 1, case_names start step]:
   assumes t: "t \<in> reachable \<Phi> s"
   assumes 1: "\<And>t s. t \<in> E s \<Longrightarrow> P t s"
-  assumes 2: "\<And>t t' s. t' \<in> reachable \<Phi> s \<Longrightarrow> P t' s \<Longrightarrow> t' \<in> \<Phi> \<Longrightarrow> t \<in> reachable \<Phi> t' \<Longrightarrow> P t t' \<Longrightarrow> P t s"
+  assumes 2: "\<And>t t' s. t' \<in> reachable \<Phi> s \<Longrightarrow> P t' s \<Longrightarrow> t' \<in> \<Phi> \<Longrightarrow> t \<in> reachable \<Phi> t' \<Longrightarrow>
+    P t t' \<Longrightarrow> P t s"
   shows "P t s"
   using t
   by induct (blast intro: 1 2 reachable.intros)+
@@ -350,7 +318,7 @@ proof (rule measurable_PiM_single')
   fix i show "(\<lambda>\<omega>. path s \<omega> i) \<in> measurable D_seq (count_space S)"
   proof (induct i)
     case (Suc i)
-    note measurable_compose_countable_set[OF countable_space this, measurable (raw)]
+    note measurable_compose_countable[OF countable_space this, measurable (raw)]
     show ?case
       unfolding path.simps by measurable
   qed (simp add: s0)
@@ -359,7 +327,7 @@ qed (simp add: path_in_S PiE_iff)
 lemma measurable_path'[measurable (raw)]:
   assumes f: "f \<in> measurable M (count_space S)" and g: "g \<in> measurable M D_seq"
   shows "(\<lambda>x. path (f x) (g x)) \<in> measurable M S_seq"
-  using measurable_compose_countable_set[OF countable_space f,
+  using measurable_compose_countable[OF countable_space f,
       OF measurable_compose[OF g measurable_path]] .
 
 lemma path_nat_case:
@@ -401,14 +369,14 @@ lemma borel_measurable_positive_integral_paths[measurable (raw)]:
   assumes f: "f \<in> measurable M (count_space S)"
   assumes g: "(\<lambda>(x, y). g x y) \<in> borel_measurable (M \<Otimes>\<^isub>M S_seq)"
   shows "(\<lambda>x. integral\<^isup>P (paths (f x)) (g x)) \<in> borel_measurable M"
-  by (rule measurable_compose_countable_set[OF countable_space f])
+  by (rule measurable_compose_countable[OF countable_space f])
      (simp add: g borel_measurable_positive_integral cong: measurable_cong_sets)
 
 lemma borel_measurable_lebesgue_integral_paths[measurable (raw)]:
   assumes f: "f \<in> measurable M (count_space S)"
   assumes g: "(\<lambda>(x, y). g x y) \<in> borel_measurable (M \<Otimes>\<^isub>M S_seq)"
   shows "(\<lambda>x. integral\<^isup>L (paths (f x)) (g x)) \<in> borel_measurable M"
-  by (rule measurable_compose_countable_set[OF countable_space f])
+  by (rule measurable_compose_countable[OF countable_space f])
      (simp add: g borel_measurable_lebesgue_integral cong: measurable_cong_sets)
 
 subsection {* Show splitting rules *}

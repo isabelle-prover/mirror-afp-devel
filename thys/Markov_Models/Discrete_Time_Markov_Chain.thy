@@ -31,7 +31,7 @@ sublocale Discrete_Time_Markov_Chain \<subseteq> K: prob_space "K s" for s
 
 sublocale Discrete_Time_Markov_Chain \<subseteq> Discrete_Markov_Kernel S K
   by default (insert finite_S s0_in_S,
-    auto intro: countable_setI_finite simp add: K_def sets_point_measure)
+    auto intro: countable_finite simp add: K_def sets_point_measure)
 
 context Discrete_Time_Markov_Chain
 begin 
