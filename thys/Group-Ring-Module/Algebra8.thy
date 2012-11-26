@@ -75,12 +75,12 @@ apply (frule ag_r_inv1[of "l_comb R M (Suc n) t g"],
    apply (subgoal_tac "(\<lambda>x\<in>{0::nat}. (s (Suc n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (t (Suc n)))) \<in> 
            {j. j \<le> (0::nat)} \<rightarrow> carrier R",
           subgoal_tac "(\<lambda>x\<in>{0::nat}. g (Suc n)) \<in>  {j. j \<le> (0::nat)} \<rightarrow> H") 
-   apply (simp add:l_comb_add[THEN sym])
+   apply (simp add:l_comb_add[THEN sym] del: Pi_split_insert_domain)
 apply (cut_tac unique_expression3_1[of H "jointfun (Suc (n + n)) 
          (jointfun n f n g) 0 (\<lambda>x\<in>{0}. g (Suc n))" "Suc (n + n)" 
       "jointfun (Suc (n + n))
         (jointfun n s n (\<lambda>x\<in>{j. j \<le> Suc n}. -\<^sub>a\<^bsub>R\<^esub> (t x))) 0
-        (\<lambda>x\<in>{0}. s (Suc n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (t (Suc n)))"], simp,
+        (\<lambda>x\<in>{0}. s (Suc n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (t (Suc n)))"], simp del: Pi_split_insert_domain,
    thin_tac "l_comb R M (Suc (Suc (n + n)))
    (jointfun (Suc (n + n)) (jointfun n s n (\<lambda>x\<in>{j. j \<le> Suc n}. -\<^sub>a\<^bsub>R\<^esub> (t x))) 0
    (\<lambda>x\<in>{0}. s (Suc n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (t (Suc n))))
@@ -107,19 +107,21 @@ apply (thin_tac " (-\<^sub>a\<^bsub>R\<^esub> (t (Suc n))) \<cdot>\<^sub>s g (Su
        subst aGroup.ag_eq_diffzero[of R "s (Suc n)" "t (Suc n)"], assumption+)
        apply (rule sym, assumption) apply assumption
    apply (rule Pi_I,
-          case_tac "x \<le> Suc (n + n)", simp add:jointfun_def, 
-          simp add:Pi_def,
-          rule impI, simp add:sliden_def,
-          simp add:Pi_def, simp add:jointfun_def sliden_def)
+          case_tac "x \<le> Suc (n + n)", simp add:jointfun_def del: Pi_split_insert_domain, 
+          simp add:Pi_def del: Pi_split_insert_domain,
+          rule impI, simp add:sliden_def del: Pi_split_insert_domain,
+          simp add:Pi_def, simp add:jointfun_def sliden_def del: Pi_split_insert_domain)
      apply (rule Pi_I,
-          case_tac "x \<le> Suc (n + n)", simp add:jointfun_def[of "Suc (n+n)"],
-          simp add:Pi_def, simp add:jointfun_def[of "Suc (n + n)"]
-          sliden_def, rule aGroup.ag_pOp_closed, assumption+,
-          simp add: Nset_pre1,
+          case_tac "x \<le> Suc (n + n)",
+          simp add:jointfun_def[of "Suc (n+n)"] del: Pi_split_insert_domain,
+          simp add:Pi_def,
+          simp add:jointfun_def[of "Suc (n + n)"] sliden_def del: Pi_split_insert_domain,
+          rule aGroup.ag_pOp_closed, assumption+,
+          simp add: Nset_pre1 del: Pi_split_insert_domain,
           simp add:im_jointfunTr1[of "Suc (n+n)" "jointfun n f n g" 0 
-              "\<lambda>x\<in>{0}. g (Suc n)"],
-          simp add:im_jointfun[of f n H g n H],
-          (subst jointfun_def[of "Suc (n+n)"])+, simp add:sliden_def)
+              "\<lambda>x\<in>{0}. g (Suc n)"] del: Pi_split_insert_domain,
+          simp add:im_jointfun[of f n H g n H] del: Pi_split_insert_domain,
+          (subst jointfun_def[of "Suc (n+n)"])+, simp add:sliden_def del: Pi_split_insert_domain)
   apply (rule conjI, frule sym, thin_tac "f (Suc n) = g (Suc n)",
          simp add:inj_on_def[of f],
          rule contrapos_pp, simp+, simp add:image_def, erule exE, 
@@ -240,13 +242,13 @@ apply (induct_tac n)
  apply (rule allI)+
  apply (rule impI, (erule conjE)+)
  apply (frule_tac H = H and f = f and n = 0 and s = s and g = g and m = m 
-        and t = t in unique_expression7_1, assumption+, simp)
+        and t = t in unique_expression7_1, assumption+, simp del: Pi_split_insert_domain)
  apply (frule_tac H = H and f = f and n = 0 and s = s and g = g and m = m 
-        and t = t in  unique_expression6, simp+)
- apply (simp add:l_comb_def)
- apply (frule_tac f = s in funcset_mem[of _ "{0}" "carrier R" 0], simp,
-        frule_tac f = t in funcset_mem[of _ "{0}" "carrier R" 0], simp,
-        frule_tac f = g in funcset_mem[of _ "{0}" H 0], simp,
+        and t = t in  unique_expression6, (simp del: Pi_split_insert_domain) +)
+ apply (simp add:l_comb_def del: Pi_split_insert_domain)
+ apply (frule_tac f = s in funcset_mem[of _ "{0}" "carrier R" 0], simp del: Pi_split_insert_domain,
+        frule_tac f = t in funcset_mem[of _ "{0}" "carrier R" 0], simp del: Pi_split_insert_domain,
+        frule_tac f = g in funcset_mem[of _ "{0}" H 0], simp del: Pi_split_insert_domain,
         frule_tac c = "g 0" in subsetD[of "H" "carrier M"], assumption+)
  apply (frule_tac a = "s 0" and m = "g 0" in sc_mem, assumption+, 
         frule_tac a = "t 0" and m = "g 0" in sc_mem, assumption+,
@@ -466,7 +468,7 @@ lemma (in Module) fsps_chain_boundTr1:"\<lbrakk>R module N; free_generator R M H
       fa \<in> {j. j \<le> (n::nat)} \<rightarrow> \<Union>{a. \<exists>b. (a, b) \<in> C} 
                        \<longrightarrow> (\<exists>(c, d) \<in> C. fa ` {j. j \<le> n} \<subseteq> c)"  
 apply (induct_tac n)
- apply (rule impI, simp)
+ apply (rule impI, simp del: Pi_split_insert_domain)
  apply ((erule exE)+, erule conjE, erule exE)
  apply (frule_tac f = fa and A = "{0}" and B = "\<Union>{a. \<exists>b. (a, b) \<in> C}" and 
                       ?A1.0 = "{0}" in image_sub, simp, simp) 
@@ -538,9 +540,9 @@ lemma (in Module) eSum_in_SubmoduleTr:"\<lbrakk>H \<subseteq> carrier M; K \<sub
       l_comb R (mdl M (fgs R M K)) n s f = l_comb R M n s f"
 apply (induct_tac n)    
  apply (rule impI, (erule conjE)+)
- apply (simp add:l_comb_def, simp add:mdl_def, rule impI) 
- apply (simp add:fgs_def, frule subset_trans[of K H "carrier M"], assumption+) 
- apply (frule funcset_mem[of f "{0}" K 0], simp,
+ apply (simp add:l_comb_def del: Pi_split_insert_domain, simp add:mdl_def del: Pi_split_insert_domain, rule impI) 
+ apply (simp add:fgs_def del: Pi_split_insert_domain, frule subset_trans[of K H "carrier M"], assumption+) 
+ apply (frule funcset_mem[of f "{0}" K 0], simp del: Pi_split_insert_domain,
         frule l_span_cont_H[of K], simp add:subsetD)
 
 apply (rule impI, erule conjE)
@@ -948,7 +950,7 @@ apply (frule_tac x = "(a1, b1)" in bspec, assumption,
 apply (drule_tac x = "(a2, b2)" in bspec, assumption,
        drule_tac x = "(a3, b3)" in bspec, assumption)
 
-apply simp
+apply (simp  del: Pi_split_insert_domain)
 apply ((erule disjE)+, blast+)
 done
 
@@ -1410,7 +1412,7 @@ apply (erule exE, (erule bexE)+)
  apply (cut_tac sc_Ring, frule Ring.whole_ideal)
  apply (frule_tac A = "carrier R" and z = h and h = f and n = n and t = s in 
         single_span, assumption+)
- apply (erule bexE, simp add:l_comb_def)
+ apply (erule bexE, simp add:l_comb_def del: Pi_split_insert_domain)
 apply (frule_tac f = sa and A = "{0}" and B = "carrier R" and 
                  x = 0 in funcset_mem,  simp, blast)
 done
@@ -2527,27 +2529,30 @@ apply (simp add:dsumM_def prodag_def aGroup_def,
          simp add:Module.module_is_ag)+
 
 apply (rule Module_axioms.intro)
- apply (cut_tac Ring, simp,
-        simp add:dsumM_carr dsumM_def,
-        simp add:dsum_sprod_mem)
+ apply (cut_tac Ring, simp del: Pi_split_insert_domain,
+        simp add:dsumM_carr dsumM_def del: Pi_split_insert_domain,
+        simp add:dsum_sprod_mem del: Pi_split_insert_domain)
 
 (* sc_l_distr *)
  apply (cut_tac ring_is_ag,
         frule_tac x = a and y = b in aGroup.ag_pOp_closed, assumption+,
-        simp add:dsumM_carr,
+        simp add:dsumM_carr del: Pi_split_insert_domain,
         frule_tac a = a and b = m in dsum_sprod_mem[of I M], assumption+,
         frule_tac a = b and b = m in dsum_sprod_mem[of I M], assumption+,
         frule_tac a = "a \<plusminus> b" and b = m in dsum_sprod_mem[of I M], assumption+,
-        simp add:dsumM_def,
+        simp add:dsumM_def del: Pi_split_insert_domain,
         cut_tac X = "prodM_sprod R I M a m" and Y = "prodM_sprod R I M b m" in
         prod_pOp_mem[of I M],
         (rule ballI, frule_tac x = k in bspec, assumption,
-        thin_tac "\<forall>i\<in>I. R module M i", simp add:Module.module_is_ag),
-        (cut_tac carr_dsum_prod[of I M], simp add:subsetD)+)
-   apply(cut_tac carr_dsum_prod1[of I M],
-        rule prodM_mem_eq, assumption+, (simp add:prodM_carr)+,
-        rule ballI, simp add:prodM_sprod_def prod_pOp_def,
-        thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
+        thin_tac "\<forall>i\<in>I. R module M i", simp add:Module.module_is_ag del: Pi_split_insert_domain),
+        (cut_tac carr_dsum_prod[of I M], simp add:subsetD del: Pi_split_insert_domain)+)
+   apply(cut_tac carr_dsum_prod1[of I M])
+apply(rule prodM_mem_eq)
+apply(assumption+)
+apply((simp add:prodM_carr del: Pi_split_insert_domain)+)
+apply(rule ballI)
+apply(simp add:prodM_sprod_def prod_pOp_def del: Pi_split_insert_domain PiE_restrict)
+apply(thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. (a \<plusminus> b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>x\<in>I. (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else undefined) \<plusminus>\<^bsub>M x\<^esub>
@@ -2592,7 +2597,7 @@ apply (rule Module_axioms.intro)
         thin_tac "n \<in> carr_dsumag I M")
  apply (frule_tac a = a and m = m in prodM_sprod_mem[of I M], assumption+, 
         frule_tac a = a and m = n in prodM_sprod_mem[of I M], assumption+)
- apply (simp add:prodM_sprod_def prod_pOp_def,
+ apply (simp add:prodM_sprod_def prod_pOp_def del: PiE_restrict,
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then m j \<plusminus>\<^bsub>M j\<^esub> n j else undefined))
         \<in> carr_prodag I M",
         thin_tac "(\<lambda>x\<in>I. (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else undefined) \<plusminus>\<^bsub>M x\<^esub>

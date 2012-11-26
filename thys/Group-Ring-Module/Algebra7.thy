@@ -2359,7 +2359,6 @@ lemma (in Module) Sum_of_SubmodulesTr:"\<lbrakk>submodule R M H; submodule R M K
 apply (induct_tac n)
  apply (rule impI)
  apply simp
- apply (frule funcset_mem [of "g" "{0}" "H \<union> K" "0"], simp)
  apply (frule submodule_subset[of H],
         frule submodule_subset[of K])
  apply (simp add:set_sum)
@@ -2761,11 +2760,7 @@ lemma (in Module) linear_comb0_1Tr:"H \<subseteq> carrier M \<Longrightarrow>
       m \<in> {j. j \<le> n} \<rightarrow> H \<longrightarrow> l_comb R M n s m = \<zero>\<^bsub>M\<^esub>"
 apply (induct_tac n)
  apply (rule impI) apply (erule conjE)
- apply (simp add:l_comb_def)
- apply (frule_tac x = 0 and f = s in funcset_mem[of _ "{0}" "{\<zero>\<^bsub>R\<^esub>}"], simp+,
-        frule_tac x = 0 and f = m in funcset_mem[of _ "{0}" H], simp+,
-        frule_tac c = "m 0" in subsetD[of H "carrier M"], assumption+,
-        simp add:sc_0_m)
+ apply (simp add:l_comb_def subsetD sc_0_m)
 
 apply (rule impI) apply (erule conjE)
  apply (frule func_pre [of _ _ "{\<zero>\<^bsub>R\<^esub>}"])
@@ -2794,12 +2789,7 @@ lemma (in Module) linear_comb0_2Tr:"ideal R A \<Longrightarrow> s \<in> {j. j \<
       \<and>  m \<in> {j. j \<le> n} \<rightarrow> {\<zero>\<^bsub>M\<^esub>} \<longrightarrow> l_comb R M n s m = \<zero>\<^bsub>M\<^esub>"
 apply (induct_tac n )
  apply (rule impI) apply (erule conjE)
- apply (simp add:l_comb_def)
- apply (frule funcset_mem [of "m" "{0}" "{\<zero>\<^bsub>M\<^esub>}" "0"], simp+,
-        frule funcset_mem [of "s" "{0}" A "0"], simp+,
-        cut_tac sc_Ring,
-        frule_tac h = "s 0" in Ring.ideal_subset, assumption+,
-        rule sc_a_0, assumption+)
+ apply (simp add:l_comb_def sc_a_0 sc_Ring Ring.ideal_subset)
 
 apply (rule impI)
  apply (erule conjE)+
@@ -2828,13 +2818,7 @@ lemma (in Module) liear_comb_memTr:"\<lbrakk>ideal R A; H \<subseteq> carrier M\
           m \<in> {j. j \<le> n} \<rightarrow> H \<longrightarrow> l_comb R M n s m \<in> carrier M"
 apply (induct_tac n)
  apply (rule allI)+ apply (rule impI) apply (erule conjE)
- apply (simp add:l_comb_def)
- apply (rule sc_mem)
-  apply (frule_tac x = 0 and f = s in funcset_mem[of _ "{0}" A], simp,
-         cut_tac sc_Ring,
-         rule_tac h = "s 0" in Ring.ideal_subset[of R A], assumption+,
-         frule_tac x = 0 and f = m in funcset_mem[of _ "{0}" H], simp,
-         simp add:subsetD)
+ apply (simp add: l_comb_def sc_mem Ring.ideal_subset[of R A] subsetD sc_Ring) 
 
 apply (rule allI)+ apply (rule impI) apply (erule conjE)
  apply (frule func_pre [of _ _ "A"],
@@ -2998,16 +2982,7 @@ lemma (in Module) l_comb_add1Tr:"\<lbrakk>ideal R A; H \<subseteq> carrier M\<rb
     l_comb R M n (\<lambda>x\<in>{j. j \<le> n}. (s x) \<plusminus>\<^bsub>R\<^esub> (t x)) f =
       l_comb R M n s f \<plusminus> l_comb R M n t f"
 apply (induct_tac n)
- apply (simp add:l_comb_def)
- apply (rule impI, (erule conjE)+)
- apply (frule_tac x = 0 in funcset_mem[of s "{0}" A], simp,
-        frule_tac x = 0 in funcset_mem[of t "{0}" A], simp,
-        frule_tac x = 0 in funcset_mem[of f "{0}" H], simp,
-        cut_tac sc_Ring,
-        frule_tac h = "s 0" in Ring.ideal_subset, assumption+,
-        frule_tac h = "t 0" in Ring.ideal_subset, assumption+,
-        frule_tac c = "f 0" in subsetD[of H "carrier M"], assumption+)
- apply (simp add:sc_l_distr)
+ apply (simp add:l_comb_def sc_Ring Ring.ideal_subset subsetD sc_l_distr)
 
  apply (rule impI, (erule conjE)+)
  apply (frule func_pre[of f], frule func_pre[of s], frule func_pre[of t],
@@ -3333,11 +3308,8 @@ lemma (in Module) mem_single_l_spanTr:"\<lbrakk>ideal R A; h \<in> carrier M\<rb
       \<longrightarrow> (\<exists>a \<in> A. l_comb R M n s f = a \<cdot>\<^sub>s h)"
 apply (cut_tac sc_Ring)  
 apply (induct_tac n)
- apply (rule impI, (erule conjE)+, simp add:l_comb_def)
- apply (frule funcset_mem[of f "{0}" "{h}" 0], simp, simp,
-        frule funcset_mem[of s "{0}" A 0], simp,
-        frule_tac h = "s 0" in Ring.ideal_subset[of R A], assumption+,
-        blast)
+ apply (rule impI, (erule conjE)+)
+ apply (simp add:l_comb_def Ring.ideal_subset[of R A] bexI[of _ "s 0"])
 apply (rule impI, (erule conjE)+,
        frule func_pre[of _ _ A], frule func_pre[of _ _ "{h}"],
        frule_tac n = n in l_comb_mem_linear_span[of A "{h}" s _ f],
@@ -3993,14 +3965,10 @@ apply (rule impI, (erule conjE)+)
 apply (case_tac "H = {}")
  apply (simp add:linear_span_def)
  apply (simp add:l_comb_def)
- apply (frule_tac f = f and A = "{0}" and B = "{\<zero>}" and x = 0 in 
-          funcset_mem, simp+)
  apply (rule sc_a_0,
         cut_tac sc_Ring,
         simp add:Pi_def Ring.ideal_subset) 
- apply (simp add:l_comb_def) 
- apply (rule l_span_closed2Tr0[of A H "s 0" "f 0"], assumption+,
-        simp add:Pi_def, simp add:Pi_def)
+ apply (simp add:l_comb_def l_span_closed2Tr0)
 
 apply (rule impI, erule conjE,
        frule func_pre[of s], frule func_pre[of f], simp)
@@ -4240,16 +4208,11 @@ lemma (in Module) similar_termTr:"\<lbrakk>ideal R A; a \<in> A\<rbrakk> \<Longr
 apply (cut_tac sc_Ring)   
 apply (induct_tac n)
  apply (rule allI)+ apply (rule impI) apply (erule conjE)+
- apply simp 
- apply (frule_tac x = 0 and f = s in funcset_mem[of _ "{0}" A], simp,
-        frule_tac h = "s 0" in Ring.ideal_subset[of R A], assumption+,
-        frule_tac x = 0 and f = f in funcset_mem[of _ "{0}" "carrier M"], simp,
-        frule_tac h = a in Ring.ideal_subset[of R A], assumption+,
-        subst sc_l_distr[THEN sym], assumption+)
-   apply (subgoal_tac "(\<lambda>k\<in>{0::nat}. (s 0 \<plusminus>\<^bsub>R\<^esub> a)) \<in> {0} \<rightarrow> A")
-   apply (subgoal_tac "(s 0 \<plusminus>\<^bsub>R\<^esub> a) \<cdot>\<^sub>s f 0 = (\<lambda>k\<in>{0::nat}. s 0 \<plusminus>\<^bsub>R\<^esub> a) 0 \<cdot>\<^sub>s f 0")
-   apply blast
-   apply (simp, simp add:Ring.ideal_pOp_closed)
+ apply simp
+ apply (rule_tac x = "\<lambda>k\<in>{0::nat}. (s 0 \<plusminus>\<^bsub>R\<^esub> a)" in bexI)
+ apply (simp add: Ring.ideal_subset sc_l_distr)
+ apply simp
+   apply (simp add:Ring.ideal_pOp_closed)
 
 (** n **)
 apply ((rule allI)+, rule impI, (erule conjE)+)
@@ -4362,7 +4325,7 @@ lemma (in Module) same_togetherTr:"\<lbrakk>ideal R A; H \<subseteq> carrier M \
        (card (f ` {j. j \<le> n}) - Suc 0))"  
 apply (induct_tac n)
  apply ((rule allI)+, rule impI, erule conjE)
- apply (simp)
+ apply (simp del: Pi_split_insert_domain)
  apply (frule_tac f = f and A = "{0}" and B= H in func_to_img,
         frule_tac f = f and A = "{0}" and B= H in surj_to_image,
         fastforce simp add:image_def)
@@ -4499,8 +4462,6 @@ lemma (in Module) finite_lin_spanTr1:"\<lbrakk>ideal R A; z \<in> carrier M\<rbr
 apply (induct_tac n)
  apply (rule impI)
  apply ((erule conjE)+, simp)
- apply (frule_tac f = h and A = "{0}" and B = "{z}" and x = 0 in funcset_mem,
-        simp, simp)
  apply blast 
 
 apply (rule impI) apply (erule conjE)+
@@ -4508,8 +4469,6 @@ apply (rule impI) apply (erule conjE)+
 apply (simp del:nsum_suc, erule bexE, simp,
        frule_tac f = h and A = "{j. j \<le> Suc n}" and B = "{z}" and x = "Suc n"
        in funcset_mem, simp, simp,
-       frule_tac f = s and A = "{0}" and B = A and x = 0 in funcset_mem,
-         simp,
        frule_tac f = t and A = "{j. j \<le> Suc n}" and B = A and x = "Suc n" in
         funcset_mem, simp, cut_tac sc_Ring,
        frule_tac h = "s 0" in Ring.ideal_subset[of R A], assumption+,
@@ -5668,9 +5627,7 @@ apply (rule contrapos_pp, simp+, simp add:subset_eq)
          simp add:free_generator_sub, assumption+)
   apply (simp add:ag_eq_diffzero[of "l_comb R M m t g" "l_comb R M 0 s f"],
          simp add:l_comb_def[of R M 0 s f],
-          frule_tac x = 0 in funcset_mem[of s "{0}" "carrier R"], simp,
-          frule_tac x = 0 in funcset_mem[of f "{0}" H], simp,
-          frule free_generator_sub[of H],
+         frule free_generator_sub[of H],
           frule_tac c = "f 0" in subsetD[of H "carrier M"], assumption+,
           simp add:sc_minus_am1)
   apply (subgoal_tac "l_comb R M m t g \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> (s 0)) \<cdot>\<^sub>s f 0 = 

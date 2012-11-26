@@ -3670,7 +3670,6 @@ lemma (in Ring) fg_freeTr1:"\<lbrakk>R module M; free_generator R M A;
                       l_comb R (fgmodule R A z i f s) n sa fa"
 apply (induct_tac n, (rule allI)+, rule impI, erule conjE)
  apply (simp add:l_comb_def)
- apply (frule_tac f = fa and A = "{0}" and B = A in funcset_mem, simp)
  apply (simp add:cmp_def)
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule_tac f = fa and n = n and A = A in func_pre,
@@ -4337,7 +4336,7 @@ lemma (in Ring) linear_comb_memTr:"\<lbrakk>R module M; submodule R M N; T \<sub
       l_comb R M n s f \<in> N"
 apply (induct_tac n)
  apply ((rule allI)+, rule impI, (erule conjE)+)
- apply (simp add:l_comb_def) 
+ apply (simp add:l_comb_def del: Pi_split_insert_domain)
  apply (rule Module.submodule_sc_closed, assumption+)
  apply (simp add:Pi_def, simp add:Pi_def subsetD)
 

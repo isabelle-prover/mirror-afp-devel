@@ -829,8 +829,6 @@ apply (rule conjI)
  apply (erule conjE)+ apply (frule_tac x = x in mem_of_Nset [of _ "n"])
  apply (frule_tac f = g and x = x in funcset_mem[of _ "{j. j \<le> n}" 
                       "Un_carrier {j. j \<le> n} B"], assumption+)
- apply (thin_tac "g \<in> {j. j \<le> n} \<rightarrow> Un_carrier {j. j \<le> n} B",
-        thin_tac "h \<in> {0} \<rightarrow> Un_carrier {0} (compose {0} B (slide (Suc n)))")
  apply (simp add:Un_carrier_def,
         erule exE, erule conjE, erule exE, simp, erule conjE,
         frule_tac x = i and y = n and z = "Suc n" in le_less_trans,
@@ -1915,19 +1913,10 @@ lemma (in aGroup) additionTr2:" \<forall>f. \<forall>h. f \<in> {j. j \<le> (Suc
 apply (induct_tac n) 
  apply (rule allI)+
  apply (rule impI, (erule conjE)+)
- apply (simp add:cmp_def) 
+ apply (simp add:cmp_def)
  apply (case_tac "h 0 = 0")
   apply (simp add:Nset_1)
-  apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" 
-                              "{0, Suc 0}" "Suc 0"], simp)
-  apply (simp add:inj_on_def, simp add:Nset_1)
-  apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" "{0, Suc 0}" "0"],
-         simp, frule not_sym, simp)
-   apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" "{0, Suc 0}" 
-                    "Suc 0"], simp, simp)
-    apply (rule ag_pOp_commute)
-  apply (rule funcset_mem, assumption+, simp,
-         rule funcset_mem, assumption+, simp)
+  apply (simp add:Nset_1 ag_pOp_commute)
 
 (************* n *****************)
 apply (rule allI)+
@@ -2022,11 +2011,7 @@ lemma (in aGroup) addition21:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> carr
        h \<in> {j. j \<le> n} \<rightarrow> {j. j \<le> n}; inj_on h {j. j \<le> n}\<rbrakk> \<Longrightarrow>
        nsum A (cmp f h) n = nsum A f n"
 apply (case_tac "n = 0")
- apply simp
- apply (subgoal_tac "h 0 = 0", simp add:cmp_def)
- apply (cut_tac Nset_inc_0[of 0])
- apply (frule_tac f = h and A = "{0}" and B = "{0}" in funcset_mem, simp,
-        simp) 
+ apply (simp add: cmp_def)
  apply (cut_tac f = f and n = "n - Suc 0" and h = h in addition2)
  apply simp+
 done
@@ -2469,9 +2454,7 @@ lemma (in Ring) ideal_inc_set_multTr:"\<lbrakk>A \<subseteq> carrier R; ideal R 
        set_mult R A B \<subseteq> C \<rbrakk> \<Longrightarrow>
          \<forall>f \<in> {j. j \<le> (n::nat)} \<rightarrow> set_mult R A B. \<Sigma>\<^sub>e R f n \<in> C"
 apply (induct_tac n)
- apply (rule ballI, simp,
-    frule_tac x = 0 and f = f in funcset_mem[of _ "{0}" "set_mult R A B"],
-    simp, simp add:subsetD)
+ apply (simp add:subsetD)
 
 apply (rule ballI)
   apply (
@@ -2561,9 +2544,7 @@ apply (cut_tac ring_is_ag)
 apply (frule ideal_prod_ideal[of "B" "C"], assumption+,
        subst sum_mult_is_ideal_prod[of A "B \<diamondsuit>\<^sub>r C", THEN sym], assumption+)     
 apply (induct_tac n)
- apply (rule ballI, simp,
-       frule_tac x = 0 and f = f in funcset_mem[of _ "{0}" "set_mult R A B"],
-        simp)
+ apply simp
  apply (simp add:ideal_prod_assocTr0)
  apply (rule ballI,
        frule_tac x = f in bspec,
