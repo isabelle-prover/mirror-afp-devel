@@ -17,9 +17,6 @@ begin
 
 section{* General redefinitions *}
 
-lemma member_ListMem [code_unfold]: "List.member = (\<lambda> xs x. ListMem x xs)"
-  by (simp add: ListMem_iff member_def fun_eq_iff)
-
 inductive app :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where
   "app [] ys ys"
@@ -43,7 +40,9 @@ theorem app_eq: "app xs ys zs = (zs = xs @ ys)"
   done
 
 code_pred
-  (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool, o \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool as reverse_app)
+  (modes:
+    i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool, i \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool,
+    o \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, o \<Rightarrow> o \<Rightarrow> i \<Rightarrow> bool as reverse_app)
   app
 .
 
@@ -210,43 +209,27 @@ qed
 
 section{* Code generation *}
 
-primrec the_Repeats :: "base \<Rightarrow> cname option"
-where
-  "the_Repeats (Repeats C) = Some C"
-| "the_Repeats (Shares C) = None"
-
-lemma the_Repeats_eq_Some_iff: "the_Repeats B = Some C \<longleftrightarrow> B = Repeats C"
-by(cases B) simp_all
-
 lemma subclsRp_code [code_pred_intro]:
-  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; ListMem D (List.map_filter the_Repeats Bs) \<rbrakk> \<Longrightarrow> subclsRp P C D"
-by(auto intro: subclsRp.intros simp add: List.map_filter_def the_Repeats_eq_Some_iff ListMem_iff)
+  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"
+by(auto intro: subclsRp.intros simp add: contains_def)
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   subclsRp
-by(erule subclsRp.cases)(fastforce simp add: List.map_filter_def the_Repeats_eq_Some_iff ListMem_iff intro: rev_image_eqI)
+by(erule subclsRp.cases)(fastforce simp add: contains_def)
 
 lemma subclsR_code [code_pred_inline]:
   "P \<turnstile> C \<prec>\<^sub>R D \<longleftrightarrow> subclsRp P C D"
 by(simp add: subclsR_def)
 
-primrec the_Shares :: "base \<Rightarrow> cname option"
-where
-  "the_Shares (Repeats C) = None"
-| "the_Shares (Shares C) = Some C"
-
-lemma the_Shares_eq_Some_iff: "the_Shares B = Some C \<longleftrightarrow> B = Shares C"
-by(cases B) simp_all
-
 lemma subclsSp_code [code_pred_intro]:
-  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; ListMem D (List.map_filter the_Shares Bs) \<rbrakk> \<Longrightarrow> subclsSp P C D"
-by(auto intro: subclsSp.intros simp add: List.map_filter_def the_Shares_eq_Some_iff ListMem_iff)
+  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; contains (set Bs) (Shares D) \<rbrakk> \<Longrightarrow> subclsSp P C D"
+by(auto intro: subclsSp.intros simp add: contains_def)
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   subclsSp
-by(erule subclsSp.cases)(fastforce simp add: List.map_filter_def the_Shares_eq_Some_iff ListMem_iff intro: rev_image_eqI)
+by(erule subclsSp.cases)(fastforce simp add: contains_def)
 
 declare SubobjsR_Base [code_pred_intro]
 lemma SubobjsR_Rep_code [code_pred_intro]:
@@ -258,17 +241,13 @@ code_pred
   Subobjs\<^isub>R
 by(erule Subobjs\<^isub>R.cases)(auto simp add: subclsR_code)
 
-lemma baseClasses_iff [code_pred_inline]:
-  "D \<in> baseClasses Bs \<longleftrightarrow> ListMem D (map getbase Bs)"
-by(simp add: baseClasses_def ListMem_iff)
-
 lemma subcls1p_code [code_pred_intro]:
-  "\<lbrakk>class P C = Some (Bs,rest); ListMem D (map getbase Bs) \<rbrakk> \<Longrightarrow> subcls1p P C D"
-by(auto intro: subcls1p.intros simp add: baseClasses_iff)
+  "\<lbrakk>class P C = Some (Bs,rest); contains (baseClasses Bs) D \<rbrakk> \<Longrightarrow> subcls1p P C D"
+by(auto intro: subcls1p.intros simp add: contains_def)
 
 code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   subcls1p
-by(fastforce elim!: subcls1p.cases simp add: baseClasses_iff) 
+by(fastforce elim!: subcls1p.cases simp add: contains_def) 
 
 declare Subobjs_Rep [code_pred_intro]
 lemma Subobjs_Sh_code [code_pred_intro]:
