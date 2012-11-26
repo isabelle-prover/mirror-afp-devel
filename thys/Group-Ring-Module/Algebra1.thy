@@ -4071,7 +4071,8 @@ by auto
 
 lemma Nset2_finiteTr:"\<forall>A. (finite A \<and>(card A = Suc n) \<longrightarrow> 
      (\<exists>f. f \<in> {i. i \<le> n} \<rightarrow> A \<and> surj_to f {i. i \<le> n} A))"
-apply (induct_tac n, rule allI, rule impI, erule conjE, simp add:card1_Tr2)
+apply (induct_tac n, rule allI, rule impI, erule conjE)
+apply (simp add: card1_Tr2 del: Pi_split_insert_domain)
   (* n *)
 apply (rule allI, rule impI, erule conjE, frule Nset2_prep1, assumption+)
 apply (erule exE)
