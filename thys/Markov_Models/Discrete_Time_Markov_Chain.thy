@@ -107,7 +107,7 @@ lemma space_Int_subset[simp]: "X \<inter> (UNIV \<rightarrow> S) \<subseteq> spa
   by (simp add: space_PiM PiE_def) 
 
 lemma space_in_S_seq[measurable]: "UNIV \<rightarrow> S \<in> sets S_seq"
-  using top[of S_seq] by (simp add: space_PiM PiE_def) 
+  using sets.top[of S_seq] by (simp add: space_PiM PiE_def)
 
 lemma measurable_Collect_Pi[measurable (raw)]: 
   "Sigma_Algebra.pred S_seq P \<Longrightarrow> {\<omega>\<in>UNIV \<rightarrow> S. P \<omega>} \<in> sets S_seq"

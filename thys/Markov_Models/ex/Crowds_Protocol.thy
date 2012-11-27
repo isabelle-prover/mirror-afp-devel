@@ -436,7 +436,7 @@ proof -
     using ae by (auto dest!: AE_prob_1)
   from ae_S have *:
     "\<P>(x in M. Q x) = prob (\<Union>n\<in>I. {x\<in>space M. P n x} \<inter> S)"
-    using P Q S by (intro finite_measure_eq_AE) (auto intro!: Int)
+    using P Q S by (intro finite_measure_eq_AE) (auto intro!: sets.Int)
   from ae_S have **:
     "\<And>n. n \<in> I \<Longrightarrow> \<P>(x in M. P n x) = prob ({x\<in>space M. P n x} \<inter> S)"
     using P Q S by (intro finite_measure_eq_AE) auto
@@ -790,7 +790,7 @@ proof -
   next
     fix i assume "i \<in> jondos - colls"
     show "{\<omega> \<in> space \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = i \<and> hit_colls \<omega>} \<in> sets \<PP>"
-      by (intro sets_Collect sets_Collect_finite_Ex) auto
+      by (intro sets.sets_Collect sets.sets_Collect_finite_Ex) auto
   next
     { fix \<omega> :: "nat \<Rightarrow> _" assume \<omega>: "\<omega> \<in> UNIV \<rightarrow> valid_states"
       { fix i
@@ -804,7 +804,7 @@ proof -
       = {\<omega> \<in> space \<PP>. (\<exists>j\<in>jondos. first_jondo \<omega> = j \<and> last_ncoll \<omega> = j) \<and> hit_colls \<omega>}"
       using measurable_space[OF measurable_last_ncoll] by auto
     also have "\<dots> \<in> sets \<PP>"
-      by (intro sets_Collect sets_Collect_finite_Ex) auto
+      by (intro sets.sets_Collect sets.sets_Collect_finite_Ex) auto
     finally show "{\<omega> \<in> space \<PP>. (first_jondo \<omega> = last_ncoll \<omega>) \<and> hit_colls \<omega>} \<in> sets \<PP>" .
   next
     show "AE \<omega> in \<PP>. (\<forall>i\<in>jondos - colls.
