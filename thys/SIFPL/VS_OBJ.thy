@@ -1177,7 +1177,7 @@ done
 (*>*)
 
 (*<*)
-lemma FIXvarFIX_:
+lemma FIXvarFIX':
   "(PhiWhile b \<Phi>) = (\<lambda> (s,t,\<beta>) . (b,\<Phi>,\<beta>,s,t):var)"
 apply (rule ext, rule iffI)
 apply (case_tac x, clarsimp) apply (erule FIXvar)
@@ -1185,7 +1185,7 @@ apply (case_tac x, clarsimp) apply (simp add: varFIXvar)
 done
 
 lemma FIXvarFIX: "(PhiWhile b) = (\<lambda> \<Phi> . (\<lambda> (s,t,\<beta>) . (b,\<Phi>,\<beta>,s,t):var))"
-apply rule apply (rule FIXvarFIX_)
+apply rule apply (rule FIXvarFIX')
 done
 (*>*)
 
@@ -1199,7 +1199,7 @@ lemma WHILE_IND:
 apply (rule VDMConseq)
 apply (erule WHILE) apply assumption
 apply clarsimp
-apply (simp add: FIXvarFIX_)
+apply (simp add: FIXvarFIX')
 done
 (*>*)
 
@@ -1611,7 +1611,7 @@ apply (simp add: twiddle_def)
 done
 (*>*)
 (*<*)
-lemma twiddle_mkIDs_compose_:
+lemma twiddle_mkIDs_compose':
   "\<lbrakk> s \<equiv>\<^sub>(mkId (snd s)) r; r \<equiv>\<^sub>(mkId (snd r)) t\<rbrakk> \<Longrightarrow> s \<equiv>\<^sub>(mkId (snd s)) t"
 apply (case_tac s, clarsimp)
 apply (case_tac t, clarsimp)
