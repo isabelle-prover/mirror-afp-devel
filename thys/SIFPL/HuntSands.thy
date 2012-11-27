@@ -695,7 +695,7 @@ apply (erule varFIX)
 done
 (*>*)
 (*<*)
-lemma FIXvarFIX_: "(PhiWhileP A b \<Phi>) = (\<lambda> (s,t) . (b,A,\<Phi>,s,t):var)"
+lemma FIXvarFIX': "(PhiWhileP A b \<Phi>) = (\<lambda> (s,t) . (b,A,\<Phi>,s,t):var)"
 apply (rule ext, rule iffI)
 apply (case_tac x, clarsimp) apply (erule FIXvar)
 apply (case_tac x, clarsimp) apply (simp add: varFIXvar)
@@ -704,7 +704,7 @@ done
 lemma FIXvarFIX: 
 "PhiWhileP A b = (\<lambda> \<Phi> . (\<lambda> (s,t) . (b,A,\<Phi>,s,t):var))"
 (*<*)
-by (rule, rule FIXvarFIX_)
+by (rule, rule FIXvarFIX')
 (*>*)
 
 text{*Thus, the above while rule may also be written using the

@@ -331,7 +331,7 @@ apply (erule FIXvar)
 apply (erule varFIX)
 done
 
-lemma FIXvarFIX_: "(PhiWhile b \<Phi>) = (\<lambda> (s,t) . (b,\<Phi>,s,t):var)"
+lemma FIXvarFIX': "(PhiWhile b \<Phi>) = (\<lambda> (s,t) . (b,\<Phi>,s,t):var)"
 apply (rule ext, rule iffI)
 apply (case_tac x, clarsimp) apply (erule FIXvar)
 apply (case_tac x, clarsimp) apply (simp add: varFIXvar)
@@ -340,7 +340,7 @@ done
 
 lemma FIXvarFIX: "(PhiWhile b) = (\<lambda> \<Phi> . (\<lambda> (s,t) . (b,\<Phi>,s,t):var))"
 (*<*)
-by (rule, rule FIXvarFIX_)
+by (rule, rule FIXvarFIX')
 (*>*)
 
 text{*From this rule and the rule WHILE above, one may derive the

@@ -11,7 +11,7 @@ notation
   and "PQ.priorities" ("\<parallel>(_)\<parallel>")
 
 text {*
-  \noindent Naming convention: prefix @{text bt_} for bintrees, @{text bts_} for bintree lists,
+  \noindent Naming convention: prefix @{text "bt_"} for bintrees, @{text "bts_"} for bintree lists,
   no prefix for binqueues.
 *}
 
