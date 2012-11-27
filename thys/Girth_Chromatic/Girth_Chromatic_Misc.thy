@@ -151,28 +151,6 @@ lemma dist_real_noabs_less:
   fixes a b c :: real assumes "dist a b < c" shows "a - b < c"
 using assms by (simp add: dist_real_def)
 
-
-lemma fact_div_fact_le_pow:
-  assumes "r \<le> n" shows "fact n div fact (n - r) \<le> n ^ r"
-proof -
-  have "\<And>r. r \<le> n \<Longrightarrow> \<Prod>{n - r..n} = (n - r) * \<Prod>{Suc (n - r)..n}"
-    by (subst setprod_insert[symmetric]) (auto simp: atLeastAtMost_insertL)
-  with assms show ?thesis
-    by (induct r rule: nat.induct) (auto simp add: fact_div_fact Suc_diff_Suc mult_le_mono)
-qed
-
-lemma choose_le_pow:
-  assumes "r \<le> n" shows "n choose r \<le> n ^ r"
-proof -
-  have "n choose r \<le> fact n div fact (n - r)"
-    using `r \<le> n` by (subst binomial_fact_lemma[symmetric]) auto
-  with fact_div_fact_le_pow[OF assms] show ?thesis by auto
-qed
-
-lemma choose_altdef_nat: "(k::nat) \<le> n \<Longrightarrow>
-    n choose k = fact n div (fact k * fact (n - k))"
- by (subst binomial_fact_lemma[symmetric]) auto
-
 lemma n_choose_2_nat:
   fixes n :: nat shows "(n choose 2) = (n * (n - 1)) div 2"
 proof -
@@ -182,7 +160,7 @@ proof -
     then obtain m where "n = Suc (Suc m)"
       by (metis add_Suc le_Suc_ex numeral_2_eq_2)
     moreover have "(n choose 2) = (fact n div fact (n - 2)) div 2"
-      using `2 \<le> n` by (simp add: choose_altdef_nat
+      using `2 \<le> n` by (simp add: binomial_altdef_nat
         div_mult2_eq[symmetric] nat_mult_commute numeral_2_eq_2)
     ultimately show ?thesis by (simp add: algebra_simps)
   qed (auto simp: binomial_eq_0)

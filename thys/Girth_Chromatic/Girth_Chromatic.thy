@@ -366,7 +366,7 @@ proof -
       using A by (auto intro: pG.random_prob_independent)
     also have "\<dots> \<le> n powr ?nr n * (1 - p n) powr (?nr n choose 2)"
       using A
-      by (simp add: powr_realpow power_real_of_nat choose_le_pow del: real_of_nat_power)
+      by (simp add: powr_realpow power_real_of_nat binomial_le_pow del: real_of_nat_power)
     also have "\<dots> = n powr ?nr n * (1 - p n) powr (?nr n * (?nr n - 1) / 2)"
       by (cases "even (?nr n - 1)")
          (auto simp: n_choose_2_nat nat_even_iff_2_dvd[symmetric] real_of_nat_div)
