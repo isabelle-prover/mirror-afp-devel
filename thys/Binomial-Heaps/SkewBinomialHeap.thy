@@ -2317,7 +2317,7 @@ theorem bs_empty_correct: "h=bs_empty \<longleftrightarrow> bs_to_mset h = {#}"
   apply simp
   done
 
-lemma bs_mset_of_empty_[simp]:
+lemma bs_mset_of_empty[simp]:
   "bs_to_mset bs_empty = {#}"
   by (simp add: bs_empty_def)
 
