@@ -223,7 +223,7 @@ by (rule exI[where x="Suc c"]) (auto intro: assms)
 lemma LIMSEQ_neg_powr:
   assumes s: "s < 0"
   shows "(%x. (real x) powr s) ----> 0"
-by (rule tendsto_neg_powr[OF assms real_tendsto_inf_real])
+by (rule tendsto_neg_powr[OF assms filter_lim_real_sequentially])
 
 lemma LIMSEQ_inv_powr:
   assumes "0 < c" "0 < d"
