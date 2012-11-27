@@ -129,6 +129,9 @@ hide_fact (open) LNil LCons
 definition inf_llist :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a llist"
 where [code del]: "inf_llist f = llist_corec f (\<lambda>f. Some (f 0, \<lambda>n. f (Suc n)))"
 
+abbreviation repeat :: "'a \<Rightarrow> 'a llist"
+where "repeat \<equiv> iterates (\<lambda>x. x)"
+
 definition lprefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
 where [code del]: "lprefix xs ys \<equiv> \<exists>zs. lappend xs zs = ys"
 
@@ -179,8 +182,6 @@ where "lsublist xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (
 
 definition (in monoid_add) llistsum :: "'a llist \<Rightarrow> 'a"
 where "llistsum xs = (if lfinite xs then listsum (list_of xs) else 0)"
-
-
 
 
 subsection {* Auxiliary lemmata *}
@@ -934,6 +935,18 @@ qed(simp add: zero_enat_def[symmetric])
 lemma ldrop_all:
   "llength xs \<le> m \<Longrightarrow> ldrop m xs = LNil"
 by(cases m)(simp_all add: ldropn_all)
+
+lemma ldropn_eq_LConsD:
+  "ldropn n xs = LCons y ys \<Longrightarrow> enat n < llength xs"
+proof(induct n arbitrary: xs)
+  case 0 thus ?case by(simp add: zero_enat_def[symmetric])
+next
+  case (Suc n) thus ?case by(cases xs)(simp_all add: Suc_ile_eq)
+qed
+
+lemma ldrop_eq_LConsD:
+  "ldrop n xs = LCons y ys \<Longrightarrow> n < llength xs"
+by(cases n)(auto dest: ldropn_eq_LConsD)
 
 lemma ldropn_lmap [simp]: "ldropn n (lmap f xs) = lmap f (ldropn n xs)"
 by(induct n arbitrary: xs)(simp_all add: ldropn.simps split: llist_split)
@@ -2371,6 +2384,12 @@ by(auto dest: lset_ltakeWhileD)
 lemma ltakeWhile_all_conv: "ltakeWhile P xs = xs \<longleftrightarrow> lset xs \<subseteq> {x. P x}"
 by (metis Int_Collect Int_absorb2 le_infE lset_ltakeWhile_subset ltakeWhile_all)
 
+lemma ldropWhile_eq_LNil_iff:
+  "ldropWhile P xs = LNil \<longleftrightarrow> (\<forall>x \<in> lset xs. P x)"
+apply(simp add: ldropWhile_def ldrop_eq_LNil)
+apply(metis lappend_ltakeWhile_ldropWhile lset_ltakeWhileD ltake_all ltake_lappend1 order_refl ltakeWhile_all order_refl)
+done
+
 lemma lzip_ltakeWhile_fst: "lzip (ltakeWhile P xs) ys = ltakeWhile (P \<circ> fst) (lzip xs ys)"
 proof -
   have "(lzip (ltakeWhile P xs) ys, ltakeWhile (P \<circ> fst) (lzip xs ys)) \<in>
@@ -2430,6 +2449,39 @@ proof -
     thus ?case by(cases ys) auto
   qed
 qed
+
+lemma lnth_llength_ltakeWhile:
+  assumes len: "llength (ltakeWhile P xs) < llength xs"
+  shows "\<not> P (lnth xs (the_enat (llength (ltakeWhile P xs))))"
+proof
+  assume P: "P (lnth xs (the_enat (llength (ltakeWhile P xs))))"
+  from len obtain len where "llength (ltakeWhile P xs) = enat len"
+    by(cases "llength (ltakeWhile P xs)") auto
+  with P len show False apply simp
+  proof(induct len arbitrary: xs)
+    case 0 thus ?case by(clarsimp simp add: zero_enat_def[symmetric] neq_LNil_conv)
+  next
+    case (Suc len) thus ?case by(cases xs)(auto split: split_if_asm simp add: eSuc_enat[symmetric])
+  qed
+qed
+
+lemma ltakeWhile_repeat: 
+  fixes P x
+  defines "lhs \<equiv> ltakeWhile P (repeat x)"
+  and "rhs \<equiv> if P x then repeat x else LNil"
+  shows "lhs = rhs"
+proof -
+  have "(lhs, rhs) \<in> {(lhs, rhs). lhs = ltakeWhile P (repeat x) \<and> rhs = (if P x then repeat x else LNil)}"
+    unfolding lhs_def rhs_def by blast
+  thus ?thesis
+  proof(coinduct rule: llist_equalityI)
+    case (Eqllist q)
+    thus ?case by(subst (asm) (1 2) iterates) simp
+  qed
+qed
+
+lemma ldropWhile_repeat: "ldropWhile P (repeat x) = (if P x then LNil else repeat x)"
+by(simp add: ldropWhile_def ltakeWhile_repeat)
 
 subsection {* @{term "llist_all2"} *}
 
@@ -2714,6 +2766,13 @@ next
   hence "lhd (ldropn n xs') = lnth xs' n" by(rule Suc)
   thus ?case by simp
 qed
+
+lemma lhd_ldropWhile: "ldropWhile P xs \<noteq> LNil \<Longrightarrow> \<not> P (lhd (ldropWhile P xs))"
+using lnth_llength_ltakeWhile[of P xs]
+apply(simp add: ldropWhile_def ldrop_eq_LNil not_le)
+apply(cases "llength (ltakeWhile P xs)")
+apply(simp_all add: lhd_ldropn)
+done
 
 lemma lhd_lzip: "\<lbrakk> xs \<noteq> LNil; ys \<noteq> LNil \<rbrakk> \<Longrightarrow> lhd (lzip xs ys) = (lhd xs, lhd ys)"
 by(clarsimp simp add: neq_LNil_conv)
