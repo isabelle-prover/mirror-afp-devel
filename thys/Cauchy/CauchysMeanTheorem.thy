@@ -63,11 +63,11 @@ lists. We then define sum and product operations over these lists. *}
 subsubsection {* Sum and product definitions *}
 
 definition
-  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_" [999] 1000) where
+  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_" [999] 998) where
   "listsum xs = foldr op+ xs 0"
 
 definition
-  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_" [999] 1000) where
+  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_" [999] 998) where
   "listprod xs = foldr op* xs 1"
 
 lemma listsum_empty [simp]: "\<Sum>:[] = 0"
@@ -909,10 +909,10 @@ proof -
   from \<alpha>_def \<beta>_def have el_neq: "\<beta> \<noteq> \<alpha>" by simp
   from neqne neq have xsne: "xs \<noteq> []" by auto
 
-  from \<beta>_def have \<beta>mem: "\<beta> : set xs" by (auto simp: neq)
-  from \<alpha>_def have \<alpha>mem: "\<alpha> : set xs" by (auto simp: neq)
+  from \<beta>_def have \<beta>_mem: "\<beta> : set xs" by (auto simp: neq)
+  from \<alpha>_def have \<alpha>_mem: "\<alpha> : set xs" by (auto simp: neq)
 
-  from pos_xs pos_def xsne \<alpha>mem \<beta>mem \<alpha>_def \<beta>_def have
+  from pos_xs pos_def xsne \<alpha>_mem \<beta>_mem \<alpha>_def \<beta>_def have
     \<alpha>_pos: "\<alpha> > 0" and \<beta>_pos: "\<beta> > 0" by auto
 
   -- "remove these elements from xs, and insert two new elements"
@@ -925,7 +925,7 @@ proof -
 
   obtain new_list where nl: "new_list = m#b#(left_over)" by auto
 
-  from el_neq \<beta>mem \<alpha>mem have "\<beta> : set xs \<and> \<alpha> : set xs \<and> \<beta> \<noteq> \<alpha>" by simp
+  from el_neq \<beta>_mem \<alpha>_mem have "\<beta> : set xs \<and> \<alpha> : set xs \<and> \<beta> \<noteq> \<alpha>" by simp
   hence "\<alpha> : set (remove1 \<beta> xs) \<and> \<beta> : set(remove1 \<alpha> xs)" by (auto simp add: in_set_remove1)
   moreover hence "(remove1 \<alpha> xs) \<noteq> [] \<and> (remove1 \<beta> xs) \<noteq> []" by (auto)
   ultimately have
@@ -944,7 +944,7 @@ proof -
   qed
 
   -- "now show that the new list has the same mean as the old list"
-  with mem nl lo bdef \<alpha>mem \<beta>mem
+  with mem nl lo bdef \<alpha>_mem \<beta>_mem
     have "\<Sum>:new_list = \<Sum>:xs"
       apply clarsimp
       apply (subst listsum_rmv1)
@@ -953,7 +953,7 @@ proof -
         apply simp
       apply clarsimp
     done
-  moreover from lo nl \<beta>mem \<alpha>mem mem have
+  moreover from lo nl \<beta>_mem \<alpha>_mem mem have
     leq: "length new_list = length xs"
     apply -
     apply (erule conjE)+
@@ -973,7 +973,7 @@ proof -
     moreover from nl have
       "\<Prod>:new_list = \<Prod>:left_over * (m*b)" by auto
     moreover
-    from lo \<alpha>mem \<beta>mem mem remove1_retains_prod have
+    from lo \<alpha>_mem \<beta>_mem mem remove1_retains_prod have
       xsprod: "\<Prod>:xs = \<Prod>:left_over * (\<alpha>*\<beta>)" by auto
     moreover from xsne have
       "xs \<noteq> []" .
@@ -987,7 +987,7 @@ proof -
         from xsprod have "\<Prod>:xs = \<Prod>:left_over * (\<alpha>*\<beta>)" .
         ultimately have "\<Prod>:left_over * (\<alpha>*\<beta>) > 0" by simp
         moreover
-        from pos_els \<alpha>mem \<beta>mem have "\<alpha> > 0" and "\<beta> > 0" by auto
+        from pos_els \<alpha>_mem \<beta>_mem have "\<alpha> > 0" and "\<beta> > 0" by auto
         hence "\<alpha>*\<beta> > 0" by (rule mult_pos_pos)
         ultimately show "\<Prod>:left_over > 0"
           apply -
@@ -1029,7 +1029,7 @@ proof -
       apply -
       apply (rule list_neq_remove1)
       by simp
-    also from \<alpha>mem \<alpha>_ne_m xsne have
+    also from \<alpha>_mem \<alpha>_ne_m xsne have
       "\<dots> < length (list_neq xs m)"
       apply -
       apply (rule list_neq_remove1)
@@ -1062,7 +1062,7 @@ proof -
     finally have
       "het new_list \<le> length (list_neq (remove1 \<alpha> xs) m)"
       by simp
-    also from \<alpha>mem \<alpha>_ne_m xsne have "\<dots> < length (list_neq xs m)"
+    also from \<alpha>_mem \<alpha>_ne_m xsne have "\<dots> < length (list_neq xs m)"
       apply -
       apply (rule list_neq_remove1)
       by simp
