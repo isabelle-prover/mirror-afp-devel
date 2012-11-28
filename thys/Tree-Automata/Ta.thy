@@ -597,10 +597,10 @@ definition "ta_union TA TA' ==
   the union-algorithm.
 *}
 lemma accs_exclusive_aux: 
-  "\<lbrakk> accs \<delta>n n q; \<delta>n=\<delta>\<union>\<delta>'; \<delta>_states \<delta> \<inter> \<delta>_states \<delta>' = {}; q\<in>\<delta>_states \<delta> \<rbrakk> 
+  "\<lbrakk> accs \<delta>_n n q; \<delta>_n=\<delta>\<union>\<delta>'; \<delta>_states \<delta> \<inter> \<delta>_states \<delta>' = {}; q\<in>\<delta>_states \<delta> \<rbrakk> 
    \<Longrightarrow> accs \<delta> n q"
 proof (induct arbitrary: \<delta> \<delta>' rule: accs.induct[case_names step])
-  case (step q l qs \<delta>n ts \<delta> \<delta>')
+  case (step q l qs \<delta>_n ts \<delta> \<delta>')
   note [simp] = step.prems(1)
   note [simp] = step.hyps(2)[symmetric] step.hyps(3)
   from step.prems have "q\<notin>\<delta>_states \<delta>'" by blast
@@ -1281,43 +1281,43 @@ text {*
 context ranked_tree_automaton
 begin
   -- "Left-hand side of subset rule for given symbol and rhs"
-  definition "\<delta>ss_lhs f ss == 
+  definition "\<delta>_ss_lhs f ss == 
     { q | q qs. (q \<rightarrow> f qs)\<in>\<delta> \<and> list_all_zip (op \<in>) qs ss }"
 
   -- "Subset construction"
-  inductive_set \<delta>ss :: "('Q set,'L) ta_rule set" where
+  inductive_set \<delta>_ss :: "('Q set,'L) ta_rule set" where
     "\<lbrakk> A f = Some (length ss); 
        ss \<in> lists {s. s \<subseteq> ta_rstates TA}; 
-       s = \<delta>ss_lhs f ss
-     \<rbrakk> \<Longrightarrow> (s \<rightarrow> f ss) \<in> \<delta>ss"
+       s = \<delta>_ss_lhs f ss
+     \<rbrakk> \<Longrightarrow> (s \<rightarrow> f ss) \<in> \<delta>_ss"
 
-  lemma \<delta>ssI: 
+  lemma \<delta>_ssI: 
     assumes A: "A f = Some (length ss)"
                "ss \<in> lists {s. s \<subseteq> ta_rstates TA}"
     shows 
-      "( (\<delta>ss_lhs f ss) \<rightarrow> f ss) \<in> \<delta>ss"
-    using \<delta>ss.intros[where s="(\<delta>ss_lhs f ss)"] A
+      "( (\<delta>_ss_lhs f ss) \<rightarrow> f ss) \<in> \<delta>_ss"
+    using \<delta>_ss.intros[where s="(\<delta>_ss_lhs f ss)"] A
     by auto
 
-  lemma \<delta>ss_subset[simp, intro!]: "\<delta>ss_lhs f ss \<subseteq> Q"
-    by (unfold ta_rstates_def \<delta>ss_lhs_def) (auto intro: \<delta>_statesI)
+  lemma \<delta>_ss_subset[simp, intro!]: "\<delta>_ss_lhs f ss \<subseteq> Q"
+    by (unfold ta_rstates_def \<delta>_ss_lhs_def) (auto intro: \<delta>_statesI)
 
-  lemma \<delta>ss_finite[simp, intro!]: "finite \<delta>ss"
+  lemma \<delta>_ss_finite[simp, intro!]: "finite \<delta>_ss"
   proof -
-    have "\<delta>ss \<subseteq> \<Union>(\<lambda>f. (\<lambda>(s,ss). (s \<rightarrow> f ss))
+    have "\<delta>_ss \<subseteq> \<Union>(\<lambda>f. (\<lambda>(s,ss). (s \<rightarrow> f ss))
                      `({s. s\<subseteq>Q} 
                        \<times> (lists {s. s\<subseteq>Q} \<inter> {l. length l = the (A f)}))
                   ) ` F" 
       (is "_\<subseteq>\<Union>(\<lambda>f. ?tr f ` ?prod f)`F")
     proof (intro equalityI subsetI)
       fix r
-      assume "r\<in>\<delta>ss"
+      assume "r\<in>\<delta>_ss"
       then obtain f s ss where 
         U: "r=(s \<rightarrow> f ss)" 
            "A f = Some (length ss)" 
            "ss\<in>lists {s. s\<subseteq>Q}" 
-           "s=\<delta>ss_lhs f ss"
-        by (force elim!: \<delta>ss.cases)
+           "s=\<delta>_ss_lhs f ss"
+        by (force elim!: \<delta>_ss.cases)
       from U(4) have "s\<subseteq>Q" by simp 
       moreover from U(2) have "length ss = the (A f)" by simp
       ultimately have "(s,ss)\<in>?prod f" using U(3) by auto
@@ -1330,41 +1330,41 @@ begin
     ultimately show ?thesis by (blast intro: finite_subset)
   qed
 
-  lemma \<delta>ss_det: "\<lbrakk> (q \<rightarrow> f qs) \<in> \<delta>ss; (q' \<rightarrow> f qs) \<in>\<delta>ss \<rbrakk> \<Longrightarrow> q=q'"
-    by (auto elim!: \<delta>ss.cases)
+  lemma \<delta>_ss_det: "\<lbrakk> (q \<rightarrow> f qs) \<in> \<delta>_ss; (q' \<rightarrow> f qs) \<in>\<delta>_ss \<rbrakk> \<Longrightarrow> q=q'"
+    by (auto elim!: \<delta>_ss.cases)
 
-  lemma \<delta>ss_accs_sound: 
+  lemma \<delta>_ss_accs_sound: 
     assumes A: "accs \<delta> t q"  
     obtains s where
     "s\<subseteq>Q"
     "q\<in>s"
-    "accs \<delta>ss t s"
+    "accs \<delta>_ss t s"
   proof -
-    have "\<exists>s\<subseteq>Q. q\<in>s \<and> accs_laz \<delta>ss t s" using A[unfolded accs_laz]
+    have "\<exists>s\<subseteq>Q. q\<in>s \<and> accs_laz \<delta>_ss t s" using A[unfolded accs_laz]
     proof (induct \<delta>\<equiv>\<delta> t q rule: accs_laz.induct[case_names step])
       case (step q f qs ts)
       hence I:
         "(q \<rightarrow> f qs)\<in>\<delta>"
         "list_all_zip (accs_laz \<delta>) ts qs"
-        "list_all_zip (\<lambda>t q. \<exists>s. s\<subseteq>Q \<and> q\<in>s \<and> accs_laz \<delta>ss t s) ts qs"
+        "list_all_zip (\<lambda>t q. \<exists>s. s\<subseteq>Q \<and> q\<in>s \<and> accs_laz \<delta>_ss t s) ts qs"
         by simp_all
       from I(3) obtain ss where SS: 
         "ss \<in> lists {s. s\<subseteq>Q}"
         "list_all_zip (op \<in>) qs ss"
-        "list_all_zip (accs_laz \<delta>ss) ts ss"
+        "list_all_zip (accs_laz \<delta>_ss) ts ss"
         by (erule_tac laz_swap_ex) auto
       from I(2) SS(2) have 
         LEN[simp]: "length qs = length ts" "length ss = length ts"
         by (auto simp add: list_all_zip_alt)
       from ranked[OF I(1)] have AF: "A f = Some (length ts)" by simp
 
-      from \<delta>ssI[of f ss, OF _ SS(1)] AF have 
-        RULE_S: "((\<delta>ss_lhs f ss) \<rightarrow> f ss) \<in> \<delta>ss"
+      from \<delta>_ssI[of f ss, OF _ SS(1)] AF have 
+        RULE_S: "((\<delta>_ss_lhs f ss) \<rightarrow> f ss) \<in> \<delta>_ss"
         by simp
       
       from accs_laz.intros[OF RULE_S SS(3)] have 
-        G1: "accs_laz \<delta>ss (NODE f ts) (\<delta>ss_lhs f ss)" .
-      from I(1) SS(2) have "q\<in>(\<delta>ss_lhs f ss)" by (auto simp add: \<delta>ss_lhs_def)
+        G1: "accs_laz \<delta>_ss (NODE f ts) (\<delta>_ss_lhs f ss)" .
+      from I(1) SS(2) have "q\<in>(\<delta>_ss_lhs f ss)" by (auto simp add: \<delta>_ss_lhs_def)
       thus ?case using G1 by auto
     qed
     thus ?thesis 
@@ -1376,18 +1376,18 @@ begin
   qed
 
 
-  lemma \<delta>ss_accs_precise:
-    assumes A: "accs \<delta>ss t s" "q\<in>s"  
+  lemma \<delta>_ss_accs_precise:
+    assumes A: "accs \<delta>_ss t s" "q\<in>s"  
     shows "accs \<delta> t q"
     using A
     unfolding accs_laz
-  proof (induct \<delta>\<equiv>\<delta>ss t s 
+  proof (induct \<delta>\<equiv>\<delta>_ss t s 
                 arbitrary: q 
                 rule: accs_laz.induct[case_names step])
     case (step s f ss ts)
     hence I:
-      "(s \<rightarrow> f ss) \<in> \<delta>ss"
-      "list_all_zip (accs_laz \<delta>ss) ts ss"
+      "(s \<rightarrow> f ss) \<in> \<delta>_ss"
+      "list_all_zip (accs_laz \<delta>_ss) ts ss"
       "list_all_zip (\<lambda>t s. \<forall>q\<in>s. accs_laz \<delta> t q) ts ss"
       "q\<in>s"
       by (auto simp add: Ball_def)
@@ -1398,13 +1398,13 @@ begin
     from I(1) have SS: 
       "A f = Some (length ts)"
       "ss \<in> lists {s. s\<subseteq>Q}"
-      "s=\<delta>ss_lhs f ss"
-      by (force elim!: \<delta>ss.cases)+
+      "s=\<delta>_ss_lhs f ss"
+      by (force elim!: \<delta>_ss.cases)+
       
     from I(4) SS(3) obtain qs where
       RULE: "(q \<rightarrow> f qs) \<in> \<delta>" and
       QSISS: "list_all_zip (op \<in>) qs ss"
-      by (auto simp add: \<delta>ss_lhs_def)
+      by (auto simp add: \<delta>_ss_lhs_def)
     from I(3) QSISS have CA: "list_all_zip (accs_laz \<delta>) ts qs"
       by (auto simp add: list_all_zip_alt)
     from accs_laz.intros[OF RULE CA] show ?case .
@@ -1413,12 +1413,12 @@ begin
 
   -- "Determinization"
   definition "detTA == \<lparr> ta_initial = { s. s\<subseteq>Q \<and> s\<inter>Qi \<noteq> {} }, 
-                         ta_rules = \<delta>ss \<rparr>"
+                         ta_rules = \<delta>_ss \<rparr>"
       
   theorem detTA_is_ta[simp, intro]:
     "det_tree_automaton detTA A"
     apply (unfold_locales)
-    apply (auto simp add: detTA_def elim: \<delta>ss.cases)
+    apply (auto simp add: detTA_def elim: \<delta>_ss.cases)
     done
     
 
@@ -1431,21 +1431,21 @@ begin
     fix t s
     assume A: 
       "s\<subseteq>Q \<and> s\<inter>Qi \<noteq> {}"
-      "accs \<delta>ss t s"
+      "accs \<delta>_ss t s"
     from A(1) obtain qi where QI: "qi\<in>s" "qi\<in>Qi" by auto
 
-    from \<delta>ss_accs_precise[OF A(2) QI(1)] have "accs \<delta> t qi" .
+    from \<delta>_ss_accs_precise[OF A(2) QI(1)] have "accs \<delta> t qi" .
     with QI(2) show "\<exists>qi\<in>Qi. accs \<delta> t qi" by blast
   next
     fix t qi
     assume A: 
       "qi\<in>Qi" 
       "accs \<delta> t qi"
-    from \<delta>ss_accs_sound[OF A(2)] obtain s where SS: 
+    from \<delta>_ss_accs_sound[OF A(2)] obtain s where SS: 
       "s\<subseteq>Q" 
       "qi\<in>s" 
-      "accs \<delta>ss t s" .
-    with A(1) show "\<exists>s\<subseteq>Q. s \<inter> Qi \<noteq> {} \<and> accs \<delta>ss t s" by blast
+      "accs \<delta>_ss t s" .
+    with A(1) show "\<exists>s\<subseteq>Q. s \<inter> Qi \<noteq> {} \<and> accs \<delta>_ss t s" by blast
   qed
     
   theorems detTA_correct = detTA_is_ta detTA_lang
@@ -1466,17 +1466,17 @@ begin
     by (auto simp add: Qcomplete_def)
 
   -- "Rules of the complete automaton"
-  definition \<delta>complete :: "('Q option, 'L) ta_rule set" where
-    "\<delta>complete == (remap_rule Some ` \<delta>) 
+  definition \<delta>_complete :: "('Q option, 'L) ta_rule set" where
+    "\<delta>_complete == (remap_rule Some ` \<delta>) 
                   \<union> { (None \<rightarrow> f qs) | f qs. 
                          A f = Some (length qs) 
                          \<and> qs\<in>lists Qcomplete 
                          \<and> \<not>(\<exists>qo qso. (qo \<rightarrow> f qso)\<in>\<delta> \<and> qs=map Some qso ) }"
 
 
-  lemma \<delta>_states_complete: "q\<in>\<delta>_states \<delta>complete \<Longrightarrow> q\<in>Qcomplete"
+  lemma \<delta>_states_complete: "q\<in>\<delta>_states \<delta>_complete \<Longrightarrow> q\<in>Qcomplete"
     apply (erule \<delta>_statesE)
-    apply (unfold \<delta>complete_def Qcomplete_def)
+    apply (unfold \<delta>_complete_def Qcomplete_def)
     apply auto
     apply (case_tac x)
     apply (auto simp add: ta_rstates_def intro: \<delta>_statesI) [1]
@@ -1486,22 +1486,22 @@ begin
     
 
   definition 
-    "completeTA == \<lparr> ta_initial = Some`Qi, ta_rules = \<delta>complete \<rparr>"
+    "completeTA == \<lparr> ta_initial = Some`Qi, ta_rules = \<delta>_complete \<rparr>"
 
-  lemma \<delta>complete_finite[simp, intro]: "finite \<delta>complete"
+  lemma \<delta>_complete_finite[simp, intro]: "finite \<delta>_complete"
   proof -
-    have "\<delta>complete \<subseteq> legal_rules Qcomplete"
+    have "\<delta>_complete \<subseteq> legal_rules Qcomplete"
       apply (rule)
       apply (rule legal_rulesI)
       apply assumption
       apply (case_tac x)
-      apply (unfold \<delta>complete_def Qcomplete_def ta_rstates_def) [1]
+      apply (unfold \<delta>_complete_def Qcomplete_def ta_rstates_def) [1]
       apply auto
       apply (case_tac xa)
       apply (auto dest: \<delta>_statesI)
       apply (case_tac xa)
       apply (auto dest: \<delta>_statesI)
-      apply (unfold \<delta>complete_def Qcomplete_def ta_rstates_def) [1]
+      apply (unfold \<delta>_complete_def Qcomplete_def ta_rstates_def) [1]
       apply (auto)
       apply (case_tac xa)
       apply (auto intro: ranked)
@@ -1516,13 +1516,13 @@ begin
     case goal2  thus ?case by (simp add: completeTA_def)
   next
     case goal3 thus ?case
-      apply (auto simp add: completeTA_def \<delta>complete_def)
+      apply (auto simp add: completeTA_def \<delta>_complete_def)
       apply (case_tac x)
       apply (auto intro: ranked)
       done
   next
     case goal4 thus ?case
-      apply (auto simp add: completeTA_def \<delta>complete_def)
+      apply (auto simp add: completeTA_def \<delta>_complete_def)
       apply (case_tac x, case_tac xa)
       apply (auto intro: deterministic) [1]
       apply (case_tac x)
@@ -1536,11 +1536,11 @@ begin
       fix qo qso
       assume R: "(qo \<rightarrow> f qso)\<in>\<delta>" and [simp]: "qs=map Some qso"
       hence "((Some qo) \<rightarrow> f qs) \<in> remap_rule Some ` \<delta>" by force
-      hence ?case by (simp add: completeTA_def \<delta>complete_def) blast
+      hence ?case by (simp add: completeTA_def \<delta>_complete_def) blast
     } moreover {
       assume A: "\<not>(\<exists>qo qso. (qo \<rightarrow> f qso)\<in>\<delta> \<and> qs=map Some qso)"
 
-      have "(Some ` Qi \<union> \<delta>_states \<delta>complete) \<subseteq> Qcomplete"
+      have "(Some ` Qi \<union> \<delta>_states \<delta>_complete) \<subseteq> Qcomplete"
         apply (auto intro: \<delta>_states_complete)
         apply (simp add: Qcomplete_def ta_rstates_def)
         done
@@ -1550,7 +1550,7 @@ begin
 
       from A B goal5(2) have ?case
         apply (rule_tac x=None in exI)
-        apply (simp add: completeTA_def \<delta>complete_def)
+        apply (simp add: completeTA_def \<delta>_complete_def)
         done
     } ultimately show ?case by blast
   qed
@@ -1565,8 +1565,8 @@ begin
       QI: "Some qi \<in> Some`Qi" and
       ACCS: "accs (remap_rule Some`\<delta>) t (Some qi)"
       by (auto intro: remap_accs1)
-    have "(remap_rule Some`\<delta>) \<subseteq> \<delta>complete" by (unfold \<delta>complete_def) auto
-    with ACCS have "accs \<delta>complete t (Some qi)" by (blast dest: accs_mono)
+    have "(remap_rule Some`\<delta>) \<subseteq> \<delta>_complete" by (unfold \<delta>_complete_def) auto
+    with ACCS have "accs \<delta>_complete t (Some qi)" by (blast dest: accs_mono)
     thus "t\<in>ta_lang completeTA" using QI 
       by (auto simp add: ta_lang_def completeTA_def)
   next
@@ -1574,24 +1574,24 @@ begin
     assume A: "t\<in>ta_lang completeTA"
     then obtain qi where 
       QI: "qi\<in>Qi" and
-      ACCS: "accs \<delta>complete t (Some qi)" 
+      ACCS: "accs \<delta>_complete t (Some qi)" 
       by (auto simp add: ta_lang_def completeTA_def)
     moreover
     {
       fix qi
-      have "\<lbrakk> accs \<delta>complete t (Some qi) \<rbrakk> \<Longrightarrow> accs \<delta> t qi"
+      have "\<lbrakk> accs \<delta>_complete t (Some qi) \<rbrakk> \<Longrightarrow> accs \<delta> t qi"
         unfolding accs_laz
-      proof (induct \<delta>\<equiv>\<delta>complete t q\<equiv>"Some qi"
+      proof (induct \<delta>\<equiv>\<delta>_complete t q\<equiv>"Some qi"
                     arbitrary: qi
                     rule: accs_laz.induct[case_names step])
         case (step f qs ts qi)
         hence I:
-          "((Some qi) \<rightarrow> f qs) \<in> \<delta>complete"
-          "list_all_zip (accs_laz \<delta>complete) ts qs"
+          "((Some qi) \<rightarrow> f qs) \<in> \<delta>_complete"
+          "list_all_zip (accs_laz \<delta>_complete) ts qs"
           "list_all_zip (\<lambda>t q. (\<forall>qo. q=Some qo \<longrightarrow> accs_laz \<delta> t qo)) ts qs"
           by auto
         from I(1) have "((Some qi) \<rightarrow> f qs) \<in> remap_rule Some`\<delta>"
-          by (unfold \<delta>complete_def) auto
+          by (unfold \<delta>_complete_def) auto
         then obtain qso where 
           RULE: "(qi \<rightarrow> f qso)\<in>\<delta>" and
           QSF: "qs=map Some qso"

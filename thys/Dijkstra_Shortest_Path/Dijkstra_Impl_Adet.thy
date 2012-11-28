@@ -150,14 +150,14 @@ begin
     *}
   theorem cdijkstra_correct:
     shows
-    "weighted_graph.is_shortest_path_map ga v0 (\<alpha>r (mr.\<alpha> cdijkstra))" (is ?G1)
+    "weighted_graph.is_shortest_path_map ga v0 (\<alpha>_r (mr.\<alpha> cdijkstra))" (is ?G1)
     and "mr.invar cdijkstra" (is ?G2) 
     and "res_invarm (mr.\<alpha> cdijkstra)" (is ?G3)
   proof -
     note cdijkstra_refines
     also note mdijkstra_refines
     finally have Z: "RETURN cdijkstra \<le> 
-      \<Down>(build_rel (\<alpha>r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
+      \<Down>(build_rel (\<alpha>_r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
         dijkstra'"
       apply (subst (asm) conc_fun_chain)
       apply rule
@@ -192,7 +192,7 @@ theorem dijkstra_impl_correct:
   assumes nonneg_weights: "\<And>v w v'. (v,w,v')\<in>edges (hlg_\<alpha> g) \<Longrightarrow> 0\<le>w"
   shows 
   "weighted_graph.is_shortest_path_map (hlg_\<alpha> g) v0 
-      (Dijkstra.\<alpha>r (rm_\<alpha> (dijkstra_impl g v0)))" (is ?G1)
+      (Dijkstra.\<alpha>_r (rm_\<alpha> (dijkstra_impl g v0)))" (is ?G1)
   and "Dijkstra.res_invarm (rm_\<alpha> (dijkstra_impl g v0))" (is ?G2)
 proof -
   interpret hlgv!: valid_graph "hlg_\<alpha> g" using hlg.valid INV .

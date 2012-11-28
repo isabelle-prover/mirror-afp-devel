@@ -656,11 +656,11 @@ assumes ie: "te m i \<le> te l i"
 and corr_k: "correct k (te k (i+1))"
 and corr_l_tk: "correct l (te k (i+1))"
 and corr_m_tk: "correct m (te k (i+1))"
-and ind_hyp: "\<bar>IC l i (te l i) - IC m i (te l i)\<bar> \<le> \<delta>S"
-shows "\<bar>\<theta> k (i+1) l - \<theta> k (i+1) m\<bar> \<le> 2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+and ind_hyp: "\<bar>IC l i (te l i) - IC m i (te l i)\<bar> \<le> \<delta>_S"
+shows "\<bar>\<theta> k (i+1) l - \<theta> k (i+1) m\<bar> \<le> 2*\<Lambda> + \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
 proof-
   let ?X = "\<theta> k (i+1) l - \<theta> k (i+1) m"
-  let ?N = "2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+  let ?N = "2*\<Lambda> + \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
   let ?D1 = "\<theta> k (i+1) l - IC l i (te k (i+1))"
   let ?D2 = "\<theta> k (i+1) m - IC m i (te k (i+1))"
   let ?ICS = "IC l i (te k (i+1)) - IC m i (te k (i+1))"
@@ -681,14 +681,14 @@ proof-
   from ie_lk corr_l_tk corr_m_tk IC_bd
   have Eq3: "\<bar>?ICS\<bar> \<le> \<bar>?IC\<bar> + 2*\<rho>*(te k (i+1) - ?tlm)"
     by simp
-  from this ind_hyp have Eq4: "\<bar>?ICS\<bar> \<le> \<delta>S + 2*\<rho>*(te k (i+1) - ?tlm)"
+  from this ind_hyp have Eq4: "\<bar>?ICS\<bar> \<le> \<delta>_S + 2*\<rho>*(te k (i+1) - ?tlm)"
     by simp
 
   from corr_l corr_k beta_bound2 have "te k (i+1) - ?tlm \<le> rmax + \<beta>"
     by simp
   from this constants_ax have "2*\<rho>*(te k (i+1) - ?tlm) \<le> 2*\<rho>*(rmax + \<beta>)"
     by (simp add: real_mult_le_cancel_iff2)
-  from this Eq4 have Eq4a: "\<bar>?ICS\<bar> \<le> \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+  from this Eq4 have Eq4a: "\<bar>?ICS\<bar> \<le> \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
     by (simp)
 
   from corr_k corr_l_tk readerror 
@@ -708,9 +708,9 @@ and corr_m: "correct m (te p (i+1))"
 and corr_p: "correct p (te p (i+1))"
 and IC_bound: 
     "\<bar>IC l i (max (te l i) (te m i)) - IC m i (max (te l i) (te m i))\<bar>
-      \<le> \<delta>S"
+      \<le> \<delta>_S"
 shows "\<bar>\<theta> p (i+1) l - \<theta> p (i+1) m\<bar>
-       \<le>  2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+       \<le>  2*\<Lambda> + \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
 proof-
   from corr_p corr_l beta_bound1 have tli_le_tp: "te l i \<le> te p (i+1)"
     by (simp add: le_diff_eq)
@@ -726,13 +726,13 @@ proof-
   from tml_le_tp corr_m correct_closed have corr_m_tml: "correct m ?tml"
     by blast
 
-  let ?Y = "2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+  let ?Y = "2*\<Lambda> + \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
   show "\<bar>\<theta> p (i+1) l - \<theta> p (i+1) m\<bar> \<le> ?Y"
   proof cases
     assume A: "te m i < te l i"
 
     from this IC_bound 
-    have "\<bar>IC l i (te l i) - IC m i (te l i)\<bar> \<le> \<delta>S"
+    have "\<bar>IC l i (te l i) - IC m i (te l i)\<bar> \<le> \<delta>_S"
       by(simp add: max_def)
     from this A corr_p corr_l corr_m pe_cond2 
     show ?thesis by(simp) 
@@ -740,10 +740,10 @@ proof-
     assume "\<not> (te m i < te l i)"
     hence Eq1: "te l i \<le> te m i" by simp
     from this IC_bound 
-    have Eq2: "\<bar>IC l i (te m i) - IC m i (te m i)\<bar> \<le> \<delta>S"
+    have Eq2: "\<bar>IC l i (te m i) - IC m i (te m i)\<bar> \<le> \<delta>_S"
       by(simp add: max_def)
 
-    hence "\<bar>IC m i (te m i) - IC l i (te m i)\<bar> \<le> \<delta>S"
+    hence "\<bar>IC m i (te m i) - IC l i (te m i)\<bar> \<le> \<delta>_S"
       by (simp add: abs_minus_commute)
     from this Eq1 corr_p corr_l corr_m pe_cond2 
     have "\<bar>\<theta> p (i+1) m - \<theta> p (i+1) l\<bar> \<le> ?Y"
@@ -754,13 +754,13 @@ qed
 
 lemma four_one_ind_half: 
   assumes ie1: "\<beta> \<le> rmin"
-  and ie2: "\<mu> \<le> \<delta>S"
-  and ie3: "\<gamma>1 \<delta>S \<le> \<delta>S"
-  and ind_hyp: "okmaxsync i \<delta>S"
+  and ie2: "\<mu> \<le> \<delta>_S"
+  and ie3: "\<gamma>1 \<delta>_S \<le> \<delta>_S"
+  and ind_hyp: "okmaxsync i \<delta>_S"
   and ie4: "te q (i+1) \<le> te p (i+1)"
   and corr_p: "correct p (te p (i+1))"
   and corr_q: "correct q (te p (i+1))"
-shows "\<bar>IC p (i+1) (te p (i+1)) - IC q (i+1) (te p (i+1))\<bar> \<le> \<delta>S"
+shows "\<bar>IC p (i+1) (te p (i+1)) - IC q (i+1) (te p (i+1))\<bar> \<le> \<delta>_S"
 proof-
   let ?tpq = "te p (i+1)"
 
@@ -798,7 +798,7 @@ proof-
   hence cond1: "okRead2 ?f ?g ?X ?ppred" 
     by(simp add: okRead2_def)
     
-  let ?Y = "2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+  let ?Y = "2*\<Lambda> + \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
 
   have "\<forall> l m. ?ppred l \<and> ?ppred m \<longrightarrow> \<bar>?f l - ?f m\<bar> \<le> ?Y"
   proof-
@@ -827,7 +827,7 @@ proof-
         by blast
 
       from ind_hyp corr_l_tlm corr_m_tlm 
-      have EqAbs1: "\<bar>IC l i ?tlm - IC m i ?tlm\<bar> \<le> \<delta>S"
+      have EqAbs1: "\<bar>IC l i ?tlm - IC m i ?tlm\<bar> \<le> \<delta>_S"
         by(auto simp add: okmaxsync_def)
 
       have EqAbs3: "\<bar>?f l - ?f m\<bar> = \<bar>\<theta> q (i+1) l - \<theta> q (i+1) m\<bar>"
@@ -865,7 +865,7 @@ proof-
         by blast
 
       from ind_hyp corr_l_tlm corr_m_tlm 
-      have EqAbs1: "\<bar>IC l i ?tlm - IC m i ?tlm\<bar> \<le> \<delta>S"
+      have EqAbs1: "\<bar>IC l i ?tlm - IC m i ?tlm\<bar> \<le> \<delta>_S"
         by(auto simp add: okmaxsync_def)
 
       from EqAbs1 corr_p corr_l corr_m theta_bound
@@ -881,7 +881,7 @@ proof-
   have "\<bar>cfn q ?f - cfn p ?g\<bar> \<le> \<pi> ?X ?Y" 
     by blast
 
-  from ie3 this have "\<bar>cfn q ?f - cfn p ?g\<bar> \<le> \<delta>S"
+  from ie3 this have "\<bar>cfn q ?f - cfn p ?g\<bar> \<le> \<delta>_S"
     by (simp add: \<gamma>1_def)
 
   from this Eq_IC_cfn show ?thesis by (simp)
@@ -891,11 +891,11 @@ text{* Theorem 4.1 in Shankar's paper. *}
 
 theorem four_one: 
   assumes ie1: "\<beta> \<le> rmin"
-  and ie2: "\<mu> \<le> \<delta>S"
-  and ie3: "\<gamma>1 \<delta>S \<le> \<delta>S"
-shows "okmaxsync i \<delta>S"
+  and ie2: "\<mu> \<le> \<delta>_S"
+  and ie3: "\<gamma>1 \<delta>_S \<le> \<delta>_S"
+shows "okmaxsync i \<delta>_S"
 proof(induct i)
-  show "okmaxsync 0 \<delta>S"
+  show "okmaxsync 0 \<delta>_S"
   proof-
     {
       fix p q 
@@ -911,11 +911,11 @@ proof(induct i)
          = \<bar>PC p 0 - PC q 0\<bar>" (is "?T1 = ?T2")
         by(simp add: Adj_def)
 
-      from ie2 init synch0 cp0 have range1: "0 \<le> PC p 0 \<and> PC p 0 \<le> \<delta>S"  
+      from ie2 init synch0 cp0 have range1: "0 \<le> PC p 0 \<and> PC p 0 \<le> \<delta>_S"  
         by auto
-      from ie2 init synch0 cq0 have range2: "0 \<le> PC q 0 \<and> PC q 0 \<le> \<delta>S"
+      from ie2 init synch0 cq0 have range2: "0 \<le> PC q 0 \<and> PC q 0 \<le> \<delta>_S"
         by auto
-      have "?T2 \<le> \<delta>S"
+      have "?T2 \<le> \<delta>_S"
       proof cases
         assume A:"PC p 0 < PC q 0"
         from A range1 range2 show ?thesis 
@@ -925,13 +925,13 @@ proof(induct i)
         from notA range1 range2 show ?thesis
           by(auto simp add: abs_if)
       qed
-      from this IC_eq_PC have "?T1 \<le> \<delta>S" by simp
+      from this IC_eq_PC have "?T1 \<le> \<delta>_S" by simp
     }
     thus ?thesis by (simp add: okmaxsync_def)
   qed
 next
-  fix i assume ind_hyp: "okmaxsync i \<delta>S"
-  show "okmaxsync (Suc i) \<delta>S"
+  fix i assume ind_hyp: "okmaxsync i \<delta>_S"
+  show "okmaxsync (Suc i) \<delta>_S"
   proof-
     {
       fix p q
@@ -941,7 +941,7 @@ next
       let ?tq = "te q (i + 1)"
       let ?tpq = "max ?tp ?tq"
 
-      have "\<bar>IC p (i+1) ?tpq - IC q (i+1) ?tpq\<bar> \<le> \<delta>S" (is "?E1 \<le> \<delta>S")
+      have "\<bar>IC p (i+1) ?tpq - IC q (i+1) ?tpq\<bar> \<le> \<delta>_S" (is "?E1 \<le> \<delta>_S")
       proof cases
         assume A: "?tq < ?tp"
         from A corr_p have cp1: "correct p (te p (i+1))" 
@@ -954,7 +954,7 @@ next
           by (simp add: max_def)
         from A cp1 cq1 corr_p corr_q ind_hyp ie1 ie2 ie3 
           four_one_ind_half 
-        have "?E2 \<le> \<delta>S" by (simp)
+        have "?E2 \<le> \<delta>_S" by (simp)
         from this Eq1 show ?thesis by simp
       next
         assume notA: "\<not> (?tq < ?tp)"
@@ -968,7 +968,7 @@ next
           by (simp add: max_def abs_minus_commute)
         from notA have "?tp \<le> ?tq" by simp
         from this cp2 cq2 ind_hyp ie1 ie2 ie3 four_one_ind_half
-        have "?E3 \<le> \<delta>S"
+        have "?E3 \<le> \<delta>_S"
           by simp
         from this Eq2 show ?thesis by (simp)
       qed
@@ -998,10 +998,10 @@ text{* Lemma for the inductive case in Theorem 4.2 *}
 
 lemma four_two_ind:
   assumes ie1: "\<beta> \<le> rmin"
-  and ie2: "\<mu> \<le> \<delta>S"
-  and ie3: "\<gamma>1 \<delta>S \<le> \<delta>S"
-  and ie4: "\<gamma>2 \<delta>S \<le> \<delta>"
-  and ie5: "\<gamma>3 \<delta>S \<le> \<delta>"
+  and ie2: "\<mu> \<le> \<delta>_S"
+  and ie3: "\<gamma>1 \<delta>_S \<le> \<delta>_S"
+  and ie4: "\<gamma>2 \<delta>_S \<le> \<delta>"
+  and ie5: "\<gamma>3 \<delta>_S \<le> \<delta>"
   and ie6: "te q (i+1) \<le> te p (i+1)"
   and ind_hyp: "okClocks p q i"
   and t_bound1: "0 \<le> t"
@@ -1044,20 +1044,20 @@ proof cases
     + 2*\<rho>*(t - ?tpq)" (is "?E1 \<le> ?E2")
     by(blast)
   
-  from ie1 ie2 ie3 four_one have "okmaxsync i \<delta>S" by simp
+  from ie1 ie2 ie3 four_one have "okmaxsync i \<delta>_S" by simp
 
-  from this corr_tpq have "\<bar>IC p i ?tpq - IC q i ?tpq\<bar> \<le> \<delta>S"
+  from this corr_tpq have "\<bar>IC p i ?tpq - IC q i ?tpq\<bar> \<le> \<delta>_S"
     by(simp add: okmaxsync_def)
   
-  from Eq6 this  have Eq7: "?E1 \<le> \<delta>S + 2*\<rho>*(t - ?tpq)" by simp
+  from Eq6 this  have Eq7: "?E1 \<le> \<delta>_S + 2*\<rho>*(t - ?tpq)" by simp
 
   from corr_p Eq2 rts0 have "t - te p i \<le> rmax" by simp
   from this have "t - ?tpq \<le> rmax" by (simp add: max_def)
   from this constants_ax have "2*\<rho>*(t - ?tpq) \<le> 2*\<rho>*rmax" 
     by (simp add: real_mult_le_cancel_iff1) 
-  hence "\<delta>S + 2*\<rho>*(t - ?tpq) \<le> \<delta>S + 2*\<rho>*rmax"
+  hence "\<delta>_S + 2*\<rho>*(t - ?tpq) \<le> \<delta>_S + 2*\<rho>*rmax"
     by simp
-  from this Eq7 have "?E1 \<le> \<delta>S + 2*\<rho>*rmax" by simp
+  from this Eq7 have "?E1 \<le> \<delta>_S + 2*\<rho>*rmax" by simp
   from this Eq5 ie4 show ?thesis by(simp add: \<gamma>2_def)
 next
   assume "\<not> (t < te q (i+1))"
@@ -1142,7 +1142,7 @@ next
 
   let ?f = "\<theta> q (i+1)"
   let ?ppred = "\<lambda> l. correct l (te q (i+1))"
-  let ?X = "2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
+  let ?X = "2*\<Lambda> + \<delta>_S + 2*\<rho>*(rmax + \<beta>)"
 
   have "\<forall> l m. ?ppred l \<and> ?ppred m \<longrightarrow> \<bar>\<theta> q (i+1) l - \<theta> q (i+1) m\<bar> \<le> ?X"
   proof-
@@ -1167,9 +1167,9 @@ next
       have corr_tlm: "correct l ?tlm \<and> correct m ?tlm"
         by blast
 
-      have "\<bar>IC l i ?tlm - IC m i ?tlm\<bar> \<le> \<delta>S"
+      have "\<bar>IC l i ?tlm - IC m i ?tlm\<bar> \<le> \<delta>_S"
       proof-
-        from ie1 ie2 ie3 four_one  have "okmaxsync i \<delta>S"
+        from ie1 ie2 ie3 four_one  have "okmaxsync i \<delta>_S"
           by simp
         from this corr_tlm show ?thesis by(simp add: okmaxsync_def)
       qed
@@ -1233,10 +1233,10 @@ text{* Theorem 4.2 in Shankar's paper. *}
 
 theorem four_two: 
   assumes ie1: "\<beta> \<le> rmin"
-  and ie2: "\<mu> \<le> \<delta>S"
-  and ie3: "\<gamma>1 \<delta>S \<le> \<delta>S"
-  and ie4: "\<gamma>2 \<delta>S \<le> \<delta>"
-  and ie5: "\<gamma>3 \<delta>S \<le> \<delta>"
+  and ie2: "\<mu> \<le> \<delta>_S"
+  and ie3: "\<gamma>1 \<delta>_S \<le> \<delta>_S"
+  and ie4: "\<gamma>2 \<delta>_S \<le> \<delta>"
+  and ie5: "\<gamma>3 \<delta>_S \<le> \<delta>"
 shows "okClocks p q i"
 proof (induct i)
   show "okClocks p q 0"
@@ -1335,10 +1335,10 @@ bound delta. *}
 
 theorem agreement: 
   assumes ie1: "\<beta> \<le> rmin"
-  and ie2: "\<mu> \<le> \<delta>S"
-  and ie3: "\<gamma>1 \<delta>S \<le> \<delta>S"
-  and ie4: "\<gamma>2 \<delta>S \<le> \<delta>"
-  and ie5: "\<gamma>3 \<delta>S \<le> \<delta>"
+  and ie2: "\<mu> \<le> \<delta>_S"
+  and ie3: "\<gamma>1 \<delta>_S \<le> \<delta>_S"
+  and ie4: "\<gamma>2 \<delta>_S \<le> \<delta>"
+  and ie5: "\<gamma>3 \<delta>_S \<le> \<delta>"
   and ie6: "0 \<le> t"
   and cpq: "correct p t \<and> correct q t"
 shows "\<bar>VC p t - VC q t\<bar> \<le> \<delta>"

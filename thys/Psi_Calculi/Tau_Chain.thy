@@ -674,12 +674,12 @@ lemma weakInput:
   and     "distinct xvec" 
   and     "set xvec \<subseteq> supp N"
   and     "length xvec = length Tvec"
-  and     Qeq\<Psi>: "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>"
+  and     Qeq_\<Psi>: "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>"
 
   shows "\<Psi> : Q \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.P \<Longrightarrow>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> P[xvec::=Tvec]"
 proof -
   have "\<Psi> \<rhd>  M\<lparr>\<lambda>*xvec N\<rparr>.P \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<lparr>\<lambda>*xvec N\<rparr>.P" by simp
-  moreover from Qeq\<Psi> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<lparr>\<lambda>*xvec N\<rparr>.P)) \<Psi>"
+  moreover from Qeq_\<Psi> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<lparr>\<lambda>*xvec N\<rparr>.P)) \<Psi>"
     by auto
   moreover from assms have "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.P \<longmapsto>K\<lparr>(N[xvec::=Tvec])\<rparr> \<prec> P[xvec::=Tvec]"
     by(rule_tac Input)
@@ -695,12 +695,12 @@ lemma weakOutput:
   and   P    :: "('a, 'b, 'c) psi"
   
   assumes "\<Psi> \<turnstile> M \<leftrightarrow> K"
-  and     Qeq\<Psi>: "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>"
+  and     Qeq_\<Psi>: "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>"
 
   shows "\<Psi> : Q \<rhd> M\<langle>N\<rangle>.P \<Longrightarrow>K\<langle>N\<rangle> \<prec> P"
 proof -
   have "\<Psi> \<rhd>  M\<langle>N\<rangle>.P \<Longrightarrow>\<^sup>^\<^sub>\<tau> M\<langle>N\<rangle>.P" by simp
-  moreover from Qeq\<Psi> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<langle>N\<rangle>.P)) \<Psi>"
+  moreover from Qeq_\<Psi> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<langle>N\<rangle>.P)) \<Psi>"
     by auto
   moreover have "insertAssertion (extractFrame(M\<langle>N\<rangle>.P)) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(M\<langle>N\<rangle>.P)) \<Psi>" by simp
   moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` have "\<Psi> \<rhd> M\<langle>N\<rangle>.P \<longmapsto>K\<langle>N\<rangle> \<prec> P"

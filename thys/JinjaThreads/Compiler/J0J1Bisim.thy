@@ -699,7 +699,7 @@ qed(fastforce split: split_if_asm elim: D_mono' intro: sqUn_lem2 sqUn_lem A_inli
 lemma bisim_B: "bisim Vs e E xs \<Longrightarrow> \<B> E (length Vs)"
   and bisims_Bs: "bisims Vs es Es xs \<Longrightarrow> \<B>s Es (length Vs)"
 apply(induct rule: bisim_bisims.inducts)
-apply(auto intro: \<B> \<B>s)
+apply(auto intro: \<B> \<B>_list)
 done
 
 lemma bisim_expr_locks_eq: "bisim Vs e e' xs \<Longrightarrow> expr_locks e = expr_locks e'"

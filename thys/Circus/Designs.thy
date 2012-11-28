@@ -65,10 +65,10 @@ where "H3 (P)  \<equiv>  P ;; \<Pi>d"
 definition H4::"('\<alpha> alphabet_d) Healthiness_condition"
 where "H4 (P)  \<equiv>  ((P;;true) \<longleftrightarrow> true)"
 
-definition \<sigma>f::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d"
+definition sigma_f::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d" ("\<sigma>f")
 where "\<sigma>f D \<equiv> \<lambda> (A, A') . D (A, A'\<lparr>ok:=False\<rparr>)"
 
-definition \<sigma>t::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d"
+definition sigma_t::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d" ("\<sigma>t")
 where "\<sigma>t D \<equiv> \<lambda> (A, A') . D (A, A'\<lparr>ok:=True\<rparr>)"
 
 definition OKAY::"'\<alpha> relation_d"
@@ -78,7 +78,7 @@ definition OKAY'::"'\<alpha> relation_d"
 where "OKAY' \<equiv> \<lambda> (A, A') . ok A'"
 
 lemmas design_defs = design_def skip_d_def J_def Healthy_def H1_def H2_def H3_def
-                     H4_def \<sigma>f_def \<sigma>t_def OKAY_def OKAY'_def
+                     H4_def sigma_f_def sigma_t_def OKAY_def OKAY'_def
 
 subsubsection{* Proofs *}
 

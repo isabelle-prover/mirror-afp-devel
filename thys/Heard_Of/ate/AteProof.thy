@@ -20,12 +20,12 @@ lemma decide_sent_msgs_threshold:
   and vp: "decide (rho (Suc r) p) = Some v"
   shows "card {qq. sendMsg Ate_M r qq p (rho r qq) = v} > E - \<alpha>"
 proof -
-  from run obtain \<mu>p
-    where mu: "\<mu>p \<in> SHOmsgVectors Ate_M r p (rho r) (HOs r p) (SHOs r p)"
-      and nxt: "nextState Ate_M r p (rho r p) \<mu>p (rho (Suc r) p)"
+  from run obtain \<mu>_p
+    where mu: "\<mu>_p \<in> SHOmsgVectors Ate_M r p (rho r) (HOs r p) (SHOs r p)"
+      and nxt: "nextState Ate_M r p (rho r p) \<mu>_p (rho (Suc r) p)"
     by (auto simp: SHORun_eq SHOnextConfig_eq)
   from mu
-  have "{qq. \<mu>p qq = Some v} - (HOs r p - SHOs r p)
+  have "{qq. \<mu>_p qq = Some v} - (HOs r p - SHOs r p)
           \<subseteq> {qq. sendMsg Ate_M r qq p (rho r qq) = v}"
        (is "?vrcvdp - ?ahop \<subseteq> ?vsentp") 
     by (auto simp: SHOmsgVectors_def)
@@ -51,14 +51,14 @@ text {*
 
 lemma other_values_received:
   assumes comm: "SHOcommPerRd Ate_M (HOs r) (SHOs r)"
-  and nxt: "nextState Ate_M r q (rho r q) \<mu>q ((rho (Suc r)) q)"
-  and muq: "\<mu>q \<in> SHOmsgVectors Ate_M r q (rho r) (HOs r q) (SHOs r q)"
+  and nxt: "nextState Ate_M r q (rho r q) \<mu>_q ((rho (Suc r)) q)"
+  and muq: "\<mu>_q \<in> SHOmsgVectors Ate_M r q (rho r) (HOs r q) (SHOs r q)"
   and vsent: "card {qq. sendMsg Ate_M r qq q (rho r qq) = v} > E - \<alpha>"
              (is "card ?vsent > _")
-  shows "card ({qq. \<mu>q qq \<noteq> Some v} \<inter> HOs r q) \<le> N + 2*\<alpha> - E"
+  shows "card ({qq. \<mu>_q qq \<noteq> Some v} \<inter> HOs r q) \<le> N + 2*\<alpha> - E"
 proof -
   from nxt muq
-  have "({qq. \<mu>q qq \<noteq> Some v} \<inter> HOs r q) - (HOs r q - SHOs r q)
+  have "({qq. \<mu>_q qq \<noteq> Some v} \<inter> HOs r q) - (HOs r q - SHOs r q)
         \<subseteq>  {qq. sendMsg Ate_M r qq q (rho r qq) \<noteq> v}"
     (is "?notvrcvd - ?aho \<subseteq> ?notvsent") 
     unfolding SHOmsgVectors_def by auto
@@ -87,42 +87,42 @@ text {*
 
 lemma mostOftenRcvd_v:
   assumes comm: "SHOcommPerRd Ate_M (HOs r) (SHOs r)"
-  and nxt: "nextState Ate_M r q (rho r q) \<mu>q ((rho (Suc r)) q)"
-  and muq: "\<mu>q \<in> SHOmsgVectors Ate_M r q (rho r) (HOs r q) (SHOs r q)"
-  and threshold_T: "card {qq. \<mu>q qq \<noteq> None} > T"
+  and nxt: "nextState Ate_M r q (rho r q) \<mu>_q ((rho (Suc r)) q)"
+  and muq: "\<mu>_q \<in> SHOmsgVectors Ate_M r q (rho r) (HOs r q) (SHOs r q)"
+  and threshold_T: "card {qq. \<mu>_q qq \<noteq> None} > T"
   and threshold_E: "card {qq. sendMsg Ate_M r qq q (rho r qq) = v} > E - \<alpha>"
-  shows "mostOftenRcvd \<mu>q = {v}"
+  shows "mostOftenRcvd \<mu>_q = {v}"
 proof -
-  from muq have hodef:"HOs r q = {qq. \<mu>q qq \<noteq> None}"
+  from muq have hodef:"HOs r q = {qq. \<mu>_q qq \<noteq> None}"
     unfolding SHOmsgVectors_def by auto
 
   from comm nxt muq threshold_E
-  have "card ({qq. \<mu>q qq \<noteq> Some v} \<inter> HOs r q) \<le> N + 2*\<alpha> - E"
+  have "card ({qq. \<mu>_q qq \<noteq> Some v} \<inter> HOs r q) \<le> N + 2*\<alpha> - E"
     (is "card ?heardnotv \<le> _")
     by (rule other_values_received)
   moreover
-  have "card ?heardnotv \<ge> T + 1 - card {qq. \<mu>q qq = Some v}"
+  have "card ?heardnotv \<ge> T + 1 - card {qq. \<mu>_q qq = Some v}"
   proof -
     from muq
-    have "?heardnotv = (HOs r q) - {qq. \<mu>q qq = Some v}"
-      and "{qq. \<mu>q qq = Some v} \<subseteq> HOs r q"
+    have "?heardnotv = (HOs r q) - {qq. \<mu>_q qq = Some v}"
+      and "{qq. \<mu>_q qq = Some v} \<subseteq> HOs r q"
       unfolding SHOmsgVectors_def by auto
-    hence "card ?heardnotv = card (HOs r q) - card {qq. \<mu>q qq = Some v}"
+    hence "card ?heardnotv = card (HOs r q) - card {qq. \<mu>_q qq = Some v}"
       by (auto simp: card_Diff_subset)
     with hodef threshold_T show ?thesis by auto
   qed
   ultimately
-  have "card {qq. \<mu>q qq = Some v} > card ?heardnotv"
+  have "card {qq. \<mu>_q qq = Some v} > card ?heardnotv"
     using TNaE by auto
   moreover
   {
     fix w
     assume w: "w \<noteq> v"
-    with hodef have "{qq. \<mu>q qq = Some w} \<subseteq> ?heardnotv" by auto
-    hence "card {qq. \<mu>q qq = Some w} \<le> card ?heardnotv" by (auto simp: card_mono)
+    with hodef have "{qq. \<mu>_q qq = Some w} \<subseteq> ?heardnotv" by auto
+    hence "card {qq. \<mu>_q qq = Some w} \<le> card ?heardnotv" by (auto simp: card_mono)
   }
   ultimately
-  have "{w. card {qq. \<mu>q qq = Some w} \<ge> card {qq. \<mu>q qq = Some v}} = {v}"
+  have "{w. card {qq. \<mu>_q qq = Some w} \<ge> card {qq. \<mu>_q qq = Some v}} = {v}"
     by force
   thus ?thesis unfolding mostOftenRcvd_def by auto
 qed
@@ -146,16 +146,16 @@ proof -
   {
     fix qq
     assume kv:"x (rho (r + k) qq) = v"
-    from run obtain \<mu>qq
-      where nxt: "nextState Ate_M (r + k) qq (rho (r + k) qq) \<mu>qq ((rho (Suc (r + k))) qq)"
-        and muq: "\<mu>qq \<in> SHOmsgVectors Ate_M (r + k) qq (rho (r + k)) 
+    from run obtain \<mu>_qq
+      where nxt: "nextState Ate_M (r + k) qq (rho (r + k) qq) \<mu>_qq ((rho (Suc (r + k))) qq)"
+        and muq: "\<mu>_qq \<in> SHOmsgVectors Ate_M (r + k) qq (rho (r + k)) 
                                          (HOs (r + k) qq) (SHOs (r + k) qq)"
       by (auto simp: SHORun_eq SHOnextConfig_eq)
         
     have "x (rho (r + Suc k) qq) = v"
-    proof (cases "card {pp. \<mu>qq pp \<noteq> None} > T")
+    proof (cases "card {pp. \<mu>_qq pp \<noteq> None} > T")
       case True
-      with comm nxt muq thrE have "mostOftenRcvd \<mu>qq = {v}"
+      with comm nxt muq thrE have "mostOftenRcvd \<mu>_qq = {v}"
         by (auto dest: mostOftenRcvd_v)
       with nxt True show "x (rho (r + Suc k) qq) = v"
         by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
@@ -193,15 +193,15 @@ proof -
   have "SHOcommPerRd (Ate_M::(Proc, 'val::linorder pstate, 'val) SHOMachine) 
                      (HOs (r+k)) (SHOs (r+k))" ..
   moreover
-  from run obtain \<mu>q
-    where nxt: "nextState Ate_M (r+k) q (rho (r+k) q) \<mu>q (rho (r + Suc k) q)"
-      and muq: "\<mu>q \<in> SHOmsgVectors Ate_M (r+k) q (rho (r+k))
+  from run obtain \<mu>_q
+    where nxt: "nextState Ate_M (r+k) q (rho (r+k) q) \<mu>_q (rho (r + Suc k) q)"
+      and muq: "\<mu>_q \<in> SHOmsgVectors Ate_M (r+k) q (rho (r+k))
                                    (HOs (r+k) q) (SHOs (r+k) q)"
     by (auto simp: SHORun_eq SHOnextConfig_eq)
   moreover
   from nxt qupdatex 
-  have threshold_T: "card {qq. \<mu>q qq \<noteq> None} > T"
-    and xsmall: "x (rho (r + Suc k) q) = Min (mostOftenRcvd \<mu>q)"
+  have threshold_T: "card {qq. \<mu>_q qq \<noteq> None} > T"
+    and xsmall: "x (rho (r + Suc k) q) = Min (mostOftenRcvd \<mu>_q)"
     by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
   moreover
   have "E - \<alpha> < card {qq. x (rho (r + k) qq) = v}"
@@ -221,7 +221,7 @@ proof -
   have "E - \<alpha> < card {qq. sendMsg Ate_M (r+k) qq q (rho (r+k) qq) = v}"
     by (auto simp: Ate_SHOMachine_def Ate_sendMsg_def SHORun_eq SHOnextConfig_eq)
   ultimately
-  have "mostOftenRcvd \<mu>q = {v}" by (auto dest:mostOftenRcvd_v)
+  have "mostOftenRcvd \<mu>_q = {v}" by (auto dest:mostOftenRcvd_v)
   with xsmall show ?thesis by auto
 qed
 
@@ -278,13 +278,13 @@ proof -
       have "\<forall>qq. x (rho (Suc r) qq) = v"
       proof
         fix qq
-        from run obtain \<mu>qq
-          where nxt: "nextState Ate_M r qq (rho r qq) \<mu>qq (rho (Suc r) qq)"
-            and mu: "\<mu>qq \<in> SHOmsgVectors Ate_M r qq (rho r) (HOs r qq) (SHOs r qq)"
+        from run obtain \<mu>_qq
+          where nxt: "nextState Ate_M r qq (rho r qq) \<mu>_qq (rho (Suc r) qq)"
+            and mu: "\<mu>_qq \<in> SHOmsgVectors Ate_M r qq (rho r) (HOs r qq) (SHOs r qq)"
           by (auto simp: SHORun_eq SHOnextConfig_eq)
         from nxt
-        have "(card {pp. \<mu>qq pp \<noteq> None} > T \<and> x (rho (Suc r) qq) = Min (mostOftenRcvd \<mu>qq))
-            \<or> (card {pp. \<mu>qq pp \<noteq> None} \<le> T \<and> x (rho (Suc r) qq) = x (rho r qq))"
+        have "(card {pp. \<mu>_qq pp \<noteq> None} > T \<and> x (rho (Suc r) qq) = Min (mostOftenRcvd \<mu>_qq))
+            \<or> (card {pp. \<mu>_qq pp \<noteq> None} \<le> T \<and> x (rho (Suc r) qq) = x (rho r qq))"
           by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
         thus "x (rho (Suc r) qq) = v"
         proof safe
@@ -292,63 +292,63 @@ proof -
           with ih show "?thesis"
             by (auto simp: Ate_SHOMachine_def Ate_sendMsg_def)
         next
-          assume threshold_T:"T < card {pp. \<mu>qq pp \<noteq> None}"
-             and xsmall:"x (rho (Suc r) qq) = Min (mostOftenRcvd \<mu>qq)"
+          assume threshold_T:"T < card {pp. \<mu>_qq pp \<noteq> None}"
+             and xsmall:"x (rho (Suc r) qq) = Min (mostOftenRcvd \<mu>_qq)"
                    
-          have "card {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w} \<le> T div 2"
+          have "card {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w} \<le> T div 2"
           proof -
             from comm have 1:"card (HOs r qq - SHOs r qq) \<le> \<alpha>"
               by (auto simp: Ate_SHOMachine_def Ate_commPerRd_def)
             moreover
             from mu ih
-            have "SHOs r qq \<inter> HOs r qq \<subseteq> {pp. \<mu>qq pp = Some v}"
-              and "HOs r qq = {pp. \<mu>qq pp \<noteq> None}"
+            have "SHOs r qq \<inter> HOs r qq \<subseteq> {pp. \<mu>_qq pp = Some v}"
+              and "HOs r qq = {pp. \<mu>_qq pp \<noteq> None}"
               by (auto simp: SHOmsgVectors_def Ate_SHOMachine_def Ate_sendMsg_def)
-            hence "{pp. \<mu>qq pp \<noteq> None} - {pp. \<mu>qq pp = Some v} 
+            hence "{pp. \<mu>_qq pp \<noteq> None} - {pp. \<mu>_qq pp = Some v} 
                    \<subseteq> HOs r qq - SHOs r qq"
               by auto
-            hence "card ({pp. \<mu>qq pp \<noteq> None} - {pp. \<mu>qq pp = Some v})
+            hence "card ({pp. \<mu>_qq pp \<noteq> None} - {pp. \<mu>_qq pp = Some v})
                       \<le> card (HOs r qq - SHOs r qq)"
               by (auto simp:card_mono)
             ultimately
-            have "card ({pp. \<mu>qq pp \<noteq> None} - {pp. \<mu>qq pp = Some v}) \<le> T div 2"
+            have "card ({pp. \<mu>_qq pp \<noteq> None} - {pp. \<mu>_qq pp = Some v}) \<le> T div 2"
               using Tge2a by auto
             moreover
-            have "{pp. \<mu>qq pp \<noteq> None} - {pp. \<mu>qq pp = Some v}
-                  = {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w}" by auto
+            have "{pp. \<mu>_qq pp \<noteq> None} - {pp. \<mu>_qq pp = Some v}
+                  = {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w}" by auto
             ultimately
             show ?thesis by simp
           qed
           moreover
-          have "{pp. \<mu>qq pp \<noteq> None}
-                = {pp. \<mu>qq pp = Some v} \<union> {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w}"
-            and "{pp. \<mu>qq pp = Some v} \<inter> {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w} = {}" 
+          have "{pp. \<mu>_qq pp \<noteq> None}
+                = {pp. \<mu>_qq pp = Some v} \<union> {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w}"
+            and "{pp. \<mu>_qq pp = Some v} \<inter> {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w} = {}" 
             by auto
-          hence "card {pp. \<mu>qq pp \<noteq> None}
-                 = card {pp. \<mu>qq pp = Some v} + card {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w}"
+          hence "card {pp. \<mu>_qq pp \<noteq> None}
+                 = card {pp. \<mu>_qq pp = Some v} + card {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w}"
             by (auto simp: card_Un_Int)
           moreover
           note threshold_T
           ultimately
-          have "card {pp. \<mu>qq pp = Some v} > card {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w}"
+          have "card {pp. \<mu>_qq pp = Some v} > card {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w}"
             by auto
           moreover
           {
             fix w
             assume "w \<noteq> v"
-            hence "{pp. \<mu>qq pp = Some w} \<subseteq> {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w}" 
+            hence "{pp. \<mu>_qq pp = Some w} \<subseteq> {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w}" 
               by auto
-            hence "card {pp. \<mu>qq pp = Some w} \<le> card {pp. \<exists>w. w \<noteq> v \<and> \<mu>qq pp = Some w}"
+            hence "card {pp. \<mu>_qq pp = Some w} \<le> card {pp. \<exists>w. w \<noteq> v \<and> \<mu>_qq pp = Some w}"
               by (auto simp: card_mono)
           }
           ultimately
           have zz:"\<And>w. w \<noteq> v \<Longrightarrow> 
-                       card {pp. \<mu>qq pp = Some w} < card {pp. \<mu>qq pp = Some v}"
+                       card {pp. \<mu>_qq pp = Some w} < card {pp. \<mu>_qq pp = Some v}"
             by force
-          hence "\<And>w. card {pp. \<mu>qq pp = Some v} \<le> card {pp. \<mu>qq pp = Some w}
+          hence "\<And>w. card {pp. \<mu>_qq pp = Some v} \<le> card {pp. \<mu>_qq pp = Some w}
                       \<Longrightarrow> w = v" 
             by force
-          with zz have "mostOftenRcvd \<mu>qq = {v}"
+          with zz have "mostOftenRcvd \<mu>_qq = {v}"
             by (force simp: mostOftenRcvd_def)
           with xsmall show "x (rho (Suc r) qq) = v" by auto
         qed
@@ -364,9 +364,9 @@ proof -
               "decide (rho (Suc rp) p) = Some w"
     by (rule decisionNonNullThenDecided)
 
-  from run obtain \<mu>p
-    where nxt: "nextState Ate_M rp p (rho rp p) \<mu>p (rho (Suc rp) p)"
-      and mu: "\<mu>p \<in> SHOmsgVectors Ate_M rp p (rho rp) (HOs rp p) (SHOs rp p)"
+  from run obtain \<mu>_p
+    where nxt: "nextState Ate_M rp p (rho rp p) \<mu>_p (rho (Suc rp) p)"
+      and mu: "\<mu>_p \<in> SHOmsgVectors Ate_M rp p (rho rp) (HOs rp p) (SHOs rp p)"
     by (auto simp: SHORun_eq SHOnextConfig_eq)
 
   {
@@ -376,31 +376,31 @@ proof -
       by (auto simp: Ate_SHOMachine_def Ate_commPerRd_def)
     moreover
     from mu P
-    have "SHOs rp p \<inter> HOs rp p \<subseteq> {pp. \<mu>p pp = Some v}"
-      and "HOs rp p = {pp. \<mu>p pp \<noteq> None}"
+    have "SHOs rp p \<inter> HOs rp p \<subseteq> {pp. \<mu>_p pp = Some v}"
+      and "HOs rp p = {pp. \<mu>_p pp \<noteq> None}"
       by (auto simp: SHOmsgVectors_def)
-    hence "{pp. \<mu>p pp \<noteq> None} - {pp. \<mu>p pp = Some v}
+    hence "{pp. \<mu>_p pp \<noteq> None} - {pp. \<mu>_p pp = Some v}
            \<subseteq> HOs rp p - SHOs rp p"
       by auto
-    hence "card ({pp. \<mu>p pp \<noteq> None} - {pp. \<mu>p pp = Some v})
+    hence "card ({pp. \<mu>_p pp \<noteq> None} - {pp. \<mu>_p pp = Some v})
             \<le> card (HOs rp p - SHOs rp p)"
       by (auto simp: card_mono)
     ultimately
-    have "card ({pp. \<mu>p pp \<noteq> None} - {pp. \<mu>p pp = Some v}) < E"
+    have "card ({pp. \<mu>_p pp \<noteq> None} - {pp. \<mu>_p pp = Some v}) < E"
       using Egta by auto
     moreover
-    from w have "{pp. \<mu>p pp = Some w} 
-                 \<subseteq> {pp. \<mu>p pp \<noteq> None} - {pp. \<mu>p pp = Some v}"
+    from w have "{pp. \<mu>_p pp = Some w} 
+                 \<subseteq> {pp. \<mu>_p pp \<noteq> None} - {pp. \<mu>_p pp = Some v}"
       by auto
-    hence "card {pp. \<mu>p pp = Some w} 
-             \<le> card ({pp. \<mu>p pp \<noteq> None} - {pp. \<mu>p pp = Some v})"
+    hence "card {pp. \<mu>_p pp = Some w} 
+             \<le> card ({pp. \<mu>_p pp \<noteq> None} - {pp. \<mu>_p pp = Some v})"
       by (auto simp: card_mono)
     ultimately
-    have "card {pp. \<mu>p pp = Some w} < E" by simp
+    have "card {pp. \<mu>_p pp = Some w} < E" by simp
   }
-  hence PP: "\<And>w. card {pp. \<mu>p pp = Some w} \<ge> E \<Longrightarrow> w = v" by force
+  hence PP: "\<And>w. card {pp. \<mu>_p pp = Some w} \<ge> E \<Longrightarrow> w = v" by force
 
-  from rp nxt mu have "card {q. \<mu>p q = Some w} > E"
+  from rp nxt mu have "card {q. \<mu>_p q = Some w} > E"
     by (auto simp: SHOmsgVectors_def Ate_SHOMachine_def 
                    nextState_def Ate_nextState_def)
   with PP show ?thesis by auto
@@ -597,8 +597,8 @@ theorem ate_termination:
   shows "\<exists>r v. decide (rho r p) = Some v"
 proof -
   from commG obtain r' \<pi>1 \<pi>2
-    where \<pi>ea: "card \<pi>1 > E - \<alpha>"
-      and \<pi>t: "card \<pi>2 > T"
+    where \<pi>_ea: "card \<pi>1 > E - \<alpha>"
+      and \<pi>_t: "card \<pi>2 > T"
       and  hosho: "\<forall>p \<in> \<pi>1. (HOs r' p = \<pi>2 \<and> SHOs r' p \<inter> HOs r' p = \<pi>2)"
     by (auto simp: Ate_SHOMachine_def Ate_commGlobal_def)
 
@@ -610,50 +610,50 @@ proof -
       fix p q
       assume p: "p \<in> \<pi>1" and q: "q \<in> \<pi>1"
 
-      from run obtain \<mu>p
-        where nxtp: "nextState Ate_M r' p (rho r' p) \<mu>p (rho (Suc r') p)"
-          and mup: "\<mu>p \<in> SHOmsgVectors Ate_M r' p (rho r') (HOs r' p) (SHOs r' p)"
+      from run obtain \<mu>_p
+        where nxtp: "nextState Ate_M r' p (rho r' p) \<mu>_p (rho (Suc r') p)"
+          and mup: "\<mu>_p \<in> SHOmsgVectors Ate_M r' p (rho r') (HOs r' p) (SHOs r' p)"
         by (auto simp: SHORun_eq SHOnextConfig_eq)
 
-      from run obtain \<mu>q
-        where nxtq: "nextState Ate_M r' q (rho r' q) \<mu>q (rho (Suc r') q)"
-          and muq: "\<mu>q \<in> SHOmsgVectors Ate_M r' q (rho r') (HOs r' q) (SHOs r' q)"
+      from run obtain \<mu>_q
+        where nxtq: "nextState Ate_M r' q (rho r' q) \<mu>_q (rho (Suc r') q)"
+          and muq: "\<mu>_q \<in> SHOmsgVectors Ate_M r' q (rho r') (HOs r' q) (SHOs r' q)"
         by (auto simp: SHORun_eq SHOnextConfig_eq)
 
       from mup muq p q
-      have "{qq. \<mu>q qq \<noteq> None}  = HOs r' q"
-        and 2:"{qq. \<mu>q qq = Some (sendMsg Ate_M r' qq q (rho r' qq))}
+      have "{qq. \<mu>_q qq \<noteq> None}  = HOs r' q"
+        and 2:"{qq. \<mu>_q qq = Some (sendMsg Ate_M r' qq q (rho r' qq))}
                \<supseteq> SHOs r' q \<inter> HOs r' q"
-        and "{qq. \<mu>p qq \<noteq> None}  = HOs r' p"
-        and 4:"{qq. \<mu>p qq = Some (sendMsg Ate_M r' qq p (rho r' qq))}
+        and "{qq. \<mu>_p qq \<noteq> None}  = HOs r' p"
+        and 4:"{qq. \<mu>_p qq = Some (sendMsg Ate_M r' qq p (rho r' qq))}
                \<supseteq> SHOs r' p \<inter> HOs r' p"
         by (auto simp: SHOmsgVectors_def)
       with p q hosho 
-      have aa:"\<pi>2 = {qq. \<mu>q qq \<noteq> None}"
-        and cc:"\<pi>2 = {qq. \<mu>p qq \<noteq> None}" by auto
+      have aa:"\<pi>2 = {qq. \<mu>_q qq \<noteq> None}"
+        and cc:"\<pi>2 = {qq. \<mu>_p qq \<noteq> None}" by auto
       from p q hosho 2
-      have bb:"{qq. \<mu>q qq = Some (sendMsg Ate_M r' qq q (rho r' qq))} \<supseteq> \<pi>2"
+      have bb:"{qq. \<mu>_q qq = Some (sendMsg Ate_M r' qq q (rho r' qq))} \<supseteq> \<pi>2"
         by auto
       from p q hosho 4
-      have dd:"{qq. \<mu>p qq = Some (sendMsg Ate_M r' qq p (rho r' qq))} \<supseteq> \<pi>2" 
+      have dd:"{qq. \<mu>_p qq = Some (sendMsg Ate_M r' qq p (rho r' qq))} \<supseteq> \<pi>2" 
         by auto
-      have "Min (mostOftenRcvd \<mu>p) = Min (mostOftenRcvd \<mu>q)"
+      have "Min (mostOftenRcvd \<mu>_p) = Min (mostOftenRcvd \<mu>_q)"
       proof -
         have "\<forall>qq. sendMsg Ate_M r' qq p (rho r' qq)
                    = sendMsg Ate_M r' qq q (rho r' qq)"
           by (auto simp: Ate_SHOMachine_def Ate_sendMsg_def)
-        with aa bb cc dd have "\<forall>qq. \<mu>p qq \<noteq> None \<longrightarrow> \<mu>p qq = \<mu>q qq"
+        with aa bb cc dd have "\<forall>qq. \<mu>_p qq \<noteq> None \<longrightarrow> \<mu>_p qq = \<mu>_q qq"
           by force
         moreover
         from aa bb cc dd
-        have "{qq. \<mu>p qq \<noteq> None} = {qq. \<mu>q qq \<noteq> None}" by auto
-        hence "\<forall>qq. \<mu>p qq = None \<longleftrightarrow> \<mu>q qq = None" by blast
-        hence "\<forall>qq. \<mu>p qq = None \<longrightarrow> \<mu>p qq = \<mu>q qq" by auto
+        have "{qq. \<mu>_p qq \<noteq> None} = {qq. \<mu>_q qq \<noteq> None}" by auto
+        hence "\<forall>qq. \<mu>_p qq = None \<longleftrightarrow> \<mu>_q qq = None" by blast
+        hence "\<forall>qq. \<mu>_p qq = None \<longrightarrow> \<mu>_p qq = \<mu>_q qq" by auto
         ultimately
-        have "\<forall>qq. \<mu>p qq = \<mu>q qq" by blast
+        have "\<forall>qq. \<mu>_p qq = \<mu>_q qq" by blast
         thus ?thesis by (auto simp: mostOftenRcvd_def)
       qed
-      with \<pi>t aa nxtq \<pi>t cc nxtp
+      with \<pi>_t aa nxtq \<pi>_t cc nxtp
       show "x (rho (Suc r') p) = x (rho (Suc r') q)"
         by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
     qed
@@ -664,7 +664,7 @@ proof -
         by (auto simp: Ate_SHOMachine_def Ate_sendMsg_def)
       hence "card \<pi>1 \<le> card {qq. sendMsg Ate_M (Suc r') qq pp (rho (Suc r') qq) = v}"
         by (auto intro: card_mono)
-      with \<pi>ea
+      with \<pi>_ea
       have "E - \<alpha> < card {qq. sendMsg Ate_M (Suc r') qq pp (rho (Suc r') qq) = v}"
         by simp
     }
@@ -705,22 +705,22 @@ proof -
                             \<Rightarrow> (Proc HO) \<Rightarrow> (Proc HO) \<Rightarrow> bool)
               Ate_M (HOs (Suc r' + k)) (SHOs (Suc r' + k))" ..
     moreover
-    from run obtain \<mu>pp
-      where nxt:"nextState Ate_M (Suc r' + k) pp (rho (Suc r' + k) pp) \<mu>pp 
+    from run obtain \<mu>_pp
+      where nxt:"nextState Ate_M (Suc r' + k) pp (rho (Suc r' + k) pp) \<mu>_pp 
                            (rho (Suc r' + Suc k) pp)"
-        and mu: "\<mu>pp \<in> SHOmsgVectors Ate_M (Suc r' + k) pp (rho (Suc r' + k))
+        and mu: "\<mu>_pp \<in> SHOmsgVectors Ate_M (Suc r' + k) pp (rho (Suc r' + k))
                            (HOs (Suc r' + k) pp) (SHOs (Suc r' + k) pp)"
       by (auto simp: SHORun_eq SHOnextConfig_eq)
     moreover
     from nxt ppupdatex
-    have threshold_T: "card {qq. \<mu>pp qq \<noteq> None} > T"
-      and xsmall: "x (rho (Suc r' + Suc k) pp) = Min (mostOftenRcvd \<mu>pp)"
+    have threshold_T: "card {qq. \<mu>_pp qq \<noteq> None} > T"
+      and xsmall: "x (rho (Suc r' + Suc k) pp) = Min (mostOftenRcvd \<mu>_pp)"
       by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
     moreover
     from P2
     have "E - \<alpha> < card {qq. sendMsg Ate_M (Suc r' + k) qq pp (rho (Suc r' + k) qq) = v}" .
     ultimately
-    have "mostOftenRcvd \<mu>pp = {v}" by (auto dest!: mostOftenRcvd_v)
+    have "mostOftenRcvd \<mu>_pp = {v}" by (auto dest!: mostOftenRcvd_v)
     with xsmall 
     have "x (rho (Suc r' + Suc k) pp) = v" by simp
   }
@@ -734,10 +734,10 @@ proof -
     then obtain k where "Suc r' + k > r'" and t:"card (HOs (Suc r' + k) pp) > T"
       by (auto dest: less_imp_Suc_add)
     moreover
-    from run obtain \<mu>pp
-      where nxt: "nextState Ate_M (Suc r' + k) pp (rho (Suc r' + k) pp) \<mu>pp
+    from run obtain \<mu>_pp
+      where nxt: "nextState Ate_M (Suc r' + k) pp (rho (Suc r' + k) pp) \<mu>_pp
                                   (rho (Suc r' + Suc k) pp)"
-        and mu: "\<mu>pp \<in> SHOmsgVectors Ate_M (Suc r' + k) pp (rho (Suc r' + k))
+        and mu: "\<mu>_pp \<in> SHOmsgVectors Ate_M (Suc r' + k) pp (rho (Suc r' + k))
                                   (HOs (Suc r' + k) pp) (SHOs (Suc r' + k) pp)"
       by (auto simp: SHORun_eq SHOnextConfig_eq)
     moreover
@@ -748,17 +748,17 @@ proof -
                                 \<Rightarrow> (Proc HO) \<Rightarrow> (Proc HO) \<Rightarrow> bool) 
                 Ate_M (HOs (Suc r' + k)) (SHOs (Suc r' + k))" ..
       moreover
-      from mu have "HOs (Suc r' + k) pp = {q. \<mu>pp q \<noteq> None}"
+      from mu have "HOs (Suc r' + k) pp = {q. \<mu>_pp q \<noteq> None}"
         by (auto simp: SHOmsgVectors_def)
       with nxt t
-      have threshold_T: "card {q. \<mu>pp q \<noteq> None} > T"
-        and xsmall: "x (rho (Suc r' + Suc k) pp) = Min (mostOftenRcvd \<mu>pp)"
+      have threshold_T: "card {q. \<mu>_pp q \<noteq> None} > T"
+        and xsmall: "x (rho (Suc r' + Suc k) pp) = Min (mostOftenRcvd \<mu>_pp)"
         by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
       moreover
       from P2
       have "E - \<alpha> < card {qq. sendMsg Ate_M (Suc r' + k) qq pp (rho (Suc r' + k) qq) = v}" .
       ultimately
-      have "mostOftenRcvd \<mu>pp = {v}"  
+      have "mostOftenRcvd \<mu>_pp = {v}"  
         using nxt mu by (auto dest!: mostOftenRcvd_v)
       with xsmall show ?thesis by auto
     qed
@@ -820,16 +820,16 @@ proof -
       and "\<forall>pp. sendMsg Ate_M r' pp p (rho r' pp) = v"
     by (auto simp: Ate_SHOMachine_def Ate_sendMsg_def)
   moreover
-  from run obtain \<mu>p
-    where nxt: "nextState Ate_M r' p (rho r' p) \<mu>p (rho (Suc r') p)"
-      and mu: "\<mu>p \<in> SHOmsgVectors Ate_M r' p (rho r') (HOs r' p) (SHOs r' p)"
+  from run obtain \<mu>_p
+    where nxt: "nextState Ate_M r' p (rho r' p) \<mu>_p (rho (Suc r') p)"
+      and mu: "\<mu>_p \<in> SHOmsgVectors Ate_M r' p (rho r') (HOs r' p) (SHOs r' p)"
     by (auto simp: SHORun_eq SHOnextConfig_eq)
   from mu 
   have "card (SHOs r' p \<inter> HOs r' p)
-        \<le> card {q. \<mu>p q = Some (sendMsg Ate_M r' q p (rho r' q))}"
+        \<le> card {q. \<mu>_p q = Some (sendMsg Ate_M r' q p (rho r' q))}"
     by (auto simp: SHOmsgVectors_def intro: card_mono)
   ultimately
-  have threshold_E: "card {q. \<mu>p q = Some v} > E" by auto
+  have threshold_E: "card {q. \<mu>_p q = Some v} > E" by auto
   with nxt show ?thesis
     by (auto simp: Ate_SHOMachine_def nextState_def Ate_nextState_def)
 qed

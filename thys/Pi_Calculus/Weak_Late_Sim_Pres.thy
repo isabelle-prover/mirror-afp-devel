@@ -1007,10 +1007,10 @@ proof -
           next
             case Stay
             have "\<alpha> \<prec> P' = \<tau> \<prec> P \<parallel> !P" by fact
-            hence \<alpha>eq\<tau>: "\<alpha> = \<tau>" and P'eqP: "P' = P \<parallel> !P" by(simp add: residual.inject)+
+            hence "\<alpha> = \<tau>" and P'eqP: "P' = P \<parallel> !P" by(simp add: residual.inject)+
             have "!P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> !P" by(simp add: weakTransition_def)
             moreover from P'eqP P'RelQ' have "(!P, Q') \<in> Rel'" by(blast intro: RelStay)
-            ultimately show ?case using \<alpha>eq\<tau> by blast
+            ultimately show ?case using `\<alpha> = \<tau>` by blast
           qed
         qed
       qed

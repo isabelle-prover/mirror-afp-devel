@@ -58,7 +58,7 @@ record 'val pstate =
   ready :: bool            -- {* for coordinators: did the round finish successfully? *}
   timestamp :: nat         -- {* time stamp of current value *}
   decide :: "'val option"  -- {* value the process has decided on, if any *}
-  coord\<Phi> :: Proc           -- {* coordinator for current phase *}
+  coord_\<Phi> :: Proc           -- {* coordinator for current phase *}
 
 text {*
   Possible messages sent during the execution of the algorithm.
@@ -104,7 +104,7 @@ definition LV_initState where
    \<and> \<not>(ready st)
    \<and> timestamp st = 0
    \<and> decide st = None
-   \<and> coord\<Phi> st = crd"
+   \<and> coord_\<Phi> st = crd"
 
 text {*
   We separately define the transition predicates and the send functions
@@ -131,11 +131,11 @@ text {*
 
 definition send0 where
   "send0 r p q st \<equiv>
-   if q = coord\<Phi> st then ValStamp (x st) (timestamp st) else Null"
+   if q = coord_\<Phi> st then ValStamp (x st) (timestamp st) else Null"
 
 definition next0 where
   "next0 r p st msgs crd st' \<equiv>
-      if p = coord\<Phi> st \<and> card (valStampsRcvd msgs) > N div 2
+      if p = coord_\<Phi> st \<and> card (valStampsRcvd msgs) > N div 2
       then (\<exists>p v. msgs p = Some (ValStamp v (highestStampRcvd msgs))
                 \<and> st' = st \<lparr> vote := Some v, commt := True \<rparr> )
       else st' = st"
@@ -150,12 +150,12 @@ text {*
 
 definition send1 where
   "send1 r p q st \<equiv>
-   if p = coord\<Phi> st \<and> commt st then Vote (the (vote st)) else Null"
+   if p = coord_\<Phi> st \<and> commt st then Vote (the (vote st)) else Null"
 
 definition next1 where
   "next1 r p st msgs crd st' \<equiv>
-   if msgs (coord\<Phi> st) \<noteq> None \<and> isVote (the (msgs (coord\<Phi> st)))
-   then st' = st \<lparr> x := val (the (msgs (coord\<Phi> st))), timestamp := Suc(phase r) \<rparr>
+   if msgs (coord_\<Phi> st) \<noteq> None \<and> isVote (the (msgs (coord_\<Phi> st)))
+   then st' = st \<lparr> x := val (the (msgs (coord_\<Phi> st))), timestamp := Suc(phase r) \<rparr>
    else st' = st"
 
 text {*
@@ -168,7 +168,7 @@ text {*
 
 definition send2 where
   "send2 r p q st \<equiv>
-   if timestamp st = Suc(phase r) \<and> q = coord\<Phi> st then Ack else Null"
+   if timestamp st = Suc(phase r) \<and> q = coord_\<Phi> st then Ack else Null"
 
 -- {* processes from which an acknowledgement was received *}
 definition acksRcvd where
@@ -177,7 +177,7 @@ definition acksRcvd where
 
 definition next2 where
   "next2 r p st msgs crd st' \<equiv>
-   if p = coord\<Phi> st \<and> card (acksRcvd msgs) > N div 2
+   if p = coord_\<Phi> st \<and> card (acksRcvd msgs) > N div 2
    then st' = st \<lparr> ready := True \<rparr>
    else st' = st"
 
@@ -192,20 +192,20 @@ text {*
 
 definition send3 where
   "send3 r p q st \<equiv>
-   if p = coord\<Phi> st \<and> ready st then Vote (the (vote st)) else Null"
+   if p = coord_\<Phi> st \<and> ready st then Vote (the (vote st)) else Null"
 
 definition next3 where
   "next3 r p st msgs crd st' \<equiv>
-      (if msgs (coord\<Phi> st) \<noteq> None \<and> isVote (the (msgs (coord\<Phi> st)))
-       then decide st' = Some (val (the (msgs (coord\<Phi> st))))
+      (if msgs (coord_\<Phi> st) \<noteq> None \<and> isVote (the (msgs (coord_\<Phi> st)))
+       then decide st' = Some (val (the (msgs (coord_\<Phi> st))))
        else decide st' = decide st)
-   \<and> (if p = coord\<Phi> st
+   \<and> (if p = coord_\<Phi> st
       then \<not>(ready st') \<and> \<not>(commt st')
       else ready st' = ready st \<and> commt st' = commt st)
    \<and> x st' = x st
    \<and> vote st' = vote st
    \<and> timestamp st' = timestamp st
-   \<and> coord\<Phi> st' = crd"
+   \<and> coord_\<Phi> st' = crd"
 
 text {*
   The overall send function and next-state relation are simply obtained as

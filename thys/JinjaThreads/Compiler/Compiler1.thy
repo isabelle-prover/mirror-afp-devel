@@ -110,7 +110,7 @@ done
 
 lemma fixes e :: "'addr expr" and es :: "'addr expr list"
   shows \<B>: "size Vs = n \<Longrightarrow> \<B> (compE1 Vs e) n"
-  and \<B>s: "size Vs = n \<Longrightarrow> \<B>s (compEs1 Vs es) n"
+  and \<B>_list: "size Vs = n \<Longrightarrow> \<B>s (compEs1 Vs es) n"
 apply(induct Vs e and Vs es arbitrary: n and n rule: compE1_compEs1.induct)
 apply auto
 done

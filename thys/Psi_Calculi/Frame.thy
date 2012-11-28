@@ -290,7 +290,7 @@ proof -
       by fact
 
     from EQ `x \<noteq> y` have EQ': "\<langle>xvec', \<Psi>\<rangle> = ([(x, y)] \<bullet> \<langle>yvec', \<Psi>'\<rangle>)" 
-                     and xFresh\<Psi>': "x \<sharp> \<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
+                     and xFresh_\<Psi>': "x \<sharp> \<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
       by(simp add: frame.inject alpha)+
 
     show ?case
@@ -298,7 +298,7 @@ proof -
       assume "x \<sharp> \<langle>xvec', \<Psi>\<rangle>"
       with EQ have "y \<sharp> \<langle>yvec', \<Psi>'\<rangle>"
         by(rule frameEqFresh)
-      with xFresh\<Psi>' EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>" 
+      with xFresh_\<Psi>' EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>" 
         by(simp)
       with `xvec' \<sharp>* yvec'` `length xvec' = n` IH
       obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p"  and "\<Psi>' = p \<bullet> \<Psi>"
@@ -308,7 +308,7 @@ proof -
       show ?case by blast
     next
       assume "\<not>(x \<sharp> \<lparr>\<nu>*xvec'\<rparr>(FAssert \<Psi>))"
-      hence xSupp\<Psi>: "x \<in> supp(\<langle>xvec', \<Psi>\<rangle>)"
+      hence xSupp_\<Psi>: "x \<in> supp(\<langle>xvec', \<Psi>\<rangle>)"
         by(simp add: fresh_def)
       with EQ have "y \<in> supp (\<langle>yvec', \<Psi>'\<rangle>)"
         by(rule frameEqSupp)
@@ -320,7 +320,7 @@ proof -
       obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p" and "([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>"
         by blast
 
-      from xSupp\<Psi> have "x \<sharp> xvec'"
+      from xSupp_\<Psi> have "x \<sharp> xvec'"
         by(induct xvec') (auto simp add: frame.supp abs_supp)      
       with `x \<sharp> yvec'` `y \<sharp> xvec'` `y \<sharp> yvec'` S have "x \<sharp> p" and "y \<sharp> p"
         apply(induct p)
@@ -389,7 +389,7 @@ proof -
     next
       case False
       from EQ `x \<noteq> y` have EQ': "\<langle>xvec', \<Psi>\<rangle> = ([(x, y)] \<bullet> \<langle>yvec', \<Psi>'\<rangle>)" 
-                       and xFresh\<Psi>': "x \<sharp> \<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
+                       and xFresh_\<Psi>': "x \<sharp> \<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
         by(simp add: frame.inject alpha)+
     
       show ?thesis
@@ -397,7 +397,7 @@ proof -
         case True
         from EQ `x \<sharp> \<langle>xvec', \<Psi>\<rangle>` have "y \<sharp> \<langle>yvec', \<Psi>'\<rangle>"
           by(rule frameEqFresh)
-        with xFresh\<Psi>' EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>" 
+        with xFresh_\<Psi>' EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>" 
           by(simp)
         with `length xvec' = n` IH
         obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "\<Psi>' = p \<bullet> \<Psi>"
@@ -407,7 +407,7 @@ proof -
         show ?thesis by blast
       next
         case False
-        from `\<not>(x \<sharp> \<lparr>\<nu>*xvec'\<rparr>(FAssert \<Psi>))` have xSupp\<Psi>: "x \<in> supp(\<langle>xvec', \<Psi>\<rangle>)"
+        from `\<not>(x \<sharp> \<lparr>\<nu>*xvec'\<rparr>(FAssert \<Psi>))` have xSupp_\<Psi>: "x \<in> supp(\<langle>xvec', \<Psi>\<rangle>)"
           by(simp add: fresh_def)
         with EQ have "y \<in> supp (\<langle>yvec', \<Psi>'\<rangle>)"
           by(rule frameEqSupp)
@@ -420,7 +420,7 @@ proof -
         obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p" and "([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>"
           by blast
         
-        from xSupp\<Psi> have "x \<sharp> xvec'"
+        from xSupp_\<Psi> have "x \<sharp> xvec'"
           by(induct xvec') (auto simp add: frame.supp abs_supp)      
         with `x \<sharp> yvec'` `y \<sharp> xvec'` `y \<sharp> yvec'` S have "x \<sharp> p" and "y \<sharp> p"
           apply(induct p)
@@ -1744,7 +1744,7 @@ proof -
     with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "([(x, y)] \<bullet> A\<^isub>F') \<sharp>* \<Psi>" by simp
     with `\<And>\<Psi> A\<^isub>F \<Psi>'. \<lbrakk>insertAssertion F \<Psi> = \<langle>A\<^isub>F, \<Psi>'\<rangle>; A\<^isub>F \<sharp>* F; A\<^isub>F \<sharp>* \<Psi>; distinct A\<^isub>F\<rbrakk> \<Longrightarrow> \<exists>\<Psi>\<^isub>F. F = \<langle>A\<^isub>F, \<Psi>\<^isub>F\<rangle> \<and> \<Psi>' = \<Psi> \<otimes> \<Psi>\<^isub>F` A 
          `([(x, y)] \<bullet> A\<^isub>F') \<sharp>* F` `distinct A\<^isub>F'` `x \<sharp> A\<^isub>F'` `y \<sharp> A\<^isub>F'`
-    obtain \<Psi>\<^isub>F where Feq: "F = \<langle>A\<^isub>F', \<Psi>\<^isub>F\<rangle>" and \<Psi>eq: "([(x, y)] \<bullet> \<Psi>') = \<Psi> \<otimes> \<Psi>\<^isub>F"
+    obtain \<Psi>\<^isub>F where Feq: "F = \<langle>A\<^isub>F', \<Psi>\<^isub>F\<rangle>" and \<Psi>_eq: "([(x, y)] \<bullet> \<Psi>') = \<Psi> \<otimes> \<Psi>\<^isub>F"
       by force
     
     from Feq have "\<lparr>\<nu>x\<rparr>F =  \<langle>(x#A\<^isub>F'), \<Psi>\<^isub>F\<rangle>" by(simp add: frame.inject)
@@ -1752,7 +1752,7 @@ proof -
     hence "\<lparr>\<nu>x\<rparr>F = \<langle>A\<^isub>F, [(x, y)] \<bullet> \<Psi>\<^isub>F\<rangle>" using `y \<sharp> F` `A\<^isub>F = y#A\<^isub>F'` `x \<sharp> A\<^isub>F` `y \<sharp> A\<^isub>F'`
       by(simp add: eqvts calc_atm alphaFrameRes)
 
-    moreover from \<Psi>eq have "[(x, y)] \<bullet> ([(x, y)] \<bullet> \<Psi>') = [(x, y)] \<bullet> (\<Psi> \<otimes> \<Psi>\<^isub>F)"
+    moreover from \<Psi>_eq have "[(x, y)] \<bullet> ([(x, y)] \<bullet> \<Psi>') = [(x, y)] \<bullet> (\<Psi> \<otimes> \<Psi>\<^isub>F)"
       by simp
     with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi>' = \<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>\<^isub>F)" by(simp add: eqvts)
     ultimately show ?case

@@ -104,21 +104,21 @@ lemma map_to_nat_correct:
 
   lemma it_set_to_List_enq_correct: 
     assumes "set_iteratei \<alpha> invar iterate" 
-    assumes "list_empty \<alpha>l invarl emp"
-    assumes "list_enqueue \<alpha>l invarl enq"
+    assumes "list_empty \<alpha>_l invarl emp"
+    assumes "list_enqueue \<alpha>_l invarl enq"
     assumes [simp]: "invar S"
     shows 
-      "set (\<alpha>l (it_set_to_List_enq iterate emp enq S)) = \<alpha> S" (is ?T1)
+      "set (\<alpha>_l (it_set_to_List_enq iterate emp enq S)) = \<alpha> S" (is ?T1)
       "invarl (it_set_to_List_enq iterate emp enq S)" (is ?T2)
-      "distinct (\<alpha>l (it_set_to_List_enq iterate emp enq S))" (is ?T3)
+      "distinct (\<alpha>_l (it_set_to_List_enq iterate emp enq S))" (is ?T3)
   proof -
     interpret set_iteratei \<alpha> invar iterate by fact
-    interpret list_empty \<alpha>l invarl emp by fact
-    interpret list_enqueue \<alpha>l invarl enq by fact
+    interpret list_empty \<alpha>_l invarl emp by fact
+    interpret list_enqueue \<alpha>_l invarl enq by fact
     have "?T1 \<and> ?T2 \<and> ?T3"
       apply (unfold it_set_to_List_enq_def)
       apply (rule_tac 
-        I="\<lambda>it F. set (\<alpha>l F) = \<alpha> S - it \<and> invarl F \<and> distinct (\<alpha>l F)" 
+        I="\<lambda>it F. set (\<alpha>_l F) = \<alpha> S - it \<and> invarl F \<and> distinct (\<alpha>_l F)" 
         in iterate_rule_P)
       apply (auto simp add: enqueue_correct empty_correct)
       done
@@ -132,21 +132,21 @@ lemma map_to_nat_correct:
 
   lemma it_set_to_List_push_correct: 
     assumes "set_iteratei \<alpha> invar iterate" 
-    assumes "list_empty \<alpha>l invarl emp"
-    assumes "list_push \<alpha>l invarl push"
+    assumes "list_empty \<alpha>_l invarl emp"
+    assumes "list_push \<alpha>_l invarl push"
     assumes [simp]: "invar S"
     shows 
-      "set (\<alpha>l (it_set_to_List_push iterate emp push S)) = \<alpha> S" (is ?T1)
+      "set (\<alpha>_l (it_set_to_List_push iterate emp push S)) = \<alpha> S" (is ?T1)
       "invarl (it_set_to_List_push iterate emp push S)" (is ?T2)
-      "distinct (\<alpha>l (it_set_to_List_push iterate emp push S))" (is ?T3)
+      "distinct (\<alpha>_l (it_set_to_List_push iterate emp push S))" (is ?T3)
   proof -
     interpret set_iteratei \<alpha> invar iterate by fact
-    interpret list_empty \<alpha>l invarl emp by fact
-    interpret list_push \<alpha>l invarl push by fact
+    interpret list_empty \<alpha>_l invarl emp by fact
+    interpret list_push \<alpha>_l invarl push by fact
     have "?T1 \<and> ?T2 \<and> ?T3"
       apply (unfold it_set_to_List_push_def)
       apply (rule_tac 
-        I="\<lambda>it F. set (\<alpha>l F) = \<alpha> S - it \<and> invarl F \<and> distinct (\<alpha>l F)" 
+        I="\<lambda>it F. set (\<alpha>_l F) = \<alpha> S - it \<and> invarl F \<and> distinct (\<alpha>_l F)" 
         in iterate_rule_P)
       apply (auto simp add: push_correct empty_correct)
       done

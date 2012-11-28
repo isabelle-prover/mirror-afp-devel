@@ -57,7 +57,7 @@ by(simp add:hyperset_defs)
 
 section {*Definite assignment*}
 
-primrec \<A> :: "expr \<Rightarrow> hyperset" and \<A>s :: "expr list \<Rightarrow> hyperset" where
+primrec \<A> :: "expr \<Rightarrow> hyperset" and \<A>_list :: "expr list \<Rightarrow> hyperset" ("\<A>s") where
 "\<A> (new C) = \<lfloor>{}\<rfloor>" |
 "\<A> (Cast C e) = \<A> e" |
 "\<A> (\<lparr>C\<rparr>e) = \<A> e" |
@@ -77,7 +77,7 @@ primrec \<A> :: "expr \<Rightarrow> hyperset" and \<A>s :: "expr list \<Rightarr
 "\<A>s ([]) = \<lfloor>{}\<rfloor>" |
 "\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
 
-primrec \<D> :: "expr \<Rightarrow> hyperset \<Rightarrow> bool" and \<D>s :: "expr list \<Rightarrow> hyperset \<Rightarrow> bool" where
+primrec \<D> :: "expr \<Rightarrow> hyperset \<Rightarrow> bool" and \<D>_list :: "expr list \<Rightarrow> hyperset \<Rightarrow> bool" ("\<D>s") where
 "\<D> (new C) A = True" |
 "\<D> (Cast C e) A = \<D> e A" |
 "\<D> (\<lparr>C\<rparr>e) A = \<D> e A" |

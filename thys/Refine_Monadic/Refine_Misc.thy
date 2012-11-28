@@ -420,12 +420,12 @@ locale galois_connection =
   fixes \<alpha>::"'a::complete_lattice \<Rightarrow> 'b::complete_lattice" and \<gamma>
   assumes galois: "c \<le> \<gamma>(a) \<longleftrightarrow> \<alpha>(c) \<le> a"
 begin
-  lemma \<alpha>\<gamma>_defl: "\<alpha>(\<gamma>(x)) \<le> x"
+  lemma \<alpha>_\<gamma>_defl: "\<alpha>(\<gamma>(x)) \<le> x"
   proof -
     have "\<gamma> x \<le> \<gamma> x" by simp
     with galois show "\<alpha>(\<gamma>(x)) \<le> x" by blast
   qed
-  lemma \<gamma>\<alpha>_infl: "x \<le> \<gamma>(\<alpha>(x))"
+  lemma \<gamma>_\<alpha>_infl: "x \<le> \<gamma>(\<alpha>(x))"
   proof -
     have "\<alpha> x \<le> \<alpha> x" by simp
     with galois show "x \<le> \<gamma>(\<alpha>(x))" by blast
@@ -435,12 +435,12 @@ begin
   proof 
     fix x::'a and y::'a
     assume "x\<le>y"
-    also note \<gamma>\<alpha>_infl[of y]
+    also note \<gamma>_\<alpha>_infl[of y]
     finally show "\<alpha> x \<le> \<alpha> y" by (simp add: galois)
   qed
 
   lemma \<gamma>_mono: "mono \<gamma>"
-    by rule (metis \<alpha>\<gamma>_defl galois inf_absorb1 le_infE)
+    by rule (metis \<alpha>_\<gamma>_defl galois inf_absorb1 le_infE)
 
   lemma dist_\<gamma>[simp]: 
     "\<gamma> (inf a b) = inf (\<gamma> a) (\<gamma> b)"

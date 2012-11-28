@@ -116,7 +116,7 @@ where
 --"Indices in blocks increase by 1"
 
 primrec \<B> :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
-  and \<B>s :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"
+  and \<B>_list :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"  ("\<B>s")
 where
   "\<B> (new C) i = True"
 | "\<B> (newA T\<lfloor>e\<rceil>) i = \<B> e i"

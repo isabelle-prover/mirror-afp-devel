@@ -152,32 +152,32 @@ lemma resCases'[consumes 7, case_names cOpen cRes]:
   and   P'   :: "('a, 'b, 'c) psi"
   and   C    :: "'d::fs_name"
 
-  assumes Trans: "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<longmapsto>x\<alpha> \<prec> xP'"
+  assumes Trans: "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<longmapsto>x_\<alpha> \<prec> xP'"
   and     "x \<sharp> \<Psi>"
-  and     "x \<sharp> x\<alpha>"
+  and     "x \<sharp> x_\<alpha>"
   and     "x \<sharp> xP'"
-  and     "bn x\<alpha> \<sharp>* \<Psi>"
-  and     "bn x\<alpha> \<sharp>* P"
-  and     "bn x\<alpha> \<sharp>* subject x\<alpha>"
+  and     "bn x_\<alpha> \<sharp>* \<Psi>"
+  and     "bn x_\<alpha> \<sharp>* P"
+  and     "bn x_\<alpha> \<sharp>* subject x_\<alpha>"
   and     rOpen: "\<And>M xvec yvec y N P'. \<lbrakk>\<Psi> \<rhd> P \<longmapsto>M\<lparr>\<nu>*(xvec@yvec)\<rparr>\<langle>([(x, y)] \<bullet> N)\<rangle> \<prec> ([(x, y)] \<bullet> P'); y \<in> supp N;
                                          x \<sharp> N; x \<sharp> P'; x \<noteq> y; y \<sharp> xvec; y \<sharp> yvec; y \<sharp> M; distinct xvec; distinct yvec;
                                          xvec \<sharp>* \<Psi>; y \<sharp> \<Psi>; yvec \<sharp>* \<Psi>; xvec \<sharp>* P; y \<sharp> P; yvec \<sharp>* P; xvec \<sharp>* M; y \<sharp> M;
-                                         yvec \<sharp>* M; xvec \<sharp>* yvec; x\<alpha> = M\<lparr>\<nu>*(xvec@y#yvec)\<rparr>\<langle>N\<rangle>; xP' = P'\<rbrakk> \<Longrightarrow>
+                                         yvec \<sharp>* M; xvec \<sharp>* yvec; x_\<alpha> = M\<lparr>\<nu>*(xvec@y#yvec)\<rparr>\<langle>N\<rangle>; xP' = P'\<rbrakk> \<Longrightarrow>
                                          Prop"
-  and     rScope:  "\<And>P'. \<lbrakk>\<Psi> \<rhd> P \<longmapsto>x\<alpha> \<prec> P'; xP' = \<lparr>\<nu>x\<rparr>P'\<rbrakk> \<Longrightarrow> Prop"
+  and     rScope:  "\<And>P'. \<lbrakk>\<Psi> \<rhd> P \<longmapsto>x_\<alpha> \<prec> P'; xP' = \<lparr>\<nu>x\<rparr>P'\<rbrakk> \<Longrightarrow> Prop"
 
   shows "Prop"
 proof -
-  from Trans have "distinct(bn x\<alpha>)" by(auto dest: boundOutputDistinct)
-  have "length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')" by simp
+  from Trans have "distinct(bn x_\<alpha>)" by(auto dest: boundOutputDistinct)
+  have "length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xP')" by simp
   note Trans
   moreover have "length [] = inputLength(\<lparr>\<nu>x\<rparr>P)" and "distinct []"
     by(auto simp add: inputLength_inputLength'_inputLength''.simps)
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  ultimately show ?thesis using `bn x\<alpha> \<sharp>* \<Psi>` `bn x\<alpha> \<sharp>* P` `bn x\<alpha> \<sharp>* subject x\<alpha>` `x \<sharp> \<Psi>` `x \<sharp> x\<alpha>` `x \<sharp> xP'` `distinct(bn x\<alpha>)` rScope rOpen
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xP')` `distinct(bn x_\<alpha>)`
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xP')` `distinct(bn x_\<alpha>)`
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xP')` `distinct(bn x_\<alpha>)`
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xP')` `distinct(bn x_\<alpha>)`
+  ultimately show ?thesis using `bn x_\<alpha> \<sharp>* \<Psi>` `bn x_\<alpha> \<sharp>* P` `bn x_\<alpha> \<sharp>* subject x_\<alpha>` `x \<sharp> \<Psi>` `x \<sharp> x_\<alpha>` `x \<sharp> xP'` `distinct(bn x_\<alpha>)` rScope rOpen
     apply(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ _ x x]) 
     apply(auto simp add: psi.inject alpha abs_fresh residualInject boundOutputApp boundOutput.inject eqvts)
     apply(subgoal_tac "y \<in> supp Na")
@@ -194,44 +194,44 @@ lemma parCases'[consumes 5, case_names cPar1 cPar2 cComm1 cComm2]:
   and   T    :: "('a, 'b, 'c) psi"
   and   C    :: "'d::fs_name"
 
-  assumes Trans: "\<Psi> \<rhd> P \<parallel> Q \<longmapsto>x\<alpha> \<prec> xT"
-  and     "bn x\<alpha> \<sharp>* \<Psi>"
-  and     "bn x\<alpha> \<sharp>* P"
-  and     "bn x\<alpha> \<sharp>* Q"
-  and     "bn x\<alpha> \<sharp>* subject x\<alpha>"
-  and     rPar1: "\<And>P' A\<^isub>Q \<Psi>\<^isub>Q. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>x\<alpha> \<prec> P';  extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>; distinct A\<^isub>Q;
-                                  A\<^isub>Q \<sharp>* \<Psi>; A\<^isub>Q \<sharp>* P; A\<^isub>Q \<sharp>* Q; A\<^isub>Q \<sharp>* x\<alpha>; A\<^isub>Q \<sharp>* P'; A\<^isub>Q \<sharp>* C; xT = P' \<parallel> Q\<rbrakk> \<Longrightarrow> Prop"
-  and     rPar2: "\<And>Q' A\<^isub>P \<Psi>\<^isub>P. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> Q \<longmapsto>x\<alpha> \<prec> Q';  extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>; distinct A\<^isub>P;
-                                 A\<^isub>P \<sharp>* \<Psi>; A\<^isub>P \<sharp>* P; A\<^isub>P \<sharp>* Q; A\<^isub>P \<sharp>* x\<alpha>; A\<^isub>P \<sharp>* Q'; A\<^isub>P \<sharp>* C; xT = P \<parallel> Q'\<rbrakk> \<Longrightarrow> Prop"
+  assumes Trans: "\<Psi> \<rhd> P \<parallel> Q \<longmapsto>x_\<alpha> \<prec> xT"
+  and     "bn x_\<alpha> \<sharp>* \<Psi>"
+  and     "bn x_\<alpha> \<sharp>* P"
+  and     "bn x_\<alpha> \<sharp>* Q"
+  and     "bn x_\<alpha> \<sharp>* subject x_\<alpha>"
+  and     rPar1: "\<And>P' A\<^isub>Q \<Psi>\<^isub>Q. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>x_\<alpha> \<prec> P';  extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>; distinct A\<^isub>Q;
+                                  A\<^isub>Q \<sharp>* \<Psi>; A\<^isub>Q \<sharp>* P; A\<^isub>Q \<sharp>* Q; A\<^isub>Q \<sharp>* x_\<alpha>; A\<^isub>Q \<sharp>* P'; A\<^isub>Q \<sharp>* C; xT = P' \<parallel> Q\<rbrakk> \<Longrightarrow> Prop"
+  and     rPar2: "\<And>Q' A\<^isub>P \<Psi>\<^isub>P. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> Q \<longmapsto>x_\<alpha> \<prec> Q';  extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>; distinct A\<^isub>P;
+                                 A\<^isub>P \<sharp>* \<Psi>; A\<^isub>P \<sharp>* P; A\<^isub>P \<sharp>* Q; A\<^isub>P \<sharp>* x_\<alpha>; A\<^isub>P \<sharp>* Q'; A\<^isub>P \<sharp>* C; xT = P \<parallel> Q'\<rbrakk> \<Longrightarrow> Prop"
   and     rComm1: "\<And>\<Psi>\<^isub>Q M N P' A\<^isub>P \<Psi>\<^isub>P K xvec Q' A\<^isub>Q.
            \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'; extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>; distinct A\<^isub>P;
             \<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'; extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>; distinct A\<^isub>Q;
             \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K; distinct xvec;
             A\<^isub>P \<sharp>* \<Psi>;  A\<^isub>P \<sharp>* \<Psi>\<^isub>Q;  A\<^isub>P \<sharp>* P;  A\<^isub>P \<sharp>* M;  A\<^isub>P \<sharp>* N;  A\<^isub>P \<sharp>* P';  A\<^isub>P \<sharp>* Q;  A\<^isub>P \<sharp>* xvec;  A\<^isub>P \<sharp>* Q'; A\<^isub>P \<sharp>* A\<^isub>Q;  A\<^isub>P \<sharp>* C; 
             A\<^isub>Q \<sharp>* \<Psi>;  A\<^isub>Q \<sharp>* \<Psi>\<^isub>P; A\<^isub>Q \<sharp>* P;  A\<^isub>Q \<sharp>* K;  A\<^isub>Q \<sharp>* N;  A\<^isub>Q \<sharp>* P';  A\<^isub>Q \<sharp>* Q;  A\<^isub>Q \<sharp>* xvec;  A\<^isub>Q \<sharp>* Q'; A\<^isub>Q \<sharp>* C; 
-            xvec \<sharp>* \<Psi>;  xvec \<sharp>* \<Psi>\<^isub>P; xvec \<sharp>* P;  xvec \<sharp>* M;  xvec \<sharp>* K; xvec \<sharp>* Q;  xvec \<sharp>* \<Psi>\<^isub>Q;  xvec \<sharp>* C; x\<alpha>=\<tau>; xT = \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q')\<rbrakk> \<Longrightarrow> Prop"
+            xvec \<sharp>* \<Psi>;  xvec \<sharp>* \<Psi>\<^isub>P; xvec \<sharp>* P;  xvec \<sharp>* M;  xvec \<sharp>* K; xvec \<sharp>* Q;  xvec \<sharp>* \<Psi>\<^isub>Q;  xvec \<sharp>* C; x_\<alpha>=\<tau>; xT = \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q')\<rbrakk> \<Longrightarrow> Prop"
   and     rComm2: "\<And>\<Psi>\<^isub>Q M xvec N P' A\<^isub>P \<Psi>\<^isub>P K Q' A\<^isub>Q.
            \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'; extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>; distinct A\<^isub>P;
             \<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> Q \<longmapsto>K\<lparr>N\<rparr> \<prec> Q'; extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>; distinct A\<^isub>Q;
             \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K; distinct xvec;
             A\<^isub>P \<sharp>* \<Psi>;  A\<^isub>P \<sharp>* \<Psi>\<^isub>Q;  A\<^isub>P \<sharp>* P;  A\<^isub>P \<sharp>* M;  A\<^isub>P \<sharp>* N;  A\<^isub>P \<sharp>* P';  A\<^isub>P \<sharp>* Q;  A\<^isub>P \<sharp>* xvec;  A\<^isub>P \<sharp>* Q'; A\<^isub>P \<sharp>* A\<^isub>Q;  A\<^isub>P \<sharp>* C; 
             A\<^isub>Q \<sharp>* \<Psi>;  A\<^isub>Q \<sharp>* \<Psi>\<^isub>P; A\<^isub>Q \<sharp>* P;  A\<^isub>Q \<sharp>* K;  A\<^isub>Q \<sharp>* N;  A\<^isub>Q \<sharp>* P';  A\<^isub>Q \<sharp>* Q;  A\<^isub>Q \<sharp>* xvec;  A\<^isub>Q \<sharp>* Q'; A\<^isub>Q \<sharp>* C; 
-            xvec \<sharp>* \<Psi>;  xvec \<sharp>* \<Psi>\<^isub>P; xvec \<sharp>* P;  xvec \<sharp>* M;  xvec \<sharp>* K;  xvec \<sharp>* Q;  xvec \<sharp>* \<Psi>\<^isub>Q;  xvec \<sharp>* C; x\<alpha>=\<tau>; xT = \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q')\<rbrakk> \<Longrightarrow> Prop"
+            xvec \<sharp>* \<Psi>;  xvec \<sharp>* \<Psi>\<^isub>P; xvec \<sharp>* P;  xvec \<sharp>* M;  xvec \<sharp>* K;  xvec \<sharp>* Q;  xvec \<sharp>* \<Psi>\<^isub>Q;  xvec \<sharp>* C; x_\<alpha>=\<tau>; xT = \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q')\<rbrakk> \<Longrightarrow> Prop"
 
   shows "Prop"
 proof -
-  from Trans have "distinct(bn x\<alpha>)" by(auto dest: boundOutputDistinct)
-  have "length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)" by simp
+  from Trans have "distinct(bn x_\<alpha>)" by(auto dest: boundOutputDistinct)
+  have "length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xT)" by simp
   note Trans
   moreover have "length [] = inputLength(P \<parallel> Q)" and "distinct []"
     by(auto simp add: inputLength_inputLength'_inputLength''.simps)
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover obtain x::name where "x \<sharp> \<Psi>" and "x \<sharp> P" and "x \<sharp> Q" and "x \<sharp> x\<alpha>" and "x \<sharp> xT"
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xT)` `distinct(bn x_\<alpha>)`
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xT)` `distinct(bn x_\<alpha>)`
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xT)` `distinct(bn x_\<alpha>)`
+  moreover note `length(bn x_\<alpha>) = residualLength(x_\<alpha> \<prec> xT)` `distinct(bn x_\<alpha>)`
+  moreover obtain x::name where "x \<sharp> \<Psi>" and "x \<sharp> P" and "x \<sharp> Q" and "x \<sharp> x_\<alpha>" and "x \<sharp> xT"
     by(generate_fresh "name") auto
-  ultimately show ?thesis using `bn x\<alpha> \<sharp>* \<Psi>` `bn x\<alpha> \<sharp>* P` `bn x\<alpha> \<sharp>* Q` `bn x\<alpha> \<sharp>* subject x\<alpha>` using rPar1 rPar2 rComm1 rComm2
+  ultimately show ?thesis using `bn x_\<alpha> \<sharp>* \<Psi>` `bn x_\<alpha> \<sharp>* P` `bn x_\<alpha> \<sharp>* Q` `bn x_\<alpha> \<sharp>* subject x_\<alpha>` using rPar1 rPar2 rComm1 rComm2
     by(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ C x x]) (auto simp add: psi.inject residualInject residualInject')
 qed
 

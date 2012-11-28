@@ -743,11 +743,11 @@ fun mpath_weight' :: "(('V,'W) path \<times> 'W) option \<Rightarrow> ('W::weigh
 
 context Dijkstra
 begin
-  definition \<alpha>w::"('V,'W) mwl \<Rightarrow> 'V set" where "\<alpha>w \<equiv> dom"
-  definition \<alpha>r::"('V,'W) mres \<Rightarrow> 'V \<rightharpoonup> ('V,'W) path" where 
-    "\<alpha>r \<equiv> \<lambda>res v. case res v of None \<Rightarrow> None | Some (p,w) \<Rightarrow> Some (rev p)"
-  definition \<alpha>s:: "('V,'W) mstate \<Rightarrow> ('V,'W) state" where
-    "\<alpha>s \<equiv> map_pair \<alpha>w \<alpha>r"
+  definition \<alpha>_w::"('V,'W) mwl \<Rightarrow> 'V set" where "\<alpha>_w \<equiv> dom"
+  definition \<alpha>_r::"('V,'W) mres \<Rightarrow> 'V \<rightharpoonup> ('V,'W) path" where 
+    "\<alpha>_r \<equiv> \<lambda>res v. case res v of None \<Rightarrow> None | Some (p,w) \<Rightarrow> Some (rev p)"
+  definition \<alpha>_s:: "('V,'W) mstate \<Rightarrow> ('V,'W) state" where
+    "\<alpha>_s \<equiv> map_pair \<alpha>_w \<alpha>_r"
 
   text {* Additional invariants for the new state. They guarantee that
     the cached weights are consistent.*}
@@ -760,25 +760,25 @@ begin
       (\<forall>v\<in>dom wl. the (wl v) = mpath_weight' (res v)) \<and> res_invarm res
     "
   lemma mpath_weight'_correct: "\<lbrakk>dinvarm (wl,res)\<rbrakk> \<Longrightarrow>
-    mpath_weight' (res v) = path_weight' (\<alpha>r res v)
+    mpath_weight' (res v) = path_weight' (\<alpha>_r res v)
     "
-    unfolding dinvarm_def res_invarm_def \<alpha>r_def
+    unfolding dinvarm_def res_invarm_def \<alpha>_r_def
     by (auto split: option.split option.split_asm)
 
   lemma mpath'_correct: "\<lbrakk>dinvarm (wl,res)\<rbrakk> \<Longrightarrow>
-    mpath' (res v) = Option.map rev (\<alpha>r res v)"
-    unfolding dinvarm_def \<alpha>r_def
+    mpath' (res v) = Option.map rev (\<alpha>_r res v)"
+    unfolding dinvarm_def \<alpha>_r_def
     by (auto split: option.split option.split_asm)
 
   lemma wl_weight_correct:
     assumes INV: "dinvarm (wl,res)" 
     assumes WLV: "wl v = Some w" 
-    shows "path_weight' (\<alpha>r res v) = w"
+    shows "path_weight' (\<alpha>_r res v) = w"
   proof -
     from INV WLV have "w = mpath_weight' (res v)"
       unfolding dinvarm_def by force
     also from mpath_weight'_correct[OF INV] have 
-      "\<dots> = path_weight' (\<alpha>r res v)" .
+      "\<dots> = path_weight' (\<alpha>_r res v)" .
     finally show ?thesis by simp
   qed
 
@@ -789,14 +789,14 @@ begin
       RETURN (wl(v0\<mapsto>Num 0),[v0 \<mapsto> ([],0)])
     }"
 
-  lemma mdinit_refines: "mdinit \<le> \<Down>(build_rel \<alpha>s dinvarm) dinit"
+  lemma mdinit_refines: "mdinit \<le> \<Down>(build_rel \<alpha>_s dinvarm) dinit"
     unfolding mdinit_def dinit_def
     apply (rule build_rel_SPEC)
     apply (intro FOREACH_rule[where I="\<lambda>it wl. (\<forall>v\<in>V-it. wl v = Some Infty) \<and> 
       dom wl = V-it"]
            refine_vcg)
     apply (auto 
-      simp: \<alpha>s_def \<alpha>w_def \<alpha>r_def dinvarm_def res_invarm_def infty_unbox
+      simp: \<alpha>_s_def \<alpha>_w_def \<alpha>_r_def dinvarm_def res_invarm_def infty_unbox
       split: split_if_asm
     )
     done
@@ -812,10 +812,10 @@ begin
     }"
     
   lemma mpop_min_refines:
-    "\<lbrakk> (\<sigma>,\<sigma>') \<in> build_rel \<alpha>s dinvarm \<rbrakk> \<Longrightarrow> 
+    "\<lbrakk> (\<sigma>,\<sigma>') \<in> build_rel \<alpha>_s dinvarm \<rbrakk> \<Longrightarrow> 
       mpop_min \<sigma> \<le> 
        \<Down>(build_rel 
-          (\<lambda>(v,w,\<sigma>). (v,\<alpha>s \<sigma>)) 
+          (\<lambda>(v,w,\<sigma>). (v,\<alpha>_s \<sigma>)) 
           (\<lambda>(v,w,\<sigma>). dinvarm \<sigma> \<and> w = mpath_weight' (snd \<sigma> v)))
       (pop_min \<sigma>')"
     -- "The two algorithms are structurally different, so we use the
@@ -824,7 +824,7 @@ begin
 
     apply (rule pw_ref_svI)
     apply rule
-    apply (auto simp add: refine_pw_simps \<alpha>s_def \<alpha>w_def
+    apply (auto simp add: refine_pw_simps \<alpha>_s_def \<alpha>_w_def
       split: prod.split prod.split_asm)
 
     apply (auto simp: dinvarm_def) []
@@ -839,15 +839,15 @@ begin
 
   text {* The new update function: *}
   definition "uinvarm v wl res it \<sigma> \<equiv> 
-    uinvar v wl res it (\<alpha>s \<sigma>) \<and> dinvarm \<sigma>"
+    uinvar v wl res it (\<alpha>_s \<sigma>) \<and> dinvarm \<sigma>"
 
   definition mupdate :: "'V \<Rightarrow> 'W infty \<Rightarrow> ('V,'W) mstate \<Rightarrow> ('V,'W) mstate nres"
    where 
     "mupdate v wv \<sigma> \<equiv> do {
-      ASSERT (update_pre v (\<alpha>s \<sigma>) \<and> wv=mpath_weight' (snd \<sigma> v));
+      ASSERT (update_pre v (\<alpha>_s \<sigma>) \<and> wv=mpath_weight' (snd \<sigma> v));
       let (wl,res) = \<sigma>;
       let pv = mpath' (res v);
-      FOREACH\<^bsup>uinvarm v (\<alpha>w wl) (\<alpha>r res)\<^esup> (succ G v) (\<lambda>(w',v') (wl,res). 
+      FOREACH\<^bsup>uinvarm v (\<alpha>_w wl) (\<alpha>_r res)\<^esup> (succ G v) (\<lambda>(w',v') (wl,res). 
         if (wv + Num w' < mpath_weight' (res v')) then do {
           ASSERT (v'\<in>dom wl \<and> pv \<noteq> None);
           RETURN (wl(v'\<mapsto>wv + Num w'),
@@ -857,18 +857,18 @@ begin
     }"
 
   lemma mupdate_refines: 
-    assumes SREF: "(\<sigma>,\<sigma>')\<in>build_rel \<alpha>s dinvarm"
+    assumes SREF: "(\<sigma>,\<sigma>')\<in>build_rel \<alpha>_s dinvarm"
     assumes WV: "wv = mpath_weight' (snd \<sigma> v)"
     assumes VV': "v'=v"
-    shows "mupdate v wv \<sigma> \<le> \<Down>(build_rel \<alpha>s dinvarm) (update' v' \<sigma>')"
+    shows "mupdate v wv \<sigma> \<le> \<Down>(build_rel \<alpha>_s dinvarm) (update' v' \<sigma>')"
   proof (simp only: VV')
     {
       txt {* Show that IF-condition is a refinement: *}
       fix wl res wl' res' it w' v'
-      assume "uinvarm v (\<alpha>w wl) (\<alpha>r res) it (wl',res')" 
+      assume "uinvarm v (\<alpha>_w wl) (\<alpha>_r res) it (wl',res')" 
         and "dinvarm (wl,res)"
       hence "mpath_weight' (res v) + Num w' < mpath_weight' (res' v') \<longleftrightarrow>
-        path_weight' (\<alpha>r res v) + Num w' < path_weight' (\<alpha>r res' v')"
+        path_weight' (\<alpha>_r res v) + Num w' < path_weight' (\<alpha>_r res' v')"
         unfolding uinvarm_def
         by (auto simp add: mpath_weight'_correct)
     } note COND_refine=this
@@ -876,17 +876,17 @@ begin
     {
       txt {* THEN-case: *}
       fix wl res wl' res' it w' v'
-      assume UINV: "uinvarm v (\<alpha>w wl) (\<alpha>r res) it (wl',res')"
+      assume UINV: "uinvarm v (\<alpha>_w wl) (\<alpha>_r res) it (wl',res')"
         and DINV: "dinvarm (wl,res)"
         and "mpath_weight' (res v) + Num w' < mpath_weight' (res' v')"
-        and "path_weight' (\<alpha>r res v) + Num w' < path_weight' (\<alpha>r res' v')"
-        and V'MEM: "v'\<in>\<alpha>w wl'"
-        and NN: "\<alpha>r res v \<noteq> None"
+        and "path_weight' (\<alpha>_r res v) + Num w' < path_weight' (\<alpha>_r res' v')"
+        and V'MEM: "v'\<in>\<alpha>_w wl'"
+        and NN: "\<alpha>_r res v \<noteq> None"
     
       from NN obtain pv wv where
-        ARV: "\<alpha>r res v = Some (rev pv)" and
+        ARV: "\<alpha>_r res v = Some (rev pv)" and
         RV: "res v = Some (pv,wv)" 
-        unfolding \<alpha>r_def by (auto split: option.split_asm)
+        unfolding \<alpha>_r_def by (auto split: option.split_asm)
 
       with DINV have [simp]: "wv = path_weight (rev pv)"
         unfolding dinvarm_def res_invarm_def by (auto split: option.split_asm)
@@ -895,17 +895,17 @@ begin
 
       from V'MEM NN have "v'\<in>dom wl'" (is "?G1") 
         and "mpath' (res v) \<noteq> None" (is "?G2") 
-        unfolding \<alpha>w_def \<alpha>r_def by (auto split: option.split_asm)
+        unfolding \<alpha>_w_def \<alpha>_r_def by (auto split: option.split_asm)
     
-      hence "\<And>x. \<alpha>w wl' = \<alpha>w (wl'(v'\<mapsto>x))" by (auto simp: \<alpha>w_def)
-      moreover have "mpath' (res v) = Option.map rev (\<alpha>r res v)" using DINV 
+      hence "\<And>x. \<alpha>_w wl' = \<alpha>_w (wl'(v'\<mapsto>x))" by (auto simp: \<alpha>_w_def)
+      moreover have "mpath' (res v) = Option.map rev (\<alpha>_r res v)" using DINV 
         by (simp add: mpath'_correct)
       ultimately have
-        "\<alpha>w wl' = \<alpha>w (wl'(v' \<mapsto> mpath_weight' (res v) + Num w')) 
-        \<and> (\<alpha>r res')(v' \<mapsto> the (\<alpha>r res v)@[(v, w', v')]) 
-           = \<alpha>r (res'(v' \<mapsto> ((v, w', v')#the (mpath' (res v)), 
+        "\<alpha>_w wl' = \<alpha>_w (wl'(v' \<mapsto> mpath_weight' (res v) + Num w')) 
+        \<and> (\<alpha>_r res')(v' \<mapsto> the (\<alpha>_r res v)@[(v, w', v')]) 
+           = \<alpha>_r (res'(v' \<mapsto> ((v, w', v')#the (mpath' (res v)), 
                  val (mpath_weight' (res v)) + w')))" (is ?G3)
-        by (auto simp add: \<alpha>r_def intro!: ext)
+        by (auto simp add: \<alpha>_r_def intro!: ext)
       have
         "(dinvarm (wl'(v'\<mapsto>mpath_weight' (res v) + Num w'),
                            res'(v' \<mapsto> ((v,w',v') # the (mpath' (res v)),
@@ -919,17 +919,17 @@ begin
 
     note [refine2] = inj_on_id
 
-    show "mupdate v wv \<sigma> \<le> \<Down>(build_rel \<alpha>s dinvarm) (update' v \<sigma>')" 
+    show "mupdate v wv \<sigma> \<le> \<Down>(build_rel \<alpha>_s dinvarm) (update' v \<sigma>')" 
       using SREF WV
       unfolding mupdate_def update'_def
       apply -
 
       apply (refine_rcg)
       apply simp_all [4]
-      apply (simp add: \<alpha>s_def uinvarm_def)
-      apply (simp_all add: \<alpha>s_def COND_refine THEN_refine(1-2)) [3]
+      apply (simp add: \<alpha>_s_def uinvarm_def)
+      apply (simp_all add: \<alpha>_s_def COND_refine THEN_refine(1-2)) [3]
       using THEN_refine(3,4)
-      apply (auto simp: \<alpha>s_def) []
+      apply (auto simp: \<alpha>_s_def) []
       txt {*The ELSE-case is trivial:*}
       apply simp
       done
@@ -945,14 +945,14 @@ begin
       RETURN res
     }"
 
-  lemma mdijkstra_refines: "mdijkstra \<le> \<Down>(build_rel \<alpha>r res_invarm) dijkstra'"
+  lemma mdijkstra_refines: "mdijkstra \<le> \<Down>(build_rel \<alpha>_r res_invarm) dijkstra'"
   proof -
     note [refine] = mdinit_refines mpop_min_refines mupdate_refines
     show ?thesis
       unfolding mdijkstra_def dijkstra'_def
       apply (refine_rcg)
       apply (simp_all split: prod.split
-        add: \<alpha>s_def \<alpha>w_def dinvarm_def)
+        add: \<alpha>_s_def \<alpha>_w_def dinvarm_def)
       done
   qed
 

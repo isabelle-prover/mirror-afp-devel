@@ -290,11 +290,11 @@ lemma e_less_eq_refl :
 
 lemma e_less_eq_listsum2:
   assumes 
-  "\<forall>x\<in>set (\<alpha>s). snd x \<noteq> Infty"
-  "((), b) \<in> set (\<alpha>s)"
-  shows "e_less_eq (fst (p_unwrap b)) (listsum (map snd (\<alpha>s)))"
+  "\<forall>x\<in>set (\<alpha>_s). snd x \<noteq> Infty"
+  "((), b) \<in> set (\<alpha>_s)"
+  shows "e_less_eq (fst (p_unwrap b)) (listsum (map snd (\<alpha>_s)))"
   apply(insert assms)
-  apply (induct "\<alpha>s")
+  apply (induct "\<alpha>_s")
   apply (auto simp add: zero_def e_less_eq_mon e_less_eq_refl) 
   done
 

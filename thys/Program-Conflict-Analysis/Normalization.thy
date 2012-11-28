@@ -444,13 +444,13 @@ lemma mon_ww_ileq: "w\<preceq>w' \<Longrightarrow> mon_ww fg w \<subseteq> mon_w
   (* TODO: Find some general statement about the property that monitors are computed element-wise and pslit this lemma and move the essential part to ConsInterleave.thy. Maybe the essential part is cil_set ?*)
 lemma mon_ww_cil: 
   "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> mon_ww fg w = mon_ww fg w1 \<union> mon_ww fg w2"
-  by (induct rule: cil_set_induct_fix\<alpha>) auto
+  by (induct rule: cil_set_induct_fix_\<alpha>) auto
 lemma mon_loc_cil: 
   "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> mon_loc fg w = mon_loc fg w1 \<union> mon_loc fg w2"
-  by (induct rule: cil_set_induct_fix\<alpha>) auto
+  by (induct rule: cil_set_induct_fix_\<alpha>) auto
 lemma mon_env_cil: 
   "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> mon_env fg w = mon_env fg w1 \<union> mon_env fg w2"
-  by (induct rule: cil_set_induct_fix\<alpha>) auto
+  by (induct rule: cil_set_induct_fix_\<alpha>) auto
 
 lemma mon_ww_of_le_rem: 
   "mon_ww fg (map le_rem_s w) = mon_loc fg w \<union> mon_env fg w"
@@ -795,39 +795,39 @@ text {*
 *}
 
 definition 
-  "\<alpha>n fg e == if e=[] then ({},{}) else (mon_e fg (hd e), mon_w fg (tl e))"
+  "\<alpha>_n fg e == if e=[] then ({},{}) else (mon_e fg (hd e), mon_w fg (tl e))"
   (* TODO: We could also use a primrec here, this would generate simps- (and induct-) lemmas automatically *)
-lemma \<alpha>n_simps[simp]: 
-  "\<alpha>n fg [] = ({},{})" 
-  "\<alpha>n fg (e#w) = (mon_e fg e, mon_w fg w)"
-  by (unfold \<alpha>n_def, auto)
+lemma \<alpha>_n_simps[simp]: 
+  "\<alpha>_n fg [] = ({},{})" 
+  "\<alpha>_n fg (e#w) = (mon_e fg e, mon_w fg w)"
+  by (unfold \<alpha>_n_def, auto)
 
 -- "We also need an abstraction function for normalized loc/env-paths"
 definition 
-  "\<alpha>nl fg e == \<alpha>n fg (le_rem_s e)"
+  "\<alpha>_nl fg e == \<alpha>_n fg (le_rem_s e)"
 
-lemma \<alpha>nl_def': "\<alpha>nl fg == \<alpha>n fg \<circ> le_rem_s"
-  by (rule eq_reflection[OF ext]) (auto simp add: \<alpha>nl_def)
+lemma \<alpha>_nl_def': "\<alpha>_nl fg == \<alpha>_n fg \<circ> le_rem_s"
+  by (rule eq_reflection[OF ext]) (auto simp add: \<alpha>_nl_def)
 
--- {* These are some ad-hoc simplifications, with the aim at converting @{term "\<alpha>nl"} back to @{term "\<alpha>n"} *}
-lemma \<alpha>nl_simps[simp]: 
-  "\<alpha>nl fg (ENV x) = \<alpha>n fg x" 
-  "\<alpha>nl fg (LOC x) = \<alpha>n fg x"
-  by (unfold \<alpha>nl_def, auto)
-lemma \<alpha>nl_simps1[simp]:
-  "(\<alpha>nl fg) \<circ> ENV = \<alpha>n fg"
-  "(\<alpha>nl fg) \<circ> LOC = \<alpha>n fg"
-  by (unfold \<alpha>nl_def' comp_def) (simp_all)
-lemma \<alpha>n_\<alpha>nl: "(\<alpha>n fg) \<circ> le_rem_s = \<alpha>nl fg"
-  unfolding \<alpha>nl_def'[symmetric] ..
-lemma \<alpha>n_fst_snd[simp]: "fst (\<alpha>n fg w) \<union> snd (\<alpha>n fg w) = mon_w fg w"
+-- {* These are some ad-hoc simplifications, with the aim at converting @{term "\<alpha>_nl"} back to @{term "\<alpha>_n"} *}
+lemma \<alpha>_nl_simps[simp]: 
+  "\<alpha>_nl fg (ENV x) = \<alpha>_n fg x" 
+  "\<alpha>_nl fg (LOC x) = \<alpha>_n fg x"
+  by (unfold \<alpha>_nl_def, auto)
+lemma \<alpha>_nl_simps1[simp]:
+  "(\<alpha>_nl fg) \<circ> ENV = \<alpha>_n fg"
+  "(\<alpha>_nl fg) \<circ> LOC = \<alpha>_n fg"
+  by (unfold \<alpha>_nl_def' comp_def) (simp_all)
+lemma \<alpha>_n_\<alpha>_nl: "(\<alpha>_n fg) \<circ> le_rem_s = \<alpha>_nl fg"
+  unfolding \<alpha>_nl_def'[symmetric] ..
+lemma \<alpha>_n_fst_snd[simp]: "fst (\<alpha>_n fg w) \<union> snd (\<alpha>_n fg w) = mon_w fg w"
   by (induct w) auto
 
-lemma mon_pl_of_\<alpha>nl: "mon_pl (map (\<alpha>nl fg) w) = mon_loc fg w \<union> mon_env fg w"
+lemma mon_pl_of_\<alpha>_nl: "mon_pl (map (\<alpha>_nl fg) w) = mon_loc fg w \<union> mon_env fg w"
   by (induct w) (auto split: el_step.split)
 
-text {* We now derive specialized introduction lemmas for @{text "\<otimes>\<^bsub>\<alpha>n fg\<^esub>"} *}
-lemma cil_\<alpha>n_cons_helper: "mon_pl (map (\<alpha>n fg) wb) = mon_ww fg wb"
+text {* We now derive specialized introduction lemmas for @{text "\<otimes>\<^bsub>\<alpha>_n fg\<^esub>"} *}
+lemma cil_\<alpha>_n_cons_helper: "mon_pl (map (\<alpha>_n fg) wb) = mon_ww fg wb"
   apply (unfold mon_pl_def)
   apply (induct wb)
   apply simp_all
@@ -837,49 +837,49 @@ lemma cil_\<alpha>n_cons_helper: "mon_pl (map (\<alpha>n fg) wb) = mon_ww fg wb"
   apply simp_all
   done
 
-lemma cil_\<alpha>nl_cons_helper: 
-  "mon_pl (map (\<alpha>nl fg) wb) = mon_ww fg (map le_rem_s wb)"
-  by (simp add: \<alpha>n_\<alpha>nl cil_\<alpha>n_cons_helper[symmetric])
+lemma cil_\<alpha>_nl_cons_helper: 
+  "mon_pl (map (\<alpha>_nl fg) wb) = mon_ww fg (map le_rem_s wb)"
+  by (simp add: \<alpha>_n_\<alpha>_nl cil_\<alpha>_n_cons_helper[symmetric])
   
-lemma cil_\<alpha>n_cons1: "\<lbrakk>w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb; fst (\<alpha>n fg e) \<inter> mon_ww fg wb = {}\<rbrakk> 
-  \<Longrightarrow> e#w \<in> e#wa \<otimes>\<^bsub>\<alpha>n fg\<^esub> wb" 
+lemma cil_\<alpha>_n_cons1: "\<lbrakk>w\<in>wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb; fst (\<alpha>_n fg e) \<inter> mon_ww fg wb = {}\<rbrakk> 
+  \<Longrightarrow> e#w \<in> e#wa \<otimes>\<^bsub>\<alpha>_n fg\<^esub> wb" 
   apply (rule cil_cons1)
   apply assumption
-  apply (subst cil_\<alpha>n_cons_helper)
+  apply (subst cil_\<alpha>_n_cons_helper)
   apply assumption
 done
 
-lemma cil_\<alpha>n_cons2: "\<lbrakk>w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb; fst (\<alpha>n fg e) \<inter> mon_ww fg wa = {}\<rbrakk> 
-  \<Longrightarrow> e#w \<in> wa \<otimes>\<^bsub>\<alpha>n fg\<^esub> e#wb" 
+lemma cil_\<alpha>_n_cons2: "\<lbrakk>w\<in>wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb; fst (\<alpha>_n fg e) \<inter> mon_ww fg wa = {}\<rbrakk> 
+  \<Longrightarrow> e#w \<in> wa \<otimes>\<^bsub>\<alpha>_n fg\<^esub> e#wb" 
   apply (rule cil_cons2)
   apply assumption
-  apply (subst cil_\<alpha>n_cons_helper)
+  apply (subst cil_\<alpha>_n_cons_helper)
   apply assumption
 done
 
 subsubsection "Monitors"
 lemma (in flowgraph) ntrs_mon_s: 
   assumes A: "((s,c),e,(s',c'))\<in>ntrs fg" 
-  shows "mon_s fg s' = mon_s fg s \<union> fst (\<alpha>n fg e)"
+  shows "mon_s fg s' = mon_s fg s \<union> fst (\<alpha>_n fg e)"
 proof -
   from A obtain u r p u' w v where DET: "s=u#r" "e=LCall p#w" "((u#r,c),LCall p,(entry fg p#u'#r,c))\<in>trss fg" "(([entry fg p],c),w,([v],c'))\<in>trcl (trss fg)" "s'=v#u'#r" by (blast elim!: ntrs.cases[simplified])
   hence "mon_n fg u = mon_n fg u'" by (auto elim!: trss.cases dest: mon_n_same_proc edges_part)
-  with trss_bot_proc_const[where s="[]" and s'="[]", simplified, OF DET(4)] DET(1,2,5) show ?thesis by (auto simp add: mon_n_def \<alpha>n_def)
+  with trss_bot_proc_const[where s="[]" and s'="[]", simplified, OF DET(4)] DET(1,2,5) show ?thesis by (auto simp add: mon_n_def \<alpha>_n_def)
 qed
 
 corollary (in flowgraph) ntrs_called_mon: 
   assumes A: "((s,c),e,(s',c'))\<in>ntrs fg" 
-  shows "fst (\<alpha>n fg e) \<subseteq> mon_s fg s'" 
+  shows "fst (\<alpha>_n fg e) \<subseteq> mon_s fg s'" 
   using ntrs_mon_s[OF A] by auto
 
 lemma (in flowgraph) ntr_mon_s: 
-  "(c,e,c')\<in>ntr fg \<Longrightarrow> mon_c fg c' = mon_c fg c \<union> fst (\<alpha>n fg e)"
+  "(c,e,c')\<in>ntr fg \<Longrightarrow> mon_c fg c' = mon_c fg c \<union> fst (\<alpha>_n fg e)"
   by (erule gtrE) (auto simp add: mon_c_unconc ntrs_c_no_mon_s ntrs_mon_s)
 
 lemma (in flowgraph) ntrp_mon_s: 
   assumes A: "((s,c),e,(s',c'))\<in>ntrp fg" 
-  shows "mon_c fg ({#s'#}+c') = mon_c fg ({#s#}+c) \<union> fst (\<alpha>nl fg e)"
-  using ntr_mon_s[OF gtrp2gtr_s[OF A]] by (unfold \<alpha>nl_def)
+  shows "mon_c fg ({#s'#}+c') = mon_c fg ({#s#}+c) \<union> fst (\<alpha>_nl fg e)"
+  using ntr_mon_s[OF gtrp2gtr_s[OF A]] by (unfold \<alpha>_nl_def)
 
 
 subsubsection {* Interleaving theorem *}
@@ -895,7 +895,7 @@ lemma (in flowgraph) ntr_split:
   "!!ca cb. \<lbrakk>(ca+cb,w,c')\<in>trcl (ntr fg); valid fg (ca+cb)\<rbrakk> \<Longrightarrow> 
   \<exists>ca' cb' wa wb. 
   c'=ca'+cb' \<and> 
-  w\<in>(wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb) \<and> 
+  w\<in>(wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb) \<and> 
   mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {} \<and> 
   mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa) = {} \<and> 
   (ca,wa,ca')\<in>trcl (ntr fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg)"
@@ -925,7 +925,7 @@ next
     -- " and by the induction hypothesis, we split the path from the intermediate configuration"
     with IHP(1) SPLIT(2) CHVALID obtain ca' cb' wa wb where IHAPP: 
       "c'=ca'+cb'" 
-      "w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb" 
+      "w\<in>wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb" 
       "mon_c fg ({#sh#}+csp+(ca-{#s#})) \<inter> (mon_c fg cb \<union> mon_ww fg wb)={}" 
       "mon_c fg cb \<inter> (mon_c fg ({#sh#}+csp+(ca-{#s#})) \<union> mon_ww fg wa)={}" 
       "({#sh#}+csp+(ca-{#s#}),wa,ca')\<in>trcl (ntr fg)" 
@@ -942,11 +942,11 @@ next
     with IHAPP(5) have "(ca,e#wa,ca')\<in>trcl (ntr fg)" by simp
     moreover
     -- "and that we can prepend the first step to the interleaving"
-    have "e#w \<in> e#wa \<otimes>\<^bsub>\<alpha>n fg\<^esub> wb" 
+    have "e#w \<in> e#wa \<otimes>\<^bsub>\<alpha>_n fg\<^esub> wb" 
     proof -
-      from ntrs_called_mon[OF NTRS(3)] have "fst (\<alpha>n fg e) \<subseteq> mon_s fg sh" .
-      with IHAPP(3) have "fst (\<alpha>n fg e) \<inter> mon_ww fg wb = {}" by (auto simp add: mon_c_unconc) 
-      from cil_\<alpha>n_cons1[OF IHAPP(2) this] show ?thesis .
+      from ntrs_called_mon[OF NTRS(3)] have "fst (\<alpha>_n fg e) \<subseteq> mon_s fg sh" .
+      with IHAPP(3) have "fst (\<alpha>_n fg e) \<inter> mon_ww fg wb = {}" by (auto simp add: mon_c_unconc) 
+      from cil_\<alpha>_n_cons1[OF IHAPP(2) this] show ?thesis .
     qed
     moreover
     -- "and that the monitors of the initial context does not interfere"
@@ -961,7 +961,7 @@ next
     -- "The other case, that is if the first step was made on a thread in the right part of the configuration, is shown completely analogously"
     case right note CASE=this 
     with CEHFMT NTRS have CHFMT: "ch=ca+({#sh#}+csp+(cb-{#s#}))" by (simp add: union_ac)
-    with IHP(1) SPLIT(2) CHVALID obtain ca' cb' wa wb where IHAPP: "c'=ca'+cb'" "w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb" "mon_c fg ca \<inter> (mon_c fg ({#sh#}+csp+(cb-{#s#})) \<union> mon_ww fg wb)={}" 
+    with IHP(1) SPLIT(2) CHVALID obtain ca' cb' wa wb where IHAPP: "c'=ca'+cb'" "w\<in>wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb" "mon_c fg ca \<inter> (mon_c fg ({#sh#}+csp+(cb-{#s#})) \<union> mon_ww fg wb)={}" 
       "mon_c fg ({#sh#}+csp+(cb-{#s#})) \<inter> (mon_c fg ca \<union> mon_ww fg wa)={}" "(ca,wa,ca')\<in>trcl (ntr fg)" "({#sh#}+csp+(cb-{#s#}),wb,cb')\<in>trcl (ntr fg)" 
       by blast
     moreover
@@ -972,11 +972,11 @@ next
     qed
     with IHAPP(6) have PA: "(cb,e#wb,cb')\<in>trcl (ntr fg)" by simp
     moreover
-    have "e#w \<in> wa \<otimes>\<^bsub>\<alpha>n fg\<^esub> e#wb" 
+    have "e#w \<in> wa \<otimes>\<^bsub>\<alpha>_n fg\<^esub> e#wb" 
     proof -
-      from ntrs_called_mon[OF NTRS(3)] have "fst (\<alpha>n fg e) \<subseteq> mon_s fg sh" .
-      with IHAPP(4) have "fst (\<alpha>n fg e) \<inter> mon_ww fg wa = {}" by (auto simp add: mon_c_unconc) 
-      from cil_\<alpha>n_cons2[OF IHAPP(2) this] show ?thesis  .
+      from ntrs_called_mon[OF NTRS(3)] have "fst (\<alpha>_n fg e) \<subseteq> mon_s fg sh" .
+      with IHAPP(4) have "fst (\<alpha>_n fg e) \<inter> mon_ww fg wa = {}" by (auto simp add: mon_c_unconc) 
+      from cil_\<alpha>_n_cons2[OF IHAPP(2) this] show ?thesis  .
     qed
     moreover
     have "mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa) = {}" "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg (e#wb)) = {}" 
@@ -994,7 +994,7 @@ lemma (in flowgraph) ntrp_split: "
   !!s c1 c2 s' c'. 
   \<lbrakk>((s,c1+c2),w,(s',c'))\<in>trcl (ntrp fg); valid fg ({#s#}+c1+c2)\<rbrakk> 
   \<Longrightarrow> \<exists>w1 w2 c1' c2'. 
-        w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> (map ENV w2) \<and> 
+        w \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> (map ENV w2) \<and> 
         c'=c1'+c2' \<and> 
         ((s,c1),w1,(s',c1'))\<in>trcl (ntrp fg) \<and> 
         (c2,w2,c2')\<in>trcl (ntr fg) \<and> 
@@ -1009,9 +1009,9 @@ next
     from ntrs_c_cases_s[OF CASE(2)] obtain csp where CHFMT: "ch=(csp+c1)+c2" "\<And>s. s :# csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (simp add: union_assoc, blast) 
     with c_of_initial_no_mon have CSPNOMON: "mon_c fg csp = {}" by auto
     from ntr_valid_preserve_s[OF gtrI_s, OF CASE(2)] Cons.prems(2) CHFMT have VALID: "valid fg ({#sh#}+(csp+c1)+c2)" by (simp add: union_ac)
-    from Cons.hyps[OF _ VALID, of s' c'] CHFMT(1) SPLIT(2) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> (map ENV w2)" "c' = c1' + c2'" "((sh, csp + c1), w1, s', c1') \<in> trcl (ntrp fg)" 
+    from Cons.hyps[OF _ VALID, of s' c'] CHFMT(1) SPLIT(2) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> (map ENV w2)" "c' = c1' + c2'" "((sh, csp + c1), w1, s', c1') \<in> trcl (ntrp fg)" 
       "(c2, w2, c2') \<in> trcl (ntr fg)" "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg c2 = {}" "mon_ww fg w2 \<inter> mon_c fg ({#sh#} + (csp + c1)) = {}" by blast
-    have "ee#w \<in> ee#w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> (map ENV w2)" proof (rule cil_cons1)
+    have "ee#w \<in> ee#w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> (map ENV w2)" proof (rule cil_cons1)
       from ntrp_mon_env_w_no_ctx[OF SPLIT(2), unfolded mon_env_def] have "mon_ww fg (map le_rem_s (env w)) \<inter> mon_s fg sh = {}" .
       moreover have "mon_ww fg w2 \<subseteq> mon_ww fg (map le_rem_s (env w))" proof - (* TODO: This proof should be shorter and more straightforward *)
         from cil_subset_il IHAPP(1) ileq_interleave have "map ENV w2 \<preceq> w" by blast
@@ -1021,7 +1021,7 @@ next
         thus ?thesis by (rule mon_ww_ileq)
       qed
       ultimately have "mon_ww fg w2 \<inter> mon_s fg sh = {}" by blast
-      with ntrs_mon_s[OF CASE(2)] CASE(1) show "fst (\<alpha>nl fg ee) \<inter> mon_pl (map (\<alpha>nl fg) (map ENV w2)) = {}" by (auto simp add: cil_\<alpha>n_cons_helper)
+      with ntrs_mon_s[OF CASE(2)] CASE(1) show "fst (\<alpha>_nl fg ee) \<inter> mon_pl (map (\<alpha>_nl fg) (map ENV w2)) = {}" by (auto simp add: cil_\<alpha>_n_cons_helper)
     qed (rule IHAPP(1))
     moreover
     have "((s,c1),ee#w1,(s',c1'))\<in>trcl (ntrp fg)" proof -
@@ -1047,15 +1047,15 @@ next
         from ntr_valid_preserve_s[OF gtrI_s, OF CASE(5)] Cons.prems(2) CASE(2) have "valid fg ({#ssh#} + ({#s#} + ceh))" by (simp add: union_assoc) (auto simp add: union_ac)
         with left CEHFMT show ?thesis by (auto simp add: union_ac)
       qed
-      from Cons.hyps[OF _ VALID,of s' c'] CHFMT' SPLIT(2) CASE(3) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "c' = c1' + c2'" 
+      from Cons.hyps[OF _ VALID,of s' c'] CHFMT' SPLIT(2) CASE(3) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV w2" "c' = c1' + c2'" 
         "((s, csp + {#ssh#} + (c1 - {#ss#})), w1, s', c1') \<in> trcl (ntrp fg)" "(c2, w2, c2') \<in> trcl (ntr fg)" 
         "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg c2 = {}" "mon_ww fg w2 \<inter> mon_c fg ({#s#} + (csp + {#ssh#} + (c1 - {#ss#}))) = {}" by blast
-      have "ee # w \<in> (ee#w1) \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" proof (rule cil_cons1)
+      have "ee # w \<in> (ee#w1) \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV w2" proof (rule cil_cons1)
         from IHAPP(6) have "mon_ww fg w2 \<inter> mon_s fg ssh = {}" by (auto simp add: mon_c_unconc)
-        moreover from ntrs_mon_s[OF CASE(5)] CASE(1) have "fst (\<alpha>nl fg ee) \<subseteq> mon_s fg ssh" by auto
-        ultimately have "fst (\<alpha>nl fg ee) \<inter> mon_ww fg w2 = {}" by auto
-        moreover have "mon_pl (map (\<alpha>nl fg) (map ENV w2)) = mon_ww fg w2" by (simp add: cil_\<alpha>n_cons_helper)
-        ultimately show "fst (\<alpha>nl fg ee) \<inter> mon_pl (map (\<alpha>nl fg) (map ENV w2)) = {}" by auto
+        moreover from ntrs_mon_s[OF CASE(5)] CASE(1) have "fst (\<alpha>_nl fg ee) \<subseteq> mon_s fg ssh" by auto
+        ultimately have "fst (\<alpha>_nl fg ee) \<inter> mon_ww fg w2 = {}" by auto
+        moreover have "mon_pl (map (\<alpha>_nl fg) (map ENV w2)) = mon_ww fg w2" by (simp add: cil_\<alpha>_n_cons_helper)
+        ultimately show "fst (\<alpha>_nl fg ee) \<inter> mon_pl (map (\<alpha>_nl fg) (map ENV w2)) = {}" by auto
       qed (rule IHAPP(1))
       moreover 
       have SS: "((s,c1),ee,(s,csp + {#ssh#} + (c1 - {#ss#})))\<in>ntrp fg" proof -
@@ -1079,15 +1079,15 @@ next
         from ntr_valid_preserve_s[OF gtrI_s, OF CASE(5)] Cons.prems(2) CASE(2) have "valid fg ({#ssh#} + ({#s#} + ceh))" by (simp add: union_assoc) (auto simp add: union_ac)
         with right CEHFMT show ?thesis by (auto simp add: union_ac)
       qed
-      from Cons.hyps[OF _ VALID,of s' c'] CHFMT' SPLIT(2) CASE(3) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "c' = c1' + c2'" 
+      from Cons.hyps[OF _ VALID,of s' c'] CHFMT' SPLIT(2) CASE(3) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV w2" "c' = c1' + c2'" 
         "((s, c1), w1, s', c1') \<in> trcl (ntrp fg)" "(csp + {#ssh#} + (c2 - {#ss#}), w2, c2') \<in> trcl (ntr fg)" 
         "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg (csp + {#ssh#} + (c2 - {#ss#})) = {}" "mon_ww fg w2 \<inter> mon_c fg ({#s#} + c1) = {}" by blast
-      have "ee # w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV (e#w2)" proof (simp add: CASE(1), rule cil_cons2)
+      have "ee # w \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV (e#w2)" proof (simp add: CASE(1), rule cil_cons2)
         from IHAPP(5) have "mon_ww fg (map le_rem_s w1) \<inter> mon_s fg ssh = {}" by (auto simp add: mon_c_unconc)
-        moreover from ntrs_mon_s[OF CASE(5)] CASE(1) have "fst (\<alpha>nl fg ee) \<subseteq> mon_s fg ssh" by auto
-        ultimately have "fst (\<alpha>nl fg ee) \<inter> mon_ww fg (map le_rem_s w1) = {}" by auto
-        moreover have "mon_pl (map (\<alpha>nl fg) w1) = mon_ww fg (map le_rem_s w1)" by (unfold \<alpha>nl_def') (simp add: cil_\<alpha>n_cons_helper[symmetric])
-        ultimately show "fst (\<alpha>nl fg (ENV e)) \<inter> mon_pl (map (\<alpha>nl fg) w1) = {}" using CASE(1) by auto
+        moreover from ntrs_mon_s[OF CASE(5)] CASE(1) have "fst (\<alpha>_nl fg ee) \<subseteq> mon_s fg ssh" by auto
+        ultimately have "fst (\<alpha>_nl fg ee) \<inter> mon_ww fg (map le_rem_s w1) = {}" by auto
+        moreover have "mon_pl (map (\<alpha>_nl fg) w1) = mon_ww fg (map le_rem_s w1)" by (unfold \<alpha>_nl_def') (simp add: cil_\<alpha>_n_cons_helper[symmetric])
+        ultimately show "fst (\<alpha>_nl fg (ENV e)) \<inter> mon_pl (map (\<alpha>_nl fg) w1) = {}" using CASE(1) by auto
       qed (rule IHAPP(1))
       moreover 
       have SS: "(c2,e,csp + {#ssh#} + (c2 - {#ss#}))\<in>ntr fg" proof -
@@ -1113,7 +1113,7 @@ lemma (in flowgraph) ntr_split':
   and VALID: "valid fg (ca+cb)" 
   shows "\<exists>ca' cb' wa wb. 
     c'=ca'+cb' \<and> 
-    w\<in>(wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb) \<and> 
+    w\<in>(wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb) \<and> 
     mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {} \<and> 
     mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa) = {} \<and> 
     (ca,wa,ca')\<in>trcl (ntr fg) \<and> 
@@ -1124,9 +1124,9 @@ next
   case (add s cae) hence CASE: "ca+cb={#s#}+(cae+cb)" by (simp add: union_ac) 
   with ntrs.gtr2gtrp A obtain s' ce' ww where NTRP: "c'={#s'#}+ce'" "w=map le_rem_s ww" "((s,cae+cb),ww,(s',ce'))\<in>trcl (ntrp fg)" by (simp, blast)
   from ntrp_split[OF NTRP(3)] VALID CASE obtain w1 w2 c1' c2' where LEM:
-    "ww \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "ce' = c1' + c2'" "((s, cae), w1, s', c1') \<in> trcl (ntrp fg)" "(cb, w2, c2') \<in> trcl (ntr fg)" "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg cb = {}" "mon_ww fg w2 \<inter> mon_c fg ({#s#} + cae) = {}"
+    "ww \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV w2" "ce' = c1' + c2'" "((s, cae), w1, s', c1') \<in> trcl (ntrp fg)" "(cb, w2, c2') \<in> trcl (ntr fg)" "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg cb = {}" "mon_ww fg w2 \<inter> mon_c fg ({#s#} + cae) = {}"
     by (auto simp add: union_ac)
-  from cil_map[OF LEM(1)[unfolded \<alpha>nl_def']] NTRP(2) have "w \<in> map le_rem_s w1 \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2" by auto
+  from cil_map[OF LEM(1)[unfolded \<alpha>_nl_def']] NTRP(2) have "w \<in> map le_rem_s w1 \<otimes>\<^bsub>\<alpha>_n fg\<^esub> w2" by auto
   moreover from gtrp2gtr[OF LEM(3)] add NTRP(1) LEM(2) have "(ca,map le_rem_s w1,{#s'#}+c1')\<in>trcl (ntr fg)" "c'=({#s'#}+c1') + c2'" by (simp_all add: union_ac)
   moreover from add LEM(6) have "mon_c fg ca \<inter> mon_ww fg w2 = {}" by (auto simp add: union_ac)
   with VALID have "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg w2) = {}" by (auto simp add: valid_unconc)
@@ -1138,7 +1138,7 @@ qed
 text {* The unsplit lemma combines two interleavable executions. For illustration purposes, we first prove the less general version for multiset-configurations.
   The general version for loc/env-configurations is shown later. *}   
 lemma (in flowgraph) ntr_unsplit: 
-  assumes A: "w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb" and 
+  assumes A: "w\<in>wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb" and 
   B: "(ca,wa,ca')\<in>trcl (ntr fg)" 
   "(cb,wb,cb')\<in>trcl (ntr fg)" 
   "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb)={}" 
@@ -1149,13 +1149,13 @@ proof -
   from A have "\<forall>ca cb. (ca,wa,ca')\<in>trcl (ntr fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg) \<and> mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb)={} \<and> mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa)={} \<longrightarrow> 
     (ca+cb,w,ca'+cb')\<in>trcl (ntr fg)"
   -- "We prove the generalized goal by induction over the structure of consistent interleaving"
-  proof (induct rule: cil_set_induct_fix\<alpha>) 
+  proof (induct rule: cil_set_induct_fix_\<alpha>) 
     -- "If both words are empty, the proposition is trivial"
     case empty thus ?case by simp 
   next
     -- "The first macrostep of the combined path was taken from the left operand of the interleaving"
     case (left e w' w1' w2) thus ?case proof (intro allI impI) 
-      case (goal1 ca cb) hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2" "fst (\<alpha>n fg e) \<inter> mon_pl (map (\<alpha>n fg) w2) = {}" 
+      case (goal1 ca cb) hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>_n fg\<^esub> w2" "fst (\<alpha>_n fg e) \<inter> mon_pl (map (\<alpha>_n fg) w2) = {}" 
         "!!ca cb.
            \<lbrakk>(ca, w1', ca') \<in> trcl (ntr fg);
            (cb, w2, cb') \<in> trcl (ntr fg);
@@ -1172,7 +1172,7 @@ proof -
       also
       -- "The rest of the path is combined by using the induction hypothesis"
       have "(cah + cb, w', ca' + cb') \<in> trcl (ntr fg)" proof - 
-        from I(2,6,7) ntr_mon_s[OF SPLIT(1)] have MON_CAH: "mon_c fg cah \<inter> (mon_c fg cb \<union> mon_ww fg w2) = {}" by (cases e) (auto simp add: cil_\<alpha>n_cons_helper) 
+        from I(2,6,7) ntr_mon_s[OF SPLIT(1)] have MON_CAH: "mon_c fg cah \<inter> (mon_c fg cb \<union> mon_ww fg w2) = {}" by (cases e) (auto simp add: cil_\<alpha>_n_cons_helper) 
         with I(7) have MON_CB: "mon_c fg cb \<inter> (mon_c fg cah \<union> mon_ww fg w1') = {}" by auto
         from I(3)[OF SPLIT(2) I(5) MON_CAH MON_CB] show ?thesis .
       qed
@@ -1181,7 +1181,7 @@ proof -
   next
     -- "The first macrostep of the combined path was taken from the right path -- this case is done completely analogous"
     case (right e w' w2' w1) thus ?case proof (intro allI impI) 
-      case (goal1 ca cb) hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2'" "fst (\<alpha>n fg e) \<inter> mon_pl (map (\<alpha>n fg) w1) = {}" 
+      case (goal1 ca cb) hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>_n fg\<^esub> w2'" "fst (\<alpha>_n fg e) \<inter> mon_pl (map (\<alpha>_n fg) w1) = {}" 
         "!!ca cb.
            \<lbrakk>(ca, w1, ca') \<in> trcl (ntr fg);
            (cb, w2', cb') \<in> trcl (ntr fg);
@@ -1195,7 +1195,7 @@ proof -
       from ntr_add_context_s[OF SPLIT(1), where cn=ca] I(6) have "(ca + cb, e, ca + cbh) \<in> ntr fg" by (auto simp add: union_commute)
       also
       have "(ca + cbh, w', ca' + cb') \<in> trcl (ntr fg)" proof -
-        from I(2,6,7) ntr_mon_s[OF SPLIT(1)] have MON_CBH: "mon_c fg cbh \<inter> (mon_c fg ca \<union> mon_ww fg w1) = {}" by (cases e) (auto simp add: cil_\<alpha>n_cons_helper)
+        from I(2,6,7) ntr_mon_s[OF SPLIT(1)] have MON_CBH: "mon_c fg cbh \<inter> (mon_c fg ca \<union> mon_ww fg w1) = {}" by (cases e) (auto simp add: cil_\<alpha>_n_cons_helper)
         with I(6) have MON_CA: "mon_c fg ca \<inter> (mon_c fg cbh \<union> mon_ww fg w2') = {}" by auto
         from I(3)[OF I(4) SPLIT(2) MON_CA MON_CBH] show ?thesis .
       qed
@@ -1207,7 +1207,7 @@ qed
 
 
 lemma (in flowgraph) ntrp_unsplit: 
-  assumes A: "w\<in>wa\<otimes>\<^bsub>\<alpha>nl fg\<^esub> (map ENV wb)" and
+  assumes A: "w\<in>wa\<otimes>\<^bsub>\<alpha>_nl fg\<^esub> (map ENV wb)" and
   B: "((s,ca),wa,(s',ca'))\<in>trcl (ntrp fg)" 
   "(cb,wb,cb')\<in>trcl (ntr fg)" 
   "mon_c fg ({#s#}+ca) \<inter> (mon_c fg cb \<union> mon_ww fg wb)={}" 
@@ -1215,15 +1215,15 @@ lemma (in flowgraph) ntrp_unsplit:
   shows "((s,ca+cb),w,(s',ca'+cb'))\<in>trcl (ntrp fg)"
 proof -
   { fix wb'
-    have "w\<in>wa\<otimes>\<^bsub>\<alpha>nl fg\<^esub>wb' \<Longrightarrow> 
+    have "w\<in>wa\<otimes>\<^bsub>\<alpha>_nl fg\<^esub>wb' \<Longrightarrow> 
       \<forall>s ca cb wb. wb'=map ENV wb \<and> 
       ((s,ca),wa,(s',ca'))\<in>trcl (ntrp fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg) \<and> mon_c fg ({#s#}+ca) \<inter> (mon_c fg cb \<union> mon_ww fg wb)={} \<and> mon_c fg cb \<inter> (mon_c fg ({#s#}+ca) \<union> mon_ww fg (map le_rem_s wa))={} \<longrightarrow> 
       ((s,ca+cb),w,(s',ca'+cb'))\<in>trcl (ntrp fg)" 
-    proof (induct rule: cil_set_induct_fix\<alpha>)
+    proof (induct rule: cil_set_induct_fix_\<alpha>)
       case empty thus ?case by simp
     next
       case (left e w' w1' w2) thus ?case proof (intro allI impI)
-        case (goal1 s ca cb wb) hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>nl fg\<^esub> w2" "fst (\<alpha>nl fg e) \<inter> mon_pl (map (\<alpha>nl fg) w2) = {}"
+        case (goal1 s ca cb wb) hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> w2" "fst (\<alpha>_nl fg e) \<inter> mon_pl (map (\<alpha>_nl fg) w2) = {}"
           "!!s ca cb wb. \<lbrakk>
             w2 = map ENV wb;
             ((s, ca), w1', s', ca') \<in> trcl (ntrp fg);
@@ -1241,14 +1241,14 @@ proof -
         from ntrp_add_context_s[OF SPLIT(1), of cb] I(8) have "((s, ca + cb), e, sh, cah + cb) \<in> ntrp fg" by auto
         also have "((sh,cah+cb),w',(s',ca'+cb'))\<in>trcl (ntrp fg)" proof (rule I(3))
           from ntrp_mon_s[OF SPLIT(1)] I(2,4,7,8) show 1: "mon_c fg ({#sh#} + cah) \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {}"
-            by (cases e) (case_tac a, simp add: cil_\<alpha>n_cons_helper, fastforce simp add: cil_\<alpha>n_cons_helper)+ (* FIXME: Ughly apply-script style proof *)
+            by (cases e) (case_tac a, simp add: cil_\<alpha>_n_cons_helper, fastforce simp add: cil_\<alpha>_n_cons_helper)+ (* FIXME: Ughly apply-script style proof *)
           from I(8) 1 show "mon_c fg cb \<inter> (mon_c fg ({#sh#} + cah) \<union> mon_ww fg (map le_rem_s w1')) = {}" by auto
         qed (auto simp add: I(4,6) SPLIT(2)) 
         finally show ?case .
       qed
     next
       case (right ee w' w2' w1) thus ?case proof (intro allI impI)
-        case (goal1 s ca cb wb) hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> w2'" "fst (\<alpha>nl fg ee) \<inter> mon_pl (map (\<alpha>nl fg) w1) = {}"
+        case (goal1 s ca cb wb) hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> w2'" "fst (\<alpha>_nl fg ee) \<inter> mon_pl (map (\<alpha>_nl fg) w1) = {}"
           "!!s ca cb wb. \<lbrakk>
             w2' = map ENV wb;
             ((s, ca), w1, s', ca') \<in> trcl (ntrp fg);
@@ -1271,7 +1271,7 @@ proof -
         qed
         also have "((s,ca+cbh),w',(s',ca'+cb'))\<in>trcl (ntrp fg)" proof (rule I(3))
           from ntr_mon_s[OF SPLIT(1)] I(2,4,7,8) EE(2) show 1: "mon_c fg cbh \<inter> (mon_c fg ({#s#} + ca) \<union> mon_ww fg (map le_rem_s w1)) = {}"
-            by (cases e) (simp add: cil_\<alpha>nl_cons_helper, fastforce simp add: cil_\<alpha>nl_cons_helper) (* FIXME: Ughly apply-script style proof *)
+            by (cases e) (simp add: cil_\<alpha>_nl_cons_helper, fastforce simp add: cil_\<alpha>_nl_cons_helper) (* FIXME: Ughly apply-script style proof *)
           from I(7) 1 EE(1) show "mon_c fg ({#s#} + ca) \<inter> (mon_c fg cbh \<union> mon_ww fg wb') = {}" by auto
         qed (auto simp add: EE(3) I(5) SPLIT(2)) 
         finally show ?case .
@@ -1288,7 +1288,7 @@ theorem (in flowgraph) ntr_interleave: "valid fg (ca+cb) \<Longrightarrow>
   (ca+cb,w,c')\<in>trcl (ntr fg) \<longleftrightarrow> 
   (\<exists>ca' cb' wa wb. 
     c'=ca'+cb' \<and> 
-    w\<in>(wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb) \<and> 
+    w\<in>(wa\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wb) \<and> 
     mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {} \<and> 
     mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa) = {} \<and> 
     (ca,wa,ca')\<in>trcl (ntr fg) \<and> (cb,wb,cb')\<in>trcl (ntr fg))"
@@ -1299,7 +1299,7 @@ theorem (in flowgraph) ntrp_interleave:
   "valid fg ({#s#}+c1+c2) \<Longrightarrow> 
   ((s,c1+c2),w,(s',c'))\<in>trcl (ntrp fg) \<longleftrightarrow> 
   (\<exists>w1 w2 c1' c2'. 
-    w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> (map ENV w2) \<and> 
+    w \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> (map ENV w2) \<and> 
     c'=c1'+c2' \<and> 
     ((s,c1),w1,(s',c1'))\<in>trcl (ntrp fg) \<and> 
     (c2,w2,c2')\<in>trcl (ntr fg) \<and> 
@@ -1328,7 +1328,7 @@ lemma (in flowgraph) ntr_reverse_split: "!!w s' ce'. \<lbrakk>
   \<exists>s ce w1 w2 ce1' ce2'. 
     c={#s#}+ce \<and> 
     ce'=ce1'+ce2' \<and> 
-    w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub> w2 \<and> 
+    w\<in>w1\<otimes>\<^bsub>\<alpha>_n fg\<^esub> w2 \<and> 
     mon_s fg s \<inter> (mon_c fg ce \<union> mon_ww fg w2) = {} \<and> 
     mon_c fg ce \<inter> (mon_s fg s \<union> mon_ww fg w1) = {} \<and> 
     ({#s#},w1,{#s'#}+ce1')\<in>trcl (ntr fg) \<and> 
@@ -1343,7 +1343,7 @@ next
   case (add ce s)
   -- "We split the path by this initial configuration"
   from ntr_split[OF add.prems(1,2)] obtain ce1' ce2' w1 w2 where 
-    SPLIT: "{#s'#}+ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w2" 
+    SPLIT: "{#s'#}+ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w2" 
     "mon_c fg ce \<inter> (mon_s fg s\<union>mon_ww fg w1) = {}" 
     "mon_s fg s \<inter> (mon_c fg ce \<union> mon_ww fg w2) = {}" 
     "({#s#},w1,ce1')\<in>trcl (ntr fg)" 
@@ -1363,14 +1363,14 @@ next
       IHAPP: 
       "ce={#st#}+cet" 
       "ce2'-{#s'#} = ce21'+ce22'" 
-      "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" 
+      "w2\<in>w21\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w22" 
       "mon_s fg st \<inter> (mon_c fg cet \<union> mon_ww fg w22)={}" 
       "mon_c fg cet \<inter> (mon_s fg st \<union> mon_ww fg w21)={}" 
       "({#st#},w21,{#s'#}+ce21')\<in>trcl (ntr fg)" 
       "(cet,w22,ce22')\<in>trcl (ntr fg)" by blast 
     
     -- {* And finally we add the path from @{term s} again. This requires some monitor sorting and the associativity of the consistent interleaving operator. *}
-    from cil_assoc2 [of w w1 _ w2 w22 w21] SPLIT(2) IHAPP(3) obtain wl where CASSOC: "w\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>wl" "wl\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" by (auto simp add: cil_commute)
+    from cil_assoc2 [of w w1 _ w2 w22 w21] SPLIT(2) IHAPP(3) obtain wl where CASSOC: "w\<in>w21\<otimes>\<^bsub>\<alpha>_n fg\<^esub>wl" "wl\<in>w1\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w22" by (auto simp add: cil_commute)
     from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have COMBINE: "({#s#} + cet, wl, ce1' + ce22') \<in> trcl (ntr fg)" by (rule_tac ntr_unsplit[OF CASSOC(2) SPLIT(5) IHAPP(7)]) (auto simp add: mon_c_unconc mon_ww_cil) 
     moreover from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have "mon_s fg st \<inter> (mon_c fg ({#s#}+cet) \<union> mon_ww fg wl) = {}" "mon_c fg ({#s#}+cet) \<inter> (mon_s fg st \<union> mon_ww fg w21) = {}" by (auto simp add: mon_c_unconc mon_ww_cil)
     moreover from right IHAPP(1,2) have "{#s#}+ce={#st#}+({#s#}+cet)" "ce'=ce21'+(ce1'+ce22')" by (simp_all add: union_ac)

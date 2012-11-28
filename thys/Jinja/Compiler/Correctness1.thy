@@ -492,7 +492,7 @@ done
 text{*\noindent and the correct block numbering: *}
 
 lemma \<B>: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B> (compE\<^isub>1 Vs e) n"
-and \<B>s: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B>s (compEs\<^isub>1 Vs es) n"
+and \<B>_list: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B>s (compEs\<^isub>1 Vs es) n"
 (*<*)by(induct e and es) simp_all(*>*)
 
 text{* The main complication is preservation of definite assignment
