@@ -110,7 +110,7 @@ lemma space_in_S_seq[measurable]: "UNIV \<rightarrow> S \<in> sets S_seq"
   using sets.top[of S_seq] by (simp add: space_PiM PiE_def)
 
 lemma measurable_Collect_Pi[measurable (raw)]: 
-  "Sigma_Algebra.pred S_seq P \<Longrightarrow> {\<omega>\<in>UNIV \<rightarrow> S. P \<omega>} \<in> sets S_seq"
+  "Measurable.pred S_seq P \<Longrightarrow> {\<omega>\<in>UNIV \<rightarrow> S. P \<omega>} \<in> sets S_seq"
   unfolding pred_def by (simp add: space_PiM PiE_def)
 
 lemma AE_all_in_S: "AE \<omega> in paths s. \<forall>i. \<omega> i \<in> S"

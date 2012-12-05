@@ -54,9 +54,9 @@ lemma nat_boundary_cases[case_names less add]:
 lemma
   fixes S :: "'s set"
   assumes S: "countable S"
-  assumes P[measurable]: "\<And>s. s \<in> S \<Longrightarrow> Sigma_Algebra.pred M (P s)"
-  shows sets_Collect_All_S[measurable (raw)]: "Sigma_Algebra.pred M (\<lambda>x. \<forall>s\<in>S. P s x)" (is ?ALL)
-    and sets_Collect_Ex_S[measurable (raw)]: "Sigma_Algebra.pred M (\<lambda>x. \<exists>s\<in>S. P s x)" (is ?EX)
+  assumes P[measurable]: "\<And>s. s \<in> S \<Longrightarrow> Measurable.pred M (P s)"
+  shows sets_Collect_All_S[measurable (raw)]: "Measurable.pred M (\<lambda>x. \<forall>s\<in>S. P s x)" (is ?ALL)
+    and sets_Collect_Ex_S[measurable (raw)]: "Measurable.pred M (\<lambda>x. \<exists>s\<in>S. P s x)" (is ?EX)
 proof -
   let ?f = "from_nat_into S"
   have *: 
