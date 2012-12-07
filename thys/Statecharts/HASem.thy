@@ -132,7 +132,7 @@ definition
 
 definition
   ET :: "('s,'e,'d) status => (('s,'e,'d) trans) set" where
-  "ET ST == \<Union> SA \<in> SAs (HA ST). EnabledTrans `` {ST} `` {SA}"
+  "ET ST == \<Union> SA \<in> SAs (HA ST). (EnabledTrans `` {ST}) `` {SA}"
 
 (* -------------------------------------------------------------- *)
 (* maximal non conflicting set of transitions                     *)
