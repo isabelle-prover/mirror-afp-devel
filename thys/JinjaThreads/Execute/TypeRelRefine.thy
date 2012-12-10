@@ -9,7 +9,11 @@ header {* \isaheader{Tabulation for lookup functions} *}
 theory TypeRelRefine
 imports
   "../Common/TypeRel"
-  "workaround/AList_Mapping"
+  "~~/src/HOL/Library/AList_Mapping"
+  "~~/src/HOL/Library/Quotient_Product"
+  "~~/src/HOL/Library/Quotient_List"
+  "~~/src/HOL/Library/Quotient_Option"
+  "~~/src/HOL/Library/Quotient_Set"
 begin
 
 subsection {* Auxiliary lemmata *}
@@ -27,29 +31,23 @@ by(induct xs) auto
 lemma map_of_map_K: "map_of (map (\<lambda>k. (k, c)) xs) k = (if k \<in> set xs then Some c else None)"
 by(induct xs) auto
 
-definition map_values :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'c) mapping"
-where "map_values f m = Mapping.Mapping (\<lambda>k. Option.map (f k) (Mapping.lookup m k))"
+lift_definition map_values :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'c) mapping"
+is "\<lambda>f m k. Option.map (f k) (m k)" .
 
 lemma map_values_Mapping [simp]: 
-"map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. Option.map (f k) (m k))"
-by(rule mapping_eqI)(simp add: map_values_def)
+  "map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. Option.map (f k) (m k))"
+by(rule map_values.abs_eq)
 
-definition assoc_list_to_mapping :: "('k \<times> 'v) list \<Rightarrow> ('k, 'v) mapping"
-where "assoc_list_to_mapping xs = Mapping.Mapping (map_of xs)"
+lift_definition assoc_list_to_mapping :: "('k \<times> 'v) list \<Rightarrow> ('k, 'v) mapping"
+is map_of .
 
 lemma assoc_list_to_mapping_code [code]:
   "assoc_list_to_mapping xs = foldr (\<lambda>(k, v) m. Mapping.update k v m) xs Mapping.empty"
   (is "?lhs = ?rhs")
-proof -
-  have "?lhs = Mapping.Mapping (foldr (\<lambda>(k, v) m. m(k \<mapsto> v)) xs empty)"
-    by(simp add: assoc_list_to_mapping_def) (metis empty_map_add map_add_map_of_foldr)
-  moreover have "?rhs = \<dots>"
-    by(induct xs)(auto simp add: Mapping.empty_def Mapping.update_def simp del: fun_upd_apply)
-  ultimately show ?thesis by simp
-qed
+by transfer(simp add: map_add_map_of_foldr[symmetric])
 
 lemma map_Mapping: "Mapping.map f g (Mapping.Mapping m) = Mapping.Mapping (Option.map g \<circ> m \<circ> f)"
-by(rule mapping_eqI) simp
+by(rule map.abs_eq)
 
 abbreviation subclst :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"
 where "subclst P \<equiv> (subcls1 P)^++"
@@ -64,32 +62,26 @@ type_synonym
    (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping \<times> 
    (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
 
-definition tabulate_class :: "'m cdecl list \<Rightarrow> (cname, 'm class) mapping"
-where "tabulate_class P = Mapping.Mapping (class (Program P))"
+lift_definition tabulate_class :: "'m cdecl list \<Rightarrow> (cname, 'm class) mapping"
+is "class \<circ> Program" .
 
-definition tabulate_subcls :: "'m cdecl list \<Rightarrow> (cname, cname set) mapping"
-where 
-  "tabulate_subcls P = 
-  Mapping.Mapping 
-    (\<lambda>C. if is_class (Program P) C then
-        Some {D. Program P \<turnstile> C \<preceq>\<^sup>* D} 
-      else None)"
+lift_definition tabulate_subcls :: "'m cdecl list \<Rightarrow> (cname, cname set) mapping"
+is "\<lambda>P C. if is_class (Program P) C then Some {D. Program P \<turnstile> C \<preceq>\<^sup>* D} else None" .
 
-definition tabulate_sees_field :: "'m cdecl list \<Rightarrow> (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping"
-where
-  "tabulate_sees_field P =
-  Mapping.Mapping
-    (\<lambda>C. if is_class (Program P) C then
-        Some (Mapping.Mapping (\<lambda>F. if \<exists>T fm D. Program P \<turnstile> C sees F:T (fm) in D then Some (field (Program P) C F) else None)) 
-      else None)"
+lemma bi_total_relcompp_converseI: "bi_total R \<Longrightarrow> (R OO op = OO R\<inverse>\<inverse>) x x"
+by (metis (full_types) bi_total_def conversep_iff relcomppI)
 
-definition tabulate_Method :: "'m cdecl list \<Rightarrow> (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
-where
-  "tabulate_Method P =
-  Mapping.Mapping 
-    (\<lambda>C. if is_class (Program P) C then
-         Some (Mapping.Mapping (\<lambda>M. if \<exists>Ts T mthd D. Program P \<turnstile> C sees M:Ts\<rightarrow>T=mthd in D then Some (method (Program P) C M) else None))
-      else None)"
+lift_definition tabulate_sees_field :: "'m cdecl list \<Rightarrow> (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping"
+is "\<lambda>P C. if is_class (Program P) C then
+        Some (\<lambda>F. if \<exists>T fm D. Program P \<turnstile> C sees F:T (fm) in D then Some (field (Program P) C F) else None)
+      else None"
+by(intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total)
+
+lift_definition tabulate_Method :: "'m cdecl list \<Rightarrow> (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
+is "\<lambda>P C. if is_class (Program P) C then
+         Some (\<lambda>M. if \<exists>Ts T mthd D. Program P \<turnstile> C sees M:Ts\<rightarrow>T=mthd in D then Some (method (Program P) C M) else None)
+      else None"
+by(intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total)
 
 fun wf_prog_impl' :: "'m prog_impl' \<Rightarrow> bool"
 where
@@ -101,11 +93,49 @@ where
 
 subsection {* Implementation type for tabulated lookup functions *}
 
+lemma option_rel_conversep: "option_rel R\<inverse>\<inverse> = (option_rel R)\<inverse>\<inverse>"
+  (is "?lhs = ?rhs")
+proof(rule ext)+
+  fix x y
+  show "?lhs x y = ?rhs x y"
+    by(cases "(R, y, x)" rule: option_rel.cases) simp_all
+qed
+
+lemma fun_rel_conversep: "fun_rel A\<inverse>\<inverse> B\<inverse>\<inverse> = (fun_rel A B)\<inverse>\<inverse>"
+by(blast intro!: ext dest: fun_relD)
+
+lemma [transfer_rule]: 
+  "(cr_mapping ===> (op = ===> option_rel cr_mapping) OO cr_mapping ===> op =)
+     (op = ===> option_rel (cr_mapping)\<inverse>\<inverse>) op ="
+apply(subst (3) conversep_eq[symmetric])
+apply(unfold option_rel_conversep fun_rel_conversep)
+apply(rule fun_relI)+
+apply(erule relcomppE)
+ apply(rule iffI)
+ apply(case_tac y)
+ apply(case_tac ya)
+ apply(clarsimp simp add: cr_mapping_def Mapping_inject Mapping_inverse)
+ apply(rule ext)
+ apply(drule_tac x=x in fun_relD, rule refl)
+ apply(drule_tac x=x in fun_relD, rule refl)
+ apply(case_tac "xa x")
+ apply(case_tac [1-2] "yc x")
+ apply(case_tac [1-4] "yb x")
+ apply(simp_all add: Mapping.rep_inject)[8]
+apply simp
+apply(rule fun_relI)
+apply(drule (1) fun_relD)
+apply(case_tac "xa yb")
+apply(case_tac [1-2] "b yb")
+apply(case_tac [1-4] "x yb")
+apply(simp_all add: cr_mapping_def)
+done
+
 typedef 'm prog_impl = "{P :: 'm prog_impl'. wf_prog_impl' P}"
   morphisms impl_of ProgRefine 
 proof
   show "([], Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None)) \<in> ?prog_impl"
-    by(auto simp add: fun_eq_iff is_class_def tabulate_class_def tabulate_subcls_def tabulate_sees_field_def tabulate_Method_def)
+    by clarsimp(transfer, simp_all add: fun_eq_iff is_class_def fun_relI)
 qed
 
 lemma impl_of_ProgImpl [simp]:
@@ -139,7 +169,7 @@ lemma classes_program [code]: "classes (program P) = fst (impl_of P)"
 by(simp add: program_def)
 
 lemma class_program [code]: "class (program Pi) = Mapping.lookup (fst (snd (impl_of Pi)))"
-by(cases Pi)(clarsimp simp add: tabulate_class_def)
+by(cases Pi)(clarsimp simp add: tabulate_class_def lookup.rep_eq Mapping_inverse)
 
 subsection {* Refining sub class and lookup functions to use precomputed mappings *}
 
@@ -151,7 +181,7 @@ lemma subcls'_program [code]:
   (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> False
    | Some m \<Rightarrow> D \<in> m)"
 apply(cases Pi)
-apply(clarsimp simp add: subcls'_def tabulate_subcls_def)
+apply(clarsimp simp add: subcls'_def tabulate_subcls_def lookup.rep_eq Mapping_inverse)
 apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 done
 
@@ -162,7 +192,7 @@ by(rule pred_eqI)(auto elim: subcls'_i_i_iE intro: subcls'_i_i_iI)
 lemma subcls'_i_i_o_program [code]:
   "subcls'_i_i_o (program Pi) C = 
   sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_set m)"
-by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
+by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def lookup.rep_eq Mapping_inverse intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
 lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_unfold]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
@@ -177,7 +207,7 @@ lemma Method_program [code]:
     (case Mapping.lookup m M of 
        None \<Rightarrow> False
      | Some (D', Ts', T', meth') \<Rightarrow> Ts = Ts' \<and> T = T' \<and> meth = meth' \<and> D = D'))"
-by(cases Pi)(auto split: split_if_asm dest: sees_method_is_class simp add: tabulate_Method_def)
+by(cases Pi)(auto split: split_if_asm dest: sees_method_is_class simp add: tabulate_Method_def lookup.rep_eq Mapping_inverse)
 
 lemma Method_i_i_i_o_o_o_o_program [code]:
   "Method_i_i_i_o_o_o_o (program Pi) C M = 
@@ -209,7 +239,7 @@ lemma sees_field_program [code]:
     (case Mapping.lookup m F of 
        None \<Rightarrow> False
      | Some (D', T', fd') \<Rightarrow> T = T' \<and> fd = fd' \<and> D = D'))"
-by(cases Pi)(auto split: split_if_asm dest: has_visible_field[THEN has_field_is_class] simp add: tabulate_sees_field_def)
+by(cases Pi)(auto split: split_if_asm dest: has_visible_field[THEN has_field_is_class] simp add: tabulate_sees_field_def lookup.rep_eq Mapping_inverse)
 
 lemma sees_field_i_i_i_o_o_o_program [code]:
   "sees_field_i_i_i_o_o_o (program Pi) C F =
@@ -240,7 +270,7 @@ lemma field_program [code]:
        None \<Rightarrow> Predicate.not_unique bot
      | Some (D', T, fd) \<Rightarrow> (D', T, fd)))"
 unfolding field_def not_unique_def
-by(cases Pi)(fastforce simp add: tabulate_sees_field_def split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
+by(cases Pi)(fastforce simp add: tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
 subsection {* Implementation for precomputing mappings *}
 
@@ -340,7 +370,7 @@ lemma tablulate_subcls_code [code]:
        _ = check_acyclicity mapping P
    in mapping
   )"
-apply(auto simp add: tabulate_subcls_def Mapping.tabulate_def fun_eq_iff is_class_def o_def map_of_map2[simplified split_def])
+apply(auto simp add: tabulate_subcls_def Mapping.tabulate_def fun_eq_iff is_class_def o_def map_of_map2[simplified split_def] Mapping_inject)
  apply(subst map_of_map2[simplified split_def])
  apply(auto simp add: fun_eq_iff subcls''_eq_subcls map_of_map_K dest: subclst_snd_classD elim: rtranclp_tranclpE)[1]
 apply(subst map_of_map2[simplified split_def])
@@ -415,31 +445,34 @@ by(auto dest: has_fields_fun)
 lemma tabulate_sees_field_code [code]:
   "tabulate_sees_field P =
    Mapping.tabulate (map fst P) (\<lambda>C. assoc_list_to_mapping (map (\<lambda>((F, D), Tfm). (F, (D, Tfm))) (fields' P C)))"
-apply(simp add: tabulate_sees_field_def tabulate_def is_class_def fields'_def Fields'_eq_Fields)
+apply(simp add: tabulate_sees_field_def tabulate_def is_class_def fields'_def Fields'_eq_Fields Mapping_inject)
 apply(rule ext)
-apply auto
-apply(simp add: o_def)
-apply(subst map_of_map2[unfolded split_def])
-apply simp
-apply(auto simp add: assoc_list_to_mapping_def)
-apply(rule ext)
-apply auto
-apply(simp_all add: sees_field_def)
-apply auto
-apply(simp_all add: Fields'_eq_Fields)
-apply(drule (1) has_fields_fun, clarsimp)
-apply(rule sym)
-apply(rule ccontr)
-apply(clarsimp)
-apply(rule ext)
-apply(clarsimp)
-apply(clarsimp simp add: sees_field_def)
+apply clarsimp
+apply(rule conjI)
+ apply(clarsimp simp add: o_def)
+ apply(subst map_of_map2[unfolded split_def])
+ apply simp
+ apply(clarsimp simp add: assoc_list_to_mapping_def Mapping_inject)
+ apply(rule conjI)
+  apply clarsimp
+  apply(rule ext)
+  apply clarsimp
+  apply(rule conjI)
+   apply(clarsimp simp add: sees_field_def Fields'_eq_Fields)
+   apply(drule (1) has_fields_fun, clarsimp)
+  apply clarify
+  apply(rule sym)
+  apply(rule ccontr)
+  apply(clarsimp simp add: sees_field_def Fields'_eq_Fields)
+ apply clarsimp
+ apply(rule ext)
+ apply(clarsimp simp add: sees_field_def)
 apply(clarsimp simp add: o_def)
 apply(subst map_of_map2[simplified split_def])
 apply(rule sym)
-apply(auto)
+apply(clarsimp)
 apply(rule ccontr)
-apply auto
+apply simp
 done
 
 subsubsection {* @{term "Methods" } *}
@@ -459,33 +492,25 @@ lemma Methods'_into_Methods:
   shows "Program P \<turnstile> C sees_methods (map_of Mm)"
 using assms
 apply induct
-apply(auto intro: Methods.intros simp add: o_def split_def)
-apply(rule sees_methods_Object)
-apply fastforce
-apply(rule ext)
-apply(subst map_of_map2[unfolded split_def])
-apply(simp add: o_def)
+ apply(clarsimp simp add: o_def split_def)
+ apply(rule sees_methods_Object)
+  apply fastforce
+ apply(rule ext)
+ apply(subst map_of_map2[unfolded split_def])
+ apply(simp add: o_def)
 
 apply(rule sees_methods_rec)
-apply fastforce
-apply simp
-apply assumption
-apply(rule ext)
-apply(unfold map_add_def)
-apply auto
-apply(subst (asm) map_of_map2[unfolded split_def], simp)
-apply(subst (asm) map_of_map2[unfolded split_def], simp)
-apply(subst (asm) map_of_map2[unfolded split_def], simp)
-apply(subst (asm) map_of_map2[unfolded split_def], simp)
-apply(subst (asm) map_of_map2[unfolded split_def], simp)
-apply(subst (asm) map_of_map2[unfolded split_def], simp)
+   apply fastforce
+  apply simp
+ apply assumption
+apply(clarsimp simp add: map_add_def map_of_map2)
 done
 
 lemma Methods_into_Methods':
   assumes "Program P \<turnstile> C sees_methods Mm"
   shows "\<exists>Mm'. Methods' P C Mm' \<and> Mm = map_of Mm'"
 using assms
-by induct(auto intro: Methods'.intros ext simp add: map_of_map2 map_add_def)
+by induct(auto intro: Methods'.intros simp add: map_of_map2 map_add_def)
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
@@ -524,14 +549,15 @@ by(auto simp add: methods'_def)
 lemma tabulate_Method_code [code]:
   "tabulate_Method P =
    Mapping.tabulate (map fst P) (\<lambda>C. assoc_list_to_mapping (map (\<lambda>(M, (rest, D)). (M, D, rest)) (methods' P C)))"
-apply(simp add: tabulate_Method_def tabulate_def o_def)
+apply(simp add: tabulate_Method_def tabulate_def o_def lookup.rep_eq Mapping_inject)
 apply(rule ext)
-apply auto
+apply clarsimp
+apply(rule conjI)
+ apply clarify
  apply(rule sym)
  apply(subst map_of_map2[unfolded split_def])
- apply simp
-  apply(simp add: is_class_def)
- apply(simp add: assoc_list_to_mapping_def)
+ apply(simp add: is_class_def)
+ apply(simp add: assoc_list_to_mapping_def Mapping_inject)
  apply(rule ext)
  apply(simp add: map_of_map2)
  apply(rule conjI)
@@ -548,6 +574,7 @@ apply auto
  apply(simp add: split_def)
  apply(subst map_of_map2[unfolded split_def])
  apply(fastforce intro: ccontr)
+apply clarify
 apply(rule sym)
 apply(simp add: map_of_eq_None_iff is_class_def)
 apply(simp only: set_map[symmetric] map_map o_def fst_conv)

@@ -6,6 +6,10 @@ imports Main
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Wfrec"
   "~~/src/HOL/Library/Dlist"
+  "~~/src/HOL/Library/Quotient_Product"
+  "~~/src/HOL/Library/Quotient_List"
+  "~~/src/HOL/Library/Quotient_Option"
+  "~~/src/HOL/Library/Quotient_Set"
   Set_without_equal
   Set_Monad
   "../../Coinductive/Lazy_TLList"

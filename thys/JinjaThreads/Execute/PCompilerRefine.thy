@@ -35,11 +35,7 @@ lemma compP_code_code [code abstract]:
 apply(cases P)
 apply(simp add: compP_code_def)
 apply(subst ProgRefine_inverse)
-apply(auto)
-
-apply(simp add: tabulate_subcls_def cong: if_cong)
-
-apply(fastforce simp add: tabulate_sees_field_def intro!: ext)
+apply(auto simp add: tabulate_subcls_def tabulate_sees_field_def Mapping_inject intro!: ext)
 done
 
 declare compP.simps [simp] compP.simps[symmetric, simp del]
