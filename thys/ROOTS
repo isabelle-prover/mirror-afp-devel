@@ -8,6 +8,7 @@ BDD
 BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
+Bondy
 BytecodeLogicJmlTypes
 CCS
 Category
@@ -54,6 +55,7 @@ HotelKeyCards
 Huffman
 Impossible_Geometry
 Inductive_Confidentiality
+InformationFlowSlicing
 Integration
 Jinja
 JinjaThreads
@@ -78,6 +80,7 @@ MuchAdoAboutTwo
 Myhill-Nerode
 Nat-Interval-Logic
 NormByEval
+Open_Induction
 Ordinal
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
@@ -86,6 +89,7 @@ POPLmark-deBruijn
 Perfect-Number-Thm
 Pi_Calculus
 Polynomials
+Possibilistic_Noninterference
 Presburger-Automata
 Program-Conflict-Analysis
 PseudoHoops
@@ -101,6 +105,7 @@ SATSolverVerification
 SIFPL
 SenSocialChoice
 Separation_Algebra
+Separation_Logic_Imperative_HOL
 SequentInvertibility
 Shivers-CFA
 Simpl
@@ -110,6 +115,7 @@ Stream-Fusion
 Stuttering_Equivalence
 SumSquares
 TLA
+Tarskis_Geometry
 Topology
 Transitive-Closure
 Transitive-Closure-II
