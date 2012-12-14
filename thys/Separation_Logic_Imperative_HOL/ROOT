@@ -1,0 +1,23 @@
+session "Separation_Logic_Imperative_HOL" (AFP) = HOL +
+  options [timeout = 3600]
+  theories [document = false]
+    "Tools/Imperative_HOL_Add"
+    "Tools/Syntax_Match"
+    "../Collections/common/HashCode"
+    "../Collections/common/Misc"
+    "Tools/Sep_Misc"
+    "~~/src/HOL/Library/Efficient_Nat"
+  theories
+	Sep_Main
+	"Examples/Imp_List_Spec"
+    "Examples/List_Seg"
+    "Examples/Open_List"
+    "Examples/Circ_List"
+    "Examples/Imp_Map_Spec"
+    "Examples/Hash_Map_Impl"
+    "Examples/Imp_Set_Spec"
+    "Examples/Hash_Set_Impl"
+    "Examples/Idioms"
+  files
+    "document/root.bib"
+    "document/root.tex"
