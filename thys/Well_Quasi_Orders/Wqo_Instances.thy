@@ -113,7 +113,7 @@ relation.*}
 
 instantiation list :: (wqo) wqo
 begin
-definition "xs \<le> ys \<longleftrightarrow> emb (op \<le>) xs ys"
+definition "xs \<le> ys \<longleftrightarrow> list_hembeq (op \<le>) xs ys"
 definition "(xs :: 'a list) < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> (ys \<le> xs)"
 
 instance proof (rule wqo_class.intro)
@@ -123,7 +123,7 @@ instance proof (rule wqo_class.intro)
   hence wqo: "wqo_on ?P UNIV"
     unfolding wqo_on_UNIV_conv less_le_not_le [abs_def] .
   from wqo_on_lists [OF this]
-    have "wqo_on (emb ?P) (lists UNIV)" .
+    have "wqo_on (list_hembeq ?P) (lists UNIV)" .
   hence "wqo_on ?P' UNIV"
     using `wqo_on ?P UNIV`
     unfolding wqo_on_def
@@ -133,13 +133,13 @@ instance proof (rule wqo_class.intro)
     unfolding wqo_on_UNIV_conv less_list_def [abs_def] .
   thus "class.wqo_axioms ?P'" by (auto simp: class.wqo_def)
 
-  from reflp_on_emb [OF wqo_on_imp_reflp_on [OF wqo]]
-    have "reflp_on (emb ?P) (lists UNIV)" .
+  from reflp_on_list_hembeq
+    have "reflp_on (list_hembeq ?P) (lists UNIV)" .
   hence refl: "reflp_on ?P' UNIV"
     unfolding reflp_on_def less_eq_list_def by auto
 
-  from transp_on_emb [OF wqo_on_imp_transp_on [OF wqo]]
-    have "transp_on (emb ?P) (lists UNIV)" .
+  from transp_on_list_hembeq [OF wqo_on_imp_transp_on [OF wqo]]
+    have "transp_on (list_hembeq ?P) (lists UNIV)" .
   hence trans: "transp_on ?P' UNIV"
     unfolding transp_on_def less_eq_list_def by blast
   show "OFCLASS ('a list, preorder_class)"
@@ -192,3 +192,4 @@ qed
 end
 
 end
+

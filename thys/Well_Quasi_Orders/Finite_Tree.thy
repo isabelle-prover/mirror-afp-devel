@@ -1,12 +1,17 @@
 theory Finite_Tree
-imports Well_Quasi_Orders
+imports
+  "~~/src/HOL/Library/Sublist"
+  Restricted_Predicates
 begin
 
+text {*By the interface we are actually not necessarliy finite, but just
+finitely branching. However, all interesting properties below are only valid
+on the inductively defined set of trees built from the constructor 'mk'.*}
 locale finite_tree =
-  fixes mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a"
-    and root :: "'a \<Rightarrow> 'b"
-    and succs :: "'a \<Rightarrow> 'a list"
-  assumes inject: "mk x ts = mk x' ts' \<longleftrightarrow> x = x' \<and> ts = ts'"
+  fixes mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a" -- "constract a tree from a node and a list of trees"
+    and root :: "'a \<Rightarrow> 'b" -- "the root-node of a tree"
+    and succs :: "'a \<Rightarrow> 'a list" -- "the direct subtrees of a tree"
+  assumes inject: "mk x ts = mk x' ts' \<longleftrightarrow> x = x' \<and> ts = ts'" -- "'mk' behaves like a dataype constructor"
     and root_mk [simp]: "root (mk x ts) = x"
     and succs_mk [simp]: "succs (mk x ts) = ts"
 begin
@@ -196,14 +201,14 @@ lemma nodes_simps [simp]:
 inductive
   subtree :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  base: "t \<in> set ts \<Longrightarrow> subtree t (mk x ts)" |
-  step: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (mk x ts)"
+  base [intro]: "t \<in> set ts \<Longrightarrow> subtree t (mk x ts)" |
+  step [intro]: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (mk x ts)"
 
-lemma emb_mono:
+lemma list_hembeq_mono:
   assumes "\<And>s t. P s t \<longrightarrow> Q s t"
-  shows "emb P s t \<longrightarrow> emb Q s t"
+  shows "list_hembeq P s t \<longrightarrow> list_hembeq Q s t"
 proof
-  assume "emb P s t" thus "emb Q s t"
+  assume "list_hembeq P s t" thus "list_hembeq Q s t"
     by (induct) (auto simp: assms)
 qed
 
@@ -214,17 +219,44 @@ lemma reflclp_mono:
 
 text {*Homeomorphic embedding on trees.*}
 inductive
-  hemb :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+  tree_hembeq :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
   for P :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
 where
-  hemb_base [intro]: "t \<in> set ts \<Longrightarrow> hemb P t (mk f ts)" |
-  hemb_emb [intro]: "P f g \<Longrightarrow> emb ((hemb P)\<^sup>=\<^sup>=) ss ts \<Longrightarrow> hemb P (mk f ss) (mk g ts)" |
-  hemb_trans [intro]: "hemb P s t \<Longrightarrow> hemb P t u \<Longrightarrow> hemb P s u" |
-  hemb_ctxt [intro]: "hemb P s t \<Longrightarrow> hemb P (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
-monos emb_mono reflclp_mono
+  tree_hembeq_base [intro]: "t \<in> set ts \<Longrightarrow> tree_hembeq P t (mk f ts)" |
+  tree_hembeq_sublisteq [intro]: "P\<^sup>=\<^sup>= f g \<Longrightarrow> sublisteq ss ts \<Longrightarrow> tree_hembeq P (mk f ss) (mk g ts)" |
+  tree_hembeq_trans [intro]: "tree_hembeq P s t \<Longrightarrow> tree_hembeq P t u \<Longrightarrow> tree_hembeq P s u" |
+  tree_hembeq_ctxt [intro]: "tree_hembeq P s t \<Longrightarrow> tree_hembeq P (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
 
-lemma hemb_subtree:
-  assumes "hemb P s t" and "subtree t u" shows "hemb P s u"
+lemma tree_hembeq_reflclp [simp]:
+  "tree_hembeq (P\<^sup>=\<^sup>=) = tree_hembeq P" (is "?P = ?Q")
+proof (intro ext)
+  fix s t
+  show "?P s t = ?Q s t"
+  proof
+    assume "?P s t" then show "?Q s t" by (induct) auto
+  next
+    assume "?Q s t" then show "?P s t" by (induct) auto
+  qed
+qed
+
+lemma tree_hembeq_mono:
+  assumes "\<And>s t. P s t \<longrightarrow> Q s t"
+  shows "tree_hembeq P s t \<longrightarrow> tree_hembeq Q s t"
+proof
+  assume "tree_hembeq P s t" then show "tree_hembeq Q s t"
+  proof (induct)
+    case (tree_hembeq_sublisteq f g ss ts)
+    show ?case
+    proof (rule tree_hembeq.tree_hembeq_sublisteq)
+      show "Q\<^sup>=\<^sup>= f g" using `P\<^sup>=\<^sup>= f g` by (auto simp: assms)
+    next
+      show "sublisteq ss ts" by fact
+    qed
+  qed force+
+qed
+
+lemma tree_hembeq_subtree:
+  assumes "tree_hembeq P s t" and "subtree t u" shows "tree_hembeq P s u"
   using assms(2, 1)
   by (induct rule: subtree.induct) auto
 
@@ -291,12 +323,215 @@ qed
 lemma subtree_trans:
   assumes "subtree s t" and "subtree t u" shows "subtree s u"
   using assms(2, 1)
-  by (induct rule: subtree.induct) (auto intro: subtree.intros)
+  by (induct rule: subtree.induct) (auto)
 
 lemma subtree_nodes_subset:
   assumes "subtree s t" and "t \<in> trees A" shows "nodes s \<subseteq> nodes t"
   using assms by (induct) force+
+  
+lemma trees_induct_aux:
+  assumes "\<And>f ts. f \<in> A \<Longrightarrow> (\<And>t. \<lbrakk>t \<in> set ts\<rbrakk> \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk f ts)"
+  shows "t \<in> trees A \<Longrightarrow> P t" and "ts \<in> trees_list A \<Longrightarrow> \<forall>t\<in>set ts. P t"
+  by (induct t and ts rule: trees_trees_list.inducts [where ?P2.0 = "\<lambda>ts. \<forall>t\<in>set ts. P t"])
+     (rule assms, auto)
+
+lemma trees_induct [consumes 1, case_names mk, induct set: trees]:
+  assumes "t \<in> trees A"
+    and "\<And>f ts. f \<in> A \<Longrightarrow> (\<And>t. \<lbrakk>t \<in> set ts\<rbrakk> \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk f ts)"
+  shows "P t"
+  using assms and trees_induct_aux(1) by metis
+
+lemma sublisteq_size:
+  assumes "sublisteq ss ts"
+  shows "list_size size ss \<le> list_size size ts"
+  using assms by (induct) auto
+
+lemma not_sublisteq_size: "list_size size ys < list_size size xs \<Longrightarrow> \<not> sublisteq xs ys"
+  by (metis sublisteq_size linorder_not_less)
+
+lemma trees_list_insert:
+  assumes "ss @ ts \<in> trees_list A" and "t \<in> trees A"
+  shows "ss @ t # ts \<in> trees_list A"
+  using assms by (induct ss) auto
+
+abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
+
+lemma list_hembeq_tree_hembeq_imp_sublisteq:
+  assumes "list_hembeq (tree_hembeq P) xs zs"
+    (is "list_hembeq ?P xs zs")
+  shows "\<exists>ys. sublisteq ys zs \<and> length ys = length xs \<and>
+    (\<forall>i<length xs. (tree_hembeq P)\<^sup>=\<^sup>= (xs ! i) (ys ! i))"
+using assms
+proof (induct)
+  case (list_hembeq_Nil ys)
+  thus ?case by auto
+next
+  case (list_hembeq_Cons xs zs z)
+  then obtain ys where *: "sublisteq ys zs" and "length ys = length xs"
+    and "\<forall>i<length xs. ?P\<^sup>=\<^sup>= (xs ! i) (ys ! i)" by auto
+  moreover have "sublisteq ys (z # zs)" using * by auto
+  ultimately show ?case by blast
+next
+  case (list_hembeq_Cons2 x z xs zs)
+  then obtain ys where *: "sublisteq ys zs"
+    and len: "length ys = length xs"
+    and **: "\<forall>i<length xs. ?P\<^sup>=\<^sup>= (xs ! i) (ys ! i)" by auto
+  let ?ys = "z # ys" and ?xs = "x # xs"
+  from * have "sublisteq ?ys (z # zs)" by auto
+  moreover have "length ?ys = length ?xs" using len by auto
+  moreover have "\<forall>i<length ?xs. ?P\<^sup>=\<^sup>= (?xs ! i) (?ys ! i)"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ?xs"
+    show "?P\<^sup>=\<^sup>= (?xs ! i) (?ys ! i)"
+      using i and ** and `?P\<^sup>=\<^sup>= x z`
+      by (cases i) (auto)
+  qed
+  ultimately show ?case by blast
+qed
+
+lemma args_steps_imp_steps_gen:
+  assumes ctxt: "\<And>s t ss1 ss2. r (length ss1) s t \<Longrightarrow>
+    length ts = Suc (length ss1 + length ss2) \<Longrightarrow>
+    R\<^sup>*\<^sup>* (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
+    and len: "length ss = length ts"
+    and args: "\<And>i. i < length ts \<Longrightarrow> (r i)\<^sup>*\<^sup>* (ss ! i) (ts ! i)"
+  shows "R\<^sup>*\<^sup>* (mk f ss) (mk f ts)"
+proof -
+  let ?ts = "\<lambda>i. take i ts @ drop i ss"
+  {
+    fix s t and ss1 ss2 :: "'a list"
+    assume "(r (length ss1))\<^sup>*\<^sup>* s t"
+      and len: "length ts = Suc (length ss1 + length ss2)"
+    then have "R\<^sup>*\<^sup>* (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
+    proof (induct)
+      case (step t u)
+      from step(3) [OF len] and ctxt [OF step(2) len]
+        show ?case by auto
+    qed simp
+  }
+  note * = this
+  have **: "\<forall>i\<le>length ts. R\<^sup>*\<^sup>* (mk f ss) (mk f (?ts i))"
+  proof (intro allI impI)
+    fix i assume "i \<le> length ts"
+    then show "R\<^sup>*\<^sup>* (mk f ss) (mk f (?ts i))"
+    proof (induct i)
+      case 0
+      then show ?case by simp
+    next
+      case (Suc i)
+      then have IH: "R\<^sup>*\<^sup>* (mk f ss) (mk f (?ts i))"
+        and i: "i < length ts" by auto
+      have si: "?ts (Suc i) = take i ts @ ts ! i # drop (Suc i) ss"
+        unfolding take_Suc_conv_app_nth [OF i] by simp
+      have ii: "?ts i = take i ts @ ss ! i # drop (Suc i) ss"
+        unfolding nth_drop' [OF i [unfolded len[symmetric]]] ..
+      from i have i': "length (take i ts) < length ts"  and len': "length (take i ts) = i" by auto
+      from len i have len'': "length ts = Suc (length (take i ts) + length (drop (Suc i) ss))" by simp
+      from *[OF args [OF i'] len''] and IH
+        show ?case unfolding si ii len' by auto
+    qed
+  qed
+  from this [THEN spec, THEN mp[OF _ le_refl]]
+  show ?thesis using len by auto
+qed
+
+lemma args_steps_imp_steps:
+  assumes len: "length ss = length ts"
+    and args: "\<forall>i<length ss. (tree_hembeq P)\<^sup>=\<^sup>= (ss ! i) (ts ! i)"
+  shows "(tree_hembeq P)\<^sup>*\<^sup>* (mk f ss) (mk f ts)" (is "?P (mk f ss) (mk f ts)")
+proof (rule args_steps_imp_steps_gen[OF _ len])
+  fix i
+  assume "i < length ts" thus "?P (ss ! i) (ts ! i)" using args and len by auto
+qed auto
+
+lemma reflp_on_tree_hembeq:
+  "reflp_on (tree_hembeq P) (trees A)"
+proof
+  fix t
+  assume "t \<in> trees A"
+  thus "tree_hembeq P t t"
+  proof (induct t)
+    case (mk x ts)
+    hence "\<forall>t \<in> set ts. tree_hembeq P t t"
+      and "x \<in> A" by (auto simp: trees_def)
+    from list_hembeq_refl
+      have *: "list_hembeq (tree_hembeq P) ts ts" by (auto simp: reflp_on_def)
+    moreover have "P\<^sup>=\<^sup>= x x" by simp
+    ultimately show ?case by auto
+  qed
+qed
+
+lemma tree_hembeq_tranclp [simp]:
+  "(tree_hembeq P)\<^sup>+\<^sup>+ = tree_hembeq P" (is "?l = ?r")
+proof (intro ext)
+  fix s t
+  {
+    assume "?l s t"
+    then have "?r s t"
+      by (induct s t) blast+
+  }
+  then show "?l s t = ?r s t" by auto
+qed
+
+lemma tree_hembeq_rtranclp [simp]:
+  assumes "s \<in> trees A" and "t \<in> trees A"
+  shows "(tree_hembeq P)\<^sup>*\<^sup>* s t = tree_hembeq P s t" (is "?l = ?r")
+proof -
+  {
+    assume "?l"
+    then have "?r" using assms
+      by (induct)
+         (insert reflp_on_tree_hembeq, auto simp: reflcl_tranclp [symmetric] reflp_on_def)
+  }
+  then show "?l = ?r" by auto
+qed
+
+lemma tree_hembeq_list_hembeq:
+  assumes "P\<^sup>=\<^sup>= f g" and "list_hembeq (tree_hembeq P) ss ts"
+  shows "tree_hembeq P (mk f ss) (mk g ts)"
+proof -
+  from list_hembeq_tree_hembeq_imp_sublisteq [OF assms(2)]
+    obtain us where "sublisteq us ts" and "length ss = length us"
+    and *: "\<forall>i<length ss. (tree_hembeq P)\<^sup>=\<^sup>= (ss ! i) (us ! i)" by auto
+  with args_steps_imp_steps have "(tree_hembeq P)\<^sup>*\<^sup>* (mk f ss) (mk f us)" by auto
+  moreover from `P\<^sup>=\<^sup>= f g` and `sublisteq us ts` have "tree_hembeq P (mk f us) (mk g ts)" by blast
+  ultimately have "(tree_hembeq P)\<^sup>+\<^sup>+ (mk f ss) (mk g ts)" by (rule rtranclp_into_tranclp1)
+  then show ?thesis by simp
+qed
+
+lemma subtreeeq_trees:
+  "subtreeeq s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
+  using subtree_trees by auto
+
+lemma trees_intros:
+  "x \<in> A \<Longrightarrow>
+    \<forall>t\<in>set ts. t \<in> trees A \<Longrightarrow>
+    mk x ts \<in> trees A"
+  by (induct ts) (auto intro: trees_trees_list.intros)
+
+
+lemma trees_cases [consumes 1, cases set: trees]:
+  assumes "t \<in> trees A"
+    and "\<And>f ts. \<lbrakk>f \<in> A; \<forall>t\<in>set ts. t \<in> trees A; t = mk f ts\<rbrakk> \<Longrightarrow> P"
+  shows "P"
+  using assms by (cases rule: trees.cases) (auto intro: subtree_trees)
+
+lemma root_succs:
+  assumes "t \<in> trees A"
+  shows "mk (root t) (succs t) = t"
+  using assms by (cases t) simp_all
+
+lemma in_succs_imp_subtree:
+  assumes "t \<in> trees A" and "s \<in> set (succs t)"
+  shows "subtree s t"
+  using assms by (cases t) (auto)
+
+lemma tree_hembeq_subtreeeq:
+  assumes "tree_hembeq P s t" and "subtreeeq t u" shows "tree_hembeq P s u"
+  using assms and tree_hembeq_subtree by auto
 
 end
 
 end
+

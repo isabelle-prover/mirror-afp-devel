@@ -8,37 +8,37 @@ section {* Closure under @{text SUBSEQ} and @{text SUPSEQ} *}
 
 text {* Properties about the embedding relation *}
 
-lemma sub_strict_length:
-  assumes a: "sub x y" "x \<noteq> y" 
+lemma sublisteq_strict_length:
+  assumes a: "sublisteq x y" "x \<noteq> y" 
   shows "length x < length y"
 using a
 by (induct) (auto simp add: less_Suc_eq)
 
-lemma sub_wf:
-  shows "wf {(x, y). sub x y \<and> x \<noteq> y}"
+lemma sublisteq_wf:
+  shows "wf {(x, y). sublisteq x y \<and> x \<noteq> y}"
 proof -
   have "wf (measure length)" by simp
   moreover
-  have "{(x, y). sub x y \<and> x \<noteq> y} \<subseteq> measure length"
-    unfolding measure_def by (auto simp add: sub_strict_length)
+  have "{(x, y). sublisteq x y \<and> x \<noteq> y} \<subseteq> measure length"
+    unfolding measure_def by (auto simp add: sublisteq_strict_length)
   ultimately 
-  show "wf {(x, y). sub x y \<and> x \<noteq> y}" by (rule wf_subset)
+  show "wf {(x, y). sublisteq x y \<and> x \<noteq> y}" by (rule wf_subset)
 qed
 
-lemma sub_good:
-  shows "good sub (f :: nat \<Rightarrow> ('a::finite) list)"
+lemma sublisteq_good:
+  shows "good sublisteq (f :: nat \<Rightarrow> ('a::finite) list)"
 using wqo_on_imp_good[where f="f", OF wqo_on_lists_over_finite_sets]
 by simp
 
-lemma sub_Higman_antichains:
-  assumes a: "\<forall>(x::('a::finite) list) \<in> A. \<forall>y \<in> A. x \<noteq> y \<longrightarrow> \<not>(sub x y) \<and> \<not>(sub y x)"
+lemma sublisteq_Higman_antichains:
+  assumes a: "\<forall>(x::('a::finite) list) \<in> A. \<forall>y \<in> A. x \<noteq> y \<longrightarrow> \<not>(sublisteq x y) \<and> \<not>(sublisteq y x)"
   shows "finite A"
 proof (rule ccontr)
   assume "infinite A"
   then obtain f::"nat \<Rightarrow> 'a::finite list" where b: "inj f" and c: "range f \<subseteq> A"
     by (auto simp add: infinite_iff_countable_subset)
-  from sub_good[where f="f"] 
-  obtain i j where d: "i < j" and e: "sub (f i) (f j) \<or> f i = f j" 
+  from sublisteq_good[where f="f"] 
+  obtain i j where d: "i < j" and e: "sublisteq (f i) (f j) \<or> f i = f j" 
     unfolding good_def
     by auto
   have "f i \<noteq> f j" using b d by (auto simp add: inj_on_def)
@@ -46,17 +46,17 @@ proof (rule ccontr)
   have "f i \<in> A" using c by auto
   moreover
   have "f j \<in> A" using c by auto
-  ultimately have "\<not>(sub (f i) (f j))" using a by simp
+  ultimately have "\<not>(sublisteq (f i) (f j))" using a by simp
   with e show "False" by auto
 qed
 
 subsection {* Sub- and Supersequences *}
 
 definition
- "SUBSEQ A \<equiv> {x::('a::finite) list. \<exists>y \<in> A. sub x y}"
+ "SUBSEQ A \<equiv> {x::('a::finite) list. \<exists>y \<in> A. sublisteq x y}"
 
 definition
- "SUPSEQ A \<equiv> {x::('a::finite) list. \<exists>y \<in> A. sub y x}"
+ "SUPSEQ A \<equiv> {x::('a::finite) list. \<exists>y \<in> A. sublisteq y x}"
 
 lemma SUPSEQ_simps [simp]:
   shows "SUPSEQ {} = {}"
@@ -66,7 +66,7 @@ unfolding SUPSEQ_def by auto
 lemma SUPSEQ_atom [simp]:
   shows "SUPSEQ {[c]} = UNIV \<cdot> {[c]} \<cdot> UNIV"
 unfolding SUPSEQ_def conc_def
-by (auto dest: emb_ConsD)
+by (auto dest: list_hembeq_ConsD)
 
 lemma SUPSEQ_union [simp]:
   shows "SUPSEQ (A \<union> B) = SUPSEQ A \<union> SUPSEQ B"
@@ -76,9 +76,9 @@ lemma SUPSEQ_conc [simp]:
   shows "SUPSEQ (A \<cdot> B) = SUPSEQ A \<cdot> SUPSEQ B"
 unfolding SUPSEQ_def conc_def
 apply(auto)
-apply(drule emb_appendD)
+apply(drule list_hembeq_appendD)
 apply(auto)
-by (metis emb_append_mono)
+by (metis list_hembeq_append_mono)
 
 lemma SUPSEQ_star [simp]:
   shows "SUPSEQ (A\<star>) = UNIV"
@@ -156,15 +156,15 @@ proof -
        a: "x \<in> SUPSEQ (- (SUBSEQ A))" and 
        b: "x \<notin> - (SUBSEQ A)" by auto
 
-    from a obtain y where c: "y \<in> - (SUBSEQ A)" and d: "sub y x"
+    from a obtain y where c: "y \<in> - (SUBSEQ A)" and d: "sublisteq y x"
       by (auto simp add: SUPSEQ_def)
 
     from b have "x \<in> SUBSEQ A" by simp
-    then obtain x' where f: "x' \<in> A" and e: "sub x x'"
+    then obtain x' where f: "x' \<in> A" and e: "sublisteq x x'"
       by (auto simp add: SUBSEQ_def)
     
-    from d e have "sub y x'"
-      by (rule sub_trans)
+    from d e have "sublisteq y x'"
+      by (rule sublisteq_trans)
     then have "y \<in> SUBSEQ A" using f
       by (auto simp add: SUBSEQ_def)
     with c show "False" by simp
@@ -175,7 +175,7 @@ qed
 definition
   minimal :: "'a::finite list \<Rightarrow> 'a lang \<Rightarrow> bool"
 where
-  "minimal x A \<equiv> (\<forall>y \<in> A. sub y x \<longrightarrow> sub x y)"
+  "minimal x A \<equiv> (\<forall>y \<in> A. sublisteq y x \<longrightarrow> sublisteq x y)"
 
 lemma main_lemma:
   shows "\<exists>M. finite M \<and> SUPSEQ A = SUPSEQ M"
@@ -183,19 +183,19 @@ proof -
   def M \<equiv> "{x \<in> A. minimal x A}"
   have "finite M"
     unfolding M_def minimal_def
-    by (rule sub_Higman_antichains) (auto simp add: sub_antisym)
+    by (rule sublisteq_Higman_antichains) (auto simp add: sublisteq_antisym)
   moreover
   have "SUPSEQ A \<subseteq> SUPSEQ M"
   proof
     fix x
     assume "x \<in> SUPSEQ A"
-    then obtain y where "y \<in> A" and "sub y x" by (auto simp add: SUPSEQ_def)
-    then have a: "y \<in> {y' \<in> A. sub y' x}" by simp
-    obtain z where b: "z \<in> A" "sub z x" and c: "\<forall>y. sub y z \<and> y \<noteq> z \<longrightarrow> y \<notin> {y' \<in> A. sub y' x}"
-      using wfE_min[OF sub_wf a] by auto
+    then obtain y where "y \<in> A" and "sublisteq y x" by (auto simp add: SUPSEQ_def)
+    then have a: "y \<in> {y' \<in> A. sublisteq y' x}" by simp
+    obtain z where b: "z \<in> A" "sublisteq z x" and c: "\<forall>y. sublisteq y z \<and> y \<noteq> z \<longrightarrow> y \<notin> {y' \<in> A. sublisteq y' x}"
+      using wfE_min[OF sublisteq_wf a] by auto
     then have "z \<in> M"
       unfolding M_def minimal_def
-      by (auto intro: sub_trans)
+      by (auto intro: sublisteq_trans)
     with b(2) show "x \<in> SUPSEQ M"
       by (auto simp add: SUPSEQ_def)
   qed

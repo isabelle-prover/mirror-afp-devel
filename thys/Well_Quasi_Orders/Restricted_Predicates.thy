@@ -7,16 +7,17 @@
 header {* Binary Predicates Restricted to Elements of a given Set *}
 
 theory Restricted_Predicates
-imports
-  Main
-  "~~/src/HOL/Library/Sublist"
+imports Main
 begin
 
 definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" where
-  "restrict_to P A \<equiv> \<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y"
+  "restrict_to P A = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y)"
 
 definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "reflp_on P A \<equiv> \<forall>a\<in>A. P a a"
+  "reflp_on P A = (\<forall>a\<in>A. P a a)"
+
+definition transp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "transp_on P A = (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. P x y \<and> P y z \<longrightarrow> P x z)"
 
 abbreviation strict where
   "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
@@ -34,10 +35,18 @@ lemma reflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> P a a) \<Longrightarrow> reflp_on P A"
   unfolding reflp_on_def by blast
 
-lemma reflp_on_reflclp [simp]:
+lemma transp_onI [Pure.intro]:
+  "(\<And>x y z. \<lbrakk>x \<in> A; y \<in> A; z \<in> A; P x y; P y z\<rbrakk> \<Longrightarrow> P x z) \<Longrightarrow> transp_on P A"
+  unfolding transp_on_def by blast
+
+lemma reflp_on_reflclp_simp [simp]:
   assumes "reflp_on P A" and "a \<in> A" and "b \<in> A"
   shows "P\<^sup>=\<^sup>= a b = P a b"
   using assms by (auto simp: reflp_on_def)
+
+lemma reflp_on_reflclp:
+  "reflp_on (P\<^sup>=\<^sup>=) A"
+  by (auto simp: reflp_on_def)
 
 lemma transp_on_tranclp:
   assumes "transp_on P A"
@@ -63,10 +72,10 @@ lemma transp_on_subset:
   by (auto simp: transp_on_def)
 
 definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "wfp_on P A \<equiv> \<not> (\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i))"
+  "wfp_on P A = (\<not> (\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)))"
 
 definition inductive_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "inductive_on P A \<equiv> \<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x)"
+  "inductive_on P A = (\<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x))"
 
 text {*If @{term P} is well-founded on @{term A} then every non-empty subset @{term Q}
 of @{term A} has a minimal element @{term z} w.r.t. @{term P}, i.e., all elements
@@ -149,7 +158,7 @@ proof -
 qed
 
 definition antisymp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "antisymp_on P A \<equiv> \<forall>a\<in>A. \<forall>b\<in>A. P a b \<and> P b a \<longrightarrow> a = b"
+  "antisymp_on P A = (\<forall>a\<in>A. \<forall>b\<in>A. P a b \<and> P b a \<longrightarrow> a = b)"
 
 lemma antisymp_onI [Pure.intro]:
   "(\<And>a b. \<lbrakk> a \<in> A; b \<in> A; P a b; P b a\<rbrakk> \<Longrightarrow> a = b) \<Longrightarrow> antisymp_on P A"
@@ -165,13 +174,44 @@ lemma transp_on_imp_transp_on_reflclp:
   by (metis (hide_lams, mono_tags) sup2CI sup2E)
 
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "qo_on P A \<equiv> reflp_on P A \<and> transp_on P A"
+  "qo_on P A = (reflp_on P A \<and> transp_on P A)"
 
 definition orderp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "orderp_on P A \<equiv> antisymp_on P A \<and> reflp_on P A \<and> transp_on P A"
+  "orderp_on P A = (antisymp_on P A \<and> reflp_on P A \<and> transp_on P A)"
 
 definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "irreflp_on P A \<equiv> \<forall>a\<in>A. \<not> P a a"
+  "irreflp_on P A = (\<forall>a\<in>A. \<not> P a a)"
+
+lemma irreflp_onI [Pure.intro]:
+  "(\<And>a. a \<in> A \<Longrightarrow> \<not> P a a) \<Longrightarrow> irreflp_on P A"
+  unfolding irreflp_on_def by blast
+
+lemma irreflp_on_subset:
+  assumes "A \<subseteq> B" and "irreflp_on P B"
+  shows "irreflp_on P A"
+  using assms by (auto simp: irreflp_on_def)
+
+lemma transp_on_irreflp_on_imp_antisymp_on:
+  assumes "transp_on P A" and "irreflp_on P A"
+  shows "antisymp_on (P\<^sup>=\<^sup>=) A"
+proof
+  fix a b assume "a \<in> A"
+    and "b \<in> A" and "P\<^sup>=\<^sup>= a b" and "P\<^sup>=\<^sup>= b a"
+  show "a = b"
+  proof (rule ccontr)
+    assume "a \<noteq> b"
+    with `P\<^sup>=\<^sup>= a b` and `P\<^sup>=\<^sup>= b a` have "P a b" and "P b a" by auto
+    with `transp_on P A` and `a \<in> A` and `b \<in> A` have "P a a" unfolding transp_on_def by blast
+    with `irreflp_on P A` and `a \<in> A` show False unfolding irreflp_on_def by blast
+  qed
+qed
+
+lemma strict_reflclp [simp]:
+  assumes "x \<in> A" and "y \<in> A"
+    and "transp_on P A" and "irreflp_on P A"
+  shows "strict (P\<^sup>=\<^sup>=) x y = P x y"
+  using assms unfolding transp_on_def irreflp_on_def
+  by blast
 
 lemma qo_on_imp_reflp_on:
   "qo_on P A \<Longrightarrow> reflp_on P A"
@@ -240,12 +280,12 @@ definition
   inv_image_betw ::
     "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)"
 where
-  "inv_image_betw P f A B \<equiv> \<lambda>x y. x \<in> A \<and> y \<in> A \<and> f x \<in> B \<and> f y \<in> B \<and> P (f x) (f y)"
+  "inv_image_betw P f A B = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> f x \<in> B \<and> f y \<in> B \<and> P (f x) (f y))"
 
 definition
   measure_on :: "('a \<Rightarrow> nat) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  "measure_on f A \<equiv> inv_image_betw (op <) f A UNIV"
+  "measure_on f A = inv_image_betw (op <) f A UNIV"
 
 lemma in_inv_image_betw [simp]:
   "inv_image_betw P f A B x y \<longleftrightarrow> x \<in> A \<and> y \<in> A \<and> f x \<in> B \<and> f y \<in> B \<and> P (f x) (f y)"
@@ -318,5 +358,9 @@ next
     ultimately show ?thesis using assms(1, 2) unfolding transp_on_def by blast
   qed
 qed
+
+lemma restrict_to_reflclp:
+  "restrict_to P\<^sup>=\<^sup>= A x y \<Longrightarrow> (restrict_to P A)\<^sup>=\<^sup>= x y"
+  by (auto simp: restrict_to_def)
 
 end

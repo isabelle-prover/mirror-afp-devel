@@ -161,8 +161,9 @@ qed
 subsection {* Higman's Lemma for Wqo *}
 
 lemma wqo_on_lists:
-  assumes "wqo_on P A" shows "wqo_on (emb P) (lists A)"
-  using assms and almost_full_on_lists and transp_on_emb by (auto simp: wqo_on_def)
+  assumes "wqo_on P A" shows "wqo_on (list_hembeq P) (lists A)"
+  using assms and almost_full_on_lists
+    and transp_on_list_hembeq by (auto simp: wqo_on_def)
 
 text {*Every reflexive and transitive relation on a finite set is a wqo.*}
 lemma finite_wqo_on:
@@ -177,7 +178,7 @@ lemma finite_eq_wqo_on:
   by (auto simp: reflp_on_def transp_on_def)
 
 lemma wqo_on_lists_over_finite_sets:
-  "wqo_on (emb (op =)) (UNIV::('a::finite) list set)"
+  "wqo_on (list_hembeq (op =)) (UNIV::('a::finite) list set)"
   using wqo_on_lists [OF finite_eq_wqo_on [of UNIV]] by simp
 
 end

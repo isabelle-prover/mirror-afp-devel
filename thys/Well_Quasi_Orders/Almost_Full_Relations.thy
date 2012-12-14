@@ -8,6 +8,7 @@ header {* Almost-Full Relations *}
 
 theory Almost_Full_Relations
 imports
+  "~~/src/HOL/Library/Sublist"
   "~~/src/HOL/Library/Ramsey"
   Minimal_Bad_Sequences
 begin
@@ -180,6 +181,30 @@ where
   "option_le P (Some x) None = False" |
   "option_le P (Some x) (Some y) = P x y"
 
+fun
+  option_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool"
+where
+  "option_less P None None = False" |
+  "option_less P None (Some y) = True" |
+  "option_less P (Some x) None = False" |
+  "option_less P (Some x) (Some y) = P x y"
+
+lemma reflclp_option_less [simp]:
+  "(option_less P)\<^sup>=\<^sup>= = option_le (P\<^sup>=\<^sup>=)"
+proof (intro ext)
+  fix x y
+  show "(option_less P)\<^sup>=\<^sup>= x y = option_le (P\<^sup>=\<^sup>=) x y"
+  by (cases x, auto) (cases y, auto)+
+qed
+
+lemma reflclp_option_le [simp]:
+  "(option_le P)\<^sup>=\<^sup>= = option_le (P\<^sup>=\<^sup>=)"
+proof (intro ext)
+  fix x y
+  show "(option_le P)\<^sup>=\<^sup>= x y = option_le (P\<^sup>=\<^sup>=) x y"
+  by (cases x, auto) (cases y, auto)+
+qed
+
 lemma almost_full_on_with_bot:
   assumes "almost_full_on P A"
   shows "almost_full_on (option_le P) A\<^sub>\<bottom>"
@@ -211,6 +236,11 @@ proof
   qed
 qed
 
+lemma almost_full_on_reflclp_option_less:
+  assumes "almost_full_on (P\<^sup>=\<^sup>=) A"
+  shows "almost_full_on ((option_less P)\<^sup>=\<^sup>=) A\<^sub>\<bottom>"
+  using almost_full_on_with_bot [OF assms] by simp
+
 
 subsection {* Disjoint Union of Wqo Sets *}
 
@@ -220,6 +250,29 @@ where
   "sum_le P Q (Inl x) (Inl y) = P x y" |
   "sum_le P Q (Inr x) (Inr y) = Q x y" |
   "sum_le P Q x y = False"
+
+fun
+  sum_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
+where
+  "sum_less P Q (Inl x) (Inl y) = P x y" |
+  "sum_less P Q (Inr x) (Inr y) = Q x y" |
+  "sum_less P Q x y = False"
+
+lemma reflclp_sum_less [simp]:
+  "(sum_less P Q)\<^sup>=\<^sup>= = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
+proof (intro ext)
+  fix x y
+  show "(sum_less P Q)\<^sup>=\<^sup>= x y = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=) x y"
+  by (cases x, auto) (cases y, auto)+
+qed
+
+lemma reflclp_sum_le [simp]:
+  "(sum_le P Q)\<^sup>=\<^sup>= = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
+proof (intro ext)
+  fix x y
+  show "(sum_le P Q)\<^sup>=\<^sup>= x y = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=) x y"
+  by (cases x, auto) (cases y, auto)+
+qed
 
 text {*When two sets are almost full, then their disjoint sum is almost full.*}
 lemma almost_full_on_Plus:
@@ -303,6 +356,11 @@ proof
   qed
 qed
 
+lemma almost_full_on_sum_less:
+  assumes "almost_full_on (P\<^sup>=\<^sup>=) A" and "almost_full_on (Q\<^sup>=\<^sup>=) B"
+  shows "almost_full_on ((sum_less P Q)\<^sup>=\<^sup>=) (A <+> B)"
+  using almost_full_on_Plus [OF assms] by simp
+
 
 subsection {* Dickson's Lemma *}
 
@@ -312,6 +370,21 @@ definition
   prod_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
 where
   "prod_le P1 P2 \<equiv> \<lambda>(p1, p2) (q1, q2). P1 p1 q1 \<and> P2 p2 q2"
+
+definition
+  prod_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
+where
+  "prod_less P1 P2 = (\<lambda>(p1, p2) (q1, q2).
+    (P1\<^sup>=\<^sup>= p1 q1 \<and> P2 p2 q2) \<or> (P1 p1 q1 \<and> P2\<^sup>=\<^sup>= p2 q2))"
+
+lemma reflclp_prod_less [simp]:
+  "(prod_less P Q)\<^sup>=\<^sup>= = prod_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
+proof (intro ext)
+  fix x y
+  show "(prod_less P Q)\<^sup>=\<^sup>= x y = prod_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=) x y"
+  by (cases x, cases y)
+     (auto simp add: prod_le_def prod_less_def)
+qed
 
 text {*By Ramsey's Theorem every infinite sequence on which @{term "sup P Q"}
 is transitive, contains a (monotone) infinite subsequence on which either
@@ -395,71 +468,38 @@ proof (rule ccontr)
   qed
 qed
 
+lemma almost_full_on_prod_less:
+  assumes "almost_full_on (P1\<^sup>=\<^sup>=) A1" and "almost_full_on (P2\<^sup>=\<^sup>=) A2"
+  shows "almost_full_on ((prod_less P1 P2)\<^sup>=\<^sup>=) (A1 \<times> A2)"
+  using almost_full_on_Sigma [OF assms] by simp
+
 
 subsection {* Embedding *}
 
-lemma reflp_on_emb:
-  assumes "reflp_on P A"
-  shows "reflp_on (emb P) (lists A)"
-proof
-  fix xs
-  assume "xs \<in> lists A"
-  with assms show "emb P xs xs"
-    by (induct xs) (auto simp: reflp_on_def)
-qed
+lemma reflp_on_list_hembeq:
+  shows "reflp_on (list_hembeq P) (lists A)"
+  using list_hembeq_refl
+  unfolding reflp_on_def by blast
 
-lemma transp_on_emb:
+lemma transp_on_list_hembeq:
   assumes "transp_on P A"
-  shows "transp_on (emb P) (lists A)"
-proof
-  fix xs ys zs
-  assume "emb P xs ys" and "emb P ys zs"
-    and "xs \<in> lists A" and "ys \<in> lists A" and "zs \<in> lists A"
-  thus "emb P xs zs"
-  proof (induction arbitrary: zs)
-    case emb_Nil show ?case by blast
-  next
-    case (emb_Cons xs ys y)
-    from emb_ConsD [OF `emb P (y#ys) zs`] obtain us v vs
-      where zs: "zs = us @ v # vs" and "P y v" and "emb P ys vs" by blast
-    hence "emb P ys (v#vs)" by blast
-    hence "emb P ys zs" unfolding zs by (rule emb_append2)
-    from emb_Cons.IH [OF this] and emb_Cons.prems show ?case by simp
-  next
-    case (emb_Cons2 x y xs ys)
-    from emb_ConsD [OF `emb P (y#ys) zs`] obtain us v vs
-      where zs: "zs = us @ v # vs" and "P y v" and "emb P ys vs" by blast
-    with emb_Cons2 have "emb P xs vs" by simp
-    moreover have "P x v"
-    proof -
-      from zs and `zs \<in> lists A` have "v \<in> A" by auto
-      moreover have "x \<in> A" and "y \<in> A" using emb_Cons2 by simp_all
-      ultimately show ?thesis using `P x y` and `P y v` and assms
-        unfolding transp_on_def by blast
-    qed
-    ultimately have "emb P (x#xs) (v#vs)" by blast
-    thus ?case unfolding zs by (rule emb_append2)
-  qed
-qed
+  shows "transp_on (list_hembeq P) (lists A)"
+  using assms and list_hembeq_trans [of A P]
+    unfolding transp_on_def by metis
 
-lemma emb_refl:
-  assumes "reflp_on P (set xs)"
-  shows "emb P xs xs"
-  using reflp_on_emb [OF assms] by (auto simp: reflp_on_def)
-
-lemma Nil_imp_good_emb [simp]:
+lemma Nil_imp_good_list_hembeq [simp]:
   assumes "f i = []"
-  shows "good (emb P) f"
+  shows "good (list_hembeq P) f"
 proof (rule ccontr)
-  assume "bad (emb P) f"
-  moreover have "(emb P) (f i) (f (Suc i))"
+  assume "bad (list_hembeq P) f"
+  moreover have "(list_hembeq P) (f i) (f (Suc i))"
     unfolding assms by auto
   ultimately show False
     unfolding good_def by auto
 qed
 
 lemma bad_imp_not_Nil:
-  "bad (emb P) f \<Longrightarrow> f i \<noteq> []"
+  "bad (list_hembeq P) f \<Longrightarrow> f i \<noteq> []"
   by auto
 
 lemma list_suffix_induct [case_names psuffix]:
@@ -482,11 +522,11 @@ lemma wfp_on_suffix:
   using wfp_on_subset [of "lists A" UNIV]
   by blast
 
-interpretation list_mbs: mbs emb suffix lists
+interpretation list_mbs: mbs list_hembeq suffix lists
 proof -
-  show "mbs emb suffix lists"
+  show "mbs list_hembeq suffix lists"
     by (unfold_locales) (auto
-      simp: emb_suffix wfp_on_suffix suffix_lists
+      simp: list_hembeq_suffix wfp_on_suffix suffix_lists
       intro: suffix_trans)
 qed
 
@@ -564,10 +604,12 @@ qed
 
 lemma almost_full_on_lists:
   assumes "almost_full_on P A"
-  shows "almost_full_on (emb P) (lists A)"
+  shows "almost_full_on (list_hembeq P) (lists A)"
     (is "almost_full_on ?P ?A")
 proof -
-  { from reflp_on_emb [OF almost_full_on_imp_reflp_on [OF assms]] have "reflp_on ?P ?A" . }
+  {
+    from reflp_on_list_hembeq have "reflp_on ?P ?A" .
+  }
   note refl = this
   {
     have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> good ?P f"
@@ -576,7 +618,7 @@ proof -
       then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f" by blast
       from list_mbs.mbs [OF this] obtain m where
         bad: "bad ?P m" and
-        mb: "\<And>n. mbs.min_at emb suffix P m n" and
+        mb: "\<And>n. mbs.min_at list_hembeq suffix P m n" and
         in_lists: "\<And>i. m i \<in> lists A"
         by blast
       let ?A = m
@@ -605,7 +647,7 @@ proof -
             have suffix: "suffixeq (?B (f (j - f 0))) (?A (f (j - f 0)))" by simp
             assume "i < f 0" and "f 0 \<le> j"
             with * have "?P (?A i) (?B (f (j - f 0)))" by auto
-            with suffix have "?P (?A i) (?A (f (j - f 0)))" using emb_suffixeq [of P] by blast
+            with suffix have "?P (?A i) (?A (f (j - f 0)))" using list_hembeq_suffixeq [of P] by blast
             moreover from ge [THEN spec [of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
             ultimately have False using `bad ?P ?A` by (auto simp: good_def)
           } ultimately show False by arith
@@ -663,15 +705,138 @@ proof -
      from hd_Cons_tl and non_empty
         have hd_tl: "hd (?A i) # tl (?A i) = ?A i"
           "hd (?A j) # tl (?A j) = ?A j" by auto
-      from * have "P (a i) (a j)" and "?P (?B i) (?B j)"
+      from * have "P\<^sup>=\<^sup>= (a i) (a j)" and "?P (?B i) (?B j)"
         unfolding prod_le_def by auto
-      from emb_Cons2 [OF this]
+      from list_hembeq_Cons2 [OF this]
         have "?P (?A i) (?A j)" using a and hd_tl by auto
       with `i < j` and `bad ?P ?A` show False by (auto simp: good_def almost_full_on_def)
     qed
   }
   with trans show ?thesis unfolding almost_full_on_def by blast
 qed
+
+definition
+  list_hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
+where
+  "list_hemb P xs ys = (list_hembeq P xs ys \<and> xs \<noteq> ys)"
+
+lemma list_hembeq_eq_length_induct [consumes 2, case_names Nil Cons]:
+  assumes "length xs = length ys"
+    and "list_hembeq P xs ys"
+    and "\<And>ys. Q [] ys"
+    and "\<And>x y xs ys. \<lbrakk>P\<^sup>=\<^sup>= x y; list_hembeq P xs ys; Q xs ys\<rbrakk> \<Longrightarrow> Q (x#xs) (y#ys)"
+  shows "Q xs ys"
+  using assms(2, 1)
+proof (induct)
+  case (list_hembeq_Nil ys)
+  show ?case by fact
+next
+  case (list_hembeq_Cons xs ys y)
+  with list_hembeq_length have "length xs \<le> length ys" by blast
+  with `length xs = length (y#ys)` show ?case by auto
+next
+  case (list_hembeq_Cons2 x y xs ys)
+  with assms(4) show ?case by auto
+qed
+
+lemma list_hembeq_eq_length_le:
+  assumes "length xs = length ys"
+    and "list_hembeq P xs ys"
+  shows "\<forall>i<length xs. P\<^sup>=\<^sup>= (xs ! i) (ys ! i)"
+  using assms
+proof (induct rule: list_hembeq_eq_length_induct)
+  case Nil show ?case by simp
+next
+  case (Cons x y xs ys)
+  show ?case
+  proof (intro allI impI)
+    fix i assume "i < length (x # xs)"
+    with Cons show "P\<^sup>=\<^sup>= ((x#xs)!i) ((y#ys)!i)"
+      by (cases i) simp_all
+  qed
+qed
+
+lemma transp_on_list_hemb:
+  assumes irrefl: "irreflp_on P A"
+    and trans: "transp_on P A"
+  shows "transp_on (list_hemb P) (lists A)"
+    (is "transp_on ?P ?A")
+proof
+  fix xs ys zs
+  assume "xs \<in> ?A" and "ys \<in> ?A" and "zs \<in> ?A"
+    and "?P xs ys" and "?P ys zs"
+  moreover then have "list_hembeq P xs ys" and "list_hembeq P ys zs"
+    and "xs \<noteq> ys" and "ys \<noteq> zs" unfolding list_hemb_def by auto
+  ultimately have "list_hembeq P xs zs"
+    using transp_on_list_hembeq [OF trans]
+    unfolding transp_on_def by blast
+  moreover have "xs \<noteq> zs"
+  proof
+    assume "xs = zs"
+    moreover from list_hembeq_length and `list_hembeq P xs ys` and `list_hembeq P ys zs`
+      have "length xs \<le> length ys" and "length ys \<le> length zs" by blast+
+    ultimately have "length xs = length ys" and "length ys = length zs" by auto
+    with list_hembeq_eq_length_le and `list_hembeq P xs ys` and `list_hembeq P ys zs`
+      have *: "\<forall>i<length xs. P\<^sup>=\<^sup>= (xs!i) (ys!i)"
+      and **: "\<forall>i<length ys. P\<^sup>=\<^sup>= (ys!i) (zs!i)" by blast+
+    show False
+    proof (cases "\<exists>i<length xs. P (xs!i) (ys!i) \<and> P (ys!i) (zs!i)")
+      case True
+      then obtain i where "i < length xs"
+        and "P (xs ! i) (ys ! i)" and "P (ys ! i) (zs ! i)" by blast+
+      moreover have "xs ! i \<in> A" and "ys ! i \<in> A" and "zs ! i \<in> A"
+        using `xs \<in> ?A` and `ys \<in> ?A` and `zs \<in> ?A`
+        and `i < length xs`
+        and `length xs = length ys`
+        and `length ys = length zs`
+        by auto
+      ultimately have "P (xs ! i) (zs ! i)"
+        using trans
+        unfolding transp_on_def
+        by blast
+      with irrefl and `xs ! i \<in> A` and `zs ! i \<in> A`
+        have "xs ! i \<noteq> zs ! i" unfolding irreflp_on_def by auto
+      with `xs = zs` and `i < length xs`
+        and `length xs = length ys`
+        and `length ys = length zs`
+        show False by auto
+    next
+      case False
+      with * and ** and `length xs = length ys`
+        have "\<forall>i<length xs. xs ! i = ys ! i \<or> ys ! i = zs ! i" by auto
+      with `xs = zs` and `xs \<noteq> ys` and `ys \<noteq> zs`
+        show False using `length xs = length ys`
+        by (metis list_eq_iff_nth_eq)
+    qed
+  qed
+  ultimately show "?P xs zs" by (auto simp: list_hemb_def)
+qed
+
+lemma list_hemb_imp_list_hemb_reflclp:
+  "list_hembeq P xs ys \<Longrightarrow> list_hembeq (P\<^sup>=\<^sup>=) xs ys"
+  by (induct rule: list_hembeq.induct) auto
+
+lemma reflclp_list_hemb [simp]:
+  "(list_hemb P)\<^sup>=\<^sup>= = list_hembeq (P\<^sup>=\<^sup>=)" (is "?l = ?r")
+proof (intro ext)
+  fix xs ys
+  show "?l xs ys = ?r xs ys"
+  proof
+    assume "?l xs ys"
+    then show "?r xs ys"
+      by (auto elim: list_hemb_imp_list_hemb_reflclp simp: list_hemb_def)
+  next
+    assume "?r xs ys"
+    then show "?l xs ys"
+      by (induct rule: list_hembeq.induct)
+         (auto simp: list_hemb_def)
+  qed
+qed
+
+lemma almost_full_on_list_hemb:
+  assumes "almost_full_on (P\<^sup>=\<^sup>=) A"
+  shows "almost_full_on ((list_hemb P)\<^sup>=\<^sup>=) (lists A)"
+  using almost_full_on_lists [OF assms] by simp
 
 
 subsection {* Special Case: Finite Sets *}
