@@ -113,12 +113,12 @@ qed
 
 subsection "Points of the real projective plane"
 
-typedef (open) proj2 = "(real_vector.non_zero_vectors :: (real^3) set)//real_vector.proportionality"
+typedef proj2 = "(real_vector.non_zero_vectors :: (real^3) set)//real_vector.proportionality"
 proof
-  from basis_nonzero
-  have "(basis 1 :: real^3) \<in> real_vector.non_zero_vectors"
-    unfolding real_vector.non_zero_vectors_def by simp
-  thus "real_vector.proportionality `` {basis 1} \<in> (real_vector.non_zero_vectors :: (real^3) set)//real_vector.proportionality"
+  have "(axis 1 1 :: real^3) \<in> real_vector.non_zero_vectors"
+    unfolding real_vector.non_zero_vectors_def 
+    by (simp add: axis_def vec_eq_iff[where 'a="real"])
+  thus "real_vector.proportionality `` {axis 1 1} \<in> (real_vector.non_zero_vectors :: (real^3) set)//real_vector.proportionality"
     unfolding quotient_def 
     by auto
 qed
@@ -1205,7 +1205,7 @@ qed
 
 subsection "Collineations of the real projective plane"
 
-typedef (open) cltn2 =
+typedef cltn2 =
   "(Collect invertible :: (real^3^3) set)//invertible_proportionality"
 proof
   from matrix_id_invertible have "(mat 1 :: real^3^3) \<in> Collect invertible"
@@ -1873,7 +1873,7 @@ lemma statement52_existence:
   fixes a :: "proj2^3" and a3 :: "proj2"
   assumes "proj2_no_3_Col (insert a3 (range (op $ a)))"
   shows "\<exists> A. apply_cltn2 (proj2_abs (vector [1,1,1])) A = a3 \<and>
-  (\<forall> j. apply_cltn2 (proj2_abs (basis (\<pi>' j))) A = a$j)"
+  (\<forall> j. apply_cltn2 (proj2_abs (axis j 1)) A = a$j)"
 proof -
   let ?v = "proj2_rep a3"
   let ?B = "proj2_rep ` range (op $ a)"
@@ -2029,30 +2029,30 @@ proof -
   have "apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = proj2_abs ?v" by simp
   with proj2_abs_rep have "apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = a3"
     by simp
-  have "\<forall> j. apply_cltn2 (proj2_abs (basis (\<pi>' j))) ?A = a$j"
+  have "\<forall> j. apply_cltn2 (proj2_abs (axis j 1)) ?A = a$j"
   proof
     fix j :: "3"
-    have "((basis (\<pi>' j))::real^3) \<noteq> 0" by (simp add: vec_eq_iff)
+    have "((axis j 1)::real^3) \<noteq> 0" by (simp add: vec_eq_iff axis_def)
     with apply_cltn2_abs and `invertible ?C`
-    have "apply_cltn2 (proj2_abs (basis (\<pi>' j))) ?A = proj2_abs (basis (\<pi>' j) v* ?C)"
+    have "apply_cltn2 (proj2_abs (axis j 1)) ?A = proj2_abs (axis j 1 v* ?C)"
       by simp
 
     have "\<forall> i\<in>(UNIV-{j}).
-      ((basis (\<pi>' j))$i * c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i)) = 0"
-      by simp
+      ((axis j 1)$i * c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i)) = 0"
+      by (simp add: axis_def)
     with setsum_mono_zero_left [of UNIV "{j}"
-      "\<lambda> i. ((basis (\<pi>' j))$i * c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i))"]
-      and vector_matrix_row [of "basis (\<pi>' j)" ?C]
-    have "(basis (\<pi>' j)) v* ?C = ?C$j" by (simp add: scalar_equiv)
-    hence "(basis (\<pi>' j)) v* ?C = c (proj2_rep (a$j)) *\<^sub>R (proj2_rep (a$j))" by simp
+      "\<lambda> i. ((axis j 1)$i * c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i))"]
+      and vector_matrix_row [of "axis j 1" ?C]
+    have "(axis j 1) v* ?C = ?C$j" by (simp add: scalar_equiv)
+    hence "(axis j 1) v* ?C = c (proj2_rep (a$j)) *\<^sub>R (proj2_rep (a$j))" by simp
     with proj2_abs_mult_rep and `\<forall> i. c (proj2_rep (a$i)) \<noteq> 0`
-      and `apply_cltn2 (proj2_abs (basis (\<pi>' j))) ?A = proj2_abs (basis (\<pi>' j) v* ?C)`
-    show "apply_cltn2 (proj2_abs (basis (\<pi>' j))) ?A = a$j"
+      and `apply_cltn2 (proj2_abs (axis j 1)) ?A = proj2_abs (axis j 1 v* ?C)`
+    show "apply_cltn2 (proj2_abs (axis j 1)) ?A = a$j"
       by simp
   qed
   with `apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = a3`
   show "\<exists> A. apply_cltn2 (proj2_abs (vector [1,1,1])) A = a3 \<and>
-    (\<forall> j. apply_cltn2 (proj2_abs (basis (\<pi>' j))) A = a$j)"
+    (\<forall> j. apply_cltn2 (proj2_abs (axis j 1)) A = a$j)"
     by auto
 qed
 
@@ -2063,9 +2063,9 @@ lemma statement53_existence:
 proof -
   let ?q = "\<chi> i. \<chi> j::3. p$i $ (of_int (Rep_bit1 j))"
   let ?D = "\<chi> i. \<some> D. apply_cltn2 (proj2_abs (vector [1,1,1])) D = p$i$3
-    \<and> (\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) D = ?q$i$j')"
+    \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) D = ?q$i$j')"
   have "\<forall> i. apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$i) = p$i$3
-    \<and> (\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$i) = ?q$i$j')"
+    \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$i) = ?q$i$j')"
   proof
     fix i
     have "range (op $ (p$i)) = insert (p$i$3) (range (op $ (?q$i)))"
@@ -2085,18 +2085,18 @@ proof -
     ultimately have "proj2_no_3_Col (insert (p$i$3) (range (op $ (?q$i))))"
       by simp
     hence "\<exists> D. apply_cltn2 (proj2_abs (vector [1,1,1])) D = p$i$3
-      \<and> (\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) D = ?q$i$j')"
+      \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) D = ?q$i$j')"
       by (rule statement52_existence)
     with someI_ex [of "\<lambda> D. apply_cltn2 (proj2_abs (vector [1,1,1])) D = p$i$3
-      \<and> (\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) D = ?q$i$j')"]
+      \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) D = ?q$i$j')"]
     show "apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$i) = p$i$3
-      \<and> (\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$i) = ?q$i$j')"
+      \<and> (\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$i) = ?q$i$j')"
       by simp
   qed
   hence "apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$0) = p$0$3"
     and "apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$1) = p$1$3"
-    and "\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$0) = ?q$0$j'"
-    and "\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$1) = ?q$1$j'"
+    and "\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$0) = ?q$0$j'"
+    and "\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$1) = ?q$1$j'"
     by simp_all
 
   let ?C = "cltn2_compose (cltn2_inverse (?D$0)) (?D$1)"
@@ -2118,16 +2118,16 @@ proof -
     next
       assume "j \<noteq> 3"
       with eq_3_or_of_3 obtain j' :: 3 where "j = of_int (Rep_bit1 j')" by auto
-      with `\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$0) = ?q$0$j'`
-        and `\<forall> j'. apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$1) = ?q$1$j'`
-      have "p$0$j = apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$0)"
-        and "p$1$j = apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$1)"
+      with `\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$0) = ?q$0$j'`
+        and `\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$1) = ?q$1$j'`
+      have "p$0$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$0)"
+        and "p$1$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$1)"
         by simp_all
-      from `p$0$j = apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$0)`
+      from `p$0$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$0)`
         and cltn2.act_inv_iff
-      have "apply_cltn2 (p$0$j) (cltn2_inverse (?D$0)) = proj2_abs (basis (\<pi>' j'))"
+      have "apply_cltn2 (p$0$j) (cltn2_inverse (?D$0)) = proj2_abs (axis j' 1)"
         by simp
-      with `p$1$j = apply_cltn2 (proj2_abs (basis (\<pi>' j'))) (?D$1)`
+      with `p$1$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$1)`
         and cltn2.act_act [of "cltn2_inverse (?D$0)" "?D$1" "p$0$j"]
       show "apply_cltn2 (p$0$j) ?C = p$1$j" by simp
     qed
