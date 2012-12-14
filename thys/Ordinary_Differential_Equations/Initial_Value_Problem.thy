@@ -432,6 +432,7 @@ proof (rule lipschitzI)
       apply (subst Abs_bcontfun_inverse) defer
       apply (subst Abs_bcontfun_inverse) defer
       apply (simp add: clamp_def)
+      unfolding Basis_real_def
       apply (auto intro!: P_inner_bcontfun elim!: bcontfunE intro: continuous_on_subset)
       done
   }
@@ -734,7 +735,7 @@ text{*\label{sec:pl-rect}*}
 locale rectangle = ivp_on_interval +
   fixes b
   assumes b_nonneg: "b \<ge> 0"
-  assumes rectangle: "D = {x0 - (\<chi>\<chi> i. b)..x0 + (\<chi>\<chi> i. b)}"
+  assumes rectangle: "D = {x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)..x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)}"
 
 locale solution_in_rectangle = rectangle + continuous I D f +
   fixes B
@@ -833,15 +834,15 @@ proof -
             thus "False" using t_bound \<xi> by (simp add: dist_real_def)
           qed
           with \<xi> t_bound have norm_lt: "norm (x \<xi> - x t0) < b" by auto
-          have "x \<xi> \<ge> x0 - (\<chi>\<chi> i. b) \<and> x \<xi> \<le> x0 + (\<chi>\<chi> i. b)"
+          have "x \<xi> \<ge> x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i) \<and> x \<xi> \<le> x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)"
           proof (rule ccontr)
-            assume "\<not> (x0 - (\<chi>\<chi> i. b) \<le> x \<xi> \<and> x \<xi> \<le> x0 + (\<chi>\<chi> i. b))"
-            hence "\<exists>i<DIM('a). \<not> x \<xi> $$ i \<le> x0 $$ i + b \<or> \<not> x0 $$ i - b \<le> x \<xi> $$ i"
-              by (auto simp add: eucl_le[where x = "x \<xi>"] eucl_le[where y = "x \<xi>"])
+            assume "\<not> (x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i) \<le> x \<xi> \<and> x \<xi> \<le> x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i))"
+            hence "\<exists>i\<in>Basis. \<not> x \<xi> \<bullet> i \<le> x0 \<bullet> i + b \<or> \<not> x0 \<bullet> i - b \<le> x \<xi> \<bullet> i"
+              by (auto simp add: eucl_le[where x = "x \<xi>"] eucl_le[where y = "x \<xi>"] inner_simps)
             then guess i .. note i = this
-            then have "i < DIM('a)" "b < norm ((x \<xi> - x t0) $$ i)"
+            then have "i \<in> Basis" "b < norm ((x \<xi> - x t0) \<bullet> i)"
               using x_sol.is_solutionD[OF x_sol]
-              by auto
+              by (auto simp: inner_simps)
             moreover have "... \<le> norm (x \<xi> - x t0)" using norm_nth_le[of i "x \<xi> - x t0"] i
               by simp
             ultimately
@@ -863,45 +864,45 @@ proof -
       proof cases
         assume "t = T"
         have "x t0 = x0" using x_sol.is_solutionD[OF x_sol] by simp
-        have "x T \<ge> x0 - (\<chi>\<chi> i. b) \<and> x T \<le> x0 + (\<chi>\<chi> i. b)"
+        have "x T \<ge> x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i) \<and> x T \<le> x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)"
         proof (rule ccontr)
-          assume not_le: "\<not> (x0 - (\<chi>\<chi> i. b) \<le> x T \<and> x T \<le> x0 + (\<chi>\<chi> i. b))"
-          hence "\<exists>i<DIM('a). \<not> x T $$ i \<le> x0 $$ i + b \<or> \<not> x0 $$ i - b \<le> x T $$ i"
-            by (auto simp add: eucl_le[where x = "x T"] eucl_le[where y = "x T"])
+          assume not_le: "\<not> (x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i) \<le> x T \<and> x T \<le> x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i))"
+          hence "\<exists>i\<in>Basis. \<not> x T \<bullet> i \<le> x0 \<bullet> i + b \<or> \<not> x0 \<bullet> i - b \<le> x T \<bullet> i"
+            by (auto simp add: eucl_le[where x = "x T"] eucl_le[where y = "x T"] inner_simps)
           then guess i .. note i = this
-          from i[THEN conjunct2]
+          from i(2)
           show False
           proof safe
-            assume H: "\<not> x T $$ i \<le> x0 $$ i + b"
-            hence "\<exists>s\<in>{t0..T}. x s $$ i = x0 $$ i + b"
+            assume H: "\<not> x T \<bullet> i \<le> x0 \<bullet> i + b"
+            hence "\<exists>s\<in>{t0..T}. x s \<bullet> i = x0 \<bullet> i + b"
               using interval_notempty x_sol.solution_continuous_on[OF x_sol]
                 `x t0 = x0` b_nonneg
               by (auto intro: ivt_increasing_component_on_1 simp: interval)
             then guess s .. note s = this
             have "s \<in> {t \<in> {t0..T}. norm (x t - x t0) \<in> {b..}}"
             proof safe
-              have "b \<le> norm ((x s - x t0)$$i)"
-                using s by (simp add: `x t0 = x0`)
+              have "b \<le> norm ((x s - x t0)\<bullet>i)"
+                using s by (simp add: `x t0 = x0` inner_simps)
               also have "... \<le> norm (x s - x t0)"
-                using i[THEN conjunct1]
+                using i(1)
                 by (rule norm_nth_le)
               finally show "b \<le> norm (x s - x t0)" .
             qed (insert s, simp)
             with exceeding have "s = T" by auto
             with s H show False by simp
           next
-            assume H: "\<not> x0 $$ i - b \<le> x T $$ i"
-            hence "\<exists>s\<in>{t0..T}. x s $$ i = x0 $$ i - b"
+            assume H: "\<not> x0 \<bullet> i - b \<le> x T \<bullet> i"
+            hence "\<exists>s\<in>{t0..T}. x s \<bullet> i = x0 \<bullet> i - b"
               using interval_notempty x_sol.solution_continuous_on[OF x_sol]
                 `x t0 = x0` b_nonneg
               by (auto intro: ivt_decreasing_component_on_1 simp: interval)
             then guess s .. note s = this
             have "s \<in> {t \<in> {t0..T}. norm (x t - x t0) \<in> {b..}}"
             proof safe
-              have "b \<le> norm ((x s - x t0)$$i)"
-                using s by (simp add: `x t0 = x0`)
+              have "b \<le> norm ((x s - x t0)\<bullet>i)"
+                using s by (simp add: `x t0 = x0` inner_simps)
               also have "... \<le> norm (x s - x t0)"
-                using i[THEN conjunct1]
+                using i(1)
                 by (rule norm_nth_le)
               finally show "b \<le> norm (x s - x t0)" .
             qed (insert s, simp)
@@ -912,15 +913,15 @@ proof -
         with `t = T` show "x t \<in> D" by (simp add: rectangle)
       next
         assume "t \<noteq> T"
-        have "x t \<ge> x0 - (\<chi>\<chi> i. b) \<and> x t \<le> x0 + (\<chi>\<chi> i. b)"
+        have "x t \<ge> x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i) \<and> x t \<le> x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)"
         proof (rule ccontr)
-          assume not_le: "\<not> (x0 - (\<chi>\<chi> i. b) \<le> x t \<and> x t \<le> x0 + (\<chi>\<chi> i. b))"
-          hence "\<exists>i<DIM('a). \<not> x t $$ i \<le> x0 $$ i + b \<or> \<not> x0 $$ i - b \<le> x t $$ i"
-            by (auto simp add: eucl_le[where x = "x t"] eucl_le[where y = "x t"])
+          assume not_le: "\<not> (x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i) \<le> x t \<and> x t \<le> x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i))"
+          hence "\<exists>i\<in>Basis. \<not> x t \<bullet> i \<le> x0 \<bullet> i + b \<or> \<not> x0 \<bullet> i - b \<le> x t \<bullet> i"
+            by (auto simp add: eucl_le[where x = "x t"] eucl_le[where y = "x t"] inner_simps)
           then guess i .. note i = this
-          then have "i < DIM('a)" "b < norm ((x t - x t0) $$ i)"
+          then have "i \<in> Basis" "b < norm ((x t - x t0) \<bullet> i)"
             using x_sol.is_solutionD[OF x_sol]
-            by auto
+            by (auto simp add: inner_simps)
           moreover have "... \<le> norm (x t - x t0)"
             using norm_nth_le[of i "x t - x t0"] i by simp
           ultimately have b_lt: "b < norm (x t - x t0)" by simp
@@ -965,22 +966,18 @@ end
 
 sublocale unique_on_rectangle \<subseteq> unique_solution
 proof -
-  have "D \<noteq> {}" using rectangle b_nonneg by (simp add: interval_ne_empty)
+  have "D \<noteq> {}" using rectangle b_nonneg by (simp add: interval_ne_empty inner_simps)
   hence not_empty: "{t0..T}\<times>D \<noteq> {}" using interval iv_defined by simp
   {
     fix t::real and x y
-    let ?fc = "ext_cont f (t0,x0 - (\<chi>\<chi> i. b)) (T,x0 + (\<chi>\<chi> i. b))"
-    let ?ca_x = "clamp (t0, x0 - (\<chi>\<chi> i. b)) (T, x0 + (\<chi>\<chi> i. b)) (t, x)"
-    let ?ca_y = "clamp (t0, x0 - (\<chi>\<chi> i. b)) (T, x0 + (\<chi>\<chi> i. b)) (t, y)"
+    let ?fc = "ext_cont f (t0,x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) (T,x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i))"
+    let ?ca_x = "clamp (t0, x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) (T, x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)) (t, x)"
+    let ?ca_y = "clamp (t0, x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) (T, x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)) (t, y)"
     assume "t \<in> {t0..T}"
-    hence fst_x: "fst (?ca_x) = t"
-      "fst (?ca_y) = t"
-      by (auto simp add: fst_eq_component_zero clamp_def)
-    (auto simp add: fst_eq_component_zero[symmetric])
-    have "?ca_x \<in> {t0..T}\<times>D"
-      "?ca_y \<in> {t0..T}\<times>D"
-      using clamp_in_interval[OF
-        `{t0..T}\<times>D\<noteq>{}`[unfolded rectangle, folded pair_interval_iff]]
+    hence fst_x: "fst (?ca_x) = t" "fst (?ca_y) = t"
+      by (simp_all add: clamp_def fst_eq_Basis)
+    have "?ca_x \<in> {t0..T}\<times>D" "?ca_y \<in> {t0..T}\<times>D"
+      using clamp_in_interval[OF `{t0..T}\<times>D\<noteq>{}`[unfolded rectangle, folded pair_interval_iff]]
       unfolding rectangle by auto
     hence "(fst (?ca_x), snd (?ca_x)) \<in> {t0..T}\<times>D" "(fst (?ca_y), snd (?ca_y)) \<in> {t0..T}\<times>D"
       by auto
@@ -1011,7 +1008,7 @@ proof -
       by (simp add: dist_Pair_Pair)
   }
   then interpret ivp_c: unique_on_strip
-    "i\<lparr>ivp_f:=ext_cont f (t0,x0 - (\<chi>\<chi> i. b)) (T,x0 + (\<chi>\<chi> i. b)), ivp_D:=UNIV\<rparr>"
+    "i\<lparr>ivp_f:=ext_cont f (t0,x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) (T,x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)), ivp_D:=UNIV\<rparr>"
     using interval continuous rectangle lipschitz iv_defined
     apply unfold_locales
     apply (auto intro!:
@@ -1029,7 +1026,7 @@ proof -
       fix t assume "t \<in> I"
       moreover
       hence "(ivp_c.solution has_vector_derivative
-        ext_cont f (t0, x0 - (\<chi>\<chi> i. b)) (T, x0 + (\<chi>\<chi> i. b)) (t, ivp_c.solution t))
+        ext_cont f (t0, x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) (T, x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i)) (t, ivp_c.solution t))
         (at t within {t0..T})"
         using ivp_c.solution_has_deriv interval by auto
       moreover

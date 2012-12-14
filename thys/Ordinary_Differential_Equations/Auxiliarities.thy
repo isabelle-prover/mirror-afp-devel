@@ -10,30 +10,24 @@ lemma sqrt_le_rsquare:
   shows "x\<twosuperior> \<le> y"
   using assms real_sqrt_le_iff[of "x\<twosuperior>"] by simp
 
-lemma fst_eq_component_zero':
-  shows "fst (x, y) = (x, y) $$ 0" 
-  by (simp add: euclidean_component_def basis_prod_def)
+lemma fst_Basis[simp]: "i \<in> Basis \<Longrightarrow> (i, 0) \<in> Basis"
+  by (simp add: Basis_prod_def)
 
-lemma snd_eq_component_plus':
-  fixes x::"'a::euclidean_space"
-  shows "snd (x, y) $$ i = (x, y) $$ (i + DIM('a))" 
-  by (simp add: euclidean_component_def basis_prod_def)
+lemma snd_Basis[simp]: "i \<in> Basis \<Longrightarrow> (0, i) \<in> Basis"
+  by (simp add: Basis_prod_def)
 
-lemma snd_eq_component_plus:
-  fixes x::"real\<times>'a::euclidean_space"
-  shows "snd x $$ i = x $$ (Suc i)" 
-  using snd_eq_component_plus'[of "fst x" "snd x"]
-  by simp
+lemma fst_eq_Basis: 
+  fixes a :: "('a::euclidean_space) \<times> ('b::euclidean_space)"
+  shows "fst a = (\<Sum>i\<in>Basis. (a \<bullet> (i, 0)) *\<^sub>R i)"
+  by (cases a) (simp add: euclidean_representation)
 
-lemma pair_component_ifthenelse:
-  fixes x::"'a::euclidean_space" and y::"'b::euclidean_space"
-  shows "(x, y) $$ i = (if i < DIM('a) then x $$ i else y $$ (i - DIM('a)))"
-  by (simp add: euclidean_component_def basis_prod_def)
+lemma snd_eq_Basis: 
+  fixes a :: "('a::euclidean_space) \<times> ('b::euclidean_space)"
+  shows "snd a = (\<Sum>i\<in>Basis. (a \<bullet> (0, i)) *\<^sub>R i)"
+  by (cases a) (simp add: euclidean_representation)
 
-lemma fst_eq_component_zero:
-  shows "fst x = x $$ 0"
-  using fst_eq_component_zero'[of "fst x" "snd x"]
-  by simp
+lemma in_prod_Basis_iff: "(i, j) \<in> Basis \<longleftrightarrow> (j = 0 \<and> i \<in> Basis) \<or> (i = 0 \<and> j \<in> Basis)" 
+  by (auto simp: Basis_prod_def)
 
 lemma setsum_ge_element:
   fixes f::"'a \<Rightarrow> ('b::ordered_comm_monoid_add)"
@@ -50,8 +44,8 @@ qed
 
 lemma norm_nth_le:
   fixes x::"'a::euclidean_space"
-  assumes "i < DIM('a)"
-  shows "norm (x $$ i) \<le> norm x"
+  assumes "i \<in> Basis"
+  shows "norm (x \<bullet> i) \<le> norm x"
   unfolding norm_conv_dist euclidean_dist_l2[of x] setL2_def
   by (auto intro!: real_le_rsqrt setsum_ge_element assms)
 
@@ -59,39 +53,29 @@ subsection {* Pairs *}
 
 subsubsection {* Ordering on Pairs *}
 
+lemma pair_le_iff[simp]:
+  fixes a1 b1::"'a::ordered_euclidean_space"
+  fixes a2 b2::"'b::ordered_euclidean_space"
+  shows "(a1, a2) \<le> (b1, b2) \<longleftrightarrow> a1 \<le> b1 \<and> a2 \<le> b2"
+  by (simp add: eucl_le[of "(a1, a2)"] eucl_le[of a1] eucl_le[of a2] Basis_prod_def ball_Un)
+
 lemma pair_le_intro[intro]:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "a1 \<le> b1" "a2 \<le> b2"
-  shows "(a1, a2) \<le> (b1, b2)"
-  using assms
-  by (auto simp add: eucl_le[of "(a1, a2)"] eucl_le[of a1] eucl_le[of a2]
-    pair_component_ifthenelse)
+  shows "a1 \<le> b1 \<Longrightarrow> a2 \<le> b2 \<Longrightarrow> (a1, a2) \<le> (b1, b2)" 
+  by simp
 
 lemma pair_le_elim1:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "(a1, a2) \<le> (b1, b2)"
-  shows "a1 \<le> b1"
-  using assms
-  by (auto simp add: pair_component_ifthenelse
-    eucl_le[of a1 b1] eucl_le[of a2 b2] eucl_le[of "(a1, a2)" "(b1, b2)"]
-    split: split_if_asm)
+  shows "(a1, a2) \<le> (b1, b2) \<Longrightarrow> a1 \<le> b1"
+  by simp
 
 lemma pair_le_elim2:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "(a1, a2) \<le> (b1, b2)"
-  shows "a2 \<le> b2"
-proof -
-  { fix i assume "i < DIM('b)"
-    with assms have "snd (a1, a2) $$ i \<le> snd (b1, b2) $$ i"
-      unfolding snd_eq_component_plus'
-      by (simp add: eucl_le[of "(a1, a2)" "(b1, b2)"])
-  }
-  thus ?thesis
-  unfolding eucl_le[of a2 b2] by simp
-qed
+  shows "(a1, a2) \<le> (b1, b2) \<Longrightarrow> a2 \<le> b2"
+  by simp
 
 lemma pair_le_elim[elim]:
   fixes a1 b1::"'a::ordered_euclidean_space"
@@ -102,51 +86,32 @@ using assms
 by (auto elim: pair_le_elim1 pair_le_elim2)
 
 lemma pair_interval_ne_empty:
-  assumes "{a1..a2} \<noteq> {}"
-  assumes "{b1..b2} \<noteq> {}"
-  shows "{(a1, b1)..(a2, b2)} \<noteq> {}"
-  using assms
-  by (simp add: interval_ne_empty pair_component_ifthenelse)
+  "{a1..a2} \<noteq> {} \<Longrightarrow> {b1..b2} \<noteq> {} \<Longrightarrow> {(a1, b1)..(a2, b2)} \<noteq> {}"
+  unfolding interval_ne_empty Basis_prod_def ball_Un by simp
 
-lemma pair_le_iff[simp]:
+lemma pair_less_iff[simp]:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) \<le> (b1, b2) \<longleftrightarrow> a1 \<le> b1 \<and> a2 \<le> b2"
-  using pair_le_elim1 pair_le_elim2 pair_le_intro by auto
+  shows "(a1, a2) < (b1, b2) \<longleftrightarrow> a1 < b1 \<and> a2 < b2"
+  by (simp add: eucl_less[of "(a1, a2)"] eucl_less[of a1] eucl_less[of a2] Basis_prod_def ball_Un)
 
 lemma pair_less_intro[intro]:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "a1 < b1" "a2 < b2"
-  shows "(a1, a2) < (b1, b2)"
-  using assms
-  by (auto simp add: eucl_less[of "(a1, a2)"] eucl_less[of a1] eucl_less[of a2]
-    pair_component_ifthenelse)
+  shows "a1 < b1 \<Longrightarrow> a2 < b2 \<Longrightarrow> (a1, a2) < (b1, b2)"
+  by simp
 
 lemma pair_less_elim1:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "(a1, a2) < (b1, b2)"
-  shows "a1 < b1"
-  using assms
-  by (auto simp add: pair_component_ifthenelse
-    eucl_less[of a1 b1] eucl_less[of a2 b2] eucl_less[of "(a1, a2)" "(b1, b2)"]
-    split: split_if_asm)
+  shows "(a1, a2) < (b1, b2) \<Longrightarrow> a1 < b1"
+  by simp
 
 lemma pair_less_elim2:
   fixes a1 b1::"'a::ordered_euclidean_space"
   fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "(a1, a2) < (b1, b2)"
-  shows "a2 < b2"
-proof -
-  { fix i assume "i < DIM('b)"
-    with assms have "snd (a1, a2) $$ i < snd (b1, b2) $$ i"
-      unfolding snd_eq_component_plus'
-      by (simp add: eucl_less[of "(a1, a2)" "(b1, b2)"])
-  }
-  thus ?thesis
-  unfolding eucl_less[of a2 b2] by simp
-qed
+  shows "(a1, a2) < (b1, b2) \<Longrightarrow> a2 < b2"
+  by simp
 
 lemma pair_less_elim[elim]:
   fixes a1 b1::"'a::ordered_euclidean_space"
@@ -155,12 +120,6 @@ lemma pair_less_elim[elim]:
   shows "a1 < b1" and "a2 < b2"
 using assms
 by (auto elim: pair_less_elim1 pair_less_elim2)
-
-lemma pair_less_iff[simp]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) < (b1, b2) \<longleftrightarrow> a1 < b1 \<and> a2 < b2"
-  using pair_less_elim1 pair_less_elim2 pair_less_intro by auto
 
 lemma pair_interval_iff[simp]: "{(a1, a2)..(b1, b2)} = {a1..b1}\<times>{a2..b2}" by auto
 
@@ -430,6 +389,7 @@ proof
     by (cases "a = x") simp_all
 qed auto
 
+(*
 subsubsection {* Experiments on total derivative *}
 
 lemma Pair_real_function_eq_eucl:
@@ -489,6 +449,7 @@ proof -
   thus ?thesis
     by (simp add: H1 H2 Pair_real_function_eq_eucl)
 qed
+*)
 
 subsection {* Integration *}
 

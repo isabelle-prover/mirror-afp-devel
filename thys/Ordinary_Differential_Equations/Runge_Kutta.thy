@@ -210,9 +210,6 @@ proof -
     "\<And>t. t \<in> I \<Longrightarrow> xc t = solution t" unfolding interval by blast
   
   def g \<equiv> "\<lambda>t. (t, xc t)"
-  have "g = (\<lambda>t. (\<chi>\<chi> i. (t, xc t) $$ i))" unfolding g_def by simp
-  also have "... = (\<lambda>t. \<chi>\<chi> i. if i = 0 then t $$ i else xc t $$ (i - DIM(real)))"
-    unfolding pair_component_ifthenelse by simp
   def g' \<equiv> "\<lambda>t. (1::real, f (t, xc t))"
 
   have consistent_xc: "consistent xc t' T B' 1 (euler_increment f)"

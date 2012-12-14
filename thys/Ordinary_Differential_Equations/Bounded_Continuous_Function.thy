@@ -298,22 +298,16 @@ qed
 subsection{* Continuously Extended Functions *}
 
 definition clamp::"'a::ordered_euclidean_space \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where
-"clamp a b x = (\<chi>\<chi> i.
-  if x$$i < a$$i then
-    a$$i
-  else if x$$i \<le> b$$i then
-    x$$i
-  else
-    b$$i)"
+  "clamp a b x = (\<Sum>i\<in>Basis.
+    (if x\<bullet>i < a\<bullet>i then a\<bullet>i else if x\<bullet>i \<le> b\<bullet>i then x\<bullet>i else b\<bullet>i) *\<^sub>R i)"
 
 definition ext_cont::
-  "('a::ordered_euclidean_space \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow>
-  ('a, 'b) bcontfun"
+  "('a::ordered_euclidean_space \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> ('a, 'b) bcontfun"
   where "ext_cont f a b = Abs_bcontfun ((\<lambda>x. f (clamp a b x)))"
 
 lemma ext_cont_def':
   "ext_cont f a b =
-  Abs_bcontfun (\<lambda>x. f (\<chi>\<chi> i. if x$$i < a$$i then a$$i else if x$$i \<le> b$$i then x$$i else b$$i))"
+  Abs_bcontfun (\<lambda>x. f (\<Sum>i\<in>Basis. (if x\<bullet>i < a\<bullet>i then a\<bullet>i else if x\<bullet>i \<le> b\<bullet>i then x\<bullet>i else b\<bullet>i) *\<^sub>R i))"
 unfolding ext_cont_def clamp_def ..
 
 lemma clamp_in_interval:
@@ -323,20 +317,14 @@ lemma clamp_in_interval:
   using interval_ne_empty(1)[of a b] assms
   by (auto simp add: eucl_le[of a] eucl_le[where y=b])
 
-lemma component_eq_intro:
-  fixes F::"'a::ordered_euclidean_space"
-  assumes "\<And>i. i < DIM('a) \<Longrightarrow> f i = g i"
-  shows "((\<chi>\<chi> i. f i)::'a) = (\<chi>\<chi> i. g i)"
-unfolding Chi_def using assms by simp
-
 lemma dist_clamps_le_dist_args:
   fixes x::"'a::ordered_euclidean_space"
   assumes "{a..b} \<noteq> {}"
   shows "dist (clamp a b y) (clamp a b x) \<le> dist y x"
 proof -
-    from interval_ne_empty(1)[of a b] assms have "(\<forall>i<DIM('a). a $$ i \<le> b $$ i)" ..
-    hence "(\<Sum>i<DIM('a). (dist (clamp a b y $$ i) (clamp a b x $$ i))\<twosuperior>)
-    \<le> (\<Sum>i<DIM('a). (dist (y $$ i) (x $$ i))\<twosuperior>)"
+    from interval_ne_empty(1)[of a b] assms have "(\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i)" ..
+    hence "(\<Sum>i\<in>Basis. (dist (clamp a b y \<bullet> i) (clamp a b x \<bullet> i))\<twosuperior>)
+    \<le> (\<Sum>i\<in>Basis. (dist (y \<bullet> i) (x \<bullet> i))\<twosuperior>)"
       by (auto intro!: setsum_mono
         simp add: clamp_def dist_real_def real_abs_le_square_iff[symmetric])
     thus ?thesis
@@ -407,24 +395,15 @@ declare [[coercion Rep_bcontfun]]
 
 lemma ext_cont_cancel[simp]:
   fixes x a b::"'a::ordered_euclidean_space"
-  assumes "x \<in> {a..b}"
+  assumes x: "x \<in> {a..b}"
   assumes "continuous_on {a..b} f"
   shows "ext_cont f a b x = f x"
   using assms
   unfolding ext_cont_def
 proof (subst Abs_bcontfun_inverse[OF clamp_bcontfun])
   show "f (clamp a b x) = f x"
-    unfolding clamp_def
-  proof (intro arg_cong[where f=f])
-    from assms have "\<forall>i < DIM('a).
-      (if x $$ i < a $$ i then a $$ i else
-      if x $$ i \<le> b $$ i then x $$ i else b $$ i) = x $$ i"
-      using eucl_le[of a x] eucl_le[of x b] by auto
-    hence "(\<chi>\<chi> i. if x $$ i < a $$ i then a $$ i else if x $$ i \<le> b $$ i then x $$ i else b $$ i) =
-      ((\<chi>\<chi> i. x $$ i)::'a)" unfolding Chi_def by auto
-    thus "(\<chi>\<chi> i. if x $$ i < a $$ i then a $$ i else if x $$ i \<le> b $$ i then x $$ i else b $$ i) = x"
-      by simp
-  qed
+    using x unfolding clamp_def mem_interval
+    by (intro arg_cong[where f=f] euclidean_eqI[where 'a='a]) (simp add: not_less)
 qed auto
 
 end

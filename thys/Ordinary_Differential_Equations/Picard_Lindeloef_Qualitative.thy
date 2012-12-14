@@ -9,55 +9,54 @@ subsubsection {* Local Solution with local Lipschitz *}
 text{*\label{sec:qpl-lipschitz}*}
 
 lemma cube_in_cball':
-  fixes x y :: "'a::ordered_euclidean_space"
+  fixes x y :: "'a::euclidean_space"
   assumes "r > 0"
-  assumes "\<And>i. i < DIM('a) \<Longrightarrow> dist (x $$ i) (y $$ i) \<le> r / sqrt(DIM('a))"
+  assumes "\<And>i. i\<in> Basis \<Longrightarrow> dist (x \<bullet> i) (y \<bullet> i) \<le> r / sqrt(DIM('a))"
   shows "y \<in> cball x r"
   unfolding mem_cball euclidean_dist_l2[of x y] setL2_def
 proof -
-  have "(\<Sum>i<DIM('a). (dist (x $$ i) (y $$ i))\<twosuperior>) \<le> (\<Sum>i<DIM('a). (r / sqrt(DIM('a)))\<twosuperior>)"
+  have "(\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<twosuperior>) \<le> (\<Sum>(i::'a)\<in>Basis. (r / sqrt(DIM('a)))\<twosuperior>)"
   proof (intro setsum_mono)
-    fix i
-    assume "i \<in> {..<DIM('a)}"
-    thus "(dist (x $$ i) (y $$ i))\<twosuperior> \<le> (r / sqrt(DIM('a)))\<twosuperior>"
+    fix i :: 'a
+    assume "i \<in> Basis"
+    thus "(dist (x \<bullet> i) (y \<bullet> i))\<twosuperior> \<le> (r / sqrt(DIM('a)))\<twosuperior>"
       using assms
       by (auto intro: sqrt_le_rsquare)
   qed
   moreover
   have "... \<le> r\<twosuperior>"
-    using assms
-    by (simp add: power_divide real_eq_of_nat)
+    using assms by (simp add: power_divide real_eq_of_nat)
   ultimately
-  show "sqrt (\<Sum>i<DIM('a). (dist (x $$ i) (y $$ i))\<twosuperior>) \<le> r"
+  show "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<twosuperior>) \<le> r"
     using assms by (auto intro!: real_le_lsqrt real_le_lsqrt setsum_nonneg)
 qed
 
 lemma cube_in_cball:
   fixes x::"'a::ordered_euclidean_space"
   assumes "0 < r"
-  shows "\<exists>b > 0. b \<le> r \<and> (\<exists>B. B = Chi (\<lambda>x. b) \<and> (\<forall>y \<in> {x - B..x + B}. y \<in> cball x r))"
+  shows "\<exists>b > 0. b \<le> r \<and> (\<exists>B. B = (\<Sum>i\<in>Basis. b *\<^sub>R i) \<and> (\<forall>y \<in> {x - B..x + B}. y \<in> cball x r))"
 proof (rule, safe)
   have "r / sqrt (real DIM('a)) \<le> r / 1"
     using assms DIM_positive by (intro divide_left_mono) auto
   thus "r / sqrt (real DIM('a)) \<le> r" by simp
 next
-  show "(\<exists>B. B = Chi (\<lambda>x. r / sqrt (real DIM('a))) \<and> (\<forall>y \<in> {x - B..x + B}. y \<in> cball x r))"
+  let ?B = "\<Sum>i\<in>Basis. (r / sqrt (real DIM('a))) *\<^sub>R i"
+  show "\<exists>B. B = ?B \<and> (\<forall>y \<in> {x - B..x + B}. y \<in> cball x r)"
   proof (rule, safe)
     fix y::'a
-    assume "y \<in> {x - Chi (\<lambda>i. r / sqrt (real DIM('a)))..x + Chi (\<lambda>i. r / sqrt (real DIM('a)))}"
-    hence bounds:
-      "x - Chi (\<lambda>i. r / sqrt (real DIM('a))) \<le> y"
-      "y \<le> x + Chi (\<lambda>i. r / sqrt (real DIM('a)))"
+    assume "y \<in> {x - ?B..x + ?B}"
+    hence bounds: "x - ?B \<le> y" "y \<le> x + ?B"
       by auto
     show "y \<in> cball x r" 
     proof (intro cube_in_cball')
-      fix i
-      assume "i < DIM('a)"
+      fix i :: 'a
+      assume "i\<in> Basis"
       with bounds[simplified eucl_le[where y = y] eucl_le[where x = y]]
       have bounds_comp:
-        "x $$ i - r / sqrt (real DIM('a)) \<le> y $$ i"
-        "y $$ i \<le> x $$ i + r / sqrt (real DIM('a))" by auto
-      thus "dist (x $$ i) (y $$ i) \<le> r / sqrt (real DIM('a))"
+        "x \<bullet> i - r / sqrt (real DIM('a)) \<le> y \<bullet> i"
+        "y \<bullet> i \<le> x \<bullet> i + r / sqrt (real DIM('a))"
+        by (auto simp: inner_simps)
+      thus "dist (x \<bullet> i) (y \<bullet> i) \<le> r / sqrt (real DIM('a))"
         unfolding dist_real_def by simp
     qed (auto simp add: assms)
   qed (rule)
@@ -87,27 +86,27 @@ proof -
   from this[THEN open_contains_cball_eq] iv_defined
   have "\<exists>e>0. cball (t0, x0) e \<subseteq> (I\<times>D)" by auto
   then guess v .. note v = this
+  let ?C = "\<lambda>c. \<Sum>i\<in>Basis. c *\<^sub>R i"
   have "0 < Min {u, v, 1/L}" using u v L by simp
   hence
-    "\<exists>b > 0. b \<le> Min {u, v, 1 / (2*L)} \<and> (\<exists>B. B = (\<chi>\<chi> x. b) \<and> (\<forall>p \<in> {(t0, x0) - B..(t0, x0) + B}. p \<in> cball (t0, x0) (Min {u, v, 1 / (2 *L)})))"
+    "\<exists>b > 0. b \<le> Min {u, v, 1 / (2*L)} \<and> (\<exists>B. B = ?C b \<and> (\<forall>p \<in> {(t0, x0) - B..(t0, x0) + B}. p \<in> cball (t0, x0) (Min {u, v, 1 / (2 *L)})))"
     by (intro cube_in_cball) simp_all
   then guess a .. note a = this
   from this[THEN conjunct2, THEN conjunct2] guess A .. note A = this
-  have inclusion: "\<forall>(t, x) \<in> {(t0, x0 - (\<chi>\<chi> i. a))..(t0 + a, x0 + (\<chi>\<chi> i. a))}.
-    (t, x) \<in> cball (t0, x0) u \<inter> (I\<times>D)"
+  have inclusion: "\<forall>(t, x) \<in> {(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)}. (t, x) \<in> cball (t0, x0) u \<inter> (I\<times>D)"
   proof (rule, rule)
     fix tx
     fix t x
-    assume "tx \<in> {(t0, x0 - (\<chi>\<chi> i. a))..(t0 + a, x0 + (\<chi>\<chi> i. a))}" "tx = (t, x)"
+    assume "tx \<in> {(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)}" "tx = (t, x)"
     hence "(t, x) \<in> {(t0, x0) - A..(t0, x0) + A}"
       unfolding pair_le_iff
       using A a
-      by (auto simp add: eucl_le[where y="(t, x)"] eucl_le[where x="(t, x)"] pair_component_ifthenelse eucl_le[where x=x] eucl_le[where y=x])
+      by (auto simp add: eucl_le[where 'a="real \<times> 'a"] eucl_le[where 'a='a] inner_simps in_prod_Basis_iff)
     with A v show "(t, x)\<in>cball (t0, x0) u \<inter> (I\<times>D)" using iv_defined
       by force
   qed
-  hence subset: "{(t0, x0 - (\<chi>\<chi> i. a))..(t0 + a, x0 + (\<chi>\<chi> i. a))} \<subseteq> cball (t0, x0) u \<inter> (I\<times>D)" by auto
-  def R \<equiv> "{(t0, x0 - (\<chi>\<chi> i. a))..(t0 + a, x0 + (\<chi>\<chi> i. a))}"
+  hence subset: "{(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)} \<subseteq> cball (t0, x0) u \<inter> (I\<times>D)" by auto
+  def R \<equiv> "{(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)}"
   have "R \<subseteq> I\<times>D" using subset by (simp add: R_def)
   have "bounded (f ` R)"
     using continuous_on_subset[where t="R"] `R\<subseteq>I\<times>D` continuous
@@ -117,7 +116,7 @@ proof -
     by (auto simp add: bounded_iff)
   have "0 \<le> norm (f (t0, x0))" using norm_ge_zero[of "f (t0, x0)"] by simp
   also have "... \<le> B" using f_bounded iv_defined R_def a
-    by (auto simp: eucl_le[of x0] eucl_le[where y=x0])
+    by (auto simp: eucl_le[of x0] eucl_le[where y=x0] inner_simps)
   finally have "0 \<le> B" .
   obtain a' where a': "a' > 0" "a' < a / (B+1)" "a' < a"
   proof
@@ -130,8 +129,7 @@ proof -
     show "min (a / (B + 2)) (a / 2) < a" using a by auto
   qed
       --{* new initial value problem *}
-  def j \<equiv> "(i\<lparr>ivp_I := {t0..min (t0 + a') T_max},
-             ivp_D := {x0 - (\<chi>\<chi> i. a)..x0 + (\<chi>\<chi> i. a)}\<rparr>)"
+  def j \<equiv> "(i\<lparr>ivp_I := {t0..min (t0 + a') T_max}, ivp_D := {x0 - ?C a..x0 + ?C a}\<rparr>)"
   have "ivp_I j \<times> ivp_D j\<subseteq>R" using a' by (auto simp add: j_def R_def)
   with `R \<subseteq> I\<times>D` have "ivp_I j \<times> ivp_D j \<subseteq> I\<times>D" by simp
   with continuous have "continuous_on (ivp_I j \<times> ivp_D j) f" 
@@ -139,8 +137,8 @@ proof -
   moreover
   {
     fix t x y
-    assume "t \<in> {t0..t0 + a}" "x \<in> {x0 - (\<chi>\<chi> i. a)..x0 + (\<chi>\<chi> i. a)}"
-      "y \<in> {x0 - (\<chi>\<chi> i. a)..x0 + (\<chi>\<chi> i. a)}"
+    assume "t \<in> {t0..t0 + a}" "x \<in> {x0 - ?C a..x0 + ?C a}"
+      "y \<in> {x0 - ?C a..x0 + ?C a}"
     with inclusion have "(t, x) \<in> cball (t0, x0) u \<inter> (I\<times>D)"
       "(t, y) \<in> cball (t0, x0) u \<inter> (I\<times>D)"
       by auto
@@ -155,7 +153,7 @@ proof -
   ultimately
   interpret ivp_r: unique_on_rectangle j "min (t0 + a') T_max" a "B+1" L "ivp_D j"
     using a' a L `B\<ge>0` `t0 < T_max`
-    by unfold_locales (auto simp:
+    by unfold_locales (auto simp: inner_simps
       j_def eucl_le[of x0] eucl_le[where y=x0] R_def lipschitz_def)
 
   have "ivp_D j \<subseteq> D"
@@ -574,8 +572,8 @@ proof -
         fix t
         assume "t \<in> {t0..xM}"
         moreover
-        from Inf(1) xM_in interval have "(\<forall>i<DIM(real).
-          t0 $$ i \<le> t $$ i \<and> t $$ i \<le> xM $$ i) \<longrightarrow>
+        from Inf(1) xM_in interval have "(\<forall>i\<in>Basis.
+          t0 \<bullet> i \<le> t \<bullet> i \<and> t \<bullet> i \<le> xM \<bullet> i) \<longrightarrow>
           t \<in> K" unfolding is_interval_def by blast
         hence "t \<in> {t0..xM} \<longrightarrow> t \<in> K" by simp
         ultimately show "t \<in> K" by simp

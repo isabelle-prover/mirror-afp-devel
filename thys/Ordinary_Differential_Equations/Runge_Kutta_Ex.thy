@@ -187,31 +187,22 @@ lemma derivative_of_square_x_minus_t:
   fixes t x::real
   shows "((\<lambda>(t, x). x^2 - t) has_derivative (\<lambda>(dt, dx). 2*x*dx - dt)) (at (t, x))"
 proof -
-  have "((\<lambda>tx. (tx$$1)^2 - tx$$0) has_derivative (\<lambda>dtx. 2*(t, x)$$1*dtx$$1 - dtx$$0)) (at (t, x))"
+  have "((\<lambda>tx. (tx \<bullet> (0,1))^2 - tx \<bullet> (1,0)) has_derivative
+    (\<lambda>dtx. 2 * ((t, x) \<bullet> (0, 1)) * (dtx \<bullet> (0, 1)) - dtx \<bullet> (1, 0))) (at (t, x))"
   proof -
-    have f: "(\<lambda>x. (x $$ 1)\<twosuperior>) = (\<lambda>x. x^2)o(\<lambda>x. x$$1)" by auto
-    have f': "(\<lambda>dtx. 2*(t, x)$$1*dtx$$1) = (op * (of_nat 2 * (t, x)$$1 ^ (2 - 1)))o(\<lambda>h. h$$1)" by auto
-    have "((\<lambda>x. (x $$ 1)\<twosuperior>) has_derivative (\<lambda>h. 2 * (t, x) $$ 1 * h $$ 1)) (at (t, x))"
+    have f: "(\<lambda>x. (x \<bullet> (0,1))\<twosuperior>) = (\<lambda>x. x^2)o(\<lambda>x. x \<bullet> (0,1))" by auto
+    have f': "(\<lambda>dtx. 2*((t, x) \<bullet> (0,1))*(dtx \<bullet> (0,1))) = 
+      (op * (of_nat 2 * ((t, x) \<bullet> (0,1)) ^ (2 - 1)))o(\<lambda>h. h \<bullet> (0,1))" by auto
+    have "((\<lambda>x. (x \<bullet> (0,1))\<twosuperior>) has_derivative (\<lambda>h. 2 * ((t, x) \<bullet> (0,1)) * (h \<bullet> (0,1)))) (at (t, x))"
       unfolding f f'
       by (intro diff_chain_at has_derivative_intros FDERIV_power[unfolded FDERIV_conv_has_derivative])
     thus ?thesis by (intro has_derivative_intros)
   qed
-  moreover have "(\<lambda>tx. (tx $$ 1)\<twosuperior> - tx $$ 0) = (\<lambda>(t, x). x^2 - t)"
-  proof (rule, safe)
-    fix t x
-    show "((t, x) $$ 1)\<twosuperior> - (t, x) $$ 0 = x\<twosuperior> - t"
-      using snd_eq_component_plus'[of t x 0] fst_eq_component_zero'[of t x]
-      by simp
-  qed
-  moreover have "(\<lambda>dtx. 2 * (t, x) $$ 1 * dtx $$ 1 - dtx $$ 0) = (\<lambda>(dt, dx). 2 * x * dx - dt)"
-  proof (rule, safe)
-    fix a b
-    show "2 * (t, x) $$ 1 * (a, b) $$ 1 - (a, b) $$ 0 = 2 * x * b - a"
-      using snd_eq_component_plus'[of a b 0] fst_eq_component_zero'[of a b]
-      using snd_eq_component_plus'[of t x 0] fst_eq_component_zero'[of t x]
-      by simp
-  qed
-  ultimately show ?thesis by simp
+  also have "(\<lambda>tx. (tx \<bullet> (0,1))\<twosuperior> - tx \<bullet> (1,0)) = (\<lambda>(t, x). x^2 - t)"
+    by auto
+  also have "(\<lambda>dtx. 2 * ((t, x) \<bullet> (0,1)) * (dtx \<bullet> (0,1)) - (dtx \<bullet> (1,0))) = (\<lambda>(dt, dx). 2 * x * dx - dt)"
+    by auto
+  finally show ?thesis .
 qed
 
 lemma derivative:
