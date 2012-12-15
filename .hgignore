@@ -20,3 +20,11 @@ thys/ClockSynchInst/document/bound_prec_enh.cvc
 thys/ClockSynchInst/document/bound_prec_enh.ics
 thys/ClockSynchInst/document/bound_prec_enh4.cvc
 thys/ClockSynchInst/document/bound_prec_enh7.cvc
+
+thys/JinjaThreads/Execute/JVM_Execute2.ML
+thys/JinjaThreads/Execute/JWellForm.ML
+thys/JinjaThreads/Execute/J_Execute.ML
+thys/JinjaThreads/JVM_Execute2.ML
+thys/JinjaThreads/JWellForm.ML
+thys/JinjaThreads/J_Execute.ML
+
