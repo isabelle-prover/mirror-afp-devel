@@ -20,3 +20,5 @@ thys/ClockSynchInst/document/bound_prec_enh.cvc
 thys/ClockSynchInst/document/bound_prec_enh.ics
 thys/ClockSynchInst/document/bound_prec_enh4.cvc
 thys/ClockSynchInst/document/bound_prec_enh7.cvc
+
+thys/Well_Quasi_Orders/generated/
