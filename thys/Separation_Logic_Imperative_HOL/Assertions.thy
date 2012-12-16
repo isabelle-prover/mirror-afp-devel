@@ -140,7 +140,7 @@ lemma proper_iff:
   by (metis properD2 relH_in_rangeI(1) relH_sym) 
 
 text {* We encapsulate assertions in their own type *}  
-typedef (open) assn = "Collect proper" 
+typedef assn = "Collect proper" 
   apply simp
   unfolding proper_def 
   by fastforce
