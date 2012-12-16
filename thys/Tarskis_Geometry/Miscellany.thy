@@ -197,9 +197,9 @@ proof -
     and "0 = a * a - 2 * a * b + b * b \<longleftrightarrow> a = b" by auto
   hence "4 * a * b \<le> a * a + 2 * a * b + b * b"
     and "4 * a * b = a * a + 2 * a * b + b * b \<longleftrightarrow> a = b" by auto
-  with right_distrib [of "a + b" a b] and left_distrib [of a b] have
+  with distrib_right [of "a + b" a b] and distrib_left [of a b] have
     "4 * a * b \<le> (a + b) * (a + b)"
-    and "4 * a * b = (a + b) * (a + b) \<longleftrightarrow> a = b" by simp+
+    and "4 * a * b = (a + b) * (a + b) \<longleftrightarrow> a = b" by (simp add: field_simps)+
   with real_sqrt_le_mono [of "4 * a * b" "(a + b) * (a + b)"]
     and real_sqrt_eq_iff [of "4 * a * b" "(a + b) * (a + b)"] have
     "sqrt (4 * a * b) \<le> sqrt ((a + b) * (a + b))"

@@ -11,7 +11,7 @@ theory Open_Induction
 imports
   Main
   "~~/src/HOL/Library/Zorn"
-  "$AFP/Well_Quasi_Orders/Restricted_Predicates"
+  "../Well_Quasi_Orders/Restricted_Predicates"
 begin
 
 

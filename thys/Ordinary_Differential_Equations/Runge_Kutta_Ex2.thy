@@ -43,20 +43,10 @@ sublocale example2 \<subseteq> ex_ivp: example_ivp t0' x0' b r T B L B' h' T' e'
 
 context example2 begin
 
-lemma snd_eq_component_shift:
-  fixes x::"'a::euclidean_space \<times> 'b::euclidean_space"
-  shows "snd x = (\<chi>\<chi> i. x $$ (i + DIM('a)))"
-proof -
-  from snd_eq_component_plus'[of "fst x" "snd x"]
-  have "(\<chi>\<chi> i. snd x $$ i) = (\<chi>\<chi> i. x $$ (i + DIM('a)))" by simp
-  thus ?thesis by (metis euclidean_beta_reduce)
-qed
-
 lemma has_derivative_real_Pair_snd:
-  fixes net ::
-    "(real \<times> real) filter"
+  fixes net :: "(real \<times> real) filter"
   shows "(snd has_derivative snd) net"
-  by (simp add: has_derivative_intros snd_eq_component_shift[abs_def])
+  by (simp add: has_derivative_intros snd_eq_Basis[abs_def])
 
 lemma derivative:
   fixes tx::"real \<times> real"

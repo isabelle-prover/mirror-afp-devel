@@ -711,7 +711,7 @@ qed
 subsection {* Definition of the Klein--Beltrami model of the hyperbolic plane *}
 abbreviation "hyp2 == K2"
 
-typedef (open) hyp2 = K2
+typedef hyp2 = K2
   using K2_centre_in_K2
   by auto
 

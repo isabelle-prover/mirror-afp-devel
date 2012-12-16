@@ -1,0 +1,10 @@
+session "Tarskis_Geometry" (AFP) = HOL +
+  options [timeout = 3600]
+  theories [document = false]
+    "~~/src/HOL/Algebra/Group"
+    "~~/src/HOL/Multivariate_Analysis/Cartesian_Euclidean_Space"
+  theories
+    Hyperbolic_Tarski
+  files
+    "document/root.bib"
+    "document/root.tex"
