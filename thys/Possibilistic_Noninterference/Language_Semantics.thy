@@ -703,7 +703,7 @@ proof-
    have "seq c \<and> (c,s) \<rightarrow>t s1' \<and> (c,s) \<rightarrow>t s2' \<longrightarrow> s1' = s2'"
    apply(induct c arbitrary: s1' s2') by auto
   }
-  thus ?thesis unfolding determOn_def by fastsimp
+  thus ?thesis unfolding determOn_def by fastforce
 qed
 
 end (* context PL *)
