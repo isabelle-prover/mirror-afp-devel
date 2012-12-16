@@ -812,26 +812,21 @@ proof
   ultimately show "?P xs zs" by (auto simp: list_hemb_def)
 qed
 
-lemma list_hemb_imp_list_hemb_reflclp:
-  "list_hembeq P xs ys \<Longrightarrow> list_hembeq (P\<^sup>=\<^sup>=) xs ys"
-  by (induct rule: list_hembeq.induct) auto
-
-lemma reflclp_list_hemb [simp]:
-  "(list_hemb P)\<^sup>=\<^sup>= = list_hembeq (P\<^sup>=\<^sup>=)" (is "?l = ?r")
+lemma list_hembeq_reflclp [simp]:
+  "list_hembeq (P\<^sup>=\<^sup>=) = list_hembeq P" (is "?l = ?r")
 proof (intro ext)
-  fix xs ys
-  show "?l xs ys = ?r xs ys"
+  fix s t
+  show "?l s t = ?r s t"
   proof
-    assume "?l xs ys"
-    then show "?r xs ys"
-      by (auto elim: list_hemb_imp_list_hemb_reflclp simp: list_hemb_def)
+    assume "?l s t" then show "?r s t" by (induct) auto
   next
-    assume "?r xs ys"
-    then show "?l xs ys"
-      by (induct rule: list_hembeq.induct)
-         (auto simp: list_hemb_def)
+    assume "?r s t" then show "?l s t" by (induct) auto
   qed
 qed
+
+lemma reflclp_list_hemb [simp]:
+  "(list_hemb P)\<^sup>=\<^sup>= = list_hembeq P" (is "?l = ?r")
+  by (intro ext) (auto simp: list_hemb_def)
 
 lemma almost_full_on_list_hemb:
   assumes "almost_full_on (P\<^sup>=\<^sup>=) A"
@@ -862,3 +857,4 @@ proof
 qed
 
 end
+
