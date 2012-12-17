@@ -39,6 +39,10 @@ proof -
   } ultimately show ?thesis by blast
 qed
 
+lemma trees_list_intro:
+  "\<forall>t\<in>set ts. t \<in> trees A \<Longrightarrow> ts \<in> trees_list A"
+  by (induct ts) (auto intro: trees_trees_list.intros)
+
 inductive_set
   rec_set
 and
