@@ -108,8 +108,8 @@ end
 subsection {* Lists are Well-Quasi-Ordered *}
 
 text {*If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
-lists of type @{typ "'a list"} are well-quasi-ordered by the embedding
-relation.*}
+lists of type @{typ "'a list"} are well-quasi-ordered by the homeomorphic
+embedding relation.*}
 
 instantiation list :: (wqo) wqo
 begin
@@ -150,8 +150,8 @@ qed
 end
 
 text {*If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
-lists of type @{typ "'a list"} are well-quasi-ordered by the embedding
-relation.*}
+trees of type @{typ "'a tree"} are well-quasi-ordered by the homeomorphic
+embedding relation.*}
 
 instantiation tree :: (wqo) wqo
 begin
