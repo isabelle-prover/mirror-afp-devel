@@ -336,7 +336,7 @@ abbreviation
             \<Rightarrow> 'a
             \<Rightarrow> ('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState Trace
             \<Rightarrow> ('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState Trace"
-      ("_ \<^bsub>\<^esub>\<bowtie>\<^bsub>_\<^esub> _" [50, 1000, 51] 50)
+      ("_ \<^bsub>\<^esub>\<bowtie>\<^bsub>_\<^esub> _" [55, 1000, 56] 55)
 where
   "t \<^bsub>\<^esub>\<bowtie>\<^bsub>a\<^esub> t' \<equiv> tZip (sSplice a) t t'"
 (*<*)
