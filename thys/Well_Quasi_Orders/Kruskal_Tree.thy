@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Kruskal's Tree Theorem *}
+header {* Example Instance of Kruskal's Tree Theorem *}
 
 theory Kruskal_Tree
 imports Kruskal

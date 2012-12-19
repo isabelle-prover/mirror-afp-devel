@@ -1,3 +1,11 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* General Interface for Finite Trees *}
+
 theory Finite_Tree
 imports
   "~~/src/HOL/Library/Sublist"
@@ -208,6 +216,127 @@ where
   base [intro]: "t \<in> set ts \<Longrightarrow> subtree t (mk x ts)" |
   step [intro]: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (mk x ts)"
 
+definition size :: "'a \<Rightarrow> nat" where
+  "size \<equiv>
+    rec (\<lambda>x ts n. n + Suc 0) 0 (\<lambda>t ts m n. m + n + Suc 0)"
+
+definition size_list :: "'a list \<Rightarrow> nat" where
+  "size_list \<equiv>
+    list_rec (\<lambda>x ts n. Suc n) 0 (\<lambda>t ts m n. Suc (m + n))"
+
+lemma size:
+  "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> size (mk x ts) = Suc (size_list ts)"
+  "size_list [] = 0"
+  "t \<in> trees A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> size_list (t # ts) = Suc (size t + size_list ts)"
+  by (simp_all add: size_def size_list_def)
+
+lemma size_simps [simp]:
+  "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow>
+    size (mk x ts) = Suc (list_size size ts)"
+  by (induct ts) (auto simp: size)
+
+lemma size_simp1:
+  "s \<in> set ss \<Longrightarrow> subtree t s \<Longrightarrow> size t < size s \<Longrightarrow> size t < Suc (list_size size ss)"
+  by (induct ss) auto
+
+lemma size_simp2:
+  "t \<in> set ts \<Longrightarrow> size t < Suc (list_size size ts)"
+  by (induct ts) auto
+
+lemmas size_simps' = size_simp1 size_simp2
+
+lemma set_trees_list_trees [simp]:
+  "t \<in> set ts \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> t \<in> trees A"
+  by (induct ts arbitrary: t) auto
+
+lemma subtree_size:
+  "subtree t s \<Longrightarrow> s \<in> trees A \<Longrightarrow> size t < size s"
+  by (induct rule: subtree.induct) (auto simp: size_simps')
+
+lemma mk_trees_trees_list [simp]:
+  "mk x ts \<in> trees A \<Longrightarrow> x \<in> A \<Longrightarrow> ts \<in> trees_list A"
+  by auto
+
+lemma subtree_trees:
+  "subtree s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
+  by (induct rule: subtree.induct) auto
+
+abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
+
+lemma subtreeeq_trees:
+  "subtreeeq s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
+  using subtree_trees by auto
+
+lemma trees_intros:
+  "x \<in> A \<Longrightarrow>
+    \<forall>t\<in>set ts. t \<in> trees A \<Longrightarrow>
+    mk x ts \<in> trees A"
+  by (induct ts) (auto intro: trees_trees_list.intros)
+
+lemma trees_cases [consumes 1, cases set: trees]:
+  assumes "t \<in> trees A"
+    and "\<And>f ts. \<lbrakk>f \<in> A; \<forall>t\<in>set ts. t \<in> trees A; t = mk f ts\<rbrakk> \<Longrightarrow> P"
+  shows "P"
+  using assms by (cases rule: trees.cases) (auto intro: subtree_trees)
+
+lemma root_succs:
+  assumes "t \<in> trees A"
+  shows "mk (root t) (succs t) = t"
+  using assms by (cases t) simp_all
+
+lemma in_succs_imp_subtree:
+  assumes "t \<in> trees A" and "s \<in> set (succs t)"
+  shows "subtree s t"
+  using assms by (cases t) (auto)
+lemma restrict_to_trees_eq_measure_on_trees [simp]:
+  "restrict_to (\<lambda>x y. f x < f y) (trees A) = measure_on f (trees A)"
+  by (intro ext) (auto)
+
+lemma wfp_on_subtree:
+  "wfp_on subtree (trees A)"
+proof -
+  let ?P = "\<lambda>x y. size x < size y"
+  have *: "wfp_on ?P (trees A)"
+    by (rule wfp_on_restrict_to [THEN iffD1]) simp
+  show ?thesis
+    by (auto simp: *
+      intro!: wfp_on_mono [OF subset_refl, of "trees A" subtree ?P] subtree_size)
+qed
+
+lemma subtree_trans:
+  assumes "subtree s t" and "subtree t u" shows "subtree s u"
+  using assms(2, 1)
+  by (induct rule: subtree.induct) (auto)
+
+lemma subtree_nodes_subset:
+  assumes "subtree s t" and "t \<in> trees A" shows "nodes s \<subseteq> nodes t"
+  using assms by (induct) force+
+
+lemma trees_induct_aux:
+  assumes "\<And>f ts. f \<in> A \<Longrightarrow> (\<And>t. \<lbrakk>t \<in> set ts\<rbrakk> \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk f ts)"
+  shows "t \<in> trees A \<Longrightarrow> P t" and "ts \<in> trees_list A \<Longrightarrow> \<forall>t\<in>set ts. P t"
+  by (induct t and ts rule: trees_trees_list.inducts [where ?P2.0 = "\<lambda>ts. \<forall>t\<in>set ts. P t"])
+     (rule assms, auto)
+
+lemma trees_induct [consumes 1, case_names mk, induct set: trees]:
+  assumes "t \<in> trees A"
+    and "\<And>f ts. f \<in> A \<Longrightarrow> (\<And>t. \<lbrakk>t \<in> set ts\<rbrakk> \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk f ts)"
+  shows "P t"
+  using assms and trees_induct_aux(1) by metis
+
+lemma sublisteq_size:
+  assumes "sublisteq ss ts"
+  shows "list_size size ss \<le> list_size size ts"
+  using assms by (induct) auto
+
+lemma not_sublisteq_size: "list_size size ys < list_size size xs \<Longrightarrow> \<not> sublisteq xs ys"
+  by (metis sublisteq_size linorder_not_less)
+
+lemma trees_list_insert:
+  assumes "ss @ ts \<in> trees_list A" and "t \<in> trees A"
+  shows "ss @ t # ts \<in> trees_list A"
+  using assms by (induct ss) auto
+
 lemma list_hembeq_mono:
   assumes "\<And>s t. P s t \<longrightarrow> Q s t"
   shows "list_hembeq P s t \<longrightarrow> list_hembeq Q s t"
@@ -263,102 +392,6 @@ lemma tree_hembeq_subtree:
   assumes "tree_hembeq P s t" and "subtree t u" shows "tree_hembeq P s u"
   using assms(2, 1)
   by (induct rule: subtree.induct) auto
-
-definition size :: "'a \<Rightarrow> nat" where
-  "size \<equiv>
-    rec (\<lambda>x ts n. n + Suc 0) 0 (\<lambda>t ts m n. m + n + Suc 0)"
-
-definition size_list :: "'a list \<Rightarrow> nat" where
-  "size_list \<equiv>
-    list_rec (\<lambda>x ts n. n + Suc 0) 0 (\<lambda>t ts m n. m + n + Suc 0)"
-
-lemma size:
-  "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> size (mk x ts) = size_list ts + Suc 0"
-  "size_list [] = 0"
-  "t \<in> trees A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> size_list (t # ts) = size t + size_list ts + Suc 0"
-  by (simp_all add: size_def size_list_def)
-
-lemma size_simps [simp]:
-  "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow>
-    size (mk x ts) = list_size size ts + Suc 0"
-  by (induct ts) (auto simp: size)
-
-lemma size_simp1:
-  "s \<in> set ss \<Longrightarrow> subtree t s \<Longrightarrow> size t < size s \<Longrightarrow> size t < Suc (list_size size ss)"
-  by (induct ss) auto
-
-lemma size_simp2:
-  "t \<in> set ts \<Longrightarrow> size t < Suc (list_size size ts)"
-  by (induct ts) auto
-
-lemmas size_simps' = size_simp1 size_simp2
-
-lemma set_trees_list_trees [simp]:
-  "t \<in> set ts \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> t \<in> trees A"
-  by (induct ts arbitrary: t) auto
-
-lemma subtree_size:
-  "subtree t s \<Longrightarrow> s \<in> trees A \<Longrightarrow> size t < size s"
-  by (induct rule: subtree.induct) (auto simp: size_simps')
-
-lemma mk_trees_trees_list [simp]:
-  "mk x ts \<in> trees A \<Longrightarrow> x \<in> A \<Longrightarrow> ts \<in> trees_list A"
-  by auto
-
-lemma subtree_trees:
-  "subtree s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
-  by (induct rule: subtree.induct) auto
-
-lemma restrict_to_trees_eq_measure_on_trees [simp]:
-  "restrict_to (\<lambda>x y. f x < f y) (trees A) = measure_on f (trees A)"
-  by (intro ext) (auto)
-
-lemma wfp_on_subtree:
-  "wfp_on subtree (trees A)"
-proof -
-  let ?P = "\<lambda>x y. size x < size y"
-  have *: "wfp_on ?P (trees A)"
-    by (rule wfp_on_restrict_to [THEN iffD1]) simp
-  show ?thesis
-    by (auto simp: *
-      intro!: wfp_on_mono [OF subset_refl, of "trees A" subtree ?P] subtree_size)
-qed
-
-lemma subtree_trans:
-  assumes "subtree s t" and "subtree t u" shows "subtree s u"
-  using assms(2, 1)
-  by (induct rule: subtree.induct) (auto)
-
-lemma subtree_nodes_subset:
-  assumes "subtree s t" and "t \<in> trees A" shows "nodes s \<subseteq> nodes t"
-  using assms by (induct) force+
-  
-lemma trees_induct_aux:
-  assumes "\<And>f ts. f \<in> A \<Longrightarrow> (\<And>t. \<lbrakk>t \<in> set ts\<rbrakk> \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk f ts)"
-  shows "t \<in> trees A \<Longrightarrow> P t" and "ts \<in> trees_list A \<Longrightarrow> \<forall>t\<in>set ts. P t"
-  by (induct t and ts rule: trees_trees_list.inducts [where ?P2.0 = "\<lambda>ts. \<forall>t\<in>set ts. P t"])
-     (rule assms, auto)
-
-lemma trees_induct [consumes 1, case_names mk, induct set: trees]:
-  assumes "t \<in> trees A"
-    and "\<And>f ts. f \<in> A \<Longrightarrow> (\<And>t. \<lbrakk>t \<in> set ts\<rbrakk> \<Longrightarrow> t \<in> trees A \<and> P t) \<Longrightarrow> P (mk f ts)"
-  shows "P t"
-  using assms and trees_induct_aux(1) by metis
-
-lemma sublisteq_size:
-  assumes "sublisteq ss ts"
-  shows "list_size size ss \<le> list_size size ts"
-  using assms by (induct) auto
-
-lemma not_sublisteq_size: "list_size size ys < list_size size xs \<Longrightarrow> \<not> sublisteq xs ys"
-  by (metis sublisteq_size linorder_not_less)
-
-lemma trees_list_insert:
-  assumes "ss @ ts \<in> trees_list A" and "t \<in> trees A"
-  shows "ss @ t # ts \<in> trees_list A"
-  using assms by (induct ss) auto
-
-abbreviation subtreeeq where "subtreeeq \<equiv> subtree\<^sup>=\<^sup>="
 
 lemma list_hembeq_tree_hembeq_imp_sublisteq:
   assumes "list_hembeq (tree_hembeq P) xs zs"
@@ -504,36 +537,123 @@ proof -
   then show ?thesis by simp
 qed
 
-lemma subtreeeq_trees:
-  "subtreeeq s t \<Longrightarrow> t \<in> trees A \<Longrightarrow> s \<in> trees A"
-  using subtree_trees by auto
-
-lemma trees_intros:
-  "x \<in> A \<Longrightarrow>
-    \<forall>t\<in>set ts. t \<in> trees A \<Longrightarrow>
-    mk x ts \<in> trees A"
-  by (induct ts) (auto intro: trees_trees_list.intros)
-
-
-lemma trees_cases [consumes 1, cases set: trees]:
-  assumes "t \<in> trees A"
-    and "\<And>f ts. \<lbrakk>f \<in> A; \<forall>t\<in>set ts. t \<in> trees A; t = mk f ts\<rbrakk> \<Longrightarrow> P"
-  shows "P"
-  using assms by (cases rule: trees.cases) (auto intro: subtree_trees)
-
-lemma root_succs:
-  assumes "t \<in> trees A"
-  shows "mk (root t) (succs t) = t"
-  using assms by (cases t) simp_all
-
-lemma in_succs_imp_subtree:
-  assumes "t \<in> trees A" and "s \<in> set (succs t)"
-  shows "subtree s t"
-  using assms by (cases t) (auto)
-
 lemma tree_hembeq_subtreeeq:
   assumes "tree_hembeq P s t" and "subtreeeq t u" shows "tree_hembeq P s u"
   using assms and tree_hembeq_subtree by auto
+
+inductive_set
+  terms :: "('b \<times> nat) set \<Rightarrow> 'a set"
+  for F :: "('b \<times> nat) set"
+where
+  [intro]: "(f, n) \<in> F \<Longrightarrow> length ts = n \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> mk f ts \<in> terms F"
+
+lemma terms_imp_trees:
+  assumes "t \<in> terms F" shows "t \<in> trees (fst ` F)"
+  using assms
+  by (induct, auto intro: trees_list_intro) (metis fst_conv imageI)
+
+lemma mk_terms:
+  assumes "mk f ts \<in> terms F" shows "(f, length ts) \<in> F \<and> (\<forall>t\<in>set ts. t \<in> terms F)"
+  using assms by (cases) (auto simp: inject)
+  
+lemma mk_terms_iff:
+  "mk f ts \<in> terms F \<longleftrightarrow> (f, length ts) \<in> F \<and> (\<forall>t\<in>set ts. t \<in> terms F)" (is "?l = ?r")
+  by (auto dest: mk_terms)
+
+lemma in_set_size:
+  "mk f ts \<in> terms F \<Longrightarrow> t \<in> set ts \<Longrightarrow> size t < size (mk f ts)"
+  by (auto dest: terms_imp_trees intro: subtree_size)
+
+lemma in_set_size':
+  "(f, length ts) \<in> F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> t \<in> set ts \<Longrightarrow> size t \<le> size (mk f ts)"
+  by  (intro less_imp_le in_set_size) auto
+
+lemma mk_size:
+  "mk f ts \<in> terms F \<Longrightarrow> size (mk f ts) = Suc (list_size size ts)"
+  by (auto intro: size_simps dest!: terms_imp_trees)
+
+lemma mk_size' [simp]:
+  "(f, length ts) \<in> F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> size (mk f ts) = Suc (list_size size ts)"
+  by (rule mk_size) auto
+
+lemma subtree_terms:
+  assumes "subtree s t" and "t \<in> terms F" shows "s \<in> terms F"
+  using assms by (induct) (auto iff: mk_terms_iff)
+
+lemma subtreeeq_terms:
+  assumes "subtreeeq s t" and "t \<in> terms F" shows "s \<in> terms F"
+  using assms and subtree_terms by auto
+
+lemma wfp_on_subtree_terms:
+  "wfp_on subtree (terms F)"
+  apply (rule wfp_on_mono [of _ "trees (fst ` F)" _ subtree])
+  apply (rule subsetI [OF terms_imp_trees])
+  apply (assumption)
+  apply (assumption)
+  apply (rule wfp_on_subtree)
+done
+
+lemma sublisteq_set_subset:
+  assumes "sublisteq xs ys"
+  shows "set xs \<subseteq> set ys"
+  using assms by (induct) auto
+
+lemma args_steps_imp_steps_gen_terms:
+  assumes ctxt: "\<And>s t ss1 ss2. (f, Suc (length (ss1@ss2))) \<in> F \<Longrightarrow>
+    \<forall>t\<in>set (ss1@ss2). t \<in> terms F \<Longrightarrow>
+    r (length ss1) s t \<Longrightarrow>
+    length ts = Suc (length ss1 + length ss2) \<Longrightarrow>
+    R\<^sup>*\<^sup>* (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
+    and F: "(f, length ss) \<in> F"
+    and terms: "\<forall>t\<in>set (ss@ts). t \<in> terms F"
+    and len: "length ss = length ts"
+    and args: "\<And>i. i < length ts \<Longrightarrow> (r i)\<^sup>*\<^sup>* (ss ! i) (ts ! i)"
+  shows "R\<^sup>*\<^sup>* (mk f ss) (mk f ts)"
+proof -
+  let ?ts = "\<lambda>i. take i ts @ drop i ss"
+  {
+    fix s t and ss1 ss2 :: "'a list"
+    assume "(r (length ss1))\<^sup>*\<^sup>* s t"
+      and F: "(f, Suc (length (ss1@ss2))) \<in> F"
+      and terms: "\<forall>t\<in>set (ss1@ss2). t \<in> terms F"
+      and len: "length ts = Suc (length ss1 + length ss2)"
+    then have "R\<^sup>*\<^sup>* (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
+    proof (induct)
+      case (step t u)
+      from step(3) [OF step(4) step(5) len]
+        and ctxt [OF step(4) step(5) step(2) len]
+        show ?case by auto
+    qed simp
+  }
+  note * = this
+  have **: "\<forall>i\<le>length ts. R\<^sup>*\<^sup>* (mk f ss) (mk f (?ts i))"
+  proof (intro allI impI)
+    fix i assume "i \<le> length ts"
+    then show "R\<^sup>*\<^sup>* (mk f ss) (mk f (?ts i))"
+    proof (induct i)
+      case 0
+      then show ?case by simp
+    next
+      case (Suc i)
+      then have IH: "R\<^sup>*\<^sup>* (mk f ss) (mk f (?ts i))"
+        and i: "i < length ts" by auto
+      have si: "?ts (Suc i) = take i ts @ ts ! i # drop (Suc i) ss"
+        unfolding take_Suc_conv_app_nth [OF i] by simp
+      have ii: "?ts i = take i ts @ ss ! i # drop (Suc i) ss"
+        unfolding nth_drop' [OF i [unfolded len [symmetric]]] ..
+      from i have i': "length (take i ts) < length ts"  and len': "length (take i ts) = i" by auto
+      from len i have len'': "length ts = Suc (length (take i ts) + length (drop (Suc i) ss))" by simp
+      have **: "Suc (length (take i ts @ drop (Suc i) ss)) = length ss"
+        using len and `i < length ts` by simp
+      have ***: "\<forall>t\<in>set (take i ts @ drop (Suc i) ss). t \<in> terms F"
+        using terms and `i < length ts` and len by (auto dest: in_set_takeD in_set_dropD)
+      from * [OF args[OF i'] _ _ len''] and IH and F and ***
+        show ?case unfolding si ii len' ** by auto
+    qed
+  qed
+  from this [THEN spec, THEN mp[OF _ le_refl]]
+  show ?thesis using len by auto
+qed
 
 end
 

@@ -522,14 +522,6 @@ lemma wfp_on_suffix:
   using wfp_on_subset [of "lists A" UNIV]
   by blast
 
-interpretation list_mbs: mbs list_hembeq suffix lists
-proof -
-  show "mbs list_hembeq suffix lists"
-    by (unfold_locales) (auto
-      simp: list_hembeq_suffix wfp_on_suffix suffix_lists
-      intro: suffix_trans)
-qed
-
 
 subsection {* Higman's Lemma *}
 
@@ -607,6 +599,13 @@ lemma almost_full_on_lists:
   shows "almost_full_on (list_hembeq P) (lists A)"
     (is "almost_full_on ?P ?A")
 proof -
+  interpret list_mbs: mbs "\<lambda>_. ?P" suffix lists
+  proof -
+    show "mbs (\<lambda>_. ?P) suffix lists"
+      by (unfold_locales) (auto
+        simp: list_hembeq_suffix wfp_on_suffix suffix_lists
+        intro: suffix_trans)
+  qed
   {
     from reflp_on_list_hembeq have "reflp_on ?P ?A" .
   }
@@ -618,7 +617,7 @@ proof -
       then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f" by blast
       from list_mbs.mbs [OF this] obtain m where
         bad: "bad ?P m" and
-        mb: "\<And>n. mbs.min_at list_hembeq suffix P m n" and
+        mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) suffix A m n" and
         in_lists: "\<And>i. m i \<in> lists A"
         by blast
       let ?A = m
@@ -838,15 +837,15 @@ subsection {* Special Case: Finite Sets *}
 
 text {*Every reflexive relation on a finite set is almost full.*}
 lemma finite_almost_full_on:
-  fixes A :: "('a::finite) set"
+  assumes finite: "finite A"
   assumes refl: "reflp_on P A"
   shows "almost_full_on P A"
 proof
-  fix f::"'a::finite seq"
+  fix f :: "'a seq"
   assume *: "\<forall>i. f i \<in> A"
   let ?I = "UNIV::nat set"
   have "f ` ?I \<subseteq> A" using * by auto
-  with finite [of A] and finite_subset have 1: "finite (f ` ?I)" by blast
+  with finite and finite_subset have 1: "finite (f ` ?I)" by blast
   have "infinite ?I" by auto
   from pigeonhole_infinite [OF this 1]
     obtain k where "infinite {j. f j = f k}" by auto
@@ -855,6 +854,12 @@ proof
   hence "P (f k) (f l)" using refl and * by (auto simp: reflp_on_def)
   with `k < l` show "good P f" by (auto simp: good_def)
 qed
+
+lemma eq_almost_full_on_finite_set:
+  assumes "finite A"
+  shows "almost_full_on (op =) A"
+  using finite_almost_full_on [OF assms, of "op ="]
+  by (auto simp: reflp_on_def)
 
 end
 

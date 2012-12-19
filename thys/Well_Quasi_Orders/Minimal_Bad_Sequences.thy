@@ -91,18 +91,18 @@ is the order that is used for checking minimality. The required properties are:
 \item @{term "weak"} reflects the property of being in @{term "vals A"}
 \end{itemize}*}
 locale mbs =
-  fixes strong :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
+  fixes strong :: "'a set \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"
     and weak :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
     and vals :: "'a set \<Rightarrow> 'b set"
-  assumes strong_weak: "strong P x y \<Longrightarrow> weak y z \<Longrightarrow> strong P x z"
+  assumes strong_weak: "z \<in> vals A \<Longrightarrow> strong A x y \<Longrightarrow> weak y z \<Longrightarrow> strong A x z"
     and wfp_on_weak: "wfp_on weak (vals A)"
-    and weak_trans: "weak x y \<Longrightarrow> weak y  z \<Longrightarrow> weak x z"
+    and weak_trans: "weak x y \<Longrightarrow> weak y z \<Longrightarrow> weak x z"
     and weak_vals: "weak x y \<Longrightarrow> y \<in> vals A \<Longrightarrow> x \<in> vals A"
 begin
 
 abbreviation weakeq where "weakeq \<equiv> weak\<^sup>=\<^sup>="
 
-lemma strong_weakeq: "strong P x y \<Longrightarrow> weakeq y z \<Longrightarrow> strong P x z"
+lemma strong_weakeq: "z \<in> vals A \<Longrightarrow> strong A x y \<Longrightarrow> weakeq y z \<Longrightarrow> strong A x z"
   using strong_weak by auto
 
 lemma weakeq_trans: "weakeq x y \<Longrightarrow> weakeq y z \<Longrightarrow> weakeq x z"
@@ -114,10 +114,11 @@ lemma weakeq_vals: "weakeq x y \<Longrightarrow> y \<in> vals A \<Longrightarrow
 text {*The following lemma is the reason for the suffix condition that
 is used throughout.*}
 lemma bad_strong_repl:
-  assumes "bad (strong P) f"
-    and "bad (strong P) g"
+  assumes "\<forall>i. f i \<in> vals A"
+    and "bad (strong A) f"
+    and "bad (strong A) g"
     and "\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (g i) (f j)"
-  shows "bad (strong P) (repl n f g)" (is "bad ?P ?f")
+  shows "bad (strong A) (repl n f g)" (is "bad ?P ?f")
 proof (rule ccontr)
   presume "good ?P ?f"
   then obtain i j where "i < j"
@@ -125,18 +126,19 @@ proof (rule ccontr)
   {
     assume "j < n"
     with `i < j` and good have "?P (f i) (f j)" by simp
-    with assms(1) have False using `i < j` by (auto simp: good_def)
+    with assms(2) have False using `i < j` by (auto simp: good_def)
   } moreover {
     assume "n \<le> i"
     with `i < j` and good have "?P (g i) (g j)" by auto
-    with assms(2) have False using `i < j` by (auto simp: good_def)
+    with assms(3) have False using `i < j` by (auto simp: good_def)
   } moreover {
     assume "i < n" and "n \<le> j"
-    with assms(3) obtain k where "k \<ge> n" and weakeq: "weakeq (g j) (f k)" by blast
+    with assms(4) obtain k where "k \<ge> n" and weakeq: "weakeq (g j) (f k)" by blast
     from `i < j` and `i < n` and `n \<le> j` and good
       have "?P (f i) (g j)" by auto
-    from strong_weakeq [OF this weakeq] have "?P (f i) (f k)" .
-    with `i < n` and `n \<le> k` and assms(1) have False by (auto simp: good_def)
+    from strong_weakeq [OF assms(1) [THEN spec, of k] this weakeq]
+      have "?P (f i) (f k)" .
+    with `i < n` and `n \<le> k` and assms(2) have False by (auto simp: good_def)
   } ultimately show False using `i < j` by arith
 qed simp
 
@@ -144,10 +146,10 @@ qed simp
 text {*An infinite sequence, is minimal at position @{text n}, if
 every subsequence that coincides on the first @{text "n - 1"} elements is good,
 whenever the @{text n}-th element is replaced by a smaller one.*}
-definition min_at :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b seq \<Rightarrow> nat \<Rightarrow> bool" where
-  "min_at P f n \<equiv>
+definition min_at :: "'a set \<Rightarrow> 'b seq \<Rightarrow> nat \<Rightarrow> bool" where
+  "min_at A f n \<equiv>
     \<forall>g. (\<forall>i<n. g i = f i) \<and> weak (g n) (f n) \<and> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (g i) (f j))
-    \<longrightarrow> good (strong P) g"
+    \<longrightarrow> good (strong A) g"
 
 lemma weak_induct [consumes 1, case_names IH]:
   assumes "x \<in> vals A"
@@ -191,36 +193,36 @@ related to the remaining elements of the given sequence.*}
 (*same proof as for minimal_bad_Suc, but with explicit structure
 of induction (better suited for textual explanation)*)
 lemma
-  assumes "f (Suc n) \<in> vals A"
-    and "min_at P f n"
-    and "bad (strong P) f" (is "bad ?P f")
+  assumes "\<forall>i. f i \<in> vals A"
+    and "min_at A f n"
+    and "bad (strong A) f" (is "bad ?P f")
   shows "\<exists>g.
     (\<forall>i\<le>n. g i = f i) \<and>
     weakeq (g (Suc n)) (f (Suc n)) \<and>
     (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (g i) (f j)) \<and>
-    bad (strong P) (repl (Suc n) f g) \<and>
-    min_at P (repl(Suc n) f g) (Suc n)"
+    bad (strong A) (repl (Suc n) f g) \<and>
+    min_at A (repl (Suc n) f g) (Suc n)"
   (is "\<exists>g. ?C g f (f (Suc n))")
 proof -
   let ?I = "\<lambda>x. \<forall>f.
-    x = f (Suc n) \<and> x \<in> vals A \<and> min_at P f n \<and> bad ?P f \<longrightarrow> (\<exists>g. ?C g f x)"
+    x = f (Suc n) \<and> (\<forall>i. f i \<in> vals A) \<and> min_at A f n \<and> bad ?P f \<longrightarrow> (\<exists>g. ?C g f x)"
   {
     fix x
     assume "x = f (Suc n)"
-    hence "x \<in> vals A" using assms by simp
+    hence "x \<in> vals A" and "\<forall>i. f i \<in> vals A" using assms by simp+
     hence "?I x"
     proof (induct x rule: weak_induct)
       fix x
-      assume "x \<in> vals A" and IH: "\<And>y. \<lbrakk>y \<in> vals A; weak y x\<rbrakk> \<Longrightarrow> ?I y"
+      assume "x \<in> vals A" and IH: "\<And>y. \<lbrakk>y \<in> vals A; weak y x; \<forall>i. f i \<in> vals A\<rbrakk> \<Longrightarrow> ?I y"
       show "?I x"
       proof (intro allI impI, elim conjE)
         fix f
-        assume x: "x = f (Suc n)" and "x \<in> vals A"
-          and "min_at P f n" and "bad ?P f"
+        assume x: "x = f (Suc n)" and *: "\<forall>i. f i \<in> vals A"
+          and "min_at A f n" and "bad ?P f"
         show "\<exists>g. ?C g f x"
-        proof (cases "min_at P f (Suc n)")
+        proof (cases "min_at A f (Suc n)")
           case True
-          hence "min_at P (repl (Suc n) f f) (Suc n)" by simp
+          hence "min_at A (repl (Suc n) f f) (Suc n)" by simp
           moreover have "weakeq x x" by simp
           moreover from `bad ?P f` have "bad ?P (repl (Suc n) f f)" by simp
           ultimately show ?thesis unfolding x by blast
@@ -229,18 +231,31 @@ proof -
           then obtain h
             where weak: "weak (h (Suc n)) (f (Suc n))"
             and suffix: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (h i) (f j)"
-            and "bad (strong P) h" by (auto simp: min_at_def)
+            and "bad ?P h" by (auto simp: min_at_def)
           let ?g = "repl (Suc n) f h"
           from weak have weak': "weak (?g (Suc n)) (f (Suc n))" by simp
-          have min_at: "min_at P ?g n"
+          have min_at: "min_at A ?g n"
             using suffix_repl [OF _ suffix, of n]
-            and `min_at P f n` by (auto simp: min_at_def)
-          have bad: "bad (strong P) ?g"
-            using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF suffix] .
+            and `min_at A f n` by (auto simp: min_at_def)
+          have bad: "bad ?P ?g"
+            using bad_strong_repl [OF * `bad ?P f` `bad ?P h`, of "Suc n", OF suffix] .
+          have vals: "\<forall>i. ?g i \<in> vals A"
+          proof
+            fix i show "?g i \<in> vals A"
+            proof (cases "i < Suc n")
+              assume "i < Suc n" then show ?thesis using * by simp
+            next
+              assume "\<not> i < Suc n"
+              then have "i \<ge> Suc n" by arith
+              with suffix obtain j where "j \<ge> Suc n" and "weakeq (h i) (f j)" by auto
+              with weak_vals and * have "h i \<in> vals A" by auto
+              with `\<not> i < Suc n` show ?thesis by simp
+            qed
+          qed
           have "?g (Suc n) \<in> vals A"
             using weak_vals [OF weak `x \<in> vals A` [unfolded x]] by simp
-          from IH [unfolded x, OF this weak', THEN spec [of _ ?g]]
-            and min_at and bad and this obtain M
+          from IH [unfolded x, OF this weak', THEN spec [of _ ?g], OF assms(1)]
+            and min_at and bad and this and vals obtain M
             where C: "?C M ?g (?g (Suc n))" by blast
           moreover with weak_imp_weakeq [OF weak]
             have "weakeq (M (Suc n)) (f (Suc n))"
@@ -258,38 +273,54 @@ proof -
 qed
 
 lemma minimal_bad_Suc:
-  assumes "f (Suc n) \<in> vals A"
-    and "min_at P f n"
-    and "bad (strong P) f"
+  assumes "\<forall>i. f i \<in> vals A"
+    and "min_at A f n"
+    and "bad (strong A) f"
   shows "\<exists>g.
     (\<forall>i\<le>n. g i = f i) \<and>
     weakeq (g (Suc n)) (f (Suc n)) \<and>
     (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (g i) (f j)) \<and>
-    bad (strong P) (repl (Suc n) f g) \<and>
-    min_at P (repl (Suc n) f g) (Suc n)"
+    bad (strong A) (repl (Suc n) f g) \<and>
+    min_at A (repl (Suc n) f g) (Suc n)"
   (is "\<exists>g. ?C g f (f (Suc n))")
-using assms
+using assms(1) [THEN spec, of "Suc n"] and assms
 proof (induct x\<equiv>"f (Suc n)" arbitrary: f rule: weak_induct)
-  case IH show ?case
-  proof (cases "min_at P f (Suc n)")
+  let ?P = "strong A"
+  case IH
+  then have *: "\<forall>i. f i \<in> vals A" by simp
+  show ?case
+  proof (cases "min_at A f (Suc n)")
     case True
-    with `bad (strong P) f` show ?thesis
+    with `bad ?P f` show ?thesis
       by (metis (full_types) repl_ident sup2CI)
   next
     case False
     then obtain h
       where weak: "weak (h (Suc n)) (f (Suc n))"
       and suffix: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (h i) (f j)"
-      and "bad (strong P) h" by (auto simp: min_at_def)
+      and "bad ?P h" by (auto simp: min_at_def)
     let ?g = "repl (Suc n) f h"
     from weak have weak': "weak (?g (Suc n)) (f (Suc n))" by simp
-    have min_at: "min_at P ?g n"
+    have min_at: "min_at A ?g n"
       using suffix_repl [OF _ suffix, of n]
-      and `min_at P f n` by (auto simp: min_at_def)
-    have bad: "bad (strong P) ?g"
-      using bad_strong_repl [OF `bad (strong P) f` `bad (strong P) h`, of "Suc n", OF suffix] .
+      and `min_at A f n` by (auto simp: min_at_def)
+    have vals: "\<forall>i. ?g i \<in> vals A"
+    proof
+      fix i show "?g i \<in> vals A"
+      proof (cases "i < Suc n")
+        assume "i < Suc n" then show ?thesis using * by simp
+      next
+        assume "\<not> i < Suc n"
+        then have "i \<ge> Suc n" by arith
+        with suffix obtain j where "j \<ge> Suc n" and "weakeq (h i) (f j)" by auto
+        with weak_vals and * have "h i \<in> vals A" by auto
+        with `\<not> i < Suc n` show ?thesis by simp
+      qed
+    qed
+    have bad: "bad ?P ?g"
+      using bad_strong_repl [OF * `bad ?P f` `bad ?P h`, of "Suc n", OF suffix] .
     have "?g (Suc n) \<in> vals A" using weak_vals [OF weak IH(1)] by simp
-    from IH(2) [of ?g, OF this, OF weak' min_at bad] obtain M
+    from IH(2) [of ?g, OF this weak' vals min_at bad] obtain M
       where C: "?C M ?g (?g (Suc n))" by blast
     moreover with weak_imp_weakeq [OF weak]
       have "weakeq (M (Suc n)) (f (Suc n))"
@@ -305,26 +336,26 @@ minimal at its first element (used for the base case of constructing a
 minimal bad sequence.*}
 lemma minimal_bad_0:
   assumes "f 0 \<in> vals A"
-    and "bad (strong P) f"
-  shows "\<exists>g. (\<forall>i. \<exists>j. weakeq (g i) (f j)) \<and> min_at P g 0 \<and> bad (strong P) g"
+    and "bad (strong A) f" (is "bad ?P f")
+  shows "\<exists>g. (\<forall>i. \<exists>j. weakeq (g i) (f j)) \<and> min_at A g 0 \<and> bad ?P g"
 using assms
 proof (induct x\<equiv>"f 0" arbitrary: f rule: weak_induct)
   case IH show ?case
-  proof (cases "min_at P f 0")
+  proof (cases "min_at A f 0")
     case True with IH show ?thesis by blast
   next
     case False
     then obtain h
       where weak: "weak (h 0) (f 0)"
       and suffix: "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (h i) (f j)"
-      and bad: "bad (strong P) h"
+      and bad: "bad ?P h"
       unfolding min_at_def by auto
     have "h 0 \<in> vals A"
       using weak_vals [OF weak IH(1)] .
     from IH(2) [of h, OF this weak bad] obtain e
       where "\<forall>i. \<exists>j. weakeq (e i) (h j)"
-      and "min_at P e 0"
-      and "bad (strong P) e" by auto
+      and "min_at A e 0"
+      and "bad ?P e" by auto
     moreover with suffix
       have "\<forall>i. \<exists>j. weakeq (e i) (f j)" using weakeq_trans by fast
     ultimately show ?thesis by blast
@@ -360,42 +391,42 @@ text {*If there is a bad sequence over elements of @{term "vals A"},
 then there is a minimal (i.e., minimal at all positions) bad sequence
 over elements of @{term "vals A"}.*}
 lemma mbs:
-  assumes "\<forall>i. f i \<in> vals A" and "bad (strong P) f" (is "bad ?P f")
+  assumes "\<forall>i. f i \<in> vals A" and "bad (strong A) f" (is "bad ?P f")
   shows "\<exists>g.
-    bad (strong P) g \<and>
-    (\<forall>n. min_at P g n) \<and>
+    bad ?P g \<and>
+    (\<forall>n. min_at A g n) \<and>
     (\<forall>i. g i \<in> vals A)"
 proof -
   from assms have "f 0 \<in> vals A" by simp
   from minimal_bad_0 [of f, OF this `bad ?P f`] obtain g
     where "\<forall>i. \<exists>j. weakeq (g i) (f j)"
-    and "min_at P g 0"
+    and "min_at A g 0"
     and "bad ?P g"
     by blast
   with `\<forall>i. f i \<in> vals A`
     have "\<And>i. g i \<in> vals A"
     using weakeq_vals by blast
-  from minimal_bad_Suc [of _ _ _ P]
+  from minimal_bad_Suc
     have "\<forall>f n.
-    f (Suc n) \<in> vals A \<and>
-    min_at P f n \<and>
+    (\<forall>i. f i \<in> vals A) \<and>
+    min_at A f n \<and>
     bad ?P f \<longrightarrow>
     (\<exists>M.
       (\<forall>i\<le>n. M i = f i) \<and>
       weakeq (M (Suc n)) (f (Suc n)) \<and>
       (\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (M i) (f j)) \<and>
       bad ?P (repl (Suc n) f M) \<and>
-      min_at P (repl (Suc n) f M) (Suc n))"
+      min_at A (repl (Suc n) f M) (Suc n))"
     (is "\<forall>f n. ?Q f n \<longrightarrow> (\<exists>M. ?Q' f n M)")
     by blast
   from choice2 [OF this] obtain M
     where * [rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
   let ?g = "minimal_bad_seq M g"
   let ?A = "\<lambda>i. ?g i i"
-  have "\<forall>n. (\<forall>i\<ge>n. ?g n i \<in> vals A)
+  have "\<forall>n. (\<forall>i. ?g n i \<in> vals A)
     \<and> (n = 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (g j)))
     \<and> (n > 0 \<longrightarrow> (\<forall>i\<ge>n. \<exists>j\<ge>n. weakeq (?g n i) (?g (n - 1) j)))
-    \<and> (\<forall>i\<le>n. min_at P (?g n) i)
+    \<and> (\<forall>i\<le>n. min_at A (?g n) i)
     \<and> (\<forall>i\<le>n. ?A i = ?g n i)
     \<and> bad ?P (?g n)" (is "\<forall>n. ?Q n")
   proof
@@ -403,32 +434,33 @@ proof -
     show "?Q n"
     proof (induction n)
       case 0
-      have "\<forall>i\<ge>0. g i \<in> vals A" using `\<And>i. g i \<in> vals A` by auto
-      moreover have "min_at P g 0" by fact
+      have "\<forall>i. g i \<in> vals A" using `\<And>i. g i \<in> vals A` by auto
+      moreover have "min_at A g 0" by fact
       moreover have "bad ?P g" by fact
       ultimately
         have M [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
-        and "bad ?P (M g 0)" and "min_at P (M g 0) (Suc 0)"
+        and "bad ?P (M g 0)" and "min_at A (M g 0) (Suc 0)"
         and **: "\<forall>i\<ge>Suc 0. \<exists>j\<ge>Suc 0. weakeq (M g 0 i) (g j)"
         using * [of g 0] by auto
       moreover have "\<forall>i. ?g 0 i \<in> vals A"
           using ** and weakeq_vals and `\<And>i. g i \<in> vals A`
           by (auto) (metis M le_0_eq not_less_eq_eq)
-      moreover have "min_at P (M g 0) 0"
-        using `min_at P g 0` and suffix_repl [of 0, OF _ **] by (auto simp: min_at_def)
+      moreover have "min_at A (M g 0) 0"
+        using `min_at A g 0` and suffix_repl [of 0, OF _ **] by (auto simp: min_at_def)
       moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (?g 0 i) (g j)"
         using suffix_repl [of 0, OF _ **] by auto
       ultimately show ?case by simp
     next
       case (Suc n)
-      with * [of "?g n" n]
+      then have vals: "\<forall>i. ?g n i \<in> vals A" by simp
+      from Suc and * [of "?g n" n]
         have eq: "\<forall>i\<le>n. ?A i = ?g n i"
         and weak: "weakeq (?g (Suc n) (Suc n)) (?g n (Suc n))"
         and subseq: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (?g (Suc n) i) (?g n j)"
         and "bad ?P (?g (Suc n))"
-        and min_at: "min_at P (?g (Suc n)) (Suc n)"
+        and min_at: "min_at A (?g (Suc n)) (Suc n)"
         by (simp_all add: Let_def)
-      moreover have "\<forall>i\<ge>Suc n. ?g (Suc n) i \<in> vals A"
+      moreover have vals': "\<forall>i\<ge>Suc n. ?g (Suc n) i \<in> vals A"
       proof (intro allI impI)
         fix i
         assume "i \<ge> Suc n"
@@ -444,10 +476,23 @@ proof -
         thus "?A i = ?g (Suc n) i"
           by (cases "i = Suc n") (auto dest: neq_le_trans simp: Let_def eq)
       qed
-      moreover have "\<forall>i\<le>Suc n. min_at P (?g (Suc n)) i"
+      moreover have "\<forall>i. ?g (Suc n) i \<in> vals A"
+      proof
+        fix i
+        from weak
+        show "?g (Suc n) i \<in> vals A"
+        proof (cases "i \<ge> Suc n")
+          assume "i \<ge> Suc n" then show ?thesis using vals' by simp
+        next
+          assume "\<not> i \<ge> Suc n"
+          then have "i \<le> n" by arith
+          with eq and * and vals show ?thesis by simp
+        qed
+      qed
+      moreover have "\<forall>i\<le>Suc n. min_at A (?g (Suc n)) i"
       proof (intro allI impI)
         fix i assume "i \<le> Suc n"
-        show "min_at P (?g (Suc n)) i"
+        show "min_at A (?g (Suc n)) i"
         proof (cases "i = Suc n")
           case True with min_at show ?thesis by simp
         next
@@ -488,7 +533,7 @@ proof -
       ultimately show ?case by simp
     qed
   qed
-  hence 1: "\<forall>n. \<forall>i\<le>n. min_at P (?g n) i"
+  hence 1: "\<forall>n. \<forall>i\<le>n. min_at A (?g n) i"
     and 2: "\<forall>n. \<forall>i\<le>n. ?A i = ?g n i"
     and 3: "\<forall>n. bad ?P (?g n)"
     and 4: "\<forall>i. \<exists>j. weakeq (?g 0 i) (g j)"
@@ -557,3 +602,4 @@ qed
 end
 
 end
+
