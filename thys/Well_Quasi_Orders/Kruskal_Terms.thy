@@ -186,7 +186,7 @@ next
   ultimately show "?r" using assms by auto
 qed
 
-lemma almost_full_on_trees:
+lemma almost_full_on_terms:
   assumes "almost_full_on P F"
   shows "almost_full_on (term_hemb F (P\<^sup>=\<^sup>=)) (terms F)"
 proof -
