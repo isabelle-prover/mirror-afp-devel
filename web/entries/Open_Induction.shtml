@@ -40,7 +40,9 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
+
 A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
+<p>This research was supported by the Austrian Science Fund (FWF): J3202.</p>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
