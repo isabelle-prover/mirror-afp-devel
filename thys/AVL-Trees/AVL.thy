@@ -25,25 +25,21 @@ datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 subsection {* Invariants and auxiliary functions *}
 
-primrec set_of :: "'a tree \<Rightarrow> 'a set"
-where
+primrec set_of :: "'a tree \<Rightarrow> 'a set" where
 "set_of ET = {}" |
 "set_of (MKT n l r h) = Set.insert n (set_of l \<union> set_of r)"
 
-primrec height :: "'a tree \<Rightarrow> nat"
-where
+primrec height :: "'a tree \<Rightarrow> nat" where
 "height ET = 0" |
 "height (MKT x l r h) = max (height l) (height r) + 1"
 
-primrec avl :: "'a tree \<Rightarrow> bool"
-where
+primrec avl :: "'a tree \<Rightarrow> bool" where
 "avl ET = True" |
 "avl (MKT x l r h) =
  ((height l = height r \<or> height l = height r + 1 \<or> height r = height l + 1) \<and> 
   h = max (height l) (height r) + 1 \<and> avl l \<and> avl r)"
 
-primrec is_ord :: "('a::order) tree \<Rightarrow> bool"
-where
+primrec is_ord :: "('a::order) tree \<Rightarrow> bool" where
 "is_ord ET = True" |
 "is_ord (MKT n l r h) =
  ((\<forall>n' \<in> set_of l. n' < n) \<and> (\<forall>n' \<in> set_of r. n < n') \<and> is_ord l \<and> is_ord r)"
@@ -51,15 +47,13 @@ where
 
 subsection {* AVL interface and implementation *}
 
-primrec is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool"
-where
+primrec is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool" where
  "is_in k ET = False" |
  "is_in k (MKT n l r h) = (if k = n then True else
                            if k < n then (is_in k l)
                            else (is_in k r))"
 
-primrec ht :: "'a tree \<Rightarrow> nat"
-where
+primrec ht :: "'a tree \<Rightarrow> nat" where
 "ht ET = 0" |
 "ht (MKT x l r h) = h"
 
@@ -67,8 +61,7 @@ definition
  mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "mkt x l r = MKT x l r (max (ht l) (ht r) + 1)"
 
-fun mkt_bal_l
-where
+fun mkt_bal_l where
 "mkt_bal_l n l r = (
   if ht l = ht r + 2 then (case l of 
     MKT ln ll lr _ \<Rightarrow> (if ht ll < ht lr
@@ -78,8 +71,7 @@ where
   else mkt n l r
 )"
 
-fun mkt_bal_r
-where
+fun mkt_bal_r where
 "mkt_bal_r n l r = (
   if ht r = ht l + 2 then (case r of
     MKT rn rl rr _ \<Rightarrow> (if ht rl > ht rr
@@ -89,8 +81,7 @@ where
   else mkt n l r
 )"
 
-primrec insert :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
-where
+primrec insert :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert x ET = MKT x ET ET 1" |
 "insert x (MKT n l r h) = 
    (if x=n
@@ -99,8 +90,7 @@ where
       then mkt_bal_l n (insert x l) r
       else mkt_bal_r n l (insert x r))"
 
-fun delete_max
-where
+fun delete_max where
 "delete_max (MKT n l ET h) = (n,l)" |
 "delete_max (MKT n l r h) = (
   let (n',r') = delete_max r in
@@ -108,8 +98,7 @@ where
 
 lemmas delete_max_induct = delete_max.induct[case_names ET MKT]
 
-fun delete_root           
-where
+fun delete_root where
 "delete_root (MKT n ET r h) = r" |
 "delete_root (MKT n l ET h) = l" |
 "delete_root (MKT n l r h) =  
@@ -119,8 +108,7 @@ where
 
 lemmas delete_root_cases = delete_root.cases[case_names ET_t MKT_ET MKT_MKT]
 
-primrec delete :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
-where
+primrec delete :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "delete _ ET = ET" |
 "delete x (MKT n l r h) = (
    if x = n then delete_root (MKT n l r h)
@@ -138,51 +126,42 @@ subsubsection {* Insertion maintains AVL balance *}
 
 declare Let_def [simp]
 
-lemma [simp]: 
-  assumes "avl t"
-  shows "ht t = height t"
-using assms
+lemma [simp]: "avl t \<Longrightarrow> ht t = height t"
 by (induct t) simp_all
 
 lemma height_mkt_bal_l:
-  assumes "height l = height r + 2" and "avl l" and "avl r"
-  shows "height (mkt_bal_l n l r) = height r + 2 \<or>
-        height (mkt_bal_l n l r) = height r + 3"
-using assms
+  "\<lbrakk> height l = height r + 2; avl l; avl r \<rbrakk> \<Longrightarrow>
+   height (mkt_bal_l n l r) = height r + 2 \<or>
+   height (mkt_bal_l n l r) = height r + 3"
 by (cases l) (auto simp:mkt_def split:tree.split)
        
 lemma height_mkt_bal_r:
-  assumes "height r = height l + 2" and "avl l" and  "avl r"
-  shows "height (mkt_bal_r n l r) = height l + 2 \<or>
-        height (mkt_bal_r n l r) = height l + 3"
-using assms
-by (cases r) ((auto simp add:mkt_def split:tree.split), arith+)
+  "\<lbrakk> height r = height l + 2; avl l; avl r \<rbrakk> \<Longrightarrow>
+   height (mkt_bal_r n l r) = height l + 2 \<or>
+   height (mkt_bal_r n l r) = height l + 3"
+by (cases r) (auto simp add:mkt_def split:tree.split)
 
-lemma [simp]:
-  shows  "height(mkt x l r) = max (height l) (height r) + 1"
+lemma [simp]: "height(mkt x l r) = max (height l) (height r) + 1"
 by (simp add: mkt_def)
 
-lemma avl_mkt: 
-  assumes "avl l" and "avl r" 
-    and "height l = height r \<or> height l = height r + 1 \<or> height r = height l + 1"
-  shows "avl(mkt x l r)"
-using assms
+lemma avl_mkt:
+  "\<lbrakk> avl l; avl r;
+     height l = height r \<or> height l = height r + 1 \<or> height r = height l + 1
+   \<rbrakk> \<Longrightarrow> avl(mkt x l r)"
 by (auto simp add:max_def mkt_def)
 
 lemma height_mkt_bal_l2:
-  assumes "avl l" and "avl r" and "height l \<noteq> height r + 2"
-  shows "height (mkt_bal_l n l r) = (1 + max (height l) (height r))"
-using assms
+  "\<lbrakk> avl l; avl r; height l \<noteq> height r + 2 \<rbrakk> \<Longrightarrow>
+   height (mkt_bal_l n l r) = (1 + max (height l) (height r))"
 by (cases l, cases r) simp_all
 
 lemma height_mkt_bal_r2:
-  assumes "avl l" and "avl r" and "height r \<noteq> height l + 2"
-  shows "height (mkt_bal_r n l r) = (1 + max (height l) (height r))"
-using assms
+  "\<lbrakk> avl l;  avl r;  height r \<noteq> height l + 2 \<rbrakk> \<Longrightarrow>
+   height (mkt_bal_r n l r) = (1 + max (height l) (height r))"
 by (cases l, cases r) simp_all
 
 lemma avl_mkt_bal_l: 
-  assumes a: "avl l" "avl r" and "height l = height r \<or> height l = height r + 1
+  assumes "avl l" "avl r" and "height l = height r \<or> height l = height r + 1
     \<or> height r = height l + 1 \<or> height l = height r + 2" 
   shows "avl(mkt_bal_l n l r)"
 proof(cases l)
@@ -225,7 +204,8 @@ text{* Insertion maintains the AVL property: *}
 
 theorem avl_insert_aux:
   assumes "avl t"
-  shows "avl(insert x t)" "(height (insert x t) = height t \<or> height (insert x t) = height t + 1)"
+  shows "avl(insert x t)"
+        "(height (insert x t) = height t \<or> height (insert x t) = height t + 1)"
 using assms
 proof (induction t)
   case (MKT n l r h)
@@ -451,58 +431,44 @@ lemmas avl_delete = avl_delete_aux(1)
 subsubsection {* Correctness of insertion *}
 
 lemma set_of_mkt_bal_l:
-  assumes "avl l" and "avl r"
-  shows "set_of (mkt_bal_l n l r) = Set.insert n (set_of l \<union> set_of r)"
+  "\<lbrakk> avl l; avl r \<rbrakk> \<Longrightarrow>
+  set_of (mkt_bal_l n l r) = Set.insert n (set_of l \<union> set_of r)"
 by (auto simp: mkt_def split:tree.splits)
 
 lemma set_of_mkt_bal_r:
-  assumes "avl l" and "avl r"
-  shows "set_of (mkt_bal_r n l r) = Set.insert n (set_of l \<union> set_of r)"
+  "\<lbrakk> avl l; avl r \<rbrakk> \<Longrightarrow>
+  set_of (mkt_bal_r n l r) = Set.insert n (set_of l \<union> set_of r)"
 by (auto simp: mkt_def split:tree.splits)
 
 text{* Correctness of @{const insert}: *}
 
 theorem set_of_insert:
-  assumes "avl t"
-  shows "set_of(insert x t) = Set.insert x (set_of t)"
-using assms
+  "avl t \<Longrightarrow> set_of(insert x t) = Set.insert x (set_of t)"
 by (induct t) 
-(auto simp: avl_insert set_of_mkt_bal_l set_of_mkt_bal_r simp del:mkt_bal_l.simps mkt_bal_r.simps)
+   (auto simp: avl_insert set_of_mkt_bal_l set_of_mkt_bal_r simp del:mkt_bal_l.simps mkt_bal_r.simps)
 
 subsubsection {* Correctness of deletion *}
 
-fun rightmost_item :: "'a tree \<Rightarrow> 'a" 
-where
+fun rightmost_item :: "'a tree \<Rightarrow> 'a" where
 "rightmost_item (MKT n l ET h) = n" |
 "rightmost_item (MKT n l r h) = rightmost_item r"
 
 lemma avl_dist:
-  assumes "avl(MKT n l r h)" and "is_ord(MKT n l r h)" and "x \<in> set_of l"
-  shows "x \<notin> set_of r"
-proof
-  assume "x \<in> set_of r"
-  with `x : set_of l` and `is_ord(MKT n l r h)` have "x < n" and "x > n" by auto
-  thus False by simp
-qed
+  "\<lbrakk> avl(MKT n l r h); is_ord(MKT n l r h); x \<in> set_of l \<rbrakk> \<Longrightarrow>
+  x \<notin> set_of r"
+by fastforce
 
 lemma avl_dist2:
-  assumes "avl(MKT n l r h)" and "is_ord(MKT n l r h)" and "x \<in> set_of l \<or> x \<in> set_of r"
-  shows "x \<noteq> n"
-proof
-  assume "x = n"
-  with `x \<in> set_of l \<or> x \<in> set_of r` and `is_ord(MKT n l r h)` show False by auto
-qed
+  "\<lbrakk> avl(MKT n l r h); is_ord(MKT n l r h); x \<in> set_of l \<or> x \<in> set_of r \<rbrakk> \<Longrightarrow>
+  x \<noteq> n"
+by auto
 
-lemma ritem_in_rset:
-  assumes "r \<noteq> ET"
-  shows "rightmost_item r \<in> set_of r"
-using assms
+lemma ritem_in_rset: "r \<noteq> ET \<Longrightarrow> rightmost_item r \<in> set_of r"
 by(induct r rule:rightmost_item.induct) auto
 
 lemma ritem_greatest_in_rset:
-  assumes "r \<noteq> ET" and "is_ord r"
-  shows "\<forall>x.  x \<in> set_of r \<longrightarrow> x \<noteq> rightmost_item r \<longrightarrow> x < rightmost_item r" 
-using assms
+  "\<lbrakk> r \<noteq> ET; is_ord r \<rbrakk> \<Longrightarrow>
+  \<forall>x.  x \<in> set_of r \<longrightarrow> x \<noteq> rightmost_item r \<longrightarrow> x < rightmost_item r" 
 proof(induct r rule:rightmost_item.induct)
   case (2 n l rn rl rr rh h)
   show ?case (is "\<forall>x. ?P x") 
@@ -518,19 +484,17 @@ proof(induct r rule:rightmost_item.induct)
 qed auto
 
 lemma ritem_not_in_ltree:
-  assumes "avl(MKT n l r h)" and "is_ord(MKT n l r h)" and "r \<noteq> ET"
-  shows "rightmost_item r \<notin> set_of l"
-using assms
+  "\<lbrakk> avl(MKT n l r h); is_ord(MKT n l r h); r \<noteq> ET \<rbrakk> \<Longrightarrow>
+  rightmost_item r \<notin> set_of l"
 by (metis avl_dist ritem_in_rset)
 
 lemma set_of_delete_max:
-  assumes "avl t" and "is_ord t" and "t\<noteq>ET"
-  shows "set_of (snd(delete_max t)) = (set_of t) - {rightmost_item t}"
-using assms
+  "\<lbrakk> avl t; is_ord t; t\<noteq>ET \<rbrakk> \<Longrightarrow>
+   set_of (snd(delete_max t)) = (set_of t) - {rightmost_item t}"
 proof (induct t rule: delete_max_induct)
   case (MKT n l rn rl rr rh h)
   let ?r = "MKT rn rl rr rh"
-  from `avl t` MKT have "avl l" and "avl ?r" by simp_all
+  from MKT have "avl l" and "avl ?r" by simp_all
   let ?t' = "mkt_bal_l n l (snd (delete_max ?r))"
   from MKT have "avl (snd(delete_max ?r))" by (auto simp add: avl_delete_max)
   with assms MKT  ritem_not_in_ltree[of n l ?r h]
@@ -543,9 +507,7 @@ proof (induct t rule: delete_max_induct)
 qed auto
 
 lemma fst_delete_max_eq_ritem:
-  assumes "t\<noteq>ET"
-  shows "fst(delete_max t) = rightmost_item t"
-using assms
+  "t\<noteq>ET \<Longrightarrow> fst(delete_max t) = rightmost_item t"
 by (induct t rule:rightmost_item.induct) (auto split:prod.splits)
 
 lemma set_of_delete_root:
@@ -572,9 +534,7 @@ qed auto
 text{* Correctness of @{const delete}: *}
 
 theorem set_of_delete:
-  assumes "avl t" and "is_ord t"
-  shows "set_of (delete x t) = (set_of t) - {x}"
-using assms
+  "\<lbrakk> avl t; is_ord t \<rbrakk> \<Longrightarrow> set_of (delete x t) = (set_of t) - {x}"
 proof (induct t)
   case (MKT n l r h)
   then show ?case
@@ -598,41 +558,29 @@ qed simp
 
 subsubsection {* Correctness of lookup *}
 
-theorem is_in_correct: 
-  assumes "is_ord t"
-  shows "is_in k t = (k : set_of t)"
-using assms
+theorem is_in_correct: "is_ord t \<Longrightarrow> is_in k t = (k : set_of t)"
 by (induct t) auto
 
 subsubsection {* Insertion maintains order *}
 
 lemma is_ord_mkt_bal_l:
-  assumes "is_ord(MKT n l r h)"
-  shows "is_ord (mkt_bal_l n l r)"
-using assms
+  "is_ord(MKT n l r h) \<Longrightarrow> is_ord (mkt_bal_l n l r)"
 by (cases l) (auto simp: mkt_def split:tree.splits intro: order_less_trans)
 
-lemma is_ord_mkt_bal_r:
-  assumes "is_ord(MKT n l r h)"
-  shows "is_ord (mkt_bal_r n l r)"
-using assms
+lemma is_ord_mkt_bal_r: "is_ord(MKT n l r h) \<Longrightarrow> is_ord (mkt_bal_r n l r)"
 by (cases r) (auto simp: mkt_def split:tree.splits intro: order_less_trans)
 
 text{* If the order is linear, @{const insert} maintains the order: *}
 
 theorem is_ord_insert:
-  assumes "avl t" and "is_ord t"
-  shows "is_ord(insert (x::'a::linorder) t)"
-using assms
+  "\<lbrakk> avl t; is_ord t \<rbrakk> \<Longrightarrow> is_ord(insert (x::'a::linorder) t)"
 by (induct t) (simp_all add:is_ord_mkt_bal_l is_ord_mkt_bal_r avl_insert set_of_insert
                 linorder_not_less order_neq_le_trans del:mkt_bal_l.simps mkt_bal_r.simps)
 
 subsubsection {* Deletion maintains order *}
 
 lemma is_ord_delete_max:
-  assumes "avl t" and "is_ord t" and "t\<noteq>ET"
-  shows "is_ord(snd(delete_max t))"
-using assms
+  "\<lbrakk> avl t; is_ord t; t\<noteq>ET \<rbrakk> \<Longrightarrow> is_ord(snd(delete_max t))"
 proof(induct t rule:delete_max_induct)
   case(MKT n l rn rl rr rh h)
   let ?r = "MKT rn rl rr rh"
@@ -674,9 +622,7 @@ qed simp_all
 text{* If the order is linear, @{const delete} maintains the order: *}
 
 theorem is_ord_delete:
-  assumes "avl t" and "is_ord t"
-  shows "is_ord (delete x t)"
-using assms
+  "\<lbrakk> avl t; is_ord t \<rbrakk> \<Longrightarrow> is_ord (delete x t)"
 proof (induct t)
   case (MKT n l r h)
   then show ?case
@@ -699,4 +645,4 @@ proof (induct t)
   qed
 qed simp
 
-end                                                     
+end
