@@ -1314,6 +1314,42 @@ lemma poly_split_eval: assumes "poly_split m p = (c,q)"
   shows "eval_poly \<alpha> p = (eval_monom \<alpha> m * c) + eval_poly \<alpha> q"
 using poly_split[OF assms] unfolding eq_poly_def by auto
 
+(* we assume that the polynomial invariant is present, otherwise this check might fail, e.g., on 0 =p 0 + 0 *)
+fun check_poly_eq :: "('v,'a :: semiring_0)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool"
+where "check_poly_eq [] q = (q = [])"
+    | "check_poly_eq ((m,c) # p) q = (case extract (\<lambda> nd. fst nd =m m) q of
+                                         None \<Rightarrow> False
+                                       | Some (q1,(_,d),q2) \<Rightarrow> c = d \<and> check_poly_eq p (q1 @ q2))"
+
+lemma check_poly_eq: fixes p :: "('v,'a :: poly_carrier)poly"
+  assumes chk: "check_poly_eq p q"
+  shows "p =p q" unfolding eq_poly_def
+proof
+  fix \<alpha>
+  from chk show "eval_poly \<alpha> p = eval_poly \<alpha> q"
+  proof (induct p arbitrary: q)
+    case Nil
+    thus ?case by auto
+  next
+    case (Cons mc p)
+    obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
+    show ?case
+    proof (cases "extract (\<lambda> mc. fst mc =m m) q")
+      case None
+      with Cons(2) show ?thesis unfolding mc by simp
+    next
+      case (Some res)
+      obtain q1 md q2 where "res = (q1,md,q2)" by (cases res, auto)
+      with extract_Some[OF Some[simplified this]] obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" 
+        by (cases md, auto)
+      from Cons(2) Some mc res have rec: "check_poly_eq p (q1 @ q2)" and c: "c = d" by auto
+      from Cons(1)[OF rec] have p: "eval_poly \<alpha> p = eval_poly \<alpha> (q1 @ q2)" .
+      show ?thesis unfolding mc eval_poly.simps c p q using eq_monom[OF m', of \<alpha>] by (simp add: ac_simps)
+    qed
+  qed
+qed
+
+declare check_poly_eq.simps[simp del]
 
 
 fun check_poly_ge :: "('v,'a :: ordered_semiring_0)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool"

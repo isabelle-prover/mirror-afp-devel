@@ -58,7 +58,10 @@ The research was funded by the Austrian Science Fund (FWF): J3202.
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2012-06-11]: Added Kruskal's Tree Theorem
+[2012-06-11]: Added Kruskal's Tree Theorem.
+[2012-12-19]: New variant of Kruskal's tree theorem for terms (as opposed to
+variadic terms, i.e., trees), plus finite version of the tree theorem as
+corollary.
         </td></tr>
 
     <tr><td class="datahead">License:</td>

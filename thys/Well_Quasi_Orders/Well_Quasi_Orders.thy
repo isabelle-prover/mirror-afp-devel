@@ -167,18 +167,20 @@ lemma wqo_on_lists:
 
 text {*Every reflexive and transitive relation on a finite set is a wqo.*}
 lemma finite_wqo_on:
-  fixes A :: "('a::finite) set"
-  assumes refl: "reflp_on P A" and "transp_on P A"
+  assumes "finite A"
+    and refl: "reflp_on P A" and "transp_on P A"
   shows "wqo_on P A"
   using assms and finite_almost_full_on by (auto simp: wqo_on_def)
 
 lemma finite_eq_wqo_on:
-  "wqo_on (op =) (A::('a::finite) set)"
-  using finite_wqo_on [of "op =" A]
+  assumes "finite A"
+  shows "wqo_on (op =) A"
+  using finite_wqo_on [OF assms, of "op ="]
   by (auto simp: reflp_on_def transp_on_def)
 
 lemma wqo_on_lists_over_finite_sets:
   "wqo_on (list_hembeq (op =)) (UNIV::('a::finite) list set)"
-  using wqo_on_lists [OF finite_eq_wqo_on [of UNIV]] by simp
+  using wqo_on_lists [OF finite_eq_wqo_on [OF finite [of "UNIV::('a::finite) set"]]] by simp
 
 end
+

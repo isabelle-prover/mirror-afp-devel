@@ -1310,7 +1310,10 @@ abstract = Based on Isabelle/HOL's type class for preorders,
  The research was funded by the Austrian Science Fund (FWF): J3202.
 extra-history =
   Change history:
-  [2012-06-11]: Added Kruskal's Tree Theorem
+  [2012-06-11]: Added Kruskal's Tree Theorem.
+  [2012-12-19]: New variant of Kruskal's tree theorem for terms (as opposed to
+  variadic terms, i.e., trees), plus finite version of the tree theorem as
+  corollary.
 
 [Marriage]
 title = Hall's Marriage Theorem
@@ -1341,7 +1344,9 @@ title = Open Induction
 author = Mizuhito Ogawa, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
 date = 2012-11-02
 topic = Mathematics/Combinatorics
-abstract = A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
+abstract =
+  A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
+  <p>This research was supported by the Austrian Science Fund (FWF): J3202.</p>
 
 [Category]
 title = Category Theory to Yoneda's Lemma 
