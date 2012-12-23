@@ -133,7 +133,7 @@ apply( drule (1) class_wf)
 apply( unfold wf_cdecl_def)
 apply(rule conjI)
  apply(force)
-apply(unfold reflcl_tranclp[symmetric, where r="subcls1 P"])
+apply(unfold reflclp_tranclp[symmetric, where r="subcls1 P"])
 apply(blast)
 done
 
