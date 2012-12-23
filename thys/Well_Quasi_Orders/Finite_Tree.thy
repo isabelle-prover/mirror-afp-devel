@@ -519,7 +519,7 @@ proof -
     assume "?l"
     then have "?r" using assms
       by (induct)
-         (insert reflp_on_tree_hembeq, auto simp: reflcl_tranclp [symmetric] reflp_on_def)
+         (insert reflp_on_tree_hembeq, auto simp: reflclp_tranclp [symmetric] reflp_on_def)
   }
   then show "?l = ?r" by auto
 qed
