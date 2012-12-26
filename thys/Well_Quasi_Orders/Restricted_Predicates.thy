@@ -134,7 +134,7 @@ qed
 lemmas wfp_on_imp_inductive_on =
   wfp_on_imp_minimal [THEN minimal_imp_inductive_on]
 
-lemma inductive_on_induct [consumes 2, case_names less]:
+lemma inductive_on_induct [consumes 2, case_names less, induct pred: inductive_on]:
   assumes "inductive_on P A" and "x \<in> A"
     and "\<And>y. \<lbrakk> y \<in> A; \<And>x. \<lbrakk> x \<in> A; P x y \<rbrakk> \<Longrightarrow> Q x \<rbrakk> \<Longrightarrow> Q y"
   shows "Q x"
@@ -409,6 +409,12 @@ lemma accessible_on_downward:
   "accessible_on P A b \<Longrightarrow> a \<in> A \<Longrightarrow> P a b \<Longrightarrow> accessible_on P A a"
   by (cases rule: accessible_on.cases) fast
 
+lemma accessible_on_restrict_to_downwards:
+  assumes "(restrict_to P A)\<^sup>+\<^sup>+ a b" and "accessible_on P A b"
+  shows "accessible_on P A a"
+  using assms
+  by (induct) (auto dest: accessible_on_imp_mem accessible_on_downward)
+
 lemma accessible_on_imp_inductive_on:
   assumes "\<forall>x\<in>A. accessible_on P A x"
   shows "inductive_on P A"
@@ -426,6 +432,88 @@ proof
 qed
 
 lemmas accessible_on_imp_wfp_on = accessible_on_imp_inductive_on [THEN inductive_on_imp_wfp_on]
+
+lemma wfp_on_tranclp_imp_wfp_on:
+  assumes "wfp_on (P\<^sup>+\<^sup>+) A"
+  shows "wfp_on P A"
+  by (rule ccontr) (insert assms, auto simp: wfp_on_def)
+
+lemma inductive_on_imp_accessible_on:
+  assumes "inductive_on P A"
+  shows "\<forall>x\<in>A. accessible_on P A x"
+proof
+  fix x
+  assume "x \<in> A"
+  with assms show "accessible_on P A x"
+    by (induct) (auto intro: accessible_onI)
+qed
+
+lemma inductive_on_accessible_on_conv:
+  "inductive_on P A \<longleftrightarrow> (\<forall>x\<in>A. accessible_on P A x)"
+  using inductive_on_imp_accessible_on
+    and accessible_on_imp_inductive_on
+    by blast
+
+lemmas wfp_on_imp_accessible_on =
+  wfp_on_imp_inductive_on [THEN inductive_on_imp_accessible_on]
+
+lemma accessible_on_tranclp:
+  assumes "accessible_on P A x"
+  shows "accessible_on ((restrict_to P A)\<^sup>+\<^sup>+) A x"
+    (is "accessible_on ?P A x")
+  using assms
+proof (induct)
+  case (1 x)
+  then have "x \<in> A" by (blast dest: accessible_on_imp_mem)
+  then show ?case
+  proof (rule accessible_onI)
+    fix y
+    assume "y \<in> A"
+    assume "?P y x"
+    then show "accessible_on ?P A y"
+    proof (cases)
+      assume "restrict_to P A y x"
+      with 1 and `y \<in> A` show ?thesis by blast
+    next
+      fix z
+      assume "?P y z" and "restrict_to P A z x"
+      with 1 have "accessible_on ?P A z" by (auto simp: restrict_to_def)
+      from accessible_on_downward [OF this `y \<in> A` `?P y z`]
+        show ?thesis .
+    qed
+  qed
+qed
+
+lemma wfp_on_restrict_to_tranclp:
+  assumes "wfp_on P A"
+  shows "wfp_on ((restrict_to P A)\<^sup>+\<^sup>+) A"
+  using wfp_on_imp_accessible_on [OF assms]
+    and accessible_on_tranclp [of P A]
+    and accessible_on_imp_wfp_on [of A "(restrict_to P A)\<^sup>+\<^sup>+"]
+    by blast
+
+lemma wfp_on_restrict_to_tranclp':
+  assumes "wfp_on (restrict_to P A)\<^sup>+\<^sup>+ A"
+  shows "wfp_on P A"
+  by (rule ccontr) (insert assms, auto simp: wfp_on_def)
+
+lemma wfp_on_restrict_to_tranclp_wfp_on_conv:
+  "wfp_on (restrict_to P A)\<^sup>+\<^sup>+ A \<longleftrightarrow> wfp_on P A"
+  using wfp_on_restrict_to_tranclp [of P A]
+    and wfp_on_restrict_to_tranclp' [of P A]
+    by blast
+
+lemma tranclp_idemp [simp]:
+  "(P\<^sup>+\<^sup>+)\<^sup>+\<^sup>+ = P\<^sup>+\<^sup>+" (is "?l = ?r")
+proof (intro ext)
+  fix x y
+  show "?l x y = ?r x y"
+  proof
+    assume "?l x y" then show "?r x y" by (induct) auto
+  next
+    assume "?r x y" then show "?l x y" by (induct) auto
+  qed
+qed
 
 end
 
