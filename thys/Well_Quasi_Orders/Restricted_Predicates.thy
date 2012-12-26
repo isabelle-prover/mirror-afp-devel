@@ -77,6 +77,11 @@ definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a 
 definition inductive_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "inductive_on P A = (\<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x))"
 
+lemma inductive_onI [Pure.intro]:
+  assumes "\<And>Q x. \<lbrakk>x \<in> A; (\<And>y. \<lbrakk>y \<in> A; \<And>x. \<lbrakk>x \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x\<rbrakk> \<Longrightarrow> Q y)\<rbrakk> \<Longrightarrow>  Q x"
+  shows "inductive_on P A"
+  using assms unfolding inductive_on_def by metis
+
 text {*If @{term P} is well-founded on @{term A} then every non-empty subset @{term Q}
 of @{term A} has a minimal element @{term z} w.r.t. @{term P}, i.e., all elements
 that are @{term P}-smaller than @{term z} are not in @{term Q}.*}
@@ -262,7 +267,7 @@ lemma wfp_on_imp_has_min_elt:
   shows "\<exists>x\<in>A. \<forall>y\<in>A. \<not> strict P y x"
   using assms unfolding wfp_on_iff_minimal by force
 
-lemma wfp_on_induct [consumes 2, case_names less]:
+lemma wfp_on_induct [consumes 2, case_names less, induct pred: wfp_on]:
   assumes "wfp_on P A" and "x \<in> A"
     and "\<And>y. \<lbrakk> y \<in> A; \<And>x. \<lbrakk> x \<in> A; P x y \<rbrakk> \<Longrightarrow> Q x \<rbrakk> \<Longrightarrow> Q y"
   shows "Q x"
@@ -363,4 +368,64 @@ lemma restrict_to_reflclp:
   "restrict_to P\<^sup>=\<^sup>= A x y \<Longrightarrow> (restrict_to P A)\<^sup>=\<^sup>= x y"
   by (auto simp: restrict_to_def)
 
+lemma wfp_on_imp_irreflp_on:
+  assumes "wfp_on P A"
+  shows "irreflp_on P A"
+proof
+  fix x
+  assume "x \<in> A"
+  show "\<not> P x x"
+  proof
+    let ?f = "\<lambda>_. x"
+    assume "P x x"
+    then have "\<forall>i. P (?f (Suc i)) (?f i)" by blast
+    with `x \<in> A` have "\<not> wfp_on P A" by (auto simp: wfp_on_def)
+    with assms show False by contradiction
+  qed
+qed
+
+inductive
+  accessible_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> bool"
+  for P and A
+where
+  accessible_onI [Pure.intro]:
+    "\<lbrakk>x \<in> A; \<And>y. \<lbrakk>y \<in> A; P y x\<rbrakk> \<Longrightarrow> accessible_on P A y\<rbrakk> \<Longrightarrow> accessible_on P A x"
+
+lemma accessible_on_imp_mem:
+  assumes "accessible_on P A a"
+  shows "a \<in> A"
+  using assms by (induct) auto
+
+lemma accessible_on_induct [consumes 1, induct pred: accessible_on]:
+  assumes *: "accessible_on P A a"
+    and IH: "\<And>x. \<lbrakk>accessible_on P A x; \<And>y. \<lbrakk>y \<in> A; P y x\<rbrakk> \<Longrightarrow> Q y\<rbrakk> \<Longrightarrow> Q x"
+  shows "Q a"
+  apply (rule * [THEN accessible_on.induct])
+  apply (rule IH)
+  apply (rule accessible_onI)
+  by auto
+
+lemma accessible_on_downward:
+  "accessible_on P A b \<Longrightarrow> a \<in> A \<Longrightarrow> P a b \<Longrightarrow> accessible_on P A a"
+  by (cases rule: accessible_on.cases) fast
+
+lemma accessible_on_imp_inductive_on:
+  assumes "\<forall>x\<in>A. accessible_on P A x"
+  shows "inductive_on P A"
+proof
+  fix Q x
+  assume "x \<in> A"
+    and *: "\<And>y. \<lbrakk>y \<in> A; \<And>x. \<lbrakk>x \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x\<rbrakk> \<Longrightarrow> Q y"
+  with assms have "accessible_on P A x" by auto
+  then show "Q x"
+  proof (induct)
+    case (1 z)
+    then have "z \<in> A" by (blast dest: accessible_on_imp_mem)
+    show ?case by (rule *) fact+
+  qed
+qed
+
+lemmas accessible_on_imp_wfp_on = accessible_on_imp_inductive_on [THEN inductive_on_imp_wfp_on]
+
 end
+
