@@ -151,7 +151,7 @@ definition
      'a \<Rightarrow>
      'd"
 where
-  "rec f g h t \<equiv> THE y. (t, y) \<in> rec_set f g h"
+  "rec f g h t = (THE y. (t, y) \<in> rec_set f g h)"
 
 definition
   list_rec ::
@@ -161,7 +161,7 @@ definition
       'a list \<Rightarrow>
       'c"
 where
-  "list_rec f g h ts \<equiv> THE y. (ts, y) \<in> list_rec_set f g h"
+  "list_rec f g h ts = (THE y. (ts, y) \<in> list_rec_set f g h)"
 
 lemma rec_simps [simp]:
   "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> rec f g h (mk x ts) = f x ts (list_rec f g h ts)"
@@ -181,10 +181,10 @@ lemma list_rec_simps [simp]:
     and the1_equality [OF functional(1), of t A _ f g h]
   by (metis functional(1) functional(2) rec_set_list_rec_set.intros(3) trees_list.simps)
 
-definition "nodes \<equiv>
+definition "nodes =
   rec (\<lambda>x ts N. {x} \<union> N) ({}) (\<lambda>t ts M N. M \<union> N)"
 
-definition "nodes_list \<equiv>
+definition "nodes_list =
   list_rec (\<lambda>x ts N. {x} \<union> N) {} (\<lambda>t ts M N. M \<union> N)"
 
 lemma trees_list_Cons [iff]:
@@ -217,12 +217,10 @@ where
   step [intro]: "subtree s t \<Longrightarrow> t \<in> set ts \<Longrightarrow> subtree s (mk x ts)"
 
 definition size :: "'a \<Rightarrow> nat" where
-  "size \<equiv>
-    rec (\<lambda>x ts n. n + Suc 0) 0 (\<lambda>t ts m n. m + n + Suc 0)"
+  "size = rec (\<lambda>x ts n. n + Suc 0) 0 (\<lambda>t ts m n. m + n + Suc 0)"
 
 definition size_list :: "'a list \<Rightarrow> nat" where
-  "size_list \<equiv>
-    list_rec (\<lambda>x ts n. Suc n) 0 (\<lambda>t ts m n. Suc (m + n))"
+  "size_list = list_rec (\<lambda>x ts n. Suc n) 0 (\<lambda>t ts m n. Suc (m + n))"
 
 lemma size:
   "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> size (mk x ts) = Suc (size_list ts)"
