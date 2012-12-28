@@ -187,6 +187,12 @@ definition "nodes =
 definition "nodes_list =
   list_rec (\<lambda>x ts N. {x} \<union> N) {} (\<lambda>t ts M N. M \<union> N)"
 
+lemma nodes:
+  "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> nodes (mk x ts) = {x} \<union> nodes_list ts"
+  "nodes_list [] = {}"
+  "t \<in> trees A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> nodes_list (t # ts) = nodes t \<union> nodes_list ts"
+  by (simp_all add: nodes_def nodes_list_def)
+
 lemma trees_list_Cons [iff]:
   "(t # ts) \<in> trees_list A \<longleftrightarrow> t \<in> trees A \<and> ts \<in> trees_list A"
   (is "?lhs \<longleftrightarrow> ?rhs")
@@ -198,12 +204,6 @@ proof -
       by (auto intro: trees_trees_list.intros)
   } ultimately show ?thesis by blast
 qed
-
-lemma nodes:
-  "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> nodes (mk x ts) = {x} \<union> nodes_list ts"
-  "nodes_list [] = {}"
-  "t \<in> trees A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow> nodes_list (t # ts) = nodes t \<union> nodes_list ts"
-  by (simp_all add: nodes_def nodes_list_def)
 
 lemma nodes_simps [simp]:
   "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow>
