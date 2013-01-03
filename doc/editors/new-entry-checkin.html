@@ -52,8 +52,6 @@ properly public with the next Isabelle release (they are only available as
 
 <li>create/adjust <tt>config</tt> file (template in <tt>thys/Example-Submission/config</tt>)</li>
 
-<li>make sure there is a <tt>thys/entryname/ROOT</tt> file and add <code>entryname</code> to <code>thys/ROOTS</code></li>
-	
 <li>to check, run in <tt>afp/release/thys</tt><br>
 <code>../admin/testall -r Isabelle20XX -c &lt;name&gt;</code><br>
 (be sure to have ISABELLE_RELEASES set to the path where Isabelle releases are kept, e.g. /home/proj/isabelle/)
@@ -87,6 +85,10 @@ sourceforge, will run the session $lt;name&gt; to generate
 HTML, produce a tar.gz for the archive and for the entry, and will update the
 web pages on the server. The script will ask before it copies, so you can check locally if everything is as you want it.
 </p></li>
+
+<li>Tell Gerwin about the new entry, so he can make sure there is a
+<tt>thys/entryname/ROOT</tt> file and add <code>entryname</code> to
+<code>thys/ROOTS</code> for the new build system in the devel version.</li>
 
 <li>That's it. Changes should show up at <a href="http://afp.sf.net">http://afp.sf.net</a></li>
 
