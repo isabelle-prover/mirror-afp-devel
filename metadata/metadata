@@ -1190,6 +1190,17 @@ extra-history =
   Change history: 
   [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
 
+[Sqrt_Babylonian]
+title = Computing Square Roots using the Babylonian Method
+author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+date = 2013-01-03
+topic = Mathematics/Analysis
+license = LGPL
+abstract =
+  We implement the Babylonian method to compute square roots of numbers.
+  We provide precise algorithms for naturals, integers and rationals, and
+  offer an approximation algorithm for linear ordered fields.
+
 [Markov_Models]
 title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
