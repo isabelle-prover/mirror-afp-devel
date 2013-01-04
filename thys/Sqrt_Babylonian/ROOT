@@ -1,0 +1,7 @@
+session Sqrt_Babylonian (AFP) = HOL +
+  options [timeout = 300]
+  theories
+    Sqrt_Babylonian
+  files
+    "document/root.bib"
+    "document/root.tex"
