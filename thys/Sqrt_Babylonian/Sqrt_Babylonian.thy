@@ -466,15 +466,6 @@ definition sqrt_rat :: "rat \<Rightarrow> rat list"
 text {* Whereas soundness of @{const sqrt_rat} is simple, it is a bit more tedious to show
   that all roots are computed, which uses facts on @{const coprime}. *}
 
-lemma quotient_of_div:
-  assumes r: "quotient_of r = (n,d)"
-  shows "r = of_int n / of_int d"
-proof -
-  from theI'[OF quotient_of_unique[of r], unfolded r[unfolded quotient_of_def]]
-  have "r = Fract n d" by simp
-  thus ?thesis using Fract_of_int_quotient by simp
-qed
-
 lemma sqrt_rat[simp]: "set (sqrt_rat x) = { y. y * y = x}" (is "?l = ?r")
 proof -
   note d = sqrt_rat_def
