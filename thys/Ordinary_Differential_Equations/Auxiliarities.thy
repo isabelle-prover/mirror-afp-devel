@@ -1,6 +1,6 @@
 header {* Auxiliary Lemmas *}
 theory Auxiliarities
-imports Multivariate_Analysis
+imports "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
 begin
 
 subsection {* Euclidean Components *}
