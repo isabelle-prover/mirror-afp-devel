@@ -185,7 +185,7 @@ subsection{* Well-formedness*}
 --"Indices in blocks increase by 1"
 
 primrec \<B> :: "expr\<^isub>1 \<Rightarrow> nat \<Rightarrow> bool"
-  and \<B>_list :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool"  ("\<B>s") where
+  and \<B>s :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool" where
 "\<B> (new C) i = True" |
 "\<B> (Cast C e) i = \<B> e i" |
 "\<B> (Val v) i = True" |

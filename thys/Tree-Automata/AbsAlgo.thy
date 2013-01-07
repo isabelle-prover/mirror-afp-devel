@@ -763,27 +763,27 @@ lemma br'_inner_invar_initial:
   done
 
 lemma br'_inner_step_proof:
-  fixes \<alpha>_s :: "'\<Sigma> \<Rightarrow> ('Q,'L) br'_state"
+  fixes \<alpha>s :: "'\<Sigma> \<Rightarrow> ('Q,'L) br'_state"
   fixes cstep :: "('Q,'L) ta_rule \<Rightarrow> '\<Sigma> \<Rightarrow> '\<Sigma>"
-  fixes \<Sigma>_h :: "'\<Sigma>"
+  fixes \<Sigma>h :: "'\<Sigma>"
   fixes cinvar :: "('Q,'L) ta_rule set \<Rightarrow> '\<Sigma> \<Rightarrow> bool"
 
   assumes iterable_set: "set_iteratei \<alpha> invar iteratei"
-  assumes invar_initial: "cinvar {r\<in>\<delta>. q\<in>set (rhsq r)} \<Sigma>_h"
+  assumes invar_initial: "cinvar {r\<in>\<delta>. q\<in>set (rhsq r)} \<Sigma>h"
   assumes invar_step: 
     "!!it r \<Sigma>. \<lbrakk> r\<in>it; it \<subseteq> {r\<in>\<delta>. q\<in>set (rhsq r)}; cinvar it \<Sigma> \<rbrakk> 
                  \<Longrightarrow> cinvar (it-{r}) (cstep r \<Sigma>)"
   assumes step_desc: 
     "!!it r \<Sigma>. \<lbrakk> r\<in>it; it\<subseteq>{r\<in>\<delta>. q\<in>set (rhsq r)}; cinvar it \<Sigma> \<rbrakk> 
-                 \<Longrightarrow> \<alpha>_s (cstep r \<Sigma>) = br'_inner_step r (\<alpha>_s \<Sigma>)"
+                 \<Longrightarrow> \<alpha>s (cstep r \<Sigma>) = br'_inner_step r (\<alpha>s \<Sigma>)"
   assumes it_set_desc: "invar it_set" "\<alpha> it_set = {r\<in>\<delta>. q\<in>set (rhsq r)}"
 
   assumes QIW[simp]: "q\<in>W"
 
-  assumes \<Sigma>_desc[simp]: "\<alpha>_s \<Sigma> = (Q,W,rcm)"
-  assumes \<Sigma>_h_desc[simp]: "\<alpha>_s \<Sigma>_h = (Q,W-{q},rcm)"
+  assumes \<Sigma>_desc[simp]: "\<alpha>s \<Sigma> = (Q,W,rcm)"
+  assumes \<Sigma>h_desc[simp]: "\<alpha>s \<Sigma>h = (Q,W-{q},rcm)"
 
-  shows "(\<alpha>_s \<Sigma>, \<alpha>_s (iteratei it_set (\<lambda>_. True) cstep \<Sigma>_h))\<in>br'_step \<delta>"
+  shows "(\<alpha>s \<Sigma>, \<alpha>s (iteratei it_set (\<lambda>_. True) cstep \<Sigma>h))\<in>br'_step \<delta>"
 proof -
   interpret set_iteratei \<alpha> invar iteratei by fact
 
@@ -791,7 +791,7 @@ proof -
     apply (rule_tac 
       I="\<lambda>it \<Sigma>. cinvar it \<Sigma> 
                 \<and> br'_inner_invar {r\<in>\<delta>. q\<in>set (rhsq r)} q (Q,W-{q},rcm) 
-                                  it (\<alpha>_s \<Sigma>)" 
+                                  it (\<alpha>s \<Sigma>)" 
       in iterate_rule_P)
     apply (simp_all 
       add: it_set_desc invar_initial br'_inner_invar_initial invar_step 
@@ -1097,15 +1097,15 @@ lemma brw_inner_invar_imp_final:
 lemma brw_inner_invar_step: 
   assumes INVI: "(Q,W,rcm)\<in>brw_invar \<delta>"
   assumes A: "q\<in>W" "r\<in>it" "it\<subseteq>{r\<in>\<delta>. q\<in>set (rhsq r)}" 
-  assumes INVH: "brw_inner_invar {r\<in>\<delta>. q\<in>set (rhsq r)} q (Q,W-{q},rcm) it \<Sigma>_h"
-  assumes STEP: "(\<Sigma>_h,\<Sigma>')\<in>brw_inner_step r" 
+  assumes INVH: "brw_inner_invar {r\<in>\<delta>. q\<in>set (rhsq r)} q (Q,W-{q},rcm) it \<Sigma>h"
+  assumes STEP: "(\<Sigma>h,\<Sigma>')\<in>brw_inner_step r" 
   shows "brw_inner_invar {r\<in>\<delta>. q\<in>set (rhsq r)} q (Q,W-{q},rcm) (it-{r}) \<Sigma>'"
 proof -
   from INVI have BR'_INV: "(dom Q,W,rcm)\<in>br'_invar \<delta>"
     by (simp add: brw_invar_def brw_\<alpha>_def)
 
   obtain c Qh Wh rcmh Q' W' rcm' where
-    SIGMAF[simp]: "\<Sigma>_h=(Qh,Wh,rcmh)" "\<Sigma>'=(Q',W',rcm')" and
+    SIGMAF[simp]: "\<Sigma>h=(Qh,Wh,rcmh)" "\<Sigma>'=(Q',W',rcm')" and
     CF[simp]: "c = the (rcmh r)" and
     SF: "if c\<le>1 \<and> (lhs r) \<notin> dom Qh then 
            Q' = Qh(lhs r \<mapsto> (construct_witness Qh r)) 
@@ -1194,35 +1194,35 @@ lemma brw_inner_invar_initial:
   by (simp add: brw_inner_invar_def br'_inner_invar_initial brw_\<alpha>_def)
 
 theorem brw_inner_step_proof:
-  fixes \<alpha>_s :: "'\<Sigma> \<Rightarrow> ('Q,'L) brw_state"
+  fixes \<alpha>s :: "'\<Sigma> \<Rightarrow> ('Q,'L) brw_state"
   fixes cstep :: "('Q,'L) ta_rule \<Rightarrow> '\<Sigma> \<Rightarrow> '\<Sigma>"
-  fixes \<Sigma>_h :: "'\<Sigma>"
+  fixes \<Sigma>h :: "'\<Sigma>"
   fixes cinvar :: "('Q,'L) ta_rule set \<Rightarrow> '\<Sigma> \<Rightarrow> bool"
 
   assumes set_iterate: "set_iteratei \<alpha> invar iteratei"
-  assumes invar_start: "(\<alpha>_s \<Sigma>)\<in>brw_invar \<delta>"
-  assumes invar_initial: "cinvar {r\<in>\<delta>. q\<in>set (rhsq r)} \<Sigma>_h"
+  assumes invar_start: "(\<alpha>s \<Sigma>)\<in>brw_invar \<delta>"
+  assumes invar_initial: "cinvar {r\<in>\<delta>. q\<in>set (rhsq r)} \<Sigma>h"
   assumes invar_step: 
     "!!it r \<Sigma>. \<lbrakk> r\<in>it; it \<subseteq> {r\<in>\<delta>. q\<in>set (rhsq r)}; cinvar it \<Sigma> \<rbrakk> 
                 \<Longrightarrow> cinvar (it-{r}) (cstep r \<Sigma>)"
   assumes step_desc: 
     "!!it r \<Sigma>. \<lbrakk> r\<in>it; it\<subseteq>{r\<in>\<delta>. q\<in>set (rhsq r)}; cinvar it \<Sigma> \<rbrakk> 
-                \<Longrightarrow> (\<alpha>_s \<Sigma>, \<alpha>_s (cstep r \<Sigma>)) \<in> brw_inner_step r"
+                \<Longrightarrow> (\<alpha>s \<Sigma>, \<alpha>s (cstep r \<Sigma>)) \<in> brw_inner_step r"
   assumes it_set_desc: "invar it_set" "\<alpha> it_set = {r\<in>\<delta>. q\<in>set (rhsq r)}"
 
   assumes QIW[simp]: "q\<in>W"
 
-  assumes \<Sigma>_desc[simp]: "\<alpha>_s \<Sigma> = (Q,W,rcm)"
-  assumes \<Sigma>_h_desc[simp]: "\<alpha>_s \<Sigma>_h = (Q,W-{q},rcm)"
+  assumes \<Sigma>_desc[simp]: "\<alpha>s \<Sigma> = (Q,W,rcm)"
+  assumes \<Sigma>h_desc[simp]: "\<alpha>s \<Sigma>h = (Q,W-{q},rcm)"
 
-  shows "(\<alpha>_s \<Sigma>, \<alpha>_s (iteratei it_set (\<lambda>_. True) cstep \<Sigma>_h))\<in>brw_step \<delta>"
+  shows "(\<alpha>s \<Sigma>, \<alpha>s (iteratei it_set (\<lambda>_. True) cstep \<Sigma>h))\<in>brw_step \<delta>"
 proof -
   interpret set_iteratei \<alpha> invar iteratei by fact
 
   show ?thesis
     apply (rule_tac 
       I="\<lambda>it \<Sigma>. cinvar it \<Sigma> \<and> brw_inner_invar {r\<in>\<delta>. q\<in>set (rhsq r)} q 
-                                                (Q,W-{q},rcm) it (\<alpha>_s \<Sigma>)" 
+                                                (Q,W-{q},rcm) it (\<alpha>s \<Sigma>)" 
       in iterate_rule_P)
     apply (auto 
       simp add: it_set_desc invar_initial brw_inner_invar_initial invar_step 
@@ -1248,7 +1248,7 @@ definition frp_\<alpha> :: "('Q1,'Q2,'L) frp_state \<Rightarrow> ('Q1\<times>'Q2
   where "frp_\<alpha> S == let (Q,W,\<delta>)=S in (Q, W)"
 
 definition "frp_invar_add \<delta>1 \<delta>2 == 
-  { (Q,W,\<delta>_d). \<delta>_d = { r. r\<in>\<delta>_prod \<delta>1 \<delta>2 \<and> lhs r \<in> Q - set W} }"
+  { (Q,W,\<delta>d). \<delta>d = { r. r\<in>\<delta>_prod \<delta>1 \<delta>2 \<and> lhs r \<in> Q - set W} }"
 
 definition frp_invar 
   :: "('Q1, 'L) tree_automaton_rec \<Rightarrow> ('Q2, 'L) tree_automaton_rec 
@@ -1267,15 +1267,15 @@ inductive_set frp_step
      set Wn = f_succ (\<delta>_prod \<delta>1 \<delta>2) `` {(q1,q2)} - Q;
      W'=Wn@Wtl;
      Q'=Q \<union> f_succ (\<delta>_prod \<delta>1 \<delta>2) `` {(q1,q2)};
-     \<delta>_d'=\<delta>_d \<union> {r\<in>\<delta>_prod \<delta>1 \<delta>2. lhs r = (q1,q2) }
-  \<rbrakk> \<Longrightarrow> ((Q,W,\<delta>_d),(Q',W',\<delta>_d'))\<in>frp_step \<delta>1 \<delta>2"
+     \<delta>d'=\<delta>d \<union> {r\<in>\<delta>_prod \<delta>1 \<delta>2. lhs r = (q1,q2) }
+  \<rbrakk> \<Longrightarrow> ((Q,W,\<delta>d),(Q',W',\<delta>d'))\<in>frp_step \<delta>1 \<delta>2"
 
 inductive_set frp_initial :: "'Q1 set \<Rightarrow> 'Q2 set \<Rightarrow> ('Q1,'Q2,'L) frp_state set"
   for Q10 Q20 where 
   "\<lbrakk> distinct W; set W = Q10\<times>Q20 \<rbrakk> \<Longrightarrow> (Q10\<times>Q20,W,{}) \<in> frp_initial Q10 Q20"
 
 definition frp_cond :: "('Q1,'Q2,'L) frp_state set" where
-  "frp_cond == {(Q,W,\<delta>_d). W\<noteq>[]}"
+  "frp_cond == {(Q,W,\<delta>d). W\<noteq>[]}"
 
 definition "frp_algo T1 T2 == \<lparr>
   wa_cond = frp_cond,
@@ -1351,17 +1351,17 @@ lemma f_succ_adv:
     can be constructed from the result"
 theorem frp_inv_final:
   "\<forall>s. s\<in>wa_invar (frp_algo T1 T2) \<and> s\<notin>wa_cond (frp_algo T1 T2)
-       \<longrightarrow> (case s of (Q,W,\<delta>_d) \<Rightarrow> 
+       \<longrightarrow> (case s of (Q,W,\<delta>d) \<Rightarrow> 
              \<lparr> ta_initial = ta_initial T1 \<times> ta_initial T2, 
-               ta_rules = \<delta>_d 
+               ta_rules = \<delta>d 
              \<rparr> = ta_fwd_reduce (ta_prod T1 T2))"
   apply (intro allI impI)
   apply (case_tac s)
   apply simp
   apply (simp add: ta_reduce_def ta_prod_def frp_algo_def)
 proof -
-  fix Q W \<delta>_d
-  assume A: "(Q,W,\<delta>_d)\<in>frp_invar T1 T2 \<and> (Q,W,\<delta>_d)\<notin>frp_cond"
+  fix Q W \<delta>d
+  assume A: "(Q,W,\<delta>d)\<in>frp_invar T1 T2 \<and> (Q,W,\<delta>d)\<notin>frp_cond"
 
   from frp_ref.transfer_correctness[OF dfs_invar_final, 
                                     unfolded frp_algo_def, simplified, 
@@ -1370,7 +1370,7 @@ proof -
                                  (ta_initial T1 \<times> ta_initial T2)"
     by (simp add: f_accessible_def dfs_\<alpha>_def frp_\<alpha>_def)
 
-  from A show "\<delta>_d = reduce_rules 
+  from A show "\<delta>d = reduce_rules 
     (\<delta>_prod (ta_rules T1) (ta_rules T2)) 
     (f_accessible (\<delta>_prod (ta_rules T1) (ta_rules T2)) 
                   (ta_initial T1 \<times> ta_initial T2))"

@@ -95,7 +95,7 @@ by(auto simp add: hyperset_defs)
 subsection "Definite assignment"
 
 primrec \<A>  :: "('a,'b,'addr) exp \<Rightarrow> 'a hyperset"
-  and \<A>_list :: "('a,'b,'addr) exp list \<Rightarrow> 'a hyperset"  ("\<A>s")
+  and \<A>s :: "('a,'b,'addr) exp list \<Rightarrow> 'a hyperset"
 where
   "\<A> (new C) = \<lfloor>{}\<rfloor>"
 | "\<A> (newA T\<lfloor>e\<rceil>) = \<A> e"

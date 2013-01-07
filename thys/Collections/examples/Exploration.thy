@@ -39,7 +39,7 @@ definition sse_cond :: "'\<Sigma> sse_state set" where
 
   -- "Initial state"
 definition sse_initial :: "'\<Sigma> set \<Rightarrow> '\<Sigma> sse_state" where
-  "sse_initial \<Sigma>_i == (\<Sigma>_i,\<Sigma>_i)"
+  "sse_initial \<Sigma>i == (\<Sigma>i,\<Sigma>i)"
 
 
   -- {*Invariants: 
@@ -56,41 +56,41 @@ definition sse_initial :: "'\<Sigma> set \<Rightarrow> '\<Sigma> sse_state" wher
 
   \end{itemize}*}
 definition sse_invar :: "'\<Sigma> set \<Rightarrow> ('\<Sigma>\<times>'\<Sigma>) set \<Rightarrow> '\<Sigma> sse_state set" where
-  "sse_invar \<Sigma>_i R = {(\<Sigma>,W). 
+  "sse_invar \<Sigma>i R = {(\<Sigma>,W). 
     W\<subseteq>\<Sigma> \<and>
-    (\<Sigma> \<subseteq> R\<^sup>*``\<Sigma>_i) \<and> 
-    (\<forall>\<sigma>\<in>(R\<^sup>*``\<Sigma>_i)-\<Sigma>. \<exists>\<sigma>_h\<in>W. (\<sigma>_h,\<sigma>)\<in>(R - (UNIV \<times> \<Sigma>))\<^sup>*)
+    (\<Sigma> \<subseteq> R\<^sup>*``\<Sigma>i) \<and> 
+    (\<forall>\<sigma>\<in>(R\<^sup>*``\<Sigma>i)-\<Sigma>. \<exists>\<sigma>h\<in>W. (\<sigma>h,\<sigma>)\<in>(R - (UNIV \<times> \<Sigma>))\<^sup>*)
   }"
 
-definition "sse_algo \<Sigma>_i R == 
+definition "sse_algo \<Sigma>i R == 
   \<lparr> wa_cond=sse_cond, 
     wa_step=sse_step R, 
-    wa_initial = {sse_initial \<Sigma>_i}, 
-    wa_invar = sse_invar \<Sigma>_i R \<rparr>"
+    wa_initial = {sse_initial \<Sigma>i}, 
+    wa_invar = sse_invar \<Sigma>i R \<rparr>"
 
-definition "sse_term_rel \<Sigma>_i R == 
-  { (\<sigma>',\<sigma>). \<sigma>\<in>sse_invar \<Sigma>_i R \<and> (\<sigma>,\<sigma>')\<in>sse_step R }"
+definition "sse_term_rel \<Sigma>i R == 
+  { (\<sigma>',\<sigma>). \<sigma>\<in>sse_invar \<Sigma>i R \<and> (\<sigma>,\<sigma>')\<in>sse_step R }"
 
   -- "Termination: Either a new state is discovered, or the workset shrinks"
 theorem sse_term:
-  assumes finite[simp, intro!]: "finite (R\<^sup>*``\<Sigma>_i)"
-  shows "wf (sse_term_rel \<Sigma>_i R)"
+  assumes finite[simp, intro!]: "finite (R\<^sup>*``\<Sigma>i)"
+  shows "wf (sse_term_rel \<Sigma>i R)"
 proof -
-  have "wf (({(\<Sigma>',\<Sigma>). \<Sigma> \<subset> \<Sigma>' \<and> \<Sigma>' \<subseteq> (R\<^sup>*``\<Sigma>_i)}) <*lex*> finite_psubset)"
+  have "wf (({(\<Sigma>',\<Sigma>). \<Sigma> \<subset> \<Sigma>' \<and> \<Sigma>' \<subseteq> (R\<^sup>*``\<Sigma>i)}) <*lex*> finite_psubset)"
     by (auto intro: wf_bounded_supset)
-  moreover have "sse_term_rel \<Sigma>_i R \<subseteq> \<dots>" (is "_ \<subseteq> ?R")
+  moreover have "sse_term_rel \<Sigma>i R \<subseteq> \<dots>" (is "_ \<subseteq> ?R")
   proof
     fix S
-    assume A: "S\<in>sse_term_rel \<Sigma>_i R"
+    assume A: "S\<in>sse_term_rel \<Sigma>i R"
     obtain \<Sigma> W \<Sigma>' W' \<sigma> where
       [simp]: "S=((\<Sigma>',W'),(\<Sigma>,W))" and
-      S: "(\<Sigma>,W) \<in> sse_invar \<Sigma>_i R"
+      S: "(\<Sigma>,W) \<in> sse_invar \<Sigma>i R"
          "\<sigma>\<in>W"
          "\<Sigma>' = \<Sigma> \<union> R``{\<sigma>}"
          "W' = (W-{\<sigma>}) \<union> (R``{\<sigma>} - \<Sigma>)"
     proof -
       obtain \<Sigma> W \<Sigma>' W' where SF[simp]: "S=((\<Sigma>',W'),(\<Sigma>,W))" by (cases S) force
-      from A have R: "(\<Sigma>,W) \<in> sse_invar \<Sigma>_i R" "((\<Sigma>,W),(\<Sigma>',W'))\<in>sse_step R" 
+      from A have R: "(\<Sigma>,W) \<in> sse_invar \<Sigma>i R" "((\<Sigma>,W),(\<Sigma>',W'))\<in>sse_step R" 
         by (auto simp add: sse_term_rel_def)
       from sse_step.cases[OF R(2)] obtain \<sigma> where S:
         "\<sigma>\<in>W"
@@ -104,7 +104,7 @@ proof -
     from S(1) have 
       [simp, intro!]: "finite \<Sigma>" "finite W" and
       WSS: "W\<subseteq>\<Sigma>" and
-      SSS: "\<Sigma>\<subseteq>R\<^sup>*``\<Sigma>_i"
+      SSS: "\<Sigma>\<subseteq>R\<^sup>*``\<Sigma>i"
       by (auto simp add: sse_invar_def intro: finite_subset)
 
     show "S\<in>?R" proof (cases "R``{\<sigma>} \<subseteq> \<Sigma>")
@@ -113,30 +113,30 @@ proof -
     next
       case False
       with S have "\<Sigma>' \<supset> \<Sigma>" by auto
-      moreover from S(2) WSS SSS have "\<sigma>\<in>R\<^sup>*``\<Sigma>_i" by auto
-      hence "R``{\<sigma>} \<subseteq> R\<^sup>*``\<Sigma>_i" 
+      moreover from S(2) WSS SSS have "\<sigma>\<in>R\<^sup>*``\<Sigma>i" by auto
+      hence "R``{\<sigma>} \<subseteq> R\<^sup>*``\<Sigma>i" 
         by (auto intro: rtrancl_into_rtrancl)
-      with S(3) SSS have "\<Sigma>' \<subseteq> R\<^sup>*``\<Sigma>_i" by auto
+      with S(3) SSS have "\<Sigma>' \<subseteq> R\<^sup>*``\<Sigma>i" by auto
       ultimately show ?thesis by simp
     qed
   qed
   ultimately show ?thesis by (auto intro: wf_subset)
 qed
         
-lemma sse_invar_initial: "(sse_initial \<Sigma>_i) \<in> sse_invar \<Sigma>_i R"
+lemma sse_invar_initial: "(sse_initial \<Sigma>i) \<in> sse_invar \<Sigma>i R"
   by (unfold sse_invar_def sse_initial_def)
      (auto elim: rtrancl_last_touch)
 
   -- "Correctness theorem: If the loop terminates, the discovered states are
        exactly the reachable states"
 theorem sse_invar_final: 
-  "\<forall>S. S\<in>wa_invar (sse_algo \<Sigma>_i R) \<and> S\<notin>wa_cond (sse_algo \<Sigma>_i R) 
-    \<longrightarrow> fst S = R\<^sup>*``\<Sigma>_i"
+  "\<forall>S. S\<in>wa_invar (sse_algo \<Sigma>i R) \<and> S\<notin>wa_cond (sse_algo \<Sigma>i R) 
+    \<longrightarrow> fst S = R\<^sup>*``\<Sigma>i"
   by (intro allI, case_tac S)
      (auto simp add: sse_invar_def sse_cond_def sse_algo_def)
 
-lemma sse_invar_step: "\<lbrakk>S\<in>sse_invar \<Sigma>_i R; (S,S')\<in>sse_step R\<rbrakk> 
-  \<Longrightarrow> S'\<in>sse_invar \<Sigma>_i R"
+lemma sse_invar_step: "\<lbrakk>S\<in>sse_invar \<Sigma>i R; (S,S')\<in>sse_step R\<rbrakk> 
+  \<Longrightarrow> S'\<in>sse_invar \<Sigma>i R"
   -- "Split the goal by the invariant:"
   apply (cases S, cases S')
   apply clarsimp
@@ -153,56 +153,56 @@ lemma sse_invar_step: "\<lbrakk>S\<in>sse_invar \<Sigma>_i R; (S,S')\<in>sse_ste
 proof (intro ballI)
   fix \<sigma> W \<Sigma> \<sigma>'
   assume A: 
-    "(\<Sigma>,W)\<in>sse_invar \<Sigma>_i R"
+    "(\<Sigma>,W)\<in>sse_invar \<Sigma>i R"
     "\<sigma>\<in>W"
-    "\<sigma>'\<in>R\<^sup>* `` \<Sigma>_i - (\<Sigma> \<union> R `` {\<sigma>})"
+    "\<sigma>'\<in>R\<^sup>* `` \<Sigma>i - (\<Sigma> \<union> R `` {\<sigma>})"
     -- "Using the invariant of the original state, we obtain
         a state in the original workset and a path not touching
         the originally discovered states"
-  from A(3) have "\<sigma>' \<in> R\<^sup>* `` \<Sigma>_i - \<Sigma>" by auto
-  with A(1) obtain \<sigma>_h where IP: 
-    "\<sigma>_h\<in>W" 
-    "(\<sigma>_h,\<sigma>')\<in>(R - (UNIV \<times> \<Sigma>))\<^sup>*" 
+  from A(3) have "\<sigma>' \<in> R\<^sup>* `` \<Sigma>i - \<Sigma>" by auto
+  with A(1) obtain \<sigma>h where IP: 
+    "\<sigma>h\<in>W" 
+    "(\<sigma>h,\<sigma>')\<in>(R - (UNIV \<times> \<Sigma>))\<^sup>*" 
   and SS:
     "W\<subseteq>\<Sigma>"
-    "\<Sigma>\<subseteq>R\<^sup>* `` \<Sigma>_i"
+    "\<Sigma>\<subseteq>R\<^sup>* `` \<Sigma>i"
     by (unfold sse_invar_def) force
 
   -- {* We now make a case distinction, whether the obtained path contains
       states from @{term "post \<sigma>"} or not: *}
-  from IP(2) show "\<exists>\<sigma>_h\<in>W - {\<sigma>} \<union> (R `` {\<sigma>} - \<Sigma>). 
-                     (\<sigma>_h, \<sigma>') \<in> (R - UNIV \<times> (\<Sigma> \<union> R `` {\<sigma>}))\<^sup>*"
+  from IP(2) show "\<exists>\<sigma>h\<in>W - {\<sigma>} \<union> (R `` {\<sigma>} - \<Sigma>). 
+                     (\<sigma>h, \<sigma>') \<in> (R - UNIV \<times> (\<Sigma> \<union> R `` {\<sigma>}))\<^sup>*"
   proof (cases rule: rtrancl_last_visit[where S="R `` {\<sigma>}"])
     case no_visit
     -- {* In the case that the obtained path contains no states from 
           @{term "post \<sigma>"}, we can take it. *}
-    hence G1: "(\<sigma>_h,\<sigma>')\<in>(R- (UNIV \<times> (\<Sigma>\<union>R `` {\<sigma>})))\<^sup>*" 
+    hence G1: "(\<sigma>h,\<sigma>')\<in>(R- (UNIV \<times> (\<Sigma>\<union>R `` {\<sigma>})))\<^sup>*" 
       by (simp add: set_diff_diff_left Sigma_Un_distrib2)
-    moreover have "\<sigma>_h \<noteq> \<sigma>" 
+    moreover have "\<sigma>h \<noteq> \<sigma>" 
       -- {* We may exclude the case that our obtained path started at 
             @{text \<sigma>}, as all successors of @{text \<sigma>} are 
             in @{term "R `` {\<sigma>}"} *}
     proof
-      assume [simp]: "\<sigma>_h=\<sigma>"
+      assume [simp]: "\<sigma>h=\<sigma>"
       from A SS have "\<sigma>\<noteq>\<sigma>'" by auto
       with G1 show False
         by (auto simp add: elim: converse_rtranclE)
     qed
     ultimately show ?thesis using IP(1) by auto
   next
-    case (last_visit_point \<sigma>_t)
+    case (last_visit_point \<sigma>t)
     -- {* If the obtained path contains a state from @{text "R `` {\<sigma>}"}, 
           we simply pick the last one: *}
-    hence "(\<sigma>_t,\<sigma>')\<in>(R- (UNIV \<times> (\<Sigma>\<union>R `` {\<sigma>})))\<^sup>*" 
+    hence "(\<sigma>t,\<sigma>')\<in>(R- (UNIV \<times> (\<Sigma>\<union>R `` {\<sigma>})))\<^sup>*" 
       by (simp add: set_diff_diff_left Sigma_Un_distrib2)
-    moreover from last_visit_point(2) have "\<sigma>_t\<notin>\<Sigma>" 
+    moreover from last_visit_point(2) have "\<sigma>t\<notin>\<Sigma>" 
       by (auto elim: trancl.cases)
     ultimately show ?thesis using last_visit_point(1) by auto
   qed
 qed
 
 -- "The sse-algorithm is a well-defined while-algorithm"
-theorem sse_while_algo: "finite (R\<^sup>*``\<Sigma>_i) \<Longrightarrow> while_algo (sse_algo \<Sigma>_i R)"
+theorem sse_while_algo: "finite (R\<^sup>*``\<Sigma>i) \<Longrightarrow> while_algo (sse_algo \<Sigma>i R)"
   apply unfold_locales
   apply (auto simp add: sse_algo_def intro: sse_invar_step sse_invar_initial)
   apply (drule sse_term)
@@ -226,10 +226,10 @@ definition dfs_\<alpha> :: "'\<Sigma> dfs_state \<Rightarrow> '\<Sigma> sse_stat
 definition dfs_invar_add :: "'\<Sigma> dfs_state set"
   where "dfs_invar_add == {(\<Sigma>,W). distinct W}"
 
-definition "dfs_invar \<Sigma>_i R == dfs_invar_add \<inter> { s. dfs_\<alpha> s \<in> sse_invar \<Sigma>_i R }"
+definition "dfs_invar \<Sigma>i R == dfs_invar_add \<inter> { s. dfs_\<alpha> s \<in> sse_invar \<Sigma>i R }"
 
-inductive_set dfs_initial :: "'\<Sigma> set \<Rightarrow> '\<Sigma> dfs_state set" for \<Sigma>_i
-  where "\<lbrakk> distinct W; set W = \<Sigma>_i\<rbrakk> \<Longrightarrow> (\<Sigma>_i,W)\<in>dfs_initial \<Sigma>_i"
+inductive_set dfs_initial :: "'\<Sigma> set \<Rightarrow> '\<Sigma> dfs_state set" for \<Sigma>i
+  where "\<lbrakk> distinct W; set W = \<Sigma>i\<rbrakk> \<Longrightarrow> (\<Sigma>i,W)\<in>dfs_initial \<Sigma>i"
 
 inductive_set dfs_step :: "('\<Sigma>\<times>'\<Sigma>) set \<Rightarrow> ('\<Sigma> dfs_state \<times>'\<Sigma> dfs_state) set" 
   for R where
@@ -243,15 +243,15 @@ inductive_set dfs_step :: "('\<Sigma>\<times>'\<Sigma>) set \<Rightarrow> ('\<Si
 definition dfs_cond :: "'\<Sigma> dfs_state set" 
   where "dfs_cond == { (\<Sigma>,W). W\<noteq>[]}"
 
-definition "dfs_algo \<Sigma>_i R == \<lparr> 
+definition "dfs_algo \<Sigma>i R == \<lparr> 
   wa_cond = dfs_cond, 
   wa_step = dfs_step R, 
-  wa_initial = dfs_initial \<Sigma>_i, 
-  wa_invar = dfs_invar \<Sigma>_i R \<rparr>"
+  wa_initial = dfs_initial \<Sigma>i, 
+  wa_invar = dfs_invar \<Sigma>i R \<rparr>"
 
   -- "The DFS-algorithm refines the state-space exploration algorithm"
 theorem dfs_pref_sse: 
-  "wa_precise_refine (dfs_algo \<Sigma>_i R) (sse_algo \<Sigma>_i R) dfs_\<alpha>"
+  "wa_precise_refine (dfs_algo \<Sigma>i R) (sse_algo \<Sigma>i R) dfs_\<alpha>"
   apply (unfold_locales)
   apply (auto simp add: dfs_algo_def sse_algo_def dfs_cond_def sse_cond_def 
                         dfs_\<alpha>_def)
@@ -264,13 +264,13 @@ theorem dfs_pref_sse:
 
   -- "The DFS-algorithm is a well-defined while-algorithm"
 theorem dfs_while_algo:
-  assumes finite[simp, intro!]: "finite (R\<^sup>*``\<Sigma>_i)"
-  shows "while_algo (dfs_algo \<Sigma>_i R)"
+  assumes finite[simp, intro!]: "finite (R\<^sup>*``\<Sigma>i)"
+  shows "while_algo (dfs_algo \<Sigma>i R)"
 proof -
-  interpret wa_precise_refine "(dfs_algo \<Sigma>_i R)" "(sse_algo \<Sigma>_i R)" dfs_\<alpha> 
+  interpret wa_precise_refine "(dfs_algo \<Sigma>i R)" "(sse_algo \<Sigma>i R)" dfs_\<alpha> 
     using dfs_pref_sse .
 
-  have [simp]: "wa_invar (sse_algo \<Sigma>_i R) = sse_invar \<Sigma>_i R" 
+  have [simp]: "wa_invar (sse_algo \<Sigma>i R) = sse_invar \<Sigma>i R" 
     by (simp add: sse_algo_def)
 
   show ?thesis 

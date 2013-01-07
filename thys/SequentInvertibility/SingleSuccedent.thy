@@ -708,30 +708,30 @@ proof (induct n arbitrary:\<Gamma> rule:nat_less_induct)
                  proof-
                  {fix p
                   assume "p \<in> set ps"
-                  obtain \<Gamma>_i \<delta>_i where p: "p = (\<Gamma>_i \<Rightarrow>* \<delta>_i)" by (cases p) auto
-                  have "\<delta>_i = Em \<or> \<delta>_i \<noteq> Em" by blast
+                  obtain \<Gamma>i \<delta>i where p: "p = (\<Gamma>i \<Rightarrow>* \<delta>i)" by (cases p) auto
+                  have "\<delta>i = Em \<or> \<delta>i \<noteq> Em" by blast
                   moreover
-                     {assume "\<delta>_i = Em"
-                      then have "extend (\<Gamma>1 \<Rightarrow>* Compound F Fs) p = (\<Gamma>1 + \<Gamma>_i \<Rightarrow>* Compound F Fs)" using p
+                     {assume "\<delta>i = Em"
+                      then have "extend (\<Gamma>1 \<Rightarrow>* Compound F Fs) p = (\<Gamma>1 + \<Gamma>i \<Rightarrow>* Compound F Fs)" using p
                            by (auto simp add:extend_def)
-                      with pms obtain m where "m \<le>n'" and "(\<Gamma>1 + \<Gamma>_i \<Rightarrow>* Compound F Fs,m) \<in> derivable R*"
+                      with pms obtain m where "m \<le>n'" and "(\<Gamma>1 + \<Gamma>i \<Rightarrow>* Compound F Fs,m) \<in> derivable R*"
                            using `p \<in> set ps` by auto
-                      with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>_i + \<Gamma>' \<Rightarrow>* E,m') \<in> derivable R*"
+                      with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>i + \<Gamma>' \<Rightarrow>* E,m') \<in> derivable R*"
                            by auto
                       then have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* E) p,m) \<in> derivable R*" using `m\<le>n'`
-                           and p and `\<delta>_i = Em` apply (auto simp add:extend_def union_ac) 
+                           and p and `\<delta>i = Em` apply (auto simp add:extend_def union_ac) 
                            by (rule_tac x="m'" in exI) auto
                      }
                   moreover
-                     {assume "\<delta>_i \<noteq> Em"
-                      then have "extend (\<Gamma>1 \<Rightarrow>* Compound F Fs) p = (\<Gamma>1 + \<Gamma>_i \<Rightarrow>* \<delta>_i)" using p
+                     {assume "\<delta>i \<noteq> Em"
+                      then have "extend (\<Gamma>1 \<Rightarrow>* Compound F Fs) p = (\<Gamma>1 + \<Gamma>i \<Rightarrow>* \<delta>i)" using p
                            by (auto simp add:extend_def)
-                      with pms obtain m where "m\<le>n'" and "(\<Gamma>1 + \<Gamma>_i \<Rightarrow>* \<delta>_i,m) \<in> derivable R*"
+                      with pms obtain m where "m\<le>n'" and "(\<Gamma>1 + \<Gamma>i \<Rightarrow>* \<delta>i,m) \<in> derivable R*"
                            using `p \<in> set ps` by auto
-                      then have "(\<Gamma>1 + \<Gamma>_i + \<Gamma>' \<Rightarrow>* \<delta>_i,m) \<in> derivable R*" using rules 
-                           and dpWeak[where \<Gamma>="\<Gamma>1 + \<Gamma>_i" and E="\<delta>_i" and n=m and R=R and R'=R'] by auto
+                      then have "(\<Gamma>1 + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>i,m) \<in> derivable R*" using rules 
+                           and dpWeak[where \<Gamma>="\<Gamma>1 + \<Gamma>i" and E="\<delta>i" and n=m and R=R and R'=R'] by auto
                       then have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* E) p,m) \<in> derivable R*" using `m\<le>n'`
-                           and p and `\<delta>_i \<noteq> Em` by (auto simp add:extend_def union_ac)
+                           and p and `\<delta>i \<noteq> Em` by (auto simp add:extend_def union_ac)
                      } 
                   ultimately have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* E) p, m) \<in> derivable R*" by blast
                  }
@@ -868,35 +868,35 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
                  proof-
                  {fix p
                   assume "p \<in> set ps"
-                  obtain \<Gamma>_i \<delta>_i where p: "p = (\<Gamma>_i \<Rightarrow>* \<delta>_i)" by (cases p) auto
-                  have "\<delta>_i = Em \<or> \<delta>_i \<noteq> Em" by blast
+                  obtain \<Gamma>i \<delta>i where p: "p = (\<Gamma>i \<Rightarrow>* \<delta>i)" by (cases p) auto
+                  have "\<delta>i = Em \<or> \<delta>i \<noteq> Em" by blast
                   moreover
-                     {assume "\<delta>_i = Em"
-                      then have "extend (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>') p = (\<Gamma> + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>')" using p
+                     {assume "\<delta>i = Em"
+                      then have "extend (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>') p = (\<Gamma> + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>')" using p
                            by (auto simp add:extend_def union_ac)
-                      with pms obtain m where "m \<le>n'" and "(\<Gamma> + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>',m) \<in> derivable R*"
+                      with pms obtain m where "m \<le>n'" and "(\<Gamma> + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>',m) \<in> derivable R*"
                            using `p \<in> set ps` by auto
-                      with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma> + \<Gamma>_i + \<Gamma>' \<Rightarrow>* \<delta>',m') \<in> derivable R*"
+                      with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma> + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>',m') \<in> derivable R*"
                            apply auto apply (drule_tac x=m in spec) apply auto
-                           apply (drule_tac x="\<Gamma>+\<Gamma>_i" in spec) apply (drule_tac x="\<delta>'" in spec)
+                           apply (drule_tac x="\<Gamma>+\<Gamma>i" in spec) apply (drule_tac x="\<delta>'" in spec)
                            by (auto simp add:union_ac)
                       then have "\<exists> m\<le>n'. (extend (\<Gamma> + \<Gamma>' \<Rightarrow>* \<delta>') p,m) \<in> derivable R*" using `m\<le>n'`
-                           and p and `\<delta>_i = Em` apply (auto simp add:extend_def union_ac) 
+                           and p and `\<delta>i = Em` apply (auto simp add:extend_def union_ac) 
                            by (rule_tac x="m'" in exI) auto
                      }
                   moreover
-                     {assume "\<delta>_i \<noteq> Em"
-                      then have "extend (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>') p = (\<Gamma> + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>_i)" using p
+                     {assume "\<delta>i \<noteq> Em"
+                      then have "extend (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>') p = (\<Gamma> + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>i)" using p
                            by (auto simp add:extend_def union_ac)
-                      with pms obtain m where "m\<le>n'" and "(\<Gamma> + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>_i,m) \<in> derivable R*"
+                      with pms obtain m where "m\<le>n'" and "(\<Gamma> + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>i,m) \<in> derivable R*"
                            using `p \<in> set ps` by auto
-                      then have "\<exists> m\<le>n'. (\<Gamma> + \<Gamma>_i + \<Gamma>' \<Rightarrow>* \<delta>_i,m) \<in> derivable R*" using `n = Suc n'` and b'
+                      then have "\<exists> m\<le>n'. (\<Gamma> + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>i,m) \<in> derivable R*" using `n = Suc n'` and b'
                            and IH
                            apply auto apply (drule_tac x=m in spec) apply auto
-                           apply (drule_tac x="\<Gamma> + \<Gamma>_i" in spec) apply (drule_tac x=\<delta>_i in spec) 
+                           apply (drule_tac x="\<Gamma> + \<Gamma>i" in spec) apply (drule_tac x=\<delta>i in spec) 
                            apply (auto simp add:union_ac) apply (rule_tac x="m'" in exI) by auto
                       then have "\<exists> m\<le>n'. (extend (\<Gamma> + \<Gamma>' \<Rightarrow>* \<delta>') p,m) \<in> derivable R*" using `m\<le>n'`
-                           and p and `\<delta>_i \<noteq> Em` by (auto simp add:extend_def union_ac)
+                           and p and `\<delta>i \<noteq> Em` by (auto simp add:extend_def union_ac)
                      } 
                   ultimately have "\<exists> m\<le>n'. (extend (\<Gamma> + \<Gamma>' \<Rightarrow>* \<delta>') p, m) \<in> derivable R*" by blast
                  }
@@ -951,34 +951,34 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
                      proof-
                      {fix p
                       assume "p \<in> set ps"
-                      obtain \<Gamma>_i \<delta>_i where p: "p = (\<Gamma>_i \<Rightarrow>* \<delta>_i)" by (cases p) auto
-                      have "\<delta>_i = Em \<or> \<delta>_i \<noteq> Em" by blast
+                      obtain \<Gamma>i \<delta>i where p: "p = (\<Gamma>i \<Rightarrow>* \<delta>i)" by (cases p) auto
+                      have "\<delta>i = Em \<or> \<delta>i \<noteq> Em" by blast
                       moreover
-                         {assume "\<delta>_i = Em"
-                          then have "extend (\<Gamma>1 \<oplus> Compound F Fs \<Rightarrow>* \<delta>) p = (\<Gamma>1 + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>)" using p
+                         {assume "\<delta>i = Em"
+                          then have "extend (\<Gamma>1 \<oplus> Compound F Fs \<Rightarrow>* \<delta>) p = (\<Gamma>1 + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>)" using p
                                by (auto simp add:extend_def union_ac)
-                          with pms obtain m where "m \<le>n'" and "(\<Gamma>1 + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>,m) \<in> derivable R*"
+                          with pms obtain m where "m \<le>n'" and "(\<Gamma>1 + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>,m) \<in> derivable R*"
                                using `p \<in> set ps` by auto
-                          with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>_i + \<Gamma>' \<Rightarrow>* \<delta>,m') \<in> derivable R*"
+                          with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>,m') \<in> derivable R*"
                                apply auto apply (drule_tac x=m in spec) apply auto
-                               apply (drule_tac x="\<Gamma>1 + \<Gamma>_i" in spec) apply (drule_tac x=\<delta> in spec) 
+                               apply (drule_tac x="\<Gamma>1 + \<Gamma>i" in spec) apply (drule_tac x=\<delta> in spec) 
                                by (auto simp add:union_ac)
                           then have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<delta>) p,m) \<in> derivable R*" using `m\<le>n'`
-                               and p and `\<delta>_i = Em` apply (auto simp add:extend_def union_ac) 
+                               and p and `\<delta>i = Em` apply (auto simp add:extend_def union_ac) 
                                by (rule_tac x="m'" in exI) auto
                          }
                       moreover
-                         {assume "\<delta>_i \<noteq> Em"
-                          then have "extend (\<Gamma>1 \<oplus> Compound F Fs \<Rightarrow>* \<delta>) p = (\<Gamma>1 + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>_i)" using p
+                         {assume "\<delta>i \<noteq> Em"
+                          then have "extend (\<Gamma>1 \<oplus> Compound F Fs \<Rightarrow>* \<delta>) p = (\<Gamma>1 + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>i)" using p
                                by (auto simp add:extend_def union_ac)
-                          with pms obtain m where "m\<le>n'" and "(\<Gamma>1 + \<Gamma>_i \<oplus> Compound F Fs \<Rightarrow>* \<delta>_i,m) \<in> derivable R*"
+                          with pms obtain m where "m\<le>n'" and "(\<Gamma>1 + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>i,m) \<in> derivable R*"
                                using `p \<in> set ps` by auto
-                          with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>_i + \<Gamma>' \<Rightarrow>* \<delta>_i,m') \<in> derivable R*"
+                          with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>i,m') \<in> derivable R*"
                                apply auto apply (drule_tac x=m in spec) apply auto
-                               apply (drule_tac x="\<Gamma>1 + \<Gamma>_i" in spec) apply (drule_tac x=\<delta>_i in spec) 
+                               apply (drule_tac x="\<Gamma>1 + \<Gamma>i" in spec) apply (drule_tac x=\<delta>i in spec) 
                                by (auto simp add:union_ac)
                           then have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<delta>) p,m) \<in> derivable R*" using `m\<le>n'`
-                               and p and `\<delta>_i \<noteq> Em` and `n = Suc n'` apply (auto simp add:extend_def union_ac)
+                               and p and `\<delta>i \<noteq> Em` and `n = Suc n'` apply (auto simp add:extend_def union_ac)
                                apply (rule_tac x=m' in exI) by auto
                          } 
                       ultimately have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<delta>) p, m) \<in> derivable R*" by blast

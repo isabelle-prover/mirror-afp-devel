@@ -74,59 +74,59 @@ lemma ah_leq_il_left: "\<lbrakk> h1 [*] h2; h1' \<le> h1 \<rbrakk> \<Longrightar
 
 subsection "Acquisition histories of executions"
 text {* Next we define a function that abstracts from executions (lists of enter/use pairs) to acquisition histories *}
-primrec \<alpha>_ah :: "('m set \<times> 'm set) list \<Rightarrow> 'm \<Rightarrow> 'm set" where
-  "\<alpha>_ah [] m = {}"
-| "\<alpha>_ah (e#w) m = (if m\<in>fst e then fst e \<union> snd e \<union> mon_pl w else \<alpha>_ah w m)"
+primrec \<alpha>ah :: "('m set \<times> 'm set) list \<Rightarrow> 'm \<Rightarrow> 'm set" where
+  "\<alpha>ah [] m = {}"
+| "\<alpha>ah (e#w) m = (if m\<in>fst e then fst e \<union> snd e \<union> mon_pl w else \<alpha>ah w m)"
 
--- {* @{term \<alpha>_ah} generates valid acquisition histories *}
-lemma \<alpha>_ah_ah: "\<alpha>_ah w \<in> ah"
+-- {* @{term \<alpha>ah} generates valid acquisition histories *}
+lemma \<alpha>ah_ah: "\<alpha>ah w \<in> ah"
   apply (induct w)
   apply (unfold ah_def)
   apply simp
   apply (fastforce split: split_if_asm)
   done
 
-lemma \<alpha>_ah_hd: "\<lbrakk>m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w\<rbrakk> \<Longrightarrow> x\<in>\<alpha>_ah (e#w) m"
+lemma \<alpha>ah_hd: "\<lbrakk>m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w\<rbrakk> \<Longrightarrow> x\<in>\<alpha>ah (e#w) m"
   by auto
-lemma \<alpha>_ah_tl: "\<lbrakk>m\<notin>fst e; x\<in>\<alpha>_ah w m\<rbrakk> \<Longrightarrow> x\<in>\<alpha>_ah (e#w) m"
+lemma \<alpha>ah_tl: "\<lbrakk>m\<notin>fst e; x\<in>\<alpha>ah w m\<rbrakk> \<Longrightarrow> x\<in>\<alpha>ah (e#w) m"
   by auto
 
-lemma \<alpha>_ah_cases[cases set, case_names hd tl]: "\<lbrakk>
-    x\<in>\<alpha>_ah w m; 
+lemma \<alpha>ah_cases[cases set, case_names hd tl]: "\<lbrakk>
+    x\<in>\<alpha>ah w m; 
     !!e w'. \<lbrakk>w=e#w'; m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w'\<rbrakk> \<Longrightarrow> P; 
-    !!e w'. \<lbrakk>w=e#w'; m\<notin>fst e; x\<in>\<alpha>_ah w' m\<rbrakk> \<Longrightarrow> P
+    !!e w'. \<lbrakk>w=e#w'; m\<notin>fst e; x\<in>\<alpha>ah w' m\<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
   by (cases w) (simp_all split: split_if_asm, blast+)
 
-lemma \<alpha>_ah_cons_cases[cases set, case_names hd tl]: "\<lbrakk>
-    x\<in>\<alpha>_ah (e#w') m;  
+lemma \<alpha>ah_cons_cases[cases set, case_names hd tl]: "\<lbrakk>
+    x\<in>\<alpha>ah (e#w') m;  
     \<lbrakk>m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w'\<rbrakk> \<Longrightarrow> P; 
-    \<lbrakk>m\<notin>fst e; x\<in>\<alpha>_ah w' m\<rbrakk> \<Longrightarrow> P
+    \<lbrakk>m\<notin>fst e; x\<in>\<alpha>ah w' m\<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
   by (simp_all split: split_if_asm)
 
-lemma mon_ah_subset: "mon_ah (\<alpha>_ah w) \<subseteq> mon_pl w"
+lemma mon_ah_subset: "mon_ah (\<alpha>ah w) \<subseteq> mon_pl w"
   by (induct w) (auto simp add: mon_ah_def)
 
 -- {* Subwords generate smaller acquisition histories *}
-lemma \<alpha>_ah_ileq: "w1\<preceq>w2 \<Longrightarrow> \<alpha>_ah w1 \<le> \<alpha>_ah w2" 
+lemma \<alpha>ah_ileq: "w1\<preceq>w2 \<Longrightarrow> \<alpha>ah w1 \<le> \<alpha>ah w2" 
 proof (induct rule: less_eq_list_induct)
   case empty thus ?case by (unfold le_fun_def [where 'b="'a set"], simp)
 next
   case (drop l' l a) show ?case
   proof (unfold le_fun_def  [where 'b="'a set"], intro allI subsetI)
     fix m x
-    assume A: "x \<in> \<alpha>_ah l' m"
-    with drop(2) have "x\<in>\<alpha>_ah l m" by (unfold le_fun_def  [where 'b="'a set"], auto)
+    assume A: "x \<in> \<alpha>ah l' m"
+    with drop(2) have "x\<in>\<alpha>ah l m" by (unfold le_fun_def  [where 'b="'a set"], auto)
     moreover hence "x\<in>mon_pl l" using mon_ah_subset[unfolded mon_ah_def] by fast
-    ultimately show "x\<in>\<alpha>_ah (a # l) m" by auto
+    ultimately show "x\<in>\<alpha>ah (a # l) m" by auto
   qed
 next
   case (take a b l' l) show ?case
   proof (unfold le_fun_def [where 'b="'a set"], intro allI subsetI)
     fix m x
-    assume A: "x\<in>\<alpha>_ah (a#l') m"
-    thus "x \<in> \<alpha>_ah (b # l) m" proof (cases rule: \<alpha>_ah_cons_cases)
+    assume A: "x\<in>\<alpha>ah (a#l') m"
+    thus "x \<in> \<alpha>ah (b # l) m" proof (cases rule: \<alpha>ah_cons_cases)
       case hd with mon_pl_ileq[OF take.hyps(2)] and `op =\<^sup>=\<^sup>= a b` show ?thesis by auto
     next
       case tl with take.hyps(3)[unfolded le_fun_def [where 'b="'a set"]] and `op =\<^sup>=\<^sup>= a b` show ?thesis by auto
@@ -136,30 +136,30 @@ qed
       
 text {* We can now prove the relation of monitor consistent interleavability and interleavability of the acquisition histories. *}
 lemma ah_interleavable1: 
-  "w \<in> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<Longrightarrow> \<alpha>_ah (map \<alpha> w1) [*] \<alpha>_ah (map \<alpha> w2)" 
+  "w \<in> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<Longrightarrow> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)" 
   -- "The lemma is shown by induction on the structure of the monitor consistent interleaving operator"
-proof (induct w \<alpha> w1 w2 rule: cil_set_induct_fix_\<alpha>) 
+proof (induct w \<alpha> w1 w2 rule: cil_set_induct_fix\<alpha>) 
   case empty show ?case by (simp add: ah_il_def) -- {* The base case is trivial by the definition of @{term "op [*]"} *}
 next
   -- "Case: First step comes from the left word"
   case (left e w' w1' w2) show ?case 
   proof (rule ccontr) -- "We do a proof by contradiction"
     -- "Assume there is a conflicting pair in the acquisition histories"
-    assume "\<not> \<alpha>_ah (map \<alpha> (e # w1')) [*] \<alpha>_ah (map \<alpha> w2)" 
-    then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>_ah (map \<alpha> (e#w1')) m2" "m2 \<in> \<alpha>_ah (map \<alpha> w2) m1" by (unfold ah_il_def, blast) 
+    assume "\<not> \<alpha>ah (map \<alpha> (e # w1')) [*] \<alpha>ah (map \<alpha> w2)" 
+    then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>ah (map \<alpha> (e#w1')) m2" "m2 \<in> \<alpha>ah (map \<alpha> w2) m1" by (unfold ah_il_def, blast) 
     -- "It comes either from the first step or not"
-    from CPAIR(1) have "(m2\<in>fst (\<alpha> e) \<and> m1 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w1')) \<or> (m2\<notin>fst (\<alpha> e) \<and> m1 \<in> \<alpha>_ah (map \<alpha> w1') m2)" (is "?CASE1 \<or> ?CASE2") 
+    from CPAIR(1) have "(m2\<in>fst (\<alpha> e) \<and> m1 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w1')) \<or> (m2\<notin>fst (\<alpha> e) \<and> m1 \<in> \<alpha>ah (map \<alpha> w1') m2)" (is "?CASE1 \<or> ?CASE2") 
       by (auto split: split_if_asm) 
     moreover {
       -- "Case: One monitor of the conflicting pair is entered in the first step of the left path"
       assume ?CASE1 hence C: "m2\<in>fst (\<alpha> e)" .. 
       -- "Because the paths are consistently interleavable, the monitors entered in the first step must not occur in the other path"
-      from left(2) mon_ah_subset[of "map \<alpha> w2"] have "fst (\<alpha> e) \<inter> mon_ah (\<alpha>_ah (map \<alpha> w2)) = {}" by auto 
+      from left(2) mon_ah_subset[of "map \<alpha> w2"] have "fst (\<alpha> e) \<inter> mon_ah (\<alpha>ah (map \<alpha> w2)) = {}" by auto 
       -- "But this is a contradiction to being a conflicting pair"
       with C CPAIR(2) have False by (unfold mon_ah_def, blast) 
     } moreover {
       -- "Case: The first monitor of the conflicting pair is entered after the first step of the left path"
-      assume ?CASE2 hence C: "m1 \<in> \<alpha>_ah (map \<alpha> w1') m2" .. 
+      assume ?CASE2 hence C: "m1 \<in> \<alpha>ah (map \<alpha> w1') m2" .. 
       -- "But this is a contradiction to the induction hypothesis, that says that the acquisition histories of the tail of the left path and the 
         right path are interleavable"
       with left(3) CPAIR(2) have False by (unfold ah_il_def, blast) 
@@ -169,16 +169,16 @@ next
   -- "Case: First step comes from the right word. This case is shown completely analogous"
   case (right e w' w2' w1) show ?case 
   proof (rule ccontr)
-    assume "\<not> \<alpha>_ah (map \<alpha> w1) [*] \<alpha>_ah (map \<alpha> (e#w2'))" 
-    then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>_ah (map \<alpha> w1) m2" "m2 \<in> \<alpha>_ah (map \<alpha> (e#w2')) m1" by (unfold ah_il_def, blast) 
-    from CPAIR(2) have "(m1\<in>fst (\<alpha> e) \<and> m2 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w2')) \<or> (m1\<notin>fst (\<alpha> e) \<and> m2 \<in> \<alpha>_ah (map \<alpha> w2') m1)" (is "?CASE1 \<or> ?CASE2") 
+    assume "\<not> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> (e#w2'))" 
+    then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>ah (map \<alpha> w1) m2" "m2 \<in> \<alpha>ah (map \<alpha> (e#w2')) m1" by (unfold ah_il_def, blast) 
+    from CPAIR(2) have "(m1\<in>fst (\<alpha> e) \<and> m2 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w2')) \<or> (m1\<notin>fst (\<alpha> e) \<and> m2 \<in> \<alpha>ah (map \<alpha> w2') m1)" (is "?CASE1 \<or> ?CASE2") 
       by (auto split: split_if_asm)
     moreover {
       assume ?CASE1 hence C: "m1\<in>fst (\<alpha> e)" .. 
-      from right(2) mon_ah_subset[of "map \<alpha> w1"] have "fst (\<alpha> e) \<inter> mon_ah (\<alpha>_ah (map \<alpha> w1)) = {}" by auto 
+      from right(2) mon_ah_subset[of "map \<alpha> w1"] have "fst (\<alpha> e) \<inter> mon_ah (\<alpha>ah (map \<alpha> w1)) = {}" by auto 
       with C CPAIR(1) have False by (unfold mon_ah_def, blast) 
     } moreover {
-      assume ?CASE2 hence C: "m2 \<in> \<alpha>_ah (map \<alpha> w2') m1" .. 
+      assume ?CASE2 hence C: "m2 \<in> \<alpha>ah (map \<alpha> w2') m1" .. 
       with right(3) CPAIR(1) have False by (unfold ah_il_def, blast) 
     } ultimately show False ..
   qed
@@ -186,13 +186,13 @@ qed
 
 
 lemma ah_interleavable2: 
-  assumes A: "\<alpha>_ah (map \<alpha> w1) [*] \<alpha>_ah (map \<alpha> w2)" 
+  assumes A: "\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)" 
   shows "w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<noteq> {}"
   -- "This lemma is shown by induction on the sum of the word lengths"
 proof -
   -- "To apply this induction in Isabelle, we have to rewrite the lemma a bit"
   { fix n
-    have "!!w1 w2. \<lbrakk>\<alpha>_ah (map \<alpha> w1) [*] \<alpha>_ah (map \<alpha> w2); n=length w1 + length w2\<rbrakk> \<Longrightarrow> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<noteq> {}" 
+    have "!!w1 w2. \<lbrakk>\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2); n=length w1 + length w2\<rbrakk> \<Longrightarrow> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<noteq> {}" 
     proof (induct n rule: nat_less_induct[case_names I])
       -- "We first rule out the cases that one of the words is empty"
       case (I n w1 w2) show ?case proof (cases w1) 
@@ -210,7 +210,7 @@ proof -
             case True -- "The first step of the first word can safely be executed"
             -- "From the induction hypothesis, we get that there is a consistent interleaving of the rest of the first word and the second word"
             have "w1'\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<noteq> {}" proof -
-              from I.prems(1) CONS1 ah_leq_il_left[OF _ \<alpha>_ah_ileq[OF le_list_map, OF less_eq_list_drop[OF order_refl]]] have "\<alpha>_ah (map \<alpha> w1') [*] \<alpha>_ah (map \<alpha> w2)" by fast
+              from I.prems(1) CONS1 ah_leq_il_left[OF _ \<alpha>ah_ileq[OF le_list_map, OF less_eq_list_drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1') [*] \<alpha>ah (map \<alpha> w2)" by fast
               moreover from CONS1 I.prems(2) have "length w1'+length w2 < n" by simp
               ultimately show ?thesis using I.hyps by blast
             qed
@@ -222,7 +222,7 @@ proof -
               case True -- "The first step of the second word can safely be executed"
               -- "This case is shown analogously to the latter one"
               have "w1\<otimes>\<^bsub>\<alpha>\<^esub>w2' \<noteq> {}" proof -
-                from I.prems(1) CONS2 ah_leq_il_right[OF _ \<alpha>_ah_ileq[OF le_list_map, OF less_eq_list_drop[OF order_refl]]] have "\<alpha>_ah (map \<alpha> w1) [*] \<alpha>_ah (map \<alpha> w2')" by fast
+                from I.prems(1) CONS2 ah_leq_il_right[OF _ \<alpha>ah_ileq[OF le_list_map, OF less_eq_list_drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2')" by fast
                 moreover from CONS2 I.prems(2) have "length w1+length w2' < n" by simp
                 ultimately show ?thesis using I.hyps by blast
               qed
@@ -230,7 +230,7 @@ proof -
             next
               case False note C2=this -- "Neither first step can safely be executed. This is exactly the situation from that we can extract a conflicting pair"
               from C1 C2 obtain m1 m2 where "m1\<in>fst (\<alpha> e1)" "m1\<in>mon_pl (map \<alpha> w2)" "m2\<in>fst (\<alpha> e2)" "m2\<in>mon_pl (map \<alpha> w1)" by blast
-              with CONS1 CONS2 have "m2 \<in> \<alpha>_ah (map \<alpha> w1) m1" "m1 \<in> \<alpha>_ah (map \<alpha> w2) m2" by auto
+              with CONS1 CONS2 have "m2 \<in> \<alpha>ah (map \<alpha> w1) m1" "m1 \<in> \<alpha>ah (map \<alpha> w2) m2" by auto
               -- "But by assumption, there are no conflicting pairs, thus we get a contradiction"
               with I.prems(1) have False by (unfold ah_il_def) blast 
               thus ?thesis ..
@@ -245,7 +245,7 @@ qed
   
 text {* Finally, we can state the relationship between monitor consistent interleaving and interleaving of acquisition histories *}
 theorem ah_interleavable: 
-  "(\<alpha>_ah (map \<alpha> w1) [*] \<alpha>_ah (map \<alpha> w2)) \<longleftrightarrow> (w1\<otimes>\<^bsub>\<alpha>\<^esub>w2\<noteq>{})" 
+  "(\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)) \<longleftrightarrow> (w1\<otimes>\<^bsub>\<alpha>\<^esub>w2\<noteq>{})" 
   using ah_interleavable1 ah_interleavable2 by blast
 
 subsection "Acquisition history backward update"
@@ -259,7 +259,7 @@ text {*
   Intuitively, @{term "ah_update h (E,U) M m"} means to prepend a step @{term "(E,U)"} to the acquisition history @{term h} of a path that uses monitors @{term M}. Note that we need the extra parameter @{term M}, since
   an acquisition history does not contain information about the monitors that are used on a path before the first monitor that will not be left has been entered. 
 *}
-lemma ah_update_cons: "\<alpha>_ah (e#w) = ah_update (\<alpha>_ah w) e (mon_pl w)"
+lemma ah_update_cons: "\<alpha>ah (e#w) = ah_update (\<alpha>ah w) e (mon_pl w)"
   by (auto intro!: ext simp add: ah_update_def)
 
 text {* The backward-update function is monotonic in the first and third argument as well as in the used monitors of the second argument. 

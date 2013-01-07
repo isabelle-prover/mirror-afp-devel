@@ -140,7 +140,7 @@ where "R1 (P)  \<equiv>  \<lambda>(A, A'). (P (A, A')) \<and> prefixeq (tr A) (t
 definition R2::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
 where "R2 (P)  \<equiv> \<lambda>(A, A'). (P (A\<lparr>tr:=[]\<rparr>,A'\<lparr>tr:= tr A' - tr A\<rparr>) \<and> prefixeq (tr A) (tr A'))"
 
-definition Pi_rea ("\<Pi>rea")
+definition \<Pi>rea   
 where "\<Pi>rea  \<equiv> \<lambda>(A, A'). (\<not>ok A \<and> prefixeq (tr A) (tr A')) \<or> (ok A' \<and> tr A = tr A' 
                             \<and> (wait A = wait A') \<and> ref A = ref A' \<and> more A = more A')"
 
@@ -150,7 +150,7 @@ where "R3 (P)  \<equiv> (\<Pi>rea \<triangleleft> wait o fst \<triangleright> P)
 definition R::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition" 
 where "R  \<equiv> R3 o R2 o R1"
 
-lemmas rp_defs = R1_def R2_def Pi_rea_def R3_def R_def spec_def
+lemmas rp_defs = R1_def R2_def \<Pi>rea_def R3_def R_def spec_def
 
 subsubsection {* Proofs *}
 

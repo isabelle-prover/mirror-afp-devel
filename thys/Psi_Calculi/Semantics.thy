@@ -1742,7 +1742,7 @@ next
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha>' \<sharp>* subject \<alpha>'`
   have "bn \<alpha> \<sharp>* (\<alpha> \<prec> P' \<parallel> Q)" and "bn \<alpha>' \<sharp>* (\<alpha>' \<prec> P'')" by simp+
   ultimately obtain p where S: "(set p) \<subseteq> (set(bn \<alpha>)) \<times> (set(bn(p \<bullet> \<alpha>)))" and "distinctPerm p"
-                        and \<alpha>_Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (P' \<parallel> Q)" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
+                        and \<alpha>Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (P' \<parallel> Q)" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
                         and "(bn(p \<bullet> \<alpha>)) \<sharp>* (P' \<parallel> Q)"
     by(rule residualEq)
     
@@ -1757,7 +1757,7 @@ next
   with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* bn \<alpha>'` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (P' \<parallel> Q)` `A\<^isub>Q \<sharp>* C`
   have "Prop C \<Psi> (P \<parallel> Q) (p \<bullet> \<alpha>) (p \<bullet> (P' \<parallel> Q))"
     by(rule_tac rAlpha) auto
-  with \<alpha>_Eq P'eq `distinctPerm p` show ?case by simp
+  with \<alpha>Eq P'eq `distinctPerm p` show ?case by simp
 next
   case(cPar2 \<Psi> \<Psi>\<^isub>P Q \<alpha> Q' P A\<^isub>P \<alpha>' C Q'')
   note `\<alpha> \<prec> (P \<parallel> Q') = \<alpha>' \<prec> Q''`
@@ -1766,7 +1766,7 @@ next
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha>' \<sharp>* subject \<alpha>'`
   have "bn \<alpha> \<sharp>* (\<alpha> \<prec> P \<parallel> Q')" and "bn \<alpha>' \<sharp>* (\<alpha>' \<prec> Q'')" by simp+
   ultimately obtain p where S: "(set p) \<subseteq> (set(bn \<alpha>)) \<times> (set(bn(p \<bullet> \<alpha>)))" and "distinctPerm p"
-                        and \<alpha>_Eq: "\<alpha>' = p \<bullet> \<alpha>" and Q'eq: "Q'' = p \<bullet> (P \<parallel> Q')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
+                        and \<alpha>Eq: "\<alpha>' = p \<bullet> \<alpha>" and Q'eq: "Q'' = p \<bullet> (P \<parallel> Q')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
                         and "(bn(p \<bullet> \<alpha>)) \<sharp>* (P \<parallel> Q')"
     by(rule residualEq)
     
@@ -1781,7 +1781,7 @@ next
   with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (P \<parallel> Q')`
   have "Prop C \<Psi> (P \<parallel> Q) (p \<bullet> \<alpha>) (p \<bullet> (P \<parallel> Q'))"
     by(rule_tac rAlpha) auto
-  with \<alpha>_Eq Q'eq `distinctPerm p` show ?case by simp
+  with \<alpha>Eq Q'eq `distinctPerm p` show ?case by simp
 next
   case(cComm1 \<Psi> \<Psi>\<^isub>Q P M N P' A\<^isub>P \<Psi>\<^isub>P Q K xvec Q' A\<^isub>Q \<alpha> C P'')
   hence "Prop C \<Psi> (P \<parallel> Q) (\<tau>) (\<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q'))"
@@ -1807,7 +1807,7 @@ next
   hence "(xvec@x#yvec) \<sharp>* (M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle> \<prec> P')" by auto
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` have "bn \<alpha> \<sharp>* (\<alpha> \<prec> P'')" by simp
   ultimately obtain p where S: "(set p) \<subseteq> (set(xvec@x#yvec)) \<times> (set(p \<bullet> (xvec@x#yvec)))" and "distinctPerm p"
-             and \<alpha>_eq: "\<alpha> = (p \<bullet> M)\<lparr>\<nu>*(p \<bullet> (xvec@x#yvec))\<rparr>\<langle>(p \<bullet> N)\<rangle>" and P'eq: "P'' = (p \<bullet> P')"
+             and \<alpha>eq: "\<alpha> = (p \<bullet> M)\<lparr>\<nu>*(p \<bullet> (xvec@x#yvec))\<rparr>\<langle>(p \<bullet> N)\<rangle>" and P'eq: "P'' = (p \<bullet> P')"
              and A: "(xvec@x#yvec) \<sharp>* ((p \<bullet> M)\<lparr>\<nu>*(p \<bullet> (xvec@x#yvec))\<rparr>\<langle>(p \<bullet> N)\<rangle>)"
              and B: "(p \<bullet> (xvec@x#yvec)) \<sharp>* (M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle>)"
              and C: "(p \<bullet> (xvec@x#yvec)) \<sharp>* P'"
@@ -1836,7 +1836,7 @@ next
     apply(assumption | simp)+
     apply(fastforce simp add: fresh_star_def abs_fresh)
     by(assumption | simp)+
-  with \<alpha>_eq P'eq show ?case by simp
+  with \<alpha>eq P'eq show ?case by simp
 next
   case(cScope \<Psi> P \<alpha> P' x \<alpha>' C P'')
   note `\<alpha> \<prec> (\<lparr>\<nu>x\<rparr>P') = \<alpha>' \<prec> P''`
@@ -1845,7 +1845,7 @@ next
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha>' \<sharp>* subject \<alpha>'`
   have "bn \<alpha> \<sharp>* (\<alpha> \<prec> \<lparr>\<nu>x\<rparr>P')" and "bn \<alpha>' \<sharp>* (\<alpha>' \<prec> P'')" by simp+
   ultimately obtain p where S: "(set p) \<subseteq> (set(bn \<alpha>)) \<times> (set(bn(p \<bullet> \<alpha>)))" and "distinctPerm p"
-                        and \<alpha>_Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (\<lparr>\<nu>x\<rparr>P')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
+                        and \<alpha>Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (\<lparr>\<nu>x\<rparr>P')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
                         and "(bn(p \<bullet> \<alpha>)) \<sharp>* (\<lparr>\<nu>x\<rparr>P')"
     by(rule residualEq)
     
@@ -1860,7 +1860,7 @@ next
   with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `x \<sharp> \<alpha>` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (\<lparr>\<nu>x\<rparr>P')`
   have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) (p \<bullet> \<alpha>) (p \<bullet> (\<lparr>\<nu>x\<rparr>P'))"
     by(rule_tac rAlpha) simp+
-  with \<alpha>_Eq P'eq `distinctPerm p` show ?case by simp
+  with \<alpha>Eq P'eq `distinctPerm p` show ?case by simp
 next
   case(Bang \<Psi> P Rs \<alpha> C)
   thus ?case by(rule_tac rBang) auto
@@ -2367,13 +2367,13 @@ next
   case(cPar1 \<Psi> \<Psi>\<^isub>Q P \<alpha> P' Q A\<^isub>Q C P'')
   thus ?case by(force intro: rPar1 simp add: residualInject)
 next 
-  case(cPar2 \<Psi> \<Psi>\<^isub>P Q \<alpha> Q' xvec P C Q'')
+  case(cPar2 \<Psi> \<Psi>P Q \<alpha> Q' xvec P C Q'')
   thus ?case by(force intro: rPar2 simp add: residualInject)
 next
-  case(cComm1 \<Psi> \<Psi>\<^isub>Q P M N P' xvec \<Psi>\<^isub>P Q K zvec Q' yvec C PQ)
+  case(cComm1 \<Psi> \<Psi>Q P M N P' xvec \<Psi>P Q K zvec Q' yvec C PQ)
   thus ?case by(simp add: residualInject)
 next
-  case(cComm2 \<Psi> \<Psi>\<^isub>Q P M zvec N P' xvec \<Psi>\<^isub>P Q K yvec Q' C PQ)
+  case(cComm2 \<Psi> \<Psi>Q P M zvec N P' xvec \<Psi>P Q K yvec Q' C PQ)
   thus ?case by(simp add: residualInject)
 next
   case(cOpen \<Psi> P M xvec N P' x yvec C P'') 
@@ -2455,7 +2455,7 @@ next
   case(cComm1 \<Psi> \<Psi>\<^isub>Q P M N P' A\<^isub>P \<Psi>\<^isub>P Q K xvec Q' A\<^isub>Q C PQ)
   thus ?case by(force intro: rComm1 simp add: residualInject)
 next
-  case(cComm2 \<Psi> \<Psi>\<^isub>Q P M xvec N P' A\<^isub>P \<Psi>\<^isub>P Q' A\<^isub>Q C PQ)
+  case(cComm2 \<Psi> \<Psi>\<^isub>Q P M xvec N P' A\<^isub>P \<Psi>P Q' A\<^isub>Q C PQ)
   thus ?case by(force intro: rComm2 simp add: residualInject)
 next
   case(cOpen \<Psi> P M xvec N P' x yvec C P'')
@@ -2614,7 +2614,7 @@ next
   moreover from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` have "distinct(A\<^isub>P@A\<^isub>Q)"
     by(auto simp add: fresh_star_def fresh_def name_list_supp)
   ultimately obtain p where S: "set p \<subseteq> set(A\<^isub>P@A\<^isub>Q) \<times> set((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"  and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
+                        and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
     using `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct A\<^isub>P\<^isub>Q`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
   
@@ -2634,7 +2634,7 @@ next
        S `distinctPerm p` Aeq
   have "Prop C \<Psi> (P \<parallel> Q) (\<alpha> \<prec> (P' \<parallel> Q)) (p \<bullet> (A\<^isub>P@A\<^isub>Q)) (p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q))"
     by(rule_tac rAlpha) (assumption | simp add: eqvts)+
-  with \<Psi>_eq Aeq show ?case by(simp add: eqvts)
+  with \<Psi>eq Aeq show ?case by(simp add: eqvts)
 next
   case(cPar2 \<Psi> \<Psi>\<^isub>P Q \<alpha> Q' P A\<^isub>P A\<^isub>P\<^isub>Q \<Psi>\<^isub>P\<^isub>Q C)
   obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "distinct A\<^isub>Q"
@@ -2658,7 +2658,7 @@ next
   moreover from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` have "distinct(A\<^isub>P@A\<^isub>Q)"
     by(auto simp add: fresh_star_def fresh_def name_list_supp)
   ultimately obtain p where S: "(set p \<subseteq> (set(A\<^isub>P@A\<^isub>Q)) \<times> (set A\<^isub>P\<^isub>Q))"  and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = ((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"
+                        and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = ((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"
     using `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct A\<^isub>P\<^isub>Q`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -2679,7 +2679,7 @@ next
        S `distinctPerm p` Aeq
   have "Prop C \<Psi> (P \<parallel> Q) (\<alpha> \<prec> (P \<parallel> Q')) (p \<bullet> (A\<^isub>P@A\<^isub>Q)) (p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q))"
     by(rule_tac rAlpha) (assumption | simp add: eqvts)+
-  with \<Psi>_eq Aeq show ?case by(simp add: eqvts)
+  with \<Psi>eq Aeq show ?case by(simp add: eqvts)
 next
   case(cComm1 \<Psi> \<Psi>\<^isub>Q P M N P' A\<^isub>P \<Psi>\<^isub>P Q K xvec Q' A\<^isub>Q A\<^isub>P\<^isub>Q \<Psi>\<^isub>P\<^isub>Q C)
   from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` have "distinct(A\<^isub>P@A\<^isub>Q)"
@@ -2692,14 +2692,14 @@ next
     by simp
   with `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct(A\<^isub>P@A\<^isub>Q)` `distinct A\<^isub>P\<^isub>Q`
   obtain p where S: "(set p \<subseteq> (set(A\<^isub>P@A\<^isub>Q)) \<times> (set A\<^isub>P\<^isub>Q))"  and "distinctPerm p"
-             and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = p \<bullet> (A\<^isub>P@A\<^isub>Q)"
+             and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = p \<bullet> (A\<^isub>P@A\<^isub>Q)"
     by(rule_tac frameChainEq') (assumption | simp)+
   moreover note `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* Q` `A\<^isub>P \<sharp>* xvec`
                 `A\<^isub>Q \<sharp>* xvec` `A\<^isub>P \<sharp>* P'` `A\<^isub>Q \<sharp>* P'` `A\<^isub>P \<sharp>* Q'` `A\<^isub>Q \<sharp>* Q'` `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q`
                 `A\<^isub>P \<sharp>* C` `A\<^isub>Q \<sharp>* C`
   ultimately have "Prop C \<Psi> (P \<parallel> Q) (\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q')) (p \<bullet> (A\<^isub>P@A\<^isub>Q)) (p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q))"
     by(rule_tac rAlpha) auto
-  with \<Psi>_eq Aeq show ?case by simp
+  with \<Psi>eq Aeq show ?case by simp
 next
   case(cComm2 \<Psi> \<Psi>\<^isub>Q P M xvec N P' A\<^isub>P \<Psi>\<^isub>P Q K Q' A\<^isub>Q A\<^isub>P\<^isub>Q \<Psi>\<^isub>P\<^isub>Q C)
   from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` have "distinct(A\<^isub>P@A\<^isub>Q)"
@@ -2712,14 +2712,14 @@ next
     by simp
   with `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct(A\<^isub>P@A\<^isub>Q)` `distinct A\<^isub>P\<^isub>Q`
   obtain p where S: "(set p \<subseteq> (set(A\<^isub>P@A\<^isub>Q)) \<times> (set A\<^isub>P\<^isub>Q))"  and "distinctPerm p"
-             and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = p \<bullet> (A\<^isub>P@A\<^isub>Q)"
+             and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = p \<bullet> (A\<^isub>P@A\<^isub>Q)"
     by(rule_tac frameChainEq') (assumption | simp)+
   moreover note `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* Q` `A\<^isub>P \<sharp>* xvec`
                 `A\<^isub>Q \<sharp>* xvec` `A\<^isub>P \<sharp>* P'` `A\<^isub>Q \<sharp>* P'` `A\<^isub>P \<sharp>* Q'` `A\<^isub>Q \<sharp>* Q'` `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q`
                 `A\<^isub>P \<sharp>* C` `A\<^isub>Q \<sharp>* C`
   ultimately have "Prop C \<Psi> (P \<parallel> Q) (\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q')) (p \<bullet> (A\<^isub>P@A\<^isub>Q)) (p \<bullet> (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q))"
     by(rule_tac rAlpha) auto
-  with \<Psi>_eq Aeq show ?case by simp
+  with \<Psi>eq Aeq show ?case by simp
 next
   case(cOpen \<Psi> P M xvec yvec N P' x A\<^isub>x\<^isub>P \<Psi>\<^isub>x\<^isub>P C)
   obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "distinct A\<^isub>P"
@@ -2739,7 +2739,7 @@ next
     by simp
   moreover from `x \<sharp> A\<^isub>P` `distinct A\<^isub>P` have "distinct(x#A\<^isub>P)" by simp
   ultimately obtain p where S: "set p \<subseteq> set (x#A\<^isub>P) \<times> set (p \<bullet> (x#A\<^isub>P))" and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>x\<^isub>P = p \<bullet> \<Psi>\<^isub>P" and Aeq: "A\<^isub>x\<^isub>P = (p \<bullet> x)#(p \<bullet> A\<^isub>P)"
+                        and \<Psi>eq: "\<Psi>\<^isub>x\<^isub>P = p \<bullet> \<Psi>\<^isub>P" and Aeq: "A\<^isub>x\<^isub>P = (p \<bullet> x)#(p \<bullet> A\<^isub>P)"
     using `A\<^isub>P \<sharp>* A\<^isub>x\<^isub>P``x \<sharp> A\<^isub>x\<^isub>P` `distinct A\<^isub>x\<^isub>P`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -2757,7 +2757,7 @@ next
        S `distinctPerm p`
   have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) (M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle> \<prec> P') (p \<bullet> (x#A\<^isub>P)) (p \<bullet> \<Psi>\<^isub>P)"
     by(rule_tac A\<^isub>P="x#A\<^isub>P" in rAlpha) (assumption | simp add: abs_fresh fresh_star_def boundOutputFresh)+
-  with \<Psi>_eq Aeq show ?case by(simp add: eqvts)
+  with \<Psi>eq Aeq show ?case by(simp add: eqvts)
 next
   case(cScope \<Psi> P \<alpha> P' x A\<^isub>x\<^isub>P \<Psi>\<^isub>x\<^isub>P C)
   obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "distinct A\<^isub>P"
@@ -2775,7 +2775,7 @@ next
     by simp
   moreover from `x \<sharp> A\<^isub>P` `distinct A\<^isub>P` have "distinct(x#A\<^isub>P)" by simp
   ultimately obtain p where S: "set p \<subseteq> set (x#A\<^isub>P) \<times> set (p \<bullet> (x#A\<^isub>P))" and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>x\<^isub>P = p \<bullet> \<Psi>\<^isub>P" and Aeq: "A\<^isub>x\<^isub>P = (p \<bullet> x)#(p \<bullet> A\<^isub>P)"
+                        and \<Psi>eq: "\<Psi>\<^isub>x\<^isub>P = p \<bullet> \<Psi>\<^isub>P" and Aeq: "A\<^isub>x\<^isub>P = (p \<bullet> x)#(p \<bullet> A\<^isub>P)"
     using `A\<^isub>P \<sharp>* A\<^isub>x\<^isub>P``x \<sharp> A\<^isub>x\<^isub>P` `distinct A\<^isub>x\<^isub>P`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -2792,7 +2792,7 @@ next
        S `distinctPerm p`
   have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) (\<alpha> \<prec> (\<lparr>\<nu>x\<rparr>P')) (p \<bullet> (x#A\<^isub>P)) (p \<bullet> \<Psi>\<^isub>P)"
     by(rule_tac A\<^isub>P="x#A\<^isub>P" in rAlpha) (assumption | simp add: abs_fresh fresh_star_def)+
-  with \<Psi>_eq Aeq show ?case by(simp add: eqvts)
+  with \<Psi>eq Aeq show ?case by(simp add: eqvts)
 next
   case(Bang \<Psi> P Rs A\<^isub>b\<^isub>P \<Psi>\<^isub>b\<^isub>P C)
 
@@ -2938,7 +2938,7 @@ next
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha>' \<sharp>* subject \<alpha>'`
   have "bn \<alpha> \<sharp>* (\<alpha> \<prec> P' \<parallel> Q)" and "bn \<alpha>' \<sharp>* (\<alpha>' \<prec> P'')" by simp+
   ultimately obtain p where S: "(set p) \<subseteq> (set(bn \<alpha>)) \<times> (set(bn(p \<bullet> \<alpha>)))" and "distinctPerm p"
-                        and \<alpha>_Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (P' \<parallel> Q)" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
+                        and \<alpha>Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (P' \<parallel> Q)" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
                         and "(bn(p \<bullet> \<alpha>)) \<sharp>* (P' \<parallel> Q)"
     by(rule residualEq)
     
@@ -2951,10 +2951,10 @@ next
                 `extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>` `distinct A\<^isub>P` `A\<^isub>P \<sharp>* A\<^isub>Q` `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>Q \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P`
   ultimately have "Prop C \<Psi> (P \<parallel> Q) \<alpha> (P' \<parallel> Q) (A\<^isub>P@A\<^isub>Q) (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)"
     by(rule_tac rPar1)
-  with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (P' \<parallel> Q)` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>Q \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* \<alpha>'` `A\<^isub>Q \<sharp>* \<alpha>'` \<alpha>_Eq `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<alpha>'` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* Q` `A\<^isub>P \<sharp>* P'` `A\<^isub>Q \<sharp>* P'` `A\<^isub>P \<sharp>* C` `A\<^isub>Q \<sharp>* C`
+  with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (P' \<parallel> Q)` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>Q \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* \<alpha>'` `A\<^isub>Q \<sharp>* \<alpha>'` \<alpha>Eq `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<alpha>'` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* Q` `A\<^isub>P \<sharp>* P'` `A\<^isub>Q \<sharp>* P'` `A\<^isub>P \<sharp>* C` `A\<^isub>Q \<sharp>* C`
   have "Prop C \<Psi> (P \<parallel> Q) (p \<bullet> \<alpha>) (p \<bullet> (P' \<parallel> Q)) (A\<^isub>P@A\<^isub>Q) (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)"
     by(rule_tac rAlpha) auto
-  with \<alpha>_Eq P'eq `distinctPerm p` show ?case by simp
+  with \<alpha>Eq P'eq `distinctPerm p` show ?case by simp
 next
   case(cPar2 \<Psi> \<Psi>\<^isub>P Q \<alpha> Q' A\<^isub>P P A\<^isub>Q \<Psi>\<^isub>Q C \<alpha>' Q'')
   note `\<alpha> \<prec> (P \<parallel> Q') = \<alpha>' \<prec> Q''`
@@ -2963,7 +2963,7 @@ next
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha>' \<sharp>* subject \<alpha>'`
   have "bn \<alpha> \<sharp>* (\<alpha> \<prec> P \<parallel> Q')" and "bn \<alpha>' \<sharp>* (\<alpha>' \<prec> Q'')" by simp+
   ultimately obtain p where S: "(set p) \<subseteq> (set(bn \<alpha>)) \<times> (set(bn(p \<bullet> \<alpha>)))" and "distinctPerm p"
-                        and \<alpha>_Eq: "\<alpha>' = p \<bullet> \<alpha>" and Q'eq: "Q'' = p \<bullet> (P \<parallel> Q')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
+                        and \<alpha>Eq: "\<alpha>' = p \<bullet> \<alpha>" and Q'eq: "Q'' = p \<bullet> (P \<parallel> Q')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
                         and "(bn(p \<bullet> \<alpha>)) \<sharp>* (P \<parallel> Q')"
     by(rule residualEq)
     
@@ -2976,10 +2976,10 @@ next
                 `extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>Q \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P`
   ultimately have "Prop C \<Psi> (P \<parallel> Q) \<alpha> (P \<parallel> Q') (A\<^isub>P@A\<^isub>Q) (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)"
     by(rule_tac rPar2) auto
-  with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (P \<parallel> Q')` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>Q \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* \<alpha>'` `A\<^isub>Q \<sharp>* \<alpha>'` \<alpha>_Eq `bn \<alpha> \<sharp>* \<alpha>'` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* Q` `A\<^isub>P \<sharp>* Q'` `A\<^isub>Q \<sharp>* Q'` `A\<^isub>P \<sharp>* C` `A\<^isub>Q \<sharp>* C`
+  with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (P \<parallel> Q')` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>Q \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* \<alpha>'` `A\<^isub>Q \<sharp>* \<alpha>'` \<alpha>Eq `bn \<alpha> \<sharp>* \<alpha>'` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>Q \<sharp>* P` `A\<^isub>P \<sharp>* Q` `A\<^isub>Q \<sharp>* Q` `A\<^isub>P \<sharp>* Q'` `A\<^isub>Q \<sharp>* Q'` `A\<^isub>P \<sharp>* C` `A\<^isub>Q \<sharp>* C`
   have "Prop C \<Psi> (P \<parallel> Q) (p \<bullet> \<alpha>) (p \<bullet> (P \<parallel> Q')) (A\<^isub>P@A\<^isub>Q) (\<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q)"
    by(rule_tac rAlpha) auto
-  with \<alpha>_Eq Q'eq `distinctPerm p` show ?case by simp
+  with \<alpha>Eq Q'eq `distinctPerm p` show ?case by simp
 next
   case(cComm1 \<Psi> \<Psi>\<^isub>Q P M N P' A\<^isub>P \<Psi>\<^isub>P Q K xvec Q' A\<^isub>Q C \<alpha> P'')
   thus ?case using rComm1
@@ -3044,7 +3044,7 @@ next
   hence "(xvec@x#yvec) \<sharp>* (M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle> \<prec> P')" by auto
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` have "bn \<alpha> \<sharp>* (\<alpha> \<prec> P'')" by simp
   ultimately obtain p where S: "(set p) \<subseteq> (set(xvec@x#yvec)) \<times> (set(p \<bullet> (xvec@x#yvec)))" and "distinctPerm p"
-             and \<alpha>_eq: "\<alpha> = (p \<bullet> M)\<lparr>\<nu>*(p \<bullet> (xvec@x#yvec))\<rparr>\<langle>(p \<bullet> N)\<rangle>" and P'eq: "P'' = (p \<bullet> P')"
+             and \<alpha>eq: "\<alpha> = (p \<bullet> M)\<lparr>\<nu>*(p \<bullet> (xvec@x#yvec))\<rparr>\<langle>(p \<bullet> N)\<rangle>" and P'eq: "P'' = (p \<bullet> P')"
              and A: "(xvec@x#yvec) \<sharp>* ((p \<bullet> M)\<lparr>\<nu>*(p \<bullet> (xvec@x#yvec))\<rparr>\<langle>(p \<bullet> N)\<rangle>)"
              and B: "(p \<bullet> (xvec@x#yvec)) \<sharp>* (M\<lparr>\<nu>*(xvec@x#yvec)\<rparr>\<langle>N\<rangle>)"
              and C: "(p \<bullet> (xvec@x#yvec)) \<sharp>* P'"
@@ -3070,15 +3070,15 @@ next
     by(rule_tac rOpen)
   moreover have "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> M) = [(x, y)] \<bullet> p \<bullet> M"
     by(subst perm_compose[symmetric]) simp
-  with `y \<sharp> M` `x \<sharp> \<alpha>` \<alpha>_eq `y \<sharp> p` `x \<sharp> M` have D: "(([(x, y)] \<bullet> p) \<bullet> M) = p \<bullet> M"
+  with `y \<sharp> M` `x \<sharp> \<alpha>` \<alpha>eq `y \<sharp> p` `x \<sharp> M` have D: "(([(x, y)] \<bullet> p) \<bullet> M) = p \<bullet> M"
     by(auto simp add: eqvts freshChainSimps)
   moreover have "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> xvec) = [(x, y)] \<bullet> p \<bullet> xvec"
     by(subst perm_compose[symmetric]) simp
-  with `y \<sharp> xvec` `x \<sharp> \<alpha>` \<alpha>_eq `y \<sharp> p` `x \<sharp> xvec` have E: "(([(x, y)] \<bullet> p) \<bullet> xvec) = p \<bullet> xvec"
+  with `y \<sharp> xvec` `x \<sharp> \<alpha>` \<alpha>eq `y \<sharp> p` `x \<sharp> xvec` have E: "(([(x, y)] \<bullet> p) \<bullet> xvec) = p \<bullet> xvec"
     by(auto simp add: eqvts freshChainSimps)
   moreover have "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> yvec) = [(x, y)] \<bullet> p \<bullet> yvec"
     by(subst perm_compose[symmetric]) simp
-  with `y \<sharp> yvec` `x \<sharp> \<alpha>` \<alpha>_eq `y \<sharp> p` `x \<sharp> yvec` have F: "(([(x, y)] \<bullet> p) \<bullet> yvec) = p \<bullet> yvec"
+  with `y \<sharp> yvec` `x \<sharp> \<alpha>` \<alpha>eq `y \<sharp> p` `x \<sharp> yvec` have F: "(([(x, y)] \<bullet> p) \<bullet> yvec) = p \<bullet> yvec"
     by(auto simp add: eqvts freshChainSimps)
   moreover have "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> x) = [(x, y)] \<bullet> p \<bullet> x"
     by(subst perm_compose[symmetric]) simp
@@ -3086,14 +3086,14 @@ next
     apply(simp add: freshChainSimps calc_atm)
     apply(subgoal_tac "y \<noteq> p \<bullet> x")
     apply(clarsimp)
-    using A \<alpha>_eq
+    using A \<alpha>eq
     apply(simp add: eqvts)
     apply(subst fresh_atm[symmetric])
     apply(simp only: freshChainSimps)
     by simp
   moreover have "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> N) = [(x, y)] \<bullet> p \<bullet> N"
     by(subst perm_compose[symmetric]) simp
-  with `y \<sharp> N` `x \<sharp> \<alpha>` `y \<sharp> p` \<alpha>_eq have H: "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> N) = p \<bullet> N"
+  with `y \<sharp> N` `x \<sharp> \<alpha>` `y \<sharp> p` \<alpha>eq have H: "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> N) = p \<bullet> N"
     by(auto simp add: eqvts freshChainSimps)
   moreover have "(([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> P') = [(x, y)] \<bullet> p \<bullet> P'"
     by(subst perm_compose[symmetric]) simp
@@ -3105,13 +3105,13 @@ next
     by simp
   moreover from S have "([(x, y)] \<bullet> set p) \<subseteq> [(x, y)] \<bullet> (set(xvec@x#yvec) \<times> set(p \<bullet> (xvec@x#yvec)))"
     by(simp)
-  with `y \<noteq> p \<bullet> x` `(([(x, y)] \<bullet> p) \<bullet> y) = p \<bullet> x` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> yvec` `y \<sharp> yvec` `y \<sharp> p` `x \<sharp> \<alpha>` \<alpha>_eq have 
+  with `y \<noteq> p \<bullet> x` `(([(x, y)] \<bullet> p) \<bullet> y) = p \<bullet> x` `x \<sharp> xvec` `y \<sharp> xvec` `x \<sharp> yvec` `y \<sharp> yvec` `y \<sharp> p` `x \<sharp> \<alpha>` \<alpha>eq have 
     "set([(x, y)] \<bullet> p) \<subseteq> set(xvec@y#yvec) \<times> set(([(x, y)] \<bullet> p) \<bullet> (xvec@y#yvec))"
     by(simp add: eqvts calc_atm perm_compose)
   moreover note `xvec \<sharp>* \<Psi>` `yvec \<sharp>* \<Psi>` `xvec \<sharp>* P` `yvec \<sharp>* P` `xvec \<sharp>* M` `yvec \<sharp>* M` 
                 `yvec \<sharp>* C`  S `distinctPerm p` `x \<sharp> C` `xvec \<sharp>* C` `xvec \<sharp>* \<Psi>\<^isub>P` `yvec \<sharp>* \<Psi>\<^isub>P` `x \<sharp> \<Psi>`
                 `A\<^isub>P \<sharp>* xvec` `x \<sharp> A\<^isub>P` `A\<^isub>P \<sharp>* yvec` `A\<^isub>P \<sharp>* M` `x \<sharp> xvec` `x \<sharp> yvec` `x \<sharp> M` `x \<sharp> A\<^isub>P` `A\<^isub>P \<sharp>* N`
-                 A B C  \<alpha>_eq `A\<^isub>P \<sharp>* \<alpha>` `y \<sharp> \<Psi>` `y \<noteq> x` `y \<sharp> P` `y \<sharp> M` `y \<sharp> \<Psi>\<^isub>P` `y \<sharp> C` `xvec \<sharp>* \<alpha>` `x \<sharp> \<alpha>` `yvec \<sharp>* \<alpha>` `y \<sharp> \<alpha>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* \<Psi>` `y \<sharp> A\<^isub>P` `y \<sharp> N` `A\<^isub>P \<sharp>* P'` `y \<sharp> P'` `A\<^isub>P \<sharp>* C` P'eq
+                 A B C  \<alpha>eq `A\<^isub>P \<sharp>* \<alpha>` `y \<sharp> \<Psi>` `y \<noteq> x` `y \<sharp> P` `y \<sharp> M` `y \<sharp> \<Psi>\<^isub>P` `y \<sharp> C` `xvec \<sharp>* \<alpha>` `x \<sharp> \<alpha>` `yvec \<sharp>* \<alpha>` `y \<sharp> \<alpha>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* \<Psi>` `y \<sharp> A\<^isub>P` `y \<sharp> N` `A\<^isub>P \<sharp>* P'` `y \<sharp> P'` `A\<^isub>P \<sharp>* C` P'eq
   ultimately have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) (([(x, y)] \<bullet> p) \<bullet> (M\<lparr>\<nu>*(xvec@y#yvec)\<rparr>\<langle>([(x, y)] \<bullet> N)\<rangle>)) (([(x, y)] \<bullet> p) \<bullet> [(x, y)] \<bullet> P') (x#A\<^isub>P) \<Psi>\<^isub>P"
     apply(rule_tac \<alpha>="M\<lparr>\<nu>*(xvec@y#yvec)\<rparr>\<langle>([(x, y)] \<bullet> N)\<rangle>" in rAlpha)
     apply(assumption | simp)+
@@ -3122,7 +3122,7 @@ next
     apply(simp add: fresh_left calc_atm)
     apply(assumption | simp)+
     by(simp add: eqvts fresh_left)+
-  with \<alpha>_eq P'eq D E F G H I show ?case 
+  with \<alpha>eq P'eq D E F G H I show ?case 
     by(simp add: eqvts)
 next    
  case(cScope \<Psi> P \<alpha> P' x A\<^isub>P \<Psi>\<^isub>P C \<alpha>' P'')
@@ -3132,7 +3132,7 @@ next
   moreover from `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha>' \<sharp>* subject \<alpha>'`
   have "bn \<alpha> \<sharp>* (\<alpha> \<prec> \<lparr>\<nu>x\<rparr>P')" and "bn \<alpha>' \<sharp>* (\<alpha>' \<prec> P'')" by simp+
   ultimately obtain p where S: "(set p) \<subseteq> (set(bn \<alpha>)) \<times> (set(bn(p \<bullet> \<alpha>)))" and "distinctPerm p"
-                        and \<alpha>_Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (\<lparr>\<nu>x\<rparr>P')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
+                        and \<alpha>Eq: "\<alpha>' = p \<bullet> \<alpha>" and P'eq: "P'' = p \<bullet> (\<lparr>\<nu>x\<rparr>P')" and "(bn(p \<bullet> \<alpha>)) \<sharp>* \<alpha>"
                         and "(bn(p \<bullet> \<alpha>)) \<sharp>* (\<lparr>\<nu>x\<rparr>P')"
     by(rule residualEq)
     
@@ -3145,10 +3145,10 @@ next
                 `distinct A\<^isub>P` `x \<sharp> A\<^isub>P` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* P'` `A\<^isub>P \<sharp>* C`
   ultimately have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) \<alpha> (\<lparr>\<nu>x\<rparr>P') (x#A\<^isub>P) \<Psi>\<^isub>P"
     by(rule_tac rScope) 
-  with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `x \<sharp> \<alpha>` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (\<lparr>\<nu>x\<rparr>P')` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* \<alpha>'` \<alpha>_Eq `x \<sharp> \<alpha>'` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<alpha>'` `x \<sharp> \<Psi>` `A\<^isub>P \<sharp>* \<Psi>` `x \<sharp> A\<^isub>P` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* P'` `x \<sharp> C` `A\<^isub>P \<sharp>* C`
+  with `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `x \<sharp> \<alpha>` `bn \<alpha> \<sharp>* subject \<alpha>` `bn \<alpha> \<sharp>* C` `bn \<alpha> \<sharp>* (bn \<alpha>')` S `distinctPerm p` `bn(p \<bullet> \<alpha>) \<sharp>* \<alpha>` `bn(p \<bullet> \<alpha>) \<sharp>* (\<lparr>\<nu>x\<rparr>P')` `A\<^isub>P \<sharp>* \<alpha>` `A\<^isub>P \<sharp>* \<alpha>'` \<alpha>Eq `x \<sharp> \<alpha>'` `bn \<alpha> \<sharp>* \<Psi>\<^isub>P` `bn \<alpha> \<sharp>* \<alpha>'` `x \<sharp> \<Psi>` `A\<^isub>P \<sharp>* \<Psi>` `x \<sharp> A\<^isub>P` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* P'` `x \<sharp> C` `A\<^isub>P \<sharp>* C`
   have "Prop C \<Psi> (\<lparr>\<nu>x\<rparr>P) (p \<bullet> \<alpha>) (p \<bullet> (\<lparr>\<nu>x\<rparr>P'))  (x#A\<^isub>P) \<Psi>\<^isub>P" 
     by(rule_tac rAlpha) (simp add: abs_fresh)+
-  with \<alpha>_Eq P'eq `distinctPerm p` show ?case by simp
+  with \<alpha>Eq P'eq `distinctPerm p` show ?case by simp
 next
   case(cBang \<Psi> P Rs A\<^isub>P \<Psi>\<^isub>P C \<alpha>)
   thus ?case by(rule_tac rBang) auto 
@@ -6750,19 +6750,19 @@ next
     by(simp add: AssertionStatImp_def AssertionStatEq_def)
   ultimately show ?case using `guarded P` by(rule semantics.Case)
 next
-  case(cPar1 \<Psi> \<Psi>\<^isub>Q P \<alpha> P' xvec Q \<Psi>')
+  case(cPar1 \<Psi> \<Psi>Q P \<alpha> P' xvec Q \<Psi>')
   thus ?case
     by(rule_tac Par1) (auto intro: Composition)
 next
-  case(cPar2 \<Psi> \<Psi>\<^isub>P Q \<alpha> Q' xvec P \<Psi>')
+  case(cPar2 \<Psi> \<Psi>P Q \<alpha> Q' xvec P \<Psi>')
   thus ?case
     by(rule_tac Par2) (auto intro: Composition)
 next
-  case(cComm1 \<Psi> \<Psi>\<^isub>Q P M N P' xvec \<Psi>\<^isub>P Q K zvec Q' yvec \<Psi>')
+  case(cComm1 \<Psi> \<Psi>Q P M N P' xvec \<Psi>P Q K zvec Q' yvec \<Psi>')
   thus ?case
     by(clarsimp, rule_tac Comm1) (blast intro: Composition statEqEnt)+
 next
-  case(cComm2 \<Psi> \<Psi>\<^isub>Q P M zvec N P' xvec \<Psi>\<^isub>P Q K Q' yvec \<Psi>')
+  case(cComm2 \<Psi> \<Psi>Q P M zvec N P' xvec \<Psi>P Q K Q' yvec \<Psi>')
   thus ?case
     by(clarsimp, rule_tac Comm2) (blast intro: Composition statEqEnt)+
 next
@@ -7113,7 +7113,7 @@ proof -
     next
       case(cOpen \<Psi> P M xvec1 xvec2 N P' x A\<^isub>P \<Psi>\<^isub>P C C' \<alpha> P'' X Y Z)
       from `M\<lparr>\<nu>*(xvec1@x#xvec2)\<rparr>\<langle>N\<rangle> \<prec> P' = \<alpha> \<prec> P''` `x \<sharp> xvec1` `x \<sharp> xvec2` `x \<sharp> \<alpha>` `x \<sharp> P''` `distinct(bn \<alpha>)` `A\<^isub>P \<sharp>* \<alpha>` `x \<sharp> \<alpha>`
-      obtain yvec1 y yvec2 N' where yvecEq: "bn \<alpha> = yvec1@y#yvec2" and P'eqP'': "\<lparr>\<nu>*(xvec1@xvec2)\<rparr>N \<prec>' P' = \<lparr>\<nu>*(yvec1@yvec2)\<rparr>([(x, y)] \<bullet> N') \<prec>' ([(x, y)] \<bullet> P'')" and "A\<^isub>P \<sharp>* N'" and Subj: "subject \<alpha> = Some M" and "x \<sharp> N'" and \<alpha>_eq: "\<alpha> = M\<lparr>\<nu>*(yvec1@y#yvec2)\<rparr>\<langle>N'\<rangle>"
+      obtain yvec1 y yvec2 N' where yvecEq: "bn \<alpha> = yvec1@y#yvec2" and P'eqP'': "\<lparr>\<nu>*(xvec1@xvec2)\<rparr>N \<prec>' P' = \<lparr>\<nu>*(yvec1@yvec2)\<rparr>([(x, y)] \<bullet> N') \<prec>' ([(x, y)] \<bullet> P'')" and "A\<^isub>P \<sharp>* N'" and Subj: "subject \<alpha> = Some M" and "x \<sharp> N'" and \<alpha>eq: "\<alpha> = M\<lparr>\<nu>*(yvec1@y#yvec2)\<rparr>\<langle>N'\<rangle>"
         apply(cases rule: actionCases[where \<alpha>=\<alpha>])
         apply(auto simp add: residualInject)
         apply(rule boundOutputOpenDest)
@@ -7211,7 +7211,7 @@ proof -
       moreover from `A\<^isub>P' \<sharp>* ([(x, y)] \<bullet> N')` have "([(x, y)] \<bullet> A\<^isub>P') \<sharp>* ([(x, y)] \<bullet> [(x, y)] \<bullet> N')"
         by(simp only: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
       with `x \<sharp> A\<^isub>P'` `y \<sharp> A\<^isub>P'` have "A\<^isub>P' \<sharp>* N'" by simp
-      with `A\<^isub>P' \<sharp>* M` `(yvec1@yvec2) \<sharp>* A\<^isub>P'` `y \<sharp> A\<^isub>P'` \<alpha>_eq have "A\<^isub>P' \<sharp>* \<alpha>" by simp
+      with `A\<^isub>P' \<sharp>* M` `(yvec1@yvec2) \<sharp>* A\<^isub>P'` `y \<sharp> A\<^isub>P'` \<alpha>eq have "A\<^isub>P' \<sharp>* \<alpha>" by simp
       moreover hence "(((y, x)#p) \<bullet> A\<^isub>P') \<sharp>* (((y, x)#p) \<bullet> \<alpha>)"
         by(simp only: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
       with `x \<sharp> A\<^isub>P'` `y \<sharp> A\<^isub>P'` S `(yvec1@yvec2) \<sharp>* A\<^isub>P'` `(p \<bullet> (yvec1@yvec2)) \<sharp>* A\<^isub>P'`
@@ -7219,7 +7219,7 @@ proof -
       moreover from `A\<^isub>P' \<sharp>* ([(x, y)] \<bullet> P'')` have "([(x, y)] \<bullet> A\<^isub>P') \<sharp>* ([(x, y)] \<bullet> [(x, y)] \<bullet> P'')"
         by(simp only: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
       with `x \<sharp> A\<^isub>P'` `y \<sharp> A\<^isub>P'` have "A\<^isub>P' \<sharp>* P''" by simp
-      moreover from yvecEq \<alpha>_eq `(p \<bullet> (yvec1@yvec2)) \<sharp>* (yvec1@yvec2)` `y \<sharp> p` `x \<sharp> \<alpha>` S `(p \<bullet> (yvec1@yvec2)) \<sharp>* M``(p \<bullet> (yvec1@yvec2)) \<sharp>* ([(x, y)] \<bullet> N')` `y \<sharp> yvec1``y \<sharp> yvec2` `x \<sharp> p`
+      moreover from yvecEq \<alpha>eq `(p \<bullet> (yvec1@yvec2)) \<sharp>* (yvec1@yvec2)` `y \<sharp> p` `x \<sharp> \<alpha>` S `(p \<bullet> (yvec1@yvec2)) \<sharp>* M``(p \<bullet> (yvec1@yvec2)) \<sharp>* ([(x, y)] \<bullet> N')` `y \<sharp> yvec1``y \<sharp> yvec2` `x \<sharp> p`
       have "bn(((y, x)#p) \<bullet> \<alpha>) \<sharp>* \<alpha>"
       apply(simp add: eqvts del: set_append) 
       apply(intro conjI)
@@ -8174,7 +8174,7 @@ proof(induct rule: parInputCases[of _ _ _ _ _ _ "(A\<^isub>P\<^isub>Q, \<Psi>\<^
   moreover from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` have "distinct(A\<^isub>P@A\<^isub>Q)"
     by(auto simp add: fresh_star_def fresh_def name_list_supp)
   ultimately obtain p where S: "set p \<subseteq> set(A\<^isub>P@A\<^isub>Q) \<times> set((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"  and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
+                        and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
     using `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct A\<^isub>P\<^isub>Q`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -8194,7 +8194,7 @@ proof(induct rule: parInputCases[of _ _ _ _ _ _ "(A\<^isub>P\<^isub>Q, \<Psi>\<^
   moreover from `A\<^isub>P \<sharp>* A\<^isub>Q` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> A\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> \<Psi>\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>Q \<sharp>* \<Psi>\<^isub>P` have "(p \<bullet> A\<^isub>Q) \<sharp>* (p \<bullet> \<Psi>\<^isub>P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>_eq
+  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>eq
     by(rule_tac rPar1) (assumption | simp)+
 next
   case(cPar2 Q' A\<^isub>P \<Psi>\<^isub>P)
@@ -8215,7 +8215,7 @@ next
   moreover from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P` have "distinct(A\<^isub>P@A\<^isub>Q)"
     by(auto simp add: fresh_star_def fresh_def name_list_supp)
   ultimately obtain p where S: "set p \<subseteq> set(A\<^isub>P@A\<^isub>Q) \<times> set((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"  and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
+                        and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
     using `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct A\<^isub>P\<^isub>Q`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -8235,7 +8235,7 @@ next
   moreover from `A\<^isub>Q \<sharp>* A\<^isub>P` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> A\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> \<Psi>\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>Q \<sharp>* \<Psi>\<^isub>P` have "(p \<bullet> A\<^isub>Q) \<sharp>* (p \<bullet> \<Psi>\<^isub>P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>_eq
+  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>eq
     by(rule_tac rPar2) (assumption | simp)+
 qed
 
@@ -8287,7 +8287,7 @@ proof(induct rule: parOutputCases[of _ _ _ _ _ _ _ "(A\<^isub>P\<^isub>Q, \<Psi>
   moreover from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>P \<sharp>* A\<^isub>Q` have "distinct(A\<^isub>P@A\<^isub>Q)"
     by(auto simp add: fresh_star_def fresh_def name_list_supp)
   ultimately obtain p where S: "set p \<subseteq> set(A\<^isub>P@A\<^isub>Q) \<times> set((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"  and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
+                        and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
     using `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct A\<^isub>P\<^isub>Q`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -8308,7 +8308,7 @@ proof(induct rule: parOutputCases[of _ _ _ _ _ _ _ "(A\<^isub>P\<^isub>Q, \<Psi>
   moreover from `A\<^isub>P \<sharp>* A\<^isub>Q` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> A\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> \<Psi>\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>Q \<sharp>* \<Psi>\<^isub>P` have "(p \<bullet> A\<^isub>Q) \<sharp>* (p \<bullet> \<Psi>\<^isub>P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>_eq
+  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>eq
     by(rule_tac rPar1) (assumption | simp)+
 next
   case(cPar2 Q' A\<^isub>P \<Psi>\<^isub>P)
@@ -8329,7 +8329,7 @@ next
   moreover from `distinct A\<^isub>P` `distinct A\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P` have "distinct(A\<^isub>P@A\<^isub>Q)"
     by(auto simp add: fresh_star_def fresh_def name_list_supp)
   ultimately obtain p where S: "set p \<subseteq> set(A\<^isub>P@A\<^isub>Q) \<times> set((p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q))"  and "distinctPerm p"
-                        and \<Psi>_eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
+                        and \<Psi>eq: "\<Psi>\<^isub>P\<^isub>Q = (p \<bullet> \<Psi>\<^isub>P) \<otimes> (p \<bullet> \<Psi>\<^isub>Q)" and Aeq: "A\<^isub>P\<^isub>Q = (p \<bullet> A\<^isub>P)@(p \<bullet> A\<^isub>Q)"
     using `A\<^isub>P \<sharp>* A\<^isub>P\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>P\<^isub>Q` `distinct A\<^isub>P\<^isub>Q`
     by(rule_tac frameChainEq') (assumption | simp add: eqvts)+
 
@@ -8349,7 +8349,7 @@ next
   moreover from `A\<^isub>Q \<sharp>* A\<^isub>P` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> A\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` have "(p \<bullet> A\<^isub>P) \<sharp>* (p \<bullet> \<Psi>\<^isub>Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
   moreover from `A\<^isub>Q \<sharp>* \<Psi>\<^isub>P` have "(p \<bullet> A\<^isub>Q) \<sharp>* (p \<bullet> \<Psi>\<^isub>P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>_eq
+  ultimately show ?case using `A\<^isub>P\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>P\<^isub>Q \<sharp>* P` `A\<^isub>P\<^isub>Q \<sharp>* Q` `A\<^isub>P\<^isub>Q \<sharp>* M` Aeq \<Psi>eq
     by(rule_tac rPar2) (assumption | simp)+
 qed
 

@@ -36,7 +36,7 @@ locale dijkstraC_def =
   fixes ga :: "('V,'W) graph"
   fixes g :: 'G
 begin
-  definition "\<alpha>_sc == map_pair qw.\<alpha> mr.\<alpha>"
+  definition "\<alpha>sc == map_pair qw.\<alpha> mr.\<alpha>"
   definition "dinvarC_add == \<lambda>(wl,res). qw.invar wl \<and> mr.invar res"
 
   definition cdinit :: "('qw\<times>'mr) nres" where
@@ -101,28 +101,28 @@ begin
     unfolding cdinit_def mdinit_def
     apply (refine_rcg)
     apply (refine_dref_type)
-    apply (simp_all add: \<alpha>_sc_def dinvarC_add_def
+    apply (simp_all add: \<alpha>sc_def dinvarC_add_def
       qw.correct mr.correct)
     done
 
   schematic_lemma cpop_min_refines:
-    "(\<sigma>,\<sigma>') \<in> build_rel \<alpha>_sc dinvarC_add
+    "(\<sigma>,\<sigma>') \<in> build_rel \<alpha>sc dinvarC_add
       \<Longrightarrow> cpop_min \<sigma> \<le> \<Down>?R (mpop_min \<sigma>')"
     unfolding cpop_min_def mpop_min_def
     apply (refine_rcg)
     apply (refine_dref_type)
-    apply (simp add: \<alpha>_sc_def dinvarC_add_def)
-    apply (simp add: \<alpha>_sc_def dinvarC_add_def)
+    apply (simp add: \<alpha>sc_def dinvarC_add_def)
+    apply (simp add: \<alpha>sc_def dinvarC_add_def)
     done
 
   schematic_lemma cupdate_refines:
     notes [refine] = inj_on_id
-    shows "(\<sigma>,\<sigma>')\<in>build_rel \<alpha>_sc dinvarC_add \<Longrightarrow> v=v' \<Longrightarrow> wv=wv' \<Longrightarrow> 
+    shows "(\<sigma>,\<sigma>')\<in>build_rel \<alpha>sc dinvarC_add \<Longrightarrow> v=v' \<Longrightarrow> wv=wv' \<Longrightarrow> 
     cupdate v wv \<sigma> \<le> \<Down>?R (mupdate v' wv' \<sigma>')"
     unfolding cupdate_def mupdate_def
     apply (refine_rcg)
     apply (refine_dref_type)
-    apply (simp_all add: \<alpha>_sc_def dinvarC_add_def 
+    apply (simp_all add: \<alpha>sc_def dinvarC_add_def 
       qw.correct mr.correct)
     done
 
@@ -135,7 +135,7 @@ begin
 
       apply (simp_all 
         split: prod.split prod.split_asm 
-        add: qw.correct mr.correct dinvarC_add_def \<alpha>_sc_def)
+        add: qw.correct mr.correct dinvarC_add_def \<alpha>sc_def)
       done
   qed
 
@@ -224,7 +224,7 @@ begin
     *}
   theorem (in dijkstraC) idijkstra_correct:
     shows
-    "weighted_graph.is_shortest_path_map ga v0 (\<alpha>_r (mr.\<alpha> idijkstra))" (is ?G1)
+    "weighted_graph.is_shortest_path_map ga v0 (\<alpha>r (mr.\<alpha> idijkstra))" (is ?G1)
     and "mr.invar idijkstra" (is ?G2) 
     and "res_invarm (mr.\<alpha> idijkstra)" (is ?G3)
   proof -
@@ -232,7 +232,7 @@ begin
     also note cdijkstra_refines
     also note mdijkstra_refines
     finally have Z: "RETURN idijkstra \<le> 
-      \<Down>(build_rel (\<alpha>_r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
+      \<Down>(build_rel (\<alpha>r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
         dijkstra'"
       apply (subst (asm) conc_fun_chain)
       apply rule
@@ -258,7 +258,7 @@ theorem dijkstra_impl_correct:
   assumes nonneg_weights: "\<And>v w v'. (v,w,v')\<in>edges (hlg_\<alpha> g) \<Longrightarrow> 0\<le>w"
   shows 
   "weighted_graph.is_shortest_path_map (hlg_\<alpha> g) v0 
-      (Dijkstra.\<alpha>_r (rm_\<alpha> (dijkstra_impl g v0)))" (is ?G1)
+      (Dijkstra.\<alpha>r (rm_\<alpha> (dijkstra_impl g v0)))" (is ?G1)
   and "Dijkstra.res_invarm (rm_\<alpha> (dijkstra_impl g v0))" (is ?G2)
 proof -
   interpret hlgv!: valid_graph "hlg_\<alpha> g" using hlg.valid INV .

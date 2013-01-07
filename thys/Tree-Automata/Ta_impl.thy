@@ -571,11 +571,11 @@ type_synonym ('q1,'q2,'l) pa_state
 definition pa_\<alpha> 
   :: "('q1::hashable,'q2::hashable,'l::hashable) pa_state 
       \<Rightarrow> ('q1,'q2,'l) frp_state"
-  where "pa_\<alpha> S == let (Q,W,\<delta>_d)=S in (hs_\<alpha> Q,W,ls_\<alpha> \<delta>_d)"
+  where "pa_\<alpha> S == let (Q,W,\<delta>d)=S in (hs_\<alpha> Q,W,ls_\<alpha> \<delta>d)"
 
 definition pa_cond 
   :: "('q1::hashable,'q2::hashable,'l::hashable) pa_state \<Rightarrow> bool" 
-  where "pa_cond S == let (Q,W,\<delta>_d) = S in W\<noteq>[]"
+  where "pa_cond S == let (Q,W,\<delta>d) = S in W\<noteq>[]"
 
   -- "Adds all successor states to the set of discovered states and to the 
   worklist"
@@ -597,7 +597,7 @@ definition pa_step
       \<Rightarrow> ('q2::hashable,'l) hashedTa 
       \<Rightarrow> ('q1,'q2,'l) pa_state \<Rightarrow> ('q1,'q2,'l) pa_state"
   where "pa_step H1 H2 S == let 
-    (Q,W,\<delta>_d)=S;
+    (Q,W,\<delta>d)=S;
     (q1,q2)=hd W
   in  
     ls_iteratei (hta_lookup_s q1 H1) (\<lambda>_. True) (\<lambda>r1 res. 
@@ -605,14 +605,14 @@ definition pa_step
         if (length (rhsq r1) = length (rhsq r2)) then
           let 
             rp=r_prod r1 r2;
-            (Q,W,\<delta>_d) = res;
+            (Q,W,\<delta>d) = res;
             (Q',W') = pa_upd_rule Q W (rhsq rp)
           in
-            (Q',W',ls_ins_dj rp \<delta>_d)
+            (Q',W',ls_ins_dj rp \<delta>d)
         else
           res
       ) res
-    ) (Q,tl W,\<delta>_d)
+    ) (Q,tl W,\<delta>d)
   "
 
 definition pa_initial 
@@ -628,7 +628,7 @@ where "pa_initial H1 H2 ==
 
 definition pa_invar_add:: 
   "('q1::hashable,'q2::hashable,'l::hashable) pa_state set" 
-  where "pa_invar_add == { (Q,W,\<delta>_d). hs_invar Q \<and> ls_invar \<delta>_d }"
+  where "pa_invar_add == { (Q,W,\<delta>d). hs_invar Q \<and> ls_invar \<delta>d }"
 
 definition "pa_invar H1 H2 == 
   pa_invar_add \<inter> {s. (pa_\<alpha> s) \<in> frp_invar (hta_\<alpha> H1) (hta_\<alpha> H2)}"
@@ -686,11 +686,11 @@ qed
 lemma pa_step_correct:
   assumes TA: "hashedTa H1" "hashedTa H2"
   assumes idx[simp]: "hta_has_idx_s H1" "hta_has_idx_sf H2"
-  assumes INV: "(Q,W,\<delta>_d)\<in>pa_invar H1 H2"
-  assumes COND: "pa_cond (Q,W,\<delta>_d)"
+  assumes INV: "(Q,W,\<delta>d)\<in>pa_invar H1 H2"
+  assumes COND: "pa_cond (Q,W,\<delta>d)"
   shows 
-    "(pa_step H1 H2 (Q,W,\<delta>_d))\<in>pa_invar_add" (is ?T1)
-    "(pa_\<alpha> (Q,W,\<delta>_d), pa_\<alpha> (pa_step H1 H2 (Q,W,\<delta>_d))) 
+    "(pa_step H1 H2 (Q,W,\<delta>d))\<in>pa_invar_add" (is ?T1)
+    "(pa_\<alpha> (Q,W,\<delta>d), pa_\<alpha> (pa_step H1 H2 (Q,W,\<delta>d))) 
      \<in> frp_step (ls_\<alpha> (hta_\<delta> H1)) (ls_\<alpha> (hta_\<delta> H2))" (is ?T2)
 proof -
   interpret h1: hashedTa H1 by fact
@@ -700,20 +700,20 @@ proof -
     [simp]: "W=(q1,q2)#Wtl" 
     by (cases W) (auto simp add: pa_cond_def)
 
-  from INV have [simp]: "hs_invar Q" "ls_invar \<delta>_d" 
+  from INV have [simp]: "hs_invar Q" "ls_invar \<delta>d" 
     by (auto simp add: pa_invar_add_def pa_invar_def)
 
-  def inv == "\<lambda>\<delta>_p (Q', W', \<delta>_d'). 
+  def inv == "\<lambda>\<delta>p (Q', W', \<delta>d'). 
     hs_invar Q' 
-    \<and> ls_invar \<delta>_d' 
+    \<and> ls_invar \<delta>d' 
     \<and> (\<exists>Wn. distinct Wn 
-            \<and> set Wn = (f_succ \<delta>_p `` {(q1,q2)}) - hs_\<alpha> Q 
+            \<and> set Wn = (f_succ \<delta>p `` {(q1,q2)}) - hs_\<alpha> Q 
             \<and> W'=Wn@Wtl 
-            \<and> hs_\<alpha> Q'=hs_\<alpha> Q \<union> (f_succ \<delta>_p `` {(q1,q2)}))
-    \<and> (ls_\<alpha> \<delta>_d' = ls_\<alpha> \<delta>_d \<union> {r\<in>\<delta>_p. lhs r = (q1,q2) })"
+            \<and> hs_\<alpha> Q'=hs_\<alpha> Q \<union> (f_succ \<delta>p `` {(q1,q2)}))
+    \<and> (ls_\<alpha> \<delta>d' = ls_\<alpha> \<delta>d \<union> {r\<in>\<delta>p. lhs r = (q1,q2) })"
 
   have G: "inv (\<delta>_prod (ls_\<alpha> (hta_\<delta> H1)) (ls_\<alpha> (hta_\<delta> H2))) 
-               (pa_step H1 H2 (Q,W,\<delta>_d))"
+               (pa_step H1 H2 (Q,W,\<delta>d))"
     apply (unfold pa_step_def)
     apply simp
     apply (rule_tac 
@@ -761,9 +761,9 @@ proof -
     from goal1(1,4) G' have 
       [simp]: "ls_\<alpha> (hta_\<delta> H2) - (it2 - {r2}) = (ls_\<alpha> (hta_\<delta> H2) - it2) \<union> {r2}"
       by auto
-    obtain Qh Wh \<delta>_dh Q' W' \<delta>_d' where [simp]: "resh=(Qh,Wh,\<delta>_dh)" 
+    obtain Qh Wh \<delta>dh Q' W' \<delta>d' where [simp]: "resh=(Qh,Wh,\<delta>dh)" 
       by (cases resh) fastforce
-    from goal1(6) have INVAH[simp]: "hs_invar Qh" "ls_invar \<delta>_dh" 
+    from goal1(6) have INVAH[simp]: "hs_invar Qh" "ls_invar \<delta>dh" 
       by (auto simp add: inv_def)
 
     -- "The involved rules have the same label, and their lhs is determined"
@@ -802,7 +802,7 @@ proof -
                    \<union> f_succ (\<delta>_prod (ls_\<alpha> (hta_\<delta> H1) - it1) (ls_\<alpha> (hta_\<delta> H2))
                               \<union> \<delta>_prod {r1} (ls_\<alpha> (hta_\<delta> H2) - it2)) 
                       `` {(q1, q2)}" 
-        "ls_\<alpha> \<delta>_dh = ls_\<alpha> \<delta>_d 
+        "ls_\<alpha> \<delta>dh = ls_\<alpha> \<delta>d 
           \<union> {r. ( r \<in> \<delta>_prod (ls_\<alpha> (hta_\<delta> H1) - it1) (ls_\<alpha> (hta_\<delta> H2)) 
                   \<or> r \<in> \<delta>_prod {r1} (ls_\<alpha> (hta_\<delta> H2) - it2)
                  ) \<and> lhs r = (q1, q2)
@@ -810,23 +810,23 @@ proof -
         by blast
 
       -- "Required to justify disjoint insert"
-      have RPD: "r_prod r1 r2 \<notin> ls_\<alpha> \<delta>_dh" 
+      have RPD: "r_prod r1 r2 \<notin> ls_\<alpha> \<delta>dh" 
       proof -
         from INV[unfolded pa_invar_def frp_invar_def frp_invar_add_def]
         have LSDD: 
-          "ls_\<alpha> \<delta>_d = {r \<in> \<delta>_prod (ls_\<alpha> (hta_\<delta> H1)) (ls_\<alpha> (hta_\<delta> H2)). 
+          "ls_\<alpha> \<delta>d = {r \<in> \<delta>_prod (ls_\<alpha> (hta_\<delta> H1)) (ls_\<alpha> (hta_\<delta> H2)). 
                         lhs r \<in> hs_\<alpha> Q - set W}"
           by (auto simp add: pa_\<alpha>_def hta_\<alpha>_def)
-        have "r_prod r1 r2 \<notin> ls_\<alpha> \<delta>_d"
+        have "r_prod r1 r2 \<notin> ls_\<alpha> \<delta>d"
         proof
-          assume "r_prod r1 r2 \<in> ls_\<alpha> \<delta>_d"
+          assume "r_prod r1 r2 \<in> ls_\<alpha> \<delta>d"
           with LSDD have "lhs (r_prod r1 r2) \<notin> set W" by auto
           moreover from goal1(1,4) G' have "lhs (r_prod r1 r2) = (q1,q2)" 
             by (cases r1, cases r2) auto
           ultimately show False by simp
         qed
-        moreover from goal1(6) have "ls_\<alpha> \<delta>_dh = 
-          ls_\<alpha> \<delta>_d \<union> 
+        moreover from goal1(6) have "ls_\<alpha> \<delta>dh = 
+          ls_\<alpha> \<delta>d \<union> 
           {r. ( r \<in> \<delta>_prod (ls_\<alpha> (hta_\<delta> H1) - it1) (ls_\<alpha> (hta_\<delta> H2)) 
                 \<or> r \<in> \<delta>_prod {r1} (ls_\<alpha> (hta_\<delta> H2) - it2)
               ) \<and> lhs r = (q1, q2)}" (is "_= _ \<union> ?s")
@@ -862,10 +862,10 @@ proof -
     } ultimately show ?case by blast
   qed
   from G show ?T1
-    by (cases "pa_step H1 H2 (Q,W,\<delta>_d)")
+    by (cases "pa_step H1 H2 (Q,W,\<delta>d)")
        (simp add: pa_invar_add_def inv_def)
   from G show ?T2
-    by (cases "pa_step H1 H2 (Q,W,\<delta>_d)")
+    by (cases "pa_step H1 H2 (Q,W,\<delta>d)")
        (auto simp add: inv_def pa_\<alpha>_def Let_def intro: frp_step.intros)
 
 qed
@@ -943,8 +943,8 @@ lemmas pa_inv_final =
     automaton to be present, while the second version computes the required 
     indices, if necessary"
 definition "hta_prod' H1 H2 ==
-  let (Q,W,\<delta>_d) = while pa_cond (pa_step H1 H2) (pa_initial H1 H2) in
-    init_hta (hhh_cart (hta_Qi H1) (hta_Qi H2)) \<delta>_d
+  let (Q,W,\<delta>d) = while pa_cond (pa_step H1 H2) (pa_initial H1 H2) in
+    init_hta (hhh_cart (hta_Qi H1) (hta_Qi H2)) \<delta>d
   "
 
 definition "hta_prod H1 H2 == 
