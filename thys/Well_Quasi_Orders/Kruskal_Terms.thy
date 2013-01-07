@@ -11,6 +11,7 @@ imports
   Well_Quasi_Orders
   Kruskal_Auxiliaries
   Finite_Tree
+  Multiset_Extension
 begin
 
 context finite_tree
@@ -193,12 +194,11 @@ proof -
   let ?P = "(term_hemb F P)\<^sup>=\<^sup>="
   let ?A = "terms F"
   interpret term_mbs: mbs "\<lambda>F. (term_hemb F P)\<^sup>=\<^sup>=" subtree "terms"
-    apply (unfold_locales)
-    apply (rule term_hembeq_subtree, assumption+)
-    apply (rule wfp_on_subtree_terms)
-    apply (erule subtree_trans, assumption)
-    apply (rule subtree_terms, assumption+)
-  done
+  proof
+    fix F s t u
+    assume "u \<in> terms F" and "term_hembeq F P s t" and "subtree t u"
+    then show "term_hembeq F P s u" by (rule term_hembeq_subtree)
+  qed (auto intro: wfp_on_subtree_terms subtree_terms elim: subtree_trans)
   { have "reflp_on ?P ?A" by (auto simp: reflp_on_def) }
   note refl = this
   {
@@ -341,6 +341,266 @@ proof -
   }
   then show ?thesis
     using term_hembeq_term_hemb_conv by (auto simp: almost_full_on_def good_def)
+qed
+
+text {*Multiset of function symbol / arity pairs.*}
+definition "funas_ms = rec (\<lambda>f ts N. {#(f, length ts)#} + N) {#} (\<lambda>t ts M N. M + N)"
+definition "funas_list_ms = list_rec (\<lambda>f ts N. {#(f, length ts)#} + N) {#} (\<lambda>t ts M N. M + N)"
+
+lemma terms_imp_trees_list:
+  "(\<forall>t\<in>set ts. t \<in> terms F) \<Longrightarrow> ts \<in> trees_list (fst ` F)"
+  by (induct ts) (auto dest: terms_imp_trees intro: trees_trees_list.intros)
+
+lemma rec_simps_terms [simp]:
+  assumes "(x, length ts) \<in> F"
+    and "\<forall>t\<in>set ts. t \<in> terms F"
+  shows "rec f g h (mk x ts) = f x ts (list_rec f g h ts)"
+proof -
+  from assms have "x \<in> fst ` F"
+    and "ts \<in> trees_list (fst ` F)" by (force dest: terms_imp_trees_list)+
+  then show ?thesis by simp
+qed
+
+lemma list_rec_simps_terms [simp]:
+  assumes "t \<in> terms F"
+    and "\<forall>t\<in>set ts. t \<in> terms F"
+  shows "list_rec f g h (t # ts) = h t ts (rec f g h t) (list_rec f g h ts)"
+proof -
+  from assms have "t \<in> trees (fst ` F)"
+    and "ts \<in> trees_list (fst ` F)" by (auto dest: terms_imp_trees_list terms_imp_trees)
+  then show ?thesis by simp
+qed
+
+lemma funas_list_ms_Nil [simp]:
+  "funas_list_ms [] = {#}"
+  by (simp add: funas_list_ms_def)
+
+lemma funas_ms [simp]:
+  "(f, length ts) \<in> F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow>
+    funas_ms (mk f ts) = {#(f, length ts)#} + funas_list_ms ts"
+  "t \<in> terms F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> funas_list_ms (t # ts) = funas_ms t + funas_list_ms ts"
+  by (simp_all add: funas_ms_def funas_list_ms_def)
+
+lemma listsum_map_funas_ms [simp]:
+  assumes "\<forall>t\<in>set ts. t \<in> terms F"
+  shows "listsum (map funas_ms ts) = funas_list_ms ts"
+  using assms by (induct ts) (auto)
+
+lemma funas_ms_simps:
+  "(f, length ts) \<in> F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow>
+    funas_ms (mk f ts) = {#(f, length ts)#} + listsum (map funas_ms ts)"
+  by (simp)
+
+lemma listsum_map_funas_msD:
+  assumes "x \<in># listsum (map funas_ms ts)"
+  shows "\<exists>t\<in>set ts. x \<in># funas_ms t"
+  using assms by (induct ts) auto
+
+lemma funas_ms_imp_mem:
+  assumes "t \<in> terms F"
+    and "(f, n) \<in># funas_ms t"
+  shows "(f, n) \<in> F"
+  using assms
+  by (induct t, auto simp del: funas_ms simp: funas_ms_simps dest: listsum_map_funas_msD)
+     (metis (full_types) less_not_refl3)
+
+lemma funas_list_ms_imp_mem:
+  assumes "\<forall>t\<in>set ts. t \<in> terms F"
+    and "(f, n) \<in># funas_list_ms ts"
+  shows "(f, n) \<in> F"
+  using assms by (induct ts) (auto simp: funas_ms_imp_mem)
+
+lemma funas_ms_multisets:
+  assumes "t \<in> terms F"
+  shows "funas_ms t \<in> multisets F"
+  using assms
+proof (induct)
+  fix f n ts
+  assume "(f, n) \<in> F" and "length ts = n"
+    and "\<forall>t\<in>set ts. t \<in> terms F \<and> funas_ms t \<in> multisets F"
+  moreover then have "\<forall>t\<in>set ts. t \<in> terms F" by blast
+  ultimately show "funas_ms (mk f ts) \<in> multisets F"
+    by (auto simp: multisets_def dest: funas_list_ms_imp_mem)
+qed
+
+lemma funas_list_ms_multisets:
+  assumes "\<forall>t\<in>set ts. t \<in> terms F"
+  shows "funas_list_ms ts \<in> multisets F"
+  using assms
+  by (induct ts)
+     (auto, auto dest: funas_ms_multisets)
+
+lemma funas_list_ms_append [simp]:
+  assumes "\<forall>t\<in>set (ss @ ts). t \<in> terms F"
+  shows "funas_list_ms (ss @ ts) = funas_list_ms ss + funas_list_ms ts"
+  using assms by (induct ss) (auto simp: ac_simps)
+
+lemma funas_ms_not_empty:
+  assumes "t \<in> terms F"
+  shows "funas_ms t \<noteq> {#}"
+  using assms by (induct t) (auto)
+
+lemma mulex_on_funas_list_ms_Cons [simp]:
+  assumes "s \<in> terms F" and "\<forall>t\<in>set ss. t \<in> terms F"
+  shows "mulex_on P F (funas_list_ms ss) (funas_list_ms (s # ss))"
+  using assms
+  by (auto dest: funas_ms_multisets funas_list_ms_multisets funas_ms_not_empty
+           intro: mulex_on_self_add_right
+           simp: ac_simps)
+
+lemma set_reflclp_mulex_on:
+  assumes "t \<in> set ts" and "\<forall>t\<in>set ts. t \<in> terms F"
+  shows "(mulex_on P F)\<^sup>=\<^sup>= (funas_ms t) (funas_list_ms ts)"
+using assms
+proof (induct ts)
+  case (Cons s ss)
+  then have *: "s \<in> terms F" "\<forall>t\<in>set ss. t \<in> terms F" by auto
+  {
+    assume "funas_ms s \<noteq> funas_ms s + funas_list_ms ss"
+    with * have "mulex_on P F (funas_ms s) (funas_ms s + funas_list_ms ss)"
+      by (cases "funas_list_ms ss \<noteq> {#}")
+         (auto dest!: funas_ms_multisets funas_list_ms_multisets)
+  }
+  moreover
+  {
+    assume "mulex_on P F (funas_ms t) (funas_list_ms ss)"
+    with * have "mulex_on P F (funas_ms t) (funas_ms s + funas_list_ms ss)"
+      by (auto dest: funas_ms_multisets mulex_on_union_right)
+  }
+  moreover
+  {
+    from * have "mulex_on P F (funas_list_ms ss) (funas_ms s + funas_list_ms ss)"
+      by (auto simp: funas_ms_not_empty funas_ms_multisets funas_list_ms_multisets ac_simps)
+  }
+  ultimately show ?case using Cons by auto
+qed simp
+
+lemma sublisteq_aux:
+  assumes "sublisteq xs ys" and "\<forall>x\<in>set ys. P x"
+  shows "\<forall>x\<in>set xs. P x"
+  using assms by (induct) auto
+
+lemma sublisteq_reflclp_mulex_on:
+  assumes "sublisteq ss ts" and "\<forall>t\<in>set ts. t \<in> terms F"
+  shows "(mulex_on P F)\<^sup>=\<^sup>= (funas_list_ms ss) (funas_list_ms ts)"
+using assms
+proof (induct)
+  case (list_hembeq_Nil ys)
+  then show ?case by (force dest: funas_list_ms_multisets)
+next
+  case (list_hembeq_Cons xs ys y)
+  moreover then have "funas_ms y \<noteq> {#}"
+    and "funas_ms y \<in> multisets F"
+    and "funas_list_ms ys \<in> multisets F"
+    by (auto dest: funas_ms_not_empty funas_ms_multisets funas_list_ms_multisets)
+  ultimately show ?case by (auto simp: ac_simps)
+next
+  case (list_hembeq_Cons2 x y xs ys)
+  moreover
+  then have "\<forall>t\<in>set xs. t \<in> terms F" by (auto dest: sublisteq_aux)
+  ultimately
+  show ?case
+    by (auto intro!: mulex_on_union dest: funas_ms_multisets)
+qed
+
+lemma mono_on_term_hemb_mulex_on_funas_ms_terms:
+  "mono_on (term_hemb F P) (mulex_on P F) funas_ms (terms F)"
+proof
+  let ?f = "funas_ms" and ?fs = "funas_list_ms"
+  let ?P = "term_hemb F P" and ?Q = "mulex_on P F"
+  let ?A = "terms F" and ?B = "multisets F"
+  fix s t
+  assume "?P s t"
+  then show "?Q (?f s) (?f t)"
+  proof (induct)
+    case (term_hemb_base f n ts t)
+    note IH = this
+    then have 1: "?f (mk f ts) = {#(f, length ts)#} + ?fs ts" by (simp)
+    have "t \<in> set ts" by fact
+    moreover have "\<forall>t\<in>set ts. t \<in> terms F" by fact
+    ultimately have "?Q\<^sup>=\<^sup>= (?f t) (?fs ts)" by (rule set_reflclp_mulex_on)
+    moreover have "?f t \<in> ?B" using IH by (auto dest: funas_ms_multisets)
+    moreover have "(f, length ts) \<in> F" using IH by simp
+    ultimately show ?case by (simp add: 1)
+  next
+    case (term_hemb_sublisteq f n g m ss ts)
+    note IH = this
+    then have 1: "?f (mk f ss) = {#(f, length ss)#} + ?fs ss"
+      and 2: "?f (mk g ts) = {#(g, length ts)#} + ?fs ts"
+      by (simp_all)
+    show ?case
+      unfolding 1 2
+    proof (rule union_mulex_on_mono2)
+      from IH show "?fs ss \<in> ?B" by (blast dest: funas_list_ms_multisets)
+    next
+      from IH show "?Q {#(f, length ss)#} {#(g, length ts)#}" by (blast intro: singleton_mulex_onI)
+    next
+      show "?Q\<^sup>=\<^sup>= (?fs ss) (?fs ts)"
+        by (rule sublisteq_reflclp_mulex_on) fact+
+    qed
+  next
+    case (term_hemb_trans s t u)
+    then show ?case using mulex_on_trans by blast
+  next
+    case (term_hemb_ctxt s t f n ss1 ss2)
+    note IH = this
+    let ?n = "Suc (length (ss1 @ ss2))"
+    let ?ss = "ss1 @ s # ss2" and ?ts = "ss1 @ t # ss2"
+    from IH have n: "n = ?n" by simp
+    have 1: "?f (mk f ?ss) = {#(f, ?n)#} + ?f s + ?fs ss1 + ?fs ss2"
+    proof -
+      from IH have "(f, ?n) \<in> F" and "\<forall>t\<in>set ?ss. t \<in> ?A" by (auto dest: term_hemb_imp_terms)
+      then have "?f (mk f ?ss) = {#(f, ?n)#} + ?fs ?ss" by (simp)
+      moreover have "?fs ?ss = ?f s + ?fs ss1 + ?fs ss2"
+      proof -
+        from IH have "s \<in> terms F" and "\<forall>t\<in>set ?ss. t \<in> ?A" by (auto dest: term_hemb_imp_terms)
+        then show ?thesis by (auto simp: ac_simps)
+      qed
+      ultimately show ?thesis by (simp (no_asm_simp) add: ac_simps)
+    qed
+    have 2: "?f (mk f ?ts) = {#(f, ?n)#} + ?f t + ?fs ss1 + ?fs ss2"
+    proof -
+      from IH have "(f, ?n) \<in> F" and "\<forall>t\<in>set ?ts. t \<in> ?A" by (auto dest: term_hemb_imp_terms)
+      then have "?f (mk f ?ts) = {#(f, ?n)#} + ?fs ?ts" by (simp)
+      moreover have "?fs ?ts = ?f t + ?fs ss1 + ?fs ss2"
+      proof -
+        from IH have "t \<in> terms F" and "\<forall>t\<in>set ?ts. t \<in> ?A" by (auto dest: term_hemb_imp_terms)
+        then show ?thesis by (auto simp: ac_simps)
+      qed
+      ultimately show ?thesis by (simp (no_asm_simp) add: ac_simps)
+    qed
+    have 3: "?fs ss1 \<in> ?B"
+    proof -
+      from IH have "\<forall>t\<in>set ss1. t \<in> ?A" by (auto)
+      then show ?thesis by (auto simp: multisets_def funas_list_ms_imp_mem)
+    qed
+    have 4: "?fs ss2 \<in> ?B"
+    proof -
+      from IH have "\<forall>t\<in>set ss2. t \<in> ?A" by auto
+      then show ?thesis by (auto simp: multisets_def funas_list_ms_imp_mem)
+    qed
+    from IH and 3 and 4 have "{#(f, ?n)#} \<in> ?B"
+      by (force simp: multisets_def dest: funas_list_ms_imp_mem)
+    show ?case
+      unfolding 1 2
+      by (intro mulex_on_union' mulex_on_union) fact+
+  qed
+qed
+
+text {*Homeomorphic embedding on terms is irreflexive when based on a well-founded
+precedence.*}
+lemma irreflp_on_term_hemb_terms:
+  assumes "wfp_on P F"
+  shows "irreflp_on (term_hemb F P) (terms F)"
+proof -
+ let ?P = "term_hemb F P" and ?Q = "mulex_on P F"
+  let ?A = "terms F" and ?B = "multisets F"
+  from assms [THEN irreflp_on_mulex_on]
+    have "irreflp_on ?Q ?B" .
+  moreover have "funas_ms ` ?A \<subseteq> ?B" by (blast intro: funas_ms_multisets)
+  moreover have "mono_on ?P ?Q funas_ms ?A"
+    by (rule mono_on_term_hemb_mulex_on_funas_ms_terms)
+  ultimately show ?thesis by (rule mono_on_irreflp_on)
 qed
 
 end
