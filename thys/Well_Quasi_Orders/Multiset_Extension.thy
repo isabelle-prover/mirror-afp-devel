@@ -341,5 +341,47 @@ lemma union_mulex_on_mono2:
     mulex_on P F (A + B) (C + D)"
   by (auto intro: union_mulex_on_mono mulex_on_union')
 
+lemma mult1_mono:
+  assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; (x, y) \<in> R\<rbrakk> \<Longrightarrow> (x, y) \<in> S"
+    and "M \<in> multisets A"
+    and "N \<in> multisets A"
+    and "(M, N) \<in> mult1 R"
+  shows "(M, N) \<in> mult1 S"
+  using assms 
+  unfolding mult1_def multisets_def
+  by (auto) (metis (full_types) mem_set_of_iff set_mp)
+
+lemma mulex1_mono:
+  assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y"
+    and "M \<in> multisets A"
+    and "N \<in> multisets A"
+    and "mulex1 P M N"
+  shows "mulex1 Q M N"
+  using mult1_mono [of A "{(x, y). P x y}" "{(x, y). Q x y}" M N]
+    and assms unfolding mulex1_def by blast
+
+lemma mulex_on_mono:
+  assumes *: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y"
+    and "mulex_on P A M N"
+  shows "mulex_on Q A M N"
+proof -
+  let ?rel = "\<lambda>P. (restrict_to (mulex1 P) (multisets A))"
+  from `mulex_on P A M N` have "(?rel P)\<^sup>+\<^sup>+ M N" by (simp add: mulex_on_def)
+  then have "(?rel Q)\<^sup>+\<^sup>+ M N"
+  proof (induct rule: tranclp.induct)
+    case (r_into_trancl M N)
+    then have "M \<in> multisets A" and "N \<in> multisets A" by auto
+    from mulex1_mono [OF * this] and r_into_trancl
+      show ?case by auto
+  next
+    case (trancl_into_trancl L M N)
+    then have "M \<in> multisets A" and "N \<in> multisets A" by auto
+    from mulex1_mono [OF * this] and trancl_into_trancl
+      have "?rel Q M N" by auto
+    with `(?rel Q)\<^sup>+\<^sup>+ L M` show ?case by (rule tranclp.trancl_into_trancl)
+  qed
+  then show ?thesis by (simp add: mulex_on_def)
+qed
+
 end
 
