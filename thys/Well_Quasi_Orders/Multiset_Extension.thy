@@ -102,6 +102,11 @@ lemma union_multisets_iff [iff]:
 lemma mulex_on_trans:
   "mulex_on P A L M \<Longrightarrow> mulex_on P A M N \<Longrightarrow> mulex_on P A L N"
   unfolding mulex_on_def by auto
+
+lemma transp_on_mulex_on:
+  "transp_on (mulex_on P A) B"
+  using mulex_on_trans [of P A]
+  by (auto simp: transp_on_def)
   
 lemma mulex_on_add_right [simp]:
   assumes "mulex_on P A M N" and "a \<in> A"

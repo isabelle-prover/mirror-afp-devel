@@ -1,0 +1,60 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Multiset Extension Preserves Well-Quasi-Orders *}
+
+theory Wqo_Multiset
+imports
+  Multiset_Extension
+  Well_Quasi_Orders
+begin
+
+lemma list_hembeq_imp_reflclp_mulex_on:
+  assumes "xs \<in> lists A" and "ys \<in> lists A"
+    and "list_hembeq P xs ys"
+  shows "(mulex_on P A)\<^sup>=\<^sup>= (multiset_of xs) (multiset_of ys)"
+using assms(3, 1, 2)
+proof (induct)
+  case (list_hembeq_Nil ys)
+  then show ?case
+    by (cases ys) (auto intro!: empty_mulex_on simp: multisets_def)
+next
+  case (list_hembeq_Cons xs ys y)
+  then show ?case by (auto intro!: mulex_on_self_add_right simp: multisets_def)
+next
+  case (list_hembeq_Cons2 x y xs ys)
+  then show ?case
+    by (auto intro: union_mulex_on_mono mulex_on_union'
+             intro!: singleton_mulex_onI mulex_on_union
+             simp: multisets_def)
+qed
+
+text {*The (reflexive closure of the) multiset extension of an almost-full relation
+is almost-full.*}
+lemma almost_full_on_multisets:
+  assumes "almost_full_on P A"
+  shows "almost_full_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"
+proof -
+  let ?P = "(mulex_on P A)\<^sup>=\<^sup>="
+  from almost_full_on_hom [OF _ almost_full_on_lists, of A P ?P multiset_of,
+    OF list_hembeq_imp_reflclp_mulex_on, simplified]
+    show ?thesis using assms by blast
+qed
+
+lemma wqo_on_multisets:
+  assumes "wqo_on P A"
+  shows "wqo_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"
+proof
+  from transp_on_mulex_on [of P A "multisets A"]
+    show "transp_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"
+    unfolding transp_on_def by blast
+next
+  from almost_full_on_multisets [OF assms [THEN wqo_on_imp_almost_full_on]]
+    show "almost_full_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)" .
+qed
+
+end
+

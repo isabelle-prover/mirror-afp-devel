@@ -16,7 +16,7 @@ definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a 
   "wqo_on P A \<equiv> transp_on P A \<and> almost_full_on P A"
 
 lemma wqo_onI [Pure.intro]:
-  "\<lbrakk>transp_on P A; \<And>f. \<forall>i. f i \<in> A \<Longrightarrow> good P f\<rbrakk> \<Longrightarrow> wqo_on P A"
+  "\<lbrakk>transp_on P A; almost_full_on P A\<rbrakk> \<Longrightarrow> wqo_on P A"
   unfolding wqo_on_def almost_full_on_def by blast
 
 lemma wqo_on_imp_reflp_on:
@@ -27,9 +27,9 @@ lemma wqo_on_imp_transp_on:
   "wqo_on P A \<Longrightarrow> transp_on P A"
   by (auto simp: wqo_on_def)
 
-lemma wqo_on_imp_good:
-  "wqo_on P A \<Longrightarrow> \<forall>i. f i \<in> A \<Longrightarrow> good P f"
-  by (auto simp: wqo_on_def almost_full_on_def)
+lemma wqo_on_imp_almost_full_on:
+  "wqo_on P A \<Longrightarrow> almost_full_on P A"
+  by (auto simp: wqo_on_def)
 
 lemma wqo_on_subset:
   "A \<subseteq> B \<Longrightarrow> wqo_on P B \<Longrightarrow> wqo_on P A"
@@ -63,7 +63,8 @@ lemma wqo_on_hom:
     and "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
     and "wqo_on P A"
   shows "wqo_on Q (h ` A)"
-  using assms and almost_full_on_hom unfolding wqo_on_def by blast
+  using assms and almost_full_on_hom [of A P Q h]
+  unfolding wqo_on_def by blast
 
 text {*The monomorphic preimage of a wqo set is wqo.*}
 lemma wqo_on_mon:
@@ -71,7 +72,8 @@ lemma wqo_on_mon:
     and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
     and wqo: "wqo_on Q B"
   shows "wqo_on P A"
-  using assms and almost_full_on_mon unfolding wqo_on_def by blast
+  using assms and almost_full_on_mon [of A P Q h]
+  unfolding wqo_on_def by blast
 
 
 subsection {* A Typeclass for Well-Quasi-Orders *}

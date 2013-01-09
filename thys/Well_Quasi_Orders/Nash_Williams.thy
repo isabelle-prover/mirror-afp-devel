@@ -667,9 +667,8 @@ proof -
         from transp_on_subset[OF subset trans] show "transp_on ?P ?B'" .
       next
         from refl have refl: "reflp_on ?P ?B'" using reflp_on_subset and subset by blast
-        fix f :: "'a set seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_good[of ?P ?B f, OF no_index refl this]
-          show "good ?P f" .
+        from no_bad_of_special_shape_imp_good[of ?P ?B _, OF no_index refl]
+          show "almost_full_on ?P ?B'" by (auto simp: almost_full_on_def)
       qed
       let ?a' = "{a i | i. True}"
       have "?a' \<subseteq> A" using a and ex_subset and `\<And>j. g j \<subseteq> A` by blast
@@ -789,3 +788,4 @@ qed
 end
 
 end
+

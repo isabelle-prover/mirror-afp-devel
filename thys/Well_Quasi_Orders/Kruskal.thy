@@ -167,11 +167,9 @@ proof
   from tree_hembeq_trans show "transp_on (tree_hembeq P) (trees A)"
     by (auto simp: transp_on_def)
 next
-  fix f
-  assume *: "\<forall>i::nat. f i \<in> trees A"
   from assms have "almost_full_on P A" by (auto simp: wqo_on_def)
   from almost_full_on_trees [OF this]
-    show "good (tree_hembeq P) f" using * by (auto simp: almost_full_on_def)
+    show "almost_full_on (tree_hembeq P) (trees A)" .
 qed
 
 end
