@@ -383,5 +383,43 @@ proof -
   then show ?thesis by (simp add: mulex_on_def)
 qed
 
+lemma mult1_reflcl:
+  assumes "(M, N) \<in> mult1 R"
+  shows "(M, N) \<in> mult1 (R\<^sup>=)"
+  using assms by (auto simp: mult1_def)
+
+lemma mulex1_reflclp:
+  assumes "mulex1 P M N"
+  shows "mulex1 (P\<^sup>=\<^sup>=) M N"
+  using mulex1_mono [of UNIV P "P\<^sup>=\<^sup>=" M N, OF _ _ _ assms]
+  by (auto simp: multisets_def)
+
+lemma mulex_on_reflclp:
+  assumes "mulex_on P A M N"
+  shows "mulex_on (P\<^sup>=\<^sup>=) A M N"
+  using mulex_on_mono [OF _ assms, of "P\<^sup>=\<^sup>="] by auto
+
+lemma surj_on_multisets_multiset_of:
+  "\<forall>M\<in>multisets A. \<exists>xs\<in>lists A. M = multiset_of xs"
+proof
+  fix M
+  assume "M \<in> multisets A"
+  then show "\<exists>xs\<in>lists A. M = multiset_of xs"
+  proof (induct M)
+    case empty show ?case by simp
+  next
+    case (add M a)
+    then obtain xs where "xs \<in> lists A" and "M = multiset_of xs" by auto
+    then have "M + {#a#} = multiset_of (a # xs)" by simp
+    moreover have "a # xs \<in> lists A" using `xs \<in> lists A` and add by auto
+    ultimately show ?case by blast
+  qed
+qed
+
+lemma image_multiset_of_lists [simp]:
+  "multiset_of ` lists A = multisets A"
+  using surj_on_multisets_multiset_of [of A]
+  by auto (metis mem_Collect_eq multisets_def set_of_multiset_of subsetI)
+
 end
 
