@@ -56,6 +56,12 @@ subsection {* Basic Definitions and Facts *}
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "almost_full_on P A \<equiv> \<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> good P f"
 
+lemma almost_full_onD:
+  fixes f :: "nat \<Rightarrow> 'a" and A :: "'a set"
+  assumes "almost_full_on P A" and "\<And>i. f i \<in> A"
+  obtains i j where "i < j" and "P (f i) (f j)"
+  using assms unfolding almost_full_on_def good_def by blast
+
 lemma almost_full_on [Pure.intro]:
   "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> good P f) \<Longrightarrow> almost_full_on P A"
   unfolding almost_full_on_def by blast

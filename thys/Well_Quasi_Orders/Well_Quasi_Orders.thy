@@ -31,6 +31,10 @@ lemma wqo_on_imp_almost_full_on:
   "wqo_on P A \<Longrightarrow> almost_full_on P A"
   by (auto simp: wqo_on_def)
 
+lemma wqo_on_imp_good:
+  "wqo_on P A \<Longrightarrow> \<forall>i. f i \<in> A \<Longrightarrow> good P f"
+  by (auto simp: wqo_on_def almost_full_on_def)
+
 lemma wqo_on_subset:
   "A \<subseteq> B \<Longrightarrow> wqo_on P B \<Longrightarrow> wqo_on P A"
   using almost_full_on_subset [of A B P]
@@ -44,8 +48,7 @@ lemma wqo_on_imp_wfp_on:
 proof (rule ccontr)
   have "transp_on ?P A" by (rule transp_on_imp_transp_on_strict [OF wqo_on_imp_transp_on [OF assms]])
   hence "transp_on ?P\<inverse>\<inverse> A" by (rule transp_on_converse)
-  from reflp_on_imp_irreflp_on_strict [OF wqo_on_imp_reflp_on [OF assms]]
-    have "irreflp_on ?P A" .
+  have "irreflp_on ?P A" ..
   assume "\<not> wfp_on ?P A"
   then obtain f where *: "\<forall>i. f i \<in> A"
     and **: "\<forall>i. ?P (f (Suc i)) (f i)" by (auto simp: wfp_on_def)

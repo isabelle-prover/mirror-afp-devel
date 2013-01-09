@@ -32,6 +32,9 @@ lemma mono_onI [Pure.intro]:
 abbreviation strict where
   "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
 
+lemma strict_reflclp_conv [simp]:
+  "strict (P\<^sup>=\<^sup>=) = strict P" by auto
+
 abbreviation chain_on where
   "chain_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
 
@@ -71,6 +74,14 @@ lemma reflp_on_converse:
 
 lemma transp_on_converse:
   "transp_on P A \<Longrightarrow> transp_on P\<inverse>\<inverse> A"
+  unfolding transp_on_def by blast
+
+lemma transp_on_reflclp:
+  "transp_on P A \<Longrightarrow> transp_on P\<^sup>=\<^sup>= A"
+  unfolding transp_on_def by blast
+
+lemma transp_on_strict:
+  "transp_on P A \<Longrightarrow> transp_on (strict P) A"
   unfolding transp_on_def by blast
 
 lemma reflp_on_subset:
@@ -353,9 +364,9 @@ lemma wfp_on_restrict_to [simp]:
   "wfp_on (restrict_to P A) A = wfp_on P A"
   unfolding wfp_on_def by auto
 
-lemma reflp_on_imp_irreflp_on_strict:
-  "reflp_on P A \<Longrightarrow> irreflp_on (strict P) A"
-  by (auto simp: reflp_on_def irreflp_on_def)
+lemma irreflp_on_strict [simp, intro]:
+  "irreflp_on (strict P) A"
+  by (auto simp: irreflp_on_def)
 
 lemma transp_on_imp_transp_on_strict:
   "transp_on P A \<Longrightarrow> transp_on (strict P) A"
