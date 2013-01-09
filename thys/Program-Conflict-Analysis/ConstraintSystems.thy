@@ -323,7 +323,7 @@ lemma (in flowgraph) ntr_reverse_split_atU:
            atU U c1' \<and> ({#s#},w',c1')\<in>trcl (ntr fg)" 
 proof -
   obtain ui r ce' where C'FMT: "c'={#ui#r#}+ce'" "ui\<in>U" by (rule atU_fmt[OF A], simp only: mset_contains_eq) (blast dest: sym)
-  with ntr_reverse_split[OF _ V] B obtain s ce w1 w2 ce1' ce2' where RSPLIT: "c={#s#}+ce" "ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w2" "({#s#}, w1, {#ui#r#} + ce1') \<in> trcl (ntr fg)" by blast
+  with ntr_reverse_split[OF _ V] B obtain s ce w1 w2 ce1' ce2' where RSPLIT: "c={#s#}+ce" "ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w2" "({#s#}, w1, {#ui#r#} + ce1') \<in> trcl (ntr fg)" by blast
   with C'FMT have "s:#c" "w1\<preceq>w" "{#ui#r#}+ce1' \<le> c'" "atU U ({#ui#r#}+ce1')" by (auto dest: cil_ileq)
   with RSPLIT(4) show ?thesis by blast
 qed
@@ -349,7 +349,7 @@ lemma (in flowgraph) RU_sound:
     (u,Ml,Me,h)\<in>RU_cs fg U \<and> 
     Ml \<subseteq> mon_loc fg w \<and> 
     Me \<subseteq> mon_env fg w \<and> 
-    h \<le> \<alpha>_ah (map (\<alpha>_nl fg) w)"
+    h \<le> \<alpha>ah (map (\<alpha>nl fg) w)"
 -- "The proof works by induction over the length of the reaching path"
 proof (induct w rule: length_compl_induct) 
   -- {* For a reaching path of length zero, the proposition follows immediately by the constraint @{thm [source] RU_init} *}
@@ -373,7 +373,7 @@ next
   -- "We split the remaining path by the local thread and the spawned threads, getting two interleavable paths, one from the local thread and one from the spawned threads"
   from ntrp_split[where ?c1.0="{#}", simplified, OF SPLIT(2) ntrp_valid_preserve_s[OF SPLIT(1)], simplified] obtain w1 w2 c1' c2' where 
     LESPLIT: 
-      "wwl\<in>w1\<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV w2" 
+      "wwl\<in>w1\<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" 
       "c' = c1' + c2'" 
       "((sh, {#}), w1, s', c1') \<in> trcl (ntrp fg)" 
       "(ch, w2, c2') \<in> trcl (ntr fg)" 
@@ -390,7 +390,7 @@ next
     -- "This does not affect the configuration being at @{term U}"
     from atU_xchange_stack left DECOMP(1) have ATU: "atU U ({#v'#rr#}+c1')" by fastforce 
     -- "Then we can apply the induction hypothesis to get a constraint system entry for the path"
-    from Cons.hyps[OF LEN DECOMP(2) ATU] obtain Ml Me h where IHAPP: "(v,Ml,Me,h)\<in>RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) w1)" by blast 
+    from Cons.hyps[OF LEN DECOMP(2) ATU] obtain Ml Me h where IHAPP: "(v,Ml,Me,h)\<in>RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by blast 
     -- {* Next, we have to apply the constraint @{thm [source] RU_call} *}
     from S_ENTRY_PAT[of "{#}", simplified] have S_ENTRY: "(v, mon_w fg w, {#}) \<in> S_cs fg 0" .
     have MON_U_ME: "mon_n fg u \<inter> Me = {}" proof -
@@ -401,17 +401,17 @@ next
     -- "Then we assemble the rest of the proposition, that are the monitor restrictions and the acquisition history restriction"
     moreover have "mon fg p \<union> mon_w fg w \<union> Ml \<subseteq> mon_loc fg (eel#wwl)" using mon_loc_ileq[OF ILEQ] IHAPP(2) FS_FMT(1) by fastforce
     moreover have "Me \<subseteq> mon_env fg (eel#wwl)" using mon_env_ileq[OF ILEQ, of fg] IHAPP(3) by auto
-    moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>_ah (map (\<alpha>_nl fg) (eel#wwl))" proof (simp add: ah_update_cons)
-      show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>_ah (map (\<alpha>_nl fg) wwl)) (\<alpha>_nl fg eel) (mon_pl (map (\<alpha>_nl fg) wwl))" proof (rule ah_update_mono)
-        from IHAPP(4) have "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) w1)" .
-        also from \<alpha>_ah_ileq[OF le_list_map[OF ILEQ]] have "\<alpha>_ah (map (\<alpha>_nl fg) w1) \<le> \<alpha>_ah (map (\<alpha>_nl fg) wwl)" .
-        finally show "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) wwl)" .
+    moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>ah (map (\<alpha>nl fg) (eel#wwl))" proof (simp add: ah_update_cons)
+      show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>ah (map (\<alpha>nl fg) wwl)) (\<alpha>nl fg eel) (mon_pl (map (\<alpha>nl fg) wwl))" proof (rule ah_update_mono)
+        from IHAPP(4) have "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" .
+        also from \<alpha>ah_ileq[OF le_list_map[OF ILEQ]] have "\<alpha>ah (map (\<alpha>nl fg) w1) \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" .
+        finally show "h \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" .
       next
-        from FS_FMT(1) show "(mon fg p, mon_w fg w) = \<alpha>_nl fg eel" by auto
+        from FS_FMT(1) show "(mon fg p, mon_w fg w) = \<alpha>nl fg eel" by auto
       next
-        from IHAPP(2,3) have "(Ml \<union> Me) \<subseteq> mon_pl (map (\<alpha>_nl fg) w1)" by (auto simp add: mon_pl_of_\<alpha>_nl)
-        also from mon_pl_ileq[OF le_list_map[OF ILEQ]] have "\<dots> \<subseteq> mon_pl (map (\<alpha>_nl fg) wwl)" .
-        finally show "(Ml \<union> Me) \<subseteq> mon_pl (map (\<alpha>_nl fg) wwl)" .
+        from IHAPP(2,3) have "(Ml \<union> Me) \<subseteq> mon_pl (map (\<alpha>nl fg) w1)" by (auto simp add: mon_pl_of_\<alpha>nl)
+        also from mon_pl_ileq[OF le_list_map[OF ILEQ]] have "\<dots> \<subseteq> mon_pl (map (\<alpha>nl fg) wwl)" .
+        finally show "(Ml \<union> Me) \<subseteq> mon_pl (map (\<alpha>nl fg) wwl)" .
       qed
     qed
     ultimately show ?thesis by blast
@@ -425,7 +425,7 @@ next
     from ntrs.gtr2gtrp[where c="{#}", simplified, OF RI(5)] obtain sr' cre' wwr where RI_NTRP: "cr'={#sr'#}+cre'" "wr=map le_rem_s wwr" "(([entry fg q],{#}),wwr,(sr',cre'))\<in>trcl (ntrp fg)" by blast
     from LEN le_list_length[OF RI(2)] RI_NTRP(2) have LEN': "length wwr \<le> length wwl" by simp
     -- "The induction hypothesis yields a constraint system entry"
-    from Cons.hyps[OF LEN' RI_NTRP(3)] RI_NTRP(1) RI(4) obtain Ml Me h where IHAPP: "(entry fg q, Ml, Me, h)\<in>RU_cs fg U" "Ml \<subseteq> mon_loc fg wwr" "Me \<subseteq> mon_env fg wwr" "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) wwr)" by auto 
+    from Cons.hyps[OF LEN' RI_NTRP(3)] RI_NTRP(1) RI(4) obtain Ml Me h where IHAPP: "(entry fg q, Ml, Me, h)\<in>RU_cs fg U" "Ml \<subseteq> mon_loc fg wwr" "Me \<subseteq> mon_env fg wwr" "h \<le> \<alpha>ah (map (\<alpha>nl fg) wwr)" by auto 
     -- {* We also have an entry in the same-level path constraint system that contains the thread from that @{term U} was reached *}
     from S_ENTRY_PAT[of "{#q#}", simplified] RI(1) have S_ENTRY: "(v, mon_w fg w, {#q#}) \<in> S_cs fg 1" by auto 
     -- {* Before we can apply the  @{thm [source] RU_spawn}-constraint, we have to analyze the monitors*}
@@ -444,23 +444,23 @@ next
     -- "Next we have to assemble the rest of the proposition"
     moreover have "mon fg p \<union> mon_w fg w \<subseteq> mon_loc fg (eel#wwl)" using FS_FMT(1) by fastforce
     moreover have "Ml \<union> Me \<subseteq> mon_env fg (eel#wwl)" using MON_MLE_ENV by auto
-    moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>_ah (map (\<alpha>_nl fg) (eel#wwl))" -- "Only the proposition about the acquisition histories needs some more work"
+    moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>ah (map (\<alpha>nl fg) (eel#wwl))" -- "Only the proposition about the acquisition histories needs some more work"
     proof (simp add: ah_update_cons)
-      have MAP_HELPER: "map (\<alpha>_nl fg) wwr \<preceq> map (\<alpha>_nl fg) wwl" proof -
-        from RI_NTRP(2) have "map (\<alpha>_nl fg) wwr = map (\<alpha>_n fg) wr" by (simp add: \<alpha>_n_\<alpha>_nl)
-        also from le_list_map[OF RI(2)] have "\<dots> \<preceq> map (\<alpha>_n fg) w2" .
-        also have "\<dots> = map (\<alpha>_nl fg) (map ENV w2)" by simp
-        also from le_list_map[OF ILEQ] have "\<dots> \<preceq> map (\<alpha>_nl fg) wwl" .
+      have MAP_HELPER: "map (\<alpha>nl fg) wwr \<preceq> map (\<alpha>nl fg) wwl" proof -
+        from RI_NTRP(2) have "map (\<alpha>nl fg) wwr = map (\<alpha>n fg) wr" by (simp add: \<alpha>n_\<alpha>nl)
+        also from le_list_map[OF RI(2)] have "\<dots> \<preceq> map (\<alpha>n fg) w2" .
+        also have "\<dots> = map (\<alpha>nl fg) (map ENV w2)" by simp
+        also from le_list_map[OF ILEQ] have "\<dots> \<preceq> map (\<alpha>nl fg) wwl" .
         finally show "?thesis" .
       qed
-      show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>_ah (map (\<alpha>_nl fg) wwl)) (\<alpha>_nl fg eel) (mon_pl (map (\<alpha>_nl fg) wwl))" proof (rule ah_update_mono)
-        from IHAPP(4) have "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) wwr)" .
-        also have "\<dots> \<le> \<alpha>_ah (map (\<alpha>_nl fg) wwl)" by (rule \<alpha>_ah_ileq[OF MAP_HELPER])
-        finally show "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) wwl)" .
+      show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>ah (map (\<alpha>nl fg) wwl)) (\<alpha>nl fg eel) (mon_pl (map (\<alpha>nl fg) wwl))" proof (rule ah_update_mono)
+        from IHAPP(4) have "h \<le> \<alpha>ah (map (\<alpha>nl fg) wwr)" .
+        also have "\<dots> \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" by (rule \<alpha>ah_ileq[OF MAP_HELPER])
+        finally show "h \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" .
       next
-        from FS_FMT(1) show "(mon fg p, mon_w fg w) = \<alpha>_nl fg eel" by simp
+        from FS_FMT(1) show "(mon fg p, mon_w fg w) = \<alpha>nl fg eel" by simp
       next
-        from IHAPP(2,3) mon_pl_ileq[OF MAP_HELPER] show "Ml \<union> Me \<subseteq> mon_pl (map (\<alpha>_nl fg) wwl)" by (auto simp add: mon_pl_of_\<alpha>_nl)
+        from IHAPP(2,3) mon_pl_ileq[OF MAP_HELPER] show "Ml \<union> Me \<subseteq> mon_pl (map (\<alpha>nl fg) wwl)" by (auto simp add: mon_pl_of_\<alpha>nl)
       qed
     qed
     ultimately show ?thesis by blast
@@ -481,14 +481,14 @@ lemma (in flowgraph) RU_precise: "(u,Ml,Me,h)\<in>RU_cs fg U
     atU U ({#s'#}+c') \<and> 
     mon_loc fg w = Ml \<and> 
     mon_env fg w = Me \<and> 
-    \<alpha>_ah (map (\<alpha>_nl fg) w) = h"
+    \<alpha>ah (map (\<alpha>nl fg) w) = h"
 proof (induct rule: RU_cs.induct)
   -- {* The @{text "RU_init"} constraint is trivially covered by the empty path *}
   case (RU_init u) thus ?case by (auto intro: exI[of _ "[]"]) 
 next
   -- "Call constraint"
   case (RU_call u p u' v M P Ml Me h) 
-  then obtain w s' c' where IHAPP: "(([v], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>_ah (map (\<alpha>_nl fg) w) = h" by blast
+  then obtain w s' c' where IHAPP: "(([v], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>ah (map (\<alpha>nl fg) w) = h" by blast
   from RU_call.hyps(2) S_precise[OF RU_call.hyps(3), simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
     SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" by fastforce
   from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
@@ -509,12 +509,12 @@ next
   moreover from IHAPP(2) have "atU U ({# s'@[u'] #}+(c'+ch))" by auto
   moreover have "mon_loc fg (LOC (LCall p # wsl) # w) = mon fg p \<union> M \<union> Ml" using SLPATH(2) IHAPP(3) by auto
   moreover have "mon_env fg (LOC (LCall p # wsl) # w) = Me" using IHAPP(4) by auto
-  moreover have "\<alpha>_ah (map (\<alpha>_nl fg) (LOC (LCall p # wsl) # w)) = ah_update h (mon fg p, M) (Ml \<union> Me)" proof -
-    have "\<alpha>_ah (map (\<alpha>_nl fg) (LOC (LCall p # wsl) # w)) = ah_update (\<alpha>_ah (map (\<alpha>_nl fg) w)) (mon fg p, mon_w fg wsl) (mon_pl (map (\<alpha>_nl fg) w))" by (auto simp add: ah_update_cons)
+  moreover have "\<alpha>ah (map (\<alpha>nl fg) (LOC (LCall p # wsl) # w)) = ah_update h (mon fg p, M) (Ml \<union> Me)" proof -
+    have "\<alpha>ah (map (\<alpha>nl fg) (LOC (LCall p # wsl) # w)) = ah_update (\<alpha>ah (map (\<alpha>nl fg) w)) (mon fg p, mon_w fg wsl) (mon_pl (map (\<alpha>nl fg) w))" by (auto simp add: ah_update_cons)
     also have "\<dots> = ah_update h (mon fg p, M) (Ml \<union> Me)" proof -
-      from IHAPP(5) have "\<alpha>_ah (map (\<alpha>_nl fg) w) = h" .
-      moreover from SLPATH(2) have "(mon fg p, mon_w fg wsl) = (mon fg p, M)" by (simp add: mon_pl_of_\<alpha>_nl)
-      moreover from IHAPP(3,4) have "mon_pl (map (\<alpha>_nl fg) w) = Ml \<union> Me" by (auto simp add: mon_pl_of_\<alpha>_nl)
+      from IHAPP(5) have "\<alpha>ah (map (\<alpha>nl fg) w) = h" .
+      moreover from SLPATH(2) have "(mon fg p, mon_w fg wsl) = (mon fg p, M)" by (simp add: mon_pl_of_\<alpha>nl)
+      moreover from IHAPP(3,4) have "mon_pl (map (\<alpha>nl fg) w) = Ml \<union> Me" by (auto simp add: mon_pl_of_\<alpha>nl)
       ultimately show ?thesis by simp
     qed
     finally show ?thesis .
@@ -522,7 +522,7 @@ next
   ultimately show ?case by blast
 next
   -- "Spawn constraint"
-  case (RU_spawn u p u' v M P q Ml Me h) then obtain w s' c' where IHAPP: "(([entry fg q], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>_ah (map (\<alpha>_nl fg) w) = h" by blast
+  case (RU_spawn u p u' v M P q Ml Me h) then obtain w s' c' where IHAPP: "(([entry fg q], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>ah (map (\<alpha>nl fg) w) = h" by blast
   from RU_spawn.hyps(2) S_precise[OF RU_spawn.hyps(3), simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
     SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" "size P \<le> 1" "(\<lambda>p. [entry fg p]) `# P \<le> ch" by fastforce
   with RU_spawn.hyps(4) obtain che where PFMT: "P={#q#}" "ch = {#[entry fg q]#} + che" by (auto elim!: mset_size_le1_cases mset_le_addE)
@@ -541,12 +541,12 @@ next
   moreover from IHAPP(2) have "atU U ({#[v,u']#} + (che+({#s'#} + c')))" by simp
   moreover have "mon_loc fg (LOC (LCall p # wsl) # map ENV (map le_rem_s w)) = mon fg p \<union> M" using SLPATH(2) by (auto simp del: map_map)
   moreover have "mon_env fg (LOC (LCall p # wsl) # map ENV (map le_rem_s w)) = Ml \<union> Me" using IHAPP(3,4) by (auto simp add: mon_ww_of_le_rem simp del: map_map)
-  moreover have "\<alpha>_ah (map (\<alpha>_nl fg) (LOC (LCall p # wsl) # map ENV (map le_rem_s w))) = ah_update h (mon fg p, M) (Ml \<union> Me)" proof -
-    have "\<alpha>_ah (map (\<alpha>_nl fg) (LOC (LCall p # wsl) # map ENV (map le_rem_s w))) = ah_update (\<alpha>_ah (map (\<alpha>_n fg) (map le_rem_s w))) (mon fg p, mon_w fg wsl) (mon_pl (map (\<alpha>_n fg) (map le_rem_s w)))" by (simp add: ah_update_cons o_assoc)
+  moreover have "\<alpha>ah (map (\<alpha>nl fg) (LOC (LCall p # wsl) # map ENV (map le_rem_s w))) = ah_update h (mon fg p, M) (Ml \<union> Me)" proof -
+    have "\<alpha>ah (map (\<alpha>nl fg) (LOC (LCall p # wsl) # map ENV (map le_rem_s w))) = ah_update (\<alpha>ah (map (\<alpha>n fg) (map le_rem_s w))) (mon fg p, mon_w fg wsl) (mon_pl (map (\<alpha>n fg) (map le_rem_s w)))" by (simp add: ah_update_cons o_assoc)
     also have "\<dots> = ah_update h (mon fg p, M) (Ml \<union> Me)" proof -
-      from IHAPP(5) have "\<alpha>_ah (map (\<alpha>_n fg) (map le_rem_s w)) = h" by (simp add: \<alpha>_n_\<alpha>_nl)
+      from IHAPP(5) have "\<alpha>ah (map (\<alpha>n fg) (map le_rem_s w)) = h" by (simp add: \<alpha>n_\<alpha>nl)
       moreover from SLPATH(2) have "(mon fg p, mon_w fg wsl) = (mon fg p, M)" by simp
-      moreover from IHAPP(3,4) have "mon_pl (map (\<alpha>_n fg) (map le_rem_s w)) = Ml \<union> Me" by (auto simp add: mon_pl_of_\<alpha>_nl \<alpha>_n_\<alpha>_nl)
+      moreover from IHAPP(3,4) have "mon_pl (map (\<alpha>n fg) (map le_rem_s w)) = Ml \<union> Me" by (auto simp add: mon_pl_of_\<alpha>nl \<alpha>n_\<alpha>nl)
       ultimately show ?thesis by simp
     qed
     finally show ?thesis .
@@ -631,7 +631,7 @@ proof (induct w rule: length_compl_induct)
 next
   case (Cons ee ww) then obtain sh ch where SPLIT: "(([u],{#}),ee,(sh,ch))\<in>ntrp fg" "((sh,ch),ww,(s',c'))\<in>trcl (ntrp fg)" by (fast dest: trcl_uncons)
   from ntrp_split[where ?c1.0="{#}", simplified, OF SPLIT(2) ntrp_valid_preserve_s[OF SPLIT(1)], simplified] obtain w1 w2 c1' c2' where 
-    LESPLIT: "ww \<in> w1 \<otimes>\<^bsub>\<alpha>_nl fg\<^esub> map ENV w2" "c' = c1' + c2'" "((sh, {#}), w1, s', c1') \<in> trcl (ntrp fg)" "(ch, w2, c2') \<in> trcl (ntr fg)" "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg ch = {}" "mon_ww fg w2 \<inter> mon_s fg sh = {}"
+    LESPLIT: "ww \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "c' = c1' + c2'" "((sh, {#}), w1, s', c1') \<in> trcl (ntrp fg)" "(ch, w2, c2') \<in> trcl (ntr fg)" "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg ch = {}" "mon_ww fg w2 \<inter> mon_s fg sh = {}"
     by blast
   obtain p u' v w where 
     FS_FMT: "ee = LOC (LCall p # w)" "(u, Call p, u') \<in> edges fg" "sh = [v, u']" "proc_of fg v = p" "mon_c fg ch = {}" 
@@ -655,16 +655,16 @@ next
     then obtain s1' s2' where R_STACKS: "{#s1'#}+{#s2'#} \<le> c2'" "atU_s U s1'" "atU_s V s2'" by (unfold atUV_def) auto
     then obtain ce2' where C2'FMT: "c2'={#s1'#}+({#s2'#}+ce2')" by (auto simp add: mset_le_exists_conv union_ac)
     obtain q ceh w21 w22 ce21' ce22' where 
-      REVSPLIT: "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
+      REVSPLIT: "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
       "({#[entry fg q]#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" 
     proof -
       case goal1
       from ntr_reverse_split[of ch w2 s1' "{#s2'#}+ce2'"] ntrp_valid_preserve_s[OF SPLIT(1), simplified] C2'FMT LESPLIT(4)
       obtain seh ceh w21 w22 ce21' ce22' where 
-        "ch={#seh#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w22" "mon_s fg seh \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon_s fg seh \<union> mon_ww fg w21) = {}"
+        "ch={#seh#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon_s fg seh \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon_s fg seh \<union> mon_ww fg w21) = {}"
         "({#seh#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
       moreover from this(1) CHFMT[of seh] obtain q where "seh=[entry fg q]" by auto
-      ultimately have "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>_n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
+      ultimately have "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
         "({#[entry fg q]#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" by auto
       thus ?thesis using goal1 by (blast)
     qed
@@ -699,24 +699,24 @@ next
       qed
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT'(5)] obtain sq'' ce22ee' ww22' where R_CONV': "ce22e' = {#sq''#}+ce22ee'" "w22'=map le_rem_s ww22'" "(([entry fg q'],{#}),ww22',(sq'',ce22ee'))\<in>trcl (ntrp fg)" by blast
       -- "From the soundness of the RU-constraint system, we get the corresponding entries"
-      from RU_sound[OF R_CONV(3) ATUV(1)] obtain Ml Me h where RU: "(entry fg q, Ml, Me, h) \<in> RU_cs fg U" "Ml \<subseteq> mon_loc fg ww21" "Me \<subseteq> mon_env fg ww21" "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) ww21)" by blast
-      from RU_sound[OF R_CONV'(3), of V] REVSPLIT'(4) R_CONV'(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww22'" "Me' \<subseteq> mon_env fg ww22'" "h' \<le> \<alpha>_ah (map (\<alpha>_nl fg) ww22')" by auto 
+      from RU_sound[OF R_CONV(3) ATUV(1)] obtain Ml Me h where RU: "(entry fg q, Ml, Me, h) \<in> RU_cs fg U" "Ml \<subseteq> mon_loc fg ww21" "Me \<subseteq> mon_env fg ww21" "h \<le> \<alpha>ah (map (\<alpha>nl fg) ww21)" by blast
+      from RU_sound[OF R_CONV'(3), of V] REVSPLIT'(4) R_CONV'(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww22'" "Me' \<subseteq> mon_env fg ww22'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww22')" by auto 
       from S_ENTRY_PAT[of "{#q#}+{#q'#}", simplified] REVSPLIT(1) REVSPLIT'(1) have S_ENTRY: "(v, mon_w fg w, {#q#} + {#q'#}) \<in> S_cs fg (2::nat)" by (simp add: numerals)
       have "(u, mon fg p \<union> mon_w fg w, Ml \<union> Me \<union> Ml' \<union> Me') \<in> RUV_cs fg U V" proof (rule RUV_split_ee[OF FS_FMT(2,4) S_ENTRY _ RU(1) RV(1)])
         from MON_PU MON2_LEQ MON2N_LEQ R_CONV(2) R_CONV'(2) mon_ww_ileq[OF REVSPLIT'(2), of fg] RU(2,3) RV(2,3) show "(mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me \<union> Ml' \<union> Me') = {}" by (simp add: mon_ww_of_le_rem) blast
       next
-        from ah_interleavable1[OF REVSPLIT(3)] have "\<alpha>_ah (map (\<alpha>_n fg) w21) [*] \<alpha>_ah (map (\<alpha>_n fg) w22)" .
+        from ah_interleavable1[OF REVSPLIT(3)] have "\<alpha>ah (map (\<alpha>n fg) w21) [*] \<alpha>ah (map (\<alpha>n fg) w22)" .
         thus "h [*] h'" 
         proof (erule_tac ah_leq_il)
           note RU(4)
-          also have "map (\<alpha>_nl fg) ww21 \<preceq> map (\<alpha>_n fg) w21" using R_CONV(2) by (simp add: \<alpha>_n_\<alpha>_nl)
-          hence "\<alpha>_ah (map (\<alpha>_nl fg) ww21) \<le> \<alpha>_ah (map (\<alpha>_n fg) w21)" by (rule \<alpha>_ah_ileq)
-          finally show "h \<le> \<alpha>_ah (map (\<alpha>_n fg) w21)" .
+          also have "map (\<alpha>nl fg) ww21 \<preceq> map (\<alpha>n fg) w21" using R_CONV(2) by (simp add: \<alpha>n_\<alpha>nl)
+          hence "\<alpha>ah (map (\<alpha>nl fg) ww21) \<le> \<alpha>ah (map (\<alpha>n fg) w21)" by (rule \<alpha>ah_ileq)
+          finally show "h \<le> \<alpha>ah (map (\<alpha>n fg) w21)" .
         next
           note RV(4)
-          also have "map (\<alpha>_nl fg) ww22' \<preceq> map (\<alpha>_n fg) w22" using R_CONV'(2) REVSPLIT'(2) by (simp add: \<alpha>_n_\<alpha>_nl[symmetric] le_list_map map_map[symmetric] del: map_map)
-          hence "\<alpha>_ah (map (\<alpha>_nl fg) ww22') \<le> \<alpha>_ah (map (\<alpha>_n fg) w22)" by (rule \<alpha>_ah_ileq)
-          finally show "h' \<le> \<alpha>_ah (map (\<alpha>_n fg) w22)" .
+          also have "map (\<alpha>nl fg) ww22' \<preceq> map (\<alpha>n fg) w22" using R_CONV'(2) REVSPLIT'(2) by (simp add: \<alpha>n_\<alpha>nl[symmetric] le_list_map map_map[symmetric] del: map_map)
+          hence "\<alpha>ah (map (\<alpha>nl fg) ww22') \<le> \<alpha>ah (map (\<alpha>n fg) w22)" by (rule \<alpha>ah_ileq)
+          finally show "h' \<le> \<alpha>ah (map (\<alpha>n fg) w22)" .
         qed
       qed (simp)
       moreover have "mon fg p \<union> mon_w fg w \<subseteq> mon_loc fg (ee#ww)" using FS_FMT(1) by auto
@@ -725,23 +725,23 @@ next
     qed
   next
     case lr -- "The first node is reached from the local thread, the second one from a spawned thread"
-    from RU_sound[OF DECOMP_LOC(2), of U] lr(1) DECOMP_LOC(1) obtain Ml Me h where RU: "(v, Ml, Me, h) \<in> RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) w1)" by auto
-    obtain Ml' Me' h' q' where RV: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>_ah (map (\<alpha>_n fg) w2)" proof -
+    from RU_sound[OF DECOMP_LOC(2), of U] lr(1) DECOMP_LOC(1) obtain Ml Me h where RU: "(v, Ml, Me, h) \<in> RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by auto
+    obtain Ml' Me' h' q' where RV: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)" proof -
       case goal1
       -- {* We have to extract the interesting thread from the spawned threads in order to get an entry in @{term "RU fg V"} *}
       obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] :# ch" "w2'\<preceq>w2" "c2i' \<le> c2'" "atU V c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)" 
         using ntr_reverse_split_atU[OF _ lr(2) LESPLIT(4)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] CHFMT by (simp add: valid_unconc) blast
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
-      from RU_sound[OF R_CONV(3), of V] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>_ah (map (\<alpha>_nl fg) ww2')" by auto
+      from RU_sound[OF R_CONV(3), of V] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
-      moreover have "\<alpha>_ah (map (\<alpha>_nl fg) ww2') \<le> \<alpha>_ah (map (\<alpha>_n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>_n_\<alpha>_nl[symmetric] le_list_map map_map[symmetric] simp del: map_map intro: \<alpha>_ah_ileq del: predicate2I)
+      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_\<alpha>nl[symmetric] le_list_map map_map[symmetric] simp del: map_map intro: \<alpha>ah_ileq del: predicate2I)
       ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RV(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp
     have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me \<union> Ml' \<union> Me') \<in> RUV_cs fg U V" proof (rule RUV_split_le[OF FS_FMT(2,4) S_ENTRY _ RU(1) RV(2)])
       from MON_PU MON1_LEQ MON2_LEQ RU(3) RV(3,4) show "(mon_n fg u \<union> mon fg p) \<inter> (Me \<union> Ml' \<union> Me') = {}" by blast
     next
-      from ah_interleavable1[OF LESPLIT(1)] have "\<alpha>_ah (map (\<alpha>_nl fg) w1) [*] \<alpha>_ah (map (\<alpha>_n fg) w2)" by simp
+      from ah_interleavable1[OF LESPLIT(1)] have "\<alpha>ah (map (\<alpha>nl fg) w1) [*] \<alpha>ah (map (\<alpha>n fg) w2)" by simp
       thus "h [*] h'" using RU(4) RV(5) by (auto elim: ah_leq_il) 
     qed (simp)
     moreover have "mon fg p \<union> mon_w fg w \<union> Ml \<subseteq> mon_loc fg (ee # ww)" using FS_FMT(1) MON1_LEQ RU(2) by (simp) blast
@@ -749,23 +749,23 @@ next
     ultimately show ?thesis by blast
   next
     case rl -- "The second node is reached from the local thread, the first one from a spawned thread. This case is symmetric to the previous one"
-    from RU_sound[OF DECOMP_LOC(2), of V] rl(1) DECOMP_LOC(1) obtain Ml Me h where RV: "(v, Ml, Me, h) \<in> RU_cs fg V" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>_ah (map (\<alpha>_nl fg) w1)" by auto
-    obtain Ml' Me' h' q' where RU: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>_ah (map (\<alpha>_n fg) w2)" proof -
+    from RU_sound[OF DECOMP_LOC(2), of V] rl(1) DECOMP_LOC(1) obtain Ml Me h where RV: "(v, Ml, Me, h) \<in> RU_cs fg V" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by auto
+    obtain Ml' Me' h' q' where RU: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)" proof -
       case goal1
       -- {* We have to extract the interesting thread from the spawned threads in order to get an entry in @{term "RU fg V"} *}
       obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] :# ch" "w2'\<preceq>w2" "c2i' \<le> c2'" "atU U c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)" 
         using ntr_reverse_split_atU[OF _ rl(2) LESPLIT(4)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] CHFMT by (simp add: valid_unconc) blast
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
-      from RU_sound[OF R_CONV(3), of U] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RU: "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>_ah (map (\<alpha>_nl fg) ww2')" by auto
+      from RU_sound[OF R_CONV(3), of U] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RU: "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
-      moreover have "\<alpha>_ah (map (\<alpha>_nl fg) ww2') \<le> \<alpha>_ah (map (\<alpha>_n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>_n_\<alpha>_nl[symmetric] le_list_map map_map[symmetric] simp del: map_map intro: \<alpha>_ah_ileq del: predicate2I)
+      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_\<alpha>nl[symmetric] le_list_map map_map[symmetric] simp del: map_map intro: \<alpha>ah_ileq del: predicate2I)
       ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RU(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp
     have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me \<union> Ml' \<union> Me') \<in> RUV_cs fg U V" proof (rule RUV_split_el[OF FS_FMT(2,4) S_ENTRY _ RV(1) RU(2)])
       from MON_PU MON1_LEQ MON2_LEQ RV(3) RU(3,4) show "(mon_n fg u \<union> mon fg p) \<inter> (Me \<union> Ml' \<union> Me') = {}" by blast
     next
-      from ah_interleavable1[OF LESPLIT(1)] have "\<alpha>_ah (map (\<alpha>_nl fg) w1) [*] \<alpha>_ah (map (\<alpha>_n fg) w2)" by simp
+      from ah_interleavable1[OF LESPLIT(1)] have "\<alpha>ah (map (\<alpha>nl fg) w1) [*] \<alpha>ah (map (\<alpha>n fg) w2)" by simp
       thus "h [*] h'" using RV(4) RU(5) by (auto elim: ah_leq_il) 
     qed (simp)
     moreover have "mon fg p \<union> mon_w fg w \<union> Ml \<subseteq> mon_loc fg (ee # ww)" using FS_FMT(1) MON1_LEQ RV(2) by (simp) blast
@@ -809,11 +809,11 @@ next
   -- "Get paths from precision results"
   from S_precise_ntrp[OF RUV_split_le(3,2,1), simplified] mset_size1elem[OF _ RUV_split_le(4)] obtain w che where 
     FS: "(([u], {#}), LOC (LCall p # w), [v, u'], {#[entry fg q]#} + che) \<in> ntrp fg" "P={#q#}" "M = mon_w fg w" "mon_n fg v = mon fg p" "mon_c fg ({#[entry fg q]#}+che) = {}" by (auto elim: mset_le_addE)
-  from RU_precise[OF RUV_split_le(5)] obtain ww1 s1' c1' where P1: "(([v], {#}), ww1, s1', c1') \<in> trcl (ntrp fg)" "atU U ({#s1'#} + c1')" "mon_loc fg ww1 = Ml" "mon_env fg ww1 = Me" "\<alpha>_ah (map (\<alpha>_nl fg) ww1) = h" by blast
-  from RU_precise[OF RUV_split_le(6)] obtain ww2 s2' c2' where P2: "(([entry fg q], {#}), ww2, s2', c2') \<in> trcl (ntrp fg)" "atU V ({#s2'#} + c2')" "mon_loc fg ww2 = Ml'" "mon_env fg ww2 = Me'" "\<alpha>_ah (map (\<alpha>_nl fg) ww2) = h'" by blast
+  from RU_precise[OF RUV_split_le(5)] obtain ww1 s1' c1' where P1: "(([v], {#}), ww1, s1', c1') \<in> trcl (ntrp fg)" "atU U ({#s1'#} + c1')" "mon_loc fg ww1 = Ml" "mon_env fg ww1 = Me" "\<alpha>ah (map (\<alpha>nl fg) ww1) = h" by blast
+  from RU_precise[OF RUV_split_le(6)] obtain ww2 s2' c2' where P2: "(([entry fg q], {#}), ww2, s2', c2') \<in> trcl (ntrp fg)" "atU V ({#s2'#} + c2')" "mon_loc fg ww2 = Ml'" "mon_env fg ww2 = Me'" "\<alpha>ah (map (\<alpha>nl fg) ww2) = h'" by blast
   -- "Get combined path from the acquisition history interleavability, need to remap loc/env-steps in second path"
-  from P2(5) have "\<alpha>_ah (map (\<alpha>_nl fg) (map ENV (map le_rem_s ww2))) = h'" by (simp add: \<alpha>_n_\<alpha>_nl o_assoc)
-  with P1(5) RUV_split_le(8) obtain ww where IL: "ww\<in>ww1\<otimes>\<^bsub>\<alpha>_nl fg\<^esub>(map ENV (map le_rem_s ww2))" using ah_interleavable2 by (force)
+  from P2(5) have "\<alpha>ah (map (\<alpha>nl fg) (map ENV (map le_rem_s ww2))) = h'" by (simp add: \<alpha>n_\<alpha>nl o_assoc)
+  with P1(5) RUV_split_le(8) obtain ww where IL: "ww\<in>ww1\<otimes>\<^bsub>\<alpha>nl fg\<^esub>(map ENV (map le_rem_s ww2))" using ah_interleavable2 by (force)
   -- {* Use the @{thm [source] ntrp_unsplit}-theorem to combine the executions *}
   from ntrp_unsplit[where ca="{#}",OF IL P1(1) gtrp2gtr[OF P2(1)], simplified] have "(([v], {#[entry fg q]#}), ww, s1', c1' + ({#s2'#} + c2')) \<in> trcl (ntrp fg)" 
     using FS(4,5) RUV_split_le(7)
@@ -830,11 +830,11 @@ next
   -- "Get paths from precision results"
   from S_precise_ntrp[OF RUV_split_el(3,2,1), simplified] mset_size1elem[OF _ RUV_split_el(4)] obtain w che where 
     FS: "(([u], {#}), LOC (LCall p # w), [v, u'], {#[entry fg q]#} + che) \<in> ntrp fg" "P={#q#}" "M = mon_w fg w" "mon_n fg v = mon fg p" "mon_c fg ({#[entry fg q]#}+che) = {}" by (auto elim: mset_le_addE)
-  from RU_precise[OF RUV_split_el(5)] obtain ww1 s1' c1' where P1: "(([v], {#}), ww1, s1', c1') \<in> trcl (ntrp fg)" "atU V ({#s1'#} + c1')" "mon_loc fg ww1 = Ml" "mon_env fg ww1 = Me" "\<alpha>_ah (map (\<alpha>_nl fg) ww1) = h" by blast
-  from RU_precise[OF RUV_split_el(6)] obtain ww2 s2' c2' where P2: "(([entry fg q], {#}), ww2, s2', c2') \<in> trcl (ntrp fg)" "atU U ({#s2'#} + c2')" "mon_loc fg ww2 = Ml'" "mon_env fg ww2 = Me'" "\<alpha>_ah (map (\<alpha>_nl fg) ww2) = h'" by blast
+  from RU_precise[OF RUV_split_el(5)] obtain ww1 s1' c1' where P1: "(([v], {#}), ww1, s1', c1') \<in> trcl (ntrp fg)" "atU V ({#s1'#} + c1')" "mon_loc fg ww1 = Ml" "mon_env fg ww1 = Me" "\<alpha>ah (map (\<alpha>nl fg) ww1) = h" by blast
+  from RU_precise[OF RUV_split_el(6)] obtain ww2 s2' c2' where P2: "(([entry fg q], {#}), ww2, s2', c2') \<in> trcl (ntrp fg)" "atU U ({#s2'#} + c2')" "mon_loc fg ww2 = Ml'" "mon_env fg ww2 = Me'" "\<alpha>ah (map (\<alpha>nl fg) ww2) = h'" by blast
   -- "Get combined path from the acquisition history interleavability, need to remap loc/env-steps in second path"
-  from P2(5) have "\<alpha>_ah (map (\<alpha>_nl fg) (map ENV (map le_rem_s ww2))) = h'" by (simp add: \<alpha>_n_\<alpha>_nl o_assoc)
-  with P1(5) RUV_split_el(8) obtain ww where IL: "ww\<in>ww1\<otimes>\<^bsub>\<alpha>_nl fg\<^esub>(map ENV (map le_rem_s ww2))" using ah_interleavable2 by (force)
+  from P2(5) have "\<alpha>ah (map (\<alpha>nl fg) (map ENV (map le_rem_s ww2))) = h'" by (simp add: \<alpha>n_\<alpha>nl o_assoc)
+  with P1(5) RUV_split_el(8) obtain ww where IL: "ww\<in>ww1\<otimes>\<^bsub>\<alpha>nl fg\<^esub>(map ENV (map le_rem_s ww2))" using ah_interleavable2 by (force)
   -- {* Use the @{thm [source] ntrp_unsplit}-theorem to combine the executions *}
   from ntrp_unsplit[where ca="{#}",OF IL P1(1) gtrp2gtr[OF P2(1)], simplified] have "(([v], {#[entry fg q]#}), ww, s1', c1' + ({#s2'#} + c2')) \<in> trcl (ntrp fg)" 
     using FS(4,5) RUV_split_el(7)
@@ -852,12 +852,12 @@ next
   from S_precise_ntrp[OF RUV_split_ee(3,2,1), simplified] mset_size2elem[OF _ RUV_split_ee(4)] obtain w che where 
     FS: "(([u], {#}), LOC (LCall p # w), [v, u'], {#[entry fg q]#} + {#[entry fg q']#} + che) \<in> ntrp fg" "P={#q#}+{#q'#}" "M = mon_w fg w" "mon_n fg v = mon fg p" "mon_c fg ({#[entry fg q]#}+{#[entry fg q']#}+che) = {}" 
     by (auto elim: mset_le_addE)
-  from RU_precise[OF RUV_split_ee(5)] obtain ww1 s1' c1' where P1: "(([entry fg q], {#}), ww1, s1', c1') \<in> trcl (ntrp fg)" "atU U ({#s1'#} + c1')" "mon_loc fg ww1 = Ml" "mon_env fg ww1 = Me" "\<alpha>_ah (map (\<alpha>_nl fg) ww1) = h" by blast
-  from RU_precise[OF RUV_split_ee(6)] obtain ww2 s2' c2' where P2: "(([entry fg q'], {#}), ww2, s2', c2') \<in> trcl (ntrp fg)" "atU V ({#s2'#} + c2')" "mon_loc fg ww2 = Ml'" "mon_env fg ww2 = Me'" "\<alpha>_ah (map (\<alpha>_nl fg) ww2) = h'" by blast
+  from RU_precise[OF RUV_split_ee(5)] obtain ww1 s1' c1' where P1: "(([entry fg q], {#}), ww1, s1', c1') \<in> trcl (ntrp fg)" "atU U ({#s1'#} + c1')" "mon_loc fg ww1 = Ml" "mon_env fg ww1 = Me" "\<alpha>ah (map (\<alpha>nl fg) ww1) = h" by blast
+  from RU_precise[OF RUV_split_ee(6)] obtain ww2 s2' c2' where P2: "(([entry fg q'], {#}), ww2, s2', c2') \<in> trcl (ntrp fg)" "atU V ({#s2'#} + c2')" "mon_loc fg ww2 = Ml'" "mon_env fg ww2 = Me'" "\<alpha>ah (map (\<alpha>nl fg) ww2) = h'" by blast
 
   -- "Get interleaved paths, project away loc/env information first"
-  from P1(5) P2(5) have "\<alpha>_ah (map (\<alpha>_n fg) (map le_rem_s ww1)) = h" "\<alpha>_ah (map (\<alpha>_n fg) (map le_rem_s ww2)) = h'" by (auto simp add: \<alpha>_n_\<alpha>_nl o_assoc)
-  with RUV_split_ee(8) obtain ww where IL: "ww \<in> (map le_rem_s ww1) \<otimes>\<^bsub>\<alpha>_n fg\<^esub> (map le_rem_s ww2)" using ah_interleavable2 by (force simp del: map_map)
+  from P1(5) P2(5) have "\<alpha>ah (map (\<alpha>n fg) (map le_rem_s ww1)) = h" "\<alpha>ah (map (\<alpha>n fg) (map le_rem_s ww2)) = h'" by (auto simp add: \<alpha>n_\<alpha>nl o_assoc)
+  with RUV_split_ee(8) obtain ww where IL: "ww \<in> (map le_rem_s ww1) \<otimes>\<^bsub>\<alpha>n fg\<^esub> (map le_rem_s ww2)" using ah_interleavable2 by (force simp del: map_map)
   -- {* Use the @{thm [source] ntr_unsplit}-theorem to combine the executions *}
   from ntr_unsplit[OF IL gtrp2gtr[OF P1(1)] gtrp2gtr[OF P2(1)], simplified] have PC: "({#[entry fg q]#} + {#[entry fg q']#}, ww, {#s1'#} + c1' + ({#s2'#} + c2')) \<in> trcl (ntr fg)" using FS(5) by (auto simp add: mon_c_unconc)
   -- "Prepend first step"

@@ -231,15 +231,15 @@ lemma sho_correct_vals:
   shows "vals (rho (?len l') p) l' = vals (rho (?len l) ?q) l"
 proof -
   let ?r = "?len l"
-  from run obtain \<mu>_p
-    where nxt: "nextState EIG_M ?r p (rho ?r p) \<mu>_p (rho (Suc ?r) p)"
-      and mu: "\<mu>_p \<in> SHOmsgVectors EIG_M ?r p (rho ?r) (HOs ?r p) (SHOs ?r p)"
+  from run obtain \<mu>p
+    where nxt: "nextState EIG_M ?r p (rho ?r p) \<mu>p (rho (Suc ?r) p)"
+      and mu: "\<mu>p \<in> SHOmsgVectors EIG_M ?r p (rho ?r) (HOs ?r p) (SHOs ?r p)"
     by (auto simp: EIG_SHOMachine_def SHORun_eq SHOnextConfig_eq)
   with shop 
-  have msl:"\<mu>_p ?q = Some (vals (rho ?r ?q))"
+  have msl:"\<mu>p ?q = Some (vals (rho ?r ?q))"
     by (auto simp: EIG_SHOMachine_def EIG_sendMsg_def SHOmsgVectors_def)
   from nxt length_lbl[of l'] children_length[OF l']
-  have "extend_vals ?r p (rho ?r p) \<mu>_p (rho (Suc ?r) p)"
+  have "extend_vals ?r p (rho ?r p) \<mu>p (rho (Suc ?r) p)"
     by (auto simp: EIG_SHOMachine_def nextState_def EIG_nextState_def
                    next_main_def next_end_def)
   with msl l' show ?thesis
@@ -261,8 +261,8 @@ next
   fix n
   assume ih: "?v n = ?vl"
   let ?r = "length_lbl l + n"
-  from run obtain \<mu>_p
-    where nxt: "nextState EIG_M ?r p (rho ?r p) \<mu>_p (rho (Suc ?r) p)"
+  from run obtain \<mu>p
+    where nxt: "nextState EIG_M ?r p (rho ?r p) \<mu>p (rho (Suc ?r) p)"
     by (auto simp: EIG_SHOMachine_def SHORun_eq SHOnextConfig_eq)
   with ih show "?v (Suc n) = ?vl"
     by (auto simp: EIG_SHOMachine_def nextState_def EIG_nextState_def
@@ -750,8 +750,8 @@ proof (induct r)
 next
   fix r
   assume ih: "?P r"
-  from run obtain \<mu>_p
-    where "EIG_nextState r p (rho r p) \<mu>_p (rho (Suc r) p)"
+  from run obtain \<mu>p
+    where "EIG_nextState r p (rho r p) \<mu>p (rho (Suc r) p)"
     by (auto simp: EIG_SHOMachine_def SHORun_eq SHOnextConfig_eq 
                    nextState_def)
   thus "?P (Suc r)"

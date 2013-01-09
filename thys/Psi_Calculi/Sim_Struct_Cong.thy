@@ -347,14 +347,14 @@ proof(induct rule: simI[of _ _ _ _ "()"])
     ultimately show ?case using `A\<^isub>Q\<^isub>R \<sharp>* Q` `A\<^isub>Q\<^isub>R \<sharp>* R` `A\<^isub>Q\<^isub>R \<sharp>* K`
     proof(induct rule: parCasesOutputFrame)
       case(cPar1 Q' A\<^isub>Q \<Psi>\<^isub>Q A\<^isub>R \<Psi>\<^isub>R)
-      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>_eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
-      from PTrans \<Psi>_eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
+      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
+      from PTrans \<Psi>eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
         by(metis statEqTransition Associativity Commutativity Composition)
       moreover note FrP
       moreover from `(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<Psi>\<^isub>R \<rhd> Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'` have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P \<rhd> Q \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'"
         by(metis statEqTransition Associativity Commutativity Composition)
       moreover note `extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>`
-      moreover from MeqK \<Psi>_eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K"
+      moreover from MeqK \<Psi>eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K"
         by(metis statEqEnt Associativity Commutativity Composition)
       moreover from `A\<^isub>P \<sharp>* R` `A\<^isub>P \<sharp>* A\<^isub>Q\<^isub>R` Aeq `extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>` have "A\<^isub>P \<sharp>* A\<^isub>Q" and "A\<^isub>P \<sharp>* \<Psi>\<^isub>R"
         by(auto dest:  extractFrameFreshChain)
@@ -371,7 +371,7 @@ proof(induct rule: simI[of _ _ _ _ "()"])
       ultimately show ?case by blast
     next
       case(cPar2 R' A\<^isub>Q \<Psi>\<^isub>Q A\<^isub>R \<Psi>\<^isub>R)
-      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>_eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
+      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
       from `A\<^isub>Q\<^isub>R \<sharp>* \<Psi>` `A\<^isub>Q\<^isub>R \<sharp>* P` `A\<^isub>Q\<^isub>R \<sharp>* \<Psi>\<^isub>P` `A\<^isub>P \<sharp>* A\<^isub>Q\<^isub>R` Aeq have "A\<^isub>R \<sharp>* \<Psi>" and "A\<^isub>R \<sharp>* \<Psi>\<^isub>P" and "A\<^isub>P \<sharp>* A\<^isub>R" and "A\<^isub>P \<sharp>* A\<^isub>Q" and "A\<^isub>R \<sharp>* P" by simp+
       from `A\<^isub>Q\<^isub>R \<sharp>* \<Psi>` Aeq have "A\<^isub>Q \<sharp>* \<Psi>" by simp
       from `A\<^isub>Q\<^isub>R \<sharp>* P` `A\<^isub>P \<sharp>* A\<^isub>Q\<^isub>R` Aeq FrP have "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P" by(auto dest: extractFrameFreshChain)
@@ -380,9 +380,9 @@ proof(induct rule: simI[of _ _ _ _ "()"])
       then obtain K' where KeqK': "((\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<Psi>\<^isub>Q) \<otimes> \<Psi>\<^isub>R \<turnstile> K \<leftrightarrow> K'" and "A\<^isub>P \<sharp>* K'" and "A\<^isub>Q \<sharp>* K'"
       using `A\<^isub>P \<sharp>* R` `A\<^isub>Q \<sharp>* R` `A\<^isub>R \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* \<Psi>\<^isub>P` `A\<^isub>R \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>R` `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>R \<sharp>* R` `A\<^isub>R \<sharp>* R` `A\<^isub>R \<sharp>* K` `distinct A\<^isub>R` `xvec \<sharp>* K` `distinct xvec`
         by(rule_tac B="A\<^isub>P@A\<^isub>Q" in obtainPrefix) (assumption | force)+
-      from PTrans \<Psi>_eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
+      from PTrans \<Psi>eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
         by(metis statEqTransition Associativity Commutativity Composition)
-      moreover from MeqK KeqK' \<Psi>_eq have MeqK': "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q) \<otimes> \<Psi>\<^isub>P \<turnstile> M \<leftrightarrow> K'"
+      moreover from MeqK KeqK' \<Psi>eq have MeqK': "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q) \<otimes> \<Psi>\<^isub>P \<turnstile> M \<leftrightarrow> K'"
         by(metis statEqEnt Associativity Commutativity Composition chanEqTrans)
       ultimately have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>K'\<lparr>N\<rparr> \<prec> P'" using FrP `distinct A\<^isub>P` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* M` `A\<^isub>P \<sharp>* K'` `A\<^isub>P \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>P \<sharp>* \<Psi>\<^isub>R`
         by(rule_tac inputRenameSubject) auto
@@ -413,14 +413,14 @@ proof(induct rule: simI[of _ _ _ _ "()"])
     ultimately show ?case using `A\<^isub>Q\<^isub>R \<sharp>* Q` `A\<^isub>Q\<^isub>R \<sharp>* R` `A\<^isub>Q\<^isub>R \<sharp>* K`
     proof(induct rule: parCasesInputFrame)
       case(cPar1 Q' A\<^isub>Q \<Psi>\<^isub>Q A\<^isub>R \<Psi>\<^isub>R)
-      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>_eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
-      from PTrans \<Psi>_eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
+      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
+      from PTrans \<Psi>eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
         by(metis statEqTransition Associativity Commutativity Composition)
       moreover note FrP
       moreover from `(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<Psi>\<^isub>R \<rhd> Q \<longmapsto>K\<lparr>N\<rparr> \<prec> Q'` have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P \<rhd> Q \<longmapsto>K\<lparr>N\<rparr> \<prec> Q'"
         by(metis statEqTransition Associativity Commutativity Composition)
       moreover note `extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>`
-      moreover from MeqK \<Psi>_eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K"
+      moreover from MeqK \<Psi>eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>Q \<turnstile> M \<leftrightarrow> K"
         by(metis statEqEnt Associativity Commutativity Composition)
       moreover from `A\<^isub>P \<sharp>* Q` `A\<^isub>P \<sharp>* R` `A\<^isub>P \<sharp>* A\<^isub>Q\<^isub>R` Aeq `extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>` `extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>`
       have "A\<^isub>P \<sharp>* A\<^isub>Q" and "A\<^isub>P \<sharp>* \<Psi>\<^isub>R" by(auto dest: extractFrameFreshChain)
@@ -436,16 +436,16 @@ proof(induct rule: simI[of _ _ _ _ "()"])
       ultimately show ?case by blast
     next
       case(cPar2 R' A\<^isub>Q \<Psi>\<^isub>Q A\<^isub>R \<Psi>\<^isub>R)
-      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>_eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
+      have Aeq: "A\<^isub>Q\<^isub>R = A\<^isub>Q@A\<^isub>R" and \<Psi>eq: "\<Psi>\<^isub>Q\<^isub>R = \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R" by fact+
       from `A\<^isub>Q\<^isub>R \<sharp>* \<Psi>` `A\<^isub>Q\<^isub>R \<sharp>* P` `A\<^isub>Q\<^isub>R \<sharp>* \<Psi>\<^isub>P` `A\<^isub>P \<sharp>* A\<^isub>Q\<^isub>R` Aeq 
       have "A\<^isub>R \<sharp>* \<Psi>" and "A\<^isub>R \<sharp>* \<Psi>\<^isub>P" and "A\<^isub>P \<sharp>* A\<^isub>R" and "A\<^isub>P \<sharp>* A\<^isub>Q" and "A\<^isub>R \<sharp>* P" and "A\<^isub>Q \<sharp>* \<Psi>" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>P" by simp+
       have RTrans: "(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<Psi>\<^isub>Q \<rhd> R \<longmapsto>K\<lparr>N\<rparr> \<prec> R'" and FrR: "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>" by fact+
       then obtain K' where KeqK': "((\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<Psi>\<^isub>Q) \<otimes> \<Psi>\<^isub>R \<turnstile> K \<leftrightarrow> K'" and "A\<^isub>P \<sharp>* K'" and "A\<^isub>Q \<sharp>* K'"
       using `A\<^isub>P \<sharp>* R` `A\<^isub>Q \<sharp>* R` `A\<^isub>R \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* \<Psi>\<^isub>P` `A\<^isub>R \<sharp>* \<Psi>\<^isub>Q` `A\<^isub>Q \<sharp>* A\<^isub>R` `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>R \<sharp>* R` `A\<^isub>R \<sharp>* R` `A\<^isub>R \<sharp>* K` `distinct A\<^isub>R`
         by(rule_tac B="A\<^isub>P@A\<^isub>Q" in obtainPrefix) (assumption | force)+
-      from PTrans \<Psi>_eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
+      from PTrans \<Psi>eq have "(\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
         by(metis statEqTransition Associativity Commutativity Composition)
-      moreover from MeqK KeqK' \<Psi>_eq have MeqK': "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q) \<otimes> \<Psi>\<^isub>P \<turnstile> M \<leftrightarrow> K'"
+      moreover from MeqK KeqK' \<Psi>eq have MeqK': "((\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q) \<otimes> \<Psi>\<^isub>P \<turnstile> M \<leftrightarrow> K'"
         by(metis statEqEnt Associativity Commutativity Composition chanEqTrans)
       moreover from `A\<^isub>P \<sharp>* R` `A\<^isub>P \<sharp>* Q` `A\<^isub>P \<sharp>* A\<^isub>Q\<^isub>R` FrR `extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>` Aeq have "A\<^isub>P \<sharp>* \<Psi>\<^isub>Q" and "A\<^isub>P \<sharp>* \<Psi>\<^isub>R"
         by(auto dest: extractFrameFreshChain)

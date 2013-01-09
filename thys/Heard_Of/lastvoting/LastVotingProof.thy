@@ -355,17 +355,17 @@ text {*
 
 lemma notStep3EqualCoord:
   assumes run: "CHORun LV_M rho HOs coords" and stp:"step r \<noteq> 3"
-  shows "coord_\<Phi> (rho (Suc r) p) = coord_\<Phi> (rho r p)" (is "?P p r")
+  shows "coord\<Phi> (rho (Suc r) p) = coord\<Phi> (rho r p)" (is "?P p r")
   by (rule LV_Suc'[OF run, where P="?P"])
      (auto simp: stp next0_def next1_def next2_def)
 
 lemma coordinators:
 assumes run: "CHORun LV_M rho HOs coords"
-shows "coord_\<Phi> (rho r p) = coords (4*(phase r)) p"
+shows "coord\<Phi> (rho r p) = coords (4*(phase r)) p"
 proof -
   let ?r0 = "(4*(phase r) - 1)"
   let ?r1 = "(4*(phase r))"
-  have "coord_\<Phi> (rho ?r1 p) = coords ?r1 p"
+  have "coord\<Phi> (rho ?r1 p) = coords ?r1 p"
   proof (cases "phase r > 0")
     case False
     hence "phase r = 0" by auto
@@ -387,15 +387,15 @@ proof -
                       (HOrcvdMsgs LV_M ?r0 p (HOs ?r0 p) (rho ?r0))
                       (coords (Suc ?r0) p) (rho (Suc ?r0) p)"
       by (auto simp: LV_nextState_def)
-    hence "coord_\<Phi> (rho (Suc ?r0) p) = coords (Suc ?r0) p" 
+    hence "coord\<Phi> (rho (Suc ?r0) p) = coords (Suc ?r0) p" 
       by (auto simp: next3_def)
     with True show ?thesis by auto
   qed
   moreover
   from run
-  have "coord_\<Phi> (rho (Suc (Suc (Suc ?r1))) p) = coord_\<Phi> (rho ?r1 p)
-        \<and> coord_\<Phi> (rho (Suc (Suc ?r1)) p) = coord_\<Phi> (rho ?r1 p)
-        \<and> coord_\<Phi> (rho (Suc ?r1) p) = coord_\<Phi> (rho ?r1 p)"
+  have "coord\<Phi> (rho (Suc (Suc (Suc ?r1))) p) = coord\<Phi> (rho ?r1 p)
+        \<and> coord\<Phi> (rho (Suc (Suc ?r1)) p) = coord\<Phi> (rho ?r1 p)
+        \<and> coord\<Phi> (rho (Suc ?r1) p) = coord\<Phi> (rho ?r1 p)"
     by (auto simp: notStep3EqualCoord step_def phase_def mod_Suc)
   moreover
   have "r \<in> {?r1, Suc ?r1, Suc (Suc ?r1), Suc (Suc (Suc ?r1))}"
@@ -458,16 +458,16 @@ text {*
 
 lemma commitE:
   assumes run: "CHORun LV_M rho HOs coords" and cmt: "commt (rho r p)"
-  and conds: "\<lbrakk> 1 \<le> step r; coord_\<Phi> (rho r p) = p; vote (rho r p) \<noteq> None;
-                card {q . coord_\<Phi> (rho r q) = p} > N div 2
+  and conds: "\<lbrakk> 1 \<le> step r; coord\<Phi> (rho r p) = p; vote (rho r p) \<noteq> None;
+                card {q . coord\<Phi> (rho r q) = p} > N div 2
               \<rbrakk> \<Longrightarrow> A"
   shows "A"
 proof -
   have "commt (rho r p) \<longrightarrow> 
           1 \<le> step r
-        \<and> coord_\<Phi> (rho r p) = p
+        \<and> coord\<Phi> (rho r p) = p
         \<and> vote (rho r p) \<noteq> None
-        \<and> card {q . coord_\<Phi> (rho r q) = p} > N div 2"
+        \<and> card {q . coord\<Phi> (rho r q) = p} > N div 2"
     (is "?P p r" is "_ \<longrightarrow> ?R r")
   proof (rule LV_induct'[OF run, where P="?P"])
     -- {* the only interesting step is step 0 *}
@@ -482,7 +482,7 @@ proof -
       assume cm': "commt (rho (Suc n) p)"
       from stp ih have cm: "\<not> commt (rho n p)" by simp
       with nxt cm'
-      have "coord_\<Phi> (rho n p) = p
+      have "coord\<Phi> (rho n p) = p
             \<and> vote (rho (Suc n) p) \<noteq> None 
             \<and> card (valStampsRcvd (HOrcvdMsgs LV_M n p (HOs n p) (rho n)))
                  > N div 2"
@@ -490,11 +490,11 @@ proof -
       moreover
       from stp 
       have "valStampsRcvd (HOrcvdMsgs LV_M n p (HOs n p) (rho n))
-             \<subseteq> {q . coord_\<Phi> (rho n q) = p}"
+             \<subseteq> {q . coord\<Phi> (rho n q) = p}"
         by (auto simp: valStampsRcvd_def LV_CHOMachine_def
                        HOrcvdMsgs_def  LV_sendMsg_def send0_def)
       hence "card (valStampsRcvd (HOrcvdMsgs LV_M n p (HOs n p)  (rho n)))
-              \<le> card {q . coord_\<Phi> (rho n q) = p}"
+              \<le> card {q . coord\<Phi> (rho n q) = p}"
         by (auto intro: card_mono)
       moreover
       note stp stp' run
@@ -520,13 +520,13 @@ lemma currentTimestampE:
   assumes run: "CHORun LV_M rho HOs coords"
   and ts: "timestamp (rho r p) = Suc (phase r)"
   and conds: "\<lbrakk> 2 \<le> step r;
-                commt (rho r (coord_\<Phi> (rho r p)));
-                x (rho r p) = the (vote (rho r (coord_\<Phi> (rho r p))))
+                commt (rho r (coord\<Phi> (rho r p)));
+                x (rho r p) = the (vote (rho r (coord\<Phi> (rho r p))))
               \<rbrakk> \<Longrightarrow> A"
   shows "A"
 proof -
   let "?ts n" = "timestamp (rho n p)"
-  let "?crd n" = "coord_\<Phi> (rho n p)"
+  let "?crd n" = "coord\<Phi> (rho n p)"
   have "?ts r = Suc (phase r) \<longrightarrow> 
            2 \<le> step r 
          \<and> commt (rho r (?crd r))
@@ -617,17 +617,17 @@ text {*
 
 lemma readyE:
   assumes run: "CHORun LV_M rho HOs coords" and rdy: "ready (rho r p)"
-  and conds: "\<lbrakk> step r = 3; coord_\<Phi> (rho r p) = p;
-                card { q . coord_\<Phi> (rho r q) = p 
+  and conds: "\<lbrakk> step r = 3; coord\<Phi> (rho r p) = p;
+                card { q . coord\<Phi> (rho r q) = p 
                          \<and> timestamp (rho r q) = Suc (phase r) } > N div 2
               \<rbrakk> \<Longrightarrow> P"
   shows P
 proof -
-  let "?qs n" = "{ q . coord_\<Phi> (rho n q) = p 
+  let "?qs n" = "{ q . coord\<Phi> (rho n q) = p 
                      \<and> timestamp (rho n q) = Suc (phase n) }"
   have "ready (rho r p) \<longrightarrow> 
           step r = 3
-        \<and> coord_\<Phi> (rho r p) = p
+        \<and> coord\<Phi> (rho r p) = p
         \<and> card (?qs r) > N div 2"
     (is "?Q p r"  is "_ \<longrightarrow> ?R p r")
   proof (rule LV_induct'[OF run, where P="?Q"])
@@ -641,9 +641,9 @@ proof -
     proof
       assume rdy: "ready (rho (Suc n) p)"
       from stp ih have nrdy: "\<not> ready (rho n p)" by simp
-      with rdy nxt have "coord_\<Phi> (rho n p) = p"
+      with rdy nxt have "coord\<Phi> (rho n p) = p"
         by (auto simp: next2_def)
-      with run stp have coord: "coord_\<Phi> (rho (Suc n) p) = p"
+      with run stp have coord: "coord\<Phi> (rho (Suc n) p) = p"
         by (simp add: notStep3EqualCoord)
       let ?acks = "acksRcvd (HOrcvdMsgs LV_M n p (HOs n p) (rho n))"
       from nrdy rdy nxt have aRcvd: "card ?acks > N div 2"
@@ -653,11 +653,11 @@ proof -
         fix q
         assume q: "q \<in> ?acks"
         with stp 
-        have n: "coord_\<Phi> (rho n q) = p \<and> timestamp (rho n q) = Suc (phase n)"
+        have n: "coord\<Phi> (rho n q) = p \<and> timestamp (rho n q) = Suc (phase n)"
           by (auto simp: LV_CHOMachine_def HOrcvdMsgs_def LV_sendMsg_def 
                          acksRcvd_def send2_def isAck_def)
         with run stp ph
-        show "coord_\<Phi> (rho (Suc n) q) = p
+        show "coord\<Phi> (rho (Suc n) q) = p
               \<and> timestamp (rho (Suc n) q) = Suc (phase (Suc n))"
           by (simp add: notStep3EqualCoord notStep1EqualTimestamp)
       qed
@@ -687,14 +687,14 @@ lemma decisionE:
   and dec: "decide (rho (Suc r) p) \<noteq> decide (rho r p)"
   and conds: "\<lbrakk> 
         step r = 3; 
-        decide (rho (Suc r) p) = Some (the (vote (rho r (coord_\<Phi> (rho r p)))));
-        ready (rho r (coord_\<Phi> (rho r p))); commt (rho r (coord_\<Phi> (rho r p)))
+        decide (rho (Suc r) p) = Some (the (vote (rho r (coord\<Phi> (rho r p)))));
+        ready (rho r (coord\<Phi> (rho r p))); commt (rho r (coord\<Phi> (rho r p)))
       \<rbrakk> \<Longrightarrow> P"
   shows P
 proof -
   let ?cfg = "rho r"
   let ?cfg' = "rho (Suc r)"
-  let "?crd p" = "coord_\<Phi> (?cfg p)"
+  let "?crd p" = "coord\<Phi> (?cfg p)"
   let ?dec' = "decide (?cfg' p)"
   txt {* Except for the assertion about the @{text commt} field, the assertion can be
          proved directly from the next-state relation. *}
@@ -797,14 +797,14 @@ proof -
             with x show ?thesis by auto
           next
             case False
-            with stp nxt have cmt: "commt (rho n (coord_\<Phi> (rho n p)))"
-              and xp: "x (rho (Suc n) p) = the (vote (rho n (coord_\<Phi> (rho n p))))"
+            with stp nxt have cmt: "commt (rho n (coord\<Phi> (rho n p)))"
+              and xp: "x (rho (Suc n) p) = the (vote (rho n (coord\<Phi> (rho n p))))"
             by (auto simp: next1_def LV_CHOMachine_def HOrcvdMsgs_def 
                            LV_sendMsg_def send1_def isVote_def)
-            from run cmt have "vote (rho n (coord_\<Phi> (rho n p))) \<noteq> None"
+            from run cmt have "vote (rho n (coord\<Phi> (rho n p))) \<noteq> None"
               by (rule commitE)
             moreover
-            from vt have "vote (rho n (coord_\<Phi> (rho n p))) \<in> ?x0opt"
+            from vt have "vote (rho n (coord\<Phi> (rho n p))) \<in> ?x0opt"
               by (auto simp add: image_def)
             moreover
             note xp
@@ -899,7 +899,7 @@ proof -
           with dec True v show ?thesis by (auto simp: image_def)
         next
           case False
-          let ?crd = "coord_\<Phi> (rho n p)"
+          let ?crd = "coord\<Phi> (rho n p)"
           from False run 
           have d': "decide (rho (Suc n) p) = Some (the (vote (rho n ?crd)))" 
             and cmt: "commt (rho n ?crd)"
@@ -953,8 +953,8 @@ lemma decisionThenMajorityBeyondTS:
   using run dec proof (rule decisionE)
   txt {* Lemma @{text decisionE} tells us that we are at step 3 and
     that the coordinator is ready. *}
-  let ?crd = "coord_\<Phi> (rho r p)"
-  let ?qs = "{ q . coord_\<Phi> (rho r q) = ?crd
+  let ?crd = "coord\<Phi> (rho r p)"
+  let ?qs = "{ q . coord\<Phi> (rho r q) = ?crd
                  \<and> timestamp (rho r q) = Suc (phase r) }"
   assume stp: "step r = 3" and rdy: "ready (rho r ?crd)"
   txt {* Now, lemma @{text readyE} implies that a majority of processes
@@ -979,13 +979,13 @@ lemma committedProcsEqual:
   and cmt: "commt (rho r p)" and cmt': "commt (rho r p')"
   shows "p = p'"
 proof -
-  from run cmt have "card {q . coord_\<Phi> (rho r q) = p} > N div 2"
+  from run cmt have "card {q . coord\<Phi> (rho r q) = p} > N div 2"
     by (blast elim: commitE)
   moreover
-  from run cmt' have "card {q . coord_\<Phi> (rho r q) = p'} > N div 2" 
+  from run cmt' have "card {q . coord\<Phi> (rho r q) = p'} > N div 2" 
     by (blast elim: commitE)
   ultimately
-  obtain q where "coord_\<Phi> (rho r q) = p" and "p' = coord_\<Phi> (rho r q)" 
+  obtain q where "coord\<Phi> (rho r q) = p" and "p' = coord\<Phi> (rho r q)" 
     by (auto elim: majoritiesE')
   thus ?thesis by simp
 qed
@@ -999,14 +999,14 @@ lemma readyProcsEqual:
   and rdy: "ready (rho r p)" and rdy': "ready (rho r p')"
   shows "p = p'"
 proof -
-  let "?C p" = "{q . coord_\<Phi> (rho r q) = p \<and> timestamp (rho r q) = Suc (phase r)}"
+  let "?C p" = "{q . coord\<Phi> (rho r q) = p \<and> timestamp (rho r q) = Suc (phase r)}"
   from run rdy have "card (?C p) > N div 2"
     by (blast elim: readyE)
   moreover
   from run rdy' have "card (?C p') > N div 2" 
     by (blast elim: readyE)
   ultimately
-  obtain q where "coord_\<Phi> (rho r q) = p" and "p' = coord_\<Phi> (rho r q)" 
+  obtain q where "coord\<Phi> (rho r q) = p" and "p' = coord\<Phi> (rho r q)" 
     by (auto elim: majoritiesE')
   thus ?thesis by simp
 qed
@@ -1136,13 +1136,13 @@ proof -
           q1: "q \<in> ?bynd (Suc n)" and q2: "rho (Suc n) q \<noteq> rho n q" ..
         from nxt have "?nxt q" ..
         with q2 stp
-        have  x': "x (rho (Suc n) q) = the (vote (rho n (coord_\<Phi> (rho n q))))"
-          and coord: "commt (rho n (coord_\<Phi> (rho n q)))"
+        have  x': "x (rho (Suc n) q) = the (vote (rho n (coord\<Phi> (rho n q))))"
+          and coord: "commt (rho n (coord\<Phi> (rho n q)))"
           by (auto simp: next1_def send1_def LV_CHOMachine_def HOrcvdMsgs_def
                          LV_sendMsg_def isVote_def)
         from run ct have vote: "vote (rho n p) \<noteq> None" 
           by (rule commitE)
-        from run coord ct have "coord_\<Phi> (rho n q) = p" 
+        from run coord ct have "coord\<Phi> (rho n q) = p" 
           by (rule committedProcsEqual)
         with q1 x' vote vote' show ?thesis by auto
       next
@@ -1230,18 +1230,18 @@ proof (induct k)
       @{text x} field of processes with fresh timestamps *}
     from run dec
     have  stp: "step r = 3"
-      and v: "decide (rho (Suc r) p) = Some (the (vote (rho r (coord_\<Phi> (rho r p)))))"
-      and cmt: "commt (rho r (coord_\<Phi> (rho r p)))"
+      and v: "decide (rho (Suc r) p) = Some (the (vote (rho r (coord\<Phi> (rho r p)))))"
+      and cmt: "commt (rho r (coord\<Phi> (rho r p)))"
       by (auto elim: decisionE)
     from stp LV_timestamp_bounded[OF run, where n=r]
     have "timestamp (rho r q) \<le> Suc (phase r)" by simp
     with q have "timestamp (rho r q) = Suc (phase r)"
       by (simp add: procsBeyondTS_def)
     with run
-    have  x: "x (rho r q) = the (vote (rho r (coord_\<Phi> (rho r q))))"
-      and cmt': "commt (rho r (coord_\<Phi> (rho r q)))"
+    have  x: "x (rho r q) = the (vote (rho r (coord\<Phi> (rho r q))))"
+      and cmt': "commt (rho r (coord\<Phi> (rho r q)))"
       by (auto elim: currentTimestampE)
-    from run cmt cmt' have "coord_\<Phi> (rho r p) = coord_\<Phi> (rho r q)" 
+    from run cmt cmt' have "coord\<Phi> (rho r p) = coord\<Phi> (rho r q)" 
       by (rule committedProcsEqual)
     with x v show "x (rho (r+0) q) = ?v" by simp
   qed
@@ -1276,7 +1276,7 @@ proof (induct k)
           by (auto intro: card_mono)
         ultimately
         have maj: "card (?bynd k) > N div 2" by simp
-        let ?crd = "coord_\<Phi> (rho (r+k) q)"
+        let ?crd = "coord\<Phi> (rho (r+k) q)"
         from False stp nxt have 
           cmt: "commt (rho (r+k) ?crd)" and
           x: "x (rho (Suc (r+k)) q) = the (vote (rho (r+k) ?crd))"
@@ -1337,7 +1337,7 @@ lemma laterProcessDecidesSameValue:
   shows "decide (rho (Suc (r+k)) q) = decide (rho (Suc r) p)"
 proof -
   let "?bynd k" = "procsBeyondTS (Suc (phase r)) (rho (r+k))"
-  let ?qcrd = "coord_\<Phi> (rho (r+k) q)"
+  let ?qcrd = "coord\<Phi> (rho (r+k) q)"
   from run p have notNone: "decide (rho (Suc r) p) \<noteq> None"
     by (auto elim: decisionE)
   -- {* process @{text q} decides on the vote of its coordinator *}
@@ -1522,13 +1522,13 @@ proof -
   let ?r4 = "Suc ?r3"
 
   txt {* Process @{text c} is the coordinator of all steps of phase @{text ph}. *}
-  from run c have c':"\<forall>p. coord_\<Phi> (rho ?r p) = c"
+  from run c have c':"\<forall>p. coord\<Phi> (rho ?r p) = c"
     by (auto simp add: phase_def coordinators)
-  with run have c1: "\<forall>p. coord_\<Phi> (rho ?r1 p) = c"
+  with run have c1: "\<forall>p. coord\<Phi> (rho ?r1 p) = c"
     by (auto simp add: step_def mod_Suc notStep3EqualCoord)
-  with run have c2: "\<forall>p. coord_\<Phi> (rho ?r2 p) = c"
+  with run have c2: "\<forall>p. coord\<Phi> (rho ?r2 p) = c"
     by (auto simp add: step_def mod_Suc notStep3EqualCoord)
-  with run have c3: "\<forall>p. coord_\<Phi> (rho ?r3 p) = c"
+  with run have c3: "\<forall>p. coord\<Phi> (rho ?r3 p) = c"
     by (auto simp add: step_def mod_Suc notStep3EqualCoord)
 
   txt {* The coordinator receives @{text ValStamp} messages from a majority of
@@ -1549,7 +1549,7 @@ proof -
   proof
     fix p
     let ?msgs = "HOrcvdMsgs LV_M ?r1 p (HOs ?r1 p) (rho ?r1)"
-    let ?crd = "coord_\<Phi> (rho ?r1 p)"
+    let ?crd = "coord\<Phi> (rho ?r1 p)"
     from run 1 c1 rcv1
     have cnd: "?msgs ?crd \<noteq> None \<and> isVote (the (?msgs ?crd))"
       by (auto elim: commitE
@@ -1582,7 +1582,7 @@ proof -
   proof
     fix p
     let ?msgs = "HOrcvdMsgs LV_M ?r3 p (HOs ?r3 p) (rho ?r3)"
-    let ?crd = "coord_\<Phi> (rho ?r3 p)"
+    let ?crd = "coord\<Phi> (rho ?r3 p)"
     from run 3 c3 rcv3
     have cnd: "?msgs ?crd \<noteq> None \<and> isVote (the (?msgs ?crd))"
       by (auto elim: readyE

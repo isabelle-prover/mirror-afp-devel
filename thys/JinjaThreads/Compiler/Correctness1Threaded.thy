@@ -51,7 +51,7 @@ by(induct e and es arbitrary: xs n and xs n)(auto intro: fv_B_unmod)
 
 lemma el_loc_ok_compE1: "\<lbrakk> \<not> contains_insync e; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> el_loc_ok (compE1 Vs e) xs"
   and els_loc_ok_compEs1: "\<lbrakk> \<not> contains_insyncs es; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> els_loc_ok (compEs1 Vs es) xs"
-by(auto intro: el_loc_okI els_loc_okI syncvars_compE1 syncvarss_compEs1 \<B> \<B>_list simp del: compEs1_conv_map)
+by(auto intro: el_loc_okI els_loc_okI syncvars_compE1 syncvarss_compEs1 \<B> \<B>s simp del: compEs1_conv_map)
 
 lemma shows el_loc_ok_not_contains_insync_local_change:
   "\<lbrakk> \<not> contains_insync e; el_loc_ok e xs \<rbrakk> \<Longrightarrow> el_loc_ok e xs'"

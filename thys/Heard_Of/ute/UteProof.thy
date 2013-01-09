@@ -91,10 +91,10 @@ text {* No two processes may vote for different values in the same round. *}
 
 lemma common_vote:
   assumes usafe: "SHOcommPerRd Ute_M HO SHO"
-  and nxtp: "nextState Ute_M r p (rho r p)  \<mu>_p (rho (Suc r) p)"
-  and mup: "\<mu>_p \<in> SHOmsgVectors Ute_M r p (rho r) (HO p) (SHO p)"
-  and nxtq: "nextState Ute_M r q (rho r q)  \<mu>_q (rho (Suc r) q)"
-  and muq: "\<mu>_q \<in> SHOmsgVectors Ute_M r q (rho r) (HO q) (SHO q)"
+  and nxtp: "nextState Ute_M r p (rho r p)  \<mu>p (rho (Suc r) p)"
+  and mup: "\<mu>p \<in> SHOmsgVectors Ute_M r p (rho r) (HO p) (SHO p)"
+  and nxtq: "nextState Ute_M r q (rho r q)  \<mu>q (rho (Suc r) q)"
+  and muq: "\<mu>q \<in> SHOmsgVectors Ute_M r q (rho r) (HO q) (SHO q)"
   and vp: "vote (rho (Suc r) p) = Some vp"
   and vq: "vote (rho (Suc r) q) = Some vq"
   shows "vp = vq"
@@ -108,7 +108,7 @@ using assms proof -
     proof -
       from nxtp vp have stp:"step r = 0" by (auto simp: vote_step)
       from mup
-      have "{qq. \<mu>_p qq = Some (Val vp)} - (HO p - SHO p) 
+      have "{qq. \<mu>p qq = Some (Val vp)} - (HO p - SHO p) 
              \<subseteq> {qq. sendMsg Ute_M r qq p (rho r qq) = Val vp}"
              (is "?vrcvdp - ?ahop \<subseteq> ?vsentp") 
          by (auto simp: SHOmsgVectors_def)
@@ -117,13 +117,13 @@ using assms proof -
         by (auto simp: card_mono diff_card_le_card_Diff)
       hence "card ?vsentp \<ge> card ?vrcvdp - card ?ahop" by auto
       moreover
-      from nxtp stp have "next0 r p (rho r p) \<mu>_p (rho (Suc r) p)"
+      from nxtp stp have "next0 r p (rho r p) \<mu>p (rho (Suc r) p)"
         by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def)
       with vp have "card ?vrcvdp > T"
         unfolding next0_def by auto
       moreover
       from muq
-      have "{qq. \<mu>_q qq = Some (Val vq)} - (HO q - SHO q)
+      have "{qq. \<mu>q qq = Some (Val vq)} - (HO q - SHO q)
              \<subseteq> {qq. sendMsg Ute_M r qq q (rho r qq) = Val vq}"
              (is "?vrcvdq - ?ahoq \<subseteq> ?vsentq") 
         by (auto simp: SHOmsgVectors_def)
@@ -132,9 +132,9 @@ using assms proof -
         by (auto simp: card_mono diff_card_le_card_Diff)
       hence "card ?vsentq \<ge> card ?vrcvdq - card ?ahoq" by auto
       moreover
-      from nxtq stp have "next0 r q (rho r q) \<mu>_q (rho (Suc r) q)"
+      from nxtq stp have "next0 r q (rho r q) \<mu>q (rho (Suc r) q)"
         by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def)
-      with vq have "card {qq. \<mu>_q qq = Some (Val vq)} > T" 
+      with vq have "card {qq. \<mu>q qq = Some (Val vq)} > T" 
         by (unfold next0_def, auto)
       moreover
       from usafe have "card ?ahop \<le> \<alpha>" and "card ?ahoq \<le> \<alpha>"
@@ -186,14 +186,14 @@ lemma decide_with_threshold_E:
   shows "card {q. sendMsg Ute_M r q p (rho r q) = Vote (Some v)}
            > E - \<alpha>"
 proof -
-  from run obtain \<mu>_p
-    where nxt:"nextState Ute_M r p (rho r p) \<mu>_p (rho (Suc r) p)"
-      and "\<forall>qq. qq \<in> HOs r p \<longleftrightarrow> \<mu>_p qq \<noteq> None"
+  from run obtain \<mu>p
+    where nxt:"nextState Ute_M r p (rho r p) \<mu>p (rho (Suc r) p)"
+      and "\<forall>qq. qq \<in> HOs r p \<longleftrightarrow> \<mu>p qq \<noteq> None"
       and "\<forall>qq. qq \<in> SHOs r p \<inter> HOs r p 
-                \<longrightarrow> \<mu>_p qq = Some (sendMsg Ute_M r qq p (rho r qq))"
+                \<longrightarrow> \<mu>p qq = Some (sendMsg Ute_M r qq p (rho r qq))"
     unfolding Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq SHOmsgVectors_def
     by blast
-  hence "{qq. \<mu>_p qq = Some (Vote (Some v))} - (HOs r p - SHOs r p)
+  hence "{qq. \<mu>p qq = Some (Vote (Some v))} - (HOs r p - SHOs r p)
           \<subseteq> {qq. sendMsg Ute_M r qq p (rho r qq) = Vote (Some v)}"
          (is "?vrcvdp - ?ahop \<subseteq> ?vsentp") by auto
   hence "card (?vrcvdp - ?ahop) \<le> card ?vsentp"
@@ -205,9 +205,9 @@ proof -
     by (auto simp: Ute_SHOMachine_def Ute_commPerRd_def)
   moreover
   from run d1 d2 have "step r \<noteq> 0" by (rule decide_step)
-  with nxt have "next1 r p (rho r p) \<mu>_p (rho (Suc r) p)"
+  with nxt have "next1 r p (rho r p) \<mu>p (rho (Suc r) p)"
     by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def)
-  with run d1 d2 have "card {qq. \<mu>_p qq = Some (Vote (Some v))} > E"
+  with run d1 d2 have "card {qq. \<mu>p qq = Some (Vote (Some v))} > E"
     unfolding next1_def by auto
   ultimately
   show ?thesis using alpha_lt_E by auto
@@ -270,8 +270,8 @@ lemma common_x_argument_2:
   assumes run: "SHORun Ute_M rho HOs SHOs" 
   and usafe: "\<forall>r. SHOcommPerRd Ute_M (HOs r) (SHOs r)"
   and nxtpp: "nextState Ute_M (Suc r) pp (rho (Suc r) pp) 
-                        \<mu>_pp (rho (Suc (Suc r)) pp)"
-  and mupp: "\<mu>_pp \<in> SHOmsgVectors Ute_M (Suc r) pp (rho (Suc r)) 
+                        \<mu>pp (rho (Suc (Suc r)) pp)"
+  and mupp: "\<mu>pp \<in> SHOmsgVectors Ute_M (Suc r) pp (rho (Suc r)) 
                                  (HOs (Suc r) pp) (SHOs (Suc r) pp)"
   and threshold: "card {q. sendMsg Ute_M (Suc r) q p (rho (Suc r) q) 
                              = Vote (Some v)} > E - \<alpha>"
@@ -292,12 +292,12 @@ proof -
     show False by simp
   qed
 
-  have va: "card {qq. \<mu>_pp qq = Some (Vote (Some v))} > \<alpha>"
+  have va: "card {qq. \<mu>pp qq = Some (Vote (Some v))} > \<alpha>"
        (is "card (?msgs v) > \<alpha>")
   proof -
     from mupp
     have "SHOs (Suc r) pp \<inter> HOs (Suc r) pp 
-          \<subseteq> {qq. \<mu>_pp qq = Some (sendMsg Ute_M (Suc r) qq pp (rho (Suc r) qq))}"
+          \<subseteq> {qq. \<mu>pp qq = Some (sendMsg Ute_M (Suc r) qq pp (rho (Suc r) qq))}"
       unfolding SHOmsgVectors_def by auto
     moreover
     hence "(?msgs v) \<supseteq> (?sent pp v) \<inter> (SHOs (Suc r) pp \<inter> HOs (Suc r) pp)" 
@@ -314,7 +314,7 @@ proof -
   qed
   moreover
   from nxtpp stp
-  have "next1 (Suc r) pp (rho (Suc r) pp)  \<mu>_pp (rho (Suc (Suc r)) pp)"
+  have "next1 (Suc r) pp (rho (Suc r) pp)  \<mu>pp (rho (Suc (Suc r)) pp)"
     by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def)
   ultimately
   obtain w where wa:"card (?msgs w) > \<alpha>" and xw:"x (rho (Suc (Suc r)) pp) = w"
@@ -324,7 +324,7 @@ proof -
   proof -
     note usafe
     moreover
-    obtain qv where "qv \<in> SHOs (Suc r) pp" and "\<mu>_pp qv = Some (Vote (Some v))"
+    obtain qv where "qv \<in> SHOs (Suc r) pp" and "\<mu>pp qv = Some (Vote (Some v))"
     proof -
       have "\<not> (?msgs v \<subseteq> HOs (Suc r) pp - SHOs (Suc r) pp)"
       proof
@@ -342,7 +342,7 @@ proof -
       qed
       then obtain qv
         where "qv \<notin> HOs (Suc r) pp - SHOs (Suc r) pp"
-          and qsv:"\<mu>_pp qv = Some (Vote (Some v))" 
+          and qsv:"\<mu>pp qv = Some (Vote (Some v))" 
         by auto
       with mupp have "qv \<in> SHOs (Suc r) pp"
         unfolding SHOmsgVectors_def by auto
@@ -353,7 +353,7 @@ proof -
                      Ute_sendMsg_def send1_def)
     moreover
     obtain qw where
-      "qw \<in> SHOs (Suc r) pp" and "\<mu>_pp qw = Some (Vote (Some w))"
+      "qw \<in> SHOs (Suc r) pp" and "\<mu>pp qw = Some (Vote (Some w))"
     proof -
       have "\<not> (?msgs w \<subseteq> HOs (Suc r) pp - SHOs (Suc r) pp)"
       proof
@@ -371,7 +371,7 @@ proof -
       qed
       then obtain qw
         where "qw \<notin> HOs (Suc r) pp - SHOs (Suc r) pp"
-          and qsw: "\<mu>_pp qw = Some (Vote (Some w))" 
+          and qsw: "\<mu>pp qw = Some (Vote (Some w))" 
         by auto
       with mupp have "qw \<in> SHOs (Suc r) pp" 
         unfolding SHOmsgVectors_def by auto
@@ -381,11 +381,11 @@ proof -
       by (auto simp: Ute_SHOMachine_def SHOmsgVectors_def
                      Ute_sendMsg_def send1_def)
     moreover
-    from run obtain \<mu>_qv \<mu>_qw
-      where "nextState Ute_M r qv ((rho r) qv)  \<mu>_qv (rho (Suc r) qv)"
-        and "\<mu>_qv \<in> SHOmsgVectors Ute_M r qv (rho r) (HOs r qv) (SHOs r qv)"
-        and "nextState Ute_M r qw ((rho r) qw)  \<mu>_qw (rho (Suc r) qw)"
-        and "\<mu>_qw \<in> SHOmsgVectors Ute_M r qw (rho r) (HOs r qw) (SHOs r qw)"
+    from run obtain \<mu>qv \<mu>qw
+      where "nextState Ute_M r qv ((rho r) qv)  \<mu>qv (rho (Suc r) qv)"
+        and "\<mu>qv \<in> SHOmsgVectors Ute_M r qv (rho r) (HOs r qv) (SHOs r qv)"
+        and "nextState Ute_M r qw ((rho r) qw)  \<mu>qw (rho (Suc r) qw)"
+        and "\<mu>qw \<in> SHOmsgVectors Ute_M r qw (rho r) (HOs r qw) (SHOs r qw)"
       by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq) blast
     ultimately
     show ?thesis using usafe by (auto dest: common_vote)
@@ -417,9 +417,9 @@ proof -
   have "\<forall>pp. x (rho (Suc (Suc r)) pp) = v"
   proof 
     fix pp
-    from run obtain \<mu>_pp
-      where "\<mu>_pp \<in> SHOmsgVectors Ute_M r' pp (rho r') (HOs r' pp) (SHOs r' pp)"
-        and "nextState Ute_M r' pp (rho r' pp)  \<mu>_pp (rho (Suc r') pp)"
+    from run obtain \<mu>pp
+      where "\<mu>pp \<in> SHOmsgVectors Ute_M r' pp (rho r') (HOs r' pp) (SHOs r' pp)"
+        and "nextState Ute_M r' pp (rho r' pp)  \<mu>pp (rho (Suc r') pp)"
       by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
     with run comm ih rr' show "x (rho (Suc (Suc r)) pp) = v" 
       by (auto dest: common_x_argument_2)
@@ -429,23 +429,23 @@ proof -
     by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq
                    Ute_sendMsg_def send0_def mod_Suc step_def)
   with rr'
-  have "\<And>p \<mu>_p'. \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc r') p (rho (Suc r')) 
+  have "\<And>p \<mu>p'. \<mu>p' \<in> SHOmsgVectors Ute_M (Suc r') p (rho (Suc r')) 
                                      (HOs (Suc r') p) (SHOs (Suc r') p)
              \<Longrightarrow> SHOs (Suc r') p \<inter> HOs (Suc r') p
-                   \<subseteq> {q. \<mu>_p' q = Some (Val v)}"
+                   \<subseteq> {q. \<mu>p' q = Some (Val v)}"
     by (auto simp: SHOmsgVectors_def)
-  hence "\<And>p \<mu>_p'. \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc r') p (rho (Suc r')) 
+  hence "\<And>p \<mu>p'. \<mu>p' \<in> SHOmsgVectors Ute_M (Suc r') p (rho (Suc r')) 
                                        (HOs (Suc r') p) (SHOs (Suc r') p)
              \<Longrightarrow> card (SHOs (Suc r') p \<inter> HOs (Suc r') p)
-                   \<le> card {q. \<mu>_p' q = Some (Val v)}" 
+                   \<le> card {q. \<mu>p' q = Some (Val v)}" 
     by (auto simp: card_mono)
   moreover
   from comm have "\<And>p. T < card (SHOs (Suc r') p \<inter> HOs (Suc r') p)"
     by (auto simp: Ute_SHOMachine_def Ute_commPerRd_def)
   ultimately 
-  have vT:"\<And>p \<mu>_p'. \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc r') p (rho (Suc r')) 
+  have vT:"\<And>p \<mu>p'. \<mu>p' \<in> SHOmsgVectors Ute_M (Suc r') p (rho (Suc r')) 
                                          (HOs (Suc r') p) (SHOs (Suc r') p)
-                \<Longrightarrow> T < card {q. \<mu>_p' q = Some (Val v)}"
+                \<Longrightarrow> T < card {q. \<mu>p' q = Some (Val v)}"
     by (auto dest: less_le_trans)
 
   show ?thesis
@@ -453,23 +453,23 @@ proof -
     have "\<forall>pp. vote ((rho (Suc (Suc r'))) pp) = Some v"
     proof
       fix pp
-      from run obtain \<mu>_pp
-        where nxtpp: "nextState Ute_M (Suc r') pp (rho (Suc r') pp) \<mu>_pp 
+      from run obtain \<mu>pp
+        where nxtpp: "nextState Ute_M (Suc r') pp (rho (Suc r') pp) \<mu>pp 
                                       (rho (Suc (Suc r')) pp)"
-          and mupp: "\<mu>_pp \<in> SHOmsgVectors Ute_M (Suc r') pp (rho (Suc r'))
+          and mupp: "\<mu>pp \<in> SHOmsgVectors Ute_M (Suc r') pp (rho (Suc r'))
                                      (HOs (Suc r') pp) (SHOs (Suc r') pp)"
         by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
-      with vT have vT':"card {q. \<mu>_pp q = Some (Val v)} > T" 
+      with vT have vT':"card {q. \<mu>pp q = Some (Val v)} > T" 
         by auto
       moreover
       from stpr rr' have "step (Suc r') = 0"
         by (auto simp: mod_Suc step_def)
       with nxtpp
-      have "next0 (Suc r') pp (rho (Suc r') pp) \<mu>_pp (rho (Suc (Suc r')) pp)"
+      have "next0 (Suc r') pp (rho (Suc r') pp) \<mu>pp (rho (Suc (Suc r')) pp)"
         by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def)
       ultimately
       obtain w
-        where wT:"card {q. \<mu>_pp q = Some (Val w)} > T"
+        where wT:"card {q. \<mu>pp q = Some (Val w)} > T"
           and votew:"vote (rho (Suc (Suc r')) pp) = Some w" 
         by (auto simp: next0_def)
       from vT' wT have "v = w"
@@ -666,11 +666,11 @@ proof -
     have "\<forall>pp. vote ((rho (Suc 0)) pp) = Some v"
     proof
       fix pp
-      from run obtain \<mu>_pp
-        where nxtpp:"nextState Ute_M 0 pp (rho 0 pp) \<mu>_pp (rho (Suc 0) pp)"
-          and mupp:"\<mu>_pp \<in> SHOmsgVectors Ute_M 0 pp (rho 0) (HOs 0 pp) (SHOs 0 pp)"
+      from run obtain \<mu>pp
+        where nxtpp:"nextState Ute_M 0 pp (rho 0 pp) \<mu>pp (rho (Suc 0) pp)"
+          and mupp:"\<mu>pp \<in> SHOmsgVectors Ute_M 0 pp (rho 0) (HOs 0 pp) (SHOs 0 pp)"
         by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
-      have majv:"card {q. \<mu>_pp q = Some (Val v)} > T"
+      have majv:"card {q. \<mu>pp q = Some (Val v)} > T"
       proof -
         from run init have "\<forall>q. sendMsg Ute_M 0 q pp (rho 0 q) = Val v"
           by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq 
@@ -681,19 +681,19 @@ proof -
         moreover
         from mupp
         have "SHOs 0 pp \<inter> HOs 0 pp 
-               \<subseteq> {q. \<mu>_pp q = Some (sendMsg Ute_M 0 q pp (rho 0 q))}"
+               \<subseteq> {q. \<mu>pp q = Some (sendMsg Ute_M 0 q pp (rho 0 q))}"
           by (auto simp: SHOmsgVectors_def)
         hence "card (SHOs 0 pp \<inter> HOs 0 pp)
-                 \<le> card {q. \<mu>_pp q = Some (sendMsg Ute_M 0 q pp (rho 0 q))}"
+                 \<le> card {q. \<mu>pp q = Some (sendMsg Ute_M 0 q pp (rho 0 q))}"
           by (auto simp: card_mono)
         ultimately
         show ?thesis by (auto simp: less_le_trans)
       qed
       moreover
-      from nxtpp have "next0 0 pp ((rho 0) pp) \<mu>_pp (rho (Suc 0) pp)"
+      from nxtpp have "next0 0 pp ((rho 0) pp) \<mu>pp (rho (Suc 0) pp)"
         by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def step_def)
       ultimately
-      obtain w where majw:"card {q. \<mu>_pp q = Some (Val w)} > T"
+      obtain w where majw:"card {q. \<mu>pp q = Some (Val w)} > T"
                  and votew:"vote (rho (Suc 0) pp) = Some w"
         by (auto simp: next0_def)
 
@@ -816,11 +816,11 @@ proof -
       with smv show ?thesis by auto
     qed
     moreover
-    from run obtain \<mu>_pp \<mu>_qq
-      where "nextState Ute_M r pp (rho r pp) \<mu>_pp (rho (Suc r) pp)"
-        and "\<mu>_pp \<in> SHOmsgVectors Ute_M r pp (rho r) (HOs r pp) (SHOs r pp)"
-        and "nextState Ute_M r qq ((rho r) qq)  \<mu>_qq (rho (Suc r) qq)"
-        and "\<mu>_qq \<in> SHOmsgVectors Ute_M r qq (rho r) (HOs r qq) (SHOs r qq)"
+    from run obtain \<mu>pp \<mu>qq
+      where "nextState Ute_M r pp (rho r pp) \<mu>pp (rho (Suc r) pp)"
+        and "\<mu>pp \<in> SHOmsgVectors Ute_M r pp (rho r) (HOs r pp) (SHOs r pp)"
+        and "nextState Ute_M r qq ((rho r) qq)  \<mu>qq (rho (Suc r) qq)"
+        and "\<mu>qq \<in> SHOmsgVectors Ute_M r qq (rho r) (HOs r qq) (SHOs r qq)"
       unfolding Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq by blast
     ultimately
     show ?thesis using comm by (auto dest: common_vote)
@@ -841,11 +841,11 @@ lemma termination_argument_1:
   and stp: "step (Suc r) = Suc 0"
   and \<pi>: "\<forall>p. \<pi>0 = HOs (Suc r) p \<and> \<pi>0 = SHOs (Suc r) p"
   obtains v where 
-    "\<And>p \<mu>_p' q. 
+    "\<And>p \<mu>p' q. 
        \<lbrakk> q \<in> SHOs (Suc (Suc r)) p \<inter> HOs (Suc (Suc r)) p; 
-         \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc (Suc r)) p (rho (Suc (Suc r)))
+         \<mu>p' \<in> SHOmsgVectors Ute_M (Suc (Suc r)) p (rho (Suc (Suc r)))
                              (HOs (Suc (Suc r)) p) (SHOs (Suc (Suc r)) p)
-       \<rbrakk> \<Longrightarrow> \<mu>_p' q = (Some (Val v))"
+       \<rbrakk> \<Longrightarrow> \<mu>p' q = (Some (Val v))"
 proof -
   from \<pi> have hosho:"\<forall>p. SHOs (Suc r) p = SHOs (Suc r) p \<inter> HOs (Suc r) p"
     by simp
@@ -853,34 +853,34 @@ proof -
   have "\<And>p q. x (rho (Suc (Suc r)) p) = x (rho (Suc (Suc r)) q)"
   proof -
     fix p q
-    from run obtain \<mu>_p
+    from run obtain \<mu>p
       where nxt: "nextState Ute_M (Suc r) p (rho (Suc r) p)  
-                                  \<mu>_p (rho (Suc (Suc r)) p)"
-        and mu: "\<mu>_p \<in> SHOmsgVectors Ute_M (Suc r) p (rho (Suc r)) 
+                                  \<mu>p (rho (Suc (Suc r)) p)"
+        and mu: "\<mu>p \<in> SHOmsgVectors Ute_M (Suc r) p (rho (Suc r)) 
                                           (HOs (Suc r) p) (SHOs (Suc r) p)"
       by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
 
-    from run obtain \<mu>_q
+    from run obtain \<mu>q
       where nxtq: "nextState Ute_M (Suc r) q (rho (Suc r) q)
-                                   \<mu>_q (rho (Suc (Suc r)) q)"
-       and muq: "\<mu>_q \<in> SHOmsgVectors Ute_M (Suc r) q (rho (Suc r))
+                                   \<mu>q (rho (Suc (Suc r)) q)"
+       and muq: "\<mu>q \<in> SHOmsgVectors Ute_M (Suc r) q (rho (Suc r))
                                           (HOs (Suc r) q) (SHOs (Suc r) q)"
       by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
        
-    have "\<forall>qq. \<mu>_p qq = \<mu>_q qq"
+    have "\<forall>qq. \<mu>p qq = \<mu>q qq"
     proof
       fix qq
-      show "\<mu>_p qq = \<mu>_q qq"
-      proof (cases "\<mu>_p qq = None")
+      show "\<mu>p qq = \<mu>q qq"
+      proof (cases "\<mu>p qq = None")
         case False
         with mu \<pi> have 1:"qq \<in> SHOs (Suc r) p" and 2:"qq \<in> SHOs (Suc r) q"
           unfolding SHOmsgVectors_def by auto
         from mu \<pi> 1
-        have "\<mu>_p qq = Some (sendMsg Ute_M (Suc r) qq p (rho (Suc r) qq))"
+        have "\<mu>p qq = Some (sendMsg Ute_M (Suc r) qq p (rho (Suc r) qq))"
           unfolding SHOmsgVectors_def by auto
         moreover
         from muq \<pi> 2 
-        have "\<mu>_q qq = Some (sendMsg Ute_M (Suc r) qq q (rho (Suc r) qq))"
+        have "\<mu>q qq = Some (sendMsg Ute_M (Suc r) qq q (rho (Suc r) qq))"
           unfolding SHOmsgVectors_def by auto
         ultimately
         show ?thesis
@@ -889,12 +889,12 @@ proof -
       next
         case True
         with mu have "qq \<notin> HOs (Suc r) p" unfolding SHOmsgVectors_def by auto
-        with \<pi> muq have "\<mu>_q qq = None" unfolding SHOmsgVectors_def by auto
+        with \<pi> muq have "\<mu>q qq = None" unfolding SHOmsgVectors_def by auto
         with True show ?thesis by simp
       qed
     qed
-    hence vsets:"\<And>v. {qq. \<mu>_p qq = Some (Vote (Some v))} 
-                    = {qq. \<mu>_q qq = Some (Vote (Some v))}"
+    hence vsets:"\<And>v. {qq. \<mu>p qq = Some (Vote (Some v))} 
+                    = {qq. \<mu>q qq = Some (Vote (Some v))}"
       by auto
     (* NB: due to the Global predicate (HO = SHO), we do not need \<alpha> + 1 msgs
        holding a true vote, only 1. We might also prefer to invoke only the
@@ -904,27 +904,27 @@ proof -
        to previous (Suc r)esults. *)
 
     show "x (rho (Suc (Suc r)) p) = x (rho (Suc (Suc r)) q)"
-    proof (cases "\<exists>v. \<alpha> < card {qq. \<mu>_p qq = Some (Vote (Some v))}", clarify)
+    proof (cases "\<exists>v. \<alpha> < card {qq. \<mu>p qq = Some (Vote (Some v))}", clarify)
       fix v
-      assume vp: "\<alpha> < card {qq. \<mu>_p qq = Some (Vote (Some v))}"
+      assume vp: "\<alpha> < card {qq. \<mu>p qq = Some (Vote (Some v))}"
       with run comm stp \<pi> nxt mu have "x (rho (Suc (Suc r)) p) = v" 
         by (auto dest: set_x_from_vote)
       moreover
       from vsets vp
-      have "\<alpha> < card {qq. \<mu>_q qq = Some (Vote (Some v))}" by auto
+      have "\<alpha> < card {qq. \<mu>q qq = Some (Vote (Some v))}" by auto
       with run comm stp \<pi> nxtq muq have "x (rho (Suc (Suc r)) q) = v" 
         by (auto dest: set_x_from_vote)
       ultimately
       show "x (rho (Suc (Suc r)) p) = x (rho (Suc (Suc r)) q)" 
         by auto
     next
-      assume nov: "\<not> (\<exists>v. \<alpha> < card {qq. \<mu>_p qq = Some (Vote (Some v))})"
+      assume nov: "\<not> (\<exists>v. \<alpha> < card {qq. \<mu>p qq = Some (Vote (Some v))})"
       with nxt stp have "x (rho (Suc (Suc r)) p) = undefined"
         by (auto simp: Ute_SHOMachine_def nextState_def 
                        Ute_nextState_def next1_def)
       moreover
       from vsets nov
-      have "\<not> (\<exists>v. \<alpha> < card {qq. \<mu>_q qq = Some (Vote (Some v))})" by auto
+      have "\<not> (\<exists>v. \<alpha> < card {qq. \<mu>q qq = Some (Vote (Some v))})" by auto
       with nxtq stp have "x (rho (Suc (Suc r)) q) = undefined" 
         by (auto simp: Ute_SHOMachine_def nextState_def 
                        Ute_nextState_def next1_def)
@@ -936,18 +936,18 @@ proof -
   moreover
   from stp have "step (Suc (Suc r)) = 0" 
     by (auto simp: step_def mod_Suc)
-  hence "\<And>p \<mu>_p' q. 
+  hence "\<And>p \<mu>p' q. 
     \<lbrakk> q \<in> SHOs (Suc (Suc r)) p \<inter> HOs (Suc (Suc r)) p;
-      \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc (Suc r)) p (rho (Suc (Suc r)))
+      \<mu>p' \<in> SHOmsgVectors Ute_M (Suc (Suc r)) p (rho (Suc (Suc r)))
                           (HOs (Suc (Suc r)) p) (SHOs (Suc (Suc r)) p)
-    \<rbrakk> \<Longrightarrow> \<mu>_p' q = Some (Val (x (rho (Suc (Suc r)) q)))"
+    \<rbrakk> \<Longrightarrow> \<mu>p' q = Some (Val (x (rho (Suc (Suc r)) q)))"
     by (auto simp: Ute_SHOMachine_def SHOmsgVectors_def Ute_sendMsg_def send0_def)
   ultimately
-  have "\<And>p \<mu>_p' q. 
+  have "\<And>p \<mu>p' q. 
     \<lbrakk> q \<in> SHOs (Suc (Suc r)) p  \<inter> HOs (Suc (Suc r)) p; 
-      \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc (Suc r)) p (rho (Suc (Suc r)))
+      \<mu>p' \<in> SHOmsgVectors Ute_M (Suc (Suc r)) p (rho (Suc (Suc r)))
                                 (HOs (Suc (Suc r)) p) (SHOs (Suc (Suc r)) p)
-    \<rbrakk> \<Longrightarrow> \<mu>_p' q = (Some (Val v))" 
+    \<rbrakk> \<Longrightarrow> \<mu>p' q = (Some (Val v))" 
     by auto
   with that show thesis by blast
 qed
@@ -960,18 +960,18 @@ text {*
 (* immediate from lemma @{text vote_step} and the algorithm definition. *)
 
 lemma termination_argument_2:
-  assumes mup: "\<mu>_p \<in> SHOmsgVectors Ute_M (Suc r) p (rho (Suc r)) 
+  assumes mup: "\<mu>p \<in> SHOmsgVectors Ute_M (Suc r) p (rho (Suc r)) 
                                      (HOs (Suc r) p) (SHOs (Suc r) p)"
-  and nxtq: "nextState Ute_M r q (rho r q)  \<mu>_q (rho (Suc r) q)"
+  and nxtq: "nextState Ute_M r q (rho r q)  \<mu>q (rho (Suc r) q)"
   and vq: "vote (rho (Suc r) q) = Some v"
   and qsho: "q \<in> SHOs (Suc r) p \<inter> HOs (Suc r) p"
-  shows "\<mu>_p q = Some (Vote (Some v))"
+  shows "\<mu>p q = Some (Vote (Some v))"
 proof -
   from nxtq vq have "step r = 0" by (auto simp: vote_step)
-  with mup qsho have "\<mu>_p q = Some (Vote (vote (rho (Suc r) q)))"
+  with mup qsho have "\<mu>p q = Some (Vote (vote (rho (Suc r) q)))"
     by (auto simp: Ute_SHOMachine_def SHOmsgVectors_def Ute_sendMsg_def
                    step_def send1_def mod_Suc)
-  with vq show "\<mu>_p q = Some (Vote (Some v))" by auto
+  with vq show "\<mu>p q = Some (Vote (Some v))" by auto
 qed
 
 text{* 
@@ -1003,36 +1003,36 @@ proof -
     have abc:"\<forall>p. \<exists>w. vote (rho (Suc (Suc r0)) p) = Some w"
     proof
       fix p
-      from run stp obtain \<mu>_p
-        where nxt:"nextState Ute_M (Suc r0) p (rho (Suc r0) p) \<mu>_p 
+      from run stp obtain \<mu>p
+        where nxt:"nextState Ute_M (Suc r0) p (rho (Suc r0) p) \<mu>p 
                                    (rho (Suc (Suc r0)) p)"
-          and mup:"\<mu>_p \<in> SHOmsgVectors Ute_M (Suc r0) p (rho (Suc r0)) 
+          and mup:"\<mu>p \<in> SHOmsgVectors Ute_M (Suc r0) p (rho (Suc r0)) 
                                       (HOs (Suc r0) p) (SHOs (Suc r0) p)"
         by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
 
-      have "\<exists>v. T < card {qq. \<mu>_p qq = Some (Val v)}"
+      have "\<exists>v. T < card {qq. \<mu>p qq = Some (Val v)}"
       proof -
         from t have "card (SHOs (Suc r0) p \<inter> HOs (Suc r0) p) > T" .. 
         moreover
         from run commR stp \<pi> rr
         obtain v where
-          "\<And>p \<mu>_p' q. 
+          "\<And>p \<mu>p' q. 
               \<lbrakk> q \<in> SHOs (Suc r0) p \<inter> HOs (Suc r0) p;
-                \<mu>_p' \<in> SHOmsgVectors Ute_M (Suc r0) p (rho (Suc r0)) 
+                \<mu>p' \<in> SHOmsgVectors Ute_M (Suc r0) p (rho (Suc r0)) 
                                           (HOs (Suc r0) p) (SHOs (Suc r0) p)
-              \<rbrakk> \<Longrightarrow> \<mu>_p' q = Some (Val v)" 
+              \<rbrakk> \<Longrightarrow> \<mu>p' q = Some (Val v)" 
           using termination_argument_1 by blast
 
         with mup obtain v where
-          "\<And>qq. qq \<in> SHOs (Suc r0) p \<inter> HOs (Suc r0) p \<Longrightarrow> \<mu>_p qq = Some (Val v)" 
+          "\<And>qq. qq \<in> SHOs (Suc r0) p \<inter> HOs (Suc r0) p \<Longrightarrow> \<mu>p qq = Some (Val v)" 
           by auto
-        hence "SHOs (Suc r0) p \<inter> HOs (Suc r0) p \<subseteq> {qq. \<mu>_p qq = Some (Val v)}" 
+        hence "SHOs (Suc r0) p \<inter> HOs (Suc r0) p \<subseteq> {qq. \<mu>p qq = Some (Val v)}" 
           by auto
         hence "card (SHOs (Suc r0) p \<inter> HOs (Suc r0) p)
-                 \<le> card {qq. \<mu>_p qq = Some (Val v)}"
+                 \<le> card {qq. \<mu>p qq = Some (Val v)}"
           by (auto intro: card_mono)
         ultimately
-        have "T < card {qq. \<mu>_p qq = Some (Val v)}" by auto
+        have "T < card {qq. \<mu>p qq = Some (Val v)}" by auto
         thus ?thesis by auto
       qed
       with stp nxt show "\<exists>w. vote ((rho (Suc (Suc r0))) p) = Some w"
@@ -1046,14 +1046,14 @@ proof -
       fix pp
       from abc obtain wp where pwp:"vote ((rho (Suc (Suc r0))) pp) = Some wp" 
         by blast
-      from run obtain \<mu>_pp \<mu>_qq
+      from run obtain \<mu>pp \<mu>qq
         where nxtp: "nextState Ute_M (Suc r0) pp (rho (Suc r0) pp)
-                                     \<mu>_pp (rho (Suc (Suc r0)) pp)"
-          and mup: "\<mu>_pp \<in> SHOmsgVectors Ute_M (Suc r0) pp (rho (Suc r0))
+                                     \<mu>pp (rho (Suc (Suc r0)) pp)"
+          and mup: "\<mu>pp \<in> SHOmsgVectors Ute_M (Suc r0) pp (rho (Suc r0))
                                           (HOs (Suc r0) pp) (SHOs (Suc r0) pp)"
           and nxtq: "nextState Ute_M (Suc r0) qq (rho (Suc r0) qq)
-                                     \<mu>_qq (rho (Suc (Suc r0)) qq)"
-          and muq: "\<mu>_qq \<in> SHOmsgVectors Ute_M (Suc r0) qq (rho (Suc r0))
+                                     \<mu>qq (rho (Suc (Suc r0)) qq)"
+          and muq: "\<mu>qq \<in> SHOmsgVectors Ute_M (Suc r0) qq (rho (Suc r0))
                                           (HOs (Suc r0) qq) (SHOs (Suc r0) qq)"
         unfolding Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq by blast
       from commR this pwp qqw have "wp = w"
@@ -1064,40 +1064,40 @@ proof -
     with that show ?thesis by auto
   qed
 
-  from run obtain \<mu>_p'
+  from run obtain \<mu>p'
     where nxtp: "nextState Ute_M (Suc (Suc r0)) p (rho (Suc (Suc r0)) p)
-                                 \<mu>_p' (rho (Suc (Suc (Suc r0))) p)"
-      and mup': "\<mu>_p' \<in> SHOmsgVectors Ute_M (Suc (Suc r0)) p (rho (Suc (Suc r0)))
+                                 \<mu>p' (rho (Suc (Suc (Suc r0))) p)"
+      and mup': "\<mu>p' \<in> SHOmsgVectors Ute_M (Suc (Suc r0)) p (rho (Suc (Suc r0)))
                                      (HOs (Suc (Suc r0)) p) (SHOs (Suc (Suc r0)) p)"
     by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
   have "\<And>qq. qq \<in> SHOs (Suc (Suc r0)) p \<inter> HOs (Suc (Suc r0)) p 
-              \<Longrightarrow> \<mu>_p' qq = Some (Vote (Some w))"
+              \<Longrightarrow> \<mu>p' qq = Some (Vote (Some w))"
   proof -
     fix qq
     assume qqsho:"qq \<in> SHOs (Suc (Suc r0)) p \<inter> HOs (Suc (Suc r0)) p"
-    from run obtain \<mu>_qq where
+    from run obtain \<mu>qq where
       nxtqq:"nextState Ute_M (Suc r0) qq (rho (Suc r0) qq)
-                             \<mu>_qq (rho (Suc (Suc r0)) qq)"
+                             \<mu>qq (rho (Suc (Suc r0)) qq)"
       by (auto simp: Ute_SHOMachine_def SHORun_eq SHOnextConfig_eq)
-    from commR mup' nxtqq votew qqsho show "\<mu>_p' qq = Some (Vote (Some w))"
+    from commR mup' nxtqq votew qqsho show "\<mu>p' qq = Some (Vote (Some w))"
       by (auto dest: termination_argument_2)
   qed
   hence "SHOs (Suc (Suc r0)) p  \<inter> HOs (Suc (Suc r0)) p
-           \<subseteq> {qq. \<mu>_p' qq = Some (Vote (Some w))}" 
+           \<subseteq> {qq. \<mu>p' qq = Some (Vote (Some w))}" 
     by auto
   hence wsho: "card (SHOs (Suc (Suc r0)) p  \<inter> HOs (Suc (Suc r0)) p)
-                 \<le> card {qq. \<mu>_p' qq = Some (Vote (Some w))}"
+                 \<le> card {qq. \<mu>p' qq = Some (Vote (Some w))}"
     by (auto simp: card_mono)
    
   from stp have "step (Suc (Suc r0)) = Suc 0" 
     unfolding step_def by auto
-  with nxtp have "next1 (Suc (Suc r0)) p (rho (Suc (Suc r0)) p) \<mu>_p'
+  with nxtp have "next1 (Suc (Suc r0)) p (rho (Suc (Suc r0)) p) \<mu>p'
                         (rho (Suc (Suc (Suc r0))) p)"
     by (auto simp: Ute_SHOMachine_def nextState_def Ute_nextState_def)
   moreover
   from e have "E < card (SHOs (Suc (Suc r0)) p \<inter> HOs (Suc (Suc r0)) p)" 
     by auto
-  with wsho have majv:"card {qq. \<mu>_p' qq = Some (Vote (Some w))} > E" 
+  with wsho have majv:"card {qq. \<mu>p' qq = Some (Vote (Some w))} > E" 
     by auto
   ultimately
   show ?thesis by (auto simp: next1_def)

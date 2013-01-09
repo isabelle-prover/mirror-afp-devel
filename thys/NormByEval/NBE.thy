@@ -2434,8 +2434,8 @@ apply(subst (asm) linpats.simps) back
 apply auto
 apply(case_tac "ALL i<size ts. EX \<sigma>. subst\<^bsub>ML\<^esub> \<sigma> (comp_pat (ts!i)) = cvs!i")
  apply(clarsimp simp:Skolem_list_nth)
- apply(rename_tac "\<sigma>_s")
- apply(erule_tac x="%x. (\<sigma>_s!(THE i. i<size ts & x : fv(ts!i)))x" in allE)
+ apply(rename_tac "\<sigma>s")
+ apply(erule_tac x="%x. (\<sigma>s!(THE i. i<size ts & x : fv(ts!i)))x" in allE)
  apply(clarsimp simp:eq_lists_iff_eq_nth)
  apply(rotate_tac -3)
  apply(erule_tac x=i in allE)
