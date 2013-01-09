@@ -94,7 +94,7 @@ qed
 text {*The homomorphic image of an almost full set is almost full.*}
 lemma almost_full_on_hom:
   fixes h :: "'a \<Rightarrow> 'b"
-  assumes hom: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
+  assumes hom: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (h x) (h y)"
     and af: "almost_full_on P A"
   shows "almost_full_on Q (h ` A)"
 proof
@@ -119,7 +119,7 @@ qed
 
 text {*The monomorphic preimage of an almost full set is almost full.*}
 lemma almost_full_on_mon:
-  assumes mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
+  assumes mon: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> P x y = Q (h x) (h y)" "bij_betw h A B"
     and af: "almost_full_on Q B"
   shows "almost_full_on P A"
 proof
