@@ -26,26 +26,6 @@ abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<f
 
 subsection {* Numbers *}
 
-lemma ereal_divide_right_mono:
-  fixes a b c :: ereal
-  assumes "a \<le> b" "0 < c"
-  shows "a / c \<le> b / c"
-using assms by (cases a b c rule: ereal3_cases) (auto intro: divide_right_mono)
-
-lemma ereal_divide_left_mono:
-  fixes a b c :: ereal
-  assumes "b \<le> a" "0 < c" "0 < a * b"
-  shows "c / a \<le> c / b"
-using assms by (cases a b c rule: ereal3_cases)
-  (auto intro: divide_left_mono simp: field_simps sign_simps split: split_if_asm)
-
-lemma ereal_of_enat_less_iff: "ereal_of_enat a < ereal_of_enat b \<longleftrightarrow> a < b"
-  by (cases a b rule: enat2_cases) auto
-
-
-lemma ereal_of_enat_inf: "ereal_of_enat a = \<infinity> \<longleftrightarrow> a = \<infinity>"
-  by (cases a) auto
-
 lemma enat_in_Inf:
   fixes S :: "enat set"
   assumes "Inf S \<noteq> top"
