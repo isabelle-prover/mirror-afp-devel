@@ -553,8 +553,6 @@ code_pred
   SelectMethodDef 
 .
 
-
-
 text {* Isomorphic subo with mapping instead of a map *}
 
 type_synonym subo' = "(path \<times> (vname, val) mapping)"
@@ -914,7 +912,16 @@ lemma ConsThrow':
   P,E \<turnstile> \<langle>e#es, s\<^isub>0\<rangle> [\<Rightarrow>'] \<langle>throw e' # es, s\<^isub>1\<rangle>"
 by transfer(rule ConsThrow)
 
+text {* Axiomatic heap address model refinement *}
 
+partial_function (option) lowest :: "(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat option"
+where
+  [code]: "lowest P n = (if P n then Some n else lowest P (Suc n))"
+
+axiomatization
+where
+  new_Addr'_code [code]: "new_Addr' h = lowest (Option.is_none \<circ> h) 0"
+    -- {* admissible: a tightening of the specification of @{const new_Addr'} *}
 
 lemma [transfer_rule]:
  "(prod_rel (op = ===> option_rel (prod_rel op = (set_rel (prod_rel op = cr_mapping)))) op = ===>
@@ -1171,14 +1178,6 @@ next
 qed
 
 subsection {* Examples *}
-
-definition [code del]: "new_Addr'' = new_Addr'"
-declare new_Addr'.rep_eq [code del] new_Addr''_def[symmetric, code]
-code_const new_Addr''
-  (SML 
-    "(fn hp =>
- let fun gen'_new'_addr n = case hp n of NONE => SOME n | SOME obj => gen'_new'_addr (n + 1) in gen'_new'_addr 0 end)")
-
 
 values [expected "{Val (Intg 5)}"]
   "{fst (e', s') | e' s'. 
@@ -1460,3 +1459,4 @@ values [expected "{Val (Intg 42)}"] -- "callFailGplusplus"
        (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
 end
+

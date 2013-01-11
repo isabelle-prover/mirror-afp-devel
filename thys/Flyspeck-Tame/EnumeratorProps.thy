@@ -167,7 +167,7 @@ lemma enumAppend_length2: "\<And>ls. ls \<in> set ((enumAppend nmax ^^ n) lss) \
 
 lemma enum_enumerator:
  "enum i j = enumerator i j"
-by(simp add: enum_def enumTab_def tabulate2_def tabulate_def tabulate'_def sub_def sub1_def)
+by(simp add: enum_def enumTab_def tabulate2_def tabulate_def)
 
 
 (*********** enumerator *********)
