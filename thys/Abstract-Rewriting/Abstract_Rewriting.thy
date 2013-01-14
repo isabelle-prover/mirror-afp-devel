@@ -1001,6 +1001,13 @@ proof - {
 } thus ?thesis by best
 qed
 
+lemma SN_nat_gt: "SN {(a,b :: nat) . a > b}"
+proof -
+  from wf_less have "wf ({(x,y) . (x :: nat) > y}^-1)" unfolding converse_unfold by auto
+  from wf_imp_SN[OF this] show ?thesis .
+qed
+
+
 lemma SN_iff_wf: "SN A = wf (A\<inverse>)" by (auto simp: SN_imp_wf wf_imp_SN)
 
 lemma SN_imp_acyclic: "SN R \<Longrightarrow> acyclic R"

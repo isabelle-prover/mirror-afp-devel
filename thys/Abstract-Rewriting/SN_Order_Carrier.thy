@@ -50,25 +50,7 @@ end
 definition nat_mono :: "nat \<Rightarrow> bool" where "nat_mono x \<equiv> x \<noteq> 0"
 
 interpretation nat_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: nat \<Rightarrow> nat \<Rightarrow> bool" nat_mono
-proof (unfold_locales)
-  have "SN {(x,y). (y :: nat) < x}" (is "SN ?gt")
-  proof (rule ccontr, unfold SN_defs, clarify)
-    fix x f
-    assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
-    have "\<forall> i. f i + i \<le> f 0"
-    proof 
-      fix i
-      show "f i + i \<le> f 0"
-      proof (induct i, simp)
-        case (Suc i)
-        with spec[OF steps, of i] show ?case by auto
-      qed
-    qed
-    hence "f (Suc (f 0)) + Suc (f 0) \<le> f 0" by blast
-    thus False by auto
-  qed
-  thus "SN {(x,y). (y :: nat) \<succeq> 0 \<and> y < x}" by auto
-qed (auto simp: nat_mono_def)
+  by (unfold_locales, insert SN_nat_gt, auto simp: nat_mono_def)
 
 instantiation nat :: poly_carrier 
 begin 
