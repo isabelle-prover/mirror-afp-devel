@@ -40,8 +40,8 @@ structure Syntax_Match = struct
     val (_,[pat,obj]) = strip_comb redex;
     (*val _ = tracing (PolyML.makestring credex);*)
 
-    fun fo_matches po = (Pattern.first_order_match 
-      thy po (Vartab.empty, Vartab.empty); true) handle _ => false;
+    fun fo_matches po = can (fn () => Pattern.first_order_match 
+      thy po (Vartab.empty, Vartab.empty)) ();
   in
     if fo_matches (pat,obj) then NONE else SOME fo_nomatch_thm
   end

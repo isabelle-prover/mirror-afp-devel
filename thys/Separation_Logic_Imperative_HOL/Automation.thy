@@ -483,9 +483,11 @@ structure Seplogic_Auto = struct
 
   in 
     result
-  end handle exc => 
-    (tracing ("assn_simproc failed with exception: "^PolyML.makestring exc); 
-      NONE) (* Fail silently *);
+  end handle exc =>
+    if Exn.is_interrupt exc then reraise exc
+    else
+      (tracing ("assn_simproc failed with exception: "^ML_Compiler.exn_message exc);
+        NONE) (* Fail silently *);
   
   val assn_simproc = Simplifier.make_simproc {
     lhss = [@{cpat "?h\<Turnstile>?P"},@{cpat "?P \<Longrightarrow>\<^sub>A ?Q"},
