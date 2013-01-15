@@ -151,7 +151,7 @@ structure Refine_Autoref = struct
   ) end
 
   fun trace_sg ctxt i st = ();
-    (*if i <= nprems_of st then tracing (PolyML.makestring (cprem_of st i))
+    (*if i <= nprems_of st then tracing (@{make_string} (cprem_of st i))
     else ();*)
       
   fun autoref_tac (cfg:config) sstep ctxt i st = let

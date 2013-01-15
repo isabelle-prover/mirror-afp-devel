@@ -439,9 +439,9 @@ structure Seplogic_Auto = struct
 
       fun normalize_core t = let 
         val ((has_true,pures,ptrs),rt) = normalizer t;
-        (*val _ = tracing (PolyML.makestring ptrs);*)
+        (*val _ = tracing (@{make_string} ptrs);*)
         val similar = find_similar ptrs_key ptrs;
-        (*val _ = tracing (PolyML.makestring similar);*)
+        (*val _ = tracing (@{make_string} similar);*)
         val true_t = if has_true then SOME @{term "Assertions.top_assn"} 
           else NONE;
         val pures' = case pures of 
