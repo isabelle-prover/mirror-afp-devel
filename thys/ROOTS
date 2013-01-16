@@ -61,6 +61,7 @@ Jinja
 JinjaThreads
 JiveDataStoreModel
 KBPs
+Kleene_Algebra
 Lam-ml-Normalization
 LatticeProperties
 Lazy-Lists-II
@@ -97,6 +98,7 @@ Psi_Calculi
 RIPEMD-160-SPARK
 RSAPSS
 Ramsey-Infinite
+Rank_Nullity_Theorem
 Recursion-Theory-I
 Refine_Monadic
 Regular-Sets
