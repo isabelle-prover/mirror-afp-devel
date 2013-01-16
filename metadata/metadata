@@ -844,6 +844,35 @@ date = 2006-08-08
 topic = Computer Science/Programming Languages/Logics
 abstract = These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.
 
+[Kleene_Algebra]
+title = Kleene Algebra
+author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>, Georg Struth, <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
+date = 2013-01-15
+topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
+abstract =
+ These files contain a formalisation of variants of Kleene algebras and
+ their most important models as axiomatic type classes in Isabelle/HOL.
+ Kleene algebras are foundational structures in computing with
+ applications ranging from automata and language theory to computational
+ modeling, program construction and verification.
+ <p>
+ We start with formalising dioids, which are additively idempotent
+ semirings, and expand them by axiomatisations of the Kleene star for
+ finite iteration and an omega operation for infinite iteration. We
+ show that powersets over a given monoid, (regular) languages, sets of
+ paths in a graph, sets of computation traces, and binary relations form
+ Kleene algebras, and consider further models based on lattices,
+ max-plus semirings and min-plus semirings. We also demonstrate that
+ dioids are closed under the formation of matrices and formal power
+ series (proofs for Kleene algebras remain to be completed).
+ <p>
+ On the one hand we have aimed at a reference formalisation of variants
+ of Kleene algebras that covers a wide range of variants and the core
+ theorems in a structured and modular way and provides readable proofs
+ at text book level. On the other hand, we intend to use this algebraic
+ hierarchy and its models as a generic algebraic middle-layer from which
+ programming applications can quickly be explored, implemented and verified.
+
 [BytecodeLogicJmlTypes]
 title = A Bytecode Logic for JML and Types
 author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
