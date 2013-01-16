@@ -1,0 +1,117 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<h1><font class="first">K</font>leene
+<font class="first">A</font>lgebra
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Kleene Algebra</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>, <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a> and  <a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2013-01-15</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+These files contain a formalisation of variants of Kleene algebras and
+their most important models as axiomatic type classes in Isabelle/HOL.
+Kleene algebras are foundational structures in computing with
+applications ranging from automata and language theory to computational
+modeling, program construction and verification.
+<p>
+We start with formalising dioids, which are additively idempotent
+semirings, and expand them by axiomatisations of the Kleene star for
+finite iteration and an omega operation for infinite iteration. We
+show that powersets over a given monoid, (regular) languages, sets of
+paths in a graph, sets of computation traces, and binary relations form
+Kleene algebras, and consider further models based on lattices,
+max-plus semirings and min-plus semirings. We also demonstrate that
+dioids are closed under the formation of matrices and formal power
+series (proofs for Kleene algebras remain to be completed).
+<p>
+On the one hand we have aimed at a reference formalisation of variants
+of Kleene algebras that covers a wide range of variants and the core
+theorems in a structured and modular way and provides readable proofs
+at text book level. On the other hand, we intend to use this algebraic
+hierarchy and its models as a generic algebraic middle-layer from which
+programming applications can quickly be explored, implemented and verified.
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Kleene_Algebra" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

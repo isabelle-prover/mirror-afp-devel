@@ -41,6 +41,7 @@
 <a href="entries/Statecharts.shtml">Statecharts</a> &nbsp;
 <a href="entries/Stuttering_Equivalence.shtml">Stuttering_Equivalence</a> &nbsp;
 <a href="entries/Tree-Automata.shtml">Tree-Automata</a> &nbsp;
+<a href="entries/Kleene_Algebra.shtml">Kleene_Algebra</a> &nbsp;
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
 </div>
 
@@ -131,6 +132,7 @@
 <a href="entries/Separation_Algebra.shtml">Separation_Algebra</a> &nbsp;
 <a href="entries/Separation_Logic_Imperative_HOL.shtml">Separation_Logic_Imperative_HOL</a> &nbsp;
 <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
+<a href="entries/Kleene_Algebra.shtml">Kleene_Algebra</a> &nbsp;
 <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp;
 <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
 <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
@@ -193,11 +195,13 @@
 <a href="entries/LatticeProperties.shtml">LatticeProperties</a> &nbsp;
 <a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
+<a href="entries/Kleene_Algebra.shtml">Kleene_Algebra</a> &nbsp;
 <a href="entries/Free-Groups.shtml">Free-Groups</a> &nbsp;
 <a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
 <a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a> &nbsp;
 <a href="entries/Robbins-Conjecture.shtml">Robbins-Conjecture</a> &nbsp;
 <a href="entries/Valuation.shtml">Valuation</a> &nbsp;
+<a href="entries/Rank_Nullity_Theorem.shtml">Rank_Nullity_Theorem</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>

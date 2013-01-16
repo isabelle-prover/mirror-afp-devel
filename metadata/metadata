@@ -853,6 +853,35 @@ date = 2006-08-08
 topic = Computer Science/Programming Languages/Logics
 abstract = These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.
 
+[Kleene_Algebra]
+title = Kleene Algebra
+author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
+date = 2013-01-15
+topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
+abstract =
+ These files contain a formalisation of variants of Kleene algebras and
+ their most important models as axiomatic type classes in Isabelle/HOL.
+ Kleene algebras are foundational structures in computing with
+ applications ranging from automata and language theory to computational
+ modeling, program construction and verification.
+ <p>
+ We start with formalising dioids, which are additively idempotent
+ semirings, and expand them by axiomatisations of the Kleene star for
+ finite iteration and an omega operation for infinite iteration. We
+ show that powersets over a given monoid, (regular) languages, sets of
+ paths in a graph, sets of computation traces, and binary relations form
+ Kleene algebras, and consider further models based on lattices,
+ max-plus semirings and min-plus semirings. We also demonstrate that
+ dioids are closed under the formation of matrices and formal power
+ series (proofs for Kleene algebras remain to be completed).
+ <p>
+ On the one hand we have aimed at a reference formalisation of variants
+ of Kleene algebras that covers a wide range of variants and the core
+ theorems in a structured and modular way and provides readable proofs
+ at text book level. On the other hand, we intend to use this algebraic
+ hierarchy and its models as a generic algebraic middle-layer from which
+ programming applications can quickly be explored, implemented and verified.
+
 [BytecodeLogicJmlTypes]
 title = A Bytecode Logic for JML and Types
 author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
@@ -1143,6 +1172,14 @@ topic = Mathematics/Algebra
 base = HOL/Group-Ring-Module
 abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
 depends-on = Group-Ring-Module
+
+[Rank_Nullity_Theorem]
+title = Rank-Nullity Theorem in Linear Algebra
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
+topic = Mathematics/Algebra
+base = HOL/HOL-Multivariate_Analysis
+date = 2013-01-16
+abstract = In this article we present a proof of the result known in Linear Algebra as the ``rank nullity Theorem'', which states that, given any linear form f from a finite dimensional vector space V to a vector space W, then the dimension of V is equal to the dimension of the kernel of f (which is a subspace of V) and the dimension of the range of f (which is a subspace of W). The proof presented here is based on the one given by Sheldon Axler in his book <i>Linear Algebra Done Right</i>. It makes use of the HOL-Multivariate-Analysis session of Isabelle, and of several of its results and definitions. As a corollary of the previous theorem, and taking advantage of the relationship between linear forms and matrices, we prove that, for every matrix A (which has associated a linear form between finite dimensional vector spaces), the sum of its null space and its column space (which is equal to the range of the linear form) is equal to the number of columns of A.
 
 [Cauchy]
 title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality 
