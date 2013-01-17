@@ -147,6 +147,22 @@ proof
   qed
 qed
 
+text {*Every total and well-founded relation is almost-full.*}
+lemma total_on_and_wfp_on_imp_almost_full_on:
+  assumes "total_on P A" and "wfp_on P A"
+  shows "almost_full_on P\<^sup>=\<^sup>= A"
+proof (rule ccontr)
+  assume "\<not> almost_full_on P\<^sup>=\<^sup>= A"
+  then obtain f :: "nat \<Rightarrow> 'a" where *: "\<And>i. f i \<in> A"
+    and "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
+    unfolding almost_full_on_def good_def by blast
+  with `total_on P A` have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)"
+    unfolding total_on_def by blast
+  then have "\<And>i. P (f (Suc i)) (f i)" by auto
+  with `wfp_on P A` and * show False
+    unfolding wfp_on_def by blast
+qed
+
 
 (*TODO: move to Option.thy of Isabelle/HOL?*)
 subsection {* Adding a Bottom Element to a Set *}

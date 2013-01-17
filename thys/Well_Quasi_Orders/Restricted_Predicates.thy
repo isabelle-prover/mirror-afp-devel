@@ -24,6 +24,9 @@ definition
 where
   "mono_on P Q f A = (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (f x) (f y))"
 
+definition total_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "total_on P A = (\<forall>x\<in>A. \<forall>y\<in>A. x = y \<or> P x y \<or> P y x)"
+
 lemma mono_onI [Pure.intro]:
   assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (f x) (f y)"
   shows "mono_on P Q f A"
@@ -51,6 +54,10 @@ lemma reflp_onI [Pure.intro]:
 lemma transp_onI [Pure.intro]:
   "(\<And>x y z. \<lbrakk>x \<in> A; y \<in> A; z \<in> A; P x y; P y z\<rbrakk> \<Longrightarrow> P x z) \<Longrightarrow> transp_on P A"
   unfolding transp_on_def by blast
+
+lemma total_onI [Pure.intro]:
+  "(\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> x = y \<or> P x y \<or> P y x) \<Longrightarrow> total_on P A"
+  unfolding total_on_def by blast
 
 lemma reflp_on_reflclp_simp [simp]:
   assumes "reflp_on P A" and "a \<in> A" and "b \<in> A"
