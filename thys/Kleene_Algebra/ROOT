@@ -2,7 +2,7 @@ session "Kleene_Algebra" (AFP) = HOL +
   options [timeout = 3600]
 
   theories [document = false]
-    "~~/src/HOL/Word/Word";
+    "~~/src/HOL/Word/Word"
 
   theories
     Signatures
