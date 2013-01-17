@@ -867,5 +867,28 @@ lemma eq_almost_full_on_finite_set:
   using finite_almost_full_on [OF assms, of "op ="]
   by (auto simp: reflp_on_def)
 
+
+subsection {*Natural Numbers*}
+
+lemma almost_full_on_UNIV_nat:
+  "almost_full_on (op \<le>) (UNIV :: nat set)"
+proof -
+  let ?P = "sublisteq :: bool list \<Rightarrow> bool list \<Rightarrow> bool"
+  have *: "length ` (UNIV :: bool list set) = (UNIV :: nat set)"
+    by (metis Ex_list_of_length surj_def)
+  have "almost_full_on (op \<le>) (length ` (UNIV :: bool list set))"
+  proof (rule almost_full_on_hom)
+    fix xs ys :: "bool list"
+    assume "?P xs ys"
+    then show "length xs \<le> length ys"
+      by (metis list_hembeq_length)
+  next
+    have "finite (UNIV :: bool set)" by auto
+    from almost_full_on_lists [OF eq_almost_full_on_finite_set [OF this]]
+      show "almost_full_on ?P UNIV" unfolding lists_UNIV .
+  qed
+  then show ?thesis unfolding * .
+qed
+
 end
 
