@@ -285,7 +285,7 @@ text {* The next law shows how omegas below a sum can be unfolded. *}
 lemma omega_sum_unfold: "x\<^sup>\<omega> + x\<^sup>\<star> \<cdot> y \<cdot> (x + y)\<^sup>\<omega> = (x + y)\<^sup>\<omega>"
 proof -
   have "(x + y)\<^sup>\<omega> = x \<cdot> (x + y)\<^sup>\<omega> + y \<cdot> (x+y)\<^sup>\<omega>"
-    by (metis left_distrib omega_unfold_eq)
+    by (metis distrib_right omega_unfold_eq)
   thus ?thesis
     by (metis mult.assoc wagner_3)
 qed
@@ -379,7 +379,7 @@ proof
 next
   assume "x\<^sup>\<omega> + y\<^sup>\<omega> = 0"
   show "(x + y)\<^sup>\<omega> = 0"
-    by (metis `x\<^sup>\<omega> + y\<^sup>\<omega> = (0\<Colon>'a)` assms no_trivial_inverse omega_sum_refine right_distrib star_omega_1)
+    by (metis `x\<^sup>\<omega> + y\<^sup>\<omega> = (0\<Colon>'a)` assms no_trivial_inverse omega_sum_refine distrib_left star_omega_1)
 qed
 
 text {*
@@ -461,7 +461,7 @@ next
   also have "z + x \<cdot> y = z + x \<cdot> x\<^sup>\<star> \<cdot> z"
     by (metis calculation mult.assoc)
   moreover have "... = (1 + x \<cdot> x\<^sup>\<star>) \<cdot> z"
-    by (metis left_distrib mult_onel)
+    by (metis distrib_right mult_onel)
   moreover have "... = x\<^sup>\<star> \<cdot> z"
     by (metis star_unfoldl_eq)
   thus "z + x \<cdot> y = y"

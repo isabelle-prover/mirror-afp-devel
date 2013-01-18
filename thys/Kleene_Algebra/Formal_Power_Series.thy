@@ -30,7 +30,7 @@ This theory generalises Amine Chaieb's development of formal power
 series as functions from natural numbers, which may be found in {\em
 HOL/Library/Formal\_Power\_Series.thy}. *}
 
-typedef (open) ('a, 'b) fps = "{f::'a list \<Rightarrow> 'b. True}"
+typedef ('a, 'b) fps = "{f::'a list \<Rightarrow> 'b. True}"
   morphisms fps_nth Abs_fps
   by simp
 
@@ -184,11 +184,11 @@ by (simp add: fps_ext times_fps_def setsum_0')
 
 lemma fps_distl:
   "(f::('a::type,'b::{join_semilattice_zero,semiring}) fps) * (g + h) = (f * g) + (f * h)"
-by (simp add: fps_ext fps_mult_image right_distrib setsum_fun_sum)
+by (simp add: fps_ext fps_mult_image distrib_left setsum_fun_sum)
 
 lemma fps_distr:
   "((f::('a::type,'b::{join_semilattice_zero,semiring}) fps) + g) * h = (f * h) + (g * h)"
-by (simp add: fps_ext fps_mult_image left_distrib setsum_fun_sum)
+by (simp add: fps_ext fps_mult_image distrib_right setsum_fun_sum)
 
 text {* The multiplicative unit laws are surprisingly tedious. For the
 proof of the left unit law we use the recursive definition, which we
