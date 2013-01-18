@@ -15,6 +15,7 @@ session Ordinary_Differential_Equations (AFP) = "HOL-Multivariate_Analysis" +
     Runge_Kutta
     Runge_Kutta_Ex
     Runge_Kutta_Ex2
+    Runge_Kutta_Ex3
   files
     "document/root.bib"
     "document/root.tex"
