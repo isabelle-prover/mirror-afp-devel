@@ -144,7 +144,7 @@ fun lang :: "'a rexp \<Rightarrow> 'a lan" where
 | "lang (Times x y) = lang x \<cdot> lang y"
 | "lang (Star x) = (lang x)\<^sup>\<star>"
 
-typedef (open) 'a reg_lan = "range lang :: 'a lan set"
+typedef 'a reg_lan = "range lang :: 'a lan set"
   by auto
 
 setup_lifting type_definition_reg_lan
@@ -190,7 +190,7 @@ begin
     show "x \<cdot> y \<cdot> z = x \<cdot> (y \<cdot> z)"
       by transfer (metis semigroup_mult_class.mult.assoc)
     show "(x + y) \<cdot> z = x \<cdot> z + y \<cdot> z"
-      by transfer (metis semiring_class.left_distrib)
+      by transfer (metis semiring_class.distrib_right)
     show "1 \<cdot> x = x"
       by transfer (metis monoid_mult_class.mult_1_left)
     show "x \<cdot> 1 = x"
@@ -208,7 +208,7 @@ begin
     show "x + x = x"
       by transfer (metis join_semilattice_class.add_idem)
     show "x \<cdot> (y + z) = x \<cdot> y + x \<cdot> z"
-      by transfer (metis semiring_class.right_distrib)
+      by transfer (metis semiring_class.distrib_left)
     show "z \<cdot> x \<le> z \<cdot> (x + y)"
       by transfer (metis pre_dioid_class.subdistl)
     show "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"

@@ -445,15 +445,10 @@ definition fixed_point where
   "fixed_point = (THE x. P x = x)"
 
 lemma fixed_point_unique: "\<exists>!x. P x = x"
-proof -
-  have banach_fixed_point: "\<exists>!y::(real, 'a)bcontfun.
-    y \<in> UNIV \<and> P y = y"
-    using lipschitz lipschitz_bound lipschitz_P interval
-      bcontfun_complete iv_defined
-    by (intro banach_fix[where c="(T - t0)*L"]) (auto intro:
-      split_mult_pos_le simp: lipschitz_def)
-  thus ?thesis by blast
-qed
+  using lipschitz lipschitz_bound lipschitz_P interval
+      complete_univ iv_defined
+  by (intro banach_fix_type[where c="(T - t0)*L"])
+     (auto intro: split_mult_pos_le simp: lipschitz_def)
 
 lemma fixed_point:
   "P fixed_point =  fixed_point"

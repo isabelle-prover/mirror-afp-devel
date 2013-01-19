@@ -158,15 +158,20 @@ lemma setsum_flatten1:
   assumes "finite (A :: 'a set)"
   and "finite (B :: 'a set)"
   shows "\<Sum>{\<Sum>{f x y |y. y \<in> B} |x. x \<in> A} = \<Sum>{f x y |x y. x \<in> A \<and> y \<in> B}"
-  by  (simp add: fset_to_im assms flatten1_im, simp add: fset_to_im[symmetric])
-
+ apply (simp add: fset_to_im assms flatten1_im)
+ apply (subst fset_to_im[symmetric])
+ apply simp
+done
 
 lemma setsum_flatten2:
   fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'b::join_semilattice_zero"
   assumes "finite A"
   and "finite B"
   shows "\<Sum>{\<Sum> {f x y |x. x \<in> A} |y. y \<in> B} = \<Sum>{f x y |x y. x \<in> A \<and> y \<in> B}"
-  by  (simp add: fset_to_im assms flatten2_im, simp add: fset_to_im[symmetric])
+ apply (simp add: fset_to_im assms flatten2_im)
+ apply (subst fset_to_im[symmetric])
+ apply simp
+done
 
 text {* Next we show another additivity property for suprema. *}
 
@@ -214,20 +219,19 @@ qed
 
 subsection {* Finite Suprema in Dioids *}
 
-text {* In this section we mainly prove variants of distributivity
-laws. *}
+text {* In this section we mainly prove variants of distributivity laws. *}
 
 lemma setsum_distl:
   assumes "finite Y"
   shows "(x :: 'a::dioid_one_zero) \<cdot> (\<Sum>Y) = \<Sum>{x \<cdot> y|y. y \<in> Y}"
-  by (simp only: setsum_fun_add assms annir right_distrib Collect_mem_eq fun_im)
+  by (simp only: setsum_fun_add assms annir distrib_left Collect_mem_eq fun_im)
 
 lemma setsum_distr:
   assumes "finite X"
   shows "(\<Sum>X) \<cdot> (y :: 'a::dioid_one_zero) = \<Sum>{x \<cdot> y|x. x \<in> X}"
 proof -
   have "(\<Sum> X) \<cdot> y = \<Sum> ((\<lambda>x. x \<cdot> y) ` X)"
-    by (rule setsum_fun_add, metis assms, rule annil, rule left_distrib)
+    by (rule setsum_fun_add, metis assms, rule annil, rule distrib_right)
   thus ?thesis
     by (metis Collect_mem_eq fun_im)
 qed

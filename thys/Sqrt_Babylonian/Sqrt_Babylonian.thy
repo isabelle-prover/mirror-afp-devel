@@ -629,8 +629,8 @@ qed
 
 text {* Also soundness is not complicated. *}
 
-lemma sqrt_approx_main_sound: assumes x: "x > 0" and xx: "x * x \<ge> n"
-  shows "sqrt_approx_main x * sqrt_approx_main x \<ge> n \<and> sqrt_approx_main x * sqrt_approx_main x - n < \<epsilon>"
+lemma sqrt_approx_main_sound: assumes x: "x > 0" and xx: "x * x > n"
+  shows "sqrt_approx_main x * sqrt_approx_main x > n \<and> sqrt_approx_main x * sqrt_approx_main x - n < \<epsilon>"
   using assms
 proof (induct x rule: sqrt_approx_main.induct)
   case (1 x)
@@ -649,17 +649,20 @@ proof (induct x rule: sqrt_approx_main.induct)
     from x have x4: "4 * x * x > 0" by (auto intro: mult_sign_intros)
     show ?thesis unfolding simp
     proof (rule IH)
-      show "n \<le> ?y * ?y"
-        unfolding mult_le_cancel_left_pos[OF x4, of n, symmetric]
+      show "n < ?y * ?y"
+        unfolding mult_less_cancel_left_pos[OF x4, of n, symmetric]
       proof -
         have id: "4 * x * x * (?y * ?y) = 4 * x * x * n + (n - x * x) * (n - x * x)" using x(1)
           by (simp add: field_simps)
-        show "4 * x * x * n \<le> 4 * x * x * (?y * ?y)" unfolding id
-          by (simp)
+        from 1(3) have "x * x - n > 0" by auto
+        from mult_pos_pos[OF this this]
+        show "4 * x * x * n < 4 * x * x * (?y * ?y)" unfolding id 
+          by (simp add: field_simps)
       qed
     qed
   qed
 qed   
+
 end
 
 text {* It remains to assemble everything into one algorithm. *}
@@ -686,8 +689,8 @@ next
   also have "?sqrti = ?sqrt"
     by (rule sqrt_approx_main_impl, auto)
   finally have id: "sqrt_approx \<epsilon> x = sqrt" unfolding sqrt_def .
-  have sqrt: "sqrt * sqrt \<ge> ?x \<and> sqrt * sqrt - ?x < \<epsilon>" unfolding sqrt_def
-    by (rule sqrt_approx_main_sound[OF x(2)], auto simp: field_simps)
+  have sqrt: "sqrt * sqrt > ?x \<and> sqrt * sqrt - ?x < \<epsilon>" unfolding sqrt_def
+    by (rule sqrt_approx_main_sound[OF x(2)], insert x mult_pos_pos[OF x(1) x(1)], auto simp: field_simps)
   show ?thesis unfolding id using sqrt by auto
 qed
 

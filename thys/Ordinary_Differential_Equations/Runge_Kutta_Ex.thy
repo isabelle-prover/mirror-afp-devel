@@ -191,7 +191,7 @@ proof -
     (\<lambda>dtx. 2 * ((t, x) \<bullet> (0, 1)) * (dtx \<bullet> (0, 1)) - dtx \<bullet> (1, 0))) (at (t, x))"
   proof -
     have f: "(\<lambda>x. (x \<bullet> (0,1))\<twosuperior>) = (\<lambda>x. x^2)o(\<lambda>x. x \<bullet> (0,1))" by auto
-    have f': "(\<lambda>dtx. 2*((t, x) \<bullet> (0,1))*(dtx \<bullet> (0,1))) = 
+    have f': "(\<lambda>dtx. 2*((t, x) \<bullet> (0,1))*(dtx \<bullet> (0,1))) =
       (op * (of_nat 2 * ((t, x) \<bullet> (0,1)) ^ (2 - 1)))o(\<lambda>h. h \<bullet> (0,1))" by auto
     have "((\<lambda>x. (x \<bullet> (0,1))\<twosuperior>) has_derivative (\<lambda>h. 2 * ((t, x) \<bullet> (0,1)) * (h \<bullet> (0,1)))) (at (t, x))"
       unfolding f f'
@@ -353,7 +353,7 @@ lemma sol_bounds:
   shows "E.solution (E.Delta i) \<in> {euler_result i - error_bound'..euler_result i + error_bound'}"
   using convergence[OF i] by (auto simp add: dist_real_def)
 
-lemma euler_result: "euler_result i_max = Float -33140952 -28" by eval (* 2 s *)
+lemma euler_result: "euler_result i_max = Float -33140952 -28" by eval
 
 lemma "euler_result i_max \<in> {-0.1235..-0.1234}"
   by (simp add: euler_result)

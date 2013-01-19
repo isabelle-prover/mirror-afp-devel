@@ -389,68 +389,6 @@ proof
     by (cases "a = x") simp_all
 qed auto
 
-(*
-subsubsection {* Experiments on total derivative *}
-
-lemma Pair_real_function_eq_eucl:
-  fixes f::"real\<Rightarrow>real\<Rightarrow>real"
-  shows "(\<lambda>(a, b). f a b) = (\<lambda>ab. f (ab$$0) (ab$$1))"
-proof (safe intro!: ext)
-  fix a b::real
-  from snd_eq_component_plus'[of a b 0] fst_eq_component_zero'[of a b]
-  show "f a b = f ((a, b) $$ 0) ((a, b) $$ 1)" by simp
-qed  
-
-lemma real_Pair_euclidean_representation:
-  fixes t x::real
-  shows "(t, x) = t *\<^sub>R basis 0 + x *\<^sub>R basis 1"
-proof -
-  have "(t, x) $$ 0 = t" by (simp add: fst_eq_component_zero[symmetric])
-  moreover have "(t, x) $$ 1 = x" using snd_eq_component_plus'[of t x 0, symmetric] by simp
-  ultimately show "(t, x) = t *\<^sub>R basis 0 + x *\<^sub>R basis 1"
-    using euclidean_representation[of "(t, x)"] by simp
-qed
-
-lemma derivative_at_real_Pair_partial_intro:
-  fixes f::"real\<times>real\<Rightarrow>real"
-  assumes "f differentiable (at (t, x))"
-  assumes "((\<lambda>t. f (t, x)) has_derivative ft (t, x)) (at t)"
-  assumes "((\<lambda>x. f (t, x)) has_derivative fx (t, x)) (at x)"
-  shows "(f has_derivative (\<lambda>(dt, dx). ft (t, x) dt + fx (t, x) dx)) (at (t, x))"
-proof -
-  from frechet_derivative_works[of f "(at (t, x))"] assms(1)
-  have f': "(f has_derivative frechet_derivative f (at (t, x))) (at (t, x))" by simp
-
-  hence "(f o (\<lambda>t. t *\<^sub>R basis 0 + x *\<^sub>R basis 1) has_derivative (frechet_derivative f (at (t, x)) o (\<lambda>dt. dt *\<^sub>R basis 0 + 0))) (at t)"
-    by (intro diff_chain_at has_derivative_intros ) (simp add: real_Pair_euclidean_representation)
-  hence "((\<lambda>t. f (t, x)) has_derivative (frechet_derivative f (at (t, x)) o (\<lambda>dt. dt *\<^sub>R basis 0))) (at t)"
-    by (simp add: o_def real_Pair_euclidean_representation)
-  from frechet_derivative_unique_at[OF assms(2)[simplified has_vector_derivative_def] this]
-  have H1: "\<And>h. frechet_derivative f (at (t, x)) (basis 0) * h = ft (t, x) h"
-    using linear_frechet_derivative[OF assms(1)]
-    by (auto simp add: linear_cmul)
-
-  note f'
-  hence "(f o (\<lambda>x. t *\<^sub>R basis 0 + x *\<^sub>R basis 1) has_derivative (frechet_derivative f (at (t, x)) o (\<lambda>dx. 0 + dx *\<^sub>R basis 1))) (at x)"
-    by (intro diff_chain_at has_derivative_intros ) (simp add: real_Pair_euclidean_representation)
-  hence "((\<lambda>x. f (t, x)) has_derivative (frechet_derivative f (at (t, x)) o (\<lambda>dx. dx *\<^sub>R basis 1))) (at x)"
-    by (simp add: o_def real_Pair_euclidean_representation)
-  from frechet_derivative_unique_at[OF assms(3) this]
-  have H2: "\<And>h. frechet_derivative f (at (t, x)) (basis (Suc 0)) * h = fx (t, x) h"
-    using linear_frechet_derivative[OF assms(1)]
-    by (auto simp add: linear_cmul)
-
-  from assms(1) Derivative.jacobian_works[of f]
-  have "(f has_derivative
-      (\<lambda>h. frechet_derivative f (at (t, x)) (basis 0) * h $$ 0 +
-        frechet_derivative f (at (t, x)) (basis (Suc 0)) * h $$ Suc 0))
-    (at (t, x))"
-    by simp
-  thus ?thesis
-    by (simp add: H1 H2 Pair_real_function_eq_eucl)
-qed
-*)
-
 subsection {* Integration *}
 
 lemmas content_real[simp]
@@ -478,5 +416,15 @@ proof (intro antisym)
   thus "a * Sup S \<le> Sup (op * a ` S)"
     by (simp add: ac_simps pos_le_divide_eq[OF assms(1)])
 qed (auto intro!: mult_mono Sup_least)
+
+subsection {* Banach on type class *}
+
+lemma banach_fix_type:
+  fixes f::"'a::complete_space\<Rightarrow>'a"
+  assumes c:"0 \<le> c" "c < 1"
+      and lipschitz:"\<forall>x. \<forall>y. dist (f x) (f y) \<le> c * dist x y"
+  shows "\<exists>!x. (f x = x)"
+  using assms banach_fix[OF complete_univ UNIV_not_empty assms(1,2) subset_UNIV, of f]
+  by auto
 
 end

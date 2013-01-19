@@ -158,7 +158,7 @@ lemma sol_bounds:
   shows "E.solution (E.Delta i) \<in> {euler_result i - error_bound'..euler_result i + error_bound'}"
   using convergence[OF i] by (auto simp add: dist_real_def)
 
-lemma euler_result: "euler_result i_max = Float 3625575212341 -41" by eval (* 10 s *)
+lemma euler_result: "euler_result i_max = Float 3625575212341 -41" by eval
 
 lemma sol_dec: "E.solution 0.5 \<in> {1.648708..1.648734}"
 proof -
