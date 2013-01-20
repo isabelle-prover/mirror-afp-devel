@@ -375,6 +375,19 @@ lemma irreflp_on_strict [simp, intro]:
   "irreflp_on (strict P) A"
   by (auto simp: irreflp_on_def)
 
+lemma transp_on_map:
+  assumes "transp_on Q B"
+    and "h ` A \<subseteq> B"
+  shows "transp_on (\<lambda>x y. Q (h x) (h y)) A"
+  using assms unfolding transp_on_def
+  by auto (metis image_eqI set_mp)
+
+lemma irreflp_on_map:
+  assumes "irreflp_on Q B"
+    and "h ` A \<subseteq> B"
+  shows "irreflp_on (\<lambda>x y. Q (h x) (h y)) A"
+  using assms unfolding irreflp_on_def by auto
+
 lemma transp_on_imp_transp_on_strict:
   "transp_on P A \<Longrightarrow> transp_on (strict P) A"
   unfolding transp_on_def by blast
