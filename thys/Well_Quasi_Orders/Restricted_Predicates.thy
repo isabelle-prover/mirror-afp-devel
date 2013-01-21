@@ -215,9 +215,20 @@ definition orderp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 
 definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "irreflp_on P A = (\<forall>a\<in>A. \<not> P a a)"
 
+definition po_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "po_on P A = (irreflp_on P A \<and> transp_on P A)"
+
 lemma irreflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> \<not> P a a) \<Longrightarrow> irreflp_on P A"
   unfolding irreflp_on_def by blast
+
+lemma po_on_imp_irreflp_on:
+  "po_on P A \<Longrightarrow> irreflp_on P A"
+  by (auto simp: po_on_def)
+
+lemma po_on_imp_transp_on:
+  "po_on P A \<Longrightarrow> transp_on P A"
+  by (auto simp: po_on_def)
 
 lemma mono_on_irreflp_on:
   assumes "irreflp_on Q B"
@@ -230,6 +241,12 @@ lemma irreflp_on_subset:
   assumes "A \<subseteq> B" and "irreflp_on P B"
   shows "irreflp_on P A"
   using assms by (auto simp: irreflp_on_def)
+
+lemma po_on_subset:
+  assumes "A \<subseteq> B" and "po_on P B"
+  shows "po_on P A"
+  using transp_on_subset and irreflp_on_subset and assms
+  unfolding po_on_def by blast
 
 lemma transp_on_irreflp_on_imp_antisymp_on:
   assumes "transp_on P A" and "irreflp_on P A"
@@ -245,6 +262,13 @@ proof
     with `irreflp_on P A` and `a \<in> A` show False unfolding irreflp_on_def by blast
   qed
 qed
+
+lemma po_on_imp_antisymp_on:
+  assumes "po_on P A"
+  shows "antisymp_on (P\<^sup>=\<^sup>=) A"
+  using transp_on_irreflp_on_imp_antisymp_on [of P A]
+    and assms
+  unfolding po_on_def by blast
 
 lemma strict_reflclp [simp]:
   assumes "x \<in> A" and "y \<in> A"
@@ -387,6 +411,13 @@ lemma irreflp_on_map:
     and "h ` A \<subseteq> B"
   shows "irreflp_on (\<lambda>x y. Q (h x) (h y)) A"
   using assms unfolding irreflp_on_def by auto
+
+lemma po_on_map:
+  assumes "po_on Q B"
+    and "h ` A \<subseteq> B"
+  shows "po_on (\<lambda>x y. Q (h x) (h y)) A"
+  using assms and transp_on_map and irreflp_on_map
+  unfolding po_on_def by auto
 
 lemma transp_on_imp_transp_on_strict:
   "transp_on P A \<Longrightarrow> transp_on (strict P) A"
@@ -562,6 +593,46 @@ proof (intro ext)
     assume "?r x y" then show "?l x y" by (induct) auto
   qed
 qed
+
+
+(*TODO: move the following 3 lemmas to Transitive_Closure?*)
+lemma stepfun_imp_tranclp:
+  assumes "f 0 = x" and "f (Suc n) = z"
+    and "\<forall>i\<le>n. P (f i) (f (Suc i))"
+  shows "P\<^sup>+\<^sup>+ x z"
+  using assms
+  by (induct n arbitrary: x z)
+     (auto intro: tranclp.trancl_into_trancl)
+
+lemma tranclp_imp_stepfun:
+  assumes "P\<^sup>+\<^sup>+ x z"
+  shows "\<exists>f n. f 0 = x \<and> f (Suc n) = z \<and> (\<forall>i\<le>n. P (f i) (f (Suc i)))"
+    (is "\<exists>f n. ?P x z f n")
+  using assms
+proof (induct rule: tranclp_induct)
+  case (base y)
+  let ?f = "(\<lambda>_. y)(0 := x)"
+  have "?f 0 = x" and "?f (Suc 0) = y" by auto
+  moreover have "\<forall>i\<le>0. P (?f i) (?f (Suc i))"
+    using base by auto
+  ultimately show ?case by blast
+next
+  case (step y z)
+  then obtain f n where IH: "?P x y f n" by blast
+  then have *: "\<forall>i\<le>n. P (f i) (f (Suc i))"
+    and [simp]: "f 0 = x" "f (Suc n) = y"
+    by auto
+  let ?n = "Suc n"
+  let ?f = "f(Suc ?n := z)"
+  have "?f 0 = x" and "?f (Suc ?n) = z" by auto
+  moreover have "\<forall>i\<le>?n. P (?f i) (?f (Suc i))"
+    using `P y z` and * by auto
+  ultimately show ?case by blast
+qed
+
+lemma tranclp_stepfun_conv:
+  "P\<^sup>+\<^sup>+ x y \<longleftrightarrow> (\<exists>f n. f 0 = x \<and> f (Suc n) = y \<and> (\<forall>i\<le>n. P (f i) (f (Suc i))))"
+  using tranclp_imp_stepfun and stepfun_imp_tranclp by metis
 
 end
 

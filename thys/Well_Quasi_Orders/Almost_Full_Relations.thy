@@ -962,5 +962,168 @@ proof -
   qed
 qed
 
+lemma irreflp_on_extension:
+  fixes A P f
+  defines "R \<equiv> (\<lambda>x y. (x \<in> A \<and> y \<in> A) \<and> (P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)))"
+  assumes A: "\<And>i::nat. f i \<in> A"
+    and bad: "bad P\<^sup>=\<^sup>= f"
+    and trans: "transp_on P A"
+    and irrefl: "irreflp_on P A"
+  shows "irreflp_on R\<^sup>+\<^sup>+ A"
+proof
+  def S \<equiv> "\<lambda>x y. x \<in> A \<and> y \<in> A \<and> (\<exists>i. P\<^sup>=\<^sup>= x (f (Suc i)) \<and> P\<^sup>=\<^sup>= (f i) y)"
+  from bad
+    have le: "\<And>i j. P\<^sup>=\<^sup>= (f i) (f j) \<Longrightarrow> j \<le> i"
+    unfolding good_def by (metis not_leE)
+  have RS: "\<And>x y z. R x y \<Longrightarrow> S y z \<Longrightarrow> S\<^sup>+\<^sup>+ x z"
+  proof -
+    fix x y z
+    assume "R x y" and "S y z"
+    from `R x y` have "x \<in> A" and "y \<in> A" by (auto simp: R_def)
+    from `R x y` have "P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)" by (auto simp: R_def)
+    then show "S\<^sup>+\<^sup>+ x z"
+    proof
+      assume "P x y"
+      with `x \<in> A` and `y \<in> A` and A and `S y z`
+        show ?thesis using trans unfolding transp_on_def S_def by blast
+    next
+      assume "\<exists>i. x = f (Suc i) \<and> y = f i"
+      then have "S x y" using `x \<in> A` and `y \<in> A` by (auto simp: S_def)
+      with `S y z` show ?thesis by auto
+    qed
+  qed
+  have RS': "\<And>x y z. R x y \<Longrightarrow> S\<^sup>+\<^sup>+ y z \<Longrightarrow> S\<^sup>+\<^sup>+ x z"
+  proof -
+    fix x y z assume "R x y" and "S\<^sup>+\<^sup>+ y z"
+    moreover from `S\<^sup>+\<^sup>+ y z` obtain u where "S y u" and "S\<^sup>*\<^sup>* u z" by (metis tranclpD)
+    ultimately have "S\<^sup>+\<^sup>+ x u" using RS by blast
+    with `S\<^sup>*\<^sup>* u z` show "S\<^sup>+\<^sup>+ x z" by auto
+  qed
+  have RS'': "\<And>x y z. R\<^sup>+\<^sup>+ x y \<Longrightarrow> S\<^sup>+\<^sup>+ y z \<Longrightarrow> S\<^sup>+\<^sup>+ x z"
+  proof -
+    fix x y z assume "R\<^sup>+\<^sup>+ x y" and "S\<^sup>+\<^sup>+ y z"
+    then show "S\<^sup>+\<^sup>+ x z" by (induct) (auto intro: RS')
+  qed
+
+  fix a
+  assume "a \<in> A"
+  show "\<not> R\<^sup>+\<^sup>+ a a"
+  proof
+    assume "R\<^sup>+\<^sup>+ a a"
+    then obtain x y where "R\<^sup>+\<^sup>+ x y" and "P\<^sup>=\<^sup>= a x" and "P\<^sup>=\<^sup>= y a" by blast
+    then have "S\<^sup>+\<^sup>+ x y" using `a \<in> A`
+    proof (induct arbitrary: a rule: tranclp_induct)
+      case (base y)
+      from base have "x \<in> A" and "y \<in> A" by (auto simp: R_def)
+      from base have "P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)" by (auto simp: R_def)
+      then show ?case
+      proof
+        assume "P x y" with `a \<in> A` and `x \<in> A` and `y \<in> A` and `P\<^sup>=\<^sup>= a x` and `P\<^sup>=\<^sup>= y a` 
+          have "P a a" using trans unfolding transp_on_def by blast
+        with irrefl and `a \<in> A` show ?thesis unfolding irreflp_on_def by blast
+      next
+        assume "\<exists>i. x = f (Suc i) \<and> y = f i"
+        then show ?thesis using `x \<in> A` and `y \<in> A` unfolding S_def by auto
+      qed
+    next
+      case (step y z)
+      from `R\<^sup>+\<^sup>+ x y` have "x \<in> A" and "y \<in> A" by (induct) (auto simp: R_def)
+      from `R y z` have "z \<in> A" by (auto simp: R_def)
+      from `P\<^sup>=\<^sup>= z a` and `P\<^sup>=\<^sup>= a x` and `z \<in> A` and `a \<in> A` and `x \<in> A`
+        have "P\<^sup>=\<^sup>= z x" using trans unfolding transp_on_def by blast
+      from `R y z` have "P y z \<or> (\<exists>i. y = f (Suc i) \<and> z = f i)" by (auto simp: R_def)
+      then show ?case
+      proof
+        assume "P y z"
+        then have "P\<^sup>=\<^sup>= y z" by auto
+        with `P\<^sup>=\<^sup>= z x` and `z \<in> A` and step
+          have "S\<^sup>+\<^sup>+ x y" by blast
+        then obtain u where "S\<^sup>*\<^sup>* x u" and "S u y" by (metis rtranclp.rtrancl_refl tranclp.cases tranclp_into_rtranclp)
+        with `P\<^sup>=\<^sup>= y z` and A and `y \<in> A` and `z \<in> A`
+          have "S u z" using trans unfolding transp_on_def S_def by blast
+        with `S\<^sup>*\<^sup>* x u` show ?thesis by auto
+      next
+        assume "\<exists>i. y = f (Suc i) \<and> z = f i"
+        then obtain i where "y = f (Suc i)" and "z = f i" by auto
+        then have "S\<^sup>+\<^sup>+ y z" using `y \<in> A` and `z \<in> A` unfolding S_def by blast
+        with `R\<^sup>+\<^sup>+ x y` show ?thesis by (rule RS'')
+      qed
+    qed
+    from tranclp_imp_stepfun [OF this] obtain g n
+      where "g 0 = x" and "g (Suc n) = y"
+      and "\<forall>i\<le>n. S (g i) (g (Suc i))"
+      and gA: "\<forall>i\<le>Suc n. g i \<in> A" unfolding S_def
+      by auto (metis le_Suc_eq order_refl)
+    then have "\<forall>i\<in>{0 ..< Suc n}. \<exists>j. P\<^sup>=\<^sup>= (g i) (f (Suc j)) \<and> P\<^sup>=\<^sup>= (f j) (g (Suc i))"
+      unfolding S_def by auto
+    from bchoice [OF this] obtain h
+      where *: "\<forall>i\<le>n. P\<^sup>=\<^sup>= (g i) (f (Suc (h i))) \<and> P\<^sup>=\<^sup>= (f (h i)) (g (Suc i))" by force
+    then have "\<forall>i<n. P\<^sup>=\<^sup>= (f (h i)) (f (Suc (h (Suc i))))"
+    proof (intro allI impI)
+      fix i assume "i < n"
+        then have "i \<le> n" and "Suc i \<le> n" and "i < Suc n" by auto
+      from * [rule_format, OF `i \<le> n`] and * [rule_format, OF `Suc i \<le> n`]
+        have "P\<^sup>=\<^sup>= (f (h i)) (g (Suc i))"
+        and "P\<^sup>=\<^sup>= (g (Suc i)) (f (Suc (h (Suc i))))" by auto
+      moreover
+      have "f (h i) \<in> A" and "g (Suc i) \<in> A" and "f (Suc (h (Suc i))) \<in> A"
+        using `i < Suc n` and A and gA by auto
+      ultimately
+        show "P\<^sup>=\<^sup>= (f (h i)) (f (Suc (h (Suc i))))"
+        using transp_on_imp_transp_on_reflclp [OF trans]
+        unfolding transp_on_def by blast
+    qed
+    with le have "\<forall>i<n. Suc (h (Suc i)) \<le> h i" by blast
+    then have "\<forall>i<n. h (Suc i) < h i" by auto
+    then have "h n \<le> h 0" by (induct n) auto
+    from gA and `g 0 = x` have "x \<in> A" by auto
+    from gA and `g (Suc n) = y` have "y \<in> A" by auto
+    from * and `g 0 = x` have "P\<^sup>=\<^sup>= x (f (Suc (h 0)))" by auto
+    with `P\<^sup>=\<^sup>= a x` have "P\<^sup>=\<^sup>= a (f (Suc (h 0)))"
+      using `a \<in> A` and `x \<in> A` and `f (Suc (h 0)) \<in> A`
+      and transp_on_imp_transp_on_reflclp [OF trans]
+      unfolding transp_on_def by blast
+    from * and `g (Suc n) = y` have "P\<^sup>=\<^sup>= (f (h n)) y" by auto
+    with `P\<^sup>=\<^sup>= y a` have "P\<^sup>=\<^sup>= (f (h n)) a"
+      using `y \<in> A` and `f (h n) \<in> A` and `a \<in> A`
+      and transp_on_imp_transp_on_reflclp [OF trans]
+      unfolding transp_on_def by blast
+    with `P\<^sup>=\<^sup>= a (f (Suc (h 0)))` have "P\<^sup>=\<^sup>= (f (h n)) (f (Suc (h 0)))"
+      using `f (h n) \<in> A` and `a \<in> A` and `f (Suc (h 0)) \<in> A`
+      and transp_on_imp_transp_on_reflclp [OF trans]
+      unfolding transp_on_def by blast
+    with le have "Suc (h 0) \<le> h n" by auto
+    with `h n \<le> h 0` show False by auto
+  qed
+qed
+
+text {*If every extension of a partial-order is well-founded, then
+the partial order is almost-full.*}
+lemma wfp_on_extensions_imp_almost_full_on:
+  assumes po: "po_on P A"
+    and extends: "\<And>Q. \<lbrakk>po_on Q A; \<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y\<rbrakk> \<Longrightarrow> wfp_on Q A"
+  shows "almost_full_on P\<^sup>=\<^sup>= A"
+proof (rule ccontr)
+  assume "\<not> almost_full_on P\<^sup>=\<^sup>= A"
+  then obtain f where A: "\<And>i::nat. f i \<in> A"
+    and "bad P\<^sup>=\<^sup>= f" by (auto simp: almost_full_on_def)
+  from `bad P\<^sup>=\<^sup>= f`
+    have le: "\<And>i j. P\<^sup>=\<^sup>= (f i) (f j) \<Longrightarrow> j \<le> i"
+    unfolding good_def by (metis not_leE)
+  def R \<equiv> "(\<lambda>x y. (x \<in> A \<and> y \<in> A) \<and> (P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)))"
+  let ?R = "R\<^sup>+\<^sup>+"
+  have **: "\<And>i. ?R (f (Suc i)) (f i)" using A by (auto simp: R_def)
+  then have "\<not> wfp_on ?R A" using A by (auto simp: wfp_on_def)
+  have irrefl: "irreflp_on P A" by (rule po [THEN po_on_imp_irreflp_on])
+  have trans: "transp_on P A" by (rule po [THEN po_on_imp_transp_on])
+  have "irreflp_on ?R A"
+    using irreflp_on_extension [OF A `bad P\<^sup>=\<^sup>= f` trans irrefl]
+    unfolding R_def by blast
+  moreover have "transp_on ?R A" by (auto simp: transp_on_def)
+  ultimately have "po_on ?R A" by (auto simp: po_on_def)
+  from extends [OF this] have "wfp_on ?R A" unfolding R_def by blast
+  with `\<not> wfp_on ?R A` show False by contradiction
+qed
+
 end
 
