@@ -79,8 +79,16 @@ lemma reflp_on_converse:
   "reflp_on P A \<Longrightarrow> reflp_on P\<inverse>\<inverse> A"
   unfolding reflp_on_def by blast
 
+lemma reflp_on_converse_simp [simp]:
+  "reflp_on P\<inverse>\<inverse> A \<longleftrightarrow> reflp_on P A"
+  by (auto simp: reflp_on_def)
+
 lemma transp_on_converse:
   "transp_on P A \<Longrightarrow> transp_on P\<inverse>\<inverse> A"
+  unfolding transp_on_def by blast
+
+lemma transp_on_converse_simp [simp]:
+  "transp_on P\<inverse>\<inverse> A \<longleftrightarrow> transp_on P A"
   unfolding transp_on_def by blast
 
 lemma transp_on_reflclp:
@@ -225,6 +233,18 @@ lemma po_onI [Pure.intro]:
 lemma irreflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> \<not> P a a) \<Longrightarrow> irreflp_on P A"
   unfolding irreflp_on_def by blast
+
+lemma irreflp_on_converse:
+  "irreflp_on P A \<Longrightarrow> irreflp_on P\<inverse>\<inverse> A"
+  unfolding irreflp_on_def by blast
+
+lemma irreflp_on_converse_simp [simp]:
+  "irreflp_on P\<inverse>\<inverse> A \<longleftrightarrow> irreflp_on P A"
+  by (auto simp: irreflp_on_def)
+
+lemma po_on_converse_simp [simp]:
+  "po_on P\<inverse>\<inverse> A \<longleftrightarrow> po_on P A"
+  by (simp add: po_on_def)
 
 lemma po_on_imp_irreflp_on:
   "po_on P A \<Longrightarrow> irreflp_on P A"
