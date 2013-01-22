@@ -18,6 +18,7 @@ session Well_Quasi_Orders (AFP) = HOL +
     Kruskal_Tree
     Multiset_Extension
     Kruskal_Terms
+    Wpo_Kruskal_Terms
   files
     "document/root.bib"
     "document/root.tex"
