@@ -8,7 +8,7 @@ header {* Well-Partial-Orders *}
 
 theory Well_Partial_Orders
 imports
-  "$AFP/Well_Quasi_Orders/Almost_Full_Relations"
+  Almost_Full_Relations
   "~~/src/HOL/Library/Zorn"
 begin
 

@@ -4,6 +4,8 @@ session Well_Quasi_Orders (AFP) = HOL +
     "../Abstract-Rewriting/Seq"
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Ramsey"
+    "~~/src/HOL/Library/Order_Relation"
+    "~~/src/HOL/Library/Zorn"
   theories
     "~~/src/HOL/Library/Sublist"
     Restricted_Predicates
