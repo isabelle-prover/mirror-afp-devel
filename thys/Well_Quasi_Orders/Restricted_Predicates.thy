@@ -218,6 +218,10 @@ definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow>
 definition po_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "po_on P A = (irreflp_on P A \<and> transp_on P A)"
 
+lemma po_onI [Pure.intro]:
+  "\<lbrakk>irreflp_on P A; transp_on P A\<rbrakk> \<Longrightarrow> po_on P A"
+  by (auto simp: po_on_def)
+
 lemma irreflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> \<not> P a a) \<Longrightarrow> irreflp_on P A"
   unfolding irreflp_on_def by blast
