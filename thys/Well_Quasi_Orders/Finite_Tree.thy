@@ -543,7 +543,7 @@ inductive_set
   terms :: "('b \<times> nat) set \<Rightarrow> 'a set"
   for F :: "('b \<times> nat) set"
 where
-  [intro]: "(f, n) \<in> F \<Longrightarrow> length ts = n \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> mk f ts \<in> terms F"
+  mk [intro]: "(f, n) \<in> F \<Longrightarrow> length ts = n \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> mk f ts \<in> terms F"
 
 lemma terms_imp_trees:
   assumes "t \<in> terms F" shows "t \<in> trees (fst ` F)"
