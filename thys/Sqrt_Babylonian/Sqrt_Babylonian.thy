@@ -235,24 +235,18 @@ text {* For completeness, we first need the following crucial inquality, which w
    as we first made several proof attemps which have been dead ends.) *}
 lemma square_inequality: "2 * x * y \<le> x * x div y * y + y * (y :: int)"
 proof -
-  have "y = x + (y - x)" by simp
-  then obtain z where xyz: "y = x + z" and z: "z = y - x" by blast
-  from z have x: "x = y - z" by auto
-  have xx: "x * x = z * z + y * (y - z) - y * z" unfolding x 
-    by (auto simp: field_simps)
-  have le: "(y * y + z * z - y * (z * 2)) mod y \<le> z * z" 
-  proof -
-    have "(y * y + z * z - y * (z * 2)) mod y
-      = (z * z + (y - z * 2) * y) mod y"
-      by (simp add: field_simps)
-    also have "\<dots> = z * z mod y" by fastforce
-    also have "\<dots> \<le> z * z" 
-      by (rule zmod_le_nonneg_dividend, auto)
-    finally show ?thesis .
-  qed
-  show ?thesis unfolding xx unfolding x
-    unfolding mod_div_equality_int using le
-    by (simp add: field_simps)
+  have pos: "0 \<le> (y - x) * (y - x) div y * y" 
+    by (metis transfer_nat_int_function_closures div_0 eq_iff linear neg_imp_zdiv_nonneg_iff not_le split_mult_pos_le)
+  have "x * x div y * y + y * y = 
+    ((y - x) * (y - x) + y*(2*x - y)) div y * y + y * y" by (simp add: field_simps)
+  also have "\<dots> = 2*y*x - y*y + (y-x)*(y-x) div y * y + y * y"
+  proof (cases "y = 0")
+    case False
+    show ?thesis unfolding div_mult_self2[OF False] by (auto simp: field_simps)
+  qed simp
+  also have "\<dots> = 2*x*y + (y-x)*(y-x) div y * y" by (auto simp: field_simps)
+  also have "\<dots> \<ge> 2*x*y" using pos by auto
+  finally show ?thesis .
 qed 
   
 lemma sqrt_babylon_int_main_complete: assumes x0: "x \<ge> 0"
