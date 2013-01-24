@@ -109,8 +109,8 @@ qed
 
 text {*If for every @{term i} there is a later index @{term "f i"} such that the
 corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.*}
-lemma stepfun_imp_chainp:
-  assumes "\<forall>i\<ge>n::nat. f i > i \<and> P (S i) (S (f i))"
+lemma stepfun_imp_chainp':
+  assumes "\<forall>i\<ge>n::nat. f i \<ge> i \<and> P (S i) (S (f i))"
   shows "chainp P (\<lambda>i. S ((f ^^ i) n))" (is "chainp P ?T")
 proof
   fix i
@@ -119,16 +119,25 @@ proof
     show "P (?T i) (?T (Suc i))" by simp
 qed
 
+lemma stepfun_imp_chainp:
+  assumes "\<forall>i\<ge>n::nat. f i > i \<and> P (S i) (S (f i))"
+  shows "chainp P (\<lambda>i. S ((f ^^ i) n))" (is "chainp P ?T")
+  using stepfun_imp_chainp'[of n f P S] and assms by force
+
 text {*If for every @{term i} there is a later index @{term j} such that the
 corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.*}
+lemma steps_imp_chainp':
+  assumes "\<forall>i\<ge>n::nat. \<exists>j\<ge>i. P (S i) (S j)" shows "\<exists>T. chainp P T"
+proof -
+  from assms have "\<forall>i\<in>{i. i \<ge> n}. \<exists>j\<ge>i. P (S i) (S j)" by auto
+  from bchoice[OF this]
+    obtain f where "\<forall>i\<ge>n. f i \<ge> i \<and> P (S i) (S (f i))" by auto
+  from stepfun_imp_chainp'[of n f P S, OF this] show ?thesis by fast
+qed
+
 lemma steps_imp_chainp:
   assumes "\<forall>i\<ge>n::nat. \<exists>j>i. P (S i) (S j)" shows "\<exists>T. chainp P T"
-proof -
-  from assms have "\<forall>i\<in>{i. i \<ge> n}. \<exists>j>i. P (S i) (S j)" by auto
-  from bchoice[OF this]
-    obtain f where seq: "\<forall>i\<ge>n. f i > i \<and> P (S i) (S (f i))" by auto
-  from stepfun_imp_chainp[of n f P S, OF this] show ?thesis by fast
-qed
+  using steps_imp_chainp' [of n P S] and assms by force
 
 
 subsection {* Predicates on Natural Numbers *}
