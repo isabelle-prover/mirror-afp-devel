@@ -6,7 +6,7 @@ begin
 
 text {*If the strict part of a quasi-order @{term Q} is a
 well-partial-order, then @{term Q} is a well-quasi-order.*}
-lemma wpo_on_imp_wqo_on:
+lemma wpo_on_strict_imp_wqo_on:
   fixes P Q
   defines "P \<equiv> strict Q"
   assumes "wpo_on P A" and "qo_on Q A"
@@ -57,6 +57,43 @@ next
     unfolding qo_on_def reflp_on_def transp_on_def
     by blast
 qed
+
+lemma wqo_on_imp_wpo_on:
+  fixes P Q
+  defines "P \<equiv> strict Q"
+  assumes "wqo_on Q A" and "antisymp_on Q A"
+  shows "wpo_on P A"
+proof
+  have refl: "\<And>x. x \<in> A \<Longrightarrow> Q x x"
+    using `wqo_on Q A` [THEN wqo_on_imp_reflp_on]
+    unfolding reflp_on_def by blast
+  show "irreflp_on P A" by (simp add: P_def)
+  show "transp_on P A"
+    using `wqo_on Q A` [THEN wqo_on_imp_transp_on, THEN transp_on_imp_transp_on_strict]
+    unfolding P_def .
+  from `wqo_on Q A` have af: "almost_full_on Q A"
+    by (rule wqo_on_imp_almost_full_on)
+  from assms
+    have eq: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> Q x y = (strict Q)\<^sup>=\<^sup>= x y"
+    by (auto intro: refl simp: antisymp_on_def)
+  show "almost_full_on P\<^sup>=\<^sup>= A"
+  proof
+    fix f
+    assume *: "\<forall>i::nat. f i \<in> A"
+    from af [unfolded almost_full_on_def, THEN spec, THEN mp, OF this]
+      show "good P\<^sup>=\<^sup>= f"
+      using * and eq
+      unfolding P_def good_def
+      by blast
+  qed
+qed
+
+lemma wpo_on_strict_wqo_on_conv:
+  assumes "qo_on P A" and "antisymp_on P A"
+  shows "wpo_on (strict P) A = wqo_on P A"
+  using wpo_on_strict_imp_wqo_on [OF _ assms(1)]
+    and wqo_on_imp_wpo_on [OF _ assms(2)]
+    by blast
 
 end
 
