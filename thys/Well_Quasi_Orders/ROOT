@@ -13,6 +13,7 @@ session Well_Quasi_Orders (AFP) = HOL +
     Almost_Full_Relations
     Well_Quasi_Orders
     Well_Partial_Orders
+    Orders
     Finite_Tree
     Kruskal
     Wqo_Instances
