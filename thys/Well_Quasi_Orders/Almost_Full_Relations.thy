@@ -56,6 +56,15 @@ subsection {* Basic Definitions and Facts *}
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "almost_full_on P A \<equiv> \<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> good P f"
 
+lemma (in mbs) mbs':
+  assumes "\<not> almost_full_on (strong A) (vals A)"
+  shows "\<exists>g.
+    bad (strong A) g \<and>
+    (\<forall>n. min_at A g n) \<and>
+    (\<forall>i. g i \<in> vals A)"
+  using assms and mbs
+  unfolding almost_full_on_def by blast
+
 lemma almost_full_onD:
   fixes f :: "nat \<Rightarrow> 'a" and A :: "'a set"
   assumes "almost_full_on P A" and "\<And>i. f i \<in> A"
