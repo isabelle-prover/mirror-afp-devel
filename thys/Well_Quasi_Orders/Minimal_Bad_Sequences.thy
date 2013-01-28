@@ -70,7 +70,7 @@ proof
 qed
 
 fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
-  "minimal_bad_seq A f 0 = A f 0"
+  "minimal_bad_seq A f 0 = f"
 | "minimal_bad_seq A f (Suc n) = (
     let g = minimal_bad_seq A f n in
     repl (Suc n) g (A g n))"
@@ -209,11 +209,11 @@ proof -
   {
     fix x
     assume "x = f (Suc n)"
-    hence "x \<in> vals A" and "\<forall>i. f i \<in> vals A" using assms by simp+
+    hence "x \<in> vals A" using assms by simp+
     hence "?I x"
     proof (induct x rule: weak_induct)
       fix x
-      assume "x \<in> vals A" and IH: "\<And>y. \<lbrakk>y \<in> vals A; weak y x; \<forall>i. f i \<in> vals A\<rbrakk> \<Longrightarrow> ?I y"
+      assume "x \<in> vals A" and IH: "\<And>y. \<lbrakk>y \<in> vals A; weak y x\<rbrakk> \<Longrightarrow> ?I y"
       show "?I x"
       proof (intro allI impI, elim conjE)
         fix f
@@ -233,13 +233,12 @@ proof -
             and suffix: "\<forall>i\<ge>Suc n. \<exists>j\<ge>Suc n. weakeq (h i) (f j)"
             and "bad ?P h" by (auto simp: min_at_def)
           let ?g = "repl (Suc n) f h"
-          from weak have weak': "weak (?g (Suc n)) (f (Suc n))" by simp
-          have min_at: "min_at A ?g n"
-            using suffix_repl [OF _ suffix, of n]
-            and `min_at A f n` by (auto simp: min_at_def)
-          have bad: "bad ?P ?g"
-            using bad_strong_repl [OF * `bad ?P f` `bad ?P h`, of "Suc n", OF suffix] .
-          have vals: "\<forall>i. ?g i \<in> vals A"
+          have "?g (Suc n) \<in> vals A"
+            using weak_vals [OF weak `x \<in> vals A` [unfolded x]] by simp
+          moreover
+          from weak have weak': "weak (?g (Suc n)) x" by (simp add: x)
+          ultimately have "?I (?g (Suc n))" by (rule IH)
+          moreover have vals: "\<forall>i. ?g i \<in> vals A"
           proof
             fix i show "?g i \<in> vals A"
             proof (cases "i < Suc n")
@@ -252,11 +251,12 @@ proof -
               with `\<not> i < Suc n` show ?thesis by simp
             qed
           qed
-          have "?g (Suc n) \<in> vals A"
-            using weak_vals [OF weak `x \<in> vals A` [unfolded x]] by simp
-          from IH [unfolded x, OF this weak', THEN spec [of _ ?g], OF assms(1)]
-            and min_at and bad and this and vals obtain M
-            where C: "?C M ?g (?g (Suc n))" by blast
+          moreover have min_at: "min_at A ?g n"
+            using suffix_repl [OF _ suffix, of n]
+            and `min_at A f n` by (auto simp: min_at_def)
+          moreover have bad: "bad ?P ?g"
+            using bad_strong_repl [OF * `bad ?P f` `bad ?P h`, of "Suc n", OF suffix] .
+          ultimately obtain M where C: "?C M ?g (?g (Suc n))" by blast
           moreover with weak_imp_weakeq [OF weak]
             have "weakeq (M (Suc n)) (f (Suc n))"
             using weakeq_trans [of "M (Suc n)" "?g (Suc n)"] by auto
@@ -434,22 +434,9 @@ proof -
     show "?Q n"
     proof (induction n)
       case 0
-      have "\<forall>i. g i \<in> vals A" using `\<And>i. g i \<in> vals A` by auto
-      moreover have "min_at A g 0" by fact
-      moreover have "bad ?P g" by fact
-      ultimately
-        have M [simp]: "M g 0 0 = g 0" and "weakeq (M g 0 (Suc 0)) (g (Suc 0))"
-        and "bad ?P (M g 0)" and "min_at A (M g 0) (Suc 0)"
-        and **: "\<forall>i\<ge>Suc 0. \<exists>j\<ge>Suc 0. weakeq (M g 0 i) (g j)"
-        using * [of g 0] by auto
-      moreover have "\<forall>i. ?g 0 i \<in> vals A"
-          using ** and weakeq_vals and `\<And>i. g i \<in> vals A`
-          by (auto) (metis M le_0_eq not_less_eq_eq)
-      moreover have "min_at A (M g 0) 0"
-        using `min_at A g 0` and suffix_repl [of 0, OF _ **] by (auto simp: min_at_def)
-      moreover have "\<forall>i\<ge>0. \<exists>j\<ge>0. weakeq (?g 0 i) (g j)"
-        using suffix_repl [of 0, OF _ **] by auto
-      ultimately show ?case by simp
+      with `\<And>i. g i \<in> vals A` and `min_at A g 0` and `bad ?P g`
+        show ?case
+        by auto
     next
       case (Suc n)
       then have vals: "\<forall>i. ?g n i \<in> vals A" by simp
