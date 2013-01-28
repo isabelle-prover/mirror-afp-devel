@@ -9,7 +9,7 @@ header {*
   \isaheader{Auxiliary Definitions}
 *}
 
-theory Aux imports Main begin
+theory Auxiliary imports Main begin
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
   "((n::nat) + max i j \<le> m) = (n + i \<le> m \<and> n + j \<le> m)"

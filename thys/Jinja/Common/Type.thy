@@ -6,7 +6,7 @@
 
 header {* \isaheader{Jinja types} *}
 
-theory Type imports Aux begin
+theory Type imports Auxiliary begin
 
 type_synonym cname = string -- "class names"
 type_synonym mname = string -- "method name"
