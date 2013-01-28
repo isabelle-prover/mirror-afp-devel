@@ -1,6 +1,6 @@
 theory Common_Main
 imports
-  "../Basic/Aux"
+  "../Basic/Auxiliary"
   "../Framework/FWProgress"
   "../Framework/FWBisimDeadlock"
   "../Framework/FWBisimLift"

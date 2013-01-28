@@ -18,7 +18,7 @@ imports Main
   "../../Collections/impl/TrieMapImpl"
   "../../Collections/impl/ListMapImpl"
   "../../Collections/impl/Fifo"
-  Aux
+  Auxiliary
 begin
 
 end
