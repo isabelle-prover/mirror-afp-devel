@@ -644,7 +644,7 @@ lemma almost_full_on_lists:
   assumes "almost_full_on P A"
   shows "almost_full_on (list_hembeq P) (lists A)"
     (is "almost_full_on ?P ?A")
-proof -
+proof (rule ccontr)
   interpret list_mbs: mbs "\<lambda>_. ?P" suffix lists
   proof -
     show "mbs (\<lambda>_. ?P) suffix lists"
@@ -652,112 +652,104 @@ proof -
         simp: list_hembeq_suffix wfp_on_suffix suffix_lists
         intro: suffix_trans)
   qed
+  note refl = reflp_on_list_hembeq [of P A]
+  assume "\<not> almost_full_on ?P ?A"
+  then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f"
+    unfolding almost_full_on_def by blast
+  from list_mbs.mbs [OF this] obtain m where
+    bad: "bad ?P m" and
+    mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) suffix A m n" and
+    in_lists: "\<And>i. m i \<in> lists A"
+    by blast
+  let ?A = m
+  have non_empty: "\<forall>i. ?A i \<noteq> []" using bad and bad_imp_not_Nil by auto
+  then obtain a as where a: "\<forall>i. hd (?A i) = a i \<and> tl (?A i) = as i" by force
+  let ?B = "\<lambda>i. tl (?A i)"
   {
-    from reflp_on_list_hembeq have "reflp_on ?P ?A" .
-  }
-  note refl = this
-  {
-    have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> good ?P f"
-    proof (rule ccontr)
-      assume "\<not> ?thesis"
-      then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f" by blast
-      from list_mbs.mbs [OF this] obtain m where
-        bad: "bad ?P m" and
-        mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) suffix A m n" and
-        in_lists: "\<And>i. m i \<in> lists A"
-        by blast
-      let ?A = m
-      have non_empty: "\<forall>i. ?A i \<noteq> []" using bad and bad_imp_not_Nil by auto
-      then obtain a as where a: "\<forall>i. hd (?A i) = a i \<and> tl (?A i) = as i" by force
-      let ?B = "\<lambda>i. tl (?A i)"
+    assume "\<exists>f::nat seq. (\<forall>i. f i \<ge> f 0) \<and> bad ?P (?B \<circ> f)"
+    then obtain f :: "nat seq" where ge: "\<forall>i. f i \<ge> f 0"
+      and "bad ?P (?B \<circ> f)" by auto
+    let ?C = "\<lambda>i. if i < f 0 then ?A i else ?B (f (i - f 0))"
+    have [simp]: "\<And>i. i < f 0 \<Longrightarrow> ?C i = ?A i" by auto
+    have [simp]: "\<And>i. f 0 \<le> i \<Longrightarrow> ?C i = ?B (f (i - f 0))" by auto
+    have "bad ?P ?C"
+    proof
+      assume "good ?P ?C"
+      then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: good_def)
       {
-        assume "\<exists>f::nat seq. (\<forall>i. f i \<ge> f 0) \<and> bad ?P (?B \<circ> f)"
-        then obtain f :: "nat seq" where ge: "\<forall>i. f i \<ge> f 0"
-          and "bad ?P (?B \<circ> f)" by auto
-        let ?C = "\<lambda>i. if i < f 0 then ?A i else ?B (f (i - f 0))"
-        have [simp]: "\<And>i. i < f 0 \<Longrightarrow> ?C i = ?A i" by auto
-        have [simp]: "\<And>i. f 0 \<le> i \<Longrightarrow> ?C i = ?B (f (i - f 0))" by auto
-        have "bad ?P ?C"
-        proof
-          assume "good ?P ?C"
-          then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: good_def)
-          {
-            assume "j < f 0" with `i < j` and * have "?P (?A i) (?A j)" by simp
-            with `i < j` and `bad ?P ?A` have False by (auto simp: good_def)
-          } moreover {
-            assume "f 0 \<le> i" with `i < j` and * have "?P (?B (f (i - f 0))) (?B (f (j - f 0)))" by simp
-            moreover with `i < j` and `f 0 \<le> i` have "i - f 0 < j - f 0" by auto
-            ultimately have False using `bad ?P (?B \<circ> f)` by (auto simp: good_def)
-          } moreover {
-            have suffix: "suffixeq (?B (f (j - f 0))) (?A (f (j - f 0)))" by simp
-            assume "i < f 0" and "f 0 \<le> j"
-            with * have "?P (?A i) (?B (f (j - f 0)))" by auto
-            with suffix have "?P (?A i) (?A (f (j - f 0)))" using list_hembeq_suffixeq [of P] by blast
-            moreover from ge [THEN spec [of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
-            ultimately have False using `bad ?P ?A` by (auto simp: good_def)
-          } ultimately show False by arith
-        qed
-        have "\<forall>i<f 0. ?C i = ?A i" by auto
-        moreover have "suffix (?C (f 0)) (?A (f 0))" using non_empty by auto
-        moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (?A j)"
-        proof (intro allI impI)
-          fix i
-          let ?i = "f (i - f 0)"
-          assume "f 0 \<le> i"
-          with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> ?i" by auto
-          from `f 0 \<le> i` have "?C i = ?B ?i" by auto
-          with non_empty have "suffix\<^sup>=\<^sup>= (?C i) (?A ?i)" by auto
-          thus "\<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (?A j)" using `f 0 \<le> ?i` by auto
-        qed
-        ultimately have "good ?P ?C"
-          using mb [of "f 0", unfolded list_mbs.min_at_def, rule_format, of ?C] by blast
-        with `bad ?P ?C` have False by blast
-      }
-      hence no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
-      let ?B' = "{?B i | i. True}"
-      have subset: "?B' \<subseteq> lists A"
-      proof
-        fix B assume "B \<in> ?B'"
-        then obtain i where B: "B = ?B i" by auto
-        hence "suffixeq B (?A i)" by simp
-        with in_lists [of i] show "B \<in> lists A" by (auto simp: suffixeq_def)
-      qed
-      have "almost_full_on ?P ?B'"
-      proof
-        from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
-        fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_good [of ?P ?B f, OF no_special_bad_seq refl this]
-          show "good ?P f" .
-      qed
-      let ?a' = "{a i | i. True}"
-      have "?a' \<subseteq> A"
-      proof
-        fix x assume "x \<in> ?a'"
-        then obtain i where x: "x = a i" by auto
-        with a and non_empty have "a i \<in> set (?A i)" by (metis hd_in_set)
-        with in_lists [of i] show "x \<in> A" unfolding x by auto
-      qed
-      from almost_full_on_subset [OF this assms]
-        have "almost_full_on P ?a'" .
-      from almost_full_on_Sigma [OF `almost_full_on P ?a'` `almost_full_on ?P ?B'`]
-        have af: "almost_full_on (prod_le P ?P) (?a' \<times> ?B')" .
-      let ?aB = "\<lambda>i. (a i, ?B i)"
-      let ?P' = "prod_le P ?P"
-      have "\<forall>i. ?aB i \<in> (?a' \<times> ?B')" by auto
-      with af have "good ?P' ?aB" unfolding almost_full_on_def by auto
-      then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
-        by (auto simp: good_def almost_full_on_def)
-     from hd_Cons_tl and non_empty
-        have hd_tl: "hd (?A i) # tl (?A i) = ?A i"
-          "hd (?A j) # tl (?A j) = ?A j" by auto
-      from * have "P\<^sup>=\<^sup>= (a i) (a j)" and "?P (?B i) (?B j)"
-        unfolding prod_le_def by auto
-      from list_hembeq_Cons2 [OF this]
-        have "?P (?A i) (?A j)" using a and hd_tl by auto
-      with `i < j` and `bad ?P ?A` show False by (auto simp: good_def almost_full_on_def)
+        assume "j < f 0" with `i < j` and * have "?P (?A i) (?A j)" by simp
+        with `i < j` and `bad ?P ?A` have False by (auto simp: good_def)
+      } moreover {
+        assume "f 0 \<le> i" with `i < j` and * have "?P (?B (f (i - f 0))) (?B (f (j - f 0)))" by simp
+        moreover with `i < j` and `f 0 \<le> i` have "i - f 0 < j - f 0" by auto
+        ultimately have False using `bad ?P (?B \<circ> f)` by (auto simp: good_def)
+      } moreover {
+        have suffix: "suffixeq (?B (f (j - f 0))) (?A (f (j - f 0)))" by simp
+        assume "i < f 0" and "f 0 \<le> j"
+        with * have "?P (?A i) (?B (f (j - f 0)))" by auto
+        with suffix have "?P (?A i) (?A (f (j - f 0)))" using list_hembeq_suffixeq [of P] by blast
+        moreover from ge [THEN spec [of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
+        ultimately have False using `bad ?P ?A` by (auto simp: good_def)
+      } ultimately show False by arith
     qed
+    have "\<forall>i<f 0. ?C i = ?A i" by auto
+    moreover have "suffix (?C (f 0)) (?A (f 0))" using non_empty by auto
+    moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (?A j)"
+    proof (intro allI impI)
+      fix i
+      let ?i = "f (i - f 0)"
+      assume "f 0 \<le> i"
+      with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> ?i" by auto
+      from `f 0 \<le> i` have "?C i = ?B ?i" by auto
+      with non_empty have "suffix\<^sup>=\<^sup>= (?C i) (?A ?i)" by auto
+      thus "\<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (?A j)" using `f 0 \<le> ?i` by auto
+    qed
+    ultimately have "good ?P ?C"
+      using mb [of "f 0", unfolded list_mbs.min_at_def, rule_format, of ?C] by blast
+    with `bad ?P ?C` have False by blast
   }
-  with trans show ?thesis unfolding almost_full_on_def by blast
+  hence no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (?B \<circ> f))" by blast
+  let ?B' = "{?B i | i. True}"
+  have subset: "?B' \<subseteq> lists A"
+  proof
+    fix B assume "B \<in> ?B'"
+    then obtain i where B: "B = ?B i" by auto
+    hence "suffixeq B (?A i)" by simp
+    with in_lists [of i] show "B \<in> lists A" by (auto simp: suffixeq_def)
+  qed
+  have "almost_full_on ?P ?B'"
+  proof
+    from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
+    fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?B'"
+    from no_bad_of_special_shape_imp_good [of ?P ?B f, OF no_special_bad_seq refl this]
+      show "good ?P f" .
+  qed
+  let ?a' = "{a i | i. True}"
+  have "?a' \<subseteq> A"
+  proof
+    fix x assume "x \<in> ?a'"
+    then obtain i where x: "x = a i" by auto
+    with a and non_empty have "a i \<in> set (?A i)" by (metis hd_in_set)
+    with in_lists [of i] show "x \<in> A" unfolding x by auto
+  qed
+  from almost_full_on_subset [OF this assms]
+    have "almost_full_on P ?a'" .
+  from almost_full_on_Sigma [OF `almost_full_on P ?a'` `almost_full_on ?P ?B'`]
+    have af: "almost_full_on (prod_le P ?P) (?a' \<times> ?B')" .
+  let ?aB = "\<lambda>i. (a i, ?B i)"
+  let ?P' = "prod_le P ?P"
+  have "\<forall>i. ?aB i \<in> (?a' \<times> ?B')" by auto
+  with af have "good ?P' ?aB" unfolding almost_full_on_def by auto
+  then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
+    by (auto simp: good_def almost_full_on_def)
+ from hd_Cons_tl and non_empty
+    have hd_tl: "hd (?A i) # tl (?A i) = ?A i"
+      "hd (?A j) # tl (?A j) = ?A j" by auto
+  from * have "P\<^sup>=\<^sup>= (a i) (a j)" and "?P (?B i) (?B j)"
+    unfolding prod_le_def by auto
+  from list_hembeq_Cons2 [OF this]
+    have "?P (?A i) (?A j)" using a and hd_tl by auto
+  with `i < j` and `bad ?P ?A` show False by (auto simp: good_def almost_full_on_def)
 qed
 
 definition
