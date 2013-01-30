@@ -92,6 +92,49 @@ lemma almost_full_on_subset:
   "A \<subseteq> B \<Longrightarrow> almost_full_on P B \<Longrightarrow> almost_full_on P A"
   by (auto simp: almost_full_on_def)
 
+text {*Every infinite sequence over a set, on which there is an almost-full relation @{term P},
+has an infinite subsequence that is a chain w.r.t.\ @{term P}.*}
+lemma almost_full_on_imp_subchain:
+  assumes "almost_full_on P A"
+    and *: "\<And>i::nat. f i \<in> A"
+  shows "\<exists>g::nat \<Rightarrow> nat. (\<forall>i j. i < j \<longrightarrow> g i < g j) \<and>
+    (\<forall>i. P (f (g i)) (f (g (Suc i))))"
+proof -
+  let ?A = "{i. \<forall>j>i. \<not> P (f i) (f j)}"
+  show ?thesis
+  proof (cases "finite ?A")
+    assume "infinite ?A"
+    then have "INFM i. i \<in> ?A" unfolding INFM_iff_infinite by simp
+    then interpret infinitely_many "\<lambda>i. i \<in> ?A" by (unfold_locales) assumption
+    def [simp]: g \<equiv> "index"
+    have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (g i)) (f (g j))"
+    proof (intro allI impI)
+      fix i j :: nat
+      assume "i < j"
+      from index_ordered_less [OF this] have "g i < g j" by auto
+      moreover have "g i \<in> ?A" using index_p by auto
+      ultimately show "\<not> P (f (g i)) (f (g j))" by auto
+    qed
+    then have "bad P (\<lambda>x. f (g x))" by (auto simp: good_def)
+    with assms show ?thesis by (auto simp: almost_full_on_def good_def)
+  next
+    assume "finite ?A"
+    have "\<exists>n. \<forall>i\<ge>n. i \<notin> ?A"
+      using infinite_nat_iff_unbounded_le [symmetric, of ?A]
+      using `finite ?A` by auto
+    then obtain N where "\<forall>i\<in>{i. i \<ge> N}. \<exists>j>i. P (f i) (f j)" by auto
+    from bchoice [OF this] obtain g
+      where seq: "\<forall>i\<ge>N. g i > i \<and> P (f i) (f (g i))" by auto
+    then have mono: "\<forall>i\<ge>N. g i > i" by auto
+    def [simp]: h \<equiv> "\<lambda>i. (g ^^ i) N"
+    from stepfun_imp_chainp [of N g P f, OF seq]
+      have "\<forall>i. P (f (h i)) (f (h (Suc i)))" by auto
+    moreover from funpow_mono [OF mono]
+      have "\<forall>i j. i < j \<longrightarrow> h i < h j" by auto
+    ultimately show ?thesis by blast
+  qed
+qed
+
 text {*Almost full relations do not admit infinite antichains.*}
 lemma almost_full_on_imp_not_antichain_on:
   assumes "almost_full_on P A"
@@ -665,13 +708,13 @@ proof (rule ccontr)
   ultimately have [simp]: "\<And>i. hd (m i) # tl (m i) = m i" by auto
 
   {
-    assume "\<exists>f::nat seq. (\<forall>i. f i \<ge> f 0) \<and> bad ?P (t \<circ> f)"
-    then obtain f :: "nat seq" where ge: "\<forall>i. f i \<ge> f 0"
-      and "bad ?P (t \<circ> f)" by auto
-    let ?n = "f 0"
-    def c \<equiv> "\<lambda>i. if i < ?n then m i else t (f (i - ?n))"
+    assume "\<exists>\<phi>::nat seq. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>)"
+    then obtain \<phi> :: "nat seq" where ge: "\<forall>i. \<phi> i \<ge> \<phi> 0"
+      and "bad ?P (t \<circ> \<phi>)" by auto
+    let ?n = "\<phi> 0"
+    def c \<equiv> "\<lambda>i. if i < ?n then m i else t (\<phi> (i - ?n))"
     have [simp]: "\<And>i. i < ?n \<Longrightarrow> c i = m i" by (auto simp: c_def)
-    have [simp]: "\<And>i. ?n \<le> i \<Longrightarrow> c i = t (f (i - ?n))" by (auto simp: c_def)
+    have [simp]: "\<And>i. ?n \<le> i \<Longrightarrow> c i = t (\<phi> (i - ?n))" by (auto simp: c_def)
     have "bad ?P c"
     proof
       assume "good ?P c"
@@ -681,16 +724,16 @@ proof (rule ccontr)
         with `i < j` and `bad ?P m` have False by (auto simp: good_def)
       } moreover {
         let ?i' = "i - ?n" and ?j' = "j - ?n"
-        assume "?n \<le> i" with `i < j` and * have "?P (t (f ?i')) (t (f ?j'))" by simp
+        assume "?n \<le> i" with `i < j` and * have "?P (t (\<phi> ?i')) (t (\<phi> ?j'))" by simp
         moreover with `i < j` and `?n \<le> i` have "?i' < ?j'" by auto
-        ultimately have False using `bad ?P (t \<circ> f)` by (auto simp: good_def)
+        ultimately have False using `bad ?P (t \<circ> \<phi>)` by (auto simp: good_def)
       } moreover {
         let ?j' = "j - ?n"
-        have suffix: "suffixeq (t (f ?j')) (m (f ?j'))" by (simp)
+        have suffix: "suffixeq (t (\<phi> ?j')) (m (\<phi> ?j'))" by (simp)
         assume "i < ?n" and "?n \<le> j"
-        with * have "?P (m i) (t (f ?j'))" by auto
-        with suffix have "?P (m i) (m (f ?j'))" using list_hembeq_suffixeq [of P] by blast
-        moreover from ge [THEN spec [of _ ?j']] and `i < ?n` have "i < f ?j'" by auto
+        with * have "?P (m i) (t (\<phi> ?j'))" by auto
+        with suffix have "?P (m i) (m (\<phi> ?j'))" using list_hembeq_suffixeq [of P] by blast
+        moreover from ge [THEN spec [of _ ?j']] and `i < ?n` have "i < \<phi> ?j'" by auto
         ultimately have False using `bad ?P m` by (auto simp: good_def)
       } ultimately show False by arith
     qed
@@ -699,9 +742,9 @@ proof (rule ccontr)
     moreover have "\<forall>i\<ge>?n. \<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)"
     proof (intro allI impI)
       fix i
-      let ?i = "f (i - ?n)"
+      let ?i = "\<phi> (i - ?n)"
       assume "?n \<le> i"
-      with `\<forall>i. ?n \<le> f i` have "?n \<le> ?i" by auto
+      with `\<forall>i. ?n \<le> \<phi> i` have "?n \<le> ?i" by auto
       from `?n \<le> i` have "c i = t ?i" by simp
       with non_empty have "suffix\<^sup>=\<^sup>= (c i) (m ?i)" by (simp)
       thus "\<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> ?i` by auto
@@ -710,7 +753,7 @@ proof (rule ccontr)
       using mb [of ?n, unfolded list_mbs.min_at_def, rule_format, of c] by blast
     with `bad ?P c` have False by blast
   }
-  then have no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (t \<circ> f))" by blast
+  then have no_special_bad_seq: "\<not> (\<exists>\<phi>. (\<forall>i. \<phi> 0 \<le> \<phi> i) \<and> bad ?P (t \<circ> \<phi>))" by blast
 
   let ?H = "{h i | i. True}"
   let ?T = "{t i | i. True}"
@@ -920,47 +963,6 @@ proof -
       show "almost_full_on ?P UNIV" unfolding lists_UNIV .
   qed
   then show ?thesis unfolding * .
-qed
-
-lemma almost_full_on_imp_subchain:
-  assumes "almost_full_on P A"
-    and *: "\<And>i::nat. f i \<in> A"
-  shows "\<exists>g::nat \<Rightarrow> nat. (\<forall>i j. i < j \<longrightarrow> g i < g j) \<and>
-    (\<forall>i. P (f (g i)) (f (g (Suc i))))"
-proof -
-  let ?A = "{i. \<forall>j>i. \<not> P (f i) (f j)}"
-  show ?thesis
-  proof (cases "finite ?A")
-    assume "infinite ?A"
-    then have "INFM i. i \<in> ?A" unfolding INFM_iff_infinite by simp
-    then interpret infinitely_many "\<lambda>i. i \<in> ?A" by (unfold_locales) assumption
-    def [simp]: g \<equiv> "index"
-    have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (g i)) (f (g j))"
-    proof (intro allI impI)
-      fix i j :: nat
-      assume "i < j"
-      from index_ordered_less [OF this] have "g i < g j" by auto
-      moreover have "g i \<in> ?A" using index_p by auto
-      ultimately show "\<not> P (f (g i)) (f (g j))" by auto
-    qed
-    then have "bad P (\<lambda>x. f (g x))" by (auto simp: good_def)
-    with assms show ?thesis by (auto simp: almost_full_on_def good_def)
-  next
-    assume "finite ?A"
-    have "\<exists>n. \<forall>i\<ge>n. i \<notin> ?A"
-      using infinite_nat_iff_unbounded_le [symmetric, of ?A]
-      using `finite ?A` by auto
-    then obtain N where "\<forall>i\<in>{i. i \<ge> N}. \<exists>j>i. P (f i) (f j)" by auto
-    from bchoice [OF this] obtain g
-      where seq: "\<forall>i\<ge>N. g i > i \<and> P (f i) (f (g i))" by auto
-    then have mono: "\<forall>i\<ge>N. g i > i" by auto
-    def [simp]: h \<equiv> "\<lambda>i. (g ^^ i) N"
-    from stepfun_imp_chainp [of N g P f, OF seq]
-      have "\<forall>i. P (f (h i)) (f (h (Suc i)))" by auto
-    moreover from funpow_mono [OF mono]
-      have "\<forall>i j. i < j \<longrightarrow> h i < h j" by auto
-    ultimately show ?thesis by blast
-  qed
 qed
 
 lemma irreflp_on_extension:
