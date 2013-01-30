@@ -668,44 +668,47 @@ proof (rule ccontr)
     assume "\<exists>f::nat seq. (\<forall>i. f i \<ge> f 0) \<and> bad ?P (t \<circ> f)"
     then obtain f :: "nat seq" where ge: "\<forall>i. f i \<ge> f 0"
       and "bad ?P (t \<circ> f)" by auto
-    let ?C = "\<lambda>i. if i < f 0 then m i else t (f (i - f 0))"
-    have [simp]: "\<And>i. i < f 0 \<Longrightarrow> ?C i = m i" by auto
-    have [simp]: "\<And>i. f 0 \<le> i \<Longrightarrow> ?C i = t (f (i - f 0))" by auto
-    have "bad ?P ?C"
+    let ?n = "f 0"
+    def c \<equiv> "\<lambda>i. if i < ?n then m i else t (f (i - ?n))"
+    have [simp]: "\<And>i. i < ?n \<Longrightarrow> c i = m i" by (auto simp: c_def)
+    have [simp]: "\<And>i. ?n \<le> i \<Longrightarrow> c i = t (f (i - ?n))" by (auto simp: c_def)
+    have "bad ?P c"
     proof
-      assume "good ?P ?C"
-      then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: good_def)
+      assume "good ?P c"
+      then obtain i j where "i < j" and *: "?P (c i) (c j)" by (auto simp: good_def)
       {
-        assume "j < f 0" with `i < j` and * have "?P (m i) (m j)" by simp
+        assume "j < ?n" with `i < j` and * have "?P (m i) (m j)" by simp
         with `i < j` and `bad ?P m` have False by (auto simp: good_def)
       } moreover {
-        assume "f 0 \<le> i" with `i < j` and * have "?P (t (f (i - f 0))) (t (f (j - f 0)))" by simp
-        moreover with `i < j` and `f 0 \<le> i` have "i - f 0 < j - f 0" by auto
+        let ?i' = "i - ?n" and ?j' = "j - ?n"
+        assume "?n \<le> i" with `i < j` and * have "?P (t (f ?i')) (t (f ?j'))" by simp
+        moreover with `i < j` and `?n \<le> i` have "?i' < ?j'" by auto
         ultimately have False using `bad ?P (t \<circ> f)` by (auto simp: good_def)
       } moreover {
-        have suffix: "suffixeq (t (f (j - f 0))) (m (f (j - f 0)))" by (simp)
-        assume "i < f 0" and "f 0 \<le> j"
-        with * have "?P (m i) (t (f (j - f 0)))" by auto
-        with suffix have "?P (m i) (m (f (j - f 0)))" using list_hembeq_suffixeq [of P] by blast
-        moreover from ge [THEN spec [of _ "j - f 0"]] and `i < f 0` have "i < f (j - f 0)" by auto
+        let ?j' = "j - ?n"
+        have suffix: "suffixeq (t (f ?j')) (m (f ?j'))" by (simp)
+        assume "i < ?n" and "?n \<le> j"
+        with * have "?P (m i) (t (f ?j'))" by auto
+        with suffix have "?P (m i) (m (f ?j'))" using list_hembeq_suffixeq [of P] by blast
+        moreover from ge [THEN spec [of _ ?j']] and `i < ?n` have "i < f ?j'" by auto
         ultimately have False using `bad ?P m` by (auto simp: good_def)
       } ultimately show False by arith
     qed
-    have "\<forall>i<f 0. ?C i = m i" by auto
-    moreover have "suffix (?C (f 0)) (m (f 0))" using non_empty by auto
-    moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (m j)"
+    have "\<forall>i<?n. c i = m i" by auto
+    moreover have "suffix (c ?n) (m ?n)" using non_empty by auto
+    moreover have "\<forall>i\<ge>?n. \<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)"
     proof (intro allI impI)
       fix i
-      let ?i = "f (i - f 0)"
-      assume "f 0 \<le> i"
-      with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> ?i" by auto
-      from `f 0 \<le> i` have "?C i = t ?i" by simp
-      with non_empty have "suffix\<^sup>=\<^sup>= (?C i) (m ?i)" by (simp)
-      thus "\<exists>j\<ge>f 0. suffix\<^sup>=\<^sup>= (?C i) (m j)" using `f 0 \<le> ?i` by auto
+      let ?i = "f (i - ?n)"
+      assume "?n \<le> i"
+      with `\<forall>i. ?n \<le> f i` have "?n \<le> ?i" by auto
+      from `?n \<le> i` have "c i = t ?i" by simp
+      with non_empty have "suffix\<^sup>=\<^sup>= (c i) (m ?i)" by (simp)
+      thus "\<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> ?i` by auto
     qed
-    ultimately have "good ?P ?C"
-      using mb [of "f 0", unfolded list_mbs.min_at_def, rule_format, of ?C] by blast
-    with `bad ?P ?C` have False by blast
+    ultimately have "good ?P c"
+      using mb [of ?n, unfolded list_mbs.min_at_def, rule_format, of c] by blast
+    with `bad ?P c` have False by blast
   }
   then have no_special_bad_seq: "\<not> (\<exists>f. (\<forall>i. f 0 \<le> f i) \<and> bad ?P (t \<circ> f))" by blast
 
