@@ -639,12 +639,12 @@ lemma bad_of_special_shape:
 proof -
   from assms have "\<forall>i. \<exists>j. f i = g j" by blast
   from choice [OF this] obtain \<phi>
-    where [abs_def]: "\<And>i::nat. f i = g (\<phi> i)" by blast
+    where [abs_def]: "\<And>i. f i = g (\<phi> i)" by blast
   with `bad P f` have "bad P (g \<circ> \<phi>)" by (auto simp: o_def)
   have "\<forall>i. \<exists>j>i. \<phi> j \<ge> \<phi> 0"
   proof (rule ccontr)
     assume "\<not> ?thesis"
-    then obtain i where "\<forall>j>i. \<not> (\<phi> j \<ge> \<phi> 0)" by auto
+    then obtain i where "\<forall>j>i. \<not> (\<phi> 0 \<le> \<phi> j)" by auto
     then have "\<phi> ` {j. j > i} \<subseteq> {..< \<phi> 0}" (is "\<phi> ` ?I \<subseteq> _") by auto
     then have "finite (\<phi> ` ?I)" by (blast intro: finite_subset)
     moreover have "infinite ?I" by (rule infinite_wo_prefix)
@@ -662,10 +662,7 @@ proof -
   let ?\<phi> = "\<lambda>i. \<phi> (?\<psi> i)"
   from funpow_mono [OF \<psi>]
     have **: "\<And>i j. i < j \<Longrightarrow> ?\<psi> i < ?\<psi> j" by auto
-  have "\<forall>i. ?\<phi> i \<ge> ?\<phi> 0"
-  proof
-    fix i show "?\<phi> i \<ge> ?\<phi> 0" using * by (induct i) auto
-  qed
+  have "\<forall>i. ?\<phi> i \<ge> ?\<phi> 0" by (rule, induct_tac i) (auto simp: *)
   moreover have "bad P (g \<circ> ?\<phi>)"
     using ** and `bad P (g \<circ> \<phi>)` by (auto simp: good_def)
   ultimately show ?thesis by (blast intro: exI [of _ ?\<phi>])
