@@ -76,14 +76,14 @@ lemma almost_full_on [Pure.intro]:
   unfolding almost_full_on_def by blast
 
 lemma almost_full_on_imp_reflp_on:
-  assumes af: "almost_full_on P A"
+  assumes "almost_full_on P A"
   shows "reflp_on P A"
 proof
   fix x
   assume "x \<in> A"
   let ?f = "\<lambda>i. x"
   have "\<forall>i. ?f i \<in> A" using `x \<in> A` by simp
-  with af obtain i j :: nat where "i < j"
+  with assms obtain i j :: nat where "i < j"
     and "P (?f i) (?f j)" by (auto simp: almost_full_on_def good_def)
   thus "P x x" by simp
 qed
@@ -631,57 +631,53 @@ proof -
   thus ?thesis unfolding infinite_nat_iff_unbounded by auto
 qed
 
-lemma no_bad_of_special_shape_imp_good:
-  assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
-    and refl: "reflp_on P {B i | i. True}"
-    and "\<forall>i. f i \<in> {B i | i. True}"
-  shows "good P f"
-proof (rule ccontr)
-  assume "bad P f"
-  from assms(3) have "\<forall>i. \<exists>j. f i = B j" by blast
-  from choice [OF this] obtain g where "\<And>i. f i = B (g i)" by blast
-  with `bad P f` have "bad P (B \<circ> g)" by (auto simp: good_def)
-  have "\<forall>i. \<exists>j>i. g j \<ge> g 0"
+lemma bad_of_special_shape:
+  assumes refl: "reflp_on P {g i | i. True}"
+    and "\<forall>i. f i \<in> {g i | i. True}"
+    and "bad P f"
+  shows "\<exists>\<phi>::nat \<Rightarrow> nat. (\<forall>i. \<phi> 0 \<le> \<phi> i) \<and> bad P (g \<circ> \<phi>)"
+proof -
+  from assms have "\<forall>i. \<exists>j. f i = g j" by blast
+  from choice [OF this] obtain \<phi>
+    where [abs_def]: "\<And>i::nat. f i = g (\<phi> i)" by blast
+  with `bad P f` have "bad P (g \<circ> \<phi>)" by (auto simp: o_def)
+  have "\<forall>i. \<exists>j>i. \<phi> j \<ge> \<phi> 0"
   proof (rule ccontr)
     assume "\<not> ?thesis"
-    then obtain i::nat where "\<forall>j>i. \<not> (g j \<ge> g 0)" by auto
-    hence *: "\<forall>j>i. g j < g 0" by auto
-    let ?I = "{j. j > i}"
-    from * have "\<forall>j>i. g j \<in> {..<g 0}" by auto
-    hence "\<forall>j\<in>?I. g j \<in> {..<g 0}" by auto
-    hence "g ` ?I \<subseteq> {..<g 0}" unfolding image_subset_iff by auto
-    moreover have "finite {..<g 0}" by auto
-    ultimately have 1: "finite (g ` ?I)" using finite_subset by blast
-    have 2: "infinite ?I" by (rule infinite_wo_prefix)
-    from pigeonhole_infinite [OF 2 1]
-      obtain k where "k > i" and "infinite {j. j > i \<and> g j = g k}" by auto
-    then obtain l where "k < l" and "g l = g k"
-      unfolding infinite_nat_iff_unbounded by auto
-    hence "P (B (g k)) (B (g l))" using refl by (auto simp: reflp_on_def)
-    with `k < l` and `bad P (B \<circ> g)` show False by (auto simp: good_def)
+    then obtain i where "\<forall>j>i. \<not> (\<phi> j \<ge> \<phi> 0)" by auto
+    then have "\<phi> ` {j. j > i} \<subseteq> {..< \<phi> 0}" (is "\<phi> ` ?I \<subseteq> _") by auto
+    then have "finite (\<phi> ` ?I)" by (blast intro: finite_subset)
+    moreover have "infinite ?I" by (rule infinite_wo_prefix)
+    ultimately obtain k
+      where "k > i" and "infinite {j. j > i \<and> \<phi> j = \<phi> k}"
+      using pigeonhole_infinite [of ?I \<phi>] by auto
+    then obtain l where "k < l" and "\<phi> l = \<phi> k"
+      by (auto simp: infinite_nat_iff_unbounded)
+    then have "P (g (\<phi> k)) (g (\<phi> l))" using refl by (auto simp: reflp_on_def)
+    with `k < l` and `bad P (g \<circ> \<phi>)` show False by (auto simp: good_def)
   qed
-  from choice [OF this] obtain h
-    where "\<forall>i. (h i) > i" and *: "\<And>i. g (h i) \<ge> g 0" by blast
-  hence "\<forall>i\<ge>0. (h i) > i" by auto
-  from funpow_mono [OF this] have **: "\<And>i j. i < j \<Longrightarrow> (h ^^ i) 0 < (h ^^ j) 0" by auto
-  let ?i = "\<lambda>i. (h ^^ i) 0"
-  let ?f = "\<lambda>i. g (?i i)"
-  have "\<forall>i. ?f i \<ge> ?f 0"
+  from choice [OF this] obtain \<psi>
+    where \<psi>: "\<forall>i\<ge>0. (\<psi> i) > i" and *: "\<And>i. \<phi> (\<psi> i) \<ge> \<phi> 0" by blast
+  let ?\<psi> = "\<lambda>i. (\<psi> ^^ i) 0"
+  let ?\<phi> = "\<lambda>i. \<phi> (?\<psi> i)"
+  from funpow_mono [OF \<psi>]
+    have **: "\<And>i j. i < j \<Longrightarrow> ?\<psi> i < ?\<psi> j" by auto
+  have "\<forall>i. ?\<phi> i \<ge> ?\<phi> 0"
   proof
-    fix i show "?f i \<ge> ?f 0" using * by (induct i) auto
+    fix i show "?\<phi> i \<ge> ?\<phi> 0" using * by (induct i) auto
   qed
-  moreover have "bad P (B \<circ> ?f)"
-  proof
-    assume "good P (B \<circ> ?f)"
-    then obtain i j where "i < j" and "P (B (?f i)) (B (?f j))" by (auto simp: good_def)
-    hence "P (B (g (?i i))) (B (g (?i j)))" by simp
-    moreover from ** [OF `i < j`] have "?i i < ?i j" .
-    ultimately show False using `bad P (B \<circ> g)` by (auto simp: good_def)
-  qed
-  ultimately have "(\<forall>i. ?f i \<ge> ?f 0) \<and> bad P (B \<circ> ?f)" by auto
-  hence "\<exists>f. (\<forall>i. f i \<ge> f 0) \<and> bad P (B \<circ> f)" by (rule exI [of _ ?f])
-  with assms(1) show False by blast
+  moreover have "bad P (g \<circ> ?\<phi>)"
+    using ** and `bad P (g \<circ> \<phi>)` by (auto simp: good_def)
+  ultimately show ?thesis by (blast intro: exI [of _ ?\<phi>])
 qed
+
+lemma no_bad_of_special_shape_imp_good:
+  assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
+    and "reflp_on P {B i | i. True}"
+    and "\<forall>i. f i \<in> {B i | i. True}"
+  shows "good P f"
+  using bad_of_special_shape [OF assms(2-)] and assms(1)
+  by blast
 
 lemma almost_full_on_lists:
   assumes "almost_full_on P A"
@@ -709,7 +705,7 @@ proof (rule ccontr)
 
   {
     assume "\<exists>\<phi>::nat seq. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>)"
-    then obtain \<phi> :: "nat seq" where ge: "\<forall>i. \<phi> i \<ge> \<phi> 0"
+    then obtain \<phi> :: "nat seq" where ge: "\<And>i. \<phi> i \<ge> \<phi> 0"
       and "bad ?P (t \<circ> \<phi>)" by auto
     let ?n = "\<phi> 0"
     def c \<equiv> "\<lambda>i. if i < ?n then m i else t (\<phi> (i - ?n))"
@@ -733,7 +729,7 @@ proof (rule ccontr)
         assume "i < ?n" and "?n \<le> j"
         with * have "?P (m i) (t (\<phi> ?j'))" by auto
         with suffix have "?P (m i) (m (\<phi> ?j'))" using list_hembeq_suffixeq [of P] by blast
-        moreover from ge [THEN spec [of _ ?j']] and `i < ?n` have "i < \<phi> ?j'" by auto
+        moreover from ge [of ?j'] and `i < ?n` have "i < \<phi> ?j'" by auto
         ultimately have False using `bad ?P m` by (auto simp: good_def)
       } ultimately show False by arith
     qed
@@ -744,7 +740,7 @@ proof (rule ccontr)
       fix i
       let ?i = "\<phi> (i - ?n)"
       assume "?n \<le> i"
-      with `\<forall>i. ?n \<le> \<phi> i` have "?n \<le> ?i" by auto
+      with ge have "?n \<le> ?i" by auto
       from `?n \<le> i` have "c i = t ?i" by simp
       with non_empty have "suffix\<^sup>=\<^sup>= (c i) (m ?i)" by (simp)
       thus "\<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> ?i` by auto
@@ -753,7 +749,9 @@ proof (rule ccontr)
       using mb [of ?n, unfolded list_mbs.min_at_def, rule_format, of c] by blast
     with `bad ?P c` have False by blast
   }
-  then have no_special_bad_seq: "\<not> (\<exists>\<phi>. (\<forall>i. \<phi> 0 \<le> \<phi> i) \<and> bad ?P (t \<circ> \<phi>))" by blast
+  then have no_special_bad_seq: "\<not> (\<exists>\<phi>. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>))" by blast
+  then have "\<not> (\<exists>\<phi>. (\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j) \<and> bad ?P (t \<circ> \<phi>))"
+    by (metis le0 less_mono_imp_le_mono)
 
   let ?H = "{h i | i. True}"
   let ?T = "{t i | i. True}"
@@ -780,8 +778,8 @@ proof (rule ccontr)
     qed
     from reflp_on_subset [OF this refl] have refl: "reflp_on ?P ?T" .
     fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?T"
-    from no_bad_of_special_shape_imp_good [of ?P t f, OF no_special_bad_seq refl this]
-      show "good ?P f" .
+    from bad_of_special_shape [of ?P t f, OF refl this] and no_special_bad_seq
+      show "good ?P f" by blast
   qed
   ultimately
   have "almost_full_on (prod_le P ?P) (?H \<times> ?T)"
