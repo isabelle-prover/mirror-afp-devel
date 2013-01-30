@@ -8,7 +8,7 @@ header {*
 
 theory FWState
 imports 
-  "../Basic/Aux"
+  "../Basic/Auxiliary"
 begin
 
 datatype lock_action =

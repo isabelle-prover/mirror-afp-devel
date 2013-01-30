@@ -5,7 +5,7 @@
 
 header {* \isaheader{Auxiliary Definitions} *}
 
-theory Aux
+theory Auxiliary
 imports Main "~~/src/HOL/Library/While_Combinator"
 begin
 

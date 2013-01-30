@@ -8,7 +8,7 @@ header {*
   \isaheader{Auxiliary Definitions and Lemmata}
 *}
 
-theory Aux 
+theory Auxiliary
 imports
   Main
   "~~/src/HOL/Library/FinFun_Syntax"

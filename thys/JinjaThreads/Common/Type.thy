@@ -11,7 +11,7 @@ header {*
 
 theory Type
 imports
-  "../Basic/Aux"
+  "../Basic/Auxiliary"
 begin
 
 type_synonym cname = String.literal -- "class names"

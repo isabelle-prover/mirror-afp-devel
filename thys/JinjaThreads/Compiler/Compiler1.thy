@@ -13,12 +13,12 @@ theory Compiler1 imports
 begin
 
 definition fresh_var :: "vname list \<Rightarrow> vname"
-where "fresh_var Vs \<equiv> Aux.concat (STR ''V'' # Vs)"
+where "fresh_var Vs \<equiv> Auxiliary.concat (STR ''V'' # Vs)"
 
 lemma fresh_var_fresh: "fresh_var Vs \<notin> set Vs"
 proof -
   have "\<forall>V \<in> set Vs. length (explode V) < length (explode (fresh_var Vs))"
-    by(induct Vs)(auto simp add: fresh_var_def Aux.concat_def STR_inverse implode_def)
+    by(induct Vs)(auto simp add: fresh_var_def Auxiliary.concat_def STR_inverse implode_def)
   thus ?thesis by auto
 qed
 
