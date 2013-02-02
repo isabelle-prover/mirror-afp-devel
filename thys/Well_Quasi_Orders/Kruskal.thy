@@ -13,6 +13,12 @@ imports
   Kruskal_Auxiliaries
 begin
 
+(*TODO: move*)
+lemma list_hembeq_singleton [simp]:
+  assumes "reflp_on P A" and "y \<in> A"
+  shows "list_hembeq P [x] [y] = P x y"
+  using assms by (auto simp: reflp_on_def elim!: list_hembeq.cases)
+
 context finite_tree
 begin
 
@@ -22,8 +28,8 @@ subsection {* Kruskal's Tree Theorem *}
 lemma almost_full_on_trees:
   assumes "almost_full_on P A"
   shows "almost_full_on (tree_hembeq P) (trees A)"
-    (is "almost_full_on ?P ?A")
 proof (rule ccontr)
+  let ?P = "tree_hembeq P"
   interpret tree_mbs: mbs "\<lambda>_. ?P" subtree trees
   proof -
     show "mbs (\<lambda>_. ?P) subtree trees"
@@ -44,114 +50,110 @@ proof (rule ccontr)
   have [simp]: "\<And>i. mk (root (m i)) (succs (m i)) = m i" by (metis in_trees root_succs)
 
   {
-    assume "\<exists>R \<phi>::nat seq. (\<forall>i. R i \<in> set (s (\<phi> i)) \<and> \<phi> i \<ge> \<phi> 0) \<and> bad ?P R"
-    then obtain R and \<phi> :: "nat seq"
-      where in_succs: "\<forall>i. R i \<in> set (s (\<phi> i))"
-      and ge: "\<forall>i. \<phi> i \<ge> \<phi> 0"
-      and "bad ?P R" by auto
-    let ?C = "\<lambda>i. if i < \<phi> 0 then m i else R (i - \<phi> 0)"
-    have [simp]: "\<And>i. i < \<phi> 0 \<Longrightarrow> ?C i = m i" by auto
-    have [simp]: "\<And>i. \<phi> 0 \<le> i \<Longrightarrow> ?C i = R (i - \<phi> 0)" by auto
-    have "bad ?P ?C"
+    assume "\<exists>t \<phi>::nat seq. (\<forall>i. t i \<in> set (s (\<phi> i)) \<and> \<phi> i \<ge> \<phi> 0) \<and> bad ?P t"
+    then obtain t and \<phi> :: "nat seq"
+      where in_succs: "\<And>i. t i \<in> set (s (\<phi> i))"
+      and ge: "\<And>i. \<phi> i \<ge> \<phi> 0"
+      and "bad ?P t" by auto
+    let ?n = "\<phi> 0"
+    def c \<equiv> "\<lambda>i. if i < ?n then m i else t (i - ?n)"
+    have [simp]: "\<And>i. i < ?n \<Longrightarrow> c i = m i" by (auto simp: c_def)
+    have [simp]: "\<And>i. ?n \<le> i \<Longrightarrow> c i = t (i - ?n)" by (auto simp: c_def)
+    have "bad ?P c"
     proof
-      assume "good ?P ?C"
-      then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: good_def)
+      assume "good ?P c"
+      then obtain i j where "i < j" and *: "?P (c i) (c j)" by (auto simp: good_def)
       {
-        assume "j < \<phi> 0" with `i < j` and * have "?P (m i) (m j)" by simp
+        assume "j < ?n" with `i < j` and * have "?P (m i) (m j)" by simp
         with `i < j` and `bad ?P m` have False by (auto simp: good_def)
       } moreover {
-        assume "\<phi> 0 \<le> i" with `i < j` and * have "?P (R (i - \<phi> 0)) (R (j - \<phi> 0))" by simp
-        moreover with `i < j` and `\<phi> 0 \<le> i` have "i - (\<phi> 0) < j - (\<phi> 0)" by auto
-        ultimately have False using `bad ?P R` by (auto simp: good_def)
+        let ?i' = "i - ?n" and ?j' = "j - ?n"
+        assume "?n \<le> i" with `i < j` and * have "?P (t ?i') (t ?j')" by simp
+        moreover with `i < j` and `?n \<le> i` have "?i' < ?j'" by auto
+        ultimately have False using `bad ?P t` by (auto simp: good_def)
       } moreover {
-        let ?i = "j - \<phi> 0"
-        from in_succs have "R ?i \<in> set (s (\<phi> ?i))" by simp
+        let ?j' = "j - ?n"
+        from in_succs have "t ?j' \<in> set (s (\<phi> ?j'))" by simp
         with in_succs_imp_subtree [OF in_trees]
-          have subtree: "subtreeeq (R ?i) (m (\<phi> ?i))" by auto
-        assume "i < \<phi> 0" and "\<phi> 0 \<le> j"
-        with * have "?P (m i) (R ?i)" by auto
-        with subtree have "?P (m i) (m (\<phi> ?i))" using tree_hembeq_subtreeeq [of P] by blast
-        moreover from ge [THEN spec [of _ "?i"]] and `i < \<phi> 0` have "i < \<phi> ?i" by auto
+          have subtree: "subtreeeq (t ?j') (m (\<phi> ?j'))" by auto
+        assume "i < ?n" and "?n \<le> j"
+        with * have "?P (m i) (t ?j')" by auto
+        with subtree have "?P (m i) (m (\<phi> ?j'))" using tree_hembeq_subtreeeq [of P] by blast
+        moreover from ge [of "?j'"] and `i < ?n` have "i < \<phi> ?j'" by auto
         ultimately have False using `bad ?P m` by (auto simp: good_def)
       } ultimately show False by arith
     qed
-    have "\<forall>i<\<phi> 0. ?C i = m i" by simp
-    moreover have "subtree (?C (\<phi> 0)) (m (\<phi> 0))"
+    have "\<forall>i<?n. c i = m i" by simp
+    moreover have "subtree (c ?n) (m ?n)"
       using in_succs_imp_subtree [OF in_trees] and in_succs by simp
-    moreover have "\<forall>i\<ge>\<phi> 0. \<exists>j\<ge>\<phi> 0. subtree\<^sup>=\<^sup>= (?C i) (m j)"
+    moreover have "\<forall>i\<ge>?n. \<exists>j\<ge>?n. subtree\<^sup>=\<^sup>= (c i) (m j)"
     proof (intro allI impI)
       fix i
-      let ?i = "i - \<phi> 0"
-      assume "\<phi> 0 \<le> i"
-      with `\<forall>i. \<phi> 0 \<le> \<phi> i` have "\<phi> 0 \<le> \<phi> ?i" by auto
-      from `\<phi> 0 \<le> i` have "?C i = R ?i" by auto
+      let ?i = "(i - ?n)"
+      assume "?n \<le> i"
+      with ge have "?n \<le> \<phi> ?i" by auto
+      from `?n \<le> i` have "c i = t ?i" by auto
       with in_succs_imp_subtree [OF in_trees] and in_succs
-        have "subtree\<^sup>=\<^sup>= (?C i) (m (\<phi> ?i))" by auto
-      thus "\<exists>j\<ge>\<phi> 0. subtree\<^sup>=\<^sup>= (?C i) (m j)" using `\<phi> 0 \<le> \<phi> ?i` by auto
+        have "subtree\<^sup>=\<^sup>= (c i) (m (\<phi> ?i))" by auto
+      thus "\<exists>j\<ge>?n. subtree\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> \<phi> ?i` by auto
     qed
-    ultimately have "good ?P ?C"
-      using mb [of "\<phi> 0", unfolded tree_mbs.min_at_def, rule_format] by simp
-    with `bad ?P ?C` have False by blast
+    ultimately have "good ?P c"
+      using mb [of ?n, unfolded tree_mbs.min_at_def, rule_format] by simp
+    with `bad ?P c` have False by blast
   }
-  hence no_special_bad_seq: "\<not> (\<exists>R \<phi>. (\<forall>i. R i \<in> set (s (\<phi> i)) \<and> \<phi> 0 \<le> \<phi> i) \<and> bad ?P R)" by blast
+  hence no_special_bad_seq: "\<not> (\<exists>t \<phi>. (\<forall>i. t i \<in> set (s (\<phi> i)) \<and> \<phi> 0 \<le> \<phi> i) \<and> bad ?P t)" by blast
 
   let ?R = "{r i | i. True}"
-  let ?S = "{x. \<exists>i. x \<in> set (s i)}"
-  have subset: "?S \<subseteq> trees A"
-  proof
-    fix x assume "x \<in> ?S"
-    then obtain i where B: "x \<in> set (s i)" by auto
-    with in_succs_imp_subtree [OF in_trees]
-      have "subtreeeq x (m i)" by auto
-    with in_trees [of i] show "x \<in> trees A"
-      using subtreeeq_trees by blast
+  let ?S = "{s i | i. True}"
+  have "almost_full_on P ?R"
+  proof -
+    have "?R \<subseteq> A"
+    proof
+      fix x assume "x \<in> ?R"
+      then obtain i where [simp]: "x = r i" by auto
+      from in_trees [of i] show "x \<in> A" by (cases "m i") (simp)
+    qed
+    from almost_full_on_subset [OF this assms] show ?thesis .
   qed
-  have "almost_full_on ?P ?S"
-  proof
-    from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?S" .
-    fix f :: "'a seq" assume "\<forall>i. f i \<in> ?S"
-    from bad_of_special_shape' [OF refl this] and no_special_bad_seq
-      show "good ?P f" by blast
+  moreover have "almost_full_on (list_hembeq ?P) ?S"
+  proof -
+    let ?S' = "\<Union>(set ` ?S)"
+    have "almost_full_on ?P ?S'"
+    proof
+      have "?S' \<subseteq> trees A"
+      proof
+        fix x assume "x \<in> ?S'"
+        then obtain i where "x \<in> set (s i)" by auto
+        with in_succs_imp_subtree [OF in_trees]
+          have "subtreeeq x (m i)" by auto
+        with in_trees [of i] show "x \<in> trees A"
+          using subtreeeq_trees by blast
+      qed
+      from reflp_on_subset [OF this refl] have refl: "reflp_on ?P ?S'" .
+      fix f :: "'a seq" assume "\<forall>i. f i \<in> ?S'"
+      with bad_of_special_shape' [OF refl this] and no_special_bad_seq
+        show "good ?P f" by blast
+    qed
+    moreover have "?S \<subseteq> lists ?S'" by auto
+    ultimately show ?thesis
+      using almost_full_on_lists [of ?P ?S']
+        and almost_full_on_subset [of ?S "lists ?S'"]
+        by blast
   qed
-  have "?R \<subseteq> A"
-  proof
-    fix x assume "x \<in> ?R"
-    then obtain i where x: "x = r i" by auto
-    from in_trees [of i]
-      show "x \<in> A" by (cases "m i") (simp add: x)
-  qed
-  from almost_full_on_subset [OF this assms]
-    have "almost_full_on P ?R" .
-
-  from almost_full_on_lists [OF `almost_full_on ?P ?S`]
-    have lists: "almost_full_on (list_hembeq ?P) (lists ?S)" .
-
-  let ?succs = "{s i | i. True}"
-  have "?succs \<subseteq> lists ?S" by auto
-  from almost_full_on_subset [OF this lists]
-    have "almost_full_on (list_hembeq ?P) ?succs" .
-
-  let ?P' = "prod_le P (list_hembeq ?P)"
-
-  from almost_full_on_Sigma [OF `almost_full_on P ?R` `almost_full_on (list_hembeq ?P) ?succs`]
-    have af: "almost_full_on ?P' (?R \<times> ?succs)" .
-  
-  let ?aB = "\<lambda>i. (r i, succs (m i))"
-
-  have "\<forall>i. ?aB i \<in> (?R \<times> ?succs)" by auto
-  with af have "good ?P' ?aB" unfolding almost_full_on_def by auto
-  then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
+  ultimately
+  have "almost_full_on (prod_le P (list_hembeq ?P)) (?R \<times> ?S)"
+    by (rule almost_full_on_Sigma)
+  moreover have "\<forall>i. (r i, s i) \<in> (?R \<times> ?S)" by auto
+  ultimately have "good (prod_le P (list_hembeq ?P)) (\<lambda>i. (r i, s i))"
+    by (auto simp: almost_full_on_def)
+  then obtain i j where "i < j"
+    and "prod_le P (list_hembeq ?P) (r i, s i) (r j, s j)"
     by (auto simp: good_def almost_full_on_def)
-
-  from root_succs and in_trees
-    have root_succs: "mk (root (m i)) (succs (m i)) = m i"
-      "mk (root (m j)) (succs (m j)) = m j" by force+
-
-  from * have "P\<^sup>=\<^sup>= (r i) (r j)" and "list_hembeq ?P (succs (m i)) (succs (m j))"
+  then have "P\<^sup>=\<^sup>= (r i) (r j)" and "list_hembeq ?P (s i) (s j)"
     by (auto simp: prod_le_def)
   from tree_hembeq_list_hembeq [OF this]
-    have "?P (m i) (m j)" using root_succs by auto
-  with `i < j` and `bad ?P m` show False by (auto simp: good_def almost_full_on_def)
+    have "?P (m i) (m j)" by auto
+  with `i < j` and `bad ?P m` show False by (auto simp: good_def)
 qed
 
 lemma wqo_on_trees:

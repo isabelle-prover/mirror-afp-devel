@@ -187,160 +187,146 @@ next
   ultimately show "?r" using assms by auto
 qed
 
+lemma terms_root_succs:
+  "t \<in> terms F \<Longrightarrow> (root t, length (succs t)) \<in> F \<and> (\<forall>t\<in>set (succs t). t \<in> terms F)"
+  unfolding mk_terms_iff [symmetric]
+  by (induct rule: terms.induct) auto
+
 lemma almost_full_on_terms:
   assumes "almost_full_on P F"
-  shows "almost_full_on (term_hemb F (P\<^sup>=\<^sup>=)) (terms F)"
-proof -
+  shows "almost_full_on (term_hemb F P)\<^sup>=\<^sup>= (terms F)"
+proof (rule ccontr)
   let ?P = "(term_hemb F P)\<^sup>=\<^sup>="
-  let ?A = "terms F"
   interpret term_mbs: mbs "\<lambda>F. (term_hemb F P)\<^sup>=\<^sup>=" subtree "terms"
   proof
     fix F s t u
     assume "u \<in> terms F" and "term_hembeq F P s t" and "subtree t u"
     then show "term_hembeq F P s u" by (rule term_hembeq_subtree)
   qed (auto intro: wfp_on_subtree_terms subtree_terms elim: subtree_trans)
-  { have "reflp_on ?P ?A" by (auto simp: reflp_on_def) }
-  note refl = this
+  have refl: "reflp_on ?P (terms F)" by (auto simp: reflp_on_def)
+
+  assume "\<not> ?thesis"
+  then obtain f where "\<forall>i. f i \<in> terms F" and "bad ?P f"
+    unfolding almost_full_on_def by blast
+  from term_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
+    and mb: "\<And>n. mbs.min_at (\<lambda>F. (term_hemb F P)\<^sup>=\<^sup>=) subtree F m n"
+    and in_terms: "\<And>i. m i \<in> terms F"
+    by blast
+  obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
+  have [simp]: "\<And>i. mk (root (m i)) (succs (m i)) = m i" by (metis in_terms root_mk succs_mk terms.cases)
+
   {
-    have "\<forall>f. (\<forall>i. f i \<in> ?A) \<longrightarrow> good ?P f"
-    proof (rule ccontr)
-      assume "\<not> ?thesis"
-      then obtain f where "\<forall>i. f i \<in> terms F" and "bad ?P f" by blast
-      from term_mbs.mbs [OF this] obtain m where
-        bad: "bad ?P m" and
-        mb: "\<And>n. mbs.min_at (\<lambda>F. (term_hemb F P)\<^sup>=\<^sup>=) subtree F m n" and
-        in_terms: "\<And>i. m i \<in> terms F"
-        by blast
-      let ?A = m
-      obtain a as
-        where a: "\<forall>i. root (?A i) = a i \<and> succs (?A i) = as i" by force
-      let ?B = "\<lambda>i. set (succs (?A i))"
+    assume "\<exists>t \<phi>::nat seq. (\<forall>i. t i \<in> set (s (\<phi> i)) \<and> \<phi> i \<ge> \<phi> 0) \<and> bad ?P t"
+    then obtain t and \<phi> :: "nat seq"
+      where in_succs: "\<And>i. t i \<in> set (s (\<phi> i))"
+      and ge: "\<And>i. \<phi> i \<ge> \<phi> 0"
+      and "bad ?P t" by auto
+    let ?n = "\<phi> 0"
+    def c \<equiv> "\<lambda>i. if i < ?n then m i else t (i - ?n)"
+    have [simp]: "\<And>i. i < ?n \<Longrightarrow> c i = m i" by (auto simp: c_def)
+    have [simp]: "\<And>i. ?n \<le> i \<Longrightarrow> c i = t (i - ?n)" by (auto simp: c_def)
+    have "bad ?P c"
+    proof
+      assume "good ?P c"
+      then obtain i j where "i < j" and *: "?P (c i) (c j)" by (auto simp: good_def)
       {
-        assume "\<exists>R f::nat seq. (\<forall>i. R i \<in> ?B (f i) \<and> f i \<ge> f 0) \<and> bad ?P R"
-        then obtain R and f :: "nat seq"
-          where in_succs: "\<forall>i. R i \<in> ?B (f i)"
-          and ge: "\<forall>i. f i \<ge> f 0"
-          and "bad ?P R" by auto
-        let ?C = "\<lambda>i. if i < f 0 then ?A i else R (i - f 0)"
-        have [simp]: "\<And>i. i < f 0 \<Longrightarrow> ?C i = ?A i" by auto
-        have [simp]: "\<And>i. f 0 \<le> i \<Longrightarrow> ?C i = R (i - f 0)" by auto
-        have "bad ?P ?C"
-        proof
-          assume "good ?P ?C"
-          then obtain i j where "i < j" and *: "?P (?C i) (?C j)" by (auto simp: good_def)
-          {
-            assume "j < f 0" with `i < j` and * have "?P (?A i) (?A j)" by simp
-            with `i < j` and `bad ?P ?A` have False by (auto simp: good_def)
-          } moreover {
-            assume "f 0 \<le> i" with `i < j` and * have "?P (R (i - f 0)) (R (j - f 0))" by simp
-            moreover with `i < j` and `f 0 \<le> i` have "i - (f 0) < j - (f 0)" by auto
-            ultimately have False using `bad ?P R` by (auto simp: good_def)
-          } moreover {
-            let ?i = "j - f 0"
-            from in_succs have "R ?i \<in> ?B (f ?i)" by simp
-            from in_succs_imp_subtree [OF _ this] and in_terms
-              have subtree: "subtreeeq (R ?i) (?A (f ?i))"
-              by (auto dest: terms_imp_trees)
-            assume "i < f 0" and "f 0 \<le> j"
-            with * have "?P (?A i) (R ?i)" by auto
-            with subtree have "?P (?A i) (?A (f ?i))"
-              using term_hembeq_subtreeeq and in_terms
-              by blast
-            moreover from ge [THEN spec [of _ "?i"]] and `i < f 0` have "i < f ?i" by auto
-            ultimately have False using `bad ?P ?A` by (auto simp: good_def)
-          } ultimately show False by arith
-        qed
-        have "\<forall>i<f 0. ?C i = ?A i" by simp
-        moreover have "subtree (?C (f 0)) (?A (f 0))"
-          using in_succs_imp_subtree [OF _ in_succs [THEN spec, of 0]]
-          and in_terms by (auto dest: terms_imp_trees)
-        moreover have "\<forall>i\<ge>f 0. \<exists>j\<ge>f 0. subtree\<^sup>=\<^sup>= (?C i) (?A j)"
-        proof (intro allI impI)
-          fix i
-          let ?i = "i - f 0"
-          assume "f 0 \<le> i"
-          with `\<forall>i. f 0 \<le> f i` have "f 0 \<le> f ?i" by auto
-          from `f 0 \<le> i` have "?C i = R ?i" by auto
-          with in_succs_imp_subtree [OF _ in_succs [THEN spec [of _ ?i]]] and in_terms
-            have "subtree\<^sup>=\<^sup>= (?C i) (?A (f ?i))" by (auto dest: terms_imp_trees)
-          thus "\<exists>j\<ge>f 0. subtree\<^sup>=\<^sup>= (?C i) (?A j)" using `f 0 \<le> f ?i` by auto
-        qed
-        ultimately have "good ?P ?C"
-          using mb [of "f 0", unfolded term_mbs.min_at_def, rule_format] by simp
-        with `bad ?P ?C` have False by blast
-      }
-      hence no_special_bad_seq: "\<not> (\<exists>R f. (\<forall>i. R i \<in> ?B (f i) \<and> f 0 \<le> f i) \<and> bad ?P R)" by blast
-      let ?B' = "{x. \<exists>i. x \<in> ?B i}"
-      have subset: "?B' \<subseteq> terms F"
+        assume "j < ?n" with `i < j` and * have "?P (m i) (m j)" by simp
+        with `i < j` and `bad ?P m` have False by (auto simp: good_def)
+      } moreover {
+        let ?i' = "i - ?n" and ?j' = "j - ?n"
+        assume "?n \<le> i" with `i < j` and * have "?P (t ?i') (t ?j')" by simp
+        moreover with `i < j` and `?n \<le> i` have "?i' < ?j'" by auto
+        ultimately have False using `bad ?P t` by (auto simp: good_def)
+      } moreover {
+        let ?j' = "j - ?n"
+        from in_succs have "t ?j' \<in> set (s (\<phi> ?j'))" by simp
+        with in_succs_imp_subtree and in_terms
+          have subtree: "subtreeeq (t ?j') (m (\<phi> ?j'))"
+          by (auto dest!: terms_imp_trees)
+        assume "i < ?n" and "?n \<le> j"
+        with * have "?P (m i) (t ?j')" by auto
+        with subtree have "?P (m i) (m (\<phi> ?j'))"
+          using term_hembeq_subtreeeq and in_terms
+          by blast
+        moreover from ge [of "?j'"] and `i < ?n` have "i < \<phi> ?j'" by auto
+        ultimately have False using `bad ?P m` by (auto simp: good_def)
+      } ultimately show False by arith
+    qed
+    have "\<forall>i<?n. c i = m i" by simp
+    moreover have "subtree (c ?n) (m ?n)"
+      using in_succs_imp_subtree and in_terms and in_succs
+      by (fastforce dest!: terms_imp_trees)
+    moreover have "\<forall>i\<ge>?n. \<exists>j\<ge>?n. subtree\<^sup>=\<^sup>= (c i) (m j)"
+    proof (intro allI impI)
+      fix i
+      let ?i = "i - ?n"
+      assume "?n \<le> i"
+      with ge have "?n \<le> \<phi> ?i" by auto
+      from `?n \<le> i` have "c i = t ?i" by auto
+      with in_succs_imp_subtree and in_succs and in_terms
+        have "subtree\<^sup>=\<^sup>= (c i) (m (\<phi> ?i))" by (fastforce dest!: terms_imp_trees)
+      thus "\<exists>j\<ge>?n. subtree\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> \<phi> ?i` by auto
+    qed
+    ultimately have "good ?P c"
+      using mb [of ?n, unfolded term_mbs.min_at_def, rule_format] by simp
+    with `bad ?P c` have False by blast
+  }
+  hence no_special_bad_seq: "\<not> (\<exists>t \<phi>. (\<forall>i. t i \<in> set (s (\<phi> i)) \<and> \<phi> 0 \<le> \<phi> i) \<and> bad ?P t)" by blast
+
+  let ?R = "{(r i, length (s i)) | i. True}"
+  let ?S = "{s i | i. True}"
+  have "almost_full_on P ?R"
+  proof -
+    have "?R \<subseteq> F"
+    proof
+      fix x assume "x \<in> ?R"
+      then obtain i where [simp]: "x = (r i, length (s i))" by auto
+      from in_terms [of i] show "x \<in> F" by (cases "m i") (simp)
+    qed
+    from almost_full_on_subset [OF this assms] show ?thesis .
+  qed
+  moreover have "almost_full_on (list_hembeq ?P) ?S"
+  proof -
+    let ?S' = "\<Union>(set ` ?S)"
+    have "almost_full_on ?P ?S'"
+    proof
+      have "?S' \<subseteq> terms F"
       proof
-        fix x assume "x \<in> ?B'"
-        then obtain i where B: "x \<in> ?B i" by auto
-        from in_succs_imp_subtree [OF _ this] and in_terms
-          have "subtreeeq x (?A i)" by (auto dest: terms_imp_trees)
+        fix x assume "x \<in> ?S'"
+        then obtain i where "x \<in> set (s i)" by auto
+        with in_succs_imp_subtree and in_terms
+          have "subtreeeq x (m i)" by (auto dest!: terms_imp_trees)
         with in_terms [of i] show "x \<in> terms F"
           using subtreeeq_terms by blast
       qed
-      have "almost_full_on ?P ?B'"
-      proof
-        from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
-        fix f :: "'a seq" assume "\<forall>i. f i \<in> ?B'"
-        from bad_of_special_shape' [OF refl this] and no_special_bad_seq
-          show "good ?P f" by blast
-      qed
-      let ?a' = "{(a i, length (as i)) | i. True}"
-      have "?a' \<subseteq> F"
-      proof
-        fix x assume "x \<in> ?a'"
-        then obtain i where x: "x = (a i, length (as i))" by auto
-        from in_terms [of i] and a [THEN spec [of _ i]]
-          show "x \<in> F" by (cases "m i") (simp add: x)
-      qed
-      from almost_full_on_subset [OF this assms]
-        have "almost_full_on P ?a'" .
-
-      from almost_full_on_lists [OF `almost_full_on ?P ?B'`]
-        have lists: "almost_full_on (list_hembeq ?P) (lists ?B')" .
-
-      let ?succs = "{succs (?A i) | i. True}"
-      have "?succs \<subseteq> lists ?B'" by auto
-      from almost_full_on_subset [OF this lists]
-        have "almost_full_on (list_hembeq ?P) ?succs" .
-
-      let ?P' = "prod_le P (list_hembeq ?P)"
-
-      from almost_full_on_Sigma [OF `almost_full_on P ?a'` `almost_full_on (list_hembeq ?P) ?succs`]
-        have af: "almost_full_on ?P' (?a' \<times> ?succs)" .
-      
-      let ?aB = "\<lambda>i. ((a i, length (as i)), succs (?A i))"
-
-      have "\<forall>i. ?aB i \<in> (?a' \<times> ?succs)" by auto
-      with af have "good ?P' ?aB" unfolding almost_full_on_def by auto
-      then obtain i j where "i < j" and *: "?P' (?aB i) (?aB j)"
-        by (auto simp: good_def almost_full_on_def)
-
-      from root_succs and in_terms
-        have root_succs: "\<And>i. mk (root (?A i)) (succs (?A i)) = ?A i"
-          by (force dest: terms_imp_trees)+
-
-      have in_terms': "\<And>i. mk (a i) (as i) \<in> terms F"
-      proof -
-        fix i
-        from a have "a i = root (m i)" and "as i = succs (m i)" by auto
-        then show "?thesis i" using in_terms and root_succs by simp
-      qed
-      from in_terms'
-        have Fi: "(a i, length (as i)) \<in> F" and Fj: "(a j, length (as j)) \<in> F"
-          and terms: "\<forall>t\<in>set (as i @ as j). t \<in> terms F"
-          by (auto iff: mk_terms_iff)
-      from * have "P\<^sup>=\<^sup>= (a i, length (as i)) (a j, length (as j))" and "list_hembeq ?P (succs (?A i)) (succs (?A j))"
-        by (auto simp: prod_le_def)
-      with term_hembeq_list_hembeq [OF this(1) Fi Fj terms]
-        have "?P (?A i) (?A j)" using a and root_succs by auto
-      with `i < j` and `bad ?P ?A` show False by (auto simp: good_def almost_full_on_def)
+      from reflp_on_subset [OF this refl] have refl: "reflp_on ?P ?S'" .
+      fix f :: "'a seq" assume "\<forall>i. f i \<in> ?S'"
+      with bad_of_special_shape' [OF refl this] and no_special_bad_seq
+        show "good ?P f" by blast
     qed
-  }
-  then show ?thesis
-    using term_hembeq_term_hemb_conv by (auto simp: almost_full_on_def good_def)
+    moreover have "?S \<subseteq> lists ?S'" by auto
+    ultimately show ?thesis
+      using almost_full_on_lists [of ?P ?S']
+        and almost_full_on_subset [of ?S "lists ?S'"]
+        by blast
+  qed
+  ultimately
+  have "almost_full_on (prod_le P (list_hembeq ?P)) (?R \<times> ?S)"
+    by (rule almost_full_on_Sigma)
+  moreover have "\<forall>i. ((r i, length (s i)), s i) \<in> (?R \<times> ?S)" by auto
+  ultimately have "good (prod_le P (list_hembeq ?P)) (\<lambda>i. ((r i, length (s i)), s i))"
+    by (auto simp: almost_full_on_def)
+  then obtain i j where "i < j"
+    and "prod_le P (list_hembeq ?P) ((r i, length (s i)), s i) ((r j, length (s j)), s j)"
+    by (auto simp: good_def almost_full_on_def)
+  then have "P\<^sup>=\<^sup>= (r i, length (s i)) (r j, length (s j))" and "list_hembeq ?P (s i) (s j)"
+    by (auto simp: prod_le_def)
+  moreover have "(r i, length (s i)) \<in> F" and "(r j, length (s j)) \<in> F"
+      and "\<forall>t\<in>set (s i @ s j). t \<in> terms F"
+      using terms_root_succs [OF in_terms] by auto
+  ultimately have "?P (m i) (m j)"
+    using term_hembeq_list_hembeq [of P "r i" "s i" "r j" "s j" F] by auto
+  with `i < j` and `bad ?P m` show False by (auto simp: good_def)
 qed
 
 text {*Multiset of function symbol / arity pairs.*}
