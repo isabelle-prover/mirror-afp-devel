@@ -36,7 +36,7 @@
 
 \begin{document}
 
-\title{Stuttering equivalence}
+\title{Stuttering Equivalence and Stuttering Invariance}
 \author{
   Stephan Merz\\
   Inria Nancy \& LORIA\\
@@ -59,15 +59,16 @@ are stuttering equivalent, whereas
 are not. Stuttering equivalence is a fundamental concept in the theory
 of concurrent and distributed systems. Notably, Lamport~\cite{lamport:what-good}
 argues that refinement notions for such systems should be insensitive to
-finite stuttering. Peled and Wilke~\cite{peled:ltl-x} show that all LTL
-(linear-time temporal logic) properties that are insensitive to stuttering
-equivalence can be expressed without the next-time operator. Stuttering
-equivalence is also important for certain verification techniques
+finite stuttering. Peled and Wilke~\cite{peled:ltl-x} showed that all PLTL
+(propositional linear-time temporal logic) properties that are insensitive 
+to stuttering equivalence can be expressed without the next-time operator. 
+Stuttering equivalence is also important for certain verification techniques
 such as partial-order reduction for model checking.
 
 We formalize stuttering equivalence in Isabelle/HOL. Our development relies
-on the notion of a stuttering sampling function that identifies blocks of 
-identical sequence elements.
+on the notion of stuttering sampling functions that may skip blocks of 
+identical sequence elements. We also encode PLTL and prove the theorem
+due to Peled and Wilke~\cite{peled:ltl-x}.
 
 
 \tableofcontents

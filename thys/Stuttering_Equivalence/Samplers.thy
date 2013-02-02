@@ -72,7 +72,7 @@ text {*
   and we introduce a convenient notation.
 *}
 
-definition suffix :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a)"   ("_[_ ..]" [100, 15] 100) where
+definition suffix :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a)"   ("_[_ ..]" [80, 15] 80) where
   "\<sigma>[n..] \<equiv> \<lambda>i. \<sigma> (n + i)"
 
 lemma suffix_elt [simp]: "(\<sigma>[n..]) i = \<sigma> (n+i)"
@@ -117,7 +117,7 @@ lemma stutter_sampler_mono: "stutter_sampler f \<sigma> \<Longrightarrow> strict
 lemma stutter_sampler_between:
   assumes f: "stutter_sampler f \<sigma>"
       and lo: "f k \<le> n" and hi: "n < f (Suc k)"
-  shows "\<sigma> n = \<sigma> (f k)"
+    shows "\<sigma> n = \<sigma> (f k)"
   using assms by (auto simp: stutter_sampler_def less_le)
 
 lemma stutter_sampler_interval:
@@ -193,19 +193,19 @@ next
 qed
 
 
-subsection {* Preservation of properties through stuttering reduction *}
+subsection {* Preservation of properties through stuttering sampling *}
 
 text {*
-  Stuttering reduction preserves the initial element of the sequence, as well as
+  Stuttering sampling preserves the initial element of the sequence, as well as
   the presence and relative ordering of different elements.
 *}
 
-lemma stutter_reduced_0:
+lemma stutter_sampled_0:
   assumes "stutter_sampler f \<sigma>"
   shows "\<sigma> (f 0) = \<sigma> 0"
   using assms[THEN stutter_sampler_0] by simp
 
-lemma stutter_reduced_in_range:
+lemma stutter_sampled_in_range:
   assumes f: "stutter_sampler f \<sigma>" and s: "s \<in> range \<sigma>"
   shows "s \<in> range (\<sigma> \<circ> f)"
 proof -
@@ -215,12 +215,12 @@ proof -
   with n show ?thesis by auto
 qed
 
-lemma stutter_reduced_range:
+lemma stutter_sampled_range:
   assumes "stutter_sampler f \<sigma>"
   shows "range (\<sigma> \<circ> f) = range \<sigma>"
-  using assms by (auto intro: stutter_reduced_in_range)
+  using assms by (auto intro: stutter_sampled_in_range)
 
-lemma stutter_reduced_precedence:
+lemma stutter_sampled_precedence:
   assumes f: "stutter_sampler f \<sigma>" and ij: "i \<le> j"
   obtains k l where "k \<le> l" "\<sigma> (f k) = \<sigma> i" "\<sigma> (f l) = \<sigma> j"
 proof -
@@ -296,11 +296,81 @@ proof -
 qed
 
 text {*
-  @{text max_stutter_sampler} reduces all finite stuttering. That is, two
-  sequence elements at two consecutive sampling points are equal only if
-  the sequence stutters infinitely from there on.
+  We write @{text "\<natural>\<sigma>"} for the sequence @{text "\<sigma>"} sampled by the
+  maximal stuttering sampler. Also, a sequence is \emph{stutter free}
+  if it contains no finite stuttering: whenever two subsequent
+  elements are equal then all subsequent elements are the same.
 *}
+definition stutter_reduced ("\<natural>_" [100] 100) where
+  "\<natural>\<sigma> = \<sigma> \<circ> (max_stutter_sampler \<sigma>)"
 
+definition stutter_free where
+  "stutter_free \<sigma> \<equiv> \<forall>k. \<sigma> (Suc k) = \<sigma> k \<longrightarrow> (\<forall>n>k. \<sigma> n = \<sigma> k)"
+
+lemma stutter_freeI:
+  assumes "\<And>k n. \<lbrakk>\<sigma> (Suc k) = \<sigma> k; n>k\<rbrakk> \<Longrightarrow> \<sigma> n = \<sigma> k"
+  shows "stutter_free \<sigma>"
+  using assms unfolding stutter_free_def by blast
+
+lemma stutter_freeD:
+  assumes "stutter_free \<sigma>" and "\<sigma> (Suc k) = \<sigma> k" and "n>k"
+  shows "\<sigma> n = \<sigma> k"
+  using assms unfolding stutter_free_def by blast
+
+text {*
+  Any suffix of a stutter free sequence is itself stutter free.
+*}
+lemma stutter_free_suffix: 
+  assumes sigma: "stutter_free \<sigma>"
+  shows "stutter_free (\<sigma>[k..])"
+proof (rule stutter_freeI)
+  fix j n
+  assume j: "(\<sigma>[k..]) (Suc j) = (\<sigma>[k..]) j" and n: "j < n"
+  from j have "\<sigma> (Suc (k+j)) = \<sigma> (k+j)" by simp
+  moreover from n have "k+n > k+j" by simp
+  ultimately have "\<sigma> (k+n) = \<sigma> (k+j)" by (rule stutter_freeD[OF sigma])
+  thus "(\<sigma>[k..]) n = (\<sigma>[k..]) j" by simp
+qed
+
+lemma stutter_reduced_0: "(\<natural>\<sigma>) 0 = \<sigma> 0"
+  by (simp add: stutter_reduced_def stutter_sampled_0 max_stutter_sampler)
+
+lemma stutter_free_reduced:
+  assumes sigma: "stutter_free \<sigma>"
+  shows "\<natural>\<sigma> = \<sigma>"
+proof -
+  {
+    fix n
+    have "max_stutter_sampler \<sigma> n = n" (is "?ms n = n")
+    proof (induct n)
+      show "?ms 0 = 0" by simp
+    next
+      fix n
+      assume ih: "?ms n = n"
+      show "?ms (Suc n) = Suc n"
+      proof (cases "\<sigma> (Suc n) = \<sigma> (?ms n)")
+        case True
+        with ih have "\<sigma> (Suc n) = \<sigma> n" by simp
+        with sigma have "\<forall>k > n. \<sigma> k = \<sigma> n"
+          unfolding stutter_free_def by blast
+        with ih show ?thesis by (simp add: Let_def)
+      next
+        case False
+        with ih have "(LEAST k. k>n \<and> \<sigma> k \<noteq> \<sigma> (?ms n)) = Suc n"
+          by (auto intro: Least_equality)
+        with ih False show ?thesis by (simp add: Let_def)
+      qed
+    qed
+  }
+  thus ?thesis by (auto simp: stutter_reduced_def)
+qed
+
+text {*
+  Whenever two sequence elements at two consecutive sampling points of the 
+  maximal stuttering sampler are equal then the sequence stutters infinitely 
+  from the first sampling point onwards. In particular, @{text "\<natural>\<sigma>"} is
+  stutter free.
+*}
 lemma max_stutter_sampler_nostuttering:
   assumes stut: "\<sigma> (max_stutter_sampler \<sigma> (Suc k)) = \<sigma> (max_stutter_sampler \<sigma> k)"
       and n: "n > max_stutter_sampler \<sigma> k" (is "_ > ?ms k")
@@ -313,6 +383,28 @@ proof (rule ccontr)
   from this stut show "False" ..
 qed
 
+lemma stutter_reduced_stutter_free: "stutter_free (\<natural>\<sigma>)"
+proof (rule stutter_freeI)
+  fix k n
+  assume k: "(\<natural>\<sigma>) (Suc k) = (\<natural>\<sigma>) k" and n: "k < n"
+  from n have "max_stutter_sampler \<sigma> k < max_stutter_sampler \<sigma> n"
+    using max_stutter_sampler[THEN stutter_sampler_mono, THEN strict_monoD]
+    by blast
+  with k show "(\<natural>\<sigma>) n = (\<natural>\<sigma>) k"
+    unfolding stutter_reduced_def 
+    by (auto elim: max_stutter_sampler_nostuttering 
+             simp del: max_stutter_sampler.simps)
+qed
+
+lemma stutter_reduced_suffix: "\<natural>((\<natural>\<sigma>)[k..]) = (\<natural>\<sigma>)[k..]"
+proof (rule stutter_free_reduced)
+  have "stutter_free (\<natural>\<sigma>)" by (rule stutter_reduced_stutter_free)
+  thus "stutter_free ((\<natural>\<sigma>)[k..])" by (rule stutter_free_suffix)
+qed
+
+lemma stutter_reduced_reduced: "\<natural>\<natural>\<sigma> = \<natural>\<sigma>"
+  by (rule stutter_reduced_suffix[of "\<sigma>" "0", simplified])
+
 text {*
   One can define a partial order on sampling functions for a given sequence
   @{text "\<sigma>"} by saying that function @{text g} is better than function @{text f}
@@ -322,16 +414,16 @@ text {*
   such that @{text "\<sigma> \<circ> f \<circ> h = \<sigma> \<circ> g"}. (Note that @{text "f \<circ> h"} is indeed a stuttering
   sampling function for @{text "\<sigma>"}, by theorem @{text "stutter_sampler_comp"}.)
 
-  We do not formalize this notion but just prove the following result, which
-  formally expresses that @{text "max_stutter_sampler \<sigma>"} is indeed the best 
-  sampling function according to this order. Its proof is somewhat technical.
+  We do not formalize this notion but prove that @{text "max_stutter_sampler \<sigma>"}
+  is the best sampling function according to this order.
 *}
 
 theorem sample_max_sample:
   assumes f: "stutter_sampler f \<sigma>"
-  shows "\<sigma> \<circ> (max_stutter_sampler \<sigma>) = \<sigma> \<circ> f \<circ> (max_stutter_sampler (\<sigma> \<circ> f))"
-        (is "_ \<circ> ?mss = _ \<circ> _ \<circ> ?mssf")
+  shows "\<natural>(\<sigma> \<circ> f) = \<natural>\<sigma>"
 proof -
+  let ?mss = "max_stutter_sampler \<sigma>"
+  let ?mssf = "max_stutter_sampler (\<sigma> \<circ> f)"
   from f have mssf: "stutter_sampler (f \<circ> ?mssf) \<sigma>"
     by (blast intro: stutter_sampler_comp max_stutter_sampler)
   txt {*
@@ -484,7 +576,10 @@ proof -
       qed
     qed
   }
-  thus ?thesis by force
+  hence "\<natural>\<sigma> = \<natural>(\<sigma> \<circ> f)" unfolding stutter_reduced_def by force
+  thus ?thesis by (rule sym)
 qed
 
+
 end  (* theory Samplers *)
+
