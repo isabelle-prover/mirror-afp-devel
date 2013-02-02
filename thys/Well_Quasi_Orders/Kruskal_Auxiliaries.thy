@@ -12,12 +12,12 @@ imports
 begin
 
 lemma bad_of_special_shape':
-  assumes refl: "reflp_on P {x. \<exists>i. x \<in> set (g i)}"
-    (is "reflp_on P {x. \<exists>i. x \<in> ?G i}")
-    and "\<forall>i. f i \<in> {x. \<exists>i. x \<in> set (g i)}"
+  assumes refl: "reflp_on P (\<Union>(set ` {g i | i. True}))"
+    and "\<forall>i. f i \<in> \<Union>(set ` {g i | i. True})"
     and "bad P f"
   shows "\<exists>R (f::nat \<Rightarrow> nat). (\<forall>i. R i \<in> set (g (f i)) \<and> f 0 \<le> f i) \<and> bad P R"
 proof -
+  let ?G = "\<lambda>i. set (g i)"
   from assms have "\<forall>i. \<exists>j. f i \<in> ?G j" by auto
   from choice [OF this] obtain \<phi> where G: "\<And>i. f i \<in> ?G (\<phi> i)" by auto
   have "\<forall>i. \<exists>j>i. \<phi> 0 \<le> \<phi> j"

@@ -20,7 +20,7 @@ next
   from assms have "almost_full_on (P\<^sup>=\<^sup>=) F" by (auto simp: wpo_on_def)
   from almost_full_on_terms [OF this]
     show "almost_full_on (term_hemb F P)\<^sup>=\<^sup>= (terms F)"
-    using term_hembeq_term_hemb_conv [of _ F P]
+    using term_hembeq_term_hemb_conv [of _ F P, symmetric]
     by (simp add: almost_full_on_def good_def)
 qed
 
