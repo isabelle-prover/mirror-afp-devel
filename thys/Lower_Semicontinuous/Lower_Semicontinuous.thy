@@ -301,7 +301,7 @@ next
     from this obtain N where N_def: "ALL n>=N. x n : T"
        apply (subst tendsto_obtains_N[of x x0 T]) using assms by auto
     hence "ALL n>=N. f x0 - e < (f o x) n" using T_def by auto
-    hence "liminf (f o x) >= f x0 - e" apply (subst liminf_bounded[of N]) by auto
+    hence "liminf (f o x) >= f x0 - e" by (intro Liminf_bounded) (auto simp: eventually_sequentially intro!: exI[of _ N])
     hence "f x0 <= liminf (f o x) + e" apply (cases e) unfolding ereal_minus_le_iff by auto
   }
   then show ?thesis by (intro ereal_le_epsilon) auto
@@ -333,7 +333,9 @@ proof-
       { fix B :: real obtain N where N_def: "ALL n>=N. f(x n) <= ereal B"
            using Lim_MInfty[of "f o x"] `(f o x) ----> l` `l = -\<infinity>` by auto
         def g == "(%n. if n>=N then x n else x N)"
-        hence "g ----> x0" using tail_same_limit[of x _ N g] `x ----> x0` by auto
+        hence "g ----> x0"
+          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x ----> x0`])
+             (auto simp: eventually_sequentially)
         moreover have "ALL n. f(g n) <= ereal B" using g_def N_def by auto
         ultimately have "f x0 <= ereal B" using `?rhs` by auto
       } hence "f x0 = -\<infinity>" using ereal_bot by auto
@@ -345,7 +347,9 @@ proof-
            apply (subst tendsto_obtains_N[of "f o x" l "{l - e <..< l + e}"])
            using fin e_def ereal_between `(f o x) ----> l` by auto
         def g == "(%n. if n>=N then x n else x N)"
-        hence "g ----> x0" using tail_same_limit[of x _ N g] `x ----> x0` by auto
+        hence "g ----> x0"
+          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x ----> x0`])
+             (auto simp: eventually_sequentially)
         moreover have "ALL n. f(g n) <= l + e" using g_def N_def by auto
         ultimately have "f x0 <= l + e" using `?rhs` by auto
       } hence "f x0 <= l" using ereal_le_epsilon by auto
@@ -355,7 +359,7 @@ proof-
 moreover
 { assume lsc: "lsc_at x0 f"
   { fix x c assume xc_def: "x ----> x0 & (ALL n. f(x n)<=c)"
-    hence "liminf (f o x) <= c" using limsup_bounded[of 0 "f o x" c] ereal_Liminf_le_Limsup[of sequentially "f o x"] by auto
+    hence "liminf (f o x) <= c" using Limsup_bounded[of sequentially "f o x" c] Liminf_le_Limsup[of sequentially "f o x"] by auto
     hence "f x0 <= c" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
   } hence "?rhs" by auto
 } ultimately show ?thesis by blast
@@ -376,7 +380,7 @@ proof-
 moreover
 { assume lsc: "lsc_at x0 f"
   { fix x c c0 assume xc_def: "x ----> x0 & c ----> c0 & (ALL n. f(x n)<=c n)"
-    hence "liminf (f o x) <= c0" using liminf_mono[of _ "f o x" c] lim_imp_Liminf[of sequentially] by auto
+    hence "liminf (f o x) <= c0" using Liminf_mono[of "f o x" c sequentially] lim_imp_Liminf[of sequentially] by auto
     hence "f x0 <= c0" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
   } hence "?rhs" by auto
 } ultimately show ?thesis by blast
@@ -470,7 +474,7 @@ moreover
     hence "limsup (f o x) <= f x0" using a unfolding usc_limsup by auto
     moreover have "... <= liminf (f o x)" using a `x ----> x0` unfolding lsc_liminf by auto
     ultimately have "limsup (f o x) = f x0 & liminf (f o x) = f x0"
-       using ereal_Liminf_le_Limsup[of sequentially "f o x"] by auto
+       using Liminf_le_Limsup[of sequentially "f o x"] by auto
     hence "(f o x) ----> f x0" using ereal_Liminf_eq_Limsup[of sequentially] by auto
   } hence "continuous (at x0) f" using continuous_at_sequentially2[of x0 f] by auto
 } ultimately show ?thesis by blast
@@ -1822,44 +1826,6 @@ lemma ereal_divide_pos:
   shows "a/(ereal b)>0"
   by (metis PInfty_eq_infinity assms ereal.simps(2) ereal_less(2) ereal_less_divide_pos ereal_mult_zero)
 
-lemma lsc_hull_of_convex_aux:
-  "Limsup (at 1 within {0..<1}) (%m. ereal ((1-m)*a+m*b)) <= ereal b"
-proof-
-{ fix y assume "ereal b<y"
-  hence y_def:"0 <(y - ereal b)" using ereal_less_minus_iff by auto
-  have "EX d>0. ALL z:{0..<1}. 0 < dist z 1 & dist z 1 < d --> ereal ((1 - z) * a + z * b) < y"
-  proof(cases "y=\<infinity>")
-    case True thus ?thesis apply(rule_tac x="1" in exI) by auto
-    next
-    case False
-    then obtain r where r_def: "y=ereal r" using y_def by (cases y) auto
-    { assume "a>b"
-      hence "a-b>0" by (simp add: algebra_simps)
-      hence "(ereal r-ereal b)/(ereal(a-b))>0" using y_def r_def by (metis ereal_divide_pos)
-      then obtain d where d_def: "0<d & ereal d<(ereal r-ereal b)/(ereal(a-b))"
-        using ereal_dense2[of 0] by auto
-      { fix z::real assume "dist z 1 < d"
-        hence "ereal(1 - z)<ereal d" unfolding dist_norm by auto
-        hence "ereal(1 - z)<(ereal r-ereal b)/(ereal(a-b))" using d_def by (metis order_less_trans)
-        hence "(a - b) * (1 - z) < r - b"
-          using ereal_less_divide_pos[of "ereal(a-b)" "ereal (1 - z)" "(ereal r-ereal b)"] `a-b>0` by auto
-        hence "(1 - z) * a + z * b < r" by (simp add: algebra_simps)
-        hence "ereal ((1 - z) * a + z * b) < y" using r_def by auto
-      } hence ?thesis using d_def by auto
-    } moreover
-    { assume "b>=a"
-      { fix z::real assume "z:{0..<1}"
-        hence "0<=(1 - z)" by auto
-        hence "(1 - z) * a <= (1 - z) * b" using `b>=a` by (metis comm_mult_left_mono)
-        hence "(1 - z) * a + z * b <= b" by (simp add: algebra_simps)
-        hence "ereal ((1 - z) * a + z * b) < y" using r_def `ereal b<y` by auto
-      } hence ?thesis apply(rule_tac x="1" in exI) by auto
-    } ultimately show ?thesis using not_le by auto
-  qed
-} thus ?thesis unfolding Limsup_Inf apply (subst complete_lattice_class.Inf_lower)
-      unfolding eventually_within by auto
-qed
-
 
 lemma real_interval_limpt:
   assumes "a<b"
@@ -1876,6 +1842,17 @@ proof-
   moreover have "max a (b-e):{a..<b}" using e_def `a<b` by auto
   ultimately have "EX y:{a..<b}. y : T & y ~= b" by auto
 } thus ?thesis unfolding islimpt_def by auto
+qed
+
+
+lemma lsc_hull_of_convex_aux:
+  "Limsup (at 1 within {0..<1}) (%m. ereal ((1-m)*a+m*b)) <= ereal b"
+proof-
+  have nontr: "~trivial_limit (at 1 within {0..< 1::real})"
+    apply (subst trivial_limit_within) using real_interval_limpt by auto
+  have "((%m. ereal ((1-m)*a+m*b)) ---> (1 - 1) * a + 1 * b) (at 1 within {0..<1})"
+    unfolding lim_ereal by (intro tendsto_intros)
+  from lim_imp_Limsup[OF nontr this] show ?thesis by simp
 qed
 
 
@@ -1927,7 +1904,7 @@ moreover
     moreover have nontr: "~trivial_limit (at (1::real) within {0..<1})"
        apply (subst trivial_limit_within) using real_interval_limpt by auto
     moreover hence "Liminf (at 1 within {0..<1}) ?g <= Limsup (at 1 within {0..<1}) ?g"
-      apply (subst ereal_Liminf_le_Limsup) by auto
+      apply (subst Liminf_le_Limsup) by auto
     ultimately have "Limsup (at 1 within {0..<1}) ?g = (lsc_hull f) y
                    & Liminf (at 1 within {0..<1}) ?g = (lsc_hull f) y"
       using * by auto

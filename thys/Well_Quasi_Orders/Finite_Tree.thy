@@ -12,7 +12,7 @@ imports
   Restricted_Predicates
 begin
 
-text {*By the interface we are actually not necessarliy finite, but just
+text {*By the interface we are actually not necessarily finite, but just
 finitely branching. However, all interesting properties below are only valid
 on the inductively defined set of trees built from the constructor 'mk'.*}
 locale finite_tree =

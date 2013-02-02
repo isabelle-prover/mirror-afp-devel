@@ -112,8 +112,8 @@ proof -
       proof
         from reflp_on_subset [OF subset refl] have refl: "reflp_on ?P ?B'" .
         fix f :: "'a seq" assume "\<forall>i. f i \<in> ?B'"
-        from no_bad_of_special_shape_imp_good' [OF no_special_bad_seq refl this]
-          show "good ?P f" .
+        from bad_of_special_shape' [OF refl this] and no_special_bad_seq
+          show "good ?P f" by blast
       qed
       let ?a' = "{a i | i. True}"
       have "?a' \<subseteq> A"
