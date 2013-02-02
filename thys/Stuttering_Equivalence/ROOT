@@ -3,6 +3,7 @@ session Stuttering_Equivalence (AFP) = HOL +
   theories
     Samplers
     StutterEquivalence
+    PLTL
   files
     "document/root.bib"
     "document/root.tex"

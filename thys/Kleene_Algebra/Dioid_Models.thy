@@ -298,7 +298,7 @@ path and an empty one is undefined; the fusion of two non-empty paths
 appends the tail of the second path to the first one.
 
 We need to use a total alternative and make sure that undefined paths
-do not contribute to the complex product.  *}
+do not contribute to the complex product. *}
 
 fun p_fusion :: "'a path \<Rightarrow> 'a path \<Rightarrow> 'a path" where
   "p_fusion [] _ = []"

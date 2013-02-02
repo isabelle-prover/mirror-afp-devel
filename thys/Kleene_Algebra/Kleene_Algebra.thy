@@ -72,7 +72,7 @@ proof (rule antisym) -- "this splits an equation into two inequalities"
     by (metis add_lub eq_refl star_1l)
   thus "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
     by (metis star_inductl)
-  show "x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star>"
+  next show "x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star>"
     by (metis mult_isor mult_onel star_ref)
 qed
 

@@ -22,31 +22,25 @@
 <div align="center">
 <p> </p>
 
-<h1><font class="first">S</font>tuttering
-<font class="first">E</font>quivalence
+<h1><font class="first">R</font>ibbon
+<font class="first">P</font>roofs
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Stuttering Equivalence</td></tr>
+        <td class="data" width="80%">Ribbon Proofs</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.loria.fr/~merz/">Stephan Merz</a></td></tr>
+        <td class="data"><a href="http://www.pes.tu-berlin.de/menue/ueber_uns/team/john_wickerson/">John Wickerson</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2012-05-07</td></tr>
+        <td class="data">2013-01-19</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-<p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p>
-        </td></tr>
-
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
-
-[2013-01-31]: Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.
+This document concerns the theory of ribbon proofs: a diagrammatic proof system, based on separation logic, for verifying program correctness. We include the syntax, proof rules, and soundness results for two alternative formalisations of ribbon proofs. <p> Compared to traditional proof outlines, ribbon proofs emphasise the structure of a proof, so are intelligible and pedagogical. Because they contain less redundancy than proof outlines, and allow each proof step to be checked locally, they may be more scalable. Where proof outlines are cumbersome to modify, ribbon proofs can be visually manoeuvred to yield proofs of variant programs.
         </td></tr>
 
     <tr><td class="datahead">License:</td>
@@ -63,7 +57,7 @@
 
 <p></p>
 
-<!--#set var="name" value="Stuttering_Equivalence" -->
+<!--#set var="name" value="Ribbon_Proofs" -->
 <!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -90,10 +84,7 @@
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-05-08.tar.gz">afp-<!--#echo var="name" -->-2012-05-08.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
