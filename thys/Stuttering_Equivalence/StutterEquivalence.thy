@@ -11,7 +11,7 @@ text {*
 *}
 
 definition stutter_equiv  (infix "\<approx>" 50) where
-  "\<sigma> \<approx> \<tau> \<equiv> \<sigma> \<circ> (max_stutter_sampler \<sigma>) = \<tau> \<circ> (max_stutter_sampler \<tau>)"
+  "\<sigma> \<approx> \<tau> \<equiv> \<natural>\<sigma> = \<natural>\<tau>"
 
 text {*
   Stuttering equivalence is an equivalence relation.
@@ -27,13 +27,16 @@ lemma stutter_equiv_trans [trans]: "\<rho> \<approx> \<sigma> \<Longrightarrow> 
   unfolding stutter_equiv_def by simp
 
 text {*
-  In particular, any stutter-reduced sequence is stuttering equivalent
-  to the original one.
+  In particular, any sequence sampled by a stuttering sampler
+  is stuttering equivalent to the original one.
 *}
-lemma reduced_stutter_equiv:
+lemma sampled_stutter_equiv:
   assumes "stutter_sampler f \<sigma>"
   shows "\<sigma> \<circ> f \<approx> \<sigma>"
-  using assms unfolding stutter_equiv_def by (rule sym[OF sample_max_sample])
+  using assms unfolding stutter_equiv_def by (rule sample_max_sample)
+
+lemma stutter_reduced_equivalent: "\<natural>\<sigma> \<approx> \<sigma>"
+  unfolding stutter_equiv_def by (rule stutter_reduced_reduced)
 
 text {*
   For proving stuttering equivalence of two sequences, it is enough
@@ -47,15 +50,10 @@ lemma stutter_equivI:
       and eq: "\<sigma> \<circ> f = \<tau> \<circ> g"
   shows "\<sigma> \<approx> \<tau>"
 proof -
-  from f have "\<sigma> \<circ> (max_stutter_sampler \<sigma>) = 
-               \<sigma> \<circ> f \<circ> (max_stutter_sampler (\<sigma> \<circ> f))"
-    by (rule sample_max_sample)
-  also from eq have "... = \<tau> \<circ> g \<circ> (max_stutter_sampler (\<tau> \<circ> g))"
-    by simp
-  also from g have "... = \<tau> \<circ> (max_stutter_sampler \<tau>)"
-    by (rule sym[OF sample_max_sample])
-  finally show ?thesis
-    unfolding stutter_equiv_def .
+  from f have "\<natural>\<sigma> = \<natural>(\<sigma> \<circ> f)" by (rule sample_max_sample[THEN sym])
+  also from eq have "... = \<natural>(\<tau> \<circ> g)" by simp
+  also from g have "... = \<natural>\<tau>" by (rule sample_max_sample)
+  finally show ?thesis by (unfold stutter_equiv_def)
 qed
 
 text {*
@@ -69,7 +67,7 @@ lemma stutter_equivE:
   shows "P"
 proof (rule p)
   from eq show "\<sigma> \<circ> (max_stutter_sampler \<sigma>) = \<tau> \<circ> (max_stutter_sampler \<tau>)"
-    unfolding stutter_equiv_def .
+    by (unfold stutter_equiv_def stutter_reduced_def)
 qed (rule max_stutter_sampler)+
 
 text {*
@@ -87,12 +85,10 @@ text {*
 lemma stutter_equiv_0:
   assumes "\<sigma> \<approx> \<tau>"
   shows "\<sigma> 0 = \<tau> 0"
-using assms proof (rule stutter_equivE)
-  fix f g
-  assume f: "stutter_sampler f \<sigma>" and g: "stutter_sampler g \<tau>"
-     and eq: "\<sigma> \<circ> f = \<tau> \<circ> g"
-  from eq have "\<sigma> (f 0) = \<tau> (g 0)" by (rule o_eq_dest)
-  with f g show ?thesis by (simp add: stutter_sampler_0)
+proof -
+  have "\<sigma> 0 = (\<natural>\<sigma>) 0" by (rule stutter_reduced_0[THEN sym])
+  with assms[unfolded stutter_equiv_def] show ?thesis
+    by (simp add: stutter_reduced_0)
 qed
 
 text {*
@@ -125,7 +121,7 @@ qed
 text {*
   Given a stuttering sampling function @{text f} and a point @{text "n"}
   within the interval from @{text "f k"} to @{text "f (k+1)"}, the suffix
-  starting at @{text b} is stuttering equivalent to the suffix starting
+  starting at @{text n} is stuttering equivalent to the suffix starting
   at @{text "f k"}.
 *}
 lemma stutter_equiv_within_interval:
@@ -157,39 +153,70 @@ proof -
 qed
 
 text {*
-  Given two stuttering equivalent sequences, for every suffix of one there
-  is a stuttering-equivalent suffix of the other.
+  Given two stuttering equivalent sequences @{text "\<sigma>"} and @{text "\<tau>"},
+  we obtain a zig-zag relationship as follows: for any suffix @{text "\<tau>[n..]"}
+  there is a suffix @{text "\<sigma>[m..]"} such that:
+  \begin{enumerate}
+  \item @{text "\<sigma>[m..] \<approx> \<tau>[n..]"} and
+  \item for every suffix @{text "\<sigma>[j..]"} where @{text "j<m"} there is a
+    corresponding suffix @{text "\<tau>[k..]"} for some @{text "k<n"}.
+  \end{enumerate}
 *}
 theorem stutter_equiv_suffixes_left:
   assumes "\<sigma> \<approx> \<tau>"
-  obtains m where "\<sigma>[m..] \<approx> \<tau>[n..]"
+  obtains m where "\<sigma>[m..] \<approx> \<tau>[n..]" and "\<forall>j<m. \<exists>k<n. \<sigma>[j..] \<approx> \<tau>[k..]"
 using assms proof (rule stutter_equivE)
   fix f g
   assume f: "stutter_sampler f \<sigma>"
      and g: "stutter_sampler g \<tau>"
      and eq: "\<sigma> \<circ> f = \<tau> \<circ> g"
-  from g obtain k where k: "g k \<le> n" "n < g (Suc k)"
+  from g obtain i where i: "g i \<le> n" "n < g (Suc i)"
     by (rule stutter_sampler_interval)
-  with g have "\<tau>[n..] \<approx> \<tau>[g k ..]"
+  with g have "\<tau>[n..] \<approx> \<tau>[g i ..]"
     by (rule stutter_equiv_within_interval)
-  also from g have "... \<approx> (\<tau> \<circ> g)[k ..]"
+  also from g have "... \<approx> (\<tau> \<circ> g)[i ..]"
     by (rule suffix_stutter_equiv)
-  also from eq have "... = (\<sigma> \<circ> f)[k ..]"
+  also from eq have "... = (\<sigma> \<circ> f)[i ..]"
     by simp
-  also from f have "... \<approx> \<sigma>[f k ..]"
+  also from f have "... \<approx> \<sigma>[f i ..]"
     by (rule suffix_stutter_equiv[THEN stutter_equiv_sym])
-  finally have "\<sigma>[f k ..] \<approx> \<tau>[n ..]"
+  finally have "\<sigma>[f i ..] \<approx> \<tau>[n ..]"
     by (rule stutter_equiv_sym)
-  with that show ?thesis .
+  moreover
+  {
+    fix j
+    assume j: "j < f i"
+    from f obtain a where a: "f a \<le> j" "j < f (Suc a)"
+      by (rule stutter_sampler_interval)
+    from a j have "f a < f i" by simp
+    with f[THEN stutter_sampler_mono] have "a < i"
+      by (simp add: strict_mono_less)
+    with g[THEN stutter_sampler_mono] have "g a < g i"
+      by (simp add: strict_mono_less)
+    with i have 1: "g a < n" by simp
+
+    from f a have "\<sigma>[j..] \<approx> \<sigma>[f a ..]"
+      by (rule stutter_equiv_within_interval)
+    also from f have "... \<approx> (\<sigma> \<circ> f)[a ..]"
+      by (rule suffix_stutter_equiv)
+    also from eq have "... = (\<tau> \<circ> g)[a ..]" by simp
+    also from g have "... \<approx> \<tau>[g a ..]"
+      by (rule suffix_stutter_equiv[THEN stutter_equiv_sym])
+    finally have "\<sigma>[j ..] \<approx> \<tau>[g a ..]" .
+    with 1 have "\<exists>k<n. \<sigma>[j..] \<approx> \<tau>[k ..]" by blast
+  }
+  moreover
+  note that
+  ultimately show ?thesis by blast
 qed
 
 theorem stutter_equiv_suffixes_right:
   assumes "\<sigma> \<approx> \<tau>"
-  obtains n where "\<sigma>[m..] \<approx> \<tau>[n..]"
+  obtains n where "\<sigma>[m..] \<approx> \<tau>[n..]" and "\<forall>j<n. \<exists>k<m. \<sigma>[k..] \<approx> \<tau>[j..]"
 proof -
   from assms have "\<tau> \<approx> \<sigma>" 
     by (rule stutter_equiv_sym)
-  then obtain n where "\<tau>[n..] \<approx> \<sigma>[m..]" 
+  then obtain n where "\<tau>[n..] \<approx> \<sigma>[m..]" "\<forall>j<n. \<exists>k<m. \<tau>[j..] \<approx> \<sigma>[k..]"
     by (rule stutter_equiv_suffixes_left)
   with that show ?thesis 
     by (blast dest: stutter_equiv_sym)
@@ -201,23 +228,24 @@ text {*
 *}
 lemma stutter_equiv_element_left:
   assumes "\<sigma> \<approx> \<tau>"
-  obtains m where "\<sigma> m = \<tau> n"
+  obtains m where "\<sigma> m = \<tau> n" and "\<forall>j<m. \<exists>k<n. \<sigma> j = \<tau> k"
 proof -
-  from assms obtain m where "\<sigma>[m..] \<approx> \<tau>[n..]"
+  from assms obtain m where "\<sigma>[m..] \<approx> \<tau>[n..]" "\<forall>j<m. \<exists>k<n. \<sigma>[j..] \<approx> \<tau>[k..]"
     by (rule stutter_equiv_suffixes_left)
   with that show ?thesis
-    by (auto dest: stutter_equiv_0)
+    by (force dest: stutter_equiv_0)
 qed
 
 lemma stutter_equiv_element_right:
   assumes "\<sigma> \<approx> \<tau>"
-  obtains n where "\<sigma> m = \<tau> n"
+  obtains n where "\<sigma> m = \<tau> n" and "\<forall>j<n. \<exists>k<m. \<sigma> k = \<tau> j"
 proof -
-  from assms obtain n where "\<sigma>[m..] \<approx> \<tau>[n..]"
+  from assms obtain n where "\<sigma>[m..] \<approx> \<tau>[n..]" "\<forall>j<n. \<exists>k<m. \<sigma>[k..] \<approx> \<tau>[j..]"
     by (rule stutter_equiv_suffixes_right)
   with that show ?thesis
-    by (auto dest: stutter_equiv_0)
+    by (force dest: stutter_equiv_0)
 qed
 
 
 end (* theory StutterEquivalence *)
+
