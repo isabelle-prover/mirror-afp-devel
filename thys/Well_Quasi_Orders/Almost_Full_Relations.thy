@@ -747,8 +747,6 @@ proof (rule ccontr)
     with `bad ?P c` have False by blast
   }
   then have no_special_bad_seq: "\<not> (\<exists>\<phi>. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>))" by blast
-  then have "\<not> (\<exists>\<phi>. (\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j) \<and> bad ?P (t \<circ> \<phi>))"
-    by (metis le0 less_mono_imp_le_mono)
 
   let ?H = "{h i | i. True}"
   let ?T = "{t i | i. True}"
