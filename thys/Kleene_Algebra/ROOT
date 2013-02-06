@@ -14,10 +14,11 @@ session "Kleene_Algebra" (AFP) = HOL +
     Action_Algebra
     Action_Algebra_Models
     Omega_Algebra
+    Omega_Algebra_Models
     Finite_Suprema
     Formal_Power_Series
     Inf_Matrix
-      
+
   files
     "document/root.bib"
     "document/root.tex"
