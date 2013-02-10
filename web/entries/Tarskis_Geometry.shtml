@@ -100,7 +100,11 @@ more interesting proofs.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-11-09.tar.gz">afp-<!--#echo var="name" -->-2012-11-09.tar.gz</a></li>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-11-08.tar.gz">afp-<!--#echo var="name" -->-2012-11-08.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

@@ -92,7 +92,10 @@ of the conference Certified Programs and Proofs 2012.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-09-10.tar.gz">afp-<!--#echo var="name" -->-2012-09-10.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

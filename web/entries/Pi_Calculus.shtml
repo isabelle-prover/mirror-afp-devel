@@ -91,7 +91,10 @@ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/file
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-06-14.tar.gz">afp-<!--#echo var="name" -->-2012-06-14.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
