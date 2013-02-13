@@ -649,12 +649,13 @@ qed
 text {* The following property appears in process algebra. *}
 
 lemma troeger [simp]: "(x + y)\<^sup>\<star> \<cdot> z = x\<^sup>\<star> \<cdot> (y \<cdot> (x+y)\<^sup>\<star> \<cdot> z + z)"
-  using opp_mult_def apply -  -- {* {\em opp\_mult\_def} is not actually required for {\em metis} to
-                                    find a proof, but (interestingly enough) it considerably speeds
-                                    up the proof search. This idiom suppresses the ``unused
-                                    theorem'' warning that {\em metis} would generate if
-                                    {\em opp\_mult\_def} were simply passed as an argument. *}
-  by (metis add.commute distrib_right mult.assoc mult_onel mult_oner distrib_left star_sum_unfold)
+  using [[metis_verbose=false]]
+    -- {* Theorem {\em opp\_mult\_def} is not actually required for
+          {\em metis} to find a proof, but (interestingly enough) it
+          considerably speeds up the proof search. We suppress the
+          ``unused theorem'' warning that {\em metis} would generate
+          in verbose mode. *}
+  by (metis add.commute distrib_left distrib_right mult.assoc mult_onel mult_oner opp_mult_def star_sum_unfold)
 
 text {* The following properties are related to a property from
 propositional dynamic logic which has been attributed to Albert
