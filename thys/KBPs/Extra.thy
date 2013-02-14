@@ -10,6 +10,7 @@ imports
   Main
   Equiv_Relations
   "~~/src/HOL/Library/Option_ord"
+  "~~/src/HOL/Library/Product_Lexorder"
 begin
 
 (* Extra lemmas that are not noteworthy. *)
@@ -21,25 +22,6 @@ lemma relation_mono:
 lemma quotientI2:
   "\<lbrakk> x \<in> A; X = r `` {x} \<rbrakk> \<Longrightarrow> X \<in> A // r"
   by (simp add: quotientI)
-
-(* Use our own instance rather than
-
-  "~~/src/HOL/Library/Product_ord"
-
-as we need to know that it is lexicographic. *)
-
-instantiation prod :: (linorder, linorder) linorder
-begin
-
-definition less_eq_prod
-  where "x \<le> y \<equiv> fst x < fst y \<or> (fst x = fst y \<and> snd x \<le> snd y)"
-
-definition less_prod
-  where "(x::'a \<times> 'b) < y \<equiv> fst x < fst y \<or> (fst x = fst y \<and> snd x < snd y)"
-
-instance by intro_classes (unfold less_eq_prod_def less_prod_def, auto)
-
-end
 
 instantiation unit :: linorder
 begin

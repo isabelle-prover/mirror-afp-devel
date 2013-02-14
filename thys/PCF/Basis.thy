@@ -5,7 +5,7 @@
 theory Basis
 imports
   "~~/src/HOL/HOLCF/HOLCF"
-  "~~/src/HOL/Library/Product_Lattice"
+  "~~/src/HOL/Library/Product_Order"
   "~~/src/HOL/HOLCF/Library/Nat_Discrete"
   Dual_Lattice
 begin

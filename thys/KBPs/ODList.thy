@@ -616,8 +616,7 @@ lemma tabulate_toList[simp, code abstract]:
    apply (rule inj_onI)
    apply simp
   apply (rule mono_onI)
-  unfolding less_eq_prod_def
-  apply auto
+  apply (simp add: less_eq_prod_def less_le)
   done
 
 lemma lookup_tabulate[simp]:
@@ -630,8 +629,7 @@ next
     apply (subst msort_map)
     apply (auto intro: inj_onI simp: sorted_Cons)
     apply (rule mono_onI)
-    unfolding less_eq_prod_def
-    apply auto
+    apply (simp add: less_eq_prod_def less_le)
     done
   also from insert have "... = lookup (tabulate (fromList xs) f)"
     unfolding tabulate_def lookup_def
@@ -647,8 +645,7 @@ next
     apply (subst msort_map)
     apply (auto intro: inj_onI)
     apply (rule mono_onI)
-    unfolding less_eq_prod_def
-    apply auto
+    apply (simp add: less_eq_prod_def less_le)
     done
   also with insert IH have "... = (Some \<circ> f) |` toSet dxs"
     by (auto simp add: restrict_map_def fun_eq_iff)

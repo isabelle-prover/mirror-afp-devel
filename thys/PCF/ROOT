@@ -2,7 +2,7 @@ session PCF (AFP) = HOLCF +
   options [timeout = 600, document_graph]
   theories [document = false, show_question_marks = false]
     "~~/src/HOL/HOLCF/HOLCF"
-    "~~/src/HOL/Library/Product_Lattice"
+    "~~/src/HOL/Library/Product_Order"
     Dual_Lattice
     Basis
   theories [show_question_marks = false]
