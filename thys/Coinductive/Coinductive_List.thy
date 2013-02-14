@@ -889,19 +889,19 @@ primrec random_aux_llist ::
   "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a llist \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
 where
   "random_aux_llist 0 j = 
-   Quickcheck.collapse (Random.select_weight 
+   Quickcheck_Random.collapse (Random.select_weight 
      [(1, Pair valtermify_LNil)])"
 | "random_aux_llist (Code_Numeral.Suc i) j =
-   Quickcheck.collapse (Random.select_weight
-     [(Code_Numeral.Suc i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_llist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
+   Quickcheck_Random.collapse (Random.select_weight
+     [(Code_Numeral.Suc i, Quickcheck_Random.random j o\<rightarrow> (\<lambda>x. random_aux_llist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
       (1, Pair valtermify_LNil)])"
-definition "Quickcheck.random i = random_aux_llist i i"
+definition "Quickcheck_Random.random i = random_aux_llist i i"
 instance ..
 end
 
 lemma random_aux_llist_code [code]:
-  "random_aux_llist i j = Quickcheck.collapse (Random.select_weight
-     [(i, Quickcheck.random j o\<rightarrow> (\<lambda>x. random_aux_llist (i - 1) j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
+  "random_aux_llist i j = Quickcheck_Random.collapse (Random.select_weight
+     [(i, Quickcheck_Random.random j o\<rightarrow> (\<lambda>x. random_aux_llist (i - 1) j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
       (1, Pair valtermify_LNil)])"
   apply (cases i rule: code_numeral.exhaust)
   apply (simp_all only: random_aux_llist.simps code_numeral_zero_minus_one Suc_code_numeral_minus_one)
