@@ -1,6 +1,6 @@
 header {* Implementation of Dijkstra's-Algorithm using Automatic Determinization *}
 theory Dijkstra_Impl_Adet
-imports Dijkstra GraphSpec HashGraphImpl "~~/src/HOL/Library/Efficient_Nat"
+imports Dijkstra GraphSpec HashGraphImpl "~~/src/HOL/Library/Code_Target_Numeral"
   "../Refine_Monadic/Autoref_Collection_Bindings"
 begin 
 

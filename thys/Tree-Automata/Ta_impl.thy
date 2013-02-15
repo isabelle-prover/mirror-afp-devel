@@ -7,7 +7,7 @@ theory Ta_impl
 imports 
   Main
 
-  "~~/src/HOL/Library/Efficient_Nat" 
+  "~~/src/HOL/Library/Code_Target_Numeral" 
   "../Collections/Collections" 
 
   Ta AbsAlgo

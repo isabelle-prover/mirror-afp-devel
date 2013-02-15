@@ -6,10 +6,10 @@ session "Separation_Logic_Imperative_HOL" (AFP) = HOL +
     "../Collections/common/HashCode"
     "../Collections/common/Misc"
     "Tools/Sep_Misc"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
   theories
-	Sep_Main
-	"Examples/Imp_List_Spec"
+    Sep_Main
+    "Examples/Imp_List_Spec"
     "Examples/List_Seg"
     "Examples/Open_List"
     "Examples/Circ_List"

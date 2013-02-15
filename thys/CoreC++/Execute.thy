@@ -12,7 +12,7 @@ imports BigStep WellType
   "~~/src/HOL/Library/Quotient_Product"
   "~~/src/HOL/Library/Quotient_Set"
   "~~/src/HOL/Library/Quotient_Option"
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 section{* General redefinitions *}
