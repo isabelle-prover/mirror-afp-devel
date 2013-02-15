@@ -1,6 +1,6 @@
 header {* Implementation of Dijkstra's-Algorithm using the ICF *}
 theory Dijkstra_Impl
-imports Dijkstra GraphSpec HashGraphImpl "~~/src/HOL/Library/Efficient_Nat"
+imports Dijkstra GraphSpec HashGraphImpl "~~/src/HOL/Library/Code_Target_Numeral"
 begin 
 text{*
   In this second refinement step, we use interfaces from the 

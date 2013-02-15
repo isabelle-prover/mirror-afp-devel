@@ -46,17 +46,20 @@ value "nat_res_to_list (nat_dijkstra (hlg_from_list (ran_graph 4 8912)) 0)"
 ML_val {*
 let
   (* Configuration of test: *)
-  val vertices = 1000; (* Number of vertices *)
-  val seed = 123454; (* Seed for random number generator *)
+  val vertices = @{code nat_of_integer} 1000; (* Number of vertices *)
+  val seed = @{code nat_of_integer} 123454; (* Seed for random number generator *)
   val cfg_print_paths = true; (* Whether to output complete paths *)
   val cfg_print_res = true; (* Whether to output result at all *)
 
   (* Internals *)
   fun string_of_edge (u,(w,v)) = 
-    "(" ^ string_of_int u ^ "," ^ string_of_int w ^ "," ^ string_of_int v ^ ")";
+    "(" ^ string_of_int (@{code integer_of_nat} u)
+    ^ "," ^ string_of_int (@{code integer_of_nat} w)
+    ^ "," ^ string_of_int (@{code integer_of_nat} v) ^ ")";
 
   fun print_entry (dest,(path,weight)) =
-    writeln (string_of_int dest ^ ": " ^ string_of_int weight ^
+    writeln (string_of_int (@{code integer_of_nat} dest)
+    ^ ": " ^ string_of_int (@{code integer_of_nat} weight) ^
     ( if cfg_print_paths then 
         " via [" ^ commas (map string_of_edge (rev path)) ^ "]"
       else ""
@@ -71,10 +74,10 @@ let
   val rt1 = Time.toMilliseconds (Time.now() - start);
 
   val start = Time.now();
-  val res = @{code nat_dijkstra} graph 0;
+  val res = @{code nat_dijkstra} graph (@{code nat_of_integer} 0);
   val rt2 = Time.toMilliseconds (Time.now() - start);
 in
-  writeln (string_of_int vertices ^ " vertices: " 
+  writeln (string_of_int (@{code integer_of_nat} vertices) ^ " vertices: " 
   ^ string_of_int rt2 ^ " ms + "
   ^ string_of_int rt1 ^ " ms to create graph = " 
   ^ string_of_int (rt1+rt2) ^ " ms");

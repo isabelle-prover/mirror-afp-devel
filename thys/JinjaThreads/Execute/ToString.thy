@@ -3,7 +3,7 @@
 *)
 
 header {* \isaheader{String representation of types} *}
-theory ToString imports 
+theory ToString imports
   "../J/Expr"
   "../JVM/JVMInstructions"
   "../../Collections/impl/TrieMapImpl"
@@ -41,34 +41,19 @@ definition [code]:
 instance proof qed
 end
 
-function digit_toString :: "int \<Rightarrow> String.literal"
+definition digit_toString :: "int \<Rightarrow> String.literal"
 where
-  "digit_toString 0 = STR ''0''"
-| "digit_toString 1 = STR ''1''"
-| "digit_toString 2 = STR ''2''"
-| "digit_toString 3 = STR ''3''"
-| "digit_toString 4 = STR ''4''"
-| "digit_toString 5 = STR ''5''"
-| "digit_toString 6 = STR ''6''"
-| "digit_toString 7 = STR ''7''"
-| "digit_toString 8 = STR ''8''"
-| "digit_toString 9 = STR ''9''"
-| "n \<notin> {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} \<Longrightarrow> digit_toString n = undefined"
-apply(case_tac x)
-apply simp_all
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply(rename_tac n', case_tac n', simp)
-apply simp
-done
-termination by lexicographic_order
+  "digit_toString k = (if k = 0 then STR ''0''
+    else if k = 1 then STR ''1''
+    else if k = 2 then STR ''2''
+    else if k = 3 then STR ''3''
+    else if k = 4 then STR ''4''
+    else if k = 5 then STR ''5''
+    else if k = 6 then STR ''6''
+    else if k = 7 then STR ''7''
+    else if k = 8 then STR ''8''
+    else if k = 9 then STR ''9''
+    else undefined)"
 
 function int_toString :: "int \<Rightarrow> String.literal list"
 where

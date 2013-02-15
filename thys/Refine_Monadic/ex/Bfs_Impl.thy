@@ -3,7 +3,7 @@ theory Bfs_Impl
 imports 
   Breadth_First_Search 
   "../Collection_Bindings" "../Refine"
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
   text {*
     Originally, this was part of our submission to the 
@@ -217,21 +217,30 @@ begin
   text {* The generated code is most conveniently executed within 
     Isabelle/HOL itself. We use a small test graph here: *}
 
-  definition nat_list:: "nat list \<Rightarrow> _" where "nat_list \<equiv> dlist_of_list"
-  ML {*
-    (* Define a test graph. *)
-    fun succ 1 = @{code nat_list} [2,3]
-        | succ 2 = @{code nat_list} [4]
-        | succ 4 = @{code nat_list} [5]
-        | succ 5 = @{code nat_list} [2]
-        | succ 3 = @{code nat_list} [6]
-        | succ _ = @{code nat_list} [];
+  definition nat_list:: "nat list \<Rightarrow> nat dlist"
+  where
+    "nat_list \<equiv> dlist_of_list"
 
+  definition succ :: "nat \<Rightarrow> nat dlist"
+  where
+    "succ n = nat_list (if n = 1 then [2, 3]
+      else if n = 2 then [4]
+      else if n = 4 then [5]
+      else if n = 5 then [2]
+      else if n = 3 then [6]
+      else [])"
+  
+  definition bfs_code_succ :: "integer \<Rightarrow> integer \<Rightarrow> nat option dres"
+  where
+    "bfs_code_succ m n = bfs_code succ (nat_of_integer m) (nat_of_integer n)"
+      
+  ML {*
     (* Execute algorithm for some node pairs. *)
-    @{code bfs_code} succ 1 1;
-    @{code bfs_code} succ 1 2;
-    @{code bfs_code} succ 1 5;
-    @{code bfs_code} succ 1 7;
-    *}
+    @{code bfs_code_succ} 1 1;
+    @{code bfs_code_succ} 1 2;
+    @{code bfs_code_succ} 1 5;
+    @{code bfs_code_succ} 1 7;
+  *}
 
 end
+

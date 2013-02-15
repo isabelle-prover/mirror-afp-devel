@@ -331,6 +331,10 @@ lemma error_bound: "error_bound \<le> error_bound'"
 
 definition i_max::nat where "i_max = 2 ^ 13"
 
+lemma [code_unfold]: -- {* Workaround to avoid non-pattern @{term "0::int"} in LHS of code equations *}
+  "0 = int_of_integer 0"
+  by simp
+
 lemma T_max: "E.Delta i_max = 0.5" by eval
 
 lemma i_max_correct: "\<And>i. i \<le> i_max \<Longrightarrow> E.Delta i \<le> T'"
