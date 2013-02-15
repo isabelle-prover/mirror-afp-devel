@@ -66,6 +66,9 @@ export_code
 
 definition j2jvm :: "addr J_prog \<Rightarrow> addr jvm_prog" where "j2jvm = J2JVM"
 
+code_modulename SML
+  Cardinality Set
+
 export_code
   wf_jvm_prog' exec_JVM_rr exec_JVM_rnd j2jvm
   j_Program 
