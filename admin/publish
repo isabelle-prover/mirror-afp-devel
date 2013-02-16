@@ -139,11 +139,12 @@ if [ "$1" != "-" ]; then
     mv $EXPORT.tar.gz $TARS
     ln -s $EXPORT.tar.gz $TARS/$EXPORT_PRE-current.tar.gz
 
+    echo "Generating HTML for [$@]"
+    $ISABELLE_TOOL afp_build -- -c $@  || fail "isabelle afp_build failed on [$@]"
+
     cd $EXPORT
     for ENTRY in $@; do
         if [ -d $ENTRY ]; then
-            echo "Generating HTML for [$ENTRY]"
-            $ISABELLE_TOOL afp_build $ENTRY || fail "isabelle make all failed on [$ENTRY]"
             echo "Tarring [$ENTRY]"
             $TAR -cf $EXPORT_PRE-$ENTRY-$DATE.tar $ENTRY
             gzip --best -f $EXPORT_PRE-$ENTRY-$DATE.tar
