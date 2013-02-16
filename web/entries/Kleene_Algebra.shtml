@@ -106,7 +106,10 @@ programming applications can quickly be explored, implemented and verified.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2013-01-16.tar.gz">afp-<!--#echo var="name" -->-2013-01-16.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

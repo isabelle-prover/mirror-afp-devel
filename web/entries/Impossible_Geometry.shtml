@@ -93,7 +93,11 @@ Squaring the circle, doubling the cube and trisecting an angle, using a compass 
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-08-07.tar.gz">afp-<!--#echo var="name" -->-2012-08-07.tar.gz</a></li>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-08-06.tar.gz">afp-<!--#echo var="name" -->-2012-08-06.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
