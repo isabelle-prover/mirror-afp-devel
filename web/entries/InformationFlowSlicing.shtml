@@ -80,12 +80,12 @@ by Wasserrab et al.
 <!--#set var="base1" value="HOL/Jinja/Slicing" --> 
 <!--#set var="base2" value="HOL/Jinja/HRB-Slicing" --> 
 
-<!--#set var="binfo1" value="../browser_info/current/${base1}/${name}" -->
+<!--#set var="binfo1" value="../browser_info/current/${base1}/${name}_Intra" -->
 <!--#set var="doc1" value="${binfo1}/document.pdf" -->
 <!--#set var="outline1" value="${binfo1}/outline.pdf" -->
 <!--#set var="browse1" value="${binfo1}/index.html" -->
 
-<!--#set var="binfo2" value="../browser_info/current/${base2}/${name}" -->
+<!--#set var="binfo2" value="../browser_info/current/${base2}/${name}_Inter" -->
 <!--#set var="doc2" value="${binfo2}/document.pdf" -->
 <!--#set var="outline2" value="${binfo2}/outline.pdf" -->
 <!--#set var="browse2" value="${binfo2}/index.html" -->
