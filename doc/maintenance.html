@@ -58,22 +58,25 @@ each time your entry breaks (see below).
 <p>
 <b>Technicalities:</b>
 <ul>
-<li>To get the current Isabelle development version, download 
-    and install it from the
-    <a href="http://isabelle.in.tum.de/devel/">Isabelle web site</a>.</li>
-<li>For experienced users there is anonymous mercurial access to the Isabelle sources. Use
+<li>To get the current Isabelle development version, use
 <pre>
 hg clone http://isabelle.in.tum.de/repos/isabelle 
 </pre>
-to check them out. 
+to clone the hg repository. See the README file inside for further instructions.
 </li> 
-<li>To check if entry <code>x</code> works, go 
-    to <code>afp-devel/thys/x</code> and execute 
-    <code>isabelle make</code>. This assumes that 
-    the command <code>Isabelle</code> would start 
+<li>Set up your AFP repository as a component by adding
+	<code>init_component "/path_to/afp-devel"</code>
+	to your <code>~/.isabelle/etc/settings</code> (or use any other of the
+	component adding mechanisms).
+	You need this to get access to the AFP settings
+	and the <code>afp_build</code> tool.
+</li>
+<li>To check if entry <code>x</code> works, execute 
+    <code>isabelle afp_build x</code>. This assumes that 
+    the command <code>isabelle</code> would start 
     up the current Isabelle development version.</li>
-<li>To test all entries, or a number of them, 
-    run <code>afp-devel/admin/testall</code>. 
+<li>To test all entries,
+    run <code>isabelle afp_build -A</code>. 
     (Running the script with <code>-?</code> will 
     show options and usage information)</li>
 <li>The changes you make to the mercurial repository will 
