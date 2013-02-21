@@ -3,7 +3,7 @@ session "Finger-Trees" (AFP) = HOL +
   theories
     FingerTree
   theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
     Test
 (* FIXME *)
 (* Finger Trees*)

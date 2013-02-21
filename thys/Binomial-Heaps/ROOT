@@ -6,7 +6,7 @@ session "Binomial-Heaps" (AFP) = HOL +
     BinomialHeap
     SkewBinomialHeap
   theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
   theories [document = false]
     Test
 (* FIXME *)

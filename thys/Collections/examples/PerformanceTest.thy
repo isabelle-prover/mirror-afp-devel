@@ -4,7 +4,7 @@
 *)
 header "Tests"
 theory Test
-imports Efficient_Nat Collections
+imports Code_Target_Numeral Collections
 begin
 text_raw {*\label{thy:Test}*}
 

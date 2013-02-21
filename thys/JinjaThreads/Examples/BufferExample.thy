@@ -140,7 +140,7 @@ lemma "wf_J_prog (BufferExample_annotated 10)"
 by eval
 
 definition main where "main = STR ''main''"
-definition five :: nat where "five = 5"
+definition five :: int where "five = 5"
 
 ML {*
   val program = @{code BufferExample_annotated} @{code "five"};

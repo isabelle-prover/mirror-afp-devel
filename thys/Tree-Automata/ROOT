@@ -2,7 +2,7 @@ session "Tree-Automata" (AFP) = HOL +
   options [timeout = 1000]
   theories [document = false]
     "../Collections/common/Misc"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Library/While_Combinator"
     "../Collections/Collections"
     "../Collections/DatRef"

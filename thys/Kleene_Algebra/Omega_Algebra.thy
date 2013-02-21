@@ -172,15 +172,15 @@ proof
 qed
 
 lemma "z \<cdot> x \<le> y \<cdot> z \<longrightarrow> z \<cdot> x\<^sup>\<omega> \<le> y\<^sup>\<omega> \<cdot> z"
-  nitpick -- "4-element counterexample"
+  nitpick [expect=genuine] -- "4-element counterexample"
 oops
 
 lemma "y \<cdot> z  \<le> z \<cdot> x \<longrightarrow> y\<^sup>\<omega> \<le> z \<cdot> x\<^sup>\<omega>"
-  nitpick -- "2-element counterexample"
+  nitpick [expect=genuine] -- "2-element counterexample"
 oops
 
 lemma "y \<cdot> z  \<le> z \<cdot> x \<longrightarrow> y\<^sup>\<omega> \<cdot> z \<le> x\<^sup>\<omega>"
-  nitpick -- "4-element counterexample"
+  nitpick [expect=genuine] -- "4-element counterexample"
 oops
 
 text {* Next we prove transitivity of omega elements. *}
@@ -395,7 +395,7 @@ lemma ewp_super_id1: "0 \<noteq> 1 \<longrightarrow> 1 \<le> x \<longrightarrow>
   by (metis ewp_def mult_oner)
 
 lemma "0 \<noteq> 1 \<longrightarrow> 1 \<le> x \<longleftrightarrow> ewp x"
-  nitpick -- "3-element counterexample"
+  nitpick [expect=genuine] -- "3-element counterexample"
 oops
 
 text {* The next facts relate the absence of the empty word property
@@ -486,17 +486,5 @@ end
 subsection {* Omega Algebras *}
 
 class omega_algebra = kleene_algebra + left_omega_algebra
-
-text {* Omega algebras are the only algebras in this repository for
-which we currently do not provide any models. In fact, the trace, path
-and language model are not really interesting in this setting. In the
-relational model, the omega of a relation relates all those elements
-in the domain of the relation, from which an infinite chain starts,
-with all other elements; all other elements are not related to
-anything~\cite{hofnerstruth10nontermination}.
-
-Since this situation can be modelled most conveniently in the context
-of Kleene algebras with domain, we postpone an implementation until
-these structures have been prepared for the Archive. *}
 
 end

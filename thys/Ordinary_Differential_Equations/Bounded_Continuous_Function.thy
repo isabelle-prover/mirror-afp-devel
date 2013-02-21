@@ -122,7 +122,7 @@ end
 
 subsection {* Complete Space *}
 
-instance bcontfun :: (metric_space, "{metric_space, heine_borel}") complete_space
+instance bcontfun :: (metric_space, complete_space) complete_space
 proof
   fix f::"nat \<Rightarrow> ('a,'b) bcontfun"
   assume "Cauchy f" --{* Cauchy equals uniform convergence *}

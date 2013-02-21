@@ -92,6 +92,7 @@ in the HOLCF extension of HOL.
   </tr>
     <tr><td class="links">Older releases:
 <ul>
+<li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-05-24.tar.gz">afp-<!--#echo var="name" -->-2012-05-24.tar.gz</a></li>
 <li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2011-10-11.tar.gz">afp-<!--#echo var="name" -->-2011-10-11.tar.gz</a></li>
 <li>Isabelle 2011: <a href="../release/afp-<!--#echo var="name" -->-2011-02-11.tar.gz">afp-<!--#echo var="name" -->-2011-02-11.tar.gz</a></li>
 <li>Isabelle 2009-2: <a href="../release/afp-<!--#echo var="name" -->-2010-11-18.tar.gz">afp-<!--#echo var="name" -->-2010-11-18.tar.gz</a></li>

@@ -3,7 +3,7 @@ session "Presburger-Automata" (AFP) = HOL +
   theories [document = false]
     DFS
     "~~/src/HOL/Library/Nat_Bijection"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     Presburger_Automata
   theories [document = false]

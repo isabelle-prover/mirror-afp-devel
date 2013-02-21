@@ -2,7 +2,7 @@ session "CoreC++" (AFP) = HOL +
   options [timeout = 2000]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     "CoreC++"
   files

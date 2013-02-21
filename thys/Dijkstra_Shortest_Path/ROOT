@@ -5,7 +5,7 @@ session Dijkstra_Shortest_Path (AFP) = Refine_Monadic +
     "../Refine_Monadic/Refine"
     "../Refine_Monadic/Collection_Bindings"
     "../Refine_Monadic/Autoref_Collection_Bindings"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     Introduction
     Dijkstra_Misc
