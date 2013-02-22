@@ -1,6 +1,6 @@
 session KBPs (AFP) = HOL +
-  options [timeout = 3600]
-  theories [document = false, show_question_marks = false, names_short]
+  options [timeout = 3600, show_question_marks = false, names_short]
+  theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
     "~~/src/HOL/Library/OptionalSugar"
     "~~/src/HOL/Library/AList"
@@ -8,7 +8,7 @@ session KBPs (AFP) = HOL +
     List_local
     "~~/src/HOL/Library/Mapping"
     "~~/src/HOL/Library/Saturated"
-  theories [show_question_marks = false, names_short]
+  theories
     KBPs_Main
   files
     "document/MC.pdf"
