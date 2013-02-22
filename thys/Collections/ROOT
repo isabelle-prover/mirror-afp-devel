@@ -12,6 +12,7 @@ session Collections (AFP) = HOL +
     "../Binomial-Heaps/SkewBinomialHeap"
     "../Finger-Trees/FingerTree"
   theories
+    (* Specifications *)
     "spec/Spec_Chapter"
     "spec/MapSpec"
     "spec/SetSpec"
@@ -19,6 +20,7 @@ session Collections (AFP) = HOL +
     "spec/AnnotatedListSpec"
     "spec/PrioSpec"
     "spec/PrioUniqueSpec"
+    (* Generic Algorithms *)
     "gen_algo/Gen_Algo_Chapter"
     "gen_algo/MapGA"
     "gen_algo/SetGA"
@@ -28,6 +30,7 @@ session Collections (AFP) = HOL +
     "gen_algo/Algos"
     "gen_algo/PrioByAnnotatedList"
     "gen_algo/PrioUniqueByAnnotatedList"
+    (* Implementations *)
     "impl/Impl_Chapter"
     "impl/Impl_Overview"
     "impl/MapStdImpl"
@@ -43,16 +46,12 @@ session Collections (AFP) = HOL +
   theories
     Collections
     Userguide
+    (* Examples *)
     "examples/Examples_Chapter"
     "examples/itp_2010"
     "examples/Exploration"
     "examples/Exploration_DFS"
     "examples/All"
-(* FIXME *)
-(* Specifications *)
-(* Generic Algorithms *)
-(* Implementations *)
-(* Examples *)
   files
     "document/conclusion.tex"
     "document/documentation.tex"

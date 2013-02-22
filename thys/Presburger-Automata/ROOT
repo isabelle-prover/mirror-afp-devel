@@ -7,9 +7,8 @@ session "Presburger-Automata" (AFP) = HOL +
   theories
     Presburger_Automata
   theories [document = false]
+    (* Code Generation *)
     Exec
-(* FIXME *)
-(* Code Generation *)
   files
     "document/root.bib"
     "document/root.tex"

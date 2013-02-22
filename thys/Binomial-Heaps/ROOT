@@ -5,12 +5,10 @@ session "Binomial-Heaps" (AFP) = HOL +
   theories
     BinomialHeap
     SkewBinomialHeap
+  (* Keep these in, they are to early detect problems with the code generator *)
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
-  theories [document = false]
     Test
-(* FIXME *)
-(* Keep these in, they are to early detect problems with the code generator *)
   files
     "document/root.bib"
     "document/root.tex"

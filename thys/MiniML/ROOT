@@ -1,14 +1,14 @@
-session MiniML (AFP) = HOL +
-  options [timeout = 3600]
-  theories
-    W
-(* FIXME *)
 (*  Title:      HOL/MiniML/ROOT.ML
     Author:     Wolfgang Naraschewski and Tobias Nipkow
     Copyright   1995 TUM
 
 Type inference for MiniML
 *)
+
+session MiniML (AFP) = HOL +
+  options [timeout = 3600]
+  theories
+    W
   files
     "document/root.bib"
     "document/root.tex"
