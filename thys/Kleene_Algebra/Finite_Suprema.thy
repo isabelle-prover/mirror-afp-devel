@@ -68,6 +68,23 @@ qed
 
 text {* This immediately implies some variants. *}
 
+lemma setsum_less_eqI:
+  "(\<And>x. x \<in> A \<Longrightarrow> f x \<le> y) \<Longrightarrow> setsum f A \<le> (y::'a::join_semilattice_zero)"
+ apply (atomize (full))
+ apply (case_tac "finite A")
+  apply (erule finite_induct)
+   apply simp_all
+ apply (metis add_lub)
+done
+
+lemma setsum_less_eqE:
+  "\<lbrakk> setsum f A \<le> y; x \<in> A; finite A \<rbrakk> \<Longrightarrow> f x \<le> (y::'a::join_semilattice_zero)"
+ apply (erule rev_mp)
+ apply (erule rev_mp)
+ apply (erule finite_induct)
+  apply (auto simp add: add_lub)
+done
+
 lemma setsum_fun_image_sup:
   fixes f :: "'a \<Rightarrow> 'b::join_semilattice_zero"
   assumes "finite (A :: 'a set)"
