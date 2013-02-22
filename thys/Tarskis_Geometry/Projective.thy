@@ -34,8 +34,8 @@ begin
       hence "x \<noteq> 0" unfolding non_zero_vectors_def ..
       moreover have "x = scale 1 x" by simp
       ultimately show "(x, x) \<in> proportionality"
-	unfolding proportionality_def
-	by blast
+        unfolding proportionality_def
+        by blast
     qed
     ultimately show "refl_on non_zero_vectors proportionality"
       unfolding refl_on_def ..
@@ -46,14 +46,14 @@ begin
     { fix x y
       assume "(x, y) \<in> proportionality"
       hence "x \<noteq> 0" and "y \<noteq> 0" and "\<exists>k. x = scale k y"
-	unfolding proportionality_def
-	by simp+
+        unfolding proportionality_def
+        by simp+
       from `\<exists>k. x = scale k y` obtain k where "x = scale k y" by auto
       with `x \<noteq> 0` have "k \<noteq> 0" by simp
       with `x = scale k y` have "y = scale (1/k) x" by simp
       with `x \<noteq> 0` and `y \<noteq> 0` have "(y, x) \<in> proportionality"
-	unfolding proportionality_def
-	by auto
+        unfolding proportionality_def
+        by auto
     }
     thus "sym proportionality"
       unfolding sym_def
@@ -65,14 +65,14 @@ begin
     { fix x y z
       assume "(x, y) \<in> proportionality" and "(y, z) \<in> proportionality"
       hence "x \<noteq> 0" and "z \<noteq> 0" and "\<exists>j. x = scale j y" and "\<exists>k. y = scale k z"
-	unfolding proportionality_def
-	by simp+
+        unfolding proportionality_def
+        by simp+
       from `\<exists>j. x = scale j y` and `\<exists>k. y = scale k z`
       obtain j and k where "x = scale j y" and "y = scale k z" by auto+
       hence "x = scale (j * k) z" by simp
       with `x \<noteq> 0` and `z \<noteq> 0` have "(x, z) \<in> proportionality"
-	unfolding proportionality_def
-	by auto
+        unfolding proportionality_def
+        by auto
     }
     thus "trans proportionality"
       unfolding trans_def
