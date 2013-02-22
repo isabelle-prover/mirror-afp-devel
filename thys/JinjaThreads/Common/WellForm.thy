@@ -641,7 +641,7 @@ proof -
       then obtain T' fm' where "map_of FDTs' (F, D) = \<lfloor>(T', fm')\<rfloor>" by(auto)
       with hasf' have "P \<turnstile> D' \<preceq>\<^sup>* D" by(auto dest!: map_of_SomeD intro: has_fields_decl_above)
       with classD DnObj have "(subcls1 P)^++ D D"
-	by(auto intro: subcls1.intros rtranclp_into_tranclp2)
+        by(auto intro: subcls1.intros rtranclp_into_tranclp2)
       with wf show False by(auto dest: subcls_irrefl)
     qed
     ultimately show ?thesis using FD hasf'

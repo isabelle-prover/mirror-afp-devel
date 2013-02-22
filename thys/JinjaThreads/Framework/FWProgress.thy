@@ -131,17 +131,17 @@ proof -
             ultimately show False by contradiction
           qed }
         hence "may_lock (locks s $ l) t"
-	  by-(rule classical, auto simp add: not_may_lock_conv) }
+          by-(rule classical, auto simp add: not_may_lock_conv) }
       note mayl = this
       { fix t'
         assume t'LT: "Inr (Inl t') \<in> LT"
         hence "\<not> not_final_thread s t' \<and> t' \<noteq> t"
         proof(cases "t' = t")
-	  case False with t'LT mw L show ?thesis by(fastforce)
+          case False with t'LT mw L show ?thesis by(fastforce)
         next
-	  case True with tst mw[OF t'LT] nfine' L have False
-	    by(auto intro!: must_wait.intros simp add: not_final_thread_iff)
-	  thus ?thesis ..
+          case True with tst mw[OF t'LT] nfine' L have False
+            by(auto intro!: must_wait.intros simp add: not_final_thread_iff)
+          thus ?thesis ..
         qed }
       note mayj = this
       { fix t'

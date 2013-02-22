@@ -247,17 +247,17 @@ proof(rule exI[where x="SOME i. Q i t x m"])
     note cct = `thread_oks TS (TA # TAS)`
     { assume nt': "NewThread t x m \<in> set TAS"
       from cct have ?case
-	apply(clarsimp)
-	by(rule IH[OF nt']) }
+        apply(clarsimp)
+        by(rule IH[OF nt']) }
     moreover
     { assume ta: "TA = NewThread t x m"
       with cct have rup: "redT_updT' TS TA t = \<lfloor>(undefined, no_wait_locks)\<rfloor>"
-	by(simp)
+        by(simp)
       from cct have cctta: "thread_oks (redT_updT' TS TA) TAS" by simp
       from ta have "upd_inv I Q TA t = \<lfloor>SOME i. Q i t x m\<rfloor>"
-	by(simp)
+        by(simp)
       hence ?case 
-	by(clarsimp simp add: upd_invs_Some_eq[OF cctta, OF rup]) }
+        by(clarsimp simp add: upd_invs_Some_eq[OF cctta, OF rup]) }
     ultimately show ?case using nt by auto
   qed
   with Qsome show "upd_invs I Q tas t = \<lfloor>SOME i. Q i t x m\<rfloor> \<and> Q (SOME i. Q i t x m) t x m"

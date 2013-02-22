@@ -122,12 +122,12 @@ proof -
     proof(cases)
       case (inf_step_tableI s1' stls1' tl1)
       hence stls1: "stls1 = LCons (s1, tl1, s1') stls1'"
-	and r: "s1 -1-tl1\<rightarrow> s1'" and reds1: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
+        and r: "s1 -1-tl1\<rightarrow> s1'" and reds1: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
       let ?tl2s2' = "SOME (tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
       let ?tl2 = "fst ?tl2s2'" let ?s2' = "snd ?tl2s2'"
       from stls2 stls1 have "stls2 = LCons (s2, ?tl2s2') (tl1_to_tl2 ?s2' stls1')" by simp
       moreover from simulation1[OF bisim r] obtain s2' tl2
-	where "s2 -2-tl2\<rightarrow> s2'" "s1' \<approx> s2'" "tl1 \<sim> tl2" by blast
+        where "s2 -2-tl2\<rightarrow> s2'" "s1' \<approx> s2'" "tl1 \<sim> tl2" by blast
       hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) (tl2, s2')" by simp
       hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) ?tl2s2'" by(rule someI)
       hence "s2 -2-?tl2\<rightarrow> ?s2'" "s1' \<approx> ?s2'" "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
@@ -150,33 +150,33 @@ proof -
       case (1 n)
       hence IH: "\<And>m s1 s2 stls1. \<lbrakk> m < n; enat m < llength (lmap (fst \<circ> snd) stls1);
                                    s1 -1-stls1\<rightarrow>*t \<infinity>; s1 \<approx> s2 \<rbrakk>
-	         \<Longrightarrow> lnth (lmap (fst \<circ> snd) stls1) m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)) m"
-	by blast
+                 \<Longrightarrow> lnth (lmap (fst \<circ> snd) stls1) m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)) m"
+        by blast
       from `s1 -1-stls1\<rightarrow>*t \<infinity>` show ?case
       proof cases
-	case (inf_step_tableI s1' stls1' tl1)
-	hence  stls1: "stls1 = LCons (s1, tl1, s1') stls1'"
-	  and r: "s1 -1-tl1\<rightarrow> s1'" and reds: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
-	let ?tl2s2' = "SOME (tl2, s2').  s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
-	let ?tl2 = "fst ?tl2s2'" let ?s2' = "snd ?tl2s2'"
-	from simulation1[OF `s1 \<approx> s2` r] obtain s2' tl2
-	  where "s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2" by blast
-	hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) (tl2, s2')" by simp
-	hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) ?tl2s2'" by(rule someI)
-	hence bisim': "s1' \<approx> ?s2'" and tlsim: "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
-	show ?thesis
-	proof(cases n)
-	  case 0
-	  with stls1 tlsim show ?thesis by simp
-	next
-	  case (Suc m)
-	  hence "m < n" by simp
-	  moreover have "enat m < llength (lmap (fst \<circ> snd) stls1')"
-	    using stls1 `enat n < llength (lmap (fst \<circ> snd) stls1)` Suc by(simp add: Suc_ile_eq)
-	  ultimately have "lnth (lmap (fst \<circ> snd) stls1') m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 ?s2' stls1')) m"
-	    using reds bisim' by(rule IH)
-	  with Suc stls1 show ?thesis by(simp del: o_apply)
-	qed
+        case (inf_step_tableI s1' stls1' tl1)
+        hence  stls1: "stls1 = LCons (s1, tl1, s1') stls1'"
+          and r: "s1 -1-tl1\<rightarrow> s1'" and reds: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
+        let ?tl2s2' = "SOME (tl2, s2').  s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
+        let ?tl2 = "fst ?tl2s2'" let ?s2' = "snd ?tl2s2'"
+        from simulation1[OF `s1 \<approx> s2` r] obtain s2' tl2
+          where "s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2" by blast
+        hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) (tl2, s2')" by simp
+        hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) ?tl2s2'" by(rule someI)
+        hence bisim': "s1' \<approx> ?s2'" and tlsim: "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
+        show ?thesis
+        proof(cases n)
+          case 0
+          with stls1 tlsim show ?thesis by simp
+        next
+          case (Suc m)
+          hence "m < n" by simp
+          moreover have "enat m < llength (lmap (fst \<circ> snd) stls1')"
+            using stls1 `enat n < llength (lmap (fst \<circ> snd) stls1)` Suc by(simp add: Suc_ile_eq)
+          ultimately have "lnth (lmap (fst \<circ> snd) stls1') m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 ?s2' stls1')) m"
+            using reds bisim' by(rule IH)
+          with Suc stls1 show ?thesis by(simp del: o_apply)
+        qed
       qed
     qed
   qed
@@ -459,8 +459,8 @@ proof -
     proof(cases)
       case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
       hence sstls1: "sstls1 = LCons (s1, s1', tl1, s1'') sstls1'"
-	and \<tau>s: "s1 -\<tau>1\<rightarrow>* s1'" and r: "s1' -1-tl1\<rightarrow> s1''" and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''"
-	and reds1: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all
+        and \<tau>s: "s1 -\<tau>1\<rightarrow>* s1'" and r: "s1' -1-tl1\<rightarrow> s1''" and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''"
+        and reds1: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all
       let ?P = "\<lambda>(s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
       let ?s2tl2s2' = "Eps ?P"
       let ?s2'' = "snd (snd ?s2tl2s2')"
@@ -468,8 +468,8 @@ proof -
       moreover from simulation_silents1[OF `s1 \<approx> s2` \<tau>s]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
       from simulation1[OF `s1' \<approx> s2'` r n\<tau>] obtain s2'' s2''' tl2
-	where "s2' -\<tau>2\<rightarrow>* s2''" 
-	and rest: "s2'' -2-tl2\<rightarrow> s2'''" "\<not> \<tau>move2 s2'' tl2 s2'''" "s1'' \<approx> s2'''" "tl1 \<sim> tl2" by blast
+        where "s2' -\<tau>2\<rightarrow>* s2''" 
+        and rest: "s2'' -2-tl2\<rightarrow> s2'''" "\<not> \<tau>move2 s2'' tl2 s2'''" "s1'' \<approx> s2'''" "tl1 \<sim> tl2" by blast
       from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
       with rest have "?P (s2'', tl2, s2''')" by simp
       hence "?P ?s2tl2s2'" by(rule someI)
@@ -497,41 +497,41 @@ proof -
       case (less n)
       note IH = `\<And>m s1 s2 sstls1. \<lbrakk> m < n; enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1);
                                    s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>; s1 \<approx> s2 \<rbrakk>
-	         \<Longrightarrow> lnth (lmap (fst \<circ> snd \<circ> snd) sstls1) m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) m`
+                 \<Longrightarrow> lnth (lmap (fst \<circ> snd \<circ> snd) sstls1) m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) m`
       from `s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>` show ?case
       proof cases
-	case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
-	hence sstls1: "sstls1 = LCons (s1, s1', tl1, s1'') sstls1'"
-	  and \<tau>s: "s1 -\<tau>1\<rightarrow>* s1'" and r: "s1' -1-tl1\<rightarrow> s1''"
-	  and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''" and reds: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all
-	let ?P = "\<lambda>(s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
-	let ?s2tl2s2' = "Eps ?P" let ?tl2 = "fst (snd ?s2tl2s2')" let ?s2'' = "snd (snd ?s2tl2s2')"
-	from simulation_silents1[OF `s1 \<approx> s2` \<tau>s] obtain s2'
-	  where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
-	from simulation1[OF `s1' \<approx> s2'` r n\<tau>] obtain s2'' s2''' tl2
-	  where "s2' -\<tau>2\<rightarrow>* s2''"
-	  and rest: "s2'' -2-tl2\<rightarrow> s2'''" "\<not> \<tau>move2 s2'' tl2 s2'''" "s1'' \<approx> s2'''" "tl1 \<sim> tl2" by blast
-	from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
-	with rest have "?P (s2'', tl2, s2''')" by auto
-	hence "?P ?s2tl2s2'" by(rule someI)
-	hence "s1'' \<approx> ?s2''" "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
-	show ?thesis
-	proof(cases n)
-	  case 0
-	  with sstls1 `tl1 \<sim> ?tl2` show ?thesis by simp
-	next
-	  case (Suc m)
-	  hence "m < n" by simp
-	  moreover have "enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1')"
-	    using sstls1 `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` Suc by(simp add: Suc_ile_eq)
-	  ultimately have "lnth (lmap (fst \<circ> snd \<circ> snd) sstls1') m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 ?s2'' sstls1')) m"
-	    using reds `s1'' \<approx> ?s2''` by(rule IH)
-	  with Suc sstls1 show ?thesis by(simp del: o_apply)
-	qed
+        case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
+        hence sstls1: "sstls1 = LCons (s1, s1', tl1, s1'') sstls1'"
+          and \<tau>s: "s1 -\<tau>1\<rightarrow>* s1'" and r: "s1' -1-tl1\<rightarrow> s1''"
+          and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''" and reds: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all
+        let ?P = "\<lambda>(s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
+        let ?s2tl2s2' = "Eps ?P" let ?tl2 = "fst (snd ?s2tl2s2')" let ?s2'' = "snd (snd ?s2tl2s2')"
+        from simulation_silents1[OF `s1 \<approx> s2` \<tau>s] obtain s2'
+          where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
+        from simulation1[OF `s1' \<approx> s2'` r n\<tau>] obtain s2'' s2''' tl2
+          where "s2' -\<tau>2\<rightarrow>* s2''"
+          and rest: "s2'' -2-tl2\<rightarrow> s2'''" "\<not> \<tau>move2 s2'' tl2 s2'''" "s1'' \<approx> s2'''" "tl1 \<sim> tl2" by blast
+        from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
+        with rest have "?P (s2'', tl2, s2''')" by auto
+        hence "?P ?s2tl2s2'" by(rule someI)
+        hence "s1'' \<approx> ?s2''" "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
+        show ?thesis
+        proof(cases n)
+          case 0
+          with sstls1 `tl1 \<sim> ?tl2` show ?thesis by simp
+        next
+          case (Suc m)
+          hence "m < n" by simp
+          moreover have "enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1')"
+            using sstls1 `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` Suc by(simp add: Suc_ile_eq)
+          ultimately have "lnth (lmap (fst \<circ> snd \<circ> snd) sstls1') m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 ?s2'' sstls1')) m"
+            using reds `s1'' \<approx> ?s2''` by(rule IH)
+          with Suc sstls1 show ?thesis by(simp del: o_apply)
+        qed
       next
-	case \<tau>inf_step_table_Nil
-	with `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` have False by simp
-	thus ?thesis ..
+        case \<tau>inf_step_table_Nil
+        with `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` have False by simp
+        thus ?thesis ..
       qed
     qed
   qed

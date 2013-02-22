@@ -422,7 +422,7 @@ proof -
    (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
    (\<forall>p\<in> s_\<alpha> w. p < n)" and
    r = "{(ss',ss) . ss \<in> list n A \<and> ss' \<in> list n A \<and> ss [\<sqsubset>\<^sub>r] ss'} <*lex*> s_finite_psubset"
-	 in while_rule)
+         in while_rule)
 
   -- "Invariant holds initially:"
   apply (simp add:stables_def)

@@ -235,15 +235,15 @@ next
     proof(cases xs)
       case Nil
       thus ?thesis using a
-	by(auto)
+        by(auto)
     next
       case (Cons X XS)
       with a have x: "x = X" and "replicate n x = XS @ ys" by auto
       hence "\<exists>m\<le>n. XS = replicate m x \<and> ys = replicate (n - m) x"
-	by -(rule IH[THEN iffD1])
+        by -(rule IH[THEN iffD1])
       then obtain m where "m \<le> n" and XS: "XS = replicate m x" and ys: "ys = replicate (n - m) x" by blast
       with x Cons show ?thesis
-	by(fastforce)
+        by(fastforce)
     qed
   next
     assume "\<exists>m\<le>Suc n. xs = replicate m x \<and> ys = replicate (Suc n - m) x"

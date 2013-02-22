@@ -402,7 +402,7 @@ proof(atomize_elim)
         let ?ta' = "\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+          by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedWaitInterrupted
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
@@ -411,7 +411,7 @@ proof(atomize_elim)
         let ?ta' = "\<lbrace>Notified\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+          by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedWaitNotified
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
@@ -499,7 +499,7 @@ proof(atomize_elim)
           with True False have "final_thread.actions_ok' s t ?ta'" using None
             by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv)
           moreover from ta have "final_thread.actions_subset ?ta' ta"
-	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+            by(auto simp add: collect_locks'_def finfun_upd_apply)
           moreover from RedWait RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
           ultimately show ?thesis by blast
         next
@@ -508,7 +508,7 @@ proof(atomize_elim)
           from False have "final_thread.actions_ok' s t ?ta'" using None
             by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
           moreover from ta have "final_thread.actions_subset ?ta' ta"
-	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+            by(auto simp add: collect_locks'_def finfun_upd_apply)
           moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
           ultimately show ?thesis by blast
         qed
@@ -533,7 +533,7 @@ proof(atomize_elim)
           from False have "final_thread.actions_ok' s t ?ta'" using None
             by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
           moreover from ta have "final_thread.actions_subset ?ta' ta"
-	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+            by(auto simp add: collect_locks'_def finfun_upd_apply)
           moreover from RedWait RedWaitFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
           ultimately show ?thesis by blast
         qed
@@ -598,7 +598,7 @@ proof(atomize_elim)
           from False have "final_thread.actions_ok' s t ?ta'" using None
             by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
           moreover from ta have "final_thread.actions_subset ?ta' ta"
-	    by(auto simp add: collect_locks'_def finfun_upd_apply)
+            by(auto simp add: collect_locks'_def finfun_upd_apply)
           moreover from RedWaitSpurious(1-5) RedWaitFail
           obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
           ultimately show ?thesis by blast
@@ -609,11 +609,11 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
         from ta False None have "\<not> has_lock (locks s $ a) t"
-	  by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
+          by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+          by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedNotify obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
@@ -625,7 +625,7 @@ proof(atomize_elim)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: finfun_upd_apply simp add: wset_actions_ok_def intro: has_lock_may_lock)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+          by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedNotifyFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
@@ -633,11 +633,11 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
         from ta False None have "\<not> has_lock (locks s $ a) t"
-	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+          by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedNotifyAll obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next
@@ -649,7 +649,7 @@ proof(atomize_elim)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
-	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+          by(auto simp add: collect_locks'_def finfun_upd_apply)
         moreover from RedNotifyAllFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastforce)
         ultimately show ?thesis by blast
       next

@@ -31,18 +31,18 @@ where
 | "compE2 (insync\<^bsub>V\<^esub> (a) e) = [Goto 1]" -- "Define insync sensibly"
 | "compE2 (e1;;e2) = compE2 e1 @ [Pop] @ compE2 e2"
 | "compE2 (if (e) e\<^isub>1 else e\<^isub>2) =
-	  (let cnd   = compE2 e;
-	       thn   = compE2 e\<^isub>1;
-	       els   = compE2 e\<^isub>2;
-  	       test  = IfFalse (int(size thn + 2)); 
-	       thnex = Goto (int(size els + 1))
+          (let cnd   = compE2 e;
+               thn   = compE2 e\<^isub>1;
+               els   = compE2 e\<^isub>2;
+               test  = IfFalse (int(size thn + 2)); 
+               thnex = Goto (int(size els + 1))
            in cnd @ [test] @ thn @ [thnex] @ els)"
 | "compE2 (while (e) c) =
-	  (let cnd   = compE2 e;
-	       bdy   = compE2 c;
-	       test  = IfFalse (int(size bdy + 3)); 
-	       loop  = Goto (-int(size bdy + size cnd + 2))
-	   in cnd @ [test] @ bdy @ [Pop] @ [loop] @ [Push Unit])"
+          (let cnd   = compE2 e;
+               bdy   = compE2 c;
+               test  = IfFalse (int(size bdy + 3)); 
+               loop  = Goto (-int(size bdy + size cnd + 2))
+           in cnd @ [test] @ bdy @ [Pop] @ [loop] @ [Push Unit])"
 | "compE2 (throw e) = compE2 e @ [ThrowExc]"
 | "compE2 (try e1 catch(C i) e2) =
    (let catch = compE2 e2
@@ -86,8 +86,8 @@ where
 | "compxE2 (e1;;e2) pc d =
    compxE2 e1 pc d @ compxE2 e2 (pc+size(compE2 e1)+1) d"
 | "compxE2 (if (e) e\<^isub>1 else e\<^isub>2) pc d =
-	   (let pc\<^isub>1   = pc + size(compE2 e) + 1;
-	        pc\<^isub>2   = pc\<^isub>1 + size(compE2 e\<^isub>1) + 1
+           (let pc\<^isub>1   = pc + size(compE2 e) + 1;
+                pc\<^isub>2   = pc\<^isub>1 + size(compE2 e\<^isub>1) + 1
             in compxE2 e pc d @ compxE2 e\<^isub>1 pc\<^isub>1 d @ compxE2 e\<^isub>2 pc\<^isub>2 d)"
 | "compxE2 (while (b) e) pc d =
    compxE2 b pc d @ compxE2 e (pc+size(compE2 b)+1) d"

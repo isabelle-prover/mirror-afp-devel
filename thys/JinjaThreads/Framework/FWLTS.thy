@@ -304,71 +304,71 @@ next
       proof(coinduct s' xm rule: mthr.\<tau>diverge_trancl_measure_coinduct)
         case (\<tau>diverge s' xm)
         then obtain s x where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
-	  and blocked: "ln \<noteq> no_wait_locks \<or> wset s t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
-	  and s'_def: "s' = (locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
-	  and xm_def: "xm = (x, shr s)"
-	  and xmxm': "silent_moves t xm' (x, shr s)"
-	  and "mthr.\<tau>diverge s" by blast
+          and blocked: "ln \<noteq> no_wait_locks \<or> wset s t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
+          and s'_def: "s' = (locks s, ((thr s)(t := None), shr s), wset s, interrupts s)"
+          and xm_def: "xm = (x, shr s)"
+          and xmxm': "silent_moves t xm' (x, shr s)"
+          and "mthr.\<tau>diverge s" by blast
         from `mthr.\<tau>diverge s` obtain s'' where "\<tau>mredT s s''" "mthr.\<tau>diverge s''" by cases auto
         from `\<tau>mredT s s''` obtain t' ta where "s -t'\<triangleright>ta\<rightarrow> s''" and "m\<tau>move s (t', ta) s''" by auto
         then obtain x' x'' m'' where red: "t' \<turnstile> \<langle>x', shr s\<rangle> -ta\<rightarrow> \<langle>x'', m''\<rangle>"
-	  and tst': "thr s t' = \<lfloor>(x', no_wait_locks)\<rfloor>" 
-	  and aoe: "actions_ok s t' ta"
+          and tst': "thr s t' = \<lfloor>(x', no_wait_locks)\<rfloor>" 
+          and aoe: "actions_ok s t' ta"
           and s'': "redT_upd s t' ta x'' m'' s''"
-	  by cases(fastforce elim: m\<tau>move.cases)+
+          by cases(fastforce elim: m\<tau>move.cases)+
         from `m\<tau>move s (t', ta) s''` have [simp]: "ta = \<epsilon>"
-	  by(auto elim!: m\<tau>move.cases dest!: silent_tl)
+          by(auto elim!: m\<tau>move.cases dest!: silent_tl)
         hence wst': "wset s t' = None" using aoe by auto
         from `m\<tau>move s (t', ta) s''` tst' s''
         have "\<tau>move (x', shr s) \<epsilon> (x'', m'')" by(auto elim: m\<tau>move.cases)
         show ?case
         proof(cases "t' = t")
-	  case False
-	  with tst' wst' have "thr s' t' = \<lfloor>(x', no_wait_locks)\<rfloor>"
-	    "wset s' t' = None" "shr s' = shr s" unfolding s'_def by auto
-	  with red have "s' -t'\<triangleright>\<epsilon>\<rightarrow> redT_upd_\<epsilon> s' t' x'' m''"
+          case False
+          with tst' wst' have "thr s' t' = \<lfloor>(x', no_wait_locks)\<rfloor>"
+            "wset s' t' = None" "shr s' = shr s" unfolding s'_def by auto
+          with red have "s' -t'\<triangleright>\<epsilon>\<rightarrow> redT_upd_\<epsilon> s' t' x'' m''"
             by -(rule redT_normal, auto simp add: redT_updLns_def o_def finfun_Diag_const2 redT_updWs_def)
-	  moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` `thr s' t' = \<lfloor>(x', no_wait_locks)\<rfloor>` `shr s' = shr s`
-	  have "m\<tau>move s' (t', ta) (redT_upd_\<epsilon> s' t' x'' m'')"
-	    by -(rule m\<tau>move.intros, auto)
-	  ultimately have "\<tau>mredT s' (redT_upd_\<epsilon> s' t' x'' m'')"
-	    unfolding `ta = \<epsilon>` by(rule mthr.silent_move.intros)
-	  hence "\<tau>mredT^++ s' (redT_upd_\<epsilon> s' t' x'' m'')" ..
-	  moreover have "thr s'' t = \<lfloor>(x, ln)\<rfloor>"
-	    using tst `t' \<noteq> t` s'' by auto
-	  moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
-	  have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
-	  hence "shr s = shr s''" using s'' by(auto)
-	  have "ln \<noteq> no_wait_locks \<or> wset s'' t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
-	    using blocked s'' by(auto simp add: redT_updWs_def elim!: rtrancl3p_cases)
-	  moreover have "redT_upd_\<epsilon> s' t' x'' m'' = (locks s'', ((thr s'')(t := None), shr s''), wset s'', interrupts s'')"
-	    unfolding s'_def using tst s'' `t' \<noteq> t`
+          moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` `thr s' t' = \<lfloor>(x', no_wait_locks)\<rfloor>` `shr s' = shr s`
+          have "m\<tau>move s' (t', ta) (redT_upd_\<epsilon> s' t' x'' m'')"
+            by -(rule m\<tau>move.intros, auto)
+          ultimately have "\<tau>mredT s' (redT_upd_\<epsilon> s' t' x'' m'')"
+            unfolding `ta = \<epsilon>` by(rule mthr.silent_move.intros)
+          hence "\<tau>mredT^++ s' (redT_upd_\<epsilon> s' t' x'' m'')" ..
+          moreover have "thr s'' t = \<lfloor>(x, ln)\<rfloor>"
+            using tst `t' \<noteq> t` s'' by auto
+          moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
+          have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
+          hence "shr s = shr s''" using s'' by(auto)
+          have "ln \<noteq> no_wait_locks \<or> wset s'' t \<noteq> None \<or> \<not> \<tau>diverge t xm'"
+            using blocked s'' by(auto simp add: redT_updWs_def elim!: rtrancl3p_cases)
+          moreover have "redT_upd_\<epsilon> s' t' x'' m'' = (locks s'', ((thr s'')(t := None), shr s''), wset s'', interrupts s'')"
+            unfolding s'_def using tst s'' `t' \<noteq> t`
             by(auto intro: ext elim!: rtrancl3p_cases simp add: redT_updLns_def redT_updWs_def)
-	  ultimately show ?thesis using `mthr.\<tau>diverge s''` xmxm'
-	    unfolding `shr s = shr s''` by blast
+          ultimately show ?thesis using `mthr.\<tau>diverge s''` xmxm'
+            unfolding `shr s = shr s''` by blast
         next
-	  case True
-	  with tst tst' wst' blocked have "\<not> \<tau>diverge t xm'"
-	    and [simp]: "x' = x" by auto
-	  moreover from red `\<tau>move (x', shr s) \<epsilon> (x'', m'')` True
-	  have "silent_move t (x, shr s) (x'', m'')" by auto
-	  with xmxm' have "silent_move_from t xm' (x, shr s) (x'', m'')"
-	    by(rule silent_move_fromI)
-	  ultimately have "(if \<tau>diverge t xm' then \<lambda>s s'. False else flip (silent_move_from t xm')) (x'', m'') xm"
-	    by(auto simp add: flip_conv xm_def)
-	  moreover have "thr s'' t = \<lfloor>(x'', ln)\<rfloor>" using tst True s''
+          case True
+          with tst tst' wst' blocked have "\<not> \<tau>diverge t xm'"
+            and [simp]: "x' = x" by auto
+          moreover from red `\<tau>move (x', shr s) \<epsilon> (x'', m'')` True
+          have "silent_move t (x, shr s) (x'', m'')" by auto
+          with xmxm' have "silent_move_from t xm' (x, shr s) (x'', m'')"
+            by(rule silent_move_fromI)
+          ultimately have "(if \<tau>diverge t xm' then \<lambda>s s'. False else flip (silent_move_from t xm')) (x'', m'') xm"
+            by(auto simp add: flip_conv xm_def)
+          moreover have "thr s'' t = \<lfloor>(x'', ln)\<rfloor>" using tst True s''
             by(auto simp add: redT_updLns_def)
-	  moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
-	  have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
-	  hence "shr s = shr s''" using s'' by auto
-	  have "s' = (locks s'', ((thr s'')(t := None), shr s''), wset s'', interrupts s'')"
-	    using True s'' unfolding s'_def 
+          moreover from `\<tau>move (x', shr s) \<epsilon> (x'', m'')` red
+          have [simp]: "m'' = shr s" by(auto dest: \<tau>move_heap)
+          hence "shr s = shr s''" using s'' by auto
+          have "s' = (locks s'', ((thr s'')(t := None), shr s''), wset s'', interrupts s'')"
+            using True s'' unfolding s'_def 
             by(auto intro: ext elim!: rtrancl3p_cases simp add: redT_updLns_def redT_updWs_def)
-	  moreover have "(x'', m'') = (x'', shr s'')" using s'' by auto
-	  moreover from xmxm' `silent_move t (x, shr s) (x'', m'')`
-	  have "silent_moves t xm' (x'', shr s'')"
-	    unfolding `m'' = shr s` `shr s = shr s''` by auto
-	  ultimately show ?thesis using `\<not> \<tau>diverge t xm'` `mthr.\<tau>diverge s''` by blast
+          moreover have "(x'', m'') = (x'', shr s'')" using s'' by auto
+          moreover from xmxm' `silent_move t (x, shr s) (x'', m'')`
+          have "silent_moves t xm' (x'', shr s'')"
+            unfolding `m'' = shr s` `shr s = shr s''` by auto
+          ultimately show ?thesis using `\<not> \<tau>diverge t xm'` `mthr.\<tau>diverge s''` by blast
         qed
       qed }
     ultimately have "\<exists>t x. thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s' t = None \<and> \<tau>diverge t (x, shr s')" by(rule IH)
@@ -480,56 +480,56 @@ proof(intro strip)
       hence "?ts' \<in> Q'" unfolding Q'_def by(auto simp del: split_paired_Ex)
       ultimately have "\<exists>z\<in>Q'. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q'" by(rule IH)
       then obtain ts' where "ts' \<in> Q'" 
-	and min: "\<And>ts''. m\<mu>t m ts'' ts' \<Longrightarrow> ts'' \<notin> Q'" by blast
+        and min: "\<And>ts''. m\<mu>t m ts'' ts' \<Longrightarrow> ts'' \<notin> Q'" by blast
       from `ts' \<in> Q'` obtain x' ln' where "ts' t = None" "ts'(t \<mapsto> (x', ln')) \<in> Q"
-	unfolding Q'_def by auto
+        unfolding Q'_def by auto
       def Q'' == "{(x, m)|x. \<exists>ln. ts'(t \<mapsto> (x, ln)) \<in> Q}"
       from `ts'(t \<mapsto> (x', ln')) \<in> Q` have "(x', m) \<in> Q''" unfolding Q''_def by blast
       hence "\<exists>xm''\<in>Q''. \<forall>xm'''. \<mu> xm''' xm'' \<longrightarrow> xm''' \<notin> Q''" by(rule wf_\<mu>[unfolded wfP_eq_minimal, rule_format])
       then obtain xm'' where "xm'' \<in> Q''" and min': "\<And>xm'''. \<mu> xm''' xm'' \<Longrightarrow> xm''' \<notin> Q''" by blast
       from `xm'' \<in> Q''` obtain x'' ln'' where "xm'' = (x'', m)" "ts'(t \<mapsto> (x'', ln'')) \<in> Q" unfolding Q''_def by blast
       moreover {
-	fix ts''
-	assume "m\<mu>t m ts'' (ts'(t \<mapsto> (x'', ln'')))"
-	then obtain T X'' LN'' X' LN'
-	  where "finite (dom ts'')" "ts'' T = \<lfloor>(X'', LN'')\<rfloor>" 
-	  and "(ts'(t \<mapsto> (x'', ln''))) T = \<lfloor>(X', LN')\<rfloor>" "\<mu> (X'', m) (X', m)"
-	  and eq: "\<And>t'. t' \<noteq> T \<Longrightarrow> ts'' t' = (ts'(t \<mapsto> (x'', ln''))) t'" by(cases) blast
-	have "ts'' \<notin> Q"
-	proof(cases "T = t")
-	  case True
-	  from True `(ts'(t \<mapsto> (x'', ln''))) T = \<lfloor>(X', LN')\<rfloor>` have "X' = x''" by simp
-	  with `\<mu> (X'', m) (X', m)` have "(X'', m) \<notin> Q''" by(auto dest: min'[unfolded `xm'' = (x'', m)`])
-	  hence "\<forall>ln. ts'(t \<mapsto> (X'', ln)) \<notin> Q" by(simp add: Q''_def)
-	  moreover from `ts' t = None` eq True
-	  have "ts''(t := None) = ts'" by(auto simp add: fun_eq_iff)
-	  with `ts'' T = \<lfloor>(X'', LN'')\<rfloor>` True
-	  have ts'': "ts'' = ts'(t \<mapsto> (X'', LN''))" by(auto intro!: ext)
-	  ultimately show ?thesis by blast
-	next
-	  case False
-	  from `finite (dom ts'')` have "finite (dom (ts''(t := None)))" by simp
-	  moreover from `ts'' T = \<lfloor>(X'', LN'')\<rfloor>` False
-	  have "(ts''(t := None)) T = \<lfloor>(X'', LN'')\<rfloor>" by simp
-	  moreover from `(ts'(t \<mapsto> (x'', ln''))) T = \<lfloor>(X', LN')\<rfloor>` False
-	  have "ts' T = \<lfloor>(X', LN')\<rfloor>" by simp
-	  ultimately have "m\<mu>t m (ts''(t := None)) ts'" using `\<mu> (X'', m) (X', m)`
-	  proof(rule m\<mu>tI)
-	    fix t'
-	    assume "t' \<noteq> T"
-	    with eq[OF False[symmetric]] eq[OF this] `ts' t = None`
-	    show "(ts''(t := None)) t' = ts' t'" by auto
-	  qed
-	  hence "ts''(t := None) \<notin> Q'" by(rule min)
-	  thus ?thesis
-	  proof(rule contrapos_nn)
-	    assume "ts'' \<in> Q"
-	    from eq[OF False[symmetric]] have "ts'' t = \<lfloor>(x'', ln'')\<rfloor>" by simp
-	    hence ts'': "ts''(t \<mapsto> (x'', ln'')) = ts''" by(auto simp add: fun_eq_iff)
-	    from `ts'' \<in> Q` have "ts''(t \<mapsto> (x'', ln'')) \<in> Q" unfolding ts'' .
-	    thus "ts''(t := None) \<in> Q'" unfolding Q'_def by auto
-	  qed
-	qed
+        fix ts''
+        assume "m\<mu>t m ts'' (ts'(t \<mapsto> (x'', ln'')))"
+        then obtain T X'' LN'' X' LN'
+          where "finite (dom ts'')" "ts'' T = \<lfloor>(X'', LN'')\<rfloor>" 
+          and "(ts'(t \<mapsto> (x'', ln''))) T = \<lfloor>(X', LN')\<rfloor>" "\<mu> (X'', m) (X', m)"
+          and eq: "\<And>t'. t' \<noteq> T \<Longrightarrow> ts'' t' = (ts'(t \<mapsto> (x'', ln''))) t'" by(cases) blast
+        have "ts'' \<notin> Q"
+        proof(cases "T = t")
+          case True
+          from True `(ts'(t \<mapsto> (x'', ln''))) T = \<lfloor>(X', LN')\<rfloor>` have "X' = x''" by simp
+          with `\<mu> (X'', m) (X', m)` have "(X'', m) \<notin> Q''" by(auto dest: min'[unfolded `xm'' = (x'', m)`])
+          hence "\<forall>ln. ts'(t \<mapsto> (X'', ln)) \<notin> Q" by(simp add: Q''_def)
+          moreover from `ts' t = None` eq True
+          have "ts''(t := None) = ts'" by(auto simp add: fun_eq_iff)
+          with `ts'' T = \<lfloor>(X'', LN'')\<rfloor>` True
+          have ts'': "ts'' = ts'(t \<mapsto> (X'', LN''))" by(auto intro!: ext)
+          ultimately show ?thesis by blast
+        next
+          case False
+          from `finite (dom ts'')` have "finite (dom (ts''(t := None)))" by simp
+          moreover from `ts'' T = \<lfloor>(X'', LN'')\<rfloor>` False
+          have "(ts''(t := None)) T = \<lfloor>(X'', LN'')\<rfloor>" by simp
+          moreover from `(ts'(t \<mapsto> (x'', ln''))) T = \<lfloor>(X', LN')\<rfloor>` False
+          have "ts' T = \<lfloor>(X', LN')\<rfloor>" by simp
+          ultimately have "m\<mu>t m (ts''(t := None)) ts'" using `\<mu> (X'', m) (X', m)`
+          proof(rule m\<mu>tI)
+            fix t'
+            assume "t' \<noteq> T"
+            with eq[OF False[symmetric]] eq[OF this] `ts' t = None`
+            show "(ts''(t := None)) t' = ts' t'" by auto
+          qed
+          hence "ts''(t := None) \<notin> Q'" by(rule min)
+          thus ?thesis
+          proof(rule contrapos_nn)
+            assume "ts'' \<in> Q"
+            from eq[OF False[symmetric]] have "ts'' t = \<lfloor>(x'', ln'')\<rfloor>" by simp
+            hence ts'': "ts''(t \<mapsto> (x'', ln'')) = ts''" by(auto simp add: fun_eq_iff)
+            from `ts'' \<in> Q` have "ts''(t \<mapsto> (x'', ln'')) \<in> Q" unfolding ts'' .
+            thus "ts''(t := None) \<in> Q'" unfolding Q'_def by auto
+          qed
+        qed
       }
       ultimately show ?case by blast
     qed
