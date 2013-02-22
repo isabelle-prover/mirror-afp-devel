@@ -1,13 +1,7 @@
-session "Ribbon_Proofs" (AFP) = "HOL" +
+session "Ribbon_Proofs" (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/AList"
-    "~~/src/HOL/Library/DAList"
     "~~/src/HOL/Quotient_Examples/FSet"
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/Quotient_List"
-    "~~/src/HOL/Library/Quotient_Set"
-    "~~/src/HOL/Library/Quotient_Syntax"
   theories
     Finite_Map
     JHelper
@@ -18,5 +12,5 @@ session "Ribbon_Proofs" (AFP) = "HOL" +
     Ribbons_Graphical
     Ribbons_Graphical_Soundness
   files 
-	"document/root.tex"
-  	"document/root.bib"
+    "document/root.tex"
+    "document/root.bib"
