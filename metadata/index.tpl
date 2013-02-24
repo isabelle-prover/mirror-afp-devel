@@ -37,7 +37,8 @@ is available <a href="citing.shtml">[here]</a>.
 <p>
 <strong>
 This is the development version of the archive, referring to a recent
-Isabelle development version. Some entries may not be in a working state.
+Isabelle development version. Some entries may not be in a working state, see
+the <a href="status.shtml">status page</a> for more information.
 The main archive is available from the <a href="index.shtml">front page</a>.
 </strong>
 </p>
