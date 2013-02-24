@@ -64,6 +64,7 @@ KBPs
 Kleene_Algebra
 Lam-ml-Normalization
 LatticeProperties
+Launchbury
 Lazy-Lists-II
 LightweightJava
 LinearQuantifierElim
@@ -80,6 +81,7 @@ MonoBoolTranAlgebra
 MuchAdoAboutTwo
 Myhill-Nerode
 Nat-Interval-Logic
+Nominal2
 NormByEval
 Open_Induction
 Ordinal
