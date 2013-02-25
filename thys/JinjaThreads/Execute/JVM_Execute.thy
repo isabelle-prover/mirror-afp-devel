@@ -151,8 +151,8 @@ apply(rule sc_execute.mexec_deterministic[OF assms sc_deterministic_heap_ops])
 apply(simp add: sc_spurious_wakeups)
 done
 
-ML {* @{code exec_JVM_rr} *}
+ML_val {* @{code exec_JVM_rr} *}
 
-ML {* @{code exec_JVM_rnd} *}
+ML_val {* @{code exec_JVM_rnd} *}
 
 end

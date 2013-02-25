@@ -598,6 +598,6 @@ code_modulename Haskell
   TypeRelRefine TypeRel
   Decl TypeRel
 
-ML {* @{code Program} *}
+ML_val {* @{code Program} *}
 
 end

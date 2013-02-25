@@ -55,7 +55,7 @@ export_code
   in OCaml file -
   in SML file -
 
-ML {*
+ML_val {*
   (* ** Binomial Heaps ** *)
 
   val q1 = @{code bh_insert} "a" (@{code nat_of_integer} 1)

@@ -172,7 +172,7 @@ definition "V = ''V''"
 definition "C = ''C''"
 definition "F = ''F''"
 
-ML {*
+ML_val {*
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 5)), _), _) = Predicate.yield @{code test1};
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 11)), _), _) = Predicate.yield @{code test2};
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 83)), _), _) = Predicate.yield @{code test3};
@@ -194,7 +194,7 @@ definition "test7 = [classObject, classL] \<turnstile> \<langle>testExpr_BuildLi
 definition "L = ''L''"
 definition "N = ''N''"
 
-ML {*
+ML_val {*
   val SOME ((_, (h, _)), _) = Predicate.yield @{code test7};
   val SOME (_, fs1) = h (@{code nat_of_integer} 0);
   val SOME (_, fs2) = h (@{code nat_of_integer} 1);
@@ -220,7 +220,7 @@ definition "i = ''int''"
 definition "t = ''test''"
 definition "A = ''A''"
 
-ML {*
+ML_val {*
   val SOME ((_, (h, l)), _) = Predicate.yield @{code test8};
   val SOME (_, fs1) = h (@{code nat_of_integer} 0);
   val SOME (_, fs2) = h (@{code nat_of_integer} 1);

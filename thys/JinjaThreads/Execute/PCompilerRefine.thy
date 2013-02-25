@@ -58,6 +58,6 @@ code_modulename Haskell
   PCompiler PCompiler
   PCompilerRefine PCompiler
 
-ML {* @{code compP} *}
+ML_val {* @{code compP} *}
 
 end

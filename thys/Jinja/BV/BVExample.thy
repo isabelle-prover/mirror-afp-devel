@@ -571,7 +571,7 @@ definition test2 where
 definition test3 where "test3 = \<phi>\<^sub>a"
 definition test4 where "test4 = \<phi>\<^sub>m"
 
-ML {* 
+ML_val {* 
   if @{code test1} = @{code map} @{code OK} @{code test3} then () else error "wrong result";
   if @{code test2} = @{code map} @{code OK} @{code test4} then () else error "wrong result" 
 *}

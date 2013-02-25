@@ -104,7 +104,7 @@ value "rbt_restrict_list (list_to_rs [1::nat,2,3,4,5]) [1::nat,9,2,3,4,5,6,5,4,3
 
 definition "test n = list_to_rs [1..int_of_integer n]"
 
-ML {* @{code test} 9000 *}
+ML_val {* @{code test} 9000 *}
 
 subsection "Theories"
 text {*
