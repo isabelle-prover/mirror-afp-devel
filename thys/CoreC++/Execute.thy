@@ -1179,6 +1179,8 @@ qed
 
 subsection {* Examples *}
 
+declare [[values_timeout = 100]]
+
 values [expected "{Val (Intg 5)}"]
   "{fst (e', s') | e' s'. 
     [],empty \<turnstile> \<langle>{''V'':Integer; ''V'' :=  Val(Intg 5);; Var ''V''},(empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
