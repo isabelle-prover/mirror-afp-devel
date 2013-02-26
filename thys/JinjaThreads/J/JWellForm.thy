@@ -89,6 +89,6 @@ code_pred
 .
 
 text {* Formal code generation test *}
-ML {* @{code wf_J_prog'}  *}
+ML_val {* @{code wf_J_prog'}  *}
 
 end

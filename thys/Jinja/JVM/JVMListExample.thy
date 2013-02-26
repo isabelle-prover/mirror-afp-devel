@@ -116,7 +116,7 @@ lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def 
 
 definition "test = exec (E, start_state E test_name makelist_name)"
 
-ML {* 
+ML_val {* 
   @{code test};
   @{code exec} (@{code E}, @{code the} it);
   @{code exec} (@{code E}, @{code the} it);

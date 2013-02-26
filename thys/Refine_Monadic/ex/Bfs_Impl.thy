@@ -234,7 +234,7 @@ begin
   where
     "bfs_code_succ m n = bfs_code succ (nat_of_integer m) (nat_of_integer n)"
       
-  ML {*
+  ML_val {*
     (* Execute algorithm for some node pairs. *)
     @{code bfs_code_succ} 1 1;
     @{code bfs_code_succ} 1 2;

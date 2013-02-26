@@ -32,7 +32,7 @@
         <td class="data" width="80%">Collections Framework</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Peter Lammich (peter /dot/ lammich /at/ in /dot/ tum /dot/ de), Andreas Lochbihler and  Thomas Tuerk</td></tr>
+        <td class="data">Peter Lammich (peter /dot/ lammich /at/ in /dot/ tum /dot/ de), <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and  Thomas Tuerk</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2009-11-25</td></tr>

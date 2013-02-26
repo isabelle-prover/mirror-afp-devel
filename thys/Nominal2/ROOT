@@ -1,0 +1,9 @@
+(* This session is expect to be merged into the Isabelle distribution 
+   before the next release *)
+
+session "Nominal2" = HOLCF +
+  options [document = false]
+  theories
+    "Nominal2"
+    "Atoms"
+    "Eqvt"

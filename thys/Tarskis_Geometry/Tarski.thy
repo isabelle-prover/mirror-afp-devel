@@ -154,7 +154,7 @@ begin
     assume "SC {a, b} {c, d}"
     with SC_def [of "{a, b}" "{c, d}"]
       obtain w x y z where "{a, b} = {w, x}" and "{c, d} = {y, z}" and "w x \<congruent> y z"
-	by blast
+        by blast
     from left_segment_congruence [of a b w x y z] and
         `{a, b} = {w, x}` and
         `w x \<congruent> y z`
@@ -196,7 +196,7 @@ begin
   proof -
     from SC_def [of X Y] and `SC X Y`
       obtain w x y z where "X = {w, x}" and "Y = {y, z}" and "w x \<congruent> y z"
-	by auto
+        by auto
     from th2_2 [of w x y z] and `w x \<congruent> y z` have "y z \<congruent> w x" by simp
     with SC_def [of Y X] and `X = {w, x}` and `Y = {y, z}`
       show "SC Y X" by (simp add: C_SC_equiv)
@@ -227,7 +227,7 @@ begin
   proof -
     from SC_def [of X Y] and `SC X Y`
       obtain w x y z where "X = {w, x}" and "Y = {y, z}" and "w x \<congruent> y z"
-	by auto
+        by auto
     from SC_def [of Y Z] and `SC Y Z`
       obtain p q r s where "Y = {p, q}" and "Z = {r, s}" and "p q \<congruent> r s" by auto
     from `Y = {y, z}` and `Y = {p, q}` and `p q \<congruent> r s`
@@ -299,14 +299,14 @@ begin
     assume "a \<noteq> b"
     moreover
       note A5' [of a b c a a' b' c' a'] and
-	unordered_pair_equality [of a c] and
-	unordered_pair_equality [of a' c']
+        unordered_pair_equality [of a c] and
+        unordered_pair_equality [of a' c']
     moreover
       from OFS_def [of a b c a a' b' c' a'] and
-	  hypotheses and
-	  th2_8 [of a a'] and
+          hypotheses and
+          th2_8 [of a a'] and
           unordered_pair_equality [of a b] and
-	  unordered_pair_equality [of a' b']
+          unordered_pair_equality [of a' b']
         have "OFS a b c a a' b' c' a'" by (simp add: C_SC_equiv)
     ultimately show ?thesis by (simp add: C_SC_equiv)
   qed
@@ -322,8 +322,8 @@ begin
       have "q x \<congruent> q x'" by simp
     with OFS_def [of q a x x q a x x'] and
         `B q a x` and
-	SC_refl and
-	`a x \<congruent> a x'`
+        SC_refl and
+        `a x \<congruent> a x'`
       have "OFS q a x x q a x x'" by simp
     with A5' [of q a x x q a x x'] and `q \<noteq> a` have "x x \<congruent> x x'" by simp
     thus "x = x'" by (rule A3_reversed)

@@ -1,13 +1,12 @@
 session "Finger-Trees" (AFP) = HOL +
   options [timeout = 300]
   theories
+    (* Finger Trees *)
     FingerTree
   theories [document = false]
+    (* Do not remove this, as it serves to detect issues with the code generator *)
     "~~/src/HOL/Library/Code_Target_Numeral"
     Test
-(* FIXME *)
-(* Finger Trees*)
-(* Do not remove this, as it serves to detect issues with the code generator *)
   files
     "document/root.bib"
     "document/root.tex"

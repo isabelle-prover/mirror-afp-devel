@@ -48,7 +48,7 @@ text {*
 export_code hs_seti in SML file -
 
   -- "Code generation"
-  ML {* @{code hs_seti} *} 
+  ML_val {* @{code hs_seti} *} 
   (*value "hs_seti [1,2,3::nat] hs_empty"*)
 
   subsubsection "Tail-Recursive version"
@@ -77,7 +77,7 @@ export_code hs_seti in SML file -
   lemmas hs_set_i2_impl = hsr.set_i2_impl[folded hs_seti2_def]
 
   -- "Code generation"
-  ML {* @{code hs_seti2} *} 
+  ML_val {* @{code hs_seti2} *} 
   (*value "hs_seti [1,2,3::nat] hs_empty"*)
 
 subsubsection "With explicit operation parameters"
@@ -96,7 +96,7 @@ subsubsection "With explicit operation parameters"
   lemmas hs_set_i'_impl = hsr.set_i'_impl[folded hs_seti'_def, unfolded hs_ops_unfold]
 
   -- "Code generation"
-  ML {* @{code hs_seti'} *} 
+  ML_val {* @{code hs_seti'} *} 
   (*value "hs_seti' [1,2,3::nat] hs_empty"*)
 
 
@@ -222,7 +222,7 @@ text {*
 
 
   -- "Code generation"
-  ML {* @{code hs_filter_le_avg} @{code test_hs} *} 
+  ML_val {* @{code hs_filter_le_avg} @{code test_hs} *} 
 
 
   -- "Using abbreviations"

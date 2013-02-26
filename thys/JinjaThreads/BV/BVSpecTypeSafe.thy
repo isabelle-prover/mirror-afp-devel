@@ -122,11 +122,11 @@ proof -
     proof(cases D')
       case Some
       thus ?thesis using eff rv DsubD' conf that
-	by(fastforce simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
+        by(fastforce simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
     next
       case None
       with that eff rv conf DsubThrowable show ?thesis
-	by(fastforce simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
+        by(fastforce simp add: xcpt_eff_def sup_state_opt_any_Some intro: widen_trans[OF widen_subcls])
     qed
 
     with conf loc stk hxcp have "conf_f P h (ST',LT') ins ?f" 
@@ -257,34 +257,34 @@ proof -
       moreover 
       from wtprog mD''
       obtain start: "wt_start P D'' Ts' mxl' (\<Phi> D'' M')" and ins': "ins' \<noteq> []"
-	by (auto dest: wt_jvm_prog_impl_wt_start)
+        by (auto dest: wt_jvm_prog_impl_wt_start)
       then obtain LT\<^isub>0 where LT\<^isub>0: "\<Phi> D'' M' ! 0 = Some ([], LT\<^isub>0)"
-	by (clarsimp simp add: wt_start_def defs1 sup_state_opt_any_Some)
+        by (clarsimp simp add: wt_start_def defs1 sup_state_opt_any_Some)
       moreover
       have "conf_f P h ([], LT\<^isub>0) ins' ?f'"
       proof -
-	let ?LT = "OK (Class D'') # (map OK Ts') @ (replicate mxl' Err)"
+        let ?LT = "OK (Class D'') # (map OK Ts') @ (replicate mxl' Err)"
         
-	from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
-	hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" by simp
-	also note Ts also note Ts' finally
-	have "P,h \<turnstile> rev (take n stk) [:\<le>\<^sub>\<top>] map OK Ts'" by simp 
-	also
-	have "P,h \<turnstile> replicate mxl' undefined_value [:\<le>\<^sub>\<top>] replicate mxl' Err" by simp
-	also from m_C' have "P \<turnstile> C' \<preceq>\<^sup>* D''" by (rule sees_method_decl_above)
+        from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
+        hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" by simp
+        also note Ts also note Ts' finally
+        have "P,h \<turnstile> rev (take n stk) [:\<le>\<^sub>\<top>] map OK Ts'" by simp 
+        also
+        have "P,h \<turnstile> replicate mxl' undefined_value [:\<le>\<^sub>\<top>] replicate mxl' Err" by simp
+        also from m_C' have "P \<turnstile> C' \<preceq>\<^sup>* D''" by (rule sees_method_decl_above)
         from obj heap_ok have "is_htype P U" by (rule typeof_addr_is_type)
         with C' have "P \<turnstile> ty_of_htype U \<le> Class C'" 
           by(cases U)(simp_all add: widen_array_object)
         with `P \<turnstile> C' \<preceq>\<^sup>* D''` obj C' have "P,h \<turnstile> Addr a :\<le> Class D''"
           by (auto simp add: conf_def intro: widen_trans)
-	ultimately
-	have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] ?LT" by simp
-	also from start LT\<^isub>0 have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT\<^isub>0" by (simp add: wt_start_def)
-	finally have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] LT\<^isub>0" .
-	thus ?thesis using ins' by simp
+        ultimately
+        have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] ?LT" by simp
+        also from start LT\<^isub>0 have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT\<^isub>0" by (simp add: wt_start_def)
+        finally have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] LT\<^isub>0" .
+        thus ?thesis using ins' by simp
       qed
       ultimately have ?thesis using s' \<Phi>_pc approx meth_C m_D T' ins D tconf C' mD''
-	by (fastforce dest: sees_method_fun [of _ C]) }
+        by (fastforce dest: sees_method_fun [of _ C]) }
     moreover
     { assume [simp]: "meth' = Native"
       with wfprog m_C' have "D''\<bullet>M'(Ts') :: T'" by(simp add: sees_wf_native)
@@ -302,9 +302,9 @@ proof -
 
       from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
       then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
-	by(auto simp add: confs_conv_map)
+        by(auto simp add: confs_conv_map)
       hence Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
-	by- (simp only: rev_map[symmetric], simp)
+        by- (simp only: rev_map[symmetric], simp)
       from `P \<turnstile> rev Us [\<le>] rev (take n ST)` Ts Ts'
       have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
       with obj `map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)` C' m_C' 
@@ -327,11 +327,11 @@ proof -
         case (RetVal v)
         with \<sigma> have \<sigma>: "\<sigma> = (None, h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)" by simp
         from heap_ok wtext' va' RetVal preh tconf have "P,h' \<turnstile> v :\<le> T'"
-	  by(auto dest: red_external_conf_extRet[OF wfprog])
+          by(auto dest: red_external_conf_extRet[OF wfprog])
         from stk have "P,h \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" by(rule list_all2_dropI)
         hence "P,h' \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" using hext by(rule confs_hext)
         with `P,h' \<turnstile> v :\<le> T'` have "P,h' \<turnstile> v # drop (n + 1) stk [:\<le>] T' # drop (n+1) ST"
-	  by(auto simp add: conf_def intro: widen_trans)
+          by(auto simp add: conf_def intro: widen_trans)
         also
         with NT ins wti \<Phi>_pc \<Phi>' nec False D m_D T'
         have "P \<turnstile> (T' # drop (n + 1) ST) [\<le>] ST'"
@@ -1648,18 +1648,18 @@ proof -
 
         from NT wt \<Phi>_pc obtain D D' Ts T m
           where D: "class_type_of' (ST!n) = Some D"
-	  and m_D: "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
-	  and Ts:  "P \<turnstile> rev (take n ST) [\<le>] Ts"
+          and m_D: "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
+          and Ts:  "P \<turnstile> rev (take n ST) [\<le>] Ts"
           by auto
 
         from n ST D have "P,h \<turnstile> stk!n :\<le> ST!n"
-	  by (auto simp add: list_all2_conv_all_nth)
+          by (auto simp add: list_all2_conv_all_nth)
 
         from `P,h \<turnstile> stk!n :\<le> ST!n` Null D
         obtain a T' where
-	  Addr:   "stk!n = Addr a" and
-	  obj:    "typeof_addr h a = Some T'" and
-	  T'subSTn: "P \<turnstile> ty_of_htype T' \<le> ST ! n"
+          Addr:   "stk!n = Addr a" and
+          obj:    "typeof_addr h a = Some T'" and
+          T'subSTn: "P \<turnstile> ty_of_htype T' \<le> ST ! n"
           by(cases "stk ! n")(auto simp add: conf_def widen_Class)
 
         from D T'subSTn obtain C' where
@@ -1679,9 +1679,9 @@ proof -
           case None[simp]
           from ST have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
           then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
-	    by(auto simp add: confs_conv_map)
+            by(auto simp add: confs_conv_map)
           hence Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
-	    by- (simp only: rev_map[symmetric], simp)
+            by- (simp only: rev_map[symmetric], simp)
           with Ts `P \<turnstile> Ts [\<le>] Ts'` have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
           with obj Us Call' C' have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
             by(auto intro!: external_WT'.intros)

@@ -395,57 +395,57 @@ proof(cases rule: Red1_mthr.redT.cases)
     { fix t'
       assume None: "(redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = None"
       { fix l
-	from aoe have "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
-	with None have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' = has_locks (locks s1 $ l) t'"
-	  by(auto split: split_if_asm)
-	also from loks None have "has_locks (locks s1 $ l) t' = 0" unfolding lock_oks1_def
-	  by(force split: split_if_asm dest!: redT_updTs_None)
-	finally have "has_locks (upd_locks (locks s1 $ l) t (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l)) t' = 0" by simp }
+        from aoe have "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
+        with None have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' = has_locks (locks s1 $ l) t'"
+          by(auto split: split_if_asm)
+        also from loks None have "has_locks (locks s1 $ l) t' = 0" unfolding lock_oks1_def
+          by(force split: split_if_asm dest!: redT_updTs_None)
+        finally have "has_locks (upd_locks (locks s1 $ l) t (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l)) t' = 0" by simp }
       hence "\<forall>l. has_locks (upd_locks (locks s1 $ l) t (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l)) t' = 0" .. }
     moreover {
       fix t' eX eXS LN
       assume Some: "(redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = \<lfloor>((eX, eXS), LN)\<rfloor>"
       { fix l
-	from aoe have lao: "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
-	have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' + LN $ l = expr_lockss (map fst (eX # eXS)) l"
-	proof(cases "t = t'")
-	  case True
-	  from loks thrst x
-	  have "has_locks (locks s1 $ l) t = expr_locks e l + expr_lockss (map fst exs) l"
-	    by(force simp add: lock_oks1_def)
-	  hence "lock_expr_locks_ok (locks s1 $ l) t 0 (int (expr_locks e l + expr_lockss (map fst exs) l))"
-	    by(simp add: lock_expr_locks_ok_def)
-	  with lao have "lock_expr_locks_ok (upd_locks (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)) t (upd_threadRs 0 (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l))
+        from aoe have lao: "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
+        have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' + LN $ l = expr_lockss (map fst (eX # eXS)) l"
+        proof(cases "t = t'")
+          case True
+          from loks thrst x
+          have "has_locks (locks s1 $ l) t = expr_locks e l + expr_lockss (map fst exs) l"
+            by(force simp add: lock_oks1_def)
+          hence "lock_expr_locks_ok (locks s1 $ l) t 0 (int (expr_locks e l + expr_lockss (map fst exs) l))"
+            by(simp add: lock_expr_locks_ok_def)
+          with lao have "lock_expr_locks_ok (upd_locks (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)) t (upd_threadRs 0 (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l))
  (upd_expr_lock_actions (int (expr_locks e l + expr_lockss (map fst exs) l)) (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l))"
-	    by(rule upd_locks_upd_expr_lock_preserve_lock_expr_locks_ok)
-	  moreover from sync thrst x have "sync_ok e" "el_loc_ok e x"
-	    unfolding el_loc_ok1_def by(auto dest: ts_okD)
-	  with red1_update_expr_locks[OF wf red]
-	  have "upd_expr_locks (int \<circ> expr_locks e) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'" by(simp)
-	  hence "upd_expr_lock_actions (int (expr_locks e l)) (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l) = int (expr_locks e' l)"
-	    by(simp add: upd_expr_locks_def fun_eq_iff)
-	  ultimately show ?thesis using lao Some thrst x True
+            by(rule upd_locks_upd_expr_lock_preserve_lock_expr_locks_ok)
+          moreover from sync thrst x have "sync_ok e" "el_loc_ok e x"
+            unfolding el_loc_ok1_def by(auto dest: ts_okD)
+          with red1_update_expr_locks[OF wf red]
+          have "upd_expr_locks (int \<circ> expr_locks e) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'" by(simp)
+          hence "upd_expr_lock_actions (int (expr_locks e l)) (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l) = int (expr_locks e' l)"
+            by(simp add: upd_expr_locks_def fun_eq_iff)
+          ultimately show ?thesis using lao Some thrst x True
             by(auto simp add: lock_expr_locks_ok_def upd_expr_locks_def)
-	next
-	  case False
-	  from aoe have tok: "thread_oks (thr s1) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by auto
-	  show ?thesis
-	  proof(cases "thr s1 t' = None")
-	    case True
-	    with Some tok False obtain m 
-	      where nt: "NewThread t' (eX, eXS) m \<in> set (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)"
-	      and [simp]: "LN = no_wait_locks" by(auto dest: redT_updTs_new_thread)
-	    note expr_locks_new_thread1[OF wf red nt]
-	    moreover from loks True have "has_locks (locks s1 $ l) t' = 0"
-	      by(force simp add: lock_oks1_def)
-	    ultimately show ?thesis using lao False by simp
-	  next
-	    case False
-	    with Some `t \<noteq> t'` tok 
-	    have "thr s1 t' = \<lfloor>((eX, eXS), LN)\<rfloor>" by(fastforce dest: redT_updTs_Some[OF _ tok])
-	    with loks tok lao `t \<noteq> t'` show ?thesis by(cases eX)(auto simp add: lock_oks1_def)
-	  qed
-	qed }
+        next
+          case False
+          from aoe have tok: "thread_oks (thr s1) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by auto
+          show ?thesis
+          proof(cases "thr s1 t' = None")
+            case True
+            with Some tok False obtain m 
+              where nt: "NewThread t' (eX, eXS) m \<in> set (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)"
+              and [simp]: "LN = no_wait_locks" by(auto dest: redT_updTs_new_thread)
+            note expr_locks_new_thread1[OF wf red nt]
+            moreover from loks True have "has_locks (locks s1 $ l) t' = 0"
+              by(force simp add: lock_oks1_def)
+            ultimately show ?thesis using lao False by simp
+          next
+            case False
+            with Some `t \<noteq> t'` tok 
+            have "thr s1 t' = \<lfloor>((eX, eXS), LN)\<rfloor>" by(fastforce dest: redT_updTs_Some[OF _ tok])
+            with loks tok lao `t \<noteq> t'` show ?thesis by(cases eX)(auto simp add: lock_oks1_def)
+          qed
+        qed }
       hence "\<forall>l. has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' + LN $ l = expr_lockss (map fst (eX # eXS)) l" .. }
     ultimately show ?thesis using s1' unfolding lock_oks1_def x' by(clarsimp simp del: fun_upd_apply)
   next

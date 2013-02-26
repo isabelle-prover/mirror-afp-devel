@@ -116,14 +116,14 @@ proof(rule iffI)
       show "\<forall>LT. Red1_mthr.can_sync False P t x (shr s) LT \<longrightarrow>
          (\<exists>lt\<in>LT. final_thread.must_wait final_expr1 s t lt (dom (thr s)))"
       proof(intro strip)
-	fix LT
-	assume "Red1_mthr.can_sync False P t x (shr s) LT"
-	then obtain ta x' m' where "mred1' P t (x, shr s) ta (x', m')" 
-	  and [simp]: "LT = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
-	  by(rule Red1_mthr.can_syncE)
-	hence "mred1 P t (x, shr s) ta (x', m')" by(auto simp add: split_beta intro: Red1_False_into_Red1_True)
-	hence "Red1_mthr.can_sync True P t x (shr s) LT" by(rule Red1_mthr.can_syncI) simp
-	thus "\<exists>lt\<in>LT. final_thread.must_wait final_expr1 s t lt (dom (thr s))" by(rule cs)
+        fix LT
+        assume "Red1_mthr.can_sync False P t x (shr s) LT"
+        then obtain ta x' m' where "mred1' P t (x, shr s) ta (x', m')" 
+          and [simp]: "LT = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
+          by(rule Red1_mthr.can_syncE)
+        hence "mred1 P t (x, shr s) ta (x', m')" by(auto simp add: split_beta intro: Red1_False_into_Red1_True)
+        hence "Red1_mthr.can_sync True P t x (shr s) LT" by(rule Red1_mthr.can_syncI) simp
+        thus "\<exists>lt\<in>LT. final_thread.must_wait final_expr1 s t lt (dom (thr s))" by(rule cs)
       qed
     qed
   next
@@ -157,13 +157,13 @@ next
       show "\<forall>LT. Red1_mthr.can_sync True P t x (shr s) LT \<longrightarrow>
          (\<exists>lt\<in>LT. final_thread.must_wait final_expr1 s t lt (dom (thr s)))"
       proof(intro strip)
-	fix LT
-	assume "Red1_mthr.can_sync True P t x (shr s) LT"
-	then obtain ta x' m' where "mred1 P t (x, shr s) ta (x', m')" 
-	  and [simp]: "LT = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
-	  by(rule Red1_mthr.can_syncE)
-	then obtain e xs exs e' xs' exs' where x [simp]: "x = ((e, xs), exs)" "x' = ((e', xs'), exs')"
-	  and red: "True,P,t \<turnstile>1 \<langle>(e, xs)/exs, shr s\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', m'\<rangle>" by(cases x, cases x') fastforce
+        fix LT
+        assume "Red1_mthr.can_sync True P t x (shr s) LT"
+        then obtain ta x' m' where "mred1 P t (x, shr s) ta (x', m')" 
+          and [simp]: "LT = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
+          by(rule Red1_mthr.can_syncE)
+        then obtain e xs exs e' xs' exs' where x [simp]: "x = ((e, xs), exs)" "x' = ((e', xs'), exs')"
+          and red: "True,P,t \<turnstile>1 \<langle>(e, xs)/exs, shr s\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', m'\<rangle>" by(cases x, cases x') fastforce
         from IUF_Red1_taD[OF red] obtain ex'' exs'' h'' ta' 
           where red': "False,P,t \<turnstile>1 \<langle>(e, xs)/exs,shr s\<rangle> -ta'\<rightarrow> \<langle>ex''/exs'',h''\<rangle>"
           and "collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"

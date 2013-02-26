@@ -1,9 +1,5 @@
-session Fermat3_4 (AFP) = HOL +
+session Fermat3_4 (AFP) = "HOL-Old_Number_Theory" +
   options [timeout = 600]
-  theories [document = false]
-    "~~/src/HOL/Old_Number_Theory/Factorization"
-    "~~/src/HOL/Old_Number_Theory/EvenOdd"
-    "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity"
   theories
     Fermat4
     Fermat3

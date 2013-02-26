@@ -1,10 +1,10 @@
 session HotelKeyCards (AFP) = HOL +
-  options [timeout = 600]
-  theories [show_question_marks = false]
+  options [timeout = 600, show_question_marks = false]
+  theories
     Notation
-  theories [document = false, show_question_marks = false]
+  theories [document = false]
     Basis
-  theories [show_question_marks = false]
+  theories
     State
     NewCard
     Trace

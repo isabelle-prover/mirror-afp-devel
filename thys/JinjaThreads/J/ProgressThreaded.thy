@@ -591,9 +591,9 @@ proof -
     proof(rule ccontr)
       assume "ln' \<noteq> no_wait_locks"
       then obtain l where "ln' $ l > 0"
-	by(auto simp add: neq_no_wait_locks_conv)
+        by(auto simp add: neq_no_wait_locks_conv)
       from lock' es't have "has_locks (ls' $ l) t + ln' $ l = expr_locks e' l"
-	by(auto dest: lock_okD2)
+        by(auto dest: lock_okD2)
       with `ln' $ l > 0` have "expr_locks e' l > 0" by simp
       moreover from `final e'` have "expr_locks e' l = 0" by(rule final_locks)
       ultimately show False by simp

@@ -72,8 +72,8 @@ next
     have "B \<subseteq> UNIV" by simp
     moreover
     { from `is_basis B` have "UNIV \<subseteq> span B" and "independent B"
-	unfolding is_basis_def
-	by simp+ }
+        unfolding is_basis_def
+        by simp+ }
     ultimately have "card B = dim (UNIV::((real^'n) set))"
       using basis_card_eq_dim [of B UNIV]
       by simp

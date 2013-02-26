@@ -1,8 +1,5 @@
-session MuchAdoAboutTwo (AFP) = HOL +
+session MuchAdoAboutTwo (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false, quick_and_dirty]
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/Permutation"
   theories [quick_and_dirty]
     MuchAdoAboutTwo
   files

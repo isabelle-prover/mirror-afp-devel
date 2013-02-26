@@ -37,7 +37,8 @@ is available <a href="citing.shtml">[here]</a>.
 <p>
 <strong>
 This is the development version of the archive, referring to a recent
-Isabelle development version. Some entries may not be in a working state.
+Isabelle development version. Some entries may not be in a working state, see
+the <a href="status.shtml">status page</a> for more information.
 The main archive is available from the <a href="index.shtml">front page</a>.
 </strong>
 </p>
@@ -52,6 +53,13 @@ The main archive is available from the <a href="index.shtml">front page</a>.
     <tr>
 	  <td class="head">2013</td>
 	</tr>
+
+<tr><td class="entry">
+2013-01-31:
+<a href="entries/Launchbury.shtml">The Correctness of Launchbury's Natural Semantics for Lazy Evaluation</a>
+<br>Author:
+Joachim Breitner
+</td></tr>
 
 <tr><td class="entry">
 2013-01-19:
@@ -595,7 +603,7 @@ Henry Sudhof
 2010-02-12:
 <a href="entries/Coinductive.shtml">Coinductive</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
 </td></tr>
 
 
@@ -637,7 +645,7 @@ Peter Lammich
 <a href="entries/Collections.shtml">Collections Framework</a>
 <br>Author:
 Peter Lammich,
-Andreas Lochbihler and 
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and 
 Thomas Tuerk
 </td></tr>
 
@@ -687,7 +695,7 @@ Andrei Popescu
 2009-05-06:
 <a href="entries/FinFun.shtml">Code Generation for Functions as Data</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -844,7 +852,7 @@ Veronika Ortner and
 2007-12-03:
 <a href="entries/JinjaThreads.shtml">Jinja with Threads</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
 </td></tr>
 
 <tr><td class="entry">

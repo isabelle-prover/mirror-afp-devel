@@ -1,9 +1,5 @@
-session SATSolverVerification (AFP) = HOL +
+session SATSolverVerification (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/Code_Target_Int"
-    "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     BasicDPLL
     NieuwenhuisOliverasTinelli

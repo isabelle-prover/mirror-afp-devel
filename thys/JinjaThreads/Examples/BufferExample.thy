@@ -142,7 +142,7 @@ by eval
 definition main where "main = STR ''main''"
 definition five :: int where "five = 5"
 
-ML {*
+ML_val {*
   val program = @{code BufferExample_annotated} @{code "five"};
   val compiled = @{code J2JVM} program;
 

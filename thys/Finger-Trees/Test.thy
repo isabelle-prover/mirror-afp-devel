@@ -83,7 +83,7 @@ export_code
   in OCaml file -
   in SML file -
 
-ML {*
+ML_val {*
   val t1 = @{code fti_toTree}
     [("a", @{code nat_of_integer} 1), ("b", @{code nat_of_integer} 2), ("c", @{code nat_of_integer} 3)];
   val t2 = @{code fti_toTree}

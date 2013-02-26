@@ -96,7 +96,7 @@ text {*
 
 (*
   code_module Test file "/dev/stdout" contains test_cg' test_cg''
-  ML {*
+  ML_val {*
     open Test;
 
     val start = Time.now();
