@@ -340,7 +340,7 @@ proof-
          by (cases w, auto simp add:free_group_def Xin'_def split:if_splits)       
        qed
     next
-    txt {* Surjectivity is relatively simple, and ofen not even mentioned in
+    txt {* Surjectivity is relatively simple, and often not even mentioned in
     human proofs. *}
     have "G.lift g ` carrier \<F>\<^bsub>I\<^esub> =
           G.lift g ` \<langle>\<iota> ` I\<rangle>\<^bsub>\<F>\<^bsub>I\<^esub>\<^esub>"

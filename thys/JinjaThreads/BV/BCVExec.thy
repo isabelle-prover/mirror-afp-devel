@@ -62,6 +62,6 @@ by(simp add: fun_eq_iff jvm_kildall_correct)
 definition "wf_jvm_prog' = wf_jvm_prog"
 
 (* Formal code generation test *)
-ML {* @{code wf_jvm_prog'} *}
+ML_val {* @{code wf_jvm_prog'} *}
 
 end

@@ -170,7 +170,7 @@ proof -
     proof cases
       case (inf_stepI tl s' tls')
       hence tls: "tls = LCons tl tls'" and r: "trsys s tl s'"
-	and inf': "s' -tls'\<rightarrow>* \<infinity>" by simp_all
+        and inf': "s' -tls'\<rightarrow>* \<infinity>" by simp_all
       let ?s' = "SOME s'. trsys s tl s' \<and> s' -tls'\<rightarrow>* \<infinity>"
       from tls stls have "stls = LCons (s, tl, ?s') (inf_step2inf_step_table ?s' tls')" by simp
       moreover from r inf' have "trsys s tl s' \<and> s' -tls'\<rightarrow>* \<infinity>" ..
@@ -198,7 +198,7 @@ proof -
     proof cases
       case (inf_step_tableI s' stls' tl)
       hence stls: "stls = LCons (s, tl, s') stls'" and r: "trsys s tl s'"
-	and inf': "s' -stls'\<rightarrow>*t \<infinity>" by simp_all
+        and inf': "s' -stls'\<rightarrow>*t \<infinity>" by simp_all
       from stls tls have "tls = LCons tl (lmap (fst \<circ> snd) stls')" by simp
       with r inf' show ?thesis by blast
     qed
@@ -482,19 +482,19 @@ proof -
       case False
       hence "lfilter ?P stls = LNil" by(rule diverge_lfilter_LNil)
       with inf_step have ?\<tau>inf_step_Nil unfolding tls_def 
-	by(auto simp add: lfilter_empty_conv intro: inf_step_table_all_\<tau>_into_\<tau>diverge)
+        by(auto simp add: lfilter_empty_conv intro: inf_step_table_all_\<tau>_into_\<tau>diverge)
       thus ?thesis ..
     next
       case True
       hence "lfilter ?P stls \<noteq> LNil" by(rule contrapos_pn)(rule lfilter_eq_LNil)
       then obtain x tl x' xs where stls: "lfilter ?P stls = LCons (x, tl, x') xs" by(auto simp add: neq_LNil_conv)
       from lfilter_eq_LConsD[OF this] obtain stls1 stls2
-	where stls1: "stls = lappend stls1 (LCons (x, tl, x') stls2)"
-	and "lfinite stls1"
-	and \<tau>s: "\<forall>(s, tl, s')\<in>lset stls1. \<tau>move s tl s'"
-	and n\<tau>: "\<not> \<tau>move x tl x'" and xs: "xs = lfilter ?P stls2" by blast
+        where stls1: "stls = lappend stls1 (LCons (x, tl, x') stls2)"
+        and "lfinite stls1"
+        and \<tau>s: "\<forall>(s, tl, s')\<in>lset stls1. \<tau>move s tl s'"
+        and n\<tau>: "\<not> \<tau>move x tl x'" and xs: "xs = lfilter ?P stls2" by blast
       from `lfinite stls1` inf_step \<tau>s have "s -\<tau>\<rightarrow>* x" unfolding stls1
-	by(rule inf_step_table_lappend_llist_of_\<tau>_into_\<tau>moves)
+        by(rule inf_step_table_lappend_llist_of_\<tau>_into_\<tau>moves)
       moreover from `lfinite stls1` have "llist_of (list_of stls1) = stls1" by(simp add: llist_of_list_of)
       with inf_step stls1 have "s -lappend (llist_of (list_of stls1)) (LCons (x, tl, x') stls2)\<rightarrow>*t \<infinity>" by simp
       from inf_step_table_lappend_llist_ofD[OF this]
@@ -590,9 +590,9 @@ proof -
     proof(cases rule: converse_rtranclpE[consumes 1, case_names refl step])
       case refl
       moreover from tranclpD[OF `silent_move^++ s' s'''`] obtain s''
-	where "silent_move s' s''" "silent_move^** s'' s'''" by blast
+        where "silent_move s' s''" "silent_move^** s'' s'''" by blast
       ultimately show ?thesis using `silent_move^** s'' s'''` `X s''' \<or> s''' -\<tau>\<rightarrow> \<infinity>`
-	by(auto intro: \<tau>diverge_rtranclp_silent_move)
+        by(auto intro: \<tau>diverge_rtranclp_silent_move)
     next
       case (step S)
       moreover from `silent_move\<^sup>*\<^sup>* S s'` `silent_move^++ s' s'''`
@@ -615,22 +615,22 @@ proof -
       hence IH: "\<And>s' t'. \<lbrakk> \<mu> t' t; X s' t' \<rbrakk> \<Longrightarrow>
                  \<exists>s'' t''. silent_move^++ s' s'' \<and> (X s'' t'' \<or> s'' -\<tau>\<rightarrow> \<infinity>)" by blast
       from step[OF `X s t`] obtain s' t'
-	where "\<mu> t' t \<and> s' = s \<or> silent_move\<^sup>+\<^sup>+ s s'" "X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>" by blast
+        where "\<mu> t' t \<and> s' = s \<or> silent_move\<^sup>+\<^sup>+ s s'" "X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>" by blast
       from `\<mu> t' t \<and> s' = s \<or> silent_move\<^sup>+\<^sup>+ s s'` show ?case
       proof
-	assume "\<mu> t' t \<and> s' = s"
-	hence  "\<mu> t' t" and [simp]: "s' = s" by simp_all
-	from `X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>` show ?thesis
-	proof
-	  assume "X s' t'"
-	  from IH[OF `\<mu> t' t` this] show ?thesis by simp
-	next
-	  assume "s' -\<tau>\<rightarrow> \<infinity>" thus ?thesis
-	    by cases(auto simp add: silent_move_iff)
-	qed
+        assume "\<mu> t' t \<and> s' = s"
+        hence  "\<mu> t' t" and [simp]: "s' = s" by simp_all
+        from `X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>` show ?thesis
+        proof
+          assume "X s' t'"
+          from IH[OF `\<mu> t' t` this] show ?thesis by simp
+        next
+          assume "s' -\<tau>\<rightarrow> \<infinity>" thus ?thesis
+            by cases(auto simp add: silent_move_iff)
+        qed
       next
-	assume "silent_move\<^sup>+\<^sup>+ s s'"
-	thus ?thesis using `X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>` by blast
+        assume "silent_move\<^sup>+\<^sup>+ s s'"
+        thus ?thesis using `X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>` by blast
       qed
     qed }
   note X = this
@@ -682,7 +682,7 @@ proof -
       case (\<tau>inf_step_Cons s' s'' tls' tl)
       let ?ss = "SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>-tls'\<rightarrow>* \<infinity>"
       from \<tau>inf_step_Cons have tls: "tls = LCons tl tls'" and "s -\<tau>\<rightarrow>* s'" "s' -tl\<rightarrow> s''"
-	"\<not> \<tau>move s' tl s''" "s'' -\<tau>-tls'\<rightarrow>* \<infinity>" by simp_all
+        "\<not> \<tau>move s' tl s''" "s'' -\<tau>-tls'\<rightarrow>* \<infinity>" by simp_all
       hence "(\<lambda>(s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>-tls'\<rightarrow>* \<infinity>) (s', s'')" by simp
       hence "(\<lambda>(s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>-tls'\<rightarrow>* \<infinity>) ?ss" by(rule someI)
       with sstls tls have ?\<tau>inf_step_table_Cons by auto
@@ -776,7 +776,7 @@ proof(intro allI impI)
       assume "silent_move_from s z y"
       with `(silent_move_from s')^** x' z` `silent_move^** s' x'`
       have "silent_move_from s' z y"
-	by(blast intro: rtranclp_silent_move_from_imp_silent_moves)
+        by(blast intro: rtranclp_silent_move_from_imp_silent_moves)
       hence "\<not> y \<in> Q" by(rule min) }
     with `z \<in> Q` show ?thesis by(auto simp add: intro!: bexI)
   qed
@@ -818,7 +818,7 @@ proof -
       case True
       then obtain s' where "s -\<tau>\<rightarrow> s'" ..
       with `S -\<tau>\<rightarrow>* s` have "flip (silent_move_from S) s' s"
-	unfolding flip_conv by(rule silent_move_fromI)
+        unfolding flip_conv by(rule silent_move_fromI)
       moreover from `S -\<tau>\<rightarrow>* s` `s -\<tau>\<rightarrow> s'` have "S -\<tau>\<rightarrow>* s'" ..
       ultimately have "\<exists>s''. s' -\<tau>\<rightarrow>* s'' \<and> (\<forall>s'''. \<not> s'' -\<tau>\<rightarrow> s''')" by(rule IH)
       then obtain s'' where "s' -\<tau>\<rightarrow>* s''" "\<forall>s'''. \<not> s'' -\<tau>\<rightarrow> s'''" by blast

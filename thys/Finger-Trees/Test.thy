@@ -1,5 +1,5 @@
 theory Test
-imports "~~/src/HOL/Library/Efficient_Nat" FingerTree
+imports "~~/src/HOL/Library/Code_Target_Numeral" FingerTree
 begin
   text {*
     Test code generation, to early detect problems with code generator.
@@ -83,14 +83,16 @@ export_code
   in OCaml file -
   in SML file -
 
-ML {*
-  val t1 = @{code fti_toTree} [("a",1),("b",2),("c",3)];
-  val t2 = @{code fti_toTree} [("d",1),("e",2),("f",3)];
+ML_val {*
+  val t1 = @{code fti_toTree}
+    [("a", @{code nat_of_integer} 1), ("b", @{code nat_of_integer} 2), ("c", @{code nat_of_integer} 3)];
+  val t2 = @{code fti_toTree}
+    [("d", @{code nat_of_integer} 1), ("e", @{code nat_of_integer} 2), ("f", @{code nat_of_integer} 3)];
   val t3 = @{code fti_app} t1 t2;
   val t3 = @{code fti_app} t3 (@{code fti_empty} ());
 
-  val t4 = @{code fti_lcons} ("g",7) t3;
-  val t4 = @{code fti_rcons} t3 ("g",7);
+  val t4 = @{code fti_lcons} ("g", @{code nat_of_integer} 7) t3;
+  val t4 = @{code fti_rcons} t3 ("g", @{code nat_of_integer} 7);
   @{code fti_toList} t4;
   @{code fti_annot} t4;
   @{code fti_viewL} t4;
@@ -103,11 +105,12 @@ ML {*
   @{code fti_isEmpty} t4;
   @{code fti_isEmpty} (@{code fti_empty} ());
 
-  val (tl,(e,tr)) = @{code fti_splitTree} (fn a => a>=10) 0 t4;
+  val (tl,(e,tr)) = @{code fti_splitTree} (fn a => @{code integer_of_nat} a >= 10) (@{code nat_of_integer} 0) t4;
   @{code fti_toList} tl; e; @{code fti_toList} tr;
 
-  @{code fti_foldl} (fn s => fn (_,a) => s+a) 0 t4;
-  @{code fti_foldr} (fn (_,a) => fn s => s+a) t4 0;
+  @{code fti_foldl} (fn s => fn (_, a) => s + @{code integer_of_nat} a) 0 t4;
+  @{code fti_foldr} (fn (_, a) => fn s => s + @{code integer_of_nat} a) t4 0;
 *}
 
 end
+

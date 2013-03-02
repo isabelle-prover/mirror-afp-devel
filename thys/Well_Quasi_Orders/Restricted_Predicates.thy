@@ -246,6 +246,11 @@ lemma po_on_converse_simp [simp]:
   "po_on P\<inverse>\<inverse> A \<longleftrightarrow> po_on P A"
   by (simp add: po_on_def)
 
+lemma po_on_imp_qo_on:
+  "po_on P A \<Longrightarrow> qo_on (P\<^sup>=\<^sup>=) A"
+  unfolding po_on_def qo_on_def
+  by (metis reflp_on_reflclp transp_on_imp_transp_on_reflclp)
+
 lemma po_on_imp_irreflp_on:
   "po_on P A \<Longrightarrow> irreflp_on P A"
   by (auto simp: po_on_def)
@@ -665,6 +670,28 @@ qed
 lemma tranclp_stepfun_conv:
   "P\<^sup>+\<^sup>+ x y \<longleftrightarrow> (\<exists>f n. f 0 = x \<and> f (Suc n) = y \<and> (\<forall>i\<le>n. P (f i) (f (Suc i))))"
   using tranclp_imp_stepfun and stepfun_imp_tranclp by metis
+
+
+subsection {*Facts about predecessor sets.*}
+
+lemma qo_on_predecessor_subset_conv':
+  assumes "qo_on P A" and "B \<subseteq> A" and "C \<subseteq> A"
+  shows "{x\<in>A. \<exists>y\<in>B. P x y} \<subseteq> {x\<in>A. \<exists>y\<in>C. P x y} \<longleftrightarrow> (\<forall>x\<in>B. \<exists>y\<in>C. P x y)"
+  using assms
+  by (auto simp: subset_eq qo_on_def reflp_on_def, unfold transp_on_def) metis+
+
+lemma qo_on_predecessor_subset_conv:
+  "\<lbrakk>qo_on P A; x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> {z\<in>A. P z x} \<subseteq> {z\<in>A. P z y} \<longleftrightarrow> P x y"
+  using qo_on_predecessor_subset_conv' [of P A "{x}" "{y}"] by simp
+
+lemma po_on_predecessors_eq_conv:
+  assumes "po_on P A" and "x \<in> A" and "y \<in> A"
+  shows "{z\<in>A. P\<^sup>=\<^sup>= z x} = {z\<in>A. P\<^sup>=\<^sup>= z y} \<longleftrightarrow> x = y"
+  using assms(2-)
+    and reflp_on_reflclp [of P A]
+    and po_on_imp_antisymp_on [OF `po_on P A`]
+    unfolding antisymp_on_def reflp_on_def
+    by blast
 
 end
 

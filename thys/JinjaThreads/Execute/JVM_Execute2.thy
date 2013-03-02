@@ -330,8 +330,8 @@ apply(rule JVM_rnd.random_scheduler_scheduler)
 apply(rule sc_exec_deterministic[OF assms])
 done
 
-ML {* @{code exec_JVM_rr} *}
+ML_val {* @{code exec_JVM_rr} *}
 
-ML {* @{code exec_JVM_rnd} *}
+ML_val {* @{code exec_JVM_rnd} *}
 
 end

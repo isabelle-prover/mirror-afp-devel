@@ -8,7 +8,7 @@ header {* \isaheader{Code Generation For BigStep} *}
 theory execute_Bigstep
 imports
   BigStep Examples
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 inductive map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"
@@ -172,22 +172,21 @@ definition "V = ''V''"
 definition "C = ''C''"
 definition "F = ''F''"
 
-ML {*
-  val SOME ((@{code Val} (@{code Intg} 5), _), _) = Predicate.yield @{code test1};
-  val SOME ((@{code Val} (@{code Intg} 11), _), _) = Predicate.yield @{code test2};
-  val SOME ((@{code Val} (@{code Intg} 83), _), _) = Predicate.yield @{code test3};
+ML_val {*
+  val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 5)), _), _) = Predicate.yield @{code test1};
+  val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 11)), _), _) = Predicate.yield @{code test2};
+  val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 83)), _), _) = Predicate.yield @{code test3};
 
   val SOME ((_, (_, l)), _) = Predicate.yield @{code test4};
-  val SOME (@{code Intg} 6) = l @{code V};
+  val SOME (@{code Intg} (@{code int_of_integer} 6)) = l @{code V};
 
   val SOME ((_, (h, _)), _) = Predicate.yield @{code test5};
-  val SOME (c, fs) = h 1;
-  val SOME (obj, _) = h 0;
+  val SOME (c, fs) = h (@{code nat_of_integer} 1);
+  val SOME (obj, _) = h (@{code nat_of_integer} 0);
   val SOME (@{code Intg} i) = fs (@{code F}, @{code C});
-  if c = @{code C} andalso obj = @{code Object} andalso i = 42 
-    then () else error "";
+  @{assert} (c = @{code C} andalso obj = @{code Object} andalso i = @{code int_of_integer} 42);
 
-  val SOME ((@{code Val} (@{code Intg} 160), _), _) = Predicate.yield @{code test6};
+  val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 160)), _), _) = Predicate.yield @{code test6};
 *}
 
 definition "test7 = [classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -195,26 +194,25 @@ definition "test7 = [classObject, classL] \<turnstile> \<langle>testExpr_BuildLi
 definition "L = ''L''"
 definition "N = ''N''"
 
-ML {*
+ML_val {*
   val SOME ((_, (h, _)), _) = Predicate.yield @{code test7};
-  val SOME (_, fs1) = h 0;
-  val SOME (_, fs2) = h 1;
-  val SOME (_, fs3) = h 2;
-  val SOME (_, fs4) = h 3;
+  val SOME (_, fs1) = h (@{code nat_of_integer} 0);
+  val SOME (_, fs2) = h (@{code nat_of_integer} 1);
+  val SOME (_, fs3) = h (@{code nat_of_integer} 2);
+  val SOME (_, fs4) = h (@{code nat_of_integer} 3);
 
   val F = @{code "F"};
   val L = @{code "L"};
   val N = @{code "N"};
-  
-  if fs1 (F, L) = SOME (@{code Intg} 1) andalso
-     fs1 (N, L) = SOME (@{code Addr} 1) andalso
-     fs2 (F, L) = SOME (@{code Intg} 2) andalso
-     fs2 (N, L) = SOME (@{code Addr} 2) andalso
-     fs3 (F, L) = SOME (@{code Intg} 3) andalso
-     fs3 (N, L) = SOME (@{code Addr} 3) andalso
-     fs4 (F, L) = SOME (@{code Intg} 4) andalso
-     fs4 (N, L) = SOME @{code Null}
-  then () else error "";
+
+  @{assert} (fs1 (F, L) = SOME (@{code Intg} (@{code int_of_integer} 1)) andalso
+     fs1 (N, L) = SOME (@{code Addr} (@{code nat_of_integer} 1)) andalso
+     fs2 (F, L) = SOME (@{code Intg} (@{code int_of_integer} 2)) andalso
+     fs2 (N, L) = SOME (@{code Addr} (@{code nat_of_integer} 2)) andalso
+     fs3 (F, L) = SOME (@{code Intg} (@{code int_of_integer} 3)) andalso
+     fs3 (N, L) = SOME (@{code Addr} (@{code nat_of_integer} 3)) andalso
+     fs4 (F, L) = SOME (@{code Intg} (@{code int_of_integer} 4)) andalso
+     fs4 (N, L) = SOME @{code Null});
 *}
 
 definition "test8 = [classObject, classA] \<turnstile> \<langle>testExpr_ClassA, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -222,20 +220,20 @@ definition "i = ''int''"
 definition "t = ''test''"
 definition "A = ''A''"
 
-ML {*
+ML_val {*
   val SOME ((_, (h, l)), _) = Predicate.yield @{code test8};
-  val SOME (_, fs1) = h 0;
-  val SOME (_, fs2) = h 1;
+  val SOME (_, fs1) = h (@{code nat_of_integer} 0);
+  val SOME (_, fs2) = h (@{code nat_of_integer} 1);
 
   val i = @{code "i"};
   val t = @{code "t"};
   val A = @{code "A"};
 
-  if fs1 (i, A) = SOME (@{code Intg} 10) andalso 
+  @{assert} (fs1 (i, A) = SOME (@{code Intg} (@{code int_of_integer} 10)) andalso 
      fs1 (t, A) = SOME @{code Null} andalso
-     fs2 (i, A) = SOME (@{code Intg} 50) andalso 
-     fs2 (t, A) = SOME @{code Null}
-  then () else error "";
+     fs2 (i, A) = SOME (@{code Intg} (@{code int_of_integer} 50)) andalso 
+     fs2 (t, A) = SOME @{code Null});
 *}
 
 end
+

@@ -1,7 +1,7 @@
 session RSAPSS (AFP) = HOL +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Old_Number_Theory/Primes"
     Word  (* local, not HOL-Word! *)
   theories

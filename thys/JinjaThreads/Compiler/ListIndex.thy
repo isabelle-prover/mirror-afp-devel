@@ -203,16 +203,16 @@ proof -
       case True
       with `[x # xs [\<mapsto>] ys] V = Some v` `length xs \<le> length Ys` `ys = y # Ys`
       have "[xs [\<mapsto>] Ys] V = Some v"
-	apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: split_if_asm)
-	apply(clarsimp simp add: in_set_conv_decomp)
-	apply(erule_tac x="length ys" in allE)
-	by(simp)
+        apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: split_if_asm)
+        apply(clarsimp simp add: in_set_conv_decomp)
+        apply(erule_tac x="length ys" in allE)
+        by(simp)
       with IH[OF this `length xs \<le> length Ys` True] `ys = y # Ys` True
       show ?thesis by(simp)
     next
       case False with `V \<in> set (x # xs)` have "x = V" by auto
       with False `[x # xs [\<mapsto>] ys] V = Some v` `ys = y # Ys` have "y = v"
-	by(auto)
+        by(auto)
       with False `x = V` `ys = y # Ys` 
       show ?thesis by(simp)
     qed

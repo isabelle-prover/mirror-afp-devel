@@ -40,7 +40,7 @@ proof
     { fix w z
       have "dist w z \<le> dist z w"
       proof -
-	from triangle [of w z z] show "dist w z \<le> dist z w" by simp
+        from triangle [of w z z] show "dist w z \<le> dist z w" by simp
       qed }
     hence "dist x y \<le> dist y x" and "dist y x \<le> dist x y" by simp+
     thus "dist x y = dist y x" by simp

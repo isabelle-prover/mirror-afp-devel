@@ -11,9 +11,9 @@ imports
   "../BV/BCVExec"
   "../Compiler/Compiler"
   "../../Coinductive/Lazy_TLList"
-  "~~/src/HOL/Library/Code_Integer"
+  "~~/src/HOL/Library/Code_Target_Int"
   "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 hide_const (open) Multiset.join

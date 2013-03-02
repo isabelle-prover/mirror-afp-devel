@@ -538,70 +538,70 @@ proof -
       fix t'' l
       assume "?ts' t'' = None"
       hence "ts t'' = None"
-	by(auto split: split_if_asm intro: redT_updTs_None)
+        by(auto split: split_if_asm intro: redT_updTs_None)
       with loes have "has_locks (ls $ l) t'' = 0"
-	by(auto dest: lock_okD1)
+        by(auto dest: lock_okD1)
       moreover from `?ts' t'' = None` 
       have "t \<noteq> t''" by(simp split: split_if_asm)
       ultimately show "has_locks (ls' $ l) t'' = 0"
-	by(simp add: red_mthr.redT_has_locks_inv[OF redT])
+        by(simp add: red_mthr.redT_has_locks_inv[OF redT])
     next
       fix t'' e'' x'' l ln''
       assume ts't'': "?ts' t'' = \<lfloor>((e'', x''), ln'')\<rfloor>"
       with aoes' have aoe'': "sync_ok e''" by(auto dest: ts_okD)
       show "has_locks (ls' $ l) t'' + ln'' $ l = expr_locks e'' l"
       proof(cases "t = t''")
-	case True
-	note tt'' = `t = t''`
-	with ts't'' have  e'': "e'' = e'" and x'': "x'' = x'"
-	  and ln'': "ln'' = redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" by auto
-	have "ls_els_ok ls t no_wait_locks (int o expr_locks e)"
-	proof(rule ls_els_okI)
-	  fix l
-	  note lock_okD2[OF loes, OF est]
-	  thus "lock_expr_locks_ok (ls $ l) t (no_wait_locks $ l) ((int \<circ> expr_locks e) l)"
-	    by(simp add: lock_expr_locks_ok_def)
-	qed
-	hence "ls_els_ok (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) t (redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) (upd_expr_locks (int o expr_locks e) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)"
-	  by(rule redT_updLs_upd_expr_locks_preserves_ls_els_ok[OF _ lota])
-	hence "ls_els_ok (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) t (redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) (int o expr_locks e')"
-	  by(simp only: red_update_expr_locks[OF wf P aoe])
-	thus ?thesis using ls' e'' tt'' ln''
-	  by(auto dest: ls_els_okD[where l = l] simp: lock_expr_locks_ok_def)
+        case True
+        note tt'' = `t = t''`
+        with ts't'' have  e'': "e'' = e'" and x'': "x'' = x'"
+          and ln'': "ln'' = redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" by auto
+        have "ls_els_ok ls t no_wait_locks (int o expr_locks e)"
+        proof(rule ls_els_okI)
+          fix l
+          note lock_okD2[OF loes, OF est]
+          thus "lock_expr_locks_ok (ls $ l) t (no_wait_locks $ l) ((int \<circ> expr_locks e) l)"
+            by(simp add: lock_expr_locks_ok_def)
+        qed
+        hence "ls_els_ok (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) t (redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) (upd_expr_locks (int o expr_locks e) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)"
+          by(rule redT_updLs_upd_expr_locks_preserves_ls_els_ok[OF _ lota])
+        hence "ls_els_ok (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) t (redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) (int o expr_locks e')"
+          by(simp only: red_update_expr_locks[OF wf P aoe])
+        thus ?thesis using ls' e'' tt'' ln''
+          by(auto dest: ls_els_okD[where l = l] simp: lock_expr_locks_ok_def)
       next
-	case False
-	note tt'' = `t \<noteq> t''`
-	from lota have lao: "lock_actions_ok (ls $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)"
-	  by(simp add: lock_ok_las_def)
-	show ?thesis
-	proof(cases "ts t''")
-	  case None
-	  with est ts't'' tt'' cctta
-	  obtain m where "NewThread t'' (e'', x'') m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" and ln'': "ln'' = no_wait_locks"
-	    by(auto dest: redT_updTs_new_thread)
-	  moreover with P have "m' = m" by(auto dest: red_new_thread_heap)
-	  ultimately have "NewThread t'' (e'', x'') m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by simp
-	  with wf P ln'' have "expr_locks e'' = (\<lambda>ad. 0)"
-	    by -(rule expr_locks_new_thread)
-	  hence elel: "expr_locks e'' l = 0" by simp
-	  from loes None  have "has_locks (ls $ l) t'' = 0"
-	    by(auto dest: lock_okD1)
-	  moreover note lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]]
-	  ultimately have "has_locks (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l) t'' = 0"
-	    by(auto simp add: fun_eq_iff)
-	  with elel ls' ln'' show ?thesis by(auto)
-	next
-	  case (Some a)
-	  then obtain E X LN where est'': "ts t'' = \<lfloor>((E, X), LN)\<rfloor>" by(cases a, auto)
-	  with loes have IH: "has_locks (ls $ l) t'' + LN $ l = expr_locks E l"
-	    by(auto dest: lock_okD2)
-	  from est est'' tt'' cctta have "?ts' t'' = \<lfloor>((E, X), LN)\<rfloor>"
+        case False
+        note tt'' = `t \<noteq> t''`
+        from lota have lao: "lock_actions_ok (ls $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)"
+          by(simp add: lock_ok_las_def)
+        show ?thesis
+        proof(cases "ts t''")
+          case None
+          with est ts't'' tt'' cctta
+          obtain m where "NewThread t'' (e'', x'') m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" and ln'': "ln'' = no_wait_locks"
+            by(auto dest: redT_updTs_new_thread)
+          moreover with P have "m' = m" by(auto dest: red_new_thread_heap)
+          ultimately have "NewThread t'' (e'', x'') m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by simp
+          with wf P ln'' have "expr_locks e'' = (\<lambda>ad. 0)"
+            by -(rule expr_locks_new_thread)
+          hence elel: "expr_locks e'' l = 0" by simp
+          from loes None  have "has_locks (ls $ l) t'' = 0"
+            by(auto dest: lock_okD1)
+          moreover note lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]]
+          ultimately have "has_locks (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l) t'' = 0"
+            by(auto simp add: fun_eq_iff)
+          with elel ls' ln'' show ?thesis by(auto)
+        next
+          case (Some a)
+          then obtain E X LN where est'': "ts t'' = \<lfloor>((E, X), LN)\<rfloor>" by(cases a, auto)
+          with loes have IH: "has_locks (ls $ l) t'' + LN $ l = expr_locks E l"
+            by(auto dest: lock_okD2)
+          from est est'' tt'' cctta have "?ts' t'' = \<lfloor>((E, X), LN)\<rfloor>"
             by(simp)(rule redT_updTs_Some, simp_all)
-	  with ts't'' have e'': "E = e''" and x'': "X = x''"
-	    and ln'': "ln'' = LN" by(simp_all)
-	  with lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]] IH ls'
-	  show ?thesis by(clarsimp simp add: redT_updLs_def fun_eq_iff)
-	qed
+          with ts't'' have e'': "E = e''" and x'': "X = x''"
+            and ln'': "ln'' = LN" by(simp_all)
+          with lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]] IH ls'
+          show ?thesis by(clarsimp simp add: redT_updLs_def fun_eq_iff)
+        qed
       qed
     qed
     with s' show ?thesis by simp
@@ -621,62 +621,62 @@ proof -
       fix t'' l
       assume rtutes: "ts' t'' = None"
       with ts' have tst'': "ts t'' = None"
-	by(simp split: split_if_asm)
+        by(simp split: split_if_asm)
       with tst have tt'': "t \<noteq> t''" by auto
       from tst'' loes have "has_locks (ls $ l) t'' = 0"
-	by(auto dest: lock_okD1)
+        by(auto dest: lock_okD1)
       thus "has_locks (ls' $ l) t'' = 0"
-	by(simp add: red_mthr.redT_has_locks_inv[OF redT tt''])
+        by(simp add: red_mthr.redT_has_locks_inv[OF redT tt''])
     next
       fix t'' e'' x'' ln'' l
       assume ts't'': "ts' t'' = \<lfloor>((e'', x''), ln'')\<rfloor>"
       show "has_locks (ls' $ l) t'' + ln'' $ l = expr_locks e'' l"
       proof(cases "t = t''")
-	case True
-	note [simp] = this
-	with ts't'' ts' tst
-	have [simp]: "ln'' = no_wait_locks" "e = e''" by auto
-	from tst loes have "has_locks (ls $ l) t + ln $ l = expr_locks e l"
-	  by(auto dest: lock_okD2)
-	show ?thesis
-	proof(cases "ln $ l > 0")
-	  case True
-	  with `may_acquire_all ls t ln` ls' have "may_lock (ls $ l) t"
-	    by(auto elim: may_acquire_allE)
-	  with ls'
-	  have "has_locks (ls' $ l) t = has_locks (ls $ l) t + ln $ l"
-	    by(simp add: has_locks_acquire_locks_conv)
-	  with `has_locks (ls $ l) t + ln $ l = expr_locks e l`
-	  show ?thesis by(simp)
-	next
-	  case False
-	  hence "ln $ l = 0" by simp
-	  with ls' have "has_locks (ls' $ l) t = has_locks (ls $ l) t"
-	    by(simp)
-	  with `has_locks (ls $ l) t + ln $ l = expr_locks e l` `ln $ l = 0`
-	  show ?thesis by(simp)
-	qed
+        case True
+        note [simp] = this
+        with ts't'' ts' tst
+        have [simp]: "ln'' = no_wait_locks" "e = e''" by auto
+        from tst loes have "has_locks (ls $ l) t + ln $ l = expr_locks e l"
+          by(auto dest: lock_okD2)
+        show ?thesis
+        proof(cases "ln $ l > 0")
+          case True
+          with `may_acquire_all ls t ln` ls' have "may_lock (ls $ l) t"
+            by(auto elim: may_acquire_allE)
+          with ls'
+          have "has_locks (ls' $ l) t = has_locks (ls $ l) t + ln $ l"
+            by(simp add: has_locks_acquire_locks_conv)
+          with `has_locks (ls $ l) t + ln $ l = expr_locks e l`
+          show ?thesis by(simp)
+        next
+          case False
+          hence "ln $ l = 0" by simp
+          with ls' have "has_locks (ls' $ l) t = has_locks (ls $ l) t"
+            by(simp)
+          with `has_locks (ls $ l) t + ln $ l = expr_locks e l` `ln $ l = 0`
+          show ?thesis by(simp)
+        qed
       next
-	case False
-	with ts' ts't'' have tst'': "ts t'' = \<lfloor>((e'', x''), ln'')\<rfloor>" by(simp)
-	with loes have "has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l"
-	  by(auto dest: lock_okD2)
-	show ?thesis
-	proof(cases "ln $ l > 0")
-	  case False
-	  with `t \<noteq> t''` ls'
-	  have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''" by(simp)
-	  with `has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l`
-	  show ?thesis by(simp)
-	next
-	  case True
-	  with `may_acquire_all ls t ln` have "may_lock (ls $ l) t"
-	    by(auto elim: may_acquire_allE)
-	  with ls' `t \<noteq> t''` have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''"
-	    by(simp add: has_locks_acquire_locks_conv')
-	  with ls' `has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l`
-	  show ?thesis by(simp)
-	qed
+        case False
+        with ts' ts't'' have tst'': "ts t'' = \<lfloor>((e'', x''), ln'')\<rfloor>" by(simp)
+        with loes have "has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l"
+          by(auto dest: lock_okD2)
+        show ?thesis
+        proof(cases "ln $ l > 0")
+          case False
+          with `t \<noteq> t''` ls'
+          have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''" by(simp)
+          with `has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l`
+          show ?thesis by(simp)
+        next
+          case True
+          with `may_acquire_all ls t ln` have "may_lock (ls $ l) t"
+            by(auto elim: may_acquire_allE)
+          with ls' `t \<noteq> t''` have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''"
+            by(simp add: has_locks_acquire_locks_conv')
+          with ls' `has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l`
+          show ?thesis by(simp)
+        qed
       qed
     qed
   qed

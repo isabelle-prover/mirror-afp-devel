@@ -1,11 +1,11 @@
 session PCF (AFP) = HOLCF +
-  options [timeout = 600, document_graph]
-  theories [document = false, show_question_marks = false]
+  options [timeout = 600, document_graph, show_question_marks = false]
+  theories [document = false]
     "~~/src/HOL/HOLCF/HOLCF"
-    "~~/src/HOL/Library/Product_Lattice"
+    "~~/src/HOL/Library/Product_Order"
     Dual_Lattice
     Basis
-  theories [show_question_marks = false]
+  theories
     Logical_Relations
     PCF
     OpSem

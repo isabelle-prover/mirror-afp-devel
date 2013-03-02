@@ -505,7 +505,7 @@ abstract =
 
 [FinFun]
 title = Code Generation for Functions as Data 
-author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2009-05-06
 topic = Computer Science/Data Structures
 abstract = <b>FinFun is now part of the Isabelle distribution. The entry is kept for archival; maintained but not developed further. Use the Isabelle distribution version instead.</b><p>FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.</p>
@@ -524,7 +524,7 @@ extra-history =
 
 [Collections]
 title = Collections Framework
-author = Peter Lammich <mailto:peter.lammich@in.tum.de>, Andreas Lochbihler, Thomas Tuerk
+author = Peter Lammich <mailto:peter.lammich@in.tum.de>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
@@ -618,7 +618,7 @@ abstract = Huffman's algorithm is a procedure for constructing a binary tree wit
 [Coinductive]
 title = Coinductive
 topic = Computer Science/Functional Programming
-author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2010-02-12
 base = HOL/HOL-Library
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
@@ -699,7 +699,7 @@ abstract = We introduce Jinja, a Java-like programming language with a formal se
 
 [JinjaThreads]
 title = Jinja with Threads
-author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2007-12-03
 base = HOL/HOL-Word
 topic = Computer Science/Programming Languages/Language Definitions
@@ -897,11 +897,11 @@ abstract =
  semirings, and expand them by axiomatisations of the Kleene star for
  finite iteration and an omega operation for infinite iteration. We
  show that powersets over a given monoid, (regular) languages, sets of
- paths in a graph, sets of computation traces, and binary relations form
- Kleene algebras, and consider further models based on lattices,
- max-plus semirings and min-plus semirings. We also demonstrate that
- dioids are closed under the formation of matrices and formal power
- series (proofs for Kleene algebras remain to be completed).
+ paths in a graph, sets of computation traces, binary relations and
+ formal power series form Kleene algebras, and consider further models
+ based on lattices, max-plus semirings and min-plus semirings. We also
+ demonstrate that dioids are closed under the formation of matrices
+ (proofs for Kleene algebras remain to be completed).
  <p>
  On the one hand we have aimed at a reference formalisation of variants
  of Kleene algebras that covers a wide range of variants and the core

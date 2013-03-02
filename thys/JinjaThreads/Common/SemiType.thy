@@ -315,24 +315,24 @@ proof -
       case True
       have BNTthesis: "\<And>B. \<lbrakk> B \<in> (M \<inter> types P) - {NT} \<rbrakk> \<Longrightarrow> ?thesis"
       proof -
-	fix B
-	assume BM: "B \<in> M \<inter> types P - {NT}"
-	from wfw1t[OF BM] obtain z
-	  where zM: "z \<in> M"
-	  and znnt: "z \<noteq> NT"
+        fix B
+        assume BM: "B \<in> M \<inter> types P - {NT}"
+        from wfw1t[OF BM] obtain z
+          where zM: "z \<in> M"
+          and znnt: "z \<noteq> NT"
           and itz: "is_type P z"
-	  and y: "\<And>y. (y, z) \<in> ((widen1 P)\<inverse>)\<^sup>+ \<Longrightarrow> y \<notin> M \<inter> types P - {NT}" by blast
-	show "?thesis B"
-	proof(rule bexI[OF _ zM], rule allI, rule impI)
-	  fix y
-	  assume "(y, z) \<in> {(y, T). is_type P T \<and> is_type P y \<and> widen P T y \<and> T \<noteq> y}"
-	  hence Pzy: "P \<turnstile> z \<le> y" and zy: "z \<noteq> y" and "is_type P y" by auto
-	  hence "P \<turnstile> z <\<^sup>+ y" using znnt itz
+          and y: "\<And>y. (y, z) \<in> ((widen1 P)\<inverse>)\<^sup>+ \<Longrightarrow> y \<notin> M \<inter> types P - {NT}" by blast
+        show "?thesis B"
+        proof(rule bexI[OF _ zM], rule allI, rule impI)
+          fix y
+          assume "(y, z) \<in> {(y, T). is_type P T \<and> is_type P y \<and> widen P T y \<and> T \<noteq> y}"
+          hence Pzy: "P \<turnstile> z \<le> y" and zy: "z \<noteq> y" and "is_type P y" by auto
+          hence "P \<turnstile> z <\<^sup>+ y" using znnt itz
             by -(rule widen_into_widen1_trancl[OF wfP])
-	  hence ynM: "y \<notin> M \<inter> types P - {NT}"
-	    by -(rule y, simp add: trancl_converse)
+          hence ynM: "y \<notin> M \<inter> types P - {NT}"
+            by -(rule y, simp add: trancl_converse)
           thus "y \<notin> M" using Pzy znnt `is_type P y` by auto
-	qed
+        qed
       qed
       from True show ?thesis by(fastforce intro: BNTthesis)
     next
@@ -407,54 +407,54 @@ proof -
       case True
       hence "exec_lub (widen1 P) (super P) A B = Class Object"
       proof(rule disjE)
-	assume A: "A = Class Object"
-	moreover
-	from BObject BNT itB have "P \<turnstile> B <\<^sup>* Class Object"
-	  by(cases "B = Class Object")(auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
-	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
-	  by(auto intro: is_ubI)
-	hence "is_lub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
-	  by(auto simp add: is_lub_def dest: is_ubD)
-	with acyclic_widen1[OF wf]
-	have "exec_lub (widen1 P) (super P) (Class Object) B = Class Object"
-	  by(auto intro: exec_lub_conv superI)
-	ultimately show "exec_lub (widen1 P) (super P) A B = Class Object" by simp
+        assume A: "A = Class Object"
+        moreover
+        from BObject BNT itB have "P \<turnstile> B <\<^sup>* Class Object"
+          by(cases "B = Class Object")(auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
+        hence "is_ub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
+          by(auto intro: is_ubI)
+        hence "is_lub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
+          by(auto simp add: is_lub_def dest: is_ubD)
+        with acyclic_widen1[OF wf]
+        have "exec_lub (widen1 P) (super P) (Class Object) B = Class Object"
+          by(auto intro: exec_lub_conv superI)
+        ultimately show "exec_lub (widen1 P) (super P) A B = Class Object" by simp
       next
-	assume B: "B = Class Object"
-	moreover
-	from AObject ANT itA
-	have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
-	  by(cases "A = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
-	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
-	  by(auto intro: is_ubI)
-	hence "is_lub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
-	  by(auto simp add: is_lub_def dest: is_ubD)
-	with acyclic_widen1[OF wf]
-	have "exec_lub (widen1 P) (super P) A (Class Object) = Class Object"
-	  by(auto intro: exec_lub_conv superI)
-	ultimately show "exec_lub (widen1 P) (super P) A B = Class Object" by simp
+        assume B: "B = Class Object"
+        moreover
+        from AObject ANT itA
+        have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
+          by(cases "A = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wf])
+        hence "is_ub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
+          by(auto intro: is_ubI)
+        hence "is_lub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
+          by(auto simp add: is_lub_def dest: is_ubD)
+        with acyclic_widen1[OF wf]
+        have "exec_lub (widen1 P) (super P) A (Class Object) = Class Object"
+          by(auto intro: exec_lub_conv superI)
+        ultimately show "exec_lub (widen1 P) (super P) A B = Class Object" by simp
       qed
       with wf show ?thesis by(simp)
     next
       case False
       hence AnObject: "A \<noteq> Class Object"
-	and BnObject: "B \<noteq> Class Object" by auto
+        and BnObject: "B \<noteq> Class Object" by auto
       from widen_into_widen1_trancl[OF wf AObject AnObject ANT itA]
       have "P \<turnstile> A <\<^sup>* Class Object" by(rule trancl_into_rtrancl)
       moreover from widen_into_widen1_trancl[OF wf BObject BnObject BNT itB]
       have "P \<turnstile> B <\<^sup>* Class Object" by(rule trancl_into_rtrancl)
       ultimately have "is_lub ((widen1 P)\<^sup>*) A B (exec_lub (widen1 P) (super P) A B)"
-	by(rule is_lub_exec_lub[OF single_valued_widen1[OF wf] acyclic_widen1[OF wf]])(auto intro: superI)
+        by(rule is_lub_exec_lub[OF single_valued_widen1[OF wf] acyclic_widen1[OF wf]])(auto intro: superI)
       hence Aew1: "P \<turnstile> A <\<^sup>* exec_lub (widen1 P) (super P) A B"
-	by(auto simp add: is_lub_def dest!: is_ubD)
+        by(auto simp add: is_lub_def dest!: is_ubD)
       thus ?thesis
       proof(rule rtranclE)
-	assume "A = exec_lub (widen1 P) (super P) A B"
-	with itA show ?thesis by simp
+        assume "A = exec_lub (widen1 P) (super P) A B"
+        with itA show ?thesis by simp
       next
-	fix A'
-	assume "P \<turnstile> A' <\<^sup>1 exec_lub (widen1 P) (super P) A B"
-	thus ?thesis by(rule widen1_is_type[OF wf])
+        fix A'
+        assume "P \<turnstile> A' <\<^sup>1 exec_lub (widen1 P) (super P) A B"
+        thus ?thesis by(rule widen1_is_type[OF wf])
       qed
     qed }
   with is_class_Object[OF wf] sup itA itB show ?thesis unfolding sup_def

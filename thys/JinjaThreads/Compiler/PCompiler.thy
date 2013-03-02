@@ -314,8 +314,8 @@ proof -
       assume mset': "m \<in> set ms'"
       obtain M Ts T body' where m: "m = (M, Ts, T, body')" by(cases m)
       with mset' ms' obtain body where mf: "body' = Option.map (f C M Ts T) body"
-	and mset: "(M, Ts, T, body) \<in> set ms"
-	by(clarsimp simp add: image_iff compM_def)
+        and mset: "(M, Ts, T, body) \<in> set ms"
+        by(clarsimp simp add: image_iff compM_def)
       from wf1 CObj mset
       have "wf_overriding P D (M, Ts, T, body)" by(auto simp add: wf_cdecl_def simp del: wf_overriding.simps)
       hence "wf_overriding (compP f P) D m" unfolding m mf

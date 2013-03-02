@@ -53,15 +53,15 @@ proof(cases)
     proof cases
       case (red0Red xs')
       hence [simp]: "es' = es"
-	and red: "extTA2J0 P,P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>" by auto
+        and red: "extTA2J0 P,P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>" by auto
       from red_fv_subset[OF wf red] fv have "fv e' = {}" by auto
       with fv show ?thesis by simp
     next
       case (red0Call a M vs U Ts T pns body D)
       hence [simp]: "ta = \<epsilon>"
-	"e' = blocks (this # pns) (Class D # Ts) (Addr a # vs) body"
-	"es' = e # es" "h' = h"
-	and sees: "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
+        "e' = blocks (this # pns) (Class D # Ts) (Addr a # vs) body"
+        "es' = e # es" "h' = h"
+        and sees: "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
       from sees_wf_mdecl[OF wf sees]
       have "fv body \<subseteq> insert this (set pns)" "length Ts = length pns" by(simp_all add: wf_mdecl_def)
       thus ?thesis using fv `length vs = length pns` by auto
@@ -602,11 +602,11 @@ next
     with red1 have "\<tau>Red0t P t h1 (e, es) (?e, e' # es')" by(rule rtranclp_into_tranclp1)
     moreover {
       from `P,t \<turnstile>0 \<langle>e'/es',h1\<rangle> -\<epsilon>\<rightarrow> \<langle>?e/e' # es',h1\<rangle>` have "wf_state (?e, e' # es')"
-	using wf_state' by(rule red0_preserves_wf_state[OF wf])
+        using wf_state' by(rule red0_preserves_wf_state[OF wf])
       moreover from is_call_red_inline_callD[OF sees red' call] ha
       have "E' = inline_call ?e e'" by auto
       ultimately have "bisim_red_red0 s1' ((?e, e' # es'), h1')" unfolding s1' e1' x1'
-	by(auto del: wf_state.cases wf_state.intros) }
+        by(auto del: wf_state.cases wf_state.intros) }
     moreover from red' call notsynth have "h1 = h1'"
       by(auto dest: is_call_red_state_unchanged)
     ultimately show ?thesis unfolding heap x1' x1 s2 s1' `h1' = h1`

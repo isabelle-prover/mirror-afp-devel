@@ -7,7 +7,7 @@ session Collections (AFP) = HOL +
     "common/RBT_add"
     "common/Dlist_add"
     "common/Array"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Library/While_Combinator"
     "../Binomial-Heaps/BinomialHeap"
     "../Binomial-Heaps/SkewBinomialHeap"
@@ -50,9 +50,10 @@ session Collections (AFP) = HOL +
     "gen_algo/StdInst"
 
   theories
-    (* Examples *)
     Collections
     Userguide
+
+    (* Examples *)
     "examples/Examples_Chapter"
     "examples/itp_2010"
     "examples/Exploration"

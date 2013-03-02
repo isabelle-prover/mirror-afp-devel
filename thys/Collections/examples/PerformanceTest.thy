@@ -4,7 +4,7 @@
 *)
 header "Tests"
 theory Test
-imports Efficient_Nat Collections
+imports Code_Target_Numeral Collections
 begin
 text_raw {*\label{thy:Test}*}
 
@@ -96,7 +96,7 @@ text {*
 
 (*
   code_module Test file "/dev/stdout" contains test_cg' test_cg''
-  ML {*
+  ML_val {*
     open Test;
 
     val start = Time.now();

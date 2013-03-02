@@ -535,11 +535,11 @@ next
     { assume "V \<in> set Vs"
       hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
       with `bisim (Vs @ [V]) e E' xs` have "unmod E' (index Vs V)"
-	by -(rule hidden_bisim_unmod)
+        by -(rule hidden_bisim_unmod)
       moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
       have "index Vs V < length xs" by(auto intro: index_less_aux)
       ultimately have "xs ! index Vs V = xs' ! index Vs V"
-	using sim_move01_preserves_unmod[OF red'] by(simp) }
+        using sim_move01_preserves_unmod[OF red'] by(simp) }
     moreover from red' have "length xs = length xs'" by(rule sim_move01_preserves_len[symmetric])
     ultimately have rel: "x'(V := x V) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
       using `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `length Vs + max_vars {V:T=vo; e} \<le> length xs`
@@ -553,7 +553,7 @@ next
       case (Some v)
       moreover
       with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v\<rfloor>"
-	by(auto simp add: map_le_def dest: bspec)
+        by(auto simp add: map_le_def dest: bspec)
       moreover
       from `length Vs + max_vars {V:T=vo; e} \<le> length xs` have "length Vs < length xs" by auto
       ultimately have "xs' ! length Vs = v" using `length xs = length xs'` by(simp)
@@ -573,13 +573,13 @@ next
     { assume "V \<in> set Vs"
       hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
       with `bisim (Vs @ [V]) e E' (xs[length Vs := v])` have "unmod E' (index Vs V)"
-	by -(rule hidden_bisim_unmod)
+        by -(rule hidden_bisim_unmod)
       moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
       have "index Vs V < length xs" by(auto intro: index_less_aux)
       moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
       have "(xs[length Vs := v]) ! index Vs V = xs ! index Vs V" by(simp)
       ultimately have "xs ! index Vs V = xs' ! index Vs V"
-	using sim_move01_preserves_unmod[OF red', of "index Vs V"] by(simp) }
+        using sim_move01_preserves_unmod[OF red', of "index Vs V"] by(simp) }
     moreover from red' have "length xs = length xs'" by(auto dest: sim_move01_preserves_len)
     ultimately have rel: "x'(V := x V) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
       using `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `length Vs + max_vars {V:T=vo; e} \<le> length xs`
@@ -605,13 +605,13 @@ next
     { assume "V \<in> set Vs"
       hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
       with `bisim (Vs @ [V]) e E' xs` have "unmod E' (index Vs V)"
-	by -(rule hidden_bisim_unmod)
+        by -(rule hidden_bisim_unmod)
       moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
       have "index Vs V < length xs" by(auto intro: index_less_aux)
       moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
       have "(xs[length Vs := v]) ! index Vs V = xs ! index Vs V" by(simp)
       ultimately have "xs ! index Vs V = xs' ! index Vs V"
-	using sim_move01_preserves_unmod[OF red', of "index Vs V"] by(simp) }
+        using sim_move01_preserves_unmod[OF red', of "index Vs V"] by(simp) }
     moreover from red' have "length xs = length xs'" by(auto dest: sim_move01_preserves_len)
     ultimately have rel: "x'(V := x V) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
       using `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `length Vs + max_vars {V:T=vo; e} \<le> length xs`
@@ -1288,12 +1288,12 @@ next
     { assume "V' \<in> set Vs"
       hence "hidden (Vs @ [V']) (index Vs V')" by(rule hidden_index)
       with `bisim (Vs @ [V']) E e (lcl (h, x))` have "unmod e (index Vs V')"
-	by(auto intro: hidden_bisim_unmod)
+        by(auto intro: hidden_bisim_unmod)
       moreover from `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` `V' \<in> set Vs`
       have "index Vs V' < length x" by(auto intro: index_less_aux)
       ultimately have "x ! index Vs V' = x' ! index Vs V'"
-	using red1_preserves_unmod[OF `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`]
-	by(simp) }
+        using red1_preserves_unmod[OF `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`]
+        by(simp) }
     with `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` 
       `X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']` `length x = length x'` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]`
     have rel: "X'(V' := X V') \<subseteq>\<^sub>m [Vs [\<mapsto>] x']" by(auto intro: Block_lem)
@@ -1321,12 +1321,12 @@ next
     { assume "V' \<in> set Vs"
       hence "hidden (Vs @ [V']) (index Vs V')" by(rule hidden_index)
       with `bisim (Vs @ [V']) E e (lcl (h, x))` have "unmod e (index Vs V')"
-	by(auto intro: hidden_bisim_unmod)
+        by(auto intro: hidden_bisim_unmod)
       moreover from `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` `V' \<in> set Vs`
       have "index Vs V' < length x" by(auto intro: index_less_aux)
       ultimately have "x ! index Vs V' = x' ! index Vs V'"
-	using red1_preserves_unmod[OF `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`]
-	by(simp) }
+        using red1_preserves_unmod[OF `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`]
+        by(simp) }
     with `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` 
       `X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']` `length x = length x'` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]`
     have rel: "X'(V' := X V') \<subseteq>\<^sub>m [Vs [\<mapsto>] x']" by(auto intro: Block_lem)

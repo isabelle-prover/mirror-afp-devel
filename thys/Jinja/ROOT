@@ -3,7 +3,7 @@ session Jinja (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Sublist"
     "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Efficient_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     Jinja
   files

@@ -133,12 +133,12 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
     proof(rule imageE)
       fix y
       assume [simp]: "x = index (Vs @ [V]) y"
-	and y: "y \<in> fv exp"
+        and y: "y \<in> fv exp"
       have "y \<noteq> V"
       proof
-	assume [simp]: "y = V"
-	hence "x = length Vs" by simp
-	with `x \<noteq> length Vs` show False by contradiction
+        assume [simp]: "y = V"
+        hence "x = length Vs" by simp
+        with `x \<noteq> length Vs` show False by contradiction
       qed
       moreover with fv' y have "y \<in> set Vs" by auto
       ultimately have "index (Vs @ [V]) y = index Vs y" by(simp)
@@ -151,7 +151,7 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
     proof(rule imageE)
       fix y
       assume [simp]: "x = index Vs y"
-	and y: "y \<in> fv exp - {V}"
+        and y: "y \<in> fv exp - {V}"
       with fv' have "y \<in> set Vs" "y \<noteq> V" by auto
       hence "index Vs y = index (Vs @ [V]) y" by simp
       with y have "x \<in> index (Vs @ [V]) ` fv exp" by auto
@@ -175,7 +175,7 @@ next
     proof(rule imageE)
       fix y
       assume [simp]: "x = index (Vs @ [fresh_var Vs]) y"
-	and y: "y \<in> fv exp2"
+        and y: "y \<in> fv exp2"
       from y fv2 have "y \<in> set Vs" by auto
       moreover hence "y \<noteq> (fresh_var Vs)" by(auto simp add: fresh_var_fresh)
       ultimately show ?thesis using y by(auto)
@@ -187,7 +187,7 @@ next
     proof(rule imageE)
       fix y
       assume [simp]: "x = index Vs y"
-	and y: "y \<in> fv exp2"
+        and y: "y \<in> fv exp2"
       from y fv2 have "y \<in> set Vs" by auto
       moreover hence "y \<noteq> (fresh_var Vs)" by(auto simp add: fresh_var_fresh)
       ultimately have "index Vs y = index (Vs @ [fresh_var Vs]) y" by simp
@@ -209,7 +209,7 @@ next
     proof(rule imageE)
       fix y
       assume [simp]: "x = index (Vs @ [fresh_var Vs]) y"
-	and y: "y \<in> fv exp"
+        and y: "y \<in> fv exp"
       from y fv have "y \<in> set Vs" by auto
       moreover hence "y \<noteq> (fresh_var Vs)" by(auto simp add: fresh_var_fresh)
       ultimately have "index (Vs @ [fresh_var Vs]) y = index Vs y" by simp
@@ -222,7 +222,7 @@ next
     proof(rule imageE)
       fix y
       assume [simp]: "x = index Vs y"
-	and y: "y \<in> fv exp"
+        and y: "y \<in> fv exp"
       from y fv have "y \<in> set Vs" by auto
       moreover hence "y \<noteq> (fresh_var Vs)" by(auto simp add: fresh_var_fresh)
       ultimately have "index Vs y = index (Vs @ [fresh_var Vs]) y" by simp
@@ -247,12 +247,12 @@ next
     proof(rule imageE)
       fix y
       assume [simp]: "x = index (Vs @ [V]) y"
-	and y: "y \<in> fv exp2"
+        and y: "y \<in> fv exp2"
       have "y \<noteq> V"
       proof
-	assume [simp]: "y = V"
-	hence "x = length Vs" by simp
-	with `x \<noteq> length Vs` show False by contradiction
+        assume [simp]: "y = V"
+        hence "x = length Vs" by simp
+        with `x \<noteq> length Vs` show False by contradiction
       qed
       moreover with fv2 y have "y \<in> set Vs" by auto
       ultimately have "index (Vs @ [V]) y = index Vs y" by(simp)
@@ -265,7 +265,7 @@ next
     proof(rule imageE)
       fix y
       assume [simp]: "x = index Vs y"
-	and y: "y \<in> fv exp2 - {V}"
+        and y: "y \<in> fv exp2 - {V}"
       with fv2 have "y \<in> set Vs" "y \<noteq> V" by auto
       hence "index Vs y = index (Vs @ [V]) y" by simp
       with y have "x \<in> index (Vs @ [V]) ` fv exp2" by auto
@@ -295,7 +295,7 @@ next
     proof(rule imageE)
       fix x
       assume x: "length Vs = index (Vs @ [fresh_var Vs]) x"
-	and x': "x \<in> fv exp2"
+        and x': "x \<in> fv exp2"
       from x' fv2 have "x \<in> set Vs" "x \<noteq> (fresh_var Vs)" by(auto simp add: fresh_var_fresh)
       with x show ?thesis by(simp)
     qed
@@ -313,7 +313,7 @@ next
     proof(rule imageE)
       fix x
       assume x: "length Vs = index (Vs @ [fresh_var Vs]) x"
-	and x': "x \<in> fv exp"
+        and x': "x \<in> fv exp"
       from x' fv have "x \<in> set Vs" "x \<noteq> (fresh_var Vs)" by(auto simp add: fresh_var_fresh)
       with x show ?thesis by(simp)
     qed

@@ -59,7 +59,7 @@ definition correct_state :: "[ty\<^isub>P,'thread_id,('addr, 'heap) jvm_state] \
                   ("_ |- _:_ [ok]"  [61,0,0] 61)
 where
   "correct_state \<Phi> t \<equiv> \<lambda>(xp,h,frs).
-	P,h \<turnstile> t \<surd>t \<and> hconf h \<and> preallocated h \<and>
+        P,h \<turnstile> t \<surd>t \<and> hconf h \<and> preallocated h \<and>
         (case frs of
              [] \<Rightarrow> True
              | (f#fs) \<Rightarrow> 

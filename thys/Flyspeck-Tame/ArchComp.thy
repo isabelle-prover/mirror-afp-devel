@@ -3,7 +3,7 @@
 header "Comparing Enumeration and Archive"
 
 theory ArchComp
-imports ArchCompProps "~~/src/HOL/Library/Efficient_Nat"
+imports ArchCompProps "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 method_setup cond_eval = {*

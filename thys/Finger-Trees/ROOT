@@ -2,10 +2,12 @@ session "Finger-Trees" (AFP) = "HOL-Library" +
   options [timeout = 300]
 
   theories
+    (* Finger Trees *)
     FingerTree
 
   theories [document = false]
-    Test (* Do not remove this, as it serves to detect issues with the code generator *)
+    (* Do not remove this, as it serves to detect issues with the code generator *)
+    Test
 
   files
     "document/root.bib"

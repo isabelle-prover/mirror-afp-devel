@@ -4,7 +4,8 @@ session "Binomial-Heaps" (AFP) = "HOL-Library" +
     BinomialHeap
     SkewBinomialHeap
   theories [document = false]
-    Test (* Keep these in, they are to early detect problems with the code generator *)
+    (* Keep these in, they are to early detect problems with the code generator *)
+    Test 
   files
     "document/root.bib"
     "document/root.tex"

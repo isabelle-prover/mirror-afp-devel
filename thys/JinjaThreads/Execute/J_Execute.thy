@@ -132,8 +132,8 @@ apply(rule sc.red_mthr_deterministic[OF sc_deterministic_heap_ops])
 apply(simp add: sc_spurious_wakeups)
 done
 
-ML {* @{code exec_J_rr} *}
+ML_val {* @{code exec_J_rr} *}
 
-ML {* @{code exec_J_rnd} *}
+ML_val {* @{code exec_J_rnd} *}
 
 end

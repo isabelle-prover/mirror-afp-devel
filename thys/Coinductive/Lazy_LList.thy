@@ -240,7 +240,7 @@ declare Lazy_llist_def [simp del]
 
 text {* Simple ML test for laziness *}
 
-ML {*
+ML_val {*
   val zeros = @{code iterates} (fn x => x + 1) 0;
   val lhd = @{code lhd} zeros;
   val ltl = @{code ltl} zeros;

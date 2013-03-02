@@ -8,7 +8,7 @@ theory JVMListExample
 imports
   "../Common/SystemClasses"
   JVMExec
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 definition list_name :: string
@@ -116,7 +116,7 @@ lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def 
 
 definition "test = exec (E, start_state E test_name makelist_name)"
 
-ML {* 
+ML_val {* 
   @{code test};
   @{code exec} (@{code E}, @{code the} it);
   @{code exec} (@{code E}, @{code the} it);
@@ -178,12 +178,18 @@ ML {*
   @{code exec} (@{code E}, @{code the} it);
 
   val SOME (_, (h, _)) = it;
-  if snd (@{code the} (h 3)) (@{code val_name}, @{code list_name}) = SOME (@{code Intg} 1) then () else error "wrong result";
-  if snd (@{code the} (h 3)) (@{code next_name}, @{code list_name}) = SOME (@{code Addr} 4) then () else error "wrong result";
-  if snd (@{code the} (h 4)) (@{code val_name}, @{code list_name}) = SOME (@{code Intg} 2) then () else error "wrong result";
-  if snd (@{code the} (h 4)) (@{code next_name}, @{code list_name}) = SOME (@{code Addr} 5) then () else error "wrong result";
-  if snd (@{code the} (h 5)) (@{code val_name}, @{code list_name}) = SOME (@{code Intg} 3) then () else error "wrong result";
-  if snd (@{code the} (h 5)) (@{code next_name}, @{code list_name}) = SOME @{code Null} then () else error "wrong result";
+  if snd (@{code the} (h (@{code nat_of_integer} 3))) (@{code val_name}, @{code list_name}) =
+    SOME (@{code Intg} (@{code int_of_integer} 1)) then () else error "wrong result";
+  if snd (@{code the} (h (@{code nat_of_integer} 3))) (@{code next_name}, @{code list_name}) =
+    SOME (@{code Addr} (@{code nat_of_integer} 4)) then () else error "wrong result";
+  if snd (@{code the} (h (@{code nat_of_integer} 4))) (@{code val_name}, @{code list_name}) =
+    SOME (@{code Intg} (@{code int_of_integer} 2)) then () else error "wrong result";
+  if snd (@{code the} (h (@{code nat_of_integer} 4))) (@{code next_name}, @{code list_name}) =
+    SOME (@{code Addr} (@{code nat_of_integer} 5)) then () else error "wrong result";
+  if snd (@{code the} (h (@{code nat_of_integer} 5))) (@{code val_name}, @{code list_name}) =
+    SOME (@{code Intg} (@{code int_of_integer} 3)) then () else error "wrong result";
+  if snd (@{code the} (h (@{code nat_of_integer} 5))) (@{code next_name}, @{code list_name}) =
+    SOME @{code Null} then () else error "wrong result";
 *}
 
 end

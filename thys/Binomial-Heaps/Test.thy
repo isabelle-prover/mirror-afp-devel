@@ -1,5 +1,5 @@
 theory Test
-imports "~~/src/HOL/Library/Efficient_Nat" BinomialHeap SkewBinomialHeap
+imports "~~/src/HOL/Library/Code_Target_Numeral" BinomialHeap SkewBinomialHeap
 begin
   text {*
     This theory is included into teh session, in order to
@@ -55,11 +55,13 @@ export_code
   in OCaml file -
   in SML file -
 
-ML {*
+ML_val {*
   (* ** Binomial Heaps ** *)
 
-  val q1 = @{code bh_insert} "a" 1 (@{code bh_insert} "b" 2 (@{code bh_empty} ()));
-  val q2 = @{code bh_insert} "c" 3 (@{code bh_insert} "d" 4 (@{code bh_empty} ()));
+  val q1 = @{code bh_insert} "a" (@{code nat_of_integer} 1)
+    (@{code bh_insert} "b" (@{code nat_of_integer} 2) (@{code bh_empty} ()));
+  val q2 = @{code bh_insert} "c" (@{code nat_of_integer} 3)
+    (@{code bh_insert} "d" (@{code nat_of_integer} 4) (@{code bh_empty} ()));
 
   val q = @{code bh_meld} q1 q2;
   @{code bh_findMin} q;
@@ -69,8 +71,10 @@ ML {*
 
 
   (* ** Skew Binomial Heaps ** *)
-  val q1 = @{code sh_insert} "a" 1 (@{code sh_insert} "b" 2 (@{code sh_empty} ()));
-  val q2 = @{code sh_insert} "c" 3 (@{code sh_insert} "d" 4 (@{code sh_empty} ()));
+  val q1 = @{code sh_insert} "a" (@{code nat_of_integer} 1)
+    (@{code sh_insert} "b" (@{code nat_of_integer} 2) (@{code sh_empty} ()));
+  val q2 = @{code sh_insert} "c" (@{code nat_of_integer} 3)
+    (@{code sh_insert} "d" (@{code nat_of_integer} 4) (@{code sh_empty} ()));
 
   val q = @{code sh_meld} q1 q2;
   @{code sh_findMin} q;

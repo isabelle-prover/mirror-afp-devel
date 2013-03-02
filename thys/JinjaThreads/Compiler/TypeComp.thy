@@ -852,9 +852,9 @@ next
     next
       have "drop (length xs - length (x2 # xs0)) xs = x2 # xs0"
       proof(rule drop_mess)
-	from len show "Suc (length (x2 # xs0)) \<le> length xs" by(simp)
+        from len show "Suc (length (x2 # xs0)) \<le> length xs" by(simp)
       next
-	from drop show "drop (length xs - Suc (length (x2 # xs0))) xs = x1 # x2 # xs0" by simp
+        from drop show "drop (length xs - Suc (length (x2 # xs0))) xs = x1 # x2 # xs0" by simp
       qed
       thus "drop (length xs - Suc (length xs0)) xs = x2 # xs0" by(simp)
     qed
@@ -1028,13 +1028,13 @@ next
       hence \<tau>: "\<lfloor>(ST', LT')\<rfloor> \<in> set (?\<tau>1''' # ?\<tau>s2 @ [?\<tau>2, ?\<tau>2', ?\<tau>2''])" by simp
       show "length ST \<le> length ST' \<and> P \<turnstile> \<lfloor>(drop (length ST' - length ST) ST',  LT')\<rfloor> \<le>' ty\<^isub>i' ST (E @ [Class Object]) ?A2"
       proof(cases "\<lfloor>(ST', LT')\<rfloor> \<in> set ?\<tau>s2")
-	case True
+        case True
         from compT_ST_prefix[OF suffixeq_refl this] compT_LT_prefix[OF this B2]
         show ?thesis unfolding postfix_conv_eq_length_drop by(simp add: ty\<^isub>i'_def)
       next
-	case False
-	with \<tau> show ?thesis
-	  by(auto simp add: ty\<^isub>i'_def hyperset_defs intro: ty\<^isub>l_antimono)
+        case False
+        with \<tau> show ?thesis
+          by(auto simp add: ty\<^isub>i'_def hyperset_defs intro: ty\<^isub>l_antimono)
       qed
     qed
   qed simp
@@ -1358,7 +1358,7 @@ proof -
     proof(cases i)
       case (Invoke M n)
       have "\<And>C Ts D. (\<exists>T m. compP f P \<turnstile> C sees M: Ts\<rightarrow>T = m in D) \<longleftrightarrow> (\<exists>T m. P \<turnstile> C sees M: Ts\<rightarrow>T = m in D)"
-	by(auto dest!: sees_method_compPD dest: sees_method_compP)
+        by(auto dest!: sees_method_compPD dest: sees_method_compP)
       with Invoke show ?thesis by clarsimp
     qed(simp_all) }
   thus ?thesis by(cases \<tau>) simp

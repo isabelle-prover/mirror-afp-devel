@@ -1646,7 +1646,7 @@ proof(induct e "n :: nat" e' xs stk loc pc "None :: 'addr option"
     moreover {
       assume pc: "pc < length (compE2 e1)"
       with bisim1 ins have False
-	by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 e1)" by(cases "pc < length (compE2 e1)") auto
     from call ins show ?thesis by simp
   qed
@@ -1674,7 +1674,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 A)"
       with bisim1 ins have False
-	by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 A)" by(cases "pc < length (compE2 A)") auto
     from call ins show ?thesis by simp
   qed
@@ -1702,7 +1702,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 A)"
       with bisim1 ins have False
-	by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 A)" by(cases "pc < length (compE2 A)") auto
     from call ins show ?thesis by simp
   qed
@@ -1727,7 +1727,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 i)"
       with bisim1 ins have False
-	by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 i)" by(cases "pc < length (compE2 i)") auto
     from call ins show ?thesis by simp
   qed
@@ -1755,7 +1755,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 e)"
       with bisim1 ins have False
-	by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 e)" by(cases "pc < length (compE2 e)") auto
     from call ins show ?thesis by simp
   qed
@@ -2038,7 +2038,7 @@ next
       then obtain v' where [simp]: "i = Val v'" by auto
       note exec also from bisim2
       have "\<tau>Exec_mover_a P t i h ([], loc, 0, None) ([v'], loc, length (compE2 i), None)"
-	by(auto dest!: bisim1Val2D1)
+        by(auto dest!: bisim1Val2D1)
       from AAss_\<tau>ExecrI2[OF this, of A e v]
       have "\<tau>Exec_mover_a P t (A\<lfloor>i\<rceil> := e) h ([v], loc, length (compE2 A), None) ([v', v], loc, length (compE2 A) + length (compE2 i), None)" by simp
       also (rtranclp_trans) from call IH3[of loc] len cs obtain pc' stk' loc'
@@ -2047,22 +2047,22 @@ next
         and bisim': "P,e,h \<turnstile> (e, loc) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
       from AAss_\<tau>ExecrI3[OF exec, of A i v' v]
       have "\<tau>Exec_mover_a P t (A\<lfloor>i\<rceil> := e) h ([v', v], loc, length (compE2 A) + length (compE2 i), None)
-	                ((rev vs @ Addr a # stk') @ [v', v], loc', length (compE2 A) + length (compE2 i) + pc', None)" by simp
+                        ((rev vs @ Addr a # stk') @ [v', v], loc', length (compE2 A) + length (compE2 i) + pc', None)" by simp
       also (rtranclp_trans) from bisim'
       have "P,A\<lfloor>i\<rceil> := e,h \<turnstile> (Val v\<lfloor>Val v'\<rceil> := e, xs) \<leftrightarrow> ((rev vs @ Addr a # stk') @ [v', v], loc', length (compE2 A) + length (compE2 i) + pc', None)"
-	by - (rule bisim1AAss3, simp)
+        by - (rule bisim1AAss3, simp)
       ultimately show ?thesis using ins by fastforce
     next
       case False
       note exec also from False call IH2[of loc] len cs obtain pc' stk' loc'
-	where exec: "\<tau>Exec_mover_a P t i h ([], xs, 0, None) (rev vs @ Addr a # stk', loc', pc', None)"
-	and ins: "compE2 i ! pc' = Invoke M' (length vs)" "pc' < length (compE2 i)"
-	and bisim': "P,i,h \<turnstile> (i, xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
+        where exec: "\<tau>Exec_mover_a P t i h ([], xs, 0, None) (rev vs @ Addr a # stk', loc', pc', None)"
+        and ins: "compE2 i ! pc' = Invoke M' (length vs)" "pc' < length (compE2 i)"
+        and bisim': "P,i,h \<turnstile> (i, xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
       from AAss_\<tau>ExecrI2[OF exec, of A e v]
       have "\<tau>Exec_mover_a P t (A\<lfloor>i\<rceil> := e) h ([v], loc, length (compE2 A), None) (rev vs @ Addr a # (stk' @ [v]), loc', length (compE2 A) + pc', None)" by simp
       also (rtranclp_trans) from bisim'
       have "P,A\<lfloor>i\<rceil> := e,h \<turnstile> (Val v\<lfloor>i\<rceil> := e, xs) \<leftrightarrow> ((rev vs @ Addr a # stk') @ [v], loc', length (compE2 A) + pc', None)"
-	by(rule bisim1AAss2)
+        by(rule bisim1AAss2)
       ultimately show ?thesis using ins False by(fastforce intro!: exI)
     qed
   next
@@ -3802,24 +3802,24 @@ next
     proof(cases ps)
       case Cons
       with exec pc have "exec_meth_d (compP2 P) (compE2 obj @ compEs2 ps)
-	(stack_xlift (length STK) (compxE2 obj 0 0 @ compxEs2 ps (length (compE2 obj)) (Suc 0))) t
+        (stack_xlift (length STK) (compxE2 obj 0 0 @ compxEs2 ps (length (compE2 obj)) (Suc 0))) t
         h (stk @ STK, loc, length (compE2 obj) + 0, xcp) ta h' (stk', loc', pc', xcp')"
-	by -(rule exec_meth_take, auto)
+        by -(rule exec_meth_take, auto)
       hence "?execs ps [] (v # STK) loc 0 None stk' loc' (pc' - length (compE2 obj)) xcp'"
-	apply -
-	apply(rule exec_meth_drop_xt)
-	apply(simp add: compxEs2_size_convs compxEs2_stack_xlift_convs)
-	apply(auto simp add: stack_xlift_compxE2)
-	done
+        apply -
+        apply(rule exec_meth_drop_xt)
+        apply(simp add: compxEs2_size_convs compxEs2_stack_xlift_convs)
+        apply(auto simp add: stack_xlift_compxE2)
+        done
       from IHparams[OF this] PC obtain stk'' where stk': "stk' = stk'' @ v # STK"
-	and exec': "exec_meth_d (compP2 P) (compEs2 ps) (compxEs2 ps 0 0) t h ([], loc, 0, None) ta h' (stk'', loc', PC, xcp')"
-	by auto
+        and exec': "exec_meth_d (compP2 P) (compEs2 ps) (compxEs2 ps 0 0) t h ([], loc, 0, None) ta h' (stk'', loc', PC, xcp')"
+        by auto
       from exec' have "exec_meth_d (compP2 P) ((compE2 obj @ compEs2 ps) @ [Invoke M' (length ps)]) (compxE2 obj 0 0 @ shift (length (compE2 obj)) (stack_xlift (length [v]) (compxEs2 ps 0 0))) t h ([] @ [v], loc, length (compE2 obj) + 0, None) ta h' (stk'' @ [v], loc', length (compE2 obj) + PC, xcp')"
-	apply -
-	apply(rule exec_meth_append)
-	apply(rule append_exec_meth_xt)
-	apply(erule exec_meth_stk_offer)
-	by(auto)
+        apply -
+        apply(rule exec_meth_append)
+        apply(rule append_exec_meth_xt)
+        apply(erule exec_meth_stk_offer)
+        by(auto)
       thus ?thesis using stk' PC by(clarsimp simp add: shift_compxEs2 stack_xlift_compxEs2 add_ac)
     next
       case Nil
@@ -3856,38 +3856,38 @@ next
       from exec have "exec_meth_d (compP2 P) ((compE2 obj @ compEs2 ps) @ [Invoke M' (length ps)])
         (stack_xlift (length STK) (compxE2 obj 0 0) @ shift (length (compE2 obj)) (stack_xlift (length (v # STK)) (compxEs2 ps 0 0))) t
         h (stk @ v # STK, loc, length (compE2 obj) + pc, xcp) ta h' (stk', loc', pc', xcp')"
-	by(simp add: compxEs2_size_convs compxEs2_stack_xlift_convs)
+        by(simp add: compxEs2_size_convs compxEs2_stack_xlift_convs)
       hence exec': "exec_meth_d (compP2 P) (compE2 obj @ compEs2 ps) (stack_xlift (length STK) (compxE2 obj 0 0) @
         shift (length (compE2 obj)) (stack_xlift (length (v # STK)) (compxEs2 ps 0 0))) t
         h (stk @ v # STK, loc, length (compE2 obj) + pc, xcp) ta h' (stk', loc', pc', xcp')"
-	by(rule exec_meth_take)(simp add: True)
+        by(rule exec_meth_take)(simp add: True)
       hence "?execs ps stk (v # STK) loc pc xcp stk' loc' (pc' - length (compE2 obj)) xcp'"
-	by(rule exec_meth_drop_xt)(auto simp add: stack_xlift_compxE2)
+        by(rule exec_meth_drop_xt)(auto simp add: stack_xlift_compxE2)
       from IHparam[OF this] obtain stk'' where stk': "stk' = stk'' @ v # STK"
-	and exec'': "exec_meth_d (compP2 P) (compEs2 ps) (compxEs2 ps 0 0) t h (stk, loc, pc, xcp) ta h' (stk'', loc', pc' - length (compE2 obj), xcp')" by blast
+        and exec'': "exec_meth_d (compP2 P) (compEs2 ps) (compxEs2 ps 0 0) t h (stk, loc, pc, xcp) ta h' (stk'', loc', pc' - length (compE2 obj), xcp')" by blast
       from exec'' have "exec_meth_d (compP2 P) (compEs2 ps) (stack_xlift (length [v]) (compxEs2 ps 0 0)) t h (stk @ [v], loc, pc, xcp) ta h' (stk'' @ [v], loc', pc' - length (compE2 obj), xcp')"
-	by(rule exec_meth_stk_offer)
+        by(rule exec_meth_stk_offer)
       hence "exec_meth_d (compP2 P) (compE2 obj @ compEs2 ps) (compxE2 obj 0 0 @ shift (length (compE2 obj)) (stack_xlift (length [v]) (compxEs2 ps 0 0))) t
  h (stk @ [v], loc, length (compE2 obj) + pc, xcp) ta h' (stk'' @ [v], loc', length (compE2 obj) + (pc' - length (compE2 obj)), xcp')"
-	by(rule append_exec_meth_xt) auto
+        by(rule append_exec_meth_xt) auto
       hence "exec_meth_d (compP2 P) ((compE2 obj @ compEs2 ps) @ [Invoke M' (length ps)])
      (compxE2 obj 0 0 @ shift (length (compE2 obj)) (stack_xlift (length [v]) (compxEs2 ps 0 0))) t
  h (stk @ [v], loc, length (compE2 obj) + pc, xcp) ta h' (stk'' @ [v], loc', length (compE2 obj) + (pc' - length (compE2 obj)), xcp')"
-	by(rule exec_meth_append)
+        by(rule exec_meth_append)
       moreover from exec' have "pc' \<ge> length (compE2 obj)"
-	by(rule exec_meth_drop_xt_pc)(auto simp add: stack_xlift_compxE2)
+        by(rule exec_meth_drop_xt_pc)(auto simp add: stack_xlift_compxE2)
       ultimately show ?thesis using stk'
-	by(auto simp add: shift_compxEs2 stack_xlift_compxEs2)
+        by(auto simp add: shift_compxEs2 stack_xlift_compxEs2)
     next
       case False
       with pc have pc: "pc = length (compEs2 ps)" by simp
       with bisimParam obtain vs where "stk = vs" "length vs = length ps" "xcp = None"
-	by(auto dest: bisims1_pc_length_compEs2D)
+        by(auto dest: bisims1_pc_length_compEs2D)
       with exec pc Cons show ?thesis
-	apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def split: split_if_asm)
+        apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def split: split_if_asm)
         apply(auto simp add: neq_Nil_conv split: extCallRet.split_asm)
-	apply(force intro!: exec_meth.intros)+
-	done
+        apply(force intro!: exec_meth.intros)+
+        done
     qed
   qed
 next
@@ -4053,17 +4053,17 @@ next
       case None
       from exec'' None True
       have "?exec e2 stk STK loc pc xcp stk' loc' (pc' - length ?pre) xcp'"
-	apply -
-	apply(erule exec_meth.cases)
-	apply(cases "compE2 e2 ! pc")
-	by(fastforce simp add: is_Ref_def intro: exec_meth.intros split: split_if_asm)+
+        apply -
+        apply(erule exec_meth.cases)
+        apply(cases "compE2 e2 ! pc")
+        by(fastforce simp add: is_Ref_def intro: exec_meth.intros split: split_if_asm)+
       from IH[OF this] obtain stk'' where stk: "stk' = stk'' @ STK"
-	and exec''': "exec_meth_d (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp)
+        and exec''': "exec_meth_d (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp)
       ta h' (stk'', loc', pc' - length ?pre, xcp')" by blast
       from exec''' have "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
       (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
      h (stk, loc, pc, xcp) ta h' (stk'', loc', pc' - length ?pre, xcp')"
-	by(rule exec_meth_append_xt)
+        by(rule exec_meth_append_xt)
       hence "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
       (compxE2 e1 0 0 @ shift (length ?pre) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)])) t
      h (stk, loc, length ?pre + pc, xcp) ta h' (stk'', loc', length ?pre + (pc' - length ?pre), xcp')"
@@ -4072,48 +4072,48 @@ next
     next
       case (Some a)
       with exec'' have [simp]: "h' = h" "xcp' = None" "loc' = loc" "ta = \<epsilon>"
-	by(auto elim!: exec_meth.cases simp add: match_ex_table_append
+        by(auto elim!: exec_meth.cases simp add: match_ex_table_append
            split: split_if_asm dest!: match_ex_table_stack_xliftD)
       show ?thesis
       proof(cases "match_ex_table (compP2 P) (cname_of h a) pc (compxE2 e2 0 0)")
-	case None
-	with Some exec'' True have [simp]: "stk' = Addr a # STK"
-	  and pc': "pc' = length (compE2 e1) + length (compE2 e2) + 6"
-	  by(auto elim!: exec_meth.cases simp add: match_ex_table_append
+        case None
+        with Some exec'' True have [simp]: "stk' = Addr a # STK"
+          and pc': "pc' = length (compE2 e1) + length (compE2 e2) + 6"
+          by(auto elim!: exec_meth.cases simp add: match_ex_table_append
                   split: split_if_asm dest!: match_ex_table_stack_xliftD)
-	with exec'' Some None
-	have "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
-	(compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
-	h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc, pc' - length ?pre, None)"
-	  by -(rule exec_catch, auto elim!: exec_meth.cases simp add: match_ex_table_append matches_ex_entry_def
+        with exec'' Some None
+        have "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
+        (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
+        h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc, pc' - length ?pre, None)"
+          by -(rule exec_catch, auto elim!: exec_meth.cases simp add: match_ex_table_append matches_ex_entry_def
                                      split: split_if_asm dest!: match_ex_table_stack_xliftD)
-	hence "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
-	(compxE2 e1 0 0 @ shift (length ?pre) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)])) t
-	h (stk, loc, length ?pre + pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc,
-	length ?pre + (pc' - length ?pre), None)"
-	  by(rule append_exec_meth_xt[where n=1]) auto
-	with pc' Some show ?thesis by(simp add: eval_nat_numeral shift_compxE2 add_ac)
+        hence "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
+        (compxE2 e1 0 0 @ shift (length ?pre) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)])) t
+        h (stk, loc, length ?pre + pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc,
+        length ?pre + (pc' - length ?pre), None)"
+          by(rule append_exec_meth_xt[where n=1]) auto
+        with pc' Some show ?thesis by(simp add: eval_nat_numeral shift_compxE2 add_ac)
       next
-	case (Some pcd)
-	with `xcp = \<lfloor>a\<rfloor>` exec'' True
-	have "exec_meth_d (compP2 P) (compE2 e2) (compxE2 e2 0 0) t
+        case (Some pcd)
+        with `xcp = \<lfloor>a\<rfloor>` exec'' True
+        have "exec_meth_d (compP2 P) (compE2 e2) (compxE2 e2 0 0) t
           h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - snd pcd) stk, loc, pc' - length ?pre, None)"
-	  apply -
-	  apply(rule exec_catch)
-	  apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm
-	             dest!: match_ex_table_stack_xliftD)
-	  done
-	hence "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
+          apply -
+          apply(rule exec_catch)
+          apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm
+                     dest!: match_ex_table_stack_xliftD)
+          done
+        hence "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
    h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - snd pcd) stk, loc, pc' - length ?pre, None)"
-	  by(rule exec_meth_append_xt)
-	hence "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]) 
+          by(rule exec_meth_append_xt)
+        hence "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]) 
               (compxE2 e1 0 0 @ shift (length ?pre) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)])) t
    h (stk, loc, length ?pre + pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - snd pcd) stk, loc, length ?pre + (pc' - length ?pre), None)"
-	  by(rule append_exec_meth_xt[where n=1])(auto)
-	moreover from Some `xcp = \<lfloor>a\<rfloor>` exec'' True pc'
-	have "pc' = length (compE2 e1) + 3 + fst pcd" "stk' = Addr a # drop (length stk - snd pcd) stk @ STK"
-	  by(auto elim!: exec_meth.cases dest!: match_ex_table_stack_xliftD simp: match_ex_table_append split: split_if_asm)
-	ultimately show ?thesis using `xcp = \<lfloor>a\<rfloor>` by(auto simp add: eval_nat_numeral shift_compxE2 add_ac)
+          by(rule append_exec_meth_xt[where n=1])(auto)
+        moreover from Some `xcp = \<lfloor>a\<rfloor>` exec'' True pc'
+        have "pc' = length (compE2 e1) + 3 + fst pcd" "stk' = Addr a # drop (length stk - snd pcd) stk @ STK"
+          by(auto elim!: exec_meth.cases dest!: match_ex_table_stack_xliftD simp: match_ex_table_append split: split_if_asm)
+        ultimately show ?thesis using `xcp = \<lfloor>a\<rfloor>` by(auto simp add: eval_nat_numeral shift_compxE2 add_ac)
       qed
     qed
   next
@@ -4127,7 +4127,7 @@ next
     by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
 next
   case bisim1Sync6 thus ?case  
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)	
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)     
 next
   case bisim1Sync7 thus ?case
     by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
@@ -4544,43 +4544,43 @@ next
     proof(cases xcp)
       case None
       with exec' True have "?exec e stk STK loc pc xcp stk' loc' pc' xcp'"
-	apply -
-	apply(erule exec_meth.cases)
-	apply(cases "compE2 e ! pc")
-	apply(fastforce simp add: is_Ref_def intro: exec_meth.intros split: split_if_asm)+
-	done
+        apply -
+        apply(erule exec_meth.cases)
+        apply(cases "compE2 e ! pc")
+        apply(fastforce simp add: is_Ref_def intro: exec_meth.intros split: split_if_asm)+
+        done
       from IH[OF this] show ?thesis by auto
     next
       case (Some a)
       with exec' have [simp]: "h' = h" "loc' = loc" "xcp' = None" "ta = \<epsilon>"
-	by(auto elim: exec_meth.cases)
+        by(auto elim: exec_meth.cases)
       show ?thesis
       proof(cases "match_ex_table (compP2 P) (cname_of h a) pc (compxE2 e 0 0)")
-	case (Some pcd)
-	from exec `xcp = \<lfloor>a\<rfloor>` Some pc
-	have stk': "stk' = Addr a # (drop (length stk - snd pcd) stk) @ STK"
-	  by(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm dest!: match_ex_table_stack_xliftD)
-	from exec' `xcp = \<lfloor>a\<rfloor>` Some pc have "exec_meth_d (compP2 P)
-	  (compE2 e) (stack_xlift (length STK) (compxE2 e 0 0)) t h (stk @ STK, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # (drop (length (stk @ STK) - (snd pcd + length STK)) (stk @ STK)), loc, pc', None)"
-	  apply -
-	  apply(rule exec_meth.intros)
-	  apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm dest!: match_ex_table_shift_pcD match_ex_table_stack_xliftD)
-	  done
-	from IH[unfolded `ta = \<epsilon>` `xcp = \<lfloor>a\<rfloor>` `h' = h`, OF this]
-	have stk: "Addr a # drop (length stk - snd pcd) (stk @ STK) = Addr a # drop (length stk - snd pcd) stk @ STK"
-	  and exec'': "exec_meth_d (compP2 P) (compE2 e) (compxE2 e 0 0) t h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - snd pcd) stk, loc, pc', None)" by auto
-	thus ?thesis using Some stk' `xcp = \<lfloor>a\<rfloor>` by(auto)
+        case (Some pcd)
+        from exec `xcp = \<lfloor>a\<rfloor>` Some pc
+        have stk': "stk' = Addr a # (drop (length stk - snd pcd) stk) @ STK"
+          by(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm dest!: match_ex_table_stack_xliftD)
+        from exec' `xcp = \<lfloor>a\<rfloor>` Some pc have "exec_meth_d (compP2 P)
+          (compE2 e) (stack_xlift (length STK) (compxE2 e 0 0)) t h (stk @ STK, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # (drop (length (stk @ STK) - (snd pcd + length STK)) (stk @ STK)), loc, pc', None)"
+          apply -
+          apply(rule exec_meth.intros)
+          apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm dest!: match_ex_table_shift_pcD match_ex_table_stack_xliftD)
+          done
+        from IH[unfolded `ta = \<epsilon>` `xcp = \<lfloor>a\<rfloor>` `h' = h`, OF this]
+        have stk: "Addr a # drop (length stk - snd pcd) (stk @ STK) = Addr a # drop (length stk - snd pcd) stk @ STK"
+          and exec'': "exec_meth_d (compP2 P) (compE2 e) (compxE2 e 0 0) t h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - snd pcd) stk, loc, pc', None)" by auto
+        thus ?thesis using Some stk' `xcp = \<lfloor>a\<rfloor>` by(auto)
       next
-	case None
-	with Some exec pc have stk': "stk' = Addr a # STK"
-	  and pc': "pc' = Suc (length (compE2 e))"
-	  and subcls: "compP2 P \<turnstile> cname_of h a \<preceq>\<^sup>* C'"
-	  by(auto elim!: exec_meth.cases split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
-	moreover from Some True None pc' subcls
-	have "exec_meth_d (compP2 P) (compE2 (try e catch(C' V) e2)) (compxE2 (try e catch(C' V) e2) 0 0) t h
-	  (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc, pc', None)"
-	  by -(rule exec_catch,auto simp add: match_ex_table_append_not_pcs matches_ex_entry_def)
-	ultimately show ?thesis using Some by auto
+        case None
+        with Some exec pc have stk': "stk' = Addr a # STK"
+          and pc': "pc' = Suc (length (compE2 e))"
+          and subcls: "compP2 P \<turnstile> cname_of h a \<preceq>\<^sup>* C'"
+          by(auto elim!: exec_meth.cases split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
+        moreover from Some True None pc' subcls
+        have "exec_meth_d (compP2 P) (compE2 (try e catch(C' V) e2)) (compxE2 (try e catch(C' V) e2) 0 0) t h
+          (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc, pc', None)"
+          by -(rule exec_catch,auto simp add: match_ex_table_append_not_pcs matches_ex_entry_def)
+        ultimately show ?thesis using Some by auto
       qed
     qed
   next
@@ -4921,13 +4921,13 @@ proof -
     proof
       from mconf ma sub sees
       show "compTP P \<turnstile> t:(None, m, [([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)]) \<surd>"
-	by(rule new_thread_conf_compTP)
+        by(rule new_thread_conf_compTP)
 
       from sees show "P \<turnstile> D sees M: []\<rightarrow>T = \<lfloor>meth\<rfloor> in D" by(rule sees_method_idemp)
       show "list_all2 (bisim1_fr P m) [] []" by simp
       show "P,blocks1 0 [Class D] meth,m \<turnstile> ({0:Class D=None; meth}, Addr a # replicate (max_vars meth) undefined_value) \<leftrightarrow>
                                                 ([], Addr a # replicate (max_vars meth) undefined_value, 0, None)"
-	by simp(rule bisim1_refl)
+        by simp(rule bisim1_refl)
     qed simp
     with sees sees' have "bisim1_list1 t m ({0:Class (fst (method P C M))=None; the (snd (snd (snd (method P C M))))}, Addr a # replicate (max_vars (the (snd (snd (snd (method P C M)))))) undefined_value) [] None [([], Addr a # replicate (fst (snd (the (snd (snd (snd (method (compP2 P) C M))))))) undefined_value, fst (method (compP2 P) C M), M, 0)]" by simp }
   thus ?thesis
@@ -5031,7 +5031,7 @@ proof -
 
       show "P,blocks1 0 [Class D] body,H \<turnstile> ({0:Class D=None; body}, Addr a # replicate (max_vars body) undefined_value) \<leftrightarrow>
                                                 ([], Addr a # replicate (max_vars body) undefined_value, 0, None)"
-	by(auto intro: bisim1_refl)
+        by(auto intro: bisim1_refl)
     qed simp_all
     hence "bisim1_list1 t H ({0:Class (fst (method P C M))=None; the (snd (snd (snd (method P C M))))},
                                Addr a # replicate (max_vars (the (snd (snd (snd (method P C M)))))) undefined_value)

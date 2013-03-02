@@ -1,7 +1,5 @@
 session Valuation (AFP) = "Group-Ring-Module" +
   options [timeout = 3600]
-  theories [document = false]
-    "../Group-Ring-Module/Algebra9"
   theories
     Valuation3
   files

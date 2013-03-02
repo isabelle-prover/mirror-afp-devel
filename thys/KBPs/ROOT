@@ -1,6 +1,6 @@
 session KBPs (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false, show_question_marks = false, names_short]
+  theories [document = false]
     Extra
     List_local
   theories [show_question_marks = false, names_short]

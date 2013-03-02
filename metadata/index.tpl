@@ -34,7 +34,15 @@ and larger scientific developments, mechanically checked in the theorem prover
 <a href="http://isabelle.in.tum.de/">Isabelle</a>. It is organized in the way 
 of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/journals/afp/">dblp</a> and has an ISSN: 2150-914x. Submissions are refereed. The preferred citation style 
 is available <a href="citing.shtml">[here]</a>.
-A <a href="devel.shtml">development version</a> of the archive is available as well.</td></tr>
+<p>
+<strong>
+This is the development version of the archive, referring to a recent
+Isabelle development version. Some entries may not be in a working state, see
+the <a href="status.shtml">status page</a> for more information.
+The main archive is available from the <a href="index.shtml">front page</a>.
+</strong>
+</p>
+</td></tr>
 </table>
 <p>&nbsp;</p>
 

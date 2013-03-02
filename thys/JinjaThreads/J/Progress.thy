@@ -63,23 +63,23 @@ next
       then obtain i where v: "v = Intg i" by blast
       thus ?thesis
       proof (cases "0 <=s i")
-	case True
+        case True
         obtain h' ao where "allocate h (Array_type T (nat (sint i))) = (h', ao)"
           by(cases "allocate h (Array_type T (nat (sint i)))")
-	thus ?thesis using True `v = Intg i` WTrtNewArray.prems
+        thus ?thesis using True `v = Intg i` WTrtNewArray.prems
           by(cases ao)(auto simp del: split_paired_Ex,(blast intro: RedNewArrayFail RedNewArray)+)
       next
-	assume "\<not> 0 <=s i"
-	hence "i <s 0" by simp
-	then have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val(Intg i)\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize,(h, l)\<rangle>"
-	  by - (rule RedNewArrayNegative, auto)
-	with e v show ?thesis by blast
+        assume "\<not> 0 <=s i"
+        hence "i <s 0" by simp
+        then have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val(Intg i)\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize,(h, l)\<rangle>"
+          by - (rule RedNewArrayNegative, auto)
+        with e v show ?thesis by blast
       qed
     next
       fix exa
       assume e: "e = Throw exa"
       then have "extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Throw exa\<rceil>,(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw exa,(h, l)\<rangle>"
-	by - (rule NewArrayThrow)
+        by - (rule NewArrayThrow)
       with e show ?thesis by blast
     qed
   next
@@ -106,15 +106,15 @@ next
       with WTrtCast obtain V where thvU: "typeof\<^bsub>h\<^esub> v = \<lfloor>V\<rfloor>" by fastforce
       thus ?thesis
       proof (cases "P \<turnstile> V \<le> U")
-	assume "P \<turnstile> V \<le> U"
-	with thvU have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v,(h,l)\<rangle>"
-	  by - (rule RedCast, auto)
-	with ev show ?thesis by blast
+        assume "P \<turnstile> V \<le> U"
+        with thvU have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v,(h,l)\<rangle>"
+          by - (rule RedCast, auto)
+        with ev show ?thesis by blast
       next
-	assume "\<not> P \<turnstile> V \<le> U"
-	with thvU have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
-	  by - (rule RedCastFail, auto)
-	with ev show ?thesis by blast
+        assume "\<not> P \<turnstile> V \<le> U"
+        with thvU have "extTA,P,t \<turnstile> \<langle>Cast U (Val v),(h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
+          by - (rule RedCastFail, auto)
+        with ev show ?thesis by blast
       qed
     next
       fix a
@@ -166,21 +166,21 @@ next
       fix v1 assume [simp]: "e1 = Val v1"
       show ?thesis
       proof cases
-	assume "final e2"
-	thus ?thesis
-	proof (rule finalE)
-	  fix v2 assume [simp]: "e2 = Val v2"
-	  with WTrtBinOp have type: "typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>" "typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>" by auto
-	  from binop_progress[OF this `P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T`] obtain va
-	    where "binop bop v1 v2 = \<lfloor>va\<rfloor>" by blast
-	  thus ?thesis by(cases va)(fastforce intro: RedBinOp RedBinOpFail)+
-	next
-	  fix a assume "e2 = Throw a"
-	  thus ?thesis by(fastforce intro:BinOpThrow2)
-	qed
+        assume "final e2"
+        thus ?thesis
+        proof (rule finalE)
+          fix v2 assume [simp]: "e2 = Val v2"
+          with WTrtBinOp have type: "typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>" "typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>" by auto
+          from binop_progress[OF this `P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T`] obtain va
+            where "binop bop v1 v2 = \<lfloor>va\<rfloor>" by blast
+          thus ?thesis by(cases va)(fastforce intro: RedBinOp RedBinOpFail)+
+        next
+          fix a assume "e2 = Throw a"
+          thus ?thesis by(fastforce intro:BinOpThrow2)
+        qed
       next
-	assume "\<not> final e2" with WTrtBinOp show ?thesis
-	  by simp (fast intro!:BinOpRed2)
+        assume "\<not> final e2" with WTrtBinOp show ?thesis
+          by simp (fast intro!:BinOpRed2)
       qed
     next
       fix a assume "e1 = Throw a"
@@ -219,43 +219,43 @@ next
       case null
       thus ?thesis
       proof (cases "final i")
-	assume "final i"
-	thus ?thesis
-	proof (rule finalE)
-	  fix v
-	  assume i: "i = Val v"
-	  have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Val v\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h,l)\<rangle>"
-	    by(rule RedAAccNull)
-	  with i null show ?thesis by blast
-	next
-	  fix ex
-	  assume i: "i = Throw ex"
-	  have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Throw ex\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw ex, (h,l)\<rangle>"
-	    by(rule AAccThrow2)
-	  with i null show ?thesis by blast
-	qed
+        assume "final i"
+        thus ?thesis
+        proof (rule finalE)
+          fix v
+          assume i: "i = Val v"
+          have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Val v\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h,l)\<rangle>"
+            by(rule RedAAccNull)
+          with i null show ?thesis by blast
+        next
+          fix ex
+          assume i: "i = Throw ex"
+          have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Throw ex\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw ex, (h,l)\<rangle>"
+            by(rule AAccThrow2)
+          with i null show ?thesis by blast
+        qed
       next
-	assume "\<not> final i"
-	from WTrtAAcc null show ?thesis
-	  by simp
+        assume "\<not> final i"
+        from WTrtAAcc null show ?thesis
+          by simp
       qed
     next
       case (Array ad U)
       with wte obtain n where ty: "typeof_addr h ad = \<lfloor>Array_type U n\<rfloor>" by auto
       thus ?thesis
       proof (cases "final i")
-	assume "final i"
-	thus ?thesis
-	proof(rule finalE)
-	  fix v
-	  assume [simp]: "i = Val v"
-	  with wtei have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastforce
-	  hence "\<exists>i. v = Intg i" by fastforce
-	  then obtain i where [simp]: "v = Intg i" by blast
-	  thus ?thesis
-	  proof (cases "i <s 0 \<or> sint i \<ge> int n")
+        assume "final i"
+        thus ?thesis
+        proof(rule finalE)
+          fix v
+          assume [simp]: "i = Val v"
+          with wtei have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastforce
+          hence "\<exists>i. v = Intg i" by fastforce
+          then obtain i where [simp]: "v = Intg i" by blast
+          thus ?thesis
+          proof (cases "i <s 0 \<or> sint i \<ge> int n")
             case True
-	    with WTrtAAcc Array ty show ?thesis by (fastforce intro: RedAAccBounds)
+            with WTrtAAcc Array ty show ?thesis by (fastforce intro: RedAAccBounds)
           next
             case False
             hence "nat (sint i) < n"
@@ -265,14 +265,14 @@ next
             obtain v where "heap_read h ad (ACell (nat (sint i))) v" by blast
             with False Array ty show ?thesis by(fastforce intro: RedAAcc)
           qed
-	next
-	  fix ex
-	  assume "i = Throw ex"
-	  with WTrtAAcc Array show ?thesis by (fastforce intro: AAccThrow2)
-	qed
+        next
+          fix ex
+          assume "i = Throw ex"
+          with WTrtAAcc Array show ?thesis by (fastforce intro: AAccThrow2)
+        qed
       next
-	assume "\<not> final i"
-	with WTrtAAcc Array show ?thesis by (fastforce intro: AAccRed2)
+        assume "\<not> final i"
+        with WTrtAAcc Array show ?thesis by (fastforce intro: AAccRed2)
       qed
     next
       fix ex
@@ -301,25 +301,25 @@ next
       case null
       thus ?thesis
       proof (cases "final i")
-	assume "final i"
-	thus ?thesis
-	proof (rule finalE)
-	  fix v
-	  assume i: "i = Val v"
-	  have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Val v\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h,l)\<rangle>"
-	    by (rule RedAAccNull)
-	  with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
-	next
-	  fix ex
-	  assume i: "i = Throw ex"
-	  have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Throw ex\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw ex, (h,l)\<rangle>"
-	    by(rule AAccThrow2)
-	  with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
-	qed
+        assume "final i"
+        thus ?thesis
+        proof (rule finalE)
+          fix v
+          assume i: "i = Val v"
+          have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Val v\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h,l)\<rangle>"
+            by (rule RedAAccNull)
+          with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
+        next
+          fix ex
+          assume i: "i = Throw ex"
+          have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Throw ex\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw ex, (h,l)\<rangle>"
+            by(rule AAccThrow2)
+          with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
+        qed
       next
-	assume "\<not> final i"
-	with WTrtAAccNT null show ?thesis
-	  by(fastforce intro: AAccRed2)
+        assume "\<not> final i"
+        with WTrtAAccNT null show ?thesis
+          by(fastforce intro: AAccRed2)
       qed
     next
       case Throw thus ?thesis by (fastforce intro: AAccThrow1)
@@ -346,59 +346,59 @@ next
       case null
       show ?thesis
       proof(cases "final i")
-	assume "final i"
-	thus ?thesis
-	proof (rule finalE)
-	  fix v
-	  assume i: "i = Val v"
-	  with wti have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastforce
-	  then obtain idx where "v = Intg idx" by fastforce
-	  thus ?thesis
-	  proof (cases "final e")
-	    assume "final e"
-	    thus ?thesis
-	    proof (rule finalE)
-	      fix w
-	      assume "e = Val w"
-	      with WTrtAAss null show ?thesis by (fastforce intro: RedAAssNull)
-	    next
-	      fix ex
-	      assume "e = Throw ex"
-	      with WTrtAAss null show ?thesis by (fastforce intro: AAssThrow3)
-	    qed
-	  next
-	    assume "\<not> final e"
-	    with WTrtAAss null show ?thesis by (fastforce intro: AAssRed3)
-	  qed
-	next
-	  fix ex
-	  assume "i = Throw ex"
-	  with WTrtAAss null show ?thesis by (fastforce intro: AAssThrow2)
-	qed
+        assume "final i"
+        thus ?thesis
+        proof (rule finalE)
+          fix v
+          assume i: "i = Val v"
+          with wti have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastforce
+          then obtain idx where "v = Intg idx" by fastforce
+          thus ?thesis
+          proof (cases "final e")
+            assume "final e"
+            thus ?thesis
+            proof (rule finalE)
+              fix w
+              assume "e = Val w"
+              with WTrtAAss null show ?thesis by (fastforce intro: RedAAssNull)
+            next
+              fix ex
+              assume "e = Throw ex"
+              with WTrtAAss null show ?thesis by (fastforce intro: AAssThrow3)
+            qed
+          next
+            assume "\<not> final e"
+            with WTrtAAss null show ?thesis by (fastforce intro: AAssRed3)
+          qed
+        next
+          fix ex
+          assume "i = Throw ex"
+          with WTrtAAss null show ?thesis by (fastforce intro: AAssThrow2)
+        qed
       next
-	assume "\<not> final i"
-	with WTrtAAss null show ?thesis by (fastforce intro: AAssRed2)
+        assume "\<not> final i"
+        with WTrtAAss null show ?thesis by (fastforce intro: AAssRed2)
       qed
     next
       case (Array ad U)
       with wta obtain n where ty: "typeof_addr h ad = \<lfloor>Array_type U n\<rfloor>" by auto
       thus ?thesis
       proof (cases "final i")
-	assume fi: "final i"
-	thus ?thesis
-	proof (rule finalE)
-	  fix v
-	  assume ivalv: "i = Val v"
-	  with wti have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastforce
-	  then obtain idx where vidx: "v = Intg idx" by fastforce
-	  thus ?thesis
-	  proof (cases "final e")
-	    assume fe: "final e"
-	    thus ?thesis
-	    proof(rule finalE)
-	      fix w
-	      assume evalw: "e = Val w"
-	      show ?thesis
+        assume fi: "final i"
+        thus ?thesis
+        proof (rule finalE)
+          fix v
+          assume ivalv: "i = Val v"
+          with wti have "typeof\<^bsub>h\<^esub> v = Some Integer" by fastforce
+          then obtain idx where vidx: "v = Intg idx" by fastforce
+          thus ?thesis
+          proof (cases "final e")
+            assume fe: "final e"
+            thus ?thesis
+            proof(rule finalE)
+              fix w
+              assume evalw: "e = Val w"
+              show ?thesis
               proof(cases "idx <s 0 \<or> sint idx \<ge> int n")
                 case True
                 with ty evalw Array ivalv vidx show ?thesis by(fastforce intro: RedAAssBounds)
@@ -423,23 +423,23 @@ next
                   show ?thesis by(fastforce intro: RedAAssStore)
                 qed
               qed
-	    next
-	      fix ex
-	      assume "e = Throw ex"
-	      with Array ivalv show ?thesis by (fastforce intro: AAssThrow3)
-	    qed
-	  next
-	    assume "\<not> final e"
-	    with WTrtAAss Array fi ivalv vidx show ?thesis by (fastforce intro: AAssRed3)
-	  qed
-	next
-	  fix ex
-	  assume "i = Throw ex"
-	  with WTrtAAss Array show ?thesis by (fastforce intro: AAssThrow2)
-	qed
+            next
+              fix ex
+              assume "e = Throw ex"
+              with Array ivalv show ?thesis by (fastforce intro: AAssThrow3)
+            qed
+          next
+            assume "\<not> final e"
+            with WTrtAAss Array fi ivalv vidx show ?thesis by (fastforce intro: AAssRed3)
+          qed
+        next
+          fix ex
+          assume "i = Throw ex"
+          with WTrtAAss Array show ?thesis by (fastforce intro: AAssThrow2)
+        qed
       next
-	assume "\<not> final i"
-	with WTrtAAss Array show ?thesis by (fastforce intro: AAssRed2)
+        assume "\<not> final i"
+        with WTrtAAss Array show ?thesis by (fastforce intro: AAssRed2)
       qed
     next
       fix ex
@@ -468,12 +468,12 @@ next
       assume fi: "final i"
       show ?case
       proof (cases "final e")
-	assume fe: "final e"
-	with WTrtAAssNT fa fi show ?thesis
-	  by (fastforce simp:final_iff intro: RedAAssNull AAssThrow1 AAssThrow2 AAssThrow3)
+        assume fe: "final e"
+        with WTrtAAssNT fa fi show ?thesis
+          by (fastforce simp:final_iff intro: RedAAssNull AAssThrow1 AAssThrow2 AAssThrow3)
       next
-	assume "\<not> final e"
-	with WTrtAAssNT fa fi show ?thesis
+        assume "\<not> final e"
+        with WTrtAAssNT fa fi show ?thesis
           by (fastforce simp: final_iff intro!:AAssRed3 AAssThrow1 AAssThrow2)
       qed
     next
@@ -585,10 +585,10 @@ next
       fix a assume e1: "e1 = addr a"
       show ?thesis
       proof cases
-	assume "final e2"
-	thus ?thesis
-	proof (rule finalE)
-	  fix v assume e2: "e2 = Val v"
+        assume "final e2"
+        thus ?thesis
+        proof (rule finalE)
+          fix v assume e2: "e2 = Val v"
           from wte1 field icto e1 have adal: "P,h \<turnstile> a@CField D F : T"
             by(auto intro: addr_loc_type.intros)
           from e2 `P \<turnstile> T2 \<le> T` `P,E,h \<turnstile> e2 : T2`
@@ -596,14 +596,14 @@ next
           from heap_write_total[OF hconf adal this] obtain h' 
             where "heap_write h a (CField D F) v h'" ..
           with wte1 field e1 e2 show ?thesis
-	    by(fastforce intro: RedFAss)
+            by(fastforce intro: RedFAss)
         next
-	  fix a assume "e2 = Throw a"
-	  thus ?thesis using e1 by(fastforce intro:FAssThrow2)
-	qed
+          fix a assume "e2 = Throw a"
+          thus ?thesis using e1 by(fastforce intro:FAssThrow2)
+        qed
       next
-	assume "\<not> final e2" with WTrtFAss `final e1` e1 show ?thesis
-	  by simp (fast intro!:FAssRed2)
+        assume "\<not> final e2" with WTrtFAss `final e1` e1 show ?thesis
+          by simp (fast intro!:FAssRed2)
       qed
     next
       fix a assume "e1 = Throw a"
@@ -622,11 +622,11 @@ next
     proof cases
       assume "final e\<^isub>2"  --"@{term e\<^isub>2} is @{term Val} or @{term throw}"
       with WTrtFAssNT `final e\<^isub>1` show ?thesis
-	by(fastforce simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
+        by(fastforce simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
     next
       assume "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
       with WTrtFAssNT `final e\<^isub>1` show ?thesis
-	by (fastforce  simp:final_iff intro!:FAssRed2 FAssThrow1)
+        by (fastforce  simp:final_iff intro!:FAssRed2 FAssThrow1)
     qed
   next
     assume "\<not> final e\<^isub>1" --"@{term e\<^isub>1} reduces by IH"
@@ -651,11 +651,11 @@ next
       fix a assume e_addr: "e = addr a"
       show ?thesis
       proof(cases "\<exists>vs. es = map Val vs")
-	assume es: "\<exists>vs. es = map Val vs"
-	from wte e_addr obtain hU where ha: "typeof_addr h a = \<lfloor>hU\<rfloor>" "U = ty_of_htype hU"  by(auto)
-	have "length es = length Ts'" using wtes by(auto simp add: WTrts_conv_list_all2 dest: list_all2_lengthD)
-	moreover from subtype have "length Ts' = length Ts" by(auto dest: list_all2_lengthD)
-	ultimately have esTs: "length es = length Ts" by(auto)
+        assume es: "\<exists>vs. es = map Val vs"
+        from wte e_addr obtain hU where ha: "typeof_addr h a = \<lfloor>hU\<rfloor>" "U = ty_of_htype hU"  by(auto)
+        have "length es = length Ts'" using wtes by(auto simp add: WTrts_conv_list_all2 dest: list_all2_lengthD)
+        moreover from subtype have "length Ts' = length Ts" by(auto dest: list_all2_lengthD)
+        ultimately have esTs: "length es = length Ts" by(auto)
         show ?thesis
         proof(cases meth)
           case (Some pnsbody)
@@ -666,44 +666,44 @@ next
           with sees wf have "D\<bullet>M(Ts) :: T" by(auto intro: sees_wf_native)
           moreover from es obtain vs where vs: "es = map Val vs" ..
           with wtes have tyes: "map typeof\<^bsub>h\<^esub> vs = map Some Ts'" by simp
-	  with ha `D\<bullet>M(Ts) :: T` icto sees None
+          with ha `D\<bullet>M(Ts) :: T` icto sees None
           have "P,h \<turnstile> a\<bullet>M(vs) : T" using subtype by(auto simp add: external_WT'_iff)
           from external_call_progress[OF wf this hconf, of t] obtain ta va h'
-	    where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" by blast
-	  thus ?thesis using ha icto None sees vs e_addr
+            where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" by blast
+          thus ?thesis using ha icto None sees vs e_addr
             by(fastforce intro: RedCallExternal simp del: split_paired_Ex)
         qed
       next
-	assume "\<not>(\<exists>vs. es = map Val vs)"
-	hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"
-	  by(simp add:ex_map_conv)
-	let ?ves = "takeWhile (\<lambda>e. \<exists>v. e = Val v) es"
+        assume "\<not>(\<exists>vs. es = map Val vs)"
+        hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"
+          by(simp add:ex_map_conv)
+        let ?ves = "takeWhile (\<lambda>e. \<exists>v. e = Val v) es"
         let ?rest = "dropWhile (\<lambda>e. \<exists>v. e = Val v) es"
-	let ?ex = "hd ?rest" let ?rst = "tl ?rest"
-	from not_all_Val have nonempty: "?rest \<noteq> []" by auto
-	hence es: "es = ?ves @ ?ex # ?rst" by simp
-	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastforce dest:set_takeWhileD)
-	then obtain vs where ves: "?ves = map Val vs"
-	  using ex_map_conv by blast
-	show ?thesis
-	proof cases
-	  assume "final ?ex"
-	  moreover from nonempty have "\<not>(\<exists>v. ?ex = Val v)"
-	    by(auto simp:neq_Nil_conv simp del:dropWhile_eq_Nil_conv)
+        let ?ex = "hd ?rest" let ?rst = "tl ?rest"
+        from not_all_Val have nonempty: "?rest \<noteq> []" by auto
+        hence es: "es = ?ves @ ?ex # ?rst" by simp
+        have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastforce dest:set_takeWhileD)
+        then obtain vs where ves: "?ves = map Val vs"
+          using ex_map_conv by blast
+        show ?thesis
+        proof cases
+          assume "final ?ex"
+          moreover from nonempty have "\<not>(\<exists>v. ?ex = Val v)"
+            by(auto simp:neq_Nil_conv simp del:dropWhile_eq_Nil_conv)
               (simp add:dropWhile_eq_Cons_conv)
-	  ultimately obtain b where ex_Throw: "?ex = Throw b"
-	    by(fast elim!:finalE)
-	  show ?thesis using e_addr es ex_Throw ves
-	    by(fastforce intro:CallThrowParams)
-	next
-	  assume not_fin: "\<not> final ?ex"
-	  have "finals es = finals(?ves @ ?ex # ?rst)" using es
-	    by(rule arg_cong)
-	  also have "\<dots> = finals(?ex # ?rst)" using ves by simp
-	  finally have "finals es = finals(?ex # ?rst)" .
-	  hence "\<not> finals es" using not_finals_ConsI[OF not_fin] by blast
-	  thus ?thesis using e_addr dae IHes  by(fastforce intro!:CallParams)
-	qed
+          ultimately obtain b where ex_Throw: "?ex = Throw b"
+            by(fast elim!:finalE)
+          show ?thesis using e_addr es ex_Throw ves
+            by(fastforce intro:CallThrowParams)
+        next
+          assume not_fin: "\<not> final ?ex"
+          have "finals es = finals(?ves @ ?ex # ?rst)" using es
+            by(rule arg_cong)
+          also have "\<dots> = finals(?ex # ?rst)" using ves by simp
+          finally have "finals es = finals(?ex # ?rst)" .
+          hence "\<not> finals es" using not_finals_ConsI[OF not_fin] by blast
+          thus ?thesis using e_addr dae IHes  by(fastforce intro!:CallParams)
+        qed
       qed
     next
       fix a assume "e = Throw a"
@@ -729,17 +729,17 @@ next
       hence "e = null" using WTrtCallNT by simp
       have ?case
       proof cases
-	assume "finals es"
-	moreover
-	{ fix vs assume "es = map Val vs"
-	  with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: RedCallNull) }
-	moreover
-	{ fix vs a es' assume "es = map Val vs @ Throw a # es'"
-	  with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: CallThrowParams) }
-	ultimately show ?thesis by(fastforce simp:finals_iff)
+        assume "finals es"
+        moreover
+        { fix vs assume "es = map Val vs"
+          with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: RedCallNull) }
+        moreover
+        { fix vs a es' assume "es = map Val vs @ Throw a # es'"
+          with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: CallThrowParams) }
+        ultimately show ?thesis by(fastforce simp:finals_iff)
       next
-	assume "\<not> finals es" --"@{term es} reduces by IH"
-	with WTrtCallNT `e = null` show ?thesis by(fastforce intro: CallParams)
+        assume "\<not> finals es" --"@{term es} reduces by IH"
+        with WTrtCallNT `e = null` show ?thesis by(fastforce intro: CallParams)
       qed
     }
     moreover
@@ -790,14 +790,14 @@ next
       assume oval: "o' = Val v"
       with wto refT show ?thesis
       proof(cases "v")
-	assume vnull: "v = Null"
-	with oval vnull show ?thesis
-	  by(fastforce intro: SynchronizedNull)
+        assume vnull: "v = Null"
+        with oval vnull show ?thesis
+          by(fastforce intro: SynchronizedNull)
       next
-	fix ad
-	assume vaddr: "v = Addr ad"
-	thus ?thesis using oval 
-	  by(fastforce intro: LockSynchronized)
+        fix ad
+        assume vaddr: "v = Addr ad"
+        thus ?thesis using oval 
+          by(fastforce intro: LockSynchronized)
       qed(auto elim: refTE)
     next
       fix a
@@ -843,9 +843,9 @@ next
       then obtain b where v: "v = Bool b" using wt by auto
       show ?thesis
       proof (cases b)
-	case True with val v show ?thesis by(fastforce intro:RedCondT)
+        case True with val v show ?thesis by(fastforce intro:RedCondT)
       next
-	case False with val v show ?thesis by(fastforce intro:RedCondF)
+        case False with val v show ?thesis by(fastforce intro:RedCondF)
       qed
     next
       fix a assume "e = Throw a"
@@ -890,7 +890,7 @@ next
       fix a
       assume e1_Throw: "e1 = Throw a"
       with wt1 obtain D where ha: "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
-	by(auto simp add: widen_Class)
+        by(auto simp add: widen_Class)
       thus ?thesis using e1_Throw
         by(cases "P \<turnstile> D \<preceq>\<^sup>* C")(fastforce intro:RedTryCatch RedTryFail)+
     qed
@@ -918,7 +918,7 @@ next
       hence Des': "\<D>s es \<lfloor>dom l\<rfloor>" using De Des by auto
       have not_fins_tl: "\<not> finals es" using not_fins e by simp
       show ?thesis using e IHes[OF Des' not_fins_tl]
-	by (blast intro!:ListRed2)
+        by (blast intro!:ListRed2)
     next
       fix a assume "e = Throw a"
       hence False using not_fins by simp

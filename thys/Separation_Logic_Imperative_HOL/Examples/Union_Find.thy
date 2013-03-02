@@ -1,6 +1,6 @@
 header {* Union-Find Data-Structure *}
 theory Union_Find
-imports "../Sep_Main" "~~/src/HOL/Library/Efficient_Nat"
+imports "../Sep_Main" "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 text {*
   We implement a simple union-find data-structure based on an array.

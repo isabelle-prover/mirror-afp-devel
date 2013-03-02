@@ -133,8 +133,8 @@ next
       moreover
       have "A2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A2] by simp blast
       ultimately show ?thesis using TryCatch A1 A2
-	by(fastforce simp add: hyperset_defs image_index
-	  Diff_subset_conv inj_on_image_Int[OF inj_on_index])
+        by(fastforce simp add: hyperset_defs image_index
+          Diff_subset_conv inj_on_image_Int[OF inj_on_index])
     qed
   qed
 next
@@ -151,7 +151,7 @@ next
     have "A2 \<subseteq> set Vs" using Cond.prems A_fv[OF A2] by simp blast
     ultimately have ?case using Cond
       by(auto simp add:hyperset_defs image_Un
-	  inj_on_image_Int[OF inj_on_index])
+          inj_on_image_Int[OF inj_on_index])
   }
   ultimately show ?case by fastforce
 qed (auto simp add:hyperset_defs)

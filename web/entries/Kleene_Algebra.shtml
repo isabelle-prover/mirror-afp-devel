@@ -51,11 +51,11 @@ We start with formalising dioids, which are additively idempotent
 semirings, and expand them by axiomatisations of the Kleene star for
 finite iteration and an omega operation for infinite iteration. We
 show that powersets over a given monoid, (regular) languages, sets of
-paths in a graph, sets of computation traces, and binary relations form
-Kleene algebras, and consider further models based on lattices,
-max-plus semirings and min-plus semirings. We also demonstrate that
-dioids are closed under the formation of matrices and formal power
-series (proofs for Kleene algebras remain to be completed).
+paths in a graph, sets of computation traces, binary relations and
+formal power series form Kleene algebras, and consider further models
+based on lattices, max-plus semirings and min-plus semirings. We also
+demonstrate that dioids are closed under the formation of matrices
+(proofs for Kleene algebras remain to be completed).
 <p>
 On the one hand we have aimed at a reference formalisation of variants
 of Kleene algebras that covers a wide range of variants and the core

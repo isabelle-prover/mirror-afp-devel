@@ -85,7 +85,7 @@ lemmas [code_unfold] =
 
 definition main :: "String.literal" where "main = STR ''main''"
 
-ML {*
+ML_val {*
   val program = @{code ApprenticeChallenge_annotated};
   val compiled = @{code J2JVM} program;
 

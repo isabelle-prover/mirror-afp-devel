@@ -317,7 +317,7 @@ next
       from UNT wt wta obtain V where wte: "P,E,hp s \<turnstile> e : V" by(auto)
       from wte red_hext_incr[OF assa] have wte': "P,E,hp s' \<turnstile> e : V" by - (rule WTrt_hext_mono)
       from wta' UNT wti' wte' void show ?thesis
-	by(fastforce elim: WTrtAAssNT)
+        by(fastforce elim: WTrtAAssNT)
     next
       case (Array A)
       have UA: "U' = A\<lfloor>\<rceil>" by fact
@@ -559,7 +559,7 @@ next
     proof(cases "U = NT")
       case True
       moreover have "P,E,hp s' \<turnstile> es [:] Us"
-	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       ultimately show ?thesis using wte' by(blast intro!:WTrtCallNT)
     next
       case False
@@ -568,11 +568,11 @@ next
         by(rule widen_is_class_type_of)
 
       obtain Ts' T' meth' D'
-	where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = meth' in D'"
-	and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
-	using Call_lemma[OF method "subclass" wf] by fast
+        where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = meth' in D'"
+        and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
+        using Call_lemma[OF method "subclass" wf] by fast
       have wtes': "P,E,hp s' \<turnstile> es [:] Us"
-	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+        by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       show ?thesis using wtes' wte' icto' subs method' subs' sub' by(blast intro:widens_trans)
     qed
   next
