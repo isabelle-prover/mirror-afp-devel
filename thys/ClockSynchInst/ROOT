@@ -3,11 +3,6 @@ session ClockSynchInst (AFP) = HOL +
   theories
     ICAInstance
     LynchInstance
-(* FIXME *)
-(*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    Author:      Damián Barsotti <damian@hal.famaf.unc.edu.ar>, 2006
-    Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
-*)
   files
     "document/root.bib"
     "document/root.tex"
