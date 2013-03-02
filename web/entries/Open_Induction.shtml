@@ -60,7 +60,7 @@ A proof of the open induction schema based on J.-C. Raoult, Proving open propert
 <p></p>
 
 <!--#set var="name" value="Open_Induction" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

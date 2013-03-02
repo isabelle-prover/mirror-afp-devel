@@ -1,13 +1,12 @@
-session "Finger-Trees" (AFP) = HOL +
+session "Finger-Trees" (AFP) = "HOL-Library" +
   options [timeout = 300]
+
   theories
     FingerTree
+
   theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
-    Test
-(* FIXME *)
-(* Finger Trees*)
-(* Do not remove this, as it serves to detect issues with the code generator *)
+    Test (* Do not remove this, as it serves to detect issues with the code generator *)
+
   files
     "document/root.bib"
     "document/root.tex"

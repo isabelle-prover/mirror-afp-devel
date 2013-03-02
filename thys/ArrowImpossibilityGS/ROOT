@@ -1,8 +1,5 @@
-session ArrowImpossibilityGS (AFP) = HOL +
+session ArrowImpossibilityGS (AFP) = "HOL-Library" +
   options [timeout = 600]
-  theories [document = false]
-    "~~/src/HOL/Library/FuncSet"
-    "~~/src/HOL/Library/Zorn"
   theories
     "Thys/Arrow_Utility"
     "Thys/GS"

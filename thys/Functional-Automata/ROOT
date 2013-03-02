@@ -1,16 +1,9 @@
-session "Functional-Automata" (AFP) = HOL +
+session "Functional-Automata" (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/Sublist"
     "../Regular-Sets/Regular_Exp"
-    "~~/src/HOL/Library/Quotient_Product"
   theories
     Functional_Automata
-(* FIXME *)
-(*  Title:      HOL/Lex/ROOT.ML
-    Author:     Tobias Nipkow
-    Copyright   1998 TUM
-*)
   files
     "document/root.bib"
     "document/root.tex"

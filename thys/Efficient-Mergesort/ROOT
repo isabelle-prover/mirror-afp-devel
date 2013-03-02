@@ -1,7 +1,5 @@
-session "Efficient-Mergesort" (AFP) = HOL +
+session "Efficient-Mergesort" (AFP) = "HOL-Library" +
   options [timeout = 120]
-  theories [document = false]
-    "~~/src/HOL/Library/Multiset"
   theories
     Efficient_Sort
   files

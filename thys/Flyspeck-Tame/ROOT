@@ -1,8 +1,5 @@
-session "Flyspeck-Tame" (AFP) = HOL +
+session "Flyspeck-Tame" (AFP) = "HOL-Library" +
   options [timeout = 86400]
-  theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
-    "~~/src/HOL/Library/While_Combinator"
   theories
     Completeness
   files

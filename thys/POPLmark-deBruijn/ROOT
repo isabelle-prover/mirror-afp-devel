@@ -1,7 +1,5 @@
-session "POPLmark-deBruijn" (AFP) = HOL +
+session "POPLmark-deBruijn" (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
   theories
     POPLmark
     POPLmarkRecordCtxt

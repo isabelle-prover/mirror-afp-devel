@@ -1,15 +1,11 @@
-session "Presburger-Automata" (AFP) = HOL +
+session "Presburger-Automata" (AFP) = "HOL-Library" +
   options [timeout = 1000]
   theories [document = false]
     DFS
-    "~~/src/HOL/Library/Nat_Bijection"
-    "~~/src/HOL/Library/Efficient_Nat"
   theories
     Presburger_Automata
   theories [document = false]
-    Exec
-(* FIXME *)
-(* Code Generation *)
+    Exec (* Code Generation *)
   files
     "document/root.bib"
     "document/root.tex"

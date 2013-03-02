@@ -1,13 +1,5 @@
-session Coinductive (AFP) = HOL +
+session Coinductive (AFP) = "HOL-Library" +
   options [timeout = 200, document_graph]
-  theories [document = false]
-    "~~/src/HOL/Library/Extended_Nat"
-    "~~/src/HOL/Library/Prefix_Order"
-    "~~/src/HOL/Library/Quotient_Syntax"
-    "~~/src/HOL/Library/Quotient_Product"
-    "~~/src/HOL/Library/Quotient_Set"
-    "~~/src/HOL/Library/Quotient_Sum"
-    "~~/src/HOL/Library/Infinite_Set"
   theories
     Coinductive
     Lazy_TLList

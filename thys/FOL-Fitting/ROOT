@@ -1,7 +1,5 @@
-session "FOL-Fitting" (AFP) = HOL +
+session "FOL-Fitting" (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/Infinite_Set"
   theories
     FOL_Fitting
   files

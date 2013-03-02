@@ -1,16 +1,10 @@
-session "Binomial-Heaps" (AFP) = HOL +
+session "Binomial-Heaps" (AFP) = "HOL-Library" +
   options [timeout = 300]
-  theories [document = false]
-    "~~/src/HOL/Library/Multiset"
   theories
     BinomialHeap
     SkewBinomialHeap
   theories [document = false]
-    "~~/src/HOL/Library/Efficient_Nat"
-  theories [document = false]
-    Test
-(* FIXME *)
-(* Keep these in, they are to early detect problems with the code generator *)
+    Test (* Keep these in, they are to early detect problems with the code generator *)
   files
     "document/root.bib"
     "document/root.tex"

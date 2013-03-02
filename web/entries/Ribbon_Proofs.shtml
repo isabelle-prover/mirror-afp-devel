@@ -58,7 +58,7 @@ This document concerns the theory of ribbon proofs: a diagrammatic proof system,
 <p></p>
 
 <!--#set var="name" value="Ribbon_Proofs" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

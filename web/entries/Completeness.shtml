@@ -58,7 +58,7 @@ The completeness of first-order logic is proved, following the first five pages 
 <p></p>
 
 <!--#set var="name" value="Completeness" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

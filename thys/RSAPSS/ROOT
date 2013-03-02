@@ -1,8 +1,7 @@
-session RSAPSS (AFP) = HOL +
+session RSAPSS (AFP) = "HOL-Word" +
   options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Library/Efficient_Nat"
-    Word
     "~~/src/HOL/Old_Number_Theory/Primes"
   theories
     RSAPSS

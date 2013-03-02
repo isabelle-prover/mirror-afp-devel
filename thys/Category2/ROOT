@@ -1,8 +1,6 @@
-session Category2 (AFP) = HOL +
+session Category2 (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/FuncSet"
-    "~~/src/HOL/Library/Multiset"
     "~~/src/HOL/ZF/MainZF"
   theories
     MonadicEquationalTheory

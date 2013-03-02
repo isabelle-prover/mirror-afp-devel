@@ -1,7 +1,5 @@
-session "Free-Boolean-Algebra" (AFP) = HOL +
+session "Free-Boolean-Algebra" (AFP) = "HOL-Library" +
   options [timeout = 100]
-  theories [document = false]
-    "~~/src/HOL/Library/Lattice_Syntax"
   theories
     Free_Boolean_Algebra
   files

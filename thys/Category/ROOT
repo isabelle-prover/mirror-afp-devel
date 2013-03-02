@@ -1,7 +1,5 @@
-session Category (AFP) = HOL +
+session Category (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/FuncSet"
   theories
     Cat
     SetCat
@@ -9,9 +7,6 @@ session Category (AFP) = HOL +
     HomFunctors
     NatTrans
     Yoneda
-(* FIXME *)
-(*License: LGPL
-All files in this development of Category Theory are licensed under LGPL.*)
   files
     "document/root.bib"
     "document/root.tex"

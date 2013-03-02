@@ -58,7 +58,7 @@ This article presents a development of Category Theory in Isabelle/HOL. A Catego
 <p></p>
 
 <!--#set var="name" value="Category2" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

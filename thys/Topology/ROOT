@@ -1,8 +1,6 @@
-session Topology (AFP) = HOL +
+session Topology (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [document = false]
-    "~~/src/HOL/Library/FuncSet"
-    "~~/src/HOL/Library/Zorn"
     "../Lazy-Lists-II/LList2"
   theories
     LList_Topology

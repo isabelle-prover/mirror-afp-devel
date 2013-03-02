@@ -84,7 +84,7 @@ new codatatype stream with operations (with contributions by Peter Gammie)
 <p></p>
 
 <!--#set var="name" value="Coinductive" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

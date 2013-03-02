@@ -1,7 +1,5 @@
-session FinFun (AFP) = HOL +
+session FinFun (AFP) = "HOL-Library" +
   options [timeout = 3600, document_graph]
-  theories [document = false]
-    "~~/src/HOL/Library/Infinite_Set"
   theories
     FinFunPred
   files

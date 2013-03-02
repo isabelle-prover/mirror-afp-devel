@@ -62,7 +62,7 @@ This theory defines deterministic and nondeterministic automata in a functional 
 <p></p>
 
 <!--#set var="name" value="Functional-Automata" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -1,8 +1,5 @@
-session "Regular-Sets" (AFP) = HOL +
+session "Regular-Sets" (AFP) = "HOL-Library" +
   options [timeout = 300]
-  theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Reflection"
   theories
     Regexp_Method
     pEquivalence_Checking

@@ -1,9 +1,7 @@
-session "Program-Conflict-Analysis" (AFP) = HOL +
+session "Program-Conflict-Analysis" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Multiset"
     Misc
-    "~~/src/HOL/Library/Permutation"
     Interleave
   theories
     MainResult

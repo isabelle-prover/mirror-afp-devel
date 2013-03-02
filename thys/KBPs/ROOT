@@ -1,13 +1,8 @@
-session KBPs (AFP) = HOL +
+session KBPs (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [document = false, show_question_marks = false, names_short]
-    "~~/src/HOL/Library/LaTeXsugar"
-    "~~/src/HOL/Library/OptionalSugar"
-    "~~/src/HOL/Library/AList"
     Extra
     List_local
-    "~~/src/HOL/Library/Mapping"
-    "~~/src/HOL/Library/Saturated"
   theories [show_question_marks = false, names_short]
     KBPs_Main
   files

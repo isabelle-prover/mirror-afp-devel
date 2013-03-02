@@ -71,7 +71,7 @@ tedious proofs for linear orders of two datatypes.
 <p></p>
 
 <!--#set var="name" value="Datatype_Order_Generator" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -131,7 +131,7 @@ abstract = Squaring the circle, doubling the cube and trisecting an angle, using
 title = Knowledge-based programs
 author = Peter Gammie <http://peteg.org/>
 topic = Computer Science/Automata and Formal Languages
-base = HOL
+base = HOL/HOL-Library
 date = 2011-05-17
 abstract = Knowledge-based programs (KBPs) are a formalism for directly relating agents' knowledge and behaviour. Here we present a general scheme for compiling KBPs to executable automata with a proof of correctness in Isabelle/HOL. We develop the algorithm top-down, using Isabelle's locale mechanism to structure these proofs, and show that two classic examples can be synthesised using Isabelle's code generator.
 extra-history =
@@ -195,6 +195,7 @@ title = Regular Sets and Expressions
 author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 topic = Computer Science/Automata and Formal Languages
 date = 2010-05-12
+base = HOL/HOL-Library
 abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.
 extra-history =
   Change history:
@@ -207,12 +208,14 @@ title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu, Xingyuan Zhang, Christian Urban <http://www.in.tum.de/~urbanc>
 topic = Computer Science/Automata and Formal Languages
 date = 2011-08-26
+base = HOL/HOL-Library
 abstract = There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
 
 [Presburger-Automata]
 title = Formalizing the Logic-Automaton Connection
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter
 date = 2009-12-03
+base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages, Logic
 abstract = This work presents a formalization of a library for automata on bit strings. It forms the basis of a reflection-based decision procedure for Presburger arithmetic, which is efficiently executable thanks to Isabelle's code generator. With this work, we therefore provide a mechanized proof of a well-known connection between logic and automata theory. The formalization is also described in a publication [TPHOLs 2009].
 
@@ -220,6 +223,7 @@ abstract = This work presents a formalization of a library for automata on bit s
 title = Functional Automata
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2004-03-30
+base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
 depends-on = Regular-Sets
@@ -257,6 +261,7 @@ extra-history =
 title = Tree Automata
 author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
 date = 2009-11-25
+base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages
 abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
 depends-on = Collections
@@ -304,6 +309,7 @@ extra-history =
 title = Efficient Mergesort
 topic = Computer Science/Algorithms
 date = 2011-11-09
+base = HOL/HOL-Library
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>
 abstract = We provide a formalization of the mergesort algorithm as used in GHC's Data.List module, proving correctness and stability. Furthermore, experimental data suggests that generated (Haskell-)code for this algorithm is much faster than for previous algorithms available in the Isabelle distribution.
 extra-history =
@@ -314,6 +320,7 @@ extra-history =
 title = Formal Verification of Modern SAT Solvers 
 author = Filip Maric <http://www.matf.bg.ac.yu/~filip>
 date = 2008-07-23
+base = HOL/HOL-Library
 topic = Computer Science/Algorithms
 abstract = This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.
 
@@ -351,6 +358,7 @@ depends-on = Regular-Sets
 title = Much Ado About Two 
 author = Sascha B&ouml;hme <http://www4.in.tum.de/~boehmes/>
 date = 2007-11-06
+base = HOL/HOL-Library
 topic = Computer Science/Algorithms
 abstract = This article is an Isabelle formalisation of a paper with the same title. In a similar way as Knuth's 0-1-principle for sorting algorithms, that paper develops a 0-1-2-principle for parallel prefix computations.
 
@@ -463,6 +471,7 @@ abstract = Priority queues are an important data structure and efficient impleme
 title = Binomial Heaps and Skew Binomial Heaps
 author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <mailto:peter.lammich@uni-muenster.de>
 date = 2010-10-28
+base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract = 
  We implement and prove correct binomial heaps and skew binomial heaps.
@@ -480,6 +489,7 @@ abstract =
 title = Finger Trees
 author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan K&ouml;rner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <mailto:peter.lammich@uni-muenster.de>
 date = 2010-10-28
+base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract =
  We implement and prove correct 2-3 finger trees.
@@ -497,6 +507,7 @@ abstract =
 title = Code Generation for Functions as Data 
 author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
 date = 2009-05-06
+base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract = <b>FinFun is now part of the Isabelle distribution. The entry is kept for archival; maintained but not developed further. Use the Isabelle distribution version instead.</b><p>FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.</p>
 extra-history =
@@ -545,6 +556,7 @@ abstract = These theories illustrates the verification of basic file operations 
 title = Generating linear orders for datatypes
 author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2012-08-07
+base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract =
   We provide a framework for registering automatic methods to derive
@@ -568,6 +580,7 @@ abstract = This theory provides functions for finding the index of an element in
 [List-Infinite]
 title = Infinite Lists
 date = 2011-02-23
+base = HOL/HOL-Library
 author = David Trachtenherz <http://www4.in.tum.de/~trachten>
 topic = Computer Science/Data Structures
 abstract = We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also provides additional results for finite lists (theory ListInf/List2), natural numbers (folder CommonArith, esp. division/modulo, naturals with infinity), sets (folder CommonSet, esp. cutting/truncating sets, traversing sets of naturals).
@@ -608,6 +621,7 @@ title = Coinductive
 topic = Computer Science/Functional Programming
 author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
 date = 2010-02-12
+base = HOL/HOL-Library
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
 extra-history =
   Change history:
@@ -666,6 +680,7 @@ abstract =
 title = CoreC++
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2006-05-15
+base = HOL/HOL-Library
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present an operational semantics and type safety proof for multiple inheritance in C++. The semantics models the behavior of method calls, field accesses, and two forms of casts in C++ class hierarchies. For explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
 
@@ -772,6 +787,7 @@ abstract = We apply Andy Pitts's methods of defining relations over domains to
 title = POPLmark Challenge Via de Bruijn Indices 
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 date = 2007-08-02
+base = HOL/HOL-Library
 topic = Computer Science/Programming Languages/Lambda Calculi
 abstract = We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs. 
 
@@ -813,7 +829,7 @@ author = Peter Lammich <mailto:lammich@in.tum.de>, Rene Meis <mailto:rene.meis@u
 date = 2012-11-14
 topic = Computer Science/Programming Languages/Logics
 license = BSD
-base = HOL
+base = HOL/HOL-Library
 abstract =
   We provide a framework for separation-logic based correctness proofs of 
   Imperative HOL programs. Our framework comes with a set of proof methods to
@@ -966,6 +982,7 @@ title = Formalization of Conflict Analysis of Programs with Procedures, Thread C
 topic = Computer Science/Programming Languages/Static Analysis
 author = Peter Lammich <http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/>, Markus M&uuml;ller-Olm <http://wwwmath.uni-muenster.de/u/mmo/>
 date = 2007-12-14
+base = HOL/HOL-Library
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point. 
 
 [Shivers-CFA]
@@ -1026,6 +1043,7 @@ abstract = Two models of an electronic hotel key card system are contrasted: a s
 title = SHA1, RSA, PSS and more
 author = Christina Lindenberg <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html>, Kai Wirt <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/wirt.html>
 date = 2005-05-02
+base = HOL/HOL-Word
 topic = Computer Science/Security
 abstract = Formal verification is getting more and more important in computer science. However the state of the art formal verification methods in cryptography are very rudimentary. These theories are one step to provide a tool box allowing the use of formal methods in every aspect of cryptography. Moreover we present a proof of concept for the feasibility of verification techniques to a standard signature algorithm.
 
@@ -1043,6 +1061,7 @@ depends-on = Slicing, HRB-Slicing
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
 author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
 date = 2004-09-28
+base = HOL/HOL-Library
 topic = Logic
 abstract = Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.
 
@@ -1050,6 +1069,7 @@ abstract = Soundness and completeness for a system of first order logic are form
 title = Completeness theorem 
 author = James Margetson, Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
 date = 2004-09-20
+base = HOL/HOL-Library
 topic = Logic
 abstract = The completeness of first-order logic is proved, following the first five pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel et al., CUP, 1992. Their presentation of formulas allows the proofs to use symmetry arguments. Margetson formalized this theorem by early 2000. The Isar conversion is thanks to Tom Ridge. A paper describing the formalization is available <a href="Completeness-paper.pdf">[pdf]</a>. 
 
@@ -1075,6 +1095,7 @@ extra-history =
 title = First-Order Logic According to Fitting 
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 date = 2007-08-02
+base = HOL/HOL-Library
 topic = Logic
 abstract = We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the L&ouml;wenheim-Skolem theorem.
 
@@ -1115,6 +1136,7 @@ topic = Logic
 title = Free Boolean Algebra
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2010-03-29
+base = HOL/HOL-Library
 abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
 
 [Abstract-Rewriting]
@@ -1161,6 +1183,7 @@ extra-history =
 title = An Example of a Cofinitary Group in Isabelle/HOL
 author = Bart Kastermans <http://www.bartk.nl/>
 date = 2009-08-04
+base = HOL/HOL-Library
 topic = Mathematics/Algebra
 abstract = We formalize the usual proof that the group generated by the function k -> k + 1 on the integers gives rise to a cofinitary group.
 
@@ -1168,6 +1191,7 @@ abstract = We formalize the usual proof that the group generated by the function
 title = Groups, Rings and Modules
 author = Hidetsune Kobayashi, L. Chen, H. Murao 
 date = 2004-05-18
+base = HOL/HOL-Library
 topic = Mathematics/Algebra
 abstract = The theory of groups, rings and modules is developed to a great depth. Group theory results include Zassenhaus's theorem and the Jordan-Hoelder theorem. The ring theory development includes ideals, quotient rings and the Chinese remainder theorem. The module development includes the Nakayama lemma, exact sequences and Tensor products.
 
@@ -1293,6 +1317,7 @@ depends-on = Fermat3_4
 title = Arrow and Gibbard-Satterthwaite 
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2008-09-01
+base = HOL/HOL-Library
 topic = Mathematics/Social Choice Theory
 abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www.in.tum.de/~nipkow/pubs/arrow.html">here</a>. 
 
@@ -1307,6 +1332,7 @@ abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare"
 title = Topology
 author = Stefan Friedrich
 date = 2004-04-26
+base = HOL/HOL-Library
 topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
 depends-on = Lazy-Lists-II
@@ -1344,6 +1370,7 @@ abstract = This works presents a formalization of the Girth-Chromatic number the
 title = Flyspeck I: Tame Graphs 
 author = Gertrud Bauer, Tobias Nipkow <http://www4.in.tum.de/~nipkow>
 date = 2006-05-22
+base = HOL/HOL-Library
 topic = Mathematics/Graph Theory
 abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his <i>revised</i> proof of the Kepler Conjecture. The revison concerns the definition of tameness. The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
 extra-history =
@@ -1405,6 +1432,7 @@ abstract = This formalization of Ramsey's theorem (infinitary version) is taken 
 title = Open Induction
 author = Mizuhito Ogawa, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
 date = 2012-11-02
+base = HOL/HOL-Library
 topic = Mathematics/Combinatorics
 abstract =
   A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
@@ -1414,6 +1442,7 @@ abstract =
 title = Category Theory to Yoneda's Lemma 
 author = Greg O'Keefe <http://users.rsise.anu.edu.au/~okeefe/>
 date = 2005-04-21
+base = HOL/HOL-Library
 topic = Mathematics/Category Theory
 license = LGPL
 abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
@@ -1425,6 +1454,7 @@ extra-history =
 title = Category Theory
 author = Alexander Katovsky <mailto:apk32@cam.ac.uk>
 date = 2010-06-20
+base = HOL/HOL-Library
 topic = Mathematics/Category Theory
 abstract = This article presents a development of Category Theory in Isabelle/HOL. A Category is defined using records and locales. Functors and Natural Transformations are also defined. The main result that has been formalized is that the Yoneda functor is a full and faithful embedding. We also formalize the completeness of many sorted monadic equational logic. Extensive use is made of the HOLZF theory in both cases. For an informal description see <a href="http://www.srcf.ucam.org/~apk32/Isabelle/Category/Cat.pdf">here [pdf]</a>.
 
@@ -1454,5 +1484,6 @@ depends-on = Coinductive
 title = Ribbon Proofs
 author = John Wickerson <http://www.pes.tu-berlin.de/menue/ueber_uns/team/john_wickerson/>
 date = 2013-01-19
+base = HOL/HOL-Library
 topic = Computer Science/Programming Languages/Logics
 abstract = This document concerns the theory of ribbon proofs: a diagrammatic proof system, based on separation logic, for verifying program correctness. We include the syntax, proof rules, and soundness results for two alternative formalisations of ribbon proofs. <p> Compared to traditional proof outlines, ribbon proofs emphasise the structure of a proof, so are intelligible and pedagogical. Because they contain less redundancy than proof outlines, and allow each proof step to be checked locally, they may be more scalable. Where proof outlines are cumbersome to modify, ribbon proofs can be visually manoeuvred to yield proofs of variant programs.

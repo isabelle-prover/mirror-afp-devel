@@ -1,8 +1,5 @@
-session "CoreC++" (AFP) = HOL +
+session "CoreC++" (AFP) = "HOL-Library" +
   options [timeout = 2000]
-  theories [document = false]
-    "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Library/Efficient_Nat"
   theories
     "CoreC++"
   files

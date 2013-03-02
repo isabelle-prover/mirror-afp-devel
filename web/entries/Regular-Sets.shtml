@@ -68,7 +68,7 @@ This is a library of constructions on regular expressions and languages. It prov
 <p></p>
 
 <!--#set var="name" value="Regular-Sets" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

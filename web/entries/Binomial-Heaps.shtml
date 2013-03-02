@@ -72,7 +72,7 @@ operations.  Our implementation follows the paper by Brodal and Okasaki.
 <p></p>
 
 <!--#set var="name" value="Binomial-Heaps" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

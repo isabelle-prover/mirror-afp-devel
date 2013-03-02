@@ -1,7 +1,5 @@
-session CofGroups (AFP) = HOL +
+session CofGroups (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/Nat_Bijection"
   theories
     CofGroups
   files

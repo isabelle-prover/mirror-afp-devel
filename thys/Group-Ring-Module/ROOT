@@ -1,9 +1,5 @@
-session "Group-Ring-Module" (AFP) = HOL +
+session "Group-Ring-Module" (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/FuncSet"
-    "~~/src/HOL/Library/Binomial"
-    "~~/src/HOL/Library/Zorn"
   theories
     Algebra9
   files

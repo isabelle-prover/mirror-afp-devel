@@ -75,7 +75,7 @@ ML, OCaml, Haskell, and Scala.
 <p></p>
 
 <!--#set var="name" value="Separation_Logic_Imperative_HOL" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
