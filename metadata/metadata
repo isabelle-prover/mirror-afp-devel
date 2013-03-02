@@ -1043,7 +1043,6 @@ abstract = Two models of an electronic hotel key card system are contrasted: a s
 title = SHA1, RSA, PSS and more
 author = Christina Lindenberg <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html>, Kai Wirt <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/wirt.html>
 date = 2005-05-02
-base = HOL/HOL-Word
 topic = Computer Science/Security
 abstract = Formal verification is getting more and more important in computer science. However the state of the art formal verification methods in cryptography are very rudimentary. These theories are one step to provide a tool box allowing the use of formal methods in every aspect of cryptography. Moreover we present a proof of concept for the feasibility of verification techniques to a standard signature algorithm.
 
