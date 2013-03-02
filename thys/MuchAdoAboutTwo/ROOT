@@ -1,6 +1,7 @@
 session MuchAdoAboutTwo (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories [quick_and_dirty]
+    (* the theory contains one sorry to introduce an axiom *)
     MuchAdoAboutTwo
   files
     "document/root.bib"
