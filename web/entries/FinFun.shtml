@@ -76,7 +76,7 @@ replace sets as FinFuns by predicates as FinFuns because the set type constructo
 <p></p>
 
 <!--#set var="name" value="FinFun" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

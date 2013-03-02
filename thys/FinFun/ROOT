@@ -1,4 +1,4 @@
-session FinFun (AFP) = "HOL-Library" +
+session FinFun (AFP) = HOL +
   options [timeout = 3600, document_graph]
   theories
     FinFunPred
