@@ -232,7 +232,7 @@ moreover
   { fix C :: ereal assume "C<f x0"
     from this obtain d where "d>0 & (!y : (ball x0 d). C < f y)" using `?rhs` by auto
     hence "EX T. open T & x0 : T & (!y : T. C < f y)" apply (rule_tac x="ball x0 d" in exI)
-      apply (simp add: open_ball centre_in_ball) done
+      apply (simp add: centre_in_ball) done
   } hence "lsc_at x0 f" using assms lsc_at_ereal[of x0 f] by auto
 }
 ultimately show ?thesis by auto
@@ -261,14 +261,14 @@ proof-
     also have "...<=(INF y:(ball x0 e - {x0}). f y)" apply (subst INF_mono) by auto
     finally have "EX e:{e. e>0}. C <= (INF y:(ball x0 e - {x0}). f y)" using e_def by auto
   }
-  hence "f x0 <= Liminf (at x0) f" unfolding Liminf_at apply (subst ereal_le_Sup) by auto
+  hence "f x0 <= Liminf (at x0) f" unfolding Liminf_at apply (subst le_Sup_iff_less) by auto
 }
 moreover
 { assume inf: "f x0 <= Liminf (at x0) f"
   { fix C assume "C<f x0"
-    from this obtain y where y_def: "C<y & y<f x0" using ereal_dense by auto
+    from this obtain y where y_def: "C<y & y<f x0" using dense by auto
     from this obtain e where e_def: "e>0 & y <= INFI (ball x0 e - {x0}) f"
-      using inf ereal_le_Sup[of "f x0" "{0<..}" "(%e. INFI (ball x0 e - {x0}) f)"]
+      using inf le_Sup_iff_less[of "f x0" "{0<..}" "(%e. INFI (ball x0 e - {x0}) f)"]
       unfolding Liminf_at by auto
     hence "ALL z:(ball x0 e - {x0}). y <= f z" unfolding INF_def using le_Inf_iff[of y] by auto
     hence "ALL z:ball x0 e. y <= f z" using y_def by auto
@@ -827,7 +827,7 @@ have *: "f x >= (SUP e:{0<..}. INF y:ball x e. f y)"
     hence "z <= (INF y:ball x e. f y)" apply (subst INF_greatest) by auto
     also have "... <= (SUP e:{0<..}. INF y:ball x e. f y)" apply (subst SUP_upper) using e_def by auto
     finally have "z <= (SUP e:{0<..}. INF y:ball x e. f y)" by auto
-  } hence "f x <= (SUP e:{0<..}. INF y:ball x e. f y)" using ereal_le_ereal[of "f x"] by auto
+  } hence "f x <= (SUP e:{0<..}. INF y:ball x e. f y)" using dense_le[of "f x"] by auto
   hence ?thesis unfolding min_def using * l by auto
 }
 moreover
@@ -842,7 +842,7 @@ moreover
     moreover have "(INF y:ball x e. f y) <= (INF y:(ball x e - {x}). f y)" apply (subst INF_mono) by auto
     ultimately have "(INF y:ball x e. f y) = (INF y:(ball x e - {x}). f y)" by auto
   } hence "Liminf (at x) f = (SUP e:{0<..}. INF y:ball x e. f y)"
-      unfolding Liminf_at apply (subst same_SUP) by auto
+      unfolding Liminf_at apply (intro SUPR_eq) by auto
   hence ?thesis using g unfolding min_def by auto
 } ultimately show ?thesis using not_le by blast
 qed
@@ -863,7 +863,7 @@ proof-
       by (auto intro: SUP_upper)
     hence "ereal z >= (INF y:ball x e1. f y)" using xz_def by auto
     hence *: "ALL y>ereal z. EX t. t : ball x e1 & f t <= y"
-      using ereal_Inf_le[of "ball x e1" f "ereal z"] by auto
+      by (simp add: Bex_def Inf_le_iff_less)
     obtain t where t_def: "t : ball x e1 & f t <= ereal(z+e1)"
       using e1_def *[rule_format, of "ereal(z+e1)"] by auto
     hence epi: "(t,z+e1):Epigraph UNIV f" unfolding Epigraph_def by auto
@@ -1677,12 +1677,12 @@ proof-
 } moreover
 { fix x assume "x:domain (lsc_hull f)"
   hence "min (f x) (Liminf (at x) f) < \<infinity>" unfolding domain_def using lsc_hull_liminf_at[of f] by auto
-  then obtain z where z_def: "min (f x) (Liminf (at x) f) < z & z < \<infinity>" by (metis ereal_dense)
+  then obtain z where z_def: "min (f x) (Liminf (at x) f) < z & z < \<infinity>" by (metis dense)
   { fix e::real assume "e>0"
     hence "INFI (ball x e) f <= min (f x) (Liminf (at x) f)"
       unfolding min_Liminf_at apply (subst SUP_upper) by auto
     hence "EX y. y : ball x e & f y <= z"
-      using ereal_Inf_le[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by auto
+      using Inf_le_iff_less[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by (auto simp: Bex_def)
     hence "EX y. dist x y < e & y : domain f" unfolding domain_def ball_def using z_def by auto
   } hence "x:closure(domain f)" unfolding closure_approachable by (auto simp add: dist_commute)
 } ultimately show ?thesis by auto
