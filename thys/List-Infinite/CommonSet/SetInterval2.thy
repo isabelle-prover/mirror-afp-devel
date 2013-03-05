@@ -1488,7 +1488,7 @@ lemma atMost_atLeastAtMost_0_conv: "{..i::nat} = {0..i}"
 by (simp add: set_interval_defs)
 
 lemma atLeastAtMost_subset_atMost: "(k::'a::order) \<le> k' \<Longrightarrow> {l..k} \<subseteq> {..k'}"
-by (clarsimp, blast intro: order_trans)
+by (simp)
 
 thm image_add_lemmas
 thm image_Suc_lemmas
