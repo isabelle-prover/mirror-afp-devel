@@ -445,7 +445,7 @@ let
     |> map (simplify (HOL_basic_ss addsimps qfv_supp_thms))
     |> map (simplify (HOL_basic_ss addsimps @{thms prod_fv_supp prod_alpha_eq Abs_eq_iff[symmetric]}))
 
-  (* filters the theormes that are of the form "qfv = supp" *)
+  (* filters the theorems that are of the form "qfv = supp" *)
   fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ lhs $ _)) = member (op=) qfvs lhs
   | is_qfv_thm _ = false
 
