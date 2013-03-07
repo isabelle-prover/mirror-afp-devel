@@ -431,7 +431,7 @@ proof -
     where sees_M: "(P\<^bsub>wf\<^esub>) \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl,is,xt) in C"
     and "pc < length is"
     and reachable: "P\<^bsub>\<Phi>\<^esub> C M ! pc \<noteq> None"
-    by (cases x, (cases cs, auto)+)
+    by (cases x) (cases cs, auto)+
   from P_wf sees_M
   have wt_method: "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
     by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
@@ -445,7 +445,9 @@ proof -
     apply (drule BV_correct_1)
       apply (fastforce simp: bv_conform_def)
      apply (simp add: exec_1_iff)
-    by (cases "instrs_of (P\<^bsub>wf\<^esub>) C M ! pc", simp_all add: split_beta)
+    apply (cases "instrs_of (P\<^bsub>wf\<^esub>) C M ! pc")
+    apply (simp_all add: split_beta)
+    done
   from reachable obtain ST LT where reachable: "(P\<^bsub>\<Phi>\<^esub>) C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
     by fastforce
   with wt_method sees_M `pc < length is`
@@ -453,8 +455,12 @@ proof -
     "\<forall>pc' \<in> set (succs (is ! pc) (ST, LT) pc).
     stkLength P C M pc' = length (fst (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT))) \<and>
     locLength P C M pc' = length (snd (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)))"
-    unfolding wt_method_def
-    using [[simproc del: list_to_set_comprehension]] by (cases "is ! pc", (fastforce dest!: list_all2_lengthD)+)
+    unfolding wt_method_def apply (cases "is ! pc")
+    using [[simproc del: list_to_set_comprehension]]
+    apply (cases "is ! pc")
+    apply (tactic {* PARALLEL_GOALS
+      (ALLGOALS (Clasimp.fast_force_tac (@{context} addSDs @{thms list_all2_lengthD}))) *})
+    done
   have [simp]: "\<exists>x. x" by auto
   have [simp]: "Ex Not" by auto
   show ?thesis
@@ -463,7 +469,7 @@ proof -
     from state_correct have "preallocated h"
       by (clarsimp simp: bv_conform_def correct_state_def hconf_def)
     from Invoke applicable sees_M have "stkLength P C M pc > n"
-      by (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)", auto)
+      by (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)") auto
     show ?thesis
     proof (cases x)
       case None [simp]
@@ -478,22 +484,36 @@ proof -
       with ve Invoke obtain xf where [simp]: "aa = ((C',M',pc')#cs' , xf)"
         by (auto elim!: JVM_CFG.cases)
       from ve Invoke obtain f where kind: "kind a = \<Up>f"
-        by -(clarsimp, erule JVM_CFG.cases, auto)
+        apply -
+        apply clarsimp
+        apply (erule JVM_CFG.cases)
+        apply auto
+        done
       show ?thesis
       proof (cases xf)
         case True [simp]
         with a_pred Invoke have stk_n: "stk (length cs, stkLength P C M pc - Suc n) = Null"
           apply auto
-          by (erule JVM_CFG.cases, simp_all)
+          apply (erule JVM_CFG.cases)
+          apply simp_all
+          done
         from ve Invoke kind
         have [simp]: "f = (\<lambda>(h,stk,loc).
           (h, 
            stk((length cs',(stkLength P C' M' pc') - 1) := Addr (addr_of_sys_xcpt NullPointer)),
           loc))"
-          by -(clarsimp, erule JVM_CFG.cases, auto)
+          apply -
+          apply clarsimp
+          apply (erule JVM_CFG.cases)
+          apply auto
+          done
         from ve Invoke
         have "find_handler_for P NullPointer ((C,M,pc)#cs) = (C',M',pc')#cs'"
-          by -(clarsimp, erule JVM_CFG.cases, auto)
+          apply -
+          apply clarsimp
+          apply (erule JVM_CFG.cases)
+          apply auto
+          done
         with Invoke state_correct kind stk_n trg_state_correct applicable sees_M
           `preallocated h`
         show ?thesis
@@ -503,7 +523,8 @@ proof -
           apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct)
             apply fastforce
            apply (fastforce simp: split_beta split: split_if_asm)
-          by fastforce
+          apply fastforce
+          done
       next
         case False [simp]
         from a_pred Invoke
@@ -663,7 +684,7 @@ proof -
   next
     case (IfFalse b)
     have nat_int_pc_conv: "nat (int pc + 1) = pc + 1"
-      by (cases pc, auto)
+      by (cases pc) auto
     from IfFalse stk_loc_succs sees_M reachable applicable
     have "stkLength P C M (Suc pc) = stkLength P C M pc - 1"
       and "stkLength P C M (nat (int pc + b)) = stkLength P C M pc - 1"
