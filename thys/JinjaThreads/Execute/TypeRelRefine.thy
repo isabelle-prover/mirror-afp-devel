@@ -38,14 +38,6 @@ lemma map_values_Mapping [simp]:
   "map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. Option.map (f k) (m k))"
 by(rule map_values.abs_eq)
 
-lift_definition assoc_list_to_mapping :: "('k \<times> 'v) list \<Rightarrow> ('k, 'v) mapping"
-is map_of .
-
-lemma assoc_list_to_mapping_code [code]:
-  "assoc_list_to_mapping xs = foldr (\<lambda>(k, v) m. Mapping.update k v m) xs Mapping.empty"
-  (is "?lhs = ?rhs")
-by transfer(simp add: map_add_map_of_foldr[symmetric])
-
 lemma map_Mapping: "Mapping.map f g (Mapping.Mapping m) = Mapping.Mapping (Option.map g \<circ> m \<circ> f)"
 by(rule map.abs_eq)
 
@@ -75,13 +67,15 @@ lift_definition tabulate_sees_field :: "'m cdecl list \<Rightarrow> (cname, (vna
 is "\<lambda>P C. if is_class (Program P) C then
         Some (\<lambda>F. if \<exists>T fm D. Program P \<turnstile> C sees F:T (fm) in D then Some (field (Program P) C F) else None)
       else None"
-by(intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total)
+apply (subst mapping.pcr_cr_eq[symmetric])+
+by (intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total bi_total_eq)
 
 lift_definition tabulate_Method :: "'m cdecl list \<Rightarrow> (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
 is "\<lambda>P C. if is_class (Program P) C then
          Some (\<lambda>M. if \<exists>Ts T mthd D. Program P \<turnstile> C sees M:Ts\<rightarrow>T=mthd in D then Some (method (Program P) C M) else None)
       else None"
-by(intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total)
+apply (subst mapping.pcr_cr_eq[symmetric])+
+by(intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total bi_total_eq)
 
 fun wf_prog_impl' :: "'m prog_impl' \<Rightarrow> bool"
 where
@@ -93,49 +87,12 @@ where
 
 subsection {* Implementation type for tabulated lookup functions *}
 
-lemma option_rel_conversep: "option_rel R\<inverse>\<inverse> = (option_rel R)\<inverse>\<inverse>"
-  (is "?lhs = ?rhs")
-proof(rule ext)+
-  fix x y
-  show "?lhs x y = ?rhs x y"
-    by(cases "(R, y, x)" rule: option_rel.cases) simp_all
-qed
-
-lemma fun_rel_conversep: "fun_rel A\<inverse>\<inverse> B\<inverse>\<inverse> = (fun_rel A B)\<inverse>\<inverse>"
-by(blast intro!: ext dest: fun_relD)
-
-lemma [transfer_rule]: 
-  "(cr_mapping ===> (op = ===> option_rel cr_mapping) OO cr_mapping ===> op =)
-     (op = ===> option_rel (cr_mapping)\<inverse>\<inverse>) op ="
-apply(subst (3) conversep_eq[symmetric])
-apply(unfold option_rel_conversep fun_rel_conversep)
-apply(rule fun_relI)+
-apply(erule relcomppE)
- apply(rule iffI)
- apply(case_tac y)
- apply(case_tac ya)
- apply(clarsimp simp add: cr_mapping_def Mapping_inject Mapping_inverse)
- apply(rule ext)
- apply(drule_tac x=x in fun_relD, rule refl)
- apply(drule_tac x=x in fun_relD, rule refl)
- apply(case_tac "xa x")
- apply(case_tac [1-2] "yc x")
- apply(case_tac [1-4] "yb x")
- apply(simp_all add: Mapping.rep_inject)[8]
-apply simp
-apply(rule fun_relI)
-apply(drule (1) fun_relD)
-apply(case_tac "xa yb")
-apply(case_tac [1-2] "b yb")
-apply(case_tac [1-4] "x yb")
-apply(simp_all add: cr_mapping_def)
-done
-
 typedef 'm prog_impl = "{P :: 'm prog_impl'. wf_prog_impl' P}"
   morphisms impl_of ProgRefine 
 proof
-  show "([], Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None), Mapping.Mapping (\<lambda>C. None)) \<in> ?prog_impl"
-    by clarsimp(transfer, simp_all add: fun_eq_iff is_class_def fun_relI)
+  show "([], Mapping.empty, Mapping.empty, Mapping.empty, Mapping.empty) \<in> ?prog_impl"
+    apply clarsimp
+    by transfer (simp_all add: fun_eq_iff is_class_def fun_relI)
 qed
 
 lemma impl_of_ProgImpl [simp]:
