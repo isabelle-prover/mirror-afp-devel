@@ -53,9 +53,9 @@ yours via</p>
 theories. Users of your distribution also need to install the AFP in the above
 manner.</p>
 
-Example: you are using Isabelle2012, and have downloaded your afp directory to
+Example: you are using Isabelle2013, and have downloaded your afp directory to
 <code>~/afp</code>. You would add the line
-<code>~/afp</code> to the file <code>~/.isabelle/components</code>.
+<code>~/afp</code> to the file <code>~/.isabelle/Isabelle2013/components</code>.
 
 </td></tr>
 </tbody>
