@@ -42,7 +42,7 @@ and
         <td class="data" width="80%">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a></td></tr>
+        <td class="data">Norbert Schirmer</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2008-02-29</td></tr>

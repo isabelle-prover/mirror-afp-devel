@@ -57,7 +57,7 @@ abstract = The Circus specification language combines elements for complex data 
 
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm
-author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <mailto:lammich@in.tum.de>
+author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 topic = Computer Science/Algorithms
 base = HOL/Collections/Refine_Monadic
 date = 2012-01-30
@@ -70,7 +70,7 @@ abstract = We implement and prove correct Dijkstra's algorithm for the
 
 [Refine_Monadic]
 title = Refinement for Monadic Programs
-author = Peter Lammich <mailto:lammich@in.tum.de>
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 topic = Computer Science/Programming Languages/Logics
 base = HOL/Collections
 date = 2012-01-30
@@ -205,7 +205,7 @@ extra-history =
 
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
-author = Chunhan Wu, Xingyuan Zhang, Christian Urban <http://www.in.tum.de/~urbanc>
+author = Chunhan Wu, Xingyuan Zhang, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
 topic = Computer Science/Automata and Formal Languages
 date = 2011-08-26
 base = HOL/HOL-Library
@@ -259,7 +259,7 @@ extra-history =
 
 [Tree-Automata]
 title = Tree Automata
-author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2009-11-25
 base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages
@@ -318,7 +318,7 @@ extra-history =
 
 [SATSolverVerification]
 title = Formal Verification of Modern SAT Solvers 
-author = Filip Maric <http://www.matf.bg.ac.yu/~filip>
+author = Filip Maric <http://poincare.matf.bg.ac.rs/~filip/>
 date = 2008-07-23
 base = HOL/HOL-Library
 topic = Computer Science/Algorithms
@@ -371,7 +371,7 @@ abstract = Disk Paxos is an algorithm for building arbitrary fault-tolerant dist
 
 [GenClock]
 title = Formalization of a Generalized Protocol for Clock Synchronization
-author = Alwen Tiu <http://www.loria.fr/~tiu/>
+author = Alwen Tiu <http://users.cecs.anu.edu.au/~tiu/>
 date = 2005-06-24
 topic = Computer Science/Algorithms/Distributed
 abstract = We formalize the generalized Byzantine fault-tolerant clock synchronization protocol of Schneider. This protocol abstracts from particular algorithms or implementations for clock synchronization. This abstraction includes several assumptions on the behaviors of physical clocks and on general properties of concrete algorithms/implementations. Based on these assumptions the correctness of the protocol is proved by Schneider. His proof was later verified by Shankar using the theorem prover EHDM (precursor to PVS). Our formalization in Isabelle/HOL is based on Shankar's formalization.
@@ -417,7 +417,7 @@ abstract =
 
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
-author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <mailto:viktor.kuncak@epfl.ch>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
+author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
 date = 2012-03-1
 topic = Computer Science/Algorithms/Distributed
 base = HOL/HOLCF
@@ -446,7 +446,7 @@ extra-history =
 
 [BDD]
 title = BDD Normalisation
-author = Veronika Ortner, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
+author = Veronika Ortner, Norbert Schirmer
 date = 2008-02-29
 base = HOL/Simpl
 topic = Computer Science/Data Structures
@@ -455,7 +455,7 @@ depends-on = Simpl
 
 [BinarySearchTree]
 title = Binary Search Trees
-author = Viktor Kuncak <http://www.mit.edu/people/vkuncak/>
+author = Viktor Kuncak <http://lara.epfl.ch/~kuncak/>
 date = 2004-04-05
 topic = Computer Science/Data Structures
 abstract = The correctness is shown of binary search tree operations (lookup, insert and remove) implementing a set. Two versions are given, for both structured and linear (tactic-style) proofs. An implementation of integer-indexed maps is also verified.
@@ -469,7 +469,7 @@ abstract = Priority queues are an important data structure and efficient impleme
 
 [Binomial-Heaps]
 title = Binomial Heaps and Skew Binomial Heaps
-author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2010-10-28
 base = HOL/HOL-Library
 topic = Computer Science/Data Structures
@@ -487,7 +487,7 @@ abstract =
 
 [Finger-Trees]
 title = Finger Trees
-author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan K&ouml;rner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan K&ouml;rner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2010-10-28
 base = HOL/HOL-Library
 topic = Computer Science/Data Structures
@@ -505,7 +505,7 @@ abstract =
 
 [FinFun]
 title = Code Generation for Functions as Data 
-author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2009-05-06
 topic = Computer Science/Data Structures
 abstract = <b>FinFun is now part of the Isabelle distribution. The entry is kept for archival; maintained but not developed further. Use the Isabelle distribution version instead.</b><p>FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.</p>
@@ -524,7 +524,7 @@ extra-history =
 
 [Collections]
 title = Collections Framework
-author = Peter Lammich <mailto:peter.lammich@in.tum.de>, Andreas Lochbihler, Thomas Tuerk
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
@@ -546,7 +546,7 @@ extra-history =
 
 [FileRefinement]
 title = File Refinement
-author = Karen Zee <http://www.mit.edu/~kkz/>, Viktor Kuncak <http://cag.csail.mit.edu/~vkuncak/>
+author = Karen Zee <http://www.mit.edu/~kkz/>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>
 date = 2004-12-09
 topic = Computer Science/Data Structures
 abstract = These theories illustrates the verification of basic file operations (file creation, file read and file write) in the Isabelle theorem prover. We describe a file at two levels of abstraction: an abstract file represented as a resizable array, and a concrete file represented using data blocks. 
@@ -618,7 +618,7 @@ abstract = Huffman's algorithm is a procedure for constructing a binary tree wit
 [Coinductive]
 title = Coinductive
 topic = Computer Science/Functional Programming
-author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2010-02-12
 base = HOL/HOL-Library
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
@@ -653,7 +653,7 @@ author = Brian Huffman <http://cs.pdx.edu/~brianh>
 topic = Computer Science/Functional Programming
 date = 2009-04-29
 base = HOL/HOLCF
-abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://www.cse.unsw.edu.au/~dons/streams.html">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
+abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://hackage.haskell.org/package/stream-fusion">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
 
 [Tycon]
 title = Type Constructor Classes and Monad Transformers
@@ -685,7 +685,7 @@ abstract = We present an operational semantics and type safety proof for multipl
 
 [FeatherweightJava]
 title = A Theory of Featherweight Java in Isabelle/HOL 
-author = J. Nathan Foster <http://www.cis.upenn.edu/~jnfoster>, Dimitrios Vytiniotis <http://www.cis.upenn.edu/~dimitriv>
+author = J. Nathan Foster <http://www.cs.cornell.edu/~jnfoster/>, Dimitrios Vytiniotis <http://research.microsoft.com/en-us/people/dimitris/>
 date = 2006-03-31
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the type system, small-step operational semantics, and type soundness proof for Featherweight Java, a simple object calculus, in Isabelle/HOL.
@@ -699,7 +699,7 @@ abstract = We introduce Jinja, a Java-like programming language with a formal se
 
 [JinjaThreads]
 title = Jinja with Threads
-author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2007-12-03
 base = HOL/HOL-Word
 topic = Computer Science/Programming Languages/Language Definitions
@@ -807,7 +807,7 @@ abstract = This theory defines the type inference rules and the type inference a
 
 [Simpl]
 title = A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment
-author = Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
+author = Norbert Schirmer
 date = 2008-02-29
 topic = Computer Science/Programming Languages/Language Definitions, Computer Science/Programming Languages/Logics
 license = LGPL
@@ -824,7 +824,7 @@ abstract = We present a generic type class implementation of separation algebra 
 
 [Separation_Logic_Imperative_HOL]
 title = A Separation Logic Framework for Imperative HOL
-author = Peter Lammich <mailto:lammich@in.tum.de>, Rene Meis <mailto:rene.meis@uni-due.de>
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Rene Meis <mailto:rene.meis@uni-due.de>
 date = 2012-11-14
 topic = Computer Science/Programming Languages/Logics
 license = BSD
@@ -979,7 +979,7 @@ abstract = This article formalizes normalization by evaluation as implemented in
 [Program-Conflict-Analysis]
 title = Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors
 topic = Computer Science/Programming Languages/Static Analysis
-author = Peter Lammich <http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/>, Markus M&uuml;ller-Olm <http://wwwmath.uni-muenster.de/u/mmo/>
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Markus M&uuml;ller-Olm <http://cs.uni-muenster.de/u/mmo/>
 date = 2007-12-14
 base = HOL/HOL-Library
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point. 
@@ -1025,7 +1025,7 @@ abstract = Gill and Hutton formalise the worker/wrapper transformation, building
 
 [JiveDataStoreModel]
 title = Jive Data and Store Model
-author = Nicole Rauch <mailto:rauch@informatik.uni-kl.de>, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
+author = Nicole Rauch <mailto:rauch@informatik.uni-kl.de>, Norbert Schirmer
 date = 2005-06-20
 license = LGPL
 topic = Computer Science/Programming Languages/Misc
@@ -1040,7 +1040,7 @@ abstract = Two models of an electronic hotel key card system are contrasted: a s
 
 [RSAPSS]
 title = SHA1, RSA, PSS and more
-author = Christina Lindenberg <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html>, Kai Wirt <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/wirt.html>
+author = Christina Lindenberg, Kai Wirt
 date = 2005-05-02
 topic = Computer Science/Security
 abstract = Formal verification is getting more and more important in computer science. However the state of the art formal verification methods in cryptography are very rudimentary. These theories are one step to provide a tool box allowing the use of formal methods in every aspect of cryptography. Moreover we present a proof of concept for the feasibility of verification techniques to a standard signature algorithm.
@@ -1057,7 +1057,7 @@ depends-on = Slicing, HRB-Slicing
 
 [Verified-Prover]
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
-author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
+author = Tom Ridge
 date = 2004-09-28
 base = HOL/HOL-Library
 topic = Logic
@@ -1180,7 +1180,7 @@ extra-history =
 
 [CofGroups]
 title = An Example of a Cofinitary Group in Isabelle/HOL
-author = Bart Kastermans <http://www.bartk.nl/>
+author = Bart Kastermans <http://kasterma.net>
 date = 2009-08-04
 base = HOL/HOL-Library
 topic = Mathematics/Algebra
@@ -1196,7 +1196,7 @@ abstract = The theory of groups, rings and modules is developed to a great depth
 
 [Robbins-Conjecture]
 title = A Complete Proof of the Robbins Conjecture
-author = Matthew Wampler-Doty <http://www.w-d.org/>
+author = Matthew Wampler-Doty
 date = 2010-05-22
 topic = Mathematics/Algebra
 abstract = This document gives a formalization of the proof of the Robbins conjecture, following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.

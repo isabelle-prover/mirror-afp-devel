@@ -37,7 +37,7 @@ in
         <td class="data" width="80%">A Theory of Featherweight Java in Isabelle/HOL</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cis.upenn.edu/~jnfoster">J. Nathan Foster</a> and  <a href="http://www.cis.upenn.edu/~dimitriv">Dimitrios Vytiniotis</a></td></tr>
+        <td class="data"><a href="http://www.cs.cornell.edu/~jnfoster/">J. Nathan Foster</a> and  <a href="http://research.microsoft.com/en-us/people/dimitris/">Dimitrios Vytiniotis</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2006-03-31</td></tr>

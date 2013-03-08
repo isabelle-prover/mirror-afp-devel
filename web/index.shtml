@@ -100,7 +100,7 @@ Ren&eacute; Thiemann
 2012-11-14:
 <a href="entries/Separation_Logic_Imperative_HOL.shtml">A Separation Logic Framework for Imperative HOL</a>
 <br>Author:
-Peter Lammich and 
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
 Rene Meis
 </td></tr>
 
@@ -245,7 +245,7 @@ Christian Sternagel
 <a href="entries/Abortable_Linearizable_Modules.shtml">Abortable Linearizable Modules</a>
 <br>Author:
 Rachid Guerraoui,
-Viktor Kuncak and 
+<a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a> and 
 Giuliano Losa
 </td></tr>
 
@@ -268,14 +268,14 @@ Lars Noschinski
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra's Shortest Path Algorithm</a>
 <br>Author:
 Benedikt Nordhoff and 
-Peter Lammich
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
 2012-01-30:
 <a href="entries/Refine_Monadic.shtml">Refinement for Monadic Programs</a>
 <br>Author:
-Peter Lammich
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -342,7 +342,7 @@ Laurentiu Leustean and
 <br>Author:
 Chunhan Wu,
 Xingyuan Zhang and 
-<a href="http://www.in.tum.de/~urbanc">Christian Urban</a>
+<a href="http://www.inf.kcl.ac.uk/staff/urbanc/">Christian Urban</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -464,7 +464,7 @@ Ren&eacute; Neumann
 <br>Author:
 Rene Meis,
 Finn Nielsen and 
-Peter Lammich
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -473,7 +473,7 @@ Peter Lammich
 <br>Author:
 Benedikt Nordhoff,
 Stefan K&ouml;rner and 
-Peter Lammich
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -549,7 +549,7 @@ Alexander Katovsky
 2010-05-22:
 <a href="entries/Robbins-Conjecture.shtml">A Complete Proof of the Robbins Conjecture</a>
 <br>Author:
-<a href="http://www.w-d.org/">Matthew Wampler-Doty</a>
+Matthew Wampler-Doty
 </td></tr>
 
 <tr><td class="entry">
@@ -595,7 +595,7 @@ Henry Sudhof
 2010-02-12:
 <a href="entries/Coinductive.shtml">Coinductive</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
 </td></tr>
 
 
@@ -629,15 +629,15 @@ Markus Reiter
 2009-11-25:
 <a href="entries/Tree-Automata.shtml">Tree Automata</a>
 <br>Author:
-Peter Lammich
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
 2009-11-25:
 <a href="entries/Collections.shtml">Collections Framework</a>
 <br>Author:
-Peter Lammich,
-Andreas Lochbihler and 
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>,
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and 
 Thomas Tuerk
 </td></tr>
 
@@ -680,14 +680,14 @@ Andrei Popescu
 2009-08-04:
 <a href="entries/CofGroups.shtml">An Example of a Cofinitary Group in Isabelle/HOL</a>
 <br>Author:
-<a href="http://www.bartk.nl/">Bart Kastermans</a>
+<a href="http://kasterma.net">Bart Kastermans</a>
 </td></tr>
 
 <tr><td class="entry">
 2009-05-06:
 <a href="entries/FinFun.shtml">Code Generation for Functions as Data</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -780,7 +780,7 @@ Andrei Popescu
 2008-07-23:
 <a href="entries/SATSolverVerification.shtml">Formal Verification of Modern SAT Solvers</a>
 <br>Author:
-<a href="http://www.matf.bg.ac.yu/~filip">Filip Maric</a>
+<a href="http://poincare.matf.bg.ac.rs/~filip/">Filip Maric</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -795,14 +795,14 @@ Michael Nedzelsky
 <a href="entries/BDD.shtml">BDD Normalisation</a>
 <br>Author:
 Veronika Ortner and 
-<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
+Norbert Schirmer
 </td></tr>
 
 <tr><td class="entry">
 2008-02-29:
 <a href="entries/Simpl.shtml">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
+Norbert Schirmer
 </td></tr>
 
 <tr><td class="entry">
@@ -836,15 +836,15 @@ Veronika Ortner and
 2007-12-14:
 <a href="entries/Program-Conflict-Analysis.shtml">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a>
 <br>Author:
-<a href="http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/">Peter Lammich</a> and 
-<a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
+<a href="http://cs.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
 </td></tr>
 
 <tr><td class="entry">
 2007-12-03:
 <a href="entries/JinjaThreads.shtml">Jinja with Threads</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -934,8 +934,8 @@ Gertrud Bauer and
 2006-03-31:
 <a href="entries/FeatherweightJava.shtml">A Theory of Featherweight Java in Isabelle/HOL</a>
 <br>Author:
-<a href="http://www.cis.upenn.edu/~jnfoster">J. Nathan Foster</a> and 
-<a href="http://www.cis.upenn.edu/~dimitriv">Dimitrios Vytiniotis</a>
+<a href="http://www.cs.cornell.edu/~jnfoster/">J. Nathan Foster</a> and 
+<a href="http://research.microsoft.com/en-us/people/dimitris/">Dimitrios Vytiniotis</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -982,7 +982,7 @@ Benjamin Porter
 2005-06-24:
 <a href="entries/GenClock.shtml">Formalization of a Generalized Protocol for Clock Synchronization</a>
 <br>Author:
-<a href="http://www.loria.fr/~tiu/">Alwen Tiu</a>
+<a href="http://users.cecs.anu.edu.au/~tiu/">Alwen Tiu</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -998,7 +998,7 @@ Benjamin Porter
 <a href="entries/JiveDataStoreModel.shtml">Jive Data and Store Model</a>
 <br>Author:
 Nicole Rauch and 
-<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
+Norbert Schirmer
 </td></tr>
 
 <tr><td class="entry">
@@ -1013,8 +1013,8 @@ Nicole Rauch and
 2005-05-02:
 <a href="entries/RSAPSS.shtml">SHA1, RSA, PSS and more</a>
 <br>Author:
-<a href="http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html">Christina Lindenberg</a> and 
-<a href="http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/wirt.html">Kai Wirt</a>
+Christina Lindenberg and 
+Kai Wirt
 </td></tr>
 
 <tr><td class="entry">
@@ -1041,7 +1041,7 @@ Nicole Rauch and
 <a href="entries/FileRefinement.shtml">File Refinement</a>
 <br>Author:
 <a href="http://www.mit.edu/~kkz/">Karen Zee</a> and 
-<a href="http://cag.csail.mit.edu/~vkuncak/">Viktor Kuncak</a>
+<a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -1055,7 +1055,7 @@ Nicole Rauch and
 2004-09-28:
 <a href="entries/Verified-Prover.shtml">A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</a>
 <br>Author:
-<a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
+Tom Ridge
 </td></tr>
 
 <tr><td class="entry">
@@ -1115,7 +1115,7 @@ Stefan Friedrich
 2004-04-05:
 <a href="entries/BinarySearchTree.shtml">Binary Search Trees</a>
 <br>Author:
-<a href="http://www.mit.edu/people/vkuncak/">Viktor Kuncak</a>
+<a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a>
 </td></tr>
 
 <tr><td class="entry">
