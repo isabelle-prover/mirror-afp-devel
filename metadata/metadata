@@ -761,7 +761,7 @@ abstract = We present a Theory of Objects based on the original functional sigma
 title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
 author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
 date = 2011-02-23
-base = HOL/List-Infinite/Nat-Interval-Logic
+base = HOL/HOL-Library/List-Infinite/Nat-Interval-Logic
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
 
@@ -1110,6 +1110,7 @@ abstract = The invertibility of the rules of a sequent calculus is important for
 title = Quantifier Elimination for Linear Arithmetic
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2008-01-11
+base = HOL/HOL-Library
 topic = Logic
 abstract = This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
 
@@ -1117,7 +1118,7 @@ abstract = This article formalizes quantifier elimination procedures for dense l
 title = Interval Temporal Logic on Natural Numbers
 author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
 date = 2011-02-23
-base = HOL/List-Infinite
+base = HOL/HOL-Library/List-Infinite
 topic = Logic
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
 depends-on = List-Infinite
@@ -1205,7 +1206,7 @@ title = Fundamental Properties of Valuation Theory and Hensel's Lemma
 author = Hidetsune Kobayashi
 date = 2007-08-08
 topic = Mathematics/Algebra
-base = HOL/Group-Ring-Module
+base = HOL/HOL-Library/Group-Ring-Module
 abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
 depends-on = Group-Ring-Module
 
