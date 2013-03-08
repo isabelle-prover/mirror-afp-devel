@@ -12,7 +12,7 @@
 VERSION=afp-2013
 
 DEST=afp@web.sourceforge.net:htdocs/
-SRC=afp.hg.sourceforge.net/hgroot/afp/$VERSION
+SRC=hg.code.sf.net/p/afp/$VERSION
 
 if [ -n "$SF_LOGIN" ]; then
     LN=$SF_LOGIN

@@ -54,7 +54,7 @@ def write_entries(entries, template, isa_ver, isa_date, afp_ver, afp_date):
 	          '<a href="http://isabelle.in.tum.de/repos/isabelle/changelog/{0}">' \
 	          '{0}</a> - {1}</td></tr>'.format(isa_ver, isa_date)
 	print '   <tr><td>AFP revision:</td><td>'\
-	          '<a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/log/{0}">' \
+	          '<a href="http://sourceforge.net/p/afp/code/ci/{0}">' \
 	          '{0}</a> - {1}</td></tr>'.format(afp_ver, afp_date)
 	print '   </tbody></table>'
 	
