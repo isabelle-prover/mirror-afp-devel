@@ -58,7 +58,7 @@ fun lookup xs x = the (AList.lookup (op=) xs x)
 fun define_qtypes qtys_descr alpha_tys alpha_trms alpha_equivp_thms lthy =
   let
     val qty_args1 = map2 (fn ty => fn trm => (ty, trm, false)) alpha_tys alpha_trms
-    val qty_args2 = (map2 (fn descr => fn args1 => (descr, args1, (NONE, false))) qtys_descr qty_args1)
+    val qty_args2 = (map2 (fn descr => fn args1 => (descr, args1, (NONE, false, NONE))) qtys_descr qty_args1)
     val qty_args3 = qty_args2 ~~ alpha_equivp_thms
   in
     fold_map Quotient_Type.add_quotient_type qty_args3 lthy
