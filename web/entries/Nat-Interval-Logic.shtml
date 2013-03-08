@@ -66,7 +66,7 @@ We introduce a theory of temporal logic operators using sets of natural numbers 
 <p></p>
 
 <!--#set var="name" value="Nat-Interval-Logic" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/List-Infinite/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/List-Infinite/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -33,7 +33,7 @@
         <td class="data" width="80%">Abortable Linearizable Modules</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Rachid Guerraoui (rachid /dot/ guerraoui /at/ epfl /dot/ ch), Viktor Kuncak (viktor /dot/ kuncak /at/ epfl /dot/ ch) and  Giuliano Losa (giuliano /dot/ losa /at/ epfl /dot/ ch)</td></tr>
+        <td class="data">Rachid Guerraoui (rachid /dot/ guerraoui /at/ epfl /dot/ ch), <a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a> and  Giuliano Losa (giuliano /dot/ losa /at/ epfl /dot/ ch)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-03-1</td></tr>
