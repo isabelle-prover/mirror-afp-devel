@@ -1065,7 +1065,7 @@ abstract = Soundness and completeness for a system of first order logic are form
 
 [Completeness]
 title = Completeness theorem 
-author = James Margetson, Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
+author = James Margetson, Tom Ridge
 date = 2004-09-20
 base = HOL/HOL-Library
 topic = Logic
@@ -1422,10 +1422,10 @@ abstract = A proof of Bondy's theorem following B. Bollabas, Combinatorics, 1986
 
 [Ramsey-Infinite]
 title = Ramsey's theorem, infinitary version
-author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
+author = Tom Ridge
 date = 2004-09-20
 topic = Mathematics/Combinatorics
-abstract = This formalization of Ramsey's theorem (infinitary version) is taken from Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26. It differs slightly from the text by assuming a slightly stronger hypothesis. In particular, the induction hypothesis is stronger, holding for any infinite subset of the naturals. This avoids the rather peculiar mapping argument between kj and aikj on p.263, which is unnecessary and slightly mars this really beautiful result. 
+abstract = This formalization of Ramsey's theorem (infinitary version) is taken from Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26. It differs slightly from the text by assuming a slightly stronger hypothesis. In particular, the induction hypothesis is stronger, holding for any infinite subset of the naturals. This avoids the rather peculiar mapping argument between kj and aikj on p.263, which is unnecessary and slightly mars this really beautiful result.
 
 [Open_Induction]
 title = Open Induction
