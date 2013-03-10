@@ -54,8 +54,6 @@ ISABELLE=$ISABELLE_DEVEL/bin/isabelle
 ISABELLE_HOME_USER="$($ISABELLE getenv -b ISABELLE_HOME_USER)"
 [ -d $ISABELLE_HOME_USER ] || fail "[$ISABELLE_HOME_USER] not a directory."
 rm -rf $ISABELLE_HOME_USER/heaps
+rm -rf $ISABELLE_HOME_USER/browser_info
 
-cd $ISABELLE_DEVEL/src/HOL
-../../bin/isabelle make HOL >> $DISTLOG 2>&1
-
-#$ISABELLE_DEVEL/build -b HOL >> $DISTLOG
+$ISABELLE build -b HOL >> $DISTLOG 2>&1
