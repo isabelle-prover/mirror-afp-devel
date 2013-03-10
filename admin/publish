@@ -9,10 +9,13 @@
 
 ## settings
 
-VERSION=afp-2013
+VERSION=2013
+AFP_VERSION=afp-$VERSION
+ISABELLE_VERSION=Isabelle$VERSION
 
 DEST=afp@web.sourceforge.net:htdocs/
-SRC=hg.code.sf.net/p/afp/$VERSION
+FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION
+SRC=hg.code.sf.net/p/afp/$AFP_VERSION
 
 if [ -n "$SF_LOGIN" ]; then
     LN=$SF_LOGIN
@@ -21,6 +24,7 @@ else
 fi
 
 DEST=$LN,$DEST
+FILES=$LN@$FILES
 SRC=ssh://$LN@$SRC
 
 EXPORT_PRE=afp
@@ -116,9 +120,11 @@ echo "Checking sync with $SRC"
 $HG outgoing $SRC && fail "Push changes to SF first."
 
 echo "Exporting from working copy $ROOT"
-rm -rf "afp-export-$DATE"
-$HG archive -I thys -I web -I etc -I tools afp-export-$DATE || fail "hg archive failed."
-cd afp-export-$DATE
+HG_EXPORT=afp-export-$DATE
+rm -rf $HG_EXPORT
+$HG archive -I thys -I web -I etc -I tools $HG_EXPORT || fail "hg archive failed."
+cd $HG_EXPORT
+echo $DATE > web/release-date.txt
 mkdir $EXPORT
 mv thys etc tools $EXPORT/
 
@@ -128,7 +134,7 @@ if [ "$1" != "-" ]; then
     [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
     HTML_THYS=web/browser_info/$TAG
-    TARS=web/release/
+    TARS=web/release
     mkdir -p $HTML_THYS
     ln -s $TAG web/browser_info/current 
     ln -s ../front.css web/entries/front.css
@@ -137,8 +143,7 @@ if [ "$1" != "-" ]; then
     echo "Tarring [$EXPORT]"
     $TAR -cf $EXPORT.tar $EXPORT
     gzip --best -f $EXPORT.tar
-    mv $EXPORT.tar.gz $TARS
-    ln -s $EXPORT.tar.gz $TARS/$EXPORT_PRE-current.tar.gz
+    mv $EXPORT.tar.gz $TARS/
 
     echo "Generating HTML for [$@]"
     $ISABELLE_TOOL afp_build -- -c $@  || fail "isabelle afp_build failed on [$@]"
@@ -149,7 +154,7 @@ if [ "$1" != "-" ]; then
             echo "Tarring [$ENTRY]"
             $TAR -cf $EXPORT_PRE-$ENTRY-$DATE.tar $ENTRY
             gzip --best -f $EXPORT_PRE-$ENTRY-$DATE.tar
-            mv $EXPORT_PRE-$ENTRY-$DATE.tar.gz ../$TARS
+            mv $EXPORT_PRE-$ENTRY-$DATE.tar.gz ../$TARS/
             ln -s $EXPORT_PRE-$ENTRY-$DATE.tar.gz ../$TARS/$EXPORT_PRE-$ENTRY-current.tar.gz
             echo "Finished [$ENTRY]"
         fi
@@ -176,6 +181,11 @@ else
 fi
 
 if [ "$RESPONSE" == "y" ]; then
+    if [ "$TARS" != "" ]; then
+        echo
+        echo "Pushing $EXPORT to [$FILES]"
+        scp $TARS/$EXPORT.tar.gz $FILES
+    fi
     echo
     echo "Publishing to [$DEST]"
     chmod -R g=u web

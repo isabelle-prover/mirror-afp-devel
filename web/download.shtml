@@ -24,21 +24,18 @@
 <h1><font class="first">D</font>ownload the
 	<font class="first">A</font>rchive</h1>
 <p> </p>
-<!--#config timefmt="%Y-%m-%d" -->
 <table width="80%" class="descr">
 <tbody>
 	<tr><td class="head"><b>Current stable version</b> (for current Isabelle
 	release):</td></tr>
 		<tr></tr><td class="entry">  
-      <!--#flastmod file="release/afp-current.tar.gz" -->:  
       <a
-			href="release/afp-current.tar.gz"><tt>afp-current.tar.gz</tt></a>
-      [<!--#fsize file="release/afp-current.tar.gz" -->]
+			href="http://sourceforge.net/projects/afp/files/latest/download"><tt>afp-<!--#include file="release-date.txt" -->.tar.gz</tt></a>
     </td></tr>
 
 		<tr><td class="head">Older stable versions:</td></tr>
 		<tr><td class="entry">Please use the <a
-	href="http://sourceforge.net/project/showfiles.php?group_id=101909">sourceforge
+	href="http://sourceforge.net/projects/afp/files/">sourceforge
 	download system</a> to access older versions of the archive.</td></tr>
 
 		<tr><td class="head">Development snapshot (for development snapshot
