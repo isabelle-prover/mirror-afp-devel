@@ -117,9 +117,10 @@ $HG outgoing $SRC && fail "Push changes to SF first."
 
 echo "Exporting from working copy $ROOT"
 rm -rf "afp-export-$DATE"
-$HG archive -I thys -I web afp-export-$DATE || fail "hg archive failed."
+$HG archive -I thys -I web -I etc -I tools afp-export-$DATE || fail "hg archive failed."
 cd afp-export-$DATE
-mv thys $EXPORT
+mkdir $EXPORT
+mv thys etc tools $EXPORT/
 
 if [ "$1" != "-" ]; then
     echo "Cleaning up browser_info directory"
