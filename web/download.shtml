@@ -28,9 +28,10 @@
 <tbody>
 	<tr><td class="head"><b>Current stable version</b> (for current Isabelle
 	release):</td></tr>
-		<tr></tr><td class="entry">  
+		<tr></tr><td class="entry">
+		[<!--#include file="release-date.txt"-->]: 
       <a
-			href="http://sourceforge.net/projects/afp/files/latest/download"><tt>afp-<!--#include file="release-date.txt" -->.tar.gz</tt></a>
+	href="http://sourceforge.net/projects/afp/files/latest/download"><tt>afp-<!--#include file="release-date.txt"-->.tar.gz</tt></a>
     </td></tr>
 
 		<tr><td class="head">Older stable versions:</td></tr>
