@@ -235,10 +235,9 @@ this lemma is expected to hold. As a consequence, all following lemmas and also
 the final theorem only hold under this provision.
 *}
 
-lemma candidate_free_theorem:
-  assumes "\<And>x y. h (f x y) = g (h x) (h y)"
-  shows "map h (candidate f zs) = candidate g (map h zs)"
-sorry
+axiomatization where
+  candidate_free_theorem:
+    "\<And>x y. h (f x y) = g (h x) (h y) \<Longrightarrow> map h (candidate f zs) = candidate g (map h zs)"
 
 
 
@@ -351,7 +350,7 @@ proof -
       "\<dots> = g (?hn x) (?hn y)" by simp
       finally show "?hn (?fn x y) = g (?hn x) (?hn y)" .
     qed
-  with candidate_free_theorem [where f="?fn" and h="?hn"]
+  with candidate_free_theorem [where f="?fn" and h="?hn" and g = g]
   have ne_free_theorem: 
   "map ?hn (candidate ?fn (map l2n zs)) = candidate g (map ?hn (map l2n zs))"
       by auto
