@@ -151,7 +151,10 @@ lemma supp_fmap_transfer[transfer_rule]:
 
 lemma supp_fmap:
   "supp (m:: 'a::fs f\<rightharpoonup> 'b::fs) = (supp (fdom m) \<union> supp (fran m))"
-by transfer(erule supp_map_union)
+ apply transfer
+  apply (erule supp_map_union)
+ apply (metis Rel_def fmap.pcr_cr_eq set_rel_eq supp_fmap_transfer)
+ done
 
 instance "fmap" :: (fs,fs) fs
   by (default, auto intro: finite_sets_supp simp add: supp_fmap)
