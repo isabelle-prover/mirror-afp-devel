@@ -50,10 +50,6 @@
 \newenvironment{alignstar}{\csname align*\endcsname}{\csname endalign*\endcsname}
 \newenvironment{alignatstar}{\csname alignat*\endcsname}{\csname endalignat*\endcsname}
 
-% For compiling root.tex in the document/ directory
-\renewcommand\input[1]{%
-    \InputIfFileExists{#1}{}{\typeout{No file #1.}}%
-}
 
 \begin{document}
 
