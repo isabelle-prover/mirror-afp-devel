@@ -1,3 +1,5 @@
+chapter AFP
+
 session Ordinary_Differential_Equations (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 600]
   theories [document = false]

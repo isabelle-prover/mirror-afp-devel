@@ -1,3 +1,5 @@
+chapter AFP
+
 session Heard_Of (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]

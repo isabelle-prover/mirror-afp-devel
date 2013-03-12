@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Efficient-Mergesort" (AFP) = "HOL-Library" +
   options [timeout = 120]
   theories

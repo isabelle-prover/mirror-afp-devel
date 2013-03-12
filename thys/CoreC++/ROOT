@@ -1,3 +1,5 @@
+chapter AFP
+
 session "CoreC++" (AFP) = "HOL-Library" +
   options [timeout = 2000]
   theories

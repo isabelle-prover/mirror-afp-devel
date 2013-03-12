@@ -1,3 +1,5 @@
+chapter AFP
+
 session BDD (AFP) = Simpl +
   options [timeout = 3600, document_graph]
   theories

@@ -1,3 +1,5 @@
+chapter AFP
+
 session Separation_Algebra (AFP) = "HOL-Word" +
   options [timeout = 3600]
   theories

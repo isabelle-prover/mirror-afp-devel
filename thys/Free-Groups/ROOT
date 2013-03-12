@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Free-Groups" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]

@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Finger-Trees" (AFP) = "HOL-Library" +
   options [timeout = 300]
 

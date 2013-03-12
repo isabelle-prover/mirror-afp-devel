@@ -1,3 +1,5 @@
+chapter AFP
+
 session BytecodeLogicJmlTypes (AFP) = HOL +
   options [timeout = 3600]
   theories

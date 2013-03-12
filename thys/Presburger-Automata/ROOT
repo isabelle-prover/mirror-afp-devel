@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Presburger-Automata" (AFP) = "HOL-Library" +
   options [timeout = 1000]
   theories [document = false]

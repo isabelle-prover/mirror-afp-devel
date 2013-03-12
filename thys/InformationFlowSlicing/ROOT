@@ -1,3 +1,5 @@
+chapter AFP
+
 session InformationFlowSlicing_Inter (AFP) = "HRB-Slicing" +
   options [timeout = 14400, document_graph]
   theories

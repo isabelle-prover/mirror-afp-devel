@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Tarskis_Geometry" (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 3600]
   theories [document = false]

@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Locally-Nameless-Sigma" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]

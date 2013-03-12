@@ -1,3 +1,5 @@
+chapter AFP
+
 session WorkerWrapper (AFP) = HOLCF +
   options [timeout = 400]
   theories [document = false]

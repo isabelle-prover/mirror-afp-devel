@@ -1,3 +1,5 @@
+chapter AFP
+
 session Pi_Calculus (AFP) = "HOL-Nominal" +
   options [timeout = 3600]
   theories

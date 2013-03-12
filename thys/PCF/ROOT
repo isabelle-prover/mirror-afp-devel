@@ -1,3 +1,5 @@
+chapter AFP
+
 session PCF (AFP) = HOLCF +
   options [timeout = 600, document_graph, show_question_marks = false]
   theories [document = false]

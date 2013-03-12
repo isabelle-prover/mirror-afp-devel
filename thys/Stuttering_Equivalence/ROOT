@@ -1,3 +1,5 @@
+chapter AFP
+
 session Stuttering_Equivalence (AFP) = HOL +
   options [timeout = 300]
   theories

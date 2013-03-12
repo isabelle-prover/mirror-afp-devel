@@ -1,3 +1,5 @@
+chapter AFP
+
 session Polynomials (AFP) = HOL +
   options [timeout = 300]
   theories [document = false]

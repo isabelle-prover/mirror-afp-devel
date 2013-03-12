@@ -1,3 +1,5 @@
+chapter AFP
+
 session Category (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories

@@ -1,3 +1,5 @@
+chapter AFP
+
 session Valuation (AFP) = "Group-Ring-Module" +
   options [timeout = 3600]
   theories

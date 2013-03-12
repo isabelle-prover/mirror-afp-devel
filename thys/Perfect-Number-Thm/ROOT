@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Perfect-Number-Thm" (AFP) = HOL +
   options [timeout = 200]
   theories

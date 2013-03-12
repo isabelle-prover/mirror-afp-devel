@@ -1,3 +1,5 @@
+chapter AFP
+
 (* Session name, add to AFP group, list base session: *)
 session "Example-Submission" (AFP) = HOL +
 

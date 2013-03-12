@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Lam-ml-Normalization" (AFP) = "HOL-Nominal" +
   options [timeout = 100]
   theories [document = false]

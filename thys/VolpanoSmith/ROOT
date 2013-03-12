@@ -1,3 +1,5 @@
+chapter AFP
+
 session VolpanoSmith (AFP) = HOL +
   options [timeout = 2000]
   theories

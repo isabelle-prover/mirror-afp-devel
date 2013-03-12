@@ -1,3 +1,5 @@
+chapter AFP
+
 session SIFPL (AFP) = HOL +
   options [timeout = 600]
   theories

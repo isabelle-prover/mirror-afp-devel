@@ -1,3 +1,5 @@
+chapter AFP
+
 session HotelKeyCards (AFP) = HOL +
   options [timeout = 600, show_question_marks = false]
   theories

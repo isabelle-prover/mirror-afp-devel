@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Binomial-Queues" (AFP) = HOL +
   options [timeout = 300]
   theories

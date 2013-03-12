@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Myhill-Nerode" (AFP) = "HOL-Library" +
   options [timeout = 300]
   theories [document = false]

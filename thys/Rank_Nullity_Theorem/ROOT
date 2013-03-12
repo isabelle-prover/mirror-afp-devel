@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Rank_Nullity_Theorem" (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 60]
   theories

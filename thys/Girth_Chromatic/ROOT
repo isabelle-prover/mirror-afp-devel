@@ -1,3 +1,5 @@
+chapter AFP
+
 session Girth_Chromatic (AFP) = "HOL-Probability" +
   options [timeout = 1000]
   theories

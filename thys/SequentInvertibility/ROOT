@@ -1,3 +1,5 @@
+chapter AFP
+
 session SequentInvertibility (AFP) = "HOL-Nominal" +
   options [timeout = 500]
   theories [document = false]

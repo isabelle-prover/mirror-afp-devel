@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Nat-Interval-Logic" (AFP) = "List-Infinite" +
   options [timeout = 300, document_graph]
   theories

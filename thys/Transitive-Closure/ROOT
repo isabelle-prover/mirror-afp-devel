@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Transitive-Closure" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]

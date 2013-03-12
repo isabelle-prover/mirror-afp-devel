@@ -1,3 +1,5 @@
+chapter AFP
+
 session Sqrt_Babylonian (AFP) = HOL +
   options [timeout = 300]
   theories

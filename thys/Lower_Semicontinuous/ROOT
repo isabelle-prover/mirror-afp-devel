@@ -1,3 +1,5 @@
+chapter AFP
+
 session Lower_Semicontinuous (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 3600]
   theories

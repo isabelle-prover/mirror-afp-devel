@@ -1,3 +1,5 @@
+chapter AFP
+
 session JiveDataStoreModel (AFP) = HOL +
   options [timeout = 3600, document_graph]
   theories

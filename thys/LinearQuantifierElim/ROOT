@@ -1,3 +1,5 @@
+chapter AFP
+
 session LinearQuantifierElim (AFP) = "HOL-Library" +
   options [timeout = 1200]
   theories

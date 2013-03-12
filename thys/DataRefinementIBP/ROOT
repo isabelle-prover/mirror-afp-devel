@@ -1,3 +1,5 @@
+chapter AFP
+
 session DataRefinementIBP (AFP) = HOL +
   options [timeout = 100]
   theories [document = false]

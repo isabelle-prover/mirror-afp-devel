@@ -1,3 +1,5 @@
+chapter AFP
+
 session Fermat3_4 (AFP) = "HOL-Old_Number_Theory" +
   options [timeout = 600]
   theories

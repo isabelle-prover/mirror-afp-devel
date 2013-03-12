@@ -1,3 +1,5 @@
+chapter AFP
+
 session Open_Induction (AFP) = "HOL-Library" +
   options [timeout = 400]
   theories [document = false]

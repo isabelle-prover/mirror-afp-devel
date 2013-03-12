@@ -1,3 +1,5 @@
+chapter AFP
+
 session Abortable_Linearizable_Modules (AFP) = HOLCF +
   options [timeout = 600]
   theories [document = false]

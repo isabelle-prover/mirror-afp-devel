@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Group-Ring-Module" (AFP) = "HOL-Library" +
   options [timeout = 3600]
   theories

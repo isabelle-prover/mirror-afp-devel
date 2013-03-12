@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Gauss-Jordan-Elim-Fun" (AFP) = HOL +
   options [timeout = 60]
   theories

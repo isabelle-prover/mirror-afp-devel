@@ -1,3 +1,5 @@
+chapter AFP
+
 session Circus (AFP) = HOLCF +
   options [timeout = 3600, document_graph]
   theories [document = false]

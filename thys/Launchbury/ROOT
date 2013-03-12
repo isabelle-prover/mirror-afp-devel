@@ -1,3 +1,5 @@
+chapter AFP
+
 session Launchbury (AFP) = "Nominal2" +
   options [document_graph]
   theories

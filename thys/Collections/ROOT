@@ -1,3 +1,5 @@
+chapter AFP
+
 session Collections (AFP) = HOL +
   options [timeout = 1200, document_variants = "document:outline=/proof,/ML:userguide"]
 

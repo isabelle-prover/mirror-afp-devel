@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Compiling-Exceptions-Correctly" (AFP) = HOL +
   options [timeout = 3600]
   theories

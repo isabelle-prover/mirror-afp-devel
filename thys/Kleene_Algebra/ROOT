@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Kleene_Algebra" (AFP) = "HOL-Word" +
   options [timeout = 3600]
 

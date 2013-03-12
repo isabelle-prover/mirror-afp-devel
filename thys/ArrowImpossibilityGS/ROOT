@@ -1,3 +1,5 @@
+chapter AFP
+
 session ArrowImpossibilityGS (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories

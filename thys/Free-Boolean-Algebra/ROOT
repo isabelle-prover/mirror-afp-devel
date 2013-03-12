@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Free-Boolean-Algebra" (AFP) = "HOL-Library" +
   options [timeout = 100]
   theories

@@ -1,3 +1,5 @@
+chapter AFP
+
 session Refine_Monadic (AFP) = Collections +
   options [timeout = 3600, document_variants = "document:outline=/proof,/ML:userguide"]
   theories [document = false]

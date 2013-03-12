@@ -1,3 +1,5 @@
+chapter AFP
+
 session "Shivers-CFA" (AFP) = HOLCF +
   options [timeout = 600]
   theories [document = false]
