@@ -27,14 +27,14 @@ function fail()
     mkdir -p $AFPRELEASE || fail "could not mkdir $AFPRELEASE"
     cp $REPORT $AFPRELEASE/$STATUS
     cd $WORKING_COPY || fail "could not cd $WORKING_COPY"
-    hg archive -I thys -I web $EXPORT >> $LOG 2>&1 || fail "could not hg archive"
+    hg archive -I thys -I web -I etc -I tools $EXPORT >> $LOG 2>&1 || fail "could not hg archive"
     echo "Exported thys/web from hg" >> $LOG
 
     # update status report
     admin/mkstatus.py $REPORT admin/status.tpl "$ISABELLE_HG_ID" "$ISABELLE_DATE" "$AFP_HG_ID" "$AFP_DATE" > $WEB/status.shtml || fail "could not generate status.shtml"
 
     # make devel tar files
-    tar cf $EXPORT.tar $EXPORT/thys || fail "could not tar thys"
+    tar cf $EXPORT.tar $EXPORT/thys $EXPORT/etc $EXPORT/tools || fail "could not tar exported files"
     gzip --best -f $EXPORT.tar || fail "could not gzip $EXPORT.tar"
     mv $EXPORT.tar.gz $AFPRELEASE
     echo "Produced tar at $AFPRELEASE/$EXPORT.tar.gz" >> $LOG
