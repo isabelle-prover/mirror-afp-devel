@@ -145,8 +145,7 @@ proof -
     prefer 43 (* RedCall *)
     apply(fastforce dest: J_heap_base.red_reds.RedCall)
 
-    apply(simp_all)
-    apply(blast intro: J_heap_base.red_reds.intros dest: heap_base.heap_read_typed_into_heap_read heap_base.heap_read_typed_typed dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])+
+    apply(auto intro: J_heap_base.red_reds.intros dest: heap_base.heap_read_typed_into_heap_read heap_base.heap_read_typed_typed dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD2] heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD1])
     done
   moreover have "(?rhs1a \<longrightarrow> ?rhs1b \<longrightarrow> ?lhs1) \<and> (?rhs2a \<longrightarrow> ?rhs2b \<longrightarrow> ?lhs2)"
     apply(induct rule: J_heap_base.red_reds.induct)
@@ -160,8 +159,7 @@ proof -
     prefer 43 (* RedCall *)
     apply(fastforce dest: J_heap_base.red_reds.RedCall)
 
-    apply simp_all
-    apply(blast intro: J_heap_base.red_reds.intros intro!: heap_base.heap_read_typedI dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD1] intro: heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD2])+
+    apply(auto intro: J_heap_base.red_reds.intros intro!: heap_base.heap_read_typedI dest: heap_base'.addr_loc_type_conv_addr_loc_type[THEN fun_cong, THEN fun_cong, THEN fun_cong, THEN iffD1] intro: heap_base'.conf_conv_conf[THEN fun_cong, THEN fun_cong, THEN iffD2])
     done
   ultimately show "?lhs1 \<longleftrightarrow> ?rhs1a \<and> ?rhs1b" "?lhs2 \<longleftrightarrow> ?rhs2a \<and> ?rhs2b" by blast+
 qed
