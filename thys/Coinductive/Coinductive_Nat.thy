@@ -7,17 +7,33 @@ header {* Coinductive natural numbers *}
 
 theory Coinductive_Nat imports
   "~~/src/HOL/Library/Extended_Nat"
+  "~~/src/HOL/BNF/BNF"
 begin
-
-text {*
-  Coinductive natural numbers are isomorphic to natural numbers with infinity:
-  View Nat\_Infinity @{typ "enat"} as codatatype
-  with constructors @{term "0 :: enat"} and @{term "eSuc"}.
-*}
 
 lemmas eSuc_plus = iadd_Suc
 
 lemmas plus_enat_eq_0_conv = iadd_is_0
+
+lemma enat_add_sub_same:
+  fixes a b :: enat shows "a \<noteq> \<infinity> \<Longrightarrow> a + b - a = b"
+by(cases b) auto
+
+lemma enat_the_enat: "n \<noteq> \<infinity> \<Longrightarrow> enat (the_enat n) = n"
+by auto
+
+lemma enat_min_eq_0_iff: 
+  fixes a b :: enat
+  shows "min a b = 0 \<longleftrightarrow> a = 0 \<or> b = 0"
+by(auto simp add: min_def)
+
+lemma enat_le_plus_same: "x \<le> (x :: enat) + y" "x \<le> y + x"
+by(auto simp add: less_eq_enat_def plus_enat_def split: enat.split)
+
+lemma the_enat_0 [simp]: "the_enat 0 = 0"
+by(simp add: zero_enat_def)
+
+lemma the_enat_eSuc: "n \<noteq> \<infinity> \<Longrightarrow> the_enat (eSuc n) = Suc (the_enat n)"
+by(cases n)(simp_all add: eSuc_enat)
 
 coinductive_set enat_set :: "enat set"
 where "0 \<in> enat_set"
@@ -62,6 +78,19 @@ where [nitpick_simp]:
   "enat_cocase z s n = 
    (case n of enat n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (enat n'')) | \<infinity> \<Rightarrow> s \<infinity>)"
 
+(*
+wrap_data [0, eSuc] enat_cocase [] [[], [epred]] [[epred: 0]]
+*)
+
+
+
+
+
+
+
+
+
+
 lemma enat_cocase_0 [simp]:
   "enat_cocase z s 0 = z"
 by(simp add: enat_cocase_def zero_enat_def)
@@ -93,80 +122,136 @@ by(cases n rule: enat_coexhaust) simp_all
 
 subsection {* Corecursion for @{typ enat} *}
 
-definition enat_corec :: "'a \<Rightarrow> ('a \<Rightarrow> 'a option) \<Rightarrow> enat"
-where [code del]:
-  "enat_corec a f = 
-  (if \<exists>n. ((map_comp f) ^^ n) f a = None
-   then enat (LEAST n. ((map_comp f) ^^ n) f a = None) 
+lemma enat_case_numeral [simp]: "enat_case f i (numeral v) = (let n = numeral v in f n)"
+by(simp add: numeral_eq_enat)
+
+lemma enat_case_0 [simp]: "enat_case f i 0 = f 0"
+by(simp add: zero_enat_def)
+
+lemma [simp]:
+  shows max_eSuc_eSuc: "max (eSuc n) (eSuc m) = eSuc (max n m)"
+  and min_eSuc_eSuc: "min (eSuc n) (eSuc m) = eSuc (min n m)"
+by(simp_all add: eSuc_def split: enat.split)
+
+
+definition epred_numeral :: "num \<Rightarrow> enat"
+where [code del]: "epred_numeral = enat \<circ> pred_numeral"
+
+lemma numeral_eq_eSuc: "numeral k = eSuc (epred_numeral k)"
+by(simp add: numeral_eq_Suc eSuc_def epred_numeral_def numeral_eq_enat)
+
+lemma epred_numeral_simps [simp]:
+  "epred_numeral num.One = 0"
+  "epred_numeral (num.Bit0 k) = numeral (Num.BitM k)"
+  "epred_numeral (num.Bit1 k) = numeral (num.Bit0 k)"
+by(simp_all add: epred_numeral_def enat_numeral zero_enat_def)
+
+lemma [simp]:
+  shows eq_numeral_eSuc: "numeral k = eSuc n \<longleftrightarrow> epred_numeral k = n"
+  and Suc_eq_numeral: "eSuc n = numeral k \<longleftrightarrow> n = epred_numeral k"
+  and less_numeral_Suc: "numeral k < eSuc n \<longleftrightarrow> epred_numeral k < n"
+  and less_eSuc_numeral: "eSuc n < numeral k \<longleftrightarrow> n < epred_numeral k"
+  and le_numeral_eSuc: "numeral k \<le> eSuc n \<longleftrightarrow> epred_numeral k \<le> n"
+  and le_eSuc_numeral: "eSuc n \<le> numeral k \<longleftrightarrow> n \<le> epred_numeral k"
+  and diff_eSuc_numeral: "eSuc n - numeral k = n - epred_numeral k"
+  and diff_numeral_eSuc: "numeral k - eSuc n = epred_numeral k - n"
+  and max_eSuc_numeral: "max (eSuc n) (numeral k) = eSuc (max n (epred_numeral k))"
+  and max_numeral_eSuc: "max (numeral k) (eSuc n) = eSuc (max (epred_numeral k) n)"
+  and min_eSuc_numeral: "min (eSuc n) (numeral k) = eSuc (min n (epred_numeral k))"
+  and min_numeral_eSuc: "min (numeral k) (eSuc n) = eSuc (min (epred_numeral k) n)"
+by(simp_all add: numeral_eq_eSuc)
+
+lemma enat_cocase_numeral [simp]:
+  "enat_cocase a f (numeral v) = (let pv = epred_numeral v in f pv)"
+by(simp add: numeral_eq_eSuc)
+
+lemma enat_cocase_add_eq_if [simp]:
+  "enat_cocase a f ((numeral v) + n) = (let pv = epred_numeral v in f (pv + n))"
+by(simp add: numeral_eq_eSuc iadd_Suc)
+
+
+definition epred :: "enat \<Rightarrow> enat"
+where "epred n = n - 1"
+
+lemma epred_simps [simp]: 
+  shows epred_0: "epred 0 = 0"
+  and epred_1: "epred 1 = 0"
+  and epred_numeral: "epred (numeral i) = epred_numeral i"
+  and epred_eSuc: "epred (eSuc n) = n"
+  and epred_Infty: "epred \<infinity> = \<infinity>"
+  and epred_enat: "epred (enat m) = enat (m - 1)"
+by(simp_all add: epred_def one_enat_def zero_enat_def eSuc_def epred_numeral_def numeral_eq_enat split: enat.split)
+
+lemma epred_iadd1: "a \<noteq> 0 \<Longrightarrow> epred (a + b) = epred a + b"
+using [[simproc del: enat_eq_cancel]]
+apply(cases a b rule: enat.exhaust[case_product enat.exhaust])
+apply(simp_all add: epred_def eSuc_def one_enat_def zero_enat_def split: enat.splits)
+done
+
+lemma epred_min [simp]: "epred (min a b) = min (epred a) (epred b)"
+by(cases a b rule: enat_coexhaust[case_product enat_coexhaust]) simp_all
+
+lemma epred_le_epredI: "n \<le> m \<Longrightarrow> epred n \<le> epred m"
+by(cases m n rule: enat_coexhaust[case_product enat_coexhaust]) simp_all
+
+lemma epred_minus_epred [simp]:
+  "m \<noteq> 0 \<Longrightarrow> epred n - epred m = n - m"
+by(cases n m rule: enat_coexhaust[case_product enat_coexhaust])(simp_all add: epred_def)
+
+lemma eSuc_epred [simp]: "n \<noteq> 0 \<Longrightarrow> eSuc (epred n) = n"
+by(cases n rule: enat_coexhaust) simp_all
+
+lemma epred_inject: "\<lbrakk> x \<noteq> 0; y \<noteq> 0 \<rbrakk> \<Longrightarrow> epred x = epred y \<longleftrightarrow> x = y"
+by(cases x y rule: enat.exhaust[case_product enat.exhaust])(auto simp add: zero_enat_def)
+
+
+
+definition enat_unfold :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> enat"
+where "enat_unfold stop next a =
+  (if \<exists>n. stop ((next ^^ n) a)
+   then enat (LEAST n. stop ((next ^^ n) a))
    else \<infinity>)"
 
-lemma funpow_Suc_tail_rec: 
-  "(f ^^ (Suc n)) a = (f ^^ n) (f a)"
-by(induct n) simp_all
-
-lemma funpow_map_comp_lem:
-  "map_comp f g a = g a'
-  \<Longrightarrow> ((map_comp f) ^^ (Suc n)) g a = ((map_comp f) ^^ n) g a'"
-proof(induct n arbitrary: a a' g)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  hence "(f \<circ>\<^sub>m (f \<circ>\<^sub>m g)) a = (f \<circ>\<^sub>m g) a'"
-    by(simp add: map_comp_def)
-  hence "((op \<circ>\<^sub>m f) ^^ (Suc n)) (f \<circ>\<^sub>m g) a = ((op \<circ>\<^sub>m f) ^^ n) (f \<circ>\<^sub>m g) a'" 
-    by(rule Suc)
-  thus ?case by(simp only: funpow_Suc_tail_rec)
-qed
-
-lemma enat_corec [code, nitpick_simp]:
-  "enat_corec a f = (case f a of None \<Rightarrow> 0 | Some a \<Rightarrow> eSuc (enat_corec a f))"
-proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
+lemma enat_unfold [code, nitpick_simp]:
+  "enat_unfold stop next a =
+  (if stop a then 0 else eSuc (enat_unfold stop next (next a)))"
+  (is "?lhs = ?rhs")
+proof(cases "\<exists>n. stop ((next ^^ n) a)")
   case True
-  let ?m = "LEAST n. ((map_comp f) ^^ n) f a = None"
-  from True obtain n where n: "((map_comp f) ^^ n) f a = None" ..
-  hence fpl: "((map_comp f) ^^ ?m) f a = None" by(rule LeastI)
+  let ?P = "\<lambda>n. stop ((next ^^ n) a)"
+  let ?m = "Least ?P"
+  from True obtain n where n: "?P n" ..
+  hence "?P ?m" by(rule LeastI)
   show ?thesis
-  proof(cases "f a")
-    case None
-    hence "((map_comp f) ^^ 0) f a = None" by simp
-    hence "enat_corec a f = enat ?m"
-      unfolding enat_corec_def by(auto simp del: funpow.simps)
-    also have "?m = 0"
-      by(rule Least_equality, simp_all add: None)
-    finally show ?thesis using None by(simp add: zero_enat_def)
+  proof(cases "stop a")
+    case True
+    thus ?thesis
+      by(auto simp add: enat_unfold_def zero_enat_def intro: Least_equality exI[where x=0])
   next
-    case (Some a')
-    from n have "enat_corec a f = enat ?m" unfolding enat_corec_def by auto
-    also from n have "?m = Suc (LEAST n. ((map_comp f) ^^ (Suc n)) f a = None)"
-      by(rule Least_Suc)(simp add: Some)
-    also from Some have "(f \<circ>\<^sub>m f) a = f a'" by(simp add: map_comp_def)
-    hence Suc_n_a_n_a': "!!n. ((op \<circ>\<^sub>m f) ^^ (Suc n)) f a = ((op \<circ>\<^sub>m f) ^^ n) f a'"
-      by(rule funpow_map_comp_lem)
-    hence "Suc (LEAST n. ((map_comp f) ^^ (Suc n)) f a = None) =
-      Suc (LEAST n. ((map_comp f) ^^ n) f a' = None)" by simp
-    also note eSuc_enat[symmetric]
-    also from Some n have "n \<noteq> 0" by -(rule notI, simp)
-    then obtain n' where n': "n = Suc n'" by(auto simp add: gr0_conv_Suc)
-    with Suc_n_a_n_a'[of n'] n have "((map_comp f) ^^ n') f a' = None"
-      by(simp only:)
-    hence "enat (LEAST n. ((op \<circ>\<^sub>m f) ^^ n) f a' = None) = enat_corec a' f"
-      unfolding enat_corec_def by auto
-    finally show ?thesis using Some by simp
+    case False
+    with n obtain n' where n': "n = Suc n'" by(cases n) auto
+    from n have "?lhs = enat ?m" by(auto simp add: enat_unfold_def)
+    also from n have "?m = Suc (LEAST n. ?P (Suc n))"
+      by(rule Least_Suc)(simp add: False)
+    finally show ?thesis using False n n'
+      by(auto simp add: eSuc_enat[symmetric] funpow_swap1 enat_unfold_def)
   qed
-next
-  case False
-  hence fp: "!!n. (map_comp f ^^ n) f a \<noteq> None" by auto
-  from False have "enat_corec a f = \<infinity>" unfolding enat_corec_def by auto
-  moreover from fp[of 0] obtain a' where Some: "f a = Some a'" by auto
-  moreover
-  { fix n
-    have "(f \<circ>\<^sub>m f) a = f a'" using Some by(simp add: map_comp_def)
-    hence "(op \<circ>\<^sub>m f ^^ (Suc n)) f a = (op \<circ>\<^sub>m f ^^ n) f a'"
-      by(rule funpow_map_comp_lem)
-    with fp[of "Suc n"] have "(map_comp f ^^ n) f a' \<noteq> None" by simp }
-  hence "enat_corec a' f = \<infinity>" by(simp add: enat_corec_def)
-  ultimately show ?thesis by simp
-qed
+qed(auto simp add: enat_unfold_def funpow_swap1 elim: allE[where x=0] allE[where x="Suc n", standard])
+
+lemma enat_unfold_stop [simp]: "stop a \<Longrightarrow> enat_unfold stop next a = 0"
+by(simp add: enat_unfold)
+
+lemma enat_unfold_next: "\<not> stop a \<Longrightarrow> enat_unfold stop next a = eSuc (enat_unfold stop next (next a))"
+by(simp add: enat_unfold)
+
+lemma enat_unfold_eq_0 [simp]:
+  "enat_unfold stop next a = 0 \<longleftrightarrow> stop a"
+by(simp add: enat_unfold)
+
+lemma epred_enat_unfold [simp]:
+  "epred (enat_unfold stop next a) = (if stop a then 0 else enat_unfold stop next (next a))"
+by(simp add: enat_unfold_next)
+
 
 subsection {* Less as greatest fixpoint *}
 
@@ -241,11 +326,98 @@ lemma enat_leI [consumes 1, case_names Leenat, case_conclusion Leenat zero eSuc]
   and step:
     "\<And>m n. (m, n) \<in> X 
      \<Longrightarrow> m = 0 \<or> (\<exists>m' n' k. m = eSuc m' \<and> n = n' + enat k \<and> k \<noteq> 0 \<and>
-                           ((m', n') \<in> X \<or> m' = n'))"
+                           ((m', n') \<in> X \<or> m' \<le> n'))"
   shows "m \<le> n"
 apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="\<lambda>x y. (x, y) \<in> X"])
 apply(fastforce simp add: zero_enat_def dest: step intro: major)+
 done
+
+lemma enat_le_coinduct:
+  assumes P: "P m n"
+  and step:
+    "\<And>m n. P m n 
+     \<Longrightarrow> (n = 0 \<longrightarrow> m = 0) \<and>
+         (m \<noteq> 0 \<longrightarrow> n \<noteq> 0 \<longrightarrow> (\<exists>k. P (epred m) (epred n - k)) \<or> epred m \<le> epred n)"
+  shows "m \<le> n"
+proof -
+  from P have "(m, n) \<in> {(m, n). P m n}" by simp
+  thus ?thesis
+  proof(coinduct rule: enat_leI)
+    case (Leenat m n)
+    hence "P m n" by simp
+    show ?case
+    proof(cases m rule: enat_coexhaust)
+      case 0 
+      thus ?thesis by simp
+    next
+      case (eSuc m')
+      with step[OF `P m n`]
+      have "n \<noteq> 0" and disj: "(\<exists>k. P m' (epred n - k)) \<or> m' \<le> epred n" by auto
+      from `n \<noteq> 0` obtain n' where n': "n = eSuc n'"
+        by(cases n rule: enat_coexhaust) auto
+      from disj show ?thesis
+      proof
+        assume "m' \<le> epred n"
+        with eSuc n' show ?thesis 
+          by(auto 4 3 intro: exI[where x="Suc 0"] simp add: eSuc_enat[symmetric] iadd_Suc_right zero_enat_def[symmetric])
+      next
+        assume "\<exists>k. P m' (epred n - k)"
+        then obtain k where k: "P m' (epred n - k)" by blast
+        show ?thesis
+        proof(cases k)
+          case (enat k')
+          thus ?thesis using eSuc k n'
+            apply simp
+            apply(rule exI[where x="epred n - k"])
+            apply(rule exI[where x="Suc (min k' (the_enat n'))"])
+            apply(cases n')
+            apply(simp_all add: eSuc_enat)
+            done
+        next
+          case infinity
+          thus ?thesis using eSuc k n' 
+            apply(cases n')
+             apply simp_all
+             apply(rule exI[where x="0"])
+             apply(rule exI[where x="the_enat n"])
+            apply(auto simp add: eSuc_enat iadd_Suc_right intro!: exI[where x=\<infinity>])
+            done
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma enat_le_fun_coinduct_invar [consumes 1, case_names 0 eSuc]:
+  assumes P: "P x"
+  and 0: "\<And>x. \<lbrakk> P x; g x = 0 \<rbrakk> \<Longrightarrow> f x = 0"
+  and eSuc: "\<And>x. \<lbrakk> P x; f x \<noteq> 0; g x \<noteq> 0 \<rbrakk>
+    \<Longrightarrow> (\<exists>x' k. epred (f x) = f x' \<and> epred (g x) = g x' + k \<and> P x') \<or> epred (f x) \<le> epred (g x)"
+  shows "f x \<le> g x"
+apply(rule enat_le_coinduct[where P="\<lambda>m n. \<exists>x. P x \<and> m = f x \<and> n = g x"])
+using P apply(auto)[1]
+apply(safe)
+ apply(erule (1) 0)
+apply(drule (2) eSuc)
+apply(clarsimp)
+apply(case_tac k)
+ apply  simp_all
+apply(case_tac "g x'")
+ apply simp_all
+apply(rule_tac x="k" in exI)
+apply auto
+done
+
+lemma enat_le_fun_coinduct [case_names 0 eSuc]:
+  assumes "\<And>x. g x = 0 \<Longrightarrow> f x = 0"
+  and "\<And>x. \<lbrakk> f x \<noteq> 0; g x \<noteq> 0 \<rbrakk>
+    \<Longrightarrow> (\<exists>x' k. epred (f x) = f x' \<and> epred (g x) = g x' + k) \<or> epred (f x) \<le> epred (g x)"
+  shows "f x \<le> g x"
+apply(rule enat_le_fun_coinduct_invar[where P="\<lambda>_. True" and f=f and g=g])
+using assms by auto
+
+lemmas enat_le_fun_coinduct2 = enat_le_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
+lemmas enat_le_fun_coinduct_invar2 = enat_le_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
 
 subsection {* Equality as greatest fixpoint *}
 
@@ -268,6 +440,23 @@ proof(rule antisym)
     hence "(m, n) \<in> X" by simp
     from step[OF this] show ?case
       by(auto simp add: eSuc_plus_1 enat_1[symmetric])
+  qed
+qed
+
+lemma enat_coinduct [consumes 1, case_names Eqenat, case_conclusion Eqenat zero eSuc]:
+  assumes major: "P m n"
+  and step: "\<And>m n. P m n 
+    \<Longrightarrow> (m = 0 \<longleftrightarrow> n = 0) \<and>
+       (m \<noteq> 0 \<longrightarrow> n \<noteq> 0 \<longrightarrow> P (epred m) (epred n) \<or> epred m = epred n)"
+  shows "m = n"
+proof -
+  from major have "(m, n) \<in> {(m, n). P m n}" by simp
+  thus ?thesis
+  proof(coinduct rule: enat_equalityI)
+    case (Eqenat m n)
+    hence "P m n" by simp
+    from step[OF this] show ?case
+      by(cases m n rule: enat_coexhaust[case_product enat_coexhaust]) auto
   qed
 qed
 
@@ -295,27 +484,34 @@ proof -
   qed
 qed
 
+lemma enat_fun_coinduct_invar[consumes 1, case_names zero eSuc]:
+  assumes "P x"
+  and "\<And>x. P x \<Longrightarrow> f x = 0 \<longleftrightarrow> g x = 0"
+  and "\<And>x. \<lbrakk> P x; f x \<noteq> 0; g x \<noteq> 0 \<rbrakk> \<Longrightarrow> (\<exists>x'. epred (f x) = f x' \<and> epred (g x) = g x' \<and> P x') \<or> epred (f x) = epred (g x)"
+  shows "f x = g x"
+apply(rule enat_coinduct[where P="\<lambda>n m. \<exists>x. P x \<and> n = f x \<and> m = g x"])
+using assms by auto
+
+lemma enat_fun_coinduct[case_names zero eSuc]:
+  assumes "\<And>x. f x = 0 \<longleftrightarrow> g x = 0"
+  and "\<And>x. \<lbrakk> f x \<noteq> 0; g x \<noteq> 0 \<rbrakk> \<Longrightarrow> (\<exists>x'. epred (f x) = f x' \<and> epred (g x) = g x') \<or> epred (f x) = epred (g x)"
+  shows "f x = g x"
+by(rule enat_fun_coinduct_invar[where P="\<lambda>_. True" and f=f and g=g])(simp_all add: assms)
+
+lemmas enat_fun_coinduct2 = enat_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
+lemmas enat_fun_coinduct3 = enat_fun_coinduct[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
+lemmas enat_fun_coinduct_invar2 = enat_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
+lemmas enat_fun_coinduct_invar3 = enat_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
+
 subsection {* Uniqueness of corecursion *}
 
-lemma enat_corec_unique:
-  assumes h: "!!x. h x = (case f x of None \<Rightarrow> 0 | Some x' \<Rightarrow> eSuc (h x'))"
-  shows "h x = enat_corec x f"
-proof -
-  have "(h x, enat_corec x f) \<in> {(h x, enat_corec x f)|x. True}" by blast
-  thus ?thesis
-  proof(coinduct rule: enat_equalityI)
-    case (Eqenat n m)
-    then obtain x where x: "n = h x" "m = enat_corec x f" by auto
-    with h[of x] enat_corec[of x f]
-    show ?case by(clarsimp split: option.split) blast
-  qed
-qed
-
-lemma eSuc_minus_eSuc [simp]: "eSuc n - eSuc m = n - m"
-by(simp add: eSuc_def split: enat.split)
-
-lemma eSuc_minus_1 [simp]: "eSuc n - 1 = n"
-by(simp add: one_enat_def eSuc_enat[symmetric] zero_enat_def[symmetric])
+lemma enat_unfold_unique:
+  assumes h: "!!x. h x = (if stop x then 0 else eSuc (h (next x)))"
+  shows "h x = enat_unfold stop next x"
+apply(coinduct x rule: enat_fun_coinduct)
+ apply(subst h, simp)
+apply(subst h, auto)
+done
 
 subsection {* Misc. *}
 

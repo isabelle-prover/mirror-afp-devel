@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 theory Coinductive_List_Prefix imports
-  Coinductive_List_Lib
+  Coinductive_List
   "~~/src/HOL/Library/Prefix_Order"
 begin
 
@@ -60,75 +60,42 @@ instantiation llist :: (type) semilattice_inf begin
 
 definition [code del]:
   "inf xs ys =
-   llist_corec (xs, ys)
-     (\<lambda>(xs, ys). case xs of LNil \<Rightarrow> None
-                   | LCons x xs' \<Rightarrow> 
-                      (case ys of LNil \<Rightarrow> None
-                         | LCons y ys' \<Rightarrow> if (x = y) then Some (x, xs', ys') else None))"
+   llist_unfold (\<lambda>(xs, ys). xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)
+     (lhd \<circ> snd) (map_pair ltl ltl) (xs, ys)"
 
 lemma llist_inf_simps [simp, code, nitpick_simp]:
   "inf LNil xs = LNil"
   "inf xs LNil = LNil"
   "inf (LCons x xs) (LCons y ys) = (if x = y then LCons x (inf xs ys) else LNil)"
-unfolding inf_llist_def
-by(simp_all add: llist_corec split: llist_split)
+unfolding inf_llist_def by simp_all
+
+lemma llist_inf_eq_LNil [simp]:
+  "inf xs ys = LNil \<longleftrightarrow> (xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)"
+by(simp add: inf_llist_def)
+
+lemma [simp]: assumes "xs \<noteq> LNil" "ys \<noteq> LNil" "lhd xs = lhd ys"
+  shows lhd_llist_inf: "lhd (inf xs ys) = lhd ys"
+  and  ltl_llist_inf: "ltl (inf xs ys) = inf (ltl xs) (ltl ys)"
+using assms by(simp_all add: inf_llist_def)
 
 instance
 proof
   fix xs ys zs :: "'a llist"
-  have "(inf xs ys, xs) \<in> {(inf xs ys, xs)|xs ys. True}" by blast
-  thus "inf xs ys \<le> xs" unfolding le_llist_conv_lprefix
-  proof(coinduct rule: lprefixI)
-    case (lprefix zs xs)
-    then obtain ys where zs: "zs = inf xs ys" by auto
-    show ?case
-    proof(cases "\<exists>x xs' ys'. xs = LCons x xs' \<and> ys = LCons x ys'")
-      case True
-      with zs have ?LeLCons by auto
-      thus ?thesis ..
-    next
-      case False
-      with zs have ?LeLNil by(cases xs)(auto, cases ys, auto)
-      thus ?thesis ..
-    qed
-  qed
+  show "inf xs ys \<le> xs" unfolding le_llist_conv_lprefix
+    by(coinduct xs ys rule: lprefix_fun_coinduct2) auto
 
-  have "(inf xs ys, ys) \<in> {(inf xs ys, ys)|xs ys. True}" by blast
-  thus "inf xs ys \<le> ys" unfolding le_llist_conv_lprefix
-  proof(coinduct rule: lprefixI)
-    case (lprefix zs ys)
-    then obtain xs where zs: "zs = inf xs ys" by auto
-    show ?case
-    proof(cases "\<exists>x xs' ys'. xs = LCons x xs' \<and> ys = LCons x ys'")
-      case True
-      with zs have ?LeLCons by auto
-      thus ?thesis ..
-    next
-      case False
-      with zs have ?LeLNil by(cases xs)(auto, cases ys, auto)
-      thus ?thesis ..
-    qed
-  qed
+  show "inf xs ys \<le> ys" unfolding le_llist_conv_lprefix
+    by(coinduct xs ys rule: lprefix_fun_coinduct2) auto
 
   assume "xs \<le> ys" "xs \<le> zs"
-  hence "(xs, inf ys zs) \<in> {(xs, inf ys zs)|xs ys zs. xs \<le> ys \<and> xs \<le> zs}" 
-    by blast
+  hence "xs \<le> ys \<and> xs \<le> zs" by simp
   thus "xs \<le> inf ys zs" unfolding le_llist_conv_lprefix
-  proof(coinduct rule: lprefixI)
-    case (lprefix xs us)
-    then obtain ys zs where us: "us = inf ys zs" 
-      and le: "xs \<le> ys" "xs \<le> zs" unfolding le_llist_conv_lprefix by blast
-    show ?case
-    proof(cases xs)
-      case LNil
-      thus ?thesis ..
-    next
-      case (LCons x xs')
-      with le obtain ys' zs' where "ys = LCons x ys'" "zs = LCons x zs'"
-        "xs' \<le> ys'" "xs' \<le> zs'" by(auto simp add: LCons_lprefix_conv)
-      with us LCons have ?LeLCons by auto
-      thus ?thesis ..
-    qed
+  proof(coinduct xs ys zs rule: lprefix_fun_coinduct_invar3)
+    case (LNil xs ys zs) 
+    thus ?case by(cases xs)(auto simp add: LCons_lprefix_conv)
+  next
+    case (LCons xs ys zs)
+    thus ?case by(cases xs)(auto 4 4 simp add: LCons_lprefix_conv)
   qed
 qed
 

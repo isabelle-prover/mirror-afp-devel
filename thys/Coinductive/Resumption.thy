@@ -8,7 +8,7 @@ theory Resumption imports
 begin
 
 text {*
-  This development defines the following codatatype:
+  This theory defines the following codatatype:
 
 \begin{verbatim}
 codatatype ('a,'b,'c,'d) resumption =
@@ -16,6 +16,7 @@ codatatype ('a,'b,'c,'d) resumption =
   | Linear 'b "('a,'b,'c,'d) resumption"
   | Branch 'c "'d => ('a,'b,'c,'d) resumption"
 \end{verbatim}
+
 *}
 
 subsection {* Auxiliary definitions and lemmata similar to @{theory Datatype} *}

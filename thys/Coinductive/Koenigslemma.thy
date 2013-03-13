@@ -5,7 +5,7 @@
 header {* Example: Koenig's lemma *}
 
 theory Koenigslemma imports 
-  Coinductive_List_Lib 
+  Coinductive_List
   "~~/src/HOL/Library/Infinite_Set"
 begin
 
@@ -48,7 +48,7 @@ apply(erule paths.cases)
  apply simp
 apply(case_tac x)
  apply simp
-apply(case_tac l')
+apply(case_tac x22)
  apply simp
 apply simp
 done
@@ -143,12 +143,9 @@ theorem koenigslemma:
   shows "\<exists>xs \<in> paths graph. n \<in> lset xs \<and> \<not> lfinite xs \<and> ldistinct xs"
 proof(intro bexI conjI)
   let ?P = "\<lambda>(n, ns) n'. graph n n' \<and> infinite (reachable_via graph (- insert n (insert n' ns)) n') \<and> n' \<notin> insert n ns"
-  def xs' == "\<lambda>(n, ns). Some (n, let n' = SOME n'. ?P (n, ns) n' in (n', insert n ns))"
-  def xs == "llist_corec (n, {}) xs'"
-  let ?X = "\<lambda>xs. \<exists>n ns. xs = llist_corec (n, ns) xs' \<and> finite ns \<and> infinite (reachable_via graph (- insert n ns) n)"
-
-  have [simp]: "\<And>n ns. xs' (n, ns) = Some (n, let n' = SOME n'. ?P (n, ns) n' in (n', insert n ns))"
-    unfolding xs'_def by simp
+  def LTL == "\<lambda>(n, ns). let n' = SOME n'. ?P (n, ns) n' in (n', insert n ns)"
+  def f == "llist_unfold (\<lambda>_. False) fst LTL"
+  def ns == "{} :: 'node set"
 
   { fix n ns
     assume "infinite (reachable_via graph (- insert n ns) n)"
@@ -174,20 +171,26 @@ proof(intro bexI conjI)
     qed }
   note ex_P_I = this
 
+  { fix n ns
+    have "f (n, ns) \<noteq> LNil"
+      "lhd (f (n, ns)) = n"
+      "ltl (f (n, ns)) = (let n' = SOME n'. ?P (n, ns) n' in f (n', insert n ns))"
+      by(simp_all add: f_def LTL_def) }
+  note f_simps [simp] = this
+
   { fix n :: 'node and ns :: "'node set" and x :: 'node
-    assume "x \<in> lset (llist_corec (n, ns) xs')" "n \<notin> ns"
+    assume "x \<in> lset (f (n, ns))" "n \<notin> ns"
       and "finite ns" "infinite (reachable_via graph (- insert n ns) n)"
     hence "x \<notin> ns"
-    proof(induct "llist_corec (n, ns) xs'" arbitrary: n ns)
-      case (find xs)
-      thus ?case by(subst (asm) llist_corec) simp
+    proof(induct "f (n, ns)" arbitrary: n ns rule: lset_induct)
+      case find
+      thus ?case by(auto 4 4 dest: sym eq_LConsD)
     next
       case (step x' xs)
       let ?n' = "Eps (?P (n, ns))" 
         and ?ns' = "insert n ns"
-      from `LCons x' xs = llist_corec (n, ns) xs'`
-      obtain [simp]: "x' = n" and xs: "xs = llist_corec (?n', ?ns') xs'"
-        by(subst (asm) llist_corec) simp
+      from eq_LConsD[OF `LCons x' xs = f (n, ns)`[symmetric]]
+      have [simp]: "x' = n" and xs: "xs = f (?n', ?ns')" by auto
       from `infinite (reachable_via graph (- insert n ns) n)`
       have "\<exists>n'. ?P (n, ns) n'" by(rule ex_P_I)
       hence P: "?P (n, ns) ?n'" by(rule someI_ex)
@@ -200,18 +203,16 @@ proof(intro bexI conjI)
     qed }
   note lset = this
 
-  show "n \<in> lset xs" unfolding xs_def xs'_def by(subst llist_corec) simp
+  show "n \<in> lset (f (n, ns))"
+    using lhd_in_lset[OF f_simps(1), of n ns] by(simp del: lhd_in_lset)
 
-  { fix n ns
-    assume "lfinite (llist_corec (n, ns) xs')"
-    hence False
-    proof(induct "llist_corec (n, ns) xs'" arbitrary: n ns)
-      case lfinite_LNil thus ?case by(subst (asm) llist_corec)(clarsimp)
-    next
-      case lfinite_LConsI thus ?case 
-        by(subst (asm) (2) llist_corec)(auto simp add: Let_def xs'_def split_beta)
-    qed }
-  from this[of n "{}"] show "\<not> lfinite xs" by(auto simp add: xs_def)
+  show "\<not> lfinite (f (n, ns))"
+  proof
+    assume "lfinite (f (n, ns))"
+    thus False by(induct "f (n, ns)" arbitrary: n ns rule: lfinite_induct) auto
+  qed
+
+  let ?X = "\<lambda>xs. \<exists>n ns. xs = f (n, ns) \<and> finite ns \<and> infinite (reachable_via graph (- insert n ns) n)"
 
   have "reachable_via graph (- {n}) n \<supseteq> - {n}"
   proof(rule subsetI)
@@ -228,12 +229,12 @@ proof(intro bexI conjI)
   qed
   hence "infinite (reachable_via graph (- {n}) n)"
     using infinite by(auto dest: finite_subset)
-  hence X: "?X xs" unfolding xs_def by(auto)
+  hence X: "?X (f (n, {}))" by(auto)
 
-  thus "xs \<in> paths graph"
+  thus "f (n, {}) \<in> paths graph"
   proof(coinduct)
     case (paths xs)
-    then obtain n ns where xs_def: "xs = llist_corec (n, ns) xs'"
+    then obtain n ns where xs_def: "xs = f (n, ns)"
       and "finite ns" and "infinite (reachable_via graph (- insert n ns) n)" by blast
     from `infinite (reachable_via graph (- insert n ns) n)`
     have "\<exists>n'. ?P (n, ns) n'" by(rule ex_P_I)
@@ -242,41 +243,41 @@ proof(intro bexI conjI)
     let ?ns' = "insert n ns"
     let ?n'' = "Eps (?P (?n', ?ns'))"
     let ?ns'' = "insert ?n' ?ns'"
-    have "xs = LCons n (LCons ?n' (llist_corec (?n'', ?ns'') xs'))"
-      unfolding xs_def by(subst llist_corec)(subst llist_corec, simp add: Let_def)
+    have "xs = LCons n (LCons ?n' (f (?n'', ?ns'')))"
+      unfolding xs_def by(auto 4 3 intro: llist.expand)
     moreover from P have "graph n ?n'" by simp
     moreover {
-      have "LCons ?n' (llist_corec (?n'', ?ns'') xs') = llist_corec (?n', ?ns') xs'"
-        by(subst (2) llist_corec)(simp add: Let_def)
+      have "LCons ?n' (f (?n'', ?ns'')) = f (?n', ?ns')"
+        by(rule llist.expand) simp_all
       moreover have "finite ?ns'" using `finite ns` by simp
       moreover have "insert ?n' ?ns' = insert n (insert ?n' ns)" by auto
       hence "infinite (reachable_via graph (- insert ?n' ?ns') ?n')" using P by simp
-      ultimately have "?X (LCons ?n' (llist_corec (?n'', ?ns'') xs'))" by blast }
+      ultimately have "?X (LCons ?n' (f (?n'', ?ns'')))" by blast }
     ultimately have ?LCons by simp
     thus ?case by simp
   qed
-  
-  from X show "ldistinct xs"
-  proof(coinduct)
-    case (ldistinct xs)
-    then obtain n ns where xs_def: "xs = llist_corec (n, ns) xs'"
-      and "finite ns"
-      and "infinite (reachable_via graph (- insert n ns) n)" by blast
+
+  from `infinite (reachable_via graph (- {n}) n)`
+  have "infinite (reachable_via graph (- insert n ns) n) \<and> finite ns"
+    by(simp add: ns_def)
+  thus "ldistinct (f (n, ns))"
+  proof(coinduct n ns rule: ldistinct_fun_coinduct_invar2)
+    case (ldistinct n ns)
+    then obtain "finite ns"
+      and "infinite (reachable_via graph (- insert n ns) n)" by simp
     from `infinite (reachable_via graph (- insert n ns) n)`
     have "\<exists>n'. ?P (n, ns) n'" by(rule ex_P_I)
     hence P: "?P (n, ns) (Eps (?P (n, ns)))" by(rule someI_ex)
     let ?n' = "Eps (?P (n, ns))"
     let ?ns' = "insert n ns"
-    have "xs = LCons n (llist_corec (?n', ?ns') xs')"
-      unfolding xs_def by(subst llist_corec)(simp add: Let_def)
-    moreover have eq: "insert ?n' ?ns' = insert n (insert ?n' ns)" by auto
-    hence "n \<notin> lset (llist_corec (?n', ?ns') xs')" 
+    have eq: "insert ?n' ?ns' = insert n (insert ?n' ns)" by auto
+    hence "n \<notin> lset (f (?n', ?ns'))" 
       using P `finite ns` by(auto dest: lset)
     moreover from `finite ns` P eq
-    have "?X (llist_corec (?n', ?ns') xs')" by(fastforce intro!: exI refl)
-    ultimately have ?LCons by simp
-    thus ?case by simp
+    have "infinite (reachable_via graph (- insert ?n' ?ns') ?n')" by simp
+    ultimately show ?case using `finite ns` by auto
   qed
 qed
 
 end
+
