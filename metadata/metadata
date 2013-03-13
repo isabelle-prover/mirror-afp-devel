@@ -1,7 +1,6 @@
 [Launchbury]
 title = The Correctness of Launchbury's Natural Semantics for Lazy Evaluation
 author = Joachim Breitner <mailto:breitner@kit.edu>
-base = HOL/HOLCF/Nominal2
 date = 2013-01-31
 topic = Computer Science/Lambda Calculi
 abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics. We have formalized both semantics and identified an ambiguity in what the join operator should do: If it is understood as the least upper bound, as hinted at in the paper, the original proof fails. We fix the proof by taking a detour via a modified natural semantics with an explicit stack. In addition, we show that the original proof goes through when join is understood to be right-sided update.
@@ -9,7 +8,6 @@ abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John La
 [CCS]
 title = CCS in nominal logic
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
-base = HOL/HOL-Nominal
 date = 2012-05-29
 topic = Computer Science/Process Calculi
 abstract = We formalise a large portion of CCS as described in Milner's book 'Communication and Concurrency' using the nominal datatype package in Isabelle. Our results include many of the standard theorems of bisimulation equivalence and congruence, for both weak and strong versions. One main goal of this formalisation is to keep the machine-checked proofs as close to their pen-and-paper counterpart as possible.
@@ -20,7 +18,6 @@ abstract = We formalise a large portion of CCS as described in Milner's book 'Co
 [Pi_Calculus]
 title = The pi-calculus in nominal logic
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
-base = HOL/HOL-Nominal
 date = 2012-05-29
 topic = Computer Science/Process Calculi
 abstract = We formalise the pi-calculus using the nominal datatype package, based on ideas from the nominal logic by Pitts et al., and demonstrate an implementation in Isabelle/HOL. The purpose is to derive powerful induction rules for the semantics in order to conduct machine checkable proofs, closely following the intuitive arguments found in manual proofs. In this way we have covered many of the standard theorems of bisimulation equivalence and congruence, both late and early, and both strong and weak in a uniform manner. We thus provide one of the most extensive formalisations of a the pi-calculus ever done inside a theorem prover.
@@ -33,7 +30,6 @@ abstract = We formalise the pi-calculus using the nominal datatype package, base
 [Psi_Calculi]
 title = Psi-calculi in Isabelle
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
-base = HOL/HOL-Nominal
 date = 2012-05-29
 topic = Computer Science/Process Calculi
 abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
@@ -48,7 +44,6 @@ abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrar
 [Circus]
 title = Isabelle/Circus
 author = Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Marie-Claude Gaudel <mailto:mcg@lri.fr>
-base = HOL/HOLCF
 date = 2012-05-27
 topic = Computer Science/Process Calculi, Computer Science/Programming Languages/Logics
 abstract = The Circus specification language combines elements for complex data and behavior specifications, using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's Unifying Theories of Programming (UTP). Isabelle/Circus is a formalization of the UTP and the Circus language in Isabelle/HOL. It contains proof rules and tactic support that allows for proofs of refinement for Circus processes (involving both data and behavioral aspects).
@@ -59,7 +54,6 @@ abstract = The Circus specification language combines elements for complex data 
 title = Dijkstra's Shortest Path Algorithm
 author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 topic = Computer Science/Algorithms
-base = HOL/Collections/Refine_Monadic
 date = 2012-01-30
 depends-on = Refine_Monadic, Collections
 abstract = We implement and prove correct Dijkstra's algorithm for the
@@ -72,7 +66,6 @@ abstract = We implement and prove correct Dijkstra's algorithm for the
 title = Refinement for Monadic Programs
 author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 topic = Computer Science/Programming Languages/Logics
-base = HOL/Collections
 date = 2012-01-30
 depends-on = Collections
 abstract = We provide a framework for program and data refinement in Isabelle/HOL.
@@ -93,7 +86,6 @@ abstract = We provide a framework for program and data refinement in Isabelle/HO
 title = Pseudo Hoops
 author = George Georgescu, Laurentiu Leustean, Viorel Preoteasa <http://users.abo.fi/vpreotea/>
 topic = Mathematics/Algebra
-base = HOL/LatticeProperties
 date = 2011-09-22
 abstract = Pseudo-hoops are algebraic structures introduced by B. Bosbach under the name of complementary semigroups. In this formalization we prove some properties of pseudo-hoops and we define the basic concepts of filter and normal filter. The lattice of normal filters is isomorphic with the lattice of congruences of a pseudo-hoop. We also study some important classes of pseudo-hoops. Bounded Wajsberg pseudo-hoops are equivalent to pseudo-Wajsberg algebras and bounded basic pseudo-hoops are equivalent to pseudo-BL algebras. Some examples of pseudo-hoops are given in the last section of the formalization.
   
@@ -101,7 +93,6 @@ abstract = Pseudo-hoops are algebraic structures introduced by B. Bosbach under 
 title = Algebra of Monotonic Boolean Transformers
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
 topic = Computer Science/Programming Languages/Logics
-base = HOL/LatticeProperties
 date = 2011-09-22
 abstract = Algebras of imperative programming languages have been successful in reasoning about programs. In general an algebra of programs is an algebraic structure with programs as elements and with program compositions (sequential composition, choice, skip) as algebra operations. Various versions of these algebras were introduced to model partial correctness, total correctness, refinement, demonic choice, and other aspects. We formalize here an algebra which can be used to model total correctness, refinement, demonic and angelic choice. The basic model of this algebra are monotonic Boolean transformers (monotonic functions from a Boolean algebra to itself).
 
@@ -109,7 +100,6 @@ abstract = Algebras of imperative programming languages have been successful in 
 title = Lattice Properties
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
 topic = Mathematics/Algebra
-base = HOL
 date = 2011-09-22
 abstract = This formalization introduces and collects some algebraic structures based on lattices and complete lattices for use in other developments. The structures introduced are modular, and lattice ordered groups. In addition to the results proved for the new lattices, this formalization also introduces theorems about latices and complete lattices in general.
 extra-history =
@@ -123,7 +113,6 @@ extra-history =
 title = Proving the Impossibility of Trisecting an Angle and Doubling the Cube
 author = Ralph Romanos <mailto:ralph.romanos@student.ecp.fr>, Lawrence Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Algebra, Mathematics/Geometry
-base = HOL
 date = 2012-08-05
 abstract = Squaring the circle, doubling the cube and trisecting an angle, using a compass and straightedge alone, are classic unsolved problems first posed by the ancient Greeks. All three problems were proved to be impossible in the 19th century. The following document presents the proof of the impossibility of solving the latter two problems using Isabelle/HOL, following a proof by Carrega. The proof uses elementary methods: no Galois theory or field extensions. The set of points constructible using a compass and straightedge is defined inductively. Radical expressions, which involve only square roots and arithmetic of rational numbers, are defined, and we find that all constructive points have radical coordinates. Finally, doubling the cube and trisecting certain angles requires solving certain cubic equations that can be proved to have no rational roots. The Isabelle proofs require a great many detailed calculations.
 
@@ -131,7 +120,6 @@ abstract = Squaring the circle, doubling the cube and trisecting an angle, using
 title = Knowledge-based programs
 author = Peter Gammie <http://peteg.org/>
 topic = Computer Science/Automata and Formal Languages
-base = HOL/HOL-Library
 date = 2011-05-17
 abstract = Knowledge-based programs (KBPs) are a formalism for directly relating agents' knowledge and behaviour. Here we present a general scheme for compiling KBPs to executable automata with a proof of correctness in Isabelle/HOL. We develop the algorithm top-down, using Isabelle's locale mechanism to structure these proofs, and show that two classic examples can be synthesised using Isabelle's code generator.
 extra-history =
@@ -142,7 +130,6 @@ extra-history =
 title = The independence of Tarski's Euclidean axiom
 author = T. J. M. Makarios <mailto:tjm1983@gmail.com>
 topic = Mathematics/Geometry
-base = HOL
 date = 2012-10-30
 abstract =
   Tarski's axioms of plane geometry are formalized and, using the standard
@@ -162,7 +149,6 @@ abstract =
 title = The General Triangle Is Unique
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
 topic = Mathematics/Geometry
-base = HOL
 date = 2011-04-01
 abstract = Some acute-angled triangles are special, e.g. right-angled or isoscele triangles. Some are not of this kind, but, without measuring angles, look as if they were. In that sense, there is exactly one general triangle. This well-known fact is proven here formally.
 
@@ -170,7 +156,6 @@ abstract = Some acute-angled triangles are special, e.g. right-angled or isoscel
 title = Lightweight Java
 author = Rok Strni&scaron;a <http://rok.strnisa.com/lj/>, Matthew Parkinson <http://research.microsoft.com/people/mattpark/>
 topic = Computer Science/Programming Languages/Language Definitions
-base = HOL
 date = 2011-02-07
 abstract = A fully-formalized and extensible minimal imperative fragment of Java.
 
@@ -178,7 +163,6 @@ abstract = A fully-formalized and extensible minimal imperative fragment of Java
 title = Lower Semicontinuous Functions
 author = Bogdan Grechuk <mailto:grechukbogdan@yandex.ru>
 topic = Mathematics/Analysis
-base = HOL/HOL-Multivariate_Analysis
 date = 2011-01-08
 abstract = We define the notions of lower and upper semicontinuity for functions from a metric space to the extended real line. We prove that a function is both lower and upper semicontinuous if and only if it is continuous. We also give several equivalent characterizations of lower semicontinuity. In particular, we prove that a function is lower semicontinuous if and only if its epigraph is a closed set. Also, we introduce the notion of the lower semicontinuous hull of an arbitrary function and prove its basic properties.
 
@@ -187,7 +171,6 @@ title = RIPEMD-160
 author = Fabian Immler <mailto:immler@in.tum.de>
 topic = Computer Science/Programming Languages/Static Analysis
 date = 2011-01-10
-base = HOL/HOL-Word
 abstract = This work presents a verification of an implementation in SPARK/ADA of the cryptographic hash-function RIPEMD-160. A functional specification of RIPEMD-160 is given in Isabelle/HOL. Proofs for the verification conditions generated by the static-analysis toolset of SPARK certify the functional correctness of the implementation.
 
 [Regular-Sets]
@@ -195,7 +178,6 @@ title = Regular Sets and Expressions
 author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 topic = Computer Science/Automata and Formal Languages
 date = 2010-05-12
-base = HOL/HOL-Library
 abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.
 extra-history =
   Change history:
@@ -208,14 +190,12 @@ title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu, Xingyuan Zhang, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
 topic = Computer Science/Automata and Formal Languages
 date = 2011-08-26
-base = HOL/HOL-Library
 abstract = There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
 
 [Presburger-Automata]
 title = Formalizing the Logic-Automaton Connection
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter
 date = 2009-12-03
-base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages, Logic
 abstract = This work presents a formalization of a library for automata on bit strings. It forms the basis of a reflection-based decision procedure for Presburger arithmetic, which is efficiently executable thanks to Isabelle's code generator. With this work, we therefore provide a mechanized proof of a well-known connection between logic and automata theory. The formalization is also described in a publication [TPHOLs 2009].
 
@@ -223,7 +203,6 @@ abstract = This work presents a formalization of a library for automata on bit s
 title = Functional Automata
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2004-03-30
-base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
 depends-on = Regular-Sets
@@ -261,7 +240,6 @@ extra-history =
 title = Tree Automata
 author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2009-11-25
-base = HOL/HOL-Library
 topic = Computer Science/Automata and Formal Languages
 abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
 depends-on = Collections
@@ -309,7 +287,6 @@ extra-history =
 title = Efficient Mergesort
 topic = Computer Science/Algorithms
 date = 2011-11-09
-base = HOL/HOL-Library
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>
 abstract = We provide a formalization of the mergesort algorithm as used in GHC's Data.List module, proving correctness and stability. Furthermore, experimental data suggests that generated (Haskell-)code for this algorithm is much faster than for previous algorithms available in the Isabelle distribution.
 extra-history =
@@ -320,7 +297,6 @@ extra-history =
 title = Formal Verification of Modern SAT Solvers 
 author = Filip Maric <http://poincare.matf.bg.ac.rs/~filip/>
 date = 2008-07-23
-base = HOL/HOL-Library
 topic = Computer Science/Algorithms
 abstract = This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.
 
@@ -358,7 +334,6 @@ depends-on = Regular-Sets
 title = Much Ado About Two 
 author = Sascha B&ouml;hme <http://www4.in.tum.de/~boehmes/>
 date = 2007-11-06
-base = HOL/HOL-Library
 topic = Computer Science/Algorithms
 abstract = This article is an Isabelle formalisation of a paper with the same title. In a similar way as Knuth's 0-1-principle for sorting algorithms, that paper develops a 0-1-2-principle for parallel prefix computations.
 
@@ -420,7 +395,6 @@ title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
 date = 2012-03-1
 topic = Computer Science/Algorithms/Distributed
-base = HOL/HOLCF
 abstract =
   We define the Abortable Linearizable Module automaton (ALM for short)
   and prove its key composition property using the IOA theory of
@@ -448,7 +422,6 @@ extra-history =
 title = BDD Normalisation
 author = Veronika Ortner, Norbert Schirmer
 date = 2008-02-29
-base = HOL/Simpl
 topic = Computer Science/Data Structures
 abstract = We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
 depends-on = Simpl
@@ -471,7 +444,6 @@ abstract = Priority queues are an important data structure and efficient impleme
 title = Binomial Heaps and Skew Binomial Heaps
 author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2010-10-28
-base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract = 
  We implement and prove correct binomial heaps and skew binomial heaps.
@@ -489,7 +461,6 @@ abstract =
 title = Finger Trees
 author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan K&ouml;rner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2010-10-28
-base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract =
  We implement and prove correct 2-3 finger trees.
@@ -555,7 +526,6 @@ abstract = These theories illustrates the verification of basic file operations 
 title = Generating linear orders for datatypes
 author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2012-08-07
-base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract =
   We provide a framework for registering automatic methods to derive
@@ -579,7 +549,6 @@ abstract = This theory provides functions for finding the index of an element in
 [List-Infinite]
 title = Infinite Lists
 date = 2011-02-23
-base = HOL/HOL-Library
 author = David Trachtenherz <http://www4.in.tum.de/~trachten>
 topic = Computer Science/Data Structures
 abstract = We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also provides additional results for finite lists (theory ListInf/List2), natural numbers (folder CommonArith, esp. division/modulo, naturals with infinity), sets (folder CommonSet, esp. cutting/truncating sets, traversing sets of naturals).
@@ -620,7 +589,6 @@ title = Coinductive
 topic = Computer Science/Functional Programming
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2010-02-12
-base = HOL/HOL-Library
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
 extra-history =
   Change history:
@@ -652,14 +620,12 @@ title = Stream Fusion
 author = Brian Huffman <http://cs.pdx.edu/~brianh>
 topic = Computer Science/Functional Programming
 date = 2009-04-29
-base = HOL/HOLCF
 abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://hackage.haskell.org/package/stream-fusion">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
 
 [Tycon]
 title = Type Constructor Classes and Monad Transformers
 author = Brian Huffman <mailto:huffman@in.tum.de>
 date = 2012-06-26
-base = HOL/HOLCF
 topic = Computer Science/Functional Programming
 abstract =
  These theories contain a formalization of first class type constructors
@@ -679,7 +645,6 @@ abstract =
 title = CoreC++
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2006-05-15
-base = HOL/HOL-Library
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present an operational semantics and type safety proof for multiple inheritance in C++. The semantics models the behavior of method calls, field accesses, and two forms of casts in C++ class hierarchies. For explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
 
@@ -701,7 +666,6 @@ abstract = We introduce Jinja, a Java-like programming language with a formal se
 title = Jinja with Threads
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2007-12-03
-base = HOL/HOL-Word
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.
 depends-on = Collections, Coinductive
@@ -761,7 +725,6 @@ abstract = We present a Theory of Objects based on the original functional sigma
 title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
 author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
 date = 2011-02-23
-base = HOL/HOL-Library/List-Infinite/Nat-Interval-Logic
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
 
@@ -769,7 +732,6 @@ abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of th
 title = Logical Relations for PCF
 author = Peter Gammie <mailto:peteg42@gmail.com>
 date = 2012-07-01
-base = HOL/HOLCF
 topic = Computer Science/Programming Languages/Lambda Calculi
 abstract = We apply Andy Pitts's methods of defining relations over domains to
   several classical results in the literature. We show that the Y
@@ -786,7 +748,6 @@ abstract = We apply Andy Pitts's methods of defining relations over domains to
 title = POPLmark Challenge Via de Bruijn Indices 
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 date = 2007-08-02
-base = HOL/HOL-Library
 topic = Computer Science/Programming Languages/Lambda Calculi
 abstract = We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs. 
 
@@ -794,7 +755,6 @@ abstract = We present a solution to the POPLmark challenge designed by Aydemir e
 title = Strong Normalization of Moggis's Computational Metalanguage
 author = Christian Doczkal <mailto:doczkal@ps.uni-saarland.de>
 date = 2010-08-29
-base = HOL/HOL-Nominal
 topic = Computer Science/Programming Languages/Lambda Calculi
 abstract = Handling variable binding is one of the main difficulties in formal proofs. In this context, Moggi's computational metalanguage serves as an interesting case study. It features monadic types and a commuting conversion rule that rearranges the binding structure. Lindley and Stark have given an elegant proof of strong normalization for this calculus. The key construction in their proof is a notion of relational TT-lifting, using stacks of elimination contexts to obtain a Girard-Tait style logical relation. I give a formalization of their proof in Isabelle/HOL-Nominal with a particular emphasis on the treatment of bound variables.
 
@@ -819,7 +779,6 @@ author = Gerwin Klein <mailto:kleing@cse.unsw.edu.au>, Rafal Kolanski <mailto:ra
 date = 2012-05-11
 topic = Computer Science/Programming Languages/Logics
 license = BSD
-base = HOL/HOL-Word
 abstract = We present a generic type class implementation of separation algebra for Isabelle/HOL as well as lemmas and generic tactics which can be used directly for any instantiation of the type class. <P> The ex directory contains example instantiations that include structures such as a heap or virtual memory. <P> The abstract separation algebra is based upon "Abstract Separation Logic" by Calcagno et al. These theories are also the basis of the ITP 2012 rough diamond "Mechanised Separation Algebra" by the authors. <P> The aim of this work is to support and significantly reduce the effort for future separation logic developments in Isabelle/HOL by factoring out the part of separation logic that can be treated abstractly once and for all. This includes developing typical default rule sets for reasoning as well as automated tactic support for separation logic.
 
 [Separation_Logic_Imperative_HOL]
@@ -828,7 +787,6 @@ author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Rene Meis
 date = 2012-11-14
 topic = Computer Science/Programming Languages/Logics
 license = BSD
-base = HOL/HOL-Library
 abstract =
   We provide a framework for separation-logic based correctness proofs of 
   Imperative HOL programs. Our framework comes with a set of proof methods to
@@ -884,7 +842,6 @@ abstract = These therories describe Hoare logics for a number of imperative lang
 title = Kleene Algebra
 author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2013-01-15
-base = HOL/HOL-Word
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
  These files contain a formalisation of variants of Kleene algebras and
@@ -981,7 +938,6 @@ title = Formalization of Conflict Analysis of Programs with Procedures, Thread C
 topic = Computer Science/Programming Languages/Static Analysis
 author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Markus M&uuml;ller-Olm <http://cs.uni-muenster.de/u/mmo/>
 date = 2007-12-14
-base = HOL/HOL-Library
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point. 
 
 [Shivers-CFA]
@@ -989,7 +945,6 @@ title = Shivers' Control Flow Analysis
 topic = Computer Science/Programming Languages/Static Analysis
 author = Joachim Breitner <mailto:mail@joachim-breitner.de>
 date = 2010-11-16
-base = HOL/HOLCF
 abstract =
  In his dissertation, Olin Shivers introduces a concept of control flow graphs
  for functional languages, provides an algorithm to statically derive a safe
@@ -1001,7 +956,6 @@ abstract =
 title = Towards Certified Slicing 
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2008-09-16
-base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al. 
 depends-on = Jinja
@@ -1010,7 +964,6 @@ depends-on = Jinja
 title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
 author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
 date = 2009-11-13
-base = HOL/Jinja
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid. 
 depends-on = Jinja
@@ -1019,7 +972,6 @@ depends-on = Jinja
 title = The Worker/Wrapper Transformation
 author = Peter Gammie <http://peteg.org/>
 date = 2009-10-30
-base = HOL/HOLCF
 topic = Computer Science/Programming Languages/Transformations
 abstract = Gill and Hutton formalise the worker/wrapper transformation, building on the work of Launchbury and Peyton-Jones who developed it as a way of changing the type at which a recursive function operates. This development establishes the soundness of the technique and several examples of its use.
 
@@ -1059,7 +1011,6 @@ depends-on = Slicing, HRB-Slicing
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
 author = Tom Ridge
 date = 2004-09-28
-base = HOL/HOL-Library
 topic = Logic
 abstract = Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.
 
@@ -1067,7 +1018,6 @@ abstract = Soundness and completeness for a system of first order logic are form
 title = Completeness theorem 
 author = James Margetson, Tom Ridge
 date = 2004-09-20
-base = HOL/HOL-Library
 topic = Logic
 abstract = The completeness of first-order logic is proved, following the first five pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel et al., CUP, 1992. Their presentation of formulas allows the proofs to use symmetry arguments. Margetson formalized this theorem by early 2000. The Isar conversion is thanks to Tom Ridge. A paper describing the formalization is available <a href="Completeness-paper.pdf">[pdf]</a>. 
 
@@ -1083,7 +1033,6 @@ title = Ordinals and Cardinals
 author = Andrei Popescu
 date = 2009-09-01
 topic = Logic
-base = HOL/HOL-Cardinals-Base/HOL-Cardinals
 abstract = We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field. 
 extra-history =
   Change history:
@@ -1093,7 +1042,6 @@ extra-history =
 title = First-Order Logic According to Fitting 
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 date = 2007-08-02
-base = HOL/HOL-Library
 topic = Logic
 abstract = We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the L&ouml;wenheim-Skolem theorem.
 
@@ -1103,14 +1051,12 @@ author = Peter Chapman <http://www.cs.st-andrews.ac.uk/~pc>
 date = 2009-08-28
 topic = Logic
 license = LGPL
-base = HOL/HOL-Nominal
 abstract = The invertibility of the rules of a sequent calculus is important for guiding proof search and can be used in some formalised proofs of Cut admissibility. We present sufficient conditions for when a rule is invertible with respect to a calculus. We illustrate the conditions with examples. It must be noted we give purely syntactic criteria; no guarantees are given as to the suitability of the rules.
 
 [LinearQuantifierElim]
 title = Quantifier Elimination for Linear Arithmetic
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2008-01-11
-base = HOL/HOL-Library
 topic = Logic
 abstract = This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
 
@@ -1118,7 +1064,6 @@ abstract = This article formalizes quantifier elimination procedures for dense l
 title = Interval Temporal Logic on Natural Numbers
 author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
 date = 2011-02-23
-base = HOL/HOL-Library/List-Infinite
 topic = Logic
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
 depends-on = List-Infinite
@@ -1135,7 +1080,6 @@ topic = Logic
 title = Free Boolean Algebra
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2010-03-29
-base = HOL/HOL-Library
 abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
 
 [Abstract-Rewriting]
@@ -1182,7 +1126,6 @@ extra-history =
 title = An Example of a Cofinitary Group in Isabelle/HOL
 author = Bart Kastermans <http://kasterma.net>
 date = 2009-08-04
-base = HOL/HOL-Library
 topic = Mathematics/Algebra
 abstract = We formalize the usual proof that the group generated by the function k -> k + 1 on the integers gives rise to a cofinitary group.
 
@@ -1190,7 +1133,6 @@ abstract = We formalize the usual proof that the group generated by the function
 title = Groups, Rings and Modules
 author = Hidetsune Kobayashi, L. Chen, H. Murao 
 date = 2004-05-18
-base = HOL/HOL-Library
 topic = Mathematics/Algebra
 abstract = The theory of groups, rings and modules is developed to a great depth. Group theory results include Zassenhaus's theorem and the Jordan-Hoelder theorem. The ring theory development includes ideals, quotient rings and the Chinese remainder theorem. The module development includes the Nakayama lemma, exact sequences and Tensor products.
 
@@ -1206,7 +1148,6 @@ title = Fundamental Properties of Valuation Theory and Hensel's Lemma
 author = Hidetsune Kobayashi
 date = 2007-08-08
 topic = Mathematics/Algebra
-base = HOL/HOL-Library/Group-Ring-Module
 abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
 depends-on = Group-Ring-Module
 
@@ -1214,7 +1155,6 @@ depends-on = Group-Ring-Module
 title = Rank-Nullity Theorem in Linear Algebra
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
 topic = Mathematics/Algebra
-base = HOL/HOL-Multivariate_Analysis
 date = 2013-01-16
 abstract = In this article we present a proof of the result known in Linear Algebra as the ``rank nullity Theorem'', which states that, given any linear form f from a finite dimensional vector space V to a vector space W, then the dimension of V is equal to the dimension of the kernel of f (which is a subspace of V) and the dimension of the range of f (which is a subspace of W). The proof presented here is based on the one given by Sheldon Axler in his book <i>Linear Algebra Done Right</i>. It makes use of the HOL-Multivariate-Analysis session of Isabelle, and of several of its results and definitions. As a corollary of the previous theorem, and taking advantage of the relationship between linear forms and matrices, we prove that, for every matrix A (which has associated a linear form between finite dimensional vector spaces), the sum of its null space and its column space (which is equal to the range of the linear form) is equal to the number of columns of A.
 
@@ -1237,7 +1177,6 @@ extra-note = Note: This article is of historical interest only. Lebesgue-style i
 title = Ordinary Differential Equations
 author = Fabian Immler <http://home.in.tum.de/~immler>, Johannes H&ouml;lzl <http://home.in.tum.de/~hoelzl>
 topic = Mathematics/Analysis
-base = HOL/HOL-Multivariate_Analysis
 date = 2012-04-26
 abstract = We formalize initial value problems (IVPs) of ODEs and prove the existence of a unique solution, i.e. the Picard-Lindelöf theorem. We introduce general one-step methods for numerical approximation of the solution and provide an analysis regarding the local and global error of one-step methods. We give an executable specification of the Euler method to approximate the solution of IVPs and prove an explicit bound for the global error. We use arbitrary-precision floating-point numbers and also handle rounding errors when we truncate the numbers for efficiency reasons.
 
@@ -1280,7 +1219,6 @@ title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2012-01-03
 topic = Mathematics/Probability Theory, Computer Science/Automata and Formal Languages
-base = HOL/HOL-Multivariate_Analysis/HOL-Probability
 abstract = This is a formalization of Markov models in Isabelle/HOL. It 
   builds on Isabelle's probability theory. The available models are 
   currently Discrete-Time Markov Chains and a extensions of them with
@@ -1316,7 +1254,6 @@ depends-on = Fermat3_4
 title = Arrow and Gibbard-Satterthwaite 
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2008-09-01
-base = HOL/HOL-Library
 topic = Mathematics/Social Choice Theory
 abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www.in.tum.de/~nipkow/pubs/arrow.html">here</a>. 
 
@@ -1331,7 +1268,6 @@ abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare"
 title = Topology
 author = Stefan Friedrich
 date = 2004-04-26
-base = HOL/HOL-Library
 topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
 depends-on = Lazy-Lists-II
@@ -1362,14 +1298,12 @@ title = A Probabilistic Proof of the Girth-Chromatic Number Theorem
 author = Lars Noschinski <mailto:noschinl@in.tum.de>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
-base = HOL/HOL-Multivariate_Analysis/HOL-Probability
 abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs 
 author = Gertrud Bauer, Tobias Nipkow <http://www4.in.tum.de/~nipkow>
 date = 2006-05-22
-base = HOL/HOL-Library
 topic = Mathematics/Graph Theory
 abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his <i>revised</i> proof of the Kepler Conjecture. The revison concerns the definition of tameness. The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
 extra-history =
@@ -1431,7 +1365,6 @@ abstract = This formalization of Ramsey's theorem (infinitary version) is taken 
 title = Open Induction
 author = Mizuhito Ogawa, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
 date = 2012-11-02
-base = HOL/HOL-Library
 topic = Mathematics/Combinatorics
 abstract =
   A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
@@ -1441,7 +1374,6 @@ abstract =
 title = Category Theory to Yoneda's Lemma 
 author = Greg O'Keefe <http://users.rsise.anu.edu.au/~okeefe/>
 date = 2005-04-21
-base = HOL/HOL-Library
 topic = Mathematics/Category Theory
 license = LGPL
 abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
@@ -1453,7 +1385,6 @@ extra-history =
 title = Category Theory
 author = Alexander Katovsky <mailto:apk32@cam.ac.uk>
 date = 2010-06-20
-base = HOL/HOL-Library
 topic = Mathematics/Category Theory
 abstract = This article presents a development of Category Theory in Isabelle/HOL. A Category is defined using records and locales. Functors and Natural Transformations are also defined. The main result that has been formalized is that the Yoneda functor is a full and faithful embedding. We also formalize the completeness of many sorted monadic equational logic. Extensive use is made of the HOLZF theory in both cases. For an informal description see <a href="http://www.srcf.ucam.org/~apk32/Isabelle/Category/Cat.pdf">here [pdf]</a>.
 
@@ -1483,6 +1414,5 @@ depends-on = Coinductive
 title = Ribbon Proofs
 author = John Wickerson <http://www.pes.tu-berlin.de/menue/ueber_uns/team/john_wickerson/>
 date = 2013-01-19
-base = HOL/HOL-Library
 topic = Computer Science/Programming Languages/Logics
 abstract = This document concerns the theory of ribbon proofs: a diagrammatic proof system, based on separation logic, for verifying program correctness. We include the syntax, proof rules, and soundness results for two alternative formalisations of ribbon proofs. <p> Compared to traditional proof outlines, ribbon proofs emphasise the structure of a proof, so are intelligible and pedagogical. Because they contain less redundancy than proof outlines, and allow each proof step to be checked locally, they may be more scalable. Where proof outlines are cumbersome to modify, ribbon proofs can be visually manoeuvred to yield proofs of variant programs.

@@ -68,7 +68,7 @@ The code generator can be used to get efficient, verified code.
 <p></p>
 
 <!--#set var="name" value="Finger-Trees" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

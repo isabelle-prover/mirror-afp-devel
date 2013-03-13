@@ -65,7 +65,7 @@ In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury pr
 <p></p>
 
 <!--#set var="name" value="Launchbury" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOLCF/Nominal2/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

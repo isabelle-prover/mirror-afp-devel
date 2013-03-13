@@ -65,7 +65,7 @@ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/file
 <p></p>
 
 <!--#set var="name" value="Psi_Calculi" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Nominal/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -70,7 +70,7 @@ This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for
 <p></p>
 
 <!--#set var="name" value="Fermat3_4" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

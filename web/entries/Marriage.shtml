@@ -65,7 +65,7 @@ Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to
 <p></p>
 
 <!--#set var="name" value="Marriage" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -67,7 +67,7 @@ definition of tameness in Hales' revised proof.
 <p></p>
 
 <!--#set var="name" value="Flyspeck-Tame" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

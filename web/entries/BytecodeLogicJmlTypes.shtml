@@ -63,7 +63,7 @@ This document contains the Isabelle/HOL sources underlying the paper <i>A byteco
 <p></p>
 
 <!--#set var="name" value="BytecodeLogicJmlTypes" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

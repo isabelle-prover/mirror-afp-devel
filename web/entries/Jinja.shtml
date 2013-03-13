@@ -60,7 +60,7 @@ We introduce Jinja, a Java-like programming language with a formal semantics des
 <p></p>
 
 <!--#set var="name" value="Jinja" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

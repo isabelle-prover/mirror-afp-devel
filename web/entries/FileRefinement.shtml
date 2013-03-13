@@ -58,7 +58,7 @@ These theories illustrates the verification of basic file operations (file creat
 <p></p>
 
 <!--#set var="name" value="FileRefinement" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

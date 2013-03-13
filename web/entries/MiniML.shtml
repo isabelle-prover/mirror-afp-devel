@@ -58,7 +58,7 @@ This theory defines the type inference rules and the type inference algorithm <i
 <p></p>
 
 <!--#set var="name" value="MiniML" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

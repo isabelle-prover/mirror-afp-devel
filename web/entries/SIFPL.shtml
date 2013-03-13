@@ -62,7 +62,7 @@ We present interpretations of type systems for secure information flow in Hoare 
 <p></p>
 
 <!--#set var="name" value="SIFPL" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

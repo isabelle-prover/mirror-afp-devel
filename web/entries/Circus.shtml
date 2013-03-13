@@ -59,7 +59,7 @@ The Isabelle/Circus environment supports a syntax for the semantic definitions w
 <p></p>
 
 <!--#set var="name" value="Circus" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOLCF/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -57,7 +57,7 @@ This work presents a verification of an implementation in SPARK/ADA of the crypt
 <p></p>
 
 <!--#set var="name" value="RIPEMD-160-SPARK" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Word/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

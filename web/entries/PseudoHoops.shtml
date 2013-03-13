@@ -58,7 +58,7 @@ Pseudo-hoops are algebraic structures introduced by B. Bosbach under the name of
 <p></p>
 
 <!--#set var="name" value="PseudoHoops" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/LatticeProperties/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

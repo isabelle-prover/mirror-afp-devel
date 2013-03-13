@@ -60,7 +60,7 @@ The invertibility of the rules of a sequent calculus is important for guiding pr
 <p></p>
 
 <!--#set var="name" value="SequentInvertibility" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Nominal/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

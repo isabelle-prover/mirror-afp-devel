@@ -63,7 +63,7 @@ This theory contains some useful extensions to the LList (lazy list) theory by <
 <p></p>
 
 <!--#set var="name" value="Lazy-Lists-II" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

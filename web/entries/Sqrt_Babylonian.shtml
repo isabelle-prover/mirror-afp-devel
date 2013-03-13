@@ -66,7 +66,7 @@ offer an approximation algorithm for linear ordered fields.
 <p></p>
 
 <!--#set var="name" value="Sqrt_Babylonian" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -60,7 +60,7 @@ Two models of an electronic hotel key card system are contrasted: a state based 
 <p></p>
 
 <!--#set var="name" value="HotelKeyCards" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

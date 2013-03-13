@@ -60,7 +60,7 @@ This work presents a formalization of a library for automata on bit strings. It 
 <p></p>
 
 <!--#set var="name" value="Presburger-Automata" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
