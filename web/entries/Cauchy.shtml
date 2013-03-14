@@ -63,7 +63,7 @@ This document presents the mechanised proofs of two popular theorems attributed 
 <p></p>
 
 <!--#set var="name" value="Cauchy" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

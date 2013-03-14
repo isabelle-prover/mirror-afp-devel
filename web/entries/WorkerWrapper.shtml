@@ -59,7 +59,7 @@ Gill and Hutton formalise the worker/wrapper transformation, building on the wor
 <p></p>
 
 <!--#set var="name" value="WorkerWrapper" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOLCF/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

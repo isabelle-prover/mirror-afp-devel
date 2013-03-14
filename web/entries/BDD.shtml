@@ -62,7 +62,7 @@ We present the verification of the normalisation of a binary decision diagram (B
 <p></p>
 
 <!--#set var="name" value="BDD" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/Simpl/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

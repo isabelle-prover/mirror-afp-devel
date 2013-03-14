@@ -59,7 +59,7 @@ Priority queues are an important data structure and efficient implementations of
 <p></p>
 
 <!--#set var="name" value="Binomial-Queues" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

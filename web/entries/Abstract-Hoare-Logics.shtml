@@ -59,7 +59,7 @@ These therories describe Hoare logics for a number of imperative language constr
 <p></p>
 
 <!--#set var="name" value="Abstract-Hoare-Logics" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

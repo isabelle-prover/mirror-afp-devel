@@ -58,7 +58,7 @@ This development defines a well-ordered type of countable ordinals. It includes 
 <p></p>
 
 <!--#set var="name" value="Ordinal" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

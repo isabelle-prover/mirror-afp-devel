@@ -64,7 +64,7 @@ This works presents a formalization of the Girth-Chromatic number theorem in gra
 <p></p>
 
 <!--#set var="name" value="Girth_Chromatic" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Multivariate_Analysis/HOL-Probability/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

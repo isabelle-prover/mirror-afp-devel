@@ -60,7 +60,7 @@ This article is an Isabelle formalisation of a paper with the same title. In a s
 <p></p>
 
 <!--#set var="name" value="MuchAdoAboutTwo" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

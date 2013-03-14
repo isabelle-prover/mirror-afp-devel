@@ -74,7 +74,7 @@ termination proofs where large transitive closures have to be computed.
 <p></p>
 
 <!--#set var="name" value="Transitive-Closure-II" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

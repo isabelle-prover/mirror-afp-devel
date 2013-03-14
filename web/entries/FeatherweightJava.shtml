@@ -63,7 +63,7 @@ We formalize the type system, small-step operational semantics, and type soundne
 <p></p>
 
 <!--#set var="name" value="FeatherweightJava" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

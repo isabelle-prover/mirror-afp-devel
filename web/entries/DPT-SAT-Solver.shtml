@@ -65,7 +65,7 @@ This contribution contains a fast SAT solver for Isabelle written in Standard ML
 <p></p>
 
 <!--#set var="name" value="DPT-SAT-Solver" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

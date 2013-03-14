@@ -62,7 +62,7 @@ This document contains formal correctness proofs of modern SAT solvers. Followin
 <p></p>
 
 <!--#set var="name" value="SATSolverVerification" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

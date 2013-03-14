@@ -68,7 +68,7 @@ structures from the Isabelle Collection Framework.
 <p></p>
 
 <!--#set var="name" value="Dijkstra_Shortest_Path" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/Collections/Refine_Monadic/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

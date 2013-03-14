@@ -118,8 +118,7 @@ html_entry_text_wrapper = """
 # {3}: text columns (html_entry_text_wrapper)
 # {4}: license
 # {5}: entry
-# {6}: base (e. g. HOL or HOLCF)
-# {7}: depends-on
+# {6}: depends-on
 # {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = """
 <table width="80%" class="data">
@@ -135,7 +134,7 @@ html_entry_header_wrapper = """
 {3}
     <tr><td class="datahead">License:</td>
         <td class="data">{4}</td></tr>
-{7}
+{6}
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
@@ -148,7 +147,7 @@ html_entry_header_wrapper = """
 <p></p>
 
 <!--#set var="name" value="{5}" -->
-<!--#set var="binfo" value="../browser_info/current/{6}/${{name}}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${{name}}" -->
 """
 
 html_entry_depends_on_wrapper = """
@@ -187,7 +186,6 @@ attribute_schema = {
 	'author': (True, "parse_author", None),
 	'title': (False, None, None),
 	'abstract': (False, None, None),
-	'base': (False, None, "HOL"),
 	'license': (False, "parse_license", "BSD"),
 	'ignore': (True, None, ""),
 	'extra*': (False, "parse_extra", None),
@@ -741,7 +739,6 @@ def generate_entry(entry, attributes, param):
 			text_columns,
 			html_license_link.format(attributes['license'][0], attributes['license'][1]),
 			entry,
-			attributes['base'],
 			format_depends_on(attributes['depends-on']),
 		)
 	elif param == "older":

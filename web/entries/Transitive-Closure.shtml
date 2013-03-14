@@ -66,7 +66,7 @@ We provide a generic work-list algorithm to compute the transitive closure of fi
 <p></p>
 
 <!--#set var="name" value="Transitive-Closure" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

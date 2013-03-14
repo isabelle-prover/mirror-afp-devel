@@ -64,7 +64,7 @@ Knowledge-based programs (KBPs) are a formalism for directly relating agents' kn
 <p></p>
 
 <!--#set var="name" value="KBPs" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

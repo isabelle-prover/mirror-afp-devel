@@ -63,7 +63,7 @@ This document gives a formalization of the proof of the Robbins conjecture, foll
 <p></p>
 
 <!--#set var="name" value="Robbins-Conjecture" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -67,7 +67,7 @@ This article is of historical interest only. Lebesgue-style integration and prob
 <p></p>
 
 <!--#set var="name" value="Integration" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
