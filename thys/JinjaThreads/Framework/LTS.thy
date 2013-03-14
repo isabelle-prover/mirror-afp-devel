@@ -11,6 +11,8 @@ imports
   "~~/src/HOL/Library/Quotient_Option"
 begin
 
+hide_const (open) option_rel (* Hide option_rel from BNF *)
+
 lemma option_rel_mono:
   "\<lbrakk> option_rel R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> option_rel R' x y"
 by(cases x)(case_tac [!] y, auto)
@@ -72,11 +74,11 @@ lemma tllist_all2_flip [flip_simps]:
 proof
   assume "tllist_all2 (flip P) (flip Q) xs ys"
   thus "tllist_all2 P Q ys xs"
-    by coinduct(auto elim: tllist_all2_cases simp add: flip_def)
+    by(coinduct rule: tllist_all2_coinduct)(auto dest: tllist_all2_is_TNilD tllist_all2_tfinite2_terminalD tllist_all2_thdD intro: tllist_all2_ttlI simp add: flip_def)
 next
   assume "tllist_all2 P Q ys xs"
   thus "tllist_all2 (flip P) (flip Q) xs ys"
-    by coinduct(auto elim: tllist_all2_cases simp add: flip_def)
+    by(coinduct rule: tllist_all2_coinduct)(auto dest: tllist_all2_is_TNilD tllist_all2_tfinite2_terminalD tllist_all2_thdD intro: tllist_all2_ttlI simp add: flip_def)
 qed
 
 subsection {* Labelled transition systems *}
@@ -102,9 +104,11 @@ where
 definition inf_step2inf_step_table :: "'s \<Rightarrow> 'tl llist \<Rightarrow> ('s \<times> 'tl \<times> 's) llist"
 where
   "inf_step2inf_step_table s tls =
-   llist_corec (s, tls) (\<lambda>(s, tls). case tls of LNil \<Rightarrow> None |
-                                      LCons tl tls' \<Rightarrow> let s' = SOME s'. trsys s tl s' \<and> s' -tls'\<rightarrow>* \<infinity>
-                                                    in Some ((s, tl, s'), (s', tls')))"
+   llist_unfold
+     (\<lambda>(s, tls). tls = LNil)
+     (\<lambda>(s, tls). (s, lhd tls, SOME s'. trsys s (lhd tls) s' \<and> s' -ltl tls\<rightarrow>* \<infinity>)) 
+     (\<lambda>(s, tls). (SOME s'. trsys s (lhd tls) s' \<and> s' -ltl tls\<rightarrow>* \<infinity>, ltl tls))
+     (s, tls)"
 
 coinductive Rtrancl3p :: "'s \<Rightarrow> ('tl, 's) tllist \<Rightarrow> bool"
 where 
@@ -134,26 +138,32 @@ proof
 qed
 
 lemma inf_step2inf_step_table_LNil [simp]: "inf_step2inf_step_table s LNil = LNil"
-by(simp add: inf_step2inf_step_table_def llist_corec)
+by(simp add: inf_step2inf_step_table_def)
 
 lemma inf_step2inf_step_table_LCons [simp]:
   fixes tl shows
   "inf_step2inf_step_table s (LCons tl tls) =
    LCons (s, tl, SOME s'. trsys s tl s' \<and> s' -tls\<rightarrow>* \<infinity>) 
          (inf_step2inf_step_table (SOME s'. trsys s tl s' \<and> s' -tls\<rightarrow>* \<infinity>) tls)"
-by(simp add: inf_step2inf_step_table_def llist_corec)
+by(simp add: inf_step2inf_step_table_def)
+
+lemma inf_step2inf_step_table_eq_LNil [simp]: 
+  "inf_step2inf_step_table s tls = LNil \<longleftrightarrow> tls = LNil"
+by(simp add: inf_step2inf_step_table_def)
+
+lemma lhd_inf_step2inf_step_table [simp]:
+  "tls \<noteq> LNil 
+  \<Longrightarrow> lhd (inf_step2inf_step_table s tls) =
+      (s, lhd tls, SOME s'. trsys s (lhd tls) s' \<and> s' -ltl tls\<rightarrow>* \<infinity>)"
+by(simp add: inf_step2inf_step_table_def)
+
+lemma ltl_inf_step2inf_step_table [simp]:
+  "ltl (inf_step2inf_step_table s tls) =
+   inf_step2inf_step_table (SOME s'. trsys s (lhd tls) s' \<and> s' -ltl tls\<rightarrow>* \<infinity>) (ltl tls)"
+by(cases tls) simp_all
 
 lemma lmap_inf_step2inf_step_table: "lmap (fst \<circ> snd) (inf_step2inf_step_table s tls) = tls"
-proof -
-  have "(lmap (fst \<circ> snd) (inf_step2inf_step_table s tls), tls) \<in> 
-        {(lmap (fst \<circ> snd) (inf_step2inf_step_table s l), l) | l s. True}" by blast
-  then show ?thesis
-  proof (coinduct rule: llist_equalityI)
-    case (Eqllist q)
-    then obtain a l where q: "q = (lmap (fst \<circ> snd) (inf_step2inf_step_table a l), l)" by blast
-    thus ?case by(cases l) fastforce+
-  qed
-qed
+by(coinduct s tls rule: llist_fun_coinduct2) auto
 
 lemma inf_step_imp_inf_step_table:
   assumes inf: "s -tls\<rightarrow>* \<infinity>"
@@ -230,34 +240,27 @@ lemma Runs_into_Runs_table:
   where "tls = lmap (\<lambda>(s, tl, s'). tl) stlss"
   and "Runs_table s stlss"
 proof -
-  def step \<equiv>
-    "\<lambda>(s, tls). case tls of 
-        LNil \<Rightarrow> None 
-      | LCons tl tls' \<Rightarrow> 
-        let s' = SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls'
-        in Some ((s, tl, s'), s', tls')"
-  def stlss \<equiv> "\<lambda>s tls. llist_corec (s, tls) step"
-  have [simp]: "\<And>s. stlss s LNil = LNil"
-    unfolding stlss_def step_def by(simp add: llist_corec)
-  have [simp]: "\<And>s tl tls. stlss s (LCons tl tls) = LCons (s, tl, SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls) (stlss (SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls) tls)"
-    unfolding stlss_def step_def by(subst llist_corec) simp
+  def stlss \<equiv> "\<lambda>s tls. llist_unfold
+    (\<lambda>(s, tls). tls = LNil)
+    (\<lambda>(s, tls). (s, lhd tls, SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls)))
+    (\<lambda>(s, tls). (SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls), ltl tls))
+    (s, tls)"
+  have [simp]:
+    "\<And>s. stlss s LNil = LNil"
+    "\<And>s tl tls. stlss s (LCons tl tls) = LCons (s, tl, SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls) (stlss (SOME s'. s -tl\<rightarrow> s' \<and> Runs s' tls) tls)"
+    "\<And>s tls. stlss s tls = LNil \<longleftrightarrow> tls = LNil"
+    "\<And>s tls. tls \<noteq> LNil \<Longrightarrow> lhd (stlss s tls) = (s, lhd tls, SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls))"
+    "\<And>s tls. tls \<noteq> LNil \<Longrightarrow> ltl (stlss s tls) = stlss (SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls)) (ltl tls)"
+    by(simp_all add: stlss_def)
+  
   from assms
-  have "(tls, lmap (\<lambda>(s, tl, s'). tl) (stlss s tls)) \<in> 
-        {(tls, lmap (\<lambda>(s, tl, s'). tl) (stlss s tls)) | tls s. Runs s tls}" by blast
-  hence "tls = lmap (\<lambda>(s, tl, s'). tl) (stlss s tls)"
-  proof(coinduct rule: llist_equalityI)
-    case (Eqllist q)
-    then obtain tls s where q: "q = (tls, lmap (\<lambda>(s, tl, s'). tl) (stlss s tls))"
-      and Runs: "Runs s tls" by blast
-    from Runs show ?case
-    proof(cases)
-      case (Step s' tls' tl)
-      let ?P = "\<lambda>s'. s -tl\<rightarrow> s' \<and> Runs s' tls'"
-      from `s -tl\<rightarrow> s'` `Runs s' tls'` have "?P s'" ..
-      hence "?P (Eps ?P)" by(rule someI)
-      hence "?EqLCons" using Step q by auto
-      thus ?thesis ..
-    qed(simp add: q)
+  have "tls = lmap (\<lambda>(s, tl, s'). tl) (stlss s tls)"
+  proof(coinduct s tls rule: llist_fun_coinduct_invar2)
+    case LNil
+    thus ?case by simp
+  next
+    case (LCons s tls)
+    thus ?case by cases(auto 4 3 intro: someI2)
   qed
   moreover
   def stlss' \<equiv> "stlss s tls"
@@ -293,7 +296,7 @@ proof(atomize_elim)
   next
     case (lfinite_LConsI tls tl)
     from `Runs \<sigma> (lappend (LCons tl tls) tls')`
-    show ?case unfolding lappend_LCons
+    show ?case unfolding lappend_code
     proof(cases)
       case (Step \<sigma>')
       from `Runs \<sigma>' (lappend tls tls') \<Longrightarrow> \<exists>\<sigma>''. \<sigma>' -list_of tls\<rightarrow>* \<sigma>'' \<and> Runs \<sigma>'' tls'` `Runs \<sigma>' (lappend tls tls')`
@@ -356,9 +359,13 @@ where
 definition \<tau>inf_step2\<tau>inf_step_table :: "'s \<Rightarrow> 'tl llist \<Rightarrow> ('s \<times> 's \<times> 'tl \<times> 's) llist"
 where
   "\<tau>inf_step2\<tau>inf_step_table s tls =
-   llist_corec (s, tls) (\<lambda>(s, tls). case tls of LNil \<Rightarrow> None |
-        LCons tl tls' \<Rightarrow> let (s', s'') = SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>-tls'\<rightarrow>* \<infinity>
-                         in Some ((s, s', tl, s''), (s'', tls')))"
+   llist_unfold
+     (\<lambda>(s, tls). tls = LNil)
+     (\<lambda>(s, tls). let (s', s'') = SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -lhd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (lhd tls) s'' \<and> s'' -\<tau>-ltl tls\<rightarrow>* \<infinity>
+        in (s, s', lhd tls, s''))
+     (\<lambda>(s, tls). let (s', s'') = SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -lhd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (lhd tls) s'' \<and> s'' -\<tau>-ltl tls\<rightarrow>* \<infinity>
+        in (s'', ltl tls))
+     (s, tls)"
 
 definition silent_move_from :: "'s \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow> bool"
 where "silent_move_from s0 s1 s2 \<longleftrightarrow> silent_moves s0 s1 \<and> silent_move s1 s2"
@@ -478,16 +485,15 @@ proof -
     then obtain stls where inf_step: "s -stls\<rightarrow>*t \<infinity>"
       and tls_def: "tls = lmap (fst \<circ> snd) (lfilter ?P stls)" by blast
     show ?case
-    proof(cases "stls \<in> Domain (findRel ?P)")
-      case False
-      hence "lfilter ?P stls = LNil" by(rule diverge_lfilter_LNil)
+    proof(cases "lfilter ?P stls")
+      case LNil
       with inf_step have ?\<tau>inf_step_Nil unfolding tls_def 
-        by(auto simp add: lfilter_empty_conv intro: inf_step_table_all_\<tau>_into_\<tau>diverge)
+        by(auto intro: inf_step_table_all_\<tau>_into_\<tau>diverge)
       thus ?thesis ..
     next
-      case True
-      hence "lfilter ?P stls \<noteq> LNil" by(rule contrapos_pn)(rule lfilter_eq_LNil)
-      then obtain x tl x' xs where stls: "lfilter ?P stls = LCons (x, tl, x') xs" by(auto simp add: neq_LNil_conv)
+      case (LCons stls' xs)
+      obtain x tl x' where "stls' = (x, tl, x')" by(cases stls')
+      with LCons have stls: "lfilter ?P stls = LCons (x, tl, x') xs" by simp
       from lfilter_eq_LConsD[OF this] obtain stls1 stls2
         where stls1: "stls = lappend stls1 (LCons (x, tl, x') stls2)"
         and "lfinite stls1"
@@ -644,7 +650,7 @@ proof -
 qed
 
 lemma \<tau>inf_step2\<tau>inf_step_table_LNil [simp]: "\<tau>inf_step2\<tau>inf_step_table s LNil = LNil"
-by(simp add: \<tau>inf_step2\<tau>inf_step_table_def llist_corec)
+by(simp add: \<tau>inf_step2\<tau>inf_step_table_def)
 
 lemma \<tau>inf_step2\<tau>inf_step_table_LCons [simp]:
   fixes s tl ss tls
@@ -652,19 +658,27 @@ lemma \<tau>inf_step2\<tau>inf_step_table_LCons [simp]:
   shows
   "\<tau>inf_step2\<tau>inf_step_table s (LCons tl tls) =
    LCons (s, fst ss, tl, snd ss) (\<tau>inf_step2\<tau>inf_step_table (snd ss) tls)"
-by(simp add: ss_def \<tau>inf_step2\<tau>inf_step_table_def llist_corec split_beta)
+by(simp add: ss_def \<tau>inf_step2\<tau>inf_step_table_def split_beta)
+
+lemma \<tau>inf_step2\<tau>inf_step_table_eq_LNil [simp]:
+  "\<tau>inf_step2\<tau>inf_step_table s tls = LNil \<Longrightarrow> tls = LNil"
+by(simp add: \<tau>inf_step2\<tau>inf_step_table_def)
+
+lemma lhd_\<tau>inf_step2\<tau>inf_step_table [simp]:
+  "tls \<noteq> LNil \<Longrightarrow> lhd (\<tau>inf_step2\<tau>inf_step_table s tls) = 
+  (let (s', s'') = SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -lhd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (lhd tls) s'' \<and> s'' -\<tau>-ltl tls\<rightarrow>* \<infinity>
+  in (s, s', lhd tls, s''))"
+unfolding \<tau>inf_step2\<tau>inf_step_table_def Let_def by simp
+
+lemma ltl_\<tau>inf_step2\<tau>inf_step_table [simp]:
+  "tls \<noteq> LNil \<Longrightarrow> ltl (\<tau>inf_step2\<tau>inf_step_table s tls) =
+  (let (s', s'') = SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -lhd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (lhd tls) s'' \<and> s'' -\<tau>-ltl tls\<rightarrow>* \<infinity>
+  in \<tau>inf_step2\<tau>inf_step_table s'' (ltl tls))"
+unfolding \<tau>inf_step2\<tau>inf_step_table_def Let_def
+by(simp add: split_beta)
 
 lemma lmap_\<tau>inf_step2\<tau>inf_step_table: "lmap (fst \<circ> snd \<circ> snd) (\<tau>inf_step2\<tau>inf_step_table s tls) = tls"
-proof -
-  have "(lmap (fst \<circ> snd \<circ> snd) (\<tau>inf_step2\<tau>inf_step_table s tls), tls) \<in> 
-        {(lmap (fst \<circ> snd \<circ> snd) (\<tau>inf_step2\<tau>inf_step_table s l), l) | l s. True}" by blast
-  then show ?thesis
-  proof (coinduct rule: llist_equalityI)
-    case (Eqllist q)
-    then obtain a l where q: "q = (lmap (fst \<circ> snd \<circ> snd) (\<tau>inf_step2\<tau>inf_step_table a l), l)" by blast
-    thus ?case by(cases l) fastforce+
-  qed
-qed
+by(coinduct s tls rule: llist_fun_coinduct2)(auto simp add: split_beta)
 
 lemma \<tau>inf_step_into_\<tau>inf_step_table:
   assumes "s -\<tau>-tls\<rightarrow>* \<infinity>"
@@ -874,13 +888,32 @@ qed
 
 definition \<tau>Runs2\<tau>Runs_table :: "'s \<Rightarrow> ('tl, 's option) tllist \<Rightarrow> ('tl \<times> 's, 's option) tllist"
 where
-  "\<tau>Runs2\<tau>Runs_table s tls = 
-  tllist_corec (s, tls)
-       (\<lambda>(s, tls). case tls of 
-                     TNil b \<Rightarrow> Inr b
-                   | TCons tl tls' \<Rightarrow> 
-                     let s'' = SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' \<Down> tls'
-                     in Inl ((tl, s''), (s'', tls')))"
+  "\<tau>Runs2\<tau>Runs_table s tls = tllist_unfold
+     (\<lambda>(s, tls). is_TNil tls)
+     (\<lambda>(s, tls). terminal tls)
+     (\<lambda>(s, tls). (thd tls, SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls))
+     (\<lambda>(s, tls). (SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls, ttl tls))
+     (s, tls)"
+
+lemma is_TNil_\<tau>Runs2\<tau>Runs_table [simp]:
+  "is_TNil (\<tau>Runs2\<tau>Runs_table s tls) \<longleftrightarrow> is_TNil tls"
+by(simp add: \<tau>Runs2\<tau>Runs_table_def)
+
+lemma thd_\<tau>Runs2\<tau>Runs_table [simp]:
+  "\<not> is_TNil tls \<Longrightarrow>
+  thd (\<tau>Runs2\<tau>Runs_table s tls) =
+  (thd tls, SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls)"
+by(simp add: \<tau>Runs2\<tau>Runs_table_def)
+
+lemma ttl_\<tau>Runs2\<tau>Runs_table [simp]:
+  "\<not> is_TNil tls \<Longrightarrow>
+  ttl (\<tau>Runs2\<tau>Runs_table s tls) =
+  \<tau>Runs2\<tau>Runs_table (SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls) (ttl tls)"
+by(simp add: \<tau>Runs2\<tau>Runs_table_def)
+
+lemma terminal_\<tau>Runs2\<tau>Runs_table [simp]:
+  "is_TNil tls \<Longrightarrow> terminal (\<tau>Runs2\<tau>Runs_table s tls) = terminal tls"
+by(simp add: \<tau>Runs2\<tau>Runs_table_def)
 
 lemma \<tau>Runs2\<tau>Runs_table_simps [simp, nitpick_simp]:
   "\<tau>Runs2\<tau>Runs_table s (TNil so) = TNil so"
@@ -888,25 +921,14 @@ lemma \<tau>Runs2\<tau>Runs_table_simps [simp, nitpick_simp]:
    \<tau>Runs2\<tau>Runs_table s (TCons tl tls) =
    (let s'' = SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' \<Down> tls
     in TCons (tl, s'') (\<tau>Runs2\<tau>Runs_table s'' tls))"
-unfolding \<tau>Runs2\<tau>Runs_table_def Let_def
- apply(simp add: tllist_corec)
-apply(subst tllist_corec)
-apply(simp add: split_beta)
+ apply(simp add: \<tau>Runs2\<tau>Runs_table_def)
+apply(rule tllist.expand)
+apply(simp_all)
 done
 
 lemma \<tau>Runs2\<tau>Runs_table_inverse:
   "tmap fst id (\<tau>Runs2\<tau>Runs_table s tls) = tls"
-proof -
-  have "(tmap fst id (\<tau>Runs2\<tau>Runs_table s tls), tls) \<in>
-        {(tmap fst id (\<tau>Runs2\<tau>Runs_table s tls), tls)|tls s. True}" by blast
-  thus ?thesis
-  proof(coinduct rule: tllist_equalityI)
-    case (Eqtllist q)
-    then obtain tls s where q: "q = (tmap fst id (\<tau>Runs2\<tau>Runs_table s tls), tls)" by blast
-    show ?case unfolding q
-      by(cases tls)(auto simp add: split_beta)
-  qed
-qed
+by(coinduct s tls rule: tllist_fun_coinduct2) auto
  
 lemma \<tau>Runs_into_\<tau>Runs_table:
   assumes "s \<Down> tls"
@@ -978,31 +1000,29 @@ proof
   let ?\<tau>halt = "\<lambda>\<sigma> \<sigma>'. \<sigma> -\<tau>\<rightarrow>* \<sigma>' \<and> (\<forall>tl \<sigma>''. \<not> \<sigma>' -tl\<rightarrow> \<sigma>'')"
   let ?\<tau>diverge = "\<lambda>\<sigma>. \<sigma> -\<tau>\<rightarrow> \<infinity>"
   let ?proceed = "\<lambda>\<sigma> (tl, \<sigma>''). \<exists>\<sigma>'. \<sigma> -\<tau>\<rightarrow>* \<sigma>' \<and> \<sigma>' -tl\<rightarrow> \<sigma>'' \<and> \<not> \<tau>move \<sigma>' tl \<sigma>''"
-  def step == 
-    "\<lambda>\<sigma>. if (\<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>')
-         then Inr (Some (SOME \<sigma>'. ?\<tau>halt \<sigma> \<sigma>'))
-         else if ?\<tau>diverge \<sigma> then Inr None
-         else Inl (SOME tl\<sigma>'. ?proceed \<sigma> tl\<sigma>')"
-  def tls == "tllist_corec \<sigma> step"
-  hence "tls = tllist_corec \<sigma> step" by simp
-  thus "\<sigma> \<Down> tls"
-  proof(coinduct rule: \<tau>Runs.coinduct)
-    case (\<tau>Runs \<sigma> tls)[simp]
+
+  def tls == "tllist_unfold
+     (\<lambda>\<sigma>. (\<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>') \<or> ?\<tau>diverge \<sigma>)
+     (\<lambda>\<sigma>. if \<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>' then Some (SOME \<sigma>'. ?\<tau>halt \<sigma> \<sigma>') else None)
+     (\<lambda>\<sigma>. fst (SOME tl\<sigma>'. ?proceed \<sigma> tl\<sigma>'))
+     (\<lambda>\<sigma>. snd (SOME tl\<sigma>'. ?proceed \<sigma> tl\<sigma>')) \<sigma>"
+  from meta_eq_to_obj_eq[OF this]
+  show "\<sigma> \<Down> tls"
+  proof(coinduct \<sigma> tls rule: \<tau>Runs.coinduct)
+    case (\<tau>Runs \<sigma> tls)
     show ?case
     proof(cases "\<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>'")
       case True
       hence "?\<tau>halt \<sigma> (SOME \<sigma>'. ?\<tau>halt \<sigma> \<sigma>')" by(rule someI_ex)
-      hence ?Terminate using True unfolding \<tau>Runs
-        by(subst tllist_corec)(simp add: step_def)
-      thus ?thesis by simp
+      hence ?Terminate using True unfolding \<tau>Runs by simp
+      thus ?thesis ..
     next
       case False
       note \<tau>halt = this
       show ?thesis
       proof(cases "?\<tau>diverge \<sigma>")
         case True
-        hence ?Diverge using True False unfolding \<tau>Runs
-          by(subst tllist_corec)(simp add: step_def)
+        hence ?Diverge using False unfolding \<tau>Runs by simp
         thus ?thesis by simp
       next
         case False
@@ -1014,7 +1034,7 @@ proof
         ultimately have "?proceed \<sigma> (tl, \<sigma>'')" using \<sigma>_\<sigma>' by auto
         hence "?proceed \<sigma> (SOME tl\<sigma>. ?proceed \<sigma> tl\<sigma>)" by(rule someI)
         hence ?Proceed using False \<tau>halt unfolding \<tau>Runs
-          by(subst tllist_corec)(fastforce simp add: step_def)
+          by(subst tllist_unfold) fastforce
         thus ?thesis by simp
       qed
     qed
@@ -1063,21 +1083,25 @@ lemma \<tau>diverge_into_inf_step_silent_move2:
   assumes "s -\<tau>\<rightarrow> \<infinity>"
   obtains tls where "trsys.inf_step silent_move2 s tls"
 proof -
-  def step \<equiv> "\<lambda>s. let (tl, s') = SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity> in Some (tl, s')"
-  def tls \<equiv> "llist_corec s step"
-  from assms have "s -\<tau>\<rightarrow> \<infinity> \<and> tls = llist_corec s step" unfolding tls_def by blast
+  def tls \<equiv> "llist_unfold
+     (\<lambda>_. False)
+     (\<lambda>s. fst (SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>))
+     (\<lambda>s. snd (SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>))
+     s" (is "?tls s")
+  
+  with assms have "s -\<tau>\<rightarrow> \<infinity> \<and> tls = ?tls s" by simp
   hence "trsys.inf_step silent_move2 s tls"
   proof(coinduct rule: trsys.inf_step.coinduct[consumes 1, case_names inf_step, case_conclusion inf_step step])
     case (inf_step s tls)
     let ?P = "\<lambda>(tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>"
-    from inf_step obtain "s -\<tau>\<rightarrow> \<infinity>" and tls: "tls = llist_corec s step" ..
+    from inf_step obtain "s -\<tau>\<rightarrow> \<infinity>" and tls: "tls = ?tls s" ..
     from `s -\<tau>\<rightarrow> \<infinity>` obtain s' where "s -\<tau>\<rightarrow> s'" "s' -\<tau>\<rightarrow> \<infinity>" by cases
     from `s -\<tau>\<rightarrow> s'` obtain tl where "silent_move2 s tl s'" 
       by(blast dest: silent_move_into_silent_move2)
     with `s' -\<tau>\<rightarrow> \<infinity>` have "?P (tl, s')" by simp
     hence "?P (Eps ?P)" by(rule someI)
     thus ?case using tls
-      by(subst (asm) llist_corec)(auto simp add: step_def)
+      by(subst (asm) llist_unfold_code)(auto)
   qed
   thus thesis by(rule that)
 qed
@@ -1085,7 +1109,7 @@ qed
 lemma \<tau>Runs_into_\<tau>rtrancl3p:
   assumes runs: "s \<Down> tlss"
   and fin: "tfinite tlss"
-  and terminal: "terminal tlss = \<lfloor>s'\<rfloor>"
+  and terminal: "terminal tlss = Some s'"
   shows "\<tau>rtrancl3p s (list_of (llist_of_tllist tlss)) s'"
 using fin runs terminal
 proof(induct arbitrary: s rule: tfinite_induct)
@@ -1107,7 +1131,7 @@ qed
 lemma \<tau>Runs_terminal_stuck:
   assumes Runs: "s \<Down> tlss"
   and fin: "tfinite tlss"
-  and terminal: "terminal tlss = \<lfloor>s'\<rfloor>"
+  and terminal: "terminal tlss = Some s'"
   and proceed: "s' -tls\<rightarrow> s''"
   shows False
 using fin Runs terminal
@@ -1277,22 +1301,28 @@ lemma \<tau>Runs_into_\<tau>Runs_table2:
   where "\<tau>Runs_table2 s tlsstlss"
   and "tls = tmap (\<lambda>(tls, s', tl, s''). tl) (\<lambda>x. case x of Inl (tls, s') \<Rightarrow> Some s' | Inr _ \<Rightarrow> None) tlsstlss"
 proof -
-  def step \<equiv>
-    "\<lambda>(s, tls). 
-     case tls of
-       TNil so \<Rightarrow>
-       case so of
-         None \<Rightarrow> Inr (Inr (SOME tls'. trsys.inf_step silent_move2 s tls'))
-       | Some s' \<Rightarrow> 
-         let tls' = SOME tls'. silent_moves2 s tls' s'
-         in Inr (Inl (tls', s'))
-     | TCons tl tls' \<Rightarrow>
-       let (tls'', s', s'') = SOME (tls'', s', s''). silent_moves2 s tls'' s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' \<Down> tls'
-       in Inl ((tls'', s', tl, s''), s'', tls')"
-  def tlsstlss \<equiv> "\<lambda>s tls. tllist_corec (s, tls) step"
-  have [simp]: "\<And>s. tlsstlss s (TNil None) = TNil (Inr (SOME tls'. trsys.inf_step silent_move2 s tls'))"
-               "\<And>s s'. tlsstlss s (TNil (Some s')) = TNil (Inl (SOME tls'. silent_moves2 s tls' s', s'))"
-    unfolding tlsstlss_def by(simp_all add: tllist_corec step_def)
+  let ?terminal = "\<lambda>s tls. case terminal tls of 
+          None \<Rightarrow> Inr (SOME tls'. trsys.inf_step silent_move2 s tls')
+        | Some s' \<Rightarrow> let tls' = SOME tls'. silent_moves2 s tls' s' in Inl (tls', s')"
+  let ?P = "\<lambda>s tls (tls'', s', s''). silent_moves2 s tls'' s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls"
+  def tlsstlss \<equiv> "\<lambda>s tls. tllist_unfold
+      (\<lambda>(s, tls). is_TNil tls)
+      (\<lambda>(s, tls). ?terminal s tls)
+      (\<lambda>(s, tls). let (tls'', s', s'') = Eps (?P s tls) in (tls'', s', thd tls, s''))
+      (\<lambda>(s, tls). let (tls'', s', s'') = Eps (?P s tls) in (s'', ttl tls))
+      (s, tls)"
+
+  have [simp]:
+    "\<And>s tls. is_TNil (tlsstlss s tls) \<longleftrightarrow> is_TNil tls"
+    "\<And>s tls. is_TNil tls \<Longrightarrow> terminal (tlsstlss s tls) = ?terminal s tls"
+    "\<And>s tls. \<not> is_TNil tls \<Longrightarrow> thd (tlsstlss s tls) = (let (tls'', s', s'') = Eps (?P s tls) in (tls'', s', thd tls, s''))"
+    "\<And>s tls. \<not> is_TNil tls \<Longrightarrow> ttl (tlsstlss s tls) = (let (tls'', s', s'') = Eps (?P s tls) in tlsstlss s'' (ttl tls))"
+    by(simp_all add: tlsstlss_def split_beta)
+
+  have [simp]:
+    "\<And>s. tlsstlss s (TNil None) = TNil (Inr (SOME tls'. trsys.inf_step silent_move2 s tls'))"
+    "\<And>s s'. tlsstlss s (TNil (Some s')) = TNil (Inl (SOME tls'. silent_moves2 s tls' s', s'))"
+    unfolding tlsstlss_def by simp_all
 
   let ?conv = "tmap (\<lambda>(tls, s', tl, s''). tl) (\<lambda>x. case x of Inl (tls, s') \<Rightarrow> Some s' | Inr _ \<Rightarrow> None)"
   def xs \<equiv> "tlsstlss s tls"
@@ -1319,44 +1349,31 @@ proof -
       thus ?thesis by simp
     next
       case (Proceed s' s'' tls' tl)
-      let ?P = "\<lambda>(tls'', s', s''). silent_moves2 s tls'' s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' \<Down> tls'"
       from `s -\<tau>\<rightarrow>* s'` obtain tls'' where "silent_moves2 s tls'' s'"
         by(blast dest: silent_moves_into_silent_moves2)
-      with Proceed have "?P (tls'', s', s'')" by simp
-      hence "?P (Eps ?P)" by(rule someI)
+      with Proceed have "?P s tls (tls'', s', s'')" by simp
+      hence "?P s tls (Eps (?P s tls))" by(rule someI)
       hence ?Proceed using xs Proceed unfolding tlsstlss_def
-        by(subst (asm) tllist_corec)(auto simp add: step_def split_def)
+        by(subst (asm) tllist_unfold)(auto simp add: split_def)
       thus ?thesis by simp
     qed
   qed
   moreover
-  have "(tls, ?conv (tlsstlss s tls)) \<in> {(tls, ?conv (tlsstlss s tls))|s tls. s \<Down> tls}"
-    using assms unfolding tlsstlss_def by blast
-  hence "tls = ?conv (tlsstlss s tls)"
-  proof(coinduct rule: tllist_equalityI)
-    case (Eqtllist q)
-    then obtain s tls where q: "q = (tls, ?conv (tlsstlss s tls))"
-      and "s \<Down> tls" by blast
-    from `s \<Down> tls` show ?case
+  from assms have "tls = ?conv (tlsstlss s tls)"
+  proof(coinduct s tls rule: tllist_fun_coinduct_invar2)
+    case TNil
+    thus ?case by simp
+  next
+    case (TCons s tls)
+    thus ?case
     proof(cases)
-      case Terminate
-      hence ?EqTNil using q by simp
-      thus ?thesis ..
-    next
-      case Diverge
-      hence ?EqTNil using q by simp
-      thus ?thesis ..
-    next
       case (Proceed s' s'' tls' tl)
-      let ?P = "\<lambda>(tls'', s', s''). silent_moves2 s tls'' s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' \<Down> tls'"
       from `s -\<tau>\<rightarrow>* s'` obtain tls'' where "silent_moves2 s tls'' s'"
         by(blast dest: silent_moves_into_silent_moves2)
-      with Proceed have "?P (tls'', s', s'')" by simp
-      hence "?P (Eps ?P)" by(rule someI)
-      hence ?EqTCons using q `tls = TCons tl tls'` unfolding tlsstlss_def
-        by(subst (asm) tllist_corec)(auto simp add: step_def split_def)
-      thus ?thesis ..
-    qed
+      with Proceed have "?P s tls (tls'', s', s'')" by simp
+      hence "?P s tls (Eps (?P s tls))" by(rule someI)
+      thus ?thesis using `tls = TCons tl tls'` by auto
+    qed auto
   qed
   ultimately show thesis unfolding xs_def by(rule that)
 qed

@@ -52,7 +52,7 @@ lemma ta_bisim_mono:
   and mono: "\<And>t s1 s2. bisim t s1 s2 \<Longrightarrow> bisim' t s1 s2"
   shows "ta_bisim bisim' ta1 ta2"
 using major
-by(auto simp add: ta_bisim_def elim!: list_all2_mono nta_bisim_mono intro: mono)
+by(auto simp add: ta_bisim_def elim!: List.list_all2_mono nta_bisim_mono intro: mono)
 
 lemma nta_bisim_flip [flip_simps]:
   "nta_bisim (\<lambda>t. flip (bisim t)) = flip (nta_bisim bisim)"
@@ -757,13 +757,13 @@ lemma cond_actions_ok_bisim_ex_\<tau>1_inv:
   fixes ls ts1 m1 ws "is" ts2 m2 ct
   defines "s1' \<equiv> activate_cond_action1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) ct"
   assumes mbisim: "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2"
-  and ts1t: "ts1 t = \<lfloor>xln\<rfloor>"
-  and ts2t: "ts2 t = \<lfloor>xln'\<rfloor>"
+  and ts1t: "ts1 t = Some xln"
+  and ts2t: "ts2 t = Some xln'"
   and ct: "r2.cond_action_ok (ls, (ts2, m2), ws, is) t ct"
   shows "\<tau>mRed1 (ls, (ts1, m1), ws, is) s1'"
   and "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (thr s1' t') m1 (ts2 t') m2"
   and "r1.cond_action_ok s1' t ct"
-  and "thr s1' t = \<lfloor>xln\<rfloor>"
+  and "thr s1' t = Some xln"
 proof -
   have "\<tau>mRed1 (ls, (ts1, m1), ws, is) s1' \<and>
         (\<forall>t'. t' \<noteq> t \<longrightarrow> tbisim (ws t' = None) t' (thr s1' t') m1 (ts2 t') m2) \<and>
@@ -822,13 +822,13 @@ lemma cond_actions_oks_bisim_ex_\<tau>1_inv:
   fixes ls ts1 m1 ws "is" ts2 m2 cts
   defines "s1' \<equiv> activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts"
   assumes tbisim: "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2"
-  and ts1t: "ts1 t = \<lfloor>xln\<rfloor>"
-  and ts2t: "ts2 t = \<lfloor>xln'\<rfloor>"
+  and ts1t: "ts1 t = Some xln"
+  and ts2t: "ts2 t = Some xln'"
   and ct: "r2.cond_action_oks (ls, (ts2, m2), ws, is) t cts"
   shows "\<tau>mRed1 (ls, (ts1, m1), ws, is) s1'" 
   and "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (thr s1' t') m1 (ts2 t') m2"
   and "r1.cond_action_oks s1' t cts"
-  and "thr s1' t = \<lfloor>xln\<rfloor>"
+  and "thr s1' t = Some xln"
 using tbisim ts1t ct unfolding s1'_def
 proof(induct cts arbitrary: ts1)
   case (Cons ct cts)
@@ -878,13 +878,13 @@ lemma cond_actions_ok_bisim_ex_\<tau>2_inv:
   fixes ls ts1 m1 "is" ws ts2 m2 ct
   defines "s2' \<equiv> activate_cond_action2 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) ct"
   assumes mbisim: "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2"
-  and ts1t: "ts1 t = \<lfloor>xln\<rfloor>"
-  and ts2t: "ts2 t = \<lfloor>xln'\<rfloor>"
+  and ts1t: "ts1 t = Some xln"
+  and ts2t: "ts2 t = Some xln'"
   and ct: "r1.cond_action_ok (ls, (ts1, m1), ws, is) t ct"
   shows "\<tau>mRed2 (ls, (ts2, m2), ws, is) s2'"
   and "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (thr s2' t') m2"
   and "r2.cond_action_ok s2' t ct"
-  and "thr s2' t = \<lfloor>xln'\<rfloor>"
+  and "thr s2' t = Some xln'"
 unfolding s2'_def
 by(blast intro: FWdelay_bisimulation_final_base.cond_actions_ok_bisim_ex_\<tau>1_inv[OF FWdelay_bisimulation_final_base_flip, where bisim_wait = "flip bisim_wait", unfolded flip_simps, OF mbisim _ _ ct, OF _ ts2t ts1t])+
 
@@ -892,13 +892,13 @@ lemma cond_actions_oks_bisim_ex_\<tau>2_inv:
   fixes ls ts1 m1 ws "is" ts2 m2 cts
   defines "s2' \<equiv> activate_cond_actions2 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts"
   assumes tbisim: "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2"
-  and ts1t: "ts1 t = \<lfloor>xln\<rfloor>"
-  and ts2t: "ts2 t = \<lfloor>xln'\<rfloor>"
+  and ts1t: "ts1 t = Some xln"
+  and ts2t: "ts2 t = Some xln'"
   and ct: "r1.cond_action_oks (ls, (ts1, m1), ws, is) t cts"
   shows "\<tau>mRed2 (ls, (ts2, m2), ws, is) s2'"
   and "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (thr s2' t') m2"
   and "r2.cond_action_oks s2' t cts"
-  and "thr s2' t = \<lfloor>xln'\<rfloor>"
+  and "thr s2' t = Some xln'"
 unfolding s2'_def
 by(blast intro: FWdelay_bisimulation_final_base.cond_actions_oks_bisim_ex_\<tau>1_inv[OF FWdelay_bisimulation_final_base_flip, where bisim_wait = "flip bisim_wait", unfolded flip_simps, OF tbisim _ _ ct, OF _ ts2t ts1t])+
 

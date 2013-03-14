@@ -4508,7 +4508,7 @@ proof(cases)
       show "max_vars e' \<le> length xs'" by simp
 
       from bisims show "list_all2 (bisim1_fr P h') exs FRS"
-        by(rule list_all2_mono)(rule bisim1_fr_hext_mono[OF _ hext])
+        by(rule List.list_all2_mono)(rule bisim1_fr_hext_mono[OF _ hext])
     qed
     moreover from conf'' have "hconf h'" "preallocated h'" by(auto simp add: correct_state_def)
     with wf red

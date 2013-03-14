@@ -101,7 +101,7 @@ next
   moreover from `ta_hb_consistent P (E @ list_of (LCons tob E')) E''` `lfinite E'`
   have "ta_hb_consistent P ((E @ [tob]) @ list_of E') E''" by simp
   ultimately have "ta_hb_consistent P (E @ [tob]) (lappend E' E'')" by(rule lfinite_LConsI.IH)
-  thus ?case unfolding lappend_LCons apply(rule ta_hb_consistent.LCons)
+  thus ?case unfolding lappend_code apply(rule ta_hb_consistent.LCons)
     using `ta_hb_consistent P E (LCons tob E')`
     by cases (simp split: prod.split_asm action.split_asm obs_event.split_asm)
 qed
@@ -526,23 +526,15 @@ qed
 
 context jmm_multithreaded begin
 
-primrec complete_hb_aux ::
-  "(('l,'thread_id,'x,'m,'w) state \<times> ('thread_id \<times> ('addr, 'thread_id) obs_event action) list) 
-  \<Rightarrow> (('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) 
-     \<times> (('l,'thread_id,'x,'m,'w) state \<times> ('thread_id \<times> ('addr, 'thread_id) obs_event action) list)) option"
-where
-  "complete_hb_aux (s, E) =
-   (if \<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s' 
-    then let ((t, ta), s') =
-             SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
-         in Some ((t, ta), (s', E @ map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
-    else None)"
-    
-declare complete_hb_aux.simps [simp del]
-
 definition complete_hb :: "('l,'thread_id,'x,'m,'w) state \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) list
   \<Rightarrow> ('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
-where "complete_hb s vs = llist_corec (s, vs) complete_hb_aux"
+where
+  "complete_hb s E = llist_unfold
+     (\<lambda>(s, E). \<forall>t ta s'. \<not> s -t\<triangleright>ta\<rightarrow> s')
+     (\<lambda>(s, E). fst (SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))))
+     (\<lambda>(s, E). let ((t, ta), s') = SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
+         in (s', E @ map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
+     (s, E)"
 
 definition hb_completion ::
   "('l, 'thread_id, 'x, 'm, 'w) state \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) list \<Rightarrow> bool"
@@ -639,7 +631,7 @@ proof -
     show ?case
     proof(cases "\<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'")
       case False
-      with ttas have ?Stuck by(simp add: complete_hb_def complete_hb_aux_def llist_corec)
+      with ttas have ?Stuck by(simp add: complete_hb_def)
       thus ?thesis ..
     next
       case True
@@ -669,8 +661,7 @@ proof -
       have "non_speculative P (w_values P (\<lambda>_. {}) (map snd E)) (llist_of \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)" by(simp add: o_def)
       with hb_c red have "hb_completion ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)" by(rule hb_completion_shift1)
       ultimately have ?Step using True
-        unfolding ttas complete_hb_def
-        by(subst llist_corec)(auto simp add: complete_hb_aux.simps split_beta simp del: split_paired_Ex)
+        unfolding ttas complete_hb_def by(fastforce simp del: split_paired_Ex simp add: split_def)
       thus ?thesis ..
     qed
   qed
@@ -697,7 +688,7 @@ proof -
     show ?case
     proof(cases "\<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'")
       case False
-      with obs have ?LNil by(simp add: complete_hb_def complete_hb_aux_def llist_corec)
+      with obs have ?LNil by(simp add: complete_hb_def)
       thus ?thesis ..
     next
       case True
@@ -738,14 +729,14 @@ proof -
             unfolding lfinite_ltakeWhile by(fastforce simp add: split_def lconcat_eq_LNil)
           ultimately have "(complete_hb ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>), a) \<in> ?R"
             using red unfolding a complete_hb_def
-            apply(subst (2) llist_corec)
-            apply(subst (asm) llist_corec)
-            apply(auto simp add: split_beta complete_hb_aux.simps simp del: split_paired_Ex split_paired_All split: split_if_asm)
+            apply(subst (2) llist_unfold_code)
+            apply(subst (asm) llist_unfold_code)
+            apply(auto simp add: split_beta simp del: split_paired_Ex split_paired_All split: split_if_asm)
             apply(auto simp add: lfinite_eq_range_llist_of)
             done }
         hence ?lappend using True red hb hb_c' unfolding obs complete_hb_def
-          apply(subst llist_corec)
-          apply(simp add: complete_hb_aux.simps split_beta del: split_paired_Ex)
+          apply(subst llist_unfold_code)
+          apply(simp add: split_beta del: split_paired_Ex)
           apply(intro exI conjI impI refl disjI1|rule refl|assumption|simp_all)+
           done
         thus ?thesis ..

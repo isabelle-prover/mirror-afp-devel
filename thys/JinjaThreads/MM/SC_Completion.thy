@@ -509,7 +509,7 @@ qed
 
 lemma llist_of_list_of_append:
   "lfinite xs \<Longrightarrow> llist_of (list_of xs @ ys) = lappend xs (llist_of ys)"
-unfolding lfinite_eq_range_llist_of by clarsimp
+unfolding lfinite_eq_range_llist_of by(clarsimp simp add: lappend_llist_of_llist_of)
 
 lemma ta_seq_consist_most_recent_write_for:
   assumes sc: "ta_seq_consist P empty (lmap snd E)"
@@ -691,7 +691,7 @@ proof(intro exI conjI)
       with `w < a` have "enat (a - Suc w) < llength E - enat (Suc w)"
         by(cases "llength E") simp_all
       hence "E = lappend (lappend ?prefix (LCons (lnth E w) ?between)) (LCons (lnth (ldropn (Suc w) E) (a - Suc w)) (ldropn (Suc (a - Suc w)) (ldropn (Suc w) E)))"
-        using `w < a` `enat a < llength E` unfolding lappend_assoc lappend_LCons
+        using `w < a` `enat a < llength E` unfolding lappend_assoc lappend_code
         apply(subst ldropn_Suc_conv_ldropn, simp)
         apply(subst lappend_ltake_enat_ldropn)
         apply(subst ldropn_Suc_conv_ldropn, simp add: less_trans[where y="enat a"])
@@ -949,23 +949,15 @@ end
 
 context jmm_multithreaded begin
 
-primrec complete_sc_aux :: 
-  "(('l,'thread_id,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool)) 
-  \<Rightarrow> (('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) 
-      \<times> (('l,'thread_id,'x,'m,'w) state \<times> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool))) option"
-where
-  "complete_sc_aux (s, vs) =
-   (if \<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'
-    then let ((t, ta), s') = 
-             SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)
-         in Some ((t, ta), (s', mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
-    else None)"
-
-declare complete_sc_aux.simps [simp del]
-
 definition complete_sc :: "('l,'thread_id,'x,'m,'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> 
   ('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
-where "complete_sc s vs = llist_corec (s, vs) complete_sc_aux"
+where
+  "complete_sc s vs = llist_unfold
+     (\<lambda>(s, vs). \<forall>t ta s'. \<not> s -t\<triangleright>ta\<rightarrow> s')
+     (\<lambda>(s, vs). fst (SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))
+     (\<lambda>(s, vs). let ((t, ta), s') = SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)
+         in (s', mrw_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
+     (s, vs)"
 
 definition sc_completion :: "('l, 'thread_id, 'x, 'm, 'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> bool"
 where
@@ -1005,7 +997,7 @@ proof(rule sc_completionI)
   from \<tau>Red \<tau>Red' have "s -\<triangleright>ttas @ ttas'\<rightarrow>* s''" unfolding RedT_def by(rule rtrancl3p_trans)
   moreover from sc sc' have "ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ ttas'))))"
     apply(simp add: lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend del: lappend_llist_of_llist_of)
-    apply(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def split_def del: lmap_llist_of lmap_compose)
+    apply(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def split_def del: lmap_llist_of)
     done
   ultimately
   show "\<exists>ta' x'' m''. t \<turnstile> \<langle>x, shr s''\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle> \<and> actions_ok s'' t ta' \<and>
@@ -1037,8 +1029,7 @@ proof -
     show ?case
     proof(cases "\<exists>t' ta' s''. s' -t'\<triangleright>ta'\<rightarrow> s''")
       case False
-      hence "ttas = LNil" unfolding ttas complete_sc_def
-        by(subst llist_corec)(simp add: complete_sc_aux.simps)
+      hence "ttas = LNil" unfolding ttas complete_sc_def by(simp)
       hence ?Stuck using False by simp
       thus ?thesis ..
     next
@@ -1071,7 +1062,7 @@ proof -
         by(auto simp add: split_beta RedT_def intro: rtrancl3p_step)
       moreover from True
       have "ttas = LCons (fst (Eps ?proceed)) (complete_sc (snd (Eps ?proceed)) (?vs (ttas' @ [fst (Eps ?proceed)])))"
-        unfolding ttas complete_sc_def by(subst llist_corec)(simp add: complete_sc_aux.simps split_beta)
+        unfolding ttas complete_sc_def by(simp add: split_def)
       moreover from sc `?proceed (Eps ?proceed)`
       have "ta_seq_consist P vs (llist_of (?ttas' (ttas' @ [fst (Eps ?proceed)])))"
         unfolding map_append concat_append lappend_llist_of_llist_of[symmetric] 
@@ -1115,8 +1106,7 @@ proof -
     show ?case
     proof(cases "\<exists>t' ta' s''. s' -t'\<triangleright>ta'\<rightarrow> s''")
       case False
-      hence "obs = LNil" unfolding obs_def complete_sc_def
-        by(subst llist_corec)(simp add: complete_sc_aux.simps)
+      hence "obs = LNil" unfolding obs_def complete_sc_def by simp
       hence ?LNil unfolding obs_def by auto
       thus ?thesis ..
     next
@@ -1155,7 +1145,7 @@ proof -
         case False
         from True
         have csc_unfold: "complete_sc s' (?vs ttas') = LCons ?tta (complete_sc ?s' (?vs (ttas' @ [?tta])))"
-          unfolding complete_sc_def by(subst llist_corec)(simp add: complete_sc_aux.simps split_beta)
+          unfolding complete_sc_def by(simp add: split_def)
         hence "obs = lappend (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>) (?obs (complete_sc ?s' (?vs (ttas' @ [?tta]))))"
           using obs_def by(simp add: split_beta)
         moreover have "ta_seq_consist P vs' (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>)"

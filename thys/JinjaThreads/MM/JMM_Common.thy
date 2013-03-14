@@ -86,7 +86,7 @@ next
     have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
     from `list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) als Ts'`
     have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) als Ts'"
-      by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
+      by(rule List.list_all2_mono)(rule addr_loc_type_hext_mono[OF _ `h \<unlhd> h'`])
     ultimately have "ad = a \<and> al' \<in> set als" by(rule Cons)
     thus ?thesis by simp
   qed
@@ -262,7 +262,7 @@ next
   from `heap_copy_loc ad ad' al h ob h'`
   have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
   with wt2 have wt2': "list_all2 (\<lambda>al T. P,h' \<turnstile> ad@al : T) als Ts'" "list_all2 (\<lambda>al T. P,h' \<turnstile> ad'@al : T) als Ts'"
-    by -(erule list_all2_mono[OF _ addr_loc_type_hext_mono], assumption+)+
+    by -(erule List.list_all2_mono[OF _ addr_loc_type_hext_mono], assumption+)+
 
   from copy hconf wt1 have hconf': "hconf h'"
     by(rule heap_conf_read.hconf_heap_copy_loc_mono[OF heap_conf_read_heap_read_typed])
@@ -318,7 +318,7 @@ next
     moreover
     from hcl have "h \<unlhd> h'" by(rule hext_heap_copy_loc)
     with wt2 have wt2': "list_all2 (\<lambda>al T. P,h' \<turnstile> ad@al : T) als Ts'" "list_all2 (\<lambda>al T. P,h' \<turnstile> ad'@al : T) als Ts'"
-      by -(erule list_all2_mono[OF _ addr_loc_type_hext_mono], assumption+)+
+      by -(erule List.list_all2_mono[OF _ addr_loc_type_hext_mono], assumption+)+
     ultimately have "vs_conf P h'' (w_values P ?vs' (take (n - length ob) (map NormalAction obs)))"
       by(rule Cons.IH)
     with False show ?thesis by simp
@@ -622,9 +622,9 @@ next
         by(rule heap_conf_read.hconf_heap_copy_loc_mono[OF heap_conf_read_heap_read_typed])(rule heap_copy_loc_non_speculative_typeable[OF copy' ns vs hconf type1' type2'], fact+)
       moreover
       from type1'' have "list_all2 (\<lambda>al T. P,H'' \<turnstile> a@al : T) als Ts'"
-        by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
+        by(rule List.list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
       moreover from type2'' have "list_all2 (\<lambda>al T. P,H'' \<turnstile> a'@al : T) als Ts'"
-        by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
+        by(rule List.list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
       moreover note calculation }
     from heap_copies_progress[OF this]
     obtain obs' h''' where "heap_copies a a' als H'' obs' h'''" by blast
@@ -646,9 +646,9 @@ next
     moreover
     from copy have hext: "h \<unlhd> h'" by(rule hext_heap_copy_loc)
     from type1'' have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) als Ts'"
-      by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
+      by(rule List.list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
     moreover from type2'' have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) als Ts'"
-      by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
+      by(rule List.list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
     moreover have "hconf h'" 
       by(rule heap_conf_read.hconf_heap_copy_loc_mono[OF heap_conf_read_heap_read_typed])(rule heap_copy_loc_non_speculative_typeable[OF copy ns' vs hconf type1' type2'], fact+)
     moreover from i False have "?i' < length obs" by simp

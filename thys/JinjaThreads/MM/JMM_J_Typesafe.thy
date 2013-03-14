@@ -182,7 +182,7 @@ apply(erule multithreaded_base.\<E>.cases, hypsubst)
 apply(rule multithreaded_base.\<E>.intros)
 apply(subst if_mred_heap_read_typedD[abs_def])
 apply(erule if_mthr_Runs_heap_read_typedI)
-apply(auto simp add: image_Un lset_lmap[symmetric] lmap_lconcat lmap_compose[symmetric] o_def split_def simp del: lset_lmap lmap_compose)
+apply(auto simp add: image_Un lset_lmap[symmetric] lmap_lconcat llist.map_comp' o_def split_def simp del: lset_lmap)
 done
 
 lemma jmm'_redI:

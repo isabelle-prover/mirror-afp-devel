@@ -3418,7 +3418,7 @@ proof(cases)
           by(cases "(compE2 body @ [Return]) ! pc")(auto split: split_if_asm sum.split_asm simp: split_beta, auto split: extCallRet.splits)
         then obtain stk' loc' pc' where [simp]: "frs' = (stk', loc', C, M, pc') # FRS" by blast
         from conf obtain ST where "compP2 P,h \<turnstile> stk [:\<le>] ST" by(auto simp add: correct_state_def conf_f_def2)
-        hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule list_all2_mono)(simp add: compP2_def)
+        hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule List.list_all2_mono)(simp add: compP2_def)
         from execi sees pc check
         have exec': "exec_move_d P t (blocks1 0 (Class D#Ts) body) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
           apply(auto simp add: compP2_def compMb2_def exec_move_def check_def exec_meth_instr split: split_if_asm sum.split_asm)
@@ -3625,7 +3625,7 @@ proof(cases)
       have execm: "exec_move_d P t (blocks1 0 (Class D#Ts) body) h (stk, loc, pc, \<lfloor>a'\<rfloor>) ta h' (Addr a' # drop (length stk - d) stk, loc, pch, None)"
         by(auto simp add: exec_move_def exec_meth_xcpt)
       from conf obtain ST where "compP2 P,h \<turnstile> stk [:\<le>] ST" by(auto simp add: correct_state_def conf_f_def2)
-      hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule list_all2_mono)(simp add: compP2_def)
+      hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule List.list_all2_mono)(simp add: compP2_def)
       from red1_simulates_exec_instr[OF wf hconf tconf bisim[unfolded `xcp = \<lfloor>a'\<rfloor>`] execm _ bsok ST] lenxs ha' subclsD' \<tau>'
       obtain e'' xs''
         where b': "P,blocks1 0 (Class D#Ts) body,h \<turnstile> (e'', xs'') \<leftrightarrow> (Addr a' # drop (length stk - d) stk, loc, pch, None)"
@@ -3715,7 +3715,7 @@ proof cases
         by(cases "(compE2 body @ [Return]) ! pc")(auto split: split_if_asm sum.split_asm simp add: split_beta, auto split: extCallRet.splits)
       then obtain stk' loc' pc' where [simp]: "frs' = (stk', loc', C, M, pc') # FRS" by blast
       from conf obtain ST where "compP2 P,h \<turnstile> stk [:\<le>] ST" by(auto simp add: correct_state_def conf_f_def2)
-      hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule list_all2_mono)(simp add: compP2_def)
+      hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule List.list_all2_mono)(simp add: compP2_def)
       from execi sees True check pc
       have exec': "exec_move_d P t (blocks1 0 (Class D#Ts) body) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
         apply(auto simp add: compP2_def compMb2_def exec_move_def check_def exec_meth_instr split: split_if_asm sum.split_asm)
@@ -3745,7 +3745,7 @@ proof cases
       proof
         from red2 have "hext h h'" by(auto dest: red1_hext_incr)
         from bisims show "list_all2 (bisim1_fr P h') exs FRS"
-          by(rule list_all2_mono)(erule bisim1_fr_hext_mono[OF _ `hext h h'`])
+          by(rule List.list_all2_mono)(erule bisim1_fr_hext_mono[OF _ `hext h h'`])
       qed
       moreover from call sees'
       have "call1 e = None \<or> (\<forall>M' n. instrs_of (compP2 P) C M ! pc \<noteq> Invoke M' n) \<or> e' = e \<and> xs' = xs"

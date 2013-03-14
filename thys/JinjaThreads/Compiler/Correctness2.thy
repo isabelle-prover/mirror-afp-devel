@@ -394,7 +394,7 @@ proof -
       apply(auto elim!: bisim1_list1.cases intro!: bisim1_list1.intros simp add: split_beta intro: preallocated_hext)
         apply(erule (2) correct_state_heap_change[OF wt_compTP_compP2[OF wf]])
        apply(erule (1) bisim1_hext_mono)
-      apply(erule list_all2_mono)
+      apply(erule List.list_all2_mono)
       apply(erule (1) bisim1_fr_hext_mono)
       done
   next

@@ -14,6 +14,21 @@ imports
   "../../Collections/spec/ListSpec"
 begin
 
+text {*
+  Define an unfold operation that puts everything into one function to avoid duplicate evaluation.
+*}
+
+definition tllist_unfold' :: "('a \<Rightarrow> 'b \<times> 'a + 'c) \<Rightarrow> 'a \<Rightarrow> ('b, 'c) tllist"
+where [code del]: 
+  "tllist_unfold' f = 
+   tllist_unfold (\<lambda>a. \<exists>c. f a = Inr c) (Sum_Type.Projr \<circ> f) (fst \<circ> Sum_Type.Projl \<circ> f) (snd \<circ> Sum_Type.Projl \<circ> f)"
+
+lemma tllist_unfold' [code]:
+  "tllist_unfold' f a =
+  (case f a of Inr c \<Rightarrow> TNil c | Inl (b, a') \<Rightarrow> TCons b (tllist_unfold' f a'))"
+by(rule tllist.expand)(auto simp add: tllist_unfold'_def split: sum.split_asm)
+
+
 type_synonym
   ('l,'t,'x,'m,'w,'o,'m_t,'m_w,'s_i,'s) scheduler = 
     "'s \<Rightarrow> ('l,'t,'m,'m_t,'m_w,'s_i) state_refine \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 's) option"
@@ -322,7 +337,7 @@ definition exec_aux ::
   "'s \<times> ('l,'t,'m,'m_t,'m_w,'s_i) state_refine
   \<Rightarrow> ('s \<times> 't \<times> ('l,'t,'x,'m,'w,'o) thread_action, ('l,'t,'m,'m_t,'m_w,'s_i) state_refine) tllist"
 where
-  "exec_aux \<sigma>s = tllist_corec \<sigma>s exec_step"
+  "exec_aux \<sigma>s = tllist_unfold' exec_step \<sigma>s"
 
 definition exec :: "'s \<Rightarrow> ('l,'t,'m,'m_t,'m_w,'s_i) state_refine \<Rightarrow> ('q, ('l,'t,'m,'m_t,'m_w,'s_i) state_refine) tllist"
 where 
@@ -755,7 +770,7 @@ proof -
     proof(cases "exec_aux (\<sigma>, s)")
       case (TNil s')
       hence "\<alpha>.active_threads (state_\<alpha> s) = {}" "s' = s"
-        by(auto simp add: exec_aux_def tllist_corec split: sum.split_asm dest: exec_step_InrD[OF invar])
+        by(auto simp add: exec_aux_def tllist_unfold' split: sum.split_asm dest: exec_step_InrD[OF invar])
       hence ?Stuck using TNil by(auto dest: \<alpha>.red_in_active_threads)
       thus ?thesis ..
     next
@@ -764,7 +779,7 @@ proof -
         where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
         and [simp]: "ttls' = exec_aux (\<sigma>', s')"
         and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
-        unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastforce split: sum.split_asm)
+        unfolding exec_aux_def by(subst (asm) (2) tllist_unfold')(fastforce split: sum.split_asm)
       from invar wstok step
       have redT: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')"
         and [simp]: "\<sigma>'' = \<sigma>"
@@ -781,7 +796,7 @@ next
   thus "?thesis2" using assms
   proof(induct "exec_aux (\<sigma>, s)" arbitrary: \<sigma> s rule: tfinite_induct)
     case TNil thus ?case
-      by(auto simp add: exec_aux_def tllist_corec split_beta split: sum.split_asm dest: exec_step_InrD)
+      by(auto simp add: exec_aux_def tllist_unfold' split_beta split: sum.split_asm dest: exec_step_InrD)
   next
     case (TCons \<sigma>tta ttls)
     from `TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)`
@@ -789,7 +804,7 @@ next
       where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
       and ttls: "ttls = exec_aux (\<sigma>', s')"
       and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
-      unfolding exec_aux_def by(subst (asm) (2) tllist_corec)(fastforce split: sum.split_asm)
+      unfolding exec_aux_def by(subst (asm) (2) tllist_unfold')(fastforce split: sum.split_asm)
     note ttls moreover
     from `state_invar s` `\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))` `state_\<alpha> s \<in> invariant` `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))` step
     have [simp]: "\<sigma>'' = \<sigma>"

@@ -8,7 +8,7 @@ theory JMM_Spec
 imports
   Orders
   "../Common/Observable_Events"
-  "../../Coinductive/Coinductive_List_Lib"
+  "../../Coinductive/Coinductive_List"
 begin
 
 section {* Definitions *}

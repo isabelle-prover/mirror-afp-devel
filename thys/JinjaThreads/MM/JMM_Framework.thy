@@ -152,6 +152,10 @@ qed
 
 end
 
+lemma tset_lappendt_lfinite [simp]: (* Move to Coinductive *)
+  "lfinite xs \<Longrightarrow> tset (lappendt xs ys) = lset xs \<union> tset ys"
+by transfer auto
+
 context \<tau>multithreaded_wf begin
 
 text {* Alternative characterisation for @{term "\<E>"} *}
@@ -176,67 +180,55 @@ proof(intro equalityI subsetI)
     have "E = lconcat (lfilter (\<lambda>xs. xs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))"
       unfolding E by(simp add: lconcat_lfilter_neq_LNil)
     also have "\<dots> = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E''))))"
-      by(simp add: E' lfilter_lmap lmap_compose[symmetric] o_def split_def)
+      by(simp add: E' lfilter_lmap llist.map_comp' o_def split_def)
     also
-    have "(lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')),
-           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil)))) \<in>
-          {(lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')),
-           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))
-          |E''. \<exists>\<sigma>. mthr.\<tau>Runs_table2 \<sigma> E''}" 
-      (is "_ \<in> ?r")
-      using \<tau>Runs' by blast
-    hence "lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) = 
+    from `mthr.\<tau>Runs_table2 \<sigma> E''`
+    have "lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) = 
           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil)))"
-    proof(coinduct rule: llist_equalityI)
-      case (Eqllist q)
-      then obtain E'' \<sigma> 
-        where q: "q = (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')), lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))"
-        and \<tau>Runs': "mthr.\<tau>Runs_table2 \<sigma> E''"
-        by blast
-      show ?case
-      proof(cases "fst q")
-        case LNil
-        hence "\<forall>(tls, s', (t, ta), s'') \<in> lset (llist_of_tllist E''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []"
-          using q by(auto simp add: lfilter_empty_conv)
-        hence "\<forall>(t, ta) \<in> lset (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []"
-          by(cases "lfinite (llist_of_tllist E'')")(fastforce simp add: lset_lappend_lfinite split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_silentsD[OF \<tau>Runs'] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF \<tau>Runs'] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
-        hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))) = LNil"
-          by(simp add: lfilter_empty_conv split_beta)
-        thus ?thesis using LNil q by simp
-      next
-        case (LCons tl tls')
-        then obtain tls s' s'' tlsstlss' where tls': "tls' = lmap (\<lambda>(tls, s', tta, s''). tta) tlsstlss'"
-          and filter: "lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) (llist_of_tllist E'') = LCons (tls, s', tl, s'') tlsstlss'"
-          using q by(fastforce simp add: lmap_eq_LCons_conv)
-        from lfilter_eq_LConsD[OF filter]
-        obtain us vs where eq: "llist_of_tllist E'' = lappend us (LCons (tls, s', tl, s'') vs)"
-          and fin: "lfinite us"
-          and empty: "\<forall>(tls, s', (t, ta), s'')\<in>lset us. obs_a ta = []"
-          and neq_empty: "obs_a (snd tl) \<noteq> []"
-          and tlsstlss': "tlsstlss' = lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) vs"
-          by(auto simp add: split_beta)
-        from eq obtain E''' where E'': "E'' = lappendt us E'''" 
-          and eq': "llist_of_tllist E''' = LCons (tls, s', tl, s'') vs"
-          and terminal: "terminal E''' = terminal E''"
-          unfolding llist_of_tllist_eq_lappend_conv by auto
-        from \<tau>Runs' fin E'' obtain \<sigma>' where \<tau>Runs'': "mthr.\<tau>Runs_table2 \<sigma>' E'''"
-          by(auto dest: mthr.\<tau>Runs_table2_lappendtD)
-        then obtain \<sigma>'' E'''' where "mthr.\<tau>Runs_table2 \<sigma>'' E''''" "E''' = TCons (tls, s', tl, s'') E''''"
-          using eq' by cases auto
-        moreover from \<tau>Runs' E'' fin
-        have "\<forall>(tls, s, tl, s')\<in>lset us. \<forall>(t, ta)\<in>set tls. ta = \<epsilon>"
-          by(fastforce dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
-        hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) us)) = LNil"
-          using empty by(auto simp add: lfilter_empty_conv lset_lconcat_lfinite split_beta)
-        moreover from \<tau>Runs'' eq' have "snd ` set tls \<subseteq> {\<epsilon>}"
-          by(cases)(fastforce dest: silent_moves2_silentD)+
-        hence "[(t, ta)\<leftarrow>tls . obs_a ta \<noteq> []] = []"
-          by(auto simp add: filter_empty_conv split_beta)
-        ultimately have ?EqLCons
-          using LCons q E'' fin tls' tlsstlss' filter eq' neq_empty
-          by(fastforce simp add: lmap_lappend_distrib lappend_assoc lfilter_lappend_lfinite split_beta simp del: split_paired_Ex)
-        thus ?thesis ..
-      qed
+      (is "?lhs \<sigma> E'' = ?rhs \<sigma> E''")
+    proof(coinduct \<sigma> E'' rule: llist_fun_coinduct_invar2)
+      case (LNil \<sigma> E'')
+      thus ?case
+        by(cases "lfinite (llist_of_tllist E'')")(fastforce split: sum.split_asm simp add: split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF LNil] mthr.\<tau>Runs_table2_terminal_silentsD[OF LNil] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF LNil] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
+    next
+      case (LCons \<sigma> E'')
+      note \<tau>Runs' = `mthr.\<tau>Runs_table2 \<sigma> E''`
+      from LCons obtain tl tls' where "?lhs \<sigma> E'' = LCons tl tls'"
+        by(auto simp only: neq_LNil_conv)
+      then obtain tls s' s'' tlsstlss'
+        where tls': "tls' = lmap (\<lambda>(tls, s', tta, s''). tta) tlsstlss'"
+        and filter: "lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) (llist_of_tllist E'') = LCons (tls, s', tl, s'') tlsstlss'"
+        using LCons by(fastforce simp add: lmap_eq_LCons_conv)
+      from lfilter_eq_LConsD[OF filter]
+      obtain us vs where eq: "llist_of_tllist E'' = lappend us (LCons (tls, s', tl, s'') vs)"
+        and fin: "lfinite us"
+        and empty: "\<forall>(tls, s', (t, ta), s'')\<in>lset us. obs_a ta = []"
+        and neq_empty: "obs_a (snd tl) \<noteq> []"
+        and tlsstlss': "tlsstlss' = lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) vs"
+        by(auto simp add: split_beta)
+      from eq obtain E''' where E'': "E'' = lappendt us E'''" 
+        and eq': "llist_of_tllist E''' = LCons (tls, s', tl, s'') vs"
+        and terminal: "terminal E''' = terminal E''"
+        unfolding llist_of_tllist_eq_lappend_conv by auto
+      from \<tau>Runs' fin E'' obtain \<sigma>' where \<tau>Runs'': "mthr.\<tau>Runs_table2 \<sigma>' E'''"
+        by(auto dest: mthr.\<tau>Runs_table2_lappendtD)
+      then obtain \<sigma>'' E'''' where "mthr.\<tau>Runs_table2 \<sigma>'' E''''" "E''' = TCons (tls, s', tl, s'') E''''"
+        using eq' by cases auto
+      moreover from \<tau>Runs' E'' fin
+      have "\<forall>(tls, s, tl, s')\<in>lset us. \<forall>(t, ta)\<in>set tls. ta = \<epsilon>"
+        by(fastforce dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
+      hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) us)) = LNil"
+        using empty by(auto simp add: lfilter_empty_conv lset_lconcat_lfinite split_beta)
+      moreover from \<tau>Runs'' eq' have "snd ` set tls \<subseteq> {\<epsilon>}"
+        by(cases)(fastforce dest: silent_moves2_silentD)+
+      hence "[(t, ta)\<leftarrow>tls . obs_a ta \<noteq> []] = []"
+        by(auto simp add: filter_empty_conv split_beta)
+      ultimately show ?case
+        using LCons E'' fin tls' tlsstlss' filter eq' neq_empty
+        apply(auto simp add: lmap_lappend_distrib lappend_assoc split_beta filter_empty_conv simp del: split_paired_Ex)
+        apply(subst split_paired_Ex)
+        apply(auto simp del: split_paired_Ex)
+        done
     qed
     also have "lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) \<dots> = lfilter (\<lambda>obs. obs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))"
       unfolding lfilter_lmap by(simp add: o_def split_def)
@@ -1765,7 +1757,7 @@ next
   case 1
   hence sc1: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def llist_of.simps lmap_LCons lconcat_LCons tta
+    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps lmap_LCons lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
   from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 1 step.hyps(3)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by simp
@@ -1773,7 +1765,7 @@ next
   case 2
   hence sc1: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def llist_of.simps lmap_LCons lconcat_LCons tta
+    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps lmap_LCons lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
   from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 2 step.hyps(4)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by(simp add: tta o_def)
@@ -1933,7 +1925,7 @@ proof -
   finally have "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of (list_of (ltake (enat ra_m) E'))))))"
     by(simp add: split_def)
   hence sc': "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat ra_m) E')))))"
-    unfolding lmap_lconcat lmap_compose[symmetric] o_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric]
+    unfolding lmap_lconcat llist.map_comp' o_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric]
     by(simp add: split_beta o_def)
 
   from vs_conf_start have vs_conf_start: "vs_conf P (shr ?start_state) (w_values P (\<lambda>_. {}) (map snd ?obs_prefix))"
@@ -2021,7 +2013,7 @@ proof -
       also from `enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < enat (ra - length (lift_start_obs start_tid start_heap_obs))` `enat (ra - ?n) < llength E''`
       have "\<dots> = lnth (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) E')) (length (concat (map (\<lambda>(t, y). \<lbrace>y\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs)"
         unfolding E'
-        by(subst lnth_lmap[symmetric, where f=snd])(erule (1) less_trans, simp add: lmap_lconcat lmap_compose[symmetric] o_def split_def del: lmap_compose)
+        by(subst lnth_lmap[symmetric, where f=snd])(erule (1) less_trans, simp add: lmap_lconcat llist.map_comp' split_def o_def)
       also from len_less
       have "enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < llength (lconcat (ltake (enat ra_m) (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) E')))"
         unfolding `list_of (ltake (enat ra_m) E') = ttas' @ (t', ta') # ttas''`[symmetric]
@@ -2251,7 +2243,7 @@ proof -
       note this(1) also
       have "lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E')))
             = llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E')))"
-        unfolding lmap_lconcat lmap_compose[symmetric] o_def split_def lconcat_llist_of[symmetric] map_map lmap_llist_of[symmetric]
+        unfolding lmap_lconcat llist.map_comp' o_def split_def lconcat_llist_of[symmetric] map_map lmap_llist_of[symmetric]
         by simp
       finally have "ta_seq_consist P ?vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E'))))" .
       from if.sequential_completion[OF cut_and_update ta_seq_consist_convert_RA \<sigma>_\<sigma>'[folded mthr.if.RedT_def] this red_ra]
@@ -2274,7 +2266,7 @@ proof -
       have tsa_ok: "thread_start_actions_ok ?E_sc" by(rule thread_start_actions_ok_init_fin) 
         
       from sc have "ta_seq_consist P empty (lmap snd ?E_sc)"
-        by(simp add: lmap_lappend_distrib o_def lmap_lconcat lmap_compose[symmetric] split_def ta_seq_consist_lappend start_sc del: lmap_compose)
+        by(simp add: lmap_lappend_distrib o_def lmap_lconcat llist.map_comp' split_def ta_seq_consist_lappend start_sc)
       from ta_seq_consist_imp_sequentially_consistent[OF tsa_ok jmm.\<E>_new_actions_for_fun[OF `?E_sc \<in> ?\<E>`] this]
       obtain ws_sc where "sequentially_consistent P (?E_sc, ws_sc)"
         and "P \<turnstile> (?E_sc, ws_sc) \<surd>" unfolding start_heap_obs_def[symmetric] by iprover
@@ -2499,7 +2491,7 @@ proof -
         also note non_speculative_lappend also note lmap_lappend_distrib also note non_speculative_lappend
         also have "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E')) = 
                   llist_of (concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))))"
-          by(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def split_def del: lmap_llist_of lmap_compose)
+          by(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def split_def del: lmap_llist_of)
         ultimately
         have "non_speculative P (\<lambda>_. {}) (lmap snd (llist_of ?start_heap_obs))"
           and "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) 
@@ -2510,7 +2502,7 @@ proof -
           by(simp_all add: length_concat o_def split_def listsum_setsum_nth length_list_of_conv_the_enat less_min_eq1 atLeast0LessThan lnth_ltake split: split_if_asm cong: strong_setsum_cong)
         hence ns: "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) 
                      (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E')))))"
-          unfolding lconcat_llist_of[symmetric] lmap_lconcat lmap_llist_of[symmetric] lmap_compose[symmetric] o_def split_def
+          unfolding lconcat_llist_of[symmetric] lmap_lconcat lmap_llist_of[symmetric] llist.map_comp' o_def split_def
           by(simp)
 
         from ns'
@@ -2557,7 +2549,7 @@ proof -
         with ns' eq[symmetric] have "non_speculative P (w_values P (\<lambda>_. {}) (map snd (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E')))))) (llist_of (map snd (map (Pair t_r) \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>)))"
           by(subst append_take_drop_id[where xs="\<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>" and n=r_n, symmetric])(simp add: o_def map_concat split_def lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: append_take_drop_id lappend_llist_of_llist_of)
         with ns have ns'': "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E') @ [(t_r, ta'_r)]))))"
-          unfolding lconcat_llist_of[symmetric] map_append lappend_llist_of_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric]
+          unfolding lconcat_llist_of[symmetric] map_append lappend_llist_of_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp'
           by(simp add: o_def split_def non_speculative_lappend list_of_lconcat map_concat)
         from \<sigma>_\<sigma>' red_ra' have "mthr.if.RedT ?start_state (list_of ?r_m_E' @ [(t_r, ta'_r)]) \<sigma>''''"
           unfolding mthr.if.RedT_def ..
@@ -2579,7 +2571,7 @@ proof -
         also let ?E' = "lappend (llist_of (lift_start_obs start_tid start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))) (lappend (llist_of (map (Pair t_r) (drop r_n \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>))) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ttas')))"
         have "?E = ?E'"
           using eq[symmetric]
-          by(simp add: lmap_lappend_distrib lappend_assoc lappend_llist_of_llist_of[symmetric] lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lmap_compose[symmetric] o_def split_def del: lappend_llist_of_llist_of lmap_llist_of lmap_compose)(simp add: lappend_assoc[symmetric] lmap_lappend_distrib[symmetric] map_append[symmetric] del: map_append)
+          by(simp add: lmap_lappend_distrib lappend_assoc lappend_llist_of_llist_of[symmetric] lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def split_def del: lmap_llist_of)(simp add: lappend_assoc[symmetric] lmap_lappend_distrib[symmetric] map_append[symmetric] lappend_llist_of_llist_of del: map_append)
         finally have tsa': "thread_start_actions_ok ?E'" .
 
         from hb hb' eq[symmetric]
@@ -2703,7 +2695,7 @@ proof -
           apply(subst lconcat_llist_of[symmetric])
           apply(subst (3) lmap_llist_of[symmetric])
           apply(subst (3) lmap_llist_of[symmetric])
-          apply(subst lmap_compose[symmetric])
+          apply(subst llist.map_comp')
           apply(simp only: split_def o_def)
           apply(subst llist_of_list_of, simp)
           apply(subst (1 2) ltake_lappend2, simp add: r_conv3)
@@ -3266,7 +3258,7 @@ proof
               unfolding EE_def[symmetric, unfolded append_assoc]
             proof(intro conjI TrueI exI[where x=w'] strip)
               have "llist_of E'' [\<approx>] llist_of E'" using j len eq'' ta'_j unfolding E''_def E'_def
-                by(auto simp add: sim_actions_def list_all2_append list_all2_refl split_beta take_Suc_conv_app_nth take_map[symmetric])
+                by(auto simp add: sim_actions_def list_all2_append List.list_all2_refl split_beta take_Suc_conv_app_nth take_map[symmetric])
               moreover have "length E'' = length E'" using j j' by(simp add: E''_def E'_def)
               ultimately have sim: "ltake (enat (length E')) (llist_of E'') [\<approx>] ltake (enat (length E')) (llist_of E')" by simp
 

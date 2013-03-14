@@ -90,7 +90,7 @@ proof -
       case (Step S s' ttas tta)
       from `\<xi> = LCons tta ttas` read
       have read1: "\<And>ad al v T. \<lbrakk> NormalAction (ReadMem ad al v) \<in> set \<lbrace>snd tta\<rbrace>\<^bsub>o\<^esub>; ?adal ad al T \<rbrakk> \<Longrightarrow> ?conf v T"
-        and read2: "?read ttas" by(auto simp add: o_def simp del: lmap_compose)
+        and read2: "?read ttas" by(auto simp add: o_def)
       from `?redT S tta s'` read1
       have "?redT' S tta s'" by(fastforce simp add: multithreaded_base.redT.simps)
       hence ?Step using Step read2 `s = S` by blast

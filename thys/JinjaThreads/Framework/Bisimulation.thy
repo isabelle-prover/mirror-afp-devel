@@ -90,26 +90,34 @@ proof -
   from r1.inf_step_imp_inf_step_table[OF red1]
   obtain stls1 where red1': "s1 -1-stls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd) stls1" by blast
-  def tl1_to_tl2_def: tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (stls1 :: ('s1 \<times> 'tl1 \<times> 's1) llist).
-      llist_corec (s2, stls1) (\<lambda>(s2, stls1). case stls1 of LNil \<Rightarrow> None
-                               |    LCons (s1, tl1, s1') stls1' \<Rightarrow> 
-             let (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
-             in Some ((s2, tl2, s2'), (s2', stls1')))"
-  hence [simp]: "\<And>s2. tl1_to_tl2 s2 LNil = LNil"
+  def tl1_to_tl2_def: tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (stls1 :: ('s1 \<times> 'tl1 \<times> 's1) llist). llist_unfold
+     (\<lambda>(s2, stls1). stls1 = LNil)
+     (\<lambda>(s2, stls1). let (s1, tl1, s1') = lhd stls1;
+                        (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
+                    in (s2, tl2, s2'))
+     (\<lambda>(s2, stls1). let (s1, tl1, s1') = lhd stls1;
+                        (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
+                    in (s2', ltl stls1))
+     (s2, stls1)"
+
+  have tl1_to_tl2_simps [simp]:
+    "\<And>s2 stls1. tl1_to_tl2 s2 stls1 = LNil \<longleftrightarrow> stls1 = LNil"
+    "\<And>s2 stls1. stls1 \<noteq> LNil \<Longrightarrow> lhd (tl1_to_tl2 s2 stls1) =
+    (let (s1, tl1, s1') = lhd stls1;
+         (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
+     in (s2, tl2, s2'))"
+    "\<And>s2 stls1. stls1 \<noteq> LNil \<Longrightarrow> ltl (tl1_to_tl2 s2 stls1) =
+    (let (s1, tl1, s1') = lhd stls1;
+         (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
+     in tl1_to_tl2 s2' (ltl stls1))"
+    "\<And>s2. tl1_to_tl2 s2 LNil = LNil"
     "\<And>s2 s1 tl1 s1' stls1'. tl1_to_tl2 s2 (LCons (s1, tl1, s1') stls1') =
         LCons (s2, SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) 
               (tl1_to_tl2 (snd (SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2)) stls1')"
-    by(simp_all add: llist_corec split_beta)
+    by(simp_all add: tl1_to_tl2_def split_beta)
 
-  have "(llength (tl1_to_tl2 s2 stls1), llength stls1) \<in>
-       {(llength (tl1_to_tl2 s2 stls1), llength stls1)|s2 stls1. True}" by blast
-  hence [simp]: "llength (tl1_to_tl2 s2 stls1) = llength stls1"
-  proof(coinduct rule: enat_equalityI)
-    case (Eqenat m n)
-    then obtain s2 stls1 where m: "m = llength (tl1_to_tl2 s2 stls1)"
-      and n: "n = llength stls1" by blast
-    thus ?case by(cases "stls1") fastforce+
-  qed
+  have [simp]: "llength (tl1_to_tl2 s2 stls1) = llength stls1"
+    by(coinduct s2 stls1 rule: enat_fun_coinduct2)(auto simp add: epred_llength split_beta)
 
   def stls2: stls2 \<equiv> "tl1_to_tl2 s2 stls1"
   with red1' bisim have "\<exists>s1 stls1. s1 -1-stls1\<rightarrow>*t \<infinity> \<and> stls2 = tl1_to_tl2 s2 stls1 \<and> s1 \<approx> s2" by blast
@@ -423,30 +431,42 @@ proof -
   from trsys1.\<tau>inf_step_imp_\<tau>inf_step_table[OF \<tau>inf1]
   obtain sstls1 where \<tau>inf1': "s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd \<circ> snd) sstls1" by blast
-  def tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (sstls1 :: ('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist).
-      llist_corec (s2, sstls1) (\<lambda>(s2, sstls1). case sstls1 of LNil \<Rightarrow> None
-                               | LCons (s1, s1', tl1, s1'') stls1' \<Rightarrow> 
-             let (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
-                                                           \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
-             in Some ((s2, s2', tl2, s2''), (s2'', stls1')))"
-  hence [simp]: "\<And>s2. tl1_to_tl2 s2 LNil = LNil"
+  def tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (sstls1 :: ('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist). llist_unfold
+     (\<lambda>(s2, sstls1). sstls1 = LNil)
+     (\<lambda>(s2, sstls1).
+        let (s1, s1', tl1, s1'') = lhd sstls1;
+            (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
+                                     \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
+        in (s2, s2', tl2, s2''))
+     (\<lambda>(s2, sstls1). 
+        let (s1, s1', tl1, s1'') = lhd sstls1;
+            (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
+                                     \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
+        in (s2'', ltl sstls1))
+     (s2, sstls1)"
+  have [simp]:
+    "\<And>s2 sstls1. tl1_to_tl2 s2 sstls1 = LNil \<longleftrightarrow> sstls1 = LNil"
+    "\<And>s2 sstls1. sstls1 \<noteq> LNil \<Longrightarrow> lhd (tl1_to_tl2 s2 sstls1) =
+        (let (s1, s1', tl1, s1'') = lhd sstls1;
+            (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
+                                     \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
+        in (s2, s2', tl2, s2''))"
+    "\<And>s2 sstls1. sstls1 \<noteq> LNil \<Longrightarrow> ltl (tl1_to_tl2 s2 sstls1) =
+        (let (s1, s1', tl1, s1'') = lhd sstls1;
+            (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
+                                     \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
+        in tl1_to_tl2 s2'' (ltl sstls1))"
+    "\<And>s2. tl1_to_tl2 s2 LNil = LNil"
     "\<And>s2 s1 s1' tl1 s1'' stls1'. tl1_to_tl2 s2 (LCons (s1, s1', tl1, s1'') stls1') =
         LCons (s2, SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> 
                                           \<not> \<tau>move2 s2' tl2 s2'' \<and> s1'' \<approx> s2'' \<and> tl1 \<sim> tl2) 
               (tl1_to_tl2 (snd (snd (SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
                                                             \<not> \<tau>move2 s2' tl2 s2'' \<and> s1'' \<approx> s2'' \<and> tl1 \<sim> tl2)))
                            stls1')"
-    by(simp_all add: llist_corec split_beta)
+    by(simp_all add: tl1_to_tl2_def split_beta)
 
-  have "(llength (tl1_to_tl2 s2 sstls1), llength sstls1) \<in>
-       {(llength (tl1_to_tl2 s2 sstls1), llength sstls1)|s2 sstls1. True}" by blast
-  hence [simp]: "llength (tl1_to_tl2 s2 sstls1) = llength sstls1"
-  proof(coinduct rule: enat_equalityI)
-    case (Eqenat m n)
-    then obtain s2 sstls1 where m: "m = llength (tl1_to_tl2 s2 sstls1)"
-      and n: "n = llength sstls1" by blast
-    thus ?case by(cases "sstls1") fastforce+
-  qed
+  have [simp]: "llength (tl1_to_tl2 s2 sstls1) = llength sstls1"
+    by(coinduct s2 sstls1 rule: enat_fun_coinduct2)(auto simp add: epred_llength split_beta)
 
   def sstls2: sstls2 \<equiv> "tl1_to_tl2 s2 sstls1"
   with \<tau>inf1' bisim have "\<exists>s1 sstls1. s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity> \<and> sstls2 = tl1_to_tl2 s2 sstls1 \<and> s1 \<approx> s2" by blast
@@ -597,30 +617,36 @@ lemma no_move2_to_no_move1:
 using delay_bisimulation_diverge.no_move1_to_no_move2[OF delay_bisimulation_diverge_flip]
 unfolding flip_simps .
 
+lemmas (in -) tllist_all2_fun_coinduct_invar3 = tllist_all2_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
+
 lemma simulation_\<tau>Runs_table1:
   assumes bisim: "s1 \<approx> s2"
   and run1: "trsys1.\<tau>Runs_table s1 stlsss1"
   shows "\<exists>stlsss2. trsys2.\<tau>Runs_table s2 stlsss2 \<and> tllist_all2 (\<lambda>(tl1, s1'') (tl2, s2''). tl1 \<sim> tl2 \<and> s1'' \<approx> s2'') (option_rel bisim) stlsss1 stlsss2"
 proof(intro exI conjI)
-  def tls1_to_tls2 == "\<lambda>(s2 :: 's2) (stlsss1 :: ('tl1 \<times> 's1, 's1 option) tllist).
-      tllist_corec (s2, stlsss1) 
-        (\<lambda>(s2, stlsss1). case stlsss1 of 
-             TNil os1 \<Rightarrow> Inr (Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') os1)
-           | TCons (tl1, s1'') stlsss1' \<Rightarrow>
-             let (tl2, s2'') = SOME (tl2, s2''). \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and>
-                                                           \<not> \<tau>move2 s2' tl2 s2'' \<and> s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
-             in Inl ((tl2, s2''), (s2'', stlsss1')))"
-
-  have [simp]: "\<And>s2 os1. tls1_to_tls2 s2 (TNil os1) = 
-                TNil (Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') os1)"
-    unfolding tls1_to_tls2_def by(subst tllist_corec)(simp)
+  let ?P = "\<lambda>(s2 :: 's2) (stlsss1 :: ('tl1 \<times> 's1, 's1 option) tllist) (tl2, s2'').
+    \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and> snd (thd stlsss1) \<approx> s2'' \<and> fst (thd stlsss1) \<sim> tl2"
+  def tls1_to_tls2 == "\<lambda>s2 stlsss1. tllist_unfold
+      (\<lambda>(s2, stlsss1). is_TNil stlsss1)
+      (\<lambda>(s2, stlsss1). Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1))
+      (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (tl2, s2''))
+      (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (s2'', ttl stlsss1))
+      (s2, stlsss1)"
+  have [simp]:
+    "\<And>s2 stlsss1. is_TNil (tls1_to_tls2 s2 stlsss1) \<longleftrightarrow> is_TNil stlsss1"
+    "\<And>s2 stlsss1. is_TNil stlsss1 \<Longrightarrow> terminal (tls1_to_tls2 s2 stlsss1) = Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1)"
+    "\<And>s2 stlsss1. \<not> is_TNil stlsss1 \<Longrightarrow> thd (tls1_to_tls2 s2 stlsss1) = (let (tl2, s2'') = Eps (?P s2 stlsss1) in (tl2, s2''))"
+    "\<And>s2 stlsss1. \<not> is_TNil stlsss1 \<Longrightarrow> ttl (tls1_to_tls2 s2 stlsss1) = (let (tl2, s2'') = Eps (?P s2 stlsss1) in tls1_to_tls2 s2'' (ttl stlsss1))"
+    "\<And>s2 os1. tls1_to_tls2 s2 (TNil os1) = 
+               TNil (Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') os1)"
+    by(simp_all add: tls1_to_tls2_def split_beta)
   have [simp]:
     "\<And>s2 s1 s1' tl1 s1'' stlsss1. 
      tls1_to_tls2 s2 (TCons (tl1, s1'') stlsss1) =
      (let (tl2, s2'') = SOME (tl2, s2''). \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> 
                              \<not> \<tau>move2 s2' tl2 s2'' \<and> s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
       in TCons (tl2, s2'') (tls1_to_tls2 s2'' stlsss1))"
-    unfolding tls1_to_tls2_def by(subst tllist_corec)(simp add: split_beta)
+    by(rule tllist.expand)(simp_all add: split_beta)
 
   def stlsss2 == "tls1_to_tls2 s2 stlsss1"
   with bisim run1 have "\<exists>s1 stlsss1. s1 \<approx> s2 \<and> trsys1.\<tau>Runs_table s1 stlsss1 \<and> stlsss2 = tls1_to_tls2 s2 stlsss1"
@@ -669,15 +695,17 @@ proof(intro exI conjI)
 
   let ?Tlsim = "\<lambda>(tl1, s1'') (tl2, s2''). tl1 \<sim> tl2 \<and> s1'' \<approx> s2''"
   let ?Bisim = "option_rel bisim"
-  from run1 bisim have "\<exists>s1 s2. trsys1.\<tau>Runs_table s1 stlsss1 \<and> s1 \<approx> s2 \<and> stlsss2 = tls1_to_tls2 s2 stlsss1"
-    by(auto simp add: stlsss2_def)
-  thus "tllist_all2 ?Tlsim ?Bisim stlsss1 stlsss2"
-  proof coinduct
-    case (tllist_all2 stlsss1 stlsss2)
-    then obtain s1 s2 where "trsys1.\<tau>Runs_table s1 stlsss1"
-      and bisim: "s1 \<approx> s2"
-      and [simp]: "stlsss2 = tls1_to_tls2 s2 stlsss1" by blast
-    thus ?case
+  from conjI[OF run1 bisim]
+  show "tllist_all2 ?Tlsim ?Bisim stlsss1 stlsss2"
+    unfolding stlsss2_def
+  proof(coinduct s1 s2 stlsss1 rule: tllist_all2_fun_coinduct_invar3)
+    case is_TNil 
+    thus ?case by simp
+  next
+    case (TNil s1 s2 stlsss1)
+    hence Runs: "trsys1.\<tau>Runs_table s1 stlsss1"
+      and bisim: "s1 \<approx> s2" by simp_all
+    from Runs show ?case
     proof cases
       case (Terminate s1')
       let ?P = "\<lambda>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl2 s2''. \<not> s2' -2-tl2\<rightarrow> s2'') \<and> s1' \<approx> s2'"
@@ -689,25 +717,32 @@ proof(intro exI conjI)
         and "\<And>tl2 s2'''. \<not> s2'' -2-tl2\<rightarrow> s2'''" by blast
       ultimately have "?P s2''" by(blast intro: rtranclp_trans)
       hence "?P (Eps ?P)" by(rule someI)
-      hence ?TNil using `stlsss1 = TNil \<lfloor>s1'\<rfloor>` bisim by(simp)
-      thus ?thesis ..
+      thus ?thesis using `stlsss1 = TNil \<lfloor>s1'\<rfloor>` bisim by(simp)
     next
       case Diverge thus ?thesis by simp
     next
       case (Proceed s1' s1'' stlsss1' tl1)
-      let ?P = "\<lambda>(tl2, s2''). \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and> s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
+      with TNil show ?thesis by simp
+    qed
+  next
+    case (TCons s1 s2 stlsss1)
+    hence Runs: "trsys1.\<tau>Runs_table s1 stlsss1"
+      and bisim: "s1 \<approx> s2" by simp_all
+    from Runs `\<not> is_TNil stlsss1` show ?case
+    proof cases
+      case (Proceed s1' s1'' stlsss1' tl1)
       from simulation_silents1[OF bisim `s1 -\<tau>1\<rightarrow>* s1'`]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1' \<approx> s2'" by blast
       moreover from simulation1[OF `s1' \<approx> s2'` `s1' -1-tl1\<rightarrow> s1''` `\<not> \<tau>move1 s1' tl1 s1''`]
       obtain s2'' s2''' tl2 where "s2' -\<tau>2\<rightarrow>* s2''"
         and "s2'' -2-tl2\<rightarrow> s2'''" and "\<not> \<tau>move2 s2'' tl2 s2'''"
         and "s1'' \<approx> s2'''" and "tl1 \<sim> tl2" by blast
-      ultimately have "?P (tl2, s2''')" by(blast intro: rtranclp_trans)
-      hence "?P (Eps ?P)" by(rule someI)
-      hence ?TCons using `stlsss1 = TCons (tl1, s1'') stlsss1'` `trsys1.\<tau>Runs_table s1'' stlsss1'` bisim
+      ultimately have "?P s2 stlsss1 (tl2, s2''')"
+        using `stlsss1 = TCons (tl1, s1'') stlsss1'` by(auto intro: rtranclp_trans)
+      hence "?P s2 stlsss1 (Eps (?P s2 stlsss1))" by(rule someI)
+      thus ?thesis using `stlsss1 = TCons (tl1, s1'') stlsss1'` `trsys1.\<tau>Runs_table s1'' stlsss1'` bisim
         by auto blast
-      thus ?thesis ..
-    qed
+    qed(simp_all)
   qed
 qed
 
