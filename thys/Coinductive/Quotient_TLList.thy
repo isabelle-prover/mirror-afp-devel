@@ -39,7 +39,7 @@ proof(rule reflpI)
     using assms by(auto elim: reflpE)
 qed
 
-lemma tllist_all2_left_total[transfer_rule]:
+lemma tllist_all2_left_total[reflexivity_rule]:
   assumes R: "left_total R"
   and S: "left_total S"
   shows "left_total (tllist_all2 R S)"
@@ -314,7 +314,7 @@ lemma tllist_quotient [quot_thm]:
   \<Longrightarrow> Quotient3 (tllist_all2 R1 R2) (tmap Abs1 Abs2) (tmap Rep1 Rep2)"
 by(blast intro: Quotient3I dest: Quotient3_tmap_Abs_Rep Quotient3_tllist_all2_tmap_tmapI tllist_all2_rel)
 
-declare [[mapQ3 tllist = (tllist_all2, tllist_quotient)]]
+declare [[mapQ3 tllist = (tllist_rel, tllist_quotient)]]
 
 lemma Quotient_llist[quot_map]:
   assumes "Quotient R1 Abs1 Rep1 T1"

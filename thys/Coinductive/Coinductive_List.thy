@@ -400,9 +400,8 @@ where [code del]:
 
 abbreviation lset where "lset \<equiv> llist_set"
 
-definition llist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'b llist \<Rightarrow> bool"
-where [code del]:
-  "llist_all2 P xs ys \<longleftrightarrow> llength xs = llength ys \<and> (\<forall>(x, y) \<in> lset (lzip xs ys). P x y)"
+abbreviation llist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'b llist \<Rightarrow> bool"
+where "llist_all2 \<equiv> llist_rel"
 
 definition llast :: "'a llist \<Rightarrow> 'a"
 where [nitpick_simp]:
@@ -2124,6 +2123,9 @@ next
   thus ?case by -(drule sym, auto simp add: lzip_eq_LCons_conv)
 qed
 
+lemma lset_lzip_same [simp]: "lset (lzip xs xs) = (\<lambda>x. (x, x)) ` lset xs"
+by(auto 4 3 simp add: lset_lzip in_lset_conv_lnth)
+
 lemma lfinite_lzip [simp]:
   "lfinite (lzip xs ys) \<longleftrightarrow> lfinite xs \<or> lfinite ys" (is "?lhs \<longleftrightarrow> ?rhs")
 proof
@@ -2456,18 +2458,10 @@ by(simp add: ldropWhile_def lhd_ldrop llength_ltakeWhile_lt_iff)
 
 subsection {* @{term "llist_all2"} *}
 
-lemma llist_all2_LNil_LNil [simp]: "llist_all2 P LNil LNil"
-  by(simp add: llist_all2_def)
-
-lemma llist_all2_LNil_LCons [simp]: "\<not> llist_all2 P LNil (LCons x xs)"
-  by(simp add: llist_all2_def)
-
-lemma llist_all2_LCons_LNil [simp]: "\<not> llist_all2 P (LCons x xs) LNil"
-  by(simp add: llist_all2_def)
-
-lemma llist_all2_LCons_LCons [simp]:
-  "llist_all2 P (LCons x xs) (LCons y ys) \<longleftrightarrow> P x y \<and> llist_all2 P xs ys"
-by(auto simp add: llist_all2_def)
+lemmas llist_all2_LNil_LNil = llist.rel_inject(1)
+lemmas llist_all2_LNil_LCons = llist.rel_distinct(1)
+lemmas llist_all2_LCons_LNil = llist.rel_distinct(2)
+lemmas llist_all2_LCons_LCons = llist.rel_inject(2)
 
 lemma llist_all2_code [code]:
   "llist_all2 P LNil LNil = True"
@@ -2493,6 +2487,10 @@ by(cases xs) simp_all
 lemma llist_all2_llist_of [simp]:
   "llist_all2 P (llist_of xs) (llist_of ys) = list_all2 P xs ys"
 by(induct xs ys rule: list_induct2')(simp_all)
+
+lemma llist_all2_def:
+  "llist_all2 P xs ys \<longleftrightarrow> llength xs = llength ys \<and> (\<forall>(x, y) \<in> lset (lzip xs ys). P x y)"
+by(auto 4 4 elim!: GrE simp add: llist_rel_def lmap_fst_lzip_conv_ltake lmap_snd_lzip_conv_ltake ltake_all intro: GrI)
 
 lemma llist_all2_llengthD:
   "llist_all2 P xs ys \<Longrightarrow> llength xs = llength ys"
@@ -2611,7 +2609,6 @@ by(fastforce simp add: llist_all2_conv_all_lnth lset_conv_lnth)
 lemma llist_all2_conj: 
   "llist_all2 (\<lambda>x y. P x y \<and> Q x y) xs ys \<longleftrightarrow> llist_all2 P xs ys \<and> llist_all2 Q xs ys"
 by(auto simp add: llist_all2_conv_all_lnth)
-
 
 lemma llist_all2_lhdD:
   "\<lbrakk> llist_all2 P xs ys; xs \<noteq> LNil \<rbrakk> \<Longrightarrow> P (lhd xs) (lhd ys)"
@@ -2783,21 +2780,7 @@ next
     by(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)(auto 4 3 dest: llist_all2_lhdD intro: llist_all2_ltlI)
 qed
 
-lemma llist_all2_eq [simp, id_simps, relator_eq]: "llist_all2 (op =) = (op =)"
-proof(intro ext iffI)
-  fix xs ys
-  assume "llist_all2 (op =) xs ys"
-  thus "xs = ys"
-    by(coinduct xs ys rule: llist_coinduct)(auto intro: llist_all2_ltlI dest: llist_all2_lhdD)
-next
-  fix xs ys :: "'a llist"
-  assume "xs = ys"
-  thus "llist_all2 (op =) xs ys"
-    by(simp add: llist_all2_conv_all_lnth)
-qed
-
-
-
+lemmas llist_all2_eq [simp, id_simps, relator_eq] = llist.rel_eq
 
 subsection {* The last element @{term "llast"} *}
 

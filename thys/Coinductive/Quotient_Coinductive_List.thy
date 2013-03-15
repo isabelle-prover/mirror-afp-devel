@@ -58,7 +58,7 @@ subsection {* Relator for type @{typ "'a llist"} *}
 lemma reflp_llist_all2 [reflexivity_rule]: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
   by (auto intro!: reflpI elim: reflpE simp add: llist_all2_conv_all_lnth)
 
-lemma llist_all2_left_total[reflexivity_rule, transfer_rule]:
+lemma llist_all2_left_total [reflexivity_rule]:
   assumes "left_total R"
   shows "left_total (llist_all2 R)"
 proof (rule left_totalI)
@@ -357,7 +357,7 @@ lemma llist_quotient [quot_thm]:
   "Quotient3 R Abs Rep \<Longrightarrow> Quotient3 (llist_all2 R) (lmap Abs) (lmap Rep)"
 by(blast intro: Quotient3I dest: Quotient_lmap_Abs_Rep Quotient_llist_all2_lmap_Rep llist_all2_rel)
 
-declare [[mapQ3 llist = (llist_all2, llist_quotient)]]
+declare [[mapQ3 llist = (llist_rel, llist_quotient)]]
 
 lemma LCons_preserve [quot_preserve]:
   assumes "Quotient3 R Abs Rep"

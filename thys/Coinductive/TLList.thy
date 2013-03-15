@@ -372,6 +372,37 @@ proof -
   with `x \<in> tset xs` show ?thesis by blast
 qed
 
+theorem tllist_set2_induct[consumes 1, case_names find step]:
+  assumes "x \<in> tllist_set2 xs" and "\<And>xs. is_TNil xs \<Longrightarrow> P (terminal xs) xs"
+  and "\<And>xs y. \<lbrakk>\<not> is_TNil xs; y \<in> tllist_set2 (ttl xs); P y (ttl xs)\<rbrakk> \<Longrightarrow> P y xs"
+  shows "P x xs"
+proof -
+  have "\<forall>x\<in>tllist_set2 xs. P x xs"
+    apply(rule tllist.dtor_set2_induct)
+    using assms
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_natural' split: sum.splits)
+     apply(case_tac b)
+      apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+      apply(erule_tac x="b" in meta_allE)
+      apply(erule meta_impE)
+       apply fastforce
+      apply(simp add: tllist.dtor_ctor)
+     apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps)
+    apply(rotate_tac -2)
+    apply(erule_tac x="b" in meta_allE)
+    apply(erule_tac x="xa" in meta_allE)
+    apply(erule meta_impE)
+     apply(case_tac b)
+      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+    apply(case_tac b)
+    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps)
+    done
+  with `x \<in> tllist_set2 xs` show ?thesis by blast
+qed
+
+abbreviation tllist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist \<Rightarrow> bool"
+where "tllist_all2 \<equiv> tllist_rel"
 
 
 subsection {* Connection with @{typ "'a llist"} *}
@@ -556,6 +587,41 @@ lemma terminal_tllist_of_llist_lfinite [simp]:
   "lfinite xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
 by(induct rule: lfinite.induct) simp_all
 
+lemma tllist_set2_tllist_of_llist [simp]:
+  "tllist_set2 (tllist_of_llist b xs) = (if lfinite xs then {b} else {})"
+proof(cases "lfinite xs")
+  case True
+  thus ?thesis by(induct) auto
+next
+  case False
+  { fix x
+    assume "x \<in> tllist_set2 (tllist_of_llist b xs)"
+    hence False using False
+      by(induct "tllist_of_llist b xs" arbitrary: xs rule: tllist_set2_induct) fastforce+ }
+  thus ?thesis using False by auto
+qed
+
+lemma tllist_set2_transfer [transfer_rule]:
+  "(pcr_tllist A B ===> set_rel B) (\<lambda>(xs, b). if lfinite xs then {b} else {}) tllist_set2"
+by(auto 4 4 simp add: pcr_tllist_def cr_tllist_def dest: llist_all2_lfiniteD intro: set_relI)
+
+lemma tllist_all2_transfer [transfer_rule]:
+  "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op = ===> op =)
+     (\<lambda>P Q (xs, b) (ys, b'). llist_all2 P xs ys \<and> (lfinite xs \<longrightarrow> Q b b')) tllist_all2"
+unfolding tllist.pcr_cr_eq
+apply(rule fun_relI)+
+apply(clarsimp simp add: cr_tllist_def llist_rel_def tllist_rel_def)
+apply(safe elim!: GrE)
+   apply simp_all
+   apply(rule_tac b="tllist_of_llist (b, ba) yb" in relcompI)
+    apply(auto intro!: GrI simp add: tmap_tllist_of_llist)[2]
+  apply(rule_tac b="tllist_of_llist (b, ba) yb" in relcompI)
+   apply(auto simp add: tmap_tllist_of_llist intro!: GrI split: split_if_asm)[2]
+ apply(rule_tac b="llist_of_tllist yb" in relcompI)
+apply(auto intro!: GrI)
+apply(transfer, auto intro: GrI split: split_if_asm)+
+done
+
 subsection {* Library function definitions *}
 
 text {* 
@@ -578,10 +644,6 @@ by(simp add: split_beta)
 lift_definition tconcat :: "'b \<Rightarrow> ('a llist, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "\<lambda>b (xss, b'). (lconcat xss, if lfinite xss then b' else b)"
 by(simp add: split_beta)
-
-lift_definition tllist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist \<Rightarrow> bool"
-is "\<lambda>P Q (xs, b) (ys, b'). llist_all2 P xs ys \<and> (lfinite xs \<longrightarrow> Q b b')"
-by(auto dest: llist_all2_lfiniteD)
 
 lift_definition tnth :: "('a, 'b) tllist \<Rightarrow> nat \<Rightarrow> 'a"
 is "lnth \<circ> fst" by(auto)
@@ -729,13 +791,8 @@ hide_const (open) tconcat'
 
 subsection {* @{term tllist_all2} *}
 
-lemma tllist_all2_TNil [simp]:
-  "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
-by transfer auto
-
-lemma tllist_all2_TCons [simp]:
-  "tllist_all2 P Q (TCons x ts) (TCons x' ts') \<longleftrightarrow> P x x' \<and> tllist_all2 P Q ts ts'"
-by transfer auto
+lemmas tllist_all2_TNil = tllist.rel_inject(1)
+lemmas tllist_all2_TCons = tllist.rel_inject(2)
 
 lemma tllist_all2_TNil1: "tllist_all2 P Q (TNil b) ts \<longleftrightarrow> (\<exists>b'. ts = TNil b' \<and> Q b b')"
 by transfer auto
@@ -750,7 +807,6 @@ by transfer(fastforce simp add: llist_all2_LCons1 dest: llist_all2_lfiniteD)
 lemma tllist_all2_TCons2: 
   "tllist_all2 P Q ts' (TCons x ts) \<longleftrightarrow> (\<exists>x' ts''. ts' = TCons x' ts'' \<and> P x' x \<and> tllist_all2 P Q ts'' ts)"
 by transfer(fastforce simp add: llist_all2_LCons2 dest: llist_all2_lfiniteD)
-
 
 lemma tllist_all2_coinduct [consumes 1, case_names tllist_all2, case_conclusion tllist_all2 is_TNil TNil TCons]:
   assumes "X xs ys"
@@ -878,8 +934,7 @@ lemma tllist_all2_tnthD2:
   \<Longrightarrow> P (tnth xs n) (tnth ys n)"
 by(simp add: tllist_all2_conv_all_tnth)
 
-lemma tllist_all2_eq [id_simps]: "tllist_all2 (op =) (op =) = (op =)"
-by transfer auto
+lemmas tllist_all2_eq [id_simps] = tllist.rel_eq
 
 lemma tmap_eq_tmap_conv_tllist_all2:
   "tmap f g xs = tmap f' g' ys \<longleftrightarrow>
