@@ -215,8 +215,7 @@ lemma fmap_add_eqvt[eqvt]:
 
 lemma fmap_of_eqvt[eqvt]:
   "\<pi> \<bullet> fmap_of l = fmap_of (\<pi> \<bullet> l)"
-  (* apply transfer does not do anything here *)
-  by (simp add: fmap_of_def permute_fmap_def map_fun_def Abs_fmap_inverse finite_dom_map_of map_of_eqvt)
+by transfer (rule map_of_eqvt)
 
 subsubsection {* Freshness and support *}
 
