@@ -145,16 +145,12 @@ show ?thesis by auto
 qed
 
 lemma supp_fmap_transfer[transfer_rule]:
-  "(cr_fmap ===> op =) supp supp"
-  unfolding fun_rel_def cr_fmap_def supp_def 
-  by (simp add: permute_fmap.rep_eq[symmetric] Rep_fmap_inject)
+  "(pcr_fmap op= op= ===> op =) supp supp"
+  unfolding supp_def[abs_def] by transfer_prover
 
 lemma supp_fmap:
   "supp (m:: 'a::fs f\<rightharpoonup> 'b::fs) = (supp (fdom m) \<union> supp (fran m))"
- apply transfer
-  apply (erule supp_map_union)
- apply (metis Rel_def fmap.pcr_cr_eq set_rel_eq supp_fmap_transfer)
- done
+by transfer(erule supp_map_union)
 
 instance "fmap" :: (fs,fs) fs
   by (default, auto intro: finite_sets_supp simp add: supp_fmap)
