@@ -727,7 +727,7 @@ lemma LAss':
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,(h,l)\<rangle>; E V = Some T;
      P \<turnstile> T casts v to v'; l' = l(V\<mapsto>v') \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v',(h,l')\<rangle>"
-by (transfer fixing: l) (erule (3) LAss)
+by (transfer) (erule (3) LAss)
 
 lemma LAssThrow':
   "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
@@ -919,12 +919,6 @@ axiomatization
 where
   new_Addr'_code [code]: "new_Addr' h = lowest (Option.is_none \<circ> h) 0"
     -- {* admissible: a tightening of the specification of @{const new_Addr'} *}
-
-lemma [transfer_rule]:
- "(prod_rel (op = ===> option_rel (prod_rel op = (set_rel (prod_rel op = (pcr_mapping op= op=))))) op = ===>
-   prod_rel (op = ===> option_rel (prod_rel op = (set_rel (prod_rel op = (pcr_mapping op= op=)))))
-   (op = ===> option_rel op =) ===> op =) op = op ="
-unfolding fun_rel_eq option_rel_eq by transfer_prover
 
 lemma eval'_cases
   [consumes 1,
