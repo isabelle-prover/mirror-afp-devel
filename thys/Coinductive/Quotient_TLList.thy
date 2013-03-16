@@ -18,10 +18,10 @@ proof(intro ext)
 qed
 
 lemma OO_transfer [transfer_rule]:
-  assumes "bi_total B"
+  assumes [transfer_rule]: "bi_total B"
   shows "((A ===> B ===> op =) ===> (B ===> C ===> op =) ===> A ===> C ===> op =) op OO op OO"
 unfolding OO_def[abs_def]
-by transfer_prover fact
+by transfer_prover
 
 
 enriched_type tmap: tmap
