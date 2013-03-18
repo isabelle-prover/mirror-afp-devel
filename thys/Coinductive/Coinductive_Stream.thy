@@ -274,19 +274,13 @@ lemma llist_of_stream_stream_corec [simp]:
 by(coinduct x rule: llist_fun_coinduct) auto
 
 lemma stream_unfold_transfer [transfer_rule]:
-  assumes "is_equality AtoB" "is_equality AtoA" "is_equality A"
-  shows
-  "(AtoB ===> AtoA ===> A ===> pcr_stream op =) (llist_unfold (\<lambda>_. False)) stream_unfold"
-using assms unfolding is_equality_def stream.pcr_cr_eq
-by(auto simp add: cr_stream_def intro!: fun_relI)
+  "(op = ===> op = ===> op = ===> pcr_stream op =) (llist_unfold (\<lambda>_. False)) stream_unfold"
+by(auto simp add: stream.pcr_cr_eq cr_stream_def intro!: fun_relI)
 
 lemma stream_corec_transfer [transfer_rule]:
-  assumes "is_equality AtoB" "is_equality Abool" "is_equality A" "is_equality AtoA"
-  shows
-  "(AtoB ===> Abool ===> (A ===> pcr_stream op =) ===> AtoA ===> A ===> cr_stream)
+  "(op = ===> op = ===> (op = ===> pcr_stream op =) ===> op = ===> op = ===> cr_stream)
    (llist_corec (\<lambda>_. False)) stream_corec"
-using assms unfolding is_equality_def stream.pcr_cr_eq
-apply(auto intro!: fun_relI simp add: cr_stream_def)
+apply(auto intro!: fun_relI simp add: cr_stream_def stream.pcr_cr_eq)
 apply(rule fun_cong) back
 apply(rule_tac x=yc in fun_cong)
 apply(rule_tac x=xb in arg_cong)
@@ -303,8 +297,8 @@ lemma llist_of_stream_SCons [simp]: "llist_of_stream (SCons x xs) = LCons x (lli
 by(simp add: llist_of_stream_def)
 
 lemma SCons_transfer [transfer_rule]:
-  "is_equality A \<Longrightarrow> (A ===> pcr_stream op = ===> pcr_stream op =) LCons SCons"
-by(auto simp add: is_equality_def cr_stream_def stream.pcr_cr_eq intro!: fun_relI)
+  "(op = ===> pcr_stream op = ===> pcr_stream op =) LCons SCons"
+by(auto simp add: cr_stream_def stream.pcr_cr_eq intro!: fun_relI)
 
 abbreviation sset where "sset \<equiv> stream_set"
 
@@ -338,8 +332,8 @@ lemma llist_of_stream_smap [simp]:
 by(coinduct xs rule: llist_fun_coinduct) auto
 
 lemma smap_transfer [transfer_rule]:
-  "is_equality A \<Longrightarrow> (A ===> pcr_stream op = ===> pcr_stream op =) lmap smap"
-by(auto simp add: is_equality_def cr_stream_def stream.pcr_cr_eq intro!: fun_relI)
+  "(op = ===> pcr_stream op = ===> pcr_stream op =) lmap smap"
+by(auto simp add: cr_stream_def stream.pcr_cr_eq intro!: fun_relI)
 
 subsection {* Definition of derived operations *}
 
