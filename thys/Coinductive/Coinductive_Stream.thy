@@ -278,7 +278,7 @@ lemma stream_unfold_transfer [transfer_rule]:
 by(auto simp add: stream.pcr_cr_eq cr_stream_def intro!: fun_relI)
 
 lemma stream_corec_transfer [transfer_rule]:
-  "(op = ===> op = ===> (op = ===> pcr_stream op =) ===> op = ===> op = ===> cr_stream)
+  "(op = ===> op = ===> (op = ===> pcr_stream op =) ===> op = ===> op = ===> pcr_stream op=)
    (llist_corec (\<lambda>_. False)) stream_corec"
 apply(auto intro!: fun_relI simp add: cr_stream_def stream.pcr_cr_eq)
 apply(rule fun_cong) back
