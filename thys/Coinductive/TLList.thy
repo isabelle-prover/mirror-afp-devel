@@ -543,12 +543,12 @@ by(simp add: reflp_def)
 setup_lifting (no_code) Quotient_tllist reflp_tllist
 
 lemma TNil_transfer [transfer_rule]:
-  "\<lbrakk> is_equality A; is_equality B \<rbrakk> \<Longrightarrow> (A ===> pcr_tllist B A) (Pair LNil) TNil"
-by(auto simp add: is_equality_def tllist.pcr_cr_eq cr_tllist_def)
+  "(B ===> pcr_tllist A B) (Pair LNil) TNil"
+by(auto simp add: pcr_tllist_def cr_tllist_def intro!: fun_relI relcomppI)
 
 lemma TCons_transfer [transfer_rule]:
-  "\<lbrakk> is_equality A; is_equality B \<rbrakk> \<Longrightarrow> (A ===> pcr_tllist A B ===> pcr_tllist A B) (apfst \<circ> LCons) TCons"
-by(auto intro!: fun_relI simp add: cr_tllist_def is_equality_def tllist.pcr_cr_eq)
+  "(A ===> pcr_tllist A B ===> pcr_tllist A B) (apfst \<circ> LCons) TCons"
+by(auto 4 3 intro!: fun_relI relcomppI simp add: pcr_tllist_def prod_rel_def llist_all2_LCons1 cr_tllist_def)
 
 lemma tmap_tllist_of_llist:
   "tmap f g (tllist_of_llist b xs) = tllist_of_llist (g b) (lmap f xs)"
@@ -604,9 +604,8 @@ lemma llist_of_tllist_transfer [transfer_rule]:
 by(auto simp add: pcr_tllist_def cr_tllist_def llist_all2_eq)
 
 lemma tllist_of_llist_transfer [transfer_rule]:
-  "\<lbrakk> is_equality A; is_equality B; is_equality Allist \<rbrakk>
-  \<Longrightarrow> (A ===> Allist ===> pcr_tllist B A) (\<lambda>b xs. (xs, b)) tllist_of_llist"
-by(auto simp add: is_equality_def tllist.pcr_cr_eq cr_tllist_def)
+  "(op = ===> op = ===> pcr_tllist op = op =) (\<lambda>b xs. (xs, b)) tllist_of_llist"
+by(auto simp add: tllist.pcr_cr_eq cr_tllist_def)
 
 lemma terminal_tllist_of_llist_lfinite [simp]:
   "lfinite xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
@@ -705,14 +704,13 @@ using assms
 apply(rule contrapos_np)
 by(induct xs rule: terminal0.raw_induct[rotated 1, OF refl, consumes 1])(auto split: tllist_split_asm) 
 
-lemma terminal_transfer [transfer_rule]:
-  "\<lbrakk> is_equality A; is_equality B \<rbrakk> 
-  \<Longrightarrow> (pcr_tllist A B ===> op =) (\<lambda>(xs, b). if lfinite xs then b else undefined) terminal"
-by(auto simp add: cr_tllist_def is_equality_def tllist.pcr_cr_eq terminal_tinfinite)
-
 lemma terminal_tllist_of_llist:
   "terminal (tllist_of_llist y xs) = (if lfinite xs then y else undefined)"
 by(simp add: terminal_tinfinite)
+
+lemma terminal_transfer [transfer_rule]:
+  "(pcr_tllist A op = ===> op =) (\<lambda>(xs, b). if lfinite xs then b else undefined) terminal"
+by(auto simp add: cr_tllist_def pcr_tllist_def terminal_tllist_of_llist intro!: fun_relI dest: llist_all2_lfiniteD)
 
 lemma terminal_tmap [simp]: "tfinite xs \<Longrightarrow> terminal (tmap f g xs) = g (terminal xs)"
 by(induct rule: tfinite_induct) simp_all
