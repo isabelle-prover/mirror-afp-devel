@@ -122,17 +122,6 @@ begin
 partial_function (tailrec) terminal0 
 where "terminal0 xs = (if is_TNil xs then tllist_case id undefined xs else terminal0 (ttl xs))"
 
-(*
-thm terminal0.raw_induct
-
-lemma mono_terminal0:
-  "mono_tailrec (\<lambda>f. if is_TNil x then tllist_case id undefined x else f (ttl x))"
-by(intro partial_function_mono)
-
-lemmas terminal0_induct_undefined[consumes 1, case_names terminal0] =
-  fixp_induct_tailrec_undefined[where U="\<lambda>x. x" and C="\<lambda>x. x", OF mono_terminal0 terminal0_def refl, rotated 1]
-*)
-
 end
 
 lemma terminal0_terminal [simp]: "terminal0 = terminal"
