@@ -2606,6 +2606,12 @@ by(fastforce simp add: llist_all2_conv_all_lnth lset_conv_lnth)
 lemma llist_all2_right: "llist_all2 (\<lambda>_. P) xs ys \<longleftrightarrow> llength xs = llength ys \<and> (\<forall>x\<in>lset ys. P x)"
 by(fastforce simp add: llist_all2_conv_all_lnth lset_conv_lnth)
 
+lemma llist_all2_lsetD1: "\<lbrakk> llist_all2 P xs ys; x \<in> lset xs \<rbrakk> \<Longrightarrow> \<exists>y\<in>lset ys. P x y"
+by(auto 4 4 simp add: llist_all2_def lset_lzip lset_conv_lnth split_beta lnth_lzip simp del: split_paired_All)
+
+lemma llist_all2_lsetD2: "\<lbrakk> llist_all2 P xs ys; y \<in> lset ys \<rbrakk> \<Longrightarrow> \<exists>x\<in>lset xs. P x y"
+by(auto 4 4 simp add: llist_all2_def lset_lzip lset_conv_lnth split_beta lnth_lzip simp del: split_paired_All)
+
 lemma llist_all2_conj: 
   "llist_all2 (\<lambda>x y. P x y \<and> Q x y) xs ys \<longleftrightarrow> llist_all2 P xs ys \<and> llist_all2 Q xs ys"
 by(auto simp add: llist_all2_conv_all_lnth)
@@ -2613,6 +2619,10 @@ by(auto simp add: llist_all2_conv_all_lnth)
 lemma llist_all2_lhdD:
   "\<lbrakk> llist_all2 P xs ys; xs \<noteq> LNil \<rbrakk> \<Longrightarrow> P (lhd xs) (lhd ys)"
 by(auto simp add: neq_LNil_conv llist_all2_LCons1)
+
+lemma llist_all2_lhdD2:
+  "\<lbrakk> llist_all2 P xs ys; ys \<noteq> LNil \<rbrakk> \<Longrightarrow> P (lhd xs) (lhd ys)"
+by(auto simp add: neq_LNil_conv llist_all2_LCons2)
 
 lemma llist_all2_lappendI:
   assumes 1: "llist_all2 P xs ys"

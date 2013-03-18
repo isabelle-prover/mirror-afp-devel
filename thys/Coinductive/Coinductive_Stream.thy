@@ -287,18 +287,18 @@ apply(rule_tac x=xb in arg_cong)
 apply(auto elim: fun_relE)
 done
 
-lemma shd_transfer [transfer_rule]: "(pcr_stream op = ===> op =) lhd shd"
-by(auto simp add: cr_stream_def stream.pcr_cr_eq)
+lemma shd_transfer [transfer_rule]: "(pcr_stream A ===> A) lhd shd"
+by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI)(frule llist_all2_lhdD, auto)
 
-lemma stl_transfer [transfer_rule]: "(pcr_stream op = ===> pcr_stream op =) ltl stl"
-by(auto simp add: cr_stream_def stream.pcr_cr_eq)
+lemma stl_transfer [transfer_rule]: "(pcr_stream A ===> pcr_stream A) ltl stl"
+by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI dest: llist_all2_ltlI)
 
 lemma llist_of_stream_SCons [simp]: "llist_of_stream (SCons x xs) = LCons x (llist_of_stream xs)"
 by(simp add: llist_of_stream_def)
 
 lemma SCons_transfer [transfer_rule]:
-  "(op = ===> pcr_stream op = ===> pcr_stream op =) LCons SCons"
-by(auto simp add: cr_stream_def stream.pcr_cr_eq intro!: fun_relI)
+  "(A ===> pcr_stream A ===> pcr_stream A) LCons SCons"
+by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI)
 
 abbreviation sset where "sset \<equiv> stream_set"
 
@@ -322,8 +322,8 @@ next
   qed
 qed
 
-lemma sset_transfer [transfer_rule]: "(pcr_stream op = ===> op =) lset sset"
-by(auto simp add: cr_stream_def stream.pcr_cr_eq intro!: fun_relI del: equalityI)
+lemma sset_transfer [transfer_rule]: "(pcr_stream A ===> set_rel A) lset sset"
+by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI set_relI dest: llist_all2_lsetD1 llist_all2_lsetD2)
 
 abbreviation smap where "smap \<equiv> stream_map"
 
@@ -332,8 +332,8 @@ lemma llist_of_stream_smap [simp]:
 by(coinduct xs rule: llist_fun_coinduct) auto
 
 lemma smap_transfer [transfer_rule]:
-  "(op = ===> pcr_stream op = ===> pcr_stream op =) lmap smap"
-by(auto simp add: cr_stream_def stream.pcr_cr_eq intro!: fun_relI)
+  "((A ===> B) ===> pcr_stream A ===> pcr_stream B) lmap smap"
+by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI dest: lmap_transfer[THEN fun_relD] elim: fun_relD)
 
 subsection {* Definition of derived operations *}
 
