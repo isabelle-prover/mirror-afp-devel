@@ -6,8 +6,6 @@ header {* \isaheader{JVM Semantics for the delay bisimulation proof from interme
 
 theory Execs imports JVMTau begin
 
-hide_const (open) shift (* hide BNF_BFR.shift *)
-
 declare match_ex_table_app [simp del]
   match_ex_table_eq_NoneI [simp del]
   compxE2_size_convs [simp del]

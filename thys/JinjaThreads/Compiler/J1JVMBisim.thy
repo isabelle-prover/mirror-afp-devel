@@ -10,8 +10,6 @@ theory J1JVMBisim imports
   "J1"
 begin
 
-hide_const (open) shift (* hide BNF_GFP.shift once more *)
-
 declare Listn.lesub_list_impl_same_size[simp del]
 
 lemma (in JVM_heap_conf_base') \<tau>exec_1_\<tau>exec_1_d:

@@ -11,8 +11,6 @@ imports
   "~~/src/HOL/Library/Quotient_Option"
 begin
 
-hide_const (open) option_rel (* Hide option_rel from BNF *)
-
 lemma option_rel_mono:
   "\<lbrakk> option_rel R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> option_rel R' x y"
 by(cases x)(case_tac [!] y, auto)
