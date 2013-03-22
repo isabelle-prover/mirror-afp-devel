@@ -18,6 +18,8 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
     "Examples/Hash_Map_Impl"
     "Examples/Imp_Set_Spec"
     "Examples/Hash_Set_Impl"
+    "Examples/To_List_GA"
+    "Examples/Union_Find"
     "Examples/Idioms"
   files
     "document/root.bib"
