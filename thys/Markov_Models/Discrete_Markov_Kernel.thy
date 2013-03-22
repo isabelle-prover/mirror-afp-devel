@@ -1,7 +1,7 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 header {* Discrete-time Markov processes constructed using Markov kernels *}
 theory Discrete_Markov_Kernel
-  imports "~~/src/HOL/Probability/Probability" "~~/src/HOL/Library/Countable_Set"
+  imports "~~/src/HOL/Probability/Probability"
 begin
 
 lemma (in wellorder) smallest:

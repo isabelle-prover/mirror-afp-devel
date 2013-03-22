@@ -189,29 +189,14 @@ theorem real_mon_conv_bound:
   and bound: "\<And>n. c n \<le> (x::real)"
   shows "\<exists>l. c\<up>l \<and> l\<le>x"
 proof -
-  from mon have m2: "\<forall>n. c n \<le> c (Suc n)" 
-    by simp                                 
-  also 
-  def g \<equiv> "(\<lambda>n::nat. x)"
-  hence "\<forall>n. g(Suc n) \<le> g(n)" 
-    by simp                     
-  moreover 
-    -- {*This is like $\isacommand{also}$ but lacks the transitivity step.*}
-  
-  from bound have "\<forall>n. c n \<le> g(n)" 
-    by (simp add: g_def)             
-  
-  ultimately have 
-  "\<exists>l m. l \<le> m \<and> ((\<forall>n. c n \<le> l) \<and> c----> l) \<and> 
-    (\<forall>n. m \<le> g n) \<and> (g ----> m)"
-    by (rule lemma_nest)
-  then obtain l m where lm: "l \<le> m" and conv: "c ----> l" 
-    and gm: "g ----> m" 
-    by fast             
-  from gm g_def have "m=x" 
-    by (simp add: tendsto_const LIMSEQ_unique)
-  with lm conv m2 show ?thesis 
-    by (auto simp add: real_mon_conv) 
+  from incseq_convergent[of c x] mon bound
+  obtain l where "c ----> l" "\<forall>i. c i \<le> l"
+    by (auto simp: incseq_Suc_iff)
+  moreover -- {*This is like $\isacommand{also}$ but lacks the transitivity step.*}
+  with bound have "l \<le> x"
+    by (intro LIMSEQ_le_const2) auto
+  ultimately show ?thesis
+    by (auto simp: real_mon_conv mon)
 qed
 
 theorem real_mon_conv_dom:

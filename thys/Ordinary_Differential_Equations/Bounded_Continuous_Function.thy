@@ -53,7 +53,7 @@ proof -
   have "Rep_bcontfun g \<in> bcontfun" using Rep_bcontfun .
   from bcontfunE'[OF this] guess z . note z = this
   show ?thesis unfolding dist_bcontfun_def
-  proof (intro Sup_upper)
+  proof (intro cSup_upper)
     fix d assume "d \<in> range (\<lambda>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x))"
     then obtain x where "d = dist (Rep_bcontfun f x) (Rep_bcontfun g x)" ..
     also have "\<dots> \<le> dist (Rep_bcontfun f x) undefined + dist (Rep_bcontfun g x) undefined"
@@ -67,7 +67,7 @@ lemma dist_bound:
   fixes f ::"('a, 'b) bcontfun"
   assumes "\<And>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> b"
   shows "dist f g \<le> b"
-  using assms by (auto simp: dist_bcontfun_def)
+  using assms by (auto simp: dist_bcontfun_def intro: cSup_least)
 
 lemma dist_bounded_Abs:
   fixes f g ::"'a \<Rightarrow> 'b"
@@ -87,7 +87,7 @@ lemma dist_val_lt_imp_dist_fun_le:
   assumes "\<forall>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) < e"
   shows "dist f g \<le> e"
 unfolding dist_bcontfun_def
-proof (intro Sup_least)
+proof (intro cSup_least)
   fix x
   assume "x \<in> range (\<lambda>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x))"
   then guess a ..
@@ -102,13 +102,13 @@ proof
     have "\<And>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> dist f g" by (rule dist_bounded)
     also assume "dist f g = 0"
     finally  show "f = g" by (auto simp: Rep_bcontfun_inject[symmetric] Abs_bcontfun_inverse[OF ])
-  qed (auto simp: dist_bcontfun_def intro!:Sup_eq)
+  qed (auto simp: dist_bcontfun_def intro!: cSup_eq)
 next
   fix f g h :: "('a, 'b) bcontfun"
   from bcontfunE[OF Rep_bcontfun[of f]] guess y . note y = this
   from bcontfunE[OF Rep_bcontfun[of g]] guess z . note z = this
   show "dist f g \<le> dist f h + dist g h"
-  proof (subst dist_bcontfun_def, safe intro!: Sup_least)
+  proof (subst dist_bcontfun_def, safe intro!: cSup_least)
     fix x
     have "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le>
       dist (Rep_bcontfun f x) (Rep_bcontfun h x) + dist (Rep_bcontfun g x) (Rep_bcontfun h x)"
@@ -285,7 +285,7 @@ proof
   from bcontfunE[OF Rep_bcontfun[of g]] guess z . note z = this
   show "norm (f + g) \<le> norm f + norm g"
     unfolding norm_bcontfun_def
-  proof (subst dist_bcontfun_def, safe intro!: Sup_least)
+  proof (subst dist_bcontfun_def, safe intro!: cSup_least)
     fix x
     have "dist (Rep_bcontfun (f + g) x) (Rep_bcontfun 0 x) \<le>
       dist (Rep_bcontfun f x) 0 + dist (Rep_bcontfun g x) 0"

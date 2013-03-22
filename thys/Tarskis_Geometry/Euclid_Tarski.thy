@@ -429,7 +429,7 @@ proof
         from ylemma [of y] and `y \<in> Y`
           obtain j where "j \<ge> 1" and "y - a = j *\<^sub>R (c - a)" by auto
         with `y \<in> Y` have "j \<in> ?S" by auto
-        with Inf_lower have "?k \<le> j" by auto
+        then have "?k \<le> j" by (auto intro: cInf_lower)
         { fix h
           assume "h \<in> ?S"
           hence "h \<ge> 1" by simp
@@ -445,7 +445,7 @@ proof
             have "i *\<^sub>R (c - a) = (l * h) *\<^sub>R (c - a)" by auto
           with scaleR_cancel_right and `c - a \<noteq> 0` have "i = l * h" by blast
           with `l \<le> 1` and `h \<ge> 1` have "i \<le> h" by simp }
-        with `?S \<noteq> {}` and Inf_greatest [of ?S] have "i \<le> ?k" by simp
+        with `?S \<noteq> {}` and cInf_greatest [of ?S] have "i \<le> ?k" by simp
         have "y - x = (y - a) - (x - a)" by simp
         with `y - a = j *\<^sub>R (c - a)` and `x - a = i *\<^sub>R (c - a)`
           have "y - x = j *\<^sub>R (c - a) - i *\<^sub>R (c - a)" by simp

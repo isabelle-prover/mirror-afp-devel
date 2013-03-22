@@ -221,13 +221,9 @@ lemma continuous_xy:
   assumes f_cont: "continuous_on (S \<times> U) f"
   assumes y_cont: "continuous_on S y"
   shows "continuous_on S (\<lambda>x. f (x, y x))"
-proof -
-  have "(\<lambda>x. f (x, y x)) = (f o (\<lambda>x. (x, y x)))" by auto
-  moreover have "(\<lambda>x. (x, y x)) ` S \<subseteq> (S \<times> U)" using defined by auto
-  ultimately show "continuous_on S (\<lambda>t. f (t, y t))" using f_cont y_cont
-    by (auto intro!: continuous_on_compose continuous_on_Pair continuous_on_id
-      continuous_on_subset[where t="(\<lambda>x. (x, y x)) ` S"])
-qed
+  using continuous_on_compose2[OF continuous_on_subset[where t="(\<lambda>x. (x, y x)) ` S", OF f_cont]
+                                  continuous_on_Pair[OF continuous_on_id y_cont]] defined
+  by auto
 
 lemma has_derivative_within_union:
   assumes "(f has_derivative g) (at x within s)"
@@ -412,10 +408,10 @@ lemma Sup_real_mult:
 using assms
 proof (intro antisym)
   have "Sup S \<le> Sup (op * a ` S) / a" using assms
-    by (intro Sup_least mult_imp_le_div_pos Sup_upper[where z = "a * z"]) auto
+    by (intro cSup_least mult_imp_le_div_pos cSup_upper[where z = "a * z"]) auto
   thus "a * Sup S \<le> Sup (op * a ` S)"
     by (simp add: ac_simps pos_le_divide_eq[OF assms(1)])
-qed (auto intro!: mult_mono Sup_least)
+qed (auto intro!: mult_mono cSup_least intro: cSup_upper)
 
 subsection {* Banach on type class *}
 
