@@ -269,7 +269,7 @@ proof(induct ps rule: length_induct)
   note IH = 1(1) and subset = 1(2) and dist = 1(3)
   show ?case
   proof (cases ps0)
-    case Nil thus ?thesis by(simp add:Max_def)
+    case Nil thus ?thesis by simp
   next
     case (Cons p ps)
     let ?ps = "deleteAround g (fst p) ps"

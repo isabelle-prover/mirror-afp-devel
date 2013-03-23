@@ -920,7 +920,7 @@ proof (cases "finite A")
     case (insert x A) thus ?case using assms by (simp add: ereal_pos_distrib)
   qed
 next
-  case False thus ?thesis by (simp add: setsum_def)
+  case False thus ?thesis by simp
 qed
 
 

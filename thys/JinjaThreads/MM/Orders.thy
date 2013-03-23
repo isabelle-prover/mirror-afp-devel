@@ -478,10 +478,8 @@ by(simp add: restrictP_subsume1)
 subsection {* Maximal elements w.r.t. a total order *}
 
 definition max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
-where "max_torder r a b = (if DomainP r a \<and> DomainP r b then if r a b then b else a else SOME a. \<not> DomainP r a)"
-
-definition Max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a"
-where "Max_torder r = fold1 (max_torder r)"
+where "max_torder r a b = (if DomainP r a \<and> DomainP r b then if r a b then b else a
+  else if a = b then a else SOME a. \<not> DomainP r a)"
 
 lemma refl_on_DomainD: "refl_on A r \<Longrightarrow> A = Domain r"
 by(auto simp add: Domain_unfold dest: refl_onD refl_onD1)
@@ -489,9 +487,9 @@ by(auto simp add: Domain_unfold dest: refl_onD refl_onD1)
 lemma refl_onP_DomainPD: "refl_onP A r \<Longrightarrow> A = {a. DomainP r a}"
 by(drule refl_on_DomainD) auto
 
-lemma ab_semigroup_mult_max_torder:
+lemma semilattice_max_torder:
   assumes tot: "torder_on A r"
-  shows "class.ab_semigroup_mult (max_torder r)"
+  shows "semilattice (max_torder r)"
 proof -
   from tot have as: "antisymP r" 
     and to: "total_onP A r" 
@@ -501,23 +499,36 @@ proof -
   from refl have "{a. DomainP r a} = A" by (rule refl_onP_DomainPD[symmetric])
   from this [symmetric] have "domain": "\<And>a. DomainP r a \<longleftrightarrow> a \<in> A" by simp
   show ?thesis
-  proof(unfold_locales)
+  proof
     fix x y z
     show "max_torder r (max_torder r x y) z = max_torder r x (max_torder r y z)"
-      unfolding max_torder_def "domain" apply auto
-      apply (blast dest: total_onPD[OF to] transPD[OF trans] antisymPD[OF as] refl_onPD1[OF refl] refl_onPD2[OF refl] someI[where P="\<lambda>a. a \<notin> A"])+
-      done
+    proof (cases "x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z")
+      case True
+      have *: "\<And>a b. a \<noteq> b \<Longrightarrow> max_torder r a b = (if DomainP r a \<and> DomainP r b then
+        if r a b then b else a else SOME a. \<not> DomainP r a)"
+        by (auto simp add: max_torder_def)
+      with True show ?thesis
+        apply (simp only: max_torder_def "domain")
+        apply auto
+        apply (blast dest: total_onPD [OF to] transPD [OF trans] antisymPD [OF as] refl_onPD1 [OF refl] refl_onPD2 [OF refl] someI [where P="\<lambda>a. a \<notin> A"])+
+        done
+    next
+      have max_torder_idem: "\<And>a. max_torder r a a = a" by (simp add: max_torder_def)
+      case False then show ?thesis
+        apply (auto simp add: max_torder_idem)
+        apply (auto simp add: max_torder_def "domain" dest: someI [where P="\<lambda>a. a \<notin> A"])
+        done
+    qed
   next
     fix x y
     show "max_torder r x y = max_torder r y x"
-      by(auto simp add: max_torder_def "domain" dest: total_onPD[OF to] antisymPD[OF as])
+      by (auto simp add: max_torder_def "domain" dest: total_onPD [OF to] antisymPD [OF as])
+  next
+    fix x
+    show "max_torder r x x = x"
+      by (simp add: max_torder_def)
   qed
 qed
-
-lemma comp_fun_commute_max_torder:
-  assumes tot: "torder_on A r"
-  shows "comp_fun_commute (max_torder r)"
-by(rule ab_semigroup_mult.comp_fun_commute)(rule ab_semigroup_mult_max_torder[OF tot])
 
 lemma max_torder_ge_conv_disj:
   assumes tot: "torder_on A r" and x: "x \<in> A" and y: "y \<in> A"
@@ -534,42 +545,64 @@ proof -
     by(simp add: max_torder_def "domain")(blast dest: total_onPD[OF to] transPD[OF trans])
 qed
 
-lemma Max_torder_in_Domain:
+definition Max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a"
+where
+  "Max_torder r = semilattice_set.F (max_torder r)"
+
+context
+  fixes A r
   assumes tot: "torder_on A r"
-  and B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
+begin
+
+lemma semilattice_set:
+  "semilattice_set (max_torder r)"
+  by (rule semilattice_set.intro, rule semilattice_max_torder) (fact tot)
+
+lemma domain:
+  "DomainP r a \<longleftrightarrow> a \<in> A"
+proof -
+  from tot have "{a. DomainP r a} = A"
+    by (auto elim: torder_onE porder_onE dest: refl_onP_DomainPD [symmetric])
+  from this [symmetric] show ?thesis by simp
+qed
+
+lemma Max_torder_in_Domain:
+  assumes B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
   shows "Max_torder r B \<in> A"
 proof -
-  interpret ab_semigroup_mult "max_torder r"
-    using tot by (rule ab_semigroup_mult_max_torder)
-  from tot have "{a. DomainP r a} = A" by(auto elim: torder_onE porder_onE dest: refl_onP_DomainPD[symmetric])
-  from this [symmetric] have "domain": "\<And>a. DomainP r a \<longleftrightarrow> a \<in> A" by simp
-  show ?thesis unfolding Max_torder_def using B
-    by(induct rule: finite_ne_induct)(simp_all add: fold1_insert max_torder_def "domain")
+  interpret Max_torder!: semilattice_set "max_torder r"
+  where
+    "semilattice_set.F (max_torder r) = Max_torder r"
+    by (fact semilattice_set Max_torder_def [symmetric])+
+  show ?thesis using B
+    by (induct rule: finite_ne_induct) (simp_all add: max_torder_def "domain")
 qed
 
 lemma Max_torder_in_set:
-  assumes tot: "torder_on A r"
-  and B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
+  assumes B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
   shows "Max_torder r B \<in> B"
 proof -
-  interpret ab_semigroup_mult "max_torder r"
-    using tot by (rule ab_semigroup_mult_max_torder)
-  from tot have "{a. DomainP r a} = A" by(auto elim: torder_onE porder_onE dest: refl_onP_DomainPD[symmetric])
-  from this [symmetric] have "domain": "\<And>a. DomainP r a \<longleftrightarrow> a \<in> A" by simp
-  show ?thesis unfolding Max_torder_def using B
-    by(induct rule: finite_ne_induct)(simp_all add: fold1_insert max_torder_def "domain" Max_torder_in_Domain[OF tot, unfolded Max_torder_def])
+  interpret Max_torder!: semilattice_set "max_torder r"
+  where
+    "semilattice_set.F (max_torder r) = Max_torder r"
+    by (fact semilattice_set Max_torder_def [symmetric])+
+  show ?thesis using B
+    by (induct rule: finite_ne_induct) (auto simp add: max_torder_def "domain")
 qed
 
 lemma Max_torder_above_iff:
-  assumes tot: "torder_on A r"
-  and B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
+  assumes B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
   shows "r x (Max_torder r B) \<longleftrightarrow> (\<exists>a\<in>B. r x a)"
 proof -
-  interpret ab_semigroup_mult "max_torder r"
-    using tot by (rule ab_semigroup_mult_max_torder)
-  from B show ?thesis unfolding Max_torder_def
-    by(induct rule: finite_ne_induct)(simp_all add: fold1_insert max_torder_ge_conv_disj[OF tot] Max_torder_in_Domain[unfolded Max_torder_def, OF tot])
+  interpret Max_torder!: semilattice_set "max_torder r"
+  where
+    "semilattice_set.F (max_torder r) = Max_torder r"
+    by (fact semilattice_set Max_torder_def [symmetric])+
+  from B show ?thesis
+    by (induct rule: finite_ne_induct) (simp_all add: max_torder_ge_conv_disj [OF tot] Max_torder_in_Domain)
 qed
+
+end
 
 lemma Max_torder_above:
   assumes tot: "torder_on A r"
@@ -579,7 +612,7 @@ proof -
   from tot have refl: "refl_onP A r" by(auto elim: torder_onE porder_onE)
   with `a \<in> B` `B \<subseteq> A` have "r a a" by(blast dest: refl_onPD[OF refl])
   from `a \<in> B` have "B \<noteq> {}" by auto
-  from Max_torder_above_iff[OF tot `finite B` this `B \<subseteq> A`, of a] `r a a` `a \<in> B`
+  from Max_torder_above_iff [OF tot `finite B` this `B \<subseteq> A`, of a] `r a a` `a \<in> B`
   show ?thesis by blast
 qed
 
@@ -590,3 +623,4 @@ lemma inv_into_id [simp]: "a \<in> A \<Longrightarrow> inv_into A id a = a"
 by (metis f_inv_into_f id_apply image_id)
 
 end
+

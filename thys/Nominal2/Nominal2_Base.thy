@@ -1056,11 +1056,11 @@ text {*
   given.
 *}
 
-class le_eqvt =  order + 
-  assumes le_eqvt [eqvt]: "p \<bullet> (x \<le> y) = ((p \<bullet> x) \<le> (p \<bullet> (y::('a::{pt, order}))))"
+class le_eqvt = ord +
+  assumes le_eqvt [eqvt]: "p \<bullet> (x \<le> y) = ((p \<bullet> x) \<le> (p \<bullet> (y::('a::{order, pt}))))"
 
-class inf_eqvt = complete_lattice +
-  assumes inf_eqvt [eqvt]: "p \<bullet> (Inf X) = Inf (p \<bullet> (X::('a::{pt, Inf}) set))"
+class inf_eqvt = Inf +
+  assumes inf_eqvt [eqvt]: "p \<bullet> (Inf X) = Inf (p \<bullet> (X::'a::{complete_lattice, pt} set))"
 
 instantiation bool :: le_eqvt
 begin

@@ -774,7 +774,7 @@ lemma setsum_rv:
 (*<*)proof (cases "finite K")
   case False
   hence "(\<lambda>t. \<Sum>k\<in>K. f k t) = (\<lambda>t. 0)"
-    by (simp add: setsum_def)
+    by simp
   with ms show ?thesis
     by (simp add: const_rv)
 next
