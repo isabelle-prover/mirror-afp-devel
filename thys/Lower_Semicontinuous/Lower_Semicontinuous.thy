@@ -1757,10 +1757,8 @@ qed
 
 
 lemma always_eventually_within:
-  fixes S :: "'a::metric_space set"
-  assumes "(ALL x:S. P x)"
-  shows "eventually P (at x within S)"
-  unfolding eventually_within apply(rule_tac x="1" in exI) using assms by auto
+  "(ALL x:S. P x) \<Longrightarrow> eventually P (at x within S)"
+  unfolding eventually_within by auto
 
 
 lemma ereal_divide_pos:

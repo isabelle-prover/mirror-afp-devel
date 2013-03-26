@@ -6,7 +6,7 @@
 header "Real Euclidean space and Tarski's axioms"
 
 theory Euclid_Tarski
-imports Tarski SupInf
+imports Tarski
 begin
 
 subsection "Real Euclidean space satisfies the first five axioms"
