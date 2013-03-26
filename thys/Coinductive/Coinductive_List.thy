@@ -2021,7 +2021,7 @@ lemma llcp_ltake2: "llcp xs (ltake n ys) = min n (llcp xs ys)"
 by(metis llcp_commute llcp_ltake1)
 
 lemma llcp_ltake [simp]: "llcp (ltake n xs) (ltake m ys) = min (min n m) (llcp xs ys)"
-by(metis llcp_ltake1 llcp_ltake2 min_max.inf.assoc)
+by(metis llcp_ltake1 llcp_ltake2 min.assoc)
 
 subsection {* Zipping two lazy lists to a lazy list of pairs @{term "lzip" } *}
 

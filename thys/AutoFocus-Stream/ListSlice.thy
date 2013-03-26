@@ -6,7 +6,7 @@
 header {* Additional definitions and results for lists *}
 
 theory ListSlice
-imports ListInf
+imports "../List-Infinite/ListInf/ListInf"
 begin
 
 

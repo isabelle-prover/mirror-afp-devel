@@ -6,7 +6,7 @@
 header {* \textsc{AutoFocus} message streams and temporal logic on intervals *}
 
 theory IL_AF_Stream
-imports Main IL_TemporalOperators AF_Stream
+imports Main "../Nat-Interval-Logic/IL_TemporalOperators" AF_Stream
 begin
 
 
@@ -385,8 +385,8 @@ lemma drop_f_join_if: "
 by (simp add: drop_f_join_eq1 drop_f_join_eq2)
 
 lemma f_join_take: "xs \<down> n \<Join>\<^sub>f I = xs \<Join>\<^sub>f (I \<down>< n)"
-apply (clarsimp simp: list_eq_iff f_join_length cut_cut_less min_max.inf.commute)
-apply (simp add: f_join_nth f_join_length cut_cut_less min_max.inf_commute)
+apply (clarsimp simp: list_eq_iff f_join_length cut_cut_less min.commute)
+apply (simp add: f_join_nth f_join_length cut_cut_less min.commute)
 apply (case_tac "n < length xs")
  apply (simp add: min_eqL inext_nth_cut_less_eq)
  thm less_card_cut_less_imp_inext_nth_less

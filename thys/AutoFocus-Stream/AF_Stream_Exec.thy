@@ -7,7 +7,7 @@
 header {* Processing of message streams *}
 
 theory AF_Stream_Exec
-imports AF_Stream ListInf_Prefix SetIntervalStep
+imports AF_Stream "../List-Infinite/ListInf/ListInf_Prefix" "../List-Infinite/CommonSet/SetIntervalStep"
 begin
 
 
