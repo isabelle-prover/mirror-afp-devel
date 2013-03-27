@@ -119,7 +119,7 @@ proof
     by (metis calculation eq_iff star_inductl_var_eq)
 qed
 
-lemma star_inductl_var_eq2: "y = x \<cdot> y \<longleftrightarrow> y = x\<^sup>\<star> \<cdot> y"
+lemma "y = x \<cdot> y \<longleftrightarrow> y = x\<^sup>\<star> \<cdot> y"
   nitpick [expect=genuine] -- "2-element counterexample"
 oops
 
