@@ -2017,7 +2017,6 @@ proof (rule ccontr)
       thm not_less_iMin
       by (simp add: not_less_iMin)
     have "\<exists>n. I \<rightarrow> n = prev"
-      thm s_not_ex[of prev]
       by (insert prev_not_in_s s_not_ex[of prev] s_prev_in, blast)
     then obtain nPrev where s_nPrev: "I \<rightarrow> nPrev = prev" by blast
     hence "I \<rightarrow> (Suc nPrev) = inext prev I" by simp
@@ -2135,7 +2134,6 @@ proof (rule ccontr)
       apply simp_all
       done
     have "\<exists>n. I \<leftarrow> n = next'"
-      thm s_not_ex[of next']
       by (insert next_not_in_s s_not_ex[of next'] s_next_in, blast)
     then obtain nNext where s_nNext: "I \<leftarrow> nNext = next'" by blast
     hence "I \<leftarrow> (Suc nNext) = iprev next' I" by simp
