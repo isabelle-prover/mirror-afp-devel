@@ -2385,7 +2385,7 @@ done
 lemma (in Corps) value_mI_genTr1:"\<lbrakk>0 < n; distinct_pds K n P; ideal (O\<^bsub>K P n\<^esub>) I;
  I \<noteq> {\<zero>\<^bsub>O\<^bsub>K P n\<^esub>\<^esub>}; I \<noteq> carrier (O\<^bsub>K P n\<^esub>); j \<le> n\<rbrakk> \<Longrightarrow>
  (mprod_exp K (K_gamma j) (Kb\<^bsub>K n P\<^esub>) n)\<^bsub>K\<^esub>\<^bsup>(m_zmax_pdsI K n P I)\<^esup> \<in> carrier K"
-apply (frule K_gamma_hom[of "j" "n"]) thm mprod_mem
+apply (frule K_gamma_hom[of "j" "n"])
 apply (frule mprod_mem[of n "K_gamma j" "Kb\<^bsub>K n P\<^esub>"])
  apply (rule Kbase_hom1, assumption+)
 apply (rule npowf_mem)

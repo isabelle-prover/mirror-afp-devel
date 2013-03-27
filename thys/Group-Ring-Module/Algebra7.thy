@@ -2362,7 +2362,7 @@ apply (induct_tac n)
  apply (frule submodule_subset[of H],
         frule submodule_subset[of K])
  apply (simp add:set_sum)
- apply (erule disjE) thm ag_r_zero[THEN sym]
+ apply (erule disjE)
  apply (frule_tac c = "g 0" in subsetD[of H "carrier M"], assumption+,
         frule_tac t = "g 0" in ag_r_zero[THEN sym]) apply (
         frule submodule_inc_0[of K], blast)

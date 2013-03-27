@@ -1748,7 +1748,6 @@ apply (rule conjI)
         assumption+)
   apply(frule_tac h = k2a and k = k2b in 
           submodule_pOp_closed[of "fgs R M {h}"], assumption+)      
-        thm sSum_unique[of N H H1 h]
   apply (frule_tac ?x1.0 = "k1a \<plusminus> k1b" and ?x2.0 = k1 and ?y1.0 = "k2a \<plusminus> k2b" 
          and ?y2.0 = k2 in sSum_unique[of N H H1 h], assumption+, simp,
          assumption+, erule conjE, rotate_tac -2, frule sym,

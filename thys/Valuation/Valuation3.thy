@@ -1161,7 +1161,7 @@ apply (rule ballI)+
         thin_tac "I\<^bsub>K\<^esub> \<in> aHom K K' \<and>
            (\<forall>x\<in>carrier K. \<forall>y\<in>carrier K. I\<^bsub>K\<^esub> (x \<cdot>\<^sub>r y) = I\<^bsub>K\<^esub> x \<cdot>\<^sub>r\<^bsub>K'\<^esub> I\<^bsub>K\<^esub> y) \<and>
            I\<^bsub>K\<^esub> 1\<^sub>r = 1\<^sub>r\<^bsub>K'\<^esub>")
-  apply (simp add:Corps.Vr_pOp_f_pOp[of K' v']) thm Vr_mem_f_mem
+  apply (simp add:Corps.Vr_pOp_f_pOp[of K' v'])
   apply (frule_tac x = a in Vr_mem_f_mem[of v], assumption+,
          frule_tac x = b in Vr_mem_f_mem[of v], assumption+)
   apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of K],

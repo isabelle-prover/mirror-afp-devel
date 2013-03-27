@@ -841,7 +841,7 @@ apply (frule pol_expr_unique2[of "add_cf S (scf_d R S X p (Suc d))
  apply (subst  polyn_expr_short[of "scf_d R S X p (Suc d)" d], assumption,
         simp)
  apply (subst  polyn_expr_short[of "scf_d R S X q (Suc d)" d], assumption,
-        simp) thm polyn_add_n
+        simp)
  apply (subst polyn_add_n[of d "snd (scf_d R S X p (Suc d))" 
                "snd (scf_d R S X q (Suc d))"])
  apply (simp add:split_pol_coeff, simp add:split_pol_coeff,
