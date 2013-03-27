@@ -245,7 +245,7 @@ lemma star_star_closure: "x\<^sup>\<star> \<le> z\<^sup>\<star> \<longrightarrow
 lemma star_closed_unfold: "x\<^sup>\<star> = x \<longrightarrow> x = 1 + x \<cdot> x"
   by (metis star_plus_one star_trans_eq)
 
-lemma star_closed_unfold: "x\<^sup>\<star> = x \<longleftrightarrow> x = 1 + x \<cdot> x"
+lemma "x\<^sup>\<star> = x \<longleftrightarrow> x = 1 + x \<cdot> x"
   nitpick [expect=genuine] -- "3-element counterexample"
 oops
 
