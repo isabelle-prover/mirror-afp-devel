@@ -218,7 +218,6 @@ lemma (in Max_test)
   shows
   "\<Gamma>\<turnstile> {\<sigma>} \<acute>k :== CALL Max(LEQ_'proc,\<acute>n,\<acute>m) \<lbrace>\<acute>k = mx (op \<le>) \<^bsup>\<sigma>\<^esup>n \<^bsup>\<sigma>\<^esup>m\<rbrace>"
 proof -
-  thm Max_spec
   note Max_spec = Max_spec [where leq="(op \<le>)"]
   show ?thesis
     apply vcg
@@ -240,7 +239,6 @@ shows
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<inter> \<lbrace>\<forall>n' m'. \<Gamma>\<turnstile> \<lbrace>\<acute>i=n' \<and> \<acute>j=m'\<rbrace> \<acute>r :== PROC \<acute>compare(\<acute>i,\<acute>j) \<lbrace>\<acute>r = (leq n' m')\<rbrace>\<rbrace>)
     \<acute>k :== PROC Max(\<acute>compare,\<acute>n,\<acute>m)
   \<lbrace>\<acute>k = mx leq n m\<rbrace>"
-term "\<lbrace>{s. \<^bsup>s\<^esup>n = n' \<and> \<^bsup>s\<^esup>m = m'} = X\<rbrace>"
 apply (hoare_rule HoarePartial.ProcNoRec1)
 apply (intro allI)
 apply (rule conseq_exploit_pre')

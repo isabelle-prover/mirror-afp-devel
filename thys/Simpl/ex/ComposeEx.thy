@@ -235,7 +235,7 @@ end
 
 lemma (in RevStr_impl) RevStr_modifies:
 "\<forall>\<sigma>. \<Gamma>\<turnstile>\<^bsub>/UNIV \<^esub>{\<sigma>} \<acute>str :== PROC RevStr(\<acute>str) 
-  {t. t may_only_modify_globals \<sigma> in [strnext]}" thm RevStr_modifies'
+  {t. t may_only_modify_globals \<sigma> in [strnext]}"
 apply (rule allI)
 apply (rule HoarePartialProps.ConseqMGT [OF RevStr_modifies'])
 apply (clarsimp simp add: 

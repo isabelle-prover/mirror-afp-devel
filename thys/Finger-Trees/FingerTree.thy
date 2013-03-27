@@ -1333,7 +1333,6 @@ next
       note miv = IV2(2)[of "i + gmn a" l1 n1 r1]
       have v2:"p (i + gmn a + gmnl (v # va))" 
         using IV2(5) by (simp add: add_assoc)
-      thm IV2 miv
       note miv2 =  miv[OF _ IV2(1) IV2(3) IV2(1)  v2 v1]
       have v3: "a # l1 = l" "n1 = n" "r1 = r"  using IV2 v1 by auto
       with miv2 have 

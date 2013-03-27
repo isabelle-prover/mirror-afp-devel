@@ -479,7 +479,6 @@ lemma ls_copy_map_of:
   apply simp
 proof -
   case goal1
-  thm ht_hash_ls_insls[OF goal1(4)]
   note a = ht_hash_ls_insls[OF goal1(4), of "ls ! n"]
   note b = ht_distinct_ls_insls[OF goal1(5), of "ls ! n"]
   note c = length_ls_insls[OF goal1(6), of "ls ! n"]

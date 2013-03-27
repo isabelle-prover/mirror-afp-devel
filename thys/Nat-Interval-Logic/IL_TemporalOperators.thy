@@ -41,7 +41,6 @@ instance bool :: wellorder
 apply (rule wf_wellorderI)
  apply (rule_tac t="{(x, y). x < y}" and s="{(False, True)}" in subst)
   apply fastforce
- thm wf_def
  apply (unfold wf_def, blast)
 apply intro_classes
 done

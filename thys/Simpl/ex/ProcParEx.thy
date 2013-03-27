@@ -248,7 +248,6 @@ proof -
     apply vcg
     apply (rule_tac x="op \<le>" in exI)
     apply clarsimp
-    thm LEQ_spec
     apply (rule LEQ_spec [rule_format])
     done
 qed
