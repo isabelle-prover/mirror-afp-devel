@@ -33,7 +33,6 @@ subsection "Register standard existing types"
 derive linorder list
 derive linorder sum
 derive linorder prod
-derive countable list 
 
 subsection "Without nested recursion"
 

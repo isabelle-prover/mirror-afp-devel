@@ -699,13 +699,6 @@ begin
 
 end (* instantiation *)
 
-instantiation mreal :: dioid_one_zero
-begin
-
-  instance ..
-
-end (* instantiation *)
-
 
 subsection {* The Min-Plus Dioid *}
 
@@ -777,13 +770,6 @@ begin
      by (cases x, cases y, simp_all add: plus_preal_def, metis linorder_le_cases min_max.inf_absorb2 min_max.le_iff_inf)
     show "x * (y + z) = x * y + x * z"
       by (cases x, cases y, cases z, simp_all add: plus_preal_def times_preal_def)   qed
-
-end (* instantiation *)
-
-instantiation preal :: dioid_one_zero
-begin
-
-  instance ..
 
 end (* instantiation *)
 
@@ -862,11 +848,5 @@ begin
 
 end (* instantiation *)
 
-instantiation pnat :: dioid_one_zero
-begin
-
-  instance ..
-
-end (* instantiation *)
-
 end
+
