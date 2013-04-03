@@ -16,8 +16,6 @@ imports
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
-hide_const (open) Multiset.join
-
 text {* Avoid module dependency cycles. *}
 (* FIXME: Eliminate dependency cycle in Isabelle library *) 
 code_modulename SML
