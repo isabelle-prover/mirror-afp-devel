@@ -163,6 +163,13 @@ lemma continuous_on_Pair[continuous_on_intros]:
 
 subsection {* Derivatives *}
 
+lemma DERIV_conv_has_vector_derivative:
+  "DERIV f x :> f' = (f has_vector_derivative f') (at x)"
+proof -
+  have "\<And>s. (\<lambda>xa. xa *\<^sub>R f') = op * f'" by auto
+  thus ?thesis by (simp add: DERIV_conv_has_derivative has_vector_derivative_def)
+qed
+
 lemma has_vector_derivative_imp:
   assumes "x \<in> s"
   assumes "\<And>x. x \<in> s \<Longrightarrow> f x = g x"
