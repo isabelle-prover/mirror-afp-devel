@@ -394,7 +394,7 @@ proof (rule lipschitzI)
       hence fz_cont[intro, simp]:
         "continuous_on {t0..t} (\<lambda>t. f (t, z t))"
         by (rule continuous_on_subset) (simp add: t_bounds)
-      
+
       have "norm (P_inner y t - P_inner z t) =
         norm (integral {t0..t} (\<lambda>t. f (t, y t) - f (t, z t)))"
         using yb

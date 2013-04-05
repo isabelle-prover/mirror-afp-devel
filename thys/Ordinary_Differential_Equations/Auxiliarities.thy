@@ -125,27 +125,27 @@ lemma pair_interval_iff[simp]: "{(a1, a2)..(b1, b2)} = {a1..b1}\<times>{a2..b2}"
 
 subsubsection {* Continuity of Pair-function *}
 
-lemma continuous_on_fst: "continuous_on X fst"
+lemma continuous_on_fst[continuous_on_intros]: "continuous_on X fst"
   unfolding continuous_on_def
   by (intro ballI tendsto_intros)
 
-lemma continuous_on_snd: "continuous_on X snd"
+lemma continuous_on_snd[continuous_on_intros]: "continuous_on X snd"
   unfolding continuous_on_def
   by (intro ballI tendsto_intros)
 
-lemma continuous_at_fst:
+lemma continuous_at_fst[continuous_intros]:
   fixes x::"'a::euclidean_space \<times> 'b::euclidean_space"
   shows "continuous (at x) fst"
   unfolding continuous_def netlimit_at
   by (intro tendsto_intros)
 
-lemma continuous_at_snd:
+lemma continuous_at_snd[continuous_intros]:
   fixes x::"'a::euclidean_space \<times> 'b::euclidean_space"
   shows "continuous (at x) snd"
   unfolding continuous_def netlimit_at
   by (intro tendsto_intros)
 
-lemma continuous_at_Pair:
+lemma continuous_at_Pair[continuous_intros]:
   fixes x::"'a::euclidean_space \<times> 'b::euclidean_space"
   assumes "continuous (at x) f"
   assumes "continuous (at x) g"
@@ -153,20 +153,13 @@ lemma continuous_at_Pair:
   using assms unfolding continuous_def
   by (intro tendsto_intros)
 
-lemma continuous_on_Pair:
+lemma continuous_on_Pair[continuous_on_intros]:
   fixes x::"'a::euclidean_space \<times> 'b::euclidean_space"
   assumes "continuous_on S f"
   assumes "continuous_on S g"
   shows "continuous_on S (\<lambda>x. (f x, g x))"
   using assms unfolding continuous_on_def
   by (auto intro: tendsto_intros)
-
-lemmas continuous_intros = continuous_intros
-  continuous_at_fst continuous_at_snd
-  continuous_at_Pair
-lemmas continuous_on_intros = continuous_on_intros
-  continuous_on_fst continuous_on_snd
-  continuous_on_Pair
 
 subsection {* Derivatives *}
 
