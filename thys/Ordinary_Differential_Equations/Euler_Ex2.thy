@@ -1,5 +1,5 @@
-theory Runge_Kutta_Ex2
-imports Runge_Kutta_Ex
+theory Euler_Ex2
+imports Euler_Ex
 begin
 
 subsection{* $\dot{x}~t := x$ *}

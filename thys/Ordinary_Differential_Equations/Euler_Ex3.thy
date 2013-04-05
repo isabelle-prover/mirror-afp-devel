@@ -1,5 +1,5 @@
-theory Runge_Kutta_Ex3
-  imports Runge_Kutta_Ex
+theory Euler_Ex3
+  imports Euler_Ex
 begin
 
 subsection{* $\dot{x}~t := x^2 + t^2$ *}
