@@ -43,15 +43,10 @@ sublocale example2 \<subseteq> ex_ivp: example_ivp t0' x0' b r T B L B' h' T' e'
 
 context example2 begin
 
-lemma has_derivative_real_Pair_snd:
-  fixes net :: "(real \<times> real) filter"
-  shows "(snd has_derivative snd) net"
-  by (simp add: has_derivative_intros snd_eq_Basis[abs_def])
-
 lemma derivative:
   fixes tx::"real \<times> real"
   shows "(f has_derivative f' tx) (at tx)"
-  using has_derivative_real_Pair_snd by (simp add: i_def f_def f'_def)
+  unfolding i_def f_def f'_def by (auto intro!: FDERIV_intros)
 
 lemma f_bounded:
   fixes x s

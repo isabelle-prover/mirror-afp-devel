@@ -8,7 +8,6 @@ session Ordinary_Differential_Equations (AFP) = "HOL-Multivariate_Analysis" +
     "~~/src/HOL/Library/Float"
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
-    "~~/src/HOL/Library/FrechetDeriv"
   theories
     Bounded_Continuous_Function
     Initial_Value_Problem

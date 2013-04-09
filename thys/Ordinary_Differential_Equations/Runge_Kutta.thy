@@ -1,7 +1,7 @@
 header{* Runge-Kutta methods*}
 theory Runge_Kutta
 imports
-  One_Step_Method "~~/src/HOL/Library/FrechetDeriv" "~~/src/HOL/Library/Float"
+  One_Step_Method "~~/src/HOL/Library/Float"
 begin
 text{*\label{sec:rk}*}
 

@@ -323,8 +323,7 @@ proof -
     by (rule has_derivative_within_subset) auto
   thus "(f has_vector_derivative f' x) (at x)"
     using assms(1-2)
-    by (auto simp add: has_derivative_within_subset has_vector_derivative_def
-      has_derivative_within_open)
+    by (simp add: has_vector_derivative_def has_derivative_within_open[OF _ open_greaterThanLessThan])
 qed
 
 lemma obtain_linear_continuation_at:

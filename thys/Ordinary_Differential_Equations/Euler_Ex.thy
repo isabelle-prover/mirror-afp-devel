@@ -186,24 +186,7 @@ begin
 lemma derivative_of_square_x_minus_t:
   fixes t x::real
   shows "((\<lambda>(t, x). x^2 - t) has_derivative (\<lambda>(dt, dx). 2*x*dx - dt)) (at (t, x))"
-proof -
-  have "((\<lambda>tx. (tx \<bullet> (0,1))^2 - tx \<bullet> (1,0)) has_derivative
-    (\<lambda>dtx. 2 * ((t, x) \<bullet> (0, 1)) * (dtx \<bullet> (0, 1)) - dtx \<bullet> (1, 0))) (at (t, x))"
-  proof -
-    have f: "(\<lambda>x. (x \<bullet> (0,1))\<twosuperior>) = (\<lambda>x. x^2)o(\<lambda>x. x \<bullet> (0,1))" by auto
-    have f': "(\<lambda>dtx. 2*((t, x) \<bullet> (0,1))*(dtx \<bullet> (0,1))) =
-      (op * (of_nat 2 * ((t, x) \<bullet> (0,1)) ^ (2 - 1)))o(\<lambda>h. h \<bullet> (0,1))" by auto
-    have "((\<lambda>x. (x \<bullet> (0,1))\<twosuperior>) has_derivative (\<lambda>h. 2 * ((t, x) \<bullet> (0,1)) * (h \<bullet> (0,1)))) (at (t, x))"
-      unfolding f f'
-      by (intro diff_chain_at has_derivative_intros FDERIV_power[unfolded FDERIV_conv_has_derivative])
-    thus ?thesis by (intro has_derivative_intros)
-  qed
-  also have "(\<lambda>tx. (tx \<bullet> (0,1))\<twosuperior> - tx \<bullet> (1,0)) = (\<lambda>(t, x). x^2 - t)"
-    by auto
-  also have "(\<lambda>dtx. 2 * ((t, x) \<bullet> (0,1)) * (dtx \<bullet> (0,1)) - (dtx \<bullet> (1,0))) = (\<lambda>(dt, dx). 2 * x * dx - dt)"
-    by auto
-  finally show ?thesis .
-qed
+  by (auto intro!: FDERIV_eq_intros)
 
 lemma derivative:
   fixes tx::"real \<times> real"
