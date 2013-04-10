@@ -242,7 +242,7 @@ fun widen_tac ss =
   rtac @{thm widen_asm} THEN'
   simp_tac (Simplifier.inherit_context ss @{simpset} addsimps @{thms le_Javatype_def}) THEN'
   Method.insert_tac @{thms direct_subtype_widened} THEN'
-  simp_tac (Simplifier.inherit_context ss (global_simpset_of @{theory Transitive_Closure}))
+  simp_tac (Simplifier.inherit_context ss (simpset_of @{theory_context Transitive_Closure}))
 *}
 
 declaration {* fn _ =>

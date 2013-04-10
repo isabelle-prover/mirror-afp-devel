@@ -530,7 +530,7 @@ apply (frule_tac [2] n = "m" in new_tv_W) prefer 2 apply assumption
 apply (erule_tac [2] conjE)
 apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
  apply (tactic {* 
-    (fast_tac (put_claset (global_claset_of @{theory Fun}) @{context}
+    (fast_tac (put_claset (claset_of @{theory_context Fun}) @{context}
       addDs [sym RS @{thm W_var_geD}, @{thm new_scheme_list_le}, @{thm codD},
         @{thm new_tv_not_free_tv}]) 2) *})
 apply (case_tac "na: free_tv t - free_tv Sa")

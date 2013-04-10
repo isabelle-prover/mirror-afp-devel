@@ -1871,7 +1871,7 @@ fun gen_call_rec_rule specs_name n rule =
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
            instantiate' [] [SOME (cterm_of thy Specs)] rule
-           |> full_simplify ((global_simpset_of @{theory Main})
+           |> full_simplify ((simpset_of @{theory_context Main})
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
            |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
@@ -2535,9 +2535,9 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
           fun solve_modifies_tac i =
                 (clarsimp_tac
-                  (put_claset (global_claset_of @{theory Set}) ctxt
+                  (put_claset (claset_of @{theory_context Set}) ctxt
                     |> map_simpset (fn _ =>
-                       (Simplifier.context ctxt (global_simpset_of @{theory Set}))
+                       (Simplifier.context ctxt (simpset_of @{theory_context Set}))
                        addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
                        addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
                        |> fold Simplifier.add_cong K_congs)) i)
@@ -2650,7 +2650,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
 fun solve_in_Faults_tac i =
     resolve_tac [UNIV_I, in_insert_hd] i
     ORELSE
-    SELECT_GOAL (SOLVE (simp_tac (global_simpset_of @{theory Set}) 1)) i;
+    SELECT_GOAL (SOLVE (simp_tac (simpset_of @{theory_context Set}) 1)) i;
 
 local
 val triv_simp = merge_assertion_simp_tac [mem_Collect_eq] THEN'
@@ -3331,7 +3331,7 @@ fun lookup' _ [] _ = NONE
 
 local
 
-val ss = global_simpset_of @{theory Fun}
+val ss = simpset_of @{theory_context Fun}
   addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
     :: @{thms list.inject} @ @{thms char.inject}
     @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms})
@@ -3518,9 +3518,9 @@ fun solve_modifies_tac ctxt state_kind state_space i =
                      (REPEAT_ALL_NEW (resolve_tac [conjI,impI,refl]) k))) i
   in
     (trace_tac ctxt "solve_modifies_tac" THEN
-     clarsimp_tac (put_claset (global_claset_of @{theory HOL}) ctxt
+     clarsimp_tac (put_claset (claset_of @{theory_context HOL}) ctxt
         |> map_simpset (fn _ =>
-            (Simplifier.context ctxt (global_simpset_of @{theory Set}))
+            (Simplifier.context ctxt (simpset_of @{theory_context Set}))
              addsimps ([mex_def,meq_def]@K_convs)
              addsimprocs (state_upd_simproc Record::(state_simprocs Record))
              |> fold Simplifier.add_cong K_congs)) i)
