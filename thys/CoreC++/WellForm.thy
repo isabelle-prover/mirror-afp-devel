@@ -1840,7 +1840,7 @@ next
   have "P,E \<turnstile> \<lparr>C\<rparr>e :: T'" by fact
   thus ?case by (fastforce elim:WT.cases)
 next
-  case (WTBinOp E e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2 T bop)
+  case (WTBinOp E e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2 bop T)
   have bop:"case bop of Eq \<Rightarrow> T\<^isub>1 = T\<^isub>2 \<and> T = Boolean
     | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
     and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T'" by fact+

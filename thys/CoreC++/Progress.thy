@@ -382,7 +382,7 @@ next
 next
   case WTrtVar thus ?case by(fastforce intro:RedVar simp:hyper_isin_def)
 next
-  case (WTrtBinOp E h e1 T1 e2 T2 T' bop)
+  case (WTrtBinOp E h e1 T1 e2 T2 bop T')
   have bop:"case bop of Eq \<Rightarrow> T' = Boolean
                       | Add \<Rightarrow> T1 = Integer \<and> T2 = Integer \<and> T' = Integer"
     and wte1:"P,E,h \<turnstile> e1 : T1" and wte2:"P,E,h \<turnstile> e2 : T2" by fact+
