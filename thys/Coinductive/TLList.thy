@@ -92,10 +92,6 @@ by simp
 
 declare tllist.sels(2)[simp del]
 
-translations
-  "case p of XCONST TNil y \<Rightarrow> a | XCONST TCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
-  "case p of (XCONST TNil :: 'a) y \<Rightarrow> a | (XCONST TCons :: 'b) x l \<Rightarrow> b" \<rightharpoonup> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
-
 lemma tllist_case_cert:
   assumes "CASE \<equiv> tllist_case c d"
   shows "(CASE (TNil b) \<equiv> c b) &&& (CASE (TCons M N) \<equiv> d M N)"

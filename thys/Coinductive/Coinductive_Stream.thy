@@ -21,10 +21,6 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-translations -- "poor man's case syntax"
-  "case p of XCONST SCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST stream_case (\<lambda>x l. b) p"
-  "case p of (XCONST LCons :: 'b) x l \<Rightarrow> b" \<rightharpoonup> "CONST stream_case (\<lambda>x l. b) p"
-
 text {* split rules without eta expansion *}
 
 lemma stream_split: (* eta-contract stream.split *)

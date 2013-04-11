@@ -39,10 +39,6 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-translations -- "poor man's case syntax"
-  "case p of XCONST LNil \<Rightarrow> a | XCONST LCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST llist_case a (\<lambda>x l. b) p"
-  "case p of XCONST LNil :: 'a \<Rightarrow> a | (XCONST LCons :: 'b) x l \<Rightarrow> b" \<rightharpoonup> "CONST llist_case a (\<lambda>x l. b) p"
-
 text {* split rules without eta expansion *}
 
 lemma llist_split: (* eta-contract llist.split *)
