@@ -2064,7 +2064,7 @@ abschalten. Wieder anschalten siehe nach dem Beweis. *)
 declare split_paired_All [simp del] split_paired_Ex [simp del]
 
 declaration {* K (Simplifier.map_ss (fn ss => ss delloop "split_all_tac")) *}
-declaration {* K (Classical.map_cs (fn cs => cs delSWrapper "split_all_tac")) *}
+setup {* map_theory_claset (fn ctxt => ctxt delSWrapper "split_all_tac") *}
 
 
 lemma list_eval_Throw: 
@@ -2759,7 +2759,7 @@ qed
 
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
-declaration {* K (Classical.map_cs (fn cs => cs addSbefore ("split_all_tac", split_all_tac))) *}
+setup {* map_theory_claset (fn ctxt => ctxt addSbefore ("split_all_tac", split_all_tac)) *}
 declaration {* K (Simplifier.map_ss (fn ss => ss addloop ("split_all_tac", split_all_tac))) *}
 
 
