@@ -2760,7 +2760,7 @@ qed
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
 setup {* map_theory_claset (fn ctxt => ctxt addSbefore ("split_all_tac", split_all_tac)) *}
-declaration {* K (Simplifier.map_ss (fn ss => ss addloop ("split_all_tac", split_all_tac))) *}
+setup {* map_theory_simpset (fn ctxt => ctxt addloop' ("split_all_tac", split_all_tac)) *}
 
 
 text {* Its extension to @{text"\<rightarrow>*"}: *} 
