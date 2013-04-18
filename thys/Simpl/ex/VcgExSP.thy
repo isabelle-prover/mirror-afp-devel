@@ -651,7 +651,7 @@ do this work:
 
 
 
-ML {* bind_thm ("ProcRec2", Hoare.gen_proc_rec Hoare.Partial 2) *}
+ML {* bind_thm ("ProcRec2", Hoare.gen_proc_rec @{context} Hoare.Partial 2) *}
 
 
 lemma (in odd_even_clique)

@@ -871,7 +871,7 @@ when we construct a well-founded relation on the product of state space and proc
 names.
 *}
 
-ML {* bind_thm ("HoareTotal_ProcRec2", Hoare.gen_proc_rec Hoare.Total 2)*}
+ML {* bind_thm ("HoareTotal_ProcRec2", Hoare.gen_proc_rec @{context} Hoare.Total 2)*}
 
 
 text {*

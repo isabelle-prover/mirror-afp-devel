@@ -27,11 +27,12 @@ sig
   val abs_state: term -> term option
   val abs_var: Proof.context -> term -> (string * typ)
   val split_state: Proof.context -> string -> typ -> term -> (term * term list)
-  val ex_tac: term list -> tactic (* the term-list is the list of selectors as
-                                     returned by split_state. They may be used to
-                                     construct the instatiation of the existentially
-                                     quantified state.
-                                  *)
+  val ex_tac: Proof.context -> term list -> tactic
+    (* the term-list is the list of selectors as
+       returned by split_state. They may be used to
+       construct the instatiation of the existentially
+       quantified state.
+    *)
 end;
 
 functor GeneraliseFun (structure SplitState: SPLIT_STATE) =
@@ -135,7 +136,7 @@ fun split_thm qnt ctxt s T t =
                                 (HOLogic.mk_Trueprop (list_exists (vs, t')),
                                  HOLogic.mk_Trueprop (HOLogic.mk_exists (s,T,t))))
   in (case qnt of
-        Hol_ex => Goal.prove ctxt [] [] prop (fn _ => SplitState.ex_tac vars)
+        Hol_ex => Goal.prove ctxt [] [] prop (fn _ => SplitState.ex_tac ctxt vars)
       | _ => let 
                val rP = cterm_of thy (conc_of genRefl');
                val thm0 = Thm.instantiate ([], [(rP, cterm_of thy prop)]) genRefl';
