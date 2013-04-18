@@ -191,17 +191,18 @@ fun mk_less_disj mk_less px py dtys =
 fun simps_of_info info = #case_rewrites info @ #rec_rewrites info @ #inject info @ #distinct info
 
 (* TODO: my_simp_set should be HOL_ss + the other simplification stuff for orders like simprocs, ... *)
-val my_simp_set = simpset_of @{context} 
-  delsimps (simpset_of @{context} |> dest_ss |> #simps |> map snd) 
-  addsimps @{thms HOL.simp_thms}
+val my_simp_set =
+  simpset_of (@{context} 
+    delsimps (simpset_of @{context} |> dest_ss |> #simps |> map snd)
+    addsimps @{thms HOL.simp_thms})
 
 fun mk_transitivity_thms thy (info : Datatype_Aux.info) = 
   let 
-    val ctxt = Proof_Context.init_global thy
+    val ctxt = Proof_Context.init_global thy  (* FIXME proper context!? *)
     (* first prove transitivity of < *)
     val trans_props = mk_trans_thm_trm thy info
     val sort = @{sort "order"}
-    val simp_main = my_simp_set addsimps (simps_of_info info)
+    val simp_main = put_simpset my_simp_set ctxt addsimps (simps_of_info info)
     val (mk_rec,nrec_args) = mk_less_idx thy info sort
     val typ_subst = typ_subst_for_sort thy info sort
     val descr = #descr info
@@ -338,7 +339,7 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
 
 fun mk_binary_thm thy (info : Datatype_Aux.info) prop_gen sort same_constructor_tac = 
   let 
-    val ctxt = Proof_Context.init_global thy
+    val ctxt = Proof_Context.init_global thy  (* FIXME proper context!? *)
     val prop_props = mk_prop_trm thy info sort prop_gen
     val (mk_rec,nrec_args) = mk_less_idx thy info sort
     val typ_subst = typ_subst_for_sort thy info sort
@@ -356,9 +357,9 @@ fun mk_binary_thm thy (info : Datatype_Aux.info) prop_gen sort same_constructor_
       let 
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
         val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> the_info thy
-        val simp_set = my_simp_set addsimps (simps_of_info info) @ (simps_of_info linfo)
-        val solve_with_tac = (fn thms => mk_solve_with_tac thms 
-          (force_tac (map_simpset (K simp_set) ctxt) 1))
+        val simp_set =
+          put_simpset my_simp_set ctxt addsimps (simps_of_info info) @ (simps_of_info linfo)
+        val solve_with_tac = (fn thms => mk_solve_with_tac thms (force_tac simp_set 1))
         fun case_tac ctxt = mk_case_tac ctxt [[SOME y]] (#exhaust linfo)
         fun sub_case_tac (ctxt,k,prems,iparams_y) = 
           let 
@@ -611,7 +612,7 @@ fun derive kind dtyp_name thy =
         
           fun order_tac ctxt = 
             my_print_tac "enter order" THEN
-            unfold_tac less_thms (simpset_of ctxt) THEN
+            unfold_tac less_thms ctxt THEN
             my_print_tac "after unfolding" THEN
             rtac less 1 THEN
             my_print_tac "after less" THEN
@@ -634,7 +635,7 @@ fun derive kind dtyp_name thy =
           val lthy = Class.instantiation ([tyco],vs,sort) thy''
           val linear = mk_linear_thm thy info
           fun order_tac ctxt = 
-            unfold_tac less_thms (simpset_of ctxt) THEN
+            unfold_tac less_thms ctxt THEN
             rtac linear 1 
           val thy''' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
           val _ = Output.writeln ("registered " ^ base_name ^ " in class linorder")
