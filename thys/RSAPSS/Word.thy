@@ -2246,28 +2246,30 @@ declare fast_bv_to_nat_Cons [simp del]
 declare fast_bv_to_nat_Cons0 [simp]
 declare fast_bv_to_nat_Cons1 [simp]
 
-setup {*
-let
-  fun is_const_bool (Const(@{const_name "True"},_)) = true
-    | is_const_bool (Const(@{const_name "False"},_)) = true
-    | is_const_bool _ = false
-  fun is_const_bit (Const("Word.bit.Zero",_)) = true
-    | is_const_bit (Const("Word.bit.One",_)) = true
-    | is_const_bit _ = false
-  fun vec_is_usable (Const("List.list.Nil",_)) = true
-    | vec_is_usable (Const("List.list.Cons",_) $ b $ bs) =
-        vec_is_usable bs andalso is_const_bit b
-    | vec_is_usable _ = false
-  val fast2_th = @{thm "Word.fast_bv_to_nat_def"};
-  fun g sg thms (Const("Word.bv_to_nat",_) $ (Const("List.list.Cons",_) $ Const("Word.bit.One",_) $ t)) =
-        if vec_is_usable t then
-          SOME (Drule.cterm_instantiate [(cterm_of sg (Var(("bs",0),Type("List.list",[Type("Word.bit",[])]))),cterm_of sg t)] fast2_th)
-        else NONE
-    | g _ _ _ = NONE
-  val simproc2 = Simplifier.simproc_global @{theory} "bv_to_nat" ["Word.bv_to_nat (x # xs)"] g
-in
-  Simplifier.map_simpset_global (fn ss => ss addsimprocs [simproc2])
-end*}
+simproc_setup bv_to_nat ("Word.bv_to_nat (x # xs)") = {*
+  fn _ => fn ctxt => fn ct =>
+    let
+      val thy = Proof_Context.theory_of ctxt
+      fun is_const_bool (Const(@{const_name "True"},_)) = true
+        | is_const_bool (Const(@{const_name "False"},_)) = true
+        | is_const_bool _ = false
+      fun is_const_bit (Const("Word.bit.Zero",_)) = true
+        | is_const_bit (Const("Word.bit.One",_)) = true
+        | is_const_bit _ = false
+      fun vec_is_usable (Const("List.list.Nil",_)) = true
+        | vec_is_usable (Const("List.list.Cons",_) $ b $ bs) =
+            vec_is_usable bs andalso is_const_bit b
+        | vec_is_usable _ = false
+      val fast2_th = @{thm "Word.fast_bv_to_nat_def"};
+      fun proc (Const("Word.bv_to_nat",_) $ (Const("List.list.Cons",_) $ Const("Word.bit.One",_) $ t)) =
+            if vec_is_usable t then
+              SOME (Drule.cterm_instantiate
+                [(cterm_of thy (Var(("bs",0),Type("List.list",[Type("Word.bit",[])]))),
+                  cterm_of thy t)] fast2_th)
+            else NONE
+        | proc _ = NONE
+    in proc (term_of ct) end
+*}
 
 declare bv_to_nat1 [simp del]
 declare bv_to_nat_helper [simp del]
