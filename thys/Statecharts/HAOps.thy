@@ -1163,15 +1163,12 @@ fun wellformed_tac ctxt L i =
         rtac AddSA_CompFun_ran_IFF i,
         rtac insert_inter i,
         rtac insert_notmem i,
-        CHANGED (simp_tac (HOL_basic_ss addsimps
+        CHANGED (simp_tac (put_simpset HOL_basic_ss ctxt addsimps
            [PseudoHA_HARoot, PseudoHA_CompFun, PseudoHA_CompFun_ran,PseudoHA_Events,PseudoHA_SAs,insert_union,
             PseudoHA_HAInitValue,Un_empty_right]@ L) i),
         fast_tac ctxt i,
-        CHANGED (simp_tac (simpset_of ctxt) i)
-];
-
+        CHANGED (simp_tac ctxt i)];
 *}
-
 
 method_setup wellformed  = {* Attrib.thms >> (fn thms => fn ctxt => (METHOD (fn facts => 
                                        (HEADGOAL (wellformed_tac ctxt (facts @ thms)))))) *}
