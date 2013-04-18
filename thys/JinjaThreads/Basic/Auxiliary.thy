@@ -452,10 +452,7 @@ let
       NONE => NONE
     | SOME (i, k, j) => SOME (swap_params_conv ctxt k j (K (swap_prems_conv i)) ct))
 in
-  fn _ =>
-    fn ss =>
-      fn ct =>
-        mk_swap_rrule (Simplifier.the_context ss) ct
+  fn _ => mk_swap_rrule
 end
 *}
 declare [[simproc del: rearrange_eqs]]
