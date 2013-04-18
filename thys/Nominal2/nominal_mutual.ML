@@ -198,7 +198,7 @@ fun recover_mutual_psimp all_orig_fdefs parts ctxt (fname, _, _, args, rhs)
       (HOLogic.Trueprop $ HOLogic.mk_eq (list_comb (f, args), rhs))
       (fn _ => (Local_Defs.unfold_tac ctxt all_orig_fdefs)
          THEN EqSubst.eqsubst_tac ctxt [0] [simp] 1
-         THEN (simp_tac (simpset_of ctxt)) 1) (* FIXME: global simpset?!! *)
+         THEN (simp_tac ctxt) 1)
     |> restore_cond
     |> export
   end
@@ -223,7 +223,8 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
       |> Variable.variant_fixes ["p"] 		   
     val p = Free (p, @{typ perm})
 
-    val ss = HOL_basic_ss addsimps 
+    val simpset =
+      put_simpset HOL_basic_ss ctxt' addsimps 
       @{thms permute_sum.simps[symmetric] Pair_eqvt[symmetric]} @
       @{thms Projr.simps Projl.simps} @
       [(cond MRS eqvt_thm) RS @{thm sym}] @ 
@@ -233,7 +234,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
   in
     Goal.prove ctxt' [] [] (HOLogic.Trueprop $ HOLogic.mk_eq (goal_lhs, goal_rhs))
       (fn _ => (Local_Defs.unfold_tac ctxt all_orig_fdefs)
-         THEN (asm_full_simp_tac ss 1))
+         THEN (asm_full_simp_tac simpset 1))
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> restore_cond
     |> export
@@ -250,9 +251,9 @@ fun mk_applied_form ctxt caTs thm =
     |> Thm.forall_elim_vars 0
   end
 
-fun mutual_induct_rules lthy induct all_f_defs (Mutual {n, ST, parts, ...}) =
+fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
   let
-    val cert = cterm_of (Proof_Context.theory_of lthy)
+    val cert = cterm_of (Proof_Context.theory_of ctxt)
     val newPs =
       map2 (fn Pname => fn MutualPart {cargTs, ...} =>
           Free (Pname, cargTs ---> HOLogic.boolT))
@@ -271,8 +272,8 @@ fun mutual_induct_rules lthy induct all_f_defs (Mutual {n, ST, parts, ...}) =
 
     val induct_inst =
       Thm.forall_elim (cert case_exp) induct
-      |> full_simplify SumTree.sumcase_split_ss
-      |> full_simplify (HOL_basic_ss addsimps all_f_defs)
+      |> full_simplify (put_simpset SumTree.sumcase_split_ss ctxt)
+      |> full_simplify (put_simpset HOL_basic_ss ctxt addsimps all_f_defs)
 
     fun project rule (MutualPart {cargTs, i, ...}) k =
       let
@@ -281,7 +282,7 @@ fun mutual_induct_rules lthy induct all_f_defs (Mutual {n, ST, parts, ...}) =
       in
         (rule
          |> Thm.forall_elim (cert inj)
-         |> full_simplify SumTree.sumcase_split_ss
+         |> full_simplify (put_simpset SumTree.sumcase_split_ss ctxt)
          |> fold_rev (Thm.forall_intr o cert) (afs @ newPs),
          k + length cargTs)
       end
@@ -350,7 +351,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
     |> map (fn th => th RS mp)
   end
 
-fun mk_partial_rules_mutual lthy inner_cont (m as Mutual {parts, fqgars, ...}) proof =
+fun mk_partial_rules_mutual ctxt inner_cont (m as Mutual {parts, fqgars, ...}) proof =
   let
     val result = inner_cont proof
 
@@ -359,7 +360,7 @@ fun mk_partial_rules_mutual lthy inner_cont (m as Mutual {parts, fqgars, ...}) p
 
     val (all_f_defs, fs) =
       map (fn MutualPart {f_defthm = SOME f_def, f = SOME f, cargTs, ...} =>
-          (mk_applied_form lthy cargTs (Thm.symmetric f_def), f))
+          (mk_applied_form ctxt cargTs (Thm.symmetric f_def), f))
       parts
       |> split_list
 
@@ -370,18 +371,18 @@ fun mk_partial_rules_mutual lthy inner_cont (m as Mutual {parts, fqgars, ...}) p
       map (fn MutualPart {f = SOME f, cargTs, ...} => cargTs) parts
 
     fun mk_mpsimp fqgar sum_psimp =
-      in_context lthy fqgar (recover_mutual_psimp all_orig_fdefs parts) sum_psimp
+      in_context ctxt fqgar (recover_mutual_psimp all_orig_fdefs parts) sum_psimp
 
     fun mk_meqvts fqgar sum_psimp =
-      in_context lthy fqgar (recover_mutual_eqvt eqvt all_orig_fdefs parts) sum_psimp
+      in_context ctxt fqgar (recover_mutual_eqvt eqvt all_orig_fdefs parts) sum_psimp
 
-    val rew_ss = HOL_basic_ss addsimps all_f_defs
+    val rew_simpset = put_simpset HOL_basic_ss ctxt addsimps all_f_defs
     val mpsimps = map2 mk_mpsimp fqgars psimps
-    val minducts = mutual_induct_rules lthy simple_pinduct all_f_defs m
-    val mtermination = full_simplify rew_ss termination
-    val mdomintros = Option.map (map (full_simplify rew_ss)) domintros
+    val minducts = mutual_induct_rules ctxt simple_pinduct all_f_defs m
+    val mtermination = full_simplify rew_simpset termination
+    val mdomintros = Option.map (map (full_simplify rew_simpset)) domintros
     val meqvts = map2 mk_meqvts fqgars psimps
-    val meqvt_funs = prove_eqvt lthy fs cargTss meqvts minducts
+    val meqvt_funs = prove_eqvt ctxt fs cargTss meqvts minducts
  in
     NominalFunctionResult { fs=fs, G=G, R=R,
       psimps=mpsimps, simple_pinducts=minducts,
@@ -472,26 +473,27 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
       |> all x |> all y
 
     val simp_thms = @{thms Projl.simps Projr.simps sum.inject sum.cases sum.distinct o_apply}
-    val ss0 = HOL_basic_ss addsimps simp_thms
-    val ss1 = HOL_ss addsimps simp_thms
+    val simpset0 = put_simpset HOL_basic_ss lthy''' addsimps simp_thms
+    val simpset1 = put_simpset HOL_ss lthy''' addsimps simp_thms
 
     val inj_thm = Goal.prove lthy''' [] [] goal_inj 
-      (K (HEADGOAL (DETERM o etac G_aux_induct THEN_ALL_NEW asm_simp_tac ss1)))
+      (K (HEADGOAL (DETERM o etac G_aux_induct THEN_ALL_NEW asm_simp_tac simpset1)))
 
     fun aux_tac thm = 
-      rtac (Drule.gen_all thm) THEN_ALL_NEW (asm_full_simp_tac (ss1 addsimps [inj_thm]))
+      rtac (Drule.gen_all thm) THEN_ALL_NEW (asm_full_simp_tac (simpset1 addsimps [inj_thm]))
     
     val iff1_thm = Goal.prove lthy''' [] [] goal_iff1 
       (K (HEADGOAL (DETERM o etac G_aux_induct THEN' RANGE (map aux_tac GIntro_thms))))
       |> Drule.gen_all
     val iff2_thm = Goal.prove lthy''' [] [] goal_iff2 
-      (K (HEADGOAL (DETERM o etac G_induct THEN' RANGE (map (aux_tac o simplify ss0) GIntro_aux_thms))))
+      (K (HEADGOAL (DETERM o etac G_induct THEN' RANGE
+        (map (aux_tac o simplify simpset0) GIntro_aux_thms))))
       |> Drule.gen_all
 
     val iff_thm = Goal.prove lthy''' [] [] (HOLogic.mk_Trueprop (HOLogic.mk_eq (G, G_aux)))
       (K (HEADGOAL (EVERY' ((map rtac @{thms ext ext iffI}) @ [etac iff2_thm, etac iff1_thm]))))
  
-    val tac = HEADGOAL (simp_tac (HOL_basic_ss addsimps [iff_thm]))
+    val tac = HEADGOAL (simp_tac (put_simpset HOL_basic_ss lthy''' addsimps [iff_thm]))
     val goalstate' = 
       case (SINGLE tac) goalstate of
         NONE => error "auxiliary equivalence proof failed"

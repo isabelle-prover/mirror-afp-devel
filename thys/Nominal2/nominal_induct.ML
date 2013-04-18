@@ -22,8 +22,8 @@ fun tuple_fun Ts (xi, T) =
   Library.funpow (length Ts) HOLogic.mk_split
     (Var (xi, (HOLogic.unitT :: Ts) ---> Term.range_type T));
 
-val split_all_tuples =
-  Simplifier.full_simplify (HOL_basic_ss addsimps
+fun split_all_tuples ctxt =
+  Simplifier.full_simplify (put_simpset HOL_basic_ss ctxt addsimps
     @{thms split_conv split_paired_all unit_all_eq1} @
     @{thms fresh_Unit_elim fresh_Pair_elim} @
     @{thms fresh_star_Unit_elim fresh_star_Pair_elim fresh_star_Un_elim} @
@@ -93,7 +93,7 @@ fun nominal_induct_tac ctxt simp def_insts avoiding fixings rules facts =
     val atomized_defs = map (map (Conv.fconv_rule Induct.atomize_cterm)) defs;
 
     val finish_rule =
-      split_all_tuples
+      split_all_tuples defs_ctxt
       #> rename_params_rule true
         (map (Name.clean o Variable.revert_fixed defs_ctxt o fst) avoiding);
 

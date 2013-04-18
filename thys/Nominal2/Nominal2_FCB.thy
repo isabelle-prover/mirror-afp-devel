@@ -12,7 +12,7 @@ ML {*
 val all_trivials : (Proof.context -> Method.method) context_parser =
 Scan.succeed (fn ctxt =>
  let
-   val tac = TRYALL (SOLVED' (full_simp_tac (simpset_of ctxt)))
+   val tac = TRYALL (SOLVED' (full_simp_tac ctxt))
  in 
    Method.SIMPLE_METHOD' (K tac)
  end)

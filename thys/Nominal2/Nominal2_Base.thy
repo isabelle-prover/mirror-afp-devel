@@ -823,14 +823,13 @@ method_setup perm_strict_simp =
  {* Nominal_Permeq.args_parser >> Nominal_Permeq.perm_strict_simp_meth *}
  {* pushes permutations inside, raises an error if it cannot solve all permutations. *}
 
-simproc_setup perm_simproc ("p \<bullet> t") = {* fn _ => fn ss => fn ctrm =>
+simproc_setup perm_simproc ("p \<bullet> t") = {* fn _ => fn ctxt => fn ctrm =>
   case term_of (Thm.dest_arg ctrm) of 
     Free _ => NONE
   | Var _ => NONE
   | Const (@{const_name permute}, _) $ _ $ _ => NONE
   | _ =>
       let
-        val ctxt = Simplifier.the_context ss
         val thm = Nominal_Permeq.eqvt_conv ctxt Nominal_Permeq.eqvt_strict_config ctrm
           handle ERROR _ => Thm.reflexive ctrm
       in
@@ -1864,14 +1863,14 @@ by auto
 
 text {* for handling of freshness of functions *}
 
-simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") = {* fn _ => fn ss => fn ctrm =>
+simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") = {* fn _ => fn ctxt => fn ctrm =>
   let 
     val _ $ _ $ f = term_of ctrm
   in
     case (Term.add_frees f [], Term.add_vars f []) of
       ([], []) => SOME(@{thm fresh_fun_eqvt[simplified eqvt_def, THEN Eq_TrueI]})
     | (x::_, []) => let
-         val thy = Proof_Context.theory_of (Simplifier.the_context ss)        
+         val thy = Proof_Context.theory_of ctxt
          val argx = Free x
          val absf = absfree x f
          val cty_inst = [SOME (ctyp_of thy (fastype_of argx)), SOME (ctyp_of thy (fastype_of f))]
@@ -2928,7 +2927,7 @@ lemma if_fresh_at_base [simp]:
 by (simp_all add: fresh_at_base)
 
 
-simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ss => fn ctrm =>
+simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt => fn ctrm =>
   let
     fun first_is_neg lhs rhs [] = NONE
       | first_is_neg lhs rhs (thm::thms) =
@@ -2940,10 +2939,10 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ss => f
            | _ => first_is_neg lhs rhs thms)
 
     val simp_thms = @{thms fresh_Pair fresh_at_base atom_eq_iff}
-    val prems = Simplifier.prems_of ss
+    val prems = Simplifier.prems_of ctxt
       |> filter (fn thm => case Thm.prop_of thm of                    
            _ $ (Const (@{const_name fresh}, _) $ _ $ _) => true | _ => false)
-      |> map (simplify (HOL_basic_ss addsimps simp_thms))
+      |> map (simplify (put_simpset HOL_basic_ss  ctxt addsimps simp_thms))
       |> map HOLogic.conj_elims
       |> flat
   in 
@@ -3322,19 +3321,18 @@ lemma Fresh_apply':
   done
 
 lemma "1 = 1 &&& 2 = 2"
-apply(tactic {* ALLGOALS (asm_full_simp_tac @{simpset}) *})
+apply(tactic {* ALLGOALS (asm_full_simp_tac @{context}) *})
 done
 
 
-simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _ => fn ss => fn ctrm =>
+simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _ => fn ctxt => fn ctrm =>
   let
-     val ctxt = Simplifier.the_context ss
      val _ $ h = term_of ctrm
 
      val cfresh = @{const_name fresh}
      val catom  = @{const_name atom}
 
-     val atoms = Simplifier.prems_of ss
+     val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of                    
            _ $ (Const (cfresh, _) $ (Const (catom, _) $ atm) $ _) => SOME (atm) | _ => NONE)
       |> distinct (op=)
@@ -3344,8 +3342,8 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _
          val goal1 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) h)
          val goal2 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) (h $ atm))
  
-         val thm1 = Goal.prove ctxt [] [] goal1 (K (asm_simp_tac ss 1)) 
-         val thm2 = Goal.prove ctxt [] [] goal2 (K (asm_simp_tac ss 1)) 
+         val thm1 = Goal.prove ctxt [] [] goal1 (K (asm_simp_tac ctxt 1)) 
+         val thm2 = Goal.prove ctxt [] [] goal2 (K (asm_simp_tac ctxt 1)) 
        in
          SOME (@{thm Fresh_apply'} OF [thm1, thm2] RS eq_reflection)
        end handle ERROR _ => NONE
@@ -3427,8 +3425,5 @@ ML_file "nominal_atoms.ML"
 section {* automatic equivariance procedure for inductive definitions *}
 
 ML_file "nominal_eqvt.ML"
-
-
-
 
 end

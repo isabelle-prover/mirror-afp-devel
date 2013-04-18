@@ -192,12 +192,14 @@ fun mk_supports_goal ctxt qtrm =
 
 fun supports_tac ctxt perm_simps =
   let
-    val ss1 = HOL_basic_ss addsimps @{thms supports_def fresh_def[symmetric]}
-    val ss2 = HOL_ss addsimps @{thms swap_fresh_fresh fresh_Pair}
+    val simpset1 =
+      put_simpset HOL_basic_ss ctxt addsimps @{thms supports_def fresh_def[symmetric]}
+    val simpset2 =
+      put_simpset HOL_ss ctxt addsimps @{thms swap_fresh_fresh fresh_Pair}
   in
-    EVERY' [ simp_tac ss1,
+    EVERY' [ simp_tac simpset1,
              eqvt_tac ctxt (eqvt_strict_config addpres perm_simps),
-             simp_tac ss2 ]
+             simp_tac simpset2 ]
   end
 
 fun prove_supports_single ctxt perm_simps qtrm =
@@ -228,7 +230,8 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
     val tac = 
       EVERY' [ rtac @{thm supports_finite},
                resolve_tac qsupports_thms,
-               asm_simp_tac (HOL_ss addsimps @{thms finite_supp supp_Pair finite_Un}) ]
+               asm_simp_tac (put_simpset HOL_ss ctxt
+                addsimps @{thms finite_supp supp_Pair finite_Un}) ]
   in
     Goal.prove ctxt' [] [] goals
       (K (HEADGOAL (rtac qinduct THEN_ALL_NEW tac)))
@@ -271,8 +274,7 @@ fun gen_mk_goals fv supp =
 fun mk_fvs_goals fv = gen_mk_goals fv mk_supp
 fun mk_fv_bns_goals fv_bn alpha_bn = gen_mk_goals fv_bn (mk_supp_rel alpha_bn)
 
-fun add_ss thms =
-  HOL_basic_ss addsimps thms
+fun add_simpset ctxt thms = put_simpset HOL_basic_ss ctxt addsimps thms
 
 fun symmetric thms = 
   map (fn thm => thm RS @{thm sym}) thms
@@ -289,13 +291,13 @@ fun mk_supp_abs_tac ctxt [] = []
   | mk_supp_abs_tac ctxt (BC (_, [], _)::xs) = mk_supp_abs_tac ctxt xs
   | mk_supp_abs_tac ctxt (bc::xs) = (DETERM o mk_supp_abs ctxt bc)::mk_supp_abs_tac ctxt xs
 
-fun mk_bn_supp_abs_tac trm =
+fun mk_bn_supp_abs_tac ctxt trm =
   trm
   |> fastype_of
   |> body_type
   |> (fn ty => case ty of
-        @{typ "atom set"}  => simp_tac (add_ss supp_Abs_set)
-      | @{typ "atom list"} => simp_tac (add_ss supp_Abs_lst)
+        @{typ "atom set"}  => simp_tac (add_simpset ctxt supp_Abs_set)
+      | @{typ "atom list"} => simp_tac (add_simpset ctxt supp_Abs_lst)
       | _ => raise TERM ("mk_bn_supp_abs_tac", [trm]))
 
 
@@ -322,22 +324,22 @@ fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps
           val supp_abs_tac = 
             case (AList.lookup (op=) (qtrms ~~ bclausess) (head_of arg)) of
               SOME bclauses => EVERY' (mk_supp_abs_tac ctxt bclauses)
-            | NONE => mk_bn_supp_abs_tac fv_fun
+            | NONE => mk_bn_supp_abs_tac ctxt fv_fun
           val eqvt_rconfig = eqvt_relaxed_config addpres (perm_simps @ fv_bn_eqvts)
         in
-          EVERY' [ TRY o asm_full_simp_tac (add_ss (@{thm supp_Pair[symmetric]}::fv_simps)),
+          EVERY' [ TRY o asm_full_simp_tac (add_simpset ctxt (@{thm supp_Pair[symmetric]}::fv_simps)),
                    TRY o supp_abs_tac,
-                   TRY o simp_tac (add_ss @{thms supp_def supp_rel_def}),
+                   TRY o simp_tac (add_simpset ctxt @{thms supp_def supp_rel_def}),
                    TRY o eqvt_tac ctxt eqvt_rconfig, 
-                   TRY o simp_tac (add_ss (@{thms Abs_eq_iff} @ eq_iffs)),
-                   TRY o asm_full_simp_tac (add_ss thms3),
-                   TRY o simp_tac (add_ss thms2),
-                   TRY o asm_full_simp_tac (add_ss (thms1 @ (symmetric fv_bn_eqvts)))] i
+                   TRY o simp_tac (add_simpset ctxt (@{thms Abs_eq_iff} @ eq_iffs)),
+                   TRY o asm_full_simp_tac (add_simpset ctxt thms3),
+                   TRY o simp_tac (add_simpset ctxt thms2),
+                   TRY o asm_full_simp_tac (add_simpset ctxt (thms1 @ (symmetric fv_bn_eqvts)))] i
         end)
   in
     induct_prove qtys (goals1 @ goals2) qinduct tac ctxt
     |> map atomize
-    |> map (simplify (HOL_basic_ss addsimps @{thms fun_eq_iff[symmetric]}))
+    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms fun_eq_iff[symmetric]}))
   end
 
 
@@ -352,7 +354,7 @@ fun prove_bns_finite qtys qbns qinduct qbn_simps ctxt =
       end
 
     val props = map mk_goal qbns
-    val ss_tac = asm_full_simp_tac (HOL_basic_ss addsimps (qbn_simps @ 
+    val ss_tac = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps (qbn_simps @ 
       @{thms set.simps set_append finite_insert finite.emptyI finite_Un}))
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt
@@ -373,11 +375,11 @@ fun prove_perm_bn_alpha_thms qtys qperm_bns alpha_bns qinduct qperm_bn_simps qeq
 
     val props = map2 mk_goal qperm_bns alpha_bns
     val ss = @{thm id_def}::qperm_bn_simps @ qeq_iffs @ qalpha_refls
-    val ss_tac = asm_full_simp_tac (HOL_ss addsimps ss)
+    val ss_tac = asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps ss)
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt'
     |> Proof_Context.export ctxt' ctxt
-    |> map (simplify (HOL_basic_ss addsimps @{thms id_def})) 
+    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms id_def})) 
   end
 
 fun prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qbn_eqvts ctxt =
@@ -397,13 +399,13 @@ fun prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qb
     val props = map2 mk_goal qbns qperm_bns
     val ss = @{thm id_def}::qperm_bn_simps @ qbn_defs
     val ss_tac = 
-      EVERY' [asm_full_simp_tac (HOL_basic_ss addsimps ss),
+      EVERY' [asm_full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss),
               TRY o eqvt_tac ctxt' (eqvt_strict_config addpres qbn_eqvts),
-              TRY o asm_full_simp_tac HOL_basic_ss]
+              TRY o asm_full_simp_tac (put_simpset HOL_basic_ss ctxt')]
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt'
     |> Proof_Context.export ctxt' ctxt 
-    |> map (simplify (HOL_basic_ss addsimps @{thms id_def})) 
+    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms id_def})) 
   end
 
 
@@ -499,7 +501,7 @@ fun fresh_thm ctxt c parms binders bn_finite_thms =
   in
     Goal.prove ctxt [] [] goal
       (K (HEADGOAL (rtac @{thm at_set_avoiding1}
-          THEN_ALL_NEW (simp_tac (HOL_ss addsimps ss)))))
+          THEN_ALL_NEW (simp_tac (put_simpset HOL_ss ctxt addsimps ss)))))
   end
 
 
@@ -539,7 +541,9 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
           then resolve_tac @{thms Abs_rename_set' Abs_rename_res' Abs_rename_lst'}
           else resolve_tac @{thms Abs_rename_set  Abs_rename_res  Abs_rename_lst}
         
-        val tac2 = EVERY' [simp_tac (HOL_basic_ss addsimps ss), TRY o simp_tac HOL_ss] 
+        val tac2 =
+          EVERY' [simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss),
+            TRY o simp_tac (put_simpset HOL_ss ctxt)]
      in
        [ Goal.prove ctxt [] [] goal (K (HEADGOAL (tac1 THEN_ALL_NEW tac2)))
          |> (if rec_flag
@@ -563,19 +567,20 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
   
             val ss = @{thms fresh_star_Pair union_eqvt fresh_star_Un}
             val (([(_, fperm)], fprops), ctxt') = Obtain.result
-              (K (EVERY1 [etac exE, 
-                          full_simp_tac (HOL_basic_ss addsimps ss), 
-                          REPEAT o (etac @{thm conjE})])) [fthm] ctxt 
+              (fn ctxt' => EVERY1 [etac exE, 
+                            full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss), 
+                            REPEAT o (etac @{thm conjE})]) [fthm] ctxt
   
             val abs_eq_thms = flat 
              (map (abs_eq_thm ctxt fprops (term_of fperm) parms bn_eqvt permute_bns) bclauses)
 
             val ((_, eqs), ctxt'') = Obtain.result
-              (K (EVERY1 
+              (fn ctxt'' => EVERY1 
                    [ REPEAT o (etac @{thm exE}), 
                      REPEAT o (etac @{thm conjE}),
                      REPEAT o (dtac setify),
-                     full_simp_tac (HOL_basic_ss addsimps @{thms set_append set.simps})])) abs_eq_thms ctxt' 
+                     full_simp_tac (put_simpset HOL_basic_ss ctxt''
+                      addsimps @{thms set_append set.simps})]) abs_eq_thms ctxt'
 
             val (abs_eqs, peqs) = split_filter is_abs_eq eqs
 
@@ -585,7 +590,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
 
             (* for freshness conditions *) 
             val tac1 = SOLVED' (EVERY'
-              [ simp_tac (HOL_basic_ss addsimps peqs),
+              [ simp_tac (put_simpset HOL_basic_ss ctxt'' addsimps peqs),
                 rewrite_goal_tac (@{thms fresh_star_Un[THEN eq_reflection]}),
                 conj_tac (DETERM o resolve_tac fprops') ]) 
 
@@ -729,10 +734,11 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
         in
           rtac thm' 1
         end) ctxt
-      THEN_ALL_NEW asm_full_simp_tac HOL_basic_ss
+      THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss ctxt)
  
+    (* FIXME proper goal context *)
     val size_simp_tac = 
-      simp_tac (size_simpset addsimps (@{thms comp_def snd_conv} @ size_thms))
+      simp_tac (put_simpset size_ss lthy'' addsimps (@{thms comp_def snd_conv} @ size_thms))
   in
     Goal.prove_multi lthy'' [] prems' concls
       (fn {prems, context} => 

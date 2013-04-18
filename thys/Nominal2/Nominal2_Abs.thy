@@ -922,9 +922,8 @@ using assms by (auto simp add: Abs1_eq_iff fresh_permute_left)
 
 
 ML {*
-fun alpha_single_simproc thm _ ss ctrm =
+fun alpha_single_simproc thm _ ctxt ctrm =
  let
-    val ctxt = Simplifier.the_context ss
     val thy = Proof_Context.theory_of ctxt
     val _ $ (_ $ x) $ (_ $ y) = term_of ctrm
     val cvrs = union (op =) (Term.add_frees x []) (Term.add_frees y [])

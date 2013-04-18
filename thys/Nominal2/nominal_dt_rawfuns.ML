@@ -52,7 +52,7 @@ fun lookup xs x = the (AList.lookup (op=) xs x)
 (* strip_bn_fun takes a rhs of a bn function: this can only contain unions or
    appends of elements; in case of recursive calls it returns also the applied
    bn function *)
-fun strip_bn_fun lthy args t =
+fun strip_bn_fun ctxt args t =
 let 
   fun aux t =
     case t of
@@ -65,14 +65,14 @@ let
     | Const (@{const_name bot}, _) => []
     | Const (@{const_name Nil}, _) => []
     | (f as Const _) $ (x as Var _) => [(find_index (equal x) args, SOME f)]
-    | _ => error ("Unsupported binding function: " ^ (Syntax.string_of_term lthy t))
+    | _ => error ("Unsupported binding function: " ^ (Syntax.string_of_term ctxt t))
 in
   aux t
 end  
 
 (** definition of the raw binding functions **)
 
-fun prep_bn_info lthy dt_names dts bn_funs eqs = 
+fun prep_bn_info ctxt dt_names dts bn_funs eqs = 
 let
   fun process_eq eq = 
   let
@@ -85,7 +85,7 @@ let
     val dt_index = find_index (fn x => x = ty_name) dt_names
     val (cnstr_head, cnstr_args) = strip_comb cnstr    
     val cnstr_name = Long_Name.base_name (fst (dest_Const cnstr_head))
-    val rhs_elements = strip_bn_fun lthy cnstr_args rhs
+    val rhs_elements = strip_bn_fun ctxt cnstr_args rhs
   in
     ((bn_fun, dt_index), (cnstr_name, rhs_elements))
   end
@@ -344,7 +344,7 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
 
 (** proves the two pt-type class properties **)
 
-fun prove_permute_zero induct perm_defs perm_fns lthy =
+fun prove_permute_zero induct perm_defs perm_fns ctxt =
   let
     val perm_types = map (body_type o fastype_of) perm_fns
     val perm_indnames = Datatype_Prop.make_tnames perm_types
@@ -356,17 +356,17 @@ fun prove_permute_zero induct perm_defs perm_fns lthy =
       HOLogic.mk_Trueprop (foldr1 HOLogic.mk_conj
         (map single_goal (perm_fns ~~ perm_types ~~ perm_indnames)))
 
-    val simps = HOL_basic_ss addsimps (@{thm permute_zero} :: perm_defs)
+    val simpset = put_simpset HOL_basic_ss ctxt addsimps (@{thm permute_zero} :: perm_defs)
 
     val tac = (Datatype_Aux.ind_tac induct perm_indnames 
-               THEN_ALL_NEW asm_simp_tac simps) 1
+               THEN_ALL_NEW asm_simp_tac simpset) 1
   in
-    Goal.prove lthy perm_indnames [] goals (K tac)
+    Goal.prove ctxt perm_indnames [] goals (K tac)
     |> Datatype_Aux.split_conj_thm
   end
 
 
-fun prove_permute_plus induct perm_defs perm_fns lthy =
+fun prove_permute_plus induct perm_defs perm_fns ctxt =
   let
     val p = Free ("p", @{typ perm})
     val q = Free ("q", @{typ perm})
@@ -380,12 +380,13 @@ fun prove_permute_plus induct perm_defs perm_fns lthy =
       HOLogic.mk_Trueprop (foldr1 HOLogic.mk_conj
         (map single_goal (perm_fns ~~ perm_types ~~ perm_indnames)))
 
-    val simps = HOL_basic_ss addsimps (@{thm permute_plus} :: perm_defs)
+    (* FIXME proper goal context *)
+    val simpset = put_simpset HOL_basic_ss ctxt addsimps (@{thm permute_plus} :: perm_defs)
 
     val tac = (Datatype_Aux.ind_tac induct perm_indnames
-               THEN_ALL_NEW asm_simp_tac simps) 1
+               THEN_ALL_NEW asm_simp_tac simpset) 1
   in
-    Goal.prove lthy ("p" :: "q" :: perm_indnames) [] goals (K tac)
+    Goal.prove ctxt ("p" :: "q" :: perm_indnames) [] goals (K tac)
     |> Datatype_Aux.split_conj_thm 
   end
 
@@ -458,11 +459,11 @@ fun define_raw_perms raw_dt_info lthy =
 val eqvt_apply_sym = @{thm eqvt_apply[symmetric]}
 
 fun subproof_tac const_names simps = 
-  SUBPROOF (fn {prems, context, ...} => 
+  SUBPROOF (fn {prems, context = ctxt, ...} => 
     HEADGOAL 
-      (simp_tac (HOL_basic_ss addsimps simps)
-       THEN' eqvt_tac context (eqvt_relaxed_config addexcls const_names)
-       THEN' simp_tac (HOL_basic_ss addsimps (prems @ [eqvt_apply_sym]))))
+      (simp_tac (put_simpset HOL_basic_ss ctxt addsimps simps)
+       THEN' eqvt_tac ctxt (eqvt_relaxed_config addexcls const_names)
+       THEN' simp_tac (put_simpset HOL_basic_ss ctxt addsimps (prems @ [eqvt_apply_sym]))))
 
 fun prove_eqvt_tac insts ind_thms const_names simps ctxt = 
   HEADGOAL

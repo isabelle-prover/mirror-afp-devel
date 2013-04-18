@@ -28,7 +28,7 @@ method_setup nominal_induct =
 
 (****************************************************)
 (* inductive definition involving nominal datatypes *)
-ML_file "nominal_inductive.ML" 
+ML_file "nominal_inductive.ML"
 
 
 (***************************************)
@@ -442,15 +442,17 @@ let
 
   (* postprocessing of eq and fv theorems *)
   val qeq_iffs' = qeq_iffs
-    |> map (simplify (HOL_basic_ss addsimps qfv_supp_thms))
-    |> map (simplify (HOL_basic_ss addsimps @{thms prod_fv_supp prod_alpha_eq Abs_eq_iff[symmetric]}))
+    |> map (simplify (put_simpset HOL_basic_ss lthyC addsimps qfv_supp_thms))
+    |> map (simplify (put_simpset HOL_basic_ss lthyC
+        addsimps @{thms prod_fv_supp prod_alpha_eq Abs_eq_iff[symmetric]}))
 
   (* filters the theorems that are of the form "qfv = supp" *)
   fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ lhs $ _)) = member (op=) qfvs lhs
   | is_qfv_thm _ = false
 
   val qsupp_constrs = qfv_defs
-    |> map (simplify (HOL_basic_ss addsimps (filter (is_qfv_thm o prop_of) qfv_supp_thms)))
+    |> map (simplify (put_simpset HOL_basic_ss lthyC
+        addsimps (filter (is_qfv_thm o prop_of) qfv_supp_thms)))
 
   val transform_thm = @{lemma "x = y \<Longrightarrow> a \<notin> x \<longleftrightarrow> a \<notin> y" by simp}
   val transform_thms = 
@@ -461,7 +463,7 @@ let
 
   val qfresh_constrs = qsupp_constrs
     |> map (fn thm => thm RS transform_thm) 
-    |> map (simplify (HOL_basic_ss addsimps transform_thms))
+    |> map (simplify (put_simpset HOL_basic_ss lthyC addsimps transform_thms))
 
   (* proving that the qbn result is finite *)
   val qbn_finite_thms = prove_bns_finite qtys qbns qinduct qbn_defs lthyC

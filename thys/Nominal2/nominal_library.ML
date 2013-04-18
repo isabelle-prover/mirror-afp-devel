@@ -89,7 +89,7 @@ sig
   val all_dtyp_constrs_types: Datatype_Aux.descr -> cns_info list
 
   (* tactics for function package *)
-  val size_simpset: simpset
+  val size_ss: simpset
   val pat_completeness_simp: thm list -> Proof.context -> tactic
   val prove_termination_ind: Proof.context -> int -> tactic
   val prove_termination_fun: thm list -> Proof.context -> Function.info * local_theory
@@ -346,19 +346,21 @@ fun all_dtyp_constrs_types descr =
 
 (** function package tactics **)
 
-fun pat_completeness_simp simps lthy =
+fun pat_completeness_simp simps ctxt =
   let
-    val simp_set = HOL_basic_ss addsimps (@{thms sum.inject sum.distinct} @ simps)
+    val simpset =
+      put_simpset HOL_basic_ss ctxt addsimps (@{thms sum.inject sum.distinct} @ simps)
   in
-    Pat_Completeness.pat_completeness_tac lthy 1
-      THEN ALLGOALS (asm_full_simp_tac simp_set)
+    Pat_Completeness.pat_completeness_tac ctxt 1
+      THEN ALLGOALS (asm_full_simp_tac simpset)
   end
 
 (* simpset for size goals *)
-val size_simpset = HOL_ss
+val size_ss =
+  simpset_of (put_simpset HOL_ss @{context}
    addsimprocs [@{simproc natless_cancel_numerals}]
    addsimps @{thms in_measure wf_measure sum.cases add_Suc_right add.right_neutral 
-     zero_less_Suc prod.size(1) mult_Suc_right}
+     zero_less_Suc prod.size(1) mult_Suc_right})
 
 val natT = @{typ nat}
     
@@ -413,7 +415,7 @@ let
 
   val tac = 
     Function_Relation.relation_tac ctxt measure_trm
-    THEN_ALL_NEW simp_tac (size_simpset addsimps size_simps)
+    THEN_ALL_NEW simp_tac (put_simpset size_ss ctxt addsimps size_simps)
   in 
     Function.prove_termination NONE (HEADGOAL tac) ctxt
   end
@@ -446,10 +448,10 @@ and map_term' f (t $ u) =
 fun map_thm_tac ctxt tac thm =
   let
     val monos = Inductive.get_monos ctxt
-    val simps = HOL_basic_ss addsimps @{thms split_def}
+    val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms split_def}
   in
     EVERY [cut_facts_tac [thm] 1, etac rev_mp 1, 
-      REPEAT_DETERM (FIRSTGOAL (simp_tac simps THEN' resolve_tac monos)),
+      REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac monos)),
       REPEAT_DETERM (rtac impI 1 THEN (atac 1 ORELSE tac))]
   end
 

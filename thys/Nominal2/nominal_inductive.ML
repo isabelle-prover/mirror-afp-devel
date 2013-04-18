@@ -164,7 +164,7 @@ fun helper_tac flag prm p ctxt =
         |> flag ? (all_elims [p])
         |> flag ? (eqvt_srule context)
     in
-      asm_full_simp_tac (HOL_ss addsimps (prm' :: @{thms induct_forall_def})) 1
+      asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps (prm' :: @{thms induct_forall_def})) 1
     end) ctxt
 
 fun non_binder_tac prem intr_cvars Ps ctxt = 
@@ -207,7 +207,7 @@ fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
 
     val ss = @{thms finite_supp supp_Pair finite_Un permute_finite} @ 
              @{thms fresh_star_Pair fresh_star_permute_iff}
-    val simp = asm_full_simp_tac (HOL_ss addsimps ss)
+    val simp = asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps ss)
   in 
     Goal.prove ctxt [] [] fresh_goal
       (K (HEADGOAL (rtac @{thm at_set_avoiding2} 
@@ -232,13 +232,14 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val concl_args' = map (subst_free (param_trms ~~ prm_trms)) concl_args 
       
       val user_thm' = map (cterm_instantiate (intr_cvars ~~ prms)) user_thm
-        |> map (full_simplify (HOL_ss addsimps (@{thm fresh_star_Pair}::prems)))
+        |> map (full_simplify (put_simpset HOL_ss ctxt addsimps (@{thm fresh_star_Pair}::prems)))
       
       val fthm = fresh_thm ctxt user_thm' (term_of p) (term_of c) concl_args' avoid_trm'
 
       val (([(_, q)], fprop :: fresh_eqs), ctxt') = Obtain.result
               (K (EVERY1 [etac @{thm exE}, 
-                          full_simp_tac (HOL_basic_ss addsimps @{thms supp_Pair fresh_star_Un}), 
+                          full_simp_tac (put_simpset HOL_basic_ss ctxt
+                            addsimps @{thms supp_Pair fresh_star_Un}),
                           REPEAT o etac @{thm conjE},
                           dtac fresh_star_plus,
                           REPEAT o dtac supp_perm_eq'])) [fthm] ctxt 
@@ -253,7 +254,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
         |> eqvt_srule ctxt
 
       val fprop' = eqvt_srule ctxt' fprop 
-      val tac_fresh = simp_tac (HOL_basic_ss addsimps [fprop'])
+      val tac_fresh = simp_tac (put_simpset HOL_basic_ss ctxt' addsimps [fprop'])
 
       (* for inductive-premises*)
       fun tac1 prm = helper_tac true prm (mk_cplus q p) ctxt' 
@@ -360,7 +361,8 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
           |> singleton (Proof_Context.export ctxt ctxt_outside)
           |> Datatype_Aux.split_conj_thm
           |> map (fn thm => thm RS normalise)
-          |> map (asm_full_simplify (HOL_basic_ss addsimps @{thms permute_zero induct_rulify})) 
+          |> map (asm_full_simplify (put_simpset HOL_basic_ss ctxt
+              addsimps @{thms permute_zero induct_rulify})) 
           |> map (Drule.rotate_prems (length ind_prems'))
           |> map zero_var_indexes
 

@@ -18,12 +18,12 @@ struct
 open Nominal_Permeq;
 open Nominal_ThmDecls;
 
-val atomize_conv = 
+fun atomize_conv ctxt =
   Raw_Simplifier.rewrite_cterm (true, false, false) (K (K NONE))
-    (HOL_basic_ss addsimps @{thms induct_atomize});
-val atomize_intr = Conv.fconv_rule (Conv.prems_conv ~1 atomize_conv);
+    (put_simpset HOL_basic_ss ctxt addsimps @{thms induct_atomize});
+fun atomize_intr ctxt = Conv.fconv_rule (Conv.prems_conv ~1 (atomize_conv ctxt));
 fun atomize_induct ctxt = Conv.fconv_rule (Conv.prems_conv ~1
-  (Conv.params_conv ~1 (K (Conv.prems_conv ~1 atomize_conv)) ctxt));
+  (Conv.params_conv ~1 (K (Conv.prems_conv ~1 (atomize_conv ctxt))) ctxt));
 
 
 (** equivariance tactics **)
@@ -34,15 +34,17 @@ fun eqvt_rel_single_case_tac ctxt pred_names pi intro  =
     val cpi = Thm.cterm_of thy pi
     val pi_intro_rule = Drule.instantiate' [] [NONE, SOME cpi] @{thm permute_boolI}
     val eqvt_sconfig = eqvt_strict_config addexcls pred_names
-    val simps1 = HOL_basic_ss addsimps @{thms permute_fun_def permute_self split_paired_all}
-    val simps2 = HOL_basic_ss addsimps @{thms permute_bool_def  permute_minus_cancel(2)}
+    val simpset1 =
+      put_simpset HOL_basic_ss ctxt addsimps @{thms permute_fun_def permute_self split_paired_all}
+    val simpset2 =
+      put_simpset HOL_basic_ss ctxt addsimps @{thms permute_bool_def  permute_minus_cancel(2)}
   in
     eqvt_tac ctxt eqvt_sconfig THEN'
     SUBPROOF (fn {prems, context as ctxt, ...} =>
       let
         val prems' = map (transform_prem2 ctxt pred_names) prems
         val prems'' = map (fn thm => eqvt_rule ctxt eqvt_sconfig (thm RS pi_intro_rule)) prems'
-        val prems''' = map (simplify simps2 o simplify simps1) prems''
+        val prems''' = map (simplify simpset2 o simplify simpset1) prems''
 
       in
         HEADGOAL (rtac intro THEN_ALL_NEW resolve_tac (prems' @ prems'' @ prems''')) 
@@ -81,7 +83,7 @@ fun raw_equivariance pred_trms raw_induct intrs ctxt =
 
     val pred_names = map get_name pred_trms
     val raw_induct' = atomize_induct ctxt raw_induct
-    val intrs' = map atomize_intr intrs
+    val intrs' = map (atomize_intr ctxt) intrs
   
     val (([raw_concl], [raw_pi]), ctxt') = 
       ctxt 

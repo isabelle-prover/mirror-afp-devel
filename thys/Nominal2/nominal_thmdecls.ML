@@ -121,12 +121,12 @@ fun is_bad_list [] = true
 (* transforms equations into the "p o c == c"-form 
    from p o (c x1 ...xn) = c (p o x1) ... (p o xn) *)
 
-fun eqvt_transform_eq_tac thm = 
+fun eqvt_transform_eq_tac ctxt thm = 
 let
   val ss_thms = @{thms permute_minus_cancel permute_prod.simps split_paired_all}
 in
   REPEAT o FIRST' 
-    [CHANGED o simp_tac (HOL_basic_ss addsimps ss_thms),
+    [CHANGED o simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss_thms),
      rtac (thm RS @{thm trans}),
      rtac @{thm trans[OF permute_fun_def]} THEN' rtac @{thm ext}]
 end
@@ -155,7 +155,7 @@ fun eqvt_transform_eq ctxt thm =
         val goal = HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_perm p c, c))
         val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
       in
-        Goal.prove ctxt [] [] goal' (fn _ => eqvt_transform_eq_tac thm 1)
+        Goal.prove ctxt [] [] goal' (fn _ => eqvt_transform_eq_tac ctxt thm 1)
         |> singleton (Proof_Context.export ctxt' ctxt)
         |> safe_mk_equiv
         |> zero_var_indexes
@@ -171,10 +171,10 @@ fun eqvt_transform_imp_tac ctxt p p' thm =
     val cp = Thm.cterm_of thy p
     val cp' = Thm.cterm_of thy (mk_minus p')
     val thm' = Drule.cterm_instantiate [(cp, cp')] thm
-    val simp = HOL_basic_ss addsimps @{thms permute_minus_cancel(2)}
+    val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms permute_minus_cancel(2)}
   in
     EVERY' [rtac @{thm iffI}, dtac @{thm permute_boolE}, rtac thm, atac,
-      rtac @{thm permute_boolI}, dtac thm', full_simp_tac simp]
+      rtac @{thm permute_boolI}, dtac thm', full_simp_tac simpset]
   end
 
 fun eqvt_transform_imp ctxt thm =
