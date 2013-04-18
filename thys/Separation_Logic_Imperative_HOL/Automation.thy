@@ -394,8 +394,7 @@ structure Seplogic_Auto = struct
     if success then SOME t' else NONE
   end;
 
-  fun assn_simproc_fun ss credex = let
-    val ctxt = Simplifier.the_context ss
+  fun assn_simproc_fun ctxt credex = let
     val ([redex],ctxt') = Variable.import_terms true [term_of credex] ctxt;
     (*val _ = tracing (tr_term redex);*)
     val export = singleton (Variable.export ctxt' ctxt)
@@ -475,10 +474,9 @@ structure Seplogic_Auto = struct
       in t' end) terms;
     val new_form = list_comb (f,nterms);
 
-    val res_ss = Simplifier.inherit_context ss 
-      (HOL_basic_ss addsimps @{thms star_aci});
+    val res_simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci};
     val result = Option.map (export o mk_meta_eq) (Arith_Data.prove_conv_nohyps
-      [simp_tac res_ss 1] ctxt' (redex,new_form)
+      [simp_tac res_simpset 1] ctxt' (redex,new_form)
     );
 
   in 
@@ -512,7 +510,7 @@ structure Seplogic_Auto = struct
   (* Default simplification. MUST contain assertion normalization!
     Tactic must not fail! *)
   fun dflt_tac ctxt = asm_full_simp_tac
-    (HOL_ss
+    (put_simpset HOL_ss ctxt
       addsimprocs [assn_simproc] 
       addsimps @{thms norm_assertion_simps}
       addsimps dflt_simps.get ctxt
@@ -529,12 +527,12 @@ structure Seplogic_Auto = struct
   *)
   fun match_frame_tac imp_solve_tac ctxt = let
     (* Normalize star-lists *)
-    val norm_tac = simp_tac (HOL_basic_ss addsimps @{thms SLN_normalize});
+    val norm_tac = simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_normalize});
 
     (* Strip star-lists *)
     val strip_tac = 
-      simp_tac (HOL_basic_ss addsimps @{thms SLN_strip}) THEN'
-      simp_tac (HOL_basic_ss addsimps @{thms SLN_def});
+      simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_strip}) THEN'
+      simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_def});
 
     (* Do a match step *)
     val match_tac = rtac @{thm FI_match} (* Separate p,q*)
@@ -593,7 +591,7 @@ structure Seplogic_Auto = struct
     val preprocess_entails_tac = 
       dflt_tac ctxt 
       THEN' extract_ex_tac
-      THEN' simp_tac (HOL_ss addsimps @{thms solve_ent_preprocess_simps});
+      THEN' simp_tac (put_simpset HOL_ss ctxt addsimps @{thms solve_ent_preprocess_simps});
 
     val match_entails_tac =
       resolve_tac @{thms entails_solve_init} 

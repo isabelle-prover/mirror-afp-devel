@@ -28,12 +28,12 @@ lemma [cong]: "syntax_fo_nomatch x y = syntax_fo_nomatch x y" by simp
 lemma [cong]: "syntax_nomatch x y = syntax_nomatch x y" by simp
 
 ML {*
-structure Syntax_Match = struct
+structure Syntax_Match =
+struct
   val nomatch_thm = @{thm syntax_nomatch_def};
   val fo_nomatch_thm = @{thm syntax_fo_nomatch_def};
 
-  fun fo_nomatch_simproc ss credex = let
-    val ctxt = Simplifier.the_context ss;
+  fun fo_nomatch_simproc ctxt credex = let
     val thy = Proof_Context.theory_of ctxt;
 
     val redex = term_of credex;
@@ -46,8 +46,7 @@ structure Syntax_Match = struct
     if fo_matches (pat,obj) then NONE else SOME fo_nomatch_thm
   end
 
-  fun nomatch_simproc ss credex = let
-    val ctxt = Simplifier.the_context ss;
+  fun nomatch_simproc ctxt credex = let
     val thy = Proof_Context.theory_of ctxt;
 
     val redex = term_of credex;
