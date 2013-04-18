@@ -132,7 +132,7 @@ structure Refine_Autoref = struct
   | _ => no_tac st; 
   
   fun preprocess_tac ctxt (cfg:config) =
-    ((Method.assm_tac ctxt ORELSE' full_simp_tac (#simp_ss cfg)) 
+    ((Method.assm_tac ctxt ORELSE' full_simp_tac (put_simpset (#simp_ss cfg) ctxt)) 
        THEN_ALL_NEW (TRY o REPEAT_ALL_NEW 
          (Tactic.eresolve_tac (#elim_thms cfg)))
        );
@@ -192,7 +192,7 @@ structure Refine_Autoref = struct
     spec_thms = add_spec_thms @ spec_thms.get ctxt,
     other_thms = other_thms.get ctxt,
     elim_thms = elim_thms.get ctxt,
-    simp_ss = HOL_basic_ss addsimps (simp_thms.get ctxt),
+    simp_ss = simpset_of (put_simpset HOL_basic_ss ctxt addsimps (simp_thms.get ctxt)),
     trace=trace
   };
 

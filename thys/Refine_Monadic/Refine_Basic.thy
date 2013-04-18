@@ -51,12 +51,12 @@ subsection {* Setup *}
       let 
         val ref_thms = (refine0.get ctxt 
           @ add_thms @ refine.get ctxt @ refine2.get ctxt);
-        val prod_ss = (Splitter.add_split @{thm prod.split} HOL_basic_ss);
+        val prod_simpset = (put_simpset HOL_basic_ss ctxt |> Splitter.add_split @{thm prod.split});
         val prod_simp_tac = 
           if Config.get ctxt no_prod_split then 
             K no_tac
           else
-            (simp_tac prod_ss THEN' 
+            (simp_tac prod_simpset THEN' 
               REPEAT_ALL_NEW (resolve_tac @{thms impI allI}));
       in
         REPEAT_ALL_NEW (DETERM o (resolve_tac ref_thms ORELSE' prod_simp_tac))

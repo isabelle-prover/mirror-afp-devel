@@ -7,7 +7,8 @@ begin
     *}
 
 ML {*
-structure RefineG_Transfer = struct
+structure RefineG_Transfer =
+struct
   structure transfer = Named_Thms
     ( val name = @{binding refine_transfer}
       val description = "Refinement Framework: " ^ 
@@ -15,7 +16,7 @@ structure RefineG_Transfer = struct
 
   fun transfer_tac thms ctxt i st = let 
     val thms = thms @ transfer.get ctxt;
-    val ss = HOL_basic_ss addsimps @{thms nested_prod_case_simp}
+    val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_prod_case_simp}
   in
     REPEAT_DETERM1 (
       COND (has_fewer_prems (nprems_of st)) no_tac (
@@ -23,7 +24,7 @@ structure RefineG_Transfer = struct
           Method.assm_tac ctxt i,
           resolve_tac thms i,
           Refine_Misc.triggered_mono_tac ctxt i,
-          CHANGED_PROP (simp_tac ss i)]
+          CHANGED_PROP (simp_tac simpset i)]
       )) st
   end
   
