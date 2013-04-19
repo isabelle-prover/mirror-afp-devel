@@ -12,15 +12,12 @@ function usage()
   echo
   echo "Usage: $PRG OPTIONS [entries]"
   echo
-  echo "  Runs isabelle make on specified entries in the Archive of Formal Proofs"
+  echo "  Runs isabelle build on specified entries in the Archive of Formal Proofs"
   echo 
   echo "Options:"
   echo "-t <path/to/isabelle>  use isabelle tool wrapper at specified path"     
   echo "-c                     include target clean (rebuild session)"
-  echo "-d <path>              use specified path as base for archive entries"
   echo "-r                     use env variable ISABELLE_RELEASES to find isabelle"
-  echo "-f                     skip entries not marked as frequent"
-  echo "-F                     skip entries marked as frequent"
   echo 
   echo "Examples:"
   echo
@@ -69,7 +66,7 @@ INCLUDE_INFREQUENT="yes"
 INCLUDE_FREQUENT="yes"
 
 
-while getopts "t:cfFr:d:" OPT
+while getopts "t:cr:" OPT
 do
     case "$OPT" in
       r)
@@ -78,20 +75,11 @@ do
         check_isabelle
         ;;
       c)
-        CLEAN="clean"
-        ;;
-      d)
-        THYS="$OPTARG"
+        CLEAN="-c"
         ;;
       t)
         ISABELLE_TOOL="$OPTARG"
         check_isabelle
-        ;;
-      f) 
-        INCLUDE_INFREQUENT="no"
-        ;;
-      F) 
-        INCLUDE_FREQUENT="no"
         ;;
     esac
 done
@@ -112,47 +100,10 @@ do
     OPTS="$OPTS $ARG"
   fi
 done
-if [ "$DIRS" == "" ]; then DIRS=*; fi
-
-FAIL="";
-SKIPPED="";
+if [ "$DIRS" == "" ]; then DIRS="-g AFP"; fi
 
 timestamp
 
-for DIR in $DIRS; do
-    if [ -d $DIR ]; then
-        cd $DIR
-        echo "Testing [$DIR]"
-        FREQUENT="$(unset FREQUENT; . ./config; echo "$FREQUENT")"
-        if [ "$FREQUENT" == "yes" -a "$INCLUDE_FREQUENT" == "yes" \
-          -o "$FREQUENT" == "no" -a "$INCLUDE_INFREQUENT" == "yes" ]; then
-            if [ "$OPTS" == "" ]; then
-                "$ISABELLE_TOOL" make $CLEAN all || FAIL="${FAIL}${DIR} "
-            else
-                "$ISABELLE_TOOL" make $CLEAN all "$OPTS" || FAIL="${FAIL}${DIR} "
-            fi
-            echo "Finished [$DIR]"
-        else
-            echo "Skipped [$DIR]"
-            SKIPPED="${SKIPPED}${DIR} "
-        fi
-        timestamp
-        cd ..    
-    fi
-done
+$ISABELLE_TOOL build -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML" -v -d . $CLEAN $DIRS
 
-if [ "$SKIPPED" != "" ]; then 
-    echo "The following tests were skipped:"
-    echo "$SKIPPED"
-    echo ""
-fi
-
-if [ "$FAIL" != "" ]; then 
-    echo "The following tests failed:"
-    echo "$FAIL"
-    echo "Please check logs."
-    exit 1
-else
-    echo "All tests successful."
-    exit 0
-fi
+timestamp
