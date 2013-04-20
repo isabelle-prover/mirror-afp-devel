@@ -1,0 +1,31 @@
+session Containers = "HOL-Library" +
+  options [document_output=output, document=pdf]
+  theories [document=false]
+    "../Datatype_Order_Generator/Order_Generator"
+
+  theories
+    Auxiliary
+    Card_Datatype
+    Set_Linorder
+    Collection_Order
+    List_Proper_Interval
+    Containers
+    Containers_Userguide
+
+  theories [document=false]
+    Card_Datatype_Ex
+
+  files
+    "document/root.tex"
+    "document/root.bib"
+
+session "Containers-Benchmarks" = Containers +
+  theories
+    "ITP-2013/Benchmark_Bool"
+    "ITP-2013/Benchmark_LC"
+    "ITP-2013/Benchmark_Default"
+    "ITP-2013/Benchmark_ICF"
+    "ITP-2013/Benchmark_RBT"
+    "ITP-2013/Benchmark_Set_Default"
+    "ITP-2013/Benchmark_Set_LC"
+
