@@ -25,11 +25,11 @@ lemmas reify_eqs[reify] =
 corollary [reflection]: "interpret (qe_dlo f) xs = interpret f xs"
 by(simp add:I_qe_dlo interpret_def)
 
-method_setup reify = {*
+method_setup dlo_reify = {*
   Attrib.thms --
     Scan.option (Scan.lift (Args.$$$ "(") |-- Args.term --| Scan.lift (Args.$$$ ")")) >>
   (fn (eqs, to) => fn ctxt =>
-    Method.SIMPLE_METHOD' (Reflection.genreify_tac ctxt (eqs @ (fst (Reify_Data.get ctxt))) to
+    Method.SIMPLE_METHOD' (Reflection.default_reify_tac ctxt eqs to
      THEN' simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm"interpret_def"}])))
 *} "dlo reification"
 
@@ -41,12 +41,12 @@ declare Logic.interpret.simps(1-2)[code]
 subsection{* Examples *}
 
 lemma "\<forall>x::real. \<not> x < x"
-apply reify
+apply dlo_reify
 apply(subst I_qe_dlo[symmetric])
 by eval
 
 lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z & z < y"
-apply reify
+apply dlo_reify
 apply(subst I_qe_dlo[symmetric])
 by eval
 
@@ -60,18 +60,18 @@ oops
 *)
 
 lemma "\<forall>x::real. \<not> x < x"
-apply reify
+apply dlo_reify
 apply(subst I_qe_dlo[symmetric])
 by eval
 
 lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z & z < y"
-apply reify
+apply dlo_reify
 apply(subst I_qe_dlo[symmetric])
 by eval
 
 (* 160 secs *)
 lemma "\<not>(\<exists>x y z. \<forall>u::real. x < x | \<not> x<u | x<y & y<z & \<not> x<z)"
-apply reify
+apply dlo_reify
 apply(subst I_qe_dlo[symmetric])
 by eval
 

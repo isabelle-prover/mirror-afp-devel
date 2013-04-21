@@ -38,7 +38,7 @@ in
       (TRY o etac @{thm rev_subsetD})
       THEN' (Subgoal.FOCUS_PARAMS (fn {context=ctxt', ...} =>
         TRY (Local_Defs.unfold_tac ctxt @{thms regexp_unfold})
-        THEN Reflection.genreify_tac ctxt @{thms regexp_reify} NONE 1
+        THEN Reflection.gen_reify_tac ctxt @{thms regexp_reify} NONE 1
         THEN rtac @{thm rel_eqI} 1
         THEN CONVERSION regexp_conv 1
         THEN rtac TrueI 1) ctxt)))
