@@ -1,8 +1,4 @@
-session Containers = "HOL-Library" +
-  options [document_output=output, document=pdf]
-  theories [document=false]
-    "../Datatype_Order_Generator/Order_Generator"
-
+session Containers (AFP) = "Datatype_Order_Generator" +
   theories
     Auxiliary
     Card_Datatype

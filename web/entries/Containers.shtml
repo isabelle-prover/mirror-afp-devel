@@ -69,7 +69,7 @@ It even allows to compare complements with non-complements.
 <p></p>
 
 <!--#set var="name" value="Containers" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/Datatype_Order_Generator/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
