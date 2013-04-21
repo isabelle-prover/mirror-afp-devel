@@ -548,7 +548,7 @@ extra-history =
 title = Light-weight Containers
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2013-04-15
-base = HOL/HOL-Library/Datatype_Order_Generator
+base = HOL/HOL-Library
 topic = Computer Science/Data Structures
 abstract =
   This development provides a framework for container types like sets and maps such that generated code implements these containers with different (efficient) data structures.
