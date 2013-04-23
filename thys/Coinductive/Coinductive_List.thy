@@ -157,8 +157,7 @@ by auto
 lemma llist_map_simps [simp, code]:
   shows lmap_LNil: "llist_map f LNil = LNil"
   and lmap_LCons: "llist_map f (LCons x xs) = LCons (f x) (llist_map f xs)"
-unfolding llist_map_def LNil_def LCons_def
-by(subst llist.ctor_dtor_unfold, simp add: llist.dtor_ctor pre_llist_map_def)+
+by simp+
 
 lemma [simp]:
   shows LNil_eq_llist_map: "LNil = llist_map f xs \<longleftrightarrow> xs = LNil"

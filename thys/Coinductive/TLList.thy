@@ -271,8 +271,7 @@ abbreviation tmap where "tmap \<equiv> tllist_map"
 lemma tmap_simps [simp, code, nitpick_simp]:
   "tmap f g (TNil b) = TNil (g b)"
   "tmap f g (TCons x xs) = TCons (f x) (tmap f g xs)"
-unfolding tllist_map_def TNil_def TCons_def
-by(subst tllist.ctor_dtor_unfold, simp add: tllist.dtor_ctor pre_tllist_map_def)+
+by simp+
 
 lemma is_TNil_tmap [simp]: "is_TNil (tmap f g xs) \<longleftrightarrow> is_TNil xs"
 by(cases xs) simp_all
