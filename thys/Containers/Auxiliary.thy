@@ -1,0 +1,170 @@
+(*  Title:      Containers/Auxiliary.thy
+    Author:     Andreas Lochbihler, KIT *)
+
+theory Auxiliary imports
+  "~~/src/HOL/Library/Monad_Syntax"
+begin
+
+chapter {* An executable linear order on sets *}
+text_raw {* \label{chapter:linear:order:set} *}
+
+section {* Auxiliary definitions *}
+
+lemma insert_bind_set: "insert a A \<guillemotright>= f = f a \<union> (A \<guillemotright>= f)"
+by(auto simp add: Set.bind_def)
+
+lemma set_bind_iff:
+  "set (List.bind xs f) = Set.bind (set xs) (set \<circ> f)"
+by(induct xs)(simp_all add: insert_bind_set)
+
+lemma set_bind_conv_fold: "set xs \<guillemotright>= f = fold (op \<union> \<circ> f) xs {}"
+by(induct xs rule: rev_induct)(simp_all add: insert_bind_set)
+
+lemma card_gt_1D:
+  assumes "card A > 1"
+  shows "\<exists>x y. x \<in> A \<and> y \<in> A \<and> x \<noteq> y"
+proof(rule ccontr)
+  from assms have "A \<noteq> {}" by auto
+  then obtain x where "x \<in> A" by auto
+  moreover
+  assume "\<not> ?thesis"
+  ultimately have "A = {x}" by auto
+  with assms show False by simp
+qed
+
+lemma card_eq_1_iff: "card A = 1 \<longleftrightarrow> (\<exists>x. A = {x})"
+proof
+  assume card: "card A = 1"
+  hence [simp]: "finite A" using card_gt_0_iff[of A] by simp
+  have "A = {THE x. x \<in> A}"
+  proof(intro equalityI subsetI)
+    fix x
+    assume x: "x \<in> A"
+    hence "(THE x. x \<in> A) = x"
+    proof(rule the_equality)
+      fix x'
+      assume x': "x' \<in> A"
+      show "x' = x"
+      proof(rule ccontr)
+        assume neq: "x' \<noteq> x"
+        from x x' have eq: "A = insert x (insert x' (A - {x, x'}))" by auto
+        have "card A = 2 + card (A - {x, x'})" using neq by(subst eq)(simp)
+        with card show False by simp
+      qed
+    qed
+    thus "x \<in> {THE x. x \<in> A}" by simp
+  next
+    fix x
+    assume "x \<in> {THE x. x \<in> A}"
+    hence x: "x = (THE x. x \<in> A)" by simp
+    from card have "A \<noteq> {}" by auto
+    then obtain x' where x': "x' \<in> A" by blast
+    thus "x \<in> A" unfolding x
+    proof(rule theI)
+      fix x
+      assume x: "x \<in> A"
+      show "x = x'"
+      proof(rule ccontr)
+        assume neq: "x \<noteq> x'"
+        from x x' have eq: "A = insert x (insert x' (A - {x, x'}))" by auto
+        have "card A = 2 + card (A - {x, x'})" using neq by(subst eq)(simp)
+        with card show False by simp
+      qed
+    qed
+  qed
+  thus "\<exists>x. A = {x}" ..
+qed auto
+
+context linorder begin
+
+lemma sorted_last: "\<lbrakk> sorted xs; x \<in> set xs \<rbrakk> \<Longrightarrow> x \<le> last xs"
+by(cases xs rule: rev_cases)(auto simp add: sorted_append)
+
+end
+
+
+
+definition ID :: "'a \<Rightarrow> 'a" where "ID = id"
+
+lemma ID_code [code, code_unfold]: "ID = (\<lambda>x. x)"
+by(simp add: ID_def id_def)
+
+lemma ID_Some: "ID (Some x) = Some x"
+by(simp add: ID_def)
+
+lemma ID_None: "ID None = None" 
+by(simp add: ID_def)
+
+text {* instantiations for unit *}
+
+instantiation unit :: "{complete_boolean_algebra, complete_linorder}" begin
+definition "top = ()"
+definition "bot = ()"
+definition [code_unfold]: "sup _ _ = ()"
+definition [code_unfold]: "inf _ _ = ()"
+definition [code_unfold]: "less_eq = (\<lambda>_ _ :: unit. True)"
+definition [code_unfold]: "less = (\<lambda>_ _ :: unit. False)"
+definition "Sup _ = ()"
+definition "Inf _ = ()"
+definition [simp, code_unfold]: "uminus = (\<lambda>_ :: unit. ())"
+
+lemma not_less_unit [simp]: "\<not> () < ()" by(simp add: less_unit_def)
+lemma le_unit [simp]: "() \<le> ()" by(simp add: less_eq_unit_def)
+
+instance by intro_classes simp_all
+end
+
+
+text {* lexicographic order on pairs *}
+
+context
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>a" 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>a" 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>b" 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>b" 50) 
+begin
+
+definition less_eq_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+where "less_eq_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubseteq>\<^isub>b y2)"
+
+definition less_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+where "less_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubset>\<^isub>b y2)"
+
+lemma less_eq_prod_simps [simp]:
+  "(x1, x2) \<sqsubseteq> (y1, y2) \<longleftrightarrow> x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubseteq>\<^isub>b y2"
+by(simp add: less_eq_prod_def)
+
+lemma less_prod_simps [simp]:
+  "(x1, x2) \<sqsubset> (y1, y2) \<longleftrightarrow> x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubset>\<^isub>b y2"
+by(simp add: less_prod_def)
+
+end
+
+context
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>a" 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>a" 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>b" 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>b" 50) 
+  assumes lin_a: "class.linorder leq_a less_a" 
+  and lin_b: "class.linorder leq_b less_b"
+begin
+
+abbreviation (input) less_eq_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+where "less_eq_prod' \<equiv> less_eq_prod leq_a less_a leq_b"
+
+abbreviation (input) less_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+where "less_prod' \<equiv> less_prod leq_a less_a less_b"
+
+lemma linorder_prod:
+  "class.linorder op \<sqsubseteq> op \<sqsubset>"
+proof -
+  interpret a!: linorder "op \<sqsubseteq>\<^isub>a" "op \<sqsubset>\<^isub>a" by(fact lin_a)
+  interpret b!: linorder "op \<sqsubseteq>\<^isub>b" "op \<sqsubset>\<^isub>b" by(fact lin_b)
+  show ?thesis by unfold_locales auto
+qed
+
+end
+
+hide_const less_eq_prod' less_prod'
+
+end

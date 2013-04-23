@@ -67,6 +67,10 @@ new codatatype resumption
 [2012-06-27]:
 new codatatype stream with operations (with contributions by Peter Gammie)
 (revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/dd789a56473c">dd789a56473c</a>)<br>
+[2013-03-13]:
+construct codatatypes with the BNF package and adjust the definitions and proofs,
+setup for lifting and transfer packages
+(revision <a href="http://sourceforge.net/p/afp/code/ci/f593eda5b2c0af115ef7c823360f3ee00edfb840">f593eda5b2c0af115ef7c823360f3ee00edfb840</a>)<br>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

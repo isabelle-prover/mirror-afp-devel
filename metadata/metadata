@@ -515,6 +515,21 @@ extra-history =
                 Some maintenance changes
   [2012-04-25]: New iterator foundation by Tuerk. Various maintenance changes.
 
+[Containers]
+title = Light-weight Containers
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+date = 2013-04-15
+topic = Computer Science/Data Structures
+abstract =
+  This development provides a framework for container types like sets and maps such that generated code implements these containers with different (efficient) data structures.
+  Thanks to type classes and refinement during code generation, this light-weight approach can seamlessly replace Isabelle's default setup for code generation.
+  Heuristics automatically pick one of the available data structures depending on the type of elements to be stored, but users can also choose on their own.
+  The extensible design permits to add more implementations at any time.
+  <p>
+  To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
+  It even allows to compare complements with non-complements.
+depends-on = Datatype_Order_Generator
+
 [FileRefinement]
 title = File Refinement
 author = Karen Zee <http://www.mit.edu/~kkz/>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>
