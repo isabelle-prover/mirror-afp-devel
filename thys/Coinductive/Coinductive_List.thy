@@ -57,11 +57,6 @@ text {* congruence rules *}
 
 declare llist.map_cong [cong]
 
-lemma llist_case_cong:
-  "\<lbrakk> xs = ys; ys = LNil \<Longrightarrow> f1 = g1; \<And>y ys'. ys = LCons y ys' \<Longrightarrow> f2 y ys' = g2 y ys' \<rbrakk>
-  \<Longrightarrow> llist_case f1 f2 xs = llist_case g1 g2 ys"
-by(cases xs) auto
-
 text {* Code generator setup *}
 
 code_datatype LNil LCons

@@ -39,11 +39,6 @@ text {* congruence rules *}
 
 declare stream.map_cong [cong]
 
-lemma stream_case_cong:
-  "\<lbrakk> xs = ys; \<And>y ys'. ys = SCons y ys' \<Longrightarrow> f y ys' = g y ys' \<rbrakk>
-  \<Longrightarrow> stream_case f xs = stream_case g ys"
-by(cases xs) auto
-
 text {* Code generator setup *}
 
 code_datatype SCons
