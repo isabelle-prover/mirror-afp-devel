@@ -218,7 +218,7 @@ proof -
   have "\<forall>x\<in>llist_set xs. P x xs"
     apply(rule llist.dtor_set_induct)
     using assms
-    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def collect_def sum_set_simps sum.set_natural' split: sum.splits)
+    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps)
@@ -545,7 +545,7 @@ lemma lset_lmember [code_unfold]:
   "x \<in> lset xs \<longleftrightarrow> lmember x xs"
 by(simp add: lmember_def)
 
-lemmas lset_lmap [simp] = llist.set_natural'
+lemmas lset_lmap [simp] = llist.set_map'
 
 
 

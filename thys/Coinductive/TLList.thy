@@ -314,7 +314,7 @@ proof -
   have "\<forall>x\<in>tset xs. P x xs"
     apply(rule tllist.dtor_set1_induct)
     using assms
-    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_natural' split: sum.splits)
+    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
@@ -343,7 +343,7 @@ proof -
   have "\<forall>x\<in>tllist_set2 xs. P x xs"
     apply(rule tllist.dtor_set2_induct)
     using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_natural' split: sum.splits)
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
       apply(erule_tac x="b" in meta_allE)
