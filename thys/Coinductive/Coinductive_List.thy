@@ -55,24 +55,18 @@ lemmas llist_splits = llist_split llist_split_asm
 
 text {* congruence rules *}
 
-lemma llist_map_cong [cong]:
-  "\<lbrakk> xs = ys; \<And>x. x \<in> llist_set xs \<Longrightarrow> f x = g x \<rbrakk> \<Longrightarrow> llist_map f xs = llist_map g ys"
-by clarify(rule llist.map_cong)
+declare llist.map_cong [cong]
 
 lemma llist_case_cong:
   "\<lbrakk> xs = ys; ys = LNil \<Longrightarrow> f1 = g1; \<And>y ys'. ys = LCons y ys' \<Longrightarrow> f2 y ys' = g2 y ys' \<rbrakk>
   \<Longrightarrow> llist_case f1 f2 xs = llist_case g1 g2 ys"
 by(cases xs) auto
 
-lemma llist_case_weak_cong [cong]:
-  "xs = ys \<Longrightarrow> llist_case f1 f2 xs = llist_case f1 f2 ys"
-by(cases xs) auto
-
 text {* Code generator setup *}
 
 code_datatype LNil LCons
 
-lemma llist_case_code [code]: 
+lemma llist_case_code [code]:
   "llist_case c d LNil = c"
   "llist_case c d (LCons M N) = d M N"
 by simp_all

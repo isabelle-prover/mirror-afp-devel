@@ -37,24 +37,18 @@ lemmas stream_splits = stream_split stream_split_asm
 
 text {* congruence rules *}
 
-lemma stream_map_cong [cong]:
-  "\<lbrakk> xs = ys; \<And>x. x \<in> stream_set xs \<Longrightarrow> f x = g x \<rbrakk> \<Longrightarrow> stream_map f xs = stream_map g ys"
-by clarify(rule stream.map_cong)
+declare stream.map_cong [cong]
 
 lemma stream_case_cong:
   "\<lbrakk> xs = ys; \<And>y ys'. ys = SCons y ys' \<Longrightarrow> f y ys' = g y ys' \<rbrakk>
   \<Longrightarrow> stream_case f xs = stream_case g ys"
 by(cases xs) auto
 
-lemma stream_case_weak_cong [cong]:
-  "xs = ys \<Longrightarrow> stream_case f xs = stream_case f ys"
-by simp
-
 text {* Code generator setup *}
 
 code_datatype SCons
 
-lemma stream_case_code [code]: 
+lemma stream_case_code [code]:
   "stream_case d (SCons M N) = d M N"
 by simp_all
 
