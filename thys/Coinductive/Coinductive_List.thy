@@ -302,12 +302,12 @@ subsection {* Function definitions *}
 definition lappend :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where 
   "lappend xs ys = llist_corec
-    (\<lambda>(xs, ys). xs = LNil \<and> ys = LNil)
-    (\<lambda>(xs, ys). if xs = LNil then lhd ys else lhd xs)
-    (\<lambda>(xs, ys). xs = LNil)
-    (\<lambda>(xs, ys). ltl ys)
-    (\<lambda>(xs, ys). (ltl xs, ys))
-    (xs, ys)"
+    (\<lambda>xs. xs = LNil \<and> ys = LNil)
+    (\<lambda>xs. if xs = LNil then lhd ys else lhd xs)
+    (\<lambda>xs. xs = LNil)
+    (\<lambda>xs. ltl ys)
+    ltl
+    xs"
 
 definition iterates :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a llist" 
 where "iterates = llist_unfold (\<lambda>_. False) id"
