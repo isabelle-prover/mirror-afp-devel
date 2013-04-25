@@ -40,7 +40,7 @@ by(auto)
 
 lemma force_inverse [simp]:
   "Lazy_llist (\<lambda>_. force xs) = xs"
-by(auto split: llist_split)
+by(auto split: llist.split)
 
 lemma LNil_Lazy_llist [code]: "LNil = Lazy_llist (\<lambda>_. None)"
 by(simp)
@@ -87,7 +87,7 @@ lemma [code, code del]: "lappend = lappend" ..
 lemma lappend_Lazy_llist [code]:
   "lappend (Lazy_llist xs) ys = 
   Lazy_llist (\<lambda>_. case xs () of None \<Rightarrow> force ys | Some (x, xs') \<Rightarrow> Some (x, lappend xs' ys))"
-by(auto split: llist_splits)
+by(auto split: llist.splits)
 
 lemma [code, code del]: "lmap = lmap" ..
 
@@ -127,7 +127,7 @@ lemma ldropn_Lazy_llist [code]:
   "ldropn n (Lazy_llist xs) = 
    Lazy_llist (\<lambda>_. if n = 0 then xs () else
                    case xs () of None \<Rightarrow> None | Some (x, ys) \<Rightarrow> force (ldropn (n - 1) ys))"
-by(cases n)(auto simp add: eSuc_enat[symmetric] split: llist_split)
+by(cases n)(auto simp add: eSuc_enat[symmetric] split: llist.split)
 
 lemma [code, code del]: "ltakeWhile = ltakeWhile" ..
 
@@ -141,7 +141,7 @@ lemma [code, code del]: "ldropWhile = ldropWhile" ..
 lemma ldropWhile_Lazy_llist [code]:
   "ldropWhile P (Lazy_llist xs) = 
    Lazy_llist (\<lambda>_. case xs () of None \<Rightarrow> None | Some (x, ys) \<Rightarrow> if P x then force (ldropWhile P ys) else Some (x, ys))"
-by(auto split: llist_split)
+by(auto split: llist.split)
 
 lemma [code, code del]: "lzip = lzip" ..
 
@@ -183,7 +183,7 @@ lemma [code, code del]: "ltl = ltl" ..
 
 lemma ltl_Lazy_llist [code]:
   "ltl (Lazy_llist xs) = Lazy_llist (\<lambda>_. case xs () of None \<Rightarrow> None | Some (x, ys) \<Rightarrow> force ys)"
-by(auto split: llist_split)
+by(auto split: llist.split)
 
 lemma [code, code del]: "llast = llast" ..
 
@@ -193,7 +193,7 @@ lemma llast_Lazy_llist [code]:
     None \<Rightarrow> undefined 
   | Some (x, xs') \<Rightarrow> 
     case force xs' of None \<Rightarrow> x | Some (x', xs'') \<Rightarrow> llast (LCons x' xs''))"
-by(auto simp add: llast_def zero_enat_def eSuc_def split: enat.split llist_splits)
+by(auto simp add: llast_def zero_enat_def eSuc_def split: enat.split llist.splits)
 
 lemma [code, code del]: "ldistinct = ldistinct" ..
 
@@ -247,14 +247,14 @@ lemma lfilter_Lazy_llist [code]:
   "lfilter P (Lazy_llist xs) =
   Lazy_llist (\<lambda>_. case xs () of None \<Rightarrow> None 
                   | Some (x, ys) \<Rightarrow> if P x then Some (x, lfilter P ys) else force (lfilter P ys))"
-by(auto split: llist_split)
+by(auto split: llist.split)
 
 lemma [code, code del]: "lconcat = lconcat" ..  
 
 lemma lconcat_Lazy_llist [code]:
   "lconcat (Lazy_llist xss) =
   Lazy_llist (\<lambda>_. case xss () of None \<Rightarrow> None | Some (xs, xss') \<Rightarrow> force (lappend xs (lconcat xss')))"
-by(auto split: llist_split)
+by(auto split: llist.split)
 
 declare option.splits [split del]
 declare Lazy_llist_def [simp del]

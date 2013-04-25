@@ -108,16 +108,6 @@ setup {*
     (map dest_Const [@{term TNil}, @{term TCons}])
 *}
 
-lemma tllist_split:
-  "P (tllist_case f g tr) = ((\<forall>b. tr = TNil b \<longrightarrow> P (f b)) \<and> (\<forall>a tr'. tr = TCons a tr' \<longrightarrow> P (g a tr')))"
-by(rule tllist.split)
-
-lemma tllist_split_asm:
-  "P (tllist_case f g tr) = (\<not> ((\<exists>b. tr = TNil b \<and> \<not> P (f b)) \<or> (\<exists>a tr'. tr = TCons a tr' \<and> \<not> P (g a tr'))))"
-by(rule tllist.split_asm)
-
-lemmas tllist_splits = tllist_split tllist_split_asm
-
 text {* Coinduction rules *}
 
 lemmas tllist_coinduct [consumes 1, case_names Eqtllist, case_conclusion Eqtllist TNil TCons] = tllist.coinduct
@@ -640,7 +630,7 @@ lemma terminal_tinfinite:
 unfolding terminal0_terminal[symmetric]
 using assms
 apply(rule contrapos_np)
-by(induct xs rule: terminal0.raw_induct[rotated 1, OF refl, consumes 1])(auto split: tllist_split_asm) 
+by(induct xs rule: terminal0.raw_induct[rotated 1, OF refl, consumes 1])(auto split: tllist.split_asm) 
 
 lemma terminal_tllist_of_llist:
   "terminal (tllist_of_llist y xs) = (if lfinite xs then y else undefined)"

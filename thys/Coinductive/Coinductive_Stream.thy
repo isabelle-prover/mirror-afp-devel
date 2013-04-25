@@ -21,21 +21,7 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-text {* split rules without eta expansion *}
-
-lemma stream_split: (* eta-contract stream.split *)
-  "P (stream_case f stream) \<longleftrightarrow> 
-  (\<forall>x1 x2. stream = SCons x1 x2 \<longrightarrow> P (f x1 x2))"
-by(rule stream.split)
-
-lemma stream_split_asm: (* eta-contracct stream.split_asm *)
-  "P (stream_case f stream) \<longleftrightarrow>
-   \<not> (\<exists>x1 x2. stream = SCons x1 x2 \<and> \<not> P (f x1 x2))"
-by(rule stream.split_asm)
-
-lemmas stream_splits = stream_split stream_split_asm
-
-text {* congruence rules *}
+text {* congruence rule *}
 
 declare stream.map_cong [cong]
 

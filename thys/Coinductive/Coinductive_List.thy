@@ -39,21 +39,7 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-text {* split rules without eta expansion *}
-
-lemma llist_split: (* eta-contract llist.split *)
-  "P (llist_case f1 f2 llist) \<longleftrightarrow> 
-  (llist = LNil \<longrightarrow> P f1) \<and> (\<forall>x21 x22. llist = LCons x21 x22 \<longrightarrow> P (f2 x21 x22))"
-by(rule llist.split)
-
-lemma llist_split_asm: (* eta-contracct llist.split_asm *)
-  "P (llist_case f1 f2 llist) \<longleftrightarrow>
-   \<not> (llist = LNil \<and> \<not> P f1 \<or> (\<exists>x21 x22. llist = LCons x21 x22 \<and> \<not> P (f2 x21 x22)))"
-by(rule llist.split_asm)
-
-lemmas llist_splits = llist_split llist_split_asm
-
-text {* congruence rules *}
+text {* congruence rule *}
 
 declare llist.map_cong [cong]
 
@@ -1002,7 +988,7 @@ next
     moreover have "lfinite (ltake (enat n') xs)"
       by(induct n' arbitrary: xs)
         (auto simp add: zero_enat_def[symmetric] eSuc_enat[symmetric] ltake_eSuc
-              split: llist_split)
+              split: llist.split)
     ultimately show ?thesis by simp
   qed
 qed
@@ -1045,7 +1031,7 @@ lemma ldropn_LCons [code]:
 by(cases n)(simp_all add: ldropn_def funpow_swap1)
 
 lemma ldropn_Suc: "ldropn (Suc n) xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> ldropn n xs')"
-by(simp split: llist_split)(simp add: ldropn_def funpow_swap1)
+by(simp split: llist.split)(simp add: ldropn_def funpow_swap1)
 
 lemma ldrop_LNil [simp]: "ldrop n LNil = LNil"
 by(cases n)(simp_all add: ldropn_Suc)
@@ -1059,7 +1045,7 @@ proof(induct n arbitrary: xs)
 next
   case (Suc n)
   thus ?case
-    by(cases xs)(simp_all add: ldropn_Suc split: llist_split)
+    by(cases xs)(simp_all add: ldropn_Suc split: llist.split)
 qed
 
 lemma ltl_ldrop: "ltl (ldrop n xs) = ldrop n (ltl xs)"
@@ -1080,7 +1066,7 @@ lemma ldrop_LCons:
 by(cases n rule: enat_coexhaust) simp_all
 
 lemma lfinite_ldropn [simp]: "lfinite (ldropn n xs) = lfinite xs"
-by(induct n arbitrary: xs)(simp_all add: ldropn_Suc split: llist_split)
+by(induct n arbitrary: xs)(simp_all add: ldropn_Suc split: llist.split)
 
 lemma lfinite_ldrop [simp]:
   "lfinite (ldrop n xs) \<longleftrightarrow> lfinite xs \<or> n = \<infinity>"
@@ -1095,7 +1081,7 @@ lemma ldrop_ltl: "ldrop n (ltl xs) = ldrop (eSuc n) xs"
 by(cases n)(simp_all add: ldropn_ltl eSuc_enat)
 
 lemma lset_ldropn_subset: "lset (ldropn n xs) \<subseteq> lset xs"
-by(induct n arbitrary: xs)(fastforce simp add: ldropn_Suc split: llist_split_asm)+
+by(induct n arbitrary: xs)(fastforce simp add: ldropn_Suc split: llist.split_asm)+
 
 lemma in_lset_ldropnD: "x \<in> lset (ldropn n xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ldropn_subset[of n xs] by auto
@@ -1174,14 +1160,14 @@ lemma ldrop_eq_LConsD:
 by(cases n)(auto dest: ldropn_eq_LConsD)
 
 lemma ldropn_lmap [simp]: "ldropn n (lmap f xs) = lmap f (ldropn n xs)"
-by(induct n arbitrary: xs)(simp_all add: ldropn_Suc split: llist_split)
+by(induct n arbitrary: xs)(simp_all add: ldropn_Suc split: llist.split)
 
 lemma ldrop_lmap [simp]: "ldrop n (lmap f xs) = lmap f (ldrop n xs)"
 by(cases n)(simp_all)
 
 lemma ldropn_ldropn [simp]: 
   "ldropn n (ldropn m xs) = ldropn (n + m) xs"
-by(induct m arbitrary: xs)(auto simp add: ldropn_Suc split: llist_split)
+by(induct m arbitrary: xs)(auto simp add: ldropn_Suc split: llist.split)
 
 lemma ldrop_ldrop [simp]: 
   "ldrop n (ldrop m xs) = ldrop (n + m) xs"
@@ -1958,7 +1944,7 @@ lemma llcp_simps [simp, code, nitpick_simp]:
   shows llcp_LNil1: "llcp LNil ys = 0"
   and llcp_LNil2: "llcp xs LNil = 0"
   and llcp_LCons: "llcp (LCons x xs) (LCons y ys) = (if x = y then eSuc (llcp xs ys) else 0)"
-by(simp_all add: llcp_def enat_unfold split: llist_split)
+by(simp_all add: llcp_def enat_unfold split: llist.split)
 
 lemma llcp_eq_0_iff:
   "llcp xs ys = 0 \<longleftrightarrow> xs = LNil \<or> ys = LNil \<or> lhd xs \<noteq> lhd ys"
@@ -2046,7 +2032,7 @@ by(coinduct xs ys n rule: llist_fun_coinduct3)(auto simp add: ltl_ltake)
 
 lemma ldropn_lzip [simp]:
   "ldropn n (lzip xs ys) = lzip (ldropn n xs) (ldropn n ys)"
-by(induct n arbitrary: xs ys)(simp_all add: ldropn_Suc split: llist_split)
+by(induct n arbitrary: xs ys)(simp_all add: ldropn_Suc split: llist.split)
 
 lemma ldrop_lzip [simp]: "ldrop n (lzip xs ys) = lzip (ldrop n xs) (ldrop n ys)"
 by(cases n) simp_all
