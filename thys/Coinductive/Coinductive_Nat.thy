@@ -75,29 +75,28 @@ qed
 
 definition enat_cocase :: "'a \<Rightarrow> (enat \<Rightarrow> 'a) \<Rightarrow> enat \<Rightarrow> 'a"
 where [nitpick_simp]:
-  "enat_cocase z s n = 
+  "enat_cocase z s n =
    (case n of enat n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (enat n'')) | \<infinity> \<Rightarrow> s \<infinity>)"
 
-(*
-wrap_data [0, eSuc] enat_cocase [] [[], [epred]] [[epred: 0]]
-*)
+locale co
+begin
 
+wrap_data ["0::enat", eSuc] enat_cocase [] [[], [epred]] [[epred: "0::enat"]]
+    apply (erule enat_coexhaust, assumption)
+   apply (rule eSuc_inject)
+  apply (rule zero_ne_eSuc)
+ apply (simp add: enat_cocase_def zero_enat_def)
+by (simp add: enat_cocase_def eSuc_def split: enat.splits)
 
-
-
-
-
-
-
-
+end
 
 lemma enat_cocase_0 [simp]:
   "enat_cocase z s 0 = z"
-by(simp add: enat_cocase_def zero_enat_def)
+by (rule co.enat.case(1))
 
 lemma enat_cocase_eSuc [simp]:
   "enat_cocase z s (eSuc n) = s n"
-by(simp add: enat_cocase_def eSuc_def split: enat.splits)
+by (rule co.enat.case(2))
 
 lemma neq_zero_conv_eSuc:
   "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = eSuc n')"
@@ -110,13 +109,13 @@ lemma enat_cocase_cert:
   shows "(CASE 0 \<equiv> c) &&& (CASE (eSuc n) \<equiv> d n)"
   using assms by simp_all
 
-lemma enat_cosplit_asm: 
+lemma enat_cosplit_asm:
   "P (enat_cocase c d n) = (\<not> (n = 0 \<and> \<not> P c \<or> (\<exists>m. n = eSuc m \<and> \<not> P (d m))))"
-by(cases n rule: enat_coexhaust) simp_all
+by (rule co.enat.split_asm)
 
 lemma enat_cosplit:
   "P (enat_cocase c d n) = ((n = 0 \<longrightarrow> P c) \<and> (\<forall>m. n = eSuc m \<longrightarrow> P (d m)))"
-by(cases n rule: enat_coexhaust) simp_all
+by (rule co.enat.split)
 
 subsection {* Corecursion for @{typ enat} *}
 
@@ -171,7 +170,7 @@ by(simp add: numeral_eq_eSuc iadd_Suc)
 definition epred :: "enat \<Rightarrow> enat"
 where "epred n = n - 1"
 
-lemma epred_simps [simp]: 
+lemma epred_simps [simp]:
   shows epred_0: "epred 0 = 0"
   and epred_1: "epred 1 = 0"
   and epred_numeral: "epred (numeral i) = epred_numeral i"
