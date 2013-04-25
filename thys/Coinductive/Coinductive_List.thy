@@ -2533,7 +2533,7 @@ proof(rule llist_all2_all_lnthI)
     using major `llength xs = llength ys`
   proof(induct n arbitrary: xs ys)
     case 0 thus ?case
-      by(auto dest: step simp add: zero_enat_def[symmetric] neq_LNil_conv lnth_0_conv_lhd)
+      by(auto dest: step simp add: zero_enat_def[symmetric] lnth_0_conv_lhd)
   next
     case (Suc n)
     from step[OF `X xs ys`] `enat (Suc n) < llength xs` Suc show ?case
