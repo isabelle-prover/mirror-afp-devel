@@ -179,7 +179,7 @@ lemma ltl_transfer [transfer_rule]:
 
 lemma lset_transfer [transfer_rule]:
   "(llist_all2 A ===> set_rel A) lset lset"
-  unfolding llist_set_def by transfer_prover
+  unfolding lset_def by transfer_prover
 
 lemma lmap_transfer [transfer_rule]:
   "((A ===> B) ===> llist_all2 A ===> llist_all2 B) lmap lmap"
@@ -295,7 +295,7 @@ proof(intro ext iffI)
   moreover hence "llist_all2 op = xs ys"
     by(rule llist_all2_mono)(simp add: Lifting.invariant_def)
   ultimately show "?rhs xs ys" unfolding Lifting.invariant_def
-    by(simp add: llist_all2_eq llist_all_def)
+    by(simp add: llist_all_def)
 qed(simp add: Lifting.invariant_def llist_all_def)
 
 
@@ -325,13 +325,13 @@ proof
   hence "llist_all2 R r r"
     apply -
     apply(rule llist_all2_reflI)
-    apply(clarsimp simp add: lset_def)
+    apply(clarsimp simp add: lset_conv_lnth)
     apply(metis Quotient3_rel[OF assms] llist_all2_lnthD)
     done
   moreover from `?lhs` have "llist_all2 R s s"
     apply -
     apply(rule llist_all2_reflI)
-    apply(clarsimp simp add: lset_def)
+    apply(clarsimp simp add: lset_conv_lnth)
     apply(metis Quotient3_rel[OF assms] llist_all2_lnthD2)
     done
   moreover from `?lhs` have "llength r = llength s" by(rule llist_all2_llengthD)
@@ -357,7 +357,7 @@ lemma llist_quotient [quot_thm]:
   "Quotient3 R Abs Rep \<Longrightarrow> Quotient3 (llist_all2 R) (lmap Abs) (lmap Rep)"
 by(blast intro: Quotient3I dest: Quotient_lmap_Abs_Rep Quotient_llist_all2_lmap_Rep llist_all2_rel)
 
-declare [[mapQ3 llist = (llist_rel, llist_quotient)]]
+declare [[mapQ3 llist = (llist_all2, llist_quotient)]]
 
 lemma LCons_preserve [quot_preserve]:
   assumes "Quotient3 R Abs Rep"

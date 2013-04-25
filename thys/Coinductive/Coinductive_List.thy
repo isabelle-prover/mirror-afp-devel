@@ -30,10 +30,9 @@ qed
 
 subsection {* Type definition *}
 
-codata 'a llist = 
+codata (lset: 'a) llist (map: lmap rel: llist_all2) = 
     LNil (defaults lhd: undefined ltl: LNil)
   | LCons (lhd: 'a) (ltl: "'a llist")
-
 
 text {* 
   The following setup should be done by the BNF package.
@@ -73,9 +72,6 @@ lemma equal_llist_code [code]:
   "equal_class.equal (LCons x xs) LNil \<longleftrightarrow> False"
   "equal_class.equal (LCons x xs) (LCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
 by(simp_all add: equal_llist_def)
-
-declare llist.sets[code] 
-(* declare llist_map_simps[code] *)
 
 lemma llist_corec_code [code]:
   "llist_corec IS_LNIL LHD endORmore LTL_end LTL_more b =
@@ -127,39 +123,39 @@ lemma eq_LConsD: "xs = LCons y ys \<Longrightarrow> lhd xs = y \<and> ltl xs = y
 by auto
 
 lemma llist_map_simps [simp, code]:
-  shows lmap_LNil: "llist_map f LNil = LNil"
-  and lmap_LCons: "llist_map f (LCons x xs) = LCons (f x) (llist_map f xs)"
+  shows lmap_LNil: "lmap f LNil = LNil"
+  and lmap_LCons: "lmap f (LCons x xs) = LCons (f x) (lmap f xs)"
 by simp+
 
 lemma [simp]:
-  shows LNil_eq_llist_map: "LNil = llist_map f xs \<longleftrightarrow> xs = LNil"
-  and llist_map_eq_LNil: "llist_map f xs = LNil \<longleftrightarrow> xs = LNil"
+  shows LNil_eq_llist_map: "LNil = lmap f xs \<longleftrightarrow> xs = LNil"
+  and llist_map_eq_LNil: "lmap f xs = LNil \<longleftrightarrow> xs = LNil"
 by(cases xs,simp_all)+
 
 lemma [simp]:
-  shows lhd_lmap: "xs \<noteq> LNil \<Longrightarrow> lhd (llist_map f xs) = f (lhd xs)"
-  and ltl_lmap: "ltl (llist_map f xs) = llist_map f (ltl xs)"
+  shows lhd_lmap: "xs \<noteq> LNil \<Longrightarrow> lhd (lmap f xs) = f (lhd xs)"
+  and ltl_lmap: "ltl (lmap f xs) = lmap f (ltl xs)"
 by(cases xs, simp_all)+
 
-lemma lmap_ident [simp]: "llist_map (\<lambda>x. x) xs = xs"
+lemma lmap_ident [simp]: "lmap (\<lambda>x. x) xs = xs"
 by(simp only: id_def[symmetric] llist.map_id')
 
 lemma lmap_eq_LCons_conv:
-  "llist_map f xs = LCons y ys \<longleftrightarrow> 
-  (\<exists>x xs'. xs = LCons x xs' \<and> y = f x \<and> ys = llist_map f xs')"
+  "lmap f xs = LCons y ys \<longleftrightarrow> 
+  (\<exists>x xs'. xs = LCons x xs' \<and> y = f x \<and> ys = lmap f xs')"
 by(cases xs)(auto)
 
 lemma lmap_id: 
-  "llist_map id = id"
+  "lmap id = id"
 by(simp add: fun_eq_iff llist.map_id')
 
 lemma llist_map_llist_unfold:
-  "llist_map f (llist_unfold IS_LNIL LHD LTL b) = llist_unfold IS_LNIL (f \<circ> LHD) LTL b"
+  "lmap f (llist_unfold IS_LNIL LHD LTL b) = llist_unfold IS_LNIL (f \<circ> LHD) LTL b"
 by(coinduct b rule: llist_fun_coinduct) auto
 
 lemma llist_map_llist_corec:
-  "llist_map f (llist_corec IS_LNIL LHD endORmore TTL_end TTL_more b) =
-   llist_corec IS_LNIL (f \<circ> LHD) endORmore (llist_map f \<circ> TTL_end) TTL_more b"
+  "lmap f (llist_corec IS_LNIL LHD endORmore TTL_end TTL_more b) =
+   llist_corec IS_LNIL (f \<circ> LHD) endORmore (lmap f \<circ> TTL_end) TTL_more b"
 by(coinduct b rule: llist_fun_coinduct) auto
 
 lemma llist_unfold_ltl_unroll:
@@ -179,26 +175,26 @@ by(subst llist_unfold_code) auto
 lemma llist_unfold_id [simp]: "llist_unfold (\<lambda>xs. xs = LNil) lhd ltl xs = xs"
 by(coinduct xs rule: llist_fun_coinduct) simp_all
 
-lemma lset_eq_empty [simp]: "llist_set xs = {} \<longleftrightarrow> xs = LNil"
+lemma lset_eq_empty [simp]: "lset xs = {} \<longleftrightarrow> xs = LNil"
 by(cases xs) simp_all
 
-lemma lhd_in_lset [simp]: "xs \<noteq> LNil \<Longrightarrow> lhd xs \<in> llist_set xs"
+lemma lhd_in_lset [simp]: "xs \<noteq> LNil \<Longrightarrow> lhd xs \<in> lset xs"
 by(cases xs) auto
 
-lemma lset_ltl: "llist_set (ltl xs) \<subseteq> llist_set xs"
+lemma lset_ltl: "lset (ltl xs) \<subseteq> lset xs"
 by(cases xs) auto
 
-lemma in_lset_ltlD: "x \<in> llist_set (ltl xs) \<Longrightarrow> x \<in> llist_set xs"
+lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
 text {* induction rules *}
 
 theorem llist_set_induct[consumes 1, case_names find step]:
-  assumes "x \<in> llist_set xs" and "\<And>xs. xs \<noteq> LNil \<Longrightarrow> P (lhd xs) xs"
-  and "\<And>xs y. \<lbrakk>xs \<noteq> LNil; y \<in> llist_set (ltl xs); P y (ltl xs)\<rbrakk> \<Longrightarrow> P y xs"
+  assumes "x \<in> lset xs" and "\<And>xs. xs \<noteq> LNil \<Longrightarrow> P (lhd xs) xs"
+  and "\<And>xs y. \<lbrakk>xs \<noteq> LNil; y \<in> lset (ltl xs); P y (ltl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
 proof -
-  have "\<forall>x\<in>llist_set xs. P x xs"
+  have "\<forall>x\<in>lset xs. P x xs"
     apply(rule llist.dtor_set_induct)
     using assms
     apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
@@ -215,7 +211,7 @@ proof -
     apply(case_tac b)
     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps)
     done
-  with `x \<in> llist_set xs` show ?thesis by blast
+  with `x \<in> lset xs` show ?thesis by blast
 qed
 
 
@@ -300,17 +296,15 @@ end
 
 subsection {* Function definitions *}
 
-abbreviation lmap where "lmap == llist_map"
-
 definition lappend :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where 
   "lappend xs ys = llist_corec
-    (\<lambda>(xs, ys). xs = LNil \<and> ys = LNil)
-    (\<lambda>(xs, ys). if xs = LNil then lhd ys else lhd xs)
-    (\<lambda>(xs, ys). xs = LNil)
-    (\<lambda>(xs, ys). ltl ys)
-    (\<lambda>(xs, ys). (ltl xs, ys))
-    (xs, ys)"
+    (\<lambda>xs. xs = LNil \<and> ys = LNil)
+    (\<lambda>xs. if xs = LNil then lhd ys else lhd xs)
+    (\<lambda>xs. xs = LNil)
+    (\<lambda>xs. ltl ys)
+    ltl
+    xs"
 
 definition iterates :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a llist" 
 where "iterates = llist_unfold (\<lambda>_. False) id"
@@ -364,11 +358,6 @@ definition lzip :: "'a llist \<Rightarrow> 'b llist \<Rightarrow> ('a \<times> '
 where [code del]:
   "lzip xs ys =
    llist_unfold (\<lambda>(xs, ys). xs = LNil \<or> ys = LNil) (map_pair lhd lhd) (map_pair ltl ltl) (xs, ys)"
-
-abbreviation lset where "lset \<equiv> llist_set"
-
-abbreviation llist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'b llist \<Rightarrow> bool"
-where "llist_all2 \<equiv> llist_rel"
 
 definition llast :: "'a llist \<Rightarrow> 'a"
 where [nitpick_simp]:
@@ -466,7 +455,7 @@ lemma lset_induct' [consumes 1, case_names find step]:
 using major apply(induct y\<equiv>"x" xs rule: llist_set_induct)
 using 1 2 by(auto simp add: neq_LNil_conv)
 
-lemma lset_induct [consumes 1, case_names find step, induct set: llist_set]:
+lemma lset_induct [consumes 1, case_names find step, induct set: lset]:
   assumes major: "x \<in> lset xs"
   and find: "\<And>xs. P (LCons x xs)"
   and step: "\<And>x' xs. \<lbrakk> x \<in> lset xs; x \<noteq> x'; P xs \<rbrakk> \<Longrightarrow> P (LCons x' xs)"
@@ -589,7 +578,7 @@ lemma lappend_assoc: "lappend (lappend xs ys) zs = lappend xs (lappend ys zs)"
 by(coinduct xs rule: llist_fun_coinduct) auto
 
 lemma lmap_lappend_distrib: 
-  "llist_map f (lappend xs ys) = lappend (llist_map f xs) (llist_map f ys)"
+  "lmap f (lappend xs ys) = lappend (lmap f xs) (lmap f ys)"
 by(coinduct xs rule: llist_fun_coinduct) auto
 
 lemma lappend_snocL1_conv_LCons2: 
@@ -1320,8 +1309,6 @@ qed
 
 lemma lset_conv_lnth: "lset xs = {lnth xs n|n. enat n < llength xs}"
 by(auto simp add: in_lset_conv_lnth)
-
-lemmas lset_def = lset_conv_lnth
 
 lemma lnth_llist_of [simp]: "lnth (llist_of xs) = nth xs"
 proof(rule ext)
@@ -2455,27 +2442,27 @@ lemma llist_all2_llist_of [simp]:
   "llist_all2 P (llist_of xs) (llist_of ys) = list_all2 P xs ys"
 by(induct xs ys rule: list_induct2')(simp_all)
 
-lemma llist_all2_def:
+lemma llist_all2_conv_lzip:
   "llist_all2 P xs ys \<longleftrightarrow> llength xs = llength ys \<and> (\<forall>(x, y) \<in> lset (lzip xs ys). P x y)"
-by(auto 4 4 elim!: GrE simp add: llist_rel_def lmap_fst_lzip_conv_ltake lmap_snd_lzip_conv_ltake ltake_all intro: GrI)
+by(auto 4 4 elim!: GrE simp add: llist_all2_def lmap_fst_lzip_conv_ltake lmap_snd_lzip_conv_ltake ltake_all intro: GrI)
 
 lemma llist_all2_llengthD:
   "llist_all2 P xs ys \<Longrightarrow> llength xs = llength ys"
-by(simp add: llist_all2_def)
+by(simp add: llist_all2_conv_lzip)
 
 lemma llist_all2_all_lnthI:
   "\<lbrakk> llength xs = llength ys;
      \<And>n. enat n < llength xs \<Longrightarrow> P (lnth xs n) (lnth ys n) \<rbrakk>
   \<Longrightarrow> llist_all2 P xs ys"
-by(auto simp add: llist_all2_def lset_lzip)
+by(auto simp add: llist_all2_conv_lzip lset_lzip)
 
 lemma llist_all2_lnthD:
   "\<lbrakk> llist_all2 P xs ys; enat n < llength xs \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
-by(fastforce simp add: llist_all2_def lset_lzip)
+by(fastforce simp add: llist_all2_conv_lzip lset_lzip)
 
 lemma llist_all2_lnthD2:
   "\<lbrakk> llist_all2 P xs ys; enat n < llength ys \<rbrakk> \<Longrightarrow> P (lnth xs n) (lnth ys n)"
-by(fastforce simp add: llist_all2_def lset_lzip)
+by(fastforce simp add: llist_all2_conv_lzip lset_lzip)
 
 lemma llist_all2_conv_all_lnth:
   "llist_all2 P xs ys \<longleftrightarrow> 
@@ -2516,7 +2503,7 @@ proof(rule llist_all2_all_lnthI)
     using major `llength xs = llength ys`
   proof(induct n arbitrary: xs ys)
     case 0 thus ?case
-      by(auto dest: step simp add: zero_enat_def[symmetric] neq_LNil_conv lnth_0_conv_lhd)
+      by(auto dest: step simp add: zero_enat_def[symmetric] lnth_0_conv_lhd)
   next
     case (Suc n)
     from step[OF `X xs ys`] `enat (Suc n) < llength xs` Suc show ?case
@@ -2556,7 +2543,7 @@ lemma llist_all2_cases[consumes 1, case_names LNil LCons, cases pred]:
     where "xs = LCons x xs'" and "ys = LCons y ys'" 
     and "P x y" and "llist_all2 P xs' ys'"
 using assms
-by(cases xs)(auto simp add: llist_all2_LCons1 llist_all2_LNil1)
+by(cases xs)(auto simp add: llist_all2_LCons1)
 
 lemma llist_all2_mono:
   "\<lbrakk> llist_all2 P xs ys; \<And>x y. P x y \<Longrightarrow> P' x y \<rbrakk> \<Longrightarrow> llist_all2 P' xs ys"
@@ -2574,10 +2561,10 @@ lemma llist_all2_right: "llist_all2 (\<lambda>_. P) xs ys \<longleftrightarrow> 
 by(fastforce simp add: llist_all2_conv_all_lnth lset_conv_lnth)
 
 lemma llist_all2_lsetD1: "\<lbrakk> llist_all2 P xs ys; x \<in> lset xs \<rbrakk> \<Longrightarrow> \<exists>y\<in>lset ys. P x y"
-by(auto 4 4 simp add: llist_all2_def lset_lzip lset_conv_lnth split_beta lnth_lzip simp del: split_paired_All)
+by(auto 4 4 simp add: llist_all2_conv_lzip lset_lzip lset_conv_lnth split_beta lnth_lzip simp del: split_paired_All)
 
 lemma llist_all2_lsetD2: "\<lbrakk> llist_all2 P xs ys; y \<in> lset ys \<rbrakk> \<Longrightarrow> \<exists>x\<in>lset xs. P x y"
-by(auto 4 4 simp add: llist_all2_def lset_lzip lset_conv_lnth split_beta lnth_lzip simp del: split_paired_All)
+by(auto 4 4 simp add: llist_all2_conv_lzip lset_lzip lset_conv_lnth split_beta lnth_lzip simp del: split_paired_All)
 
 lemma llist_all2_conj: 
   "llist_all2 (\<lambda>x y. P x y \<and> Q x y) xs ys \<longleftrightarrow> llist_all2 P xs ys \<and> llist_all2 Q xs ys"
@@ -2902,7 +2889,7 @@ proof(intro iffI strip)
     proof
       assume "x \<in> lset xs'"
       then obtain j where "enat j < llength xs'" "lnth xs' j = x"
-        unfolding lset_def by auto
+        unfolding lset_conv_lnth by auto
       hence "enat 0 < llength xs" "enat (Suc j) < llength xs" "lnth xs (Suc j) = x" "lnth xs 0 = x" 
         by(simp_all add: LCons Suc_ile_eq zero_enat_def[symmetric])
       thus False by(auto dest: ldistinct(1)[rule_format])
@@ -2949,7 +2936,7 @@ proof(intro iffI conjI)
     assume "x \<in> lset xs" and "y \<in> lset xs" and "f x = f y"
     then obtain i j
       where "enat i < llength xs" "x = lnth xs i" "enat j < llength xs" "y = lnth xs j"
-      unfolding lset_def by blast
+      unfolding lset_conv_lnth by blast
     with dist `f x = f y` show "x = y"
       unfolding ldistinct_conv_lnth by auto
   qed
@@ -3508,7 +3495,7 @@ proof
       case LNil
       hence "\<forall>x\<in>lset xs. \<not> P x" by(auto)
       hence eq: "{n. enat n < llength xs \<and> P (lnth xs n)} = {}" 
-        by(auto simp add: lset_def)
+        by(auto simp add: lset_conv_lnth)
       show ?case unfolding eq ..
     next
       case (LCons xs)
@@ -3633,7 +3620,7 @@ next
     next
       case (Suc m')
       with 0 show ?thesis
-        by(cases xs)(simp_all add: Suc_ile_eq, auto simp add: lset_def)
+        by(cases xs)(simp_all add: Suc_ile_eq, auto simp add: lset_conv_lnth)
     qed
   next
     case (Suc n)
@@ -4532,19 +4519,19 @@ next
 qed
 
 lemma lset_inf_llist [simp]: "lset (inf_llist f) = range f"
-by(auto simp add: lset_def)
+by(auto simp add: lset_conv_lnth)
 
 lemma llist_all2_inf_llist [simp]:
   "llist_all2 P (inf_llist f) (inf_llist g) \<longleftrightarrow> (\<forall>n. P (f n) (g n))"
-by(simp add: llist_all2_def)
+by(simp add: llist_all2_conv_lzip)
 
 lemma llist_all2_llist_of_inf_llist [simp]:
   "\<not> llist_all2 P (llist_of xs) (inf_llist f)"
-by(simp add: llist_all2_def)
+by(simp add: llist_all2_conv_lzip)
 
 lemma llist_all2_inf_llist_llist_of [simp]:
   "\<not> llist_all2 P (inf_llist f) (llist_of xs)"
-by(simp add: llist_all2_def)
+by(simp add: llist_all2_conv_lzip)
 
 lemma (in monoid_add) llistsum_infllist: "llistsum (inf_llist f) = 0"
 by simp

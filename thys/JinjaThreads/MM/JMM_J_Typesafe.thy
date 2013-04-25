@@ -315,7 +315,7 @@ proof -
       assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset \<xi>"
         and adal: "P \<turnstile>jmm ad@al : T"
       from read obtain a where a: "enat a < llength \<xi>" "action_obs \<xi> a = NormalAction (ReadMem ad al v)"
-        unfolding lset_def by(auto simp add: action_obs_def)
+        unfolding lset_conv_lnth by(auto simp add: action_obs_def)
       with J_allocated_heap_conf'.mred_known_addrs_typing'[OF jmm_J_allocated_heap_conf' wfP jmm_start_heap_ok]
         J_heap_conf.J_start_state_sconf_type_ok[OF jmm_J_heap_conf wfP ok]
         wf_sys is_justified_by_imp_is_weakly_justified_by[OF justified wf] range n
@@ -333,7 +333,7 @@ proof -
     assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset E"
       and adal: "P \<turnstile>jmm ad@al : T"
     from read obtain a where a: "enat a < llength E" "action_obs E a = NormalAction (ReadMem ad al v)"
-      unfolding lset_def by(auto simp add: action_obs_def)
+      unfolding lset_conv_lnth by(auto simp add: action_obs_def)
     with jmm_J_allocated_heap_conf' wfP ok legal_imp_weakly_legal_execution[OF legal]
     have "\<exists>T. P \<turnstile>jmm ad@al : T \<and> P \<turnstile>jmm v :\<le> T"
       unfolding jmm_typeof_addr'_conv_jmm_type_addr[symmetric, abs_def]
@@ -376,7 +376,7 @@ proof -
       assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset \<xi>"
         and adal: "P \<turnstile>jmm ad@al : T"
       from read obtain a where a: "enat a < llength \<xi>" "action_obs \<xi> a = NormalAction (ReadMem ad al v)"
-        unfolding lset_def by(auto simp add: action_obs_def)
+        unfolding lset_conv_lnth by(auto simp add: action_obs_def)
       with J_allocated_heap_conf'.mred_known_addrs_typing'[OF jmm_J_allocated_heap_conf' wfP jmm_start_heap_ok]
         J_heap_conf.J_start_state_sconf_type_ok[OF jmm_J_heap_conf wfP ok]
         wf_sys justified range n
@@ -394,7 +394,7 @@ proof -
     assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset E"
       and adal: "P \<turnstile>jmm ad@al : T"
     from read obtain a where a: "enat a < llength E" "action_obs E a = NormalAction (ReadMem ad al v)"
-      unfolding lset_def by(auto simp add: action_obs_def)
+      unfolding lset_conv_lnth by(auto simp add: action_obs_def)
     with jmm_J_allocated_heap_conf' wfP ok legal
     have "\<exists>T. P \<turnstile>jmm ad@al : T \<and> P \<turnstile>jmm v :\<le> T"
       unfolding jmm_typeof_addr'_conv_jmm_type_addr[symmetric, abs_def]

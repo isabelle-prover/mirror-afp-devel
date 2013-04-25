@@ -363,4 +363,10 @@ lemma if_rule:
   shows "<P> if b then f else g <Q>"
   using assms by auto
 
+lemma case_prod_rule: "(\<And>a b. x = (a, b) \<Longrightarrow> <P> f a b <Q>) \<Longrightarrow> <P> case x of (a, b) \<Rightarrow> f a b <Q>"
+  by (auto split: prod.split)
+
+lemma let_rule: "(\<And>x. x = t \<Longrightarrow> <P> f x <Q>) \<Longrightarrow> <P> Let t f <Q>"
+  by (auto split: prod.split)
+
 end

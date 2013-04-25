@@ -670,7 +670,7 @@ proof(intro exI conjI)
         hence wa: "wa \<in> lset (lmap snd ?between)" by simp
         from wa obtain i_wa where "wa = lnth (lmap snd ?between) i_wa"
           and i_wa: "enat i_wa < llength (lmap snd ?between)"
-          unfolding lset_def by blast
+          unfolding lset_conv_lnth by blast
         moreover hence i_wa_len: "enat (Suc (w + i_wa)) < llength E" by(cases "llength E") auto
         ultimately have wa': "wa = action_obs E (Suc (w + i_wa))"
           by(simp_all add: lnth_ltake action_obs_def add_ac)

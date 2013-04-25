@@ -78,8 +78,7 @@ where [nitpick_simp]:
   "enat_cocase z s n =
    (case n of enat n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (enat n'')) | \<infinity> \<Rightarrow> s \<infinity>)"
 
-locale co
-begin
+locale co begin
 
 wrap_free_constructors ["0::enat", eSuc] enat_cocase [] [[], [epred]] [[epred: "0::enat"]]
     apply (erule enat_coexhaust, assumption)
@@ -90,19 +89,14 @@ by (simp add: enat_cocase_def eSuc_def split: enat.splits)
 
 end
 
-lemma enat_cocase_0 [simp]:
-  "enat_cocase z s 0 = z"
+lemma enat_cocase_0 [simp]: "enat_cocase z s 0 = z"
 by (rule co.enat.case(1))
 
-lemma enat_cocase_eSuc [simp]:
-  "enat_cocase z s (eSuc n) = s n"
+lemma enat_cocase_eSuc [simp]: "enat_cocase z s (eSuc n) = s n"
 by (rule co.enat.case(2))
 
-lemma neq_zero_conv_eSuc:
-  "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = eSuc n')"
+lemma neq_zero_conv_eSuc: "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = eSuc n')"
 by(cases n rule: enat_coexhaust) simp_all
-
-declare [[case_translation enat_cocase 0 eSuc]]
 
 lemma enat_cocase_cert:
   assumes "CASE \<equiv> enat_cocase c d"
@@ -116,6 +110,14 @@ by (rule co.enat.split_asm)
 lemma enat_cosplit:
   "P (enat_cocase c d n) = ((n = 0 \<longrightarrow> P c) \<and> (\<forall>m. n = eSuc m \<longrightarrow> P (d m)))"
 by (rule co.enat.split)
+
+abbreviation epred :: "enat => enat" where "epred \<equiv> co.epred"
+
+lemma epred_0 [simp]: "epred 0 = 0" by(rule co.enat.sels(1))
+lemma epred_eSuc [simp]: "epred (eSuc n) = n" by(rule co.enat.sels(2))
+declare co.enat.collapse[simp]
+lemma epred_conv_minus: "epred n = n - 1"
+by(cases n rule: co.enat.exhaust)(simp_all)
 
 subsection {* Corecursion for @{typ enat} *}
 
@@ -167,22 +169,18 @@ lemma enat_cocase_add_eq_if [simp]:
 by(simp add: numeral_eq_eSuc iadd_Suc)
 
 
-definition epred :: "enat \<Rightarrow> enat"
-where "epred n = n - 1"
-
-lemma epred_simps [simp]:
-  shows epred_0: "epred 0 = 0"
-  and epred_1: "epred 1 = 0"
+lemma [simp]:
+  shows epred_1: "epred 1 = 0"
   and epred_numeral: "epred (numeral i) = epred_numeral i"
-  and epred_eSuc: "epred (eSuc n) = n"
   and epred_Infty: "epred \<infinity> = \<infinity>"
   and epred_enat: "epred (enat m) = enat (m - 1)"
-by(simp_all add: epred_def one_enat_def zero_enat_def eSuc_def epred_numeral_def numeral_eq_enat split: enat.split)
+by(simp_all add: epred_conv_minus one_enat_def zero_enat_def eSuc_def epred_numeral_def numeral_eq_enat split: enat.split)
+
+lemmas epred_simps = epred_0 epred_1 epred_numeral epred_eSuc epred_Infty epred_enat
 
 lemma epred_iadd1: "a \<noteq> 0 \<Longrightarrow> epred (a + b) = epred a + b"
-using [[simproc del: enat_eq_cancel]]
 apply(cases a b rule: enat.exhaust[case_product enat.exhaust])
-apply(simp_all add: epred_def eSuc_def one_enat_def zero_enat_def split: enat.splits)
+apply(simp_all add: epred_conv_minus eSuc_def one_enat_def zero_enat_def split: enat.splits)
 done
 
 lemma epred_min [simp]: "epred (min a b) = min (epred a) (epred b)"
@@ -193,9 +191,9 @@ by(cases m n rule: enat_coexhaust[case_product enat_coexhaust]) simp_all
 
 lemma epred_minus_epred [simp]:
   "m \<noteq> 0 \<Longrightarrow> epred n - epred m = n - m"
-by(cases n m rule: enat_coexhaust[case_product enat_coexhaust])(simp_all add: epred_def)
+by(cases n m rule: enat_coexhaust[case_product enat_coexhaust])(simp_all add: epred_conv_minus)
 
-lemma eSuc_epred [simp]: "n \<noteq> 0 \<Longrightarrow> eSuc (epred n) = n"
+lemma eSuc_epred: "n \<noteq> 0 \<Longrightarrow> eSuc (epred n) = n"
 by(cases n rule: enat_coexhaust) simp_all
 
 lemma epred_inject: "\<lbrakk> x \<noteq> 0; y \<noteq> 0 \<rbrakk> \<Longrightarrow> epred x = epred y \<longleftrightarrow> x = y"
