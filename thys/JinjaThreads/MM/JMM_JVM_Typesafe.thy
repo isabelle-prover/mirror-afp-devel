@@ -304,7 +304,7 @@ proof -
       assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset \<xi>"
         and adal: "P \<turnstile>jmm ad@al : T"
       from read obtain a where a: "enat a < llength \<xi>" "action_obs \<xi> a = NormalAction (ReadMem ad al v)"
-        unfolding lset_def by(auto simp add: action_obs_def)
+        unfolding lset_conv_lnth by(auto simp add: action_obs_def)
 
       have "ts_ok (\<lambda>t (xcp, frs) h. JVM_heap_conf_base.correct_state addr2thread_id jmm_empty jmm_allocate (\<lambda>_. jmm_typeof_addr' P) jmm_hconf P \<Phi> t (xcp, h, frs)) (thr (jmm_JVM_start_state P C M vs)) jmm.start_heap"
 
@@ -326,7 +326,7 @@ proof -
     assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset E"
       and adal: "P \<turnstile>jmm ad@al : T"
     from read obtain a where a: "enat a < llength E" "action_obs E a = NormalAction (ReadMem ad al v)"
-      unfolding lset_def by(auto simp add: action_obs_def)
+      unfolding lset_conv_lnth by(auto simp add: action_obs_def)
     with jmm_JVMd_allocated_heap_conf' \<Phi> ok legal_imp_weakly_legal_execution[OF legal]
     have "\<exists>T. P \<turnstile>jmm ad@al : T \<and> P \<turnstile>jmm v :\<le> T"
       unfolding jmm_typeof_addr'_conv_jmm_typeof_addr[symmetric, abs_def]
@@ -369,7 +369,7 @@ proof -
       assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset \<xi>"
         and adal: "P \<turnstile>jmm ad@al : T"
       from read obtain a where a: "enat a < llength \<xi>" "action_obs \<xi> a = NormalAction (ReadMem ad al v)"
-        unfolding lset_def by(auto simp add: action_obs_def)
+        unfolding lset_conv_lnth by(auto simp add: action_obs_def)
 
       have "ts_ok (\<lambda>t (xcp, frs) h. JVM_heap_conf_base.correct_state addr2thread_id jmm_empty jmm_allocate (\<lambda>_. jmm_typeof_addr' P) jmm_hconf P \<Phi> t (xcp, h, frs)) (thr (jmm_JVM_start_state P C M vs)) jmm.start_heap"
 
@@ -391,7 +391,7 @@ proof -
     assume read: "NormalAction (ReadMem ad al v) \<in> snd ` lset E"
       and adal: "P \<turnstile>jmm ad@al : T"
     from read obtain a where a: "enat a < llength E" "action_obs E a = NormalAction (ReadMem ad al v)"
-      unfolding lset_def by(auto simp add: action_obs_def)
+      unfolding lset_conv_lnth by(auto simp add: action_obs_def)
     with jmm_JVMd_allocated_heap_conf' \<Phi> ok legal
     have "\<exists>T. P \<turnstile>jmm ad@al : T \<and> P \<turnstile>jmm v :\<le> T"
       unfolding jmm_typeof_addr'_conv_jmm_typeof_addr[symmetric, abs_def]

@@ -372,7 +372,7 @@ proof -
     from len_EE'' have "enat w' < llength ?EE''" by simp
     from w'_len have "lnth ?EE'' w' = action_obs E' w'"
       using lprefix_lnthD[OF prefix `enat w' < llength ?EE''`] by(simp add: action_obs_def)
-    hence "\<dots> \<in> lset ?EE''" using `enat w' < llength ?EE''` unfolding lset_def by(auto intro!: exI)
+    hence "\<dots> \<in> lset ?EE''" using `enat w' < llength ?EE''` unfolding lset_conv_lnth by(auto intro!: exI)
     also have "\<dots> \<subseteq> set (map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?m_E''))) @ take (Suc n_w) \<lbrace>ta_w\<rbrace>\<^bsub>o\<^esub>)"
       by(auto 4 4 intro: rev_image_eqI rev_bexI simp add: split_beta lset_lconcat_lfinite dest: lset_lappend[THEN subsetD])
     also have "action_obs E' w' = action_obs E w"
