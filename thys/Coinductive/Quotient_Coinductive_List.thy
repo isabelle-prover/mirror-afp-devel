@@ -157,7 +157,7 @@ unfolding Transfer.fun_rel_def by simp
 lemma llist_case_transfer [transfer_rule]:
   "(B ===> (A ===> llist_all2 A ===> B) ===> llist_all2 A ===> B)
     llist_case llist_case"
-unfolding Transfer.fun_rel_def by (simp split: llist_split)
+unfolding Transfer.fun_rel_def by (simp split: llist.split)
 
 lemma llist_unfold_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> A) ===> A ===> llist_all2 B) llist_unfold llist_unfold"

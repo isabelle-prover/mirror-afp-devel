@@ -573,7 +573,7 @@ qed
 lemma ll2f_lem1:
  "t !! (Suc i) = Some x \<Longrightarrow> \<exists> y. t !! i = Some y"
 proof (induct i arbitrary: x t)
-  case 0 thus ?case by (auto split: llist_split llist_split_asm)
+  case 0 thus ?case by (auto split: llist.splits)
 next
   case (Suc k) thus ?case
     by (cases t) auto
@@ -583,7 +583,7 @@ lemmas ll2f_Suc_Some = ll2f_lem1 [THEN exE]
 
 lemma ll2f_None_Suc: "t !! i = None \<Longrightarrow> t !! Suc i = None"
 proof (induct i arbitrary: t)
-  case 0 thus ?case by (auto split: llist_split)
+  case 0 thus ?case by (auto split: llist.split)
 next
   case (Suc k) thus ?case by (cases t) auto
 qed
@@ -593,7 +593,7 @@ lemma ll2f_None_le:
 proof (induct i arbitrary: t j)
   case 0 thus ?case by simp
 next
-  case (Suc k) thus ?case by (cases j) (auto split: llist_split)
+  case (Suc k) thus ?case by (cases j) (auto split: llist.split)
 qed
 
 lemma ll2f_Some_le:

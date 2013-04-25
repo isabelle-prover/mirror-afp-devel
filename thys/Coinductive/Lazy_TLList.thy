@@ -102,28 +102,28 @@ lemma [code, code del]: "tappend = tappend" ..
 lemma tappend_Lazy_tllist [code]:
   "tappend (Lazy_tllist xs) ys =
   Lazy_tllist (\<lambda>_. case xs () of Inl (x, xs') \<Rightarrow> Inl (x, tappend xs' ys) | Inr b \<Rightarrow> force (ys b))"
-by(auto split: tllist_split)
+by(auto split: tllist.split)
 
 lemma [code, code del]: "lappendt = lappendt" ..
 
 lemma lappendt_Lazy_llist [code]:
   "lappendt (Lazy_llist xs) ys =
   Lazy_tllist (\<lambda>_. case xs () of None \<Rightarrow> force ys | Some (x, xs') \<Rightarrow> Inl (x, lappendt xs' ys))"
-by(auto simp add: Lazy_llist_def split: option.split tllist_split)
+by(auto simp add: Lazy_llist_def split: option.split tllist.split)
 
 lemma [code, code del]: "TLList.tfilter' = TLList.tfilter'" ..
 
 lemma tfilter'_Lazy_tllist [code]:
   "TLList.tfilter' b P (Lazy_tllist xs) =
    Lazy_tllist (\<lambda>_. case xs () of Inl (x, xs') \<Rightarrow> if P x then Inl (x, TLList.tfilter' b P xs') else force (TLList.tfilter' b P xs') | Inr b' \<Rightarrow> Inr b')"
-by(simp split: tllist_split)
+by(simp split: tllist.split)
 
 lemma [code, code del]: "TLList.tconcat' = TLList.tconcat'" ..
 
 lemma tconcat_Lazy_tllist [code]:
   "TLList.tconcat' b (Lazy_tllist xss) =
   Lazy_tllist (\<lambda>_. case xss () of Inr b' \<Rightarrow> Inr b' | Inl (xs, xss') \<Rightarrow> force (lappendt xs (TLList.tconcat' b xss')))"
-by(simp split: tllist_split)
+by(simp split: tllist.split)
 
 lemma [code, code del]: "tllist_all2 = tllist_all2" ..
 
@@ -160,7 +160,7 @@ lemma [code, code del]: "tdropn = tdropn" ..
 lemma tdropn_Lazy_tllist [code]:
   "tdropn n (Lazy_tllist xs) =
   Lazy_tllist (\<lambda>_. if n = 0 then xs () else case xs () of Inr b \<Rightarrow> Inr b | Inl (x, xs') \<Rightarrow> force (tdropn (n - 1) xs'))"
-by(cases n)(auto split: tllist_split)
+by(cases n)(auto split: tllist.split)
 
 declare Lazy_tllist_def [simp del]
 declare sum.splits [split del]

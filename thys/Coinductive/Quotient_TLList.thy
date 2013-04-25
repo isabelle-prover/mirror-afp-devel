@@ -163,7 +163,7 @@ lemma tllist_case_transfer [transfer_rule]:
   "((B ===> C) ===> (A ===> tllist_all2 A B ===> C) ===> tllist_all2 A B ===> C)
     tllist_case tllist_case"
 unfolding Transfer.fun_rel_def
-by (simp add: tllist_all2_TNil1 tllist_all2_TNil2 split: tllist_split)
+by (simp add: tllist_all2_TNil1 tllist_all2_TNil2 split: tllist.split)
 
 lemma tllist_unfold_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> C) ===> (A ===> A) ===> A ===> tllist_all2 C B) tllist_unfold tllist_unfold"

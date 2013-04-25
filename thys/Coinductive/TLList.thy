@@ -108,16 +108,6 @@ setup {*
     (map dest_Const [@{term TNil}, @{term TCons}])
 *}
 
-lemma tllist_split:
-  "P (tllist_case f g tr) = ((\<forall>b. tr = TNil b \<longrightarrow> P (f b)) \<and> (\<forall>a tr'. tr = TCons a tr' \<longrightarrow> P (g a tr')))"
-by(rule tllist.split)
-
-lemma tllist_split_asm:
-  "P (tllist_case f g tr) = (\<not> ((\<exists>b. tr = TNil b \<and> \<not> P (f b)) \<or> (\<exists>a tr'. tr = TCons a tr' \<and> \<not> P (g a tr'))))"
-by(rule tllist.split_asm)
-
-lemmas tllist_splits = tllist_split tllist_split_asm
-
 text {* Coinduction rules *}
 
 lemmas tllist_coinduct [consumes 1, case_names Eqtllist, case_conclusion Eqtllist TNil TCons] = tllist.coinduct
@@ -314,7 +304,7 @@ proof -
   have "\<forall>x\<in>tset xs. P x xs"
     apply(rule tllist.dtor_set1_induct)
     using assms
-    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_natural' split: sum.splits)
+    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
@@ -343,7 +333,7 @@ proof -
   have "\<forall>x\<in>tllist_set2 xs. P x xs"
     apply(rule tllist.dtor_set2_induct)
     using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_natural' split: sum.splits)
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
       apply(erule_tac x="b" in meta_allE)
@@ -640,7 +630,7 @@ lemma terminal_tinfinite:
 unfolding terminal0_terminal[symmetric]
 using assms
 apply(rule contrapos_np)
-by(induct xs rule: terminal0.raw_induct[rotated 1, OF refl, consumes 1])(auto split: tllist_split_asm) 
+by(induct xs rule: terminal0.raw_induct[rotated 1, OF refl, consumes 1])(auto split: tllist.split_asm) 
 
 lemma terminal_tllist_of_llist:
   "terminal (tllist_of_llist y xs) = (if lfinite xs then y else undefined)"
