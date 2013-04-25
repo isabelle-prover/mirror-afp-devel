@@ -81,7 +81,7 @@ where [nitpick_simp]:
 locale co
 begin
 
-wrap_data ["0::enat", eSuc] enat_cocase [] [[], [epred]] [[epred: "0::enat"]]
+wrap_free_constructors ["0::enat", eSuc] enat_cocase [] [[], [epred]] [[epred: "0::enat"]]
     apply (erule enat_coexhaust, assumption)
    apply (rule eSuc_inject)
   apply (rule zero_ne_eSuc)

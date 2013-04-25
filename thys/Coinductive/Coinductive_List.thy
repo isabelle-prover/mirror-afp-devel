@@ -95,9 +95,6 @@ declare llist.sels [code]
 
 text {* Coinduction rules *}
 
-lemmas llist_coinduct [consumes 1, case_names Eqllist, case_conclusion Eqllist LNil LCons] = llist.coinduct
-lemmas llist_strong_coinduct [consumes 1, case_names Eqllist, case_conclusion Eqllist LNil LCons] = llist.strong_coinduct
-
 lemma llist_fun_coinduct_invar [consumes 1, case_names LNil LCons]:
   assumes "P x"
   and "\<And>x. P x \<Longrightarrow> f x = LNil \<longleftrightarrow> g x = LNil"
@@ -1421,7 +1418,7 @@ next
     have "llength xs = llength us \<and> lappend xs ys = lappend us vs"
       using len eq by blast
     thus "xs = us"
-    proof(coinduct xs us rule: llist_coinduct)
+    proof(coinduct xs us rule: llist.coinduct)
       case (Eqllist xs us)
       thus ?case
         by(cases xs us rule: llist.exhaust[case_product llist.exhaust]) auto
@@ -1432,7 +1429,7 @@ next
     hence "\<exists>xs'. lappend (llist_of xs') ys = lappend (llist_of xs') vs"
       using eq `xs = us` by blast
     thus "ys = vs"
-    proof(coinduct ys vs rule: llist_coinduct)
+    proof(coinduct ys vs rule: llist.coinduct)
       case (Eqllist ys vs)
       then obtain xs' 
         where eq: "lappend (llist_of xs') ys = lappend (llist_of xs') vs" by blast
@@ -1597,7 +1594,7 @@ lemma lprefix_antisym:
   assumes "lprefix xs ys" "lprefix ys xs"
   shows "xs = ys"
 using conjI[OF assms]
-by(coinduct xs ys rule: llist_coinduct)(auto simp add: neq_LNil_conv)
+by(coinduct xs ys rule: llist.coinduct)(auto simp add: neq_LNil_conv)
 
 lemma lprefix_trans [trans]:
   "\<lbrakk> lprefix xs ys; lprefix ys zs \<rbrakk> \<Longrightarrow> lprefix xs zs"
@@ -1623,7 +1620,7 @@ proof
   assume "lprefix xs ys" 
   with nfin have "lprefix xs ys \<and> \<not> lfinite xs" by blast
   thus "xs = ys"
-    by(coinduct rule: llist_coinduct)(auto simp add: neq_LNil_conv)
+    by(coinduct rule: llist.coinduct)(auto simp add: neq_LNil_conv)
 qed simp
 
 lemma lmap_lprefix: "lprefix xs ys \<Longrightarrow> lprefix (lmap f xs) (lmap f ys)"
@@ -1633,7 +1630,7 @@ lemma lprefix_llength_eq_imp_eq:
   assumes "lprefix xs ys" "llength xs = llength ys"
   shows "xs = ys"
 using conjI[OF assms]
-by(coinduct xs ys rule: llist_coinduct)(auto simp add: neq_LNil_conv)
+by(coinduct xs ys rule: llist.coinduct)(auto simp add: neq_LNil_conv)
 
 lemma lprefix_llength_le:
   assumes "lprefix xs ys"
@@ -1722,7 +1719,7 @@ lemma ltake_enat_eq_imp_eq:
   assumes "\<And>n. ltake (enat n) xs = ltake (enat n) ys"
   shows "xs = ys"
 using allI[OF assms, of "\<lambda>n. n"]
-by(coinduct xs ys rule: llist_coinduct)(auto simp add: zero_enat_def neq_LNil_conv eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
+by(coinduct xs ys rule: llist.coinduct)(auto simp add: zero_enat_def neq_LNil_conv eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
 
 lemma ltake_enat_lprefix_imp_lprefix:
   assumes le: "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
@@ -3082,7 +3079,7 @@ proof(rule antisymI)
     and "(ys, xs) \<in> {(xs, ys). llexord r xs ys}"
   hence "llexord r xs ys \<and> llexord r ys xs" by auto
   thus "xs = ys"
-    by(coinduct rule: llist_coinduct)(auto 4 3 simp add: neq_LNil_conv irrefl dest: antisymD[OF r, simplified])
+    by(coinduct rule: llist.coinduct)(auto 4 3 simp add: neq_LNil_conv irrefl dest: antisymD[OF r, simplified])
 qed
 
 lemma llexord_antisym:
@@ -3147,7 +3144,7 @@ proof
     assume "\<not> ?prefix"
     with `?lhs` have "?lhs \<and> \<not> ?prefix" ..
     thus "xs = ys"
-    proof(coinduct rule: llist_coinduct)
+    proof(coinduct rule: llist.coinduct)
       case (Eqllist xs ys)
       hence "llexord r xs ys"
         and prefix: "\<And>zs xs' y ys'. \<lbrakk> lfinite zs; xs = lappend zs xs';

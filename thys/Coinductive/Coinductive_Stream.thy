@@ -69,9 +69,6 @@ declare stream.sels [code]
 
 text {* Coinduction rules *}
 
-lemmas stream_coinduct [consumes 1, case_names Eqstream] = stream.coinduct
-lemmas stream_strong_coinduct [consumes 1, case_names Eqstream] = stream.strong_coinduct
-
 lemma stream_fun_coinduct_invar [consumes 1, case_names SCons]:
   assumes "P x"
   and "\<And>x. P x

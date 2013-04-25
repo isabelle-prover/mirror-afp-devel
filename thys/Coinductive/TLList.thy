@@ -110,9 +110,6 @@ setup {*
 
 text {* Coinduction rules *}
 
-lemmas tllist_coinduct [consumes 1, case_names Eqtllist, case_conclusion Eqtllist TNil TCons] = tllist.coinduct
-lemmas tllist_strong_coinduct [consumes 1, case_names Eqllist, case_conclusion Eqtllist LNil LCons] = tllist.strong_coinduct
-
 lemma tllist_fun_coinduct_invar [consumes 1, case_names TNil TCons]:
   assumes "P x"
   and "\<And>x. P x \<Longrightarrow> is_TNil (f x) \<longleftrightarrow> is_TNil (g x) \<and> (is_TNil (f x) \<longrightarrow> is_TNil (g x) \<longrightarrow> terminal (f x) = terminal (g x))"
@@ -120,7 +117,7 @@ lemma tllist_fun_coinduct_invar [consumes 1, case_names TNil TCons]:
   \<Longrightarrow> thd (f x) = thd (g x) \<and>
      ((\<exists>x'. ttl (f x) = f x' \<and> ttl (g x) = g x' \<and> P x') \<or> ttl (f x) = ttl (g x))"
   shows "f x = g x"
-apply(rule tllist_strong_coinduct[of "\<lambda>xs ys. \<exists>x. P x \<and> xs = f x \<and> ys = g x"])
+apply(rule tllist.strong_coinduct[of "\<lambda>xs ys. \<exists>x. P x \<and> xs = f x \<and> ys = g x"])
 using assms by auto
 
 theorem tllist_fun_coinduct [case_names TNil TCons]:

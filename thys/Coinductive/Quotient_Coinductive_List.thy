@@ -97,7 +97,7 @@ proof(rule right_uniqueI)
   assume "llist_all2 A xs ys" "llist_all2 A xs zs"
   hence "\<exists>xs. llist_all2 A xs ys \<and> llist_all2 A xs zs" by auto
   thus "ys = zs"
-    by(coinduct ys zs rule: llist_strong_coinduct)(auto simp add: neq_LNil_conv llist_all2_LCons1 llist_all2_LCons2 dest: right_uniqueD[OF assms])
+    by(coinduct ys zs rule: llist.strong_coinduct)(auto simp add: neq_LNil_conv llist_all2_LCons1 llist_all2_LCons2 dest: right_uniqueD[OF assms])
 qed
 
 lemma left_unique_llist_all2 [transfer_rule]:
@@ -108,7 +108,7 @@ proof(rule left_uniqueI)
   assume "llist_all2 A xs zs" "llist_all2 A ys zs"
   hence "\<exists>zs. llist_all2 A xs zs \<and> llist_all2 A ys zs" by auto
   thus "xs = ys"
-    by(coinduct xs ys rule: llist_strong_coinduct)(auto simp add: neq_LNil_conv llist_all2_LCons1 llist_all2_LCons2 dest: left_uniqueD[OF assms])
+    by(coinduct xs ys rule: llist.strong_coinduct)(auto simp add: neq_LNil_conv llist_all2_LCons1 llist_all2_LCons2 dest: left_uniqueD[OF assms])
 qed
 
 lemma bi_unique_list_all2 [transfer_rule]:

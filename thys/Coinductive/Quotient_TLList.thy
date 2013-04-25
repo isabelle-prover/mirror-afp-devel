@@ -84,7 +84,7 @@ proof(rule left_uniqueI)
   assume "tllist_all2 A B xs zs" "tllist_all2 A B ys zs"
   hence "\<exists>zs. tllist_all2 A B xs zs \<and> tllist_all2 A B ys zs" by auto
   thus "xs = ys"
-    by(coinduct xs ys rule: tllist_strong_coinduct)(auto 4 3 dest: left_uniqueD[OF A] left_uniqueD[OF B] tllist_all2_is_TNilD tllist_all2_thdD tllist_all2_tfinite1_terminalD intro: tllist_all2_ttlI)
+    by(coinduct xs ys rule: tllist.strong_coinduct)(auto 4 3 dest: left_uniqueD[OF A] left_uniqueD[OF B] tllist_all2_is_TNilD tllist_all2_thdD tllist_all2_tfinite1_terminalD intro: tllist_all2_ttlI)
 qed
 
 lemma right_unique_tllist_all2 [transfer_rule]:
@@ -95,7 +95,7 @@ proof(rule right_uniqueI)
   assume "tllist_all2 A B xs ys" "tllist_all2 A B xs zs"
   hence "\<exists>xs. tllist_all2 A B xs ys \<and> tllist_all2 A B xs zs" by auto
   thus "ys = zs"
-    by(coinduct ys zs rule: tllist_strong_coinduct)(auto 4 3 dest: tllist_all2_is_TNilD right_uniqueD[OF B] right_uniqueD[OF A] tllist_all2_thdD tllist_all2_tfinite2_terminalD intro: tllist_all2_ttlI)
+    by(coinduct ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: tllist_all2_is_TNilD right_uniqueD[OF B] right_uniqueD[OF A] tllist_all2_thdD tllist_all2_tfinite2_terminalD intro: tllist_all2_ttlI)
 qed
 
 lemma bi_unique_tllist_all2 [transfer_rule]:
