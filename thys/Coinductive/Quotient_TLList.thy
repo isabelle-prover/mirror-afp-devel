@@ -185,7 +185,7 @@ lemma ttl_transfer [transfer_rule]:
 
 lemma tset_transfer [transfer_rule]:
   "(tllist_all2 A B ===> set_rel A) tset tset"
-  unfolding tllist_set1_def by transfer_prover
+  unfolding tset_def by transfer_prover
 
 lemma tmap_transfer [transfer_rule]:
   "((A ===> B) ===> (C ===> D) ===> tllist_all2 A C ===> tllist_all2 B D) tmap tmap"
@@ -314,7 +314,7 @@ lemma tllist_quotient [quot_thm]:
   \<Longrightarrow> Quotient3 (tllist_all2 R1 R2) (tmap Abs1 Abs2) (tmap Rep1 Rep2)"
 by(blast intro: Quotient3I dest: Quotient3_tmap_Abs_Rep Quotient3_tllist_all2_tmap_tmapI tllist_all2_rel)
 
-declare [[mapQ3 tllist = (tllist_rel, tllist_quotient)]]
+declare [[mapQ3 tllist = (tllist_all2, tllist_quotient)]]
 
 lemma Quotient_llist[quot_map]:
   assumes "Quotient R1 Abs1 Rep1 T1"

@@ -64,7 +64,7 @@ subsection {* Type definition *}
 
 consts terminal0 :: "'a"
 
-codata ('a, 'b) tllist =
+codata (tset: 'a, 'b) tllist (map: tmap rel: tllist_all2) =
     TNil (terminal : 'b) (defaults thd : "\<lambda>_. undefined" ttl: "\<lambda>b. TNil b")
   | TCons (thd : 'a) (ttl : "('a, 'b) tllist")
     (defaults terminal: "\<lambda>x :: 'a. \<lambda>xs :: ('a, 'b) tllist. (terminal0 xs :: 'b)")
@@ -256,9 +256,7 @@ lemma TNil_eq_tllist_unfold [simp]:
   "TNil b = tllist_unfold IS_TNIL TNIL THD TTL a \<longleftrightarrow> IS_TNIL a \<and> b = TNIL a"
 by(auto simp add: tllist_unfold)
 
-abbreviation tmap where "tmap \<equiv> tllist_map"
-
-lemma tmap_simps [simp, code, nitpick_simp]:
+lemma tmap_simps [nitpick_simp]:
   "tmap f g (TNil b) = TNil (g b)"
   "tmap f g (TCons x xs) = TCons (f x) (tmap f g xs)"
 by simp+
@@ -284,8 +282,6 @@ lemma TNil_eq_tmap_conv:
   "TNil y = tmap f g xs \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
 by(cases xs) auto
 
-
-abbreviation tset where "tset \<equiv> tllist_set1"
 
 lemma thd_in_tset [simp]: "\<not> is_TNil xs \<Longrightarrow> thd xs \<in> tset xs"
 by(cases xs) simp_all
@@ -353,9 +349,6 @@ proof -
     done
   with `x \<in> tllist_set2 xs` show ?thesis by blast
 qed
-
-abbreviation tllist_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist \<Rightarrow> bool"
-where "tllist_all2 \<equiv> tllist_rel"
 
 
 subsection {* Connection with @{typ "'a llist"} *}
@@ -562,7 +555,7 @@ lemma tllist_all2_transfer [transfer_rule]:
      (\<lambda>P Q (xs, b) (ys, b'). llist_all2 P xs ys \<and> (lfinite xs \<longrightarrow> Q b b')) tllist_all2"
 unfolding tllist.pcr_cr_eq
 apply(rule fun_relI)+
-apply(clarsimp simp add: cr_tllist_def llist_rel_def tllist_rel_def)
+apply(clarsimp simp add: cr_tllist_def llist_all2_def tllist_all2_def)
 apply(safe elim!: GrE)
    apply simp_all
    apply(rule_tac b="tllist_of_llist (b, ba) yb" in relcompI)

@@ -15,7 +15,7 @@ by(induct n) auto
 
 subsection {* Type definition *}
 
-codata 'a stream = SCons (shd: 'a) (stl: "'a stream")
+codata (sset: 'a) stream (map: smap) = SCons (shd: 'a) (stl: "'a stream")
 
 text {* 
   The following setup should be done by the BNF package.
@@ -51,9 +51,6 @@ end
 lemma equal_stream_code [code]:
   "equal_class.equal (SCons x xs) (SCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
 by(simp_all add: equal_stream_def)
-
-declare stream.sets[code] 
-(* declare llist_map_simps[code] *)
 
 lemma stream_corec_code [code]:
   "stream_corec SHD endORmore STL_end STL_more b = SCons (SHD b) 
@@ -101,34 +98,34 @@ lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = y
 by auto
 
 lemma stream_map_simps [simp, code]:
-  shows smap_SCons: "stream_map f (SCons x xs) = SCons (f x) (stream_map f xs)"
-unfolding stream_map_def SCons_def
+  shows smap_SCons: "smap f (SCons x xs) = SCons (f x) (smap f xs)"
+unfolding smap_def SCons_def
 by(subst stream.ctor_dtor_unfold, simp add: stream.dtor_ctor)
 
 lemma [simp]:
-  shows shd_smap: "shd (stream_map f xs) = f (shd xs)"
-  and stl_smap: "stl (stream_map f xs) = stream_map f (stl xs)"
+  shows shd_smap: "shd (smap f xs) = f (shd xs)"
+  and stl_smap: "stl (smap f xs) = smap f (stl xs)"
 by(cases xs, simp_all)+
 
-lemma smap_ident [simp]: "stream_map (\<lambda>x. x) xs = xs"
+lemma smap_ident [simp]: "smap (\<lambda>x. x) xs = xs"
 by(simp only: id_def[symmetric] stream.map_id')
 
 lemma smap_eq_SCons_conv:
-  "stream_map f xs = SCons y ys \<longleftrightarrow> 
-  (\<exists>x xs'. xs = SCons x xs' \<and> y = f x \<and> ys = stream_map f xs')"
+  "smap f xs = SCons y ys \<longleftrightarrow> 
+  (\<exists>x xs'. xs = SCons x xs' \<and> y = f x \<and> ys = smap f xs')"
 by(cases xs)(auto)
 
 lemma smap_id: 
-  "stream_map id = id"
+  "smap id = id"
 by(simp add: fun_eq_iff stream.map_id')
 
-lemma stream_map_stream_unfold:
-  "stream_map f (stream_unfold SHD STL b) = stream_unfold (f \<circ> SHD) STL b"
+lemma smap_stream_unfold:
+  "smap f (stream_unfold SHD STL b) = stream_unfold (f \<circ> SHD) STL b"
 by(coinduct b rule: stream_fun_coinduct) auto
 
-lemma stream_map_stream_corec:
-  "stream_map f (stream_corec SHD endORmore STL_end STL_more b) =
-   stream_corec (f \<circ> SHD) endORmore (stream_map f \<circ> STL_end) STL_more b"
+lemma smap_stream_corec:
+  "smap f (stream_corec SHD endORmore STL_end STL_more b) =
+   stream_corec (f \<circ> SHD) endORmore (smap f \<circ> STL_end) STL_more b"
 by(coinduct b rule: stream_fun_coinduct) auto
 
 lemma stream_unfold_ltl_unroll:
@@ -143,26 +140,26 @@ by(subst stream_unfold_code) auto
 lemma stream_unfold_id [simp]: "stream_unfold shd stl xs = xs"
 by(coinduct xs rule: stream_fun_coinduct) simp_all
 
-lemma sset_neq_empty [simp]: "stream_set xs \<noteq> {}"
+lemma sset_neq_empty [simp]: "sset xs \<noteq> {}"
 by(cases xs) simp_all
 
-lemma shd_in_sset [simp]: "shd xs \<in> stream_set xs"
+lemma shd_in_sset [simp]: "shd xs \<in> sset xs"
 by(cases xs) auto
 
-lemma sset_stl: "stream_set (stl xs) \<subseteq> stream_set xs"
+lemma sset_stl: "sset (stl xs) \<subseteq> sset xs"
 by(cases xs) auto
 
-lemma in_sset_stlD: "x \<in> stream_set (stl xs) \<Longrightarrow> x \<in> stream_set xs"
+lemma in_sset_stlD: "x \<in> sset (stl xs) \<Longrightarrow> x \<in> sset xs"
 using sset_stl[of xs] by auto
 
 text {* induction rules *}
 
-theorem stream_set_induct[consumes 1, case_names find step, induct set: "stream_set"]:
-  assumes y: "y \<in> stream_set s" and "\<And>s. P (shd s) s"
-  and "\<And>s y. \<lbrakk>y \<in> stream_set (stl s); P y (stl s)\<rbrakk> \<Longrightarrow> P y s"
+theorem stream_set_induct[consumes 1, case_names find step, induct set: sset]:
+  assumes y: "y \<in> sset s" and "\<And>s. P (shd s) s"
+  and "\<And>s y. \<lbrakk>y \<in> sset (stl s); P y (stl s)\<rbrakk> \<Longrightarrow> P y s"
   shows "P y s"
 proof -
-  have "\<forall>y \<in> stream_set s. P y s"
+  have "\<forall>y \<in> sset s. P y s"
     apply (rule stream.dtor_set_induct)
     using assms by(auto simp add:  shd_def stl_def stream_case_def fsts_def snds_def split_beta)
   thus ?thesis using y by blast
@@ -271,8 +268,6 @@ lemma SCons_transfer [transfer_rule]:
   "(A ===> pcr_stream A ===> pcr_stream A) LCons SCons"
 by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI)
 
-abbreviation sset where "sset \<equiv> stream_set"
-
 lemma lset_llist_of_stream [simp]: "lset (llist_of_stream xs) = sset xs" (is "?lhs = ?rhs")
 proof(intro set_eqI iffI)
   fix x
@@ -295,8 +290,6 @@ qed
 
 lemma sset_transfer [transfer_rule]: "(pcr_stream A ===> set_rel A) lset sset"
 by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI set_relI dest: llist_all2_lsetD1 llist_all2_lsetD2)
-
-abbreviation smap where "smap \<equiv> stream_map"
 
 lemma llist_of_stream_smap [simp]:
   "llist_of_stream (smap f xs) = lmap f (llist_of_stream xs)"
