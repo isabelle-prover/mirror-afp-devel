@@ -279,7 +279,7 @@ lemma frame_rule_left:
   using frame_rule by (simp add: assn_aci)
 
 lemmas deconstruct_rules = 
-  bind_rule if_rule false_rule return_sp_rule
+  bind_rule if_rule false_rule return_sp_rule let_rule case_prod_rule
 
 lemmas heap_rules = 
   ref_rule
