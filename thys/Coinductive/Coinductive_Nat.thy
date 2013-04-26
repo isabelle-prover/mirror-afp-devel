@@ -80,7 +80,7 @@ where [nitpick_simp]:
 
 locale co begin
 
-wrap_free_constructors ["0::enat", eSuc] enat_cocase [] [[], [epred]] [[epred: "0::enat"]]
+wrap_free_constructors ["0::enat", eSuc] enat_cocase [""] [[], [epred]] [[epred: "0::enat"]]
     apply (erule enat_coexhaust, assumption)
    apply (rule eSuc_inject)
   apply (rule zero_ne_eSuc)
@@ -241,7 +241,7 @@ by(simp add: enat_unfold)
 
 lemma enat_unfold_eq_0 [simp]:
   "enat_unfold stop next a = 0 \<longleftrightarrow> stop a"
-by (subst enat_unfold) simp
+by(simp add: enat_unfold)
 
 lemma epred_enat_unfold [simp]:
   "epred (enat_unfold stop next a) = (if stop a then 0 else enat_unfold stop next (next a))"
@@ -258,7 +258,7 @@ where
 lemma ile_into_Le_enat:
   "m \<le> n \<Longrightarrow> (m, n) \<in> Le_enat"
 proof -
-  assume "m \<le> n" 
+  assume "m \<le> n"
   hence "(m, n) \<in> {(m, n)|m n. m \<le> n}" by simp
   thus ?thesis
   proof coinduct

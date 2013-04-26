@@ -1081,7 +1081,7 @@ using lset_ldrop_subset[of n xs] by(auto)
 lemma lappend_ltake_ldrop:
   "lappend (ltake n xs) (ldrop n xs) = xs"
 by(coinduct n xs rule: llist_fun_coinduct2)
-  (auto simp add: ldrop_ltl ltl_ltake eSuc_epred intro!: arg_cong2[where f=lappend])
+  (auto simp add: ldrop_ltl ltl_ltake intro!: arg_cong2[where f=lappend])
 
 lemma ldropn_lappend:
   "ldropn n (lappend xs ys) =
@@ -1121,7 +1121,7 @@ by(rule exI)(rule lappend_ltake_ldrop)
 
 lemma ltake_plus_conv_lappend:
   "ltake (n + m) xs = lappend (ltake n xs) (ltake m (ldrop n xs))"
-by(coinduct n m xs rule: llist_fun_coinduct3)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl eSuc_epred)
+by(coinduct n m xs rule: llist_fun_coinduct3)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl)
 
 lemma ldropn_all:
   "llength xs \<le> enat m \<Longrightarrow> ldropn m xs = LNil"
