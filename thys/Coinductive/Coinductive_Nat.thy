@@ -21,7 +21,7 @@ by(cases b) auto
 lemma enat_the_enat: "n \<noteq> \<infinity> \<Longrightarrow> enat (the_enat n) = n"
 by auto
 
-lemma enat_min_eq_0_iff: 
+lemma enat_min_eq_0_iff:
   fixes a b :: enat
   shows "min a b = 0 \<longleftrightarrow> a = 0 \<or> b = 0"
 by(auto simp add: min_def)
@@ -241,7 +241,7 @@ by(simp add: enat_unfold)
 
 lemma enat_unfold_eq_0 [simp]:
   "enat_unfold stop next a = 0 \<longleftrightarrow> stop a"
-by(simp add: enat_unfold)
+by (subst enat_unfold) simp
 
 lemma epred_enat_unfold [simp]:
   "epred (enat_unfold stop next a) = (if stop a then 0 else enat_unfold stop next (next a))"
@@ -416,8 +416,8 @@ lemmas enat_le_fun_coinduct_invar2 = enat_le_fun_coinduct_invar[where ?'a="'a \<
 
 subsection {* Equality as greatest fixpoint *}
 
-lemma enat_equalityI [consumes 1, case_names Eqenat,
-                                  case_conclusion Eqenat zero eSuc]:
+lemma enat_equalityI [consumes 1, case_names Eq_enat,
+                                  case_conclusion Eq_enat zero eSuc]:
   assumes major: "(m, n) \<in> X"
   and step:
     "\<And>m n. (m, n) \<in> X
@@ -438,7 +438,7 @@ proof(rule antisym)
   qed
 qed
 
-lemma enat_coinduct [consumes 1, case_names Eqenat, case_conclusion Eqenat zero eSuc]:
+lemma enat_coinduct [consumes 1, case_names Eq_enat, case_conclusion Eq_enat zero eSuc]:
   assumes major: "P m n"
   and step: "\<And>m n. P m n 
     \<Longrightarrow> (m = 0 \<longleftrightarrow> n = 0) \<and>
@@ -448,7 +448,7 @@ proof -
   from major have "(m, n) \<in> {(m, n). P m n}" by simp
   thus ?thesis
   proof(coinduct rule: enat_equalityI)
-    case (Eqenat m n)
+    case (Eq_enat m n)
     hence "P m n" by simp
     from step[OF this] show ?case
       by(cases m n rule: enat_coexhaust[case_product enat_coexhaust]) auto
@@ -466,7 +466,7 @@ proof -
   have "(f n, g n) \<in> {(f n, g n)|n. True}" by auto
   thus ?thesis
   proof(coinduct rule: enat_equalityI)
-    case (Eqenat n1 n2)
+    case (Eq_enat n1 n2)
     then obtain n where n: "n1 = f n" "n2 = g n" by auto
     show ?case
     proof(cases n rule: enat_coexhaust)

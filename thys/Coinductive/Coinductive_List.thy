@@ -31,7 +31,7 @@ qed
 subsection {* Type definition *}
 
 codata (lset: 'a) llist (map: lmap rel: llist_all2) = 
-    LNil (defaults lhd: undefined ltl: LNil)
+    "": LNil (defaults lhd: undefined ltl: LNil)
   | LCons (lhd: 'a) (ltl: "'a llist")
 
 text {* 
@@ -1080,14 +1080,15 @@ using lset_ldrop_subset[of n xs] by(auto)
 
 lemma lappend_ltake_ldrop:
   "lappend (ltake n xs) (ldrop n xs) = xs"
-by(coinduct n xs rule: llist_fun_coinduct2)(auto simp add: ldrop_ltl ltl_ltake intro!: arg_cong2[where f=lappend])
+by(coinduct n xs rule: llist_fun_coinduct2)
+  (auto simp add: ldrop_ltl ltl_ltake eSuc_epred intro!: arg_cong2[where f=lappend])
 
 lemma ldropn_lappend:
   "ldropn n (lappend xs ys) =
   (if enat n < llength xs then lappend (ldropn n xs) ys
    else ldropn (n - the_enat (llength xs)) ys)"
 proof(induct n arbitrary: xs)
-  case 0 
+  case 0
   thus ?case by(simp add: zero_enat_def[symmetric])
 next
   case (Suc n)
@@ -1120,7 +1121,7 @@ by(rule exI)(rule lappend_ltake_ldrop)
 
 lemma ltake_plus_conv_lappend:
   "ltake (n + m) xs = lappend (ltake n xs) (ltake m (ldrop n xs))"
-by(coinduct n m xs rule: llist_fun_coinduct3)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl)
+by(coinduct n m xs rule: llist_fun_coinduct3)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl eSuc_epred)
 
 lemma ldropn_all:
   "llength xs \<le> enat m \<Longrightarrow> ldropn m xs = LNil"
@@ -1406,7 +1407,7 @@ next
       using len eq by blast
     thus "xs = us"
     proof(coinduct xs us rule: llist.coinduct)
-      case (Eqllist xs us)
+      case (Eq_llist xs us)
       thus ?case
         by(cases xs us rule: llist.exhaust[case_product llist.exhaust]) auto
     qed
@@ -1417,7 +1418,7 @@ next
       using eq `xs = us` by blast
     thus "ys = vs"
     proof(coinduct ys vs rule: llist.coinduct)
-      case (Eqllist ys vs)
+      case (Eq_llist ys vs)
       then obtain xs' 
         where eq: "lappend (llist_of xs') ys = lappend (llist_of xs') vs" by blast
       show ?case
@@ -3132,7 +3133,7 @@ proof
     with `?lhs` have "?lhs \<and> \<not> ?prefix" ..
     thus "xs = ys"
     proof(coinduct rule: llist.coinduct)
-      case (Eqllist xs ys)
+      case (Eq_llist xs ys)
       hence "llexord r xs ys"
         and prefix: "\<And>zs xs' y ys'. \<lbrakk> lfinite zs; xs = lappend zs xs';
                                       ys = lappend zs (LCons y ys') \<rbrakk>

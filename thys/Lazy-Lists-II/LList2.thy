@@ -1122,8 +1122,8 @@ proof-
   have "?r x y" using xinf yinf
     by (auto simp: finpref_def intro: R)
   thus ?thesis
-  proof (coinduct rule: llist_strong_coinduct)
-    case (Eqllist a b)
+  proof (coinduct rule: llist.strong_coinduct)
+    case (Eq_llist a b)
     hence ainf: "a \<in> A\<^sup>\<omega>"
       and binf: "b \<in> A\<^sup>\<omega>" and pref: "finpref A a \<subseteq> finpref A b" by auto
     from ainf show ?case
