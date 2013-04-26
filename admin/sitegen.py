@@ -111,6 +111,16 @@ html_entry_text_wrapper = """
         </td></tr>
 """
 
+# wrapper for a pre-formatted text column in header
+# {0}: title (e. g. 'Change history')
+# {1}: text
+html_entry_pre_text_wrapper = """
+    <tr><td class="datahead" valign="top">{0}:</td>
+        <td class="bibtex">
+			<pre>{1}</pre>
+        </td></tr>
+"""
+
 # wrapper for the entry header
 # {0}: title
 # {1}: author
@@ -165,6 +175,26 @@ html_entry_older_list = "<ul>\n{0}\n</ul>"
 # {0}: isabelle release (e. g. "2009")
 # {1}: release date (e. g. "2009-04-29")
 html_entry_older_release = """<li>Isabelle {0}: <a href="../release/afp-<!--#echo var="name" -->-{1}.tar.gz">afp-<!--#echo var="name" -->-{1}.tar.gz</a></li>\n"""
+
+### html output
+
+# wrapper for bibtex output
+# {0}: key
+# {1}: title
+# {2}: author
+# {3}: month
+# {4}: year
+# {{...}} is for escaping, because Py's format syntax collides with SSI
+bibtex_wrapper = """@article{{{0}-AFP{4},
+  author  = {{{1}}},
+  title   = {{{2}}},
+  journal = {{Archive of Formal Proofs}},
+  month   = {{{3}}},
+  year    = {{{4}}},
+  note    = {{\\url{{http://afp.sf.net/entries/{0}}}, Formal proof development}},
+  ISSN    = {{2150-914x}},
+}}"""
+
 
 ### metadata format
 
@@ -624,6 +654,13 @@ def parse_author(author, entry, key):
 		notice("In entry {0}: For {1} {2} no URL specified".format(entry, key, author))
 		return author, None
 
+# Extracts parts of a date, used in the bibtex files
+def month_of_date(date):
+	return "jan feb mar apr may jun jul aug sep oct nov dec".split(" ")[int(date.split("-")[1]) - 1]
+
+def year_of_date(date):
+	return date.split("-")[0]
+
 # splits list of dependencies. returns empty list if no dependency is
 # given
 def parse_depends_on(dependency, **kwargs):
@@ -635,10 +672,10 @@ def generate_link_list(entries):
 
 # takes a list of author-URL pairs and formats a string, either with
 # or without email addresses
-def generate_author_list(authors, spacer, ignore_mail = True):
+def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignore_url = False):
 	def _to_str(author):
 		name, url = author
-		if url:
+		if url and not ignore_url:
 			if url.startswith("mailto:"):
 				if ignore_mail:
 					return name
@@ -654,9 +691,9 @@ def generate_author_list(authors, spacer, ignore_mail = True):
 	elif len(authors) == 1:
 		return authors[0]
 	else:
-		return "{0} and {1}{2}".format(
-	      ",{0}".format(spacer).join(authors[:len(authors)-1]),
-		  spacer,
+		return "{0}{1}{2}".format(
+	      spacer.join(authors[:len(authors)-1]),
+		  last_spacer,
 		  authors[len(authors)-1]
 		)
 
@@ -697,7 +734,7 @@ def generate_index(entries):
 				attributes['date'],
 				entry,
 				attributes['title'] if attributes['title'] != '' else entry,
-				generate_author_list(attributes['author'], "\n")
+				generate_author_list(attributes['author'], ",\n", " and \n")
 			)
 		result += html_index_year.format(year, rows)
 	return result
@@ -705,6 +742,11 @@ def generate_index(entries):
 def format_entry_text(title, text):
 	return html_entry_text_wrapper.format(
 		title, "\n" + text
+	)
+
+def format_entry_pre_text(title, text):
+	return html_entry_pre_text_wrapper.format(
+		title, text
 	)
 
 def depends_on_string(deps):
@@ -733,10 +775,18 @@ def generate_entry(entry, attributes, param):
 
 		text_columns = format_entry_text("Abstract", attributes['abstract'])
 		text_columns += "".join([format_entry_text(k, v) for k, v in attributes['extra'].values()])
+		text_columns += format_entry_pre_text("BibTeX",
+			bibtex_wrapper.format(
+				entry,
+				generate_author_list(attributes['author'], ' and ', ' and ', ignore_url = True),
+				attributes['title'],
+				month_of_date(attributes['date']),
+				year_of_date(attributes['date']))
+		)
 
 		result += html_entry_header_wrapper.format(
 			attributes['title'],
-			generate_author_list(attributes['author'], ' ', ignore_mail = False),
+			generate_author_list(attributes['author'], ', ', ' and ', ignore_mail = False),
 			attributes['date'],
 			text_columns,
 			html_license_link.format(attributes['license'][0], attributes['license'][1]),

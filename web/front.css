@@ -229,6 +229,17 @@ td.abstract {
 ;
 }
 
+td.bibtex {
+ font: normal normal normal medium sans-serif;
+ font-size: small;
+ color: #000000;
+ background-color: #E2E2E2;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+}
+
 table.links {
  margin:  0em 0em 0em 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
