@@ -112,11 +112,11 @@ html_entry_text_wrapper = """
 """
 
 # wrapper for a pre-formatted text column in header
-# {0}: title (e. g. 'Change history')
+# {0}: title (e. g. 'BibTeX')
 # {1}: text
 html_entry_pre_text_wrapper = """
     <tr><td class="datahead" valign="top">{0}:</td>
-        <td class="bibtex">
+        <td class="formatted">
 			<pre>{1}</pre>
         </td></tr>
 """
@@ -185,13 +185,14 @@ html_entry_older_release = """<li>Isabelle {0}: <a href="../release/afp-<!--#ech
 # {3}: month
 # {4}: year
 # {{...}} is for escaping, because Py's format syntax collides with SSI
-bibtex_wrapper = """@article{{{0}-AFP{4},
+bibtex_wrapper = """@article{{{0}-AFP,
   author  = {{{1}}},
   title   = {{{2}}},
   journal = {{Archive of Formal Proofs}},
-  month   = {{{3}}},
-  year    = {{{4}}},
-  note    = {{\\url{{http://afp.sf.net/entries/{0}}}, Formal proof development}},
+  month   = {3},
+  year    = {4},
+  note    = {{\\url{{http://afp.sf.net/entries/{0}}},
+            Formal proof development}},
   ISSN    = {{2150-914x}},
 }}"""
 
