@@ -35,7 +35,7 @@ and
         <td class="data" width="80%">Jive Data and Store Model</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Nicole Rauch (rauch /at/ informatik /dot/ uni-kl /dot/ de) and  Norbert Schirmer</td></tr>
+        <td class="data">Nicole Rauch (rauch /at/ informatik /dot/ uni-kl /dot/ de) and Norbert Schirmer</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2005-06-20</td></tr>
@@ -44,6 +44,20 @@ and
         <td class="abstract">
 
 This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{JiveDataStoreModel-AFP,
+  author  = {Nicole Rauch and Norbert Schirmer},
+  title   = {Jive Data and Store Model},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2005,
+  note    = {\url{http://afp.sf.net/entries/JiveDataStoreModel},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

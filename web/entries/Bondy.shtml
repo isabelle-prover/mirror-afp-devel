@@ -32,7 +32,7 @@
         <td class="data" width="80%">Bondy's Theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.andrew.cmu.edu/user/avigad/">Jeremy Avigad</a> and  <a href="http://www.logic.at/people/hetzl/">Stefan Hetzl</a></td></tr>
+        <td class="data"><a href="http://www.andrew.cmu.edu/user/avigad/">Jeremy Avigad</a> and <a href="http://www.logic.at/people/hetzl/">Stefan Hetzl</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-10-27</td></tr>
@@ -41,6 +41,20 @@
         <td class="abstract">
 
 A proof of Bondy's theorem following B. Bollabas, Combinatorics, 1986, Cambridge University Press.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Bondy-AFP,
+  author  = {Jeremy Avigad and Stefan Hetzl},
+  title   = {Bondy's Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = oct,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Bondy},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

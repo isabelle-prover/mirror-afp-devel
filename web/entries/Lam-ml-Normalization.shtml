@@ -47,6 +47,20 @@ of
 Handling variable binding is one of the main difficulties in formal proofs. In this context, Moggi's computational metalanguage serves as an interesting case study. It features monadic types and a commuting conversion rule that rearranges the binding structure. Lindley and Stark have given an elegant proof of strong normalization for this calculus. The key construction in their proof is a notion of relational TT-lifting, using stacks of elimination contexts to obtain a Girard-Tait style logical relation. I give a formalization of their proof in Isabelle/HOL-Nominal with a particular emphasis on the treatment of bound variables.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Lam-ml-Normalization-AFP,
+  author  = {Christian Doczkal},
+  title   = {Strong Normalization of Moggis's Computational Metalanguage},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Lam-ml-Normalization},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

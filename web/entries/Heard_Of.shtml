@@ -38,7 +38,7 @@ the
         <td class="data" width="80%">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Henri Debrat (henri /dot/ debrat /at/ loria /dot/ fr) and  <a href="http://www.loria.fr/~merz/">Stephan Merz</a></td></tr>
+        <td class="data">Henri Debrat (henri /dot/ debrat /at/ loria /dot/ fr) and <a href="http://www.loria.fr/~merz/">Stephan Merz</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-07-27</td></tr>
@@ -72,6 +72,20 @@ coarse-grained semantics (where proofs are easier) and infer their correctness
 for the fine-grained one (which corresponds to actual executions). We
 instantiate the framework by verifying six Consensus algorithms that differ in
 the underlying algorithmic mechanisms and the kinds of faults they tolerate.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Heard_Of-AFP,
+  author  = {Henri Debrat and Stephan Merz},
+  title   = {Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model},
+  journal = {Archive of Formal Proofs},
+  month   = jul,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Heard_Of},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

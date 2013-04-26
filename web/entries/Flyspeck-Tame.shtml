@@ -34,7 +34,7 @@
         <td class="data" width="80%">Flyspeck I: Tame Graphs</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Gertrud Bauer and  <a href="http://www4.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
+        <td class="data">Gertrud Bauer and <a href="http://www4.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2006-05-22</td></tr>
@@ -50,6 +50,20 @@ These theories present the verified enumeration of <i>tame</i> plane graphs as d
 
 [2010-11-02]: modified theories to reflect the modified
 definition of tameness in Hales' revised proof.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Flyspeck-Tame-AFP,
+  author  = {Gertrud Bauer and Tobias Nipkow},
+  title   = {Flyspeck I: Tame Graphs},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2006,
+  note    = {\url{http://afp.sf.net/entries/Flyspeck-Tame},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

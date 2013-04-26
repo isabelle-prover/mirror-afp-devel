@@ -44,6 +44,20 @@
 This is a collection of cute puzzles of the form ``Show that if a function satisfies the following constraints, it must be ...'' Please add further examples to this collection!
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{FunWithFunctions-AFP,
+  author  = {Tobias Nipkow},
+  title   = {Fun With Functions},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2008,
+  note    = {\url{http://afp.sf.net/entries/FunWithFunctions},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

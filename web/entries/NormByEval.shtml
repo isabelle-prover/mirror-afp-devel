@@ -33,7 +33,7 @@ by
         <td class="data" width="80%">Normalization by Evaluation</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.linta.de/~aehlig/">Klaus Aehlig</a> and  <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data"><a href="http://www.linta.de/~aehlig/">Klaus Aehlig</a> and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2008-02-18</td></tr>
@@ -42,6 +42,20 @@ by
         <td class="abstract">
 
 This article formalizes normalization by evaluation as implemented in Isabelle. Lambda calculus plus term rewriting is compiled into a functional program with pattern matching. It is proved that the result of a successful evaluation is a) correct, i.e. equivalent to the input, and b) in normal form.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{NormByEval-AFP,
+  author  = {Klaus Aehlig and Tobias Nipkow},
+  title   = {Normalization by Evaluation},
+  journal = {Archive of Formal Proofs},
+  month   = feb,
+  year    = 2008,
+  note    = {\url{http://afp.sf.net/entries/NormByEval},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

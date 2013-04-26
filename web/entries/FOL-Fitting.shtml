@@ -46,6 +46,20 @@ to
 We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the L&ouml;wenheim-Skolem theorem.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{FOL-Fitting-AFP,
+  author  = {Stefan Berghofer},
+  title   = {First-Order Logic According to Fitting},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2007,
+  note    = {\url{http://afp.sf.net/entries/FOL-Fitting},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

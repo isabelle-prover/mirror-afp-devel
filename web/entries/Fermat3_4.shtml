@@ -55,6 +55,20 @@ of
 This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for exponents 3 and 4 and</li><li>the parametrisation of Pythagorean Triples.</li></ul>
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Fermat3_4-AFP,
+  author  = {Roelof Oosterhuis},
+  title   = {Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2007,
+  note    = {\url{http://afp.sf.net/entries/Fermat3_4},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

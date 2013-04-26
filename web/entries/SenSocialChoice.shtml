@@ -48,6 +48,20 @@ in
 Drawing on Sen's landmark work "Collective Choice and Social Welfare" (1970), this development proves Arrow's General Possibility Theorem, Sen's Liberal Paradox and May's Theorem in a general setting. The goal was to make precise the classical statements and proofs of these results, and to provide a foundation for more recent results such as the Gibbard-Satterthwaite and Duggan-Schwartz theorems.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{SenSocialChoice-AFP,
+  author  = {Peter Gammie},
+  title   = {Some classical results in Social Choice Theory},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2008,
+  note    = {\url{http://afp.sf.net/entries/SenSocialChoice},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

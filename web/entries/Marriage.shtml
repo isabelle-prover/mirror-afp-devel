@@ -33,7 +33,7 @@
         <td class="data" width="80%">Hall's Marriage Theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Dongchen Jiang (dongchenjiang /at/ googlemail /dot/ com) and  <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data">Dongchen Jiang (dongchenjiang /at/ googlemail /dot/ com) and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-12-17</td></tr>
@@ -48,6 +48,20 @@ Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to
         <td class="abstract">
 
 [2011-09-09]: Added Rado's proof
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Marriage-AFP,
+  author  = {Dongchen Jiang and Tobias Nipkow},
+  title   = {Hall's Marriage Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Marriage},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

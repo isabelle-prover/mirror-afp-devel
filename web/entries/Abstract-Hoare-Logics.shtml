@@ -44,6 +44,20 @@
 These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Abstract-Hoare-Logics-AFP,
+  author  = {Tobias Nipkow},
+  title   = {Abstract Hoare Logics},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2006,
+  note    = {\url{http://afp.sf.net/entries/Abstract-Hoare-Logics},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

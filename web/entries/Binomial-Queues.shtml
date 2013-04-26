@@ -44,6 +44,20 @@
 Priority queues are an important data structure and efficient implementations of them are crucial. We implement a functional variant of binomial queues in Isabelle/HOL and show its functional correctness. A verification against an abstract reference specification of priority queues has also been attempted, but could not be achieved to the full extent.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Binomial-Queues-AFP,
+  author  = {Ren&eacute; Neumann},
+  title   = {Functional Binomial Queues},
+  journal = {Archive of Formal Proofs},
+  month   = oct,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Binomial-Queues},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

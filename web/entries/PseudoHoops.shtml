@@ -32,7 +32,7 @@
         <td class="data" width="80%">Pseudo Hoops</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">George Georgescu, Laurentiu Leustean and  <a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a></td></tr>
+        <td class="data">George Georgescu, Laurentiu Leustean and <a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2011-09-22</td></tr>
@@ -41,6 +41,20 @@
         <td class="abstract">
 
 Pseudo-hoops are algebraic structures introduced by B. Bosbach under the name of complementary semigroups. In this formalization we prove some properties of pseudo-hoops and we define the basic concepts of filter and normal filter. The lattice of normal filters is isomorphic with the lattice of congruences of a pseudo-hoop. We also study some important classes of pseudo-hoops. Bounded Wajsberg pseudo-hoops are equivalent to pseudo-Wajsberg algebras and bounded basic pseudo-hoops are equivalent to pseudo-BL algebras. Some examples of pseudo-hoops are given in the last section of the formalization.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{PseudoHoops-AFP,
+  author  = {George Georgescu and Laurentiu Leustean and Viorel Preoteasa},
+  title   = {Pseudo Hoops},
+  journal = {Archive of Formal Proofs},
+  month   = sep,
+  year    = 2011,
+  note    = {\url{http://afp.sf.net/entries/PseudoHoops},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

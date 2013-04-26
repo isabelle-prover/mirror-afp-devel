@@ -34,7 +34,7 @@ and
         <td class="data" width="80%">Groups, Rings and Modules</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Hidetsune Kobayashi, L. Chen and  H. Murao</td></tr>
+        <td class="data">Hidetsune Kobayashi, L. Chen and H. Murao</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2004-05-18</td></tr>
@@ -43,6 +43,20 @@ and
         <td class="abstract">
 
 The theory of groups, rings and modules is developed to a great depth. Group theory results include Zassenhaus's theorem and the Jordan-Hoelder theorem. The ring theory development includes ideals, quotient rings and the Chinese remainder theorem. The module development includes the Nakayama lemma, exact sequences and Tensor products.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Group-Ring-Module-AFP,
+  author  = {Hidetsune Kobayashi and L. Chen and H. Murao},
+  title   = {Groups, Rings and Modules},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/Group-Ring-Module},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

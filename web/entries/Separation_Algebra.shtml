@@ -32,7 +32,7 @@
         <td class="data" width="80%">Separation Algebra</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Gerwin Klein (kleing /at/ cse /dot/ unsw /dot/ edu /dot/ au), Rafal Kolanski (rafal /dot/ kolanski /at/ nicta /dot/ com /dot/ au) and  Andrew Boyton (andrew /dot/ boyton /at/ nicta /dot/ com /dot/ au)</td></tr>
+        <td class="data">Gerwin Klein (kleing /at/ cse /dot/ unsw /dot/ edu /dot/ au), Rafal Kolanski (rafal /dot/ kolanski /at/ nicta /dot/ com /dot/ au) and Andrew Boyton (andrew /dot/ boyton /at/ nicta /dot/ com /dot/ au)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-05-11</td></tr>
@@ -41,6 +41,20 @@
         <td class="abstract">
 
 We present a generic type class implementation of separation algebra for Isabelle/HOL as well as lemmas and generic tactics which can be used directly for any instantiation of the type class. <P> The ex directory contains example instantiations that include structures such as a heap or virtual memory. <P> The abstract separation algebra is based upon "Abstract Separation Logic" by Calcagno et al. These theories are also the basis of the ITP 2012 rough diamond "Mechanised Separation Algebra" by the authors. <P> The aim of this work is to support and significantly reduce the effort for future separation logic developments in Isabelle/HOL by factoring out the part of separation logic that can be treated abstractly once and for all. This includes developing typical default rule sets for reasoning as well as automated tactic support for separation logic.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Separation_Algebra-AFP,
+  author  = {Gerwin Klein and Rafal Kolanski and Andrew Boyton},
+  title   = {Separation Algebra},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Separation_Algebra},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

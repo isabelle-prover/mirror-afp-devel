@@ -50,6 +50,20 @@ this research project, Shivers' algorithms and proofs are formalized
 in the HOLCF extension of HOL.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Shivers-CFA-AFP,
+  author  = {Joachim Breitner},
+  title   = {Shivers' Control Flow Analysis},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Shivers-CFA},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

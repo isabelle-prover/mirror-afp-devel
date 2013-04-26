@@ -50,6 +50,20 @@ We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the p
 [2012-09-25]: This entry has been discontinued because it is now part of the Isabelle distribution.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Ordinals_and_Cardinals-AFP,
+  author  = {Andrei Popescu},
+  title   = {Ordinals and Cardinals},
+  journal = {Archive of Formal Proofs},
+  month   = sep,
+  year    = 2009,
+  note    = {\url{http://afp.sf.net/entries/Ordinals_and_Cardinals},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

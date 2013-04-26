@@ -33,7 +33,7 @@
         <td class="data" width="80%">Depth First Search</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Toshiaki Nishihara and  <a href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a></td></tr>
+        <td class="data">Toshiaki Nishihara and <a href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2004-06-24</td></tr>
@@ -42,6 +42,20 @@
         <td class="abstract">
 
 Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Depth-First-Search-AFP,
+  author  = {Toshiaki Nishihara and Yasuhiko Minamide},
+  title   = {Depth First Search},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/Depth-First-Search},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

@@ -44,6 +44,20 @@
 This document presents the formalization of introductory material from  recursion theory --- definitions and basic properties of primitive recursive  functions, Cantor pairing function and computably enumerable sets  (including a proof of existence of a one-complete computably enumerable set  and a proof of the Rice's theorem).
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Recursion-Theory-I-AFP,
+  author  = {Michael Nedzelsky},
+  title   = {Recursion Theory I},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2008,
+  note    = {\url{http://afp.sf.net/entries/Recursion-Theory-I},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

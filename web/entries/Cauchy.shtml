@@ -48,6 +48,20 @@ the
 This document presents the mechanised proofs of two popular theorems attributed to Augustin Louis Cauchy - Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Cauchy-AFP,
+  author  = {Benjamin Porter},
+  title   = {Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2006,
+  note    = {\url{http://afp.sf.net/entries/Cauchy},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

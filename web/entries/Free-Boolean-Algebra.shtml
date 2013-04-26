@@ -44,6 +44,20 @@
 This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Free-Boolean-Algebra-AFP,
+  author  = {Brian Huffman},
+  title   = {Free Boolean Algebra},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Free-Boolean-Algebra},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

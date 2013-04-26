@@ -50,6 +50,20 @@ The main effort in the formalisation is to keep the machine checked proofs as cl
 This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Psi_Calculi-AFP,
+  author  = {Jesper Bengtson},
+  title   = {Psi-calculi in Isabelle},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Psi_Calculi},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
