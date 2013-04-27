@@ -44,6 +44,20 @@
 Gill and Hutton formalise the worker/wrapper transformation, building on the work of Launchbury and Peyton-Jones who developed it as a way of changing the type at which a recursive function operates. This development establishes the soundness of the technique and several examples of its use.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{WorkerWrapper-AFP,
+  author  = {Peter Gammie},
+  title   = {The Worker/Wrapper Transformation},
+  journal = {Archive of Formal Proofs},
+  month   = oct,
+  year    = 2009,
+  note    = {\url{http://afp.sf.net/entries/WorkerWrapper},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

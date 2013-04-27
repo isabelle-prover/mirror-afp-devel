@@ -37,7 +37,7 @@ for
         <td class="data" width="80%">A Separation Logic Framework for Imperative HOL</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and  Rene Meis (rene /dot/ meis /at/ uni-due /dot/ de)</td></tr>
+        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and Rene Meis (rene /dot/ meis /at/ uni-due /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-11-14</td></tr>
@@ -58,6 +58,20 @@ and use data-refinement techniques.
 As we target Imperative HOL, our programs can be translated to
 efficiently executable code in various target languages, including
 ML, OCaml, Haskell, and Scala.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Separation_Logic_Imperative_HOL-AFP,
+  author  = {Peter Lammich and Rene Meis},
+  title   = {A Separation Logic Framework for Imperative HOL},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Separation_Logic_Imperative_HOL},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

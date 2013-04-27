@@ -32,7 +32,7 @@
         <td class="data" width="80%">Possibilistic Noninterference</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Andrei Popescu (uuomul /at/ yahoo /dot/ com) and  Johannes H&ouml;lzl (hoelzl /at/ in /dot/ tum /dot/ de)</td></tr>
+        <td class="data">Andrei Popescu (uuomul /at/ yahoo /dot/ com) and Johannes H&ouml;lzl (hoelzl /at/ in /dot/ tum /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-09-10</td></tr>
@@ -49,6 +49,20 @@ yields sound syntactic criteria (a.k.a. type systems) in a uniform way.
 An <a href="http://www.in.tum.de/~nipkow/pubs/cpp12.html">article</a>
 about these proofs is published in the proceedings
 of the conference Certified Programs and Proofs 2012.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Possibilistic_Noninterference-AFP,
+  author  = {Andrei Popescu and Johannes H&ouml;lzl},
+  title   = {Possibilistic Noninterference},
+  journal = {Archive of Formal Proofs},
+  month   = sep,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Possibilistic_Noninterference},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

@@ -34,7 +34,7 @@ not
         <td class="data" width="80%">Jinja is not Java</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a> and  <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data"><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a> and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2005-06-01</td></tr>
@@ -43,6 +43,20 @@ not
         <td class="abstract">
 
 We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is a compromise between realism of the language and tractability and clarity of the formal semantics. The following aspects are formalised: a big and a small step operational semantics for Jinja and a proof of their equivalence; a type system and a definite initialisation analysis; a type safety proof of the small step semantics; a virtual machine (JVM), its operational semantics and its type system; a type safety proof for the JVM; a bytecode verifier, i.e. data flow analyser for the JVM; a correctness proof of the bytecode verifier w.r.t. the type system; a compiler and a proof that it preserves semantics and well-typedness. The emphasis of this work is not on particular language features but on providing a unified model of the source language, the virtual machine and the compiler. The whole development has been carried out in the theorem prover Isabelle/HOL.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Jinja-AFP,
+  author  = {Gerwin Klein and Tobias Nipkow},
+  title   = {Jinja is not Java},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2005,
+  note    = {\url{http://afp.sf.net/entries/Jinja},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

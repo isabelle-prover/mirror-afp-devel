@@ -32,7 +32,7 @@
         <td class="data" width="80%">Kleene Algebra</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>, <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a> and  <a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a></td></tr>
+        <td class="data"><a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>, <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a> and <a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2013-01-15</td></tr>
@@ -63,6 +63,20 @@ theorems in a structured and modular way and provides readable proofs
 at text book level. On the other hand, we intend to use this algebraic
 hierarchy and its models as a generic algebraic middle-layer from which
 programming applications can quickly be explored, implemented and verified.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Kleene_Algebra-AFP,
+  author  = {Alasdair Armstrong and Georg Struth and Tjark Weber},
+  title   = {Kleene Algebra},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2013,
+  note    = {\url{http://afp.sf.net/entries/Kleene_Algebra},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

@@ -35,7 +35,7 @@ using
         <td class="data" width="80%">Formalizing Statecharts using Hierarchical Automata</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Steffen Helke (helke /at/ cs /dot/ tu-berlin /dot/ de) and  Florian Kamm&uuml;ller (flokam /at/ cs /dot/ tu-berlin /dot/ de)</td></tr>
+        <td class="data">Steffen Helke (helke /at/ cs /dot/ tu-berlin /dot/ de) and Florian Kamm&uuml;ller (flokam /at/ cs /dot/ tu-berlin /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-08-08</td></tr>
@@ -55,6 +55,20 @@ Statecharts to build a bridge for future combinations with model
 checking. However the main motivation of this work is to provide a sound and
 complete basis for reasoning on Statecharts. As a central meta theorem we
 prove that the well-formedness of a Statechart is preserved by the semantics.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Statecharts-AFP,
+  author  = {Steffen Helke and Florian Kamm&uuml;ller},
+  title   = {Formalizing Statecharts using Hierarchical Automata},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Statecharts},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

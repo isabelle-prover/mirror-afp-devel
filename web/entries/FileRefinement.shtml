@@ -32,7 +32,7 @@
         <td class="data" width="80%">File Refinement</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.mit.edu/~kkz/">Karen Zee</a> and  <a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a></td></tr>
+        <td class="data"><a href="http://www.mit.edu/~kkz/">Karen Zee</a> and <a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2004-12-09</td></tr>
@@ -41,6 +41,20 @@
         <td class="abstract">
 
 These theories illustrates the verification of basic file operations (file creation, file read and file write) in the Isabelle theorem prover. We describe a file at two levels of abstraction: an abstract file represented as a resizable array, and a concrete file represented using data blocks.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{FileRefinement-AFP,
+  author  = {Karen Zee and Viktor Kuncak},
+  title   = {File Refinement},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/FileRefinement},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

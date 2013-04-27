@@ -44,6 +44,20 @@
 This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Lazy-Lists-II-AFP,
+  author  = {Stefan Friedrich},
+  title   = {Lazy Lists II},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/Lazy-Lists-II},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

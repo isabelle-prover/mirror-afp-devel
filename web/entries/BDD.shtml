@@ -32,7 +32,7 @@
         <td class="data" width="80%">BDD Normalisation</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Veronika Ortner and  Norbert Schirmer</td></tr>
+        <td class="data">Veronika Ortner and Norbert Schirmer</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2008-02-29</td></tr>
@@ -41,6 +41,20 @@
         <td class="abstract">
 
 We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{BDD-AFP,
+  author  = {Veronika Ortner and Norbert Schirmer},
+  title   = {BDD Normalisation},
+  journal = {Archive of Formal Proofs},
+  month   = feb,
+  year    = 2008,
+  note    = {\url{http://afp.sf.net/entries/BDD},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

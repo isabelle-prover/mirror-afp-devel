@@ -34,7 +34,7 @@
         <td class="data" width="80%">Dijkstra's Shortest Path Algorithm</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Benedikt Nordhoff (b /dot/ n /at/ wwu /dot/ de) and  <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
+        <td class="data">Benedikt Nordhoff (b /dot/ n /at/ wwu /dot/ de) and <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-01-30</td></tr>
@@ -47,6 +47,20 @@ single source shortest path problem, conceived in 1956 by E. Dijkstra.
 The algorithm is implemented using the data refinement framework for monadic,
 nondeterministic programs. An efficient implementation is derived using data
 structures from the Isabelle Collection Framework.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Dijkstra_Shortest_Path-AFP,
+  author  = {Benedikt Nordhoff and Peter Lammich},
+  title   = {Dijkstra's Shortest Path Algorithm},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Dijkstra_Shortest_Path},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

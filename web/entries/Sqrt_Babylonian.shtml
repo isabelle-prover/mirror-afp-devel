@@ -51,6 +51,20 @@ We provide precise algorithms for naturals, integers and rationals, and
 offer an approximation algorithm for linear ordered fields.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Sqrt_Babylonian-AFP,
+  author  = {Ren&eacute; Thiemann},
+  title   = {Computing Square Roots using the Babylonian Method},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2013,
+  note    = {\url{http://afp.sf.net/entries/Sqrt_Babylonian},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 

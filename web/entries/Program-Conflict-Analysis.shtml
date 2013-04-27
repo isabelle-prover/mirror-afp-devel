@@ -42,7 +42,7 @@ and
         <td class="data" width="80%">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and  <a href="http://cs.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a></td></tr>
+        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and <a href="http://cs.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2007-12-14</td></tr>
@@ -51,6 +51,20 @@ and
         <td class="abstract">
 
 In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Program-Conflict-Analysis-AFP,
+  author  = {Peter Lammich and Markus M&uuml;ller-Olm},
+  title   = {Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2007,
+  note    = {\url{http://afp.sf.net/entries/Program-Conflict-Analysis},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

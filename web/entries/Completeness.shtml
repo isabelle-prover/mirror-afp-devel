@@ -32,7 +32,7 @@ theorem
         <td class="data" width="80%">Completeness theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">James Margetson and  Tom Ridge</td></tr>
+        <td class="data">James Margetson and Tom Ridge</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2004-09-20</td></tr>
@@ -41,6 +41,20 @@ theorem
         <td class="abstract">
 
 The completeness of first-order logic is proved, following the first five pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel et al., CUP, 1992. Their presentation of formulas allows the proofs to use symmetry arguments. Margetson formalized this theorem by early 2000. The Isar conversion is thanks to Tom Ridge. A paper describing the formalization is available <a href="Completeness-paper.pdf">[pdf]</a>.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Completeness-AFP,
+  author  = {James Margetson and Tom Ridge},
+  title   = {Completeness theorem},
+  journal = {Archive of Formal Proofs},
+  month   = sep,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/Completeness},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

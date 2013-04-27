@@ -34,7 +34,7 @@ and
         <td class="data" width="80%">Regular Sets and Expressions</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and  <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
+        <td class="data"><a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-05-12</td></tr>
@@ -51,6 +51,20 @@ This is a library of constructions on regular expressions and languages. It prov
 [2011-08-26]: Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
 [2012-05-10]: Tobias Nipkow added extended regular expressions<br>
 [2012-05-10]: Tobias Nipkow added equivalence checking with partial derivatives
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Regular-Sets-AFP,
+  author  = {Alexander Krauss and Tobias Nipkow},
+  title   = {Regular Sets and Expressions},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Regular-Sets},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

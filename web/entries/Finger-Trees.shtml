@@ -32,7 +32,7 @@
         <td class="data" width="80%">Finger Trees</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Benedikt Nordhoff (b_nord01 /at/ uni-muenster /dot/ de), Stefan K&ouml;rner (s_koer03 /at/ uni-muenster /dot/ de) and  <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
+        <td class="data">Benedikt Nordhoff (b_nord01 /at/ uni-muenster /dot/ de), Stefan K&ouml;rner (s_koer03 /at/ uni-muenster /dot/ de) and <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-10-28</td></tr>
@@ -51,6 +51,20 @@ the main operation is to split the sequence at the point where a
 becomes true for the first time.
 The implementation follows the paper of Hintze and Paterson.
 The code generator can be used to get efficient, verified code.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Finger-Trees-AFP,
+  author  = {Benedikt Nordhoff and Stefan K&ouml;rner and Peter Lammich},
+  title   = {Finger Trees},
+  journal = {Archive of Formal Proofs},
+  month   = oct,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Finger-Trees},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

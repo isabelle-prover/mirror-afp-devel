@@ -48,6 +48,20 @@ the
 This document gives a formalization of the proof of the Robbins conjecture, following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Robbins-Conjecture-AFP,
+  author  = {Matthew Wampler-Doty},
+  title   = {A Complete Proof of the Robbins Conjecture},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Robbins-Conjecture},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

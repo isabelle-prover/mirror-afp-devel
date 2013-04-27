@@ -50,6 +50,20 @@ in
 This contribution contains a fast SAT solver for Isabelle written in Standard ML. By loading the theory <tt>DPT_SAT_Solver</tt>, the SAT solver installs itself (under the name ``dptsat'') and certain Isabelle tools like Refute will start using it automatically. This is a port of the DPT (Decision Procedure Toolkit) SAT Solver written in OCaml.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{DPT-SAT-Solver-AFP,
+  author  = {Armin Heller},
+  title   = {A Fast SAT Solver for Isabelle in Standard ML},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2009,
+  note    = {\url{http://afp.sf.net/entries/DPT-SAT-Solver},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

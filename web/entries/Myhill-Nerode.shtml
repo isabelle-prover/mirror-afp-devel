@@ -37,7 +37,7 @@ on
         <td class="data" width="80%">The Myhill-Nerode Theorem Based on Regular Expressions</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Chunhan Wu, Xingyuan Zhang and  <a href="http://www.inf.kcl.ac.uk/staff/urbanc/">Christian Urban</a></td></tr>
+        <td class="data">Chunhan Wu, Xingyuan Zhang and <a href="http://www.inf.kcl.ac.uk/staff/urbanc/">Christian Urban</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2011-08-26</td></tr>
@@ -46,6 +46,20 @@ on
         <td class="abstract">
 
 There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Myhill-Nerode-AFP,
+  author  = {Chunhan Wu and Xingyuan Zhang and Christian Urban},
+  title   = {The Myhill-Nerode Theorem Based on Regular Expressions},
+  journal = {Archive of Formal Proofs},
+  month   = aug,
+  year    = 2011,
+  note    = {\url{http://afp.sf.net/entries/Myhill-Nerode},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

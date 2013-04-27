@@ -59,6 +59,20 @@ we instantiate the type class hierarchy with various monads and monad
 transformers.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Tycon-AFP,
+  author  = {Brian Huffman},
+  title   = {Type Constructor Classes and Monad Transformers},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Tycon},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

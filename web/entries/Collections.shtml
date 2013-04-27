@@ -32,7 +32,7 @@
         <td class="data" width="80%">Collections Framework</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>, <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and  Thomas Tuerk</td></tr>
+        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>, <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and Thomas Tuerk</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2009-11-25</td></tr>
@@ -58,6 +58,20 @@ MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size
 map_image_filter, map_value_image_filter
 Some maintenance changes
 [2012-04-25]: New iterator foundation by Tuerk. Various maintenance changes.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Collections-AFP,
+  author  = {Peter Lammich and Andreas Lochbihler and Thomas Tuerk},
+  title   = {Collections Framework},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2009,
+  note    = {\url{http://afp.sf.net/entries/Collections},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

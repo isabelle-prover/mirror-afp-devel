@@ -34,7 +34,7 @@
         <td class="data" width="80%">Locally Nameless Sigma Calculus</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Ludovic Henrio (Ludovic /dot/ Henrio /at/ sophia /dot/ inria /dot/ fr), Florian Kamm&uuml;ller (flokam /at/ cs /dot/ tu-berlin /dot/ de), Bianca Lutz (sowilo /at/ cs /dot/ tu-berlin /dot/ de) and  Henry Sudhof (hsudhof /at/ cs /dot/ tu-berlin /dot/ de)</td></tr>
+        <td class="data">Ludovic Henrio (Ludovic /dot/ Henrio /at/ sophia /dot/ inria /dot/ fr), Florian Kamm&uuml;ller (flokam /at/ cs /dot/ tu-berlin /dot/ de), Bianca Lutz (sowilo /at/ cs /dot/ tu-berlin /dot/ de) and Henry Sudhof (hsudhof /at/ cs /dot/ tu-berlin /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-04-30</td></tr>
@@ -43,6 +43,20 @@
         <td class="abstract">
 
 We present a Theory of Objects based on the original functional sigma-calculus by Abadi and Cardelli but with an additional parameter to methods. We prove confluence of the operational semantics following the outline of Nipkow's proof of confluence for the lambda-calculus reusing his theory Commutation, a generic diamond lemma reduction. We furthermore formalize a simple type system for our sigma-calculus including a proof of type safety. The entire development uses the concept of Locally Nameless representation for binders. We reuse an earlier proof of confluence for a simpler sigma-calculus based on de Bruijn indices and lists to represent objects.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Locally-Nameless-Sigma-AFP,
+  author  = {Ludovic Henrio and Florian Kamm&uuml;ller and Bianca Lutz and Henry Sudhof},
+  title   = {Locally Nameless Sigma Calculus},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Locally-Nameless-Sigma},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

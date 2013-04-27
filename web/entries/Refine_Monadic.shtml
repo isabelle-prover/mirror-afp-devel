@@ -57,6 +57,20 @@ This submission comes with a collection of examples and a user-guide,
 illustrating the usage of the framework.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Refine_Monadic-AFP,
+  author  = {Peter Lammich},
+  title   = {Refinement for Monadic Programs},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Refine_Monadic},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

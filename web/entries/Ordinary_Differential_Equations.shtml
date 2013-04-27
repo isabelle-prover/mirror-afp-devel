@@ -33,7 +33,7 @@
         <td class="data" width="80%">Ordinary Differential Equations</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://home.in.tum.de/~immler">Fabian Immler</a> and  <a href="http://home.in.tum.de/~hoelzl">Johannes H&ouml;lzl</a></td></tr>
+        <td class="data"><a href="http://home.in.tum.de/~immler">Fabian Immler</a> and <a href="http://home.in.tum.de/~hoelzl">Johannes H&ouml;lzl</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-04-26</td></tr>
@@ -42,6 +42,20 @@
         <td class="abstract">
 
 We formalize initial value problems (IVPs) of ODEs and prove the existence of a unique solution, i.e. the Picard-Lindelöf theorem. We introduce general one-step methods for numerical approximation of the solution and provide an analysis regarding the local and global error of one-step methods. We give an executable specification of the Euler method to approximate the solution of IVPs and prove an explicit bound for the global error. We use arbitrary-precision floating-point numbers and also handle rounding errors when we truncate the numbers for efficiency reasons.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Ordinary_Differential_Equations-AFP,
+  author  = {Fabian Immler and Johannes H&ouml;lzl},
+  title   = {Ordinary Differential Equations},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Ordinary_Differential_Equations},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

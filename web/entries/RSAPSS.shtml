@@ -35,7 +35,7 @@ more
         <td class="data" width="80%">SHA1, RSA, PSS and more</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Christina Lindenberg and  Kai Wirt</td></tr>
+        <td class="data">Christina Lindenberg and Kai Wirt</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2005-05-02</td></tr>
@@ -44,6 +44,20 @@ more
         <td class="abstract">
 
 Formal verification is getting more and more important in computer science. However the state of the art formal verification methods in cryptography are very rudimentary. These theories are one step to provide a tool box allowing the use of formal methods in every aspect of cryptography. Moreover we present a proof of concept for the feasibility of verification techniques to a standard signature algorithm.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{RSAPSS-AFP,
+  author  = {Christina Lindenberg and Kai Wirt},
+  title   = {SHA1, RSA, PSS and more},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2005,
+  note    = {\url{http://afp.sf.net/entries/RSAPSS},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

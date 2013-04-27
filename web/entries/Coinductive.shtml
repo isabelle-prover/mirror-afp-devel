@@ -73,6 +73,20 @@ setup for lifting and transfer packages
 (revision <a href="http://sourceforge.net/p/afp/code/ci/f593eda5b2c0af115ef7c823360f3ee00edfb840">f593eda5b2c0af115ef7c823360f3ee00edfb840</a>)<br>
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Coinductive-AFP,
+  author  = {Andreas Lochbihler},
+  title   = {Coinductive},
+  journal = {Archive of Formal Proofs},
+  month   = feb,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Coinductive},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

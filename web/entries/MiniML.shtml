@@ -32,7 +32,7 @@
         <td class="data" width="80%">Mini ML</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Wolfgang Naraschewski and  <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data">Wolfgang Naraschewski and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2004-03-19</td></tr>
@@ -41,6 +41,20 @@
         <td class="abstract">
 
 This theory defines the type inference rules and the type inference algorithm <i>W</i> for MiniML (simply-typed lambda terms with <tt>let</tt>) due to Milner. It proves the soundness and completeness of <i>W</i> w.r.t. the rules.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{MiniML-AFP,
+  author  = {Wolfgang Naraschewski and Tobias Nipkow},
+  title   = {Mini ML},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/MiniML},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

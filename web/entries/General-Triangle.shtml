@@ -46,6 +46,20 @@
 Some acute-angled triangles are special, e.g. right-angled or isoscele triangles. Some are not of this kind, but, without measuring angles, look as if they were. In that sense, there is exactly one general triangle. This well-known fact is proven here formally.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{General-Triangle-AFP,
+  author  = {Joachim Breitner},
+  title   = {The General Triangle Is Unique},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2011,
+  note    = {\url{http://afp.sf.net/entries/General-Triangle},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

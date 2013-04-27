@@ -44,6 +44,20 @@
 An exception compilation scheme that dynamically creates and removes exception handler entries on the stack. A formalization of an article of the same name by <a href="http://www.cs.nott.ac.uk/~gmh/">Hutton</a> and Wright.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Compiling-Exceptions-Correctly-AFP,
+  author  = {Tobias Nipkow},
+  title   = {Compiling Exceptions Correctly},
+  journal = {Archive of Formal Proofs},
+  month   = jul,
+  year    = 2004,
+  note    = {\url{http://afp.sf.net/entries/Compiling-Exceptions-Correctly},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 

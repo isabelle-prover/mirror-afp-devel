@@ -33,7 +33,7 @@
         <td class="data" width="80%">Abortable Linearizable Modules</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Rachid Guerraoui (rachid /dot/ guerraoui /at/ epfl /dot/ ch), <a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a> and  Giuliano Losa (giuliano /dot/ losa /at/ epfl /dot/ ch)</td></tr>
+        <td class="data">Rachid Guerraoui (rachid /dot/ guerraoui /at/ epfl /dot/ ch), <a href="http://lara.epfl.ch/~kuncak/">Viktor Kuncak</a> and Giuliano Losa (giuliano /dot/ losa /at/ epfl /dot/ ch)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-03-1</td></tr>
@@ -53,6 +53,20 @@ the need to tolerate faults and asynchrony has made current
 monolithic protocols so intricate that it is no longer tractable to
 check their correctness. Our theory contains a typical example of a
 refinement proof in the I/O-automata framework of Lynch and Tuttle.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Abortable_Linearizable_Modules-AFP,
+  author  = {Rachid Guerraoui and Viktor Kuncak and Giuliano Losa},
+  title   = {Abortable Linearizable Modules},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Abortable_Linearizable_Modules},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

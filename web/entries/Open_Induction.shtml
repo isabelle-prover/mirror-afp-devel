@@ -32,7 +32,7 @@
         <td class="data" width="80%">Open Induction</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Mizuhito Ogawa and  <a href="http://www.jaist.ac.jp/~c-sterna/">Christian Sternagel</a></td></tr>
+        <td class="data">Mizuhito Ogawa and <a href="http://www.jaist.ac.jp/~c-sterna/">Christian Sternagel</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-11-02</td></tr>
@@ -43,6 +43,20 @@
 
 A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
 <p>This research was supported by the Austrian Science Fund (FWF): J3202.</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Open_Induction-AFP,
+  author  = {Mizuhito Ogawa and Christian Sternagel},
+  title   = {Open Induction},
+  journal = {Archive of Formal Proofs},
+  month   = nov,
+  year    = 2012,
+  note    = {\url{http://afp.sf.net/entries/Open_Induction},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>

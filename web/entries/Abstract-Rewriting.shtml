@@ -32,7 +32,7 @@
         <td class="data" width="80%">Abstract Rewriting</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and  <a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a></td></tr>
+        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and <a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-06-14</td></tr>
@@ -59,6 +59,20 @@ theory. One of those is Newman's lemma.
 [2010-09-17]: Added theories defining several (ordered)
 semirings related to strong normalization and giving some standard
 instances.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Abstract-Rewriting-AFP,
+  author  = {Christian Sternagel and Ren&eacute; Thiemann},
+  title   = {Abstract Rewriting},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2010,
+  note    = {\url{http://afp.sf.net/entries/Abstract-Rewriting},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
