@@ -15,7 +15,7 @@ by(induct n) auto
 
 subsection {* Type definition *}
 
-codata (sset: 'a) stream (map: smap) = SCons (shd: 'a) (stl: "'a stream")
+codatatype (sset: 'a) stream (map: smap) = SCons (shd: 'a) (stl: "'a stream")
 
 text {* 
   The following setup should be done by the BNF package.

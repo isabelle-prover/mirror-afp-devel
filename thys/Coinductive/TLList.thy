@@ -64,7 +64,7 @@ subsection {* Type definition *}
 
 consts terminal0 :: "'a"
 
-codata (tset: 'a, 'b) tllist (map: tmap rel: tllist_all2) =
+codatatype (tset: 'a, 'b) tllist (map: tmap rel: tllist_all2) =
     TNil (terminal : 'b) (defaults thd : "\<lambda>_. undefined" ttl: "\<lambda>b. TNil b")
   | TCons (thd : 'a) (ttl : "('a, 'b) tllist")
     (defaults terminal: "\<lambda>x :: 'a. \<lambda>xs :: ('a, 'b) tllist. (terminal0 xs :: 'b)")

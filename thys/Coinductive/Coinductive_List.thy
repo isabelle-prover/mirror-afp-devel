@@ -30,7 +30,7 @@ qed
 
 subsection {* Type definition *}
 
-codata (lset: 'a) llist (map: lmap rel: llist_all2) = 
+codatatype (lset: 'a) llist (map: lmap rel: llist_all2) = 
     =: LNil (defaults lhd: undefined ltl: LNil)
   | LCons (lhd: 'a) (ltl: "'a llist")
 
