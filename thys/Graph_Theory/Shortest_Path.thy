@@ -1,5 +1,5 @@
 (* Title:  Shortest_Path.thy
-   Author: Lars Noschinski, TU MÃ¼nchen
+   Author: Lars Noschinski, TU München
 *)
 
 theory Shortest_Path imports
@@ -74,7 +74,7 @@ lemma inf_over_nats:
   fixes a c :: real
   assumes "c < 0"
   shows "(INF (i :: nat). a + i * c) = - \<infinity>"
-proof (rule ereal_INFI)
+proof (rule INF_eqI)
   fix i :: nat show "- \<infinity> \<le> a + real i * c" by simp
 next
   fix y :: ereal
