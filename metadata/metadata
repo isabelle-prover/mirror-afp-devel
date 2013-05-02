@@ -1354,10 +1354,10 @@ depends-on = Lazy-Lists-II
 
 [Graph_Theory]
 title = Graph Theory
-author = Lars Noschinski <mailto:noschinl@in.tum.de>
+author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2013-04-28
-topic = Mathematics/Graph Theory
 base = HOL/HOL-Library
+topic = Mathematics/Graph Theory
 abstract = This development provides a formalization of directed graphs, supporting (labelled) multi-edges and infinite graphs. A polymorphic edge type allows edges to be treated as pairs of vertices, if multi-edges are not required. Formalized properties are i.a. walks (and related concepts), connectedness and subgraphs and basic properties of isomorphisms.
  <p>
  This formalization is used to prove characterizations of Euler Trails, Shortest Paths and Kuratowski subgraphs.

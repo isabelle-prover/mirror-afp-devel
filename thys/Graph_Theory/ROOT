@@ -1,8 +1,5 @@
-session "Graph_Theory" (AFP) = "HOL" +
+session "Graph_Theory" (AFP) = "HOL-Library" +
   options [timeout = 3600]
-  theories [document = false]
-    "~~/src/HOL/Library/Extended_Nat"
-    "~~/src/HOL/Library/Extended_Real"
   theories
     Graph_Theory
   files
