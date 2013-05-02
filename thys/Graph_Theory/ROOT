@@ -1,0 +1,7 @@
+session "Graph_Theory" (AFP) = "HOL-Library" +
+  options [timeout = 3600]
+  theories
+    Graph_Theory
+  files
+    "document/root.tex"
+    "document/root.bib"
