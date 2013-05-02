@@ -74,7 +74,7 @@ This formalization is used to prove characterizations of Euler Trails, Shortest 
 <p></p>
 
 <!--#set var="name" value="Graph_Theory" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
