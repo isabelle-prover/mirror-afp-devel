@@ -993,7 +993,7 @@ lemma inter_guards_strip_eq:
 apply (induct c1 c2 rule: inter_guards.induct) 
 prefer 8 
 apply (simp split: split_if_asm  add: not_None_eq)
-apply (tactic "hyp_subst_tac 1")
+apply (tactic "hyp_subst_tac @{context} 1")
 apply simp
 apply (rule conjI)
 apply  (rule ext)
@@ -1003,10 +1003,6 @@ apply (rule ext)
 apply (erule_tac x=s in allE, erule exE)
 apply fastforce
 apply (fastforce split: option.splits split_if_asm)+
-(*
-apply simp_all
-apply (fastforce split: option.splits split_if_asm)+
-*)
 done
 
 lemma inter_guards_sym: "\<And>c. (c1 \<inter>\<^sub>g c2) = Some c \<Longrightarrow> (c2 \<inter>\<^sub>g c1) = Some c"
@@ -1022,14 +1018,7 @@ apply  fastforce
 apply fastforce
 apply (fastforce split: option.splits split_if_asm)+
 done
-(*
-lemma inter_guards_sym: "(c1 \<inter>\<^sub>g c2) = (c2 \<inter>\<^sub>g c1)"
-apply (induct c1 c2 rule: inter_guards.induct)
-prefer 8
-apply simp_all
-apply (fastforce split: option.splits split_if_asm)+
-done
-*)
+
 
 lemma inter_guards_Skip: "(Skip \<inter>\<^sub>g c2) = Some c = (c2=Skip \<and> c=Skip)"
   by (cases c2) auto
@@ -1184,7 +1173,7 @@ done
 lemma subseteq_guards_refl: "c \<subseteq>\<^sub>g c"
   by (induct c) auto
 
-(* Antisymmetrie and transitivity should hold as well\<dots> *)
+(* Antisymmetry and transitivity should hold as well\<dots> *)
 
 
 end
