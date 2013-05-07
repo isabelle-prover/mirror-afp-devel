@@ -553,15 +553,15 @@ lemma tllist_all2_transfer [transfer_rule]:
 unfolding tllist.pcr_cr_eq
 apply(rule fun_relI)+
 apply(clarsimp simp add: cr_tllist_def llist_all2_def tllist_all2_def)
-apply(safe elim!: GrE)
+apply(safe elim!: GrpE)
    apply simp_all
-   apply(rule_tac b="tllist_of_llist (b, ba) yb" in relcompI)
-    apply(auto intro!: GrI simp add: tmap_tllist_of_llist)[2]
-  apply(rule_tac b="tllist_of_llist (b, ba) yb" in relcompI)
-   apply(auto simp add: tmap_tllist_of_llist intro!: GrI split: split_if_asm)[2]
- apply(rule_tac b="llist_of_tllist yb" in relcompI)
-apply(auto intro!: GrI)
-apply(transfer, auto intro: GrI split: split_if_asm)+
+   apply(rule_tac b="tllist_of_llist (b, ba) bb" in relcomppI)
+    apply(auto intro!: GrpI simp add: tmap_tllist_of_llist)[2]
+  apply(rule_tac b="tllist_of_llist (b, ba) bb" in relcomppI)
+   apply(auto simp add: tmap_tllist_of_llist intro!: GrpI split: split_if_asm)[2]
+ apply(rule_tac b="llist_of_tllist bb" in relcomppI)
+apply(auto intro!: GrpI)
+apply(transfer, auto intro: GrpI split: split_if_asm)+
 done
 
 subsection {* Library function definitions *}

@@ -2429,7 +2429,7 @@ lemma llist_all2_LNil1 [simp]: "llist_all2 P LNil xs \<longleftrightarrow> xs = 
 by(cases xs) simp_all
 
 lemma llist_all2_LNil2 [simp]: "llist_all2 P xs LNil \<longleftrightarrow> xs = LNil"
-by(cases xs) simp_all 
+by(cases xs) simp_all
 
 lemma llist_all2_LCons1: 
   "llist_all2 P (LCons x xs) ys \<longleftrightarrow> (\<exists>y ys'. ys = LCons y ys' \<and> P x y \<and> llist_all2 P xs ys')"
@@ -2445,7 +2445,9 @@ by(induct xs ys rule: list_induct2')(simp_all)
 
 lemma llist_all2_conv_lzip:
   "llist_all2 P xs ys \<longleftrightarrow> llength xs = llength ys \<and> (\<forall>(x, y) \<in> lset (lzip xs ys). P x y)"
-by(auto 4 4 elim!: GrE simp add: llist_all2_def lmap_fst_lzip_conv_ltake lmap_snd_lzip_conv_ltake ltake_all intro: GrI)
+by(auto 4 4 elim!: GrpE simp add:
+  llist_all2_def lmap_fst_lzip_conv_ltake lmap_snd_lzip_conv_ltake ltake_all
+  intro!: GrpI relcomppI[of _ xs _ _ ys])
 
 lemma llist_all2_llengthD:
   "llist_all2 P xs ys \<Longrightarrow> llength xs = llength ys"
