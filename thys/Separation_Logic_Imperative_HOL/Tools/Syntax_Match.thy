@@ -38,7 +38,7 @@ struct
 
     val redex = term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
-    (*val _ = tracing (PolyML.makestring credex);*)
+    (*val _ = tracing (@{make_string} credex);*)
 
     fun fo_matches po = can (fn () => Pattern.first_order_match 
       thy po (Vartab.empty, Vartab.empty)) ();
@@ -51,7 +51,7 @@ struct
 
     val redex = term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
-    (*val _ = tracing (PolyML.makestring credex);*)
+    (*val _ = tracing (@{make_string} credex);*)
   in
     if Pattern.matches thy (pat,obj) then NONE else SOME nomatch_thm
   end
