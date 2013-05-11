@@ -993,7 +993,7 @@ lemma inter_guards_strip_eq:
 apply (induct c1 c2 rule: inter_guards.induct) 
 prefer 8 
 apply (simp split: split_if_asm  add: not_None_eq)
-apply (tactic "hyp_subst_tac @{context} 1")
+apply hypsubst
 apply simp
 apply (rule conjI)
 apply  (rule ext)
