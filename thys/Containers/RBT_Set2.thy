@@ -327,11 +327,11 @@ using ID_corder_neq_None by(clarsimp)(rule ID_corder)
 
 lemma Inf_fin_member:
   "(rbt :: 'a set_rbt) \<noteq> RBT_Set2.empty \<Longrightarrow> Inf_fin (Collect (member rbt)) = RBT_Set2.fold1 inf rbt"
-by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder2] ord.is_rbt_rbt_sorted RBT_Impl_fold1_def neq_Empty_conv, simp add: Inf_fin_set_fold[symmetric])
+by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder2] ord.is_rbt_rbt_sorted RBT_Impl_fold1_def neq_Empty_conv, simp add: Inf_fin.set_eq_fold[symmetric])
 
 lemma Sup_fin_member:
   "(rbt :: 'a set_rbt) \<noteq> RBT_Set2.empty \<Longrightarrow> Sup_fin (Collect (member rbt)) = RBT_Set2.fold1 sup rbt"
-by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder2] ord.is_rbt_rbt_sorted RBT_Impl_fold1_def neq_Empty_conv, simp add: Sup_fin_set_fold[symmetric])
+by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder2] ord.is_rbt_rbt_sorted RBT_Impl_fold1_def neq_Empty_conv, simp add: Sup_fin.set_eq_fold[symmetric])
 
 end
 

@@ -1,7 +1,7 @@
 theory Benchmark_LC imports
   Benchmark_Comparison
   "../Set_Impl"
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
 notepad begin

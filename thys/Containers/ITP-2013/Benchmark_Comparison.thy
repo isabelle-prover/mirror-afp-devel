@@ -2,7 +2,7 @@ theory Benchmark_Comparison imports
   Main
 begin
 
-fun gen_build :: "code_numeral \<Rightarrow> nat \<Rightarrow> (code_numeral set \<times> Random.seed) \<Rightarrow> (code_numeral set \<times> Random.seed)"
+fun gen_build :: "natural \<Rightarrow> nat \<Rightarrow> (natural set \<times> Random.seed) \<Rightarrow> (natural set \<times> Random.seed)"
 where 
   "gen_build bound n (A, seed) =
   (if n = 0 then (A, seed) 
@@ -10,7 +10,7 @@ where
 
 declare gen_build.simps [simp del]
 
-fun gen_remove :: "code_numeral \<Rightarrow> nat \<Rightarrow> (code_numeral set \<times> Random.seed) \<Rightarrow> (code_numeral set \<times> Random.seed)"
+fun gen_remove :: "natural \<Rightarrow> nat \<Rightarrow> (natural set \<times> Random.seed) \<Rightarrow> (natural set \<times> Random.seed)"
 where
   "gen_remove bound n (A, seed) =
   (if n = 0 then (A, seed)
@@ -18,10 +18,10 @@ where
 
 declare gen_remove.simps [simp del]
 
-definition build :: "nat \<Rightarrow> Random.seed \<Rightarrow> (code_numeral set \<times> Random.seed)"
+definition build :: "nat \<Rightarrow> Random.seed \<Rightarrow> (natural set \<times> Random.seed)"
 where "build n seed = (let bound = of_nat n * 2 in gen_remove bound n (gen_build bound n ({}, seed)))"
 
-fun gen_lookup :: "code_numeral \<Rightarrow> code_numeral set \<Rightarrow> nat \<Rightarrow> (code_numeral \<times> Random.seed) \<Rightarrow> (code_numeral \<times> Random.seed)"
+fun gen_lookup :: "natural \<Rightarrow> natural set \<Rightarrow> nat \<Rightarrow> (natural \<times> Random.seed) \<Rightarrow> (natural \<times> Random.seed)"
 where
   "gen_lookup bound A n (hits, seed) =
   (if n = 0 then (hits, seed)
@@ -29,13 +29,13 @@ where
 
 declare gen_lookup.simps [simp del]
 
-primrec lookup :: "nat \<Rightarrow> (code_numeral set \<times> Random.seed) \<Rightarrow> (code_numeral \<times> Random.seed)"
+primrec lookup :: "nat \<Rightarrow> (natural set \<times> Random.seed) \<Rightarrow> (natural \<times> Random.seed)"
 where "lookup n (A, seed) = gen_lookup (of_nat n * 2) A n (0, seed)"
 
-definition test :: "code_numeral set \<Rightarrow> (code_numeral \<Rightarrow> bool) \<Rightarrow> nat"
+definition test :: "natural set \<Rightarrow> (natural \<Rightarrow> bool) \<Rightarrow> nat"
 where "test A P = card (A \<inter> {x. P x})"
 
-definition complete :: "nat \<Rightarrow> Random.seed \<Rightarrow> (code_numeral \<times> nat)"
+definition complete :: "nat \<Rightarrow> Random.seed \<Rightarrow> (natural \<times> nat)"
 where 
   "complete n seed =
   (let (A, seed') = build n seed;
@@ -45,7 +45,7 @@ where
 
 text {* @{term complete'} is @{term complete} without iteration *}
 
-definition complete' :: "nat \<Rightarrow> Random.seed \<Rightarrow> (code_numeral \<times> nat)"
+definition complete' :: "nat \<Rightarrow> Random.seed \<Rightarrow> (natural \<times> nat)"
 where "complete' n seed =
   (let (A, seed') = build n seed;
        (hits, seed'') = lookup n (A, seed')

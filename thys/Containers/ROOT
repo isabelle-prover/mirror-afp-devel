@@ -17,7 +17,6 @@ session Containers (AFP) = "Datatype_Order_Generator" +
     "document/root.tex"
     "document/root.bib"
 
-(*
 session "Containers-Benchmarks" (AFP) = Containers +
   theories
     "ITP-2013/Benchmark_Bool"
@@ -27,5 +26,4 @@ session "Containers-Benchmarks" (AFP) = Containers +
     "ITP-2013/Benchmark_RBT"
     "ITP-2013/Benchmark_Set_Default"
     "ITP-2013/Benchmark_Set_LC"
-*)
 

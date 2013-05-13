@@ -2,19 +2,19 @@ theory Benchmark_ICF
 imports 
   Benchmark_Comparison
   "../../Collections/Collections"
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
 locale benchmark_base = 
   fixes empty :: "unit \<Rightarrow> 's"
-  and memb :: "code_numeral \<Rightarrow> 's \<Rightarrow> bool"
-  and ins :: "code_numeral \<Rightarrow> 's \<Rightarrow> 's"
-  and rem :: "code_numeral \<Rightarrow> 's => 's"
+  and memb :: "natural \<Rightarrow> 's \<Rightarrow> bool"
+  and ins :: "natural \<Rightarrow> 's \<Rightarrow> 's"
+  and rem :: "natural \<Rightarrow> 's => 's"
   and size :: "'s \<Rightarrow> nat"
-  and filter :: "(code_numeral \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> 's"
+  and filter :: "(natural \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> 's"
 begin
 
-fun gen_build :: "code_numeral \<Rightarrow> nat \<Rightarrow> ('s \<times> Random.seed) \<Rightarrow> ('s \<times> Random.seed)"
+fun gen_build :: "natural \<Rightarrow> nat \<Rightarrow> ('s \<times> Random.seed) \<Rightarrow> ('s \<times> Random.seed)"
 where 
   "gen_build bound n (A, seed) =
   (if n = 0 then (A, seed) 
@@ -22,7 +22,7 @@ where
 
 declare gen_build.simps [simp del]
 
-fun gen_remove :: "code_numeral \<Rightarrow> nat \<Rightarrow> ('s \<times> Random.seed) \<Rightarrow> ('s \<times> Random.seed)"
+fun gen_remove :: "natural \<Rightarrow> nat \<Rightarrow> ('s \<times> Random.seed) \<Rightarrow> ('s \<times> Random.seed)"
 where
   "gen_remove bound n (A, seed) =
   (if n = 0 then (A, seed) 
@@ -33,7 +33,7 @@ declare gen_remove.simps [simp del]
 definition build :: "nat \<Rightarrow> Random.seed \<Rightarrow> ('s \<times> Random.seed)"
 where "build n seed = (let bound = of_nat n * 2 in gen_remove bound n (gen_build bound n (empty (), seed)))"
 
-fun gen_lookup :: "code_numeral \<Rightarrow> 's \<Rightarrow> nat \<Rightarrow> (code_numeral \<times> Random.seed) \<Rightarrow> (code_numeral \<times> Random.seed)"
+fun gen_lookup :: "natural \<Rightarrow> 's \<Rightarrow> nat \<Rightarrow> (natural \<times> Random.seed) \<Rightarrow> (natural \<times> Random.seed)"
 where
   "gen_lookup bound A n (hits, seed) =
   (if n = 0 then (hits, seed)
@@ -41,13 +41,13 @@ where
 
 declare gen_lookup.simps [simp del]
 
-primrec lookup :: "nat \<Rightarrow> ('s \<times> Random.seed) \<Rightarrow> (code_numeral \<times> Random.seed)"
+primrec lookup :: "nat \<Rightarrow> ('s \<times> Random.seed) \<Rightarrow> (natural \<times> Random.seed)"
 where "lookup n (A, seed) = gen_lookup (of_nat n * 2) A n (0, seed)"
 
-definition test :: "'s \<Rightarrow> (code_numeral \<Rightarrow> bool) \<Rightarrow> nat"
+definition test :: "'s \<Rightarrow> (natural \<Rightarrow> bool) \<Rightarrow> nat"
 where "test A P = size (filter P A)"
 
-definition complete :: "nat \<Rightarrow> Random.seed \<Rightarrow> (code_numeral \<times> nat)"
+definition complete :: "nat \<Rightarrow> Random.seed \<Rightarrow> (natural \<times> nat)"
 where 
   "complete n seed =
   (let (A, seed') = build n seed;
@@ -75,14 +75,14 @@ locale benchmark =
   set_delete \<alpha> invar rem +
   set_size \<alpha> invar size +
   set_filter \<alpha> invar \<alpha> invar filter
-  for \<alpha> :: "'s \<Rightarrow> code_numeral set"
+  for \<alpha> :: "'s \<Rightarrow> natural set"
   and invar :: "'s \<Rightarrow> bool"
   and empty :: "unit \<Rightarrow> 's"
-  and memb :: "code_numeral \<Rightarrow> 's \<Rightarrow> bool"
-  and ins :: "code_numeral \<Rightarrow> 's \<Rightarrow> 's"
-  and rem :: "code_numeral \<Rightarrow> 's \<Rightarrow> 's"
+  and memb :: "natural \<Rightarrow> 's \<Rightarrow> bool"
+  and ins :: "natural \<Rightarrow> 's \<Rightarrow> 's"
+  and rem :: "natural \<Rightarrow> 's \<Rightarrow> 's"
   and size :: "'s \<Rightarrow> nat"
-  and filter :: "(code_numeral \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> 's"
+  and filter :: "(natural \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> 's"
 begin
 
 lemma gen_build_invar: "invar (fst As) \<Longrightarrow> invar (fst (gen_build bound n As))"

@@ -284,9 +284,14 @@ definition "CENUM(int) = None"
 instance by(intro_classes)(simp_all add: cEnum_int_def)
 end
 
-instantiation code_numeral :: cenum begin
-definition "CENUM(code_numeral) = None"
-instance by(intro_classes)(simp_all add: cEnum_code_numeral_def)
+instantiation integer :: cenum begin
+definition "CENUM(integer) = None"
+instance by(intro_classes)(simp_all add: cEnum_integer_def)
+end
+
+instantiation natural :: cenum begin
+definition "CENUM(natural) = None"
+instance by(intro_classes)(simp_all add: cEnum_natural_def)
 end
 
 instantiation String.literal :: cenum begin

@@ -2,7 +2,7 @@ theory Benchmark_Set_LC
 imports 
   Benchmark_Set
   "../Set_Impl"
-  "~~/src/HOL/Library/Efficient_Nat"
+  "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
 lemma [code_unfold del]: "card \<equiv> Cardinality.card'" by(simp)

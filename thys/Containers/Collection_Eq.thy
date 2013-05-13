@@ -79,9 +79,14 @@ definition "CEQ(Enum.finite_3) = Some op ="
 instance by(intro_classes)(simp add: ceq_finite_3_def)
 end
 
-instantiation code_numeral :: ceq begin
-definition "CEQ(code_numeral) = Some op ="
-instance by(intro_classes)(simp add: ceq_code_numeral_def)
+instantiation integer :: ceq begin
+definition "CEQ(integer) = Some op ="
+instance by(intro_classes)(simp add: ceq_integer_def)
+end
+
+instantiation natural :: ceq begin
+definition "CEQ(natural) = Some op ="
+instance by(intro_classes)(simp add: ceq_natural_def)
 end
 
 instantiation nibble :: ceq begin

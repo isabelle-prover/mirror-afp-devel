@@ -163,12 +163,12 @@ declare
   list.unfoldr.simps[code]
 
 lemma generator_has_next_transfer [transfer_rule]: 
-  "is_equality A \<Longrightarrow> (fun_rel cr_generator A) fst list.has_next"
-by(auto simp add: cr_generator_def list.has_next_def is_equality_def dest: sym)
+  "(pcr_generator op = op = ===> op =) fst list.has_next"
+by(auto simp add: generator.pcr_cr_eq cr_generator_def list.has_next_def dest: sym)
 
 lemma generator_next_transfer [transfer_rule]:
-  "is_equality A \<Longrightarrow> (fun_rel cr_generator A) snd list.next"
-by(auto simp add: cr_generator_def list.next_def is_equality_def)
+  "(pcr_generator op = op = ===> op =) snd list.next"
+by(auto simp add: generator.pcr_cr_eq cr_generator_def list.next_def)
 
 lemma unfoldr_eq_Nil_iff [iff]:
   "list.unfoldr g s = [] \<longleftrightarrow> \<not> list.has_next g s"
@@ -414,6 +414,8 @@ lemma unfoldr_upto_generator:
   "list.unfoldr upto_generator n = [n..bound]"
 by(induct n taking: upto_generator rule: list.unfoldr.induct)(subst list.unfoldr.simps, subst upto.simps, auto)
 
+end
+
 subsection {* Destroying lists *}
 
 definition hd_fusion :: "('a, 's) generator \<Rightarrow> 's \<Rightarrow> 'a"
@@ -531,7 +533,5 @@ unfolding list_all2_fusion_def
 by(subst (1 2) list.unfoldr.simps)(simp add: split_beta)
 
 declare list_all2_fusion_def[symmetric, code_unfold]
-
-end
 
 end

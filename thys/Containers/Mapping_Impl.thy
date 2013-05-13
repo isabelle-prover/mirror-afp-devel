@@ -41,7 +41,8 @@ by(simp_all)(transfer, rule)+
 lemma [code, code del]: "Mapping.is_empty = Mapping.is_empty" ..
 
 lemma is_empty_transfer [transfer_rule]:
-  "(cr_mapping ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
+  "(pcr_mapping op = op = ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
+unfolding mapping.pcr_cr_eq
 apply(rule fun_relI)
 apply(case_tac y)
 apply(simp add: Mapping.is_empty_def cr_mapping_def Mapping_inverse Mapping.keys.rep_eq)
@@ -100,10 +101,10 @@ qed
 lemma [code, code del]: "Mapping.size = Mapping.size" ..
 
 lemma Mapping_size_transfer [transfer_rule]:
-  "(cr_mapping ===> op =) (card \<circ> dom) Mapping.size"
+  "(pcr_mapping op = op = ===> op =) (card \<circ> dom) Mapping.size"
 apply(rule fun_relI)
 apply(case_tac y)
-apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse cr_mapping_def)
+apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse mapping.pcr_cr_eq cr_mapping_def)
 done
 
 lemma size_Mapping [code]:
@@ -232,8 +233,13 @@ definition "MAPPING_IMPL(Enum.finite_3) = Phantom(Enum.finite_3) mapping_Assoc_L
 instance ..
 end
 
-instantiation code_numeral :: mapping_impl begin
-definition "MAPPING_IMPL(code_numeral) = Phantom(code_numeral) mapping_RBT"
+instantiation integer :: mapping_impl begin
+definition "MAPPING_IMPL(integer) = Phantom(integer) mapping_RBT"
+instance ..
+end
+
+instantiation natural :: mapping_impl begin
+definition "MAPPING_IMPL(natural) = Phantom(natural) mapping_RBT"
 instance ..
 end
 

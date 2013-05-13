@@ -4,6 +4,7 @@
 theory Lexicographic_Order imports
   List_Fusion
   "~~/src/HOL/Library/Quotient_List"
+  "~~/src/HOL/Library/Char_ord"
 begin
 
 section {* Lexicographic order as a predicate *}
@@ -279,21 +280,5 @@ by(simp add: less_literal.rep_eq fun_eq_iff)
 lemma less_eq_literal_code [code]:
   "op \<le> = (\<lambda>xs ys. ord.lexord_eq op < (explode xs) (explode ys))"
 by(simp add: less_eq_literal.rep_eq fun_eq_iff)
-
-text {* 
-  WARNING: The SML bindings are PolyML specific -- 
-  String.< and String.<= are not part of the standard basis 
-*}
-code_const "Orderings.less :: String.literal \<Rightarrow> String.literal \<Rightarrow> bool"
-  (SML "String.< ((_),/ (_))")
-  (OCaml "!((_ : string) < _)")
-  (Haskell infix 4 "<")
-  (Scala infixl 4 "<")
-
-code_const "Orderings.less_eq :: String.literal \<Rightarrow> String.literal \<Rightarrow> bool"
-  (SML "String.<= ((_),/ (_))")
-  (OCaml "!((_ : string) <= _)")
-  (Haskell infix 4 "<=")
-  (Scala infixl 4 "<=")
 
 end

@@ -2122,34 +2122,27 @@ fun proper_interval_int :: "int proper_interval" where
 instance by intro_classes (auto intro: less_add_one, metis less_add_one minus_less_iff)
 end
 
-setup_lifting (no_code) type_definition_code_numeral
-
-lemma less_code_numeral_transfer [transfer_rule]:
-  "(cr_code_numeral ===> cr_code_numeral ===> op =) op < op <"
-by(rule fun_relI)+(auto simp add: cr_code_numeral_def)
-
-lemma "0_code_numeral_transfer" [transfer_rule]: "cr_code_numeral 0 0"
-by(simp add: cr_code_numeral_def)
-
-lemma "1_code_numeral_transfer" [transfer_rule]: "cr_code_numeral 1 1"
-by(simp add: cr_code_numeral_def)
-
-lemma minus_code_numeral_transfer [transfer_rule]:
-  "(cr_code_numeral ===> cr_code_numeral ===> cr_code_numeral) op - op -"
-by(rule fun_relI)+(simp add: cr_code_numeral_def)
-
-instantiation code_numeral :: proper_interval begin
-lift_definition proper_interval_code_numeral :: "code_numeral proper_interval" 
-  is "proper_interval :: nat proper_interval" .
+instantiation integer :: proper_interval begin
+lift_definition proper_interval_integer :: "integer proper_interval" is "proper_interval" .
 instance by(intro_classes)(transfer, simp only: proper_interval_simps)+
 end
+lemma proper_interval_integer_simps [code]:
+  fixes x y :: integer and xo yo :: "integer option" shows
+  "proper_interval (Some x) (Some y) = (1 < y - x)"
+  "proper_interval None yo = True"
+  "proper_interval xo None = True"
+by(transfer, simp)+
 
-lemma proper_interval_code_numeral_code [code]:
-  defines "pi == proper_interval :: code_numeral proper_interval" shows
-  "pi no None = True"
-  "pi None (Some x) \<longleftrightarrow> (x :: code_numeral) > 0"
-  "pi (Some x) (Some y) = (y - x > 1)"
-unfolding pi_def by(transfer, simp)+
+instantiation natural :: proper_interval begin
+lift_definition proper_interval_natural :: "natural proper_interval" is "proper_interval" .
+instance by(intro_classes)(transfer, simp only: proper_interval_simps)+
+end
+lemma proper_interval_natural_simps [code]:
+  fixes x y :: natural and xo :: "natural option" shows
+  "proper_interval xo None = True"
+  "proper_interval None (Some y) \<longleftrightarrow> y > 0"
+  "proper_interval (Some x) (Some y) \<longleftrightarrow> y - x > 1"
+by(transfer, simp)+
 
 lemma le_Nibble0_iff: "x \<le> Nibble0 \<longleftrightarrow> x = Nibble0"
 by(auto simp add: nibble_less_eq_def nibble_of_nat_of_nibble dest: arg_cong[where f="nibble_of_nat"])
@@ -2168,7 +2161,7 @@ lemma nat_of_char_less_256: "nat_of_char x < 256"
 proof(cases x)
   case (Char x1 x2)
   with nat_of_nibble_less_16[of x1] nat_of_nibble_less_16[of x2]
-  show ?thesis by(simp add: nat_of_char.simps)
+  show ?thesis by(simp add: nat_of_char_Char)
 qed
 
 instantiation nibble :: proper_interval begin
@@ -2224,7 +2217,7 @@ proof
   assume "?lhs"
   moreover obtain x1 x2 where x: "x = Char x1 x2" by(cases x)
   moreover obtain y1 y2 where y: "y = Char y1 y2" by(cases y)
-  ultimately have "x1 < y1 \<or> x1 = y1 \<and> x2 < y2" (is "?C1 \<or> ?C2") by simp
+  ultimately have "x1 < y1 \<or> x1 = y1 \<and> x2 < y2" (is "?C1 \<or> ?C2") by(simp add: less_char_Char)
   thus ?rhs
   proof
     assume ?C1
@@ -2252,7 +2245,7 @@ next
   { assume "x1 = y1"
     with `?rhs` x y have "x2 < y2" 
       by(simp add: nat_of_char_def nibble_less_def) }
-  ultimately show ?lhs by(cases "x1 > y1") auto
+  ultimately show ?lhs by(cases "x1 > y1")(auto simp add: less_char_Char)
 qed
 
 lemma nat_of_char_inject [simp]: "nat_of_char x = nat_of_char y \<longleftrightarrow> x = y"
@@ -2269,6 +2262,8 @@ fun proper_interval_char :: "char proper_interval" where
 | "proper_interval_char (Some x) (Some y) \<longleftrightarrow> nat_of_char y - nat_of_char x > 1"
 instance
 proof intro_classes
+  note [simp] = less_char_Char less_eq_char_Char
+
   fix y :: char
   { assume "y \<noteq> Char Nibble0 Nibble0"
     hence "Char Nibble0 Nibble0 < y" 

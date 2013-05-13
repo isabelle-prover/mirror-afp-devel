@@ -1,7 +1,7 @@
 theory Benchmark_Set
 imports
   "~~/src/HOL/Word/Word"
-  "~~/src/HOL/Libary/Cardinality"
+  "~~/src/HOL/Library/Cardinality"
 begin
 
 instantiation word :: (len) card_UNIV begin
@@ -10,21 +10,26 @@ definition "card_UNIV = Phantom('a word) (2 ^ len_of TYPE('a))"
 instance by(intro_classes)(simp_all add: card_UNIV_word_def card_word finite_UNIV_word_def)
 end
 
-definition word_of :: "code_numeral \<Rightarrow> 'a::len0 word"
-where "word_of = word_of_int o Code_Numeral.int_of"
+definition word_of_integer :: "integer \<Rightarrow> 'a::len0 word"
+where "word_of_integer = word_of_int \<circ> int_of_integer"
 
-lemma word_of_code [code]:
-  "word_of k = (if k = 0 then 0
-    else (if k mod 2 = 0 then 2 * word_of (k div 2) else 2 * word_of (k div 2) + 1))"
-apply(unfold word_of_def o_def)
-apply(subst Code_Numeral.int_of_code)
-apply(clarsimp)
-apply(metis wi_hom_mult one_word.abs_eq plus_word.abs_eq times_word.abs_eq word_of_int_numeral)
-done
+lemma word_of_integer_code [code]:
+  "word_of_integer k = 
+  (if k < 0 then - word_of_integer (- k)
+   else if k = 0 then 0
+   else let (q, r) = divmod_integer k 2
+        in if r = 0 then 2 * word_of_integer q else 2 * word_of_integer q + 1)"
+apply(unfold word_of_integer_def o_def)
+apply(subst int_of_integer_code)
+apply(clarsimp simp add: divmod_integer_def)
+by (metis minus_minus plus_word.abs_eq times_word.abs_eq wi_hom_neg word_1_wi word_numeral_alt)
+
+definition word_of :: "natural \<Rightarrow> 'a::len0 word"
+where "word_of = word_of_integer o integer_of_natural"
 
 text {* randomly generate a set of (up to) n elements drawn from 0 to bound *}
 
-fun gen_build1 :: "code_numeral \<Rightarrow> nat \<Rightarrow> (32 word set \<times> Random.seed) \<Rightarrow> (32 word set \<times> Random.seed)"
+fun gen_build1 :: "natural \<Rightarrow> nat \<Rightarrow> (32 word set \<times> Random.seed) \<Rightarrow> (32 word set \<times> Random.seed)"
 where 
   "gen_build1 bound n (A, seed) =
   (if n = 0 then (A, seed) 
@@ -32,17 +37,17 @@ where
 
 declare gen_build1.simps[simp del]
 
-definition build1 :: "code_numeral \<Rightarrow> Random.seed \<Rightarrow> (32 word set \<times> Random.seed)"
+definition build1 :: "natural \<Rightarrow> Random.seed \<Rightarrow> (32 word set \<times> Random.seed)"
 where 
   "build1 bound seed =
   (let (n', seed') = Random.range bound seed;
        (compl, seed'') = Random.range 2 seed;
-       (x, seed''') = gen_build1 bound (Code_Numeral.nat_of n') ({}, seed'')
+       (x, seed''') = gen_build1 bound (Code_Numeral.nat_of_natural n') ({}, seed'')
    in (if compl = 0 then x else - x, seed'''))"
 
 text {* randomly generate a set of (up to) n sets each with a random number between 0 and bound of elements between 0 and bound *}
 
-fun gen_build2 :: "code_numeral \<Rightarrow> nat \<Rightarrow> (32 word set set \<times> Random.seed) \<Rightarrow> (32 word set set \<times> Random.seed)"
+fun gen_build2 :: "natural \<Rightarrow> nat \<Rightarrow> (32 word set set \<times> Random.seed) \<Rightarrow> (32 word set set \<times> Random.seed)"
 where
   "gen_build2 bound n (A, seed) =
   (if n = 0 then (A, seed)
@@ -54,7 +59,7 @@ declare gen_build2.simps[simp del]
 definition build :: "nat \<Rightarrow> nat \<Rightarrow> Random.seed \<Rightarrow> 32 word set set \<times> Random.seed"
 where "build n m seed = gen_build2 (of_nat m) n ({}, seed)"
 
-fun gen_lookup :: "32 word set set \<Rightarrow> code_numeral \<Rightarrow> nat \<Rightarrow> (nat \<times> Random.seed) \<Rightarrow> (nat \<times> Random.seed)"
+fun gen_lookup :: "32 word set set \<Rightarrow> natural \<Rightarrow> nat \<Rightarrow> (nat \<times> Random.seed) \<Rightarrow> (nat \<times> Random.seed)"
 where
   "gen_lookup A bound n (hits, seed) =
   (if n = 0 then (hits, seed)
