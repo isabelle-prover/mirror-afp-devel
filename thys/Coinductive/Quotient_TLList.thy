@@ -231,6 +231,16 @@ lemma tconcat_transfer [transfer_rule]:
 unfolding Transfer.fun_rel_def
 by transfer(auto intro: llist_all2_lconcatI dest: llist_all2_lfiniteD)
 
+lift_definition tllist_all :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
+is "\<lambda>P Q (xs, b). llist_all P xs \<and> (lfinite xs \<longrightarrow> Q b)" 
+by auto
+
+lemma Domainp_tllist [relator_domain]:
+  assumes A: "Domainp A = P"
+  and B: "Domainp B = Q"
+  shows "Domainp (tllist_all2 A B) = (tllist_all P Q)"
+  unfolding Domainp_iff[abs_def]
+by(transfer fixing: A B P Q)(clarsimp simp add: fun_eq_iff Domainp_iff[symmetric] Domainp_llist[OF A] B)
 
 subsection {* Setup for quotient package *}
 

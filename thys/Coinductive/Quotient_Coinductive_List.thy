@@ -298,6 +298,26 @@ proof(intro ext iffI)
     by(simp add: llist_all_def)
 qed(simp add: Lifting.invariant_def llist_all_def)
 
+lemma Domainp_llist [relator_domain]:
+  assumes "Domainp A = P"
+  shows "Domainp (llist_all2 A) = (llist_all P)"
+  unfolding Domainp_iff[abs_def]
+proof
+  fix xs
+  from assms have P: "\<And>x. P x \<longleftrightarrow> (\<exists>y. A x y)"
+    by(auto simp add: Domainp_iff[abs_def])
+
+  show "(\<exists>ys. llist_all2 A xs ys) \<longleftrightarrow> llist_all P xs" (is "?lhs \<longleftrightarrow> ?rhs")
+  proof
+    assume ?lhs thus ?rhs
+      by(auto 4 3 simp add: llist_all_def in_lset_conv_lnth P dest: llist_all2_lnthD)
+  next
+    assume ?rhs
+    hence "llist_all2 A xs (lmap (\<lambda>x. SOME y. A x y) xs)"
+      by(coinduct xs rule: llist_all2_fun_coinduct_invar)(auto simp add: neq_LNil_conv llist_all_def P intro: someI)
+    thus ?lhs ..
+  qed
+qed
 
 subsection {* Rules for quotient package *}
 
