@@ -259,6 +259,9 @@ begin
 lemma equal_ceq: "equal (ceq' :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
 using ID_ceq_neq_None by(clarsimp)(rule ID_ceq)
 
+(* workaround for the next theorem *)
+declare Domainp_forall_transfer[where A = "pcr_set_dlist op=", simplified set_dlist.domain_eq, transfer_rule]
+
 lemma set_dlist_induct [case_names Nil insert, induct type: set_dlist]:
   fixes dxs :: "'a :: ceq set_dlist"
   assumes Nil: "P empty" and Cons: "\<And>a dxs. \<lbrakk> \<not> member dxs a; P dxs \<rbrakk> \<Longrightarrow> P (insert a dxs)"
