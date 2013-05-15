@@ -1,6 +1,7 @@
 chapter AFP
 
 session Containers (AFP) = "Datatype_Order_Generator" +
+  options [timeout = 3600]
   theories
     Auxiliary
     Card_Datatype
@@ -9,15 +10,14 @@ session Containers (AFP) = "Datatype_Order_Generator" +
     List_Proper_Interval
     Containers
     Containers_Userguide
-
-  theories [document=false]
+  theories [document = false]
     Card_Datatype_Ex
-
   files
     "document/root.tex"
     "document/root.bib"
 
 session "Containers-Benchmarks" (AFP) = Containers +
+  options [timeout = 3600]
   theories
     "ITP-2013/Benchmark_Bool"
     "ITP-2013/Benchmark_LC"
