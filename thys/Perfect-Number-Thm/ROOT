@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Perfect-Number-Thm" (AFP) = HOL +
-  options [timeout = 200]
+  options [timeout = 600]
   theories
     Perfect
   files

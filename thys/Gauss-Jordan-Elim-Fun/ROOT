@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Gauss-Jordan-Elim-Fun" (AFP) = HOL +
-  options [timeout = 60]
+  options [timeout = 600]
   theories
     Gauss_Jordan_Elim_Fun
   files

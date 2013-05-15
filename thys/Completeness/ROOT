@@ -1,7 +1,7 @@
 chapter AFP
 
 session Completeness (AFP) = "HOL-Library" +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories
     Base
     (* NOTES omitted permutations and try to reuse library stuff *)

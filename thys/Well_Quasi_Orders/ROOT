@@ -1,7 +1,7 @@
 chapter AFP
 
 session Well_Quasi_Orders (AFP) = HOL +
-  options [timeout = 200]
+  options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/Seq"
     "~~/src/HOL/Library/Infinite_Set"

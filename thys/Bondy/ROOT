@@ -1,6 +1,6 @@
 chapter AFP
 
 session Bondy (AFP) = HOL +
-  options [timeout = 400]
+  options [timeout = 600]
   theories
     Bondy

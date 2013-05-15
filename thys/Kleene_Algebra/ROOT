@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Kleene_Algebra" (AFP) = "HOL-Word" +
-  options [timeout = 3600]
+  options [timeout = 600]
 
   theories
     Signatures

@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Lam-ml-Normalization" (AFP) = "HOL-Nominal" +
-  options [timeout = 100]
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/LaTeXsugar"
   theories

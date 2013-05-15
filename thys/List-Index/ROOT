@@ -1,7 +1,7 @@
 chapter AFP
 
 session "List-Index" (AFP) = HOL +
-  options [timeout = 100]
+  options [timeout = 600]
   theories
     List_Index
   files

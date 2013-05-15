@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Ramsey-Infinite" (AFP) = HOL +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories
     Ramsey
   files

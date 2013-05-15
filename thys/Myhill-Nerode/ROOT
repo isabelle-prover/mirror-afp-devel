@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Myhill-Nerode" (AFP) = "HOL-Library" +
-  options [timeout = 300]
+  options [timeout = 600]
   theories [document = false]
     "../Regular-Sets/Regular_Set"
     "../Regular-Sets/Regular_Exp"

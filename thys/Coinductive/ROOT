@@ -1,7 +1,7 @@
 chapter AFP
 
 session Coinductive (AFP) = "HOL-Library" +
-  options [timeout = 200, document_graph]
+  options [timeout = 600, document_graph]
   theories
     Coinductive
     Lazy_TLList

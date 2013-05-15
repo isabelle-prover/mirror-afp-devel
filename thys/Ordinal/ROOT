@@ -1,7 +1,7 @@
 chapter AFP
 
 session Ordinal (AFP) = HOL +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories
     Ordinal
   files

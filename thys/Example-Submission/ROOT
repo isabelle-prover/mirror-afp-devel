@@ -4,7 +4,7 @@ chapter AFP
 session "Example-Submission" (AFP) = HOL +
 
 (* Timeout (in sec) in case of non-termination problems *)
-  options [timeout = 3600]
+  options [timeout = 600]
 
 (* To suppress document generation of some theories: *)
 (*

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Pi_Calculus (AFP) = "HOL-Nominal" +
-  options [timeout = 3600]
+  options [timeout = 1200]
   theories
     Strong_Late_Bisim_Subst_Pres
     Weak_Late_Cong_Subst_SC

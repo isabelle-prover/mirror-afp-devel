@@ -1,7 +1,7 @@
 chapter AFP
 
 session Markov_Models (AFP) = "HOL-Probability" +
-  options [timeout = 400]
+  options [timeout = 600]
   theories [document = false]
     "../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
     "~~/src/HOL/Library/While_Combinator"

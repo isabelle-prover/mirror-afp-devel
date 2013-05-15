@@ -1,7 +1,7 @@
 chapter AFP
 
 session RSAPSS (AFP) = HOL +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Old_Number_Theory/Primes"

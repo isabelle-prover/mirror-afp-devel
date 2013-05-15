@@ -1,7 +1,7 @@
 chapter AFP
 
 session CCS (AFP) = "HOL-Nominal" +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories
     Weak_Cong_Pres
   files

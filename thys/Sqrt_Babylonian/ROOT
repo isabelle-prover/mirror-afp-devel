@@ -1,7 +1,7 @@
 chapter AFP
 
 session Sqrt_Babylonian (AFP) = HOL +
-  options [timeout = 300]
+  options [timeout = 600]
   theories
     Sqrt_Babylonian
   files

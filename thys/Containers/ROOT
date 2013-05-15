@@ -1,7 +1,7 @@
 chapter AFP
 
 session Containers (AFP) = "Datatype_Order_Generator" +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories
     Auxiliary
     Card_Datatype
@@ -17,7 +17,7 @@ session Containers (AFP) = "Datatype_Order_Generator" +
     "document/root.bib"
 
 session "Containers-Benchmarks" (AFP) = Containers +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories
     "ITP-2013/Benchmark_Bool"
     "ITP-2013/Benchmark_LC"

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Dijkstra_Shortest_Path (AFP) = Refine_Monadic +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories [document = false]
     "../Collections/Collections"
     "../Refine_Monadic/Refine"

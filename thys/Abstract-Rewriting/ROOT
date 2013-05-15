@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Abstract-Rewriting" (AFP) = HOL +
-  options [timeout = 200]
+  options [timeout = 600]
   theories [document = false]
     "../Transitive-Closure/Transitive_Closure_Impl"
     "../Regular-Sets/Regexp_Method"

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Circus (AFP) = HOLCF +
-  options [timeout = 3600, document_graph]
+  options [timeout = 600, document_graph]
   theories [document = false]
     "~~/src/HOL/Library/Sublist"
   theories

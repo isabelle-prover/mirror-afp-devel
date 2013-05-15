@@ -1,7 +1,7 @@
 chapter AFP
 
 session LinearQuantifierElim (AFP) = "HOL-Library" +
-  options [timeout = 1200]
+  options [timeout = 600]
   theories
     "Thys/QEdlo"
     "Thys/QEdlo_ex"

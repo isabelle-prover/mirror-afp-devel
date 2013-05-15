@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Ribbon_Proofs" (AFP) = "HOL-Library" +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Quotient_Examples/FSet"
   theories

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Cauchy (AFP) = HOL +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories [show_question_marks = false]
     CauchysMeanTheorem
     CauchySchwarz
