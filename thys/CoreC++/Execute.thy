@@ -64,79 +64,6 @@ lemma Set_project_set [code]:
   "Set_project (set xs) a = set (List.map_filter (\<lambda>(a', b). if a = a' then Some b else None) xs)"
 by(auto simp add: Set_project_def map_filter_def intro: rev_image_eqI split: split_if_asm)
 
-definition contains :: "'a set => 'a => bool"
-where "contains A x \<longleftrightarrow> x : A"
-
-definition contains_pred :: "'a set => 'a => unit Predicate.pred"
-where "contains_pred A x = (if x : A then Predicate.single () else bot)"
-
-lemma pred_of_setE:
-  assumes "Predicate.eval (pred_of_set A) x"
-  obtains "contains A x"
-using assms
-by(simp add: contains_def)
-
-lemma pred_of_setI:
-  "contains A x ==> Predicate.eval (pred_of_set A) x"
-by(simp add: contains_def)
-
-lemma pred_of_set_eq: "pred_of_set \<equiv> \<lambda>A. Predicate.Pred (contains A)"
-by(simp add: contains_def[abs_def] pred_of_set_def o_def)
-
-lemma containsI: "x \<in> A ==> contains A x" 
-by(simp add: contains_def)
-
-lemma containsE: assumes "contains A x"
- obtains A' x' where "A = A'" "x = x'" "x : A"
-using assms by(simp add: contains_def)
-
-lemma contains_predI: "contains A x ==> Predicate.eval (contains_pred A x) ()"
-by(simp add: contains_pred_def contains_def)
-
-lemma contains_predE: 
-  assumes "Predicate.eval (contains_pred A x) y"
-  obtains "contains A x"
-using assms
-by(simp add: contains_pred_def contains_def split: split_if_asm)
-
-lemma contains_pred_eq: "contains_pred \<equiv> \<lambda>A x. Predicate.Pred (\<lambda>y. contains A x)"
-by(rule eq_reflection)(auto simp add: contains_pred_def fun_eq_iff contains_def intro: pred_eqI)
-
-lemma contains_pred_notI:
-   "\<not> contains A x ==> Predicate.eval (Predicate.not_pred (contains_pred A x)) ()"
-by(simp add: contains_pred_def contains_def not_pred_eq)
-
-setup {*
-let
-  val Fun = Predicate_Compile_Aux.Fun
-  val Input = Predicate_Compile_Aux.Input
-  val Output = Predicate_Compile_Aux.Output
-  val Bool = Predicate_Compile_Aux.Bool
-  val io = Fun (Input, Fun (Output, Bool))
-  val ii = Fun (Input, Fun (Input, Bool))
-in
-  Core_Data.PredData.map (Graph.new_node 
-    (@{const_name contains}, 
-     Core_Data.PredData {
-       intros = [(NONE, @{thm containsI})], 
-       elim = SOME @{thm containsE}, 
-       preprocessed = true,
-       function_names = [(Predicate_Compile_Aux.Pred, 
-         [(io, @{const_name pred_of_set}), (ii, @{const_name contains_pred})])], 
-       predfun_data = [
-         (io, Core_Data.PredfunData {
-            elim = @{thm pred_of_setE}, intro = @{thm pred_of_setI},
-            neg_intro = NONE, definition = @{thm pred_of_set_eq}
-          }),
-         (ii, Core_Data.PredfunData {
-            elim = @{thm contains_predE}, intro = @{thm contains_predI}, 
-            neg_intro = SOME @{thm contains_pred_notI}, definition = @{thm contains_pred_eq}
-          })],
-       needs_random = []}))
-end
-*}
-
-
 
 text{* Redefine map Val vs *}
 
@@ -210,26 +137,26 @@ qed
 section{* Code generation *}
 
 lemma subclsRp_code [code_pred_intro]:
-  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"
+  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; Predicate_Compile.contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"
 by(auto intro: subclsRp.intros simp add: contains_def)
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   subclsRp
-by(erule subclsRp.cases)(fastforce simp add: contains_def)
+by(erule subclsRp.cases)(fastforce simp add: Predicate_Compile.contains_def)
 
 lemma subclsR_code [code_pred_inline]:
   "P \<turnstile> C \<prec>\<^sub>R D \<longleftrightarrow> subclsRp P C D"
 by(simp add: subclsR_def)
 
 lemma subclsSp_code [code_pred_intro]:
-  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; contains (set Bs) (Shares D) \<rbrakk> \<Longrightarrow> subclsSp P C D"
-by(auto intro: subclsSp.intros simp add: contains_def)
+  "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; Predicate_Compile.contains (set Bs) (Shares D) \<rbrakk> \<Longrightarrow> subclsSp P C D"
+by(auto intro: subclsSp.intros simp add: Predicate_Compile.contains_def)
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   subclsSp
-by(erule subclsSp.cases)(fastforce simp add: contains_def)
+by(erule subclsSp.cases)(fastforce simp add: Predicate_Compile.contains_def)
 
 declare SubobjsR_Base [code_pred_intro]
 lemma SubobjsR_Rep_code [code_pred_intro]:
@@ -242,12 +169,12 @@ code_pred
 by(erule Subobjs\<^isub>R.cases)(auto simp add: subclsR_code)
 
 lemma subcls1p_code [code_pred_intro]:
-  "\<lbrakk>class P C = Some (Bs,rest); contains (baseClasses Bs) D \<rbrakk> \<Longrightarrow> subcls1p P C D"
-by(auto intro: subcls1p.intros simp add: contains_def)
+  "\<lbrakk>class P C = Some (Bs,rest); Predicate_Compile.contains (baseClasses Bs) D \<rbrakk> \<Longrightarrow> subcls1p P C D"
+by(auto intro: subcls1p.intros simp add: Predicate_Compile.contains_def)
 
 code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
   subcls1p
-by(fastforce elim!: subcls1p.cases simp add: contains_def) 
+by(fastforce elim!: subcls1p.cases simp add: Predicate_Compile.contains_def) 
 
 declare Subobjs_Rep [code_pred_intro]
 lemma Subobjs_Sh_code [code_pred_intro]:
@@ -736,9 +663,9 @@ by transfer(rule LAssThrow)
 
 lemma FAcc'_new: (* iteration over set *)
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),(h,l)\<rangle>; h a = Some(D,S);
-     Ds = Cs'@\<^sub>pCs; contains (Set_project S Ds) fs; Mapping.lookup fs F = Some v \<rbrakk>
+     Ds = Cs'@\<^sub>pCs; Predicate_Compile.contains (Set_project S Ds) fs; Mapping.lookup fs F = Some v \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,(h,l)\<rangle>"
-unfolding Set_project_def mem_Collect_eq contains_def
+unfolding Set_project_def mem_Collect_eq Predicate_Compile.contains_def
 by transfer(rule FAcc)
 
 lemma FAccNull':
@@ -754,10 +681,10 @@ by transfer(rule FAccThrow)
 lemma FAss'_new: (* iteration over set *)
   "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>;
      h\<^isub>2 a = Some(D,S); P \<turnstile> (last Cs') has least F:T via Cs; P \<turnstile> T casts v to v';
-     Ds = Cs'@\<^sub>pCs;  contains (Set_project S Ds) fs; fs' = Mapping.update F v' fs;
+     Ds = Cs'@\<^sub>pCs;  Predicate_Compile.contains (Set_project S Ds) fs; fs' = Mapping.update F v' fs;
      S' = S - {(Ds,fs)} \<union> {(Ds,fs')}; h\<^isub>2' = h\<^isub>2(a\<mapsto>(D,S'))\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v',(h\<^isub>2',l\<^isub>2)\<rangle>"
-unfolding contains_def Set_project_def mem_Collect_eq
+unfolding Predicate_Compile.contains_def Set_project_def mem_Collect_eq
 by transfer(rule FAss)
 
 lemma FAssNull':
@@ -1126,10 +1053,10 @@ proof -
     case BinOpThrow2 thus ?thesis by(rule BinOpThrow2'[OF refl])
   next
     case FAcc thus ?thesis
-      by(rule FAcc'[OF refl, unfolded contains_def Set_project_def mem_Collect_eq])
+      by(rule FAcc'[OF refl, unfolded Predicate_Compile.contains_def Set_project_def mem_Collect_eq])
   next
     case FAss thus ?thesis
-      by(rule FAss'[OF refl, unfolded contains_def Set_project_def mem_Collect_eq])
+      by(rule FAss'[OF refl, unfolded Predicate_Compile.contains_def Set_project_def mem_Collect_eq])
   next
     case FAssThrow2 thus ?thesis by(rule FAssThrow2'[OF refl])
   next
