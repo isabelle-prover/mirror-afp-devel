@@ -106,7 +106,7 @@ proof cases
   from `obs = NewHeapElem a' (Class_type C) # obs'` read 
   have "ReadMem ad al v \<in> set obs'" by simp
   moreover
-  from `allocate h (Class_type C) = (H', \<lfloor>a'\<rfloor>)` have "h \<unlhd> H'" by(rule hext_allocate)
+  from `(H', a') \<in> allocate h (Class_type C)` have "h \<unlhd> H'" by(rule hext_allocate)
   hence "typeof_addr H' a = \<lfloor>Class_type C\<rfloor>" using `typeof_addr h a = \<lfloor>Class_type C\<rfloor>`
     by(rule typeof_addr_hext_mono)
   hence type: "list_all2 (\<lambda>al T. P,H' \<turnstile> a@al : T) ?als ?Ts"
@@ -127,7 +127,7 @@ next
   note `heap_copies a a' ?als H' obs' h'`
   moreover from `obs = NewHeapElem a' (Array_type T n) # obs'` read
   have "ReadMem ad al v \<in> set obs'" by simp
-  moreover from `allocate h (Array_type T n) = (H', \<lfloor>a'\<rfloor>)`
+  moreover from `(H', a') \<in> allocate h (Array_type T n)`
   have "h \<unlhd> H'" by(rule hext_allocate)
   with `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>`
   have type': "typeof_addr H' a = \<lfloor>Array_type T n\<rfloor>"
@@ -339,7 +339,7 @@ proof(cases)
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
   let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
   let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Class_type C) :: ('addr, 'thread_id) obs_event))"
-  from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
+  from `(h'', ad') \<in> allocate h (Class_type C)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
   hence type: "typeof_addr h'' ad = \<lfloor>Class_type C\<rfloor>" using `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` 
     by(rule typeof_addr_hext_mono)
     
@@ -349,14 +349,14 @@ proof(cases)
   moreover from `P \<turnstile> C has_fields FDTs`
   have "is_class P C" by(rule has_fields_is_class)
   hence "is_htype P (Class_type C)" by simp
-  with vs `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)`
+  with vs `(h'', ad') \<in> allocate h (Class_type C)`
   have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
-  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` hconf `is_htype P (Class_type C)`
+  moreover from `(h'', ad') \<in> allocate h (Class_type C)` hconf `is_htype P (Class_type C)`
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
-  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` `is_htype P (Class_type C)`
+  moreover from `(h'', ad') \<in> allocate h (Class_type C)` `is_htype P (Class_type C)`
   have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
@@ -364,12 +364,12 @@ proof(cases)
   ultimately
   have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h'' obs' h'"
     by(rule heap_copies_non_speculative_typeable)+
-  from `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` FDTs copy
+  from `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` `(h'', ad') \<in> allocate h (Class_type C)` FDTs copy
   show ?thesis unfolding obs by(rule heap_base.heap_clone.intros)
 next
   case (ArrClone T n h'' FDTs obs')
   note obs = `obs = NewHeapElem ad' (Array_type T n) # obs'`
-    and new = `allocate h (Array_type T n) = (h'', \<lfloor>ad'\<rfloor>)`
+    and new = `(h'', ad') \<in> allocate h (Array_type T n)`
     and FDTs = `P \<turnstile> Object has_fields FDTs`
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
   let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate n T"
@@ -412,7 +412,7 @@ proof(cases)
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
   let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
   let ?vs = "w_value P vs (NormalAction (NewHeapElem ad' (Class_type C) :: ('addr, 'thread_id) obs_event))"
-  from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
+  from `(h'', ad') \<in> allocate h (Class_type C)` have hext: "h \<unlhd> h''" by(rule hext_heap_ops)
   hence type: "typeof_addr h'' ad = \<lfloor>Class_type C\<rfloor>" using `typeof_addr h ad = \<lfloor>Class_type C\<rfloor>` 
     by(rule typeof_addr_hext_mono)
     
@@ -422,14 +422,14 @@ proof(cases)
   moreover from `P \<turnstile> C has_fields FDTs`
   have "is_class P C" by(rule has_fields_is_class)
   hence "is_htype P (Class_type C)" by simp
-  with vs `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)`
+  with vs `(h'', ad') \<in> allocate h (Class_type C)`
   have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
-  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` hconf `is_htype P (Class_type C)`
+  moreover from `(h'', ad') \<in> allocate h (Class_type C)` hconf `is_htype P (Class_type C)`
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
-  moreover from `allocate h (Class_type C) = (h'', \<lfloor>ad'\<rfloor>)` `is_htype P (Class_type C)`
+  moreover from `(h'', ad') \<in> allocate h (Class_type C)` `is_htype P (Class_type C)`
   have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
@@ -451,7 +451,7 @@ proof(cases)
 next
   case (ArrClone T N h'' FDTs obs')
   note obs = `obs = NewHeapElem ad' (Array_type T N) # obs'`
-    and new = `allocate h (Array_type T N) = (h'', \<lfloor>ad'\<rfloor>)`
+    and new = `(h'', ad') \<in> allocate h (Array_type T N)`
     and FDTs = `P \<turnstile> Object has_fields FDTs`
   let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<N]"
   let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs @ replicate N T"
@@ -683,14 +683,14 @@ proof cases
   from i read obs have i_0: "i > 0" by(simp add: nth_Cons' split: split_if_asm)
 
   from `P \<turnstile> C has_fields FDTs` have "is_class P C" by(rule has_fields_is_class)
-  with `allocate h (Class_type C) = (h'', \<lfloor>a'\<rfloor>)`
+  with `(h'', a') \<in> allocate h (Class_type C)`
   have type_a': "typeof_addr h'' a' = \<lfloor>Class_type C\<rfloor>" and hext: "h \<unlhd> h''"
     by(auto dest: allocate_SomeD hext_allocate)
 
   note `heap_copies a a' ?als h'' obs' h'`
   moreover from `typeof_addr h a = \<lfloor>Class_type C\<rfloor>` hconf have "is_htype P (Class_type C)"
     by(rule typeof_addr_is_type)
-  with vs `allocate h (Class_type C) = (h'', \<lfloor>a'\<rfloor>)`
+  with vs `(h'', a') \<in> allocate h (Class_type C)`
   have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
   moreover
   from hext `typeof_addr h a = \<lfloor>Class_type C\<rfloor>`
@@ -702,7 +702,7 @@ proof cases
   have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
     unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
-  moreover from `allocate h (Class_type C) = (h'', \<lfloor>a'\<rfloor>)` hconf `is_htype P (Class_type C)`
+  moreover from `(h'', a') \<in> allocate h (Class_type C)` hconf `is_htype P (Class_type C)`
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from i read i_0 obs have "?i < length obs'" "obs' ! ?i = ReadMem a'' al'' v" by simp_all
   moreover from v i_0 obs
@@ -713,7 +713,7 @@ proof cases
                              ?i < length obs'' \<and> take ?i obs'' = take ?i obs' \<and> obs'' ! ?i = ReadMem a'' al'' v' \<and>
                              length obs'' \<le> length obs'"
     by(rule heap_copies_non_speculative_read[OF hrt])
-  thus ?thesis using `typeof_addr h a = \<lfloor>Class_type C\<rfloor>` `allocate h (Class_type C) = (h'', \<lfloor>a'\<rfloor>)` FDTs obs i_0
+  thus ?thesis using `typeof_addr h a = \<lfloor>Class_type C\<rfloor>` `(h'', a') \<in> allocate h (Class_type C)` FDTs obs i_0
     by(auto 4 4 intro: heap_clone.ObjClone simp add: take_Cons')
 next
   case (ArrClone T n h'' FDTs obs')
@@ -728,13 +728,13 @@ next
 
   from `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>` hconf
   have "is_htype P (Array_type T n)" by(rule typeof_addr_is_type)
-  with `allocate h (Array_type T n) = (h'', \<lfloor>a'\<rfloor>)`
+  with `(h'', a') \<in> allocate h (Array_type T n)`
   have type_a': "typeof_addr h'' a' = \<lfloor>Array_type T n\<rfloor>"
     and hext: "h \<unlhd> h''"
     by(auto dest: allocate_SomeD hext_allocate)
 
   note `heap_copies a a' ?als h'' obs' h'`
-  moreover from vs `allocate h (Array_type T n) = (h'', \<lfloor>a'\<rfloor>)` `is_htype P (Array_type T n)`
+  moreover from vs `(h'', a') \<in> allocate h (Array_type T n)` `is_htype P (Array_type T n)`
   have "vs_conf P h'' ?vs" by(rule vs_conf_allocate)
   moreover from hext `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>`
   have type'a: "typeof_addr h'' a = \<lfloor>Array_type T n\<rfloor>"
@@ -744,7 +744,7 @@ next
   moreover from type_a' FDTs
   have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
     by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
-  moreover from `allocate h (Array_type T n) = (h'', \<lfloor>a'\<rfloor>)` hconf `is_htype P (Array_type T n)`
+  moreover from `(h'', a') \<in> allocate h (Array_type T n)` hconf `is_htype P (Array_type T n)`
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from i read i_0 obs have "?i < length obs'" "obs' ! ?i = ReadMem a'' al'' v" by simp_all
   moreover from v i_0 obs
@@ -755,7 +755,7 @@ next
                              ?i < length obs'' \<and> take ?i obs'' = take ?i obs' \<and> obs'' ! ?i = ReadMem a'' al'' v' \<and>
                              length obs'' \<le> length obs'"
     by(rule heap_copies_non_speculative_read[OF hrt])
-  thus ?thesis using `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>` `allocate h (Array_type T n) = (h'', \<lfloor>a'\<rfloor>)` FDTs obs i_0
+  thus ?thesis using `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>` `(h'', a') \<in> allocate h (Array_type T n)` FDTs obs i_0
     by(auto 4 4 intro: heap_clone.ArrClone simp add: take_Cons')
 qed
 
@@ -876,7 +876,7 @@ lemma heap_clone_fail_allocated_same:
   assumes "heap_clone P h a h' None"
   shows "allocated h' = allocated h"
 using assms
-by(cases)(auto dest: allocate_allocated_fail)
+by(cases)(auto)
 
 lemma red_external_NewHeapElemD:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; a' \<in> allocated h'; a' \<notin> allocated h \<rbrakk>
@@ -1006,13 +1006,13 @@ locale heap'' =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'m prog"
   +
-  assumes allocate_typeof_addr_SomeD: "\<lbrakk> allocate h hT = (h', \<lfloor>a\<rfloor>); typeof_addr a \<noteq> None \<rbrakk> \<Longrightarrow> typeof_addr a = \<lfloor>hT\<rfloor>"
+  assumes allocate_typeof_addr_SomeD: "\<lbrakk> (h', a) \<in> allocate h hT; typeof_addr a \<noteq> None \<rbrakk> \<Longrightarrow> typeof_addr a = \<lfloor>hT\<rfloor>"
 begin
 
 lemma heap_copy_loc_New_type_match:

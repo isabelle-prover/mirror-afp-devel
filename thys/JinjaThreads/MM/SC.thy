@@ -83,11 +83,11 @@ abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where
   "cname_of hp a == fst (the_obj (the (hp a)))"
 
-definition sc_allocate :: "'m prog \<Rightarrow> heap \<Rightarrow> htype \<Rightarrow> (heap \<times> addr option)"
+definition sc_allocate :: "'m prog \<Rightarrow> heap \<Rightarrow> htype \<Rightarrow> (heap \<times> addr) set"
 where
   "sc_allocate P h hT = 
-   (case new_Addr h of None \<Rightarrow> (h, None)
-                   | Some a \<Rightarrow> (h(a \<mapsto> blank P hT), Some a))"
+   (case new_Addr h of None \<Rightarrow> {}
+                   | Some a \<Rightarrow> {(h(a \<mapsto> blank P hT), a)})"
 
 definition sc_typeof_addr :: "heap \<Rightarrow> addr \<Rightarrow> htype option"
 where "sc_typeof_addr h a = Option.map obj_ty (h a)"
@@ -171,13 +171,13 @@ by(simp add: sc.wf_start_state.simps sc_start_heap_ok)
 lemma sc_heap:
   "heap addr2thread_id thread_id2addr (sc_allocate P) sc_typeof_addr sc_heap_write P"
 proof
-  fix h hT h' a
-  assume "sc_allocate P h hT = (h', \<lfloor>a\<rfloor>)"
+  fix h' a h hT
+  assume "(h', a) \<in> sc_allocate P h hT"
   thus "sc_typeof_addr h' a = \<lfloor>hT\<rfloor>"
     by(auto simp add: sc_allocate_def sc_typeof_addr_def dest: new_Addr_SomeD split: split_if_asm)
 next
-  fix h hT h' a
-  assume "sc_allocate P h hT = (h', a)"
+  fix h' h hT a
+  assume "(h', a) \<in> sc_allocate P h hT"
   from this[symmetric] show "h \<unlhd>sc h'"
     by(fastforce simp add: sc_allocate_def sc_typeof_addr_def sc.hext_def dest: new_Addr_SomeD intro!: map_leI)
 next
@@ -321,10 +321,10 @@ next
   thus "is_htype P hT"
     by(auto simp add: sc_typeof_addr_def sc_oconf_def dest!: sc_hconfD split: heapobj.split_asm)
 next
-  fix h hT h' a
-  assume "P \<turnstile>sc h \<surd>" "sc_allocate P h hT = (h', a)" "is_htype P hT"
+  fix h h' hT a
+  assume "P \<turnstile>sc h \<surd>" "(h', a) \<in> sc_allocate P h hT" "is_htype P hT"
   thus "P \<turnstile>sc h' \<surd>"
-    by(auto simp add: sc_allocate_def dest!: new_Addr_SomeD[OF sym] intro: sc_hconf_new sc_oconf_init split: split_if_asm)
+    by(auto simp add: sc_allocate_def dest!: new_Addr_SomeD intro: sc_hconf_new sc_oconf_init split: split_if_asm)
 next
   fix h a al T v h'
   assume "P \<turnstile>sc h \<surd>"
@@ -441,8 +441,11 @@ interpretation sc!: heap_conf_read
 for P
 by(rule sc_heap_conf_read)
 
-lemma sc_deterministic_heap_ops: "\<not> sc_spurious_wakeups \<Longrightarrow> sc.deterministic_heap_ops"
-by(rule sc.deterministic_heap_opsI)(auto elim: sc_heap_read.cases sc_heap_write.cases)
+abbreviation sc_deterministic_heap_ops :: "'m prog \<Rightarrow> bool"
+where "sc_deterministic_heap_ops \<equiv> sc.deterministic_heap_ops TYPE('m)"
+
+lemma sc_deterministic_heap_ops: "\<not> sc_spurious_wakeups \<Longrightarrow> sc_deterministic_heap_ops P"
+by(rule sc.deterministic_heap_opsI)(auto elim: sc_heap_read.cases sc_heap_write.cases simp add: sc_allocate_def)
 
 subsection {* Code generation *}
 

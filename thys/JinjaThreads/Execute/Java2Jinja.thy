@@ -56,6 +56,9 @@ where "thread_toString' = toString"
 definition trace_toString :: "thread_id \<times> (addr, thread_id) obs_event list \<Rightarrow> String.literal"
 where "trace_toString = toString"
 
+code_modulename SML
+  Cardinality Set
+
 export_code
   wf_J_prog' exec_J_rr exec_J_rnd 
   j_Program
@@ -65,9 +68,6 @@ export_code
   file "J_Execute.ML"
 
 definition j2jvm :: "addr J_prog \<Rightarrow> addr jvm_prog" where "j2jvm = J2JVM"
-
-code_modulename SML
-  Cardinality Set
 
 export_code
   wf_jvm_prog' exec_JVM_rr exec_JVM_rnd j2jvm

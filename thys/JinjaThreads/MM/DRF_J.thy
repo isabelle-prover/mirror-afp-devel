@@ -185,7 +185,7 @@ locale J_allocated_heap = allocated_heap +
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -198,19 +198,19 @@ context J_allocated_heap begin
 
 lemma red_allocated_mono: "P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> allocated (hp s) \<subseteq> allocated (hp s')"
   and reds_allocated_mono: "P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> allocated (hp s) \<subseteq> allocated (hp s')"
-by(induct rule: red_reds.inducts)(auto dest: allocate_allocatedD allocate_allocated_fail heap_write_allocated_same red_external_allocated_mono del: subsetI)
+by(induct rule: red_reds.inducts)(auto dest: allocate_allocatedD heap_write_allocated_same red_external_allocated_mono del: subsetI)
 
 lemma red_allocatedD:
   "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk> \<Longrightarrow> ad \<in> allocated (hp s') \<and> ad \<notin> allocated (hp s)"
   and reds_allocatedD:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk> \<Longrightarrow> ad \<in> allocated (hp s') \<and> ad \<notin> allocated (hp s)"
-by(induct rule: red_reds.inducts)(auto dest: allocate_allocatedD allocate_allocated_fail heap_write_allocated_same red_external_allocatedD)
+by(induct rule: red_reds.inducts)(auto dest: allocate_allocatedD heap_write_allocated_same red_external_allocatedD)
 
 lemma red_allocated_NewHeapElemD:
   "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; ad \<in> allocated (hp s'); ad \<notin> allocated (hp s) \<rbrakk> \<Longrightarrow> \<exists>CTn. NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
   and reds_allocated_NewHeapElemD:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; ad \<in> allocated (hp s'); ad \<notin> allocated (hp s) \<rbrakk> \<Longrightarrow> \<exists>CTn. NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
-by(induct rule: red_reds.inducts)(auto dest: allocate_allocated_fail allocate_allocatedD heap_write_allocated_same red_external_NewHeapElemD)
+by(induct rule: red_reds.inducts)(auto dest: allocate_allocatedD heap_write_allocated_same red_external_NewHeapElemD)
 
 lemma mred_allocated_multithreaded:
   "allocated_multithreaded addr2thread_id thread_id2addr empty_heap allocate typeof_addr heap_write allocated final_expr (mred P) P"
@@ -449,7 +449,7 @@ locale J_allocated_heap_conf =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -741,7 +741,7 @@ locale J_allocated_progress =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"

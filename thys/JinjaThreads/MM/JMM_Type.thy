@@ -21,17 +21,10 @@ type_synonym 'addr JMM_heap = "'addr \<rightharpoonup> htype"
 
 translations (type) "'addr JMM_heap" <= (type) "'addr \<Rightarrow> htype option"
 
-definition new_Addr :: "('addr \<rightharpoonup> 'b) \<Rightarrow> 'addr option"
-where "new_Addr h \<equiv> if \<exists>a. h a = None then Some(SOME a. h a = None) else None"
-
-lemma new_Addr_SomeD:
-  "new_Addr h = Some a \<Longrightarrow> h a = None"
-by(auto simp add:new_Addr_def split:if_splits intro: someI)
-
 abbreviation jmm_empty :: "'addr JMM_heap" where "jmm_empty == Map.empty"
 
-definition jmm_allocate :: "'addr JMM_heap \<Rightarrow> htype \<Rightarrow> 'addr JMM_heap \<times> 'addr option"
-where "jmm_allocate h hT = (case new_Addr h of None \<Rightarrow> (h, None) | Some a \<Rightarrow> (h(a \<mapsto> hT), Some a))"
+definition jmm_allocate :: "'addr JMM_heap \<Rightarrow> htype \<Rightarrow> ('addr JMM_heap \<times> 'addr) set"
+where "jmm_allocate h hT = (\<lambda>a. (h(a \<mapsto> hT), a)) ` {a. h a = None}"
 
 definition jmm_typeof_addr :: "'addr JMM_heap \<Rightarrow> 'addr \<rightharpoonup> htype"
 where "jmm_typeof_addr h = h"
@@ -96,15 +89,15 @@ subsection {* Locale @{text heap} *}
 
 lemma jmm_heap: "heap addr2thread_id thread_id2addr jmm_allocate jmm_typeof_addr jmm_heap_write P"
 proof
-  fix h hT h' a
-  assume "jmm_allocate h hT = (h', \<lfloor>a\<rfloor>)"
+  fix h' a h hT
+  assume "(h', a) \<in> jmm_allocate h hT"
   thus "jmm_typeof_addr h' a = \<lfloor>hT\<rfloor>"
-    by(auto simp add: jmm_heap_ops_defs dest: new_Addr_SomeD)
+    by(auto simp add: jmm_heap_ops_defs)
 next
-  fix h hT and h' :: "('addr :: addr) JMM_heap" and a
-  assume "jmm_allocate h hT = (h', a)"
+  fix h' :: "('addr :: addr) JMM_heap" and h hT a
+  assume "(h', a) \<in> jmm_allocate h hT"
   thus "h \<unlhd>jmm h'"
-    by(fastforce simp add: jmm_heap_ops_defs intro: jmm.hextI dest: new_Addr_SomeD[OF sym])
+    by(fastforce simp add: jmm_heap_ops_defs intro: jmm.hextI)
 next
   fix h a al v and h' :: "('addr :: addr) JMM_heap"
   assume "jmm_heap_write h a al v h'"
@@ -174,8 +167,8 @@ next
   assume "jmm_typeof_addr h a = \<lfloor>hT\<rfloor>" "P \<turnstile>jmm h \<surd>"
   thus "is_htype P hT" by(auto simp add: jmm_hconf_def jmm_heap_ops_defs intro: ranI)
 next
-  fix h hT h' a
-  assume "jmm_allocate h hT = (h', a)" "P \<turnstile>jmm h \<surd>" "is_htype P hT"
+  fix h' h hT a
+  assume "(h', a) \<in> jmm_allocate h hT" "P \<turnstile>jmm h \<surd>" "is_htype P hT"
   thus "P \<turnstile>jmm h' \<surd>"
     by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
 next
@@ -282,15 +275,10 @@ lemma jmm_allocated_heap:
 proof
   show "jmm_allocated jmm_empty = {}" by(auto simp add: jmm_heap_ops_defs)
 next
-  fix h hT h' a
-  assume "jmm_allocate h hT = (h', \<lfloor>a\<rfloor>)"
+  fix h' a h hT
+  assume "(h', a) \<in> jmm_allocate h hT"
   thus "jmm_allocated h' = insert a (jmm_allocated h) \<and> a \<notin> jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs split: split_if_asm dest: new_Addr_SomeD)
-next
-  fix h hT h'
-  assume "jmm_allocate h hT = (h', None)"
-  thus "jmm_allocated h' = jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs)
+    by(auto simp add: jmm_heap_ops_defs split: split_if_asm)
 next
   fix h a al v h'
   assume "jmm_heap_write h a al v h'"

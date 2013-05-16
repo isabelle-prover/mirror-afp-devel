@@ -17,7 +17,7 @@ locale heap_execute = addr_base +
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
   fixes spurious_wakeups :: bool
   and empty_heap :: "'heap" 
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set" 
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap set"
@@ -66,23 +66,23 @@ lemma heap_clone_code:
   "heap_clone P h a =
   (case typeof_addr h a of
     \<lfloor>Class_type C\<rfloor> \<Rightarrow> 
-    (case allocate h (Class_type C) of
-       (h', None) \<Rightarrow> {(h', None)}
-     | (h', Some a') \<Rightarrow> do {
+      let HA = allocate h (Class_type C) 
+      in if HA = {} then {(h, None)} else do {
+          (h', a') \<leftarrow> HA;
           FDTs \<leftarrow> set_of_pred (Fields_i_i_o P C);
           (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h';
           {(h'', \<lfloor>(NewHeapElem a' (Class_type C) # obs, a')\<rfloor>)}
-       })
-  | \<lfloor>Array_type T n\<rfloor> \<Rightarrow>
-     (case allocate h (Array_type T n) of
-          (h', None) \<Rightarrow> {(h', None)}
-        | (h', \<lfloor>a'\<rfloor>) \<Rightarrow> do {
-             FDTs \<leftarrow> set_of_pred (Fields_i_i_o P Object);
-             (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h';
-             {(h'', \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>)}
-           })
+        }
+  | \<lfloor>Array_type T n\<rfloor> \<Rightarrow> 
+      let HA = allocate h (Array_type T n)
+      in if HA = {} then {(h, None)} else do {
+        (h', a') \<leftarrow> HA;
+        FDTs \<leftarrow> set_of_pred (Fields_i_i_o P Object);
+        (obs, h'') \<leftarrow> heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h';
+        {(h'', \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>)}
+      }
   | _ \<Rightarrow> {})"
-by(auto 4 3 elim!: execute.heap_clone.cases split: ty.splits prod.split_asm htype.splits intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq)
+by(auto 4 3 elim!: execute.heap_clone.cases split: ty.splits prod.split_asm htype.splits intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq Bex_def)
 
 definition red_external_aggr :: 
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'heap \<Rightarrow> 

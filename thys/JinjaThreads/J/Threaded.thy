@@ -723,6 +723,12 @@ lemma
      final_thread.actions_ok final s t ta; final_thread.actions_ok final s t ta' \<rbrakk> 
   \<Longrightarrow> ta = ta' \<and> es' = es'' \<and> s' = s''"
 proof(induct e "(shr s, xs)" ta e' s' and es "(shr s, xs)" ta es' s' arbitrary: e'' s'' xs and es'' s'' xs rule: red_reds.inducts)
+  case RedNew
+  thus ?case by(auto elim!: red_cases dest: deterministic_heap_ops_allocateD[OF det])
+next
+  case RedNewArray
+  thus ?case by(auto elim!: red_cases dest: deterministic_heap_ops_allocateD[OF det])
+next
   case RedCall thus ?case
     by(auto elim!: red_cases dest: sees_method_fun simp add: map_eq_append_conv)
 next

@@ -237,22 +237,20 @@ proof -
     thus ?thesis
     proof(cases "ins ! pc")
       case (New C)
-      obtain h' ao where "allocate h (Class_type C) = (h', ao)" by(cases "allocate h (Class_type C)")
-      with xexec New show ?thesis by(auto simp add: split_beta intro: hext_allocate)
+      with xexec show ?thesis
+        by(auto intro: hext_allocate split: split_if_asm)
     next
       case (NewArray T)
-      obtain h' ao where "allocate h (Array_type T (nat (sint (the_Intg (hd stk))))) = (h', ao)"
-        by(cases "allocate h (Array_type T (nat (sint (the_Intg (hd stk)))))")
-      with xexec NewArray show ?thesis
+      with xexec show ?thesis
         by(auto intro: hext_allocate split: split_if_asm)
     next
       case AStore
       with xexec check_ins show ?thesis
-        by(auto simp add: split_beta split: split_if_asm intro: hext_heap_write)
+	by(auto simp add: split_beta split: split_if_asm intro: hext_heap_write)
     next
       case Putfield
       with xexec check_ins show ?thesis
-        by(auto intro: hext_heap_write simp add: split_beta split: split_if_asm)
+	by(auto intro: hext_heap_write simp add: split_beta split: split_if_asm)
     next
       case (Invoke M n)
       with xexec check_ins show ?thesis

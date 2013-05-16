@@ -69,7 +69,7 @@ locale J1_JVM_heap_base =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -2903,7 +2903,7 @@ next
   case bisim1Val2 thus ?case by(auto dest: exec_meth_length_compE2_stack_xliftD)
 next
   case bisim1New thus ?case
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros)
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
 next
   case bisim1NewThrow thus ?case by(fastforce elim: exec_meth.cases intro: exec_meth.intros)
 next
@@ -2925,7 +2925,7 @@ next
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: split_if_asm)
+      by(erule exec_meth.cases)(auto 4 4 intro: exec_meth.intros split: split_if_asm)
   qed
 next
   case (bisim1NewArrayThrow e n a xs stk loc pc T)
@@ -4845,7 +4845,7 @@ locale J1_JVM_heap_conf_base =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -4960,7 +4960,7 @@ locale J1_JVM_conf_read =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -4983,7 +4983,7 @@ locale J1_JVM_heap_conf =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"

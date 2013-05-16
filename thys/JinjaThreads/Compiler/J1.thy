@@ -52,27 +52,27 @@ inductive red1 ::
 for uf :: bool and P :: "'addr J1_prog" and t :: 'thread_id
 where
   Red1New:
-  "allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>)
+  "(h', a) \<in> allocate h (Class_type C)
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<lbrace>NewHeapElem a (Class_type C)\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | Red1NewFail:
-  "allocate h (Class_type C) = (h', None)
-  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h', l)\<rangle>"
+  "allocate h (Class_type C) = {}
+  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h, l)\<rangle>"
 
 | New1ArrayRed:
   "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>newA T\<lfloor>e'\<rceil>, s'\<rangle>"
 
 | Red1NewArray:
-  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>) \<rbrakk>
+  "\<lbrakk> 0 <=s i; (h', a) \<in> allocate h (Array_type T (nat (sint i))) \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | Red1NewArrayNegative:
   "i <s 0 \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize, s\<rangle>"
 
 | Red1NewArrayFail:
-  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = (h', None) \<rbrakk>
-  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h', l)\<rangle>"
+  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = {} \<rbrakk>
+  \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h, l)\<rangle>"
 
 | Cast1Red:
   "uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>

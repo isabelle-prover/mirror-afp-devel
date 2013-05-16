@@ -159,7 +159,7 @@ proof -
           with ta'' ta' show ?thesis by(fastforce simp del: split_paired_Ex)
         qed
       qed
-    qed(auto split: split_if_asm simp add: split_beta ta_upd_simps exec_1_iff simp del: split_paired_Ex)
+    qed(auto 4 4 split: split_if_asm simp add: split_beta ta_upd_simps exec_1_iff intro: rev_image_eqI simp del: split_paired_Ex)
     with check' have "\<exists>ta' \<sigma>'. P,t \<turnstile> Normal (xcp, h, frs) -ta'-jvmd\<rightarrow> Normal \<sigma>' \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and>
       collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<and> collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub> \<subseteq> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
       apply clarify

@@ -408,7 +408,7 @@ next
   next
     case (Red1NewArray i a)
     note [simp] = `e = Val (Intg i)` `ta = \<lbrace>NewHeapElem a (Array_type U (nat (sint i)))\<rbrace>` `e' = addr a` `xs' = xs`
-      and new = `allocate h (Array_type U (nat (sint i))) = (h', \<lfloor>a\<rfloor>)`
+      and new = `(h', a) \<in> allocate h (Array_type U (nat (sint i)))`
     from bisim have s: "xcp = None" "xs = loc" by(auto dest: bisim_Val_loc_eq_xcp_None)
     from bisim have "\<tau>Exec_mover_a P t E h (stk, loc, pc, xcp) ([Intg i], loc, length (compE2 E), None)"
       by(auto dest: bisim1Val2D1)
@@ -440,8 +440,8 @@ next
       by(auto simp add: exec_move_def)(blast intro: NewArray_\<tau>ExecrI)
   next
     case (Red1NewArrayFail i)
-    note [simp] = `e = Val (Intg i)` `e' = THROW OutOfMemory` `xs' = xs` `ta = \<epsilon>`
-      and new = `allocate h (Array_type U (nat (sint i))) = (h', None)`
+    note [simp] = `e = Val (Intg i)` `e' = THROW OutOfMemory` `xs' = xs` `ta = \<epsilon>` `h' = h`
+      and new = `allocate h (Array_type U (nat (sint i))) = {}`
     have "\<not> \<tau>move1 P h (newA U\<lfloor>Val (Intg i)\<rceil>)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
     moreover from bisim have s: "xcp = None" "xs = loc"
       and "\<tau>Exec_mover_a P t E h (stk, loc, pc, xcp) ([Intg i], loc, length (compE2 E), None)"

@@ -122,26 +122,26 @@ for extTA :: "('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('
 and P :: "'addr J_prog" and t :: 'thread_id
 where
   RedNew:
-  "allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>)
+  "(h', a) \<in> allocate h (Class_type C)
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>new C, (h, l)\<rangle> -\<lbrace>NewHeapElem a (Class_type C)\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | RedNewFail:
-  "allocate h (Class_type C) = (h', None)
-  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h', l)\<rangle>"
+  "allocate h (Class_type C) = {}
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h, l)\<rangle>"
 
 | NewArrayRed:
   "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>newA T\<lfloor>e'\<rceil>, s'\<rangle>"
 
 | RedNewArray:
-  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>) \<rbrakk>
+  "\<lbrakk> 0 <=s i; (h', a) \<in> allocate h (Array_type T (nat (sint i))) \<rbrakk>
   \<Longrightarrow> extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
 
 | RedNewArrayNegative:
   "i <s 0 \<Longrightarrow> extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize, s\<rangle>"
 
 | RedNewArrayFail:
-  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = (h', None) \<rbrakk>
-  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h', l)\<rangle>"
+  "\<lbrakk> 0 <=s i; allocate h (Array_type T (nat (sint i))) = {} \<rbrakk>
+  \<Longrightarrow> extTA,P,t \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h, l)\<rangle>"
 
 | CastRed:
   "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>Cast C e, s\<rangle> -ta\<rightarrow> \<langle>Cast C e', s'\<rangle>"
@@ -601,9 +601,11 @@ done
 
 end
 
-lemmas [code_pred_intro] =
-  J_heap_base.RedNew J_heap_base.RedNewFail J_heap_base.NewArrayRed J_heap_base.RedNewArray J_heap_base.RedNewArrayNegative
-  J_heap_base.RedNewArrayFail J_heap_base.CastRed J_heap_base.RedCast J_heap_base.RedCastFail J_heap_base.InstanceOfRed
+lemmas [code_pred_intro] = 
+  J_heap_base.RedNew[folded Predicate_Compile.contains_def] J_heap_base.RedNewFail J_heap_base.NewArrayRed 
+  J_heap_base.RedNewArray[folded Predicate_Compile.contains_def]
+  J_heap_base.RedNewArrayNegative J_heap_base.RedNewArrayFail
+  J_heap_base.CastRed J_heap_base.RedCast J_heap_base.RedCastFail J_heap_base.InstanceOfRed
   J_heap_base.RedInstanceOf J_heap_base.BinOpRed1 J_heap_base.BinOpRed2 J_heap_base.RedBinOp J_heap_base.RedBinOpFail 
   J_heap_base.RedVar J_heap_base.LAssRed J_heap_base.RedLAss
   J_heap_base.AAccRed1 J_heap_base.AAccRed2 J_heap_base.RedAAccNull
@@ -693,7 +695,7 @@ proof -
   next
     case ThrowThrow thus ?thesis
       by-(erule (4) ThrowThrow'[OF refl refl refl refl refl refl refl refl refl refl refl])
-  qed(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl])+
+  qed(assumption|erule (4) that[unfolded Predicate_Compile.contains_def, OF refl refl refl refl refl refl refl refl refl refl refl])+
 next
   case reds
   from reds.prems show thesis
