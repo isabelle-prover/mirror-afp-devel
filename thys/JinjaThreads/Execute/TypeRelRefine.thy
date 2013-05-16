@@ -60,22 +60,15 @@ is "class \<circ> Program" .
 lift_definition tabulate_subcls :: "'m cdecl list \<Rightarrow> (cname, cname set) mapping"
 is "\<lambda>P C. if is_class (Program P) C then Some {D. Program P \<turnstile> C \<preceq>\<^sup>* D} else None" .
 
-lemma bi_total_relcompp_converseI: "bi_total R \<Longrightarrow> (R OO op = OO R\<inverse>\<inverse>) x x"
-by (metis (full_types) bi_total_def conversep_iff relcomppI)
-
 lift_definition tabulate_sees_field :: "'m cdecl list \<Rightarrow> (cname, (vname, cname \<times> ty \<times> fmod) mapping) mapping"
 is "\<lambda>P C. if is_class (Program P) C then
         Some (\<lambda>F. if \<exists>T fm D. Program P \<turnstile> C sees F:T (fm) in D then Some (field (Program P) C F) else None)
-      else None"
-apply (subst mapping.pcr_cr_eq[symmetric])+
-by (intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total bi_total_eq)
+      else None" .
 
 lift_definition tabulate_Method :: "'m cdecl list \<Rightarrow> (cname, (mname, cname \<times> ty list \<times> ty \<times> 'm option) mapping) mapping"
 is "\<lambda>P C. if is_class (Program P) C then
          Some (\<lambda>M. if \<exists>Ts T mthd D. Program P \<turnstile> C sees M:Ts\<rightarrow>T=mthd in D then Some (method (Program P) C M) else None)
-      else None"
-apply (subst mapping.pcr_cr_eq[symmetric])+
-by(intro bi_total_relcompp_converseI bi_total_fun bi_unique_eq bi_total_option_rel mapping.bi_total bi_total_eq)
+      else None" .
 
 fun wf_prog_impl' :: "'m prog_impl' \<Rightarrow> bool"
 where
