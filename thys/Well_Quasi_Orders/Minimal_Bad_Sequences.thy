@@ -53,18 +53,6 @@ proof
     by (induct i) (simp_all add: assms)
 qed
 
-lemma bad_repl:
-  assumes "\<forall>i. f i \<ge> f 0" and "\<forall>i j. i > j \<longrightarrow> f i > f j"
-    and "bad P (repl (f 0) A B)" (is "bad P ?A")
-  shows "bad P (B \<circ> f)"
-proof
-  assume "good P (B \<circ> f)"
-  then obtain i j where "i < j" and "P (B (f i)) (B (f j))" by (auto simp: good_def)
-  hence "P (?A (f i)) (?A (f j))" using assms by auto
-  moreover from `i < j` have "f i < f j" using assms by auto
-  ultimately show False using assms(3) by (auto simp: good_def)
-qed
-
 fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
   "minimal_bad_seq A f 0 = f"
 | "minimal_bad_seq A f (Suc n) = (
