@@ -1,3 +1,5 @@
+(*FIXME: depends on Well_Order_Extension.thy, which is currently awaiting
+integration into the Isabelle distribituion.*)
 theory Wpo_Extension
 imports
   Well_Partial_Orders
