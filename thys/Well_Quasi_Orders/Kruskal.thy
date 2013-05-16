@@ -29,12 +29,13 @@ lemma almost_full_on_trees:
   assumes "almost_full_on P A"
   shows "almost_full_on (tree_hembeq P) (trees A)"
 proof (rule ccontr)
+  let ?A = "trees A"
   let ?P = "tree_hembeq P"
-  interpret tree_mbs: mbs subtree trees
+  interpret tree_mbs: mbs subtree ?A
   proof -
-    show "mbs subtree trees"
+    show "mbs subtree ?A"
       by (unfold_locales)
-         (force simp: wfp_on_subtree intro: subtree_trans elim!: subtree_trees)+
+         (force simp: wfp_on_subtree intro: subtree_trans)+
   qed
   note refl = reflp_on_tree_hembeq [of P A]
   
@@ -42,7 +43,7 @@ proof (rule ccontr)
   then obtain f where "\<forall>i. f i \<in> trees A" and "bad ?P f"
     unfolding almost_full_on_def by blast
   from tree_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at subtree trees ?P A m n"
+    and mb: "\<And>n. mbs.min_at subtree ?A ?P m n"
     and in_trees: "\<And>i. m i \<in> trees A"
     by blast
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force

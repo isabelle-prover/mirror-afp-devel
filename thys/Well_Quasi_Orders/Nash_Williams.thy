@@ -131,6 +131,30 @@ lemma bad_imp_not_empty:
   "bad (set_le P) f \<Longrightarrow> f i \<noteq> {}"
   by auto
 
+subsection {* Piecing Together Infinite Sequences *}
+
+text {*Replace the elements of an infinite sequence, starting from a given
+position, by those of another infinite sequence.*}
+definition repl :: "nat \<Rightarrow> 'a seq \<Rightarrow> 'a seq \<Rightarrow> 'a seq" where
+  "repl i f g \<equiv> \<lambda>j. if j \<ge> i then g j else f j"
+
+lemma repl_0 [simp]:
+  "repl 0 f g = g"
+  by (simp add: repl_def)
+
+lemma repl_simps [simp]:
+  "j \<ge> i \<Longrightarrow> repl i f g j = g j"
+  "j < i \<Longrightarrow> repl i f g j = f j"
+  by (auto simp: repl_def)
+
+lemma repl_ident [simp]:
+   "repl i f f = f"
+   by (auto simp: repl_def)
+
+lemma repl_repl_ident [simp]:
+  "repl n (repl n f g) h = repl n f h"
+  by (auto simp: repl_def)
+
 lemma bad_set_le_repl:
   assumes "bad (set_le P) f"
     and "bad (set_le P) g"
@@ -338,6 +362,11 @@ next
   qed
 qed
 
+fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" where
+  "minimal_bad_seq A f 0 = f"
+| "minimal_bad_seq A f (Suc n) = (
+    let g = minimal_bad_seq A f n in
+    repl (Suc n) g (A g n))"
 
 lemma wqo_on_finite_subsets:
   fixes A :: "'a set"
