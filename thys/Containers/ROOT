@@ -17,7 +17,7 @@ session Containers (AFP) = "Datatype_Order_Generator" +
     "document/root.bib"
 
 session "Containers-Benchmarks" (AFP) = Containers +
-  options [timeout = 600]
+  options [timeout = 600, document = false]
   theories
     "ITP-2013/Benchmark_Bool"
     "ITP-2013/Benchmark_LC"
