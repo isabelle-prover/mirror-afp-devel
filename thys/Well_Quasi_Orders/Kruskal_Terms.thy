@@ -197,19 +197,16 @@ lemma almost_full_on_terms:
   shows "almost_full_on (term_hemb F P)\<^sup>=\<^sup>= (terms F)"
 proof (rule ccontr)
   let ?P = "(term_hemb F P)\<^sup>=\<^sup>="
-  interpret term_mbs: mbs "\<lambda>F. (term_hemb F P)\<^sup>=\<^sup>=" subtree "terms"
-  proof
-    fix F s t u
-    assume "u \<in> terms F" and "term_hembeq F P s t" and "subtree t u"
-    then show "term_hembeq F P s u" by (rule term_hembeq_subtree)
-  qed (auto intro: wfp_on_subtree_terms subtree_terms elim: subtree_trans)
+  interpret term_mbs: mbs subtree "terms"
+    by (unfold_locales)
+       (auto intro: wfp_on_subtree_terms subtree_terms elim: subtree_trans)
   have refl: "reflp_on ?P (terms F)" by (auto simp: reflp_on_def)
 
   assume "\<not> ?thesis"
   then obtain f where "\<forall>i. f i \<in> terms F" and "bad ?P f"
     unfolding almost_full_on_def by blast
   from term_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at (\<lambda>F. (term_hemb F P)\<^sup>=\<^sup>=) subtree terms F m n"
+    and mb: "\<And>n. mbs.min_at subtree terms ?P F m n"
     and in_terms: "\<And>i. m i \<in> terms F"
     by blast
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force

@@ -57,10 +57,10 @@ definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightar
   "almost_full_on P A \<equiv> \<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> good P f"
 
 lemma (in mbs) mbs':
-  assumes "\<not> almost_full_on (strong A) (vals A)"
+  assumes "\<not> almost_full_on P (vals A)"
   shows "\<exists>g.
-    bad (strong A) g \<and>
-    (\<forall>n. min_at A g n) \<and>
+    bad P g \<and>
+    (\<forall>n. min_at P A g n) \<and>
     (\<forall>i. g i \<in> vals A)"
   using assms and mbs
   unfolding almost_full_on_def by blast
@@ -681,12 +681,11 @@ lemma almost_full_on_lists:
   shows "almost_full_on (list_hembeq P) (lists A)"
 proof (rule ccontr)
   let ?P = "list_hembeq P"
-  interpret list_mbs: mbs "\<lambda>_. ?P" suffix lists
+  interpret list_mbs: mbs suffix lists
   proof -
-    show "mbs (\<lambda>_. ?P) suffix lists"
-      by (unfold_locales) (auto
-        simp: list_hembeq_suffix wfp_on_suffix suffix_lists
-        intro: suffix_trans)
+    show "mbs suffix lists"
+      by (unfold_locales)
+         (auto simp: wfp_on_suffix suffix_lists intro: suffix_trans)
   qed
   note refl = reflp_on_list_hembeq [of P A]
 
@@ -694,7 +693,7 @@ proof (rule ccontr)
   then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f"
     unfolding almost_full_on_def by blast
   from list_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) suffix lists A m n"
+    and mb: "\<And>n. mbs.min_at suffix lists ?P A m n"
     and in_lists: "\<And>i. m i \<in> lists A" by blast
   then have non_empty: "\<And>i. m i \<noteq> []" using bad_imp_not_Nil by auto
   moreover obtain h t where [simp]: "\<And>i. h i = hd (m i)" "\<And>i. t i = tl (m i)" by force
