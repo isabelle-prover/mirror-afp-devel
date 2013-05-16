@@ -43,7 +43,7 @@ proof (rule ccontr)
   then obtain f where "\<forall>i. f i \<in> trees A" and "bad ?P f"
     unfolding almost_full_on_def by blast
   from tree_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) subtree A m n"
+    and mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) subtree trees A m n"
     and in_trees: "\<And>i. m i \<in> trees A"
     by blast
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
@@ -83,20 +83,13 @@ proof (rule ccontr)
         ultimately have False using `bad ?P m` by (auto simp: good_def)
       } ultimately show False by arith
     qed
-    have "\<forall>i<?n. c i = m i" by simp
+    have "\<forall>i. c i \<in> trees A"
+      using in_trees
+      by (simp add: c_def)
+         (metis `\<And>i. s i = succs (m i)` in_succs in_succs_imp_subtree subtree_trees)
+    moreover have "\<forall>i<?n. c i = m i" by simp
     moreover have "subtree (c ?n) (m ?n)"
       using in_succs_imp_subtree [OF in_trees] and in_succs by simp
-    moreover have "\<forall>i\<ge>?n. \<exists>j\<ge>?n. subtree\<^sup>=\<^sup>= (c i) (m j)"
-    proof (intro allI impI)
-      fix i
-      let ?i = "(i - ?n)"
-      assume "?n \<le> i"
-      with ge have "?n \<le> \<phi> ?i" by auto
-      from `?n \<le> i` have "c i = t ?i" by auto
-      with in_succs_imp_subtree [OF in_trees] and in_succs
-        have "subtree\<^sup>=\<^sup>= (c i) (m (\<phi> ?i))" by auto
-      thus "\<exists>j\<ge>?n. subtree\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> \<phi> ?i` by auto
-    qed
     ultimately have "good ?P c"
       using mb [of ?n, unfolded tree_mbs.min_at_def, rule_format] by simp
     with `bad ?P c` have False by blast

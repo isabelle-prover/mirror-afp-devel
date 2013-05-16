@@ -170,6 +170,9 @@ definition mbp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set
     \<forall>g. (\<forall>i<n. g i = f i) \<and> g n \<subset> f n \<and> (\<forall>i\<ge>n. \<exists>j\<ge>n. g i \<subseteq> f j)
     \<longrightarrow> good (set_le P) g"
 
+lemma ex_repl_conv:
+  "(\<exists>j\<ge>n. P (repl n f g j)) \<longleftrightarrow> (\<exists>j\<ge>n. P (g j))"
+  by auto
 
 lemma minimal_bad_element:
   fixes f :: "'a set seq"

@@ -694,7 +694,7 @@ proof (rule ccontr)
   then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f"
     unfolding almost_full_on_def by blast
   from list_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) suffix A m n"
+    and mb: "\<And>n. mbs.min_at (\<lambda>_. ?P) suffix lists A m n"
     and in_lists: "\<And>i. m i \<in> lists A" by blast
   then have non_empty: "\<And>i. m i \<noteq> []" using bad_imp_not_Nil by auto
   moreover obtain h t where [simp]: "\<And>i. h i = hd (m i)" "\<And>i. t i = tl (m i)" by force
@@ -730,18 +730,11 @@ proof (rule ccontr)
         ultimately have False using `bad ?P m` by (auto simp: good_def)
       } ultimately show False by arith
     qed
-    have "\<forall>i<?n. c i = m i" by auto
+    have "\<forall>i. c i \<in> lists A"
+      using in_lists and non_empty
+      by (simp add: c_def) (metis suffix_lists suffix_tl)
+    moreover have "\<forall>i<?n. c i = m i" by auto
     moreover have "suffix (c ?n) (m ?n)" using non_empty by auto
-    moreover have "\<forall>i\<ge>?n. \<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)"
-    proof (intro allI impI)
-      fix i
-      let ?i = "\<phi> (i - ?n)"
-      assume "?n \<le> i"
-      with ge have "?n \<le> ?i" by auto
-      from `?n \<le> i` have "c i = t ?i" by simp
-      with non_empty have "suffix\<^sup>=\<^sup>= (c i) (m ?i)" by (simp)
-      thus "\<exists>j\<ge>?n. suffix\<^sup>=\<^sup>= (c i) (m j)" using `?n \<le> ?i` by auto
-    qed
     ultimately have "good ?P c"
       using mb [of ?n, unfolded list_mbs.min_at_def, rule_format, of c] by blast
     with `bad ?P c` have False by blast
