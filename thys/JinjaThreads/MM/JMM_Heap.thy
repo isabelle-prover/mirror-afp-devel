@@ -22,7 +22,7 @@ locale allocated_heap_base = heap_base +
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -35,7 +35,7 @@ locale allocated_heap =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -44,18 +44,13 @@ locale allocated_heap =
 
   assumes allocated_empty: "allocated empty_heap = {}"
   and allocate_allocatedD:
-  "allocate h hT = (h', Some a) \<Longrightarrow> allocated h' = insert a (allocated h) \<and> a \<notin> allocated h"
-  and allocate_allocated_fail:
-  "allocate h hT = (h', None) \<Longrightarrow> allocated h' = allocated h"
+  "(h', a) \<in> allocate h hT \<Longrightarrow> allocated h' = insert a (allocated h) \<and> a \<notin> allocated h"
   and heap_write_allocated_same:
   "heap_write h a al v h' \<Longrightarrow> allocated h' = allocated h"
 begin
 
-lemma allocate_allocated_mono: "allocate h C = (h', ao) \<Longrightarrow> allocated h \<subseteq> allocated h'"
-by(cases ao)(simp_all add: allocate_allocated_fail allocate_allocatedD)
-
-lemma allocate_allocated_mono': "allocated h \<subseteq> allocated (fst (allocate h hT))"
-by(cases "allocate h hT", simp add: allocate_allocated_mono)
+lemma allocate_allocated_mono: "(h', a) \<in> allocate h C \<Longrightarrow> allocated h \<subseteq> allocated h'"
+by(simp_all add: allocate_allocatedD)
 
 lemma
   shows start_addrs_allocated: "allocated start_heap = set start_addrs"
@@ -74,26 +69,22 @@ proof -
       case (Cons x xs)
       note ads = `allocated h = set ads`
       show ?case
-      proof(cases b)
+      proof(cases "b \<and> allocate h (Class_type x) \<noteq> {}")
         case False thus ?thesis using ads
           by(simp add: create_initial_object_simps zip_append1)
       next
         case True[simp]
-        obtain h' ao where new_obj: "allocate h (Class_type x) = (h', ao)" by(cases "allocate h (Class_type x)")
-        show ?thesis
-        proof(cases ao)
-          case None
-          with new_obj have "allocated h' = allocated h" by(simp add: allocate_allocated_fail)
-          with ads None show ?thesis by(simp add: create_initial_object_simps new_obj)
-        next
-          case (Some a')
-          with new_obj have "allocated h' = insert a' (allocated h)" "a' \<notin> allocated h"
-            by(auto dest: allocate_allocatedD)
-          with ads have "allocated h' = set (ads @ [a'])" by auto
-          hence "?concl xs h' (ads @ [a']) True" by(rule Cons)
-          moreover have "a' \<notin> set ads" using `a' \<notin> allocated h` ads by blast
-          ultimately show ?thesis by(simp add: create_initial_object_simps new_obj Some)
-        qed
+        then obtain h' a' 
+          where h'a': "(SOME ha. ha \<in> allocate h (Class_type x)) = (h', a')"
+          and new_obj: "(h', a') \<in> allocate h (Class_type x)"
+          by(cases "(SOME ha. ha \<in> allocate h (Class_type x))")(auto simp del: True dest: allocate_Eps)
+
+        from new_obj have "allocated h' = insert a' (allocated h)" "a' \<notin> allocated h"
+          by(auto dest: allocate_allocatedD)
+        with ads have "allocated h' = set (ads @ [a'])" by auto
+        hence "?concl xs h' (ads @ [a']) True" by(rule Cons)
+        moreover have "a' \<notin> set ads" using `a' \<notin> allocated h` ads by blast
+        ultimately show ?thesis by(simp add: create_initial_object_simps new_obj h'a')
       qed
     qed }
   from this[of empty_heap "[]" True initialization_list]
@@ -162,7 +153,7 @@ lemma vs_conf_hext: "\<lbrakk> vs_conf P h vs; h \<unlhd> h' \<rbrakk> \<Longrig
 by(blast intro!: vs_confI intro: conf_hext addr_loc_type_hext_mono dest: vs_confD)
 
 lemma vs_conf_allocate:
-  "\<lbrakk> vs_conf P h vs; allocate h hT = (h', \<lfloor>a\<rfloor>); is_htype P hT \<rbrakk> 
+  "\<lbrakk> vs_conf P h vs; (h', a) \<in> allocate h hT; is_htype P hT \<rbrakk> 
   \<Longrightarrow> vs_conf P h' (w_value P vs (NormalAction (NewHeapElem a hT)))"
 apply(drule vs_conf_hext)
  apply(erule hext_allocate)

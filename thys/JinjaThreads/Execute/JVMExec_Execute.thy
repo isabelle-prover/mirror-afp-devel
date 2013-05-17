@@ -15,7 +15,7 @@ locale JVM_heap_execute = heap_execute +
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr" 
   and spurious_wakeups :: bool
   and empty_heap :: "'heap" 
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> 'heap \<times> 'addr option" 
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set" 
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<Rightarrow> htype option" 
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap set"
@@ -43,17 +43,17 @@ lemma exec_instr_code [code]:
   "exec_instr (Push v) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
    {(\<epsilon>, (None, h, (v # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
   "exec_instr (New C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-   {let (h', ao) = allocate h (Class_type C)
-    in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
-              | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', (Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs)}"
+   (let HA = allocate h (Class_type C) in
+    if HA = {} then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)}
+    else do { (h', a) \<leftarrow> HA; {(\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', (Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs)} })"
   "exec_instr (NewArray T) P t h stk loc C0 M0 pc frs =
-   {let si = the_Intg (hd stk);
+   (let si = the_Intg (hd stk);
         i = nat (sint si)
-    in (if si <s 0
-        then (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-        else (let (h', ao) = allocate h (Array_type T i)
-              in case ao of None \<Rightarrow> (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h', (stk, loc, C0, M0, pc) # frs)
-                        | Some a \<Rightarrow> (\<lbrace>NewHeapElem a (Array_type T i)\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs)))}"
+    in if si <s 0
+       then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
+       else let HA = allocate h (Array_type T i) in
+         if HA = {} then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}
+         else do { (h', a) \<leftarrow> HA; {(\<lbrace>NewHeapElem a (Array_type T i)\<rbrace>, None, h', (Addr a # tl stk, loc, C0, M0, pc + 1) # frs)}})"
   "exec_instr ALoad P t h stk loc C0 M0 pc frs =
    (let va = hd (tl stk)
     in (if va = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)}

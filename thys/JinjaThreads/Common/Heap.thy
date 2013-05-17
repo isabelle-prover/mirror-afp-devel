@@ -40,7 +40,7 @@ locale heap_base =
   +
   fixes spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -78,6 +78,7 @@ where
   "deterministic_heap_ops \<longleftrightarrow>
   (\<forall>h ad al v v'. heap_read h ad al v \<longrightarrow> heap_read h ad al v' \<longrightarrow> v = v') \<and>
   (\<forall>h ad al v h' h''. heap_write h ad al v h' \<longrightarrow> heap_write h ad al v h'' \<longrightarrow> h' = h'') \<and>
+  (\<forall>h hT h' a h'' a'. (h', a) \<in> allocate h hT \<longrightarrow> (h'', a') \<in> allocate h hT \<longrightarrow> h' = h'' \<and> a = a') \<and>
   \<not> spurious_wakeups"
 
 end
@@ -163,6 +164,7 @@ by(auto simp add: typeof_addr_loc_def dest: addr_loc_type_fun)
 lemma deterministic_heap_opsI:
   "\<lbrakk> \<And>h ad al v v'. \<lbrakk> heap_read h ad al v; heap_read h ad al v' \<rbrakk> \<Longrightarrow> v = v';
      \<And>h ad al v h' h''. \<lbrakk> heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h'';
+     \<And>h hT h' a h'' a'. \<lbrakk> (h', a) \<in> allocate h hT; (h'', a') \<in> allocate h hT \<rbrakk> \<Longrightarrow> h' = h'' \<and> a = a';
      \<not> spurious_wakeups \<rbrakk>
   \<Longrightarrow> deterministic_heap_ops"
 unfolding deterministic_heap_ops_def by blast
@@ -173,6 +175,10 @@ unfolding deterministic_heap_ops_def by blast
 
 lemma deterministic_heap_ops_writeD:
   "\<lbrakk> deterministic_heap_ops; heap_write h ad al v h'; heap_write h ad al v h'' \<rbrakk> \<Longrightarrow> h' = h''"
+unfolding deterministic_heap_ops_def by blast
+
+lemma deterministic_heap_ops_allocateD:
+  "\<lbrakk> deterministic_heap_ops; (h', a) \<in> allocate h hT; (h'', a') \<in> allocate h hT \<rbrakk> \<Longrightarrow> h' = h'' \<and> a = a'"
 unfolding deterministic_heap_ops_def by blast
 
 lemma deterministic_heap_ops_no_spurious_wakeups:
@@ -192,7 +198,7 @@ locale addr_conv =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -218,15 +224,15 @@ locale heap =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'m prog"
   +
-  assumes allocate_SomeD: "\<lbrakk> allocate h hT = (h', Some a); is_htype P hT \<rbrakk> \<Longrightarrow> typeof_addr h' a = Some hT"
+  assumes allocate_SomeD: "\<lbrakk> (h', a) \<in> allocate h hT; is_htype P hT \<rbrakk> \<Longrightarrow> typeof_addr h' a = Some hT"
 
-  and hext_allocate: "\<And>a. allocate h hT = (h', a) \<Longrightarrow> h \<unlhd> h'"
+  and hext_allocate: "\<And>a. (h', a) \<in> allocate h hT \<Longrightarrow> h \<unlhd> h'"
 
   and hext_heap_write:
   "heap_write h a al v h' \<Longrightarrow> h \<unlhd> h'"
@@ -234,10 +240,6 @@ locale heap =
 begin
 
 lemmas hext_heap_ops = hext_allocate hext_heap_write
-
-lemma hext_allocate': "h \<unlhd> fst (allocate h hT)"
-using hext_allocate[of h hT "fst (allocate h hT)" "snd (allocate h hT)"]
-by simp
 
 lemma typeof_addr_hext_mono:
   "\<lbrakk> h \<unlhd> h'; typeof_addr h a = \<lfloor>hT\<rfloor> \<rbrakk> \<Longrightarrow> typeof_addr h' a = \<lfloor>hT\<rfloor>"

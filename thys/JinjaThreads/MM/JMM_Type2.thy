@@ -35,17 +35,17 @@ primrec the_Address :: "addr \<Rightarrow> htype \<times> nat"
 where "the_Address (Address hT n) = (hT, n)"
 
 text {*
-  The JMM heap only stores how many objects of a given @{typ "htype"} have already been allocated.
+  The JMM heap only stores which sequence numbers of a given @{typ "htype"} have already been allocated.
 *}
 
-type_synonym JMM_heap = "htype \<Rightarrow> nat"
+type_synonym JMM_heap = "htype \<Rightarrow> nat set"
 
-translations (type) "JMM_heap" <= (type) "htype \<Rightarrow> nat"
+translations (type) "JMM_heap" <= (type) "htype \<Rightarrow> nat set"
 
-definition jmm_allocate :: "JMM_heap \<Rightarrow> htype \<Rightarrow> JMM_heap \<times> addr option"
-where "jmm_allocate h hT = (let n = h hT in (h(hT := n + 1), Some (Address hT n)))"
+definition jmm_allocate :: "JMM_heap \<Rightarrow> htype \<Rightarrow> (JMM_heap \<times> addr) set"
+where "jmm_allocate h hT = (let hhT = h hT in (\<lambda>n. (h(hT := insert n hhT), Address hT n)) ` (- hhT))"
 
-abbreviation jmm_empty :: "JMM_heap" where "jmm_empty == (\<lambda>_. 0)"
+abbreviation jmm_empty :: "JMM_heap" where "jmm_empty == (\<lambda>_. {})"
 
 definition jmm_typeof_addr :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<rightharpoonup> htype"
 where "jmm_typeof_addr P h = (\<lambda>hT. if is_htype P hT then Some hT else None) \<circ> fst \<circ> the_Address"
@@ -72,7 +72,7 @@ definition jmm_hconf :: "JMM_heap \<Rightarrow> bool"
 where "jmm_hconf h \<longleftrightarrow> True"
 
 definition jmm_allocated :: "JMM_heap \<Rightarrow> addr set"
-where "jmm_allocated h = {Address CTn n|CTn n. n < h CTn}"
+where "jmm_allocated h = {Address CTn n|CTn n. n \<in> h CTn}"
 
 definition jmm_spurious_wakeups :: "bool"
 where "jmm_spurious_wakeups = True"
@@ -123,9 +123,6 @@ interpretation jmm!: allocated_heap_base
   for P
 .
 
-lemma jmm_start_heap_ok: "jmm.start_heap_ok"
-by(simp add: jmm.start_heap_ok_def jmm.start_heap_data_def initialization_list_def jmm.create_initial_object_simps jmm_allocate_def sys_xcpts_list_def)
-
 text {* Now a variation of the JMM with a different read operation that permits to read only type-conformant values *}
 
 abbreviation jmm_heap_read_typed :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
@@ -161,13 +158,13 @@ subsection {* Locale @{text heap} *}
 
 lemma jmm_heap: "heap addr2thread_id thread_id2addr jmm_allocate (jmm_typeof_addr P) jmm_heap_write P"
 proof
-  fix h hT h' a
-  assume "jmm_allocate h hT = (h', \<lfloor>a\<rfloor>)" "is_htype P hT"
+  fix h' a h hT
+  assume "(h', a) \<in> jmm_allocate h hT" "is_htype P hT"
   thus "jmm_typeof_addr P h' a = \<lfloor>hT\<rfloor>"
     by(auto simp add: jmm_heap_ops_defs)
 next
   fix h hT h' a
-  assume "jmm_allocate h hT = (h', a)"
+  assume "(h', a) \<in> jmm_allocate h hT"
   thus "P \<turnstile> h \<unlhd>jmm h'" by(auto simp add: jmm_heap_ops_defs intro: jmm.hextI)
 next
   fix h a al v h'
@@ -201,6 +198,23 @@ lemma jmm_heap_read_typed_default_val:
   "heap_base.heap_read_typed typeof_addr jmm_heap_read P h a al
    (default_val (THE T. heap_base.addr_loc_type typeof_addr P h a al T))"
 by(rule heap_base.heap_read_typedI)(simp_all add: heap_base.THE_addr_loc_type jmm_heap_read_def heap_base.defval_conf)
+
+lemma jmm_allocate_Eps:
+  "(SOME ha. ha \<in> jmm_allocate h hT) = (h', a')
+  \<Longrightarrow> jmm_allocate h hT \<noteq> {} \<longrightarrow> (h', a') \<in> jmm_allocate h hT"
+by(auto dest: jmm.allocate_Eps)
+
+lemma jmm_allocate_eq_empty: "jmm_allocate h hT = {} \<longleftrightarrow> h hT = UNIV"
+by(auto simp add: jmm_allocate_def)
+
+lemma jmm_allocate_otherD:
+  "(h', a) \<in> jmm_allocate h hT \<Longrightarrow> \<forall>hT'. hT' \<noteq> hT \<longrightarrow> h' hT' = h hT'"
+by(auto simp add: jmm_allocate_def)
+
+lemma jmm_start_heap_ok: "jmm.start_heap_ok"
+apply(simp add: jmm.start_heap_ok_def jmm.start_heap_data_def initialization_list_def sys_xcpts_list_def jmm.create_initial_object_simps)
+apply(split prod.split, clarify, clarsimp simp add: jmm.create_initial_object_simps jmm_allocate_eq_empty Thread_neq_sys_xcpts sys_xcpts_neqs dest!: jmm_allocate_Eps jmm_allocate_otherD)+
+done
 
 subsection {* Locale @{text "heap_conf"} *}
 
@@ -334,15 +348,10 @@ lemma jmm_allocated_heap:
 proof
   show "jmm_allocated jmm_empty = {}" by(simp add: jmm_allocated_def)
 next
-  fix h hT h' a
-  assume "jmm_allocate h hT = (h', \<lfloor>a\<rfloor>)"
+  fix h' a h hT
+  assume "(h', a) \<in> jmm_allocate h hT"
   thus "jmm_allocated h' = insert a (jmm_allocated h) \<and> a \<notin> jmm_allocated h"
     by(auto simp add: jmm_heap_ops_defs split: split_if_asm)
-next
-  fix h hT h'
-  assume "jmm_allocate h hT = (h', None)"
-  thus "jmm_allocated h' = jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs)
 next
   fix h a al v h'
   assume "jmm_heap_write h a al v h'"

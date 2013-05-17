@@ -705,27 +705,28 @@ proof -
     \<Phi>_suc:      "\<Phi> C M!(pc+1) = Some (ST', LT')" and
     less:       "P \<turnstile> (Class X # ST, LT) \<le>\<^sub>i (ST', LT')"
     by auto
-  obtain h' ao where new: "allocate h (Class_type X) = (h', ao)" by(cases "allocate h (Class_type X)")
-  hence hext: "h \<unlhd> h'" by(rule hext_allocate)
-  with preh have preh': "preallocated h'" by(rule preallocated_hext)
-  from new heap_ok is_class_X have heap_ok': "hconf h'"
-    by(auto intro: hconf_allocate_mono)
   show ?thesis
-  proof(cases "ao")
-    case None
-    with frame frames tconf suc_pc no_x ins meth \<Phi>_pc new hext
-      wf_preallocatedD[OF wf, of h' OutOfMemory] preh' is_class_X heap_ok'
+  proof(cases "allocate h (Class_type X) = {}")
+    case True
+    with frame frames tconf suc_pc no_x ins meth \<Phi>_pc
+      wf_preallocatedD[OF wf, of h OutOfMemory] preh is_class_X heap_ok
     show ?thesis
       by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext)
   next
-    case (Some oref)
+    case False
+    with ins meth no_x obtain h' oref 
+      where new: "(h', oref) \<in> allocate h (Class_type X)"
+      and \<sigma>': "\<sigma> = (None, h', (Addr oref#stk,loc,C,M,pc+1)#frs)" (is "\<sigma> = (None, h', ?f # frs)")
+      by auto
+
+    from new have hext: "h \<unlhd> h'" by(rule hext_allocate)
+    with preh have preh': "preallocated h'" by(rule preallocated_hext)
+    from new heap_ok is_class_X have heap_ok': "hconf h'"
+      by(auto intro: hconf_allocate_mono)
+
     with new is_class_X have h': "typeof_addr h' oref = \<lfloor>Class_type X\<rfloor>" by(auto dest: allocate_SomeD)
   
-    with ins meth Some no_x new have \<sigma>':
-      "\<sigma> = (None, h', (Addr oref#stk,loc,C,M,pc+1)#frs)"
-      (is "\<sigma> = (None, h', ?f # frs)")
-      by simp
-    moreover note heap_ok'
+    note heap_ok' \<sigma>'
     moreover
     from frame less suc_pc wf h' hext
     have "conf_f P h' (ST', LT') ins ?f"
@@ -887,33 +888,28 @@ proof -
 
   from stk ST obtain si stk' where si: "stk = Intg si # stk'"
     by(auto simp add: conf_def)
-  
-  obtain h' ao where new: "allocate h (Array_type X (nat (sint si))) = (h', ao)"
-    by(cases "allocate h (Array_type X (nat (sint si)))")
-  hence hext: "h \<unlhd> h'" by(rule hext_allocate)
-  with preh have preh': "preallocated h'" by(rule preallocated_hext)
-  from new heap_ok is_type_X have heap_ok': "hconf h'" by(auto intro: hconf_allocate_mono)
 
   show ?thesis
-  proof(cases "si <s 0 \<or> ao = None")
+  proof(cases "si <s 0 \<or> allocate h (Array_type X (nat (sint si))) = {}")
     case True
-    with frame frames tconf heap_ok heap_ok' suc_pc no_x ins meth \<Phi>_pc si new preh' preh hext
-      wf_preallocatedD[OF wf, of h' OutOfMemory] wf_preallocatedD[OF wf, of h NegativeArraySize]
+    with frame frames tconf heap_ok suc_pc no_x ins meth \<Phi>_pc si preh
+      wf_preallocatedD[OF wf, of h OutOfMemory] wf_preallocatedD[OF wf, of h NegativeArraySize]
     show ?thesis
       by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext split: split_if_asm)+
   next
     case False
-    then obtain oref where new_Addr: "ao = Some oref" 
-      and si': "0 <=s si"
-      by(auto)
+    with ins meth si no_x obtain h' oref 
+      where new: "(h', oref) \<in> allocate h (Array_type X (nat (sint si)))"
+      and \<sigma>': "\<sigma> = (None, h', (Addr oref#tl stk,loc,C,M,pc+1)#frs)" (is "\<sigma> = (None, h', ?f # frs)")
+      by(auto split: split_if_asm)
+    from new have hext: "h \<unlhd> h'" by(rule hext_allocate)
+    with preh have preh': "preallocated h'" by(rule preallocated_hext)
+    from new heap_ok is_type_X have heap_ok': "hconf h'" by(auto intro: hconf_allocate_mono)
+    from False have si': "0 <=s si" by auto
     with new is_type_X have h': "typeof_addr h' oref = \<lfloor>Array_type X (nat (sint si))\<rfloor>" 
       by(auto dest: allocate_SomeD)
 
-    with ins meth new_Addr si si' no_x new have \<sigma>':
-      "\<sigma> = (None, h', (Addr oref#tl stk,loc,C,M,pc+1)#frs)"
-      (is "\<sigma> = (None, h', ?f # frs)")
-      by(auto split: split_if_asm)
-    moreover note heap_ok'
+    note \<sigma>' heap_ok'
     moreover
     from frame ST' ST LT' suc_pc wf XX' h' hext
     have "conf_f P h' (X' # ST', LT') ins ?f"
@@ -1689,7 +1685,7 @@ proof -
           show ?thesis by(auto dest!: red_external_imp_red_external_aggr)
         qed
       qed
-    qed(auto simp add: split_beta split: split_if_asm)
+    qed(auto 4 4 simp add: split_beta split: split_if_asm)
     thus ?thesis using sees None
       unfolding f exec_1_iff by(simp del: split_paired_Ex)
   qed

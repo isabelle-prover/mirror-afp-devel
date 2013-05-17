@@ -144,14 +144,14 @@ inductive heap_clone :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Right
 for P :: "'m prog" and h :: 'heap and a :: 'addr 
 where
   CloneFail:
-  "\<lbrakk> typeof_addr h a = \<lfloor>hT\<rfloor>; allocate h hT = (h', None) \<rbrakk>
-  \<Longrightarrow> heap_clone P h a h' None"
+  "\<lbrakk> typeof_addr h a = \<lfloor>hT\<rfloor>; allocate h hT = {} \<rbrakk>
+  \<Longrightarrow> heap_clone P h a h None"
 | ObjClone:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; allocate h (Class_type C) = (h', \<lfloor>a'\<rfloor>);
+  "\<lbrakk> typeof_addr h a = \<lfloor>Class_type C\<rfloor>; (h', a') \<in> allocate h (Class_type C);
      P \<turnstile> C has_fields FDTs; heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h' obs h'' \<rbrakk>
   \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewHeapElem a' (Class_type C) # obs, a')\<rfloor>"
 | ArrClone:
-  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; allocate h (Array_type T n) = (h', \<lfloor>a'\<rfloor>); P \<turnstile> Object has_fields FDTs;
+  "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n\<rfloor>; (h', a') \<in> allocate h (Array_type T n); P \<turnstile> Object has_fields FDTs;
      heap_copies a a' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h' obs  h'' \<rbrakk>
   \<Longrightarrow> heap_clone P h a h'' \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>"
 
@@ -570,7 +570,7 @@ proof -
     by(rule heap_base.heap_copies.cases)(erule (3) that[OF refl refl refl refl]|assumption)+
 qed
 
-declare heap_base.heap_clone.intros [code_pred_intro]
+declare heap_base.heap_clone.intros [folded Predicate_Compile.contains_def, code_pred_intro]
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> (i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool) \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> o \<Rightarrow> bool)
@@ -578,9 +578,8 @@ code_pred
 proof -
   case heap_clone
   from heap_clone.prems show thesis
-    by(rule heap_base.heap_clone.cases)(erule (3) that[OF refl refl refl refl refl refl refl]|assumption)+
+    by(rule heap_base.heap_clone.cases[folded Predicate_Compile.contains_def])(erule (3) that[OF refl refl refl refl refl refl refl]|assumption)+
 qed
-
 
 text {* 
   code\_pred in Isabelle2012 cannot handle boolean parameters as premises properly, 

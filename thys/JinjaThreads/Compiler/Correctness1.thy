@@ -71,7 +71,7 @@ locale J0_J1_heap_base =
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -202,15 +202,15 @@ apply(fastforce simp add: sim_move01_def sim_moves01_def \<tau>red1r_Val \<tau>r
 done
 
 lemma sim_move01_reds:
-  "\<lbrakk> allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>); ta0 = \<lbrace>NewHeapElem a (Class_type C)\<rbrace>; ta = \<lbrace>NewHeapElem a (Class_type C)\<rbrace> \<rbrakk>
+  "\<lbrakk> (h', a) \<in> allocate h (Class_type C); ta0 = \<lbrace>NewHeapElem a (Class_type C)\<rbrace>; ta = \<lbrace>NewHeapElem a (Class_type C)\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (new C) (new C) h xs ta (addr a) h' xs"
-  "allocate h (Class_type C) = (h', None) \<Longrightarrow> sim_move01 P t \<epsilon> (new C) (new C) h xs \<epsilon> (THROW OutOfMemory) h' xs"
-  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>); 0 <=s i;
+  "allocate h (Class_type C) = {} \<Longrightarrow> sim_move01 P t \<epsilon> (new C) (new C) h xs \<epsilon> (THROW OutOfMemory) h xs"
+  "\<lbrakk> (h', a) \<in> allocate h (Array_type T (nat (sint i))); 0 <=s i;
      ta0 = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>; ta = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs ta (addr a) h' xs"
   "i <s 0 \<Longrightarrow> sim_move01 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW NegativeArraySize) h xs"
-  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', None); 0 <=s i \<rbrakk>
-  \<Longrightarrow> sim_move01 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW OutOfMemory) h' xs"
+  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = {}; 0 <=s i \<rbrakk>
+  \<Longrightarrow> sim_move01 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW OutOfMemory) h xs"
   "\<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; P \<turnstile> U \<le> T \<rbrakk>
   \<Longrightarrow> sim_move01 P t \<epsilon> (Cast T (Val v)) (Cast T (Val v)) h xs \<epsilon> (Val v) h xs"
   "\<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; \<not> P \<turnstile> U \<le> T \<rbrakk>
@@ -948,15 +948,15 @@ proof -
 qed
 
 lemma sim_move10_reds:
-  "\<lbrakk> allocate h (Class_type C) = (h', \<lfloor>a\<rfloor>); ta1 = \<lbrace>NewHeapElem a (Class_type C)\<rbrace>; ta = \<lbrace>NewHeapElem a (Class_type C)\<rbrace> \<rbrakk>
+  "\<lbrakk> (h', a) \<in> allocate h (Class_type C); ta1 = \<lbrace>NewHeapElem a (Class_type C)\<rbrace>; ta = \<lbrace>NewHeapElem a (Class_type C)\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (new C) e1' (new C) h xs ta (addr a) h' xs"
-  "allocate h (Class_type C) = (h', None) \<Longrightarrow> sim_move10 P t \<epsilon> (new C) e1' (new C) h xs \<epsilon> (THROW OutOfMemory) h' xs"
-  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', \<lfloor>a\<rfloor>); 0 <=s i;
+  "allocate h (Class_type C) = {} \<Longrightarrow> sim_move10 P t \<epsilon> (new C) e1' (new C) h xs \<epsilon> (THROW OutOfMemory) h xs"
+  "\<lbrakk> (h', a) \<in> allocate h (Array_type T (nat (sint i))); 0 <=s i;
      ta1 = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace>; ta = \<lbrace>NewHeapElem a (Array_type T (nat (sint i)))\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move10 P t ta1 (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs ta (addr a) h' xs"
   "i <s 0 \<Longrightarrow> sim_move10 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW NegativeArraySize) h xs"
-  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = (h', None); 0 <=s i \<rbrakk>
-  \<Longrightarrow> sim_move10 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW OutOfMemory) h' xs"
+  "\<lbrakk> allocate h (Array_type T (nat (sint i))) = {}; 0 <=s i \<rbrakk>
+  \<Longrightarrow> sim_move10 P t \<epsilon> (newA T\<lfloor>Val (Intg i)\<rceil>) e1' (newA T\<lfloor>Val (Intg i)\<rceil>) h xs \<epsilon> (THROW OutOfMemory) h xs"
   "\<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; P \<turnstile> U \<le> T \<rbrakk>
   \<Longrightarrow> sim_move10 P t \<epsilon> (Cast T (Val v)) e1' (Cast T (Val v)) h xs \<epsilon> (Val v) h xs"
   "\<lbrakk> typeof\<^bsub>h\<^esub> v = \<lfloor>U\<rfloor>; \<not> P \<turnstile> U \<le> T \<rbrakk>

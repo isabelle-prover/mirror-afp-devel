@@ -33,7 +33,7 @@ locale heap_conf_base =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -58,7 +58,7 @@ locale heap_conf =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -67,7 +67,7 @@ locale heap_conf =
   +
   assumes hconf_empty [iff]: "hconf empty_heap"
   and typeof_addr_is_type: "\<lbrakk> typeof_addr h a = \<lfloor>hT\<rfloor>; hconf h \<rbrakk> \<Longrightarrow> is_type P (ty_of_htype hT)"
-  and hconf_allocate_mono: "\<And>a. \<lbrakk> allocate h hT = (h', a); hconf h; is_htype P hT \<rbrakk> \<Longrightarrow> hconf h'"
+  and hconf_allocate_mono: "\<And>a. \<lbrakk> (h', a) \<in> allocate h hT; hconf h; is_htype P hT \<rbrakk> \<Longrightarrow> hconf h'"
   and hconf_heap_write_mono:
   "\<And>T. \<lbrakk> heap_write h a al v h'; hconf h; P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> hconf h'"
 
@@ -81,7 +81,7 @@ locale heap_progress =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -101,7 +101,7 @@ locale heap_conf_read =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -117,7 +117,7 @@ locale heap_typesafe =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -129,9 +129,6 @@ context heap_conf begin
 lemmas hconf_heap_ops_mono = 
   hconf_allocate_mono
   hconf_heap_write_mono
-
-lemma hconf_allocate_mono': "\<lbrakk> hconf h; is_htype P hT \<rbrakk> \<Longrightarrow> hconf (fst (allocate h hT))"
-by(rule hconf_allocate_mono[where a="snd (allocate h hT)"]) auto
 
 end
 
@@ -189,7 +186,7 @@ unfolding conf_def by(cases v)(auto dest: typeof_addr_hext_mono)
 
 lemma conf_heap_ops_mono:
   assumes "P,h \<turnstile> v :\<le> T"
-  shows conf_allocate_mono: "\<And>a. allocate h hT = (h', a) \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
+  shows conf_allocate_mono: "(h', a) \<in> allocate h hT \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
   and conf_heap_write_mono: "heap_write h a al v' h' \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
 using assms
 by(auto intro: conf_hext dest: hext_heap_ops)
@@ -270,7 +267,7 @@ by(auto simp add: tconf_def dest: typeof_addr_hext_mono)
 
 lemma tconf_heap_ops_mono:
   assumes "P,h \<turnstile> t \<surd>t"
-  shows tconf_allocate_mono: "\<And>a. allocate h hT = (h', a) \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
+  shows tconf_allocate_mono: "(h', a) \<in> allocate h hT \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
   and tconf_heap_write_mono: "heap_write h a al v h' \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
 using tconf_hext_mono[OF assms, of h']
 by(blast intro: hext_heap_ops)+
@@ -278,7 +275,19 @@ by(blast intro: hext_heap_ops)+
 lemma tconf_start_heap_start_tid:
   "\<lbrakk> start_heap_ok; wf_syscls P \<rbrakk> \<Longrightarrow> P,start_heap \<turnstile> start_tid \<surd>t"
 unfolding start_tid_def start_heap_def start_heap_ok_def start_heap_data_def initialization_list_def addr_of_sys_xcpt_def start_addrs_def sys_xcpts_list_def 
-apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps)
+apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps split: split_if_asm)
+apply(erule not_empty_pairE)+
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
+apply(drule (1) allocate_Eps)
 apply(drule allocate_SomeD[where hT="Class_type Thread"])
  apply simp
 apply(rule tconfI)

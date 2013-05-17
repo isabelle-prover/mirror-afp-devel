@@ -989,7 +989,7 @@ next
     hence False 
       by(auto simp add: final_thread.actions_ok_iff lock_ok_las_def finfun_upd_apply elim!: allE[where x="the_Addr (hd stk)"]) }
   with assms MExit show ?thesis by(auto split: split_if_asm)
-qed(auto simp add: split_beta split: split_if_asm dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det])
+qed(auto simp add: split_beta split: split_if_asm dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] deterministic_heap_ops_allocateD[OF det])
 
 lemma exec_1_deterministic:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"

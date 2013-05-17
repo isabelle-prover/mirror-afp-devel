@@ -122,7 +122,8 @@ end
 lemma (in heap_conf) hconf_start_heap:
   "wf_prog wf_md P \<Longrightarrow> hconf start_heap"
 unfolding start_heap_def start_heap_data_def initialization_list_def sys_xcpts_list_def
-by(auto split: prod.split elim!: hconf_allocate_mono simp add: is_class_xcpt create_initial_object_simps)
+using hconf_empty
+by -(simp add: create_initial_object_simps del: hconf_empty, clarsimp split: prod.split elim!: not_empty_pairE simp del: hconf_empty, drule (1) allocate_Eps, drule (1) hconf_allocate_mono, simp add: is_class_xcpt)+
 
 lemma subcls1_wfD:
   "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"

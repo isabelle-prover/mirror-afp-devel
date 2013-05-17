@@ -42,9 +42,8 @@ theorem (in J_progress) red_progress:
   and progresss: "\<lbrakk> P,E,h \<turnstile> es [:] Ts; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s' ta. extTA,P,t \<turnstile> \<langle>es,(h,l)\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>"
 proof (induct arbitrary: l and l rule:WTrt_WTrts.inducts)
   case (WTrtNew C)
-  obtain h' ao where h': "allocate h (Class_type C) = (h', ao)" by(cases "allocate h (Class_type C)")
   thus ?case using WTrtNew
-    by(cases ao)(fastforce intro: RedNewFail RedNew)+
+    by(cases "allocate h (Class_type C) = {}")(fastforce intro: RedNewFail RedNew)+
 next
   case (WTrtNewArray E e T l)
   have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h,l)\<rangle> -tas\<rightarrow> \<langle>e', s'\<rangle>"
@@ -64,10 +63,8 @@ next
       thus ?thesis
       proof (cases "0 <=s i")
         case True
-        obtain h' ao where "allocate h (Array_type T (nat (sint i))) = (h', ao)"
-          by(cases "allocate h (Array_type T (nat (sint i)))")
         thus ?thesis using True `v = Intg i` WTrtNewArray.prems
-          by(cases ao)(auto simp del: split_paired_Ex,(blast intro: RedNewArrayFail RedNewArray)+)
+          by(cases "allocate h (Array_type T (nat (sint i))) = {}")(auto simp del: split_paired_Ex intro: RedNewArrayFail RedNewArray)
       next
         assume "\<not> 0 <=s i"
         hence "i <s 0" by simp

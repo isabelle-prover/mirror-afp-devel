@@ -24,31 +24,25 @@ lemma red_wt_hconf_hext:
                         collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<and> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<and>
                         collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub> = collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
-  case (RedNew h C h' a l)
-  obtain H' ao where "allocate H (Class_type C) = (H', ao)" by(cases "allocate H (Class_type C)")
-  with RedNew show ?case
-    by(cases ao)(fastforce simp add: ta_upd_simps intro: RedNewFail red_reds.RedNew)+
+  case (RedNew h' a h C l)
+  thus ?case
+    by(cases "allocate H (Class_type C) = {}")(fastforce simp add: ta_upd_simps intro: RedNewFail red_reds.RedNew)+
 next
-  case (RedNewFail h C h' l)
-  obtain H' ao where "allocate H (Class_type C) = (H', ao)" by(cases "allocate H (Class_type C)")
-  with RedNewFail show ?case
-    by(cases ao)(fastforce simp add: ta_upd_simps intro: red_reds.RedNewFail RedNew)+
+  case (RedNewFail h C l)
+  thus ?case
+    by(cases "allocate H (Class_type C) = {}")(fastforce simp add: ta_upd_simps intro: red_reds.RedNewFail RedNew)+
 next 
   case NewArrayRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case (RedNewArray i h T h' a l E T')
-  obtain H' ao where "allocate H (Array_type T (nat (sint i))) = (H', ao)"
-    by(cases "allocate H (Array_type T (nat (sint i)))")
-  with RedNewArray show ?case
-    by(cases ao)(fastforce simp add: ta_upd_simps intro: red_reds.RedNewArray RedNewArrayFail)+
+  case (RedNewArray i h' a h T l E T')
+  thus ?case
+    by(cases "allocate H (Array_type T (nat (sint i))) = {}")(fastforce simp add: ta_upd_simps intro: red_reds.RedNewArray RedNewArrayFail)+
 next
   case RedNewArrayNegative thus ?case by(fastforce intro: red_reds.intros)
 next
-  case (RedNewArrayFail i h T h' l E T')
-  obtain H' ao where "allocate H (Array_type T (nat (sint i))) = (H', ao)"
-    by(cases "allocate H (Array_type T (nat (sint i)))")
-  with RedNewArrayFail show ?case
-    by(cases ao)(fastforce simp add: ta_upd_simps intro: RedNewArray red_reds.RedNewArrayFail)+
+  case (RedNewArrayFail i h T l E T')
+  thus ?case 
+    by(cases "allocate H (Array_type T (nat (sint i))) = {}")(fastforce simp add: ta_upd_simps intro: RedNewArray red_reds.RedNewArrayFail)+
 next
   case CastRed thus ?case by(fastforce intro: red_reds.intros)
 next

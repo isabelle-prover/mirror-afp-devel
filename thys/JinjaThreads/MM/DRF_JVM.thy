@@ -243,7 +243,7 @@ locale JVM_allocated_heap = allocated_heap +
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -259,7 +259,7 @@ lemma exec_instr_allocated_mono:
   "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; check_instr i P h stk loc C M pc frs \<rbrakk>
   \<Longrightarrow> allocated h \<subseteq> allocated h'"
 apply(cases i)
-apply(auto 4 4 simp add: split_beta has_method_def is_native.simps split: split_if_asm sum.split_asm intro: allocate_allocated_mono' dest: heap_write_allocated_same dest!: red_external_aggr_allocated_mono del: subsetI)
+apply(auto 4 4 simp add: split_beta has_method_def is_native.simps split: split_if_asm sum.split_asm intro: allocate_allocated_mono dest: heap_write_allocated_same dest!: red_external_aggr_allocated_mono del: subsetI)
 done
 
 lemma mexecd_allocated_mono:
@@ -277,7 +277,7 @@ lemma exec_instr_allocatedD:
      check_instr i P h stk loc C M pc frs; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> ad \<in> allocated h' \<and> ad \<notin> allocated h"
 apply(cases i)
-apply(auto 4 4 split: split_if_asm prod.split_asm dest: allocate_allocatedD allocate_allocated_fail dest!: red_external_aggr_allocatedD simp add: has_method_def is_native.simps)
+apply(auto 4 4 split: split_if_asm prod.split_asm dest: allocate_allocatedD dest!: red_external_aggr_allocatedD simp add: has_method_def is_native.simps)
 done
 
 lemma mexecd_allocatedD:
@@ -296,7 +296,7 @@ lemma exec_instr_NewHeapElemD:
      ad \<in> allocated h'; ad \<notin> allocated h \<rbrakk>
   \<Longrightarrow> \<exists>CTn. NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 apply(cases i)
-apply(auto 4 3 split: split_if_asm prod.split_asm sum.split_asm dest: allocate_allocatedD allocate_allocated_fail heap_write_allocated_same dest!: red_external_aggr_NewHeapElemD simp add: is_native.simps has_method_def)
+apply(auto 4 3 split: split_if_asm prod.split_asm sum.split_asm dest: allocate_allocatedD heap_write_allocated_same dest!: red_external_aggr_NewHeapElemD simp add: is_native.simps has_method_def)
 done
 
 lemma mexecd_NewHeapElemD:
@@ -489,10 +489,10 @@ proof -
   from assms show ?thesis
   proof(cases i)
     case New with assms show ?thesis
-      by(auto dest: hext_allocate vs_conf_allocate intro: vs_conf_hext)
+      by(auto 4 4 dest: hext_allocate vs_conf_allocate intro: vs_conf_hext)
   next
     case NewArray with assms show ?thesis
-      by(auto dest: hext_allocate vs_conf_allocate intro: vs_conf_hext cong: if_cong)
+      by(auto 4 4 dest: hext_allocate vs_conf_allocate intro: vs_conf_hext cong: if_cong)
   next
     case Invoke with assms show ?thesis
       by(fastforce dest: red_external_aggr_non_speculative_vs_conf simp add: has_method_def is_native.simps)
@@ -557,7 +557,7 @@ locale JVM_allocated_heap_conf =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -813,7 +813,7 @@ locale JVM_allocated_progress =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
   and empty_heap :: "'heap"
-  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr option)"
+  and allocate :: "'heap \<Rightarrow> htype \<Rightarrow> ('heap \<times> 'addr) set"
   and typeof_addr :: "'heap \<Rightarrow> 'addr \<rightharpoonup> htype"
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"

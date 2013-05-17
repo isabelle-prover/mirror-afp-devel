@@ -405,21 +405,24 @@ next
   case (bisim1New C' n xs)
   note exec = `exec_move_d P t (new C') h ([], xs, 0, None) ta h' (stk', loc', pc', xcp')`
   have \<tau>: "\<not> \<tau>move2 (compP2 P) h [] (new C') 0 None" "\<not> \<tau>move1 P h (new C')" by(auto simp add: \<tau>move2_iff)
-  from exec obtain ao where ao: "allocate h (Class_type C') = (h', ao)"
-    by(cases "allocate h (Class_type C')")(auto elim!: exec_meth.cases simp add: exec_move_def)
   show ?case
-  proof(cases "ao")
-    case None
+  proof(cases "allocate h (Class_type C') = {}")
+    case True
     have "P,new C',h' \<turnstile> (THROW OutOfMemory, xs) \<leftrightarrow> ([], xs, 0, \<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>)"
       by(rule bisim1NewThrow)
-    with exec None \<tau> ao show ?thesis
+    with exec \<tau> True show ?thesis
       by(fastforce intro: Red1NewFail elim!: exec_meth.cases simp add: exec_move_def)
   next
-    case (Some a)
-    have "P,new C',h' \<turnstile> (addr a, xs) \<leftrightarrow> ([Addr a], xs, length (compE2 (new C')), None)"
+    case False
+    have "\<And>a h'. P,new C',h' \<turnstile> (addr a, xs) \<leftrightarrow> ([Addr a], xs, length (compE2 (new C')), None)"
       by(rule bisim1Val2) auto
-    thus ?thesis using exec Some \<tau> ao
-      by(fastforce elim!: exec_meth.cases intro: Red1New simp add: compP2_def exec_move_def ta_upd_simps ta_bisim_def)
+    thus ?thesis using exec False \<tau>
+      apply(simp add: exec_move_def)
+      apply(erule exec_meth.cases)
+      apply simp_all
+      apply clarsimp
+      apply(auto intro!: Red1New exI simp add: ta_bisim_def)
+      done
   qed
 next
   case (bisim1NewThrow C' n xs)
@@ -461,19 +464,22 @@ next
         by(fastforce elim!: exec_meth.cases intro: bisim1NewArrayFail Red1NewArrayNegative simp add: exec_move_def)
     next
       case False
-      with exec stk xcp obtain ao where ao: "allocate h (Array_type U (nat (sint I))) = (h', ao)"
-        by(cases "allocate h (Array_type U (nat (sint I)))")(auto elim!: exec_meth.cases simp add: exec_move_def)
       show ?thesis
-      proof(cases "ao")
-        case None
-        with False exec stk xcp ao show ?thesis
+      proof(cases "allocate h (Array_type U (nat (sint I))) = {}")
+        case True
+        with False exec stk xcp show ?thesis
           by(fastforce elim!: exec_meth.cases intro: bisim1NewArrayFail Red1NewArrayFail simp add: exec_move_def)
       next
-        case (Some a)
-        have "P,newA U\<lfloor>e\<rceil>,h' \<turnstile> (addr a, loc) \<leftrightarrow> ([Addr a], loc, length (compE2 (newA U\<lfloor>e\<rceil>)), None)"
+        case False
+        have "\<And>a h'. P,newA U\<lfloor>e\<rceil>,h' \<turnstile> (addr a, loc) \<leftrightarrow> ([Addr a], loc, length (compE2 (newA U\<lfloor>e\<rceil>)), None)"
           by(rule bisim1Val2) simp
-        with False Some exec stk xcp ao show ?thesis
-          by(fastforce elim!: exec_meth.cases intro: Red1NewArray simp add: exec_move_def ta_bisim_def ta_upd_simps)
+        with False `\<not> I <s 0` exec stk xcp show ?thesis
+          apply(simp add: exec_move_def)
+          apply(erule exec_meth.cases)
+          apply simp_all
+          apply clarsimp
+          apply(auto intro!: Red1NewArray exI simp add: ta_bisim_def)
+          done
       qed
     qed
     moreover have "no_call2 (newA U\<lfloor>e\<rceil>) pc" by(simp add: no_call2_def)
