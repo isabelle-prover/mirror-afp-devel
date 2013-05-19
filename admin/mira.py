@@ -13,10 +13,7 @@ from mira import misc
 
 
 afp_settings='''
-ML_PLATFORM=x86-linux
-ML_HOME="/home/polyml/polyml-svn/x86-linux"
-ML_SYSTEM="polyml-5.5.0"
-ML_OPTIONS="-H 1000"
+ML_OPTIONS="-H 1000 --gcthreads 4"
 
 ISABELLE_BUILD_OPTIONS="threads=4 parallel_proofs=2"
 '''
