@@ -2568,7 +2568,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                   basic_tac spec (cnt - 8),
                   if cmode = Parameter
                   then EVERY [rtac subset_refl (cnt - 8),
-                              simp_tac (put_simpset HOL_basic_ss @{context}
+                              simp_tac (put_simpset HOL_basic_ss ctxt
                                 addsimps (CollectInt_iff :: @{thms simp_thms})) 1]
                   else all_tac]
         end) ()
