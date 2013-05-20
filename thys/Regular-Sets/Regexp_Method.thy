@@ -27,22 +27,23 @@ lemmas regexp_reify = rel_of_regexp.simps rel_eq.simps
 lemmas regexp_unfold = trancl_unfold_left subset_Un_eq
 
 method_setup regexp = {*
-let
-  val regexp_conv = Code_Runtime.static_holds_conv @{theory}
-  [@{const_name Zero}, @{const_name One}, @{const_name Atom}, @{const_name Plus},
-   @{const_name Times}, @{const_name Star}, 
-   @{const_name check_eqv}, @{const_name Trueprop}]
-in
   Scan.succeed (fn ctxt =>
-    SIMPLE_METHOD' (
-      (TRY o etac @{thm rev_subsetD})
-      THEN' (Subgoal.FOCUS_PARAMS (fn {context=ctxt', ...} =>
-        TRY (Local_Defs.unfold_tac ctxt @{thms regexp_unfold})
-        THEN Reflection.gen_reify_tac ctxt @{thms regexp_reify} NONE 1
-        THEN rtac @{thm rel_eqI} 1
-        THEN CONVERSION regexp_conv 1
-        THEN rtac TrueI 1) ctxt)))
-end
+    let
+      val thy = Proof_Context.theory_of ctxt
+      val regexp_conv = Code_Runtime.static_holds_conv thy
+      [@{const_name Zero}, @{const_name One}, @{const_name Atom}, @{const_name Plus},
+       @{const_name Times}, @{const_name Star}, 
+       @{const_name check_eqv}, @{const_name Trueprop}]
+    in
+      SIMPLE_METHOD' (
+        (TRY o etac @{thm rev_subsetD})
+        THEN' (Subgoal.FOCUS_PARAMS (fn {context=ctxt', ...} =>
+          TRY (Local_Defs.unfold_tac ctxt' @{thms regexp_unfold})
+          THEN Reflection.gen_reify_tac ctxt' @{thms regexp_reify} NONE 1
+          THEN rtac @{thm rel_eqI} 1
+          THEN CONVERSION regexp_conv 1
+          THEN rtac TrueI 1) ctxt))
+    end)
 *} "decide relation equalities via regular expressions"
 
 hide_const (open) le_rexp nPlus nTimes norm nullable bisimilar is_bisimulation closure step test
