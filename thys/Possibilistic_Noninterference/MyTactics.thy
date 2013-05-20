@@ -30,8 +30,7 @@ fun mclarsimp_all_tac SS = (TRY mclarify_all_tac) THEN (TRYALL (asm_full_simp_ta
 fun mautoTacs i = mclarTacs i @ [rtac conjI i, etac disjE i]
 val mauto_no_simp_tac = REPEAT(SOMEGOAL(fn i => FIRST (mautoTacs i)))
 
-val clarify_all_tac = TRYALL (clarify_tac @{context})
-
+fun clarify_all_tac ctxt = TRYALL (clarify_tac ctxt)
 *}
 
 text{* Above, "m" stands for "mild" -- mainly, disjunctions are left untouched. *}

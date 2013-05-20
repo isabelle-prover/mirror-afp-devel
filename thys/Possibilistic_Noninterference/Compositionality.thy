@@ -51,7 +51,7 @@ proof-
    "(\<exists> c1 c2. c = c1 ;; c2 \<and> discr c1 \<and> discr c2) 
     \<Longrightarrow> discr c"
    apply(erule discr_coind) 
-   proof(tactic{* clarify_all_tac *})
+   proof(tactic{* clarify_all_tac @{context} *})
      fix c s c' s' c1 c2
      assume c1: "discr c1" and c2: "discr c2" 
      assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
@@ -94,14 +94,14 @@ proof-
    "(\<exists> c1 c2. c = Par c1 c2 \<and> discr c1 \<and> discr c2) 
     \<Longrightarrow> discr c"
    apply(erule discr_coind) 
-   proof(tactic{* clarify_all_tac *})
+   proof(tactic{* clarify_all_tac @{context} *})
      fix c s c' s' c1 c2
      assume c1: "discr c1" and c2: "discr c2" 
      assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
      thus "s \<approx> s' \<and> ((\<exists>c1 c2. c' = Par c1 c2 \<and> discr c1 \<and> discr c2) \<or> discr c')"
      apply - apply(erule Par_transC_invert)
      by(metis c1 c2 discr.cases)+
-   qed blast
+   qed
   }
   thus ?thesis using assms by blast
 qed
@@ -148,7 +148,7 @@ proof-
    "(\<exists> c1 c2. c = c1 ;; c2 \<and> discr0 c1 \<and> discr0 c2) 
     \<Longrightarrow> discr0 c"
    apply(erule discr0_coind) 
-   proof(tactic{* clarify_all_tac *})
+   proof(tactic{* clarify_all_tac @{context} *})
      fix c s c' s' c1 c2
      assume mt: "mustT (c1 ;; c2) s" 
      and c1: "discr0 c1" and c2: "discr0 c2" 
@@ -204,7 +204,7 @@ proof-
    "(\<exists> c1 c2. c = Par c1 c2 \<and> discr0 c1 \<and> discr0 c2) 
     \<Longrightarrow> discr0 c"
    apply(induct rule: discr0_coind) 
-   proof(tactic{* clarify_all_tac *})
+   proof(tactic{* clarify_all_tac @{context} *})
      fix c s c' s' c1 c2
      assume mt: "mustT (Par c1 c2) s" and c1: "discr0 c1" and c2: "discr0 c2" 
      assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
@@ -214,7 +214,7 @@ proof-
      apply (metis c1 c2 discr0_transT mt mustT_Par_L)
      apply (metis c1 c2 discr0.simps indis_sym mt mustT_Par_R)
      by (metis PL.mustT_Par_R c1 c2 discr0_transT mt)
-   qed blast
+   qed
   }
   thus ?thesis using assms by blast
 qed
@@ -263,7 +263,7 @@ proof-
    "(\<exists> c1 c2. c = c1 ;; c2 \<and> siso c1 \<and> siso c2) 
     \<Longrightarrow> siso c"
    apply(erule siso_coind) 
-   proof(tactic{* clarify_all_tac *})
+   proof(tactic{* clarify_all_tac @{context} *})
      fix c s t c' s' c1 c2
      assume "s \<approx> t" and "(c1 ;; c2, s) \<rightarrow>c (c', s')" and "siso c1" and "siso c2"
      thus "\<exists>t'. s' \<approx> t' \<and> (c1 ;; c2, t) \<rightarrow>c (c', t')"
@@ -304,7 +304,7 @@ proof-
    "(\<exists> c1 c2. c = Par c1 c2 \<and> siso c1 \<and> siso c2) 
     \<Longrightarrow> siso c"
    apply(erule siso_coind)
-   proof(tactic{* clarify_all_tac *})
+   proof(tactic{* clarify_all_tac @{context} *})
      fix c s t c' s' c1 c2
      assume "s \<approx> t" and "(Par c1 c2, s) \<rightarrow>c (c', s')" and c1: "siso c1" and c2: "siso c2"
      thus "\<exists>t'. s' \<approx> t' \<and> (Par c1 c2, t) \<rightarrow>c (c', t')"
