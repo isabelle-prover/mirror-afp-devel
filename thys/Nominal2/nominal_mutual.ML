@@ -418,7 +418,6 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
 
     val (mutual' as Mutual {n', parts, ST, RST, ...}, lthy'') = define_projections fixes mutual fsum lthy'
 
-    val mutual_cont = mk_partial_rules_mutual lthy'' cont mutual'
 
     (* XXX *)
 
@@ -445,6 +444,8 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
 
     val ((G_aux, GIntro_aux_thms, _, G_aux_induct), lthy''') = 
       Nominal_Function_Core.inductive_def ((Binding.name G_name_aux, G_type), NoSyn) GIntros_aux lthy''
+
+    val mutual_cont = mk_partial_rules_mutual lthy''' cont mutual'
 
     (* proof of equivalence between graph and auxiliary graph *)
     val x = Var(("x", 0), ST)
