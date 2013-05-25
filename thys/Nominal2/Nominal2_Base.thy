@@ -2017,12 +2017,12 @@ lemma Union_included_in_supp:
   assumes fin: "finite S"
   shows "(\<Union>x\<in>S. supp x) \<subseteq> supp S"
 proof -
-  have eqvt: "eqvt (\<lambda>S. \<Union> supp ` S)" 
+  have eqvt: "eqvt (\<lambda>S. \<Union> (supp ` S))" 
     unfolding eqvt_def 
     by (perm_simp) (simp)
   have "(\<Union>x\<in>S. supp x) = supp (\<Union>x\<in>S. supp x)"
     by (rule supp_finite_atom_set[symmetric]) (rule Union_of_finite_supp_sets[OF fin])
-  also have "\<dots> = supp ((\<lambda>S. \<Union> supp ` S) S)" by simp
+  also have "\<dots> = supp ((\<lambda>S. \<Union> (supp ` S)) S)" by simp
   also have "\<dots> \<subseteq> supp S" using eqvt
     by (rule supp_fun_app_eqvt)
   finally show "(\<Union>x\<in>S. supp x) \<subseteq> supp S" .

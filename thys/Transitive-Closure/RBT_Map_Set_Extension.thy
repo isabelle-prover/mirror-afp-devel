@@ -85,11 +85,11 @@ lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs_\<alpha> as \<s
 definition rs_Union :: "('q :: linorder)rs list \<Rightarrow> 'q rs"
 where [code_unfold]: "rs_Union \<equiv> foldl rs_union (rs_empty ())"
 
-lemma rs_Union[simp]: "rs_\<alpha> (rs_Union qs) = (\<Union> rs_\<alpha> ` set qs)"
+lemma rs_Union[simp]: "rs_\<alpha> (rs_Union qs) = \<Union> (rs_\<alpha> ` set qs)"
 proof -
   { 
     fix start
-    have "rs_\<alpha> (foldl rs_union start qs) = rs_\<alpha> start \<union> \<Union> rs_\<alpha> ` set qs"
+    have "rs_\<alpha> (foldl rs_union start qs) = rs_\<alpha> start \<union> \<Union> (rs_\<alpha> ` set qs)"
       by (induct qs arbitrary: start, auto simp: rs_correct)
   } from this[of "rs_empty ()"]
   show ?thesis unfolding rs_Union_def

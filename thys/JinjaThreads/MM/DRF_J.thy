@@ -59,12 +59,12 @@ by(simp add: ka_locals_def)
 lemma kas_append [simp]: "kas (es @ es') = kas es \<union> kas es'"
 by(induct es) auto
 
-lemma kas_map_Val [simp]: "kas (map Val vs) = (\<Union>ka_Val ` set vs)"
+lemma kas_map_Val [simp]: "kas (map Val vs) = \<Union>(ka_Val ` set vs)"
 by(induct vs) auto
 
 lemma ka_blocks:
   "\<lbrakk> length pns = length Ts; length vs = length Ts \<rbrakk> 
-  \<Longrightarrow> ka (blocks pns Ts vs body) = (\<Union>ka_Val ` set vs) \<union> ka body"
+  \<Longrightarrow> ka (blocks pns Ts vs body) = \<Union>(ka_Val ` set vs) \<union> ka body"
 by(induct pns Ts vs body rule: blocks.induct)(auto)
 
 lemma WT_ka: "P,E \<turnstile> e :: T \<Longrightarrow> ka e = {}"
@@ -536,7 +536,7 @@ context J_allocated_heap_conf begin
 lemma executions_sc:
   assumes wf: "wf_J_prog P"
   and wf_start: "wf_start_state P C M vs"
-  and vs2: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and vs2: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "executions_sc_hb (J_\<E> P C M vs status) P"
   (is "executions_sc_hb ?E P")
 proof -
@@ -754,7 +754,7 @@ lemma non_speculative_read:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "red_mthr.if.non_speculative_read (init_fin_lift_state status (J_start_state P C M vs)) 
                                           (w_values P (\<lambda>_. {}) (map snd (lift_start_obs start_tid start_heap_obs)))"
   (is "red_mthr.if.non_speculative_read ?start_state ?start_vs")
@@ -853,7 +853,7 @@ lemma J_cut_and_update:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "red_mthr.if.cut_and_update (init_fin_lift_state status (J_start_state P C M vs))
            (mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs)))"
 proof -
@@ -895,7 +895,7 @@ lemma J_drf:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "drf (J_\<E> P C M vs status) P"
 proof -
   from wf_start obtain Ts T pns body D where ok: "start_heap_ok"
@@ -918,7 +918,7 @@ lemma J_sc_legal:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "sc_legal (J_\<E> P C M vs status) P"
 proof -
   from wf_start obtain Ts T pns body D where ok: "start_heap_ok"
@@ -961,7 +961,7 @@ lemma J_jmm_consistent:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "jmm_consistent (J_\<E> P C M vs status) P"
   (is "jmm_consistent ?\<E> P")
 proof -
@@ -974,7 +974,7 @@ lemma J_ex_sc_exec:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "\<exists>E ws. E \<in> J_\<E> P C M vs status \<and> P \<turnstile> (E, ws) \<surd> \<and> sequentially_consistent P (E, ws)"
   (is "\<exists>E ws. _ \<in> ?\<E> \<and> _")
 proof -
@@ -1002,7 +1002,7 @@ theorem J_consistent:
   assumes wf: "wf_J_prog P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "\<exists>E ws. legal_execution P (J_\<E> P C M vs status) (E, ws)"
 proof -
   let ?\<E> = "J_\<E> P C M vs status"

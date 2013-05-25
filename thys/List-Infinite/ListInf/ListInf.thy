@@ -236,7 +236,7 @@ done
 
 thm List.inj_on_mapI
 lemma inj_on_oI: "
-  inj_on f (\<Union> (\<lambda>f. range f) ` A) \<Longrightarrow> inj_on (\<lambda>g. f \<circ> g) A"
+  inj_on f (\<Union> ((\<lambda>f. range f) ` A)) \<Longrightarrow> inj_on (\<lambda>g. f \<circ> g) A"
 apply (rule inj_onI)
 apply (rule o_inj_on, assumption)
 apply (unfold inj_on_def)

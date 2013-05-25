@@ -64,20 +64,20 @@ fun
   pderivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> ('a rexp) set"
 where
   "pderivs [] r = {r}"
-| "pderivs (c # s) r = \<Union> (pderivs s) ` (pderiv c r)"
+| "pderivs (c # s) r = \<Union> (pderivs s ` pderiv c r)"
 
 abbreviation
  pderiv_set :: "'a \<Rightarrow> 'a rexp set \<Rightarrow> 'a rexp set"
 where
-  "pderiv_set c rs \<equiv> \<Union> pderiv c ` rs"
+  "pderiv_set c rs \<equiv> \<Union> (pderiv c ` rs)"
 
 abbreviation
   pderivs_set :: "'a list \<Rightarrow> 'a rexp set \<Rightarrow> 'a rexp set"
 where
-  "pderivs_set s rs \<equiv> \<Union> (pderivs s) ` rs"
+  "pderivs_set s rs \<equiv> \<Union> (pderivs s ` rs)"
 
 lemma pderivs_append:
-  "pderivs (s1 @ s2) r = \<Union> (pderivs s2) ` (pderivs s1 r)"
+  "pderivs (s1 @ s2) r = \<Union> (pderivs s2 ` pderivs s1 r)"
 by (induct s1 arbitrary: r) (simp_all)
 
 lemma pderivs_snoc:
@@ -97,32 +97,32 @@ by (induct s) (simp_all)
 subsection {* Relating left-quotients and partial derivatives *}
 
 lemma Deriv_pderiv:
-  shows "Deriv c (lang r) = \<Union> lang ` (pderiv c r)"
+  shows "Deriv c (lang r) = \<Union> (lang ` pderiv c r)"
 by (induct r) (auto simp add: nullable_iff conc_UNION_distrib)
 
 lemma Derivs_pderivs:
-  shows "Derivs s (lang r) = \<Union> lang ` (pderivs s r)"
+  shows "Derivs s (lang r) = \<Union> (lang ` pderivs s r)"
 proof (induct s arbitrary: r)
   case (Cons c s)
-  have ih: "\<And>r. Derivs s (lang r) = \<Union> lang ` (pderivs s r)" by fact
+  have ih: "\<And>r. Derivs s (lang r) = \<Union> (lang ` pderivs s r)" by fact
   have "Derivs (c # s) (lang r) = Derivs s (Deriv c (lang r))" by simp
-  also have "\<dots> = Derivs s (\<Union> lang ` (pderiv c r))" by (simp add: Deriv_pderiv)
+  also have "\<dots> = Derivs s (\<Union> (lang ` pderiv c r))" by (simp add: Deriv_pderiv)
   also have "\<dots> = Derivss s (lang ` (pderiv c r))"
     by (auto simp add:  Derivs_def)
-  also have "\<dots> = \<Union> lang ` (pderivs_set s (pderiv c r))"
+  also have "\<dots> = \<Union> (lang ` (pderivs_set s (pderiv c r)))"
     using ih by auto
-  also have "\<dots> = \<Union> lang ` (pderivs (c # s) r)" by simp
-  finally show "Derivs (c # s) (lang r) = \<Union> lang ` pderivs (c # s) r" .
+  also have "\<dots> = \<Union> (lang ` (pderivs (c # s) r))" by simp
+  finally show "Derivs (c # s) (lang r) = \<Union> (lang ` pderivs (c # s) r)" .
 qed (simp add: Derivs_def)
 
 subsection {* Relating derivatives and partial derivatives *}
 
 lemma deriv_pderiv:
-  shows "(\<Union> lang ` (pderiv c r)) = lang (deriv c r)"
+  shows "\<Union> (lang ` (pderiv c r)) = lang (deriv c r)"
 unfolding lang_deriv Deriv_pderiv by simp
 
 lemma derivs_pderivs:
-  shows "(\<Union> lang ` (pderivs s r)) = lang (derivs s r)"
+  shows "\<Union> (lang ` (pderivs s r)) = lang (derivs s r)"
 unfolding lang_derivs Derivs_pderivs by simp
 
 

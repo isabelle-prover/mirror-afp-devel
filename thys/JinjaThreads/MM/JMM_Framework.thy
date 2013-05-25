@@ -1122,7 +1122,7 @@ by(cases ob rule: new_obs_addr.cases) auto
 
 definition new_obs_addrs :: "('addr, 'thread_id) obs_event list \<Rightarrow> 'addr set"
 where
-  "new_obs_addrs obs = (\<Union>new_obs_addr ` set obs)"
+  "new_obs_addrs obs = \<Union>(new_obs_addr ` set obs)"
 
 fun new_obs_addr_if :: "('addr, 'thread_id) obs_event action \<Rightarrow> 'addr set"
 where
@@ -1131,7 +1131,7 @@ where
 
 definition new_obs_addrs_if :: "('addr, 'thread_id) obs_event action list \<Rightarrow> 'addr set"
 where 
-  "new_obs_addrs_if obs = (\<Union>new_obs_addr_if ` set obs)"
+  "new_obs_addrs_if obs = \<Union>(new_obs_addr_if ` set obs)"
 
 lemma ka_Val_subset_new_obs_Addr_ReadMem:
   "ka_Val v \<subseteq> new_obs_addr (ReadMem ad al v)"

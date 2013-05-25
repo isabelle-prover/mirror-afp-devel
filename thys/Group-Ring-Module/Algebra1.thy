@@ -1783,9 +1783,9 @@ lemma pos_prec_less:"0 < i \<Longrightarrow> i - Suc 0 < i"
 by arith
 
 lemma Un_less_Un:"\<lbrakk>f \<in> {j. j \<le> (Suc n)} \<rightarrow> (X::'a set set); 
-        A \<subseteq> \<Union>f ` {j. j \<le> (Suc n)}; 
+        A \<subseteq> \<Union>(f ` {j. j \<le> (Suc n)}); 
        i \<in> {j. j \<le> (Suc n)}; j \<in> {l. l \<le> (Suc n)}; i \<noteq> j \<and> f i \<subseteq> f j\<rbrakk>
-       \<Longrightarrow> A \<subseteq> \<Union>compose {j. j \<le> n} f (skip i) ` {j. j \<le> n}"
+       \<Longrightarrow> A \<subseteq> \<Union>(compose {j. j \<le> n} f (skip i) ` {j. j \<le> n})"
 apply (simp add:compose_def)
  apply (rule subsetI, simp)
  apply (frule_tac c = x and A = A and B = "\<Union>x\<in>{j. j \<le> Suc n}. f x" in

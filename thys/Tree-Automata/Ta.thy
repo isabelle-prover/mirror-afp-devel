@@ -61,7 +61,7 @@ fun rhsl where "rhsl (q \<rightarrow> l qs) = l"
   -- "States in a rule"
 fun rule_states where "rule_states (q \<rightarrow> l qs) = insert q (set qs)"
   -- "States in a set of rules"
-definition "\<delta>_states \<delta> == \<Union>rule_states ` \<delta>"
+definition "\<delta>_states \<delta> == \<Union>(rule_states ` \<delta>)"
   -- "States in a tree automaton"
 definition "ta_rstates TA = ta_initial TA \<union> \<delta>_states (ta_rules TA)"
   -- "Symbols occurring in rules"
@@ -263,7 +263,7 @@ begin
     def possible_rules_f == "\<lambda>(Q::'Q set) f. 
       (\<lambda>(q,qs). (q \<rightarrow> f qs)) ` (Q \<times> (lists Q \<inter> {qs. A f = Some (length qs)}))"
     
-    have "legal_rules Q = \<Union>possible_rules_f Q`F"
+    have "legal_rules Q = \<Union>(possible_rules_f Q`F)"
       by (auto simp add: legal_rules_def possible_rules_f_def)
     moreover have "!!f. finite (possible_rules_f Q f)" 
       apply (unfold possible_rules_f_def)
@@ -1304,11 +1304,11 @@ begin
 
   lemma \<delta>ss_finite[simp, intro!]: "finite \<delta>ss"
   proof -
-    have "\<delta>ss \<subseteq> \<Union>(\<lambda>f. (\<lambda>(s,ss). (s \<rightarrow> f ss))
+    have "\<delta>ss \<subseteq> \<Union>((\<lambda>f. (\<lambda>(s,ss). (s \<rightarrow> f ss))
                      `({s. s\<subseteq>Q} 
                        \<times> (lists {s. s\<subseteq>Q} \<inter> {l. length l = the (A f)}))
-                  ) ` F" 
-      (is "_\<subseteq>\<Union>(\<lambda>f. ?tr f ` ?prod f)`F")
+                  ) ` F)" 
+      (is "_\<subseteq>\<Union>((\<lambda>f. ?tr f ` ?prod f)`F)")
     proof (intro equalityI subsetI)
       fix r
       assume "r\<in>\<delta>ss"

@@ -156,7 +156,7 @@ proof -
   from assms obtain r::"'a rexp" where eq: "lang r = A" by auto
   have fin: "finite (pderivs_lang B r)" by (rule finite_pderivs_lang)
   
-  have "Deriv_lang B (lang r) = (\<Union> lang ` (pderivs_lang B r))"
+  have "Deriv_lang B (lang r) = (\<Union> (lang ` pderivs_lang B r))"
     by (simp add: Derivs_pderivs pderivs_lang_def)
   also have "\<dots> = lang (\<Uplus>(pderivs_lang B r))" using fin by simp
   finally have "Deriv_lang B A = lang (\<Uplus>(pderivs_lang B r))" using eq

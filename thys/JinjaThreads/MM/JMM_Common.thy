@@ -923,12 +923,12 @@ by cases(auto dest: heap_copies_known_addrs_ReadMem)
 
 lemma red_external_known_addrs_ReadMem:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
-  \<Longrightarrow> ad \<in> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs"
+  \<Longrightarrow> ad \<in> {thread_id2addr t, a} \<union> (\<Union>(ka_Val ` set vs)) \<union> set start_addrs"
 by(erule red_external.cases)(simp_all add: heap_clone_known_addrs_ReadMem)
 
 lemma red_external_aggr_known_addrs_ReadMem:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
-  \<Longrightarrow> ad \<in> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs"
+  \<Longrightarrow> ad \<in> {thread_id2addr t, a} \<union> (\<Union>(ka_Val ` set vs)) \<union> set start_addrs"
 apply(auto simp add: red_external_aggr_def split: split_if_asm dest: heap_clone_known_addrs_ReadMem)
 done
 
@@ -955,27 +955,27 @@ by cases(auto simp add: nth_Cons new_obs_addrs_def split: nat.split_asm dest: he
 
 lemma red_external_known_addrs_WriteMem:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>; \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr a'); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
-  \<Longrightarrow> a' \<in> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs \<union> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+  \<Longrightarrow> a' \<in> {thread_id2addr t, a} \<union> (\<Union>(ka_Val ` set vs)) \<union> set start_addrs \<union> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 by(erule red_external.cases)(auto dest: heap_clone_known_addrs_WriteMem)
 
 lemma red_external_aggr_known_addrs_WriteMem:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h;
      \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr a'); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
-  \<Longrightarrow> a' \<in> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs \<union> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
+  \<Longrightarrow> a' \<in> {thread_id2addr t, a} \<union> (\<Union>(ka_Val ` set vs)) \<union> set start_addrs \<union> new_obs_addrs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 apply(auto simp add: red_external_aggr_def split: split_if_asm dest: heap_clone_known_addrs_WriteMem)
 done
 
 lemma red_external_known_addrs_mono:
   assumes ok: "start_heap_ok"
   and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
-  shows "(case va of RetVal v \<Rightarrow> ka_Val v | RetExc a \<Rightarrow> {a} | RetStaySame \<Rightarrow> {}) \<subseteq> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs \<union> new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+  shows "(case va of RetVal v \<Rightarrow> ka_Val v | RetExc a \<Rightarrow> {a} | RetStaySame \<Rightarrow> {}) \<subseteq> {thread_id2addr t, a} \<union> (\<Union>(ka_Val ` set vs)) \<union> set start_addrs \<union> new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 using red
 by cases(auto simp add: addr_of_sys_xcpt_start_addr[OF ok] new_obs_addrs_def heap_clone.simps)
 
 lemma red_external_aggr_known_addrs_mono:
   assumes ok: "start_heap_ok"
   and red: "(ta, va, h') \<in> red_external_aggr P t a M vs h" "is_native P (the (typeof_addr h a)) M"
-  shows "(case va of RetVal v \<Rightarrow> ka_Val v | RetExc a \<Rightarrow> {a} | RetStaySame \<Rightarrow> {}) \<subseteq> {thread_id2addr t, a} \<union> (\<Union>ka_Val ` set vs) \<union> set start_addrs \<union> new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
+  shows "(case va of RetVal v \<Rightarrow> ka_Val v | RetExc a \<Rightarrow> {a} | RetStaySame \<Rightarrow> {}) \<subseteq> {thread_id2addr t, a} \<union> (\<Union>(ka_Val ` set vs)) \<union> set start_addrs \<union> new_obs_addrs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 using red
 apply(cases "the (typeof_addr h a)")
 apply(auto simp add: red_external_aggr_def addr_of_sys_xcpt_start_addr[OF ok] new_obs_addrs_def heap_clone.simps split: split_if_asm)

@@ -281,7 +281,7 @@ lemma (in loc1) fSuc:
   apply(rule_tac someI_ex)
   apply(simp only: f[symmetric]) 
   apply(drule_tac subst[OF deriv[of "snd (f n)"] ])
-  apply(simp only: finite_insert) apply(subgoal_tac "infinite (\<Union>deriv ` {w. ~is_axiom (s_of_ns (snd (f n))) & w : set (subs (snd (f n)))})")
+  apply(simp only: finite_insert) apply(subgoal_tac "infinite (\<Union>(deriv ` {w. ~is_axiom (s_of_ns (snd (f n))) & w : set (subs (snd (f n)))}))")
    apply(drule_tac infinite_union[OF finite_subs]) apply(erule exE) apply(rule_tac x="(Suc n, y)" in exI)
    apply(clarify) apply(simp) apply(case_tac "f n") apply(simp add: step) apply(force simp add: is_axiom_finite_deriv)
   apply(force simp add: infinite_inj_infinite_image inj_inj_on) 

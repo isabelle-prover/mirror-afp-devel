@@ -379,7 +379,7 @@ locale set_Union_image = set \<alpha>1 invar1 + set \<alpha>2 invar2 + set \<alp
   +
   fixes Union_image :: "('a \<Rightarrow> 's2) \<Rightarrow> 's1 \<Rightarrow> 's3"
   assumes Union_image_correct: 
-    "\<lbrakk> invar1 s; !!x. x\<in>\<alpha>1 s \<Longrightarrow> invar2 (f x) \<rbrakk> \<Longrightarrow> \<alpha>3 (Union_image f s) = \<Union>\<alpha>2`f`\<alpha>1 s"
+    "\<lbrakk> invar1 s; !!x. x\<in>\<alpha>1 s \<Longrightarrow> invar2 (f x) \<rbrakk> \<Longrightarrow> \<alpha>3 (Union_image f s) = \<Union>(\<alpha>2`f`\<alpha>1 s)"
     "\<lbrakk> invar1 s; !!x. x\<in>\<alpha>1 s \<Longrightarrow> invar2 (f x) \<rbrakk> \<Longrightarrow> invar3 (Union_image f s)"
 
 

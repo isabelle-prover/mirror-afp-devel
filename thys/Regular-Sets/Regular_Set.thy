@@ -216,7 +216,7 @@ where "Derivs xs A = { ys. xs @ ys \<in> A }"
 abbreviation 
   Derivss :: "'a list \<Rightarrow> 'a lang set \<Rightarrow> 'a lang"
 where
-  "Derivss s As \<equiv> \<Union> (Derivs s) ` As"
+  "Derivss s As \<equiv> \<Union> (Derivs s ` As)"
 
 
 lemma Deriv_empty[simp]:   "Deriv a {} = {}"

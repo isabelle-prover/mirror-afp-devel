@@ -640,7 +640,7 @@ qed
 lemma executions_sc:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and wf_start: "wf_start_state P C M vs"
-  and vs2: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and vs2: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "executions_sc_hb (JVMd_\<E> P C M vs status) P"
     (is "executions_sc_hb ?E P")
 proof -
@@ -826,7 +826,7 @@ lemma non_speculative_read:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "execd_mthr.if.non_speculative_read (init_fin_lift_state status (JVM_start_state P C M vs)) 
                                             (w_values P (\<lambda>_. {}) (map snd (lift_start_obs start_tid start_heap_obs)))"
   (is "execd_mthr.if.non_speculative_read ?start_state ?start_vs")
@@ -925,7 +925,7 @@ lemma JVM_cut_and_update:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P" 
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "execd_mthr.if.cut_and_update (init_fin_lift_state status (JVM_start_state P C M vs))
            (mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs)))"
 proof -
@@ -962,7 +962,7 @@ lemma JVM_drf:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "drf (JVMd_\<E> P C M vs status) P"
 proof -
   from wf_start obtain Ts T meth D where ok: "start_heap_ok"
@@ -987,7 +987,7 @@ lemma JVM_sc_legal:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
 shows "sc_legal (JVMd_\<E> P C M vs status) P"
 proof -
   from wf_start obtain Ts T meth D where ok: "start_heap_ok"
@@ -1032,7 +1032,7 @@ lemma JVM_jmm_consistent:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "jmm_consistent (JVMd_\<E> P C M vs status) P"
     (is "jmm_consistent ?\<E> P")
 proof -
@@ -1045,7 +1045,7 @@ lemma JVM_ex_sc_exec:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "\<exists>E ws. E \<in> JVMd_\<E> P C M vs status \<and> P \<turnstile> (E, ws) \<surd> \<and> sequentially_consistent P (E, ws)"
   (is "\<exists>E ws. _ \<in> ?\<E> \<and> _")
 proof -
@@ -1073,7 +1073,7 @@ theorem JVM_consistent:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "\<exists>E ws. legal_execution P (JVMd_\<E> P C M vs status) (E, ws)"
 proof -
   let ?\<E> = "JVMd_\<E> P C M vs status"

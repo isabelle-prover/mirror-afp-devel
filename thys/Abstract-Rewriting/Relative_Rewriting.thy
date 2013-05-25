@@ -733,8 +733,8 @@ proof (rule ccontr)
     and inf1: "INFM i. ty i \<in> {top_s, top_ns}"
     and inf2: "INFM i. ty i \<in> {top_s, normal_s}"
     by auto
-  let ?Un = "\<lambda> tt. \<Union> ?rel ` tt"
-  let ?UnM = "\<lambda> tt. (\<Union> ?rel ` tt) \<inter> M'"
+  let ?Un = "\<lambda> tt. \<Union> (?rel ` tt)"
+  let ?UnM = "\<lambda> tt. (\<Union> (?rel ` tt)) \<inter> M'"
   let ?A = "?UnM {top_s,top_ns,normal_s,normal_ns}"
   let ?P' = "?UnM {top_s}"
   let ?Pw' = "?UnM {top_s,top_ns}"

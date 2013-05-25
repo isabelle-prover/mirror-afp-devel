@@ -30,7 +30,7 @@ by(simp only: J_weakly_legal_typesafe[OF assms] J_JVM_conf_read.red_\<E>_eq_mexe
 theorem J2JVM_jmm_correctly_synchronized:
   assumes wf: "wf_J_prog P"
   and wf_start: "jmm_wf_start_state P C M vs"
-  and ka: "\<Union>ka_Val ` set vs \<subseteq> set jmm.start_addrs"
+  and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set jmm.start_addrs"
   shows "correctly_synchronized (J2JVM P) (jmm_JVMd_\<E> (J2JVM P) C M vs Running) \<longleftrightarrow> 
          correctly_synchronized P (jmm_J_\<E> P C M vs Running)"
   (is "?lhs \<longleftrightarrow> ?rhs")

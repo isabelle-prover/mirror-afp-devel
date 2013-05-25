@@ -667,10 +667,10 @@ proof -
   {
     fix s f
     have "\<lbrakk>invar1 s; \<And>x. x \<in> \<alpha>1 s \<Longrightarrow> invar2 (f x)\<rbrakk> \<Longrightarrow> 
-      \<alpha>3 (it_Union_image iti1 em3 un233 f s) = \<Union>\<alpha>2 ` f ` \<alpha>1 s 
+      \<alpha>3 (it_Union_image iti1 em3 un233 f s) = \<Union>(\<alpha>2 ` f ` \<alpha>1 s)
       \<and> invar3 (it_Union_image iti1 em3 un233 f s)"
       apply (unfold it_Union_image_def)
-      apply (rule_tac I="\<lambda>it res. invar3 res \<and> \<alpha>3 res = \<Union>\<alpha>2`f`(\<alpha>1 s - it)" in iterate_rule_P)
+      apply (rule_tac I="\<lambda>it res. invar3 res \<and> \<alpha>3 res = \<Union>(\<alpha>2`f`(\<alpha>1 s - it))" in iterate_rule_P)
       apply (fastforce simp add: empty_correct union_correct)+
       done
   }

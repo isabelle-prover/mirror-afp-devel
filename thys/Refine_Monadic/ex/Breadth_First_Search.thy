@@ -180,7 +180,7 @@ begin
       (\<forall>v\<in>N. conn src v \<and> min_dist src v = Suc d) \<and>
       (\<forall>v\<in>V. conn src v \<and> min_dist src v \<le> Suc d) \<and>
       (\<forall>v. conn src v \<and> min_dist src v \<le> d \<longrightarrow> v \<in> V) \<and>
-      (\<forall>v. conn src v \<and> min_dist src v = Suc d \<longrightarrow> v \<in> N \<union> ((\<Union>succ`C) - V))
+      (\<forall>v. conn src v \<and> min_dist src v = Suc d \<longrightarrow> v \<in> N \<union> ((\<Union>(succ`C)) - V))
     )) \<and> (
     f \<longrightarrow> conn src dst \<and> min_dist src dst = d
     )"

@@ -41,7 +41,7 @@ definition matching_i :: "nat \<Rightarrow> 'v set \<Rightarrow> ('v * 'v) set \
 
 definition V_i:: "nat \<Rightarrow> 'v set \<Rightarrow> ('v * 'v) set \<Rightarrow> ('v * 'v) set \<Rightarrow> 
                   ('v \<Rightarrow> label) \<Rightarrow> 'v set" where
-  "V_i i V E M L = \<Union> edge_as_set ` matching_i i V E M L"
+  "V_i i V E M L = \<Union> (edge_as_set ` matching_i i V E M L)"
 
 definition endpoint_inV :: "'v set \<Rightarrow> ('v * 'v) \<Rightarrow> 'v" where 
   "endpoint_inV V e = (if fst e \<in> V then fst e else snd e)" 
