@@ -52,7 +52,7 @@ print_translation {*
       if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3 andalso t3 = t4
       then Syntax.const (@{type_syntax "\<tau>moves"}) $ l $ t1 $ x1 $ m1 $ w $ o1
       else raise Match;
-  in [(@{type_syntax "fun"},tr')]
+  in [(@{type_syntax "fun"}, K tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w,'o) \<tau>moves"

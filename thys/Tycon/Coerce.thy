@@ -30,7 +30,7 @@ translations
   "PRJ('a)" \<rightharpoonup> "CONST prj :: udom \<rightarrow> 'a"
   "COERCE('a,'b)" \<rightharpoonup> "CONST coerce :: 'a \<rightarrow> 'b"
 
-typed_print_translation (advanced) {*
+typed_print_translation {*
 let
   fun emb_tr' (ctxt : Proof.context) (Type(_, [T, _])) [] =
     Syntax.const @{syntax_const "_emb"} $ Syntax_Phases.term_of_typ ctxt T

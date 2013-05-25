@@ -39,10 +39,10 @@ let
            (Syntax.const @{type_syntax fun} $ ty $
              (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax bool})))))
     | corder_tr ts = raise TERM ("corder_tr", ts);
-in [(@{syntax_const "_CORDER"}, corder_tr)] end
+in [(@{syntax_const "_CORDER"}, K corder_tr)] end
 *}
 
-typed_print_translation (advanced) {*
+typed_print_translation {*
 let
   fun corder_tr' ctxt
     (Type (@{type_name option}, [Type (@{type_name prod}, [Type (@{type_name fun}, [T, _]), _])])) ts =

@@ -37,7 +37,7 @@ print_translation {*
        , Const (@{type_syntax "obs_event"}, _) $ a3 $ t2] =
       if a1 = a2 andalso a2 = a3 andalso t1 = t2 then Syntax.const @{type_syntax "Jinja_thread_action"} $ a1 $ t1 $ x $ h
       else raise Match;
-    in [(@{type_syntax "thread_action"}, tr')]
+    in [(@{type_syntax "thread_action"}, K tr')]
   end
 *}
 typ "('addr, 'thread_id, 'x, 'heap) Jinja_thread_action"

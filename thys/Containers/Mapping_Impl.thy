@@ -188,7 +188,7 @@ let
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "mapping_impl"} $
        (Syntax.const @{type_syntax phantom} $ ty $ Syntax.const @{type_syntax mapping_impl}))
     | mapping_impl_tr ts = raise TERM ("mapping_impl_tr", ts);
-in [(@{syntax_const "_MAPPING_IMPL"}, mapping_impl_tr)] end
+in [(@{syntax_const "_MAPPING_IMPL"}, K mapping_impl_tr)] end
 *}
 
 lemma [code, code del]: "Mapping.empty = Mapping.empty" ..
