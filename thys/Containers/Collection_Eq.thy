@@ -29,10 +29,10 @@ let
          (Syntax.const @{type_syntax fun} $ ty $ 
            (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax bool}))))
     | ceq_tr ts = raise TERM ("ceq_tr", ts);
-in [(@{syntax_const "_CEQ"}, ceq_tr)] end
+in [(@{syntax_const "_CEQ"}, K ceq_tr)] end
 *}
 
-typed_print_translation (advanced) {*
+typed_print_translation {*
 let
   fun ceq_tr' ctxt
     (Type (@{type_name option}, [Type (@{type_name fun}, [T, _])])) ts =

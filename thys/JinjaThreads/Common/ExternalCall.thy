@@ -23,7 +23,7 @@ print_translation {*
        , h] =
       if a1 = a2 then Syntax.const @{type_syntax "external_thread_action"} $ a1 $ t $ h
       else raise Match;
-    in [(@{type_syntax "Jinja_thread_action"}, tr')]
+    in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
 *}
 typ "('addr,'thread_id,'heap) external_thread_action"

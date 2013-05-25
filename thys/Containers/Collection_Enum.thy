@@ -53,10 +53,10 @@ let
                (Syntax.const @{type_syntax fun} $ ty $ (Syntax.const @{type_syntax bool})) $
                (Syntax.const @{type_syntax bool}))))))
     | cenum_tr ts = raise TERM ("cenum_tr", ts);
-in [(@{syntax_const "_CENUM"}, cenum_tr)] end
+in [(@{syntax_const "_CENUM"}, K cenum_tr)] end
 *}
 
-typed_print_translation (advanced) {*
+typed_print_translation {*
 let
   fun cenum_tr' ctxt
     (Type (@{type_name option}, [Type (@{type_name prod}, [Type (@{type_name list}, [T]), _])])) ts =

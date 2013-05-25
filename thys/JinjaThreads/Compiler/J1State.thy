@@ -50,7 +50,7 @@ print_translation {*
       if a1 = a2 andalso a2 = a3 andalso a3 = a4 andalso a4 = a5 
       then Syntax.const @{type_syntax "J1_thread_action"} $ a1 $ t $ h
       else raise Match;
-    in [(@{type_syntax "Jinja_thread_action"}, tr')]
+    in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
 *}
 typ "('addr,'thread_id,'heap) J1_thread_action"
@@ -72,7 +72,7 @@ print_translation {*
       if a1 = a2 andalso a2 = a3 andalso a3 = a4 andalso a4 = a5 andalso a5 = a6
       then Syntax.const @{type_syntax "J1_state"} $ a1 $ t $ h
       else raise Match;
-    in [(@{type_syntax "state"}, tr')]
+    in [(@{type_syntax "state"}, K tr')]
   end
 *}
 typ "('addr, 'thread_id, 'heap) J1_state"

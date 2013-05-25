@@ -1839,7 +1839,7 @@ let
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "set_impl"} $
        (Syntax.const @{type_syntax phantom} $ ty $ Syntax.const @{type_syntax set_impl}))
     | set_impl_tr ts = raise TERM ("set_impl_tr", ts);
-in [(@{syntax_const "_SET_IMPL"}, set_impl_tr)] end
+in [(@{syntax_const "_SET_IMPL"}, K set_impl_tr)] end
 *}
 
 lemma [code, code del]: "{} = {}" ..

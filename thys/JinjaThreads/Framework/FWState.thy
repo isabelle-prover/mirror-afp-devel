@@ -65,7 +65,7 @@ print_translation {*
                  (Const (@{type_syntax "list"}, _) $ o1))))] =
       if t1 = t2 andalso t2 = t3 andalso t3 = t4 then Syntax.const @{type_syntax thread_action} $ l $ t1 $ x $ m $ w $ o1
       else raise Match;
-  in [(@{type_syntax "prod"}, tr')]
+  in [(@{type_syntax "prod"}, K tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w,'o) thread_action"
@@ -318,7 +318,7 @@ print_translation {*
       if t1 = t2 andalso t1 = t3 andalso t1 = t4 andalso l1 = l2
       then Syntax.const @{type_syntax state} $ l1 $ t1 $ x $ m $ w
       else raise Match;
-  in [(@{type_syntax "prod"}, tr')]
+  in [(@{type_syntax "prod"}, K tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w) state"
@@ -515,7 +515,7 @@ print_translation {*
         andalso t1 = t2 andalso t2 = t3 andalso t3 = t4 andalso t4 = t5
       then Syntax.const @{type_syntax semantics} $ l $ t1 $ x1 $ m1 $ w $ o1
       else raise Match;
-  in [(@{type_syntax fun}, tr')]
+  in [(@{type_syntax fun}, K tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w,'o) semantics"

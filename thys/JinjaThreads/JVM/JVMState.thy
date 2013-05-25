@@ -39,7 +39,7 @@ print_translation {*
                 Const (@{type_syntax "nat"}, _)))] =
       if a1 = a2 then Syntax.const @{type_syntax "frame"} $ a1
       else raise Match;
-    in [(@{type_syntax "prod"}, tr')]
+    in [(@{type_syntax "prod"}, K tr')]
   end
 *}
 typ "'addr frame"
@@ -80,7 +80,7 @@ print_translation {*
        , h] =
       if a1 = a2 andalso a2 = a3 andalso a3 = a4 then Syntax.const @{type_syntax "jvm_thread_action"} $ a1 $ t $ h
       else raise Match;
-    in [(@{type_syntax "Jinja_thread_action"}, tr')]
+    in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
 *}
 typ "('addr, 'thread_id, 'heap) jvm_thread_action"

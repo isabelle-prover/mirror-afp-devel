@@ -261,7 +261,8 @@ let
       val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
-[(@{const_syntax "iUntil"}, btr' "_iUntil"), (@{const_syntax "iSince"}, btr' "_iSince")]
+ [(@{const_syntax "iUntil"}, K (btr' "_iUntil")),
+  (@{const_syntax "iSince"}, K (btr' "_iSince"))]
 end
 *}
 
@@ -277,7 +278,8 @@ let
       val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
-[(@{const_syntax "iWeakUntil"}, btr' "_iWeakUntil"), (@{const_syntax "iWeakSince"}, btr' "_iWeakSince")]
+ [(@{const_syntax "iWeakUntil"}, K (btr' "_iWeakUntil")),
+  (@{const_syntax "iWeakSince"}, K (btr' "_iWeakSince"))]
 end
 *}
 
@@ -293,7 +295,8 @@ let
       val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
-[(@{const_syntax "iRelease"}, btr' "_iRelease"), (@{const_syntax "iTrigger"}, btr' "_iTrigger")]
+ [(@{const_syntax "iRelease"}, K (btr' "_iRelease")),
+  (@{const_syntax "iTrigger"}, K (btr' "_iTrigger"))]
 end
 *}
 
