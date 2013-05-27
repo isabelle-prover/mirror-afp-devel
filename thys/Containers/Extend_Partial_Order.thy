@@ -8,11 +8,11 @@ begin
 
 section {* Every partial order can be extended to a total order *}
 
-lemma ChainD: "\<lbrakk> x \<in> C; C \<in> Chain r; y \<in> C \<rbrakk> \<Longrightarrow> (x, y) \<in> r \<or> (y, x) \<in> r"
-by(simp add: Chain_def)
+lemma ChainsD: "\<lbrakk> x \<in> C; C \<in> Chains r; y \<in> C \<rbrakk> \<Longrightarrow> (x, y) \<in> r \<or> (y, x) \<in> r"
+by(simp add: Chains_def)
 
-lemma Chain_Field: "\<lbrakk> C \<in> Chain r; x \<in> C \<rbrakk> \<Longrightarrow> x \<in> Field r"
-by(auto simp add: Chain_def Field_def)
+lemma Chains_Field: "\<lbrakk> C \<in> Chains r; x \<in> C \<rbrakk> \<Longrightarrow> x \<in> Field r"
+by(auto simp add: Chains_def Field_def)
 
 lemma total_onD:
   "\<lbrakk> total_on A r; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x, y) \<in> r \<or> x = y \<or> (y, x) \<in> r"
@@ -221,11 +221,11 @@ proof(atomize_elim)
   def S \<equiv> "{s. partial_order_on A s \<and> r \<subseteq> s}"
   from r have r_in_S: "r \<in> S" unfolding S_def by auto
 
-  have "\<exists>y\<in>S. \<forall>x\<in>S. y \<subseteq> x \<longrightarrow> y = x"
+  have "\<exists>y\<in>S. \<forall>x\<in>S. y \<subseteq> x \<longrightarrow> x = y"
   proof(rule Zorn_Lemma2[rule_format])
     fix c
-    assume "c \<in> chain S"
-    hence "c \<subseteq> S" by(rule chainD2)
+    assume "c \<in> chains S"
+    hence "c \<subseteq> S" by(rule chainsD2)
 
     show "\<exists>y\<in>S. \<forall>x\<in>c. x \<subseteq> y"
     proof(cases "c = {}")
@@ -265,8 +265,8 @@ proof(atomize_elim)
           then obtain X Y where "X \<in> c" "Y \<in> c" "(x, y) \<in> X" "(y, x) \<in> Y" by blast
           from `X \<in> c` `Y \<in> c` `c \<subseteq> S` have "antisym X" "antisym Y"
             unfolding S_def by(auto simp add: partial_order_on_def)
-          moreover from `c \<in> chain S` `X \<in> c` `Y \<in> c` 
-          have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainD)
+          moreover from `c \<in> chains S` `X \<in> c` `Y \<in> c` 
+          have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainsD)
           ultimately show "x = y" using `(x, y) \<in> X` `(y, x) \<in> Y` 
             by(auto dest: antisymD)
         qed
@@ -278,8 +278,8 @@ proof(atomize_elim)
           then obtain X Y where "X \<in> c" "Y \<in> c" "(x, y) \<in> X" "(y, z) \<in> Y" by blast
           from `X \<in> c` `Y \<in> c` `c \<subseteq> S` have "trans X" "trans Y"
             unfolding S_def by(auto simp add: partial_order_on_def preorder_on_def)
-          from `c \<in> chain S` `X \<in> c` `Y \<in> c` 
-          have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainD)
+          from `c \<in> chains S` `X \<in> c` `Y \<in> c` 
+          have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainsD)
           thus "(x, z) \<in> \<Union>c"
           proof
             assume "X \<subseteq> Y"

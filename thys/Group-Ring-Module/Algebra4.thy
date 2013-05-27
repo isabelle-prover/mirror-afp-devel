@@ -4980,7 +4980,7 @@ section "Primary ideals, Prime ideals"
 
 definition
   maximal_set :: "['a set set, 'a set] \<Rightarrow> bool" where
-  "maximal_set S mx \<longleftrightarrow> mx \<in> S \<and> (\<forall>s\<in>S. mx \<subseteq> s \<longrightarrow> mx = s)" 
+  "maximal_set S mx \<longleftrightarrow> mx \<in> S \<and> (\<forall>s\<in>S. mx \<subseteq> s \<longrightarrow> s = mx)" 
 
 definition
   nilpotent :: "[_, 'a] \<Rightarrow> bool" where
@@ -5161,15 +5161,15 @@ apply (thin_tac "i \<plusminus> j = i \<cdot>\<^sub>r ia \<plusminus> j \<cdot>\
         rule ideal_ring_multiple[of mx], assumption+)
 done
        
-lemma (in Ring) chain_un:"\<lbrakk>c \<in> chain {I. ideal R I \<and> I \<subset> carrier R}; c \<noteq> {}\<rbrakk>
+lemma (in Ring) chains_un:"\<lbrakk>c \<in> chains {I. ideal R I \<and> I \<subset> carrier R}; c \<noteq> {}\<rbrakk>
        \<Longrightarrow> ideal R (\<Union>c)"
 apply (rule ideal_condition1)
 apply (rule Union_least[of "c" "carrier R"])
- apply (simp add:chain_def,
+ apply (simp add:chains_def,
        erule conjE,
        frule_tac c = X in subsetD[of "c" "{I. ideal R I \<and> I \<subset> carrier R}"],
        assumption+, simp add:psubset_imp_subset)
- apply (simp add:chain_def,
+ apply (simp add:chains_def,
        erule conjE)
  apply (frule nonempty_ex[of "c"], erule exE)
  apply (frule_tac c = x in subsetD[of "c" "{I. ideal R I \<and> I \<subset> carrier R}"],
@@ -5179,7 +5179,7 @@ apply (rule Union_least[of "c" "carrier R"])
 apply (rule ballI)+
  apply simp 
  apply (erule bexE)+
-apply (simp add: chain_def chain_subset_def)
+apply (simp add: chains_def chain_subset_def)
  apply (frule conjunct1) apply (frule conjunct2)
  apply (thin_tac "c \<subseteq> {I. ideal R I \<and> I \<subset> carrier R} \<and> (\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x)")
  apply (frule_tac x = X in bspec, assumption,
@@ -5201,7 +5201,7 @@ apply (simp add: chain_def chain_subset_def)
 
 apply (rule ballI)+
  apply (simp, erule bexE)
- apply (simp add:chain_def, erule conjE)
+ apply (simp add:chains_def, erule conjE)
  apply (frule_tac c = X in subsetD[of "c" "{I. ideal R I \<and> I \<subset> carrier R}"], 
         assumption+, simp, erule conjE)
  apply (frule_tac I = X and x = x and r = r in ideal_ring_multiple,
@@ -5219,10 +5219,10 @@ apply (simp add:maximal_ideal_def)
 done
 
 lemma (in Ring) id_maximal_Exist:"\<not>(zeroring R) \<Longrightarrow> \<exists>I. maximal_ideal R I"
- apply (cut_tac S="{ I. ideal R I \<and> I \<subset> carrier R }" in Zorn_Lemma2)
+ apply (cut_tac A="{ I. ideal R I \<and> I \<subset> carrier R }" in Zorn_Lemma2)
  apply (rule ballI) 
 
- apply (case_tac "c={}", simp)
+ apply (case_tac "C={}", simp)
    apply (cut_tac zero_ideal)
    apply (simp add:zeroring_def) 
     apply (cut_tac Ring, simp,
@@ -5232,38 +5232,38 @@ lemma (in Ring) id_maximal_Exist:"\<not>(zeroring R) \<Longrightarrow> \<exists>
          thin_tac "\<zero> \<in> carrier R")
    apply (subst psubset_eq)
    apply blast 
- apply (subgoal_tac "\<Union>c \<in> {I. ideal R I \<and> I \<subset> carrier R}") 
- apply (subgoal_tac "\<forall>x\<in>c. x \<subseteq> (\<Union>c)", blast) 
+ apply (subgoal_tac "\<Union>C \<in> {I. ideal R I \<and> I \<subset> carrier R}") 
+ apply (subgoal_tac "\<forall>x\<in>C. x \<subseteq> (\<Union>C)", blast) 
   apply (rule ballI, rule Union_upper, assumption)
-  apply (simp add:chain_un) 
-  apply (cut_tac A = c in Union_least[of _ "carrier R"])
-  apply (simp add:chain_def, erule conjE,
-        frule_tac c = X and A = c in 
+  apply (simp add:chains_un) 
+  apply (cut_tac A = C in Union_least[of _ "carrier R"])
+  apply (simp add:chains_def, erule conjE,
+        frule_tac c = X and A = C in 
           subsetD[of _ "{I. ideal R I \<and> I \<subset> carrier R}"], assumption+,
           simp add:ideal_subset1, simp add:psubset_eq)
   apply (rule contrapos_pp, simp+,
-         cut_tac ring_one, frule sym, thin_tac "\<Union>c = carrier R")
-  apply (frule_tac B = "\<Union>c" in eq_set_inc[of "1\<^sub>r" "carrier R"], assumption,
-         thin_tac "carrier R = \<Union>c")
+         cut_tac ring_one, frule sym, thin_tac "\<Union>C = carrier R")
+  apply (frule_tac B = "\<Union>C" in eq_set_inc[of "1\<^sub>r" "carrier R"], assumption,
+         thin_tac "carrier R = \<Union>C")
   apply (simp, erule bexE)
-  apply (simp add:chain_def, erule conjE)
-  apply (frule_tac c = X and A = c in 
+  apply (simp add:chains_def, erule conjE)
+  apply (frule_tac c = X and A = C in 
          subsetD[of _ "{I. ideal R I \<and> I \<subseteq> carrier R \<and> I \<noteq> carrier R}"],
          assumption+, simp, (erule conjE)+)
   apply (frule_tac I = X in ideal_inc_one, assumption+, simp)
 
  apply (erule bexE, simp, erule conjE)
- apply (subgoal_tac "maximal_ideal R y", blast)
+ apply (subgoal_tac "maximal_ideal R M", blast)
  apply (simp add:maximal_ideal_def)
 
 apply (rule conjI, rule contrapos_pp, simp+,
-       frule_tac  I = y in ideal_inc_one, assumption+, simp)
+       frule_tac  I = M in ideal_inc_one, assumption+, simp)
 
 apply (rule equalityI)
  apply (rule subsetI, simp)
  apply (erule conjE)
  apply (frule_tac x = x in spec,
-        thin_tac "\<forall>x. ideal R x \<and> x \<subset> carrier R \<longrightarrow> y \<subseteq> x \<longrightarrow> y = x", simp)
+        thin_tac "\<forall>x. ideal R x \<and> x \<subset> carrier R \<longrightarrow> M \<subseteq> x \<longrightarrow> x = M", simp)
  apply (frule_tac I = x in ideal_subset1, simp add:psubset_eq)
  apply (case_tac "x = carrier R", simp)
  apply simp
@@ -6493,7 +6493,7 @@ by (simp add:maximal_set_def)
 lemma (in Ring) maximal_setTr:"\<lbrakk>maximal_set {I. ideal R I \<and> S \<inter> I = {}} mx; 
                                          ideal R J; mx \<subset> J \<rbrakk> \<Longrightarrow> S \<inter> J \<noteq> {}"
 by (rule contrapos_pp, simp+, simp add:psubset_eq, erule conjE,
-       simp add:maximal_set_def)
+       simp add:maximal_set_def, blast)
 
 lemma (in Ring) mulDisj:"\<lbrakk>mul_closed_set R S; 1\<^sub>r \<in> S; \<zero> \<notin> S; 
     T = {I. ideal R I \<and> S \<inter> I = {}}; maximal_set T mx \<rbrakk> \<Longrightarrow> prime_ideal R mx"
@@ -6565,39 +6565,39 @@ done
 
 lemma (in Ring) ex_mulDisj_maximal:"\<lbrakk>mul_closed_set R S; \<zero> \<notin> S; 1\<^sub>r \<in> S;  
        T = {I. ideal R I \<and> S \<inter> I = {}}\<rbrakk> \<Longrightarrow>  \<exists>mx. maximal_set T mx" 
-apply (cut_tac S="{ I. ideal R I \<and> S \<inter> I = {}}" in Zorn_Lemma2)
+apply (cut_tac A="{ I. ideal R I \<and> S \<inter> I = {}}" in Zorn_Lemma2)
 prefer 2
   apply (simp add:maximal_set_def)
 
 apply (rule ballI)
-apply (case_tac "c = {}")
+apply (case_tac "C = {}")
  apply (cut_tac zero_ideal, blast) 
 
-apply (subgoal_tac "c \<in> chain {I. ideal R I \<and> I \<subset> carrier R}")
-apply (frule chain_un, assumption)
- apply (subgoal_tac "S \<inter> (\<Union> c) = {}")
- apply (subgoal_tac "\<forall>x\<in>c. x \<subseteq> \<Union> c",  blast)
+apply (subgoal_tac "C \<in> chains {I. ideal R I \<and> I \<subset> carrier R}")
+apply (frule chains_un, assumption)
+ apply (subgoal_tac "S \<inter> (\<Union> C) = {}")
+ apply (subgoal_tac "\<forall>x\<in>C. x \<subseteq> \<Union> C",  blast)
 apply (rule ballI, rule subsetI, simp add:CollectI)
  apply blast
 
 apply (rule contrapos_pp, simp+)
- apply (frule_tac A = S and B = "\<Union> c" in nonempty_int)
+ apply (frule_tac A = S and B = "\<Union> C" in nonempty_int)
  apply (erule exE)
  apply (simp, erule conjE, erule bexE) 
- apply (simp add:chain_def, erule conjE)
- apply (frule_tac c = X and A = c and B = "{I. ideal R I \<and> S \<inter> I = {}}" in
+ apply (simp add:chains_def, erule conjE)
+ apply (frule_tac c = X and A = C and B = "{I. ideal R I \<and> S \<inter> I = {}}" in
         subsetD, assumption+,
-        thin_tac "c \<subseteq> {I. ideal R I \<and> I \<subset> carrier R}",
-        thin_tac "c \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}")
+        thin_tac "C \<subseteq> {I. ideal R I \<and> I \<subset> carrier R}",
+        thin_tac "C \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}")
  apply (simp, blast)
 
-apply (simp add:chain_def chain_subset_def, erule conjE)
+apply (simp add:chains_def chain_subset_def, erule conjE)
  apply (rule subsetI)
- apply (frule_tac c = x and A = c and B = "{I. ideal R I \<and> S \<inter> I = {}}" in 
+ apply (frule_tac c = x and A = C and B = "{I. ideal R I \<and> S \<inter> I = {}}" in 
                   subsetD, assumption+,
-        thin_tac "c \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}",
+        thin_tac "C \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}",
         thin_tac "T = {I. ideal R I \<and> S \<inter> I = {}}")
- apply (simp, thin_tac "\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x", erule conjE)
+ apply (simp, thin_tac "\<forall>x\<in>C. \<forall>y\<in>C. x \<subseteq> y \<or> y \<subseteq> x", erule conjE)
  apply (simp add:psubset_eq ideal_subset1)
  apply (rule contrapos_pp, simp+)
  apply (rotate_tac -1, frule sym, thin_tac "x = carrier R", 
@@ -6684,35 +6684,35 @@ done
 
 lemma (in Ring) ex_contid_maximal:"\<lbrakk> S = {1\<^sub>r}; \<zero> \<notin> S; ideal R I; I \<inter> S = {};
 T = {J. ideal R J \<and> S \<inter> J = {} \<and> I \<subseteq> J}\<rbrakk> \<Longrightarrow> \<exists>mx. maximal_set T mx" 
-apply (cut_tac S="{J. ideal R J \<and> S \<inter> J = {} \<and> I \<subseteq> J}" in Zorn_Lemma2)
+apply (cut_tac A="{J. ideal R J \<and> S \<inter> J = {} \<and> I \<subseteq> J}" in Zorn_Lemma2)
 apply (rule ballI)
-apply (case_tac "c = {}") (** case c = {} **)
- apply blast             (** case c = {} done **)
-     (** existence of sup in c **)
-apply (subgoal_tac "\<Union>c\<in>{J. ideal R J \<and> S \<inter> J = {} \<and> I \<subseteq> J} \<and> 
-                                         (\<forall>x\<in>c. x \<subseteq>  \<Union>c)")  
+apply (case_tac "C = {}") (** case C = {} **)
+ apply blast             (** case C = {} done **)
+     (** existence of sup in C **)
+apply (subgoal_tac "\<Union>C\<in>{J. ideal R J \<and> S \<inter> J = {} \<and> I \<subseteq> J} \<and> 
+                                         (\<forall>x\<in>C. x \<subseteq>  \<Union>C)")  
  apply blast
 apply (rule conjI,
        simp add:CollectI)
-apply (subgoal_tac "c \<in> chain {I. ideal R I \<and> I \<subset> carrier R}")
+apply (subgoal_tac "C \<in> chains {I. ideal R I \<and> I \<subset> carrier R}")
 apply (rule conjI,
-       simp add:chain_un)
+       simp add:chains_un)
 apply (rule conjI)
 apply (rule contrapos_pp, simp+, erule bexE)
- apply (thin_tac " c \<in> chain {I. ideal R I \<and> I \<subset> carrier R}")
- apply (simp add:chain_def, erule conjE)
- apply (frule_tac c = x and A = c and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}" 
+ apply (thin_tac " C \<in> chains {I. ideal R I \<and> I \<subset> carrier R}")
+ apply (simp add:chains_def, erule conjE)
+ apply (frule_tac c = x and A = C and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}" 
          in subsetD, assumption+, simp,
-        thin_tac "c \<in> chain {I. ideal R I \<and> I \<subset> carrier R}")
- apply (frule_tac A = c in nonempty_ex, erule exE, simp add:chain_def,
+        thin_tac "C \<in> chains {I. ideal R I \<and> I \<subset> carrier R}")
+ apply (frule_tac A = C in nonempty_ex, erule exE, simp add:chains_def,
         erule conjE,
-        frule_tac c = x and A = c and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}" in
+        frule_tac c = x and A = C and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}" in
                   subsetD, assumption+, simp, (erule conjE)+)
- apply (rule_tac A = I and B = x and C = "\<Union>c" in subset_trans, assumption,
-        rule_tac B = x and A = c in Union_upper, assumption+)
- apply (simp add:chain_def, erule conjE)
+ apply (rule_tac A = I and B = x and C = "\<Union>C" in subset_trans, assumption,
+        rule_tac B = x and A = C in Union_upper, assumption+)
+ apply (simp add:chains_def, erule conjE)
  apply (rule subsetI, simp)
- apply (frule_tac c = x and A = c and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}"
+ apply (frule_tac c = x and A = C and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}"
         in subsetD, assumption+, simp, (erule conjE)+)
  apply (subst psubset_eq, simp add:ideal_subset1)
  apply (rule contrapos_pp, simp+, simp add:ring_one)
@@ -6736,12 +6736,7 @@ apply (rule equalityI)
  apply (subgoal_tac "1\<^sub>r \<in> x")
  apply (rule_tac  I = x in ideal_inc_one, assumption+)
  apply (rule contrapos_pp, simp+)
- apply (subgoal_tac "mx = x", 
-        rotate_tac -3, frule not_sym) 
- apply (simp, blast)
-apply (rule subsetI, 
-            simp add:CollectI)
- apply (case_tac "x = mx", simp, simp)
+apply (drule spec[of _ mx])
  apply (simp add:whole_ideal,
         rule subsetI, rule ideal_subset[of "mx"], assumption+)
 done

@@ -51,12 +51,12 @@ lemma chain_on_imp_subset:
   "chain_on P C A \<Longrightarrow> C \<subseteq> A" by (simp add: chain_on_def)
 
 lemma chain_on_Union:
-  assumes "C \<in> Zorn.chain {C. chain_on P C A}" (is "C \<in> Zorn.chain ?A")
+  assumes "C \<in> chains {C. chain_on P C A}" (is "C \<in> chains ?A")
   shows "chain_on P (\<Union>C) A"
 proof
   from assms have "C \<subseteq> ?A" and
     *[rule_format]: "\<forall>x\<in>C. \<forall>y\<in>C. x \<subseteq> y \<or> y \<subseteq> x"
-    by (auto simp: chain_def chain_subset_def)
+    by (auto simp: chains_def chain_subset_def)
   then show "\<Union>C \<subseteq> A" unfolding chain_on_def by blast
   fix x y assume "x \<in> \<Union>C" and "y \<in> \<Union>C"
   then obtain X Y
@@ -90,10 +90,10 @@ lemma max_chain_on_exists:
   "\<exists>M. max_chain_on P M A"
 proof -
   let ?S = "{C. chain_on P C A}"
-  have "\<And>C. C \<in> Zorn.chain ?S \<Longrightarrow> \<Union>C \<in> ?S"
+  have "\<And>C. C \<in> chains ?S \<Longrightarrow> \<Union>C \<in> ?S"
     using chain_on_Union and chain_on_imp_subset by blast
   with Zorn_Lemma [of ?S]
-    obtain M where "M \<in> ?S" and *: "\<forall>z\<in>?S. M \<subseteq> z \<longrightarrow> M = z" by blast
+    obtain M where "M \<in> ?S" and *: "\<forall>z\<in>?S. M \<subseteq> z \<longrightarrow> z = M" by blast
   then have "M \<subseteq> A" and "chain_on P M A" by (auto dest: chain_on_imp_subset)
   moreover {
     fix C assume "chain_on P C A" and "M \<subseteq> C"

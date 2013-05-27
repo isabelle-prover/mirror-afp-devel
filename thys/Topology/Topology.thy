@@ -1456,13 +1456,13 @@ qed
 lemma filter_chain_lemma:
   fixes T (structure) and F
   assumes "filter F T"
-  assumes C_chain: "C \<in> chain {V. V \<in> Filters \<and> F \<subseteq> V}" (is "C \<in> chain ?FF")
+  assumes C_chain: "C \<in> chains {V. V \<in> Filters \<and> F \<subseteq> V}" (is "C \<in> chains ?FF")
   shows "\<Union>(C \<union> {F}) \<in> Filters" (is "?E \<in> Filters")
 proof-
   interpret filter F T by fact
   from C_chain have C_subset_FF[dest]: "\<And> x. x\<in>C \<Longrightarrow> x \<in> ?FF" and
     C_ordered: "\<forall> A \<in> C. \<forall> B \<in> C. A \<subseteq> B \<or> B \<subseteq> A"
-    by (auto simp: chain_def chain_subset_def)
+    by (auto simp: chains_def chain_subset_def)
 
   show ?thesis
   proof    
@@ -1502,10 +1502,10 @@ lemma expand_filter_ultra:
   shows "R"
 proof-
   let ?FF = "{V. V \<in> Filters \<and> F \<subseteq> V}"
-  have "\<forall> C \<in> chain ?FF. \<exists>y \<in> ?FF. \<forall>x \<in> C. x \<subseteq> y"
+  have "\<forall> C \<in> chains ?FF. \<exists>y \<in> ?FF. \<forall>x \<in> C. x \<subseteq> y"
   proof clarify
     fix C let ?M = "\<Union>(C \<union> {F})"
-    assume C_in_chain: "C \<in> chain ?FF"
+    assume C_in_chain: "C \<in> chains ?FF"
     hence "?M \<in> ?FF" using F_filter
       by (auto dest: filter_chain_lemma [OF filter.intro])
     moreover have "\<forall> x \<in> C. x \<subseteq> ?M" using C_in_chain
@@ -1513,7 +1513,7 @@ proof-
     ultimately show "\<exists>y\<in>?FF. \<forall>x\<in>C. x \<subseteq> y"
       by auto
   qed then obtain U where
-    U_FFilter: "U \<in> ?FF" and U_max: "\<forall> V \<in> ?FF. U \<subseteq> V \<longrightarrow> U = V"
+    U_FFilter: "U \<in> ?FF" and U_max: "\<forall> V \<in> ?FF. U \<subseteq> V \<longrightarrow> V = U"
     by (blast dest!: Zorn_Lemma2)
   hence U_filter: "U \<in> Filters" and F_subset_U: "F \<subseteq> U"
     by auto

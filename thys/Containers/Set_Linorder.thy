@@ -39,15 +39,15 @@ proof(cases "finite (UNIV :: 'a set)")
   
   have "Partial_order r"
     by(auto simp add: Field_def r_def partial_order_on_def preorder_on_def intro!: refl_onI transI antisymI)
-  moreover have "\<forall>\<CC> \<in> Chain r. \<exists>\<B> \<in> Field r. \<forall>\<A> \<in> \<CC>. (\<A>, \<B>) \<in> r"
+  moreover have "\<forall>\<CC> \<in> Chains r. \<exists>\<B> \<in> Field r. \<forall>\<A> \<in> \<CC>. (\<A>, \<B>) \<in> r"
   proof
     fix \<CC>
-    assume \<CC>: "\<CC> \<in> Chain r"
+    assume \<CC>: "\<CC> \<in> Chains r"
     let ?\<B> = "\<Union>\<CC> \<union> {A. finite A}"
     have "?\<B> \<in> Field r" using False \<CC>
-      by clarsimp(safe, drule (2) ChainD, auto 4 4 dest: Chain_Field)
+      by clarsimp(safe, drule (2) ChainsD, auto 4 4 dest: Chains_Field)
     moreover hence "\<And>\<A>. \<A> \<in> \<CC> \<Longrightarrow> (\<A>, ?\<B>) \<in> r"
-      using \<CC> by(auto simp del: in_Field_r dest: Chain_Field)
+      using \<CC> by(auto simp del: in_Field_r dest: Chains_Field)
     ultimately show "\<exists>\<B> \<in> Field r. \<forall>\<A> \<in> \<CC>. (\<A>, \<B>) \<in> r" by blast
   qed
   ultimately have "\<exists>\<P> \<in> Field r. \<forall>\<A> \<in> Field r. (\<P>, \<A>) \<in> r \<longrightarrow> \<A> = \<P>"
