@@ -286,7 +286,7 @@ fun generalise_over_tac P i st =
         in 
           (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))
            |> rtac meta_spec_protect' 1
-           |> Seq.maps (fn st' => Thm.bicompose false 
+           |> Seq.maps (fn st' => Thm.bicompose {flatten = true, match = false, incremented = false}
                         (false, Goal.conclude st', Thm.nprems_of st') i st))
         end
       | NONE => no_tac st)
@@ -302,7 +302,7 @@ fun generalise_tac ctxt i st =
     val r = Goal.conclude (generalise ctxt ct');
   in (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))
       |> (rtac r 1 THEN rtac (Drule.protectI) 1)
-      |> Seq.maps (fn st' => Thm.bicompose false 
+      |> Seq.maps (fn st' => Thm.bicompose {flatten = true, match = false, incremented = false}
                     (false, Goal.conclude st', Thm.nprems_of st') i st))
   end
 
