@@ -6,7 +6,7 @@ theory ShortestPathNeg
   shortest path theory
 *)
 imports 
-  "$ISALIB_GRAPHS/Graph_Theory" 
+  "../Graph_Theory/Graph_Theory"
   "ShortestPath"
 
 begin

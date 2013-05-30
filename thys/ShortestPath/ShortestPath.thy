@@ -1,9 +1,10 @@
 theory ShortestPath
 imports
   Complex   
-  "$ISALIB_GRAPHS/Graph_Theory"
+  "../Graph_Theory/Graph_Theory"
   "~~/src/HOL/Library/Extended_Nat"
 begin
+
 section {*Shortest Path (with non-negative edge costs)*}
 text{* The following theory is used in the verification of a certifying algorithm's checker for shortest path. For more information see \cite{FrameworkVerificationofCertifyingComputations}. *}
 

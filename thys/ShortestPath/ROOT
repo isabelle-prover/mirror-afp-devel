@@ -1,0 +1,8 @@
+session "ShortestPath" (AFP) = Graph_Theory +
+  options [timeout = 3600]
+  theories
+    ShortestPath
+    ShortestPathNeg
+  files
+    "document/root.bib"
+    "document/root.tex"
