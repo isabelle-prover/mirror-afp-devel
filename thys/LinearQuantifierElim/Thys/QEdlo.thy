@@ -1,7 +1,7 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
 theory QEdlo
-imports DLO "~~/src/HOL/Library/Reflection"
+imports DLO
 begin
 
 subsection "DNF-based quantifier elimination"
