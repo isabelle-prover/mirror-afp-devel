@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-theory QEdlo_ex imports QEdlo "~~/src/HOL/Library/Reflection"
+theory QEdlo_ex imports QEdlo
 begin
 
 (* tweaking the reflection setup *)
@@ -25,7 +25,7 @@ lemmas reify_eqs =
 method_setup dlo_reify = {*
   Scan.succeed
   (fn ctxt =>
-    Method.SIMPLE_METHOD' (Reflection.reify_tac ctxt @{thms reify_eqs} NONE
+    Method.SIMPLE_METHOD' (Reification.tac ctxt @{thms reify_eqs} NONE
      THEN' simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm"interpret_def"}])))
 *} "dlo reification"
 

@@ -1,7 +1,7 @@
 header {* Proving Relation (In)equalities via Regular Expressions *}
 
 theory Regexp_Method
-imports Equivalence_Checking Relation_Interpretation "~~/src/HOL/Library/Reflection"
+imports Equivalence_Checking Relation_Interpretation
 begin
 
 primrec rel_of_regexp :: "('a * 'a) set list \<Rightarrow> nat rexp \<Rightarrow> ('a * 'a) set" where
@@ -39,7 +39,7 @@ method_setup regexp = {*
         (TRY o etac @{thm rev_subsetD})
         THEN' (Subgoal.FOCUS_PARAMS (fn {context=ctxt', ...} =>
           TRY (Local_Defs.unfold_tac ctxt' @{thms regexp_unfold})
-          THEN Reflection.reify_tac ctxt' @{thms regexp_reify} NONE 1
+          THEN Reification.tac ctxt' @{thms regexp_reify} NONE 1
           THEN rtac @{thm rel_eqI} 1
           THEN CONVERSION regexp_conv 1
           THEN rtac TrueI 1) ctxt))
