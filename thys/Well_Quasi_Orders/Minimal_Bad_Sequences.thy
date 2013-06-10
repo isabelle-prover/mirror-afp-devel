@@ -80,8 +80,7 @@ lemma
     min_at P g (Suc n)"
   (is "\<exists>g. ?C g f (f (Suc n))")
 proof -
-  let ?I = "\<lambda>x. \<forall>f.
-    x = f (Suc n) \<and> (\<forall>i. f i \<in> A) \<and> bad P f \<and> min_at P f n \<longrightarrow> (\<exists>g. ?C g f x)"
+  let ?I = "\<lambda>x. \<forall>f. x = f (Suc n) \<and> (\<forall>i. f i \<in> A) \<and> bad P f \<and> min_at P f n \<longrightarrow> (\<exists>g. ?C g f x)"
   {
     fix x
     assume "x = f (Suc n)"
@@ -194,64 +193,58 @@ proof -
     where "\<And>i. g i \<in> A" and "min_at P g 0" and "bad P g" by blast
   from minimal_bad_Suc
     have "\<forall>f n. (\<forall>i. f i \<in> A) \<and> min_at P f n \<and> bad P f \<longrightarrow>
-    (\<exists>M.
-      (\<forall>i. M i \<in> A) \<and>
-      (\<forall>i\<le>n. M i = f i) \<and>
-      lesseq (M (Suc n)) (f (Suc n)) \<and>
-      bad P M \<and>
-      min_at P M (Suc n))"
-      (is "\<forall>f n. ?Q f n \<longrightarrow> (\<exists>M. ?Q' f n M)")
+    (\<exists>\<nu>.
+      (\<forall>i. \<nu> i \<in> A) \<and>
+      (\<forall>i\<le>n. \<nu> i = f i) \<and>
+      lesseq (\<nu> (Suc n)) (f (Suc n)) \<and>
+      bad P \<nu> \<and>
+      min_at P \<nu> (Suc n))"
+      (is "\<forall>f n. ?Q f n \<longrightarrow> (\<exists>\<nu>. ?Q' f n \<nu>)")
       by blast
-  from choice2 [OF this] obtain M
-    where * [rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (M f n)" by force
-  let ?g = "minimal_bad_seq M g"
-  let ?A = "\<lambda>i. ?g i i"
-  have "\<forall>n. (\<forall>i. ?g n i \<in> A)
-    \<and> (\<forall>i\<le>n. min_at P (?g n) i)
-    \<and> (\<forall>i\<le>n. ?A i = ?g n i)
-    \<and> bad P (?g n)" (is "\<forall>n. ?Q n")
+  from choice2 [OF this] obtain \<nu>
+    where * [rule_format]: "\<forall>f n. ?Q f n \<longrightarrow> ?Q' f n (\<nu> f n)" by force
+  def [simp]: m' \<equiv> "minimal_bad_seq \<nu> g"
+  txt {*The minimal bad sequence is the diagonal of @{term m'}.*}
+  def [simp]: m \<equiv> "\<lambda>i. m' i i"
+  have "\<forall>n. (\<forall>i. m' n i \<in> A)
+    \<and> (\<forall>i\<le>n. min_at P (m' n) i)
+    \<and> (\<forall>i\<le>n. m i = m' n i)
+    \<and> bad P (m' n)" (is "\<forall>n. ?Q n")
   proof
     fix n show "?Q n"
     proof (induction n)
       case 0
-      with `\<And>i. g i \<in> A` and `min_at P g 0` and `bad P g`
-        show ?case by auto
+      then show ?case
+        using `\<And>i. g i \<in> A` and `min_at P g 0` and `bad P g` by auto
     next
       case (Suc n)
-      from Suc and * [of "?g n" n]
-        have eq: "\<forall>i\<le>n. ?A i = ?g n i"
-        and vals: "\<forall>i. ?g n i \<in> A"
-        and less: "lesseq (?g (Suc n) (Suc n)) (?g n (Suc n))"
-        and bad: "bad P (?g n)"
-        and "bad P (?g (Suc n))"
-        and min_at: "min_at P (?g n) n"
-        and min_at_Suc: "min_at P (?g (Suc n)) (Suc n)"
+      with * [of "m' n" n]
+        have eq: "\<forall>i\<le>n. m i = m' n i"
+        and vals: "\<forall>i. m' n i \<in> A"
+        and bad: "bad P (m' n)"
+        and "bad P (m' (Suc n))"
+        and min_at: "min_at P (m' n) n"
+        and min_at_Suc: "min_at P (m' (Suc n)) (Suc n)"
         by (simp_all add: Let_def)
-      moreover have vals': "\<forall>i\<ge>Suc n. ?g (Suc n) i \<in> A"
+      moreover have vals': "\<forall>i\<ge>Suc n. m' (Suc n) i \<in> A"
       proof (intro allI impI)
         fix i assume "Suc n \<le> i"
-        moreover from * [of "?g n"] and vals and min_at and bad
-          have "M (?g n) n i \<in> A" by simp
-        ultimately show "?g (Suc n) i \<in> A" by (simp add: Let_def)
+        moreover from * [of "m' n"] and vals and min_at and bad
+          have "\<nu> (m' n) n i \<in> A" by simp
+        ultimately show "m' (Suc n) i \<in> A" by (simp add: Let_def)
       qed
-      moreover have *: "\<forall>i\<le>Suc n. ?A i = ?g (Suc n) i"
-        using min_at and vals and bad by (auto simp: * eq elim: le_SucE)
-      moreover have "\<forall>i. ?g (Suc n) i \<in> A"
+      moreover have *: "\<forall>i\<le>Suc n. m i = m' (Suc n) i"
+        using min_at and vals and bad using eq by (auto simp: * elim: le_SucE)
+      moreover have "\<forall>i. m' (Suc n) i \<in> A"
       proof
         fix i
-        show "?g (Suc n) i \<in> A"
-        proof (cases "i \<ge> Suc n")
-          assume "i \<ge> Suc n" then show ?thesis using vals' by simp
-        next
-          assume "\<not> i \<ge> Suc n"
-          then have "i \<le> n" by arith
-          with eq and * and vals show ?thesis by simp
-        qed
+        show "m' (Suc n) i \<in> A"
+          by (cases "i \<ge> Suc n") (insert vals' vals eq *, simp+)
       qed
-      moreover have "\<forall>i\<le>Suc n. min_at P (?g (Suc n)) i"
+      moreover have "\<forall>i\<le>Suc n. min_at P (m' (Suc n)) i"
       proof (intro allI impI)
         fix i assume "i \<le> Suc n"
-        show "min_at P (?g (Suc n)) i"
+        show "min_at P (m' (Suc n)) i"
         proof (cases "i = Suc n")
           case True with min_at_Suc show ?thesis by simp
         next
@@ -263,35 +256,28 @@ proof -
       ultimately show ?case by simp
     qed
   qed
-  then have vals: "\<forall>i. ?A i \<in> A"
-    and 1: "\<forall>n. \<forall>i\<le>n. min_at P (?g n) i"
-    and 2: "\<forall>n. \<forall>i\<le>n. ?A i = ?g n i"
-    and 3: "\<forall>n. bad P (?g n)"
-    and 4: "\<forall>i. \<exists>j. lesseq (?g 0 i) (g j)"
-    by auto
-  have "\<forall>i. ?A i \<in> A" by fact
-  moreover have bad: "bad P ?A"
+  then have "\<And>i. m i \<in> A"
+    and min: "\<And>n i. i \<le> n \<Longrightarrow> min_at P (m' n) i"
+    and eq: "\<And>n i. i \<le> n \<Longrightarrow> m i = m' n i"
+    and bad: "\<And>n. bad P (m' n)" by (auto)
+  then have "\<forall>i. m i \<in> A" by simp
+  moreover have "bad P m"
   proof
-    assume "good P ?A"
+    assume "good P m"
     then obtain i j :: nat where "i < j"
-      and "P (?g i i) (?g j j)" unfolding good_def by auto
-    moreover with 2 [rule_format, of i j]
-      have "P (?g j i) (?g j j)" by auto
-    ultimately have "good P (?g j)" unfolding good_def by blast
-    with 3 show False by auto
+      and "P (m i) (m j)" by (auto simp: good_def)
+    with eq [of i j] and bad show False by (auto simp: good_def)
   qed
-  moreover
-  have "\<forall>n S. (\<forall>i. S i \<in> A) \<and> (\<forall>i<n. S i = ?A i) \<and> less (S n) (?A n) \<longrightarrow> good P S"
-  proof (intro allI impI, elim conjE)
+  moreover have "\<forall>n. min_at P m n"
+  proof (unfold min_at_def, intro allI impI, elim conjE)
     fix S n
-    assume "\<forall>i<n. S i = ?A i"
-    then have "\<forall>i<n. S i = ?g n i" using 2 by auto
-    moreover assume "\<forall>i. S i \<in> A" and "less (S n) (?A n)"
+    assume "\<forall>i<n. S i = m i"
+    then have "\<forall>i<n. S i = m' n i" using eq by auto
+    moreover assume "\<forall>i. S i \<in> A" and "less (S n) (m n)"
     ultimately show "good P S"
-      using 1 [rule_format, of n] by (auto simp: min_at_def)
+      using min [of n] by (auto simp: min_at_def)
   qed
-  ultimately
-  show ?thesis by (auto simp: min_at_def)
+  ultimately show ?thesis by blast
 qed
 
 end

@@ -480,45 +480,47 @@ is transitive, contains a (monotone) infinite subsequence on which either
 @{term P} is transitive or @{term Q} is transitive.*}
 lemma trans_subseq:
   fixes f :: "'a seq"
-  assumes *: "\<forall>i j. i < j \<longrightarrow> P (f i) (f j) \<or> Q (f i) (f j)"
-  shows "\<exists>g::nat seq. (\<forall>i j. i < j \<longrightarrow> g i < g j) \<and>
-    ((\<forall>i j. i < j \<longrightarrow> P (f (g i)) (f (g j))) \<or>
-     (\<forall>i j. i < j \<longrightarrow> Q (f (g i)) (f (g j))))"
+    and P (infix "\<le>\<^sub>1" 50)
+    and Q (infix "\<le>\<^sub>2" 50)
+  assumes *: "\<forall>i j. i < j \<longrightarrow> f i \<le>\<^sub>1 f j \<or> f i \<le>\<^sub>2 f j"
+  shows "\<exists>\<phi>::nat seq. (\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j) \<and>
+    ((\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>1 f (\<phi> j)) \<or>
+     (\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>2 f (\<phi> j)))"
 proof -
-  def h \<equiv> "\<lambda>I. if (\<exists>i j. i \<in> I \<and> j \<in> I \<and> i < j \<and> P (f i) (f j)) then 0 else Suc 0"
+  def h \<equiv> "\<lambda>I. if (\<exists>i j. i \<in> I \<and> j \<in> I \<and> i < j \<and> f i \<le>\<^sub>1 f j) then 0 else Suc 0"
   have inf: "infinite (UNIV::nat set)" by blast
   have "\<forall>i\<in>UNIV. \<forall>j\<in>UNIV. i \<noteq> j \<longrightarrow> h {i, j} < 2" by (auto simp: h_def)
-  from Ramsey2 [OF inf this] obtain I :: "nat set" and n
-    where "infinite I" and "n < 2" and **: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = n" by blast
+  from Ramsey2 [OF inf this] obtain I :: "nat set" and c
+    where "infinite I" and "c < 2" and **: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = c" by blast
   from `infinite I` have "INFM i. i \<in> I" unfolding INFM_iff_infinite by simp
   then interpret infinitely_many "\<lambda>i. i \<in> I" by (unfold_locales) assumption
-  def [simp]: g \<equiv> "index"
-  let ?f = "f \<circ> g"
-  from `n < 2` have "n = 0 \<or> n = 1" by arith
+  def [simp]: \<phi> \<equiv> "index"
+  let ?f = "f \<circ> \<phi>"
+  from `c < 2` have "c = 0 \<or> c = 1" by arith
   thus ?thesis
   proof
-    assume [simp]: "n = 0"
-    have "\<forall>i j. i < j \<longrightarrow> P (?f i) (?f j)"
+    assume [simp]: "c = 0"
+    have "\<forall>i j. i < j \<longrightarrow> ?f i \<le>\<^sub>1 ?f j"
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      with index_ordered_less have "g i < g j" by auto
-      moreover have "g i \<in> I" and "g j \<in> I" using index_p by auto
-      ultimately have "h {g i, g j} = 0" using ** by auto
-      with `g i < g j` show "P (?f i) (?f j)"
+      with index_ordered_less have "\<phi> i < \<phi> j" by auto
+      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using index_p by auto
+      ultimately have "h {\<phi> i, \<phi> j} = 0" using ** by auto
+      with `\<phi> i < \<phi> j` show "?f i \<le>\<^sub>1 ?f j"
         by (auto simp: h_def) (metis Suc_neq_Zero order_less_not_sym)
     qed
     thus ?thesis using index_ordered_less by auto
   next
-    assume [simp]: "n = 1"
-    have "\<forall>i j. i < j \<longrightarrow> Q (?f i) (?f j)"
+    assume [simp]: "c = 1"
+    have "\<forall>i j. i < j \<longrightarrow> ?f i \<le>\<^sub>2 ?f j"
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      with index_ordered_less have "g i < g j" by auto
-      moreover have "g i \<in> I" and "g j \<in> I" using index_p by auto
-      ultimately have "h {g i, g j} = 1" using ** by auto
-      with `g i < g j` show "Q (?f i) (?f j)"
+      with index_ordered_less have "\<phi> i < \<phi> j" by auto
+      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using index_p by auto
+      ultimately have "h {\<phi> i, \<phi> j} = 1" using ** by auto
+      with `\<phi> i < \<phi> j` show "?f i \<le>\<^sub>2 ?f j"
         using * by (auto simp: h_def) (metis Suc_n_not_n)
     qed
     thus ?thesis using index_ordered_less by auto
