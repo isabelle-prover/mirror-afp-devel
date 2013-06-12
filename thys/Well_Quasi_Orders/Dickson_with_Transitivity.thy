@@ -43,14 +43,12 @@ proof
     have UNIV: "UNIV = ?T \<union> {m. ?P m}" by blast
     show ?thesis using `finite ?T` and nat_infinite by (auto simp: UNIV)
   qed
-  ultimately obtain N where *: "\<forall>m>N. \<exists>n>m. q m \<le>\<^sub>1 q n"
-    by (auto simp: finite_nat_set_iff_bounded) (metis less_asym)
+  ultimately obtain N where *: "\<forall>m\<ge>N. \<exists>n>m. q m \<le>\<^sub>1 q n"
+    by (auto simp: finite_nat_set_iff_bounded) (metis not_less)
   def f \<equiv> "enumchain (\<lambda>m n. q m \<le>\<^sub>1 q n) N"
   from enumchain_chain [OF *] have **: "\<And>i. q (f i) \<le>\<^sub>1 q (f (Suc i))"
     by (simp add: f_def)
-  from enumchain_mono [OF *] have "\<And>i. N < f i"
-    and f_mono: "\<And>i. f i < f (Suc i)"
-    by (simp add: f_def)+
+  from enumchain_mono [OF *] have f_mono: "\<And>i. f i < f (Suc i)" by (simp add: f_def)+
   obtain i j where "i < j" and "q' (f i) \<le>\<^sub>2 q' (f j)"
     using af2 [unfolded almost_full_on_def, THEN spec, of "\<lambda>i. q' (f i)"] and q'
     by (auto simp: good_def)
