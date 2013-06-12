@@ -130,7 +130,7 @@ lemma steps_imp_chainp':
   assumes "\<forall>i\<ge>n::nat. \<exists>j\<ge>i. P (S i) (S j)" shows "\<exists>T. chainp P T"
 proof -
   from assms have "\<forall>i\<in>{i. i \<ge> n}. \<exists>j\<ge>i. P (S i) (S j)" by auto
-  from bchoice[OF this]
+  from bchoice [OF this] (*choice could be replaced by an application of Least_Enum.infinitely_many2*)
     obtain f where "\<forall>i\<ge>n. f i \<ge> i \<and> P (S i) (S (f i))" by auto
   from stepfun_imp_chainp'[of n f P S, OF this] show ?thesis by fast
 qed
