@@ -8,6 +8,7 @@ header {* Almost-Full Relations *}
 
 theory Almost_Full_Relations
 imports
+  Least_Enum
   "~~/src/HOL/Library/Sublist"
   "~~/src/HOL/Library/Ramsey"
   Minimal_Bad_Sequences
@@ -104,15 +105,15 @@ proof -
   show ?thesis
   proof (cases "finite ?A")
     assume "infinite ?A"
-    then have "INFM i. i \<in> ?A" unfolding INFM_iff_infinite by simp
-    then interpret infinitely_many "\<lambda>i. i \<in> ?A" by (unfold_locales) assumption
-    def [simp]: g \<equiv> "index"
+    then have "\<forall>i. \<exists>j>i. j \<in> ?A" by (simp add: infinite_nat_iff_unbounded)
+    then interpret infinitely_many1 "\<lambda>i. i \<in> ?A" by (unfold_locales) assumption
+    def [simp]: g \<equiv> "enum"
     have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (g i)) (f (g j))"
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      from index_ordered_less [OF this] have "g i < g j" by auto
-      moreover have "g i \<in> ?A" using index_p by auto
+      from enum_less [OF this] have "g i < g j" by auto
+      moreover have "g i \<in> ?A" using enum_P by auto
       ultimately show "\<not> P (f (g i)) (f (g j))" by auto
     qed
     then have "bad P (\<lambda>x. f (g x))" by (auto simp: good_def)
@@ -383,27 +384,27 @@ proof
       assume "finite ?I"
       moreover have "infinite (UNIV::nat set)" by auto
       ultimately have "infinite ?J" unfolding ** [symmetric] by (rule Diff_infinite_finite)
-      then have "INFM i. i \<in> ?J" unfolding INFM_iff_infinite by simp
-      then interpret infinitely_many "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
-      let ?f = "\<lambda>i. Sum_Type.Projr (f (index i))"
-      have ***: "\<forall>i. \<exists>x\<in>B. f (index i) = Inr x" using index_p by auto
+      then have "\<forall>i. \<exists>j>i. j \<in> ?J" by (simp add: infinite_nat_iff_unbounded)
+      then interpret infinitely_many1 "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
+      let ?f = "\<lambda>i. Sum_Type.Projr (f (enum i))"
+      have ***: "\<forall>i. \<exists>x\<in>B. f (enum i) = Inr x" using enum_P by auto
       have B: "\<forall>i. ?f i \<in> B"
       proof
         fix i
-        from *** obtain x where "x \<in> B" and "f (index i) = Inr x" by blast
+        from *** obtain x where "x \<in> B" and "f (enum i) = Inr x" by blast
         then show "?f i \<in> B" by simp
       qed
       {
         fix i j :: nat
         assume "i < j"
-        then have "index i < index j" using index_ordered_less by auto
-        with bad have not: "\<not> ?P (f (index i)) (f (index j))" by (auto simp: good_def)
+        then have "enum i < enum j" using enum_less by auto
+        with bad have not: "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
         have "\<not> Q (?f i) (?f j)"
         proof
           assume "Q (?f i) (?f j)"
           moreover with *** obtain x y where "x \<in> B" and "y \<in> B"
-            and "f (index i) = Inr x" and "f (index j) = Inr y" by blast
-          ultimately have "?P (f (index i)) (f (index j))" by simp
+            and "f (enum i) = Inr x" and "f (enum j) = Inr y" by blast
+          ultimately have "?P (f (enum i)) (f (enum j))" by simp
           then show False using not by simp
         qed
       }
@@ -413,27 +414,27 @@ proof
       ultimately show False by blast
     next
       assume "infinite ?I"
-      then have "INFM i. i \<in> ?I" unfolding INFM_iff_infinite by simp
-      then interpret infinitely_many "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
-      let ?f = "\<lambda>i. Sum_Type.Projl (f (index i))"
-      have ***: "\<forall>i. \<exists>x\<in>A. f (index i) = Inl x" using index_p by auto
+      then have "\<forall>i. \<exists>j>i. j \<in> ?I" by (simp add: infinite_nat_iff_unbounded)
+      then interpret infinitely_many1 "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
+      let ?f = "\<lambda>i. Sum_Type.Projl (f (enum i))"
+      have ***: "\<forall>i. \<exists>x\<in>A. f (enum i) = Inl x" using enum_P by auto
       have A: "\<forall>i. ?f i \<in> A"
       proof
         fix i
-        from *** obtain x where "x \<in> A" and "f (index i) = Inl x" by blast
+        from *** obtain x where "x \<in> A" and "f (enum i) = Inl x" by blast
         then show "?f i \<in> A" by simp
       qed
       {
         fix i j :: nat
         assume "i < j"
-        then have "index i < index j" using index_ordered_less by auto
-        with bad have not: "\<not> ?P (f (index i)) (f (index j))" by (auto simp: good_def)
+        then have "enum i < enum j" using enum_less by auto
+        with bad have not: "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
         have "\<not> P (?f i) (?f j)"
         proof
           assume "P (?f i) (?f j)"
           moreover with *** obtain x y where "x \<in> A" and "y \<in> A"
-            and "f (index i) = Inl x" and "f (index j) = Inl y" by blast
-          ultimately have "?P (f (index i)) (f (index j))" by simp
+            and "f (enum i) = Inl x" and "f (enum j) = Inl y" by blast
+          ultimately have "?P (f (enum i)) (f (enum j))" by simp
           then show False using not by simp
         qed
       }
@@ -492,9 +493,9 @@ proof -
   have "\<forall>i\<in>UNIV. \<forall>j\<in>UNIV. i \<noteq> j \<longrightarrow> h {i, j} < 2" by (auto simp: h_def)
   from Ramsey2 [OF inf this] obtain I :: "nat set" and c
     where "infinite I" and "c < 2" and **: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = c" by blast
-  from `infinite I` have "INFM i. i \<in> I" unfolding INFM_iff_infinite by simp
-  then interpret infinitely_many "\<lambda>i. i \<in> I" by (unfold_locales) assumption
-  def [simp]: \<phi> \<equiv> "index"
+  from `infinite I` have "\<forall>i. \<exists>j>i. j \<in> I" by (simp add: infinite_nat_iff_unbounded)
+  then interpret infinitely_many1 "\<lambda>i. i \<in> I" by (unfold_locales) assumption
+  def [simp]: \<phi> \<equiv> "enum"
   let ?f = "f \<circ> \<phi>"
   from `c < 2` have "c = 0 \<or> c = 1" by arith
   then show ?thesis
@@ -504,26 +505,26 @@ proof -
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      with index_ordered_less have "\<phi> i < \<phi> j" by auto
-      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using index_p by auto
+      with enum_less have "\<phi> i < \<phi> j" by auto
+      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using enum_P by auto
       ultimately have "h {\<phi> i, \<phi> j} = 0" using ** by auto
       with `\<phi> i < \<phi> j` show "?f i \<le>\<^sub>1 ?f j"
         by (auto simp: h_def) (metis Suc_neq_Zero order_less_not_sym)
     qed
-    then show ?thesis using index_ordered_less by auto
+    then show ?thesis using enum_less by auto
   next
     assume [simp]: "c = 1"
     have "\<forall>i j. i < j \<longrightarrow> ?f i \<le>\<^sub>2 ?f j"
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      with index_ordered_less have "\<phi> i < \<phi> j" by auto
-      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using index_p by auto
+      with enum_less have "\<phi> i < \<phi> j" by auto
+      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using enum_P by auto
       ultimately have "h {\<phi> i, \<phi> j} = 1" using ** by auto
       with `\<phi> i < \<phi> j` show "?f i \<le>\<^sub>2 ?f j"
         using * by (auto simp: h_def) (metis Suc_n_not_n)
     qed
-    then show ?thesis using index_ordered_less by auto
+    then show ?thesis using enum_less by auto
   qed
 qed
 

@@ -20,6 +20,10 @@ lemma enum_mono:
   shows "enum i < enum (Suc i)"
   using infm by (cases i, auto) (metis (lifting) LeastI)+
 
+lemma enum_less:
+  "i < j \<Longrightarrow> enum i < enum j"
+  using enum_mono by (metis lift_Suc_mono_less)
+
 lemma enum_P:
   shows "P (enum i)"
   using infm by (cases i, auto) (metis (lifting) LeastI)+
