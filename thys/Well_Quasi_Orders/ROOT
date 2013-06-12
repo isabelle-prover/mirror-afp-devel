@@ -12,7 +12,9 @@ session Well_Quasi_Orders (AFP) = HOL +
     "~~/src/HOL/Library/Sublist"
     Restricted_Predicates
     Minimal_Bad_Sequences
+    Least_Enum
     Almost_Full_Relations
+    Dickson_with_Transitivity
     Well_Quasi_Orders
     Well_Partial_Orders
     Orders
