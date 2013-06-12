@@ -27,11 +27,12 @@ proof
   let ?T = "{m. \<not> ?P m}"
   have "finite ?T"
   proof (rule ccontr)
-    def f \<equiv> "enum (\<lambda>i. i \<in> ?T)" -- "enumerate the indices in ?T"
     assume "infinite ?T"
     then have "\<forall>i. \<exists>j>i. j \<in> ?T" by (auto simp: infinite_nat_iff_unbounded)
-    with enum_P [OF this] and enum_mono [OF this]
+    then interpret T: infinitely_many1 "\<lambda>x. x \<in> ?T" by (unfold_locales) blast
+    def f \<equiv> "T.enum" -- "enumerate the indices in ?T"
     have "\<And>i. f i \<in> ?T" and "\<And>i. f i < f (Suc i)"
+      using T.enum_P and T.enum_mono
       unfolding f_def [symmetric] by simp+
     moreover then have "\<And>i j. i < j \<Longrightarrow> f i < f j" by (metis lift_Suc_mono_less)
     ultimately have "bad (op \<le>\<^sub>1) (\<lambda>i. q (f (Suc i)))"
@@ -43,12 +44,13 @@ proof
     have UNIV: "UNIV = ?T \<union> {m. ?P m}" by blast
     show ?thesis using `finite ?T` and nat_infinite by (auto simp: UNIV)
   qed
-  ultimately obtain N where *: "\<forall>m\<ge>N. \<exists>n>m. q m \<le>\<^sub>1 q n"
+  ultimately obtain N where "\<forall>m\<ge>N. \<exists>n>m. q m \<le>\<^sub>1 q n"
     by (auto simp: finite_nat_set_iff_bounded) (metis not_less)
-  def f \<equiv> "enumchain (\<lambda>m n. q m \<le>\<^sub>1 q n) N"
-  from enumchain_chain [OF *] have **: "\<And>i. q (f i) \<le>\<^sub>1 q (f (Suc i))"
+  then interpret le1: infinitely_many2 "\<lambda>x y. q x \<le>\<^sub>1 q y" N by (unfold_locales) blast
+  def f \<equiv> "le1.enumchain"
+  from le1.enumchain_chain have **: "\<And>i. q (f i) \<le>\<^sub>1 q (f (Suc i))"
     by (simp add: f_def)
-  from enumchain_mono [OF *] have f_mono: "\<And>i. f i < f (Suc i)" by (simp add: f_def)+
+  from le1.enumchain_mono have f_mono: "\<And>i. f i < f (Suc i)" by (simp add: f_def)+
   obtain i j where "i < j" and "q' (f i) \<le>\<^sub>2 q' (f j)"
     using af2 [unfolded almost_full_on_def, THEN spec, of "\<lambda>i. q' (f i)"] and q'
     by (auto simp: good_def)
