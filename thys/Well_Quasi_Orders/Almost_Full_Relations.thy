@@ -349,6 +349,10 @@ where
   "sum_less P Q (Inr x) (Inr y) = Q x y" |
   "sum_less P Q x y = False"
 
+text {*Note that all proofs below involving @{const sum_le} and @{const sum_less} work as they are,
+when in the last clause of each function definition @{const True} is used instead of @{const False}.
+I'm not sure which variant is preferable.*}
+
 lemma reflclp_sum_less [simp]:
   "(sum_less P Q)\<^sup>=\<^sup>= = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
 proof (intro ext)
