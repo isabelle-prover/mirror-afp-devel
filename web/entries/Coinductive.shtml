@@ -47,30 +47,30 @@ This article collects formalisations of general-purpose coinductive data types a
 
 [2010-06-10]:
 coinductive lists: setup for quotient package
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/015574f3bf3c">015574f3bf3c</a>)<br>
+(revision 015574f3bf3c)<br>
 [2010-06-28]:
 new codatatype terminated lazy lists
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/e12de475c558">e12de475c558</a>)<br>
+(revision e12de475c558)<br>
 [2010-08-04]:
 terminated lazy lists: setup for quotient package;
 more lemmas
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6ead626f1d01">6ead626f1d01</a>)<br>
+(revision 6ead626f1d01)<br>
 [2010-08-17]:
 Koenig's lemma as an example application for coinductive lists
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/f81ce373fa96">f81ce373fa96</a>)<br>
+(revision f81ce373fa96)<br>
 [2011-02-01]:
 lazy implementation of coinductive (terminated) lists for the code generator
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/6034973dce83">6034973dce83</a>)<br>
+(revision 6034973dce83)<br>
 [2011-07-20]:
 new codatatype resumption
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/811364c776c7">811364c776c7</a>)<br>
+(revision 811364c776c7)<br>
 [2012-06-27]:
 new codatatype stream with operations (with contributions by Peter Gammie)
-(revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/dd789a56473c">dd789a56473c</a>)<br>
+(revision dd789a56473c)<br>
 [2013-03-13]:
 construct codatatypes with the BNF package and adjust the definitions and proofs,
 setup for lifting and transfer packages
-(revision <a href="http://sourceforge.net/p/afp/code/ci/f593eda5b2c0af115ef7c823360f3ee00edfb840">f593eda5b2c0af115ef7c823360f3ee00edfb840</a>)<br>
+(revision f593eda5b2c0)<br>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

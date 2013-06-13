@@ -79,7 +79,7 @@ This theory is split into two sections. In the first section, we give a formal p
 <p></p>
 
 <!--#set var="name" value="ShortestPath" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/Graph_Theory/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
