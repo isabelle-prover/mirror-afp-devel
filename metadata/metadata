@@ -1370,8 +1370,8 @@ abstract = Based on Isabelle/HOL's type class for preorders,
  The research was funded by the Austrian Science Fund (FWF): J3202.
 extra-history =
   Change history:
-  [2013-05-16]: Simplified construction of minimal bad sequences.
-  [2012-06-11]: Added Kruskal's Tree Theorem.
+  [2013-05-16]: Simplified construction of minimal bad sequences.<br>
+  [2012-06-11]: Added Kruskal's Tree Theorem.<br>
   [2012-12-19]: New variant of Kruskal's tree theorem for terms (as opposed to
   variadic terms, i.e., trees), plus finite version of the tree theorem as
   corollary.
