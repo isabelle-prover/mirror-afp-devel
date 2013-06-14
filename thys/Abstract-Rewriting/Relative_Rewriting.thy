@@ -1398,33 +1398,32 @@ proof
   fix f :: "nat \<Rightarrow> 'a"
   assume "f 0 \<in> UNIV"
     and chain: "chain R f"
-  have trans_seq: "\<forall>i j. i < j \<longrightarrow> (f i, f j) \<in> r \<union> s"
-    using assms and chain_imp_trancl[OF chain] by auto
-  let ?M = "{i::nat. \<forall>j>i. (f i, f j) \<notin> r}"
+  have *: "\<And>i j. i < j \<Longrightarrow> (f i, f j) \<in> r \<union> s"
+    using assms and chain_imp_trancl [OF chain] by auto
+  let ?M = "{i. \<forall>j>i. (f i, f j) \<notin> r}"
   show False
   proof (cases "finite ?M")
-    case True
     let ?n = "Max ?M"
-    from Max_ge[OF True] have "\<forall>i\<in>?M. i \<le> ?n" by simp
-    hence "\<forall>k\<ge>Suc ?n. \<exists>k'>k. (f k, f k') \<in> r" by auto
-    from steps_imp_chainp[of "Suc ?n" "\<lambda>x y. (x, y) \<in> r", OF this] and assms
+    assume "finite ?M"
+    with Max_ge have "\<forall>i\<in>?M. i \<le> ?n" by simp
+    then have "\<forall>k\<ge>Suc ?n. \<exists>k'>k. (f k, f k') \<in> r" by auto
+    with steps_imp_chainp [of "Suc ?n" "\<lambda>x y. (x, y) \<in> r"] and assms
       show False by auto
   next
-    case False
-    from choice[OF this[unfolded infinite_nat_iff_unbounded]]
-      obtain g where 1: "\<forall>i. g i > i \<and> g i \<in> ?M" by auto
-    with trans_seq have 2: "\<forall>i\<ge>0. g i > i \<and> (f i, f (g i)) \<in> r \<union> s" by auto
-    let ?g = "\<lambda>i. (g ^^ Suc i) (Suc 0)"
-    let ?f = "\<lambda>i. f (?g i)"
-    have "\<forall>i. (?f i, ?f (Suc i)) \<in> s"
+    assume "infinite ?M"
+    then have "INFM j. j \<in> ?M" by (simp add: Inf_many_def)
+    then interpret infinitely_many "\<lambda>i. i \<in> ?M" by (unfold_locales) assumption
+    def [simp]: g \<equiv> "index"
+    have "\<forall>i. (f (g i), f (g (Suc i))) \<in> s"
     proof
       fix i
-      from 2 have "(g ^^ i) (Suc n) \<ge> 0" by (induct i) auto
-      hence "?g i \<ge> 0" using assms by auto
-      with 2[THEN spec[of _ "(g ^^ Suc i) (Suc 0)"]]
-        show "(?f i, ?f (Suc i)) \<in> s" using 1 by auto
+      have less: "g i < g (Suc i)" using index_ordered_less [of i "Suc i"] by simp
+      have "g i \<in> ?M" using index_p by simp
+      then have "(f (g i), f (g (Suc i))) \<notin> r" using less by simp
+      moreover have "(f (g i), f (g (Suc i))) \<in> r \<union> s" using * [OF less] by simp
+      ultimately show "(f (g i), f (g (Suc i))) \<in> s" by blast
     qed
-    with assms show False by best
+    with `SN s` show False by (auto simp: SN_defs)
   qed
 qed
 
