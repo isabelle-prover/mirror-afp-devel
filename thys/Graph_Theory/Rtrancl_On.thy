@@ -21,18 +21,22 @@ inductive_set
 where
     rtrancl_on_refl [intro!, Pure.intro!, simp]: "a \<in> F \<Longrightarrow> (a, a) \<in> rtrancl_on F r"
   | rtrancl_on_into_rtrancl_on [Pure.intro]:
-      "(a, b) \<in> rtrancl_on F r  \<Longrightarrow> (b, c) \<in> r \<Longrightarrow> b \<in> F \<Longrightarrow> c \<in> F
+      "(a, b) \<in> rtrancl_on F r  \<Longrightarrow> (b, c) \<in> r \<Longrightarrow> c \<in> F
       \<Longrightarrow> (a, c) \<in> rtrancl_on F r"
 
 definition symcl :: "'a rel \<Rightarrow> 'a rel" ("(_\<^sup>s)" [1000] 999) where
   "symcl R = R \<union> (\<lambda>(a,b). (b,a)) ` R"
+
+lemma in_rtrancl_on_in_F:
+  assumes "(a,b) \<in> rtrancl_on F r" shows "a \<in> F" "b \<in> F"
+  using assms by induct auto
 
 lemma rtrancl_on_induct[consumes 1, case_names base step, induct set: rtrancl_on]:
   assumes "(a, b) \<in> rtrancl_on F r"
     and "a \<in> F \<Longrightarrow> P a"
         "\<And>y z. \<lbrakk>(a, y) \<in> rtrancl_on F r; (y,z) \<in> r; y \<in> F; z \<in> F; P y\<rbrakk> \<Longrightarrow> P z"
   shows "P b"
-  using assms by (induct a b) auto
+  using assms by (induct a b) (auto dest: in_rtrancl_on_in_F)
 
 lemma rtrancl_on_trans:
   assumes "(a,b) \<in> rtrancl_on F r" "(b,c) \<in> rtrancl_on F r" shows "(a,c) \<in> rtrancl_on F r"

@@ -13,7 +13,7 @@ text {*
   We represent a walk in a graph by the list of its arcs.
 *}
 
-type_synonym 'b awalk = "('b list)"
+type_synonym 'b awalk = "'b list"
 
 context pre_digraph begin
 
@@ -102,6 +102,11 @@ lemma awalk_conv:
 unfolding awalk_def using hd_in_set[OF awalk_verts_non_Nil, of u p]
 by (auto intro: awalk_verts_in_verts awhd_if_cas awlast_if_cas simp del: hd_in_set)
 
+lemma awalkI:
+  assumes "set (awalk_verts u p) \<subseteq> verts G" "set p \<subseteq> arcs G" "cas u p v"
+  shows "awalk u p v"
+  using assms by (auto simp: awalk_conv awhd_if_cas awlast_if_cas)
+
 lemma awalkE[elim]:
   assumes "awalk u p v"
   obtains "set (awalk_verts u p) \<subseteq> verts G" "set p \<subseteq> arcs G" "cas u p v"
@@ -121,9 +126,14 @@ lemma awalk_hd_in_verts: "awalk u p v \<Longrightarrow> u \<in> verts G"
 lemma awalk_last_in_verts: "awalk u p v \<Longrightarrow> v \<in> verts G"
   unfolding awalk_conv by auto
 
+lemma hd_in_awalk_verts:
+  "awalk u p v \<Longrightarrow> u \<in> set (awalk_verts u p)"
+  "apath u p v \<Longrightarrow> u \<in> set (awalk_verts u p)"
+  by (case_tac [!]p) (auto simp: apath_def)
+
 lemma awalk_Cons_iff:
   "awalk u (e # es) w \<longleftrightarrow> e \<in> arcs G \<and> u = tail G e \<and> awalk (head G e) es w" (is "?L \<longleftrightarrow> ?R")
-  by (cases es) (auto simp: awalk_def)
+  by (auto simp: awalk_def)
 
 lemma apath_Cons_iff:
   "apath u (e # es) w \<longleftrightarrow> e \<in> arcs G \<and> tail G e = u \<and> apath (head G e) es w
@@ -133,13 +143,9 @@ by (auto simp: apath_def awalk_Cons_iff)
 lemmas awalk_simps = awalk_Nil_iff awalk_Cons_iff
 lemmas apath_simps = apath_Nil_iff apath_Cons_iff
 
-lemma awalk_singleton:
-  "awalk u [e] v \<longleftrightarrow> e \<in> arcs G \<and> tail G e = u \<and> head G e = v"
-by (auto simp: awalk_simps)
-
 lemma arc_implies_awalk:
   "e \<in> arcs G \<Longrightarrow> awalk (tail G e) [e] (head G e)"
-by (simp add: awalk_singleton)
+by (simp add: awalk_simps)
 
 lemma apath_nonempty_ends:
   assumes "apath u p v"
@@ -192,10 +198,23 @@ next
   with Cons.prems show ?case by auto
 qed
 
+lemma set_awalk_verts_not_Nil_cas:
+  assumes "cas u p v" "p \<noteq> []"
+  shows "set (awalk_verts u p) = set (map (tail G) p) \<union> set (map (head G) p)"
+proof -
+  have "u \<in> set (map (tail G) p)" using assms by (cases p) auto
+  with assms show ?thesis  by (auto simp: set_awalk_verts_cas)
+qed
+
 lemma set_awalk_verts:
   assumes "awalk u p v"
   shows "set (awalk_verts u p) = {u} \<union> set (map (tail G) p) \<union> set (map (head G) p)"
   using assms by (intro set_awalk_verts_cas) blast
+
+lemma set_awalk_verts_not_Nil:
+  assumes "awalk u p v" "p \<noteq> []"
+  shows "set (awalk_verts u p) = set (map (tail G) p) \<union> set (map (head G) p)"
+  using assms by (intro set_awalk_verts_not_Nil_cas) blast
 
 lemma
   awhd_of_awalk: "awalk u p v \<Longrightarrow> awhd u p = u" and
@@ -213,7 +232,7 @@ lemma awalk_verts_arc2:
   shows "head G e \<in> set (awalk_verts u p)"
 using assms by (simp add: set_awalk_verts) 
 
-lemma awalk_induct_raw[case_names Base Cons, induct pred: awalk]:
+lemma awalk_induct_raw[case_names Base Cons(*, induct pred: awalk*)]:
   assumes "awalk u p v"
   assumes "\<And>w1. w1 \<in> verts G \<Longrightarrow> P w1 [] w1"
   assumes "\<And>w1 w2 e es. e \<in> arcs G \<Longrightarrow> arc_to_ends G e = (w1, w2)
@@ -237,42 +256,6 @@ subsection {* Appending awalks *}
 lemma (in pre_digraph) cas_append_iff[simp]:
   "cas u (p @ q) v \<longleftrightarrow> cas u p (awlast u p) \<and> cas (awlast u p) q v"
 by (induct u p v rule: cas.induct) auto
-
-lemma awalk_decomp:
-  assumes "awalk u p v"
-  assumes "w \<in> set (awalk_verts u p)"
-  shows "\<exists>q r. p = q @ r \<and> awalk u q w \<and> awalk w r v"
-using assms
-proof (induct p arbitrary: u)
-  case Nil then show ?case by (auto simp: awalk_def)
-next
-  case (Cons e es)
-  from Cons(2) have awalk_es: "awalk (head G e) es v"
-      and tail_e: "tail G e = u"
-    using awalk_Cons_iff by auto
-  show ?case
-  proof (cases "w \<in> set (awalk_verts (head G e) es)")
-    case True
-    with awalk_es obtain q r
-        where "es = q @ r \<and> awalk (head G e) q w \<and> awalk w r v" 
-      by atomize_elim (rule Cons, auto)
-    then have "e # es = (e # q) @ r \<and> awalk u (e # q) w \<and> awalk w r v"
-      using tail_e Cons
-      by (auto simp: awalk_Cons_iff arc_to_ends_def)
-    then show ?thesis by blast
-  next
-    case False
-    have "head G e = awhd (head G e) es"
-      using Cons.prems(1)
-      by (cases es) auto
-    with False Cons.prems have "tail G e = w \<and> u = tail G e"
-      by (cases es) auto
-    then have "e # es = [] @ (e # es) \<and> awalk u [] w \<and> awalk w (e # es) v"
-      using Cons.prems(1)
-      by (auto simp: awalk_Nil_iff)
-    then show ?thesis by blast
-  qed
-qed
 
 lemma cas_ends:
   assumes "cas u p v" "cas u' p v'"
@@ -305,11 +288,11 @@ by (auto simp: awalk_def intro: awlast_in_verts)
 
 lemma awlast_append:
   "awlast u (p @ q) = awlast (awlast u p) q"
-by (cases p q rule: list_exhaust2) (auto simp: awalk_verts_conv)
+by (simp add: awalk_verts_conv)
 
 lemma awhd_append:
   "awhd u (p @ q) = awhd (awhd u q) p"
-by (cases p q rule: list_exhaust2) auto
+by (simp add: awalk_verts_conv)
 
 declare awalkE[rule del]
 
@@ -318,13 +301,9 @@ lemma awalkE'[elim]:
   obtains "set (awalk_verts u p) \<subseteq> verts G" "set p \<subseteq> arcs G" "cas u p v"
     "awhd u p = u" "awlast u p = v" "u \<in> verts G" "v \<in> verts G"
 proof -
-  have "u \<in> set (awalk_verts u p)"
-    using assms by (cases p) (auto elim: awalkE)
-  moreover
-  have "v \<in> set (awalk_verts u p)"
-    using assms by (auto elim: awalkE)
-  ultimately
-  show ?thesis using assms by (auto elim: awalkE intro: that)
+  have "u \<in> set (awalk_verts u p)" "v \<in> set (awalk_verts u p)"
+    using assms by (auto simp: hd_in_awalk_verts elim: awalkE)
+  then show ?thesis using assms by (auto elim: awalkE intro: that)
 qed
 
 lemma awalk_appendI:
@@ -448,6 +427,21 @@ proof -
   ultimately show ?thesis by (intro that) auto
 qed
 
+lemma awalk_decomp:
+  assumes "awalk u p v"
+  assumes "w \<in> set (awalk_verts u p)"
+  shows "\<exists>q r. p = q @ r \<and> awalk u q w \<and> awalk w r v"
+proof -
+  from assms have "cas u p v" by auto
+  moreover from assms obtain xs ys where
+    "awalk_verts u p = xs @ w # ys" by (auto simp: in_set_conv_decomp)
+  ultimately
+  obtain q r where "cas u q w" "cas w r v" "p = q @ r" "awalk_verts u q = xs @ [w]"
+    by (auto intro: awalk_decomp_verts)
+  with assms show ?thesis by auto
+qed
+
+
 lemma awalk_not_distinct_decomp:
   assumes "awalk u p v"
   assumes "\<not> distinct (awalk_verts u p)"
@@ -497,13 +491,16 @@ subsection {* Cycles *}
 definition closed_w :: "'b awalk \<Rightarrow> bool" where
   "closed_w p \<equiv> \<exists>u. awalk u p u \<and> 0 < length p"
 
-(* This definition of a cycle matches the one in
-    Bang-Jensen, Gutin: Digraphs: Theory, Algorithms and Applications.
-  as well as the one in
-    Lutz Volkmann: Graphen an allen Ecken und Kanten, 2006 (?)
+text {*
+  The definitions of cycles in textbooks vary w.r.t to the minimial length
+  of a cycle.
 
-  Distinct vertices imply distinct arcs as shown in below.
-*)
+  The definition given here matches \cite{diestel2010graph}.
+  \cite{bangjensen2009digraphs} excludes loops from being cycles.
+  Volkmann (Lutz Volkmann: Graphen an allen Ecken und Kanten, 2006 (?))
+  places no restriction on the length in the definition, but later
+  usage assumes cycles to be non-empty.
+*}
 definition (in pre_digraph) cycle :: "'b awalk \<Rightarrow> bool" where
   "cycle p \<equiv> \<exists>u. awalk u p u \<and> distinct (tl (awalk_verts u p)) \<and> p \<noteq> []"
 
@@ -533,7 +530,7 @@ lemma (in wf_digraph) cycle_conv:
   "cycle p \<longleftrightarrow> (\<exists>u. awalk u p u \<and> distinct (tl (awalk_verts u p)) \<and> distinct p \<and> p \<noteq> [])"
   unfolding cycle_def by (auto intro: distinct_tl_verts_imp_distinct)
 
-lemma (in digraph) cycle_digraph_conv:
+lemma (in loopfree_digraph) cycle_digraph_conv:
   "cycle p \<longleftrightarrow> (\<exists>u. awalk u p u \<and> distinct (tl (awalk_verts u p)) \<and> 2 \<le> length p)" (is "?L \<longleftrightarrow> ?R")
 proof
   assume "cycle p"
@@ -547,6 +544,28 @@ proof
   qed
   then show ?R using * by auto
 qed (auto simp: cycle_def)
+
+lemma (in wf_digraph) closed_w_imp_cycle:
+  assumes "closed_w p" shows "\<exists>p. cycle p"
+  using assms
+proof (induct "length p" arbitrary: p rule: less_induct)
+  case less
+  then obtain u where *: "awalk u p u" "p \<noteq> []" by (auto simp: closed_w_def)
+  show ?thesis
+  proof cases
+    assume "distinct (tl (awalk_verts u p))"
+    with less show ?thesis by (auto simp: closed_w_def cycle_altdef)
+  next
+    assume A: "\<not>distinct (tl (awalk_verts u p))"
+    then obtain e es where "p = e # es" by (cases p) auto
+    with A * have **: "awalk (head G e) es u" "\<not>distinct (awalk_verts (head G e) es)"
+      by (auto simp: awalk_Cons_iff)
+    obtain q r s where "es = q @ r @ s" "\<exists>w. awalk w r w" "closed_w r"
+      using awalk_not_distinct_decomp[OF **] by (auto simp: closed_w_def)
+    then have "length r < length p" using `p = _` by auto
+    then show ?thesis using `closed_w r` by (rule less)
+  qed
+qed
 
 
 
@@ -572,20 +591,10 @@ proof
   qed
 next
   assume "\<exists>p. awalk u p v \<and> p \<noteq> []" then obtain p where "awalk u p v" "p \<noteq> []" by auto
-  thus "u \<rightarrow>\<^isup>+ v" using `awalk u p v`
-  proof induct
-    case (Cons x y e es)
-     have "x \<rightarrow> y" using Cons.hyps
-       unfolding arc_to_ends_def by (blast dest: in_arcs_imp_in_arcs_ends )
-
-    show ?case
-    proof (cases "es = []")
-      case True with Cons have "y = v" by (simp add: awalk_singleton arc_to_ends_def)
-      with `x \<rightarrow> y` show ?thesis by auto
-    next
-      case False with Cons have "y \<rightarrow>\<^isup>+ v" unfolding awalk_Cons_iff by (simp add: arc_to_ends_def)
-      with `x \<rightarrow> y` show ?thesis by auto
-    qed
+  thus "u \<rightarrow>\<^isup>+ v"
+  proof (induct p arbitrary: u)
+    case (Cons a as) then show ?case
+      by (cases "as = []") (auto simp: awalk_simps trancl_into_trancl2 dest: in_arcs_imp_in_arcs_ends)
   qed simp
 qed
 
@@ -633,7 +642,7 @@ qed
 
 subsection {* Paths *}
 
-lemma (in pseudo_digraph) apaths_finite:
+lemma (in fin_digraph) apaths_finite:
   shows "finite {p. apath u p v}"
 proof -
   have "{p. apath u p v}

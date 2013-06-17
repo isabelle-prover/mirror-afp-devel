@@ -1,5 +1,5 @@
 (* Title:  Shortest_Path.thy
-   Author: Lars Noschinski, TU München
+   Author: Lars Noschinski, TU MÃ¼nchen
 *)
 
 theory Shortest_Path imports
@@ -74,7 +74,7 @@ lemma inf_over_nats:
   fixes a c :: real
   assumes "c < 0"
   shows "(INF (i :: nat). a + i * c) = - \<infinity>"
-proof (rule INF_eqI)
+proof (rule ereal_INFI)
   fix i :: nat show "- \<infinity> \<le> a + real i * c" by simp
 next
   fix y :: ereal
@@ -187,7 +187,7 @@ proof -
   qed
 qed
 
-lemma (in pseudo_digraph) neg_inf_imp_neg_cyc:
+lemma (in fin_digraph) neg_inf_imp_neg_cyc:
   assumes inf_mu: "\<mu> f u v = - \<infinity>"
   shows "\<exists>p. awalk u p v \<and> (\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0)"
 proof -
@@ -214,7 +214,7 @@ proof -
   with `awalk u pw v` show ?thesis by auto
 qed
 
-lemma (in pseudo_digraph) no_neg_cyc_imp_no_neg_inf:
+lemma (in fin_digraph) no_neg_cyc_imp_no_neg_inf:
   assumes no_neg_cyc: "\<And>p. awalk u p v
     \<Longrightarrow> \<not>(\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0)"
   shows "- \<infinity> < \<mu> f u v"
@@ -283,7 +283,7 @@ next
   finally show ?case .
 qed
 
-lemma (in pseudo_digraph) no_neg_cyc_reach_imp_path:
+lemma (in fin_digraph) no_neg_cyc_reach_imp_path:
   assumes reach: "u \<rightarrow>\<^isup>* v"
   assumes no_neg_cyc: "\<And>p. awalk u p v
     \<Longrightarrow> \<not>(\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0)"
@@ -338,7 +338,7 @@ proof -
     by (simp add: set_paths_def image_def)
 qed
 
-lemma (in pseudo_digraph) min_cost_awalk:
+lemma (in fin_digraph) min_cost_awalk:
   assumes reach: "u \<rightarrow>\<^isup>* v"
   assumes pos_cost: "\<And>e. e \<in> arcs G \<Longrightarrow> c e \<ge> 0"
   shows "\<exists>p. apath u p v \<and> \<mu> c u v = awalk_cost c p"
@@ -350,7 +350,7 @@ proof -
     by (rule no_neg_cyc_reach_imp_path) (auto simp: not_less intro: pc)
 qed
 
-lemma (in pseudo_digraph) pos_cost_mu_triangle:
+lemma (in fin_digraph) pos_cost_mu_triangle:
   assumes pos_cost: "\<And>e. e \<in> arcs G \<Longrightarrow> c e \<ge> 0" (* introduce predicate? *)
   assumes e_props: "arc_to_ends G e = (u,v)" "e \<in> arcs G"
   shows "\<mu> c s v \<le> \<mu> c s u + c e"
@@ -378,7 +378,7 @@ next
   finally show ?thesis .
 qed
 
-lemma (in pseudo_digraph) mu_exact_triangle:
+lemma (in fin_digraph) mu_exact_triangle:
   assumes "v \<noteq> s"
   assumes "s \<rightarrow>\<^isup>* v"
   assumes nonneg_arcs: "\<And>e. e \<in> arcs G \<Longrightarrow> 0 \<le> c e"
@@ -404,14 +404,14 @@ proof -
   then show ?thesis using arc ..
 qed
 
-lemma (in pseudo_digraph) mu_exact_triangle_Ex:
+lemma (in fin_digraph) mu_exact_triangle_Ex:
   assumes "v \<noteq> s"
   assumes "s \<rightarrow>\<^isup>* v"
   assumes "\<And>e. e \<in> arcs G \<Longrightarrow> 0 \<le> c e"
   shows "\<exists>u e. \<mu> c s v = \<mu> c s u + c e \<and> arc e (u,v)"
 using assms by (metis mu_exact_triangle)
 
-lemma (in pseudo_digraph) mu_Inf_triangle:
+lemma (in fin_digraph) mu_Inf_triangle:
   assumes "v \<noteq> s"
   assumes "\<And>e. e \<in> arcs G \<Longrightarrow> 0 \<le> c e"
   shows "\<mu> c s v = Inf {\<mu> c s u + c e | u e. arc e (u, v)}" (is "_ = Inf ?S")

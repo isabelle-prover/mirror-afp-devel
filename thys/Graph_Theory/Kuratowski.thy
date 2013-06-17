@@ -18,18 +18,27 @@ text {*
 
 subsection {* Public definitions *}
 
-definition K5 :: "'a pair_pre_digraph \<Rightarrow> bool" ("K\<^isub>5") where
-  "K5 G \<equiv> pair_graph G \<and> card (pverts G) = 5 \<and> (\<forall>u \<in> pverts G. \<forall>v \<in> pverts G. u \<noteq> v \<longrightarrow> (u, v) \<in> parcs G)"
+definition complete_digraph :: "nat \<Rightarrow> 'a pair_pre_digraph \<Rightarrow> bool" ("K\<^bsub>_\<^esub>") where
+  "complete_digraph n G \<equiv> finite (pverts G) \<and> card (pverts G) = n \<and> parcs G = {(u,v). (u,v) \<in> (pverts G \<times> pverts G) \<and> u \<noteq> v}"
 
-definition K33 :: "'a pair_pre_digraph \<Rightarrow> bool" ("K\<^isub>3\<^isub>3") where
-  "K33 G \<equiv> pair_graph G \<and> card (pverts G) = 6 \<and>
-    (\<exists>U \<subseteq> pverts G. \<exists>V \<subseteq> pverts G. U \<union> V = pverts G \<and> card U = 3 \<and> card V = 3 \<and>
-      (\<forall>u \<in> U. \<forall>v \<in> V. (u, v) \<in> parcs G \<and> (v, u) \<in> parcs G) \<and>
-      (\<forall>u \<in> U. \<forall>u' \<in> U. (u, u') \<notin> parcs G) \<and>
-      (\<forall>v \<in> V. \<forall>v' \<in> V. (v, v') \<notin> parcs G))"
+definition complete_bipartite_digraph :: "nat \<Rightarrow> nat \<Rightarrow> 'a pair_pre_digraph \<Rightarrow> bool" ("K\<^bsub>_,_\<^esub>") where
+  "complete_bipartite_digraph m n G \<equiv> finite (pverts G) \<and> (\<exists>U V. pverts G = U \<union> V \<and> U \<inter> V = {}
+    \<and> card U = m \<and> card V = n \<and> parcs G = U \<times> V \<union> V \<times> U)"
+
+lemma pair_graphI_complete:
+  assumes "K\<^bsub>n\<^esub> G" shows "pair_graph G"
+proof
+  have "finite (pverts G \<times> pverts G)" "parcs G \<subseteq> pverts G \<times> pverts G"
+    using assms by (auto simp: complete_digraph_def)
+  then show "finite (parcs G)" by (rule rev_finite_subset)
+qed (insert assms, auto simp: complete_digraph_def symmetric_def split: prod.splits intro: symI)
+
+lemma pair_graphI_complete_bipartite:
+  assumes "K\<^bsub>m,n\<^esub> G" shows "pair_graph G"
+  using assms by unfold_locales (fastforce simp: complete_bipartite_digraph_def symmetric_def split: prod.splits intro: symI)+
 
 definition planar :: "'a pair_pre_digraph \<Rightarrow> bool" where
-  "planar G \<equiv> \<not>(\<exists>H. subgraph (with_proj H) G \<and> pair_pseudo_graph H \<and> (\<exists>K. subdivision K H \<and> (K\<^isub>3\<^isub>3 K \<or> K\<^isub>5 K)))"
+  "planar G \<equiv> \<not>(\<exists>H. subgraph (with_proj H) G \<and> (\<exists>K. subdivision K H \<and> (K\<^bsub>3,3\<^esub> K \<or> K\<^bsub>5\<^esub> K)))"
 
 subsection {* Inner vertices of a walk *}
 
@@ -43,7 +52,7 @@ lemma inner_verts_with_proj_def:
 lemma (in pre_digraph) inner_verts_conv: "inner_verts p = butlast (tl (awalk_verts u p))"
   unfolding inner_verts_def awalk_verts_conv by simp
 
-lemma (in pseudo_digraph) set_inner_verts:
+lemma (in fin_digraph) set_inner_verts:
   assumes "apath u p v"
   shows "set (inner_verts p) = set (awalk_verts u p) - {u,v}"
 proof (cases "length p < 2")
@@ -93,7 +102,7 @@ definition (in pre_digraph) gen_iapath :: "'a set \<Rightarrow> 'a \<Rightarrow>
 abbreviation (in pre_digraph) (input) iapath :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
   "iapath u p v \<equiv> gen_iapath (verts3 G) u p v"
 
-definition gen_contr_graph :: "'a pair_pre_digraph \<Rightarrow> 'a set \<Rightarrow> 'a pair_pre_digraph" where
+definition gen_contr_graph :: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> 'a pair_pre_digraph" where
   "gen_contr_graph G V \<equiv> \<lparr>
      pverts = V,
      parcs = {(u,v). \<exists>p. pre_digraph.gen_iapath G V u p v}
@@ -101,6 +110,15 @@ definition gen_contr_graph :: "'a pair_pre_digraph \<Rightarrow> 'a set \<Righta
 
 abbreviation (input) contracted_graph :: "'a pair_pre_digraph \<Rightarrow> 'a pair_pre_digraph" where
   "contracted_graph G \<equiv> gen_contr_graph G (verts3 G)"
+
+lemma (in wf_digraph) giapath_subgraphI:
+  assumes "subgraph H G" "pre_digraph.gen_iapath H V u p v"
+  shows "gen_iapath V u p v"
+proof -
+  have "tail H = tail G" using assms by (auto simp: subgraph_def compatible_def)
+  with assms show ?thesis
+    by (auto simp: pre_digraph.gen_iapath_def pre_digraph.inner_verts_def intro: subgraph_apath_imp_apath)
+qed
 
 
 
@@ -279,16 +297,6 @@ qed
 
 
 
-subsection {* Pair Digraphs *}
-
-lemma subgraph_trans:
-  assumes "pair_pseudo_digraph U" "pair_pseudo_digraph V" "pair_pseudo_digraph W"
-  assumes "subgraph U V" "subgraph V W"
-  shows "subgraph U W"
-using assms by (auto simp: subgraph_def)
-
-
-
 subsection {* Pair Graphs *}
 
 context pair_pseudo_graph begin
@@ -310,33 +318,14 @@ lemma inner_verts_rev_path:
   shows "inner_verts (rev_path p) = rev (inner_verts p)"
 by (metis assms butlast_rev butlast_tl awalk_verts_rev_path inner_verts_conv tl_rev)
 
-(* TODO: Rules missing to easily prove:
-  \<not>apath u ((x, y) # (y, x) # ys) v"
-
-  or similarly:
-  apath u ((x,y) # ys) v \<Longrightarrow> x \<noteq> y
-
-  At the moment, I need a case distinction on ys.
-
-  Show:
-  ev x ((x, y) # (y, x) # ys)
-  = x # ev y ((y, x) # ys)
-  = y # ev x ys
-  = y # x # ...
-
-  What would probably help is:
-
-    apath x ys v \<Longrightarrow> x \<in> set (awalk_verts x ys)
-*)
-
 lemma apath_imp_progressing:
   assumes "apath u p v" shows "progressing G p"
 proof (rule ccontr)
   assume "\<not>?thesis"
-  then obtain xs x y ys where "p = xs @ (x,y) # (y,x) # ys"
+  then obtain xs x y ys where *: "p = xs @ (x,y) # (y,x) # ys"
     unfolding progressing_def by auto
-  then have "\<not>apath u p v"
-    by (cases ys) (auto simp: apath_append_iff apath_Cons_iff)
+  then  have "\<not>apath u p v"
+    by (simp add: apath_append_iff apath_simps hd_in_awalk_verts)
   then show False using assms by auto
 qed
 
@@ -356,7 +345,7 @@ proof (cases p)
     then have ei_unf: "e1 = (u1, u)" "e2 = (u2, u)"
       using Cons assms by (auto simp: awalk_Cons_iff prod_eqI)
     with Cons assms `e = (u,x)` `e1 \<noteq> e2` have "u1 \<noteq> u2" "x \<noteq> u1" "x \<noteq> u2"
-      by (auto simp: awalk_Cons_iff set_awalk_verts progressing_Cons_Cons)
+      by (auto simp: progressing_Cons_Cons)
     moreover have "{(u1, u), (u2, u), (x,u)} \<subseteq> parcs G"
       using e_unf ei_unf Cons assms by (auto simp: awalk_Cons_iff intro: arcs_symmetric)
     then have "finite (in_arcs G u)"
@@ -713,7 +702,7 @@ proof (rule subgraphI)
   show "verts slim \<subseteq> verts G" "arcs slim \<subseteq> arcs G"
     by (auto simp: verts_slim_in_G arcs_slim_in_G)
   show "compatible G slim" ..
-  show "wf_digraph slim"
+  show "wf_digraph slim" "wf_digraph G"
     by unfold_locales
 qed
 
@@ -824,17 +813,16 @@ proof (induct rule: subdivision.induct)
   from two_less_deg2 have "pverts (contracted_graph G) = pverts G"
     by (auto simp: gen_contr_graph_def verts3_def)
   moreover have "parcs (contracted_graph G) = parcs G"
-  proof -
-    { fix e assume "e \<in> parcs G" (* fix u v assume "(u,v) \<in> arcs G" *)
+  proof
+    { fix e assume "e \<in> parcs G"
       then have "iapath (fst e) [(fst e, snd e)] (snd e)"
         using no_loops[of "(fst e, snd e)"] two_less_deg2
         by (auto simp: gen_iapath_def apath_Cons_iff apath_Nil_iff inner_verts_def verts3_def)
       then have "\<exists>p. iapath (fst e) p (snd e)" ..
     }
-    then
-    have "parcs G \<subseteq> parcs (contracted_graph G)"
+    then show "parcs G \<subseteq> parcs (contracted_graph G)"
       using two_less_deg2 by (force simp: gen_contr_graph_def)
-    moreover
+  next
     { fix u v assume "\<exists>p. iapath u p v"
       then obtain p where awalk: "awalk u p v" "p \<noteq> []"
           and iv: "set (inner_verts p) \<inter> verts3 G = {}"
@@ -850,9 +838,8 @@ proof (induct rule: subdivision.induct)
         by (cases p) (auto simp: inner_verts_def map_butlast[symmetric] split: split_if_asm)
       then have "p = [(u,v)]" using awalk by (cases p) (auto simp: awalk_Cons_iff)
       then have "(u,v) \<in> parcs G" using awalk by auto }
-    then have "parcs (contracted_graph G) \<subseteq> parcs G"
+    then show "parcs (contracted_graph G) \<subseteq> parcs G"
       by (auto simp: gen_contr_graph_def)
-    ultimately show ?thesis by blast
   qed
   ultimately show ?case
     by (auto simp: gen_contr_graph_def)
@@ -872,17 +859,10 @@ next
       by (auto simp: gen_contr_graph_def)
     moreover
     then have "parcs (contracted_graph ?sH) = parcs (contracted_graph H)"
-    proof -
-      have sd_empty: "\<And>p. sd_path e w p = [] \<longleftrightarrow> p = []" by (case_tac p) (auto simp: `e = (u,v)`)
-      have co_empty: "\<And>p. co_path e w p = [] \<longleftrightarrow> p = []"
-        by (case_tac p) (auto simp: `e = (u,v)`)
-      from v show ?thesis
-        unfolding gen_contr_graph_def
-        by (auto dest: H.gen_iapath_co_path[OF divide(1,2) V_cond]
-            H.gen_iapath_sd_path[OF divide(1,2) V_cond])
-    qed
-    ultimately show ?thesis
-      by (auto simp: gen_contr_graph_def)
+      unfolding gen_contr_graph_def
+      by (auto dest: H.gen_iapath_co_path[OF divide(1,2) V_cond]
+          H.gen_iapath_sd_path[OF divide(1,2) V_cond])
+    ultimately show ?thesis by auto
   qed
   then show ?case using divide by simp
 qed
@@ -893,70 +873,43 @@ lemma eq_card_mono_trans:
 
 lemma K33_contractedI:
   assumes subd: "subdivision G H"
-  assumes k33: "K\<^isub>3\<^isub>3 G"
-  shows "K\<^isub>3\<^isub>3 (contracted_graph H)"
+  assumes k33: "K\<^bsub>3,3\<^esub> G"
+  shows "K\<^bsub>3,3\<^esub> (contracted_graph H)"
 proof -
-  interpret pgG: pair_graph G using k33 by (auto simp: K33_def)
+  interpret pgG: pair_graph G using k33 by (rule pair_graphI_complete_bipartite)
   { fix v assume "v \<in> pverts G"
-    from k33 obtain U V where subs: "U \<subseteq> pverts G" "V \<subseteq> pverts G" "U \<union> V = pverts G"
-      and cards: "card U = 3" "card V=3"
-      and conn: "(\<forall>u\<in>U. \<forall>v\<in>V. (u, v) \<in> parcs G \<and> (v, u) \<in> parcs G)"
-      unfolding K33_def by auto
+    from k33 obtain U V where cards: "card U = 3" "card V=3"
+      and UV: "U \<inter> V = {}" "pverts G = U \<union> V" "parcs G = U \<times> V \<union> V \<times> U"
+      unfolding complete_bipartite_digraph_def by blast
     have "2 < in_degree G v"
     proof (cases "v \<in> U")
       case True
-      then have X: "\<And>w. w \<in> V \<Longrightarrow> (w,v) \<in> parcs G" and fin: "finite (in_arcs G v)"
-        using conn by auto
-      have "3 = card V" by (simp add: cards)
-      also have "\<dots> = card (V \<times> {v})"
-        by (auto simp: card_cartesian_product)
-      also have "V \<times> {v} \<subseteq> in_arcs G v"
-        using X by auto
-      also (eq_card_mono_trans[OF _ _ fin]) have "card \<dots> \<le> in_degree G v"
-        unfolding in_degree_def ..
-      finally show ?thesis by auto
+      then have "in_arcs G v = V \<times> {v}" using UV by fastforce
+      then show ?thesis using cards by (auto simp: card_cartesian_product in_degree_def)
     next
       case False
-      then have "v \<in> V" using subs `v \<in> pverts G` by auto
-      then have X: "\<And>w. w \<in> U \<Longrightarrow> (w,v) \<in> parcs G" and fin: "finite (in_arcs G v)"
-        using conn by auto
-      have "3 = card U" by (simp add: cards)
-      also have "\<dots> = card (U \<times> {v})"
-        by (auto simp: card_cartesian_product)
-      also have "U \<times> {v} \<subseteq> in_arcs G v"
-        using X by auto
-      also (eq_card_mono_trans[OF _ _ fin])  have "card \<dots> \<le> in_degree G v"
-        unfolding in_degree_def ..
-      finally show ?thesis by auto
+      then have "in_arcs G v = U \<times> {v}" using `v \<in> _` UV by fastforce
+      then show ?thesis using cards by (auto simp: card_cartesian_product in_degree_def)
     qed }
-  moreover
-  have "pair_graph G" using k33 unfolding K33_def by auto
-  ultimately show ?thesis using pair_graph.contracted_no_degree2_simp assms by auto
+  then show ?thesis using pair_graph.contracted_no_degree2_simp assms by auto
 qed
-
-lemma K5E:
-  assumes "K\<^isub>5 G"
-  obtains "pair_graph G" "card (pverts G) = 5"
-    "\<And>u v. u \<in> pverts G \<Longrightarrow> v \<in> pverts G \<Longrightarrow> u \<noteq> v \<Longrightarrow> (u,v) \<in> parcs G"
-using assms by (auto simp: K5_def)
 
 lemma K5_contractedI:
   assumes subd: "subdivision G H"
-  assumes k5: "K\<^isub>5 G"
-  shows "K\<^isub>5 (contracted_graph H)"
+  assumes k5: "K\<^bsub>5\<^esub> G"
+  shows "K\<^bsub>5\<^esub> (contracted_graph H)"
 proof -
-  interpret pgG: pair_graph G using k5 by (auto simp: K5_def)
+  interpret pgG: pair_graph G using k5 by (rule pair_graphI_complete)
   { fix v assume "v \<in> pverts G"
     have "2 < (4 :: nat)" by simp
     also have "4 = card (pverts G - {v})"
-      using k5 `v \<in> pverts G` unfolding K5_def by auto
+      using k5 `v \<in> pverts G` unfolding complete_digraph_def by auto
     also have "pverts G - {v} = {u \<in> pverts G. u \<noteq> v}"
       by auto
     also have "card \<dots> = card ({u \<in> pverts G. u \<noteq> v} \<times> {v})" (is "_ = card ?A")
       by auto
     also have "?A = in_arcs G v"
-      using k5 `v \<in> pverts G`
-      by safe (auto simp: intro: pgG.wellformed' dest: pgG.no_loops' elim: K5E)
+      using k5 `v \<in> pverts G` unfolding complete_digraph_def by safe auto
     also have "card \<dots> = in_degree G v"
       unfolding in_degree_def ..
     finally have "2 < in_degree G v" . }
@@ -1221,7 +1174,7 @@ next
   have "pverts G - V \<noteq> {}"
     by (metis Nat.diff_le_self Suc_n_not_le_n card_Diff_subset_Int diff_Suc_Suc empty_Diff finite.emptyI inf_bot_left)
   then obtain w where "w \<in> pverts G - V" by auto
-  then obtain x q y where q: "G.gen_iapath V x q y" "w \<in> set (G.awalk_verts x q)"
+  then obtain x q y where q: "G.gen_iapath V x q y" "w \<in> set (G.awalk_verts x q)" "in_degree G w \<le> 2"
     using `G.is_slim V` by (auto simp: G.is_slim_def)
   then have "w \<noteq> x" "w \<noteq> y" "w \<notin> V" using `w \<in> pverts G - V` by (auto simp: G.gen_iapath_def)
   then obtain e where "e \<in> set q" "snd e = w"
@@ -1240,14 +1193,13 @@ next
     by (blast intro: G.arcs_symmetric)+
 
   have "u \<noteq> w" "v \<noteq> w" using q_decomp q
-    by (auto simp: G.gen_iapath_def G.apath_append_iff G.apath_Cons_iff)
+    by (auto simp: G.gen_iapath_def G.apath_append_iff G.apath_simps)
 
   have in_arcs: "in_arcs G w = {(u,w), (v,w)}"
   proof -
     have "{(u,w), (v,w)} \<subseteq> in_arcs G w"
       using uvw_arcs1 uvw_arcs2 by (auto simp: )
-    moreover have "in_degree G w \<le> 2"
-      using `G.is_slim V` `w \<in> pverts G - V` by (auto simp: G.is_slim_def)
+    moreover note `in_degree G w \<le> 2`
     moreover have "card {(u,w), (v,w)} = 2" using `u \<noteq> v` by auto
     ultimately
     show ?thesis by - (rule card_seteq[symmetric], auto simp: in_degree_def)
@@ -1294,7 +1246,7 @@ next
 
   have mem_G': "(u,v) \<in> parcs G'" "w \<notin> pverts G'" by (auto simp: G'_def)
 
-  interpret pd_G': pair_pseudo_digraph G'
+  interpret pd_G': pair_fin_digraph G'
   proof
     fix e assume A: "e \<in> parcs G'"
     have "e \<in> parcs G \<and> e \<noteq> (u, w) \<and> e \<noteq> (w, u) \<and> e \<noteq> (v, w) \<and> e \<noteq> (w, v) \<Longrightarrow> fst e \<noteq> w"
@@ -1347,7 +1299,7 @@ next
 qed
 
 lemma  contr_is_subgraph_subdivision:
-  shows "\<exists>H. subgraph (with_proj H) G \<and> pair_pseudo_graph H \<and> subdivision (contracted_graph G) H"
+  shows "\<exists>H. subgraph (with_proj H) G \<and> subdivision (contracted_graph G) H"
 proof -
   interpret sG: pair_pseudo_graph slim
     by (rule pair_pseudo_graph_slim)
@@ -1363,24 +1315,18 @@ theorem final_theorem:
   fixes K :: "'a pair_pre_digraph"
   assumes subgraph_K: "subgraph K G"
   assumes spd_K: "pair_pseudo_graph K"
-  assumes kuratowski: "K\<^isub>3\<^isub>3 (contracted_graph K) \<or> K\<^isub>5 (contracted_graph K)"
+  assumes kuratowski: "K\<^bsub>3,3\<^esub> (contracted_graph K) \<or> K\<^bsub>5\<^esub> (contracted_graph K)"
   shows "\<not>planar G"
 proof -
   interpret spd_K: pair_pseudo_graph K by (fact spd_K)
   obtain H where subgraph_H: "subgraph (with_proj H) K"
-      and spd_H: "pair_pseudo_graph H"
       and subdiv_H:"subdivision (contracted_graph K) H"
     by atomize_elim (rule spd_K.contr_is_subgraph_subdivision)
-  interpret spd_H: pair_pseudo_graph H by (rule spd_H)
-  have "subgraph H G"
-    using subgraph_H subgraph_K by (auto intro: subgraph_trans)
-  moreover
   from subdiv_H and kuratowski
-  have "\<exists>K. subdivision K H \<and> (K\<^isub>3\<^isub>3 K \<or> K\<^isub>5 K)" by blast
-  ultimately
-  show ?thesis using spd_H unfolding planar_def by blast
+  have "\<exists>K. subdivision K H \<and> (K\<^bsub>3,3\<^esub> K \<or> K\<^bsub>5\<^esub> K)" by blast
+  then show ?thesis using  subgraph_H subgraph_K
+ unfolding planar_def by (blast intro: subgraph_trans)
 qed
-
 
 end
 

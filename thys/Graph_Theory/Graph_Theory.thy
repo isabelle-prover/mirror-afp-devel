@@ -9,6 +9,7 @@ imports
 
   Digraph_Component
   Digraph_Component_Vwalk
+  Digraph_Isomorphism
   Pair_Digraph
   Vertex_Walk
 

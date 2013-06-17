@@ -31,7 +31,7 @@ lemma vpathI_subgraph:
   shows "vpath p H"
 using assms by (auto intro: vwalkI_subgraph)
 
-lemma (in graph) vpathI_arc:
+lemma (in loopfree_digraph) vpathI_arc:
   assumes "(a,b) \<in> arcs_ends G"
   shows "vpath [a,b] G"
 using assms

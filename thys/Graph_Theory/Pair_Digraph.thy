@@ -12,7 +12,7 @@ section {* Digraphs without Parallel Arcs *}
 
 text {*
   If no parallel arcs are desired, arcs can be accurately described as pairs of
-  vertices. This allows us to get rid of of the projection functions @{term "tail G"}
+  This is the natural representation for Digraphs without multi-arcs.
   and @{term "head G"}, making it easier to deal with multiple related graphs
   and to modify a graph by adding edges.
 
@@ -78,17 +78,17 @@ lemmas wellformed' = in_arcsD1 in_arcsD2
 
 end
 
-locale pair_pseudo_digraph = pair_wf_digraph +
+locale pair_fin_digraph = pair_wf_digraph +
   assumes pair_finite_verts: "finite (pverts G)"
     and pair_finite_arcs: "finite (parcs G)"
 
-locale pair_pseudo_graph = pair_pseudo_digraph  +
+locale pair_pseudo_graph = pair_fin_digraph  +
   assumes pair_sym_arcs: "symmetric G"
 
-locale pair_digraph = pair_pseudo_digraph  +
+locale pair_digraph = pair_fin_digraph  +
   assumes pair_no_loops: "e \<in> parcs G \<Longrightarrow> fst e \<noteq> snd e"
 
-locale pair_graph = pair_digraph  + pair_pseudo_graph
+locale pair_graph = pair_digraph + pair_pseudo_graph
 
 sublocale pair_pre_digraph \<subseteq> pre_digraph "with_proj G"
   where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
@@ -104,7 +104,7 @@ sublocale pair_wf_digraph \<subseteq> wf_digraph "with_proj G"
     and "pre_digraph.cas G = pcas"
   by unfold_locales (auto simp: arc_fst_in_verts arc_snd_in_verts)
 
-sublocale pair_pseudo_digraph \<subseteq> pseudo_digraph "with_proj G"
+sublocale pair_fin_digraph \<subseteq> fin_digraph "with_proj G"
   where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
@@ -141,7 +141,7 @@ next
   show ?L by unfold_locales
 qed
 
-lemma (in pair_pseudo_digraph) pair_pseudo_digraph[intro!]: "pair_pseudo_digraph G" by default
+lemma (in pair_fin_digraph) pair_fin_digraph[intro!]: "pair_fin_digraph G" by default
 
 context pair_digraph begin
 
@@ -153,20 +153,20 @@ lemma no_loops':
 
 end
 
-lemma (in pair_pseudo_digraph) apath_succ_decomp:
+lemma (in pair_fin_digraph) apath_succ_decomp:
   assumes "apath u p v"
   assumes "(x,y) \<in> set p"
   assumes "y \<noteq> v"
   shows "\<exists>p1 z p2. p = p1 @ (x,y) # (y,z) # p2 \<and> x \<noteq> z \<and> y \<noteq> z"
 proof -
   from `(x,y) \<in> set p` obtain p1 p2 where p_decomp: "p = p1 @ (x,y) # p2"
-    by (metis in_set_conv_decomp_first)
+    by (metis (no_types) in_set_conv_decomp_first)
   from p_decomp `apath u p v` `y \<noteq> v` have "p2 \<noteq> []" "awalk y p2 v"
     by (auto simp: apath_def awalk_Cons_iff)
   then obtain z p2' where p2_decomp: "p2 = (y,z) # p2'"
     by atomize_elim (cases p2, auto simp: awalk_Cons_iff)
   then have "x \<noteq> z \<and> y \<noteq> z" using p_decomp p2_decomp `apath u p v`
-    by (cases p2') (auto simp: apath_append_iff apath_Cons_iff)
+    by (auto simp: apath_append_iff apath_simps hd_in_awalk_verts)
   with p_decomp p2_decomp have "p = p1 @ (x,y) # (y,z) # p2' \<and> x \<noteq> z \<and> y \<noteq> z"
     by auto
   then show ?thesis by blast
@@ -231,8 +231,7 @@ next
   have "tl (awalk_verts (awlast v (rev_path es)) [(snd e, fst e)]) = [fst e]"
     by auto
   ultimately
-  show ?case using 1 verts
-    by (auto simp: awalk_verts_append intro: awalk_appendI)
+  show ?case using 1 verts by (auto simp: awalk_verts_append)
 next
   case (Cons e es) case 2
   with Cons have "awalk v (rev_path es) (snd e)"
@@ -562,5 +561,6 @@ proof -
 qed
 
 end
+
 
 end
