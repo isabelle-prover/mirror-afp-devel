@@ -54,7 +54,7 @@ We present a formalization of parts of Melvin Fitting's book ``First-Order Logic
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/FOL-Fitting},
+  note    = {\url{http://afp.sf.net/entries/FOL-Fitting.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

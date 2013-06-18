@@ -53,7 +53,7 @@ We introduce Jinja, a Java-like programming language with a formal semantics des
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2005,
-  note    = {\url{http://afp.sf.net/entries/Jinja},
+  note    = {\url{http://afp.sf.net/entries/Jinja.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

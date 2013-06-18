@@ -39,7 +39,7 @@ your own developments. If you would like to make your work available to others
 <p>Let <code>PATH</code> be the absolute path where you have put the unpacked
 AFP directory that you downloaded. Add <code>PATH</code> on a separate line to
 the file <code>~/.isabelle/IsabelleXYZ/etc/components</code>, where XYZ is the
-Isabelle release you are working with, for example XYZ=2012. (In case you are
+Isabelle release you are working with, for example XYZ=2013. (In case you are
 working with the development version of Isabelle, the file is simply
 <code>~/.isabelle/etc/components</code>). You may need to create this file.</p>
 
@@ -47,7 +47,7 @@ working with the development version of Isabelle, the file is simply
 You can now refer to article <code>ABC</code> from the AFP in some theory of
 yours via</p>
 
-<p><code>imports "$AFP/ABC"</code></p>
+<p><code>imports "$AFP/ABC/Some_ABC_Theory"</code></p>
 
 <p>This allows you to distribute your material separately from any AFP
 theories. Users of your distribution also need to install the AFP in the above

@@ -63,7 +63,7 @@ termination proofs where large transitive closures have to be computed.
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Transitive-Closure-II},
+  note    = {\url{http://afp.sf.net/entries/Transitive-Closure-II.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

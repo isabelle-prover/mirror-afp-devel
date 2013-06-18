@@ -51,7 +51,7 @@ This article presents a development of Category Theory in Isabelle/HOL. A Catego
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Category2},
+  note    = {\url{http://afp.sf.net/entries/Category2.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

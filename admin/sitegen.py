@@ -190,7 +190,7 @@ bibtex_wrapper = """@article{{{0}-AFP,
   journal = {{Archive of Formal Proofs}},
   month   = {3},
   year    = {4},
-  note    = {{\\url{{http://afp.sf.net/entries/{0}}},
+  note    = {{\\url{{http://afp.sf.net/entries/{0}.shtml}},
             Formal proof development}},
   ISSN    = {{2150-914x}},
 }}"""

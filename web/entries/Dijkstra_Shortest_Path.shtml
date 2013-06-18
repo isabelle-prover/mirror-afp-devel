@@ -57,7 +57,7 @@ structures from the Isabelle Collection Framework.
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Dijkstra_Shortest_Path},
+  note    = {\url{http://afp.sf.net/entries/Dijkstra_Shortest_Path.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

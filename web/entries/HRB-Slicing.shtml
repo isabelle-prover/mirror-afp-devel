@@ -58,7 +58,7 @@ After verifying <a href="Slicing.shtml">dynamic and static interprocedural slici
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/HRB-Slicing},
+  note    = {\url{http://afp.sf.net/entries/HRB-Slicing.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

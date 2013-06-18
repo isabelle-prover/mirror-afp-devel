@@ -52,7 +52,7 @@ These theories present the mechanised proof of the Perfect Number Theorem.
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/Perfect-Number-Thm},
+  note    = {\url{http://afp.sf.net/entries/Perfect-Number-Thm.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

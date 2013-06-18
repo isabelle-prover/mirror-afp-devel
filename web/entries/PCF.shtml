@@ -62,7 +62,7 @@ carried out in HOLCF.
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/PCF},
+  note    = {\url{http://afp.sf.net/entries/PCF.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

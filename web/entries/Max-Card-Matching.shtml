@@ -65,7 +65,7 @@ then <i>M</i> is a maximum cardinality matching.
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Max-Card-Matching},
+  note    = {\url{http://afp.sf.net/entries/Max-Card-Matching.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

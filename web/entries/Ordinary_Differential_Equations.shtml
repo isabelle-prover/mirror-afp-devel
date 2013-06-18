@@ -52,7 +52,7 @@ We formalize initial value problems (IVPs) of ODEs and prove the existence of a 
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Ordinary_Differential_Equations},
+  note    = {\url{http://afp.sf.net/entries/Ordinary_Differential_Equations.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

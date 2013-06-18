@@ -61,7 +61,7 @@ The code generator can be used to get efficient, verified code.
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Finger-Trees},
+  note    = {\url{http://afp.sf.net/entries/Finger-Trees.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
