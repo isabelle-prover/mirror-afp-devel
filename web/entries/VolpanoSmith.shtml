@@ -58,7 +58,7 @@ The Volpano/Smith/Irvine security type systems requires that variables are annot
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/VolpanoSmith},
+  note    = {\url{http://afp.sf.net/entries/VolpanoSmith.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

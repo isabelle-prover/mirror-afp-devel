@@ -54,7 +54,7 @@ Formal verification is getting more and more important in computer science. Howe
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2005,
-  note    = {\url{http://afp.sf.net/entries/RSAPSS},
+  note    = {\url{http://afp.sf.net/entries/RSAPSS.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

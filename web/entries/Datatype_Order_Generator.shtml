@@ -64,7 +64,7 @@ tedious proofs for linear orders of two datatypes.
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Datatype_Order_Generator},
+  note    = {\url{http://afp.sf.net/entries/Datatype_Order_Generator.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

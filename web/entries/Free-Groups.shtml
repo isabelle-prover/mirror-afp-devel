@@ -63,7 +63,7 @@ proven, as well as some isomorphisms results about Free Groups.
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Free-Groups},
+  note    = {\url{http://afp.sf.net/entries/Free-Groups.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

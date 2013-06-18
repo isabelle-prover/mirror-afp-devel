@@ -60,7 +60,7 @@ definition of tameness in Hales' revised proof.
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2006,
-  note    = {\url{http://afp.sf.net/entries/Flyspeck-Tame},
+  note    = {\url{http://afp.sf.net/entries/Flyspeck-Tame.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

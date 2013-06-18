@@ -63,7 +63,7 @@ This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/Fermat3_4},
+  note    = {\url{http://afp.sf.net/entries/Fermat3_4.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

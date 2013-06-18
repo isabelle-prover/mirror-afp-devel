@@ -81,7 +81,7 @@ setup for lifting and transfer packages
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Coinductive},
+  note    = {\url{http://afp.sf.net/entries/Coinductive.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

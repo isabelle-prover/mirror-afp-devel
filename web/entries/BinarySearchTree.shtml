@@ -52,7 +52,7 @@ The correctness is shown of binary search tree operations (lookup, insert and re
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/BinarySearchTree},
+  note    = {\url{http://afp.sf.net/entries/BinarySearchTree.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

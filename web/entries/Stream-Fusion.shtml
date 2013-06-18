@@ -51,7 +51,7 @@ Stream Fusion is a system for removing intermediate list structures from Haskell
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/Stream-Fusion},
+  note    = {\url{http://afp.sf.net/entries/Stream-Fusion.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

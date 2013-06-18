@@ -51,7 +51,7 @@ These theories illustrates the verification of basic file operations (file creat
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/FileRefinement},
+  note    = {\url{http://afp.sf.net/entries/FileRefinement.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

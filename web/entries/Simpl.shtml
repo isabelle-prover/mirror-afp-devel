@@ -61,7 +61,7 @@ We present the theory of Simpl, a sequential imperative programming language. We
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/Simpl},
+  note    = {\url{http://afp.sf.net/entries/Simpl.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

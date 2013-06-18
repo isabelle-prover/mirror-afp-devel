@@ -65,7 +65,7 @@ The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as 
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/GraphMarkingIBP},
+  note    = {\url{http://afp.sf.net/entries/GraphMarkingIBP.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -59,7 +59,7 @@ offer an approximation algorithm for linear ordered fields.
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Sqrt_Babylonian},
+  note    = {\url{http://afp.sf.net/entries/Sqrt_Babylonian.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

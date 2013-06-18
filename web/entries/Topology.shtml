@@ -50,7 +50,7 @@ This entry contains two theories. The first, <tt>Topology</tt>, develops the bas
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Topology},
+  note    = {\url{http://afp.sf.net/entries/Topology.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

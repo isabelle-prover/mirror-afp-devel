@@ -51,7 +51,7 @@ This theory provides functions for finding the index of an element in a list, by
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/List-Index},
+  note    = {\url{http://afp.sf.net/entries/List-Index.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

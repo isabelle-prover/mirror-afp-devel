@@ -52,7 +52,7 @@ Gill and Hutton formalise the worker/wrapper transformation, building on the wor
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/WorkerWrapper},
+  note    = {\url{http://afp.sf.net/entries/WorkerWrapper.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

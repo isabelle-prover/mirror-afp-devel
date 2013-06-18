@@ -56,7 +56,7 @@ There are many proofs of the Myhill-Nerode theorem using automata. In this libra
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Myhill-Nerode},
+  note    = {\url{http://afp.sf.net/entries/Myhill-Nerode.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

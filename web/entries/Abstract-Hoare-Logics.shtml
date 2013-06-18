@@ -52,7 +52,7 @@ These therories describe Hoare logics for a number of imperative language constr
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2006,
-  note    = {\url{http://afp.sf.net/entries/Abstract-Hoare-Logics},
+  note    = {\url{http://afp.sf.net/entries/Abstract-Hoare-Logics.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
