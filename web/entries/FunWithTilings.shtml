@@ -52,7 +52,7 @@ Tilings are defined inductively. It is shown that one form of mutilated chess bo
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/FunWithTilings},
+  note    = {\url{http://afp.sf.net/entries/FunWithTilings.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -57,7 +57,7 @@ This works presents a formalization of the Girth-Chromatic number theorem in gra
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Girth_Chromatic},
+  note    = {\url{http://afp.sf.net/entries/Girth_Chromatic.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

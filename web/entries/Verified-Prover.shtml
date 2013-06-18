@@ -62,7 +62,7 @@ Soundness and completeness for a system of first order logic are formally proved
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Verified-Prover},
+  note    = {\url{http://afp.sf.net/entries/Verified-Prover.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

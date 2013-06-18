@@ -57,7 +57,7 @@ Two formalizations of AVL trees with room for extensions. The first formalizatio
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/AVL-Trees},
+  note    = {\url{http://afp.sf.net/entries/AVL-Trees.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

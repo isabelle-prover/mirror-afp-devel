@@ -53,7 +53,7 @@ We present a Theory of Objects based on the original functional sigma-calculus b
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Locally-Nameless-Sigma},
+  note    = {\url{http://afp.sf.net/entries/Locally-Nameless-Sigma.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

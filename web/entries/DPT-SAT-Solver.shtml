@@ -58,7 +58,7 @@ This contribution contains a fast SAT solver for Isabelle written in Standard ML
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/DPT-SAT-Solver},
+  note    = {\url{http://afp.sf.net/entries/DPT-SAT-Solver.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

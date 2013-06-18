@@ -51,7 +51,7 @@ This document concerns the theory of ribbon proofs: a diagrammatic proof system,
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Ribbon_Proofs},
+  note    = {\url{http://afp.sf.net/entries/Ribbon_Proofs.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

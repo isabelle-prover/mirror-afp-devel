@@ -60,7 +60,7 @@ This article is of historical interest only. Lebesgue-style integration and prob
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Integration},
+  note    = {\url{http://afp.sf.net/entries/Integration.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -55,7 +55,7 @@ Disk Paxos is an algorithm for building arbitrary fault-tolerant distributed sys
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2005,
-  note    = {\url{http://afp.sf.net/entries/DiskPaxos},
+  note    = {\url{http://afp.sf.net/entries/DiskPaxos.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

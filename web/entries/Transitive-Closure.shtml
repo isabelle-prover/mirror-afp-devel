@@ -55,7 +55,7 @@ We provide a generic work-list algorithm to compute the transitive closure of fi
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Transitive-Closure},
+  note    = {\url{http://afp.sf.net/entries/Transitive-Closure.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

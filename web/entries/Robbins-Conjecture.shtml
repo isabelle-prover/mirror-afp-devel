@@ -56,7 +56,7 @@ This document gives a formalization of the proof of the Robbins conjecture, foll
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Robbins-Conjecture},
+  note    = {\url{http://afp.sf.net/entries/Robbins-Conjecture.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

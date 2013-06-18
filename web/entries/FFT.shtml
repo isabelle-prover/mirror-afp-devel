@@ -52,7 +52,7 @@ We formalise a functional implementation of the FFT algorithm over the complex n
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2005,
-  note    = {\url{http://afp.sf.net/entries/FFT},
+  note    = {\url{http://afp.sf.net/entries/FFT.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
