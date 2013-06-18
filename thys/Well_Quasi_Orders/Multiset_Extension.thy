@@ -70,6 +70,9 @@ definition
 where
   "mulex_on P A = (restrict_to (mulex1 P) (multisets A))\<^sup>+\<^sup>+"
 
+abbreviation mulex :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> bool" where
+  "mulex P \<equiv> mulex_on P UNIV"
+
 lemma mulex_on_self_add_singleton_right [simp]:
   assumes "a \<in> A" and "M \<in> multisets A"
   shows "mulex_on P A M (M + {#a#})"
