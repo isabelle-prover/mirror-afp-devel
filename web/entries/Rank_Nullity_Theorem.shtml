@@ -54,7 +54,7 @@ In this article we present a proof of the result known in Linear Algebra as the 
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Rank_Nullity_Theorem},
+  note    = {\url{http://afp.sf.net/entries/Rank_Nullity_Theorem.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

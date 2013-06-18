@@ -56,7 +56,7 @@ This document presents the mechanised proofs of two popular theorems attributed 
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2006,
-  note    = {\url{http://afp.sf.net/entries/Cauchy},
+  note    = {\url{http://afp.sf.net/entries/Cauchy.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

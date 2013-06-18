@@ -69,7 +69,7 @@ been essential to  formalize polynomial interpretations.
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Polynomials},
+  note    = {\url{http://afp.sf.net/entries/Polynomials.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

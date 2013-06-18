@@ -82,7 +82,7 @@ the underlying algorithmic mechanisms and the kinds of faults they tolerate.
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Heard_Of},
+  note    = {\url{http://afp.sf.net/entries/Heard_Of.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

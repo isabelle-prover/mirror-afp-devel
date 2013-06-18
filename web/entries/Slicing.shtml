@@ -52,7 +52,7 @@ Slicing is a widely-used technique with applications in e.g. compiler technology
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/Slicing},
+  note    = {\url{http://afp.sf.net/entries/Slicing.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

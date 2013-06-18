@@ -58,7 +58,7 @@ Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Marriage},
+  note    = {\url{http://afp.sf.net/entries/Marriage.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

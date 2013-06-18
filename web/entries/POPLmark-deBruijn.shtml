@@ -55,7 +55,7 @@ We present a solution to the POPLmark challenge designed by Aydemir et al., whic
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/POPLmark-deBruijn},
+  note    = {\url{http://afp.sf.net/entries/POPLmark-deBruijn.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

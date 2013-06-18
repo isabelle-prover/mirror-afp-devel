@@ -61,7 +61,7 @@ In this work we formally verify the soundness and precision of a static program 
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/Program-Conflict-Analysis},
+  note    = {\url{http://afp.sf.net/entries/Program-Conflict-Analysis.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

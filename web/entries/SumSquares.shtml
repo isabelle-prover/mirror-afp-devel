@@ -55,7 +55,7 @@ This document presents the mechanised proofs of the following results:<ul><li>an
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/SumSquares},
+  note    = {\url{http://afp.sf.net/entries/SumSquares.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

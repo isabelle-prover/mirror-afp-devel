@@ -55,7 +55,7 @@ This document contains formal correctness proofs of modern SAT solvers. Followin
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/SATSolverVerification},
+  note    = {\url{http://afp.sf.net/entries/SATSolverVerification.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

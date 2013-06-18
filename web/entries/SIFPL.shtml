@@ -55,7 +55,7 @@ We present interpretations of type systems for secure information flow in Hoare 
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/SIFPL},
+  note    = {\url{http://afp.sf.net/entries/SIFPL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

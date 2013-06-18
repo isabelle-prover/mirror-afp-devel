@@ -57,7 +57,7 @@ Convergence with respect to a valuation is discussed as convergence of a Cauchy 
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/Valuation},
+  note    = {\url{http://afp.sf.net/entries/Valuation.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

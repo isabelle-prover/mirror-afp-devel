@@ -50,7 +50,7 @@ We present an operational semantics and type safety proof for multiple inheritan
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2006,
-  note    = {\url{http://afp.sf.net/entries/CoreC++},
+  note    = {\url{http://afp.sf.net/entries/CoreC++.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

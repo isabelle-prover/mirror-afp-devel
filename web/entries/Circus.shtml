@@ -52,7 +52,7 @@ The Isabelle/Circus environment supports a syntax for the semantic definitions w
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Circus},
+  note    = {\url{http://afp.sf.net/entries/Circus.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

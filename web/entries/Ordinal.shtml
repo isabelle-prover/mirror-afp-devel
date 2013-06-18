@@ -51,7 +51,7 @@ This development defines a well-ordered type of countable ordinals. It includes 
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2005,
-  note    = {\url{http://afp.sf.net/entries/Ordinal},
+  note    = {\url{http://afp.sf.net/entries/Ordinal.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

@@ -53,7 +53,7 @@ This formalization is used to prove characterizations of Euler Trails, Shortest 
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Graph_Theory},
+  note    = {\url{http://afp.sf.net/entries/Graph_Theory.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

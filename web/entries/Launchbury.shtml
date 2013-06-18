@@ -58,7 +58,7 @@ In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury pr
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Launchbury},
+  note    = {\url{http://afp.sf.net/entries/Launchbury.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

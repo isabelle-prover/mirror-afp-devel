@@ -51,7 +51,7 @@ A proof of Bondy's theorem following B. Bollabas, Combinatorics, 1986, Cambridge
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Bondy},
+  note    = {\url{http://afp.sf.net/entries/Bondy.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

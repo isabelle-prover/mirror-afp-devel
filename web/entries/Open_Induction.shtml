@@ -53,7 +53,7 @@ A proof of the open induction schema based on J.-C. Raoult, Proving open propert
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Open_Induction},
+  note    = {\url{http://afp.sf.net/entries/Open_Induction.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

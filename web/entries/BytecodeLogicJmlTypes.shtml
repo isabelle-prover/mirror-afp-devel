@@ -56,7 +56,7 @@ This document contains the Isabelle/HOL sources underlying the paper <i>A byteco
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/BytecodeLogicJmlTypes},
+  note    = {\url{http://afp.sf.net/entries/BytecodeLogicJmlTypes.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

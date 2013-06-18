@@ -55,7 +55,7 @@ Huffman's algorithm is a procedure for constructing a binary tree with minimum w
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/Huffman},
+  note    = {\url{http://afp.sf.net/entries/Huffman.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

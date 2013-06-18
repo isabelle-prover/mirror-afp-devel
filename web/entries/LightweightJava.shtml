@@ -51,7 +51,7 @@ A fully-formalized and extensible minimal imperative fragment of Java.
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/LightweightJava},
+  note    = {\url{http://afp.sf.net/entries/LightweightJava.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

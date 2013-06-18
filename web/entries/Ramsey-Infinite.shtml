@@ -53,7 +53,7 @@ This formalization of Ramsey's theorem (infinitary version) is taken from Boolos
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Ramsey-Infinite},
+  note    = {\url{http://afp.sf.net/entries/Ramsey-Infinite.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

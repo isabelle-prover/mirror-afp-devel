@@ -57,7 +57,7 @@ F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") 
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2006,
-  note    = {\url{http://afp.sf.net/entries/ClockSynchInst},
+  note    = {\url{http://afp.sf.net/entries/ClockSynchInst.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

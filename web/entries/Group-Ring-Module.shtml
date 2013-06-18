@@ -53,7 +53,7 @@ The theory of groups, rings and modules is developed to a great depth. Group the
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Group-Ring-Module},
+  note    = {\url{http://afp.sf.net/entries/Group-Ring-Module.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

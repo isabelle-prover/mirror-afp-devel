@@ -50,7 +50,7 @@ This work presents a verification of an implementation in SPARK/ADA of the crypt
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/RIPEMD-160-SPARK},
+  note    = {\url{http://afp.sf.net/entries/RIPEMD-160-SPARK.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

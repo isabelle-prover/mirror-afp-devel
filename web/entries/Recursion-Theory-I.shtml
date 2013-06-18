@@ -52,7 +52,7 @@ This document presents the formalization of introductory material from  recursio
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/Recursion-Theory-I},
+  note    = {\url{http://afp.sf.net/entries/Recursion-Theory-I.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

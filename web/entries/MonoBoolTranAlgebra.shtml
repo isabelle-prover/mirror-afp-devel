@@ -54,7 +54,7 @@ Algebras of imperative programming languages have been successful in reasoning a
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/MonoBoolTranAlgebra},
+  note    = {\url{http://afp.sf.net/entries/MonoBoolTranAlgebra.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

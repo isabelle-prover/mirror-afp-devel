@@ -65,7 +65,7 @@ illustrating the usage of the framework.
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Refine_Monadic},
+  note    = {\url{http://afp.sf.net/entries/Refine_Monadic.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

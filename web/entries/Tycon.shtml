@@ -67,7 +67,7 @@ transformers.
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Tycon},
+  note    = {\url{http://afp.sf.net/entries/Tycon.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

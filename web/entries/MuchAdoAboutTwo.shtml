@@ -53,7 +53,7 @@ This article is an Isabelle formalisation of a paper with the same title. In a s
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/MuchAdoAboutTwo},
+  note    = {\url{http://afp.sf.net/entries/MuchAdoAboutTwo.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

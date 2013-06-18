@@ -51,7 +51,7 @@ This theory defines deterministic and nondeterministic automata in a functional 
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Functional-Automata},
+  note    = {\url{http://afp.sf.net/entries/Functional-Automata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

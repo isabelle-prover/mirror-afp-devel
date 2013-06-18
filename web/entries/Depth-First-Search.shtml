@@ -52,7 +52,7 @@ Depth-first search of a graph is formalized with recdef. It is shown that it vis
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Depth-First-Search},
+  note    = {\url{http://afp.sf.net/entries/Depth-First-Search.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

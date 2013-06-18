@@ -58,7 +58,7 @@ in the HOLCF extension of HOL.
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Shivers-CFA},
+  note    = {\url{http://afp.sf.net/entries/Shivers-CFA.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

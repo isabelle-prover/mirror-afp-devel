@@ -51,7 +51,7 @@ We present the verification of the normalisation of a binary decision diagram (B
   journal = {Archive of Formal Proofs},
   month   = feb,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/BDD},
+  note    = {\url{http://afp.sf.net/entries/BDD.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

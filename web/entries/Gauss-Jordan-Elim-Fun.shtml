@@ -56,7 +56,7 @@ This theory provides a compact formulation of Gauss-Jordan elimination for matri
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Gauss-Jordan-Elim-Fun},
+  note    = {\url{http://afp.sf.net/entries/Gauss-Jordan-Elim-Fun.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

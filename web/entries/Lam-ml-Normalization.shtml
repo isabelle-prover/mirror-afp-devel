@@ -55,7 +55,7 @@ Handling variable binding is one of the main difficulties in formal proofs. In t
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Lam-ml-Normalization},
+  note    = {\url{http://afp.sf.net/entries/Lam-ml-Normalization.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

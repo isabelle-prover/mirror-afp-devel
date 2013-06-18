@@ -60,7 +60,7 @@ Squaring the circle, doubling the cube and trisecting an angle, using a compass 
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Impossible_Geometry},
+  note    = {\url{http://afp.sf.net/entries/Impossible_Geometry.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

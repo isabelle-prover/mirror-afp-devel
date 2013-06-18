@@ -58,7 +58,7 @@ We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the p
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/Ordinals_and_Cardinals},
+  note    = {\url{http://afp.sf.net/entries/Ordinals_and_Cardinals.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

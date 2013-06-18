@@ -99,7 +99,7 @@ allow spurious wake-ups
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2007,
-  note    = {\url{http://afp.sf.net/entries/JinjaThreads},
+  note    = {\url{http://afp.sf.net/entries/JinjaThreads.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

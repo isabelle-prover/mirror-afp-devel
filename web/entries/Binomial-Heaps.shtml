@@ -65,7 +65,7 @@ operations.  Our implementation follows the paper by Brodal and Okasaki.
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Binomial-Heaps},
+  note    = {\url{http://afp.sf.net/entries/Binomial-Heaps.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

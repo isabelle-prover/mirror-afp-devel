@@ -52,7 +52,7 @@ This theory defines a type constructor representing the free Boolean algebra ove
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Free-Boolean-Algebra},
+  note    = {\url{http://afp.sf.net/entries/Free-Boolean-Algebra.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

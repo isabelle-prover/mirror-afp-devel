@@ -65,7 +65,7 @@ Added new syntax for demonic and angelic update statements.
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/DataRefinementIBP},
+  note    = {\url{http://afp.sf.net/entries/DataRefinementIBP.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

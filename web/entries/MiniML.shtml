@@ -51,7 +51,7 @@ This theory defines the type inference rules and the type inference algorithm <i
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/MiniML},
+  note    = {\url{http://afp.sf.net/entries/MiniML.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

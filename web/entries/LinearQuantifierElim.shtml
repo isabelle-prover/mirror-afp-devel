@@ -54,7 +54,7 @@ This article formalizes quantifier elimination procedures for dense linear order
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/LinearQuantifierElim},
+  note    = {\url{http://afp.sf.net/entries/LinearQuantifierElim.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

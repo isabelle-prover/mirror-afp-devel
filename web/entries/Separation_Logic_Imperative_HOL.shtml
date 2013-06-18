@@ -68,7 +68,7 @@ ML, OCaml, Haskell, and Scala.
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Separation_Logic_Imperative_HOL},
+  note    = {\url{http://afp.sf.net/entries/Separation_Logic_Imperative_HOL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

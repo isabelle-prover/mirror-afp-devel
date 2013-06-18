@@ -52,7 +52,7 @@ Priority queues are an important data structure and efficient implementations of
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Binomial-Queues},
+  note    = {\url{http://afp.sf.net/entries/Binomial-Queues.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

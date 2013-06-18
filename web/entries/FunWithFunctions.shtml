@@ -52,7 +52,7 @@ This is a collection of cute puzzles of the form ``Show that if a function satis
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2008,
-  note    = {\url{http://afp.sf.net/entries/FunWithFunctions},
+  note    = {\url{http://afp.sf.net/entries/FunWithFunctions.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

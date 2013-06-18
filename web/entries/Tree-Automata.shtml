@@ -51,7 +51,7 @@ This work presents a machine-checked tree automata library for Standard-ML, OCam
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/Tree-Automata},
+  note    = {\url{http://afp.sf.net/entries/Tree-Automata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

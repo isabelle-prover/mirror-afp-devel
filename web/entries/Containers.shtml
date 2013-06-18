@@ -58,7 +58,7 @@ It even allows to compare complements with non-complements.
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Containers},
+  note    = {\url{http://afp.sf.net/entries/Containers.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

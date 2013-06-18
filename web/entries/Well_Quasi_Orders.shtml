@@ -72,7 +72,7 @@ corollary.
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Well_Quasi_Orders},
+  note    = {\url{http://afp.sf.net/entries/Well_Quasi_Orders.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

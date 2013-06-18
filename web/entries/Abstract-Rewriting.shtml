@@ -69,7 +69,7 @@ instances.
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Abstract-Rewriting},
+  note    = {\url{http://afp.sf.net/entries/Abstract-Rewriting.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>

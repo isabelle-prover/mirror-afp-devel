@@ -57,7 +57,7 @@ We provide a formalization of the mergesort algorithm as used in GHC's Data.List
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Efficient-Mergesort},
+  note    = {\url{http://afp.sf.net/entries/Efficient-Mergesort.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
