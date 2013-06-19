@@ -430,6 +430,9 @@ lemma image_multiset_of_lists [simp]:
   using surj_on_multisets_multiset_of [of A]
   by auto (metis mem_Collect_eq multisets_def set_of_multiset_of subsetI)
 
+lemma multisets_UNIV [simp]: "multisets UNIV = UNIV"
+  by (metis image_multiset_of_lists lists_UNIV surj_multiset_of)
+
 lemma non_empty_multiset_induct [consumes 1, case_names singleton add]:
   assumes "M \<noteq> {#}"
     and "\<And>x. P {#x#}"
