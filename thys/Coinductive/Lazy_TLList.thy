@@ -7,17 +7,9 @@ theory Lazy_TLList imports
   Lazy_LList
 begin
 
-code_modulename SML
-  Lazy_TLList TLList
-
-code_modulename OCaml
-  Lazy_TLList TLList
-
-code_modulename Haskell
-  Lazy_TLList TLList
-
-code_modulename Scala
-  Lazy_TLList TLList
+code_identifier
+  code_module Lazy_TLList \<rightharpoonup>
+    (SML) TLList and (OCaml) TLList and (Haskell) TLList and (Scala) TLList
 
 definition Lazy_tllist :: "(unit \<Rightarrow> 'a \<times> ('a, 'b) tllist + 'b) \<Rightarrow> ('a, 'b) tllist"
 where [code del]:

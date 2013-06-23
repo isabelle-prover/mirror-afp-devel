@@ -236,25 +236,24 @@ theorem "y \<in> set (dfs g [x] []) = ((x,y) \<in> (set g)\<^sup>*)"
 
 subsection "Executable Code"
 
-code_type node
-  (SML "int")
+consts Node :: "int \<Rightarrow> node"
+
+code_datatype Node
 
 instantiation node :: equal
 begin
 
-definition equal_node :: "node => node => bool"
+definition equal_node :: "node \<Rightarrow> node \<Rightarrow> bool"
 where
-  [code del]: "equal_node = (op =)"
+  [code del]: "equal_node = HOL.eq"
 
 instance proof
 qed (simp add: equal_node_def)
 
 end
 
-code_const "HOL.equal \<Colon> node \<Rightarrow> node \<Rightarrow> bool"
-  (SML "!((_ : int) = _)")
+code_abort "HOL.equal :: node \<Rightarrow> node \<Rightarrow> bool"
 
 export_code dfs dfs2 in SML file "dfs.ML"
-
 
 end

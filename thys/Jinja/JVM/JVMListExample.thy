@@ -103,14 +103,12 @@ where
 definition undefined_cname :: cname 
   where [code del]: "undefined_cname = undefined"
 declare undefined_cname_def[symmetric, code_unfold]
-code_const undefined_cname
-  (SML "object")
+code_printing constant undefined_cname \<rightharpoonup> (SML) "object"
 
 definition undefined_val :: val
   where [code del]: "undefined_val = undefined"
 declare undefined_val_def[symmetric, code_unfold]
-code_const undefined_val
-  (SML "Unit")
+code_printing constant undefined_val \<rightharpoonup> (SML) "Unit"
 
 lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def]
 

@@ -268,6 +268,7 @@ definition [code]: "toString = toString \<circ> Assoc_List.impl_of"
 instance proof qed
 end
 
-code_instance String.literal :: toString (Haskell -)
+code_printing
+  class_instance String.literal :: toString \<rightharpoonup> (Haskell) -
 
 end

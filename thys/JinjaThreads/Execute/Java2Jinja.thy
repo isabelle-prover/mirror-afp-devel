@@ -9,8 +9,8 @@ imports
   ToString
 begin
 
-code_modulename SML
-  Java2Jinja Code_Generation
+code_identifier
+  code_module Java2Jinja \<rightharpoonup> (SML) Code_Generation
 
 definition j_Program :: "addr J_mb cdecl list \<Rightarrow> addr J_prog"
 where "j_Program = Program"
@@ -56,8 +56,8 @@ where "thread_toString' = toString"
 definition trace_toString :: "thread_id \<times> (addr, thread_id) obs_event list \<Rightarrow> String.literal"
 where "trace_toString = toString"
 
-code_modulename SML
-  Cardinality Set
+code_identifier
+  code_module Cardinality \<rightharpoonup> (SML) Set
 
 export_code
   wf_J_prog' exec_J_rr exec_J_rnd 

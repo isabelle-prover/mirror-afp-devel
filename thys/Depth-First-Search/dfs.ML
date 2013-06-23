@@ -9,6 +9,17 @@ fun snd (a, b) = b;
 
 end; (*struct Product_Type*)
 
+structure Arith : sig
+  datatype num = One | Bit0 of num | Bit1 of num
+  datatype int = Zero_int | Pos of num | Neg of num
+end = struct
+
+datatype num = One | Bit0 of num | Bit1 of num;
+
+datatype int = Zero_int | Pos of num | Neg of num;
+
+end; (*struct Arith*)
+
 structure HOL : sig
   type 'a equal
   val equal : 'a equal -> 'a -> 'a -> bool
@@ -32,17 +43,23 @@ fun member A_ [] y = false
 end; (*struct List*)
 
 structure DFS : sig
-  val equal_node : int HOL.equal
-  val nexts : (int * int) list -> int -> int list
-  val dfs : (int * int) list -> int list -> int list -> int list
-  val dfs2 : (int * int) list -> int list -> int list -> int list
+  datatype node = Node of Arith.int
+  val equal_nodea : node -> node -> bool
+  val equal_node : node HOL.equal
+  val nexts : (node * node) list -> node -> node list
+  val dfs : (node * node) list -> node list -> node list -> node list
+  val dfs2 : (node * node) list -> node list -> node list -> node list
 end = struct
 
-val equal_node = {equal = (fn a => fn b => ((a : int) = b))} : int HOL.equal;
+datatype node = Node of Arith.int;
+
+fun equal_nodea _ _ = raise Fail "equal_node";
+
+val equal_node = {equal = equal_nodea} : node HOL.equal;
 
 fun nexts [] n = []
   | nexts (e :: es) n =
-    (if (((Product_Type.fst e) : int) = n) then Product_Type.snd e :: nexts es n
+    (if equal_nodea (Product_Type.fst e) n then Product_Type.snd e :: nexts es n
       else nexts es n);
 
 fun dfs g [] ys = ys

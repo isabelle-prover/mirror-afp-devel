@@ -18,11 +18,12 @@ begin
 
 text {* Avoid module dependency cycles. *}
 (* FIXME: Eliminate dependency cycle in Isabelle library *) 
-code_modulename SML
-  More_Set Set
-  Set Set
-  Complete_Lattices Set
-  Complete_Partial_Order Set
+
+code_identifier
+  code_module More_Set \<rightharpoonup> (SML) Set
+| code_module Set \<rightharpoonup> (SML) Set
+| code_module Complete_Lattices \<rightharpoonup> (SML) Set
+| code_module Complete_Partial_Order \<rightharpoonup> (SML) Set
 
 text {* new code equation for @{term "insort_insert_key"} to avoid module dependency cycle with @{term "set"}. *}
 lemma insort_insert_key_code [code]:

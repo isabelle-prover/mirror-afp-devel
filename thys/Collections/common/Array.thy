@@ -348,14 +348,14 @@ array_shrink :: ArrayType e -> Nat -> ArrayType e;
 array_shrink a sz = if sz > array_length a then undefined else array_of_size sz (Arr.elems a);
 *}
 
-code_const Array (Haskell "Array.array'_of'_list")
-code_const new_array (Haskell "Array.new'_array")
-code_const array_length (Haskell "Array.array'_length")
-code_const array_get (Haskell "Array.array'_get")
-code_const array_set (Haskell "Array.array'_set")
-code_const array_of_list (Haskell "Array.array'_of'_list") 
-code_const array_grow (Haskell "Array.array'_grow")
-code_const array_shrink (Haskell "Array.array'_shrink")
+code_printing constant Array \<rightharpoonup> (Haskell) "Array.array'_of'_list"
+code_printing constant new_array \<rightharpoonup> (Haskell) "Array.new'_array"
+code_printing constant array_length \<rightharpoonup> (Haskell) "Array.array'_length"
+code_printing constant array_get \<rightharpoonup> (Haskell) "Array.array'_get"
+code_printing constant array_set \<rightharpoonup> (Haskell) "Array.array'_set"
+code_printing constant array_of_list \<rightharpoonup> (Haskell) "Array.array'_of'_list" 
+code_printing constant array_grow \<rightharpoonup> (Haskell) "Array.array'_grow"
+code_printing constant array_shrink \<rightharpoonup> (Haskell) "Array.array'_shrink"
 
 subsubsection {* Code Generator Setup For SML *}
 
@@ -541,16 +541,15 @@ end;
 
 *}
 
-code_type array 
-  (SML "_/ FArray.IsabelleMapping.ArrayType")
-
-code_const Array (SML "FArray.IsabelleMapping.array'_of'_list")
-code_const new_array (SML "FArray.IsabelleMapping.new'_array")
-code_const array_length (SML "FArray.IsabelleMapping.array'_length")
-code_const array_get (SML "FArray.IsabelleMapping.array'_get")
-code_const array_set (SML "FArray.IsabelleMapping.array'_set")
-code_const array_grow (SML "FArray.IsabelleMapping.array'_grow")
-code_const array_shrink (SML "FArray.IsabelleMapping.array'_shrink")
-code_const array_of_list (SML "FArray.IsabelleMapping.array'_of'_list")
+code_printing
+  type_constructor array \<rightharpoonup> (SML) "_/ FArray.IsabelleMapping.ArrayType"
+| constant Array \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_of'_list"
+| constant new_array \<rightharpoonup> (SML) "FArray.IsabelleMapping.new'_array"
+| constant array_length \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_length"
+| constant array_get \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_get"
+| constant array_set \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_set"
+| constant array_grow \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_grow"
+| constant array_shrink \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_shrink"
+| constant array_of_list \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_of'_list"
 
 end

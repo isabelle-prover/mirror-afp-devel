@@ -658,16 +658,10 @@ lemma fields_code [code]:
   "fields P C = Predicate.the (Fields_i_i_o P C)"
 by(simp add: fields_def Predicate.the_def eval_Fields_conv)
 
-code_modulename SML
-  TypeRel TypeRel
-  Decl TypeRel
-
-code_modulename Haskell
-  TypeRel TypeRel
-  Decl TypeRel
-
-code_modulename OCaml
-  TypeRel TypeRel
-  Decl TypeRel
+code_identifier
+  code_module TypeRel \<rightharpoonup>
+    (SML) TypeRel and (Haskell) TypeRel and (OCaml) TypeRel
+| code_module Decl \<rightharpoonup>
+    (SML) TypeRel and (Haskell) TypeRel and (OCaml) TypeRel
 
 end

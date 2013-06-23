@@ -10,9 +10,9 @@ begin
 
 section {* Different implementations of maps *}
 
-code_modulename SML
-  Mapping Mapping_Impl
-  Mapping_Impl Mapping_Impl
+code_identifier
+  code_module Mapping \<rightharpoonup> (SML) Mapping_Impl
+| code_module Mapping_Impl \<rightharpoonup> (SML) Mapping_Impl
 
 definition map_impl_unsupported_operation :: "(unit \<Rightarrow> 'a) \<Rightarrow> 'a"
 where [simp, code del]: "map_impl_unsupported_operation f = f ()"

@@ -533,20 +533,13 @@ done
 
 text {* Merge modules TypeRel, Decl and TypeRelRefine to avoid cyclic modules *}
 
-code_modulename SML
-  TypeRel TypeRel
-  TypeRelRefine TypeRel
-  Decl TypeRel
-
-code_modulename OCaml
-  TypeRel TypeRel
-  TypeRelRefine TypeRel
-  Decl TypeRel
-
-code_modulename Haskell
-  TypeRel TypeRel
-  TypeRelRefine TypeRel
-  Decl TypeRel
+code_identifier
+  code_module TypeRel \<rightharpoonup>
+    (SML) TypeRel and (Haskell) TypeRel and (OCaml) TypeRel
+| code_module TypeRelRefine \<rightharpoonup>
+    (SML) TypeRel and (Haskell) TypeRel and (OCaml) TypeRel
+| code_module Decl \<rightharpoonup>
+    (SML) TypeRel and (Haskell) TypeRel and (OCaml) TypeRel
 
 ML_val {* @{code Program} *}
 

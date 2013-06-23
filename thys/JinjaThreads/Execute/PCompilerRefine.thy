@@ -46,17 +46,11 @@ by(cases P)(clarsimp simp add: program_def compP_code_code)
 
 text {* Merge module names to avoid cycles in module dependency *}
 
-code_modulename SML
-  PCompiler PCompiler
-  PCompilerRefine PCompiler
-
-code_modulename OCaml
-  PCompiler PCompiler
-  PCompilerRefine PCompiler
-
-code_modulename Haskell
-  PCompiler PCompiler
-  PCompilerRefine PCompiler
+code_identifier
+  code_module PCompiler \<rightharpoonup>
+    (SML) PCompiler and (OCaml) PCompiler and (Haskell) PCompiler 
+| code_module PCompilerRefine \<rightharpoonup>
+    (SML) PCompiler and (OCaml) PCompiler and (Haskell) PCompiler 
 
 ML_val {* @{code compP} *}
 

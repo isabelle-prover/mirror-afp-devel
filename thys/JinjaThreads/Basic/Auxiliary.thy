@@ -854,10 +854,11 @@ subsection {* Concatenation for @{typ String.literal} *}
 definition concat :: "String.literal list \<Rightarrow> String.literal"
 where [code del]: "concat xs = implode (List.concat (map explode xs))"
 
-code_const concat
-  (SML "String.concat")
-  (Haskell "concat")
-  (OCaml "String.concat \"\"")
+code_printing
+  constant concat \<rightharpoonup>
+    (SML) "String.concat"
+    and (Haskell) "concat"
+    and (OCaml) "String.concat \"\""
 
 hide_const (open) concat
 

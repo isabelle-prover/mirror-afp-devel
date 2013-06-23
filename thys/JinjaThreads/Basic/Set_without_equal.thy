@@ -36,14 +36,9 @@ declare
 
 text {* Merge name spaces to avoid cyclic module dependencies *}
 
-code_modulename SML
-  Set_without_equal Set
-
-code_modulename Haskell
-  Set_without_equal Set
-
-code_modulename OCaml
-  Set_without_equal Set
+code_identifier
+  code_module Set_without_equal \<rightharpoonup>
+    (SML) Set and (Haskell) Set and (OCaml) Set
 
 end
 
