@@ -25,7 +25,7 @@ locale shortest_paths_locale_step1 =
   fixes num :: "'a \<Rightarrow> nat"
   fixes parent_edge :: "'a \<Rightarrow> 'b option"
   fixes dist :: "'a  \<Rightarrow> ereal"
-  assumes graphG: "pseudo_digraph G"
+  assumes graphG: "fin_digraph G"
   assumes s_assms: 
     "s \<in> verts G" 
     "dist s \<noteq> \<infinity>" 
@@ -39,7 +39,7 @@ locale shortest_paths_locale_step1 =
   assumes noPedge: "\<And>e. e\<in>arcs G \<Longrightarrow> 
     dist (tail G e) \<noteq> \<infinity> \<Longrightarrow> dist (head G e) \<noteq> \<infinity>"
 
-sublocale shortest_paths_locale_step1 \<subseteq> pseudo_digraph G
+sublocale shortest_paths_locale_step1 \<subseteq> fin_digraph G
   using graphG by auto
 
 definition (in shortest_paths_locale_step1) enum :: "'a \<Rightarrow> enat" where
