@@ -583,7 +583,7 @@ fun prove_stuff ctxt globals G f R clauses complete compat compat_store G_elim G
     val goalstate =  
          Conjunction.intr (Conjunction.intr (Conjunction.intr graph_is_function complete) invariant) G_eqvt 
       |> Thm.close_derivation
-      |> Goal.protect
+      |> Goal.protect 0
       |> fold_rev (Thm.implies_intr o cprop_of) compat
       |> Thm.implies_intr (cprop_of complete)
       |> Thm.implies_intr (cprop_of invariant)
