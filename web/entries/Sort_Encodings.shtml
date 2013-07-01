@@ -91,7 +91,7 @@ point for other formalizations of first-order logic metatheory.
 <p></p>
 
 <!--#set var="name" value="Sort_Encodings" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Cardinals/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Library/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
