@@ -917,10 +917,6 @@ definition
                    \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a" where
   "fPRoject n B x = (\<lambda>f\<in>ac_fProd_Rg n B. f x)"
 
-abbreviation
-  FPRODRING  ("(fr\<Pi>\<^sub>_/ _)" [72,73]72) where
-  "fr\<Pi>\<^sub>n B == fprodrg n B"
-
 lemma fprodrg_ring:"\<forall>k \<le> n. Ring (B k) \<Longrightarrow> Ring (fprodrg n B)"
 apply (simp add:fprodrg_def)
 apply (frule ac_fProd_Prod)
