@@ -1,5 +1,7 @@
 session "Sort_Encodings" = "HOL-Cardinals" +
   options [document = pdf]
+  theories [document = false]
+    "~~/src/HOL/BNF/Countable_Type"
   theories 
     Encodings
   files
