@@ -735,11 +735,11 @@ by(cases rule: outputCases') (auto simp add: pi.inject residual.inject)
 lemma zeroTrans[dest]:
   fixes Rs :: residual
 
-  assumes "\<zero> \<longmapsto>\<^isub>e Rs"
+  assumes "\<zero> \<longmapsto> e Rs"
 
   shows "False"
 using assms
-by - (ind_cases "\<zero> \<longmapsto>\<^isub>e Rs")
+by - (ind_cases "\<zero> \<longmapsto> e Rs")
 
 lemma mismatchTrans[dest]:
   fixes a   :: name
