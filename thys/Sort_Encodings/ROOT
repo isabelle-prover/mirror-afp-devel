@@ -1,0 +1,7 @@
+session "Sort_Encodings" = "HOL-Cardinals" +
+  options [document = pdf]
+  theories 
+    Encodings
+  files
+    "document/root.bib" 
+    "document/root.tex"

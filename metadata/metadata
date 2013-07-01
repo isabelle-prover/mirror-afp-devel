@@ -1162,6 +1162,27 @@ date = 2010-03-29
 base = HOL/HOL-Library
 abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
 
+[Sort_Encodings]
+title = Sound and Complete Sort Encodings for First-Order Logic
+author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>
+date = 2013-06-27
+base = HOL/HOL-Cardinals
+topic = Logic
+abstract =
+  This is a formalization of the soundness and completeness properties 
+  for various efficient encodings of sorts in unsorted first-order logic
+  used by Isabelle's Sledgehammer tool.
+  <p>
+  Essentially, the encodings proceed as follows:
+  a many-sorted problem is decorated with (as few as possible) tags or
+  guards that make the problem monotonic; then sorts can be soundly
+  erased. 
+  <p>
+  The development employs a formalization of many-sorted first-order logic 
+  in clausal form (clauses, structures and the basic properties
+  of the satisfaction relation), which could be of interest as the starting
+  point for other formalizations of first-order logic metatheory.
+
 [Abstract-Rewriting]
 title = Abstract Rewriting
 topic = Logic/Rewriting
