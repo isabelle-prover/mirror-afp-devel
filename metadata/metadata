@@ -1166,7 +1166,7 @@ abstract = This theory defines a type constructor representing the free Boolean 
 title = Sound and Complete Sort Encodings for First-Order Logic
 author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>
 date = 2013-06-27
-base = HOL/HOL-Cardinals
+base = HOL/HOL-Library
 topic = Logic
 abstract =
   This is a formalization of the soundness and completeness properties 
