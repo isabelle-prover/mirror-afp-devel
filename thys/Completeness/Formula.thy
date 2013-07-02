@@ -28,9 +28,7 @@ definition
   vblcase :: "['a,vbl => 'a,vbl] => 'a" where
   "vblcase a f n = (@z. (n=zeroX \<longrightarrow> z=a) \<and> (!x. n=nextX x \<longrightarrow> z=f(x)))"
 
-translations
-  "case p of XCONST zeroX \<Rightarrow> a | XCONST nextX y \<Rightarrow> b" == "(CONST vblcase a (%y. b) p)"
-  "case p of XCONST zeroX :: 'a \<Rightarrow> a | (XCONST nextX :: 'b) y \<Rightarrow> b" => "(CONST vblcase a (%y. b) p)"
+declare [[case_translation vblcase zeroX nextX]]
 
 definition
   freshVar :: "vbl set => vbl" where
