@@ -1,5 +1,11 @@
 chapter AFP
 
+(* dummy session; regression test wants one session with name of directory *)
+session InformationFlowSlicing (AFP) = InformationFlowSlicing_Inter +
+  options [timeout = 600, document_graph]
+  theories
+    LiftingInter
+
 session InformationFlowSlicing_Inter (AFP) = "HRB-Slicing" +
   options [timeout = 600, document_graph]
   theories
