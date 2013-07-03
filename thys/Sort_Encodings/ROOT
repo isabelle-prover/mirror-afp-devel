@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Sort_Encodings" = "HOL-Library" +
+  options [document = pdf]
+  theories [document = false]
+    "~~/src/HOL/Cardinals/Cardinals"
+    "~~/src/HOL/BNF/Countable_Type"
+  theories 
+    Encodings
+  files
+    "document/root.bib" 
+    "document/root.tex"

@@ -72,7 +72,7 @@ close OUT;
 foreach $t (keys %old_sessions) {
   $old_status = $old_ok{$t} ? $OK : $FAIL;
   $new_status = $finished{$t} ? $OK : $FAIL;
-  if (!$t ~~ @sessions) {
+  if (!($t ~~ @sessions)) {
     print "[$t] was removed. Last status was $old_status.\n";
   }
   elsif ($old_ok{$t} != $finished{$t}) {
