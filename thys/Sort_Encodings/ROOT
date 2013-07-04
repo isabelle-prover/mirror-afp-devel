@@ -1,7 +1,7 @@
 chapter AFP
 
-session "Sort_Encodings" = "HOL-Library" +
-  options [document = pdf]
+session "Sort_Encodings" (AFP) = "HOL-Library" +
+  options [timeout = 3600]
   theories [document = false]
     "~~/src/HOL/Cardinals/Cardinals"
     "~~/src/HOL/BNF/Countable_Type"
