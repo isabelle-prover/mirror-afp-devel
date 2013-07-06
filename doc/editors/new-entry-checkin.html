@@ -64,7 +64,7 @@ properly public with the next Isabelle release (they are only available as
 
 <li><code>hg add</code> and <code>hg commit</code> the new submission</li>
 
-<li>Enter data for author/abstract/index/etc in the file <code>metadata/metada</code>. If the entry uses a new topic 
+<li>Enter data for author/abstract/index/etc in the file <code>metadata/metadata</code>. If the entry uses a new topic 
 or category, add it to metadata/topics (make sure there is an empty line at the end of the file). 
 </li>
 
@@ -78,13 +78,13 @@ or category, add it to metadata/topics (make sure there is an empty line at the 
 
 <li>to publish the changes to the web, run<br>
 <code>
-cd ~/afp-release/admin<br>
+cd ~/afp/release/admin<br>
 ./publish -r Isabelle200X &lt;name&gt;
 </code>
 <p>
 This will check out the Isabelle200X (=release) version of the archive from
-sourceforge, will run the session $lt;name&gt; to generate
-HTML, produce a tar.gz for the archive and for the entry, and will update the
+sourceforge, will run the session &lt;name&gt; to generate
+HTML, produce a <code>.tar.gz</code> for the archive and for the entry, and will update the
 web pages on the server. The script will ask before it copies, so you can check locally if everything is as you want it.
 </p></li>
 
@@ -95,7 +95,7 @@ web pages on the server. The script will ask before it copies, so you can check 
 <p><a name="devel"><b>New submission in devel</b></a></p>
 
 <p>
-Although it is a condition of submission that the entry works with the current stable Isabelle version, occasionally it happens that a submission does not work with the stable version and cannot be backported, but is important/good enough to include anyway. In this case, we can't relesase the submission on the main web site yet, but we can add it to the development version of the archive, such that it is at least available to those who are working with the current Isabelle development snapshot.</p>
+Although it is a condition of submission that the entry works with the current stable Isabelle version, occasionally it happens that a submission does not work with the stable version and cannot be backported, but is important/good enough to include anyway. In this case, we can't release the submission on the main web site yet, but we can add it to the development version of the archive, such that it is at least available to those who are working with the current Isabelle development snapshot.</p>
 
 <p>
 The check-in procedure is the same as for a normal release entry, apart from the fact that everything happens in the devel instead of release directory and that the last step (publish) is omitted.</p>
