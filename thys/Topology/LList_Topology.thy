@@ -230,7 +230,7 @@ lemma (in itrace_top) infsuff_open [intro!]:
   "r \<in> A\<^sup>\<star> \<Longrightarrow> infsuff A r open"
   by auto
 
-lemma (in itrace_top) itop_carrier: "carrier = A\<^sup>\<omega>"
+lemma (in itrace_top) itop_carrier: "carrier = A\<^bsup>\<omega>\<^esup>"
   by (auto simp: carrier_topo infsuff_def)
 
 lemma itop_sub_ttop_base:
@@ -260,7 +260,7 @@ lemma (in itrace_top) infsuff_nhd_base:
   shows "R"
 proof-
   from unhd obtain m where
-    uA: "u \<subseteq> A\<^sup>\<omega>" and
+    uA: "u \<subseteq> A\<^bsup>\<omega>\<^esup>" and
     mopen: "m open" and
     tm: "t \<in> m" and
     mu: "m \<subseteq> u"
@@ -305,7 +305,7 @@ proof(rule T2I, clarify)
   fix x y assume xpoint: "x \<in> carrier"
     and ypoint: "y \<in> carrier"
     and neq: "x \<noteq> y"
-  from xpoint ypoint have xA: "x \<in> A\<^sup>\<omega>" and yA: "y \<in> A\<^sup>\<omega>"
+  from xpoint ypoint have xA: "x \<in> A\<^bsup>\<omega>\<^esup>" and yA: "y \<in> A\<^bsup>\<omega>\<^esup>"
     by (auto simp: itop_carrier)
   then obtain s where
     sA: "s \<in> A\<^sup>\<star>" and sx: "s \<le> x" and sy: "\<not> s \<le> y" using neq
@@ -350,21 +350,21 @@ corollary (in itrace_top) unique_convergence:
 lemma safty_closed:
   fixes   A :: "'a set"
   defines "T \<equiv> itop A"
-  assumes P: "P \<subseteq> A\<^sup>\<omega>"
+  assumes P: "P \<subseteq> A\<^bsup>\<omega>\<^esup>"
   and safety: "safety A P"
   shows "P iscl T"
 proof-
   have istopT [iff]: "istop T" by (simp add: T_def)
-  have carrT [simp]: "carr T = A\<^sup>\<omega>" by (simp add: T_def itop_carr)
+  have carrT [simp]: "carr T = A\<^bsup>\<omega>\<^esup>" by (simp add: T_def itop_carr)
   show ?thesis
   proof (rule closure_eq_closed, auto)
     fix x assume xclos: "x \<in> clos T P"
     with P have "x \<in> carr T"
       by (intro subsetD [OF closure_subset]) auto
-    hence xA: "x \<in> A\<^sup>\<omega>" by simp
+    hence xA: "x \<in> A\<^bsup>\<omega>\<^esup>" by simp
     moreover 
     from P xclos have adhx: "adh T P x" by (auto intro!: closure_imp_adh)
-    have "\<forall> r \<in> finpref A x. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P"
+    have "\<forall> r \<in> finpref A x. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P"
     proof
       fix r assume "r \<in> finpref A x"
       hence "x \<in> infsuff A r" and rA: "r \<in> A\<^sup>\<star>" using xA
@@ -372,9 +372,9 @@ proof-
       hence "infsuff A r \<in> nhds T x" by (auto simp: T_def)
       with adhx have  "infsuff A r \<inter> P \<noteq> {}" by (elim adhCE) auto
       then obtain t where "t \<in> infsuff A r" and tP: "t \<in> P" by auto
-      then obtain s where "s \<in> A\<^sup>\<omega>" and "t = r @@ s" using rA
+      then obtain s where "s \<in> A\<^bsup>\<omega>\<^esup>" and "t = r @@ s" using rA
         by (auto elim!: infsuff_appE)
-      thus "\<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P" using tP by auto
+      thus "\<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P" using tP by auto
     qed
     ultimately show "x \<in> P" using safety
       by (auto elim: safetyE)
@@ -382,19 +382,19 @@ proof-
 qed
 *)
 lemma (in itrace_top) adh_lemma:
-assumes xpoint: "x \<in> A\<^sup>\<omega>"
-  and  PA: "P \<subseteq> A\<^sup>\<omega>"
-shows "x adh P = (\<forall> r \<in> finpref A x. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P)"
+assumes xpoint: "x \<in> A\<^bsup>\<omega>\<^esup>"
+  and  PA: "P \<subseteq> A\<^bsup>\<omega>\<^esup>"
+shows "x adh P = (\<forall> r \<in> finpref A x. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P)"
 proof-
-  from PA have "\<And>r. r \<in> A\<^sup>\<star> \<Longrightarrow> (\<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) =
+  from PA have "\<And>r. r \<in> A\<^sup>\<star> \<Longrightarrow> (\<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P) =
         (\<exists> s \<in> P. r \<le> s)"
     by (auto simp: llist_le_def iff: lapp_infT)
-  hence  "(\<forall> r \<in> finpref A x. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) =
+  hence  "(\<forall> r \<in> finpref A x. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P) =
         (\<forall> r \<in> finpref A x. \<exists> s \<in> P. r \<le> s)"
     by (auto simp: finpref_def)
   also have "\<dots> = (\<forall> r \<in> finpref A x. infsuff A r \<inter> P \<noteq> {})"
   proof-
-    have "\<And>r. (\<exists>s\<in>P. r \<le> s) = ({ra. ra \<in> A\<^sup>\<omega> \<and> r \<le> ra} \<inter> P \<noteq> {})" using PA
+    have "\<And>r. (\<exists>s\<in>P. r \<le> s) = ({ra. ra \<in> A\<^bsup>\<omega>\<^esup> \<and> r \<le> ra} \<inter> P \<noteq> {})" using PA
       by blast
     thus ?thesis by (simp add: infsuff_def)
   qed
@@ -420,7 +420,7 @@ proof-
 qed
 
 lemma (in itrace_top) infsafety_closed_iff:
-  "P \<subseteq> A\<^sup>\<omega> \<Longrightarrow>  infsafety A P = (P closed)"
+  "P \<subseteq> A\<^bsup>\<omega>\<^esup> \<Longrightarrow>  infsafety A P = (P closed)"
   by (auto simp: infsafety_def topology.closed_adh adh_lemma itop_carrier)
 
 lemma (in itrace_top) empty:
@@ -448,32 +448,32 @@ lemma (in trivial) dense:
 
 lemma (in itrace_top) infliveness_dense_iff:
   assumes notempty: "A \<noteq> {}"
-  and P: "P \<subseteq> A\<^sup>\<omega>"
+  and P: "P \<subseteq> A\<^bsup>\<omega>\<^esup>"
   shows "infliveness A P = (P dense)"
 proof-
-  have "infliveness A P = (\<forall>r\<in>A\<^sup>\<star>. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P)"
+  have "infliveness A P = (\<forall>r\<in>A\<^sup>\<star>. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P)"
     by (simp add: infliveness_def)
-  also have "\<dots> = (\<forall>x\<in>A\<^sup>\<omega>. \<forall> r \<in> finpref A x. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P)"
+  also have "\<dots> = (\<forall>x\<in>A\<^bsup>\<omega>\<^esup>. \<forall> r \<in> finpref A x. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P)"
   proof-
     from notempty obtain a where "a \<in> A"
       by auto
-    hence lc: "lconst a \<in> A\<^sup>\<omega>"
+    hence lc: "lconst a \<in> A\<^bsup>\<omega>\<^esup>"
       by (rule lconstT)
-    hence "\<And>P. (\<forall>x\<in>A\<^sup>\<omega>. \<forall>r\<in>finpref A x. P r) = (\<forall> r\<in>A\<^sup>\<star>. P r)"
+    hence "\<And>P. (\<forall>x\<in>A\<^bsup>\<omega>\<^esup>. \<forall>r\<in>finpref A x. P r) = (\<forall> r\<in>A\<^sup>\<star>. P r)"
     proof (auto dest: finpref_fin)
-      fix P r  assume lc: "lconst a \<in> A\<^sup>\<omega>"
-        and Pr: "\<forall>x\<in>A\<^sup>\<omega>. \<forall>r\<in>finpref A x. P r"
+      fix P r  assume lc: "lconst a \<in> A\<^bsup>\<omega>\<^esup>"
+        and Pr: "\<forall>x\<in>A\<^bsup>\<omega>\<^esup>. \<forall>r\<in>finpref A x. P r"
         and rA: "r \<in> A\<^sup>\<star>"
-      from rA lc have rlc: "r @@ lconst a \<in> A\<^sup>\<omega>" by (rule lapp_fin_infT)
+      from rA lc have rlc: "r @@ lconst a \<in> A\<^bsup>\<omega>\<^esup>" by (rule lapp_fin_infT)
       moreover from rA rlc have "r \<in> finpref A (r @@ lconst a)" 
         by (auto simp: finpref_def llist_le_def)
       ultimately show "P r" using Pr by auto
     qed
     thus ?thesis by simp
   qed
-  also have "\<dots> = (\<forall>x\<in>A\<^sup>\<omega>. x adh P)" using P
+  also have "\<dots> = (\<forall>x\<in>A\<^bsup>\<omega>\<^esup>. x adh P)" using P
     by (simp add: adh_lemma)
-  also have "\<dots> = (A\<^sup>\<omega> \<subseteq> closure P)" using P
+  also have "\<dots> = (A\<^bsup>\<omega>\<^esup> \<subseteq> closure P)" using P
     by (auto simp: adh_closure_iff itop_carrier)
   also have "\<dots> = (P dense)"
     by (simp add: infliveness_def is_dense_def is_densein_def itop_carrier)
@@ -482,7 +482,7 @@ qed
 
 theorem (in itrace_top) alpern_schneider:
 assumes notempty: "A \<noteq> {}"
-  and   Psub:     "P \<subseteq> A\<^sup>\<omega>"
+  and   Psub:     "P \<subseteq> A\<^bsup>\<omega>\<^esup>"
   shows "\<exists> S L. infsafety A S \<and> infliveness A L \<and> P = S \<inter> L"
 proof-
   from Psub have "P \<subseteq> carrier"
