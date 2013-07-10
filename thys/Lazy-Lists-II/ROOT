@@ -1,9 +1,7 @@
 chapter AFP
 
-session "Lazy-Lists-II" (AFP) = HOL +
+session "Lazy-Lists-II" (AFP) = Coinductive +
   options [timeout = 600]
-  theories [document = false]
-    "../Coinductive/Coinductive_List"
   theories
     LList2
   files
