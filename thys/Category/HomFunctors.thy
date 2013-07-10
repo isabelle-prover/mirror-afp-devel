@@ -26,11 +26,11 @@ locale into_set = two_cats AA BB
 
 
 lemma (in into_set) homf_preserves_arrows:
- "Hom(A,_)\<^sub>\<a> : Ar \<rightarrow> ar Set"
+ "Hom(A,_)\<^bsub>\<a>\<^esub> : Ar \<rightarrow> ar Set"
 proof (rule funcsetI)
   fix f
   assume f: "f \<in> Ar"
-  thus "Hom(A,_)\<^sub>\<a> f \<in> ar Set"
+  thus "Hom(A,_)\<^bsub>\<a>\<^esub> f \<in> ar Set"
   proof (simp add: homf_def Set_def set_cat_def set_arrow_def U_def)
     have 1: "(op \<bullet>) : Hom (Dom f) (Cod f) \<rightarrow> Hom A (Dom f) \<rightarrow> Hom A (Cod f)" ..
     have 2: "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
@@ -48,38 +48,38 @@ qed
 
 
 lemma (in into_set) homf_preserves_objects:
- "Hom(A,_)\<^sub>\<o> : Ob \<rightarrow> ob Set"
+ "Hom(A,_)\<^bsub>\<o>\<^esub> : Ob \<rightarrow> ob Set"
 proof (rule funcsetI)
   fix B
   assume B: "B \<in> Ob"
-  have "Hom(A,_)\<^sub>\<o> B = Hom A B"
+  have "Hom(A,_)\<^bsub>\<o>\<^esub> B = Hom A B"
     using B by (simp add: homf_def)
   moreover have "\<dots> \<in> ob Set"
     by (simp add: U_def Set_def set_cat_def)
-  ultimately show "Hom(A,_)\<^sub>\<o> B \<in> ob Set" by simp
+  ultimately show "Hom(A,_)\<^bsub>\<o>\<^esub> B \<in> ob Set" by simp
 qed
 
 
 lemma (in into_set) homf_preserves_dom:
   assumes f: "f \<in> Ar"
-  shows "Hom(A,_)\<^sub>\<o> (Dom f) = dom Set (Hom(A,_)\<^sub>\<a> f)"
+  shows "Hom(A,_)\<^bsub>\<o>\<^esub> (Dom f) = dom Set (Hom(A,_)\<^bsub>\<a>\<^esub> f)"
 proof-
   have "Dom f \<in> Ob" using f ..
-  hence 1: "Hom(A,_)\<^sub>\<o> (Dom f) = Hom A (Dom f)"
+  hence 1: "Hom(A,_)\<^bsub>\<o>\<^esub> (Dom f) = Hom A (Dom f)"
     using f by (simp add: homf_def)
-  have 2: "dom Set (Hom(A,_)\<^sub>\<a> f) = Hom A (Dom f)"
+  have 2: "dom Set (Hom(A,_)\<^bsub>\<a>\<^esub> f) = Hom A (Dom f)"
     using f by (simp add: Set_def homf_def)
   from 1 and 2 show ?thesis by simp
 qed
 
 lemma (in into_set) homf_preserves_cod:
   assumes f: "f \<in> Ar"
-  shows "Hom(A,_)\<^sub>\<o> (Cod f) = cod Set (Hom(A,_)\<^sub>\<a> f)"
+  shows "Hom(A,_)\<^bsub>\<o>\<^esub> (Cod f) = cod Set (Hom(A,_)\<^bsub>\<a>\<^esub> f)"
 proof-
   have "Cod f \<in> Ob" using f ..
-  hence 1: "Hom(A,_)\<^sub>\<o> (Cod f) = Hom A (Cod f)"
+  hence 1: "Hom(A,_)\<^bsub>\<o>\<^esub> (Cod f) = Hom A (Cod f)"
     using f by (simp add: homf_def)
-  have 2: "cod Set (Hom(A,_)\<^sub>\<a> f) = Hom A (Cod f)"
+  have 2: "cod Set (Hom(A,_)\<^bsub>\<a>\<^esub> f) = Hom A (Cod f)"
     using f by (simp add: Set_def homf_def)
   from 1 and 2 show ?thesis by simp
 qed
@@ -87,7 +87,7 @@ qed
 
 lemma (in into_set) homf_preserves_id:
   assumes B: "B \<in> Ob"
-  shows "Hom(A,_)\<^sub>\<a> (Id B) = id Set (Hom(A,_)\<^sub>\<o> B)"
+  shows "Hom(A,_)\<^bsub>\<a>\<^esub> (Id B) = id Set (Hom(A,_)\<^bsub>\<o>\<^esub> B)"
 proof-
   have 1: "Id B \<in> Ar" using B ..
   have 2: "Dom (Id B) = B"
@@ -96,12 +96,12 @@ proof-
     using B by (rule AA.id_dom_cod)
   have 4: "(\<lambda>g\<in>Hom A B. (Id B) \<bullet> g) = (\<lambda>g\<in>Hom A B. g)"
     by (rule ext) (auto simp add: hom_def)
-  have "Hom(A,_)\<^sub>\<a> (Id B) = \<lparr>
+  have "Hom(A,_)\<^bsub>\<a>\<^esub> (Id B) = \<lparr>
     set_dom=Hom A B, 
     set_func=(\<lambda>g\<in>Hom A B. g),
     set_cod=Hom A B\<rparr>"
     by (simp add: homf_def 1 2 3 4)
-  also have "\<dots>= id Set (Hom(A,_)\<^sub>\<o> B)"
+  also have "\<dots>= id Set (Hom(A,_)\<^bsub>\<o>\<^esub> B)"
     using B by (simp add: Set_def U_def set_cat_def set_id_def homf_def)
   finally show ?thesis .
 qed
@@ -111,21 +111,21 @@ lemma (in into_set) homf_preserves_comp:
   assumes f: "f \<in> Ar" 
     and g: "g \<in> Ar"
     and fg: "Cod f = Dom g"
-  shows "Hom(A,_)\<^sub>\<a> (g \<bullet> f) = (Hom(A,_)\<^sub>\<a> g) \<odot> (Hom(A,_)\<^sub>\<a> f)"
+  shows "Hom(A,_)\<^bsub>\<a>\<^esub> (g \<bullet> f) = (Hom(A,_)\<^bsub>\<a>\<^esub> g) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f)"
 proof-
   have 1: "g \<bullet> f \<in> Ar" using assms ..
   have 2: "Dom (g \<bullet> f) = Dom f" using f g fg ..
   have 3: "Cod (g \<bullet> f) = Cod g" using f g fg ..
-  have lhs: "Hom(A,_)\<^sub>\<a> (g \<bullet> f) = \<lparr>
+  have lhs: "Hom(A,_)\<^bsub>\<a>\<^esub> (g \<bullet> f) = \<lparr>
     set_dom=Hom A (Dom f), 
     set_func=(\<lambda>h\<in>Hom A (Dom f). (g \<bullet> f) \<bullet> h),
     set_cod=Hom A (Cod g)\<rparr>"
     by (simp add: homf_def 1 2 3)
-  have 4: "set_dom ((Hom(A,_)\<^sub>\<a> g) \<odot> (Hom(A,_)\<^sub>\<a> f)) = Hom A (Dom f)"
+  have 4: "set_dom ((Hom(A,_)\<^bsub>\<a>\<^esub> g) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f)) = Hom A (Dom f)"
     using f by (simp add: set_comp_def homf_def)
-  have 5: "set_cod ((Hom(A,_)\<^sub>\<a> g) \<odot> (Hom(A,_)\<^sub>\<a> f)) = Hom A (Cod g)"
+  have 5: "set_cod ((Hom(A,_)\<^bsub>\<a>\<^esub> g) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f)) = Hom A (Cod g)"
     using g by (simp add: set_comp_def homf_def)
-  have "set_func ((Hom(A,_)\<^sub>\<a> g) \<odot> (Hom(A,_)\<^sub>\<a> f))
+  have "set_func ((Hom(A,_)\<^bsub>\<a>\<^esub> g) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f))
       = compose (Hom A (Dom f)) (\<lambda>y\<in>Hom A (Dom g). g \<bullet> y) (\<lambda>x\<in>Hom A (Dom f). f \<bullet> x)"
     using f g by (simp add: set_comp_def homf_def)
   also have "\<dots> = (\<lambda>h\<in>Hom A (Dom f). (g \<bullet> f) \<bullet> h)"
@@ -158,10 +158,10 @@ proof-
         (g \<bullet> f) \<bullet> h"
       using f g fg 10 by (simp add: compose_def 10 11 hom_def)
   qed
-  finally have 6: "set_func ((Hom(A,_)\<^sub>\<a> g) \<odot> (Hom(A,_)\<^sub>\<a> f))
+  finally have 6: "set_func ((Hom(A,_)\<^bsub>\<a>\<^esub> g) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f))
     = (\<lambda>h\<in>Hom A (Dom f). (g \<bullet> f) \<bullet> h)" .
   from 4 and 5 and 6
-  have rhs: "(Hom(A,_)\<^sub>\<a> g) \<odot> (Hom(A,_)\<^sub>\<a> f) = \<lparr>
+  have rhs: "(Hom(A,_)\<^bsub>\<a>\<^esub> g) \<odot> (Hom(A,_)\<^bsub>\<a>\<^esub> f) = \<lparr>
     set_dom=Hom A (Dom f), 
     set_func=(\<lambda>h\<in>Hom A (Dom f). (g \<bullet> f) \<bullet> h),
     set_cod=Hom A (Cod g)\<rparr>"
@@ -174,19 +174,19 @@ qed
 theorem (in into_set) homf_into_set:
   "Functor Hom(A,_) : AA \<longrightarrow> Set"
 proof (intro functor.intro functor_axioms.intro)
-  show "Hom(A,_)\<^sub>\<a> : Ar \<rightarrow> ar Set"
+  show "Hom(A,_)\<^bsub>\<a>\<^esub> : Ar \<rightarrow> ar Set"
     by (rule homf_preserves_arrows)
-  show "Hom(A,_)\<^sub>\<o> : Ob \<rightarrow> ob Set"
+  show "Hom(A,_)\<^bsub>\<o>\<^esub> : Ob \<rightarrow> ob Set"
     by (rule homf_preserves_objects)
-  show "\<forall>f\<in>Ar. Hom(A,_) \<^sub>\<o> (Dom f) = dom Set (Hom(A,_) \<^sub>\<a> f)"
+  show "\<forall>f\<in>Ar. Hom(A,_)\<^bsub>\<o>\<^esub> (Dom f) = dom Set (Hom(A,_)\<^bsub>\<a>\<^esub> f)"
     by (intro ballI) (rule homf_preserves_dom)
-  show "\<forall>f\<in>Ar. Hom(A,_) \<^sub>\<o> (Cod f) = cod Set (Hom(A,_) \<^sub>\<a> f)"
+  show "\<forall>f\<in>Ar. Hom(A,_)\<^bsub>\<o>\<^esub> (Cod f) = cod Set (Hom(A,_)\<^bsub>\<a>\<^esub> f)"
     by (intro ballI) (rule homf_preserves_cod)
-  show "\<forall>B\<in>Ob. Hom(A,_) \<^sub>\<a> (Id B) = id Set (Hom(A,_) \<^sub>\<o> B)"
+  show "\<forall>B\<in>Ob. Hom(A,_)\<^bsub>\<a>\<^esub> (Id B) = id Set (Hom(A,_)\<^bsub>\<o>\<^esub> B)"
     by (intro ballI) (rule homf_preserves_id)
   show "\<forall>f\<in>Ar. \<forall>g\<in>Ar. 
     Cod f = Dom g \<longrightarrow>
-    Hom(A,_)\<^sub>\<a> (g \<bullet> f) = comp Set (Hom(A,_)\<^sub>\<a> g) (Hom(A,_)\<^sub>\<a> f)"
+    Hom(A,_)\<^bsub>\<a>\<^esub> (g \<bullet> f) = comp Set (Hom(A,_)\<^bsub>\<a>\<^esub> g) (Hom(A,_)\<^bsub>\<a>\<^esub> f)"
     by (intro ballI impI, simp add: Set_def set_cat_def) (rule homf_preserves_comp)
   show "two_cats AA Set"
   proof intro_locales

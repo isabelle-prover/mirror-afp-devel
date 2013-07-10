@@ -18,12 +18,12 @@ record ('o1,'a1,'o2,'a2) functor =
   am :: "'a1 \<Rightarrow> 'a2"
 
 abbreviation
-  om_syn  ("_ \<^sub>\<o>" [81]) where
-  "F\<^sub>\<o> \<equiv> om F"
+  om_syn  ("_ \<^bsub>\<o>\<^esub>" [81]) where
+  "F\<^bsub>\<o>\<^esub> \<equiv> om F"
 
 abbreviation
-  am_syn  ("_ \<^sub>\<a>" [81]) where
-  "F\<^sub>\<a> \<equiv> am F"
+  am_syn  ("_ \<^bsub>\<a>\<^esub>" [81]) where
+  "F\<^bsub>\<a>\<^esub> \<equiv> am F"
 
 locale two_cats = AA: category AA + BB: category BB
     for AA :: "('o1,'a1,'m1)category_scheme" (structure)
@@ -32,16 +32,16 @@ locale two_cats = AA: category AA + BB: category BB
     and preserves_cod  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
     and preserves_id  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
     and preserves_comp  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
-  defines "preserves_dom G \<equiv> \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Dom\<^bsub>AA\<^esub> f) = Dom\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
-    and "preserves_cod G \<equiv> \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^sub>\<o> (Cod\<^bsub>AA\<^esub> f) = Cod\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
-    and "preserves_id G \<equiv> \<forall>A\<in>Ob\<^bsub>AA\<^esub>. G\<^sub>\<a> (Id\<^bsub>AA\<^esub> A) = Id\<^bsub>BB\<^esub> (G\<^sub>\<o> A)"
+  defines "preserves_dom G \<equiv> \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^bsub>\<o>\<^esub> (Dom\<^bsub>AA\<^esub> f) = Dom\<^bsub>BB\<^esub> (G\<^bsub>\<a>\<^esub> f)"
+    and "preserves_cod G \<equiv> \<forall>f\<in>Ar\<^bsub>AA\<^esub>. G\<^bsub>\<o>\<^esub> (Cod\<^bsub>AA\<^esub> f) = Cod\<^bsub>BB\<^esub> (G\<^bsub>\<a>\<^esub> f)"
+    and "preserves_id G \<equiv> \<forall>A\<in>Ob\<^bsub>AA\<^esub>. G\<^bsub>\<a>\<^esub> (Id\<^bsub>AA\<^esub> A) = Id\<^bsub>BB\<^esub> (G\<^bsub>\<o>\<^esub> A)"
     and "preserves_comp G \<equiv>
-      \<forall>f\<in>Ar\<^bsub>AA\<^esub>. \<forall>g\<in>Ar\<^bsub>AA\<^esub>. Cod\<^bsub>AA\<^esub> f = Dom\<^bsub>AA\<^esub> g \<longrightarrow> G\<^sub>\<a> (g \<bullet>\<^bsub>AA\<^esub> f) = (G\<^sub>\<a> g) \<bullet>\<^bsub>BB\<^esub> (G\<^sub>\<a> f)"
+      \<forall>f\<in>Ar\<^bsub>AA\<^esub>. \<forall>g\<in>Ar\<^bsub>AA\<^esub>. Cod\<^bsub>AA\<^esub> f = Dom\<^bsub>AA\<^esub> g \<longrightarrow> G\<^bsub>\<a>\<^esub> (g \<bullet>\<^bsub>AA\<^esub> f) = (G\<^bsub>\<a>\<^esub> g) \<bullet>\<^bsub>BB\<^esub> (G\<^bsub>\<a>\<^esub> f)"
 
 locale functor = two_cats +
   fixes F (structure)
-  assumes F_preserves_arrows: "F\<^sub>\<a> : Ar\<^bsub>AA\<^esub> \<rightarrow> Ar\<^bsub>BB\<^esub>"
-    and F_preserves_objects: "F\<^sub>\<o> : Ob\<^bsub>AA\<^esub> \<rightarrow> Ob\<^bsub>BB\<^esub>"
+  assumes F_preserves_arrows: "F\<^bsub>\<a>\<^esub> : Ar\<^bsub>AA\<^esub> \<rightarrow> Ar\<^bsub>BB\<^esub>"
+    and F_preserves_objects: "F\<^bsub>\<o>\<^esub> : Ob\<^bsub>AA\<^esub> \<rightarrow> Ob\<^bsub>BB\<^esub>"
     and F_preserves_dom: "preserves_dom F"
     and F_preserves_cod: "preserves_cod F"
     and F_preserves_id: "preserves_id F"
@@ -72,10 +72,10 @@ lemma (in functor) "Functor F : AA \<longrightarrow> BB" ..
 lemma functors_preserve_arrows [intro]:
   assumes "Functor F : AA \<longrightarrow> BB"
     and "f \<in> ar AA"
-  shows "F\<^sub>\<a> f \<in> ar BB"
+  shows "F\<^bsub>\<a>\<^esub> f \<in> ar BB"
 proof-
   from `Functor F : AA \<longrightarrow> BB`
-  have "F\<^sub>\<a> : ar AA \<rightarrow> ar BB"
+  have "F\<^bsub>\<a>\<^esub> : ar AA \<rightarrow> ar BB"
     by (simp add: functor_def functor_axioms_def)
   from this and `f \<in> ar AA`
   show ?thesis by (rule funcset_mem)
@@ -86,26 +86,26 @@ lemma (in functor) functors_preserve_homsets:
   assumes 1: "A \<in> Ob\<^bsub>AA\<^esub>"
   and 2: "B \<in> Ob\<^bsub>AA\<^esub>"
   and 3: "f \<in> Hom\<^bsub>AA\<^esub> A B"
-  shows "F\<^sub>\<a> f \<in> Hom\<^bsub>BB\<^esub> (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
+  shows "F\<^bsub>\<a>\<^esub> f \<in> Hom\<^bsub>BB\<^esub> (F\<^bsub>\<o>\<^esub> A) (F\<^bsub>\<o>\<^esub> B)"
 proof-
   from 3 
   have 4: "f \<in> Ar" 
     by (simp add: hom_def)
   with F_preserves_arrows 
-  have 5: "F\<^sub>\<a> f \<in> Ar\<^bsub>BB\<^esub>" 
+  have 5: "F\<^bsub>\<a>\<^esub> f \<in> Ar\<^bsub>BB\<^esub>" 
     by (rule funcset_mem)
   from 4 and F_preserves_dom 
-  have "Dom\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> (Dom\<^bsub>AA\<^esub> f)"
+  have "Dom\<^bsub>BB\<^esub> (F\<^bsub>\<a>\<^esub> f) = F\<^bsub>\<o>\<^esub> (Dom\<^bsub>AA\<^esub> f)"
     by (simp add: preserves_dom_def)
-  also from 3 have "\<dots> = F\<^sub>\<o> A"
+  also from 3 have "\<dots> = F\<^bsub>\<o>\<^esub> A"
     by (simp add: hom_def)
-  finally have 6: "Dom\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> A" .
+  finally have 6: "Dom\<^bsub>BB\<^esub> (F\<^bsub>\<a>\<^esub> f) = F\<^bsub>\<o>\<^esub> A" .
   from 4 and F_preserves_cod 
-  have "Cod\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> (Cod\<^bsub>AA\<^esub> f)"
+  have "Cod\<^bsub>BB\<^esub> (F\<^bsub>\<a>\<^esub> f) = F\<^bsub>\<o>\<^esub> (Cod\<^bsub>AA\<^esub> f)"
     by (simp add: preserves_cod_def)
-  also from 3 have "\<dots> = F\<^sub>\<o> B"
+  also from 3 have "\<dots> = F\<^bsub>\<o>\<^esub> B"
     by (simp add: hom_def)
-  finally have 7: "Cod\<^bsub>BB\<^esub> (F\<^sub>\<a> f) = F\<^sub>\<o> B" .
+  finally have 7: "Cod\<^bsub>BB\<^esub> (F\<^bsub>\<a>\<^esub> f) = F\<^bsub>\<o>\<^esub> B" .
   from 5 and 6 and 7
   show ?thesis
     by (simp add: hom_def)
@@ -115,10 +115,10 @@ qed
 lemma functors_preserve_objects [intro]:
   assumes "Functor F : AA \<longrightarrow> BB"
     and "A \<in> ob AA"
-  shows "F\<^sub>\<o> A \<in> ob BB"
+  shows "F\<^bsub>\<o>\<^esub> A \<in> ob BB"
 proof-
   from `Functor F : AA \<longrightarrow> BB`
-  have "F\<^sub>\<o> : ob AA \<rightarrow> ob BB"
+  have "F\<^bsub>\<o>\<^esub> : ob AA \<rightarrow> ob BB"
     by (simp add: functor_def functor_axioms_def)
   from this and `A \<in> ob AA`
   show ?thesis by (rule funcset_mem)
@@ -135,12 +135,12 @@ locale one_cat = two_cats +
   assumes endo: "BB = AA"
 
 lemma (in one_cat) id_func_preserves_arrows:
-  shows "(id_func AA)\<^sub>\<a> : Ar \<rightarrow> Ar"
+  shows "(id_func AA)\<^bsub>\<a>\<^esub> : Ar \<rightarrow> Ar"
   by (unfold id_func_def, rule funcsetI, simp)
 
 
 lemma (in one_cat) id_func_preserves_objects:
-  shows "(id_func AA)\<^sub>\<o> : Ob \<rightarrow> Ob"
+  shows "(id_func AA)\<^bsub>\<o>\<^esub> : Ob \<rightarrow> Ob"
   by (unfold id_func_def, rule funcsetI, simp)
 
 
@@ -150,13 +150,13 @@ unfolding preserves_dom_def endo
 proof
   fix f
   assume f: "f \<in> Ar"
-  hence lhs: "(id_func AA)\<^sub>\<o> (Dom f) = Dom f"
+  hence lhs: "(id_func AA)\<^bsub>\<o>\<^esub> (Dom f) = Dom f"
     by (simp add: id_func_def) auto
-  have "(id_func AA)\<^sub>\<a> f = f"
+  have "(id_func AA)\<^bsub>\<a>\<^esub> f = f"
     using f by (simp add: id_func_def)
-  hence rhs: "Dom (id_func AA)\<^sub>\<a> f = Dom f"
+  hence rhs: "Dom (id_func AA)\<^bsub>\<a>\<^esub> f = Dom f"
     by simp
-  from lhs and rhs show "(id_func AA)\<^sub>\<o> (Dom f) = Dom (id_func AA)\<^sub>\<a> f"
+  from lhs and rhs show "(id_func AA)\<^bsub>\<o>\<^esub> (Dom f) = Dom (id_func AA)\<^bsub>\<a>\<^esub> f"
     by simp
 qed
 
@@ -166,13 +166,13 @@ apply (unfold preserves_cod_def, simp only: endo)
 proof
   fix f
   assume f: "f \<in> Ar"
-  hence lhs: "(id_func AA)\<^sub>\<o> (Cod f) = Cod f"
+  hence lhs: "(id_func AA)\<^bsub>\<o>\<^esub> (Cod f) = Cod f"
     by (simp add: id_func_def) auto
-  have "(id_func AA)\<^sub>\<a> f = f"
+  have "(id_func AA)\<^bsub>\<a>\<^esub> f = f"
     using f by (simp add: id_func_def)
-  hence rhs: "Cod (id_func AA)\<^sub>\<a> f = Cod f"
+  hence rhs: "Cod (id_func AA)\<^bsub>\<a>\<^esub> f = Cod f"
     by simp
-  from lhs and rhs show "(id_func AA)\<^sub>\<o> (Cod f) = Cod (id_func AA)\<^sub>\<a> f"
+  from lhs and rhs show "(id_func AA)\<^bsub>\<o>\<^esub> (Cod f) = Cod (id_func AA)\<^bsub>\<a>\<^esub> f"
     by simp
 qed
 
@@ -183,13 +183,13 @@ unfolding preserves_id_def endo
 proof
   fix A
   assume A: "A \<in> Ob"
-  hence lhs: "(id_func AA)\<^sub>\<a> (Id A) = Id A"
+  hence lhs: "(id_func AA)\<^bsub>\<a>\<^esub> (Id A) = Id A"
     by (simp add: id_func_def) auto
-  have "(id_func AA)\<^sub>\<o> A = A"
+  have "(id_func AA)\<^bsub>\<o>\<^esub> A = A"
     using A by (simp add: id_func_def)
-  hence rhs: "Id ((id_func AA)\<^sub>\<o> A) = Id A"
+  hence rhs: "Id ((id_func AA)\<^bsub>\<o>\<^esub> A) = Id A"
     by simp
-  from lhs and rhs show "(id_func AA)\<^sub>\<a> (Id A) = Id ((id_func AA)\<^sub>\<o> A)"
+  from lhs and rhs show "(id_func AA)\<^bsub>\<a>\<^esub> (Id A) = Id ((id_func AA)\<^bsub>\<o>\<^esub> A)"
     by simp
 qed
 
@@ -201,16 +201,16 @@ proof (intro ballI impI)
   fix f and g
   assume f: "f \<in> Ar" and g: "g \<in> Ar" and "Cod f = Dom g"
   then have "g \<bullet> f \<in> Ar" ..
-  hence lhs: "(id_func AA)\<^sub>\<a> (g \<bullet> f) = g \<bullet> f"
+  hence lhs: "(id_func AA)\<^bsub>\<a>\<^esub> (g \<bullet> f) = g \<bullet> f"
     by (simp add: id_func_def)
-  have id_f: "(id_func AA)\<^sub>\<a> f = f"
+  have id_f: "(id_func AA)\<^bsub>\<a>\<^esub> f = f"
     using f by (simp add: id_func_def)
-  have id_g: "(id_func AA)\<^sub>\<a> g = g"
+  have id_g: "(id_func AA)\<^bsub>\<a>\<^esub> g = g"
     using g by (simp add: id_func_def)
-  hence rhs: "(id_func AA)\<^sub>\<a> g \<bullet> (id_func AA)\<^sub>\<a> f = g \<bullet> f"
+  hence rhs: "(id_func AA)\<^bsub>\<a>\<^esub> g \<bullet> (id_func AA)\<^bsub>\<a>\<^esub> f = g \<bullet> f"
     by (simp add: id_f id_g)
   from lhs and rhs 
-  show "(id_func AA)\<^sub>\<a> (g \<bullet> f) = (id_func AA)\<^sub>\<a> g \<bullet> (id_func AA)\<^sub>\<a> f"
+  show "(id_func AA)\<^bsub>\<a>\<^esub> (g \<bullet> f) = (id_func AA)\<^bsub>\<a>\<^esub> g \<bullet> (id_func AA)\<^bsub>\<a>\<^esub> f"
     by simp
 qed
 
