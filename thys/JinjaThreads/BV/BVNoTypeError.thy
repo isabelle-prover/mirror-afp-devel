@@ -11,7 +11,7 @@ imports
 begin
 
 lemma wt_jvm_prog_states:
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl, ins, et)\<rfloor> in C; 
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl, ins, et)\<rfloor> in C; 
      \<Phi> C M ! pc = \<tau>; pc < size ins \<rbrakk>
   \<Longrightarrow> OK \<tau> \<in> states P mxs (1+size Ts+mxl)"
 (*<*)
@@ -33,7 +33,7 @@ text {*
   are started in a conformant state.
 *}
 theorem no_type_error:
-  assumes welltyped: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "\<Phi> \<turnstile> t:\<sigma> \<surd>"
+  assumes welltyped: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and conforms: "\<Phi> \<turnstile> t:\<sigma> \<surd>"
   shows "exec_d P t \<sigma> \<noteq> TypeError"
 (*<*)
 proof -

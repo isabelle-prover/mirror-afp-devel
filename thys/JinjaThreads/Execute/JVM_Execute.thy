@@ -68,7 +68,7 @@ lemma eval_sc_mexec:
 by(rule ext)+(fastforce intro!: SUP1_I simp add: sc.exec_1_eq')
 
 lemma sc_jvm_start_state_invar: 
-  assumes "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and "sc_wf_start_state P C M vs"
   shows "sc_state_\<alpha> (sc_jvm_start_state_refine P C M vs) \<in> sc_jvm_state_invar P \<Phi>"
 using sc_execute.correct_jvm_state_initial[OF assms]

@@ -49,7 +49,7 @@ text {*
   conforms. 
 *} term find_handler
 lemma uncaught_xcpt_correct:
-  assumes wt: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wt: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes h:  "h xcp = Some obj"
   shows "\<And>f. P,\<Phi> \<turnstile> (None, h, f#frs)\<surd> \<Longrightarrow> P,\<Phi> \<turnstile> (find_handler P xcp h frs) \<surd>" 
   (is "\<And>f. ?correct (None, h, f#frs) \<Longrightarrow> ?correct (?find frs)")
@@ -187,7 +187,7 @@ text {*
 *}
 lemma xcpt_correct:
   fixes \<sigma>' :: jvm_state
-  assumes wtp:  "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wtp:  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes xp:   "fst (exec_instr (ins!pc) P h stk loc C M pc frs) = Some xcp"
@@ -345,7 +345,7 @@ declare defs1 [simp]
 
 lemma Invoke_correct: 
   fixes \<sigma>' :: jvm_state
-  assumes wtprog: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wtprog: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes meth_C: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:    "ins ! pc = Invoke M' n"
   assumes wti:    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
@@ -469,7 +469,7 @@ declare list_all2_Cons2 [iff]
 
 lemma Return_correct:
   fixes \<sigma>' :: jvm_state
-  assumes wt_prog: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wt_prog: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins: "ins ! pc = Return"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
@@ -629,7 +629,7 @@ lemma Cast_conf2:
 
 
 lemma Checkcast_correct:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
+"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
     P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
     ins!pc = Checkcast D; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
@@ -958,7 +958,7 @@ text {*
   into another conforming state when one instruction is executed.
 *}
 theorem instr_correct:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
+"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C;
   Some \<sigma>' = exec (P, None, h, (stk,loc,C,M,pc)#frs); 
   P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
@@ -1001,7 +1001,7 @@ lemma correct_state_impl_Some_method:
   by fastforce
 
 lemma BV_correct_1 [rule_format]:
-"\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P,\<Phi> \<turnstile> \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+"\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P,\<Phi> \<turnstile> \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
 (*<*)
 apply (simp only: split_tupled_all exec_1_iff)
 apply (rename_tac xp h frs)
@@ -1028,7 +1028,7 @@ theorem progress:
                simp del: split_paired_Ex)
 
 lemma progress_conform:
-  "\<lbrakk>wf_jvm_prog\<^sub>\<Phi> P; P,\<Phi> \<turnstile> (xp,h,frs)\<surd>; xp=None; frs\<noteq>[]\<rbrakk> 
+  "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P,\<Phi> \<turnstile> (xp,h,frs)\<surd>; xp=None; frs\<noteq>[]\<rbrakk> 
   \<Longrightarrow> \<exists>\<sigma>'. P \<turnstile> (xp,h,frs) -jvm\<rightarrow>\<^isub>1 \<sigma>' \<and> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
 (*<*)
 apply (drule progress)
@@ -1038,7 +1038,7 @@ done
 (*>*)
 
 theorem BV_correct [rule_format]:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<rbrakk> \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>\<surd> \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<rbrakk> \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>\<surd> \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
 (*<*)
 apply (simp only: exec_all_def1)
 apply (erule rtrancl_induct)
@@ -1063,7 +1063,7 @@ lemma hconf_start:
 (*>*)
     
 lemma BV_correct_initial: 
-  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> C sees M:[]\<rightarrow>T = m in C \<rbrakk>
+  shows "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> C sees M:[]\<rightarrow>T = m in C \<rbrakk>
   \<Longrightarrow> P,\<Phi> \<turnstile> start_state P C M \<surd>"
 (*<*)
   apply (cases m)                            
@@ -1081,7 +1081,7 @@ declare [[simproc add: list_to_set_comprehension]]
 (*>*)
 
 theorem typesafe:
-  assumes welltyped:   "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes welltyped:   "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes main_method: "P \<turnstile> C sees M:[]\<rightarrow>T = m in C"
   shows "P \<turnstile> start_state P C M -jvm\<rightarrow> \<sigma>  \<Longrightarrow>  P,\<Phi> \<turnstile> \<sigma> \<surd>"
 (*<*)

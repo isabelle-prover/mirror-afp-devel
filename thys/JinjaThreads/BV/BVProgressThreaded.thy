@@ -11,7 +11,7 @@ imports
 begin
 
 lemma (in JVM_heap_conf_base') mexec_eq_mexecd:
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; \<Phi> \<turnstile> t: (xcp, h, frs) \<surd> \<rbrakk> \<Longrightarrow> mexec P t ((xcp, frs), h) = mexecd P t ((xcp, frs), h)"
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t: (xcp, h, frs) \<surd> \<rbrakk> \<Longrightarrow> mexec P t ((xcp, frs), h) = mexecd P t ((xcp, frs), h)"
 apply(auto intro!: ext)
  apply(unfold exec_1_iff)
  apply(drule no_type_error)
@@ -271,25 +271,25 @@ next
 qed
 
 lemma lifting_wf_correct_state_d:
-  "wf_jvm_prog\<^sub>\<Phi> P \<Longrightarrow> lifting_wf JVM_final (mexecd P) (\<lambda>t (xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>)"
+  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P \<Longrightarrow> lifting_wf JVM_final (mexecd P) (\<lambda>t (xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>)"
 by(unfold_locales)(auto intro: BV_correct_d_1 correct_state_new_thread correct_state_heap_change)
 
 lemma lifting_wf_correct_state:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   shows "lifting_wf JVM_final (mexec P) (\<lambda>t (xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>)"
 proof(unfold_locales)
   fix t x m ta x' m'
   assume "mexec P t (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x m"
   with wf show "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x' m'"
-    by(cases x)(cases x', simp add: welltyped_commute[symmetric, OF `wf_jvm_prog\<^sub>\<Phi> P`], rule BV_correct_d_1)
+    by(cases x)(cases x', simp add: welltyped_commute[symmetric, OF `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`], rule BV_correct_d_1)
 next
   fix t x m ta x' m' t'' x''
   assume "mexec P t (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x m"
     and "NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
   with wf show "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t'': (xcp, h, frs) \<surd>) x'' m'"
-    apply(cases x, cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^sub>\<Phi> P`])
+    apply(cases x, cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`])
     by(rule correct_state_new_thread)
 next
   fix t x m ta x' m' t'' x''
@@ -297,7 +297,7 @@ next
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x m"
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t'': (xcp, h, frs) \<surd>) x'' m"
   with wf show "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t'': (xcp, h, frs) \<surd>) x'' m'"
-    by(cases x)(cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^sub>\<Phi> P`], rule correct_state_heap_change)
+    by(cases x)(cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`], rule correct_state_heap_change)
 qed
 
 lemmas preserves_correct_state = FWLiftingSem.lifting_wf.RedT_preserves[OF lifting_wf_correct_state]
@@ -317,7 +317,7 @@ end
 context JVM_heap_conf begin
 
 lemma correct_jvm_state_initial:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and wf_start: "wf_start_state P C M vs"
   shows "JVM_start_state P C M vs \<in> correct_jvm_state \<Phi>"
 proof -
@@ -333,7 +333,7 @@ end
 context JVM_conf_read begin
 
 lemma invariant3p_correct_jvm_state_mexecdT:
-  assumes wf:  "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf:  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   shows "invariant3p (mexecdT P) (correct_jvm_state \<Phi>)"
 unfolding correct_jvm_state_def
 apply(rule invariant3pI)
@@ -343,7 +343,7 @@ apply(erule (1) execd_mthr.redT_preserves_lock_thread_ok)
 done
 
 lemma invariant3p_correct_jvm_state_mexecT:
-  assumes wf:  "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf:  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   shows "invariant3p (mexecT P) (correct_jvm_state \<Phi>)"
 unfolding correct_jvm_state_def
 apply(rule invariant3pI)
@@ -353,7 +353,7 @@ apply(erule (1) exec_mthr.redT_preserves_lock_thread_ok)
 done
 
 lemma correct_jvm_state_preserved:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and correct: "s \<in> correct_jvm_state \<Phi>"
   and red: "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'"
   shows "s' \<in> correct_jvm_state \<Phi>"
@@ -361,7 +361,7 @@ using wf red correct unfolding exec_mthr.RedT_def
 by(rule invariant3p_rtrancl3p[OF invariant3p_correct_jvm_state_mexecT])
 
 theorem jvm_typesafe:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and start: "wf_start_state P C M vs"
   and exec: "P \<turnstile> JVM_start_state P C M vs -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'"
   shows "s' \<in> correct_jvm_state \<Phi>"
@@ -375,7 +375,7 @@ declare (in JVM_typesafe) split_paired_Ex [simp del]
 context JVM_heap_conf_base' begin 
 
 lemma execd_NewThread_Thread_Object:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and conf: "\<Phi> \<turnstile> t': \<sigma> \<surd>"
   and red: "P,t' \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'"
   and nt: "NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
@@ -410,7 +410,7 @@ proof -
 qed
 
 lemma mexecdT_NewThread_Thread_Object:
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; correct_state_ts \<Phi> (thr s) (shr s); P \<turnstile> s -t'\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; correct_state_ts \<Phi> (thr s) (shr s); P \<turnstile> s -t'\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>C. typeof_addr (shr s') (thread_id2addr t) = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(frule correct_state_ts_thread_conf)
 apply(erule execd_mthr.redT.cases)
@@ -457,7 +457,7 @@ end
 context JVM_typesafe begin
 
 lemma execd_wf_progress:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   shows "progress JVM_final (mexecd P) convert_RA (execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
   (is "progress _ _ _ ?wf_state")
 proof
@@ -664,7 +664,7 @@ next
   with `\<not> JVM_final x` obtain f Frs where "frs = f # Frs"
     by(fastforce simp add: neq_Nil_conv)
   with tst correct x have "\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>" by(auto dest: ts_okD)
-  with `wf_jvm_prog\<^sub>\<Phi> P`
+  with `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`
   have "exec_d P t (xcp, shr s, f # Frs) \<noteq> TypeError" by(auto dest: no_type_error)
   then obtain \<Sigma> where "exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>" by(auto)
   hence "exec P t (xcp, shr s, f # Frs) = \<Sigma>"
@@ -672,7 +672,7 @@ next
   with progress[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`]
   obtain ta \<sigma> where "(ta, \<sigma>) \<in> \<Sigma>" unfolding exec_1_iff by blast
   with `x = (xcp, frs)` `frs = f # Frs` `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`
-    `wf_jvm_prog\<^sub>\<Phi> P` `exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>`
+    `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P` `exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>`
   show "\<exists>ta x' m'. mexecd P t (x, shr s) ta (x', m')"
     by(cases ta, cases \<sigma>)(fastforce simp add: split_paired_Ex intro: exec_1_d_NormalI)
 qed(fastforce dest: defensive_imp_aggressive_1 mexec_instr_Wakeup_no_Join exec_ta_satisfiable)+
@@ -682,7 +682,7 @@ end
 context JVM_conf_read begin
 
 lemma mexecT_eq_mexecdT:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and cs: "correct_state_ts \<Phi> (thr s) (shr s)"
   shows "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s' = P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'"
 proof(rule iffI)
@@ -728,7 +728,7 @@ next
 qed
 
 lemma mExecT_eq_mExecdT:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and ct: "correct_state_ts \<Phi> (thr s) (shr s)"
   shows "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s' = P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'"
 proof
@@ -766,19 +766,19 @@ next
 qed
 
 lemma mexecT_preserves_thread_conf: 
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; correct_state_ts \<Phi> (thr s) (shr s);
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; correct_state_ts \<Phi> (thr s) (shr s);
     P \<turnstile> s -t'\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s'; thread_conf P (thr s) (shr s) \<rbrakk> 
   \<Longrightarrow> thread_conf P (thr s') (shr s')"
 by(simp only: mexecT_eq_mexecdT)(rule execd_tconf.redT_preserves)
 
 lemma mExecT_preserves_thread_conf: 
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; correct_state_ts \<Phi> (thr s) (shr s);
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; correct_state_ts \<Phi> (thr s) (shr s);
     P \<turnstile> s -\<triangleright>tta\<rightarrow>\<^bsub>jvm\<^esub>* s'; thread_conf P (thr s) (shr s) \<rbrakk>
   \<Longrightarrow> thread_conf P (thr s') (shr s')"
 by(simp only: mExecT_eq_mExecdT)(rule execd_tconf.RedT_preserves)
 
 lemma wset_Suspend_ok_mexecd_mexec:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   shows "exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>) = execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>)"
 apply(safe)
  apply(rule execd_mthr.wset_Suspend_okI)
@@ -814,7 +814,7 @@ end
 context JVM_typesafe begin
 
 lemma exec_wf_progress:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   shows "progress JVM_final (mexec P) convert_RA (exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
   (is "progress _ _ _ ?wf_state")
 proof -
@@ -869,7 +869,7 @@ qed
 
 theorem mexecd_TypeSafety:
   fixes ln :: "'addr \<Rightarrow>f nat"
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and s: "s \<in> execd_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>)"
   and Exec: "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'"
   and "\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'')"
@@ -902,7 +902,7 @@ qed
 
 theorem mexec_TypeSafety:
   fixes ln :: "'addr \<Rightarrow>f nat"
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and s: "s \<in> exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>)"
   and Exec: "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'"
   and "\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s'')"
@@ -935,7 +935,7 @@ proof -
 qed
 
 lemma start_mexec_mexecd_commute:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and start: "wf_start_state P C M vs"
   shows "P \<turnstile> JVM_start_state P C M vs -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s \<longleftrightarrow> P \<turnstile> JVM_start_state P C M vs -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s"
 using correct_jvm_state_initial[OF assms]

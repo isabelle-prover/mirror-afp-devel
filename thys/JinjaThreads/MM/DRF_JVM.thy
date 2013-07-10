@@ -823,7 +823,7 @@ locale JVM_allocated_progress =
 begin
 
 lemma non_speculative_read:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
@@ -922,7 +922,7 @@ proof(rule execd_mthr.if.non_speculative_readI)
 qed
 
 lemma JVM_cut_and_update:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P" 
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
@@ -959,7 +959,7 @@ proof -
 qed
 
 lemma JVM_drf:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
@@ -984,7 +984,7 @@ proof -
 qed
 
 lemma JVM_sc_legal:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
@@ -1029,7 +1029,7 @@ proof -
 qed
 
 lemma JVM_jmm_consistent:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
@@ -1042,7 +1042,7 @@ proof -
 qed
 
 lemma JVM_ex_sc_exec:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
@@ -1070,7 +1070,7 @@ proof -
 qed
 
 theorem JVM_consistent:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and hrt: "heap_read_typeable hconf P"
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"

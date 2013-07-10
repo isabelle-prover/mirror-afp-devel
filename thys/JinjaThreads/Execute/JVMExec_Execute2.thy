@@ -525,7 +525,7 @@ locale JVM_heap_execute_conf_read = JVM_heap_execute +
 begin
 
 lemma exec_correct_state:
-  assumes wt: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wt: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and correct: "execute.correct_state \<Phi> t (jvm_state_of_jvm_state' s)"
   and ok: "jvm_state'_ok P s"
   shows "exec P t s = jvm_ta_state'_of_jvm_ta_state P ` execute.exec P t (jvm_state_of_jvm_state' s)"

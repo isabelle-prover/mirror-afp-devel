@@ -12,7 +12,7 @@ begin
 context JVM_progress begin
 
 lemma must_sync_preserved_d:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and ml: "execd_mthr.must_sync P t (xcp, frs) h" 
   and hext: "hext h h'"
   and hconf': "hconf h'"
@@ -39,7 +39,7 @@ proof(rule execd_mthr.must_syncI)
 qed
 
 lemma can_sync_devreserp_d:
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and cl': "execd_mthr.can_sync P t (xcp, frs) h' L" 
   and cs: "\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>"
   and hext: "hext h h'"

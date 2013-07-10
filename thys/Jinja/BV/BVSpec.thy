@@ -64,16 +64,12 @@ definition wf_jvm_prog :: "jvm_prog \<Rightarrow> bool"
 where
   "wf_jvm_prog P \<equiv> \<exists>\<Phi>. wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
 
-notation (input)
-  wf_jvm_prog_phi  ("wf'_jvm'_prog\<^sub>_ _" [0,999] 1000)
-
-
 lemma wt_jvm_progD:
-  "wf_jvm_prog\<^sub>\<Phi> P \<Longrightarrow> \<exists>wt. wf_prog wt P"
+  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P \<Longrightarrow> \<exists>wt. wf_prog wt P"
 (*<*) by (unfold wf_jvm_prog_phi_def, blast) (*>*)
 
 lemma wt_jvm_prog_impl_wt_instr:
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; 
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; 
       P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,ins,xt) in C; pc < size ins \<rbrakk> 
   \<Longrightarrow> P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
 (*<*)
@@ -84,7 +80,7 @@ lemma wt_jvm_prog_impl_wt_instr:
 (*>*)
 
 lemma wt_jvm_prog_impl_wt_start:
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; 
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; 
      P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,ins,xt) in C \<rbrakk> \<Longrightarrow> 
   0 < size ins \<and> wt_start P C Ts mxl\<^isub>0 (\<Phi> C M)"
 (*<*)

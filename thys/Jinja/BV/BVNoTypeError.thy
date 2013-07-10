@@ -51,7 +51,7 @@ lemma is_BoolI [intro, simp]: "P,h \<turnstile> v :\<le> Boolean \<Longrightarro
 declare defs1 [simp del]
 
 lemma wt_jvm_prog_states:
-  "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> C sees M: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C; 
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> C sees M: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C; 
      \<Phi> C M ! pc = \<tau>; pc < size ins \<rbrakk>
   \<Longrightarrow> OK \<tau> \<in> states P mxs (1+size Ts+mxl)"
 (*<*)
@@ -68,7 +68,7 @@ text {*
 *}
 theorem no_type_error:
   fixes \<sigma> :: jvm_state
-  assumes welltyped: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>"
+  assumes welltyped: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>"
   shows "exec_d P \<sigma> \<noteq> TypeError"
 (*<*)
 proof -
@@ -223,7 +223,7 @@ text {*
   one (after arbitrarily many steps).
 *}
 theorem welltyped_aggressive_imp_defensive:
-  "wf_jvm_prog\<^sub>\<Phi> P \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma> \<surd> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'
+  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma> \<surd> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'
   \<Longrightarrow> P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>')"
 (*<*)
   apply (simp only: exec_all_def) 
@@ -248,7 +248,7 @@ text {*
 *} 
 corollary welltyped_commutes:
   fixes \<sigma> :: jvm_state
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
   shows "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>') = P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
   apply rule
   apply (erule defensive_imp_aggressive)
@@ -261,7 +261,7 @@ corollary welltyped_initial_commutes:
   defines start: "\<sigma> \<equiv> start_state P C M"
   shows "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>') = P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
 proof -
-  from wf obtain \<Phi> where wf': "wf_jvm_prog\<^sub>\<Phi> P" by (auto simp: wf_jvm_prog_def)
+  from wf obtain \<Phi> where wf': "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" by (auto simp: wf_jvm_prog_def)
   from this meth have "P,\<Phi> \<turnstile> \<sigma> \<surd>" unfolding start by (rule BV_correct_initial)
   with wf' show ?thesis by (rule welltyped_commutes)
 qed
@@ -273,7 +273,7 @@ lemma not_TypeError_eq [iff]:
 
 locale cnf =
   fixes P and \<Phi> and \<sigma>
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"  
+  assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"  
   assumes cnf: "correct_state P \<Phi> \<sigma>" 
 
 theorem (in cnf) no_type_errors:
@@ -299,7 +299,7 @@ locale start =
 corollary (in start) bv_no_type_error:
   shows "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<Longrightarrow> \<sigma>' \<noteq> TypeError"
 proof -
-  from wf obtain \<Phi> where "wf_jvm_prog\<^sub>\<Phi> P" by (auto simp: wf_jvm_prog_def)
+  from wf obtain \<Phi> where "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" by (auto simp: wf_jvm_prog_def)
   moreover
   with sees have "correct_state P \<Phi> (start_state P C M)" 
     by - (rule BV_correct_initial)

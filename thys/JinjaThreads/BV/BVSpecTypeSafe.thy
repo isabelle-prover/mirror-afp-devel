@@ -54,7 +54,7 @@ context JVM_heap_conf_base begin
 
 lemma exception_step_conform:
   fixes \<sigma>' :: "('addr, 'heap) jvm_state"
-  assumes wtp: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wtp: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes correct: "\<Phi> \<turnstile> t:(\<lfloor>xcp\<rfloor>, h, fr # frs) \<surd>"
   shows "\<Phi> \<turnstile> t:exception_step P xcp h fr frs \<surd>"
 proof -
@@ -155,7 +155,7 @@ declare defs1 [simp]
 
 lemma Invoke_correct: 
   fixes \<sigma>' :: "('addr, 'heap) jvm_state"
-  assumes wtprog: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wtprog: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes meth_C: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
   assumes ins:    "ins ! pc = Invoke M' n"
   assumes wti:    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
@@ -347,7 +347,7 @@ qed
 declare list_all2_Cons2 [iff]
 
 lemma Return_correct:
-  assumes wt_prog: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wt_prog: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
   assumes ins: "ins ! pc = Return"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
@@ -484,7 +484,7 @@ lemma Push_correct:
 declare [[simproc add: list_to_set_comprehension]]
 
 lemma Checkcast_correct:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
+"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
     P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
     ins!pc = Checkcast D; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
@@ -500,7 +500,7 @@ apply(fastforce simp add: conf_def intro: widen_trans)
 done
 
 lemma Instanceof_correct:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
+"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
     P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
     ins!pc = Instanceof Ty; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
@@ -1373,7 +1373,7 @@ text {*
   into another conforming state when one instruction is executed.
 *}
 theorem instr_correct:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
+"\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C;
   (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs); 
   \<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
@@ -1419,7 +1419,7 @@ end
 section {* Main *}
 
 lemma (in JVM_conf_read) BV_correct_1 [rule_format]:
-"\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; \<Phi> \<turnstile> t: \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>' \<longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"
+"\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t: \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>' \<longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"
 apply (simp only: split_tupled_all exec_1_iff)
 apply (rename_tac xp h frs)
 apply (case_tac xp)
@@ -1439,7 +1439,7 @@ apply(erule (1) exception_step_conform)
 done
 
 theorem (in JVM_progress) progress:
-  assumes wt: "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wt: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and cs: "\<Phi> \<turnstile> t: (xcp, h, f # frs)\<surd>"
   shows "\<exists>ta \<sigma>'. P,t \<turnstile> (xcp, h, f # frs) -ta-jvm\<rightarrow> \<sigma>'"
 proof -
@@ -1692,7 +1692,7 @@ proof -
 qed
 
 lemma (in JVM_heap_conf) BV_correct_initial:
-  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
+  shows "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<Phi> \<turnstile> start_tid:JVM_start_state' P C M vs \<surd>"
   apply (cases m)
   apply (unfold JVM_start_state'_def)
