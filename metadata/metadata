@@ -536,6 +536,9 @@ abstract =
   To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
   It even allows to compare complements with non-complements.
 depends-on = Datatype_Order_Generator
+extra-history = 
+  Change history:
+  [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)
 
 [FileRefinement]
 title = File Refinement
