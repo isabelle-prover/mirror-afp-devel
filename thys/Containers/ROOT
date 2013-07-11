@@ -26,4 +26,4 @@ session "Containers-Benchmarks" (AFP) = Containers +
     "ITP-2013/Benchmark_RBT"
     "ITP-2013/Benchmark_Set_Default"
     "ITP-2013/Benchmark_Set_LC"
-
+    "ITP-2013/Clauses"
