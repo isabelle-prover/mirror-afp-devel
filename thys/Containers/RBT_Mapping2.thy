@@ -22,10 +22,36 @@ subsection {* Type definition *}
 
 typedef ('a, 'b) mapping_rbt
   = "{t :: ('a :: corder, 'b) RBT_Impl.rbt. ord.is_rbt cless t \<or> ID CORDER('a) = None}"
-  morphisms impl_of Mapping_RBT
+  morphisms impl_of Mapping_RBT'
 proof
   show "RBT_Impl.Empty \<in> ?mapping_rbt" by(simp add: ord.Empty_is_rbt)
 qed
+
+definition Mapping_RBT :: "('a :: corder, 'b) rbt \<Rightarrow> ('a, 'b) mapping_rbt"
+where
+  "Mapping_RBT t = Mapping_RBT'
+  (if ord.is_rbt cless t \<or> ID CORDER('a) = None then t
+   else RBT_Impl.fold (ord.rbt_insert cless) t rbt.Empty)"
+
+lemma Mapping_RBT_inverse:
+  fixes y :: "('a :: corder, 'b) rbt"
+  assumes "y \<in> {t. ord.is_rbt cless t \<or> ID CORDER('a) = None}"
+  shows "impl_of (Mapping_RBT y) = y"
+using assms by(auto simp add: Mapping_RBT_def Mapping_RBT'_inverse)
+
+lemma impl_of_inverse: "Mapping_RBT (impl_of t) = t"
+by(cases t)(auto simp add: Mapping_RBT'_inverse Mapping_RBT_def)
+
+lemma type_definition_mapping_rbt': 
+  "type_definition impl_of Mapping_RBT 
+    {t :: ('a, 'b) rbt. ord.is_rbt cless t \<or> ID CORDER('a :: corder) = None}"
+by unfold_locales(rule mapping_rbt.impl_of impl_of_inverse Mapping_RBT_inverse)+
+
+lemmas Mapping_RBT_cases[cases type: mapping_rbt] = 
+  type_definition.Abs_cases[OF type_definition_mapping_rbt'] 
+  and Mapping_RBT_induct[induct type: mapping_rbt] =
+  type_definition.Abs_induct[OF type_definition_mapping_rbt'] and
+  Mapping_RBT_inject = type_definition.Abs_inject[OF type_definition_mapping_rbt']
 
 lemma rbt_eq_iff:
   "t1 = t2 \<longleftrightarrow> impl_of t1 = impl_of t2"
@@ -41,7 +67,7 @@ lemma Mapping_RBT_impl_of [simp]:
 
 subsection {* Operations *}
 
-setup_lifting type_definition_mapping_rbt
+setup_lifting type_definition_mapping_rbt'
 
 context fixes dummy :: "'a :: corder" begin
 

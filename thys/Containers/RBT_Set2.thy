@@ -335,6 +335,23 @@ by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF s
 
 end
 
+lemma set_keys_Mapping_RBT: "set (keys (Mapping_RBT t)) = set (RBT_Impl.keys t)"
+proof(cases t)
+  case Empty thus ?thesis
+    by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_corder_def Mapping_RBT'_inverse ord.is_rbt_def ord.rbt_sorted.simps)
+next
+  case (Branch c l k v r)
+  show ?thesis
+  proof(cases "is_corder TYPE('a) \<and> \<not> ord.is_rbt cless (Branch c l k v r)")
+    case False thus ?thesis using Branch
+      by(auto simp add: Mapping_RBT_def keys.rep_eq is_corder_def Mapping_RBT'_inverse simp del: not_None_eq)
+  next
+    case True
+    thus ?thesis using Branch
+      by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_corder_def Mapping_RBT'_inverse RBT_ext.linorder.is_rbt_fold_rbt_insert[OF ID_corder] linorder.rbt_insert_is_rbt[OF ID_corder] ord.Empty_is_rbt)(subst linorder.rbt_lookup_keys[OF ID_corder, symmetric], assumption, auto simp add: linorder.rbt_sorted_fold_insert[OF ID_corder] RBT_ext.linorder.rbt_lookup_fold_rbt_insert[OF ID_corder] RBT_ext.linorder.rbt_lookup_rbt_insert'[OF ID_corder] linorder.rbt_insert_rbt_sorted[OF ID_corder] ord.is_rbt_rbt_sorted ord.Empty_is_rbt dom_map_of_conv_image_fst RBT_Impl.keys_def ord.rbt_lookup.simps)
+  qed
+qed
+
 hide_const (open) member empty insert remove bulkload union keys fold fold_rev filter all ex product Id_on init
 
 end

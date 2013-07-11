@@ -1657,7 +1657,6 @@ lemma acc_code [code]:
   "acc A = bacc A (of_phantom (card_UNIV :: 'a card_UNIV))"
 by(simp add: card_UNIV acc_bacc_eq)
 
-
 lemma SUPR_code [code]:
   fixes xs :: "'a :: complete_lattice list"
   and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
@@ -1944,5 +1943,71 @@ instantiation phantom :: (type, set_impl) set_impl begin
 definition "SET_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom) (of_phantom SET_IMPL('b))"
 instance ..
 end
+
+subsection {* Pretty printing for sets *}
+
+text {*
+  @{term code_post} marks contexts (as hypothesis) in which we use code\_post as a
+  decision procedure rather than a pretty-printing engine. 
+  The intended use is to enable more rules when proving assumptions of rewrite rules.
+*}
+
+definition code_post :: bool where "code_post = True"
+
+lemma conj_code_post [code_post]: 
+  assumes code_post
+  shows "True & x \<longleftrightarrow> x" "False & x \<longleftrightarrow> False"
+by simp_all
+
+text {*
+  A flag to switch post-processing of sets on and off.
+  Use \verb$declare pretty_sets[code_post del]$ to disable pretty printing of sets in value.
+*}
+
+definition code_post_set :: bool
+where pretty_sets [code_post, simp]: "code_post_set = True"
+
+definition collapse_RBT_set :: "'a set_rbt \<Rightarrow> 'a :: corder set \<Rightarrow> 'a set"
+where "collapse_RBT_set r M = set (RBT_Set2.keys r) \<union> M"
+
+lemma RBT_set_collapse_RBT_set [code_post]:
+  fixes r :: "'a :: corder set_rbt"
+  assumes "code_post \<Longrightarrow> is_corder TYPE('a)" and code_post_set
+  shows "RBT_set r = collapse_RBT_set r {}"
+using assms
+by(clarsimp simp add: code_post_def is_corder_def RBT_set_def member_conv_keys collapse_RBT_set_def)
+
+lemma collapse_RBT_set_Branch [code_post]: 
+  "collapse_RBT_set (Mapping_RBT (Branch c l x v r)) M =
+   collapse_RBT_set (Mapping_RBT l) (insert x (collapse_RBT_set (Mapping_RBT r) M))"
+unfolding collapse_RBT_set_def
+by(auto simp add: is_corder_def set_keys_Mapping_RBT)
+
+lemma collapse_RBT_set_Empty [code_post]: 
+  "collapse_RBT_set (Mapping_RBT rbt.Empty) M = M"
+by(auto simp add: collapse_RBT_set_def set_keys_Mapping_RBT)
+
+definition collapse_DList_set :: "'a :: ceq set_dlist \<Rightarrow> 'a set"
+where "collapse_DList_set dxs = set (DList_Set.list_of_dlist dxs)"
+
+lemma DList_set_collapse_DList_set [code_post]:
+  fixes dxs :: "'a :: ceq set_dlist"
+  assumes "code_post \<Longrightarrow> is_ceq TYPE('a)" and code_post_set
+  shows "DList_set dxs = collapse_DList_set dxs"
+using assms
+by(clarsimp simp add: code_post_def DList_set_def is_ceq_def collapse_DList_set_def Collect_member)
+
+lemma collapse_DList_set_empty [code_post]: "collapse_DList_set (Abs_dlist []) = {}"
+by(simp add: collapse_DList_set_def Abs_dlist_inverse)
+
+lemma collapse_DList_set_Cons [code_post]: 
+  "collapse_DList_set (Abs_dlist (x # xs)) = insert x (collapse_DList_set (Abs_dlist xs))"
+by(simp add: collapse_DList_set_def set_list_of_dlist_Abs_dlist)
+
+lemma Set_Monad_code_post [code_post]:
+  assumes code_post_set
+  shows "Set_Monad [] = {}"
+  and "Set_Monad (x#xs) = insert x (Set_Monad xs)"
+by simp_all
 
 end

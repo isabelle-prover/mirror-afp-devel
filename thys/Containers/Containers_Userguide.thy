@@ -362,9 +362,11 @@ definition empty where "empty = Mapping.empty"
 declare (in -) mynamespace.empty_def [code]
 (*>*)
 text {* 
-  To see the effect of the different configurations, consider the following examples where @{term [names_short] "empty"} 
-  refers to @{term "Mapping.empty"}.
-
+  To see the effect of the different configurations, consider the following examples where @{term [names_short] "empty"} refers to @{term "Mapping.empty"}.
+  For that, we must disable pretty printing for sets as follows:
+*}
+declare (*<*)(in -) (*>*)pretty_sets[code_post del]
+text {*
   \begin{center}
     \small
     \begin{tabular}{ll}
@@ -384,7 +386,7 @@ text {*
       \\
       \midrule
       @{term [source] "{} :: string expr' set"}
-      &
+     &
       @{value [names_short] "{} :: string expr' set"}
       \\
       @{term [source] "{} :: (nat \<Rightarrow> nat) expr' set"}
@@ -411,7 +413,10 @@ text {*
   By default, @{typ bool} prefers distinct (associative) lists over RBTs, because there are just two elements.
   As @{typ "bool expr'"} enherits the choice for maps from @{typ bool}, an associative list implements @{term [source] "empty :: (bool expr', unit) mapping"}.
   For sets, in contrast, @{term "SET_IMPL('a expr')"} discards @{typ 'a}'s preferences and picks RBTs, because there is a comparison operation.
+
+  Finally, let's enable pretty-printing for sets again:
 *}
+declare (*<*)(in -) (*>*)pretty_sets [code_post]
 (*<*)
   (* The following value commands ensure that the code generator executes @{value ...} above,
      I could not find a way to specify [code] to @{value}. *)

@@ -8,7 +8,34 @@ imports
   List_Fusion
 begin
 
-section {* More operations for red-black trees *}
+section {* More on red-black trees *}
+
+subsection {* More lemmas *}
+
+context linorder begin
+
+lemma is_rbt_fold_rbt_insert:
+  "is_rbt t \<Longrightarrow> is_rbt (RBT_Impl.fold rbt_insert t' t)"
+by(simp add: rbt_insert_def is_rbt_fold_rbt_insertwk)
+
+lemma rbt_sorted_fold_insert: "rbt_sorted t \<Longrightarrow> rbt_sorted (RBT_Impl.fold rbt_insert t' t)"
+by(induct t' arbitrary: t)(simp_all add: rbt_insert_rbt_sorted)
+
+lemma rbt_lookup_rbt_insert': "rbt_sorted t \<Longrightarrow> rbt_lookup (rbt_insert k v t) = rbt_lookup t(k \<mapsto> v)"
+by(simp add: rbt_insert_def rbt_lookup_rbt_insertwk fun_eq_iff split: option.split)
+
+lemma rbt_lookup_fold_rbt_insert:
+  "rbt_sorted t2 \<Longrightarrow> 
+  rbt_lookup (RBT_Impl.fold rbt_insert t1 t2) = rbt_lookup t2 ++ map_of (rev (RBT_Impl.entries t1))"
+proof(induction t1 arbitrary: t2)
+  case Empty thus ?case by simp
+next
+  case (Branch c l x k r)
+  show ?case using Branch.prems
+    by(simp add: map_add_def Branch.IH rbt_insert_rbt_sorted rbt_sorted_fold_insert rbt_lookup_rbt_insert' fun_eq_iff split: option.split)
+qed
+
+end
 
 subsection {* Build the cross product of two RBTs *}
 

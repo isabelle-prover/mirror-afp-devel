@@ -42,6 +42,9 @@ in [(@{const_syntax ceq}, ceq_tr')]
 end
 *}
 
+definition is_ceq :: "'a :: ceq itself \<Rightarrow> bool"
+where "is_ceq _ \<longleftrightarrow> ID CEQ('a) \<noteq> None"
+
 subsection {* Type class instances for HOL types *}
 
 instantiation unit :: ceq begin
@@ -49,55 +52,112 @@ definition "CEQ(unit) = Some (\<lambda>_ _. True)"
 instance by(intro_classes)(simp add: ceq_unit_def fun_eq_iff)
 end
 
+lemma is_ceq_unit [simp, code_post]: "is_ceq TYPE(unit)"
+by(simp add: is_ceq_def ceq_unit_def ID_Some)
+
 instantiation bool :: ceq begin
 definition "CEQ(bool) = Some op ="
 instance by(intro_classes)(simp add: ceq_bool_def)
 end
+
+lemma is_ceq_bool [simp, code_post]: "is_ceq TYPE(bool)"
+by(simp add: is_ceq_def ceq_bool_def ID_Some)
 
 instantiation nat :: ceq begin
 definition "CEQ(nat) = Some op ="
 instance by(intro_classes)(simp add: ceq_nat_def)
 end
 
+lemma is_ceq_nat [simp, code_post]: "is_ceq TYPE(nat)"
+by(simp add: is_ceq_def ceq_nat_def ID_Some)
+
 instantiation int :: ceq begin
 definition "CEQ(int) = Some op ="
 instance by(intro_classes)(simp add: ceq_int_def)
 end
+
+lemma is_ceq_int [simp, code_post]: "is_ceq TYPE(int)"
+by(simp add: is_ceq_def ceq_int_def ID_Some)
 
 instantiation Enum.finite_1 :: ceq begin
 definition "CEQ(Enum.finite_1) = Some op ="
 instance by(intro_classes)(simp add: ceq_finite_1_def)
 end
 
+lemma is_ceq_finite_1 [simp, code_post]: "is_ceq TYPE(Enum.finite_1)"
+by(simp add: is_ceq_def ceq_finite_1_def ID_Some)
+
 instantiation Enum.finite_2 :: ceq begin
 definition "CEQ(Enum.finite_2) = Some op ="
 instance by(intro_classes)(simp add: ceq_finite_2_def)
 end
+
+lemma is_ceq_finite_2 [simp, code_post]: "is_ceq TYPE(Enum.finite_2)"
+by(simp add: is_ceq_def ceq_finite_2_def ID_Some)
 
 instantiation Enum.finite_3 :: ceq begin
 definition "CEQ(Enum.finite_3) = Some op ="
 instance by(intro_classes)(simp add: ceq_finite_3_def)
 end
 
+lemma is_ceq_finite_3 [simp, code_post]: "is_ceq TYPE(Enum.finite_3)"
+by(simp add: is_ceq_def ceq_finite_3_def ID_Some)
+
+instantiation Enum.finite_4 :: ceq begin
+definition "CEQ(Enum.finite_4) = Some op ="
+instance by(intro_classes)(simp add: ceq_finite_4_def)
+end
+
+lemma is_ceq_finite_4 [simp, code_post]: "is_ceq TYPE(Enum.finite_4)"
+by(simp add: is_ceq_def ceq_finite_4_def ID_Some)
+
+instantiation Enum.finite_5 :: ceq begin
+definition "CEQ(Enum.finite_5) = None"
+instance by(intro_classes)(simp add: ceq_finite_5_def)
+end
+
+lemma is_ceq_finite_5 [simp]: "\<not> is_ceq TYPE(Enum.finite_5)"
+by(simp add: is_ceq_def ceq_finite_5_def ID_None)
+
 instantiation integer :: ceq begin
 definition "CEQ(integer) = Some op ="
 instance by(intro_classes)(simp add: ceq_integer_def)
 end
+
+lemma is_ceq_integer [simp, code_post]: "is_ceq TYPE(integer)"
+by(simp add: is_ceq_def ceq_integer_def ID_Some)
 
 instantiation natural :: ceq begin
 definition "CEQ(natural) = Some op ="
 instance by(intro_classes)(simp add: ceq_natural_def)
 end
 
+lemma is_ceq_natural [simp, code_post]: "is_ceq TYPE(natural)"
+by(simp add: is_ceq_def ceq_natural_def ID_Some)
+
 instantiation nibble :: ceq begin
 definition "CEQ(nibble) \<equiv> Some op ="
 instance by intro_classes(simp add: ceq_nibble_def)
 end
 
+lemma is_ceq_nibble [simp, code_post]: "is_ceq TYPE(nibble)"
+by(simp add: is_ceq_def ceq_nibble_def ID_Some)
+
 instantiation char :: ceq begin
 definition "CEQ(char) = Some op ="
 instance by(intro_classes)(simp add: ceq_char_def)
 end
+
+lemma is_ceq_char [simp, code_post]: "is_ceq TYPE(char)"
+by(simp add: is_ceq_def ceq_char_def ID_Some)
+
+instantiation String.literal :: ceq begin
+definition "CEQ(String.literal) = Some op ="
+instance by(intro_classes)(simp add: ceq_literal_def)
+end
+
+lemma is_ceq_literal [simp, code_post]: "is_ceq TYPE(String.literal)"
+by(simp add: is_ceq_def ceq_literal_def ID_Some)
 
 instantiation sum :: (ceq, ceq) ceq begin
 text {* Do not use @{term "op ="} because that would pull in @{class equal} on component types for code generation *}
@@ -122,6 +182,10 @@ proof(intro_classes)
 qed
 end
 
+lemma is_ceq_sum [simp, code_post]:
+  "is_ceq TYPE('a + 'b) \<longleftrightarrow> is_ceq TYPE('a :: ceq) \<and> is_ceq TYPE('b :: ceq)"
+by(simp add: is_ceq_def ceq_sum_def ID_Some ID_None split: option.split)
+
 instantiation prod :: (ceq, ceq) ceq begin
 definition "CEQ('a * 'b) =
   (case ID CEQ('a) of None \<Rightarrow> None
@@ -142,6 +206,10 @@ proof
 qed
 end
 
+lemma is_ceq_prod [simp, code_post]:
+  "is_ceq TYPE('a \<times> 'b) \<longleftrightarrow> is_ceq TYPE('a :: ceq) \<and> is_ceq TYPE('b :: ceq)"
+by(simp add: is_ceq_def ceq_prod_def ID_Some ID_None split: option.split)
+
 instantiation list :: (ceq) ceq begin
 definition "CEQ('a list) = Option.map (\<lambda>eq. (\<lambda>xs ys. list_all2 eq xs ys)) (ID CEQ('a))"
 instance
@@ -155,6 +223,10 @@ proof
     by(simp add: eq[abs_def] list_all2_eq[symmetric, abs_def])
 qed
 end
+
+lemma is_ceq_list [simp, code_post]:
+  "is_ceq TYPE('a list) \<longleftrightarrow> is_ceq TYPE('a :: ceq)"
+by(simp add: is_ceq_def ceq_list_def ID_def)
 
 instantiation option :: (ceq) ceq begin
 definition "CEQ('a option) =
@@ -174,15 +246,17 @@ proof
 qed
 end
 
+lemma is_ceq_option [simp, code_post]:
+  "is_ceq TYPE('a option) \<longleftrightarrow> is_ceq TYPE('a :: ceq)"
+by(simp add: is_ceq_def ceq_option_def ID_def)
+
 instantiation "fun" :: (type, type) ceq begin
 definition "CEQ('a \<Rightarrow> 'b) = None"
 instance by(intro_classes)(simp add: ceq_fun_def)
 end
 
-instantiation String.literal :: ceq begin
-definition "CEQ(String.literal) = Some op ="
-instance by(intro_classes)(simp add: ceq_literal_def)
-end
+lemma is_ceq_fun [simp]: "\<not> is_ceq TYPE('a \<Rightarrow> 'b)"
+by(simp add: is_ceq_def ceq_fun_def ID_None)
 
 definition set_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" 
 where [code del]: "set_eq = op ="
@@ -196,6 +270,9 @@ instantiation set :: (ceq) ceq begin
 definition "CEQ('a set) = (case ID CEQ('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some set_eq)"
 instance by(intro_classes)(simp add: ceq_set_def set_eq_def split: option.splits)
 end
+
+lemma is_ceq_set [simp, code_post]: "is_ceq TYPE('a set) \<longleftrightarrow> is_ceq TYPE('a :: ceq)"
+by(simp add: is_ceq_def ceq_set_def ID_None ID_Some split: option.split)
 
 lemma ID_ceq_set_not_None_iff [simp]: "ID CEQ('a set) \<noteq> None \<longleftrightarrow> ID CEQ('a :: ceq) \<noteq> None"
 by(simp add: ceq_set_def ID_def split: option.splits)

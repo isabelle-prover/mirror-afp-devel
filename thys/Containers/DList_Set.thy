@@ -115,12 +115,38 @@ subsection {* The type of distinct lists *}
 
 typedef 'a :: ceq set_dlist =
   "{xs::'a list. equal_base.list_distinct ceq' xs \<or> ID CEQ('a) = None}"
-  morphisms list_of_dlist Abs_dlist
+  morphisms list_of_dlist Abs_dlist'
 proof
   show "[] \<in> ?set_dlist" by(simp)
 qed
 
-setup_lifting type_definition_set_dlist
+definition Abs_dlist :: "'a :: ceq list \<Rightarrow> 'a set_dlist" 
+where 
+  "Abs_dlist xs = Abs_dlist' 
+  (if equal_base.list_distinct ceq' xs \<or> ID CEQ('a) = None then xs 
+   else equal_base.list_remdups ceq' xs)"
+
+lemma Abs_dlist_inverse:
+  fixes y :: "'a :: ceq list"
+  assumes "y \<in> {xs. equal_base.list_distinct ceq' xs \<or> ID CEQ('a) = None}"
+  shows "list_of_dlist (Abs_dlist y) = y"
+using assms by(auto simp add: Abs_dlist_def Abs_dlist'_inverse)
+
+lemma list_of_dlist_inverse: "Abs_dlist (list_of_dlist dxs) = dxs"
+by(cases dxs)(simp add: Abs_dlist'_inverse Abs_dlist_def)
+
+lemma type_definition_set_dlist':
+  "type_definition list_of_dlist Abs_dlist
+  {xs :: 'a :: ceq list. equal_base.list_distinct ceq' xs \<or> ID CEQ('a) = None}"
+by(unfold_locales)(rule set_dlist.list_of_dlist Abs_dlist_inverse list_of_dlist_inverse)+
+
+lemmas Abs_dlist_cases[cases type: set_dlist] = 
+  type_definition.Abs_cases[OF type_definition_set_dlist'] 
+  and Abs_dlist_induct[induct type: set_dlist] =
+  type_definition.Abs_induct[OF type_definition_set_dlist'] and
+  Abs_dlist_inject = type_definition.Abs_inject[OF type_definition_set_dlist']
+
+setup_lifting type_definition_set_dlist'
 
 subsection {* Operations *}
 
@@ -252,6 +278,10 @@ proof -
   from this[of "list_of_dlist dxs2" "list_of_dlist dxs1" "[]"]
   show ?thesis by(simp add: product.rep_eq fold.rep_eq)
 qed
+
+lemma set_list_of_dlist_Abs_dlist:
+  "set (list_of_dlist (Abs_dlist xs)) = set xs"
+by(clarsimp simp add: Abs_dlist_def Abs_dlist'_inverse)(subst Abs_dlist'_inverse, auto dest: equal.equal_eq[OF ID_ceq])
 
 context assumes ID_ceq_neq_None: "ID CEQ('a :: ceq) \<noteq> None"
 begin
