@@ -271,10 +271,8 @@ function dbind where
   by pat_completeness auto
 termination by lexicographic_order
 
-setup {*
-  Adhoc_Overloading.add_variant 
-  @{const_name Monad_Syntax.bind} @{const_name dbind}
-*}
+adhoc_overloading
+  Monad_Syntax.bind dbind
 
 lemma [code]:
   "dbind (dRETURN x) f = f x"

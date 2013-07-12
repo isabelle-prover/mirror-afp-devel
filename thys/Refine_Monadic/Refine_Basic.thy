@@ -403,10 +403,8 @@ lemma bind_SUCCEED[simp]: "bind SUCCEED f = SUCCEED"
 lemma bind_RES: "bind (RES X) f = Sup (f`X)" unfolding bind_def 
   by (auto)
 
-setup {*
-  Adhoc_Overloading.add_variant 
-  @{const_name Monad_Syntax.bind} @{const_name bind}
-*}
+adhoc_overloading
+  Monad_Syntax.bind Refine_Basic.bind
 
 lemma pw_bind_nofail[refine_pw_simps]:
   "nofail (bind M f) \<longleftrightarrow> (nofail M \<and> (\<forall>x. inres M x \<longrightarrow> nofail (f x)))"
@@ -801,7 +799,6 @@ lemma option_rule[refine_vcg]:
 
 lemma Let_rule[refine_vcg]:
   "f x \<le> SPEC \<Phi> \<Longrightarrow> Let x f \<le> SPEC \<Phi>" by auto
-
 
 text {* The following lemma shows that greatest and least fixed point are equal,
   if we can provide a variant. *}
