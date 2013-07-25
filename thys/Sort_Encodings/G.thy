@@ -82,7 +82,7 @@ proof-
   ultimately have "|?K| \<le>o |?L|" unfolding card_of_ordLeq[symmetric] by auto
   moreover have "countable ?L" using countable_wtFsym countable_tp
   by (metis countable_Plus)
-  ultimately show ?thesis by(rule ordLeq_countable)
+  ultimately show ?thesis by(rule countable_ordLeq)
 qed
 
 lemma countable_GE_wtPsym: "countable (Collect GE_wtPsym)" (is "countable ?K")
@@ -95,7 +95,7 @@ proof-
   ultimately have "|?K| \<le>o |?L|" unfolding card_of_ordLeq[symmetric] by auto
   moreover have "countable ?L" using countable_wtPsym countable_tp
   by (metis countable_Plus)
-  ultimately show ?thesis by(rule ordLeq_countable)
+  ultimately show ?thesis by(rule countable_ordLeq)
 qed
 
 end (* context ProblemIkTpartG *)

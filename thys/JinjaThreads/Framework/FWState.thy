@@ -188,15 +188,9 @@ translations
   "_ta_lock la l" == "CONST inject_thread_action (CONST Pair la l)"
   "_ta_block (_ta_snoc btas bta)" == "CONST thread_action'_to_thread_action bta (_ta_block btas)"
 
-setup {*
-  Adhoc_Overloading.add_overloaded @{const_name inject_thread_action}
-  #> Adhoc_Overloading.add_variant @{const_name inject_thread_action} @{const_name NewThreadAction}
-  #> Adhoc_Overloading.add_variant @{const_name inject_thread_action} @{const_name ConditionalAction}
-  #> Adhoc_Overloading.add_variant @{const_name inject_thread_action} @{const_name WaitSetAction}
-  #> Adhoc_Overloading.add_variant @{const_name inject_thread_action} @{const_name InterruptAction}
-  #> Adhoc_Overloading.add_variant @{const_name inject_thread_action} @{const_name ObsAction}
-  #> Adhoc_Overloading.add_variant @{const_name inject_thread_action} @{const_name LockAction}
-*}
+
+adhoc_overloading
+  inject_thread_action NewThreadAction ConditionalAction WaitSetAction InterruptAction ObsAction LockAction
 
 lemma ta_upd_proj_simps [simp]:
   shows ta_obs_proj_simps:

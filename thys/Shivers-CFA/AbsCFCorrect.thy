@@ -39,19 +39,20 @@ Therefore, we use a module by Christian Sternagel and Alexander Krauss for ad-ho
 
 consts abs :: "'a \<Rightarrow> 'b" ("|_|")
 
-setup {* Adhoc_Overloading.add_overloaded @{const_name abs} *}
-
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_cnt} *}
+adhoc_overloading
+  abs abs_cnt
 
 definition abs_benv :: "benv \<Rightarrow> 'c::contour_a \<abenv>"
   where "abs_benv \<beta> = Option.map abs_cnt \<circ> \<beta>"
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_benv} *}
+adhoc_overloading
+  abs abs_benv
 
 primrec abs_closure :: "closure \<Rightarrow> 'c::contour_a \<aclosure>"
   where "abs_closure (l,\<beta>) = (l,|\<beta>| )"
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_closure} *}
+adhoc_overloading
+  abs abs_closure
 
 primrec abs_d :: "d \<Rightarrow> 'c::contour_a \<ad>"
   where "abs_d (DI i) = {}"
@@ -59,29 +60,34 @@ primrec abs_d :: "d \<Rightarrow> 'c::contour_a \<ad>"
       | "abs_d (DC cl) = {PC |cl|}"
       | "abs_d (Stop) = {AStop}"
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_d} *}
+adhoc_overloading
+  abs abs_d  
 
 definition abs_venv :: "venv \<Rightarrow> 'c::contour_a \<avenv>"
   where "abs_venv ve = (\<lambda>(v,b_a). \<Union>{(case ve (v,b) of Some d \<Rightarrow> |d| | None \<Rightarrow> {}) | b. |b| = b_a })"
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_venv} *}
+adhoc_overloading
+  abs abs_venv
 
 definition abs_ccache :: "ccache \<Rightarrow> 'c::contour_a \<accache>"
   where "abs_ccache cc = (\<Union>((c,\<beta>),d) \<in> cc . {((c,abs_benv \<beta>), p) | p . p\<in>abs_d d})"
 (* equivalent, but I already have cont2cont for UNION
   where "abs_ccache cc = { ((c,abs_benv \<beta>),p) | c \<beta> p d . ((c,\<beta>),d) \<in> cc \<and> p \<in> abs_d d}" *)
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_ccache} *}
+adhoc_overloading
+  abs abs_ccache
 
 fun abs_fstate :: "fstate \<Rightarrow> 'c::contour_a \<afstate>"
   where "abs_fstate (d,ds,ve,b) = (the_elem |d|, map abs_d ds, |ve|, |b| )"
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_fstate} *}
+adhoc_overloading
+  abs abs_fstate
 
 fun abs_cstate :: "cstate \<Rightarrow> 'c::contour_a \<acstate>"
   where "abs_cstate (c,\<beta>,ve,b) = (c, |\<beta>|, |ve|, |b| )"
 
-setup {* Adhoc_Overloading.add_variant @{const_name abs} @{const_name abs_cstate} *}
+adhoc_overloading
+  abs abs_cstate
 
 subsection {* Lemmas about abstraction functions *}
 
@@ -117,36 +123,42 @@ The family of relations defined here capture the notion of safe approximation.
 
 consts approx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<lessapprox> _")
 
-setup {* Adhoc_Overloading.add_overloaded @{const_name approx} *}
-
 definition venv_approx :: "'c \<avenv> \<Rightarrow>'c \<avenv> \<Rightarrow> bool"
   where "venv_approx = smap_less"
 
-setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name venv_approx} *}
+adhoc_overloading
+  approx venv_approx
 
 definition ccache_approx :: "'c \<accache> \<Rightarrow>'c \<accache> \<Rightarrow> bool"
   where "ccache_approx = less_eq"
 
-setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name ccache_approx} *}
+adhoc_overloading
+  approx ccache_approx
 
 definition d_approx :: "'c \<ad> \<Rightarrow>'c \<ad> \<Rightarrow> bool"
   where "d_approx = less_eq"
 
-setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name d_approx} *}
+adhoc_overloading
+  approx d_approx
 
 definition ds_approx :: "'c \<ad> list \<Rightarrow>'c \<ad> list \<Rightarrow> bool"
   where "ds_approx = list_all2 d_approx"
 
-setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name ds_approx} *}
+adhoc_overloading
+  approx ds_approx
 
 inductive fstate_approx :: "'c \<afstate> \<Rightarrow>'c \<afstate> \<Rightarrow> bool"
   where "\<lbrakk> ve \<lessapprox> ve' ; ds \<lessapprox> ds' \<rbrakk>
          \<Longrightarrow> fstate_approx (proc,ds,ve,b) (proc,ds',ve',b)"
-setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name fstate_approx} *}
+
+adhoc_overloading
+  approx fstate_approx
 
 inductive cstate_approx :: "'c \<acstate> \<Rightarrow>'c \<acstate> \<Rightarrow> bool"
   where "\<lbrakk> ve \<lessapprox> ve' \<rbrakk> \<Longrightarrow> cstate_approx (c,\<beta>,ve,b) (c,\<beta>,ve',b)"
-setup {* Adhoc_Overloading.add_variant @{const_name approx} @{const_name cstate_approx} *}
+
+adhoc_overloading
+  approx cstate_approx
 
 subsection {* Lemmas about the approximation relation *}
 
