@@ -103,10 +103,10 @@ apply(cases e)
 apply(simp_all add: inf_sup_aci sup.assoc)
 done
 
-lemma sup_bot1: "sup_class.sup bot a = (a :: 'a :: {semilattice_sup, bot})"
+lemma sup_bot1: "sup_class.sup bot a = (a :: 'a :: {semilattice_sup, order_bot})"
 by(rule sup_absorb2)auto
 
-lemma sup_bot2: "sup_class.sup a bot = (a :: 'a :: {semilattice_sup, bot})"
+lemma sup_bot2: "sup_class.sup a bot = (a :: 'a :: {semilattice_sup, order_bot})"
 by(rule sup_absorb1) auto
 
 lemma sup_val_case_val_case_same:

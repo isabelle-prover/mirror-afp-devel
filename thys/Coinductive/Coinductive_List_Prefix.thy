@@ -38,7 +38,7 @@ by(simp add: less_eq_llist_def fun_eq_iff)
 lemma less_llist_conv_lstrict_prefix [iff]: "op < = lstrict_prefix"
 by(simp add: less_llist_def fun_eq_iff)
 
-instantiation llist :: (type) bot begin
+instantiation llist :: (type) order_bot begin
 
 definition "bot = LNil"
 

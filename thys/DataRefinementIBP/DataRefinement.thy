@@ -75,7 +75,7 @@ theorem data_refinement_choice2:
 
 
 theorem data_refinement_top [simp]:
-  "DataRefinement S1 D D' \<top>"
+  "DataRefinement S1 D D' (\<top>::_::order_top)"
   by (simp add: DataRefinement_def le_fun_def top_fun_def)
 
 definition apply_fun::"('a\<Rightarrow>'b\<Rightarrow>'c)\<Rightarrow>('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'c" (infixl ".." 5) where

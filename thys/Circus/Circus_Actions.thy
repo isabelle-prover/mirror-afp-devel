@@ -7,7 +7,7 @@
 header {* Isabelle/\Circus *}
 
 theory Circus_Actions
-imports HOLCF CSP_Processes
+imports "~~/src/HOL/HOLCF/HOLCF" CSP_Processes
 begin
 
 subsection{* Circus actions \label{sec:Circus_actions} *}
@@ -15,7 +15,7 @@ subsection{* Circus actions \label{sec:Circus_actions} *}
 text {* In this subsection, we introduce definitions for Circus actions with 
 some useful theorems and lemmas. *}
 
-default_sort type
+default_sort type   
 
 subsubsection {* Definitions *}
 
@@ -518,6 +518,14 @@ proof
       apply (rule Sup_is_action[simplified])
       apply (auto)
       done
+  }
+  {
+    show "Sup {} = (bot :: ('a,'b) action)"
+      by (auto simp: bot_action Sup_action)
+  }
+  {
+    show "Inf {} = (top :: ('a,'b) action)"
+      by (auto simp: top_action Inf_action)
   }
 qed
 

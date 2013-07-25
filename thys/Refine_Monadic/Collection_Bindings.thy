@@ -75,7 +75,7 @@ subsubsection {* Monotonicity for Iterators *}
 lemma it_mono_aux:
   assumes COND: "\<And>\<sigma> \<sigma>'. \<sigma>\<le>\<sigma>' \<Longrightarrow> c \<sigma> \<noteq> c \<sigma>' \<Longrightarrow> \<sigma>=bot \<or> \<sigma>'=top "
   assumes STRICT: "\<And>x. f x bot = bot" "\<And>x. f' x top = top"
-  assumes B: "\<sigma>\<le>\<sigma>'"
+  assumes B: "(\<sigma>::'a::{order_bot,order_top}) \<le> \<sigma>'"
   assumes A: "\<And>a x x'. x\<le>x' \<Longrightarrow> f a x \<le> f' a x'"
   shows "foldli l c f \<sigma> \<le> foldli l c f' \<sigma>'"
 proof -

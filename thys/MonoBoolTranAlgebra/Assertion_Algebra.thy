@@ -167,6 +167,11 @@ next
   fix z :: "'a Assertion" fix A assume A: "\<And>x . x \<in> A \<Longrightarrow> x \<le> z" from A show "Sup A \<le> z"
     by (rule Sup2)
 next
+  show "Inf {} = (\<top>::'a Assertion)"
+    by (auto simp: Inf_Assertion_def Sup_Assertion_def compl_bot_eq [symmetric] bot_Assertion_def)
+next
+  show "Sup {} = (\<bottom>::'a Assertion)"
+    by (auto simp: Sup_Assertion_def bot_Assertion_def)
 qed
 end
 
