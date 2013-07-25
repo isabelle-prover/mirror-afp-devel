@@ -29,7 +29,7 @@ lemma mono_comp: "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f o g)
 text {*Some lattice simplification rules*}
 
 lemma inf_bot_bot: (* FIXME *)
-  "(x::'a::{semilattice_inf,bot}) \<sqinter> \<bottom> = \<bottom>"
+  "(x::'a::{semilattice_inf,order_bot}) \<sqinter> \<bottom> = \<bottom>"
   apply (rule antisym)
   by auto
 

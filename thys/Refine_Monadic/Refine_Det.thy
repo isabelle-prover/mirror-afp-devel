@@ -93,9 +93,6 @@ begin
     apply (case_tac x, simp_all, case_tac [!] y, 
       simp_all, case_tac [!] z, simp_all) []
 
-    apply (case_tac a, simp_all add: bot_dres_def) []
-    apply (case_tac a, simp_all add: top_dres_def) []
-
     apply (case_tac x)
     apply (auto simp add: Inf_dres_def) [3]
 
@@ -140,6 +137,11 @@ begin
       apply force
 
       apply (case_tac x, force+)[]
+
+    apply (auto simp: top_dres_def Inf_dres_def)
+
+    apply (auto simp: bot_dres_def Sup_dres_def)
+
     done
 
 end

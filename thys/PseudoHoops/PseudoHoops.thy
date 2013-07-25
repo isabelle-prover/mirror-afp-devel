@@ -723,7 +723,7 @@ sublocale pseudo_hoop_lattice <  distrib_lattice "op \<sqinter>" "op \<le>" "op 
   apply (rule lemma_2_9_ii)
   by (simp add: supremum_pair)
 
-class bounded_semilattice_inf_top = semilattice_inf + top
+class bounded_semilattice_inf_top = semilattice_inf + order_top
 begin
 lemma inf_eq_top_iff [simp]:
   "(inf x y = top) = (x = top \<and> y = top)"

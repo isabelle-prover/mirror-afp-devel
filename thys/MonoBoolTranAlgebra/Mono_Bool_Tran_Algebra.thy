@@ -24,7 +24,7 @@ class star =
 class dual_star = 
   fixes dual_star::"'a \<Rightarrow> 'a" ("(_ ^ \<otimes>)" [81] 80)
 
-class mbt_algebra = monoid_mult + dual + omega + distrib_lattice + top + bot + star + dual_star +
+class mbt_algebra = monoid_mult + dual + omega + distrib_lattice + order_top + order_bot + star + dual_star +
   assumes
       dual_le: "(x \<le> y) = (y ^ o \<le> x ^ o)"
   and dual_dual [simp]: "(x ^ o) ^ o = x"
@@ -756,7 +756,7 @@ subsection{*Monotonic Boolean trasformers algebra with post condition statement*
 definition
   "post_fun (p::'a::order) q = (if p \<le> q then \<top> else \<bottom>)"
 
-lemma post_mono [simp]: "(post_fun p) \<in> MonoTran"
+lemma post_mono [simp]: "(post_fun (p::_::{order_bot,order_top})) \<in> MonoTran"
    apply (simp add: post_fun_def MonoTran_def mono_def, safe)
    apply (subgoal_tac "p \<le> y", simp)
    by (rule_tac y = x in order_trans, simp_all)

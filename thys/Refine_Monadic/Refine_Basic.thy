@@ -161,12 +161,12 @@ instance
   apply (case_tac x, (case_tac [!] y)?, auto) []
   apply (case_tac x, (case_tac [!] y)?, auto) []
   apply (case_tac x, case_tac [!] y, case_tac [!] z, auto) []
-  apply (case_tac a, auto) []
-  apply (case_tac a, auto) []
   apply (case_tac x, auto) []
   apply (case_tac z, fastforce+) []
   apply (case_tac x, auto) []
   apply (case_tac z, fastforce+) []
+  apply auto []
+  apply auto []
   done
   
 end

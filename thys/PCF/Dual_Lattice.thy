@@ -185,7 +185,7 @@ instance dual :: (distrib_lattice) distrib_lattice
 
 subsection {* Top and bottom elements *}
 
-instantiation dual :: (top) bot
+instantiation dual :: (order_top) order_bot
 begin
 
 definition
@@ -196,7 +196,7 @@ instance
 
 end
 
-instantiation dual :: (bot) top
+instantiation dual :: (order_bot) order_top
 begin
 
 definition

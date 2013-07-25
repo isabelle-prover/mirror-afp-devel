@@ -98,10 +98,7 @@ end
 lemma [simp]: "\<bottom> \<in> MonoTran"
   by (simp add: MonoTran_def mono_def bot_fun_def)
 
-
-class order_bot = order + bot
-
-instantiation MonoTran :: (order_bot) bot
+instantiation MonoTran :: (order_bot) order_bot
 begin
 
 definition
@@ -116,9 +113,7 @@ end
 lemma [simp]: "\<top> \<in> MonoTran"
   by (simp add: MonoTran_def mono_def top_fun_def)
 
-class order_top = order + top
-
-instantiation MonoTran :: (order_top) top
+instantiation MonoTran :: (order_top) order_top
 begin
 
 definition
@@ -241,6 +236,11 @@ next
     apply (simp add: Sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
     by (rule Sup_least, blast)
 next
+  show "Inf {} = (\<top>::'a MonoTran)"
+    by (auto simp: Inf_MonoTran_def top_MonoTran_def)
+next
+  show "Sup {} = (\<bottom>::'a MonoTran)"
+    by (auto simp: Sup_MonoTran_def bot_MonoTran_def)
 qed
 end
 

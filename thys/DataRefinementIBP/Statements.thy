@@ -84,13 +84,13 @@ lemma mono_demonic [simp]: "mono [:Q:]"
   by auto
 
 theorem demonic_bottom:
-  "[:R:] (\<bottom>::('a::{order, bot})) = {s . (R s) = \<bottom>}"
+  "[:R:] (\<bottom>::('a::order_bot)) = {s . (R s) = \<bottom>}"
   apply (unfold demonic_def, safe, simp_all)
   apply (rule antisym)
   by auto
 
 theorem demonic_bottom_top [simp]:
-  "[:\<bottom>:]  = \<top>"
+  "[:(\<bottom>::_::order_bot):]  = \<top>"
   by (simp add: fun_eq_iff inf_fun_def sup_fun_def demonic_def top_fun_def bot_fun_def)
 
 theorem demonic_sup_inf:
@@ -107,7 +107,7 @@ such that $Q\ s \ s'$, then the angelic update of $Q$ fails in $s$.
 *}
 
 definition
-  angelic :: "('a \<Rightarrow> 'b\<Colon>{semilattice_inf,bot}) \<Rightarrow> 'b \<Rightarrow> 'a set" 
+  angelic :: "('a \<Rightarrow> 'b\<Colon>{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a set" 
                ("{: _ :}" [0] 1000) where
   "{:Q:} p = {s . (Q s) \<sqinter> p \<noteq> \<bottom>}"
 

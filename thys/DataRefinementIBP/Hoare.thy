@@ -64,7 +64,7 @@ lemma hoare_demonic: "\<Turnstile> P {| [:R:] |} Q = (\<forall> s . s \<in> P \<
   by auto
 
 lemma hoare_not_guard:
-  "mono S \<Longrightarrow> \<Turnstile> p {| S |} q = \<Turnstile> (p \<squnion> (- grd S)) {| S |} q"
+  "mono (S :: (_::order_bot) \<Rightarrow> _) \<Longrightarrow> \<Turnstile> p {| S |} q = \<Turnstile> (p \<squnion> (- grd S)) {| S |} q"
   apply (simp add: Hoare_def grd_def, safe)
   apply (drule monoD)
   by auto
@@ -89,7 +89,7 @@ theorem lfp_wf_induction:
 definition
   "post_fun (p::'a::order) q = (if p \<le> q then \<top> else \<bottom>)"
 
-lemma post_mono [simp]: "mono (post_fun p)"
+lemma post_mono [simp]: "mono (post_fun p :: (_::{order_bot,order_top}))"
    apply (simp add: post_fun_def  mono_def, safe)
    apply (subgoal_tac "p \<le> y", simp)
    by (rule_tac y = x in order_trans, simp_all)

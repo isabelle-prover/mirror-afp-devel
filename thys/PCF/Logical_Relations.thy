@@ -142,9 +142,15 @@ definition
 lemma mklr_Inf: "unlr (Inf A) = Inf (unlr ` A)"
   unfolding Inf_admS_def by (simp add: admS_def)
 
+lemma INT_admS_bot [simp]:
+  "(\<Inter>R. unlr R) = {\<bottom>}"
+by (auto, metis singletonE unlr_bot)
+
 instance
 apply default
-apply (auto simp add: less_eq_admS_def mklr_Inf Sup_admS_def)
+apply (auto simp add:
+ less_eq_admS_def mklr_Inf Sup_admS_def
+ Inf_admS_def bot_admS_def top_admS_def admS_def)
 done
 
 end
@@ -483,9 +489,17 @@ definition
 lemma mksynlr_Inf: "unsynlr (Inf A) = Inf (unsynlr ` A)"
   unfolding Inf_synlr_def by (simp add: admS_def synlr_def)
 
+lemma INT_synlr_bot [simp]:
+  "(\<Inter>R. unsynlr R) = {\<bottom>} \<times> UNIV"
+apply auto
+apply (drule spec[of _ "mksynlr ({\<bottom>} \<times> UNIV)"])
+apply (metis bot_synlr_def mem_Sigma_iff singletonE unsynlr_bot)
+done
+
 instance
 apply default
 apply (auto simp add: less_eq_synlr_def mksynlr_Inf Sup_synlr_def)
+apply (auto simp add: Inf_synlr_def bot_synlr_def top_synlr_def)
 done
 
 end
