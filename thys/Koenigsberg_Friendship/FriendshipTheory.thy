@@ -631,9 +631,9 @@ proof -
       have "v1\<noteq>v2" by (metis `C1 = {n. R v1 n}` `C1 \<noteq> C2` `C2 = {n. R v2 n}`)
       thus "C1 \<inter> C2 ={}" by (metis `C1 = {n. R v1 n}` `C2 = {n. R v2 n}` assms(4))
     qed
-  moreover have "\<Union>(\<lambda>x. {n. R x n}) ` A = (\<Union>x\<in>A. {n. R x n})" by auto
+  moreover have "\<Union>((\<lambda>x. {n. R x n}) ` A) = (\<Union>x\<in>A. {n. R x n})" by auto
   moreover have "finite ((\<lambda>x. {n. R x n}) ` A )" by (metis assms(3) finite_imageI)
-  moreover have "finite (\<Union>(\<lambda>x. {n. R x n}) ` A)" by (metis (full_types) Union_image_eq assms(1) 
+  moreover have "finite (\<Union>((\<lambda>x. {n. R x n}) ` A))" by (metis (full_types) Union_image_eq assms(1) 
     assms(2) assms(3) card_eq_0_iff finite_UN_I less_nat_zero_code)
   moreover have " card A = card ((\<lambda>x. {n. R x n}) ` A)" 
     proof -
@@ -809,8 +809,10 @@ proof -
       hence "finite l2_v" using `k>0` by (metis card_infinite mult_is_0 neq0_conv) 
       moreover have "l2_v=l2_neq_v \<union> l2_eq_v" using l2_v l2_neq_v l2_eq_v by auto
       moreover have "l2_neq_v \<inter> l2_eq_v ={}" using l2_neq_v l2_eq_v by auto
-      ultimately have "card l2_neq_v = card l2_v - card l2_eq_v" 
-        by (metis add_diff_cancel_left' card.union_disjoint finite_Un nat_add_commute)
+      ultimately have "card l2_neq_v = card l2_v - card l2_eq_v"
+        by (metis Int_commute Nat.add_0_right Un_commute card_Diff_subset_Int card_Un_Int
+                  card_gt_0_iff diff_add_inverse finite_Diff finite_Un inf_sup_absorb
+                  less_nat_zero_code)
       thus "card l2_neq_v = k*k-k" using `card l2_eq_v=k` using `card l2_v=k*k` by auto
     qed
   moreover have "bij_betw last l2_neq_v {n. n\<in>V \<and> n\<noteq>v}" 
@@ -871,10 +873,10 @@ proof -
     proof -
       have "V={n. n\<in>V \<and> n\<noteq>v} \<union> {v}" using `v\<in>V` by auto
       moreover have "{n. n\<in>V \<and> n\<noteq>v} \<inter> {v}={}" by auto
-      ultimately show ?thesis 
-        using `finite V`  card.union_disjoint[of "{n \<in> V. n \<noteq> v}" "{v}"] finite_Un
+      ultimately show ?thesis
+        using `finite V` card_Un_disjoint[of "{n \<in> V. n \<noteq> v}" "{v}"] finite_Un
         by auto
-    qed
+    qed 
   ultimately show "card V = k*k-k+1" by auto
 qed
 
@@ -1029,7 +1031,7 @@ proof (rule ccontr)
       ultimately have "card (C (l+1)) = card {ps. length ps = l+2 \<and> adj_path (hd ps) (tl ps) 
           \<and> adjacent (last ps) (hd ps) \<and> last (butlast ps)=hd ps} + card {ps. length ps = l+2 \<and> 
           adj_path (hd ps) (tl ps) \<and> adjacent (last ps) (hd ps) \<and> last (butlast ps)\<noteq>hd ps}" 
-        using card.union_disjoint[of "{ps. length ps = l + 2 \<and> adj_path (hd ps) (tl ps) \<and> adjacent 
+        using card_Un_disjoint[of "{ps. length ps = l + 2 \<and> adj_path (hd ps) (tl ps) \<and> adjacent 
           (last ps) (hd ps) \<and> last (butlast ps) = hd ps}" "{ps. length ps = l + 2 \<and> adj_path (hd ps) 
           (tl ps) \<and> adjacent (last ps) (hd ps) \<and> last (butlast ps) \<noteq> hd ps}"] finite_Un
         by auto

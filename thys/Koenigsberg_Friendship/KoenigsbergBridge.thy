@@ -903,9 +903,11 @@ next
       moreover have "card (nodes G)\<noteq>0" using `nodes G\<noteq>{}` 
         by (metis card_eq_0_iff `finite (nodes G)`)
       ultimately have "card (nodes G) \<ge>2" by auto
-      hence "\<exists>n\<in>nodes G. n\<noteq>v" 
+      hence "\<exists>n\<in>nodes G. n\<noteq>v" sorry 
+(*
         by (metis (full_types) Nat.add_0_right `card (nodes G) \<noteq> 1` card.insert card_empty 
             empty_iff finite.emptyI insertI1 `nodes G\<noteq>{}` subsetI subset_singletonD)
+*)
       then obtain v' w where "(v,w,v')\<in>edges G" 
         proof -
           assume pre:"\<And>w v'. (v, w, v') \<in> edges G \<Longrightarrow> thesis"
