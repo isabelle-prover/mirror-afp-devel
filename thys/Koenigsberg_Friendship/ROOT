@@ -1,0 +1,31 @@
+session Koenigsberg_Friendship (AFP) = Dijkstra_Shortest_Path +
+  
+  options [timeout = 3600]
+  
+  theories [document = false]
+    "~~/src/HOL/Algebra/Congruence"
+    "~~/src/HOL/Algebra/FiniteProduct"
+    "~~/src/HOL/Algebra/Group"
+    "~~/src/HOL/Algebra/Lattice"
+    "~~/src/HOL/Algebra/Ring"
+    "~~/src/HOL/Library/AList"
+    "~~/src/HOL/Library/DAList"
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Multiset"
+    "~~/src/HOL/Number_Theory/Binomial"
+    "~~/src/HOL/Number_Theory/Cong"
+    "~~/src/HOL/Number_Theory/Fib"
+    "~~/src/HOL/Number_Theory/MiscAlgebra"
+    "~~/src/HOL/Number_Theory/Number_Theory"
+    "~~/src/HOL/Number_Theory/Primes"
+    "~~/src/HOL/Number_Theory/Residues"
+    "~~/src/HOL/Number_Theory/UniqueFactorization"
+  
+  theories
+    MoreGraph
+    KoenigsbergBridge
+    FriendshipTheory
+    
+  files
+    "document/root.bib"
+    "document/root.tex"
