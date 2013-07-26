@@ -50,6 +50,12 @@ To support arbitrary nesting of sets, we define a linear order on sets based on 
 It even allows to compare complements with non-complements.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Containers-AFP,

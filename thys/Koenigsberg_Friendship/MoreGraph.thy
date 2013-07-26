@@ -1499,7 +1499,7 @@ proof -
       assume "v\<notin>V"
       hence "\<forall>e \<in> E. fst e \<noteq> v" by (metis E_valid(1) imageI set_mp)
       hence "degree v G=0" unfolding degree_def using `finite E` 
-        by (metis (lifting, mono_tags) card.neutral card_infinite mem_Collect_eq) 
+        by force
       thus False using `odd(degree v G)` by auto
     qed
   have "v'\<in>V" 
@@ -1507,8 +1507,8 @@ proof -
       assume "v'\<notin>V"
       hence "\<forall>e \<in> E. fst e \<noteq> v'" by (metis E_valid(1) imageI set_mp)
       hence "degree v' G=0" unfolding degree_def using `finite E` 
-        by (metis (lifting, mono_tags) card.neutral card_infinite mem_Collect_eq) 
-      thus False using `odd(degree v' G)` by auto
+        by force
+     thus False using `odd(degree v' G)` by auto
     qed
   then obtain max_path v0 where max_path:
       "is_trail  v0 max_path v'" 

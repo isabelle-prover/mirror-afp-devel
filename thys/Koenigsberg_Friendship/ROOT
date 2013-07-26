@@ -1,7 +1,21 @@
 chapter AFP
 
-session Koenigsberg_Friendship (AFP) = Dijkstra_Shortest_Path +
+session Koenigsberg_Friendship (AFP) = Koenigsberg_Friendship_Base +
   
+  options [timeout = 3600]
+  
+  theories
+    MoreGraph
+    KoenigsbergBridge
+    FriendshipTheory
+    
+  files
+    "document/root.bib"
+    "document/root.tex"
+
+
+session Koenigsberg_Friendship_Base = HOL +
+
   options [timeout = 3600]
   
   theories [document = false]
@@ -22,12 +36,5 @@ session Koenigsberg_Friendship (AFP) = Dijkstra_Shortest_Path +
     "~~/src/HOL/Number_Theory/Primes"
     "~~/src/HOL/Number_Theory/Residues"
     "~~/src/HOL/Number_Theory/UniqueFactorization"
-  
-  theories
-    MoreGraph
-    KoenigsbergBridge
-    FriendshipTheory
-    
-  files
-    "document/root.bib"
-    "document/root.tex"
+    "../Dijkstra_Shortest_Path/Graph"
+
