@@ -1550,3 +1550,10 @@ base = HOL/Collections/Refine_Monadic/Dijkstra_Shortest_Path
 topic = Mathematics/Graph Theory
 depends-on = Refine_Monadic, Collections, Dijkstra_Shortest_Path
 abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the K&ouml;nigsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
+
+[IEEE_Floating_Point]
+title = A Formal Model of IEEE Floating Point Arithmetic
+author = Lei Yu <mailto:ly271@cam.ac.uk>
+date = 2013-07-27
+topic = Computer Science/Data Structures
+abstract = This development provides a formal model of IEEE-754 floating-point arithmetic. This formalization, including formal specification of the standard and proofs of important properties of floating-point arithmetic, forms the foundation for verifying programs with floating-point computation. There is also a code generation setup for floats so that we can execute programs using this formalization in functional programming languages.
