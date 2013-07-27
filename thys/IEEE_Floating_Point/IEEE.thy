@@ -1,15 +1,14 @@
-(*===========================================================================================*)
-(* Formalization of IEEE-754 Standard for binary floating-point arithmetic                   *)
-(*===========================================================================================*)
+(*=========================================================================*)
+(* Formalization of IEEE-754 Standard for binary floating-point arithmetic *)
+(*=========================================================================*)
 
 (* Author: Lei Yu, University of Cambridge *)
 
+theory IEEE 
+  imports Complex_Main
+begin
 
-theory IEEE imports Complex_Main   begin
-
-section {*
-Specification of the IEEE standard.                                                       
-*}
+section {* Specification of the IEEE standard *}
 
 (*Type synonyms*)
 type_synonym format = "nat \<times> nat" 

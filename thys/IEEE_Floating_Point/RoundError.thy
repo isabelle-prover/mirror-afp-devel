@@ -1,12 +1,12 @@
-(*============================================================================================*)
-(* Properties about Rounding Errors.                                                          *)
-(*============================================================================================*)
+(*=========================================================================*)
+(* Properties about Rounding Errors.                                       *)
+(*=========================================================================*)
 
 (* Author: Lei Yu, University of Cambridge *)
 
 theory RoundError imports IEEE FloatProperty begin
 
-subsection{*Properties about Rounding Errors.*}
+subsection {*Properties about Rounding Errors *}
 
 definition error :: "real \<Rightarrow> real" where
 "error x = Val(Abs_float(round float_format To_nearest x)) - x" 

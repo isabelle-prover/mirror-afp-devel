@@ -1,14 +1,12 @@
-
-
-(*=============================================================================================*)
-(* Proofs of Properties about Floating Point Arithemtic.                                       *) 
-(*=============================================================================================*) 
+(*==========================================================================*)
+(* Proofs of Properties about Floating Point Arithmetic.                    *) 
+(*==========================================================================*) 
 
 (* Author: Lei Yu, University of Cambridge *)
 
 theory FloatProperty imports IEEE begin
 
-section{*Proofs of Properties about Floating Point Arithemtic.*}
+section{* Proofs of Properties about Floating Point Arithmetic *}
 
 subsection{*Theorems derived from definitions*}                                                           
 
