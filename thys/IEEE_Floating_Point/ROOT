@@ -1,3 +1,5 @@
+chapter AFP
+
 session IEEE_Floating_Point (AFP) = HOL +
 
   options [timeout = 3600]
