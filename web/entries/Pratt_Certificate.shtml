@@ -77,7 +77,7 @@ In 1975, Pratt introduced a proof system for certifying primes. He showed that a
 <p></p>
 
 <!--#set var="name" value="Pratt_Certificate" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Number_Theory/Lehmer/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

@@ -75,7 +75,7 @@ the notion of the order of an element of a group, and the cyclicity of the multi
 <p></p>
 
 <!--#set var="name" value="Lehmer" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Number_Theory/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->

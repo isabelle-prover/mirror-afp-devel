@@ -1362,6 +1362,7 @@ title = Lehmer's Theorem
 author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2013-07-22
 topic = Mathematics/Number Theory
+base = HOL/HOL-Number_Theory
 abstract = In 1927, Lehmer presented criterions for primality, based on the converse of Fermat's litte theorem. This work formalizes the second criterion from Lehmer's paper, a necessary and sufficient condition for primality.
   <p>
   As a side product we formalize some properties of Euler's phi-function,
@@ -1371,6 +1372,7 @@ abstract = In 1927, Lehmer presented criterions for primality, based on the conv
 title = Pratt's Primality Certificates
 author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2013-07-22
+base = HOL/HOL-Number_Theory/Lehmer
 topic = Mathematics/Number Theory
 abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
 depends-on = Lehmer
