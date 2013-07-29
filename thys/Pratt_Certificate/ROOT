@@ -1,0 +1,14 @@
+(* Session name, add to AFP group, list base session: *)
+session "Pratt_Certificate" (AFP) = "Lehmer" +
+
+(* Timeout (in sec) in case of non-termination problems *)
+  options [timeout = 3600]
+
+(* The top-level theories of the submission *)
+  theories
+    Pratt_Certificate
+
+(* Dependencies on non-Isabelle files *)
+  files
+    "document/root.tex"
+    "document/root.bib"
