@@ -1302,6 +1302,24 @@ topic = Mathematics/Number Theory
 abstract = This document presents the mechanised proofs of the following results:<ul><li>any prime number of the form 4m+1 can be written as the sum of two squares;</li><li>any natural number can be written as the sum of four squares</li></ul>
 depends-on = Fermat3_4
 
+[Lehmer]
+title = Lehmer's Theorem
+author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www21.in.tum.de/~noschinl/>
+date = 2013-07-22
+topic = Mathematics/Number Theory
+abstract = In 1927, Lehmer presented criterions for primality, based on the converse of Fermat's litte theorem. This work formalizes the second criterion from Lehmer's paper, a necessary and sufficient condition for primality.
+  <p>
+  As a side product we formalize some properties of Euler's phi-function,
+  the notion of the order of an element of a group, and the cyclicity of the multiplicative group of a finite field.
+
+[Pratt_Certificate]
+title = Pratt's Primality Certificates
+author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www21.in.tum.de/~noschinl/>
+date = 2013-07-22
+topic = Mathematics/Number Theory
+abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
+depends-on = Lehmer
+
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite 
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -1356,7 +1374,7 @@ abstract = A <em>matching</em> in a graph <i>G</i> is a subset <i>M</i> of the
 
 [Girth_Chromatic]
 title = A Probabilistic Proof of the Girth-Chromatic Number Theorem
-author = Lars Noschinski <mailto:noschinl@in.tum.de>
+author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
 abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
