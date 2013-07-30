@@ -1143,7 +1143,7 @@ fun apply_in_context thy lexp f t =
          else name_variant (lname ^ "'");
   in
     thy
-    |> Theory.copy (* Create a dummy locale in dummy theory just to read the term *)
+    (* Create a dummy locale in dummy theory just to read the term *)
     |> add_locale_cmd (name_variant "foo") lexp []
     |> (fn ctxt => f ctxt t)
   end;
@@ -1188,9 +1188,7 @@ fun clique_name clique =
 
 
 fun error_to_warning msg f thy =
-  let val thy' = Theory.checkpoint thy;
-      val try_thy = Theory.copy thy';
-  in f try_thy handle ERROR msg' => (warning (msg' ^ "\n" ^ msg) ; thy') end;
+  f thy handle ERROR msg' => (warning (msg' ^ "\n" ^ msg); thy);
 
 
 fun procedures_definition locname procs thy =
@@ -1207,15 +1205,14 @@ fun procedures_definition locname procs thy =
     val names       = map #1 procs';
     val sk = #7 (hd procs');
 
-    val thy = thy |> Context.theory_map (set_default_state_kind sk) |> Theory.checkpoint;
+    val thy = thy |> Context.theory_map (set_default_state_kind sk);
 
     val (all_callss,cliques,is_recursive,has_body) =
       let
         val ctxt =
-            thy
-            |> Theory.checkpoint |> Theory.copy |> Context.Theory
-            |> fold (add_parameter_info  Morphism.identity (unsuffix proc_deco)) name_pars
-            |> StateSpace.set_silent true
+          Context.Theory thy
+          |> fold (add_parameter_info  Morphism.identity (unsuffix proc_deco)) name_pars
+          |> StateSpace.set_silent true
 
         fun read_body (name,body) =
           Syntax.read_term (Context.proof_of ctxt) body;
@@ -1408,7 +1405,6 @@ fun procedures_definition locname procs thy =
 
       in thy
          |> add_distinct_procs_namespace
-         |> Theory.checkpoint
          |> (fn thy =>
               add_locale_cmd cliqN (pE thy) (elems thy) thy)
          |> Proof_Context.theory_of
@@ -1447,10 +1443,7 @@ fun procedures_definition locname procs thy =
              |> error_to_warning ("abbreviation: '" ^ thm_name  ^ "' not added")
                   (add_abbrev (Locale.intern thy (suffix cliqueN (cname name))) Syntax.mode_input thm_name spec)
           end;
-      in thy
-         |> Theory.checkpoint
-         |> fold add_locale'' specs
-      end;
+      in thy |> fold add_locale'' specs end;
 
       fun add_recursive_info name =
         if is_recursive name then Context.theory_map (add_recursive Morphism.identity name) else I;

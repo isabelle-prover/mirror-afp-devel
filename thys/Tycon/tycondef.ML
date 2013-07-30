@@ -385,7 +385,6 @@ fun domain_isomorphism
   let
     (* this theory is used just for parsing *)
     val tmp_thy = thy |>
-      Theory.copy |>
       Sign.add_types_global (map (fn (tvs, tbind, mx, _, _) =>
         (tbind, length tvs, mx)) doms)
 
@@ -828,7 +827,6 @@ fun gen_add_tycon
 
     (* this theory is used just for parsing and error checking *)
     val tmp_thy = thy
-      |> Theory.copy
       |> fold (add_arity o thy_arity) dtnvs
 
     val dbinds : binding list =
