@@ -347,7 +347,7 @@ proof (induction xs)
   next
   case (Cons y ys)
     have "real (listprod ys) > 0" using listprod_ge Cons.prems by fastforce
-    thus ?case using Log.log_mult[OF Cons.prems(1-2)] Cons by force
+    thus ?case using log_mult[OF Cons.prems(1-2)] Cons by force
 qed
 
 lemma concat_length_le:
@@ -476,7 +476,7 @@ proof (induction p rule: less_induct)
         by (simp add: o_def listsum_subtractf listsum_triv real_of_nat_def listsum_const_mult)
       also have "\<dots> \<le> 6*log 2 (p - 1) - 4" using `?k\<ge>2` prod_qs_eq listsum_log[of 2 qs] qs_ge_2
         by force
-      also have "\<dots> \<le> 6*log 2 p - 4" using Log.log_le_cancel_iff[of 2 "p - 1" p] `p>3` by force
+      also have "\<dots> \<le> 6*log 2 p - 4" using log_le_cancel_iff[of 2 "p - 1" p] `p>3` by force
       ultimately have "length (Prime p # ((build_fpc p a (p - 1) qs)@ concat ?cs))
                        \<le> 6*log 2 p - 4" by linarith }
     ultimately obtain c where c:"Triple p a (p - 1) \<in> set c" "valid_cert c"
