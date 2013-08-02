@@ -239,6 +239,11 @@ td.formatted {
  border-style: none none none none;
 }
 
+a#bib {
+  text-decoration: none;
+  color:#000000;
+}
+
 table.links {
  margin:  0em 0em 0em 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
@@ -287,7 +292,6 @@ div.list a:focus { text-decoration:underline }
 
 pre.bibtex { 
   white-space: pre;
-	border-width: thin thin thin thin;
- 	border-style: solid;   
+  border-width: thin thin thin thin;
+  border-style: solid;
 }
-
