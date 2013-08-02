@@ -1,5 +1,5 @@
-(*  Title:      HOL/Library/Coinductive_Lists.thy
-    Author:     Lawrence C Paulson and Makarius
+(*  Title:      Coinductive_List.thy
+    Author:     Andreas Lochbihler
 *)
 
 header {* Potentially infinite lists as greatest fixed-point *}
