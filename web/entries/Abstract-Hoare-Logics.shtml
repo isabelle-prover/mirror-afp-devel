@@ -3,7 +3,9 @@
 <html>
 <head>
   <title>Archive of Formal Proofs</title>
-  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
