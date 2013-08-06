@@ -1414,57 +1414,10 @@ next
     assume "lfinite xs"
     then obtain xs' where "xs = llist_of xs'"
       by(auto simp add: lfinite_eq_range_llist_of)
-    hence "\<exists>xs'. lappend (llist_of xs') ys = lappend (llist_of xs') vs"
+    hence "lappend (llist_of xs') ys = lappend (llist_of xs') vs"
       using eq `xs = us` by blast
     thus "ys = vs"
-    proof(coinduct ys vs rule: llist.coinduct)
-      case (Eq_llist ys vs)
-      then obtain xs' 
-        where eq: "lappend (llist_of xs') ys = lappend (llist_of xs') vs" by blast
-      show ?case
-      proof(cases ys)
-        case LNil
-        with eq have "vs = LNil"
-        proof(cases vs)
-          case (LCons v vs')
-          with eq LNil have "llist_of xs' = lappend (llist_of (xs' @ [v])) vs'"
-            by(auto simp add: lappend_llist_of_LCons)
-          hence "llength (llist_of xs') = llength (lappend (llist_of (xs' @ [v])) vs')"
-            by simp
-          hence "enat (length xs') = enat (Suc (length xs')) + llength vs'" by simp
-          hence False by(metis Suc_n_not_le_n enat_le_plus_same(1) enat_ord_code(1))
-          thus ?thesis ..
-        qed simp
-        with LNil show ?thesis by simp
-      next
-        case (LCons y ys')
-        with eq obtain vs'
-          where "vs = LCons y vs'" 
-          and "lappend (llist_of (xs' @ [y])) ys' = lappend (llist_of (xs' @ [y])) vs'"
-        proof(cases vs)
-          case LNil
-          with eq LCons have "llist_of xs' = lappend (llist_of (xs' @ [y])) ys'"
-            by(auto simp add: lappend_llist_of_LCons)
-          hence "llength (llist_of xs') = llength (lappend (llist_of (xs' @ [y])) ys')"
-            by simp
-          hence "enat (length xs') = enat (Suc (length xs')) + llength ys'" by simp
-          hence False by(metis Suc_n_not_le_n enat_le_plus_same(1) enat_ord_code(1))
-          thus ?thesis ..
-        next
-          case (LCons v vs')
-          have "y = lnth (lappend (llist_of (xs' @ [y])) ys') (length xs')"
-            by(simp add: lnth_lappend1)
-          also from eq `ys = LCons y ys'` LCons
-          have "lappend (llist_of (xs' @ [y])) ys' = lappend (llist_of (xs' @ [v])) vs'"
-            by(auto simp add: lappend_llist_of_LCons)
-          also have "lnth \<dots> (length xs') = v"
-            by(simp add: lnth_lappend1)
-          finally show ?thesis using eq LCons `ys = LCons y ys'` that
-            by(auto simp add: lappend_llist_of_LCons)
-        qed
-        with LCons show ?thesis by auto
-      qed
-    qed
+      by (induct xs') simp_all
   qed
 qed
 
