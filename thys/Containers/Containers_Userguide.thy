@@ -814,8 +814,8 @@ text {*
   Typically, these just dispatch to the operations on the type from \S\ref{subsection:hide:invariants}.
   Some operations depend on the type class operations from \S\ref{subsection:introduce:type:class} being defined; then, the code equation must check that the operations are indeed defined.
   If not, there is usually no way to implement the operation, so the code should raise an exception.
-  Logically, we use a function of type @{typ "(unit \<Rightarrow> 'a) \<Rightarrow> 'a"} with definition @{term "\<lambda>f. f ()"}, but declare it as \isamarkuptrue\isacommand{code{\isacharunderscore}abort}\isamarkupfalse{} to generate an exception when the code executes (the unit closure avoids non-termination in strict languages).
-  This function gets the unit-closure of the equation's left-hand side as argument, because it is then trivial to prove equality.
+  Logically, we use the function @{term "Code.abort"} of type @{typ "String.literal \<Rightarrow> (unit \<Rightarrow> 'a) \<Rightarrow> 'a"} with definition @{term "\<lambda>_ f. f ()"}, but the generated code raises an exception \texttt{Fail} with the given message (the unit closure avoids non-termination in strict languages).
+  This function gets the exception message and the unit-closure of the equation's left-hand side as argument, because it is then trivial to prove equality.
 
   Again, we only show a small set of operations; a realistic implementation should cover as many as possible.
 *}
@@ -830,14 +830,14 @@ by simp(transfer, simp)
 lemma update_Trie_Mapping [code]:
   "Mapping.update k v (Trie_Mapping t) = 
   (case ID cbl :: 'k cbl of
-     None \<Rightarrow> map_impl_unsupported_operation (\<lambda>_. Mapping.update k v (Trie_Mapping t))
+     None \<Rightarrow> Code.abort (STR ''update Trie_Mapping: cbl = None'') (\<lambda>_. Mapping.update k v (Trie_Mapping t))
    | Some _ \<Rightarrow> Trie_Mapping (update k v t))"
 by(simp split: option.split add: lookup_update Mapping.update.abs_eq)
 
 lemma keys_Trie_Mapping [code]:
   "Mapping.keys (Trie_Mapping t) =
   (case ID cbl :: 'k cbl of
-     None \<Rightarrow> map_impl_unsupported_operation (\<lambda>_. Mapping.keys (Trie_Mapping t))
+     None \<Rightarrow> Code.abort (STR ''keys Trie_Mapping: cbl = None'') (\<lambda>_. Mapping.keys (Trie_Mapping t))
    | Some _ \<Rightarrow> keys t)"
 by(simp add: Mapping.keys.abs_eq keys_conv_dom_lookup split: option.split)
 
@@ -1012,8 +1012,8 @@ text_raw {* \label{subsection:set_impl_unsupported_operation} *}
 
 text {*
   Not all combinations of data and container implementation are possible.
-  For example, you cannot implement a set of functions with an RBT, because there is no order on @{typ "'a \<Rightarrow> 'b"}.
-  If you try, the code will raise exceptions like \texttt{set\_impl\_unsupported\_operation} or \texttt{map\_impl\_unsupported\_operation} or \texttt{Match}.
+  For example, you cannot implement a set of functions with a RBT, because there is no order on @{typ "'a \<Rightarrow> 'b"}.
+  If you try, the code will raise an exception \texttt{Fail} (with an exception message) or \texttt{Match}.
   They can occur in three cases:
 
   \begin{enumerate}
@@ -1049,19 +1049,16 @@ where
 ML_val {*
 fun test_fail s f =
   let
-    val error = Fail ("exception Fail \"" ^ s ^ "\" expected")
+    fun error s' = Fail ("exception Fail \"" ^ s ^ "\" expected, but got " ^ s')
   in
-    (f (); raise error)
+    (f (); raise (error "no exception") )
     handle
-      Fail s' => if s = s' then () else raise error
+      Fail s' => if s = s' then () else raise (error s')
   end;
 
-fun test_siuo f = test_fail "set_impl_unsupported_operation" f;
-fun test_miuo f = test_fail "map_impl_unsupported_operation" f;
-
-test_siuo @{code test_set_impl_unsupported_operation1};
-test_siuo @{code test_set_impl_unsupported_operation2};
-test_miuo @{code test_mapping_impl_unsupported_operation};
+test_fail "union RBT_set Set_Monad: corder = None" @{code test_set_impl_unsupported_operation1};
+test_fail "image Collect_set" @{code test_set_impl_unsupported_operation2};
+test_fail "is_empty RBT_Mapping: corder = None" @{code test_mapping_impl_unsupported_operation};
 *}
 (*>*)
 

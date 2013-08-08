@@ -14,11 +14,6 @@ code_identifier
   code_module Mapping \<rightharpoonup> (SML) Mapping_Impl
 | code_module Mapping_Impl \<rightharpoonup> (SML) Mapping_Impl
 
-definition map_impl_unsupported_operation :: "(unit \<Rightarrow> 'a) \<Rightarrow> 'a"
-where [simp, code del]: "map_impl_unsupported_operation f = f ()"
-
-code_abort "map_impl_unsupported_operation"
-
 subsection {* Map implementations *}
 
 definition Assoc_List_Mapping :: "('a, 'b) alist \<Rightarrow> ('a, 'b) mapping"
@@ -52,7 +47,7 @@ lemma is_empty_Mapping [code]:
   fixes t :: "('a :: corder, 'b) mapping_rbt" shows
   "Mapping.is_empty (Assoc_List_Mapping al) \<longleftrightarrow> al = DAList.empty"
   "Mapping.is_empty (RBT_Mapping t) \<longleftrightarrow>
-  (case ID CORDER('a) of None \<Rightarrow> map_impl_unsupported_operation (\<lambda>_. Mapping.is_empty (RBT_Mapping t))
+  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''is_empty RBT_Mapping: corder = None'') (\<lambda>_. Mapping.is_empty (RBT_Mapping t))
                      | Some _ \<Rightarrow> RBT_Mapping2.is_empty t)"
 apply(simp_all split: option.split)
  apply(transfer, case_tac al, simp_all)
@@ -66,7 +61,7 @@ lemma update_Mapping [code]:
   "Mapping.update k v (Mapping m) = Mapping (m(k \<mapsto> v))"
   "Mapping.update k v (Assoc_List_Mapping al) = Assoc_List_Mapping (DAList.update k v al)"
   "Mapping.update k v (RBT_Mapping t) =
-  (case ID CORDER('a) of None \<Rightarrow> map_impl_unsupported_operation (\<lambda>_. Mapping.update k v (RBT_Mapping t))
+  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''update RBT_Mapping: corder = None'') (\<lambda>_. Mapping.update k v (RBT_Mapping t))
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.insert k v t))" (is ?RBT)
 by(simp_all split: option.split)(transfer, simp)+
 
@@ -77,7 +72,7 @@ lemma delete_Mapping [code]:
   "Mapping.delete k (Mapping m) = Mapping (m(k := None))"
   "Mapping.delete k (Assoc_List_Mapping al) = Assoc_List_Mapping (AssocList.delete k al)"
   "Mapping.delete k (RBT_Mapping t) = 
-  (case ID CORDER('a) of None \<Rightarrow> map_impl_unsupported_operation (\<lambda>_. Mapping.delete k (RBT_Mapping t))
+  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''delete RBT_Mapping: corder = None'') (\<lambda>_. Mapping.delete k (RBT_Mapping t))
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.delete k t))"
 by(simp_all split: option.split)(transfer, simp)+
 
@@ -111,7 +106,7 @@ lemma size_Mapping [code]:
   fixes t :: "('a :: corder, 'b) mapping_rbt" shows
   "Mapping.size (Assoc_List_Mapping al) = size al"
   "Mapping.size (RBT_Mapping t) =
-  (case ID CORDER('a) of None \<Rightarrow> map_impl_unsupported_operation (\<lambda>_. Mapping.size (RBT_Mapping t))
+  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''size RBT_Mapping: corder = None'') (\<lambda>_. Mapping.size (RBT_Mapping t))
                      | Some _ \<Rightarrow> length (RBT_Mapping2.entries t))"
 apply(simp_all split: option.split)
 apply(transfer, simp add: dom_map_of_conv_image_fst set_map[symmetric] distinct_card del: set_map)
