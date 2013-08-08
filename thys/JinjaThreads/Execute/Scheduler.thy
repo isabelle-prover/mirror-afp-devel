@@ -1228,25 +1228,25 @@ lemma singleton2_code [code]:
   (case f () of
     Predicate.Empty \<Rightarrow> dfault ()
   | Predicate.Insert x P \<Rightarrow> 
-    if Predicate.is_empty P then x else FinFun.code_abort (\<lambda>_. singleton2 dfault (Predicate.Seq f))
+    if Predicate.is_empty P then x else Code.abort (STR ''singleton2 not unique'') (\<lambda>_. singleton2 dfault (Predicate.Seq f))
   | Predicate.Join P xq \<Rightarrow>
     if Predicate.is_empty P then 
       the_only2 dfault xq
-    else if Predicate.null xq then singleton2 dfault P else FinFun.code_abort (\<lambda>_. singleton2 dfault (Predicate.Seq f)))"
+    else if Predicate.null xq then singleton2 dfault P else Code.abort (STR ''singleton2 not unique'') (\<lambda>_. singleton2 dfault (Predicate.Seq f)))"
 unfolding singleton2_def the_only2_def
-by(auto simp only: singleton_code code_abort_def split: seq.split split_if)
+by(auto simp only: singleton_code Code.abort_def split: seq.split split_if)
 
 lemma the_only2_code [code]:
-  "the_only2 dfault Predicate.Empty = FinFun.code_abort dfault"
+  "the_only2 dfault Predicate.Empty = Code.abort (STR ''the_only2 empty'') dfault"
   "the_only2 dfault (Predicate.Insert x P) = 
-  (if Predicate.is_empty P then x else FinFun.code_abort (\<lambda>_. the_only2 dfault (Predicate.Insert x P)))"
+  (if Predicate.is_empty P then x else Code.abort (STR ''the_only2 not unique'') (\<lambda>_. the_only2 dfault (Predicate.Insert x P)))"
   "the_only2 dfault (Predicate.Join P xq) = 
   (if Predicate.is_empty P then 
      the_only2 dfault xq
    else if Predicate.null xq then 
      singleton2 dfault P 
    else
-     FinFun.code_abort (\<lambda>_. the_only2 dfault (Predicate.Join P xq)))"
+     Code.abort (STR ''the_only2 not unique'') (\<lambda>_. the_only2 dfault (Predicate.Join P xq)))"
 unfolding singleton2_def the_only2_def by simp_all
 
 lemma the2_eq [code]:

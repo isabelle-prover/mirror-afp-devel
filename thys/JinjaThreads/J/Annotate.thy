@@ -351,7 +351,7 @@ lemma eval_Anno_i_i_i_o_conv:
 by(auto intro!: ext intro: Anno_code_i_i_i_oI elim: Anno_code_i_i_i_oE)
  
 lemma annotate_code [code]:
-  "annotate_code P E e = Predicate.singleton (\<lambda>_. FinFun.code_abort (\<lambda>_. e)) (Anno_code_i_i_i_o P E e)"
+  "annotate_code P E e = Predicate.singleton (\<lambda>_. Code.abort (STR ''annotate'') (\<lambda>_. e)) (Anno_code_i_i_i_o P E e)"
 by(simp add: THE_default_def Predicate.singleton_def annotate_code_def eval_Anno_i_i_i_o_conv)
 
 end
