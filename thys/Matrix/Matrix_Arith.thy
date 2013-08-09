@@ -28,6 +28,7 @@ header {* Basic Operations on Matrices *}
 theory Matrix_Arith
 imports
   Utility
+  "~~/src/HOL/Algebra/Ring"
 begin
 
 text {*
@@ -133,7 +134,7 @@ definition mat_map :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> 
 
 subsection {* algorithms preserve dimensions *}
 
-lemma vec0[simp]: "vec nr (vec0I ze nr)"
+lemma vec0[simp,intro]: "vec nr (vec0I ze nr)"
   by (simp add: vec_def vec0I_def)
 
 lemma replicate_prop:
@@ -141,22 +142,22 @@ lemma replicate_prop:
   shows "\<forall>y\<in>set (replicate n x). P y"
   using assms by (induct n) simp_all
 
-lemma mat0[simp]: "mat nr nc (mat0I ze nr nc)"
+lemma mat0[simp,intro]: "mat nr nc (mat0I ze nr nc)"
 unfolding mat_def mat0I_def
 using replicate_prop[of "vec nr" "vec0I ze nr" "nc"] by simp
 
-lemma vec1: assumes "i < nr" shows "vec nr (vec1I ze on nr i)"
+lemma vec1[simp,intro]: assumes "i < nr" shows "vec nr (vec1I ze on nr i)"
 unfolding vec_def vec1I_def using assms by auto
 
-lemma mat1: "mat nr nr (mat1I ze on nr)"
+lemma mat1[simp,intro]: "mat nr nr (mat1I ze on nr)"
 unfolding mat_def mat1I_def using vec1 by auto
 
-lemma vec_plus: "\<lbrakk>vec nr u; vec nr v\<rbrakk> \<Longrightarrow> vec nr (vec_plusI pl u v)"
+lemma vec_plus[simp,intro]: "\<lbrakk>vec nr u; vec nr v\<rbrakk> \<Longrightarrow> vec nr (vec_plusI pl u v)"
 using assms 
 unfolding vec_plusI_def vec_def
 by auto
 
-lemma mat_plus: assumes "mat nr nc m1" and "mat nr nc m2" shows "mat nr nc (mat_plusI pl m1 m2)"
+lemma mat_plus[simp,intro]: assumes "mat nr nc m1" and "mat nr nc m2" shows "mat nr nc (mat_plusI pl m1 m2)"
 using assms
 unfolding mat_def mat_plusI_def
 proof (simp, induct nc arbitrary: m1 m2, simp)
@@ -178,12 +179,12 @@ proof (simp, induct nc arbitrary: m1 m2, simp)
   qed
 qed
 
-lemma vec_map: "vec nr u \<Longrightarrow> vec nr (vec_map f u)"
+lemma vec_map[simp,intro]: "vec nr u \<Longrightarrow> vec nr (vec_map f u)"
 using assms 
 unfolding vec_map_def vec_def
 by auto
 
-lemma mat_map: "mat nr nc m \<Longrightarrow> mat nr nc (mat_map f m)"
+lemma mat_map[simp,intro]: "mat nr nc m \<Longrightarrow> mat nr nc (mat_map f m)"
 using assms vec_map
 unfolding mat_map_def mat_def 
 by auto
@@ -229,7 +230,7 @@ lemma col: assumes "mat nr nc m"
   unfolding vec_def col_def mat_def
   by (auto simp: vec_def) 
 
-lemma transpose: assumes "mat nr nc m"
+lemma transpose[simp,intro]: assumes "mat nr nc m"
   shows "mat nc nr (transpose nr m)"
 using assms 
 proof (induct m arbitrary: nc)
@@ -263,13 +264,13 @@ lemma matT_vec_multI: assumes "mat nr nc m"
   unfolding mat_def
   by (simp add: vec_def)
 
-lemma mat_mult: assumes wf1: "mat nr n m1"
+lemma mat_mult[simp,intro]: assumes wf1: "mat nr n m1"
   and wf2: "mat n nc m2"
   shows "mat nr nc (mat_multI ze pl ti nr m1 m2)"
 using assms
 unfolding mat_def mat_multI_def by (auto simp: matT_vec_multI[OF transpose[OF wf1]])
 
-lemma mat_pow: assumes "mat n n m"
+lemma mat_pow[simp,intro]: assumes "mat n n m"
   shows "mat n n (mat_powI ze on pl ti n m i)"
 proof (induct i)
   case 0
@@ -280,28 +281,28 @@ next
     by (rule mat_mult[OF Suc assms])
 qed
 
-lemma sub_vec: assumes "vec nr v" and "sd \<le> nr" 
+lemma sub_vec[simp,intro]: assumes "vec nr v" and "sd \<le> nr" 
   shows "vec sd (sub_vec sd v)"
 using assms unfolding vec_def sub_vec_def by auto
 
-lemma sub_mat: assumes wf: "mat nr nc m" and sr: "sr \<le> nr" and sc: "sc \<le> nc"
+lemma sub_mat[simp,intro]: assumes wf: "mat nr nc m" and sr: "sr \<le> nr" and sc: "sc \<le> nc"
   shows "mat sr sc (sub_mat sr sc m)"
 using assms in_set_takeD[of _ sc m] sub_vec[OF _ sr] unfolding mat_def sub_mat_def by auto
 
 
 subsection {* properties of algorithms which do not depend on properties of type of matrix *}
 
-lemma mat0_index: assumes "i < nc" and "j < nr"
+lemma mat0_index[simp]: assumes "i < nc" and "j < nr"
   shows "mat0I ze nr nc ! i ! j = ze"
 unfolding mat0I_def vec0I_def using assms by auto
 
-lemma mat0_row: assumes "i < nr"
+lemma mat0_row[simp]: assumes "i < nr"
   shows "row (mat0I ze nr nc) i = vec0I ze nc"
 unfolding row_def mat0I_def vec0I_def
 using assms by auto
 
 
-lemma mat0_col: assumes "i < nc"
+lemma mat0_col[simp]: assumes "i < nc"
   shows "col (mat0I ze nr nc) i = vec0I ze nr"
 unfolding mat0I_def col_def
 using assms by auto
@@ -334,7 +335,7 @@ proof -
 qed
 
 
-lemma col_transpose_is_row: 
+lemma col_transpose_is_row[simp]: 
   assumes wf: "mat nr nc m"
   and i: "i < nr"
   shows "col (transpose nr m) i = row m i"
@@ -360,19 +361,26 @@ qed (simp add: col_def row_def mat_def i)
 lemma mat_col_eq:
   assumes wf1: "mat nr nc m1"
   and wf2: "mat nr nc m2"
-  shows "(\<forall> i < nc. col m1 i = col m2 i) = (m1 = m2)" (is "?l = ?r")
+  shows "(m1 = m2) = (\<forall> i < nc. col m1 i = col m2 i)" (is "?l = ?r")
 proof
-  assume ?r thus ?l by auto
+  assume ?l thus ?r by auto
 next
-  assume ?l show ?r 
+  assume ?r show ?l
   proof (rule nth_equalityI)
     show "length m1 = length m2" using wf1 wf2 unfolding mat_def by auto
   next
-    from `?l` show "\<forall> i < length m1. m1 ! i = m2 ! i" using wf1 unfolding col_def mat_def by auto
+    from `?r` show "\<forall> i < length m1. m1 ! i = m2 ! i" using wf1 unfolding col_def mat_def by auto
   qed
 qed
 
-lemma mat_eq_index:
+lemma mat_col_eqI:
+  assumes wf1: "mat nr nc m1"
+  and wf2: "mat nr nc m2"
+  and id: "\<And> i. i < nc \<Longrightarrow> col m1 i = col m2 i"
+  shows "m1 = m2"
+  unfolding mat_col_eq[OF wf1 wf2] using id by auto
+
+lemma mat_eq:
   assumes wf1: "mat nr nc m1"
   and wf2: "mat nr nc m2"
   shows "(m1 = m2) = (\<forall> i < nc. \<forall> j < nr. m1 ! i ! j = m2 ! i ! j)" (is "?l = ?r")
@@ -380,7 +388,7 @@ proof
   assume ?l thus ?r by auto
 next
   assume ?r show ?l
-  proof (simp only: mat_col_eq[OF wf1 wf2,symmetric], unfold col_def, intro allI impI)
+  proof (rule mat_col_eqI[OF wf1 wf2], unfold col_def)
     fix i
     assume i: "i < nc"
     show "m1 ! i = m2 ! i"
@@ -392,7 +400,14 @@ next
   qed
 qed
 
-lemma vec_index_eq: 
+lemma mat_eqI:
+  assumes wf1: "mat nr nc m1"
+  and wf2: "mat nr nc m2"
+  and id: "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> m1 ! i ! j = m2 ! i ! j"
+  shows "m1 = m2" 
+  unfolding mat_eq[OF wf1 wf2] using id by auto
+
+lemma vec_eq: 
   assumes wf1: "vec n v1"
   and wf2: "vec n v2"
   shows "(v1 = v2) = (\<forall> i < n. v1 ! i = v2 ! i)" (is "?l = ?r")
@@ -406,6 +421,13 @@ next
     from `?r` wf1 show "\<forall> i < length v1. v1 ! i = v2 ! i" unfolding vec_def by simp
   qed
 qed
+
+lemma vec_eqI: 
+  assumes wf1: "vec n v1"
+  and wf2: "vec n v2"
+  and id: "\<And> i. i < n \<Longrightarrow> v1 ! i = v2 ! i"
+  shows "v1 = v2"
+  unfolding vec_eq[OF wf1 wf2] using id by auto
 
 
 lemma row_col: assumes "mat nr nc m"  
@@ -470,7 +492,14 @@ next
   qed
 qed
 
-lemma row_transpose_is_col:   assumes wf: "mat nr nc m"
+lemma mat_row_eqI: 
+  assumes wf1: "mat nr nc m1"
+  and wf2: "mat nr nc m2"
+  and id: "\<And> i. i < nr \<Longrightarrow> row m1 i = row m2 i"
+  shows "m1 = m2"
+  unfolding mat_row_eq[OF wf1 wf2] using id by auto
+
+lemma row_transpose_is_col[simp]:   assumes wf: "mat nr nc m"
   and i: "i < nc"
   shows "row (transpose nr m) i = col m i"
 proof -
@@ -504,7 +533,7 @@ lemma mat_vec_mult_index:
 by (simp only:matT_vec_mult_to_scalar[OF transpose[OF wf] wfV i],
   simp only: col_transpose_is_row[OF wf i])
 
-lemma mat_mult_index :
+lemma mat_mult_index[simp] :
   assumes wf1: "mat nr n m1"
   and wf2: "mat n nc m2"
   and i: "i < nr"
@@ -548,7 +577,7 @@ lemma scalar_prod_cons:
 unfolding scalar_prodI_def by auto
 
 
-lemma vec_plus_index: 
+lemma vec_plus_index[simp]: 
   assumes wf1: "vec nr v1"
   and wf2: "vec nr v2"
   and i: "i < nr"
@@ -563,7 +592,7 @@ proof (induct v1 arbitrary: i v2 nr, simp)
     by (cases i, simp add: v2, auto simp: v2 nr)
 qed
 
-lemma mat_map_index: assumes wf: "mat nr nc m" and i: "i < nc" and j: "j < nr" 
+lemma mat_map_index[simp]: assumes wf: "mat nr nc m" and i: "i < nc" and j: "j < nr" 
   shows "mat_map f m ! i ! j = f (m ! i ! j)"
 proof -
   from wf i have i: "i < length m" unfolding mat_def by auto
@@ -575,7 +604,7 @@ proof -
 qed
 
 
-lemma mat_plus_index: 
+lemma mat_plus_index[simp]: 
   assumes wf1: "mat nr nc m1"
   and wf2: "mat nr nc m2"
   and i: "i < nc"
@@ -611,7 +640,7 @@ proof (induct m1 arbitrary: m2 nc i, simp)
   qed
 qed
 
-lemma transpose_index: assumes wf: "mat nr nc m"
+lemma transpose_index[simp]: assumes wf: "mat nr nc m"
   and i: "i < nr"
   and j: "j < nc"
   shows "transpose nr m ! i ! j = m ! j ! i"
@@ -622,29 +651,14 @@ proof -
   finally show ?thesis . 
 qed
 
-lemma transpose_mat_plus: assumes wf1: "mat nr nc m1"
-  and wf2: "mat nr nc m2"
-  shows "transpose nr (mat_plusI pl m1 m2) = mat_plusI pl (transpose nr m1) (transpose nr m2)"
-proof - 
-  let ?m12 = "mat_plusI pl m1 m2"
-  let ?t1 = "transpose nr m1"
-  let ?t2 = "transpose nr m2"
-  from mat_plus[OF wf1 wf2] have wf12: "mat nr nc ?m12" .
-  from transpose[OF wf1] have wft1: "mat nc nr ?t1" .
-  from transpose[OF wf2] have wft2: "mat nc nr ?t2" .
-  show ?thesis 
-  proof (simp only: mat_eq_index[OF transpose[OF wf12] mat_plus[OF wft1 wft2]], intro allI impI)
-    fix i j
-    assume i: "i < nr" and j: "j < nc"
-    show "transpose nr ?m12 ! i ! j = mat_plusI pl ?t1 ?t2 ! i ! j"      
-      by (simp only: transpose_index[OF wf12 i j],
-        simp only: mat_plus_index[OF wft1 wft2 i j],
-        simp only: mat_plus_index[OF wf1 wf2 j i],
-        simp only: transpose_index[OF wf1 i j],
-        simp only: transpose_index[OF wf2 i j])
-  qed
-qed
-      
+lemma transpose_mat_plus: assumes wf: "mat nr nc m1" "mat nr nc m2"
+  shows "transpose nr (mat_plusI pl m1 m2) = mat_plusI pl (transpose nr m1) (transpose nr m2)" (is "?l = ?r")
+proof (rule mat_eqI)
+  fix i j
+  assume i: "i < nr" and j: "j < nc"
+  note [simp] = transpose_index[OF _ this] mat_plus_index[OF _ _ j i] mat_plus_index[OF _ _ this] 
+  show "?l ! i ! j = ?r ! i ! j" using wf by simp
+qed (auto intro: wf)      
 
 lemma row_mat_plus: assumes wf1: "mat nr nc m1"
   and wf2: "mat nr nc m2"
@@ -667,21 +681,14 @@ lemma mat1_index: assumes i: "i < n" and j: "j < n"
   shows "mat1I ze on n ! i ! j = (if i = j then on else ze)"
   by (simp add: col_mat1[OF i, simplified col_def] vec1_index[OF j])
 
-lemma transpose_mat1: "transpose nr (mat1I ze on nr) = (mat1I ze on nr)"
-proof (simp only: mat_eq_index[OF transpose[OF mat1] mat1], intro impI allI)
+lemma transpose_mat1: "transpose nr (mat1I ze on nr) = (mat1I ze on nr)" (is "?l = ?r")
+proof (rule mat_eqI)
   fix i j
-  assume i: "i < nr" and j: "j < nr"
-  let ?I = "mat1I ze on nr"
-  show "transpose nr ?I ! i ! j = ?I ! i ! j"
-    by  (simp only: col_def[symmetric], 
-      simp only: col_mat1[OF i],
-      simp only: row_col[OF transpose[OF mat1] j i,symmetric],
-      simp only: row_transpose_is_col[OF mat1 j],
-      simp only: col_mat1[OF j],
-      simp only: vec1_index[OF j],
-      simp only: vec1_index[OF i], simp)
-qed
-
+  assume i:"i < nr" and j: "j < nr"
+  note [simp] = transpose_index[OF _ this] mat1_index[OF this] mat1_index[OF j i]
+  show "?l ! i ! j = ?r ! i ! j" by auto
+qed auto
+  
 lemma row_mat1: assumes i: "i < nr"
   shows "row (mat1I ze on nr) i = vec1I ze on nr i"
 by (simp only: col_transpose_is_row[OF mat1 i, symmetric],
@@ -719,35 +726,25 @@ end
 
 context semigroup_add
 begin
-lemma vec_plus_assoc: assumes u: "vec nr u" and v: "vec nr v" and w: "vec nr w"
- shows "vec_plus u (vec_plus v w) = vec_plus (vec_plus u v) w" (is "?l = ?r")
-proof -
-  from v w have vw: "vec nr (vec_plus v w)" by (simp add: vec_plus)
-  from u v have uv: "vec nr (vec_plus u v)" by (simp add: vec_plus)
-  from assms have l: "vec nr ?l" by (simp add: vec_plus)
-  from assms have r: "vec nr ?r" by (simp add: vec_plus)
-  show ?thesis by (simp only: vec_index_eq[OF l r], intro allI impI,
-    simp only: vec_plus_index[OF u vw],
-    simp only: vec_plus_index[OF v w],
-    simp only: vec_plus_index[OF uv w],
-    simp only: vec_plus_index[OF u v],
-    simp only: add_assoc)
-qed
+lemma vec_plus_assoc: assumes vec: "vec nr u" "vec nr v" "vec nr w"
+ shows "vec_plus u (vec_plus v w) = vec_plus (vec_plus u v) w" 
+proof (rule vec_eqI)
+  fix i
+  assume i: "i < nr"
+  note [simp] = vec_plus_index[OF _ _ i] 
+  from vec
+  show "vec_plus u (vec_plus v w) ! i = vec_plus (vec_plus u v) w ! i" 
+    by (auto simp: add_assoc)
+qed (auto intro: vec)
 
-lemma mat_plus_assoc: assumes wf_1: "mat nr nc m1" and wf_2: "mat nr nc m2" and wf_3: "mat nr nc m3"
+lemma mat_plus_assoc: assumes wf: "mat nr nc m1" "mat nr nc m2" "mat nr nc m3"
   shows "mat_plus m1 (mat_plus m2 m3) = mat_plus (mat_plus m1 m2) m3" (is "?l = ?r")
-proof -
-  from wf_2 wf_3 have wf_23: "mat nr nc (mat_plus m2 m3)" by (simp add: mat_plus)
-  from wf_1 wf_2 have wf_12: "mat nr nc (mat_plus m1 m2)" by (simp add: mat_plus)
-  from assms have wf_l: "mat nr nc ?l" by (simp add: mat_plus)
-  from assms have wf_r: "mat nr nc ?r" by (simp add: mat_plus)
-  show ?thesis by (simp only: mat_eq_index[OF wf_l wf_r], intro allI impI,
-    simp only: mat_plus_index[OF wf_1 wf_23],
-    simp only: mat_plus_index[OF wf_2 wf_3],
-    simp only: mat_plus_index[OF wf_12 wf_3],
-    simp only: mat_plus_index[OF wf_1 wf_2],
-    simp only: add_assoc)
-qed
+proof (rule mat_eqI)
+  fix i j 
+  assume "i < nc" "j < nr"
+  note [simp] = mat_plus_index[OF _ _ this]
+  show "?l ! i ! j = ?r ! i ! j" using wf by (simp add: add_assoc)
+qed (auto simp: wf)
 end
 
 context ab_semigroup_add
@@ -793,28 +790,28 @@ proof (induct nr arbitrary: u)
  case (Suc nn) thus ?case by (cases u, auto)
 qed simp
 
-lemma plus_vec0[simp]: assumes "vec nr u" shows "vec_plus u (vec0 nr) = u"
+lemma plus_vec0[simp]: assumes "vec nr u" shows "vec_plus u (vec0 nr) = u" 
 using assms
 unfolding vec_def vec_plusI_def vec0I_def
 proof (induct nr arbitrary: u)
  case (Suc nn) thus ?case by (cases u, auto)
 qed simp
+ 
+lemma plus_mat0[simp]: assumes wf: "mat nr nc m" shows "mat_plus m (mat0 nr nc) = m" (is "?l = ?r")
+proof (rule mat_eqI)
+  fix i j
+  assume "i < nc" "j < nr"
+  note [simp] = mat_plus_index[OF _ _ this] mat0_index[OF this]
+  show "?l ! i ! j = ?r ! i ! j" using wf by simp
+qed (insert wf, auto)
 
-lemma plus_mat0[simp]: assumes "mat nr nc m" shows "mat_plus m (mat0 nr nc) = m"
-using assms 
-unfolding mat_def 
-proof (induct nc arbitrary: m)
-  case (Suc nn) 
-  thus ?case 
-  proof (cases m)
-    case (Cons v mm)
-    with Suc have wf: "vec nr v" by auto
-    from Cons Suc have "mat_plus m (mat0 nr (Suc nn)) = vec_plus v (vec0 nr) # mat_plus mm (mat0 nr nn)" by (auto simp: mat_plusI_def mat0I_def)
-    also have "\<dots> = vec_plus v (vec0 nr) # mm" using Suc Cons by auto
-    also have "\<dots> = v # mm" by (simp only: plus_vec0 wf)
-    finally show ?thesis using Cons by auto
-  qed simp
-qed (simp add: mat_plusI_def mat0I_def)
+lemma mat0_plus[simp]: assumes wf: "mat nr nc m" shows "mat_plus (mat0 nr nc) m = m" (is "?l = ?r")
+proof (rule mat_eqI)
+  fix i j
+  assume "i < nc" "j < nr"
+  note [simp] = mat_plus_index[OF _ _ this] mat0_index[OF this]
+  show "?l ! i ! j = ?r ! i ! j" using wf by simp
+qed (insert wf, auto)
 end
 
 context semiring_0
@@ -929,14 +926,16 @@ lemma mat_mult_assoc:
   and wf3: "mat n2 nc m3"
   shows "mat_mult nr (mat_mult nr m1 m2) m3 = mat_mult nr m1 (mat_mult n1 m2 m3)" (is "?m12_3 = ?m1_23")
 proof -
+  note wf = wf1 wf2 wf3
   let ?m12 = "mat_mult nr m1 m2"
   let ?m23 = "mat_mult n1 m2 m3"
-  from wf1 wf2 have wf12: "mat nr n2 ?m12" by (rule mat_mult)
-  from wf2 wf3 have wf23: "mat n1 nc ?m23" by (rule mat_mult)
-  from wf1 wf23 have wf1_23: "mat nr nc ?m1_23" by (rule mat_mult)
-  from wf12 wf3 have wf12_3: "mat nr nc ?m12_3" by (rule mat_mult)
+  from wf have 
+    wf12: "mat nr n2 ?m12" and
+    wf23: "mat n1 nc ?m23" and
+    wf1_23: "mat nr nc ?m1_23" and
+    wf12_3: "mat nr nc ?m12_3" by auto
   show ?thesis
-  proof (simp only: mat_col_eq[OF wf12_3 wf1_23, symmetric], unfold col_def, intro allI impI)
+  proof (rule mat_col_eqI, unfold col_def)
     fix i
     assume i: "i < nc"
     with wf1_23 wf12_3 wf3 have len: "length (?m12_3 ! i) = length (?m1_23 ! i)" and ilen: "i < length m3" unfolding mat_def by (auto simp: vec_def)
@@ -945,14 +944,14 @@ proof -
       fix j
       assume jlen: "j < length (?m12_3 ! i)"
       with wf12_3 i have j: "j < nr" unfolding mat_def by (auto simp: vec_def)      
-      show "?m12_3 ! i ! j = ?m1_23 ! i ! j"
-        by (simp only: mat_mult_index[OF wf12 wf3 j i],
-             simp only: mat_mult_index[OF wf1 wf23 j i], 
-             simp only: row_mat_mult_index[OF wf1 wf2 j],
-             simp only: col_mat_mult_index[OF wf2 wf3 i], 
-             simp only: scalar_product_assoc[OF wf2 row[OF wf1 j] col[OF wf3 i]])
+      show "?m12_3 ! i ! j = ?m1_23 ! i ! j" 
+        by (unfold mat_mult_index[OF wf12 wf3 j i]
+              mat_mult_index[OF wf1 wf23 j i]
+              row_mat_mult_index[OF wf1 wf2 j]
+              col_mat_mult_index[OF wf2 wf3 i]
+              scalar_product_assoc[OF wf2 row[OF wf1 j] col[OF wf3 i]], simp)
     qed
-  qed
+  qed (insert wf, auto)
 qed
 
 lemma mat_mult_assoc_n:  
@@ -980,28 +979,22 @@ qed simp
 
 lemma mat0_mult_left: assumes wf: "mat nc ncc m"
   shows "mat_mult nr (mat0 nr nc) m = (mat0 nr ncc)"
-proof (simp only: mat_eq_index[OF mat_mult[OF mat0 wf] mat0], intro allI impI)
+proof (rule mat_eqI)
   fix i j
   assume i: "i < ncc" and j: "j < nr"
   show "mat_mult nr (mat0 nr nc) m ! i ! j = mat0 nr ncc ! i ! j"
-  by (simp only: mat_mult_index[OF mat0 wf j i], 
-         simp only: mat0_index[OF i j], 
-         simp only: mat0_row[OF j],
-         simp only: scalar_left_zero)
-qed
+    by (unfold mat_mult_index[OF mat0 wf j i] mat0_index[OF i j] mat0_row[OF j] scalar_left_zero, simp)
+qed (auto simp: wf)
 
 
 lemma mat0_mult_right: assumes wf: "mat nr nc m"
   shows "mat_mult nr m (mat0 nc ncc) = (mat0 nr ncc)"
-proof (simp only: mat_eq_index[OF mat_mult[OF wf mat0] mat0], intro allI impI)
+proof (rule mat_eqI)
   fix i j
   assume i: "i < ncc" and j: "j < nr"
   show "mat_mult nr m (mat0 nc ncc) ! i ! j = mat0 nr ncc ! i ! j"
-    by (simp only: mat_mult_index[OF wf mat0 j i],
-         simp only: mat0_index[OF i j],
-         simp only: mat0_col[OF i],
-         simp only: scalar_right_zero)
-qed
+    by (unfold mat_mult_index[OF wf mat0 j i] mat0_index[OF i j] mat0_col[OF i] scalar_right_zero, simp)
+qed (insert wf, auto)
 
 lemma scalar_vec_plus_distrib_right: 
   assumes wf1: "vec nr u"
@@ -1041,25 +1034,27 @@ lemma mat_mult_plus_distrib_right:
   and wf3: "mat nc ncc m3"
   shows "mat_mult nr m1 (mat_plus m2 m3) = mat_plus (mat_mult nr m1 m2) (mat_mult nr m1 m3)" (is "mat_mult nr m1 ?m23 = mat_plus ?m12 ?m13")
 proof -
+  note wf = wf1 wf2 wf3
   let ?m1_23 = "mat_mult nr m1 ?m23"
   let ?m12_13 = "mat_plus ?m12 ?m13"
-  from mat_plus[OF wf2 wf3] have wf23: "mat nc ncc ?m23" .
-  from mat_mult[OF wf1 wf2] have wf12: "mat nr ncc ?m12" .
-  from mat_mult[OF wf1 wf3] have wf13: "mat nr ncc ?m13" .
-  from mat_mult[OF wf1 wf23] have wf1_23: "mat nr ncc ?m1_23" .
-  from mat_plus[OF wf12 wf13] have wf12_13: "mat nr ncc ?m12_13" .
+  from wf have 
+    wf23: "mat nc ncc ?m23" and
+    wf12: "mat nr ncc ?m12" and
+    wf13: "mat nr ncc ?m13" and 
+    wf1_23: "mat nr ncc ?m1_23" and
+    wf12_13: "mat nr ncc ?m12_13" by auto
   show ?thesis 
-  proof (simp only: mat_eq_index[OF wf1_23 wf12_13], intro impI allI)
+  proof (rule mat_eqI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
     show "?m1_23 ! i ! j = ?m12_13 ! i ! j"
-      by (simp only: mat_mult_index[OF wf1 wf23 j i],
-           simp only: mat_plus_index[OF wf12 wf13 i j],
-           simp only: mat_mult_index[OF wf1 wf2 j i],
-           simp only: mat_mult_index[OF wf1 wf3 j i],
-           simp only: col_mat_plus[OF wf2 wf3 i],
+      by (unfold mat_mult_index[OF wf1 wf23 j i]
+           mat_plus_index[OF wf12 wf13 i j]
+           mat_mult_index[OF wf1 wf2 j i]
+           mat_mult_index[OF wf1 wf3 j i]
+           col_mat_plus[OF wf2 wf3 i],
         rule scalar_vec_plus_distrib_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]])
-  qed
+  qed (insert wf, auto)
 qed
 
 lemma mat_mult_plus_distrib_left: 
@@ -1068,25 +1063,27 @@ lemma mat_mult_plus_distrib_left:
   and wf3: "mat nc ncc m3"
   shows "mat_mult nr (mat_plus m1 m2) m3 = mat_plus (mat_mult nr m1 m3) (mat_mult nr m2 m3)" (is "mat_mult nr ?m12 _ = mat_plus ?m13 ?m23")
 proof -
+  note wf = wf1 wf2 wf3
   let ?m12_3 = "mat_mult nr ?m12 m3"
   let ?m13_23 = "mat_plus ?m13 ?m23"
-  from mat_plus[OF wf1 wf2] have wf12: "mat nr nc ?m12" .
-  from mat_mult[OF wf1 wf3] have wf13: "mat nr ncc ?m13" .
-  from mat_mult[OF wf2 wf3] have wf23: "mat nr ncc ?m23" .
-  from mat_mult[OF wf12 wf3] have wf12_3: "mat nr ncc ?m12_3" .
-  from mat_plus[OF wf13 wf23] have wf13_23: "mat nr ncc ?m13_23" .
+  from wf have
+    wf12: "mat nr nc ?m12" and
+    wf13: "mat nr ncc ?m13" and
+    wf23: "mat nr ncc ?m23" and
+    wf12_3: "mat nr ncc ?m12_3" and
+    wf13_23: "mat nr ncc ?m13_23" by auto
   show ?thesis 
-  proof (simp only: mat_eq_index[OF wf12_3 wf13_23], intro impI allI)
+  proof (rule mat_eqI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
     show "?m12_3 ! i ! j = ?m13_23 ! i ! j"
-      by (simp only: mat_mult_index[OF wf12 wf3 j i],
-           simp only: mat_plus_index[OF wf13 wf23 i j],
-           simp only: mat_mult_index[OF wf1 wf3 j i],
-           simp only: mat_mult_index[OF wf2 wf3 j i],
-           simp only: row_mat_plus[OF wf1 wf2 j],
+      by (unfold mat_mult_index[OF wf12 wf3 j i]
+           mat_plus_index[OF wf13 wf23 i j]
+           mat_mult_index[OF wf1 wf3 j i]
+           mat_mult_index[OF wf2 wf3 j i]
+           row_mat_plus[OF wf1 wf2 j],
            rule scalar_vec_plus_distrib_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]])
-  qed
+  qed (insert wf, auto)
 qed
 end
 
@@ -1141,32 +1138,105 @@ qed blast
 
 lemma mat1_mult_right: assumes wf: "mat nr nc m"
   shows "mat_mult nr m (mat1 nc) = m"
-proof (simp only: mat_eq_index[OF mat_mult[OF wf mat1] wf], intro allI impI)
+proof (rule mat_eqI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   show "mat_mult nr m (mat1 nc) ! i ! j = m ! i ! j"
-    by (simp only: mat_mult_index[OF wf mat1 j i],
-    simp only: col_mat1[OF i],
-    simp only: scalar_right_one[OF row[OF wf j] i],
-    simp only: row_col[OF wf j i],
-    unfold col_def, simp)
-qed
+    by (unfold mat_mult_index[OF wf mat1 j i]
+     col_mat1[OF i]
+     scalar_right_one[OF row[OF wf j] i]
+     row_col[OF wf j i],
+     unfold col_def, simp)
+qed (insert wf, auto)
 
 
 lemma mat1_mult_left: assumes wf: "mat nr nc m"
   shows "mat_mult nr (mat1 nr) m = m"
-proof (simp only: mat_eq_index[OF mat_mult[OF mat1 wf] wf], intro allI impI)
+proof (rule mat_eqI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   show "mat_mult nr (mat1 nr) m ! i ! j = m ! i ! j"
-    by (simp only: mat_mult_index[OF mat1 wf j i],
-      simp only: row_mat1[OF j],
-      simp only: scalar_left_one[OF col[OF wf i] j], unfold col_def, simp)
-qed
+    by (unfold mat_mult_index[OF mat1 wf j i]
+      row_mat1[OF j]
+      scalar_left_one[OF col[OF wf i] j], unfold col_def, simp)
+qed (insert wf, auto)
 end
 
 
 declare vec0[simp del] mat0[simp del] vec0_plus[simp del] plus_vec0[simp del] plus_mat0[simp del]
 
+subsection {* Connection to HOL-Algebra *}
+
+context monoid_add
+begin
+abbreviation mat_carrier :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat set"
+  where "mat_carrier nr nc \<equiv> Collect (mat nr nc)"
+end
+lemma (in monoid_add) mat_monoid: "monoid \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>"
+  by (unfold_locales, auto simp: mat_plus_assoc)
+
+lemma (in group_add) mat_group: "group \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>" (is "group ?R")
+proof -
+  interpret monoid ?R
+    by (rule mat_monoid)
+  {
+    fix m :: "'a mat"
+    assume wf: "mat nr nc m"
+    let ?m' = "mat_map uminus m" 
+    have "\<exists> m'. mat nr nc m' \<and> mat_plus m' m = mat0 nr nc \<and> mat_plus m m' = mat0 nr nc"
+    proof (rule exI[of _ ?m'], intro conjI mat_eqI)
+      fix i j 
+      assume "i < nc" "j < nr"
+      note [simp] = mat_plus_index[OF _ _ this] mat_map_index[OF _ this] mat0_index[OF this]
+      show "mat_plus ?m' m ! i ! j = mat0 nr nc ! i ! j" using wf by simp
+      show "mat_plus m ?m' ! i ! j = mat0 nr nc ! i ! j" using wf by simp
+    qed (auto intro: wf)
+  } note Units = this
+  show ?thesis
+    by (unfold_locales, auto simp: Units_def Units)
+qed
+
+lemma (in comm_monoid_add) mat_comm_monoid: "comm_monoid \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>" (is "comm_monoid ?R")
+proof -
+  interpret monoid ?R
+    by (rule mat_monoid)
+  show ?thesis
+    by (unfold_locales, insert mat_plus_comm, auto)
+qed
+
+lemma (in ab_group_add) mat_comm_group: 
+  shows "comm_group \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>" (is "comm_group ?R")
+proof -
+  interpret group ?R by (rule mat_group)
+  interpret comm_monoid ?R by (rule mat_comm_monoid)
+  show ?thesis ..
+qed
+
+lemma (in ring_1) mat_abelian_monoid: 
+  shows "abelian_monoid \<lparr> carrier =  mat_carrier n n, mult = mat_mult n, one = (mat1 n :: 'a mat), zero = mat0 n n, add = mat_plus \<rparr>"
+  (is "abelian_monoid \<lparr> carrier = ?c, mult = _, one = _, zero = ?z, add = ?a \<rparr>")
+proof -
+  interpret comm_group "\<lparr> carrier = ?c, mult = ?a, one = ?z \<rparr>" by (rule mat_comm_group)
+  show ?thesis unfolding abelian_monoid_def 
+    by (simp, unfold_locales) 
+qed
+
+lemma (in ring_1) mat_abelian_group: 
+  shows "abelian_group \<lparr> carrier =  mat_carrier n n, mult = mat_mult n, one = (mat1 n :: 'a mat), zero = mat0 n n, add = mat_plus \<rparr>"
+  (is "abelian_group ?R")
+proof -
+  interpret abelian_monoid ?R by (rule mat_abelian_monoid)
+  show ?thesis  
+    by (unfold_locales, insert group.Units[OF mat_group, of n n], auto) 
+qed
+
+lemma (in ring_1) mat_ring: 
+  shows "ring \<lparr> carrier =  mat_carrier n n, mult = mat_mult n, one = (mat1 n :: 'a mat), zero = mat0 n n, add = mat_plus \<rparr>"
+  (is "ring ?R")
+proof -
+  interpret abelian_group ?R by (rule mat_abelian_group)
+  show ?thesis 
+    by (unfold_locales, insert mat_mult_assoc mat1_mult_left mat1_mult_right mat_mult_plus_distrib_left mat_mult_plus_distrib_right, auto)
+qed
 
 end

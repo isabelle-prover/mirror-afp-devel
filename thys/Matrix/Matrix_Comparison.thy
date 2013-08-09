@@ -94,7 +94,7 @@ fun upper_triangularI :: "'a \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a
 
 subsection {* algorithms preserve dimensions *}
 
-lemma mat_max0: assumes "mat nr nc m" shows "mat nr nc (mat_max0 m)"
+lemma mat_max0[simp, intro]: assumes "mat nr nc m" shows "mat nr nc (mat_max0 m)"
 using assms unfolding mat_max0_def by (rule mat_map)
 
 subsection {* properties of algorithms which do not depend on properties of type of matrix *}
@@ -131,19 +131,37 @@ proof (induct nr arbitrary: v1 v2)
   qed
 qed simp
 
-lemma vec_ge_index: assumes "vec nr v1" 
+lemma vec_ge: assumes "vec nr v1" 
   and "vec nr v2"
   shows "vec_ge v1 v2 = (\<forall> i < nr. ge (v1 ! i) (v2 ! i))"
 using assms
 unfolding vec_ge_def by (rule vec_comp_all_index) 
 
-lemma vec_pre_gt_index: assumes "vec nr v1" 
+lemma vec_geI: assumes wf: "vec nr v1" "vec nr v2"
+  and "\<And> i. i < nr \<Longrightarrow> ge (v1 ! i) (v2 ! i)"
+  shows "vec_ge v1 v2"
+  using assms
+  unfolding vec_ge[OF wf]  by auto 
+
+lemma vec_geE: assumes ge: "vec_ge v1 v2" and wf: "vec nr v1" "vec nr v2"
+  shows "\<And> i. i < nr \<Longrightarrow> ge (v1 ! i) (v2 ! i)"
+  using ge unfolding vec_ge[OF wf] by auto
+
+lemma vec_pre_gt: assumes "vec nr v1" 
   and "vec nr v2"
   shows "vec_pre_gtI gt v1 v2 = (\<exists> i < nr. gt (v1 ! i) (v2 ! i))"
 using assms[simplified vec_def, symmetric]
 by (simp only: Not_eq_iff[symmetric, of "vec_pre_gtI gt v1 v2"], unfold vec_pre_gtI_def, simp add: set_zip, auto) 
+
+lemma vec_pre_gtI: assumes wf: "vec nr v1" "vec nr v2"
+  and "i < nr" "gt (v1 ! i) (v2 ! i)"
+  shows "vec_pre_gtI gt v1 v2" unfolding vec_pre_gt[OF wf] using assms by auto
+
+lemma vec_pre_gtE: assumes gt: "vec_pre_gtI gt v1 v2" and wf: "vec nr v1" "vec nr v2"
+  obtains i where "i < nr" "gt (v1 ! i) (v2 ! i)"
+  using gt unfolding vec_pre_gt[OF wf] by auto
     
-lemma mat_comp_all_index: assumes "mat nr nc m1" 
+lemma mat_comp_all: assumes "mat nr nc m1" 
   and "mat nr nc m2"
   shows "mat_comp_all r m1 m2 = (\<forall> i < nc. \<forall> j < nr. r (m1 ! i ! j) (m2 ! i ! j))"
 using assms
@@ -179,25 +197,39 @@ proof (induct nc arbitrary: m1 m2)
   qed
 qed simp
 
-lemma mat_ge_index: assumes "mat nr nc m1" 
-  and "mat nr nc m2"
-  shows "mat_ge m1 m2 = (\<forall> i < nc. \<forall> j < nr. ge (m1 ! i ! j) (m2 ! i ! j))"
-using assms
-unfolding mat_ge_def by (rule mat_comp_all_index)
+lemma mat_comp_allI: assumes wf: "mat nr nc m1" "mat nr nc m2"
+  and "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> r (m1 ! i ! j) (m2 ! i ! j)"
+  shows "mat_comp_all r m1 m2" unfolding mat_comp_all[OF wf]
+  using assms by auto
 
-lemma mat_pre_gt_index: assumes "mat nr nc m1"
+lemma mat_comp_allE: assumes ge: "mat_comp_all r m1 m2"
+  and wf: "mat nr nc m1" "mat nr nc m2"
+  shows "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> r (m1 ! i ! j) (m2 ! i ! j)"
+  using ge unfolding mat_comp_all[OF wf] by auto
+
+lemma mat_geI: assumes wf: "mat nr nc m1" "mat nr nc m2"
+  and "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> ge (m1 ! i ! j) (m2 ! i ! j)"
+  shows "mat_ge m1 m2" unfolding mat_ge_def 
+  by (rule mat_comp_allI, insert assms, auto)
+
+lemma mat_geE: assumes "mat_ge m1 m2"
+  and "mat nr nc m1" "mat nr nc m2"
+  shows "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> ge (m1 ! i ! j) (m2 ! i ! j)"
+  by (rule mat_comp_allE, insert assms, auto simp: mat_ge_def)
+
+lemma mat_pre_gt: assumes "mat nr nc m1"
   and "mat nr nc m2"
   shows "mat_pre_gtI gt m1 m2 = (\<exists> i < nc. \<exists> j < nr. gt (m1 ! i ! j) (m2 ! i ! j))"
 proof -
   from assms have l1: "nc = length m1" and l2: "length m2 = length m1" 
-    and vl1: "\<forall> i < nc. vec nr (m1 ! i)" and vl2: "\<forall> i < nc. vec nr (m2 ! i)" unfolding mat_def by auto
+    and vl1: "\<And> i. i < nc \<Longrightarrow> vec nr (m1 ! i)" and vl2: "\<And> i. i < nc \<Longrightarrow> vec nr (m2 ! i)" unfolding mat_def by auto
   let ?l = "\<lambda> i. \<not> vec_pre_gtI gt (m1 ! i) (m2 ! i)"
   let ?r = "\<lambda> i. \<forall> j < nr. \<not> gt (m1 ! i ! j) (m2 ! i ! j)"
   have lr: "\<forall> i < nc. ?l i = ?r i"
   proof (intro allI impI)
     fix i
     assume i: "i < nc"
-    show "?l i = ?r i" using vec_pre_gt_index[OF mp[OF spec[OF vl1] i] mp[OF spec[OF vl2] i]] by auto
+    show "?l i = ?r i" using vec_pre_gt[OF vl1[OF i] vl2[OF i]] by auto
   qed     
   show ?thesis
   proof (simp only: Not_eq_iff[symmetric, of "mat_pre_gtI gt m1 m2"], unfold mat_pre_gtI_def set_zip l2 min_max.inf_idem l1[symmetric])
@@ -206,7 +238,15 @@ proof -
   qed
 qed
 
-lemma mat_gt_index: assumes wf1: "mat n n m1"
+lemma mat_pre_gtI: assumes wf: "mat nr nc m1" "mat nr nc m2"
+  and "i < nc" "j < nr" "gt (m1 ! i ! j) (m2 ! i ! j)"
+  shows "mat_pre_gtI gt m1 m2" unfolding mat_pre_gt[OF wf] using assms by auto
+
+lemma mat_pre_gtE: assumes gt: "mat_pre_gtI gt m1 m2" and wf: "mat nr nc m1" "mat nr nc m2"
+  obtains i j where "i < nc" "j < nr" "gt (m1 ! i ! j) (m2 ! i ! j)"
+  using gt unfolding mat_pre_gt[OF wf] by auto
+
+lemma mat_gt: assumes wf1: "mat n n m1"
   and wf2: "mat n n m2"
   and sd: "sd \<le> n"
   shows "mat_gtI gt sd m1 m2 = (mat_ge m1 m2 \<and> (\<exists> i < sd. \<exists> j < sd. gt (m1 ! i ! j) (m2 ! i ! j)))"
@@ -214,14 +254,14 @@ proof -
   have id: "mat_pre_gtI gt (sub_mat sd sd m1) (sub_mat sd sd m2) = (\<exists> i < sd. \<exists> j < sd. gt (m1 ! i ! j) (m2 ! i ! j))" (is "?l = ?r")
   proof -
     have "?l = (\<exists> i < sd. \<exists> j < sd. gt (sub_mat sd sd m1 ! i ! j) (sub_mat sd sd m2 ! i ! j))"
-      by (simp only: mat_pre_gt_index[OF sub_mat[OF wf1 sd sd] sub_mat[OF wf2 sd sd]])
+      by (simp only: mat_pre_gt[OF sub_mat[OF wf1 sd sd] sub_mat[OF wf2 sd sd]])
     also have "\<dots> = ?r" by (simp only: Not_eq_iff[symmetric, of _ ?r], auto simp: sub_mat_index[OF wf1 sd sd] sub_mat_index[OF wf2 sd sd])
     finally show "?l = ?r" .
   qed
   thus ?thesis unfolding mat_gtI_def by auto
 qed
 
-lemma mat_mono_index: assumes wf: "mat n n m"
+lemma mat_mono: assumes wf: "mat n n m"
   and sd: "sd \<le> n" 
   shows "mat_monoI geq1 sd m = (\<forall> i < sd. \<exists> j < sd. geq1 (m ! i ! j))"
 proof -
@@ -320,50 +360,41 @@ lemma mat_ge_refl: "mat_ge m m"
   unfolding mat_ge_def mat_comp_all_def 
   by (induct m, auto simp: vec_ge_refl[unfolded vec_ge_def])
 
-lemma vec_ge_trans: assumes ge12: "vec_ge v1 v2" and ge23: "vec_ge v2 v3" and wf_1: "vec nr v1" and wf_2: "vec nr v2" and wf_3: "vec nr v3"
+lemma vec_ge_trans: assumes ge12: "vec_ge v1 v2" and ge23: "vec_ge v2 v3" and wf: "vec nr v1" "vec nr v2" "vec nr v3"
   shows "vec_ge v1 v3"
-proof (simp only: vec_ge_index[OF wf_1 wf_3], intro allI impI) 
+proof (rule vec_geI)
   fix i
   assume i: "i < nr"
-  show "v1 ! i \<succeq> v3 ! i"
-    using 
-      spec[OF ge12[simplified vec_ge_index[OF wf_1 wf_2]], of i]
-      spec[OF ge23[simplified vec_ge_index[OF wf_2 wf_3]], of i]
-      ge_trans[of "v1 ! i" "v2 ! i" "v3 ! i"]
-      i 
-    by blast
-qed
+  show "v1 ! i \<succeq> v3 ! i" using ge_trans[OF vec_geE[OF ge12 _ _ i] vec_geE[OF ge23 _ _ i]] wf by auto
+qed (insert wf, auto)
 
-lemma mat_ge_trans: assumes ge12: "mat_ge v1 v2" and ge23: "mat_ge v2 v3" and wf_1: "mat nr nc v1" and wf_2: "mat nr nc v2" and wf_3: "mat nr nc v3"
+lemma mat_ge_trans: assumes ge12: "mat_ge v1 v2" and ge23: "mat_ge v2 v3" and wf: "mat nr nc v1" "mat nr nc v2" "mat nr nc v3"
   shows "mat_ge v1 v3"
-proof (simp only: mat_ge_index[OF wf_1 wf_3], intro allI impI)
+proof (rule mat_geI)
   fix i j
-  assume i: "i < nc" and j: "j < nr"
-  show "v1 ! i ! j \<succeq> v3 ! i ! j"
-    using 
-      spec[OF ge12[simplified mat_ge_index[OF wf_1 wf_2]], of i]
-      spec[OF ge23[simplified mat_ge_index[OF wf_2 wf_3]], of i]
-      ge_trans[of "v1 ! i ! j" "v2 ! i ! j" "v3 ! i ! j"]
-      i j
-    by blast
-qed
+  assume ij: "i < nc" "j < nr"
+  show "v1 ! i ! j \<succeq> v3 ! i ! j" using ge_trans[OF mat_geE[OF ge12 _ _ ij] mat_geE[OF ge23 _ _ ij]] using wf by auto
+qed (insert wf, auto)
 
-lemma vec_plus_left_mono: assumes ge: "vec_ge v1 (v2 :: ('a :: ordered_ab_semigroup)vec)" and wf_1: "vec nr v1" and wf_2: "vec nr v2" and wf_3: "vec nr v3"
+lemma vec_plus_left_mono: assumes ge: "vec_ge v1 (v2 :: ('a :: ordered_ab_semigroup)vec)" and 
+  wf: "vec nr v1" "vec nr v2" "vec nr v3"
   shows "vec_ge (vec_plus v1 v3) (vec_plus v2 v3)"
-  by (simp only: vec_ge_index[OF vec_plus[OF wf_1 wf_3] vec_plus[OF wf_2 wf_3]], intro allI impI,
-    simp only: vec_plus_index[OF wf_1 wf_3],
-    simp only: vec_plus_index[OF wf_2 wf_3],
-    rule plus_left_mono,
-    auto simp: ge[simplified vec_ge_index[OF wf_1 wf_2]])
+proof (rule vec_geI)
+  fix i
+  assume i: "i < nr"
+  note [simp] = vec_plus_index[OF _ _ i] vec_geE[OF ge _ _ i]
+  show "vec_plus v1 v3 ! i \<succeq> vec_plus v2 v3 ! i" using wf by (auto intro: plus_left_mono)
+qed (insert wf, auto)
 
-lemma mat_plus_left_mono: assumes ge: "mat_ge m1 (m2 :: ('a :: ordered_ab_semigroup)mat)" and wf_1: "mat nr nc m1" and wf_2: "mat nr nc m2" and wf_3: "mat nr nc m3" 
+lemma mat_plus_left_mono: assumes ge: "mat_ge m1 (m2 :: ('a :: ordered_ab_semigroup)mat)" 
+  and wf: "mat nr nc m1" "mat nr nc m2" "mat nr nc m3" 
   shows "mat_ge (mat_plus m1 m3) (mat_plus m2 m3)"
-by (simp only: mat_ge_index[OF mat_plus[OF wf_1 wf_3] mat_plus[OF wf_2 wf_3]], intro allI impI,
-    simp only: mat_plus_index[OF wf_1 wf_3],
-    simp only: mat_plus_index[OF wf_2 wf_3],
-    rule plus_left_mono,
-    auto simp: ge[simplified mat_ge_index[OF wf_1 wf_2]])
-
+proof (rule mat_geI)
+  fix i j
+  assume i: "i < nc" "j < nr"
+  note [simp] = mat_plus_index[OF _ _ i] mat_geE[OF ge _ _ i]
+  show "mat_plus m1 m3 ! i ! j \<succeq> mat_plus m2 m3 ! i ! j" using wf by (auto intro: plus_left_mono)
+qed (insert wf, auto)
 
 lemma scalar_prod_mono_left: assumes wf1: "vec nr (v1 :: ('a :: ordered_semiring_1) vec)"
   and wf2: "vec nr v2"
@@ -431,23 +462,23 @@ proof -
   from mat_mult[OF wf1 wf3] have wf13: "mat nr ncc ?m13" .
   from mat_mult[OF wf2 wf3] have wf23: "mat nr ncc ?m23" .
   show ?thesis 
-  proof (simp only: mat_ge_index[OF wf13 wf23], intro allI impI)
+  proof (rule mat_geI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
-    from ge1 have ge1a: "\<forall>i<nc. \<forall> j < nr.  m1 ! i ! j \<succeq> m2 ! i ! j"
-      using mat_ge_index[OF wf1 wf2] by simp
-    from ge2 have ge2a: "\<forall>ia<nc. col m3 i ! ia \<succeq> vec0 nc ! ia"
-      using mat_ge_index[OF wf3 mat0] i unfolding col_def mat0I_def vec0I_def
+    have ge1a: "\<forall>i<nc. \<forall> j < nr.  m1 ! i ! j \<succeq> m2 ! i ! j"
+      using mat_geE[OF ge1 wf1 wf2] by simp
+    have ge2a: "\<forall>ia<nc. col m3 i ! ia \<succeq> vec0 nc ! ia"
+      using mat_geE[OF ge2 wf3 mat0] i unfolding col_def mat0I_def vec0I_def
       by auto      
     show "?m13 ! i ! j \<succeq> ?m23 ! i ! j"
-      by (simp only: mat_mult_index[OF wf1 wf3 j i],
-        simp only: mat_mult_index[OF wf2 wf3 j i], 
+      by (unfold mat_mult_index[OF wf1 wf3 j i]
+           mat_mult_index[OF wf2 wf3 j i], 
         rule scalar_prod_mono_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]],
-        simp only: vec_ge_index[OF row[OF wf1 j] row[OF wf2 j]],
+        unfold vec_ge[OF row[OF wf1 j] row[OF wf2 j]],
         (auto simp: row_col[OF wf1 j] row_col[OF wf2 j] col_def ge1a j)[1],
-        simp only: vec_ge_index[OF col[OF wf3 i] vec0],
+        unfold vec_ge[OF col[OF wf3 i] vec0],
         rule ge2a)
-  qed
+  qed (insert wf1 wf2 wf3, auto)
 qed  
 
 
@@ -464,75 +495,74 @@ proof -
   from mat_mult[OF wf1 wf2] have wf12: "mat nr ncc ?m12" .
   from mat_mult[OF wf1 wf3] have wf13: "mat nr ncc ?m13" .
   show ?thesis 
-  proof (simp only: mat_ge_index[OF wf12 wf13], intro allI impI)
+  proof (rule mat_geI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
-    from ge2 i have ge2a: " \<forall>ia<nc. col m2 i ! ia \<succeq> col m3 i ! ia"
-      using mat_ge_index[OF wf2 wf3] unfolding col_def by auto
-    from ge1 j have ge1a: " \<forall>i<nc. m1 ! i ! j \<succeq> 0" 
-      using mat_ge_index[OF wf1 mat0] unfolding mat0I_def vec0I_def
+    have ge2a: " \<forall>ia<nc. col m2 i ! ia \<succeq> col m3 i ! ia"
+      using mat_geE[OF ge2 wf2 wf3 i] unfolding col_def by auto
+    have ge1a: " \<forall>i<nc. m1 ! i ! j \<succeq> 0" 
+      using mat_geE[OF ge1 wf1 mat0] j unfolding mat0I_def vec0I_def
       by auto
     show "?m12 ! i ! j \<succeq> ?m13 ! i ! j"
-      by  (simp only: mat_mult_index[OF wf1 wf2 j i],
-        simp only: mat_mult_index[OF wf1 wf3 j i],
+      by  (unfold mat_mult_index[OF wf1 wf2 j i]
+             mat_mult_index[OF wf1 wf3 j i],
         rule scalar_prod_mono_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]], 
-        simp only: vec_ge_index[OF col[OF wf2 i] col[OF wf3 i]], rule ge2a, 
-        simp only: vec_ge_index[OF row[OF wf1 j] vec0],
+        unfold vec_ge[OF col[OF wf2 i] col[OF wf3 i]], rule ge2a, 
+        unfold vec_ge[OF row[OF wf1 j] vec0],
         simp add: row_col[OF wf1 j] vec0I_def col_def, rule ge1a) 
-  qed
+  qed (insert wf1 wf2 wf3, auto)
 qed
 
 lemma mat1_ge_mat0: "mat_ge (mat1 n) ((mat0 n n) :: ('a :: ordered_semiring_1) mat)" (is "mat_ge ?m1 ?m0")
-unfolding mat_ge_index[OF mat1 mat0]
-proof (intro allI impI)
+proof (rule mat_geI)
   fix i j
   assume i: "i < n" and j: "j < n"
   have zero_ij: "?m0 ! i ! j = 0" by (rule mat0_index[OF i j])
   have one_ij: "?m1 ! i ! j = (if i = j then 1 else 0)" by (rule mat1_index[OF i j])
   show "?m1 ! i ! j \<succeq> ?m0 ! i ! j"
     by (simp add: zero_ij one_ij ge_refl one_ge_zero)
-qed
+qed auto
 
 lemma mat_max0_x: assumes wf: "mat nr nc m" shows "mat_ge (mat_max0 m) m"
-proof (unfold mat_ge_index[OF mat_max0[OF wf] wf], intro allI impI)
+proof (rule mat_geI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   show "mat_max0 m ! i ! j \<succeq> m ! i ! j"
     by (unfold mat_max0_index[OF wf i j], rule max0_x)
-qed
+qed (insert wf, auto)
 
 lemma mat_max0_pos: assumes wf: "mat nr nc m"
   shows "mat_ge (mat_max0 m) (mat0 nr nc)"
-proof (unfold mat_ge_index[OF mat_max0[OF wf] mat0], intro allI impI)
+proof (rule mat_geI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   show "mat_max0 m ! i ! j \<succeq> mat0 nr nc ! i ! j"
     by (unfold mat_max0_index[OF wf i j] mat0_index[OF i j], rule max0_pos)
-qed
+qed (insert wf, auto)
 
 lemma mat_max0_id_pos: assumes ge: "mat_ge m (mat0 nr nc)" and wf: "mat nr nc m"  
   shows "mat_max0 m = m"
-proof (unfold mat_eq_index[OF mat_max0[OF wf] wf], intro allI impI)
+proof (rule mat_eqI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  with ge[simplified mat_ge_index[OF wf mat0]] 
-  have "m ! i ! j \<succeq> mat0 nr nc ! i ! j" by simp
+  from mat_geE[OF ge _ _ this]
+  have "m ! i ! j \<succeq> mat0 nr nc ! i ! j" using wf by auto
   hence "m ! i ! j \<succeq> 0" using mat0_index[OF i j, of "0 :: 'a"] by simp
   thus "mat_max0 m ! i ! j = m ! i ! j"
     by (unfold mat_max0_index[OF wf i j], rule max0_id_pos)
-qed
+qed (insert wf, auto)
 
 lemma mat_max0_mono: assumes ge: "mat_ge m1 m2" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2"
   shows "mat_ge (mat_max0 m1) (mat_max0 m2)"
-proof (unfold mat_ge_index[OF mat_max0[OF wf1] mat_max0[OF wf2]], intro allI impI)
+proof (rule mat_geI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  with ge[simplified mat_ge_index[OF wf1 wf2]] 
-  have "m1 ! i ! j \<succeq> m2 ! i ! j" by simp
+  from mat_geE[OF ge _ _ this] 
+  have "m1 ! i ! j \<succeq> m2 ! i ! j" using wf1 wf2 by simp
   hence "max0 (m1 ! i ! j) \<succeq> max0 (m2 ! i ! j)" by (rule max0_mono)
   thus "mat_max0 m1 ! i ! j \<succeq> mat_max0 m2 ! i ! j"
     by (unfold mat_max0_index[OF wf1 i j] mat_max0_index[OF wf2 i j])
-qed
+qed (insert wf1 wf2, auto)
 
 context ordered_semiring_1
 begin
@@ -787,13 +817,11 @@ proof -
         also have "... \<succeq> scalar_prod ?mind ?colj"
         proof (rule scalar_prod_mono_right[OF mind cola col])
           show "vec_ge ?mind (vec0 d)"
-            unfolding vec_ge_index[OF mind vec0] using a0
-            by (auto simp: vec0I_def intro: mult_ge_zero ge_refl)
+            unfolding vec_ge[OF mind vec0] using a0
+            by (auto simp: vec0I_def intro: ge_refl)
         next
-          show "vec_ge ?mcola ?colj" 
-            unfolding vec_ge_index[OF cola col] 
-            unfolding col_def 
-          proof (intro allI impI)
+          show "vec_ge ?mcola ?colj"
+          proof (rule vec_geI[OF cola col], unfold col_def)
             fix i
             assume i: "i < d"
             hence id: "?mcola ! i = ?cola i" by auto
@@ -820,12 +848,11 @@ proof -
         also have "... \<succeq> scalar_prod ?rowi ?colj"
         proof (rule scalar_prod_mono_left[OF mind row col])
           show "vec_ge ?colj (vec0 d)" 
-            unfolding vec_ge_index[OF col vec0]
+            unfolding vec_ge[OF col vec0]
             unfolding col_def vec0I_def using a[OF j] by auto
         next
           show "vec_ge ?mind ?rowi"
-            unfolding vec_ge_index[OF mind row]
-          proof (intro allI impI)
+          proof (rule vec_geI[OF mind row])
             fix j
             assume j: "j < d"
             have idr: "?rowi ! j = ?m n ! j ! i" unfolding row_col[OF mat_pow[OF mat] i j] col_def ..
@@ -873,13 +900,11 @@ lemma mat_max_ge: assumes m1: "mat nr nc m1" and m2: "mat nr nc m2"
 proof -
   have m: "mat nr nc (mat_max m1 m2)"
     by (rule mat_max[OF m1 m2])
-  note ind = mat_max_index[OF m1 m2]
+  note [simp] = mat_max_index[OF m1 m2]
   show "mat_ge (mat_max m1 m2) m1"
-    unfolding mat_ge_index[OF m m1]
-    using ind by auto
+    by (rule mat_geI[OF m m1], auto)
   show "mat_ge (mat_max m1 m2) m2"
-    unfolding mat_ge_index[OF m m2]
-    using ind by auto
+    by (rule mat_geI[OF m m2], auto)
 qed
 
 definition mat_max_list :: "'a mat list \<Rightarrow> 'a mat \<Rightarrow> ('a :: max_ordered_ab_semigroup) mat"
@@ -927,9 +952,8 @@ proof -
   } note am = this
   have a1: "a \<succeq> 1" unfolding a by auto
   from ge_trans[OF this one_ge_zero] have a0: "a \<succeq> 0" by simp
-  from ge0[unfolded mat_ge_index[OF mat mat0]]
-  have ge0: "\<And> i j. i < d \<Longrightarrow> j < d \<Longrightarrow> m ! i ! j \<succeq> 0"
-    using mat0_index[of _ d _ d "0 :: 'a"] by auto
+  from mat_geE[OF ge0 mat mat0]
+  have ge0: "\<And> i j. i < d \<Longrightarrow> j < d \<Longrightarrow> m ! i ! j \<succeq> 0" by auto
   note main = main[OF conjI[OF ge0 am] a1]
   obtain c where c: "c = ?n (fact ?d) * (a ^ ?d)" by auto
   have c0: "c \<succeq> 0"
@@ -979,7 +1003,7 @@ lemma vec_ge_listsum: fixes v1 :: "('a :: ordered_semiring_0) vec"
 proof -
   from v1 v2 have len: "length v1 = length v2" "length v2 = nr" unfolding vec_def by auto
   show ?thesis
-    by (rule listsum_ge_mono[OF len(1), unfolded len(2)], insert ge[unfolded vec_ge_index[OF v1 v2]], auto)
+    by (rule listsum_ge_mono[OF len(1), unfolded len(2)], insert vec_geE[OF ge v1 v2], auto)
 qed
 
 lemma linear_norm_ge: fixes m1 :: "('a :: ordered_semiring_0) mat"
@@ -1018,36 +1042,35 @@ where "mat_default n \<equiv> mat1I 0 default n"
 
 
 lemma mat_default_ge_mat0: "mat_ge (mat_default n) (mat0 n n)"
-unfolding mat_ge_index[OF mat1 mat0]
-proof (intro allI impI)
+proof (rule mat_geI)
   fix i j
   assume i: "i < n" and j: "j < n"
   have zero_ij: "mat0 n n ! i ! j = 0" by (rule mat0_index[OF i j])
   have one_ij: "mat_default n ! i ! j = (if i = j then default else 0)" by (rule mat1_index[OF i j])
   show "mat_default n ! i ! j \<succeq> mat0 n n ! i ! j"
     by (simp add: zero_ij one_ij ge_refl default_ge_zero)
-qed
+qed auto
 
 lemma mat_gt_compat: assumes sd_n: "sd \<le> n" and  ge: "mat_ge m1 m2" and gt: "mat_gt sd m2 m3" and wf1: "mat n n m1" and wf2: "mat n n m2" and wf3: "mat n n m3" 
   shows "mat_gt sd m1 m3"
 proof -
-  from gt[simplified mat_gt_index[OF wf2 wf3 sd_n]] obtain i j 
+  from gt[unfolded mat_gt[OF wf2 wf3 sd_n]] obtain i j 
     where i: "i < sd" and j: "j < sd" and gt: "m2 ! i ! j \<succ> m3 ! i ! j" and ge23: "mat_ge m2 m3" by auto 
-  from ge[simplified mat_ge_index[OF wf1 wf2]] i j sd_n have geij: "m1 ! i ! j \<succeq> m2 ! i ! j" by auto
+  from mat_geE[OF ge wf1 wf2] i j sd_n have geij: "m1 ! i ! j \<succeq> m2 ! i ! j" by auto
   from mat_ge_trans[OF ge ge23 wf1 wf2 wf3] have ge: "mat_ge m1 m3" .
   with compat[OF geij gt] i j show ?thesis 
-    by (simp only: mat_gt_index[OF wf1 wf3 sd_n], auto)
+    by (auto simp: mat_gt[OF wf1 wf3 sd_n])
 qed
 
 lemma mat_gt_compat2: assumes sd_n: "sd \<le> n" and gt: "mat_gt sd m1 m2" and ge: "mat_ge m2 m3" and wf1: "mat n n m1" and wf2: "mat n n m2" and wf3: "mat n n m3" 
   shows "mat_gt sd m1 m3"
 proof -
-  from gt[simplified mat_gt_index[OF wf1 wf2 sd_n]] obtain i j 
+  from gt[unfolded mat_gt[OF wf1 wf2 sd_n]] obtain i j 
     where i: "i < sd" and j: "j < sd" and gt: "m1 ! i ! j \<succ> m2 ! i ! j" and ge12: "mat_ge m1 m2" by auto 
-  from ge[simplified mat_ge_index[OF wf2 wf3]] i j sd_n have geij: "m2 ! i ! j \<succeq> m3 ! i ! j" by auto
+  from mat_geE[OF ge wf2 wf3] i j sd_n have geij: "m2 ! i ! j \<succeq> m3 ! i ! j" by auto
   from mat_ge_trans[OF ge12 ge wf1 wf2 wf3] have ge: "mat_ge m1 m3" .
   with compat2[OF gt geij] i j show ?thesis 
-    by (simp only: mat_gt_index[OF wf1 wf3 sd_n], auto)
+    by (auto simp: mat_gt[OF wf1 wf3 sd_n])
 qed
 
 lemma mat_gt_trans: assumes sd_n: "sd \<le> n" and  gt1: "mat_gt sd m1 m2" and gt2: "mat_gt sd m2 m3" and wf1: "mat n n m1" and wf2: "mat n n m2" and wf3: "mat n n m3" 
@@ -1281,8 +1304,7 @@ next
     fix m :: "'a mat" and nr nc
     assume m: "mat nr nc m"
     have "m = ?midx m nr nc" 
-      unfolding mat_eq_index[OF m gen] 
-      by auto
+      by (rule mat_eqI[OF m gen], auto)
   } note mat_idx = this
   let ?mni = "[ m1 ! n ! i . i \<leftarrow> [0..<nr]]"
   let ?min = "[ m2 ! i ! n . i \<leftarrow> [0..<nc]]"
@@ -1323,16 +1345,13 @@ next
   {
     fix m :: "'a mat" and nr nc
     assume m: "mat nr nc m" and ge: "mat_ge m (mat0 nr nc)"
-    from ge[unfolded mat_ge_index[OF m mat0] mat0_index]
-    have ge0: "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> m ! i ! j \<succeq> 0" using mat0_index[of _ nc _ nr "0 :: 'a"]
-      by auto
+    from mat_geE[OF ge m]
+    have ge0: "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> m ! i ! j \<succeq> 0" by auto
   } note mat_ge = this
   have ii10: "mat_ge ii1 (mat0 nr n)"
-    unfolding mat_ge_index[OF mat_ii1 mat0] using ii1_idx mat_ge[OF m1 m10] mat0_index[of _ n _ nr "0 :: 'a"]
-    by auto
+    by (rule mat_geI[OF mat_ii1], insert ii1_idx mat_ge[OF m1 m10], auto)
   have ii20: "mat_ge ii2 (mat0 n nc)"
-    unfolding mat_ge_index[OF mat_ii2 mat0] using ii2_idx mat_ge[OF m2 m20] mat0_index[of _ nc _ n "0 :: 'a"]
-    by auto
+    by (rule mat_geI[OF mat_ii2], insert ii2_idx mat_ge[OF m2 m20], auto)
   let ?mult = "mat_mult nr m1 m2"
   have m12: "mat nr nc ?mult" by (rule mat_mult[OF m1 m2])
   {
@@ -1363,8 +1382,7 @@ next
   let ?rii = "listsum [m1 ! n ! j * m2 ! i ! n . i \<leftarrow> [0..<nc], j \<leftarrow> [0..<nr]]"
   {
     have mult_mult': "?mult = ?mult'"
-      unfolding mat_eq_index[OF m12 gen[of _ _ scalar']]
-    proof (intro allI impI)
+    proof (rule mat_eqI[OF m12 gen])
       fix i j
       assume i: "i < nc" and j: "j < nr"
       have "?mult ! i ! j = scalar i j"
@@ -1392,8 +1410,8 @@ next
     ?rii" (is "_ = ?zwi + _") unfolding scalar' unfolding listsum_double_concat  ..
     also have "?zwi = ?vmii"
       unfolding linear_norm_def
-    proof (rule arg_cong[where f = "\<lambda> x. listsum (concat x)"], unfold
-      mat_eq_index[OF gen mat_mult[OF mat_ii1 mat_ii2]], intro allI impI)
+    proof (rule arg_cong[where f = "\<lambda> x. listsum (concat x)"], 
+      rule mat_eqI[OF gen mat_mult[OF mat_ii1 mat_ii2]])
       fix i j
       assume i: "i < nc" and j: "j < nr"
       let ?sc = "(\<lambda> i j. scalar_prod (row (ii1) j) (col (ii2) i))"
@@ -1527,24 +1545,25 @@ begin
 lemma mat_plus_gt_left_mono: assumes sd_n: "sd \<le> n" and gt: "mat_gt sd m1 m2" and ge: "mat_ge m3 m4" and wf1: "mat n n m1" and wf2: "mat n n m2" and wf3: "mat n n m3" and wf4: "mat n n m4"
   shows "mat_gt sd (mat_plus m1 m3) (mat_plus m2 m4)"
 proof -
+  note wf = wf1 wf2 wf3 wf4
   let ?m13 = "mat_plus m1 m3"
   let ?m23 = "mat_plus m2 m3"
   let ?m32 = "mat_plus m3 m2"
   let ?m24 = "mat_plus m2 m4"
   let ?m42 = "mat_plus m4 m2"
-  have wf13: "mat n n ?m13" and wf24: "mat n n ?m24" by ((rule mat_plus[of n n], auto simp: wf1 wf2 wf3 wf4)+)
-  from gt[simplified mat_gt_index[OF wf1 wf2 sd_n]] obtain i j where
+  have wf13: "mat n n ?m13" and wf24: "mat n n ?m24" using wf by auto
+  from gt[simplified mat_gt[OF wf1 wf2 sd_n]] obtain i j where
     i: "i < sd" and j: "j < sd" and gt: "m1 ! i ! j \<succ> m2 ! i ! j" and ge12: "mat_ge m1 m2" by auto
   with sd_n have ni: "i < n" and nj: "j < n" by auto
   from mat_plus_left_mono[OF ge12 wf1 wf2 wf3] have one: "mat_ge ?m13 ?m23" .
   from mat_plus_left_mono[OF ge wf3 wf4 wf2] have "mat_ge ?m32 ?m42" .
   hence two: "mat_ge ?m23 ?m24" by (simp add: mat_plus_comm[of m2 m3] mat_plus_comm[of m2 m4])
-  have matge: "mat_ge ?m13 ?m24" by (rule mat_ge_trans[OF one two, of n n], (rule mat_plus[of n n], auto simp: wf1 wf2 wf3 wf4)+)
-  from i j sd_n ge[simplified mat_ge_index[OF wf3 wf4]] have ge: "m3 ! i ! j \<succeq> m4 ! i ! j" by auto
+  have matge: "mat_ge ?m13 ?m24" by (rule mat_ge_trans[OF one two], insert wf, auto)
+  from i j sd_n mat_geE[OF ge] wf have ge: "m3 ! i ! j \<succeq> m4 ! i ! j" by auto
   from compat2[OF plus_gt_left_mono[OF gt] plus_right_mono[OF ge]] mat_plus_index[OF wf1 wf3 ni nj] mat_plus_index[OF wf2 wf4 ni nj]      
   have gt: "?m13 ! i ! j \<succ> ?m24 ! i ! j" by simp
   from i j matge gt  show ?thesis 
-    by (auto simp: mat_gt_index[OF wf13 wf24 sd_n] matge)
+    by (auto simp: mat_gt[OF wf13 wf24 sd_n] matge)
 qed
 
 lemma mat_default_gt_mat0: assumes sd_pos: "sd > 0" and sd_n: "sd \<le> n"
@@ -1552,7 +1571,7 @@ lemma mat_default_gt_mat0: assumes sd_pos: "sd > 0" and sd_n: "sd \<le> n"
 proof -
   from assms have n: "n > 0" by auto
   show ?thesis 
-    by (simp only: mat_gt_index[OF mat1 mat0 sd_n] mat_default_ge_mat0, rule conjI[OF TrueI],
+    by (simp only: mat_gt[OF mat1 mat0 sd_n] mat_default_ge_mat0, rule conjI[OF TrueI],
       (rule exI[of _ 0], simp only: sd_pos, rule conjI[OF TrueI])+, simp add: mat1_index[OF n n] mat0_index[OF n n] default_gt_zero)
 qed
 end
@@ -1562,7 +1581,7 @@ text {* three easy lemmas to go from pairs of numbers to numbers  *}
 lemma mul_div_eq: assumes "c < b" shows "(a * b + c) div b = (a :: nat)" 
 proof -
   from assms have b: "b \<noteq> 0" by simp
-  have "(a * b + c) div b = (c + a * b) div b" by arith
+  have "(a * b + c) div b = (c + a * b) div b" by presburger
   also have "\<dots> = c div b + a" using b by simp
   also have "\<dots> = a" using assms by simp
   finally show ?thesis .
@@ -1627,8 +1646,9 @@ abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
 lemma mat_sn: assumes sd_n: "sd \<le> n" shows "SN {(m1,m2) . m1 \<succ>m n sd m2}"
 unfolding SN_defs
 proof clarify
-  fix e f 
-  assume ass: "\<forall> i. (f i, f (Suc i)) \<in> {(m1,m2). m1 \<succ>m n sd m2}"
+  fix f 
+  assume "\<forall> i. (f i, f (Suc i)) \<in> {(m1,m2). m1 \<succ>m n sd m2}"
+  hence ass: "\<And> i. (f i, f (Suc i)) \<in> {(m1,m2). m1 \<succ>m n sd m2}" by blast
   hence len_n: "\<And> i. length (f i) = n" by (auto simp: mat_def) 
   let ?rel = "{(x,y). y \<succeq> 0 \<and> x \<succ> y}"
   let ?gt = "\<lambda> k i j. f k ! i ! j \<succ> f (Suc k) ! i ! j"
@@ -1643,15 +1663,15 @@ proof clarify
   have all: "\<And> k. (\<exists> ij < ?sd. ?fgt k ij) \<and> (\<forall> ij < ?sd. ?fge k ij)"
   proof -
     fix k
-    from spec[OF ass, of k] have wf: "mat n n (f k)" and wf1: "mat n n (f (Suc k))" and gt: "mat_gt sd (f k) (f (Suc k))" and
+    from ass[of k] have wf: "mat n n (f k)" and wf1: "mat n n (f (Suc k))" and gt: "mat_gt sd (f k) (f (Suc k))" and
       gez: "mat_ge (f (Suc k)) (mat0 n n)" by auto
-    from gt[simplified mat_gt_index[OF wf wf1 sd_n]] obtain i j where i: "i < sd" and j: "j < sd" and ge: "mat_ge (f k) (f (Suc k))"
+    from gt[simplified mat_gt[OF wf wf1 sd_n]] obtain i j where i: "i < sd" and j: "j < sd" and ge: "mat_ge (f k) (f (Suc k))"
       and gt: "?gt k i j" by auto
     hence pgt: "?fpgt k (?ij i j)" by (auto simp: mul_div_eq[OF j] j)
     have ij: "?ij i j < ?sd" using i j smaller_product by auto
-    from ge[simplified mat_ge_index[OF wf wf1]] sd_n have "\<forall> i < sd. \<forall> j < sd. ?ge k i j" by auto
+    from mat_geE[OF ge wf wf1] sd_n have "\<forall> i < sd. \<forall> j < sd. ?ge k i j" by auto
     hence ge: "\<forall> ij < ?sd. ?fge k ij" by (simp add: all_all_into_all)      
-    from gez[simplified mat_ge_index[OF wf1 mat0]] sd_n have "\<forall> i < sd. \<forall> j < sd. ?gez k i j" by (auto simp: mat0_index)
+    from mat_geE[OF gez wf1 mat0] sd_n have "\<forall> i < sd. \<forall> j < sd. ?gez k i j" by auto
     hence "?gez k i j" using i j by simp
     hence "?f (Suc k) (?ij i j) \<succeq> 0" by (auto simp: mul_div_eq[OF j] j)
     with pgt have gt: "?fgt k (?ij i j)" by auto 
@@ -1689,11 +1709,11 @@ proof -
   from wf1 wf3 have wf13: "mat n n ?m13" by (rule mat_mult)
   from mat_mult_right_mono[OF wf1 wf2 wf3 ge] gt have gem: "mat_ge ?m12 ?m13" unfolding mat_gtI_def by auto
   from gt obtain i j where i: "i < sd" and j: "j < sd" and gt: "m2 ! i ! j \<succ> m3 ! i ! j" and geq: "mat_ge m2 m3"
-    by (auto simp: mat_gt_index[OF wf2 wf3 sd_n])
-  from mmono mat_mono_index[OF wf1 sd_n] j obtain k where k: "k < sd" and monojk: "mono (m1 ! j ! k)" by auto
+    by (auto simp: mat_gt[OF wf2 wf3 sd_n])
+  from mmono mat_mono[OF wf1 sd_n] j obtain k where k: "k < sd" and monojk: "mono (m1 ! j ! k)" by auto
   from i j k sd_n have ni: "i < n" and nj: "j < n" and nk: "k < n" by auto
   show ?thesis 
-  proof (simp only: mat_gt_index[OF wf12 wf13 sd_n], simp only: gem, rule conjI[OF TrueI],
+  proof (simp only: mat_gt[OF wf12 wf13 sd_n], simp only: gem, rule conjI[OF TrueI],
       rule exI[of _ i], simp only: i, rule conjI[OF TrueI],
       rule exI[of _ k], simp only: k, rule conjI[OF TrueI])
     let ?r = "\<lambda> n. map (\<lambda> j. m1 ! j ! k) [0 ..< n]"
@@ -1702,13 +1722,13 @@ proof -
     from col[OF wf3 ni] have wfc3: "length (col m3 i) = n" unfolding vec_def by auto
     have "row m1 k = map (\<lambda> i. row m1 k ! i) [0 ..< length (row m1 k)]" by (rule map_nth[symmetric])
     also have "\<dots> = map (\<lambda> i. row m1 k !  i) [0 ..< n]" by (simp add: wfr)
-    also have "\<dots> = ?r n" using row_col[OF wf1 nk, simplified col_def]
+    also have "\<dots> = ?r n" using row_col[OF wf1 nk, unfolded col_def]
       by auto
     finally have r: "row m1 k = ?r n" .
     let ?c2 = "\<lambda> n. map (\<lambda> j. m2 ! i ! j) [0 ..< n]"
-    have c2: "col m2 i = ?c2 n" by (simp only: wfc2[symmetric] col_def, simp add: map_nth)
+    have c2: "col m2 i = ?c2 n" unfolding wfc2[symmetric] col_def by (simp add: map_nth)
     let ?c3 = "\<lambda> n. map (\<lambda> j. m3 ! i ! j) [0 ..< n]"
-    have c3: "col m3 i = ?c3 n" by (simp only: wfc3[symmetric] col_def, simp add: map_nth)
+    have c3: "col m3 i = ?c3 n" unfolding wfc3[symmetric] col_def by (simp add: map_nth)
     from mat_mult_index[OF wf1 wf2 nk ni]
     have s12: "?m12 ! i ! k = scalar_prod (?r n) (?c2 n)" by (simp add: r c2)
     from mat_mult_index[OF wf1 wf3 nk ni]
@@ -1717,14 +1737,14 @@ proof -
     proof (intro impI allI)
       fix j
       assume "j < n"
-      with ge[simplified mat_ge_index[OF wf1 mat0]] nk
-      show "?r n ! j \<succeq> 0" by (simp add: mat0_index)
+      with mat_geE[OF ge wf1 mat0] nk
+      show "?r n ! j \<succeq> 0" by simp
     qed
     have c2c3: "\<forall> j < n. ?c2 n ! j \<succeq> ?c3 n ! j"
     proof (intro impI allI)
       fix j
       assume "j < n"
-      with ni geq[simplified mat_ge_index[OF wf2 wf3]] 
+      with ni mat_geE[OF geq wf2 wf3] 
       show "?c2 n ! j \<succeq> ?c3 n ! j" by simp
     qed
     from nj r0 c2c3 have "scalar_prod (?r n) (?c2 n) \<succ> scalar_prod (?r n) (?c3 n)"
@@ -1760,10 +1780,8 @@ proof -
         have wf1: "vec n (?r n)" by (simp add: vec_def)
         have wf2: "vec n (?c2 n)" by (simp add: vec_def)
         have wf3: "vec n (?c3 n)" by (simp add: vec_def)
-        from ge have ge: "vec_ge (?c2 n) (?c3 n)" 
-          by (simp only: vec_ge_index[OF wf2 wf3])
-        from za have z: "vec_ge (?r n) (vec0 n)" 
-          by (simp only: vec_ge_index[OF wf1 vec0], auto simp: vec0I_def)
+        from ge have ge: "vec_ge (?c2 n) (?c3 n)" unfolding vec_ge[OF wf2 wf3] by simp
+        from za have z: "vec_ge (?r n) (vec0 n)" unfolding vec_ge[OF wf1 vec0] by (simp add: vec0I_def)
         have s23: "?s2 \<succeq> ?s3"
           by (rule scalar_prod_mono_right, (simp add: vec_def)+, rule ge, rule z)
         from compat2[OF plus_gt_left_mono[OF p23] plus_right_mono[OF s23]] sum2 sum3 show ?thesis by simp
@@ -1841,31 +1859,31 @@ lemma mat_arc_pos_zero: assumes n_pos: "n > 0"
 
 lemma mat_gt_arc_compat: assumes ge: "mat_ge m1 m2" and gt: "mat_gt_arc m2 m3" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2" and wf3: "mat nr nc m3" 
   shows "mat_gt_arc m1 m3"
-proof (simp only: mat_comp_all_index[OF wf1 wf3], intro allI impI)
+proof (rule mat_comp_allI[OF wf1 wf3])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  from ge i j have one: "m1 ! i ! j \<succeq> m2 ! i ! j" using mat_ge_index[OF wf1 wf2] by auto
-  from gt i j have two: "m2 ! i ! j \<succ> m3 ! i ! j" using mat_comp_all_index[OF wf2 wf3] by auto
+  from mat_geE[OF ge wf1 wf2 i j] have one: "m1 ! i ! j \<succeq> m2 ! i ! j" .
+  from mat_comp_allE[OF gt wf2 wf3 i j] have two: "m2 ! i ! j \<succ> m3 ! i ! j" .
   from one two show "m1 ! i ! j \<succ> m3 ! i ! j" by (rule compat)
-qed
+qed 
 
 lemma mat_gt_arc_compat2: assumes gt: "mat_gt_arc m1 m2" and ge: "mat_ge m2 m3" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2" and wf3: "mat nr nc m3" 
   shows "mat_gt_arc m1 m3"
-proof (simp only: mat_comp_all_index[OF wf1 wf3], intro allI impI)
+proof (rule mat_comp_allI[OF wf1 wf3])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  from gt i j have one: "m1 ! i ! j \<succ> m2 ! i ! j" using mat_comp_all_index[OF wf1 wf2] by auto
-  from ge i j have two: "m2 ! i ! j \<succeq> m3 ! i ! j" using mat_ge_index[OF wf2 wf3] by auto
+  from mat_comp_allE[OF gt wf1 wf2 i j] have one: "m1 ! i ! j \<succ> m2 ! i ! j" .
+  from mat_geE[OF ge wf2 wf3 i j] have two: "m2 ! i ! j \<succeq> m3 ! i ! j" .
   from one two show "m1 ! i ! j \<succ>  m3 ! i ! j" by (rule compat2)
 qed
 
 lemma mat_gt_arc_trans: assumes gt1: "mat_gt_arc m1 m2" and gt2: "mat_gt_arc m2 m3" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2" and wf3: "mat nr nc m3" 
   shows "mat_gt_arc m1 m3"
-proof (simp only: mat_comp_all_index[OF wf1 wf3], intro allI impI)
+proof (rule mat_comp_allI[OF wf1 wf3])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  from gt1 i j have one: "m1 ! i ! j \<succ> m2 ! i ! j" using mat_comp_all_index[OF wf1 wf2] by auto
-  from gt2 i j have two: "m2 ! i ! j \<succ> m3 ! i ! j" using mat_comp_all_index[OF wf2 wf3] by auto
+  from mat_comp_allE[OF gt1 wf1 wf2 i j] have one: "m1 ! i ! j \<succ> m2 ! i ! j" .
+  from mat_comp_allE[OF gt2 wf2 wf3 i j] have two: "m2 ! i ! j \<succ> m3 ! i ! j" .
   from one two show "m1 ! i ! j \<succ> m3 ! i ! j" by (rule gt_trans)
 qed
 
@@ -1879,10 +1897,8 @@ lemma mat_gt_arc_plus_mono: assumes gt1: "mat_gt_arc x y"
 proof -
   let ?xz = "mat_plus x z"
   let ?yu = "mat_plus y u"
-  from mat_plus[OF wfx wfz] have wfxz: "mat nr nc ?xz" .
-  from mat_plus[OF wfy wfu] have wfyu: "mat nr nc ?yu" .
-  show ?thesis 
-  proof (simp only: mat_comp_all_index[OF wfxz wfyu], intro allI impI)
+  show ?thesis
+  proof (rule mat_comp_allI)
     fix i j
     assume i: "i < nc" and j: "j < nr"
     show "mat_plus x z ! i ! j \<succ> mat_plus y u ! i ! j"
@@ -1890,11 +1906,10 @@ proof -
         simp only: mat_plus_index[OF wfx wfz i j],
         simp only: mat_plus_index[OF wfy wfu i j],
         rule plus_gt_both_mono)
-      show "x ! i ! j \<succ> y ! i ! j" using gt1 i j mat_comp_all_index[OF wfx wfy] by auto
-    next
-      show "z ! i ! j \<succ> u ! i ! j" using gt2 i j mat_comp_all_index[OF wfz wfu] by auto
+      show "x ! i ! j \<succ> y ! i ! j" using mat_comp_allE[OF gt1 wfx wfy i j] .
+      show "z ! i ! j \<succ> u ! i ! j" using mat_comp_allE[OF gt2 wfz wfu i j] .
     qed
-  qed
+  qed (insert wfx wfy wfz wfu, auto)
 qed
 
 
@@ -1906,10 +1921,8 @@ lemma mat_gt_arc_mult_left_mono: assumes gt1: "mat_gt_arc x y"
 proof -
   let ?xz = "mat_mult nr x z"
   let ?yz = "mat_mult nr y z"
-  from mat_mult[OF wfx wfz] have wfxz: "mat nr ncc ?xz" .
-  from mat_mult[OF wfy wfz] have wfyz: "mat nr ncc ?yz" .
   show ?thesis 
-  proof (simp only: mat_comp_all_index[OF wfxz wfyz], intro allI impI)
+  proof (rule mat_comp_allI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
     have wfxj: "vec nc (row x j)" using row[OF wfx j] .
@@ -1917,22 +1930,18 @@ proof -
     have wfzi: "vec nc (col z i)" using col[OF wfz i] .
     show "?xz ! i ! j \<succ> ?yz ! i ! j"
     proof (
-        simp only: mat_mult_index[OF wfx wfz j i],
-        simp only: mat_mult_index[OF wfy wfz j i],
+        unfold mat_mult_index[OF wfx wfz j i] mat_mult_index[OF wfy wfz j i],
         rule scalar_prod_left_mono[OF wfxj wfyj wfzi],
-        simp only: vec_comp_all_index[OF wfxj wfyj],
+        unfold vec_comp_all_index[OF wfxj wfyj],
         intro allI impI
       )
       fix k
       assume k: "k < nc"
-      from gt1 mat_comp_all_index[OF wfx wfy, of gt] j k
+      from gt1 mat_comp_all[OF wfx wfy, of gt] j k
       show "row x j ! k \<succ> row y j ! k"
-        by (
-          simp only: row_col[OF wfx j k],
-          simp only: row_col[OF wfy j k],
-          unfold col_def, auto)
+        by (unfold row_col[OF wfx j k] row_col[OF wfy j k] col_def, auto) 
     qed
-  qed
+  qed (insert wfx wfy wfz, auto)
 qed
 
 lemma mat_gt_arc_mult_right_mono: fixes x :: "'a mat" 
@@ -1944,10 +1953,8 @@ lemma mat_gt_arc_mult_right_mono: fixes x :: "'a mat"
 proof -
   let ?xy = "mat_mult nr x y"
   let ?xz = "mat_mult nr x z"
-  from mat_mult[OF wfx wfy] have wfxy: "mat nr ncc ?xy" .
-  from mat_mult[OF wfx wfz] have wfxz: "mat nr ncc ?xz" .
   show ?thesis 
-  proof (simp only: mat_comp_all_index[OF wfxy wfxz], intro allI impI)
+  proof (rule mat_comp_allI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
     have wfxj: "vec nc (row x j)" using row[OF wfx j] .
@@ -1955,18 +1962,17 @@ proof -
     have wfzi: "vec nc (col z i)" using col[OF wfz i] .
     show "?xy ! i ! j \<succ> ?xz ! i ! j"
     proof (
-        simp only: mat_mult_index[OF wfx wfy j i],
-        simp only: mat_mult_index[OF wfx wfz j i],
+        unfold mat_mult_index[OF wfx wfy j i] mat_mult_index[OF wfx wfz j i],
         rule scalar_prod_right_mono[OF wfxj wfyi wfzi],
-        simp only: vec_comp_all_index[OF wfyi wfzi],
+        unfold vec_comp_all_index[OF wfyi wfzi],
         intro allI impI
       )
       fix k
       assume k: "k < nc"
-      from gt1[unfolded mat_comp_all_index[OF wfy wfz]] i k
+      from gt1[unfolded mat_comp_all[OF wfy wfz]] i k
       show "col y i ! k \<succ> col z i ! k" unfolding col_def by auto
     qed
-  qed
+  qed (insert wfx wfy wfz, auto)
 qed
 
 lemma mat_not_all_ge: assumes n_pos: "n > 0"
@@ -1984,22 +1990,21 @@ proof -
     fix f :: "nat \<Rightarrow> nat \<Rightarrow> 'a" 
     have "mat n n (?gen f)"
       unfolding mat_def by (auto simp: vec_def)    
-  } note gen = this
+  } note gen[simp] = this
   obtain f :: "nat \<Rightarrow> nat \<Rightarrow> 'a" where f: "f = (\<lambda> i j. if i = 0 \<and> j = 0 then e else 0)" by auto
   let ?m = "?gen f"
   have m00: "?m ! 0 ! 0 = e" using n_pos unfolding f by auto
   show ?thesis
   proof (rule exI[of _ ?m], intro conjI, rule gen)
     show "mat_ge ?m (mat0 n n)"
-      unfolding mat_ge_index[OF gen mat0]
-    proof (intro allI impI)
+    proof (rule mat_geI)
       fix i j
       assume i: "i < n" and j: "j < n"
       have m: "?m ! i ! j = f i j" using i j by auto
-      have 0: "mat0 n n ! i ! j = (0 :: 'a)" using mat0_index[OF i j] .
+      have 0: "mat0 n n ! i ! j = (0 :: 'a)" using i j by simp 
       show "?m ! i ! j \<succeq> mat0 n n ! i ! j" unfolding m 0
         unfolding f using e0 ge_refl by auto
-    qed
+    qed auto
   next
     show "mat_arc_pos ?m" 
       unfolding mat_arc_posI_def 
@@ -2032,60 +2037,59 @@ proof -
     finally have "?mult ! 0 ! 0 = m2 ! 0 ! 0 * e" .
     with nc c have "\<not> m1 ! 0 ! 0 \<succeq> ?mult ! 0 ! 0" by simp
     thus "\<not> mat_ge m1 ?mult"
-      unfolding mat_ge_index[OF m1 mat_mult[OF m2 gen]] using n_pos
+      unfolding mat_ge_def mat_comp_all[OF m1 mat_mult[OF m2 gen]] using n_pos
       by auto
   qed
 qed
 
 lemma mat0_leastI: assumes wf: "mat nr nc m"
   shows "mat_gt_arc m (mat0 nr nc)"
-proof (simp only: mat_comp_all_index[OF wf mat0], intro allI impI)
+proof (rule mat_comp_allI[OF wf])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  show "m ! i ! j \<succ> mat0I 0 nr nc ! i ! j"
-    by (simp only: mat0_index[OF i j] zero_leastI)
-qed
+  thus "m ! i ! j \<succ> mat0I 0 nr nc ! i ! j" by (auto simp: zero_leastI)
+qed auto
 
 lemma mat0_leastII: 
   assumes gt: "mat_gt_arc (mat0 nr nc) m"
   and wf: "mat nr nc m"
   shows "m = mat0 nr nc"
-proof (simp only: mat_eq_index[OF wf mat0], intro allI impI)
+proof (rule mat_eqI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   show "m ! i ! j = mat0 nr nc ! i ! j"
-  proof (simp only: mat0_index[OF i j], rule zero_leastII)
-    show "0 \<succ> m ! i ! j" using i j gt mat_comp_all_index[OF mat0 wf, of gt 0] mat0_index[OF i j, of "0 :: 'a"] by force
+    unfolding mat0_index[OF i j]
+  proof (rule zero_leastII)
+    show "0 \<succ> m ! i ! j" using i j gt mat_comp_all[OF mat0 wf] mat0_index[OF i j] by force
   qed
-qed
+qed (insert wf, auto)
 
 
 lemma mat0_leastIII: assumes wf: "mat nr nc m"
   shows "mat_ge m ((mat0 nr nc) :: 'a mat)"
-proof (simp only: mat_ge_index[OF wf mat0], intro allI impI)
+proof (rule mat_geI[OF wf])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  show "(m ! i ! j) \<succeq> ((mat0 nr nc :: 'a mat) ! i ! j)"
-    by (simp only: mat0_index[OF i j] zero_leastIII)
-qed
+  show "m ! i ! j \<succeq> mat0 nr nc ! i ! j"
+    by (simp add: mat0_index[OF i j] zero_leastIII)
+qed auto
 
 lemma mat1_gt_arc_mat0: "mat_gt_arc (mat1 n) (mat0 n n)"
-proof (simp only: mat_comp_all_index[OF mat1 mat0], intro allI impI)
+proof (rule mat_comp_allI)
   fix i j
   assume i: "i < n" and j: "j < n"
   show "mat1 n ! i ! j \<succ> mat0 n n ! i ! j"
-    by (simp only: mat0_index[OF i j],
-      rule zero_leastI)
-qed
+    by (simp add: mat0_index[OF i j] zero_leastI)
+qed auto
 
 lemma mat_default_gt_arc_mat0: "mat_gt_arc (mat_default n) (mat0 n n)"
-proof (simp only: mat_comp_all_index[OF mat1 mat0], intro allI impI)
+proof (rule mat_comp_allI)
   fix i j
   assume i: "i < n" and j: "j < n"
   show "mat_default n ! i ! j \<succ> mat0 n n ! i ! j"
     by (simp only: mat0_index[OF i j],
       rule zero_leastI)
-qed
+qed auto
 end 
 
 context SN_both_mono_ordered_semiring_1
@@ -2101,11 +2105,10 @@ proof (rule ccontr)
   proof
     fix i
     from steps have wf1: "mat n n (f i)" and wf2: "mat n n (f (Suc i))" and gt: "mat_gt_arc (f i) (f (Suc i))" by auto
-    show "f i ! 0 ! 0 \<succ>  f (Suc i) ! 0 ! 0" using mat_comp_all_index[OF wf1 wf2, of gt] mat0_index[OF n_pos n_pos, of 0] gt n_pos by force
+    show "f i ! 0 ! 0 \<succ>  f (Suc i) ! 0 ! 0" using mat_comp_allE[OF gt wf1 wf2] mat0_index[OF n_pos n_pos, of 0] n_pos by force
   qed
   from pos gt SN show False unfolding SN_defs by force
 qed
-
 
 
 lemma mat_arc_pos_plus: assumes n_pos: "n > 0" 
@@ -2143,9 +2146,9 @@ proof -
 qed
 
 lemma mat_arc_pos_mat_default: assumes n_pos: "n > 0" shows "mat_arc_pos (mat_default n)"
-unfolding mat1I_def mat_arc_posI_def 
-using n_pos
-by (auto simp: vec1I_def arc_pos_default)
+  unfolding mat1I_def mat_arc_posI_def 
+  using n_pos
+  by (auto simp: vec1I_def arc_pos_default)
 end
 
 
@@ -2172,7 +2175,7 @@ proof -
     fix m1 m2
     assume ass: "mat n n m1 \<and> mat n n m2 \<and> (m1,m2) \<in> set m12s"
     hence wf1: "mat n n m1" and wf2: "mat n n m2" and m1m2: "(m1,m2) \<in> set m12s" by auto
-    from orient[OF ass, unfolded mat_gt_index[OF wf1 wf2 sd_n]] 
+    from orient[OF ass, unfolded mat_gt[OF wf1 wf2 sd_n]] 
     obtain i j where ge: "mat_ge m1 m2" and i: "i < sd" and j: "j < sd" and weak_gt: "weak_gt (m1 ! i ! j) (m2 ! i ! j)" (is "weak_gt ?x ?y") by auto
     from wf1 i j sd_n have m1ij: "m1 ! i \<in> set m1 \<and> m1 ! i ! j \<in> set (m1 ! i)" unfolding mat_def  by (auto simp: vec_def)
     from wf2 i j sd_n have m2ij: "m2 ! i \<in> set m2 \<and> m2 ! i ! j \<in> set (m2 ! i)" unfolding mat_def  by (auto simp: vec_def)
@@ -2180,7 +2183,7 @@ proof -
     have y: "?y \<in> set ?m2y" by (auto, rule bexI[OF _ m1m2], rule bexI[of _ "m2 ! i"], auto simp: m2ij)
     from x y have "(?x,?y) \<in> set ?pairs" by force
     with weak_gt have gt: "(?x,?y) \<in> set ?strict" by simp
-    show "mat_gtI gt sd m1 m2" unfolding mat_gt_index[OF wf1 wf2 sd_n]
+    show "mat_gtI gt sd m1 m2" unfolding mat_gt[OF wf1 wf2 sd_n]
       by (intro exI conjI, rule ge, rule i, rule j, rule orient2[OF gt])
   qed (rule order)
 qed
@@ -2208,11 +2211,12 @@ proof -
     fix m1 m2
     assume ass: "mat n n m1 \<and> mat n n m2 \<and> (m1,m2) \<in> set m12s"
     hence wf1: "mat n n m1" and wf2: "mat n n m2" and m1m2: "(m1,m2) \<in> set m12s" by auto
-    show "mat_comp_all gt  m1 m2" unfolding mat_comp_all_index[OF wf1 wf2]
-    proof (intro allI impI)
+    show "mat_comp_all gt  m1 m2" 
+    proof (rule mat_comp_allI[OF wf1 wf2])
       fix i j
       assume i: "i < n" and j: "j < n"
-      with orient[OF ass, unfolded mat_comp_all_index[OF wf1 wf2]] have weak_gt: "weak_gt (m1 ! i ! j) (m2 ! i ! j)" (is "weak_gt ?x ?y") by auto  
+      from mat_comp_allE[OF orient[OF ass] wf1 wf2 this]
+      have weak_gt: "weak_gt (m1 ! i ! j) (m2 ! i ! j)" (is "weak_gt ?x ?y") by auto  
       from wf1 i j have m1ij: "m1 ! i \<in> set m1 \<and> m1 ! i ! j \<in> set (m1 ! i)" unfolding mat_def  by (auto simp: vec_def)
       from wf2 i j have m2ij: "m2 ! i \<in> set m2 \<and> m2 ! i ! j \<in> set (m2 ! i)" unfolding mat_def  by (auto simp: vec_def)
       have x: "?x \<in> set ?m1x" by (simp, rule bexI[OF _ m1m2], rule bexI[of _ "m1 ! i"], auto simp: m1ij)
