@@ -47,7 +47,7 @@ definition vec_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarro
 
 (* comparison of vectors using >= componentwise *)
 definition vec_ge :: "('a :: non_strict_order) vec \<Rightarrow> 'a vec \<Rightarrow> bool"
-  where "vec_ge \<equiv> vec_comp_all ge"
+  where "vec_ge \<equiv> vec_comp_all (op \<ge>)"
 
 (* comparison of matrices where all components have to be in relation *)
 definition mat_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> bool"
@@ -55,7 +55,7 @@ definition mat_comp_all :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarro
 
 (* comparison of matrices using >= componentwise *)
 definition mat_ge :: "('a :: non_strict_order) mat \<Rightarrow> 'a mat \<Rightarrow> bool"
-  where "mat_ge \<equiv> mat_comp_all ge"
+  where "mat_ge \<equiv> mat_comp_all (op \<ge>)"
 
 (* demanding at least one strict decrease between two vectors *)
 definition vec_pre_gtI :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a vec \<Rightarrow> 'a vec \<Rightarrow> bool"
@@ -77,31 +77,28 @@ definition mat_gtI :: "('a :: non_strict_order \<Rightarrow> 'a \<Rightarrow> bo
 definition mat_monoI :: "('a \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool"
 where "mat_monoI geq1 sd m = Ball (set (sub_mat sd sd m)) (\<lambda> m. Bex (set m) geq1)"
 
-(* max0 on matrices *)
-definition mat_max0 :: "('a :: max_ordered_monoid_add) mat \<Rightarrow> 'a mat"
-  where "mat_max0 \<equiv> mat_map max0"
+(* max on vectors and matrices *)
+abbreviation vec_max where "vec_max \<equiv> vec_plusI (max :: 'a :: ord \<Rightarrow> 'a \<Rightarrow> 'a)"
+abbreviation mat_max where "mat_max \<equiv> mat_plusI (max :: 'a :: ord \<Rightarrow> 'a \<Rightarrow> 'a)"
 
 (* checking whether a matrix is arctic positive (first entry is arctic positive) *)
 definition mat_arc_posI :: "('a \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> bool"
 where "mat_arc_posI ap m \<equiv> ap (m ! 0 ! 0)"
 
 (* check whether a matrix is upper triangular *)
-fun upper_triangularI :: "'a \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> bool"
-  where "upper_triangularI ze on g [] = True"
-      | "upper_triangularI ze on g ((a # as) # m) = (g on a \<and> (\<forall> b \<in> set as. b = ze) \<and> upper_triangularI ze on g (map tl m))"
-      | "upper_triangularI ze on g ([] # m) = False"
+fun upper_triangular :: "('a :: {ord,one,zero}) mat \<Rightarrow> bool"
+  where "upper_triangular [] = True"
+      | "upper_triangular ((a # as) # m) = (1 \<ge> a \<and> (\<forall> b \<in> set as. b = 0) \<and> upper_triangular (map tl m))"
+      | "upper_triangular ([] # m) = False"
 
 
 subsection {* algorithms preserve dimensions *}
 
-lemma mat_max0[simp, intro]: assumes "mat nr nc m" shows "mat nr nc (mat_max0 m)"
-using assms unfolding mat_max0_def by (rule mat_map)
+lemmas mat_max = mat_plus[of _ _ _ _ max]
 
 subsection {* properties of algorithms which do not depend on properties of type of matrix *}
 
-lemma mat_max0_index: assumes wf: "mat nr nc m" and i: "i < nc" and j: "j < nr" 
-  shows "mat_max0 m ! i ! j = max0 (m ! i ! j)"
-unfolding mat_max0_def using assms by (rule mat_map_index)
+lemmas mat_max_index = mat_plus_index[of _ _ _ _ _ _ max]
 
 lemma vec_comp_all_index: assumes "vec nr v1" 
   and "vec nr v2"
@@ -133,18 +130,18 @@ qed simp
 
 lemma vec_ge: assumes "vec nr v1" 
   and "vec nr v2"
-  shows "vec_ge v1 v2 = (\<forall> i < nr. ge (v1 ! i) (v2 ! i))"
+  shows "vec_ge v1 v2 = (\<forall> i < nr. (v1 ! i) \<ge> (v2 ! i))"
 using assms
 unfolding vec_ge_def by (rule vec_comp_all_index) 
 
 lemma vec_geI: assumes wf: "vec nr v1" "vec nr v2"
-  and "\<And> i. i < nr \<Longrightarrow> ge (v1 ! i) (v2 ! i)"
+  and "\<And> i. i < nr \<Longrightarrow> (v1 ! i) \<ge> (v2 ! i)"
   shows "vec_ge v1 v2"
   using assms
   unfolding vec_ge[OF wf]  by auto 
 
 lemma vec_geE: assumes ge: "vec_ge v1 v2" and wf: "vec nr v1" "vec nr v2"
-  shows "\<And> i. i < nr \<Longrightarrow> ge (v1 ! i) (v2 ! i)"
+  shows "\<And> i. i < nr \<Longrightarrow> (v1 ! i) \<ge> (v2 ! i)"
   using ge unfolding vec_ge[OF wf] by auto
 
 lemma vec_pre_gt: assumes "vec nr v1" 
@@ -208,13 +205,13 @@ lemma mat_comp_allE: assumes ge: "mat_comp_all r m1 m2"
   using ge unfolding mat_comp_all[OF wf] by auto
 
 lemma mat_geI: assumes wf: "mat nr nc m1" "mat nr nc m2"
-  and "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> ge (m1 ! i ! j) (m2 ! i ! j)"
+  and "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> (m1 ! i ! j) \<ge> (m2 ! i ! j)"
   shows "mat_ge m1 m2" unfolding mat_ge_def 
   by (rule mat_comp_allI, insert assms, auto)
 
 lemma mat_geE: assumes "mat_ge m1 m2"
   and "mat nr nc m1" "mat nr nc m2"
-  shows "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> ge (m1 ! i ! j) (m2 ! i ! j)"
+  shows "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> (m1 ! i ! j) \<ge> (m2 ! i ! j)"
   by (rule mat_comp_allE, insert assms, auto simp: mat_ge_def)
 
 lemma mat_pre_gt: assumes "mat nr nc m1"
@@ -306,8 +303,9 @@ proof -
     by auto
 qed
 
+
 lemma upper_triangular: assumes "mat n n m"
-  shows "upper_triangularI ze on g m = (\<forall> i < n. g on (m ! i ! i) \<and> (\<forall> j < n. j > i \<longrightarrow> m ! i ! j = ze))"
+  shows "upper_triangular m = (\<forall> i < n. 1 \<ge> (m ! i ! i) \<and> (\<forall> j < n. j > i \<longrightarrow> m ! i ! j = 0))"
   using assms
 proof (induct n arbitrary: m)
   case 0
@@ -325,10 +323,10 @@ next
   with l have mat: "mat n n ?m" unfolding mat_def by simp
   from v have las: "length as = n" unfolding vec_def by simp
   note IH = Suc(1)[OF mat]
-  let ?l = "\<lambda> i. g on (map tl rs ! i ! i) \<and>
-            (\<forall>j<n. i < j \<longrightarrow> map tl rs ! i ! j = ze)"
-  let ?r = "\<lambda> i. g on (rs ! i ! Suc i) \<and>
-            (\<forall>j<n. i < j \<longrightarrow> rs ! i ! Suc j = ze)"
+  let ?l = "\<lambda> i. 1 \<ge> (map tl rs ! i ! i) \<and>
+            (\<forall>j<n. i < j \<longrightarrow> map tl rs ! i ! j = 0)"
+  let ?r = "\<lambda> i. 1 \<ge> (rs ! i ! Suc i) \<and>
+            (\<forall>j<n. i < j \<longrightarrow> rs ! i ! Suc j = 0)"
   {
     fix i
     assume i: "i < n"
@@ -342,7 +340,7 @@ next
       unfolding rsi by auto      
   }
   hence main: "(\<forall>i<n. ?l i) = (\<forall> i<n. ?r i)" by auto
-  show ?case unfolding m r upper_triangularI.simps
+  show ?case unfolding m r upper_triangular.simps
     unfolding IH 
     unfolding all_Suc_conv
     unfolding all_set_conv_all_nth l las
@@ -365,7 +363,7 @@ lemma vec_ge_trans: assumes ge12: "vec_ge v1 v2" and ge23: "vec_ge v2 v3" and wf
 proof (rule vec_geI)
   fix i
   assume i: "i < nr"
-  show "v1 ! i \<succeq> v3 ! i" using ge_trans[OF vec_geE[OF ge12 _ _ i] vec_geE[OF ge23 _ _ i]] wf by auto
+  show "v1 ! i \<ge> v3 ! i" using ge_trans[OF vec_geE[OF ge12 _ _ i] vec_geE[OF ge23 _ _ i]] wf by auto
 qed (insert wf, auto)
 
 lemma mat_ge_trans: assumes ge12: "mat_ge v1 v2" and ge23: "mat_ge v2 v3" and wf: "mat nr nc v1" "mat nr nc v2" "mat nr nc v3"
@@ -373,7 +371,7 @@ lemma mat_ge_trans: assumes ge12: "mat_ge v1 v2" and ge23: "mat_ge v2 v3" and wf
 proof (rule mat_geI)
   fix i j
   assume ij: "i < nc" "j < nr"
-  show "v1 ! i ! j \<succeq> v3 ! i ! j" using ge_trans[OF mat_geE[OF ge12 _ _ ij] mat_geE[OF ge23 _ _ ij]] using wf by auto
+  show "v1 ! i ! j \<ge> v3 ! i ! j" using ge_trans[OF mat_geE[OF ge12 _ _ ij] mat_geE[OF ge23 _ _ ij]] using wf by auto
 qed (insert wf, auto)
 
 lemma vec_plus_left_mono: assumes ge: "vec_ge v1 (v2 :: ('a :: ordered_ab_semigroup)vec)" and 
@@ -383,7 +381,7 @@ proof (rule vec_geI)
   fix i
   assume i: "i < nr"
   note [simp] = vec_plus_index[OF _ _ i] vec_geE[OF ge _ _ i]
-  show "vec_plus v1 v3 ! i \<succeq> vec_plus v2 v3 ! i" using wf by (auto intro: plus_left_mono)
+  show "vec_plus v1 v3 ! i \<ge> vec_plus v2 v3 ! i" using wf by (auto intro: plus_left_mono)
 qed (insert wf, auto)
 
 lemma mat_plus_left_mono: assumes ge: "mat_ge m1 (m2 :: ('a :: ordered_ab_semigroup)mat)" 
@@ -393,7 +391,7 @@ proof (rule mat_geI)
   fix i j
   assume i: "i < nc" "j < nr"
   note [simp] = mat_plus_index[OF _ _ i] mat_geE[OF ge _ _ i]
-  show "mat_plus m1 m3 ! i ! j \<succeq> mat_plus m2 m3 ! i ! j" using wf by (auto intro: plus_left_mono)
+  show "mat_plus m1 m3 ! i ! j \<ge> mat_plus m2 m3 ! i ! j" using wf by (auto intro: plus_left_mono)
 qed (insert wf, auto)
 
 lemma scalar_prod_mono_left: assumes wf1: "vec nr (v1 :: ('a :: ordered_semiring_1) vec)"
@@ -401,23 +399,23 @@ lemma scalar_prod_mono_left: assumes wf1: "vec nr (v1 :: ('a :: ordered_semiring
   and wf3: "vec nr v3"
   and ge1: "vec_ge v1 v2"
   and ge2: "vec_ge v3 (vec0 nr)"
-  shows "scalar_prod v1 v3 \<succeq> scalar_prod v2 v3"
+  shows "scalar_prod v1 v3 \<ge> scalar_prod v2 v3"
 using assms unfolding vec_def vec_ge_def vec_comp_all_def vec0I_def
 proof -
-  assume "length v1 = nr" and "length v2 = nr" and " length v3 = nr" and " \<forall>(x,y)\<in>set (zip v1 v2). x \<succeq> y" and " \<forall>(x,y)\<in>set (zip v3 (replicate nr 0)). x \<succeq> y"
-  thus "scalar_prod v1 v3 \<succeq> scalar_prod v2 v3"
+  assume "length v1 = nr" and "length v2 = nr" and " length v3 = nr" and " \<forall>(x,y)\<in>set (zip v1 v2). x \<ge> y" and " \<forall>(x,y)\<in>set (zip v3 (replicate nr 0)). x \<ge> y"
+  thus "scalar_prod v1 v3 \<ge> scalar_prod v2 v3"
   proof (induct nr arbitrary: v1 v2 v3)
     case (Suc nrr)
     from Suc obtain a1 w1 where v1: "v1 = a1 # w1" and w1: "length w1 = nrr" by (cases v1, auto)
     from Suc obtain a2 w2 where v2: "v2 = a2 # w2" and w2: "length w2 = nrr" by (cases v2, auto)
     from Suc obtain a3 w3 where v3: "v3 = a3 # w3" and w3: "length w3 = nrr" by (cases v3, auto)
-    from Suc have rec: "scalar_prod w1 w3 \<succeq> scalar_prod w2 w3" (is "?l \<succeq> ?r")
+    from Suc have rec: "scalar_prod w1 w3 \<ge> scalar_prod w2 w3" (is "?l \<ge> ?r")
       by (auto simp: w1 w2 w3 v1 v2 v3)
     show ?case proof (simp add: v1 v2 v3 scalar_prod_cons)
-      have one: "a1 * a3 \<succeq> a2 * a3" using times_left_mono[of a3 a1 a2] Suc v1 v2 v3 by auto
-      hence "a1 * a3 + ?l \<succeq> a2 * a3 + ?l" by (rule plus_left_mono)
-      also have "\<dots> \<succeq> a2 * a3 + ?r" using rec by (rule plus_right_mono)
-      finally show "a1 * a3 + ?l \<succeq> a2 * a3 + ?r" .
+      have one: "a1 * a3 \<ge> a2 * a3" using times_left_mono[of a3 a2 a1] Suc v1 v2 v3 by auto
+      hence "a1 * a3 + ?l \<ge> a2 * a3 + ?l" by (rule plus_left_mono)
+      also have "a2 * a3 + ?l \<ge> a2 * a3 + ?r" using rec by (rule plus_right_mono)
+      finally show "a1 * a3 + ?l \<ge> a2 * a3 + ?r" .
     qed
   qed (simp add: scalar_prodI_def ge_refl)
 qed
@@ -427,23 +425,25 @@ lemma scalar_prod_mono_right: assumes wf1: "vec nr (v1 :: ('a :: ordered_semirin
   and wf3: "vec nr v3"
   and ge1: "vec_ge v2 v3"
   and ge2: "vec_ge v1 (vec0 nr)"
-  shows "scalar_prod v1 v2 \<succeq> scalar_prod v1 v3"
+  shows "scalar_prod v1 v2 \<ge> scalar_prod v1 v3"
 using assms unfolding vec_def vec_ge_def vec0I_def vec_comp_all_def
 proof -
-  assume "length v1 = nr" and "length v2 = nr" and " length v3 = nr" and " \<forall>(x,y)\<in>set (zip v2 v3). ge x y" and " \<forall>(x,y)\<in>set (zip v1 (replicate nr 0)). ge x y"
-  thus "ge (scalar_prod v1 v2) (scalar_prod v1 v3)"
+  assume "length v1 = nr" and "length v2 = nr" and " length v3 = nr" 
+    and " \<forall>(x,y)\<in>set (zip v2 v3). x \<ge> y" 
+    and " \<forall>(x,y)\<in>set (zip v1 (replicate nr 0)). x \<ge> y"
+  thus "(scalar_prod v1 v2) \<ge> (scalar_prod v1 v3)"
   proof (induct nr arbitrary: v1 v2 v3)
     case (Suc nrr)
     from Suc obtain a1 w1 where v1: "v1 = a1 # w1" and w1: "length w1 = nrr" by (cases v1, auto)
     from Suc obtain a2 w2 where v2: "v2 = a2 # w2" and w2: "length w2 = nrr" by (cases v2, auto)
     from Suc obtain a3 w3 where v3: "v3 = a3 # w3" and w3: "length w3 = nrr" by (cases v3, auto)
-    from Suc have rec: "scalar_prod w1 w2 \<succeq> scalar_prod w1 w3" (is "?l \<succeq> ?r")
+    from Suc have rec: "scalar_prod w1 w2 \<ge> scalar_prod w1 w3" (is "?l \<ge> ?r")
       by (auto simp: w1 w2 w3 v1 v2 v3)
     show ?case proof (simp add: v1 v2 v3 scalar_prod_cons)
-      have one: "a1 * a2 \<succeq> a1 * a3" using times_right_mono[of a1 a2 a3] Suc v1 v2 v3 by auto
-      hence "a1 * a2 + ?l \<succeq> a1 * a3 + ?l" by (rule plus_left_mono)
-      also have " \<dots> \<succeq> a1 * a3 + ?r" using rec by (rule plus_right_mono)
-      finally show "a1 * a2 + ?l \<succeq> a1 * a3 + ?r" .
+      have one: "a1 * a2 \<ge> a1 * a3" using times_right_mono[of a1 a3 a2] Suc v1 v2 v3 by auto
+      hence "a1 * a2 + ?l \<ge> a1 * a3 + ?l" by (rule plus_left_mono)
+      also have "a1 * a3 + ?l \<ge> a1 * a3 + ?r" using rec by (rule plus_right_mono)
+      finally show "a1 * a2 + ?l \<ge> a1 * a3 + ?r" .
     qed
   qed (simp add: scalar_prodI_def ge_refl)
 qed
@@ -465,12 +465,12 @@ proof -
   proof (rule mat_geI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
-    have ge1a: "\<forall>i<nc. \<forall> j < nr.  m1 ! i ! j \<succeq> m2 ! i ! j"
+    have ge1a: "\<forall>i<nc. \<forall> j < nr.  m1 ! i ! j \<ge> m2 ! i ! j"
       using mat_geE[OF ge1 wf1 wf2] by simp
-    have ge2a: "\<forall>ia<nc. col m3 i ! ia \<succeq> vec0 nc ! ia"
+    have ge2a: "\<forall>ia<nc. col m3 i ! ia \<ge> vec0 nc ! ia"
       using mat_geE[OF ge2 wf3 mat0] i unfolding col_def mat0I_def vec0I_def
       by auto      
-    show "?m13 ! i ! j \<succeq> ?m23 ! i ! j"
+    show "?m13 ! i ! j \<ge> ?m23 ! i ! j"
       by (unfold mat_mult_index[OF wf1 wf3 j i]
            mat_mult_index[OF wf2 wf3 j i], 
         rule scalar_prod_mono_left[OF row[OF wf1 j] row[OF wf2 j] col[OF wf3 i]],
@@ -498,12 +498,12 @@ proof -
   proof (rule mat_geI)
     fix i j
     assume i: "i < ncc" and j: "j < nr"
-    have ge2a: " \<forall>ia<nc. col m2 i ! ia \<succeq> col m3 i ! ia"
+    have ge2a: " \<forall>ia<nc. col m2 i ! ia \<ge> col m3 i ! ia"
       using mat_geE[OF ge2 wf2 wf3 i] unfolding col_def by auto
-    have ge1a: " \<forall>i<nc. m1 ! i ! j \<succeq> 0" 
+    have ge1a: " \<forall>i<nc. m1 ! i ! j \<ge> 0" 
       using mat_geE[OF ge1 wf1 mat0] j unfolding mat0I_def vec0I_def
       by auto
-    show "?m12 ! i ! j \<succeq> ?m13 ! i ! j"
+    show "?m12 ! i ! j \<ge> ?m13 ! i ! j"
       by  (unfold mat_mult_index[OF wf1 wf2 j i]
              mat_mult_index[OF wf1 wf3 j i],
         rule scalar_prod_mono_right[OF row[OF wf1 j] col[OF wf2 i] col[OF wf3 i]], 
@@ -519,56 +519,54 @@ proof (rule mat_geI)
   assume i: "i < n" and j: "j < n"
   have zero_ij: "?m0 ! i ! j = 0" by (rule mat0_index[OF i j])
   have one_ij: "?m1 ! i ! j = (if i = j then 1 else 0)" by (rule mat1_index[OF i j])
-  show "?m1 ! i ! j \<succeq> ?m0 ! i ! j"
+  show "?m1 ! i ! j \<ge> ?m0 ! i ! j"
     by (simp add: zero_ij one_ij ge_refl one_ge_zero)
 qed auto
 
-lemma mat_max0_x: assumes wf: "mat nr nc m" shows "mat_ge (mat_max0 m) m"
+lemma mat_max_comm: assumes wf: "mat nr nc m1" "mat nr nc (m2 :: ('a :: non_strict_order) mat)" shows "mat_max m1 m2 = mat_max m2 m1"
+proof (rule mat_eqI)
+  fix i j
+  assume i: "i < nc" and j: "j < nr"
+  show "mat_max m1 m2 ! i ! j = mat_max m2 m1 ! i ! j"
+    by (unfold mat_max_index[OF wf i j] mat_max_index[OF wf(2,1) i j], rule max_comm)
+qed (insert wf, auto)
+
+lemma mat_max_ge_x: assumes wf: "mat nr nc m1" "mat nr nc m2" shows "mat_ge (mat_max m1 m2) m1"
 proof (rule mat_geI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  show "mat_max0 m ! i ! j \<succeq> m ! i ! j"
-    by (unfold mat_max0_index[OF wf i j], rule max0_x)
+  show "mat_max m1 m2 ! i ! j \<ge> m1 ! i ! j"
+    by (unfold mat_max_index[OF wf i j], rule max_ge_x)
 qed (insert wf, auto)
 
-lemma mat_max0_pos: assumes wf: "mat nr nc m"
-  shows "mat_ge (mat_max0 m) (mat0 nr nc)"
-proof (rule mat_geI)
-  fix i j
-  assume i: "i < nc" and j: "j < nr"
-  show "mat_max0 m ! i ! j \<succeq> mat0 nr nc ! i ! j"
-    by (unfold mat_max0_index[OF wf i j] mat0_index[OF i j], rule max0_pos)
-qed (insert wf, auto)
+lemma mat_max_ge: assumes wf1: "mat nr nc m1" and wf2: "mat nr nc m2" 
+  shows "mat_ge (mat_max m1 m2) m1" "mat_ge (mat_max m1 m2) m2"
+  using mat_max_ge_x[OF wf1 wf2] mat_max_ge_x[OF wf2 wf1] unfolding mat_max_comm[OF wf2 wf1]
+  by auto
 
-lemma mat_max0_id_pos: assumes ge: "mat_ge m (mat0 nr nc)" and wf: "mat nr nc m"  
-  shows "mat_max0 m = m"
+lemma mat_max_id: assumes ge: "mat_ge m1 m2" and wf: "mat nr nc m1" "mat nr nc m2"
+  shows "mat_max m1 m2 = m1"
 proof (rule mat_eqI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   from mat_geE[OF ge _ _ this]
-  have "m ! i ! j \<succeq> mat0 nr nc ! i ! j" using wf by auto
-  hence "m ! i ! j \<succeq> 0" using mat0_index[OF i j, of "0 :: 'a"] by simp
-  thus "mat_max0 m ! i ! j = m ! i ! j"
-    by (unfold mat_max0_index[OF wf i j], rule max0_id_pos)
+  have "m1 ! i ! j \<ge> m2 ! i ! j" using wf by auto
+  thus "mat_max m1 m2 ! i ! j = m1 ! i ! j"
+    by (unfold mat_max_index[OF wf i j], rule max_id)
 qed (insert wf, auto)
 
-lemma mat_max0_mono: assumes ge: "mat_ge m1 m2" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2"
-  shows "mat_ge (mat_max0 m1) (mat_max0 m2)"
+lemma mat_max_mono: assumes ge: "mat_ge m1 m2" and wf1: "mat nr nc m1" and wf2: "mat nr nc m2"
+  and wf3: "mat nr nc m3"
+  shows "mat_ge (mat_max m3 m1) (mat_max m3 m2)"
 proof (rule mat_geI)
   fix i j
   assume i: "i < nc" and j: "j < nr"
   from mat_geE[OF ge _ _ this] 
-  have "m1 ! i ! j \<succeq> m2 ! i ! j" using wf1 wf2 by simp
-  hence "max0 (m1 ! i ! j) \<succeq> max0 (m2 ! i ! j)" by (rule max0_mono)
-  thus "mat_max0 m1 ! i ! j \<succeq> mat_max0 m2 ! i ! j"
-    by (unfold mat_max0_index[OF wf1 i j] mat_max0_index[OF wf2 i j])
-qed (insert wf1 wf2, auto)
-
-context ordered_semiring_1
-begin
-abbreviation upper_triangular where "upper_triangular \<equiv> upper_triangularI (0 :: 'a) 1 ge
-"
-end
+  have "m1 ! i ! j \<ge> m2 ! i ! j" using wf1 wf2 by simp
+  hence "max (m3 ! i ! j) (m1 ! i ! j) \<ge> max (m3 ! i ! j) (m2 ! i ! j)" by (rule max_mono)
+  thus "mat_max m3 m1 ! i ! j \<ge> mat_max m3 m2 ! i ! j"
+    by (unfold mat_max_index[OF wf3 wf1 i j] mat_max_index[OF wf3 wf2 i j])
+qed (insert wf1 wf2 wf3, auto)
 
 lemma mat_pow_ge_zero: assumes m: "mat n n (m :: ('a :: ordered_semiring_1) mat)" and m0: "mat_ge m (mat0 n n)"
   shows "mat_ge (mat_pow n m nn) (mat0 n n)"
@@ -582,16 +580,16 @@ next
     by (rule mat_ge_trans[OF mat_mult_left_mono[OF mat_pow[OF m] mat0 m Suc m0] _ mat_mult[OF mat_pow[OF m] m] mat_mult[OF mat0 m] mat0], unfold mat0_mult_left[OF m], rule mat_ge_refl) 
 qed    
 
-lemma upper_triangular_mat_pow_main: assumes mat: "mat d d (m :: ('a :: {comm_semiring_1, ordered_semiring_1}) mat)"
+lemma upper_triangular_mat_pow_main: assumes mat: "mat d d (m :: ('a :: poly_carrier) mat)"
   and tri: "upper_triangular m"
-  and a: "\<And> i j. i < d \<Longrightarrow> j < d \<Longrightarrow> ge (m ! i ! j) 0 \<and> ge a (m ! i ! j)"
-  and a1: "ge a 1"
-  shows "\<forall> i < d. \<forall> j < d. (i > j \<longrightarrow> mat_pow d m n ! j ! i = 0) \<and> ge (of_nat (fact (j - i)) * (of_nat n * a)^(j - i)) (mat_pow d m n ! j ! i)"
+  and a: "\<And> i j. i < d \<Longrightarrow> j < d \<Longrightarrow> (m ! i ! j) \<ge> 0 \<and> a \<ge> (m ! i ! j)"
+  and a1: "a \<ge> 1"
+  shows "\<forall> i < d. \<forall> j < d. (i > j \<longrightarrow> mat_pow d m n ! j ! i = 0) \<and> (of_nat (fact (j - i)) * (of_nat n * a)^(j - i)) \<ge> (mat_pow d m n ! j ! i)"
 proof -
   let ?n = "of_nat :: nat \<Rightarrow> 'a"
   let ?m = "mat_pow d m"
   let ?p = "\<lambda> n i j. i > j \<longrightarrow> ?m n ! j ! i = 0"
-  let ?q = "\<lambda> n i j. ge (?n (fact (j - i)) * (?n n * a)^(j - i)) (?m n ! j ! i)"
+  let ?q = "\<lambda> n i j. (?n (fact (j - i)) * (?n n * a)^(j - i)) \<ge> (?m n ! j ! i)"
   show "\<forall> i < d. \<forall> j < d. ?p n i j \<and> ?q n i j"
   proof (induct n)
     case 0
@@ -667,8 +665,8 @@ proof -
           by (induct z, auto)
       } note lower_part = this
       hence p: "?p (Suc n) i j" unfolding id by simp
-      from a[OF i i] have a0: "a \<succeq> 0" using ge_trans[of a "m ! i ! i" 0] by auto
-      have na: "\<And> n. ?n n * a \<succeq> (0 :: 'a)"
+      from a[OF i i] have a0: "a \<ge> 0" using ge_trans[of "m ! i ! i" a 0] by auto
+      have na: "\<And> n. ?n n * a \<ge> (0 :: 'a)"
         by (rule mult_ge_zero[OF of_nat_ge_zero a0])
       have "?q (Suc n) i j"
       proof (cases "j < i") 
@@ -733,7 +731,7 @@ proof -
           by (rule nth_map_conv, auto)     
         also have "listsum (?map @ [?fact j]) = listsum ?map + ?fact j" by simp
         finally have sprod: "scalar_prod ?mind ?mcola = listsum ?map + ?fact j" .
-        have "?fsn \<succeq> scalar_prod ?mind ?mcola" 
+        have "?fsn \<ge> scalar_prod ?mind ?mcola" (is "_ \<ge> ?z")
           unfolding sprod
           unfolding diff
           unfolding of_nat_Suc
@@ -749,11 +747,11 @@ proof -
             show ?thesis unfolding 0 by (auto simp: ge_refl field_simps)
           next
             case (Suc dd)                        
-            have ana0: "(1 + ?n n) * a \<succeq> 0"
+            have ana0: "(1 + ?n n) * a \<ge> 0"
               unfolding of_nat_Suc[symmetric] by (rule na)
-            have anana: "(1 + ?n n) * a \<succeq> ?n n * a"
+            have anana: "(1 + ?n n) * a \<ge> ?n n * a"
               using plus_right_mono[OF a0, of "a * ?n n"] by (auto simp: field_simps)
-            have ananapow: "((1 + ?n n) * a) ^ d \<succeq> (?n n * a) ^ d \<and> (?n n * a)^d \<succeq> 0"
+            have ananapow: "((1 + ?n n) * a) ^ d \<ge> (?n n * a) ^ d \<and> (?n n * a)^d \<ge> 0"
               by (rule pow_mono[OF anana na])
             have "?n (fact (Suc d)) * (a + ?n n * a) ^ Suc d = 
               ?n (fact (Suc d)) * ((a + ?n n * a) * (a + ?n n * a) ^ d)" 
@@ -762,59 +760,59 @@ proof -
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d) + 
               ?n (fact d) * (a * (a + ?n n * a) ^ d)" 
               by (simp add: field_simps)
-            also have "... \<succeq> ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
+            also have "... \<ge> ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d) + 
               ?n (fact d) * (1 * (a + ?n n * a) ^ d)" 
               by (rule plus_right_mono[OF times_right_mono[OF of_nat_ge_zero times_left_mono[OF pow_ge_zero a1]]], insert na[of "Suc n"], auto simp: field_simps)
             also have "?n (fact d) * (1 * (a + ?n n * a) ^ d) = ?n (fact d) * (((1 + ?n n) * a) ^ d)" by (simp add: field_simps)
             also have "?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d) + 
-              ?n (fact d) * (((1 + ?n n) * a) ^ d) \<succeq> 
+              ?n (fact d) * (((1 + ?n n) * a) ^ d) \<ge> 
               ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d) + 
               ((\<Sum>k\<leftarrow>[0..<d]. ?n (fact k) * (?n n * a) ^ k * a) +
-  ?n (fact d) * (?n n * a) ^ d)"
+  ?n (fact d) * (?n n * a) ^ d)" (is "_ \<ge> ?z")
               by (rule plus_right_mono[OF IH])
-            also have "... = ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
+            also have "?z = ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d) + 
               (\<Sum>k\<leftarrow>[0..<d]. ?n (fact k) * (?n n * a) ^ k * a) +
                 ?n (fact d) * (?n n * a) ^ d" by (simp add: field_simps)
-            also have "... \<succeq> ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
+            also have "... \<ge> ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d) + 
               (\<Sum>k\<leftarrow>[0..<d]. ?n (fact k) * (?n n * a) ^ k * a) +
-                0"
+                0" (is "_ \<ge> ?z")
               by (rule plus_right_mono[OF mult_ge_zero[OF of_nat_ge_zero]], insert ananapow, auto)
-            also have "... = ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
+            also have "?z = ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               (\<Sum>k\<leftarrow>[0..<d]. ?n (fact k) * (?n n * a) ^ k * a) +
               ?n (d * fact d) * (a * (a + ?n n * a) ^ d)" by (simp add: ac_simps)
-            also have "... \<succeq> ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
+            also have "... \<ge> ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d) + 
               (\<Sum>k\<leftarrow>[0..<d]. ?n (fact k) * (?n n * a) ^ k * a) + 
-              ?n (fact d) * (?n n * a) ^ d * a"
+              ?n (fact d) * (?n n * a) ^ d * a" (is "_ \<ge> ?z")
             proof (rule plus_right_mono)
               have "?n (d * fact d) * (a * (a + ?n n * a) ^ d)
                 = ?n (fact d) * (a * (a + ?n n * a) ^ d) + 
                 ?n (dd * fact d) * (a * (a + ?n n * a) ^ d)" unfolding Suc  by (simp add: field_simps)
-              also have "... \<succeq> ?n (fact d) * (a * (a + ?n n * a) ^ d) + 0"
+              also have "... \<ge> ?n (fact d) * (a * (a + ?n n * a) ^ d) + 0" (is "_ \<ge> ?z")
                 by (rule plus_right_mono[OF mult_ge_zero[OF of_nat_ge_zero mult_ge_zero[OF a0]]], insert ana0, auto simp: field_simps)
-              also have "... = (?n (fact d) * (a + ?n n * a) ^ d) * a"
+              also have "?z = (?n (fact d) * (a + ?n n * a) ^ d) * a"
                 by (auto simp: field_simps)
-              also have "... \<succeq> (?n (fact d) * (?n n * a) ^ d) * a"
+              also have "... \<ge> (?n (fact d) * (?n n * a) ^ d) * a"
                 by (rule times_left_mono[OF a0 times_right_mono[OF of_nat_ge_zero]], insert ananapow, auto simp: field_simps)
-              finally show "?n (d * fact d) * (a * (a + ?n n * a) ^ d) \<succeq> (?n (fact d) * (?n n * a) ^ d) * a" .
+              finally show "?n (d * fact d) * (a * (a + ?n n * a) ^ d) \<ge> (?n (fact d) * (?n n * a) ^ d) * a" .
             qed
-            also have "... = (\<Sum>k\<leftarrow>[0..< Suc d]. ?n (fact k) * (?n n * a) ^ k * a) 
+            also have "?z = (\<Sum>k\<leftarrow>[0..< Suc d]. ?n (fact k) * (?n n * a) ^ k * a) 
                + ?n (fact (Suc d)) * ((?n n * a) * (a + ?n n * a) ^ d)"
               by (simp add: field_simps)
-            also have "... \<succeq> (\<Sum>k\<leftarrow>[0..<Suc d]. ?n (fact k) * (?n n * a) ^ k * a) +
+            also have "... \<ge> (\<Sum>k\<leftarrow>[0..<Suc d]. ?n (fact k) * (?n n * a) ^ k * a) +
               ?n (fact (Suc d)) * (?n n * a) ^ Suc d" unfolding power_Suc
               by (rule plus_right_mono[OF times_right_mono[OF of_nat_ge_zero times_right_mono[OF na]]], insert ananapow, auto simp: field_simps)
             finally
-            show "?n (fact (Suc d)) * ((1 + ?n n) * a) ^ Suc d \<succeq>
+            show "?n (fact (Suc d)) * ((1 + ?n n) * a) ^ Suc d \<ge>
               (\<Sum>k\<leftarrow>[0..<Suc d]. ?n (fact k) * (?n n * a) ^ k * a) +
               ?n (fact (Suc d)) * (?n n * a) ^ Suc d" by (simp add: field_simps)
           qed
         qed      
-        also have "... \<succeq> scalar_prod ?mind ?colj"
+        also have "?z \<ge> scalar_prod ?mind ?colj" (is "_ \<ge> ?z")
         proof (rule scalar_prod_mono_right[OF mind cola col])
           show "vec_ge ?mind (vec0 d)"
             unfolding vec_ge[OF mind vec0] using a0
@@ -825,7 +823,7 @@ proof -
             fix i
             assume i: "i < d"
             hence id: "?mcola ! i = ?cola i" by auto
-            have "?cola i \<succeq> m ! j ! i"
+            have "?cola i \<ge> m ! j ! i"
             proof (cases "i < j")
               case True
               with a[OF j i] show ?thesis by auto
@@ -842,10 +840,10 @@ proof -
                 with tri[OF j] i show ?thesis by (auto simp: ge_refl)
               qed
             qed
-            thus "?mcola ! i \<succeq> m ! j ! i" unfolding id .
+            thus "?mcola ! i \<ge> m ! j ! i" unfolding id .
           qed
         qed
-        also have "... \<succeq> scalar_prod ?rowi ?colj"
+        also have "?z \<ge> scalar_prod ?rowi ?colj"
         proof (rule scalar_prod_mono_left[OF mind row col])
           show "vec_ge ?colj (vec0 d)" 
             unfolding vec_ge[OF col vec0]
@@ -858,13 +856,13 @@ proof -
             have idr: "?rowi ! j = ?m n ! j ! i" unfolding row_col[OF mat_pow[OF mat] i j] col_def ..
             have idl: "?mind ! j = ?ind j" using j by auto
             note IH = Suc[rule_format, OF i j]
-            have "?ind j \<succeq> ?m n ! j ! i" 
+            have "?ind j \<ge> ?m n ! j ! i" 
               by (cases "j < i", insert IH, auto simp: ge_refl)
-            thus "?mind ! j \<succeq> ?rowi ! j" unfolding idl idr .
+            thus "?mind ! j \<ge> ?rowi ! j" unfolding idl idr .
           qed
         qed
         finally
-        show "?fsn \<succeq> ?m (Suc n) ! j ! i" unfolding id .
+        show "?fsn \<ge> ?m (Suc n) ! j ! i" unfolding id .
       qed
       with p 
       show "?p (Suc n) i j \<and> ?q (Suc n) i j" ..
@@ -872,17 +870,12 @@ proof -
   qed
 qed
 
-abbreviation vec_max where "vec_max \<equiv> vec_plusI (max :: 'a :: max_ordered_ab_semigroup \<Rightarrow> 'a \<Rightarrow> 'a)"
-abbreviation mat_max where "mat_max \<equiv> mat_plusI (max :: 'a :: max_ordered_ab_semigroup \<Rightarrow> 'a \<Rightarrow> 'a)"
 
-lemmas mat_max_index = mat_plus_index[of _ _ _ _ _ _ max]
-lemmas mat_max = mat_plus[of _ _ _ _ max]
-
-definition max_mat where "max_mat m \<equiv> mat_fold max m (0 :: 'a :: max_ordered_ab_semigroup)"
+definition max_mat where "max_mat m \<equiv> mat_fold max m (0 :: 'a :: ordered_ab_semigroup)"
 
 lemma max_mat: assumes m: "mat nr nc m" 
   and i: "i < nc" and j: "j < nr"
-  shows "max_mat m \<succeq> m ! i ! j"
+  shows "max_mat m \<ge> m ! i ! j"
 proof -
   have id: "max_mat m = foldr max (concat m) 0" 
     unfolding max_mat_def mat_fold.simps vec_fold.simps
@@ -895,19 +888,7 @@ proof -
     by (rule foldr_max[OF mij])
 qed
 
-lemma mat_max_ge: assumes m1: "mat nr nc m1" and m2: "mat nr nc m2"
-  shows "mat_ge (mat_max m1 m2) m1" "mat_ge (mat_max m1 m2) m2"
-proof -
-  have m: "mat nr nc (mat_max m1 m2)"
-    by (rule mat_max[OF m1 m2])
-  note [simp] = mat_max_index[OF m1 m2]
-  show "mat_ge (mat_max m1 m2) m1"
-    by (rule mat_geI[OF m m1], auto)
-  show "mat_ge (mat_max m1 m2) m2"
-    by (rule mat_geI[OF m m2], auto)
-qed
-
-definition mat_max_list :: "'a mat list \<Rightarrow> 'a mat \<Rightarrow> ('a :: max_ordered_ab_semigroup) mat"
+definition mat_max_list :: "'a mat list \<Rightarrow> 'a mat \<Rightarrow> ('a :: ordered_ab_semigroup) mat"
   where "mat_max_list ms init \<equiv> foldr mat_max ms init"
 
 lemma mat_max_list: assumes init: "mat nr nc init"
@@ -935,10 +916,10 @@ next
 qed
 
 (* upper triangular matrices grow polynomially in the degree (-1) of the matrix *)
-lemma upper_triangular_mat_pow_index: assumes mat: "mat d d (m :: ('a :: bin_max_ordered_semiring_1) mat)"
+lemma upper_triangular_mat_pow_index: assumes mat: "mat d d (m :: ('a :: poly_carrier) mat)"
   and tri: "upper_triangular m"
   and ge0: "mat_ge m (mat0 d d)"
-  shows "\<exists> c. c \<succeq> 0 \<and> (\<forall> n > 0. \<forall> i < d. \<forall> j < d. ge (c * of_nat n ^ (d - Suc 0)) (mat_pow d m n ! i ! j))"
+  shows "\<exists> c. c \<ge> 0 \<and> (\<forall> n > 0. \<forall> i < d. \<forall> j < d. (c * of_nat n ^ (d - Suc 0)) \<ge> (mat_pow d m n ! i ! j))"
 proof -
   let ?n = "of_nat :: nat \<Rightarrow> 'a"
   let ?d = "d - Suc 0"
@@ -948,15 +929,15 @@ proof -
     fix i j
     assume i: "i < d" and j: "j < d"
     from ge_trans[OF _ max_mat[OF mat i j]]
-    have "a \<succeq> m ! i ! j" unfolding a by auto
+    have "a \<ge> m ! i ! j" unfolding a by auto
   } note am = this
-  have a1: "a \<succeq> 1" unfolding a by auto
-  from ge_trans[OF this one_ge_zero] have a0: "a \<succeq> 0" by simp
+  have a1: "a \<ge> 1" unfolding a by auto
+  from ge_trans[OF this one_ge_zero] have a0: "a \<ge> 0" by simp
   from mat_geE[OF ge0 mat mat0]
-  have ge0: "\<And> i j. i < d \<Longrightarrow> j < d \<Longrightarrow> m ! i ! j \<succeq> 0" by auto
+  have ge0: "\<And> i j. i < d \<Longrightarrow> j < d \<Longrightarrow> m ! i ! j \<ge> 0" by auto
   note main = main[OF conjI[OF ge0 am] a1]
   obtain c where c: "c = ?n (fact ?d) * (a ^ ?d)" by auto
-  have c0: "c \<succeq> 0"
+  have c0: "c \<ge> 0"
     unfolding c
     by (rule mult_ge_zero[OF _ pow_ge_zero[OF a0]], auto)
   show ?thesis
@@ -966,29 +947,29 @@ proof -
     let ?ij = "i - j"
     from i have ijd: "?ij \<le> ?d" by auto
     from main[rule_format, OF _ _ _ _ j i]
-    have ge: "?n (fact (i - j)) * ((?n n * a) ^ (i - j)) \<succeq> mat_pow d m n ! i ! j" ..
-    have na: "?n n * a \<succeq> 0" by (rule mult_ge_zero[OF _ a0], auto)
+    have ge: "?n (fact (i - j)) * ((?n n * a) ^ (i - j)) \<ge> mat_pow d m n ! i ! j" ..
+    have na: "?n n * a \<ge> 0" by (rule mult_ge_zero[OF _ a0], auto)
     have fact: "fact ?d \<ge> fact ?ij"
       by (rule fact_mono_nat[OF ijd])
-    have nfact: "?n (fact ?d) \<succeq> ?n (fact ?ij)" 
+    have nfact: "?n (fact ?d) \<ge> ?n (fact ?ij)" 
       by (rule of_nat_mono[OF fact])
     have "?n n ^ ?d * c = ?n n ^ ?d * (?n (fact ?d) * a ^ ?d)"
       unfolding c by auto
     also have "... = ?n (fact ?d) * ((?n n) ^ ?d * a ^ ?d)" by (auto simp: field_simps)
     also have "((?n n) ^ ?d * a ^ ?d) = (?n n * a) ^ ?d"
       unfolding comm_semiring_1_class.normalizing_semiring_rules ..
-    also have "?n (fact ?d) * (?n n * a) ^ ?d \<succeq> ?n (fact ?ij) * (?n n* a) ^ ?d"
+    also have "?n (fact ?d) * (?n n * a) ^ ?d \<ge> ?n (fact ?ij) * (?n n* a) ^ ?d" (is "_ \<ge> ?z")
       by (rule times_left_mono[OF pow_ge_zero[OF mult_ge_zero[OF _ a0]] nfact], auto)
-    also have "... \<succeq> ?n (fact ?ij) * (?n n * a) ^ ?ij"
+    also have "?z \<ge> ?n (fact ?ij) * (?n n * a) ^ ?ij" (is "_ \<ge> ?z")
     proof (rule times_right_mono[OF of_nat_ge_zero pow_mono_exp[OF mult_ge_one[OF _ a1] ijd]]) 
       from n obtain nn where n: "n = Suc nn" by (cases n, auto)
-      have "?n n \<succeq> 1 + 0" unfolding n of_nat_Suc
+      have "?n n \<ge> 1 + 0" unfolding n of_nat_Suc
         by (rule plus_right_mono, auto)
-      thus "?n n \<succeq> 1" by simp
+      thus "?n n \<ge> 1" by simp
     qed
-    also have "... \<succeq> mat_pow d m n ! i ! j" using ge .
+    also have "?z \<ge> mat_pow d m n ! i ! j" using ge .
     finally
-    show "c * (?n n ^ ?d) \<succeq> mat_pow d m n ! i ! j" by (simp add: field_simps)
+    show "c * (?n n ^ ?d) \<ge> mat_pow d m n ! i ! j" by (simp add: field_simps)
   qed
 qed 
 
@@ -999,7 +980,7 @@ definition linear_norm :: "('a :: monoid_add)mat \<Rightarrow> 'a"
 
 lemma vec_ge_listsum: fixes v1 :: "('a :: ordered_semiring_0) vec"
   assumes v1: "vec nr v1" and v2: "vec nr v2" and ge: "vec_ge v1 v2"
-  shows "listsum v1 \<succeq> listsum v2" 
+  shows "listsum v1 \<ge> listsum v2" 
 proof -
   from v1 v2 have len: "length v1 = length v2" "length v2 = nr" unfolding vec_def by auto
   show ?thesis
@@ -1009,7 +990,7 @@ qed
 lemma linear_norm_ge: fixes m1 :: "('a :: ordered_semiring_0) mat"
   assumes m1: "mat nr nc m1" and m2: "mat nr nc m2"
   and ge: "mat_ge m1 m2" 
-  shows "linear_norm m1 \<succeq> linear_norm m2"
+  shows "linear_norm m1 \<ge> linear_norm m2"
   using assms 
 proof (induct m1 arbitrary: m2 nc)
   case Nil
@@ -1021,10 +1002,10 @@ next
   note Cons = Cons[unfolded this]
   from Cons(4) have v12': "vec_ge v1 v2" and m12ge: "mat_ge m1 m2"
     unfolding mat_ge_def mat_comp_all_def vec_ge_def by auto
-  from vec_ge_listsum[OF v1 v2 v12'] have v12: "listsum v1 \<succeq> listsum v2" .
-  from Cons(1)[OF  m1 m2 m12ge] have m12: "linear_norm m1 \<succeq> linear_norm m2" .
+  from vec_ge_listsum[OF v1 v2 v12'] have v12: "listsum v1 \<ge> listsum v2" .
+  from Cons(1)[OF  m1 m2 m12ge] have m12: "linear_norm m1 \<ge> linear_norm m2" .
   from ge_trans[OF plus_left_mono[OF v12] plus_right_mono[OF m12]]
-  have vm12: "linear_norm (v1 # m1) \<succeq> linear_norm (v2 # m2)" unfolding linear_norm_def by simp
+  have vm12: "linear_norm (v1 # m1) \<ge> linear_norm (v2 # m2)" unfolding linear_norm_def by simp
   thus ?case unfolding m2v .
 qed
 
@@ -1040,6 +1021,8 @@ where "mat_gt \<equiv> mat_gtI gt"
 abbreviation mat_default :: "nat \<Rightarrow> 'a mat" 
 where "mat_default n \<equiv> mat1I 0 default n"
 
+lemma mat_gt_imp_mat_ge: "mat_gt sd m1 m2 \<Longrightarrow> mat_ge m1 m2"
+  unfolding mat_gtI_def by auto
 
 lemma mat_default_ge_mat0: "mat_ge (mat_default n) (mat0 n n)"
 proof (rule mat_geI)
@@ -1047,7 +1030,7 @@ proof (rule mat_geI)
   assume i: "i < n" and j: "j < n"
   have zero_ij: "mat0 n n ! i ! j = 0" by (rule mat0_index[OF i j])
   have one_ij: "mat_default n ! i ! j = (if i = j then default else 0)" by (rule mat1_index[OF i j])
-  show "mat_default n ! i ! j \<succeq> mat0 n n ! i ! j"
+  show "mat_default n ! i ! j \<ge> mat0 n n ! i ! j"
     by (simp add: zero_ij one_ij ge_refl default_ge_zero)
 qed auto
 
@@ -1056,7 +1039,7 @@ lemma mat_gt_compat: assumes sd_n: "sd \<le> n" and  ge: "mat_ge m1 m2" and gt: 
 proof -
   from gt[unfolded mat_gt[OF wf2 wf3 sd_n]] obtain i j 
     where i: "i < sd" and j: "j < sd" and gt: "m2 ! i ! j \<succ> m3 ! i ! j" and ge23: "mat_ge m2 m3" by auto 
-  from mat_geE[OF ge wf1 wf2] i j sd_n have geij: "m1 ! i ! j \<succeq> m2 ! i ! j" by auto
+  from mat_geE[OF ge wf1 wf2] i j sd_n have geij: "m1 ! i ! j \<ge> m2 ! i ! j" by auto
   from mat_ge_trans[OF ge ge23 wf1 wf2 wf3] have ge: "mat_ge m1 m3" .
   with compat[OF geij gt] i j show ?thesis 
     by (auto simp: mat_gt[OF wf1 wf3 sd_n])
@@ -1067,7 +1050,7 @@ lemma mat_gt_compat2: assumes sd_n: "sd \<le> n" and gt: "mat_gt sd m1 m2" and g
 proof -
   from gt[unfolded mat_gt[OF wf1 wf2 sd_n]] obtain i j 
     where i: "i < sd" and j: "j < sd" and gt: "m1 ! i ! j \<succ> m2 ! i ! j" and ge12: "mat_ge m1 m2" by auto 
-  from mat_geE[OF ge wf2 wf3] i j sd_n have geij: "m2 ! i ! j \<succeq> m3 ! i ! j" by auto
+  from mat_geE[OF ge wf2 wf3] i j sd_n have geij: "m2 ! i ! j \<ge> m3 ! i ! j" by auto
   from mat_ge_trans[OF ge12 ge wf1 wf2 wf3] have ge: "mat_ge m1 m3" .
   with compat2[OF gt geij] i j show ?thesis 
     by (auto simp: mat_gt[OF wf1 wf3 sd_n])
@@ -1097,7 +1080,7 @@ proof -
       by (cases snr, (cases av2, auto)+)
     note Cons = Cons[unfolded av2 snr]
     from Cons(2) have v1: "vec nr v1" unfolding d by simp
-    from Cons(4) have a12: "a1 \<succeq> a2" and v12: "vec_ge v1 v2"
+    from Cons(4) have a12: "a1 \<ge> a2" and v12: "vec_ge v1 v2"
       unfolding vec_ge_def vec_comp_all_def by auto
     from Cons(5) obtain sd where "(a1 \<succ> a2) \<or> (vec_pre_gtI op \<succ> (sub_vec sd v1) (sub_vec sd v2))" 
       unfolding vec_pre_gtI_def sub_vec_def by (cases ssd, auto)
@@ -1116,10 +1099,10 @@ qed
 
 lemma linear_norm_gt_main: assumes m1: "mat nr nc m1" and m2: "mat nr nc m2"
   and ge: "mat_ge m1 m2" 
-  shows "linear_norm m1 \<succeq> linear_norm m2 \<and> (mat_pre_gt (sub_mat sd sdc m1) (sub_mat sd sdc m2) \<longrightarrow> linear_norm m1 \<succ> linear_norm m2)"
+  shows "linear_norm m1 \<ge> linear_norm m2 \<and> (mat_pre_gt (sub_mat sd sdc m1) (sub_mat sd sdc m2) \<longrightarrow> linear_norm m1 \<succ> linear_norm m2)"
 proof -
   note d = vec_def
-  from ge m1 m2 show "(linear_norm m1 \<succeq> linear_norm m2) \<and> (mat_pre_gt (sub_mat sd sdc m1) (sub_mat sd sdc m2) \<longrightarrow> linear_norm m1 \<succ> linear_norm m2)"
+  from ge m1 m2 show "(linear_norm m1 \<ge> linear_norm m2) \<and> (mat_pre_gt (sub_mat sd sdc m1) (sub_mat sd sdc m2) \<longrightarrow> linear_norm m1 \<succ> linear_norm m2)"
   proof (induct m1 arbitrary: m2 nc sdc)
     case Nil
     thus ?case unfolding mat_pre_gtI_def sub_mat_def mat_def by (cases m2, (force simp: ge_refl)+)
@@ -1130,10 +1113,10 @@ proof -
     from Cons(2) have v12': "vec_ge v1 v2" and m12ge: "mat_ge m1 m2"
       unfolding mat_ge_def mat_comp_all_def vec_ge_def by auto
     note IH = Cons(1)[OF m12ge m1 m2]
-    from vec_ge_listsum[OF v1 v2 v12'] have v12: "listsum v1 \<succeq> listsum v2" .
-    from IH have m12: "linear_norm m1 \<succeq> linear_norm m2" by simp
+    from vec_ge_listsum[OF v1 v2 v12'] have v12: "listsum v1 \<ge> listsum v2" .
+    from IH have m12: "linear_norm m1 \<ge> linear_norm m2" by simp
     from ge_trans[OF plus_left_mono[OF v12] plus_right_mono[OF m12]]
-    have vm12: "linear_norm (v1 # m1) \<succeq> linear_norm (v2 # m2)" unfolding linear_norm_def by simp
+    have vm12: "linear_norm (v1 # m1) \<ge> linear_norm (v2 # m2)" unfolding linear_norm_def by simp
     show ?case unfolding m2v
     proof (rule conjI[OF vm12], rule impI)
       assume gt: "mat_pre_gt (sub_mat sd ssdc (v1 # m1)) (sub_mat sd ssdc (v2 # m2))"
@@ -1178,7 +1161,7 @@ qed
 lemma linear_norm_ge_0: fixes m :: "('a :: ordered_semiring_0) mat"
   assumes m: "mat nr nc m" 
   and ge: "mat_ge m (mat0 nr nc)" 
-  shows "linear_norm m \<succeq> 0"
+  shows "linear_norm m \<ge> 0"
   using linear_norm_ge[OF m mat0 ge]
   unfolding linear_norm_0 .
 
@@ -1209,8 +1192,8 @@ next
 qed    
 
 lemma linear_norm_index: fixes m :: "('a :: ordered_semiring_1) mat"   
-  assumes bc: "bc \<succeq> 0"
-  shows "mat nr nc m \<Longrightarrow> \<lbrakk>\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> bc \<succeq> m ! i ! j\<rbrakk> \<Longrightarrow> of_nat nr * of_nat nc * bc \<succeq> linear_norm m"
+  assumes bc: "bc \<ge> 0"
+  shows "mat nr nc m \<Longrightarrow> \<lbrakk>\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> bc \<ge> m ! i ! j\<rbrakk> \<Longrightarrow> of_nat nr * of_nat nc * bc \<ge> linear_norm m"
 proof (induct nc arbitrary: m)
   case 0 thus ?case using bc unfolding mat_def linear_norm_def 
     by (simp add: ge_refl)
@@ -1219,14 +1202,14 @@ next
   from Suc(2) obtain v m where vm: "vm = v # m" 
     and m: "mat nr nc m" and v: "vec nr v" unfolding mat_def  by (cases vm, auto)
   note Suc = Suc[unfolded vm]
-  from Suc(3)[of 0] have bcv: "\<And> j. j < nr \<Longrightarrow> bc \<succeq> v ! j" by simp
+  from Suc(3)[of 0] have bcv: "\<And> j. j < nr \<Longrightarrow> bc \<ge> v ! j" by simp
   {
     fix i 
     assume "i < nc" 
-    with Suc(3)[of "Suc i"] have "\<And> j. j < nr \<Longrightarrow> bc \<succeq> m ! i ! j" by auto
+    with Suc(3)[of "Suc i"] have "\<And> j. j < nr \<Longrightarrow> bc \<ge> m ! i ! j" by auto
   } note bcm = this
-  from Suc(1)[OF m bcm] have IH: "of_nat nr * of_nat nc * bc \<succeq> linear_norm m" by auto
-  from v bcv have v: "of_nat nr * bc \<succeq> listsum v"
+  from Suc(1)[OF m bcm] have IH: "of_nat nr * of_nat nc * bc \<ge> linear_norm m" by auto
+  from v bcv have v: "of_nat nr * bc \<ge> listsum v"
   proof (induct nr arbitrary: v)
     case 0
     thus ?case unfolding vec_def using bc by (auto simp: ge_refl)
@@ -1235,27 +1218,27 @@ next
     from Suc(2) obtain a v where av: "av = a # v" 
       and v: "vec nr v" unfolding vec_def  by (cases av, auto)
     note Suc = Suc[unfolded av]
-    from Suc(3)[of 0] have a: "bc \<succeq> a" by auto
+    from Suc(3)[of 0] have a: "bc \<ge> a" by auto
     {
       fix i
       assume "i < nr"
-      with Suc(3)[of "Suc i"] have "bc \<succeq> v ! i" by auto 
+      with Suc(3)[of "Suc i"] have "bc \<ge> v ! i" by auto 
     } note bcv = this
-    from Suc(1)[OF v bcv] have IH: "of_nat nr * bc \<succeq> listsum v" by auto
+    from Suc(1)[OF v bcv] have IH: "of_nat nr * bc \<ge> listsum v" by auto
     have "of_nat (Suc nr) * bc = bc + of_nat nr * bc" by (simp add: field_simps)
-    also have "... \<succeq> a + listsum v"
+    also have "... \<ge> a + listsum v"
       by (rule ge_trans[OF plus_left_mono[OF a] plus_right_mono[OF IH]])
     finally show ?case unfolding av by simp
   qed
   have "of_nat nr * of_nat (Suc nc) * bc = of_nat nr * bc + of_nat nr * of_nat nc * bc" by (simp add: field_simps)
-  also have "... \<succeq> listsum v + linear_norm m"
+  also have "... \<ge> listsum v + linear_norm m"
     by (rule ge_trans[OF plus_left_mono[OF v] plus_right_mono[OF IH]])
   finally show ?case unfolding vm linear_norm_def by auto
 qed
 
 lemma linear_norm_submultiplicative: fixes m1 :: "('a :: ordered_semiring_1) mat"
   shows "mat_ge m1 (mat0 nr n) \<Longrightarrow> mat_ge m2 (mat0 n nc) \<Longrightarrow> mat nr n m1 \<Longrightarrow> mat n nc m2 \<Longrightarrow>
-  linear_norm m1 * linear_norm m2 \<succeq> linear_norm (mat_mult nr m1 m2)" 
+  linear_norm m1 * linear_norm m2 \<ge> linear_norm (mat_mult nr m1 m2)" 
 proof (induct n arbitrary: m1 m2)
   case 0
   have m2: "\<forall> x \<in> set m2. x = [] \<Longrightarrow> m2 = replicate (length m2) []"
@@ -1346,7 +1329,7 @@ next
     fix m :: "'a mat" and nr nc
     assume m: "mat nr nc m" and ge: "mat_ge m (mat0 nr nc)"
     from mat_geE[OF ge m]
-    have ge0: "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> m ! i ! j \<succeq> 0" by auto
+    have ge0: "\<And> i j. i < nc \<Longrightarrow> j < nr \<Longrightarrow> m ! i ! j \<ge> 0" by auto
   } note mat_ge = this
   have ii10: "mat_ge ii1 (mat0 nr n)"
     by (rule mat_geI[OF mat_ii1], insert ii1_idx mat_ge[OF m1 m10], auto)
@@ -1424,24 +1407,24 @@ next
   } note vmult = this
   have "?v m1 * ?v m2 = ?v (ii1) * ?v (ii2) + (?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin)"
     unfolding vm1 vm2 by (simp add: field_simps)
-  also have "... \<succeq> ?vmii + (?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin)"
+  also have "... \<ge> ?vmii + (?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin)" (is "_ \<ge> ?z")
     by (rule plus_left_mono[OF IH[OF ii10 ii20 mat_ii1 mat_ii2]])
-  also have "... \<succeq> ?vmii + ?rii" 
+  also have "?z \<ge> ?vmii + ?rii" (is "_ \<ge> ?z")
   proof (rule plus_right_mono)
-    from linear_norm_ge_0[OF mat_ii1 ii10] have ii10: "linear_norm ii1 \<succeq> 0" .
-    from linear_norm_ge_0[OF mat_ii2 ii20] have ii20: "linear_norm ii2 \<succeq> 0" .
+    from linear_norm_ge_0[OF mat_ii1 ii10] have ii10: "linear_norm ii1 \<ge> 0" .
+    from linear_norm_ge_0[OF mat_ii2 ii20] have ii20: "linear_norm ii2 \<ge> 0" .
     note m10 = mat_ge[OF m1 m10]
     note m20 = mat_ge[OF m2 m20]
-    have lmin0: "?lmin \<succeq> 0"
+    have lmin0: "?lmin \<ge> 0"
       by (rule listsum_ge_0_nth, insert m20, auto)
-    have lmni0: "?lmni \<succeq> 0"
+    have lmni0: "?lmni \<ge> 0"
       by (rule listsum_ge_0_nth, insert m10, auto)
-    have p10: "?v (ii1) * ?lmin \<succeq> 0"
+    have p10: "?v (ii1) * ?lmin \<ge> 0"
       by (rule mult_ge_zero[OF ii10 lmin0])
-    have p20: "?lmni * ?v (ii2) \<succeq> 0"
+    have p20: "?lmni * ?v (ii2) \<ge> 0"
       by (rule mult_ge_zero[OF lmni0 ii20])
     from plus_right_mono[OF ge_trans[OF plus_left_mono[OF p10] plus_right_mono[OF p20]], of "?lmni * ?lmin"]
-    have ge: "?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin \<succeq> ?lmni * ?lmin"
+    have ge: "?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin \<ge> ?lmni * ?lmin"
       by (simp add: ac_simps)
     have id: "?lmni * ?lmin = ?rii" 
     proof (induct nc)
@@ -1464,77 +1447,77 @@ next
       finally
       show ?case .
     qed
-    show "?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin \<succeq> ?rii" 
+    show "?v (ii1) * ?lmin + ?lmni * ?v (ii2) + ?lmni * ?lmin \<ge> ?rii" 
       using ge unfolding id .
   qed
-  also have "... = ?v ?mult" unfolding vmult ..
+  also have "?z = ?v ?mult" unfolding vmult ..
   finally show ?case .
 qed
 
 
 lemma linear_norm_mult_left_ex: assumes m: "mat n n (m :: ('a :: large_ordered_semiring_1) mat)" 
   and m0: "mat_ge m (mat0 n n)" (is "mat_ge m ?m0")
-  shows "\<exists> c. (\<forall> m'. mat n n m' \<longrightarrow> mat_ge m' (mat0 n n) \<longrightarrow> linear_norm m' * (of_nat c) \<succeq> linear_norm (mat_mult n m' m))"
+  shows "\<exists> c. (\<forall> m'. mat n n m' \<longrightarrow> mat_ge m' (mat0 n n) \<longrightarrow> linear_norm m' * (of_nat c) \<ge> linear_norm (mat_mult n m' m))"
 proof -
   let ?c = "linear_norm m"
-  from linear_norm_ge_0[OF m m0] have c0: "?c \<succeq> 0" .
-  from ex_large_of_nat[of ?c] obtain c where c: "of_nat c \<succeq> ?c" by auto
+  from linear_norm_ge_0[OF m m0] have c0: "?c \<ge> 0" .
+  from ex_large_of_nat[of ?c] obtain c where c: "of_nat c \<ge> ?c" by auto
   show ?thesis
   proof (rule exI[of _ c], intro allI impI)
     fix m' :: "'a mat"
     assume m': "mat n n m'" and m'0: "mat_ge m' (mat0 n n)"
     let ?m' = "linear_norm m'"
-    have "?m' * of_nat c \<succeq> ?m' * ?c"
+    have "?m' * of_nat c \<ge> ?m' * ?c" (is "_ \<ge> ?z")
       by (rule times_right_mono[OF linear_norm_ge_0[OF m' m'0] c])
-    also have "... \<succeq> linear_norm (mat_mult n m' m)"
+    also have "?z \<ge> linear_norm (mat_mult n m' m)"
       by (rule linear_norm_submultiplicative[OF m'0 m0 m' m])
-    finally show "linear_norm m' * of_nat c \<succeq> linear_norm (mat_mult n m' m)" .
+    finally show "linear_norm m' * of_nat c \<ge> linear_norm (mat_mult n m' m)" .
   qed
 qed
 
 lemma linear_norm_mult_right_ex: assumes m: "mat n n (m :: ('a :: large_ordered_semiring_1) mat)" 
   and m0: "mat_ge m (mat0 n n)" (is "mat_ge m ?m0")
-  shows "\<exists> c. (\<forall> m'. mat n n m' \<longrightarrow> mat_ge m' (mat0 n n) \<longrightarrow> linear_norm m' * (of_nat c) \<succeq> linear_norm (mat_mult n m m'))"
+  shows "\<exists> c. (\<forall> m'. mat n n m' \<longrightarrow> mat_ge m' (mat0 n n) \<longrightarrow> linear_norm m' * (of_nat c) \<ge> linear_norm (mat_mult n m m'))"
 proof -
   let ?c = "linear_norm m"
-  from linear_norm_ge_0[OF m m0] have c0: "?c \<succeq> 0" .
-  from ex_large_of_nat[of ?c] obtain c where c: "of_nat c \<succeq> ?c" by auto
+  from linear_norm_ge_0[OF m m0] have c0: "?c \<ge> 0" .
+  from ex_large_of_nat[of ?c] obtain c where c: "of_nat c \<ge> ?c" by auto
   show ?thesis
   proof (rule exI[of _ c], intro allI impI)
     fix m' :: "'a mat"
     assume m': "mat n n m'" and m'0: "mat_ge m' (mat0 n n)"
     let ?m' = "linear_norm m'"
-    have "?m' * of_nat c \<succeq> ?m' * ?c"
+    have "?m' * of_nat c \<ge> ?m' * ?c" (is "_ \<ge> ?z")
       by (rule times_right_mono[OF linear_norm_ge_0[OF m' m'0] c])
-    also have "... = ?c * ?m'" by (simp add: ac_simps)
-    also have "... \<succeq> linear_norm (mat_mult n m m')"
+    also have "?z = ?c * ?m'" by (simp add: ac_simps)
+    also have "... \<ge> linear_norm (mat_mult n m m')"
       by (rule linear_norm_submultiplicative[OF m0 m'0 m m'])
-    finally show "linear_norm m' * of_nat c \<succeq> linear_norm (mat_mult n m m')" .
+    finally show "linear_norm m' * of_nat c \<ge> linear_norm (mat_mult n m m')" .
   qed
 qed
 
 
 
-lemma upper_triangular_mat_pow_value: assumes mat: "mat d d (m :: ('a :: bin_max_ordered_semiring_1) mat)"
+lemma upper_triangular_mat_pow_value: assumes mat: "mat d d (m :: ('a :: poly_carrier) mat)"
   and tri: "upper_triangular m"
   and ge0: "mat_ge m (mat0 d d)"
-  shows "\<exists> c. c \<succeq> 0 \<and> (\<forall> n > 0. ge (c * of_nat (n ^ (d - Suc 0))) (linear_norm (mat_pow d m n)))"
+  shows "\<exists> c. c \<ge> 0 \<and> (\<forall> n > 0. (c * of_nat (n ^ (d - Suc 0))) \<ge> (linear_norm (mat_pow d m n)))"
 proof -
   from upper_triangular_mat_pow_index[OF mat tri ge0]
-  obtain c where "c \<succeq> (0\<Colon>'a) \<and>
-         (\<forall>n>0. \<forall>i<d. \<forall>j<d. c * of_nat n ^ (d - Suc 0) \<succeq>
+  obtain c where "c \<ge> (0\<Colon>'a) \<and>
+         (\<forall>n>0. \<forall>i<d. \<forall>j<d. c * of_nat n ^ (d - Suc 0) \<ge>
                             mat_pow d m n ! i ! j)" ..
-  hence c: "(c :: 'a) \<succeq> 0" and ge: "\<And> n i j. n > 0 \<Longrightarrow> i < d \<Longrightarrow> j < d \<Longrightarrow> c * of_nat n ^ (d - Suc 0) \<succeq> mat_pow d m n ! i ! j" by auto
+  hence c: "(c :: 'a) \<ge> 0" and ge: "\<And> n i j. n > 0 \<Longrightarrow> i < d \<Longrightarrow> j < d \<Longrightarrow> c * of_nat n ^ (d - Suc 0) \<ge> mat_pow d m n ! i ! j" by auto
   let ?c = "of_nat d * of_nat d * c"
-  from c have c0: "?c \<succeq> 0" by auto
+  from c have c0: "?c \<ge> 0" by auto
   show ?thesis
   proof (rule exI, rule conjI[OF c0], intro allI impI)
     fix n :: nat
     assume n: "0 < n"
-    hence "?c * of_nat n ^ (d - Suc 0) \<succeq> linear_norm (mat_pow d m n)"
+    hence "?c * of_nat n ^ (d - Suc 0) \<ge> linear_norm (mat_pow d m n)"
       using linear_norm_index[OF _ mat_pow[OF mat] ge[OF n]] c 
       by (auto simp: field_simps)
-    thus "?c * of_nat (n ^ (d - Suc 0)) \<succeq> linear_norm (mat_pow d m n)"
+    thus "?c * of_nat (n ^ (d - Suc 0)) \<ge> linear_norm (mat_pow d m n)"
       unfolding of_nat_power .
   qed
 qed
@@ -1559,7 +1542,7 @@ proof -
   from mat_plus_left_mono[OF ge wf3 wf4 wf2] have "mat_ge ?m32 ?m42" .
   hence two: "mat_ge ?m23 ?m24" by (simp add: mat_plus_comm[of m2 m3] mat_plus_comm[of m2 m4])
   have matge: "mat_ge ?m13 ?m24" by (rule mat_ge_trans[OF one two], insert wf, auto)
-  from i j sd_n mat_geE[OF ge] wf have ge: "m3 ! i ! j \<succeq> m4 ! i ! j" by auto
+  from i j sd_n mat_geE[OF ge] wf have ge: "m3 ! i ! j \<ge> m4 ! i ! j" by auto
   from compat2[OF plus_gt_left_mono[OF gt] plus_right_mono[OF ge]] mat_plus_index[OF wf1 wf3 ni nj] mat_plus_index[OF wf2 wf4 ni nj]      
   have gt: "?m13 ! i ! j \<succ> ?m24 ! i ! j" by simp
   from i j matge gt  show ?thesis 
@@ -1637,8 +1620,8 @@ qed simp
 context SN_one_mono_ordered_semiring_1
 begin
 
-abbreviation mat_ns :: "'a mat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" ("(_ \<succeq>m _ _)" [51,51,51] 50) 
- where "m1 \<succeq>m n m2 \<equiv> (mat n n m1 \<and> mat n n m2 \<and> mat_ge m1 m2)"
+abbreviation mat_ns :: "'a mat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" ("(_ \<ge>m _ _)" [51,51,51] 50) 
+ where "m1 \<ge>m n m2 \<equiv> (mat n n m1 \<and> mat n n m2 \<and> mat_ge m1 m2)"
 
 abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" ("(_ \<succ>m _ _ _)" [51,51,51,51] 50)
  where "m1 \<succ>m n sd m2 \<equiv> (mat n n m1 \<and> mat n n m2 \<and> mat_ge m2 (mat0 n n) \<and> mat_gt sd m1 m2)"
@@ -1650,15 +1633,15 @@ proof clarify
   assume "\<forall> i. (f i, f (Suc i)) \<in> {(m1,m2). m1 \<succ>m n sd m2}"
   hence ass: "\<And> i. (f i, f (Suc i)) \<in> {(m1,m2). m1 \<succ>m n sd m2}" by blast
   hence len_n: "\<And> i. length (f i) = n" by (auto simp: mat_def) 
-  let ?rel = "{(x,y). y \<succeq> 0 \<and> x \<succ> y}"
+  let ?rel = "{(x,y). y \<ge> 0 \<and> x \<succ> y}"
   let ?gt = "\<lambda> k i j. f k ! i ! j \<succ> f (Suc k) ! i ! j"
-  let ?ge = "\<lambda> k i j. f k ! i ! j \<succeq> f (Suc k) ! i ! j"
-  let ?gez = "\<lambda> k i j. f (Suc k) ! i ! j \<succeq> 0"
+  let ?ge = "\<lambda> k i j. f k ! i ! j \<ge> f (Suc k) ! i ! j"
+  let ?gez = "\<lambda> k i j. f (Suc k) ! i ! j \<ge> 0"
   let ?f = "\<lambda> k ij. f k ! (ij div sd) ! (ij mod sd)"
   let ?ij = "\<lambda> i j. (i * sd + j)"
   let ?fgt = "\<lambda> k ij. (?f k ij,?f (Suc k) ij) \<in> ?rel"
   let ?fpgt = "\<lambda> k ij. ?f k ij \<succ> ?f (Suc k) ij"
-  let ?fge = "\<lambda> k ij. ?f k ij \<succeq> ?f (Suc k) ij"
+  let ?fge = "\<lambda> k ij. ?f k ij \<ge> ?f (Suc k) ij"
   let ?sd = "sd * sd"
   have all: "\<And> k. (\<exists> ij < ?sd. ?fgt k ij) \<and> (\<forall> ij < ?sd. ?fge k ij)"
   proof -
@@ -1673,17 +1656,17 @@ proof clarify
     hence ge: "\<forall> ij < ?sd. ?fge k ij" by (simp add: all_all_into_all)      
     from mat_geE[OF gez wf1 mat0] sd_n have "\<forall> i < sd. \<forall> j < sd. ?gez k i j" by auto
     hence "?gez k i j" using i j by simp
-    hence "?f (Suc k) (?ij i j) \<succeq> 0" by (auto simp: mul_div_eq[OF j] j)
+    hence "?f (Suc k) (?ij i j) \<ge> 0" by (auto simp: mul_div_eq[OF j] j)
     with pgt have gt: "?fgt k (?ij i j)" by auto 
     from gt ge ij show "(\<exists> ij < ?sd. ?fgt k ij) \<and> (\<forall> ij < ?sd. ?fge k ij)" by auto
   qed
   obtain f sd where f: "f = ?f" and "sd = ?sd" by auto
-  with all have ex: "\<And> k. (\<exists> i < sd. (f k i, f (Suc k) i) \<in> ?rel)" and all: "\<And> k.(\<forall> i < sd. f k i \<succeq> f (Suc k) i)" by auto
+  with all have ex: "\<And> k. (\<exists> i < sd. (f k i, f (Suc k) i) \<in> ?rel)" and all: "\<And> k.(\<forall> i < sd. f k i \<ge> f (Suc k) i)" by auto
   let ?g = "\<lambda> k i. (f k i, f (Suc k) i) \<in> ?rel"
   from ex have g: "\<forall> k. \<exists> i < sd. ?g k i" by auto
   from inf_pigeonhole_principle[OF g] obtain i where i: "i < sd" and inf: "\<forall> k. \<exists> k' \<ge> k. ?g k' i" by auto
   let ?h = "\<lambda> k. (f k i)"
-  let ?nRel = "{(x,y) | x y :: 'a. x \<succeq> y}"
+  let ?nRel = "{(x,y) | x y :: 'a. x \<ge> y}"
   from all i have all: "\<forall> k. (?h k, ?h (Suc k)) \<in> ?nRel \<union> ?rel" by auto
   from SN have SNe: "SN_on ?rel {?h 0}" unfolding SN_defs by auto
   have comp: "?nRel O ?rel \<subseteq> ?rel" using compat by auto
@@ -1733,19 +1716,19 @@ proof -
     have s12: "?m12 ! i ! k = scalar_prod (?r n) (?c2 n)" by (simp add: r c2)
     from mat_mult_index[OF wf1 wf3 nk ni]
     have s13: "?m13 ! i ! k = scalar_prod (?r n) (?c3 n)" by (simp add: r c3)
-    have r0: "\<forall> j < n. ?r n ! j \<succeq> 0" 
+    have r0: "\<forall> j < n. ?r n ! j \<ge> 0" 
     proof (intro impI allI)
       fix j
       assume "j < n"
       with mat_geE[OF ge wf1 mat0] nk
-      show "?r n ! j \<succeq> 0" by simp
+      show "?r n ! j \<ge> 0" by simp
     qed
-    have c2c3: "\<forall> j < n. ?c2 n ! j \<succeq> ?c3 n ! j"
+    have c2c3: "\<forall> j < n. ?c2 n ! j \<ge> ?c3 n ! j"
     proof (intro impI allI)
       fix j
       assume "j < n"
       with ni mat_geE[OF geq wf2 wf3] 
-      show "?c2 n ! j \<succeq> ?c3 n ! j" by simp
+      show "?c2 n ! j \<ge> ?c3 n ! j" by simp
     qed
     from nj r0 c2c3 have "scalar_prod (?r n) (?c2 n) \<succ> scalar_prod (?r n) (?c3 n)"
     proof (induct n)
@@ -1760,17 +1743,17 @@ proof -
       also have "\<dots> = m1 ! n ! k * m3 ! i ! n + scalar_prod (?r n) (?c3 n)" (is "_ = plus ?p3 ?s3") 
         by (simp add: scalar_prod_last)
       finally have sum3: "?sum3 = ?p3 + ?s3" .
-      from Suc(3) have z: "m1 ! n ! k \<succeq> 0" by (simp del: upt_Suc)
-      from Suc(3) have za: "\<forall> j < n. ?r n ! j \<succeq> 0"  by (simp del: upt_Suc)
-      from Suc(4) have ge: "\<forall> j < n. ?c2 n ! j \<succeq> ?c3 n ! j"  by (simp del: upt_Suc)
+      from Suc(3) have z: "m1 ! n ! k \<ge> 0" by (simp del: upt_Suc)
+      from Suc(3) have za: "\<forall> j < n. ?r n ! j \<ge> 0"  by (simp del: upt_Suc)
+      from Suc(4) have ge: "\<forall> j < n. ?c2 n ! j \<ge> ?c3 n ! j"  by (simp del: upt_Suc)
       show ?case
       proof (cases "j = n")
         case False
         with Suc(2) have j: "j < n" by auto
         have rec: "?s2 \<succ> ?s3"
           by (rule Suc, rule j, rule za, rule ge)
-        from Suc(4) have ge: "m2 ! i ! n \<succeq> m3 ! i ! n" by (simp del: upt_Suc)
-        from times_right_mono[OF z ge] have p23: "?p2 \<succeq> ?p3" .
+        from Suc(4) have ge: "m2 ! i ! n \<ge> m3 ! i ! n" by (simp del: upt_Suc)
+        from times_right_mono[OF z ge] have p23: "?p2 \<ge> ?p3" .
         from compat2[OF plus_gt_left_mono[OF rec] plus_right_mono[OF p23]] have "?s2 + ?p2 \<succ> ?s3 + ?p3" .
         with add_commute[of ?p2] add_commute[of ?p3] have "?p2 + ?s2 \<succ> ?p3 + ?s3" by simp
         with sum2 sum3 show ?thesis by simp 
@@ -1782,7 +1765,7 @@ proof -
         have wf3: "vec n (?c3 n)" by (simp add: vec_def)
         from ge have ge: "vec_ge (?c2 n) (?c3 n)" unfolding vec_ge[OF wf2 wf3] by simp
         from za have z: "vec_ge (?r n) (vec0 n)" unfolding vec_ge[OF wf1 vec0] by (simp add: vec0I_def)
-        have s23: "?s2 \<succeq> ?s3"
+        have s23: "?s2 \<ge> ?s3"
           by (rule scalar_prod_mono_right, (simp add: vec_def)+, rule ge, rule z)
         from compat2[OF plus_gt_left_mono[OF p23] plus_right_mono[OF s23]] sum2 sum3 show ?thesis by simp
       qed
@@ -1800,6 +1783,10 @@ where "mat_gt_arc \<equiv> mat_comp_all gt"
 
 abbreviation mat_arc_pos :: "'a mat \<Rightarrow> bool"
 where "mat_arc_pos \<equiv> mat_arc_posI arc_pos"
+
+lemma mat_gt_arc_imp_mat_ge: assumes gt: "mat_gt_arc m1 m2" and wf: "mat nr nc m1" "mat nr nc m2"
+  shows "mat_ge m1 m2"
+  by (rule mat_geI[OF wf gt_imp_ge[OF mat_comp_allE[OF gt wf]]], auto)  
 
 lemma scalar_prod_left_mono: assumes wf1: "vec nr v1"
   and wf2: "vec nr v2"
@@ -1862,7 +1849,7 @@ lemma mat_gt_arc_compat: assumes ge: "mat_ge m1 m2" and gt: "mat_gt_arc m2 m3" a
 proof (rule mat_comp_allI[OF wf1 wf3])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  from mat_geE[OF ge wf1 wf2 i j] have one: "m1 ! i ! j \<succeq> m2 ! i ! j" .
+  from mat_geE[OF ge wf1 wf2 i j] have one: "m1 ! i ! j \<ge> m2 ! i ! j" .
   from mat_comp_allE[OF gt wf2 wf3 i j] have two: "m2 ! i ! j \<succ> m3 ! i ! j" .
   from one two show "m1 ! i ! j \<succ> m3 ! i ! j" by (rule compat)
 qed 
@@ -1873,7 +1860,7 @@ proof (rule mat_comp_allI[OF wf1 wf3])
   fix i j
   assume i: "i < nc" and j: "j < nr"
   from mat_comp_allE[OF gt wf1 wf2 i j] have one: "m1 ! i ! j \<succ> m2 ! i ! j" .
-  from mat_geE[OF ge wf2 wf3 i j] have two: "m2 ! i ! j \<succeq> m3 ! i ! j" .
+  from mat_geE[OF ge wf2 wf3 i j] have two: "m2 ! i ! j \<ge> m3 ! i ! j" .
   from one two show "m1 ! i ! j \<succ>  m3 ! i ! j" by (rule compat2)
 qed
 
@@ -1983,8 +1970,8 @@ lemma mat_not_all_ge: assumes n_pos: "n > 0"
 proof -
   obtain c where c: "c = m1 ! 0 ! 0" by auto
   from a2 have "arc_pos (m2 ! 0 ! 0)" unfolding mat_arc_posI_def .
-  from not_all_ge[OF this, of c] obtain e where e0: "e \<succeq> 0" and ae: "arc_pos e"
-    and nc: "\<not> c \<succeq> m2 ! 0 ! 0 * e" by auto
+  from not_all_ge[OF this, of c] obtain e where e0: "e \<ge> 0" and ae: "arc_pos e"
+    and nc: "\<not> c \<ge> m2 ! 0 ! 0 * e" by auto
   let ?gen = "\<lambda> f. map (\<lambda>i. map (f i) [0..<n]) [0..<n]"
   {
     fix f :: "nat \<Rightarrow> nat \<Rightarrow> 'a" 
@@ -2002,7 +1989,7 @@ proof -
       assume i: "i < n" and j: "j < n"
       have m: "?m ! i ! j = f i j" using i j by auto
       have 0: "mat0 n n ! i ! j = (0 :: 'a)" using i j by simp 
-      show "?m ! i ! j \<succeq> mat0 n n ! i ! j" unfolding m 0
+      show "?m ! i ! j \<ge> mat0 n n ! i ! j" unfolding m 0
         unfolding f using e0 ge_refl by auto
     qed auto
   next
@@ -2035,7 +2022,7 @@ proof -
     also have "... = m2 ! 0 ! 0 * e"
       unfolding scalar_right_zero by simp
     finally have "?mult ! 0 ! 0 = m2 ! 0 ! 0 * e" .
-    with nc c have "\<not> m1 ! 0 ! 0 \<succeq> ?mult ! 0 ! 0" by simp
+    with nc c have "\<not> m1 ! 0 ! 0 \<ge> ?mult ! 0 ! 0" by simp
     thus "\<not> mat_ge m1 ?mult"
       unfolding mat_ge_def mat_comp_all[OF m1 mat_mult[OF m2 gen]] using n_pos
       by auto
@@ -2070,7 +2057,7 @@ lemma mat0_leastIII: assumes wf: "mat nr nc m"
 proof (rule mat_geI[OF wf])
   fix i j
   assume i: "i < nc" and j: "j < nr"
-  show "m ! i ! j \<succeq> mat0 nr nc ! i ! j"
+  show "m ! i ! j \<ge> mat0 nr nc ! i ! j"
     by (simp add: mat0_index[OF i j] zero_leastIII)
 qed auto
 
