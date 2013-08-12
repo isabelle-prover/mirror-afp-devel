@@ -30,11 +30,11 @@ qed
 
 subsection {* Type definition *}
 
-codatatype (lset: 'a) llist (map: lmap rel: llist_all2) = 
+codatatype (lset: 'a) llist (map: lmap rel: llist_all2) =
     =: LNil (defaults lhd: undefined ltl: LNil)
   | LCons (lhd: 'a) (ltl: "'a llist")
 
-text {* 
+text {*
   The following setup should be done by the BNF package.
 *}
 
@@ -187,6 +187,11 @@ by(cases xs) auto
 lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
+lemma llist_case_def':
+"llist_case lnil lcons xs = (case llist_dtor xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
+apply (case_tac xs)
+by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor)
+
 text {* induction rules *}
 
 theorem llist_set_induct[consumes 1, case_names find step]:
@@ -197,7 +202,7 @@ proof -
   have "\<forall>x\<in>lset xs. P x xs"
     apply(rule llist.dtor_set_induct)
     using assms
-    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def collect_def sum_set_simps sum.set_map' split: sum.splits)
+    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def' collect_def sum_set_simps sum.set_map' split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps)

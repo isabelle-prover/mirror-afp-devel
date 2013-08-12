@@ -17,7 +17,7 @@ subsection {* Type definition *}
 
 codatatype (sset: 'a) stream (map: smap) = SCons (shd: 'a) (stl: "'a stream")
 
-text {* 
+text {*
   The following setup should be done by the BNF package.
 *}
 
@@ -158,7 +158,9 @@ theorem stream_set_induct[consumes 1, case_names find step, induct set: sset]:
 proof -
   have "\<forall>y \<in> sset s. P y s"
     apply (rule stream.dtor_set_induct)
-    using assms by(auto simp add:  shd_def stl_def stream_case_def fsts_def snds_def split_beta)
+    using assms apply (auto simp add: shd_def stl_def fsts_def snds_def split_beta)
+    apply (metis fst_conv shd_def stream.collapse[unfolded SCons_def] stream.ctor_dtor stream.ctor_inject)
+    by (metis sndI stl_def stream.collapse[unfolded SCons_def] stream.ctor_dtor stream.ctor_inject)
   thus ?thesis using y by blast
 qed
 
