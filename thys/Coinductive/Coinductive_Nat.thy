@@ -73,42 +73,35 @@ proof -
   thus thesis by cases (erule that)+
 qed
 
-definition enat_cocase :: "'a \<Rightarrow> (enat \<Rightarrow> 'a) \<Rightarrow> enat \<Rightarrow> 'a"
-where [nitpick_simp]:
-  "enat_cocase z s n =
-   (case n of enat n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (enat n'')) | \<infinity> \<Rightarrow> s \<infinity>)"
-
 locale co begin
 
-wrap_free_constructors ["0::enat", eSuc] enat_cocase [=] [[], [epred]] [[epred: "0::enat"]]
-    apply (erule enat_coexhaust, assumption)
-   apply (rule eSuc_inject)
-  apply (rule zero_ne_eSuc)
- apply (simp add: enat_cocase_def zero_enat_def)
-by (simp add: enat_cocase_def eSuc_def split: enat.splits)
+wrap_free_constructors ["0::enat", eSuc] enat_case [=] [[], [epred]] [[epred: "0::enat"]]
+  apply (erule enat_coexhaust, assumption)
+ apply (rule eSuc_inject)
+by (rule zero_ne_eSuc)
 
 end
 
-lemma enat_cocase_0 [simp]: "enat_cocase z s 0 = z"
+lemma enat_cocase_0 [simp]: "co.enat_case z s 0 = z"
 by (rule co.enat.case(1))
 
-lemma enat_cocase_eSuc [simp]: "enat_cocase z s (eSuc n) = s n"
+lemma enat_cocase_eSuc [simp]: "co.enat_case z s (eSuc n) = s n"
 by (rule co.enat.case(2))
 
 lemma neq_zero_conv_eSuc: "n \<noteq> 0 \<longleftrightarrow> (\<exists>n'. n = eSuc n')"
 by(cases n rule: enat_coexhaust) simp_all
 
 lemma enat_cocase_cert:
-  assumes "CASE \<equiv> enat_cocase c d"
+  assumes "CASE \<equiv> co.enat_case c d"
   shows "(CASE 0 \<equiv> c) &&& (CASE (eSuc n) \<equiv> d n)"
   using assms by simp_all
 
 lemma enat_cosplit_asm:
-  "P (enat_cocase c d n) = (\<not> (n = 0 \<and> \<not> P c \<or> (\<exists>m. n = eSuc m \<and> \<not> P (d m))))"
+  "P (co.enat_case c d n) = (\<not> (n = 0 \<and> \<not> P c \<or> (\<exists>m. n = eSuc m \<and> \<not> P (d m))))"
 by (rule co.enat.split_asm)
 
 lemma enat_cosplit:
-  "P (enat_cocase c d n) = ((n = 0 \<longrightarrow> P c) \<and> (\<forall>m. n = eSuc m \<longrightarrow> P (d m)))"
+  "P (co.enat_case c d n) = ((n = 0 \<longrightarrow> P c) \<and> (\<forall>m. n = eSuc m \<longrightarrow> P (d m)))"
 by (rule co.enat.split)
 
 abbreviation epred :: "enat => enat" where "epred \<equiv> co.epred"
@@ -161,11 +154,11 @@ lemma [simp]:
 by(simp_all add: numeral_eq_eSuc)
 
 lemma enat_cocase_numeral [simp]:
-  "enat_cocase a f (numeral v) = (let pv = epred_numeral v in f pv)"
+  "co.enat_case a f (numeral v) = (let pv = epred_numeral v in f pv)"
 by(simp add: numeral_eq_eSuc)
 
 lemma enat_cocase_add_eq_if [simp]:
-  "enat_cocase a f ((numeral v) + n) = (let pv = epred_numeral v in f (pv + n))"
+  "co.enat_case a f ((numeral v) + n) = (let pv = epred_numeral v in f (pv + n))"
 by(simp add: numeral_eq_eSuc iadd_Suc)
 
 
