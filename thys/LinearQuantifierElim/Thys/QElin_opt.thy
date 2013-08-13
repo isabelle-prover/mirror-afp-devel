@@ -27,35 +27,35 @@ lemma asimp_pretty:
   else Atom(Eq r cs))"
 by(auto simp:asimp_def)
 
-definition qe_FMo\<^isub>1 :: "atom list \<Rightarrow> atom fm" where
-"qe_FMo\<^isub>1 as = list_conj [asimp(combine p q). p\<leftarrow>lbounds as, q\<leftarrow>ubounds as]"
+definition qe_FMo\<^sub>1 :: "atom list \<Rightarrow> atom fm" where
+"qe_FMo\<^sub>1 as = list_conj [asimp(combine p q). p\<leftarrow>lbounds as, q\<leftarrow>ubounds as]"
 
-lemma I_asimp: "R.I (asimp a) xs = I\<^isub>R a xs"
+lemma I_asimp: "R.I (asimp a) xs = I\<^sub>R a xs"
 by(simp add:asimp_def iprod0_if_coeffs0 split:atom.split)
 
-lemma I_qe_FMo\<^isub>1: "R.I (qe_FMo\<^isub>1 as) xs = R.I (qe_FM\<^isub>1 as) xs"
-by(simp add:qe_FM\<^isub>1_def qe_FMo\<^isub>1_def I_asimp)
+lemma I_qe_FMo\<^sub>1: "R.I (qe_FMo\<^sub>1 as) xs = R.I (qe_FM\<^sub>1 as) xs"
+by(simp add:qe_FM\<^sub>1_def qe_FMo\<^sub>1_def I_asimp)
 
-definition "qe_FMo = R\<^isub>e.lift_dnfeq_qe qe_FMo\<^isub>1"
+definition "qe_FMo = R\<^sub>e.lift_dnfeq_qe qe_FMo\<^sub>1"
 
-lemma qfree_qe_FMo\<^isub>1: "qfree (qe_FMo\<^isub>1 as)"
-by(auto simp:qe_FM\<^isub>1_def qe_FMo\<^isub>1_def asimp_def intro!:qfree_list_conj
+lemma qfree_qe_FMo\<^sub>1: "qfree (qe_FMo\<^sub>1 as)"
+by(auto simp:qe_FM\<^sub>1_def qe_FMo\<^sub>1_def asimp_def intro!:qfree_list_conj
         split:atom.split)
 
 corollary I_qe_FMo: "R.I (qe_FMo \<phi>) xs = R.I \<phi> xs"
 unfolding qe_FMo_def
-apply(rule R\<^isub>e.I_lift_dnfeq_qe)
- apply(rule qfree_qe_FMo\<^isub>1)
+apply(rule R\<^sub>e.I_lift_dnfeq_qe)
+ apply(rule qfree_qe_FMo\<^sub>1)
 apply(rule allI)
-apply(subst I_qe_FMo\<^isub>1)
-apply(rule I_qe_FM\<^isub>1)
+apply(subst I_qe_FMo\<^sub>1)
+apply(rule I_qe_FM\<^sub>1)
  prefer 2 apply blast
 apply(clarify)
 apply(drule_tac x=a in bspec) apply simp
-apply(simp add: depends\<^isub>R_def split:atom.splits list.splits)
+apply(simp add: depends\<^sub>R_def split:atom.splits list.splits)
 done
 
 theorem qfree_qe_FMo: "qfree (qe_FMo f)"
-by(simp add:qe_FMo_def R\<^isub>e.qfree_lift_dnfeq_qe qfree_qe_FMo\<^isub>1)
+by(simp add:qe_FMo_def R\<^sub>e.qfree_lift_dnfeq_qe qfree_qe_FMo\<^sub>1)
 
 end

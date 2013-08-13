@@ -87,12 +87,12 @@ inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<R
   \<Longrightarrow> P,E \<turnstile>1 sync\<^bsub>V\<^esub> (o') e :: T'"
 
 | WT1Seq:
-  "\<lbrakk> P,E \<turnstile>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>1 e\<^isub>2::T\<^isub>2 \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile>1 e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+  "\<lbrakk> P,E \<turnstile>1 e\<^sub>1::T\<^sub>1;  P,E \<turnstile>1 e\<^sub>2::T\<^sub>2 \<rbrakk>
+  \<Longrightarrow>  P,E \<turnstile>1 e\<^sub>1;;e\<^sub>2 :: T\<^sub>2"
 
 | WT1Cond:
-  "\<lbrakk> P,E \<turnstile>1 e :: Boolean;  P,E \<turnstile>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>1 e\<^isub>2::T\<^isub>2; P \<turnstile> lub(T\<^isub>1,T\<^isub>2) = T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>1 if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "\<lbrakk> P,E \<turnstile>1 e :: Boolean;  P,E \<turnstile>1 e\<^sub>1::T\<^sub>1;  P,E \<turnstile>1 e\<^sub>2::T\<^sub>2; P \<turnstile> lub(T\<^sub>1,T\<^sub>2) = T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>1 if (e) e\<^sub>1 else e\<^sub>2 :: T"
 
 | WT1While:
   "\<lbrakk> P,E \<turnstile>1 e :: Boolean;  P,E \<turnstile>1 c::T \<rbrakk>
@@ -103,8 +103,8 @@ inductive WT1 :: "'addr J1_prog \<Rightarrow> env1 \<Rightarrow> 'addr expr1 \<R
   P,E \<turnstile>1 throw e :: Void"
 
 | WT1Try:
-  "\<lbrakk> P,E \<turnstile>1 e\<^isub>1 :: T;  P,E@[Class C] \<turnstile>1 e\<^isub>2 :: T; is_class P C \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>1 try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "\<lbrakk> P,E \<turnstile>1 e\<^sub>1 :: T;  P,E@[Class C] \<turnstile>1 e\<^sub>2 :: T; is_class P C \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>1 try e\<^sub>1 catch(C V) e\<^sub>2 :: T"
 
 | WT1Nil: "P,E \<turnstile>1 [] [::] []"
 

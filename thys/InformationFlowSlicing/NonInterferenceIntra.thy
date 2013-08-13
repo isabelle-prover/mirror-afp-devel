@@ -50,14 +50,14 @@ locale NonInterferenceIntraGraph =
     \<Longrightarrow> targetnode a = (_Exit_) \<or> targetnode a = (_High_)"
   and High_target_Entry_edge:
   "\<exists>a. valid_edge a \<and> sourcenode a = (_Entry_) \<and> targetnode a = (_High_) \<and>
-       kind a = (\<lambda>s. True)\<^isub>\<surd>"
+       kind a = (\<lambda>s. True)\<^sub>\<surd>"
   and Entry_predecessor_of_High:
   "\<lbrakk>valid_edge a; targetnode a = (_High_)\<rbrakk> \<Longrightarrow> sourcenode a = (_Entry_)"
   and Exit_edge_Entry_or_Low: "\<lbrakk>valid_edge a; targetnode a = (_Exit_)\<rbrakk> 
     \<Longrightarrow> sourcenode a = (_Entry_) \<or> sourcenode a = (_Low_)"
   and Low_source_Exit_edge:
   "\<exists>a. valid_edge a \<and> sourcenode a = (_Low_) \<and> targetnode a = (_Exit_) \<and> 
-       kind a = (\<lambda>s. True)\<^isub>\<surd>"
+       kind a = (\<lambda>s. True)\<^sub>\<surd>"
   and Exit_successor_of_Low:
   "\<lbrakk>valid_edge a; sourcenode a = (_Low_)\<rbrakk> \<Longrightarrow> targetnode a = (_Exit_)"
   and DefHigh: "Def (_High_) = H" 
@@ -78,10 +78,10 @@ qed
 lemma Entry_path_High_path:
   assumes "(_Entry_) -as\<rightarrow>* n" and "inner_node n"
   obtains a' as' where "as = a'#as'" and "(_High_) -as'\<rightarrow>* n" 
-  and "kind a' = (\<lambda>s. True)\<^isub>\<surd>"
+  and "kind a' = (\<lambda>s. True)\<^sub>\<surd>"
 proof(atomize_elim)
   from `(_Entry_) -as\<rightarrow>* n` `inner_node n`
-  show "\<exists>a' as'. as = a'#as' \<and> (_High_) -as'\<rightarrow>* n \<and> kind a' = (\<lambda>s. True)\<^isub>\<surd>"
+  show "\<exists>a' as'. as = a'#as' \<and> (_High_) -as'\<rightarrow>* n \<and> kind a' = (\<lambda>s. True)\<^sub>\<surd>"
   proof(induct n'\<equiv>"(_Entry_)" as n rule:path.induct)
     case (Cons_path n'' as n' a)
     from `n'' -as\<rightarrow>* n'` `inner_node n'` have "n'' \<noteq> (_Exit_)" 
@@ -90,12 +90,12 @@ proof(atomize_elim)
     have "n'' = (_High_)" by -(drule Entry_edge_Exit_or_High,auto)
     from High_target_Entry_edge
     obtain a' where "valid_edge a'" and "sourcenode a' = (_Entry_)"
-      and "targetnode a' = (_High_)" and "kind a' = (\<lambda>s. True)\<^isub>\<surd>"
+      and "targetnode a' = (_High_)" and "kind a' = (\<lambda>s. True)\<^sub>\<surd>"
       by blast
     with `valid_edge a` `sourcenode a = (_Entry_)` `targetnode a = n''`
       `n'' = (_High_)`
     have "a = a'" by(auto dest:edge_det)
-    with `n'' -as\<rightarrow>* n'` `n'' = (_High_)` `kind a' = (\<lambda>s. True)\<^isub>\<surd>` show ?case by blast
+    with `n'' -as\<rightarrow>* n'` `n'' = (_High_)` `kind a' = (\<lambda>s. True)\<^sub>\<surd>` show ?case by blast
   qed fastforce
 qed
 
@@ -104,10 +104,10 @@ qed
 lemma Exit_path_Low_path:
   assumes "n -as\<rightarrow>* (_Exit_)" and "inner_node n"
   obtains a' as' where "as = as'@[a']" and "n -as'\<rightarrow>* (_Low_)"
-  and "kind a' = (\<lambda>s. True)\<^isub>\<surd>"
+  and "kind a' = (\<lambda>s. True)\<^sub>\<surd>"
 proof(atomize_elim)
   from `n -as\<rightarrow>* (_Exit_)`
-  show "\<exists>as' a'. as = as'@[a'] \<and> n -as'\<rightarrow>* (_Low_) \<and> kind a' = (\<lambda>s. True)\<^isub>\<surd>"
+  show "\<exists>as' a'. as = as'@[a'] \<and> n -as'\<rightarrow>* (_Low_) \<and> kind a' = (\<lambda>s. True)\<^sub>\<surd>"
   proof(induct as rule:rev_induct)
     case Nil
     with `inner_node n` show ?case by fastforce
@@ -124,11 +124,11 @@ proof(atomize_elim)
       by(blast dest!:Exit_edge_Entry_or_Low)
     from Low_source_Exit_edge
     obtain ax where "valid_edge ax" and "sourcenode ax = (_Low_)"
-      and "targetnode ax = (_Exit_)" and "kind ax = (\<lambda>s. True)\<^isub>\<surd>"
+      and "targetnode ax = (_Exit_)" and "kind ax = (\<lambda>s. True)\<^sub>\<surd>"
       by blast
     with `valid_edge a'` `targetnode a' = (_Exit_)` `sourcenode a' = (_Low_)`
     have "a' = ax" by(fastforce intro:edge_det)
-    with `n -as'\<rightarrow>* sourcenode a'` `sourcenode a' = (_Low_)` `kind ax = (\<lambda>s. True)\<^isub>\<surd>`
+    with `n -as'\<rightarrow>* sourcenode a'` `sourcenode a' = (_Low_)` `kind ax = (\<lambda>s. True)\<^sub>\<surd>`
     show ?case by blast
   qed
 qed
@@ -150,11 +150,11 @@ In classical noninterference, an external observer can only see public values,
 in our case the @{text L}-variables. If two states agree in the values of all 
 @{text L}-variables, these states are indistinguishable for him. 
 \emph{Low equivalence} groups those states in an equivalence class using 
-the relation @{text "\<approx>\<^isub>L"}:
+the relation @{text "\<approx>\<^sub>L"}:
 *}
 
-definition lowEquivalence :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infixl "\<approx>\<^isub>L" 50)
-  where "s \<approx>\<^isub>L s' \<equiv> \<forall>V \<in> L. state_val s V = state_val s' V"
+definition lowEquivalence :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infixl "\<approx>\<^sub>L" 50)
+  where "s \<approx>\<^sub>L s' \<equiv> \<forall>V \<in> L. state_val s V = state_val s' V"
 
 text {* The following lemmas connect low equivalent states with
 relevant variables as necessary in the correctness proof for slicing. *}
@@ -208,12 +208,12 @@ qed
 
 
 lemma lowEquivalence_relevant_nodes_Entry:
-  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice S"
+  assumes "s \<approx>\<^sub>L s'" and "(_High_) \<notin> backward_slice S"
   shows "\<forall>V \<in> rv S (_Entry_). state_val s V = state_val s' V"
 proof
   fix V assume "V \<in> rv S (_Entry_)"
   with `(_High_) \<notin> backward_slice S` have "V \<in> L" by -(rule relevant_vars_Entry)
-  with `s \<approx>\<^isub>L s'` show "state_val s V = state_val s' V" by(simp add:lowEquivalence_def)
+  with `s \<approx>\<^sub>L s'` show "state_val s V = state_val s' V" by(simp add:lowEquivalence_def)
 qed
 
 
@@ -276,11 +276,11 @@ next
         by -(rule Exit_successor_of_Low,simp+)
       from Low_source_Exit_edge obtain ax where "valid_edge ax"
         and "sourcenode ax = (_Low_)" and "targetnode ax = (_Exit_)"
-        and "kind ax = (\<lambda>s. True)\<^isub>\<surd>" by blast
+        and "kind ax = (\<lambda>s. True)\<^sub>\<surd>" by blast
       from `valid_edge a` `sourcenode a = n` `n = (_Low_)` `targetnode a = (_Exit_)`
         `valid_edge ax` `sourcenode ax = (_Low_)` `targetnode ax = (_Exit_)`
       have "a = ax" by(fastforce dest:edge_det)
-      with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
+      with `kind ax = (\<lambda>s. True)\<^sub>\<surd>` have "kind a = (\<lambda>s. True)\<^sub>\<surd>" by simp
       with `targetnode a = (_Exit_)` `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
       have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,auto)
       with False have False by -(drule Low_neq_Exit,simp)
@@ -338,10 +338,10 @@ First, a theorem regarding
 which agree to a complete program execution: *}
 
 lemma nonInterference_path_to_Low:
-  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
+  assumes "s \<approx>\<^sub>L s'" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
   and "(_Entry_) -as\<rightarrow>* (_Low_)" and "preds (kinds as) s"
   and "(_Entry_) -as'\<rightarrow>* (_Low_)" and "preds (kinds as') s'"
-  shows "transfers (kinds as) s \<approx>\<^isub>L transfers (kinds as') s'"
+  shows "transfers (kinds as) s \<approx>\<^sub>L transfers (kinds as') s'"
 proof -
   from `(_Entry_) -as\<rightarrow>* (_Low_)` `preds (kinds as) s` `(_Low_) \<in> S`
   obtain asx where "preds (slice_kinds S asx) s"
@@ -355,7 +355,7 @@ proof -
                            state_val (transfers (kinds as') s') V"
     and "slice_edges S as' = slice_edges S asx'"
     and "(_Entry_) -asx'\<rightarrow>* (_Low_)" by(erule fundamental_property_of_static_slicing)
-  from `s \<approx>\<^isub>L s'` `(_High_) \<notin> backward_slice S`
+  from `s \<approx>\<^sub>L s'` `(_High_) \<notin> backward_slice S`
   have "\<forall>V \<in> rv S (_Entry_). state_val s V = state_val s' V" 
     by(rule lowEquivalence_relevant_nodes_Entry)
   with `(_Entry_) -asx\<rightarrow>* (_Low_)` `(_Entry_) -asx'\<rightarrow>* (_Low_)` `(_Low_) \<in> S`
@@ -372,10 +372,10 @@ qed
 
 
 theorem nonInterference_path:
-  assumes "s \<approx>\<^isub>L s'" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
+  assumes "s \<approx>\<^sub>L s'" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
   and "(_Entry_) -as\<rightarrow>* (_Exit_)" and "preds (kinds as) s"
   and "(_Entry_) -as'\<rightarrow>* (_Exit_)" and "preds (kinds as') s'"
-  shows "transfers (kinds as) s \<approx>\<^isub>L transfers (kinds as') s'"
+  shows "transfers (kinds as) s \<approx>\<^sub>L transfers (kinds as') s'"
 proof -
   from `(_Entry_) -as\<rightarrow>* (_Exit_)` obtain x xs where "as = x#xs"
     and "(_Entry_) = sourcenode x" and "valid_edge x" 
@@ -395,16 +395,16 @@ proof -
       by -(rule path_Exit_source,simp)
     from Entry_Exit_edge obtain z where "valid_edge z"
       and "sourcenode z = (_Entry_)" and "targetnode z = (_Exit_)"
-      and "kind z = (\<lambda>s. False)\<^isub>\<surd>" by blast
+      and "kind z = (\<lambda>s. False)\<^sub>\<surd>" by blast
     from `valid_edge x` `valid_edge z` `(_Entry_) = sourcenode x` 
       `sourcenode z = (_Entry_)` Exit `targetnode z = (_Exit_)`
     have "x = z" by(fastforce intro:edge_det)
-    with `preds (kinds as) s` `as = x#xs` `xs = []` `kind z = (\<lambda>s. False)\<^isub>\<surd>` 
+    with `preds (kinds as) s` `as = x#xs` `xs = []` `kind z = (\<lambda>s. False)\<^sub>\<surd>` 
     have False by(simp add:kinds_def)
     thus ?thesis by simp
   qed simp
   with `targetnode x -xs\<rightarrow>* (_Exit_)` obtain x' xs' where "xs = xs'@[x']"
-    and "targetnode x -xs'\<rightarrow>* (_Low_)" and "kind x' = (\<lambda>s. True)\<^isub>\<surd>"
+    and "targetnode x -xs'\<rightarrow>* (_Low_)" and "kind x' = (\<lambda>s. True)\<^sub>\<surd>"
     by(fastforce elim:Exit_path_Low_path)
   with `(_Entry_) = sourcenode x` `valid_edge x`
   have "(_Entry_) -x#xs'\<rightarrow>* (_Low_)" by(fastforce intro:Cons_path)
@@ -429,29 +429,29 @@ proof -
       by -(rule path_Exit_source,simp)
     from Entry_Exit_edge obtain z where "valid_edge z"
       and "sourcenode z = (_Entry_)" and "targetnode z = (_Exit_)"
-      and "kind z = (\<lambda>s. False)\<^isub>\<surd>" by blast
+      and "kind z = (\<lambda>s. False)\<^sub>\<surd>" by blast
     from `valid_edge y` `valid_edge z` `(_Entry_) = sourcenode y` 
       `sourcenode z = (_Entry_)` Exit `targetnode z = (_Exit_)`
     have "y = z" by(fastforce intro:edge_det)
-    with `preds (kinds as') s'` `as' = y#ys` `ys = []` `kind z = (\<lambda>s. False)\<^isub>\<surd>` 
+    with `preds (kinds as') s'` `as' = y#ys` `ys = []` `kind z = (\<lambda>s. False)\<^sub>\<surd>` 
     have False by(simp add:kinds_def)
     thus ?thesis by simp
   qed simp
   with `targetnode y -ys\<rightarrow>* (_Exit_)` obtain y' ys' where "ys = ys'@[y']"
-    and "targetnode y -ys'\<rightarrow>* (_Low_)" and "kind y' = (\<lambda>s. True)\<^isub>\<surd>"
+    and "targetnode y -ys'\<rightarrow>* (_Low_)" and "kind y' = (\<lambda>s. True)\<^sub>\<surd>"
     by(fastforce elim:Exit_path_Low_path)
   with `(_Entry_) = sourcenode y` `valid_edge y`
   have "(_Entry_) -y#ys'\<rightarrow>* (_Low_)" by(fastforce intro:Cons_path)
   from `as' = y#ys` `ys = ys'@[y']` have "as' = (y#ys')@[y']" by simp
   with `preds (kinds as') s'` have "preds (kinds (y#ys')) s'"
     by(simp add:kinds_def preds_split)
-  from `s \<approx>\<^isub>L s'` `(_High_) \<notin> backward_slice S` `(_Low_) \<in> S`
+  from `s \<approx>\<^sub>L s'` `(_High_) \<notin> backward_slice S` `(_Low_) \<in> S`
     `(_Entry_) -x#xs'\<rightarrow>* (_Low_)` `preds (kinds (x#xs')) s`
     `(_Entry_) -y#ys'\<rightarrow>* (_Low_)` `preds (kinds (y#ys')) s'`
-  have "transfers (kinds (x#xs')) s \<approx>\<^isub>L transfers (kinds (y#ys')) s'"
+  have "transfers (kinds (x#xs')) s \<approx>\<^sub>L transfers (kinds (y#ys')) s'"
     by(rule nonInterference_path_to_Low)
-  with `as = x#xs` `xs = xs'@[x']` `kind x' = (\<lambda>s. True)\<^isub>\<surd>`
-    `as' = y#ys` `ys = ys'@[y']` `kind y' = (\<lambda>s. True)\<^isub>\<surd>`
+  with `as = x#xs` `xs = xs'@[x']` `kind x' = (\<lambda>s. True)\<^sub>\<surd>`
+    `as' = y#ys` `ys = ys'@[y']` `kind y' = (\<lambda>s. True)\<^sub>\<surd>`
   show ?thesis by(simp add:kinds_def transfers_split)
 qed
 
@@ -488,64 +488,64 @@ begin
 
 text{* The following theorem needs the explicit edge from @{text "(_High_)"}
   to @{text n}. An approach using a @{text "init"} predicate for initial statements,
-  being reachable from @{text "(_High_)"} via a @{text "(\<lambda>s. True)\<^isub>\<surd>"} edge,
+  being reachable from @{text "(_High_)"} via a @{text "(\<lambda>s. True)\<^sub>\<surd>"} edge,
   does not work as the same statement could be identified by several nodes, some
   initial, some not. E.g., in the program \texttt{while (True) Skip;;Skip}
   two nodes identify this inital statement: the initial node and the node
   within the loop (because of loop unrolling).*}
 
 theorem nonInterference:
-  assumes "s\<^isub>1 \<approx>\<^isub>L s\<^isub>2" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
+  assumes "s\<^sub>1 \<approx>\<^sub>L s\<^sub>2" and "(_High_) \<notin> backward_slice S" and "(_Low_) \<in> S"
   and "valid_edge a" and "sourcenode a = (_High_)" and "targetnode a = n" 
-  and "kind a = (\<lambda>s. True)\<^isub>\<surd>" and "n \<triangleq> c" and "final c'"
-  and "\<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>c',s\<^isub>1'\<rangle>" and "\<langle>c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>c',s\<^isub>2'\<rangle>"
-  shows "s\<^isub>1' \<approx>\<^isub>L s\<^isub>2'"
+  and "kind a = (\<lambda>s. True)\<^sub>\<surd>" and "n \<triangleq> c" and "final c'"
+  and "\<langle>c,s\<^sub>1\<rangle> \<Rightarrow> \<langle>c',s\<^sub>1'\<rangle>" and "\<langle>c,s\<^sub>2\<rangle> \<Rightarrow> \<langle>c',s\<^sub>2'\<rangle>"
+  shows "s\<^sub>1' \<approx>\<^sub>L s\<^sub>2'"
 proof -
   from High_target_Entry_edge obtain ax where "valid_edge ax"
     and "sourcenode ax = (_Entry_)" and "targetnode ax = (_High_)"
-    and "kind ax = (\<lambda>s. True)\<^isub>\<surd>" by blast
-  from `n \<triangleq> c` `\<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>c',s\<^isub>1'\<rangle>`
-  obtain n\<^isub>1 as\<^isub>1 where "n -as\<^isub>1\<rightarrow>* n\<^isub>1" and "transfers (kinds as\<^isub>1) s\<^isub>1 = s\<^isub>1'"
-    and "preds (kinds as\<^isub>1) s\<^isub>1" and "n\<^isub>1 \<triangleq> c'"
+    and "kind ax = (\<lambda>s. True)\<^sub>\<surd>" by blast
+  from `n \<triangleq> c` `\<langle>c,s\<^sub>1\<rangle> \<Rightarrow> \<langle>c',s\<^sub>1'\<rangle>`
+  obtain n\<^sub>1 as\<^sub>1 where "n -as\<^sub>1\<rightarrow>* n\<^sub>1" and "transfers (kinds as\<^sub>1) s\<^sub>1 = s\<^sub>1'"
+    and "preds (kinds as\<^sub>1) s\<^sub>1" and "n\<^sub>1 \<triangleq> c'"
     by(fastforce dest:fundamental_property)
-  from `n -as\<^isub>1\<rightarrow>* n\<^isub>1` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
-  have "(_High_) -a#as\<^isub>1\<rightarrow>* n\<^isub>1" by(rule Cons_path)
-  from `final c'` `n\<^isub>1 \<triangleq> c'`
-  obtain a\<^isub>1 where "valid_edge a\<^isub>1" and "sourcenode a\<^isub>1 = n\<^isub>1" 
-    and "targetnode a\<^isub>1 = (_Low_)" and "kind a\<^isub>1 = \<Up>id" by(fastforce dest:final_edge_Low)
-  hence "n\<^isub>1 -[a\<^isub>1]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
-  with `(_High_) -a#as\<^isub>1\<rightarrow>* n\<^isub>1` have "(_High_) -(a#as\<^isub>1)@[a\<^isub>1]\<rightarrow>* (_Low_)"
+  from `n -as\<^sub>1\<rightarrow>* n\<^sub>1` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
+  have "(_High_) -a#as\<^sub>1\<rightarrow>* n\<^sub>1" by(rule Cons_path)
+  from `final c'` `n\<^sub>1 \<triangleq> c'`
+  obtain a\<^sub>1 where "valid_edge a\<^sub>1" and "sourcenode a\<^sub>1 = n\<^sub>1" 
+    and "targetnode a\<^sub>1 = (_Low_)" and "kind a\<^sub>1 = \<Up>id" by(fastforce dest:final_edge_Low)
+  hence "n\<^sub>1 -[a\<^sub>1]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
+  with `(_High_) -a#as\<^sub>1\<rightarrow>* n\<^sub>1` have "(_High_) -(a#as\<^sub>1)@[a\<^sub>1]\<rightarrow>* (_Low_)"
     by(rule path_Append)
   with `valid_edge ax` `sourcenode ax = (_Entry_)` `targetnode ax = (_High_)`
-  have "(_Entry_) -ax#((a#as\<^isub>1)@[a\<^isub>1])\<rightarrow>* (_Low_)" by -(rule Cons_path)
-  from `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `preds (kinds as\<^isub>1) s\<^isub>1`
-    `kind a\<^isub>1 = \<Up>id` have "preds (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) s\<^isub>1"
+  have "(_Entry_) -ax#((a#as\<^sub>1)@[a\<^sub>1])\<rightarrow>* (_Low_)" by -(rule Cons_path)
+  from `kind ax = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (\<lambda>s. True)\<^sub>\<surd>` `preds (kinds as\<^sub>1) s\<^sub>1`
+    `kind a\<^sub>1 = \<Up>id` have "preds (kinds (ax#((a#as\<^sub>1)@[a\<^sub>1]))) s\<^sub>1"
     by (simp add:kinds_def preds_split)
-  from `n \<triangleq> c` `\<langle>c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>c',s\<^isub>2'\<rangle>`
-  obtain n\<^isub>2 as\<^isub>2 where "n -as\<^isub>2\<rightarrow>* n\<^isub>2" and "transfers (kinds as\<^isub>2) s\<^isub>2 = s\<^isub>2'"
-    and "preds (kinds as\<^isub>2) s\<^isub>2" and "n\<^isub>2 \<triangleq> c'"
+  from `n \<triangleq> c` `\<langle>c,s\<^sub>2\<rangle> \<Rightarrow> \<langle>c',s\<^sub>2'\<rangle>`
+  obtain n\<^sub>2 as\<^sub>2 where "n -as\<^sub>2\<rightarrow>* n\<^sub>2" and "transfers (kinds as\<^sub>2) s\<^sub>2 = s\<^sub>2'"
+    and "preds (kinds as\<^sub>2) s\<^sub>2" and "n\<^sub>2 \<triangleq> c'"
     by(fastforce dest:fundamental_property)
-  from `n -as\<^isub>2\<rightarrow>* n\<^isub>2` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
-  have "(_High_) -a#as\<^isub>2\<rightarrow>* n\<^isub>2" by(rule Cons_path)
-  from `final c'` `n\<^isub>2 \<triangleq> c'`
-  obtain a\<^isub>2 where "valid_edge a\<^isub>2" and "sourcenode a\<^isub>2 = n\<^isub>2" 
-    and "targetnode a\<^isub>2 = (_Low_)" and "kind a\<^isub>2 = \<Up>id" by(fastforce dest:final_edge_Low)
-  hence "n\<^isub>2 -[a\<^isub>2]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
-  with `(_High_) -a#as\<^isub>2\<rightarrow>* n\<^isub>2` have "(_High_) -(a#as\<^isub>2)@[a\<^isub>2]\<rightarrow>* (_Low_)"
+  from `n -as\<^sub>2\<rightarrow>* n\<^sub>2` `valid_edge a` `sourcenode a = (_High_)` `targetnode a = n`
+  have "(_High_) -a#as\<^sub>2\<rightarrow>* n\<^sub>2" by(rule Cons_path)
+  from `final c'` `n\<^sub>2 \<triangleq> c'`
+  obtain a\<^sub>2 where "valid_edge a\<^sub>2" and "sourcenode a\<^sub>2 = n\<^sub>2" 
+    and "targetnode a\<^sub>2 = (_Low_)" and "kind a\<^sub>2 = \<Up>id" by(fastforce dest:final_edge_Low)
+  hence "n\<^sub>2 -[a\<^sub>2]\<rightarrow>* (_Low_)" by(fastforce intro:path_edge)
+  with `(_High_) -a#as\<^sub>2\<rightarrow>* n\<^sub>2` have "(_High_) -(a#as\<^sub>2)@[a\<^sub>2]\<rightarrow>* (_Low_)"
     by(rule path_Append)
   with `valid_edge ax` `sourcenode ax = (_Entry_)` `targetnode ax = (_High_)`
-  have "(_Entry_) -ax#((a#as\<^isub>2)@[a\<^isub>2])\<rightarrow>* (_Low_)" by -(rule Cons_path)
-  from `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `preds (kinds as\<^isub>2) s\<^isub>2`
-    `kind a\<^isub>2 = \<Up>id` have "preds (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2"
+  have "(_Entry_) -ax#((a#as\<^sub>2)@[a\<^sub>2])\<rightarrow>* (_Low_)" by -(rule Cons_path)
+  from `kind ax = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (\<lambda>s. True)\<^sub>\<surd>` `preds (kinds as\<^sub>2) s\<^sub>2`
+    `kind a\<^sub>2 = \<Up>id` have "preds (kinds (ax#((a#as\<^sub>2)@[a\<^sub>2]))) s\<^sub>2"
     by (simp add:kinds_def preds_split)
-  from `s\<^isub>1 \<approx>\<^isub>L s\<^isub>2` `(_High_) \<notin> backward_slice S` `(_Low_) \<in> S`
-    `(_Entry_) -ax#((a#as\<^isub>1)@[a\<^isub>1])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) s\<^isub>1`
-    `(_Entry_) -ax#((a#as\<^isub>2)@[a\<^isub>2])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2`
-  have "transfers (kinds (ax#((a#as\<^isub>1)@[a\<^isub>1]))) s\<^isub>1 \<approx>\<^isub>L 
-        transfers (kinds (ax#((a#as\<^isub>2)@[a\<^isub>2]))) s\<^isub>2"
+  from `s\<^sub>1 \<approx>\<^sub>L s\<^sub>2` `(_High_) \<notin> backward_slice S` `(_Low_) \<in> S`
+    `(_Entry_) -ax#((a#as\<^sub>1)@[a\<^sub>1])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^sub>1)@[a\<^sub>1]))) s\<^sub>1`
+    `(_Entry_) -ax#((a#as\<^sub>2)@[a\<^sub>2])\<rightarrow>* (_Low_)` `preds (kinds (ax#((a#as\<^sub>2)@[a\<^sub>2]))) s\<^sub>2`
+  have "transfers (kinds (ax#((a#as\<^sub>1)@[a\<^sub>1]))) s\<^sub>1 \<approx>\<^sub>L 
+        transfers (kinds (ax#((a#as\<^sub>2)@[a\<^sub>2]))) s\<^sub>2"
     by(rule nonInterference_path_to_Low)
-  with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (\<lambda>s. True)\<^isub>\<surd>` `kind a\<^isub>1 = \<Up>id` `kind a\<^isub>2 = \<Up>id`
-    `transfers (kinds as\<^isub>1) s\<^isub>1 = s\<^isub>1'` `transfers (kinds as\<^isub>2) s\<^isub>2 = s\<^isub>2'`
+  with `kind ax = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (\<lambda>s. True)\<^sub>\<surd>` `kind a\<^sub>1 = \<Up>id` `kind a\<^sub>2 = \<Up>id`
+    `transfers (kinds as\<^sub>1) s\<^sub>1 = s\<^sub>1'` `transfers (kinds as\<^sub>2) s\<^sub>2 = s\<^sub>2'`
   show ?thesis by(simp add:kinds_def transfers_split)
 qed
 

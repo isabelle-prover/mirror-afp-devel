@@ -106,7 +106,7 @@ lemma key2_not_currk:
 by (induct set: reach) auto
 
 lemma guest_key2_disj2[simp]:
-"\<lbrakk> s : reach; (k\<^isub>1,k) \<in> cards s g\<^isub>1; (k\<^isub>2,k) \<in> cards s g\<^isub>2 \<rbrakk> \<Longrightarrow> g\<^isub>1=g\<^isub>2"
+"\<lbrakk> s : reach; (k\<^sub>1,k) \<in> cards s g\<^sub>1; (k\<^sub>2,k) \<in> cards s g\<^sub>2 \<rbrakk> \<Longrightarrow> g\<^sub>1=g\<^sub>2"
 by (induct set: reach) (auto simp:key2_not_currk)
 
 lemma safe_roomk_currk[simp]:

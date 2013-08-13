@@ -2308,8 +2308,8 @@ end
 instantiation Enum.finite_2 :: proper_interval begin
 fun proper_interval_finite_2 :: "Enum.finite_2 proper_interval" where 
   "proper_interval_finite_2 None None \<longleftrightarrow> True"
-| "proper_interval_finite_2 None (Some x) \<longleftrightarrow> x = finite_2.a\<^isub>2"
-| "proper_interval_finite_2 (Some x) None \<longleftrightarrow> x = finite_2.a\<^isub>1"
+| "proper_interval_finite_2 None (Some x) \<longleftrightarrow> x = finite_2.a\<^sub>2"
+| "proper_interval_finite_2 (Some x) None \<longleftrightarrow> x = finite_2.a\<^sub>1"
 | "proper_interval_finite_2 (Some x) (Some y) \<longleftrightarrow> False"
 instance by intro_classes (auto simp add: less_finite_2_def)
 end
@@ -2317,9 +2317,9 @@ end
 instantiation Enum.finite_3 :: proper_interval begin
 fun proper_interval_finite_3 :: "Enum.finite_3 proper_interval" where
   "proper_interval_finite_3 None None \<longleftrightarrow> True"
-| "proper_interval_finite_3 None (Some x) \<longleftrightarrow> x \<noteq> finite_3.a\<^isub>1"
-| "proper_interval_finite_3 (Some x) None \<longleftrightarrow> x \<noteq> finite_3.a\<^isub>3"
-| "proper_interval_finite_3 (Some x) (Some y) \<longleftrightarrow> x = finite_3.a\<^isub>1 \<and> y = finite_3.a\<^isub>3"
+| "proper_interval_finite_3 None (Some x) \<longleftrightarrow> x \<noteq> finite_3.a\<^sub>1"
+| "proper_interval_finite_3 (Some x) None \<longleftrightarrow> x \<noteq> finite_3.a\<^sub>3"
+| "proper_interval_finite_3 (Some x) (Some y) \<longleftrightarrow> x = finite_3.a\<^sub>1 \<and> y = finite_3.a\<^sub>3"
 instance
 proof
   fix x y :: Enum.finite_3

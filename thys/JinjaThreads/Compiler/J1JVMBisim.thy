@@ -4893,12 +4893,12 @@ proof -
   hence "conf_f (compP2 P) h ([], map (\<lambda>i. if i = 0 then OK ([Class D] ! i) else Err) [0..<max_vars meth] @ [Err])
                 (compE2 meth @ [Return]) ([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)"
     unfolding conf_f_def2 by(simp add: compP2_def)
-  ultimately have "conf_f (compP2 P) h ([], TC0.ty\<^isub>l (Suc (max_vars meth)) [Class D] {0}) (compE2 meth @ [Return])
+  ultimately have "conf_f (compP2 P) h ([], TC0.ty\<^sub>l (Suc (max_vars meth)) [Class D] {0}) (compE2 meth @ [Return])
                        ([], Addr a # replicate (max_vars meth) undefined_value, D, M, 0)"
-    by(simp add: TC0.ty\<^isub>l_def conf_f_def2 compP2_def)
+    by(simp add: TC0.ty\<^sub>l_def conf_f_def2 compP2_def)
   with hconf ha sub sees_method_compP[OF sees, where f="\<lambda>C M Ts T. compMb2"] sees_method_idemp[OF sees]
   show ?thesis
-    by(auto simp add: TC0.ty\<^isub>i'_def correct_state_def compTP_def tconf_def)(fastforce simp add: compP2_def compMb2_def tconf_def intro: sees_method_idemp)+
+    by(auto simp add: TC0.ty\<^sub>i'_def correct_state_def compTP_def tconf_def)(fastforce simp add: compP2_def compMb2_def tconf_def intro: sees_method_idemp)+
 qed
 
 lemma ta_bisim12_extTA2J1_extTA2JVM:

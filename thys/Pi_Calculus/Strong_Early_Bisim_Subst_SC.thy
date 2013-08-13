@@ -13,9 +13,9 @@ begin
 lemma resComm:
   fixes P :: pi
   
-  shows "<\<nu>a><\<nu>b>P \<sim>\<^sup>s\<^isub>e <\<nu>b><\<nu>a>P"
+  shows "<\<nu>a><\<nu>b>P \<sim>\<^sup>s\<^sub>e <\<nu>b><\<nu>a>P"
 proof -
-  have "<\<nu>a><\<nu>b>P \<sim>\<^sup>s\<^isub>l <\<nu>b><\<nu>a>P"
+  have "<\<nu>a><\<nu>b>P \<sim>\<^sup>s\<^sub>l <\<nu>b><\<nu>a>P"
     by(rule Strong_Late_Bisim_Subst_SC.resComm)
   thus ?thesis by(rule lateEarlyCong) 
 qed
@@ -26,9 +26,9 @@ lemma matchId:
   fixes a :: name
   and   P :: pi
 
-  shows "[a\<frown>a]P \<sim>\<^sup>s\<^isub>e P"
+  shows "[a\<frown>a]P \<sim>\<^sup>s\<^sub>e P"
 proof -
-  have "[a\<frown>a]P \<sim>\<^sup>s\<^isub>l P" by(rule Strong_Late_Bisim_Subst_SC.matchId)
+  have "[a\<frown>a]P \<sim>\<^sup>s\<^sub>l P" by(rule Strong_Late_Bisim_Subst_SC.matchId)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -38,9 +38,9 @@ lemma mismatchNil:
   fixes a :: name
   and   P :: pi
   
-  shows "[a\<noteq>a]P \<sim>\<^sup>s\<^isub>e \<zero>"
+  shows "[a\<noteq>a]P \<sim>\<^sup>s\<^sub>e \<zero>"
 proof -
-  have "[a\<noteq>a]P \<sim>\<^sup>s\<^isub>l \<zero>" by(rule Strong_Late_Bisim_Subst_SC.mismatchNil)
+  have "[a\<noteq>a]P \<sim>\<^sup>s\<^sub>l \<zero>" by(rule Strong_Late_Bisim_Subst_SC.mismatchNil)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -50,9 +50,9 @@ lemma sumSym:
   fixes P :: pi
   and   Q :: pi
   
-  shows "P \<oplus> Q \<sim>\<^sup>s\<^isub>e Q \<oplus> P"
+  shows "P \<oplus> Q \<sim>\<^sup>s\<^sub>e Q \<oplus> P"
 proof -
-  have "P \<oplus> Q \<sim>\<^sup>s\<^isub>l Q \<oplus> P" by(rule Strong_Late_Bisim_Subst_SC.sumSym)
+  have "P \<oplus> Q \<sim>\<^sup>s\<^sub>l Q \<oplus> P" by(rule Strong_Late_Bisim_Subst_SC.sumSym)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -61,18 +61,18 @@ lemma sumAssoc:
   and   Q :: pi
   and   R :: pi
   
-  shows "(P \<oplus> Q) \<oplus> R \<sim>\<^sup>s\<^isub>e P \<oplus> (Q \<oplus> R)"
+  shows "(P \<oplus> Q) \<oplus> R \<sim>\<^sup>s\<^sub>e P \<oplus> (Q \<oplus> R)"
 proof -
-  have "(P \<oplus> Q) \<oplus> R \<sim>\<^sup>s\<^isub>l P \<oplus> (Q \<oplus> R)" by(rule Strong_Late_Bisim_Subst_SC.sumAssoc)
+  have "(P \<oplus> Q) \<oplus> R \<sim>\<^sup>s\<^sub>l P \<oplus> (Q \<oplus> R)" by(rule Strong_Late_Bisim_Subst_SC.sumAssoc)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
 lemma sumZero:
   fixes P :: pi
   
-  shows "P \<oplus> \<zero> \<sim>\<^sup>s\<^isub>e P"
+  shows "P \<oplus> \<zero> \<sim>\<^sup>s\<^sub>e P"
 proof -
-  have "P \<oplus> \<zero> \<sim>\<^sup>s\<^isub>l P" by(rule Strong_Late_Bisim_Subst_SC.sumZero)
+  have "P \<oplus> \<zero> \<sim>\<^sup>s\<^sub>l P" by(rule Strong_Late_Bisim_Subst_SC.sumZero)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -81,9 +81,9 @@ qed
 lemma parZero:
   fixes P :: pi
 
-  shows "P \<parallel> \<zero> \<sim>\<^sup>s\<^isub>e P"
+  shows "P \<parallel> \<zero> \<sim>\<^sup>s\<^sub>e P"
 proof -
-  have "P \<parallel> \<zero> \<sim>\<^sup>s\<^isub>l P" by(rule Strong_Late_Bisim_Subst_SC.parZero)
+  have "P \<parallel> \<zero> \<sim>\<^sup>s\<^sub>l P" by(rule Strong_Late_Bisim_Subst_SC.parZero)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -91,9 +91,9 @@ lemma parSym:
   fixes P :: pi
   and   Q :: pi
 
-  shows "P \<parallel> Q \<sim>\<^sup>s\<^isub>e Q \<parallel> P"
+  shows "P \<parallel> Q \<sim>\<^sup>s\<^sub>e Q \<parallel> P"
 proof -
-  have "P \<parallel> Q \<sim>\<^sup>s\<^isub>l Q \<parallel> P" by(rule Strong_Late_Bisim_Subst_SC.parSym)
+  have "P \<parallel> Q \<sim>\<^sup>s\<^sub>l Q \<parallel> P" by(rule Strong_Late_Bisim_Subst_SC.parSym)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -104,9 +104,9 @@ lemma scopeExtPar:
 
   assumes "x \<sharp> P"
 
-  shows "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^isub>e P \<parallel> <\<nu>x>Q"
+  shows "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>e P \<parallel> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^isub>l P \<parallel> <\<nu>x>Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar)
+  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>l P \<parallel> <\<nu>x>Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -117,9 +117,9 @@ lemma scopeExtPar':
 
   assumes xFreshQ: "x \<sharp> Q"
 
-  shows "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^isub>e (<\<nu>x>P) \<parallel> Q"
+  shows "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>e (<\<nu>x>P) \<parallel> Q"
 proof -
-  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^isub>l (<\<nu>x>P) \<parallel> Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar')
+  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>l (<\<nu>x>P) \<parallel> Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar')
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -128,9 +128,9 @@ lemma parAssoc:
   and   Q :: pi
   and   R :: pi
 
-  shows "(P \<parallel> Q) \<parallel> R \<sim>\<^sup>s\<^isub>e P \<parallel> (Q \<parallel> R)"
+  shows "(P \<parallel> Q) \<parallel> R \<sim>\<^sup>s\<^sub>e P \<parallel> (Q \<parallel> R)"
 proof -
-  have "(P \<parallel> Q) \<parallel> R \<sim>\<^sup>s\<^isub>l P \<parallel> (Q \<parallel> R)" by(rule Strong_Late_Bisim_Subst_SC.parAssoc)
+  have "(P \<parallel> Q) \<parallel> R \<sim>\<^sup>s\<^sub>l P \<parallel> (Q \<parallel> R)" by(rule Strong_Late_Bisim_Subst_SC.parAssoc)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -140,9 +140,9 @@ lemma freshRes:
 
   assumes a \<sharp> P"
 
-  shows "<\<nu>a>P \<sim>\<^sup>s\<^isub>e P"
+  shows "<\<nu>a>P \<sim>\<^sup>s\<^sub>e P"
 proof -
-  from a \<sharp> P` have "<\<nu>a>P \<sim>\<^sup>s\<^isub>l P" by(rule Strong_Late_Bisim_Subst_SC.freshRes)
+  from a \<sharp> P` have "<\<nu>a>P \<sim>\<^sup>s\<^sub>l P" by(rule Strong_Late_Bisim_Subst_SC.freshRes)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -153,18 +153,18 @@ lemma scopeExtSum:
   
   assumes "x \<sharp> P"
 
-  shows "<\<nu>x>(P \<oplus> Q) \<sim>\<^sup>s\<^isub>e P \<oplus> <\<nu>x>Q"
+  shows "<\<nu>x>(P \<oplus> Q) \<sim>\<^sup>s\<^sub>e P \<oplus> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sup>s\<^isub>l P \<oplus> <\<nu>x>Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtSum)
+  from `x \<sharp> P` have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sup>s\<^sub>l P \<oplus> <\<nu>x>Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtSum)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
 lemma bangSC:
   fixes P
 
-  shows "!P \<sim>\<^sup>s\<^isub>e P \<parallel> !P"
+  shows "!P \<sim>\<^sup>s\<^sub>e P \<parallel> !P"
 proof -
-  have "!P \<sim>\<^sup>s\<^isub>l P \<parallel> !P" by(rule Strong_Late_Bisim_Subst_SC.bangSC)
+  have "!P \<sim>\<^sup>s\<^sub>l P \<parallel> !P" by(rule Strong_Late_Bisim_Subst_SC.bangSC)
   thus ?thesis by(rule lateEarlyCong)
 qed
 

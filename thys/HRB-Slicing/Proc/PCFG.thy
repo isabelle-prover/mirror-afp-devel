@@ -72,123 +72,123 @@ datatype p_edge_kind =
 type_synonym p_edge = "(label \<times> p_edge_kind \<times> label)"
 
 inductive Proc_CFG :: "cmd \<Rightarrow> label \<Rightarrow> p_edge_kind \<Rightarrow> label \<Rightarrow> bool"
-("_ \<turnstile> _ -_\<rightarrow>\<^isub>p _")
+("_ \<turnstile> _ -_\<rightarrow>\<^sub>p _")
 where
 
   Proc_CFG_Entry_Exit:
-  "prog \<turnstile> Entry -IEdge (\<lambda>s. False)\<^isub>\<surd>\<rightarrow>\<^isub>p Exit"
+  "prog \<turnstile> Entry -IEdge (\<lambda>s. False)\<^sub>\<surd>\<rightarrow>\<^sub>p Exit"
 
 | Proc_CFG_Entry:
-  "prog \<turnstile> Entry -IEdge (\<lambda>s. True)\<^isub>\<surd>\<rightarrow>\<^isub>p Label 0"
+  "prog \<turnstile> Entry -IEdge (\<lambda>s. True)\<^sub>\<surd>\<rightarrow>\<^sub>p Label 0"
 
 | Proc_CFG_Skip: 
-  "Skip \<turnstile> Label 0 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit"
+  "Skip \<turnstile> Label 0 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit"
 
 | Proc_CFG_LAss: 
-  "V:=e \<turnstile> Label 0 -IEdge \<Up>(\<lambda>cf. update cf V e)\<rightarrow>\<^isub>p Label 1"
+  "V:=e \<turnstile> Label 0 -IEdge \<Up>(\<lambda>cf. update cf V e)\<rightarrow>\<^sub>p Label 1"
 
 | Proc_CFG_LAssSkip:
-  "V:=e \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit"
+  "V:=e \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit"
 
 | Proc_CFG_SeqFirst:
-  "\<lbrakk>c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'; n' \<noteq> Exit\<rbrakk> \<Longrightarrow> c\<^isub>1;;c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'"
+  "\<lbrakk>c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p n'; n' \<noteq> Exit\<rbrakk> \<Longrightarrow> c\<^sub>1;;c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'"
 
 | Proc_CFG_SeqConnect: 
-  "\<lbrakk>c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p Exit; n \<noteq> Entry\<rbrakk> \<Longrightarrow> c\<^isub>1;;c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p Label #:c\<^isub>1"
+  "\<lbrakk>c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p Exit; n \<noteq> Entry\<rbrakk> \<Longrightarrow> c\<^sub>1;;c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p Label #:c\<^sub>1"
 
 | Proc_CFG_SeqSecond: 
-  "\<lbrakk>c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'; n \<noteq> Entry\<rbrakk> \<Longrightarrow> c\<^isub>1;;c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -et\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1"
+  "\<lbrakk>c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'; n \<noteq> Entry\<rbrakk> \<Longrightarrow> c\<^sub>1;;c\<^sub>2 \<turnstile> n \<oplus> #:c\<^sub>1 -et\<rightarrow>\<^sub>p n' \<oplus> #:c\<^sub>1"
 
 | Proc_CFG_CondTrue:
-    "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> Label 0 
-  -IEdge (\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 1"
+    "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> Label 0 
+  -IEdge (\<lambda>cf. state_check cf b (Some true))\<^sub>\<surd>\<rightarrow>\<^sub>p Label 1"
 
 | Proc_CFG_CondFalse:
-    "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow>\<^isub>p 
-                        Label (#:c\<^isub>1 + 1)"
+    "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some false))\<^sub>\<surd>\<rightarrow>\<^sub>p 
+                        Label (#:c\<^sub>1 + 1)"
 
 | Proc_CFG_CondThen:
-  "\<lbrakk>c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'; n \<noteq> Entry\<rbrakk> \<Longrightarrow> if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> 1 -et\<rightarrow>\<^isub>p n' \<oplus> 1"
+  "\<lbrakk>c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p n'; n \<noteq> Entry\<rbrakk> \<Longrightarrow> if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> 1 -et\<rightarrow>\<^sub>p n' \<oplus> 1"
 
 | Proc_CFG_CondElse:
-  "\<lbrakk>c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'; n \<noteq> Entry\<rbrakk> 
-  \<Longrightarrow> if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -et\<rightarrow>\<^isub>p n' \<oplus> (#:c\<^isub>1 + 1)"
+  "\<lbrakk>c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'; n \<noteq> Entry\<rbrakk> 
+  \<Longrightarrow> if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> (#:c\<^sub>1 + 1) -et\<rightarrow>\<^sub>p n' \<oplus> (#:c\<^sub>1 + 1)"
 
 | Proc_CFG_WhileTrue:
-    "while (b) c' \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some true))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 2"
+    "while (b) c' \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some true))\<^sub>\<surd>\<rightarrow>\<^sub>p Label 2"
 
 | Proc_CFG_WhileFalse:
-    "while (b) c' \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some false))\<^isub>\<surd>\<rightarrow>\<^isub>p Label 1"
+    "while (b) c' \<turnstile> Label 0 -IEdge (\<lambda>cf. state_check cf b (Some false))\<^sub>\<surd>\<rightarrow>\<^sub>p Label 1"
 
 | Proc_CFG_WhileFalseSkip:
-  "while (b) c' \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit"
+  "while (b) c' \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit"
 
 | Proc_CFG_WhileBody:
-  "\<lbrakk>c' \<turnstile> n -et\<rightarrow>\<^isub>p n'; n \<noteq> Entry; n' \<noteq> Exit\<rbrakk> 
-  \<Longrightarrow> while (b) c' \<turnstile> n \<oplus> 2 -et\<rightarrow>\<^isub>p n' \<oplus> 2"
+  "\<lbrakk>c' \<turnstile> n -et\<rightarrow>\<^sub>p n'; n \<noteq> Entry; n' \<noteq> Exit\<rbrakk> 
+  \<Longrightarrow> while (b) c' \<turnstile> n \<oplus> 2 -et\<rightarrow>\<^sub>p n' \<oplus> 2"
 
 | Proc_CFG_WhileBodyExit:
-  "\<lbrakk>c' \<turnstile> n -et\<rightarrow>\<^isub>p Exit; n \<noteq> Entry\<rbrakk> \<Longrightarrow> while (b) c' \<turnstile> n \<oplus> 2 -et\<rightarrow>\<^isub>p Label 0"
+  "\<lbrakk>c' \<turnstile> n -et\<rightarrow>\<^sub>p Exit; n \<noteq> Entry\<rbrakk> \<Longrightarrow> while (b) c' \<turnstile> n \<oplus> 2 -et\<rightarrow>\<^sub>p Label 0"
 
 | Proc_CFG_Call:
-  "Call p es rets \<turnstile> Label 0 -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label 1"
+  "Call p es rets \<turnstile> Label 0 -CEdge (p,es,rets)\<rightarrow>\<^sub>p Label 1"
 
 | Proc_CFG_CallSkip:
-  "Call p es rets \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit"
+  "Call p es rets \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit"
 
 
 subsubsection{* Some lemmas about the procedure CFG *}
 
 lemma Proc_CFG_Exit_no_sourcenode [dest]:
-  "prog \<turnstile> Exit -et\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
+  "prog \<turnstile> Exit -et\<rightarrow>\<^sub>p n' \<Longrightarrow> False"
 by(induct prog n\<equiv>"Exit" et n' rule:Proc_CFG.induct,auto)
 
 
 lemma Proc_CFG_Entry_no_targetnode [dest]:
-  "prog \<turnstile> n -et\<rightarrow>\<^isub>p Entry \<Longrightarrow> False"
+  "prog \<turnstile> n -et\<rightarrow>\<^sub>p Entry \<Longrightarrow> False"
 by(induct prog n et n'\<equiv>"Entry" rule:Proc_CFG.induct,auto)
 
 
 lemma Proc_CFG_IEdge_intra_kind:
-  "prog \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> intra_kind et"
+  "prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> intra_kind et"
 by(induct prog n x\<equiv>"IEdge et" n' rule:Proc_CFG.induct,auto simp:intra_kind_def)
 
 
-lemma [dest]:"prog \<turnstile> n -IEdge (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
+lemma [dest]:"prog \<turnstile> n -IEdge (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)\<rightarrow>\<^sub>p n' \<Longrightarrow> False"
 by(fastforce dest:Proc_CFG_IEdge_intra_kind simp:intra_kind_def)
 
-lemma [dest]:"prog \<turnstile> n -IEdge (Q\<hookleftarrow>\<^bsub>p\<^esub>f)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
+lemma [dest]:"prog \<turnstile> n -IEdge (Q\<hookleftarrow>\<^bsub>p\<^esub>f)\<rightarrow>\<^sub>p n' \<Longrightarrow> False"
 by(fastforce dest:Proc_CFG_IEdge_intra_kind simp:intra_kind_def)
 
 
 lemma Proc_CFG_sourcelabel_less_num_nodes:
-  "prog \<turnstile> Label l -et\<rightarrow>\<^isub>p n' \<Longrightarrow> l < #:prog"
+  "prog \<turnstile> Label l -et\<rightarrow>\<^sub>p n' \<Longrightarrow> l < #:prog"
 proof(induct prog "Label l" et n' arbitrary:l rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 et n' c\<^isub>2 l)
+  case (Proc_CFG_SeqFirst c\<^sub>1 et n' c\<^sub>2 l)
   thus ?case by simp
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 et c\<^isub>2 l)
+  case (Proc_CFG_SeqConnect c\<^sub>1 et c\<^sub>2 l)
   thus ?case by simp
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1 l) 
-  note n = `n \<oplus> #:c\<^isub>1 = Label l` 
-  note IH = `\<And>l. n = Label l \<Longrightarrow> l < #:c\<^isub>2`
+  case (Proc_CFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1 l) 
+  note n = `n \<oplus> #:c\<^sub>1 = Label l` 
+  note IH = `\<And>l. n = Label l \<Longrightarrow> l < #:c\<^sub>2`
   from n obtain l' where l':"n = Label l'" by(cases n) auto
-  from IH[OF this] have "l' < #:c\<^isub>2" .
+  from IH[OF this] have "l' < #:c\<^sub>2" .
   with n l' show ?case by simp
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n et n' b c\<^isub>2 l) 
+  case (Proc_CFG_CondThen c\<^sub>1 n et n' b c\<^sub>2 l) 
   note n = `n \<oplus> 1 = Label l`
-  note IH = `\<And>l. n = Label l \<Longrightarrow> l < #:c\<^isub>1`
+  note IH = `\<And>l. n = Label l \<Longrightarrow> l < #:c\<^sub>1`
   from n obtain l' where l':"n = Label l'" by(cases n) auto
-  from IH[OF this] have "l' < #:c\<^isub>1" .
+  from IH[OF this] have "l' < #:c\<^sub>1" .
   with n l' show ?case by simp
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n et n' b c\<^isub>1 l)
-  note n = `n \<oplus> (#:c\<^isub>1 + 1) = Label l`
-  note IH = `\<And>l. n = Label l \<Longrightarrow> l < #:c\<^isub>2`
+  case (Proc_CFG_CondElse c\<^sub>2 n et n' b c\<^sub>1 l)
+  note n = `n \<oplus> (#:c\<^sub>1 + 1) = Label l`
+  note IH = `\<And>l. n = Label l \<Longrightarrow> l < #:c\<^sub>2`
   from n obtain l' where l':"n = Label l'" by(cases n) auto
-  from IH[OF this] have "l' < #:c\<^isub>2" .
+  from IH[OF this] have "l' < #:c\<^sub>2" .
   with n l' show ?case by simp
 next
   case (Proc_CFG_WhileBody c' n et n' b l)
@@ -208,30 +208,30 @@ qed (auto simp:num_inner_nodes_gr_0)
 
 
 lemma Proc_CFG_targetlabel_less_num_nodes:
-  "prog \<turnstile> n -et\<rightarrow>\<^isub>p Label l \<Longrightarrow> l < #:prog"
+  "prog \<turnstile> n -et\<rightarrow>\<^sub>p Label l \<Longrightarrow> l < #:prog"
 proof(induct prog n et "Label l" arbitrary:l rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n et c\<^isub>2 l)
+  case (Proc_CFG_SeqFirst c\<^sub>1 n et c\<^sub>2 l)
  thus ?case by simp
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1 l)
-  note n' = `n' \<oplus> #:c\<^isub>1 = Label l` 
-  note IH = `\<And>l. n' = Label l \<Longrightarrow> l < #:c\<^isub>2`
+  case (Proc_CFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1 l)
+  note n' = `n' \<oplus> #:c\<^sub>1 = Label l` 
+  note IH = `\<And>l. n' = Label l \<Longrightarrow> l < #:c\<^sub>2`
   from n' obtain l' where l':"n' = Label l'" by(cases n') auto
-  from IH[OF this] have "l' < #:c\<^isub>2" .
+  from IH[OF this] have "l' < #:c\<^sub>2" .
   with n' l' show ?case by simp
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n et n' b c\<^isub>2 l)
+  case (Proc_CFG_CondThen c\<^sub>1 n et n' b c\<^sub>2 l)
   note n' = `n' \<oplus> 1 = Label l` 
-  note IH = `\<And>l. n' = Label l \<Longrightarrow> l < #:c\<^isub>1`
+  note IH = `\<And>l. n' = Label l \<Longrightarrow> l < #:c\<^sub>1`
   from n' obtain l' where l':"n' = Label l'" by(cases n') auto
-  from IH[OF this] have "l' < #:c\<^isub>1" .
+  from IH[OF this] have "l' < #:c\<^sub>1" .
   with n' l' show ?case by simp
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n et n' b c\<^isub>1 l)
-  note n' = `n' \<oplus> (#:c\<^isub>1 + 1) = Label l` 
-  note IH = `\<And>l. n' = Label l \<Longrightarrow> l < #:c\<^isub>2`
+  case (Proc_CFG_CondElse c\<^sub>2 n et n' b c\<^sub>1 l)
+  note n' = `n' \<oplus> (#:c\<^sub>1 + 1) = Label l` 
+  note IH = `\<And>l. n' = Label l \<Longrightarrow> l < #:c\<^sub>2`
   from n' obtain l' where l':"n' = Label l'" by(cases n') auto
-  from IH[OF this] have "l' < #:c\<^isub>2" .
+  from IH[OF this] have "l' < #:c\<^sub>2" .
   with n' l' show ?case by simp
 next
   case (Proc_CFG_WhileBody c' n et n' b l)
@@ -244,44 +244,44 @@ qed (auto simp:num_inner_nodes_gr_0)
 
 
 lemma Proc_CFG_EntryD:
-  "prog \<turnstile> Entry -et\<rightarrow>\<^isub>p n' 
-  \<Longrightarrow> (n' = Exit \<and> et = IEdge(\<lambda>s. False)\<^isub>\<surd>) \<or> (n' = Label 0 \<and> et = IEdge (\<lambda>s. True)\<^isub>\<surd>)"
+  "prog \<turnstile> Entry -et\<rightarrow>\<^sub>p n' 
+  \<Longrightarrow> (n' = Exit \<and> et = IEdge(\<lambda>s. False)\<^sub>\<surd>) \<or> (n' = Label 0 \<and> et = IEdge (\<lambda>s. True)\<^sub>\<surd>)"
 by(induct prog n\<equiv>"Entry" et n' rule:Proc_CFG.induct,auto)
 
 
 lemma Proc_CFG_Exit_edge:
-  obtains l et where "prog \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p Exit" and "l \<le> #:prog"
+  obtains l et where "prog \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p Exit" and "l \<le> #:prog"
 proof(atomize_elim)
-  show "\<exists>l et. prog \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p Exit \<and> l \<le> #:prog"
+  show "\<exists>l et. prog \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p Exit \<and> l \<le> #:prog"
   proof(induct prog)
     case Skip
-    have "Skip \<turnstile> Label 0 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit" by(rule Proc_CFG_Skip)
+    have "Skip \<turnstile> Label 0 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit" by(rule Proc_CFG_Skip)
     thus ?case by fastforce
   next
     case (LAss V e)
-    have "V:=e \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit" by(rule Proc_CFG_LAssSkip)
+    have "V:=e \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit" by(rule Proc_CFG_LAssSkip)
     thus ?case by fastforce
   next
-    case (Seq c\<^isub>1 c\<^isub>2)
-    from `\<exists>l et. c\<^isub>2 \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p Exit \<and> l \<le> #:c\<^isub>2`
-    obtain l et where "c\<^isub>2 \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p Exit" and "l \<le> #:c\<^isub>2" by blast
-    hence "c\<^isub>1;;c\<^isub>2 \<turnstile> Label l \<oplus> #:c\<^isub>1 -IEdge et\<rightarrow>\<^isub>p Exit \<oplus> #:c\<^isub>1"
+    case (Seq c\<^sub>1 c\<^sub>2)
+    from `\<exists>l et. c\<^sub>2 \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p Exit \<and> l \<le> #:c\<^sub>2`
+    obtain l et where "c\<^sub>2 \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p Exit" and "l \<le> #:c\<^sub>2" by blast
+    hence "c\<^sub>1;;c\<^sub>2 \<turnstile> Label l \<oplus> #:c\<^sub>1 -IEdge et\<rightarrow>\<^sub>p Exit \<oplus> #:c\<^sub>1"
       by(fastforce intro:Proc_CFG_SeqSecond)
-    with `l \<le> #:c\<^isub>2` show ?case by fastforce
+    with `l \<le> #:c\<^sub>2` show ?case by fastforce
   next
-    case (Cond b c\<^isub>1 c\<^isub>2)
-    from `\<exists>l et. c\<^isub>1 \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p Exit \<and> l \<le> #:c\<^isub>1`
-    obtain l et where "c\<^isub>1 \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p Exit" and "l \<le> #:c\<^isub>1" by blast
-    hence "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> Label l \<oplus> 1 -IEdge et\<rightarrow>\<^isub>p Exit \<oplus> 1"
+    case (Cond b c\<^sub>1 c\<^sub>2)
+    from `\<exists>l et. c\<^sub>1 \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p Exit \<and> l \<le> #:c\<^sub>1`
+    obtain l et where "c\<^sub>1 \<turnstile> Label l -IEdge et\<rightarrow>\<^sub>p Exit" and "l \<le> #:c\<^sub>1" by blast
+    hence "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> Label l \<oplus> 1 -IEdge et\<rightarrow>\<^sub>p Exit \<oplus> 1"
       by(fastforce intro:Proc_CFG_CondThen)
-    with `l \<le> #:c\<^isub>1` show ?case by fastforce
+    with `l \<le> #:c\<^sub>1` show ?case by fastforce
   next
     case (While b c')
-    have "while (b) c' \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit" by(rule Proc_CFG_WhileFalseSkip)
+    have "while (b) c' \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit" by(rule Proc_CFG_WhileFalseSkip)
     thus ?case by fastforce
   next
     case (Call p es rets)
-    have "Call p es rets \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^isub>p Exit" by(rule Proc_CFG_CallSkip)
+    have "Call p es rets \<turnstile> Label 1 -IEdge \<Up>id\<rightarrow>\<^sub>p Exit" by(rule Proc_CFG_CallSkip)
     thus ?case by fastforce
   qed
 qed
@@ -290,60 +290,60 @@ qed
 text {* Lots of lemmas for call edges @{text "\<dots>"} *}
 
 lemma Proc_CFG_Call_Labels:
-  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n' \<Longrightarrow> \<exists>l. n = Label l \<and> n' = Label (Suc l)"
+  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n' \<Longrightarrow> \<exists>l. n = Label l \<and> n' = Label (Suc l)"
 by(induct prog n et\<equiv>"CEdge (p,es,rets)" n' rule:Proc_CFG.induct,auto)
 
 
 lemma Proc_CFG_Call_target_0:
-  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label 0 \<Longrightarrow> n = Entry"
+  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p Label 0 \<Longrightarrow> n = Entry"
 by(induct prog n et\<equiv>"CEdge (p,es,rets)" n'\<equiv>"Label 0" rule:Proc_CFG.induct)
   (auto dest:Proc_CFG_Call_Labels)
 
 
 lemma Proc_CFG_Call_Intra_edge_not_same_source:
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; prog \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n''\<rbrakk> \<Longrightarrow> False"
+  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n''\<rbrakk> \<Longrightarrow> False"
 proof(induct prog n "CEdge (p,es,rets)" n' arbitrary:n'' rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n n' c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` 
+  case (Proc_CFG_SeqFirst c\<^sub>1 n n' c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'` 
     `n' \<noteq> Exit`
-  obtain nx where "c\<^isub>1 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p nx"
+  obtain nx where "c\<^sub>1 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG_Entry_Exit Proc_CFG_Entry)
     by(case_tac n)(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit`
+  case (Proc_CFG_SeqConnect c\<^sub>1 n c\<^sub>2)
+  from `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit`
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n n' c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` 
+  case (Proc_CFG_SeqSecond c\<^sub>2 n n' c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n \<oplus> #:c\<^sub>1 -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'` 
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>2 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p nx"
+  obtain nx where "c\<^sub>2 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
       apply(cases n) apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
      apply(cases n) apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
     by(cases n,auto,case_tac n,auto)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n n' b c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> 1 -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+  case (Proc_CFG_CondThen c\<^sub>1 n n' b c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> 1 -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>1 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p nx"
+  obtain nx where "c\<^sub>1 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(cases n) apply auto apply(case_tac n) apply auto
     apply(cases n) apply auto
     by(case_tac n)(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n n' b c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 + 1 -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+  case (Proc_CFG_CondElse c\<^sub>2 n n' b c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> #:c\<^sub>1 + 1 -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>2 \<turnstile> n -IEdge et\<rightarrow>\<^isub>p nx"
+  obtain nx where "c\<^sub>2 \<turnstile> n -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(cases n) apply auto
      apply(case_tac n) apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
@@ -351,10 +351,10 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBody c' n n' b)
-  note IH = `\<And>n''. c' \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `while (b) c' \<turnstile> n \<oplus> 2 -IEdge et\<rightarrow>\<^isub>p n''` `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+  note IH = `\<And>n''. c' \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `while (b) c' \<turnstile> n \<oplus> 2 -IEdge et\<rightarrow>\<^sub>p n''` `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry` `n' \<noteq> Exit`
-  obtain nx where "c' \<turnstile> n -IEdge et\<rightarrow>\<^isub>p nx"
+  obtain nx where "c' \<turnstile> n -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
       apply(drule label_incr_ge[OF sym]) apply simp
      apply(cases n) apply auto apply(case_tac n) apply auto
@@ -362,37 +362,37 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBodyExit c' n b)
-  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit`
+  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit`
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
   case Proc_CFG_Call
-  from `Call p es rets \<turnstile> Label 0 -IEdge et\<rightarrow>\<^isub>p n''`
+  from `Call p es rets \<turnstile> Label 0 -IEdge et\<rightarrow>\<^sub>p n''`
   show ?case by(fastforce elim:Proc_CFG.cases)
 qed
 
 
 lemma Proc_CFG_Call_Intra_edge_not_same_target:
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; prog \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n'\<rbrakk> \<Longrightarrow> False"
+  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; prog \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n'\<rbrakk> \<Longrightarrow> False"
 proof(induct prog n "CEdge (p,es,rets)" n' arbitrary:n'' rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n n' c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> False`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n'` `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` 
+  case (Proc_CFG_SeqFirst c\<^sub>1 n n' c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> False`
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n'` `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'` 
     `n' \<noteq> Exit`
-  have "c\<^isub>1 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n'"
+  have "c\<^sub>1 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n'"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG_Entry dest:Proc_CFG_targetlabel_less_num_nodes) 
     by(case_tac n')(auto dest:Proc_CFG_targetlabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit`
+  case (Proc_CFG_SeqConnect c\<^sub>1 n c\<^sub>2)
+  from `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit`
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n n' c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> False`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1` `c\<^isub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` 
+  case (Proc_CFG_SeqSecond c\<^sub>2 n n' c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> False`
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<oplus> #:c\<^sub>1` `c\<^sub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'` 
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>2 \<turnstile> nx -IEdge et\<rightarrow>\<^isub>p n'"
+  obtain nx where "c\<^sub>2 \<turnstile> nx -IEdge et\<rightarrow>\<^sub>p n'"
     apply - apply(erule Proc_CFG.cases,auto)
        apply(fastforce intro:Proc_CFG_Entry_Exit)
       apply(cases n') apply(auto dest:Proc_CFG_targetlabel_less_num_nodes)
@@ -401,11 +401,11 @@ next
     by(case_tac n') auto
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n n' b c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> False`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<oplus> 1` `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+  case (Proc_CFG_CondThen c\<^sub>1 n n' b c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> False`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<oplus> 1` `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>1 \<turnstile> nx -IEdge et\<rightarrow>\<^isub>p n'"
+  obtain nx where "c\<^sub>1 \<turnstile> nx -IEdge et\<rightarrow>\<^sub>p n'"
     apply - apply(erule Proc_CFG.cases,auto)
         apply(cases n') apply(auto intro:Proc_CFG_Entry_Exit)
        apply(cases n') apply(auto dest:Proc_CFG_Call_target_0)
@@ -416,11 +416,11 @@ next
     by(case_tac n')(auto dest:Proc_CFG_Call_Labels)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n n' b c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> False`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1 + 1` `c\<^isub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+  case (Proc_CFG_CondElse c\<^sub>2 n n' b c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> False`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<oplus> #:c\<^sub>1 + 1` `c\<^sub>2 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>2 \<turnstile> nx -IEdge et\<rightarrow>\<^isub>p n'"
+  obtain nx where "c\<^sub>2 \<turnstile> nx -IEdge et\<rightarrow>\<^sub>p n'"
     apply - apply(erule Proc_CFG.cases,auto)
         apply(cases n') apply(auto intro:Proc_CFG_Entry_Exit)
        apply(cases n') apply(auto dest:Proc_CFG_Call_target_0)
@@ -432,10 +432,10 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBody c' n n' b)
-  note IH = `\<And>n''. c' \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> False`
-  from `while (b) c' \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p n' \<oplus> 2` `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+  note IH = `\<And>n''. c' \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> False`
+  from `while (b) c' \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p n' \<oplus> 2` `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry` `n' \<noteq> Exit`
-  obtain nx where "c' \<turnstile> nx -IEdge et\<rightarrow>\<^isub>p n'"
+  obtain nx where "c' \<turnstile> nx -IEdge et\<rightarrow>\<^sub>p n'"
     apply - apply(erule Proc_CFG.cases,auto)
       apply(cases n') apply(auto dest:Proc_CFG_Call_target_0)
      apply(cases n') apply auto
@@ -443,101 +443,101 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBodyExit c' n b)
-  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit`
+  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit`
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
   case Proc_CFG_Call
-  from `Call p es rets \<turnstile> n'' -IEdge et\<rightarrow>\<^isub>p Label 1`
+  from `Call p es rets \<turnstile> n'' -IEdge et\<rightarrow>\<^sub>p Label 1`
   show ?case by(fastforce elim:Proc_CFG.cases)
 qed
 
 
 lemma Proc_CFG_Call_nodes_eq:
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; prog \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''\<rbrakk>
+  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; prog \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''\<rbrakk>
   \<Longrightarrow> n' = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'"
 proof(induct prog n "CEdge (p,es,rets)" n' arbitrary:n'' rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n n' c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''
+  case (Proc_CFG_SeqFirst c\<^sub>1 n n' c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''
     \<Longrightarrow> n' = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `c\<^isub>1;; c\<^isub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  have "c\<^isub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''"
+  from `c\<^sub>1;; c\<^sub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  have "c\<^sub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(fastforce dest:Proc_CFG_Call_Labels)
     by(case_tac n,(fastforce dest:Proc_CFG_sourcelabel_less_num_nodes)+)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p Exit` have False
+  case (Proc_CFG_SeqConnect c\<^sub>1 n c\<^sub>2)
+  from `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p Exit` have False
     by(fastforce dest:Proc_CFG_Call_Labels)
   thus ?case by simp
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n n' c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''
+  case (Proc_CFG_SeqSecond c\<^sub>2 n n' c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''
     \<Longrightarrow> n' = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''` `n \<noteq> Entry`
-  obtain nx where edge:"c\<^isub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx" and nx:"nx \<oplus> #:c\<^isub>1 = n''"
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n \<oplus> #:c\<^sub>1 -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''` `n \<noteq> Entry`
+  obtain nx where edge:"c\<^sub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx" and nx:"nx \<oplus> #:c\<^sub>1 = n''"
     apply - apply(erule Proc_CFG.cases,auto)
     by(cases n,auto dest:Proc_CFG_sourcelabel_less_num_nodes label_incr_inj)+
   from edge have "n' = nx \<and> p = p' \<and> es = es' \<and> rets = rets'" by (rule IH)
   with nx show ?case by auto
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n n' b c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''
+  case (Proc_CFG_CondThen c\<^sub>1 n n' b c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''
     \<Longrightarrow> n' = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> 1 -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''`
-  obtain nx where "c\<^isub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx \<and> nx \<oplus> 1 = n''"
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> 1 -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''`
+  obtain nx where "c\<^sub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx \<and> nx \<oplus> 1 = n''"
   proof(rule Proc_CFG.cases)
-    fix c\<^isub>2' nx etx nx' bx c\<^isub>1'
-    assume "if (b) c\<^isub>1 else c\<^isub>2 = if (bx) c\<^isub>1' else c\<^isub>2'"
-      and "n \<oplus> 1 = nx \<oplus> #:c\<^isub>1' + 1" and "nx \<noteq> Entry"
-    with `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'` obtain l where "n = Label l" and "l \<ge> #:c\<^isub>1"
+    fix c\<^sub>2' nx etx nx' bx c\<^sub>1'
+    assume "if (b) c\<^sub>1 else c\<^sub>2 = if (bx) c\<^sub>1' else c\<^sub>2'"
+      and "n \<oplus> 1 = nx \<oplus> #:c\<^sub>1' + 1" and "nx \<noteq> Entry"
+    with `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'` obtain l where "n = Label l" and "l \<ge> #:c\<^sub>1"
       by(cases n,auto,cases nx,auto)
-    with `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'` have False
+    with `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'` have False
       by(fastforce dest:Proc_CFG_sourcelabel_less_num_nodes)
     thus ?thesis by simp
   qed (auto dest:label_incr_inj)
-  then obtain nx where edge:"c\<^isub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx" 
+  then obtain nx where edge:"c\<^sub>1 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx" 
     and nx:"nx \<oplus> 1 = n''" by blast
   from IH[OF edge] nx show ?case by simp
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n n' b c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''
+  case (Proc_CFG_CondElse c\<^sub>2 n n' b c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''
     \<Longrightarrow> n' = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 + 1 -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''`
-  obtain nx where "c\<^isub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx \<and> nx \<oplus> #:c\<^isub>1 + 1 = n''"
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> #:c\<^sub>1 + 1 -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''`
+  obtain nx where "c\<^sub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx \<and> nx \<oplus> #:c\<^sub>1 + 1 = n''"
   proof(rule Proc_CFG.cases)
-    fix c\<^isub>1' nx etx nx' bx c\<^isub>2'
-    assume ifs:"if (b) c\<^isub>1 else c\<^isub>2 = if (bx) c\<^isub>1' else c\<^isub>2'"
-      and "n \<oplus> #:c\<^isub>1 + 1 = nx \<oplus> 1" and "nx \<noteq> Entry"
-      and edge:"c\<^isub>1' \<turnstile> nx -etx\<rightarrow>\<^isub>p nx'"
-    then obtain l where "nx = Label l" and "l \<ge> #:c\<^isub>1"
+    fix c\<^sub>1' nx etx nx' bx c\<^sub>2'
+    assume ifs:"if (b) c\<^sub>1 else c\<^sub>2 = if (bx) c\<^sub>1' else c\<^sub>2'"
+      and "n \<oplus> #:c\<^sub>1 + 1 = nx \<oplus> 1" and "nx \<noteq> Entry"
+      and edge:"c\<^sub>1' \<turnstile> nx -etx\<rightarrow>\<^sub>p nx'"
+    then obtain l where "nx = Label l" and "l \<ge> #:c\<^sub>1"
       by(cases n,auto,cases nx,auto)
     with edge ifs have False
       by(fastforce dest:Proc_CFG_sourcelabel_less_num_nodes)
     thus ?thesis by simp
   qed (auto dest:label_incr_inj)
-  then obtain nx where edge:"c\<^isub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx"
-    and nx:"nx \<oplus> #:c\<^isub>1 + 1 = n''"
+  then obtain nx where edge:"c\<^sub>2 \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx"
+    and nx:"nx \<oplus> #:c\<^sub>1 + 1 = n''"
     by blast
   from IH[OF edge] nx show ?case by simp
 next
   case (Proc_CFG_WhileBody c' n n' b)
-  note IH = `\<And>n''. c' \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''
+  note IH = `\<And>n''. c' \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''
     \<Longrightarrow> n' = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `while (b) c' \<turnstile> n \<oplus> 2 -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''`
-  obtain nx where "c' \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx \<and> nx \<oplus> 2 = n''"
+  from `while (b) c' \<turnstile> n \<oplus> 2 -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''`
+  obtain nx where "c' \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx \<and> nx \<oplus> 2 = n''"
     by(rule Proc_CFG.cases,auto dest:label_incr_inj Proc_CFG_Call_Labels)
-  then obtain nx where edge:"c' \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx" 
+  then obtain nx where edge:"c' \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx" 
     and nx:"nx \<oplus> 2 = n''" by blast
   from IH[OF edge] nx show ?case by simp
 next
   case (Proc_CFG_WhileBodyExit c' n b)
-  from `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p Exit` have False
+  from `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p Exit` have False
     by(fastforce dest:Proc_CFG_Call_Labels)
   thus ?case by simp
 next
   case Proc_CFG_Call
-  from `Call p es rets \<turnstile> Label 0 -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''`
+  from `Call p es rets \<turnstile> Label 0 -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''`
   have "p = p' \<and> es = es' \<and> rets = rets' \<and> n'' = Label 1"
     by(auto elim:Proc_CFG.cases)
   then show ?case by simp
@@ -545,29 +545,29 @@ qed
 
 
 lemma Proc_CFG_Call_nodes_eq':
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; prog \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'\<rbrakk>
+  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; prog \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'\<rbrakk>
   \<Longrightarrow> n = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'"
 proof(induct prog n "CEdge (p,es,rets)" n' arbitrary:n'' rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n n' c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'
+  case (Proc_CFG_SeqFirst c\<^sub>1 n n' c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'
     \<Longrightarrow> n = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'` `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  have "c\<^isub>1 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'"
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'` `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  have "c\<^sub>1 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(fastforce dest:Proc_CFG_Call_Labels)
     by(case_tac n',auto dest:Proc_CFG_targetlabel_less_num_nodes Proc_CFG_Call_Labels)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p Exit` have False
+  case (Proc_CFG_SeqConnect c\<^sub>1 n c\<^sub>2)
+  from `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p Exit` have False
     by(fastforce dest:Proc_CFG_Call_Labels)
   thus ?case by simp
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n n' c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'
+  case (Proc_CFG_SeqSecond c\<^sub>2 n n' c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'
     \<Longrightarrow> n = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1`
-  obtain nx where edge:"c\<^isub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'" and nx:"nx \<oplus> #:c\<^isub>1 = n''"
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n' \<oplus> #:c\<^sub>1`
+  obtain nx where edge:"c\<^sub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'" and nx:"nx \<oplus> #:c\<^sub>1 = n''"
     apply - apply(erule Proc_CFG.cases,auto)
     by(cases n',
        auto dest:Proc_CFG_targetlabel_less_num_nodes Proc_CFG_Call_Labels 
@@ -575,61 +575,61 @@ next
   from edge have "n = nx \<and> p = p' \<and> es = es' \<and> rets = rets'" by (rule IH)
   with nx show ?case by auto
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n n' b c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'
+  case (Proc_CFG_CondThen c\<^sub>1 n n' b c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'
     \<Longrightarrow> n = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<oplus> 1`
-  obtain nx where "c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<and> nx \<oplus> 1 = n''"
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n' \<oplus> 1`
+  obtain nx where "c\<^sub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p n' \<and> nx \<oplus> 1 = n''"
   proof(cases)
     case (Proc_CFG_CondElse nx nx')
-    from `n' \<oplus> 1 = nx' \<oplus> #:c\<^isub>1 + 1`
-      `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-    obtain l where "n' = Label l" and "l \<ge> #:c\<^isub>1"
+    from `n' \<oplus> 1 = nx' \<oplus> #:c\<^sub>1 + 1`
+      `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+    obtain l where "n' = Label l" and "l \<ge> #:c\<^sub>1"
       by(cases n', auto dest:Proc_CFG_Call_Labels,cases nx',auto)
-    with `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'` have False
+    with `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'` have False
       by(fastforce dest:Proc_CFG_targetlabel_less_num_nodes)
     thus ?thesis by simp
   qed (auto dest:label_incr_inj)
-  then obtain nx where edge:"c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'" 
+  then obtain nx where edge:"c\<^sub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'" 
     and nx:"nx \<oplus> 1 = n''"
     by blast
   from IH[OF edge] nx show ?case by simp
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n n' b c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'
+  case (Proc_CFG_CondElse c\<^sub>2 n n' b c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'
     \<Longrightarrow> n = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1 + 1`
-  obtain nx where "c\<^isub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<and> nx \<oplus> #:c\<^isub>1 + 1 = n''"
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n' \<oplus> #:c\<^sub>1 + 1`
+  obtain nx where "c\<^sub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p n' \<and> nx \<oplus> #:c\<^sub>1 + 1 = n''"
   proof(cases)
     case (Proc_CFG_CondThen nx nx')
-    from `n' \<oplus> #:c\<^isub>1 + 1 = nx' \<oplus> 1`
-      `c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx'`
-    obtain l where "nx' = Label l" and "l \<ge> #:c\<^isub>1"
+    from `n' \<oplus> #:c\<^sub>1 + 1 = nx' \<oplus> 1`
+      `c\<^sub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx'`
+    obtain l where "nx' = Label l" and "l \<ge> #:c\<^sub>1"
       by(cases n',auto,cases nx',auto dest:Proc_CFG_Call_Labels)
-    with `c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx'`
+    with `c\<^sub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx'`
     have False by(fastforce dest:Proc_CFG_targetlabel_less_num_nodes)
     thus ?thesis by simp
   qed (auto dest:label_incr_inj)
-  then obtain nx where edge:"c\<^isub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'" 
-    and nx:"nx \<oplus> #:c\<^isub>1 + 1 = n''"
+  then obtain nx where edge:"c\<^sub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'" 
+    and nx:"nx \<oplus> #:c\<^sub>1 + 1 = n''"
     by blast
   from IH[OF edge] nx show ?case by simp
 next
   case (Proc_CFG_WhileBody c' n n' b)
-  note IH = `\<And>n''. c' \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'
+  note IH = `\<And>n''. c' \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'
     \<Longrightarrow> n = n'' \<and> p = p' \<and> es = es' \<and> rets = rets'`
-  from `while (b) c' \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<oplus> 2`
-  obtain nx where edge:"c' \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'" and nx:"nx \<oplus> 2 = n''"
+  from `while (b) c' \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n' \<oplus> 2`
+  obtain nx where edge:"c' \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'" and nx:"nx \<oplus> 2 = n''"
     by(rule Proc_CFG.cases,auto dest:label_incr_inj)
   from IH[OF edge] nx show ?case by simp
 next
   case (Proc_CFG_WhileBodyExit c' n b)
-  from `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p Exit`
+  from `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p Exit`
   have False by(fastforce dest:Proc_CFG_Call_Labels)
   thus ?case by simp
 next
   case Proc_CFG_Call
-  from `Call p es rets \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label 1`
+  from `Call p es rets \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^sub>p Label 1`
   have "p = p' \<and> es = es' \<and> rets = rets' \<and> n'' = Label 0"
     by(auto elim:Proc_CFG.cases)
   then show ?case by simp
@@ -637,48 +637,48 @@ qed
 
 
 lemma Proc_CFG_Call_targetnode_no_Call_sourcenode:
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; prog \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''\<rbrakk> 
+  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; prog \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''\<rbrakk> 
   \<Longrightarrow> False"
 proof(induct prog n "CEdge (p,es,rets)" n' arbitrary:n'' rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n n' c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n' -CEdge (p', es', rets')\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `c\<^isub>1;; c\<^isub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  have "c\<^isub>1 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n''"
+  case (Proc_CFG_SeqFirst c\<^sub>1 n n' c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n' -CEdge (p', es', rets')\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `c\<^sub>1;; c\<^sub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  have "c\<^sub>1 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n''"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(fastforce dest:Proc_CFG_Call_Labels)
     by(case_tac n)(auto dest:Proc_CFG_targetlabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p Exit` have False
+  case (Proc_CFG_SeqConnect c\<^sub>1 n c\<^sub>2)
+  from `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p Exit` have False
     by(fastforce dest:Proc_CFG_Call_Labels)
   thus ?case by simp
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n n' c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n' -CEdge (p', es', rets')\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `c\<^isub>1;; c\<^isub>2 \<turnstile> n' \<oplus> #:c\<^isub>1 -CEdge (p', es', rets')\<rightarrow>\<^isub>p n''` `c\<^isub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c\<^isub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx"
+  case (Proc_CFG_SeqSecond c\<^sub>2 n n' c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n' -CEdge (p', es', rets')\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `c\<^sub>1;; c\<^sub>2 \<turnstile> n' \<oplus> #:c\<^sub>1 -CEdge (p', es', rets')\<rightarrow>\<^sub>p n''` `c\<^sub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c\<^sub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
       apply(cases n') apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
      apply(fastforce dest:Proc_CFG_Call_Labels)
     by(cases n',auto,case_tac n,auto)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n n' b c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n' \<oplus> 1 -CEdge (p', es', rets')\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c\<^isub>1 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx"
+  case (Proc_CFG_CondThen c\<^sub>1 n n' b c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n' \<oplus> 1 -CEdge (p', es', rets')\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c\<^sub>1 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(cases n') apply auto apply(case_tac n) apply auto
     apply(cases n') apply auto
     by(case_tac n)(auto dest:Proc_CFG_targetlabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n n' b c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n' \<oplus> #:c\<^isub>1 + 1 -CEdge (p', es', rets')\<rightarrow>\<^isub>p n''` 
-    `c\<^isub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c\<^isub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx"
+  case (Proc_CFG_CondElse c\<^sub>2 n n' b c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n' \<oplus> #:c\<^sub>1 + 1 -CEdge (p', es', rets')\<rightarrow>\<^sub>p n''` 
+    `c\<^sub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c\<^sub>2 \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(cases n') apply auto
      apply(case_tac n) apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
@@ -686,63 +686,63 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBody c' n n' b)
-  note IH = `\<And>n''. c' \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'' \<Longrightarrow> False`
-  from `while (b) c' \<turnstile> n' \<oplus> 2 -CEdge (p', es', rets')\<rightarrow>\<^isub>p n''` `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c' \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx"
+  note IH = `\<And>n''. c' \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'' \<Longrightarrow> False`
+  from `while (b) c' \<turnstile> n' \<oplus> 2 -CEdge (p', es', rets')\<rightarrow>\<^sub>p n''` `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c' \<turnstile> n' -CEdge (p',es',rets')\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
     by(cases n',auto,case_tac n,auto)+
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBodyExit c' n b)
-  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit` 
+  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit` 
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
   case Proc_CFG_Call
-  from `Call p es rets \<turnstile> Label 1 -CEdge (p', es', rets')\<rightarrow>\<^isub>p n''`
+  from `Call p es rets \<turnstile> Label 1 -CEdge (p', es', rets')\<rightarrow>\<^sub>p n''`
   show ?case by(fastforce elim:Proc_CFG.cases)
 qed
 
 
 lemma Proc_CFG_Call_follows_id_edge:
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; prog \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n''\<rbrakk> \<Longrightarrow> et = \<Up>id"
+  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; prog \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n''\<rbrakk> \<Longrightarrow> et = \<Up>id"
 proof(induct prog n "CEdge (p,es,rets)" n' arbitrary:n'' rule:Proc_CFG.induct)
-  case (Proc_CFG_SeqFirst c\<^isub>1 n n' c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> et = \<Up>id`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'` `n' \<noteq> Exit`
-  obtain nx where "c\<^isub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p nx"
+  case (Proc_CFG_SeqFirst c\<^sub>1 n n' c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> et = \<Up>id`
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'` `n' \<noteq> Exit`
+  obtain nx where "c\<^sub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
     by(case_tac n)(auto dest:Proc_CFG_targetlabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit`
+  case (Proc_CFG_SeqConnect c\<^sub>1 n c\<^sub>2)
+  from `c\<^sub>1 \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit`
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n n' c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> et = \<Up>id`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n' \<oplus> #:c\<^isub>1 -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c\<^isub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p nx"
+  case (Proc_CFG_SeqSecond c\<^sub>2 n n' c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> et = \<Up>id`
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n' \<oplus> #:c\<^sub>1 -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c\<^sub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
       apply(cases n') apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
      apply(cases n') apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
     by(cases n',auto,case_tac n,auto)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n n' b c\<^isub>2)
-  note IH = `\<And>n''. c\<^isub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> et = \<Up>id`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n' \<oplus> 1 -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
+  case (Proc_CFG_CondThen c\<^sub>1 n n' b c\<^sub>2)
+  note IH = `\<And>n''. c\<^sub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> et = \<Up>id`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n' \<oplus> 1 -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
     `n \<noteq> Entry`
-  obtain nx where "c\<^isub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p nx"
+  obtain nx where "c\<^sub>1 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(cases n') apply auto apply(case_tac n) apply auto
     apply(cases n') apply auto
     by(case_tac n)(auto dest:Proc_CFG_targetlabel_less_num_nodes)
   then show ?case by (rule IH)
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n n' b c\<^isub>1)
-  note IH = `\<And>n''. c\<^isub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> et = \<Up>id`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n' \<oplus> #:c\<^isub>1 + 1 -IEdge et\<rightarrow>\<^isub>p n''` `c\<^isub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c\<^isub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p nx"
+  case (Proc_CFG_CondElse c\<^sub>2 n n' b c\<^sub>1)
+  note IH = `\<And>n''. c\<^sub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> et = \<Up>id`
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n' \<oplus> #:c\<^sub>1 + 1 -IEdge et\<rightarrow>\<^sub>p n''` `c\<^sub>2 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c\<^sub>2 \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
      apply(cases n') apply auto
      apply(case_tac n) apply(auto dest:Proc_CFG_sourcelabel_less_num_nodes)
@@ -750,9 +750,9 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBody c' n n' b)
-  note IH = `\<And>n''. c' \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p n'' \<Longrightarrow> et = \<Up>id`
-  from `while (b) c' \<turnstile> n' \<oplus> 2 -IEdge et\<rightarrow>\<^isub>p n''` `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
-  obtain nx where "c' \<turnstile> n' -IEdge et\<rightarrow>\<^isub>p nx"
+  note IH = `\<And>n''. c' \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p n'' \<Longrightarrow> et = \<Up>id`
+  from `while (b) c' \<turnstile> n' \<oplus> 2 -IEdge et\<rightarrow>\<^sub>p n''` `c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'`
+  obtain nx where "c' \<turnstile> n' -IEdge et\<rightarrow>\<^sub>p nx"
     apply - apply(erule Proc_CFG.cases,auto)
       apply(cases n') apply auto
      apply(cases n') apply auto apply(case_tac n) apply auto
@@ -760,17 +760,17 @@ next
   then show ?case by (rule IH)
 next
   case (Proc_CFG_WhileBodyExit c' n et' b)
-  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Exit` 
+  from `c' \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^sub>p Exit` 
   show ?case by(fastforce dest:Proc_CFG_Call_Labels)
 next
   case Proc_CFG_Call
-  from `Call p es rets \<turnstile> Label 1 -IEdge et\<rightarrow>\<^isub>p n''` show ?case
+  from `Call p es rets \<turnstile> Label 1 -IEdge et\<rightarrow>\<^sub>p n''` show ?case
     by(fastforce elim:Proc_CFG.cases)
 qed
 
 
 lemma Proc_CFG_edge_det:
-  "\<lbrakk>prog \<turnstile> n -et\<rightarrow>\<^isub>p n'; prog \<turnstile> n -et'\<rightarrow>\<^isub>p n'\<rbrakk> \<Longrightarrow> et = et'"
+  "\<lbrakk>prog \<turnstile> n -et\<rightarrow>\<^sub>p n'; prog \<turnstile> n -et'\<rightarrow>\<^sub>p n'\<rbrakk> \<Longrightarrow> et = et'"
 proof(induct rule:Proc_CFG.induct)
   case Proc_CFG_Entry_Exit thus ?case by(fastforce dest:Proc_CFG_EntryD)
 next
@@ -782,31 +782,31 @@ next
 next
   case Proc_CFG_LAssSkip thus ?case by(fastforce elim:Proc_CFG.cases)
 next
-  case (Proc_CFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note edge = `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'` 
-  note IH = `c\<^isub>1 \<turnstile> n -et'\<rightarrow>\<^isub>p n' \<Longrightarrow> et = et'`
+  case (Proc_CFG_SeqFirst c\<^sub>1 n et n' c\<^sub>2)
+  note edge = `c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p n'` 
+  note IH = `c\<^sub>1 \<turnstile> n -et'\<rightarrow>\<^sub>p n' \<Longrightarrow> et = et'`
   from edge `n' \<noteq> Exit` obtain l where l:"n' = Label l" by (cases n') auto
-  with edge have "l < #:c\<^isub>1" by(fastforce intro:Proc_CFG_targetlabel_less_num_nodes)
-  with `c\<^isub>1;;c\<^isub>2 \<turnstile> n -et'\<rightarrow>\<^isub>p n'` l have "c\<^isub>1 \<turnstile> n -et'\<rightarrow>\<^isub>p n'"
+  with edge have "l < #:c\<^sub>1" by(fastforce intro:Proc_CFG_targetlabel_less_num_nodes)
+  with `c\<^sub>1;;c\<^sub>2 \<turnstile> n -et'\<rightarrow>\<^sub>p n'` l have "c\<^sub>1 \<turnstile> n -et'\<rightarrow>\<^sub>p n'"
     by(fastforce elim:Proc_CFG.cases intro:Proc_CFG.intros dest:label_incr_ge)
   from IH[OF this] show ?case .
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  note edge = `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p Exit`
-  note IH = `c\<^isub>1 \<turnstile> n -et'\<rightarrow>\<^isub>p Exit \<Longrightarrow> et = et'`
+  case (Proc_CFG_SeqConnect c\<^sub>1 n et c\<^sub>2)
+  note edge = `c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p Exit`
+  note IH = `c\<^sub>1 \<turnstile> n -et'\<rightarrow>\<^sub>p Exit \<Longrightarrow> et = et'`
   from edge `n \<noteq> Entry` obtain l where l:"n = Label l" by (cases n) auto
-  with edge have "l < #:c\<^isub>1" by(fastforce intro: Proc_CFG_sourcelabel_less_num_nodes)
-  with `c\<^isub>1;;c\<^isub>2 \<turnstile> n -et'\<rightarrow>\<^isub>p Label #:c\<^isub>1` l have "c\<^isub>1 \<turnstile> n -et'\<rightarrow>\<^isub>p Exit"
+  with edge have "l < #:c\<^sub>1" by(fastforce intro: Proc_CFG_sourcelabel_less_num_nodes)
+  with `c\<^sub>1;;c\<^sub>2 \<turnstile> n -et'\<rightarrow>\<^sub>p Label #:c\<^sub>1` l have "c\<^sub>1 \<turnstile> n -et'\<rightarrow>\<^sub>p Exit"
     by(fastforce elim:Proc_CFG.cases 
                 dest:Proc_CFG_targetlabel_less_num_nodes label_incr_ge)
   from IH[OF this] show ?case .
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note edge = `c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'` 
-  note IH = `c\<^isub>2 \<turnstile> n -et'\<rightarrow>\<^isub>p n' \<Longrightarrow> et = et'`
+  case (Proc_CFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1)
+  note edge = `c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'` 
+  note IH = `c\<^sub>2 \<turnstile> n -et'\<rightarrow>\<^sub>p n' \<Longrightarrow> et = et'`
   from edge `n \<noteq> Entry` obtain l where l:"n = Label l" by (cases n) auto
-  with edge have "l < #:c\<^isub>2" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `c\<^isub>1;;c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -et'\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1` l have "c\<^isub>2 \<turnstile> n -et'\<rightarrow>\<^isub>p n'"
+  with edge have "l < #:c\<^sub>2" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
+  with `c\<^sub>1;;c\<^sub>2 \<turnstile> n \<oplus> #:c\<^sub>1 -et'\<rightarrow>\<^sub>p n' \<oplus> #:c\<^sub>1` l have "c\<^sub>2 \<turnstile> n -et'\<rightarrow>\<^sub>p n'"
     by -(erule Proc_CFG.cases,
     (fastforce dest:Proc_CFG_sourcelabel_less_num_nodes label_incr_ge
               dest!:label_incr_inj)+)
@@ -816,22 +816,22 @@ next
 next
   case Proc_CFG_CondFalse thus ?case by(fastforce elim:Proc_CFG.cases)
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note edge = `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'`
-  note IH = `c\<^isub>1 \<turnstile> n -et'\<rightarrow>\<^isub>p n' \<Longrightarrow> et = et'`
+  case (Proc_CFG_CondThen c\<^sub>1 n et n' b c\<^sub>2)
+  note edge = `c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p n'`
+  note IH = `c\<^sub>1 \<turnstile> n -et'\<rightarrow>\<^sub>p n' \<Longrightarrow> et = et'`
   from edge `n \<noteq> Entry` obtain l where l:"n = Label l" by (cases n) auto
-  with edge have "l < #:c\<^isub>1" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> 1 -et'\<rightarrow>\<^isub>p n' \<oplus> 1` l have "c\<^isub>1 \<turnstile> n -et'\<rightarrow>\<^isub>p n'"
+  with edge have "l < #:c\<^sub>1" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
+  with `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> 1 -et'\<rightarrow>\<^sub>p n' \<oplus> 1` l have "c\<^sub>1 \<turnstile> n -et'\<rightarrow>\<^sub>p n'"
     by -(erule Proc_CFG.cases,(fastforce dest:label_incr_ge label_incr_inj)+)
   from IH[OF this] show ?case .
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note edge = `c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'`
-  note IH = `c\<^isub>2 \<turnstile> n -et'\<rightarrow>\<^isub>p n' \<Longrightarrow> et = et'`
+  case (Proc_CFG_CondElse c\<^sub>2 n et n' b c\<^sub>1)
+  note edge = `c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'`
+  note IH = `c\<^sub>2 \<turnstile> n -et'\<rightarrow>\<^sub>p n' \<Longrightarrow> et = et'`
   from edge `n \<noteq> Entry` obtain l where l:"n = Label l" by (cases n) auto
-  with edge have "l < #:c\<^isub>2" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -et'\<rightarrow>\<^isub>p n' \<oplus> (#:c\<^isub>1 + 1)` l 
-  have "c\<^isub>2 \<turnstile> n -et'\<rightarrow>\<^isub>p n'"
+  with edge have "l < #:c\<^sub>2" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
+  with `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n \<oplus> (#:c\<^sub>1 + 1) -et'\<rightarrow>\<^sub>p n' \<oplus> (#:c\<^sub>1 + 1)` l 
+  have "c\<^sub>2 \<turnstile> n -et'\<rightarrow>\<^sub>p n'"
     by -(erule Proc_CFG.cases,(fastforce dest:Proc_CFG_sourcelabel_less_num_nodes 
                              label_incr_inj label_incr_ge label_incr_simp_rev)+)
   from IH[OF this] show ?case .
@@ -843,23 +843,23 @@ next
   case Proc_CFG_WhileFalseSkip thus ?case by(fastforce elim:Proc_CFG.cases)
 next
   case (Proc_CFG_WhileBody c' n et n' b)
-  note edge = `c' \<turnstile> n -et\<rightarrow>\<^isub>p n'`
-  note IH = `c' \<turnstile> n -et'\<rightarrow>\<^isub>p n' \<Longrightarrow> et = et'`
+  note edge = `c' \<turnstile> n -et\<rightarrow>\<^sub>p n'`
+  note IH = `c' \<turnstile> n -et'\<rightarrow>\<^sub>p n' \<Longrightarrow> et = et'`
   from edge `n \<noteq> Entry` obtain l where l:"n = Label l" by (cases n) auto
   with edge have less:"l < #:c'" 
     by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
   from edge `n' \<noteq> Exit` obtain l' where l':"n' = Label l'" by (cases n') auto
   with edge have "l' < #:c'" by(fastforce intro:Proc_CFG_targetlabel_less_num_nodes)
-  with `while (b) c' \<turnstile> n \<oplus> 2 -et'\<rightarrow>\<^isub>p n' \<oplus> 2` l less l' have "c' \<turnstile> n -et'\<rightarrow>\<^isub>p n'"
+  with `while (b) c' \<turnstile> n \<oplus> 2 -et'\<rightarrow>\<^sub>p n' \<oplus> 2` l less l' have "c' \<turnstile> n -et'\<rightarrow>\<^sub>p n'"
     by(fastforce elim:Proc_CFG.cases dest:label_incr_start_Node_smaller)
   from IH[OF this] show ?case .
 next
   case (Proc_CFG_WhileBodyExit c' n et b)
-  note edge = `c' \<turnstile> n -et\<rightarrow>\<^isub>p Exit`
-  note IH = `c' \<turnstile> n -et'\<rightarrow>\<^isub>p Exit \<Longrightarrow> et = et'`
+  note edge = `c' \<turnstile> n -et\<rightarrow>\<^sub>p Exit`
+  note IH = `c' \<turnstile> n -et'\<rightarrow>\<^sub>p Exit \<Longrightarrow> et = et'`
   from edge `n \<noteq> Entry` obtain l where l:"n = Label l" by (cases n) auto
   with edge have "l < #:c'" by(fastforce intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `while (b) c' \<turnstile> n \<oplus> 2 -et'\<rightarrow>\<^isub>p Label 0` l have "c' \<turnstile> n -et'\<rightarrow>\<^isub>p Exit"
+  with `while (b) c' \<turnstile> n \<oplus> 2 -et'\<rightarrow>\<^sub>p Label 0` l have "c' \<turnstile> n -et'\<rightarrow>\<^sub>p Exit"
     by -(erule Proc_CFG.cases,auto dest:label_incr_start_Node_smaller)
   from IH[OF this] show ?case .
 next
@@ -870,97 +870,97 @@ qed
 
 
 lemma WCFG_deterministic:
-  "\<lbrakk>prog \<turnstile> n\<^isub>1 -et\<^isub>1\<rightarrow>\<^isub>p n\<^isub>1'; prog \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n\<^isub>1 = n\<^isub>2; n\<^isub>1' \<noteq> n\<^isub>2'\<rbrakk>
-  \<Longrightarrow> \<exists>Q Q'. et\<^isub>1 = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  "\<lbrakk>prog \<turnstile> n\<^sub>1 -et\<^sub>1\<rightarrow>\<^sub>p n\<^sub>1'; prog \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n\<^sub>1 = n\<^sub>2; n\<^sub>1' \<noteq> n\<^sub>2'\<rbrakk>
+  \<Longrightarrow> \<exists>Q Q'. et\<^sub>1 = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
             (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
-proof(induct arbitrary:n\<^isub>2 n\<^isub>2' rule:Proc_CFG.induct)
+proof(induct arbitrary:n\<^sub>2 n\<^sub>2' rule:Proc_CFG.induct)
   case (Proc_CFG_Entry_Exit prog)
-  from `prog \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Entry = n\<^isub>2` `Exit \<noteq> n\<^isub>2'`
-  have "et\<^isub>2 = IEdge (\<lambda>s. True)\<^isub>\<surd>" by(fastforce dest:Proc_CFG_EntryD)
+  from `prog \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Entry = n\<^sub>2` `Exit \<noteq> n\<^sub>2'`
+  have "et\<^sub>2 = IEdge (\<lambda>s. True)\<^sub>\<surd>" by(fastforce dest:Proc_CFG_EntryD)
   thus ?case by simp
 next
   case (Proc_CFG_Entry prog)
-  from `prog \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Entry = n\<^isub>2` `Label 0 \<noteq> n\<^isub>2'`
-  have "et\<^isub>2 = IEdge (\<lambda>s. False)\<^isub>\<surd>" by(fastforce dest:Proc_CFG_EntryD)
+  from `prog \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Entry = n\<^sub>2` `Label 0 \<noteq> n\<^sub>2'`
+  have "et\<^sub>2 = IEdge (\<lambda>s. False)\<^sub>\<surd>" by(fastforce dest:Proc_CFG_EntryD)
   thus ?case by simp
 next
   case Proc_CFG_Skip
-  from `Skip \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 0 = n\<^isub>2` `Exit \<noteq> n\<^isub>2'`
+  from `Skip \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 0 = n\<^sub>2` `Exit \<noteq> n\<^sub>2'`
   have False by(fastforce elim:Proc_CFG.cases)
   thus ?case by simp
 next
   case (Proc_CFG_LAss V e)
-  from `V:=e \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 0 = n\<^isub>2` `Label 1 \<noteq> n\<^isub>2'`
+  from `V:=e \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 0 = n\<^sub>2` `Label 1 \<noteq> n\<^sub>2'`
   have False by -(erule Proc_CFG.cases,auto)
   thus ?case by simp
 next
   case (Proc_CFG_LAssSkip V e)
-  from `V:=e \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 1 = n\<^isub>2` `Exit \<noteq> n\<^isub>2'`
+  from `V:=e \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 1 = n\<^sub>2` `Exit \<noteq> n\<^sub>2'`
   have False by -(erule Proc_CFG.cases,auto)
   thus ?case by simp
 next
-  case (Proc_CFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
-  \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  case (Proc_CFG_SeqFirst c\<^sub>1 n et n' c\<^sub>2)
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; n' \<noteq> n\<^sub>2'\<rbrakk>
+  \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
             (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n = n\<^isub>2` `n' \<noteq> n\<^isub>2'`
-  have "c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2' \<or> (c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p Exit \<and> n\<^isub>2' = Label #:c\<^isub>1)"
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p n'` `n = n\<^sub>2` `n' \<noteq> n\<^sub>2'`
+  have "c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2' \<or> (c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p Exit \<and> n\<^sub>2' = Label #:c\<^sub>1)"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros)
     by(case_tac n,auto dest:Proc_CFG_sourcelabel_less_num_nodes)+
   thus ?case
   proof
-    assume "c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'"
-    from IH[OF this `n = n\<^isub>2` `n' \<noteq> n\<^isub>2'`] show ?case .
+    assume "c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'"
+    from IH[OF this `n = n\<^sub>2` `n' \<noteq> n\<^sub>2'`] show ?case .
   next
-    assume "c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p Exit \<and> n\<^isub>2' = Label #:c\<^isub>1"
-    hence edge:"c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p Exit" and n2':"n\<^isub>2' = Label #:c\<^isub>1" by simp_all
-    from IH[OF edge `n = n\<^isub>2` `n' \<noteq> Exit`] show ?case .
+    assume "c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p Exit \<and> n\<^sub>2' = Label #:c\<^sub>1"
+    hence edge:"c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p Exit" and n2':"n\<^sub>2' = Label #:c\<^sub>1" by simp_all
+    from IH[OF edge `n = n\<^sub>2` `n' \<noteq> Exit`] show ?case .
   qed
 next
-  case (Proc_CFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; Exit \<noteq> n\<^isub>2'\<rbrakk>
-  \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  case (Proc_CFG_SeqConnect c\<^sub>1 n et c\<^sub>2)
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; Exit \<noteq> n\<^sub>2'\<rbrakk>
+  \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
             (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p Exit` `n = n\<^isub>2` `n \<noteq> Entry`
-    `Label #:c\<^isub>1 \<noteq> n\<^isub>2'` have "c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2' \<and> Exit \<noteq> n\<^isub>2'"
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p Exit` `n = n\<^sub>2` `n \<noteq> Entry`
+    `Label #:c\<^sub>1 \<noteq> n\<^sub>2'` have "c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2' \<and> Exit \<noteq> n\<^sub>2'"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros)
     by(case_tac n,auto dest:Proc_CFG_sourcelabel_less_num_nodes)+
-  from IH[OF this[THEN conjunct1] `n = n\<^isub>2` this[THEN conjunct2]]
+  from IH[OF this[THEN conjunct1] `n = n\<^sub>2` this[THEN conjunct2]]
   show ?case .
 next
-  case (Proc_CFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
-  \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  case (Proc_CFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1)
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; n' \<noteq> n\<^sub>2'\<rbrakk>
+  \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
             (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `c\<^isub>1;;c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<oplus> #:c\<^isub>1 = n\<^isub>2`
-    `n' \<oplus> #:c\<^isub>1 \<noteq> n\<^isub>2'` `n \<noteq> Entry`
-  obtain nx where "c\<^isub>2 \<turnstile> n -et\<^isub>2\<rightarrow>\<^isub>p nx \<and> nx \<oplus> #:c\<^isub>1 = n\<^isub>2'"
+  from `c\<^sub>1;;c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'` `n \<oplus> #:c\<^sub>1 = n\<^sub>2`
+    `n' \<oplus> #:c\<^sub>1 \<noteq> n\<^sub>2'` `n \<noteq> Entry`
+  obtain nx where "c\<^sub>2 \<turnstile> n -et\<^sub>2\<rightarrow>\<^sub>p nx \<and> nx \<oplus> #:c\<^sub>1 = n\<^sub>2'"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros)
       apply(cases n,auto dest:Proc_CFG_sourcelabel_less_num_nodes)
      apply(cases n,auto dest:Proc_CFG_sourcelabel_less_num_nodes)
     by(fastforce dest:label_incr_inj)
-  with `n' \<oplus> #:c\<^isub>1 \<noteq> n\<^isub>2'` have edge:"c\<^isub>2 \<turnstile> n -et\<^isub>2\<rightarrow>\<^isub>p nx" and neq:"n' \<noteq> nx"
+  with `n' \<oplus> #:c\<^sub>1 \<noteq> n\<^sub>2'` have edge:"c\<^sub>2 \<turnstile> n -et\<^sub>2\<rightarrow>\<^sub>p nx" and neq:"n' \<noteq> nx"
     by auto
   from IH[OF edge _ neq] show ?case by simp
 next
-  case (Proc_CFG_CondTrue b c\<^isub>1 c\<^isub>2)
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 0 = n\<^isub>2` `Label 1 \<noteq> n\<^isub>2'`
+  case (Proc_CFG_CondTrue b c\<^sub>1 c\<^sub>2)
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 0 = n\<^sub>2` `Label 1 \<noteq> n\<^sub>2'`
   show ?case by -(erule Proc_CFG.cases,auto)
 next
-  case (Proc_CFG_CondFalse b c\<^isub>1 c\<^isub>2)
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 0 = n\<^isub>2` `Label (#:c\<^isub>1 + 1) \<noteq> n\<^isub>2'`
+  case (Proc_CFG_CondFalse b c\<^sub>1 c\<^sub>2)
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 0 = n\<^sub>2` `Label (#:c\<^sub>1 + 1) \<noteq> n\<^sub>2'`
   show ?case by -(erule Proc_CFG.cases,auto)
 next
-  case (Proc_CFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
-    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  case (Proc_CFG_CondThen c\<^sub>1 n et n' b c\<^sub>2)
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; n' \<noteq> n\<^sub>2'\<rbrakk>
+    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
               (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c\<^isub>1 \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<noteq> Entry` 
-    `n \<oplus> 1 = n\<^isub>2` `n' \<oplus> 1 \<noteq> n\<^isub>2'`
-  obtain nx where "c\<^isub>1 \<turnstile> n -et\<^isub>2\<rightarrow>\<^isub>p nx \<and> n' \<noteq> nx"
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c\<^sub>1 \<turnstile> n -et\<rightarrow>\<^sub>p n'` `n \<noteq> Entry` 
+    `n \<oplus> 1 = n\<^sub>2` `n' \<oplus> 1 \<noteq> n\<^sub>2'`
+  obtain nx where "c\<^sub>1 \<turnstile> n -et\<^sub>2\<rightarrow>\<^sub>p nx \<and> n' \<noteq> nx"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros simp del:One_nat_def)
      apply(drule label_incr_inj) apply(auto simp del:One_nat_def)
@@ -968,13 +968,13 @@ next
     by(case_tac na,auto dest:Proc_CFG_sourcelabel_less_num_nodes)
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp
 next
-  case (Proc_CFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
-    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  case (Proc_CFG_CondElse c\<^sub>2 n et n' b c\<^sub>1)
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; n' \<noteq> n\<^sub>2'\<rbrakk>
+    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
               (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<noteq> Entry` 
-    `n \<oplus> #:c\<^isub>1 + 1 = n\<^isub>2` `n' \<oplus> #:c\<^isub>1 + 1 \<noteq> n\<^isub>2'`
-  obtain nx where "c\<^isub>2 \<turnstile> n -et\<^isub>2\<rightarrow>\<^isub>p nx \<and> n' \<noteq> nx"
+  from `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c\<^sub>2 \<turnstile> n -et\<rightarrow>\<^sub>p n'` `n \<noteq> Entry` 
+    `n \<oplus> #:c\<^sub>1 + 1 = n\<^sub>2` `n' \<oplus> #:c\<^sub>1 + 1 \<noteq> n\<^sub>2'`
+  obtain nx where "c\<^sub>2 \<turnstile> n -et\<^sub>2\<rightarrow>\<^sub>p nx \<and> n' \<noteq> nx"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros simp del:One_nat_def)
      apply(drule label_incr_simp_rev)
@@ -983,24 +983,24 @@ next
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp
 next
   case (Proc_CFG_WhileTrue b c')
-  from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 0 = n\<^isub>2` `Label 2 \<noteq> n\<^isub>2'`
+  from `while (b) c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 0 = n\<^sub>2` `Label 2 \<noteq> n\<^sub>2'`
   show ?case by -(erule Proc_CFG.cases,auto)
 next
   case (Proc_CFG_WhileFalse b c')
-  from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 0 = n\<^isub>2` `Label 1 \<noteq> n\<^isub>2'`
+  from `while (b) c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 0 = n\<^sub>2` `Label 1 \<noteq> n\<^sub>2'`
   show ?case by -(erule Proc_CFG.cases,auto)
 next
   case (Proc_CFG_WhileFalseSkip b c')
-  from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `Label 1 = n\<^isub>2` `Exit \<noteq> n\<^isub>2'`
+  from `while (b) c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `Label 1 = n\<^sub>2` `Exit \<noteq> n\<^sub>2'`
   show ?case by -(erule Proc_CFG.cases,auto dest:label_incr_ge)
 next
   case (Proc_CFG_WhileBody c' n et n' b)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
-    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; n' \<noteq> n\<^sub>2'\<rbrakk>
+    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
               (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c' \<turnstile> n -et\<rightarrow>\<^isub>p n'` `n \<noteq> Entry`
-    `n' \<noteq> Exit` `n \<oplus> 2 = n\<^isub>2` `n' \<oplus> 2 \<noteq> n\<^isub>2'`
-  obtain nx where "c' \<turnstile> n -et\<^isub>2\<rightarrow>\<^isub>p nx \<and> n' \<noteq> nx"
+  from `while (b) c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c' \<turnstile> n -et\<rightarrow>\<^sub>p n'` `n \<noteq> Entry`
+    `n' \<noteq> Exit` `n \<oplus> 2 = n\<^sub>2` `n' \<oplus> 2 \<noteq> n\<^sub>2'`
+  obtain nx where "c' \<turnstile> n -et\<^sub>2\<rightarrow>\<^sub>p nx \<and> n' \<noteq> nx"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros)
       apply(fastforce dest:label_incr_ge[OF sym])
@@ -1009,12 +1009,12 @@ next
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp
 next
   case (Proc_CFG_WhileBodyExit c' n et b)
-  note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'; n = n\<^isub>2; Exit \<noteq> n\<^isub>2'\<rbrakk>
-    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^isub>\<surd> \<and> et\<^isub>2 = IEdge (Q')\<^isub>\<surd> \<and> 
+  note IH = `\<And>n\<^sub>2 n\<^sub>2'. \<lbrakk>c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'; n = n\<^sub>2; Exit \<noteq> n\<^sub>2'\<rbrakk>
+    \<Longrightarrow> \<exists>Q Q'. et = IEdge (Q)\<^sub>\<surd> \<and> et\<^sub>2 = IEdge (Q')\<^sub>\<surd> \<and> 
               (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
-  from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow>\<^isub>p n\<^isub>2'` `c' \<turnstile> n -et\<rightarrow>\<^isub>p Exit` `n \<noteq> Entry`
-    `n \<oplus> 2 = n\<^isub>2` `Label 0 \<noteq> n\<^isub>2'`
-  obtain nx where "c' \<turnstile> n -et\<^isub>2\<rightarrow>\<^isub>p nx \<and> Exit \<noteq> nx"
+  from `while (b) c' \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow>\<^sub>p n\<^sub>2'` `c' \<turnstile> n -et\<rightarrow>\<^sub>p Exit` `n \<noteq> Entry`
+    `n \<oplus> 2 = n\<^sub>2` `Label 0 \<noteq> n\<^sub>2'`
+  obtain nx where "c' \<turnstile> n -et\<^sub>2\<rightarrow>\<^sub>p nx \<and> Exit \<noteq> nx"
     apply - apply(erule Proc_CFG.cases)
     apply(auto intro:Proc_CFG.intros)
      apply(fastforce dest:label_incr_ge[OF sym])
@@ -1047,10 +1047,10 @@ function containsCall ::
   "procs \<Rightarrow> cmd \<Rightarrow> pname list \<Rightarrow> pname \<Rightarrow> bool"
 where "containsCall procs Skip ps p \<longleftrightarrow> False"
   | "containsCall procs (V:=e) ps p \<longleftrightarrow> False"
-  | "containsCall procs (c\<^isub>1;;c\<^isub>2) ps p \<longleftrightarrow> 
-       containsCall procs c\<^isub>1 ps p \<or> containsCall procs c\<^isub>2 ps p"
-  | "containsCall procs (if (b) c\<^isub>1 else c\<^isub>2) ps p \<longleftrightarrow> 
-       containsCall procs c\<^isub>1 ps p \<or> containsCall procs c\<^isub>2 ps p"
+  | "containsCall procs (c\<^sub>1;;c\<^sub>2) ps p \<longleftrightarrow> 
+       containsCall procs c\<^sub>1 ps p \<or> containsCall procs c\<^sub>2 ps p"
+  | "containsCall procs (if (b) c\<^sub>1 else c\<^sub>2) ps p \<longleftrightarrow> 
+       containsCall procs c\<^sub>1 ps p \<or> containsCall procs c\<^sub>2 ps p"
   | "containsCall procs (while (b) c) ps p \<longleftrightarrow> 
        containsCall procs c ps p"
   | "containsCall procs (Call q es' rets') ps p \<longleftrightarrow> p = q \<and> ps = [] \<or> 
@@ -1198,16 +1198,16 @@ qed auto
 
 
 lemma Proc_CFG_Call_containsCall:
-  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n' \<Longrightarrow> containsCall procs prog [] p"
+  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n' \<Longrightarrow> containsCall procs prog [] p"
 by(induct prog n et\<equiv>"CEdge (p,es,rets)" n' rule:Proc_CFG.induct,auto)
 
 
 lemma containsCall_empty_Proc_CFG_Call_edge: 
   assumes "containsCall procs prog [] p"
-  obtains l es rets l' where "prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'"
+  obtains l es rets l' where "prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^sub>p Label l'"
 proof(atomize_elim)
   from `containsCall procs prog [] p`
-  show "\<exists>l es rets l'. prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'"
+  show "\<exists>l es rets l'. prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^sub>p Label l'"
   proof(induct procs prog ps\<equiv>"[]::pname list" p rule:containsCall_induct)
     case Seq thus ?case
       by auto(fastforce dest:Proc_CFG_SeqFirst,fastforce dest:Proc_CFG_SeqSecond)
@@ -1238,44 +1238,44 @@ for prog::cmd and procs::procs
 where
 
   Main:
-  "prog \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n' \<Longrightarrow> prog,procs \<turnstile> (Main,n) -et\<rightarrow> (Main,n')"
+  "prog \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n' \<Longrightarrow> prog,procs \<turnstile> (Main,n) -et\<rightarrow> (Main,n')"
 
 | Proc:
-  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'; 
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -IEdge et\<rightarrow>\<^sub>p n'; 
     containsCall procs prog ps p\<rbrakk> 
   \<Longrightarrow> prog,procs \<turnstile> (p,n) -et\<rightarrow> (p,n')"
 
 
 | MainCall:
-  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; (p,ins,outs,c) \<in> set procs\<rbrakk>
+  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'; (p,ins,outs,c) \<in> set procs\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (Main,Label l) 
                   -(\<lambda>s. True):(Main,n')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
 
 | ProcCall:
-  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l';
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^sub>p Label l';
     (p',ins',outs',c') \<in> set procs; containsCall procs prog ps p\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p,Label l) 
                -(\<lambda>s. True):(p,Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map (\<lambda>e cf. interpret e cf) es'\<rightarrow> (p',Entry)"
 
 | MainReturn:
-  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'; (p,ins,outs,c) \<in> set procs\<rbrakk>
+  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^sub>p Label l'; (p,ins,outs,c) \<in> set procs\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
        (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
 
 | ProcReturn:
-  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l'; 
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^sub>p Label l'; 
    (p',ins',outs',c') \<in> set procs; containsCall procs prog ps p\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p',Exit) -(\<lambda>cf. snd cf = (p,Label l'))\<hookleftarrow>\<^bsub>p'\<^esub>
        (\<lambda>cf cf'. cf'(rets' [:=] map cf outs'))\<rightarrow> (p,Label l')"
 
 | MainCallReturn:
-  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'
-  \<Longrightarrow> prog,procs \<turnstile> (Main,n) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,n')"
+  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^sub>p n'
+  \<Longrightarrow> prog,procs \<turnstile> (Main,n) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (Main,n')"
 
 | ProcCallReturn:
-  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'; 
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^sub>p n'; 
     containsCall procs prog ps p\<rbrakk> 
-  \<Longrightarrow> prog,procs \<turnstile> (p,n) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p,n')"
+  \<Longrightarrow> prog,procs \<turnstile> (p,n) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (p,n')"
 
 
 end

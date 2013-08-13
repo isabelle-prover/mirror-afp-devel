@@ -1471,11 +1471,11 @@ proof -
 qed
 
 abbreviation
-redrtrans :: "trm \<Rightarrow> trm \<Rightarrow> bool" (" _ \<mapsto>\<^isup>* _ " )
+redrtrans :: "trm \<Rightarrow> trm \<Rightarrow> bool" (" _ \<mapsto>\<^sup>* _ " )
 where "redrtrans \<equiv> reduction^**" 
 
 text {* To be able to handle the case where $p$ makes a step, we need to
-establish @{term "p \<mapsto> p' \<Longrightarrow> (m[x::=p]) \<mapsto>\<^isup>* (m[x::=p'])"} as well as the
+establish @{term "p \<mapsto> p' \<Longrightarrow> (m[x::=p]) \<mapsto>\<^sup>* (m[x::=p'])"} as well as the
 fact that strong normalization is preserved for an arbitrary number of reduction
 steps. The first claim involves a number of simple transitivity lemmas. Here we
 can benefit from having removed the freshness conditions from the reduction
@@ -1484,33 +1484,33 @@ the \isa{red-subst} lemma, only those cases where substitution is pushed to two
 subterms needs to be proven explicitly.*}
 
 lemma red_trans:
-  shows r1_trans: " s \<mapsto>\<^isup>* s' \<Longrightarrow> App s t \<mapsto>\<^isup>* App s' t"
-  and r2_trans: " t \<mapsto>\<^isup>* t' \<Longrightarrow> App s t \<mapsto>\<^isup>* App s t'"
-  and r4_trans: "t \<mapsto>\<^isup>* t' \<Longrightarrow> \<Lambda> x . t \<mapsto>\<^isup>* \<Lambda> x . t' "
-  and r6_trans: " s \<mapsto>\<^isup>* s'  \<Longrightarrow> s to x in t \<mapsto>\<^isup>* s' to x in t"
-  and r7_trans: "\<lbrakk> t \<mapsto>\<^isup>* t'  \<rbrakk> \<Longrightarrow> s to x in t \<mapsto>\<^isup>* s  to x in t'"
-  and r11_trans: "s \<mapsto>\<^isup>* s' \<Longrightarrow> [s] \<mapsto>\<^isup>* ([s'])"
+  shows r1_trans: " s \<mapsto>\<^sup>* s' \<Longrightarrow> App s t \<mapsto>\<^sup>* App s' t"
+  and r2_trans: " t \<mapsto>\<^sup>* t' \<Longrightarrow> App s t \<mapsto>\<^sup>* App s t'"
+  and r4_trans: "t \<mapsto>\<^sup>* t' \<Longrightarrow> \<Lambda> x . t \<mapsto>\<^sup>* \<Lambda> x . t' "
+  and r6_trans: " s \<mapsto>\<^sup>* s'  \<Longrightarrow> s to x in t \<mapsto>\<^sup>* s' to x in t"
+  and r7_trans: "\<lbrakk> t \<mapsto>\<^sup>* t'  \<rbrakk> \<Longrightarrow> s to x in t \<mapsto>\<^sup>* s  to x in t'"
+  and r11_trans: "s \<mapsto>\<^sup>* s' \<Longrightarrow> [s] \<mapsto>\<^sup>* ([s'])"
 by - (induct rule: rtranclp_induct , (auto intro:
 transitive_closurep_trans')[2])+
 
-lemma red_subst: "p \<mapsto> p' \<Longrightarrow> (m[x::=p]) \<mapsto>\<^isup>* (m[x::=p'])"
+lemma red_subst: "p \<mapsto> p' \<Longrightarrow> (m[x::=p]) \<mapsto>\<^sup>* (m[x::=p'])"
 proof(nominal_induct m avoiding: x p p' rule:trm.strong_induct)
   case (App s t) 
-  hence "App (s[x::=p]) (t[x::=p]) \<mapsto>\<^isup>* App (s[x::=p']) (t[x::=p])" 
+  hence "App (s[x::=p]) (t[x::=p]) \<mapsto>\<^sup>* App (s[x::=p']) (t[x::=p])" 
     by (auto intro: r1_trans)
-  also from App have "\<dots> \<mapsto>\<^isup>* App (s[x::=p']) ( t[x::=p'])"
+  also from App have "\<dots> \<mapsto>\<^sup>* App (s[x::=p']) ( t[x::=p'])"
     by (auto intro: r2_trans)
   finally show ?case by auto
 next
   case (To s y n) hence 
-    "(s[x::=p]) to y in (n[x::=p]) \<mapsto>\<^isup>* (s[x::=p']) to y in (n[x::=p])" 
+    "(s[x::=p]) to y in (n[x::=p]) \<mapsto>\<^sup>* (s[x::=p']) to y in (n[x::=p])" 
     by (auto intro: r6_trans)
-  also from To have " \<dots> \<mapsto>\<^isup>* (s[x::=p']) to y in (n[x::=p']) "
+  also from To have " \<dots> \<mapsto>\<^sup>* (s[x::=p']) to y in (n[x::=p']) "
     by (auto intro: r7_trans)
   finally show ?case using To by auto
 qed (auto intro:red_trans)
 
-lemma SN_trans : "\<lbrakk>  p \<mapsto>\<^isup>* p' ; SN p \<rbrakk> \<Longrightarrow> SN p' "
+lemma SN_trans : "\<lbrakk>  p \<mapsto>\<^sup>* p' ; SN p \<rbrakk> \<Longrightarrow> SN p' "
 by (induct rule: rtranclp_induct) (auto intro: SN_preserved)
 
 subsection {* Central lemma *}
@@ -1579,9 +1579,9 @@ reasioning about the reflexive transitive closure of the reduction relation. *}
               using xl xr by (auto)
             from this obtain p' where s: "s' = [p']" and  p : "p \<mapsto> p'" 
               by (blast dest:red_Ret)
-            from p have "((m\<star>k)[x::=p]) \<mapsto>\<^isup>* ((m\<star>k)[x::=p'])" 
+            from p have "((m\<star>k)[x::=p]) \<mapsto>\<^sup>* ((m\<star>k)[x::=p'])" 
               by (rule red_subst)
-            with xk have "((m[x::=p]) \<star> k) \<mapsto>\<^isup>* ((m[x::=p']) \<star> k)" 
+            with xk have "((m[x::=p]) \<star> k) \<mapsto>\<^sup>* ((m[x::=p']) \<star> k)" 
               by (simp add: ssubst_forget)
             hence sn: "SN ((m[x::=p']) \<star> k)" using sn by (rule SN_trans)
             from p xp have xp' : "x \<sharp> p'" by (rule reduction_fresh)

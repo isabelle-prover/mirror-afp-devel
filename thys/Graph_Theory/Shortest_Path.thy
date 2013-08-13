@@ -18,7 +18,7 @@ definition \<mu> where
   "\<mu> f u v \<equiv> INF p: {p. awalk u p v}. awalk_cost f p"
 
 lemma shortest_path_inf:
-  assumes "\<not>(u \<rightarrow>\<^isup>* v)"
+  assumes "\<not>(u \<rightarrow>\<^sup>* v)"
   shows "\<mu> f u v = \<infinity>"
 proof -
   have *: "{p. awalk u p v} = {}"
@@ -227,14 +227,14 @@ proof (intro ereal_MInfty_lessI notI)
 qed
 
 lemma \<mu>_reach_conv:
-  "\<mu> f u v < \<infinity> \<longleftrightarrow> u \<rightarrow>\<^isup>* v"
+  "\<mu> f u v < \<infinity> \<longleftrightarrow> u \<rightarrow>\<^sup>* v"
 proof
   assume "\<mu> f u v < \<infinity>"
   then have "{p. awalk u p v} \<noteq> {}"
     unfolding \<mu>_def INF_def by safe (simp add: top_ereal_def)
-  then show "u \<rightarrow>\<^isup>* v" by (simp add: reachable_awalk)
+  then show "u \<rightarrow>\<^sup>* v" by (simp add: reachable_awalk)
 next
-  assume "u \<rightarrow>\<^isup>* v"
+  assume "u \<rightarrow>\<^sup>* v"
   then obtain p where p_props: "apath u p v"
     by (metis reachable_awalk apath_awalk_to_apath)
   then have "{p} \<subseteq> {p. apath u p v}" by simp
@@ -284,7 +284,7 @@ next
 qed
 
 lemma (in fin_digraph) no_neg_cyc_reach_imp_path:
-  assumes reach: "u \<rightarrow>\<^isup>* v"
+  assumes reach: "u \<rightarrow>\<^sup>* v"
   assumes no_neg_cyc: "\<And>p. awalk u p v
     \<Longrightarrow> \<not>(\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0)"
   shows "\<exists>p. apath u p v \<and> \<mu> f u v = awalk_cost f p"
@@ -339,7 +339,7 @@ proof -
 qed
 
 lemma (in fin_digraph) min_cost_awalk:
-  assumes reach: "u \<rightarrow>\<^isup>* v"
+  assumes reach: "u \<rightarrow>\<^sup>* v"
   assumes pos_cost: "\<And>e. e \<in> arcs G \<Longrightarrow> c e \<ge> 0"
   shows "\<exists>p. apath u p v \<and> \<mu> c u v = awalk_cost c p"
 proof -
@@ -360,7 +360,7 @@ next
   assume "\<mu> c s u \<noteq> \<infinity>"
   then have "{p. awalk s p u} \<noteq> {}"
     unfolding \<mu>_def INF_def by safe (simp add: top_ereal_def)
-  then have "s \<rightarrow>\<^isup>* u" by (simp add: reachable_awalk)
+  then have "s \<rightarrow>\<^sup>* u" by (simp add: reachable_awalk)
   with pos_cost
   obtain p where p_props: "apath s p u" 
       and p_cost: "\<mu> c s u = awalk_cost c p"
@@ -380,7 +380,7 @@ qed
 
 lemma (in fin_digraph) mu_exact_triangle:
   assumes "v \<noteq> s"
-  assumes "s \<rightarrow>\<^isup>* v"
+  assumes "s \<rightarrow>\<^sup>* v"
   assumes nonneg_arcs: "\<And>e. e \<in> arcs G \<Longrightarrow> 0 \<le> c e"
   obtains u e where "\<mu> c s v = \<mu> c s u + c e" and "arc e (u,v)"
 proof -
@@ -406,7 +406,7 @@ qed
 
 lemma (in fin_digraph) mu_exact_triangle_Ex:
   assumes "v \<noteq> s"
-  assumes "s \<rightarrow>\<^isup>* v"
+  assumes "s \<rightarrow>\<^sup>* v"
   assumes "\<And>e. e \<in> arcs G \<Longrightarrow> 0 \<le> c e"
   shows "\<exists>u e. \<mu> c s v = \<mu> c s u + c e \<and> arc e (u,v)"
 using assms by (metis mu_exact_triangle)
@@ -416,7 +416,7 @@ lemma (in fin_digraph) mu_Inf_triangle:
   assumes "\<And>e. e \<in> arcs G \<Longrightarrow> 0 \<le> c e"
   shows "\<mu> c s v = Inf {\<mu> c s u + c e | u e. arc e (u, v)}" (is "_ = Inf ?S")
 proof cases
-  assume "s \<rightarrow>\<^isup>* v"
+  assume "s \<rightarrow>\<^sup>* v"
   then obtain u e where "\<mu> c s v = \<mu> c s u + c e" "arc e (u,v)"
     using assms by (metis mu_exact_triangle)
   then have "Inf ?S \<le> \<mu> c s v" by (auto intro: Complete_Lattices.Inf_lower)
@@ -425,7 +425,7 @@ proof cases
       simp: arc_def arc_to_ends_def)
   finally show ?thesis by simp
 next
-  assume "\<not>s \<rightarrow>\<^isup>* v"
+  assume "\<not>s \<rightarrow>\<^sup>* v"
   then have "\<mu> c s v = \<infinity>" by (metis shortest_path_inf)
   def S \<equiv> "?S"
   show "\<mu> c s v = Inf S"
@@ -437,7 +437,7 @@ next
     { fix x assume "x \<in> S"
       then obtain u e where "arc e (u,v)" and x_val: "x = \<mu> c s u + c e"
         unfolding S_def by auto
-      then have "\<not>s \<rightarrow>\<^isup>* u" using `\<not> s \<rightarrow>\<^isup>* v` by (metis reachable_arc_trans)
+      then have "\<not>s \<rightarrow>\<^sup>* u" using `\<not> s \<rightarrow>\<^sup>* v` by (metis reachable_arc_trans)
       then have "\<mu> c s u + c e= \<infinity>" by (simp add: shortest_path_inf)
       then have "x = \<infinity>" using x_val by simp }
     then have "S = {\<infinity>}" using `S \<noteq> {}` by auto

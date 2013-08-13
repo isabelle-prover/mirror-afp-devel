@@ -218,7 +218,7 @@ begin
     \begin{itemize}
       \item The initialization of the variables occur after the loop in
           our formulation. This is just a syntactic difference, as our loop
-          construct has the form @{text "WHILEI I c f \<sigma>\<^isub>0"}, where @{text "\<sigma>\<^isub>0"}
+          construct has the form @{text "WHILEI I c f \<sigma>\<^sub>0"}, where @{text "\<sigma>\<^sub>0"}
           is the initial state, and @{text "I"} is the loop invariant;
       \item We translated the textual specification 
         {\em remove one vertex @{text "v"} from @{text "C"}} as accurately as

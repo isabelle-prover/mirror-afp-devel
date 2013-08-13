@@ -10,43 +10,43 @@ theory LBVJVM
 imports "../DFA/Abstract_BV" TF_JVM
 begin
 
-type_synonym prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
+type_synonym prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^sub>i' err list"
 
-definition check_cert :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> bool"
+definition check_cert :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err list \<Rightarrow> bool"
 where
   "check_cert P mxs mxl n cert \<equiv> check_types P mxs mxl cert \<and> size cert = n+1 \<and>
                                  (\<forall>i<n. cert!i \<noteq> Err) \<and> cert!n = OK None"
 
 definition lbvjvm :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> 
-             ty\<^isub>i' err list \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err \<Rightarrow> ty\<^isub>i' err"
+             ty\<^sub>i' err list \<Rightarrow> instr list \<Rightarrow> ty\<^sub>i' err \<Rightarrow> ty\<^sub>i' err"
 where
-  "lbvjvm P mxs maxr T\<^isub>r et cert bs \<equiv>
-  wtl_inst_list bs cert (JVM_SemiType.sup P mxs maxr) (JVM_SemiType.le P mxs maxr) Err (OK None) (exec P mxs T\<^isub>r et bs) 0"
+  "lbvjvm P mxs maxr T\<^sub>r et cert bs \<equiv>
+  wtl_inst_list bs cert (JVM_SemiType.sup P mxs maxr) (JVM_SemiType.le P mxs maxr) Err (OK None) (exec P mxs T\<^sub>r et bs) 0"
 
 definition wt_lbv :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
-             ex_table \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> instr list \<Rightarrow> bool"
+             ex_table \<Rightarrow> ty\<^sub>i' err list \<Rightarrow> instr list \<Rightarrow> bool"
 where
-  "wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 et cert ins \<equiv>
-   check_cert P mxs (1+size Ts+mxl\<^isub>0) (size ins) cert \<and>
+  "wt_lbv P C Ts T\<^sub>r mxs mxl\<^sub>0 et cert ins \<equiv>
+   check_cert P mxs (1+size Ts+mxl\<^sub>0) (size ins) cert \<and>
    0 < size ins \<and> 
-   (let start  = Some ([],(OK (Class C))#((map OK Ts))@(replicate mxl\<^isub>0 Err));
-        result = lbvjvm P mxs (1+size Ts+mxl\<^isub>0) T\<^isub>r et cert ins (OK start)
+   (let start  = Some ([],(OK (Class C))#((map OK Ts))@(replicate mxl\<^sub>0 Err));
+        result = lbvjvm P mxs (1+size Ts+mxl\<^sub>0) T\<^sub>r et cert ins (OK start)
     in result \<noteq> Err)"
 
 definition wt_jvm_prog_lbv :: "jvm_prog \<Rightarrow> prog_cert \<Rightarrow> bool"
 where
   "wt_jvm_prog_lbv P cert \<equiv>
-  wf_prog (\<lambda>P C (mn,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,b,et)). wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 et (cert C mn) b) P"
+  wf_prog (\<lambda>P C (mn,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,b,et)). wt_lbv P C Ts T\<^sub>r mxs mxl\<^sub>0 et (cert C mn) b) P"
 
 definition mk_cert :: "jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> instr list 
-              \<Rightarrow> ty\<^isub>m \<Rightarrow> ty\<^isub>i' err list"
+              \<Rightarrow> ty\<^sub>m \<Rightarrow> ty\<^sub>i' err list"
 where
-  "mk_cert P mxs T\<^isub>r et bs phi \<equiv> make_cert (exec P mxs T\<^isub>r et bs) (map OK phi) (OK None)"
+  "mk_cert P mxs T\<^sub>r et bs phi \<equiv> make_cert (exec P mxs T\<^sub>r et bs) (map OK phi) (OK None)"
 
-definition prg_cert :: "jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> prog_cert"
+definition prg_cert :: "jvm_prog \<Rightarrow> ty\<^sub>P \<Rightarrow> prog_cert"
 where
-  "prg_cert P phi C mn \<equiv> let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,ins,et)) = method P C mn
-                         in  mk_cert P mxs T\<^isub>r et ins (phi C mn)"
+  "prg_cert P phi C mn \<equiv> let (C,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,ins,et)) = method P C mn
+                         in  mk_cert P mxs T\<^sub>r et ins (phi C mn)"
    
 lemma check_certD [intro?]:
   "check_cert P mxs mxl n cert \<Longrightarrow> cert_ok cert n Err (OK None) (states P mxs mxl)"
@@ -54,7 +54,7 @@ lemma check_certD [intro?]:
 
 
 lemma (in start_context) wt_lbv_wt_step:
-  assumes lbv: "wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 xt cert is"
+  assumes lbv: "wt_lbv P C Ts T\<^sub>r mxs mxl\<^sub>0 xt cert is"
   shows "\<exists>\<tau>s \<in> list (size is) A. wt_step r Err step \<tau>s \<and> OK first \<sqsubseteq>\<^sub>r \<tau>s!0"
 (*<*)
 proof -
@@ -81,8 +81,8 @@ qed
 
 
 lemma (in start_context) wt_lbv_wt_method:
-  assumes lbv: "wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 xt cert is"  
-  shows "\<exists>\<tau>s. wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
+  assumes lbv: "wt_lbv P C Ts T\<^sub>r mxs mxl\<^sub>0 xt cert is"  
+  shows "\<exists>\<tau>s. wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
 (*<*)
 proof -
   from lbv have l: "is \<noteq> []" by (simp add: wt_lbv_def)
@@ -97,7 +97,7 @@ proof -
   moreover from l have 0: "0 < size \<tau>s" by simp
   with step obtain \<tau>s0 where "\<tau>s!0 = OK \<tau>s0"
     by (unfold wt_step_def) blast
-  with start 0 have "wt_start P C Ts mxl\<^isub>0 (map ok_val \<tau>s)"
+  with start 0 have "wt_start P C Ts mxl\<^sub>0 (map ok_val \<tau>s)"
     by (simp add: wt_start_def JVM_le_Err_conv lesub_def Err.le_def)    
   moreover {
     from list have "check_types P mxs mxl \<tau>s" by (simp add: check_types_def)
@@ -115,7 +115,7 @@ proof -
     ultimately have "wt_app_eff (sup_state_opt P) app eff (map ok_val \<tau>s)"
       by (auto intro: wt_err_imp_wt_app_eff simp add: exec_def states_def)
   }    
-  ultimately have "wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (map ok_val \<tau>s)"
+  ultimately have "wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (map ok_val \<tau>s)"
     by (simp add: wt_method_def2 check_types_def del: map_map)
   thus ?thesis ..
 qed
@@ -123,10 +123,10 @@ qed
 
   
 lemma (in start_context) wt_method_wt_lbv:
-  assumes wt: "wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s" 
-  defines [simp]: "cert \<equiv> mk_cert P mxs T\<^isub>r xt is \<tau>s"
+  assumes wt: "wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s" 
+  defines [simp]: "cert \<equiv> mk_cert P mxs T\<^sub>r xt is \<tau>s"
   
-  shows "wt_lbv P C Ts T\<^isub>r mxs mxl\<^isub>0 xt cert is" 
+  shows "wt_lbv P C Ts T\<^sub>r mxs mxl\<^sub>0 xt cert is" 
 (*<*)
 proof -
   let ?\<tau>s  = "map OK \<tau>s"
@@ -136,7 +136,7 @@ proof -
     0:        "0 < size is" and
     size:     "size is = size ?\<tau>s" and
     ck_types: "check_types P mxs mxl ?\<tau>s" and
-    wt_start: "wt_start P C Ts mxl\<^isub>0 \<tau>s" and
+    wt_start: "wt_start P C Ts mxl\<^sub>0 \<tau>s" and
     app_eff:  "wt_app_eff (sup_state_opt P) app eff \<tau>s"
     by (force simp add: wt_method_def2 check_types_def) 
   
@@ -188,8 +188,8 @@ theorem jvm_lbv_correct:
   "wt_jvm_prog_lbv P Cert \<Longrightarrow> wf_jvm_prog P"
 (*<*)
 proof -  
-  let ?\<Phi> = "\<lambda>C mn. let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)) = method P C mn in 
-              SOME \<tau>s. wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
+  let ?\<Phi> = "\<lambda>C mn. let (C,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)) = method P C mn in 
+              SOME \<tau>s. wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
     
   assume wt: "wt_jvm_prog_lbv P Cert"
   hence "wf_jvm_prog\<^bsub>?\<Phi>\<^esub> P"

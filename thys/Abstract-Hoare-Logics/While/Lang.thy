@@ -47,10 +47,10 @@ The constructors @{term Semi}, @{term Cond} and @{term While}
 represent sequential composition, conditional and while-loop.
 The annotations allow us to write
 \begin{center}
-@{term"c\<^isub>1;c\<^isub>2"} \qquad @{term"IF b THEN c\<^isub>1 ELSE c\<^isub>2"}
+@{term"c\<^sub>1;c\<^sub>2"} \qquad @{term"IF b THEN c\<^sub>1 ELSE c\<^sub>2"}
  \qquad @{term"WHILE b DO c"}
 \end{center}
-instead of @{term[source]"Semi c\<^isub>1 c\<^isub>2"}, @{term[source]"Cond b c\<^isub>1 c\<^isub>2"}
+instead of @{term[source]"Semi c\<^sub>1 c\<^sub>2"}, @{term[source]"Cond b c\<^sub>1 c\<^sub>2"}
 and @{term[source]"While b c"}.
 
 The command @{term"LOCAL f;c;g"} applies function @{text f} to the state,

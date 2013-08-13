@@ -98,7 +98,7 @@ lemma prob_eq:
   "prob A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
   using emeasure_eq[of A] unfolding emeasure_eq_measure by simp
 
-lemma integral_finite_singleton: "integral\<^isup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
+lemma integral_finite_singleton: "integral\<^sup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
   using p_prob prob_eq unfolding P_def
   by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong mult_nonneg_nonneg)
 
@@ -136,7 +136,7 @@ lemma Markov_inequality:
   assumes "0 < c" "\<And>x. 0 \<le> f x"
   shows "prob {x \<in> space P. c \<le> f x} \<le> (\<integral>x. f x \<partial> P) / c"
 proof -
-  from assms have "(\<integral>\<^isup>+ x. ereal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
+  from assms have "(\<integral>\<^sup>+ x. ereal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
     by (intro positive_integral_eq_integral) auto
   with assms show ?thesis
     using positive_integral_Markov_inequality[of f P "space P" "1 / c"]
@@ -334,9 +334,9 @@ text {* Almost never many independent edges: *}
 lemma almost_never_le_\<alpha>:
   fixes k :: nat
     and p :: "nat \<Rightarrow> real"
-  assumes p_prob: "\<forall>\<^isup>\<infinity> n. 0 < p n \<and> p n < 1"
+  assumes p_prob: "\<forall>\<^sup>\<infinity> n. 0 < p n \<and> p n < 1"
   assumes [arith]: "k > 0"
-  assumes N_prop: "\<forall>\<^isup>\<infinity> n. (6 * k * ln n)/n \<le> p n"
+  assumes N_prop: "\<forall>\<^sup>\<infinity> n. (6 * k * ln n)/n \<le> p n"
   shows "(\<lambda>n. probGn p n (\<lambda>es. 1/2*n/k \<le> \<alpha> (edge_space.edge_ugraph n es))) ----> 0"
     (is "(\<lambda>n. ?prob_fun n) ----> 0")
 proof -
@@ -347,14 +347,14 @@ proof -
 
   have r_pos: "\<And>n. 0 < n \<Longrightarrow> 0 < r n " by (auto simp: r_def field_simps)
 
-  have nr_bounds: "\<forall>\<^isup>\<infinity> n. 2 \<le> ?nr n \<and> ?nr n \<le> n"
+  have nr_bounds: "\<forall>\<^sup>\<infinity> n. 2 \<le> ?nr n \<and> ?nr n \<le> n"
     by (intro eventually_sequentiallyI[of "4 * k"])
       (simp add: r_def natceiling_le le_natceiling_iff field_simps)
 
   from nr_bounds p_prob have ev_prob_fun_raw_le:
-    "\<forall>\<^isup>\<infinity> n. probGn p n (\<lambda>es. ?nr n\<le> \<alpha> (edge_space.edge_ugraph n es))
+    "\<forall>\<^sup>\<infinity> n. probGn p n (\<lambda>es. ?nr n\<le> \<alpha> (edge_space.edge_ugraph n es))
       \<le> (n * exp (- p n * (real (?nr n) - 1) / 2)) powr ?nr n"
-    (is "\<forall>\<^isup>\<infinity> n. ?prob_fun_raw_le n")
+    (is "\<forall>\<^sup>\<infinity> n. ?prob_fun_raw_le n")
   proof (rule eventually_elim2)
     fix n :: nat assume A: "2 \<le> ?nr n \<and> ?nr n \<le> n" "0 < p n \<and>p n < 1"
     then interpret pG: edge_space n "p n" by unfold_locales auto
@@ -386,7 +386,7 @@ proof -
   qed
 
   from p_prob N_prop
-  have ev_expr_bound: "\<forall>\<^isup>\<infinity> n. n * exp (-p n * (real (?nr n) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)"
+  have ev_expr_bound: "\<forall>\<^sup>\<infinity> n. n * exp (-p n * (real (?nr n) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)"
   proof (elim eventually_rev_mp, intro eventually_sequentiallyI conjI impI)
     fix n assume n_bound[arith]: "2 \<le> n"
       and p_bound: "0 < p n \<and> p n < 1" "(6 * k * ln n) / n \<le> p n"
@@ -416,11 +416,11 @@ proof -
   proof (unfold ceil_bound, rule real_tendsto_sandwich)
     show "(\<lambda>n. 0) ----> 0"
         "(\<lambda>n. (exp 1 / n) powr (1 / 2)) ----> 0"
-        "\<forall>\<^isup>\<infinity> n. 0 \<le> ?prob_fun_raw n"
+        "\<forall>\<^sup>\<infinity> n. 0 \<le> ?prob_fun_raw n"
       using p_prob by (auto intro: measure_nonneg LIMSEQ_inv_powr elim: eventually_elim1)
   next
     from nr_bounds ev_expr_bound ev_prob_fun_raw_le
-    show "\<forall>\<^isup>\<infinity> n. ?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)"
+    show "\<forall>\<^sup>\<infinity> n. ?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)"
     proof (elim eventually_rev_mp, intro eventually_sequentiallyI impI conjI)
       fix n assume A: "3 \<le> n"
         and nr_bounds: "2 \<le> ?nr n \<and> ?nr n \<le> n"
@@ -540,15 +540,15 @@ proof -
   from k_def have "3 \<le> k" "l \<le> k" by auto
   from \<epsilon>_def `3 \<le> k` have \<epsilon>_props: "0 < \<epsilon>" "\<epsilon> < 1 / k" "\<epsilon> < 1" by (auto simp: field_simps)
 
-  have ev_p: "\<forall>\<^isup>\<infinity> n. 0 < p n \<and> p n < 1"
+  have ev_p: "\<forall>\<^sup>\<infinity> n. 0 < p n \<and> p n < 1"
   proof (rule eventually_sequentiallyI)
     fix n :: nat assume "2 \<le> n"
     with `\<epsilon> < 1` have "n powr (\<epsilon> - 1) < 1" by (auto intro!: powr_less_one)
     then show "0 < p n \<and> p n < 1" by (auto simp: p_def)
   qed
   then
-  have prob_short_count_le: "\<forall>\<^isup>\<infinity> n. probGn p n (\<lambda>es. (real n/2) \<le> short_count (?ug n es))
-      \<le> 2 * (k - 2) * n powr (\<epsilon> * k - 1)"  (is "\<forall>\<^isup>\<infinity> n. ?P n")
+  have prob_short_count_le: "\<forall>\<^sup>\<infinity> n. probGn p n (\<lambda>es. (real n/2) \<le> short_count (?ug n es))
+      \<le> 2 * (k - 2) * n powr (\<epsilon> * k - 1)"  (is "\<forall>\<^sup>\<infinity> n. ?P n")
   proof (elim eventually_rev_mp, intro eventually_sequentiallyI impI)
     fix n :: nat assume A: "Suc k \<le> n" "0 < p n \<and> p n < 1"
     then interpret pG: edge_space n "p n" by unfold_locales auto
@@ -613,13 +613,13 @@ proof -
   def pf_short_count \<equiv> "\<lambda>n. probGn p n (\<lambda>es. n/2 \<le> short_count (?ug n es))"
     and pf_\<alpha> \<equiv> "\<lambda>n. probGn p n (\<lambda>es. 1/2 * n/k \<le> \<alpha> (edge_space.edge_ugraph n es))"
 
-  have ev_short_count_le: "\<forall>\<^isup>\<infinity> n. pf_short_count n < 1 / 2"
+  have ev_short_count_le: "\<forall>\<^sup>\<infinity> n. pf_short_count n < 1 / 2"
   proof -
     have "\<epsilon> * k - 1 < 0"
       using \<epsilon>_props `3 \<le> k` by (auto simp: field_simps)
     then have "(\<lambda>n. 2 * (k - 2) * n powr (\<epsilon> * k - 1)) ----> 0" (is "?bound ----> 0")
       by (intro tendsto_mult_right_zero LIMSEQ_neg_powr)
-    then have "\<forall>\<^isup>\<infinity> n. dist (?bound n) 0  < 1 / 2"
+    then have "\<forall>\<^sup>\<infinity> n. dist (?bound n) 0  < 1 / 2"
       by (rule tendstoD) simp
     with prob_short_count_le show ?thesis
       by (rule eventually_elim2) (auto simp: dist_real_def pf_short_count_def)
@@ -629,7 +629,7 @@ proof -
   proof -
     have "0 < k" using `3 \<le> k` by simp
 
-    have "\<forall>\<^isup>\<infinity> n. (6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
+    have "\<forall>\<^sup>\<infinity> n. (6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
     proof (rule eventually_sequentiallyI)
      fix n :: nat assume "1 \<le> n"
       then have "(6 * k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * (n powr - 1) \<le> n powr (\<epsilon> - 1)"
@@ -640,10 +640,10 @@ proof -
         by (simp add: powr_divide2)
       finally show "(6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" .
     qed
-    then have "(\<forall>\<^isup>\<infinity> n. (6 * k) * ln n / real n \<le> p n)
-        \<longleftrightarrow> (\<forall>\<^isup>\<infinity> n. (6*k) * ln n * n powr - \<epsilon> \<le> 1)"
+    then have "(\<forall>\<^sup>\<infinity> n. (6 * k) * ln n / real n \<le> p n)
+        \<longleftrightarrow> (\<forall>\<^sup>\<infinity> n. (6*k) * ln n * n powr - \<epsilon> \<le> 1)"
       by (rule eventually_subst)
-    also have "\<forall>\<^isup>\<infinity> n. (6*k) * ln n * n powr - \<epsilon> \<le> 1"
+    also have "\<forall>\<^sup>\<infinity> n. (6*k) * ln n * n powr - \<epsilon> \<le> 1"
     proof -
       { fix n :: nat assume "0 < n"
         have "ln (real n) \<le> n powr (\<epsilon>/2) / (\<epsilon>/2)"
@@ -656,9 +656,9 @@ proof -
           by (auto simp: field_simps powr_minus[symmetric] powr_add[symmetric])
         finally have "(6*k) * ln n * (n powr - \<epsilon>) \<le> 12*k/\<epsilon> * n powr (-\<epsilon>/2)" .
       }
-      then have "\<forall>\<^isup>\<infinity> n. (6*k) * ln n * (n powr - \<epsilon>) \<le> 12*k/\<epsilon> * n powr (-\<epsilon>/2)"
+      then have "\<forall>\<^sup>\<infinity> n. (6*k) * ln n * (n powr - \<epsilon>) \<le> 12*k/\<epsilon> * n powr (-\<epsilon>/2)"
         by (intro eventually_sequentiallyI[of 1]) auto
-      also have "\<forall>\<^isup>\<infinity> n. 12*k/\<epsilon> * n powr (-\<epsilon>/2) \<le> 1"
+      also have "\<forall>\<^sup>\<infinity> n. 12*k/\<epsilon> * n powr (-\<epsilon>/2) \<le> 1"
       proof -
         have "(\<lambda>n. 12*k/\<epsilon> * n powr (-\<epsilon>/2)) ----> 0"
           using `0 < \<epsilon>` by (intro tendsto_mult_right_zero LIMSEQ_neg_powr) auto
@@ -667,12 +667,12 @@ proof -
       qed
       finally (eventually_le_le) show ?thesis .
     qed
-    finally have "\<forall>\<^isup>\<infinity> n. real (6 * k) * ln (real n) / real n \<le> p n" .
+    finally have "\<forall>\<^sup>\<infinity> n. real (6 * k) * ln (real n) / real n \<le> p n" .
     with ev_p `0 < k` show ?thesis unfolding pf_\<alpha>_def by (rule almost_never_le_\<alpha>)
   qed
 
   from ev_short_count_le lim_\<alpha>[THEN tendstoD, of "1/2"] ev_p
-  have "\<forall>\<^isup>\<infinity> n. 0 < p n \<and> p n < 1 \<and> pf_short_count n < 1/2 \<and> pf_\<alpha> n < 1/2"
+  have "\<forall>\<^sup>\<infinity> n. 0 < p n \<and> p n < 1 \<and> pf_short_count n < 1/2 \<and> pf_\<alpha> n < 1/2"
     by simp (elim eventually_rev_mp, auto simp: eventually_sequentially dist_real_def)
   then obtain n where "0 < p n" "p n < 1" and [arith]: "0 < n"
       and probs: "pf_short_count n < 1/2" "pf_\<alpha> n < 1/2"

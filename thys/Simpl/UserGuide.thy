@@ -972,7 +972,7 @@ Following (input) variants of guarded statements are available:
 \begin{itemize}
 \item Assignment: @{text "\<dots> :==\<^sub>g \<dots>"}
 \item If: @{text "IF\<^sub>g \<dots>"}
-\item While: @{text "WHILE\<^isub>g \<dots>"}
+\item While: @{text "WHILE\<^sub>g \<dots>"}
 \item Call: @{text "CALL\<^sub>g \<dots>"} or @{text "\<dots> :== CALL\<^sub>g \<dots>"}
 \end{itemize}
 *}
@@ -1445,38 +1445,38 @@ dummy proof @{text "sorry"} to prototype your formalisation. So you can write th
 theory in a bottom up fashion but actually prove the lemmas in any other order.
  
 Here are some explanations of handling of locales. In the examples below, consider
-@{text proc\<^isub>1} and @{text proc\<^isub>2} to be ``leaf'' procedures, which do not call any 
+@{text proc\<^sub>1} and @{text proc\<^sub>2} to be ``leaf'' procedures, which do not call any 
 other procedure.
-Procedure @{text "proc"} directly calls @{text proc\<^isub>1} and @{text proc\<^isub>2}.
+Procedure @{text "proc"} directly calls @{text proc\<^sub>1} and @{text proc\<^sub>2}.
 
-\isacommand{lemma} (\isacommand{in} @{text "proc\<^isub>1_impl"}) @{text "proc\<^isub>1_modifies"}:\\
+\isacommand{lemma} (\isacommand{in} @{text "proc\<^sub>1_impl"}) @{text "proc\<^sub>1_modifies"}:\\
 \isacommand{shows} @{text "\<dots>"} 
 
-After the proof of @{text "proc\<^isub>1_modifies"}, the \isacommand{in} directive  
+After the proof of @{text "proc\<^sub>1_modifies"}, the \isacommand{in} directive  
 stores the lemma in the
-locale @{text "proc\<^isub>1_impl"}. When we later on include @{text "proc\<^isub>1_impl"} or prove 
-another theorem in locale @{text "proc\<^isub>1_impl"} the lemma @{text "proc\<^isub>1_modifies"}
+locale @{text "proc\<^sub>1_impl"}. When we later on include @{text "proc\<^sub>1_impl"} or prove 
+another theorem in locale @{text "proc\<^sub>1_impl"} the lemma @{text "proc\<^sub>1_modifies"}
 will already be available as fact.
 
-\isacommand{lemma} (\isacommand{in} @{text "proc\<^isub>1_impl"}) @{text "proc\<^isub>1_spec"}:\\
+\isacommand{lemma} (\isacommand{in} @{text "proc\<^sub>1_impl"}) @{text "proc\<^sub>1_spec"}:\\
 \isacommand{shows} @{text "\<dots>"} 
 
-\isacommand{lemma} (\isacommand{in} @{text "proc\<^isub>2_impl"}) @{text "proc\<^isub>2_modifies"}:\\
+\isacommand{lemma} (\isacommand{in} @{text "proc\<^sub>2_impl"}) @{text "proc\<^sub>2_modifies"}:\\
 \isacommand{shows} @{text "\<dots>"} 
 
-\isacommand{lemma} (\isacommand{in} @{text "proc\<^isub>2_impl"}) @{text "proc\<^isub>2_spec"}:\\
+\isacommand{lemma} (\isacommand{in} @{text "proc\<^sub>2_impl"}) @{text "proc\<^sub>2_spec"}:\\
 \isacommand{shows} @{text "\<dots>"} 
 
 
 \isacommand{lemma} (\isacommand{in} @{text "proc_impl"}) @{text "proc_modifies"}:\\
 \isacommand{shows} @{text "\<dots>"} 
 
-Note that we do not explicitly include anything about @{text "proc\<^isub>1"} or  
-@{text "proc\<^isub>2"} here. This is handled automatically. When defining
+Note that we do not explicitly include anything about @{text "proc\<^sub>1"} or  
+@{text "proc\<^sub>2"} here. This is handled automatically. When defining
 an @{text impl}-locale it imports all @{text impl}-locales of procedures that are
-called in the body. In case of @{text "proc_impl"} this means, that @{text "proc\<^isub>1_impl"}
-and @{text "proc\<^isub>2_impl"} are imported. This has the neat effect that all theorems that
-are proven in @{text "proc\<^isub>1_impl"} and @{text "proc\<^isub>2_impl"} are also present
+called in the body. In case of @{text "proc_impl"} this means, that @{text "proc\<^sub>1_impl"}
+and @{text "proc\<^sub>2_impl"} are imported. This has the neat effect that all theorems that
+are proven in @{text "proc\<^sub>1_impl"} and @{text "proc\<^sub>2_impl"} are also present
 in @{text "proc_impl"}.
 
 \isacommand{lemma} (\isacommand{in} @{text "proc_impl"}) @{text "proc_spec"}:\\

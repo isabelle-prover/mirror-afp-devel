@@ -66,85 +66,85 @@ lemma (in lbv) le_top [simp, intro]: "x <=_r \<top>"
 (*<*) by (insert top) simp (*>*)
   
 lemma (in lbv) merge_mono:
-  assumes less:  "set ss\<^isub>2 {\<sqsubseteq>\<^bsub>r\<^esub>} set ss\<^isub>1"
+  assumes less:  "set ss\<^sub>2 {\<sqsubseteq>\<^bsub>r\<^esub>} set ss\<^sub>1"
   assumes x:     "x \<in> A"
-  assumes ss\<^isub>1:   "snd`set ss\<^isub>1 \<subseteq> A"
-  assumes ss\<^isub>2:   "snd`set ss\<^isub>2 \<subseteq> A"
-  shows "merge c pc ss\<^isub>2 x \<sqsubseteq>\<^sub>r merge c pc ss\<^isub>1 x" (is "?s\<^isub>2 \<sqsubseteq>\<^sub>r ?s\<^isub>1")
+  assumes ss\<^sub>1:   "snd`set ss\<^sub>1 \<subseteq> A"
+  assumes ss\<^sub>2:   "snd`set ss\<^sub>2 \<subseteq> A"
+  shows "merge c pc ss\<^sub>2 x \<sqsubseteq>\<^sub>r merge c pc ss\<^sub>1 x" (is "?s\<^sub>2 \<sqsubseteq>\<^sub>r ?s\<^sub>1")
 (*<*)
 proof-
-  have "?s\<^isub>1 = \<top> \<Longrightarrow> ?thesis" by simp
+  have "?s\<^sub>1 = \<top> \<Longrightarrow> ?thesis" by simp
   moreover {
-    assume merge: "?s\<^isub>1 \<noteq> T" 
-    from x ss\<^isub>1 have "?s\<^isub>1 =
-      (if \<forall>(pc',s')\<in>set ss\<^isub>1. pc' \<noteq> pc + 1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
-      then (map snd [(p', t') \<leftarrow> ss\<^isub>1 . p'=pc+1]) \<Squnion>\<^bsub>f\<^esub> x
+    assume merge: "?s\<^sub>1 \<noteq> T" 
+    from x ss\<^sub>1 have "?s\<^sub>1 =
+      (if \<forall>(pc',s')\<in>set ss\<^sub>1. pc' \<noteq> pc + 1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
+      then (map snd [(p', t') \<leftarrow> ss\<^sub>1 . p'=pc+1]) \<Squnion>\<^bsub>f\<^esub> x
       else \<top>)" by (rule merge_def)  
     with merge obtain
-      app: "\<forall>(pc',s')\<in>set ss\<^isub>1. pc' \<noteq> pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" 
-           (is "?app ss\<^isub>1") and
-      sum: "(map snd [(p',t') \<leftarrow> ss\<^isub>1 . p' = pc+1] \<Squnion>\<^bsub>f\<^esub> x) = ?s\<^isub>1" 
-           (is "?map ss\<^isub>1 \<Squnion>\<^bsub>f\<^esub> x = _" is "?sum ss\<^isub>1 = _")
+      app: "\<forall>(pc',s')\<in>set ss\<^sub>1. pc' \<noteq> pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" 
+           (is "?app ss\<^sub>1") and
+      sum: "(map snd [(p',t') \<leftarrow> ss\<^sub>1 . p' = pc+1] \<Squnion>\<^bsub>f\<^esub> x) = ?s\<^sub>1" 
+           (is "?map ss\<^sub>1 \<Squnion>\<^bsub>f\<^esub> x = _" is "?sum ss\<^sub>1 = _")
       by (simp split: split_if_asm)
-    from app less have "?app ss\<^isub>2" by (blast dest: trans_r lesub_step_typeD)
+    from app less have "?app ss\<^sub>2" by (blast dest: trans_r lesub_step_typeD)
     moreover {
-      from ss\<^isub>1 have map1: "set (?map ss\<^isub>1) \<subseteq> A" by auto
-      with x and semilat Semilat_axioms have "?sum ss\<^isub>1 \<in> A" by (auto intro!: plusplus_closed)
-      with sum have "?s\<^isub>1 \<in> A" by simp
+      from ss\<^sub>1 have map1: "set (?map ss\<^sub>1) \<subseteq> A" by auto
+      with x and semilat Semilat_axioms have "?sum ss\<^sub>1 \<in> A" by (auto intro!: plusplus_closed)
+      with sum have "?s\<^sub>1 \<in> A" by simp
       moreover    
       have mapD: "\<And>x ss. x \<in> set (?map ss) \<Longrightarrow> \<exists>p. (p,x) \<in> set ss \<and> p=pc+1" by auto
-      from x map1 have "\<forall>x \<in> set (?map ss\<^isub>1). x \<sqsubseteq>\<^sub>r ?sum ss\<^isub>1" by clarify (rule pp_ub1)
-      with sum have "\<forall>x \<in> set (?map ss\<^isub>1). x \<sqsubseteq>\<^sub>r ?s\<^isub>1" by simp
-      with less have "\<forall>x \<in> set (?map ss\<^isub>2). x \<sqsubseteq>\<^sub>r ?s\<^isub>1"
+      from x map1 have "\<forall>x \<in> set (?map ss\<^sub>1). x \<sqsubseteq>\<^sub>r ?sum ss\<^sub>1" by clarify (rule pp_ub1)
+      with sum have "\<forall>x \<in> set (?map ss\<^sub>1). x \<sqsubseteq>\<^sub>r ?s\<^sub>1" by simp
+      with less have "\<forall>x \<in> set (?map ss\<^sub>2). x \<sqsubseteq>\<^sub>r ?s\<^sub>1"
         by (fastforce dest!: mapD lesub_step_typeD intro: trans_r)
-      moreover from map1 x have "x \<sqsubseteq>\<^sub>r (?sum ss\<^isub>1)" by (rule pp_ub2)
-      with sum have "x \<sqsubseteq>\<^sub>r ?s\<^isub>1" by simp
-      moreover from ss\<^isub>2 have "set (?map ss\<^isub>2) \<subseteq> A" by auto
-      ultimately  have "?sum ss\<^isub>2 \<sqsubseteq>\<^sub>r ?s\<^isub>1" using x by - (rule pp_lub)
+      moreover from map1 x have "x \<sqsubseteq>\<^sub>r (?sum ss\<^sub>1)" by (rule pp_ub2)
+      with sum have "x \<sqsubseteq>\<^sub>r ?s\<^sub>1" by simp
+      moreover from ss\<^sub>2 have "set (?map ss\<^sub>2) \<subseteq> A" by auto
+      ultimately  have "?sum ss\<^sub>2 \<sqsubseteq>\<^sub>r ?s\<^sub>1" using x by - (rule pp_lub)
     }
-    moreover from x ss\<^isub>2 have "?s\<^isub>2 =
-      (if \<forall>(pc', s')\<in>set ss\<^isub>2. pc' \<noteq> pc + 1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
-      then map snd [(p', t') \<leftarrow> ss\<^isub>2 . p' = pc + 1] \<Squnion>\<^bsub>f\<^esub> x
+    moreover from x ss\<^sub>2 have "?s\<^sub>2 =
+      (if \<forall>(pc', s')\<in>set ss\<^sub>2. pc' \<noteq> pc + 1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
+      then map snd [(p', t') \<leftarrow> ss\<^sub>2 . p' = pc + 1] \<Squnion>\<^bsub>f\<^esub> x
       else \<top>)" by (rule merge_def)
     ultimately have ?thesis by simp
   }
-  ultimately show ?thesis by (cases "?s\<^isub>1 = \<top>") auto
+  ultimately show ?thesis by (cases "?s\<^sub>1 = \<top>") auto
 qed
 (*>*)
 
 lemma (in lbvc) wti_mono:
-  assumes less: "s\<^isub>2 \<sqsubseteq>\<^sub>r s\<^isub>1"
-  assumes pc: "pc < size \<tau>s" and s\<^isub>1: "s\<^isub>1 \<in> A" and s\<^isub>2: "s\<^isub>2 \<in> A"
-  shows "wti c pc s\<^isub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^isub>1" (is "?s\<^isub>2' \<sqsubseteq>\<^sub>r ?s\<^isub>1'")
+  assumes less: "s\<^sub>2 \<sqsubseteq>\<^sub>r s\<^sub>1"
+  assumes pc: "pc < size \<tau>s" and s\<^sub>1: "s\<^sub>1 \<in> A" and s\<^sub>2: "s\<^sub>2 \<in> A"
+  shows "wti c pc s\<^sub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^sub>1" (is "?s\<^sub>2' \<sqsubseteq>\<^sub>r ?s\<^sub>1'")
 (*<*)
 proof -
-  from mono pc s\<^isub>2 less have "set (step pc s\<^isub>2) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step pc s\<^isub>1)" by (rule monoD)
+  from mono pc s\<^sub>2 less have "set (step pc s\<^sub>2) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step pc s\<^sub>1)" by (rule monoD)
   moreover from cert B_A pc have "c!Suc pc \<in> A" by (rule cert_okD3)
-  moreover from pres s\<^isub>1 pc have "snd`set (step pc s\<^isub>1) \<subseteq> A" by (rule pres_typeD2)
-  moreover from pres s\<^isub>2 pc have "snd`set (step pc s\<^isub>2) \<subseteq> A" by (rule pres_typeD2)
+  moreover from pres s\<^sub>1 pc have "snd`set (step pc s\<^sub>1) \<subseteq> A" by (rule pres_typeD2)
+  moreover from pres s\<^sub>2 pc have "snd`set (step pc s\<^sub>2) \<subseteq> A" by (rule pres_typeD2)
   ultimately show ?thesis by (simp add: wti merge_mono)
 qed 
 (*>*)
 
 lemma (in lbvc) wtc_mono:
-  assumes less: "s\<^isub>2 \<sqsubseteq>\<^sub>r s\<^isub>1"
-  assumes pc: "pc < size \<tau>s" and s\<^isub>1: "s\<^isub>1 \<in> A" and s\<^isub>2: "s\<^isub>2 \<in> A"
-  shows "wtc c pc s\<^isub>2 \<sqsubseteq>\<^sub>r wtc c pc s\<^isub>1" (is "?s\<^isub>2' \<sqsubseteq>\<^sub>r ?s\<^isub>1'")
+  assumes less: "s\<^sub>2 \<sqsubseteq>\<^sub>r s\<^sub>1"
+  assumes pc: "pc < size \<tau>s" and s\<^sub>1: "s\<^sub>1 \<in> A" and s\<^sub>2: "s\<^sub>2 \<in> A"
+  shows "wtc c pc s\<^sub>2 \<sqsubseteq>\<^sub>r wtc c pc s\<^sub>1" (is "?s\<^sub>2' \<sqsubseteq>\<^sub>r ?s\<^sub>1'")
 (*<*)
 proof (cases "c!pc = \<bottom>")
   case True 
-  moreover from less pc s\<^isub>1 s\<^isub>2 have "wti c pc s\<^isub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^isub>1" by (rule wti_mono)
+  moreover from less pc s\<^sub>1 s\<^sub>2 have "wti c pc s\<^sub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^sub>1" by (rule wti_mono)
   ultimately show ?thesis by (simp add: wtc)
 next
   case False
-  have "?s\<^isub>1' = \<top> \<Longrightarrow> ?thesis" by simp
+  have "?s\<^sub>1' = \<top> \<Longrightarrow> ?thesis" by simp
   moreover {
-    assume "?s\<^isub>1' \<noteq> \<top>" 
-    with False have c: "s\<^isub>1 \<sqsubseteq>\<^sub>r c!pc" by (simp add: wtc split: split_if_asm)
-    with less have "s\<^isub>2 \<sqsubseteq>\<^sub>r c!pc" ..
+    assume "?s\<^sub>1' \<noteq> \<top>" 
+    with False have c: "s\<^sub>1 \<sqsubseteq>\<^sub>r c!pc" by (simp add: wtc split: split_if_asm)
+    with less have "s\<^sub>2 \<sqsubseteq>\<^sub>r c!pc" ..
     with False c have ?thesis by (simp add: wtc)
   }
-  ultimately show ?thesis by (cases "?s\<^isub>1' = \<top>") auto
+  ultimately show ?thesis by (cases "?s\<^sub>1' = \<top>") auto
 qed
 (*>*)
 

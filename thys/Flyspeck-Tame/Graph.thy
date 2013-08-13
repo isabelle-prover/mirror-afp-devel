@@ -56,7 +56,7 @@ primrec vertices_face where
 end
 
 defs (overloaded) cong_face_def:
- "f\<^isub>1 \<cong> (f\<^isub>2::face) \<equiv> vertices f\<^isub>1 \<cong> vertices f\<^isub>2"
+ "f\<^sub>1 \<cong> (f\<^sub>2::face) \<equiv> vertices f\<^sub>1 \<cong> vertices f\<^sub>2"
 
 text {* The following operation makes a face final. *}
 

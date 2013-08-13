@@ -39,7 +39,7 @@ where
 | "valid_node prog (_ cs,None _) \<longleftrightarrow> valid_callstack prog cs"
 | "valid_node prog (_ cs,\<lfloor>(cs', xf)\<rfloor> _) \<longleftrightarrow>
     valid_callstack prog cs \<and> valid_callstack prog cs' \<and>
-    (\<exists>Q. prog \<turnstile> (_ cs,None _) -(Q)\<^isub>\<surd>\<rightarrow> (_ cs,\<lfloor>(cs', xf)\<rfloor> _)) \<and>
+    (\<exists>Q. prog \<turnstile> (_ cs,None _) -(Q)\<^sub>\<surd>\<rightarrow> (_ cs,\<lfloor>(cs', xf)\<rfloor> _)) \<and>
     (\<exists>f. prog \<turnstile> (_ cs,\<lfloor>(cs', xf)\<rfloor> _) -\<Up>f\<rightarrow> (_ cs',None _))"
 
 fun valid_edge :: "jvmprog \<Rightarrow> j_edge \<Rightarrow> bool"
@@ -97,10 +97,10 @@ proof(unfold_locales)
     have "prog \<turnstile> (_Exit_) -et\<rightarrow> n'" by simp
   thus False by fastforce
 next
-  have "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (_Exit_)" 
+  have "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (_Exit_)" 
     by (rule JCFG_EntryExit)
   thus "\<exists>a. valid_edge prog a \<and> sourcenode a = (_Entry_) \<and>
-            targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^isub>\<surd>"
+            targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^sub>\<surd>"
     by fastforce
 qed
 

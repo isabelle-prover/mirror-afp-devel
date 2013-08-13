@@ -13,93 +13,93 @@ begin
 subsection "Well-Typedness"
 
 type_synonym 
-  env\<^isub>1  = "ty list"   --"type environment indexed by variable number"
+  env\<^sub>1  = "ty list"   --"type environment indexed by variable number"
 
 inductive
-  WT\<^isub>1 :: "[J\<^isub>1_prog,env\<^isub>1, expr\<^isub>1     , ty     ] \<Rightarrow> bool"
+  WT\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1     , ty     ] \<Rightarrow> bool"
          ("(_,_ \<turnstile>\<^sub>1/ _ :: _)"   [51,51,51]50)
-  and WTs\<^isub>1 :: "[J\<^isub>1_prog,env\<^isub>1, expr\<^isub>1 list, ty list] \<Rightarrow> bool"
+  and WTs\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1 list, ty list] \<Rightarrow> bool"
          ("(_,_ \<turnstile>\<^sub>1/ _ [::] _)" [51,51,51]50)
-  for P :: J\<^isub>1_prog
+  for P :: J\<^sub>1_prog
 where
   
-  WTNew\<^isub>1:
+  WTNew\<^sub>1:
   "is_class P C  \<Longrightarrow>
   P,E \<turnstile>\<^sub>1 new C :: Class C"
 
-| WTCast\<^isub>1:
+| WTCast\<^sub>1:
   "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: Class D;  is_class P C;  P \<turnstile> C \<preceq>\<^sup>* D \<or> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>\<^sub>1 Cast C e :: Class C"
 
-| WTVal\<^isub>1:
+| WTVal\<^sub>1:
   "typeof v = Some T \<Longrightarrow>
   P,E \<turnstile>\<^sub>1 Val v :: T"
 
-| WTVar\<^isub>1:
+| WTVar\<^sub>1:
   "\<lbrakk> E!i = T; i < size E \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>\<^sub>1 Var i :: T"
 
-| WTBinOp\<^isub>1:
-  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^isub>1 :: T\<^isub>1;  P,E \<turnstile>\<^sub>1 e\<^isub>2 :: T\<^isub>2;
-     case bop of Eq \<Rightarrow> (P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1) \<and> T = Boolean
-               | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>\<^sub>1 e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
+| WTBinOp\<^sub>1:
+  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^sub>1 :: T\<^sub>1;  P,E \<turnstile>\<^sub>1 e\<^sub>2 :: T\<^sub>2;
+     case bop of Eq \<Rightarrow> (P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<or> P \<turnstile> T\<^sub>2 \<le> T\<^sub>1) \<and> T = Boolean
+               | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>\<^sub>1 e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T"
 
-| WTLAss\<^isub>1:
+| WTLAss\<^sub>1:
   "\<lbrakk> E!i = T;  i < size E; P,E \<turnstile>\<^sub>1 e :: T';  P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>\<^sub>1 i:=e :: Void"
 
-| WTFAcc\<^isub>1:
+| WTFAcc\<^sub>1:
   "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: Class C;  P \<turnstile> C sees F:T in D \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>\<^sub>1 e\<bullet>F{D} :: T"
 
-| WTFAss\<^isub>1:
-  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^isub>1 :: Class C;  P \<turnstile> C sees F:T in D;  P,E \<turnstile>\<^sub>1 e\<^isub>2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>\<^sub>1 e\<^isub>1\<bullet>F{D} := e\<^isub>2 :: Void"
+| WTFAss\<^sub>1:
+  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^sub>1 :: Class C;  P \<turnstile> C sees F:T in D;  P,E \<turnstile>\<^sub>1 e\<^sub>2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>\<^sub>1 e\<^sub>1\<bullet>F{D} := e\<^sub>2 :: Void"
 
-| WTCall\<^isub>1:
+| WTCall\<^sub>1:
   "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: Class C; P \<turnstile> C sees M:Ts' \<rightarrow> T = m in D;
     P,E \<turnstile>\<^sub>1 es [::] Ts;  P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>\<^sub>1 e\<bullet>M(es) :: T"
 
-| WTBlock\<^isub>1:
+| WTBlock\<^sub>1:
   "\<lbrakk> is_type P T; P,E@[T] \<turnstile>\<^sub>1 e::T' \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile>\<^sub>1 {i:T; e} :: T'"
 
-| WTSeq\<^isub>1:
-  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>\<^sub>1 e\<^isub>2::T\<^isub>2 \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile>\<^sub>1 e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+| WTSeq\<^sub>1:
+  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^sub>1::T\<^sub>1;  P,E \<turnstile>\<^sub>1 e\<^sub>2::T\<^sub>2 \<rbrakk>
+  \<Longrightarrow>  P,E \<turnstile>\<^sub>1 e\<^sub>1;;e\<^sub>2 :: T\<^sub>2"
 
-| WTCond\<^isub>1:
-  "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: Boolean;  P,E \<turnstile>\<^sub>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>\<^sub>1 e\<^isub>2::T\<^isub>2;
-    P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;  P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2; P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>\<^sub>1 if (e) e\<^isub>1 else e\<^isub>2 :: T"
+| WTCond\<^sub>1:
+  "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: Boolean;  P,E \<turnstile>\<^sub>1 e\<^sub>1::T\<^sub>1;  P,E \<turnstile>\<^sub>1 e\<^sub>2::T\<^sub>2;
+    P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<or> P \<turnstile> T\<^sub>2 \<le> T\<^sub>1;  P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<longrightarrow> T = T\<^sub>2; P \<turnstile> T\<^sub>2 \<le> T\<^sub>1 \<longrightarrow> T = T\<^sub>1 \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>\<^sub>1 if (e) e\<^sub>1 else e\<^sub>2 :: T"
 
-| WTWhile\<^isub>1:
+| WTWhile\<^sub>1:
   "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: Boolean;  P,E \<turnstile>\<^sub>1 c::T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>\<^sub>1 while (e) c :: Void"
 
-| WTThrow\<^isub>1:
+| WTThrow\<^sub>1:
   "P,E \<turnstile>\<^sub>1 e :: Class C  \<Longrightarrow>
   P,E \<turnstile>\<^sub>1 throw e :: Void"
 
-| WTTry\<^isub>1:
-  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^isub>1 :: T;  P,E@[Class C] \<turnstile>\<^sub>1 e\<^isub>2 :: T; is_class P C \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>\<^sub>1 try e\<^isub>1 catch(C i) e\<^isub>2 :: T"
+| WTTry\<^sub>1:
+  "\<lbrakk> P,E \<turnstile>\<^sub>1 e\<^sub>1 :: T;  P,E@[Class C] \<turnstile>\<^sub>1 e\<^sub>2 :: T; is_class P C \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>\<^sub>1 try e\<^sub>1 catch(C i) e\<^sub>2 :: T"
 
-| WTNil\<^isub>1:
+| WTNil\<^sub>1:
   "P,E \<turnstile>\<^sub>1 [] [::] []"
 
-| WTCons\<^isub>1:
+| WTCons\<^sub>1:
   "\<lbrakk> P,E \<turnstile>\<^sub>1 e :: T;  P,E \<turnstile>\<^sub>1 es [::] Ts \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile>\<^sub>1 e#es [::] T#Ts"
 
 (*<*)
-declare  WT\<^isub>1_WTs\<^isub>1.intros[intro!]
-declare WTNil\<^isub>1[iff]
+declare  WT\<^sub>1_WTs\<^sub>1.intros[intro!]
+declare WTNil\<^sub>1[iff]
 
-lemmas WT\<^isub>1_WTs\<^isub>1_induct = WT\<^isub>1_WTs\<^isub>1.induct [split_format (complete)]
-  and WT\<^isub>1_WTs\<^isub>1_inducts = WT\<^isub>1_WTs\<^isub>1.inducts [split_format (complete)]
+lemmas WT\<^sub>1_WTs\<^sub>1_induct = WT\<^sub>1_WTs\<^sub>1.induct [split_format (complete)]
+  and WT\<^sub>1_WTs\<^sub>1_inducts = WT\<^sub>1_WTs\<^sub>1.inducts [split_format (complete)]
 
 inductive_cases eee[elim!]:
   "P,E \<turnstile>\<^sub>1 Val v :: T"
@@ -107,29 +107,29 @@ inductive_cases eee[elim!]:
   "P,E \<turnstile>\<^sub>1 Cast D e :: T"
   "P,E \<turnstile>\<^sub>1 i:=e :: T"
   "P,E \<turnstile>\<^sub>1 {i:U; e} :: T"
-  "P,E \<turnstile>\<^sub>1 e\<^isub>1;;e\<^isub>2 :: T"
-  "P,E \<turnstile>\<^sub>1 if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "P,E \<turnstile>\<^sub>1 e\<^sub>1;;e\<^sub>2 :: T"
+  "P,E \<turnstile>\<^sub>1 if (e) e\<^sub>1 else e\<^sub>2 :: T"
   "P,E \<turnstile>\<^sub>1 while (e) c :: T"
   "P,E \<turnstile>\<^sub>1 throw e :: T"
-  "P,E \<turnstile>\<^sub>1 try e\<^isub>1 catch(C i) e\<^isub>2 :: T"
+  "P,E \<turnstile>\<^sub>1 try e\<^sub>1 catch(C i) e\<^sub>2 :: T"
   "P,E \<turnstile>\<^sub>1 e\<bullet>F{D} :: T"
-  "P,E \<turnstile>\<^sub>1 e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: T"
-  "P,E \<turnstile>\<^sub>1 e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
+  "P,E \<turnstile>\<^sub>1 e\<^sub>1\<bullet>F{D}:=e\<^sub>2 :: T"
+  "P,E \<turnstile>\<^sub>1 e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T"
   "P,E \<turnstile>\<^sub>1 new C :: T"
   "P,E \<turnstile>\<^sub>1 e\<bullet>M(es) :: T"
   "P,E \<turnstile>\<^sub>1 [] [::] Ts"
   "P,E \<turnstile>\<^sub>1 e#es [::] Ts"
 (*>*)
 
-lemma WTs\<^isub>1_same_size: "\<And>Ts. P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> size es = size Ts"
+lemma WTs\<^sub>1_same_size: "\<And>Ts. P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> size es = size Ts"
 (*<*)by (induct es type:list) auto(*>*)
 
 
-lemma WT\<^isub>1_unique:
-  "P,E \<turnstile>\<^sub>1 e :: T\<^isub>1 \<Longrightarrow> (\<And>T\<^isub>2. P,E \<turnstile>\<^sub>1 e :: T\<^isub>2 \<Longrightarrow> T\<^isub>1 = T\<^isub>2)" and
-  "P,E \<turnstile>\<^sub>1 es [::] Ts\<^isub>1 \<Longrightarrow> (\<And>Ts\<^isub>2. P,E \<turnstile>\<^sub>1 es [::] Ts\<^isub>2 \<Longrightarrow> Ts\<^isub>1 = Ts\<^isub>2)"
+lemma WT\<^sub>1_unique:
+  "P,E \<turnstile>\<^sub>1 e :: T\<^sub>1 \<Longrightarrow> (\<And>T\<^sub>2. P,E \<turnstile>\<^sub>1 e :: T\<^sub>2 \<Longrightarrow> T\<^sub>1 = T\<^sub>2)" and
+  "P,E \<turnstile>\<^sub>1 es [::] Ts\<^sub>1 \<Longrightarrow> (\<And>Ts\<^sub>2. P,E \<turnstile>\<^sub>1 es [::] Ts\<^sub>2 \<Longrightarrow> Ts\<^sub>1 = Ts\<^sub>2)"
 (*<*)
-apply(induct rule:WT\<^isub>1_WTs\<^isub>1.inducts)
+apply(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
 apply blast
 apply blast
 apply clarsimp
@@ -155,10 +155,10 @@ done
 
 
 lemma assumes wf: "wf_prog p P"
-shows WT\<^isub>1_is_type: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> is_type P T"
+shows WT\<^sub>1_is_type: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> is_type P T"
 and "P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> True"
 (*<*)
-apply(induct rule:WT\<^isub>1_WTs\<^isub>1.inducts)
+apply(induct rule:WT\<^sub>1_WTs\<^sub>1.inducts)
 apply simp
 apply simp
 apply (simp add:typeof_lit_is_type)
@@ -184,40 +184,40 @@ subsection{* Well-formedness*}
 
 --"Indices in blocks increase by 1"
 
-primrec \<B> :: "expr\<^isub>1 \<Rightarrow> nat \<Rightarrow> bool"
-  and \<B>s :: "expr\<^isub>1 list \<Rightarrow> nat \<Rightarrow> bool" where
+primrec \<B> :: "expr\<^sub>1 \<Rightarrow> nat \<Rightarrow> bool"
+  and \<B>s :: "expr\<^sub>1 list \<Rightarrow> nat \<Rightarrow> bool" where
 "\<B> (new C) i = True" |
 "\<B> (Cast C e) i = \<B> e i" |
 "\<B> (Val v) i = True" |
-"\<B> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2) i = (\<B> e\<^sub>1 i \<and> \<B> e\<^sub>2 i)" |
 "\<B> (Var j) i = True" |
 "\<B> (e\<bullet>F{D}) i = \<B> e i" |
 "\<B> (j:=e) i = \<B> e i" |
-"\<B> (e\<^isub>1\<bullet>F{D} := e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (e\<^sub>1\<bullet>F{D} := e\<^sub>2) i = (\<B> e\<^sub>1 i \<and> \<B> e\<^sub>2 i)" |
 "\<B> (e\<bullet>M(es)) i = (\<B> e i \<and> \<B>s es i)" |
 "\<B> ({j:T ; e}) i = (i = j \<and> \<B> e (i+1))" |
-"\<B> (e\<^isub>1;;e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
-"\<B> (if (e) e\<^isub>1 else e\<^isub>2) i = (\<B> e i \<and> \<B> e\<^isub>1 i \<and> \<B> e\<^isub>2 i)" |
+"\<B> (e\<^sub>1;;e\<^sub>2) i = (\<B> e\<^sub>1 i \<and> \<B> e\<^sub>2 i)" |
+"\<B> (if (e) e\<^sub>1 else e\<^sub>2) i = (\<B> e i \<and> \<B> e\<^sub>1 i \<and> \<B> e\<^sub>2 i)" |
 "\<B> (throw e) i = \<B> e i" |
 "\<B> (while (e) c) i = (\<B> e i \<and> \<B> c i)" |
-"\<B> (try e\<^isub>1 catch(C j) e\<^isub>2) i = (\<B> e\<^isub>1 i \<and> i=j \<and> \<B> e\<^isub>2 (i+1))" |
+"\<B> (try e\<^sub>1 catch(C j) e\<^sub>2) i = (\<B> e\<^sub>1 i \<and> i=j \<and> \<B> e\<^sub>2 (i+1))" |
 
 "\<B>s [] i = True" |
 "\<B>s (e#es) i = (\<B> e i \<and> \<B>s es i)"
 
 
-definition wf_J\<^isub>1_mdecl :: "J\<^isub>1_prog \<Rightarrow> cname \<Rightarrow> expr\<^isub>1 mdecl \<Rightarrow> bool"
+definition wf_J\<^sub>1_mdecl :: "J\<^sub>1_prog \<Rightarrow> cname \<Rightarrow> expr\<^sub>1 mdecl \<Rightarrow> bool"
 where
-  "wf_J\<^isub>1_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,body).
+  "wf_J\<^sub>1_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,body).
     (\<exists>T'. P,Class C#Ts \<turnstile>\<^sub>1 body :: T' \<and> P \<turnstile> T' \<le> T) \<and>
     \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1)"
 
-lemma wf_J\<^isub>1_mdecl[simp]:
-  "wf_J\<^isub>1_mdecl P C (M,Ts,T,body) \<equiv>
+lemma wf_J\<^sub>1_mdecl[simp]:
+  "wf_J\<^sub>1_mdecl P C (M,Ts,T,body) \<equiv>
     ((\<exists>T'. P,Class C#Ts \<turnstile>\<^sub>1 body :: T' \<and> P \<turnstile> T' \<le> T) \<and>
      \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1))"
-(*<*)by (simp add:wf_J\<^isub>1_mdecl_def)(*>*)
+(*<*)by (simp add:wf_J\<^sub>1_mdecl_def)(*>*)
 
-abbreviation "wf_J\<^isub>1_prog == wf_prog wf_J\<^isub>1_mdecl"
+abbreviation "wf_J\<^sub>1_prog == wf_prog wf_J\<^sub>1_mdecl"
 
 end

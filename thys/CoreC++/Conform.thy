@@ -19,8 +19,8 @@ primrec conf :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Ri
 | "P,h \<turnstile> v :\<le> (Class C) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C) \<or> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
 
 definition fconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool" ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50) where
-  "P,h \<turnstile> v\<^isub>m (:\<le>) T\<^isub>m  \<equiv>
-  \<forall>FD T. T\<^isub>m FD = Some T \<longrightarrow> (\<exists>v. v\<^isub>m FD = Some v \<and> P,h \<turnstile> v :\<le> T)"
+  "P,h \<turnstile> v\<^sub>m (:\<le>) T\<^sub>m  \<equiv>
+  \<forall>FD T. T\<^sub>m FD = Some T \<longrightarrow> (\<exists>v. v\<^sub>m FD = Some v \<and> P,h \<turnstile> v :\<le> T)"
 
 definition oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50) where
   "P,h \<turnstile> obj \<surd>  \<equiv> let (C,S) = obj in 
@@ -34,8 +34,8 @@ definition hconf :: "prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstil
   (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile> obj \<surd>) \<and> preallocated h"
 
 definition lconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>')\<^sub>w _" [51,51,51,51] 50) where
-  "P,h \<turnstile> v\<^isub>m (:\<le>)\<^sub>w T\<^isub>m  \<equiv>
-  \<forall>V v. v\<^isub>m V = Some v \<longrightarrow> (\<exists>T. T\<^isub>m V = Some T \<and> P,h \<turnstile> v :\<le> T)"
+  "P,h \<turnstile> v\<^sub>m (:\<le>)\<^sub>w T\<^sub>m  \<equiv>
+  \<forall>V v. v\<^sub>m V = Some v \<longrightarrow> (\<exists>T. T\<^sub>m V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 
 
 

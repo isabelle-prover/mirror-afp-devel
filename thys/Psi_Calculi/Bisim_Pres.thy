@@ -170,22 +170,22 @@ by(induct xvec) (auto intro: bisimResPres)
 
 lemma bisimParPresAux:
   fixes \<Psi>  :: 'b
-  and   \<Psi>\<^isub>R :: 'b
+  and   \<Psi>\<^sub>R :: 'b
   and   P  :: "('a, 'b, 'c) psi"
   and   Q  :: "('a, 'b, 'c) psi"
   and   R  :: "('a, 'b, 'c) psi"
-  and   A\<^isub>R :: "name list"
+  and   A\<^sub>R :: "name list"
   
-  assumes "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
-  and     FrR: "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>"
-  and     "A\<^isub>R \<sharp>* \<Psi>"
-  and     "A\<^isub>R \<sharp>* P"
-  and     "A\<^isub>R \<sharp>* Q"
+  assumes "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
+  and     FrR: "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>"
+  and     "A\<^sub>R \<sharp>* \<Psi>"
+  and     "A\<^sub>R \<sharp>* P"
+  and     "A\<^sub>R \<sharp>* Q"
 
   shows "\<Psi> \<rhd> P \<parallel> R \<sim> Q \<parallel> R"
 proof -
-  let ?X = "{(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) | xvec \<Psi> P Q R. xvec \<sharp>* \<Psi> \<and> (\<forall>A\<^isub>R \<Psi>\<^isub>R. (extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle> \<and> A\<^isub>R \<sharp>* \<Psi> \<and> A\<^isub>R \<sharp>* P \<and> A\<^isub>R \<sharp>* Q) \<longrightarrow>
-                                                                                          \<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q)}"
+  let ?X = "{(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) | xvec \<Psi> P Q R. xvec \<sharp>* \<Psi> \<and> (\<forall>A\<^sub>R \<Psi>\<^sub>R. (extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle> \<and> A\<^sub>R \<sharp>* \<Psi> \<and> A\<^sub>R \<sharp>* P \<and> A\<^sub>R \<sharp>* Q) \<longrightarrow>
+                                                                                          \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q)}"
   {
     fix xvec :: "name list"
     and \<Psi>    :: 'b 
@@ -194,7 +194,7 @@ proof -
     and R    :: "('a, 'b, 'c) psi"
 
     assume "xvec \<sharp>* \<Psi>"
-    and    "\<And>A\<^isub>R \<Psi>\<^isub>R. \<lbrakk>extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>; A\<^isub>R \<sharp>* \<Psi>; A\<^isub>R \<sharp>* P; A\<^isub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
+    and    "\<And>A\<^sub>R \<Psi>\<^sub>R. \<lbrakk>extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>; A\<^sub>R \<sharp>* P; A\<^sub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
 
     hence "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) \<in> ?X"
       apply auto
@@ -211,30 +211,30 @@ proof -
     and C    :: "'d::fs_name"
 
     assume "xvec \<sharp>* \<Psi>"
-    and    A: "\<And>A\<^isub>R \<Psi>\<^isub>R. \<lbrakk>extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>; A\<^isub>R \<sharp>* \<Psi>; A\<^isub>R \<sharp>* P; A\<^isub>R \<sharp>* Q; A\<^isub>R \<sharp>* C\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
+    and    A: "\<And>A\<^sub>R \<Psi>\<^sub>R. \<lbrakk>extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>; A\<^sub>R \<sharp>* P; A\<^sub>R \<sharp>* Q; A\<^sub>R \<sharp>* C\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
 
     from `xvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) \<in> ?X"
     proof(rule XI)
-      fix A\<^isub>R \<Psi>\<^isub>R
-      assume FrR: "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>"
-      obtain p::"name prm" where "(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>" and "(p \<bullet> A\<^isub>R) \<sharp>* P" and "(p \<bullet> A\<^isub>R) \<sharp>* Q" and "(p \<bullet> A\<^isub>R) \<sharp>* R" and "(p \<bullet> A\<^isub>R) \<sharp>* C"
-                             and "(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>\<^isub>R" and S: "(set p) \<subseteq> (set A\<^isub>R) \<times> (set(p \<bullet> A\<^isub>R))" and "distinctPerm p"
-        by(rule_tac c="(\<Psi>, P, Q, R, \<Psi>\<^isub>R, C)" in name_list_avoiding) auto
-      from FrR `(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>\<^isub>R` S have "extractFrame R = \<langle>(p \<bullet> A\<^isub>R), p \<bullet> \<Psi>\<^isub>R\<rangle>" by(simp add: frameChainAlpha')
+      fix A\<^sub>R \<Psi>\<^sub>R
+      assume FrR: "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>"
+      obtain p::"name prm" where "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" and "(p \<bullet> A\<^sub>R) \<sharp>* P" and "(p \<bullet> A\<^sub>R) \<sharp>* Q" and "(p \<bullet> A\<^sub>R) \<sharp>* R" and "(p \<bullet> A\<^sub>R) \<sharp>* C"
+                             and "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<^sub>R" and S: "(set p) \<subseteq> (set A\<^sub>R) \<times> (set(p \<bullet> A\<^sub>R))" and "distinctPerm p"
+        by(rule_tac c="(\<Psi>, P, Q, R, \<Psi>\<^sub>R, C)" in name_list_avoiding) auto
+      from FrR `(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<^sub>R` S have "extractFrame R = \<langle>(p \<bullet> A\<^sub>R), p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: frameChainAlpha')
 
-      moreover assume "A\<^isub>R \<sharp>* \<Psi>"
-      hence "(p \<bullet> A\<^isub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `A\<^isub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>` S have "(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>" by simp
-      moreover assume "A\<^isub>R \<sharp>* P"
-      hence "(p \<bullet> A\<^isub>R) \<sharp>* (p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `A\<^isub>R \<sharp>* P` `(p \<bullet> A\<^isub>R) \<sharp>* P` S have "(p \<bullet> A\<^isub>R) \<sharp>* P" by simp
-      moreover assume "A\<^isub>R \<sharp>* Q"
-      hence "(p \<bullet> A\<^isub>R) \<sharp>* (p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `A\<^isub>R \<sharp>* Q` `(p \<bullet> A\<^isub>R) \<sharp>* Q` S have "(p \<bullet> A\<^isub>R) \<sharp>* Q" by simp
-      ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R) \<rhd> P \<sim> Q" using `(p \<bullet> A\<^isub>R) \<sharp>* C` A by blast
-      hence "(p \<bullet> (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)" by(rule bisimClosed)
-      with `A\<^isub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* P` `(p \<bullet> A\<^isub>R) \<sharp>* P` `A\<^isub>R \<sharp>* Q` `(p \<bullet> A\<^isub>R) \<sharp>* Q` S `distinctPerm p`
-      show "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q" by(simp add: eqvts)
+      moreover assume "A\<^sub>R \<sharp>* \<Psi>"
+      hence "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with `A\<^sub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>` S have "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" by simp
+      moreover assume "A\<^sub>R \<sharp>* P"
+      hence "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with `A\<^sub>R \<sharp>* P` `(p \<bullet> A\<^sub>R) \<sharp>* P` S have "(p \<bullet> A\<^sub>R) \<sharp>* P" by simp
+      moreover assume "A\<^sub>R \<sharp>* Q"
+      hence "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R) \<sharp>* Q` S have "(p \<bullet> A\<^sub>R) \<sharp>* Q" by simp
+      ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> P \<sim> Q" using `(p \<bullet> A\<^sub>R) \<sharp>* C` A by blast
+      hence "(p \<bullet> (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)" by(rule bisimClosed)
+      with `A\<^sub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* P` `(p \<bullet> A\<^sub>R) \<sharp>* P` `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R) \<sharp>* Q` S `distinctPerm p`
+      show "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q" by(simp add: eqvts)
     qed
   }
   note XI' = this
@@ -248,8 +248,8 @@ proof -
     apply(simp add: eqvts)
     apply(simp add: fresh_star_bij)
     apply(clarify)
-    apply(erule_tac x="(rev p) \<bullet> A\<^isub>R" in allE)
-    apply(erule_tac x="(rev p) \<bullet> \<Psi>\<^isub>R" in allE)
+    apply(erule_tac x="(rev p) \<bullet> A\<^sub>R" in allE)
+    apply(erule_tac x="(rev p) \<bullet> \<Psi>\<^sub>R" in allE)
     apply(drule mp)
     apply(rule conjI)
     apply(rule_tac pi=p in pt_bij4[OF pt_name_inst, OF at_name_inst])
@@ -289,31 +289,31 @@ proof -
   have "(\<Psi>, P \<parallel> R, Q \<parallel> R) \<in> ?X" 
   proof -
     {
-      fix A\<^isub>R' :: "name list"
-      and \<Psi>\<^isub>R' :: 'b
+      fix A\<^sub>R' :: "name list"
+      and \<Psi>\<^sub>R' :: 'b
 
-      assume FrR': "extractFrame R = \<langle>A\<^isub>R', \<Psi>\<^isub>R'\<rangle>"
-      and    "A\<^isub>R' \<sharp>* \<Psi>"
-      and    "A\<^isub>R' \<sharp>* P"
-      and    "A\<^isub>R' \<sharp>* Q"
+      assume FrR': "extractFrame R = \<langle>A\<^sub>R', \<Psi>\<^sub>R'\<rangle>"
+      and    "A\<^sub>R' \<sharp>* \<Psi>"
+      and    "A\<^sub>R' \<sharp>* P"
+      and    "A\<^sub>R' \<sharp>* Q"
 
-      obtain p where "(p \<bullet> A\<^isub>R') \<sharp>* A\<^isub>R" and "(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>\<^isub>R'" and "(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>" and "(p \<bullet> A\<^isub>R') \<sharp>* P" and "(p \<bullet> A\<^isub>R') \<sharp>* Q"
-                 and Sp: "(set p) \<subseteq> (set A\<^isub>R') \<times> (set(p \<bullet> A\<^isub>R'))" and "distinctPerm p"
-        by(rule_tac c="(A\<^isub>R, \<Psi>, \<Psi>\<^isub>R', P, Q)" in name_list_avoiding) auto
+      obtain p where "(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R" and "(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<^sub>R'" and "(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>" and "(p \<bullet> A\<^sub>R') \<sharp>* P" and "(p \<bullet> A\<^sub>R') \<sharp>* Q"
+                 and Sp: "(set p) \<subseteq> (set A\<^sub>R') \<times> (set(p \<bullet> A\<^sub>R'))" and "distinctPerm p"
+        by(rule_tac c="(A\<^sub>R, \<Psi>, \<Psi>\<^sub>R', P, Q)" in name_list_avoiding) auto
             
-      from FrR' `(p \<bullet> A\<^isub>R') \<sharp>*  \<Psi>\<^isub>R'` Sp have "extractFrame R = \<langle>(p \<bullet> A\<^isub>R'), p \<bullet> \<Psi>\<^isub>R'\<rangle>"
+      from FrR' `(p \<bullet> A\<^sub>R') \<sharp>*  \<Psi>\<^sub>R'` Sp have "extractFrame R = \<langle>(p \<bullet> A\<^sub>R'), p \<bullet> \<Psi>\<^sub>R'\<rangle>"
         by(simp add: frameChainAlpha eqvts)
-      with FrR `(p \<bullet> A\<^isub>R') \<sharp>* A\<^isub>R` obtain q::"name prm" 
-        where Sq: "set q \<subseteq> set(p \<bullet> A\<^isub>R') \<times> set A\<^isub>R" and "distinctPerm q" and "\<Psi>\<^isub>R = q \<bullet> p \<bullet> \<Psi>\<^isub>R'"
+      with FrR `(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R` obtain q::"name prm" 
+        where Sq: "set q \<subseteq> set(p \<bullet> A\<^sub>R') \<times> set A\<^sub>R" and "distinctPerm q" and "\<Psi>\<^sub>R = q \<bullet> p \<bullet> \<Psi>\<^sub>R'"
         by(force elim: frameChainEq)
 
-      from `\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q` `\<Psi>\<^isub>R = q \<bullet> p \<bullet> \<Psi>\<^isub>R'` have "\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^isub>R') \<rhd> P \<sim> Q" by simp
-      hence "(q \<bullet> (\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^isub>R'))) \<rhd> (q \<bullet> P) \<sim> (q \<bullet> Q)" by(rule bisimClosed)
-      with Sq `A\<^isub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* P` `(p \<bullet> A\<^isub>R') \<sharp>* P` `A\<^isub>R \<sharp>* Q` `(p \<bullet> A\<^isub>R') \<sharp>* Q` `distinctPerm q`
-      have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R') \<rhd> P \<sim> Q" by(simp add: eqvts)
-      hence "(p \<bullet> (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R'))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)" by(rule bisimClosed)
-      with Sp `A\<^isub>R' \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>` `A\<^isub>R' \<sharp>* P` `(p \<bullet> A\<^isub>R') \<sharp>* P` `A\<^isub>R' \<sharp>* Q` `(p \<bullet> A\<^isub>R') \<sharp>* Q` `distinctPerm p`
-      have "\<Psi> \<otimes> \<Psi>\<^isub>R' \<rhd> P \<sim> Q" by(simp add: eqvts)
+      from `\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q` `\<Psi>\<^sub>R = q \<bullet> p \<bullet> \<Psi>\<^sub>R'` have "\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^sub>R') \<rhd> P \<sim> Q" by simp
+      hence "(q \<bullet> (\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^sub>R'))) \<rhd> (q \<bullet> P) \<sim> (q \<bullet> Q)" by(rule bisimClosed)
+      with Sq `A\<^sub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* P` `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* Q` `distinctPerm q`
+      have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R') \<rhd> P \<sim> Q" by(simp add: eqvts)
+      hence "(p \<bullet> (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R'))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)" by(rule bisimClosed)
+      with Sp `A\<^sub>R' \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `A\<^sub>R' \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* P` `A\<^sub>R' \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* Q` `distinctPerm p`
+      have "\<Psi> \<otimes> \<Psi>\<^sub>R' \<rhd> P \<sim> Q" by(simp add: eqvts)
     }
     thus ?thesis
       apply auto
@@ -324,45 +324,45 @@ proof -
   proof(coinduct rule: bisimCoinduct)
     case(cStatEq \<Psi> PR QR)
     from `(\<Psi>, PR, QR) \<in> ?X`
-    obtain xvec P Q R A\<^isub>R \<Psi>\<^isub>R where PFrR: "PR = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R)" and QFrR: "QR = \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)"
-                              and "xvec \<sharp>* \<Psi>" and FrR: "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>" and PSimQ: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
-                              and "A\<^isub>R \<sharp>* xvec" and "A\<^isub>R \<sharp>* \<Psi>" and "A\<^isub>R \<sharp>* P" and "A\<^isub>R \<sharp>* Q" and "A\<^isub>R \<sharp>* R"
+    obtain xvec P Q R A\<^sub>R \<Psi>\<^sub>R where PFrR: "PR = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R)" and QFrR: "QR = \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)"
+                              and "xvec \<sharp>* \<Psi>" and FrR: "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>" and PSimQ: "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
+                              and "A\<^sub>R \<sharp>* xvec" and "A\<^sub>R \<sharp>* \<Psi>" and "A\<^sub>R \<sharp>* P" and "A\<^sub>R \<sharp>* Q" and "A\<^sub>R \<sharp>* R"
       apply auto
-      apply(subgoal_tac "\<exists>A\<^isub>R \<Psi>\<^isub>R. extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle> \<and> A\<^isub>R \<sharp>* (xvec, \<Psi>, P, Q, R)")
+      apply(subgoal_tac "\<exists>A\<^sub>R \<Psi>\<^sub>R. extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle> \<and> A\<^sub>R \<sharp>* (xvec, \<Psi>, P, Q, R)")
       apply auto
       apply blast
       apply(rule_tac F="extractFrame R" and C="(xvec, \<Psi>, P, Q, R)" in freshFrame)
       by auto
 
-    obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "A\<^isub>P \<sharp>* A\<^isub>R" and "A\<^isub>P \<sharp>* \<Psi>\<^isub>R"
-      by(rule_tac C="(\<Psi>, A\<^isub>R, \<Psi>\<^isub>R)" in freshFrame) auto
-    obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "A\<^isub>Q \<sharp>* \<Psi>" and "A\<^isub>Q \<sharp>* A\<^isub>R" and "A\<^isub>Q \<sharp>* \<Psi>\<^isub>R"
-      by(rule_tac C="(\<Psi>, A\<^isub>R, \<Psi>\<^isub>R)" in freshFrame) auto
-    from `A\<^isub>R \<sharp>* P` `A\<^isub>R \<sharp>* Q` `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>Q \<sharp>* A\<^isub>R` FrP FrQ have "A\<^isub>R \<sharp>* \<Psi>\<^isub>P" and  "A\<^isub>R \<sharp>* \<Psi>\<^isub>Q"
+    obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>" and "A\<^sub>P \<sharp>* A\<^sub>R" and "A\<^sub>P \<sharp>* \<Psi>\<^sub>R"
+      by(rule_tac C="(\<Psi>, A\<^sub>R, \<Psi>\<^sub>R)" in freshFrame) auto
+    obtain A\<^sub>Q \<Psi>\<^sub>Q where FrQ: "extractFrame Q = \<langle>A\<^sub>Q, \<Psi>\<^sub>Q\<rangle>" and "A\<^sub>Q \<sharp>* \<Psi>" and "A\<^sub>Q \<sharp>* A\<^sub>R" and "A\<^sub>Q \<sharp>* \<Psi>\<^sub>R"
+      by(rule_tac C="(\<Psi>, A\<^sub>R, \<Psi>\<^sub>R)" in freshFrame) auto
+    from `A\<^sub>R \<sharp>* P` `A\<^sub>R \<sharp>* Q` `A\<^sub>P \<sharp>* A\<^sub>R` `A\<^sub>Q \<sharp>* A\<^sub>R` FrP FrQ have "A\<^sub>R \<sharp>* \<Psi>\<^sub>P" and  "A\<^sub>R \<sharp>* \<Psi>\<^sub>Q"
       by(force dest: extractFrameFreshChain)+
     
-    have "\<langle>(A\<^isub>P@A\<^isub>R), \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<rangle> \<simeq>\<^sub>F \<langle>(A\<^isub>Q@A\<^isub>R), \<Psi> \<otimes> \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R\<rangle>"
+    have "\<langle>(A\<^sub>P@A\<^sub>R), \<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>R\<rangle> \<simeq>\<^sub>F \<langle>(A\<^sub>Q@A\<^sub>R), \<Psi> \<otimes> \<Psi>\<^sub>Q \<otimes> \<Psi>\<^sub>R\<rangle>"
     proof -
-      have "\<langle>A\<^isub>P, \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>P, (\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P\<rangle>"
+      have "\<langle>A\<^sub>P, \<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>R\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>P, (\<Psi> \<otimes> \<Psi>\<^sub>R) \<otimes> \<Psi>\<^sub>P\<rangle>"
         by(metis frameResChainPres frameNilStatEq Associativity Commutativity AssertionStatEqTrans Composition)
-      moreover from PSimQ have "insertAssertion(extractFrame P) (\<Psi> \<otimes> \<Psi>\<^isub>R) \<simeq>\<^sub>F insertAssertion(extractFrame Q) (\<Psi> \<otimes> \<Psi>\<^isub>R)"
+      moreover from PSimQ have "insertAssertion(extractFrame P) (\<Psi> \<otimes> \<Psi>\<^sub>R) \<simeq>\<^sub>F insertAssertion(extractFrame Q) (\<Psi> \<otimes> \<Psi>\<^sub>R)"
         by(rule bisimE)
-      with FrP FrQ freshCompChain `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* \<Psi>\<^isub>R` `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>\<^isub>R` have "\<langle>A\<^isub>P, (\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>P\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>Q, (\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q\<rangle>"
+      with FrP FrQ freshCompChain `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* \<Psi>\<^sub>R` `A\<^sub>Q \<sharp>* \<Psi>` `A\<^sub>Q \<sharp>* \<Psi>\<^sub>R` have "\<langle>A\<^sub>P, (\<Psi> \<otimes> \<Psi>\<^sub>R) \<otimes> \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>Q, (\<Psi> \<otimes> \<Psi>\<^sub>R) \<otimes> \<Psi>\<^sub>Q\<rangle>"
         by auto
-      moreover have "\<langle>A\<^isub>Q, (\<Psi> \<otimes> \<Psi>\<^isub>R) \<otimes> \<Psi>\<^isub>Q\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>Q, \<Psi> \<otimes> \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R\<rangle>"
+      moreover have "\<langle>A\<^sub>Q, (\<Psi> \<otimes> \<Psi>\<^sub>R) \<otimes> \<Psi>\<^sub>Q\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>Q, \<Psi> \<otimes> \<Psi>\<^sub>Q \<otimes> \<Psi>\<^sub>R\<rangle>"
         by(metis frameResChainPres frameNilStatEq Associativity Commutativity AssertionStatEqTrans Composition)
-      ultimately have "\<langle>A\<^isub>P, \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>Q, \<Psi> \<otimes> \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R\<rangle>"
+      ultimately have "\<langle>A\<^sub>P, \<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>R\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>Q, \<Psi> \<otimes> \<Psi>\<^sub>Q \<otimes> \<Psi>\<^sub>R\<rangle>"
         by(blast intro: FrameStatEqTrans)
-      hence "\<langle>(A\<^isub>R@A\<^isub>P), \<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>R\<rangle> \<simeq>\<^sub>F \<langle>(A\<^isub>R@A\<^isub>Q), \<Psi> \<otimes> \<Psi>\<^isub>Q \<otimes> \<Psi>\<^isub>R\<rangle>"
+      hence "\<langle>(A\<^sub>R@A\<^sub>P), \<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>R\<rangle> \<simeq>\<^sub>F \<langle>(A\<^sub>R@A\<^sub>Q), \<Psi> \<otimes> \<Psi>\<^sub>Q \<otimes> \<Psi>\<^sub>R\<rangle>"
         by(drule_tac frameResChainPres) (simp add: frameChainAppend)
       thus ?thesis
         apply(simp add: frameChainAppend)
         by(metis frameResChainComm FrameStatEqTrans)
     qed
-    moreover from `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* \<Psi>` have "(A\<^isub>P@A\<^isub>R) \<sharp>* \<Psi>" by simp
-    moreover from `A\<^isub>Q \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* \<Psi>` have "(A\<^isub>Q@A\<^isub>R) \<sharp>* \<Psi>" by simp
+    moreover from `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* \<Psi>` have "(A\<^sub>P@A\<^sub>R) \<sharp>* \<Psi>" by simp
+    moreover from `A\<^sub>Q \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* \<Psi>` have "(A\<^sub>Q@A\<^sub>R) \<sharp>* \<Psi>" by simp
     ultimately have PFrRQR: "insertAssertion(extractFrame(P \<parallel> R)) \<Psi> \<simeq>\<^sub>F insertAssertion(extractFrame(Q \<parallel> R)) \<Psi>"
-      using FrP FrQ FrR `A\<^isub>P \<sharp>* A\<^isub>R` `A\<^isub>P \<sharp>* \<Psi>\<^isub>R` `A\<^isub>Q \<sharp>* A\<^isub>R` `A\<^isub>Q \<sharp>* \<Psi>\<^isub>R` `A\<^isub>R \<sharp>* \<Psi>\<^isub>P` `A\<^isub>R \<sharp>* \<Psi>\<^isub>Q`
+      using FrP FrQ FrR `A\<^sub>P \<sharp>* A\<^sub>R` `A\<^sub>P \<sharp>* \<Psi>\<^sub>R` `A\<^sub>Q \<sharp>* A\<^sub>R` `A\<^sub>Q \<sharp>* \<Psi>\<^sub>R` `A\<^sub>R \<sharp>* \<Psi>\<^sub>P` `A\<^sub>R \<sharp>* \<Psi>\<^sub>Q`
       by simp
       
     from `xvec \<sharp>* \<Psi>` have "insertAssertion (extractFrame(\<lparr>\<nu>*xvec\<rparr>P \<parallel> R)) \<Psi> \<simeq>\<^sub>F \<lparr>\<nu>*xvec\<rparr>(insertAssertion (extractFrame(P \<parallel> R)) \<Psi>)"
@@ -377,19 +377,19 @@ proof -
     case(cSim \<Psi> PR QR)
     {
       fix \<Psi> P Q R xvec
-      assume "\<And>A\<^isub>R \<Psi>\<^isub>R. \<lbrakk>extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>; A\<^isub>R \<sharp>* \<Psi>; A\<^isub>R \<sharp>* P; A\<^isub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
+      assume "\<And>A\<^sub>R \<Psi>\<^sub>R. \<lbrakk>extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>; A\<^sub>R \<sharp>* P; A\<^sub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
       moreover have "eqvt bisim" by simp
       moreover from `eqvt ?X` have "eqvt(?X \<union> bisim)" by auto
       moreover from bisimE(1) have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame P) \<Psi>" by(simp add: FrameStatEq_def)
       moreover note bisimE(2) bisimE(3)
       moreover 
       {
-        fix \<Psi> P Q A\<^isub>R \<Psi>\<^isub>R R
-        assume PSimQ: "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
-           and FrR: "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>"
-           and "A\<^isub>R \<sharp>* \<Psi>"
-           and "A\<^isub>R \<sharp>* P"
-           and "A\<^isub>R \<sharp>* Q"
+        fix \<Psi> P Q A\<^sub>R \<Psi>\<^sub>R R
+        assume PSimQ: "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
+           and FrR: "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>"
+           and "A\<^sub>R \<sharp>* \<Psi>"
+           and "A\<^sub>R \<sharp>* P"
+           and "A\<^sub>R \<sharp>* Q"
         hence "(\<Psi>, P \<parallel> R, Q \<parallel> R) \<in> ?X"
         proof -
           have "P \<parallel> R = \<lparr>\<nu>*[]\<rparr>(P \<parallel> R)" by simp
@@ -397,37 +397,37 @@ proof -
           moreover have "([]::name list) \<sharp>* \<Psi>" by simp
           moreover 
           {
-            fix A\<^isub>R' \<Psi>\<^isub>R'
+            fix A\<^sub>R' \<Psi>\<^sub>R'
 
-            assume FrR': "extractFrame R = \<langle>A\<^isub>R', \<Psi>\<^isub>R'\<rangle>"
-               and "A\<^isub>R' \<sharp>* \<Psi>"
-               and "A\<^isub>R' \<sharp>* P"
-               and "A\<^isub>R' \<sharp>* Q"
-            obtain p where "(p \<bullet> A\<^isub>R') \<sharp>* A\<^isub>R"
-                       and "(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>\<^isub>R'"
-                       and "(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>"
-                       and "(p \<bullet> A\<^isub>R') \<sharp>* P"
-                       and "(p \<bullet> A\<^isub>R') \<sharp>* Q"
-                       and S: "(set p) \<subseteq> (set A\<^isub>R') \<times> (set(p \<bullet> A\<^isub>R'))" and "distinctPerm p"
-              by(rule_tac c="(A\<^isub>R, \<Psi>, \<Psi>\<^isub>R', P, Q)" in name_list_avoiding) auto
+            assume FrR': "extractFrame R = \<langle>A\<^sub>R', \<Psi>\<^sub>R'\<rangle>"
+               and "A\<^sub>R' \<sharp>* \<Psi>"
+               and "A\<^sub>R' \<sharp>* P"
+               and "A\<^sub>R' \<sharp>* Q"
+            obtain p where "(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R"
+                       and "(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<^sub>R'"
+                       and "(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>"
+                       and "(p \<bullet> A\<^sub>R') \<sharp>* P"
+                       and "(p \<bullet> A\<^sub>R') \<sharp>* Q"
+                       and S: "(set p) \<subseteq> (set A\<^sub>R') \<times> (set(p \<bullet> A\<^sub>R'))" and "distinctPerm p"
+              by(rule_tac c="(A\<^sub>R, \<Psi>, \<Psi>\<^sub>R', P, Q)" in name_list_avoiding) auto
 
 
-            from `(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>\<^isub>R'` S have "\<langle>A\<^isub>R', \<Psi>\<^isub>R'\<rangle> = \<langle>p \<bullet> A\<^isub>R', p \<bullet> \<Psi>\<^isub>R'\<rangle>"
+            from `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<^sub>R'` S have "\<langle>A\<^sub>R', \<Psi>\<^sub>R'\<rangle> = \<langle>p \<bullet> A\<^sub>R', p \<bullet> \<Psi>\<^sub>R'\<rangle>"
               by(simp add: frameChainAlpha)
 
-            with FrR' have FrR'': "extractFrame R = \<langle>p \<bullet> A\<^isub>R', p \<bullet> \<Psi>\<^isub>R'\<rangle>" by simp
-            with FrR `(p \<bullet> A\<^isub>R') \<sharp>* A\<^isub>R`
-            obtain q where "p \<bullet> \<Psi>\<^isub>R' = (q::name prm) \<bullet> \<Psi>\<^isub>R" and S': "set q \<subseteq> (set A\<^isub>R) \<times> set(p \<bullet> A\<^isub>R')" and "distinctPerm q"
+            with FrR' have FrR'': "extractFrame R = \<langle>p \<bullet> A\<^sub>R', p \<bullet> \<Psi>\<^sub>R'\<rangle>" by simp
+            with FrR `(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R`
+            obtain q where "p \<bullet> \<Psi>\<^sub>R' = (q::name prm) \<bullet> \<Psi>\<^sub>R" and S': "set q \<subseteq> (set A\<^sub>R) \<times> set(p \<bullet> A\<^sub>R')" and "distinctPerm q"
               apply auto
               apply(drule_tac sym) apply simp
               by(drule_tac frameChainEq) auto
-            from PSimQ have "(q \<bullet> (\<Psi> \<otimes> \<Psi>\<^isub>R)) \<rhd> (q \<bullet> P) \<sim> (q \<bullet> Q)"
+            from PSimQ have "(q \<bullet> (\<Psi> \<otimes> \<Psi>\<^sub>R)) \<rhd> (q \<bullet> P) \<sim> (q \<bullet> Q)"
               by(rule bisimClosed)
-            with `A\<^isub>R \<sharp>* \<Psi>` `A\<^isub>R \<sharp>* P` `A\<^isub>R \<sharp>* Q` `(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R') \<sharp>* P` `(p \<bullet> A\<^isub>R') \<sharp>* Q` S'
-            have "\<Psi> \<otimes> (q \<bullet> \<Psi>\<^isub>R) \<rhd> P \<sim> Q" by(simp add: eqvts)
-            hence "(p \<bullet> (\<Psi> \<otimes> (q \<bullet> \<Psi>\<^isub>R))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)" by(rule bisimClosed)
-            with `A\<^isub>R' \<sharp>* \<Psi>` `A\<^isub>R' \<sharp>* P` `A\<^isub>R' \<sharp>* Q` `(p \<bullet> A\<^isub>R') \<sharp>* \<Psi>` `(p \<bullet> A\<^isub>R') \<sharp>* P` `(p \<bullet> A\<^isub>R') \<sharp>* Q` S `distinctPerm p` `(p \<bullet> \<Psi>\<^isub>R') = q \<bullet> \<Psi>\<^isub>R` 
-            have "\<Psi> \<otimes> \<Psi>\<^isub>R' \<rhd> P \<sim> Q"
+            with `A\<^sub>R \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* P` `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* Q` S'
+            have "\<Psi> \<otimes> (q \<bullet> \<Psi>\<^sub>R) \<rhd> P \<sim> Q" by(simp add: eqvts)
+            hence "(p \<bullet> (\<Psi> \<otimes> (q \<bullet> \<Psi>\<^sub>R))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)" by(rule bisimClosed)
+            with `A\<^sub>R' \<sharp>* \<Psi>` `A\<^sub>R' \<sharp>* P` `A\<^sub>R' \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* Q` S `distinctPerm p` `(p \<bullet> \<Psi>\<^sub>R') = q \<bullet> \<Psi>\<^sub>R` 
+            have "\<Psi> \<otimes> \<Psi>\<^sub>R' \<rhd> P \<sim> Q"
               by(drule_tac sym) (simp add: eqvts)
           }
           ultimately show ?thesis
@@ -462,8 +462,8 @@ proof -
     case(cExt \<Psi> PR QR \<Psi>')
 
     from `(\<Psi>, PR, QR) \<in> ?X`
-    obtain xvec P Q R A\<^isub>R \<Psi>\<^isub>R where PFrR: "PR = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R)" and QFrR: "QR = \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)"
-                               and "xvec \<sharp>* \<Psi>" and A: "\<forall>A\<^isub>R \<Psi>\<^isub>R. (extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle> \<and> A\<^isub>R \<sharp>* \<Psi> \<and> A\<^isub>R \<sharp>* P \<and> A\<^isub>R \<sharp>* Q) \<longrightarrow> \<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q"
+    obtain xvec P Q R A\<^sub>R \<Psi>\<^sub>R where PFrR: "PR = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R)" and QFrR: "QR = \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)"
+                               and "xvec \<sharp>* \<Psi>" and A: "\<forall>A\<^sub>R \<Psi>\<^sub>R. (extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle> \<and> A\<^sub>R \<sharp>* \<Psi> \<and> A\<^sub>R \<sharp>* P \<and> A\<^sub>R \<sharp>* Q) \<longrightarrow> \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q"
       by auto
     
     obtain p where "(p \<bullet> xvec) \<sharp>* \<Psi>"
@@ -486,25 +486,25 @@ proof -
 
     from `(p \<bullet> xvec) \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> R)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> Q) \<parallel> (p \<bullet> R))) \<in> ?X"
     proof(rule_tac C2="(\<Psi>, (p \<bullet> P), (p \<bullet> Q), R, \<Psi>', xvec, p \<bullet> xvec)" in XI', auto)
-      fix A\<^isub>R \<Psi>\<^isub>R
-      assume FrR: "extractFrame (p \<bullet> R) = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>" and "A\<^isub>R \<sharp>* \<Psi>" and "A\<^isub>R \<sharp>* \<Psi>'" and "A\<^isub>R \<sharp>* (p \<bullet> P)" and "A\<^isub>R \<sharp>* (p \<bullet> Q)"
-      from FrR have "(p \<bullet> (extractFrame (p \<bullet> R))) = (p \<bullet> \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>)" by simp
-      with `distinctPerm p` have "extractFrame R = \<langle>p \<bullet> A\<^isub>R, p \<bullet> \<Psi>\<^isub>R\<rangle>" by(simp add: eqvts)
-      moreover from `A\<^isub>R \<sharp>* \<Psi>` have "(p \<bullet> A\<^isub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S have "(p \<bullet> A\<^isub>R) \<sharp>* \<Psi>" by simp
-      moreover from `A\<^isub>R \<sharp>* (p \<bullet> P)` have "(p \<bullet> A\<^isub>R) \<sharp>* (p \<bullet> p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `distinctPerm p` have "(p \<bullet> A\<^isub>R) \<sharp>* P" by simp
-      moreover from `A\<^isub>R \<sharp>* (p \<bullet> Q)` have "(p \<bullet> A\<^isub>R) \<sharp>* (p \<bullet> p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `distinctPerm p` have "(p \<bullet> A\<^isub>R) \<sharp>* Q" by simp
-      ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R) \<rhd> P \<sim> Q" using A by blast
-      hence "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R)) \<otimes> (p \<bullet> \<Psi>') \<rhd> P \<sim> Q" by(rule bisimE)
-      moreover have "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^isub>R)) \<otimes> (p \<bullet> \<Psi>') \<simeq> (\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^isub>R)"
+      fix A\<^sub>R \<Psi>\<^sub>R
+      assume FrR: "extractFrame (p \<bullet> R) = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>" and "A\<^sub>R \<sharp>* \<Psi>" and "A\<^sub>R \<sharp>* \<Psi>'" and "A\<^sub>R \<sharp>* (p \<bullet> P)" and "A\<^sub>R \<sharp>* (p \<bullet> Q)"
+      from FrR have "(p \<bullet> (extractFrame (p \<bullet> R))) = (p \<bullet> \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>)" by simp
+      with `distinctPerm p` have "extractFrame R = \<langle>p \<bullet> A\<^sub>R, p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: eqvts)
+      moreover from `A\<^sub>R \<sharp>* \<Psi>` have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S have "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" by simp
+      moreover from `A\<^sub>R \<sharp>* (p \<bullet> P)` have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with `distinctPerm p` have "(p \<bullet> A\<^sub>R) \<sharp>* P" by simp
+      moreover from `A\<^sub>R \<sharp>* (p \<bullet> Q)` have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with `distinctPerm p` have "(p \<bullet> A\<^sub>R) \<sharp>* Q" by simp
+      ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> P \<sim> Q" using A by blast
+      hence "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> (p \<bullet> \<Psi>') \<rhd> P \<sim> Q" by(rule bisimE)
+      moreover have "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> (p \<bullet> \<Psi>') \<simeq> (\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^sub>R)"
         by(metis Associativity Commutativity Composition AssertionStatEqTrans AssertionStatEqSym)
-      ultimately have "(\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^isub>R) \<rhd> P \<sim> Q" 
+      ultimately have "(\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> P \<sim> Q" 
         by(rule statEqBisim)
-      hence "(p \<bullet> ((\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^isub>R))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)"
+      hence "(p \<bullet> ((\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^sub>R))) \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)"
         by(rule bisimClosed)
-      with `distinctPerm p` `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S show "(\<Psi> \<otimes> \<Psi>') \<otimes> \<Psi>\<^isub>R \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)"
+      with `distinctPerm p` `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S show "(\<Psi> \<otimes> \<Psi>') \<otimes> \<Psi>\<^sub>R \<rhd> (p \<bullet> P) \<sim> (p \<bullet> Q)"
         by(simp add: eqvts)
     qed
     with PFrR QFrR PRAlpha QRAlpha show ?case by simp
@@ -524,9 +524,9 @@ lemma bisimParPres:
 
   shows "\<Psi> \<rhd> P \<parallel> R \<sim> Q \<parallel> R"
 proof -
-  obtain A\<^isub>R \<Psi>\<^isub>R where "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>" and "A\<^isub>R \<sharp>* \<Psi>" and "A\<^isub>R \<sharp>* P" and "A\<^isub>R \<sharp>* Q"
+  obtain A\<^sub>R \<Psi>\<^sub>R where "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>" and "A\<^sub>R \<sharp>* \<Psi>" and "A\<^sub>R \<sharp>* P" and "A\<^sub>R \<sharp>* Q"
     by(rule_tac C="(\<Psi>, P, Q)" in freshFrame) auto
-  moreover from `\<Psi> \<rhd> P \<sim> Q` have "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<sim> Q" by(rule bisimE)
+  moreover from `\<Psi> \<rhd> P \<sim> Q` have "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<sim> Q" by(rule bisimE)
   ultimately show ?thesis by(rule_tac bisimParPresAux)
 qed
 

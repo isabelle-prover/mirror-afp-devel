@@ -123,7 +123,7 @@ next
   have "\<exists>s. (if t + h < t then t + h < s \<and> s < t else t < s \<and> s < t + h) \<and>
           x (t + h) =
           (\<Sum>m = 0..<2. diff m t / real (fact m) * (t + h - t) ^ m) +
-          diff 2 s / real (fact (2::nat)) * (t + h - t)\<twosuperior>" by simp
+          diff 2 s / real (fact (2::nat)) * (t + h - t)\<^sup>2" by simp
   moreover have "2 = Suc (Suc 0)" by simp
   ultimately have "\<exists>s\<in>{t..t + h}. x (t + h) = x t + h * f (t, x t) + f' s * (h * h) / real (Suc (Suc 0))"
     using assms h by (auto simp add: diff_def)
@@ -133,12 +133,12 @@ next
   
   have "dist (x (t + h))
       (discrete_evolution (euler_increment f) (t + h) t (x t)) \<le>
-    \<bar>h\<twosuperior> * f' s / 2\<bar>" using s unfolding discrete_evolution_def euler_increment
+    \<bar>h\<^sup>2 * f' s / 2\<bar>" using s unfolding discrete_evolution_def euler_increment
     by (simp add: dist_real_def)
-  also have "... \<le> \<bar>(h\<twosuperior> / 2) * f' s\<bar>" by simp
-  also have "... = \<bar>h\<twosuperior> / 2\<bar>  * \<bar>f' s\<bar>" by (rule abs_mult)
-  also have "... \<le> h\<twosuperior> / 2 * \<bar>f' s\<bar>" by simp
-  also have "... \<le> h\<twosuperior> / 2 * B2" using assms s h unfolding B2_def[symmetric] by simp
+  also have "... \<le> \<bar>(h\<^sup>2 / 2) * f' s\<bar>" by simp
+  also have "... = \<bar>h\<^sup>2 / 2\<bar>  * \<bar>f' s\<bar>" by (rule abs_mult)
+  also have "... \<le> h\<^sup>2 / 2 * \<bar>f' s\<bar>" by simp
+  also have "... \<le> h\<^sup>2 / 2 * B2" using assms s h unfolding B2_def[symmetric] by simp
   finally show "dist (x (t + h))
     (discrete_evolution (euler_increment f) (t + h) t (x t))
       \<le> B * h ^ (1 + 1)" by (simp add: ac_simps power2_eq_square B2_def)

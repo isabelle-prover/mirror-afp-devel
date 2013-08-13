@@ -105,7 +105,7 @@ lemma (in fin_digraph) witness_path:
   assumes "\<mu> c s v = ereal r"
   shows "\<exists> p. apath s p v \<and> \<mu> c s v = awalk_cost c p"
 proof -
-  have sv: "s \<rightarrow>\<^isup>* v" 
+  have sv: "s \<rightarrow>\<^sup>* v" 
     using shortest_path_inf[of s v c] assms by fastforce
   { 
     fix p assume "awalk s p v"
@@ -127,7 +127,7 @@ proof (rule ccontr)
     show "\<And>r. \<mu> c s v = ereal r \<Longrightarrow> False"
     proof -
       fix r assume r_asm: "\<mu> c s v = ereal r"
-      hence sv: "s \<rightarrow>\<^isup>* v"
+      hence sv: "s \<rightarrow>\<^sup>* v"
         using shortest_path_inf[where u=s and v=v and f=c] by auto
       obtain p where 
         "awalk s p v" 

@@ -144,7 +144,7 @@ prevVertex f a wird mit nachbarflaeche geloescht.
 *)
 
 lemma [iff]: "separated g {}"
-by (simp add: separated_def separated\<^isub>2_def separated\<^isub>3_def)
+by (simp add: separated_def separated\<^sub>2_def separated\<^sub>3_def)
 
 lemma separated_insert:
 assumes mgp: "minGraphProps g" and a: "a \<in> \<V> g"
@@ -154,7 +154,7 @@ assumes mgp: "minGraphProps g" and a: "a \<in> \<V> g"
   and s3: "(\<And>f. f \<in> set (facesAt g a) \<Longrightarrow>
       |vertices f| \<le> 4 \<Longrightarrow> \<V> f \<inter> V \<subseteq> {a})"
   shows "separated g (insert a V)"
-proof (simp add: separated_def separated\<^isub>2_def separated\<^isub>3_def,
+proof (simp add: separated_def separated\<^sub>2_def separated\<^sub>3_def,
  intro conjI ballI impI)
   fix f assume f: "f \<in> set (facesAt g a)"
   then show "f \<bullet> a \<noteq> a" by (rule mgp_facesAt_no_loop[OF mgp a])
@@ -171,7 +171,7 @@ next
     with f' s2 show False by blast
   qed
   from ps v vV show "f \<bullet> v \<notin> V"
-    by (simp add: separated_def separated\<^isub>2_def)
+    by (simp add: separated_def separated\<^sub>2_def)
 next
   fix f assume f:  "f \<in> set (facesAt g a)" "|vertices f| \<le> 4"
   then have "\<V> f \<inter> V \<subseteq> {a}" by (rule s3)
@@ -182,7 +182,7 @@ next
   assume a: "v \<in> V" "f \<in> set (facesAt g v)"
     "|vertices f| \<le> 4"
   with ps have v: "\<V> f \<inter> V = {v}"
-    by (simp add: separated_def separated\<^isub>3_def)
+    by (simp add: separated_def separated\<^sub>3_def)
   have "v : \<V> g" using a Vg by blast
   show  "\<V> f \<inter> insert a V = {v}"
   proof cases
@@ -576,7 +576,7 @@ shows "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
 proof -
   from pS have i: "\<forall>v\<in>set V. \<forall>f\<in>set (facesAt g v).
     |vertices f| \<le> 4 \<longrightarrow> set (vertices f) \<inter> set V = {v}"
-    by (simp add: separated_def separated\<^isub>3_def)
+    by (simp add: separated_def separated\<^sub>3_def)
   show "separating (set V) (\<lambda>v. set (facesAt g v) Int P)"
   proof (simp add: separating_def, intro ballI impI)
     fix v1 v2 assume v: "v1 \<in> set V" "v2 \<in> set V" "v1 \<noteq> v2"
@@ -705,7 +705,7 @@ qed
 
 lemma separated_subset: (* separated *)
    "V1 \<subseteq> V2 \<Longrightarrow> separated g V2 \<Longrightarrow> separated g V1"
-proof (simp add:  separated_def separated\<^isub>3_def separated\<^isub>2_def,
+proof (simp add:  separated_def separated\<^sub>3_def separated\<^sub>2_def,
   elim conjE, intro allI impI ballI conjI)
   fix v f
   assume a: "v \<in> V1" "V1 \<subseteq> V2" "f \<in> set (facesAt g v)"

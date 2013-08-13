@@ -30,10 +30,10 @@ where
                            compE2 e @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]"
 | "compE2 (insync\<^bsub>V\<^esub> (a) e) = [Goto 1]" -- "Define insync sensibly"
 | "compE2 (e1;;e2) = compE2 e1 @ [Pop] @ compE2 e2"
-| "compE2 (if (e) e\<^isub>1 else e\<^isub>2) =
+| "compE2 (if (e) e\<^sub>1 else e\<^sub>2) =
           (let cnd   = compE2 e;
-               thn   = compE2 e\<^isub>1;
-               els   = compE2 e\<^isub>2;
+               thn   = compE2 e\<^sub>1;
+               els   = compE2 e\<^sub>2;
                test  = IfFalse (int(size thn + 2)); 
                thnex = Goto (int(size els + 1))
            in cnd @ [test] @ thn @ [thnex] @ els)"
@@ -85,10 +85,10 @@ where
 | "compxE2 (insync\<^bsub>V\<^esub> (a) e) pc d = []"
 | "compxE2 (e1;;e2) pc d =
    compxE2 e1 pc d @ compxE2 e2 (pc+size(compE2 e1)+1) d"
-| "compxE2 (if (e) e\<^isub>1 else e\<^isub>2) pc d =
-           (let pc\<^isub>1   = pc + size(compE2 e) + 1;
-                pc\<^isub>2   = pc\<^isub>1 + size(compE2 e\<^isub>1) + 1
-            in compxE2 e pc d @ compxE2 e\<^isub>1 pc\<^isub>1 d @ compxE2 e\<^isub>2 pc\<^isub>2 d)"
+| "compxE2 (if (e) e\<^sub>1 else e\<^sub>2) pc d =
+           (let pc\<^sub>1   = pc + size(compE2 e) + 1;
+                pc\<^sub>2   = pc\<^sub>1 + size(compE2 e\<^sub>1) + 1
+            in compxE2 e pc d @ compxE2 e\<^sub>1 pc\<^sub>1 d @ compxE2 e\<^sub>2 pc\<^sub>2 d)"
 | "compxE2 (while (b) e) pc d =
    compxE2 b pc d @ compxE2 e (pc+size(compE2 b)+1) d"
 | "compxE2 (throw e) pc d = compxE2 e pc d"
@@ -168,8 +168,8 @@ where
 | "max_stack (sync\<^bsub>V\<^esub> (o') e) = max (max_stack o') (max (max_stack e) 2)"
 | "max_stack (insync\<^bsub>V\<^esub> (a) e) = 1"
 | "max_stack (e1;;e2) = max (max_stack e1) (max_stack e2)"
-| "max_stack (if (e) e\<^isub>1 else e\<^isub>2) =
-   max (max_stack e) (max (max_stack e\<^isub>1) (max_stack e\<^isub>2))"
+| "max_stack (if (e) e\<^sub>1 else e\<^sub>2) =
+   max (max_stack e) (max (max_stack e\<^sub>1) (max_stack e\<^sub>2))"
 | "max_stack (while (e) c) = max (max_stack e) (max_stack c)"
 | "max_stack (throw e) = max_stack e"
 | "max_stack (try e1 catch(C i) e2) = max (max_stack e1) (max_stack e2)"

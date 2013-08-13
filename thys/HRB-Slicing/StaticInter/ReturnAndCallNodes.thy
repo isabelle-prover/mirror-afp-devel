@@ -36,11 +36,11 @@ next
     by(rule get_return_edges_valid)
   from `valid_edge a` `a' \<in> get_return_edges a` obtain a''
     where intra_edge1:"valid_edge a''" "sourcenode a'' = sourcenode a"
-    "targetnode a'' = targetnode a'" "kind a'' = (\<lambda>cf. False)\<^isub>\<surd>"
+    "targetnode a'' = targetnode a'" "kind a'' = (\<lambda>cf. False)\<^sub>\<surd>"
     by(fastforce dest:call_return_node_edge)
   from `valid_edge ax` `ax' \<in> get_return_edges ax` obtain ax''
     where intra_edge2:"valid_edge ax''" "sourcenode ax'' = sourcenode ax"
-    "targetnode ax'' = targetnode ax'" "kind ax'' = (\<lambda>cf. False)\<^isub>\<surd>"
+    "targetnode ax'' = targetnode ax'" "kind ax'' = (\<lambda>cf. False)\<^sub>\<surd>"
     by(fastforce dest:call_return_node_edge)
   from `valid_edge a` `a' \<in> get_return_edges a` 
   obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"

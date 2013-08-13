@@ -41,10 +41,10 @@ that appends two lists, and the conversion function @{term set} from
 lists to sets.  Variable names ending in ``s'' usually stand for
 lists.
 
-\item[Records] are constructed like this @{text"\<lparr>f\<^isub>1 = v\<^isub>1, \<dots>\<rparr>"}
-and updated like this \mbox{@{text"r\<lparr>f\<^isub>i := v\<^isub>i, \<dots>\<rparr>"}},
-where the @{text f\<^isub>i} are the field names,
-the @{text v\<^isub>i} the values and @{text r} is a record.
+\item[Records] are constructed like this @{text"\<lparr>f\<^sub>1 = v\<^sub>1, \<dots>\<rparr>"}
+and updated like this \mbox{@{text"r\<lparr>f\<^sub>i := v\<^sub>i, \<dots>\<rparr>"}},
+where the @{text f\<^sub>i} are the field names,
+the @{text v\<^sub>i} the values and @{text r} is a record.
 
 \end{description}\fussy
 Datatype @{text option} is defined like this
@@ -54,9 +54,9 @@ Datatype @{text option} is defined like this
 and adjoins a new element @{term None} to a type @{typ 'a}. For
 succinctness we write @{term"Some a"} instead of @{term[source]"Some a"}.
 
-Note that @{text"\<lbrakk>A\<^isub>1; \<dots>; A\<^isub>n\<rbrakk> \<Longrightarrow> A"}
-abbreviates @{text"A\<^isub>1 \<Longrightarrow> \<dots> \<Longrightarrow> A\<^isub>n \<Longrightarrow> A"}, which is the same as
-``If @{text A\<^isub>1} and \dots\ and @{text A\<^isub>n} then @{text A}''.
+Note that @{text"\<lbrakk>A\<^sub>1; \<dots>; A\<^sub>n\<rbrakk> \<Longrightarrow> A"}
+abbreviates @{text"A\<^sub>1 \<Longrightarrow> \<dots> \<Longrightarrow> A\<^sub>n \<Longrightarrow> A"}, which is the same as
+``If @{text A\<^sub>1} and \dots\ and @{text A\<^sub>n} then @{text A}''.
 *}
 
 (*<*)

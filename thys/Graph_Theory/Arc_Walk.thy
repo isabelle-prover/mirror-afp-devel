@@ -572,9 +572,9 @@ qed
 subsection {* Reachability *}
 
 lemma reachable1_awalk:
-  "u \<rightarrow>\<^isup>+ v \<longleftrightarrow> (\<exists>p. awalk u p v \<and> p \<noteq> [])"
+  "u \<rightarrow>\<^sup>+ v \<longleftrightarrow> (\<exists>p. awalk u p v \<and> p \<noteq> [])"
 proof
-  assume "u \<rightarrow>\<^isup>+ v" then show "\<exists>p. awalk u p v \<and> p \<noteq> []"
+  assume "u \<rightarrow>\<^sup>+ v" then show "\<exists>p. awalk u p v \<and> p \<noteq> []"
   proof (induct rule: converse_trancl_induct)
     case (base y) then obtain e where "e \<in> arcs G" "tail G e = y" "head G e = v" by auto
     with arc_implies_awalk show ?case by auto
@@ -591,7 +591,7 @@ proof
   qed
 next
   assume "\<exists>p. awalk u p v \<and> p \<noteq> []" then obtain p where "awalk u p v" "p \<noteq> []" by auto
-  thus "u \<rightarrow>\<^isup>+ v"
+  thus "u \<rightarrow>\<^sup>+ v"
   proof (induct p arbitrary: u)
     case (Cons a as) then show ?case
       by (cases "as = []") (auto simp: awalk_simps trancl_into_trancl2 dest: in_arcs_imp_in_arcs_ends)
@@ -599,16 +599,16 @@ next
 qed
 
 lemma reachable_awalk:
-  "u \<rightarrow>\<^isup>* v \<longleftrightarrow> (\<exists>p. awalk u p v)"
+  "u \<rightarrow>\<^sup>* v \<longleftrightarrow> (\<exists>p. awalk u p v)"
 proof cases
   assume "u = v"
-  have "u \<rightarrow>\<^isup>*u \<longleftrightarrow> awalk u [] u" by (auto simp: awalk_Nil_iff reachable_in_verts)
+  have "u \<rightarrow>\<^sup>*u \<longleftrightarrow> awalk u [] u" by (auto simp: awalk_Nil_iff reachable_in_verts)
   also have "\<dots> \<longleftrightarrow> (\<exists>p. awalk u p u)"
     by (metis awalk_Nil_iff awalk_hd_in_verts)
   finally show ?thesis using `u = v` by simp
 next
   assume "u \<noteq> v"
-  then have "u \<rightarrow>\<^isup>* v \<longleftrightarrow> u \<rightarrow>\<^isup>+ v" by auto
+  then have "u \<rightarrow>\<^sup>* v \<longleftrightarrow> u \<rightarrow>\<^sup>+ v" by auto
   also have "\<dots> \<longleftrightarrow> (\<exists>p. awalk u p v)"
     using `u \<noteq> v` unfolding reachable1_awalk by force
   finally show ?thesis .
@@ -616,19 +616,19 @@ qed
 
 lemma reachable_awalkI[intro?]:
   assumes "awalk u p v"
-  shows "u \<rightarrow>\<^isup>* v"
+  shows "u \<rightarrow>\<^sup>* v"
   unfolding reachable_awalk using assms by auto
 
 lemma reachable1_awalkI:
-  "awalk v p w \<Longrightarrow> p \<noteq> [] \<Longrightarrow> v \<rightarrow>\<^isup>+ w"
+  "awalk v p w \<Longrightarrow> p \<noteq> [] \<Longrightarrow> v \<rightarrow>\<^sup>+ w"
 by (auto simp add: reachable1_awalk)
 
 
 lemma reachable_arc_trans:
-  assumes "u \<rightarrow>\<^isup>* v" "arc e (v,w)"
-  shows "u \<rightarrow>\<^isup>* w"
+  assumes "u \<rightarrow>\<^sup>* v" "arc e (v,w)"
+  shows "u \<rightarrow>\<^sup>* w"
 proof -
-  from `u \<rightarrow>\<^isup>* v` obtain p where "awalk u p v"
+  from `u \<rightarrow>\<^sup>* v` obtain p where "awalk u p v"
     by (auto simp: reachable_awalk)
   moreover have "awalk v [e] w"
     using `arc e (v,w)`
@@ -805,7 +805,7 @@ next
 qed
 
 lemma reachable_apath:
-  "u \<rightarrow>\<^isup>* v \<longleftrightarrow> (\<exists>p. apath u p v)"
+  "u \<rightarrow>\<^sup>* v \<longleftrightarrow> (\<exists>p. apath u p v)"
   by (auto intro: awalkI_apath apath_awalk_to_apath simp: reachable_awalk)
 
 end

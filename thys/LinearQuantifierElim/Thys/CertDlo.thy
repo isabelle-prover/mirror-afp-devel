@@ -27,7 +27,7 @@ lemma refute_I:
 by simp
 
 lemma cyclerecD: fixes xs :: "'a :: dlo list" shows
- "\<lbrakk> cyclerec i j as; xs!i < xs!j\<rbrakk> \<Longrightarrow> \<exists>a\<in>set as. \<not> I\<^isub>d\<^isub>l\<^isub>o a xs"
+ "\<lbrakk> cyclerec i j as; xs!i < xs!j\<rbrakk> \<Longrightarrow> \<exists>a\<in>set as. \<not> I\<^sub>d\<^sub>l\<^sub>o a xs"
 apply(induct as arbitrary: j)
  apply (simp)
 apply(case_tac a)

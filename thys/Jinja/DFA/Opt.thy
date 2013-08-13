@@ -11,8 +11,8 @@ theory Opt imports Err begin
 
 definition le :: "'a ord \<Rightarrow> 'a option ord"
 where
-  "le r o\<^isub>1 o\<^isub>2 =
-  (case o\<^isub>2 of None \<Rightarrow> o\<^isub>1=None | Some y \<Rightarrow> (case o\<^isub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
+  "le r o\<^sub>1 o\<^sub>2 =
+  (case o\<^sub>2 of None \<Rightarrow> o\<^sub>1=None | Some y \<Rightarrow> (case o\<^sub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
 
 definition opt :: "'a set \<Rightarrow> 'a option set"
 where
@@ -20,9 +20,9 @@ where
 
 definition sup :: "'a ebinop \<Rightarrow> 'a option ebinop"
 where
-  "sup f o\<^isub>1 o\<^isub>2 =  
-  (case o\<^isub>1 of None \<Rightarrow> OK o\<^isub>2 
-           | Some x \<Rightarrow> (case o\<^isub>2 of None \<Rightarrow> OK o\<^isub>1
+  "sup f o\<^sub>1 o\<^sub>2 =  
+  (case o\<^sub>1 of None \<Rightarrow> OK o\<^sub>2 
+           | Some x \<Rightarrow> (case o\<^sub>2 of None \<Rightarrow> OK o\<^sub>1
                                  | Some y \<Rightarrow> (case f x y of Err \<Rightarrow> Err | OK z \<Rightarrow> OK (Some z))))"
 
 definition esl :: "'a esl \<Rightarrow> 'a option esl"
@@ -31,9 +31,9 @@ where
 
 
 lemma unfold_le_opt:
-  "o\<^isub>1 \<sqsubseteq>\<^bsub>le r\<^esub> o\<^isub>2 = 
-  (case o\<^isub>2 of None \<Rightarrow> o\<^isub>1=None | 
-              Some y \<Rightarrow> (case o\<^isub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
+  "o\<^sub>1 \<sqsubseteq>\<^bsub>le r\<^esub> o\<^sub>2 = 
+  (case o\<^sub>2 of None \<Rightarrow> o\<^sub>1=None | 
+              Some y \<Rightarrow> (case o\<^sub>1 of None \<Rightarrow> True | Some x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
 (*<*)
 apply (unfold lesub_def le_def)
 apply (rule refl)

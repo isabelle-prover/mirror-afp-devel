@@ -5,11 +5,11 @@ theory ProcState imports Com begin
 fun "interpret" :: "expr \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> val option"
 where Val: "interpret (Val v) cf = Some v"
   | Var: "interpret (Var V) cf = cf V"
-  | BinOp: "interpret (e\<^isub>1\<guillemotleft>bop\<guillemotright>e\<^isub>2) cf = 
-    (case interpret e\<^isub>1 cf of None \<Rightarrow> None
-                         | Some v\<^isub>1 \<Rightarrow> (case interpret e\<^isub>2 cf of None \<Rightarrow> None
-                                                           | Some v\<^isub>2 \<Rightarrow> (
-      case binop bop v\<^isub>1 v\<^isub>2 of None \<Rightarrow> None | Some v \<Rightarrow> Some v)))"
+  | BinOp: "interpret (e\<^sub>1\<guillemotleft>bop\<guillemotright>e\<^sub>2) cf = 
+    (case interpret e\<^sub>1 cf of None \<Rightarrow> None
+                         | Some v\<^sub>1 \<Rightarrow> (case interpret e\<^sub>2 cf of None \<Rightarrow> None
+                                                           | Some v\<^sub>2 \<Rightarrow> (
+      case binop bop v\<^sub>1 v\<^sub>2 of None \<Rightarrow> None | Some v \<Rightarrow> Some v)))"
 
 
 abbreviation update :: "(vname \<rightharpoonup> val) \<Rightarrow> vname \<Rightarrow> expr \<Rightarrow> (vname \<rightharpoonup> val)"

@@ -6,7 +6,7 @@ begin
 (* tweaking the reflection setup *)
 
 definition "interpret" :: "atom fm \<Rightarrow> 'a::dlo list \<Rightarrow> bool" where
-"interpret = Logic.interpret I\<^isub>d\<^isub>l\<^isub>o"
+"interpret = Logic.interpret I\<^sub>d\<^sub>l\<^sub>o"
 
 lemma interpret_Atoms:
   "interpret (Atom (Eq i j)) xs = (xs!i = xs!j)" 
@@ -19,7 +19,7 @@ lemma interpret_others:
 by(simp_all add:interpret_def)
 
 lemmas reify_eqs =
-  Logic.interpret.simps(1,2,4-7)[of I\<^isub>d\<^isub>l\<^isub>o, folded interpret_def]
+  Logic.interpret.simps(1,2,4-7)[of I\<^sub>d\<^sub>l\<^sub>o, folded interpret_def]
   interpret_others interpret_Atoms
 
 method_setup dlo_reify = {*
@@ -30,7 +30,7 @@ method_setup dlo_reify = {*
 *} "dlo reification"
 
 (* leave just enough equations in to convert back to True/False by eval *)
-declare I\<^isub>d\<^isub>l\<^isub>o.simps(1)[code]
+declare I\<^sub>d\<^sub>l\<^sub>o.simps(1)[code]
 declare Logic.interpret.simps[code del]
 declare Logic.interpret.simps(1-2)[code]
 

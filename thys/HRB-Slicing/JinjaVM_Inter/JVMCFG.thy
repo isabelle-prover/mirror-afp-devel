@@ -25,7 +25,7 @@ hide_const Phi E
 abbreviation PROG :: "wf_jvmprog \<Rightarrow> jvm_prog"
   where "PROG P \<equiv> fst(Rep_wf_jvmprog(P))"
 
-abbreviation TYPING :: "wf_jvmprog \<Rightarrow> ty\<^isub>P"
+abbreviation TYPING :: "wf_jvmprog \<Rightarrow> ty\<^sub>P"
   where "TYPING P \<equiv> snd(Rep_wf_jvmprog(P))"
 
 lemma wf_jvmprog_is_wf_typ: "wf_jvm_prog\<^bsub>TYPING P\<^esub> (PROG P)"
@@ -194,18 +194,18 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   | Main_to_Call: "(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Enter)
   \<Longrightarrow> (P, C0, Main) \<turnstile> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Enter) -\<Up>id\<rightarrow> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)"
   | Main_Call_LFalse: "(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)
-  \<Longrightarrow> (P, C0, Main) \<turnstile> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)"
+  \<Longrightarrow> (P, C0, Main) \<turnstile> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)"
   | Main_Call: "\<lbrakk> (P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal);
-     PROG P \<turnstile> C0 sees Main:[]\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in D;
+     PROG P \<turnstile> C0 sees Main:[]\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D;
      initParams = [(\<lambda>s. s Heap),(\<lambda>s. \<lfloor>Value Null\<rfloor>)];
      ek = (\<lambda>(s, ret). True):(ClassMain P, MethodMain P, 0)\<hookrightarrow>\<^bsub>(D, Main)\<^esub>initParams \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal) -(ek)\<rightarrow> (D, Main, None, Enter)"
   | Main_Return_to_Exit: "(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)
   \<Longrightarrow> (P, C0, Main) \<turnstile> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return) -(\<Up>id)\<rightarrow> (ClassMain P, MethodMain P, None, Return)"
   | Method_LFalse: "(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)
-  \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, None, Enter) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (C, M, None, Return)"
+  \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, None, Enter) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (C, M, None, Return)"
   | Method_LTrue: "(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)
-  \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, None, Enter) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (C, M, \<lfloor>0\<rfloor>, Enter)"
+  \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, None, Enter) -(\<lambda>s. True)\<^sub>\<surd>\<rightarrow> (C, M, \<lfloor>0\<rfloor>, Enter)"
   | CFG_Load: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter); instrs_of (PROG P) C M ! pc = Load n;
     ek = \<Up>(\<lambda>s. s(Stack (stkLength (P, C, M) pc) := s (Local n))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
@@ -224,7 +224,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
                 in s(Stack (stkLength (P, C, M) pc - 2) \<mapsto> Value (Intg (i1 + i2)))) \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
   | CFG_Goto: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter); instrs_of (PROG P) C M ! pc = Goto i \<rbrakk>
-  \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -((\<lambda>s. True)\<^isub>\<surd>)\<rightarrow> (C, M, \<lfloor>nat (int pc + i)\<rfloor>, Enter)"
+  \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -((\<lambda>s. True)\<^sub>\<surd>)\<rightarrow> (C, M, \<lfloor>nat (int pc + i)\<rfloor>, Enter)"
   | CFG_CmpEq: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter); instrs_of (PROG P) C M ! pc = CmpEq;
     ek = \<Up>(\<lambda>s. let e1 = stkAt s (stkLength (P, C, M) pc - 1);
                    e2 = stkAt s (stkLength (P, C, M) pc - 2)
@@ -233,22 +233,22 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   | CFG_IfFalse_False: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = IfFalse i;
     i \<noteq> 1;
-    ek = (\<lambda>s. stkAt s (stkLength(P, C, M) pc - 1) = Bool False)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength(P, C, M) pc - 1) = Bool False)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>nat (int pc + i)\<rfloor>, Enter)"
   | CFG_IfFalse_True: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = IfFalse i;
-    ek = (\<lambda>s. stkAt s (stkLength(P, C, M) pc - 1) \<noteq> Bool False \<or> i = 1)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength(P, C, M) pc - 1) \<noteq> Bool False \<or> i = 1)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
   | CFG_New_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = New Cl;
-    ek = (\<lambda>s. new_Addr (heap_of s) \<noteq> None)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. new_Addr (heap_of s) \<noteq> None)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Normal)"
   | CFG_New_Check_Exceptional: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = New Cl;
     pc' = (case (match_ex_table (PROG P) OutOfMemory pc (ex_table_of (PROG P) C M)) of
              None \<Rightarrow> None
            | Some (pc'', d) \<Rightarrow> \<lfloor>pc''\<rfloor>);
-    ek = (\<lambda>s. new_Addr (heap_of s) = None)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. new_Addr (heap_of s) = None)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
   | CFG_New_Update: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal);
     instrs_of (PROG P) C M ! pc = New Cl;
@@ -267,14 +267,14 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Getfield_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Getfield F Cl;
-    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) \<noteq> Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) \<noteq> Null)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Normal)"
   | CFG_Getfield_Check_Exceptional: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Getfield F Cl;
     pc' = (case (match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M)) of
              None \<Rightarrow> None
            | Some (pc'', d) \<Rightarrow> \<lfloor>pc''\<rfloor>);
-    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) = Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) = Null)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
   | CFG_Getfield_Update: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal);
     instrs_of (PROG P) C M ! pc = Getfield F Cl;
@@ -292,14 +292,14 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Putfield_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Putfield F Cl;
-    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) \<noteq> Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) \<noteq> Null)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Normal)"
   | CFG_Putfield_Check_Exceptional: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Putfield F Cl;
     pc' = (case (match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M)) of
              None \<Rightarrow> None
            | Some (pc'', d) \<Rightarrow> \<lfloor>pc''\<rfloor>);
-    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) = Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) = Null)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
   | CFG_Putfield_Update: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal);
     instrs_of (PROG P) C M ! pc = Putfield F Cl;
@@ -321,14 +321,14 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Checkcast_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Checkcast Cl;
-    ek = (\<lambda>s. cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
   | CFG_Checkcast_Check_Exceptional: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Checkcast Cl;
     pc' = (case (match_ex_table (PROG P) ClassCast pc (ex_table_of (PROG P) C M)) of
              None \<Rightarrow> None
            | Some (pc'', d) \<Rightarrow> \<lfloor>pc''\<rfloor>);
-    ek = (\<lambda>s. \<not> cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. \<not> cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
   | CFG_Checkcast_Exceptional_prop: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter);
     instrs_of (PROG P) C M ! pc = Checkcast Cl;
@@ -348,7 +348,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
                   None \<Rightarrow> match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = None
                 | Some pc'' \<Rightarrow> \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M)
                                   = \<lfloor>(pc'', d)\<rfloor>
-    )\<^isub>\<surd> \<rbrakk>
+    )\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
 
   | CFG_Throw_prop: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter);
@@ -363,14 +363,14 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc'\<rfloor>, Enter)"
   | CFG_Invoke_Check_NP_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Invoke M' n;
-    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) \<noteq> Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) \<noteq> Null)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Normal)"
   | CFG_Invoke_Check_NP_Exceptional: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = Invoke M' n;
     pc' = (case (match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M)) of
              None \<Rightarrow> None
            | Some (pc'', d) \<Rightarrow> \<lfloor>pc''\<rfloor>);
-    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) = Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) = Null)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
   | CFG_Invoke_NP_prop: "\<lbrakk> C \<noteq> ClassMain P;
     (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter);
@@ -386,7 +386,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
     instrs_of (PROG P) C M ! pc = Invoke M' n;
     TYPING P C M ! pc = \<lfloor>(ST, LT)\<rfloor>;
     ST ! n = Class D';
-    PROG P \<turnstile> D' sees M':Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in D;
+    PROG P \<turnstile> D' sees M':Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D;
     Q = (\<lambda>(s, ret). let r = stkAt s (stkLength (P, C, M) pc - Suc n);
                         C' = fst (the (heap_of s (the_Addr r)))
                      in D = fst (method (PROG P) C' M'));
@@ -398,14 +398,14 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Normal) -(ek)\<rightarrow> (D, M', None, Enter)"
   | CFG_Invoke_False: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal);
     instrs_of (PROG P) C M ! pc = Invoke M' n;
-    ek = (\<lambda>s. False)\<^isub>\<surd>
+    ek = (\<lambda>s. False)\<^sub>\<surd>
   \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Normal) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Return)"
   | CFG_Invoke_Return_Check_Normal: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Return);
     instrs_of (PROG P) C M ! pc = Invoke M' n;
     (TYPING P) C M ! pc = \<lfloor>(ST, LT)\<rfloor>;
     ST ! n \<noteq> NT;
-    ek = (\<lambda>s. s Exception = None)\<^isub>\<surd>
+    ek = (\<lambda>s. s Exception = None)\<^sub>\<surd>
   \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Return) -(ek)\<rightarrow> (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
   | CFG_Invoke_Return_Check_Exceptional: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Return);
@@ -413,7 +413,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
     match_ex_table (PROG P) Exc pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', diff)\<rfloor>;
     pc' \<noteq> length (instrs_of (PROG P) C M);
     ek = (\<lambda>s. \<exists>v d. s Exception = \<lfloor>v\<rfloor> \<and>
-                  match_ex_table (PROG P) (cname_of (heap_of s) (the_Addr (the_Value v))) pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d)\<rfloor>)\<^isub>\<surd>
+                  match_ex_table (PROG P) (cname_of (heap_of s) (the_Addr (the_Value v))) pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d)\<rfloor>)\<^sub>\<surd>
   \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Return) -(ek)\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)"
   | CFG_Invoke_Return_Exceptional_handle: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return);
@@ -425,7 +425,7 @@ inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, 
     (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Return);
     instrs_of (PROG P) C M ! pc = Invoke M' n;
     ek = (\<lambda>s. \<exists>v. s Exception = \<lfloor>v\<rfloor> \<and>
-              match_ex_table (PROG P) (cname_of (heap_of s) (the_Addr (the_Value v))) pc (ex_table_of (PROG P) C M) = None)\<^isub>\<surd> \<rbrakk>
+              match_ex_table (PROG P) (cname_of (heap_of s) (the_Addr (the_Value v))) pc (ex_table_of (PROG P) C M) = None)\<^sub>\<surd> \<rbrakk>
   \<Longrightarrow> (P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Return) -(ek)\<rightarrow> (C, M, None, Return)"
   | CFG_Return: "\<lbrakk> C \<noteq> ClassMain P; (P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter);
     instrs_of (PROG P) C M ! pc = instr.Return;
@@ -525,7 +525,7 @@ lemma "\<lbrakk> (P, C0, Main) \<turnstile> (C', M', pc', nt') -ek\<rightarrow> 
 proof (induct rule: JVMCFG_reachable_inducts)
   case (CFG_Load C P C0 Main M pc n ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Load show ?case
@@ -533,7 +533,7 @@ proof (induct rule: JVMCFG_reachable_inducts)
 next
   case (CFG_Store C P C0 Main M pc n ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Store show ?case
@@ -541,7 +541,7 @@ next
 next
   case (CFG_Push C P C0 Main M pc v ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Push show ?case
@@ -549,7 +549,7 @@ next
 next
   case (CFG_Pop C P C0 Main M pc ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Pop show ?case
@@ -557,7 +557,7 @@ next
 next
   case (CFG_IAdd C P C0 Main M pc ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_IAdd show ?case
@@ -565,7 +565,7 @@ next
 next
   case (CFG_Goto C P C0 Main M pc i)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Goto show ?case
@@ -573,7 +573,7 @@ next
 next
   case (CFG_CmpEq C P C0 Main M pc ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_CmpEq show ?case
@@ -581,7 +581,7 @@ next
 next
   case (CFG_IfFalse_False C P C0 Main M pc i ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_IfFalse_False show ?case
@@ -589,7 +589,7 @@ next
 next
   case (CFG_IfFalse_True C P C0 Main M pc i ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_IfFalse_True show ?case
@@ -597,7 +597,7 @@ next
 next
   case (CFG_New_Update C P C0 Main M pc Cl ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_New_Update show ?case
@@ -607,8 +607,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = New Cl`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -626,7 +626,7 @@ next
 next
   case (CFG_Getfield_Update C P C0 Main M pc F Cl ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Getfield_Update show ?case
@@ -636,8 +636,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Getfield F Cl`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -655,7 +655,7 @@ next
 next
   case (CFG_Putfield_Update C P C0 Main M pc F Cl ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Putfield_Update show ?case
@@ -665,8 +665,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Putfield F Cl`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -684,7 +684,7 @@ next
 next
   case (CFG_Checkcast_Check_Normal C P C0 Main M pc Cl ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Checkcast_Check_Normal show ?case
@@ -694,8 +694,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Checkcast Cl`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -715,8 +715,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Throw`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -736,8 +736,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Invoke M' n`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -757,8 +757,8 @@ next
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
   moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 where
-    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
+  obtain Ts T mxs mxl\<^sub>0 where
+    "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
   with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Invoke M' n`
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
@@ -776,7 +776,7 @@ next
 next
   case (CFG_Invoke_Return_Check_Normal C P C0 Main M pc M' n ST LT ek)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Return)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with CFG_Invoke_Return_Check_Normal show ?case
@@ -784,7 +784,7 @@ next
 next 
   case (Method_LTrue P C0 Main C M)
   from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)` `C \<noteq> ClassMain P`
-  obtain Ts T mxs mxl\<^isub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
   with Method_LTrue show ?case
@@ -803,8 +803,8 @@ proof -
   from `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, nt)`
     method_of_reachable_node_exists [of P C0 Main C M "\<lfloor>pc\<rfloor>" nt]
     instr_of_reachable_node_typable [of P C0 Main C M "\<lfloor>pc\<rfloor>" nt]
-  obtain Ts T mxs mxl\<^isub>0 "is" xt
-    where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+  obtain Ts T mxs mxl\<^sub>0 "is" xt
+    where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "TYPING P C M ! pc \<noteq> None"
     and "pc < length (instrs_of (PROG P) C M)"
     by fastforce+

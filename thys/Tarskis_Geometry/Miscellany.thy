@@ -35,13 +35,13 @@ lemma unordered_pair_equality: "{p, q} = {q, p}"
 
 lemma cosine_rule:
   fixes a b c :: "real ^ ('n::finite)"
-  shows "(norm_dist a c)\<twosuperior> =
-  (norm_dist a b)\<twosuperior> + (norm_dist b c)\<twosuperior> + 2 * ((a - b) \<bullet> (b - c))"
+  shows "(norm_dist a c)\<^sup>2 =
+  (norm_dist a b)\<^sup>2 + (norm_dist b c)\<^sup>2 + 2 * ((a - b) \<bullet> (b - c))"
 proof -
   have "(a - b) + (b - c) = a - c" by simp
   with dot_norm [of "a - b" "b - c"]
     have "(a - b) \<bullet> (b - c) =
-        ((norm (a - c))\<twosuperior> - (norm (a - b))\<twosuperior> - (norm (b - c))\<twosuperior>) / 2"
+        ((norm (a - c))\<^sup>2 - (norm (a - b))\<^sup>2 - (norm (b - c))\<^sup>2) / 2"
       by simp
   thus ?thesis by simp
 qed
@@ -49,7 +49,7 @@ qed
 lemma scalar_equiv: "r *s x = r *\<^sub>R x"
   by vector
 
-lemma norm_dist_dot: "(norm_dist x y)\<twosuperior> = (x - y) \<bullet> (x - y)"
+lemma norm_dist_dot: "(norm_dist x y)\<^sup>2 = (x - y) \<bullet> (x - y)"
   by (simp add: power2_norm_eq_inner)
 
 definition dep2 :: "'a::real_vector \<Rightarrow> 'a \<Rightarrow> bool" where

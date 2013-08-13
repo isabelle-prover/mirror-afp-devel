@@ -14,13 +14,13 @@ begin
 (* Replace WT_WTs.WTCond with new intros WT_WTs.WTCond1 and WT_WTs.WTCond2 *)
 
 lemma WTCond1:
-  "\<lbrakk>P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2;
-    P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T\<^isub>2 = T\<^isub>1 \<rbrakk> \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T\<^isub>2"
+  "\<lbrakk>P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^sub>1::T\<^sub>1;  P,E \<turnstile> e\<^sub>2::T\<^sub>2; P \<turnstile> T\<^sub>1 \<le> T\<^sub>2;
+    P \<turnstile> T\<^sub>2 \<le> T\<^sub>1 \<longrightarrow> T\<^sub>2 = T\<^sub>1 \<rbrakk> \<Longrightarrow> P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T\<^sub>2"
 by (fastforce)
 
 lemma WTCond2:
-  "\<lbrakk>P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2; P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;
-    P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T\<^isub>1 = T\<^isub>2 \<rbrakk> \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T\<^isub>1"
+  "\<lbrakk>P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^sub>1::T\<^sub>1;  P,E \<turnstile> e\<^sub>2::T\<^sub>2; P \<turnstile> T\<^sub>2 \<le> T\<^sub>1;
+    P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<longrightarrow> T\<^sub>1 = T\<^sub>2 \<rbrakk> \<Longrightarrow> P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T\<^sub>1"
 by (fastforce)
 
 lemmas [code_pred_intro] =

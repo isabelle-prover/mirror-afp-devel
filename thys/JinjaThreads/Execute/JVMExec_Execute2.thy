@@ -195,17 +195,17 @@ primrec exec_instr ::
   \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> 'addr frame' list 
   \<Rightarrow> (('addr, 'thread_id, 'heap) jvm_ta_state') set"
 where
-  "exec_instr ins' ins xt (Load n) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-   {(\<epsilon>, (None, h, ((tl ins', ins, xt), (loc ! n) # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
-| "exec_instr ins' ins xt (Store n) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-   {(\<epsilon>, (None, h, ((tl ins', ins, xt), tl stk, loc[n:=hd stk], C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
-| "exec_instr ins' ins xt (Push v) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-   {(\<epsilon>, (None, h, ((tl ins', ins, xt), v # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
-| "exec_instr ins' ins xt (New C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "exec_instr ins' ins xt (Load n) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
+   {(\<epsilon>, (None, h, ((tl ins', ins, xt), (loc ! n) # stk, loc, C\<^sub>0, M\<^sub>0, pc+1)#frs))}"
+| "exec_instr ins' ins xt (Store n) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
+   {(\<epsilon>, (None, h, ((tl ins', ins, xt), tl stk, loc[n:=hd stk], C\<^sub>0, M\<^sub>0, pc+1)#frs))}"
+| "exec_instr ins' ins xt (Push v) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
+   {(\<epsilon>, (None, h, ((tl ins', ins, xt), v # stk, loc, C\<^sub>0, M\<^sub>0, pc+1)#frs))}"
+| "exec_instr ins' ins xt (New C) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
    (let HA = allocate h (Class_type C)
-    in if HA = {} then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)}
+    in if HA = {} then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt OutOfMemory\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc) # frs)}
        else do { (h', a) \<leftarrow> HA;
-          {(\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', ((tl ins', ins, xt), Addr a # stk, loc, C\<^isub>0, M\<^isub>0, pc + 1)#frs)}})"
+          {(\<lbrace>NewHeapElem a (Class_type C)\<rbrace>, None, h', ((tl ins', ins, xt), Addr a # stk, loc, C\<^sub>0, M\<^sub>0, pc + 1)#frs)}})"
 | "exec_instr ins' ins xt (NewArray T) P t h stk loc C0 M0 pc frs =
    (let si = the_Intg (hd stk);
         i = nat (sint si)
@@ -253,29 +253,29 @@ where
          in if va = Null
             then (\<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)
             else (None, h, ((tl ins', ins, xt), Intg (word_of_int (int (alen_of_htype (the (typeof_addr h (the_Addr va)))))) # tl stk, loc, C0, M0, pc+1) # frs)))}"
-| "exec_instr ins' ins xt (Getfield F C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+| "exec_instr ins' ins xt (Getfield F C) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
    (let v = hd stk
-    in if v = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)}
+    in if v = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc) # frs)}
        else let a = the_Addr v
             in do {
                v' \<leftarrow> heap_read h a (CField C F);
-               {(\<lbrace>ReadMem a (CField C F) v'\<rbrace>, None, h, ((tl ins', ins, xt), v' # (tl stk), loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)}
+               {(\<lbrace>ReadMem a (CField C F) v'\<rbrace>, None, h, ((tl ins', ins, xt), v' # (tl stk), loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)}
             })"
-| "exec_instr ins' ins xt (Putfield F C) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+| "exec_instr ins' ins xt (Putfield F C) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (let v = hd stk;
        r = hd (tl stk)
-   in if r = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)}
+   in if r = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc) # frs)}
       else let a = the_Addr r
            in do {
                 h' \<leftarrow> heap_write h a (CField C F) v;
-                {(\<lbrace>WriteMem a (CField C F) v\<rbrace>, None, h', ((tl ins', ins, xt), tl (tl stk), loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)}
+                {(\<lbrace>WriteMem a (CField C F) v\<rbrace>, None, h', ((tl ins', ins, xt), tl (tl stk), loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)}
               })"
-| "exec_instr ins' ins xt (Checkcast T) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+| "exec_instr ins' ins xt (Checkcast T) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    {(\<epsilon>, let U = the (typeof\<^bsub>h\<^esub> (hd stk))
-        in if P \<turnstile> U \<le> T then (None, h, ((tl ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)
-           else (\<lfloor>execute.addr_of_sys_xcpt ClassCast\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs))}"
-| "exec_instr ins' ins xt (Instanceof T) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
-   {(\<epsilon>, None, h, ((tl ins', ins, xt), Bool (hd stk \<noteq> Null \<and> P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> T) # tl stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)}"
+        in if P \<turnstile> U \<le> T then (None, h, ((tl ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)
+           else (\<lfloor>execute.addr_of_sys_xcpt ClassCast\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc) # frs))}"
+| "exec_instr ins' ins xt (Instanceof T) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
+   {(\<epsilon>, None, h, ((tl ins', ins, xt), Bool (hd stk \<noteq> Null \<and> P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> T) # tl stk, loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)}"
 | "exec_instr ins' ins xt (Invoke M n) P t h stk loc C0 M0 pc frs =
    (let r = stk ! n
     in (if r = Null then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)}
@@ -289,47 +289,47 @@ where
                         (ta, va, h') \<leftarrow> red_external_aggr P t a M ps h;
                         {(extTA2JVM' P ta, extRet2JVM' ins' ins xt n h' stk loc C0 M0 pc frs va)}
                       }
-                 | \<lfloor>(mxs,mxl\<^isub>0,ins'',xt'')\<rfloor> \<Rightarrow>
-                       let f' = ((ins'', ins'', xt''), [],[r]@ps@(replicate mxl\<^isub>0 undefined_value),D,M,0)
+                 | \<lfloor>(mxs,mxl\<^sub>0,ins'',xt'')\<rfloor> \<Rightarrow>
+                       let f' = ((ins'', ins'', xt''), [],[r]@ps@(replicate mxl\<^sub>0 undefined_value),D,M,0)
                        in {(\<epsilon>, None, h, f' # ((ins', ins, xt), stk, loc, C0, M0, pc) # frs)})))"
-| "exec_instr ins' ins xt Return P t h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =
+| "exec_instr ins' ins xt Return P t h stk\<^sub>0 loc\<^sub>0 C\<^sub>0 M\<^sub>0 pc frs =
    {(\<epsilon>, (if frs=[] then (None, h, []) 
          else 
-           let v = hd stk\<^isub>0; 
+           let v = hd stk\<^sub>0; 
                ((ins', ins, xt), stk,loc,C,m,pc) = hd frs;
-                n = length (fst (snd (method P C\<^isub>0 M\<^isub>0)))
+                n = length (fst (snd (method P C\<^sub>0 M\<^sub>0)))
            in (None, h, ((tl ins', ins, xt), v#(drop (n+1) stk),loc,C,m,pc+1)#tl frs)))}"
-| "exec_instr ins' ins xt Pop P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-   {(\<epsilon>, (None, h, ((tl ins', ins, xt), tl stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
-| "exec_instr ins' ins xt Dup P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
-   {(\<epsilon>, (None, h, ((tl ins', ins, xt), hd stk # stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
-| "exec_instr ins' ins xt Swap P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
-   {(\<epsilon>, (None, h, ((tl ins', ins, xt), hd (tl stk) # hd stk # tl (tl stk), loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))}"
+| "exec_instr ins' ins xt Pop P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
+   {(\<epsilon>, (None, h, ((tl ins', ins, xt), tl stk, loc, C\<^sub>0, M\<^sub>0, pc+1)#frs))}"
+| "exec_instr ins' ins xt Dup P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
+   {(\<epsilon>, (None, h, ((tl ins', ins, xt), hd stk # stk, loc, C\<^sub>0, M\<^sub>0, pc+1)#frs))}"
+| "exec_instr ins' ins xt Swap P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
+   {(\<epsilon>, (None, h, ((tl ins', ins, xt), hd (tl stk) # hd stk # tl (tl stk), loc, C\<^sub>0, M\<^sub>0, pc+1)#frs))}"
 | "exec_instr ins' ins xt (BinOpInstr bop) P t h stk loc C0 M0 pc frs =
    {(\<epsilon>, 
      case the (execute.binop bop (hd (tl stk)) (hd stk)) of
        Inl v \<Rightarrow> (None, h, ((tl ins', ins, xt), v # tl (tl stk), loc, C0, M0, pc + 1) # frs)
      | Inr a \<Rightarrow> (Some a, h, ((ins', ins, xt), stk, loc, C0, M0, pc) # frs))}"
-| "exec_instr ins' ins xt (IfFalse i) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+| "exec_instr ins' ins xt (IfFalse i) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    {(\<epsilon>, (let pc' = if hd stk = Bool False then nat(int pc+i) else pc+1
-         in (None, h, ((drop pc' ins, ins, xt), tl stk, loc, C\<^isub>0, M\<^isub>0, pc')#frs)))}"
-| "exec_instr ins' ins xt (Goto i) P t h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+         in (None, h, ((drop pc' ins, ins, xt), tl stk, loc, C\<^sub>0, M\<^sub>0, pc')#frs)))}"
+| "exec_instr ins' ins xt (Goto i) P t h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
    {let pc' = nat(int pc+i) 
-    in (\<epsilon>, (None, h, ((drop pc' ins, ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc')#frs))}"
-| "exec_instr ins' ins xt ThrowExc P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+    in (\<epsilon>, (None, h, ((drop pc' ins, ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc')#frs))}"
+| "exec_instr ins' ins xt ThrowExc P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    {(\<epsilon>, (let xp' = if hd stk = Null then \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor> else \<lfloor>the_Addr(hd stk)\<rfloor>
-         in (xp', h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs)))}"
-| "exec_instr ins' ins xt MEnter P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+         in (xp', h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc)#frs)))}"
+| "exec_instr ins' ins xt MEnter P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    {let v = hd stk
     in if v = Null
-       then (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
-       else (\<lbrace>Lock\<rightarrow>the_Addr v, SyncLock (the_Addr v)\<rbrace>, None, h, ((tl ins', ins, xt), tl stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)}"
-| "exec_instr ins' ins xt MExit P t h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+       then (\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc) # frs)
+       else (\<lbrace>Lock\<rightarrow>the_Addr v, SyncLock (the_Addr v)\<rbrace>, None, h, ((tl ins', ins, xt), tl stk, loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs)}"
+| "exec_instr ins' ins xt MExit P t h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (let v = hd stk
    in if v = Null
-      then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs)}
-      else {(\<lbrace>Unlock\<rightarrow>the_Addr v, SyncUnlock (the_Addr v)\<rbrace>, None, h, ((tl ins', ins, xt), tl stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs),
-            (\<lbrace>UnlockFail\<rightarrow>the_Addr v\<rbrace>, \<lfloor>execute.addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)})"
+      then {(\<epsilon>, \<lfloor>execute.addr_of_sys_xcpt NullPointer\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc)#frs)}
+      else {(\<lbrace>Unlock\<rightarrow>the_Addr v, SyncUnlock (the_Addr v)\<rbrace>, None, h, ((tl ins', ins, xt), tl stk, loc, C\<^sub>0, M\<^sub>0, pc + 1) # frs),
+            (\<lbrace>UnlockFail\<rightarrow>the_Addr v\<rbrace>, \<lfloor>execute.addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, ((ins', ins, xt), stk, loc, C\<^sub>0, M\<^sub>0, pc) # frs)})"
 
 fun exception_step :: "'addr jvm_prog \<Rightarrow> 'addr \<Rightarrow> 'heap \<Rightarrow> 'addr frame' \<Rightarrow> 'addr frame' list \<Rightarrow> ('addr, 'heap) jvm_state'"
 where

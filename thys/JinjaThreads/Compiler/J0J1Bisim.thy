@@ -37,10 +37,10 @@ where
 | "unmod (sync\<^bsub>V\<^esub> (o') e) i = (unmod o' i \<and> unmod e i \<and> i \<noteq> V)"
 | "unmod (insync\<^bsub>V\<^esub> (a) e) i = unmod e i"
 | "unmod (e1;;e2) i = (unmod e1 i \<and> unmod e2 i)"
-| "unmod (if (e) e\<^isub>1 else e\<^isub>2) i = (unmod e i \<and> unmod e\<^isub>1 i \<and> unmod e\<^isub>2 i)"
+| "unmod (if (e) e\<^sub>1 else e\<^sub>2) i = (unmod e i \<and> unmod e\<^sub>1 i \<and> unmod e\<^sub>2 i)"
 | "unmod (while (e) c) i = (unmod e i \<and> unmod c i)"
 | "unmod (throw e) i = unmod e i"
-| "unmod (try e\<^isub>1 catch(C i) e\<^isub>2) j = (unmod e\<^isub>1 j \<and> (if i=j then False else unmod e\<^isub>2 j))"
+| "unmod (try e\<^sub>1 catch(C i) e\<^sub>2) j = (unmod e\<^sub>1 j \<and> (if i=j then False else unmod e\<^sub>2 j))"
 
 | "unmods ([]) i = True"
 | "unmods (e#es) i = (unmod e i \<and> unmods es i)"

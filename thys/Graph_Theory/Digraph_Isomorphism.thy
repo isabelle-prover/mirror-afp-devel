@@ -245,8 +245,8 @@ lemmas app_iso_eq =
   out_degree_app_iso_eq'
 
 lemma reachableI_app_iso:
-  assumes r: "u \<rightarrow>\<^isup>* v" and hom: "digraph_isomorphism hom"
-  shows "(iso_verts hom u) \<rightarrow>\<^isup>*\<^bsub>app_iso hom G\<^esub> (iso_verts hom v)"
+  assumes r: "u \<rightarrow>\<^sup>* v" and hom: "digraph_isomorphism hom"
+  shows "(iso_verts hom u) \<rightarrow>\<^sup>*\<^bsub>app_iso hom G\<^esub> (iso_verts hom v)"
 proof -
   interpret H: wf_digraph "app_iso hom G" using hom ..
   from r obtain p where "awalk u p v" by (auto simp: reachable_awalk)

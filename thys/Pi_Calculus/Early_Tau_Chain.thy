@@ -6,8 +6,8 @@ theory Early_Tau_Chain
   imports Early_Semantics
 begin
 
-abbreviation tauChain :: "pi \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^isub>\<tau> _" [80, 80] 80)
-  where "P \<Longrightarrow>\<^isub>\<tau> P' \<equiv> (P, P') \<in> {(P, P') | P P'. P \<longmapsto>\<tau> \<prec> P'}^*"
+abbreviation tauChain :: "pi \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>\<tau> _" [80, 80] 80)
+  where "P \<Longrightarrow>\<^sub>\<tau> P' \<equiv> (P, P') \<in> {(P, P') | P P'. P \<longmapsto>\<tau> \<prec> P'}^*"
 
 lemma tauActTauChain:
   fixes P  :: pi
@@ -15,7 +15,7 @@ lemma tauActTauChain:
 
   assumes "P \<longmapsto>\<tau> \<prec> P'"
 
-  shows "P \<Longrightarrow>\<^isub>\<tau> P'"
+  shows "P \<Longrightarrow>\<^sub>\<tau> P'"
 using assms
 by auto
 
@@ -24,17 +24,17 @@ lemma tauChainAddTau[intro]:
   and   P'  :: pi
   and   P'' :: pi
 
-  shows "P \<Longrightarrow>\<^isub>\<tau> P' \<Longrightarrow> P' \<longmapsto>\<tau> \<prec> P'' \<Longrightarrow> P \<Longrightarrow>\<^isub>\<tau> P''" 
-  and "P \<longmapsto>\<tau> \<prec> P' \<Longrightarrow> P' \<Longrightarrow>\<^isub>\<tau> P'' \<Longrightarrow> P \<Longrightarrow>\<^isub>\<tau> P''"
+  shows "P \<Longrightarrow>\<^sub>\<tau> P' \<Longrightarrow> P' \<longmapsto>\<tau> \<prec> P'' \<Longrightarrow> P \<Longrightarrow>\<^sub>\<tau> P''" 
+  and "P \<longmapsto>\<tau> \<prec> P' \<Longrightarrow> P' \<Longrightarrow>\<^sub>\<tau> P'' \<Longrightarrow> P \<Longrightarrow>\<^sub>\<tau> P''"
 by(auto dest: tauActTauChain)
 
 lemma tauChainInduct[consumes 1, case_names id ih]:
   fixes P  :: pi
   and   P' :: pi
 
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
   and     "F P"
-  and     "\<And>P'' P'''. \<lbrakk>P \<Longrightarrow>\<^isub>\<tau> P''; P'' \<longmapsto>\<tau> \<prec> P'''; F P''\<rbrakk> \<Longrightarrow> F P'''"
+  and     "\<And>P'' P'''. \<lbrakk>P \<Longrightarrow>\<^sub>\<tau> P''; P'' \<longmapsto>\<tau> \<prec> P'''; F P''\<rbrakk> \<Longrightarrow> F P'''"
 
   shows "F P'"
 using assms
@@ -45,18 +45,18 @@ lemma eqvtChainI:
   and   P'   :: pi
   and   perm :: "name prm"
 
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
 
-  shows "(perm \<bullet> P) \<Longrightarrow>\<^isub>\<tau> (perm \<bullet> P')"
+  shows "(perm \<bullet> P) \<Longrightarrow>\<^sub>\<tau> (perm \<bullet> P')"
 using assms
 proof(induct rule: tauChainInduct)
   case id
   thus ?case by simp
 next
   case(ih P'' P''')
-  have "P \<Longrightarrow>\<^isub>\<tau> P''" and "P'' \<longmapsto> \<tau> \<prec> P'''" by fact+
+  have "P \<Longrightarrow>\<^sub>\<tau> P''" and "P'' \<longmapsto> \<tau> \<prec> P'''" by fact+
   hence "(perm \<bullet> P'') \<longmapsto>\<tau> \<prec> (perm \<bullet> P''')" by(drule_tac TransitionsEarly.eqvt) auto
-  moreover have "(perm \<bullet> P) \<Longrightarrow>\<^isub>\<tau> (perm \<bullet> P'')" by fact
+  moreover have "(perm \<bullet> P) \<Longrightarrow>\<^sub>\<tau> (perm \<bullet> P'')" by fact
   ultimately show ?case by(force dest: tauActTauChain)
 qed
 
@@ -65,9 +65,9 @@ lemma eqvtChainE:
   and   P    :: pi
   and   P'   :: pi
 
-  assumes Trans: "(perm \<bullet> P) \<Longrightarrow>\<^isub>\<tau> (perm \<bullet> P')"
+  assumes Trans: "(perm \<bullet> P) \<Longrightarrow>\<^sub>\<tau> (perm \<bullet> P')"
 
-  shows   "P \<Longrightarrow>\<^isub>\<tau> P'"
+  shows   "P \<Longrightarrow>\<^sub>\<tau> P'"
 proof -
   have "rev perm \<bullet> (perm \<bullet> P) = P" by(simp add: pt_rev_pi[OF pt_name_inst, OF at_name_inst])
   moreover have "rev perm \<bullet> (perm \<bullet> P') = P'" by(simp add: pt_rev_pi[OF pt_name_inst, OF at_name_inst])
@@ -80,7 +80,7 @@ lemma eqvtChainEq:
   and   P'   :: pi
   and   perm :: "name prm"
 
-  shows   "P \<Longrightarrow>\<^isub>\<tau> P' = (perm \<bullet> P) \<Longrightarrow>\<^isub>\<tau> (perm \<bullet> P')"
+  shows   "P \<Longrightarrow>\<^sub>\<tau> P' = (perm \<bullet> P) \<Longrightarrow>\<^sub>\<tau> (perm \<bullet> P')"
 by(blast intro: eqvtChainE eqvtChainI)
 
 lemma freshChain:
@@ -88,7 +88,7 @@ lemma freshChain:
   and   P' :: pi
   and   x  :: name
   
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
   and     "x \<sharp> P"
  
   shows   "x \<sharp> P'"
@@ -109,10 +109,10 @@ lemma matchChain:
   and   P :: pi
   and   P' :: pi
   
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
   and     "P \<noteq> P'"
  
-  shows "[b\<frown>b]P \<Longrightarrow>\<^isub>\<tau> P'"
+  shows "[b\<frown>b]P \<Longrightarrow>\<^sub>\<tau> P'"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -120,15 +120,15 @@ proof(induct rule: tauChainInduct)
 next
   case(ih P'' P''')
   have P''TransP''':  "P'' \<longmapsto>\<tau> \<prec> P'''"  by fact
-  show "[b\<frown>b]P \<Longrightarrow>\<^isub>\<tau> P'''" 
+  show "[b\<frown>b]P \<Longrightarrow>\<^sub>\<tau> P'''" 
   proof(cases "P = P''")
     assume "P=P''"
     moreover with P''TransP''' have "[b\<frown>b]P \<longmapsto>\<tau> \<prec> P'''" by(force intro: Match)
-    thus "[b\<frown>b]P \<Longrightarrow>\<^isub>\<tau> P'''" by(rule tauActTauChain)
+    thus "[b\<frown>b]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule tauActTauChain)
   next
     assume "P \<noteq> P''"
-    moreover have "P \<noteq> P'' \<Longrightarrow> [b\<frown>b]P \<Longrightarrow>\<^isub>\<tau> P''" by fact
-    ultimately show "[b\<frown>b]P \<Longrightarrow>\<^isub>\<tau> P'''" using P''TransP''' by(blast)
+    moreover have "P \<noteq> P'' \<Longrightarrow> [b\<frown>b]P \<Longrightarrow>\<^sub>\<tau> P''" by fact
+    ultimately show "[b\<frown>b]P \<Longrightarrow>\<^sub>\<tau> P'''" using P''TransP''' by(blast)
   qed
 qed
 
@@ -138,11 +138,11 @@ lemma mismatchChain:
   and   P :: pi
   and   P' :: pi
   
-  assumes PChain: "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes PChain: "P \<Longrightarrow>\<^sub>\<tau> P'"
   and     aineqb: "a \<noteq> b"
   and     PineqP': "P \<noteq> P'"
  
-  shows "[a\<noteq>b]P \<Longrightarrow>\<^isub>\<tau> P'"
+  shows "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'"
 proof -
   from PChain PineqP' show ?thesis
   proof(induct rule: tauChainInduct)
@@ -151,15 +151,15 @@ proof -
   next
     case(ih P'' P''')
     have P''TransP''':  "P'' \<longmapsto>\<tau> \<prec> P'''"  by fact
-    show "[a\<noteq>b]P \<Longrightarrow>\<^isub>\<tau> P'''" 
+    show "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" 
     proof(cases "P = P''")
       assume "P=P''"
       moreover with aineqb P''TransP''' have "[a\<noteq>b]P \<longmapsto>\<tau> \<prec> P'''" by(force intro: Mismatch)
-      thus "[a\<noteq>b]P \<Longrightarrow>\<^isub>\<tau> P'''" by(rule tauActTauChain)
+      thus "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule tauActTauChain)
     next
       assume "P \<noteq> P''"
-      moreover have "P \<noteq> P'' \<Longrightarrow> [a\<noteq>b]P \<Longrightarrow>\<^isub>\<tau> P''" by fact
-      ultimately show "[a\<noteq>b]P \<Longrightarrow>\<^isub>\<tau> P'''" using P''TransP''' by(blast)
+      moreover have "P \<noteq> P'' \<Longrightarrow> [a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P''" by fact
+      ultimately show "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" using P''TransP''' by(blast)
     qed
   qed
 qed
@@ -169,10 +169,10 @@ lemma sum1Chain:
   and   P' :: pi
   and   Q  :: pi
 
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
   and     "P \<noteq> P'"
  
-  shows "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> P'"
+  shows "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -180,15 +180,15 @@ proof(induct rule: tauChainInduct)
 next
   case(ih P'' P''')
   have P''TransP''':  "P'' \<longmapsto>\<tau> \<prec> P'''" by fact
-  show "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> P'''"
+  show "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''"
   proof(cases "P = P''")
     assume "P=P''"
     moreover with P''TransP''' have "P \<oplus> Q \<longmapsto>\<tau> \<prec> P'''" by(force intro: Sum1)
-    thus "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> P'''" by(force intro: tauActTauChain)
+    thus "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''" by(force intro: tauActTauChain)
   next
     assume "P \<noteq> P''"
-    moreover have "P \<noteq> P'' \<Longrightarrow> P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> P''" by fact
-    ultimately show "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> P'''" using P''TransP''' by(force dest: tauActTauChain)
+    moreover have "P \<noteq> P'' \<Longrightarrow> P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P''" by fact
+    ultimately show "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''" using P''TransP''' by(force dest: tauActTauChain)
   qed
 qed
 
@@ -197,10 +197,10 @@ lemma sum2Chain:
   and   Q :: pi
   and   Q'  :: pi
 
-  assumes "Q \<Longrightarrow>\<^isub>\<tau> Q'"
+  assumes "Q \<Longrightarrow>\<^sub>\<tau> Q'"
   and     "Q \<noteq> Q'"
  
-  shows "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> Q'"
+  shows "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -208,15 +208,15 @@ proof(induct rule: tauChainInduct)
 next
   case(ih Q'' Q''')
   have Q''TransQ''':  "Q'' \<longmapsto>\<tau> \<prec> Q'''" by fact
-  show "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> Q'''"
+  show "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''"
   proof(cases "Q = Q''")
     assume "Q=Q''"
     moreover with Q''TransQ''' have "P \<oplus> Q \<longmapsto>\<tau> \<prec> Q'''" by(force intro: Sum2)
-    thus "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> Q'''" by(force intro: tauActTauChain)
+    thus "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''" by(force intro: tauActTauChain)
   next
     assume "Q \<noteq> Q''"
-    moreover have "Q \<noteq> Q'' \<Longrightarrow> P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> Q''" by fact
-    ultimately show "P \<oplus> Q \<Longrightarrow>\<^isub>\<tau> Q'''" using Q''TransQ''' by blast
+    moreover have "Q \<noteq> Q'' \<Longrightarrow> P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q''" by fact
+    ultimately show "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''" using Q''TransQ''' by blast
   qed
 qed
 
@@ -225,9 +225,9 @@ lemma Par1Chain:
   and   P' :: pi
   and   Q  :: pi
 
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P' \<parallel> Q"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -235,10 +235,10 @@ proof(induct rule: tauChainInduct)
 next
   case(ih P'' P')
   have P''TransP':  "P'' \<longmapsto>\<tau> \<prec> P'" by fact
-  have IH: "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P'' \<parallel> Q" by fact
+  have IH: "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P'' \<parallel> Q" by fact
   
   have "P'' \<parallel> Q \<longmapsto>\<tau> \<prec> P' \<parallel> Q" using P''TransP' by(force intro: Par1F)
-  thus "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P' \<parallel> Q" using IH by(force dest: tauActTauChain)
+  thus "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q" using IH by(force dest: tauActTauChain)
 qed
 
 lemma Par2Chain:
@@ -246,9 +246,9 @@ lemma Par2Chain:
   and   Q  :: pi
   and   Q' :: pi
 
-  assumes "Q \<Longrightarrow>\<^isub>\<tau> Q'"
+  assumes "Q \<Longrightarrow>\<^sub>\<tau> Q'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P \<parallel> Q'"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P \<parallel> Q'"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -256,10 +256,10 @@ proof(induct rule: tauChainInduct)
 next
   case(ih Q'' Q')
   have Q''TransQ':  "Q'' \<longmapsto>\<tau> \<prec> Q'" by fact
-  have IH: "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P \<parallel> Q''" by fact
+  have IH: "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P \<parallel> Q''" by fact
   
   have "P \<parallel> Q'' \<longmapsto>\<tau> \<prec> P \<parallel> Q'" using Q''TransQ' by(force intro: Par2F)
-  thus "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P \<parallel> Q'" using IH by(force dest: tauActTauChain)
+  thus "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P \<parallel> Q'" using IH by(force dest: tauActTauChain)
 qed
 
 lemma chainPar:
@@ -268,13 +268,13 @@ lemma chainPar:
   and   Q  :: pi
   and   Q' :: pi
   
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
-  and     "Q \<Longrightarrow>\<^isub>\<tau> Q'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
+  and     "Q \<Longrightarrow>\<^sub>\<tau> Q'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P' \<parallel> Q'"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q'"
 proof -
-  from `P \<Longrightarrow>\<^isub>\<tau> P'` have "P \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P' \<parallel> Q" by(rule Par1Chain)
-  moreover from `Q \<Longrightarrow>\<^isub>\<tau> Q'` have "P' \<parallel> Q \<Longrightarrow>\<^isub>\<tau> P' \<parallel> Q'" by(rule Par2Chain)
+  from `P \<Longrightarrow>\<^sub>\<tau> P'` have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q" by(rule Par1Chain)
+  moreover from `Q \<Longrightarrow>\<^sub>\<tau> Q'` have "P' \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q'" by(rule Par2Chain)
   ultimately show ?thesis by auto
 qed
 
@@ -283,9 +283,9 @@ lemma ResChain:
   and   P' :: pi
   and   a  :: name
 
-  assumes "P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes "P \<Longrightarrow>\<^sub>\<tau> P'"
 
-  shows "<\<nu>a>P \<Longrightarrow>\<^isub>\<tau> <\<nu>a>P'"
+  shows "<\<nu>a>P \<Longrightarrow>\<^sub>\<tau> <\<nu>a>P'"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -294,7 +294,7 @@ next
   case(ih P'' P''')
   have "P'' \<longmapsto>\<tau> \<prec> P'''" by fact
   hence "<\<nu>a>P'' \<longmapsto>\<tau> \<prec> <\<nu>a>P'''" by(force intro: ResF)
-  moreover have "<\<nu>a>P \<Longrightarrow>\<^isub>\<tau> <\<nu>a>P''" by fact
+  moreover have "<\<nu>a>P \<Longrightarrow>\<^sub>\<tau> <\<nu>a>P''" by fact
   ultimately show ?case by(force dest: tauActTauChain)
 qed
 
@@ -304,9 +304,9 @@ lemma substChain:
   and   b  :: name
   and   P' :: pi
 
-  assumes PTrans: "P[x::=b] \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes PTrans: "P[x::=b] \<Longrightarrow>\<^sub>\<tau> P'"
 
-  shows "P[x::=b] \<Longrightarrow>\<^isub>\<tau> P'[x::=b]"
+  shows "P[x::=b] \<Longrightarrow>\<^sub>\<tau> P'[x::=b]"
 proof(cases "x=b")
   assume "x = b"
   with PTrans show ?thesis by simp
@@ -322,10 +322,10 @@ lemma bangChain:
   fixes P  :: pi
   and   P' :: pi
 
-  assumes PTrans: "P \<parallel> !P \<Longrightarrow>\<^isub>\<tau> P'"
+  assumes PTrans: "P \<parallel> !P \<Longrightarrow>\<^sub>\<tau> P'"
   and     P'ineq: "P' \<noteq> P \<parallel> !P"
 
-  shows "!P \<Longrightarrow>\<^isub>\<tau> P'"
+  shows "!P \<Longrightarrow>\<^sub>\<tau> P'"
 using assms
 proof(induct rule: tauChainInduct)
   case id
@@ -339,7 +339,7 @@ next
     thus ?thesis by auto
   next
     case False
-    from `P' \<noteq> P \<parallel> !P` have "!P \<Longrightarrow>\<^isub>\<tau> P'" by(rule ih)
+    from `P' \<noteq> P \<parallel> !P` have "!P \<Longrightarrow>\<^sub>\<tau> P'" by(rule ih)
     with `P' \<longmapsto>\<tau> \<prec> P''` show ?thesis by(auto dest: tauActTauChain)
   qed
 qed

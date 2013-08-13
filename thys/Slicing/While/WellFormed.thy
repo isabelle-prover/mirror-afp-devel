@@ -13,8 +13,8 @@ fun lhs :: "cmd \<Rightarrow> vname set"
 where
   "lhs Skip                = {}"
   | "lhs (V:=e)              = {V}"
-  | "lhs (c\<^isub>1;;c\<^isub>2)            = lhs c\<^isub>1"
-  | "lhs (if (b) c\<^isub>1 else c\<^isub>2) = {}"
+  | "lhs (c\<^sub>1;;c\<^sub>2)            = lhs c\<^sub>1"
+  | "lhs (if (b) c\<^sub>1 else c\<^sub>2) = {}"
   | "lhs (while (b) c)       = {}"
 
 fun rhs_aux :: "expr \<Rightarrow> vname set"
@@ -27,8 +27,8 @@ fun rhs :: "cmd \<Rightarrow> vname set"
 where
   "rhs Skip                = {}"
   | "rhs (V:=e)              = rhs_aux e"
-  | "rhs (c\<^isub>1;;c\<^isub>2)            = rhs c\<^isub>1"
-  | "rhs (if (b) c\<^isub>1 else c\<^isub>2) = rhs_aux b"
+  | "rhs (c\<^sub>1;;c\<^sub>2)            = rhs c\<^sub>1"
+  | "rhs (if (b) c\<^sub>1 else c\<^sub>2) = rhs_aux b"
   | "rhs (while (b) c)       = rhs_aux b"
 
 
@@ -50,20 +50,20 @@ next
   note IH2 = `\<And>v'. \<lbrakk>interpret b2 s = Some v'; \<forall>V \<in> rhs_aux b2. s V = s' V\<rbrakk> 
              \<Longrightarrow> interpret b2 s' = Some v'`
   from `interpret (b1 \<guillemotleft>bop\<guillemotright> b2) s = Some v'` 
-  have "\<exists>v\<^isub>1 v\<^isub>2. interpret b1 s = Some v\<^isub>1 \<and> interpret b2 s = Some v\<^isub>2 \<and>
-                binop bop v\<^isub>1 v\<^isub>2 = Some v'"
+  have "\<exists>v\<^sub>1 v\<^sub>2. interpret b1 s = Some v\<^sub>1 \<and> interpret b2 s = Some v\<^sub>2 \<and>
+                binop bop v\<^sub>1 v\<^sub>2 = Some v'"
     apply(cases "interpret b1 s",simp)
     apply(cases "interpret b2 s",simp)
     by(case_tac "binop bop a aa",simp+)
-  then obtain v\<^isub>1 v\<^isub>2 where "interpret b1 s = Some v\<^isub>1"
-    and "interpret b2 s = Some v\<^isub>2" and "binop bop v\<^isub>1 v\<^isub>2 = Some v'" by blast
+  then obtain v\<^sub>1 v\<^sub>2 where "interpret b1 s = Some v\<^sub>1"
+    and "interpret b2 s = Some v\<^sub>2" and "binop bop v\<^sub>1 v\<^sub>2 = Some v'" by blast
   from `\<forall>V \<in> rhs_aux (b1 \<guillemotleft>bop\<guillemotright> b2). s V = s' V` have "\<forall>V \<in> rhs_aux b1. s V = s' V"
     by simp
-  from IH1[OF `interpret b1 s = Some v\<^isub>1` this] have "interpret b1 s' = Some v\<^isub>1" .
+  from IH1[OF `interpret b1 s = Some v\<^sub>1` this] have "interpret b1 s' = Some v\<^sub>1" .
   from `\<forall>V \<in> rhs_aux (b1 \<guillemotleft>bop\<guillemotright> b2). s V = s' V` have "\<forall>V \<in> rhs_aux b2. s V = s' V"
     by simp
-  from IH2[OF `interpret b2 s = Some v\<^isub>2` this] have "interpret b2 s' = Some v\<^isub>2" .
-  with `interpret b1 s' = Some v\<^isub>1` `binop bop v\<^isub>1 v\<^isub>2 = Some v'` show ?case by simp
+  from IH2[OF `interpret b2 s = Some v\<^sub>2` this] have "interpret b2 s' = Some v\<^sub>2" .
+  with `interpret b1 s' = Some v\<^sub>1` `binop bop v\<^sub>1 v\<^sub>2 = Some v'` show ?case by simp
 qed
 
 
@@ -86,76 +86,76 @@ proof(induct rule:WCFG_induct)
   hence "V' \<in> Defs (V':=e) (_0_)" by fastforce
   with `V \<notin> Defs (V':=e) (_0_)` show ?case by auto
 next
-  case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `V \<notin> Defs c\<^isub>1 n \<Longrightarrow> transfer et s V = s V`
-  have "V \<notin> Defs c\<^isub>1 n"
+  case (WCFG_SeqFirst c\<^sub>1 n et n' c\<^sub>2)
+  note IH = `V \<notin> Defs c\<^sub>1 n \<Longrightarrow> transfer et s V = s V`
+  have "V \<notin> Defs c\<^sub>1 n"
   proof
-    assume "V \<in> Defs c\<^isub>1 n"
-    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
+    assume "V \<in> Defs c\<^sub>1 n"
+    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^sub>1 l c"
       and "V \<in> lhs c" by fastforce
-    from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)"
+    from `labels c\<^sub>1 l c` have "labels (c\<^sub>1;;c\<^sub>2) l (c;;c\<^sub>2)"
       by(fastforce intro:Labels_Seq1)
-    from `V \<in> lhs c` have "V \<in> lhs (c;;c\<^isub>2)" by simp
-    with `labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) n" by fastforce
-    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) n` show False by fastforce
+    from `V \<in> lhs c` have "V \<in> lhs (c;;c\<^sub>2)" by simp
+    with `labels (c\<^sub>1;;c\<^sub>2) l (c;;c\<^sub>2)` have "V \<in> Defs (c\<^sub>1;;c\<^sub>2) n" by fastforce
+    with `V \<notin> Defs (c\<^sub>1;;c\<^sub>2) n` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
-  case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  note IH = `V \<notin> Defs c\<^isub>1 n \<Longrightarrow> transfer et s V = s V`
-  have "V \<notin> Defs c\<^isub>1 n"
+  case (WCFG_SeqConnect c\<^sub>1 n et c\<^sub>2)
+  note IH = `V \<notin> Defs c\<^sub>1 n \<Longrightarrow> transfer et s V = s V`
+  have "V \<notin> Defs c\<^sub>1 n"
   proof
-    assume "V \<in> Defs c\<^isub>1 n"
-    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
+    assume "V \<in> Defs c\<^sub>1 n"
+    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^sub>1 l c"
       and "V \<in> lhs c" by fastforce
-    from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)"
+    from `labels c\<^sub>1 l c` have "labels (c\<^sub>1;;c\<^sub>2) l (c;;c\<^sub>2)"
       by(fastforce intro:Labels_Seq1)
-    from `V \<in> lhs c` have "V \<in> lhs (c;;c\<^isub>2)" by simp
-    with `labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) n" by fastforce
-    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) n` show False by fastforce
+    from `V \<in> lhs c` have "V \<in> lhs (c;;c\<^sub>2)" by simp
+    with `labels (c\<^sub>1;;c\<^sub>2) l (c;;c\<^sub>2)` have "V \<in> Defs (c\<^sub>1;;c\<^sub>2) n" by fastforce
+    with `V \<notin> Defs (c\<^sub>1;;c\<^sub>2) n` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
-  case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note IH = `V \<notin> Defs c\<^isub>2 n \<Longrightarrow> transfer et s V = s V`
-  have "V \<notin> Defs c\<^isub>2 n"
+  case (WCFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1)
+  note IH = `V \<notin> Defs c\<^sub>2 n \<Longrightarrow> transfer et s V = s V`
+  have "V \<notin> Defs c\<^sub>2 n"
   proof
-    assume "V \<in> Defs c\<^isub>2 n"
-    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>2 l c"
+    assume "V \<in> Defs c\<^sub>2 n"
+    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^sub>2 l c"
       and "V \<in> lhs c" by fastforce
-    from `labels c\<^isub>2 l c` have "labels (c\<^isub>1;;c\<^isub>2) (l + #:c\<^isub>1) c"
+    from `labels c\<^sub>2 l c` have "labels (c\<^sub>1;;c\<^sub>2) (l + #:c\<^sub>1) c"
       by(fastforce intro:Labels_Seq2)
-    with `V \<in> lhs c` have "V \<in> Defs (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1)" by fastforce
-    with `V \<notin> Defs (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1)` show False by fastforce
+    with `V \<in> lhs c` have "V \<in> Defs (c\<^sub>1;;c\<^sub>2) (n \<oplus> #:c\<^sub>1)" by fastforce
+    with `V \<notin> Defs (c\<^sub>1;;c\<^sub>2) (n \<oplus> #:c\<^sub>1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
-  case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note IH = `V \<notin> Defs c\<^isub>1 n \<Longrightarrow> transfer et s V = s V`
-  have "V \<notin> Defs c\<^isub>1 n"
+  case (WCFG_CondThen c\<^sub>1 n et n' b c\<^sub>2)
+  note IH = `V \<notin> Defs c\<^sub>1 n \<Longrightarrow> transfer et s V = s V`
+  have "V \<notin> Defs c\<^sub>1 n"
   proof
-    assume "V \<in> Defs c\<^isub>1 n"
-    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
+    assume "V \<in> Defs c\<^sub>1 n"
+    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^sub>1 l c"
       and "V \<in> lhs c" by fastforce
-    from `labels c\<^isub>1 l c` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + 1) c"
+    from `labels c\<^sub>1 l c` have "labels (if (b) c\<^sub>1 else c\<^sub>2) (l + 1) c"
       by(fastforce intro:Labels_CondTrue)
-    with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1)" by fastforce
-    with `V \<notin> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1)` show False by fastforce
+    with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> 1)" by fastforce
+    with `V \<notin> Defs (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> 1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
-  case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note IH = `V \<notin> Defs c\<^isub>2 n \<Longrightarrow> transfer et s V = s V`
-  have "V \<notin> Defs c\<^isub>2 n"
+  case (WCFG_CondElse c\<^sub>2 n et n' b c\<^sub>1)
+  note IH = `V \<notin> Defs c\<^sub>2 n \<Longrightarrow> transfer et s V = s V`
+  have "V \<notin> Defs c\<^sub>2 n"
   proof
-    assume "V \<in> Defs c\<^isub>2 n"
-    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>2 l c"
+    assume "V \<in> Defs c\<^sub>2 n"
+    then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^sub>2 l c"
       and "V \<in> lhs c" by fastforce
-    from `labels c\<^isub>2 l c` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + #:c\<^isub>1 + 1) c"
+    from `labels c\<^sub>2 l c` have "labels (if (b) c\<^sub>1 else c\<^sub>2) (l + #:c\<^sub>1 + 1) c"
       by(fastforce intro:Labels_CondFalse)
-    with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1)"
+    with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1)"
       by(fastforce simp:nat_add_commute nat_add_left_commute)
-    with `V \<notin> Defs (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1)` show False by fastforce
+    with `V \<notin> Defs (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
 next
@@ -224,60 +224,60 @@ proof(induct rule:WCFG_induct)
   qed
   with `Defs (V:=e) (_0_) = {V}` show ?case by simp
 next
-  case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V 
-    \<Longrightarrow> \<forall>V\<in>Defs c\<^isub>1 n. transfer et s V = transfer et s' V`
-  from `\<forall>V\<in>Uses (c\<^isub>1;;c\<^isub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V"
-    by auto(drule Labels_Seq1[of _ _ _ c\<^isub>2],erule_tac x="V" in allE,auto)
-  from IH[OF this] have "\<forall>V\<in>Defs c\<^isub>1 n. transfer et s V = transfer et s' V" .
-  with `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` show ?case using Labels_Base 
+  case (WCFG_SeqFirst c\<^sub>1 n et n' c\<^sub>2)
+  note IH = `\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V 
+    \<Longrightarrow> \<forall>V\<in>Defs c\<^sub>1 n. transfer et s V = transfer et s' V`
+  from `\<forall>V\<in>Uses (c\<^sub>1;;c\<^sub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V"
+    by auto(drule Labels_Seq1[of _ _ _ c\<^sub>2],erule_tac x="V" in allE,auto)
+  from IH[OF this] have "\<forall>V\<in>Defs c\<^sub>1 n. transfer et s V = transfer et s' V" .
+  with `c\<^sub>1 \<turnstile> n -et\<rightarrow> n'` show ?case using Labels_Base 
     apply clarsimp 
     apply(erule labels.cases,auto dest:WCFG_sourcelabel_less_num_nodes)
     by(erule_tac x="V" in allE,fastforce)
 next
-  case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  note IH = `\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V 
-    \<Longrightarrow> \<forall>V\<in>Defs c\<^isub>1 n. transfer et s V = transfer et s' V`
-  from `\<forall>V\<in>Uses (c\<^isub>1;;c\<^isub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V"
-    by auto(drule Labels_Seq1[of _ _ _ c\<^isub>2],erule_tac x="V" in allE,auto)
-  from IH[OF this] have "\<forall>V\<in>Defs c\<^isub>1 n. transfer et s V = transfer et s' V" .
-  with `c\<^isub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` show ?case using Labels_Base 
+  case (WCFG_SeqConnect c\<^sub>1 n et c\<^sub>2)
+  note IH = `\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V 
+    \<Longrightarrow> \<forall>V\<in>Defs c\<^sub>1 n. transfer et s V = transfer et s' V`
+  from `\<forall>V\<in>Uses (c\<^sub>1;;c\<^sub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V"
+    by auto(drule Labels_Seq1[of _ _ _ c\<^sub>2],erule_tac x="V" in allE,auto)
+  from IH[OF this] have "\<forall>V\<in>Defs c\<^sub>1 n. transfer et s V = transfer et s' V" .
+  with `c\<^sub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` show ?case using Labels_Base 
     apply clarsimp 
     apply(erule labels.cases,auto dest:WCFG_sourcelabel_less_num_nodes)
     by(erule_tac x="V" in allE,fastforce)
 next
-  case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note IH = `\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V 
-    \<Longrightarrow> \<forall>V\<in>Defs c\<^isub>2 n. transfer et s V = transfer et s' V`
-  from `\<forall>V\<in>Uses (c\<^isub>1;;c\<^isub>2) (n \<oplus> #:c\<^isub>1). s V = s' V` have "\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V"
+  case (WCFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1)
+  note IH = `\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V 
+    \<Longrightarrow> \<forall>V\<in>Defs c\<^sub>2 n. transfer et s V = transfer et s' V`
+  from `\<forall>V\<in>Uses (c\<^sub>1;;c\<^sub>2) (n \<oplus> #:c\<^sub>1). s V = s' V` have "\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V"
     by(auto,blast dest:Labels_Seq2)
-  from IH[OF this] have "\<forall>V\<in>Defs c\<^isub>2 n. transfer et s V = transfer et s' V" .
-  with num_inner_nodes_gr_0[of "c\<^isub>1"] show ?case
+  from IH[OF this] have "\<forall>V\<in>Defs c\<^sub>2 n. transfer et s V = transfer et s' V" .
+  with num_inner_nodes_gr_0[of "c\<^sub>1"] show ?case
     apply clarsimp
     apply(erule labels.cases,auto)
     by(cases n,auto dest:label_less_num_inner_nodes)+
 next
-  case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note IH = `\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V 
-    \<Longrightarrow> \<forall>V\<in>Defs c\<^isub>1 n. transfer et s V = transfer et s' V`
-  from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1). s V = s' V` 
-  have "\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V" by(auto,blast dest:Labels_CondTrue)
-  from IH[OF this] have "\<forall>V\<in>Defs c\<^isub>1 n. transfer et s V = transfer et s' V" .
-  with `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` show ?case
+  case (WCFG_CondThen c\<^sub>1 n et n' b c\<^sub>2)
+  note IH = `\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V 
+    \<Longrightarrow> \<forall>V\<in>Defs c\<^sub>1 n. transfer et s V = transfer et s' V`
+  from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> 1). s V = s' V` 
+  have "\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V" by(auto,blast dest:Labels_CondTrue)
+  from IH[OF this] have "\<forall>V\<in>Defs c\<^sub>1 n. transfer et s V = transfer et s' V" .
+  with `c\<^sub>1 \<turnstile> n -et\<rightarrow> n'` show ?case
     apply clarsimp 
     apply(erule labels.cases,auto)
     apply(cases n,auto dest:label_less_num_inner_nodes)
     by(cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
 next
-  case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note IH = `\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V 
-    \<Longrightarrow> \<forall>V\<in>Defs c\<^isub>2 n. transfer et s V = transfer et s' V`
-  from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1). s V = s' V` 
-  have "\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V"
-    by auto(drule Labels_CondFalse[of _ _ _ b c\<^isub>1],erule_tac x="V" in allE,
+  case (WCFG_CondElse c\<^sub>2 n et n' b c\<^sub>1)
+  note IH = `\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V 
+    \<Longrightarrow> \<forall>V\<in>Defs c\<^sub>2 n. transfer et s V = transfer et s' V`
+  from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1). s V = s' V` 
+  have "\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V"
+    by auto(drule Labels_CondFalse[of _ _ _ b c\<^sub>1],erule_tac x="V" in allE,
        auto simp:nat_add_assoc)
-  from IH[OF this] have "\<forall>V\<in>Defs c\<^isub>2 n. transfer et s V = transfer et s' V" .
-  with `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` show ?case
+  from IH[OF this] have "\<forall>V\<in>Defs c\<^sub>2 n. transfer et s V = transfer et s' V" .
+  with `c\<^sub>2 \<turnstile> n -et\<rightarrow> n'` show ?case
     apply clarsimp 
     apply(erule labels.cases,auto)
     apply(cases n,auto dest:label_less_num_inner_nodes)
@@ -311,63 +311,63 @@ lemma WCFG_edge_Uses_pred_eq:
   "\<lbrakk>prog \<turnstile> n -et\<rightarrow> n'; \<forall>V \<in> Uses prog n. s V = s' V; pred et s\<rbrakk>
     \<Longrightarrow> pred et s'"
 proof(induct rule:WCFG_induct)
-  case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
-  from `\<forall>V\<in>Uses (c\<^isub>1;; c\<^isub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V"
-    by auto(drule Labels_Seq1[of _ _ _ c\<^isub>2],erule_tac x="V" in allE,auto)
+  case (WCFG_SeqFirst c\<^sub>1 n et n' c\<^sub>2)
+  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
+  from `\<forall>V\<in>Uses (c\<^sub>1;; c\<^sub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V"
+    by auto(drule Labels_Seq1[of _ _ _ c\<^sub>2],erule_tac x="V" in allE,auto)
   from IH[OF this `pred et s`] show ?case .
 next
-  case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
-  from `\<forall>V\<in>Uses (c\<^isub>1;; c\<^isub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V"
-    by auto(drule Labels_Seq1[of _ _ _ c\<^isub>2],erule_tac x="V" in allE,auto)
+  case (WCFG_SeqConnect c\<^sub>1 n et c\<^sub>2)
+  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
+  from `\<forall>V\<in>Uses (c\<^sub>1;; c\<^sub>2) n. s V = s' V` have "\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V"
+    by auto(drule Labels_Seq1[of _ _ _ c\<^sub>2],erule_tac x="V" in allE,auto)
   from IH[OF this `pred et s`] show ?case .
 next
-  case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
-  from `\<forall>V\<in>Uses (c\<^isub>1;; c\<^isub>2) (n \<oplus> #:c\<^isub>1). s V = s' V`
-  have "\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V" by(auto,blast dest:Labels_Seq2)
+  case (WCFG_SeqSecond c\<^sub>2 n et n' c\<^sub>1)
+  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
+  from `\<forall>V\<in>Uses (c\<^sub>1;; c\<^sub>2) (n \<oplus> #:c\<^sub>1). s V = s' V`
+  have "\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V" by(auto,blast dest:Labels_Seq2)
   from IH[OF this `pred et s`] show ?case .
 next
-  case (WCFG_CondTrue b c\<^isub>1 c\<^isub>2)
-  from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (_0_). s V = s' V` 
-  have all:"\<forall>V. labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2) \<and> 
-            V \<in> rhs (if (b) c\<^isub>1 else c\<^isub>2) \<longrightarrow> (s V = s' V)"
+  case (WCFG_CondTrue b c\<^sub>1 c\<^sub>2)
+  from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (_0_). s V = s' V` 
+  have all:"\<forall>V. labels (if (b) c\<^sub>1 else c\<^sub>2) 0 (if (b) c\<^sub>1 else c\<^sub>2) \<and> 
+            V \<in> rhs (if (b) c\<^sub>1 else c\<^sub>2) \<longrightarrow> (s V = s' V)"
     by fastforce
   obtain v' where [simp]:"v' = true" by simp
-  with `pred (\<lambda>s. interpret b s = Some true)\<^isub>\<surd> s`
+  with `pred (\<lambda>s. interpret b s = Some true)\<^sub>\<surd> s`
   have "interpret b s = Some v'" by simp
-  have "labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2)" by(rule Labels_Base)
+  have "labels (if (b) c\<^sub>1 else c\<^sub>2) 0 (if (b) c\<^sub>1 else c\<^sub>2)" by(rule Labels_Base)
   with all have "\<forall>V \<in> rhs_aux b. s V = s' V" by simp
   with `interpret b s = Some v'` have "interpret b s' = Some v'"
     by(rule rhs_interpret_eq)
   thus ?case by simp
 next
-  case (WCFG_CondFalse b c\<^isub>1 c\<^isub>2)
-  from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (_0_). s V = s' V`
-  have all:"\<forall>V. labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2) \<and> 
-              V \<in> rhs (if (b) c\<^isub>1 else c\<^isub>2) \<longrightarrow> (s V = s' V)"
+  case (WCFG_CondFalse b c\<^sub>1 c\<^sub>2)
+  from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (_0_). s V = s' V`
+  have all:"\<forall>V. labels (if (b) c\<^sub>1 else c\<^sub>2) 0 (if (b) c\<^sub>1 else c\<^sub>2) \<and> 
+              V \<in> rhs (if (b) c\<^sub>1 else c\<^sub>2) \<longrightarrow> (s V = s' V)"
     by fastforce
   obtain v' where [simp]:"v' = false" by simp
-  with `pred (\<lambda>s. interpret b s = Some false)\<^isub>\<surd> s` 
+  with `pred (\<lambda>s. interpret b s = Some false)\<^sub>\<surd> s` 
   have "interpret b s = Some v'" by simp
-  have "labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2)" by(rule Labels_Base)
+  have "labels (if (b) c\<^sub>1 else c\<^sub>2) 0 (if (b) c\<^sub>1 else c\<^sub>2)" by(rule Labels_Base)
   with all have "\<forall>V \<in> rhs_aux b. s V = s' V" by simp
   with `interpret b s = Some v'` have "interpret b s' = Some v'"
     by(rule rhs_interpret_eq)
   thus ?case by simp
 next
-  case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
-  from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> 1). s V = s' V`
-  have "\<forall>V\<in>Uses c\<^isub>1 n. s V = s' V" by(auto,blast dest:Labels_CondTrue)
+  case (WCFG_CondThen c\<^sub>1 n et n' b c\<^sub>2)
+  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
+  from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> 1). s V = s' V`
+  have "\<forall>V\<in>Uses c\<^sub>1 n. s V = s' V" by(auto,blast dest:Labels_CondTrue)
   from IH[OF this `pred et s`] show ?case .
 next
-  case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
-  from `\<forall>V\<in>Uses (if (b) c\<^isub>1 else c\<^isub>2) (n \<oplus> #:c\<^isub>1 + 1). s V = s' V`
-  have "\<forall>V\<in>Uses c\<^isub>2 n. s V = s' V"
-    by auto(drule Labels_CondFalse[of _ _ _ b c\<^isub>1],erule_tac x="V" in allE,
+  case (WCFG_CondElse c\<^sub>2 n et n' b c\<^sub>1)
+  note IH = `\<lbrakk>\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V; pred et s\<rbrakk> \<Longrightarrow> pred et s'`
+  from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1). s V = s' V`
+  have "\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V"
+    by auto(drule Labels_CondFalse[of _ _ _ b c\<^sub>1],erule_tac x="V" in allE,
        auto simp:nat_add_assoc)
   from IH[OF this `pred et s`] show ?case .
 next
@@ -377,7 +377,7 @@ next
               V \<in> rhs (while (b) c') \<longrightarrow> (s V = s' V)"
     by fastforce
   obtain v' where [simp]:"v' = true" by simp
-  with `pred (\<lambda>s. interpret b s = Some true)\<^isub>\<surd> s`
+  with `pred (\<lambda>s. interpret b s = Some true)\<^sub>\<surd> s`
   have "interpret b s = Some v'" by simp
   have "labels (while (b) c') 0 (while (b) c')" by(rule Labels_Base)
   with all have "\<forall>V \<in> rhs_aux b. s V = s' V" by simp
@@ -391,7 +391,7 @@ next
               V \<in> rhs (while (b) c') \<longrightarrow> (s V = s' V)"
     by fastforce
   obtain v' where [simp]:"v' = false" by simp
-  with `pred (\<lambda>s. interpret b s = Some false)\<^isub>\<surd> s`
+  with `pred (\<lambda>s. interpret b s = Some false)\<^sub>\<surd> s`
   have "interpret b s = Some v'" by simp
   have "labels (while (b) c') 0 (while (b) c')" by(rule Labels_Base)
   with all have "\<forall>V \<in> rhs_aux b. s V = s' V" by simp
@@ -450,7 +450,7 @@ next
   fix a a' 
   assume "valid_edge prog a" and "valid_edge prog a'" 
     and "sourcenode a = sourcenode a'" and "targetnode a \<noteq> targetnode a'"
-  thus "\<exists>Q Q'. kind a = (Q)\<^isub>\<surd> \<and> kind a' = (Q')\<^isub>\<surd> \<and> 
+  thus "\<exists>Q Q'. kind a = (Q)\<^sub>\<surd> \<and> kind a' = (Q')\<^sub>\<surd> \<and> 
                (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
     by(fastforce intro!:WCFG_deterministic simp:valid_edge_def)
 qed

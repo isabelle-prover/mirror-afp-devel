@@ -25,7 +25,7 @@ definition spanning :: "('a,'b) pre_digraph \<Rightarrow> ('a,'b) pre_digraph \<
   "spanning H G \<equiv> subgraph H G \<and> verts G = verts H"
 
 definition strongly_connected :: "('a,'b) pre_digraph \<Rightarrow> bool" where
-  "strongly_connected G \<equiv> verts G \<noteq> {} \<and> (\<forall>u \<in> verts G. \<forall>v \<in> verts G. u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v)"
+  "strongly_connected G \<equiv> verts G \<noteq> {} \<and> (\<forall>u \<in> verts G. \<forall>v \<in> verts G. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v)"
 
 
 text {*
@@ -102,13 +102,13 @@ lemma (in sym_digraph) graph_symmetric:
   using assms sym_arcs by (auto simp add: symmetric_def sym_def)
 
 lemma strongly_connectedI[intro]:
-  assumes "verts G \<noteq> {}" "\<And>u v. u \<in> verts G \<Longrightarrow> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v"
+  assumes "verts G \<noteq> {}" "\<And>u v. u \<in> verts G \<Longrightarrow> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
   shows "strongly_connected G"
 using assms by (simp add: strongly_connected_def)
 
 lemma strongly_connectedE[elim]:
   assumes "strongly_connected G"
-  assumes "(\<And>u v. u \<in> verts G \<and> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v) \<Longrightarrow> P"
+  assumes "(\<And>u v. u \<in> verts G \<and> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v) \<Longrightarrow> P"
   shows "P"
 using assms by (auto simp add: strongly_connected_def)
 
@@ -236,7 +236,7 @@ proof -
 qed
 
 lemma (in wf_digraph) reachable_mk_symmetricI:
-  assumes "u \<rightarrow>\<^isup>* v" shows "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v"
+  assumes "u \<rightarrow>\<^sup>* v" shows "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v"
 proof -
   have "arcs_ends G \<subseteq> parcs (mk_symmetric G)"
        "(u, v) \<in> rtrancl_on (pverts (mk_symmetric G)) (arcs_ends G)"
@@ -249,7 +249,7 @@ lemma (in wf_digraph) adj_mk_symmetric_eq:
   by (auto simp: parcs_mk_symmetric in_arcs_imp_in_arcs_ends arcs_ends_symmetric)
 
 lemma (in wf_digraph) reachable_mk_symmetric_eq:
-  assumes "symmetric G" shows "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v \<longleftrightarrow> u \<rightarrow>\<^isup>* v" (is "?L \<longleftrightarrow> ?R")
+  assumes "symmetric G" shows "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v \<longleftrightarrow> u \<rightarrow>\<^sup>* v" (is "?L \<longleftrightarrow> ?R")
   using adj_mk_symmetric_eq[OF assms] unfolding reachable_def by auto
 
 lemma (in wf_digraph) mk_symmetric_awalk_imp_awalk:
@@ -258,9 +258,9 @@ lemma (in wf_digraph) mk_symmetric_awalk_imp_awalk:
   obtains q where "awalk u q v"
 proof -
   interpret S: pair_wf_digraph "mk_symmetric G" ..
-  from walk have "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v"
+  from walk have "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v"
     by (simp only: S.reachable_awalk) rule
-  then have "u \<rightarrow>\<^isup>* v" by (simp only: reachable_mk_symmetric_eq[OF sym])
+  then have "u \<rightarrow>\<^sup>* v" by (simp only: reachable_mk_symmetric_eq[OF sym])
   then show ?thesis by (auto simp: reachable_awalk intro: that)
 qed
 
@@ -322,8 +322,8 @@ lemma (in pre_digraph) adj_mono:
   using assms by (blast dest: arcs_ends_mono)
 
 lemma (in pre_digraph) reachable_mono:
-  assumes walk: "u \<rightarrow>\<^isup>*\<^bsub>H\<^esub> v" and sub: "subgraph H G"
-  shows "u \<rightarrow>\<^isup>* v"
+  assumes walk: "u \<rightarrow>\<^sup>*\<^bsub>H\<^esub> v" and sub: "subgraph H G"
+  shows "u \<rightarrow>\<^sup>* v"
 proof -
   have "verts H \<subseteq> verts G" using sub by auto
   with assms show ?thesis
@@ -485,25 +485,25 @@ next
 qed
 
 lemma (in wf_digraph) induce_reachable_preserves_paths:
-  assumes "u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v"
-  shows "u \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {w. u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> w}\<^esub> v"
+  assumes "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
+  shows "u \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {w. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w}\<^esub> v"
   using assms
 proof induct
   case base then show ?case by (auto simp: reachable_def)
 next
   case (step u w)
-  interpret iG: wf_digraph "G \<restriction> {w. u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> w}"
+  interpret iG: wf_digraph "G \<restriction> {w. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w}"
     by (rule wellformed_induce_subgraph)
-  from `u \<rightarrow> w` have "u \<rightarrow>\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> wa}\<^esub> w"
+  from `u \<rightarrow> w` have "u \<rightarrow>\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> wa}\<^esub> w"
     by (auto simp: arcs_ends_conv reachable_def intro: wellformed rtrancl_on_into_rtrancl_on)
-  then have "u \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> wa}\<^esub> w"
+  then have "u \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> wa}\<^esub> w"
     by (rule iG.reachable_adjI)
   moreover
-  from step have "{x. w \<rightarrow>\<^isup>* x} \<subseteq> {x. u \<rightarrow>\<^isup>* x}"
+  from step have "{x. w \<rightarrow>\<^sup>* x} \<subseteq> {x. u \<rightarrow>\<^sup>* x}"
     by (auto intro: adj_reachable_trans)
-  then have "subgraph (G \<restriction> {wa. w \<rightarrow>\<^isup>* wa}) (G \<restriction> {wa. u \<rightarrow>\<^isup>* wa})"
+  then have "subgraph (G \<restriction> {wa. w \<rightarrow>\<^sup>* wa}) (G \<restriction> {wa. u \<rightarrow>\<^sup>* wa})"
     by (intro subgraphI) (auto simp: arcs_ends_conv compatible_def)
-  then have "w \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^isup>* wa}\<^esub> v"
+  then have "w \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^sup>* wa}\<^esub> v"
     by (rule iG.reachable_mono[rotated]) fact
   ultimately show ?case by (rule iG.reachable_trans)
 qed
@@ -580,9 +580,9 @@ proof (unfold strongly_connected_def, intro ballI conjI)
   from assms show "verts G \<noteq> {}" unfolding strongly_connected_def spanning_def by auto
 next
   fix u v assume "u \<in> verts G" and "v \<in> verts G"
-  then have "u \<rightarrow>\<^isup>*\<^bsub>H\<^esub> v" "subgraph H G"
+  then have "u \<rightarrow>\<^sup>*\<^bsub>H\<^esub> v" "subgraph H G"
     using assms by (auto simp add: strongly_connected_def)
-  then show "u \<rightarrow>\<^isup>* v" by (rule reachable_mono)
+  then show "u \<rightarrow>\<^sup>* v" by (rule reachable_mono)
 qed
 
 lemma (in wf_digraph) symmetric_connected_imp_strongly_connected:
@@ -596,9 +596,9 @@ next
     unfolding connected_def by simp
 
   fix u v assume "u \<in> verts G" "v \<in> verts G"
-  with sc_mks have "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v"
+  with sc_mks have "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v"
     unfolding strongly_connected_def by auto
-  then show "u \<rightarrow>\<^isup>* v" using assms by (simp only: reachable_mk_symmetric_eq)
+  then show "u \<rightarrow>\<^sup>* v" using assms by (simp only: reachable_mk_symmetric_eq)
 qed
 
 lemma (in wf_digraph) connected_spanning_imp_connected:
@@ -614,10 +614,10 @@ next
   then have "u \<in> pverts (mk_symmetric H)" and "v \<in> pverts (mk_symmetric H)"
     using `spanning H G` by (auto simp: mk_symmetric_def)
   with `connected H`
-  have "u \<rightarrow>\<^isup>*\<^bsub>with_proj (mk_symmetric H)\<^esub> v" "subgraph (mk_symmetric H) (mk_symmetric G)"
+  have "u \<rightarrow>\<^sup>*\<^bsub>with_proj (mk_symmetric H)\<^esub> v" "subgraph (mk_symmetric H) (mk_symmetric G)"
     using `spanning H G` unfolding connected_def
     by (auto simp: spanning_def dest: subgraph_mk_symmetric)
-  then show "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v" by (rule pre_digraph.reachable_mono)
+  then show "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v" by (rule pre_digraph.reachable_mono)
 qed
 
 lemma (in wf_digraph) spanning_tree_imp_connected:
@@ -627,14 +627,14 @@ using assms by (auto intro: connected_spanning_imp_connected)
 
 lemma (in sym_digraph) induce_reachable_is_in_sccs:
   assumes "u \<in> verts G"
-  shows "(G \<restriction> {v. u \<rightarrow>\<^isup>* v}) \<in> sccs"
+  shows "(G \<restriction> {v. u \<rightarrow>\<^sup>* v}) \<in> sccs"
 proof -
-  let ?c = "(G \<restriction> {v. u \<rightarrow>\<^isup>* v})"
+  let ?c = "(G \<restriction> {v. u \<rightarrow>\<^sup>* v})"
   have isub_c: "induced_subgraph ?c G"
     by (auto elim: reachable_in_vertsE)
   then interpret c: wf_digraph ?c by (rule wf_digraphI_induced)
 
-  have sym_c: "symmetric (G \<restriction> {v. u \<rightarrow>\<^isup>* v})"
+  have sym_c: "symmetric (G \<restriction> {v. u \<rightarrow>\<^sup>* v})"
     using sym_arcs isub_c by (rule induced_graph_imp_symmetric)
 
   note `induced_subgraph ?c G`
@@ -644,12 +644,12 @@ proof -
     show "verts ?c \<noteq> {}" using assms by auto
   next
     fix v w assume l_assms: "v \<in> verts ?c" "w \<in> verts ?c"
-    have "u \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^isup>* v}\<^esub> v"
+    have "u \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^sup>* v}\<^esub> v"
       using l_assms by (intro induce_reachable_preserves_paths) auto
-    then have "v \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^isup>* v}\<^esub> u" by (rule symmetric_reachable[OF sym_c])
-    also have "u \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^isup>* v}\<^esub> w"
+    then have "v \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^sup>* v}\<^esub> u" by (rule symmetric_reachable[OF sym_c])
+    also have "u \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^sup>* v}\<^esub> w"
       using l_assms by (intro induce_reachable_preserves_paths) auto
-    finally show "v \<rightarrow>\<^isup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^isup>* v}\<^esub> w" .
+    finally show "v \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {v. u \<rightarrow>\<^sup>* v}\<^esub> w" .
   qed
   moreover
   have "\<not>(\<exists>d. induced_subgraph d G \<and> strongly_connected d \<and>
@@ -664,9 +664,9 @@ proof -
 
     have "u \<in> verts ?c" using `u \<in> verts G` by auto
     then have "u \<in> verts d" using `verts ?c \<subset> verts d` by auto 
-    then have "u \<rightarrow>\<^isup>*\<^bsub>d\<^esub> v"
+    then have "u \<rightarrow>\<^sup>*\<^bsub>d\<^esub> v"
       using `strongly_connected d` `u \<in> verts d` `v \<in> verts d` by auto
-    then have "u \<rightarrow>\<^isup>* v"
+    then have "u \<rightarrow>\<^sup>* v"
       using `induced_subgraph d G`
       by (auto intro: pre_digraph.reachable_mono)
     then have "v \<in> verts ?c" by (auto simp: reachable_awalk)
@@ -712,7 +712,7 @@ proof -
 qed
 
 lemma (in wf_digraph) connectedI:
-  assumes "verts G \<noteq> {}" "\<And>u v. u \<in> verts G \<Longrightarrow> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v"
+  assumes "verts G \<noteq> {}" "\<And>u v. u \<in> verts G \<Longrightarrow> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v"
   shows "connected G"
   using assms by (auto simp: connected_def)
 
@@ -721,7 +721,7 @@ lemma (in wf_digraph) connected_awalkE:
   obtains p where "pre_digraph.awalk (mk_symmetric G) u p v"
 proof -
   interpret sG: pair_wf_digraph "mk_symmetric G" ..
-  from assms have "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v" by (auto simp: connected_def)
+  from assms have "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v" by (auto simp: connected_def)
   then obtain p where "sG.awalk u p v" by (auto simp: sG.reachable_awalk)
   then show ?thesis ..
 qed
@@ -765,12 +765,12 @@ proof -
       next
         assume l_assm: "\<not>(\<exists>x\<in>sccs. {a,b} \<subseteq> verts x)"
 
-        have "a \<rightarrow>\<^isup>* b" using `e \<in> arcs G` 
+        have "a \<rightarrow>\<^sup>* b" using `e \<in> arcs G` 
           by (metis a_def b_def reachable_adjI in_arcs_imp_in_arcs_ends)
-        then have "{a,b} \<subseteq> verts (G \<restriction> {v. a \<rightarrow>\<^isup>* v})" "a \<in> verts G"
+        then have "{a,b} \<subseteq> verts (G \<restriction> {v. a \<rightarrow>\<^sup>* v})" "a \<in> verts G"
           by (auto elim: reachable_in_vertsE)
         moreover
-        have "(G \<restriction> {v. a \<rightarrow>\<^isup>* v}) \<in> sccs"
+        have "(G \<restriction> {v. a \<rightarrow>\<^sup>* v}) \<in> sccs"
           using `a \<in> verts G` by (auto intro: induce_reachable_is_in_sccs)
         ultimately
         have False using l_assm by blast
@@ -806,13 +806,13 @@ next
     by (rule wellformed_union) fact+
   have subg: "subgraph G ?x" "subgraph H ?x"
     by (rule subgraphs_of_union[OF _ _ ], fact+)+
-  have reach_uw: "u \<rightarrow>\<^isup>*\<^bsub>?x\<^esub> w"
+  have reach_uw: "u \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> w"
     using `u \<in> verts ?x` subg w_in_both sc
     by (auto simp: verts_union intro: pre_digraph.reachable_mono)
-  also have reach_wv: "w \<rightarrow>\<^isup>*\<^bsub>?x\<^esub> v"
+  also have reach_wv: "w \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> v"
     using `v \<in> verts ?x` subg w_in_both sc
     by (auto simp: verts_union intro: pre_digraph.reachable_mono)
-  finally (x.reachable_trans) show "u \<rightarrow>\<^isup>*\<^bsub>?x\<^esub> v" .
+  finally (x.reachable_trans) show "u \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> v" .
 qed
 
 lemma (in wf_digraph) scc_disj:

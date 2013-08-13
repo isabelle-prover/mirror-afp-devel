@@ -259,12 +259,12 @@ proof -
   have RelStay: "\<And>P Q. (P \<parallel> !P, Q) \<in> ?Y \<Longrightarrow> (!P, Q) \<in> ?Y"
   proof(auto)
     fix P Q R T
-    assume PBisimQ: "P \<parallel> !P \<sim>\<^isub>e Q" 
+    assume PBisimQ: "P \<parallel> !P \<sim>\<^sub>e Q" 
        and QBRR: "(Q, R) \<in> bangRel weakBisim"
-       and RBisimT: "R \<sim>\<^isub>e T"
-    have "!P \<sim>\<^isub>e Q" 
+       and RBisimT: "R \<sim>\<^sub>e T"
+    have "!P \<sim>\<^sub>e Q" 
     proof -
-      have "!P \<sim>\<^isub>e P \<parallel> !P" by(rule Strong_Early_Bisim_SC.bangSC)
+      have "!P \<sim>\<^sub>e P \<parallel> !P" by(rule Strong_Early_Bisim_SC.bangSC)
       thus ?thesis using PBisimQ by(rule Strong_Early_Bisim.transitive)
     qed
     with QBRR RBisimT show "(!P, T) \<in> ?Y" by blast
@@ -278,19 +278,19 @@ proof -
     thus "(P \<parallel> R, Q \<parallel> T) \<in> ?Y"
     proof(auto)
       fix T' R'
-      assume T'BisimT: "T' \<sim>\<^isub>e T" and RBisimR': "R \<sim>\<^isub>e R'"
+      assume T'BisimT: "T' \<sim>\<^sub>e T" and RBisimR': "R \<sim>\<^sub>e R'"
          and R'BRT': "(R', T') \<in> bangRel weakBisim"
-      have "P \<parallel> R \<sim>\<^isub>e P \<parallel> R'"
+      have "P \<parallel> R \<sim>\<^sub>e P \<parallel> R'"
       proof -
-        from RBisimR' have "R \<parallel> P \<sim>\<^isub>e R' \<parallel> P" by(rule Strong_Early_Bisim_Pres.parPres)
-        moreover have "P \<parallel> R \<sim>\<^isub>e R \<parallel> P" and "R' \<parallel> P \<sim>\<^isub>e P \<parallel> R'" by(rule Strong_Early_Bisim_SC.parSym)+
+        from RBisimR' have "R \<parallel> P \<sim>\<^sub>e R' \<parallel> P" by(rule Strong_Early_Bisim_Pres.parPres)
+        moreover have "P \<parallel> R \<sim>\<^sub>e R \<parallel> P" and "R' \<parallel> P \<sim>\<^sub>e P \<parallel> R'" by(rule Strong_Early_Bisim_SC.parSym)+
         ultimately show ?thesis by(blast intro: Strong_Early_Bisim.transitive)
       qed
       moreover from PBisimQ R'BRT' have "(P \<parallel> R', Q \<parallel> T') \<in> bangRel weakBisim" by(rule BRPar)
-      moreover have "Q \<parallel> T' \<sim>\<^isub>e Q \<parallel> T"
+      moreover have "Q \<parallel> T' \<sim>\<^sub>e Q \<parallel> T"
       proof -
-        from T'BisimT have "T' \<parallel> Q \<sim>\<^isub>e T \<parallel> Q" by(rule Strong_Early_Bisim_Pres.parPres)
-        moreover have "Q \<parallel> T' \<sim>\<^isub>e T' \<parallel> Q" and "T \<parallel> Q \<sim>\<^isub>e Q \<parallel> T" by(rule Strong_Early_Bisim_SC.parSym)+
+        from T'BisimT have "T' \<parallel> Q \<sim>\<^sub>e T \<parallel> Q" by(rule Strong_Early_Bisim_Pres.parPres)
+        moreover have "Q \<parallel> T' \<sim>\<^sub>e T' \<parallel> Q" and "T \<parallel> Q \<sim>\<^sub>e Q \<parallel> T" by(rule Strong_Early_Bisim_SC.parSym)+
         ultimately show ?thesis by(blast intro: Strong_Early_Bisim.transitive)
       qed
       ultimately show ?thesis by blast

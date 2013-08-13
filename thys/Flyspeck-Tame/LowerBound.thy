@@ -41,9 +41,9 @@ proof -
   assume admissible: "admissible w g"
   assume w: "(\<Sum>\<^bsub>f \<in> faces g\<^esub> w f) < squanderTarget"
 (*<*)
-  from admissible have admissible\<^isub>1:
+  from admissible have admissible\<^sub>1:
    "\<And>f. f \<in> set (faces g) \<Longrightarrow> \<d> |vertices f| \<le> w f"
-    by (simp add: admissible_def admissible\<^isub>1_def)
+    by (simp add: admissible_def admissible\<^sub>1_def)
 (*>*) (* *)
 
   have "squanderLowerBound g
@@ -100,8 +100,8 @@ proof -
   have "distinct V3" by(simp add:V3_def V2_def `distinct V`)
 (*
   with V3_def V2_def obtain V3: "separated g (set V3)"
-    by (simp add: vertextype_def separated_def preSeparated_def separated\<^isub>1_def
-      separated\<^isub>4_def)
+    by (simp add: vertextype_def separated_def preSeparated_def separated\<^sub>1_def
+      separated\<^sub>4_def)
 *)
   from V_subset obtain V3_subset: "set V3 \<subseteq> \<V> g"
     by (auto simp add: V3_def V2_def)
@@ -146,12 +146,12 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
        from v1 have "v1 \<in> set V" by (simp add: V1_def)
        with f pS c have "set (vertices f) \<inter> set V = {v1}"
-         by (simp add: separated_def separated\<^isub>3_def)
+         by (simp add: separated_def separated\<^sub>3_def)
 
        moreover from v3 have "v3 \<in> set V"
          by (simp add: V3_def V2_def)
        with v3 pS c have "set (vertices f) \<inter> set V = {v3}"
-         by (simp add: separated_def separated\<^isub>3_def)
+         by (simp add: separated_def separated\<^sub>3_def)
        ultimately show False by auto
     qed
   qed simp
@@ -210,7 +210,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
 
   also have "\<dots> = 0" (*<*) by simp   (*>*) (* *)
 
-  txt {* ($A_1$) We use property @{text "admissible\<^isub>2"}. *}
+  txt {* ($A_1$) We use property @{text "admissible\<^sub>2"}. *}
 
   also(trans6) have
   "(\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v)) \<le> (\<Sum>\<^bsub>v \<in> V1\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
@@ -219,7 +219,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
     fix v assume "v \<in> set V1"
     with V1_def V_subset have "v \<in> set (vertices g)" (*<*)  by auto (*>*) (* *)
     with admissible show "\<b> (tri g v) (quad g v) \<le> (\<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
-      using `v \<in> set V1` by (auto simp add:admissible_def admissible\<^isub>2_def V1_def)
+      using `v \<in> set V1` by (auto simp add:admissible_def admissible\<^sub>2_def V1_def)
   qed
 
   also(trans2) from pSV1 V1_distinct V_subset have "\<dots> = (\<Sum>\<^bsub>f \<in> F1\<^esub> w f)"
@@ -234,7 +234,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
     apply auto
     done
 
-  txt {* ($A_2$) We use property @{text "admissible\<^isub>4"}. *}
+  txt {* ($A_2$) We use property @{text "admissible\<^sub>4"}. *}
 
   also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F3 \<^esub>w f)" (*<*)
   proof-
@@ -256,11 +256,11 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
     also have "(\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f\<in>E\<^esub> w f )"
       using `admissible w g`
       by(rule_tac ListSum_le)
-        (simp add: admissible_def admissible\<^isub>1_def E_def F3_def F2_def)
+        (simp add: admissible_def admissible\<^sub>1_def E_def F3_def F2_def)
     also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) \<le> (\<Sum>\<^bsub>v\<in>V3\<^esub> \<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f))"
       using `admissible w g`
       by(rule_tac ListSum_le)
-        (simp add: admissible_def admissible\<^isub>3_def V3_def V2_def V_subset_simp)
+        (simp add: admissible_def admissible\<^sub>3_def V3_def V2_def V_subset_simp)
     also have "\<dots> = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) Int Collect triangle]\<^esub> w f)"
       by(rule ListSum_V_F_eq_ListSum_F[OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
         (simp add:Ball_def)
@@ -272,13 +272,13 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   qed
 
   txt_raw {* \newpage *}
-  txt {* ($A_3$) We use property @{text "admissible\<^isub>1"}. *}
+  txt {* ($A_3$) We use property @{text "admissible\<^sub>1"}. *}
 
   also(trans3) have "(\<Sum>\<^bsub> f \<in> F4\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F4\<^esub> w f)"
   proof (rule ListSum_le)
     fix f assume "f \<in> set F4"
     then have f: "f \<in> set (faces g)" (*<*) by (simp add: F4_def F2_def)(*>*) (* *)
-    with admissible\<^isub>1 f show "\<d> |vertices f| \<le> w f" by (simp)
+    with admissible\<^sub>1 f show "\<d> |vertices f| \<le> w f" by (simp)
   qed
 
   txt {*  We reunite $F3$ and $F4$.  *}

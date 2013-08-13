@@ -8,14 +8,14 @@ subsection{* Definition and some lemmas *}
 
 definition (in CFG) weak_order_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'node \<Rightarrow> bool"
    ("_ \<longrightarrow>\<^bsub>wod\<^esub> _,_")
-where wod_def:"n \<longrightarrow>\<^bsub>wod\<^esub> n\<^isub>1,n\<^isub>2 \<equiv> ((n\<^isub>1 \<noteq> n\<^isub>2) \<and>
-   (\<exists>as. (n -as\<rightarrow>* n\<^isub>1) \<and> (n\<^isub>2 \<notin> set (sourcenodes as))) \<and>
-   (\<exists>as. (n -as\<rightarrow>* n\<^isub>2) \<and> (n\<^isub>1 \<notin> set (sourcenodes as))) \<and>
+where wod_def:"n \<longrightarrow>\<^bsub>wod\<^esub> n\<^sub>1,n\<^sub>2 \<equiv> ((n\<^sub>1 \<noteq> n\<^sub>2) \<and>
+   (\<exists>as. (n -as\<rightarrow>* n\<^sub>1) \<and> (n\<^sub>2 \<notin> set (sourcenodes as))) \<and>
+   (\<exists>as. (n -as\<rightarrow>* n\<^sub>2) \<and> (n\<^sub>1 \<notin> set (sourcenodes as))) \<and>
    (\<exists>a. (valid_edge a) \<and> (n = sourcenode a) \<and> 
-        ((\<exists>as. (targetnode a -as\<rightarrow>* n\<^isub>1) \<and>  
-               (\<forall>as'. (targetnode a -as'\<rightarrow>* n\<^isub>2) \<longrightarrow> n\<^isub>1 \<in> set(sourcenodes as'))) \<or>
-         (\<exists>as. (targetnode a -as\<rightarrow>* n\<^isub>2) \<and>  
-               (\<forall>as'. (targetnode a -as'\<rightarrow>* n\<^isub>1) \<longrightarrow> n\<^isub>2 \<in> set(sourcenodes as'))))))"
+        ((\<exists>as. (targetnode a -as\<rightarrow>* n\<^sub>1) \<and>  
+               (\<forall>as'. (targetnode a -as'\<rightarrow>* n\<^sub>2) \<longrightarrow> n\<^sub>1 \<in> set(sourcenodes as'))) \<or>
+         (\<exists>as. (targetnode a -as\<rightarrow>* n\<^sub>2) \<and>  
+               (\<forall>as'. (targetnode a -as'\<rightarrow>* n\<^sub>1) \<longrightarrow> n\<^sub>2 \<in> set(sourcenodes as'))))))"
 
 
 
@@ -25,7 +25,7 @@ for S :: "'node set"
   where refl:"\<lbrakk>valid_node n; n \<in> S\<rbrakk> \<Longrightarrow> n \<in> wod_backward_slice S"
   
   | cd_closed:
-  "\<lbrakk>n' \<longrightarrow>\<^bsub>wod\<^esub> n\<^isub>1,n\<^isub>2; n\<^isub>1 \<in> wod_backward_slice S; n\<^isub>2 \<in> wod_backward_slice S\<rbrakk>
+  "\<lbrakk>n' \<longrightarrow>\<^bsub>wod\<^esub> n\<^sub>1,n\<^sub>2; n\<^sub>1 \<in> wod_backward_slice S; n\<^sub>2 \<in> wod_backward_slice S\<rbrakk>
   \<Longrightarrow> n' \<in> wod_backward_slice S"
 
   | dd_closed:"\<lbrakk>n' influences V in n''; n'' \<in> wod_backward_slice S\<rbrakk>

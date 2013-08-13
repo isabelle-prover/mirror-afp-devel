@@ -85,7 +85,7 @@ datatype expr = Var vname | Lit int | Add expr expr
 fun vars :: "expr \<Rightarrow> vname set" where
   "vars (Var v) = {v}"
 | "vars (Lit i) = {}"
-| "vars (Add e\<^isub>1 e\<^isub>2) = vars e\<^isub>1 \<union> vars e\<^isub>2"
+| "vars (Add e\<^sub>1 e\<^sub>2) = vars e\<^sub>1 \<union> vars e\<^sub>2"
 
 value [code] "vars (Var ''x'')"
 
@@ -97,7 +97,7 @@ datatype 'a expr' = Var' 'a | Lit' int | Add' "'a expr'" "'a expr'"
 fun vars' ::  "'a expr' \<Rightarrow> 'a set" where
   "vars' (Var' v) = {v}"
 | "vars' (Lit' i) = {}"
-| "vars' (Add' e\<^isub>1 e\<^isub>2) = vars' e\<^isub>1 \<union> vars' e\<^isub>2"
+| "vars' (Add' e\<^sub>1 e\<^sub>2) = vars' e\<^sub>1 \<union> vars' e\<^sub>2"
 
 value [code] "vars' (Var' (1 :: int))"
 
@@ -168,14 +168,14 @@ fun expr'_rel :: "'a expr' \<Rightarrow> 'b expr' \<Rightarrow> bool"
 where
   "expr'_rel (Var' v)      (Var' v')        \<longleftrightarrow> R v v'"
 | "expr'_rel (Lit' i)        (Lit' i')         \<longleftrightarrow> i = i'"
-| "expr'_rel (Add' e\<^isub>1 e\<^isub>2) (Add' e\<^isub>1' e\<^isub>2') \<longleftrightarrow> expr'_rel e\<^isub>1 e\<^isub>1' \<and> expr'_rel e\<^isub>2 e\<^isub>2'"
+| "expr'_rel (Add' e\<^sub>1 e\<^sub>2) (Add' e\<^sub>1' e\<^sub>2') \<longleftrightarrow> expr'_rel e\<^sub>1 e\<^sub>1' \<and> expr'_rel e\<^sub>2 e\<^sub>2'"
 | "expr'_rel _                 _                \<longleftrightarrow> False"
 end
 
 text {* If we give HOL equality as parameter, the relator is equality: *}
 
-lemma expr'_rel_eq: "expr'_rel op = e\<^isub>1 e\<^isub>2 \<longleftrightarrow> e\<^isub>1 = e\<^isub>2"
-by(induct e\<^isub>1 e\<^isub>2 rule: expr'_rel.induct) simp_all
+lemma expr'_rel_eq: "expr'_rel op = e\<^sub>1 e\<^sub>2 \<longleftrightarrow> e\<^sub>1 = e\<^sub>2"
+by(induct e\<^sub>1 e\<^sub>2 rule: expr'_rel.induct) simp_all
 text {*
   Then, the instantiation is again canonical:
 *}
@@ -251,41 +251,41 @@ where
 | "Var' x       \<sqsubset> _               \<longleftrightarrow> True"
 | "Lit' i        \<sqsubset> Lit' i'         \<longleftrightarrow> i < i'"
 | "Lit' _        \<sqsubset> Add' _ _      \<longleftrightarrow> True"
-| "Add' e\<^isub>1 e\<^isub>2 \<sqsubset> Add' e\<^isub>1' e\<^isub>2' \<longleftrightarrow> 
-   e\<^isub>1 \<sqsubset> e\<^isub>1' \<or> \<not> e\<^isub>1' \<sqsubset> e\<^isub>1 \<and> e\<^isub>2 \<sqsubset> e\<^isub>2'"
-   -- {* Note that we avoid an explicit equality test here by using @{text "\<not> e\<^isub>1' \<sqsubset> e\<^isub>1"} *}
+| "Add' e\<^sub>1 e\<^sub>2 \<sqsubset> Add' e\<^sub>1' e\<^sub>2' \<longleftrightarrow> 
+   e\<^sub>1 \<sqsubset> e\<^sub>1' \<or> \<not> e\<^sub>1' \<sqsubset> e\<^sub>1 \<and> e\<^sub>2 \<sqsubset> e\<^sub>2'"
+   -- {* Note that we avoid an explicit equality test here by using @{text "\<not> e\<^sub>1' \<sqsubset> e\<^sub>1"} *}
 | "_             \<sqsubset> _                \<longleftrightarrow> False"
 by pat_completeness simp_all
 termination by size_change
 
 definition less_eq_expr' :: "'a expr' \<Rightarrow> 'a expr' \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-where "e\<^isub>1 \<sqsubseteq> e\<^isub>2 \<longleftrightarrow> \<not> e\<^isub>2 \<sqsubset> e\<^isub>1"
+where "e\<^sub>1 \<sqsubseteq> e\<^sub>2 \<longleftrightarrow> \<not> e\<^sub>2 \<sqsubset> e\<^sub>1"
 
 lemma expr'_linorder:
   assumes linorder: "class.linorder le_a lt_a"
   shows "class.linorder op \<sqsubseteq> op \<sqsubset>"
 proof -
   interpret linorder le_a lt_a by(rule assms)
-  { fix e\<^isub>1 e\<^isub>2
-    have "\<lbrakk> e\<^isub>1 \<sqsubset> e\<^isub>2; e\<^isub>2 \<sqsubset> e\<^isub>1 \<rbrakk> \<Longrightarrow> False"
-      by(induct e\<^isub>1 e\<^isub>2 rule: less_expr'.induct) auto }
-  hence lt_eq: "\<And>e\<^isub>1 e\<^isub>2. e\<^isub>1 \<sqsubset> e\<^isub>2 \<longleftrightarrow> e\<^isub>1 \<sqsubseteq> e\<^isub>2 \<and> \<not> e\<^isub>2\<sqsubseteq> e\<^isub>1" 
+  { fix e\<^sub>1 e\<^sub>2
+    have "\<lbrakk> e\<^sub>1 \<sqsubset> e\<^sub>2; e\<^sub>2 \<sqsubset> e\<^sub>1 \<rbrakk> \<Longrightarrow> False"
+      by(induct e\<^sub>1 e\<^sub>2 rule: less_expr'.induct) auto }
+  hence lt_eq: "\<And>e\<^sub>1 e\<^sub>2. e\<^sub>1 \<sqsubset> e\<^sub>2 \<longleftrightarrow> e\<^sub>1 \<sqsubseteq> e\<^sub>2 \<and> \<not> e\<^sub>2\<sqsubseteq> e\<^sub>1" 
     and "\<And>e. e \<sqsubseteq> e" unfolding less_eq_expr'_def by auto
   moreover
-  { fix e\<^isub>1 e\<^isub>2
-    have "\<lbrakk> e\<^isub>1 \<sqsubseteq> e\<^isub>2; e\<^isub>2 \<sqsubseteq> e\<^isub>1 \<rbrakk> \<Longrightarrow> e\<^isub>1 = e\<^isub>2"
+  { fix e\<^sub>1 e\<^sub>2
+    have "\<lbrakk> e\<^sub>1 \<sqsubseteq> e\<^sub>2; e\<^sub>2 \<sqsubseteq> e\<^sub>1 \<rbrakk> \<Longrightarrow> e\<^sub>1 = e\<^sub>2"
       unfolding less_eq_expr'_def 
-      by(induct e\<^isub>1 e\<^isub>2 rule: less_expr'.induct) auto }
+      by(induct e\<^sub>1 e\<^sub>2 rule: less_expr'.induct) auto }
   note antisym = this
   moreover
-  { fix e\<^isub>1 e\<^isub>2
-    have "e\<^isub>1 \<sqsubseteq> e\<^isub>2 \<or> e\<^isub>2 \<sqsubseteq> e\<^isub>1" unfolding less_eq_expr'_def
-      by(induct e\<^isub>1 e\<^isub>2 rule: less_expr'.induct) auto }
+  { fix e\<^sub>1 e\<^sub>2
+    have "e\<^sub>1 \<sqsubseteq> e\<^sub>2 \<or> e\<^sub>2 \<sqsubseteq> e\<^sub>1" unfolding less_eq_expr'_def
+      by(induct e\<^sub>1 e\<^sub>2 rule: less_expr'.induct) auto }
   moreover
-  { fix e\<^isub>1 e\<^isub>2 e\<^isub>3
-    have "\<lbrakk> e\<^isub>1 \<sqsubseteq> e\<^isub>2; e\<^isub>2 \<sqsubseteq> e\<^isub>3 \<rbrakk> \<Longrightarrow> e\<^isub>1 \<sqsubseteq> e\<^isub>3"
-      apply(induct e\<^isub>1 e\<^isub>2 arbitrary: e\<^isub>3 rule: less_expr'.induct)
-      apply(case_tac [!] e\<^isub>3)
+  { fix e\<^sub>1 e\<^sub>2 e\<^sub>3
+    have "\<lbrakk> e\<^sub>1 \<sqsubseteq> e\<^sub>2; e\<^sub>2 \<sqsubseteq> e\<^sub>3 \<rbrakk> \<Longrightarrow> e\<^sub>1 \<sqsubseteq> e\<^sub>3"
+      apply(induct e\<^sub>1 e\<^sub>2 arbitrary: e\<^sub>3 rule: less_expr'.induct)
+      apply(case_tac [!] e\<^sub>3)
       apply(simp_all add: less_eq_expr'_def)
       apply(fold less_eq_expr'_def lt_eq[symmetric])
       using antisym by(auto 6 2) }

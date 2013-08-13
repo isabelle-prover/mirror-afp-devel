@@ -12,17 +12,17 @@ begin
 
 locale jvm_method = prog +
   fixes mxs :: nat  
-  fixes mxl\<^isub>0 :: nat   
+  fixes mxl\<^sub>0 :: nat   
   fixes Ts :: "ty list" 
-  fixes T\<^isub>r :: ty
+  fixes T\<^sub>r :: ty
   fixes "is" :: "'addr instr list" 
   fixes xt :: ex_table
 
   fixes mxl :: nat
-  defines mxl_def: "mxl \<equiv> 1+size Ts+mxl\<^isub>0"
+  defines mxl_def: "mxl \<equiv> 1+size Ts+mxl\<^sub>0"
 
 text {* Program counter of successor instructions: *}
-primrec succs :: "'addr instr \<Rightarrow> ty\<^isub>i \<Rightarrow> pc \<Rightarrow> pc list"
+primrec succs :: "'addr instr \<Rightarrow> ty\<^sub>i \<Rightarrow> pc \<Rightarrow> pc list"
 where
   "succs (Load idx) \<tau> pc     = [pc+1]"
 | "succs (Store idx) \<tau> pc    = [pc+1]"
@@ -55,72 +55,72 @@ where
 
 text "Effect of instruction on the state type:"
 
-fun eff\<^isub>i :: "'addr instr \<times> 'm prog \<times> ty\<^isub>i \<Rightarrow> ty\<^isub>i"
+fun eff\<^sub>i :: "'addr instr \<times> 'm prog \<times> ty\<^sub>i \<Rightarrow> ty\<^sub>i"
 where
-  eff\<^isub>i_Load:
-  "eff\<^isub>i (Load n,  P, (ST, LT))          = (ok_val (LT ! n) # ST, LT)"
+  eff\<^sub>i_Load:
+  "eff\<^sub>i (Load n,  P, (ST, LT))          = (ok_val (LT ! n) # ST, LT)"
 
-| eff\<^isub>i_Store:
-  "eff\<^isub>i (Store n, P, (T#ST, LT))        = (ST, LT[n:= OK T])"
+| eff\<^sub>i_Store:
+  "eff\<^sub>i (Store n, P, (T#ST, LT))        = (ST, LT[n:= OK T])"
 
-| eff\<^isub>i_Push:
-  "eff\<^isub>i (Push v, P, (ST, LT))             = (the (typeof v) # ST, LT)"
+| eff\<^sub>i_Push:
+  "eff\<^sub>i (Push v, P, (ST, LT))             = (the (typeof v) # ST, LT)"
 
-| eff\<^isub>i_Getfield:
-  "eff\<^isub>i (Getfield F C, P, (T#ST, LT))    = (fst (snd (field P C F)) # ST, LT)"
+| eff\<^sub>i_Getfield:
+  "eff\<^sub>i (Getfield F C, P, (T#ST, LT))    = (fst (snd (field P C F)) # ST, LT)"
 
-| eff\<^isub>i_Putfield:
-  "eff\<^isub>i (Putfield F C, P, (T\<^isub>1#T\<^isub>2#ST, LT)) = (ST,LT)"
+| eff\<^sub>i_Putfield:
+  "eff\<^sub>i (Putfield F C, P, (T\<^sub>1#T\<^sub>2#ST, LT)) = (ST,LT)"
 
-| eff\<^isub>i_New:
-  "eff\<^isub>i (New C, P, (ST,LT))               = (Class C # ST, LT)"
+| eff\<^sub>i_New:
+  "eff\<^sub>i (New C, P, (ST,LT))               = (Class C # ST, LT)"
 
-| eff\<^isub>i_NewArray:
-  "eff\<^isub>i (NewArray Ty, P, (T#ST,LT))       = (Ty\<lfloor>\<rceil> # ST,LT)"
+| eff\<^sub>i_NewArray:
+  "eff\<^sub>i (NewArray Ty, P, (T#ST,LT))       = (Ty\<lfloor>\<rceil> # ST,LT)"
 
-| eff\<^isub>i_ALoad:
-  "eff\<^isub>i (ALoad, P, (T1#T2#ST,LT))       = (the_Array T2# ST,LT)"
+| eff\<^sub>i_ALoad:
+  "eff\<^sub>i (ALoad, P, (T1#T2#ST,LT))       = (the_Array T2# ST,LT)"
 
-| eff\<^isub>i_AStore:
-  "eff\<^isub>i (AStore, P, (T1#T2#T3#ST,LT))  = (ST,LT)"
+| eff\<^sub>i_AStore:
+  "eff\<^sub>i (AStore, P, (T1#T2#T3#ST,LT))  = (ST,LT)"
 
-| eff\<^isub>i_ALength:
-  "eff\<^isub>i (ALength, P, (T1#ST,LT))  = (Integer#ST,LT)"
+| eff\<^sub>i_ALength:
+  "eff\<^sub>i (ALength, P, (T1#ST,LT))  = (Integer#ST,LT)"
 
-| eff\<^isub>i_Checkcast:
-  "eff\<^isub>i (Checkcast Ty, P, (T#ST,LT))       = (Ty # ST,LT)"
+| eff\<^sub>i_Checkcast:
+  "eff\<^sub>i (Checkcast Ty, P, (T#ST,LT))       = (Ty # ST,LT)"
 
-| eff\<^isub>i_Instanceof:
-  "eff\<^isub>i (Instanceof Ty, P, (T#ST,LT))       = (Boolean # ST,LT)"
+| eff\<^sub>i_Instanceof:
+  "eff\<^sub>i (Instanceof Ty, P, (T#ST,LT))       = (Boolean # ST,LT)"
 
-| eff\<^isub>i_Pop:
-  "eff\<^isub>i (Pop, P, (T#ST,LT))               = (ST,LT)"
+| eff\<^sub>i_Pop:
+  "eff\<^sub>i (Pop, P, (T#ST,LT))               = (ST,LT)"
 
-| eff\<^isub>i_Dup:
-  "eff\<^isub>i (Dup, P, (T#ST,LT))               = (T#T#ST,LT)"
+| eff\<^sub>i_Dup:
+  "eff\<^sub>i (Dup, P, (T#ST,LT))               = (T#T#ST,LT)"
 
-| eff\<^isub>i_Swap:
-  "eff\<^isub>i (Swap, P, (T1#T2#ST,LT))               = (T2#T1#ST,LT)"
+| eff\<^sub>i_Swap:
+  "eff\<^sub>i (Swap, P, (T1#T2#ST,LT))               = (T2#T1#ST,LT)"
 
-| eff\<^isub>i_BinOpInstr:
-  "eff\<^isub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = ((THE T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)#ST, LT)"
+| eff\<^sub>i_BinOpInstr:
+  "eff\<^sub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = ((THE T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)#ST, LT)"
 
-| eff\<^isub>i_IfFalse:
-  "eff\<^isub>i (IfFalse b, P, (T\<^isub>1#ST,LT))        = (ST,LT)"
+| eff\<^sub>i_IfFalse:
+  "eff\<^sub>i (IfFalse b, P, (T\<^sub>1#ST,LT))        = (ST,LT)"
 
-| eff\<^isub>i_Invoke:
-  "eff\<^isub>i (Invoke M n, P, (ST,LT))          =
+| eff\<^sub>i_Invoke:
+  "eff\<^sub>i (Invoke M n, P, (ST,LT))          =
   (let U = fst (snd (snd (method P (the (class_type_of' (ST ! n))) M)))
    in (U # drop (n+1) ST, LT))"
 
-| eff\<^isub>i_Goto:
-  "eff\<^isub>i (Goto n, P, s)                    = s"
+| eff\<^sub>i_Goto:
+  "eff\<^sub>i (Goto n, P, s)                    = s"
 
-| eff\<^isub>i_MEnter:
-  "eff\<^isub>i (MEnter, P, (T1#ST,LT))           = (ST,LT)"
+| eff\<^sub>i_MEnter:
+  "eff\<^sub>i (MEnter, P, (T1#ST,LT))           = (ST,LT)"
 
-| eff\<^isub>i_MExit:
-  "eff\<^isub>i (MExit, P, (T1#ST,LT))            = (ST,LT)"
+| eff\<^sub>i_MExit:
+  "eff\<^sub>i (MExit, P, (T1#ST,LT))            = (ST,LT)"
 
 
 fun is_relevant_class :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> bool" 
@@ -164,15 +164,15 @@ definition relevant_entries :: "'m prog \<Rightarrow> 'addr instr \<Rightarrow> 
 where
   "relevant_entries P i pc \<equiv> filter (is_relevant_entry P i pc)"
 
-definition xcpt_eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^isub>i \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^isub>i') list"
+definition xcpt_eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^sub>i \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^sub>i') list"
 where
   "xcpt_eff i P pc \<tau> et \<equiv> let (ST,LT) = \<tau> in 
   map (\<lambda>(f,t,C,h,d). (h, Some ((case C of None \<Rightarrow> Class Throwable | Some C' \<Rightarrow> Class C')#drop (size ST - d) ST, LT))) (relevant_entries P i pc et)"
 
-definition norm_eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>i \<Rightarrow> (pc \<times> ty\<^isub>i') list"
-where "norm_eff i P pc \<tau> \<equiv> map (\<lambda>pc'. (pc',Some (eff\<^isub>i (i,P,\<tau>)))) (succs i \<tau> pc)"
+definition norm_eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^sub>i \<Rightarrow> (pc \<times> ty\<^sub>i') list"
+where "norm_eff i P pc \<tau> \<equiv> map (\<lambda>pc'. (pc',Some (eff\<^sub>i (i,P,\<tau>)))) (succs i \<tau> pc)"
 
-definition eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> (pc \<times> ty\<^isub>i') list"
+definition eff :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i' \<Rightarrow> (pc \<times> ty\<^sub>i') list"
 where
   "eff i P pc et t \<equiv>
   case t of           
@@ -192,112 +192,112 @@ by (simp add: eff_def)
 
 text "Conditions under which eff is applicable:"
 
-fun app\<^isub>i :: "'addr instr \<times> 'm prog \<times> pc \<times> nat \<times> ty \<times> ty\<^isub>i \<Rightarrow> bool"
+fun app\<^sub>i :: "'addr instr \<times> 'm prog \<times> pc \<times> nat \<times> ty \<times> ty\<^sub>i \<Rightarrow> bool"
 where
-  app\<^isub>i_Load:
-  "app\<^isub>i (Load n, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
+  app\<^sub>i_Load:
+  "app\<^sub>i (Load n, P, pc, mxs, T\<^sub>r, (ST,LT)) = 
     (n < length LT \<and> LT ! n \<noteq> Err \<and> length ST < mxs)"
-| app\<^isub>i_Store:
-  "app\<^isub>i (Store n, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
+| app\<^sub>i_Store:
+  "app\<^sub>i (Store n, P, pc, mxs, T\<^sub>r, (T#ST, LT)) = 
     (n < length LT)"
-| app\<^isub>i_Push:
-  "app\<^isub>i (Push v, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
+| app\<^sub>i_Push:
+  "app\<^sub>i (Push v, P, pc, mxs, T\<^sub>r, (ST,LT)) = 
     (length ST < mxs \<and> typeof v \<noteq> None)"
-| app\<^isub>i_Getfield:
-  "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-    (\<exists>T\<^isub>f fm. P \<turnstile> C sees F:T\<^isub>f (fm) in C \<and> P \<turnstile> T \<le> Class C)"
-| app\<^isub>i_Putfield:
-  "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
-    (\<exists>T\<^isub>f fm. P \<turnstile> C sees F:T\<^isub>f (fm) in C \<and> P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
-| app\<^isub>i_New:
-  "app\<^isub>i (New C, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
+| app\<^sub>i_Getfield:
+  "app\<^sub>i (Getfield F C, P, pc, mxs, T\<^sub>r, (T#ST, LT)) = 
+    (\<exists>T\<^sub>f fm. P \<turnstile> C sees F:T\<^sub>f (fm) in C \<and> P \<turnstile> T \<le> Class C)"
+| app\<^sub>i_Putfield:
+  "app\<^sub>i (Putfield F C, P, pc, mxs, T\<^sub>r, (T\<^sub>1#T\<^sub>2#ST, LT)) = 
+    (\<exists>T\<^sub>f fm. P \<turnstile> C sees F:T\<^sub>f (fm) in C \<and> P \<turnstile> T\<^sub>2 \<le> (Class C) \<and> P \<turnstile> T\<^sub>1 \<le> T\<^sub>f)" 
+| app\<^sub>i_New:
+  "app\<^sub>i (New C, P, pc, mxs, T\<^sub>r, (ST,LT)) = 
     (is_class P C \<and> length ST < mxs)"
-| app\<^isub>i_NewArray:
-  "app\<^isub>i (NewArray Ty, P, pc, mxs, T\<^isub>r, (Integer#ST,LT)) = 
+| app\<^sub>i_NewArray:
+  "app\<^sub>i (NewArray Ty, P, pc, mxs, T\<^sub>r, (Integer#ST,LT)) = 
     is_type P (Ty\<lfloor>\<rceil>)"
-|  app\<^isub>i_ALoad:
-  "app\<^isub>i (ALoad, P, pc, mxs, T\<^isub>r, (T1#T2#ST,LT)) = 
+|  app\<^sub>i_ALoad:
+  "app\<^sub>i (ALoad, P, pc, mxs, T\<^sub>r, (T1#T2#ST,LT)) = 
     (T1 = Integer \<and> (T2 \<noteq> NT \<longrightarrow> (\<exists>Ty. T2 = Ty\<lfloor>\<rceil>)))"
-| app\<^isub>i_AStore:
-  "app\<^isub>i (AStore, P, pc, mxs, T\<^isub>r, (T1#T2#T3#ST,LT)) = 
+| app\<^sub>i_AStore:
+  "app\<^sub>i (AStore, P, pc, mxs, T\<^sub>r, (T1#T2#T3#ST,LT)) = 
     (T2 = Integer \<and> (T3 \<noteq> NT \<longrightarrow> (\<exists>Ty. T3 = Ty\<lfloor>\<rceil>)))"
-| app\<^isub>i_ALength:
-  "app\<^isub>i (ALength, P, pc, mxs, T\<^isub>r, (T1#ST,LT)) = 
+| app\<^sub>i_ALength:
+  "app\<^sub>i (ALength, P, pc, mxs, T\<^sub>r, (T1#ST,LT)) = 
     (T1 = NT \<or> (\<exists>Ty. T1 = Ty\<lfloor>\<rceil>))"
-| app\<^isub>i_Checkcast:
-  "app\<^isub>i (Checkcast Ty, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+| app\<^sub>i_Checkcast:
+  "app\<^sub>i (Checkcast Ty, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = 
     (is_type P Ty)"
-| app\<^isub>i_Instanceof:
-  "app\<^isub>i (Instanceof Ty, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+| app\<^sub>i_Instanceof:
+  "app\<^sub>i (Instanceof Ty, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = 
     (is_type P Ty \<and> is_refT T)"
-| app\<^isub>i_Pop:
-  "app\<^isub>i (Pop, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+| app\<^sub>i_Pop:
+  "app\<^sub>i (Pop, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = 
     True"
-| app\<^isub>i_Dup:
-  "app\<^isub>i (Dup, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+| app\<^sub>i_Dup:
+  "app\<^sub>i (Dup, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = 
     (Suc (length ST) < mxs)"
-| app\<^isub>i_Swap:
-  "app\<^isub>i (Swap, P, pc, mxs, T\<^isub>r, (T1#T2#ST,LT)) = True"
-| app\<^isub>i_BinOpInstr:
-  "app\<^isub>i (BinOpInstr bop, P, pc, mxs, T\<^isub>r, (T2#T1#ST,LT)) = (\<exists>T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
-| app\<^isub>i_IfFalse:
-  "app\<^isub>i (IfFalse b, P, pc, mxs, T\<^isub>r, (Boolean#ST,LT)) = 
+| app\<^sub>i_Swap:
+  "app\<^sub>i (Swap, P, pc, mxs, T\<^sub>r, (T1#T2#ST,LT)) = True"
+| app\<^sub>i_BinOpInstr:
+  "app\<^sub>i (BinOpInstr bop, P, pc, mxs, T\<^sub>r, (T2#T1#ST,LT)) = (\<exists>T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
+| app\<^sub>i_IfFalse:
+  "app\<^sub>i (IfFalse b, P, pc, mxs, T\<^sub>r, (Boolean#ST,LT)) = 
     (0 \<le> int pc + b)"
-| app\<^isub>i_Goto:
-  "app\<^isub>i (Goto b, P, pc, mxs, T\<^isub>r, s) =  (0 \<le> int pc + b)"
-| app\<^isub>i_Return:
-  "app\<^isub>i (Return, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = (P \<turnstile> T \<le> T\<^isub>r)"
-| app\<^isub>i_Throw:
-  "app\<^isub>i (ThrowExc, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+| app\<^sub>i_Goto:
+  "app\<^sub>i (Goto b, P, pc, mxs, T\<^sub>r, s) =  (0 \<le> int pc + b)"
+| app\<^sub>i_Return:
+  "app\<^sub>i (Return, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = (P \<turnstile> T \<le> T\<^sub>r)"
+| app\<^sub>i_Throw:
+  "app\<^sub>i (ThrowExc, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = 
     (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable))"
-| app\<^isub>i_Invoke:
-  "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
+| app\<^sub>i_Invoke:
+  "app\<^sub>i (Invoke M n, P, pc, mxs, T\<^sub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
       (\<exists>C D Ts T m. class_type_of' (ST ! n) = \<lfloor>C\<rfloor> \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts)))"
-| app\<^isub>i_MEnter:
-  "app\<^isub>i (MEnter,P, pc,mxs,T\<^isub>r,(T#ST,LT)) = (is_refT T)"
-| app\<^isub>i_MExit:
-  "app\<^isub>i (MExit,P, pc,mxs,T\<^isub>r,(T#ST,LT)) = (is_refT T)"
-| app\<^isub>i_default:
-  "app\<^isub>i (i,P, pc,mxs,T\<^isub>r,s) = False"
+| app\<^sub>i_MEnter:
+  "app\<^sub>i (MEnter,P, pc,mxs,T\<^sub>r,(T#ST,LT)) = (is_refT T)"
+| app\<^sub>i_MExit:
+  "app\<^sub>i (MExit,P, pc,mxs,T\<^sub>r,(T#ST,LT)) = (is_refT T)"
+| app\<^sub>i_default:
+  "app\<^sub>i (i,P, pc,mxs,T\<^sub>r,s) = False"
 
 
-definition xcpt_app :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i \<Rightarrow> bool"
+definition xcpt_app :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i \<Rightarrow> bool"
 where
   "xcpt_app i P pc mxs xt \<tau> \<equiv> \<forall>(f,t,C,h,d) \<in> set (relevant_entries P i pc xt). (case C of None \<Rightarrow> True | Some C' \<Rightarrow> is_class P C') \<and> d \<le> size (fst \<tau>) \<and> d < mxs"
 
-definition app :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> bool"
+definition app :: "'addr instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i' \<Rightarrow> bool"
 where
-  "app i P mxs T\<^isub>r pc mpc xt t \<equiv> case t of None \<Rightarrow> True | Some \<tau> \<Rightarrow> 
-  app\<^isub>i (i,P,pc,mxs,T\<^isub>r,\<tau>) \<and> xcpt_app i P pc mxs xt \<tau> \<and> 
+  "app i P mxs T\<^sub>r pc mpc xt t \<equiv> case t of None \<Rightarrow> True | Some \<tau> \<Rightarrow> 
+  app\<^sub>i (i,P,pc,mxs,T\<^sub>r,\<tau>) \<and> xcpt_app i P pc mxs xt \<tau> \<and> 
   (\<forall>(pc',\<tau>') \<in> set (eff i P pc xt t). pc' < mpc)"
 
 
 lemma app_Some:
-  "app i P mxs T\<^isub>r pc mpc xt (Some \<tau>) = 
-  (app\<^isub>i (i,P,pc,mxs,T\<^isub>r,\<tau>) \<and> xcpt_app i P pc mxs xt \<tau> \<and> 
+  "app i P mxs T\<^sub>r pc mpc xt (Some \<tau>) = 
+  (app\<^sub>i (i,P,pc,mxs,T\<^sub>r,\<tau>) \<and> xcpt_app i P pc mxs xt \<tau> \<and> 
   (\<forall>(pc',s') \<in> set (eff i P pc xt (Some \<tau>)). pc' < mpc))"
 by (simp add: app_def)
 
 locale eff = jvm_method +
-  fixes eff\<^isub>i and app\<^isub>i and eff and app 
+  fixes eff\<^sub>i and app\<^sub>i and eff and app 
   fixes norm_eff and xcpt_app and xcpt_eff
 
   fixes mpc
   defines "mpc \<equiv> size is"
 
-  defines "eff\<^isub>i i \<tau> \<equiv> Effect.eff\<^isub>i (i,P,\<tau>)"
-  notes eff\<^isub>i_simps [simp] = Effect.eff\<^isub>i.simps [where P = P, folded eff\<^isub>i_def]
+  defines "eff\<^sub>i i \<tau> \<equiv> Effect.eff\<^sub>i (i,P,\<tau>)"
+  notes eff\<^sub>i_simps [simp] = Effect.eff\<^sub>i.simps [where P = P, folded eff\<^sub>i_def]
 
-  defines "app\<^isub>i i pc \<tau> \<equiv> Effect.app\<^isub>i (i, P, pc, mxs, T\<^isub>r, \<tau>)"
-  notes app\<^isub>i_simps [simp] = Effect.app\<^isub>i.simps [where P=P and mxs=mxs and T\<^isub>r=T\<^isub>r, folded app\<^isub>i_def]
+  defines "app\<^sub>i i pc \<tau> \<equiv> Effect.app\<^sub>i (i, P, pc, mxs, T\<^sub>r, \<tau>)"
+  notes app\<^sub>i_simps [simp] = Effect.app\<^sub>i.simps [where P=P and mxs=mxs and T\<^sub>r=T\<^sub>r, folded app\<^sub>i_def]
 
   defines "xcpt_eff i pc \<tau> \<equiv> Effect.xcpt_eff i P pc \<tau> xt"
   notes xcpt_eff = Effect.xcpt_eff_def [of _ P _ _ xt, folded xcpt_eff_def]
 
   defines "norm_eff i pc \<tau> \<equiv> Effect.norm_eff i P pc \<tau>"
-  notes norm_eff = Effect.norm_eff_def [of _ P, folded norm_eff_def eff\<^isub>i_def]
+  notes norm_eff = Effect.norm_eff_def [of _ P, folded norm_eff_def eff\<^sub>i_def]
 
   defines "eff i pc \<equiv> Effect.eff i P pc xt"
   notes eff = Effect.eff_def [of _ P  _ xt, folded eff_def norm_eff_def xcpt_eff_def]
@@ -305,8 +305,8 @@ locale eff = jvm_method +
   defines "xcpt_app i pc \<tau> \<equiv> Effect.xcpt_app i P pc mxs xt \<tau>"
   notes xcpt_app = Effect.xcpt_app_def [of _ P _ mxs xt, folded xcpt_app_def]
 
-  defines "app i pc \<equiv> Effect.app i P mxs T\<^isub>r pc mpc xt"
-  notes app = Effect.app_def [of _ P mxs T\<^isub>r _ mpc xt, folded app_def xcpt_app_def app\<^isub>i_def eff_def]
+  defines "app i pc \<equiv> Effect.app i P mxs T\<^sub>r pc mpc xt"
+  notes app = Effect.app_def [of _ P mxs T\<^sub>r _ mpc xt, folded app_def xcpt_app_def app\<^sub>i_def eff_def]
 
 
 lemma length_cases2:
@@ -363,69 +363,69 @@ text {*
 \medskip
 simp rules for @{term app}
 *}
-lemma appNone[simp]: "app i P mxs T\<^isub>r pc mpc et None = True" 
+lemma appNone[simp]: "app i P mxs T\<^sub>r pc mpc et None = True" 
   by (simp add: app_def)
 
 
 lemma appLoad[simp]:
-"app\<^isub>i (Load idx, P, T\<^isub>r, mxs, pc, s) = (\<exists>ST LT. s = (ST,LT) \<and> idx < length LT \<and> LT!idx \<noteq> Err \<and> length ST < mxs)"
+"app\<^sub>i (Load idx, P, T\<^sub>r, mxs, pc, s) = (\<exists>ST LT. s = (ST,LT) \<and> idx < length LT \<and> LT!idx \<noteq> Err \<and> length ST < mxs)"
   by (cases s, simp)
 
 lemma appStore[simp]:
-"app\<^isub>i (Store idx,P,pc,mxs,T\<^isub>r,s) = (\<exists>ts ST LT. s = (ts#ST,LT) \<and> idx < length LT)"
+"app\<^sub>i (Store idx,P,pc,mxs,T\<^sub>r,s) = (\<exists>ts ST LT. s = (ts#ST,LT) \<and> idx < length LT)"
   by (rule length_cases2, auto)
 
 lemma appPush[simp]:
-"app\<^isub>i (Push v,P,pc,mxs,T\<^isub>r,s) =
+"app\<^sub>i (Push v,P,pc,mxs,T\<^sub>r,s) =
  (\<exists>ST LT. s = (ST,LT) \<and> length ST < mxs \<and> typeof v \<noteq> None)"
   by (cases s, simp)
 
 lemma appGetField[simp]:
-"app\<^isub>i (Getfield F C,P,pc,mxs,T\<^isub>r,s) = 
+"app\<^sub>i (Getfield F C,P,pc,mxs,T\<^sub>r,s) = 
  (\<exists> oT vT ST LT fm. s = (oT#ST, LT) \<and> 
   P \<turnstile> C sees F:vT (fm) in C \<and> P \<turnstile> oT \<le> (Class C))"
   by (rule length_cases2 [of _ s]) auto
 
 lemma appPutField[simp]:
-"app\<^isub>i (Putfield F C,P,pc,mxs,T\<^isub>r,s) = 
+"app\<^sub>i (Putfield F C,P,pc,mxs,T\<^sub>r,s) = 
  (\<exists> vT vT' oT ST LT fm. s = (vT#oT#ST, LT) \<and>
   P \<turnstile> C sees F:vT' (fm) in C \<and> P \<turnstile> oT \<le> (Class C) \<and> P \<turnstile> vT \<le> vT')"
   by (rule length_cases4 [of _ s], auto)
 
 lemma appNew[simp]:
-  "app\<^isub>i (New C,P,pc,mxs,T\<^isub>r,s) = 
+  "app\<^sub>i (New C,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>ST LT. s=(ST,LT) \<and> is_class P C \<and> length ST < mxs)"
   by (cases s, simp)
 
 lemma appNewArray[simp]:
-  "app\<^isub>i (NewArray Ty,P,pc,mxs,T\<^isub>r,s) = 
+  "app\<^sub>i (NewArray Ty,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>ST LT. s=(Integer#ST,LT) \<and> is_type P (Ty\<lfloor>\<rceil>))"
   by (cases s, simp, cases "fst s", simp)(cases "hd (fst s)", auto)
 
 lemma appALoad[simp]:
-  "app\<^isub>i (ALoad,P,pc,mxs,T\<^isub>r,s) = 
+  "app\<^sub>i (ALoad,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>T ST LT. s=(Integer#T#ST,LT) \<and> (T \<noteq> NT \<longrightarrow> (\<exists>T'.  T = T'\<lfloor>\<rceil>)))"
 proof -
   obtain ST LT where [simp]: "s = (ST, LT)" by (cases s)
-  have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^isub>1 T\<^isub>2 ST'. ST = T\<^isub>1#T\<^isub>2#ST')"
+  have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^sub>1 T\<^sub>2 ST'. ST = T\<^sub>1#T\<^sub>2#ST')"
     by (cases ST, auto, case_tac list, auto)
   moreover
   { assume "ST = []" hence ?thesis by simp }
   moreover
   { fix T assume "ST = [T]" hence ?thesis by (cases T, auto) }
   moreover
-  { fix T\<^isub>1 T\<^isub>2 ST' assume "ST = T\<^isub>1#T\<^isub>2#ST'"
-    hence ?thesis by (cases T\<^isub>1, auto)
+  { fix T\<^sub>1 T\<^sub>2 ST' assume "ST = T\<^sub>1#T\<^sub>2#ST'"
+    hence ?thesis by (cases T\<^sub>1, auto)
   }
   ultimately show ?thesis by blast
 qed
 
 lemma appAStore[simp]:
-  "app\<^isub>i (AStore,P,pc,mxs,T\<^isub>r,s) = 
+  "app\<^sub>i (AStore,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>T U ST LT. s=(T#Integer#U#ST,LT) \<and> (U \<noteq> NT \<longrightarrow> (\<exists>T'. U = T'\<lfloor>\<rceil>)))"
 proof -
   obtain ST LT where [simp]: "s = (ST, LT)" by (cases s)
-  have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^isub>1 T\<^isub>2. ST = [T\<^isub>1, T\<^isub>2]) \<or> (\<exists>T1 T2 T3 ST'. ST = T1 # T2 # T3 # ST')"
+  have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^sub>1 T\<^sub>2. ST = [T\<^sub>1, T\<^sub>2]) \<or> (\<exists>T1 T2 T3 ST'. ST = T1 # T2 # T3 # ST')"
     by (cases ST, auto, case_tac list, auto, case_tac lista, auto)
   moreover
   { assume "ST = []" hence ?thesis by simp }
@@ -439,52 +439,52 @@ proof -
 qed
 
 lemma appALength[simp]:
-  "app\<^isub>i (ALength,P,pc,mxs,T\<^isub>r,s) = 
+  "app\<^sub>i (ALength,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>T ST LT. s=(T#ST,LT) \<and> (T \<noteq> NT \<longrightarrow> (\<exists>T'.  T = T'\<lfloor>\<rceil>)))"
   by (cases s, cases "fst s", simp add: app_def) (cases "hd (fst s)", auto)
 
 lemma appCheckcast[simp]: 
-  "app\<^isub>i (Checkcast Ty,P,pc,mxs,T\<^isub>r,s) =  
+  "app\<^sub>i (Checkcast Ty,P,pc,mxs,T\<^sub>r,s) =  
   (\<exists>T ST LT. s = (T#ST,LT) \<and> is_type P Ty)"
   by (cases s, cases "fst s", simp add: app_def) (cases "hd (fst s)", auto)
 
 lemma appInstanceof[simp]: 
-  "app\<^isub>i (Instanceof Ty,P,pc,mxs,T\<^isub>r,s) =  
+  "app\<^sub>i (Instanceof Ty,P,pc,mxs,T\<^sub>r,s) =  
   (\<exists>T ST LT. s = (T#ST,LT) \<and> is_type P Ty \<and> is_refT T)"
   by (cases s, cases "fst s", simp add: app_def) (cases "hd (fst s)", auto)
 
-lemma app\<^isub>iPop[simp]: 
-"app\<^isub>i (Pop,P,pc,mxs,T\<^isub>r,s) = (\<exists>ts ST LT. s = (ts#ST,LT))"
+lemma app\<^sub>iPop[simp]: 
+"app\<^sub>i (Pop,P,pc,mxs,T\<^sub>r,s) = (\<exists>ts ST LT. s = (ts#ST,LT))"
   by (rule length_cases2, auto)
 
 lemma appDup[simp]:
-"app\<^isub>i (Dup,P,pc,mxs,T\<^isub>r,s) =
+"app\<^sub>i (Dup,P,pc,mxs,T\<^sub>r,s) =
  (\<exists>T ST LT. s = (T#ST,LT) \<and> Suc (length ST) < mxs)"
 by (cases s, cases "fst s", simp_all)
 
-lemma app\<^isub>iSwap[simp]: 
-"app\<^isub>i (Swap,P,pc,mxs,T\<^isub>r,s) = (\<exists>T1 T2 ST LT. s = (T1#T2#ST,LT))"
+lemma app\<^sub>iSwap[simp]: 
+"app\<^sub>i (Swap,P,pc,mxs,T\<^sub>r,s) = (\<exists>T1 T2 ST LT. s = (T1#T2#ST,LT))"
 by(rule length_cases4) auto
 
 lemma appBinOp[simp]:
-"app\<^isub>i (BinOpInstr bop,P,pc,mxs,T\<^isub>r,s) = (\<exists>T1 T2 ST LT T. s = (T2 # T1 # ST, LT) \<and> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
+"app\<^sub>i (BinOpInstr bop,P,pc,mxs,T\<^sub>r,s) = (\<exists>T1 T2 ST LT T. s = (T2 # T1 # ST, LT) \<and> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
 proof -
   obtain ST LT where [simp]: "s = (ST,LT)" by (cases s)
-  have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^isub>1 T\<^isub>2 ST'. ST = T\<^isub>1#T\<^isub>2#ST')"
+  have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^sub>1 T\<^sub>2 ST'. ST = T\<^sub>1#T\<^sub>2#ST')"
     by (cases ST, auto, case_tac list, auto)
   moreover
   { assume "ST = []" hence ?thesis by simp }
   moreover
   { fix T assume "ST = [T]" hence ?thesis by (cases T, auto) }
   moreover
-  { fix T\<^isub>1 T\<^isub>2 ST' assume "ST = T\<^isub>1#T\<^isub>2#ST'"
+  { fix T\<^sub>1 T\<^sub>2 ST' assume "ST = T\<^sub>1#T\<^sub>2#ST'"
     hence ?thesis by simp
   }
   ultimately show ?thesis by blast
 qed
 
 lemma appIfFalse [simp]:
-"app\<^isub>i (IfFalse b,P,pc,mxs,T\<^isub>r,s) = 
+"app\<^sub>i (IfFalse b,P,pc,mxs,T\<^sub>r,s) = 
   (\<exists>ST LT. s = (Boolean#ST,LT) \<and> 0 \<le> int pc + b)"
   apply (rule length_cases2)
   apply simp
@@ -493,19 +493,19 @@ lemma appIfFalse [simp]:
   done
 
 lemma appReturn[simp]:
-"app\<^isub>i (Return,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s = (T#ST,LT) \<and> P \<turnstile> T \<le> T\<^isub>r)" 
+"app\<^sub>i (Return,P,pc,mxs,T\<^sub>r,s) = (\<exists>T ST LT. s = (T#ST,LT) \<and> P \<turnstile> T \<le> T\<^sub>r)" 
   by (rule length_cases2, auto)
 
 lemma appThrow[simp]:
-  "app\<^isub>i (ThrowExc,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable)))"
+  "app\<^sub>i (ThrowExc,P,pc,mxs,T\<^sub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable)))"
   by (rule length_cases2, auto)  
 
 lemma appMEnter[simp]:
-  "app\<^isub>i (MEnter,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> is_refT T)"
+  "app\<^sub>i (MEnter,P,pc,mxs,T\<^sub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> is_refT T)"
   by (rule length_cases2, auto)  
 
 lemma appMExit[simp]:
-  "app\<^isub>i (MExit,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> is_refT T)"
+  "app\<^sub>i (MExit,P,pc,mxs,T\<^sub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> is_refT T)"
   by (rule length_cases2, auto)
 
 lemma effNone: 
@@ -535,49 +535,49 @@ subsection {* Code generator setup *}
 declare list_all2_Nil [code]
 declare list_all2_Cons [code]
 
-lemma eff\<^isub>i_BinOpInstr_code:
-  "eff\<^isub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = (Predicate.the (WTrt_binop_i_i_i_i_o P T1 bop T2) # ST, LT)"
+lemma eff\<^sub>i_BinOpInstr_code:
+  "eff\<^sub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = (Predicate.the (WTrt_binop_i_i_i_i_o P T1 bop T2) # ST, LT)"
 by(simp add: the_WTrt_binop_code)
 
-lemmas eff\<^isub>i_code[code] =
-  eff\<^isub>i_Load eff\<^isub>i_Store eff\<^isub>i_Push eff\<^isub>i_Getfield eff\<^isub>i_Putfield eff\<^isub>i_New eff\<^isub>i_NewArray eff\<^isub>i_ALoad
-  eff\<^isub>i_AStore eff\<^isub>i_ALength eff\<^isub>i_Checkcast eff\<^isub>i_Instanceof eff\<^isub>i_Pop eff\<^isub>i_Dup eff\<^isub>i_Swap eff\<^isub>i_BinOpInstr_code
-  eff\<^isub>i_IfFalse eff\<^isub>i_Invoke eff\<^isub>i_Goto eff\<^isub>i_MEnter eff\<^isub>i_MExit
+lemmas eff\<^sub>i_code[code] =
+  eff\<^sub>i_Load eff\<^sub>i_Store eff\<^sub>i_Push eff\<^sub>i_Getfield eff\<^sub>i_Putfield eff\<^sub>i_New eff\<^sub>i_NewArray eff\<^sub>i_ALoad
+  eff\<^sub>i_AStore eff\<^sub>i_ALength eff\<^sub>i_Checkcast eff\<^sub>i_Instanceof eff\<^sub>i_Pop eff\<^sub>i_Dup eff\<^sub>i_Swap eff\<^sub>i_BinOpInstr_code
+  eff\<^sub>i_IfFalse eff\<^sub>i_Invoke eff\<^sub>i_Goto eff\<^sub>i_MEnter eff\<^sub>i_MExit
 
-lemma app\<^isub>i_Getfield_code:
-  "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) \<longleftrightarrow>
+lemma app\<^sub>i_Getfield_code:
+  "app\<^sub>i (Getfield F C, P, pc, mxs, T\<^sub>r, (T#ST, LT)) \<longleftrightarrow>
   Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>T. Predicate.single ())) \<and> P \<turnstile> T \<le> Class C"
 apply(clarsimp simp add: Predicate.bind_def Predicate.single_def holds_eq eval_sees_field_i_i_i_o_i_conv)
 done
  
-lemma app\<^isub>i_Putfield_code:
-  "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) \<longleftrightarrow>
-   P \<turnstile> T\<^isub>2 \<le> (Class C) \<and>
-   Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>(T, fm). if P \<turnstile> T\<^isub>1 \<le> T then Predicate.single () else bot))"
+lemma app\<^sub>i_Putfield_code:
+  "app\<^sub>i (Putfield F C, P, pc, mxs, T\<^sub>r, (T\<^sub>1#T\<^sub>2#ST, LT)) \<longleftrightarrow>
+   P \<turnstile> T\<^sub>2 \<le> (Class C) \<and>
+   Predicate.holds (Predicate.bind (sees_field_i_i_i_o_o_i P C F C) (\<lambda>(T, fm). if P \<turnstile> T\<^sub>1 \<le> T then Predicate.single () else bot))"
 by (auto simp add: holds_eq eval_sees_field_i_i_i_o_i_conv split: if_splits)
 
-lemma app\<^isub>i_ALoad_code:
-  "app\<^isub>i (ALoad, P, pc, mxs, T\<^isub>r, (T1#T2#ST,LT)) = 
+lemma app\<^sub>i_ALoad_code:
+  "app\<^sub>i (ALoad, P, pc, mxs, T\<^sub>r, (T1#T2#ST,LT)) = 
    (T1 = Integer \<and> (case T2 of Ty\<lfloor>\<rceil> \<Rightarrow> True | NT \<Rightarrow> True | _ \<Rightarrow> False))"
 by(simp add: split: ty.split)
 
-lemma app\<^isub>i_AStore_code:
-  "app\<^isub>i (AStore, P, pc, mxs, T\<^isub>r, (T1#T2#T3#ST,LT)) = 
+lemma app\<^sub>i_AStore_code:
+  "app\<^sub>i (AStore, P, pc, mxs, T\<^sub>r, (T1#T2#T3#ST,LT)) = 
   (T2 = Integer \<and> (case T3 of Ty\<lfloor>\<rceil> \<Rightarrow> True | NT \<Rightarrow> True | _ \<Rightarrow> False))"
 by(simp add: split: ty.split)
 
-lemma app\<^isub>i_ALength_code:
-  "app\<^isub>i (ALength, P, pc, mxs, T\<^isub>r, (T1#ST,LT)) = 
+lemma app\<^sub>i_ALength_code:
+  "app\<^sub>i (ALength, P, pc, mxs, T\<^sub>r, (T1#ST,LT)) = 
    (case T1 of Ty\<lfloor>\<rceil> \<Rightarrow> True | NT \<Rightarrow> True | _ \<Rightarrow> False)"
 by(simp add: split: ty.split)
 
-lemma app\<^isub>i_BinOpInstr_code:
-  "app\<^isub>i (BinOpInstr bop, P, pc, mxs, T\<^isub>r, (T2#T1#ST,LT)) = 
+lemma app\<^sub>i_BinOpInstr_code:
+  "app\<^sub>i (BinOpInstr bop, P, pc, mxs, T\<^sub>r, (T2#T1#ST,LT)) = 
    Predicate.holds (Predicate.bind (WTrt_binop_i_i_i_i_o P T1 bop T2) (\<lambda>T. Predicate.single ()))"
 by (auto simp add: holds_eq eval_WTrt_binop_i_i_i_i_o)
 
-lemma app\<^isub>i_Invoke_code:
-  "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
+lemma app\<^sub>i_Invoke_code:
+  "app\<^sub>i (Invoke M n, P, pc, mxs, T\<^sub>r, (ST,LT)) =
   (n < length ST \<and> 
   (ST!n \<noteq> NT \<longrightarrow>
      (case class_type_of' (ST ! n) of Some C \<Rightarrow> 
@@ -591,19 +591,19 @@ proof -
     by (auto simp add: bind_Ex Predicate.single_def holds_eq eval_Method_i_i_i_o_o_o_o_conv split: ty.split)
 qed
 
-lemma app\<^isub>i_Throw_code:
-  "app\<^isub>i (ThrowExc, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+lemma app\<^sub>i_Throw_code:
+  "app\<^sub>i (ThrowExc, P, pc, mxs, T\<^sub>r, (T#ST,LT)) = 
   (case T of NT \<Rightarrow> True | Class C \<Rightarrow> P \<turnstile> C \<preceq>\<^sup>* Throwable | _ \<Rightarrow> False)"
 by(simp split: ty.split)
 
-lemmas app\<^isub>i_code [code] =
-  app\<^isub>i_Load app\<^isub>i_Store app\<^isub>i_Push
-  app\<^isub>i_Getfield_code app\<^isub>i_Putfield_code
-  app\<^isub>i_New app\<^isub>i_NewArray
-  app\<^isub>i_ALoad_code app\<^isub>i_AStore_code app\<^isub>i_ALength_code
-  app\<^isub>i_Checkcast app\<^isub>i_Instanceof
-  app\<^isub>i_Pop app\<^isub>i_Dup app\<^isub>i_Swap app\<^isub>i_BinOpInstr_code app\<^isub>i_IfFalse app\<^isub>i_Goto
-  app\<^isub>i_Return app\<^isub>i_Throw_code app\<^isub>i_Invoke_code app\<^isub>i_MEnter app\<^isub>i_MExit
-  app\<^isub>i_default
+lemmas app\<^sub>i_code [code] =
+  app\<^sub>i_Load app\<^sub>i_Store app\<^sub>i_Push
+  app\<^sub>i_Getfield_code app\<^sub>i_Putfield_code
+  app\<^sub>i_New app\<^sub>i_NewArray
+  app\<^sub>i_ALoad_code app\<^sub>i_AStore_code app\<^sub>i_ALength_code
+  app\<^sub>i_Checkcast app\<^sub>i_Instanceof
+  app\<^sub>i_Pop app\<^sub>i_Dup app\<^sub>i_Swap app\<^sub>i_BinOpInstr_code app\<^sub>i_IfFalse app\<^sub>i_Goto
+  app\<^sub>i_Return app\<^sub>i_Throw_code app\<^sub>i_Invoke_code app\<^sub>i_MEnter app\<^sub>i_MExit
+  app\<^sub>i_default
 
 end

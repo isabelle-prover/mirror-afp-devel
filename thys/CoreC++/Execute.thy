@@ -160,13 +160,13 @@ by(erule subclsSp.cases)(fastforce simp add: Predicate_Compile.contains_def)
 
 declare SubobjsR_Base [code_pred_intro]
 lemma SubobjsR_Rep_code [code_pred_intro]:
-  "\<lbrakk>subclsRp P C D; Subobjs\<^isub>R P D Cs\<rbrakk> \<Longrightarrow> Subobjs\<^isub>R P C (C # Cs)"
+  "\<lbrakk>subclsRp P C D; Subobjs\<^sub>R P D Cs\<rbrakk> \<Longrightarrow> Subobjs\<^sub>R P C (C # Cs)"
 by(simp add: SubobjsR_Rep subclsR_def)
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)
-  Subobjs\<^isub>R
-by(erule Subobjs\<^isub>R.cases)(auto simp add: subclsR_code)
+  Subobjs\<^sub>R
+by(erule Subobjs\<^sub>R.cases)(auto simp add: subclsR_code)
 
 lemma subcls1p_code [code_pred_intro]:
   "\<lbrakk>class P C = Some (Bs,rest); Predicate_Compile.contains (baseClasses Bs) D \<rbrakk> \<Longrightarrow> subcls1p P C D"
@@ -178,7 +178,7 @@ by(fastforce elim!: subcls1p.cases simp add: Predicate_Compile.contains_def)
 
 declare Subobjs_Rep [code_pred_intro]
 lemma Subobjs_Sh_code [code_pred_intro]:
-  "\<lbrakk> (subcls1p P)^** C C'; subclsSp P C' D; Subobjs\<^isub>R P D Cs\<rbrakk>
+  "\<lbrakk> (subcls1p P)^** C C'; subclsSp P C' D; Subobjs\<^sub>R P D Cs\<rbrakk>
   \<Longrightarrow> Subobjs P C Cs"
 by(rule Subobjs_Sh)(simp_all add: rtrancl_def subcls1_def subclsS_def)
 
@@ -358,7 +358,7 @@ by(rule WTDynCast)(auto simp add: WTDynCast_ex_def)
 definition WTStaticCast_sub :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"
 where "WTStaticCast_sub P C D \<longleftrightarrow> 
   P \<turnstile> Path D to C unique \<or> 
-  ((subcls1p P)^** C D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> Subobjs\<^isub>R P C Cs))"
+  ((subcls1p P)^** C D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> Subobjs\<^sub>R P C Cs))"
 
 code_pred [inductify, skip_proof] WTStaticCast_sub .
 
@@ -367,15 +367,15 @@ lemma WTStaticCast_new:
   \<Longrightarrow> P,E \<turnstile> \<lparr>C\<rparr>e :: Class C"
 by (rule WTStaticCast)(auto simp add: WTStaticCast_sub_def subcls1_def rtrancl_def)
 
-lemma WTBinOp1: "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T;  P,E \<turnstile> e\<^isub>2 :: T\<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 :: Boolean"
+lemma WTBinOp1: "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: T;  P,E \<turnstile> e\<^sub>2 :: T\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^sub>1 \<guillemotleft>Eq\<guillemotright> e\<^sub>2 :: Boolean"
   apply (rule WTBinOp)
   apply assumption+
   apply simp
   done
 
-lemma WTBinOp2: "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Integer;  P,E \<turnstile> e\<^isub>2 :: Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Add\<guillemotright> e\<^isub>2 :: Integer"
+lemma WTBinOp2: "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: Integer;  P,E \<turnstile> e\<^sub>2 :: Integer \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^sub>1 \<guillemotleft>Add\<guillemotright> e\<^sub>2 :: Integer"
   apply (rule WTBinOp)
   apply assumption+
   apply simp
@@ -561,68 +561,68 @@ lemma NewFail':
 by transfer(rule NewFail)
 
 lemma StaticUpCast':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),s\<^isub>1\<rangle>; P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Ds),s\<^isub>1\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),s\<^sub>1\<rangle>; P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Ds),s\<^sub>1\<rangle>"
 by transfer(rule StaticUpCast)
 
 lemma StaticDownCast'_new:  (* requires reverse append *)
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Ds),s\<^isub>1\<rangle>; app Cs [C] Ds'; app Ds' Cs' Ds\<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Cs@[C]),s\<^isub>1\<rangle>"
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Ds),s\<^sub>1\<rangle>; app Cs [C] Ds'; app Ds' Cs' Ds\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Cs@[C]),s\<^sub>1\<rangle>"
 apply transfer
 apply (rule StaticDownCast)
 apply (simp add: app_eq)
 done
 
 lemma StaticCastNull':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle>"
 by transfer(rule StaticCastNull)
 
 lemma StaticCastFail'_new: (* manual unfolding of subcls *)
-"\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow>' \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  \<not> (subcls1p P)^** (last Cs) C; C \<notin> set Cs\<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>THROW ClassCast,s\<^isub>1\<rangle>"
+"\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle>\<Rightarrow>' \<langle>ref (a,Cs),s\<^sub>1\<rangle>;  \<not> (subcls1p P)^** (last Cs) C; C \<notin> set Cs\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>THROW ClassCast,s\<^sub>1\<rangle>"
 apply transfer
 by (fastforce intro:StaticCastFail simp add: rtrancl_def subcls1_def)
 
 lemma StaticCastThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule StaticCastThrow)
 
 lemma StaticUpDynCast':
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Cs),s\<^isub>1\<rangle>; P \<turnstile> Path last Cs to C unique;
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Cs),s\<^sub>1\<rangle>; P \<turnstile> Path last Cs to C unique;
     P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Ds),s\<^isub>1\<rangle>"
+  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Ds),s\<^sub>1\<rangle>"
 by transfer(rule StaticUpDynCast)
 
 lemma StaticDownDynCast'_new: (* requires reverse append *)
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Ds),s\<^isub>1\<rangle>; app Cs [C] Ds'; app Ds' Cs' Ds\<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Cs@[C]),s\<^isub>1\<rangle>"
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Ds),s\<^sub>1\<rangle>; app Cs [C] Ds'; app Ds' Cs' Ds\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref(a,Cs@[C]),s\<^sub>1\<rangle>"
 apply transfer
 apply (rule StaticDownDynCast)
 apply (simp add: app_eq)
 done
 
 lemma DynCast':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
     P \<turnstile> Path D to C via Cs'; P \<turnstile> Path D to C unique \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),(h,l)\<rangle>"
+  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),(h,l)\<rangle>"
 by transfer(rule DynCast)
 
 lemma DynCastNull':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle>"
 by transfer(rule DynCastNull)
 
 lemma DynCastFail':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow>' \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle>\<Rightarrow>' \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
     \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,(h,l)\<rangle>"
+  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,(h,l)\<rangle>"
 by transfer(rule DynCastFail)
 
 lemma DynCastThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule DynCastThrow)
 
 lemma Val':
@@ -630,19 +630,19 @@ lemma Val':
 by transfer(rule Val)
 
 lemma BinOp':
-  "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>2,s\<^isub>2\<rangle>; 
-    binop(bop,v\<^isub>1,v\<^isub>2) = Some v \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle>\<Rightarrow>'\<langle>Val v,s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>2,s\<^sub>2\<rangle>; 
+    binop(bop,v\<^sub>1,v\<^sub>2) = Some v \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2,s\<^sub>0\<rangle>\<Rightarrow>'\<langle>Val v,s\<^sub>2\<rangle>"
 by transfer(rule BinOp)
 
 lemma BinOpThrow1':
-  "P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>1\<rangle>"
 by transfer(rule BinOpThrow1)
 
 lemma BinOpThrow2':
-  "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>2\<rangle>"
 by transfer(rule BinOpThrow2)
 
 lemma Var':
@@ -651,60 +651,60 @@ lemma Var':
 by transfer(rule Var)
 
 lemma LAss':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,(h,l)\<rangle>; E V = Some T;
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v,(h,l)\<rangle>; E V = Some T;
      P \<turnstile> T casts v to v'; l' = l(V\<mapsto>v') \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v',(h,l')\<rangle>"
+  \<Longrightarrow> P,E \<turnstile> \<langle>V:=e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v',(h,l')\<rangle>"
 by (transfer) (erule (3) LAss)
 
 lemma LAssThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>V:=e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule LAssThrow)
 
 lemma FAcc'_new: (* iteration over set *)
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),(h,l)\<rangle>; h a = Some(D,S);
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),(h,l)\<rangle>; h a = Some(D,S);
      Ds = Cs'@\<^sub>pCs; Predicate_Compile.contains (Set_project S Ds) fs; Mapping.lookup fs F = Some v \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,(h,l)\<rangle>"
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v,(h,l)\<rangle>"
 unfolding Set_project_def mem_Collect_eq Predicate_Compile.contains_def
 by transfer(rule FAcc)
 
 lemma FAccNull':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^isub>1\<rangle>" 
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^sub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^sub>1\<rangle>" 
 by transfer(rule FAccNull)
 
 lemma FAccThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule FAccThrow)
 
 lemma FAss'_new: (* iteration over set *)
-  "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     h\<^isub>2 a = Some(D,S); P \<turnstile> (last Cs') has least F:T via Cs; P \<turnstile> T casts v to v';
+  "\<lbrakk> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs'),s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val v,(h\<^sub>2,l\<^sub>2)\<rangle>;
+     h\<^sub>2 a = Some(D,S); P \<turnstile> (last Cs') has least F:T via Cs; P \<turnstile> T casts v to v';
      Ds = Cs'@\<^sub>pCs;  Predicate_Compile.contains (Set_project S Ds) fs; fs' = Mapping.update F v' fs;
-     S' = S - {(Ds,fs)} \<union> {(Ds,fs')}; h\<^isub>2' = h\<^isub>2(a\<mapsto>(D,S'))\<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v',(h\<^isub>2',l\<^isub>2)\<rangle>"
+     S' = S - {(Ds,fs)} \<union> {(Ds,fs')}; h\<^sub>2' = h\<^sub>2(a\<mapsto>(D,S'))\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v',(h\<^sub>2',l\<^sub>2)\<rangle>"
 unfolding Predicate_Compile.contains_def Set_project_def mem_Collect_eq
 by transfer(rule FAss)
 
 lemma FAssNull':
-  "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v,s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^isub>2\<rangle>" 
+  "\<lbrakk> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle>;  P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val v,s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^sub>2\<rangle>" 
 by transfer(rule FAssNull)
 
 lemma FAssThrow1':
-  "P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule FAssThrow1)
 
 lemma FAssThrow2':
-  "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>2\<rangle>"
 by transfer(rule FAssThrow2)
 
 lemma CallObjThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>Call e Copt M es,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule CallObjThrow)
 
 lemma CallParamsThrow'_new: (* requires inverse map Val and append *)
@@ -717,14 +717,14 @@ apply(simp add: map_val2_conv[symmetric])
 done
 
 lemma Call'_new: (* requires inverse map Val *)
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>;
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),s\<^sub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>evs,(h\<^sub>2,l\<^sub>2)\<rangle>;
      map_val evs vs;
-     h\<^isub>2 a = Some(C,S);  P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
+     h\<^sub>2 a = Some(C,S);  P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
      P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'; length vs = length pns; 
-     P \<turnstile> Ts Casts vs to vs'; l\<^isub>2' = [this\<mapsto>Ref (a,Cs'), pns[\<mapsto>]vs'];
+     P \<turnstile> Ts Casts vs to vs'; l\<^sub>2' = [this\<mapsto>Ref (a,Cs'), pns[\<mapsto>]vs'];
      new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body   | _  \<Rightarrow> body);  
-     P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow>' \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+     P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^sub>2,l\<^sub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^sub>3,l\<^sub>3)\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<Rightarrow>' \<langle>e',(h\<^sub>3,l\<^sub>2)\<rangle>"
 apply transfer
 apply(rule Call)
 apply assumption+
@@ -733,14 +733,14 @@ apply assumption+
 done
 
 lemma StaticCall'_new: (* requires inverse map Val *)
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>;
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a,Cs),s\<^sub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>evs,(h\<^sub>2,l\<^sub>2)\<rangle>;
      map_val evs vs;
      P \<turnstile> Path (last Cs) to C unique; P \<turnstile> Path (last Cs) to C via Cs'';
      P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'; Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs';
      length vs = length pns; P \<turnstile> Ts Casts vs to vs'; 
-     l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs'];
-     P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<Rightarrow>' \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+     l\<^sub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs'];
+     P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^sub>3,l\<^sub>3)\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^sub>0\<rangle> \<Rightarrow>' \<langle>e',(h\<^sub>3,l\<^sub>2)\<rangle>"
 apply transfer
 apply(rule StaticCall)
 apply(assumption)+
@@ -749,77 +749,77 @@ apply assumption+
 done
 
 lemma CallNull'_new: (* requires inverse map Val *)
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>evs,s\<^isub>2\<rangle>; map_val evs vs \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle>;  P,E \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>evs,s\<^sub>2\<rangle>; map_val evs vs \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^sub>2\<rangle>"
 apply transfer
 apply(rule CallNull, assumption+)
 apply(simp add: map_val_conv[symmetric])
 done
 
 lemma Block':
-  "\<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None))\<rangle> \<Rightarrow>' \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1)\<rangle> \<rbrakk> \<Longrightarrow>
-  P,E \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow>' \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1(V:=l\<^isub>0 V))\<rangle>"
+  "\<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^sub>0,(h\<^sub>0,l\<^sub>0(V:=None))\<rangle> \<Rightarrow>' \<langle>e\<^sub>1,(h\<^sub>1,l\<^sub>1)\<rangle> \<rbrakk> \<Longrightarrow>
+  P,E \<turnstile> \<langle>{V:T; e\<^sub>0},(h\<^sub>0,l\<^sub>0)\<rangle> \<Rightarrow>' \<langle>e\<^sub>1,(h\<^sub>1,l\<^sub>1(V:=l\<^sub>0 V))\<rangle>"
 by transfer(rule Block)
 
 lemma Seq':
-  "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>e\<^isub>2,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>0;;e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>e\<^sub>2,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>0;;e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>e\<^sub>2,s\<^sub>2\<rangle>"
 by transfer(rule Seq)
 
 lemma SeqThrow':
-  "P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<^isub>0;;e\<^isub>1,s\<^isub>0\<rangle>\<Rightarrow>'\<langle>throw e,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e\<^sub>0;;e\<^sub>1,s\<^sub>0\<rangle>\<Rightarrow>'\<langle>throw e,s\<^sub>1\<rangle>"
 by transfer(rule SeqThrow)
 
 lemma CondT':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>e',s\<^sub>2\<rangle>"
 by transfer(rule CondT)
 
 lemma CondF':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>e',s\<^sub>2\<rangle>"
 by transfer(rule CondF)
 
 lemma CondThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule CondThrow)
 
 lemma WhileF':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>unit,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>unit,s\<^sub>1\<rangle>"
 by transfer(rule WhileF)
 
 lemma WhileT':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>1,s\<^isub>2\<rangle>; 
-     P,E \<turnstile> \<langle>while (e) c,s\<^isub>2\<rangle> \<Rightarrow>' \<langle>e\<^isub>3,s\<^isub>3\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>e\<^isub>3,s\<^isub>3\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>1,s\<^sub>2\<rangle>; 
+     P,E \<turnstile> \<langle>while (e) c,s\<^sub>2\<rangle> \<Rightarrow>' \<langle>e\<^sub>3,s\<^sub>3\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>e\<^sub>3,s\<^sub>3\<rangle>"
 by transfer(rule WhileT)
 
 lemma WhileCondThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle> throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle> throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule WhileCondThrow)
 
 lemma WhileBodyThrow':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>2\<rangle>\<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>2\<rangle>\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>2\<rangle>"
 by transfer(rule WhileBodyThrow)
 
 lemma Throw':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref r,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Throw r,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref r,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>throw e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Throw r,s\<^sub>1\<rangle>"
 by transfer(rule eval_evals.Throw)
 
 lemma ThrowNull':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>throw e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>THROW NullPointer,s\<^sub>1\<rangle>"
 by transfer(rule ThrowNull)
 
 lemma ThrowThrow':
-  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>throw e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle>"
 by transfer(rule ThrowThrow)
 
 lemma Nil':
@@ -827,13 +827,13 @@ lemma Nil':
 by transfer(rule eval_evals.Nil)
 
 lemma Cons':
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>es',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<Rightarrow>'] \<langle>Val v # es',s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v,s\<^sub>1\<rangle>; P,E \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>es',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e#es,s\<^sub>0\<rangle> [\<Rightarrow>'] \<langle>Val v # es',s\<^sub>2\<rangle>"
 by transfer(rule eval_evals.Cons)
 
 lemma ConsThrow':
-  "P,E \<turnstile> \<langle>e, s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e', s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e#es, s\<^isub>0\<rangle> [\<Rightarrow>'] \<langle>throw e' # es, s\<^isub>1\<rangle>"
+  "P,E \<turnstile> \<langle>e, s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e', s\<^sub>1\<rangle> \<Longrightarrow>
+  P,E \<turnstile> \<langle>e#es, s\<^sub>0\<rangle> [\<Rightarrow>'] \<langle>throw e' # es, s\<^sub>1\<rangle>"
 by transfer(rule ConsThrow)
 
 text {* Axiomatic heap address model refinement *}
@@ -861,125 +861,125 @@ lemma eval'_cases
   and "\<And>h E C l. x = E \<Longrightarrow> y = new C \<Longrightarrow> z = (h, l) \<Longrightarrow>
     u = Throw (addr_of_sys_xcpt OutOfMemory, [OutOfMemory]) \<Longrightarrow>
     v = (h, l) \<Longrightarrow> new_Addr' h = None \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs s\<^isub>1 C Cs' Ds. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = ref (a, Ds) \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^isub>1\<rangle> \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 a Cs s\<^sub>1 C Cs' Ds. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = ref (a, Ds) \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^sub>1\<rangle> \<Longrightarrow>
     P \<turnstile> Path last Cs to C via Cs'  \<Longrightarrow> Ds = Cs @\<^sub>p Cs' \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs C Cs' s\<^isub>1. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = ref (a, Cs @ [C]) \<Longrightarrow>
-    v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs @ [C] @ Cs'),s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 C. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = null \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow>
-   P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs s\<^isub>1 C. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = Throw (addr_of_sys_xcpt ClassCast, [ClassCast]) \<Longrightarrow>  v = s\<^isub>1 \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^isub>1\<rangle> \<Longrightarrow> (last Cs, C) \<notin> (subcls1 P)\<^sup>* \<Longrightarrow> C \<notin> set Cs \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 C. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs s\<^isub>1 C Cs' Ds. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = ref (a, Ds) \<Longrightarrow>
-    v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^isub>1\<rangle> \<Longrightarrow> P \<turnstile> Path last Cs to C unique \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 a Cs C Cs' s\<^sub>1. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = ref (a, Cs @ [C]) \<Longrightarrow>
+    v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs @ [C] @ Cs'),s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1 C. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = null \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow>
+   P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 a Cs s\<^sub>1 C. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = Throw (addr_of_sys_xcpt ClassCast, [ClassCast]) \<Longrightarrow>  v = s\<^sub>1 \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^sub>1\<rangle> \<Longrightarrow> (last Cs, C) \<notin> (subcls1 P)\<^sup>* \<Longrightarrow> C \<notin> set Cs \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 C. x = E \<Longrightarrow> y = \<lparr>C\<rparr>e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 a Cs s\<^sub>1 C Cs' Ds. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = ref (a, Ds) \<Longrightarrow>
+    v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^sub>1\<rangle> \<Longrightarrow> P \<turnstile> Path last Cs to C unique \<Longrightarrow>
     P \<turnstile> Path last Cs to C via Cs'  \<Longrightarrow> Ds = Cs @\<^sub>p Cs' \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs C Cs' s\<^isub>1. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = ref (a, Cs @ [C]) \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs @ [C] @ Cs'),s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs h l D S C Cs'. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = ref (a, Cs') \<Longrightarrow> v = (h, l) \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),(h, l)\<rangle> \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 a Cs C Cs' s\<^sub>1. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = ref (a, Cs @ [C]) \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs @ [C] @ Cs'),s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 a Cs h l D S C Cs'. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = ref (a, Cs') \<Longrightarrow> v = (h, l) \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),(h, l)\<rangle> \<Longrightarrow>
     h a = \<lfloor>(D, S)\<rfloor> \<Longrightarrow> P \<turnstile> Path D to C via Cs'  \<Longrightarrow> P \<turnstile> Path D to C unique \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 C. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = null \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> 
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow> thesis" 
-  and "\<And>E e s\<^isub>0 a Cs h l D S C. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = null \<Longrightarrow>
-    v = (h, l) \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),(h, l)\<rangle> \<Longrightarrow> h a = \<lfloor>(D, S)\<rfloor> \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 s\<^sub>1 C. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = null \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> 
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow> thesis" 
+  and "\<And>E e s\<^sub>0 a Cs h l D S C. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = null \<Longrightarrow>
+    v = (h, l) \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),(h, l)\<rangle> \<Longrightarrow> h a = \<lfloor>(D, S)\<rfloor> \<Longrightarrow>
     \<not> P \<turnstile> Path D to C unique \<Longrightarrow> \<not> P \<turnstile> Path last Cs to C unique \<Longrightarrow> C \<notin> set Cs \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 C. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1
-    \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 C. x = E \<Longrightarrow> y = Cast C e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1
+    \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
   and "\<And>E va s. x = E \<Longrightarrow> y = Val va \<Longrightarrow> z = s \<Longrightarrow> u = Val va \<Longrightarrow> v = s \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 v\<^isub>1 s\<^isub>1 e\<^isub>2 v\<^isub>2 s\<^isub>2 bop va. x = E \<Longrightarrow> y = e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = Val va \<Longrightarrow> v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>1,s\<^isub>1\<rangle> \<Longrightarrow>
-    P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>2,s\<^isub>2\<rangle> \<Longrightarrow> binop (bop, v\<^isub>1, v\<^isub>2) = \<lfloor>va\<rfloor> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 e s\<^isub>1 bop e\<^isub>2. x = E \<Longrightarrow> y = e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e \<Longrightarrow> v = s\<^isub>1  \<Longrightarrow>
-    P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 v\<^isub>1 s\<^isub>1 e\<^isub>2 e s\<^isub>2 bop. x = E \<Longrightarrow> y = e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e \<Longrightarrow>
-    v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>1,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 v\<^sub>1 s\<^sub>1 e\<^sub>2 v\<^sub>2 s\<^sub>2 bop va. x = E \<Longrightarrow> y = e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = Val va \<Longrightarrow> v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>1,s\<^sub>1\<rangle> \<Longrightarrow>
+    P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>2,s\<^sub>2\<rangle> \<Longrightarrow> binop (bop, v\<^sub>1, v\<^sub>2) = \<lfloor>va\<rfloor> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 e s\<^sub>1 bop e\<^sub>2. x = E \<Longrightarrow> y = e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e \<Longrightarrow> v = s\<^sub>1  \<Longrightarrow>
+    P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 v\<^sub>1 s\<^sub>1 e\<^sub>2 e s\<^sub>2 bop. x = E \<Longrightarrow> y = e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e \<Longrightarrow>
+    v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>1,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>2\<rangle> \<Longrightarrow> thesis"
   and "\<And>l V va E h. x = E \<Longrightarrow> y = Var V \<Longrightarrow> z = (h, l) \<Longrightarrow> u = Val va \<Longrightarrow> v = (h, l) \<Longrightarrow>
     l V = \<lfloor>va\<rfloor> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 va h l V T v' l'. x = E \<Longrightarrow> y = V:=e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = Val v' \<Longrightarrow>
-    v = (h, l') \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val va,(h, l)\<rangle> \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 va h l V T v' l'. x = E \<Longrightarrow> y = V:=e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = Val v' \<Longrightarrow>
+    v = (h, l') \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val va,(h, l)\<rangle> \<Longrightarrow>
     E V = \<lfloor>T\<rfloor> \<Longrightarrow> P \<turnstile> T casts va to v'  \<Longrightarrow> l' = l(V \<mapsto> v') \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 V. x = E \<Longrightarrow> y = V:=e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs' h l D S Ds Cs fs F va. x = E \<Longrightarrow> y = e\<bullet>F{Cs} \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = Val va \<Longrightarrow> v = (h, l) \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs'),(h, l)\<rangle> \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 V. x = E \<Longrightarrow> y = V:=e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 a Cs' h l D S Ds Cs fs F va. x = E \<Longrightarrow> y = e\<bullet>F{Cs} \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = Val va \<Longrightarrow> v = (h, l) \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs'),(h, l)\<rangle> \<Longrightarrow>
     h a = \<lfloor>(D, S)\<rfloor> \<Longrightarrow> Ds = Cs' @\<^sub>p Cs \<Longrightarrow> (Ds, fs) \<in> S \<Longrightarrow> Mapping.lookup fs F = \<lfloor>va\<rfloor> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 F Cs. x = E \<Longrightarrow> y = e\<bullet>F{Cs} \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 s\<^sub>1 F Cs. x = E \<Longrightarrow> y = e\<bullet>F{Cs} \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
     u = Throw (addr_of_sys_xcpt NullPointer, [NullPointer]) \<Longrightarrow>
-    v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 F Cs. x = E \<Longrightarrow> y = e\<bullet>F{Cs} \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 a Cs' s\<^isub>1 e\<^isub>2 va h\<^isub>2 l\<^isub>2 D S F T Cs v' Ds fs fs' S' h\<^isub>2'.
-    x = E \<Longrightarrow> y = e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = Val v' \<Longrightarrow> v = (h\<^isub>2', l\<^isub>2) \<Longrightarrow>
-    P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs'),s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val va,(h\<^isub>2, l\<^isub>2)\<rangle> \<Longrightarrow>
-    h\<^isub>2 a = \<lfloor>(D, S)\<rfloor> \<Longrightarrow> P \<turnstile> last Cs' has least F:T via Cs \<Longrightarrow>
+    v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 F Cs. x = E \<Longrightarrow> y = e\<bullet>F{Cs} \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 a Cs' s\<^sub>1 e\<^sub>2 va h\<^sub>2 l\<^sub>2 D S F T Cs v' Ds fs fs' S' h\<^sub>2'.
+    x = E \<Longrightarrow> y = e\<^sub>1\<bullet>F{Cs} := e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = Val v' \<Longrightarrow> v = (h\<^sub>2', l\<^sub>2) \<Longrightarrow>
+    P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs'),s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val va,(h\<^sub>2, l\<^sub>2)\<rangle> \<Longrightarrow>
+    h\<^sub>2 a = \<lfloor>(D, S)\<rfloor> \<Longrightarrow> P \<turnstile> last Cs' has least F:T via Cs \<Longrightarrow>
     P \<turnstile> T casts va to v'  \<Longrightarrow> Ds = Cs' @\<^sub>p Cs \<Longrightarrow> (Ds, fs) \<in> S \<Longrightarrow> fs' = Mapping.update F v' fs \<Longrightarrow>
-    S' = S - {(Ds, fs)} \<union> {(Ds, fs')} \<Longrightarrow> h\<^isub>2' = h\<^isub>2(a \<mapsto> (D, S')) \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 s\<^isub>1 e\<^isub>2 va s\<^isub>2 F Cs. x = E \<Longrightarrow> y = e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
+    S' = S - {(Ds, fs)} \<union> {(Ds, fs')} \<Longrightarrow> h\<^sub>2' = h\<^sub>2(a \<mapsto> (D, S')) \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 s\<^sub>1 e\<^sub>2 va s\<^sub>2 F Cs. x = E \<Longrightarrow> y = e\<^sub>1\<bullet>F{Cs} := e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
     u = Throw (addr_of_sys_xcpt NullPointer, [NullPointer]) \<Longrightarrow>
-    v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val va,s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 e' s\<^isub>1 F Cs e\<^isub>2. x = E \<Longrightarrow> y = e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 \<Longrightarrow>
-    z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>1 s\<^isub>0 va s\<^isub>1 e\<^isub>2 e' s\<^isub>2 F Cs. x = E \<Longrightarrow> y = e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = throw e' \<Longrightarrow> v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val va,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>2\<rangle> \<Longrightarrow> 
+    v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val va,s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 e' s\<^sub>1 F Cs e\<^sub>2. x = E \<Longrightarrow> y = e\<^sub>1\<bullet>F{Cs} := e\<^sub>2 \<Longrightarrow>
+    z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>1 s\<^sub>0 va s\<^sub>1 e\<^sub>2 e' s\<^sub>2 F Cs. x = E \<Longrightarrow> y = e\<^sub>1\<bullet>F{Cs} := e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = throw e' \<Longrightarrow> v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val va,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>2\<rangle> \<Longrightarrow> 
     thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 Copt M es. x = E \<Longrightarrow> y = Call e Copt M es \<Longrightarrow>
-    z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 va s\<^isub>1 es vs ex es' s\<^isub>2 Copt M. x = E \<Longrightarrow> y = Call e Copt M es \<Longrightarrow>
-    z = s\<^isub>0 \<Longrightarrow> u = throw ex \<Longrightarrow> v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val va,s\<^isub>1\<rangle> \<Longrightarrow>
-    P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs @ throw ex # es',s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 a Cs s\<^isub>1 ps vs h\<^isub>2 l\<^isub>2 C S M Ts' T' pns' body' Ds Ts T pns body Cs' vs' l\<^isub>2' new_body e'
-    h\<^isub>3 l\<^isub>3. x = E \<Longrightarrow> y = Call e None M ps \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = e' \<Longrightarrow> v = (h\<^isub>3, l\<^isub>2) \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs,(h\<^isub>2, l\<^isub>2)\<rangle> \<Longrightarrow>
-    h\<^isub>2 a = \<lfloor>(C, S)\<rfloor> \<Longrightarrow> P \<turnstile> last Cs has least M = (Ts', T', pns', body') via Ds \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 Copt M es. x = E \<Longrightarrow> y = Call e Copt M es \<Longrightarrow>
+    z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 va s\<^sub>1 es vs ex es' s\<^sub>2 Copt M. x = E \<Longrightarrow> y = Call e Copt M es \<Longrightarrow>
+    z = s\<^sub>0 \<Longrightarrow> u = throw ex \<Longrightarrow> v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val va,s\<^sub>1\<rangle> \<Longrightarrow>
+    P,E \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs @ throw ex # es',s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 a Cs s\<^sub>1 ps vs h\<^sub>2 l\<^sub>2 C S M Ts' T' pns' body' Ds Ts T pns body Cs' vs' l\<^sub>2' new_body e'
+    h\<^sub>3 l\<^sub>3. x = E \<Longrightarrow> y = Call e None M ps \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = e' \<Longrightarrow> v = (h\<^sub>3, l\<^sub>2) \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs,(h\<^sub>2, l\<^sub>2)\<rangle> \<Longrightarrow>
+    h\<^sub>2 a = \<lfloor>(C, S)\<rfloor> \<Longrightarrow> P \<turnstile> last Cs has least M = (Ts', T', pns', body') via Ds \<Longrightarrow>
     P \<turnstile> (C,Cs @\<^sub>p Ds) selects M = (Ts, T, pns, body) via Cs' \<Longrightarrow> length vs = length pns \<Longrightarrow>
-    P \<turnstile> Ts Casts vs to vs'  \<Longrightarrow> l\<^isub>2' = [this \<mapsto> Ref (a, Cs'), pns [\<mapsto>] vs'] \<Longrightarrow>
+    P \<turnstile> Ts Casts vs to vs'  \<Longrightarrow> l\<^sub>2' = [this \<mapsto> Ref (a, Cs'), pns [\<mapsto>] vs'] \<Longrightarrow>
     new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body | _ \<Rightarrow> body) \<Longrightarrow>
-    P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> \<langle>new_body,(h\<^isub>2, l\<^isub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^isub>3, l\<^isub>3)\<rangle> \<Longrightarrow>
+    P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> \<langle>new_body,(h\<^sub>2, l\<^sub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^sub>3, l\<^sub>3)\<rangle> \<Longrightarrow>
     thesis"
-  and "\<And>E e s\<^isub>0 a Cs s\<^isub>1 ps vs h\<^isub>2 l\<^isub>2 C Cs'' M Ts T pns body Cs' Ds vs' l\<^isub>2' e' h\<^isub>3 l\<^isub>3.
-    x = E \<Longrightarrow> y = Call e \<lfloor>C\<rfloor> M ps \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = e' \<Longrightarrow> v = (h\<^isub>3, l\<^isub>2) \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs,(h\<^isub>2, l\<^isub>2)\<rangle> \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 a Cs s\<^sub>1 ps vs h\<^sub>2 l\<^sub>2 C Cs'' M Ts T pns body Cs' Ds vs' l\<^sub>2' e' h\<^sub>3 l\<^sub>3.
+    x = E \<Longrightarrow> y = Call e \<lfloor>C\<rfloor> M ps \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = e' \<Longrightarrow> v = (h\<^sub>3, l\<^sub>2) \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref (a, Cs),s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs,(h\<^sub>2, l\<^sub>2)\<rangle> \<Longrightarrow>
     P \<turnstile> Path last Cs to C unique \<Longrightarrow> P \<turnstile> Path last Cs to C via Cs''  \<Longrightarrow>
     P \<turnstile> C has least M = (Ts, T, pns, body) via Cs' \<Longrightarrow> Ds = (Cs @\<^sub>p Cs'') @\<^sub>p Cs' \<Longrightarrow>
     length vs = length pns \<Longrightarrow> P \<turnstile> Ts Casts vs to vs'  \<Longrightarrow>
-    l\<^isub>2' = [this \<mapsto> Ref (a, Ds), pns [\<mapsto>] vs'] \<Longrightarrow>
-    P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> \<langle>body,(h\<^isub>2, l\<^isub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^isub>3, l\<^isub>3)\<rangle> \<Longrightarrow>
+    l\<^sub>2' = [this \<mapsto> Ref (a, Ds), pns [\<mapsto>] vs'] \<Longrightarrow>
+    P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> \<langle>body,(h\<^sub>2, l\<^sub>2')\<rangle> \<Rightarrow>' \<langle>e',(h\<^sub>3, l\<^sub>3)\<rangle> \<Longrightarrow>
     thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 es vs s\<^isub>2 Copt M. x = E \<Longrightarrow> y = Call e Copt M es \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
+  and "\<And>E e s\<^sub>0 s\<^sub>1 es vs s\<^sub>2 Copt M. x = E \<Longrightarrow> y = Call e Copt M es \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
     u = Throw (addr_of_sys_xcpt NullPointer, [NullPointer]) \<Longrightarrow>
-    v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs,s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E V T e\<^isub>0 h\<^isub>0 l\<^isub>0 e\<^isub>1 h\<^isub>1 l\<^isub>1.
-    x = E \<Longrightarrow> y = {V:T; e\<^isub>0} \<Longrightarrow> z = (h\<^isub>0, l\<^isub>0) \<Longrightarrow> u = e\<^isub>1 \<Longrightarrow>
-    v = (h\<^isub>1, l\<^isub>1(V := l\<^isub>0 V)) \<Longrightarrow> P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0, l\<^isub>0(V := None))\<rangle> \<Rightarrow>' \<langle>e\<^isub>1,(h\<^isub>1, l\<^isub>1)\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>0 s\<^isub>0 va s\<^isub>1 e\<^isub>1 e\<^isub>2 s\<^isub>2. x = E \<Longrightarrow> y = e\<^isub>0;; e\<^isub>1 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = e\<^isub>2 \<Longrightarrow>
-    v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>Val va,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>e\<^isub>2,s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e\<^isub>0 s\<^isub>0 e s\<^isub>1 e\<^isub>1. x = E \<Longrightarrow> y = e\<^isub>0;; e\<^isub>1 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow>
-    P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 e\<^isub>1 e' s\<^isub>2 e\<^isub>2. x = E \<Longrightarrow> y = if (e) e\<^isub>1 else e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = e' \<Longrightarrow>
-    v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 e\<^isub>2 e' s\<^isub>2 e\<^isub>1. x = E \<Longrightarrow> y = if (e) e\<^isub>1 else e\<^isub>2 \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
-    u = e' \<Longrightarrow> v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 e\<^isub>1 e\<^isub>2. x = E \<Longrightarrow> y = if (e) e\<^isub>1 else e\<^isub>2 \<Longrightarrow>
-    z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 c. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = unit \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow>
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 c v\<^isub>1 s\<^isub>2 e\<^isub>3 s\<^isub>3. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = e\<^isub>3 \<Longrightarrow>
-    v = s\<^isub>3 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^isub>1,s\<^isub>2\<rangle> \<Longrightarrow>
-    P,E \<turnstile> \<langle>while (e) c,s\<^isub>2\<rangle> \<Rightarrow>' \<langle>e\<^isub>3,s\<^isub>3\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1 c. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> 
-    P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1 c e' s\<^isub>2. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow>
-    v = s\<^isub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^isub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>2\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 r s\<^isub>1. x = E \<Longrightarrow> y = throw e \<Longrightarrow>
-    z = s\<^isub>0 \<Longrightarrow> u = Throw r \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>ref r,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 s\<^isub>1. x = E \<Longrightarrow> y = throw e \<Longrightarrow> z = s\<^isub>0 \<Longrightarrow>
+    v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<Rightarrow>'] \<langle>map Val vs,s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E V T e\<^sub>0 h\<^sub>0 l\<^sub>0 e\<^sub>1 h\<^sub>1 l\<^sub>1.
+    x = E \<Longrightarrow> y = {V:T; e\<^sub>0} \<Longrightarrow> z = (h\<^sub>0, l\<^sub>0) \<Longrightarrow> u = e\<^sub>1 \<Longrightarrow>
+    v = (h\<^sub>1, l\<^sub>1(V := l\<^sub>0 V)) \<Longrightarrow> P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^sub>0,(h\<^sub>0, l\<^sub>0(V := None))\<rangle> \<Rightarrow>' \<langle>e\<^sub>1,(h\<^sub>1, l\<^sub>1)\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>0 s\<^sub>0 va s\<^sub>1 e\<^sub>1 e\<^sub>2 s\<^sub>2. x = E \<Longrightarrow> y = e\<^sub>0;; e\<^sub>1 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = e\<^sub>2 \<Longrightarrow>
+    v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>Val va,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>e\<^sub>2,s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e\<^sub>0 s\<^sub>0 e s\<^sub>1 e\<^sub>1. x = E \<Longrightarrow> y = e\<^sub>0;; e\<^sub>1 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow>
+    P,E \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1 e\<^sub>1 e' s\<^sub>2 e\<^sub>2. x = E \<Longrightarrow> y = if (e) e\<^sub>1 else e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = e' \<Longrightarrow>
+    v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1 e\<^sub>2 e' s\<^sub>2 e\<^sub>1. x = E \<Longrightarrow> y = if (e) e\<^sub>1 else e\<^sub>2 \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
+    u = e' \<Longrightarrow> v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>e',s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 e\<^sub>1 e\<^sub>2. x = E \<Longrightarrow> y = if (e) e\<^sub>1 else e\<^sub>2 \<Longrightarrow>
+    z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1 c. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = unit \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow>
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>false,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1 c v\<^sub>1 s\<^sub>2 e\<^sub>3 s\<^sub>3. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = e\<^sub>3 \<Longrightarrow>
+    v = s\<^sub>3 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>Val v\<^sub>1,s\<^sub>2\<rangle> \<Longrightarrow>
+    P,E \<turnstile> \<langle>while (e) c,s\<^sub>2\<rangle> \<Rightarrow>' \<langle>e\<^sub>3,s\<^sub>3\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1 c. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> 
+    P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1 c e' s\<^sub>2. x = E \<Longrightarrow> y = while (e) c \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow>
+    v = s\<^sub>2 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>true,s\<^sub>1\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>2\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 r s\<^sub>1. x = E \<Longrightarrow> y = throw e \<Longrightarrow>
+    z = s\<^sub>0 \<Longrightarrow> u = Throw r \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>ref r,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 s\<^sub>1. x = E \<Longrightarrow> y = throw e \<Longrightarrow> z = s\<^sub>0 \<Longrightarrow>
     u = Throw (addr_of_sys_xcpt NullPointer, [NullPointer]) \<Longrightarrow>
-    v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow> thesis"
-  and "\<And>E e s\<^isub>0 e' s\<^isub>1. x = E \<Longrightarrow> y = throw e \<Longrightarrow>
-    z = s\<^isub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^isub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow> thesis"
+    v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow> thesis"
+  and "\<And>E e s\<^sub>0 e' s\<^sub>1. x = E \<Longrightarrow> y = throw e \<Longrightarrow>
+    z = s\<^sub>0 \<Longrightarrow> u = throw e' \<Longrightarrow> v = s\<^sub>1 \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow>' \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow> thesis"
   shows thesis
 using assms
 by(transfer)(erule eval.cases, unfold blank_def, assumption+)
@@ -1031,7 +1031,7 @@ proof -
   case eval'
   from eval'.prems show thesis
   proof(cases (no_simp) rule: eval'_cases)
-    case (StaticDownCast E C e s\<^isub>0 a Cs Cs' s\<^isub>1)
+    case (StaticDownCast E C e s\<^sub>0 a Cs Cs' s\<^sub>1)
     moreover
     have "app a [Cs] (a @ [Cs])" "app (a @ [Cs]) Cs' (a @ [Cs] @ Cs')"
       by(simp_all add: app_eq)
@@ -1041,7 +1041,7 @@ proof -
       unfolding rtrancl_def subcls1_def mem_Collect_eq prod.cases
       by(rule StaticCastFail'[OF refl])
   next
-    case (StaticDownDynCast E e s\<^isub>0 a Cs C Cs' s\<^isub>1)
+    case (StaticDownDynCast E e s\<^sub>0 a Cs C Cs' s\<^sub>1)
     moreover have "app Cs [C] (Cs @ [C])" "app (Cs @ [C]) Cs' (Cs @ [C] @ Cs')"
       by(simp_all add: app_eq)
     ultimately show thesis by(rule StaticDownDynCast'[OF refl])
@@ -1060,20 +1060,20 @@ proof -
   next
     case FAssThrow2 thus ?thesis by(rule FAssThrow2'[OF refl])
   next
-    case (CallParamsThrow E e s\<^isub>0 v s\<^isub>1 es vs ex es' s\<^isub>2 Copt M)
+    case (CallParamsThrow E e s\<^sub>0 v s\<^sub>1 es vs ex es' s\<^sub>2 Copt M)
     moreover have "map_val2 (map Val vs @ throw ex # es') vs (throw ex # es')"
       by(simp add: map_val2_conv[symmetric])
     ultimately show ?thesis by(rule CallParamsThrow'[OF refl])
   next
-    case (Call E e s\<^isub>0 a Cs s\<^isub>1 ps vs)
+    case (Call E e s\<^sub>0 a Cs s\<^sub>1 ps vs)
     moreover have "map_val (map Val vs) vs" by(simp add: map_val_conv[symmetric])
     ultimately show ?thesis by-(rule Call'[OF refl])
   next
-    case (StaticCall E e s\<^isub>0 a Cs s\<^isub>1 ps vs)
+    case (StaticCall E e s\<^sub>0 a Cs s\<^sub>1 ps vs)
     moreover have "map_val (map Val vs) vs" by(simp add: map_val_conv[symmetric])
     ultimately show ?thesis by-(rule StaticCall'[OF refl])
   next
-    case (CallNull E e s\<^isub>0 s\<^isub>1 es vs)
+    case (CallNull E e s\<^sub>0 s\<^sub>1 es vs)
     moreover have "map_val (map Val vs) vs" by(simp add: map_val_conv[symmetric])
     ultimately show ?thesis by-(rule CallNull'[OF refl])
   next

@@ -542,16 +542,16 @@ text {*To show preservation of measurability by multiplication, it is
   lemmata including the one stating measurability for squares, the proof of which is skipped.*}
 
 (*This lemma should probably be in the RealPow Theory or a special Sqroot-Theory*)
-lemma pow2_le_abs: "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar> \<le> \<bar>b::real\<bar>)"
+lemma pow2_le_abs: "(a\<^sup>2 \<le> b\<^sup>2) = (\<bar>a\<bar> \<le> \<bar>b::real\<bar>)"
 (*<*)proof -
-  have "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>)" by (simp add: numeral_2_eq_2)
+  have "(a\<^sup>2 \<le> b\<^sup>2) = (\<bar>a\<bar>\<^sup>2 \<le> \<bar>b\<bar>\<^sup>2)" by (simp add: numeral_2_eq_2)
   also have "\<dots> = (\<bar>a\<bar> \<le> \<bar>b\<bar>)" 
   proof
     assume "\<bar>a\<bar> \<le> \<bar>b\<bar>"
-    thus "\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>"
+    thus "\<bar>a\<bar>\<^sup>2 \<le> \<bar>b\<bar>\<^sup>2"
       by (rule power_mono) simp
   next
-    assume "\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>" hence "\<bar>a\<bar>^(Suc 1) \<le> \<bar>b\<bar>^(Suc 1)" by (simp add: numeral_2_eq_2)
+    assume "\<bar>a\<bar>\<^sup>2 \<le> \<bar>b\<bar>\<^sup>2" hence "\<bar>a\<bar>^(Suc 1) \<le> \<bar>b\<bar>^(Suc 1)" by (simp add: numeral_2_eq_2)
     moreover have "0 \<le> \<bar>b\<bar>" by auto
     ultimately show "\<bar>a\<bar> \<le> \<bar>b\<bar>" by (rule power_le_imp_le_base)
   qed
@@ -559,10 +559,10 @@ lemma pow2_le_abs: "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar> \<l
 qed(*>*)
 
 lemma assumes f: "f \<in> rv M" 
-  shows rv_square: "(\<lambda>w. (f w)\<twosuperior>) \<in> rv M"
+  shows rv_square: "(\<lambda>w. (f w)\<^sup>2) \<in> rv M"
 (*<*)proof -
   from f have ms: "measure_space M" by (simp add: rv_def)
-  hence "?thesis = (\<forall>a. {w. (f w)\<twosuperior> \<le> a} \<in> measurable_sets M)" (is "_ = (\<forall>a. ?F a \<in> ?M)") by (rule rv_le_iff)
+  hence "?thesis = (\<forall>a. {w. (f w)\<^sup>2 \<le> a} \<in> measurable_sets M)" (is "_ = (\<forall>a. ?F a \<in> ?M)") by (rule rv_le_iff)
   also {
     fix a
     from ms have sig: "sigma_algebra ?M" by (simp only: measure_space_def)
@@ -572,8 +572,8 @@ lemma assumes f: "f \<in> rv M"
       case True
       { fix w
         note True
-        also have "0 \<le> (f w)\<twosuperior>" by simp
-        finally have "((f w)\<twosuperior> \<le> a) = False" by simp
+        also have "0 \<le> (f w)\<^sup>2" by simp
+        finally have "((f w)\<^sup>2 \<le> a) = False" by simp
       } hence "?F a = {}" by simp
       thus ?thesis using sig by (simp only: sigma_algebra_def)
       
@@ -584,11 +584,11 @@ lemma assumes f: "f \<in> rv M"
         
         case True also
         { fix w
-          have "0 \<le> (f w)\<twosuperior>" by simp
-          hence "((f w)\<twosuperior> \<le> 0) \<Longrightarrow> ((f w)\<twosuperior> = 0)" by (simp only: order_antisym)
-          hence "((f w)\<twosuperior> \<le> 0) = ((f w)\<twosuperior> = 0)" by (force simp add: numeral_2_eq_2)
+          have "0 \<le> (f w)\<^sup>2" by simp
+          hence "((f w)\<^sup>2 \<le> 0) \<Longrightarrow> ((f w)\<^sup>2 = 0)" by (simp only: order_antisym)
+          hence "((f w)\<^sup>2 \<le> 0) = ((f w)\<^sup>2 = 0)" by (force simp add: numeral_2_eq_2)
           also have "\<dots> = (f w = 0)" by simp     
-          finally have "((f w)\<twosuperior> \<le> 0) = \<dots>" .
+          finally have "((f w)\<^sup>2 \<le> 0) = \<dots>" .
         }
         
         ultimately have "?F a = {w. f w = 0}" by simp
@@ -605,7 +605,7 @@ lemma assumes f: "f \<in> rv M"
       next
         case False
         with `\<not> a < 0` have "0<a" by (simp add: order_less_le)
-        then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
+        then have "\<exists> sqra. 0<sqra \<and> sqra\<^sup>2 = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
         then have "\<And>w. \<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
           by (auto simp only: pow2_le_abs abs_le_interval_iff)
         then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
@@ -626,14 +626,14 @@ lemma assumes f: "f \<in> rv M"
 
 qed(*>*)
 
-lemma realpow_two_binomial_iff: "(f+g::real)\<twosuperior> = f\<twosuperior> + 2*(f*g) + g\<twosuperior>"
+lemma realpow_two_binomial_iff: "(f+g::real)\<^sup>2 = f\<^sup>2 + 2*(f*g) + g\<^sup>2"
   (*<*) 
   by (simp add: power2_eq_square distrib_right distrib_left)(*>*) 
 
-lemma times_iff_sum_squares: "f*g = (f+g)\<twosuperior>/4 - (f-g)\<twosuperior>/(4::real)"
+lemma times_iff_sum_squares: "f*g = (f+g)\<^sup>2/4 - (f-g)\<^sup>2/(4::real)"
 (*<*)proof -
   have a: "f-g = f+(-g)" by simp
-  hence "(f+g)\<twosuperior>/4 - (f-g)\<twosuperior>/4 = ((f+g)\<twosuperior> + - (f+(-g))\<twosuperior>)/4" 
+  hence "(f+g)\<^sup>2/4 - (f-g)\<^sup>2/4 = ((f+g)\<^sup>2 + - (f+(-g))\<^sup>2)/4" 
     by (simp add: add_divide_distrib[THEN sym] a)
   also have "\<dots> = f*g" 
     by (simp add: realpow_two_binomial_iff) 
@@ -644,21 +644,21 @@ qed(*>*)
 theorem assumes f: "f \<in> rv M" and g: "g \<in> rv M" 
   shows rv_times_rv: "(\<lambda>w. f w * g w) \<in> rv M" 
 proof -
-  have "(\<lambda>w. f w * g w) = (\<lambda>w. (f w + g w)\<twosuperior>/4 - (f w - g w)\<twosuperior>/4)" 
+  have "(\<lambda>w. f w * g w) = (\<lambda>w. (f w + g w)\<^sup>2/4 - (f w - g w)\<^sup>2/4)" 
     by (simp only: times_iff_sum_squares)
-  also have "\<dots> = (\<lambda>w. (f w + g w)\<twosuperior>*inverse 4 - (f w + - g w)\<twosuperior>*inverse 4)"  
+  also have "\<dots> = (\<lambda>w. (f w + g w)\<^sup>2*inverse 4 - (f w + - g w)\<^sup>2*inverse 4)"  
     by (simp add: diff_minus)
   also from f g have "\<dots> \<in> rv M" 
   proof -
-    from f g have "(\<lambda>w. (f w + g w)\<twosuperior>)  \<in> rv M" 
+    from f g have "(\<lambda>w. (f w + g w)\<^sup>2)  \<in> rv M" 
       by (simp add: rv_plus_rv rv_square)
-    hence "(\<lambda>w. 0+(f w + g w)\<twosuperior>*inverse 4) \<in> rv M" 
+    hence "(\<lambda>w. 0+(f w + g w)\<^sup>2*inverse 4) \<in> rv M" 
       by (rule affine_rv)
     also from g have "(\<lambda>w. 0 + (g w)*-1 ) \<in> rv M" 
       by (rule affine_rv)
-    with f have "(\<lambda>w. (f w + - g w)\<twosuperior>)  \<in> rv M" 
+    with f have "(\<lambda>w. (f w + - g w)\<^sup>2)  \<in> rv M" 
       by (simp add: rv_plus_rv rv_square)
-    hence "(\<lambda>w. 0+(f w + - g w)\<twosuperior>*-inverse 4) \<in> rv M" 
+    hence "(\<lambda>w. 0+(f w + - g w)\<^sup>2*-inverse 4) \<in> rv M" 
       by (rule affine_rv)
     ultimately show ?thesis 
       by (simp add: rv_plus_rv diff_minus)

@@ -14,14 +14,14 @@ definition
 
 lemma I_hd_coeffs1:
 assumes 0: "\<forall>a\<in>set as. hd_coeff a \<noteq> 0" shows
-  "(\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#xs)) =
-   (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#xs))" (is "?B = ?A")
+  "(\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^sub>Z a (x#xs)) =
+   (\<exists>x. \<forall>a \<in> set as. I\<^sub>Z a (x#xs))" (is "?B = ?A")
 proof -
   let ?m = "zlcms(map hd_coeff as)"
   have "?m>0" using 0 by(simp add:zlcms_pos)
-  have "?A = (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z (hd_coeff1 ?m a) (?m*x#xs))"
+  have "?A = (\<exists>x. \<forall>a \<in> set as. I\<^sub>Z (hd_coeff1 ?m a) (?m*x#xs))"
     by (simp add:I_hd_coeff1_mult_a[OF `?m>0`] dvd_zlcms 0)
-  also have "\<dots> = (\<exists>x. ?m dvd x+0 \<and> (\<forall>a \<in> set as. I\<^isub>Z (hd_coeff1 ?m a) (x#xs)))"
+  also have "\<dots> = (\<exists>x. ?m dvd x+0 \<and> (\<forall>a \<in> set as. I\<^sub>Z (hd_coeff1 ?m a) (x#xs)))"
     by(rule unity_coeff_ex[THEN meta_eq_to_obj_eq])
   finally show ?thesis by(simp add:hd_coeffs1_def)
 qed
@@ -30,7 +30,7 @@ qed
 abbreviation "is_dvd a \<equiv> case a of Le _ _ \<Rightarrow> False | _ \<Rightarrow> True"
 
 definition
-"qe_pres\<^isub>1 as =
+"qe_pres\<^sub>1 as =
  (let ds = filter is_dvd as; (d::int) = zlcms(map divisor ds); ls = lbounds as
   in if ls = []
      then Disj [0..d - 1] (\<lambda>n. list_conj(map (Atom \<circ> asubst n []) ds))
@@ -44,7 +44,7 @@ the proof. *}
 
 lemma I_cyclic:
 assumes "is_dvd a" and "hd_coeff a = 1" and "i mod divisor a = j mod divisor a"
-shows "I\<^isub>Z a (i#e) = I\<^isub>Z a (j#e)"
+shows "I\<^sub>Z a (i#e) = I\<^sub>Z a (j#e)"
 proof (cases a)
   case (Dvd d l ks)
   with `hd_coeff a = 1` obtain ks' where [simp]: "ks = 1#ks'"
@@ -87,10 +87,10 @@ next
   case Le thus ?thesis using `is_dvd a` by simp
 qed
 
-lemma I_qe_pres\<^isub>1:
+lemma I_qe_pres\<^sub>1:
 assumes norm: "\<forall>a \<in> set as. divisor a \<noteq> 0"
 and hd: "\<forall>a \<in> set as. hd_coeff_is1 a"
-shows "Z.I (qe_pres\<^isub>1 as) xs = (\<exists>x. \<forall>a\<in> set as. I\<^isub>Z a (x#xs))"
+shows "Z.I (qe_pres\<^sub>1 as) xs = (\<exists>x. \<forall>a\<in> set as. I\<^sub>Z a (x#xs))"
 proof -
   let ?lbs = "lbounds as"
   let ?ds = "filter is_dvd as"
@@ -113,8 +113,8 @@ proof -
     assume "?QE"
     { assume "?lbs = []"
       with `?QE` obtain n where "n < ?lcm" and
-        A: "\<forall>a \<in> ?Ds. I\<^isub>Z a (n#xs)" using 1
-        by(auto simp:IZ_asubst qe_pres\<^isub>1_def)
+        A: "\<forall>a \<in> ?Ds. I\<^sub>Z a (n#xs)" using 1
+        by(auto simp:IZ_asubst qe_pres\<^sub>1_def)
       have "?Ls = {}" using `?lbs = []` set_lbounds[of as]
         by (auto simp add:filter_empty_conv split:atom.split list.split)
       have "\<exists>x. ?P x"
@@ -143,7 +143,7 @@ proof -
           thus ?thesis by auto
         qed
         let ?k = "(n - ?m) div ?lcm + 1" let ?x = "n - ?k * ?lcm"
-        have "\<forall>a \<in> ?Ds. I\<^isub>Z a (?x # xs)"
+        have "\<forall>a \<in> ?Ds. I\<^sub>Z a (?x # xs)"
         proof (intro allI ballI)
           fix a assume "a \<in> ?Ds"
           let ?d = "divisor a"
@@ -156,10 +156,10 @@ proof -
               by(simp add: dvd_eq_mod_eq_0[symmetric] dvd_mult[OF 2])
             finally show ?thesis by simp
           qed
-          thus "I\<^isub>Z a (?x#xs)" using A I_cyclic[of a n ?x] `a \<in> ?Ds` 1 by auto
+          thus "I\<^sub>Z a (?x#xs)" using A I_cyclic[of a n ?x] `a \<in> ?Ds` 1 by auto
         qed
         moreover
-        have "\<forall>a\<in> ?Us. I\<^isub>Z a (?x#xs)"
+        have "\<forall>a\<in> ?Us. I\<^sub>Z a (?x#xs)"
         proof
           fix a assume "a \<in> ?Us"
           then obtain l ks where [simp]: "a = Le l (-1#ks)" using hd
@@ -168,7 +168,7 @@ proof -
             using Min_le_iff[OF `finite ?M` `?M \<noteq> {}`] `a \<in> ?Us` by fastforce
           moreover have "(n - ?m) mod ?lcm < ?lcm"
             by(simp add: pos_mod_bound[OF zlcms_pos] norm)
-          ultimately show "I\<^isub>Z a (?x#xs)"
+          ultimately show "I\<^sub>Z a (?x#xs)"
             by(simp add:zmult_div_cancel algebra_simps)
         qed
         moreover
@@ -180,8 +180,8 @@ proof -
     moreover
     { assume "?lbs \<noteq> []"
       with `?QE` obtain il ksl m
-        where "\<forall>a\<in>set as. I\<^isub>Z (asubst (il + m) ksl a) xs"
-        by(auto simp:qe_pres\<^isub>1_def)
+        where "\<forall>a\<in>set as. I\<^sub>Z (asubst (il + m) ksl a) xs"
+        by(auto simp:qe_pres\<^sub>1_def)
       hence "?P(il + m + \<langle>ksl,xs\<rangle>)" by(simp add:IZ_asubst)
       hence "\<exists>x. ?P x" .. }
     ultimately show "\<exists>x. ?P x" by blast
@@ -191,16 +191,16 @@ proof -
     proof cases
       assume "?lbs = []"
       moreover
-      have "\<exists>x. 0 \<le> x \<and> x < ?lcm \<and> (\<forall>a \<in> ?Ds. I\<^isub>Z a (x # xs))"
+      have "\<exists>x. 0 \<le> x \<and> x < ?lcm \<and> (\<forall>a \<in> ?Ds. I\<^sub>Z a (x # xs))"
         (is "\<exists>x. ?P x")
       proof
         { fix a assume "a \<in> ?Ds"
-          hence "I\<^isub>Z a ((x mod ?lcm) # xs) = I\<^isub>Z a (x # xs)" using 1
+          hence "I\<^sub>Z a ((x mod ?lcm) # xs) = I\<^sub>Z a (x # xs)" using 1
             by (fastforce del:iffI intro: I_cyclic
                 simp: mod_mod_cancel dvd_zlcms) }
         thus "?P(x mod ?lcm)" using x norm by(simp add: zlcms_pos)
       qed
-      ultimately show ?thesis by (auto simp:qe_pres\<^isub>1_def IZ_asubst)
+      ultimately show ?thesis by (auto simp:qe_pres\<^sub>1_def IZ_asubst)
     next
       assume "?lbs \<noteq> []"
       let ?L = "{i - \<langle>ks,xs\<rangle> |ks i. (i,ks) \<in> set(lbounds as)}"
@@ -222,8 +222,8 @@ proof -
       have n: "0 \<le> ?n \<and> ?n < ?lcm" using norm by(simp add:zlcms_pos)
       moreover
       { fix a assume "a \<in> set as"
-        with x have "I\<^isub>Z a (x # xs)" by blast
-        have "I\<^isub>Z a ((li + ?n - \<langle>lks,xs\<rangle>) # xs)"
+        with x have "I\<^sub>Z a (x # xs)" by blast
+        have "I\<^sub>Z a ((li + ?n - \<langle>lks,xs\<rangle>) # xs)"
         proof -
           { assume "a \<in> ?Ls"
             then obtain i ks where [simp]: "a = Le i (1#ks)" using hd
@@ -241,11 +241,11 @@ proof -
             hence "li - \<langle>lks,xs\<rangle> \<le> x" using x by auto
             hence "(x - ?lm) mod ?lcm \<le> x - ?lm"
               using lm by(simp add: zmod_le_nonneg_dividend)
-            hence ?thesis using `I\<^isub>Z a (x # xs)` lm by auto }
+            hence ?thesis using `I\<^sub>Z a (x # xs)` lm by auto }
           moreover
           { assume "a \<in> ?Ds"
             have ?thesis
-            proof(rule I_cyclic[THEN iffD2, OF _ _ _ `I\<^isub>Z a (x # xs)`])
+            proof(rule I_cyclic[THEN iffD2, OF _ _ _ `I\<^sub>Z a (x # xs)`])
               show "is_dvd a" using `a \<in> ?Ds` by simp
               show "hd_coeff a = 1" using `a \<in> ?Ds` hd
                 by(fastforce split:atom.splits list.splits)
@@ -271,7 +271,7 @@ proof -
         qed
       }
       ultimately show ?thesis using `?lbs \<noteq> []`
-        by (simp (no_asm_simp) add:qe_pres\<^isub>1_def IZ_asubst split_def)
+        by (simp (no_asm_simp) add:qe_pres\<^sub>1_def IZ_asubst split_def)
            (force simp del:int_nat_eq)
     qed
   qed
@@ -338,26 +338,26 @@ proof -
 qed
 
 
-lemma I_qe_pres\<^isub>1_o:
+lemma I_qe_pres\<^sub>1_o:
  "\<lbrakk> \<forall>a \<in> set as. divisor a \<noteq> 0; \<forall>a\<in>set as. hd_coeff a \<noteq> 0 \<rbrakk> \<Longrightarrow>
-  Z.I ((qe_pres\<^isub>1 \<circ> hd_coeffs1) as) e = (\<exists>x. \<forall>a\<in> set as. I\<^isub>Z a (x#e))"
+  Z.I ((qe_pres\<^sub>1 \<circ> hd_coeffs1) as) e = (\<exists>x. \<forall>a\<in> set as. I\<^sub>Z a (x#e))"
 apply(simp)
-apply(subst I_qe_pres\<^isub>1)
+apply(subst I_qe_pres\<^sub>1)
   apply(simp add: divisors_hd_coeffs1)
  apply(simp add: hd_coeff_is1_hd_coeffs1)
 using I_hd_coeffs1 apply(simp)
 done
 
-definition "qe_pres = Z.lift_dnf_qe (qe_pres\<^isub>1 \<circ> hd_coeffs1)"
+definition "qe_pres = Z.lift_dnf_qe (qe_pres\<^sub>1 \<circ> hd_coeffs1)"
 
-lemma qfree_qe_pres_o: "qfree ((qe_pres\<^isub>1 \<circ> hd_coeffs1) as)"
-by(auto simp:qe_pres\<^isub>1_def intro!:qfree_list_disj)
+lemma qfree_qe_pres_o: "qfree ((qe_pres\<^sub>1 \<circ> hd_coeffs1) as)"
+by(auto simp:qe_pres\<^sub>1_def intro!:qfree_list_disj)
 
 
-lemma normal_qe_pres\<^isub>1_o:
+lemma normal_qe_pres\<^sub>1_o:
   "\<forall>a \<in> set as. hd_coeff a \<noteq> 0 \<and> divisor a \<noteq> 0 \<Longrightarrow>
-   Z.normal ((qe_pres\<^isub>1 \<circ> hd_coeffs1) as)"
-apply(auto simp:qe_pres\<^isub>1_def Z.normal_def
+   Z.normal ((qe_pres\<^sub>1 \<circ> hd_coeffs1) as)"
+apply(auto simp:qe_pres\<^sub>1_def Z.normal_def
    dest!:atoms_list_disjE atoms_list_conjE)
 
 apply(simp add: hd_coeffs1_def)
@@ -416,7 +416,7 @@ apply fastforce
 done
 
 theorem I_pres_qe: "Z.normal \<phi> \<Longrightarrow>  Z.I (qe_pres \<phi>) xs = Z.I \<phi> xs"
-by(simp add:qe_pres_def Z.I_lift_dnf_qe_anormal I_qe_pres\<^isub>1_o qfree_qe_pres_o normal_qe_pres\<^isub>1_o del:o_apply)
+by(simp add:qe_pres_def Z.I_lift_dnf_qe_anormal I_qe_pres\<^sub>1_o qfree_qe_pres_o normal_qe_pres\<^sub>1_o del:o_apply)
 
 theorem qfree_pres_qe: "qfree (qe_pres f)"
 by(simp add:qe_pres_def Z.qfree_lift_dnf_qe qfree_qe_pres_o del:o_apply)

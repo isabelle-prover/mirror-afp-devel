@@ -518,58 +518,58 @@ next
 next
   case RedDynCastFail thus ?case by fastforce
 next
-  case (BinOpRed1 E e h l e' h' l' bop e\<^isub>2)
+  case (BinOpRed1 E e h l e' h' l' bop e\<^sub>2)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
-    and wt:"P,E,h \<turnstile> e \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
+    and wt:"P,E,h \<turnstile> e \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
-  from wt obtain T\<^isub>1 T\<^isub>2 where wte:"P,E,h \<turnstile> e : T\<^isub>1" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2"
+  from wt obtain T\<^sub>1 T\<^sub>2 where wte:"P,E,h \<turnstile> e : T\<^sub>1" and wte2:"P,E,h \<turnstile> e\<^sub>2 : T\<^sub>2"
     and binop:"case bop of Eq \<Rightarrow> T = Boolean
-                        | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
+                        | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer"
     by auto
-  from WTrt_hext_mono[OF wte2 red_hext_incr[OF red]] have wte2':"P,E,h' \<turnstile> e\<^isub>2 : T\<^isub>2" .
-  have "P,E,h' \<turnstile> e' \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
+  from WTrt_hext_mono[OF wte2 red_hext_incr[OF red]] have wte2':"P,E,h' \<turnstile> e\<^sub>2 : T\<^sub>2" .
+  have "P,E,h' \<turnstile> e' \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T"
   proof (cases bop)
     assume Eq:"bop = Eq"
     from IH[OF sconf wte] obtain T' where "P,E,h' \<turnstile> e' : T'"
-      by (cases "T\<^isub>1") auto
+      by (cases "T\<^sub>1") auto
     with wte2' binop Eq show ?thesis by(cases bop) auto
   next
     assume Add:"bop = Add"
-    with binop have Intg:"T\<^isub>1 = Integer" by simp
+    with binop have Intg:"T\<^sub>1 = Integer" by simp
     with IH[OF sconf wte] have "P,E,h' \<turnstile> e' : Integer" by simp
     with wte2' binop Add show ?thesis by(cases bop) auto
   qed
   with binop show ?case by(cases bop) simp_all
 next
-  case (BinOpRed2 E e h l e' h' l' v\<^isub>1 bop)
+  case (BinOpRed2 E e h l e' h' l' v\<^sub>1 bop)
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
-    and wt:"P,E,h \<turnstile> Val v\<^isub>1 \<guillemotleft>bop\<guillemotright> e : T"
+    and wt:"P,E,h \<turnstile> Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
-  from wt obtain T\<^isub>1 T\<^isub>2 where wtval:"P,E,h \<turnstile> Val v\<^isub>1 : T\<^isub>1" and wte:"P,E,h \<turnstile> e : T\<^isub>2"
+  from wt obtain T\<^sub>1 T\<^sub>2 where wtval:"P,E,h \<turnstile> Val v\<^sub>1 : T\<^sub>1" and wte:"P,E,h \<turnstile> e : T\<^sub>2"
     and binop:"case bop of Eq \<Rightarrow> T = Boolean
-                        | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
+                        | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer"
     by auto
   from WTrt_hext_mono[OF wtval red_hext_incr[OF red]]
-  have wtval':"P,E,h' \<turnstile> Val v\<^isub>1 : T\<^isub>1" .
-  have "P,E,h' \<turnstile> Val v\<^isub>1 \<guillemotleft>bop\<guillemotright> e' : T"
+  have wtval':"P,E,h' \<turnstile> Val v\<^sub>1 : T\<^sub>1" .
+  have "P,E,h' \<turnstile> Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e' : T"
   proof (cases bop)
     assume Eq:"bop = Eq"
     from IH[OF sconf wte] obtain T' where "P,E,h' \<turnstile> e' : T'"
-      by (cases "T\<^isub>2") auto
+      by (cases "T\<^sub>2") auto
     with wtval' binop Eq show ?thesis by(cases bop) auto
   next
     assume Add:"bop = Add"
-    with binop have Intg:"T\<^isub>2 = Integer" by simp
+    with binop have Intg:"T\<^sub>2 = Integer" by simp
     with IH[OF sconf wte] have "P,E,h' \<turnstile> e' : Integer" by simp
     with wtval' binop Add show ?thesis by(cases bop) auto
   qed
   with binop show ?case by(cases bop) simp_all
 next
-  case (RedBinOp bop v\<^isub>1 v\<^isub>2 v E a b) thus ?case
+  case (RedBinOp bop v\<^sub>1 v\<^sub>2 v E a b) thus ?case
   proof (cases bop)
     case Eq thus ?thesis using RedBinOp by auto
   next
@@ -703,19 +703,19 @@ next
   with sconf have "P,E,h \<turnstile> THROW NullPointer : T" by(auto simp:sconf_def hconf_def)
   thus ?case by (fastforce intro:wt_same_type_typeconf wf_prog_wwf_prog)
 next
-  case (FAssRed1 E e h l e' h' l' F Cs e\<^isub>2)
+  case (FAssRed1 E e h l e' h' l' F Cs e\<^sub>2)
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
-    and wt:"P,E,h \<turnstile> e\<bullet>F{Cs} := e\<^isub>2 : T"
+    and wt:"P,E,h \<turnstile> e\<bullet>F{Cs} := e\<^sub>2 : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
-  from wt have "P,E,h' \<turnstile> e'\<bullet>F{Cs} := e\<^isub>2 : T"
+  from wt have "P,E,h' \<turnstile> e'\<bullet>F{Cs} := e\<^sub>2 : T"
   proof (rule WTrt_elim_cases)
     fix C T' assume wte: "P,E,h \<turnstile> e : Class C"
       and field:"P \<turnstile> C has least F:T via Cs"
       and notemptyCs:"Cs \<noteq> []"
-      and wte2:"P,E,h \<turnstile> e\<^isub>2 : T'" and sub:"P \<turnstile> T' \<le> T"
-    have wte2': "P,E,h' \<turnstile> e\<^isub>2 : T'"
+      and wte2:"P,E,h \<turnstile> e\<^sub>2 : T'" and sub:"P \<turnstile> T' \<le> T"
+    have wte2': "P,E,h' \<turnstile> e\<^sub>2 : T'"
       by(rule WTrt_hext_mono[OF wte2 red_hext_incr[OF red]])
     from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : Class C \<or> P,E,h' \<turnstile> e' : NT"
       by simp
@@ -729,8 +729,8 @@ next
     qed
   next
     fix T' assume wte:"P,E,h \<turnstile> e : NT"
-      and wte2:"P,E,h \<turnstile> e\<^isub>2 : T'" and sub:"P \<turnstile> T' \<le> T"
-    have wte2': "P,E,h' \<turnstile> e\<^isub>2 : T'"
+      and wte2:"P,E,h \<turnstile> e\<^sub>2 : T'" and sub:"P \<turnstile> T' \<le> T"
+    have wte2': "P,E,h' \<turnstile> e\<^sub>2 : T'"
       by(rule WTrt_hext_mono[OF wte2 red_hext_incr[OF red]])
     from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
     from wte' wte2' sub show ?thesis by (rule WTrtFAssNT)
@@ -808,8 +808,8 @@ next
     by (auto dest:sees_field_fun split:split_if_asm)
   from casts eq wtval show ?case
   proof(induct rule:casts_to.induct)
-    case (casts_prim T\<^isub>0 w)
-    have "T\<^isub>0 = T'" and "\<forall>C. T\<^isub>0 \<noteq> Class C" and wtval':"P,E,h \<turnstile> Val w : T''" by fact+
+    case (casts_prim T\<^sub>0 w)
+    have "T\<^sub>0 = T'" and "\<forall>C. T\<^sub>0 \<noteq> Class C" and wtval':"P,E,h \<turnstile> Val w : T''" by fact+
     with leq have "T' = T''" by(cases T',auto)
     with wtval' have "P,E,h \<turnstile> Val w : T'" by simp
     with h have "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> w))(S-{(Ds,fs)})))) \<turnstile> Val w : T'"
@@ -1183,30 +1183,30 @@ next
 next
   case RedInitBlock thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
-  case (SeqRed E e h l e' h' l' e\<^isub>2 T)
+  case (SeqRed E e h l e' h' l' e\<^sub>2 T)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e;; e\<^isub>2 : T" by fact+
-  from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T" by auto
-  from WTrt_hext_mono[OF wte2 red_hext_incr[OF red]] have wte2':"P,E,h' \<turnstile> e\<^isub>2 : T" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e;; e\<^sub>2 : T" by fact+
+  from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and wte2:"P,E,h \<turnstile> e\<^sub>2 : T" by auto
+  from WTrt_hext_mono[OF wte2 red_hext_incr[OF red]] have wte2':"P,E,h' \<turnstile> e\<^sub>2 : T" .
   from IH[OF sconf wte] obtain T'' where "P,E,h' \<turnstile> e' : T''" by(cases T') auto
-  with wte2' have "P,E,h' \<turnstile> e';; e\<^isub>2 : T" by auto
+  with wte2' have "P,E,h' \<turnstile> e';; e\<^sub>2 : T" by auto
   thus ?case by(rule wt_same_type_typeconf)
 next
   case RedSeq thus ?case by (fastforce intro:wt_same_type_typeconf)
 next
-  case (CondRed E e h l e' h' l' e\<^isub>1 e\<^isub>2)
+  case (CondRed E e h l e' h' l' e\<^sub>1 e\<^sub>2)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH: "\<And>T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                      \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
-    and wt:"P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
+    and wt:"P,E,h \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 : T"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt have wte:"P,E,h \<turnstile> e : Boolean"
-      and wte1:"P,E,h \<turnstile> e\<^isub>1 : T" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T" by auto
+      and wte1:"P,E,h \<turnstile> e\<^sub>1 : T" and wte2:"P,E,h \<turnstile> e\<^sub>2 : T" by auto
   from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : Boolean" by auto
   from wte' WTrt_hext_mono[OF wte1 red_hext_incr[OF red]]
     WTrt_hext_mono[OF wte2 red_hext_incr[OF red]]
-  have "P,E,h' \<turnstile> if (e') e\<^isub>1 else e\<^isub>2 : T"
+  have "P,E,h' \<turnstile> if (e') e\<^sub>1 else e\<^sub>2 : T"
     by (rule WTrtCond)
   thus ?case by(rule wt_same_type_typeconf)
 next

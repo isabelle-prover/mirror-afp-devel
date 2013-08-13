@@ -112,7 +112,7 @@ lemma (in shortest_paths_locale_step1) path_from_root_Vr_ex:
   assumes "v \<in> verts G"
   assumes "v \<noteq> s"
   assumes "dist v \<noteq> \<infinity>"
-  shows  "\<exists>e. s \<rightarrow>\<^isup>* tail G e \<and>
+  shows  "\<exists>e. s \<rightarrow>\<^sup>* tail G e \<and>
           e \<in> arcs G \<and> head G e = v \<and> dist (tail G e) \<noteq> \<infinity> \<and>
           parent_edge v = Some e \<and> num v = num (tail G e) + 1"
 using assms
@@ -137,7 +137,7 @@ case (Suc n')
     Suc(2) s_assms(4) by force
   have nst: "n' = num (tail G e) - 1"
     using ee(5) Suc(2) by presburger
-  obtain e' where reach: "s \<rightarrow>\<^isup>* tail G e'" and
+  obtain e' where reach: "s \<rightarrow>\<^sup>* tail G e'" and
     e': "e' \<in> arcs G" "head G e' = tail G e" "dist (tail G e') \<noteq> \<infinity>"
     using Suc(1)[OF nst tail_in_verts[OF ee(1)] ss ee(3)] by blast
   from reach also have "tail G e' \<rightarrow> tail G e" using e'
@@ -149,14 +149,14 @@ lemma (in shortest_paths_locale_step1) path_from_root_Vr:
   fixes v :: 'a
   assumes "v \<in> verts G"
   assumes "dist v \<noteq> \<infinity>"
-  shows "s \<rightarrow>\<^isup>* v"
+  shows "s \<rightarrow>\<^sup>* v"
 proof(cases "v = s")
 case True thus ?thesis using assms by simp
 next
 case False
-  obtain e where "s \<rightarrow>\<^isup>* tail G e" "e \<in> arcs G" "head G e = v"
+  obtain e where "s \<rightarrow>\<^sup>* tail G e" "e \<in> arcs G" "head G e = v"
       using path_from_root_Vr_ex[OF assms(1) False assms(2)] by blast
-  then have "s \<rightarrow>\<^isup>* tail G e" "tail G e \<rightarrow> v"
+  then have "s \<rightarrow>\<^sup>* tail G e" "tail G e \<rightarrow> v"
     by (auto intro: in_arcs_imp_in_arcs_ends)
   then show ?thesis by (rule reachable_adj_trans)
 qed

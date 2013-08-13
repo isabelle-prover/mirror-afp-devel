@@ -65,7 +65,7 @@ definition
 
 definition
   condCatch:: "('s,'p,'f) com \<Rightarrow> 's bexp \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" where
-  "condCatch c\<^isub>1 b c\<^isub>2 = Catch c\<^isub>1 (Cond b c\<^isub>2 Throw)"
+  "condCatch c\<^sub>1 b c\<^sub>2 = Catch c\<^sub>1 (Cond b c\<^sub>2 Throw)"
 
 definition
   bind:: "('s \<Rightarrow> 'v) \<Rightarrow> ('v \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com" where
@@ -170,14 +170,14 @@ where
 "flatten Skip = [Skip]" |
 "flatten (Basic f) = [Basic f]" |
 "flatten (Spec r) = [Spec r]" |
-"flatten (Seq c\<^isub>1 c\<^isub>2)  = flatten c\<^isub>1 @ flatten c\<^isub>2" |
-"flatten (Cond b c\<^isub>1 c\<^isub>2) = [Cond b c\<^isub>1 c\<^isub>2]" |
+"flatten (Seq c\<^sub>1 c\<^sub>2)  = flatten c\<^sub>1 @ flatten c\<^sub>2" |
+"flatten (Cond b c\<^sub>1 c\<^sub>2) = [Cond b c\<^sub>1 c\<^sub>2]" |
 "flatten (While b c) = [While b c]" |
 "flatten (Call p) = [Call p]" |
 "flatten (DynCom c) = [DynCom c]" |
 "flatten (Guard f g c) = [Guard f g c]" |
 "flatten Throw = [Throw]" |
-"flatten (Catch c\<^isub>1 c\<^isub>2) = [Catch c\<^isub>1 c\<^isub>2]"
+"flatten (Catch c\<^sub>1 c\<^sub>2) = [Catch c\<^sub>1 c\<^sub>2]"
 
 primrec sequence:: "(('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
                       ('s,'p,'f) com list \<Rightarrow> ('s,'p,'f) com"
@@ -192,15 +192,15 @@ where
 "normalize Skip = Skip" |
 "normalize (Basic f) = Basic f" |
 "normalize (Spec r) = Spec r" |
-"normalize (Seq c\<^isub>1 c\<^isub>2)  = sequence Seq
-                            ((flatten (normalize c\<^isub>1)) @ (flatten (normalize c\<^isub>2)))" |
-"normalize (Cond b c\<^isub>1 c\<^isub>2) = Cond b (normalize c\<^isub>1) (normalize c\<^isub>2)" |
+"normalize (Seq c\<^sub>1 c\<^sub>2)  = sequence Seq
+                            ((flatten (normalize c\<^sub>1)) @ (flatten (normalize c\<^sub>2)))" |
+"normalize (Cond b c\<^sub>1 c\<^sub>2) = Cond b (normalize c\<^sub>1) (normalize c\<^sub>2)" |
 "normalize (While b c) = While b (normalize c)" |
 "normalize (Call p) = Call p" |
 "normalize (DynCom c) = DynCom (\<lambda>s. (normalize (c s)))" |
 "normalize (Guard f g c) = Guard f g (normalize c)" |
 "normalize Throw = Throw" |
-"normalize (Catch c\<^isub>1 c\<^isub>2) = Catch (normalize c\<^isub>1) (normalize c\<^isub>2)"
+"normalize (Catch c\<^sub>1 c\<^sub>2) = Catch (normalize c\<^sub>1) (normalize c\<^sub>2)"
 
 
 lemma flatten_nonEmpty: "flatten c \<noteq> []"
@@ -459,15 +459,15 @@ where
 "strip_guards F Skip = Skip" |
 "strip_guards F (Basic f) = Basic f" |
 "strip_guards F (Spec r) = Spec r" |
-"strip_guards F (Seq c\<^isub>1 c\<^isub>2)  = (Seq (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2))" |
-"strip_guards F (Cond b c\<^isub>1 c\<^isub>2) = Cond b (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2)" |
+"strip_guards F (Seq c\<^sub>1 c\<^sub>2)  = (Seq (strip_guards F c\<^sub>1) (strip_guards F c\<^sub>2))" |
+"strip_guards F (Cond b c\<^sub>1 c\<^sub>2) = Cond b (strip_guards F c\<^sub>1) (strip_guards F c\<^sub>2)" |
 "strip_guards F (While b c) = While b (strip_guards F c)" |
 "strip_guards F (Call p) = Call p" |
 "strip_guards F (DynCom c) = DynCom (\<lambda>s. (strip_guards F (c s)))" |
 "strip_guards F (Guard f g c) = (if f \<in> F then strip_guards F c
                                   else Guard f g (strip_guards F c))" |
 "strip_guards F Throw = Throw" |
-"strip_guards F (Catch c\<^isub>1 c\<^isub>2) = Catch (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2)"
+"strip_guards F (Catch c\<^sub>1 c\<^sub>2) = Catch (strip_guards F c\<^sub>1) (strip_guards F c\<^sub>2)"
 
 definition strip:: "'f set \<Rightarrow> 
                    ('p \<Rightarrow> ('s,'p,'f) com option) \<Rightarrow> ('p \<Rightarrow> ('s,'p,'f) com option)"
@@ -577,14 +577,14 @@ where
 "mark_guards f Skip = Skip" |
 "mark_guards f (Basic g) = Basic g" |
 "mark_guards f (Spec r) = Spec r" |
-"mark_guards f (Seq c\<^isub>1 c\<^isub>2)  = (Seq (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2))" |
-"mark_guards f (Cond b c\<^isub>1 c\<^isub>2) = Cond b (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2)" |
+"mark_guards f (Seq c\<^sub>1 c\<^sub>2)  = (Seq (mark_guards f c\<^sub>1) (mark_guards f c\<^sub>2))" |
+"mark_guards f (Cond b c\<^sub>1 c\<^sub>2) = Cond b (mark_guards f c\<^sub>1) (mark_guards f c\<^sub>2)" |
 "mark_guards f (While b c) = While b (mark_guards f c)" |
 "mark_guards f (Call p) = Call p" |
 "mark_guards f (DynCom c) = DynCom (\<lambda>s. (mark_guards f (c s)))" |
 "mark_guards f (Guard f' g c) = Guard f g (mark_guards f c)" |
 "mark_guards f Throw = Throw" |
-"mark_guards f (Catch c\<^isub>1 c\<^isub>2) = Catch (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2)"
+"mark_guards f (Catch c\<^sub>1 c\<^sub>2) = Catch (mark_guards f c\<^sub>1) (mark_guards f c\<^sub>2)"
 
 lemma mark_guards_raise: "mark_guards f (raise g) = raise g"
   by (simp add: raise_def)
@@ -710,8 +710,8 @@ where
 "merge_guards Skip = Skip" |
 "merge_guards (Basic g) = Basic g" |
 "merge_guards (Spec r) = Spec r" |
-"merge_guards (Seq c\<^isub>1 c\<^isub>2)  = (Seq (merge_guards c\<^isub>1) (merge_guards c\<^isub>2))" |
-"merge_guards (Cond b c\<^isub>1 c\<^isub>2) = Cond b (merge_guards c\<^isub>1) (merge_guards c\<^isub>2)" |
+"merge_guards (Seq c\<^sub>1 c\<^sub>2)  = (Seq (merge_guards c\<^sub>1) (merge_guards c\<^sub>2))" |
+"merge_guards (Cond b c\<^sub>1 c\<^sub>2) = Cond b (merge_guards c\<^sub>1) (merge_guards c\<^sub>2)" |
 "merge_guards (While b c) = While b (merge_guards c)" |
 "merge_guards (Call p) = Call p" |
 "merge_guards (DynCom c) = DynCom (\<lambda>s. (merge_guards (c s)))" |
@@ -729,7 +729,7 @@ where
                         else Guard f g (Guard f' g' c'')
         else Guard f g c')" |
 "merge_guards Throw = Throw" |
-"merge_guards (Catch c\<^isub>1 c\<^isub>2) = Catch (merge_guards c\<^isub>1) (merge_guards c\<^isub>2)"
+"merge_guards (Catch c\<^sub>1 c\<^sub>2) = Catch (merge_guards c\<^sub>1) (merge_guards c\<^sub>2)"
 
 lemma merge_guards_res_Skip: "merge_guards c = Skip \<Longrightarrow> c = Skip"
   by (cases c) (auto split: com.splits split_if_asm simp add: is_Guard_def Let_def)
@@ -850,14 +850,14 @@ where
 "noguards Skip = True" |
 "noguards (Basic f) = True" |
 "noguards (Spec r ) = True" |
-"noguards (Seq c\<^isub>1 c\<^isub>2)  = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)" |
-"noguards (Cond b c\<^isub>1 c\<^isub>2) = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)" |
+"noguards (Seq c\<^sub>1 c\<^sub>2)  = (noguards c\<^sub>1 \<and> noguards c\<^sub>2)" |
+"noguards (Cond b c\<^sub>1 c\<^sub>2) = (noguards c\<^sub>1 \<and> noguards c\<^sub>2)" |
 "noguards (While b c) = (noguards c)" |
 "noguards (Call p) = True" |
 "noguards (DynCom c) = (\<forall>s. noguards (c s))" |
 "noguards (Guard f g c) = False" |
 "noguards Throw = True" |
-"noguards (Catch c\<^isub>1 c\<^isub>2) = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)"
+"noguards (Catch c\<^sub>1 c\<^sub>2) = (noguards c\<^sub>1 \<and> noguards c\<^sub>2)"
 
 lemma noguards_strip_guards: "noguards (strip_guards UNIV c)"
   by (induct c) auto
@@ -867,16 +867,16 @@ where
 "nothrows Skip = True" |
 "nothrows (Basic f) = True" |
 "nothrows (Spec r) = True" |
-"nothrows (Seq c\<^isub>1 c\<^isub>2)  = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)" |
-"nothrows (Cond b c\<^isub>1 c\<^isub>2) = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)" |
+"nothrows (Seq c\<^sub>1 c\<^sub>2)  = (nothrows c\<^sub>1 \<and> nothrows c\<^sub>2)" |
+"nothrows (Cond b c\<^sub>1 c\<^sub>2) = (nothrows c\<^sub>1 \<and> nothrows c\<^sub>2)" |
 "nothrows (While b c) = nothrows c" |
 "nothrows (Call p) = True" |
 "nothrows (DynCom c) = (\<forall>s. nothrows (c s))" |
 "nothrows (Guard f g c) = nothrows c" |
 "nothrows Throw = False" |
-"nothrows (Catch c\<^isub>1 c\<^isub>2) = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)"
+"nothrows (Catch c\<^sub>1 c\<^sub>2) = (nothrows c\<^sub>1 \<and> nothrows c\<^sub>2)"
 
-subsubsection {* Intersecting Guards: @{text "c\<^isub>1 \<inter>\<^sub>g c\<^isub>2"}*}
+subsubsection {* Intersecting Guards: @{text "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"}*}
 
 inductive_set com_rel ::"(('s,'p,'f) com \<times> ('s,'p,'f) com) set"
 where
@@ -1083,7 +1083,7 @@ lemmas inter_guards_simps = inter_guards_Skip inter_guards_Basic inter_guards_Sp
   inter_guards_DynCom inter_guards_Guard inter_guards_Throw 
   inter_guards_Catch
 
-subsubsection {* Subset on Guards: @{text "c\<^isub>1 \<subseteq>\<^sub>g c\<^isub>2"} *} 
+subsubsection {* Subset on Guards: @{text "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"} *} 
 
 
 consts subseteq_guards:: "('s,'p,'f) com \<times> ('s,'p,'f) com \<Rightarrow> bool"

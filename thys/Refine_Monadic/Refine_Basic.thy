@@ -808,7 +808,7 @@ lemma RECT_eq_REC_old:
   assumes I0: "I x"
   assumes IS: "\<And>f x. I x \<Longrightarrow> 
     body (\<lambda>x'. do { ASSERT (I x' \<and> (x',x)\<in>V); f x'}) x \<le> body f x"
-  shows "REC\<^isub>T body x = REC body x"
+  shows "REC\<^sub>T body x = REC body x"
   apply (rule RECT_eq_REC)
   apply (rule WF)
   apply (rule I0)

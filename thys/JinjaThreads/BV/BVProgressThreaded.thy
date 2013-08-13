@@ -28,7 +28,7 @@ done
 context JVM_heap_conf_base begin
 
 abbreviation 
-  correct_state_ts :: "ty\<^isub>P \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state) thread_info \<Rightarrow> 'heap \<Rightarrow> bool"
+  correct_state_ts :: "ty\<^sub>P \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state) thread_info \<Rightarrow> 'heap \<Rightarrow> bool"
 where
   "correct_state_ts \<Phi> \<equiv> ts_ok (\<lambda>t (xcp, frstls) h. \<Phi> \<turnstile> t: (xcp, h, frstls) \<surd>)"
 
@@ -249,9 +249,9 @@ proof(cases xcp)
       where "f'' = (stk'', loc'', C0'', M0'', pc'')"
       by(cases f'', blast)
     with `frs'' = f'' # Frs''` cs''
-    obtain Ts'' T'' mxs'' mxl\<^isub>0'' ins'' xt'' ST'' LT'' 
+    obtain Ts'' T'' mxs'' mxl\<^sub>0'' ins'' xt'' ST'' LT'' 
       where "hconf h"
-      and sees'': "P \<turnstile> C0'' sees M0'': Ts''\<rightarrow>T'' = \<lfloor>(mxs'', mxl\<^isub>0'', ins'', xt'')\<rfloor> in C0''"
+      and sees'': "P \<turnstile> C0'' sees M0'': Ts''\<rightarrow>T'' = \<lfloor>(mxs'', mxl\<^sub>0'', ins'', xt'')\<rfloor> in C0''"
       and "\<Phi> C0'' M0'' ! pc'' = \<lfloor>(ST'', LT'')\<rfloor>"
       and "conf_f P h (ST'', LT'') ins'' (stk'', loc'', C0'', M0'', pc'')"
       and "conf_fs P h \<Phi> M0'' (length Ts'') T'' Frs''"
@@ -307,7 +307,7 @@ end
 
 context JVM_heap_conf_base begin
 
-definition correct_jvm_state :: "ty\<^isub>P \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state set"
+definition correct_jvm_state :: "ty\<^sub>P \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state set"
 where
   "correct_jvm_state \<Phi>
   = {s. correct_state_ts \<Phi> (thr s) (shr s) \<and> lock_thread_ok (locks s) (thr s)}"

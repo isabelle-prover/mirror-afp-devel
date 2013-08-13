@@ -59,7 +59,7 @@ where
   "sc_jvm_start_state_refine \<equiv> 
    sc_start_state_refine (rm_empty ()) rm_update (rm_empty ()) (rs_empty ()) (\<lambda>C M Ts T (mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, C, M, 0)]))"
 
-abbreviation sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state set"
+abbreviation sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^sub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state set"
 where "sc_jvm_state_invar P \<Phi> \<equiv> {s. sc_execute.correct_state_ts P \<Phi> (thr s) (shr s)}"
 
 lemma eval_sc_mexec:

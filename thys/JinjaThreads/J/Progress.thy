@@ -611,22 +611,22 @@ next
       by(simp del: split_paired_Ex)(blast intro!:FAssRed1)
   qed
 next
-  case (WTrtFAssNT E e\<^isub>1 e\<^isub>2 T\<^isub>2 F D l)
+  case (WTrtFAssNT E e\<^sub>1 e\<^sub>2 T\<^sub>2 F D l)
   show ?case
   proof cases
-    assume "final e\<^isub>1"  --"@{term e\<^isub>1} is @{term null} or @{term throw}"
+    assume "final e\<^sub>1"  --"@{term e\<^sub>1} is @{term null} or @{term throw}"
     show ?thesis
     proof cases
-      assume "final e\<^isub>2"  --"@{term e\<^isub>2} is @{term Val} or @{term throw}"
-      with WTrtFAssNT `final e\<^isub>1` show ?thesis
+      assume "final e\<^sub>2"  --"@{term e\<^sub>2} is @{term Val} or @{term throw}"
+      with WTrtFAssNT `final e\<^sub>1` show ?thesis
         by(fastforce simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
     next
-      assume "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
-      with WTrtFAssNT `final e\<^isub>1` show ?thesis
+      assume "\<not> final e\<^sub>2" --"@{term e\<^sub>2} reduces by IH"
+      with WTrtFAssNT `final e\<^sub>1` show ?thesis
         by (fastforce  simp:final_iff intro!:FAssRed2 FAssThrow1)
     qed
   next
-    assume "\<not> final e\<^isub>1" --"@{term e\<^isub>1} reduces by IH"
+    assume "\<not> final e\<^sub>1" --"@{term e\<^sub>1} reduces by IH"
     with WTrtFAssNT show ?thesis by (fastforce intro:FAssRed1)
   qed
 next

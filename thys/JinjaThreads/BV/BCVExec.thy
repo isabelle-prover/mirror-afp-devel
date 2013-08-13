@@ -56,7 +56,7 @@ lemma check_types_code [code]:
 unfolding check_types_def by(auto simp add: list_all_iff)
 
 lemma wf_jvm_prog_code [code_unfold]:
-  "wf_jvm_prog = wf_jvm_prog\<^isub>k"
+  "wf_jvm_prog = wf_jvm_prog\<^sub>k"
 by(simp add: fun_eq_iff jvm_kildall_correct)
 
 definition "wf_jvm_prog' = wf_jvm_prog"

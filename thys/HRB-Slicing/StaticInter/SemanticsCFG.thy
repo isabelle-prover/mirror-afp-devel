@@ -15,7 +15,7 @@ locale CFG_semantics_wf = CFG sourcenode targetnode kind valid_edge Entry
   fixes identifies::"'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51,0] 80)
   assumes fundamental_property:
     "\<lbrakk>n \<triangleq> c; \<langle>c,[cf]\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>\<rbrakk> \<Longrightarrow>
-      \<exists>n' as. n -as\<rightarrow>\<^isub>\<surd>* n' \<and> n' \<triangleq> c' \<and> preds (kinds as) [(cf,undefined)] \<and>
+      \<exists>n' as. n -as\<rightarrow>\<^sub>\<surd>* n' \<and> n' \<triangleq> c' \<and> preds (kinds as) [(cf,undefined)] \<and>
               transfers (kinds as) [(cf,undefined)] = cfs' \<and> map fst cfs' = s'"
 
 

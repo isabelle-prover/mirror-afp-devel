@@ -113,10 +113,10 @@ subsection {* Reachability *}
 abbreviation dominates :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<index> _" [100,100] 40) where
   "dominates G u v \<equiv> (u,v) \<in> arcs_ends G"
 
-abbreviation reachable1 :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^isup>+\<index> _" [100,100] 40) where
+abbreviation reachable1 :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>+\<index> _" [100,100] 40) where
   "reachable1 G u v \<equiv> (u,v) \<in> (arcs_ends G)^+"
 
-definition reachable :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^isup>*\<index> _" [100,100] 40) where
+definition reachable :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>*\<index> _" [100,100] 40) where
   "reachable G u v \<equiv> (u,v) \<in> rtrancl_on (verts G) (arcs_ends G)"
 
 lemma reachableE[elim]:
@@ -129,11 +129,11 @@ lemma (in loopfree_digraph) adj_not_same:
   using assms by (rule reachableE) (auto dest: no_loops)
 
 lemma reachable_in_vertsE:
-  assumes "u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v" obtains "u \<in> verts G" "v \<in> verts G"
+  assumes "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v" obtains "u \<in> verts G" "v \<in> verts G"
   using assms unfolding reachable_def by induct auto
 
 lemma symmetric_reachable:
-  assumes "symmetric G" "v \<rightarrow>\<^isup>*\<^bsub>G\<^esub> w" shows "w \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v"
+  assumes "symmetric G" "v \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w" shows "w \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
 proof -
   have "sym (rtrancl_on (verts G) (arcs_ends G))"
     using assms by (auto simp add: symmetric_def dest: rtrancl_on_sym)
@@ -141,7 +141,7 @@ proof -
 qed
 
 lemma reachable_rtranclI:
-  "u \<rightarrow>\<^isup>*\<^bsub>G \<^esub> v \<Longrightarrow> (u, v) \<in> (arcs_ends G)\<^sup>*"
+  "u \<rightarrow>\<^sup>*\<^bsub>G \<^esub> v \<Longrightarrow> (u, v) \<in> (arcs_ends G)\<^sup>*"
   unfolding reachable_def by (rule rtrancl_on_rtranclI)
 
 
@@ -151,58 +151,58 @@ lemma adj_in_verts:
   assumes "u \<rightarrow>\<^bsub>G\<^esub> v" shows "u \<in> verts G" "v \<in> verts G"
   using assms unfolding arcs_ends_conv by auto
 
-lemma reachable_refl [intro!, Pure.intro!, simp]: "v \<in> verts G \<Longrightarrow> v \<rightarrow>\<^isup>* v"
+lemma reachable_refl [intro!, Pure.intro!, simp]: "v \<in> verts G \<Longrightarrow> v \<rightarrow>\<^sup>* v"
   unfolding reachable_def by auto
 
 lemma adj_reachable_trans[trans]:
-  assumes "a \<rightarrow>\<^bsub>G\<^esub> b" "b \<rightarrow>\<^isup>*\<^bsub>G\<^esub> c" shows "a \<rightarrow>\<^isup>*\<^bsub>G\<^esub> c"
+  assumes "a \<rightarrow>\<^bsub>G\<^esub> b" "b \<rightarrow>\<^sup>*\<^bsub>G\<^esub> c" shows "a \<rightarrow>\<^sup>*\<^bsub>G\<^esub> c"
   using assms by (auto simp: reachable_def intro: converse_rtrancl_on_into_rtrancl_on adj_in_verts)
 
 lemma reachable_adj_trans[trans]:
-  assumes "a \<rightarrow>\<^isup>*\<^bsub>G\<^esub> b" "b \<rightarrow>\<^bsub>G\<^esub> c" shows "a \<rightarrow>\<^isup>*\<^bsub>G\<^esub> c"
+  assumes "a \<rightarrow>\<^sup>*\<^bsub>G\<^esub> b" "b \<rightarrow>\<^bsub>G\<^esub> c" shows "a \<rightarrow>\<^sup>*\<^bsub>G\<^esub> c"
   using assms by (auto simp: reachable_def intro: rtrancl_on_into_rtrancl_on adj_in_verts)
 
-lemma reachable_adjI [intro, simp]: "u \<rightarrow> v \<Longrightarrow> u \<rightarrow>\<^isup>* v"
+lemma reachable_adjI [intro, simp]: "u \<rightarrow> v \<Longrightarrow> u \<rightarrow>\<^sup>* v"
   by (auto intro: adj_reachable_trans adj_in_verts)
 
 lemma reachable_trans[trans]:
-  assumes "u \<rightarrow>\<^isup>*v" "v \<rightarrow>\<^isup>* w" shows "u \<rightarrow>\<^isup>* w"
+  assumes "u \<rightarrow>\<^sup>*v" "v \<rightarrow>\<^sup>* w" shows "u \<rightarrow>\<^sup>* w"
   using assms unfolding reachable_def by (rule rtrancl_on_trans)
 
 lemma reachable_induct[consumes 1, case_names base step]:
-  assumes major: "u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v"
+  assumes major: "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
     and cases: "u \<in> verts G \<Longrightarrow> P u"
-       "\<And>x y. \<lbrakk>u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> x; x \<rightarrow>\<^bsub>G\<^esub> y; P x\<rbrakk> \<Longrightarrow> P y"
+       "\<And>x y. \<lbrakk>u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> x; x \<rightarrow>\<^bsub>G\<^esub> y; P x\<rbrakk> \<Longrightarrow> P y"
   shows "P v"
   using assms unfolding reachable_def by (rule rtrancl_on_induct) auto
 
 lemma converse_reachable_induct[consumes 1, case_names base step, induct pred: reachable]:
-  assumes major: "u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v"
+  assumes major: "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
     and cases: "v \<in> verts G \<Longrightarrow> P v"
-       "\<And>x y. \<lbrakk>x \<rightarrow>\<^bsub>G\<^esub> y; y \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v; P y\<rbrakk> \<Longrightarrow> P x"
+       "\<And>x y. \<lbrakk>x \<rightarrow>\<^bsub>G\<^esub> y; y \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v; P y\<rbrakk> \<Longrightarrow> P x"
   shows "P u"
   using assms unfolding reachable_def by (rule converse_rtrancl_on_induct) auto
 
 lemma reachable_in_verts:
-  assumes "u \<rightarrow>\<^isup>* v" shows "u \<in> verts G" "v \<in> verts G"
+  assumes "u \<rightarrow>\<^sup>* v" shows "u \<in> verts G" "v \<in> verts G"
   using assms by induct (simp_all add: adj_in_verts)
 
 lemma reachable1_in_verts:
-  assumes "u \<rightarrow>\<^isup>+ v" shows "u \<in> verts G" "v \<in> verts G"
+  assumes "u \<rightarrow>\<^sup>+ v" shows "u \<in> verts G" "v \<in> verts G"
   using assms
   by induct (simp_all add: adj_in_verts)
 
 lemma reachable1_reachable[intro]:
-  "v \<rightarrow>\<^isup>+ w \<Longrightarrow> v \<rightarrow>\<^isup>* w"
+  "v \<rightarrow>\<^sup>+ w \<Longrightarrow> v \<rightarrow>\<^sup>* w"
   unfolding reachable_def
   by (rule rtrancl_consistent_rtrancl_on) (simp_all add: reachable1_in_verts adj_in_verts)
 
 lemmas reachable1_reachableE[elim] = reachable1_reachable[elim_format]
 
 lemma reachable_neq_reachable1[intro]:
-  assumes reach: "v \<rightarrow>\<^isup>* w"
+  assumes reach: "v \<rightarrow>\<^sup>* w"
   and neq: "v \<noteq> w"
-  shows "v \<rightarrow>\<^isup>+ w"
+  shows "v \<rightarrow>\<^sup>+ w"
 proof -
   from reach have "(v,w) \<in> (arcs_ends G)^*" by (rule reachable_rtranclI)
   with neq show ?thesis by (auto dest: rtranclD)
@@ -211,15 +211,15 @@ qed
 lemmas reachable_neq_reachable1E[elim] = reachable_neq_reachable1[elim_format]
 
 lemma reachable1_reachable_trans [trans]:
-  "u \<rightarrow>\<^isup>+ v \<Longrightarrow> v \<rightarrow>\<^isup>* w \<Longrightarrow> u \<rightarrow>\<^isup>+ w"
+  "u \<rightarrow>\<^sup>+ v \<Longrightarrow> v \<rightarrow>\<^sup>* w \<Longrightarrow> u \<rightarrow>\<^sup>+ w"
 by (metis trancl_trans reachable_neq_reachable1)
 
 lemma reachable_reachable1_trans [trans]:
-  "u \<rightarrow>\<^isup>* v \<Longrightarrow> v \<rightarrow>\<^isup>+ w \<Longrightarrow> u \<rightarrow>\<^isup>+ w"
+  "u \<rightarrow>\<^sup>* v \<Longrightarrow> v \<rightarrow>\<^sup>+ w \<Longrightarrow> u \<rightarrow>\<^sup>+ w"
 by (metis trancl_trans reachable_neq_reachable1)
 
 lemma reachable_conv:
-  "u \<rightarrow>\<^isup>* v \<longleftrightarrow> (u,v) \<in> (arcs_ends G)^* \<inter> (verts G \<times> verts G)"
+  "u \<rightarrow>\<^sup>* v \<longleftrightarrow> (u,v) \<in> (arcs_ends G)^* \<inter> (verts G \<times> verts G)"
   apply (auto intro: reachable_in_verts)
   apply (induct rule: rtrancl_induct)
   apply auto

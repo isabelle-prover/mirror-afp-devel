@@ -38,18 +38,18 @@ where
   P,E \<turnstile> Var V :: T"
 (*
 WTBinOp:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T\<^isub>1;  P,E \<turnstile> e\<^isub>2 :: T\<^isub>2;
-     case bop of Eq \<Rightarrow> (P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1) \<and> T = Boolean
-               | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
+  "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: T\<^sub>1;  P,E \<turnstile> e\<^sub>2 :: T\<^sub>2;
+     case bop of Eq \<Rightarrow> (P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<or> P \<turnstile> T\<^sub>2 \<le> T\<^sub>1) \<and> T = Boolean
+               | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T"
 *)
 | WTBinOpEq:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T\<^isub>1;  P,E \<turnstile> e\<^isub>2 :: T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 :: Boolean"
+  "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: T\<^sub>1;  P,E \<turnstile> e\<^sub>2 :: T\<^sub>2; P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<or> P \<turnstile> T\<^sub>2 \<le> T\<^sub>1 \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^sub>1 \<guillemotleft>Eq\<guillemotright> e\<^sub>2 :: Boolean"
 
 | WTBinOpAdd:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Integer;  P,E \<turnstile> e\<^isub>2 :: Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Add\<guillemotright> e\<^isub>2 :: Integer"
+  "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: Integer;  P,E \<turnstile> e\<^sub>2 :: Integer \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^sub>1 \<guillemotleft>Add\<guillemotright> e\<^sub>2 :: Integer"
 
 | WTLAss:
   "\<lbrakk> E V = Some T;  P,E \<turnstile> e :: T';  P \<turnstile> T' \<le> T;  V \<noteq> this \<rbrakk>
@@ -60,8 +60,8 @@ WTBinOp:
   \<Longrightarrow> P,E \<turnstile> e\<bullet>F{D} :: T"
 
 | WTFAss:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Class C;  P \<turnstile> C sees F:T in D;  P,E \<turnstile> e\<^isub>2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
+  "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: Class C;  P \<turnstile> C sees F:T in D;  P,E \<turnstile> e\<^sub>2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<^sub>1\<bullet>F{D}:=e\<^sub>2 :: Void"
 
 | WTCall:
   "\<lbrakk> P,E \<turnstile> e :: Class C;  P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
@@ -73,12 +73,12 @@ WTBinOp:
   \<Longrightarrow>  P,E \<turnstile> {V:T; e} :: T'"
 
 | WTSeq:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2 \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+  "\<lbrakk> P,E \<turnstile> e\<^sub>1::T\<^sub>1;  P,E \<turnstile> e\<^sub>2::T\<^sub>2 \<rbrakk>
+  \<Longrightarrow>  P,E \<turnstile> e\<^sub>1;;e\<^sub>2 :: T\<^sub>2"
 | WTCond:
-  "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2;
-     P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;  P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2;  P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^sub>1::T\<^sub>1;  P,E \<turnstile> e\<^sub>2::T\<^sub>2;
+     P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<or> P \<turnstile> T\<^sub>2 \<le> T\<^sub>1;  P \<turnstile> T\<^sub>1 \<le> T\<^sub>2 \<longrightarrow> T = T\<^sub>2;  P \<turnstile> T\<^sub>2 \<le> T\<^sub>1 \<longrightarrow> T = T\<^sub>1 \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T"
 
 | WTWhile:
   "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> c::T \<rbrakk>
@@ -89,8 +89,8 @@ WTBinOp:
   P,E \<turnstile> throw e :: Void"
 
 | WTTry:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T;  P,E(V \<mapsto> Class C) \<turnstile> e\<^isub>2 :: T; is_class P C \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "\<lbrakk> P,E \<turnstile> e\<^sub>1 :: T;  P,E(V \<mapsto> Class C) \<turnstile> e\<^sub>2 :: T; is_class P C \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 :: T"
 
 -- "well-typed expression lists"
 
@@ -135,10 +135,10 @@ apply (auto elim: WTs.cases)
 done
 (*>*)
 
-lemma [iff]: "\<And>Ts. (P,E \<turnstile> es\<^isub>1 @ es\<^isub>2 [::] Ts) =
-  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> P,E \<turnstile> es\<^isub>1 [::] Ts\<^isub>1 \<and> P,E \<turnstile> es\<^isub>2[::]Ts\<^isub>2)"
+lemma [iff]: "\<And>Ts. (P,E \<turnstile> es\<^sub>1 @ es\<^sub>2 [::] Ts) =
+  (\<exists>Ts\<^sub>1 Ts\<^sub>2. Ts = Ts\<^sub>1 @ Ts\<^sub>2 \<and> P,E \<turnstile> es\<^sub>1 [::] Ts\<^sub>1 \<and> P,E \<turnstile> es\<^sub>2[::]Ts\<^sub>2)"
 (*<*)
-apply(induct es\<^isub>1 type:list)
+apply(induct es\<^sub>1 type:list)
  apply simp
 apply clarsimp
 apply(erule thin_rl)
@@ -166,7 +166,7 @@ apply (auto elim: WT.cases)
 done
 (*>*)
 
-lemma [iff]: "P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2 = (\<exists>T\<^isub>1. P,E \<turnstile> e\<^isub>1::T\<^isub>1 \<and> P,E \<turnstile> e\<^isub>2::T\<^isub>2)"
+lemma [iff]: "P,E \<turnstile> e\<^sub>1;;e\<^sub>2 :: T\<^sub>2 = (\<exists>T\<^sub>1. P,E \<turnstile> e\<^sub>1::T\<^sub>1 \<and> P,E \<turnstile> e\<^sub>2::T\<^sub>2)"
 (*<*)
 apply(rule iffI)
 apply (auto elim: WT.cases)
@@ -183,14 +183,14 @@ done
 (*<*)
 inductive_cases WT_elim_cases[elim!]:
   "P,E \<turnstile> V :=e :: T"
-  "P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T"
   "P,E \<turnstile> while (e) c :: T"
   "P,E \<turnstile> throw e :: T"
-  "P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "P,E \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 :: T"
   "P,E \<turnstile> Cast D e :: T"
   "P,E \<turnstile> a\<bullet>F{D} :: T"
   "P,E \<turnstile> a\<bullet>F{D} := v :: T"
-  "P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
+  "P,E \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T"
   "P,E \<turnstile> new C :: T"
   "P,E \<turnstile> e\<bullet>M(ps) :: T"
 (*>*)

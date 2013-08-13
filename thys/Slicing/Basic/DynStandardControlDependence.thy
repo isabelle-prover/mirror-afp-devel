@@ -6,8 +6,8 @@ context Postdomination begin
 
 definition
   dyn_standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool"
-  ("_ controls\<^isub>s _ via _" [51,0,0])
-where dyn_standard_control_dependence_def:"n controls\<^isub>s n' via as \<equiv> 
+  ("_ controls\<^sub>s _ via _" [51,0,0])
+where dyn_standard_control_dependence_def:"n controls\<^sub>s n' via as \<equiv> 
     (\<exists>a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
                    (n' postdominates (targetnode a)) \<and>
                    (valid_edge a') \<and> (sourcenode a' = n) \<and> 
@@ -15,7 +15,7 @@ where dyn_standard_control_dependence_def:"n controls\<^isub>s n' via as \<equiv
 
 
 lemma Exit_not_dyn_standard_control_dependent:
-  assumes control:"n controls\<^isub>s (_Exit_) via as" shows "False"
+  assumes control:"n controls\<^sub>s (_Exit_) via as" shows "False"
 proof -
   from control obtain a as' where path:"n -as\<rightarrow>* (_Exit_)" and as:"as = a#as'"
     and pd:"(_Exit_) postdominates (targetnode a)" 
@@ -27,7 +27,7 @@ qed
 
 
 lemma dyn_standard_control_dependence_def_variant:
-  "n controls\<^isub>s n' via as = ((n -as\<rightarrow>* n') \<and> (n \<noteq> n') \<and>
+  "n controls\<^sub>s n' via as = ((n -as\<rightarrow>* n') \<and> (n \<noteq> n') \<and>
     (\<not> n' postdominates n) \<and> (n' \<notin> set(sourcenodes as)) \<and>
   (\<forall>n'' \<in> set(targetnodes as). n' postdominates n''))"
 proof
@@ -47,7 +47,7 @@ proof
   qed
   from path have valid:"valid_node n" and valid':"valid_node n'"
     by(auto dest:path_valid_node)
-  show "n controls\<^isub>s n' via as"
+  show "n controls\<^sub>s n' via as"
   proof(cases as)
     case Nil    
     with path valid not_pd notExit have False 
@@ -93,7 +93,7 @@ proof
     qed
   qed
 next
-  assume "n controls\<^isub>s n' via as"
+  assume "n controls\<^sub>s n' via as"
   then obtain a nx a' nx' as' where notin:"n' \<notin> set(sourcenodes as)"
     and path:"n -as\<rightarrow>* n'" and as:"as = a#as'" and valid_edge:"valid_edge a'"
     and pd:"n' postdominates (targetnode a)"
@@ -216,7 +216,7 @@ lemma which_node_dyn_standard_control_dependence_source:
   and inner_node:"inner_node n" and not_pd:"\<not> n postdominates (targetnode a')"
   and last:"\<forall>ax ax'. ax \<in> set as' \<and> sourcenode ax = sourcenode ax' \<and>
     valid_edge ax' \<longrightarrow> n postdominates targetnode ax'"
-  shows "n' controls\<^isub>s n via a#as'"
+  shows "n' controls\<^sub>s n via a#as'"
 proof -
   from path source have path_n'n:"n' -a#as'\<rightarrow>* n" by(fastforce dest:path_split_second)
   from path have valid_edge:"valid_edge a" by(fastforce intro:path_split)
@@ -321,7 +321,7 @@ qed
 
 lemma inner_node_dyn_standard_control_dependence_predecessor:
   assumes inner_node:"inner_node n"
-  obtains n' as where "n' controls\<^isub>s n via as"
+  obtains n' as where "n' controls\<^sub>s n via as"
 proof(atomize_elim)
   from inner_node obtain as' where pathExit:"n -as'\<rightarrow>* (_Exit_)"
     by(fastforce dest:inner_is_valid Exit_path)
@@ -363,7 +363,7 @@ proof(atomize_elim)
   qed
   then obtain a asx where pathEntry':"(_Entry_) -a#asx\<rightarrow>* n"
     and notin:"n \<notin> set (sourcenodes (a#asx))" by blast
-  show "\<exists>n' as. n' controls\<^isub>s n via as"
+  show "\<exists>n' as. n' controls\<^sub>s n via as"
   proof(cases "\<forall>a' a''. a' \<in> set asx \<and> sourcenode a' = sourcenode a'' \<and> 
       valid_edge a'' \<longrightarrow> n postdominates targetnode a''")
     case True
@@ -375,7 +375,7 @@ proof(atomize_elim)
     from Entry_Exit_edge obtain a' where "sourcenode a' = (_Entry_)"
       and "targetnode a' = (_Exit_)" and "valid_edge a'" by auto
     with path' inner_node not_pd True eq notin pathExit
-    have "sourcenode a controls\<^isub>s n via a#asx"
+    have "sourcenode a controls\<^sub>s n via a#asx"
       by -(erule which_node_dyn_standard_control_dependence_source,auto)
     thus ?thesis by blast
   next
@@ -400,7 +400,7 @@ proof(atomize_elim)
       by(auto simp:sourcenodes_def)
     from as' pathEntry' have "(_Entry_) -(a#asx')@ax#asx''\<rightarrow>* n" by simp
     with inner_node not_pd notin' eq last pathExit valid_edge
-    have "sourcenode ax controls\<^isub>s n via ax#asx''"
+    have "sourcenode ax controls\<^sub>s n via ax#asx''"
       by(fastforce elim!:which_node_dyn_standard_control_dependence_source)
     thus ?thesis by blast
   qed

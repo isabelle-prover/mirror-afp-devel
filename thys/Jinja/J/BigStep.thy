@@ -25,171 +25,171 @@ where
   P \<turnstile> \<langle>new C, (h,l)\<rangle> \<Rightarrow> \<langle>THROW OutOfMemory,(h,l)\<rangle>"
 
 | Cast:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,(h,l)\<rangle>; h a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,(h,l)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>addr a,(h,l)\<rangle>; h a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>addr a,(h,l)\<rangle>"
 
 | CastNull:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>null,s\<^sub>1\<rangle>"
 
 | CastFail:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>addr a,(h,l)\<rangle>; h a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle>\<Rightarrow> \<langle>addr a,(h,l)\<rangle>; h a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
 
 | CastThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>Cast C e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | Val:
   "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>"
 
 | BinOp:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v\<^isub>2,s\<^isub>2\<rangle>; binop(bop,v\<^isub>1,v\<^isub>2) = Some v \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle>\<Rightarrow>\<langle>Val v,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow> \<langle>Val v\<^sub>2,s\<^sub>2\<rangle>; binop(bop,v\<^sub>1,v\<^sub>2) = Some v \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2,s\<^sub>0\<rangle>\<Rightarrow>\<langle>Val v,s\<^sub>2\<rangle>"
 
 | BinOpThrow1:
-  "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^sub>1\<rangle>"
 
 | BinOpThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow> \<langle>throw e,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^sub>2\<rangle>"
 
 | Var:
   "l V = Some v \<Longrightarrow>
   P \<turnstile> \<langle>Var V,(h,l)\<rangle> \<Rightarrow> \<langle>Val v,(h,l)\<rangle>"
 
 | LAss:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,(h,l)\<rangle>; l' = l(V\<mapsto>v) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>unit,(h,l')\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v,(h,l)\<rangle>; l' = l(V\<mapsto>v) \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>V:=e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>unit,(h,l')\<rangle>"
 
 | LAssThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>V:=e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | FAcc:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,(h,l)\<rangle>; h a = Some(C,fs); fs(F,D) = Some v \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,(h,l)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>addr a,(h,l)\<rangle>; h a = Some(C,fs); fs(F,D) = Some v \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v,(h,l)\<rangle>"
 
 | FAccNull:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<bullet>F{D},s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<bullet>F{D},s\<^sub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^sub>1\<rangle>"
 
 | FAccThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<bullet>F{D},s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<bullet>F{D},s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | FAss:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     h\<^isub>2 a = Some(C,fs); fs' = fs((F,D)\<mapsto>v); h\<^isub>2' = h\<^isub>2(a\<mapsto>(C,fs')) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>unit,(h\<^isub>2',l\<^isub>2)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow> \<langle>Val v,(h\<^sub>2,l\<^sub>2)\<rangle>;
+     h\<^sub>2 a = Some(C,fs); fs' = fs((F,D)\<mapsto>v); h\<^sub>2' = h\<^sub>2(a\<mapsto>(C,fs')) \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>unit,(h\<^sub>2',l\<^sub>2)\<rangle>"
 
 | FAssNull:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>null,s\<^sub>1\<rangle>;  P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow> \<langle>Val v,s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^sub>2\<rangle>"
 
 | FAssThrow1:
-  "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | FAssThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>2\<rangle>"
 
 | CallObjThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | CallParamsThrow:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs @ throw ex # es',s\<^isub>2\<rangle> \<rbrakk>
-   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs @ throw ex # es',s\<^sub>2\<rangle> \<rbrakk>
+   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^sub>2\<rangle>"
 
 | CallNull:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>null,s\<^sub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^sub>2\<rangle>"
 
 | Call:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     h\<^isub>2 a = Some(C,fs);  P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D;
-     length vs = length pns;  l\<^isub>2' = [this\<mapsto>Addr a, pns[\<mapsto>]vs];
-     P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^sub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>;
+     h\<^sub>2 a = Some(C,fs);  P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D;
+     length vs = length pns;  l\<^sub>2' = [this\<mapsto>Addr a, pns[\<mapsto>]vs];
+     P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>3)\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>2)\<rangle>"
 
 | Block:
-  "P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1(V:=l\<^isub>0 V))\<rangle>"
+  "P \<turnstile> \<langle>e\<^sub>0,(h\<^sub>0,l\<^sub>0(V:=None))\<rangle> \<Rightarrow> \<langle>e\<^sub>1,(h\<^sub>1,l\<^sub>1)\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>{V:T; e\<^sub>0},(h\<^sub>0,l\<^sub>0)\<rangle> \<Rightarrow> \<langle>e\<^sub>1,(h\<^sub>1,l\<^sub>1(V:=l\<^sub>0 V))\<rangle>"
 
 | Seq:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>0;;e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<Rightarrow> \<langle>e\<^sub>2,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>0;;e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>e\<^sub>2,s\<^sub>2\<rangle>"
 
 | SeqThrow:
-  "P \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^isub>0;;e\<^isub>1,s\<^isub>0\<rangle>\<Rightarrow>\<langle>throw e,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<^sub>0;;e\<^sub>1,s\<^sub>0\<rangle>\<Rightarrow>\<langle>throw e,s\<^sub>1\<rangle>"
 
 | CondT:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow> \<langle>e',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<Rightarrow> \<langle>e',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>e',s\<^sub>2\<rangle>"
 
 | CondF:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>false,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>e',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>false,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<Rightarrow> \<langle>e',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>e',s\<^sub>2\<rangle>"
 
 | CondThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | WhileF:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>false,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>unit,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>false,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow> \<langle>unit,s\<^sub>1\<rangle>"
 
 | WhileT:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>2\<rangle>; P \<turnstile> \<langle>while (e) c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>e\<^isub>3,s\<^isub>3\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>3,s\<^isub>3\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow> \<langle>Val v\<^sub>1,s\<^sub>2\<rangle>; P \<turnstile> \<langle>while (e) c,s\<^sub>2\<rangle> \<Rightarrow> \<langle>e\<^sub>3,s\<^sub>3\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow> \<langle>e\<^sub>3,s\<^sub>3\<rangle>"
 
 | WhileCondThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle> throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle> throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | WhileBodyThrow:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>\<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>2\<rangle>\<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>while (e) c,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>2\<rangle>"
 
 | Throw:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Throw a,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>throw e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Throw a,s\<^sub>1\<rangle>"
 
 | ThrowNull:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>null,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>throw e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^sub>1\<rangle>"
 
 | ThrowThrow:
-  "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>throw e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^sub>1\<rangle>"
 
 | Try:
-  "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v\<^sub>1,s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>"
 
 | TryCatch:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^isub>1,l\<^isub>1)\<rangle>;  h\<^isub>1 a = Some(D,fs);  P \<turnstile> D \<preceq>\<^sup>* C;
-     P \<turnstile> \<langle>e\<^isub>2,(h\<^isub>1,l\<^isub>1(V\<mapsto>Addr a))\<rangle> \<Rightarrow> \<langle>e\<^isub>2',(h\<^isub>2,l\<^isub>2)\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',(h\<^isub>2,l\<^isub>2(V:=l\<^isub>1 V))\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^sub>1,l\<^sub>1)\<rangle>;  h\<^sub>1 a = Some(D,fs);  P \<turnstile> D \<preceq>\<^sup>* C;
+     P \<turnstile> \<langle>e\<^sub>2,(h\<^sub>1,l\<^sub>1(V\<mapsto>Addr a))\<rangle> \<Rightarrow> \<langle>e\<^sub>2',(h\<^sub>2,l\<^sub>2)\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>e\<^sub>2',(h\<^sub>2,l\<^sub>2(V:=l\<^sub>1 V))\<rangle>"
 
 | TryThrow:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^isub>1,l\<^isub>1)\<rangle>;  h\<^isub>1 a = Some(D,fs);  \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^isub>1,l\<^isub>1)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^sub>1,l\<^sub>1)\<rangle>;  h\<^sub>1 a = Some(D,fs);  \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^sub>1,l\<^sub>1)\<rangle>"
 
 | Nil:
   "P \<turnstile> \<langle>[],s\<rangle> [\<Rightarrow>] \<langle>[],s\<rangle>"
 
 | Cons:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>es',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>Val v # es',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<Rightarrow>] \<langle>es',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<^sub>0\<rangle> [\<Rightarrow>] \<langle>Val v # es',s\<^sub>2\<rangle>"
 
 | ConsThrow:
-  "P \<turnstile> \<langle>e, s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e', s\<^isub>1\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>e#es, s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>throw e' # es, s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e, s\<^sub>0\<rangle> \<Rightarrow> \<langle>throw e', s\<^sub>1\<rangle> \<Longrightarrow>
+  P \<turnstile> \<langle>e#es, s\<^sub>0\<rangle> [\<Rightarrow>] \<langle>throw e' # es, s\<^sub>1\<rangle>"
 
 (*<*)
 lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
@@ -198,17 +198,17 @@ lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
 inductive_cases eval_cases [cases set]:
  "P \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
- "P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>V:=e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
- "P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>e\<bullet>M{D}(es),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
- "P \<turnstile> \<langle>{V:T;e\<^isub>1},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
- "P \<turnstile> \<langle>e\<^isub>1;;e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
- "P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P \<turnstile> \<langle>{V:T;e\<^sub>1},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P \<turnstile> \<langle>e\<^sub>1;;e\<^sub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>while (b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>throw e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
- "P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  
 inductive_cases evals_cases [cases set]:
  "P \<turnstile> \<langle>[],s\<rangle> [\<Rightarrow>] \<langle>e',s'\<rangle>"
@@ -292,8 +292,8 @@ lemma eval_final: "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e
 (*<*)by(induct rule:eval_evals.inducts, simp_all)(*>*)
 
 
-lemma eval_lcl_incr: "P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
- and evals_lcl_incr: "P \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
+lemma eval_lcl_incr: "P \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>1,l\<^sub>1)\<rangle> \<Longrightarrow> dom l\<^sub>0 \<subseteq> dom l\<^sub>1"
+ and evals_lcl_incr: "P \<turnstile> \<langle>es,(h\<^sub>0,l\<^sub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^sub>1,l\<^sub>1)\<rangle> \<Longrightarrow> dom l\<^sub>0 \<subseteq> dom l\<^sub>1"
 (*<*)
 proof (induct rule: eval_evals_inducts)
   case BinOp show ?case by(rule subset_trans)(rule BinOp.hyps)+

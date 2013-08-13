@@ -10,12 +10,12 @@ subsection {* Intraprocedural observable sets *}
 inductive_set obs_intra :: "'node \<Rightarrow> 'node set \<Rightarrow> 'node set" 
 for n::"'node" and S::"'node set"
 where obs_intra_elem:
-  "\<lbrakk>n -as\<rightarrow>\<^isub>\<iota>* n'; \<forall>nx \<in> set(sourcenodes as). nx \<notin> S; n' \<in> S\<rbrakk> \<Longrightarrow> n' \<in> obs_intra n S"
+  "\<lbrakk>n -as\<rightarrow>\<^sub>\<iota>* n'; \<forall>nx \<in> set(sourcenodes as). nx \<notin> S; n' \<in> S\<rbrakk> \<Longrightarrow> n' \<in> obs_intra n S"
 
 
 lemma obs_intraE:
   assumes "n' \<in> obs_intra n S"
-  obtains as where "n -as\<rightarrow>\<^isub>\<iota>* n'" and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S" and "n' \<in> S"
+  obtains as where "n -as\<rightarrow>\<^sub>\<iota>* n'" and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S" and "n' \<in> S"
   using `n' \<in> obs_intra n S`
   by(fastforce elim:obs_intra.cases)
 
@@ -24,17 +24,17 @@ lemma n_in_obs_intra:
   assumes "valid_node n" and "n \<in> S" shows "obs_intra n S = {n}"
 proof -
   from `valid_node n` have "n -[]\<rightarrow>* n" by(rule empty_path)
-  hence "n -[]\<rightarrow>\<^isub>\<iota>* n" by(simp add:intra_path_def)
+  hence "n -[]\<rightarrow>\<^sub>\<iota>* n" by(simp add:intra_path_def)
   with `n \<in> S` have "n \<in> obs_intra n S" 
     by(fastforce elim:obs_intra_elem simp:sourcenodes_def)
   { fix n' assume "n' \<in> obs_intra n S"
     have "n' = n"
     proof(rule ccontr)
       assume "n' \<noteq> n"
-      from `n' \<in> obs_intra n S` obtain as where "n -as\<rightarrow>\<^isub>\<iota>* n'"
+      from `n' \<in> obs_intra n S` obtain as where "n -as\<rightarrow>\<^sub>\<iota>* n'"
         and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
         and "n' \<in> S" by(fastforce elim:obs_intra.cases)
-      from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as\<rightarrow>* n'" by(simp add:intra_path_def)
+      from `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n -as\<rightarrow>* n'" by(simp add:intra_path_def)
       from this `\<forall>nx \<in> set(sourcenodes as). nx \<notin> S` `n' \<noteq> n` `n \<in> S`
       show False
       proof(induct rule:path.induct)
@@ -59,10 +59,10 @@ lemma edge_obs_intra_subset:
   shows "obs_intra (targetnode a) S \<subseteq> obs_intra (sourcenode a) S"
 proof
   fix n assume "n \<in> obs_intra (targetnode a) S"
-  then obtain as where "targetnode a -as\<rightarrow>\<^isub>\<iota>* n" 
+  then obtain as where "targetnode a -as\<rightarrow>\<^sub>\<iota>* n" 
     and all:"\<forall>nx \<in> set(sourcenodes as). nx \<notin> S" and "n \<in> S" by(erule obs_intraE)
-  from `valid_edge a` `intra_kind (kind a)` `targetnode a -as\<rightarrow>\<^isub>\<iota>* n`
-  have "sourcenode a -[a]@as\<rightarrow>\<^isub>\<iota>* n" by(fastforce intro:Cons_path simp:intra_path_def)
+  from `valid_edge a` `intra_kind (kind a)` `targetnode a -as\<rightarrow>\<^sub>\<iota>* n`
+  have "sourcenode a -[a]@as\<rightarrow>\<^sub>\<iota>* n" by(fastforce intro:Cons_path simp:intra_path_def)
   moreover
   from all `sourcenode a \<notin> S` have "\<forall>nx \<in> set(sourcenodes (a#as)). nx \<notin> S"
     by(simp add:sourcenodes_def)
@@ -72,10 +72,10 @@ qed
 
 
 lemma path_obs_intra_subset:
-  assumes "n -as\<rightarrow>\<^isub>\<iota>* n'" and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> S"
+  assumes "n -as\<rightarrow>\<^sub>\<iota>* n'" and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> S"
   shows "obs_intra n' S \<subseteq> obs_intra n S"
 proof -
-  from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind (kind a)"
+  from `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind (kind a)"
     by(simp_all add:intra_path_def)
   from this `\<forall>n' \<in> set(sourcenodes as). n' \<notin> S` show ?thesis
   proof(induct rule:path.induct)
@@ -99,13 +99,13 @@ qed
 
 
 lemma path_ex_obs_intra:
-  assumes "n -as\<rightarrow>\<^isub>\<iota>* n'" and "n' \<in> S"
+  assumes "n -as\<rightarrow>\<^sub>\<iota>* n'" and "n' \<in> S"
   obtains m where "m \<in> obs_intra n S"
 proof(atomize_elim)
   show "\<exists>m. m \<in> obs_intra n S"
   proof(cases "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S")
     case True
-    with `n -as\<rightarrow>\<^isub>\<iota>* n'` `n' \<in> S` have "n' \<in> obs_intra n S" by -(rule obs_intra_elem)
+    with `n -as\<rightarrow>\<^sub>\<iota>* n'` `n' \<in> S` have "n' \<in> obs_intra n S" by -(rule obs_intra_elem)
     thus ?thesis by fastforce
   next
     case False
@@ -117,7 +117,7 @@ proof(atomize_elim)
       where "ns = sourcenodes as'"
       and "as = as'@a#as''" and "sourcenode a = nx"
       by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-    with `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as'\<rightarrow>\<^isub>\<iota>* nx"
+    with `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n -as'\<rightarrow>\<^sub>\<iota>* nx"
       by(fastforce dest:path_split simp:intra_path_def)
     with `nx \<in> S` `\<forall>n' \<in> set ns. n' \<notin> S` `ns = sourcenodes as'` 
     have "nx \<in> obs_intra n S" by(fastforce intro:obs_intra_elem)

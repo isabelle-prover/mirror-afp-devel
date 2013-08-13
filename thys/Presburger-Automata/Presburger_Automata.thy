@@ -165,7 +165,7 @@ where
   "bdd_binop f (Leaf x) (Leaf y) = Leaf (f x y)"
 | "bdd_binop f (Branch l r) (Leaf y) = Branch (bdd_binop f l (Leaf y)) (bdd_binop f r (Leaf y))"
 | "bdd_binop f (Leaf x) (Branch l r) = Branch (bdd_binop f (Leaf x) l) (bdd_binop f (Leaf x) r)"
-| "bdd_binop f (Branch l\<^isub>1 r\<^isub>1) (Branch l\<^isub>2 r\<^isub>2) = Branch (bdd_binop f l\<^isub>1 l\<^isub>2) (bdd_binop f r\<^isub>1 r\<^isub>2)"
+| "bdd_binop f (Branch l\<^sub>1 r\<^sub>1) (Branch l\<^sub>2 r\<^sub>2) = Branch (bdd_binop f l\<^sub>1 l\<^sub>2) (bdd_binop f r\<^sub>1 r\<^sub>2)"
 
 lemma bddh_binop: "bddh n (bdd_binop f l r) = (bddh n l \<and> bddh n r)"
   by (induct f l r arbitrary: n rule: bdd_binop.induct) (auto split add: nat.split_asm)
@@ -245,7 +245,7 @@ lemma add_leaves_binop_subset:
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
   apply (simp add: image_eq_UN)
-  apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l\<^isub>1 xs, y \<leftarrow> add_leaves l\<^isub>2 ys]" in
+  apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l\<^sub>1 xs, y \<leftarrow> add_leaves l\<^sub>2 ys]" in
     rev_subsetD [OF _ add_leaves_mono, standard])
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
@@ -2036,9 +2036,9 @@ qed
 theorem binop_dfa_reachable:
   assumes bss: "list_all (is_alph n) bss"
   shows "(\<exists>m. dfa_reach (binop_dfa f A B) 0 bss m \<and>
-    fst (prod_dfs A B (0, 0)) ! s\<^isub>1 ! s\<^isub>2 = Some m \<and>
-    dfa_is_node A s\<^isub>1 \<and> dfa_is_node B s\<^isub>2) =
-   (dfa_reach A 0 bss s\<^isub>1 \<and> dfa_reach B 0 bss s\<^isub>2)"
+    fst (prod_dfs A B (0, 0)) ! s\<^sub>1 ! s\<^sub>2 = Some m \<and>
+    dfa_is_node A s\<^sub>1 \<and> dfa_is_node B s\<^sub>2) =
+   (dfa_reach A 0 bss s\<^sub>1 \<and> dfa_reach B 0 bss s\<^sub>2)"
 proof -
   let ?tr = "map (\<lambda>(i, j).
     bdd_binop (\<lambda>k l. the (fst (prod_dfs A B (0,0)) ! k ! l)) (fst A ! i) (fst B ! j))
@@ -2049,27 +2049,27 @@ proof -
   from s1 s2 have start: "fst (prod_dfs A B (0,0)) ! 0 ! 0 = Some 0"
     by (rule prod_dfs_start)
   show "(\<exists>m. dfa_reach (binop_dfa f A B) 0 bss m \<and>
-     fst (prod_dfs A B (0, 0)) ! s\<^isub>1 ! s\<^isub>2 = Some m \<and>
-     dfa_is_node A s\<^isub>1 \<and> dfa_is_node B s\<^isub>2) =
-    (dfa_reach A 0 bss s\<^isub>1 \<and> dfa_reach B 0 bss s\<^isub>2)"
+     fst (prod_dfs A B (0, 0)) ! s\<^sub>1 ! s\<^sub>2 = Some m \<and>
+     dfa_is_node A s\<^sub>1 \<and> dfa_is_node B s\<^sub>2) =
+    (dfa_reach A 0 bss s\<^sub>1 \<and> dfa_reach B 0 bss s\<^sub>2)"
     (is "(\<exists>m. ?lhs1 m \<and> ?lhs2 m \<and> ?lhs3 \<and> ?lhs4) = ?rhs"
      is "?lhs = _")
   proof
     assume "\<exists>m. ?lhs1 m \<and> ?lhs2 m \<and> ?lhs3 \<and> ?lhs4"
     then obtain m where lhs: "?lhs1 m" "?lhs2 m" "?lhs3" "?lhs4" by auto
     from lhs bss show ?rhs
-    proof (induct arbitrary: s\<^isub>1 s\<^isub>2)
+    proof (induct arbitrary: s\<^sub>1 s\<^sub>2)
       case Nil
       from is_node_s1_s2
-        s1 s2 `dfa_is_node A s\<^isub>1` `dfa_is_node B s\<^isub>2`
-      have "(0, 0) = (s\<^isub>1, s\<^isub>2)"
-        using start `fst (prod_dfs A B (0,0)) ! s\<^isub>1 ! s\<^isub>2 = Some 0`
+        s1 s2 `dfa_is_node A s\<^sub>1` `dfa_is_node B s\<^sub>2`
+      have "(0, 0) = (s\<^sub>1, s\<^sub>2)"
+        using start `fst (prod_dfs A B (0,0)) ! s\<^sub>1 ! s\<^sub>2 = Some 0`
         by (rule prod_dfs_inj)
       moreover have "dfa_reach A 0 [] 0" by (rule reach_nil)
       moreover have "dfa_reach B 0 [] 0" by (rule reach_nil)
       ultimately show ?case by simp
     next
-      case (snoc j bss bs s\<^isub>1 s\<^isub>2)
+      case (snoc j bss bs s\<^sub>1 s\<^sub>2)
       then have "length bs = n" by (simp add: is_alph_def)
       moreover from binop_wf_dfa have "dfa_is_node (binop_dfa f A B) 0" by (simp add: dfa_is_node_def wf_dfa_def)
       with snoc binop_wf_dfa [of f] have "dfa_is_node (binop_dfa f A B) j" by (simp add: dfa_reach_is_node)
@@ -2094,9 +2094,9 @@ proof -
         and rh: "bddh (length bs) (fst B ! snd (snd (prod_dfs A B (0,0)) ! j))"
         by (auto simp: wf_dfa_def dfa_is_node_def list_all_iff is_alph_def)
       from snoc(3)[unfolded dfa_trans_def binop_dfa_def Let_def split_beta fst_conv nth_map[OF j] bdd_lookup_binop[OF lh,OF rh], folded dfa_trans_def] k
-      have "fst (prod_dfs A B (0,0)) ! s\<^isub>1 ! s\<^isub>2 = Some k" by simp
-      with is_node_s1_s2 `dfa_is_node A s\<^isub>1` `dfa_is_node B s\<^isub>2` s_tr1' s_tr2'
-      have "(s\<^isub>1, s\<^isub>2) = (dfa_trans A (fst (snd (prod_dfs A B (0,0)) ! j)) bs, dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
+      have "fst (prod_dfs A B (0,0)) ! s\<^sub>1 ! s\<^sub>2 = Some k" by simp
+      with is_node_s1_s2 `dfa_is_node A s\<^sub>1` `dfa_is_node B s\<^sub>2` s_tr1' s_tr2'
+      have "(s\<^sub>1, s\<^sub>2) = (dfa_trans A (fst (snd (prod_dfs A B (0,0)) ! j)) bs, dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
         using k
         by (rule prod_dfs_inj)
       moreover from snoc Some_j j_tr1 j_tr2
@@ -2107,26 +2107,26 @@ proof -
       have "dfa_reach B 0 bss (snd (snd (prod_dfs A B (0,0)) ! j))" by simp
       hence "dfa_reach B 0 (bss @ [bs]) (dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
         by (rule reach_snoc)
-      ultimately show "dfa_reach A 0 (bss @ [bs]) s\<^isub>1 \<and> dfa_reach B 0 (bss @ [bs]) s\<^isub>2"
+      ultimately show "dfa_reach A 0 (bss @ [bs]) s\<^sub>1 \<and> dfa_reach B 0 (bss @ [bs]) s\<^sub>2"
         by simp
     qed
   next
     assume ?rhs
-    hence reach: "dfa_reach A 0 bss s\<^isub>1" "dfa_reach B 0 bss s\<^isub>2" by simp_all
+    hence reach: "dfa_reach A 0 bss s\<^sub>1" "dfa_reach B 0 bss s\<^sub>2" by simp_all
     then show ?lhs using bss
-    proof (induct arbitrary: s\<^isub>2)
+    proof (induct arbitrary: s\<^sub>2)
       case Nil
       with start s1 s2 show ?case
         by (auto intro: reach_nil simp: reach_nil_iff)
     next
-      case (snoc j bss bs s\<^isub>2)
+      case (snoc j bss bs s\<^sub>2)
       from snoc(3)
-      obtain s\<^isub>2' where reach_s2': "dfa_reach B 0 bss s\<^isub>2'" and s2': "s\<^isub>2 = dfa_trans B s\<^isub>2' bs"
+      obtain s\<^sub>2' where reach_s2': "dfa_reach B 0 bss s\<^sub>2'" and s2': "s\<^sub>2 = dfa_trans B s\<^sub>2' bs"
         by (auto simp: reach_snoc_iff)
       from snoc(2) [OF reach_s2'] snoc(4)
       obtain m where reach_m: "dfa_reach (binop_dfa f A B) 0 bss m"
-        and m: "fst (prod_dfs A B (0,0)) ! j ! s\<^isub>2' = Some m"
-        and j: "dfa_is_node A j" and s2'': "dfa_is_node B s\<^isub>2'"
+        and m: "fst (prod_dfs A B (0,0)) ! j ! s\<^sub>2' = Some m"
+        and j: "dfa_is_node A j" and s2'': "dfa_is_node B s\<^sub>2'"
         by auto
       from snoc have "list_all (is_alph n) bss" by simp
       with binop_wf_dfa reach_m dfa_startnode_is_node[OF binop_wf_dfa]
@@ -2134,7 +2134,7 @@ proof -
         by (rule dfa_reach_is_node)
       from is_node_s1_s2 m j s2''
       have m': "(m < length (snd (prod_dfs A B (0,0))) \<and>
-        snd (prod_dfs A B (0,0)) ! m = (j, s\<^isub>2'))"
+        snd (prod_dfs A B (0,0)) ! m = (j, s\<^sub>2'))"
         by (simp add: prod_dfs_bij [symmetric])
       with j s2'' have "dfa_is_node A (fst (snd (prod_dfs A B (0,0)) ! m))"
         "dfa_is_node B (snd (snd (prod_dfs A B (0,0)) ! m))"
@@ -2145,9 +2145,9 @@ proof -
         by (simp add: wf_dfa_def is_alph_def dfa_is_node_def list_all_iff)+
       from snoc have "length bs = n" by (simp add: is_alph_def)
       then obtain k where k: "fst (prod_dfs A B (0,0)) !
-          dfa_trans A j bs ! dfa_trans B s\<^isub>2' bs = Some k"
+          dfa_trans A j bs ! dfa_trans B s\<^sub>2' bs = Some k"
         and s_tr1: "dfa_is_node A (dfa_trans A j bs)"
-        and s_tr2: "dfa_is_node B (dfa_trans B s\<^isub>2' bs)"
+        and s_tr2: "dfa_is_node B (dfa_trans B s\<^sub>2' bs)"
         using j s2'' s1 s2 m
         by (rule prod_dfs_statetrans)
       show ?case

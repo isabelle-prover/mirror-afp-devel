@@ -107,14 +107,14 @@ proof -
   assume QTrans: "Q \<Longrightarrow>a<\<nu>x> \<prec> Q'"
   assume "x \<sharp> P"
     
-  from QTrans obtain Q'' Q''' where QChain: "Q \<Longrightarrow>\<^isub>\<tau> Q''"
+  from QTrans obtain Q'' Q''' where QChain: "Q \<Longrightarrow>\<^sub>\<tau> Q''"
                                         and Q''Trans: "Q'' \<longmapsto>a<\<nu>x> \<prec> Q'''"
-                                        and Q'''Chain: "Q''' \<Longrightarrow>\<^isub>\<tau> Q'"
+                                        and Q'''Chain: "Q''' \<Longrightarrow>\<^sub>\<tau> Q'"
     by(blast dest: transitionE)
 
-  from QChain PRelQ Sim have "\<exists>P''. P \<Longrightarrow>\<^isub>\<tau> P'' \<and> (P'', Q'') \<in> Rel"
+  from QChain PRelQ Sim have "\<exists>P''. P \<Longrightarrow>\<^sub>\<tau> P'' \<and> (P'', Q'') \<in> Rel"
     by(rule weakSimTauChain)
-  then obtain P'' where PChain: "P \<Longrightarrow>\<^isub>\<tau> P''" and P''RelQ'': "(P'', Q'') \<in> Rel" by blast
+  then obtain P'' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P''" and P''RelQ'': "(P'', Q'') \<in> Rel" by blast
   from PChain `x \<sharp> P` have xFreshP'': "x \<sharp> P''" by(rule freshChain)
   
   from P''RelQ'' have "P'' \<leadsto><Rel> Q''" by(rule Sim)
@@ -122,9 +122,9 @@ proof -
                                         and P'''RelQ''': "(P''', Q''') \<in> Rel"
     by(blast dest: Weak_Early_Sim.simE)
 
-  have "\<exists>P'. P''' \<Longrightarrow>\<^isub>\<tau> P' \<and> (P', Q') \<in> Rel" using Q'''Chain P'''RelQ''' Sim
+  have "\<exists>P'. P''' \<Longrightarrow>\<^sub>\<tau> P' \<and> (P', Q') \<in> Rel" using Q'''Chain P'''RelQ''' Sim
     by(rule weakSimTauChain)
-  then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^isub>\<tau> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
+  then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
     
   from PChain P''Trans P'''Chain have "P \<Longrightarrow>a<\<nu>x> \<prec> P'"
     by(blast dest: Weak_Early_Step_Semantics.chainTransitionAppend)
@@ -133,9 +133,9 @@ proof -
 next
   assume "Q \<Longrightarrow>\<alpha> \<prec> Q'"
 
-  then obtain Q'' Q''' where QChain: "Q \<Longrightarrow>\<^isub>\<tau> Q''" 
+  then obtain Q'' Q''' where QChain: "Q \<Longrightarrow>\<^sub>\<tau> Q''" 
                          and Q''Trans: "Q'' \<longmapsto>\<alpha> \<prec> Q'''"
-                         and Q'''Chain: "Q''' \<Longrightarrow>\<^isub>\<tau> Q'"
+                         and Q'''Chain: "Q''' \<Longrightarrow>\<^sub>\<tau> Q'"
     by(blast dest: transitionE)
   from QChain Q''Trans Q'''Chain show "\<exists>P'. P \<Longrightarrow>\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel"
   proof(induct arbitrary: \<alpha> Q''' Q' rule: tauChainInduct)
@@ -145,9 +145,9 @@ next
     then obtain P''' where PTrans: "P \<Longrightarrow>\<alpha> \<prec> P'''" and P'RelQ''': "(P''', Q''') \<in> Rel"
       by blast
     
-    have "\<exists>P'. P''' \<Longrightarrow>\<^isub>\<tau> P' \<and> (P', Q') \<in> Rel" using `Q''' \<Longrightarrow>\<^isub>\<tau> Q'` P'RelQ''' Sim
+    have "\<exists>P'. P''' \<Longrightarrow>\<^sub>\<tau> P' \<and> (P', Q') \<in> Rel" using `Q''' \<Longrightarrow>\<^sub>\<tau> Q'` P'RelQ''' Sim
       by(rule Weak_Early_Sim.weakSimTauChain)
-    then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^isub>\<tau> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
+    then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
     
     from P'''Chain PTrans have "P \<Longrightarrow>\<alpha> \<prec> P'"
       by(blast dest: Weak_Early_Step_Semantics.chainTransitionAppend)
@@ -155,19 +155,19 @@ next
     with P'RelQ' show ?case by blast
   next
     case(ih Q'''' Q'' \<alpha> Q''' Q')
-    have "Q'' \<Longrightarrow>\<^isub>\<tau> Q''" by simp
+    have "Q'' \<Longrightarrow>\<^sub>\<tau> Q''" by simp
     with `Q'''' \<longmapsto>\<tau> \<prec> Q''` obtain P'' where PChain: "P \<Longrightarrow>\<tau> \<prec>  P''" and P''RelQ'': "(P'', Q'') \<in> Rel"
       by(drule_tac ih) auto
 
     from P''RelQ'' have "P'' \<leadsto><Rel> Q''" by(rule Sim)
-    hence "\<exists>P'''. P'' \<Longrightarrow>\<^isup>^\<alpha> \<prec> P''' \<and> (P''', Q''') \<in> Rel" using `Q'' \<longmapsto>\<alpha> \<prec> Q'''`
+    hence "\<exists>P'''. P'' \<Longrightarrow>\<^sup>^\<alpha> \<prec> P''' \<and> (P''', Q''') \<in> Rel" using `Q'' \<longmapsto>\<alpha> \<prec> Q'''`
       by(rule Weak_Early_Sim.simE)
-    then obtain P''' where P''Trans: "P'' \<Longrightarrow>\<^isup>^\<alpha> \<prec> P'''"
+    then obtain P''' where P''Trans: "P'' \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'''"
                        and P'''RelQ''': "(P''', Q''') \<in> Rel"
       by blast
-    from `Q''' \<Longrightarrow>\<^isub>\<tau> Q'` P'''RelQ''' Sim have "\<exists>P'. P''' \<Longrightarrow>\<^isub>\<tau> P' \<and> (P', Q') \<in> Rel"
+    from `Q''' \<Longrightarrow>\<^sub>\<tau> Q'` P'''RelQ''' Sim have "\<exists>P'. P''' \<Longrightarrow>\<^sub>\<tau> P' \<and> (P', Q') \<in> Rel"
       by(rule Weak_Early_Sim.weakSimTauChain)
-    then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^isub>\<tau> P'"
+    then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^sub>\<tau> P'"
                      and P'RelQ': "(P', Q') \<in> Rel"
       by blast
     from PChain P''Trans have "P \<Longrightarrow>\<alpha> \<prec> P'''"

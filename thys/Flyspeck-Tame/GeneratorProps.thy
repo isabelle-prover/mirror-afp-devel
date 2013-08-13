@@ -150,13 +150,13 @@ proof
       proof
         assume "v = f \<bullet> u"
         thus False using sep f uv
-          by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
+          by(simp add:separated_def separated\<^sub>2_def separated\<^sub>3_def)
       next
         assume "v = f \<bullet> (f \<bullet> u)"
         moreover hence "v \<in> \<V> f" using `u \<in> \<V> f` by simp
         moreover have "|vertices f| \<le> 4" using 4 by arith
         ultimately show False using sep f uv `u \<in> \<V> f`
-          apply(unfold separated_def separated\<^isub>2_def separated\<^isub>3_def)
+          apply(unfold separated_def separated\<^sub>2_def separated\<^sub>3_def)
 (* why does blast get stuck? *)
           apply(subgoal_tac "f \<bullet> (f \<bullet> u) \<in> \<V> f \<inter> V")
           prefer 2 apply blast
@@ -166,22 +166,22 @@ proof
       assume 4: "|vertices f| \<noteq> 4"
       hence "v = f \<bullet> u" using "if" by simp
       thus False using sep f uv
-        by(simp add:separated_def separated\<^isub>2_def separated\<^isub>3_def)
+        by(simp add:separated_def separated\<^sub>2_def separated\<^sub>3_def)
     qed
   qed
 next
   assume not_cl: ?Q
   show ?P
   proof(simp add:separated_def, rule conjI)
-    show "separated\<^isub>2 g V"
-    proof (clarsimp simp:separated\<^isub>2_def)
+    show "separated\<^sub>2 g V"
+    proof (clarsimp simp:separated\<^sub>2_def)
       fix v f assume a: "v \<in> V" "f \<in> set (facesAt g v)" "f \<bullet> v \<in> V"
       have "v : \<V> g" using a(1) `V <= \<V> g` by blast
       show False using a not_cl mgp_facesAt_no_loop[OF mgp `v : \<V> g` a(2)]
         by(fastforce simp: close_def split:split_if_asm)
     qed
-    show "separated\<^isub>3 g V"
-    proof (clarsimp simp:separated\<^isub>3_def)
+    show "separated\<^sub>3 g V"
+    proof (clarsimp simp:separated\<^sub>3_def)
       fix v f
       assume "v \<in> V" and f: "f \<in> set (facesAt g v)" and len: "|vertices f| \<le> 4"
       have vg: "v : \<V> g" using `v : V` `V <= \<V> g` by blast
@@ -256,7 +256,7 @@ apply simp
 done
 
 lemma sep_ne: "\<exists>P \<subseteq> M. separated g (fst ` P)"
-by(unfold separated_def separated\<^isub>2_def separated\<^isub>3_def) blast
+by(unfold separated_def separated\<^sub>2_def separated\<^sub>3_def) blast
 
 lemma ExcessNotAtRec_conv_Max:
 assumes mgp: "minGraphProps g"

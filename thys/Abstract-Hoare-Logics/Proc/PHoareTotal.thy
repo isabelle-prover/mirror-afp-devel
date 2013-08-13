@@ -137,12 +137,12 @@ apply fast
 done
 
 
-definition MGT\<^isub>t :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
-  [simp]: "MGT\<^isub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
+definition MGT\<^sub>t :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
+  [simp]: "MGT\<^sub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma MGT_implies_complete:
- "{} \<turnstile>\<^sub>t MGT\<^isub>t c \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
-apply(simp add: MGT\<^isub>t_def)
+ "{} \<turnstile>\<^sub>t MGT\<^sub>t c \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
+apply(simp add: MGT\<^sub>t_def)
 apply (erule thoare.Conseq)
 apply(simp add: tvalid_defs)
 apply blast
@@ -155,7 +155,7 @@ lemma while_termiE2:
   "\<lbrakk> WHILE b DO c \<down> s; b s; s -c\<rightarrow> t \<rbrakk> \<Longrightarrow> WHILE b DO c \<down> t"
 by(erule termi.cases, auto)
 
-lemma MGT_lemma: "C \<turnstile>\<^sub>t MGT\<^isub>t CALL \<Longrightarrow> C \<turnstile>\<^sub>t MGT\<^isub>t c"
+lemma MGT_lemma: "C \<turnstile>\<^sub>t MGT\<^sub>t CALL \<Longrightarrow> C \<turnstile>\<^sub>t MGT\<^sub>t c"
 apply (simp)
 apply(induct_tac c)
      apply (rule strengthen_pre[OF _ thoare.Do])
@@ -764,8 +764,8 @@ apply(rule strengthen_pre[OF _ CALL_lemma])
 apply blast
 done
 
-lemma MGT_CALL: "{} \<turnstile>\<^sub>t MGT\<^isub>t CALL"
-apply(simp add: MGT\<^isub>t_def)
+lemma MGT_CALL: "{} \<turnstile>\<^sub>t MGT\<^sub>t CALL"
+apply(simp add: MGT\<^sub>t_def)
 apply(blast intro:thoare.Call wf_termi_call_steps CALL_cor)
 done
 

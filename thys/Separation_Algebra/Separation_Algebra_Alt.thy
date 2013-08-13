@@ -170,7 +170,7 @@ lemma sep_conj_sep_true':
   by (auto simp: sep_conjI [where p=0])
 
 lemma disjoint_submaps_exist:
-  "\<exists>h\<^isub>0 h\<^isub>1. h\<^isub>0 \<oplus> h\<^isub>1 = Some h"
+  "\<exists>h\<^sub>0 h\<^sub>1. h\<^sub>0 \<oplus> h\<^sub>1 = Some h"
   by (rule_tac x=0 in exI, auto)
 
 lemma sep_conj_true[simp]:

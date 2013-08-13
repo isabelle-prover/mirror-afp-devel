@@ -15,19 +15,19 @@ lemma cube_in_cball':
   shows "y \<in> cball x r"
   unfolding mem_cball euclidean_dist_l2[of x y] setL2_def
 proof -
-  have "(\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<twosuperior>) \<le> (\<Sum>(i::'a)\<in>Basis. (r / sqrt(DIM('a)))\<twosuperior>)"
+  have "(\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> (\<Sum>(i::'a)\<in>Basis. (r / sqrt(DIM('a)))\<^sup>2)"
   proof (intro setsum_mono)
     fix i :: 'a
     assume "i \<in> Basis"
-    thus "(dist (x \<bullet> i) (y \<bullet> i))\<twosuperior> \<le> (r / sqrt(DIM('a)))\<twosuperior>"
+    thus "(dist (x \<bullet> i) (y \<bullet> i))\<^sup>2 \<le> (r / sqrt(DIM('a)))\<^sup>2"
       using assms
       by (auto intro: sqrt_le_rsquare)
   qed
   moreover
-  have "... \<le> r\<twosuperior>"
+  have "... \<le> r\<^sup>2"
     using assms by (simp add: power_divide real_eq_of_nat)
   ultimately
-  show "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<twosuperior>) \<le> r"
+  show "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> r"
     using assms by (auto intro!: real_le_lsqrt real_le_lsqrt setsum_nonneg)
 qed
 

@@ -24,12 +24,12 @@ text {* Recursive DFS-Algorithm.
   stored in @{text "V"}.*}
 definition dfs :: "('a\<times>'a) set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool nres" where
   "dfs E vd v0 \<equiv> do {
-   REC\<^isub>T (\<lambda>D (V,v). 
+   REC\<^sub>T (\<lambda>D (V,v). 
     if v=vd then RETURN True 
     else if v\<in>V then RETURN False
     else do {
       let V=insert v V;
-      FOREACH\<^isub>C (E``{v}) (op = False) (\<lambda>v' _. D (V,v')) False
+      FOREACH\<^sub>C (E``{v}) (op = False) (\<lambda>v' _. D (V,v')) False
     }
   ) ({},v0)
   }"
@@ -135,7 +135,7 @@ definition "dfs_rec_body succi t \<equiv>
 "
 
 
-definition "dfs_rec succi t \<equiv> REC\<^isub>T (dfs_rec_body succi t)"
+definition "dfs_rec succi t \<equiv> REC\<^sub>T (dfs_rec_body succi t)"
 definition dfs_impl where "dfs_impl succi t s0 \<equiv> 
   the_res (dfs_rec succi t (hs_empty (), s0))"
 

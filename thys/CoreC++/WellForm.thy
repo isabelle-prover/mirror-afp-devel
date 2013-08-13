@@ -293,10 +293,10 @@ done
 
 
 lemma converse_SubobjsR_Rep:
-  "\<lbrakk>Subobjs\<^isub>R P C Cs; P \<turnstile> last Cs \<prec>\<^sub>R C'; wf_prog wf_md P\<rbrakk> 
-\<Longrightarrow> Subobjs\<^isub>R P C (Cs@[C'])"
+  "\<lbrakk>Subobjs\<^sub>R P C Cs; P \<turnstile> last Cs \<prec>\<^sub>R C'; wf_prog wf_md P\<rbrakk> 
+\<Longrightarrow> Subobjs\<^sub>R P C (Cs@[C'])"
 
-apply (induct rule:Subobjs\<^isub>R.induct)
+apply (induct rule:Subobjs\<^sub>R.induct)
  apply (frule subclsR_subcls1)
  apply (fastforce dest!:subcls1D class_wf wf_cdecl_supD SubobjsR_Base SubobjsR_Rep)
 apply (fastforce elim:SubobjsR_Rep simp: SubobjsR_nonempty split:split_if_asm)
@@ -333,7 +333,7 @@ proof (induct Cs')
       by fastforce
     with wf have "is_class P C'"
       by (fastforce dest:subclsS_subcls1 subcls1D class_wf elim:wf_cdecl_supD)
-    hence "Subobjs\<^isub>R P C' [C']" by (fastforce elim:SubobjsR_Base)
+    hence "Subobjs\<^sub>R P C' [C']" by (fastforce elim:SubobjsR_Base)
     with sup subS have "Subobjs P C [C']" by -(erule Subobjs_Sh, simp)
     thus ?thesis by simp
   qed 
@@ -604,7 +604,7 @@ next
     next
       case False
       with subo'' obtain D D' where leq:"P \<turnstile> C \<preceq>\<^sup>* D" and subS:"P \<turnstile> D \<prec>\<^sub>S D'"
-        and suboR:"Subobjs\<^isub>R P D' [C']"
+        and suboR:"Subobjs\<^sub>R P D' [C']"
         by (auto elim:Subobjs.cases dest:hd_SubobjsR)
       from suboR have C':"C' = D'" by (fastforce dest:hd_SubobjsR)
       from leq wf obtain Ds where steps:"P,C \<turnstile> [C] \<sqsubseteq> Ds@[D]"
@@ -613,7 +613,7 @@ next
         apply (induct rule:rtrancl_induct)
          apply (erule Subobjs_Base)
         apply (auto elim!:leq_path1.cases)
-        apply (subgoal_tac "Subobjs\<^isub>R P D [D]")
+        apply (subgoal_tac "Subobjs\<^sub>R P D [D]")
          apply (fastforce dest:Subobjs_subclass intro:Subobjs_Sh)
         apply (fastforce dest!:subclsSD intro:SubobjsR_Base wf_cdecl_supD 
                                              class_wf ShBaseclass_isBaseclass)
@@ -682,8 +682,8 @@ lemma appendPath1:
   "\<lbrakk>Subobjs P C Cs; Subobjs P (last Cs) Ds; last Cs \<noteq> hd Ds\<rbrakk>
 \<Longrightarrow> Subobjs P C Ds"
 
-apply(subgoal_tac "\<not> Subobjs\<^isub>R P (last Cs) Ds")
- apply (subgoal_tac "\<exists>C' D. P \<turnstile> last Cs \<preceq>\<^sup>* C' \<and> P \<turnstile> C' \<prec>\<^sub>S D \<and> Subobjs\<^isub>R P D Ds")
+apply(subgoal_tac "\<not> Subobjs\<^sub>R P (last Cs) Ds")
+ apply (subgoal_tac "\<exists>C' D. P \<turnstile> last Cs \<preceq>\<^sup>* C' \<and> P \<turnstile> C' \<prec>\<^sub>S D \<and> Subobjs\<^sub>R P D Ds")
   apply clarsimp
   apply (drule Subobjs_subclass)
   apply (subgoal_tac "P \<turnstile> C \<preceq>\<^sup>* C'")
@@ -1243,7 +1243,7 @@ done
 
 
 lemma leqR_SubobjsR:"\<lbrakk>(C,D) \<in> (subclsR P)\<^sup>*; is_class P C; wf_prog wf_md P\<rbrakk> 
-\<Longrightarrow> \<exists>Cs. Subobjs\<^isub>R P C (Cs@[D])"
+\<Longrightarrow> \<exists>Cs. Subobjs\<^sub>R P C (Cs@[D])"
 
 apply (induct rule:rtrancl_induct)
  apply (drule SubobjsR_Base)
@@ -1265,7 +1265,7 @@ proof -
     by (auto dest:leq_implies_path)
   with wf have classC':"is_class P C'"
     by (fastforce intro:Subobj_last_isClass simp:path_via_def)
-  with leqR wf obtain Cs' where subo:"Subobjs\<^isub>R P C' Cs'" and last:"last Cs' = D"
+  with leqR wf obtain Cs' where subo:"Subobjs\<^sub>R P C' Cs'" and last:"last Cs' = D"
     by (auto dest:leqR_SubobjsR)
   hence hd:"hd Cs' = C'"
     by (fastforce dest:hd_SubobjsR)
@@ -1840,10 +1840,10 @@ next
   have "P,E \<turnstile> \<lparr>C\<rparr>e :: T'" by fact
   thus ?case by (fastforce elim:WT.cases)
 next
-  case (WTBinOp E e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2 bop T)
-  have bop:"case bop of Eq \<Rightarrow> T\<^isub>1 = T\<^isub>2 \<and> T = Boolean
-    | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
-    and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T'" by fact+
+  case (WTBinOp E e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2 bop T)
+  have bop:"case bop of Eq \<Rightarrow> T\<^sub>1 = T\<^sub>2 \<and> T = Boolean
+    | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer"
+    and wt:"P,E \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T'" by fact+
   from wt obtain T1' T2' where
     bop':"case bop of Eq \<Rightarrow> T1' = T2' \<and> T' = Boolean
     | Add \<Rightarrow> T1' = Integer \<and> T2' = Integer \<and> T' = Integer"
@@ -1875,11 +1875,11 @@ next
   with least least' show ?case
     by (fastforce simp:sees_field_fun)
 next
-  case (WTFAss E e\<^isub>1 C F T Cs e\<^isub>2 T' T'')
+  case (WTFAss E e\<^sub>1 C F T Cs e\<^sub>2 T' T'')
   have least:"P \<turnstile> C has least F:T via Cs"
-    and wt:"P,E \<turnstile> e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 :: T''" 
-    and IH:"\<And>S. P,E \<turnstile> e\<^isub>1 :: S \<Longrightarrow> Class C = S" by fact+
-  from wt obtain C' where wte':"P,E \<turnstile> e\<^isub>1 :: Class C'" 
+    and wt:"P,E \<turnstile> e\<^sub>1\<bullet>F{Cs} := e\<^sub>2 :: T''" 
+    and IH:"\<And>S. P,E \<turnstile> e\<^sub>1 :: S \<Longrightarrow> Class C = S" by fact+
+  from wt obtain C' where wte':"P,E \<turnstile> e\<^sub>1 :: Class C'" 
     and least':"P \<turnstile> C' has least F:T'' via Cs" by auto
   from IH[OF wte'] have "C = C'" by simp
   with least least' show ?case
@@ -1905,16 +1905,16 @@ next
 next
   case WTBlock thus ?case by (clarsimp simp del:fun_upd_apply)
 next
-  case (WTSeq E e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2)
-  have IH:"\<And>T'. P,E \<turnstile> e\<^isub>2 :: T' \<Longrightarrow> T\<^isub>2 = T'"
-    and wt:"P,E \<turnstile> e\<^isub>1;; e\<^isub>2 :: T'" by fact+
-  from wt have wt':"P,E \<turnstile> e\<^isub>2 :: T'" by auto
+  case (WTSeq E e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2)
+  have IH:"\<And>T'. P,E \<turnstile> e\<^sub>2 :: T' \<Longrightarrow> T\<^sub>2 = T'"
+    and wt:"P,E \<turnstile> e\<^sub>1;; e\<^sub>2 :: T'" by fact+
+  from wt have wt':"P,E \<turnstile> e\<^sub>2 :: T'" by auto
   from IH[OF wt'] show ?case .
 next
-  case (WTCond E e e\<^isub>1 T e\<^isub>2)
-  have IH:"\<And>S. P,E \<turnstile> e\<^isub>1 :: S \<Longrightarrow> T = S"
-    and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T'" by fact+
-  from wt have "P,E \<turnstile> e\<^isub>1 :: T'" by auto
+  case (WTCond E e e\<^sub>1 T e\<^sub>2)
+  have IH:"\<And>S. P,E \<turnstile> e\<^sub>1 :: S \<Longrightarrow> T = S"
+    and wt:"P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T'" by fact+
+  from wt have "P,E \<turnstile> e\<^sub>1 :: T'" by auto
   from IH[OF this] show ?case .
 next
   case (WTCons E e T es Ts)

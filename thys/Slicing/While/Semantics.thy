@@ -14,16 +14,16 @@ where
    "\<langle>V:=e,s\<rangle> \<rightarrow> \<langle>Skip,s(V:=(interpret e s))\<rangle>"
 
   | SeqRed:
-  "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s'\<rangle> \<Longrightarrow> \<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>1';;c\<^isub>2,s'\<rangle>"
+  "\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s'\<rangle> \<Longrightarrow> \<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>1';;c\<^sub>2,s'\<rangle>"
 
   | RedSeq:
-  "\<langle>Skip;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<rangle>"
+  "\<langle>Skip;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<rangle>"
 
   | RedCondTrue:
-  "interpret b s = Some true \<Longrightarrow> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>1,s\<rangle>"
+  "interpret b s = Some true \<Longrightarrow> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>1,s\<rangle>"
 
   | RedCondFalse:
-  "interpret b s = Some false \<Longrightarrow> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<rangle>"
+  "interpret b s = Some false \<Longrightarrow> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<rangle>"
 
   | RedWhileTrue:
   "interpret b s = Some true \<Longrightarrow> \<langle>while (b) c,s\<rangle> \<rightarrow> \<langle>c;;while (b) c,s\<rangle>"
@@ -48,8 +48,8 @@ StepLAss:
   "V:=e \<turnstile> \<langle>V:=e,s,0\<rangle> \<leadsto> \<langle>Skip,s(V:=(interpret e s)),1\<rangle>"
 
 | StepSeq:
-  "\<lbrakk>labels (c\<^isub>1;;c\<^isub>2) l (Skip;;c\<^isub>2); labels (c\<^isub>1;;c\<^isub>2) #:c\<^isub>1 c\<^isub>2; l < #:c\<^isub>1\<rbrakk> 
-  \<Longrightarrow> c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>Skip;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1\<rangle>"
+  "\<lbrakk>labels (c\<^sub>1;;c\<^sub>2) l (Skip;;c\<^sub>2); labels (c\<^sub>1;;c\<^sub>2) #:c\<^sub>1 c\<^sub>2; l < #:c\<^sub>1\<rbrakk> 
+  \<Longrightarrow> c\<^sub>1;;c\<^sub>2 \<turnstile> \<langle>Skip;;c\<^sub>2,s,l\<rangle> \<leadsto> \<langle>c\<^sub>2,s,#:c\<^sub>1\<rangle>"
 
 | StepSeqWhile:
   "labels (while (b) c') l (Skip;;while (b) c')
@@ -57,11 +57,11 @@ StepLAss:
 
 | StepCondTrue:
   "interpret b s = Some true 
-     \<Longrightarrow> if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1,s,1\<rangle>"
+     \<Longrightarrow> if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1,s,1\<rangle>"
 
 | StepCondFalse:
   "interpret b s = Some false 
-  \<Longrightarrow> if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1 + 1\<rangle>"
+  \<Longrightarrow> if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>2,s,#:c\<^sub>1 + 1\<rangle>"
 
 | StepWhileTrue:
   "interpret b s = Some true 
@@ -72,19 +72,19 @@ StepLAss:
 
 | StepRecSeq1:
   "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>
-  \<Longrightarrow> prog;;c\<^isub>2 \<turnstile> \<langle>c;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c';;c\<^isub>2,s',l'\<rangle>"
+  \<Longrightarrow> prog;;c\<^sub>2 \<turnstile> \<langle>c;;c\<^sub>2,s,l\<rangle> \<leadsto> \<langle>c';;c\<^sub>2,s',l'\<rangle>"
 
 | StepRecSeq2:
   "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> 
-  \<Longrightarrow> c\<^isub>1;;prog \<turnstile> \<langle>c,s,l + #:c\<^isub>1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^isub>1\<rangle>"
+  \<Longrightarrow> c\<^sub>1;;prog \<turnstile> \<langle>c,s,l + #:c\<^sub>1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^sub>1\<rangle>"
 
 | StepRecCond1:
   "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> 
-  \<Longrightarrow> if (b) prog else c\<^isub>2 \<turnstile> \<langle>c,s,l + 1\<rangle> \<leadsto> \<langle>c',s',l' + 1\<rangle>"
+  \<Longrightarrow> if (b) prog else c\<^sub>2 \<turnstile> \<langle>c,s,l + 1\<rangle> \<leadsto> \<langle>c',s',l' + 1\<rangle>"
 
 | StepRecCond2:
   "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> 
-  \<Longrightarrow> if (b) c\<^isub>1 else prog \<turnstile> \<langle>c,s,l + #:c\<^isub>1 + 1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^isub>1 + 1\<rangle>"
+  \<Longrightarrow> if (b) c\<^sub>1 else prog \<turnstile> \<langle>c,s,l + #:c\<^sub>1 + 1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^sub>1 + 1\<rangle>"
 
 | StepRecWhile:
   "cx \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>
@@ -94,9 +94,9 @@ StepLAss:
 lemma step_label_less:
   "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<Longrightarrow> l < #:prog \<and> l' < #:prog"
 proof(induct rule:step.induct)
-  case (StepSeq c\<^isub>1 c\<^isub>2 l s)
-  from `labels (c\<^isub>1;;c\<^isub>2) l (Skip;;c\<^isub>2)`
-  have "l < #:(c\<^isub>1;; c\<^isub>2)" by(rule label_less_num_inner_nodes)
+  case (StepSeq c\<^sub>1 c\<^sub>2 l s)
+  from `labels (c\<^sub>1;;c\<^sub>2) l (Skip;;c\<^sub>2)`
+  have "l < #:(c\<^sub>1;; c\<^sub>2)" by(rule label_less_num_inner_nodes)
   thus ?case by(simp add:num_inner_nodes_gr_0)
 next
   case (StepSeqWhile b cx l s)
@@ -164,39 +164,39 @@ proof(induct arbitrary:c' rule:labels.induct)
     have "labels (V:=e) 1 Skip" by(fastforce intro:Labels_LAss)
     with `V:=e \<turnstile> \<langle>V:=e,s,0\<rangle> \<leadsto> \<langle>Skip,s(V:=(interpret e s)),1\<rangle>` show ?case by blast
   next
-    case (SeqRed c\<^isub>1 s c\<^isub>1' s' c\<^isub>2)
-    from `\<exists>l'. c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle> \<and> labels c\<^isub>1 l' c\<^isub>1'`
-    obtain l' where "c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle>" and "labels c\<^isub>1 l' c\<^isub>1'" by blast
-    from `c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle>` have "c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>c\<^isub>1;;c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1';;c\<^isub>2,s',l'\<rangle>"
+    case (SeqRed c\<^sub>1 s c\<^sub>1' s' c\<^sub>2)
+    from `\<exists>l'. c\<^sub>1 \<turnstile> \<langle>c\<^sub>1,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1',s',l'\<rangle> \<and> labels c\<^sub>1 l' c\<^sub>1'`
+    obtain l' where "c\<^sub>1 \<turnstile> \<langle>c\<^sub>1,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1',s',l'\<rangle>" and "labels c\<^sub>1 l' c\<^sub>1'" by blast
+    from `c\<^sub>1 \<turnstile> \<langle>c\<^sub>1,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1',s',l'\<rangle>` have "c\<^sub>1;;c\<^sub>2 \<turnstile> \<langle>c\<^sub>1;;c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1';;c\<^sub>2,s',l'\<rangle>"
       by(rule StepRecSeq1)
     moreover
-    from `labels c\<^isub>1 l' c\<^isub>1'` have "labels (c\<^isub>1;;c\<^isub>2) l' (c\<^isub>1';;c\<^isub>2)" by(rule Labels_Seq1)
+    from `labels c\<^sub>1 l' c\<^sub>1'` have "labels (c\<^sub>1;;c\<^sub>2) l' (c\<^sub>1';;c\<^sub>2)" by(rule Labels_Seq1)
     ultimately show ?case by blast
   next
-    case (RedSeq c\<^isub>2 s)
-    have "labels c\<^isub>2 0 c\<^isub>2" by(rule Labels.Labels_Base)
-    hence "labels (Skip;;c\<^isub>2) (0 + #:Skip) c\<^isub>2" by(rule Labels_Seq2)
-    have "labels (Skip;;c\<^isub>2) 0 (Skip;;c\<^isub>2)" by(rule Labels.Labels_Base)
-    with `labels (Skip;;c\<^isub>2) (0 + #:Skip) c\<^isub>2`
-    have "Skip;;c\<^isub>2 \<turnstile> \<langle>Skip;;c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:Skip\<rangle>"
+    case (RedSeq c\<^sub>2 s)
+    have "labels c\<^sub>2 0 c\<^sub>2" by(rule Labels.Labels_Base)
+    hence "labels (Skip;;c\<^sub>2) (0 + #:Skip) c\<^sub>2" by(rule Labels_Seq2)
+    have "labels (Skip;;c\<^sub>2) 0 (Skip;;c\<^sub>2)" by(rule Labels.Labels_Base)
+    with `labels (Skip;;c\<^sub>2) (0 + #:Skip) c\<^sub>2`
+    have "Skip;;c\<^sub>2 \<turnstile> \<langle>Skip;;c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>2,s,#:Skip\<rangle>"
       by(fastforce intro:StepSeq)
-    with `labels (Skip;;c\<^isub>2) (0 + #:Skip) c\<^isub>2` show ?case by auto
+    with `labels (Skip;;c\<^sub>2) (0 + #:Skip) c\<^sub>2` show ?case by auto
   next
-    case (RedCondTrue b s c\<^isub>1 c\<^isub>2)
+    case (RedCondTrue b s c\<^sub>1 c\<^sub>2)
     from `interpret b s = Some true`
-    have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1,s,1\<rangle>"
+    have "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1,s,1\<rangle>"
       by(rule StepCondTrue)
-    have "labels (if (b) c\<^isub>1 else c\<^isub>2) (0 + 1) c\<^isub>1"
+    have "labels (if (b) c\<^sub>1 else c\<^sub>2) (0 + 1) c\<^sub>1"
       by(rule Labels_CondTrue,rule Labels.Labels_Base)
-    with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1,s,1\<rangle>` show ?case by auto
+    with `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>1,s,1\<rangle>` show ?case by auto
   next
-    case (RedCondFalse b s c\<^isub>1 c\<^isub>2)
+    case (RedCondFalse b s c\<^sub>1 c\<^sub>2)
     from `interpret b s = Some false` 
-    have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1 + 1\<rangle>"
+    have "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>2,s,#:c\<^sub>1 + 1\<rangle>"
       by(rule StepCondFalse)
-    have "labels (if (b) c\<^isub>1 else c\<^isub>2) (0 + #:c\<^isub>1 + 1) c\<^isub>2"
+    have "labels (if (b) c\<^sub>1 else c\<^sub>2) (0 + #:c\<^sub>1 + 1) c\<^sub>2"
       by(rule Labels_CondFalse,rule Labels.Labels_Base)
-    with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1 + 1\<rangle>`
+    with `if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s,0\<rangle> \<leadsto> \<langle>c\<^sub>2,s,#:c\<^sub>1 + 1\<rangle>`
     show ?case by auto
   next
     case (RedWhileTrue b s c)
@@ -220,75 +220,75 @@ next
   from `\<langle>Skip,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` have False by(auto elim:red.cases)
   thus ?case by simp
 next
-  case (Labels_Seq1 c\<^isub>1 l c c\<^isub>2)
+  case (Labels_Seq1 c\<^sub>1 l c c\<^sub>2)
   note IH = `\<And>c'. \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> \<Longrightarrow>
-        \<exists>l'. c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>1 l' c'`
-  from `\<langle>c;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` 
-  have "(c = Skip \<and> c' = c\<^isub>2 \<and> s = s') \<or> (\<exists>c''. c' = c'';;c\<^isub>2)"
+        \<exists>l'. c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^sub>1 l' c'`
+  from `\<langle>c;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` 
+  have "(c = Skip \<and> c' = c\<^sub>2 \<and> s = s') \<or> (\<exists>c''. c' = c'';;c\<^sub>2)"
     by -(erule red.cases,auto)
   thus ?case
   proof
-    assume [simp]:"c = Skip \<and> c' = c\<^isub>2 \<and> s = s'"
-    from `labels c\<^isub>1 l c` have "l < #:c\<^isub>1"
+    assume [simp]:"c = Skip \<and> c' = c\<^sub>2 \<and> s = s'"
+    from `labels c\<^sub>1 l c` have "l < #:c\<^sub>1"
       by(rule label_less_num_inner_nodes[simplified])
-    have "labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2"
+    have "labels (c\<^sub>1;;c\<^sub>2) (0 + #:c\<^sub>1) c\<^sub>2"
       by(rule Labels_Seq2,rule Labels_Base)
-    from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;; c\<^isub>2) l (Skip;;c\<^isub>2)"
+    from `labels c\<^sub>1 l c` have "labels (c\<^sub>1;; c\<^sub>2) l (Skip;;c\<^sub>2)"
       by(fastforce intro:Labels.Labels_Seq1)
-    with `labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2` `l < #:c\<^isub>1` 
-    have "c\<^isub>1;; c\<^isub>2 \<turnstile> \<langle>Skip;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1\<rangle>"
+    with `labels (c\<^sub>1;;c\<^sub>2) (0 + #:c\<^sub>1) c\<^sub>2` `l < #:c\<^sub>1` 
+    have "c\<^sub>1;; c\<^sub>2 \<turnstile> \<langle>Skip;;c\<^sub>2,s,l\<rangle> \<leadsto> \<langle>c\<^sub>2,s,#:c\<^sub>1\<rangle>"
       by(fastforce intro:StepSeq)
-    with `labels (c\<^isub>1;;c\<^isub>2) (0 + #:c\<^isub>1) c\<^isub>2` show ?case by auto
+    with `labels (c\<^sub>1;;c\<^sub>2) (0 + #:c\<^sub>1) c\<^sub>2` show ?case by auto
   next
-    assume "\<exists>c''. c' = c'';;c\<^isub>2"
-    then obtain c'' where [simp]:"c' = c'';;c\<^isub>2" by blast
-    with `\<langle>c;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` have "\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s'\<rangle>"
-      by(auto elim!:red.cases,induct c\<^isub>2,auto)
-    from IH[OF this] obtain l' where "c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s',l'\<rangle>"
-      and "labels c\<^isub>1 l' c''" by blast
-    from `c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s',l'\<rangle>` have "c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>c;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c'';;c\<^isub>2,s',l'\<rangle>"
+    assume "\<exists>c''. c' = c'';;c\<^sub>2"
+    then obtain c'' where [simp]:"c' = c'';;c\<^sub>2" by blast
+    with `\<langle>c;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` have "\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s'\<rangle>"
+      by(auto elim!:red.cases,induct c\<^sub>2,auto)
+    from IH[OF this] obtain l' where "c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s',l'\<rangle>"
+      and "labels c\<^sub>1 l' c''" by blast
+    from `c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s',l'\<rangle>` have "c\<^sub>1;;c\<^sub>2 \<turnstile> \<langle>c;;c\<^sub>2,s,l\<rangle> \<leadsto> \<langle>c'';;c\<^sub>2,s',l'\<rangle>"
       by(rule StepRecSeq1)
-    from `labels c\<^isub>1 l' c''` have "labels (c\<^isub>1;;c\<^isub>2) l' (c'';;c\<^isub>2)"
+    from `labels c\<^sub>1 l' c''` have "labels (c\<^sub>1;;c\<^sub>2) l' (c'';;c\<^sub>2)"
       by(rule Labels.Labels_Seq1)
-    with `c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>c;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c'';;c\<^isub>2,s',l'\<rangle>` show ?case by auto
+    with `c\<^sub>1;;c\<^sub>2 \<turnstile> \<langle>c;;c\<^sub>2,s,l\<rangle> \<leadsto> \<langle>c'';;c\<^sub>2,s',l'\<rangle>` show ?case by auto
   qed
 next
-  case (Labels_Seq2 c\<^isub>2 l c c\<^isub>1 c')
+  case (Labels_Seq2 c\<^sub>2 l c c\<^sub>1 c')
   note IH = `\<And>c'. \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> \<Longrightarrow>
-            \<exists>l'. c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>2 l' c'`
-  from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
-    and "labels c\<^isub>2 l' c'" by blast
-  from `c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>` have "c\<^isub>1;; c\<^isub>2 \<turnstile> \<langle>c,s,l + #:c\<^isub>1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^isub>1\<rangle>"
+            \<exists>l'. c\<^sub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^sub>2 l' c'`
+  from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^sub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
+    and "labels c\<^sub>2 l' c'" by blast
+  from `c\<^sub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>` have "c\<^sub>1;; c\<^sub>2 \<turnstile> \<langle>c,s,l + #:c\<^sub>1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^sub>1\<rangle>"
     by(rule StepRecSeq2)
   moreover
-  from `labels c\<^isub>2 l' c'` have "labels (c\<^isub>1;;c\<^isub>2) (l' + #:c\<^isub>1) c'"
+  from `labels c\<^sub>2 l' c'` have "labels (c\<^sub>1;;c\<^sub>2) (l' + #:c\<^sub>1) c'"
     by(rule Labels.Labels_Seq2)
   ultimately show ?case by blast
 next
-  case (Labels_CondTrue c\<^isub>1 l c b c\<^isub>2 c')
-  note label = `labels c\<^isub>1 l c` and red = `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`
+  case (Labels_CondTrue c\<^sub>1 l c b c\<^sub>2 c')
+  note label = `labels c\<^sub>1 l c` and red = `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`
     and IH = `\<And>c'. \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> \<Longrightarrow>
-                   \<exists>l'. c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>1 l' c'`
-  from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
-    and "labels c\<^isub>1 l' c'" by blast
-  from `c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>`
-  have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>c,s,l + 1\<rangle> \<leadsto> \<langle>c',s',l' + 1\<rangle>"
+                   \<exists>l'. c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^sub>1 l' c'`
+  from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
+    and "labels c\<^sub>1 l' c'" by blast
+  from `c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>`
+  have "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>c,s,l + 1\<rangle> \<leadsto> \<langle>c',s',l' + 1\<rangle>"
     by(rule StepRecCond1)
   moreover
-  from `labels c\<^isub>1 l' c'` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l' + 1) c'"
+  from `labels c\<^sub>1 l' c'` have "labels (if (b) c\<^sub>1 else c\<^sub>2) (l' + 1) c'"
     by(rule Labels.Labels_CondTrue)
   ultimately show ?case by blast
 next
-  case (Labels_CondFalse c\<^isub>2 l c b c\<^isub>1 c')
+  case (Labels_CondFalse c\<^sub>2 l c b c\<^sub>1 c')
   note IH = `\<And>c'. \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> \<Longrightarrow>
-            \<exists>l'. c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>2 l' c'`
-  from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
-    and "labels c\<^isub>2 l' c'" by blast
-  from `c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>`
-  have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>c,s,l + #:c\<^isub>1 + 1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^isub>1 + 1\<rangle>"
+            \<exists>l'. c\<^sub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^sub>2 l' c'`
+  from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^sub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
+    and "labels c\<^sub>2 l' c'" by blast
+  from `c\<^sub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>`
+  have "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> \<langle>c,s,l + #:c\<^sub>1 + 1\<rangle> \<leadsto> \<langle>c',s',l' + #:c\<^sub>1 + 1\<rangle>"
     by(rule StepRecCond2)
   moreover
-  from `labels c\<^isub>2 l' c'` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l' + #:c\<^isub>1 + 1) c'"
+  from `labels c\<^sub>2 l' c'` have "labels (if (b) c\<^sub>1 else c\<^sub>2) (l' + #:c\<^sub>1 + 1) c'"
     by(rule Labels.Labels_CondFalse)
   ultimately show ?case by blast
 next

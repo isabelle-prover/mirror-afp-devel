@@ -97,21 +97,21 @@ lemma [simp]: "\<parallel>xs\<parallel> \<le> i \<Longrightarrow> (xs @ ys)\<lan
 
 text {* Association lists *}
 
-primrec assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>\<^isub>?" [90, 0] 91)
+primrec assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>\<^sub>?" [90, 0] 91)
 where
-  "[]\<langle>a\<rangle>\<^isub>? = \<bottom>"
-| "(x # xs)\<langle>a\<rangle>\<^isub>? = (if fst x = a then \<lfloor>snd x\<rfloor> else xs\<langle>a\<rangle>\<^isub>?)"
+  "[]\<langle>a\<rangle>\<^sub>? = \<bottom>"
+| "(x # xs)\<langle>a\<rangle>\<^sub>? = (if fst x = a then \<lfloor>snd x\<rfloor> else xs\<langle>a\<rangle>\<^sub>?)"
 
 primrec unique :: "('a \<times> 'b) list \<Rightarrow> bool"
 where
   "unique [] = True"
-| "unique (x # xs) = (xs\<langle>fst x\<rangle>\<^isub>? = \<bottom> \<and> unique xs)"
+| "unique (x # xs) = (xs\<langle>fst x\<rangle>\<^sub>? = \<bottom> \<and> unique xs)"
 
-lemma assoc_set: "ps\<langle>x\<rangle>\<^isub>? = \<lfloor>y\<rfloor> \<Longrightarrow> (x, y) \<in> set ps"
+lemma assoc_set: "ps\<langle>x\<rangle>\<^sub>? = \<lfloor>y\<rfloor> \<Longrightarrow> (x, y) \<in> set ps"
   by (induct ps) (auto split add: split_if_asm)
 
 lemma map_assoc_None [simp]:
-  "ps\<langle>x\<rangle>\<^isub>? = \<bottom> \<Longrightarrow> map (\<lambda>(x, y). (x, f x y)) ps\<langle>x\<rangle>\<^isub>? = \<bottom>"
+  "ps\<langle>x\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> map (\<lambda>(x, y). (x, f x y)) ps\<langle>x\<rangle>\<^sub>? = \<bottom>"
   by (induct ps) auto
 
 no_syntax

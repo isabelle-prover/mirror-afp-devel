@@ -3,7 +3,7 @@ theory JVMPostdomination imports JVMInterpretation "../StaticInter/Postdominatio
 context CFG begin
 
 lemma vp_snocI:
-  "\<lbrakk>n -as\<rightarrow>\<^isub>\<surd>* n'; n' -[a]\<rightarrow>* n''; \<forall>Q p ret fs. kind a \<noteq> Q\<hookleftarrow>\<^bsub>p\<^esub>ret \<rbrakk> \<Longrightarrow> n -as @ [a]\<rightarrow>\<^isub>\<surd>* n''"
+  "\<lbrakk>n -as\<rightarrow>\<^sub>\<surd>* n'; n' -[a]\<rightarrow>* n''; \<forall>Q p ret fs. kind a \<noteq> Q\<hookleftarrow>\<^bsub>p\<^esub>ret \<rbrakk> \<Longrightarrow> n -as @ [a]\<rightarrow>\<^sub>\<surd>* n''"
   by (cases "kind a") (auto intro: path_Append valid_path_aux_Append simp: vp_def valid_path_def)
 
 lemma valid_node_cases' [case_names Source Target, consumes 1]:
@@ -64,17 +64,17 @@ next
     (ClassMain P, MethodMain P, None, Enter) as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)"
     by blast
   moreover with `(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)`
-  have "vp_snoc P C0 Main as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal) (\<lambda>s. False)\<^isub>\<surd>
+  have "vp_snoc P C0 Main as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal) (\<lambda>s. False)\<^sub>\<surd>
     (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)"
     by (fastforce intro: JVMCFG_reachable.Main_Call_LFalse)
   ultimately show ?case by blast
 next
-  case (Main_Call P C0 Main T mxs mxl\<^isub>0 "is" xt D initParams ek)
+  case (Main_Call P C0 Main T mxs mxl\<^sub>0 "is" xt D initParams ek)
   then obtain as where "JVMCFG_Interpret.valid_path' P C0 Main
     (ClassMain P, MethodMain P, None, Enter) as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)"
     by blast
   moreover with `(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)`
-    `PROG P \<turnstile> C0 sees Main: []\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in D`
+    `PROG P \<turnstile> C0 sees Main: []\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D`
     `initParams = [\<lambda>s. s Heap, \<lambda>s. \<lfloor>Value Null\<rfloor>]`
     `ek = \<lambda>(s, ret). True:(ClassMain P, MethodMain P, 0)\<hookrightarrow>\<^bsub>(D, Main)\<^esub>initParams`
   have "vp_snoc P C0 Main as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)
@@ -98,7 +98,7 @@ next
     (ClassMain P, MethodMain P, None, Enter) as (C, M, None, Enter)"
     by blast
   moreover with `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)`
-  have "vp_snoc P C0 Main as (C, M, None, Enter) (\<lambda>s. False)\<^isub>\<surd> (C, M, None, Return)"
+  have "vp_snoc P C0 Main as (C, M, None, Enter) (\<lambda>s. False)\<^sub>\<surd> (C, M, None, Return)"
     by (fastforce intro: JVMCFG_reachable.Method_LFalse)
   ultimately show ?case by blast
 next
@@ -107,7 +107,7 @@ next
     (ClassMain P, MethodMain P, None, Enter) as (C, M, None, Enter)"
     by blast
   moreover with `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)`
-  have "vp_snoc P C0 Main as (C, M, None, Enter) (\<lambda>s. True)\<^isub>\<surd> (C, M, \<lfloor>0\<rfloor>, Enter)"
+  have "vp_snoc P C0 Main as (C, M, None, Enter) (\<lambda>s. True)\<^sub>\<surd> (C, M, \<lfloor>0\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.Method_LTrue)
   ultimately show ?case by blast
 next
@@ -173,7 +173,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Goto i`
-  have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) (\<lambda>s. True)\<^isub>\<surd> (C, M, \<lfloor>nat (int pc + i)\<rfloor>, Enter)"
+  have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) (\<lambda>s. True)\<^sub>\<surd> (C, M, \<lfloor>nat (int pc + i)\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Goto)
   ultimately show ?case by blast
 next
@@ -196,7 +196,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = IfFalse i` `i \<noteq> 1`
-    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) = Bool False)\<^isub>\<surd>`
+    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) = Bool False)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>nat (int pc + i)\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_IfFalse_False)
   ultimately show ?case by blast
@@ -207,7 +207,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = IfFalse i`
-    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) \<noteq> Bool False \<or> i = 1)\<^isub>\<surd>`
+    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) \<noteq> Bool False \<or> i = 1)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_IfFalse_True)
   ultimately show ?case by blast
@@ -217,7 +217,7 @@ next
     (ClassMain P, MethodMain P, None, Enter) as (C, M, \<lfloor>pc\<rfloor>, Enter)"
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
-    `instrs_of (PROG P) C M ! pc = New Cl` `ek = (\<lambda>s. new_Addr (heap_of s) \<noteq> None)\<^isub>\<surd>`
+    `instrs_of (PROG P) C M ! pc = New Cl` `ek = (\<lambda>s. new_Addr (heap_of s) \<noteq> None)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Normal)"
     by (fastforce intro: JVMCFG_reachable.CFG_New_Check_Normal)
   ultimately show ?case by blast
@@ -229,7 +229,7 @@ next
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     ` instrs_of (PROG P) C M ! pc = New Cl`
     `pc' = (case match_ex_table (PROG P) OutOfMemory pc (ex_table_of (PROG P) C M) of None \<Rightarrow> None
-    | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)` `ek = (\<lambda>s. new_Addr (heap_of s) = None)\<^isub>\<surd>`
+    | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)` `ek = (\<lambda>s. new_Addr (heap_of s) = None)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_New_Check_Exceptional)
   ultimately show ?case by blast
@@ -276,7 +276,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Getfield F Cl`
-    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) \<noteq> Null)\<^isub>\<surd>`
+    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) \<noteq> Null)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Normal)"
     by (fastforce intro: JVMCFG_reachable.CFG_Getfield_Check_Normal)
   ultimately show ?case by blast
@@ -288,7 +288,7 @@ next
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Getfield F Cl`
     `pc' = (case match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) of None \<Rightarrow> None
-    | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)` `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) = Null)\<^isub>\<surd>`
+    | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)` `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 1) = Null)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Getfield_Check_Exceptional)
   ultimately show ?case by blast
@@ -334,7 +334,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Putfield F Cl`
-    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) \<noteq> Null)\<^isub>\<surd>`
+    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) \<noteq> Null)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Normal)"
     by (fastforce intro: JVMCFG_reachable.CFG_Putfield_Check_Normal)
   ultimately show ?case by blast
@@ -346,7 +346,7 @@ next
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Putfield F Cl`
     `pc' = (case match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) of None \<Rightarrow> None
-    | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)` `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) = Null)\<^isub>\<surd>`
+    | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)` `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - 2) = Null)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Putfield_Check_Exceptional)
   ultimately show ?case by blast
@@ -394,7 +394,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Checkcast Cl`
-    `ek = (\<lambda>s. cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^isub>\<surd>`
+    `ek = (\<lambda>s. cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Checkcast_Check_Normal)
   ultimately show ?case by blast
@@ -407,7 +407,7 @@ next
     `instrs_of (PROG P) C M ! pc = Checkcast Cl`
     `pc' = (case match_ex_table (PROG P) ClassCast pc (ex_table_of (PROG P) C M) of None \<Rightarrow> None
     | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)`
-    `ek = (\<lambda>s. \<not> cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^isub>\<surd>`
+    `ek = (\<lambda>s. \<not> cast_ok (PROG P) Cl (heap_of s) (stkAt s (stkLength (P, C, M) pc - 1)))\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Checkcast_Check_Exceptional)
   ultimately show ?case by blast
@@ -449,20 +449,20 @@ next
            Cl = if v = Null then NullPointer else cname_of (heap_of s) (the_Addr v)
        in case pc' of None \<Rightarrow> match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = None
           | \<lfloor>pc''\<rfloor> \<Rightarrow>
-              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^isub>\<surd>`
+              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^sub>\<surd>`
     have "(P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -
       (\<lambda>s. (stkAt s (stkLength (P, C, M) pc - Suc 0) = Null \<longrightarrow>
         match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) = None) \<and>
         (stkAt s (stkLength (P, C, M) pc - Suc 0) \<noteq> Null \<longrightarrow>
           match_ex_table (PROG P) (cname_of (heap_of s)
            (the_Addr (stkAt s (stkLength (P, C, M) pc - Suc 0)))) pc (ex_table_of (PROG P) C M) =
-      None))\<^isub>\<surd>\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter)"
+      None))\<^sub>\<surd>\<rightarrow> (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter)"
       by -(erule JVMCFG_reachable.CFG_Throw_Check, simp_all)
     with path_src `pc' = None` `ek = (\<lambda>s. let v = stkAt s (stkLength (P, C, M) pc - 1);
            Cl = if v = Null then NullPointer else cname_of (heap_of s) (the_Addr v)
        in case pc' of None \<Rightarrow> match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = None
           | \<lfloor>pc''\<rfloor> \<Rightarrow>
-              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^isub>\<surd>`
+              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^sub>\<surd>`
     have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional None Enter)"
       by (fastforce intro: JVMCFG_reachable.CFG_Throw_Check)
     with path_src `pc' = None` show ?thesis by blast
@@ -475,7 +475,7 @@ next
            Cl = if v = Null then NullPointer else cname_of (heap_of s) (the_Addr v)
        in case pc' of None \<Rightarrow> match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = None
           | \<lfloor>pc''\<rfloor> \<Rightarrow>
-              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^isub>\<surd>`
+              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^sub>\<surd>`
     have "(P, C0, Main) \<turnstile> (C, M, \<lfloor>pc\<rfloor>, Enter) -
       (\<lambda>s. (stkAt s (stkLength (P, C, M) pc - Suc 0) = Null \<longrightarrow>
                                     (\<exists>d. match_ex_table (PROG P) NullPointer pc
@@ -487,14 +487,14 @@ next
                                             (the_Addr
                                               (stkAt s (stkLength (P, C, M) pc - Suc 0))))
                                           pc (ex_table_of (PROG P) C M) =
-                                         \<lfloor>(the pc', d)\<rfloor>)))\<^isub>\<surd>\<rightarrow>
+                                         \<lfloor>(the pc', d)\<rfloor>)))\<^sub>\<surd>\<rightarrow>
       (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>the pc'\<rfloor> Enter)"
       by -(rule JVMCFG_reachable.CFG_Throw_Check, simp_all)
     with met pc' path_src `ek = (\<lambda>s. let v = stkAt s (stkLength (P, C, M) pc - 1);
            Cl = if v = Null then NullPointer else cname_of (heap_of s) (the_Addr v)
        in case pc' of None \<Rightarrow> match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = None
           | \<lfloor>pc''\<rfloor> \<Rightarrow>
-              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^isub>\<surd>`
+              \<exists>d. match_ex_table (PROG P) Cl pc (ex_table_of (PROG P) C M) = \<lfloor>(pc'', d)\<rfloor>)\<^sub>\<surd>`
     have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
       by (fastforce intro: JVMCFG_reachable.CFG_Throw_Check)
     with path_src show ?thesis by blast
@@ -529,7 +529,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)`
     `instrs_of (PROG P) C M ! pc = Invoke M' n` 
-    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) \<noteq> Null)\<^isub>\<surd>`
+    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) \<noteq> Null)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Normal)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_Check_NP_Normal)
   ultimately show ?case by blast
@@ -542,7 +542,7 @@ next
     `instrs_of (PROG P) C M ! pc = Invoke M' n`
     `pc' = (case match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) of None \<Rightarrow> None
     | \<lfloor>(pc'', d)\<rfloor> \<Rightarrow> \<lfloor>pc''\<rfloor>)`
-    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) = Null)\<^isub>\<surd>`
+    `ek = (\<lambda>s. stkAt s (stkLength (P, C, M) pc - Suc n) = Null)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Enter) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional pc' Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_Check_NP_Exceptional)
   ultimately show ?case by blast
@@ -570,13 +570,13 @@ next
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_NP_handle)
   ultimately show ?case by blast
 next
-  case (CFG_Invoke_Call C P C0 Main M pc M' n ST LT D' Ts T mxs mxl\<^isub>0 "is" xt D Q paramDefs ek)
+  case (CFG_Invoke_Call C P C0 Main M pc M' n ST LT D' Ts T mxs mxl\<^sub>0 "is" xt D Q paramDefs ek)
   then obtain as where "JVMCFG_Interpret.valid_path' P C0 Main
     (ClassMain P, MethodMain P, None, Enter) as (C, M, \<lfloor>pc\<rfloor>, Normal)"
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)`
     `instrs_of (PROG P) C M ! pc = Invoke M' n` `TYPING P C M ! pc = \<lfloor>(ST, LT)\<rfloor>`
-    `ST ! n = Class D'` `PROG P \<turnstile> D' sees M': Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in D`
+    `ST ! n = Class D'` `PROG P \<turnstile> D' sees M': Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D`
     `Q = (\<lambda>(s, ret). let r = stkAt s (stkLength (P, C, M) pc - Suc n);
               C' = cname_of (heap_of s) (the_Addr r) in D = fst (method (PROG P) C' M'))`
     `paramDefs = (\<lambda>s. s Heap) # (\<lambda>s. s (Stack (stkLength (P, C, M) pc - Suc n))) #
@@ -591,7 +591,7 @@ next
     (ClassMain P, MethodMain P, None, Enter) as (C, M, \<lfloor>pc\<rfloor>, Normal)"
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)`
-    `instrs_of (PROG P) C M ! pc = Invoke M' n` `ek = (\<lambda>s. False)\<^isub>\<surd>`
+    `instrs_of (PROG P) C M ! pc = Invoke M' n` `ek = (\<lambda>s. False)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Normal) ek (C, M, \<lfloor>pc\<rfloor>, Return)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_False)
   ultimately show ?case by blast
@@ -602,7 +602,7 @@ next
     by blast
   moreover with `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, nodeType.Return)`
     `instrs_of (PROG P) C M ! pc = Invoke M' n` `TYPING P C M ! pc = \<lfloor>(ST, LT)\<rfloor>`
-    `ST ! n \<noteq> NT` `ek = (\<lambda>s. s Exception = None)\<^isub>\<surd>`
+    `ST ! n \<noteq> NT` `ek = (\<lambda>s. s Exception = None)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Return) ek (C, M, \<lfloor>Suc pc\<rfloor>, Enter)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_Return_Check_Normal)
   ultimately show ?case by blast
@@ -617,7 +617,7 @@ next
     `pc' \<noteq> length (instrs_of (PROG P) C M)`
     `ek = (\<lambda>s. \<exists>v d. s Exception = \<lfloor>v\<rfloor> \<and>
              match_ex_table (PROG P) (cname_of (heap_of s) (the_Addr (the_Value v))) pc
-              (ex_table_of (PROG P) C M) = \<lfloor>(pc', d)\<rfloor>)\<^isub>\<surd>`
+              (ex_table_of (PROG P) C M) = \<lfloor>(pc', d)\<rfloor>)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Return) ek (C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_Return_Check_Exceptional)
   ultimately show ?case by blast
@@ -641,7 +641,7 @@ next
     `instrs_of (PROG P) C M ! pc = Invoke M' n`
     `ek = (\<lambda>s. \<exists>v. s Exception = \<lfloor>v\<rfloor> \<and>
            match_ex_table (PROG P) (cname_of (heap_of s) (the_Addr (the_Value v))) pc
-            (ex_table_of (PROG P) C M) = None)\<^isub>\<surd>`
+            (ex_table_of (PROG P) C M) = None)\<^sub>\<surd>`
   have "vp_snoc P C0 Main as (C, M, \<lfloor>pc\<rfloor>, Return) ek (C, M, None, Return)"
     by (fastforce intro: JVMCFG_reachable.CFG_Invoke_Return_Exceptional_prop)
   ultimately show ?case by blast
@@ -666,7 +666,7 @@ next
       (ClassMain P, MethodMain P, None, Enter) as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)"
       by blast
     moreover with Main_Call have "vp_snoc P C0 Main as (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)
-      (\<lambda>s. False)\<^isub>\<surd> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)"
+      (\<lambda>s. False)\<^sub>\<surd> (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Return)"
       by (fastforce intro: Main_Call_LFalse)
     ultimately show ?thesis using Main_Call CFG_Return_from_Method by blast
   next
@@ -675,7 +675,7 @@ next
       (ClassMain P, MethodMain P, None, Enter) as (C', M', \<lfloor>pc'\<rfloor>, Normal)"
       by blast
     moreover with CFG_Invoke_Call
-    have "vp_snoc P C0 Main as (C', M', \<lfloor>pc'\<rfloor>, Normal) (\<lambda>s. False)\<^isub>\<surd> (C', M', \<lfloor>pc'\<rfloor>, Return)"
+    have "vp_snoc P C0 Main as (C', M', \<lfloor>pc'\<rfloor>, Normal) (\<lambda>s. False)\<^sub>\<surd> (C', M', \<lfloor>pc'\<rfloor>, Return)"
       by (fastforce intro: CFG_Invoke_False)
     ultimately show ?thesis using CFG_Invoke_Call CFG_Return_from_Method by blast
   qed
@@ -691,7 +691,7 @@ definition EP :: jvm_prog
   where "EP = (''C'', Object, [],
   [(''M'', [], Void, 1::nat, 0::nat, [Push Unit, instr.Return], [])]) # SystemClasses"
 
-definition Phi_EP :: ty\<^isub>P
+definition Phi_EP :: ty\<^sub>P
   where "Phi_EP C M = (if C = ''C'' \<and> M = ''M''
       then [\<lfloor>([],[OK (Class ''C'')])\<rfloor>,\<lfloor>([Void],[OK (Class ''C'')])\<rfloor>] else [])"
 
@@ -721,12 +721,12 @@ next
       ClassCastC_def)
   moreover have classes_wf:
     "\<forall>c\<in>set EP. wf_cdecl
-    (\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (Phi_EP C M)) EP c"
+    (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (Phi_EP C M)) EP c"
   proof
     fix C
     assume C_in_EP: "C \<in> set EP"
     show "wf_cdecl
-      (\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (Phi_EP C M)) EP C"
+      (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (Phi_EP C M)) EP C"
     proof (cases "C \<in> set SystemClasses")
       case True
       thus ?thesis
@@ -746,7 +746,7 @@ next
     qed
   qed
   ultimately show "(\<forall>c\<in>set EP. wf_cdecl
-    (\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (Phi_EP C M)) EP c) \<and>
+    (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (Phi_EP C M)) EP c) \<and>
     distinct_fst EP"
     by simp
 qed
@@ -929,7 +929,7 @@ proof -
   have "valid_edge (Abs_wf_jvmprog (EP, Phi_EP), ''C'', ''M'')
     ((ClassMain (Abs_wf_jvmprog (EP, Phi_EP)), MethodMain (Abs_wf_jvmprog (EP, Phi_EP)), None,
       Enter),
-    (\<lambda>s. False)\<^isub>\<surd>,
+    (\<lambda>s. False)\<^sub>\<surd>,
     (ClassMain (Abs_wf_jvmprog (EP, Phi_EP)), MethodMain (Abs_wf_jvmprog (EP, Phi_EP)), None,
       Return))"
     by (auto simp: valid_edge_def intro: JVMCFG_reachable.intros)
@@ -963,16 +963,16 @@ typedef cfg_wf_prog = cfg_wf_prog
 proof
   let ?prog = "(Abs_wf_jvmprog (EP, Phi_EP), ''C'', ''M'')"
   let ?edge_main0 = "((ClassMain (fst ?prog), MethodMain (fst ?prog), None, Enter),
-    (\<lambda>s. False)\<^isub>\<surd>,
+    (\<lambda>s. False)\<^sub>\<surd>,
     (ClassMain (fst ?prog), MethodMain (fst ?prog), None, Return))"
   let ?edge_main1 = "((ClassMain (fst ?prog), MethodMain (fst ?prog), None, Enter),
-    (\<lambda>s. True)\<^isub>\<surd>,
+    (\<lambda>s. True)\<^sub>\<surd>,
     (ClassMain (fst ?prog), MethodMain (fst ?prog), \<lfloor>0\<rfloor>, Enter))"
   let ?edge_main2 = "((ClassMain (fst ?prog), MethodMain (fst ?prog), \<lfloor>0\<rfloor>, Enter),
     \<Up>id,
     (ClassMain (fst ?prog), MethodMain (fst ?prog), \<lfloor>0\<rfloor>, Normal))"
   let ?edge_main3 = "((ClassMain (fst ?prog), MethodMain (fst ?prog), \<lfloor>0\<rfloor>, Normal),
-    (\<lambda>s. False)\<^isub>\<surd>,
+    (\<lambda>s. False)\<^sub>\<surd>,
     (ClassMain (fst ?prog), MethodMain (fst ?prog), \<lfloor>0\<rfloor>, Return))"
   let ?edge_main4 = "((ClassMain (fst ?prog), MethodMain (fst ?prog), \<lfloor>0\<rfloor>, Return),
     \<Up>id,
@@ -982,10 +982,10 @@ proof
       MethodMain (fst ?prog), 0)\<hookrightarrow>\<^bsub>(''C'', ''M'')\<^esub>[(\<lambda>s. s Heap),(\<lambda>s. \<lfloor>Value Null\<rfloor>)]),
     (''C'', ''M'', None, Enter))"
   let ?edge_C0 = "((''C'', ''M'', None, Enter),
-    (\<lambda>s. False)\<^isub>\<surd>,
+    (\<lambda>s. False)\<^sub>\<surd>,
     (''C'', ''M'', None, Return))"
   let ?edge_C1 = "((''C'', ''M'', None, Enter),
-    (\<lambda>s. True)\<^isub>\<surd>,
+    (\<lambda>s. True)\<^sub>\<surd>,
     (''C'', ''M'', \<lfloor>0\<rfloor>, Enter))"
   let ?edge_C2 = "((''C'', ''M'', \<lfloor>0\<rfloor>, Enter),
     \<Up>(\<lambda>s. s(Stack 0 \<mapsto> Value Unit)),

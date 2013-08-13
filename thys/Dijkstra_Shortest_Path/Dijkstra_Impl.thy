@@ -69,7 +69,7 @@ begin
   definition cdijkstra where
     "cdijkstra \<equiv> do {
       \<sigma>0 \<leftarrow> cdinit; 
-      (_,res) \<leftarrow> WHILE\<^isub>T (\<lambda>(wl,_). \<not> qw.isEmpty wl) 
+      (_,res) \<leftarrow> WHILE\<^sub>T (\<lambda>(wl,_). \<not> qw.isEmpty wl) 
             (\<lambda>\<sigma>. do { (v,wv,\<sigma>') \<leftarrow> cpop_min \<sigma>; cupdate v wv \<sigma>' } )
             \<sigma>0;
       RETURN res

@@ -54,7 +54,7 @@ lemma E_eqI: "s \<in> S \<Longrightarrow> T \<subseteq> S \<Longrightarrow> (\<A
 lemma positive_integral_K:
   fixes f :: "'s \<Rightarrow> ereal"
   assumes [simp]: "s \<in> S" "\<And>t. t \<in> S \<Longrightarrow> 0 \<le> f t"
-  shows "(\<integral>\<^isup>+t. f t \<partial>K s) = (\<Sum>t\<in>S. \<tau> s t * f t)"
+  shows "(\<integral>\<^sup>+t. f t \<partial>K s) = (\<Sum>t\<in>S. \<tau> s t * f t)"
   by (simp add: positive_integral_point_measure_finite K_def)
 
 lemma integral_K:
@@ -88,7 +88,7 @@ lemma prob_eq_sum:
 
 lemma positive_integral_eq_sum:
   assumes [simp]: "s \<in> S" and [measurable]: "f \<in> borel_measurable S_seq"
-  shows "(\<integral>\<^isup>+x. f x \<partial>paths s) = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^isup>+x. f (nat_case s' x) \<partial>paths s'))"
+  shows "(\<integral>\<^sup>+x. f x \<partial>paths s) = (\<Sum>s'\<in>S. \<tau> s s' * (\<integral>\<^sup>+x. f (nat_case s' x) \<partial>paths s'))"
   by (subst positive_integral_iterate)
      (simp_all add: space_PiM positive_integral_K positive_integral_positive)
 
@@ -202,16 +202,16 @@ lemma reward_until_positive:
 
 lemma positive_integral_reward_until_ereal:
   assumes s[simp]: "s \<notin> \<Phi>" "s \<in> S" and until: "AE \<omega> in paths s. nat_case s \<omega> \<in> until S \<Phi>"
-  shows "(\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
-   (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s'))"
+  shows "(\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
+   (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s'))"
 proof -
   have positive: "\<And>s. s \<in> S \<Longrightarrow> AE \<omega> in paths s. 0 \<le> reward_until \<Phi> (nat_case s \<omega>)"
     by (auto intro!: reward_until_positive simp: space_PiM PiE_iff split: nat.split)
 
-  have "(\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
-      (\<integral>\<^isup>+ \<omega>. \<rho> s + \<iota> s (\<omega> 0) + reward_until \<Phi> \<omega> \<partial>paths s)"
+  have "(\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
+      (\<integral>\<^sup>+ \<omega>. \<rho> s + \<iota> s (\<omega> 0) + reward_until \<Phi> \<omega> \<partial>paths s)"
     using until by (intro positive_integral_cong_AE) (auto simp: reward_until_nat_case_Suc)
-  also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s'))"
+  also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s'))"
     using emeasure_space_1
     by (subst positive_integral_eq_sum) (simp_all add: positive_integral_add positive)
   finally show ?thesis .
@@ -220,7 +220,7 @@ qed
 lemma positive_integral_reward_until_finite:
   assumes s[simp]: "s \<in> S"
     and ae: "AE \<omega> in paths s. nat_case s \<omega> \<in> until S \<Phi>"
-  shows "\<bar>\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s\<bar> \<noteq> \<infinity>"
+  shows "\<bar>\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s\<bar> \<noteq> \<infinity>"
     (is "\<bar>?R\<bar> \<noteq> \<infinity>")
 proof (rule ereal_infinity_cases)
   def M \<equiv> "Max ((\<lambda>(s, s'). \<rho> s + \<iota> s s') ` (S\<times>S))"
@@ -229,7 +229,7 @@ proof (rule ereal_infinity_cases)
   from this[OF s0 s0] \<iota>_nneg[OF s0 s0] \<rho>_nneg[OF s0] have [arith]: "0 \<le> M"
     by auto
     
-  have "?R \<le> (\<integral>\<^isup>+ \<omega>. M * hitting_time \<Phi> (nat_case s \<omega>) \<partial>paths s)"
+  have "?R \<le> (\<integral>\<^sup>+ \<omega>. M * hitting_time \<Phi> (nat_case s \<omega>) \<partial>paths s)"
     using ae
   proof (intro positive_integral_mono_AE, elim AE_mp, intro AE_I2 impI)
     fix \<omega> assume "nat_case s \<omega> \<in> until S \<Phi>" "\<omega> \<in> space (paths s)"
@@ -241,7 +241,7 @@ proof (rule ereal_infinity_cases)
     then show "reward_until \<Phi> (nat_case s \<omega>) \<le> M * hitting_time \<Phi> (nat_case s \<omega>)"
       by (simp add: real_eq_of_nat ac_simps)
   qed
-  also have "\<dots> = M * (\<integral>\<^isup>+ \<omega>. hitting_time \<Phi> (nat_case s \<omega>) \<partial>paths s)"
+  also have "\<dots> = M * (\<integral>\<^sup>+ \<omega>. hitting_time \<Phi> (nat_case s \<omega>) \<partial>paths s)"
     by (subst positive_integral_cmult[symmetric])
        (auto simp: comp_def real_eq_of_nat cong: measurable_cong_sets)
   also have "\<dots> < \<infinity>"
@@ -258,8 +258,8 @@ qed
 lemma positive_integral_reward_until_real:
   assumes s: "s \<notin> \<Phi>" "s \<in> S"
     and ae: "AE \<omega> in paths s. nat_case s \<omega> \<in> until S \<Phi>"
-  shows "(\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
-   ereal (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + real (\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s')))"
+  shows "(\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s \<omega>) \<partial>paths s) =
+   ereal (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + real (\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s')))"
     (is "?R s = _")
   unfolding positive_integral_reward_until_ereal[OF s ae]
 proof (subst setsum_ereal[symmetric], intro setsum_cong refl)
@@ -273,8 +273,8 @@ proof (subst setsum_ereal[symmetric], intro setsum_cong refl)
     from positive_integral_reward_until_finite[OF `s' \<in> S` this]
     have "\<exists>r. ?R s' = ereal r"
       by auto }
-  then show "\<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s') =
-        ereal (\<tau> s s' * (\<rho> s + \<iota> s s' + real (\<integral>\<^isup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s')))"
+  then show "\<tau> s s' * (\<rho> s + \<iota> s s' + \<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s') =
+        ereal (\<tau> s s' * (\<rho> s + \<iota> s s' + real (\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (nat_case s' \<omega>) \<partial>paths s')))"
     by (cases "\<tau> s s' = 0") (auto simp: zero_ereal_def[symmetric])
 qed
 

@@ -7,8 +7,8 @@ subsection {* Euclidean Components *}
 
 lemma sqrt_le_rsquare:
   assumes "\<bar>x\<bar> \<le> sqrt y"
-  shows "x\<twosuperior> \<le> y"
-  using assms real_sqrt_le_iff[of "x\<twosuperior>"] by simp
+  shows "x\<^sup>2 \<le> y"
+  using assms real_sqrt_le_iff[of "x\<^sup>2"] by simp
 
 lemma fst_Basis[simp]: "i \<in> Basis \<Longrightarrow> (i, 0) \<in> Basis"
   by (simp add: Basis_prod_def)

@@ -60,9 +60,9 @@ proof(unfold_locales)
   have "prog \<turnstile> (_Exit_) -et\<rightarrow> nx'" by(simp add:valid_edge_def)
   thus False by fastforce
 next
-  have "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (_Exit_)" by(rule WCFG_Entry_Exit)
+  have "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (_Exit_)" by(rule WCFG_Entry_Exit)
   thus "\<exists>a. valid_edge prog a \<and> sourcenode a = (_Entry_) \<and>
-            targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^isub>\<surd>"
+            targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^sub>\<surd>"
     by(fastforce simp:valid_edge_def)
 qed
 

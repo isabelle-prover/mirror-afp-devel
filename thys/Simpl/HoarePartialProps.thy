@@ -332,21 +332,21 @@ next
       by cases simp
   qed
 next
-  case (Catch \<Theta> F P c\<^isub>1 Q R c\<^isub>2 A)
-  have valid_c1: "\<And>n. \<Gamma>,\<Theta> \<Turnstile>n:\<^bsub>/F\<^esub> P c\<^isub>1 Q,R" by fact
-  have valid_c2: "\<And>n. \<Gamma>,\<Theta> \<Turnstile>n:\<^bsub>/F\<^esub> R c\<^isub>2 Q,A" by fact
-  show "\<Gamma>,\<Theta> \<Turnstile>n:\<^bsub>/F\<^esub> P Catch c\<^isub>1 c\<^isub>2 Q,A"
+  case (Catch \<Theta> F P c\<^sub>1 Q R c\<^sub>2 A)
+  have valid_c1: "\<And>n. \<Gamma>,\<Theta> \<Turnstile>n:\<^bsub>/F\<^esub> P c\<^sub>1 Q,R" by fact
+  have valid_c2: "\<And>n. \<Gamma>,\<Theta> \<Turnstile>n:\<^bsub>/F\<^esub> R c\<^sub>2 Q,A" by fact
+  show "\<Gamma>,\<Theta> \<Turnstile>n:\<^bsub>/F\<^esub> P Catch c\<^sub>1 c\<^sub>2 Q,A"
   proof (rule cnvalidI)
     fix s t
     assume ctxt: "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma> \<Turnstile>n:\<^bsub>/F\<^esub> P (Call p) Q,A"
-    assume exec: "\<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> =n\<Rightarrow> t" 
+    assume exec: "\<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> =n\<Rightarrow> t" 
     assume P: "s \<in> P"
     assume t_notin_Fault: "t \<notin> Fault ` F"
     from exec show "t \<in> Normal ` Q \<union> Abrupt ` A"
     proof (cases)
       fix s'
-      assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> Abrupt s'" 
-      assume exec_c2: "\<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s'\<rangle> =n\<Rightarrow> t"
+      assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> Abrupt s'" 
+      assume exec_c2: "\<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s'\<rangle> =n\<Rightarrow> t"
       from cnvalidD [OF valid_c1 ctxt exec_c1 P ] 
       have "Abrupt s' \<in> Abrupt ` R"
         by auto
@@ -354,7 +354,7 @@ next
       show ?thesis
         by fastforce
     next
-      assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> t" 
+      assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> t" 
       assume notAbr: "\<not> isAbr t"
       from cnvalidD [OF valid_c1 ctxt exec_c1 P t_notin_Fault] 
       have "t \<in> Normal ` Q \<union> Abrupt ` R" .
@@ -932,34 +932,34 @@ next
               {t. \<Gamma>\<turnstile>\<langle>Throw,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     by (rule conseqPre [OF hoarep.Throw]) (blast intro: exec.intros)
 next
-  case (Catch c\<^isub>1 c\<^isub>2)
-  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^isub>1
-                  {t. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow> Normal t},
-                  {t. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
+  case (Catch c\<^sub>1 c\<^sub>2)
+  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^sub>1
+                  {t. \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal Z\<rangle> \<Rightarrow> Normal t},
+                  {t. \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     using Catch.hyps by iprover
-  hence "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^isub>1
-               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
-               {t. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow> Abrupt t \<and> 
-                   \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
+  hence "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^sub>1
+               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
+               {t. \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal Z\<rangle> \<Rightarrow> Abrupt t \<and> 
+                   \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
     by (rule ConseqMGT)
        (fastforce intro: exec.intros simp add: final_notin_def)
   moreover
-  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^isub>2
-                  {t. \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
-                  {t. \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
+  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} c\<^sub>2
+                  {t. \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
+                  {t. \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     using Catch.hyps by iprover
-  hence "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>{s. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal Z\<rangle> \<Rightarrow>Abrupt s \<and> 
-                   \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
-               c\<^isub>2
-               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
-               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
+  hence "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>{s. \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal Z\<rangle> \<Rightarrow>Abrupt s \<and> 
+                   \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
+               c\<^sub>2
+               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
+               {t. \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     by (rule ConseqMGT)
        (fastforce intro: exec.intros  simp add: final_notin_def)
   ultimately
-  show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
-                   Catch c\<^isub>1 c\<^isub>2
-              {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
-              {t. \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
+  show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))} 
+                   Catch c\<^sub>1 c\<^sub>2
+              {t. \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Normal t},
+              {t. \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
     by (rule hoarep.Catch)
 qed
 
@@ -1199,28 +1199,28 @@ primrec procs:: "('s,'p,'f) com \<Rightarrow> 'p set"
 where
 "procs Skip = {}" |
 "procs (Basic f) = {}" |
-"procs (Seq c\<^isub>1 c\<^isub>2)  = (procs c\<^isub>1 \<union> procs c\<^isub>2)" |
-"procs (Cond b c\<^isub>1 c\<^isub>2) = (procs c\<^isub>1 \<union> procs c\<^isub>2)" |
+"procs (Seq c\<^sub>1 c\<^sub>2)  = (procs c\<^sub>1 \<union> procs c\<^sub>2)" |
+"procs (Cond b c\<^sub>1 c\<^sub>2) = (procs c\<^sub>1 \<union> procs c\<^sub>2)" |
 "procs (While b c) = procs c" |
 "procs (Call p) = {p}" |
 "procs (DynCom c) = (\<Union>s. procs (c s))" |
 "procs (Guard f g c) = procs c" |
 "procs Throw = {}" |
-"procs (Catch c\<^isub>1 c\<^isub>2) = (procs c\<^isub>1 \<union> procs c\<^isub>2)"
+"procs (Catch c\<^sub>1 c\<^sub>2) = (procs c\<^sub>1 \<union> procs c\<^sub>2)"
 
 primrec noSpec:: "('s,'p,'f) com \<Rightarrow> bool"
 where
 "noSpec Skip = True" |
 "noSpec (Basic f) = True" |
 "noSpec (Spec r) = False" |
-"noSpec (Seq c\<^isub>1 c\<^isub>2)  = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)" |
-"noSpec (Cond b c\<^isub>1 c\<^isub>2) = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)" |
+"noSpec (Seq c\<^sub>1 c\<^sub>2)  = (noSpec c\<^sub>1 \<and> noSpec c\<^sub>2)" |
+"noSpec (Cond b c\<^sub>1 c\<^sub>2) = (noSpec c\<^sub>1 \<and> noSpec c\<^sub>2)" |
 "noSpec (While b c) = noSpec c" |
 "noSpec (Call p) = True" |
 "noSpec (DynCom c) = (\<forall>s. noSpec (c s))" |
 "noSpec (Guard f g c) = noSpec c" |
 "noSpec Throw = True" |
-"noSpec (Catch c\<^isub>1 c\<^isub>2) = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)"
+"noSpec (Catch c\<^sub>1 c\<^sub>2) = (noSpec c\<^sub>1 \<and> noSpec c\<^sub>2)"
 
 lemma exec_noSpec_no_Stuck:
  assumes exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t"
@@ -1945,9 +1945,9 @@ done
 subsubsection {* Guards and Guarantees *}
 
 lemma SplitGuards_sound:
-assumes valid_c1: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c\<^isub>1 Q,A"
-assumes valid_c2: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c\<^isub>2 UNIV,UNIV"
-assumes c: "(c\<^isub>1 \<inter>\<^sub>g c\<^isub>2) = Some c"
+assumes valid_c1: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c\<^sub>1 Q,A"
+assumes valid_c2: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c\<^sub>2 UNIV,UNIV"
+assumes c: "(c\<^sub>1 \<inter>\<^sub>g c\<^sub>2) = Some c"
 shows "\<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A"
 proof (rule cnvalidI)
   fix s t 
@@ -1959,30 +1959,30 @@ proof (rule cnvalidI)
   proof (cases t)
     case Normal
     with inter_guards_execn_noFault [OF c exec]
-    have "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> t" by simp
+    have "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> t" by simp
     from valid_c1 [rule_format] ctxt this P t_notin_F
     show ?thesis
       by (rule cnvalidD)
   next
     case Abrupt
     with inter_guards_execn_noFault [OF c exec]
-    have "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> t" by simp
+    have "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> t" by simp
     from valid_c1 [rule_format] ctxt this P t_notin_F
     show ?thesis
       by (rule cnvalidD)
   next
     case (Fault f)
     with exec inter_guards_execn_Fault [OF c]
-    have "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> =n\<Rightarrow> Fault f"
+    have "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> Fault f \<or> \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s\<rangle> =n\<Rightarrow> Fault f"
       by auto
     then show ?thesis
     proof (cases rule: disjE [consumes 1])
-      assume "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> Fault f"
+      assume "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> Fault f"
       from Fault cnvalidD [OF valid_c1 [rule_format] ctxt this P] t_notin_F
       show ?thesis
         by blast
     next
-      assume "\<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> =n\<Rightarrow> Fault f"
+      assume "\<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s\<rangle> =n\<Rightarrow> Fault f"
       from Fault cnvalidD [OF valid_c2 [rule_format] ctxt this P] t_notin_F
       show ?thesis
         by blast
@@ -1990,7 +1990,7 @@ proof (rule cnvalidI)
   next
     case Stuck
     with inter_guards_execn_noFault [OF c exec]
-    have "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow> t" by simp
+    have "\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow> t" by simp
     from valid_c1 [rule_format] ctxt this P t_notin_F
     show ?thesis
       by (rule cnvalidD)
@@ -1998,9 +1998,9 @@ proof (rule cnvalidI)
 qed
 
 lemma SplitGuards: 
-  assumes c: "(c\<^isub>1 \<inter>\<^sub>g c\<^isub>2) = Some c" 
-  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 Q,A" 
-  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>2 UNIV,UNIV"
+  assumes c: "(c\<^sub>1 \<inter>\<^sub>g c\<^sub>2) = Some c" 
+  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 Q,A" 
+  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>2 UNIV,UNIV"
   shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"
 apply (rule hoare_complete')
 apply (rule allI)

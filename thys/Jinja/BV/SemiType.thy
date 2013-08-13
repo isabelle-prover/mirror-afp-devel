@@ -24,22 +24,22 @@ where
 
 definition sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty err"
 where
-  "sup P T\<^isub>1 T\<^isub>2 \<equiv>
-  if is_refT T\<^isub>1 \<and> is_refT T\<^isub>2 then 
-  OK (if T\<^isub>1 = NT then T\<^isub>2 else
-      if T\<^isub>2 = NT then T\<^isub>1 else
-      (Class (exec_lub (subcls1 P) (super P) (the_Class T\<^isub>1) (the_Class T\<^isub>2))))
+  "sup P T\<^sub>1 T\<^sub>2 \<equiv>
+  if is_refT T\<^sub>1 \<and> is_refT T\<^sub>2 then 
+  OK (if T\<^sub>1 = NT then T\<^sub>2 else
+      if T\<^sub>2 = NT then T\<^sub>1 else
+      (Class (exec_lub (subcls1 P) (super P) (the_Class T\<^sub>1) (the_Class T\<^sub>2))))
   else 
-  (if T\<^isub>1 = T\<^isub>2 then OK T\<^isub>1 else Err)"
+  (if T\<^sub>1 = T\<^sub>2 then OK T\<^sub>1 else Err)"
 
 lemma sup_def':
-  "sup P = (\<lambda>T\<^isub>1 T\<^isub>2.
-  if is_refT T\<^isub>1 \<and> is_refT T\<^isub>2 then 
-  OK (if T\<^isub>1 = NT then T\<^isub>2 else
-      if T\<^isub>2 = NT then T\<^isub>1 else
-      (Class (exec_lub (subcls1 P) (super P) (the_Class T\<^isub>1) (the_Class T\<^isub>2))))
+  "sup P = (\<lambda>T\<^sub>1 T\<^sub>2.
+  if is_refT T\<^sub>1 \<and> is_refT T\<^sub>2 then 
+  OK (if T\<^sub>1 = NT then T\<^sub>2 else
+      if T\<^sub>2 = NT then T\<^sub>1 else
+      (Class (exec_lub (subcls1 P) (super P) (the_Class T\<^sub>1) (the_Class T\<^sub>2))))
   else 
-  (if T\<^isub>1 = T\<^isub>2 then OK T\<^isub>1 else Err))"
+  (if T\<^sub>1 = T\<^sub>2 then OK T\<^sub>1 else Err))"
   by (simp add: sup_def fun_eq_iff)
 
 abbreviation

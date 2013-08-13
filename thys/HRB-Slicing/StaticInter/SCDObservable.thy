@@ -5,20 +5,20 @@ theory SCDObservable imports Observable HRBSlice begin
 context SDG begin
 
 lemma matched_bracket_assms_variant:
-  assumes "n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V'\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2" and "matched n\<^isub>2 ns' n\<^isub>3" 
-  and "n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4"
-  and "call_of_return_node (parent_node n\<^isub>4) (parent_node n\<^isub>1)"
+  assumes "n\<^sub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^sub>2 \<or> n\<^sub>1 -p:V'\<rightarrow>\<^bsub>in\<^esub> n\<^sub>2" and "matched n\<^sub>2 ns' n\<^sub>3" 
+  and "n\<^sub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^sub>4 \<or> n\<^sub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^sub>4"
+  and "call_of_return_node (parent_node n\<^sub>4) (parent_node n\<^sub>1)"
   obtains a a' where "valid_edge a" and "a' \<in> get_return_edges a"
-  and "sourcenode a = parent_node n\<^isub>1" and "targetnode a = parent_node n\<^isub>2"
-  and "sourcenode a' = parent_node n\<^isub>3" and "targetnode a' = parent_node n\<^isub>4"
+  and "sourcenode a = parent_node n\<^sub>1" and "targetnode a = parent_node n\<^sub>2"
+  and "sourcenode a' = parent_node n\<^sub>3" and "targetnode a' = parent_node n\<^sub>4"
 proof(atomize_elim)
-  from `n\<^isub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^isub>2 \<or> n\<^isub>1 -p:V'\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` obtain a Q r fs where "valid_edge a" 
-    and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "parent_node n\<^isub>1 = sourcenode a"
-    and "parent_node n\<^isub>2 = targetnode a"
+  from `n\<^sub>1 -p\<rightarrow>\<^bsub>call\<^esub> n\<^sub>2 \<or> n\<^sub>1 -p:V'\<rightarrow>\<^bsub>in\<^esub> n\<^sub>2` obtain a Q r fs where "valid_edge a" 
+    and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "parent_node n\<^sub>1 = sourcenode a"
+    and "parent_node n\<^sub>2 = targetnode a"
     by(fastforce elim:SDG_edge.cases)
-  from `n\<^isub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^isub>4 \<or> n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` obtain a' Q' f'
+  from `n\<^sub>3 -p\<rightarrow>\<^bsub>ret\<^esub> n\<^sub>4 \<or> n\<^sub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^sub>4` obtain a' Q' f'
     where "valid_edge a'" and "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
-    and "parent_node n\<^isub>3 = sourcenode a'" and "parent_node n\<^isub>4 = targetnode a'"
+    and "parent_node n\<^sub>3 = sourcenode a'" and "parent_node n\<^sub>4 = targetnode a'"
     by(fastforce elim:SDG_edge.cases)
   from `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
   obtain ax where "valid_edge ax" and "\<exists>Q r fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
@@ -29,15 +29,15 @@ proof(atomize_elim)
   from `valid_edge a'` `a' \<in> get_return_edges ax` `valid_edge ax`
   have "call_of_return_node (targetnode a') (sourcenode ax)"
     by(fastforce simp:return_node_def call_of_return_node_def)
-  with `call_of_return_node (parent_node n\<^isub>4) (parent_node n\<^isub>1)` 
-    `parent_node n\<^isub>4 = targetnode a'`
-  have "sourcenode ax = parent_node n\<^isub>1" by fastforce
+  with `call_of_return_node (parent_node n\<^sub>4) (parent_node n\<^sub>1)` 
+    `parent_node n\<^sub>4 = targetnode a'`
+  have "sourcenode ax = parent_node n\<^sub>1" by fastforce
   with `valid_edge ax` `a' \<in> get_return_edges ax` `targetnode a = targetnode ax`
-    `parent_node n\<^isub>2 = targetnode a` `parent_node n\<^isub>3 = sourcenode a'` 
-    `parent_node n\<^isub>4 = targetnode a'`
+    `parent_node n\<^sub>2 = targetnode a` `parent_node n\<^sub>3 = sourcenode a'` 
+    `parent_node n\<^sub>4 = targetnode a'`
   show "\<exists>a a'. valid_edge a \<and> a' \<in> get_return_edges a \<and>
-    sourcenode a = parent_node n\<^isub>1 \<and> targetnode a = parent_node n\<^isub>2 \<and>
-    sourcenode a' = parent_node n\<^isub>3 \<and> targetnode a' = parent_node n\<^isub>4"
+    sourcenode a = parent_node n\<^sub>1 \<and> targetnode a = parent_node n\<^sub>2 \<and>
+    sourcenode a' = parent_node n\<^sub>3 \<and> targetnode a' = parent_node n\<^sub>4"
     by fastforce
 qed
 
@@ -88,7 +88,7 @@ lemma Exit_in_obs_intra_slice_node:
   shows "CFG_node (_Exit_) \<in> S"
 proof -
   let ?S' = "\<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-  from `(_Exit_) \<in> obs_intra n' ?S'` obtain as where "n' -as\<rightarrow>\<^isub>\<iota>* (_Exit_)"
+  from `(_Exit_) \<in> obs_intra n' ?S'` obtain as where "n' -as\<rightarrow>\<^sub>\<iota>* (_Exit_)"
     and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> ?S'" and "(_Exit_) \<in> ?S'"
     by(erule obs_intraE)
   from `(_Exit_) \<in> ?S'` 
@@ -121,23 +121,23 @@ proof(rule ccontr)
     by(fastforce dest:in_obs_intra_valid)
   with `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `\<not> method_exit n` have "n postdominates n"
     by(fastforce intro:postdominate_refl)
-  from `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obtain as where "n' -as\<rightarrow>\<^isub>\<iota>* n"
+  from `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obtain as where "n' -as\<rightarrow>\<^sub>\<iota>* n"
     and all_notinS:"\<forall>n' \<in> set(sourcenodes as). n' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     and "n \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(erule obs_intraE)
-  from `n postdominates n` `\<not> n postdominates n'` `n' -as\<rightarrow>\<^isub>\<iota>* n`
+  from `n postdominates n` `\<not> n postdominates n'` `n' -as\<rightarrow>\<^sub>\<iota>* n`
   obtain as' a as'' where [simp]:"as = as'@a#as''"
     and "valid_edge a" and "\<not> n postdominates (sourcenode a)"
     and "n postdominates (targetnode a)"  and "intra_kind (kind a)"
     by(fastforce elim!:postdominate_path_branch simp:intra_path_def)
-  from `n' -as\<rightarrow>\<^isub>\<iota>* n` have "sourcenode a -a#as''\<rightarrow>\<^isub>\<iota>* n"
+  from `n' -as\<rightarrow>\<^sub>\<iota>* n` have "sourcenode a -a#as''\<rightarrow>\<^sub>\<iota>* n"
     by(fastforce elim:path_split intro:Cons_path simp:intra_path_def)
   with `\<not> n postdominates (sourcenode a)` `valid_edge a` `valid_node n` 
-  obtain asx pex where "sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex" 
+  obtain asx pex where "sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex" 
     and "n \<notin> set(sourcenodes asx)" by(fastforce simp:postdominate_def)
   have "asx \<noteq> []"
   proof
     assume "asx = []"
-    with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "sourcenode a = pex" 
+    with `sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex` have "sourcenode a = pex" 
       by(fastforce simp:intra_path_def)
     from `method_exit pex` show False
     proof(rule method_exit_cases)
@@ -153,11 +153,11 @@ proof(rule ccontr)
     qed
   qed
   then obtain ax asx' where [simp]:"asx = ax#asx'" by(cases asx) auto
-  with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "sourcenode a -ax#asx'\<rightarrow>* pex"
+  with `sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex` have "sourcenode a -ax#asx'\<rightarrow>* pex"
     by(simp add:intra_path_def)
   hence "valid_edge ax" and [simp]:"sourcenode a = sourcenode ax"
     and "targetnode ax -asx'\<rightarrow>* pex" by(auto elim:path_split_Cons)
-  with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "targetnode ax -asx'\<rightarrow>\<^isub>\<iota>* pex"
+  with `sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex` have "targetnode ax -asx'\<rightarrow>\<^sub>\<iota>* pex"
     by(simp add:intra_path_def)
   with `valid_edge ax` `n \<notin> set(sourcenodes asx)` `method_exit pex`
   have "\<not> n postdominates targetnode ax"
@@ -165,9 +165,9 @@ proof(rule ccontr)
   from `n \<in> obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` all_notinS 
   have "n \<notin> set (sourcenodes (a#as''))"
     by(fastforce elim:obs_intra.cases simp:sourcenodes_def)
-  from `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "intra_kind (kind ax)"
+  from `sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex` have "intra_kind (kind ax)"
     by(simp add:intra_path_def)
-  with `sourcenode a -a#as''\<rightarrow>\<^isub>\<iota>* n` `n postdominates (targetnode a)` 
+  with `sourcenode a -a#as''\<rightarrow>\<^sub>\<iota>* n` `n postdominates (targetnode a)` 
     `\<not> n postdominates targetnode ax` `valid_edge ax` 
     `n \<notin> set (sourcenodes (a#as''))` `intra_kind (kind a)`
   have "(sourcenode a) controls n"
@@ -194,11 +194,11 @@ proof(rule ccontr)
     nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<and> nx \<noteq> nx'" by auto
   then obtain nx nx' where "nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
     and "nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "nx \<noteq> nx'" by auto
-  from `nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obtain as where "n -as\<rightarrow>\<^isub>\<iota>* nx" 
+  from `nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obtain as where "n -as\<rightarrow>\<^sub>\<iota>* nx" 
     and all:"\<forall>n' \<in> set(sourcenodes as). n' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
     and "nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
     by(erule obs_intraE)
-  from `n -as\<rightarrow>\<^isub>\<iota>* nx` have "n -as\<rightarrow>* nx" and "\<forall>a \<in> set as. intra_kind (kind a)"
+  from `n -as\<rightarrow>\<^sub>\<iota>* nx` have "n -as\<rightarrow>* nx" and "\<forall>a \<in> set as. intra_kind (kind a)"
     by(simp_all add:intra_path_def)
   hence "valid_node nx" by(fastforce dest:path_valid_node)
   with `nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "obs_intra nx \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}" 
@@ -209,7 +209,7 @@ proof(rule ccontr)
   with `n -as\<rightarrow>* nx` `nx \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
     `nx' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `nx \<noteq> nx'` 
     `obs_intra nx \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}` `\<forall>a \<in> set as. intra_kind (kind a)` all
-  have "\<exists>a as' as''. n -as'\<rightarrow>\<^isub>\<iota>* sourcenode a \<and> targetnode a -as''\<rightarrow>\<^isub>\<iota>* nx \<and>
+  have "\<exists>a as' as''. n -as'\<rightarrow>\<^sub>\<iota>* sourcenode a \<and> targetnode a -as''\<rightarrow>\<^sub>\<iota>* nx \<and>
                      valid_edge a \<and> as = as'@a#as'' \<and> intra_kind (kind a) \<and>
                      obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx} \<and> 
                     (\<not> (\<exists>m. obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m} \<or> 
@@ -221,7 +221,7 @@ proof(rule ccontr)
                        obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'};
                        \<forall>a\<in>set as. intra_kind (kind a);
                        \<forall>n'\<in>set (sourcenodes as). n' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; as \<noteq> []\<rbrakk>
-      \<Longrightarrow> \<exists>a as' as''. n'' -as'\<rightarrow>\<^isub>\<iota>* sourcenode a \<and> targetnode a -as''\<rightarrow>\<^isub>\<iota>* n' \<and>
+      \<Longrightarrow> \<exists>a as' as''. n'' -as'\<rightarrow>\<^sub>\<iota>* sourcenode a \<and> targetnode a -as''\<rightarrow>\<^sub>\<iota>* n' \<and>
         valid_edge a \<and> as = as'@a#as'' \<and> intra_kind (kind a) \<and>
         obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'} \<and>
         (\<not> (\<exists>m. obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m} \<or> 
@@ -251,14 +251,14 @@ proof(rule ccontr)
     next
       case False
       from `n'' -as\<rightarrow>* n'` `\<forall>a\<in>set (a # as). intra_kind (kind a)`
-      have "n'' -as\<rightarrow>\<^isub>\<iota>* n'" by(simp add:intra_path_def)
+      have "n'' -as\<rightarrow>\<^sub>\<iota>* n'" by(simp add:intra_path_def)
       with all 
       have subset:"obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<subseteq> obs_intra n'' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
         by -(rule path_obs_intra_subset)
       thus ?thesis
       proof(cases "obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs_intra n'' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
         case True
-        with `n'' -as\<rightarrow>\<^isub>\<iota>* n'` `valid_edge a` `sourcenode a = n` `targetnode a = n''`
+        with `n'' -as\<rightarrow>\<^sub>\<iota>* n'` `valid_edge a` `sourcenode a = n` `targetnode a = n''`
           `obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'}` `intra_kind (kind a)` more_than_one
         show ?thesis
           apply(rule_tac x="a" in exI)
@@ -274,15 +274,15 @@ proof(rule ccontr)
           and "ni \<in> obs_intra n'' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "n' \<noteq> ni" by auto
         from IH[OF this `obs_intra n' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'}` 
           `\<forall>a\<in>set as. intra_kind (kind a)` all `as \<noteq> []`] obtain a' as' as''
-          where "n'' -as'\<rightarrow>\<^isub>\<iota>* sourcenode a'" 
-          and hyps:"targetnode a' -as''\<rightarrow>\<^isub>\<iota>* n'" "valid_edge a'" "as = as'@a'#as''" 
+          where "n'' -as'\<rightarrow>\<^sub>\<iota>* sourcenode a'" 
+          and hyps:"targetnode a' -as''\<rightarrow>\<^sub>\<iota>* n'" "valid_edge a'" "as = as'@a'#as''" 
             "intra_kind (kind a')" "obs_intra (targetnode a') \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {n'}"
             "\<not> (\<exists>m. obs_intra (sourcenode a') \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m} \<or> 
                                 obs_intra (sourcenode a') \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {})"
           by blast
-        from `n'' -as'\<rightarrow>\<^isub>\<iota>* sourcenode a'` `valid_edge a` `sourcenode a = n` 
+        from `n'' -as'\<rightarrow>\<^sub>\<iota>* sourcenode a'` `valid_edge a` `sourcenode a = n` 
           `targetnode a = n''` `intra_kind (kind a)` `intra_kind (kind a')`
-        have "n -a#as'\<rightarrow>\<^isub>\<iota>* sourcenode a'"
+        have "n -a#as'\<rightarrow>\<^sub>\<iota>* sourcenode a'"
           by(fastforce intro:path.Cons_path simp:intra_path_def)
         with hyps show ?thesis
           apply(rule_tac x="a'" in exI)
@@ -326,7 +326,7 @@ proof(rule ccontr)
     have "m postdominates nx"
       by(fastforce intro:postdominate_inner_path_targetnode elim:obs_intraE)
     with `nx \<noteq> m` have "\<not> nx postdominates m" by(fastforce dest:postdominate_antisym)
-    with `valid_node nx` `valid_node m` obtain asx pex where "m -asx\<rightarrow>\<^isub>\<iota>* pex"
+    with `valid_node nx` `valid_node m` obtain asx pex where "m -asx\<rightarrow>\<^sub>\<iota>* pex"
       and "method_exit pex" and "nx \<notin> set(sourcenodes asx)"
       by(fastforce simp:postdominate_def)
     have "\<not> nx postdominates (sourcenode a)"
@@ -334,9 +334,9 @@ proof(rule ccontr)
       assume "nx postdominates sourcenode a"
       from `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      obtain asx' where "sourcenode a -asx'\<rightarrow>\<^isub>\<iota>* m" and "nx \<notin> set(sourcenodes asx')"
+      obtain asx' where "sourcenode a -asx'\<rightarrow>\<^sub>\<iota>* m" and "nx \<notin> set(sourcenodes asx')"
         by(fastforce elim:obs_intraE)
-      with `m -asx\<rightarrow>\<^isub>\<iota>* pex` have "sourcenode a -asx'@asx\<rightarrow>\<^isub>\<iota>* pex"
+      with `m -asx\<rightarrow>\<^sub>\<iota>* pex` have "sourcenode a -asx'@asx\<rightarrow>\<^sub>\<iota>* pex"
         by(fastforce intro:path_Append simp:intra_path_def)
       with `nx \<notin> set(sourcenodes asx)` `nx \<notin> set(sourcenodes asx')` 
         `nx postdominates sourcenode a` `method_exit pex` show False
@@ -345,7 +345,7 @@ proof(rule ccontr)
     show False
     proof(cases "method_exit nx")
       case True
-      from `m postdominates nx` obtain xs where "nx -xs\<rightarrow>\<^isub>\<iota>* m"
+      from `m postdominates nx` obtain xs where "nx -xs\<rightarrow>\<^sub>\<iota>* m"
         by -(erule postdominate_implies_inner_path)
       with True have "nx = m"
         by(fastforce dest!:method_exit_inner_path simp:intra_path_def)
@@ -363,12 +363,12 @@ proof(rule ccontr)
       case True
       from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      obtain xs where "sourcenode a -xs\<rightarrow>\<^isub>\<iota>* m" and "nx \<notin> set(sourcenodes xs)"
+      obtain xs where "sourcenode a -xs\<rightarrow>\<^sub>\<iota>* m" and "nx \<notin> set(sourcenodes xs)"
         by(fastforce elim:obs_intraE)
       obtain x' xs' where [simp]:"xs = x'#xs'"
       proof(cases xs)
         case Nil
-        with `sourcenode a -xs\<rightarrow>\<^isub>\<iota>* m` have [simp]:"sourcenode a = m"
+        with `sourcenode a -xs\<rightarrow>\<^sub>\<iota>* m` have [simp]:"sourcenode a = m"
           by(fastforce simp:intra_path_def)
         with `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
         have "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce elim:obs_intraE)
@@ -378,11 +378,11 @@ proof(rule ccontr)
           by fastforce
         thus ?thesis by simp
       qed blast
-      from `sourcenode a -xs\<rightarrow>\<^isub>\<iota>* m` have "sourcenode a = sourcenode x'" 
-        and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>\<^isub>\<iota>* m"
+      from `sourcenode a -xs\<rightarrow>\<^sub>\<iota>* m` have "sourcenode a = sourcenode x'" 
+        and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>\<^sub>\<iota>* m"
         and "intra_kind (kind x')"
         by(auto elim:path_split_Cons simp:intra_path_def)
-      from `targetnode x' -xs'\<rightarrow>\<^isub>\<iota>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
+      from `targetnode x' -xs'\<rightarrow>\<^sub>\<iota>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
         `valid_node m` True
       have "\<not> nx postdominates (targetnode x')" 
         by(fastforce simp:postdominate_def sourcenodes_def)
@@ -402,7 +402,7 @@ proof(rule ccontr)
         have "nx postdominates (targetnode a)"
           by(fastforce intro:obs_intra_postdominate)
         from `obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {nx}`
-        obtain ys where "targetnode a -ys\<rightarrow>\<^isub>\<iota>* nx" 
+        obtain ys where "targetnode a -ys\<rightarrow>\<^sub>\<iota>* nx" 
           and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
           and "nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce elim:obs_intraE)
         hence "nx \<notin> set(sourcenodes ys)"by fastforce
@@ -418,10 +418,10 @@ proof(rule ccontr)
         qed
         with `nx \<notin> set(sourcenodes ys)` have "nx \<notin> set(sourcenodes (a#ys))"
           by(fastforce simp:sourcenodes_def)
-        from `valid_edge a` `targetnode a -ys\<rightarrow>\<^isub>\<iota>* nx` `intra_kind (kind a)`
-        have "sourcenode a -a#ys\<rightarrow>\<^isub>\<iota>* nx"
+        from `valid_edge a` `targetnode a -ys\<rightarrow>\<^sub>\<iota>* nx` `intra_kind (kind a)`
+        have "sourcenode a -a#ys\<rightarrow>\<^sub>\<iota>* nx"
           by(fastforce intro:Cons_path simp:intra_path_def)
-        from `sourcenode a -a#ys\<rightarrow>\<^isub>\<iota>* nx` `nx \<notin> set(sourcenodes (a#ys))`
+        from `sourcenode a -a#ys\<rightarrow>\<^sub>\<iota>* nx` `nx \<notin> set(sourcenodes (a#ys))`
           `intra_kind (kind a)` `nx postdominates (targetnode a)`
           `valid_edge x'` `intra_kind (kind x')` `\<not> nx postdominates (targetnode x')`
           `sourcenode a = sourcenode x'`

@@ -26,7 +26,7 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
        \<Longrightarrow> pred (kind a) s'"
   and deterministic:"\<lbrakk>valid_edge a; valid_edge a'; sourcenode a = sourcenode a';
     targetnode a \<noteq> targetnode a'\<rbrakk> 
-  \<Longrightarrow> \<exists>Q Q'. kind a = (Q)\<^isub>\<surd> \<and> kind a' = (Q')\<^isub>\<surd> \<and> 
+  \<Longrightarrow> \<exists>Q Q'. kind a = (Q)\<^sub>\<surd> \<and> kind a' = (Q')\<^sub>\<surd> \<and> 
              (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
 
 begin

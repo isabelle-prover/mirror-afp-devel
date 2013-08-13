@@ -59,8 +59,8 @@ lemma exception_step_conform:
   shows "\<Phi> \<turnstile> t:exception_step P xcp h fr frs \<surd>"
 proof -
   obtain stk loc C M pc where fr: "fr = (stk, loc, C, M, pc)" by(cases fr)
-  from correct obtain Ts T mxs mxl\<^isub>0 ins xt 
-    where meth: "P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  from correct obtain Ts T mxs mxl\<^sub>0 ins xt 
+    where meth: "P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
     by (simp add: correct_state_def fr) blast
 
   from correct meth fr obtain D 
@@ -156,7 +156,7 @@ declare defs1 [simp]
 lemma Invoke_correct: 
   fixes \<sigma>' :: "('addr, 'heap) jvm_state"
   assumes wtprog: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
-  assumes meth_C: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth_C: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:    "ins ! pc = Invoke M' n"
   assumes wti:    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes approx: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -258,10 +258,10 @@ proof -
       from wtprog mD''
       obtain start: "wt_start P D'' Ts' mxl' (\<Phi> D'' M')" and ins': "ins' \<noteq> []"
         by (auto dest: wt_jvm_prog_impl_wt_start)
-      then obtain LT\<^isub>0 where LT\<^isub>0: "\<Phi> D'' M' ! 0 = Some ([], LT\<^isub>0)"
+      then obtain LT\<^sub>0 where LT\<^sub>0: "\<Phi> D'' M' ! 0 = Some ([], LT\<^sub>0)"
         by (clarsimp simp add: wt_start_def defs1 sup_state_opt_any_Some)
       moreover
-      have "conf_f P h ([], LT\<^isub>0) ins' ?f'"
+      have "conf_f P h ([], LT\<^sub>0) ins' ?f'"
       proof -
         let ?LT = "OK (Class D'') # (map OK Ts') @ (replicate mxl' Err)"
         
@@ -279,8 +279,8 @@ proof -
           by (auto simp add: conf_def intro: widen_trans)
         ultimately
         have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] ?LT" by simp
-        also from start LT\<^isub>0 have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT\<^isub>0" by (simp add: wt_start_def)
-        finally have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] LT\<^isub>0" .
+        also from start LT\<^sub>0 have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT\<^sub>0" by (simp add: wt_start_def)
+        finally have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] LT\<^sub>0" .
         thus ?thesis using ins' by simp
       qed
       ultimately have ?thesis using s' \<Phi>_pc approx meth_C m_D T' ins D tconf C' mD''
@@ -348,7 +348,7 @@ declare list_all2_Cons2 [iff]
 
 lemma Return_correct:
   assumes wt_prog: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins: "ins ! pc = Return"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes correct: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -382,15 +382,15 @@ proof -
       by (auto dest: sees_method_fun)
 
     from \<Phi>_pc ins wt
-    obtain U ST\<^isub>0 where "ST = U # ST\<^isub>0" "P \<turnstile> U \<le> T"
+    obtain U ST\<^sub>0 where "ST = U # ST\<^sub>0" "P \<turnstile> U \<le> T"
       by (simp add: wt_instr_def app_def) blast    
     with wf frame 
     have hd_stk: "P,h \<turnstile> hd stk :\<le> T" by (auto simp add: conf_f_def)
 
     from f frs' frames
-    obtain ST' LT' Ts'' T'' mxs' mxl\<^isub>0' ins' xt' Ts' T' where
+    obtain ST' LT' Ts'' T'' mxs' mxl\<^sub>0' ins' xt' Ts' T' where
       \<Phi>': "\<Phi> C' M' ! pc' = Some (ST', LT')" and
-      meth_C':  "P \<turnstile> C' sees M':Ts''\<rightarrow>T''=\<lfloor>(mxs',mxl\<^isub>0',ins',xt')\<rfloor> in C'" and
+      meth_C':  "P \<turnstile> C' sees M':Ts''\<rightarrow>T''=\<lfloor>(mxs',mxl\<^sub>0',ins',xt')\<rfloor> in C'" and
       ins': "ins' ! pc' = Invoke M (size Ts)" and
       D: "\<exists>D m D'. class_type_of' (ST' ! (size Ts)) = Some D \<and> P \<turnstile> D sees M: Ts'\<rightarrow>T' = m in D'" and
       T': "P \<turnstile> T \<le> T'" and
@@ -443,7 +443,7 @@ declare not_Err_eq [iff]
 
 lemma Load_correct:
 "\<lbrakk> wf_prog wt P;
-    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
     ins!pc = Load idx; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
     \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd> ;
@@ -455,7 +455,7 @@ declare [[simproc del: list_to_set_comprehension]]
 
 lemma Store_correct:
 "\<lbrakk> wf_prog wt P;
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C;
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C;
   ins!pc = Store idx;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M;
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -469,7 +469,7 @@ lemma Store_correct:
 
 lemma Push_correct:
 "\<lbrakk> wf_prog wt P;
-    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
     ins!pc = Push v;
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
     \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>; 
@@ -485,13 +485,13 @@ declare [[simproc add: list_to_set_comprehension]]
 
 lemma Checkcast_correct:
 "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
-    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
     ins!pc = Checkcast D; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
     \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
     (tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs \<rbrakk> 
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma> \<surd>"
-using wf_preallocatedD[of "\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (\<Phi> C M)" P h ClassCast]
+using wf_preallocatedD[of "\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M)" P h ClassCast]
 apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
  apply(drule (1) sees_method_fun)
  apply(fastforce simp add: conf_def intro: widen_trans)
@@ -501,7 +501,7 @@ done
 
 lemma Instanceof_correct:
 "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
-    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+    P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
     ins!pc = Instanceof Ty; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
     \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -529,7 +529,7 @@ context JVM_conf_read begin
 
 lemma Getfield_correct:
   assumes wf: "wf_prog wt P"
-  assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes i:  "ins!pc = Getfield F D"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes cf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -600,7 +600,7 @@ qed
 
 lemma Putfield_correct:
   assumes wf: "wf_prog wt P"
-  assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes i:  "ins!pc = Putfield F D"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes cf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -680,7 +680,7 @@ qed
 
 lemma New_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = New X"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -743,7 +743,7 @@ qed
 
 lemma Goto_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = Goto branch; 
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>; 
@@ -758,7 +758,7 @@ declare [[simproc del: list_to_set_comprehension]]
 
 lemma IfFalse_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = IfFalse branch; 
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -773,7 +773,7 @@ declare [[simproc add: list_to_set_comprehension]]
 
 lemma BinOp_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = BinOpInstr bop;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -796,7 +796,7 @@ done
 
 lemma Pop_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = Pop;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -809,7 +809,7 @@ done
 
 lemma Dup_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = Dup;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -822,7 +822,7 @@ done
 
 lemma Swap_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = Swap;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -837,7 +837,7 @@ declare [[simproc del: list_to_set_comprehension]]
 
 lemma Throw_correct:
 "\<lbrakk> wf_prog wt P; 
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C; 
   ins ! pc = ThrowExc; 
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
   \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
@@ -857,7 +857,7 @@ declare [[simproc add: list_to_set_comprehension]]
 
 lemma NewArray_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = NewArray X"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -924,7 +924,7 @@ qed
 
 lemma ALoad_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = ALoad"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -1023,7 +1023,7 @@ qed
 
 lemma AStore_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = AStore"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -1151,7 +1151,7 @@ qed
 
 lemma ALength_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = ALength"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -1229,7 +1229,7 @@ qed
 
 lemma MEnter_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = MEnter"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -1297,7 +1297,7 @@ qed
 
 lemma MExit_correct:
   assumes wf:   "wf_prog wt P"
-  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C"
+  assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C"
   assumes ins:  "ins!pc = MExit"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
   assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
@@ -1374,7 +1374,7 @@ text {*
 *}
 theorem instr_correct:
 "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
-  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^isub>0,ins,xt)\<rfloor> in C;
+  P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C;
   (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs); 
   \<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
 \<Longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"
@@ -1444,9 +1444,9 @@ theorem (in JVM_progress) progress:
   shows "\<exists>ta \<sigma>'. P,t \<turnstile> (xcp, h, f # frs) -ta-jvm\<rightarrow> \<sigma>'"
 proof -
   obtain stk loc C M pc where f: "f = (stk, loc, C, M, pc)" by(cases f)
-  with cs obtain Ts T mxs mxl\<^isub>0 "is" xt ST LT
+  with cs obtain Ts T mxs mxl\<^sub>0 "is" xt ST LT
     where hconf: "hconf h"
-    and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl\<^isub>0, is, xt)\<rfloor> in C"
+    and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl\<^sub>0, is, xt)\<rfloor> in C"
     and \<Phi>_pc: "\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
     and ST: "P,h \<turnstile> stk [:\<le>] ST"
     and LT: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT"

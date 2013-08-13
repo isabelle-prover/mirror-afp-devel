@@ -273,18 +273,18 @@ by(cases m)(fastforce intro: sees_method_compP[where f=f] dest: sees_method_comp
 
 lemma wf_cdecl_compPI:
   assumes wf1_imp_wf2: 
-    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 P C (M,Ts,T,\<lfloor>m\<rfloor>); P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C \<rbrakk>
-    \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>)"
-  and wfcP1: "\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^isub>1 P (C, rest)"
+    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^sub>1 P C (M,Ts,T,\<lfloor>m\<rfloor>); P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^sub>2 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>)"
+  and wfcP1: "\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^sub>1 P (C, rest)"
   and xcomp: "class (compP f P) C = \<lfloor>rest'\<rfloor>"
   and wf: "wf_prog p P"
-  shows "wf_cdecl wf\<^isub>2 (compP f P) (C, rest')"
+  shows "wf_cdecl wf\<^sub>2 (compP f P) (C, rest')"
 proof -
   obtain D fs ms' where x: "rest' = (D, fs, ms')" by(cases rest')
   with xcomp obtain ms where xsrc: "class P C = \<lfloor>(D,fs,ms)\<rfloor>"
     and ms': "ms' = map (compM (f C)) ms"
     by(auto simp add: set_compP compC_def)
-  from xsrc wfcP1 have wf1: "wf_cdecl wf\<^isub>1 P (C,D,fs,ms)" by blast
+  from xsrc wfcP1 have wf1: "wf_cdecl wf\<^sub>1 P (C,D,fs,ms)" by blast
   { fix field
     assume "field \<in> set fs"
     with wf1 have "wf_fdecl (compP f P) field" by(simp add: wf_cdecl_def) 
@@ -297,11 +297,11 @@ proof -
     with ms' obtain body where mf: "body' = Option.map (f C M Ts' T') body"
       and mset: "(M, Ts', T', body) \<in> set ms" using mset'
       by(clarsimp simp add: image_iff compM_def)
-    moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^isub>1 P C (M,Ts',T',body)"
+    moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^sub>1 P C (M,Ts',T',body)"
       by(fastforce simp add: wf_cdecl_def)
     moreover from wf xsrc mset x have "P \<turnstile> C sees M:Ts'\<rightarrow>T' = body in C"
       by(auto intro: mdecl_visible)
-    ultimately have "wf_mdecl wf\<^isub>2 (compP f P) C m" using m
+    ultimately have "wf_mdecl wf\<^sub>2 (compP f P) C m" using m
       by(cases body)(simp add: wf_mdecl_def, auto intro: wf1_imp_wf2) }
   moreover from wf1 have "distinct_fst ms" by(simp add: wf_cdecl_def)
   with ms' have "distinct_fst ms'" by(auto)
@@ -331,10 +331,10 @@ qed
 lemma wf_prog_compPI:
 assumes lift: 
   "\<And>C M Ts T m. 
-    \<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C; wf_mdecl wf\<^isub>1 P C (M,Ts,T,\<lfloor>m\<rfloor>) \<rbrakk>
-    \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>)"
-and wf: "wf_prog wf\<^isub>1 P"
-shows "wf_prog wf\<^isub>2 (compP f P)"
+    \<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in C; wf_mdecl wf\<^sub>1 P C (M,Ts,T,\<lfloor>m\<rfloor>) \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^sub>2 (compP f P) C (M,Ts,T, \<lfloor>f C M Ts T m\<rfloor>)"
+and wf: "wf_prog wf\<^sub>1 P"
+shows "wf_prog wf\<^sub>2 (compP f P)"
 using wf
 apply (clarsimp simp add:wf_prog_def2)
 apply(rule wf_cdecl_compPI[OF lift], assumption+)
@@ -343,17 +343,17 @@ done
 
 lemma wf_cdecl_compPD:
   assumes wf1_imp_wf2: 
-    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts,T,\<lfloor>f C M Ts T m\<rfloor>); compP f P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>f C M Ts T m\<rfloor> in C \<rbrakk>
-    \<Longrightarrow> wf_mdecl wf\<^isub>2 P C (M,Ts,T, \<lfloor>m\<rfloor>)"
-  and wfcP1: "\<forall>C rest. class (compP f P) C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^isub>1 (compP f P) (C, rest)"
+    "\<And>C M Ts T m. \<lbrakk> wf_mdecl wf\<^sub>1 (compP f P) C (M,Ts,T,\<lfloor>f C M Ts T m\<rfloor>); compP f P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>f C M Ts T m\<rfloor> in C \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^sub>2 P C (M,Ts,T, \<lfloor>m\<rfloor>)"
+  and wfcP1: "\<forall>C rest. class (compP f P) C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf\<^sub>1 (compP f P) (C, rest)"
   and xcomp: "class P C = \<lfloor>rest\<rfloor>"
   and wf: "wf_prog wf_md (compP f P)"
-  shows "wf_cdecl wf\<^isub>2 P (C, rest)"
+  shows "wf_cdecl wf\<^sub>2 P (C, rest)"
 proof -
   obtain D fs ms' where x: "rest = (D, fs, ms')" by(cases rest)
   with xcomp have xsrc: "class (compP f P) C = \<lfloor>(D,fs,map (compM (f C)) ms')\<rfloor>"
     by(auto simp add: set_compP compC_def)
-  from xsrc wfcP1 have wf1: "wf_cdecl wf\<^isub>1 (compP f P) (C,D,fs,map (compM (f C)) ms')" by blast
+  from xsrc wfcP1 have wf1: "wf_cdecl wf\<^sub>1 (compP f P) (C,D,fs,map (compM (f C)) ms')" by blast
   { fix field
     assume "field \<in> set fs"
     with wf1 have "wf_fdecl P field" by(simp add: wf_cdecl_def) 
@@ -368,9 +368,9 @@ proof -
     moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = Option.map (f C M Ts' T') body' in C"
       by(auto intro: mdecl_visible)
     moreover from mset wfcP1[rule_format, OF xsrc]
-    have "wf_mdecl wf\<^isub>1 (compP f P) C (M,Ts',T',Option.map (f C M Ts' T') body')"
+    have "wf_mdecl wf\<^sub>1 (compP f P) C (M,Ts',T',Option.map (f C M Ts' T') body')"
       by(auto simp add: wf_cdecl_def)
-    ultimately have "wf_mdecl wf\<^isub>2 P C m" using m
+    ultimately have "wf_mdecl wf\<^sub>2 P C m" using m
       by(cases body')(simp add: wf_mdecl_def, auto intro: wf1_imp_wf2) }
   moreover from wf1 have "distinct_fst ms'" by(simp add: wf_cdecl_def)
   moreover

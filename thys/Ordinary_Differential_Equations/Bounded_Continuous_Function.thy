@@ -375,8 +375,8 @@ lemma dist_clamps_le_dist_args:
   shows "dist (clamp a b y) (clamp a b x) \<le> dist y x"
 proof -
     from interval_ne_empty(1)[of a b] assms have "(\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i)" ..
-    hence "(\<Sum>i\<in>Basis. (dist (clamp a b y \<bullet> i) (clamp a b x \<bullet> i))\<twosuperior>)
-    \<le> (\<Sum>i\<in>Basis. (dist (y \<bullet> i) (x \<bullet> i))\<twosuperior>)"
+    hence "(\<Sum>i\<in>Basis. (dist (clamp a b y \<bullet> i) (clamp a b x \<bullet> i))\<^sup>2)
+    \<le> (\<Sum>i\<in>Basis. (dist (y \<bullet> i) (x \<bullet> i))\<^sup>2)"
       by (auto intro!: setsum_mono
         simp add: clamp_def dist_real_def real_abs_le_square_iff[symmetric])
     thus ?thesis

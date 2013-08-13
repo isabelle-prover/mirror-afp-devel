@@ -243,10 +243,10 @@ lemma set_compP:
 
 lemma wf_cdecl_compPI:
   "\<lbrakk> \<And>C M Ts T m. 
-     \<lbrakk> wf_mdecl wf\<^isub>1 P C (M,Ts,T,m); P \<turnstile> C sees M:Ts\<rightarrow>T = m in C \<rbrakk>
-     \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, f m);
-    \<forall>x\<in>set P. wf_cdecl wf\<^isub>1 P x; x \<in> set (compP f P); wf_prog p P \<rbrakk>
-  \<Longrightarrow> wf_cdecl wf\<^isub>2 (compP f P) x"
+     \<lbrakk> wf_mdecl wf\<^sub>1 P C (M,Ts,T,m); P \<turnstile> C sees M:Ts\<rightarrow>T = m in C \<rbrakk>
+     \<Longrightarrow> wf_mdecl wf\<^sub>2 (compP f P) C (M,Ts,T, f m);
+    \<forall>x\<in>set P. wf_cdecl wf\<^sub>1 P x; x \<in> set (compP f P); wf_prog p P \<rbrakk>
+  \<Longrightarrow> wf_cdecl wf\<^sub>2 (compP f P) x"
 (*<*)
 apply(clarsimp simp add:wf_cdecl_def Ball_def set_compP)
 apply(rename_tac C D fs ms)
@@ -265,10 +265,10 @@ done
 lemma wf_prog_compPI:
 assumes lift: 
   "\<And>C M Ts T m. 
-    \<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; wf_mdecl wf\<^isub>1 P C (M,Ts,T,m) \<rbrakk>
-    \<Longrightarrow> wf_mdecl wf\<^isub>2 (compP f P) C (M,Ts,T, f m)"
-and wf: "wf_prog wf\<^isub>1 P"
-shows "wf_prog wf\<^isub>2 (compP f P)"
+    \<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; wf_mdecl wf\<^sub>1 P C (M,Ts,T,m) \<rbrakk>
+    \<Longrightarrow> wf_mdecl wf\<^sub>2 (compP f P) C (M,Ts,T, f m)"
+and wf: "wf_prog wf\<^sub>1 P"
+shows "wf_prog wf\<^sub>2 (compP f P)"
 (*<*)
 using wf
 by (simp add:wf_prog_def) (blast intro:wf_cdecl_compPI lift wf)

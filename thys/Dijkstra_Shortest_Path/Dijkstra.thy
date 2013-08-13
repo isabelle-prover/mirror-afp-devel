@@ -161,7 +161,7 @@ subsection "Dijkstra's Algorithm"
   definition dijkstra where
     "dijkstra \<equiv> do {
        \<sigma>0\<leftarrow>dinit; 
-       (_,res) \<leftarrow> WHILE\<^isub>T\<^bsup>dinvar\<^esup> (\<lambda>(wl,_). wl\<noteq>{}) 
+       (_,res) \<leftarrow> WHILE\<^sub>T\<^bsup>dinvar\<^esup> (\<lambda>(wl,_). wl\<noteq>{}) 
             (\<lambda>\<sigma>. 
               do { (v,\<sigma>') \<leftarrow> pop_min \<sigma>; update v \<sigma>' }
             )
@@ -694,7 +694,7 @@ subsection "Dijkstra's Algorithm"
   definition dijkstra' where
     "dijkstra' \<equiv> do {
       \<sigma>0 \<leftarrow> dinit; 
-      (_,res) \<leftarrow> WHILE\<^isub>T\<^bsup>dinvar\<^esup> (\<lambda>(wl,_). wl\<noteq>{}) 
+      (_,res) \<leftarrow> WHILE\<^sub>T\<^bsup>dinvar\<^esup> (\<lambda>(wl,_). wl\<noteq>{}) 
             (\<lambda>\<sigma>. do {(v,\<sigma>') \<leftarrow> pop_min \<sigma>; update' v \<sigma>'})
             \<sigma>0;
       RETURN res
@@ -939,7 +939,7 @@ begin
   definition mdijkstra where
     "mdijkstra \<equiv> do {
       \<sigma>0 \<leftarrow> mdinit; 
-      (_,res) \<leftarrow> WHILE\<^isub>T\<^bsup>dinvarm\<^esup> (\<lambda>(wl,_). dom wl\<noteq>{}) 
+      (_,res) \<leftarrow> WHILE\<^sub>T\<^bsup>dinvarm\<^esup> (\<lambda>(wl,_). dom wl\<noteq>{}) 
             (\<lambda>\<sigma>. do { (v,wv,\<sigma>') \<leftarrow> mpop_min \<sigma>; mupdate v wv \<sigma>' } )
             \<sigma>0;
       RETURN res

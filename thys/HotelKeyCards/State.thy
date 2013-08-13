@@ -251,7 +251,7 @@ lemma key1_not_currk[simp]:
 by (induct set: reach) auto
 
 lemma guest_key2_disj[simp]: 
- "\<lbrakk> s : reach; (k\<^isub>1,k) \<in> cards s g\<^isub>1; (k\<^isub>2,k) \<in> cards s g\<^isub>2 \<rbrakk> \<Longrightarrow> g\<^isub>1=g\<^isub>2"
+ "\<lbrakk> s : reach; (k\<^sub>1,k) \<in> cards s g\<^sub>1; (k\<^sub>2,k) \<in> cards s g\<^sub>2 \<rbrakk> \<Longrightarrow> g\<^sub>1=g\<^sub>2"
 by (induct set: reach) auto
 
 lemma safe_roomk_currk[simp]:
@@ -392,30 +392,30 @@ simplification rule, and each proof is a one-liner: induction on
 Although, or maybe even because these proofs work so smoothly one may
 like to understand why. Hence we examine the proof of
 Theorem~\ref{safe-state} in more detail. The only interesting case is
-@{thm[source] enter_room}. We assume that guest @{text g\<^isub>1} enters room
-@{text r\<^isub>1} with card @{term"(k\<^isub>1,k\<^isub>2)"} and call the new state @{text t}.
+@{thm[source] enter_room}. We assume that guest @{text g\<^sub>1} enters room
+@{text r\<^sub>1} with card @{term"(k\<^sub>1,k\<^sub>2)"} and call the new state @{text t}.
 We assume @{prop"safe t r"} and @{prop"g \<in> isin t r"} and prove
 @{prop"owns t r = \<lfloor>g\<rfloor>"} by case distinction.
-If @{prop"r\<^isub>1 \<noteq> r"}, the claim follows directly from the induction hypothesis
+If @{prop"r\<^sub>1 \<noteq> r"}, the claim follows directly from the induction hypothesis
 using \mbox{@{prop"safe s r"}} and @{prop"g \<in> isin t r"}
 because @{prop"owns t r = owns s r"} and @{prop"safe t r = safe s r"}.
-If @{prop"r\<^isub>1 = r"} then @{prop"g \<in> isin t r"} is equivalent with
-@{prop"g \<in> isin s r \<or> g = g\<^isub>1"}. If @{prop"g \<in> isin s r"} then
+If @{prop"r\<^sub>1 = r"} then @{prop"g \<in> isin t r"} is equivalent with
+@{prop"g \<in> isin s r \<or> g = g\<^sub>1"}. If @{prop"g \<in> isin s r"} then
 \mbox{@{prop"safe s r"}} follows from @{prop"safe t r"} by
 definition of @{thm[source]enter_room} because @{prop"g \<in> isin s r"}
 implies @{prop"isin s r \<noteq> {}"}. Hence the induction hypothesis implies the
-claim.  If @{prop"g = g\<^isub>1"} we make another case distinction.
-If @{prop"k\<^isub>2 = roomk s r"}, the claim follows immediately from
+claim.  If @{prop"g = g\<^sub>1"} we make another case distinction.
+If @{prop"k\<^sub>2 = roomk s r"}, the claim follows immediately from
 Lemma~\ref{state-lemmas}.\ref{safe_only_owner_enter_normal} above:
 only the owner of a room can possess a card where the second
 key is the room key.
-If @{prop"k\<^isub>1 = roomk s r"} then, by definition of @{thm[source]enter_room},
+If @{prop"k\<^sub>1 = roomk s r"} then, by definition of @{thm[source]enter_room},
 @{prop"safe t r"} implies @{prop"owns s r = \<lfloor>g\<rfloor> \<or> safe s r"}.
 In the first case the claim is immediate. If @{prop"safe s r"}
 then @{prop"roomk s r = currk s r"}
 (by Lemma~\ref{state-lemmas}.\ref{safe_roomk_currk})
-and thus @{prop"(currk s r, k\<^isub>2) \<in> cards s g"} by assumption
-@{prop"(k\<^isub>1,k\<^isub>2) \<in> cards s g\<^isub>1"}, thus contradicting
+and thus @{prop"(currk s r, k\<^sub>2) \<in> cards s g"} by assumption
+@{prop"(k\<^sub>1,k\<^sub>2) \<in> cards s g\<^sub>1"}, thus contradicting
 Lemma~\ref{state-lemmas}.\ref{key1_not_currk}.
 
 This detailed proof shows that a number of case distinctions are

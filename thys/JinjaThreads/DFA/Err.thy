@@ -26,13 +26,13 @@ where
 
 definition lift2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a err \<Rightarrow> 'b err \<Rightarrow> 'c err"
 where
-  "lift2 f e\<^isub>1 e\<^isub>2 =
-  (case e\<^isub>1 of Err  \<Rightarrow> Err | OK x \<Rightarrow> (case e\<^isub>2 of Err \<Rightarrow> Err | OK y \<Rightarrow> f x y))"
+  "lift2 f e\<^sub>1 e\<^sub>2 =
+  (case e\<^sub>1 of Err  \<Rightarrow> Err | OK x \<Rightarrow> (case e\<^sub>2 of Err \<Rightarrow> Err | OK y \<Rightarrow> f x y))"
 
 definition le :: "'a ord \<Rightarrow> 'a err ord"
 where
-  "le r e\<^isub>1 e\<^isub>2 =
-  (case e\<^isub>2 of Err \<Rightarrow> True | OK y \<Rightarrow> (case e\<^isub>1 of Err \<Rightarrow> False | OK x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
+  "le r e\<^sub>1 e\<^sub>2 =
+  (case e\<^sub>2 of Err \<Rightarrow> True | OK y \<Rightarrow> (case e\<^sub>1 of Err \<Rightarrow> False | OK x \<Rightarrow> x \<sqsubseteq>\<^sub>r y))"
 
 definition sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a err \<Rightarrow> 'b err \<Rightarrow> 'c err)"
 where

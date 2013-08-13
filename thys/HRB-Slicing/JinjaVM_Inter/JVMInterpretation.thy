@@ -25,7 +25,7 @@ fun procs :: "jvm_prog \<Rightarrow> ((cname \<times> mname) \<times> var list \
   where "procs [] = []"
   |"procs ((C, D, fs, ms) # P) = (methods C ms) @ (procs P)"
 
-lemma in_set_methodsI: "map_of ms M = \<lfloor>(Ts, T, mxs, mxl\<^isub>0, is, xt)\<rfloor>
+lemma in_set_methodsI: "map_of ms M = \<lfloor>(Ts, T, mxs, mxl\<^sub>0, is, xt)\<rfloor>
   \<Longrightarrow> ((C', M), Heap # map Local [0..<length Ts] @ [Local (length Ts)], [Heap, Stack 0, Exception])
   \<in> set (methods C' ms)"
   by (induct rule: methods.induct) (auto split: split_if_asm)
@@ -153,9 +153,9 @@ lemma in_set_procsE:
   and "outs = [Heap, Stack 0, Exception]"
 proof -
   from `((C, M), ins, outs) \<in> set (procs (PROG P))`
-  obtain D fs ms Ts T mxs mxl\<^isub>0 "is" xt
+  obtain D fs ms Ts T mxs mxl\<^sub>0 "is" xt
     where "(C, D, fs, ms) \<in> set (PROG P)"
-    and "(M, Ts, T, mxs, mxl\<^isub>0, is, xt) \<in> set ms"
+    and "(M, Ts, T, mxs, mxl\<^sub>0, is, xt) \<in> set ms"
     and "ins = Heap # (map (\<lambda>n. Local n) [0..<Suc (length Ts)])"
     and "outs = [Heap, Stack 0, Exception]"
     by (fastforce elim: in_set_procsE')
@@ -163,8 +163,8 @@ proof -
   have "class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor>"
     by (fastforce intro: map_of_SomeI simp: class_def)
   moreover from wf_jvmprog_is_wf_typ [of P]
-    `(M, Ts, T, mxs, mxl\<^isub>0, is, xt) \<in> set ms` `(C, D, fs, ms) \<in> set (PROG P)`
-  have "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+    `(M, Ts, T, mxs, mxl\<^sub>0, is, xt) \<in> set ms` `(C, D, fs, ms) \<in> set (PROG P)`
+  have "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     by (fastforce intro: mdecl_visible simp: wf_jvm_prog_phi_def)
   ultimately show ?thesis using `(\<And>D fs ms Ts T mb.
     \<lbrakk>class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor>; PROG P \<turnstile> C sees M: Ts\<rightarrow>T = mb in C;
@@ -351,14 +351,14 @@ next
   assume "valid_edge (P, C0, Main) a" and "a' \<in> get_return_edges P a"
   thus "\<exists>a''. valid_edge (P, C0, Main) a'' \<and>
     sourcenode a'' = targetnode a \<and>
-    targetnode a'' = sourcenode a' \<and> kind a'' = (\<lambda>cf. False)\<^isub>\<surd>"
+    targetnode a'' = sourcenode a' \<and> kind a'' = (\<lambda>cf. False)\<^sub>\<surd>"
     by (clarsimp simp: valid_edge_def) (erule JVMCFG.cases, auto intro: JVMCFG_reachable.intros)
 next
   fix a a'
   assume "valid_edge (P, C0, Main) a" and "a' \<in> get_return_edges P a"
   thus "\<exists>a''. valid_edge (P, C0, Main) a'' \<and>
     sourcenode a'' = sourcenode a \<and>
-    targetnode a'' = targetnode a' \<and> kind a'' = (\<lambda>cf. False)\<^isub>\<surd>"
+    targetnode a'' = targetnode a' \<and> kind a'' = (\<lambda>cf. False)\<^sub>\<surd>"
     by (clarsimp simp: valid_edge_def) (erule JVMCFG.cases, auto intro: JVMCFG_reachable.intros)
 next
   fix a Q r p fs
@@ -418,9 +418,9 @@ next
     (erule JVMCFG.cases, simp_all, clarsimp?)+
   qed
 next
-  fix a a' Q\<^isub>1 r\<^isub>1 p fs\<^isub>1 Q\<^isub>2 r\<^isub>2 fs\<^isub>2
+  fix a a' Q\<^sub>1 r\<^sub>1 p fs\<^sub>1 Q\<^sub>2 r\<^sub>2 fs\<^sub>2
   assume "valid_edge (P, C0, Main) a" and "valid_edge (P, C0, Main) a'"
-    and "kind a = Q\<^isub>1:r\<^isub>1\<hookrightarrow>\<^bsub>p\<^esub>fs\<^isub>1" and "kind a' = Q\<^isub>2:r\<^isub>2\<hookrightarrow>\<^bsub>p\<^esub>fs\<^isub>2"
+    and "kind a = Q\<^sub>1:r\<^sub>1\<hookrightarrow>\<^bsub>p\<^esub>fs\<^sub>1" and "kind a' = Q\<^sub>2:r\<^sub>2\<hookrightarrow>\<^bsub>p\<^esub>fs\<^sub>2"
   thus "targetnode a = targetnode a'"
     by (cases a, cases a', clarsimp simp: valid_edge_def)
   (erule JVMCFG.cases, simp_all, clarsimp?)+
@@ -501,7 +501,7 @@ next
   show "\<exists>a. valid_edge (P, C0, Main) a \<and>
     sourcenode a = (ClassMain P, MethodMain P, None, Enter) \<and>
     targetnode a = (ClassMain P, MethodMain P, None, nodeType.Return) \<and>
-    kind a = (\<lambda>s. False)\<^isub>\<surd>"
+    kind a = (\<lambda>s. False)\<^sub>\<surd>"
     by (fastforce intro: JVMCFG_reachable.intros simp: valid_edge_def)
 qed
 

@@ -237,7 +237,7 @@ text {*
 lemmas eff_simps [simp] = eff_def norm_eff_def xcpt_eff_def
 (*declare app'Invoke [simp del]*)
 
-definition phi_append :: ty\<^isub>m ("\<phi>\<^sub>a")
+definition phi_append :: ty\<^sub>m ("\<phi>\<^sub>a")
 where
   "\<phi>\<^sub>a \<equiv> map (\<lambda>(x,y). Some (x, map OK y)) [ 
    (                                    [], [Class list_name, Class list_name]),
@@ -336,7 +336,7 @@ text {* Some abbreviations for readability *}
 abbreviation "Clist == Class list_name"
 abbreviation "Ctest == Class test_name"
 
-definition phi_makelist :: ty\<^isub>m ("\<phi>\<^sub>m")
+definition phi_makelist :: ty\<^sub>m ("\<phi>\<^sub>m")
 where
   "\<phi>\<^sub>m \<equiv> map (\<lambda>(x,y). Some (x, y)) [ 
     (                                   [], [OK Ctest, Err     , Err     ]),
@@ -431,7 +431,7 @@ lemma wf_md'E:
 (*>*)
 
 text {* The whole program is welltyped: *}
-definition Phi :: ty\<^isub>P ("\<Phi>")
+definition Phi :: ty\<^sub>P ("\<Phi>")
 where
   "\<Phi> C mn \<equiv> if C = test_name \<and> mn = makelist_name then \<phi>\<^sub>m else 
              if C = list_name \<and> mn = append_name then \<phi>\<^sub>a else []"
@@ -467,7 +467,7 @@ lemma "E,\<Phi> \<turnstile> start_state E test_name makelist_name \<surd>"
 section "Example for code generation: inferring method types"
 
 definition test_kil :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
-             ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err list"
+             ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^sub>i' err list"
 where
   "test_kil G C pTs rT mxs mxl et instr \<equiv>
    (let first  = Some ([],(OK (Class C))#(map OK pTs)@(replicate mxl Err));
@@ -537,20 +537,20 @@ lemma [code]:
   "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
   by (simp add: is_refT_def split add: ty.split)
 
-declare app\<^isub>i.simps [code]
+declare app\<^sub>i.simps [code]
 
 lemma [code]:
-  "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-    Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^isub>f. if P \<turnstile> T \<le> Class C then Predicate.single () else bot))"
+  "app\<^sub>i (Getfield F C, P, pc, mxs, T\<^sub>r, (T#ST, LT)) = 
+    Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^sub>f. if P \<turnstile> T \<le> Class C then Predicate.single () else bot))"
 by(auto simp add: Predicate.holds_eq intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
 
 lemma [code]:
-  "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
-     Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^isub>f. if P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f then Predicate.single () else bot))"
+  "app\<^sub>i (Putfield F C, P, pc, mxs, T\<^sub>r, (T\<^sub>1#T\<^sub>2#ST, LT)) = 
+     Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^sub>f. if P \<turnstile> T\<^sub>2 \<le> (Class C) \<and> P \<turnstile> T\<^sub>1 \<le> T\<^sub>f then Predicate.single () else bot))"
 by(auto simp add: Predicate.holds_eq simp del: eval_bind split: split_if_asm elim!: sees_field_i_i_i_o_iE Predicate.bindE intro: Predicate.bindI sees_field_i_i_i_o_iI)
 
 lemma [code]:
-  "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
+  "app\<^sub>i (Invoke M n, P, pc, mxs, T\<^sub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
       (case ST!n of

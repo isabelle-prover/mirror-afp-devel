@@ -50,20 +50,20 @@ abbreviation (input)
 text{* The semantics of binary operators: *}
 
 fun binop :: "bop \<times> val \<times> val \<Rightarrow> val option" where
-  "binop(Eq,v\<^isub>1,v\<^isub>2) = Some(Bool (v\<^isub>1 = v\<^isub>2))"
-| "binop(Add,Intg i\<^isub>1,Intg i\<^isub>2) = Some(Intg(i\<^isub>1+i\<^isub>2))"
-| "binop(bop,v\<^isub>1,v\<^isub>2) = None"
+  "binop(Eq,v\<^sub>1,v\<^sub>2) = Some(Bool (v\<^sub>1 = v\<^sub>2))"
+| "binop(Add,Intg i\<^sub>1,Intg i\<^sub>2) = Some(Intg(i\<^sub>1+i\<^sub>2))"
+| "binop(bop,v\<^sub>1,v\<^sub>2) = None"
 
 lemma [simp]:
-  "(binop(Add,v\<^isub>1,v\<^isub>2) = Some v) = (\<exists>i\<^isub>1 i\<^isub>2. v\<^isub>1 = Intg i\<^isub>1 \<and> v\<^isub>2 = Intg i\<^isub>2 \<and> v = Intg(i\<^isub>1+i\<^isub>2))"
-apply(cases v\<^isub>1)
+  "(binop(Add,v\<^sub>1,v\<^sub>2) = Some v) = (\<exists>i\<^sub>1 i\<^sub>2. v\<^sub>1 = Intg i\<^sub>1 \<and> v\<^sub>2 = Intg i\<^sub>2 \<and> v = Intg(i\<^sub>1+i\<^sub>2))"
+apply(cases v\<^sub>1)
 apply auto
-apply(cases v\<^isub>2)
+apply(cases v\<^sub>2)
 apply auto
 done
 
 lemma binop_not_ref[simp]:
-  "binop(bop,v\<^isub>1,v\<^isub>2) = Some (Ref r) \<Longrightarrow> False"
+  "binop(bop,v\<^sub>1,v\<^sub>2) = Some (Ref r) \<Longrightarrow> False"
 by(cases bop)auto
 
 
@@ -76,23 +76,23 @@ primrec
 | "fv(Cast C e) = fv e"
 |  "fv(\<lparr>C\<rparr>e) = fv e"
 | "fv(Val v) = {}"
-| "fv(e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2) = fv e\<^sub>1 \<union> fv e\<^sub>2"
 | "fv(Var V) = {V}"
 | "fv(V := e) = {V} \<union> fv e"
 | "fv(e\<bullet>F{Cs}) = fv e"
-| "fv(e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2) = fv e\<^sub>1 \<union> fv e\<^sub>2"
 | "fv(Call e Copt M es) = fv e \<union> fvs es"
 | "fv({V:T; e}) = fv e - {V}"
-| "fv(e\<^isub>1;;e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
-| "fv(if (b) e\<^isub>1 else e\<^isub>2) = fv b \<union> fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(e\<^sub>1;;e\<^sub>2) = fv e\<^sub>1 \<union> fv e\<^sub>2"
+| "fv(if (b) e\<^sub>1 else e\<^sub>2) = fv b \<union> fv e\<^sub>1 \<union> fv e\<^sub>2"
 | "fv(while (b) e) = fv b \<union> fv e"
 | "fv(throw e) = fv e"
 
 | "fvs([]) = {}"
 | "fvs(e#es) = fv e \<union> fvs es"
 
-lemma [simp]: "fvs(es\<^isub>1 @ es\<^isub>2) = fvs es\<^isub>1 \<union> fvs es\<^isub>2"
-by (induct es\<^isub>1 type:list) auto
+lemma [simp]: "fvs(es\<^sub>1 @ es\<^sub>2) = fvs es\<^sub>1 \<union> fvs es\<^sub>2"
+by (induct es\<^sub>1 type:list) auto
 
 lemma [simp]: "fvs(map Val vs) = {}"
 by (induct vs) auto

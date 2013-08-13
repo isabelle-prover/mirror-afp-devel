@@ -14,8 +14,8 @@ locale Postdomination = CFGExit sourcenode targetnode kind valid_edge Entry
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
   and Exit::"'node"  ("'('_Exit'_')") +
-  assumes Entry_path:"valid_node n \<Longrightarrow> \<exists>as. (_Entry_) -as\<rightarrow>\<^isub>\<surd>* n"
-  and Exit_path:"valid_node n \<Longrightarrow> \<exists>as. n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+  assumes Entry_path:"valid_node n \<Longrightarrow> \<exists>as. (_Entry_) -as\<rightarrow>\<^sub>\<surd>* n"
+  and Exit_path:"valid_node n \<Longrightarrow> \<exists>as. n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)"
   and method_exit_unique:
     "\<lbrakk>method_exit n; method_exit n'; get_proc n = get_proc n'\<rbrakk> \<Longrightarrow> n = n'"
 
@@ -69,21 +69,21 @@ qed
 definition postdominate :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ postdominates _" [51,0])
 where postdominate_def:"n' postdominates n \<equiv> 
   (valid_node n \<and> valid_node n' \<and>
-  (\<forall>as pex. (n -as\<rightarrow>\<^isub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)))"
+  (\<forall>as pex. (n -as\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)))"
 
 
 lemma postdominate_implies_inner_path: 
   assumes "n' postdominates n" 
-  obtains as where "n -as\<rightarrow>\<^isub>\<iota>* n'" and "n' \<notin> set (sourcenodes as)"
+  obtains as where "n -as\<rightarrow>\<^sub>\<iota>* n'" and "n' \<notin> set (sourcenodes as)"
 proof(atomize_elim)
   from `n' postdominates n` have "valid_node n"
-    and all:"\<forall>as pex. (n -as\<rightarrow>\<^isub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)"
+    and all:"\<forall>as pex. (n -as\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)"
     by(auto simp:postdominate_def)
-  from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
-  then obtain as where "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+  from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
+  then obtain as where "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)"
     and "\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
     by -(erule valid_Exit_path_descending_path)
-  show "\<exists>as. n -as\<rightarrow>\<^isub>\<iota>* n' \<and> n' \<notin> set (sourcenodes as)"
+  show "\<exists>as. n -as\<rightarrow>\<^sub>\<iota>* n' \<and> n' \<notin> set (sourcenodes as)"
   proof(cases "\<exists>a \<in> set as. \<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f")
     case True
     then obtain asx ax asx' where [simp]:"as = asx@ax#asx'" 
@@ -91,19 +91,19 @@ proof(atomize_elim)
       by -(erule split_list_first_propE,simp)
     with `\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)`
     have "\<forall>a \<in> set asx. intra_kind(kind a)" by auto
-    from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -asx\<rightarrow>\<^isub>\<surd>* sourcenode ax"
+    from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` have "n -asx\<rightarrow>\<^sub>\<surd>* sourcenode ax"
       and "valid_edge ax" by(auto dest:vp_split)
-    from `n -asx\<rightarrow>\<^isub>\<surd>* sourcenode ax` `\<forall>a \<in> set asx. intra_kind(kind a)`
-    have "n -asx\<rightarrow>\<^isub>\<iota>* sourcenode ax" by(simp add:vp_def intra_path_def)
+    from `n -asx\<rightarrow>\<^sub>\<surd>* sourcenode ax` `\<forall>a \<in> set asx. intra_kind(kind a)`
+    have "n -asx\<rightarrow>\<^sub>\<iota>* sourcenode ax" by(simp add:vp_def intra_path_def)
     from `valid_edge ax` `\<exists>Q f p. kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
     have "method_exit (sourcenode ax)" by(fastforce simp:method_exit_def)
-    with `n -asx\<rightarrow>\<^isub>\<iota>* sourcenode ax` all have "n' \<in> set (sourcenodes asx)" by fastforce
+    with `n -asx\<rightarrow>\<^sub>\<iota>* sourcenode ax` all have "n' \<in> set (sourcenodes asx)" by fastforce
     then obtain xs ys where "sourcenodes asx = xs@n'#ys" and "n' \<notin> set xs"
       by(fastforce dest:split_list_first)
     then obtain as' a as'' where "xs = sourcenodes as'"
       and [simp]:"asx = as'@a#as''" and "sourcenode a = n'"
       by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-    from `n -asx\<rightarrow>\<^isub>\<iota>* sourcenode ax` have "n -as'\<rightarrow>\<^isub>\<iota>* sourcenode a"
+    from `n -asx\<rightarrow>\<^sub>\<iota>* sourcenode ax` have "n -as'\<rightarrow>\<^sub>\<iota>* sourcenode a"
       by(fastforce dest:path_split simp:intra_path_def)
     with `sourcenode a = n'` `n' \<notin> set xs` `xs = sourcenodes as'`
     show ?thesis by fastforce
@@ -111,15 +111,15 @@ proof(atomize_elim)
     case False
     with `\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)`
     have "\<forall>a \<in> set as. intra_kind(kind a)" by fastforce
-    with `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` all have "n' \<in> set (sourcenodes as)"
+    with `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` all have "n' \<in> set (sourcenodes as)"
       by(auto simp:vp_def intra_path_def simp:method_exit_def)
     then obtain xs ys where "sourcenodes as = xs@n'#ys" and "n' \<notin> set xs"
       by(fastforce dest:split_list_first)
     then obtain as' a as'' where "xs = sourcenodes as'"
       and [simp]:"as = as'@a#as''" and "sourcenode a = n'"
       by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-    from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` `\<forall>a \<in> set as. intra_kind(kind a)` `as = as'@a#as''`
-    have "n -as'\<rightarrow>\<^isub>\<iota>* sourcenode a"
+    from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` `\<forall>a \<in> set as. intra_kind(kind a)` `as = as'@a#as''`
+    have "n -as'\<rightarrow>\<^sub>\<iota>* sourcenode a"
       by(fastforce dest:path_split simp:vp_def intra_path_def)
     with `sourcenode a = n'` `n' \<notin> set xs` `xs = sourcenodes as'`
     show ?thesis by fastforce
@@ -129,16 +129,16 @@ qed
 
 lemma postdominate_variant:
   assumes "n' postdominates n" 
-  shows "\<forall>as. n -as\<rightarrow>\<^isub>\<surd>* (_Exit_) \<longrightarrow> n' \<in> set (sourcenodes as)"
+  shows "\<forall>as. n -as\<rightarrow>\<^sub>\<surd>* (_Exit_) \<longrightarrow> n' \<in> set (sourcenodes as)"
 proof -
   from `n' postdominates n`
-  have all:"\<forall>as pex. (n -as\<rightarrow>\<^isub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)"
+  have all:"\<forall>as pex. (n -as\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)"
     by(simp add:postdominate_def)
-  { fix as assume "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)"
-    then obtain as' pex where "n -as'\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+  { fix as assume "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)"
+    then obtain as' pex where "n -as'\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
       and "set(sourcenodes as') \<subseteq> set(sourcenodes as)"
       by(erule valid_Exit_path_intra_path)
-    from `n -as'\<rightarrow>\<^isub>\<iota>* pex` `method_exit pex` `n' postdominates n`
+    from `n -as'\<rightarrow>\<^sub>\<iota>* pex` `method_exit pex` `n' postdominates n`
     have "n' \<in> set (sourcenodes as')" by(fastforce simp:postdominate_def)
     with `set(sourcenodes as') \<subseteq> set(sourcenodes as)`
     have "n' \<in> set (sourcenodes as)" by fastforce }
@@ -151,19 +151,19 @@ lemma postdominate_refl:
 using `valid_node n`
 proof(induct rule:valid_node_cases)
   case Entry
-  { fix as pex assume "(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+  { fix as pex assume "(_Entry_) -as\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
     from `method_exit pex` have "(_Entry_) \<in> set (sourcenodes as)"
     proof(rule method_exit_cases)
       assume "pex = (_Exit_)"
-      with `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "as \<noteq> []" 
+      with `(_Entry_) -as\<rightarrow>\<^sub>\<iota>* pex` have "as \<noteq> []" 
         apply(clarsimp simp:intra_path_def) apply(erule path.cases)
         by (drule sym,simp,drule Exit_noteq_Entry,auto)
-      with `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "hd (sourcenodes as) = (_Entry_)" 
+      with `(_Entry_) -as\<rightarrow>\<^sub>\<iota>* pex` have "hd (sourcenodes as) = (_Entry_)" 
         by(fastforce intro:path_sourcenode simp:intra_path_def)
       with `as \<noteq> []`show ?thesis by(fastforce intro:hd_in_set simp:sourcenodes_def)
     next
       fix a Q p f assume "pex = sourcenode a" and "valid_edge a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
-      from `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "get_proc (_Entry_) = get_proc pex"
+      from `(_Entry_) -as\<rightarrow>\<^sub>\<iota>* pex` have "get_proc (_Entry_) = get_proc pex"
         by(rule intra_path_get_procs)
       hence "get_proc pex = Main" by(simp add:get_proc_Entry)
       from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "get_proc (sourcenode a) = p"
@@ -182,17 +182,17 @@ next
 next
   case inner
   show ?thesis
-  proof(cases "\<exists>as. n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)")
+  proof(cases "\<exists>as. n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)")
     case True
-    { fix as pex assume "n -as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+    { fix as pex assume "n -as\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
       with `\<not> method_exit n` have "as \<noteq> []" 
         by(fastforce elim:path.cases simp:intra_path_def)
-      with `n -as\<rightarrow>\<^isub>\<iota>* pex` inner have "hd (sourcenodes as) = n"
+      with `n -as\<rightarrow>\<^sub>\<iota>* pex` inner have "hd (sourcenodes as) = n"
         by(fastforce intro:path_sourcenode simp:intra_path_def)
       from `as \<noteq> []` have "sourcenodes as \<noteq> []" by(simp add:sourcenodes_def)
       with `hd (sourcenodes as) = n`[THEN sym] 
       have "n \<in> set (sourcenodes as)" by simp }
-    hence "\<forall>as pex. (n -as\<rightarrow>\<^isub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n \<in> set (sourcenodes as)"
+    hence "\<forall>as pex. (n -as\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n \<in> set (sourcenodes as)"
       by fastforce
     with True inner show ?thesis 
       by(fastforce intro:empty_path 
@@ -211,7 +211,7 @@ lemma postdominate_trans:
 proof -
   from `n'' postdominates n` `n' postdominates n''`
   have "valid_node n" and "valid_node n'" by(simp_all add:postdominate_def)
-  { fix as pex assume "n -as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+  { fix as pex assume "n -as\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
     with `n'' postdominates n` have "n'' \<in> set (sourcenodes as)"
       by(fastforce simp:postdominate_def)
     then obtain ns' ns'' where "sourcenodes as = ns'@n''#ns''"
@@ -219,8 +219,8 @@ proof -
     then obtain as' as'' a where "sourcenodes as'' = ns''" and [simp]:"as=as'@a#as''"
       and [simp]:"sourcenode a = n''"
       by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-    from `n -as\<rightarrow>\<^isub>\<iota>* pex` have "n -as'@a#as''\<rightarrow>\<^isub>\<iota>* pex" by simp
-    hence "n'' -a#as''\<rightarrow>\<^isub>\<iota>* pex"
+    from `n -as\<rightarrow>\<^sub>\<iota>* pex` have "n -as'@a#as''\<rightarrow>\<^sub>\<iota>* pex" by simp
+    hence "n'' -a#as''\<rightarrow>\<^sub>\<iota>* pex"
       by(fastforce dest:path_split_second simp:intra_path_def)
     with `n' postdominates n''` `method_exit pex`
     have "n' \<in> set(sourcenodes (a#as''))" by(fastforce simp:postdominate_def)
@@ -236,8 +236,8 @@ lemma postdominate_antisym:
 proof -
   from `n' postdominates n` have "valid_node n" and "valid_node n'" 
     by(auto simp:postdominate_def)
-  from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
-  then obtain as' pex where "n -as'\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+  from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
+  then obtain as' pex where "n -as'\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
     by -(erule valid_Exit_path_intra_path)
   with `n' postdominates n` have "\<exists>nx \<in> set(sourcenodes as'). nx = n'"
     by(fastforce simp:postdominate_def)
@@ -247,7 +247,7 @@ proof -
   from `sourcenodes as' = ns@n'#ns'` obtain asx a asx' 
     where [simp]:"ns' = sourcenodes asx'" "as' = asx@a#asx'" "sourcenode a = n'"
     by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-  from `n -as'\<rightarrow>\<^isub>\<iota>* pex` have "n' -a#asx'\<rightarrow>\<^isub>\<iota>* pex"
+  from `n -as'\<rightarrow>\<^sub>\<iota>* pex` have "n' -a#asx'\<rightarrow>\<^sub>\<iota>* pex"
     by(fastforce dest:path_split_second simp:intra_path_def)
   with `n postdominates n'` `method_exit pex` have "n \<in> set(sourcenodes (a#asx'))" 
     by(fastforce simp:postdominate_def)
@@ -261,14 +261,14 @@ proof -
       by(auto dest:split_list)
     then obtain asi asi' a' where [simp]:"asx' = asi@a'#asi'" "sourcenode a' = n"
       by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-    with `n -as'\<rightarrow>\<^isub>\<iota>* pex` have "n -(asx@a#asi)@a'#asi'\<rightarrow>\<^isub>\<iota>* pex" by simp
+    with `n -as'\<rightarrow>\<^sub>\<iota>* pex` have "n -(asx@a#asi)@a'#asi'\<rightarrow>\<^sub>\<iota>* pex" by simp
     hence "n -(asx@a#asi)@a'#asi'\<rightarrow>* pex"
       and "\<forall>a \<in> set ((asx@a#asi)@a'#asi'). intra_kind (kind a)"
       by(simp_all add:intra_path_def)
     from `n -(asx@a#asi)@a'#asi'\<rightarrow>* pex`
     have "n -a'#asi'\<rightarrow>* pex" by(fastforce dest:path_split_second)
     with `\<forall>a \<in> set ((asx@a#asi)@a'#asi'). intra_kind (kind a)`
-    have "n -a'#asi'\<rightarrow>\<^isub>\<iota>* pex" by(simp add:intra_path_def)
+    have "n -a'#asi'\<rightarrow>\<^sub>\<iota>* pex" by(simp add:intra_path_def)
     with `n' postdominates n` `method_exit pex` 
     have "n' \<in> set(sourcenodes (a'#asi'))" by(fastforce simp:postdominate_def)
     hence "n' = n \<or> n' \<in> set(sourcenodes asi')"
@@ -316,38 +316,38 @@ lemma Exit_no_postdominator:
   assumes "(_Exit_) postdominates n" shows False
 proof -
   from `(_Exit_) postdominates n` have "valid_node n" by(simp add:postdominate_def)
-  from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
-  then obtain as' pex where "n -as'\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+  from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
+  then obtain as' pex where "n -as'\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
     by -(erule valid_Exit_path_intra_path)
   with `(_Exit_) postdominates n` have "(_Exit_) \<in> set (sourcenodes as')"
     by(fastforce simp:postdominate_def)
-  with `n -as'\<rightarrow>\<^isub>\<iota>* pex` show False by(fastforce simp:intra_path_def)
+  with `n -as'\<rightarrow>\<^sub>\<iota>* pex` show False by(fastforce simp:intra_path_def)
 qed
 
 
 lemma postdominate_inner_path_targetnode:
-  assumes "n' postdominates n" and "n -as\<rightarrow>\<^isub>\<iota>* n''" and "n' \<notin> set(sourcenodes as)"
+  assumes "n' postdominates n" and "n -as\<rightarrow>\<^sub>\<iota>* n''" and "n' \<notin> set(sourcenodes as)"
   shows "n' postdominates n''"
 proof -
   from `n' postdominates n` obtain asx 
     where "valid_node n" and "valid_node n'"
-    and all:"\<forall>as pex. (n -as\<rightarrow>\<^isub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)"
+    and all:"\<forall>as pex. (n -as\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)"
     by(auto simp:postdominate_def)
-  from `n -as\<rightarrow>\<^isub>\<iota>* n''` have "valid_node n''"
+  from `n -as\<rightarrow>\<^sub>\<iota>* n''` have "valid_node n''"
     by(fastforce dest:path_valid_node simp:intra_path_def)
-  have "\<forall>as' pex'. (n'' -as'\<rightarrow>\<^isub>\<iota>* pex' \<and> method_exit pex') \<longrightarrow> 
+  have "\<forall>as' pex'. (n'' -as'\<rightarrow>\<^sub>\<iota>* pex' \<and> method_exit pex') \<longrightarrow> 
                    n' \<in> set (sourcenodes as')"
   proof(rule ccontr)
-    assume "\<not> (\<forall>as' pex'. (n'' -as'\<rightarrow>\<^isub>\<iota>* pex' \<and> method_exit pex') \<longrightarrow> 
+    assume "\<not> (\<forall>as' pex'. (n'' -as'\<rightarrow>\<^sub>\<iota>* pex' \<and> method_exit pex') \<longrightarrow> 
                           n' \<in> set (sourcenodes as'))"
-    then obtain as' pex' where "n'' -as'\<rightarrow>\<^isub>\<iota>* pex'" and "method_exit pex'"
+    then obtain as' pex' where "n'' -as'\<rightarrow>\<^sub>\<iota>* pex'" and "method_exit pex'"
       and "n' \<notin> set (sourcenodes as')" by blast
-    from `n -as\<rightarrow>\<^isub>\<iota>* n''` `n'' -as'\<rightarrow>\<^isub>\<iota>* pex'` have "n -as@as'\<rightarrow>\<^isub>\<iota>* pex'"
+    from `n -as\<rightarrow>\<^sub>\<iota>* n''` `n'' -as'\<rightarrow>\<^sub>\<iota>* pex'` have "n -as@as'\<rightarrow>\<^sub>\<iota>* pex'"
       by(fastforce intro:path_Append simp:intra_path_def)
     from `n' \<notin> set(sourcenodes as)` `n' \<notin> set (sourcenodes as')`
     have "n' \<notin> set (sourcenodes (as@as'))"
       by(simp add:sourcenodes_def)
-    with `n -as@as'\<rightarrow>\<^isub>\<iota>* pex'` `method_exit pex'` `n' postdominates n`
+    with `n -as@as'\<rightarrow>\<^sub>\<iota>* pex'` `method_exit pex'` `n' postdominates n`
     show False by(fastforce simp:postdominate_def)
   qed
   with `valid_node n'` `valid_node n''`
@@ -365,12 +365,12 @@ proof(atomize_elim)
     \<not> n postdominates targetnode ax"
   proof -
     from assms obtain asx pex 
-      where "sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+      where "sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
       and "n \<notin> set(sourcenodes asx)" by(fastforce simp:postdominate_def)
     show ?thesis
     proof(cases asx)
       case Nil
-      with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex` have "pex = sourcenode a"
+      with `sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex` have "pex = sourcenode a"
         by(fastforce simp:intra_path_def)
       with `method_exit pex` have "method_exit (sourcenode a)" by simp
       thus ?thesis
@@ -387,14 +387,14 @@ proof(atomize_elim)
       qed
     next
       case (Cons ax asx')
-      with `sourcenode a -asx\<rightarrow>\<^isub>\<iota>* pex`
+      with `sourcenode a -asx\<rightarrow>\<^sub>\<iota>* pex`
       have "sourcenode a -[]@ax#asx'\<rightarrow>* pex" 
         and "\<forall>a \<in> set (ax#asx'). intra_kind (kind a)" by(simp_all add:intra_path_def)
       from `sourcenode a -[]@ax#asx'\<rightarrow>* pex`
       have "sourcenode a = sourcenode ax" and "valid_edge ax"
         and "targetnode ax -asx'\<rightarrow>* pex"  by(fastforce dest:path_split)+
       with `\<forall>a \<in> set (ax#asx'). intra_kind (kind a)`
-      have "targetnode ax -asx'\<rightarrow>\<^isub>\<iota>* pex" by(simp add:intra_path_def)
+      have "targetnode ax -asx'\<rightarrow>\<^sub>\<iota>* pex" by(simp add:intra_path_def)
       with `n \<notin> set(sourcenodes asx)` Cons `method_exit pex`
       have "\<not> n postdominates targetnode ax"
         by(fastforce simp:postdominate_def sourcenodes_def) 
@@ -410,23 +410,23 @@ lemma inner_node_Exit_edge:
   and "inner_node (sourcenode a)" and "targetnode a = (_Exit_)"
 proof(atomize_elim)
   from `inner_node n` have "valid_node n" by(rule inner_is_valid)
-  then obtain as where "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
+  then obtain as where "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
   show "\<exists>a. valid_edge a \<and> intra_kind (kind a) \<and> inner_node (sourcenode a) \<and> 
     targetnode a = (_Exit_)"
   proof(cases "as = []")
     case True
-    with `inner_node n` `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` have False by(fastforce simp:vp_def)
+    with `inner_node n` `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` have False by(fastforce simp:vp_def)
     thus ?thesis by simp
   next
     case False
-    with `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` obtain a' as' where "as = as'@[a']" 
-      and "n -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'" and "valid_edge a'" 
+    with `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` obtain a' as' where "as = as'@[a']" 
+      and "n -as'\<rightarrow>\<^sub>\<surd>* sourcenode a'" and "valid_edge a'" 
       and "(_Exit_) = targetnode a'" by -(erule vp_split_snoc)
     from `valid_edge a'` have "valid_node (sourcenode a')" by simp
     thus ?thesis
     proof(cases "sourcenode a'" rule:valid_node_cases)
       case Entry
-      with `n -as'\<rightarrow>\<^isub>\<surd>* sourcenode a'` have "n -as'\<rightarrow>* (_Entry_)" by(simp add:vp_def)
+      with `n -as'\<rightarrow>\<^sub>\<surd>* sourcenode a'` have "n -as'\<rightarrow>* (_Entry_)" by(simp add:vp_def)
       with `inner_node n`
       have False by -(drule path_Entry_target,auto simp:inner_node_def)
       thus ?thesis by simp
@@ -465,18 +465,18 @@ lemma inner_node_Entry_edge:
   and "inner_node (targetnode a)" and "sourcenode a = (_Entry_)"
 proof(atomize_elim)
   from `inner_node n` have "valid_node n" by(rule inner_is_valid)
-  then obtain as where "(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n" by(fastforce dest:Entry_path)
+  then obtain as where "(_Entry_) -as\<rightarrow>\<^sub>\<surd>* n" by(fastforce dest:Entry_path)
   show "\<exists>a. valid_edge a \<and> intra_kind (kind a) \<and> inner_node (targetnode a) \<and> 
     sourcenode a = (_Entry_)"
   proof(cases "as = []")
     case True
-    with `inner_node n` `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` have False
+    with `inner_node n` `(_Entry_) -as\<rightarrow>\<^sub>\<surd>* n` have False
       by(fastforce simp:inner_node_def vp_def)
     thus ?thesis by simp
   next
     case False
-    with `(_Entry_) -as\<rightarrow>\<^isub>\<surd>* n` obtain a' as' where "as = a'#as'" 
-      and "targetnode a' -as'\<rightarrow>\<^isub>\<surd>* n" and "valid_edge a'" 
+    with `(_Entry_) -as\<rightarrow>\<^sub>\<surd>* n` obtain a' as' where "as = a'#as'" 
+      and "targetnode a' -as'\<rightarrow>\<^sub>\<surd>* n" and "valid_edge a'" 
       and "(_Entry_) = sourcenode a'" by -(erule vp_split_Cons)
     from `valid_edge a'` have "valid_node (targetnode a')" by simp
     thus ?thesis
@@ -486,7 +486,7 @@ proof(atomize_elim)
       thus ?thesis by simp
     next
       case Exit
-      with `targetnode a' -as'\<rightarrow>\<^isub>\<surd>* n` have "(_Exit_) -as'\<rightarrow>* n" by(simp add:vp_def)
+      with `targetnode a' -as'\<rightarrow>\<^sub>\<surd>* n` have "(_Exit_) -as'\<rightarrow>* n" by(simp add:vp_def)
       with `inner_node n`
       have False by -(drule path_Exit_source,auto simp:inner_node_def)
       thus ?thesis by simp
@@ -519,17 +519,17 @@ qed
 
 lemma intra_path_to_matching_method_exit:
   assumes "method_exit n'" and "get_proc n = get_proc n'" and "valid_node n"
-  obtains as where "n -as\<rightarrow>\<^isub>\<iota>* n'"
+  obtains as where "n -as\<rightarrow>\<^sub>\<iota>* n'"
 proof(atomize_elim)
-  from `valid_node n` obtain as' where "n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+  from `valid_node n` obtain as' where "n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)"
     by(fastforce dest:Exit_path)
-  then obtain as mex where "n -as\<rightarrow>\<^isub>\<iota>* mex" and "method_exit mex"
+  then obtain as mex where "n -as\<rightarrow>\<^sub>\<iota>* mex" and "method_exit mex"
     by(fastforce elim:valid_Exit_path_intra_path)
-  from `n -as\<rightarrow>\<^isub>\<iota>* mex` have "get_proc n = get_proc mex" 
+  from `n -as\<rightarrow>\<^sub>\<iota>* mex` have "get_proc n = get_proc mex" 
     by(rule intra_path_get_procs)
   with `method_exit n'` `get_proc n = get_proc n'` `method_exit mex`
   have "mex = n'" by(fastforce intro:method_exit_unique)
-  with `n -as\<rightarrow>\<^isub>\<iota>* mex` show "\<exists>as. n -as\<rightarrow>\<^isub>\<iota>* n'" by fastforce
+  with `n -as\<rightarrow>\<^sub>\<iota>* mex` show "\<exists>as. n -as\<rightarrow>\<^sub>\<iota>* n'" by fastforce
 qed
 
 

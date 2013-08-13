@@ -10,7 +10,7 @@ locale example3_aux = fixes t0' x0' :: float and b r T::real
   assumes interval_pos: "t0' \<le> T"
 begin
 
-definition "B = (max \<bar>x0' - \<bar>b\<bar>\<bar> \<bar>x0' + \<bar>b\<bar>\<bar>)\<twosuperior> + (max \<bar>T\<bar> \<bar>t0'\<bar>)\<twosuperior>"
+definition "B = (max \<bar>x0' - \<bar>b\<bar>\<bar> \<bar>x0' + \<bar>b\<bar>\<bar>)\<^sup>2 + (max \<bar>T\<bar> \<bar>t0'\<bar>)\<^sup>2"
 
 definition "L = 2 * max \<bar>x0' - abs b - abs r\<bar> \<bar>x0' + abs b + abs r\<bar>"
 
@@ -77,7 +77,7 @@ lemma f_bounded:
   assumes "x \<in> D"
   shows "\<bar>f (s, x)\<bar> \<le> B"
 proof -
-  have "abs (x\<twosuperior> + s^2) \<le> x^2 + s^2"
+  have "abs (x\<^sup>2 + s^2) \<le> x^2 + s^2"
     by (metis abs_of_nonneg order_eq_iff sum_power2_ge_zero)
   also have "s^2 \<le> max (abs t0) (abs T) ^ 2" using assms
     apply (auto simp add: real_abs_le_square_iff[symmetric] bounded_abs i_def)
@@ -189,7 +189,7 @@ lemma i_max_correct: "\<And>i. i \<le> i_max \<Longrightarrow> E.Delta i \<le> T
   unfolding H_def T'_def t0'_def i_max_def
   by simp
 
-definition "euler_result3 i = euler_float e' (\<lambda>(t, x). x\<twosuperior> + t\<twosuperior>) x0' E.Delta i"
+definition "euler_result3 i = euler_float e' (\<lambda>(t, x). x\<^sup>2 + t\<^sup>2) x0' E.Delta i"
 
 lemma convergence:
   assumes i: "i \<le> i_max"

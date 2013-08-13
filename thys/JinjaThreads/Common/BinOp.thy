@@ -231,9 +231,9 @@ lemma [simp]:
 by(cases "(v1, v2)" rule: binop_GreaterOrEqual.cases) auto
 
 lemma [simp]:
-  "(binop_Add v\<^isub>1 v\<^isub>2  = Some va) \<longleftrightarrow>
-   (\<exists>i\<^isub>1 i\<^isub>2. v\<^isub>1 = Intg i\<^isub>1 \<and> v\<^isub>2 = Intg i\<^isub>2 \<and> va = Inl (Intg (i\<^isub>1+i\<^isub>2)))"
-by(cases "(v\<^isub>1, v\<^isub>2)" rule: binop_Add.cases) auto
+  "(binop_Add v\<^sub>1 v\<^sub>2  = Some va) \<longleftrightarrow>
+   (\<exists>i\<^sub>1 i\<^sub>2. v\<^sub>1 = Intg i\<^sub>1 \<and> v\<^sub>2 = Intg i\<^sub>2 \<and> va = Inl (Intg (i\<^sub>1+i\<^sub>2)))"
+by(cases "(v\<^sub>1, v\<^sub>2)" rule: binop_Add.cases) auto
 
 lemma [simp]:
   "(binop_Subtract v1 v2 = Some va) \<longleftrightarrow> 

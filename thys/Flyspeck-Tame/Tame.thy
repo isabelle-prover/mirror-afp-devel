@@ -64,13 +64,13 @@ iff the following conditions hold:
 
 text {*  2. No two vertices in V are adjacent: *}
 
-definition separated\<^isub>2 :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
- "separated\<^isub>2 g V \<equiv> \<forall>v \<in> V. \<forall>f \<in> set (facesAt g v). f\<bullet>v \<notin> V"
+definition separated\<^sub>2 :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
+ "separated\<^sub>2 g V \<equiv> \<forall>v \<in> V. \<forall>f \<in> set (facesAt g v). f\<bullet>v \<notin> V"
 
 text {*  3. No two vertices lie on a common quadrilateral: *}
 
-definition separated\<^isub>3 :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
- "separated\<^isub>3 g V \<equiv> 
+definition separated\<^sub>3 :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
+ "separated\<^sub>3 g V \<equiv> 
      \<forall>v \<in> V. \<forall>f \<in> set (facesAt g v). |vertices f|\<le>4 \<longrightarrow> \<V> f \<inter> V = {v}"
 
 text {*  A set of vertices  is  called {\em separated},
@@ -78,7 +78,7 @@ text {*  A set of vertices  is  called {\em separated},
 iff no two vertices are adjacent or lie on a common quadrilateral: *}
 
 definition separated :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
- "separated g V \<equiv> separated\<^isub>2 g V \<and> separated\<^isub>3 g V"
+ "separated g V \<equiv> separated\<^sub>2 g V \<and> separated\<^sub>3 g V"
 
 subsection{* Admissible weight assignments\label{sec:TameAdmissible} *}
 
@@ -92,15 +92,15 @@ assigns a natural number to every face.
 We formalize the admissibility requirements as follows:
  *}
 
-definition admissible\<^isub>1 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
- "admissible\<^isub>1 w g \<equiv> \<forall>f \<in> \<F> g. \<d> |vertices f| \<le> w f"
+definition admissible\<^sub>1 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
+ "admissible\<^sub>1 w g \<equiv> \<forall>f \<in> \<F> g. \<d> |vertices f| \<le> w f"
 
-definition admissible\<^isub>2 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
- "admissible\<^isub>2 w g \<equiv> 
+definition admissible\<^sub>2 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
+ "admissible\<^sub>2 w g \<equiv> 
   \<forall>v \<in> \<V> g. except g v = 0 \<longrightarrow> \<b> (tri g v) (quad g v) \<le> (\<Sum>\<^bsub>f\<in>facesAt g v\<^esub> w f)"
 
-definition admissible\<^isub>3 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
- "admissible\<^isub>3 w g  \<equiv>
+definition admissible\<^sub>3 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
+ "admissible\<^sub>3 w g  \<equiv>
   \<forall>v \<in> \<V> g. vertextype g v = (5,0,1) \<longrightarrow> (\<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f)) >= \<a>"
 
 
@@ -108,7 +108,7 @@ text {* Finally we define admissibility of weights functions. *}
 
 
 definition admissible :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
- "admissible w g \<equiv> admissible\<^isub>1 w g \<and> admissible\<^isub>2 w g \<and> admissible\<^isub>3 w g"
+ "admissible w g \<equiv> admissible\<^sub>1 w g \<and> admissible\<^sub>2 w g \<and> admissible\<^sub>3 w g"
  
 subsection{* Tameness \label{sec:TameDef} *}
 

@@ -266,10 +266,10 @@ next
 qed
 
 lemma sees_method_fun_wf:
-  assumes "PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in D"
+  assumes "PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D"
   and "(D, D', fs, ms) \<in> set (PROG P)"
-  and "(M', Ts', T', mxs', mxl\<^isub>0', is', xt') \<in> set ms"
-  shows "Ts = Ts' \<and> T = T' \<and> mxs = mxs' \<and> mxl\<^isub>0 = mxl\<^isub>0' \<and> is = is' \<and> xt = xt'"
+  and "(M', Ts', T', mxs', mxl\<^sub>0', is', xt') \<in> set ms"
+  shows "Ts = Ts' \<and> T = T' \<and> mxs = mxs' \<and> mxl\<^sub>0 = mxl\<^sub>0' \<and> is = is' \<and> xt = xt'"
 proof -
   from distinct_class_names [of P] `(D, D', fs, ms) \<in> set (PROG P)`
   have "class (PROG P) D = \<lfloor>(D', fs, ms)\<rfloor>"
@@ -277,8 +277,8 @@ proof -
   moreover with distinct_method_names have "distinct_fst ms"
     by fastforce
   ultimately show ?thesis using
-    `PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in D`
-    `(M', Ts', T', mxs', mxl\<^isub>0', is', xt') \<in> set ms`
+    `PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D`
+    `(M', Ts', T', mxs', mxl\<^sub>0', is', xt') \<in> set ms`
     by (fastforce dest: visible_method_exists map_of_SomeD distinct_fst_isin_same_fst
       simp: distinct_fst_is_distinct_fst)
 qed
@@ -797,7 +797,7 @@ next
   }
   note upd_det = this
   { fix P n Q n' Q' n'' s
-    assume "P \<turnstile> n -(Q)\<^isub>\<surd>\<rightarrow> n'" and edge': "P \<turnstile> n -(Q')\<^isub>\<surd>\<rightarrow> n''" and trg: "n' \<noteq> n''"
+    assume "P \<turnstile> n -(Q)\<^sub>\<surd>\<rightarrow> n'" and edge': "P \<turnstile> n -(Q')\<^sub>\<surd>\<rightarrow> n''" and trg: "n' \<noteq> n''"
     hence "(Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     proof cases
       case CFG_Throw_Check with edge' trg show ?thesis by cases fastforce+
@@ -810,7 +810,7 @@ next
     and trg: "targetnode a \<noteq> targetnode a'"
     and "intra_kind (kind a)"
     and "intra_kind (kind a')"
-  thus "\<exists>Q Q'. kind a = (Q)\<^isub>\<surd> \<and> kind a' = (Q')\<^isub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
+  thus "\<exists>Q Q'. kind a = (Q)\<^sub>\<surd> \<and> kind a' = (Q')\<^sub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
     unfolding valid_edge_def intra_kind_def
     by (auto dest: upd_det pred_det)
 qed

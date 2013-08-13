@@ -240,13 +240,13 @@ where
 
 | Spec: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. (\<forall>t. (s,t) \<in> r \<longrightarrow> t \<in> Q) \<and> (\<exists>t. (s,t) \<in> r)} (Spec r) Q,A"
 
-| Seq: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 R,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A\<rbrakk>
+| Seq: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 R,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A\<rbrakk>
         \<Longrightarrow>
-        \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Seq c\<^isub>1 c\<^isub>2) Q,A"
+        \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Seq c\<^sub>1 c\<^sub>2) Q,A"
   
-| Cond: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P \<inter> b) c\<^isub>1 Q,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P \<inter> - b) c\<^isub>2 Q,A\<rbrakk>
+| Cond: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P \<inter> b) c\<^sub>1 Q,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P \<inter> - b) c\<^sub>2 Q,A\<rbrakk>
          \<Longrightarrow> 
-         \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^isub>1 c\<^isub>2) Q,A"
+         \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^sub>1 c\<^sub>2) Q,A"
 
 | While: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P \<inter> b) c P,A
           \<Longrightarrow>
@@ -272,7 +272,7 @@ where
 
 | Throw: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> A Throw Q,A"
 
-| Catch: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 Q,R; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A\<rbrakk> \<Longrightarrow>  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P Catch c\<^isub>1 c\<^isub>2 Q,A"
+| Catch: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 Q,R; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A\<rbrakk> \<Longrightarrow>  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P Catch c\<^sub>1 c\<^sub>2 Q,A"
 
 | Conseq: "\<forall>s \<in> P. \<exists>P' Q' A'. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P' c Q',A' \<and> s \<in> P' \<and> Q' \<subseteq> Q \<and> A' \<subseteq> A 
            \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"

@@ -75,8 +75,8 @@ where
   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>F{D} :: T"
 
 | WTFAss:
-  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; is_lub,P,E \<turnstile> e\<^isub>2 :: T'; P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^sub>1 :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; is_lub,P,E \<turnstile> e\<^sub>2 :: T'; P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> e\<^sub>1\<bullet>F{D}:=e\<^sub>2 :: Void"
 
 | WTCall:
   "\<lbrakk> is_lub,P,E \<turnstile> e :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees M:Ts \<rightarrow> T = meth in D;
@@ -94,11 +94,11 @@ where
 -- "Note that insync is not statically typable."
 
 | WTSeq:
-  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1::T\<^isub>1;  is_lub,P,E \<turnstile> e\<^isub>2::T\<^isub>2 \<rbrakk>
-  \<Longrightarrow>  is_lub,P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^sub>1::T\<^sub>1;  is_lub,P,E \<turnstile> e\<^sub>2::T\<^sub>2 \<rbrakk>
+  \<Longrightarrow>  is_lub,P,E \<turnstile> e\<^sub>1;;e\<^sub>2 :: T\<^sub>2"
 | WTCond:
-  "\<lbrakk> is_lub,P,E \<turnstile> e :: Boolean;  is_lub,P,E \<turnstile> e\<^isub>1::T\<^isub>1;  is_lub,P,E \<turnstile> e\<^isub>2::T\<^isub>2; \<turnstile> lub(T\<^isub>1, T\<^isub>2) = T \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e :: Boolean;  is_lub,P,E \<turnstile> e\<^sub>1::T\<^sub>1;  is_lub,P,E \<turnstile> e\<^sub>2::T\<^sub>2; \<turnstile> lub(T\<^sub>1, T\<^sub>2) = T \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T"
 
 | WTWhile:
   "\<lbrakk> is_lub,P,E \<turnstile> e :: Boolean;  is_lub,P,E \<turnstile> c::T \<rbrakk>
@@ -109,8 +109,8 @@ where
   is_lub,P,E \<turnstile> throw e :: Void"
 
 | WTTry:
-  "\<lbrakk> is_lub,P,E \<turnstile> e\<^isub>1 :: T;  is_lub,P,E(V \<mapsto> Class C) \<turnstile> e\<^isub>2 :: T; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "\<lbrakk> is_lub,P,E \<turnstile> e\<^sub>1 :: T;  is_lub,P,E(V \<mapsto> Class C) \<turnstile> e\<^sub>2 :: T; P \<turnstile> C \<preceq>\<^sup>* Throwable \<rbrakk>
+  \<Longrightarrow> is_lub,P,E \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 :: T"
 
 | WTNil: "is_lub,P,E \<turnstile> [] [::] []"
 
@@ -134,28 +134,28 @@ lemma WTs_conv_list_all2:
   shows "is_lub,P,E \<turnstile> es [::] Ts = list_all2 (WT is_lub P E) es Ts"
 by(induct es arbitrary: Ts)(auto simp add: list_all2_Cons1 elim: WTs.cases)
 
-lemma WTs_append [iff]: "\<And>is_lub Ts. (is_lub,P,E \<turnstile> es\<^isub>1 @ es\<^isub>2 [::] Ts) =
-  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> is_lub,P,E \<turnstile> es\<^isub>1 [::] Ts\<^isub>1 \<and> is_lub,P,E \<turnstile> es\<^isub>2[::]Ts\<^isub>2)"
+lemma WTs_append [iff]: "\<And>is_lub Ts. (is_lub,P,E \<turnstile> es\<^sub>1 @ es\<^sub>2 [::] Ts) =
+  (\<exists>Ts\<^sub>1 Ts\<^sub>2. Ts = Ts\<^sub>1 @ Ts\<^sub>2 \<and> is_lub,P,E \<turnstile> es\<^sub>1 [::] Ts\<^sub>1 \<and> is_lub,P,E \<turnstile> es\<^sub>2[::]Ts\<^sub>2)"
 by(auto simp add: WTs_conv_list_all2 list_all2_append1 dest: list_all2_lengthD[symmetric])
 
 inductive_simps WT_iffs [iff]:
   "is_lub',P,E \<turnstile> Val v :: T"
   "is_lub',P,E \<turnstile> Var V :: T"
-  "is_lub',P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+  "is_lub',P,E \<turnstile> e\<^sub>1;;e\<^sub>2 :: T\<^sub>2"
   "is_lub',P,E \<turnstile> {V:T=vo; e} :: T'"
 
 inductive_cases WT_elim_cases[elim!]:
   "is_lub',P,E \<turnstile> V :=e :: T"
   "is_lub',P,E \<turnstile> sync(o') e :: T"
-  "is_lub',P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
+  "is_lub',P,E \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :: T"
   "is_lub',P,E \<turnstile> while (e) c :: T"
   "is_lub',P,E \<turnstile> throw e :: T"
-  "is_lub',P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
+  "is_lub',P,E \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 :: T"
   "is_lub',P,E \<turnstile> Cast D e :: T"
   "is_lub',P,E \<turnstile> e instanceof U :: T"
   "is_lub',P,E \<turnstile> a\<bullet>F{D} :: T"
   "is_lub',P,E \<turnstile> a\<bullet>F{D} := v :: T"
-  "is_lub',P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
+  "is_lub',P,E \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :: T"
   "is_lub',P,E \<turnstile> new C :: T"
   "is_lub',P,E \<turnstile> newA T\<lfloor>e\<rceil> :: T'"
   "is_lub',P,E \<turnstile> a\<lfloor>i\<rceil> := e :: T"

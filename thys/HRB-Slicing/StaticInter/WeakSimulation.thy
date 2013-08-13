@@ -57,13 +57,13 @@ proof -
   from `valid_edge a` have "valid_node (sourcenode a)" by simp
   { fix x assume "x \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     and "obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
-    have "\<exists>as. targetnode a -as\<rightarrow>\<^isub>\<iota>* x"
+    have "\<exists>as. targetnode a -as\<rightarrow>\<^sub>\<iota>* x"
     proof(cases "method_exit x")
       case True
       from `valid_edge a` have "valid_node (targetnode a)" by simp
-      then obtain asx where "targetnode a -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
+      then obtain asx where "targetnode a -asx\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
         by(fastforce dest:Exit_path)
-      then obtain as pex where "targetnode a -as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+      then obtain as pex where "targetnode a -as\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
         by -(erule valid_Exit_path_intra_path)
       hence "get_proc pex = get_proc (targetnode a)"
         by -(rule intra_path_get_procs[THEN sym])
@@ -75,7 +75,7 @@ proof -
         by(fastforce elim:obs_intraE intro:intra_path_get_procs)
       finally have "pex = x" using `method_exit pex` True
         by -(rule method_exit_unique)
-      with `targetnode a -as\<rightarrow>\<^isub>\<iota>* pex` show ?thesis by fastforce
+      with `targetnode a -as\<rightarrow>\<^sub>\<iota>* pex` show ?thesis by fastforce
     next
       case False
       with `x \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
@@ -87,10 +87,10 @@ proof -
                     simp:intra_path_def sourcenodes_def)
       thus ?thesis by(fastforce elim:postdominate_implies_inner_path)
     qed
-    then obtain as where "targetnode a -as\<rightarrow>\<^isub>\<iota>* x" by blast
+    then obtain as where "targetnode a -as\<rightarrow>\<^sub>\<iota>* x" by blast
     from `x \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have "x \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by -(erule obs_intraE)
-    have "\<exists>x' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>. \<exists>as'. targetnode a -as'\<rightarrow>\<^isub>\<iota>* x' \<and> 
+    have "\<exists>x' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>. \<exists>as'. targetnode a -as'\<rightarrow>\<^sub>\<iota>* x' \<and> 
       (\<forall>a' \<in> set (sourcenodes as'). a' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
     proof(cases "\<exists>a' \<in> set (sourcenodes as). a' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
       case True
@@ -101,7 +101,7 @@ proof -
         where "sourcenodes ys = zs" and "as = ys@y#ys'"
         and "sourcenode y = z"
         by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-      from `targetnode a -as\<rightarrow>\<^isub>\<iota>* x` `as = ys@y#ys'`
+      from `targetnode a -as\<rightarrow>\<^sub>\<iota>* x` `as = ys@y#ys'`
       have "targetnode a -ys@y#ys'\<rightarrow>* x" and "\<forall>y' \<in> set ys. intra_kind (kind y')"
         by(simp_all add:intra_path_def)
       from `targetnode a -ys@y#ys'\<rightarrow>* x` have "targetnode a -ys\<rightarrow>* sourcenode y"
@@ -112,7 +112,7 @@ proof -
       show ?thesis by(fastforce simp:intra_path_def)
     next
       case False
-      with `targetnode a -as\<rightarrow>\<^isub>\<iota>* x` `x \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      with `targetnode a -as\<rightarrow>\<^sub>\<iota>* x` `x \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       show ?thesis by fastforce
     qed
     hence "\<exists>y. y \<in> obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
@@ -211,7 +211,7 @@ subsection {* Silent moves *}
 inductive silent_move :: 
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
   (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge \<Rightarrow> 'node list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') -_\<rightarrow>\<^isub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51) 
+("_,_ \<turnstile> '(_,_') -_\<rightarrow>\<^sub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51) 
 
 where silent_move_intra:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; intra_kind(kind a);
@@ -219,7 +219,7 @@ where silent_move_intra:
     hd ms \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; \<forall>m \<in> set (tl ms). return_node m;
     length s' = length s; length ms = length s;
     hd ms = sourcenode a; ms' = (targetnode a)#tl ms\<rbrakk>  
-  \<Longrightarrow> S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')"
+  \<Longrightarrow> S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')"
 
   | silent_move_call:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; 
@@ -228,57 +228,57 @@ where silent_move_intra:
     hd ms \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; \<forall>m \<in> set (tl ms). return_node m;
     length ms = length s; length s' = Suc(length s); 
     hd ms = sourcenode a; ms' = (targetnode a)#(targetnode a')#tl ms\<rbrakk>  
-  \<Longrightarrow> S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')"
+  \<Longrightarrow> S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')"
 
   | silent_move_return:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'; 
     \<exists>m \<in> set (tl ms). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>;
     \<forall>m \<in> set (tl ms). return_node m; length ms = length s; length s = Suc(length s');
     s' \<noteq> []; hd ms = sourcenode a; hd(tl ms) = targetnode a; ms' = tl ms\<rbrakk>  
-  \<Longrightarrow> S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')"
+  \<Longrightarrow> S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')"
 
 
 lemma silent_move_valid_nodes:
-  "\<lbrakk>S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s'); \<forall>m \<in> set ms'. valid_node m\<rbrakk>
+  "\<lbrakk>S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s'); \<forall>m \<in> set ms'. valid_node m\<rbrakk>
   \<Longrightarrow> \<forall>m \<in> set ms. valid_node m"
 by(induct rule:silent_move.induct)(case_tac ms,auto)+
 
 
 lemma silent_move_return_node:
-  "S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s') \<Longrightarrow> \<forall>m \<in> set (tl ms'). return_node m"
+  "S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s') \<Longrightarrow> \<forall>m \<in> set (tl ms'). return_node m"
 proof(induct rule:silent_move.induct)
-  case (silent_move_intra f a s s' ms n\<^isub>c ms')
+  case (silent_move_intra f a s s' ms n\<^sub>c ms')
   thus ?case by simp
 next
-  case (silent_move_call f a s s' Q r p fs a' ms n\<^isub>c ms')
+  case (silent_move_call f a s s' Q r p fs a' ms n\<^sub>c ms')
   from `valid_edge a'` `valid_edge a` `a' \<in> get_return_edges a`
   have "return_node (targetnode a')" by(fastforce simp:return_node_def)
   with `\<forall>m\<in>set (tl ms). return_node m` `ms' = targetnode a # targetnode a' # tl ms`
   show ?case by simp
 next
-  case (silent_move_return f a s s' Q p f' ms n\<^isub>c ms')
+  case (silent_move_return f a s s' Q p f' ms n\<^sub>c ms')
   thus ?case by(cases "tl ms") auto
 qed
 
 
 lemma silent_move_equal_length:
-  assumes "S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')" 
+  assumes "S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')" 
   shows "length ms = length s" and "length ms' = length s'"
 proof -
-  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')`
+  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')`
   have "length ms = length s \<and> length ms' = length s'"
   proof(induct rule:silent_move.induct)
-    case (silent_move_intra f a s s' ms n\<^isub>c ms')
+    case (silent_move_intra f a s s' ms n\<^sub>c ms')
     from `pred (f a) s` obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
     from `length ms = length s` `ms' = targetnode a # tl ms`
       `length s' = length s` show ?case by simp
   next
-    case (silent_move_call f a s s' Q r p fs a' ms n\<^isub>c ms')
+    case (silent_move_call f a s s' Q r p fs a' ms n\<^sub>c ms')
     from `pred (f a) s` obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
     from `length ms = length s` `length s' = Suc (length s)` 
       `ms' = targetnode a # targetnode a' # tl ms` show ?case by simp
   next
-    case (silent_move_return f a s s' Q p f' ms n\<^isub>c ms')
+    case (silent_move_return f a s s' Q p f' ms n\<^sub>c ms')
     from `length ms = length s` `length s = Suc (length s')` `ms' = tl ms` `s' \<noteq> []`
     show ?case by simp
   qed
@@ -287,11 +287,11 @@ qed
 
 
 lemma silent_move_obs_slice:
-  "\<lbrakk>S,kind \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s'); msx \<in> obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; 
+  "\<lbrakk>S,kind \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s'); msx \<in> obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; 
     \<forall>n \<in> set (tl ms'). return_node n\<rbrakk>
   \<Longrightarrow> msx \<in> obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
 proof(induct S f\<equiv>"kind" ms s a ms' s' rule:silent_move.induct)
-  case (silent_move_intra a s s' ms n\<^isub>c ms')
+  case (silent_move_intra a s s' ms n\<^sub>c ms')
   from `pred (kind a) s` `length ms = length s` have "ms \<noteq> []"
     by(cases s) auto
   with silent_move_intra show ?case by -(rule intra_edge_obs_slice)
@@ -366,12 +366,12 @@ qed
 
 
 lemma silent_move_empty_obs_slice:
-  assumes "S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')" and "obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
+  assumes "S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')" and "obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
   shows "obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
 proof(rule ccontr)
   assume "obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<noteq> {}"
   then obtain xs where "xs \<in> obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
-  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')`
+  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')`
   have "\<forall>m \<in> set (tl ms). return_node m"
     by(fastforce elim!:silent_move.cases simp:call_of_return_node_def)
   with `xs \<in> obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
@@ -382,7 +382,7 @@ proof(rule ccontr)
     \<longrightarrow> (\<exists>x'' \<in> set (xs'@[m]). \<exists>mx. call_of_return_node x'' mx \<and> 
                               mx \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
     by(erule obsE)
-  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')` `obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` assms
+  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')` `obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` assms
   show False
   proof(induct rule:silent_move.induct)
     case (silent_move_intra f a s s' ms S ms')
@@ -603,24 +603,24 @@ qed
 inductive silent_moves :: 
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
   (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge list \<Rightarrow> 'node list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') =_\<Rightarrow>\<^isub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51)
+("_,_ \<turnstile> '(_,_') =_\<Rightarrow>\<^sub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51)
 
-  where silent_moves_Nil: "length ms = length s \<Longrightarrow> S,f \<turnstile> (ms,s) =[]\<Rightarrow>\<^isub>\<tau> (ms,s)"
+  where silent_moves_Nil: "length ms = length s \<Longrightarrow> S,f \<turnstile> (ms,s) =[]\<Rightarrow>\<^sub>\<tau> (ms,s)"
 
   | silent_moves_Cons:
-  "\<lbrakk>S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s'); S,f \<turnstile> (ms',s') =as\<Rightarrow>\<^isub>\<tau> (ms'',s'')\<rbrakk> 
-  \<Longrightarrow> S,f \<turnstile> (ms,s) =a#as\<Rightarrow>\<^isub>\<tau> (ms'',s'')"
+  "\<lbrakk>S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s'); S,f \<turnstile> (ms',s') =as\<Rightarrow>\<^sub>\<tau> (ms'',s'')\<rbrakk> 
+  \<Longrightarrow> S,f \<turnstile> (ms,s) =a#as\<Rightarrow>\<^sub>\<tau> (ms'',s'')"
 
 
 lemma silent_moves_equal_length:
-  assumes "S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s')" 
+  assumes "S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s')" 
   shows "length ms = length s" and "length ms' = length s'"
 proof -
-  from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s')` 
+  from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s')` 
   have "length ms = length s \<and> length ms' = length s'"
   proof(induct rule:silent_moves.induct)
     case (silent_moves_Cons S f ms s a ms' s' as ms'' s'')
-    from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')`
+    from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')`
     have "length ms = length s" and "length ms' = length s'" 
       by(rule silent_move_equal_length)+
     with `length ms' = length s' \<and> length ms'' = length s''`
@@ -631,48 +631,48 @@ qed
 
 
 lemma silent_moves_Append:
-  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms'',s''); S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (ms',s')\<rbrakk>
-  \<Longrightarrow> S,f \<turnstile> (ms,s) =as@as'\<Rightarrow>\<^isub>\<tau> (ms',s')"
+  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms'',s''); S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^sub>\<tau> (ms',s')\<rbrakk>
+  \<Longrightarrow> S,f \<turnstile> (ms,s) =as@as'\<Rightarrow>\<^sub>\<tau> (ms',s')"
 by(induct rule:silent_moves.induct)(auto intro:silent_moves.intros)
 
 
 lemma silent_moves_split:
-  assumes "S,f \<turnstile> (ms,s) =as@as'\<Rightarrow>\<^isub>\<tau> (ms',s')"
-  obtains ms'' s'' where "S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms'',s'')"
-  and "S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (ms',s')"
+  assumes "S,f \<turnstile> (ms,s) =as@as'\<Rightarrow>\<^sub>\<tau> (ms',s')"
+  obtains ms'' s'' where "S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms'',s'')"
+  and "S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^sub>\<tau> (ms',s')"
 proof(atomize_elim)
-  from `S,f \<turnstile> (ms,s) =as@as'\<Rightarrow>\<^isub>\<tau> (ms',s')`
-  show "\<exists>ms'' s''. S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms'',s'') \<and> S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (ms',s')"
+  from `S,f \<turnstile> (ms,s) =as@as'\<Rightarrow>\<^sub>\<tau> (ms',s')`
+  show "\<exists>ms'' s''. S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms'',s'') \<and> S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^sub>\<tau> (ms',s')"
   proof(induct as arbitrary:ms s)
     case Nil
-    from `S,f \<turnstile> (ms,s) =[] @ as'\<Rightarrow>\<^isub>\<tau> (ms',s')` have "length ms = length s"
+    from `S,f \<turnstile> (ms,s) =[] @ as'\<Rightarrow>\<^sub>\<tau> (ms',s')` have "length ms = length s"
       by(fastforce intro:silent_moves_equal_length)
-    hence "S,f \<turnstile> (ms,s) =[]\<Rightarrow>\<^isub>\<tau> (ms,s)" by(rule silent_moves_Nil)
-    with `S,f \<turnstile> (ms,s) =[] @ as'\<Rightarrow>\<^isub>\<tau> (ms',s')` show ?case by fastforce
+    hence "S,f \<turnstile> (ms,s) =[]\<Rightarrow>\<^sub>\<tau> (ms,s)" by(rule silent_moves_Nil)
+    with `S,f \<turnstile> (ms,s) =[] @ as'\<Rightarrow>\<^sub>\<tau> (ms',s')` show ?case by fastforce
   next
     case (Cons ax asx)
-    note IH = `\<And>ms s. S,f \<turnstile> (ms,s) =asx @ as'\<Rightarrow>\<^isub>\<tau> (ms',s') \<Longrightarrow>
-      \<exists>ms'' s''. S,f \<turnstile> (ms,s) =asx\<Rightarrow>\<^isub>\<tau> (ms'',s'') \<and> S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (ms',s')`
-    from `S,f \<turnstile> (ms,s) =(ax # asx) @ as'\<Rightarrow>\<^isub>\<tau> (ms',s')`
-    obtain msx sx where "S,f \<turnstile> (ms,s) -ax\<rightarrow>\<^isub>\<tau> (msx,sx)"
-      and "S,f \<turnstile> (msx,sx) =asx @ as'\<Rightarrow>\<^isub>\<tau> (ms',s')"
+    note IH = `\<And>ms s. S,f \<turnstile> (ms,s) =asx @ as'\<Rightarrow>\<^sub>\<tau> (ms',s') \<Longrightarrow>
+      \<exists>ms'' s''. S,f \<turnstile> (ms,s) =asx\<Rightarrow>\<^sub>\<tau> (ms'',s'') \<and> S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^sub>\<tau> (ms',s')`
+    from `S,f \<turnstile> (ms,s) =(ax # asx) @ as'\<Rightarrow>\<^sub>\<tau> (ms',s')`
+    obtain msx sx where "S,f \<turnstile> (ms,s) -ax\<rightarrow>\<^sub>\<tau> (msx,sx)"
+      and "S,f \<turnstile> (msx,sx) =asx @ as'\<Rightarrow>\<^sub>\<tau> (ms',s')"
       by(auto elim:silent_moves.cases)
-    from IH[OF this(2)] obtain ms'' s'' where "S,f \<turnstile> (msx,sx) =asx\<Rightarrow>\<^isub>\<tau> (ms'',s'')"
-      and "S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (ms',s')" by blast
-    from `S,f \<turnstile> (ms,s) -ax\<rightarrow>\<^isub>\<tau> (msx,sx)` `S,f \<turnstile> (msx,sx) =asx\<Rightarrow>\<^isub>\<tau> (ms'',s'')`
-    have "S,f \<turnstile> (ms,s) =ax#asx\<Rightarrow>\<^isub>\<tau> (ms'',s'')" by(rule silent_moves_Cons)
-    with `S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^isub>\<tau> (ms',s')` show ?case by blast
+    from IH[OF this(2)] obtain ms'' s'' where "S,f \<turnstile> (msx,sx) =asx\<Rightarrow>\<^sub>\<tau> (ms'',s'')"
+      and "S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^sub>\<tau> (ms',s')" by blast
+    from `S,f \<turnstile> (ms,s) -ax\<rightarrow>\<^sub>\<tau> (msx,sx)` `S,f \<turnstile> (msx,sx) =asx\<Rightarrow>\<^sub>\<tau> (ms'',s'')`
+    have "S,f \<turnstile> (ms,s) =ax#asx\<Rightarrow>\<^sub>\<tau> (ms'',s'')" by(rule silent_moves_Cons)
+    with `S,f \<turnstile> (ms'',s'') =as'\<Rightarrow>\<^sub>\<tau> (ms',s')` show ?case by blast
   qed
 qed
 
 
 lemma valid_nodes_silent_moves:
-  "\<lbrakk>S,f\<turnstile> (ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms',s'); \<forall>m \<in> set ms. valid_node m\<rbrakk>
+  "\<lbrakk>S,f\<turnstile> (ms,s) =as'\<Rightarrow>\<^sub>\<tau> (ms',s'); \<forall>m \<in> set ms. valid_node m\<rbrakk>
   \<Longrightarrow> \<forall>m \<in> set ms'. valid_node m"
 proof(induct rule:silent_moves.induct)
   case (silent_moves_Cons S f ms s a ms' s' as ms'' s'')
   note IH = `\<forall>m\<in>set ms'. valid_node m \<Longrightarrow> \<forall>m\<in>set ms''. valid_node m`
-  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')` `\<forall>m\<in>set ms. valid_node m`
+  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')` `\<forall>m\<in>set ms. valid_node m`
   have "\<forall>m\<in>set ms'. valid_node m"
     apply - apply(erule silent_move.cases) apply auto
     by(cases ms,auto dest:get_return_edges_valid)+
@@ -681,20 +681,20 @@ qed simp
 
 
 lemma return_nodes_silent_moves:
-  "\<lbrakk>S,f \<turnstile> (ms,s) =as'\<Rightarrow>\<^isub>\<tau> (ms',s'); \<forall>m \<in> set (tl ms). return_node m\<rbrakk>
+  "\<lbrakk>S,f \<turnstile> (ms,s) =as'\<Rightarrow>\<^sub>\<tau> (ms',s'); \<forall>m \<in> set (tl ms). return_node m\<rbrakk>
   \<Longrightarrow> \<forall>m \<in> set (tl ms'). return_node m"
 by(induct rule:silent_moves.induct,auto dest:silent_move_return_node)
 
 
 lemma silent_moves_intra_path:
-  "\<lbrakk>S,f \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s'); \<forall>a \<in> set as. intra_kind(kind a)\<rbrakk>
+  "\<lbrakk>S,f \<turnstile> (m#ms,s) =as\<Rightarrow>\<^sub>\<tau> (m'#ms',s'); \<forall>a \<in> set as. intra_kind(kind a)\<rbrakk>
   \<Longrightarrow> ms = ms' \<and> get_proc m = get_proc m'"
 proof(induct S f "m#ms" s as "m'#ms'" s' arbitrary:m
   rule:silent_moves.induct)
   case (silent_moves_Cons S f sx a msx' sx' as s'')
   thus ?case
   proof(induct _ _ "m # ms" _ _ _ _ rule:silent_move.induct)
-    case (silent_move_intra f a s s' n\<^isub>c msx')
+    case (silent_move_intra f a s s' n\<^sub>c msx')
     note IH = `\<And>m. \<lbrakk>msx' = m # ms; \<forall>a\<in>set as. intra_kind (kind a)\<rbrakk>
       \<Longrightarrow> ms = ms' \<and> get_proc m = get_proc m'`
     from `msx' = targetnode a # tl (m # ms)`
@@ -714,14 +714,14 @@ qed simp
 
 
 lemma silent_moves_nodestack_notempty: 
-  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s'); ms \<noteq> []\<rbrakk> \<Longrightarrow> ms' \<noteq> []"
+  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s'); ms \<noteq> []\<rbrakk> \<Longrightarrow> ms' \<noteq> []"
 apply(induct S f ms s as ms' s' rule:silent_moves.induct) apply auto
 apply(erule silent_move.cases) apply auto
 apply(case_tac "tl msa") by auto
 
 
 lemma silent_moves_obs_slice:
-  "\<lbrakk>S,kind \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s'); mx \<in> obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; 
+  "\<lbrakk>S,kind \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s'); mx \<in> obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>; 
   \<forall>n \<in> set (tl ms'). return_node n\<rbrakk>
   \<Longrightarrow> mx \<in> obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<and> (\<forall>n \<in> set (tl ms). return_node n)"
 proof(induct S f\<equiv>"kind" ms s as ms' s' rule:silent_moves.induct)
@@ -733,17 +733,17 @@ next
   from IH[OF `mx \<in> obs ms'' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `\<forall>m\<in>set (tl ms''). return_node m`]
   have "mx \<in> obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "\<forall>m\<in>set (tl ms'). return_node m"
     by simp_all
-  with `S,kind \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')`
+  with `S,kind \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')`
   have "mx \<in> obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce intro:silent_move_obs_slice)
   moreover
-  from `S,kind \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')` have "\<forall>m\<in>set (tl ms). return_node m"
+  from `S,kind \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')` have "\<forall>m\<in>set (tl ms). return_node m"
     by(fastforce elim:silent_move.cases)
   ultimately show ?case by simp
 qed
 
 
 lemma silent_moves_empty_obs_slice:
-  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s'); obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}\<rbrakk>
+  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s'); obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}\<rbrakk>
   \<Longrightarrow> obs ms \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
 proof(induct rule:silent_moves.induct)
   case silent_moves_Nil thus ?case by simp
@@ -752,22 +752,22 @@ next
   note IH = `obs ms'' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {} \<Longrightarrow> obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
   from IH[OF `obs ms'' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`]
   have "obs ms' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" by simp
-  with `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')`
+  with `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')`
   show ?case by -(rule silent_move_empty_obs_slice,fastforce)
 qed
 
 
 lemma silent_moves_preds_transfers:
-  assumes "S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s')"
+  assumes "S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s')"
   shows "preds (map f as) s" and "transfers (map f as) s = s'"
 proof -
-  from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s')`
+  from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s')`
   have "preds (map f as) s \<and> transfers (map f as) s = s'"
   proof(induct rule:silent_moves.induct)
     case silent_moves_Nil thus ?case by simp
   next
     case (silent_moves_Cons S f ms s a ms' s' as ms'' s'')
-    from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')`
+    from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms',s')`
     have "pred (f a) s" and "transfer (f a) s = s'" by(auto elim:silent_move.cases)
     with `preds (map f as) s' \<and> transfers (map f as) s' = s''`
     show ?case by fastforce
@@ -780,34 +780,34 @@ qed
 lemma silent_moves_intra_path_obs:
   assumes "m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "length s = length (m#msx')"
   and "\<forall>m \<in> set msx'. return_node m"
-  obtains as' where "S,slice_kind S \<turnstile> (m#msx',s) =as'\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+  obtains as' where "S,slice_kind S \<turnstile> (m#msx',s) =as'\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
 proof(atomize_elim)
   from `m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-  obtain as where "m -as\<rightarrow>\<^isub>\<iota>* m'" and "m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+  obtain as where "m -as\<rightarrow>\<^sub>\<iota>* m'" and "m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by -(erule obs_intraE)
-  from `m -as\<rightarrow>\<^isub>\<iota>* m'` obtain x where "distance m m' x" and "x \<le> length as"
+  from `m -as\<rightarrow>\<^sub>\<iota>* m'` obtain x where "distance m m' x" and "x \<le> length as"
     by(erule every_path_distance)
   from `distance m m' x` `m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     `length s = length (m#msx')` `\<forall>m \<in> set msx'. return_node m`
-  show "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+  show "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
   proof(induct x arbitrary:m s rule:nat.induct)
     fix m fix s::"(('var \<rightharpoonup> 'val) \<times> 'ret) list"
     assume "distance m m' 0" and "length s = length (m#msx')"
-    then obtain as' where "m -as'\<rightarrow>\<^isub>\<iota>* m'" and "length as' = 0"
+    then obtain as' where "m -as'\<rightarrow>\<^sub>\<iota>* m'" and "length as' = 0"
       by(auto elim:distance.cases)
-    hence "m -[]\<rightarrow>\<^isub>\<iota>* m'" by(cases as) auto
+    hence "m -[]\<rightarrow>\<^sub>\<iota>* m'" by(cases as) auto
     hence [simp]:"m = m'" by(fastforce elim:path.cases simp:intra_path_def)
     with `length s = length (m#msx')`[THEN sym]
-    have "S,slice_kind S \<turnstile> (m#msx',s) =[]\<Rightarrow>\<^isub>\<tau> (m#msx',s)" 
+    have "S,slice_kind S \<turnstile> (m#msx',s) =[]\<Rightarrow>\<^sub>\<tau> (m#msx',s)" 
       by -(rule silent_moves_Nil)
-    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)" by simp blast
+    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)" by simp blast
   next
     fix x m fix s::"(('var \<rightharpoonup> 'val) \<times> 'ret) list"
     assume "distance m m' (Suc x)" and "m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       and "length s = length (m#msx')" and "\<forall>m \<in> set msx'. return_node m"
       and IH:"\<And>m s. \<lbrakk>distance m m' x; m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>;
                      length s = length (m#msx'); \<forall>m \<in> set msx'. return_node m\<rbrakk>
-      \<Longrightarrow> \<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+      \<Longrightarrow> \<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
     from `m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` have "valid_node m"
       by(rule in_obs_intra_valid)
     with `distance m m' (Suc x)` have "m \<noteq> m'"
@@ -838,17 +838,17 @@ proof(atomize_elim)
     have length:"length (transfer (slice_kind S a) s) = length (targetnode a#msx')"
       by(cases s)
     (auto split:split_if_asm simp add:Let_def slice_kind_def intra_kind_def)
-    from `distance (targetnode a) m' x` obtain asx where "targetnode a -asx\<rightarrow>\<^isub>\<iota>* m'" 
-      and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>\<^isub>\<iota>* m' \<longrightarrow> x \<le> length as'"
+    from `distance (targetnode a) m' x` obtain asx where "targetnode a -asx\<rightarrow>\<^sub>\<iota>* m'" 
+      and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>\<^sub>\<iota>* m' \<longrightarrow> x \<le> length as'"
       by(auto elim:distance.cases)
-    from `targetnode a -asx\<rightarrow>\<^isub>\<iota>* m'` `m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    from `targetnode a -asx\<rightarrow>\<^sub>\<iota>* m'` `m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     obtain mx where "mx \<in> obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
       by(erule path_ex_obs_intra)
     with disj have "m' \<in> obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
     from IH[OF `distance (targetnode a) m' x` this length 
       `\<forall>m \<in> set msx'. return_node m`]
     obtain asx' where moves:"S,slice_kind S \<turnstile> 
-      (targetnode a#msx',transfer (slice_kind S a) s) =asx'\<Rightarrow>\<^isub>\<tau> 
+      (targetnode a#msx',transfer (slice_kind S a) s) =asx'\<Rightarrow>\<^sub>\<tau> 
       (m'#msx',transfer (slice_kind S a) s)" by blast
     have "pred (slice_kind S a) s \<and> transfer (slice_kind S a) s = s"
     proof(cases "kind a")
@@ -857,11 +857,11 @@ proof(atomize_elim)
         by(fastforce intro:slice_kind_Upd)
       with `length s = length (m#msx')` show ?thesis by(cases s) auto
     next
-      fix Q assume "kind a = (Q)\<^isub>\<surd>"
+      fix Q assume "kind a = (Q)\<^sub>\<surd>"
       with `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a`
         `m' \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `distance (targetnode a) m' x`
         `distance m m' (Suc x)` target
-      have "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+      have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
         by(fastforce intro:slice_kind_Pred_obs_nearer_SOME)
       with `length s = length (m#msx')` show ?thesis by(cases s) auto
     next
@@ -877,13 +877,13 @@ proof(atomize_elim)
       by simp_all
     with `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a` `valid_edge a`
       `intra_kind(kind a)` `length s = length (m#msx')` `\<forall>m \<in> set msx'. return_node m`
-    have "S,slice_kind S \<turnstile> (sourcenode a#msx',s) -a\<rightarrow>\<^isub>\<tau> 
+    have "S,slice_kind S \<turnstile> (sourcenode a#msx',s) -a\<rightarrow>\<^sub>\<tau> 
                              (targetnode a#msx',transfer (slice_kind S a) s)"
       by(fastforce intro:silent_move_intra)
     with moves `transfer (slice_kind S a) s = s` `m = sourcenode a`
-    have "S,slice_kind S \<turnstile> (m#msx',s) =a#asx'\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+    have "S,slice_kind S \<turnstile> (m#msx',s) =a#asx'\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
       by(fastforce intro:silent_moves_Cons)
-    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)" by blast
+    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)" by blast
   qed
 qed
 
@@ -892,38 +892,38 @@ lemma silent_moves_intra_path_no_obs:
   assumes "obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" and "method_exit m'"
   and "get_proc m = get_proc m'" and "valid_node m" and "length s = length (m#msx')"
   and "\<forall>m \<in> set msx'. return_node m"
-  obtains as where "S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+  obtains as where "S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
 proof(atomize_elim)
   from `method_exit m'` `get_proc m = get_proc m'` `valid_node m`
-  obtain as where "m -as\<rightarrow>\<^isub>\<iota>* m'" by(erule intra_path_to_matching_method_exit)
+  obtain as where "m -as\<rightarrow>\<^sub>\<iota>* m'" by(erule intra_path_to_matching_method_exit)
   then obtain x where "distance m m' x" and "x \<le> length as"
     by(erule every_path_distance)
-  from `distance m m' x` `m -as\<rightarrow>\<^isub>\<iota>* m'` `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
+  from `distance m m' x` `m -as\<rightarrow>\<^sub>\<iota>* m'` `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
     `length s = length (m#msx')` `\<forall>m \<in> set msx'. return_node m`
-  show "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+  show "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
   proof(induct x arbitrary:m as s rule:nat.induct)
     fix m fix s::"(('var \<rightharpoonup> 'val) \<times> 'ret) list"
     assume "distance m m' 0" and "length s = length (m#msx')"
-    then obtain as' where "m -as'\<rightarrow>\<^isub>\<iota>* m'" and "length as' = 0"
+    then obtain as' where "m -as'\<rightarrow>\<^sub>\<iota>* m'" and "length as' = 0"
       by(auto elim:distance.cases)
-    hence "m -[]\<rightarrow>\<^isub>\<iota>* m'" by(cases as) auto
+    hence "m -[]\<rightarrow>\<^sub>\<iota>* m'" by(cases as) auto
     hence [simp]:"m = m'" by(fastforce elim:path.cases simp:intra_path_def)
     with `length s = length (m#msx')`[THEN sym]
-    have "S,slice_kind S \<turnstile> (m#msx',s) =[]\<Rightarrow>\<^isub>\<tau> (m#msx',s)" 
+    have "S,slice_kind S \<turnstile> (m#msx',s) =[]\<Rightarrow>\<^sub>\<tau> (m#msx',s)" 
       by(fastforce intro:silent_moves_Nil)
-    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)" by simp blast
+    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)" by simp blast
   next
     fix x m as fix s::"(('var \<rightharpoonup> 'val) \<times> 'ret) list"
-    assume "distance m m' (Suc x)" and "m -as\<rightarrow>\<^isub>\<iota>* m'"
+    assume "distance m m' (Suc x)" and "m -as\<rightarrow>\<^sub>\<iota>* m'"
       and "obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
       and "length s = length (m#msx')" and "\<forall>m \<in> set msx'. return_node m"
-      and IH:"\<And>m as s. \<lbrakk>distance m m' x; m -as\<rightarrow>\<^isub>\<iota>* m'; 
+      and IH:"\<And>m as s. \<lbrakk>distance m m' x; m -as\<rightarrow>\<^sub>\<iota>* m'; 
       obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}; length s = length (m#msx'); 
       \<forall>m \<in> set msx'. return_node m\<rbrakk>
-      \<Longrightarrow> \<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
-    from `m -as\<rightarrow>\<^isub>\<iota>* m'` have "valid_node m" 
+      \<Longrightarrow> \<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
+    from `m -as\<rightarrow>\<^sub>\<iota>* m'` have "valid_node m" 
       by(fastforce intro:path_valid_node simp:intra_path_def)
-    from `m -as\<rightarrow>\<^isub>\<iota>* m'` have "get_proc m = get_proc m'" by(rule intra_path_get_procs)
+    from `m -as\<rightarrow>\<^sub>\<iota>* m'` have "get_proc m = get_proc m'" by(rule intra_path_get_procs)
     have "m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     proof
       assume "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
@@ -943,17 +943,17 @@ proof(atomize_elim)
     have length:"length (transfer (slice_kind S a) s) = length (targetnode a#msx')"
       by(cases s)
     (auto split:split_if_asm simp add:Let_def slice_kind_def intra_kind_def)
-    from `distance (targetnode a) m' x` obtain asx where "targetnode a -asx\<rightarrow>\<^isub>\<iota>* m'" 
-      and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>\<^isub>\<iota>* m' \<longrightarrow> x \<le> length as'"
+    from `distance (targetnode a) m' x` obtain asx where "targetnode a -asx\<rightarrow>\<^sub>\<iota>* m'" 
+      and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>\<^sub>\<iota>* m' \<longrightarrow> x \<le> length as'"
       by(auto elim:distance.cases)
     from `valid_edge a` `intra_kind(kind a)` `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
       `m = sourcenode a` `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
     have "obs_intra (targetnode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}"
       by(fastforce dest:edge_obs_intra_subset)
-    from IH[OF `distance (targetnode a) m' x` `targetnode a -asx\<rightarrow>\<^isub>\<iota>* m'` this
+    from IH[OF `distance (targetnode a) m' x` `targetnode a -asx\<rightarrow>\<^sub>\<iota>* m'` this
       length `\<forall>m \<in> set msx'. return_node m`] obtain as' 
       where moves:"S,slice_kind S \<turnstile> 
-      (targetnode a#msx',transfer (slice_kind S a) s) =as'\<Rightarrow>\<^isub>\<tau> 
+      (targetnode a#msx',transfer (slice_kind S a) s) =as'\<Rightarrow>\<^sub>\<tau> 
       (m'#msx',transfer (slice_kind S a) s)" by blast
     have "pred (slice_kind S a) s \<and> transfer (slice_kind S a) s = s"
     proof(cases "kind a")
@@ -962,11 +962,11 @@ proof(atomize_elim)
         by(fastforce intro:slice_kind_Upd)
       with `length s = length (m#msx')` show ?thesis by(cases s) auto
     next
-      fix Q assume "kind a = (Q)\<^isub>\<surd>"
+      fix Q assume "kind a = (Q)\<^sub>\<surd>"
       with `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a`
         `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` `distance (targetnode a) m' x`
         `distance m m' (Suc x)` `method_exit m'` `get_proc m = get_proc m'` target
-      have "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+      have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
         by(fastforce intro:slice_kind_Pred_empty_obs_nearer_SOME)
      with `length s = length (m#msx')` show ?thesis by(cases s) auto
     next
@@ -982,19 +982,19 @@ proof(atomize_elim)
       by simp_all
     with `m \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m = sourcenode a` `valid_edge a`
       `intra_kind(kind a)` `length s = length (m#msx')` `\<forall>m \<in> set msx'. return_node m`
-    have "S,slice_kind S \<turnstile> (sourcenode a#msx',s) -a\<rightarrow>\<^isub>\<tau> 
+    have "S,slice_kind S \<turnstile> (sourcenode a#msx',s) -a\<rightarrow>\<^sub>\<tau> 
                              (targetnode a#msx',transfer (slice_kind S a) s)"
       by(fastforce intro:silent_move_intra)
     with moves `transfer (slice_kind S a) s = s` `m = sourcenode a`
-    have "S,slice_kind S \<turnstile> (m#msx',s) =a#as'\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+    have "S,slice_kind S \<turnstile> (m#msx',s) =a#as'\<Rightarrow>\<^sub>\<tau> (m'#msx',s)"
       by(fastforce intro:silent_moves_Cons)
-    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)" by blast
+    thus "\<exists>as. S,slice_kind S \<turnstile> (m#msx',s) =as\<Rightarrow>\<^sub>\<tau> (m'#msx',s)" by blast
   qed
 qed
 
 
 lemma silent_moves_vpa_path:
-  assumes "S,f \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s')" and "valid_node m"
+  assumes "S,f \<turnstile> (m#ms,s) =as\<Rightarrow>\<^sub>\<tau> (m'#ms',s')" and "valid_node m"
   and "\<forall>i < length rs. rs!i \<in> get_return_edges (cs!i)" 
   and "ms = targetnodes rs" and "valid_return_list rs m"
   and "length rs = length cs"
@@ -1003,7 +1003,7 @@ proof -
   from assms have "m -as\<rightarrow>* m' \<and> valid_path_aux cs as"
   proof(induct S f "m#ms" s as "m'#ms'" s' arbitrary:m cs ms rs
       rule:silent_moves.induct)
-    case (silent_moves_Nil msx sx n\<^isub>c f)
+    case (silent_moves_Nil msx sx n\<^sub>c f)
     from `valid_node m'` have "m' -[]\<rightarrow>* m'"
       by (rule empty_path)
     thus ?case by fastforce
@@ -1011,7 +1011,7 @@ proof -
     case (silent_moves_Cons S f sx a msx' sx' as s'')
     thus ?case
     proof(induct _ _ "m # ms" _ _ _ _ rule:silent_move.induct)
-      case (silent_move_intra f a sx sx' n\<^isub>c msx')
+      case (silent_move_intra f a sx sx' n\<^sub>c msx')
       note IH = `\<And>m cs ms rs. \<lbrakk>msx' = m # ms; valid_node m;
         \<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i); 
         ms = targetnodes rs; valid_return_list rs m;
@@ -1041,7 +1041,7 @@ proof -
       have "valid_path_aux cs (a # as)" by(fastforce simp:intra_kind_def)
       ultimately show ?case by simp
     next
-      case (silent_move_call f a sx sx' Q r p fs a' n\<^isub>c msx')
+      case (silent_move_call f a sx sx' Q r p fs a' n\<^sub>c msx')
       note IH = `\<And>m cs ms rs. \<lbrakk>msx' = m # ms; valid_node m;
         \<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i); 
         ms = targetnodes rs; valid_return_list rs m;
@@ -1086,7 +1086,7 @@ proof -
       have "valid_path_aux cs (a # as)" by simp
       ultimately show ?case by simp
     next
-      case (silent_move_return f a sx sx' Q p f' n\<^isub>c msx')
+      case (silent_move_return f a sx sx' Q p f' n\<^sub>c msx')
       note IH = `\<And>m cs ms rs. \<lbrakk>msx' = m # ms; valid_node m;
         \<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i); 
         ms = targetnodes rs; valid_return_list rs m;
@@ -1196,7 +1196,7 @@ inductive observable_moves ::
 ("_,_ \<turnstile> '(_,_') =_\<Rightarrow> '(_,_')" [51,50,0,0,50,0,0] 51) 
 
   where observable_moves_snoc:
-  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s'); S,f \<turnstile> (ms',s') -a\<rightarrow> (ms'',s'')\<rbrakk> 
+  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s'); S,f \<turnstile> (ms',s') -a\<rightarrow> (ms'',s'')\<rbrakk> 
   \<Longrightarrow> S,f \<turnstile> (ms,s) =as@[a]\<Rightarrow> (ms'',s'')"
 
 
@@ -1235,7 +1235,7 @@ proof(induct rule:observable_moves.induct)
   have "length ms' = length s'" "length ms'' = length s''"
     by(rule observable_move_equal_length)+
   moreover
-  from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s')` 
+  from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s')` 
   have "length ms = length s" and "length ms' = length s'"
     by(rule silent_moves_equal_length)+
   ultimately show "length ms = length s" "length ms'' = length s''" by simp_all
@@ -1248,12 +1248,12 @@ by(induct rule:observable_moves.induct,simp)
 
 
 lemma silent_move_observable_moves:
-  "\<lbrakk>S,f \<turnstile> (ms'',s'') =as\<Rightarrow> (ms',s'); S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms'',s'')\<rbrakk>
+  "\<lbrakk>S,f \<turnstile> (ms'',s'') =as\<Rightarrow> (ms',s'); S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (ms'',s'')\<rbrakk>
   \<Longrightarrow> S,f \<turnstile> (ms,s) =a#as\<Rightarrow> (ms',s')"
 proof(induct rule:observable_moves.induct)
   case (observable_moves_snoc S f msx sx as ms' s' a' ms'' s'')
-  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (msx,sx)` `S,f \<turnstile> (msx,sx) =as\<Rightarrow>\<^isub>\<tau> (ms',s')`
-  have "S,f \<turnstile> (ms,s) =a#as\<Rightarrow>\<^isub>\<tau> (ms',s')" by(fastforce intro:silent_moves_Cons)
+  from `S,f \<turnstile> (ms,s) -a\<rightarrow>\<^sub>\<tau> (msx,sx)` `S,f \<turnstile> (msx,sx) =as\<Rightarrow>\<^sub>\<tau> (ms',s')`
+  have "S,f \<turnstile> (ms,s) =a#as\<Rightarrow>\<^sub>\<tau> (ms',s')" by(fastforce intro:silent_moves_Cons)
   with `S,f \<turnstile> (ms',s') -a'\<rightarrow> (ms'',s'')`
   have "S,f \<turnstile> (ms,s) =(a#as)@[a']\<Rightarrow> (ms'',s'')"
     by(fastforce intro:observable_moves.observable_moves_snoc)
@@ -1262,7 +1262,7 @@ qed
 
 
 lemma silent_append_observable_moves:
-  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms'',s''); S,f \<turnstile> (ms'',s'') =as'\<Rightarrow> (ms',s')\<rbrakk>
+  "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms'',s''); S,f \<turnstile> (ms'',s'') =as'\<Rightarrow> (ms',s')\<rbrakk>
   \<Longrightarrow> S,f \<turnstile> (ms,s) =as@as'\<Rightarrow> (ms',s')"
 by(induct rule:silent_moves.induct)(auto elim:silent_move_observable_moves)
 
@@ -1275,7 +1275,7 @@ proof -
   have "preds (map f as) s \<and> transfers (map f as) s = s'"
   proof(induct rule:observable_moves.induct)
     case (observable_moves_snoc S f ms s as ms' s' a ms'' s'')
-    from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^isub>\<tau> (ms',s')` 
+    from `S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s')` 
     have "preds (map f as) s" and "transfers (map f as) s = s'"
       by(rule silent_moves_preds_transfers)+
     from `S,f \<turnstile> (ms',s') -a\<rightarrow> (ms'',s'')`
@@ -1293,7 +1293,7 @@ lemma observable_move_vpa_path:
     \<forall>i < length rs. rs!i \<in> get_return_edges (cs!i); ms = targetnodes rs;
     valid_return_list rs m; length rs = length cs\<rbrakk> \<Longrightarrow> valid_path_aux cs [a]"
 proof(induct S f "m#ms" s a "m'#ms'" s' rule:observable_move.induct)
-  case (observable_move_return f a sx sx' Q p f' n\<^isub>c)
+  case (observable_move_return f a sx sx' Q p f' n\<^sub>c)
   from `length (m # ms) = length sx` `length sx = Suc (length sx')` 
     `sx' \<noteq> []`
   obtain x xs where "ms = x#xs" by(cases ms) auto
@@ -1337,7 +1337,7 @@ inductive_set relevant_vars ::
 for S :: "'node SDG_node set" and n :: "'node SDG_node"
 
 where rvI:
-  "\<lbrakk>parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n'; n' \<in> HRB_slice S; V \<in> Use\<^bsub>SDG\<^esub> n';
+  "\<lbrakk>parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n'; n' \<in> HRB_slice S; V \<in> Use\<^bsub>SDG\<^esub> n';
     \<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
           \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''\<rbrakk>
   \<Longrightarrow> V \<in> rv S n"
@@ -1345,7 +1345,7 @@ where rvI:
 
 lemma rvE:
   assumes rv:"V \<in> rv S n"
-  obtains as n' where "parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n'"
+  obtains as n' where "parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n'"
   and "n' \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> n'"
   and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
     \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
@@ -1363,12 +1363,12 @@ lemma obs_intra_empty_rv_empty:
 proof(rule ccontr)
   assume "rv S (CFG_node m) \<noteq> {}"
   then obtain x where "x \<in> rv S (CFG_node m)" by fastforce
-  then obtain n' as where "m -as\<rightarrow>\<^isub>\<iota>* parent_node n'" and "n' \<in> HRB_slice S"
+  then obtain n' as where "m -as\<rightarrow>\<^sub>\<iota>* parent_node n'" and "n' \<in> HRB_slice S"
     by(fastforce elim:rvE)
   hence "parent_node n' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by(fastforce intro:valid_SDG_node_in_slice_parent_node_in_slice 
                  simp:SDG_to_CFG_set_def)
-  with `m -as\<rightarrow>\<^isub>\<iota>* parent_node n'` obtain mx where "mx \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+  with `m -as\<rightarrow>\<^sub>\<iota>* parent_node n'` obtain mx where "mx \<in> obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by(erule path_ex_obs_intra)
   with `obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` show False by simp
 qed
@@ -1380,24 +1380,24 @@ lemma eq_obs_intra_in_rv:
   and "x \<in> rv S n" shows "x \<in> rv S n'"
 proof -
   from `x \<in> rv S n` obtain as n''
-    where "parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n''" and "n'' \<in> HRB_slice S" 
+    where "parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''" and "n'' \<in> HRB_slice S" 
     and "x \<in> Use\<^bsub>SDG\<^esub> n''" 
     and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
       \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> n''"
     by(erule rvE)
-  from `parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n''` have "valid_node (parent_node n'')"
+  from `parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''` have "valid_node (parent_node n'')"
     by(fastforce dest:path_valid_node simp:intra_path_def)
-  from `parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n''` `n'' \<in> HRB_slice S`
+  from `parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''` `n'' \<in> HRB_slice S`
   have "\<exists>nx as' as''. parent_node nx \<in> obs_intra (parent_node n) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<and> 
-                      parent_node n -as'\<rightarrow>\<^isub>\<iota>* parent_node nx \<and>
-                      parent_node nx -as''\<rightarrow>\<^isub>\<iota>* parent_node n'' \<and> as = as'@as''"
+                      parent_node n -as'\<rightarrow>\<^sub>\<iota>* parent_node nx \<and>
+                      parent_node nx -as''\<rightarrow>\<^sub>\<iota>* parent_node n'' \<and> as = as'@as''"
   proof(cases "\<forall>nx. parent_node nx \<in> set (sourcenodes as) \<longrightarrow> nx \<notin> HRB_slice S")
     case True
-    with `parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n''` `n'' \<in> HRB_slice S`
+    with `parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''` `n'' \<in> HRB_slice S`
     have "parent_node n'' \<in> obs_intra (parent_node n) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       by(fastforce intro:obs_intra_elem valid_SDG_node_in_slice_parent_node_in_slice 
                    simp:SDG_to_CFG_set_def)
-    with `parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n''` `valid_node (parent_node n'')`
+    with `parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''` `valid_node (parent_node n'')`
     show ?thesis by(fastforce intro:empty_path simp:intra_path_def)
   next
     case False
@@ -1416,29 +1416,29 @@ proof -
     from all `ms = sourcenodes as'` 
     have "\<forall>nx\<in>set (sourcenodes as'). nx \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       by(fastforce simp:SDG_to_CFG_set_def)
-    from `parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n''` `sourcenode a' = mx`
-    have "parent_node n  -as'\<rightarrow>\<^isub>\<iota>* mx" and "valid_edge a'" and "intra_kind(kind a')"
-      and "targetnode a' -as''\<rightarrow>\<^isub>\<iota>* parent_node n''"
+    from `parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n''` `sourcenode a' = mx`
+    have "parent_node n  -as'\<rightarrow>\<^sub>\<iota>* mx" and "valid_edge a'" and "intra_kind(kind a')"
+      and "targetnode a' -as''\<rightarrow>\<^sub>\<iota>* parent_node n''"
       by(fastforce dest:path_split simp:intra_path_def)+
-    with `sourcenode a' = mx` have "mx -a'#as''\<rightarrow>\<^isub>\<iota>* parent_node n''"
+    with `sourcenode a' = mx` have "mx -a'#as''\<rightarrow>\<^sub>\<iota>* parent_node n''"
       by(fastforce intro:Cons_path simp:intra_path_def)
-    from `parent_node n -as'\<rightarrow>\<^isub>\<iota>* mx` `mx = parent_node nx'` `nx' \<in> HRB_slice S`
+    from `parent_node n -as'\<rightarrow>\<^sub>\<iota>* mx` `mx = parent_node nx'` `nx' \<in> HRB_slice S`
       `\<forall>nx\<in>set (sourcenodes as'). nx \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `ms = sourcenodes as'`
     have "mx \<in> obs_intra (parent_node n) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       by(fastforce intro:obs_intra_elem valid_SDG_node_in_slice_parent_node_in_slice
                    simp:SDG_to_CFG_set_def)
-    with `parent_node n -as'\<rightarrow>\<^isub>\<iota>* mx` `mx -a'#as''\<rightarrow>\<^isub>\<iota>* parent_node n''`
+    with `parent_node n -as'\<rightarrow>\<^sub>\<iota>* mx` `mx -a'#as''\<rightarrow>\<^sub>\<iota>* parent_node n''`
       `mx = parent_node nx'`
     show ?thesis by simp blast
   qed
   then obtain nx as' as'' 
     where "parent_node nx \<in> obs_intra (parent_node n) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-    and "parent_node n -as'\<rightarrow>\<^isub>\<iota>* parent_node nx" 
-    and "parent_node nx -as''\<rightarrow>\<^isub>\<iota>* parent_node n''" and [simp]:"as = as'@as''"
+    and "parent_node n -as'\<rightarrow>\<^sub>\<iota>* parent_node nx" 
+    and "parent_node nx -as''\<rightarrow>\<^sub>\<iota>* parent_node n''" and [simp]:"as = as'@as''"
     by blast
   from `parent_node nx \<in> obs_intra (parent_node n) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` obs_eq
   have "parent_node nx \<in> obs_intra (parent_node n') \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by auto
-  then obtain asx where "parent_node n' -asx\<rightarrow>\<^isub>\<iota>* parent_node nx" 
+  then obtain asx where "parent_node n' -asx\<rightarrow>\<^sub>\<iota>* parent_node nx" 
     and "\<forall>ni \<in> set(sourcenodes asx). ni \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
     and "parent_node nx \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by(erule obs_intraE)
@@ -1448,7 +1448,7 @@ proof -
     \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> ni"
     by(auto simp:sourcenodes_def)
   from `\<forall>ni \<in> set(sourcenodes asx). ni \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    `parent_node n' -asx\<rightarrow>\<^isub>\<iota>* parent_node nx`
+    `parent_node n' -asx\<rightarrow>\<^sub>\<iota>* parent_node nx`
   have "\<forall>ni. valid_SDG_node ni \<and> parent_node ni \<in> set (sourcenodes asx) 
     \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> ni"
   proof(induct asx arbitrary:n')
@@ -1456,16 +1456,16 @@ proof -
   next
     case (Cons ax' asx')
     note IH = `\<And>n'. \<lbrakk>\<forall>ni\<in>set (sourcenodes asx'). ni \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>;
-      parent_node n' -asx'\<rightarrow>\<^isub>\<iota>* parent_node nx\<rbrakk>
+      parent_node n' -asx'\<rightarrow>\<^sub>\<iota>* parent_node nx\<rbrakk>
       \<Longrightarrow> \<forall>ni. valid_SDG_node ni \<and> parent_node ni \<in> set (sourcenodes asx') 
               \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> ni`
-    from `parent_node n' -ax'#asx'\<rightarrow>\<^isub>\<iota>* parent_node nx`
+    from `parent_node n' -ax'#asx'\<rightarrow>\<^sub>\<iota>* parent_node nx`
     have "parent_node n' -[]@ax'#asx'\<rightarrow>* parent_node nx" 
       and "\<forall>a \<in> set (ax'#asx'). intra_kind(kind a)" by(simp_all add:intra_path_def)
     hence "targetnode ax' -asx'\<rightarrow>* parent_node nx" and "valid_edge ax'"
       and "parent_node n' = sourcenode ax'" by(fastforce dest:path_split)+
     with `\<forall>a \<in> set (ax'#asx'). intra_kind(kind a)`
-    have path:"parent_node (CFG_node (targetnode ax')) -asx'\<rightarrow>\<^isub>\<iota>* parent_node nx"
+    have path:"parent_node (CFG_node (targetnode ax')) -asx'\<rightarrow>\<^sub>\<iota>* parent_node nx"
       by(simp add:intra_path_def)
     from `\<forall>ni\<in>set (sourcenodes (ax'#asx')). ni \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have all:"\<forall>ni\<in>set (sourcenodes asx'). ni \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
@@ -1479,9 +1479,9 @@ proof -
     have all:"\<forall>ni. valid_SDG_node ni \<and> parent_node ni \<in> set (sourcenodes (asx'@as'')) 
                    \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> ni"
       by(auto simp:sourcenodes_def)
-    from `parent_node n' -ax'#asx'\<rightarrow>\<^isub>\<iota>* parent_node nx` 
-      `parent_node nx -as''\<rightarrow>\<^isub>\<iota>* parent_node n''`
-    have path:"parent_node n' -ax'#asx'@as''\<rightarrow>\<^isub>\<iota>* parent_node n''"
+    from `parent_node n' -ax'#asx'\<rightarrow>\<^sub>\<iota>* parent_node nx` 
+      `parent_node nx -as''\<rightarrow>\<^sub>\<iota>* parent_node n''`
+    have path:"parent_node n' -ax'#asx'@as''\<rightarrow>\<^sub>\<iota>* parent_node n''"
       by(fastforce intro:path_Append[of _ "ax'#asx'",simplified] simp:intra_path_def)
     have "\<forall>nx'. parent_node nx' = sourcenode ax' \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> nx'"
     proof
@@ -1516,9 +1516,9 @@ proof -
   have all:"\<forall>ni. valid_SDG_node ni \<and> parent_node ni \<in> set (sourcenodes (asx@as'')) 
                  \<longrightarrow> x \<notin> Def\<^bsub>SDG\<^esub> ni"
     by(auto simp:sourcenodes_def)
-  with `parent_node n' -asx\<rightarrow>\<^isub>\<iota>* parent_node nx` 
-    `parent_node nx -as''\<rightarrow>\<^isub>\<iota>* parent_node n''`
-  have "parent_node n' -asx@as''\<rightarrow>\<^isub>\<iota>* parent_node n''"
+  with `parent_node n' -asx\<rightarrow>\<^sub>\<iota>* parent_node nx` 
+    `parent_node nx -as''\<rightarrow>\<^sub>\<iota>* parent_node n''`
+  have "parent_node n' -asx@as''\<rightarrow>\<^sub>\<iota>* parent_node n''"
     by(fastforce intro:path_Append simp:intra_path_def)
   from this `n'' \<in> HRB_slice S` `x \<in> Use\<^bsub>SDG\<^esub> n''` all
   show "x \<in> rv S n'" by(rule rvI)
@@ -1579,13 +1579,13 @@ lemma rv_branching_edges_slice_kinds_False:
 proof -
   from `valid_edge a` `valid_edge ax` `sourcenode a = sourcenode ax` 
     `targetnode a \<noteq> targetnode ax` `intra_kind (kind a)` `intra_kind (kind ax)`
-  obtain Q Q' where "kind a = (Q)\<^isub>\<surd>" and "kind ax = (Q')\<^isub>\<surd>"
+  obtain Q Q' where "kind a = (Q)\<^sub>\<surd>" and "kind ax = (Q')\<^sub>\<surd>"
     and "\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     by(auto dest:deterministic)
   from `valid_edge a` `valid_edge ax` `sourcenode a = sourcenode ax` 
     `targetnode a \<noteq> targetnode ax` `intra_kind (kind a)` `intra_kind (kind ax)`
-  obtain P P' where "slice_kind S a = (P)\<^isub>\<surd>" 
-    and "slice_kind S ax = (P')\<^isub>\<surd>"
+  obtain P P' where "slice_kind S a = (P)\<^sub>\<surd>" 
+    and "slice_kind S ax = (P')\<^sub>\<surd>"
     and "\<forall>s. (P s \<longrightarrow> \<not> P' s) \<and> (P' s \<longrightarrow> \<not> P s)"
     by -(erule slice_deterministic,auto)
   show ?thesis
@@ -1593,17 +1593,17 @@ proof -
     case True
     with `intra_kind (kind a)`
     have "slice_kind S a = kind a" by -(rule slice_intra_kind_in_slice)
-    with `preds (slice_kinds S (a#as)) s` `kind a = (Q)\<^isub>\<surd>` 
-      `slice_kind S a = (P)\<^isub>\<surd>` have "pred (kind a) s"
+    with `preds (slice_kinds S (a#as)) s` `kind a = (Q)\<^sub>\<surd>` 
+      `slice_kind S a = (P)\<^sub>\<surd>` have "pred (kind a) s"
       by(simp add:slice_kinds_def)
     from True `sourcenode a = sourcenode ax` `intra_kind (kind ax)`
     have "slice_kind S ax = kind ax" 
       by(fastforce intro:slice_intra_kind_in_slice)
-    with `preds (slice_kinds S (ax#asx)) s'` `kind ax = (Q')\<^isub>\<surd>`
-      `slice_kind S ax = (P')\<^isub>\<surd>` have "pred (kind ax) s'" 
+    with `preds (slice_kinds S (ax#asx)) s'` `kind ax = (Q')\<^sub>\<surd>`
+      `slice_kind S ax = (P')\<^sub>\<surd>` have "pred (kind ax) s'" 
       by(simp add:slice_kinds_def)
-    with `kind ax = (Q')\<^isub>\<surd>` have "Q' (fst (hd s'))" by(cases s') auto
-    from `valid_edge a` have "sourcenode a -[]\<rightarrow>\<^isub>\<iota>* sourcenode a"
+    with `kind ax = (Q')\<^sub>\<surd>` have "Q' (fst (hd s'))" by(cases s') auto
+    from `valid_edge a` have "sourcenode a -[]\<rightarrow>\<^sub>\<iota>* sourcenode a"
       by(fastforce intro:empty_path simp:intra_path_def)
     with True `valid_edge a`
     have "\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))"
@@ -1613,24 +1613,24 @@ proof -
     with `valid_edge a` `pred (kind a) s` `pred (kind ax) s'` `length s = length s'`
       `snd (hd s) = snd (hd s')`
     have "pred (kind a) s'" by(auto intro:CFG_edge_Uses_pred_equal)
-    with `kind a = (Q)\<^isub>\<surd>` have "Q (fst (hd s'))" by(cases s') auto
+    with `kind a = (Q)\<^sub>\<surd>` have "Q (fst (hd s'))" by(cases s') auto
     with `Q' (fst (hd s'))` `\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)`
     have False by simp
     thus ?thesis by simp
   next
     case False
-    with `kind a = (Q)\<^isub>\<surd>` `slice_kind S a = (P)\<^isub>\<surd>` `valid_edge a`
+    with `kind a = (Q)\<^sub>\<surd>` `slice_kind S a = (P)\<^sub>\<surd>` `valid_edge a`
     have "P = (\<lambda>s. False) \<or> P = (\<lambda>s. True)"
       by(fastforce elim:kind_Predicate_notin_slice_slice_kind_Predicate)
-    with `slice_kind S a = (P)\<^isub>\<surd>` 
+    with `slice_kind S a = (P)\<^sub>\<surd>` 
       `preds (slice_kinds S (a#as)) s`
     have "P = (\<lambda>s. True)" by(cases s)(auto simp:slice_kinds_def)
     from `sourcenode a = sourcenode ax` False
     have "sourcenode ax \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-    with `kind ax = (Q')\<^isub>\<surd>` `slice_kind S ax = (P')\<^isub>\<surd>` `valid_edge ax`
+    with `kind ax = (Q')\<^sub>\<surd>` `slice_kind S ax = (P')\<^sub>\<surd>` `valid_edge ax`
     have "P' = (\<lambda>s. False) \<or> P' = (\<lambda>s. True)"
       by(fastforce elim:kind_Predicate_notin_slice_slice_kind_Predicate)
-    with `slice_kind S ax = (P')\<^isub>\<surd>` 
+    with `slice_kind S ax = (P')\<^sub>\<surd>` 
       `preds (slice_kinds S (ax#asx)) s'`
     have "P' = (\<lambda>s. True)" by(cases s')(auto simp:slice_kinds_def)
     with `P = (\<lambda>s. True)` `\<forall>s. (P s \<longrightarrow> \<not> P' s) \<and> (P' s \<longrightarrow> \<not> P s)`
@@ -1667,7 +1667,7 @@ proof
       from `slice_kind S a = kind a` 
         `preds (slice_kinds S (a#asx)) s'`
       have "pred (kind a) s'" by(simp add:slice_kinds_def)
-      from `valid_edge a` have "sourcenode a -[]\<rightarrow>\<^isub>\<iota>* sourcenode a"
+      from `valid_edge a` have "sourcenode a -[]\<rightarrow>\<^sub>\<iota>* sourcenode a"
         by(fastforce intro:empty_path simp:intra_path_def)
       with True `valid_edge a`
       have "\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))"
@@ -1684,13 +1684,13 @@ proof
     next
       case False
       from `V \<in> rv S (CFG_node (targetnode a))` 
-      obtain xs nx where "targetnode a -xs\<rightarrow>\<^isub>\<iota>* parent_node nx"
+      obtain xs nx where "targetnode a -xs\<rightarrow>\<^sub>\<iota>* parent_node nx"
         and "nx \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> nx"
         and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes xs) 
           \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce elim:rvE)
       from `valid_edge a` have "valid_node (sourcenode a)" by simp
-      from `valid_edge a` `targetnode a -xs\<rightarrow>\<^isub>\<iota>* parent_node nx` `intra_kind (kind a)`
-      have "sourcenode a -a#xs \<rightarrow>\<^isub>\<iota>* parent_node nx"
+      from `valid_edge a` `targetnode a -xs\<rightarrow>\<^sub>\<iota>* parent_node nx` `intra_kind (kind a)`
+      have "sourcenode a -a#xs \<rightarrow>\<^sub>\<iota>* parent_node nx"
         by(fastforce intro:path.Cons_path simp:intra_path_def)
       with `V \<in> Def (sourcenode a)` `V \<in> Use\<^bsub>SDG\<^esub> nx` `valid_node (sourcenode a)`
         `\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes xs) 
@@ -1719,19 +1719,19 @@ proof
   next
     case False
     from `V \<in> rv S (CFG_node (targetnode a))` 
-    obtain xs nx where "targetnode a -xs\<rightarrow>\<^isub>\<iota>* parent_node nx"
+    obtain xs nx where "targetnode a -xs\<rightarrow>\<^sub>\<iota>* parent_node nx"
       and "nx \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> nx"
       and all:"\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes xs) 
                  \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce elim:rvE)
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    from `valid_edge a` `targetnode a -xs\<rightarrow>\<^isub>\<iota>* parent_node nx` `intra_kind (kind a)`
-    have "sourcenode a -a#xs \<rightarrow>\<^isub>\<iota>* parent_node nx"
+    from `valid_edge a` `targetnode a -xs\<rightarrow>\<^sub>\<iota>* parent_node nx` `intra_kind (kind a)`
+    have "sourcenode a -a#xs \<rightarrow>\<^sub>\<iota>* parent_node nx"
       by(fastforce intro:path.Cons_path simp:intra_path_def)
     from False all
     have "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (a#xs)) 
                  \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
       by(fastforce dest:SDG_Def_parent_Def simp:sourcenodes_def)
-    with `sourcenode a -a#xs \<rightarrow>\<^isub>\<iota>* parent_node nx` `nx \<in> HRB_slice S`
+    with `sourcenode a -a#xs \<rightarrow>\<^sub>\<iota>* parent_node nx` `nx \<in> HRB_slice S`
       `V \<in> Use\<^bsub>SDG\<^esub> nx`
     have "V \<in> rv S (CFG_node (sourcenode a))" by(fastforce intro:rvI)
     from `intra_kind (kind a)` show ?thesis
@@ -1768,7 +1768,7 @@ proof
       proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
         case True
         with PredicateEdge `intra_kind (kind a)` 
-        have "slice_kind S a = (Q)\<^isub>\<surd>"
+        have "slice_kind S a = (Q)\<^sub>\<surd>"
           by(simp add:slice_intra_kind_in_slice)
         with `\<forall>V\<in>rv S (CFG_node (sourcenode a)). state_val s V = state_val s' V`
           `V \<in> rv S (CFG_node (sourcenode a))` `s \<noteq> []` `s' \<noteq> []`
@@ -1776,7 +1776,7 @@ proof
       next
         case False
         with PredicateEdge `valid_edge a` 
-        obtain Q' where "slice_kind S a = (Q')\<^isub>\<surd>" 
+        obtain Q' where "slice_kind S a = (Q')\<^sub>\<surd>" 
           by -(erule kind_Predicate_notin_slice_slice_kind_Predicate)
         with`\<forall>V\<in>rv S (CFG_node (sourcenode a)). state_val s V = state_val s' V`
           `V \<in> rv S (CFG_node (sourcenode a))` `s \<noteq> []` `s' \<noteq> []`
@@ -1807,90 +1807,90 @@ for S :: "'node SDG_node set"
 
 
 lemma WS_silent_move:
-  assumes "S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) -a\<rightarrow>\<^isub>\<tau> (ms\<^isub>1',s\<^isub>1')" and "((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S"
-  shows "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>2,s\<^isub>2)) \<in> WS S"
+  assumes "S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (ms\<^sub>1',s\<^sub>1')" and "((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S"
+  shows "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>2,s\<^sub>2)) \<in> WS S"
 proof -
-  from `((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S` obtain msx mx
-    where WSE:"\<forall>m \<in> set ms\<^isub>1. valid_node m" "\<forall>m \<in> set ms\<^isub>2. valid_node m"
-    "length ms\<^isub>1 = length s\<^isub>1" "length ms\<^isub>2 = length s\<^isub>2" "s\<^isub>1 \<noteq> []" "s\<^isub>2 \<noteq> []" 
-    "ms\<^isub>1 = msx@mx#tl ms\<^isub>2" "get_proc mx = get_proc (hd ms\<^isub>2)"
-    "\<forall>m \<in> set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+  from `((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S` obtain msx mx
+    where WSE:"\<forall>m \<in> set ms\<^sub>1. valid_node m" "\<forall>m \<in> set ms\<^sub>2. valid_node m"
+    "length ms\<^sub>1 = length s\<^sub>1" "length ms\<^sub>2 = length s\<^sub>2" "s\<^sub>1 \<noteq> []" "s\<^sub>2 \<noteq> []" 
+    "ms\<^sub>1 = msx@mx#tl ms\<^sub>2" "get_proc mx = get_proc (hd ms\<^sub>2)"
+    "\<forall>m \<in> set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     "msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
-    "\<forall>m \<in> set (tl ms\<^isub>1). return_node m"
-    "\<forall>i < length ms\<^isub>2. snd (s\<^isub>1!(length msx + i)) = snd (s\<^isub>2!i)"
-    "\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V"
-    "obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+    "\<forall>m \<in> set (tl ms\<^sub>1). return_node m"
+    "\<forall>i < length ms\<^sub>2. snd (s\<^sub>1!(length msx + i)) = snd (s\<^sub>2!i)"
+    "\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V"
+    "obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by(fastforce elim:WS.cases)
-  { assume "\<forall>m \<in> set (tl ms\<^isub>1'). return_node m"
-    have "obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-    proof(cases "obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
+  { assume "\<forall>m \<in> set (tl ms\<^sub>1'). return_node m"
+    have "obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+    proof(cases "obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
       case True
-      with `S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) -a\<rightarrow>\<^isub>\<tau> (ms\<^isub>1',s\<^isub>1')` have "obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" 
+      with `S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (ms\<^sub>1',s\<^sub>1')` have "obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" 
         by(rule silent_move_empty_obs_slice)
-      with `obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
+      with `obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
       show ?thesis by simp
     next
       case False
-      from this `\<forall>m \<in> set (tl ms\<^isub>1'). return_node m`
-      obtain ms' where "obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {ms'}"
+      from this `\<forall>m \<in> set (tl ms\<^sub>1'). return_node m`
+      obtain ms' where "obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {ms'}"
         by(fastforce dest:obs_singleton_element)
-      hence "ms' \<in> obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
-      from `S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) -a\<rightarrow>\<^isub>\<tau> (ms\<^isub>1',s\<^isub>1')` `ms' \<in> obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
-        `\<forall>m \<in> set (tl ms\<^isub>1'). return_node m`
-      have "ms' \<in> obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce intro:silent_move_obs_slice)
-      from this `\<forall>m \<in> set (tl ms\<^isub>1). return_node m`
-      have "obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {ms'}" by(rule obs_singleton_element)
-      with `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {ms'}` 
-        `obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      hence "ms' \<in> obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
+      from `S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (ms\<^sub>1',s\<^sub>1')` `ms' \<in> obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
+        `\<forall>m \<in> set (tl ms\<^sub>1'). return_node m`
+      have "ms' \<in> obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce intro:silent_move_obs_slice)
+      from this `\<forall>m \<in> set (tl ms\<^sub>1). return_node m`
+      have "obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {ms'}" by(rule obs_singleton_element)
+      with `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {ms'}` 
+        `obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       show ?thesis by simp
     qed }
-  with `S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) -a\<rightarrow>\<^isub>\<tau> (ms\<^isub>1',s\<^isub>1')` WSE
+  with `S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (ms\<^sub>1',s\<^sub>1')` WSE
   show ?thesis
-  proof(induct S f\<equiv>"kind" ms\<^isub>1 s\<^isub>1 a ms\<^isub>1' s\<^isub>1' rule:silent_move.induct)
-    case (silent_move_intra a s\<^isub>1 s\<^isub>1' ms\<^isub>1 S ms\<^isub>1')
-    note obs_eq = `\<forall>a\<in>set (tl ms\<^isub>1'). return_node a \<Longrightarrow>
-      obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    from `s\<^isub>1 \<noteq> []` `s\<^isub>2 \<noteq> []` obtain cf\<^isub>1 cfs\<^isub>1 cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>1 = cf\<^isub>1#cfs\<^isub>1" 
-    and [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>1,auto,cases s\<^isub>2,fastforce+)
-    from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `intra_kind (kind a)`
-    obtain cf\<^isub>1' where [simp]:"s\<^isub>1' = cf\<^isub>1'#cfs\<^isub>1"
-      by(cases cf\<^isub>1,cases "kind a",auto simp:intra_kind_def)
-    from `\<forall>m \<in> set ms\<^isub>1. valid_node m` `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` `valid_edge a`
-    have "\<forall>m \<in> set ms\<^isub>1'. valid_node m" by(cases ms\<^isub>1) auto
-    from `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1' = length s\<^isub>1` 
-      `ms\<^isub>1' = targetnode a # tl ms\<^isub>1`
-    have "length ms\<^isub>1' = length s\<^isub>1'" by(cases ms\<^isub>1) auto
-    from `\<forall>m \<in> set (tl ms\<^isub>1). return_node m` `ms\<^isub>1' = targetnode a # tl ms\<^isub>1`
-    have "\<forall>m \<in> set (tl ms\<^isub>1'). return_node m" by simp
-    from obs_eq[OF this] have "obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" .
-    from `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` `length ms\<^isub>2 = length s\<^isub>2`
-    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V"
-      by(cases ms\<^isub>2) auto
+  proof(induct S f\<equiv>"kind" ms\<^sub>1 s\<^sub>1 a ms\<^sub>1' s\<^sub>1' rule:silent_move.induct)
+    case (silent_move_intra a s\<^sub>1 s\<^sub>1' ms\<^sub>1 S ms\<^sub>1')
+    note obs_eq = `\<forall>a\<in>set (tl ms\<^sub>1'). return_node a \<Longrightarrow>
+      obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    from `s\<^sub>1 \<noteq> []` `s\<^sub>2 \<noteq> []` obtain cf\<^sub>1 cfs\<^sub>1 cf\<^sub>2 cfs\<^sub>2 where [simp]:"s\<^sub>1 = cf\<^sub>1#cfs\<^sub>1" 
+    and [simp]:"s\<^sub>2 = cf\<^sub>2#cfs\<^sub>2" by(cases s\<^sub>1,auto,cases s\<^sub>2,fastforce+)
+    from `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `intra_kind (kind a)`
+    obtain cf\<^sub>1' where [simp]:"s\<^sub>1' = cf\<^sub>1'#cfs\<^sub>1"
+      by(cases cf\<^sub>1,cases "kind a",auto simp:intra_kind_def)
+    from `\<forall>m \<in> set ms\<^sub>1. valid_node m` `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` `valid_edge a`
+    have "\<forall>m \<in> set ms\<^sub>1'. valid_node m" by(cases ms\<^sub>1) auto
+    from `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1' = length s\<^sub>1` 
+      `ms\<^sub>1' = targetnode a # tl ms\<^sub>1`
+    have "length ms\<^sub>1' = length s\<^sub>1'" by(cases ms\<^sub>1) auto
+    from `\<forall>m \<in> set (tl ms\<^sub>1). return_node m` `ms\<^sub>1' = targetnode a # tl ms\<^sub>1`
+    have "\<forall>m \<in> set (tl ms\<^sub>1'). return_node m" by simp
+    from obs_eq[OF this] have "obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" .
+    from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` `length ms\<^sub>2 = length s\<^sub>2`
+    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V"
+      by(cases ms\<^sub>2) auto
     show ?case
     proof(cases msx)
       case Nil
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `hd ms\<^isub>1 = sourcenode a` 
-      have [simp]:"mx = sourcenode a" and [simp]:"tl ms\<^isub>1 = tl ms\<^isub>2" by simp_all
-      from `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `(\<exists>m\<in>set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or>
-        hd ms\<^isub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      have "hd ms\<^isub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
-      with `hd ms\<^isub>1 = sourcenode a` have "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-      from `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` have "ms\<^isub>1' = [] @ targetnode a # tl ms\<^isub>2"
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `hd ms\<^sub>1 = sourcenode a` 
+      have [simp]:"mx = sourcenode a" and [simp]:"tl ms\<^sub>1 = tl ms\<^sub>2" by simp_all
+      from `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `(\<exists>m\<in>set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or>
+        hd ms\<^sub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      have "hd ms\<^sub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
+      with `hd ms\<^sub>1 = sourcenode a` have "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+      from `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` have "ms\<^sub>1' = [] @ targetnode a # tl ms\<^sub>2"
         by simp
       from `valid_edge a` `intra_kind(kind a)` 
       have "get_proc (sourcenode a) = get_proc (targetnode a)" by(rule get_proc_intra)
-      with `get_proc mx = get_proc (hd ms\<^isub>2)` 
-      have "get_proc (targetnode a) = get_proc (hd ms\<^isub>2)" by simp
-      from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `intra_kind (kind a)`
-      have "snd cf\<^isub>1' = snd cf\<^isub>1" by(auto simp:intra_kind_def)
-      with `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` Nil
-      have "\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! i) = snd (s\<^isub>2 ! i)"
+      with `get_proc mx = get_proc (hd ms\<^sub>2)` 
+      have "get_proc (targetnode a) = get_proc (hd ms\<^sub>2)" by simp
+      from `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `intra_kind (kind a)`
+      have "snd cf\<^sub>1' = snd cf\<^sub>1" by(auto simp:intra_kind_def)
+      with `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` Nil
+      have "\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! i) = snd (s\<^sub>2 ! i)"
         by auto(case_tac i,auto)
-      have "\<forall>V \<in> rv S (CFG_node (targetnode a)). fst cf\<^isub>1' V = fst cf\<^isub>2 V"
+      have "\<forall>V \<in> rv S (CFG_node (targetnode a)). fst cf\<^sub>1' V = fst cf\<^sub>2 V"
       proof
         fix V assume "V \<in> rv S (CFG_node (targetnode a))"
         from `valid_edge a` `intra_kind (kind a)` `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
@@ -1901,7 +1901,7 @@ proof -
           by(rule closed_eq_obs_eq_rvs')
         with `V \<in> rv S (CFG_node (targetnode a))`
         have "V \<in> rv S (CFG_node (sourcenode a))" by simp
-        then obtain as n' where "sourcenode a -as\<rightarrow>\<^isub>\<iota>* parent_node n'" 
+        then obtain as n' where "sourcenode a -as\<rightarrow>\<^sub>\<iota>* parent_node n'" 
           and "n' \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> n'"
           and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
                      \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
@@ -1915,103 +1915,103 @@ proof -
         from `valid_edge a` have "valid_node (sourcenode a)" by simp
         with `V \<notin> Def\<^bsub>SDG\<^esub> (CFG_node (sourcenode a))` have "V \<notin> Def (sourcenode a)"
           by(fastforce intro:CFG_Def_SDG_Def valid_SDG_CFG_node)
-        with `valid_edge a` `intra_kind (kind a)` `pred (kind a) s\<^isub>1`
-        have "state_val (transfer (kind a) s\<^isub>1) V = state_val s\<^isub>1 V"
+        with `valid_edge a` `intra_kind (kind a)` `pred (kind a) s\<^sub>1`
+        have "state_val (transfer (kind a) s\<^sub>1) V = state_val s\<^sub>1 V"
           by(fastforce intro:CFG_intra_edge_no_Def_equal)
-        with `transfer (kind a) s\<^isub>1 = s\<^isub>1'` have "fst cf\<^isub>1' V = fst cf\<^isub>1 V" by simp
+        with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` have "fst cf\<^sub>1' V = fst cf\<^sub>1 V" by simp
         from `V \<in> rv S (CFG_node (sourcenode a))` `msx = []`
-          `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V`
-        have "fst cf\<^isub>1 V = fst cf\<^isub>2 V" by simp
-        with `fst cf\<^isub>1' V = fst cf\<^isub>1 V` show "fst cf\<^isub>1' V = fst cf\<^isub>2 V" by simp
+          `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V`
+        have "fst cf\<^sub>1 V = fst cf\<^sub>2 V" by simp
+        with `fst cf\<^sub>1' V = fst cf\<^sub>1 V` show "fst cf\<^sub>1' V = fst cf\<^sub>2 V" by simp
       qed
-      with `\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^isub>2) ! i)).
-        (fst (s\<^isub>1 ! (length msx + i))) V = (fst (s\<^isub>2 ! i)) V` Nil
-      have "\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((targetnode a # tl ms\<^isub>2) ! i)).
-        (fst (s\<^isub>1' ! (length [] + i))) V = (fst (s\<^isub>2 ! i)) V"
+      with `\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^sub>2) ! i)).
+        (fst (s\<^sub>1 ! (length msx + i))) V = (fst (s\<^sub>2 ! i)) V` Nil
+      have "\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((targetnode a # tl ms\<^sub>2) ! i)).
+        (fst (s\<^sub>1' ! (length [] + i))) V = (fst (s\<^sub>2 ! i)) V"
         by auto (case_tac i,auto)
-      with `\<forall>m \<in> set ms\<^isub>1'. valid_node m` `\<forall>m \<in> set ms\<^isub>2. valid_node m`
-        `length ms\<^isub>1' = length s\<^isub>1'` `length ms\<^isub>2 = length s\<^isub>2`
-        `ms\<^isub>1' = [] @ targetnode a # tl ms\<^isub>2` 
-        `get_proc (targetnode a) = get_proc (hd ms\<^isub>2)`
-        `\<forall>m \<in> set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `\<forall>m \<in> set (tl ms\<^isub>1). return_node m`
-        `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! i) = snd (s\<^isub>2 ! i)`
+      with `\<forall>m \<in> set ms\<^sub>1'. valid_node m` `\<forall>m \<in> set ms\<^sub>2. valid_node m`
+        `length ms\<^sub>1' = length s\<^sub>1'` `length ms\<^sub>2 = length s\<^sub>2`
+        `ms\<^sub>1' = [] @ targetnode a # tl ms\<^sub>2` 
+        `get_proc (targetnode a) = get_proc (hd ms\<^sub>2)`
+        `\<forall>m \<in> set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>m \<in> set (tl ms\<^sub>1). return_node m`
+        `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! i) = snd (s\<^sub>2 ! i)`
       show ?thesis by(auto intro!:WSI)
     next
       case (Cons mx' msx')
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `hd ms\<^isub>1 = sourcenode a`
-      have [simp]:"mx' = sourcenode a" and [simp]:"tl ms\<^isub>1 = msx'@mx#tl ms\<^isub>2" 
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `hd ms\<^sub>1 = sourcenode a`
+      have [simp]:"mx' = sourcenode a" and [simp]:"tl ms\<^sub>1 = msx'@mx#tl ms\<^sub>2" 
         by simp_all
-     from `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` have "ms\<^isub>1' = ((targetnode a)#msx')@mx#tl ms\<^isub>2"
+     from `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` have "ms\<^sub>1' = ((targetnode a)#msx')@mx#tl ms\<^sub>2"
         by simp
-      from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V` Cons
+      from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V` Cons
       have rv:"\<forall>V\<in>rv S (CFG_node mx).
-        (fst (s\<^isub>1' ! length (targetnode a#msx'))) V = state_val s\<^isub>2 V" by fastforce
-      from `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` Cons `ms\<^isub>1' = targetnode a # tl ms\<^isub>1`
-      have "ms\<^isub>1' = ((targetnode a)#msx')@mx#tl ms\<^isub>2" by simp
-      from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` Cons
-      have "\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! (length msx + i)) = snd (s\<^isub>2 ! i)" by fastforce 
-      from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V` Cons
-      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1' ! length msx)) V = state_val s\<^isub>2 V"
+        (fst (s\<^sub>1' ! length (targetnode a#msx'))) V = state_val s\<^sub>2 V" by fastforce
+      from `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` Cons `ms\<^sub>1' = targetnode a # tl ms\<^sub>1`
+      have "ms\<^sub>1' = ((targetnode a)#msx')@mx#tl ms\<^sub>2" by simp
+      from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` Cons
+      have "\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! (length msx + i)) = snd (s\<^sub>2 ! i)" by fastforce 
+      from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V` Cons
+      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1' ! length msx)) V = state_val s\<^sub>2 V"
         by simp
-      with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-        (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` Cons
-      have "\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^isub>2)!i)).
-             (fst (s\<^isub>1'!(length (targetnode a # msx') + i))) V = (fst (s\<^isub>2!i)) V"
+      with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+        (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` Cons
+      have "\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^sub>2)!i)).
+             (fst (s\<^sub>1'!(length (targetnode a # msx') + i))) V = (fst (s\<^sub>2!i)) V"
         by clarsimp
-      with `\<forall>m\<in>set ms\<^isub>1'. valid_node m` `\<forall>m\<in>set ms\<^isub>2. valid_node m`
-        `length ms\<^isub>1' = length s\<^isub>1'` `length ms\<^isub>2 = length s\<^isub>2` 
-        `ms\<^isub>1' = ((targetnode a)#msx')@mx#tl ms\<^isub>2`
-        `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `\<forall>m \<in> set (tl ms\<^isub>1'). return_node m` `get_proc mx = get_proc (hd ms\<^isub>2)`
+      with `\<forall>m\<in>set ms\<^sub>1'. valid_node m` `\<forall>m\<in>set ms\<^sub>2. valid_node m`
+        `length ms\<^sub>1' = length s\<^sub>1'` `length ms\<^sub>2 = length s\<^sub>2` 
+        `ms\<^sub>1' = ((targetnode a)#msx')@mx#tl ms\<^sub>2`
+        `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>m \<in> set (tl ms\<^sub>1'). return_node m` `get_proc mx = get_proc (hd ms\<^sub>2)`
         `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
-        `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` Cons
-        `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! (length msx + i)) = snd (s\<^isub>2 ! i)`
+        `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` Cons
+        `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! (length msx + i)) = snd (s\<^sub>2 ! i)`
       show ?thesis by -(rule WSI,clarsimp+,fastforce,clarsimp+)
     qed
   next
-    case (silent_move_call a s\<^isub>1 s\<^isub>1' Q r p fs a' ms\<^isub>1 S ms\<^isub>1')
-    note obs_eq = `\<forall>a\<in>set (tl ms\<^isub>1'). return_node a \<Longrightarrow>
-      obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    from `s\<^isub>1 \<noteq> []` `s\<^isub>2 \<noteq> []` obtain cf\<^isub>1 cfs\<^isub>1 cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>1 = cf\<^isub>1#cfs\<^isub>1" 
-      and [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>1,auto,cases s\<^isub>2,fastforce+)
+    case (silent_move_call a s\<^sub>1 s\<^sub>1' Q r p fs a' ms\<^sub>1 S ms\<^sub>1')
+    note obs_eq = `\<forall>a\<in>set (tl ms\<^sub>1'). return_node a \<Longrightarrow>
+      obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    from `s\<^sub>1 \<noteq> []` `s\<^sub>2 \<noteq> []` obtain cf\<^sub>1 cfs\<^sub>1 cf\<^sub>2 cfs\<^sub>2 where [simp]:"s\<^sub>1 = cf\<^sub>1#cfs\<^sub>1" 
+      and [simp]:"s\<^sub>2 = cf\<^sub>2#cfs\<^sub>2" by(cases s\<^sub>1,auto,cases s\<^sub>2,fastforce+)
     from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
     obtain ins outs where "(p,ins,outs) \<in> set procs"
       by(fastforce dest!:callee_in_procs)
-    with `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-    have [simp]:"s\<^isub>1' = (Map.empty(ins [:=] params fs (fst cf\<^isub>1)), r) # cf\<^isub>1 # cfs\<^isub>1"
+    with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+    have [simp]:"s\<^sub>1' = (Map.empty(ins [:=] params fs (fst cf\<^sub>1)), r) # cf\<^sub>1 # cfs\<^sub>1"
       by simp(unfold formal_in_THE,simp)
-    from `length ms\<^isub>1 = length s\<^isub>1` `ms\<^isub>1' = targetnode a # targetnode a' # tl ms\<^isub>1`
-    have "length ms\<^isub>1' = length s\<^isub>1'" by simp
+    from `length ms\<^sub>1 = length s\<^sub>1` `ms\<^sub>1' = targetnode a # targetnode a' # tl ms\<^sub>1`
+    have "length ms\<^sub>1' = length s\<^sub>1'" by simp
     from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'"
       by(rule get_return_edges_valid)
-    with `\<forall>m\<in>set ms\<^isub>1. valid_node m` `valid_edge a` 
-      `ms\<^isub>1' = targetnode a # targetnode a' # tl ms\<^isub>1`
-    have "\<forall>m\<in>set ms\<^isub>1'. valid_node m" by(cases ms\<^isub>1) auto
+    with `\<forall>m\<in>set ms\<^sub>1. valid_node m` `valid_edge a` 
+      `ms\<^sub>1' = targetnode a # targetnode a' # tl ms\<^sub>1`
+    have "\<forall>m\<in>set ms\<^sub>1'. valid_node m" by(cases ms\<^sub>1) auto
     from `valid_edge a'` `valid_edge a` `a' \<in> get_return_edges a`
     have "return_node (targetnode a')" by(fastforce simp:return_node_def)
     with `valid_edge a` `a' \<in> get_return_edges a` `valid_edge a'`
     have "call_of_return_node (targetnode a') (sourcenode a)"
       by(simp add:call_of_return_node_def) blast
-    from `\<forall>m \<in> set (tl ms\<^isub>1). return_node m` `return_node (targetnode a')`
-      `ms\<^isub>1' = targetnode a # targetnode a' # tl ms\<^isub>1`
-    have "\<forall>m \<in> set (tl ms\<^isub>1'). return_node m" by simp
-    from obs_eq[OF this] have "obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" .
-    from `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` `length ms\<^isub>2 = length s\<^isub>2`
-    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V"
+    from `\<forall>m \<in> set (tl ms\<^sub>1). return_node m` `return_node (targetnode a')`
+      `ms\<^sub>1' = targetnode a # targetnode a' # tl ms\<^sub>1`
+    have "\<forall>m \<in> set (tl ms\<^sub>1'). return_node m" by simp
+    from obs_eq[OF this] have "obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" .
+    from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` `length ms\<^sub>2 = length s\<^sub>2`
+    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V"
       by(erule_tac x="0" in allE) auto
     show ?case
     proof(cases msx)
       case Nil
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `hd ms\<^isub>1 = sourcenode a` 
-      have [simp]:"mx = sourcenode a" and [simp]:"tl ms\<^isub>1 = tl ms\<^isub>2" by simp_all
-      from `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `(\<exists>m\<in>set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or>
-        hd ms\<^isub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      have "hd ms\<^isub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
-      with `hd ms\<^isub>1 = sourcenode a` have "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `hd ms\<^sub>1 = sourcenode a` 
+      have [simp]:"mx = sourcenode a" and [simp]:"tl ms\<^sub>1 = tl ms\<^sub>2" by simp_all
+      from `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `(\<exists>m\<in>set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>) \<or>
+        hd ms\<^sub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      have "hd ms\<^sub>1 \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
+      with `hd ms\<^sub>1 = sourcenode a` have "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
       from `valid_edge a` `a' \<in> get_return_edges a`
       obtain a'' where "valid_edge a''" and "sourcenode a'' = sourcenode a"
         and "targetnode a'' = targetnode a'" and "intra_kind(kind a'')"
@@ -2020,8 +2020,8 @@ proof -
       have "get_proc (sourcenode a'') = get_proc (targetnode a'')"
         by(rule get_proc_intra)
       with `sourcenode a'' = sourcenode a` `targetnode a'' = targetnode a'`
-        `get_proc mx = get_proc (hd ms\<^isub>2)` 
-      have "get_proc (targetnode a') = get_proc (hd ms\<^isub>2)" by simp
+        `get_proc mx = get_proc (hd ms\<^sub>2)` 
+      have "get_proc (targetnode a') = get_proc (hd ms\<^sub>2)" by simp
       from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `a' \<in> get_return_edges a`
       have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>sum\<^esub> CFG_node (targetnode a')"
         by(fastforce intro:sum_SDG_call_summary_edge)
@@ -2050,12 +2050,12 @@ proof -
         with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` show False
           by(simp add:SDG_to_CFG_set_def HRB_slice_def)
       qed
-      from `ms\<^isub>1' = targetnode a # targetnode a' # tl ms\<^isub>1`
-      have "ms\<^isub>1' = [targetnode a] @ targetnode a' # tl ms\<^isub>2" by simp
-      from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` Nil
-      have "\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! (length [targetnode a] + i)) = snd (s\<^isub>2 ! i)"
+      from `ms\<^sub>1' = targetnode a # targetnode a' # tl ms\<^sub>1`
+      have "ms\<^sub>1' = [targetnode a] @ targetnode a' # tl ms\<^sub>2" by simp
+      from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` Nil
+      have "\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! (length [targetnode a] + i)) = snd (s\<^sub>2 ! i)"
         by fastforce
-      have "\<forall>V\<in>rv S (CFG_node (targetnode a')). (fst (s\<^isub>1' ! 1)) V = state_val s\<^isub>2 V"
+      have "\<forall>V\<in>rv S (CFG_node (targetnode a')). (fst (s\<^sub>1' ! 1)) V = state_val s\<^sub>2 V"
       proof
         fix V assume "V \<in> rv S (CFG_node (targetnode a'))"
         from `valid_edge a` `a' \<in> get_return_edges a`
@@ -2063,13 +2063,13 @@ proof -
           "targetnode a'' = targetnode a'" "intra_kind(kind a'')"
           by -(drule call_return_node_edge,auto simp:intra_kind_def)
         from `V \<in> rv S (CFG_node (targetnode a'))`
-        obtain as n' where "targetnode a' -as\<rightarrow>\<^isub>\<iota>* parent_node n'"
+        obtain as n' where "targetnode a' -as\<rightarrow>\<^sub>\<iota>* parent_node n'"
           and "n' \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> n'"
           and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
           \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
           by(fastforce elim:rvE)
-        from `targetnode a' -as\<rightarrow>\<^isub>\<iota>* parent_node n'` edge
-        have "sourcenode a -a''#as\<rightarrow>\<^isub>\<iota>* parent_node n'"
+        from `targetnode a' -as\<rightarrow>\<^sub>\<iota>* parent_node n'` edge
+        have "sourcenode a -a''#as\<rightarrow>\<^sub>\<iota>* parent_node n'"
           by(fastforce intro:Cons_path simp:intra_path_def)
         from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
         have "V \<notin> Def (sourcenode a)"
@@ -2079,74 +2079,74 @@ proof -
         have "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (a''#as)) 
           \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
           by(fastforce dest:SDG_Def_parent_Def simp:sourcenodes_def)
-        with `sourcenode a -a''#as\<rightarrow>\<^isub>\<iota>* parent_node n'` `n' \<in> HRB_slice S` 
+        with `sourcenode a -a''#as\<rightarrow>\<^sub>\<iota>* parent_node n'` `n' \<in> HRB_slice S` 
           `V \<in> Use\<^bsub>SDG\<^esub> n'`
         have "V \<in> rv S (CFG_node (sourcenode a))" by(fastforce intro:rvI)
-        from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V` Nil
-        have "\<forall>V\<in>rv S (CFG_node (sourcenode a)). fst cf\<^isub>1 V = fst cf\<^isub>2 V" by simp
-        with `V \<in> rv S (CFG_node (sourcenode a))` have "fst cf\<^isub>1 V = fst cf\<^isub>2 V" by simp
-        thus "(fst (s\<^isub>1' ! 1)) V = state_val s\<^isub>2 V" by simp
+        from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V` Nil
+        have "\<forall>V\<in>rv S (CFG_node (sourcenode a)). fst cf\<^sub>1 V = fst cf\<^sub>2 V" by simp
+        with `V \<in> rv S (CFG_node (sourcenode a))` have "fst cf\<^sub>1 V = fst cf\<^sub>2 V" by simp
+        thus "(fst (s\<^sub>1' ! 1)) V = state_val s\<^sub>2 V" by simp
       qed
-      with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-        (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` Nil
-      have "\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((targetnode a' # tl ms\<^isub>2)!i)).
-        (fst (s\<^isub>1'!(length [targetnode a] + i))) V = (fst (s\<^isub>2!i)) V"
+      with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+        (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` Nil
+      have "\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((targetnode a' # tl ms\<^sub>2)!i)).
+        (fst (s\<^sub>1'!(length [targetnode a] + i))) V = (fst (s\<^sub>2!i)) V"
         by clarsimp(case_tac i,auto)
-      with `\<forall>m\<in>set ms\<^isub>1'. valid_node m` `\<forall>m\<in>set ms\<^isub>2. valid_node m`
-        `length ms\<^isub>1' = length s\<^isub>1'` `length ms\<^isub>2 = length s\<^isub>2`
-        `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `ms\<^isub>1' = [targetnode a] @ targetnode a' # tl ms\<^isub>2`
+      with `\<forall>m\<in>set ms\<^sub>1'. valid_node m` `\<forall>m\<in>set ms\<^sub>2. valid_node m`
+        `length ms\<^sub>1' = length s\<^sub>1'` `length ms\<^sub>2 = length s\<^sub>2`
+        `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `ms\<^sub>1' = [targetnode a] @ targetnode a' # tl ms\<^sub>2`
         `targetnode a' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `return_node (targetnode a')`
-        `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `get_proc (targetnode a') = get_proc (hd ms\<^isub>2)`
-        `\<forall>m \<in> set (tl ms\<^isub>1'). return_node m` `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `get_proc (targetnode a') = get_proc (hd ms\<^sub>2)`
+        `\<forall>m \<in> set (tl ms\<^sub>1'). return_node m` `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `call_of_return_node (targetnode a') (sourcenode a)`
-        `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! (length [targetnode a] + i)) = snd (s\<^isub>2 ! i)`
+        `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! (length [targetnode a] + i)) = snd (s\<^sub>2 ! i)`
       show ?thesis by(auto intro!:WSI)
     next
       case (Cons mx' msx')
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `hd ms\<^isub>1 = sourcenode a`
-      have [simp]:"mx' = sourcenode a" and [simp]:"tl ms\<^isub>1 = msx'@mx#tl ms\<^isub>2" 
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `hd ms\<^sub>1 = sourcenode a`
+      have [simp]:"mx' = sourcenode a" and [simp]:"tl ms\<^sub>1 = msx'@mx#tl ms\<^sub>2" 
         by simp_all
-      from `ms\<^isub>1' = targetnode a # targetnode a' # tl ms\<^isub>1` 
-      have "ms\<^isub>1' = (targetnode a # targetnode a' # msx')@mx#tl ms\<^isub>2"
+      from `ms\<^sub>1' = targetnode a # targetnode a' # tl ms\<^sub>1` 
+      have "ms\<^sub>1' = (targetnode a # targetnode a' # msx')@mx#tl ms\<^sub>2"
         by simp
-      from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` Cons
-      have "\<forall>i<length ms\<^isub>2.
-        snd (s\<^isub>1' ! (length (targetnode a # targetnode a' # msx') + i)) = snd (s\<^isub>2 ! i)"
+      from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` Cons
+      have "\<forall>i<length ms\<^sub>2.
+        snd (s\<^sub>1' ! (length (targetnode a # targetnode a' # msx') + i)) = snd (s\<^sub>2 ! i)"
         by fastforce
-      from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V` Cons
+      from `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V` Cons
       have "\<forall>V\<in>rv S (CFG_node mx). 
-        (fst (s\<^isub>1' ! length(targetnode a # targetnode a' # msx'))) V = state_val s\<^isub>2 V" 
+        (fst (s\<^sub>1' ! length(targetnode a # targetnode a' # msx'))) V = state_val s\<^sub>2 V" 
         by simp
-      with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-        (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` Cons
-      have "\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^isub>2)!i)).
-        (fst (s\<^isub>1'!(length (targetnode a # targetnode a' # msx') + i))) V = 
-        (fst (s\<^isub>2!i)) V"
+      with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+        (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` Cons
+      have "\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^sub>2)!i)).
+        (fst (s\<^sub>1'!(length (targetnode a # targetnode a' # msx') + i))) V = 
+        (fst (s\<^sub>2!i)) V"
         by clarsimp
-      with `\<forall>m\<in>set ms\<^isub>1'. valid_node m` `\<forall>m\<in>set ms\<^isub>2. valid_node m`
-        `length ms\<^isub>1' = length s\<^isub>1'` `length ms\<^isub>2 = length s\<^isub>2` 
-        `ms\<^isub>1' = (targetnode a # targetnode a' # msx')@mx#tl ms\<^isub>2`
+      with `\<forall>m\<in>set ms\<^sub>1'. valid_node m` `\<forall>m\<in>set ms\<^sub>2. valid_node m`
+        `length ms\<^sub>1' = length s\<^sub>1'` `length ms\<^sub>2 = length s\<^sub>2` 
+        `ms\<^sub>1' = (targetnode a # targetnode a' # msx')@mx#tl ms\<^sub>2`
         `return_node (targetnode a')`
-        `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
-        `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` Cons
-        `get_proc mx = get_proc (hd ms\<^isub>2)` `\<forall>m \<in> set (tl ms\<^isub>1'). return_node m`
-        `\<forall>i<length ms\<^isub>2.
-        snd (s\<^isub>1' ! (length (targetnode a # targetnode a' # msx') + i)) = snd (s\<^isub>2 ! i)`
+        `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` Cons
+        `get_proc mx = get_proc (hd ms\<^sub>2)` `\<forall>m \<in> set (tl ms\<^sub>1'). return_node m`
+        `\<forall>i<length ms\<^sub>2.
+        snd (s\<^sub>1' ! (length (targetnode a # targetnode a' # msx') + i)) = snd (s\<^sub>2 ! i)`
       show ?thesis by -(rule WSI,clarsimp+,fastforce,clarsimp+)
     qed
   next
-    case (silent_move_return a s\<^isub>1 s\<^isub>1' Q p f' ms\<^isub>1 S ms\<^isub>1')
-    note obs_eq = `\<forall>a\<in>set (tl ms\<^isub>1'). return_node a \<Longrightarrow>
-      obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `s\<^isub>1 \<noteq> []` `s\<^isub>1' \<noteq> []`
-    obtain cf\<^isub>1 cfx\<^isub>1 cfs\<^isub>1 cf\<^isub>1' where [simp]:"s\<^isub>1 = cf\<^isub>1#cfx\<^isub>1#cfs\<^isub>1"
-      and "s\<^isub>1' = (f' (fst cf\<^isub>1) (fst cfx\<^isub>1),snd cfx\<^isub>1)#cfs\<^isub>1"
-      by(cases s\<^isub>1,auto,case_tac list,fastforce+)
-    from `s\<^isub>2 \<noteq> []` obtain cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>2) auto
-    from `length ms\<^isub>1 = length s\<^isub>1` have "ms\<^isub>1 \<noteq> []" and "tl ms\<^isub>1 \<noteq> []" by(cases ms\<^isub>1,auto)+
+    case (silent_move_return a s\<^sub>1 s\<^sub>1' Q p f' ms\<^sub>1 S ms\<^sub>1')
+    note obs_eq = `\<forall>a\<in>set (tl ms\<^sub>1'). return_node a \<Longrightarrow>
+      obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    from `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `s\<^sub>1 \<noteq> []` `s\<^sub>1' \<noteq> []`
+    obtain cf\<^sub>1 cfx\<^sub>1 cfs\<^sub>1 cf\<^sub>1' where [simp]:"s\<^sub>1 = cf\<^sub>1#cfx\<^sub>1#cfs\<^sub>1"
+      and "s\<^sub>1' = (f' (fst cf\<^sub>1) (fst cfx\<^sub>1),snd cfx\<^sub>1)#cfs\<^sub>1"
+      by(cases s\<^sub>1,auto,case_tac list,fastforce+)
+    from `s\<^sub>2 \<noteq> []` obtain cf\<^sub>2 cfs\<^sub>2 where [simp]:"s\<^sub>2 = cf\<^sub>2#cfs\<^sub>2" by(cases s\<^sub>2) auto
+    from `length ms\<^sub>1 = length s\<^sub>1` have "ms\<^sub>1 \<noteq> []" and "tl ms\<^sub>1 \<noteq> []" by(cases ms\<^sub>1,auto)+
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
     obtain a' Q' r' fs' where "valid_edge a'" and "kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'"
       and "a \<in> get_return_edges a'"
@@ -2154,52 +2154,52 @@ proof -
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
       by(fastforce dest!:callee_in_procs)
     with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
-    have "f' (fst cf\<^isub>1) (fst cfx\<^isub>1) = 
-      (fst cfx\<^isub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs)"
+    have "f' (fst cf\<^sub>1) (fst cfx\<^sub>1) = 
+      (fst cfx\<^sub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs)"
       by(rule CFG_return_edge_fun)
-    with `s\<^isub>1' = (f' (fst cf\<^isub>1) (fst cfx\<^isub>1),snd cfx\<^isub>1)#cfs\<^isub>1`
-    have [simp]:"s\<^isub>1' = ((fst cfx\<^isub>1)
-      (ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs),snd cfx\<^isub>1)#cfs\<^isub>1" by simp
-    from `\<forall>m\<in>set ms\<^isub>1. valid_node m` `ms\<^isub>1' = tl ms\<^isub>1` have "\<forall>m\<in>set ms\<^isub>1'. valid_node m"
-      by(cases ms\<^isub>1) auto
-    from `length ms\<^isub>1 = length s\<^isub>1` `ms\<^isub>1' = tl ms\<^isub>1`
-    have "length ms\<^isub>1' = length s\<^isub>1'" by simp
-    from `\<forall>m\<in>set (tl ms\<^isub>1). return_node m` `ms\<^isub>1' = tl ms\<^isub>1` `ms\<^isub>1 \<noteq> []` `tl ms\<^isub>1 \<noteq> []`
-    have "\<forall>m\<in>set (tl ms\<^isub>1'). return_node m" by(cases ms\<^isub>1)(auto,cases ms\<^isub>1',auto)
-    from obs_eq[OF this] have "obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" .
+    with `s\<^sub>1' = (f' (fst cf\<^sub>1) (fst cfx\<^sub>1),snd cfx\<^sub>1)#cfs\<^sub>1`
+    have [simp]:"s\<^sub>1' = ((fst cfx\<^sub>1)
+      (ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs),snd cfx\<^sub>1)#cfs\<^sub>1" by simp
+    from `\<forall>m\<in>set ms\<^sub>1. valid_node m` `ms\<^sub>1' = tl ms\<^sub>1` have "\<forall>m\<in>set ms\<^sub>1'. valid_node m"
+      by(cases ms\<^sub>1) auto
+    from `length ms\<^sub>1 = length s\<^sub>1` `ms\<^sub>1' = tl ms\<^sub>1`
+    have "length ms\<^sub>1' = length s\<^sub>1'" by simp
+    from `\<forall>m\<in>set (tl ms\<^sub>1). return_node m` `ms\<^sub>1' = tl ms\<^sub>1` `ms\<^sub>1 \<noteq> []` `tl ms\<^sub>1 \<noteq> []`
+    have "\<forall>m\<in>set (tl ms\<^sub>1'). return_node m" by(cases ms\<^sub>1)(auto,cases ms\<^sub>1',auto)
+    from obs_eq[OF this] have "obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" .
     show ?case
     proof(cases msx)
       case Nil
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `hd ms\<^isub>1 = sourcenode a` 
-      have "mx = sourcenode a" and "tl ms\<^isub>1 = tl ms\<^isub>2" by simp_all
-      with `\<exists>m\<in>set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `hd ms\<^sub>1 = sourcenode a` 
+      have "mx = sourcenode a" and "tl ms\<^sub>1 = tl ms\<^sub>2" by simp_all
+      with `\<exists>m\<in>set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       have False by fastforce
       thus ?thesis by simp
     next
       case (Cons mx' msx')
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `hd ms\<^isub>1 = sourcenode a`
-      have [simp]:"mx' = sourcenode a" and [simp]:"tl ms\<^isub>1 = msx'@mx#tl ms\<^isub>2"
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `hd ms\<^sub>1 = sourcenode a`
+      have [simp]:"mx' = sourcenode a" and [simp]:"tl ms\<^sub>1 = msx'@mx#tl ms\<^sub>2"
         by simp_all
-      from `ms\<^isub>1' = tl ms\<^isub>1` have "ms\<^isub>1' = msx'@mx#tl ms\<^isub>2" by simp
-      with `ms\<^isub>1 = msx@mx#tl ms\<^isub>2` `\<forall>m\<in>set (tl ms\<^isub>1). return_node m` Cons
-      have "\<forall>m\<in>set (tl ms\<^isub>1'). return_node m"
+      from `ms\<^sub>1' = tl ms\<^sub>1` have "ms\<^sub>1' = msx'@mx#tl ms\<^sub>2" by simp
+      with `ms\<^sub>1 = msx@mx#tl ms\<^sub>2` `\<forall>m\<in>set (tl ms\<^sub>1). return_node m` Cons
+      have "\<forall>m\<in>set (tl ms\<^sub>1'). return_node m"
         by(cases msx') auto
-      from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` Cons
-      have "\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! (length msx' + i)) = snd (s\<^isub>2 ! i)"
+      from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` Cons
+      have "\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! (length msx' + i)) = snd (s\<^sub>2 ! i)"
         by auto(case_tac i,auto,cases msx',auto)
-      from `\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^isub>2) ! i)).
-        (fst (s\<^isub>1 ! (length msx + i))) V = (fst (s\<^isub>2 ! i)) V`
-        `length ms\<^isub>2 = length s\<^isub>2` `s\<^isub>2 \<noteq> []`
-      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V"
+      from `\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^sub>2) ! i)).
+        (fst (s\<^sub>1 ! (length msx + i))) V = (fst (s\<^sub>2 ! i)) V`
+        `length ms\<^sub>2 = length s\<^sub>2` `s\<^sub>2 \<noteq> []`
+      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V"
         by fastforce
-      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1' ! length msx')) V = state_val s\<^isub>2 V"
+      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1' ! length msx')) V = state_val s\<^sub>2 V"
       proof(cases msx')
         case Nil
-        with `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V`
+        with `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V`
           `msx = mx'#msx'`
-        have rv:"\<forall>V\<in>rv S (CFG_node mx). fst cfx\<^isub>1 V = fst cf\<^isub>2 V" by fastforce
-        from Nil `tl ms\<^isub>1 = msx'@mx#tl ms\<^isub>2` `hd (tl ms\<^isub>1) = targetnode a`
+        have rv:"\<forall>V\<in>rv S (CFG_node mx). fst cfx\<^sub>1 V = fst cf\<^sub>2 V" by fastforce
+        from Nil `tl ms\<^sub>1 = msx'@mx#tl ms\<^sub>2` `hd (tl ms\<^sub>1) = targetnode a`
         have [simp]:"mx = targetnode a" by simp
         from Cons 
           `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
@@ -2208,11 +2208,11 @@ proof -
         hence "mx \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" 
           by(rule call_node_notin_slice_return_node_neither)
         have "\<forall>V\<in>rv S (CFG_node mx). 
-          (fst cfx\<^isub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) V = fst cf\<^isub>2 V"
+          (fst cfx\<^sub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) V = fst cf\<^sub>2 V"
         proof
           fix V assume "V\<in>rv S (CFG_node mx)"
-          show "(fst cfx\<^isub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) V = 
-            fst cf\<^isub>2 V"
+          show "(fst cfx\<^sub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) V = 
+            fst cf\<^sub>2 V"
           proof(cases "V \<in> set (ParamDefs (targetnode a))")
             case True
             with `valid_edge a` have "V \<in> Def (targetnode a)"
@@ -2220,17 +2220,17 @@ proof -
             with `valid_edge a` have "V \<in> Def\<^bsub>SDG\<^esub> (CFG_node (targetnode a))"
               by(auto intro!:CFG_Def_SDG_Def)
             from `V\<in>rv S (CFG_node mx)` obtain as n' 
-              where "targetnode a -as\<rightarrow>\<^isub>\<iota>* parent_node n'"
+              where "targetnode a -as\<rightarrow>\<^sub>\<iota>* parent_node n'"
               and "n' \<in> HRB_slice S" "V \<in> Use\<^bsub>SDG\<^esub> n'"
               and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
               \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce elim:rvE)
-            from `targetnode a -as\<rightarrow>\<^isub>\<iota>* parent_node n'` `n' \<in> HRB_slice S`
+            from `targetnode a -as\<rightarrow>\<^sub>\<iota>* parent_node n'` `n' \<in> HRB_slice S`
               `mx \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
             obtain ax asx where "as = ax#asx"
               by(auto simp:intra_path_def)(erule path.cases,
                  auto dest:valid_SDG_node_in_slice_parent_node_in_slice 
                       simp:SDG_to_CFG_set_def)
-            with `targetnode a -as\<rightarrow>\<^isub>\<iota>* parent_node n'` 
+            with `targetnode a -as\<rightarrow>\<^sub>\<iota>* parent_node n'` 
             have "targetnode a = sourcenode ax" and "valid_edge ax"
               by(auto elim:path.cases simp:intra_path_def)
             with `\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
@@ -2240,33 +2240,33 @@ proof -
           next
             case False
             with `V\<in>rv S (CFG_node mx)` rv show ?thesis
-              by(fastforce dest:fun_upds_notin[of  _ _ "fst cfx\<^isub>1"])
+              by(fastforce dest:fun_upds_notin[of  _ _ "fst cfx\<^sub>1"])
           qed
         qed
         with Nil `msx = mx'#msx'` show ?thesis by fastforce
       next
         case Cons
-        with `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V`
+        with `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V`
           `msx = mx'#msx'`
         show ?thesis by fastforce
       qed
-      with `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V` Cons
-      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1' ! length msx')) V = state_val s\<^isub>2 V"
+      with `\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V` Cons
+      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1' ! length msx')) V = state_val s\<^sub>2 V"
         by(cases msx') auto
-      with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-        (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` Cons
-      have "\<forall>i<length ms\<^isub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^isub>2) ! i)).
-        (fst (s\<^isub>1' ! (length msx' + i))) V = (fst (s\<^isub>2 ! i)) V"
+      with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+        (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` Cons
+      have "\<forall>i<length ms\<^sub>2. \<forall>V\<in>rv S (CFG_node ((mx # tl ms\<^sub>2) ! i)).
+        (fst (s\<^sub>1' ! (length msx' + i))) V = (fst (s\<^sub>2 ! i)) V"
         by clarsimp(case_tac i,auto)
-      with `\<forall>m\<in>set ms\<^isub>1'. valid_node m` `\<forall>m\<in>set ms\<^isub>2. valid_node m`
-        `length ms\<^isub>1' = length s\<^isub>1'` `length ms\<^isub>2 = length s\<^isub>2` 
-        `ms\<^isub>1' = msx'@mx#tl ms\<^isub>2` `get_proc mx = get_proc (hd ms\<^isub>2)`
-        `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      with `\<forall>m\<in>set ms\<^sub>1'. valid_node m` `\<forall>m\<in>set ms\<^sub>2. valid_node m`
+        `length ms\<^sub>1' = length s\<^sub>1'` `length ms\<^sub>2 = length s\<^sub>2` 
+        `ms\<^sub>1' = msx'@mx#tl ms\<^sub>2` `get_proc mx = get_proc (hd ms\<^sub>2)`
+        `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
         `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
-        `\<forall>m\<in>set (tl ms\<^isub>1'). return_node m` Cons `get_proc mx = get_proc (hd ms\<^isub>2)`
-        `\<forall>m\<in>set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `obs ms\<^isub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-        `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1' ! (length msx' + i)) = snd (s\<^isub>2 ! i)`
+        `\<forall>m\<in>set (tl ms\<^sub>1'). return_node m` Cons `get_proc mx = get_proc (hd ms\<^sub>2)`
+        `\<forall>m\<in>set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `obs ms\<^sub>1' \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+        `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1' ! (length msx' + i)) = snd (s\<^sub>2 ! i)`
        show ?thesis by(auto intro!:WSI)
     qed
   qed
@@ -2274,83 +2274,83 @@ qed
 
 
 lemma WS_silent_moves:
-  "\<lbrakk>S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1',s\<^isub>1'); ((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S\<rbrakk>
-  \<Longrightarrow> ((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>2,s\<^isub>2)) \<in> WS S"
-by(induct S f\<equiv>"kind" ms\<^isub>1 s\<^isub>1 as ms\<^isub>1' s\<^isub>1' rule:silent_moves.induct,
+  "\<lbrakk>S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1',s\<^sub>1'); ((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S\<rbrakk>
+  \<Longrightarrow> ((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>2,s\<^sub>2)) \<in> WS S"
+by(induct S f\<equiv>"kind" ms\<^sub>1 s\<^sub>1 as ms\<^sub>1' s\<^sub>1' rule:silent_moves.induct,
   auto dest:WS_silent_move)
 
 
 lemma WS_observable_move:
-  assumes "((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S"
-  and "S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) -a\<rightarrow> (ms\<^isub>1',s\<^isub>1')" and "s\<^isub>1' \<noteq> []"
-  obtains as where "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)) \<in> WS S"
-  and "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+  assumes "((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S"
+  and "S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) -a\<rightarrow> (ms\<^sub>1',s\<^sub>1')" and "s\<^sub>1' \<noteq> []"
+  obtains as where "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S"
+  and "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
 proof(atomize_elim)
-  from `((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S` obtain msx mx
-    where assms:"\<forall>m \<in> set ms\<^isub>1. valid_node m" "\<forall>m \<in> set ms\<^isub>2. valid_node m"
-    "length ms\<^isub>1 = length s\<^isub>1" "length ms\<^isub>2 = length s\<^isub>2" "s\<^isub>1 \<noteq> []" "s\<^isub>2 \<noteq> []" 
-    "ms\<^isub>1 = msx@mx#tl ms\<^isub>2" "get_proc mx = get_proc (hd ms\<^isub>2)" 
-    "\<forall>m \<in> set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+  from `((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S` obtain msx mx
+    where assms:"\<forall>m \<in> set ms\<^sub>1. valid_node m" "\<forall>m \<in> set ms\<^sub>2. valid_node m"
+    "length ms\<^sub>1 = length s\<^sub>1" "length ms\<^sub>2 = length s\<^sub>2" "s\<^sub>1 \<noteq> []" "s\<^sub>2 \<noteq> []" 
+    "ms\<^sub>1 = msx@mx#tl ms\<^sub>2" "get_proc mx = get_proc (hd ms\<^sub>2)" 
+    "\<forall>m \<in> set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     "msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
-    "\<forall>m \<in> set (tl ms\<^isub>1). return_node m"
-    "\<forall>i < length ms\<^isub>2. snd (s\<^isub>1!(length msx + i)) = snd (s\<^isub>2!i)"
-    "\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V"
-    "obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+    "\<forall>m \<in> set (tl ms\<^sub>1). return_node m"
+    "\<forall>i < length ms\<^sub>2. snd (s\<^sub>1!(length msx + i)) = snd (s\<^sub>2!i)"
+    "\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V"
+    "obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     by(fastforce elim:WS.cases)
-  from `S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) -a\<rightarrow> (ms\<^isub>1',s\<^isub>1')` assms
-  show "\<exists>as. ((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)) \<in> WS S \<and>
-    S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as @ [a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
-  proof(induct S f\<equiv>"kind" ms\<^isub>1 s\<^isub>1 a ms\<^isub>1' s\<^isub>1' rule:observable_move.induct)
-    case (observable_move_intra a s\<^isub>1 s\<^isub>1' ms\<^isub>1 S ms\<^isub>1')
-    from `s\<^isub>1 \<noteq> []` `s\<^isub>2 \<noteq> []` obtain cf\<^isub>1 cfs\<^isub>1 cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>1 = cf\<^isub>1#cfs\<^isub>1" 
-      and [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>1,auto,cases s\<^isub>2,fastforce+)
-    from `length ms\<^isub>1 = length s\<^isub>1` `s\<^isub>1 \<noteq> []` have [simp]:"ms\<^isub>1 \<noteq> []" by(cases ms\<^isub>1) auto
-    from `length ms\<^isub>2 = length s\<^isub>2` `s\<^isub>2 \<noteq> []` have [simp]:"ms\<^isub>2 \<noteq> []" by(cases ms\<^isub>2) auto
-    from `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `hd ms\<^isub>1 = sourcenode a` `ms\<^isub>1 = msx@mx#tl ms\<^isub>2`
+  from `S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) -a\<rightarrow> (ms\<^sub>1',s\<^sub>1')` assms
+  show "\<exists>as. ((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S \<and>
+    S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as @ [a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
+  proof(induct S f\<equiv>"kind" ms\<^sub>1 s\<^sub>1 a ms\<^sub>1' s\<^sub>1' rule:observable_move.induct)
+    case (observable_move_intra a s\<^sub>1 s\<^sub>1' ms\<^sub>1 S ms\<^sub>1')
+    from `s\<^sub>1 \<noteq> []` `s\<^sub>2 \<noteq> []` obtain cf\<^sub>1 cfs\<^sub>1 cf\<^sub>2 cfs\<^sub>2 where [simp]:"s\<^sub>1 = cf\<^sub>1#cfs\<^sub>1" 
+      and [simp]:"s\<^sub>2 = cf\<^sub>2#cfs\<^sub>2" by(cases s\<^sub>1,auto,cases s\<^sub>2,fastforce+)
+    from `length ms\<^sub>1 = length s\<^sub>1` `s\<^sub>1 \<noteq> []` have [simp]:"ms\<^sub>1 \<noteq> []" by(cases ms\<^sub>1) auto
+    from `length ms\<^sub>2 = length s\<^sub>2` `s\<^sub>2 \<noteq> []` have [simp]:"ms\<^sub>2 \<noteq> []" by(cases ms\<^sub>2) auto
+    from `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `hd ms\<^sub>1 = sourcenode a` `ms\<^sub>1 = msx@mx#tl ms\<^sub>2`
       `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
-    have [simp]:"mx = sourcenode a" "msx = []" and [simp]:"tl ms\<^isub>2 = tl ms\<^isub>1"
+    have [simp]:"mx = sourcenode a" "msx = []" and [simp]:"tl ms\<^sub>2 = tl ms\<^sub>1"
       by(cases msx,auto)+
-    hence "length ms\<^isub>1 = length ms\<^isub>2" by(cases ms\<^isub>2) auto
-    with `length ms\<^isub>1 = length s\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2`
-    have "length s\<^isub>1 = length s\<^isub>2" by simp
-    from `hd ms\<^isub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^isub>1 = sourcenode a`
+    hence "length ms\<^sub>1 = length ms\<^sub>2" by(cases ms\<^sub>2) auto
+    with `length ms\<^sub>1 = length s\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2`
+    have "length s\<^sub>1 = length s\<^sub>2" by simp
+    from `hd ms\<^sub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^sub>1 = sourcenode a`
     have "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
     with `valid_edge a`
     have "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {sourcenode a}"
       by(fastforce intro!:n_in_obs_intra)
-    from `\<forall>m \<in> set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    from `\<forall>m \<in> set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {sourcenode a}` 
-      `hd ms\<^isub>1 = sourcenode a` 
-    have "(hd ms\<^isub>1#tl ms\<^isub>1) \<in> obs ([]@hd ms\<^isub>1#tl ms\<^isub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-      by(cases ms\<^isub>1)(auto intro!:obsI)
-    hence "ms\<^isub>1 \<in> obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-    with `obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have "ms\<^isub>1 \<in> obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-    from `ms\<^isub>2 \<noteq> []` `length ms\<^isub>2 = length s\<^isub>2` have "length s\<^isub>2 = length (hd ms\<^isub>2#tl ms\<^isub>2)"
+      `hd ms\<^sub>1 = sourcenode a` 
+    have "(hd ms\<^sub>1#tl ms\<^sub>1) \<in> obs ([]@hd ms\<^sub>1#tl ms\<^sub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+      by(cases ms\<^sub>1)(auto intro!:obsI)
+    hence "ms\<^sub>1 \<in> obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+    with `obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    have "ms\<^sub>1 \<in> obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+    from `ms\<^sub>2 \<noteq> []` `length ms\<^sub>2 = length s\<^sub>2` have "length s\<^sub>2 = length (hd ms\<^sub>2#tl ms\<^sub>2)"
       by(fastforce dest!:hd_Cons_tl)
-    from `\<forall>m \<in> set (tl ms\<^isub>1). return_node m` have "\<forall>m \<in> set (tl ms\<^isub>2). return_node m"
+    from `\<forall>m \<in> set (tl ms\<^sub>1). return_node m` have "\<forall>m \<in> set (tl ms\<^sub>2). return_node m"
       by simp
-    with `ms\<^isub>1 \<in> obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have "hd ms\<^isub>1 \<in> obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+    with `ms\<^sub>1 \<in> obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    have "hd ms\<^sub>1 \<in> obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     proof(rule obsE)
       fix nsx n nsx' n'
-      assume "ms\<^isub>2 = nsx @ n # nsx'" and "ms\<^isub>1 = n' # nsx'"
+      assume "ms\<^sub>2 = nsx @ n # nsx'" and "ms\<^sub>1 = n' # nsx'"
         and "n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-      from `ms\<^isub>2 = nsx @ n # nsx'` `ms\<^isub>1 = n' # nsx'` `tl ms\<^isub>2 = tl ms\<^isub>1`
+      from `ms\<^sub>2 = nsx @ n # nsx'` `ms\<^sub>1 = n' # nsx'` `tl ms\<^sub>2 = tl ms\<^sub>1`
       have [simp]:"nsx = []" by(cases nsx) auto
-      with `ms\<^isub>2 = nsx @ n # nsx'` have [simp]:"n = hd ms\<^isub>2" by simp
-      from `ms\<^isub>1 = n' # nsx'` have [simp]:"n' = hd ms\<^isub>1" by simp
+      with `ms\<^sub>2 = nsx @ n # nsx'` have [simp]:"n = hd ms\<^sub>2" by simp
+      from `ms\<^sub>1 = n' # nsx'` have [simp]:"n' = hd ms\<^sub>1" by simp
       with `n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` show ?thesis by simp
     qed
-    with `length s\<^isub>2 = length (hd ms\<^isub>2#tl ms\<^isub>2)` `\<forall>m \<in> set (tl ms\<^isub>2). return_node m`
-    obtain as where "S,slice_kind S \<turnstile> (hd ms\<^isub>2#tl ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (hd ms\<^isub>1#tl ms\<^isub>1,s\<^isub>2)"
-      by(fastforce elim:silent_moves_intra_path_obs[of _ _ _ s\<^isub>2 "tl ms\<^isub>2"])
-    with `ms\<^isub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
+    with `length s\<^sub>2 = length (hd ms\<^sub>2#tl ms\<^sub>2)` `\<forall>m \<in> set (tl ms\<^sub>2). return_node m`
+    obtain as where "S,slice_kind S \<turnstile> (hd ms\<^sub>2#tl ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (hd ms\<^sub>1#tl ms\<^sub>1,s\<^sub>2)"
+      by(fastforce elim:silent_moves_intra_path_obs[of _ _ _ s\<^sub>2 "tl ms\<^sub>2"])
+    with `ms\<^sub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)"
       by(fastforce dest!:hd_Cons_tl)
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    hence "sourcenode a -[]\<rightarrow>\<^isub>\<iota>* sourcenode a"
+    hence "sourcenode a -[]\<rightarrow>\<^sub>\<iota>* sourcenode a"
       by(fastforce intro:empty_path simp:intra_path_def)
     with `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have "\<forall>V. V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (sourcenode a)) 
@@ -2359,116 +2359,116 @@ proof(atomize_elim)
     with `valid_node (sourcenode a)`
     have "\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))"
       by(fastforce intro:CFG_Use_SDG_Use)
-    from `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` `length ms\<^isub>2 = length s\<^isub>2`
-    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V"
-      by(cases ms\<^isub>2) auto
+    from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` `length ms\<^sub>2 = length s\<^sub>2`
+    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V"
+      by(cases ms\<^sub>2) auto
     with `\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))`
-    have "\<forall>V \<in> Use (sourcenode a). fst cf\<^isub>1 V = fst cf\<^isub>2 V" by fastforce
+    have "\<forall>V \<in> Use (sourcenode a). fst cf\<^sub>1 V = fst cf\<^sub>2 V" by fastforce
     moreover
-    from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)`
-    have "snd (hd s\<^isub>1) = snd (hd s\<^isub>2)" by(erule_tac x="0" in allE) auto
-    ultimately have "pred (kind a) s\<^isub>2"
-      using `valid_edge a` `pred (kind a) s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
+    from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)`
+    have "snd (hd s\<^sub>1) = snd (hd s\<^sub>2)" by(erule_tac x="0" in allE) auto
+    ultimately have "pred (kind a) s\<^sub>2"
+      using `valid_edge a` `pred (kind a) s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`
       by(fastforce intro:CFG_edge_Uses_pred_equal)
-    from `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` `length s\<^isub>1' = length s\<^isub>1` 
-      `length ms\<^isub>1 = length s\<^isub>1` have "length ms\<^isub>1' = length s\<^isub>1'" by simp
-    from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `intra_kind (kind a)`
-    obtain cf\<^isub>1' where [simp]:"s\<^isub>1' = cf\<^isub>1'#cfs\<^isub>1"
-      by(cases cf\<^isub>1,cases "kind a",auto simp:intra_kind_def)
-    from `intra_kind (kind a)` `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `pred (kind a) s\<^isub>2`
-    have "pred (slice_kind S a) s\<^isub>2" by(simp add:slice_intra_kind_in_slice)
-    from `valid_edge a` `length s\<^isub>1 = length s\<^isub>2` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
-    have "length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)"
+    from `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` `length s\<^sub>1' = length s\<^sub>1` 
+      `length ms\<^sub>1 = length s\<^sub>1` have "length ms\<^sub>1' = length s\<^sub>1'" by simp
+    from `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `intra_kind (kind a)`
+    obtain cf\<^sub>1' where [simp]:"s\<^sub>1' = cf\<^sub>1'#cfs\<^sub>1"
+      by(cases cf\<^sub>1,cases "kind a",auto simp:intra_kind_def)
+    from `intra_kind (kind a)` `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `pred (kind a) s\<^sub>2`
+    have "pred (slice_kind S a) s\<^sub>2" by(simp add:slice_intra_kind_in_slice)
+    from `valid_edge a` `length s\<^sub>1 = length s\<^sub>2` `transfer (kind a) s\<^sub>1 = s\<^sub>1'`
+    have "length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)"
       by(fastforce intro:length_transfer_kind_slice_kind)
-    with `length s\<^isub>1 = length s\<^isub>2`
-    have "length s\<^isub>2 = length (transfer (slice_kind S a) s\<^isub>2)" by simp
-    with `pred (slice_kind S a) s\<^isub>2` `valid_edge a` `intra_kind (kind a)`
-      `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `hd ms\<^isub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^isub>1 = sourcenode a`
-      `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
-      `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` `\<forall>m \<in> set (tl ms\<^isub>2). return_node m`
-    have "S,slice_kind S \<turnstile> (ms\<^isub>1,s\<^isub>2) -a\<rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+    with `length s\<^sub>1 = length s\<^sub>2`
+    have "length s\<^sub>2 = length (transfer (slice_kind S a) s\<^sub>2)" by simp
+    with `pred (slice_kind S a) s\<^sub>2` `valid_edge a` `intra_kind (kind a)`
+      `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `hd ms\<^sub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^sub>1 = sourcenode a`
+      `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`
+      `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` `\<forall>m \<in> set (tl ms\<^sub>2). return_node m`
+    have "S,slice_kind S \<turnstile> (ms\<^sub>1,s\<^sub>2) -a\<rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
       by(auto intro:observable_move.observable_move_intra)
-    with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)` 
-    have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+    with `S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)` 
+    have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
       by(rule observable_moves_snoc)
-    from `\<forall>m \<in> set ms\<^isub>1. valid_node m` `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` `valid_edge a`
-    have "\<forall>m \<in> set ms\<^isub>1'. valid_node m" by(cases ms\<^isub>1) auto
-    from `\<forall>m \<in> set (tl ms\<^isub>2). return_node m` `ms\<^isub>1' = targetnode a # tl ms\<^isub>1`
-      `ms\<^isub>1' = targetnode a # tl ms\<^isub>1`
-    have "\<forall>m \<in> set (tl ms\<^isub>1'). return_node m" by fastforce
-    from `ms\<^isub>1' = targetnode a # tl ms\<^isub>1` `tl ms\<^isub>2 = tl ms\<^isub>1`
-    have "ms\<^isub>1' = [] @ targetnode a # tl ms\<^isub>2" by simp
+    from `\<forall>m \<in> set ms\<^sub>1. valid_node m` `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` `valid_edge a`
+    have "\<forall>m \<in> set ms\<^sub>1'. valid_node m" by(cases ms\<^sub>1) auto
+    from `\<forall>m \<in> set (tl ms\<^sub>2). return_node m` `ms\<^sub>1' = targetnode a # tl ms\<^sub>1`
+      `ms\<^sub>1' = targetnode a # tl ms\<^sub>1`
+    have "\<forall>m \<in> set (tl ms\<^sub>1'). return_node m" by fastforce
+    from `ms\<^sub>1' = targetnode a # tl ms\<^sub>1` `tl ms\<^sub>2 = tl ms\<^sub>1`
+    have "ms\<^sub>1' = [] @ targetnode a # tl ms\<^sub>2" by simp
     from `intra_kind (kind a)` `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have cf2':"\<exists>cf\<^isub>2'. transfer (slice_kind S a) s\<^isub>2 = cf\<^isub>2'#cfs\<^isub>2 \<and> snd cf\<^isub>2' = snd cf\<^isub>2"
-      by(cases cf\<^isub>2)(auto dest:slice_intra_kind_in_slice simp:intra_kind_def)
-    from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `intra_kind (kind a)`
-    have "snd cf\<^isub>1' = snd cf\<^isub>1" by(auto simp:intra_kind_def)
-    with `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)`
-      `snd (hd s\<^isub>1) = snd (hd s\<^isub>2)` `ms\<^isub>1' = [] @ targetnode a # tl ms\<^isub>2`
-      cf2' `length ms\<^isub>1 = length ms\<^isub>2`
-    have "\<forall>i<length ms\<^isub>1'. snd (s\<^isub>1' ! i) = snd (transfer (slice_kind S a) s\<^isub>2 ! i)"
+    have cf2':"\<exists>cf\<^sub>2'. transfer (slice_kind S a) s\<^sub>2 = cf\<^sub>2'#cfs\<^sub>2 \<and> snd cf\<^sub>2' = snd cf\<^sub>2"
+      by(cases cf\<^sub>2)(auto dest:slice_intra_kind_in_slice simp:intra_kind_def)
+    from `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `intra_kind (kind a)`
+    have "snd cf\<^sub>1' = snd cf\<^sub>1" by(auto simp:intra_kind_def)
+    with `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)`
+      `snd (hd s\<^sub>1) = snd (hd s\<^sub>2)` `ms\<^sub>1' = [] @ targetnode a # tl ms\<^sub>2`
+      cf2' `length ms\<^sub>1 = length ms\<^sub>2`
+    have "\<forall>i<length ms\<^sub>1'. snd (s\<^sub>1' ! i) = snd (transfer (slice_kind S a) s\<^sub>2 ! i)"
       by auto(case_tac i,auto)
     have "\<forall>V \<in> rv S (CFG_node (targetnode a)). 
-      fst cf\<^isub>1' V = state_val (transfer (slice_kind S a) s\<^isub>2) V" 
+      fst cf\<^sub>1' V = state_val (transfer (slice_kind S a) s\<^sub>2) V" 
     proof
       fix V assume "V \<in> rv S (CFG_node (targetnode a))"
-      show "fst cf\<^isub>1' V = state_val (transfer (slice_kind S a) s\<^isub>2) V"
+      show "fst cf\<^sub>1' V = state_val (transfer (slice_kind S a) s\<^sub>2) V"
       proof(cases "V \<in> Def (sourcenode a)")
         case True
-        from `intra_kind (kind a)` have "(\<exists>f. kind a = \<Up>f) \<or> (\<exists>Q. kind a = (Q)\<^isub>\<surd>)" 
+        from `intra_kind (kind a)` have "(\<exists>f. kind a = \<Up>f) \<or> (\<exists>Q. kind a = (Q)\<^sub>\<surd>)" 
           by(simp add:intra_kind_def)
         thus ?thesis
         proof
           assume "\<exists>f. kind a = \<Up>f"
           then obtain f' where "kind a = \<Up>f'" by blast
-          with `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
-          have "s\<^isub>1' = (f' (fst cf\<^isub>1),snd cf\<^isub>1) # cfs\<^isub>1" by simp
+          with `transfer (kind a) s\<^sub>1 = s\<^sub>1'`
+          have "s\<^sub>1' = (f' (fst cf\<^sub>1),snd cf\<^sub>1) # cfs\<^sub>1" by simp
           from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = \<Up>f'`
           have "slice_kind S a = \<Up>f'"
             by(fastforce dest:slice_intra_kind_in_slice simp:intra_kind_def)
-          hence "transfer (slice_kind S a) s\<^isub>2 = (f' (fst cf\<^isub>2),snd cf\<^isub>2) # cfs\<^isub>2" by simp
-          from `valid_edge a` `\<forall>V \<in> Use (sourcenode a). fst cf\<^isub>1 V = fst cf\<^isub>2 V` 
-            `intra_kind (kind a)` `pred (kind a) s\<^isub>1` `pred (kind a) s\<^isub>2`
-          have "\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s\<^isub>1) V =
-            state_val (transfer (kind a) s\<^isub>2) V"
+          hence "transfer (slice_kind S a) s\<^sub>2 = (f' (fst cf\<^sub>2),snd cf\<^sub>2) # cfs\<^sub>2" by simp
+          from `valid_edge a` `\<forall>V \<in> Use (sourcenode a). fst cf\<^sub>1 V = fst cf\<^sub>2 V` 
+            `intra_kind (kind a)` `pred (kind a) s\<^sub>1` `pred (kind a) s\<^sub>2`
+          have "\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s\<^sub>1) V =
+            state_val (transfer (kind a) s\<^sub>2) V"
             by -(erule CFG_intra_edge_transfer_uses_only_Use,auto)
-          with `kind a = \<Up>f'` `s\<^isub>1' = (f' (fst cf\<^isub>1),snd cf\<^isub>1) # cfs\<^isub>1` True
-            `transfer (slice_kind S a) s\<^isub>2 = (f' (fst cf\<^isub>2),snd cf\<^isub>2) # cfs\<^isub>2`
+          with `kind a = \<Up>f'` `s\<^sub>1' = (f' (fst cf\<^sub>1),snd cf\<^sub>1) # cfs\<^sub>1` True
+            `transfer (slice_kind S a) s\<^sub>2 = (f' (fst cf\<^sub>2),snd cf\<^sub>2) # cfs\<^sub>2`
           show ?thesis by simp
         next
-          assume "\<exists>Q. kind a = (Q)\<^isub>\<surd>"
-          then obtain Q where "kind a = (Q)\<^isub>\<surd>" by blast
-          with `transfer (kind a) s\<^isub>1 = s\<^isub>1'` have "s\<^isub>1' = cf\<^isub>1 # cfs\<^isub>1" by simp
-          from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>`
-          have "slice_kind S a = (Q)\<^isub>\<surd>"
+          assume "\<exists>Q. kind a = (Q)\<^sub>\<surd>"
+          then obtain Q where "kind a = (Q)\<^sub>\<surd>" by blast
+          with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` have "s\<^sub>1' = cf\<^sub>1 # cfs\<^sub>1" by simp
+          from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>`
+          have "slice_kind S a = (Q)\<^sub>\<surd>"
             by(fastforce dest:slice_intra_kind_in_slice simp:intra_kind_def)
-          hence "transfer (slice_kind S a) s\<^isub>2 = s\<^isub>2" by simp
-          from `valid_edge a` `\<forall>V \<in> Use (sourcenode a). fst cf\<^isub>1 V = fst cf\<^isub>2 V` 
-            `intra_kind (kind a)` `pred (kind a) s\<^isub>1` `pred (kind a) s\<^isub>2`
-          have "\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s\<^isub>1) V =
-                                         state_val (transfer (kind a) s\<^isub>2) V"
+          hence "transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2" by simp
+          from `valid_edge a` `\<forall>V \<in> Use (sourcenode a). fst cf\<^sub>1 V = fst cf\<^sub>2 V` 
+            `intra_kind (kind a)` `pred (kind a) s\<^sub>1` `pred (kind a) s\<^sub>2`
+          have "\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s\<^sub>1) V =
+                                         state_val (transfer (kind a) s\<^sub>2) V"
             by -(erule CFG_intra_edge_transfer_uses_only_Use,auto simp:intra_kind_def)
-          with True `kind a = (Q)\<^isub>\<surd>` `s\<^isub>1' = cf\<^isub>1 # cfs\<^isub>1`
-            `transfer (slice_kind S a) s\<^isub>2 = s\<^isub>2` 
+          with True `kind a = (Q)\<^sub>\<surd>` `s\<^sub>1' = cf\<^sub>1 # cfs\<^sub>1`
+            `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2` 
           show ?thesis by simp
         qed
       next
         case False
-        with `valid_edge a` `intra_kind (kind a)` `pred (kind a) s\<^isub>1`
-        have "state_val (transfer (kind a) s\<^isub>1) V = state_val s\<^isub>1 V"
+        with `valid_edge a` `intra_kind (kind a)` `pred (kind a) s\<^sub>1`
+        have "state_val (transfer (kind a) s\<^sub>1) V = state_val s\<^sub>1 V"
           by(fastforce intro:CFG_intra_edge_no_Def_equal)
-        with `transfer (kind a) s\<^isub>1 = s\<^isub>1'` have "fst cf\<^isub>1' V = fst cf\<^isub>1 V" by simp
+        with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` have "fst cf\<^sub>1' V = fst cf\<^sub>1 V" by simp
         from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `intra_kind (kind a)`
         have "slice_kind S a = kind a" by(fastforce intro:slice_intra_kind_in_slice)
-        from False `valid_edge a` `pred (kind a) s\<^isub>2` `intra_kind (kind a)`
-        have "state_val (transfer (kind a) s\<^isub>2) V = state_val s\<^isub>2 V"
+        from False `valid_edge a` `pred (kind a) s\<^sub>2` `intra_kind (kind a)`
+        have "state_val (transfer (kind a) s\<^sub>2) V = state_val s\<^sub>2 V"
           by(fastforce intro:CFG_intra_edge_no_Def_equal)
         with `slice_kind S a = kind a`
-        have "state_val (transfer (slice_kind S a) s\<^isub>2) V = fst cf\<^isub>2 V" by simp
+        have "state_val (transfer (slice_kind S a) s\<^sub>2) V = fst cf\<^sub>2 V" by simp
         from `V \<in> rv S (CFG_node (targetnode a))` obtain as' nx 
-          where "targetnode a -as'\<rightarrow>\<^isub>\<iota>* parent_node nx" 
+          where "targetnode a -as'\<rightarrow>\<^sub>\<iota>* parent_node nx" 
           and "nx \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> nx"
           and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as') 
                      \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
@@ -2478,85 +2478,85 @@ proof(atomize_elim)
         have all:"\<forall>n''. valid_SDG_node n'' \<and> 
           parent_node n'' \<in> set (sourcenodes (a#as')) \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
           by(fastforce dest:SDG_Def_parent_Def simp:sourcenodes_def)
-        from  `valid_edge a` `targetnode a -as'\<rightarrow>\<^isub>\<iota>* parent_node nx` 
+        from  `valid_edge a` `targetnode a -as'\<rightarrow>\<^sub>\<iota>* parent_node nx` 
           `intra_kind (kind a)`
-        have "sourcenode a -a#as'\<rightarrow>\<^isub>\<iota>* parent_node nx"
+        have "sourcenode a -a#as'\<rightarrow>\<^sub>\<iota>* parent_node nx"
           by(fastforce intro:Cons_path simp:intra_path_def)
         with `nx \<in> HRB_slice S` `V \<in> Use\<^bsub>SDG\<^esub> nx` all
         have "V \<in> rv S (CFG_node (sourcenode a))" by(fastforce intro:rvI)
-        with `\<forall>V \<in> rv S (CFG_node mx). (fst (s\<^isub>1!(length msx))) V = state_val s\<^isub>2 V`
-          `state_val (transfer (slice_kind S a) s\<^isub>2) V = fst cf\<^isub>2 V`
-          `fst cf\<^isub>1' V = fst cf\<^isub>1 V`
+        with `\<forall>V \<in> rv S (CFG_node mx). (fst (s\<^sub>1!(length msx))) V = state_val s\<^sub>2 V`
+          `state_val (transfer (slice_kind S a) s\<^sub>2) V = fst cf\<^sub>2 V`
+          `fst cf\<^sub>1' V = fst cf\<^sub>1 V`
         show ?thesis by fastforce
       qed
     qed
-    with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` cf2' 
-      `ms\<^isub>1' = [] @ targetnode a # tl ms\<^isub>2`
-      `length ms\<^isub>1 = length s\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2` `length s\<^isub>1 = length s\<^isub>2`
-    have "\<forall>i<length ms\<^isub>1'. \<forall>V\<in>rv S (CFG_node ((targetnode a # tl ms\<^isub>1')!i)).
-      (fst (s\<^isub>1'!(length [] + i))) V = (fst (transfer (slice_kind S a) s\<^isub>2 ! i)) V"
+    with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` cf2' 
+      `ms\<^sub>1' = [] @ targetnode a # tl ms\<^sub>2`
+      `length ms\<^sub>1 = length s\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2` `length s\<^sub>1 = length s\<^sub>2`
+    have "\<forall>i<length ms\<^sub>1'. \<forall>V\<in>rv S (CFG_node ((targetnode a # tl ms\<^sub>1')!i)).
+      (fst (s\<^sub>1'!(length [] + i))) V = (fst (transfer (slice_kind S a) s\<^sub>2 ! i)) V"
       by clarsimp(case_tac i,auto)
-    with `\<forall>m \<in> set ms\<^isub>2. valid_node m` `\<forall>m \<in> set ms\<^isub>1'. valid_node m` 
-      `length ms\<^isub>2 = length s\<^isub>2` `length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)`
-      `length ms\<^isub>1' = length s\<^isub>1'` `\<forall>m \<in> set (tl ms\<^isub>1'). return_node m`
-      `ms\<^isub>1' = [] @ targetnode a # tl ms\<^isub>2` `get_proc mx = get_proc (hd ms\<^isub>2)`
-      `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `\<forall>i<length ms\<^isub>1'. snd (s\<^isub>1' ! i) = snd (transfer (slice_kind S a) s\<^isub>2 ! i)`
-    have "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)) \<in> WS S"
+    with `\<forall>m \<in> set ms\<^sub>2. valid_node m` `\<forall>m \<in> set ms\<^sub>1'. valid_node m` 
+      `length ms\<^sub>2 = length s\<^sub>2` `length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)`
+      `length ms\<^sub>1' = length s\<^sub>1'` `\<forall>m \<in> set (tl ms\<^sub>1'). return_node m`
+      `ms\<^sub>1' = [] @ targetnode a # tl ms\<^sub>2` `get_proc mx = get_proc (hd ms\<^sub>2)`
+      `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `\<forall>i<length ms\<^sub>1'. snd (s\<^sub>1' ! i) = snd (transfer (slice_kind S a) s\<^sub>2 ! i)`
+    have "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S"
       by(fastforce intro!:WSI)
-    with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)`
+    with `S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)`
     show ?case by blast
   next
-    case (observable_move_call a s\<^isub>1 s\<^isub>1' Q r p fs a' ms\<^isub>1 S ms\<^isub>1')
-    from `s\<^isub>1 \<noteq> []` `s\<^isub>2 \<noteq> []` obtain cf\<^isub>1 cfs\<^isub>1 cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>1 = cf\<^isub>1#cfs\<^isub>1" 
-      and [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>1,auto,cases s\<^isub>2,fastforce+)
-    from `length ms\<^isub>1 = length s\<^isub>1` `s\<^isub>1 \<noteq> []` have [simp]:"ms\<^isub>1 \<noteq> []" by(cases ms\<^isub>1) auto
-    from `length ms\<^isub>2 = length s\<^isub>2` `s\<^isub>2 \<noteq> []` have [simp]:"ms\<^isub>2 \<noteq> []" by(cases ms\<^isub>2) auto
-    from `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `hd ms\<^isub>1 = sourcenode a` `ms\<^isub>1 = msx@mx#tl ms\<^isub>2`
+    case (observable_move_call a s\<^sub>1 s\<^sub>1' Q r p fs a' ms\<^sub>1 S ms\<^sub>1')
+    from `s\<^sub>1 \<noteq> []` `s\<^sub>2 \<noteq> []` obtain cf\<^sub>1 cfs\<^sub>1 cf\<^sub>2 cfs\<^sub>2 where [simp]:"s\<^sub>1 = cf\<^sub>1#cfs\<^sub>1" 
+      and [simp]:"s\<^sub>2 = cf\<^sub>2#cfs\<^sub>2" by(cases s\<^sub>1,auto,cases s\<^sub>2,fastforce+)
+    from `length ms\<^sub>1 = length s\<^sub>1` `s\<^sub>1 \<noteq> []` have [simp]:"ms\<^sub>1 \<noteq> []" by(cases ms\<^sub>1) auto
+    from `length ms\<^sub>2 = length s\<^sub>2` `s\<^sub>2 \<noteq> []` have [simp]:"ms\<^sub>2 \<noteq> []" by(cases ms\<^sub>2) auto
+    from `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `hd ms\<^sub>1 = sourcenode a` `ms\<^sub>1 = msx@mx#tl ms\<^sub>2`
       `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
-    have [simp]:"mx = sourcenode a" "msx = []" and [simp]:"tl ms\<^isub>2 = tl ms\<^isub>1"
+    have [simp]:"mx = sourcenode a" "msx = []" and [simp]:"tl ms\<^sub>2 = tl ms\<^sub>1"
       by(cases msx,auto)+
-    hence "length ms\<^isub>1 = length ms\<^isub>2" by(cases ms\<^isub>2) auto
-    with `length ms\<^isub>1 = length s\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2`
-    have "length s\<^isub>1 = length s\<^isub>2" by simp
-    from `hd ms\<^isub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^isub>1 = sourcenode a`
+    hence "length ms\<^sub>1 = length ms\<^sub>2" by(cases ms\<^sub>2) auto
+    with `length ms\<^sub>1 = length s\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2`
+    have "length s\<^sub>1 = length s\<^sub>2" by simp
+    from `hd ms\<^sub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^sub>1 = sourcenode a`
     have "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
     with `valid_edge a` 
     have "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {sourcenode a}"
       by(fastforce intro!:n_in_obs_intra)
-    from `\<forall>m \<in> set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    from `\<forall>m \<in> set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {sourcenode a}` 
-      `hd ms\<^isub>1 = sourcenode a` 
-    have "(hd ms\<^isub>1#tl ms\<^isub>1) \<in> obs ([]@hd ms\<^isub>1#tl ms\<^isub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-      by(cases ms\<^isub>1)(auto intro!:obsI)
-    hence "ms\<^isub>1 \<in> obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-    with `obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have "ms\<^isub>1 \<in> obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-    from `ms\<^isub>2 \<noteq> []` `length ms\<^isub>2 = length s\<^isub>2` have "length s\<^isub>2 = length (hd ms\<^isub>2#tl ms\<^isub>2)"
+      `hd ms\<^sub>1 = sourcenode a` 
+    have "(hd ms\<^sub>1#tl ms\<^sub>1) \<in> obs ([]@hd ms\<^sub>1#tl ms\<^sub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+      by(cases ms\<^sub>1)(auto intro!:obsI)
+    hence "ms\<^sub>1 \<in> obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+    with `obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    have "ms\<^sub>1 \<in> obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+    from `ms\<^sub>2 \<noteq> []` `length ms\<^sub>2 = length s\<^sub>2` have "length s\<^sub>2 = length (hd ms\<^sub>2#tl ms\<^sub>2)"
       by(fastforce dest!:hd_Cons_tl)
-    from `\<forall>m \<in> set (tl ms\<^isub>1). return_node m` have "\<forall>m \<in> set (tl ms\<^isub>2). return_node m"
+    from `\<forall>m \<in> set (tl ms\<^sub>1). return_node m` have "\<forall>m \<in> set (tl ms\<^sub>2). return_node m"
       by simp
-    with `ms\<^isub>1 \<in> obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have "hd ms\<^isub>1 \<in> obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+    with `ms\<^sub>1 \<in> obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    have "hd ms\<^sub>1 \<in> obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     proof(rule obsE)
       fix nsx n nsx' n'
-      assume "ms\<^isub>2 = nsx @ n # nsx'" and "ms\<^isub>1 = n' # nsx'"
+      assume "ms\<^sub>2 = nsx @ n # nsx'" and "ms\<^sub>1 = n' # nsx'"
         and "n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-      from `ms\<^isub>2 = nsx @ n # nsx'` `ms\<^isub>1 = n' # nsx'` `tl ms\<^isub>2 = tl ms\<^isub>1`
+      from `ms\<^sub>2 = nsx @ n # nsx'` `ms\<^sub>1 = n' # nsx'` `tl ms\<^sub>2 = tl ms\<^sub>1`
       have [simp]:"nsx = []" by(cases nsx) auto
-      with `ms\<^isub>2 = nsx @ n # nsx'` have [simp]:"n = hd ms\<^isub>2" by simp
-      from `ms\<^isub>1 = n' # nsx'` have [simp]:"n' = hd ms\<^isub>1" by simp
+      with `ms\<^sub>2 = nsx @ n # nsx'` have [simp]:"n = hd ms\<^sub>2" by simp
+      from `ms\<^sub>1 = n' # nsx'` have [simp]:"n' = hd ms\<^sub>1" by simp
       with `n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` show ?thesis by simp
     qed
-    with `length s\<^isub>2 = length (hd ms\<^isub>2#tl ms\<^isub>2)` `\<forall>m \<in> set (tl ms\<^isub>2). return_node m`
-    obtain as where "S,slice_kind S \<turnstile> (hd ms\<^isub>2#tl ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (hd ms\<^isub>1#tl ms\<^isub>1,s\<^isub>2)"
-      by(fastforce elim:silent_moves_intra_path_obs[of _ _ _ s\<^isub>2 "tl ms\<^isub>2"])
-    with `ms\<^isub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
+    with `length s\<^sub>2 = length (hd ms\<^sub>2#tl ms\<^sub>2)` `\<forall>m \<in> set (tl ms\<^sub>2). return_node m`
+    obtain as where "S,slice_kind S \<turnstile> (hd ms\<^sub>2#tl ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (hd ms\<^sub>1#tl ms\<^sub>1,s\<^sub>2)"
+      by(fastforce elim:silent_moves_intra_path_obs[of _ _ _ s\<^sub>2 "tl ms\<^sub>2"])
+    with `ms\<^sub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)"
       by(fastforce dest!:hd_Cons_tl)
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    hence "sourcenode a -[]\<rightarrow>\<^isub>\<iota>* sourcenode a"
+    hence "sourcenode a -[]\<rightarrow>\<^sub>\<iota>* sourcenode a"
       by(fastforce intro:empty_path simp:intra_path_def)
     with `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have "\<forall>V. V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (sourcenode a)) 
@@ -2565,64 +2565,64 @@ proof(atomize_elim)
     with `valid_node (sourcenode a)`
     have "\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))"
       by(fastforce intro:CFG_Use_SDG_Use)
-    from `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` `length ms\<^isub>2 = length s\<^isub>2`
-    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V"
-      by(cases ms\<^isub>2) auto
+    from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` `length ms\<^sub>2 = length s\<^sub>2`
+    have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V"
+      by(cases ms\<^sub>2) auto
     with `\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))`
-    have "\<forall>V \<in> Use (sourcenode a). fst cf\<^isub>1 V = fst cf\<^isub>2 V" by fastforce
+    have "\<forall>V \<in> Use (sourcenode a). fst cf\<^sub>1 V = fst cf\<^sub>2 V" by fastforce
     moreover
-    from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)`
-    have "snd (hd s\<^isub>1) = snd (hd s\<^isub>2)" by(erule_tac x="0" in allE) auto
-    ultimately have "pred (kind a) s\<^isub>2"
-      using `valid_edge a` `pred (kind a) s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
+    from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)`
+    have "snd (hd s\<^sub>1) = snd (hd s\<^sub>2)" by(erule_tac x="0" in allE) auto
+    ultimately have "pred (kind a) s\<^sub>2"
+      using `valid_edge a` `pred (kind a) s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`
       by(fastforce intro:CFG_edge_Uses_pred_equal)
-    from `ms\<^isub>1' = (targetnode a)#(targetnode a')#tl ms\<^isub>1` `length s\<^isub>1' = Suc(length s\<^isub>1)` 
-      `length ms\<^isub>1 = length s\<^isub>1` have "length ms\<^isub>1' = length s\<^isub>1'" by simp
+    from `ms\<^sub>1' = (targetnode a)#(targetnode a')#tl ms\<^sub>1` `length s\<^sub>1' = Suc(length s\<^sub>1)` 
+      `length ms\<^sub>1 = length s\<^sub>1` have "length ms\<^sub>1' = length s\<^sub>1'" by simp
     from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain ins outs 
       where "(p,ins,outs) \<in> set procs" by(fastforce dest!:callee_in_procs)
     with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
     have "(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins"
       by(rule formal_in_THE)
-    with `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-    have [simp]:"s\<^isub>1' = (empty(ins [:=] params fs (fst cf\<^isub>1)),r)#cf\<^isub>1#cfs\<^isub>1" by simp
+    with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+    have [simp]:"s\<^sub>1' = (empty(ins [:=] params fs (fst cf\<^sub>1)),r)#cf\<^sub>1#cfs\<^sub>1" by simp
     from `valid_edge a'` `a' \<in> get_return_edges a` `valid_edge a`
     have "return_node (targetnode a')" by(fastforce simp:return_node_def)
     with `valid_edge a` `valid_edge a'` `a' \<in> get_return_edges a`
     have "call_of_return_node (targetnode a') (sourcenode a)"
       by(simp add:call_of_return_node_def) blast
-    from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `pred (kind a) s\<^isub>2` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-    have "pred (slice_kind S a) s\<^isub>2" by(fastforce dest:slice_kind_Call_in_slice)
-    from `valid_edge a` `length s\<^isub>1 = length s\<^isub>2` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
-    have "length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)"
+    from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `pred (kind a) s\<^sub>2` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+    have "pred (slice_kind S a) s\<^sub>2" by(fastforce dest:slice_kind_Call_in_slice)
+    from `valid_edge a` `length s\<^sub>1 = length s\<^sub>2` `transfer (kind a) s\<^sub>1 = s\<^sub>1'`
+    have "length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)"
       by(fastforce intro:length_transfer_kind_slice_kind)
-    with `pred (slice_kind S a) s\<^isub>2` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-      `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `hd ms\<^isub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^isub>1 = sourcenode a`
-      `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2` `valid_edge a'`
-      `ms\<^isub>1' = (targetnode a)#(targetnode a')#tl ms\<^isub>1` `a' \<in> get_return_edges a`
-      `\<forall>m \<in> set (tl ms\<^isub>2). return_node m`
-    have "S,slice_kind S \<turnstile> (ms\<^isub>1,s\<^isub>2) -a\<rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+    with `pred (slice_kind S a) s\<^sub>2` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+      `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `hd ms\<^sub>1 \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `hd ms\<^sub>1 = sourcenode a`
+      `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2` `valid_edge a'`
+      `ms\<^sub>1' = (targetnode a)#(targetnode a')#tl ms\<^sub>1` `a' \<in> get_return_edges a`
+      `\<forall>m \<in> set (tl ms\<^sub>2). return_node m`
+    have "S,slice_kind S \<turnstile> (ms\<^sub>1,s\<^sub>2) -a\<rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
       by(auto intro:observable_move.observable_move_call)
-    with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)` 
-    have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+    with `S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)` 
+    have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
       by(rule observable_moves_snoc)
-    from `\<forall>m \<in> set ms\<^isub>1. valid_node m` `ms\<^isub>1' = (targetnode a)#(targetnode a')#tl ms\<^isub>1`
+    from `\<forall>m \<in> set ms\<^sub>1. valid_node m` `ms\<^sub>1' = (targetnode a)#(targetnode a')#tl ms\<^sub>1`
       `valid_edge a` `valid_edge a'`
-    have "\<forall>m \<in> set ms\<^isub>1'. valid_node m" by(cases ms\<^isub>1) auto
+    have "\<forall>m \<in> set ms\<^sub>1'. valid_node m" by(cases ms\<^sub>1) auto
     from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have cf2':"\<exists>cf\<^isub>2'. transfer (slice_kind S a) s\<^isub>2 = cf\<^isub>2'#s\<^isub>2 \<and> snd cf\<^isub>2' = r"
+    have cf2':"\<exists>cf\<^sub>2'. transfer (slice_kind S a) s\<^sub>2 = cf\<^sub>2'#s\<^sub>2 \<and> snd cf\<^sub>2' = r"
       by(auto dest:slice_kind_Call_in_slice)
-    with `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` 
-      `length ms\<^isub>1' = length s\<^isub>1'` `msx = []` `length ms\<^isub>1 = length ms\<^isub>2`
-      `length ms\<^isub>1 = length s\<^isub>1`
-    have "\<forall>i<length ms\<^isub>1'. snd (s\<^isub>1' ! i) = snd (transfer (slice_kind S a) s\<^isub>2 ! i)"
+    with `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` 
+      `length ms\<^sub>1' = length s\<^sub>1'` `msx = []` `length ms\<^sub>1 = length ms\<^sub>2`
+      `length ms\<^sub>1 = length s\<^sub>1`
+    have "\<forall>i<length ms\<^sub>1'. snd (s\<^sub>1' ! i) = snd (transfer (slice_kind S a) s\<^sub>2 ! i)"
       by auto(case_tac i,auto)
     have "\<forall>V \<in> rv S (CFG_node (targetnode a')). 
       V \<in> rv S (CFG_node (sourcenode a))"
     proof
       fix V assume "V \<in> rv S (CFG_node (targetnode a'))"
-      then obtain as n' where "targetnode a' -as\<rightarrow>\<^isub>\<iota>* parent_node n'"
+      then obtain as n' where "targetnode a' -as\<rightarrow>\<^sub>\<iota>* parent_node n'"
         and "n' \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> n'"
         and "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes as) 
         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce elim:rvE)
@@ -2630,8 +2630,8 @@ proof(atomize_elim)
       obtain a'' where "valid_edge a''" and "sourcenode a'' = sourcenode a"
         and "targetnode a'' = targetnode a'" and "intra_kind(kind a'')"
         by -(drule call_return_node_edge,auto simp:intra_kind_def)
-      with `targetnode a' -as\<rightarrow>\<^isub>\<iota>* parent_node n'` 
-      have "sourcenode a -a''#as\<rightarrow>\<^isub>\<iota>* parent_node n'"
+      with `targetnode a' -as\<rightarrow>\<^sub>\<iota>* parent_node n'` 
+      have "sourcenode a -a''#as\<rightarrow>\<^sub>\<iota>* parent_node n'"
         by(fastforce intro:Cons_path simp:intra_path_def)
       from `sourcenode a'' = sourcenode a` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' = sourcenode a''
@@ -2641,22 +2641,22 @@ proof(atomize_elim)
         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''`
       have "\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (a''#as)) 
         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''" by(fastforce simp:sourcenodes_def)
-      with `sourcenode a -a''#as\<rightarrow>\<^isub>\<iota>* parent_node n'` `n' \<in> HRB_slice S`
+      with `sourcenode a -a''#as\<rightarrow>\<^sub>\<iota>* parent_node n'` `n' \<in> HRB_slice S`
         `V \<in> Use\<^bsub>SDG\<^esub> n'`
       show "V \<in> rv S (CFG_node (sourcenode a))" by(fastforce intro:rvI)
     qed
     have "\<forall>V \<in> rv S (CFG_node (targetnode a)). 
-      (empty(ins [:=] params fs (fst cf\<^isub>1))) V = 
-      state_val (transfer (slice_kind S a) s\<^isub>2) V"
+      (empty(ins [:=] params fs (fst cf\<^sub>1))) V = 
+      state_val (transfer (slice_kind S a) s\<^sub>2) V"
     proof
       fix V assume "V \<in> rv S (CFG_node (targetnode a))"
       from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
         `(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins`
-      have eq:"fst (hd (transfer (slice_kind S a) s\<^isub>2)) = 
-        empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^isub>2))"
+      have eq:"fst (hd (transfer (slice_kind S a) s\<^sub>2)) = 
+        empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))"
         by(auto dest:slice_kind_Call_in_slice)
-      show "(empty(ins [:=] params fs (fst cf\<^isub>1))) V = 
-        state_val (transfer (slice_kind S a) s\<^isub>2) V"
+      show "(empty(ins [:=] params fs (fst cf\<^sub>1))) V = 
+        state_val (transfer (slice_kind S a) s\<^sub>2) V"
       proof(cases "V \<in> set ins")
         case True
         then obtain i where "V = ins!i" and "i < length ins"
@@ -2671,7 +2671,7 @@ proof(atomize_elim)
         have "V \<in> Def\<^bsub>SDG\<^esub> (Formal_in (targetnode a,i))"
           by(fastforce intro:Formal_in_SDG_Def)
         from `V \<in> rv S (CFG_node (targetnode a))` obtain as' nx 
-          where "targetnode a -as'\<rightarrow>\<^isub>\<iota>* parent_node nx" 
+          where "targetnode a -as'\<rightarrow>\<^sub>\<iota>* parent_node nx" 
           and "nx \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> nx"
           and "\<forall>n''. valid_SDG_node n'' \<and> 
           parent_node n'' \<in> set (sourcenodes as') \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
@@ -2687,7 +2687,7 @@ proof(atomize_elim)
         with `valid_edge a` have "V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))"
           by(auto intro!:CFG_Use_SDG_Use)
         from `targetnode a = parent_node nx`[THEN sym] `valid_edge a`
-        have "parent_node (Formal_in (targetnode a,i)) -[]\<rightarrow>\<^isub>\<iota>* parent_node nx"
+        have "parent_node (Formal_in (targetnode a,i)) -[]\<rightarrow>\<^sub>\<iota>* parent_node nx"
           by(fastforce intro:empty_path simp:intra_path_def)
         with `V \<in> Def\<^bsub>SDG\<^esub> (Formal_in (targetnode a,i))` 
           `V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))` `targetnode a = parent_node nx`
@@ -2724,39 +2724,39 @@ proof(atomize_elim)
         have cspp:"(cspp (targetnode a) (HRB_slice S) fs)!i = fs!i"
           by(fastforce intro:csppa_Formal_in_in_slice simp:cspp_def)
         from `i < length ins` `length fs = length ins`
-        have "(params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^isub>2))!i = 
-          ((cspp (targetnode a) (HRB_slice S) fs)!i) (fst cf\<^isub>2)"
+        have "(params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))!i = 
+          ((cspp (targetnode a) (HRB_slice S) fs)!i) (fst cf\<^sub>2)"
           by(fastforce intro:params_nth)
         with cspp 
-        have eq:"(params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^isub>2))!i =
-          (fs!i) (fst cf\<^isub>2)" by simp
+        have eq:"(params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))!i =
+          (fs!i) (fst cf\<^sub>2)" by simp
         from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
         have "(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins"
           by(rule formal_in_THE)
         with slice_kind
-        have "fst (hd (transfer (slice_kind S a) s\<^isub>2)) = 
-          empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^isub>2))"
+        have "fst (hd (transfer (slice_kind S a) s\<^sub>2)) = 
+          empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))"
           by simp
         moreover
         from `(p,ins,outs) \<in> set procs` have "distinct ins" 
           by(rule distinct_formal_ins)
-        ultimately have "state_val (transfer (slice_kind S a) s\<^isub>2) V = 
-          (params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^isub>2))!i"
+        ultimately have "state_val (transfer (slice_kind S a) s\<^sub>2) V = 
+          (params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))!i"
           using `V = ins!i` `i < length ins` `length fs = length ins`
           by(fastforce intro:fun_upds_nth)
         with eq 
-        have 2:"state_val (transfer (slice_kind S a) s\<^isub>2) V = (fs!i) (fst cf\<^isub>2)"
+        have 2:"state_val (transfer (slice_kind S a) s\<^sub>2) V = (fs!i) (fst cf\<^sub>2)"
           by simp
         from `V = ins!i` `i < length ins` `length fs = length ins`
           `distinct ins`
-        have "empty(ins [:=] params fs (fst cf\<^isub>1)) V = (params fs (fst cf\<^isub>1))!i"
+        have "empty(ins [:=] params fs (fst cf\<^sub>1)) V = (params fs (fst cf\<^sub>1))!i"
           by(fastforce intro:fun_upds_nth)
         with `i < length ins` `length fs = length ins`
-        have 1:"empty(ins [:=] params fs (fst cf\<^isub>1)) V = (fs!i) (fst cf\<^isub>1)"
+        have 1:"empty(ins [:=] params fs (fst cf\<^sub>1)) V = (fs!i) (fst cf\<^sub>1)"
           by(fastforce intro:params_nth)
-        from `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-          (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V`
-        have rv:"\<forall>V\<in>rv S (CFG_node (sourcenode a)). fst cf\<^isub>1 V = fst cf\<^isub>2 V"
+        from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+          (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V`
+        have rv:"\<forall>V\<in>rv S (CFG_node (sourcenode a)). fst cf\<^sub>1 V = fst cf\<^sub>2 V"
           by(erule_tac x="0" in allE) auto
         from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs` 
           `i < length ins` have "\<forall>V\<in>(ParamUses (sourcenode a)!i). 
@@ -2766,23 +2766,23 @@ proof(atomize_elim)
           V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (sourcenode a))"
           by(auto intro!:CFG_Use_SDG_Use dest:SDG_Use_parent_Use)
         moreover
-        from `valid_edge a` have "parent_node (CFG_node (sourcenode a)) -[]\<rightarrow>\<^isub>\<iota>* 
+        from `valid_edge a` have "parent_node (CFG_node (sourcenode a)) -[]\<rightarrow>\<^sub>\<iota>* 
           parent_node (CFG_node (sourcenode a))"
           by(fastforce intro:empty_path simp:intra_path_def)
         ultimately 
         have "\<forall>V\<in>(ParamUses (sourcenode a)!i). V \<in> rv S (CFG_node (sourcenode a))"
           using `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a`
           by(fastforce intro:rvI simp:SDG_to_CFG_set_def sourcenodes_def)
-        with rv have "\<forall>V \<in> (ParamUses (sourcenode a))!i. fst cf\<^isub>1 V = fst cf\<^isub>2 V"
+        with rv have "\<forall>V \<in> (ParamUses (sourcenode a))!i. fst cf\<^sub>1 V = fst cf\<^sub>2 V"
           by fastforce
         with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `i < length ins`
-          `(p,ins,outs) \<in> set procs` `pred (kind a) s\<^isub>1` `pred (kind a) s\<^isub>2`
-        have "(params fs (fst cf\<^isub>1))!i = (params fs (fst cf\<^isub>2))!i"
+          `(p,ins,outs) \<in> set procs` `pred (kind a) s\<^sub>1` `pred (kind a) s\<^sub>2`
+        have "(params fs (fst cf\<^sub>1))!i = (params fs (fst cf\<^sub>2))!i"
           by(fastforce dest!:CFG_call_edge_params)
         moreover
         from `i < length ins` `length fs = length ins`
-        have "(params fs (fst cf\<^isub>1))!i = (fs!i) (fst cf\<^isub>1)" 
-          and "(params fs (fst cf\<^isub>2))!i = (fs!i) (fst cf\<^isub>2)"
+        have "(params fs (fst cf\<^sub>1))!i = (fs!i) (fst cf\<^sub>1)" 
+          and "(params fs (fst cf\<^sub>2))!i = (fs!i) (fst cf\<^sub>2)"
           by(auto intro:params_nth)
         ultimately show ?thesis using 1 2 by simp
       next
@@ -2790,144 +2790,144 @@ proof(atomize_elim)
         with eq show ?thesis by(fastforce simp:fun_upds_notin)
       qed
     qed
-    with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-      (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` cf2' `tl ms\<^isub>2 = tl ms\<^isub>1`
-      `length ms\<^isub>2 = length s\<^isub>2` `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
-      `ms\<^isub>1' = (targetnode a)#(targetnode a')#tl ms\<^isub>1`
+    with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+      (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` cf2' `tl ms\<^sub>2 = tl ms\<^sub>1`
+      `length ms\<^sub>2 = length s\<^sub>2` `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`
+      `ms\<^sub>1' = (targetnode a)#(targetnode a')#tl ms\<^sub>1`
       `\<forall>V \<in> rv S (CFG_node (targetnode a')). V \<in> rv S (CFG_node (sourcenode a))`
-    have "\<forall>i<length ms\<^isub>1'. \<forall>V\<in>rv S (CFG_node ((targetnode a # tl ms\<^isub>1')!i)).
-      (fst (s\<^isub>1'!(length [] + i))) V = (fst (transfer (slice_kind S a) s\<^isub>2!i)) V"
+    have "\<forall>i<length ms\<^sub>1'. \<forall>V\<in>rv S (CFG_node ((targetnode a # tl ms\<^sub>1')!i)).
+      (fst (s\<^sub>1'!(length [] + i))) V = (fst (transfer (slice_kind S a) s\<^sub>2!i)) V"
       apply clarsimp apply(case_tac i) apply auto
       apply(erule_tac x="nat" in allE)
       apply(case_tac nat) apply auto done
-    with `\<forall>m \<in> set ms\<^isub>2. valid_node m` `\<forall>m \<in> set ms\<^isub>1'. valid_node m` 
-      `length ms\<^isub>2 = length s\<^isub>2` `length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)`
-      `length ms\<^isub>1' = length s\<^isub>1'` `ms\<^isub>1' = (targetnode a)#(targetnode a')#tl ms\<^isub>1`
-      `get_proc mx = get_proc (hd ms\<^isub>2)` `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `return_node (targetnode a')` `\<forall>m \<in> set (tl ms\<^isub>1). return_node m`
+    with `\<forall>m \<in> set ms\<^sub>2. valid_node m` `\<forall>m \<in> set ms\<^sub>1'. valid_node m` 
+      `length ms\<^sub>2 = length s\<^sub>2` `length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)`
+      `length ms\<^sub>1' = length s\<^sub>1'` `ms\<^sub>1' = (targetnode a)#(targetnode a')#tl ms\<^sub>1`
+      `get_proc mx = get_proc (hd ms\<^sub>2)` `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `return_node (targetnode a')` `\<forall>m \<in> set (tl ms\<^sub>1). return_node m`
       `call_of_return_node (targetnode a') (sourcenode a)`
-      `\<forall>i<length ms\<^isub>1'. snd (s\<^isub>1' ! i) = snd (transfer (slice_kind S a) s\<^isub>2 ! i)`
-    have "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)) \<in> WS S"
+      `\<forall>i<length ms\<^sub>1'. snd (s\<^sub>1' ! i) = snd (transfer (slice_kind S a) s\<^sub>2 ! i)`
+    have "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S"
       by(fastforce intro!:WSI)
-    with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)`
+    with `S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)`
     show ?case by blast
   next
-    case (observable_move_return a s\<^isub>1 s\<^isub>1' Q p f' ms\<^isub>1 S ms\<^isub>1')
-    from `s\<^isub>1 \<noteq> []` `s\<^isub>2 \<noteq> []` obtain cf\<^isub>1 cfs\<^isub>1 cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>1 = cf\<^isub>1#cfs\<^isub>1" 
-      and [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>1,auto,cases s\<^isub>2,fastforce+)
-    from `length ms\<^isub>1 = length s\<^isub>1` `s\<^isub>1 \<noteq> []` have [simp]:"ms\<^isub>1 \<noteq> []" by(cases ms\<^isub>1) auto
-    from `length ms\<^isub>2 = length s\<^isub>2` `s\<^isub>2 \<noteq> []` have [simp]:"ms\<^isub>2 \<noteq> []" by(cases ms\<^isub>2) auto
-    from `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `hd ms\<^isub>1 = sourcenode a` `ms\<^isub>1 = msx@mx#tl ms\<^isub>2`
+    case (observable_move_return a s\<^sub>1 s\<^sub>1' Q p f' ms\<^sub>1 S ms\<^sub>1')
+    from `s\<^sub>1 \<noteq> []` `s\<^sub>2 \<noteq> []` obtain cf\<^sub>1 cfs\<^sub>1 cf\<^sub>2 cfs\<^sub>2 where [simp]:"s\<^sub>1 = cf\<^sub>1#cfs\<^sub>1" 
+      and [simp]:"s\<^sub>2 = cf\<^sub>2#cfs\<^sub>2" by(cases s\<^sub>1,auto,cases s\<^sub>2,fastforce+)
+    from `length ms\<^sub>1 = length s\<^sub>1` `s\<^sub>1 \<noteq> []` have [simp]:"ms\<^sub>1 \<noteq> []" by(cases ms\<^sub>1) auto
+    from `length ms\<^sub>2 = length s\<^sub>2` `s\<^sub>2 \<noteq> []` have [simp]:"ms\<^sub>2 \<noteq> []" by(cases ms\<^sub>2) auto
+    from `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `hd ms\<^sub>1 = sourcenode a` `ms\<^sub>1 = msx@mx#tl ms\<^sub>2`
       `msx \<noteq> [] \<longrightarrow> (\<exists>mx'. call_of_return_node mx mx' \<and> mx' \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)`
-    have [simp]:"mx = sourcenode a" "msx = []" and [simp]:"tl ms\<^isub>2 = tl ms\<^isub>1"
+    have [simp]:"mx = sourcenode a" "msx = []" and [simp]:"tl ms\<^sub>2 = tl ms\<^sub>1"
       by(cases msx,auto)+
-    hence "length ms\<^isub>1 = length ms\<^isub>2" by(cases ms\<^isub>2) auto
-    with `length ms\<^isub>1 = length s\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2`
-    have "length s\<^isub>1 = length s\<^isub>2" by simp
-    have "\<exists>as. S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
-    proof(cases "obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
+    hence "length ms\<^sub>1 = length ms\<^sub>2" by(cases ms\<^sub>2) auto
+    with `length ms\<^sub>1 = length s\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2`
+    have "length s\<^sub>1 = length s\<^sub>2" by simp
+    have "\<exists>as. S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)"
+    proof(cases "obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
       case True
-      from `valid_edge a` `hd ms\<^isub>1 = sourcenode a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
-      have "method_exit (hd ms\<^isub>1)" by(fastforce simp:method_exit_def)
-      from `\<forall>m\<in>set ms\<^isub>2. valid_node m` have "valid_node (hd ms\<^isub>2)" by(cases ms\<^isub>2) auto
-      then obtain asx where "hd ms\<^isub>2 -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastforce dest!:Exit_path)
-      then obtain as pex where "hd ms\<^isub>2 -as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+      from `valid_edge a` `hd ms\<^sub>1 = sourcenode a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
+      have "method_exit (hd ms\<^sub>1)" by(fastforce simp:method_exit_def)
+      from `\<forall>m\<in>set ms\<^sub>2. valid_node m` have "valid_node (hd ms\<^sub>2)" by(cases ms\<^sub>2) auto
+      then obtain asx where "hd ms\<^sub>2 -asx\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(fastforce dest!:Exit_path)
+      then obtain as pex where "hd ms\<^sub>2 -as\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
         by(fastforce elim:valid_Exit_path_intra_path)
-      from `hd ms\<^isub>2 -as\<rightarrow>\<^isub>\<iota>* pex` have "get_proc (hd ms\<^isub>2) = get_proc pex"
+      from `hd ms\<^sub>2 -as\<rightarrow>\<^sub>\<iota>* pex` have "get_proc (hd ms\<^sub>2) = get_proc pex"
         by(rule intra_path_get_procs)
-      with `get_proc mx = get_proc (hd ms\<^isub>2)`
+      with `get_proc mx = get_proc (hd ms\<^sub>2)`
       have "get_proc mx = get_proc pex" by simp
-      with `method_exit (hd ms\<^isub>1)` ` hd ms\<^isub>1 = sourcenode a` `method_exit pex`
-      have [simp]:"pex = hd ms\<^isub>1" by(fastforce intro:method_exit_unique)
-      from `obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` `method_exit pex`
-        `get_proc (hd ms\<^isub>2) = get_proc pex` `valid_node (hd ms\<^isub>2)`
-        `length ms\<^isub>2 = length s\<^isub>2` `\<forall>m\<in>set (tl ms\<^isub>1). return_node m` `ms\<^isub>2 \<noteq> []`
+      with `method_exit (hd ms\<^sub>1)` ` hd ms\<^sub>1 = sourcenode a` `method_exit pex`
+      have [simp]:"pex = hd ms\<^sub>1" by(fastforce intro:method_exit_unique)
+      from `obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` `method_exit pex`
+        `get_proc (hd ms\<^sub>2) = get_proc pex` `valid_node (hd ms\<^sub>2)`
+        `length ms\<^sub>2 = length s\<^sub>2` `\<forall>m\<in>set (tl ms\<^sub>1). return_node m` `ms\<^sub>2 \<noteq> []`
       obtain as' 
-        where "S,slice_kind S \<turnstile> (hd ms\<^isub>2#tl ms\<^isub>2,s\<^isub>2) =as'\<Rightarrow>\<^isub>\<tau> (hd ms\<^isub>1#tl ms\<^isub>1,s\<^isub>2)"
-        by(fastforce elim!:silent_moves_intra_path_no_obs[of _ _ _ s\<^isub>2 "tl ms\<^isub>2"]
+        where "S,slice_kind S \<turnstile> (hd ms\<^sub>2#tl ms\<^sub>2,s\<^sub>2) =as'\<Rightarrow>\<^sub>\<tau> (hd ms\<^sub>1#tl ms\<^sub>1,s\<^sub>2)"
+        by(fastforce elim!:silent_moves_intra_path_no_obs[of _ _ _ s\<^sub>2 "tl ms\<^sub>2"]
                      dest:hd_Cons_tl)
-      with `ms\<^isub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as'\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
+      with `ms\<^sub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as'\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)"
         by(fastforce dest!:hd_Cons_tl)
       thus ?thesis by blast
     next
       case False
-      then obtain x where "x \<in> obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
-      hence "obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {x}"
+      then obtain x where "x \<in> obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
+      hence "obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {x}"
         by(rule obs_intra_singleton_element)
-      with `\<forall>m \<in> set (tl ms\<^isub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      have "x#tl ms\<^isub>1 \<in> obs ([]@hd ms\<^isub>2#tl ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+      with `\<forall>m \<in> set (tl ms\<^sub>2). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      have "x#tl ms\<^sub>1 \<in> obs ([]@hd ms\<^sub>2#tl ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
         by(fastforce intro:obsI)
-      with `ms\<^isub>2 \<noteq> []` have "x#tl ms\<^isub>1 \<in> obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+      with `ms\<^sub>2 \<noteq> []` have "x#tl ms\<^sub>1 \<in> obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
         by(fastforce dest:hd_Cons_tl simp del:obs.simps)
-      with `obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      have "x#tl ms\<^isub>1 \<in> obs ms\<^isub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
-      from this `\<forall>m\<in>set (tl ms\<^isub>1). return_node m`
-      have "x \<in> obs_intra (hd ms\<^isub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+      with `obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^sub>2 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      have "x#tl ms\<^sub>1 \<in> obs ms\<^sub>1 \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by simp
+      from this `\<forall>m\<in>set (tl ms\<^sub>1). return_node m`
+      have "x \<in> obs_intra (hd ms\<^sub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       proof(rule obsE)
         fix nsx n nsx' n'
-        assume "ms\<^isub>1 = nsx @ n # nsx'" and "x # tl ms\<^isub>1 = n' # nsx'"
+        assume "ms\<^sub>1 = nsx @ n # nsx'" and "x # tl ms\<^sub>1 = n' # nsx'"
           and "n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-        from `ms\<^isub>1 = nsx @ n # nsx'` `x # tl ms\<^isub>1 = n' # nsx'` `tl ms\<^isub>2 = tl ms\<^isub>1`
+        from `ms\<^sub>1 = nsx @ n # nsx'` `x # tl ms\<^sub>1 = n' # nsx'` `tl ms\<^sub>2 = tl ms\<^sub>1`
         have [simp]:"nsx = []" by(cases nsx) auto
-        with `ms\<^isub>1 = nsx @ n # nsx'` have [simp]:"n = hd ms\<^isub>1" by simp
-        from `x # tl ms\<^isub>1 = n' # nsx'` have [simp]:"n' = x" by simp
+        with `ms\<^sub>1 = nsx @ n # nsx'` have [simp]:"n = hd ms\<^sub>1" by simp
+        from `x # tl ms\<^sub>1 = n' # nsx'` have [simp]:"n' = x" by simp
         with `n' \<in> obs_intra n \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` show ?thesis by simp
       qed
-      { fix m as assume "hd ms\<^isub>1 -as\<rightarrow>\<^isub>\<iota>* m"
-        hence "hd ms\<^isub>1 -as\<rightarrow>* m" and "\<forall>a \<in> set as. intra_kind (kind a)"
+      { fix m as assume "hd ms\<^sub>1 -as\<rightarrow>\<^sub>\<iota>* m"
+        hence "hd ms\<^sub>1 -as\<rightarrow>* m" and "\<forall>a \<in> set as. intra_kind (kind a)"
           by(simp_all add:intra_path_def)
-        hence "m = hd ms\<^isub>1"
-        proof(induct "hd ms\<^isub>1" as m rule:path.induct)
+        hence "m = hd ms\<^sub>1"
+        proof(induct "hd ms\<^sub>1" as m rule:path.induct)
           case (Cons_path m'' as' m' a')
           from `\<forall>a\<in>set (a' # as'). intra_kind (kind a)`
           have "intra_kind (kind a')" by simp
           with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `valid_edge a'` 
-            `sourcenode a' = hd ms\<^isub>1` `hd ms\<^isub>1 = sourcenode a`
+            `sourcenode a' = hd ms\<^sub>1` `hd ms\<^sub>1 = sourcenode a`
           have False by(fastforce dest:return_edges_only simp:intra_kind_def)
           thus ?case by simp
         qed simp }
-      with `x \<in> obs_intra (hd ms\<^isub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      have "x = hd ms\<^isub>1" by(fastforce elim:obs_intraE)
-      with `x \<in> obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `length ms\<^isub>2 = length s\<^isub>2` 
-        `\<forall>m\<in>set (tl ms\<^isub>1). return_node m` `ms\<^isub>2 \<noteq> []`
-      obtain as where "S,slice_kind S \<turnstile> (hd ms\<^isub>2#tl ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (hd ms\<^isub>1#tl ms\<^isub>1,s\<^isub>2)"
-        by(fastforce elim!:silent_moves_intra_path_obs[of _ _ _ s\<^isub>2 "tl ms\<^isub>2"] 
+      with `x \<in> obs_intra (hd ms\<^sub>1) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      have "x = hd ms\<^sub>1" by(fastforce elim:obs_intraE)
+      with `x \<in> obs_intra (hd ms\<^sub>2) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `length ms\<^sub>2 = length s\<^sub>2` 
+        `\<forall>m\<in>set (tl ms\<^sub>1). return_node m` `ms\<^sub>2 \<noteq> []`
+      obtain as where "S,slice_kind S \<turnstile> (hd ms\<^sub>2#tl ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (hd ms\<^sub>1#tl ms\<^sub>1,s\<^sub>2)"
+        by(fastforce elim!:silent_moves_intra_path_obs[of _ _ _ s\<^sub>2 "tl ms\<^sub>2"] 
                      dest:hd_Cons_tl)
-      with `ms\<^isub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
+      with `ms\<^sub>2 \<noteq> []` have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)"
         by(fastforce dest!:hd_Cons_tl)
       thus ?thesis by blast
     qed
-    then obtain as where "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)" by blast
-    from `ms\<^isub>1' = tl ms\<^isub>1` `length s\<^isub>1 = Suc(length s\<^isub>1')` 
-      `length ms\<^isub>1 = length s\<^isub>1` have "length ms\<^isub>1' = length s\<^isub>1'" by simp
+    then obtain as where "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)" by blast
+    from `ms\<^sub>1' = tl ms\<^sub>1` `length s\<^sub>1 = Suc(length s\<^sub>1')` 
+      `length ms\<^sub>1 = length s\<^sub>1` have "length ms\<^sub>1' = length s\<^sub>1'" by simp
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` obtain a'' Q' r' fs' where "valid_edge a''"
       and "kind a'' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'" and "a \<in> get_return_edges a''"
       by -(drule return_needs_call,auto)
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
       by(fastforce dest!:callee_in_procs)
-    from `length s\<^isub>1 = Suc(length s\<^isub>1')` `s\<^isub>1' \<noteq> []`
-    obtain cfx cfsx where [simp]:"cfs\<^isub>1 = cfx#cfsx" by(cases cfs\<^isub>1) auto
-    with `length s\<^isub>1 = length s\<^isub>2` obtain cfx' cfsx' where [simp]:"cfs\<^isub>2 = cfx'#cfsx'"
-      by(cases cfs\<^isub>2) auto
-    from `length ms\<^isub>1 = length s\<^isub>1` have "tl ms\<^isub>1 = []@hd(tl ms\<^isub>1)#tl(tl ms\<^isub>1)"
+    from `length s\<^sub>1 = Suc(length s\<^sub>1')` `s\<^sub>1' \<noteq> []`
+    obtain cfx cfsx where [simp]:"cfs\<^sub>1 = cfx#cfsx" by(cases cfs\<^sub>1) auto
+    with `length s\<^sub>1 = length s\<^sub>2` obtain cfx' cfsx' where [simp]:"cfs\<^sub>2 = cfx'#cfsx'"
+      by(cases cfs\<^sub>2) auto
+    from `length ms\<^sub>1 = length s\<^sub>1` have "tl ms\<^sub>1 = []@hd(tl ms\<^sub>1)#tl(tl ms\<^sub>1)"
       by(auto simp:length_Suc_conv)
-    from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
-    have "s\<^isub>1' = (f' (fst cf\<^isub>1) (fst cfx),snd cfx)#cfsx" by simp
+    from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `transfer (kind a) s\<^sub>1 = s\<^sub>1'`
+    have "s\<^sub>1' = (f' (fst cf\<^sub>1) (fst cfx),snd cfx)#cfsx" by simp
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
-    have "f' (fst cf\<^isub>1) (fst cfx) = 
-      (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs)"
+    have "f' (fst cf\<^sub>1) (fst cfx) = 
+      (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs)"
       by(rule CFG_return_edge_fun)
-    with `s\<^isub>1' = (f' (fst cf\<^isub>1) (fst cfx),snd cfx)#cfsx`
-    have [simp]:"s\<^isub>1' = 
-      ((fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs),snd cfx)#cfsx"
+    with `s\<^sub>1' = (f' (fst cf\<^sub>1) (fst cfx),snd cfx)#cfsx`
+    have [simp]:"s\<^sub>1' = 
+      ((fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs),snd cfx)#cfsx"
       by simp
-    have "pred (slice_kind S a) s\<^isub>2"
+    have "pred (slice_kind S a) s\<^sub>2"
     proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
       case True
       from `valid_edge a` have "valid_node (sourcenode a)" by simp
-      hence "sourcenode a -[]\<rightarrow>\<^isub>\<iota>* sourcenode a"
+      hence "sourcenode a -[]\<rightarrow>\<^sub>\<iota>* sourcenode a"
         by(fastforce intro:empty_path simp:intra_path_def)
       with `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       have "\<forall>V. V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (sourcenode a)) 
@@ -2936,17 +2936,17 @@ proof(atomize_elim)
       with `valid_node (sourcenode a)`
       have "\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))"
         by(fastforce intro:CFG_Use_SDG_Use)
-      from `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-        (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` `length ms\<^isub>2 = length s\<^isub>2`
-      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^isub>1 ! length msx)) V = state_val s\<^isub>2 V"
-        by(cases ms\<^isub>2) auto
+      from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+        (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` `length ms\<^sub>2 = length s\<^sub>2`
+      have "\<forall>V\<in>rv S (CFG_node mx). (fst (s\<^sub>1 ! length msx)) V = state_val s\<^sub>2 V"
+        by(cases ms\<^sub>2) auto
       with `\<forall>V \<in> Use (sourcenode a). V \<in> rv S (CFG_node (sourcenode a))`
-      have "\<forall>V \<in> Use (sourcenode a). fst cf\<^isub>1 V = fst cf\<^isub>2 V" by fastforce
+      have "\<forall>V \<in> Use (sourcenode a). fst cf\<^sub>1 V = fst cf\<^sub>2 V" by fastforce
       moreover
-      from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)`
-      have "snd (hd s\<^isub>1) = snd (hd s\<^isub>2)" by(erule_tac x="0" in allE) auto
-      ultimately have "pred (kind a) s\<^isub>2"
-        using `valid_edge a` `pred (kind a) s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
+      from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)`
+      have "snd (hd s\<^sub>1) = snd (hd s\<^sub>2)" by(erule_tac x="0" in allE) auto
+      ultimately have "pred (kind a) s\<^sub>2"
+        using `valid_edge a` `pred (kind a) s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`
         by(fastforce intro:CFG_edge_Uses_pred_equal)
       with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs` 
         `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
@@ -2957,51 +2957,51 @@ proof(atomize_elim)
         by -(rule slice_kind_Return)
       thus ?thesis by simp
     qed
-    from `valid_edge a` `length s\<^isub>1 = length s\<^isub>2` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
-    have "length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)"
+    from `valid_edge a` `length s\<^sub>1 = length s\<^sub>2` `transfer (kind a) s\<^sub>1 = s\<^sub>1'`
+    have "length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)"
       by(fastforce intro:length_transfer_kind_slice_kind)
-    with `pred (slice_kind S a) s\<^isub>2` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
-      `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `hd ms\<^isub>1 = sourcenode a`
-      `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
-      `ms\<^isub>1' = tl ms\<^isub>1` `hd(tl ms\<^isub>1) = targetnode a` `\<forall>m \<in> set (tl ms\<^isub>1). return_node m`
-    have "S,slice_kind S \<turnstile> (ms\<^isub>1,s\<^isub>2) -a\<rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+    with `pred (slice_kind S a) s\<^sub>2` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
+      `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `hd ms\<^sub>1 = sourcenode a`
+      `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`
+      `ms\<^sub>1' = tl ms\<^sub>1` `hd(tl ms\<^sub>1) = targetnode a` `\<forall>m \<in> set (tl ms\<^sub>1). return_node m`
+    have "S,slice_kind S \<turnstile> (ms\<^sub>1,s\<^sub>2) -a\<rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
       by(fastforce intro!:observable_move.observable_move_return)
-    with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)`
-    have "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)"
+    with `S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (ms\<^sub>1,s\<^sub>2)`
+    have "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
       by(rule observable_moves_snoc)
-    from `\<forall>m \<in> set ms\<^isub>1. valid_node m` `ms\<^isub>1' = tl ms\<^isub>1`
-    have "\<forall>m \<in> set ms\<^isub>1'. valid_node m" by(cases ms\<^isub>1) auto
-    from `length ms\<^isub>1' = length s\<^isub>1'` have "ms\<^isub>1' = []@hd ms\<^isub>1'#tl ms\<^isub>1'"
-      by(cases ms\<^isub>1') auto
-    from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)`
-      `length ms\<^isub>1 = length ms\<^isub>2` `length ms\<^isub>1 = length s\<^isub>1`
+    from `\<forall>m \<in> set ms\<^sub>1. valid_node m` `ms\<^sub>1' = tl ms\<^sub>1`
+    have "\<forall>m \<in> set ms\<^sub>1'. valid_node m" by(cases ms\<^sub>1) auto
+    from `length ms\<^sub>1' = length s\<^sub>1'` have "ms\<^sub>1' = []@hd ms\<^sub>1'#tl ms\<^sub>1'"
+      by(cases ms\<^sub>1') auto
+    from `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)`
+      `length ms\<^sub>1 = length ms\<^sub>2` `length ms\<^sub>1 = length s\<^sub>1`
     have "snd cfx = snd cfx'" by(erule_tac x="1" in allE) auto
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
-    have cf2':"\<exists>cf\<^isub>2'. transfer (slice_kind S a) s\<^isub>2 = cf\<^isub>2'#cfsx' \<and> snd cf\<^isub>2' = snd cfx'"
+    have cf2':"\<exists>cf\<^sub>2'. transfer (slice_kind S a) s\<^sub>2 = cf\<^sub>2'#cfsx' \<and> snd cf\<^sub>2' = snd cfx'"
       by(cases cfx',cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>",
          auto dest:slice_kind_Return slice_kind_Return_in_slice)
-    with `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)` 
-      `length ms\<^isub>1' = length s\<^isub>1'` `msx = []` `length ms\<^isub>1 = length ms\<^isub>2`
-      `length ms\<^isub>1 = length s\<^isub>1` `snd cfx = snd cfx'`
-    have "\<forall>i<length ms\<^isub>1'. snd (s\<^isub>1' ! i) = snd (transfer (slice_kind S a) s\<^isub>2 ! i)"
+    with `\<forall>i<length ms\<^sub>2. snd (s\<^sub>1 ! (length msx + i)) = snd (s\<^sub>2 ! i)` 
+      `length ms\<^sub>1' = length s\<^sub>1'` `msx = []` `length ms\<^sub>1 = length ms\<^sub>2`
+      `length ms\<^sub>1 = length s\<^sub>1` `snd cfx = snd cfx'`
+    have "\<forall>i<length ms\<^sub>1'. snd (s\<^sub>1' ! i) = snd (transfer (slice_kind S a) s\<^sub>2 ! i)"
       apply auto apply(case_tac i) apply auto
       by(erule_tac x="Suc(Suc nat)" in allE) auto
-    from `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-    have "\<forall>m \<in> set (tl (tl ms\<^isub>1)). 
+    from `\<forall>m \<in> set (tl ms\<^sub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+    have "\<forall>m \<in> set (tl (tl ms\<^sub>1)). 
       \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
-      by(cases "tl ms\<^isub>1") auto
-    from `\<forall>m \<in> set (tl ms\<^isub>1). return_node m`
-    have "\<forall>m \<in> set (tl (tl ms\<^isub>1)). return_node m" by(cases "tl ms\<^isub>1") auto
-    have "\<forall>V\<in>rv S (CFG_node (hd (tl ms\<^isub>1))).
-      (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) V = 
-      state_val (transfer (slice_kind S a) s\<^isub>2) V"
+      by(cases "tl ms\<^sub>1") auto
+    from `\<forall>m \<in> set (tl ms\<^sub>1). return_node m`
+    have "\<forall>m \<in> set (tl (tl ms\<^sub>1)). return_node m" by(cases "tl ms\<^sub>1") auto
+    have "\<forall>V\<in>rv S (CFG_node (hd (tl ms\<^sub>1))).
+      (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) V = 
+      state_val (transfer (slice_kind S a) s\<^sub>2) V"
     proof
-      fix V assume "V\<in>rv S (CFG_node (hd (tl ms\<^isub>1)))"
-      with `hd(tl ms\<^isub>1) = targetnode a` have "V\<in>rv S (CFG_node (targetnode a))"
+      fix V assume "V\<in>rv S (CFG_node (hd (tl ms\<^sub>1)))"
+      with `hd(tl ms\<^sub>1) = targetnode a` have "V\<in>rv S (CFG_node (targetnode a))"
         by simp
-      show "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) V = 
-        state_val (transfer (slice_kind S a) s\<^isub>2) V"
+      show "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) V = 
+        state_val (transfer (slice_kind S a) s\<^sub>2) V"
       proof(cases "V \<in> set (ParamDefs (targetnode a))")
         case True
         then obtain i where "V = (ParamDefs (targetnode a))!i" 
@@ -3019,7 +3019,7 @@ proof(atomize_elim)
         have "V \<in> Def\<^bsub>SDG\<^esub> (Actual_out(targetnode a,i))"
           by(fastforce intro:Actual_out_SDG_Def)
         from `V \<in> rv S (CFG_node (targetnode a))` obtain as' nx 
-          where "targetnode a -as'\<rightarrow>\<^isub>\<iota>* parent_node nx" 
+          where "targetnode a -as'\<rightarrow>\<^sub>\<iota>* parent_node nx" 
           and "nx \<in> HRB_slice S" and "V \<in> Use\<^bsub>SDG\<^esub> nx"
           and "\<forall>n''. valid_SDG_node n'' \<and> 
                          parent_node n'' \<in> set (sourcenodes as') \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''"
@@ -3035,7 +3035,7 @@ proof(atomize_elim)
         with `valid_edge a` have "V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))"
           by(auto intro!:CFG_Use_SDG_Use)
         from `targetnode a = parent_node nx`[THEN sym] `valid_edge a`
-        have "parent_node (Actual_out(targetnode a,i)) -[]\<rightarrow>\<^isub>\<iota>* parent_node nx"
+        have "parent_node (Actual_out(targetnode a,i)) -[]\<rightarrow>\<^sub>\<iota>* parent_node nx"
           by(fastforce intro:empty_path simp:intra_path_def)
         with `V \<in> Def\<^bsub>SDG\<^esub> (Actual_out(targetnode a,i))` 
           `V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))` `targetnode a = parent_node nx`
@@ -3076,17 +3076,17 @@ proof(atomize_elim)
         from `Actual_out(targetnode a,i) \<in> HRB_slice S`
           `i < length(ParamDefs (targetnode a))` `valid_edge a`
           `V = (ParamDefs (targetnode a))!i` length
-        have 2:"rspp (targetnode a) (HRB_slice S) outs (fst cfx') (fst cf\<^isub>2) V = 
-          (fst cf\<^isub>2)(outs!i)"
+        have 2:"rspp (targetnode a) (HRB_slice S) outs (fst cfx') (fst cf\<^sub>2) V = 
+          (fst cf\<^sub>2)(outs!i)"
           by(fastforce intro:rspp_Actual_out_in_slice)
         from `i < length(ParamDefs (targetnode a))` length `valid_edge a`
-        have "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) 
-          ((ParamDefs (targetnode a))!i) = (map (fst cf\<^isub>1) outs)!i"
+        have "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) 
+          ((ParamDefs (targetnode a))!i) = (map (fst cf\<^sub>1) outs)!i"
           by(fastforce intro:fun_upds_nth distinct_ParamDefs)
         with `V = (ParamDefs (targetnode a))!i` 
           `i < length(ParamDefs (targetnode a))` length
-        have 1:"(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) V = 
-          (fst cf\<^isub>1)(outs!i)" 
+        have 1:"(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) V = 
+          (fst cf\<^sub>1)(outs!i)" 
           by simp
         from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs` 
           `i < length(ParamDefs (targetnode a))` length
@@ -3125,23 +3125,23 @@ proof(atomize_elim)
         with `valid_edge a` have "outs!i \<in> Use\<^bsub>SDG\<^esub> (CFG_node (sourcenode a))"
           by(auto intro!:CFG_Use_SDG_Use dest:SDG_Use_parent_Use)
         moreover
-        from `valid_edge a` have "parent_node (CFG_node (sourcenode a)) -[]\<rightarrow>\<^isub>\<iota>* 
+        from `valid_edge a` have "parent_node (CFG_node (sourcenode a)) -[]\<rightarrow>\<^sub>\<iota>* 
           parent_node (CFG_node (sourcenode a))"
           by(fastforce intro:empty_path simp:intra_path_def)
         ultimately have "outs!i \<in> rv S (CFG_node (sourcenode a))"
           using `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a`
           by(fastforce intro:rvI simp:SDG_to_CFG_set_def sourcenodes_def)
-        with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-          (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V`
-        have "(fst cf\<^isub>1)(outs!i) = (fst cf\<^isub>2)(outs!i)"
+        with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+          (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V`
+        have "(fst cf\<^sub>1)(outs!i) = (fst cf\<^sub>2)(outs!i)"
           by auto(erule_tac x="0" in allE,auto)
         with 1 2 slice_kind show ?thesis by simp
       next
         case False
-        with `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
-        have "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) =
-          (fst (hd cfs\<^isub>1))(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs)"
-          by(cases cfs\<^isub>1,auto intro:CFG_return_edge_fun)
+        with `transfer (kind a) s\<^sub>1 = s\<^sub>1'`
+        have "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs) =
+          (fst (hd cfs\<^sub>1))(ParamDefs (targetnode a) [:=] map (fst cf\<^sub>1) outs)"
+          by(cases cfs\<^sub>1,auto intro:CFG_return_edge_fun)
         show ?thesis
         proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
           case True
@@ -3150,19 +3150,19 @@ proof(atomize_elim)
           have "slice_kind S a = 
             Q\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice S) outs cf' cf)"
             by(rule slice_kind_Return_in_slice)
-          with `length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)` 
-            `length s\<^isub>1 = length s\<^isub>2`
-          have "state_val (transfer (slice_kind S a) s\<^isub>2) V = 
-            rspp (targetnode a) (HRB_slice S) outs (fst cfx') (fst cf\<^isub>2) V"
+          with `length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)` 
+            `length s\<^sub>1 = length s\<^sub>2`
+          have "state_val (transfer (slice_kind S a) s\<^sub>2) V = 
+            rspp (targetnode a) (HRB_slice S) outs (fst cfx') (fst cf\<^sub>2) V"
             by simp
           with `V \<notin> set (ParamDefs (targetnode a))`
-          have "state_val (transfer (slice_kind S a) s\<^isub>2) V = state_val cfs\<^isub>2 V"
+          have "state_val (transfer (slice_kind S a) s\<^sub>2) V = state_val cfs\<^sub>2 V"
             by(fastforce simp:rspp_def map_merge_def)
-          with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-            (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V`
-            `hd(tl ms\<^isub>1) = targetnode a`
-            `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`[THEN sym] False
-            `tl ms\<^isub>2 = tl ms\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2`
+          with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+            (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V`
+            `hd(tl ms\<^sub>1) = targetnode a`
+            `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`[THEN sym] False
+            `tl ms\<^sub>2 = tl ms\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2`
             `V\<in>rv S (CFG_node (targetnode a))`
           show ?thesis by(fastforce simp:length_Suc_conv fun_upds_notin)
         next
@@ -3170,19 +3170,19 @@ proof(atomize_elim)
           from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
           have "slice_kind S a = (\<lambda>cf. True)\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. cf')"
             by(rule slice_kind_Return)
-          from `length ms\<^isub>2 = length s\<^isub>2` have "1 < length ms\<^isub>2" by simp
-          with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-            (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V`
-            `V\<in>rv S (CFG_node (hd (tl ms\<^isub>1)))`
-            `ms\<^isub>1' = tl ms\<^isub>1` `ms\<^isub>1' = []@hd ms\<^isub>1'#tl ms\<^isub>1'`
+          from `length ms\<^sub>2 = length s\<^sub>2` have "1 < length ms\<^sub>2" by simp
+          with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+            (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V`
+            `V\<in>rv S (CFG_node (hd (tl ms\<^sub>1)))`
+            `ms\<^sub>1' = tl ms\<^sub>1` `ms\<^sub>1' = []@hd ms\<^sub>1'#tl ms\<^sub>1'`
           have "fst cfx V = fst cfx' V" apply auto
             apply(erule_tac x="1" in allE)
-            by(cases "tl ms\<^isub>1") auto
-          with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-            (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` 
-            `hd(tl ms\<^isub>1) = targetnode a`
-            `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`[THEN sym] False
-            `tl ms\<^isub>2 = tl ms\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2`
+            by(cases "tl ms\<^sub>1") auto
+          with `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+            (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` 
+            `hd(tl ms\<^sub>1) = targetnode a`
+            `length ms\<^sub>1 = length s\<^sub>1` `length s\<^sub>1 = length s\<^sub>2`[THEN sym] False
+            `tl ms\<^sub>2 = tl ms\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2`
             `V\<in>rv S (CFG_node (targetnode a))`
             `V \<notin> set (ParamDefs (targetnode a))`
             `slice_kind S a = (\<lambda>cf. True)\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. cf')`
@@ -3190,27 +3190,27 @@ proof(atomize_elim)
         qed
       qed
     qed
-    with `hd(tl ms\<^isub>1) = targetnode a` `tl ms\<^isub>2 = tl ms\<^isub>1` `ms\<^isub>1' = tl ms\<^isub>1`
-      `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^isub>2)!i)). 
-        (fst (s\<^isub>1!(length msx + i))) V = (fst (s\<^isub>2!i)) V` `length ms\<^isub>1' = length s\<^isub>1'`
-      `length ms\<^isub>1 = length s\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2` `length s\<^isub>1 = length s\<^isub>2` cf2'
-    have "\<forall>i<length ms\<^isub>1'. \<forall>V\<in>rv S (CFG_node ((hd (tl ms\<^isub>1) # tl ms\<^isub>1')!i)).
-      (fst (s\<^isub>1'!(length [] + i))) V = (fst (transfer (slice_kind S a) s\<^isub>2!i)) V"
-      apply(case_tac "tl ms\<^isub>1") apply auto 
-      apply(cases ms\<^isub>2) apply auto
+    with `hd(tl ms\<^sub>1) = targetnode a` `tl ms\<^sub>2 = tl ms\<^sub>1` `ms\<^sub>1' = tl ms\<^sub>1`
+      `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
+        (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V` `length ms\<^sub>1' = length s\<^sub>1'`
+      `length ms\<^sub>1 = length s\<^sub>1` `length ms\<^sub>2 = length s\<^sub>2` `length s\<^sub>1 = length s\<^sub>2` cf2'
+    have "\<forall>i<length ms\<^sub>1'. \<forall>V\<in>rv S (CFG_node ((hd (tl ms\<^sub>1) # tl ms\<^sub>1')!i)).
+      (fst (s\<^sub>1'!(length [] + i))) V = (fst (transfer (slice_kind S a) s\<^sub>2!i)) V"
+      apply(case_tac "tl ms\<^sub>1") apply auto 
+      apply(cases ms\<^sub>2) apply auto
       apply(case_tac i) apply auto
       by(erule_tac x="Suc(Suc nat)" in allE,auto)
-    with `\<forall>m \<in> set ms\<^isub>2. valid_node m` `\<forall>m \<in> set ms\<^isub>1'. valid_node m` 
-      `length ms\<^isub>2 = length s\<^isub>2` `length s\<^isub>1' = length (transfer (slice_kind S a) s\<^isub>2)`
-      `length ms\<^isub>1' = length s\<^isub>1'` `ms\<^isub>1' = tl ms\<^isub>1` `ms\<^isub>1' = []@hd ms\<^isub>1'#tl ms\<^isub>1'`
-      `tl ms\<^isub>1 = []@hd(tl ms\<^isub>1)#tl(tl ms\<^isub>1)`
-      `get_proc mx = get_proc (hd ms\<^isub>2)`
-      `\<forall>m \<in> set (tl (tl ms\<^isub>1)). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      `\<forall>m \<in> set (tl (tl ms\<^isub>1)). return_node m`
-      `\<forall>i<length ms\<^isub>1'. snd (s\<^isub>1' ! i) = snd (transfer (slice_kind S a) s\<^isub>2 ! i)`
-    have "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)) \<in> WS S"
+    with `\<forall>m \<in> set ms\<^sub>2. valid_node m` `\<forall>m \<in> set ms\<^sub>1'. valid_node m` 
+      `length ms\<^sub>2 = length s\<^sub>2` `length s\<^sub>1' = length (transfer (slice_kind S a) s\<^sub>2)`
+      `length ms\<^sub>1' = length s\<^sub>1'` `ms\<^sub>1' = tl ms\<^sub>1` `ms\<^sub>1' = []@hd ms\<^sub>1'#tl ms\<^sub>1'`
+      `tl ms\<^sub>1 = []@hd(tl ms\<^sub>1)#tl(tl ms\<^sub>1)`
+      `get_proc mx = get_proc (hd ms\<^sub>2)`
+      `\<forall>m \<in> set (tl (tl ms\<^sub>1)). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+      `\<forall>m \<in> set (tl (tl ms\<^sub>1)). return_node m`
+      `\<forall>i<length ms\<^sub>1'. snd (s\<^sub>1' ! i) = snd (transfer (slice_kind S a) s\<^sub>2 ! i)`
+    have "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S"
       by(auto intro!:WSI)
-    with `S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as@[a]\<Rightarrow> (ms\<^isub>1',transfer (slice_kind S a) s\<^isub>2)`
+    with `S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (ms\<^sub>1',transfer (slice_kind S a) s\<^sub>2)`
     show ?case by blast
   qed
 qed
@@ -3223,38 +3223,38 @@ definition is_weak_sim ::
   "(('node list \<times> (('var \<rightharpoonup> 'val) \<times> 'ret) list) \<times> 
   ('node list \<times> (('var \<rightharpoonup> 'val) \<times> 'ret) list)) set \<Rightarrow> 'node SDG_node set \<Rightarrow> bool"
   where "is_weak_sim R S \<equiv> 
-  \<forall>ms\<^isub>1 s\<^isub>1 ms\<^isub>2 s\<^isub>2 ms\<^isub>1' s\<^isub>1' as. 
-    ((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> R \<and> S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) =as\<Rightarrow> (ms\<^isub>1',s\<^isub>1') \<and> s\<^isub>1' \<noteq> []
-    \<longrightarrow> (\<exists>ms\<^isub>2' s\<^isub>2' as'. ((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>2',s\<^isub>2')) \<in> R \<and> 
-                        S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as'\<Rightarrow> (ms\<^isub>2',s\<^isub>2'))"
+  \<forall>ms\<^sub>1 s\<^sub>1 ms\<^sub>2 s\<^sub>2 ms\<^sub>1' s\<^sub>1' as. 
+    ((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> R \<and> S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) =as\<Rightarrow> (ms\<^sub>1',s\<^sub>1') \<and> s\<^sub>1' \<noteq> []
+    \<longrightarrow> (\<exists>ms\<^sub>2' s\<^sub>2' as'. ((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>2',s\<^sub>2')) \<in> R \<and> 
+                        S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as'\<Rightarrow> (ms\<^sub>2',s\<^sub>2'))"
 
 
 lemma WS_weak_sim:
-  assumes "((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S" 
-  and "S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) =as\<Rightarrow> (ms\<^isub>1',s\<^isub>1')" and "s\<^isub>1' \<noteq> []"
-  obtains as' where "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S (last as)) s\<^isub>2)) \<in> WS S"
-  and "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as'@[last as]\<Rightarrow> 
-                          (ms\<^isub>1',transfer (slice_kind S (last as)) s\<^isub>2)"
+  assumes "((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S" 
+  and "S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) =as\<Rightarrow> (ms\<^sub>1',s\<^sub>1')" and "s\<^sub>1' \<noteq> []"
+  obtains as' where "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2)) \<in> WS S"
+  and "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as'@[last as]\<Rightarrow> 
+                          (ms\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2)"
 proof(atomize_elim)
-  from `S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) =as\<Rightarrow> (ms\<^isub>1',s\<^isub>1')` obtain ms' s' as' a'
-    where "S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) =as'\<Rightarrow>\<^isub>\<tau> (ms',s')"
-    and "S,kind \<turnstile> (ms',s') -a'\<rightarrow> (ms\<^isub>1',s\<^isub>1')" and "as = as'@[a']"
+  from `S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) =as\<Rightarrow> (ms\<^sub>1',s\<^sub>1')` obtain ms' s' as' a'
+    where "S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) =as'\<Rightarrow>\<^sub>\<tau> (ms',s')"
+    and "S,kind \<turnstile> (ms',s') -a'\<rightarrow> (ms\<^sub>1',s\<^sub>1')" and "as = as'@[a']"
     by(fastforce elim:observable_moves.cases)
-  from `S,kind \<turnstile> (ms',s') -a'\<rightarrow> (ms\<^isub>1',s\<^isub>1')`
+  from `S,kind \<turnstile> (ms',s') -a'\<rightarrow> (ms\<^sub>1',s\<^sub>1')`
   have "\<forall>m \<in> set (tl ms'). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
     and "\<forall>n \<in> set (tl ms'). return_node n" and "ms' \<noteq> []"
     by(auto elim:observable_move.cases simp:call_of_return_node_def)
-  from `S,kind \<turnstile> (ms\<^isub>1,s\<^isub>1) =as'\<Rightarrow>\<^isub>\<tau> (ms',s')` `((ms\<^isub>1,s\<^isub>1),(ms\<^isub>2,s\<^isub>2)) \<in> WS S`
-  have "((ms',s'),(ms\<^isub>2,s\<^isub>2)) \<in> WS S" by(rule WS_silent_moves)
-  with `S,kind \<turnstile> (ms',s') -a'\<rightarrow> (ms\<^isub>1',s\<^isub>1')` `s\<^isub>1' \<noteq> []`
-  obtain as'' where "((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a') s\<^isub>2)) \<in> WS S"
-    and "S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as''@[a']\<Rightarrow> 
-    (ms\<^isub>1',transfer (slice_kind S a') s\<^isub>2)"
+  from `S,kind \<turnstile> (ms\<^sub>1,s\<^sub>1) =as'\<Rightarrow>\<^sub>\<tau> (ms',s')` `((ms\<^sub>1,s\<^sub>1),(ms\<^sub>2,s\<^sub>2)) \<in> WS S`
+  have "((ms',s'),(ms\<^sub>2,s\<^sub>2)) \<in> WS S" by(rule WS_silent_moves)
+  with `S,kind \<turnstile> (ms',s') -a'\<rightarrow> (ms\<^sub>1',s\<^sub>1')` `s\<^sub>1' \<noteq> []`
+  obtain as'' where "((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a') s\<^sub>2)) \<in> WS S"
+    and "S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as''@[a']\<Rightarrow> 
+    (ms\<^sub>1',transfer (slice_kind S a') s\<^sub>2)"
     by(fastforce elim:WS_observable_move)
-  with `((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S a') s\<^isub>2)) \<in> WS S` `as = as'@[a']`
-  show "\<exists>as'. ((ms\<^isub>1',s\<^isub>1'),(ms\<^isub>1',transfer (slice_kind S (last as)) s\<^isub>2)) \<in> WS S \<and>
-    S,slice_kind S \<turnstile> (ms\<^isub>2,s\<^isub>2) =as'@[last as]\<Rightarrow> 
-    (ms\<^isub>1',transfer (slice_kind S (last as)) s\<^isub>2)"
+  with `((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S a') s\<^sub>2)) \<in> WS S` `as = as'@[a']`
+  show "\<exists>as'. ((ms\<^sub>1',s\<^sub>1'),(ms\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2)) \<in> WS S \<and>
+    S,slice_kind S \<turnstile> (ms\<^sub>2,s\<^sub>2) =as'@[last as]\<Rightarrow> 
+    (ms\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2)"
     by fastforce
 qed
 

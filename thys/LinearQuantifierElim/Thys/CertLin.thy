@@ -14,10 +14,10 @@ instantiation atom :: monoid_add
 begin
 
 fun plus_atom :: "atom \<Rightarrow> atom \<Rightarrow> atom" where
-  "(Eq r\<^isub>1 cs\<^isub>1) + (Eq r\<^isub>2 cs\<^isub>2) = Eq (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
-  "(Eq r\<^isub>1 cs\<^isub>1) + (Less r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
-  "(Less r\<^isub>1 cs\<^isub>1) + (Eq r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
-  "(Less r\<^isub>1 cs\<^isub>1) + (Less r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)"
+  "(Eq r\<^sub>1 cs\<^sub>1) + (Eq r\<^sub>2 cs\<^sub>2) = Eq (r\<^sub>1+r\<^sub>2) (cs\<^sub>1+cs\<^sub>2)" |
+  "(Eq r\<^sub>1 cs\<^sub>1) + (Less r\<^sub>2 cs\<^sub>2) = Less (r\<^sub>1+r\<^sub>2) (cs\<^sub>1+cs\<^sub>2)" |
+  "(Less r\<^sub>1 cs\<^sub>1) + (Eq r\<^sub>2 cs\<^sub>2) = Less (r\<^sub>1+r\<^sub>2) (cs\<^sub>1+cs\<^sub>2)" |
+  "(Less r\<^sub>1 cs\<^sub>1) + (Less r\<^sub>2 cs\<^sub>2) = Less (r\<^sub>1+r\<^sub>2) (cs\<^sub>1+cs\<^sub>2)"
 
 definition
   "0 = Eq 0 []"
@@ -44,7 +44,7 @@ done
 
 end
 
-lemma I_R_additive: "I\<^isub>R a xs \<Longrightarrow> I\<^isub>R b xs \<Longrightarrow> I\<^isub>R(a+b) xs"
+lemma I_R_additive: "I\<^sub>R a xs \<Longrightarrow> I\<^sub>R b xs \<Longrightarrow> I\<^sub>R(a+b) xs"
 apply(case_tac a)
 apply(case_tac b)
 apply (simp_all add:iprod_left_add_distrib)
@@ -77,25 +77,25 @@ lemma refute_I:
   "~ Logic.interpret h (Neg f) e \<Longrightarrow> Logic.interpret h f e"
 by simp
 
-lemma I_R_mult_atom: "c \<ge> 0 \<Longrightarrow> I\<^isub>R a xs \<Longrightarrow> I\<^isub>R (c *\<^sub>a a) xs"
+lemma I_R_mult_atom: "c \<ge> 0 \<Longrightarrow> I\<^sub>R a xs \<Longrightarrow> I\<^sub>R (c *\<^sub>a a) xs"
 apply(cases a)
  apply(clarsimp)
 apply(simp)
 done
 
 lemma I_R_iprod_a:
- "size cs = size as \<Longrightarrow> \<forall>(c,a) \<in> set(zip cs as). I\<^isub>R (c *\<^sub>a a) xs
- \<Longrightarrow> I\<^isub>R (cs \<odot>\<^sub>a as) xs"
+ "size cs = size as \<Longrightarrow> \<forall>(c,a) \<in> set(zip cs as). I\<^sub>R (c *\<^sub>a a) xs
+ \<Longrightarrow> I\<^sub>R (cs \<odot>\<^sub>a as) xs"
 apply(induct cs as rule:list_induct2)
  apply (simp add:zero_atom_def)
 apply(simp add:I_R_additive)
 done
 
 lemma contradictD:
- "contradict as cs \<Longrightarrow> \<exists>a\<in>set as. \<not> I\<^isub>R a xs"
+ "contradict as cs \<Longrightarrow> \<exists>a\<in>set as. \<not> I\<^sub>R a xs"
 proof -
   assume "contradict as cs"
-  have "\<not> I\<^isub>R (cs \<odot>\<^sub>a as) xs"
+  have "\<not> I\<^sub>R (cs \<odot>\<^sub>a as) xs"
   proof (cases "cs \<odot>\<^sub>a as")
     case Less thus ?thesis using `contradict as cs`
       by(simp add:contradict_def iprod0_if_coeffs0)

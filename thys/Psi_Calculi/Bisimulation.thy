@@ -226,15 +226,15 @@ proof -
     from `\<Psi> \<rhd> P \<sim> Q` have PeqQ: "insertAssertion (extractFrame P) \<Psi> \<simeq>\<^sub>F insertAssertion (extractFrame Q) \<Psi>"
       by(rule bisimE)
 
-    obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "A\<^isub>P \<sharp>* \<Psi>'"
+    obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>" and "A\<^sub>P \<sharp>* \<Psi>'"
       by(rule_tac C="(\<Psi>, \<Psi>')" in freshFrame) auto
-    obtain A\<^isub>Q \<Psi>\<^isub>Q where FrQ: "extractFrame Q = \<langle>A\<^isub>Q, \<Psi>\<^isub>Q\<rangle>" and "A\<^isub>Q \<sharp>* \<Psi>" and "A\<^isub>Q \<sharp>* \<Psi>'"
+    obtain A\<^sub>Q \<Psi>\<^sub>Q where FrQ: "extractFrame Q = \<langle>A\<^sub>Q, \<Psi>\<^sub>Q\<rangle>" and "A\<^sub>Q \<sharp>* \<Psi>" and "A\<^sub>Q \<sharp>* \<Psi>'"
       by(rule_tac C="(\<Psi>, \<Psi>')" in freshFrame) auto
 
-    from PeqQ FrP FrQ `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>Q \<sharp>* \<Psi>` `\<Psi> \<simeq> \<Psi>'`
-    have "\<langle>A\<^isub>P, \<Psi>' \<otimes> \<Psi>\<^isub>P\<rangle> \<simeq>\<^sub>F \<langle>A\<^isub>Q, \<Psi>' \<otimes> \<Psi>\<^isub>Q\<rangle>"
+    from PeqQ FrP FrQ `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>Q \<sharp>* \<Psi>` `\<Psi> \<simeq> \<Psi>'`
+    have "\<langle>A\<^sub>P, \<Psi>' \<otimes> \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>Q, \<Psi>' \<otimes> \<Psi>\<^sub>Q\<rangle>"
       by simp (metis frameIntComposition FrameStatEqTrans FrameStatEqSym)
-    with FrP FrQ `A\<^isub>P \<sharp>* \<Psi>'` `A\<^isub>Q \<sharp>* \<Psi>'` show ?case by simp
+    with FrP FrQ `A\<^sub>P \<sharp>* \<Psi>'` `A\<^sub>Q \<sharp>* \<Psi>'` show ?case by simp
   next
     case(cSim \<Psi>' P Q)
     from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"

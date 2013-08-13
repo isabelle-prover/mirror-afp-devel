@@ -21,7 +21,7 @@ text {*
   a shorter syntax.
 *}
 
-abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^isup>\<infinity>" 10) where
+abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
   "evseq P \<equiv> eventually P sequentially"
 
 subsection {* Numbers *}

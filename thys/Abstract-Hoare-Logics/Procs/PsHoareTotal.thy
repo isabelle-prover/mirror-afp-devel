@@ -156,12 +156,12 @@ apply(unfold tvalid_defs)
 apply fast
 done
 
-definition MGT\<^isub>t :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
-  [simp]: "MGT\<^isub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
+definition MGT\<^sub>t :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
+  [simp]: "MGT\<^sub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma MGT_implies_complete:
- "{} |\<turnstile>\<^sub>t {MGT\<^isub>t c} \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
-apply(unfold MGT\<^isub>t_def)
+ "{} |\<turnstile>\<^sub>t {MGT\<^sub>t c} \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
+apply(unfold MGT\<^sub>t_def)
 apply (erule thoare.Conseq)
 apply(simp add: tvalid_defs)
 apply blast
@@ -173,7 +173,7 @@ by(erule termi.cases, auto)
 lemma while_termiE2: "\<lbrakk> WHILE b DO c \<down> s; b s; s -c\<rightarrow> t \<rbrakk> \<Longrightarrow> WHILE b DO c \<down> t"
 by(erule termi.cases, auto)
 
-lemma MGT_lemma: "\<forall>p. {} |\<turnstile>\<^sub>t {MGT\<^isub>t(CALL p)}  \<Longrightarrow>  {} |\<turnstile>\<^sub>t {MGT\<^isub>t c}"
+lemma MGT_lemma: "\<forall>p. {} |\<turnstile>\<^sub>t {MGT\<^sub>t(CALL p)}  \<Longrightarrow>  {} |\<turnstile>\<^sub>t {MGT\<^sub>t c}"
 apply (simp)
 apply(induct_tac c)
      apply (rule strengthen_pre[OF _ thoare.Do])
@@ -795,15 +795,15 @@ apply(rule strengthen_pre[OF _ CALL_lemma])
 apply blast
 done
 
-lemma MGT_CALL: "{} |\<turnstile>\<^sub>t (\<Union>p. {MGT\<^isub>t(CALL p)})"
-apply(simp add: MGT\<^isub>t_def)
+lemma MGT_CALL: "{} |\<turnstile>\<^sub>t (\<Union>p. {MGT\<^sub>t(CALL p)})"
+apply(simp add: MGT\<^sub>t_def)
 apply(rule thoare.Call)
 apply(rule wf_termi_call_steps)
 apply clarify
 apply(rule CALL_cor)
 done
 
-lemma MGT_CALL1: "\<forall>p. {} |\<turnstile>\<^sub>t {MGT\<^isub>t(CALL p)}"
+lemma MGT_CALL1: "\<forall>p. {} |\<turnstile>\<^sub>t {MGT\<^sub>t(CALL p)}"
 by(fastforce intro:MGT_CALL[THEN ConjE])
 
 theorem "{} \<Turnstile>\<^sub>t {P}c{Q}  \<Longrightarrow>  {} \<turnstile>\<^sub>t {P}c{Q::state assn}"

@@ -196,7 +196,7 @@ lemma SpecIf:
 
 
 lemma Seq [trans, intro?]: 
-  "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 R,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Seq c\<^isub>1 c\<^isub>2) Q,A"
+  "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 R,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Seq c\<^sub>1 c\<^sub>2) Q,A"
   by (rule hoarep.Seq)
 
 lemma SeqSwap: 
@@ -204,25 +204,25 @@ lemma SeqSwap:
   by (rule Seq)
 
 lemma BSeq:
-  "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 R,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (bseq c\<^isub>1 c\<^isub>2) Q,A"
+  "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 R,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (bseq c\<^sub>1 c\<^sub>2) Q,A"
   by (unfold bseq_def) (rule Seq)
 
 
 lemma Cond: 
-  assumes wp: "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^isub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^isub>2)}" 
-  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^isub>1 c\<^isub>1 Q,A" 
-  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^isub>2 c\<^isub>2 Q,A"
-  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^isub>1 c\<^isub>2) Q,A"
+  assumes wp: "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^sub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^sub>2)}" 
+  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^sub>1 c\<^sub>1 Q,A" 
+  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^sub>2 c\<^sub>2 Q,A"
+  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^sub>1 c\<^sub>2) Q,A"
 proof (rule hoarep.Cond [THEN conseqPre])
   from deriv_c1 
-  show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ({s. (s \<in> b \<longrightarrow> s \<in> P\<^isub>1) \<and> (s \<notin> b \<longrightarrow> s \<in> P\<^isub>2)} \<inter> b) c\<^isub>1 Q,A"
+  show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ({s. (s \<in> b \<longrightarrow> s \<in> P\<^sub>1) \<and> (s \<notin> b \<longrightarrow> s \<in> P\<^sub>2)} \<inter> b) c\<^sub>1 Q,A"
     by (rule conseqPre) blast
 next
   from deriv_c2 
-  show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ({s. (s \<in> b \<longrightarrow> s \<in> P\<^isub>1) \<and> (s \<notin> b \<longrightarrow> s \<in> P\<^isub>2)} \<inter> - b) c\<^isub>2 Q,A"
+  show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ({s. (s \<in> b \<longrightarrow> s \<in> P\<^sub>1) \<and> (s \<notin> b \<longrightarrow> s \<in> P\<^sub>2)} \<inter> - b) c\<^sub>2 Q,A"
     by (rule conseqPre) blast
 next
-  show "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^isub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^isub>2)}" by (rule wp)
+  show "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^sub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^sub>2)}" by (rule wp)
 qed 
 
 
@@ -240,13 +240,13 @@ lemma Cond':
 
 lemma CondInv: 
   assumes wp: "P \<subseteq> Q" 
-  assumes inv: "Q \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^isub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^isub>2)}" 
-  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^isub>1 c\<^isub>1 Q,A" 
-  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^isub>2 c\<^isub>2 Q,A"
-  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^isub>1 c\<^isub>2) Q,A"
+  assumes inv: "Q \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^sub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^sub>2)}" 
+  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^sub>1 c\<^sub>1 Q,A" 
+  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^sub>2 c\<^sub>2 Q,A"
+  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^sub>1 c\<^sub>2) Q,A"
 proof -
   from wp inv
-  have "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^isub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^isub>2)}"
+  have "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^sub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^sub>2)}"
     by blast
   from Cond [OF this deriv_c1 deriv_c2]
   show ?thesis .
@@ -254,14 +254,14 @@ qed
 
 lemma CondInv': 
   assumes wp: "P \<subseteq> I" 
-  assumes inv: "I \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^isub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^isub>2)}" 
+  assumes inv: "I \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^sub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^sub>2)}" 
   assumes wp': "I \<subseteq> Q" 
-  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^isub>1 c\<^isub>1 I,A" 
-  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^isub>2 c\<^isub>2 I,A"
-  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^isub>1 c\<^isub>2) Q,A"
+  assumes deriv_c1: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^sub>1 c\<^sub>1 I,A" 
+  assumes deriv_c2: "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P\<^sub>2 c\<^sub>2 I,A"
+  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^sub>1 c\<^sub>2) Q,A"
 proof -
   from CondInv [OF wp inv deriv_c1 deriv_c2]
-  have "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^isub>1 c\<^isub>2) I,A".
+  have "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (Cond b c\<^sub>1 c\<^sub>2) I,A".
   from conseqPost [OF this wp' subset_refl]
   show ?thesis .
 qed
@@ -272,9 +272,9 @@ lemma switchNil:
   by (simp add: Skip)
  
 lemma switchCons:
-  "\<lbrakk>P \<subseteq> {s. (v s \<in> V \<longrightarrow> s \<in> P\<^isub>1) \<and> (v s \<notin> V \<longrightarrow> s \<in> P\<^isub>2)}; 
-        \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P\<^isub>1 c Q,A;
-        \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P\<^isub>2 (switch v vs) Q,A\<rbrakk>
+  "\<lbrakk>P \<subseteq> {s. (v s \<in> V \<longrightarrow> s \<in> P\<^sub>1) \<and> (v s \<notin> V \<longrightarrow> s \<in> P\<^sub>2)}; 
+        \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P\<^sub>1 c Q,A;
+        \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P\<^sub>2 (switch v vs) Q,A\<rbrakk>
 \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P (switch v ((V,c)#vs)) Q,A"
   by (simp add: Cond)
 
@@ -548,7 +548,7 @@ lemma Throw: "P \<subseteq> A \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^
   by (rule hoarep.Throw [THEN conseqPre])
 
 lemmas Catch = hoarep.Catch
-lemma CatchSwap: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 Q,R\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P Catch c\<^isub>1 c\<^isub>2 Q,A"
+lemma CatchSwap: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A; \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 Q,R\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P Catch c\<^sub>1 c\<^sub>2 Q,A"
   by (rule hoarep.Catch)
 
 lemma raise: "P \<subseteq> {s. f s \<in> A} \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P raise f Q,A"
@@ -560,8 +560,8 @@ lemma raise: "P \<subseteq> {s. f s \<in> A} \<Longrightarrow> \<Gamma>,\<Theta>
   apply (rule subset_refl)
   done
 
-lemma condCatch: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 Q,((b \<inter> R) \<union> (-b \<inter> A));\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A\<rbrakk> 
-                  \<Longrightarrow>  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>P condCatch c\<^isub>1 b c\<^isub>2 Q,A"
+lemma condCatch: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 Q,((b \<inter> R) \<union> (-b \<inter> A));\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A\<rbrakk> 
+                  \<Longrightarrow>  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>P condCatch c\<^sub>1 b c\<^sub>2 Q,A"
   apply (simp add: condCatch_def)
   apply (rule Catch)
   apply  assumption
@@ -571,8 +571,8 @@ lemma condCatch: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<
   apply blast
   done
 
-lemma condCatchSwap: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^isub>2 Q,A;\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^isub>1 Q,((b \<inter> R) \<union> (-b \<inter> A))\<rbrakk> 
-                  \<Longrightarrow>  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>P condCatch c\<^isub>1 b c\<^isub>2 Q,A"
+lemma condCatchSwap: "\<lbrakk>\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> R c\<^sub>2 Q,A;\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c\<^sub>1 Q,((b \<inter> R) \<union> (-b \<inter> A))\<rbrakk> 
+                  \<Longrightarrow>  \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>P condCatch c\<^sub>1 b c\<^sub>2 Q,A"
   by (rule condCatch)
 
 

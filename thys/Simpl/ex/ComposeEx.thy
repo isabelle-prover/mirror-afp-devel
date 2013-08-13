@@ -132,35 +132,35 @@ lemma inject_str_last:
   by (simp add: inject_str_def globals_inject_str_last)
 
 definition
-  "lift\<^isub>e = (\<lambda>\<Gamma> p. Option.map (lift\<^isub>c project_str inject_str) (\<Gamma> p))"
+  "lift\<^sub>e = (\<lambda>\<Gamma> p. Option.map (lift\<^sub>c project_str inject_str) (\<Gamma> p))"
 print_locale lift_state_space
 interpretation ex!: lift_state_space project_str inject_str
-  "xstate_map project_str" lift\<^isub>e "lift\<^isub>c project_str inject_str"
-  "lift\<^isub>f project_str inject_str" "lift\<^isub>s project_str"
-  "lift\<^isub>r project_str inject_str"
+  "xstate_map project_str" lift\<^sub>e "lift\<^sub>c project_str inject_str"
+  "lift\<^sub>f project_str inject_str" "lift\<^sub>s project_str"
+  "lift\<^sub>r project_str inject_str"
   apply -
   apply       (rule lift_state_space.intro)
   apply       (rule project_inject_str_commutes)
   apply      simp
   apply     simp
-  apply    (simp add: lift\<^isub>e_def)
+  apply    (simp add: lift\<^sub>e_def)
   apply   simp
   apply  simp
   apply simp
   done
 
 interpretation ex!: lift_state_space_ext project_str inject_str
-  "xstate_map project_str" lift\<^isub>e "lift\<^isub>c project_str inject_str"
-  "lift\<^isub>f project_str inject_str" "lift\<^isub>s project_str"
-  "lift\<^isub>r project_str inject_str"
+  "xstate_map project_str" lift\<^sub>e "lift\<^sub>c project_str inject_str"
+  "lift\<^sub>f project_str inject_str" "lift\<^sub>s project_str"
+  "lift\<^sub>r project_str inject_str"
 
-(*  project_str "inject_str" _ lift\<^isub>e *)
+(*  project_str "inject_str" _ lift\<^sub>e *)
 apply -
 apply intro_locales [1]
   apply (rule lift_state_space_ext_axioms.intro)
   apply  (rule inject_project_str_commutes) 
   apply (rule inject_str_last)
-apply (simp_all add: lift\<^isub>e_def)
+apply (simp_all add: lift\<^sub>e_def)
   done
 
 (*
@@ -174,7 +174,7 @@ apply (simp_all add: lift\<^isub>e_def)
 (*
 declare lift_set_def [simp] project_def [simp] project_globals_def [simp]
 *)
-lemmas Rev_lift_spec = ex.lift_hoarep' [OF Rev_impl.Rev_spec,simplified lift\<^isub>s_def
+lemmas Rev_lift_spec = ex.lift_hoarep' [OF Rev_impl.Rev_spec,simplified lift\<^sub>s_def
  project_str_def project_globals_str_def,simplified, of _ "''Rev''"]
 print_theorems
 
@@ -183,7 +183,7 @@ definition "\<N> p' p = (if p=''Rev'' then p' else '''')"
 
 
 procedures RevStr(str|q) = "rename (\<N> RevStr_'proc)
-                (lift\<^isub>c project_str inject_str (Rev_body.Rev_body))"
+                (lift\<^sub>c project_str inject_str (Rev_body.Rev_body))"
 
 
 lemmas Rev_lift_spec' = 
@@ -193,15 +193,15 @@ thm Rev_lift_spec'
 
 
 lemma Rev_lift_spec'':
-  "\<forall>Ps. lift\<^isub>e [''Rev'' \<mapsto> Rev_body.Rev_body]
+  "\<forall>Ps. lift\<^sub>e [''Rev'' \<mapsto> Rev_body.Rev_body]
        \<turnstile> \<lbrace>List \<acute>str \<acute>strnext Ps\<rbrace> Call ''Rev'' \<lbrace>List \<acute>q \<acute>strnext (rev Ps)\<rbrace>"
   by (rule Rev_lift_spec')
 
 lemma (in RevStr_impl) \<N>_ok: 
-"\<forall>p bdy. (lift\<^isub>e [''Rev'' \<mapsto> Rev_body.Rev_body]) p = Some bdy \<longrightarrow> 
+"\<forall>p bdy. (lift\<^sub>e [''Rev'' \<mapsto> Rev_body.Rev_body]) p = Some bdy \<longrightarrow> 
      \<Gamma> (\<N> RevStr_'proc p) = Some (rename (\<N> RevStr_'proc) bdy)"
 apply (insert RevStr_impl)
-apply (auto simp add: RevStr_body_def lift\<^isub>e_def \<N>_def)
+apply (auto simp add: RevStr_body_def lift\<^sub>e_def \<N>_def)
 done
 
 context RevStr_impl
@@ -239,7 +239,7 @@ lemma (in RevStr_impl) RevStr_modifies:
 apply (rule allI)
 apply (rule HoarePartialProps.ConseqMGT [OF RevStr_modifies'])
 apply (clarsimp simp add: 
-  lift\<^isub>s_def mex_def meq_def
+  lift\<^sub>s_def mex_def meq_def
   project_str_def inject_str_def project_globals_str_def inject_globals_str_def)
 apply blast
 done

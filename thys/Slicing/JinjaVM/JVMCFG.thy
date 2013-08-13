@@ -30,7 +30,7 @@ abbreviation rep_jvmprog_jvm_prog :: "wf_jvmprog \<Rightarrow> jvm_prog"
 ("_\<^bsub>wf\<^esub>")
   where "P\<^bsub>wf\<^esub> \<equiv> fst(Rep_wf_jvmprog(P))"
 
-abbreviation rep_jvmprog_phi :: "wf_jvmprog \<Rightarrow> ty\<^isub>P"
+abbreviation rep_jvmprog_phi :: "wf_jvmprog \<Rightarrow> ty\<^sub>P"
 ("_\<^bsub>\<Phi>\<^esub>")
   where "P\<^bsub>\<Phi>\<^esub> \<equiv> snd(Rep_wf_jvmprog(P))"
 
@@ -138,9 +138,9 @@ where
 | exec_instr_IAdd:
   "exec_instr (IAdd) P s calldepth stk_length rs ill =
   (let (h,stk,loc) = s;
-    i\<^isub>1 = the_Intg (stk (calldepth, stk_length - 1));
-    i\<^isub>2 = the_Intg (stk (calldepth, stk_length - 2))
-   in (h, stk((calldepth, stk_length - 2) := Intg (i\<^isub>1 + i\<^isub>2)), loc))"
+    i\<^sub>1 = the_Intg (stk (calldepth, stk_length - 1));
+    i\<^sub>2 = the_Intg (stk (calldepth, stk_length - 2))
+   in (h, stk((calldepth, stk_length - 2) := Intg (i\<^sub>1 + i\<^sub>2)), loc))"
 
 | exec_instr_IfFalse:
   "exec_instr (IfFalse b) P s calldepth stk_length rs ill = s"
@@ -148,9 +148,9 @@ where
 | exec_instr_CmpEq:
   "exec_instr (CmpEq) P s calldepth stk_length rs ill =
   (let (h,stk,loc) = s;
-    v\<^isub>1 = stk (calldepth, stk_length - 1);
-    v\<^isub>2 = stk (calldepth, stk_length - 2)
-   in (h, stk((calldepth, stk_length - 2) := Bool (v\<^isub>1 = v\<^isub>2)), loc))"
+    v\<^sub>1 = stk (calldepth, stk_length - 1);
+    v\<^sub>2 = stk (calldepth, stk_length - 2)
+   in (h, stk((calldepth, stk_length - 2) := Bool (v\<^sub>1 = v\<^sub>2)), loc))"
 
 | exec_instr_Goto:
   "exec_instr (Goto i) P s calldepth stk_length rs ill = s"
@@ -508,10 +508,10 @@ inductive JVM_CFG :: "jvmprog \<Rightarrow> j_node \<Rightarrow> state edge_kind
   ("_ \<turnstile> _ -_\<rightarrow> _")
 where
   JCFG_EntryExit:
-  "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (_Exit_)"
+  "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (_Exit_)"
 
 | JCFG_EntryStart:
-  "prog = (P, C0, Main) \<Longrightarrow> prog \<turnstile> (_Entry_) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (_ [(C0, Main, 0)],None _)"
+  "prog = (P, C0, Main) \<Longrightarrow> prog \<turnstile> (_Entry_) -(\<lambda>s. True)\<^sub>\<surd>\<rightarrow> (_ [(C0, Main, 0)],None _)"
 
 | JCFG_ReturnExit:
   "\<lbrakk> prog = (P,C0,Main);
@@ -528,7 +528,7 @@ where
 | JCFG_New_Normal_Pred:
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (New Cl);
-    ek = (\<lambda>(h,stk,loc). new_Addr h \<noteq> None)\<^isub>\<surd>\<rbrakk>
+    ek = (\<lambda>(h,stk,loc). new_Addr h \<noteq> None)\<^sub>\<surd>\<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>((C, M, Suc pc)#cs,False)\<rfloor> _)"
 
 | JCFG_New_Normal_Update:
@@ -541,7 +541,7 @@ where
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (New Cl);
     find_handler_for P OutOfMemory ((C, M, pc)#cs) = cs';
-    ek = (\<lambda>(h,stk,loc). new_Addr h = None)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). new_Addr h = None)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>(cs',True)\<rfloor> _)"
 
 | JCFG_New_Exc_Update:
@@ -564,7 +564,7 @@ where
 | JCFG_Getfield_Normal_Pred:
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Getfield Fd Cl);
-    ek = (\<lambda>(h,stk,loc).  stk(length cs, stkLength P C M pc - 1) \<noteq> Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc).  stk(length cs, stkLength P C M pc - 1) \<noteq> Null)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>((C, M, Suc pc)#cs, False)\<rfloor> _)"
 
 | JCFG_Getfield_Normal_Update:
@@ -578,7 +578,7 @@ where
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Getfield Fd Cl);
     find_handler_for P NullPointer ((C, M, pc)#cs) = cs';
-    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Null)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>(cs', True)\<rfloor> _)"
 
 | JCFG_Getfield_Exc_Update:
@@ -601,7 +601,7 @@ where
 | JCFG_Putfield_Normal_Pred:
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Putfield Fd Cl);
-    ek = (\<lambda>(h,stk,loc).  stk(length cs, stkLength P C M pc - 2) \<noteq> Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc).  stk(length cs, stkLength P C M pc - 2) \<noteq> Null)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>((C, M, Suc pc)#cs, False)\<rfloor> _)"
 
 | JCFG_Putfield_Normal_Update:
@@ -615,7 +615,7 @@ where
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Putfield Fd Cl);
     find_handler_for P NullPointer ((C, M, pc)#cs) = cs';
-    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) = Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) = Null)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>(cs', True)\<rfloor> _)"
 
 | JCFG_Putfield_Exc_Update:
@@ -638,14 +638,14 @@ where
 | JCFG_Checkcast_Normal_Pred:
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Checkcast Cl);
-    ek = (\<lambda>(h,stk,loc). cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, Suc pc)#cs,None _)"
 
 | JCFG_Checkcast_Exc_Pred:
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Checkcast Cl);
     find_handler_for P ClassCast ((C, M, pc)#cs) = cs';
-    ek = (\<lambda>(h,stk,loc). \<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). \<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>(cs', True)\<rfloor> _)"
 
 | JCFG_Checkcast_Exc_Update:
@@ -673,7 +673,7 @@ where
     ek = (\<lambda>(h,stk,loc).
      stk(cd, stk_length - Suc n) \<noteq> Null \<and>
      fst(method (P\<^bsub>wf\<^esub>) (cname_of h (the_Addr(stk(cd, stk_length - Suc n)))) M2) = D
-    )\<^isub>\<surd> \<rbrakk>
+    )\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow>
       prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>((D, M2, 0)#(C, M, pc)#cs, False)\<rfloor> _)"
 
@@ -691,7 +691,7 @@ where
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (Invoke m2 n);
     find_handler_for P NullPointer ((C, M, pc)#cs) = cs';
-    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n) = Null)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n) = Null)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>(cs', True)\<rfloor> _)"
 
 | JCFG_Invoke_Exc_Update:
@@ -729,13 +729,13 @@ where
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (IfFalse b);
     b \<noteq> 1;
-    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Bool False)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Bool False)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, nat (int pc + b))#cs,None _)"
 
 | JCFG_IfFalse_Next:
   "\<lbrakk> prog = (P, C0, Main);
     (instrs_of (P\<^bsub>wf\<^esub>) C M) ! pc = (IfFalse b);
-    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) \<noteq> Bool False \<or> b = 1)\<^isub>\<surd> \<rbrakk>
+    ek = (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) \<noteq> Bool False \<or> b = 1)\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, Suc pc)#cs,None _)"
 
 | JCFG_Throw_Pred:
@@ -749,7 +749,7 @@ where
         find_handler_for P NullPointer ((C, M, pc)#cs) = cs') \<or>
       (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
         find_handler_for P (cname_of h (the_Addr(stk(cd, stk_length - 1)))) ((C, M, pc)#cs) = cs')
-    )\<^isub>\<surd> \<rbrakk>
+    )\<^sub>\<surd> \<rbrakk>
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,None _) -ek\<rightarrow> (_ (C, M, pc)#cs,\<lfloor>(cs', True)\<rfloor> _)"
 
 | JCFG_Throw_Update:
@@ -796,7 +796,7 @@ qed
 
 lemma JVMCFG_EntryD:
   "\<lbrakk>(P,C,M) \<turnstile> n -et\<rightarrow> n'; n = (_Entry_)\<rbrakk> 
-  \<Longrightarrow> (n' = (_Exit_) \<and> et = (\<lambda>s. False)\<^isub>\<surd>) \<or> (n' = (_ [(C,M,0)],None _) \<and> et = (\<lambda>s. True)\<^isub>\<surd>)"
+  \<Longrightarrow> (n' = (_Exit_) \<and> et = (\<lambda>s. False)\<^sub>\<surd>) \<or> (n' = (_ [(C,M,0)],None _) \<and> et = (\<lambda>s. True)\<^sub>\<surd>)"
 by (erule JVM_CFG.cases) simp_all
 
 declare split_def [simp add]

@@ -234,8 +234,8 @@ directly to proof of thm, declare does not work. *)
 lemma sees_methods_decl_mono:
 assumes sub: "P \<turnstile> C' \<preceq>\<^sup>* C"
 shows "P \<turnstile> C sees_methods Mm \<Longrightarrow>
-       \<exists>Mm' Mm\<^isub>2. P \<turnstile> C' sees_methods Mm' \<and> Mm' = Mm ++ Mm\<^isub>2 \<and>
-                 (\<forall>M m D. Mm\<^isub>2 M = Some(m,D) \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C)"
+       \<exists>Mm' Mm\<^sub>2. P \<turnstile> C' sees_methods Mm' \<and> Mm' = Mm ++ Mm\<^sub>2 \<and>
+                 (\<forall>M m D. Mm\<^sub>2 M = Some(m,D) \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C)"
 (*<*)
       (is "_ \<Longrightarrow> \<exists>Mm' Mm2. ?Q C' C Mm' Mm2")
 using sub

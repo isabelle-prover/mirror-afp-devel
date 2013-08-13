@@ -91,7 +91,7 @@ subsection {* Defining the sliced edge kinds *}
 primrec slice_kind_aux :: "'node \<Rightarrow> 'node \<Rightarrow> 'node SDG_node set \<Rightarrow> 
   ('var,'val,'ret,'pname) edge_kind \<Rightarrow> ('var,'val,'ret,'pname) edge_kind"
 where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then \<Up>f else \<Up>id)"
-  | "slice_kind_aux m m' S (Q)\<^isub>\<surd> = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q)\<^isub>\<surd> else
+  | "slice_kind_aux m m' S (Q)\<^sub>\<surd> = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q)\<^sub>\<surd> else
   (if obs_intra m \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> = {} then 
     (let mex = (THE mex. method_exit mex \<and> get_proc m = get_proc mex) in
     (if (\<exists>x. distance m' mex x \<and> distance m mex (x + 1) \<and>
@@ -99,14 +99,14 @@ where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG
                               distance (targetnode a') mex x \<and>
                               valid_edge a' \<and> intra_kind(kind a') \<and>
                               targetnode a' = mx'))) 
-          then (\<lambda>cf. True)\<^isub>\<surd> else (\<lambda>cf. False)\<^isub>\<surd>))
+          then (\<lambda>cf. True)\<^sub>\<surd> else (\<lambda>cf. False)\<^sub>\<surd>))
      else (let mx = THE mx. mx \<in> obs_intra m \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> in 
        (if (\<exists>x. distance m' mx x \<and> distance m mx (x + 1) \<and>
             (m' = (SOME mx'. \<exists>a'. m = sourcenode a' \<and> 
                                   distance (targetnode a') mx x \<and>
                                   valid_edge a' \<and> intra_kind(kind a') \<and>
                                   targetnode a' = mx'))) 
-          then (\<lambda>cf. True)\<^isub>\<surd> else (\<lambda>cf. False)\<^isub>\<surd>))))"
+          then (\<lambda>cf. True)\<^sub>\<surd> else (\<lambda>cf. False)\<^sub>\<surd>))))"
   | "slice_kind_aux m m' S (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp m' S fs))
                            else ((\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs))"
   | "slice_kind_aux m m' S (Q\<hookleftarrow>\<^bsub>p\<^esub>f) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then 
@@ -137,7 +137,7 @@ by(simp add:slice_kind_def)
 
 
 lemma slice_kind_Pred_empty_obs_nearer_SOME:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^isub>\<surd>"
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^sub>\<surd>"
   and "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" 
   and "method_exit mex" and "get_proc (sourcenode a) = get_proc mex"
   and "distance (targetnode a) mex x" and "distance (sourcenode a) mex (x + 1)"
@@ -145,18 +145,18 @@ lemma slice_kind_Pred_empty_obs_nearer_SOME:
                                      distance (targetnode a') mex x \<and>
                                      valid_edge a' \<and> intra_kind(kind a') \<and>
                                      targetnode a' = n')"
-  shows "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
 proof -
   from `method_exit mex` `get_proc (sourcenode a) = get_proc mex`
   have "mex = (THE mex. method_exit mex \<and> get_proc (sourcenode a) = get_proc mex)"
     by(auto intro!:the_equality[THEN sym] intro:method_exit_unique)
-  with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>` 
+  with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>` 
     `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
   have "slice_kind S a = 
     (if (\<exists>x. distance (targetnode a) mex x \<and> distance (sourcenode a) mex (x + 1) \<and>
     (targetnode a = (SOME mx'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
     distance (targetnode a') mex x \<and> valid_edge a' \<and> intra_kind(kind a') \<and>
-    targetnode a' = mx'))) then (\<lambda>cf. True)\<^isub>\<surd> else (\<lambda>cf. False)\<^isub>\<surd>)"
+    targetnode a' = mx'))) then (\<lambda>cf. True)\<^sub>\<surd> else (\<lambda>cf. False)\<^sub>\<surd>)"
     by(simp add:slice_kind_def Let_def)
   with `distance (targetnode a) mex x` `distance (sourcenode a) mex (x + 1)`
     `targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
@@ -168,7 +168,7 @@ qed
 
 
 lemma slice_kind_Pred_empty_obs_nearer_not_SOME:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^isub>\<surd>"
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^sub>\<surd>"
   and "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" 
   and "method_exit mex" and "get_proc (sourcenode a) = get_proc mex"
   and "distance (targetnode a) mex x" and "distance (sourcenode a) mex (x + 1)"
@@ -176,18 +176,18 @@ lemma slice_kind_Pred_empty_obs_nearer_not_SOME:
                                      distance (targetnode a') mex x \<and>
                                      valid_edge a' \<and> intra_kind(kind a') \<and>
                                      targetnode a' = n')"
-  shows "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
 proof -
   from `method_exit mex` `get_proc (sourcenode a) = get_proc mex`
   have "mex = (THE mex. method_exit mex \<and> get_proc (sourcenode a) = get_proc mex)"
     by(auto intro!:the_equality[THEN sym] intro:method_exit_unique)
-  with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>` 
+  with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>` 
     `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
   have "slice_kind S a = 
     (if (\<exists>x. distance (targetnode a) mex x \<and> distance (sourcenode a) mex (x + 1) \<and>
     (targetnode a = (SOME mx'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
     distance (targetnode a') mex x \<and> valid_edge a' \<and> intra_kind(kind a') \<and>
-    targetnode a' = mx'))) then (\<lambda>cf. True)\<^isub>\<surd> else (\<lambda>cf. False)\<^isub>\<surd>)"
+    targetnode a' = mx'))) then (\<lambda>cf. True)\<^sub>\<surd> else (\<lambda>cf. False)\<^sub>\<surd>)"
     by(simp add:slice_kind_def Let_def)
   with `distance (targetnode a) mex x` `distance (sourcenode a) mex (x + 1)`
     `targetnode a \<noteq> (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
@@ -199,11 +199,11 @@ qed
 
 
 lemma slice_kind_Pred_empty_obs_not_nearer:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^isub>\<surd>"
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^sub>\<surd>"
   and "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}" 
   and "method_exit mex" and "get_proc (sourcenode a) = get_proc mex"
   and dist:"distance (sourcenode a) mex (x + 1)" "\<not> distance (targetnode a) mex x"
-  shows "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
 proof -
   from `method_exit mex` `get_proc (sourcenode a) = get_proc mex`
   have "mex = (THE mex. method_exit mex \<and> get_proc (sourcenode a) = get_proc mex)"
@@ -217,14 +217,14 @@ qed
 
 
 lemma slice_kind_Pred_obs_nearer_SOME:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^isub>\<surd>" 
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^sub>\<surd>" 
   and "m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
   and "distance (targetnode a) m x" "distance (sourcenode a) m (x + 1)"
   and "targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and>
                                      distance (targetnode a') m x \<and>
                                      valid_edge a' \<and> intra_kind(kind a') \<and> 
                                      targetnode a' = n')"
-  shows "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
 proof -
   from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
   have "m = (THE m. m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
@@ -234,14 +234,14 @@ qed
 
 
 lemma slice_kind_Pred_obs_nearer_not_SOME:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^isub>\<surd>" 
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^sub>\<surd>" 
   and "m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
   and "distance (targetnode a) m x" "distance (sourcenode a) m (x + 1)"
   and "targetnode a \<noteq> (SOME nx'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                       distance (targetnode a') m x \<and>
                                       valid_edge a' \<and> intra_kind(kind a') \<and> 
                                       targetnode a' = nx')"
-  shows "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
 proof -
   from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
   have "m = (THE m. m \<in> obs_intra (sourcenode a) (\<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>))"
@@ -251,34 +251,34 @@ qed
 
 
 lemma slice_kind_Pred_obs_not_nearer:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^isub>\<surd>" 
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = (Q)\<^sub>\<surd>" 
   and in_obs:"m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
   and dist:"distance (sourcenode a) m (x + 1)" 
            "\<not> distance (targetnode a) m x"
-  shows "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
 proof -
   from in_obs have the:"m = (THE m. m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
     by(rule obs_intra_the_element[THEN sym])
   from dist have "\<not> (\<exists>x. distance (targetnode a) m x \<and> 
                             distance (sourcenode a) m (x + 1))"
     by(fastforce dest:distance_det)
-  with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>` in_obs the show ?thesis
+  with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>` in_obs the show ?thesis
     by(auto simp:slice_kind_def Let_def)
 qed
 
 
 lemma kind_Predicate_notin_slice_slice_kind_Predicate:
-  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "valid_edge a" and "kind a = (Q)\<^isub>\<surd>"
-  obtains Q' where "slice_kind S a = (Q')\<^isub>\<surd>" and "Q' = (\<lambda>s. False) \<or> Q' = (\<lambda>s. True)"
+  assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "valid_edge a" and "kind a = (Q)\<^sub>\<surd>"
+  obtains Q' where "slice_kind S a = (Q')\<^sub>\<surd>" and "Q' = (\<lambda>s. False) \<or> Q' = (\<lambda>s. True)"
 proof(atomize_elim)
-  show "\<exists>Q'. slice_kind S a = (Q')\<^isub>\<surd> \<and> (Q' = (\<lambda>s. False) \<or> Q' = (\<lambda>s. True))"
+  show "\<exists>Q'. slice_kind S a = (Q')\<^sub>\<surd> \<and> (Q' = (\<lambda>s. False) \<or> Q' = (\<lambda>s. True))"
   proof(cases "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
     case True
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    then obtain as where "sourcenode a -as\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
-    then obtain as' mex where "sourcenode a -as'\<rightarrow>\<^isub>\<iota>* mex" and "method_exit mex" 
+    then obtain as where "sourcenode a -as\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
+    then obtain as' mex where "sourcenode a -as'\<rightarrow>\<^sub>\<iota>* mex" and "method_exit mex" 
       by -(erule valid_Exit_path_intra_path)
-    from `sourcenode a -as'\<rightarrow>\<^isub>\<iota>* mex` have "get_proc (sourcenode a) = get_proc mex"
+    from `sourcenode a -as'\<rightarrow>\<^sub>\<iota>* mex` have "get_proc (sourcenode a) = get_proc mex"
       by(rule intra_path_get_procs)
     show ?thesis
     proof(cases "\<exists>x. distance (targetnode a) mex x \<and> 
@@ -292,20 +292,20 @@ proof(atomize_elim)
                                                  valid_edge a' \<and> intra_kind(kind a') \<and>
                                                  targetnode a' = n')")
         case True
-        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>`
+        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>`
           `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
           `method_exit mex` `get_proc (sourcenode a) = get_proc mex`
           `distance (targetnode a) mex x` `distance (sourcenode a) mex (x + 1)`
-        have "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+        have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
           by(rule slice_kind_Pred_empty_obs_nearer_SOME)
         thus ?thesis by simp
       next
         case False
-        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>`
+        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>`
           `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}`
           `method_exit mex` `get_proc (sourcenode a) = get_proc mex`
           `distance (targetnode a) mex x` `distance (sourcenode a) mex (x + 1)`
-        have "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+        have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
           by(rule slice_kind_Pred_empty_obs_nearer_not_SOME)
         thus ?thesis by simp
       qed
@@ -314,9 +314,9 @@ proof(atomize_elim)
       from `method_exit mex` `get_proc (sourcenode a) = get_proc mex`
       have "mex = (THE mex. method_exit mex \<and> get_proc (sourcenode a) = get_proc mex)"
         by(auto intro!:the_equality[THEN sym] intro:method_exit_unique)
-      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>`
+      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>`
         `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}` False
-      have "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+      have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
         by(auto simp:slice_kind_def Let_def)
       thus ?thesis by simp
     qed
@@ -335,18 +335,18 @@ proof(atomize_elim)
                                                  valid_edge a' \<and> intra_kind(kind a') \<and>
                                                  targetnode a' = n')")
         case True
-        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>`
+        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>`
           `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
-        have "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+        have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
           by(rule slice_kind_Pred_obs_nearer_SOME)
         thus ?thesis by simp
       next
         case False
-        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>`
+        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>`
           `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
-        have "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+        have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
           by(rule slice_kind_Pred_obs_nearer_not_SOME)
         thus ?thesis by simp
       qed
@@ -355,9 +355,9 @@ proof(atomize_elim)
       from `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
       have "m = (THE m. m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>)"
         by(rule obs_intra_the_element[THEN sym])
-      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^isub>\<surd>` False
+      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = (Q)\<^sub>\<surd>` False
         `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
-      have "slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+      have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
         by(auto simp:slice_kind_def Let_def)
       thus ?thesis by simp
     qed
@@ -413,14 +413,14 @@ lemma slice_kind_Call_intra_notin_slice:
   assumes "sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "valid_edge a" 
   and "intra_kind (kind a)" and "valid_edge a'" and "kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   and "sourcenode a' = sourcenode a"
-  shows "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+  shows "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
 proof -
   from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain a'' 
     where "a'' \<in> get_return_edges a'"
     by(fastforce dest:get_return_edge_call)
   with `valid_edge a'` obtain ax where "valid_edge ax" 
     and "sourcenode ax = sourcenode a'" and " targetnode ax = targetnode a''"
-    and "kind ax = (\<lambda>cf. False)\<^isub>\<surd>"
+    and "kind ax = (\<lambda>cf. False)\<^sub>\<surd>"
     by(fastforce dest:call_return_node_edge)
   from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   have "\<exists>!a''. valid_edge a'' \<and> sourcenode a'' = sourcenode a' \<and> 
@@ -429,18 +429,18 @@ proof -
   with `valid_edge a` `sourcenode a' = sourcenode a` `intra_kind (kind a)`
   have all:"\<forall>a''. valid_edge a'' \<and> sourcenode a'' = sourcenode a' \<and> 
     intra_kind(kind a'') \<longrightarrow> a'' = a" by fastforce
-  with `valid_edge ax` `sourcenode ax = sourcenode a'` `kind ax = (\<lambda>cf. False)\<^isub>\<surd>`
+  with `valid_edge ax` `sourcenode ax = sourcenode a'` `kind ax = (\<lambda>cf. False)\<^sub>\<surd>`
   have [simp]:"ax = a" by(fastforce simp:intra_kind_def)
   show ?thesis
   proof(cases "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
     case True
     from `valid_edge a` have "valid_node (sourcenode a)" by simp
-    then obtain asx where "sourcenode a -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
-    then obtain as pex where "sourcenode a-as\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex"
+    then obtain asx where "sourcenode a -asx\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(fastforce dest:Exit_path)
+    then obtain as pex where "sourcenode a-as\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex"
       by -(erule valid_Exit_path_intra_path)
-    from `sourcenode a-as\<rightarrow>\<^isub>\<iota>* pex` have "get_proc (sourcenode a) = get_proc pex"
+    from `sourcenode a-as\<rightarrow>\<^sub>\<iota>* pex` have "get_proc (sourcenode a) = get_proc pex"
       by(rule intra_path_get_procs)
-    from `sourcenode a-as\<rightarrow>\<^isub>\<iota>* pex` obtain x where "distance (sourcenode a) pex x"
+    from `sourcenode a-as\<rightarrow>\<^sub>\<iota>* pex` obtain x where "distance (sourcenode a) pex x"
       and "x \<le> length as" by(erule every_path_distance)
     from `method_exit pex` have "sourcenode a \<noteq> pex"
     proof(rule method_exit_cases)
@@ -477,16 +477,16 @@ proof -
     from `valid_edge ax'` `sourcenode a = sourcenode ax'` `intra_kind(kind ax')`
       `sourcenode a' = sourcenode a` all
     have [simp]:"ax' = a" by fastforce
-    from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = (\<lambda>cf. False)\<^isub>\<surd>`
+    from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = (\<lambda>cf. False)\<^sub>\<surd>`
       True `method_exit pex` `get_proc (sourcenode a) = get_proc pex` `x \<noteq> 0`
       `distance (targetnode ax') pex (x - 1)` `distance (sourcenode a) pex x` Some
     show ?thesis by(fastforce elim:slice_kind_Pred_empty_obs_nearer_SOME)
   next
     case False
     then obtain m where "m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by fastforce
-    then obtain as where "sourcenode a-as\<rightarrow>\<^isub>\<iota>* m" and "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
+    then obtain as where "sourcenode a-as\<rightarrow>\<^sub>\<iota>* m" and "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>"
       by -(erule obs_intraE)
-    from `sourcenode a-as\<rightarrow>\<^isub>\<iota>* m` obtain x where "distance (sourcenode a) m x"
+    from `sourcenode a-as\<rightarrow>\<^sub>\<iota>* m` obtain x where "distance (sourcenode a) m x"
       and "x \<le> length as" by(erule every_path_distance)
     from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
     have "sourcenode a \<noteq> m" by fastforce
@@ -508,7 +508,7 @@ proof -
     from `valid_edge ax'` `sourcenode a = sourcenode ax'` `intra_kind(kind ax')`
       `sourcenode a' = sourcenode a` all
     have [simp]:"ax' = a" by fastforce
-    from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = (\<lambda>cf. False)\<^isub>\<surd>`
+    from `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = (\<lambda>cf. False)\<^sub>\<surd>`
       `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `x \<noteq> 0`
       `distance (targetnode ax') m (x - 1)` `distance (sourcenode a) m x` Some
     show ?thesis by(fastforce elim:slice_kind_Pred_obs_nearer_SOME)
@@ -530,20 +530,20 @@ by(simp add:slice_kind_def,unfold formal_out_THE,simp)
 
 
 lemma length_transfer_kind_slice_kind:
-  assumes "valid_edge a" and "length s\<^isub>1 = length s\<^isub>2"
-  and "transfer (kind a) s\<^isub>1 = s\<^isub>1'" and "transfer (slice_kind S a) s\<^isub>2 = s\<^isub>2'"
-  shows "length s\<^isub>1' = length s\<^isub>2'"
+  assumes "valid_edge a" and "length s\<^sub>1 = length s\<^sub>2"
+  and "transfer (kind a) s\<^sub>1 = s\<^sub>1'" and "transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'"
+  shows "length s\<^sub>1' = length s\<^sub>2'"
 proof(cases "kind a" rule:edge_kind_cases)
   case Intra
   show ?thesis
   proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
     case True
     with Intra assms show ?thesis
-      by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_intra_kind_in_slice simp:intra_kind_def)+
+      by(cases s\<^sub>1)(cases s\<^sub>2,auto dest:slice_intra_kind_in_slice simp:intra_kind_def)+
   next
     case False
     with Intra assms show ?thesis
-      by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_kind_Upd 
+      by(cases s\<^sub>1)(cases s\<^sub>2,auto dest:slice_kind_Upd 
         elim:kind_Predicate_notin_slice_slice_kind_Predicate simp:intra_kind_def)+
   qed
 next
@@ -552,11 +552,11 @@ next
   proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
     case True
     with Call assms show ?thesis
-      by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_kind_Call_in_slice)+
+      by(cases s\<^sub>1)(cases s\<^sub>2,auto dest:slice_kind_Call_in_slice)+
   next
     case False
     with Call assms show ?thesis
-      by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_kind_Call)+
+      by(cases s\<^sub>1)(cases s\<^sub>2,auto dest:slice_kind_Call)+
   qed
 next
   case (Return Q p f)
@@ -569,11 +569,11 @@ next
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
       by(fastforce dest!:callee_in_procs)
     with True `valid_edge a` Return assms show ?thesis
-      by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_kind_Return_in_slice split:list.split)+
+      by(cases s\<^sub>1)(cases s\<^sub>2,auto dest:slice_kind_Return_in_slice split:list.split)+
   next    
     case False
     with Return assms show ?thesis
-      by(cases s\<^isub>1)(cases s\<^isub>2,auto dest:slice_kind_Return split:list.split)+
+      by(cases s\<^sub>1)(cases s\<^sub>2,auto dest:slice_kind_Return split:list.split)+
   qed
 qed
 
@@ -635,19 +635,19 @@ qed
 lemma slice_kind_only_one_True_edge:
   assumes "sourcenode a = sourcenode a'" and "targetnode a \<noteq> targetnode a'" 
   and "valid_edge a" and "valid_edge a'" and "intra_kind (kind a)" 
-  and "intra_kind (kind a')" and "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
-  shows "slice_kind S a' = (\<lambda>s. False)\<^isub>\<surd>"
+  and "intra_kind (kind a')" and "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
+  shows "slice_kind S a' = (\<lambda>s. False)\<^sub>\<surd>"
 proof -
-  from assms obtain Q Q' where "kind a = (Q)\<^isub>\<surd>"
-    and "kind a' = (Q')\<^isub>\<surd>" and det:"\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
+  from assms obtain Q Q' where "kind a = (Q)\<^sub>\<surd>"
+    and "kind a' = (Q')\<^sub>\<surd>" and det:"\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     by(auto dest:deterministic)
   show ?thesis
   proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
     case True
-    with `slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (Q)\<^isub>\<surd>` have "Q = (\<lambda>s. True)"
+    with `slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (Q)\<^sub>\<surd>` have "Q = (\<lambda>s. True)"
       by(simp add:slice_kind_def Let_def)
     with det have "Q' = (\<lambda>s. False)" by(simp add:fun_eq_iff)
-    with True `kind a' = (Q')\<^isub>\<surd>` `sourcenode a = sourcenode a'` show ?thesis
+    with True `kind a' = (Q')\<^sub>\<surd>` `sourcenode a = sourcenode a'` show ?thesis
       by(simp add:slice_kind_def Let_def)
   next
     case False
@@ -655,8 +655,8 @@ proof -
     thus ?thesis
     proof(cases "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {}")
       case True
-      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>`
-        `kind a = (Q)\<^isub>\<surd>`
+      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>`
+        `kind a = (Q)\<^sub>\<surd>`
       obtain mex x where mex:"mex = (THE mex. method_exit mex \<and> 
         get_proc (sourcenode a) = get_proc mex)"
         and dist:"distance (targetnode a) mex x" "distance (sourcenode a) mex (x + 1)"
@@ -692,7 +692,7 @@ proof -
         have "a = a'" by fastforce
         with `targetnode a \<noteq> targetnode a'` show False by simp
       qed
-      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` True `kind a' = (Q')\<^isub>\<surd>`
+      with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` True `kind a' = (Q')\<^sub>\<surd>`
         `sourcenode a = sourcenode a'` mex dist
       show ?thesis by(auto dest:distance_det 
         simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
@@ -704,7 +704,7 @@ proof -
         by(auto dest:obs_intra_the_element)
       with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
         `obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<noteq> {}` 
-        `slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>` `kind a = (Q)\<^isub>\<surd>`
+        `slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (Q)\<^sub>\<surd>`
       obtain x x' where "distance (targetnode a) m x" 
         "distance (sourcenode a) m (x + 1)"
         and target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and>
@@ -715,7 +715,7 @@ proof -
       show ?thesis
       proof(cases "distance (targetnode a') m x")
         case False
-        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a' = (Q')\<^isub>\<surd>`
+        with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a' = (Q')\<^sub>\<surd>`
           `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
           `sourcenode a = sourcenode a'` show ?thesis
@@ -752,7 +752,7 @@ proof -
           with `targetnode a \<noteq> targetnode a'` show False by simp
         qed
         with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
-          `kind a' = (Q')\<^isub>\<surd>` `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
+          `kind a' = (Q')\<^sub>\<surd>` `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>`
           `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
           True `sourcenode a = sourcenode a'` show ?thesis
           by(fastforce intro:slice_kind_Pred_obs_nearer_not_SOME)
@@ -766,40 +766,40 @@ lemma slice_deterministic:
   assumes "valid_edge a" and "valid_edge a'"
   and "intra_kind (kind a)" and "intra_kind (kind a')"
   and "sourcenode a = sourcenode a'" and "targetnode a \<noteq> targetnode a'"
-  obtains Q Q' where "slice_kind S a = (Q)\<^isub>\<surd>" and "slice_kind S a' = (Q')\<^isub>\<surd>"
+  obtains Q Q' where "slice_kind S a = (Q)\<^sub>\<surd>" and "slice_kind S a' = (Q')\<^sub>\<surd>"
   and "\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
 proof(atomize_elim)
   from assms obtain Q Q' 
-    where "kind a = (Q)\<^isub>\<surd>" and "kind a' = (Q')\<^isub>\<surd>" 
+    where "kind a = (Q)\<^sub>\<surd>" and "kind a' = (Q')\<^sub>\<surd>" 
     and det:"\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     by(auto dest:deterministic)
-  show "\<exists>Q Q'. slice_kind S a = (Q)\<^isub>\<surd> \<and> slice_kind S a' = (Q')\<^isub>\<surd> \<and> 
+  show "\<exists>Q Q'. slice_kind S a = (Q)\<^sub>\<surd> \<and> slice_kind S a' = (Q')\<^sub>\<surd> \<and> 
                 (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
   proof(cases "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>")
     case True
-    with `kind a = (Q)\<^isub>\<surd>` have "slice_kind S a = (Q)\<^isub>\<surd>"
+    with `kind a = (Q)\<^sub>\<surd>` have "slice_kind S a = (Q)\<^sub>\<surd>"
       by(simp add:slice_kind_def Let_def)
-    from True `kind a' = (Q')\<^isub>\<surd>` `sourcenode a = sourcenode a'`
-    have "slice_kind S a' = (Q')\<^isub>\<surd>"
+    from True `kind a' = (Q')\<^sub>\<surd>` `sourcenode a = sourcenode a'`
+    have "slice_kind S a' = (Q')\<^sub>\<surd>"
       by(simp add:slice_kind_def Let_def)
-    with `slice_kind S a = (Q)\<^isub>\<surd>` det show ?thesis by blast
+    with `slice_kind S a = (Q)\<^sub>\<surd>` det show ?thesis by blast
   next
     case False
-    with `kind a = (Q)\<^isub>\<surd>` 
-    have "slice_kind S a = (\<lambda>s. True)\<^isub>\<surd> \<or> slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
+    with `kind a = (Q)\<^sub>\<surd>` 
+    have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd> \<or> slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
       by(simp add:slice_kind_def Let_def)
     thus ?thesis
     proof
-      assume true:"slice_kind S a = (\<lambda>s. True)\<^isub>\<surd>"
+      assume true:"slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
       with `sourcenode a = sourcenode a'` `targetnode a \<noteq> targetnode a'`
         `valid_edge a` `valid_edge a'` `intra_kind (kind a)` `intra_kind (kind a')`
-      have "slice_kind S a' = (\<lambda>s. False)\<^isub>\<surd>"
+      have "slice_kind S a' = (\<lambda>s. False)\<^sub>\<surd>"
         by(rule slice_kind_only_one_True_edge)
       with true show ?thesis by simp
     next
-      assume false:"slice_kind S a = (\<lambda>s. False)\<^isub>\<surd>"
-      from False `kind a' = (Q')\<^isub>\<surd>` `sourcenode a = sourcenode a'`
-      have "slice_kind S a' = (\<lambda>s. True)\<^isub>\<surd> \<or> slice_kind S a' = (\<lambda>s. False)\<^isub>\<surd>"
+      assume false:"slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
+      from False `kind a' = (Q')\<^sub>\<surd>` `sourcenode a = sourcenode a'`
+      have "slice_kind S a' = (\<lambda>s. True)\<^sub>\<surd> \<or> slice_kind S a' = (\<lambda>s. False)\<^sub>\<surd>"
         by(simp add:slice_kind_def Let_def)
       with false show ?thesis by auto
     qed

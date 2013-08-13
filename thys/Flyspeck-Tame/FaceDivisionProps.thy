@@ -1860,8 +1860,8 @@ declare pre_splitFace_def [simp del]
 
 lemma splitFace_split_face:
      "oldF \<in> \<F> g \<Longrightarrow>
-     (f\<^isub>1, f\<^isub>2, newGraph) = splitFace g ram\<^isub>1 ram\<^isub>2 oldF newVs \<Longrightarrow>
-     (f\<^isub>1, f\<^isub>2) = split_face oldF ram\<^isub>1 ram\<^isub>2 newVs"
+     (f\<^sub>1, f\<^sub>2, newGraph) = splitFace g ram\<^sub>1 ram\<^sub>2 oldF newVs \<Longrightarrow>
+     (f\<^sub>1, f\<^sub>2) = split_face oldF ram\<^sub>1 ram\<^sub>2 newVs"
   by (simp add: splitFace_def split_def)
 
 
@@ -3409,7 +3409,7 @@ qed
 
 lemma splitFace_edges_incr:
  "pre_splitFace g ram1 ram2 f vs \<Longrightarrow>
-  (f\<^isub>1, f\<^isub>2, g') = splitFace g ram1 ram2 f vs  \<Longrightarrow>
+  (f\<^sub>1, f\<^sub>2, g') = splitFace g ram1 ram2 f vs  \<Longrightarrow>
   edges g \<subseteq> edges g'"
 apply(cases vs)
  apply(simp add:splitFace_edges_g'_vs)
@@ -3419,11 +3419,11 @@ apply blast
 done
 
 lemma snd_snd_splitFace_edges_incr:
- "pre_splitFace g v\<^isub>1 v\<^isub>2 f vs \<Longrightarrow>
-  edges g \<subseteq> edges(snd(snd(splitFace g v\<^isub>1 v\<^isub>2 f vs)))"
+ "pre_splitFace g v\<^sub>1 v\<^sub>2 f vs \<Longrightarrow>
+  edges g \<subseteq> edges(snd(snd(splitFace g v\<^sub>1 v\<^sub>2 f vs)))"
 apply(erule splitFace_edges_incr
- [where f\<^isub>1 = "fst(splitFace g v\<^isub>1 v\<^isub>2 f vs)"
-  and f\<^isub>2 = "fst(snd(splitFace g v\<^isub>1 v\<^isub>2 f vs))"])
+ [where f\<^sub>1 = "fst(splitFace g v\<^sub>1 v\<^sub>2 f vs)"
+  and f\<^sub>2 = "fst(snd(splitFace g v\<^sub>1 v\<^sub>2 f vs))"])
 apply(auto)
 done
 

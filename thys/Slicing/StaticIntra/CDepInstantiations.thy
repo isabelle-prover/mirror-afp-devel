@@ -14,12 +14,12 @@ lemma Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS S) \<Longrightarrow>
   by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:split_if_asm)
 
 
-abbreviation PDG_path' :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ \<longrightarrow>\<^isub>d* _" [51,0] 80)
-  where "n \<longrightarrow>\<^isub>d* n' \<equiv> PDG.PDG_path sourcenode targetnode valid_edge Def Use
+abbreviation PDG_path' :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ \<longrightarrow>\<^sub>d* _" [51,0] 80)
+  where "n \<longrightarrow>\<^sub>d* n' \<equiv> PDG.PDG_path sourcenode targetnode valid_edge Def Use
   standard_control_dependence n n'"
 
 lemma cd_closed:
-  "\<lbrakk>n' \<in> PDG_BS S; n controls\<^isub>s n'\<rbrakk> \<Longrightarrow> n \<in> PDG_BS S"
+  "\<lbrakk>n' \<in> PDG_BS S; n controls\<^sub>s n'\<rbrakk> \<Longrightarrow> n \<in> PDG_BS S"
   by(simp add:PDG_BS_def)(blast dest:PDG_cdep_edge PDG_path_Append PDG_path_cdep)
 
 
@@ -62,7 +62,7 @@ proof(rule ccontr)
     by(fastforce dest:path_split_second)
   with `n postdominates (targetnode a)` `\<not> n postdominates targetnode ax`
     `valid_edge ax` `n \<notin> set (sourcenodes (a#as''))`
-  have "sourcenode a controls\<^isub>s n" by(fastforce simp:standard_control_dependence_def)
+  have "sourcenode a controls\<^sub>s n" by(fastforce simp:standard_control_dependence_def)
   with `n \<in> obs n' (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
     by(fastforce intro:cd_closed PDG_cdep_edge elim:obs.cases)
   with `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)` 
@@ -255,7 +255,7 @@ proof(rule ccontr)
       from `sourcenode a -a#ys\<rightarrow>* nx` `nx \<notin> set(sourcenodes (a#ys))`
         `nx postdominates (targetnode a)` `valid_edge x'`
         `\<not> nx postdominates (targetnode x')` `sourcenode a = sourcenode x'`
-      have "(sourcenode a) controls\<^isub>s nx"
+      have "(sourcenode a) controls\<^sub>s nx"
         by(fastforce simp:standard_control_dependence_def)
       with `nx \<in> (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
         by(rule cd_closed)

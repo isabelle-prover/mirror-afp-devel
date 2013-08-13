@@ -75,14 +75,14 @@ proof -
     from welltyped meth pc
     have "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
       by (rule wt_jvm_prog_impl_wt_instr)
-    hence app\<^isub>0: "app (ins!pc) P mxs T pc (size ins) xt (\<Phi> C M!pc) "
+    hence app\<^sub>0: "app (ins!pc) P mxs T pc (size ins) xt (\<Phi> C M!pc) "
       by (simp add: wt_instr_def)
     with \<Phi> have eff: 
       "\<forall>(pc',s')\<in>set (eff (ins ! pc) P pc xt (\<Phi> C M ! pc)). pc' < size ins"
       by (unfold app_def) simp
     
-    from app\<^isub>0 \<Phi> have app:
-      "xcpt_app (ins!pc) P pc mxs xt (ST,LT) \<and> app\<^isub>i (ins!pc, P, pc, mxs, T, (ST,LT))"
+    from app\<^sub>0 \<Phi> have app:
+      "xcpt_app (ins!pc) P pc mxs xt (ST,LT) \<and> app\<^sub>i (ins!pc, P, pc, mxs, T, (ST,LT))"
       by (clarsimp simp add: app_def)
 
     show ?thesis

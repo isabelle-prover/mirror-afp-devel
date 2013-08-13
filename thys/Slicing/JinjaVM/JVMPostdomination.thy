@@ -25,7 +25,7 @@ definition EP :: jvm_prog
   where "EP = (''C'', Object, [], [(''M'', [], Void, 1::nat, 0::nat, [Push Unit, Return], [])]) #
   SystemClasses"
 
-definition Phi_EP :: ty\<^isub>P
+definition Phi_EP :: ty\<^sub>P
   where "Phi_EP C M = (if C = ''C'' \<and> M = ''M'' then [\<lfloor>([],[OK (Class ''C'')])\<rfloor>,\<lfloor>([Void],[OK (Class ''C'')])\<rfloor>] else [])"
 
 text {*
@@ -61,13 +61,13 @@ next
   have classes_wf:
     "\<forall>c\<in>set EP.
         wf_cdecl
-         (\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (Phi_EP C M))
+         (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (Phi_EP C M))
          EP c"
   proof
     fix C
     assume C_in_EP: "C \<in> set EP"
     show "wf_cdecl
-         (\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (Phi_EP C M))
+         (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (Phi_EP C M))
          EP C"
     proof (cases "C \<in> set SystemClasses")
       case True
@@ -98,7 +98,7 @@ next
   with distinct_EP
   show "(\<forall>c\<in>set EP.
     wf_cdecl
-      (\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (Phi_EP C M))
+      (\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (Phi_EP C M))
       EP c) \<and>
     distinct_fst EP"
     by simp
@@ -258,7 +258,7 @@ lemma EP_C_M_0_valid [simp]:
     (_ [(''C'', ''M'', 0)],None _)"
 proof -
   have "valid_edge (Abs_wf_jvmprog (EP, Phi_EP), ''C'', ''M'')
-    ((_Entry_), (\<lambda>s. True)\<^isub>\<surd>, (_ [(''C'', ''M'', 0)],None _))"
+    ((_Entry_), (\<lambda>s. True)\<^sub>\<surd>, (_ [(''C'', ''M'', 0)],None _))"
     apply (auto simp: Phi_EP_def)
     by rule auto
   thus ?thesis
@@ -288,8 +288,8 @@ typedef cfg_wf_prog = cfg_wf_prog
   unfolding cfg_wf_prog_def
 proof
   let ?prog = "((Abs_wf_jvmprog (EP, Phi_EP)), ''C'', ''M'')"
-  let ?edge0 = "((_Entry_), (\<lambda>s. False)\<^isub>\<surd>, (_Exit_))"
-  let ?edge1 = "((_Entry_), (\<lambda>s. True)\<^isub>\<surd>, (_ [(''C'', ''M'', 0)],None _))"
+  let ?edge0 = "((_Entry_), (\<lambda>s. False)\<^sub>\<surd>, (_Exit_))"
+  let ?edge1 = "((_Entry_), (\<lambda>s. True)\<^sub>\<surd>, (_ [(''C'', ''M'', 0)],None _))"
   let ?edge2 = "((_ [(''C'', ''M'', 0)],None _),
                  \<Up>(\<lambda>(h, stk, loc). (h, stk((0, 0) := Unit), loc)),
                  (_ [(''C'', ''M'', 1)],None _))"

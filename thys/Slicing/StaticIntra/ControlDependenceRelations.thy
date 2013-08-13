@@ -7,9 +7,9 @@ begin
 context StrongPostdomination begin
 
 lemma standard_control_implies_weak_order: 
-  assumes "n controls\<^isub>s n'" shows "n \<longrightarrow>\<^bsub>wod\<^esub> n',(_Exit_)"
+  assumes "n controls\<^sub>s n'" shows "n \<longrightarrow>\<^bsub>wod\<^esub> n',(_Exit_)"
 proof -
-  from `n controls\<^isub>s n'` obtain as a a' as' where "as = a#as'"
+  from `n controls\<^sub>s n'` obtain as a a' as' where "as = a#as'"
     and "n' \<notin> set(sourcenodes as)" and "n -as\<rightarrow>* n'"
     and "n' postdominates (targetnode a)"
     and "valid_edge a'" and "sourcenode a' = n"
@@ -20,7 +20,7 @@ proof -
     by(induct rule:path.induct,auto simp:sourcenodes_def)
   from `n -as\<rightarrow>* n'` `as = a#as'` have "valid_edge a"
     by(auto elim:path.cases)
-  from `n controls\<^isub>s n'` have "n' \<noteq> (_Exit_)"
+  from `n controls\<^sub>s n'` have "n' \<noteq> (_Exit_)"
     by(fastforce dest:Exit_not_standard_control_dependent)
   from `n -as\<rightarrow>* n'` have "(_Exit_) \<notin> set (sourcenodes as)" by fastforce
   from `n -as\<rightarrow>* n'` have "valid_node n" and "valid_node n'"

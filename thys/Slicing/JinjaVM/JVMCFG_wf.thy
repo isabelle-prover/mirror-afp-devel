@@ -1161,7 +1161,7 @@ next
     and "prog \<turnstile> (sourcenode a')-kind a'\<rightarrow>(targetnode a')"
     by simp_all
   with src_eq trg_neq
-  show "\<exists>Q Q'. kind a = (Q)\<^isub>\<surd> \<and> kind a' = (Q')\<^isub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
+  show "\<exists>Q Q'. kind a = (Q)\<^sub>\<surd> \<and> kind a' = (Q')\<^sub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
     apply (cases prog, auto)
     apply (erule JVM_CFG.cases, erule_tac [!] JVM_CFG.cases)
     (* This takes veeery long! *)

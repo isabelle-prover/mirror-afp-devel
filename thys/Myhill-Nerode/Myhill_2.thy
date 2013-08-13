@@ -207,7 +207,7 @@ qed
 subsection {* Case for @{text "Times"} *}
 
 definition
-  "Partitions x \<equiv> {(x\<^isub>p, x\<^isub>s). x\<^isub>p @ x\<^isub>s = x}"
+  "Partitions x \<equiv> {(x\<^sub>p, x\<^sub>s). x\<^sub>p @ x\<^sub>s = x}"
 
 lemma conc_partitions_elim:
   assumes "x \<in> A \<cdot> B"
@@ -234,7 +234,7 @@ done
 definition 
   tag_Times :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a list \<Rightarrow> 'a lang \<times> 'a lang set"
 where
-  "tag_Times A B \<equiv> \<lambda>x. (\<approx>A `` {x}, {(\<approx>B `` {x\<^isub>s}) | x\<^isub>p x\<^isub>s. x\<^isub>p \<in> A \<and> (x\<^isub>p, x\<^isub>s) \<in> Partitions x})"
+  "tag_Times A B \<equiv> \<lambda>x. (\<approx>A `` {x}, {(\<approx>B `` {x\<^sub>s}) | x\<^sub>p x\<^sub>s. x\<^sub>p \<in> A \<and> (x\<^sub>p, x\<^sub>s) \<in> Partitions x})"
 
 lemma tag_Times_injI:
   assumes a: "tag_Times A B x = tag_Times A B y"

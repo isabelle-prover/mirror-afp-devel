@@ -83,10 +83,10 @@ definition
      [(''pluspp'', PVar (natT \<rightarrow> natT \<rightarrow> natT)),
       (''multpp'', PVar (natT \<rightarrow> natT \<rightarrow> natT))] = Rcd
      [(''multpp'', \<lambda>:natT. \<lambda>:natT. \<lambda><:Top. \<lambda><:TVar 0. \<lambda><:TVar 1. \<lambda>:TVar 2 \<rightarrow> TVar 1.
-        Var 5 \<bullet>\<^isub>\<tau> TVar 3 \<bullet>\<^isub>\<tau> TVar 2 \<bullet>\<^isub>\<tau> TVar 1 \<bullet> (Var 4 \<bullet>\<^isub>\<tau> TVar 3 \<bullet>\<^isub>\<tau> TVar 2 \<bullet>\<^isub>\<tau> TVar 1) \<bullet> Var 0),
+        Var 5 \<bullet>\<^sub>\<tau> TVar 3 \<bullet>\<^sub>\<tau> TVar 2 \<bullet>\<^sub>\<tau> TVar 1 \<bullet> (Var 4 \<bullet>\<^sub>\<tau> TVar 3 \<bullet>\<^sub>\<tau> TVar 2 \<bullet>\<^sub>\<tau> TVar 1) \<bullet> Var 0),
       (''pluspp'', \<lambda>:natT. \<lambda>:natT. \<lambda><:Top. \<lambda><:TVar 0. \<lambda><:TVar 1. \<lambda>:TVar 2 \<rightarrow> TVar 1. \<lambda>:TVar 1.
-        Var 6 \<bullet>\<^isub>\<tau> TVar 4 \<bullet>\<^isub>\<tau> TVar 3 \<bullet>\<^isub>\<tau> TVar 3 \<bullet> Var 1 \<bullet>
-          (Var 5 \<bullet>\<^isub>\<tau> TVar 4 \<bullet>\<^isub>\<tau> TVar 3 \<bullet>\<^isub>\<tau> TVar 2 \<bullet> Var 1 \<bullet> Var 0))]
+        Var 6 \<bullet>\<^sub>\<tau> TVar 4 \<bullet>\<^sub>\<tau> TVar 3 \<bullet>\<^sub>\<tau> TVar 3 \<bullet> Var 1 \<bullet>
+          (Var 5 \<bullet>\<^sub>\<tau> TVar 4 \<bullet>\<^sub>\<tau> TVar 3 \<bullet>\<^sub>\<tau> TVar 2 \<bullet> Var 1 \<bullet> Var 0))]
    IN
      Var 0 \<bullet> (Var 1 \<bullet> Var 2 \<bullet> Var 2) \<bullet> Var 2"
 
@@ -97,7 +97,7 @@ Unfortunately, the definition based
 on evaluation contexts from \secref{sec:evaluation-ctxt} is not directly executable.
 The reason is that from the definition of evaluation contexts, the code generator
 cannot immediately read off an algorithm that, given a term @{text t}, computes a context
-@{text E} and a term @{text "t\<^isub>0"} such that @{text "t = E t\<^isub>0"}. In order to do this, one
+@{text E} and a term @{text "t\<^sub>0"} such that @{text "t = E t\<^sub>0"}. In order to do this, one
 would have to extract the algorithm contained in the proof of the {\it decomposition lemma}
 from \secref{sec:evaluation-ctxt}.
 *}

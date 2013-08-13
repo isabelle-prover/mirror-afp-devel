@@ -1163,20 +1163,20 @@ by(rule delay_bisimulation_final_base)
 
 subsection {* Transitivity for bisimulations *}
 
-definition bisim_compose :: "('s1, 's2) bisim \<Rightarrow> ('s2, 's3) bisim \<Rightarrow> ('s1, 's3) bisim" (infixr "\<circ>\<^isub>B" 60)
-where "(bisim1 \<circ>\<^isub>B bisim2) s1 s3 \<equiv> \<exists>s2. bisim1 s1 s2 \<and> bisim2 s2 s3"
+definition bisim_compose :: "('s1, 's2) bisim \<Rightarrow> ('s2, 's3) bisim \<Rightarrow> ('s1, 's3) bisim" (infixr "\<circ>\<^sub>B" 60)
+where "(bisim1 \<circ>\<^sub>B bisim2) s1 s3 \<equiv> \<exists>s2. bisim1 s1 s2 \<and> bisim2 s2 s3"
 
 lemma bisim_composeI [intro]:
-  "\<lbrakk> bisim12 s1 s2; bisim23 s2 s3 \<rbrakk> \<Longrightarrow> (bisim12 \<circ>\<^isub>B bisim23) s1 s3"
+  "\<lbrakk> bisim12 s1 s2; bisim23 s2 s3 \<rbrakk> \<Longrightarrow> (bisim12 \<circ>\<^sub>B bisim23) s1 s3"
 by(auto simp add: bisim_compose_def)
 
 lemma bisim_composeE [elim!]:
-  assumes bisim: "(bisim12 \<circ>\<^isub>B bisim23) s1 s3"
+  assumes bisim: "(bisim12 \<circ>\<^sub>B bisim23) s1 s3"
   obtains s2 where "bisim12 s1 s2" "bisim23 s2 s3"
 by(atomize_elim)(rule bisim[unfolded bisim_compose_def])
 
 lemma bisim_compose_assoc [simp]:
-  "(bisim12 \<circ>\<^isub>B bisim23) \<circ>\<^isub>B bisim34 = bisim12 \<circ>\<^isub>B bisim23 \<circ>\<^isub>B bisim34"
+  "(bisim12 \<circ>\<^sub>B bisim23) \<circ>\<^sub>B bisim34 = bisim12 \<circ>\<^sub>B bisim23 \<circ>\<^sub>B bisim34"
 by(auto simp add: fun_eq_iff)
 
 lemma bisim_compose_conv_relcomp:
@@ -1185,13 +1185,13 @@ by(auto simp add: relcomp_unfold)
 
 lemma list_all2_bisim_composeI:
   "\<lbrakk> list_all2 A xs ys; list_all2 B ys zs \<rbrakk>
-  \<Longrightarrow> list_all2 (A \<circ>\<^isub>B B) xs zs"
+  \<Longrightarrow> list_all2 (A \<circ>\<^sub>B B) xs zs"
 by(rule list_all2_trans) auto+
 
 lemma delay_bisimulation_diverge_compose:
   assumes wbisim12: "delay_bisimulation_diverge trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2"
   and wbisim23: "delay_bisimulation_diverge trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3"
-  shows "delay_bisimulation_diverge trsys1 trsys3 (bisim12 \<circ>\<^isub>B bisim23) (tlsim12 \<circ>\<^isub>B tlsim23) \<tau>move1 \<tau>move3"
+  shows "delay_bisimulation_diverge trsys1 trsys3 (bisim12 \<circ>\<^sub>B bisim23) (tlsim12 \<circ>\<^sub>B tlsim23) \<tau>move1 \<tau>move3"
 proof -
   interpret trsys1!: \<tau>trsys trsys1 \<tau>move1 .
   interpret trsys2!: \<tau>trsys trsys2 \<tau>move2 .
@@ -1201,27 +1201,27 @@ proof -
   show ?thesis
   proof
     fix s1 s3 s1'
-    assume bisim: "(bisim12 \<circ>\<^isub>B bisim23) s1 s3" and tr1: "trsys1.silent_move s1 s1'"
+    assume bisim: "(bisim12 \<circ>\<^sub>B bisim23) s1 s3" and tr1: "trsys1.silent_move s1 s1'"
     from bisim obtain s2 where bisim1: "bisim12 s1 s2" and bisim2: "bisim23 s2 s3" by blast
     from wb12.simulation_silent1[OF bisim1 tr1] obtain s2'
       where tr2: "trsys2.silent_moves s2 s2'" and bisim1': "bisim12 s1' s2'" by blast
     from wb23.simulation_silents1[OF bisim2 tr2] obtain s3'
       where "trsys3.silent_moves s3 s3'" "bisim23 s2' s3'" by blast
-    with bisim1' show "\<exists>s3'. trsys3.silent_moves s3 s3' \<and> (bisim12 \<circ>\<^isub>B bisim23) s1' s3'"
+    with bisim1' show "\<exists>s3'. trsys3.silent_moves s3 s3' \<and> (bisim12 \<circ>\<^sub>B bisim23) s1' s3'"
       by(blast intro: bisim_composeI)
   next
     fix s1 s3 s3'
-    assume bisim: "(bisim12 \<circ>\<^isub>B bisim23) s1 s3" and tr3: "trsys3.silent_move s3 s3'"
+    assume bisim: "(bisim12 \<circ>\<^sub>B bisim23) s1 s3" and tr3: "trsys3.silent_move s3 s3'"
     from bisim obtain s2 where bisim1: "bisim12 s1 s2" and bisim2: "bisim23 s2 s3" by blast
     from wb23.simulation_silent2[OF bisim2 tr3] obtain s2'
       where tr2: "trsys2.silent_moves s2 s2'" and bisim2': "bisim23 s2' s3'" by blast
     from wb12.simulation_silents2[OF bisim1 tr2] obtain s1'
       where "trsys1.silent_moves s1 s1'" "bisim12 s1' s2'" by blast
-    with bisim2' show "\<exists>s1'. trsys1.silent_moves s1 s1' \<and> (bisim12 \<circ>\<^isub>B bisim23) s1' s3'"
+    with bisim2' show "\<exists>s1'. trsys1.silent_moves s1 s1' \<and> (bisim12 \<circ>\<^sub>B bisim23) s1' s3'"
       by(blast intro: bisim_composeI)
   next
     fix s1 s3 tl1 s1'
-    assume bisim: "(bisim12 \<circ>\<^isub>B bisim23) s1 s3"
+    assume bisim: "(bisim12 \<circ>\<^sub>B bisim23) s1 s3"
       and tr1: "trsys1 s1 tl1 s1'" and \<tau>1: "\<not> \<tau>move1 s1 tl1 s1'"
     from bisim obtain s2 where bisim1: "bisim12 s1 s2" and bisim2: "bisim23 s2 s3" by blast
     from wb12.simulation1[OF bisim1 tr1 \<tau>1] obtain s2' s2'' tl2
@@ -1234,11 +1234,11 @@ proof -
       "\<not> \<tau>move3 s3'' tl3 s3'''" "bisim23 s2'' s3'''" "tlsim23 tl2 tl3" by blast
     with tr31 bisim1' tlsim1 
     show "\<exists>s3' s3'' tl3. trsys3.silent_moves s3 s3' \<and> trsys3 s3' tl3 s3'' \<and> \<not> \<tau>move3 s3' tl3 s3'' \<and>
-                         (bisim12 \<circ>\<^isub>B bisim23) s1' s3'' \<and> (tlsim12 \<circ>\<^isub>B tlsim23) tl1 tl3"
+                         (bisim12 \<circ>\<^sub>B bisim23) s1' s3'' \<and> (tlsim12 \<circ>\<^sub>B tlsim23) tl1 tl3"
       by(blast intro: rtranclp_trans bisim_composeI)
   next
     fix s1 s3 tl3 s3'
-    assume bisim: "(bisim12 \<circ>\<^isub>B bisim23) s1 s3"
+    assume bisim: "(bisim12 \<circ>\<^sub>B bisim23) s1 s3"
       and tr3: "trsys3 s3 tl3 s3'" and \<tau>3: "\<not> \<tau>move3 s3 tl3 s3'"
     from bisim obtain s2 where bisim1: "bisim12 s1 s2" and bisim2: "bisim23 s2 s3" by blast
     from wb23.simulation2[OF bisim2 tr3 \<tau>3] obtain s2' s2'' tl2
@@ -1251,11 +1251,11 @@ proof -
       "\<not> \<tau>move1 s1'' tl1 s1'''" "bisim12 s1''' s2''" "tlsim12 tl1 tl2" by blast
     with tr11 bisim2' tlsim2
     show "\<exists>s1' s1'' tl1. trsys1.silent_moves s1 s1' \<and> trsys1 s1' tl1 s1'' \<and> \<not> \<tau>move1 s1' tl1 s1'' \<and>
-                         (bisim12 \<circ>\<^isub>B bisim23) s1'' s3' \<and> (tlsim12 \<circ>\<^isub>B tlsim23) tl1 tl3"
+                         (bisim12 \<circ>\<^sub>B bisim23) s1'' s3' \<and> (tlsim12 \<circ>\<^sub>B tlsim23) tl1 tl3"
       by(blast intro: rtranclp_trans bisim_composeI)
   next
     fix s1 s2
-    assume "(bisim12 \<circ>\<^isub>B bisim23) s1 s2"
+    assume "(bisim12 \<circ>\<^sub>B bisim23) s1 s2"
     thus "\<tau>trsys.\<tau>diverge trsys1 \<tau>move1 s1 = \<tau>trsys.\<tau>diverge trsys3 \<tau>move3 s2"
       by(auto simp add: wb12.\<tau>diverge_bisim_inv wb23.\<tau>diverge_bisim_inv)
   qed
@@ -1271,7 +1271,7 @@ lemma delay_bisimulation_diverge_final_compose:
   fixes \<tau>move1 \<tau>move2
   assumes wbisim12: "delay_bisimulation_diverge_final trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2 final1 final2"
   and wbisim23: "delay_bisimulation_diverge_final trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 final2 final3"
-  shows "delay_bisimulation_diverge_final trsys1 trsys3 (bisim12 \<circ>\<^isub>B bisim23) (tlsim12 \<circ>\<^isub>B tlsim23) \<tau>move1 \<tau>move3 final1 final3"
+  shows "delay_bisimulation_diverge_final trsys1 trsys3 (bisim12 \<circ>\<^sub>B bisim23) (tlsim12 \<circ>\<^sub>B tlsim23) \<tau>move1 \<tau>move3 final1 final3"
 proof -
   interpret trsys1!: \<tau>trsys trsys1 \<tau>move1 .
   interpret trsys2!: \<tau>trsys trsys2 \<tau>move2 .
@@ -1280,13 +1280,13 @@ proof -
     by(auto intro: wbisim12)
   interpret wb23!: delay_bisimulation_diverge_final trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 final2 final3
     by(auto intro: wbisim23)
-  interpret delay_bisimulation_diverge trsys1 trsys3 "bisim12 \<circ>\<^isub>B bisim23" "tlsim12 \<circ>\<^isub>B tlsim23" \<tau>move1 \<tau>move3
+  interpret delay_bisimulation_diverge trsys1 trsys3 "bisim12 \<circ>\<^sub>B bisim23" "tlsim12 \<circ>\<^sub>B tlsim23" \<tau>move1 \<tau>move3
     by(rule delay_bisimulation_diverge_compose)(unfold_locales)
   show ?thesis
   proof
     fix s1 s3
-    assume "(bisim12 \<circ>\<^isub>B bisim23) s1 s3" "final1 s1"
-    from `(bisim12 \<circ>\<^isub>B bisim23) s1 s3` obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
+    assume "(bisim12 \<circ>\<^sub>B bisim23) s1 s3" "final1 s1"
+    from `(bisim12 \<circ>\<^sub>B bisim23) s1 s3` obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
     from wb12.final1_simulation[OF `bisim12 s1 s2` `final1 s1`]
     obtain s2' where "trsys2.silent_moves s2 s2'" "bisim12 s1 s2'" "final2 s2'" by blast
     from wb23.simulation_silents1[OF `bisim23 s2 s3` `trsys2.silent_moves s2 s2'`]
@@ -1296,13 +1296,13 @@ proof -
     from `trsys3.silent_moves s3 s3'` `trsys3.silent_moves s3' s3''`
     have "trsys3.silent_moves s3 s3''" by(rule rtranclp_trans)
     moreover from `bisim12 s1 s2'` `bisim23 s2' s3''`
-    have "(bisim12 \<circ>\<^isub>B bisim23) s1 s3''" ..
-    ultimately show "\<exists>s3'. trsys3.silent_moves s3 s3' \<and> (bisim12 \<circ>\<^isub>B bisim23) s1 s3' \<and> final3 s3'"
+    have "(bisim12 \<circ>\<^sub>B bisim23) s1 s3''" ..
+    ultimately show "\<exists>s3'. trsys3.silent_moves s3 s3' \<and> (bisim12 \<circ>\<^sub>B bisim23) s1 s3' \<and> final3 s3'"
       using `final3 s3''` by iprover
   next
     fix s1 s3
-    assume "(bisim12 \<circ>\<^isub>B bisim23) s1 s3" "final3 s3"
-    from `(bisim12 \<circ>\<^isub>B bisim23) s1 s3` obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
+    assume "(bisim12 \<circ>\<^sub>B bisim23) s1 s3" "final3 s3"
+    from `(bisim12 \<circ>\<^sub>B bisim23) s1 s3` obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
     from wb23.final2_simulation[OF `bisim23 s2 s3` `final3 s3`]
     obtain s2' where "trsys2.silent_moves s2 s2'" "bisim23 s2' s3" "final2 s2'" by blast
     from wb12.simulation_silents2[OF `bisim12 s1 s2` `trsys2.silent_moves s2 s2'`]
@@ -1312,8 +1312,8 @@ proof -
     from `trsys1.silent_moves s1 s1'` `trsys1.silent_moves s1' s1''`
     have "trsys1.silent_moves s1 s1''" by(rule rtranclp_trans)
     moreover from `bisim12 s1'' s2'` `bisim23 s2' s3`
-    have "(bisim12 \<circ>\<^isub>B bisim23) s1'' s3" ..
-    ultimately show "\<exists>s1'. trsys1.silent_moves s1 s1' \<and> (bisim12 \<circ>\<^isub>B bisim23) s1' s3 \<and> final1 s1'"
+    have "(bisim12 \<circ>\<^sub>B bisim23) s1'' s3" ..
+    ultimately show "\<exists>s1'. trsys1.silent_moves s1 s1' \<and> (bisim12 \<circ>\<^sub>B bisim23) s1' s3 \<and> final1 s1'"
       using `final1 s1''` by iprover
   qed
 qed

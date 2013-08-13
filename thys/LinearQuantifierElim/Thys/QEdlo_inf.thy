@@ -12,7 +12,7 @@ It is a fairly straightforward adaptation of the analogous algorithm
 by Loos and Weispfenning for linear arithmetic described in
 \S\ref{sec:lin-inf}. *}
 
-fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^isub>+") where
+fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub>+") where
 "asubst_peps k (Less 0 0) = FalseF" |
 "asubst_peps k (Less 0 (Suc j)) = Atom(Less k j)" |
 "asubst_peps k (Less (Suc i) 0) = (if i=k then TrueF
@@ -23,19 +23,19 @@ fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^isu
 "asubst_peps k (Eq _ 0) = FalseF" |
 "asubst_peps k (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" ("subst\<^isub>+") where
-"subst\<^isub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ k) \<phi>"
+abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" ("subst\<^sub>+") where
+"subst\<^sub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>+ k) \<phi>"
 
 definition "nolb \<phi> xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB \<phi> xs)"
 
 lemma nolb_And[simp]:
-  "nolb (And \<phi>\<^isub>1 \<phi>\<^isub>2) xs l x = (nolb \<phi>\<^isub>1 xs l x \<and> nolb \<phi>\<^isub>2 xs l x)"
+  "nolb (And \<phi>\<^sub>1 \<phi>\<^sub>2) xs l x = (nolb \<phi>\<^sub>1 xs l x \<and> nolb \<phi>\<^sub>2 xs l x)"
 apply(clarsimp simp:nolb_def)
 apply blast
 done
 
 lemma nolb_Or[simp]:
-  "nolb (Or \<phi>\<^isub>1 \<phi>\<^isub>2) xs l x = (nolb \<phi>\<^isub>1 xs l x \<and> nolb \<phi>\<^isub>2 xs l x)"
+  "nolb (Or \<phi>\<^sub>1 \<phi>\<^sub>2) xs l x = (nolb \<phi>\<^sub>1 xs l x \<and> nolb \<phi>\<^sub>2 xs l x)"
 apply(clarsimp simp:nolb_def)
 apply blast
 done
@@ -73,7 +73,7 @@ qed simp+
 lemma I_subst_peps2:
  "nqfree \<phi> \<Longrightarrow> xs!l < x \<Longrightarrow> nolb \<phi> xs (xs!l) x \<Longrightarrow> x \<notin> EQ \<phi> xs
  \<Longrightarrow> \<forall>y \<in> {xs!l <.. x}. DLO.I \<phi> (y#xs)
- \<Longrightarrow> DLO.I (subst\<^isub>+ \<phi> l) xs"
+ \<Longrightarrow> DLO.I (subst\<^sub>+ \<phi> l) xs"
 proof(induct \<phi>)
   case FalseF thus ?case
     by simp (metis linorder_antisym_conv1 linorder_neq_iff)
@@ -111,7 +111,7 @@ qed
 
 
 lemma I_subst_peps:
-  "nqfree \<phi> \<Longrightarrow> DLO.I (subst\<^isub>+ \<phi> l) xs \<longrightarrow>
+  "nqfree \<phi> \<Longrightarrow> DLO.I (subst\<^sub>+ \<phi> l) xs \<longrightarrow>
   (\<exists>leps>xs!l. \<forall>x. xs!l < x \<and> x \<le> leps \<longrightarrow> DLO.I \<phi> (x#xs))"
 proof(induct \<phi>)
   case TrueF thus ?case by simp (metis no_ub)
@@ -150,44 +150,44 @@ qed simp_all
 
 
 definition
-"qe_eps\<^isub>1(\<phi>) =
-(let as = DLO.atoms\<^isub>0 \<phi>; lbs = lbounds as; ebs = ebounds as
- in list_disj (inf\<^isub>- \<phi> # map (subst\<^isub>+ \<phi>) lbs @ map (subst \<phi>) ebs))"
+"qe_eps\<^sub>1(\<phi>) =
+(let as = DLO.atoms\<^sub>0 \<phi>; lbs = lbounds as; ebs = ebounds as
+ in list_disj (inf\<^sub>- \<phi> # map (subst\<^sub>+ \<phi>) lbs @ map (subst \<phi>) ebs))"
 
 theorem I_qe_eps1:
-assumes "nqfree \<phi>" shows "DLO.I (qe_eps\<^isub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
+assumes "nqfree \<phi>" shows "DLO.I (qe_eps\<^sub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
-  let ?as = "DLO.atoms\<^isub>0 \<phi>" let ?ebs = "ebounds ?as"
+  let ?as = "DLO.atoms\<^sub>0 \<phi>" let ?ebs = "ebounds ?as"
   assume ?QE
-  { assume "DLO.I (inf\<^isub>- \<phi>) xs"
+  { assume "DLO.I (inf\<^sub>- \<phi>) xs"
     hence ?EX using `?QE` min_inf[of \<phi> xs] `nqfree \<phi>`
-      by(auto simp add:qe_eps\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_eps\<^sub>1_def amap_fm_list_disj)
   } moreover
   { assume "\<forall>i \<in> set ?ebs. \<not>DLO.I \<phi> (xs!i # xs)"
-           "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
-    with `?QE` `nqfree \<phi>` obtain l where "DLO.I (subst\<^isub>+ \<phi> l) xs"
-      by(fastforce simp: I_subst qe_eps\<^isub>1_def set_ebounds set_lbounds)
+           "\<not> DLO.I (inf\<^sub>- \<phi>) xs"
+    with `?QE` `nqfree \<phi>` obtain l where "DLO.I (subst\<^sub>+ \<phi> l) xs"
+      by(fastforce simp: I_subst qe_eps\<^sub>1_def set_ebounds set_lbounds)
     then obtain leps where "DLO.I \<phi> (leps#xs)"
       using I_subst_peps[OF `nqfree \<phi>`] by fastforce
     hence ?EX .. }
   ultimately show ?EX by blast
 next
-  let ?as = "DLO.atoms\<^isub>0 \<phi>" let ?ebs = "ebounds ?as"
+  let ?as = "DLO.atoms\<^sub>0 \<phi>" let ?ebs = "ebounds ?as"
   assume ?EX
   then obtain x where x: "DLO.I \<phi> (x#xs)" ..
-  { assume "DLO.I (inf\<^isub>- \<phi>) xs"
-    hence ?QE using `nqfree \<phi>` by(auto simp:qe_eps\<^isub>1_def)
+  { assume "DLO.I (inf\<^sub>- \<phi>) xs"
+    hence ?QE using `nqfree \<phi>` by(auto simp:qe_eps\<^sub>1_def)
   } moreover
   { assume "\<exists>k \<in> set ?ebs. DLO.I (subst \<phi> k) xs"
-    hence ?QE by(auto simp:qe_eps\<^isub>1_def) } moreover
-  { assume "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
+    hence ?QE by(auto simp:qe_eps\<^sub>1_def) } moreover
+  { assume "\<not> DLO.I (inf\<^sub>- \<phi>) xs"
     and "\<forall>k \<in> set ?ebs. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)" using `nqfree \<phi>`
       by (auto simp:set_ebounds EQ_def I_subst nth_Cons' split:split_if_asm)
     hence "x \<notin> EQ \<phi> xs" using x by fastforce
     obtain l where "l \<in> LB \<phi> xs" "l < x"
-      using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
+      using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. l<x \<and> nolb \<phi> xs l x \<and>
             (\<forall>y. l < y \<and> y \<le> x \<longrightarrow> DLO.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB `l\<in>LB \<phi> xs` `l<x` x] x innermost_intvl[OF `nqfree \<phi>` _ _ `x \<notin> EQ \<phi> xs`]
@@ -196,31 +196,31 @@ next
       where *: "Less (Suc m) 0 \<in> set ?as \<and> xs!m < x \<and> nolb \<phi> xs (xs!m) x
             \<and> (\<forall>y. xs!m < y \<and> y \<le> x \<longrightarrow> DLO.I \<phi> (y#xs))"
       by blast
-    then have "DLO.I (subst\<^isub>+ \<phi> m) xs"
+    then have "DLO.I (subst\<^sub>+ \<phi> m) xs"
       using noE by(auto intro!: I_subst_peps2[OF `nqfree \<phi>`])
     with * have ?QE
-      by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds set_ebounds) metis
+      by(simp add:qe_eps\<^sub>1_def bex_Un set_lbounds set_ebounds) metis
   } ultimately show ?QE by blast
 qed
 
-lemma qfree_asubst_peps: "qfree (asubst\<^isub>+ k a)"
+lemma qfree_asubst_peps: "qfree (asubst\<^sub>+ k a)"
 by(cases "(k,a)" rule:asubst_peps.cases) simp_all
 
-lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> k)"
+lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^sub>+ \<phi> k)"
 by(induct \<phi>) (simp_all add:qfree_asubst_peps)
 
-lemma qfree_qe_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(qe_eps\<^isub>1 \<phi>)"
-apply(simp add:qe_eps\<^isub>1_def)
+lemma qfree_qe_eps\<^sub>1: "nqfree \<phi> \<Longrightarrow> qfree(qe_eps\<^sub>1 \<phi>)"
+apply(simp add:qe_eps\<^sub>1_def)
 apply(rule qfree_list_disj)
 apply (auto simp:qfree_min_inf qfree_subst_peps qfree_map_fm)
 done
 
-definition "qe_eps = DLO.lift_nnf_qe qe_eps\<^isub>1"
+definition "qe_eps = DLO.lift_nnf_qe qe_eps\<^sub>1"
 
 lemma qfree_qe_eps: "qfree(qe_eps \<phi>)"
-by(simp add: qe_eps_def DLO.qfree_lift_nnf_qe qfree_qe_eps\<^isub>1)
+by(simp add: qe_eps_def DLO.qfree_lift_nnf_qe qfree_qe_eps\<^sub>1)
 
 lemma I_qe_eps: "DLO.I (qe_eps \<phi>) xs = DLO.I \<phi> xs"
-by(simp add:qe_eps_def DLO.I_lift_nnf_qe qfree_qe_eps\<^isub>1 I_qe_eps1)
+by(simp add:qe_eps_def DLO.I_lift_nnf_qe qfree_qe_eps\<^sub>1 I_qe_eps1)
 
 end

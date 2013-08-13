@@ -124,7 +124,7 @@ text {* A state is a call stack of tuples, which consists of:
 
 datatype ('var,'val,'ret,'pname) edge_kind =
     UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  ("\<Up>_")
-  | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         ("'(_')\<^isub>\<surd>")
+  | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         ("'(_')\<^sub>\<surd>")
   | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" "'pname"  
              "(('var \<rightharpoonup> 'val) \<rightharpoonup> 'val) list"                       ("_:_\<hookrightarrow>\<^bsub>_\<^esub>_" 70)
   | ReturnEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'pname" 
@@ -132,7 +132,7 @@ datatype ('var,'val,'ret,'pname) edge_kind =
 
 
 definition intra_kind :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> bool"
-where "intra_kind et \<equiv> (\<exists>f. et = \<Up>f) \<or> (\<exists>Q. et = (Q)\<^isub>\<surd>)"
+where "intra_kind et \<equiv> (\<exists>f. et = \<Up>f) \<or> (\<exists>Q. et = (Q)\<^sub>\<surd>)"
 
 
 lemma edge_kind_cases [case_names Intra Call Return]:

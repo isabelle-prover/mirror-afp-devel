@@ -18,32 +18,32 @@ fun divisor :: "atom \<Rightarrow> int" where
 "divisor (Dvd d i ks) = d" |
 "divisor (NDvd d i ks) = d"
 
-fun neg\<^isub>Z :: "atom \<Rightarrow> atom fm" where
-"neg\<^isub>Z (Le i ks) = Atom(Le (1-i) (-ks))" |
-"neg\<^isub>Z (Dvd d i ks) = Atom(NDvd d i ks)" |
-"neg\<^isub>Z (NDvd d i ks) = Atom(Dvd d i ks)"
+fun neg\<^sub>Z :: "atom \<Rightarrow> atom fm" where
+"neg\<^sub>Z (Le i ks) = Atom(Le (1-i) (-ks))" |
+"neg\<^sub>Z (Dvd d i ks) = Atom(NDvd d i ks)" |
+"neg\<^sub>Z (NDvd d i ks) = Atom(Dvd d i ks)"
 
 fun hd_coeff :: "atom \<Rightarrow> int" where
 "hd_coeff (Le i ks) = (case ks of [] \<Rightarrow> 0 | k#_ \<Rightarrow> k)" |
 "hd_coeff (Dvd d i ks) = (case ks of [] \<Rightarrow> 0 | k#_ \<Rightarrow> k)" |
 "hd_coeff (NDvd d i ks) = (case ks of [] \<Rightarrow> 0 | k#_ \<Rightarrow> k)"
 
-fun decr\<^isub>Z :: "atom \<Rightarrow> atom" where
-"decr\<^isub>Z (Le i ks) = Le i (tl ks)" |
-"decr\<^isub>Z (Dvd d i ks) = Dvd d i (tl ks)" |
-"decr\<^isub>Z (NDvd d i ks) = NDvd d i (tl ks)"
+fun decr\<^sub>Z :: "atom \<Rightarrow> atom" where
+"decr\<^sub>Z (Le i ks) = Le i (tl ks)" |
+"decr\<^sub>Z (Dvd d i ks) = Dvd d i (tl ks)" |
+"decr\<^sub>Z (NDvd d i ks) = NDvd d i (tl ks)"
 
-fun I\<^isub>Z :: "atom \<Rightarrow> int list \<Rightarrow> bool" where
-"I\<^isub>Z (Le i ks) xs = (i \<le> \<langle>ks,xs\<rangle>)" |
-"I\<^isub>Z (Dvd d i ks) xs = (d dvd i+\<langle>ks,xs\<rangle>)" |
-"I\<^isub>Z (NDvd d i ks) xs = (\<not> d dvd i+\<langle>ks,xs\<rangle>)"
+fun I\<^sub>Z :: "atom \<Rightarrow> int list \<Rightarrow> bool" where
+"I\<^sub>Z (Le i ks) xs = (i \<le> \<langle>ks,xs\<rangle>)" |
+"I\<^sub>Z (Dvd d i ks) xs = (d dvd i+\<langle>ks,xs\<rangle>)" |
+"I\<^sub>Z (NDvd d i ks) xs = (\<not> d dvd i+\<langle>ks,xs\<rangle>)"
 
-definition "atoms\<^isub>0 = ATOM.atoms\<^isub>0 (\<lambda>a. hd_coeff a \<noteq> 0)"
+definition "atoms\<^sub>0 = ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 0)"
 (* FIXME !!! (incl: display should hide params)*)
 
 interpretation Z!:
-  ATOM neg\<^isub>Z "(\<lambda>a. divisor a \<noteq> 0)" I\<^isub>Z "(\<lambda>a. hd_coeff a \<noteq> 0)" decr\<^isub>Z
-  where "ATOM.atoms\<^isub>0 (\<lambda>a. hd_coeff a \<noteq> 0) = atoms\<^isub>0"
+  ATOM neg\<^sub>Z "(\<lambda>a. divisor a \<noteq> 0)" I\<^sub>Z "(\<lambda>a. hd_coeff a \<noteq> 0)" decr\<^sub>Z
+  where "ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 0) = atoms\<^sub>0"
 proof-
   case goal1
   thus ?case
@@ -61,7 +61,7 @@ apply(case_tac a)
 apply simp_all
 done
 next
-  case goal2 thus ?case by(simp add:atoms\<^isub>0_def)
+  case goal2 thus ?case by(simp add:atoms\<^sub>0_def)
 qed
 
 setup {* Sign.revert_abbrev "" @{const_abbrev Z.I} *}
@@ -85,7 +85,7 @@ fun asubst :: "int \<Rightarrow> int list \<Rightarrow> atom \<Rightarrow> atom"
 abbreviation subst :: "int \<Rightarrow> int list \<Rightarrow> atom fm \<Rightarrow> atom fm"
 where "subst i ks \<equiv> map\<^bsub>fm\<^esub> (asubst i ks)"
 
-lemma IZ_asubst: "I\<^isub>Z (asubst i ks a) xs = I\<^isub>Z a ((i + \<langle>ks,xs\<rangle>) # xs)"
+lemma IZ_asubst: "I\<^sub>Z (asubst i ks a) xs = I\<^sub>Z a ((i + \<langle>ks,xs\<rangle>) # xs)"
 apply (cases a)
 apply (case_tac list)
 apply (simp_all add:algebra_simps iprod_left_add_distrib)
@@ -155,8 +155,8 @@ coefficient to be 1 rather than 1 or -1. We show that the other version has
 the same semantics: *}
 
 lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
-  I\<^isub>Z (hd_coeff1 m (Dvd d i (k#ks))) (x#e) = (let m' = m div (abs k) in
-  I\<^isub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
+  I\<^sub>Z (hd_coeff1 m (Dvd d i (k#ks))) (x#e) = (let m' = m div (abs k) in
+  I\<^sub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
 apply(auto simp:algebra_simps abs_if sgn_if)
  apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
  apply (metis diff_minus add_left_commute dvd_minus_iff minus_add_distrib)
@@ -166,7 +166,7 @@ done
 
 
 lemma I_hd_coeff1_mult_a: assumes "m>0"
-shows "hd_coeff a dvd m | hd_coeff a = 0 \<Longrightarrow> I\<^isub>Z (hd_coeff1 m a) (m*x#xs) = I\<^isub>Z a (x#xs)"
+shows "hd_coeff a dvd m | hd_coeff a = 0 \<Longrightarrow> I\<^sub>Z (hd_coeff1 m a) (m*x#xs) = I\<^sub>Z a (x#xs)"
 proof(induct a)
   case (Le i ks)[simp]
   show ?case
@@ -192,7 +192,7 @@ proof(induct a)
           using dvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
         finally show ?thesis .
       qed
-      have "I\<^isub>Z (hd_coeff1 m (Le i ks)) (m*x#xs) \<longleftrightarrow>
+      have "I\<^sub>Z (hd_coeff1 m (Le i ks)) (m*x#xs) \<longleftrightarrow>
             (i*?m' \<le> sgn k * m*x + ?m' * \<langle>ks',xs\<rangle>)"
         using `k\<noteq>0` by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
@@ -225,7 +225,7 @@ next
           by(simp add:algebra_simps)
         finally show ?thesis .
       qed
-      have "I\<^isub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#xs) \<longleftrightarrow>
+      have "I\<^sub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#xs) \<longleftrightarrow>
             (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
         using `k\<noteq>0` by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
@@ -257,7 +257,7 @@ next
           by(simp add:algebra_simps)
         finally show ?thesis .
       qed
-      have "I\<^isub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#xs) \<longleftrightarrow>
+      have "I\<^sub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#xs) \<longleftrightarrow>
             \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
         using `k\<noteq>0` by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
@@ -270,7 +270,7 @@ qed
 
 
 lemma I_hd_coeff1_mult: assumes "m>0"
-shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^isub>0 \<phi>). hd_coeff a dvd m \<Longrightarrow>
+shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^sub>0 \<phi>). hd_coeff a dvd m \<Longrightarrow>
  Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
 proof(induct \<phi>)
   case (Atom a)

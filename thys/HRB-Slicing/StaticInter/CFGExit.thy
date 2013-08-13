@@ -16,7 +16,7 @@ locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry
   and Exit_no_return_target:
     "\<lbrakk>valid_edge a; kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; targetnode a = (_Exit_)\<rbrakk> \<Longrightarrow> False"
   and Entry_Exit_edge: "\<exists>a. valid_edge a \<and> sourcenode a = (_Entry_) \<and>
-    targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^isub>\<surd>"
+    targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^sub>\<surd>"
   
 
 begin
@@ -62,14 +62,14 @@ by(fastforce simp:method_exit_def)
 
 
 lemma method_exit_inner_path:
-  assumes "method_exit n" and "n -as\<rightarrow>\<^isub>\<iota>* n'" shows "as = []"
+  assumes "method_exit n" and "n -as\<rightarrow>\<^sub>\<iota>* n'" shows "as = []"
   using `method_exit n`
 proof(rule method_exit_cases)
   assume "n = (_Exit_)"
   show ?thesis
   proof(cases as)
     case (Cons a' as')
-    with `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n = sourcenode a'" and "valid_edge a'"
+    with `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n = sourcenode a'" and "valid_edge a'"
       by(auto elim:path_split_Cons simp:intra_path_def)
     with `n = (_Exit_)` have "sourcenode a' = (_Exit_)" by simp
     with `valid_edge a'` have False by(rule Exit_source)
@@ -81,7 +81,7 @@ next
   show ?thesis
   proof(cases as)
     case (Cons a' as')
-    with `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n = sourcenode a'" and "valid_edge a'" 
+    with `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n = sourcenode a'" and "valid_edge a'" 
       and "intra_kind (kind a')"
       by(auto elim:path_split_Cons simp:intra_path_def)
     from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_edge a'` `n = sourcenode a` 
@@ -287,7 +287,7 @@ qed
 
 
 lemma valid_Exit_path_cases:
-  assumes "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)" and "as \<noteq> []"
+  assumes "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)" and "as \<noteq> []"
   shows "(\<exists>a' as'. as = a'#as' \<and> intra_kind(kind a')) \<or>
          (\<exists>a' as' Q p f. as = a'#as' \<and> kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f) \<or>
          (\<exists>as' as'' n'. as = as'@as'' \<and> as' \<noteq> [] \<and> n -as'\<rightarrow>\<^bsub>sl\<^esub>* n')"
@@ -300,7 +300,7 @@ proof -
     case Return with `as = a'#as'` show ?thesis by simp
   next
     case (Call Q r p f)
-    from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -as\<rightarrow>* (_Exit_)" and "valid_path_aux [] as"
+    from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` have "n -as\<rightarrow>* (_Exit_)" and "valid_path_aux [] as"
       by(simp_all add:vp_def valid_path_def)
     from `n -as\<rightarrow>* (_Exit_)` `as = a'#as'`
     have "sourcenode a' = n" and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* (_Exit_)"
@@ -345,29 +345,29 @@ qed
 
 
 lemma valid_Exit_path_descending_path:
-  assumes "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)"
-  obtains as' where "n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
+  assumes "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)"
+  obtains as' where "n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
   and "set(sourcenodes as') \<subseteq> set(sourcenodes as)"
   and "\<forall>a' \<in> set as'. intra_kind(kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
 proof(atomize_elim)
-  from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)`
-  show "\<exists>as'. n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_) \<and> set(sourcenodes as') \<subseteq> set(sourcenodes as)\<and>
+  from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)`
+  show "\<exists>as'. n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_) \<and> set(sourcenodes as') \<subseteq> set(sourcenodes as)\<and>
               (\<forall>a' \<in> set as'. intra_kind(kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f))"
   proof(induct as arbitrary:n rule:length_induct)
     fix as n
     assume IH:"\<forall>as''. length as'' < length as \<longrightarrow>
-      (\<forall>n'. n' -as''\<rightarrow>\<^isub>\<surd>* (_Exit_) \<longrightarrow>
-       (\<exists>as'. n' -as'\<rightarrow>\<^isub>\<surd>* (_Exit_) \<and> set (sourcenodes as') \<subseteq> set (sourcenodes as'') \<and>
+      (\<forall>n'. n' -as''\<rightarrow>\<^sub>\<surd>* (_Exit_) \<longrightarrow>
+       (\<exists>as'. n' -as'\<rightarrow>\<^sub>\<surd>* (_Exit_) \<and> set (sourcenodes as') \<subseteq> set (sourcenodes as'') \<and>
               (\<forall>a'\<in>set as'. intra_kind (kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f))))"
-      and "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)"
-    show "\<exists>as'. n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_) \<and> set(sourcenodes as') \<subseteq> set(sourcenodes as)\<and>
+      and "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)"
+    show "\<exists>as'. n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_) \<and> set(sourcenodes as') \<subseteq> set(sourcenodes as)\<and>
               (\<forall>a' \<in> set as'. intra_kind(kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f))"
     proof(cases "as = []")
       case True
-      with `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` show ?thesis by(fastforce simp:sourcenodes_def vp_def)
+      with `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` show ?thesis by(fastforce simp:sourcenodes_def vp_def)
     next
       case False
-      with `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)`
+      with `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)`
       have "((\<exists>a' as'. as = a'#as' \<and> intra_kind(kind a')) \<or>
          (\<exists>a' as' Q p f. as = a'#as' \<and> kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)) \<or>
          (\<exists>as' as'' n'. as = as'@as'' \<and> as' \<noteq> [] \<and> n -as'\<rightarrow>\<^bsub>sl\<^esub>* n')"
@@ -376,21 +376,21 @@ proof(atomize_elim)
       proof(erule disjE)+
         assume "\<exists>a' as'. as = a'#as' \<and> intra_kind(kind a')"
         then obtain a' as' where "as = a'#as'" and "intra_kind(kind a')" by blast
-        from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` `as = a'#as'`
+        from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` `as = a'#as'`
         have "sourcenode a' = n" and "valid_edge a'" 
-          and "targetnode a' -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+          and "targetnode a' -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)"
           by(auto intro:vp_split_Cons)
         from `valid_edge a'` `intra_kind(kind a')`
         have "sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'"
           by(fastforce intro:path_edge intras_same_level_path simp:slp_def)
-        from IH `targetnode a' -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)` `as = a'#as'`
-        obtain xs where "targetnode a' -xs\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
+        from IH `targetnode a' -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)` `as = a'#as'`
+        obtain xs where "targetnode a' -xs\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
           and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
           and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
           apply(erule_tac x="as'" in allE) by auto
-        from `sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'` `targetnode a' -xs\<rightarrow>\<^isub>\<surd>* (_Exit_)`
-        have "sourcenode a' -[a']@xs\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(rule slp_vp_Append)
-        with `sourcenode a' = n` have "n -a'#xs\<rightarrow>\<^isub>\<surd>* (_Exit_)" by simp
+        from `sourcenode a' -[a']\<rightarrow>\<^bsub>sl\<^esub>* targetnode a'` `targetnode a' -xs\<rightarrow>\<^sub>\<surd>* (_Exit_)`
+        have "sourcenode a' -[a']@xs\<rightarrow>\<^sub>\<surd>* (_Exit_)" by(rule slp_vp_Append)
+        with `sourcenode a' = n` have "n -a'#xs\<rightarrow>\<^sub>\<surd>* (_Exit_)" by simp
         moreover
         from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')` `as = a'#as'`
         have "set (sourcenodes (a'#xs)) \<subseteq> set (sourcenodes as)"
@@ -404,18 +404,18 @@ proof(atomize_elim)
       next
         assume "\<exists>a' as' Q p f. as = a'#as' \<and> kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
         then obtain a' as' Q p f where "as = a'#as'" and "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by blast
-        from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` `as = a'#as'`
+        from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` `as = a'#as'`
         have "sourcenode a' = n" and "valid_edge a'" 
-          and "targetnode a' -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+          and "targetnode a' -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)"
           by(auto intro:vp_split_Cons)
-        from IH `targetnode a' -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)` `as = a'#as'`
-        obtain xs where "targetnode a' -xs\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
+        from IH `targetnode a' -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)` `as = a'#as'`
+        obtain xs where "targetnode a' -xs\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
           and "set (sourcenodes xs) \<subseteq> set (sourcenodes as')"
           and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
           apply(erule_tac x="as'" in allE) by auto
         from `sourcenode a' = n` `valid_edge a'` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
-          `targetnode a' -xs\<rightarrow>\<^isub>\<surd>* (_Exit_)`
-        have "n -a'#xs\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+          `targetnode a' -xs\<rightarrow>\<^sub>\<surd>* (_Exit_)`
+        have "n -a'#xs\<rightarrow>\<^sub>\<surd>* (_Exit_)"
           by(fastforce intro:Cons_path simp:vp_def valid_path_def)
         moreover
         from `set (sourcenodes xs) \<subseteq> set (sourcenodes as')` `as = a'#as'`
@@ -431,22 +431,22 @@ proof(atomize_elim)
         assume "\<exists>as' as'' n'. as = as'@as'' \<and> as' \<noteq> [] \<and> n -as'\<rightarrow>\<^bsub>sl\<^esub>* n'"
         then obtain as' as'' n' where "as = as'@as''" and "as' \<noteq> []"
           and "n -as'\<rightarrow>\<^bsub>sl\<^esub>* n'" by blast
-        from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` `as = as'@as''` `as' \<noteq> []`
-        have "last(targetnodes as') -as''\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+        from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)` `as = as'@as''` `as' \<noteq> []`
+        have "last(targetnodes as') -as''\<rightarrow>\<^sub>\<surd>* (_Exit_)"
           by(cases as' rule:rev_cases,auto intro:vp_split simp:targetnodes_def)
         from `n -as'\<rightarrow>\<^bsub>sl\<^esub>* n'` `as' \<noteq> []` have "last(targetnodes as') = n'"
           by(fastforce intro:path_targetnode simp:slp_def)
         from `as = as'@as''` `as' \<noteq> []` have "length as'' < length as" by simp
-        with IH `last(targetnodes as') -as''\<rightarrow>\<^isub>\<surd>* (_Exit_)`
+        with IH `last(targetnodes as') -as''\<rightarrow>\<^sub>\<surd>* (_Exit_)`
           `last(targetnodes as') = n'`
-        obtain xs where "n' -xs\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
+        obtain xs where "n' -xs\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
           and "set (sourcenodes xs) \<subseteq> set (sourcenodes as'')"
           and "\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
           apply(erule_tac x="as''" in allE) by auto
-        from `n -as'\<rightarrow>\<^bsub>sl\<^esub>* n'` obtain ys where "n -ys\<rightarrow>\<^isub>\<iota>* n'"
+        from `n -as'\<rightarrow>\<^bsub>sl\<^esub>* n'` obtain ys where "n -ys\<rightarrow>\<^sub>\<iota>* n'"
           and "set(sourcenodes ys) \<subseteq> set(sourcenodes as')"
           by(erule same_level_path_inner_path)
-        from `n -ys\<rightarrow>\<^isub>\<iota>* n'` `n' -xs\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -ys@xs\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+        from `n -ys\<rightarrow>\<^sub>\<iota>* n'` `n' -xs\<rightarrow>\<^sub>\<surd>* (_Exit_)` have "n -ys@xs\<rightarrow>\<^sub>\<surd>* (_Exit_)"
           by(fastforce intro:slp_vp_Append intra_path_slp)
         moreover
         from `set (sourcenodes xs) \<subseteq> set (sourcenodes as'')`
@@ -455,7 +455,7 @@ proof(atomize_elim)
           by(auto simp:sourcenodes_def)
         moreover
         from `\<forall>a'\<in>set xs. intra_kind (kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)`
-          `n -ys\<rightarrow>\<^isub>\<iota>* n'`
+          `n -ys\<rightarrow>\<^sub>\<iota>* n'`
         have "\<forall>a'\<in>set (ys@xs). intra_kind (kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
           by(fastforce simp:intra_path_def)
         ultimately show ?thesis by blast
@@ -466,16 +466,16 @@ qed
 
 
 lemma valid_Exit_path_intra_path:
-  assumes "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
-  obtains as' pex where "n -as'\<rightarrow>\<^isub>\<iota>* pex" and "method_exit pex" 
+  assumes "n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
+  obtains as' pex where "n -as'\<rightarrow>\<^sub>\<iota>* pex" and "method_exit pex" 
   and "set(sourcenodes as') \<subseteq> set(sourcenodes as)"
 proof(atomize_elim)
-  from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)`
-  obtain as' where "n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)" 
+  from `n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)`
+  obtain as' where "n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)" 
     and "set(sourcenodes as') \<subseteq> set(sourcenodes as)"
     and all:"\<forall>a' \<in> set as'. intra_kind(kind a') \<or> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
     by(erule valid_Exit_path_descending_path)
-  show "\<exists>as' pex. n -as'\<rightarrow>\<^isub>\<iota>* pex \<and> method_exit pex \<and> 
+  show "\<exists>as' pex. n -as'\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex \<and> 
                   set(sourcenodes as') \<subseteq> set(sourcenodes as)"
   proof(cases "\<exists>a' \<in> set as'. \<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f")
     case True
@@ -483,10 +483,10 @@ proof(atomize_elim)
       and "\<exists>Q f p. kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "\<forall>a' \<in> set asx. \<not> (\<exists>Q f p. kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
       by(erule split_list_first_propE)
     with all have "\<forall>a' \<in> set asx. intra_kind(kind a')" by auto
-    from `n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -asx\<rightarrow>* sourcenode ax"
+    from `n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)` have "n -asx\<rightarrow>* sourcenode ax"
       and "valid_edge ax" by(auto elim:path_split simp:vp_def)
     from `n -asx\<rightarrow>* sourcenode ax` `\<forall>a' \<in> set asx. intra_kind(kind a')`
-    have "n -asx\<rightarrow>\<^isub>\<iota>* sourcenode ax" by(simp add:intra_path_def)
+    have "n -asx\<rightarrow>\<^sub>\<iota>* sourcenode ax" by(simp add:intra_path_def)
     moreover
     from `valid_edge ax` `\<exists>Q f p. kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
     have "method_exit (sourcenode ax)" by(fastforce simp:method_exit_def)
@@ -496,7 +496,7 @@ proof(atomize_elim)
     ultimately show ?thesis by blast
   next
     case False
-    with all `n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -as'\<rightarrow>\<^isub>\<iota>* (_Exit_)" 
+    with all `n -as'\<rightarrow>\<^sub>\<surd>* (_Exit_)` have "n -as'\<rightarrow>\<^sub>\<iota>* (_Exit_)" 
       by(fastforce simp:vp_def intra_path_def)
     moreover have "method_exit (_Exit_)" by(simp add:method_exit_def)
     ultimately show ?thesis using `set(sourcenodes as') \<subseteq> set(sourcenodes as)`

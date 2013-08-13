@@ -262,7 +262,7 @@ proof -
       by(metis weakPsiCongParPres weakPsiCongParComm weakPsiCongSym weakPsiCongTransitive)
     moreover note bisimParPresSym
     moreover from strongBisimWeakBisim have "bisim \<subseteq> weakBisim" by auto
-    moreover have "\<And>\<Psi> \<Psi>\<^isub>R P Q R A\<^isub>R. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<approx> Q; extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>; A\<^isub>R \<sharp>* \<Psi>; A\<^isub>R \<sharp>* P; A\<^isub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> R \<parallel> P \<approx> R \<parallel> Q"
+    moreover have "\<And>\<Psi> \<Psi>\<^sub>R P Q R A\<^sub>R. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q; extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>; A\<^sub>R \<sharp>* P; A\<^sub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> R \<parallel> P \<approx> R \<parallel> Q"
       by(metis weakBisimParComm weakBisimTransitive weakBisimParPresAux)
     moreover note weakBisimResChainPres bisimResChainPres weakBisimScopeExtChainSym bisimScopeExtChainSym
     moreover have "\<And>\<Psi> P R S Q. \<lbrakk>\<Psi> \<rhd> P \<approx> R; \<Psi> \<rhd> R \<approx> S; \<Psi> \<rhd> S \<sim> Q\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> P \<approx> Q"

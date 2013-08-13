@@ -161,56 +161,56 @@ proof
           "q - p = m *\<^sub>R (r - p)"
         with scaleR_scaleR have "r - p = (1/m) *\<^sub>R (q - p)" by simp
         with cosine_rule [of r s p]
-          have "(norm_dist r s)\<twosuperior> = (norm_dist r p)\<twosuperior> + (norm_dist p s)\<twosuperior> +
+          have "(norm_dist r s)\<^sup>2 = (norm_dist r p)\<^sup>2 + (norm_dist p s)\<^sup>2 +
               2 * (((1/m) *\<^sub>R (q - p)) \<bullet> (p - s))"
             by simp
         also from inner_scaleR_left [of "1/m" "q - p" "p - s"]
           have "\<dots> =
-              (norm_dist r p)\<twosuperior> + (norm_dist p s)\<twosuperior> + 2/m * ((q - p) \<bullet> (p - s))"
+              (norm_dist r p)\<^sup>2 + (norm_dist p s)\<^sup>2 + 2/m * ((q - p) \<bullet> (p - s))"
             by simp
         also from `m \<noteq> 0` and cosine_rule [of q s p]
-          have "\<dots> = (norm_dist r p)\<twosuperior> + (norm_dist p s)\<twosuperior> +
-              1/m * ((norm_dist q s)\<twosuperior> - (norm_dist q p)\<twosuperior> - (norm_dist p s)\<twosuperior>)"
+          have "\<dots> = (norm_dist r p)\<^sup>2 + (norm_dist p s)\<^sup>2 +
+              1/m * ((norm_dist q s)\<^sup>2 - (norm_dist q p)\<^sup>2 - (norm_dist p s)\<^sup>2)"
             by simp
-        finally have "(norm_dist r s)\<twosuperior> = (norm_dist r p)\<twosuperior> + (norm_dist p s)\<twosuperior> +
-          1/m * ((norm_dist q s)\<twosuperior> - (norm_dist q p)\<twosuperior> - (norm_dist p s)\<twosuperior>)" .
+        finally have "(norm_dist r s)\<^sup>2 = (norm_dist r p)\<^sup>2 + (norm_dist p s)\<^sup>2 +
+          1/m * ((norm_dist q s)\<^sup>2 - (norm_dist q p)\<^sup>2 - (norm_dist p s)\<^sup>2)" .
         moreover
         { from norm_dist_dot [of r p] and `r - p = (1/m) *\<^sub>R (q - p)`
-            have "(norm_dist r p)\<twosuperior> = ((1/m) *\<^sub>R (q - p)) \<bullet> ((1/m) *\<^sub>R (q - p))"
+            have "(norm_dist r p)\<^sup>2 = ((1/m) *\<^sub>R (q - p)) \<bullet> ((1/m) *\<^sub>R (q - p))"
               by simp
           also from inner_scaleR_left [of "1/m" "q - p"] and
               inner_scaleR_right [of _ "1/m" "q - p"]
-            have "\<dots> = 1/m\<twosuperior> * ((q - p) \<bullet> (q - p))"
+            have "\<dots> = 1/m\<^sup>2 * ((q - p) \<bullet> (q - p))"
               by (simp add: power2_eq_square)
-          also from norm_dist_dot [of q p] have "\<dots> = 1/m\<twosuperior> * (norm_dist q p)\<twosuperior>"
+          also from norm_dist_dot [of q p] have "\<dots> = 1/m\<^sup>2 * (norm_dist q p)\<^sup>2"
             by simp
-          finally have "(norm_dist r p)\<twosuperior> = 1/m\<twosuperior> * (norm_dist q p)\<twosuperior>" . }
+          finally have "(norm_dist r p)\<^sup>2 = 1/m\<^sup>2 * (norm_dist q p)\<^sup>2" . }
         ultimately have
-          "(norm_dist r s)\<twosuperior> = 1/m\<twosuperior> * (norm_dist q p)\<twosuperior> + (norm_dist p s)\<twosuperior> +
-            1/m * ((norm_dist q s)\<twosuperior> - (norm_dist q p)\<twosuperior> - (norm_dist p s)\<twosuperior>)"
+          "(norm_dist r s)\<^sup>2 = 1/m\<^sup>2 * (norm_dist q p)\<^sup>2 + (norm_dist p s)\<^sup>2 +
+            1/m * ((norm_dist q s)\<^sup>2 - (norm_dist q p)\<^sup>2 - (norm_dist p s)\<^sup>2)"
           by simp
         with norm_metric.symm [of q p]
-          have "(norm_dist r s)\<twosuperior> = 1/m\<twosuperior> * (norm_dist p q)\<twosuperior> + (norm_dist p s)\<twosuperior> +
-              1/m * ((norm_dist q s)\<twosuperior> - (norm_dist p q)\<twosuperior> - (norm_dist p s)\<twosuperior>)"
+          have "(norm_dist r s)\<^sup>2 = 1/m\<^sup>2 * (norm_dist p q)\<^sup>2 + (norm_dist p s)\<^sup>2 +
+              1/m * ((norm_dist q s)\<^sup>2 - (norm_dist p q)\<^sup>2 - (norm_dist p s)\<^sup>2)"
             by simp }
       note fiveseglemma = this
       from fiveseglemma [of l b a c d] and `l \<noteq> 0` and `b - a = l *\<^sub>R (c - a)`
-        have "(norm_dist c d)\<twosuperior> = 1/l\<twosuperior> * (norm_dist a b)\<twosuperior> + (norm_dist a d)\<twosuperior> +
-            1/l * ((norm_dist b d)\<twosuperior> - (norm_dist a b)\<twosuperior> - (norm_dist a d)\<twosuperior>)"
+        have "(norm_dist c d)\<^sup>2 = 1/l\<^sup>2 * (norm_dist a b)\<^sup>2 + (norm_dist a d)\<^sup>2 +
+            1/l * ((norm_dist b d)\<^sup>2 - (norm_dist a b)\<^sup>2 - (norm_dist a d)\<^sup>2)"
           by simp
       also from `l = l'` and
           `a b \<congruent>\<^sub>\<real> a' b'` and
           `a d \<congruent>\<^sub>\<real> a' d'` and
           `b d \<congruent>\<^sub>\<real> b' d'`
-        have "\<dots> = 1/l'\<twosuperior> * (norm_dist a' b')\<twosuperior> + (norm_dist a' d')\<twosuperior> +
-            1/l' * ((norm_dist b' d')\<twosuperior> - (norm_dist a' b')\<twosuperior> - (norm_dist a' d')\<twosuperior>)"
+        have "\<dots> = 1/l'\<^sup>2 * (norm_dist a' b')\<^sup>2 + (norm_dist a' d')\<^sup>2 +
+            1/l' * ((norm_dist b' d')\<^sup>2 - (norm_dist a' b')\<^sup>2 - (norm_dist a' d')\<^sup>2)"
           by simp
       also from fiveseglemma [of l' b' a' c' d'] and
           `l' \<noteq> 0` and
           `b' - a' = l' *\<^sub>R (c' - a')`
-        have "\<dots> = (norm_dist c' d')\<twosuperior>" by simp
-      finally have "(norm_dist c d)\<twosuperior> = (norm_dist c' d')\<twosuperior>" .
-      hence "sqrt ((norm_dist c d)\<twosuperior>) = sqrt ((norm_dist c' d')\<twosuperior>)" by simp
+        have "\<dots> = (norm_dist c' d')\<^sup>2" by simp
+      finally have "(norm_dist c d)\<^sup>2 = (norm_dist c' d')\<^sup>2" .
+      hence "sqrt ((norm_dist c d)\<^sup>2) = sqrt ((norm_dist c' d')\<^sup>2)" by simp
       with real_sqrt_abs show "c d \<congruent>\<^sub>\<real> c' d'" by simp
     qed }
   thus "\<forall>a b c d a' b' c' d'.
@@ -690,22 +690,22 @@ proof
       and scaleR_minus_right [of "1/2" "q - p"]
     have "?m - q = -(?m - p)" by simp
     with norm_minus_cancel [of "?m - p"] have
-      "(norm (?m - q))\<twosuperior> = (norm (?m - p))\<twosuperior>" by (simp only: norm_minus_cancel)
+      "(norm (?m - q))\<^sup>2 = (norm (?m - p))\<^sup>2" by (simp only: norm_minus_cancel)
     { fix d
       assume "d p \<congruent>\<^sub>\<real> d q"
-      hence "(norm (d - p))\<twosuperior> = (norm (d - q))\<twosuperior>" by simp
+      hence "(norm (d - p))\<^sup>2 = (norm (d - q))\<^sup>2" by simp
       have "(d - ?m) \<bullet> (?m - p) = 0"
       proof -
         have "d + (-q) = d - q" by simp
         have "d + (-p) = d - p" by simp
         with dot_norm [of "d - ?m" "?m - p"] have
           "(d - ?m) \<bullet> (?m - p) =
-          ((norm (d - p))\<twosuperior> - (norm (d - ?m))\<twosuperior> - (norm(?m - p))\<twosuperior>) / 2"
+          ((norm (d - p))\<^sup>2 - (norm (d - ?m))\<^sup>2 - (norm(?m - p))\<^sup>2) / 2"
           by simp
-        also from `(norm (d - p))\<twosuperior> = (norm (d - q))\<twosuperior>`
-          and `(norm (?m - q))\<twosuperior> = (norm (?m - p))\<twosuperior>`
+        also from `(norm (d - p))\<^sup>2 = (norm (d - q))\<^sup>2`
+          and `(norm (?m - q))\<^sup>2 = (norm (?m - p))\<^sup>2`
         have
-          "\<dots> = ((norm (d - q))\<twosuperior> - (norm (d - ?m))\<twosuperior> - (norm(?m - q))\<twosuperior>) / 2"
+          "\<dots> = ((norm (d - q))\<^sup>2 - (norm (d - ?m))\<^sup>2 - (norm(?m - q))\<^sup>2) / 2"
           by simp
         also from dot_norm [of "d - ?m" "?m - q"]
           and `d + (-q) = d - q`

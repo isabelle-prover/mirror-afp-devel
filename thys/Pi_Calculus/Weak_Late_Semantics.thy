@@ -7,23 +7,23 @@ theory Weak_Late_Semantics
 begin
 
 consts weakTransition :: "(pi \<times> residual) set"
-syntax "weakLateTransition_judge" :: "pi \<Rightarrow> residual \<Rightarrow> bool" ("_ \<Longrightarrow>\<^isub>l\<^isup>^_" [80, 80] 80)
+syntax "weakLateTransition_judge" :: "pi \<Rightarrow> residual \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>l\<^sup>^_" [80, 80] 80)
 defs weakTransition_def:
   "weakTransition \<equiv> Weak_Late_Step_Semantics.transition \<union> {x. \<exists>P. x = (P, \<tau> \<prec> P)}"
-translations "P \<Longrightarrow>\<^isub>l\<^isup>^Rs" \<rightleftharpoons> "(P, Rs) \<in> Weak_Late_Semantics.weakTransition"
+translations "P \<Longrightarrow>\<^sub>l\<^sup>^Rs" \<rightleftharpoons> "(P, Rs) \<in> Weak_Late_Semantics.weakTransition"
 
 lemma transitionI:
   fixes P  :: pi
   and   Rs :: residual
   and   P' :: pi
 
-  shows "P \<Longrightarrow>\<^isub>l Rs \<Longrightarrow> P \<Longrightarrow>\<^isub>l\<^isup>^Rs"
-  and   "P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P"
+  shows "P \<Longrightarrow>\<^sub>l Rs \<Longrightarrow> P \<Longrightarrow>\<^sub>l\<^sup>^Rs"
+  and   "P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P"
 proof -
-  assume "P \<Longrightarrow>\<^isub>l Rs"
-  thus "P \<Longrightarrow>\<^isub>l\<^isup>^Rs" by(simp add: weakTransition_def)
+  assume "P \<Longrightarrow>\<^sub>l Rs"
+  thus "P \<Longrightarrow>\<^sub>l\<^sup>^Rs" by(simp add: weakTransition_def)
 next
-  show "P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P" by(simp add: weakTransition_def)
+  show "P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P" by(simp add: weakTransition_def)
 qed
 
 lemma transitionCases[consumes 1, case_names Step Stay]:
@@ -31,8 +31,8 @@ lemma transitionCases[consumes 1, case_names Step Stay]:
   and   Rs :: residual
   and   P' :: pi
 
-  assumes "P \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
-  and     "P \<Longrightarrow>\<^isub>l Rs \<Longrightarrow> F Rs"
+  assumes "P \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
+  and     "P \<Longrightarrow>\<^sub>l Rs \<Longrightarrow> F Rs"
   and     "Rs = \<tau> \<prec> P \<Longrightarrow> F (\<tau> \<prec> P)"
 
   shows "F Rs"
@@ -46,7 +46,7 @@ lemma singleActionChain:
   
   assumes "P \<longmapsto>\<alpha> \<prec> P'"
   
-  shows "P \<Longrightarrow>\<^isub>l\<^isup>^(\<alpha> \<prec> P')"
+  shows "P \<Longrightarrow>\<^sub>l\<^sup>^(\<alpha> \<prec> P')"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.singleActionChain
   simp add: weakTransition_def)
@@ -54,7 +54,7 @@ by(auto intro: Weak_Late_Step_Semantics.singleActionChain
 lemma Tau:
   fixes P :: pi
 
-  shows "\<tau>.(P) \<Longrightarrow>\<^isub>l\<^isup>^ \<tau> \<prec>  P"
+  shows "\<tau>.(P) \<Longrightarrow>\<^sub>l\<^sup>^ \<tau> \<prec>  P"
 by(auto intro: Weak_Late_Step_Semantics.Tau
    simp add: weakTransition_def)
   
@@ -63,7 +63,7 @@ lemma Output:
   and   b :: name
   and   P :: pi
 
-  shows "a{b}.P \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> P"
+  shows "a{b}.P \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> P"
 by(auto intro: Weak_Late_Step_Semantics.Output
    simp add: weakTransition_def)
 
@@ -75,8 +75,8 @@ lemma Match:
   and   P' :: pi
   and   \<alpha>  :: freeRes
 
-  shows "P \<Longrightarrow>\<^isub>l\<^isup>^b<\<nu>x> \<prec> P' \<Longrightarrow> [a\<frown>a]P \<Longrightarrow>\<^isub>l\<^isup>^b<\<nu>x> \<prec> P'"
-  and   "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P' \<Longrightarrow> P \<noteq> P' \<Longrightarrow> [a\<frown>a]P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'"
+  shows "P \<Longrightarrow>\<^sub>l\<^sup>^b<\<nu>x> \<prec> P' \<Longrightarrow> [a\<frown>a]P \<Longrightarrow>\<^sub>l\<^sup>^b<\<nu>x> \<prec> P'"
+  and   "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P' \<Longrightarrow> P \<noteq> P' \<Longrightarrow> [a\<frown>a]P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'"
 by(auto simp add: residual.inject weakTransition_def intro: Weak_Late_Step_Semantics.Match)
 
 lemma Mismatch:
@@ -88,8 +88,8 @@ lemma Mismatch:
   and   P' :: pi
   and   \<alpha>  :: freeRes
 
-  shows "\<lbrakk>P \<Longrightarrow>\<^isub>l\<^isup>^b<\<nu>x> \<prec> P'; a \<noteq> c\<rbrakk> \<Longrightarrow> [a\<noteq>c]P \<Longrightarrow>\<^isub>l\<^isup>^b<\<nu>x> \<prec> P'"
-  and   "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P' \<Longrightarrow> P \<noteq> P' \<Longrightarrow> a \<noteq> c \<Longrightarrow> [a\<noteq>c]P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'"
+  shows "\<lbrakk>P \<Longrightarrow>\<^sub>l\<^sup>^b<\<nu>x> \<prec> P'; a \<noteq> c\<rbrakk> \<Longrightarrow> [a\<noteq>c]P \<Longrightarrow>\<^sub>l\<^sup>^b<\<nu>x> \<prec> P'"
+  and   "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P' \<Longrightarrow> P \<noteq> P' \<Longrightarrow> a \<noteq> c \<Longrightarrow> [a\<noteq>c]P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'"
 by(auto simp add: residual.inject weakTransition_def intro: Weak_Late_Step_Semantics.Mismatch)
 
 lemma Open:
@@ -98,10 +98,10 @@ lemma Open:
   and   b  :: name
   and   P' :: pi
 
-  assumes Trans:  "P \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> P'"
+  assumes Trans:  "P \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> P'"
   and     aInEqb: "a \<noteq> b"
 
-  shows "<\<nu>b>P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>b> \<prec> P'"
+  shows "<\<nu>b>P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>b> \<prec> P'"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Open
   simp add: weakTransition_def residual.inject)
@@ -112,10 +112,10 @@ lemma Par1B:
   and   x  :: name
   and   P' :: pi
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'"
   and     xFreshQ: "x \<sharp> Q"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> (P' \<parallel> Q)"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> (P' \<parallel> Q)"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Par1B
   simp add: weakTransition_def residual.inject)
@@ -125,9 +125,9 @@ lemma Par1F:
   and   \<alpha>  :: freeRes
   and   P' :: pi
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> (P' \<parallel> Q)"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> (P' \<parallel> Q)"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Par1F
   simp add: weakTransition_def residual.inject)
@@ -138,10 +138,10 @@ lemma Par2B:
   and   x  :: name
   and   Q' :: pi
 
-  assumes QTrans: "Q \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> Q'"
+  assumes QTrans: "Q \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> Q'"
   and     xFreshP: "x \<sharp> P"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> (P \<parallel> Q')"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> (P \<parallel> Q')"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Par2B
   simp add: weakTransition_def residual.inject)
@@ -151,9 +151,9 @@ lemma Par2F:
   and   \<alpha>  :: freeRes
   and   Q' :: pi
 
-  assumes QTrans: "Q \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> Q'"
+  assumes QTrans: "Q \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> Q'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> (P \<parallel> Q')"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> (P \<parallel> Q')"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Par2F
   simp add: weakTransition_def residual.inject)
@@ -167,10 +167,10 @@ lemma Comm1:
   and   Q  :: pi
   and   Q' :: pi
   
-  assumes PTrans: "P \<Longrightarrow>\<^isub>lb in P''\<rightarrow>a<x> \<prec> P'"
-  and     QTrans: "Q \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> Q'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>lb in P''\<rightarrow>a<x> \<prec> P'"
+  and     QTrans: "Q \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> Q'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P' \<parallel> Q'"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P' \<parallel> Q'"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Comm1
   simp add: weakTransition_def residual.inject)
@@ -184,10 +184,10 @@ lemma Comm2:
   and   Q  :: pi
   and   Q' :: pi
   
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> P'"
-  and     QTrans: "Q \<Longrightarrow>\<^isub>lb in Q''\<rightarrow>a<x> \<prec> Q'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> P'"
+  and     QTrans: "Q \<Longrightarrow>\<^sub>lb in Q''\<rightarrow>a<x> \<prec> Q'"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P' \<parallel> Q'"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P' \<parallel> Q'"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Comm2
   simp add: weakTransition_def residual.inject)
@@ -202,12 +202,12 @@ lemma Close1:
   and   Q  :: pi
   and   Q' :: pi
   
-  assumes PTrans: "P \<Longrightarrow>\<^isub>ly in P''\<rightarrow>a<x> \<prec> P'"
-  and     QTrans: "Q \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>y> \<prec> Q'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>ly in P''\<rightarrow>a<x> \<prec> P'"
+  and     QTrans: "Q \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>y> \<prec> Q'"
   and     xFreshP: "y \<sharp> P"
   and     xFreshQ: "y \<sharp> Q"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> <\<nu>y>(P' \<parallel> Q')"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> <\<nu>y>(P' \<parallel> Q')"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Close1
   simp add: weakTransition_def residual.inject)
@@ -222,12 +222,12 @@ lemma Close2:
   and   Q'' :: pi
   and   Q' :: pi
   
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>y> \<prec> P'"
-  and     QTrans: "Q \<Longrightarrow>\<^isub>ly in Q''\<rightarrow>a<x> \<prec> Q'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>y> \<prec> P'"
+  and     QTrans: "Q \<Longrightarrow>\<^sub>ly in Q''\<rightarrow>a<x> \<prec> Q'"
   and     xFreshP: "y \<sharp> P"
   and     xFreshQ: "y \<sharp> Q"
 
-  shows "P \<parallel> Q \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> <\<nu>y>(P' \<parallel> Q')"
+  shows "P \<parallel> Q \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> <\<nu>y>(P' \<parallel> Q')"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Close2
   simp add: weakTransition_def residual.inject)
@@ -238,10 +238,10 @@ lemma ResF:
   and   P' :: pi
   and   x  :: name
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'"
   and     xFreshAlpha: "x \<sharp> \<alpha>"
 
-  shows "<\<nu>x>P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> <\<nu>x>P'"
+  shows "<\<nu>x>P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> <\<nu>x>P'"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.ResF
   simp add: weakTransition_def residual.inject)
@@ -253,12 +253,12 @@ lemma ResB:
   and   P' :: pi
   and   y  :: name
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'"
   and     yineqa: "y \<noteq> a"
   and     yineqx: "y \<noteq> x"
   and     xFreshP: "x \<sharp> P"
 
-  shows "<\<nu>y>P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> (<\<nu>y>P')"
+  shows "<\<nu>y>P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> (<\<nu>y>P')"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.ResB
   simp add: weakTransition_def residual.inject)
@@ -267,10 +267,10 @@ lemma Bang:
   fixes P  :: pi
   and   Rs :: residual
 
-  assumes "P \<parallel> !P \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
+  assumes "P \<parallel> !P \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
   and     "Rs \<noteq> \<tau> \<prec> P \<parallel> !P"
   
-  shows "!P \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
+  shows "!P \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.Bang
   simp add: weakTransition_def residual.inject)
@@ -279,9 +279,9 @@ lemma tauTransitionChain:
   fixes P  :: pi
   and   P' :: pi
 
-  assumes "P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P'"
+  assumes "P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P'"
 
-  shows "P \<Longrightarrow>\<^isub>\<tau> P'"
+  shows "P \<Longrightarrow>\<^sub>\<tau> P'"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.tauTransitionChain
   simp add: weakTransition_def residual.inject transition_def)
@@ -295,23 +295,23 @@ lemma chainTransitionAppend:
   and   P'' :: pi
   and   \<alpha>   :: freeRes
 
-  shows "P \<Longrightarrow>\<^isub>\<tau> P' \<Longrightarrow> P' \<Longrightarrow>\<^isub>l\<^isup>^ Rs \<Longrightarrow> P \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
-  and   "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'' \<Longrightarrow> P'' \<Longrightarrow>\<^isub>\<tau> P' \<Longrightarrow> x \<sharp> P \<Longrightarrow> P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'"
-  and   "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'' \<Longrightarrow> P'' \<Longrightarrow>\<^isub>\<tau> P' \<Longrightarrow> P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'"
+  shows "P \<Longrightarrow>\<^sub>\<tau> P' \<Longrightarrow> P' \<Longrightarrow>\<^sub>l\<^sup>^ Rs \<Longrightarrow> P \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
+  and   "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'' \<Longrightarrow> P'' \<Longrightarrow>\<^sub>\<tau> P' \<Longrightarrow> x \<sharp> P \<Longrightarrow> P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'"
+  and   "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'' \<Longrightarrow> P'' \<Longrightarrow>\<^sub>\<tau> P' \<Longrightarrow> P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'"
 proof -
-  assume "P \<Longrightarrow>\<^isub>\<tau> P'" and "P' \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
-  thus "P \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
+  assume "P \<Longrightarrow>\<^sub>\<tau> P'" and "P' \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
+  thus "P \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
     by(auto intro: Weak_Late_Step_Semantics.chainTransitionAppend
                    Weak_Late_Step_Semantics.tauActionChain
        simp add: weakTransition_def residual.inject)
 next
-  assume "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P''" and "P'' \<Longrightarrow>\<^isub>\<tau> P'" and "x \<sharp> P"
-  thus "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'"
+  assume "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P''" and "P'' \<Longrightarrow>\<^sub>\<tau> P'" and "x \<sharp> P"
+  thus "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'"
     by(auto intro: Weak_Late_Step_Semantics.chainTransitionAppend
        simp add: weakTransition_def residual.inject)
 next
-  assume "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P''" and "P'' \<Longrightarrow>\<^isub>\<tau> P'"
-  thus "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'"
+  assume "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P''" and "P'' \<Longrightarrow>\<^sub>\<tau> P'"
+  thus "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'"
     apply(case_tac "P''=P'")
     by(auto dest: Weak_Late_Step_Semantics.chainTransitionAppend
                      Weak_Late_Step_Semantics.tauActionChain
@@ -324,19 +324,19 @@ lemma weakEqWeakTransitionAppend:
   and   \<alpha>   :: freeRes
   and   P'' :: pi
   
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<tau> \<prec> P'"
-  and     P'Trans: "P' \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P''"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'"
+  and     P'Trans: "P' \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P''"
   
-  shows "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P''"
+  shows "P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P''"
 proof(cases "\<alpha>=\<tau>")
   assume alphaEqTau: "\<alpha> = \<tau>"
-  with P'Trans have "P' \<Longrightarrow>\<^isub>\<tau> P''" by(blast intro: tauTransitionChain)
+  with P'Trans have "P' \<Longrightarrow>\<^sub>\<tau> P''" by(blast intro: tauTransitionChain)
   with PTrans alphaEqTau show ?thesis
     by(blast intro: Weak_Late_Step_Semantics.chainTransitionAppend)
 next
   assume alphaIneqTau: "\<alpha> \<noteq> \<tau>"
-  from PTrans have "P \<Longrightarrow>\<^isub>\<tau> P'" by(rule Weak_Late_Step_Semantics.tauTransitionChain)
-  moreover from P'Trans alphaIneqTau have "P' \<Longrightarrow>\<^isub>l\<alpha> \<prec> P''"
+  from PTrans have "P \<Longrightarrow>\<^sub>\<tau> P'" by(rule Weak_Late_Step_Semantics.tauTransitionChain)
+  moreover from P'Trans alphaIneqTau have "P' \<Longrightarrow>\<^sub>l\<alpha> \<prec> P''"
     by(auto simp add: weakTransition_def residual.inject)
   ultimately show ?thesis
     by(rule Weak_Late_Step_Semantics.chainTransitionAppend)
@@ -349,7 +349,7 @@ lemma freshBoundOutputTransition:
   and   P' :: pi
   and   c  :: name
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'"
   and     cFreshP: "c \<sharp> P"
   and     cineqx: "c \<noteq> x"
 
@@ -362,7 +362,7 @@ lemma freshTauTransition:
   fixes P :: pi
   and   c :: name
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P'"
   and     cFreshP: "c \<sharp> P"
 
   shows "c \<sharp> P'"
@@ -377,7 +377,7 @@ lemma freshOutputTransition:
   and   P' :: pi
   and   c  :: name
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> P'"
   and     cFreshP: "c \<sharp> P"
 
   shows "c \<sharp> P'"
@@ -390,9 +390,9 @@ lemma eqvtI:
   and   Rs   :: residual
   and   perm :: "name prm"
 
-  assumes "P \<Longrightarrow>\<^isub>l\<^isup>^ Rs"
+  assumes "P \<Longrightarrow>\<^sub>l\<^sup>^ Rs"
 
-  shows "(perm \<bullet> P) \<Longrightarrow>\<^isub>l\<^isup>^ (perm \<bullet> Rs)"
+  shows "(perm \<bullet> P) \<Longrightarrow>\<^sub>l\<^sup>^ (perm \<bullet> Rs)"
 using assms
 by(auto intro: Weak_Late_Step_Semantics.eqvtI
   simp add: weakTransition_def residual.inject)
@@ -404,7 +404,7 @@ lemma freshInputTransition:
   and   P' :: pi
   and   c  :: name
 
-  assumes PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a<b> \<prec> P'"
+  assumes PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<b> \<prec> P'"
   and     cFreshP: "c \<sharp> P"
   and     cineqb: "c \<noteq> b"
 

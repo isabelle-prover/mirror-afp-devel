@@ -19,19 +19,19 @@ type_synonym
 primrec check_instr' :: "('addr, 'heap) check_instr'"
 where 
 check_instr'_Load:
-  "check_instr' (Load n) P h stk loc C M\<^isub>0 pc frs =
+  "check_instr' (Load n) P h stk loc C M\<^sub>0 pc frs =
   True"
 
 | check_instr'_Store:
-  "check_instr' (Store n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (Store n) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk)"
 
 | check_instr'_Push:
-  "check_instr' (Push v) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (Push v) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   True"
 
 | check_instr'_New:
-  "check_instr' (New C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr' (New C) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   True"
 
 | check_instr'_NewArray:
@@ -51,63 +51,63 @@ check_instr'_Load:
   (0 < length stk)"
 
 | check_instr'_Getfield:
-  "check_instr' (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr' (Getfield F C) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk)"
 
 | check_instr'_Putfield:
-  "check_instr' (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr' (Putfield F C) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (1 < length stk)"
 
 | check_instr'_Checkcast:
-  "check_instr' (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (Checkcast T) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk)"
 
 | check_instr'_Instanceof:
-  "check_instr' (Instanceof T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (Instanceof T) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk)"
 
 | check_instr'_Invoke:
-  "check_instr' (Invoke M n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (Invoke M n) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (n < length stk)"
 
 | check_instr'_Return:
-  "check_instr' Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' Return P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk)"
  
 | check_instr'_Pop:
-  "check_instr' Pop P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr' Pop P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk)"
 
 | check_instr'_Dup:
-  "check_instr' Dup P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr' Dup P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk)"
 
 | check_instr'_Swap:
-  "check_instr' Swap P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr' Swap P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (1 < length stk)"
 
 | check_instr'_BinOpInstr:
-  "check_instr' (BinOpInstr bop) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (BinOpInstr bop) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (1 < length stk)"
 
 | check_instr'_IfFalse:
-  "check_instr' (IfFalse b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (IfFalse b) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> 0 \<le> int pc+b)"
 
 | check_instr'_Goto:
-  "check_instr' (Goto b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' (Goto b) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 \<le> int pc+b)"
 
 | check_instr'_Throw:
-  "check_instr' ThrowExc P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' ThrowExc P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk)"
 
 | check_instr'_MEnter:
-  "check_instr' MEnter P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' MEnter P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    (0 < length stk)"
 
 | check_instr'_MExit:
-  "check_instr' MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr' MExit P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    (0 < length stk)"
 
 definition ci_stk_offer :: "('addr, 'heap) check_instr' \<Rightarrow> bool"

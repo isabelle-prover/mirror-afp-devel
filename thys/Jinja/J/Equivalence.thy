@@ -92,7 +92,7 @@ done
 subsubsection "BinOp"
 
 lemma BinOp1Reds:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle> e \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^isub>2, s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle> e \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^sub>2, s'\<rangle>"
 (*<*)
 apply(erule rtrancl_induct2)
  apply blast
@@ -112,8 +112,8 @@ done
 (*>*)
 
 lemma BinOpRedsVal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v\<^isub>2,s\<^isub>2\<rangle>; binop(bop,v\<^isub>1,v\<^isub>2) = Some v \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>2,s\<^sub>2\<rangle>; binop(bop,v\<^sub>1,v\<^sub>2) = Some v \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule BinOp1Reds)
@@ -125,7 +125,7 @@ done
 (*>*)
 
 lemma BinOpRedsThrow1:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule BinOp1Reds)
@@ -134,8 +134,8 @@ done
 (*>*)
 
 lemma BinOpRedsThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>\<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>\<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule BinOp1Reds)
@@ -188,7 +188,7 @@ done
 subsubsection "FAss"
 
 lemma FAssReds1:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{D}:=e\<^isub>2, s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{D}:=e\<^sub>2, s'\<rangle>"
 (*<*)
 apply(erule rtrancl_induct2)
  apply blast
@@ -208,8 +208,8 @@ done
 (*>*)
 
 lemma FAssRedsVal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>; Some(C,fs) = h\<^isub>2 a \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>unit, (h\<^isub>2(a\<mapsto>(C,fs((F,D)\<mapsto>v))),l\<^isub>2)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^sub>2,l\<^sub>2)\<rangle>; Some(C,fs) = h\<^sub>2 a \<rbrakk> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>unit, (h\<^sub>2(a\<mapsto>(C,fs((F,D)\<mapsto>v))),l\<^sub>2)\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule FAssReds1)
@@ -221,8 +221,8 @@ done
 (*>*)
 
 lemma FAssRedsNull:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>null,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer, s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>null,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow>
+  P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer, s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule FAssReds1)
@@ -233,7 +233,7 @@ done
 (*>*)
 
 lemma FAssRedsThrow1:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule FAssReds1)
@@ -242,8 +242,8 @@ done
 (*>*)
 
 lemma FAssRedsThrow2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<^isub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1\<bullet>F{D}:=e\<^sub>2,s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule FAssReds1)
@@ -256,7 +256,7 @@ done
 subsubsection";;"
 
 lemma  SeqReds:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e';;e\<^isub>2, s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e';;e\<^sub>2, s'\<rangle>"
 (*<*)
 apply(erule rtrancl_induct2)
  apply blast
@@ -266,7 +266,7 @@ done
 (*>*)
 
 lemma SeqRedsThrow:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule SeqReds)
@@ -275,7 +275,7 @@ done
 (*>*)
 
 lemma SeqReds2:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>e\<^isub>2',s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1;;e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2,s\<^sub>1\<rangle> \<rightarrow>* \<langle>e\<^sub>2',s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1;;e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2',s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule SeqReds)
@@ -289,7 +289,7 @@ done
 subsubsection"If"
 
 lemma CondReds:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>if (e') e\<^isub>1 else e\<^isub>2,s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<rangle> \<rightarrow>* \<langle>if (e') e\<^sub>1 else e\<^sub>2,s'\<rangle>"
 (*<*)
 apply(erule rtrancl_induct2)
  apply blast
@@ -299,7 +299,7 @@ done
 (*>*)
 
 lemma CondRedsThrow:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule CondReds)
@@ -308,7 +308,7 @@ done
 (*>*)
 
 lemma CondReds2T:
-  "\<lbrakk>P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>1, s\<^isub>1\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle>"
+  "\<lbrakk>P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>1, s\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule CondReds)
@@ -319,7 +319,7 @@ done
 (*>*)
 
 lemma CondReds2F:
-  "\<lbrakk>P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>false,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2, s\<^isub>1\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle>"
+  "\<lbrakk>P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>false,s\<^sub>1\<rangle>; P \<turnstile> \<langle>e\<^sub>2, s\<^sub>1\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule CondReds)
@@ -355,8 +355,8 @@ done
 (*>*)
 
 lemma WhileTReds:
-  "\<lbrakk> P \<turnstile> \<langle>b,s\<^isub>0\<rangle> \<rightarrow>* \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>2\<rangle>; P \<turnstile> \<langle>while (b) c,s\<^isub>2\<rangle> \<rightarrow>* \<langle>e,s\<^isub>3\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^isub>0\<rangle> \<rightarrow>* \<langle>e,s\<^isub>3\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>b,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Val v\<^sub>1,s\<^sub>2\<rangle>; P \<turnstile> \<langle>while (b) c,s\<^sub>2\<rangle> \<rightarrow>* \<langle>e,s\<^sub>3\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^sub>0\<rangle> \<rightarrow>* \<langle>e,s\<^sub>3\<rangle>"
 (*<*)
 apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedWhile)
@@ -373,8 +373,8 @@ done
 (*>*)
 
 lemma WhileTRedsThrow:
-  "\<lbrakk> P \<turnstile> \<langle>b,s\<^isub>0\<rangle> \<rightarrow>* \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^isub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>b,s\<^sub>0\<rangle> \<rightarrow>* \<langle>true,s\<^sub>1\<rangle>; P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^sub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^sub>2\<rangle>"
 (*<*)
 apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedWhile)
@@ -467,8 +467,8 @@ done
 subsubsection "Block"
 
 lemma BlockRedsFinal:
-assumes reds: "P \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2)\<rangle>" and fin: "final e\<^isub>2"
-shows "\<And>h\<^isub>0 l\<^isub>0. s\<^isub>0 = (h\<^isub>0,l\<^isub>0(V:=None)) \<Longrightarrow> P \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2(V:=l\<^isub>0 V))\<rangle>"
+assumes reds: "P \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2,l\<^sub>2)\<rangle>" and fin: "final e\<^sub>2"
+shows "\<And>h\<^sub>0 l\<^sub>0. s\<^sub>0 = (h\<^sub>0,l\<^sub>0(V:=None)) \<Longrightarrow> P \<turnstile> \<langle>{V:T; e\<^sub>0},(h\<^sub>0,l\<^sub>0)\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2,l\<^sub>2(V:=l\<^sub>0 V))\<rangle>"
 (*<*)
 using reds
 proof (induct rule:converse_rtrancl_induct2)
@@ -476,47 +476,47 @@ proof (induct rule:converse_rtrancl_induct2)
     by(fastforce intro:finalE[OF fin] RedBlock BlockThrow
                 simp del:fun_upd_apply)
 next
-  case (step e\<^isub>0 s\<^isub>0 e\<^isub>1 s\<^isub>1)
-  have red: "P \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarrow> \<langle>e\<^isub>1,s\<^isub>1\<rangle>"
-   and reds: "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2)\<rangle>"
-   and IH: "\<And>h l. s\<^isub>1 = (h,l(V := None))
-                \<Longrightarrow> P \<turnstile> \<langle>{V:T; e\<^isub>1},(h,l)\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2, l\<^isub>2(V := l V))\<rangle>"
-   and s\<^isub>0: "s\<^isub>0 = (h\<^isub>0, l\<^isub>0(V := None))" by fact+
-  obtain h\<^isub>1 l\<^isub>1 where s\<^isub>1: "s\<^isub>1 = (h\<^isub>1,l\<^isub>1)" by fastforce
+  case (step e\<^sub>0 s\<^sub>0 e\<^sub>1 s\<^sub>1)
+  have red: "P \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<rightarrow> \<langle>e\<^sub>1,s\<^sub>1\<rangle>"
+   and reds: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2,l\<^sub>2)\<rangle>"
+   and IH: "\<And>h l. s\<^sub>1 = (h,l(V := None))
+                \<Longrightarrow> P \<turnstile> \<langle>{V:T; e\<^sub>1},(h,l)\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2, l\<^sub>2(V := l V))\<rangle>"
+   and s\<^sub>0: "s\<^sub>0 = (h\<^sub>0, l\<^sub>0(V := None))" by fact+
+  obtain h\<^sub>1 l\<^sub>1 where s\<^sub>1: "s\<^sub>1 = (h\<^sub>1,l\<^sub>1)" by fastforce
   show ?case
   proof cases
-    assume "assigned V e\<^isub>0"
-    then obtain v e where e\<^isub>0: "e\<^isub>0 = V := Val v;; e"
+    assume "assigned V e\<^sub>0"
+    then obtain v e where e\<^sub>0: "e\<^sub>0 = V := Val v;; e"
       by (unfold assigned_def)blast
-    from red e\<^isub>0 s\<^isub>0 have e\<^isub>1: "e\<^isub>1 = unit;;e" and s\<^isub>1: "s\<^isub>1 = (h\<^isub>0, l\<^isub>0(V \<mapsto> v))"
+    from red e\<^sub>0 s\<^sub>0 have e\<^sub>1: "e\<^sub>1 = unit;;e" and s\<^sub>1: "s\<^sub>1 = (h\<^sub>0, l\<^sub>0(V \<mapsto> v))"
       by auto
-    from e\<^isub>1 fin have "e\<^isub>1 \<noteq> e\<^isub>2" by (auto simp:final_def)
-    then obtain e' s' where red1: "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-      and reds': "P \<turnstile> \<langle>e',s'\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2)\<rangle>"
+    from e\<^sub>1 fin have "e\<^sub>1 \<noteq> e\<^sub>2" by (auto simp:final_def)
+    then obtain e' s' where red1: "P \<turnstile> \<langle>e\<^sub>1,s\<^sub>1\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
+      and reds': "P \<turnstile> \<langle>e',s'\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2,l\<^sub>2)\<rangle>"
       using converse_rtranclE2[OF reds] by blast
-    from red1 e\<^isub>1 have es': "e' = e" "s' = s\<^isub>1" by auto
-    show ?case using e\<^isub>0 s\<^isub>1 es' reds'
+    from red1 e\<^sub>1 have es': "e' = e" "s' = s\<^sub>1" by auto
+    show ?case using e\<^sub>0 s\<^sub>1 es' reds'
       by(fastforce intro!: InitBlockRedsFinal[OF _ fin] simp del:fun_upd_apply)
   next
-    assume unass: "\<not> assigned V e\<^isub>0"
+    assume unass: "\<not> assigned V e\<^sub>0"
     show ?thesis
-    proof (cases "l\<^isub>1 V")
-      assume None: "l\<^isub>1 V = None"
-      hence "P \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>{V:T; e\<^isub>1},(h\<^isub>1, l\<^isub>1(V := l\<^isub>0 V))\<rangle>"
-        using s\<^isub>0 s\<^isub>1 red by(simp add: BlockRedNone[OF _ _ unass])
+    proof (cases "l\<^sub>1 V")
+      assume None: "l\<^sub>1 V = None"
+      hence "P \<turnstile> \<langle>{V:T; e\<^sub>0},(h\<^sub>0,l\<^sub>0)\<rangle> \<rightarrow> \<langle>{V:T; e\<^sub>1},(h\<^sub>1, l\<^sub>1(V := l\<^sub>0 V))\<rangle>"
+        using s\<^sub>0 s\<^sub>1 red by(simp add: BlockRedNone[OF _ _ unass])
       moreover
-      have "P \<turnstile> \<langle>{V:T; e\<^isub>1},(h\<^isub>1, l\<^isub>1(V := l\<^isub>0 V))\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2, l\<^isub>2(V := l\<^isub>0 V))\<rangle>"
-        using IH[of _ "l\<^isub>1(V := l\<^isub>0 V)"] s\<^isub>1 None by(simp add:fun_upd_idem)
+      have "P \<turnstile> \<langle>{V:T; e\<^sub>1},(h\<^sub>1, l\<^sub>1(V := l\<^sub>0 V))\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2, l\<^sub>2(V := l\<^sub>0 V))\<rangle>"
+        using IH[of _ "l\<^sub>1(V := l\<^sub>0 V)"] s\<^sub>1 None by(simp add:fun_upd_idem)
       ultimately show ?case by(rule converse_rtrancl_into_rtrancl)
     next
-      fix v assume Some: "l\<^isub>1 V = Some v"
-      hence "P \<turnstile> \<langle>{V:T;e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V := l\<^isub>0 V))\<rangle>"
-        using s\<^isub>0 s\<^isub>1 red by(simp add: BlockRedSome[OF _ _ unass])
+      fix v assume Some: "l\<^sub>1 V = Some v"
+      hence "P \<turnstile> \<langle>{V:T;e\<^sub>0},(h\<^sub>0,l\<^sub>0)\<rangle> \<rightarrow> \<langle>{V:T := Val v; e\<^sub>1},(h\<^sub>1,l\<^sub>1(V := l\<^sub>0 V))\<rangle>"
+        using s\<^sub>0 s\<^sub>1 red by(simp add: BlockRedSome[OF _ _ unass])
       moreover
-      have "P \<turnstile> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V:= l\<^isub>0 V))\<rangle> \<rightarrow>*
-                \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2(V:=l\<^isub>0 V))\<rangle>"
-        using InitBlockRedsFinal[OF _ fin,of _ _ "l\<^isub>1(V:=l\<^isub>0 V)" V]
-              Some reds s\<^isub>1 by(simp add:fun_upd_idem)
+      have "P \<turnstile> \<langle>{V:T := Val v; e\<^sub>1},(h\<^sub>1,l\<^sub>1(V:= l\<^sub>0 V))\<rangle> \<rightarrow>*
+                \<langle>e\<^sub>2,(h\<^sub>2,l\<^sub>2(V:=l\<^sub>0 V))\<rangle>"
+        using InitBlockRedsFinal[OF _ fin,of _ _ "l\<^sub>1(V:=l\<^sub>0 V)" V]
+              Some reds s\<^sub>1 by(simp add:fun_upd_idem)
       ultimately show ?case by(rule converse_rtrancl_into_rtrancl)
     qed
   qed
@@ -527,7 +527,7 @@ qed
 subsubsection "try-catch"
 
 lemma TryReds:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>try e' catch(C V) e\<^isub>2,s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^sub>2,s\<rangle> \<rightarrow>* \<langle>try e' catch(C V) e\<^sub>2,s'\<rangle>"
 (*<*)
 apply(erule rtrancl_induct2)
  apply blast
@@ -537,7 +537,7 @@ done
 (*>*)
 
 lemma TryRedsVal:
-  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle>"
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule TryReds)
@@ -546,9 +546,9 @@ done
 (*>*)
 
 lemma TryCatchRedsFinal:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Throw a,(h\<^isub>1,l\<^isub>1)\<rangle>;  h\<^isub>1 a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C;
-     P \<turnstile> \<langle>e\<^isub>2, (h\<^isub>1, l\<^isub>1(V \<mapsto> Addr a))\<rangle> \<rightarrow>* \<langle>e\<^isub>2', (h\<^isub>2,l\<^isub>2)\<rangle>; final e\<^isub>2' \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e\<^isub>2', (h\<^isub>2, l\<^isub>2(V := l\<^isub>1 V))\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Throw a,(h\<^sub>1,l\<^sub>1)\<rangle>;  h\<^sub>1 a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C;
+     P \<turnstile> \<langle>e\<^sub>2, (h\<^sub>1, l\<^sub>1(V \<mapsto> Addr a))\<rangle> \<rightarrow>* \<langle>e\<^sub>2', (h\<^sub>2,l\<^sub>2)\<rangle>; final e\<^sub>2' \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2, s\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2', (h\<^sub>2, l\<^sub>2(V := l\<^sub>1 V))\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule TryReds)
@@ -563,8 +563,8 @@ done
 (*>*)
 
 lemma TryRedsFail:
-  "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Throw a,(h,l)\<rangle>; h a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Throw a,(h,l)\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e\<^sub>1,s\<rangle> \<rightarrow>* \<langle>Throw a,(h,l)\<rangle>; h a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>try e\<^sub>1 catch(C V) e\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Throw a,(h,l)\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule TryReds)
@@ -595,8 +595,8 @@ done
 (*>*)
 
 lemma ListRedsVal:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>es',s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<rightarrow>]* \<langle>Val v # es',s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1\<rangle>; P \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>es',s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<^sub>0\<rangle> [\<rightarrow>]* \<langle>Val v # es',s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule ListReds1)
@@ -738,44 +738,44 @@ done
 
 lemma CallRedsFinal:
 assumes wwf: "wwf_J_prog P"
-and "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^isub>1\<rangle>"
-      "P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
-      "h\<^isub>2 a = Some(C,fs)" "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
+and "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1\<rangle>"
+      "P \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
+      "h\<^sub>2 a = Some(C,fs)" "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
       "size vs = size pns"
-and l\<^isub>2': "l\<^isub>2' = [this \<mapsto> Addr a, pns[\<mapsto>]vs]"
-and body: "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<rightarrow>* \<langle>ef,(h\<^isub>3,l\<^isub>3)\<rangle>"
+and l\<^sub>2': "l\<^sub>2' = [this \<mapsto> Addr a, pns[\<mapsto>]vs]"
+and body: "P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2')\<rangle> \<rightarrow>* \<langle>ef,(h\<^sub>3,l\<^sub>3)\<rangle>"
 and "final ef"
-shows "P \<turnstile> \<langle>e\<bullet>M(es), s\<^isub>0\<rangle> \<rightarrow>* \<langle>ef,(h\<^isub>3,l\<^isub>2)\<rangle>"
+shows "P \<turnstile> \<langle>e\<bullet>M(es), s\<^sub>0\<rangle> \<rightarrow>* \<langle>ef,(h\<^sub>3,l\<^sub>2)\<rangle>"
 (*<*)
 proof -
   have wf: "size Ts = size pns \<and> distinct pns \<and> this \<notin> set pns"
     and wt: "fv body \<subseteq> {this} \<union> set pns"
     using assms by(fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
-  from body[THEN Red_lcl_add, of l\<^isub>2]
-  have body': "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2(this\<mapsto> Addr a, pns[\<mapsto>]vs))\<rangle> \<rightarrow>* \<langle>ef,(h\<^isub>3,l\<^isub>2++l\<^isub>3)\<rangle>"
-    by (simp add:l\<^isub>2')
-  have "dom l\<^isub>3 \<subseteq> {this} \<union> set pns"
-    using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset by force
-  hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
+  from body[THEN Red_lcl_add, of l\<^sub>2]
+  have body': "P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2(this\<mapsto> Addr a, pns[\<mapsto>]vs))\<rangle> \<rightarrow>* \<langle>ef,(h\<^sub>3,l\<^sub>2++l\<^sub>3)\<rangle>"
+    by (simp add:l\<^sub>2')
+  have "dom l\<^sub>3 \<subseteq> {this} \<union> set pns"
+    using Reds_dom_lcl[OF wwf body] wt l\<^sub>2' set_take_subset by force
+  hence eql\<^sub>2: "override_on (l\<^sub>2++l\<^sub>3) l\<^sub>2 ({this} \<union> set pns) = l\<^sub>2"
     by(fastforce simp add:map_add_def override_on_def fun_eq_iff)
-  have "P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<rightarrow>* \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle>" by(rule CallRedsObj)(rule assms(2))
-  also have "P \<turnstile> \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle> \<rightarrow>*
-                 \<langle>(addr a)\<bullet>M(map Val vs),(h\<^isub>2,l\<^isub>2)\<rangle>"
+  have "P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0\<rangle> \<rightarrow>* \<langle>(addr a)\<bullet>M(es),s\<^sub>1\<rangle>" by(rule CallRedsObj)(rule assms(2))
+  also have "P \<turnstile> \<langle>(addr a)\<bullet>M(es),s\<^sub>1\<rangle> \<rightarrow>*
+                 \<langle>(addr a)\<bullet>M(map Val vs),(h\<^sub>2,l\<^sub>2)\<rangle>"
     by(rule CallRedsParams)(rule assms(3))
-  also have "P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), (h\<^isub>2,l\<^isub>2)\<rangle> \<rightarrow>
-                 \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>"
+  also have "P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), (h\<^sub>2,l\<^sub>2)\<rangle> \<rightarrow>
+                 \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^sub>2,l\<^sub>2)\<rangle>"
     by(rule RedCall)(auto simp: assms wf, rule assms(5))
-  also (rtrancl_into_rtrancl) have "P \<turnstile> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>
-                 \<rightarrow>* \<langle>ef,(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle>"
+  also (rtrancl_into_rtrancl) have "P \<turnstile> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^sub>2,l\<^sub>2)\<rangle>
+                 \<rightarrow>* \<langle>ef,(h\<^sub>3,override_on (l\<^sub>2++l\<^sub>3) l\<^sub>2 ({this} \<union> set pns))\<rangle>"
     by(rule blocksRedsFinal, insert assms wf body', simp_all)
-  finally show ?thesis using eql\<^isub>2 by simp
+  finally show ?thesis using eql\<^sub>2 by simp
 qed
 (*>*)
 
 
 lemma CallRedsThrowParams:
-  "\<lbrakk> P \<turnstile> \<langle>e,s0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs\<^isub>1 @ throw a # es\<^isub>2,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s0\<rangle> \<rightarrow>* \<langle>Val v,s\<^sub>1\<rangle>;  P \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs\<^sub>1 @ throw a # es\<^sub>2,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule CallRedsObj)
@@ -788,7 +788,7 @@ done
 
 
 lemma CallRedsThrowObj:
-  "P \<turnstile> \<langle>e,s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^isub>1\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^isub>1\<rangle>"
+  "P \<turnstile> \<langle>e,s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>1\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^sub>1\<rangle>"
 (*<*)
 apply(rule rtrancl_into_rtrancl)
  apply(erule CallRedsObj)
@@ -798,8 +798,8 @@ done
 
 
 lemma CallRedsNull:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>null,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>null,s\<^sub>1\<rangle>; P \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^sub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^sub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s\<^sub>2\<rangle>"
 (*<*)
 apply(rule rtrancl_trans)
  apply(erule CallRedsObj)
@@ -863,17 +863,17 @@ next
   case CallParamsThrow thus ?case
     by(auto dest!:evals_final simp:CallRedsThrowParams)
 next
-  case (Call e s\<^isub>0 a s\<^isub>1 ps vs h\<^isub>2 l\<^isub>2 C fs M Ts T pns body D l\<^isub>2' e' h\<^isub>3 l\<^isub>3)
-  have IHe: "P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^isub>1\<rangle>"
-    and IHes: "P \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
-    and h\<^isub>2a: "h\<^isub>2 a = Some(C,fs)"
+  case (Call e s\<^sub>0 a s\<^sub>1 ps vs h\<^sub>2 l\<^sub>2 C fs M Ts T pns body D l\<^sub>2' e' h\<^sub>3 l\<^sub>3)
+  have IHe: "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1\<rangle>"
+    and IHes: "P \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
+    and h\<^sub>2a: "h\<^sub>2 a = Some(C,fs)"
     and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
     and same_length: "length vs = length pns"
-    and l\<^isub>2': "l\<^isub>2' = [this \<mapsto> Addr a, pns[\<mapsto>]vs]"
-    and eval_body: "P \<turnstile> \<langle>body,(h\<^isub>2, l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3, l\<^isub>3)\<rangle>"
-    and IHbody: "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>" by fact+
-  show "P \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3, l\<^isub>2)\<rangle>"
-    using method same_length l\<^isub>2' h\<^isub>2a IHbody eval_final[OF eval_body]
+    and l\<^sub>2': "l\<^sub>2' = [this \<mapsto> Addr a, pns[\<mapsto>]vs]"
+    and eval_body: "P \<turnstile> \<langle>body,(h\<^sub>2, l\<^sub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3, l\<^sub>3)\<rangle>"
+    and IHbody: "P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^sub>3,l\<^sub>3)\<rangle>" by fact+
+  show "P \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^sub>3, l\<^sub>2)\<rangle>"
+    using method same_length l\<^sub>2' h\<^sub>2a IHbody eval_final[OF eval_body]
     by(fastforce intro:CallRedsFinal[OF wwf IHe IHes])
 next
   case Block thus ?case by(auto simp: BlockRedsFinal dest:eval_final)
@@ -942,25 +942,25 @@ next
     hence "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>throw a,s'\<rangle>" by (rule WhileCondThrow)
     with e' show ?thesis by simp
   next
-    fix s\<^isub>1
-    assume eval_false: "P \<turnstile> \<langle>b,s\<rangle> \<Rightarrow> \<langle>false,s\<^isub>1\<rangle>"
-    and eval_unit: "P \<turnstile> \<langle>unit,s\<^isub>1\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
-    with eval_unit have "s' = s\<^isub>1" "e' = unit" by (auto elim: eval_cases)
-    moreover from eval_false have "P \<turnstile> \<langle>while (b) c,s\<rangle> \<Rightarrow> \<langle>unit,s\<^isub>1\<rangle>"
+    fix s\<^sub>1
+    assume eval_false: "P \<turnstile> \<langle>b,s\<rangle> \<Rightarrow> \<langle>false,s\<^sub>1\<rangle>"
+    and eval_unit: "P \<turnstile> \<langle>unit,s\<^sub>1\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+    with eval_unit have "s' = s\<^sub>1" "e' = unit" by (auto elim: eval_cases)
+    moreover from eval_false have "P \<turnstile> \<langle>while (b) c,s\<rangle> \<Rightarrow> \<langle>unit,s\<^sub>1\<rangle>"
       by - (rule WhileF, simp)
     ultimately show ?thesis by simp
   next
-    fix s\<^isub>1
-    assume eval_true: "P \<turnstile> \<langle>b,s\<rangle> \<Rightarrow> \<langle>true,s\<^isub>1\<rangle>"
-    and eval_rest: "P \<turnstile> \<langle>c;; while (b) c,s\<^isub>1\<rangle>\<Rightarrow>\<langle>e',s'\<rangle>"
+    fix s\<^sub>1
+    assume eval_true: "P \<turnstile> \<langle>b,s\<rangle> \<Rightarrow> \<langle>true,s\<^sub>1\<rangle>"
+    and eval_rest: "P \<turnstile> \<langle>c;; while (b) c,s\<^sub>1\<rangle>\<Rightarrow>\<langle>e',s'\<rangle>"
     from eval_rest show ?thesis
     proof (cases)
-      fix s\<^isub>2 v\<^isub>1
-      assume "P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>2\<rangle>" "P \<turnstile> \<langle>while (b) c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+      fix s\<^sub>2 v\<^sub>1
+      assume "P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow> \<langle>Val v\<^sub>1,s\<^sub>2\<rangle>" "P \<turnstile> \<langle>while (b) c,s\<^sub>2\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
       with eval_true show "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by (rule WhileT)
     next
       fix a
-      assume "P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw a,s'\<rangle>" "e' = throw a"
+      assume "P \<turnstile> \<langle>c,s\<^sub>1\<rangle> \<Rightarrow> \<langle>throw a,s'\<rangle>" "e' = throw a"
       with eval_true show "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"        
         by (iprover intro: WhileBodyThrow)
     qed
@@ -1043,13 +1043,13 @@ shows eval_restrict_lcl:
 and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>W. fvs es \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>es,(h,l|`W)\<rangle> [\<Rightarrow>] \<langle>es',(h',l'|`W)\<rangle>)"
 (*<*)
 proof(induct rule:eval_evals_inducts)
-  case (Block e\<^isub>0 h\<^isub>0 l\<^isub>0 V e\<^isub>1 h\<^isub>1 l\<^isub>1 T)
-  have IH: "\<And>W. fv e\<^isub>0 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1|`W)\<rangle>" by fact
-  have "fv({V:T; e\<^isub>0}) \<subseteq> W" by fact+
-  hence "fv e\<^isub>0 - {V} \<subseteq> W" by simp_all
-  hence "fv e\<^isub>0 \<subseteq> insert V W" by fast
+  case (Block e\<^sub>0 h\<^sub>0 l\<^sub>0 V e\<^sub>1 h\<^sub>1 l\<^sub>1 T)
+  have IH: "\<And>W. fv e\<^sub>0 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>0,(h\<^sub>0,l\<^sub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^sub>1,(h\<^sub>1,l\<^sub>1|`W)\<rangle>" by fact
+  have "fv({V:T; e\<^sub>0}) \<subseteq> W" by fact+
+  hence "fv e\<^sub>0 - {V} \<subseteq> W" by simp_all
+  hence "fv e\<^sub>0 \<subseteq> insert V W" by fast
   from IH[OF this]
-  have "P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0, (l\<^isub>0|`W)(V := None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1, l\<^isub>1|`insert V W)\<rangle>"
+  have "P \<turnstile> \<langle>e\<^sub>0,(h\<^sub>0, (l\<^sub>0|`W)(V := None))\<rangle> \<Rightarrow> \<langle>e\<^sub>1,(h\<^sub>1, l\<^sub>1|`insert V W)\<rangle>"
     by fastforce
   from eval_evals.Block[OF this] show ?case by fastforce
 next
@@ -1077,8 +1077,8 @@ next
 next
   case Var thus ?case by(simp add:eval_evals.intros)
 next
-  case (LAss e h\<^isub>0 l\<^isub>0 v h l l' V)
-  have IH: "\<And>W. fv e \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0|`W)\<rangle> \<Rightarrow> \<langle>Val v,(h,l|`W)\<rangle>"
+  case (LAss e h\<^sub>0 l\<^sub>0 v h l l' V)
+  have IH: "\<And>W. fv e \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0|`W)\<rangle> \<Rightarrow> \<langle>Val v,(h,l|`W)\<rangle>"
    and [simp]: "l' = l(V \<mapsto> v)" by fact+
   have "fv (V:=e) \<subseteq> W" by fact
   hence fv: "fv e \<subseteq> W" and VinW: "V \<in> W" by auto
@@ -1108,23 +1108,23 @@ next
   case CallParamsThrow thus ?case
     by simp (blast intro: eval_evals.CallParamsThrow)
 next
-  case (Call e h\<^isub>0 l\<^isub>0 a h\<^isub>1 l\<^isub>1 ps vs h\<^isub>2 l\<^isub>2 C fs M Ts T pns body
-      D l\<^isub>2' e' h\<^isub>3 l\<^isub>3)
-  have IHe: "\<And>W. fv e \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0|`W)\<rangle> \<Rightarrow> \<langle>addr a,(h\<^isub>1,l\<^isub>1|`W)\<rangle>"
-   and IHps: "\<And>W. fvs ps \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>ps,(h\<^isub>1,l\<^isub>1|`W)\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2|`W)\<rangle>"
-   and IHbd: "\<And>W. fv body \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2'|`W)\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3|`W)\<rangle>"
-   and h\<^isub>2a: "h\<^isub>2 a = Some (C, fs)"
+  case (Call e h\<^sub>0 l\<^sub>0 a h\<^sub>1 l\<^sub>1 ps vs h\<^sub>2 l\<^sub>2 C fs M Ts T pns body
+      D l\<^sub>2' e' h\<^sub>3 l\<^sub>3)
+  have IHe: "\<And>W. fv e \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0|`W)\<rangle> \<Rightarrow> \<langle>addr a,(h\<^sub>1,l\<^sub>1|`W)\<rangle>"
+   and IHps: "\<And>W. fvs ps \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>ps,(h\<^sub>1,l\<^sub>1|`W)\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2|`W)\<rangle>"
+   and IHbd: "\<And>W. fv body \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2'|`W)\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>3|`W)\<rangle>"
+   and h\<^sub>2a: "h\<^sub>2 a = Some (C, fs)"
    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
    and same_len: "size vs = size pns"
-   and l\<^isub>2': "l\<^isub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]" by fact+
+   and l\<^sub>2': "l\<^sub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]" by fact+
   have "fv (e\<bullet>M(ps)) \<subseteq> W" by fact
   hence fve: "fv e  \<subseteq> W" and fvps: "fvs(ps) \<subseteq> W" by auto
   have wfmethod: "size Ts = size pns \<and> this \<notin> set pns" and
        fvbd: "fv body \<subseteq> {this} \<union> set pns"
     using method wf by(fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
   show ?case
-    using IHbd[OF fvbd] l\<^isub>2' same_len wfmethod h\<^isub>2a
-      eval_evals.Call[OF IHe[OF fve] IHps[OF fvps] _ method same_len l\<^isub>2']
+    using IHbd[OF fvbd] l\<^sub>2' same_len wfmethod h\<^sub>2a
+      eval_evals.Call[OF IHe[OF fve] IHps[OF fvps] _ method same_len l\<^sub>2']
     by (simp add:subset_insertI)
 next
   case SeqThrow thus ?case by simp (blast intro: eval_evals.SeqThrow)
@@ -1151,15 +1151,15 @@ next
 next
   case Try thus ?case by simp (blast intro: eval_evals.Try)
 next
-  case (TryCatch e\<^isub>1 h\<^isub>0 l\<^isub>0 a h\<^isub>1 l\<^isub>1 D fs C e\<^isub>2 V e\<^isub>2' h\<^isub>2 l\<^isub>2)
-  have IH\<^isub>1: "\<And>W. fv e\<^isub>1 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1,(h\<^isub>0,l\<^isub>0|`W)\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^isub>1,l\<^isub>1|`W)\<rangle>"
-   and IH\<^isub>2: "\<And>W. fv e\<^isub>2 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>2,(h\<^isub>1,l\<^isub>1(V\<mapsto>Addr a)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>2',(h\<^isub>2,l\<^isub>2|`W)\<rangle>"
-   and lookup: "h\<^isub>1 a = Some(D, fs)" and subtype: "P \<turnstile> D \<preceq>\<^sup>* C" by fact+
-  have "fv (try e\<^isub>1 catch(C V) e\<^isub>2) \<subseteq> W" by fact
-  hence fv\<^isub>1: "fv e\<^isub>1 \<subseteq> W" and fv\<^isub>2: "fv e\<^isub>2 \<subseteq> insert V W" by auto
-  have IH\<^isub>2': "P \<turnstile> \<langle>e\<^isub>2,(h\<^isub>1,(l\<^isub>1|`W)(V \<mapsto> Addr a))\<rangle> \<Rightarrow> \<langle>e\<^isub>2',(h\<^isub>2,l\<^isub>2|`insert V W)\<rangle>"
-    using IH\<^isub>2[OF fv\<^isub>2] fun_upd_restrict[of l\<^isub>1 W] (*FIXME just l|W instead of l|(W-V) in simp rule??*) by simp
-  with eval_evals.TryCatch[OF IH\<^isub>1[OF fv\<^isub>1] _ subtype IH\<^isub>2'] lookup
+  case (TryCatch e\<^sub>1 h\<^sub>0 l\<^sub>0 a h\<^sub>1 l\<^sub>1 D fs C e\<^sub>2 V e\<^sub>2' h\<^sub>2 l\<^sub>2)
+  have IH\<^sub>1: "\<And>W. fv e\<^sub>1 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>1,(h\<^sub>0,l\<^sub>0|`W)\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^sub>1,l\<^sub>1|`W)\<rangle>"
+   and IH\<^sub>2: "\<And>W. fv e\<^sub>2 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^sub>2,(h\<^sub>1,l\<^sub>1(V\<mapsto>Addr a)|`W)\<rangle> \<Rightarrow> \<langle>e\<^sub>2',(h\<^sub>2,l\<^sub>2|`W)\<rangle>"
+   and lookup: "h\<^sub>1 a = Some(D, fs)" and subtype: "P \<turnstile> D \<preceq>\<^sup>* C" by fact+
+  have "fv (try e\<^sub>1 catch(C V) e\<^sub>2) \<subseteq> W" by fact
+  hence fv\<^sub>1: "fv e\<^sub>1 \<subseteq> W" and fv\<^sub>2: "fv e\<^sub>2 \<subseteq> insert V W" by auto
+  have IH\<^sub>2': "P \<turnstile> \<langle>e\<^sub>2,(h\<^sub>1,(l\<^sub>1|`W)(V \<mapsto> Addr a))\<rangle> \<Rightarrow> \<langle>e\<^sub>2',(h\<^sub>2,l\<^sub>2|`insert V W)\<rangle>"
+    using IH\<^sub>2[OF fv\<^sub>2] fun_upd_restrict[of l\<^sub>1 W] (*FIXME just l|W instead of l|(W-V) in simp rule??*) by simp
+  with eval_evals.TryCatch[OF IH\<^sub>1[OF fv\<^sub>1] _ subtype IH\<^sub>2'] lookup
   show ?case by fastforce
 next
   case TryThrow thus ?case by simp (blast intro: eval_evals.TryThrow)
@@ -1268,42 +1268,42 @@ proof (induct rule: red_reds.inducts)
   have "P \<turnstile> \<langle>addr a,s\<rangle> \<Rightarrow> \<langle>addr a,s\<rangle>" by (rule eval_evals.intros)
   moreover
   have finals: "finals(map Val vs)" by simp
-  obtain h\<^isub>2 l\<^isub>2 where s: "s = (h\<^isub>2,l\<^isub>2)" by (cases s)
-  with finals have "P \<turnstile> \<langle>map Val vs,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
+  obtain h\<^sub>2 l\<^sub>2 where s: "s = (h\<^sub>2,l\<^sub>2)" by (cases s)
+  with finals have "P \<turnstile> \<langle>map Val vs,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
     by (iprover intro: eval_finalsId)
-  moreover from s have "h\<^isub>2 a = Some (C, fs)" using RedCall by simp
+  moreover from s have "h\<^sub>2 a = Some (C, fs)" using RedCall by simp
   moreover have method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
-  moreover have same_len\<^isub>1: "length Ts = length pns"
+  moreover have same_len\<^sub>1: "length Ts = length pns"
    and this_distinct: "this \<notin> set pns" and fv: "fv body \<subseteq> {this} \<union> set pns"
     using method wf by (fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
   have same_len: "length vs = length pns" by fact
   moreover
-  obtain l\<^isub>2' where l\<^isub>2': "l\<^isub>2' = [this\<mapsto>Addr a,pns[\<mapsto>]vs]" by simp
+  obtain l\<^sub>2' where l\<^sub>2': "l\<^sub>2' = [this\<mapsto>Addr a,pns[\<mapsto>]vs]" by simp
   moreover
-  obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s')
+  obtain h\<^sub>3 l\<^sub>3 where s': "s' = (h\<^sub>3,l\<^sub>3)" by (cases s')
   have eval_blocks:
     "P \<turnstile> \<langle>blocks (this # pns, Class D # Ts, Addr a # vs, body),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
-  hence id: "l\<^isub>3 = l\<^isub>2" using fv s s' same_len\<^isub>1 same_len
+  hence id: "l\<^sub>3 = l\<^sub>2" using fv s s' same_len\<^sub>1 same_len
     by(fastforce elim: eval_closed_lcl_unchanged)
-  from eval_blocks obtain l\<^isub>3' where "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3')\<rangle>"
+  from eval_blocks obtain l\<^sub>3' where "P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>3')\<rangle>"
   proof -
-    from same_len\<^isub>1 have "length(this#pns) = length(Class D#Ts)" by simp
-    moreover from same_len\<^isub>1 same_len
+    from same_len\<^sub>1 have "length(this#pns) = length(Class D#Ts)" by simp
+    moreover from same_len\<^sub>1 same_len
     have "length (this#pns) = length (Addr a#vs)" by simp
     moreover from eval_blocks
-    have "P \<turnstile> \<langle>blocks (this#pns,Class D#Ts,Addr a#vs,body),(h\<^isub>2,l\<^isub>2)\<rangle>
-              \<Rightarrow>\<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>" using s s' by simp
+    have "P \<turnstile> \<langle>blocks (this#pns,Class D#Ts,Addr a#vs,body),(h\<^sub>2,l\<^sub>2)\<rangle>
+              \<Rightarrow>\<langle>e',(h\<^sub>3,l\<^sub>3)\<rangle>" using s s' by simp
     ultimately obtain l''
-      where "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2(this # pns[\<mapsto>]Addr a # vs))\<rangle>\<Rightarrow>\<langle>e',(h\<^isub>3, l'')\<rangle>"
+      where "P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2(this # pns[\<mapsto>]Addr a # vs))\<rangle>\<Rightarrow>\<langle>e',(h\<^sub>3, l'')\<rangle>"
       by (blast dest:blocksEval)
-    from eval_restrict_lcl[OF wf this fv] this_distinct same_len\<^isub>1 same_len
-    have "P \<turnstile> \<langle>body,(h\<^isub>2,[this # pns[\<mapsto>]Addr a # vs])\<rangle> \<Rightarrow>
-               \<langle>e',(h\<^isub>3, l''|`(set(this#pns)))\<rangle>"
+    from eval_restrict_lcl[OF wf this fv] this_distinct same_len\<^sub>1 same_len
+    have "P \<turnstile> \<langle>body,(h\<^sub>2,[this # pns[\<mapsto>]Addr a # vs])\<rangle> \<Rightarrow>
+               \<langle>e',(h\<^sub>3, l''|`(set(this#pns)))\<rangle>"
       by(simp add:subset_insert_iff insert_Diff_if)
-    thus ?thesis by(fastforce intro!:that simp add: l\<^isub>2')
+    thus ?thesis by(fastforce intro!:that simp add: l\<^sub>2')
   qed
   ultimately
-  have "P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs),s\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>" by (rule Call)
+  have "P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs),s\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>2)\<rangle>" by (rule Call)
   with s' id show ?case by simp
 next
  case RedNew
@@ -1330,7 +1330,7 @@ next
   thus ?case
     by (cases s) (auto elim!: eval_cases intro: eval_evals.intros)
 next
-  case (BinOpRed1 e s e' s' bop e\<^isub>2 s'' e')
+  case (BinOpRed1 e s e' s' bop e\<^sub>2 s'' e')
   thus ?case
     by (cases s'')(erule eval_cases,auto intro: eval_evals.intros)
 next
@@ -1366,7 +1366,7 @@ next
   thus ?case
     by (fastforce elim!: eval_cases intro: eval_evals.intros)
 next
-  case (FAssRed1 e s e' s'' F D e\<^isub>2 s' e')
+  case (FAssRed1 e s e' s'' F D e\<^sub>2 s' e')
   thus ?case
     by (cases s')(erule eval_cases, auto intro: eval_evals.intros)
 next
@@ -1464,7 +1464,7 @@ next
   thus ?case
     by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case (TryRed e s e' s' C V e\<^isub>2 s'' e')
+  case (TryRed e s e' s' C V e\<^sub>2 s'' e')
   thus ?case
     by (cases s, cases s'', auto elim!: eval_cases intro: eval_evals.intros)
 next
@@ -1476,7 +1476,7 @@ next
   thus ?case
     by (fastforce elim: eval_cases intro: eval_evals.intros)
 next
-  case (RedTryFail s a D fs C V e\<^isub>2 s' e')
+  case (RedTryFail s a D fs C V e\<^sub>2 s' e')
   thus ?case
     by (cases s)(auto elim!: eval_cases intro: eval_evals.intros)
 next

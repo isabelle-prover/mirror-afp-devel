@@ -30,11 +30,11 @@ fun exec :: "jvm_prog \<times> jvm_state => jvm_state option" where -- "single s
 inductive_set
   exec_1 :: "jvm_prog \<Rightarrow> (jvm_state \<times> jvm_state) set"
   and exec_1' :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool" 
-    ("_ \<turnstile>/ _ -jvm\<rightarrow>\<^isub>1/ _" [61,61,61] 60)
+    ("_ \<turnstile>/ _ -jvm\<rightarrow>\<^sub>1/ _" [61,61,61] 60)
   for P :: jvm_prog
 where
-  "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> exec_1 P"
-| exec_1I: "exec (P,\<sigma>) = Some \<sigma>' \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>'"
+  "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> exec_1 P"
+| exec_1I: "exec (P,\<sigma>) = Some \<sigma>' \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>'"
 
 -- "reflexive transitive closure:"
 definition exec_all :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
@@ -51,7 +51,7 @@ lemma exec_1_eq:
 (*<*)by (auto intro: exec_1I elim: exec_1.cases)(*>*)
 
 lemma exec_1_iff:
-  "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' = (exec (P,\<sigma>) = Some \<sigma>')"
+  "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>' = (exec (P,\<sigma>) = Some \<sigma>')"
 (*<*)by (simp add: exec_1_eq)(*>*)
 
 lemma exec_all_def:
@@ -66,11 +66,11 @@ lemma jvm_trans[trans]:
 (*<*)by(simp add: exec_all_def)(*>*)
 
 lemma jvm_one_step1[trans]:
- "\<lbrakk> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>'; P \<turnstile> \<sigma>' -jvm\<rightarrow> \<sigma>'' \<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>''"
+ "\<lbrakk> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>'; P \<turnstile> \<sigma>' -jvm\<rightarrow> \<sigma>'' \<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>''"
 (*<*) by (simp add: exec_all_def1) (*>*)
 
 lemma jvm_one_step2[trans]:
- "\<lbrakk> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'; P \<turnstile> \<sigma>' -jvm\<rightarrow>\<^isub>1 \<sigma>'' \<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>''"
+ "\<lbrakk> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'; P \<turnstile> \<sigma>' -jvm\<rightarrow>\<^sub>1 \<sigma>'' \<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>''"
 (*<*) by (simp add: exec_all_def1) (*>*)
 
 lemma exec_all_conf:
@@ -105,7 +105,7 @@ text {*
 *}
 definition start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state" where
   "start_state P C M =
-  (let (D,Ts,T,mxs,mxl\<^isub>0,b) = method P C M in
-    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 undefined, C, M, 0)]))"
+  (let (D,Ts,T,mxs,mxl\<^sub>0,b) = method P C M in
+    (None, start_heap P, [([], Null # replicate mxl\<^sub>0 undefined, C, M, 0)]))"
 
 end

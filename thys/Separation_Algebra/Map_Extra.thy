@@ -33,8 +33,8 @@ section {* Things that go into Map.thy *}
 text {* Map intersection: set of all keys for which the maps agree. *}
 
 definition
-  map_inter :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> 'a set" (infixl "\<inter>\<^isub>m" 70) where
-  "m\<^isub>1 \<inter>\<^isub>m m\<^isub>2 \<equiv> {x \<in> dom m\<^isub>1. m\<^isub>1 x = m\<^isub>2 x}"
+  map_inter :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> 'a set" (infixl "\<inter>\<^sub>m" 70) where
+  "m\<^sub>1 \<inter>\<^sub>m m\<^sub>2 \<equiv> {x \<in> dom m\<^sub>1. m\<^sub>1 x = m\<^sub>2 x}"
 
 text {* Map restriction via domain subtraction *}
 
@@ -66,11 +66,11 @@ lemma non_dom_eval_eq:
   by auto
 
 lemma map_add_same_left_eq:
-  "m\<^isub>1 = m\<^isub>1' \<Longrightarrow> (m\<^isub>0 ++ m\<^isub>1 = m\<^isub>0 ++ m\<^isub>1')"
+  "m\<^sub>1 = m\<^sub>1' \<Longrightarrow> (m\<^sub>0 ++ m\<^sub>1 = m\<^sub>0 ++ m\<^sub>1')"
   by simp
 
 lemma map_add_left_cancelI [intro!]:
-  "m\<^isub>1 = m\<^isub>1' \<Longrightarrow> m\<^isub>0 ++ m\<^isub>1 = m\<^isub>0 ++ m\<^isub>1'"
+  "m\<^sub>1 = m\<^sub>1' \<Longrightarrow> m\<^sub>0 ++ m\<^sub>1 = m\<^sub>0 ++ m\<^sub>1'"
   by simp
 
 lemma dom_empty_is_empty:
@@ -93,14 +93,14 @@ lemma map_add_dom_eq:
   by (rule ext) (auto simp: map_add_def split: option.splits)
 
 lemma map_add_right_dom_eq:
-  "\<lbrakk> m\<^isub>0 ++ m\<^isub>1 = m\<^isub>0' ++ m\<^isub>1'; dom m\<^isub>1 = dom m\<^isub>1' \<rbrakk> \<Longrightarrow> m\<^isub>1 = m\<^isub>1'"
+  "\<lbrakk> m\<^sub>0 ++ m\<^sub>1 = m\<^sub>0' ++ m\<^sub>1'; dom m\<^sub>1 = dom m\<^sub>1' \<rbrakk> \<Longrightarrow> m\<^sub>1 = m\<^sub>1'"
   unfolding map_add_def
   by (rule ext, rule ccontr,
       drule_tac x=x in fun_cong, clarsimp split: option.splits,
       drule sym, drule sym, force+)
 
 lemma map_le_same_dom_eq:
-  "\<lbrakk> m\<^isub>0 \<subseteq>\<^sub>m m\<^isub>1 ; dom m\<^isub>0 = dom m\<^isub>1 \<rbrakk> \<Longrightarrow> m\<^isub>0 = m\<^isub>1"
+  "\<lbrakk> m\<^sub>0 \<subseteq>\<^sub>m m\<^sub>1 ; dom m\<^sub>0 = dom m\<^sub>1 \<rbrakk> \<Longrightarrow> m\<^sub>0 = m\<^sub>1"
   by (auto intro!: ext simp: map_le_def elim!: ballE)
 
 
@@ -133,7 +133,7 @@ lemma restrict_map_subdom:
   by (fastforce simp: restrict_map_def None_com intro: ext)
 
 lemma map_add_restrict:
-  "(m\<^isub>0 ++ m\<^isub>1) |` S = ((m\<^isub>0 |` S) ++ (m\<^isub>1 |` S))"
+  "(m\<^sub>0 ++ m\<^sub>1) |` S = ((m\<^sub>0 |` S) ++ (m\<^sub>1 |` S))"
   by (force simp: map_add_def restrict_map_def intro: ext)
 
 lemma map_le_restrict:
@@ -217,7 +217,7 @@ text {* Map disjuction *}
 
 definition
   map_disj :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infix "\<bottom>" 51) where
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<equiv> dom h\<^isub>0 \<inter> dom h\<^isub>1 = {}"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<equiv> dom h\<^sub>0 \<inter> dom h\<^sub>1 = {}"
 
 declare None_not_eq [simp]
 
@@ -245,34 +245,34 @@ lemma map_disj_empty_left [simp]:
   by (simp add: map_disj_def)
 
 lemma map_disj_com:
-  "h\<^isub>0 \<bottom> h\<^isub>1 = h\<^isub>1 \<bottom> h\<^isub>0"
+  "h\<^sub>0 \<bottom> h\<^sub>1 = h\<^sub>1 \<bottom> h\<^sub>0"
   by (simp add: map_disj_def, fast)
 
 lemma map_disjD:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> dom h\<^isub>0 \<inter> dom h\<^isub>1 = {}"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> dom h\<^sub>0 \<inter> dom h\<^sub>1 = {}"
   by (simp add: map_disj_def)
 
 lemma map_disjI:
-  "dom h\<^isub>0 \<inter> dom h\<^isub>1 = {} \<Longrightarrow> h\<^isub>0 \<bottom> h\<^isub>1"
+  "dom h\<^sub>0 \<inter> dom h\<^sub>1 = {} \<Longrightarrow> h\<^sub>0 \<bottom> h\<^sub>1"
   by (simp add: map_disj_def)
 
 
 subsection {* Map associativity-commutativity based on map disjuction *}
 
 lemma map_add_com:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> h\<^isub>0 ++ h\<^isub>1 = h\<^isub>1 ++ h\<^isub>0"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> h\<^sub>0 ++ h\<^sub>1 = h\<^sub>1 ++ h\<^sub>0"
   by (drule map_disjD, rule map_add_comm, force)
 
 lemma map_add_left_commute:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> h\<^isub>0 ++ (h\<^isub>1 ++ h\<^isub>2) = h\<^isub>1 ++ (h\<^isub>0 ++ h\<^isub>2)"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> h\<^sub>0 ++ (h\<^sub>1 ++ h\<^sub>2) = h\<^sub>1 ++ (h\<^sub>0 ++ h\<^sub>2)"
   by (simp add: map_add_com map_disj_com map_add_assoc)
 
 lemma map_add_disj:
-  "h\<^isub>0 \<bottom> (h\<^isub>1 ++ h\<^isub>2) = (h\<^isub>0 \<bottom> h\<^isub>1 \<and> h\<^isub>0 \<bottom> h\<^isub>2)"
+  "h\<^sub>0 \<bottom> (h\<^sub>1 ++ h\<^sub>2) = (h\<^sub>0 \<bottom> h\<^sub>1 \<and> h\<^sub>0 \<bottom> h\<^sub>2)"
   by (simp add: map_disj_def, fast)
 
 lemma map_add_disj':
-  "(h\<^isub>1 ++ h\<^isub>2) \<bottom> h\<^isub>0 = (h\<^isub>1 \<bottom> h\<^isub>0 \<and> h\<^isub>2 \<bottom> h\<^isub>0)"
+  "(h\<^sub>1 ++ h\<^sub>2) \<bottom> h\<^sub>0 = (h\<^sub>1 \<bottom> h\<^sub>0 \<and> h\<^sub>2 \<bottom> h\<^sub>0)"
   by (simp add: map_disj_def, fast)
 
 text {*
@@ -298,27 +298,27 @@ lemmas map_add_ac =
 subsection {* Basic properties *}
 
 lemma map_disj_None_right:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; x \<in> dom h\<^isub>0 \<rbrakk> \<Longrightarrow> h\<^isub>1 x = None"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; x \<in> dom h\<^sub>0 \<rbrakk> \<Longrightarrow> h\<^sub>1 x = None"
   by (auto simp: map_disj_def dom_def)
 
 lemma map_disj_None_left:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; x \<in> dom h\<^isub>1 \<rbrakk> \<Longrightarrow> h\<^isub>0 x = None"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; x \<in> dom h\<^sub>1 \<rbrakk> \<Longrightarrow> h\<^sub>0 x = None"
   by (auto simp: map_disj_def dom_def)
 
 lemma map_disj_None_left':
-  "\<lbrakk> h\<^isub>0 x = Some y ; h\<^isub>1 \<bottom> h\<^isub>0 \<rbrakk> \<Longrightarrow> h\<^isub>1 x = None "
+  "\<lbrakk> h\<^sub>0 x = Some y ; h\<^sub>1 \<bottom> h\<^sub>0 \<rbrakk> \<Longrightarrow> h\<^sub>1 x = None "
   by (auto simp: map_disj_def)
 
 lemma map_disj_None_right':
-  "\<lbrakk> h\<^isub>1 x = Some y ; h\<^isub>1 \<bottom> h\<^isub>0 \<rbrakk> \<Longrightarrow> h\<^isub>0 x = None "
+  "\<lbrakk> h\<^sub>1 x = Some y ; h\<^sub>1 \<bottom> h\<^sub>0 \<rbrakk> \<Longrightarrow> h\<^sub>0 x = None "
   by (auto simp: map_disj_def)
 
 lemma map_disj_common:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; h\<^isub>0 p = Some v ; h\<^isub>1 p = Some v' \<rbrakk> \<Longrightarrow> False"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; h\<^sub>0 p = Some v ; h\<^sub>1 p = Some v' \<rbrakk> \<Longrightarrow> False"
   by (frule (1) map_disj_None_left', simp)
 
 lemma map_disj_eq_dom_left:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; dom h\<^isub>0' = dom h\<^isub>0 \<rbrakk> \<Longrightarrow> h\<^isub>0' \<bottom> h\<^isub>1"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; dom h\<^sub>0' = dom h\<^sub>0 \<rbrakk> \<Longrightarrow> h\<^sub>0' \<bottom> h\<^sub>1"
   by (auto simp: map_disj_def)
 
 
@@ -341,74 +341,74 @@ lemma map_add_eval_right':
   by (clarsimp simp: map_disj_def map_add_def split: option.splits)
 
 lemma map_add_left_dom_eq:
-  assumes eq: "h\<^isub>0 ++ h\<^isub>1 = h\<^isub>0' ++ h\<^isub>1'"
-  assumes etc: "h\<^isub>0 \<bottom> h\<^isub>1" "h\<^isub>0' \<bottom> h\<^isub>1'" "dom h\<^isub>0 = dom h\<^isub>0'"
-  shows "h\<^isub>0 = h\<^isub>0'"
+  assumes eq: "h\<^sub>0 ++ h\<^sub>1 = h\<^sub>0' ++ h\<^sub>1'"
+  assumes etc: "h\<^sub>0 \<bottom> h\<^sub>1" "h\<^sub>0' \<bottom> h\<^sub>1'" "dom h\<^sub>0 = dom h\<^sub>0'"
+  shows "h\<^sub>0 = h\<^sub>0'"
 proof -
-  from eq have "h\<^isub>1 ++ h\<^isub>0 = h\<^isub>1' ++ h\<^isub>0'" using etc by (simp add: map_add_ac)
+  from eq have "h\<^sub>1 ++ h\<^sub>0 = h\<^sub>1' ++ h\<^sub>0'" using etc by (simp add: map_add_ac)
   thus ?thesis using etc
     by (fastforce elim!: map_add_right_dom_eq simp: map_add_ac)
 qed
 
 lemma map_add_left_eq:
-  assumes eq: "h\<^isub>0 ++ h = h\<^isub>1 ++ h"
-  assumes disj: "h\<^isub>0 \<bottom> h" "h\<^isub>1 \<bottom> h"
-  shows "h\<^isub>0 = h\<^isub>1"
+  assumes eq: "h\<^sub>0 ++ h = h\<^sub>1 ++ h"
+  assumes disj: "h\<^sub>0 \<bottom> h" "h\<^sub>1 \<bottom> h"
+  shows "h\<^sub>0 = h\<^sub>1"
 proof (rule ext)
   fix x
-  from eq have eq': "(h\<^isub>0 ++ h) x = (h\<^isub>1 ++ h) x" by (auto intro!: ext)
+  from eq have eq': "(h\<^sub>0 ++ h) x = (h\<^sub>1 ++ h) x" by (auto intro!: ext)
   { assume "x \<in> dom h"
-    hence "h\<^isub>0 x = h\<^isub>1 x" using disj by (simp add: map_disj_None_left)
+    hence "h\<^sub>0 x = h\<^sub>1 x" using disj by (simp add: map_disj_None_left)
   } moreover {
     assume "x \<notin> dom h"
-    hence "h\<^isub>0 x = h\<^isub>1 x" using disj eq' by (simp add: map_add_eval_left')
+    hence "h\<^sub>0 x = h\<^sub>1 x" using disj eq' by (simp add: map_add_eval_left')
   }
-  ultimately show "h\<^isub>0 x = h\<^isub>1 x" by cases
+  ultimately show "h\<^sub>0 x = h\<^sub>1 x" by cases
 qed
 
 lemma map_add_right_eq:
-  "\<lbrakk>h ++ h\<^isub>0 = h ++ h\<^isub>1; h\<^isub>0 \<bottom> h; h\<^isub>1 \<bottom> h\<rbrakk> \<Longrightarrow> h\<^isub>0 = h\<^isub>1"
+  "\<lbrakk>h ++ h\<^sub>0 = h ++ h\<^sub>1; h\<^sub>0 \<bottom> h; h\<^sub>1 \<bottom> h\<rbrakk> \<Longrightarrow> h\<^sub>0 = h\<^sub>1"
   by (rule_tac h=h in map_add_left_eq, auto simp: map_add_ac)
 
 lemma map_disj_add_eq_dom_right_eq:
-  assumes merge: "h\<^isub>0 ++ h\<^isub>1 = h\<^isub>0' ++ h\<^isub>1'" and d: "dom h\<^isub>0 = dom h\<^isub>0'" and
-      ab_disj: "h\<^isub>0 \<bottom> h\<^isub>1" and cd_disj: "h\<^isub>0' \<bottom> h\<^isub>1'"
-  shows "h\<^isub>1 = h\<^isub>1'"
+  assumes merge: "h\<^sub>0 ++ h\<^sub>1 = h\<^sub>0' ++ h\<^sub>1'" and d: "dom h\<^sub>0 = dom h\<^sub>0'" and
+      ab_disj: "h\<^sub>0 \<bottom> h\<^sub>1" and cd_disj: "h\<^sub>0' \<bottom> h\<^sub>1'"
+  shows "h\<^sub>1 = h\<^sub>1'"
 proof (rule ext)
   fix x
-  from merge have merge_x: "(h\<^isub>0 ++ h\<^isub>1) x = (h\<^isub>0' ++ h\<^isub>1') x" by simp
-  with d ab_disj cd_disj show  "h\<^isub>1 x = h\<^isub>1' x"
-    by - (case_tac "h\<^isub>1 x", case_tac "h\<^isub>1' x", simp, fastforce simp: map_disj_def,
-          case_tac "h\<^isub>1' x", clarsimp, simp add: Some_com,
+  from merge have merge_x: "(h\<^sub>0 ++ h\<^sub>1) x = (h\<^sub>0' ++ h\<^sub>1') x" by simp
+  with d ab_disj cd_disj show  "h\<^sub>1 x = h\<^sub>1' x"
+    by - (case_tac "h\<^sub>1 x", case_tac "h\<^sub>1' x", simp, fastforce simp: map_disj_def,
+          case_tac "h\<^sub>1' x", clarsimp, simp add: Some_com,
           force simp: map_disj_def, simp)
 qed
 
 lemma map_disj_add_eq_dom_left_eq:
-  assumes add: "h\<^isub>0 ++ h\<^isub>1 = h\<^isub>0' ++ h\<^isub>1'" and
-          dom: "dom h\<^isub>1 = dom h\<^isub>1'" and
-          disj: "h\<^isub>0 \<bottom> h\<^isub>1" "h\<^isub>0' \<bottom> h\<^isub>1'"
-  shows "h\<^isub>0 = h\<^isub>0'"
+  assumes add: "h\<^sub>0 ++ h\<^sub>1 = h\<^sub>0' ++ h\<^sub>1'" and
+          dom: "dom h\<^sub>1 = dom h\<^sub>1'" and
+          disj: "h\<^sub>0 \<bottom> h\<^sub>1" "h\<^sub>0' \<bottom> h\<^sub>1'"
+  shows "h\<^sub>0 = h\<^sub>0'"
 proof -
-  have "h\<^isub>1 ++ h\<^isub>0 = h\<^isub>1' ++ h\<^isub>0'" using add disj by (simp add: map_add_ac)
+  have "h\<^sub>1 ++ h\<^sub>0 = h\<^sub>1' ++ h\<^sub>0'" using add disj by (simp add: map_add_ac)
   thus ?thesis using dom disj
     by - (rule map_disj_add_eq_dom_right_eq, auto simp: map_disj_com)
 qed
 
 lemma map_add_left_cancel:
-  assumes disj: "h\<^isub>0 \<bottom> h\<^isub>1" "h\<^isub>0 \<bottom> h\<^isub>1'"
-  shows "(h\<^isub>0 ++ h\<^isub>1 = h\<^isub>0 ++ h\<^isub>1') = (h\<^isub>1 = h\<^isub>1')"
+  assumes disj: "h\<^sub>0 \<bottom> h\<^sub>1" "h\<^sub>0 \<bottom> h\<^sub>1'"
+  shows "(h\<^sub>0 ++ h\<^sub>1 = h\<^sub>0 ++ h\<^sub>1') = (h\<^sub>1 = h\<^sub>1')"
 proof (rule iffI, rule ext)
   fix x
-  assume "(h\<^isub>0 ++ h\<^isub>1) = (h\<^isub>0 ++ h\<^isub>1')"
-  hence "(h\<^isub>0 ++ h\<^isub>1) x = (h\<^isub>0 ++ h\<^isub>1') x" by (auto intro!: ext)
-  hence "h\<^isub>1 x = h\<^isub>1' x" using disj
-    by - (cases "x \<in> dom h\<^isub>0",
+  assume "(h\<^sub>0 ++ h\<^sub>1) = (h\<^sub>0 ++ h\<^sub>1')"
+  hence "(h\<^sub>0 ++ h\<^sub>1) x = (h\<^sub>0 ++ h\<^sub>1') x" by (auto intro!: ext)
+  hence "h\<^sub>1 x = h\<^sub>1' x" using disj
+    by - (cases "x \<in> dom h\<^sub>0",
           simp_all add: map_disj_None_right map_add_eval_right')
-  thus "h\<^isub>1 x = h\<^isub>1' x" by (auto intro!: ext)
+  thus "h\<^sub>1 x = h\<^sub>1' x" by (auto intro!: ext)
 qed auto
 
 lemma map_add_lr_disj:
-  "\<lbrakk> h\<^isub>0 ++ h\<^isub>1 = h\<^isub>0' ++ h\<^isub>1'; h\<^isub>1 \<bottom> h\<^isub>1'  \<rbrakk> \<Longrightarrow> dom h\<^isub>1 \<subseteq> dom h\<^isub>0'"
+  "\<lbrakk> h\<^sub>0 ++ h\<^sub>1 = h\<^sub>0' ++ h\<^sub>1'; h\<^sub>1 \<bottom> h\<^sub>1'  \<rbrakk> \<Longrightarrow> dom h\<^sub>1 \<subseteq> dom h\<^sub>0'"
   by (clarsimp simp: map_disj_def map_add_def, drule_tac x=x in fun_cong)
      (auto split: option.splits)
 
@@ -416,26 +416,26 @@ lemma map_add_lr_disj:
 subsection {* Map disjunction and map updates *}
 
 lemma map_disj_update_left [simp]:
-  "p \<in> dom h\<^isub>1 \<Longrightarrow> h\<^isub>0 \<bottom> h\<^isub>1(p \<mapsto> v) = h\<^isub>0 \<bottom> h\<^isub>1"
+  "p \<in> dom h\<^sub>1 \<Longrightarrow> h\<^sub>0 \<bottom> h\<^sub>1(p \<mapsto> v) = h\<^sub>0 \<bottom> h\<^sub>1"
   by (clarsimp simp add: map_disj_def, blast)
 
 lemma map_disj_update_right [simp]:
-  "p \<in> dom h\<^isub>1 \<Longrightarrow> h\<^isub>1(p \<mapsto> v) \<bottom> h\<^isub>0 = h\<^isub>1 \<bottom> h\<^isub>0"
+  "p \<in> dom h\<^sub>1 \<Longrightarrow> h\<^sub>1(p \<mapsto> v) \<bottom> h\<^sub>0 = h\<^sub>1 \<bottom> h\<^sub>0"
   by (simp add: map_disj_com)
 
 lemma map_add_update_left:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; p \<in> dom h\<^isub>0 \<rbrakk> \<Longrightarrow> (h\<^isub>0 ++ h\<^isub>1)(p \<mapsto> v) = (h\<^isub>0(p \<mapsto> v) ++ h\<^isub>1)"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; p \<in> dom h\<^sub>0 \<rbrakk> \<Longrightarrow> (h\<^sub>0 ++ h\<^sub>1)(p \<mapsto> v) = (h\<^sub>0(p \<mapsto> v) ++ h\<^sub>1)"
   by (drule (1) map_disj_None_right)
      (auto intro: ext simp: map_add_def cong: option.case_cong)
 
 lemma map_add_update_right:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; p \<in> dom h\<^isub>1  \<rbrakk> \<Longrightarrow> (h\<^isub>0 ++ h\<^isub>1)(p \<mapsto> v) = (h\<^isub>0 ++ h\<^isub>1 (p \<mapsto> v))"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; p \<in> dom h\<^sub>1  \<rbrakk> \<Longrightarrow> (h\<^sub>0 ++ h\<^sub>1)(p \<mapsto> v) = (h\<^sub>0 ++ h\<^sub>1 (p \<mapsto> v))"
   by (drule (1) map_disj_None_left)
      (auto intro: ext simp: map_add_def cong: option.case_cong)
 
 lemma map_add3_update:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; h\<^isub>1  \<bottom> h\<^isub>2 ; h\<^isub>0 \<bottom> h\<^isub>2 ; p \<in> dom h\<^isub>0 \<rbrakk>
-  \<Longrightarrow> (h\<^isub>0 ++ h\<^isub>1 ++ h\<^isub>2)(p \<mapsto> v) = h\<^isub>0(p \<mapsto> v) ++ h\<^isub>1 ++ h\<^isub>2"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; h\<^sub>1  \<bottom> h\<^sub>2 ; h\<^sub>0 \<bottom> h\<^sub>2 ; p \<in> dom h\<^sub>0 \<rbrakk>
+  \<Longrightarrow> (h\<^sub>0 ++ h\<^sub>1 ++ h\<^sub>2)(p \<mapsto> v) = h\<^sub>0(p \<mapsto> v) ++ h\<^sub>1 ++ h\<^sub>2"
   by (auto simp: map_add_update_left[symmetric] map_add_ac)
 
 
@@ -446,60 +446,60 @@ lemma map_le_override [simp]:
   by (auto simp: map_le_def map_add_def map_disj_def split: option.splits)
 
 lemma map_leI_left:
-  "\<lbrakk> h = h\<^isub>0 ++ h\<^isub>1 ; h\<^isub>0 \<bottom> h\<^isub>1 \<rbrakk> \<Longrightarrow> h\<^isub>0 \<subseteq>\<^sub>m h" by auto
+  "\<lbrakk> h = h\<^sub>0 ++ h\<^sub>1 ; h\<^sub>0 \<bottom> h\<^sub>1 \<rbrakk> \<Longrightarrow> h\<^sub>0 \<subseteq>\<^sub>m h" by auto
 
 lemma map_leI_right:
-  "\<lbrakk> h = h\<^isub>0 ++ h\<^isub>1 ; h\<^isub>0 \<bottom> h\<^isub>1 \<rbrakk> \<Longrightarrow> h\<^isub>1 \<subseteq>\<^sub>m h" by auto
+  "\<lbrakk> h = h\<^sub>0 ++ h\<^sub>1 ; h\<^sub>0 \<bottom> h\<^sub>1 \<rbrakk> \<Longrightarrow> h\<^sub>1 \<subseteq>\<^sub>m h" by auto
 
 lemma map_disj_map_le:
-  "\<lbrakk> h\<^isub>0' \<subseteq>\<^sub>m h\<^isub>0; h\<^isub>0 \<bottom> h\<^isub>1 \<rbrakk> \<Longrightarrow> h\<^isub>0' \<bottom> h\<^isub>1"
+  "\<lbrakk> h\<^sub>0' \<subseteq>\<^sub>m h\<^sub>0; h\<^sub>0 \<bottom> h\<^sub>1 \<rbrakk> \<Longrightarrow> h\<^sub>0' \<bottom> h\<^sub>1"
   by (force simp: map_disj_def map_le_def)
 
 lemma map_le_on_disj_left:
-  "\<lbrakk> h' \<subseteq>\<^sub>m h ; h\<^isub>0 \<bottom> h\<^isub>1 ; h' = h\<^isub>0 ++ h\<^isub>1 \<rbrakk> \<Longrightarrow> h\<^isub>0 \<subseteq>\<^sub>m h"
+  "\<lbrakk> h' \<subseteq>\<^sub>m h ; h\<^sub>0 \<bottom> h\<^sub>1 ; h' = h\<^sub>0 ++ h\<^sub>1 \<rbrakk> \<Longrightarrow> h\<^sub>0 \<subseteq>\<^sub>m h"
   unfolding map_le_def
   by (rule ballI, erule_tac x=a in ballE, auto simp: map_add_eval_left)+
 
 lemma map_le_on_disj_right:
-  "\<lbrakk> h' \<subseteq>\<^sub>m h ; h\<^isub>0 \<bottom> h\<^isub>1 ; h' = h\<^isub>1 ++ h\<^isub>0 \<rbrakk> \<Longrightarrow> h\<^isub>0 \<subseteq>\<^sub>m h"
+  "\<lbrakk> h' \<subseteq>\<^sub>m h ; h\<^sub>0 \<bottom> h\<^sub>1 ; h' = h\<^sub>1 ++ h\<^sub>0 \<rbrakk> \<Longrightarrow> h\<^sub>0 \<subseteq>\<^sub>m h"
   by (auto simp: map_le_on_disj_left map_add_ac)
 
 lemma map_le_add_cancel:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1 ; h\<^isub>0' \<subseteq>\<^sub>m h\<^isub>0 \<rbrakk> \<Longrightarrow> h\<^isub>0' ++ h\<^isub>1 \<subseteq>\<^sub>m h\<^isub>0 ++ h\<^isub>1"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1 ; h\<^sub>0' \<subseteq>\<^sub>m h\<^sub>0 \<rbrakk> \<Longrightarrow> h\<^sub>0' ++ h\<^sub>1 \<subseteq>\<^sub>m h\<^sub>0 ++ h\<^sub>1"
   by (auto simp: map_le_def map_add_def map_disj_def split: option.splits)
 
 lemma map_le_override_bothD:
-  assumes subm: "h\<^isub>0' ++ h\<^isub>1 \<subseteq>\<^sub>m h\<^isub>0 ++ h\<^isub>1"
-  assumes disj': "h\<^isub>0' \<bottom> h\<^isub>1"
-  assumes disj: "h\<^isub>0 \<bottom> h\<^isub>1"
-  shows "h\<^isub>0' \<subseteq>\<^sub>m h\<^isub>0"
+  assumes subm: "h\<^sub>0' ++ h\<^sub>1 \<subseteq>\<^sub>m h\<^sub>0 ++ h\<^sub>1"
+  assumes disj': "h\<^sub>0' \<bottom> h\<^sub>1"
+  assumes disj: "h\<^sub>0 \<bottom> h\<^sub>1"
+  shows "h\<^sub>0' \<subseteq>\<^sub>m h\<^sub>0"
 unfolding map_le_def
 proof (rule ballI)
   fix a
-  assume a: "a \<in> dom h\<^isub>0'"
-  hence sumeq: "(h\<^isub>0' ++ h\<^isub>1) a = (h\<^isub>0 ++ h\<^isub>1) a"
+  assume a: "a \<in> dom h\<^sub>0'"
+  hence sumeq: "(h\<^sub>0' ++ h\<^sub>1) a = (h\<^sub>0 ++ h\<^sub>1) a"
     using subm unfolding map_le_def by auto
-  from a have "a \<notin> dom h\<^isub>1" using disj' by (auto dest!: map_disj_None_right)
-  thus "h\<^isub>0' a = h\<^isub>0 a" using a sumeq disj disj'
+  from a have "a \<notin> dom h\<^sub>1" using disj' by (auto dest!: map_disj_None_right)
+  thus "h\<^sub>0' a = h\<^sub>0 a" using a sumeq disj disj'
     by (simp add: map_add_eval_left map_add_eval_left')
 qed
 
 lemma map_le_conv:
-  "(h\<^isub>0' \<subseteq>\<^sub>m h\<^isub>0 \<and> h\<^isub>0' \<noteq> h\<^isub>0) = (\<exists>h\<^isub>1. h\<^isub>0 = h\<^isub>0' ++ h\<^isub>1 \<and> h\<^isub>0' \<bottom> h\<^isub>1 \<and> h\<^isub>0' \<noteq> h\<^isub>0)"
+  "(h\<^sub>0' \<subseteq>\<^sub>m h\<^sub>0 \<and> h\<^sub>0' \<noteq> h\<^sub>0) = (\<exists>h\<^sub>1. h\<^sub>0 = h\<^sub>0' ++ h\<^sub>1 \<and> h\<^sub>0' \<bottom> h\<^sub>1 \<and> h\<^sub>0' \<noteq> h\<^sub>0)"
   unfolding map_le_def map_disj_def map_add_def
   by (rule iffI,
-      clarsimp intro!: exI[where x="\<lambda>x. if x \<notin> dom h\<^isub>0' then h\<^isub>0 x else None"])
+      clarsimp intro!: exI[where x="\<lambda>x. if x \<notin> dom h\<^sub>0' then h\<^sub>0 x else None"])
      (fastforce intro: ext intro: split: option.splits split_if_asm)+
 
 lemma map_le_conv2:
-  "h\<^isub>0' \<subseteq>\<^sub>m h\<^isub>0 = (\<exists>h\<^isub>1. h\<^isub>0 = h\<^isub>0' ++ h\<^isub>1 \<and> h\<^isub>0' \<bottom> h\<^isub>1)"
-  by (case_tac "h\<^isub>0'=h\<^isub>0", insert map_le_conv, auto intro: exI[where x=empty])
+  "h\<^sub>0' \<subseteq>\<^sub>m h\<^sub>0 = (\<exists>h\<^sub>1. h\<^sub>0 = h\<^sub>0' ++ h\<^sub>1 \<and> h\<^sub>0' \<bottom> h\<^sub>1)"
+  by (case_tac "h\<^sub>0'=h\<^sub>0", insert map_le_conv, auto intro: exI[where x=empty])
 
 
 subsection {* Map disjunction and restriction *}
 
 lemma map_disj_comp [simp]:
-  "h\<^isub>0 \<bottom> h\<^isub>1 |` (UNIV - dom h\<^isub>0)"
+  "h\<^sub>0 \<bottom> h\<^sub>1 |` (UNIV - dom h\<^sub>0)"
   by (force simp: map_disj_def)
 
 lemma restrict_map_disj:
@@ -507,7 +507,7 @@ lemma restrict_map_disj:
   by (auto simp: map_disj_def restrict_map_def dom_def)
 
 lemma map_disj_restrict_dom [simp]:
-  "h\<^isub>0 \<bottom> h\<^isub>1 |` (dom h\<^isub>1 - dom h\<^isub>0)"
+  "h\<^sub>0 \<bottom> h\<^sub>1 |` (dom h\<^sub>1 - dom h\<^sub>0)"
   by (force simp: map_disj_def)
 
 lemma restrict_map_disj_dom_empty:
@@ -519,7 +519,7 @@ lemma restrict_map_univ_disj_eq:
   by (rule ext, auto simp: map_disj_def restrict_map_def)
 
 lemma restrict_map_disj_dom:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> h |` dom h\<^isub>0 \<bottom> h |` dom h\<^isub>1"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> h |` dom h\<^sub>0 \<bottom> h |` dom h\<^sub>1"
   by (auto simp: map_disj_def restrict_map_def dom_def)
 
 lemma map_add_restrict_dom_left:
@@ -533,29 +533,29 @@ lemma map_add_restrict_dom_left':
                      split: option.splits)
 
 lemma restrict_map_disj_left:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> h\<^isub>0 |` S \<bottom> h\<^isub>1"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> h\<^sub>0 |` S \<bottom> h\<^sub>1"
   by (auto simp: map_disj_def)
 
 lemma restrict_map_disj_right:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> h\<^isub>0 \<bottom> h\<^isub>1 |` S"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> h\<^sub>0 \<bottom> h\<^sub>1 |` S"
   by (auto simp: map_disj_def)
 
 lemmas restrict_map_disj_both = restrict_map_disj_right restrict_map_disj_left
 
 lemma map_dom_disj_restrict_right:
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> (h\<^isub>0 ++ h\<^isub>0') |` dom h\<^isub>1 = h\<^isub>0' |` dom h\<^isub>1"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> (h\<^sub>0 ++ h\<^sub>0') |` dom h\<^sub>1 = h\<^sub>0' |` dom h\<^sub>1"
   by (simp add: map_add_restrict restrict_map_empty map_disj_def)
 
 lemma restrict_map_on_disj:
-  "h\<^isub>0' \<bottom> h\<^isub>1 \<Longrightarrow> h\<^isub>0 |` dom h\<^isub>0' \<bottom> h\<^isub>1"
+  "h\<^sub>0' \<bottom> h\<^sub>1 \<Longrightarrow> h\<^sub>0 |` dom h\<^sub>0' \<bottom> h\<^sub>1"
   unfolding map_disj_def by auto
 
 lemma restrict_map_on_disj':
-  "h\<^isub>0 \<bottom> h\<^isub>1 \<Longrightarrow> h\<^isub>0 \<bottom> h\<^isub>1 |` S"
+  "h\<^sub>0 \<bottom> h\<^sub>1 \<Longrightarrow> h\<^sub>0 \<bottom> h\<^sub>1 |` S"
   by (auto simp: map_disj_def map_add_def)
 
 lemma map_le_sub_dom:
-  "\<lbrakk> h\<^isub>0 ++ h\<^isub>1 \<subseteq>\<^sub>m h ; h\<^isub>0 \<bottom> h\<^isub>1 \<rbrakk> \<Longrightarrow> h\<^isub>0 \<subseteq>\<^sub>m h |` (dom h - dom h\<^isub>1)"
+  "\<lbrakk> h\<^sub>0 ++ h\<^sub>1 \<subseteq>\<^sub>m h ; h\<^sub>0 \<bottom> h\<^sub>1 \<rbrakk> \<Longrightarrow> h\<^sub>0 \<subseteq>\<^sub>m h |` (dom h - dom h\<^sub>1)"
   by (rule map_le_override_bothD, subst map_le_dom_restrict_sub_add)
      (auto elim: map_add_le_mapE simp: map_add_ac)
 
@@ -566,8 +566,8 @@ lemma map_submap_break:
                      dom_def)
 
 lemma map_add_disj_restrict_both:
-  "\<lbrakk> h\<^isub>0 \<bottom> h\<^isub>1; S \<inter> S' = {}; T \<inter> T' = {} \<rbrakk>
-   \<Longrightarrow> (h\<^isub>0 |` S) ++ (h\<^isub>1 |` T) \<bottom> (h\<^isub>0 |` S') ++ (h\<^isub>1 |` T')"
+  "\<lbrakk> h\<^sub>0 \<bottom> h\<^sub>1; S \<inter> S' = {}; T \<inter> T' = {} \<rbrakk>
+   \<Longrightarrow> (h\<^sub>0 |` S) ++ (h\<^sub>1 |` T) \<bottom> (h\<^sub>0 |` S') ++ (h\<^sub>1 |` T')"
   by (auto simp: map_add_ac intro!: restrict_map_disj_both restrict_map_disj)
 
 end

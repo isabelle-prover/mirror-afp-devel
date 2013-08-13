@@ -26,29 +26,29 @@ by(induct f) auto
 lemma is_Eq_iff: "(\<forall>i j. a \<noteq> Less i j) = (\<exists>i j. a = Eq i j)"
 by(cases a) auto
 
-fun neg\<^isub>R :: "atom \<Rightarrow> atom fm" where
-"neg\<^isub>R (Less r t) = Or (Atom(Less (-r) (-t))) (Atom(Eq r t))" |
-"neg\<^isub>R (Eq r t) = Or (Atom(Less r t)) (Atom(Less (-r) (-t)))"
+fun neg\<^sub>R :: "atom \<Rightarrow> atom fm" where
+"neg\<^sub>R (Less r t) = Or (Atom(Less (-r) (-t))) (Atom(Eq r t))" |
+"neg\<^sub>R (Eq r t) = Or (Atom(Less r t)) (Atom(Less (-r) (-t)))"
 
 fun hd_coeff :: "atom \<Rightarrow> real" where
 "hd_coeff (Less r cs) = (case cs of [] \<Rightarrow> 0 | c#_ \<Rightarrow> c)" |
 "hd_coeff (Eq r cs) = (case cs of [] \<Rightarrow> 0 | c#_ \<Rightarrow> c)"
 
-definition "depends\<^isub>R a = (hd_coeff a \<noteq> 0)"
+definition "depends\<^sub>R a = (hd_coeff a \<noteq> 0)"
 
-fun decr\<^isub>R :: "atom \<Rightarrow> atom" where
-"decr\<^isub>R (Less r rs) = Less r (tl rs)" |
-"decr\<^isub>R (Eq r rs) = Eq r (tl rs)"
+fun decr\<^sub>R :: "atom \<Rightarrow> atom" where
+"decr\<^sub>R (Less r rs) = Less r (tl rs)" |
+"decr\<^sub>R (Eq r rs) = Eq r (tl rs)"
 
-fun I\<^isub>R :: "atom \<Rightarrow> real list \<Rightarrow> bool" where
-"I\<^isub>R (Less r cs) xs = (r < \<langle>cs,xs\<rangle>)" |
-"I\<^isub>R (Eq r cs) xs = (r = \<langle>cs,xs\<rangle>)"
+fun I\<^sub>R :: "atom \<Rightarrow> real list \<Rightarrow> bool" where
+"I\<^sub>R (Less r cs) xs = (r < \<langle>cs,xs\<rangle>)" |
+"I\<^sub>R (Eq r cs) xs = (r = \<langle>cs,xs\<rangle>)"
 
-definition "atoms\<^isub>0 = ATOM.atoms\<^isub>0 depends\<^isub>R"
+definition "atoms\<^sub>0 = ATOM.atoms\<^sub>0 depends\<^sub>R"
 (* FIXME !!! (incl: display should hide params)*)
 
-interpretation R!: ATOM neg\<^isub>R "(\<lambda>a. True)" I\<^isub>R depends\<^isub>R decr\<^isub>R
-  where "ATOM.atoms\<^isub>0 depends\<^isub>R = atoms\<^isub>0"
+interpretation R!: ATOM neg\<^sub>R "(\<lambda>a. True)" I\<^sub>R depends\<^sub>R decr\<^sub>R
+  where "ATOM.atoms\<^sub>0 depends\<^sub>R = atoms\<^sub>0"
 proof -
   case goal1
   thus ?case
@@ -60,11 +60,11 @@ proof -
       apply arith
      apply arith
     apply(case_tac a)
-    apply(simp_all add:depends\<^isub>R_def split:list.splits)
+    apply(simp_all add:depends\<^sub>R_def split:list.splits)
     done
 next
   case goal2
-  thus ?case by(simp add:atoms\<^isub>0_def)
+  thus ?case by(simp add:atoms\<^sub>0_def)
 qed
 
 setup {* Sign.revert_abbrev "" @{const_abbrev R.I} *}
@@ -74,7 +74,7 @@ setup {* Sign.revert_abbrev "" @{const_abbrev R.lift_nnf_qe} *}
 subsubsection{*Shared constructions*}
 
 fun combine :: "(real * real list) \<Rightarrow> (real * real list) \<Rightarrow> atom" where
-"combine (r\<^isub>1,cs\<^isub>1) (r\<^isub>2,cs\<^isub>2) = Less (r\<^isub>1-r\<^isub>2) (cs\<^isub>2 - cs\<^isub>1)"
+"combine (r\<^sub>1,cs\<^sub>1) (r\<^sub>2,cs\<^sub>2) = Less (r\<^sub>1-r\<^sub>2) (cs\<^sub>2 - cs\<^sub>1)"
 
 (* More efficient combination than rhs of combine_conv below; unused
 lemma combine_code:
@@ -105,11 +105,11 @@ by(force simp: ebounds_def split:list.splits atom.splits if_splits)
 
 
 abbreviation EQ where
-"EQ f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Eq r (c#cs) : set(R.atoms\<^isub>0 f) \<and> c\<noteq>0}"
+"EQ f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Eq r (c#cs) : set(R.atoms\<^sub>0 f) \<and> c\<noteq>0}"
 abbreviation LB where
-"LB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) : set(R.atoms\<^isub>0 f) \<and> c>0}"
+"LB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) : set(R.atoms\<^sub>0 f) \<and> c>0}"
 abbreviation UB where
-"UB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) : set(R.atoms\<^isub>0 f) \<and> c<0}"
+"UB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) : set(R.atoms\<^sub>0 f) \<and> c<0}"
 
 
 fun asubst :: "real * real list \<Rightarrow> atom \<Rightarrow> atom" where
@@ -124,7 +124,7 @@ definition eval :: "real * real list \<Rightarrow> real list \<Rightarrow> real"
 "eval rcs xs = fst rcs + \<langle>snd rcs,xs\<rangle>"
 
 lemma I_asubst:
- "I\<^isub>R (asubst t a) xs = I\<^isub>R a (eval t xs # xs)"
+ "I\<^sub>R (asubst t a) xs = I\<^sub>R a (eval t xs # xs)"
 proof(cases a)
   case (Less r cs)
   thus ?thesis by(cases t, cases cs,
@@ -145,30 +145,30 @@ lemma I_subst_pretty:
 by(simp add:I_subst eval_def)
 
 
-fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^isub>-") where
-"inf\<^isub>- (And \<phi>\<^isub>1 \<phi>\<^isub>2) = and (inf\<^isub>- \<phi>\<^isub>1) (inf\<^isub>- \<phi>\<^isub>2)" |
-"inf\<^isub>- (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = or (inf\<^isub>- \<phi>\<^isub>1) (inf\<^isub>- \<phi>\<^isub>2)" |
-"inf\<^isub>- (Atom(Less r (c#cs))) =
+fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
+"inf\<^sub>- (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
+"inf\<^sub>- (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
+"inf\<^sub>- (Atom(Less r (c#cs))) =
   (if c<0 then TrueF else if c>0 then FalseF else Atom(Less r cs))" |
-"inf\<^isub>- (Atom(Eq r (c#cs))) = (if c=0 then Atom(Eq r cs) else FalseF)" |
-"inf\<^isub>- \<phi> = \<phi>"
+"inf\<^sub>- (Atom(Eq r (c#cs))) = (if c=0 then Atom(Eq r cs) else FalseF)" |
+"inf\<^sub>- \<phi> = \<phi>"
 
-fun plus_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^isub>+") where
-"inf\<^isub>+ (And \<phi>\<^isub>1 \<phi>\<^isub>2) = and (inf\<^isub>+ \<phi>\<^isub>1) (inf\<^isub>+ \<phi>\<^isub>2)" |
-"inf\<^isub>+ (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = or (inf\<^isub>+ \<phi>\<^isub>1) (inf\<^isub>+ \<phi>\<^isub>2)" |
-"inf\<^isub>+ (Atom(Less r (c#cs))) =
+fun plus_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>+") where
+"inf\<^sub>+ (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (inf\<^sub>+ \<phi>\<^sub>1) (inf\<^sub>+ \<phi>\<^sub>2)" |
+"inf\<^sub>+ (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (inf\<^sub>+ \<phi>\<^sub>1) (inf\<^sub>+ \<phi>\<^sub>2)" |
+"inf\<^sub>+ (Atom(Less r (c#cs))) =
   (if c>0 then TrueF else if c<0 then FalseF else Atom(Less r cs))" |
-"inf\<^isub>+ (Atom(Eq r (c#cs))) = (if c=0 then Atom(Eq r cs) else FalseF)" |
-"inf\<^isub>+ \<phi> = \<phi>"
+"inf\<^sub>+ (Atom(Eq r (c#cs))) = (if c=0 then Atom(Eq r cs) else FalseF)" |
+"inf\<^sub>+ \<phi> = \<phi>"
 
-lemma qfree_min_inf: "qfree \<phi> \<Longrightarrow> qfree(inf\<^isub>- \<phi>)"
+lemma qfree_min_inf: "qfree \<phi> \<Longrightarrow> qfree(inf\<^sub>- \<phi>)"
 by(induct \<phi> rule:min_inf.induct) simp_all
 
-lemma qfree_plus_inf: "qfree \<phi> \<Longrightarrow> qfree(inf\<^isub>+ \<phi>)"
+lemma qfree_plus_inf: "qfree \<phi> \<Longrightarrow> qfree(inf\<^sub>+ \<phi>)"
 by(induct \<phi> rule:plus_inf.induct) simp_all
 
 lemma min_inf:
-  "nqfree f \<Longrightarrow> \<exists>x. \<forall>y\<le>x. R.I (inf\<^isub>- f) xs = R.I f (y # xs)"
+  "nqfree f \<Longrightarrow> \<exists>x. \<forall>y\<le>x. R.I (inf\<^sub>- f) xs = R.I f (y # xs)"
   (is "_ \<Longrightarrow> \<exists>x. ?P f x")
 proof(induct f)
   case (Atom a)
@@ -227,7 +227,7 @@ next
 qed simp_all
 
 lemma plus_inf:
-  "nqfree f \<Longrightarrow> \<exists>x. \<forall>y\<ge>x. R.I (inf\<^isub>+ f) xs = R.I f (y # xs)"
+  "nqfree f \<Longrightarrow> \<exists>x. \<forall>y\<ge>x. R.I (inf\<^sub>+ f) xs = R.I f (y # xs)"
   (is "_ \<Longrightarrow> \<exists>x. ?P f x")
 proof(induct f)
   case (Atom a)
@@ -289,25 +289,25 @@ qed simp_all
 declare [[simp_depth_limit = 4]]
 
 lemma LBex:
- "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^isub>- f) xs; x \<notin> EQ f xs \<rbrakk>
+ "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^sub>- f) xs; x \<notin> EQ f xs \<rbrakk>
   \<Longrightarrow> \<exists>l\<in> LB f xs. l < x"
 apply(induct f)
 apply simp
 apply simp
 apply (case_tac a)
-apply(auto simp add: depends\<^isub>R_def field_simps split:if_splits list.splits)
+apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits)
 apply fastforce+
 done
 
 
 lemma UBex:
- "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^isub>+ f) xs; x \<notin> EQ f xs \<rbrakk>
+ "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^sub>+ f) xs; x \<notin> EQ f xs \<rbrakk>
   \<Longrightarrow> \<exists>u\<in> UB f xs. x < u"
 apply(induct f)
 apply simp
 apply simp
 apply(case_tac a)
-apply(auto simp add: depends\<^isub>R_def field_simps split:if_splits list.splits)
+apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits)
 apply fastforce+
 done
 
@@ -315,14 +315,14 @@ declare [[simp_depth_limit = 50]]
 
 lemma finite_LB: "finite(LB f xs)"
 proof -
-  have "LB f xs = (\<lambda>(r,cs). r + \<langle>cs,xs\<rangle>) ` set(lbounds(R.atoms\<^isub>0 f))"
+  have "LB f xs = (\<lambda>(r,cs). r + \<langle>cs,xs\<rangle>) ` set(lbounds(R.atoms\<^sub>0 f))"
     by (force simp:set_lbounds image_def field_simps)
   thus ?thesis by simp
 qed
 
 lemma finite_UB: "finite(UB f xs)"
 proof -
-  have "UB f xs = (\<lambda>(r,cs). r + \<langle>cs,xs\<rangle>) ` set(ubounds(R.atoms\<^isub>0 f))"
+  have "UB f xs = (\<lambda>(r,cs). r + \<langle>cs,xs\<rangle>) ` set(ubounds(R.atoms\<^sub>0 f))"
     by (force simp:set_ubounds image_def field_simps)
   thus ?thesis by simp
 qed

@@ -9,7 +9,7 @@ begin
 definition Archive :: "vertex fgraph set" where
 "Archive \<equiv> set(Tri @ Quad @ Pent @ Hex)"
 
-theorem TameEnum_Archive:  "fgraph ` TameEnum \<subseteq>\<^isub>\<simeq> Archive"
+theorem TameEnum_Archive:  "fgraph ` TameEnum \<subseteq>\<^sub>\<simeq> Archive"
 using combine_evals_filter[OF pre_iso_test3 same3]
       combine_evals_filter[OF pre_iso_test4 same4]
       combine_evals_filter[OF pre_iso_test5 same5]
@@ -46,7 +46,7 @@ qed
 
 
 theorem completeness:
-assumes "g \<in> PlaneGraphs" and "tame g" shows "fgraph g \<in>\<^isub>\<simeq> Archive"
+assumes "g \<in> PlaneGraphs" and "tame g" shows "fgraph g \<in>\<^sub>\<simeq> Archive"
 proof -
   from `g \<in> PlaneGraphs` obtain p where g1: "Seed\<^bsub>p\<^esub> [next_plane\<^bsub>p\<^esub>]\<rightarrow>* g"
     and "final g"

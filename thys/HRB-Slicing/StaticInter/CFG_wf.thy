@@ -63,7 +63,7 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
      \<Longrightarrow> f' vmap vmap' = vmap'(ParamDefs (targetnode a) [:=] map vmap outs)"
   and deterministic:"\<lbrakk>valid_edge a; valid_edge a'; sourcenode a = sourcenode a';
     targetnode a \<noteq> targetnode a'; intra_kind (kind a); intra_kind (kind a')\<rbrakk> 
-    \<Longrightarrow> \<exists>Q Q'. kind a = (Q)\<^isub>\<surd> \<and> kind a' = (Q')\<^isub>\<surd> \<and> 
+    \<Longrightarrow> \<exists>Q Q'. kind a = (Q)\<^sub>\<surd> \<and> kind a' = (Q')\<^sub>\<surd> \<and> 
              (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
 
 begin
@@ -214,11 +214,11 @@ by(simp add:Entry_empty)
 
 
 lemma CFG_intra_path_no_Def_equal:
-  assumes "n -as\<rightarrow>\<^isub>\<iota>* n'" and "\<forall>n \<in> set (sourcenodes as). V \<notin> Def n"
+  assumes "n -as\<rightarrow>\<^sub>\<iota>* n'" and "\<forall>n \<in> set (sourcenodes as). V \<notin> Def n"
   and "preds (kinds as) s"
   shows "state_val (transfers (kinds as) s) V = state_val s V"
 proof -
-  from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind (kind a)"
+  from `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind (kind a)"
     by(simp_all add:intra_path_def)
   from this `\<forall>n \<in> set (sourcenodes as). V \<notin> Def n` `preds (kinds as) s`
   have "state_val (transfers (kinds as) s) V = state_val s V"

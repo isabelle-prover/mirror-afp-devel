@@ -26,19 +26,19 @@ primrec check_instr :: "['addr instr, 'addr jvm_prog, 'heap, 'addr val list, 'ad
                         cname, mname, pc, 'addr frame list] \<Rightarrow> bool"
 where
   check_instr_Load:
-  "check_instr (Load n) P h stk loc C M\<^isub>0 pc frs = 
+  "check_instr (Load n) P h stk loc C M\<^sub>0 pc frs = 
   (n < length loc)"
 
 | check_instr_Store:
-  "check_instr (Store n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr (Store n) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk \<and> n < length loc)"
 
 | check_instr_Push:
-  "check_instr (Push v) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr (Push v) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (\<not>is_Addr v)"
 
 | check_instr_New:
-  "check_instr (New C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr (New C) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   is_class P C"
 
 | check_instr_NewArray:
@@ -58,29 +58,29 @@ where
   (0 < length stk \<and> is_Array_ref (hd stk) h)"
 
 | check_instr_Getfield:
-  "check_instr (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr (Getfield F C) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and> 
   (let (C', T, fm) = field P C F; ref = hd stk in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
       (\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>T\<rfloor> \<and> P \<turnstile> class_type_of T \<preceq>\<^sup>* C))))"
 
 | check_instr_Putfield:
-  "check_instr (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr (Putfield F C) P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (1 < length stk \<and> (\<exists>C' T fm. P \<turnstile> C sees F:T (fm) in C') \<and>
   (let (C', T, fm) = field P C F; v = hd stk; ref = hd (tl stk) in 
     C' = C \<and> is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
       (\<exists>T'. typeof_addr h (the_Addr ref) = \<lfloor>T'\<rfloor> \<and> P \<turnstile> class_type_of T' \<preceq>\<^sup>* C \<and> P,h \<turnstile> v :\<le> T))))"
 
 | check_instr_Checkcast:
-  "check_instr (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr (Checkcast T) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> is_type P T)"
 
 | check_instr_Instanceof:
-  "check_instr (Instanceof T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr (Instanceof T) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> is_type P T \<and> is_Ref (hd stk))"
 
 | check_instr_Invoke:
-  "check_instr (Invoke M n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr (Invoke M n) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (n < length stk \<and> is_Ref (stk!n) \<and>  
   (stk!n \<noteq> Null \<longrightarrow> 
     (let a = the_Addr (stk!n); 
@@ -92,23 +92,23 @@ where
        (meth = None \<longrightarrow> D\<bullet>M(Ts) :: Tr))))"
 
 | check_instr_Return:
-  "check_instr Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr Return P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> ((0 < length frs) \<longrightarrow> 
-    (P \<turnstile> C\<^isub>0 has M\<^isub>0) \<and>    
+    (P \<turnstile> C\<^sub>0 has M\<^sub>0) \<and>    
     (let v = hd stk; 
-         T = fst (snd (snd (method P C\<^isub>0 M\<^isub>0)))
+         T = fst (snd (snd (method P C\<^sub>0 M\<^sub>0)))
      in P,h \<turnstile> v :\<le> T)))"
 
 | check_instr_Pop:
-  "check_instr Pop P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr Pop P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk)"
 
 | check_instr_Dup:
-  "check_instr Dup P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  "check_instr Dup P h stk loc C\<^sub>0 M\<^sub>0 pc frs = 
   (0 < length stk)"
 
 | check_instr_Swap:
-  "check_instr Swap P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr Swap P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (1 < length stk)"
 
 | check_instr_BinOpInstr:
@@ -116,23 +116,23 @@ where
   (1 < length stk \<and> (\<exists>T1 T2 T. typeof\<^bsub>h\<^esub> (hd stk) = \<lfloor>T2\<rfloor> \<and> typeof\<^bsub>h\<^esub> (hd (tl stk)) = \<lfloor>T1\<rfloor> \<and> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T))"
 
 | check_instr_IfFalse:
-  "check_instr (IfFalse b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr (IfFalse b) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> is_Bool (hd stk) \<and> 0 \<le> int pc+b)"
 
 | check_instr_Goto:
-  "check_instr (Goto b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr (Goto b) P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 \<le> int pc+b)"
 
 | check_instr_Throw:
-  "check_instr ThrowExc P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr ThrowExc P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
   (0 < length stk \<and> is_Ref (hd stk) \<and> P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> Class Throwable)"
 
 | check_instr_MEnter:
-  "check_instr MEnter P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr MEnter P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    (0 < length stk \<and> is_Ref (hd stk))"
 
 | check_instr_MExit:
-  "check_instr MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  "check_instr MExit P h stk loc C\<^sub>0 M\<^sub>0 pc frs =
    (0 < length stk \<and> is_Ref (hd stk))"
 
 definition check_xcpt :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> nat \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> 'addr \<Rightarrow> bool"
@@ -146,7 +146,7 @@ where
   "check P \<sigma> \<equiv> let (xcpt, h, frs) = \<sigma> in
                (case frs of [] \<Rightarrow> True | (stk,loc,C,M,pc)#frs' \<Rightarrow> 
                 P \<turnstile> C has M \<and>
-                (let (C',Ts,T,meth) = method P C M; (mxs,mxl\<^isub>0,ins,xt) = the meth; i = ins!pc in
+                (let (C',Ts,T,meth) = method P C M; (mxs,mxl\<^sub>0,ins,xt) = the meth; i = ins!pc in
                  meth \<noteq> None \<and> pc < size ins \<and> size stk \<le> mxs \<and>
                  (case xcpt of None \<Rightarrow> check_instr i P h stk loc C M pc frs'
                            | Some a \<Rightarrow> check_xcpt P h (length stk) pc xt a)))"

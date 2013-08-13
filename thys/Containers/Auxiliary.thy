@@ -118,33 +118,33 @@ end
 text {* lexicographic order on pairs *}
 
 context
-  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>a" 50) 
-  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>a" 50) 
-  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>b" 50) 
-  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>b" 50) 
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>a" 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>a" 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>b" 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>b" 50) 
 begin
 
 definition less_eq_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-where "less_eq_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubseteq>\<^isub>b y2)"
+where "less_eq_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^sub>a y1 \<or> x1 \<sqsubseteq>\<^sub>a y1 \<and> x2 \<sqsubseteq>\<^sub>b y2)"
 
 definition less_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubset>" 50)
-where "less_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubset>\<^isub>b y2)"
+where "less_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^sub>a y1 \<or> x1 \<sqsubseteq>\<^sub>a y1 \<and> x2 \<sqsubset>\<^sub>b y2)"
 
 lemma less_eq_prod_simps [simp]:
-  "(x1, x2) \<sqsubseteq> (y1, y2) \<longleftrightarrow> x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubseteq>\<^isub>b y2"
+  "(x1, x2) \<sqsubseteq> (y1, y2) \<longleftrightarrow> x1 \<sqsubset>\<^sub>a y1 \<or> x1 \<sqsubseteq>\<^sub>a y1 \<and> x2 \<sqsubseteq>\<^sub>b y2"
 by(simp add: less_eq_prod_def)
 
 lemma less_prod_simps [simp]:
-  "(x1, x2) \<sqsubset> (y1, y2) \<longleftrightarrow> x1 \<sqsubset>\<^isub>a y1 \<or> x1 \<sqsubseteq>\<^isub>a y1 \<and> x2 \<sqsubset>\<^isub>b y2"
+  "(x1, x2) \<sqsubset> (y1, y2) \<longleftrightarrow> x1 \<sqsubset>\<^sub>a y1 \<or> x1 \<sqsubseteq>\<^sub>a y1 \<and> x2 \<sqsubset>\<^sub>b y2"
 by(simp add: less_prod_def)
 
 end
 
 context
-  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>a" 50) 
-  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>a" 50) 
-  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^isub>b" 50) 
-  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^isub>b" 50) 
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>a" 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>a" 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>b" 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>b" 50) 
   assumes lin_a: "class.linorder leq_a less_a" 
   and lin_b: "class.linorder leq_b less_b"
 begin
@@ -158,8 +158,8 @@ where "less_prod' \<equiv> less_prod leq_a less_a less_b"
 lemma linorder_prod:
   "class.linorder op \<sqsubseteq> op \<sqsubset>"
 proof -
-  interpret a!: linorder "op \<sqsubseteq>\<^isub>a" "op \<sqsubset>\<^isub>a" by(fact lin_a)
-  interpret b!: linorder "op \<sqsubseteq>\<^isub>b" "op \<sqsubset>\<^isub>b" by(fact lin_b)
+  interpret a!: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
+  interpret b!: linorder "op \<sqsubseteq>\<^sub>b" "op \<sqsubset>\<^sub>b" by(fact lin_b)
   show ?thesis by unfold_locales auto
 qed
 

@@ -24,7 +24,7 @@ lemma matchId:
 
   shows "[a\<frown>a]P \<approx> P"
 proof -
-  have "[a\<frown>a]P \<sim>\<^isub>e P" by(rule Strong_Early_Bisim_SC.matchId)
+  have "[a\<frown>a]P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.matchId)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -37,7 +37,7 @@ lemma mismatchId:
 
   shows "[a\<noteq>b]P \<approx> P"
 proof -
-  from `a \<noteq> b` have "[a\<noteq>b]P \<sim>\<^isub>e P" by(rule Strong_Early_Bisim_SC.mismatchId)
+  from `a \<noteq> b` have "[a\<noteq>b]P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.mismatchId)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -47,7 +47,7 @@ lemma mismatchNil:
 
   shows "[a\<noteq>a]P \<approx> \<zero>"
 proof -
-  have "[a\<noteq>a]P \<sim>\<^isub>e \<zero>" by(rule Strong_Early_Bisim_SC.mismatchNil)
+  have "[a\<noteq>a]P \<sim>\<^sub>e \<zero>" by(rule Strong_Early_Bisim_SC.mismatchNil)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -58,7 +58,7 @@ lemma resComm:
   
   shows "<\<nu>a><\<nu>b>P \<approx> <\<nu>b><\<nu>a>P"
 proof -
-  have "<\<nu>a><\<nu>b>P \<sim>\<^isub>e <\<nu>b><\<nu>a>P" by(rule Strong_Early_Bisim_SC.resComm)
+  have "<\<nu>a><\<nu>b>P \<sim>\<^sub>e <\<nu>b><\<nu>a>P" by(rule Strong_Early_Bisim_SC.resComm)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -70,7 +70,7 @@ lemma sumSym:
   
   shows "P \<oplus> Q \<approx> Q \<oplus> P"
 proof -
-  have "P \<oplus> Q \<sim>\<^isub>e Q \<oplus> P" by(rule Strong_Early_Bisim_SC.sumSym)
+  have "P \<oplus> Q \<sim>\<^sub>e Q \<oplus> P" by(rule Strong_Early_Bisim_SC.sumSym)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -81,7 +81,7 @@ lemma sumAssoc:
   
   shows "(P \<oplus> Q) \<oplus> R \<approx> P \<oplus> (Q \<oplus> R)"
 proof -
-  have "(P \<oplus> Q) \<oplus> R \<sim>\<^isub>e P \<oplus> (Q \<oplus> R)" by(rule Strong_Early_Bisim_SC.sumAssoc)
+  have "(P \<oplus> Q) \<oplus> R \<sim>\<^sub>e P \<oplus> (Q \<oplus> R)" by(rule Strong_Early_Bisim_SC.sumAssoc)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -90,7 +90,7 @@ lemma sumZero:
   
   shows "P \<oplus> \<zero> \<approx> P"
 proof -
-  have "P \<oplus> \<zero> \<sim>\<^isub>e P" by(rule Strong_Early_Bisim_SC.sumZero)
+  have "P \<oplus> \<zero> \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.sumZero)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -101,7 +101,7 @@ lemma parZero:
 
   shows "P \<parallel> \<zero> \<approx> P"
 proof -
-  have "P \<parallel> \<zero> \<sim>\<^isub>e P" by(rule Strong_Early_Bisim_SC.parZero)
+  have "P \<parallel> \<zero> \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.parZero)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -111,7 +111,7 @@ lemma parSym:
 
   shows "P \<parallel> Q \<approx> Q \<parallel> P"
 proof -
-  have "P \<parallel> Q \<sim>\<^isub>e Q \<parallel> P" by(rule Strong_Early_Bisim_SC.parSym)
+  have "P \<parallel> Q \<sim>\<^sub>e Q \<parallel> P" by(rule Strong_Early_Bisim_SC.parSym)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -124,7 +124,7 @@ lemma scopeExtPar:
 
   shows "<\<nu>x>(P \<parallel> Q) \<approx> P \<parallel> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^isub>e P \<parallel> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtPar)
+  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sub>e P \<parallel> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtPar)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -137,7 +137,7 @@ lemma scopeExtPar':
 
   shows "<\<nu>x>(P \<parallel> Q) \<approx> (<\<nu>x>P) \<parallel> Q"
 proof - 
-  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^isub>e (<\<nu>x>P) \<parallel> Q" by(rule Strong_Early_Bisim_SC.scopeExtPar')
+  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sub>e (<\<nu>x>P) \<parallel> Q" by(rule Strong_Early_Bisim_SC.scopeExtPar')
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -148,7 +148,7 @@ lemma parAssoc:
 
   shows "(P \<parallel> Q) \<parallel> R \<approx> P \<parallel> (Q \<parallel> R)"
 proof -
-  have "(P \<parallel> Q) \<parallel> R \<sim>\<^isub>e P \<parallel> (Q \<parallel> R)" by(rule Strong_Early_Bisim_SC.parAssoc)
+  have "(P \<parallel> Q) \<parallel> R \<sim>\<^sub>e P \<parallel> (Q \<parallel> R)" by(rule Strong_Early_Bisim_SC.parAssoc)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -160,7 +160,7 @@ lemma freshRes:
 
   shows "<\<nu>a>P \<approx> P"
 proof -
-  from `a \<sharp> P` have "<\<nu>a>P \<sim>\<^isub>e P" by(rule Strong_Early_Bisim_SC.freshRes)
+  from `a \<sharp> P` have "<\<nu>a>P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.freshRes)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -173,7 +173,7 @@ lemma scopeExtSum:
 
   shows "<\<nu>x>(P \<oplus> Q) \<approx> P \<oplus> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<oplus> Q) \<sim>\<^isub>e P \<oplus> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtSum)
+  from `x \<sharp> P` have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sub>e P \<oplus> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtSum)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -182,7 +182,7 @@ lemma bangSC:
 
   shows "!P \<approx> P \<parallel> !P"
 proof -
-  have "!P \<sim>\<^isub>e P \<parallel> !P" by(rule Strong_Early_Bisim_SC.bangSC)
+  have "!P \<sim>\<^sub>e P \<parallel> !P" by(rule Strong_Early_Bisim_SC.bangSC)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 

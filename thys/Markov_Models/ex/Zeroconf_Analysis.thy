@@ -166,7 +166,7 @@ qed auto
 
 subsection {* Expected runtime of an allocation run *}
 
-definition "R s = (\<integral>\<^isup>+ \<omega>. reward_until {error, ok} (nat_case s \<omega>) \<partial>paths s)"
+definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} (nat_case s \<omega>) \<partial>paths s)"
 
 lemma cost_from_start:
   "(R start::ereal) =

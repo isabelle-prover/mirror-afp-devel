@@ -19,14 +19,14 @@ theory BasicDefs imports AuxLemmas begin
 subsection{* Edge kinds *}
 
 datatype 'state edge_kind = Update "'state \<Rightarrow> 'state"           ("\<Up>_")
-                          | Predicate "'state \<Rightarrow> bool"      ("'(_')\<^isub>\<surd>")
+                          | Predicate "'state \<Rightarrow> bool"      ("'(_')\<^sub>\<surd>")
 
 
 subsection {* Transfer and predicate functions *}
 
 fun transfer :: "'state edge_kind \<Rightarrow> 'state \<Rightarrow> 'state"
 where "transfer (\<Up>f) s = f s"
-  | "transfer (P)\<^isub>\<surd> s   = s"
+  | "transfer (P)\<^sub>\<surd> s   = s"
 
 fun transfers :: "'state edge_kind list \<Rightarrow> 'state \<Rightarrow> 'state"
 where "transfers [] s   = s"
@@ -34,7 +34,7 @@ where "transfers [] s   = s"
 
 fun pred :: "'state edge_kind \<Rightarrow> 'state \<Rightarrow> bool"
 where "pred (\<Up>f) s = True"
-  | "pred (P)\<^isub>\<surd> s   = (P s)"
+  | "pred (P)\<^sub>\<surd> s   = (P s)"
 
 fun preds :: "'state edge_kind list \<Rightarrow> 'state \<Rightarrow> bool"
 where "preds [] s   = True"
@@ -56,7 +56,7 @@ lemma transfers_id_no_influence:
 by(induct ets arbitrary:s,auto)
 
 lemma preds_True_no_influence:
-  "preds [et \<leftarrow> ets. et \<noteq> (\<lambda>s. True)\<^isub>\<surd>] s = preds ets s"
+  "preds [et \<leftarrow> ets. et \<noteq> (\<lambda>s. True)\<^sub>\<surd>] s = preds ets s"
 by(induct ets arbitrary:s,auto)
 
 end

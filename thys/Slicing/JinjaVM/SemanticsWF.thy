@@ -302,7 +302,7 @@ next
       apply (rule_tac x="Ts" in exI)
       apply (rule_tac x="T" in exI)
       apply (rule_tac x="mxs" in exI)
-      apply (rule_tac x="mxl\<^isub>0" in exI)
+      apply (rule_tac x="mxl\<^sub>0" in exI)
       apply (rule_tac x="is" in exI)
       apply (rule conjI)
        apply (rule_tac x="xt" in exI)
@@ -436,7 +436,7 @@ proof -
   have wt_method: "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
     by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
   with sees_M `pc < length is` reachable
-  have applicable: "app\<^isub>i ((is ! pc),(P\<^bsub>wf\<^esub>),pc,mxs,T,(the(P\<^bsub>\<Phi>\<^esub> C M ! pc)))"
+  have applicable: "app\<^sub>i ((is ! pc),(P\<^bsub>wf\<^esub>),pc,mxs,T,(the(P\<^bsub>\<Phi>\<^esub> C M ! pc)))"
     by (auto simp: wt_method_def)
   from state_correct ve P_wf
   have trg_state_correct:
@@ -453,8 +453,8 @@ proof -
   with wt_method sees_M `pc < length is`
   have stk_loc_succs:
     "\<forall>pc' \<in> set (succs (is ! pc) (ST, LT) pc).
-    stkLength P C M pc' = length (fst (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT))) \<and>
-    locLength P C M pc' = length (snd (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)))"
+    stkLength P C M pc' = length (fst (eff\<^sub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT))) \<and>
+    locLength P C M pc' = length (snd (eff\<^sub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)))"
     unfolding wt_method_def apply (cases "is ! pc")
     using [[simproc del: list_to_set_comprehension]]
     apply (cases "is ! pc")
@@ -473,7 +473,7 @@ proof -
     show ?thesis
     proof (cases x)
       case None [simp]
-      with ve Invoke obtain Q where kind: "kind a = (Q)\<^isub>\<surd>"
+      with ve Invoke obtain Q where kind: "kind a = (Q)\<^sub>\<surd>"
         by (auto elim!: JVM_CFG.cases)
       with ve Invoke have "(C',M',pc')#cs' = (C,M,pc)#cs"
         by (auto elim!: JVM_CFG.cases)
@@ -519,7 +519,7 @@ proof -
         show ?thesis
           apply (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)",
                  auto simp: bv_conform_def stkss_purge
-                  simp del: find_handler_for.simps exec.simps app\<^isub>i.simps fun_upd_apply)
+                  simp del: find_handler_for.simps exec.simps app\<^sub>i.simps fun_upd_apply)
           apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct)
             apply fastforce
            apply (fastforce simp: split_beta split: split_if_asm)
@@ -598,7 +598,7 @@ proof -
         show ?thesis
           apply (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)",
                  auto simp: bv_conform_def stkss_purge rev_nth (* nth_stks *)
-                    simp del: find_handler_for.simps exec.simps app\<^isub>i.simps)
+                    simp del: find_handler_for.simps exec.simps app\<^sub>i.simps)
           apply(subst locss_invoke_purge, simp)
           by simp
       qed
@@ -1164,7 +1164,7 @@ proof(unfold_locales)
     by (auto dest: sees_method_fun
              simp: bv_conform_def correct_state_def)
   with P_wf sees_M have
-    applicable: "app\<^isub>i(is ! pc, (P\<^bsub>wf\<^esub>), pc, mxs, T, ST, LT)"
+    applicable: "app\<^sub>i(is ! pc, (P\<^bsub>wf\<^esub>), pc, mxs, T, ST, LT)"
     by (fastforce dest!: sees_wf_mdecl
                   simp: wf_jvm_prog_phi_def wf_mdecl_def wt_method_def)
   from sem_step
@@ -1179,10 +1179,10 @@ proof(unfold_locales)
     by -(drule wt_jvm_prog_impl_wt_instr, fastforce+)
   with applicable
   have effect: "\<forall>succ \<in> set (succs (is ! pc) (ST,LT) pc).
-    (P\<^bsub>wf\<^esub>) \<turnstile> \<lfloor>eff\<^isub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> \<le>' (P\<^bsub>\<Phi>\<^esub>) C M ! succ \<and> succ < length is"
+    (P\<^bsub>wf\<^esub>) \<turnstile> \<lfloor>eff\<^sub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> \<le>' (P\<^bsub>\<Phi>\<^esub>) C M ! succ \<and> succ < length is"
     apply clarsimp
-    apply (erule_tac x="(succ, \<lfloor>eff\<^isub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> )" in ballE)
-     by (erule_tac x="(succ, \<lfloor>eff\<^isub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> )" in ballE, clarsimp+)
+    apply (erule_tac x="(succ, \<lfloor>eff\<^sub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> )" in ballE)
+     by (erule_tac x="(succ, \<lfloor>eff\<^sub>i(is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)\<rfloor> )" in ballE, clarsimp+)
    with P_wf sees_M last_c v_cs
    have v_cs_succ:
      "\<forall>succ \<in> set (succs (is ! pc) (ST,LT) pc). valid_callstack (P,C0,M0) ((C,M,succ)#cs)"
@@ -1328,7 +1328,7 @@ proof(unfold_locales)
           by (auto dest!: find_handler_find_handler_forD)
         with New c' v_cs v_cs_f2c_frs'
         have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). new_Addr h = None)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). new_Addr h = None)\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
@@ -1442,7 +1442,7 @@ proof(unfold_locales)
           by auto
         with New c' v_cs v_cs_f2c_frs'
         have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). new_Addr h \<noteq> None)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). new_Addr h \<noteq> None)\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
@@ -1497,7 +1497,7 @@ proof(unfold_locales)
           by (auto simp: split_beta dest!: find_handler_find_handler_forD)
         with Getfield prog c' v_cs v_cs_f2c_frs'
         have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Null)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) = Null)\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
@@ -1603,7 +1603,7 @@ proof(unfold_locales)
           by (auto dest!: find_handler_find_handler_forD simp: split_beta)
         with Getfield c' v_cs v_cs_f2c_frs'
         have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) \<noteq> Null)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 1) \<noteq> Null)\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
@@ -1656,7 +1656,7 @@ proof(unfold_locales)
           by (auto dest!: find_handler_find_handler_forD simp: split_beta hd_tl_stks)
         with Putfield c' v_cs v_cs_f2c_frs'
         have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) = Null)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) = Null)\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
@@ -1750,7 +1750,7 @@ proof(unfold_locales)
           by (auto simp: split_beta hd_tl_stks)
         with Putfield c' v_cs v_cs_f2c_frs'
         have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) \<noteq> Null)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - 2) \<noteq> Null)\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
@@ -1800,7 +1800,7 @@ proof(unfold_locales)
           by (auto dest!: find_handler_find_handler_forD simp: hd_stks)
         with Checkcast c' v_cs v_cs_f2c_frs'
         have v_pred_edge:"valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). \<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). \<not> cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
@@ -1891,7 +1891,7 @@ proof(unfold_locales)
                     simp: hd_stks split_beta)
         with prog Checkcast sem_step c s v_cs_succ sees_M
         have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). cast_ok (P\<^bsub>wf\<^esub>) Cl h (stk(length cs, stkLength P C M pc - Suc 0)))\<^sub>\<surd>,
           (_ (C,M,Suc pc)#cs,None _))"
           (is "valid_edge prog ?e1")
           by (auto intro!: JCFG_Checkcast_Normal_Pred elim: sem.cases)
@@ -1942,7 +1942,7 @@ proof(unfold_locales)
                     simp: split_beta nth_Cons' (* nth_stks *) split_if_eq1)
         with Invoke c' v_cs v_cs_f2c_frs'
         have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n') = Null )\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n') = Null )\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply (auto simp del: find_handler_for.simps)
@@ -2111,7 +2111,7 @@ proof(unfold_locales)
             fst(method (P\<^bsub>wf\<^esub>)
                  (cname_of h (the_Addr(stk'(length cs, stkLength P C M pc - Suc n')))) M'
             ) = D
-          )\<^isub>\<surd>,
+          )\<^sub>\<surd>,
           (_ (C,M,pc)#cs,\<lfloor>(c',False)\<rfloor> _))"
           (is "valid_edge prog ?e1")
           apply auto
@@ -2304,7 +2304,7 @@ proof(unfold_locales)
           by auto
         with c' IfFalse True v_cs v_cs_f2c_frs'
         have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) = Bool False)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) = Bool False)\<^sub>\<surd>,
           (_ (C,M,nat (int pc + b))#cs,None _))"
           (is "valid_edge prog ?e1")
           by (fastforce intro: JCFG_IfFalse_False)
@@ -2334,7 +2334,7 @@ proof(unfold_locales)
           by auto
         with c' IfFalse False v_cs v_cs_f2c_frs'
         have v_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
-          (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) \<noteq> Bool False \<or> b = 1)\<^isub>\<surd>,
+          (\<lambda>(h,stk,loc). stk (length cs, stkLength P C M pc - 1) \<noteq> Bool False \<or> b = 1)\<^sub>\<surd>,
           (_ (C,M,Suc pc)#cs,None _))"
           (is "valid_edge prog ?e1")
           by (fastforce intro: JCFG_IfFalse_Next)
@@ -2442,7 +2442,7 @@ proof(unfold_locales)
             (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
              find_handler_for P (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1))))
                ((C,M,pc)#cs) = c')
-          )\<^isub>\<surd>,
+          )\<^sub>\<surd>,
         (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
         (is "valid_edge prog ?e1")
         apply (auto simp del: find_handler_for.simps)
@@ -2548,7 +2548,7 @@ proof(unfold_locales)
             (stk(length cs, stkLength P C M pc - 1) \<noteq> Null \<and>
              find_handler_for P (cname_of h (the_Addr(stk(length cs, stkLength P C M pc - 1))))
                ((C,M,pc)#cs) = c')
-          )\<^isub>\<surd>,
+          )\<^sub>\<surd>,
         (_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _))"
         (is "valid_edge prog ?e1")
         apply (auto simp del: find_handler_for.simps)

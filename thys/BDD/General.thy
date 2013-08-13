@@ -31,7 +31,7 @@ header {* General Lemmas on BDD Abstractions*}
 theory General imports BinDag begin
 
 definition subdag_eq:: "dag \<Rightarrow> dag \<Rightarrow> bool" where
-"subdag_eq t\<^isub>1 t\<^isub>2 = (t\<^isub>1 = t\<^isub>2 \<or> subdag t\<^isub>1 t\<^isub>2)"
+"subdag_eq t\<^sub>1 t\<^sub>2 = (t\<^sub>1 = t\<^sub>2 \<or> subdag t\<^sub>1 t\<^sub>2)"
 (*"subtree_eq Tip t = (if t = Tip then True else False)"
 "subtree_eq (Node l a r) t = (t=(Node l a r) \<or> subtree_eq l t \<or> subtree_eq r t)"*)
 
@@ -43,8 +43,8 @@ where
 fun isLeaf :: "dag \<Rightarrow> bool" where
 "isLeaf Tip = False"
 | "isLeaf (Node Tip v Tip) = True"
-| "isLeaf (Node (Node l v\<^isub>1 r) v\<^isub>2 Tip) = False"
-| "isLeaf (Node Tip v\<^isub>1 (Node l v\<^isub>2 r)) = False"
+| "isLeaf (Node (Node l v\<^sub>1 r) v\<^sub>2 Tip) = False"
+| "isLeaf (Node Tip v\<^sub>1 (Node l v\<^sub>2 r)) = False"
 
 datatype bdt = Zero | One | Bdt_Node bdt nat bdt
 
@@ -104,9 +104,9 @@ fun ordered_bdt:: "bdt \<Rightarrow> bool" where
 (*In case t = (Node Tip v Tip) v should have the values 0 or 1. This is not checked by this function*)
 fun ordered:: "dag \<Rightarrow> (ref\<Rightarrow>nat) \<Rightarrow> bool" where
 "ordered Tip = (\<lambda> var. True)"
-| "ordered (Node (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) v (Node l\<^isub>2 v\<^isub>2 r\<^isub>2)) = 
-    (\<lambda> var. (var v\<^isub>1 < var v \<and> var v\<^isub>2 < var v) \<and> 
-        (ordered (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) var) \<and> (ordered (Node l\<^isub>2 v\<^isub>2 r\<^isub>2) var))"
+| "ordered (Node (Node l\<^sub>1 v\<^sub>1 r\<^sub>1) v (Node l\<^sub>2 v\<^sub>2 r\<^sub>2)) = 
+    (\<lambda> var. (var v\<^sub>1 < var v \<and> var v\<^sub>2 < var v) \<and> 
+        (ordered (Node l\<^sub>1 v\<^sub>1 r\<^sub>1) var) \<and> (ordered (Node l\<^sub>2 v\<^sub>2 r\<^sub>2) var))"
 | "ordered (Node Tip v Tip) = (\<lambda> var. (True))"
 | "ordered (Node Tip v r) = 
      (\<lambda> var. (var (root r) < var v) \<and> (ordered r var))"
@@ -609,7 +609,7 @@ where
    (\<forall>k < length levellist. \<forall>p \<in> set (levellist ! k). p \<in> set_of t \<and> var p = k))"
 
 definition cong_eval :: "bdt \<Rightarrow> bdt \<Rightarrow> bool" (infix "\<sim>" 60)
-  where "cong_eval bdt\<^isub>1 bdt\<^isub>2 = (eval bdt\<^isub>1 = eval bdt\<^isub>2)"
+  where "cong_eval bdt\<^sub>1 bdt\<^sub>2 = (eval bdt\<^sub>1 = eval bdt\<^sub>2)"
 
 lemma cong_eval_sym: "l \<sim> r = r \<sim> l"
   by (auto simp add: cong_eval_def)
@@ -671,11 +671,11 @@ where
 
 definition isomorphic_dags_eq :: "dag \<Rightarrow> dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
 where
-"isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var =
-    (\<forall>bdt\<^isub>1 bdt\<^isub>2. (bdt st\<^isub>1 var = Some bdt\<^isub>1 \<and> bdt st\<^isub>2 var = Some bdt\<^isub>2 \<and> (bdt\<^isub>1 = bdt\<^isub>2))
-                 \<longrightarrow> st\<^isub>1 = st\<^isub>2)"
+"isomorphic_dags_eq st\<^sub>1 st\<^sub>2 var =
+    (\<forall>bdt\<^sub>1 bdt\<^sub>2. (bdt st\<^sub>1 var = Some bdt\<^sub>1 \<and> bdt st\<^sub>2 var = Some bdt\<^sub>2 \<and> (bdt\<^sub>1 = bdt\<^sub>2))
+                 \<longrightarrow> st\<^sub>1 = st\<^sub>2)"
 
-lemma isomorphic_dags_eq_sym: "isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var = isomorphic_dags_eq st\<^isub>2 st\<^isub>1  var"
+lemma isomorphic_dags_eq_sym: "isomorphic_dags_eq st\<^sub>1 st\<^sub>2 var = isomorphic_dags_eq st\<^sub>2 st\<^sub>1  var"
   by (auto simp add: isomorphic_dags_eq_def)
 
 
@@ -686,7 +686,7 @@ consts shared :: " dag \<Rightarrow> dag \<Rightarrow> (ref \<Rightarrow> nat) \
 defs shared_def: "shared t1 t2 var == subdags_shared t1 t1 var \<and> subdags_shared t2 t2 var \<and> subdags_shared t1 t2 var"*)
 
 definition shared :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
-  where "shared t var = (\<forall>st\<^isub>1 st\<^isub>2. (st\<^isub>1 <= t \<and> st\<^isub>2 <= t) \<longrightarrow> isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var)"
+  where "shared t var = (\<forall>st\<^sub>1 st\<^sub>2. (st\<^sub>1 <= t \<and> st\<^sub>2 <= t) \<longrightarrow> isomorphic_dags_eq st\<^sub>1 st\<^sub>2 var)"
 
 (* shared returns True if the Dag has no different subdags which represent the same 
 bdts. 

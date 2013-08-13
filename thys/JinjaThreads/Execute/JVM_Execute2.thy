@@ -90,7 +90,7 @@ fun jvm_mstate_of_jvm_mstate' ::
 where
   "jvm_mstate_of_jvm_mstate' (ls, (ts, m), ws) = (ls, (\<lambda>t. Option.map (map_pair jvm_thread_state_of_jvm_thread_state' id) (ts t), m), ws)"
 
-definition sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^isub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state',heap,addr) state set"
+definition sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^sub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state',heap,addr) state set"
 where
   "sc_jvm_state_invar P \<Phi> \<equiv> 
    {s. jvm_mstate_of_jvm_mstate' s \<in> sc.execute.correct_jvm_state P \<Phi>} \<inter> 

@@ -11,7 +11,7 @@ lemma sim1:
   and   Q   :: pi
   and   Rel :: "(pi \<times> pi) set"
   
-  assumes PSimQ: "P \<leadsto>\<^isup>^<Rel> Q"
+  assumes PSimQ: "P \<leadsto>\<^sup>^<Rel> Q"
 
   shows "\<tau>.(P) \<leadsto><Rel> Q"
 proof(induct rule: simCases)
@@ -22,17 +22,17 @@ proof(induct rule: simCases)
     have "x \<sharp> \<tau>.(P)" by fact
     thus ?thesis by simp
   qed
-  ultimately obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" using PSimQ
+  ultimately obtain P' where PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" using PSimQ
     by(blast dest: Weak_Late_Sim.simE)
-  from PTrans have "\<tau>.(P) \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
+  from PTrans have "\<tau>.(P) \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'"
   proof(induct rule: transitionCases)
     case Step
-    have "P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'" by fact
-    with xFreshP obtain P''' P'' where PChain: "P \<Longrightarrow>\<^isub>\<tau> P'''"
+    have "P \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'" by fact
+    with xFreshP obtain P''' P'' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P'''"
                                    and P'''Trans:  "P''' \<longmapsto>a<\<nu>x> \<prec> P''"
-                                   and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'"
+                                   and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
       by(blast dest: transitionE)
-    have "\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+    have "\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
     proof -
       have "\<tau>.(P) \<longmapsto>\<tau> \<prec> P" by(rule Late_Semantics.Tau)
       thus ?thesis using PChain by auto
@@ -53,39 +53,39 @@ next
     have "x \<sharp> \<tau>.(P)" by fact
     thus ?thesis by simp
   qed
-  ultimately obtain P'' where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel" using PSimQ
+  ultimately obtain P'' where L1: "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel" using PSimQ
     by(blast dest: Weak_Late_Sim.simE)
-  have "\<And>u. \<exists>P'. \<tau>.(P) \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
+  have "\<And>u. \<exists>P'. \<tau>.(P) \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
   proof -
     fix u
-    from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel" by blast    
-    from PTrans xFreshP obtain P''' where PChain: "P \<Longrightarrow>\<^isub>\<tau> P'''"
+    from L1 obtain P' where PTrans: "P \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel" by blast    
+    from PTrans xFreshP obtain P''' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P'''"
                                      and P'''Trans:  "P''' \<longmapsto>a<x> \<prec> P''"
-                                     and P''Chain: "P''[x::=u] \<Longrightarrow>\<^isub>\<tau> P'"
+                                     and P''Chain: "P''[x::=u] \<Longrightarrow>\<^sub>\<tau> P'"
       by(blast dest: transitionE)
-    have "\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+    have "\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
     proof -
       have "\<tau>.(P) \<longmapsto>\<tau> \<prec> P" by(rule Late_Semantics.Tau)
       thus ?thesis using PChain by auto
     qed
-    hence "\<tau>.(P) \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P'" using P'''Trans P''Chain by(blast intro: Weak_Late_Step_Semantics.transitionI)
-    with P'RelQ' show "\<exists>P'. \<tau>.(P) \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel" by blast
+    hence "\<tau>.(P) \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P'" using P'''Trans P''Chain by(blast intro: Weak_Late_Step_Semantics.transitionI)
+    with P'RelQ' show "\<exists>P'. \<tau>.(P) \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel" by blast
   qed
   thus ?case by blast
 next
   case(Free Q' \<alpha>)
   have Trans: "Q \<longmapsto>\<alpha> \<prec> Q'" by fact
-  then obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" using PSimQ
+  then obtain P' where PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" using PSimQ
     by(blast dest: Weak_Late_Sim.simE)
-  from PTrans have "\<tau>.(P) \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
+  from PTrans have "\<tau>.(P) \<Longrightarrow>\<^sub>l\<alpha> \<prec> P'"
   proof(induct rule: transitionCases)
     case Step
-    have "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'" by fact
-    then obtain P''' P'' where PChain: "P \<Longrightarrow>\<^isub>\<tau> P'''"
+    have "P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P'" by fact
+    then obtain P''' P'' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P'''"
                            and P'''Trans:  "P''' \<longmapsto>\<alpha> \<prec> P''"
-                           and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'"
+                           and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
       by(blast dest: transitionE)
-    have "\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+    have "\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
     proof -
       have "\<tau>.(P) \<longmapsto>\<tau> \<prec> P" by(rule Late_Semantics.Tau)
       thus ?thesis using PChain by auto
@@ -95,11 +95,11 @@ next
     case Stay
     have "\<alpha> \<prec> P' = \<tau> \<prec> P" by fact
     hence "\<alpha> = \<tau>" and "P = P'" by(simp add: residual.inject)+
-    moreover have "\<tau>.(P) \<Longrightarrow>\<^isub>l\<tau> \<prec> P"
+    moreover have "\<tau>.(P) \<Longrightarrow>\<^sub>l\<tau> \<prec> P"
     proof -
-      have "\<tau>.(P) \<Longrightarrow>\<^isub>\<tau>\<tau>.(P)" by simp
+      have "\<tau>.(P) \<Longrightarrow>\<^sub>\<tau>\<tau>.(P)" by simp
       moreover have "\<tau>.(P) \<longmapsto>\<tau> \<prec> P" by(rule Late_Semantics.Tau)
-      moreover have "P \<Longrightarrow>\<^isub>\<tau> P" by simp
+      moreover have "P \<Longrightarrow>\<^sub>\<tau> P" by simp
       ultimately show ?thesis by(blast intro: Weak_Late_Step_Semantics.transitionI)
     qed
     ultimately show ?case by force
@@ -112,7 +112,7 @@ lemma sim2:
   and   Q  :: pi
   and   P' :: pi
 
-  assumes PSimQ: "P \<leadsto>\<^isup>^<Rel> Q"
+  assumes PSimQ: "P \<leadsto>\<^sup>^<Rel> Q"
   and     PTrans: "P \<longmapsto>\<tau> \<prec> P'"
   and     P'RelQ: "(P', Q) \<in> Rel"
 
@@ -132,7 +132,7 @@ next
 
   have "\<tau>.(Q) \<longmapsto>\<alpha> \<prec> Q'" by fact
   hence "\<alpha> = \<tau>" and "Q = Q'" by(drule_tac tauCases, auto simp add: pi.inject residual.inject)+
-  moreover from PTrans have "P \<Longrightarrow>\<^isub>l\<tau> \<prec> P'" by(rule Weak_Late_Step_Semantics.singleActionChain)
+  moreover from PTrans have "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'" by(rule Weak_Late_Step_Semantics.singleActionChain)
   ultimately show ?case using P'RelQ by blast
 qed
   
@@ -142,14 +142,14 @@ lemma sim3:
   and   Q   :: pi
   and   Rel :: "(pi \<times> pi) set"
 
-  assumes PSimQ: "P \<leadsto>\<^isup>^<Rel> Q"
+  assumes PSimQ: "P \<leadsto>\<^sup>^<Rel> Q"
   and     L1: "\<And>Q'. Q \<longmapsto>\<tau> \<prec> Q' \<Longrightarrow> (P, Q') \<notin> Rel"
 
   shows "P \<leadsto><Rel> Q"
 proof(induct rule: simCases)
   case(Bound Q' a x)
   have "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and "x \<sharp> P" by fact+
-  with PSimQ obtain P' where "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'" and "(P', Q') \<in> Rel" by(blast dest: Weak_Late_Sim.simE)
+  with PSimQ obtain P' where "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'" and "(P', Q') \<in> Rel" by(blast dest: Weak_Late_Sim.simE)
   thus ?case by(auto simp add: weakTransition_def)
 next
   case(Input Q' a x)
@@ -158,12 +158,12 @@ next
 next
   case(Free Q' \<alpha>)
   have QTrans: "Q \<longmapsto>\<alpha> \<prec> Q'" by fact
-  with PSimQ obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
+  with PSimQ obtain P' where PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
     by(blast dest: Weak_Late_Sim.simE)
   from PTrans show ?case
   proof(induct rule: transitionCases)
     case Step
-    have "P \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'" by fact
+    have "P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P'" by fact
     with P'RelQ' show ?case by blast
   next
     case Stay
@@ -189,12 +189,12 @@ proof(case_tac "\<exists>P'. P \<longmapsto>\<tau> \<prec> P' \<and> P' \<approx
 
   have "P \<leadsto><weakBisim> \<tau>.(Q)"
   proof -
-    from PBisimQ have "P \<leadsto>\<^isup>^<weakBisim> Q" by(blast dest: Weak_Late_Bisim.unfoldE)
+    from PBisimQ have "P \<leadsto>\<^sup>^<weakBisim> Q" by(blast dest: Weak_Late_Bisim.unfoldE)
     thus ?thesis using PTrans P'BisimP by(rule sim2)
   qed
   moreover have "\<tau>.(Q) \<leadsto><weakBisim> P"
   proof -
-    from PBisimQ have "Q \<leadsto>\<^isup>^<weakBisim> P" by(blast dest: Weak_Late_Bisim.unfoldE)
+    from PBisimQ have "Q \<leadsto>\<^sup>^<weakBisim> P" by(blast dest: Weak_Late_Bisim.unfoldE)
     thus ?thesis by(rule sim1)
   qed
   ultimately have "P \<simeq> \<tau>.(Q)" by(simp add: congruence_def)
@@ -208,12 +208,12 @@ next
     then obtain Q' where QTrans: "Q \<longmapsto>\<tau> \<prec> Q'" and Q'BisimP: "Q' \<approx> P" by blast
     have "\<tau>.(P) \<leadsto><weakBisim> Q"
     proof -
-      from PBisimQ have "P \<leadsto>\<^isup>^<weakBisim> Q" by(blast dest: Weak_Late_Bisim.unfoldE)
+      from PBisimQ have "P \<leadsto>\<^sup>^<weakBisim> Q" by(blast dest: Weak_Late_Bisim.unfoldE)
       thus ?thesis by(rule sim1)
     qed
     moreover have "Q \<leadsto><weakBisim> \<tau>.(P)"
     proof -
-      from PBisimQ have "Q \<leadsto>\<^isup>^<weakBisim> P" by(blast dest: Weak_Late_Bisim.unfoldE)
+      from PBisimQ have "Q \<leadsto>\<^sup>^<weakBisim> P" by(blast dest: Weak_Late_Bisim.unfoldE)
       thus ?thesis using QTrans Q'BisimP by(rule sim2)
     qed
     ultimately have "\<tau>.(P) \<simeq> Q" by(simp add: congruence_def)
@@ -224,12 +224,12 @@ next
 
     have "P \<leadsto><weakBisim> Q"
     proof -
-      from PBisimQ have "P \<leadsto>\<^isup>^<weakBisim> Q" by(blast dest: Weak_Late_Bisim.unfoldE)
+      from PBisimQ have "P \<leadsto>\<^sup>^<weakBisim> Q" by(blast dest: Weak_Late_Bisim.unfoldE)
       thus ?thesis using L2 by(rule sim3)
     qed
     moreover have "Q \<leadsto><weakBisim> P"
     proof -
-      from PBisimQ have "Q \<leadsto>\<^isup>^<weakBisim> P" by(blast dest: Weak_Late_Bisim.unfoldE)
+      from PBisimQ have "Q \<leadsto>\<^sup>^<weakBisim> P" by(blast dest: Weak_Late_Bisim.unfoldE)
       thus ?thesis using L1 by(rule sim3)
     qed
     ultimately have "P \<simeq> Q" by(simp add: congruence_def)
@@ -243,14 +243,14 @@ lemma boundOutputRemoveTau:
   and   x  :: name
   and   P' :: pi
 
-  assumes "\<tau>.(P) \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
+  assumes "\<tau>.(P) \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'"
   and     "x \<sharp> P"
 
-  shows "P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
+  shows "P \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'"
 proof -
-  from assms obtain P''' P'''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+  from assms obtain P''' P'''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
                                  and P'''Trans: "P''' \<longmapsto>a<\<nu>x> \<prec> P''''"
-                                 and P''''Chain: "P'''' \<Longrightarrow>\<^isub>\<tau> P'"
+                                 and P''''Chain: "P'''' \<Longrightarrow>\<^sub>\<tau> P'"
     by(force dest: Weak_Late_Step_Semantics.transitionE)
   show ?thesis
   proof(case_tac "P''' = \<tau>.(P)")
@@ -259,7 +259,7 @@ proof -
     thus ?thesis by simp
   next
     assume "P''' \<noteq> \<tau>.(P)"
-    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'''"
+    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
       by(blast dest: tauChainUnfold)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
@@ -276,13 +276,13 @@ lemma inputRemoveTau:
   and   x     :: name
   and   P'    :: pi
 
-  assumes "\<tau>.(P) \<Longrightarrow>\<^isub>lu in P'''' \<rightarrow> a<x> \<prec> P'"
+  assumes "\<tau>.(P) \<Longrightarrow>\<^sub>lu in P'''' \<rightarrow> a<x> \<prec> P'"
 
-  shows "P \<Longrightarrow>\<^isub>lu in P'''' \<rightarrow> a<x> \<prec> P'"
+  shows "P \<Longrightarrow>\<^sub>lu in P'''' \<rightarrow> a<x> \<prec> P'"
 proof -
-  from assms obtain P''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+  from assms obtain P''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
                             and P'''Trans: "P''' \<longmapsto>a<x> \<prec> P''''"
-                            and P''''Chain: "P''''[x::=u] \<Longrightarrow>\<^isub>\<tau> P'"
+                            and P''''Chain: "P''''[x::=u] \<Longrightarrow>\<^sub>\<tau> P'"
     by(force dest: Weak_Late_Step_Semantics.transitionE)
   show ?thesis
   proof(case_tac "P''' = \<tau>.(P)")
@@ -291,7 +291,7 @@ proof -
     thus ?thesis by simp
   next
     assume "P''' \<noteq> \<tau>.(P)"
-    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'''"
+    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
       by(blast dest: tauChainUnfold)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
@@ -306,13 +306,13 @@ lemma outputRemoveTau:
   and   b  :: name
   and   P' :: pi
 
-  assumes "\<tau>.(P) \<Longrightarrow>\<^isub>la[b] \<prec> P'"
+  assumes "\<tau>.(P) \<Longrightarrow>\<^sub>la[b] \<prec> P'"
 
-  shows "P \<Longrightarrow>\<^isub>la[b] \<prec> P'"
+  shows "P \<Longrightarrow>\<^sub>la[b] \<prec> P'"
 proof -
-  from assms obtain P''' P'''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+  from assms obtain P''' P'''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
                                  and P'''Trans: "P''' \<longmapsto>a[b] \<prec> P''''"
-                                 and P''''Chain: "P'''' \<Longrightarrow>\<^isub>\<tau> P'"
+                                 and P''''Chain: "P'''' \<Longrightarrow>\<^sub>\<tau> P'"
     by(force dest: Weak_Late_Step_Semantics.transitionE)
   show ?thesis
   proof(case_tac "P''' = \<tau>.(P)")
@@ -321,7 +321,7 @@ proof -
     thus ?thesis by simp
   next
     assume "P''' \<noteq> \<tau>.(P)"
-    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'''"
+    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
       by(blast dest: tauChainUnfold)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
@@ -334,27 +334,27 @@ lemma tauRemoveTau:
   fixes P  :: pi
   and   P' :: pi
 
-  assumes PTrans: "\<tau>.(P) \<Longrightarrow>\<^isub>l\<tau> \<prec> P'"
+  assumes PTrans: "\<tau>.(P) \<Longrightarrow>\<^sub>l\<tau> \<prec> P'"
   and     PineqP': "P \<noteq> P'"
 
-  shows "P \<Longrightarrow>\<^isub>l\<tau> \<prec> P'"
+  shows "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'"
 proof -
-  from PTrans obtain P''' P'''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^isub>\<tau> P'''"
+  from PTrans obtain P''' P'''' where PChain:"\<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''"
                                   and P'''Trans: "P''' \<longmapsto>\<tau> \<prec> P''''"
-                                  and P''''Chain: "P'''' \<Longrightarrow>\<^isub>\<tau> P'"
+                                  and P''''Chain: "P'''' \<Longrightarrow>\<^sub>\<tau> P'"
     by(force dest: Weak_Late_Step_Semantics.transitionE)
   show ?thesis
   proof(case_tac "P''' = \<tau>.(P)")
     assume "P''' = \<tau>.(P)"
     with P'''Trans have "P = P''''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
-    with P''''Chain PineqP' obtain P'' where PTrans: "P \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'"
+    with P''''Chain PineqP' obtain P'' where PTrans: "P \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
       by(blast dest: tauChainUnfold)
-    moreover have "P \<Longrightarrow>\<^isub>\<tau> P" by simp
+    moreover have "P \<Longrightarrow>\<^sub>\<tau> P" by simp
     ultimately show ?thesis by(rule_tac Weak_Late_Step_Semantics.transitionI)
   next
     assume "P''' \<noteq> \<tau>.(P)"
-    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^isub>\<tau> P'''"
+    with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
       by(blast dest: tauChainUnfold)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
@@ -370,53 +370,53 @@ lemma sim4:
 
   assumes PSimQ: "\<tau>.(P) \<leadsto><Rel> Q"
 
-  shows "P \<leadsto>\<^isup>^<Rel> Q"
+  shows "P \<leadsto>\<^sup>^<Rel> Q"
 proof(induct rule: Weak_Late_Sim.simCases)
   case(Bound Q' a x)
   have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
 
-  with PSimQ obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'"
+  with PSimQ obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'"
                          and P'RelQ': "(P', Q') \<in> Rel" by(auto dest: simE)
-  from PTrans xFreshP have "P \<Longrightarrow>\<^isub>la<\<nu>x> \<prec> P'" 
+  from PTrans xFreshP have "P \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'" 
     by(blast intro: boundOutputRemoveTau)
-  hence "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P'" by(simp add: weakTransition_def)
+  hence "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P'" by(simp add: weakTransition_def)
   with P'RelQ' show ?case by blast
 next
   case(Input Q' a x)
   have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
-  with PSimQ obtain P'' where PSim: "\<forall>u. \<exists>P'. \<tau>.(P) \<Longrightarrow>\<^isub>lu in P'' \<rightarrow> a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
+  with PSimQ obtain P'' where PSim: "\<forall>u. \<exists>P'. \<tau>.(P) \<Longrightarrow>\<^sub>lu in P'' \<rightarrow> a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
     by(auto dest: simE)
-  have "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^isub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
+  have "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
   proof(rule allI)
     fix u
-    from PSim obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^isub>lu in P'' \<rightarrow> a<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel"
+    from PSim obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^sub>lu in P'' \<rightarrow> a<x> \<prec> P'" and P'RelQ': "(P', Q'[x::=u]) \<in> Rel"
       by blast
-    with PTrans have "P \<Longrightarrow>\<^isub>lu in P'' \<rightarrow> a<x> \<prec> P'" by(blast intro: inputRemoveTau)
-    with P'RelQ' show "\<exists>P'. P \<Longrightarrow>\<^isub>lu in P'' \<rightarrow> a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"  by blast
+    with PTrans have "P \<Longrightarrow>\<^sub>lu in P'' \<rightarrow> a<x> \<prec> P'" by(blast intro: inputRemoveTau)
+    with P'RelQ' show "\<exists>P'. P \<Longrightarrow>\<^sub>lu in P'' \<rightarrow> a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"  by blast
   qed
   thus ?case by blast
 next
   case(Free Q' \<alpha>)
-  with PSimQ obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^isub>l\<alpha> \<prec> P'"
+  with PSimQ obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^sub>l\<alpha> \<prec> P'"
                          and P'RelQ': "(P', Q') \<in> Rel" by(auto dest: simE)
   from PTrans show ?case
   proof(cases \<alpha>, auto)
     fix a b
-    assume "\<tau>.(P) \<Longrightarrow>\<^isub>l(a::name)[b] \<prec> P'"
-    hence "P \<Longrightarrow>\<^isub>la[b] \<prec> P'" by(rule outputRemoveTau)
-    hence "P \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> P'" by(simp add: weakTransition_def)
-    with P'RelQ' show "\<exists>P'. P \<Longrightarrow>\<^isub>l\<^isup>^a[b] \<prec> P' \<and> (P', Q') \<in> Rel" by blast
+    assume "\<tau>.(P) \<Longrightarrow>\<^sub>l(a::name)[b] \<prec> P'"
+    hence "P \<Longrightarrow>\<^sub>la[b] \<prec> P'" by(rule outputRemoveTau)
+    hence "P \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> P'" by(simp add: weakTransition_def)
+    with P'RelQ' show "\<exists>P'. P \<Longrightarrow>\<^sub>l\<^sup>^a[b] \<prec> P' \<and> (P', Q') \<in> Rel" by blast
   next
-    assume PTrans: "\<tau>.(P) \<Longrightarrow>\<^isub>l\<tau> \<prec> P'"
-    thus "\<exists>P'. P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P' \<and> (P', Q') \<in> Rel"
+    assume PTrans: "\<tau>.(P) \<Longrightarrow>\<^sub>l\<tau> \<prec> P'"
+    thus "\<exists>P'. P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P' \<and> (P', Q') \<in> Rel"
     proof(case_tac "P = P'")
       assume "P = P'"
-      hence "P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P'" by(simp add: weakTransition_def)
+      hence "P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P'" by(simp add: weakTransition_def)
       with P'RelQ' show ?thesis by blast
     next
       assume "P \<noteq> P'"
-      hence "P \<Longrightarrow>\<^isub>l\<tau> \<prec> P'" using PTrans by(rule_tac tauRemoveTau)
-      hence "P \<Longrightarrow>\<^isub>l\<^isup>^\<tau> \<prec> P'" by(simp add: weakTransition_def)
+      hence "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'" using PTrans by(rule_tac tauRemoveTau)
+      hence "P \<Longrightarrow>\<^sub>l\<^sup>^\<tau> \<prec> P'" by(simp add: weakTransition_def)
       with P'RelQ' show ?thesis by blast
     qed
   qed
@@ -428,46 +428,46 @@ lemma sim5:
   and   Rel :: "(pi \<times> pi) set"
 
   assumes PSimQ: "P \<leadsto><Rel> \<tau>.(Q)"
-  and     L1: "\<And>P Q. (P, Q) \<in> Rel \<Longrightarrow> P \<leadsto>\<^isup>^<Rel> Q"
+  and     L1: "\<And>P Q. (P, Q) \<in> Rel \<Longrightarrow> P \<leadsto>\<^sup>^<Rel> Q"
 
-  shows "P \<leadsto>\<^isup>^<Rel> Q"
+  shows "P \<leadsto>\<^sup>^<Rel> Q"
 proof -
   have "\<tau>.(Q) \<longmapsto>\<tau> \<prec> Q" by(rule Late_Semantics.Tau)
-  with PSimQ obtain P' where PTrans: "P \<Longrightarrow>\<^isub>l\<tau> \<prec> P'" and P'RelQ: "(P', Q) \<in> Rel"
+  with PSimQ obtain P' where PTrans: "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'" and P'RelQ: "(P', Q) \<in> Rel"
     by(auto dest: simE)
-  from PTrans have PChain:"P \<Longrightarrow>\<^isub>\<tau> P'" by(rule Weak_Late_Step_Semantics.tauTransitionChain)
-  from P'RelQ have P'SimQ: "P' \<leadsto>\<^isup>^<Rel> Q" by(rule L1)
+  from PTrans have PChain:"P \<Longrightarrow>\<^sub>\<tau> P'" by(rule Weak_Late_Step_Semantics.tauTransitionChain)
+  from P'RelQ have P'SimQ: "P' \<leadsto>\<^sup>^<Rel> Q" by(rule L1)
   show ?thesis
   proof(induct rule: Weak_Late_Sim.simCases)
     case(Bound Q' a x)
     have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
     from PChain xFreshP have xFreshP': "x \<sharp> P'" by(rule freshChain)
 
-    with P'SimQ QTrans obtain P'' where P''Trans: "P' \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P''"
+    with P'SimQ QTrans obtain P'' where P''Trans: "P' \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P''"
                                     and P''RelQ': "(P'', Q') \<in> Rel" by(auto dest: Weak_Late_Sim.simE)
-    from PChain P''Trans have "P \<Longrightarrow>\<^isub>l\<^isup>^a<\<nu>x> \<prec> P''" 
+    from PChain P''Trans have "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P''" 
       by(rule chainTransitionAppend)
     with P''RelQ' show ?case by blast
   next
     case(Input Q' a x)
     have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
     from PChain xFreshP have xFreshP': "x \<sharp> P'" by(rule freshChain)
-    with P'SimQ QTrans obtain P''' where PSim: "\<forall>u. \<exists>P''. P' \<Longrightarrow>\<^isub>lu in P''' \<rightarrow> a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"
+    with P'SimQ QTrans obtain P''' where PSim: "\<forall>u. \<exists>P''. P' \<Longrightarrow>\<^sub>lu in P''' \<rightarrow> a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"
       by(auto dest: Weak_Late_Sim.simE)
-    have "\<forall>u. \<exists>P''. P \<Longrightarrow>\<^isub>lu in P'''\<rightarrow>a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"
+    have "\<forall>u. \<exists>P''. P \<Longrightarrow>\<^sub>lu in P'''\<rightarrow>a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"
     proof(rule allI)
       fix u
-      from PSim obtain P'' where P'Trans: "P' \<Longrightarrow>\<^isub>lu in P''' \<rightarrow> a<x> \<prec> P''" and P''RelQ': "(P'', Q'[x::=u]) \<in> Rel"
+      from PSim obtain P'' where P'Trans: "P' \<Longrightarrow>\<^sub>lu in P''' \<rightarrow> a<x> \<prec> P''" and P''RelQ': "(P'', Q'[x::=u]) \<in> Rel"
         by blast
-      from PChain P'Trans have "P \<Longrightarrow>\<^isub>lu in P''' \<rightarrow>a<x> \<prec> P''" by(rule Weak_Late_Step_Semantics.chainTransitionAppend)
-      with P''RelQ' show "\<exists>P''. P \<Longrightarrow>\<^isub>lu in P''' \<rightarrow> a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"  by blast
+      from PChain P'Trans have "P \<Longrightarrow>\<^sub>lu in P''' \<rightarrow>a<x> \<prec> P''" by(rule Weak_Late_Step_Semantics.chainTransitionAppend)
+      with P''RelQ' show "\<exists>P''. P \<Longrightarrow>\<^sub>lu in P''' \<rightarrow> a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"  by blast
     qed
     thus ?case by blast
   next
     case(Free Q' \<alpha>)
-    with P'SimQ obtain P'' where P'Trans: "P' \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P''"
+    with P'SimQ obtain P'' where P'Trans: "P' \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P''"
                              and P''RelQ': "(P'', Q') \<in> Rel" by(auto dest: Weak_Late_Sim.simE)
-    from PChain P'Trans have "P \<Longrightarrow>\<^isub>l\<^isup>^\<alpha> \<prec> P''" by(rule chainTransitionAppend)
+    from PChain P'Trans have "P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P''" by(rule chainTransitionAppend)
     with P''RelQ' show ?case by blast
   qed
 qed
@@ -482,12 +482,12 @@ lemma hennessyRight:
 using assms
 proof(rule disjE)
   assume PeqQ: "\<tau>.(P) \<simeq> Q"
-  have "P \<leadsto>\<^isup>^<weakBisim> Q"
+  have "P \<leadsto>\<^sup>^<weakBisim> Q"
   proof -
     from PeqQ have "\<tau>.(P) \<leadsto><weakBisim> Q" by(simp add: congruence_def)
     thus ?thesis by(rule sim4)
   qed
-  moreover have "Q \<leadsto>\<^isup>^<weakBisim> P"
+  moreover have "Q \<leadsto>\<^sup>^<weakBisim> P"
   proof -
     from PeqQ have "Q \<leadsto><weakBisim> \<tau>.(P)" by(simp add: congruence_def)
     thus ?thesis using Weak_Late_Bisim.unfoldE(1) by(rule sim5)
@@ -501,12 +501,12 @@ next
     thus ?thesis by(rule congruenceWeakBisim)
   next
     assume PeqQ: "P \<simeq> \<tau>.(Q)"
-    have "P \<leadsto>\<^isup>^<weakBisim> Q"
+    have "P \<leadsto>\<^sup>^<weakBisim> Q"
     proof -
       from PeqQ have "P \<leadsto><weakBisim> \<tau>.(Q)" by(simp add: congruence_def)
       thus ?thesis using Weak_Late_Bisim.unfoldE(1) by(rule sim5)
     qed
-    moreover have "Q \<leadsto>\<^isup>^<weakBisim> P"
+    moreover have "Q \<leadsto>\<^sup>^<weakBisim> P"
     proof -
       from PeqQ have "\<tau>.(Q) \<leadsto><weakBisim> P" by(simp add: congruence_def)
       thus ?thesis by(rule sim4)

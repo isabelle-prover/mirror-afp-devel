@@ -14,35 +14,35 @@ imports
   "../Common/SemiType"
 begin
 
-type_synonym ty\<^isub>l = "ty err list"
-type_synonym ty\<^isub>s = "ty list"
-type_synonym ty\<^isub>i = "ty\<^isub>s \<times> ty\<^isub>l"
-type_synonym ty\<^isub>i' = "ty\<^isub>i option"
-type_synonym ty\<^isub>m = "ty\<^isub>i' list"
-type_synonym ty\<^isub>P = "mname \<Rightarrow> cname \<Rightarrow> ty\<^isub>m"
+type_synonym ty\<^sub>l = "ty err list"
+type_synonym ty\<^sub>s = "ty list"
+type_synonym ty\<^sub>i = "ty\<^sub>s \<times> ty\<^sub>l"
+type_synonym ty\<^sub>i' = "ty\<^sub>i option"
+type_synonym ty\<^sub>m = "ty\<^sub>i' list"
+type_synonym ty\<^sub>P = "mname \<Rightarrow> cname \<Rightarrow> ty\<^sub>m"
 
-definition stk_esl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>s esl"
+definition stk_esl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^sub>s esl"
 where
   "stk_esl P mxs \<equiv> upto_esl mxs (SemiType.esl P)"
 
-definition loc_sl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>l sl"
+definition loc_sl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^sub>l sl"
 where
   "loc_sl P mxl \<equiv> Listn.sl mxl (Err.sl (SemiType.esl P))"
 
-definition sl :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err sl"
+definition sl :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err sl"
 where
   "sl P mxs mxl \<equiv>
   Err.sl(Opt.esl(Product.esl (stk_esl P mxs) (Err.esl(loc_sl P mxl))))"
 
-definition "states" :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err set"
+definition "states" :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err set"
 where
   "states P mxs mxl \<equiv> fst(sl P mxs mxl)"
 
-definition le :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err ord"
+definition le :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err ord"
 where
   "le P mxs mxl \<equiv> fst(snd(sl P mxs mxl))"
 
-definition sup :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err binop"
+definition sup :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err binop"
 where
   "sup P mxs mxl \<equiv> snd(snd(sl P mxs mxl))"
 
@@ -51,17 +51,17 @@ definition sup_ty_opt :: "['c prog,ty err,ty err] \<Rightarrow> bool"
 where
   "sup_ty_opt P \<equiv> Err.le (widen P)"
 
-definition sup_state :: "['c prog,ty\<^isub>i,ty\<^isub>i] \<Rightarrow> bool"   
+definition sup_state :: "['c prog,ty\<^sub>i,ty\<^sub>i] \<Rightarrow> bool"   
                  ("_ |- _ <=i _"  [71,71,71] 70)
 where
   "sup_state P \<equiv> Product.le (Listn.le (widen P)) (Listn.le (sup_ty_opt P))"
 
-definition sup_state_opt :: "['c prog,ty\<^isub>i',ty\<^isub>i'] \<Rightarrow> bool" 
+definition sup_state_opt :: "['c prog,ty\<^sub>i',ty\<^sub>i'] \<Rightarrow> bool" 
                  ("_ |- _ <=' _"  [71,71,71] 70)
 where
   "sup_state_opt P \<equiv> Opt.le (sup_state P)"
 
-abbreviation sup_loc :: "['c prog,ty\<^isub>l,ty\<^isub>l] \<Rightarrow> bool" ("_ |- _ [<=T] _"  [71,71,71] 70)
+abbreviation sup_loc :: "['c prog,ty\<^sub>l,ty\<^sub>l] \<Rightarrow> bool" ("_ |- _ [<=T] _"  [71,71,71] 70)
 where "P |- LT [<=T] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
 
 notation (xsymbols)

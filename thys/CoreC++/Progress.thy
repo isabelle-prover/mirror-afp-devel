@@ -101,20 +101,20 @@ where
    \<Longrightarrow> P,E,h \<turnstile> \<lparr>C\<rparr>e :' Class C"
 | "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,E,h \<turnstile> Val v :' T"
 | "E V = Some T  \<Longrightarrow>  P,E,h \<turnstile> Var V :' T"
-| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2;
+| "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 :' T\<^sub>1;  P,E,h \<turnstile> e\<^sub>2 :' T\<^sub>2;
     case bop of Eq \<Rightarrow> T = Boolean
-    | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
-   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :' T"
+    | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer \<rbrakk>
+   \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 :' T"
 | "\<lbrakk> P,E,h \<turnstile> Var V :' T; P,E,h \<turnstile> e :' T' (* V \<noteq> This*); P \<turnstile> T' \<le> T \<rbrakk>
    \<Longrightarrow> P,E,h \<turnstile> V:=e :' T"
 | "\<lbrakk>P,E,h \<turnstile> e :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs\<rbrakk> 
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"
 | "P,E,h \<turnstile> e :' NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"
-| "\<lbrakk>P,E,h \<turnstile> e\<^isub>1 :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs;
-    P,E,h \<turnstile> e\<^isub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
-  \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :' T"
-| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:'NT; P,E,h \<turnstile> e\<^isub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
-   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :' T"
+| "\<lbrakk>P,E,h \<turnstile> e\<^sub>1 :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs;
+    P,E,h \<turnstile> e\<^sub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
+  \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2 :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^sub>1:'NT; P,E,h \<turnstile> e\<^sub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
+   \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2 :' T"
 | "\<lbrakk> P,E,h \<turnstile> e :' Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
     P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T" 
@@ -123,13 +123,13 @@ where
     P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> P,E,h \<turnstile> e\<bullet>(C::)M(es) :' T"
 | "\<lbrakk>P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> Call e Copt M es :' T"
-| "\<lbrakk> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'; P,E(V\<mapsto>T),h \<turnstile> e\<^isub>2 :' T\<^isub>2; P \<turnstile> T' \<le> T; is_type P T \<rbrakk>
-   \<Longrightarrow>  P,E,h \<turnstile> {V:T := Val v; e\<^isub>2} :' T\<^isub>2"
+| "\<lbrakk> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'; P,E(V\<mapsto>T),h \<turnstile> e\<^sub>2 :' T\<^sub>2; P \<turnstile> T' \<le> T; is_type P T \<rbrakk>
+   \<Longrightarrow>  P,E,h \<turnstile> {V:T := Val v; e\<^sub>2} :' T\<^sub>2"
 | "\<lbrakk> P,E(V\<mapsto>T),h \<turnstile> e :' T'; \<not> assigned V e; is_type P T \<rbrakk>
    \<Longrightarrow>  P,E,h \<turnstile> {V:T; e} :' T'"
-| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1; P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2"
-| "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^isub>1:' T;  P,E,h \<turnstile> e\<^isub>2:' T \<rbrakk>
-   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 :' T\<^sub>1; P,E,h \<turnstile> e\<^sub>2 :' T\<^sub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 :' T\<^sub>2"
+| "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^sub>1:' T;  P,E,h \<turnstile> e\<^sub>2:' T \<rbrakk>
+   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 :' T"
 | "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> c:' T \<rbrakk>
    \<Longrightarrow>  P,E,h \<turnstile> while(e) c :' Void"
 | "\<lbrakk> P,E,h \<turnstile> e :' T'; is_refT T'\<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> throw e :' T"
@@ -148,7 +148,7 @@ inductive_cases WTrt'_elim_cases[elim!]:
 
 text{* ... and some easy consequences: *}
 
-lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2)"
+lemma [iff]: "P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 :' T\<^sub>2 = (\<exists>T\<^sub>1. P,E,h \<turnstile> e\<^sub>1:' T\<^sub>1 \<and> P,E,h \<turnstile> e\<^sub>2:' T\<^sub>2)"
 
 apply(rule iffI)
 apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
@@ -538,9 +538,9 @@ next
     with WTrtFAccNT show ?thesis by simp (fast intro:FAccRed)
   qed
 next
-  case (WTrtFAss E h e\<^isub>1 C Cs F T e\<^isub>2 T')
-  have wte1:"P,E,h \<turnstile> e\<^isub>1 : Class C"
-    and wte2:"P,E,h \<turnstile> e\<^isub>2 : T'"
+  case (WTrtFAss E h e\<^sub>1 C Cs F T e\<^sub>2 T')
+  have wte1:"P,E,h \<turnstile> e\<^sub>1 : Class C"
+    and wte2:"P,E,h \<turnstile> e\<^sub>2 : T'"
     and field:"P \<turnstile> C has least F:T via Cs" 
     and notemptyCs:"Cs \<noteq> []"
     and sub:"P \<turnstile> T' \<le> T"
@@ -548,17 +548,17 @@ next
   from field wf have type:"is_type P T" by(rule least_field_is_type)
   show ?case
   proof cases
-    assume "final e\<^isub>1"
+    assume "final e\<^sub>1"
     with wte1 show ?thesis
     proof (rule final_refE)
-      fix r assume e1: "e\<^isub>1 = ref r"
+      fix r assume e1: "e\<^sub>1 = ref r"
       show ?thesis
       proof cases
-        assume "final e\<^isub>2"
+        assume "final e\<^sub>2"
         thus ?thesis
         proof (rule finalE)
-          fix v assume e2:"e\<^isub>2 = Val v"
-          from e1 obtain a Cs' where ref:"e\<^isub>1 = ref(a,Cs')" by (cases r) auto
+          fix v assume e2:"e\<^sub>2 = Val v"
+          from e1 obtain a Cs' where ref:"e\<^sub>1 = ref(a,Cs')" by (cases r) auto
           with wte1 obtain D S where h:"h a = Some(D,S)" 
             and suboD:"Subobjs P D Cs'" and last:"last Cs' = C"
             by (fastforce split:split_if_asm)
@@ -589,7 +589,7 @@ next
             fix C' D'
             assume T':"T' = Class C'" and T:"T = Class D'"
             and path_unique:"P \<turnstile> Path C' to D' unique"
-            from wte2 e2 T' obtain a' Cs'' where ref2:"e\<^isub>2 = ref(a',Cs'')"
+            from wte2 e2 T' obtain a' Cs'' where ref2:"e\<^sub>2 = ref(a',Cs'')"
               and last':"last Cs'' = C'"
               by (auto dest!:typeof_Class_Subo)
             from path_unique obtain Ds' where "P \<turnstile> Path C' to D' via Ds'"
@@ -606,7 +606,7 @@ next
           next
             fix C'
             assume T':"T' = NT" and T:"T = Class C'"
-            from e2 wte2 T' have null:"e\<^isub>2 = null" by auto
+            from e2 wte2 T' have null:"e\<^sub>2 = null" by auto
             have casts:"P \<turnstile> Class C' casts Null to Null"
               by -(rule casts_null)
             obtain v' where "v' = Null" by simp
@@ -617,39 +617,39 @@ next
             with ref e2 show ?thesis by blast
           qed
         next
-          fix r assume "e\<^isub>2 = Throw r"
+          fix r assume "e\<^sub>2 = Throw r"
           thus ?thesis using e1 by(fastforce intro:red_reds.FAssThrow2)
         qed
       next
-        assume "\<not> final e\<^isub>2" with WTrtFAss e1 show ?thesis
+        assume "\<not> final e\<^sub>2" with WTrtFAss e1 show ?thesis
           by simp (fast intro!:FAssRed2)
       qed
     next
-      fix r assume "e\<^isub>1 = Throw r"
+      fix r assume "e\<^sub>1 = Throw r"
       thus ?thesis by(fastforce intro:red_reds.FAssThrow1)
     qed
   next
-    assume "\<not> final e\<^isub>1" with WTrtFAss show ?thesis
+    assume "\<not> final e\<^sub>1" with WTrtFAss show ?thesis
       by simp (blast intro!:FAssRed1)
   qed
 next
-  case (WTrtFAssNT E h e\<^isub>1 e\<^isub>2 T' T F Cs)
+  case (WTrtFAssNT E h e\<^sub>1 e\<^sub>2 T' T F Cs)
   show ?case
   proof cases
-    assume e1: "final e\<^isub>1"  --"@{term e\<^isub>1} is @{term null} or @{term throw}"
+    assume e1: "final e\<^sub>1"  --"@{term e\<^sub>1} is @{term null} or @{term throw}"
     show ?thesis
     proof cases
-      assume "final e\<^isub>2"  --"@{term e\<^isub>2} is @{term Val} or @{term throw}"
+      assume "final e\<^sub>2"  --"@{term e\<^sub>2} is @{term Val} or @{term throw}"
       with WTrtFAssNT e1 show ?thesis
         by(fastforce simp:final_def intro:RedFAssNull red_reds.FAssThrow1 
                                          red_reds.FAssThrow2 dest!:typeof_NT)
     next
-      assume  "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
+      assume  "\<not> final e\<^sub>2" --"@{term e\<^sub>2} reduces by IH"
       with WTrtFAssNT e1 show ?thesis
         by (fastforce simp:final_def intro!:red_reds.FAssRed2 red_reds.FAssThrow1)
     qed
   next
-    assume "\<not> final e\<^isub>1" --"@{term e\<^isub>1} reduces by IH"
+    assume "\<not> final e\<^sub>1" --"@{term e\<^sub>1} reduces by IH"
     with WTrtFAssNT show ?thesis by (fastforce intro:FAssRed1)
   qed
 next
@@ -898,26 +898,26 @@ next
     with WTrtCallNT show ?thesis by (fastforce intro:CallObj)
   qed
 next
-  case (WTrtInitBlock h v T' E V T e\<^isub>2 T\<^isub>2)
-  have IH2: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E(V \<mapsto> T) \<surd>; \<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
-                  \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
+  case (WTrtInitBlock h v T' E V T e\<^sub>2 T\<^sub>2)
+  have IH2: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E(V \<mapsto> T) \<surd>; \<D> e\<^sub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^sub>2\<rbrakk>
+                  \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^sub>2,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
     and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'"
     and type:"is_type P T" and sub:"P \<turnstile> T' \<le> T"
     and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>"
-    and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" by fact+
+    and D: "\<D> {V:T := Val v; e\<^sub>2} \<lfloor>dom l\<rfloor>" by fact+
   from wf typeof type sub obtain v' where casts:"P \<turnstile> T casts v to v'"
     by(auto dest:sub_casts)
   show ?case
   proof cases
-    assume fin:"final e\<^isub>2"
+    assume fin:"final e\<^sub>2"
     with casts show ?thesis
       by(fastforce elim:finalE intro:RedInitBlock red_reds.InitBlockThrow)
   next
-    assume not_fin2: "\<not> final e\<^isub>2"
-    from D have D2: "\<D> e\<^isub>2 \<lfloor>dom(l(V\<mapsto>v'))\<rfloor>" by (auto simp:hyperset_defs)
+    assume not_fin2: "\<not> final e\<^sub>2"
+    from D have D2: "\<D> e\<^sub>2 \<lfloor>dom(l(V\<mapsto>v'))\<rfloor>" by (auto simp:hyperset_defs)
     from envconf type have "P \<turnstile> E(V \<mapsto> T) \<surd>" by(auto simp:envconf_def)
     from IH2[OF hconf this D2 not_fin2]
-    obtain h' l' e' where red2: "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>2,(h, l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
+    obtain h' l' e' where red2: "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^sub>2,(h, l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
       by auto
     from red_lcl_incr[OF red2] have "V \<in> dom l'" by auto
     with red2 casts show ?thesis by(fastforce intro:InitBlockRed)
@@ -956,18 +956,18 @@ next
     qed
   qed
 next
-  case (WTrtSeq E h e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2)
+  case (WTrtSeq E h e\<^sub>1 T\<^sub>1 e\<^sub>2 T\<^sub>2)
   show ?case
   proof cases
-    assume "final e\<^isub>1"
+    assume "final e\<^sub>1"
     thus ?thesis
       by(fast elim:finalE intro:intro:RedSeq red_reds.SeqThrow)
   next
-    assume "\<not> final e\<^isub>1" with WTrtSeq show ?thesis
+    assume "\<not> final e\<^sub>1" with WTrtSeq show ?thesis
       by simp (blast intro:SeqRed)
   qed
 next
-  case (WTrtCond E h e e\<^isub>1 T e\<^isub>2)
+  case (WTrtCond E h e e\<^sub>1 T e\<^sub>2)
   have wt: "P,E,h \<turnstile> e : Boolean" by fact
   show ?case
   proof cases

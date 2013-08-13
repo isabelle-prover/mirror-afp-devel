@@ -276,12 +276,12 @@ and "invariant inv0 succs"
 and "\<forall>x \<in> set ws. inv0 x"
 and "!!x. inv0 x \<Longrightarrow> I(f x)"
 and "SI s"
-shows "set_of s' =\<^isub>\<preceq>
+shows "set_of s' =\<^sub>\<preceq>
   f ` {x : (Rel succs)^* `` (set ws). P x} \<union> set_of s"
 apply(insert assms(1))
 unfolding worklist_tree_coll_aux_def
 apply(drule worklist_tree_rule2[where I = inv0 and S = SI and
-  P = "%ws s s'. SI s \<longrightarrow> set_of s' =\<^isub>\<preceq> f ` {x : set ws. P x} Un set_of s",
+  P = "%ws s s'. SI s \<longrightarrow> set_of s' =\<^sub>\<preceq> f ` {x : set ws. P x} Un set_of s",
   OF _ assms(2,3,5)])
    apply(simp add: SI_insert_mod2 assms(4))
   apply(clarsimp)
@@ -311,17 +311,17 @@ done
 lemma worklist_tree_coll_equiv:
   "worklist_tree_coll succs P f ws = Some s' \<Longrightarrow> invariant inv0 succs
    \<Longrightarrow> \<forall>x \<in> set ws. inv0 x \<Longrightarrow> (!!x. inv0 x \<Longrightarrow> I(f x))
-   \<Longrightarrow> set_of s' =\<^isub>\<preceq> f ` {x : (Rel succs)^* `` (set ws). P x}"
+   \<Longrightarrow> set_of s' =\<^sub>\<preceq> f ` {x : (Rel succs)^* `` (set ws). P x}"
 unfolding worklist_tree_coll_def
 apply(drule (2) worklist_tree_coll_aux_equiv)
 apply(auto simp: set_of_empty SI_empty)
 done
 
 lemma worklist_tree_coll_aux_subseteq:
-  "worklist_tree_coll_aux succs P f ws t\<^isub>0 = Some t \<Longrightarrow>
+  "worklist_tree_coll_aux succs P f ws t\<^sub>0 = Some t \<Longrightarrow>
   invariant inv0 succs \<Longrightarrow>  ALL g : set ws. inv0 g \<Longrightarrow>
-  (!!x. inv0 x \<Longrightarrow> I(f x)) \<Longrightarrow> SI t\<^isub>0 \<Longrightarrow>
-  set_of t \<subseteq> set_of t\<^isub>0 \<union> f ` {h : (Rel succs)^* `` set ws. P h}"
+  (!!x. inv0 x \<Longrightarrow> I(f x)) \<Longrightarrow> SI t\<^sub>0 \<Longrightarrow>
+  set_of t \<subseteq> set_of t\<^sub>0 \<union> f ` {h : (Rel succs)^* `` set ws. P h}"
 unfolding worklist_tree_coll_aux_def
 apply(drule worklist_tree_rule2[where I = inv0 and S = SI and P =
   "%ws t t'. set_of t' \<subseteq> set_of t \<union> f ` {g \<in> set ws. P g}"])

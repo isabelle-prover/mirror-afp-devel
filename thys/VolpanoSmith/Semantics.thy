@@ -32,13 +32,13 @@ text {* Note: we assume that only type correct expressions are regarded
   However there is [yet] no typing system *}
 
 fun binop :: "bop \<Rightarrow> val \<Rightarrow> val \<Rightarrow> val option"
-where "binop Eq v\<^isub>1 v\<^isub>2               = Some(Bool(v\<^isub>1 = v\<^isub>2))"
-  | "binop And (Bool b\<^isub>1) (Bool b\<^isub>2)  = Some(Bool(b\<^isub>1 \<and> b\<^isub>2))"
-  | "binop Less (Intg i\<^isub>1) (Intg i\<^isub>2) = Some(Bool(i\<^isub>1 < i\<^isub>2))"
-  | "binop Add (Intg i\<^isub>1) (Intg i\<^isub>2)  = Some(Intg(i\<^isub>1 + i\<^isub>2))"
-  | "binop Sub (Intg i\<^isub>1) (Intg i\<^isub>2)  = Some(Intg(i\<^isub>1 - i\<^isub>2))"
+where "binop Eq v\<^sub>1 v\<^sub>2               = Some(Bool(v\<^sub>1 = v\<^sub>2))"
+  | "binop And (Bool b\<^sub>1) (Bool b\<^sub>2)  = Some(Bool(b\<^sub>1 \<and> b\<^sub>2))"
+  | "binop Less (Intg i\<^sub>1) (Intg i\<^sub>2) = Some(Bool(i\<^sub>1 < i\<^sub>2))"
+  | "binop Add (Intg i\<^sub>1) (Intg i\<^sub>2)  = Some(Intg(i\<^sub>1 + i\<^sub>2))"
+  | "binop Sub (Intg i\<^sub>1) (Intg i\<^sub>2)  = Some(Intg(i\<^sub>1 - i\<^sub>2))"
 
-  | "binop bop v\<^isub>1 v\<^isub>2                = Some(Intg(0))"
+  | "binop bop v\<^sub>1 v\<^sub>2                = Some(Intg(0))"
 
 
 datatype com
@@ -67,9 +67,9 @@ text {* @{text interpret} silently assumes type correct expressions,
 fun "interpret" :: "expr \<Rightarrow> state \<Rightarrow> val option" ("\<lbrakk>_\<rbrakk>_")
 where Val: "\<lbrakk>Val v\<rbrakk> s = Some v"
   | Var: "\<lbrakk>Var V\<rbrakk> s = s V"
-  | BinOp: "\<lbrakk>e\<^isub>1\<guillemotleft>bop\<guillemotright>e\<^isub>2\<rbrakk> s = (case \<lbrakk>e\<^isub>1\<rbrakk> s of None \<Rightarrow> None
-    | Some v\<^isub>1 \<Rightarrow> (case \<lbrakk>e\<^isub>2\<rbrakk> s of None \<Rightarrow> None
-                           | Some v\<^isub>2 \<Rightarrow> binop bop v\<^isub>1 v\<^isub>2))"
+  | BinOp: "\<lbrakk>e\<^sub>1\<guillemotleft>bop\<guillemotright>e\<^sub>2\<rbrakk> s = (case \<lbrakk>e\<^sub>1\<rbrakk> s of None \<Rightarrow> None
+    | Some v\<^sub>1 \<Rightarrow> (case \<lbrakk>e\<^sub>2\<rbrakk> s of None \<Rightarrow> None
+                           | Some v\<^sub>2 \<Rightarrow> binop bop v\<^sub>1 v\<^sub>2))"
 
 subsection {* Small Step Semantics *}
 
@@ -82,16 +82,16 @@ where
   "\<langle>V:=e,s\<rangle> \<rightarrow> \<langle>Skip,s(V:=(\<lbrakk>e\<rbrakk> s))\<rangle>"
 
   | SeqRed:
-  "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s'\<rangle> \<Longrightarrow> \<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>1';;c\<^isub>2,s'\<rangle>"
+  "\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s'\<rangle> \<Longrightarrow> \<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>1';;c\<^sub>2,s'\<rangle>"
 
   | RedSeq:
-  "\<langle>Skip;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<rangle>"
+  "\<langle>Skip;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<rangle>"
 
   | RedCondTrue:
-  "\<lbrakk>b\<rbrakk> s = Some true \<Longrightarrow> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>1,s\<rangle>"
+  "\<lbrakk>b\<rbrakk> s = Some true \<Longrightarrow> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>1,s\<rangle>"
 
   | RedCondFalse:
-  "\<lbrakk>b\<rbrakk> s = Some false \<Longrightarrow> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<rangle>"
+  "\<lbrakk>b\<rbrakk> s = Some false \<Longrightarrow> \<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<rangle>"
 
   | RedWhileTrue:
   "\<lbrakk>b\<rbrakk> s = Some true \<Longrightarrow> \<langle>while (b) c,s\<rangle> \<rightarrow> \<langle>c;;while (b) c,s\<rangle>"
@@ -118,62 +118,62 @@ proof(induct "V:=e" s rule:converse_rtranclp_induct2)
 qed
 
 lemma Seq2_reds:
-  "\<langle>Skip;;c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<langle>c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-by(induct c=="Skip;;c\<^isub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
+  "\<langle>Skip;;c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<langle>c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+by(induct c=="Skip;;c\<^sub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
 
 lemma Seq_reds:
-  assumes "\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-  obtains s'' where "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle>" and "\<langle>c\<^isub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+  assumes "\<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+  obtains s'' where "\<langle>c\<^sub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle>" and "\<langle>c\<^sub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
 proof -
-  have "\<exists>s''. \<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^isub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+  have "\<exists>s''. \<langle>c\<^sub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^sub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
   proof -
     { fix c c'
-      assume "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>" and "c = c\<^isub>1;;c\<^isub>2" and "c' = Skip"
-      hence "\<exists>s''. \<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^isub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-      proof(induct arbitrary:c\<^isub>1 rule:converse_rtranclp_induct2)
+      assume "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>" and "c = c\<^sub>1;;c\<^sub>2" and "c' = Skip"
+      hence "\<exists>s''. \<langle>c\<^sub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^sub>2,s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+      proof(induct arbitrary:c\<^sub>1 rule:converse_rtranclp_induct2)
         case refl thus ?case by simp
       next
         case (step c s c'' s'')
-        note IH = `\<And>c\<^isub>1. \<lbrakk>c'' = c\<^isub>1;;c\<^isub>2; c' = Skip\<rbrakk> 
-          \<Longrightarrow> \<exists>sx. \<langle>c\<^isub>1,s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>`
+        note IH = `\<And>c\<^sub>1. \<lbrakk>c'' = c\<^sub>1;;c\<^sub>2; c' = Skip\<rbrakk> 
+          \<Longrightarrow> \<exists>sx. \<langle>c\<^sub>1,s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^sub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>`
         from step
-        have "\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>" by simp
-        hence "(c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s'') \<or> 
-          (\<exists>c\<^isub>1'. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle> \<and> c'' = c\<^isub>1';;c\<^isub>2)"
+        have "\<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>" by simp
+        hence "(c\<^sub>1 = Skip \<and> c'' = c\<^sub>2 \<and> s = s'') \<or> 
+          (\<exists>c\<^sub>1'. \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle> \<and> c'' = c\<^sub>1';;c\<^sub>2)"
           by(auto elim:red.cases)
         thus ?case
         proof
-          assume "c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s''"
+          assume "c\<^sub>1 = Skip \<and> c'' = c\<^sub>2 \<and> s = s''"
           with `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>` `c' = Skip`
           show ?thesis by auto
         next
-          assume "\<exists>c\<^isub>1'. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle> \<and> c'' = c\<^isub>1';;c\<^isub>2"
-          then obtain c\<^isub>1' where "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>" and "c'' = c\<^isub>1';;c\<^isub>2" by blast
-          from IH[OF `c'' = c\<^isub>1';;c\<^isub>2` `c' = Skip`]
-          obtain sx where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+          assume "\<exists>c\<^sub>1'. \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle> \<and> c'' = c\<^sub>1';;c\<^sub>2"
+          then obtain c\<^sub>1' where "\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle>" and "c'' = c\<^sub>1';;c\<^sub>2" by blast
+          from IH[OF `c'' = c\<^sub>1';;c\<^sub>2` `c' = Skip`]
+          obtain sx where "\<langle>c\<^sub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" and "\<langle>c\<^sub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
             by blast
-          from `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>` `\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>`
-          have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" by(auto intro:converse_rtranclp_into_rtranclp)
-          with `\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by auto
+          from `\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle>` `\<langle>c\<^sub>1',s''\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>`
+          have "\<langle>c\<^sub>1,s\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle>" by(auto intro:converse_rtranclp_into_rtranclp)
+          with `\<langle>c\<^sub>2,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by auto
         qed
       qed }
-    with `\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by simp
+    with `\<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?thesis by simp
   qed
   with that show ?thesis by blast
 qed
 
 
 lemma Cond_True_or_False:
-  "\<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some true \<or> \<lbrakk>b\<rbrakk> s = Some false"
-by(induct c=="if (b) c\<^isub>1 else c\<^isub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
+  "\<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some true \<or> \<lbrakk>b\<rbrakk> s = Some false"
+by(induct c=="if (b) c\<^sub>1 else c\<^sub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
 
 lemma CondTrue_reds:
-  "\<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some true \<Longrightarrow> \<langle>c\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-by(induct c=="if (b) c\<^isub>1 else c\<^isub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
+  "\<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some true \<Longrightarrow> \<langle>c\<^sub>1,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+by(induct c=="if (b) c\<^sub>1 else c\<^sub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
 
 lemma CondFalse_reds:
-  "\<langle>if (b) c\<^isub>1 else c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some false \<Longrightarrow> \<langle>c\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-by(induct c=="if (b) c\<^isub>1 else c\<^isub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
+  "\<langle>if (b) c\<^sub>1 else c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some false \<Longrightarrow> \<langle>c\<^sub>2,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
+by(induct c=="if (b) c\<^sub>1 else c\<^sub>2" s rule:converse_rtranclp_induct2)(auto elim:red.cases)
 
 lemma WhileFalse_reds: 
   "\<langle>while (b) cx,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some false \<Longrightarrow> s = s'"
@@ -201,36 +201,36 @@ where red_n_Base: "\<langle>c,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle
      | red_n_Rec: "\<lbrakk>\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>; \<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>c',s'\<rangle>\<rbrakk> \<Longrightarrow> \<langle>c,s\<rangle> \<rightarrow>\<^bsup>Suc n\<^esup> \<langle>c',s'\<rangle>"
 
 
-lemma Seq_red_nE: assumes "\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>"
-  obtains i j s'' where "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle>" and "\<langle>c\<^isub>2,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
+lemma Seq_red_nE: assumes "\<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>"
+  obtains i j s'' where "\<langle>c\<^sub>1,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle>" and "\<langle>c\<^sub>2,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
   and "n = i + j + 1"
 proof -
-  from `\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` 
-  have "\<exists>i j s''. \<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^isub>2,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 1"
-  proof(induct "c\<^isub>1;;c\<^isub>2" s n "Skip" s' arbitrary:c\<^isub>1 rule:red_n.induct)
+  from `\<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` 
+  have "\<exists>i j s''. \<langle>c\<^sub>1,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^sub>2,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 1"
+  proof(induct "c\<^sub>1;;c\<^sub>2" s n "Skip" s' arbitrary:c\<^sub>1 rule:red_n.induct)
     case (red_n_Rec s c'' s'' n s')
-    note IH = `\<And>c\<^isub>1. c'' = c\<^isub>1;;c\<^isub>2
-      \<Longrightarrow> \<exists>i j sx. \<langle>c\<^isub>1,s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 1`
-    from `\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>`
-    have "(c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s'') \<or> 
-      (\<exists>c\<^isub>1'. c'' = c\<^isub>1';;c\<^isub>2 \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>)"
-      by(induct "c\<^isub>1;;c\<^isub>2" _ _ _ rule:red_induct) auto
+    note IH = `\<And>c\<^sub>1. c'' = c\<^sub>1;;c\<^sub>2
+      \<Longrightarrow> \<exists>i j sx. \<langle>c\<^sub>1,s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^sub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 1`
+    from `\<langle>c\<^sub>1;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>`
+    have "(c\<^sub>1 = Skip \<and> c'' = c\<^sub>2 \<and> s = s'') \<or> 
+      (\<exists>c\<^sub>1'. c'' = c\<^sub>1';;c\<^sub>2 \<and> \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle>)"
+      by(induct "c\<^sub>1;;c\<^sub>2" _ _ _ rule:red_induct) auto
     thus ?case
     proof
-      assume "c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s''"
-      hence "c\<^isub>1 = Skip" and "c'' = c\<^isub>2" and "s = s''" by simp_all
-      from `c\<^isub>1 = Skip` have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle>Skip,s\<rangle>" by(fastforce intro:red_n_Base)
-      with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` `c'' = c\<^isub>2` `s = s''`
+      assume "c\<^sub>1 = Skip \<and> c'' = c\<^sub>2 \<and> s = s''"
+      hence "c\<^sub>1 = Skip" and "c'' = c\<^sub>2" and "s = s''" by simp_all
+      from `c\<^sub>1 = Skip` have "\<langle>c\<^sub>1,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle>Skip,s\<rangle>" by(fastforce intro:red_n_Base)
+      with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` `c'' = c\<^sub>2` `s = s''`
       show ?thesis by(rule_tac x="0" in exI) auto
     next
-      assume "\<exists>c\<^isub>1'. c'' = c\<^isub>1';;c\<^isub>2 \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>"
-      then obtain c\<^isub>1' where "c'' = c\<^isub>1';;c\<^isub>2" and "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>" by blast
-      from IH[OF `c'' = c\<^isub>1';;c\<^isub>2`] obtain i j sx
-        where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
+      assume "\<exists>c\<^sub>1'. c'' = c\<^sub>1';;c\<^sub>2 \<and> \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle>"
+      then obtain c\<^sub>1' where "c'' = c\<^sub>1';;c\<^sub>2" and "\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle>" by blast
+      from IH[OF `c'' = c\<^sub>1';;c\<^sub>2`] obtain i j sx
+        where "\<langle>c\<^sub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>c\<^sub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
         and "n = i + j + 1" by blast
-      from `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>` `\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>`
-      have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>Suc i\<^esup> \<langle>Skip,sx\<rangle>" by(rule red_n.red_n_Rec)
-      with `\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>` `n = i + j + 1` show ?thesis
+      from `\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s''\<rangle>` `\<langle>c\<^sub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>`
+      have "\<langle>c\<^sub>1,s\<rangle> \<rightarrow>\<^bsup>Suc i\<^esup> \<langle>Skip,sx\<rangle>" by(rule red_n.red_n_Rec)
+      with `\<langle>c\<^sub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>` `n = i + j + 1` show ?thesis
         by(rule_tac x="Suc i" in exI) auto
     qed
   qed
@@ -323,38 +323,38 @@ by(auto dest:red_n_to_reds)
 
 
 lemma red_det:
-  "\<lbrakk>\<langle>c,s\<rangle> \<rightarrow> \<langle>c\<^isub>1,s\<^isub>1\<rangle>; \<langle>c,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<^isub>2\<rangle>\<rbrakk> \<Longrightarrow> c\<^isub>1 = c\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2"
-proof(induct arbitrary:c\<^isub>2 rule:red_induct)
-  case (SeqRed c\<^isub>1 s c\<^isub>1' s' c\<^isub>2')
-  note IH = `\<And>c\<^isub>2. \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<^isub>2\<rangle> \<Longrightarrow> c\<^isub>1' = c\<^isub>2 \<and> s' = s\<^isub>2`
-  from `\<langle>c\<^isub>1;;c\<^isub>2',s\<rangle> \<rightarrow> \<langle>c\<^isub>2,s\<^isub>2\<rangle>` have "c\<^isub>1 = Skip \<or> (\<exists>cx. c\<^isub>2 = cx;;c\<^isub>2' \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>)"
+  "\<lbrakk>\<langle>c,s\<rangle> \<rightarrow> \<langle>c\<^sub>1,s\<^sub>1\<rangle>; \<langle>c,s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<^sub>2\<rangle>\<rbrakk> \<Longrightarrow> c\<^sub>1 = c\<^sub>2 \<and> s\<^sub>1 = s\<^sub>2"
+proof(induct arbitrary:c\<^sub>2 rule:red_induct)
+  case (SeqRed c\<^sub>1 s c\<^sub>1' s' c\<^sub>2')
+  note IH = `\<And>c\<^sub>2. \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<^sub>2\<rangle> \<Longrightarrow> c\<^sub>1' = c\<^sub>2 \<and> s' = s\<^sub>2`
+  from `\<langle>c\<^sub>1;;c\<^sub>2',s\<rangle> \<rightarrow> \<langle>c\<^sub>2,s\<^sub>2\<rangle>` have "c\<^sub>1 = Skip \<or> (\<exists>cx. c\<^sub>2 = cx;;c\<^sub>2' \<and> \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^sub>2\<rangle>)"
     by(fastforce elim:red.cases)
   thus ?case
   proof
-    assume "c\<^isub>1 = Skip"
-    with `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s'\<rangle>` have False by(fastforce elim:red.cases)
+    assume "c\<^sub>1 = Skip"
+    with `\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>c\<^sub>1',s'\<rangle>` have False by(fastforce elim:red.cases)
     thus ?thesis by simp
   next
-    assume "\<exists>cx. c\<^isub>2 = cx;;c\<^isub>2' \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>"
-    then obtain cx where "c\<^isub>2 = cx;;c\<^isub>2'" and "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>" by blast
-    from IH[OF `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^isub>2\<rangle>`] have "c\<^isub>1' = cx \<and> s' = s\<^isub>2" .
-    with `c\<^isub>2 = cx;;c\<^isub>2'` show ?thesis by simp
+    assume "\<exists>cx. c\<^sub>2 = cx;;c\<^sub>2' \<and> \<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^sub>2\<rangle>"
+    then obtain cx where "c\<^sub>2 = cx;;c\<^sub>2'" and "\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^sub>2\<rangle>" by blast
+    from IH[OF `\<langle>c\<^sub>1,s\<rangle> \<rightarrow> \<langle>cx,s\<^sub>2\<rangle>`] have "c\<^sub>1' = cx \<and> s' = s\<^sub>2" .
+    with `c\<^sub>2 = cx;;c\<^sub>2'` show ?thesis by simp
   qed
 qed (fastforce elim:red.cases)+
 
 
 theorem reds_det:
-  "\<lbrakk>\<langle>c,s\<rangle> \<rightarrow>* \<langle>Skip,s\<^isub>1\<rangle>; \<langle>c,s\<rangle> \<rightarrow>* \<langle>Skip,s\<^isub>2\<rangle>\<rbrakk> \<Longrightarrow> s\<^isub>1 = s\<^isub>2"
+  "\<lbrakk>\<langle>c,s\<rangle> \<rightarrow>* \<langle>Skip,s\<^sub>1\<rangle>; \<langle>c,s\<rangle> \<rightarrow>* \<langle>Skip,s\<^sub>2\<rangle>\<rbrakk> \<Longrightarrow> s\<^sub>1 = s\<^sub>2"
 proof(induct rule:converse_rtranclp_induct2)
   case refl
-  from `\<langle>Skip,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Skip,s\<^isub>2\<rangle>` show ?case
+  from `\<langle>Skip,s\<^sub>1\<rangle> \<rightarrow>* \<langle>Skip,s\<^sub>2\<rangle>` show ?case
     by -(erule converse_rtranclpE,auto elim:red.cases)
 next
   case (step c'' s'' c' s')
-  note IH = `\<langle>c',s'\<rangle> \<rightarrow>* \<langle>Skip,s\<^isub>2\<rangle> \<Longrightarrow> s\<^isub>1 = s\<^isub>2`
+  note IH = `\<langle>c',s'\<rangle> \<rightarrow>* \<langle>Skip,s\<^sub>2\<rangle> \<Longrightarrow> s\<^sub>1 = s\<^sub>2`
   from step have "\<langle>c'',s''\<rangle> \<rightarrow> \<langle>c',s'\<rangle>"
     by simp
-  from `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>Skip,s\<^isub>2\<rangle>` this have "\<langle>c',s'\<rangle> \<rightarrow>* \<langle>Skip,s\<^isub>2\<rangle>"
+  from `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>Skip,s\<^sub>2\<rangle>` this have "\<langle>c',s'\<rangle> \<rightarrow>* \<langle>Skip,s\<^sub>2\<rangle>"
     by -(erule converse_rtranclpE,auto elim:red.cases dest:red_det)
   from IH[OF this] show ?thesis .
 qed

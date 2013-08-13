@@ -27,7 +27,7 @@ where
 
 definition is_bcv :: "'s ord \<Rightarrow> 's \<Rightarrow> 's step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> ('s list \<Rightarrow> 's list) \<Rightarrow> bool"
 where
-  "is_bcv r T step n A bcv \<longleftrightarrow> (\<forall>\<tau>s\<^isub>0 \<in> list n A.
-  (\<forall>p<n. (bcv \<tau>s\<^isub>0)!p \<noteq> T) = (\<exists>\<tau>s \<in> list n A. \<tau>s\<^isub>0 [\<sqsubseteq>\<^sub>r] \<tau>s \<and> wt_step r T step \<tau>s))"
+  "is_bcv r T step n A bcv \<longleftrightarrow> (\<forall>\<tau>s\<^sub>0 \<in> list n A.
+  (\<forall>p<n. (bcv \<tau>s\<^sub>0)!p \<noteq> T) = (\<exists>\<tau>s \<in> list n A. \<tau>s\<^sub>0 [\<sqsubseteq>\<^sub>r] \<tau>s \<and> wt_step r T step \<tau>s))"
 
 end

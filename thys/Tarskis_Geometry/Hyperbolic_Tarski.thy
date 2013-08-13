@@ -121,10 +121,10 @@ lemma conic_sgn_abs:
 proof -
   from `v \<noteq> 0` and proj2_rep_abs2
   obtain j where "j \<noteq> 0" and "proj2_rep (proj2_abs v) = j *\<^sub>R v" by auto
-  from `j \<noteq> 0` have "j\<twosuperior> > 0" by simp
+  from `j \<noteq> 0` have "j\<^sup>2 > 0" by simp
 
   from `proj2_rep (proj2_abs v) = j *\<^sub>R v`
-  have "conic_sgn (proj2_abs v) = sgn (j\<twosuperior> * (v \<bullet> (M *v v)))"
+  have "conic_sgn (proj2_abs v) = sgn (j\<^sup>2 * (v \<bullet> (M *v v)))"
     unfolding conic_sgn_def
     by (simp add:
       matrix_scalar_vector_ac
@@ -132,8 +132,8 @@ proof -
       dot_scaleR_mult
       power2_eq_square
       algebra_simps)
-  also have "\<dots> = sgn (j\<twosuperior>) * sgn (v \<bullet> (M *v v))" by (rule sgn_times)
-  also from `j\<twosuperior> > 0` have "\<dots> = sgn (v \<bullet> (M *v v))" by simp
+  also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_times)
+  also from `j\<^sup>2 > 0` have "\<dots> = sgn (v \<bullet> (M *v v))" by simp
   finally show "conic_sgn (proj2_abs v) = sgn (v \<bullet> (M *v v))" .
 qed
 
@@ -170,7 +170,7 @@ proof -
   from K2_centre_non_zero and proj2_rep_abs2
   obtain k where "k \<noteq> 0" and "proj2_rep K2_centre = k *\<^sub>R vector [0,0,1]"
     by (unfold K2_centre_def) auto
-  from `k \<noteq> 0` have "0 < k\<twosuperior>" by simp
+  from `k \<noteq> 0` have "0 < k\<^sup>2" by simp
   with `proj2_rep K2_centre = k *\<^sub>R vector [0,0,1]`
   show "K2_centre \<in> K2"
     unfolding K2_def
@@ -190,7 +190,7 @@ lemma K2_imp_M_neg:
 
 lemma M_neg_imp_z_squared_big:
   assumes "v \<bullet> (M *v v) < 0"
-  shows "(v$3)\<twosuperior> > (v$1)\<twosuperior> + (v$2)\<twosuperior>"
+  shows "(v$3)\<^sup>2 > (v$1)\<^sup>2 + (v$2)\<^sup>2"
   using `v \<bullet> (M *v v) < 0`
   unfolding matrix_vector_mult_def and M_def and vector_def
   by (simp add: inner_vec_def setsum_3 power2_eq_square)
@@ -199,9 +199,9 @@ lemma M_neg_imp_z_non_zero:
   assumes "v \<bullet> (M *v v) < 0"
   shows "v$3 \<noteq> 0"
 proof -
-  have "(v$1)\<twosuperior> + (v$2)\<twosuperior> \<ge> 0" by simp
+  have "(v$1)\<^sup>2 + (v$2)\<^sup>2 \<ge> 0" by simp
   with M_neg_imp_z_squared_big [of v] and `v \<bullet> (M *v v) < 0`
-  have "(v$3)\<twosuperior> > 0" by arith
+  have "(v$3)\<^sup>2 > 0" by arith
   thus "v$3 \<noteq> 0" by simp
 qed
 
@@ -299,7 +299,7 @@ proof -
   hence "?v$3 = 0"
     unfolding inner_vec_def and vector_def
     by (simp add: setsum_3)
-  hence "?v \<bullet> (M *v ?v) = (?v$1)\<twosuperior> + (?v$2)\<twosuperior>"
+  hence "?v \<bullet> (M *v ?v) = (?v$1)\<^sup>2 + (?v$2)\<^sup>2"
     unfolding inner_vec_def
       and power2_eq_square
       and matrix_vector_mult_def
@@ -310,10 +310,10 @@ proof -
 
   have "?v \<noteq> 0" by (rule proj2_rep_non_zero)
   with `?v$3 = 0` have "?v$1 \<noteq> 0 \<or> ?v$2 \<noteq> 0" by (simp add: vec_eq_iff forall_3)
-  hence "(?v$1)\<twosuperior> > 0 \<or> (?v$2)\<twosuperior> > 0" by simp
-  with add_sign_intros [of "(?v$1)\<twosuperior>" "(?v$2)\<twosuperior>"]
-  have "(?v$1)\<twosuperior> + (?v$2)\<twosuperior> > 0" by auto
-  with `?v \<bullet> (M *v ?v) = (?v$1)\<twosuperior> + (?v$2)\<twosuperior>`
+  hence "(?v$1)\<^sup>2 > 0 \<or> (?v$2)\<^sup>2 > 0" by simp
+  with add_sign_intros [of "(?v$1)\<^sup>2" "(?v$2)\<^sup>2"]
+  have "(?v$1)\<^sup>2 + (?v$2)\<^sup>2 > 0" by auto
+  with `?v \<bullet> (M *v ?v) = (?v$1)\<^sup>2 + (?v$2)\<^sup>2`
   have "?v \<bullet> (M *v ?v) > 0" by simp
   thus "conic_sgn p = 1"
     unfolding conic_sgn_def
@@ -414,13 +414,13 @@ proof -
     by (simp add: proj2_abs_rep)
 qed
 
-lemma norm_M: "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)\<twosuperior> - 1"
+lemma norm_M: "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)\<^sup>2 - 1"
 proof -
-  have "(norm v)\<twosuperior> = (v$1)\<twosuperior> + (v$2)\<twosuperior>"
+  have "(norm v)\<^sup>2 = (v$1)\<^sup>2 + (v$2)\<^sup>2"
     unfolding norm_vec_def
       and setL2_def
     by (simp add: setsum_2)
-  thus "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)\<twosuperior> - 1"
+  thus "(vector2_append1 v) \<bullet> (M *v vector2_append1 v) = (norm v)\<^sup>2 - 1"
     unfolding vector2_append1_def
       and inner_vec_def
       and matrix_vector_mult_def
@@ -729,7 +729,7 @@ proof -
 
   from real_less_rsqrt [of "norm v" 1]
     and less_one_imp_sqr_less_one [of "norm v"]
-  have "norm v < 1 \<longleftrightarrow> (norm v)\<twosuperior> < 1" by auto
+  have "norm v < 1 \<longleftrightarrow> (norm v)\<^sup>2 < 1" by auto
   hence "norm v < 1 \<longleftrightarrow> ?v' \<bullet> (M *v ?v') < 0" by (simp add: norm_M)
   with `?v' \<noteq> 0` have "norm v < 1 \<longleftrightarrow> proj2_abs ?v' \<in> K2" by (subst K2_abs)
   thus "norm v < 1 \<longleftrightarrow> proj2_pt v \<in> hyp2" by (unfold proj2_pt_def)
@@ -742,7 +742,7 @@ proof -
   have "?v' \<noteq> 0" by (rule vector2_append1_non_zero)
 
   from real_sqrt_unique [of "norm v" 1]
-  have "norm v = 1 \<longleftrightarrow> (norm v)\<twosuperior> = 1" by auto
+  have "norm v = 1 \<longleftrightarrow> (norm v)\<^sup>2 = 1" by auto
   hence "norm v = 1 \<longleftrightarrow> ?v' \<bullet> (M *v ?v') = 0" by (simp add: norm_M)
   with `?v' \<noteq> 0` have "norm v = 1 \<longleftrightarrow> proj2_abs ?v' \<in> S" by (subst S_abs)
   thus "norm v = 1 \<longleftrightarrow> proj2_pt v \<in> S" by (unfold proj2_pt_def)
@@ -835,10 +835,10 @@ proof -
   have "?v \<noteq> 0" by (simp add: vec_eq_iff forall_3 vector_3)
   with `a \<in> hyp2` and `a = proj2_abs ?v`
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_abs)
-  hence "x\<twosuperior> < 1"
+  hence "x\<^sup>2 < 1"
     unfolding M_def matrix_vector_mult_def inner_vec_def
     by (simp add: setsum_3 vector_3 power2_eq_square)
-  with real_sqrt_abs [of x] and real_sqrt_less_iff [of "x\<twosuperior>" 1]
+  with real_sqrt_abs [of x] and real_sqrt_less_iff [of "x\<^sup>2" 1]
   have "\<bar>x\<bar> < 1" by simp
   with `a = proj2_abs ?v`
   show "\<exists> x. \<bar>x\<bar> < 1 \<and> a = proj2_abs (vector [x,0,1])"
@@ -857,10 +857,10 @@ proof -
   have "?v \<noteq> 0" by (simp add: vec_eq_iff forall_3 vector_3)
   with `a \<in> hyp2` and `a = proj2_abs ?v`
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_abs)
-  hence "y\<twosuperior> < 1"
+  hence "y\<^sup>2 < 1"
     unfolding M_def matrix_vector_mult_def inner_vec_def
     by (simp add: setsum_3 vector_3 power2_eq_square)
-  with real_sqrt_abs [of y] and real_sqrt_less_iff [of "y\<twosuperior>" 1]
+  with real_sqrt_abs [of y] and real_sqrt_less_iff [of "y\<^sup>2" 1]
   have "\<bar>y\<bar> < 1" by simp
   with `a = proj2_abs ?v`
   show "\<exists> y. \<bar>y\<bar> < 1 \<and> a = proj2_abs (vector [0,y,1])"
@@ -991,12 +991,12 @@ subsection {* $K$-isometries map the interior of the conic to itself *}
 lemma collinear_quadratic:
   assumes "t = i *\<^sub>R a + r"
   shows "t \<bullet> (M *v t) =
-  (a \<bullet> (M *v a)) * i\<twosuperior> + 2 * (a \<bullet> (M *v r)) * i + r \<bullet> (M *v r)"
+  (a \<bullet> (M *v a)) * i\<^sup>2 + 2 * (a \<bullet> (M *v r)) * i + r \<bullet> (M *v r)"
 proof -
   from M_reverse have "i * (a \<bullet> (M *v r)) = i * (r \<bullet> (M *v a))" by simp
   with `t = i *\<^sub>R a + r`
   show "t \<bullet> (M *v t) =
-    (a \<bullet> (M *v a)) * i\<twosuperior> + 2 * (a \<bullet> (M *v r)) * i + r \<bullet> (M *v r)"
+    (a \<bullet> (M *v a)) * i\<^sup>2 + 2 * (a \<bullet> (M *v r)) * i + r \<bullet> (M *v r)"
     by (simp add:
       inner_add_left
       matrix_vector_right_distrib
@@ -1012,7 +1012,7 @@ qed
 lemma S_quadratic':
   assumes "p \<noteq> 0" and "q \<noteq> 0" and "proj2_abs p \<noteq> proj2_abs q"
   shows "proj2_abs (k *\<^sub>R p + q) \<in> S
-  \<longleftrightarrow> p \<bullet> (M *v p) * k\<twosuperior> + p \<bullet> (M *v q) * 2 * k + q \<bullet> (M *v q) = 0"
+  \<longleftrightarrow> p \<bullet> (M *v p) * k\<^sup>2 + p \<bullet> (M *v q) * 2 * k + q \<bullet> (M *v q) = 0"
 proof -
   let ?r = "k *\<^sub>R p + q"
   from `p \<noteq> 0` and `q \<noteq> 0` and `proj2_abs p \<noteq> proj2_abs q`
@@ -1021,14 +1021,14 @@ proof -
   hence "proj2_abs ?r \<in> S \<longleftrightarrow> ?r \<bullet> (M *v ?r) = 0" by (rule S_abs)
   with collinear_quadratic [of ?r k p q]
   show "proj2_abs ?r \<in> S
-    \<longleftrightarrow> p \<bullet> (M *v p) * k\<twosuperior> + p \<bullet> (M *v q) * 2 * k + q \<bullet> (M *v q) = 0"
+    \<longleftrightarrow> p \<bullet> (M *v p) * k\<^sup>2 + p \<bullet> (M *v q) * 2 * k + q \<bullet> (M *v q) = 0"
     by (simp add: dot_lmul_matrix [symmetric] algebra_simps)
 qed
 
 lemma S_quadratic:
   assumes "p \<noteq> q" and "r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)"
   shows "r \<in> S
-  \<longleftrightarrow> proj2_rep p \<bullet> (M *v proj2_rep p) * k\<twosuperior>
+  \<longleftrightarrow> proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2
       + proj2_rep p \<bullet> (M *v proj2_rep q) * 2 * k
       + proj2_rep q \<bullet> (M *v proj2_rep q)
     = 0"
@@ -1041,12 +1041,12 @@ proof -
   from `p \<noteq> q` have "proj2_abs ?u \<noteq> proj2_abs ?v" by (simp add: proj2_abs_rep)
   with `?u \<noteq> 0` and `?v \<noteq> 0` and `r = proj2_abs ?w`
   show "r \<in> S
-    \<longleftrightarrow> ?u \<bullet> (M *v ?u) * k\<twosuperior> + ?u \<bullet> (M *v ?v) * 2 * k + ?v \<bullet> (M *v ?v) = 0"
+    \<longleftrightarrow> ?u \<bullet> (M *v ?u) * k\<^sup>2 + ?u \<bullet> (M *v ?v) * 2 * k + ?v \<bullet> (M *v ?v) = 0"
     by (simp add: S_quadratic')
 qed
 
 definition quarter_discrim :: "real^3 \<Rightarrow> real^3 \<Rightarrow> real" where
-  "quarter_discrim p q \<equiv> (p \<bullet> (M *v q))\<twosuperior> - p \<bullet> (M *v p) * (q \<bullet> (M *v q))"
+  "quarter_discrim p q \<equiv> (p \<bullet> (M *v q))\<^sup>2 - p \<bullet> (M *v p) * (q \<bullet> (M *v q))"
 
 lemma quarter_discrim_invariant:
   assumes "t = i *\<^sub>R a + r"
@@ -1059,14 +1059,14 @@ proof -
       inner_add_right
       matrix_scalar_vector_ac
       scalar_matrix_vector_assoc [symmetric])
-  hence "(a \<bullet> (M *v t))\<twosuperior> =
-    (a \<bullet> (M *v a))\<twosuperior> * i\<twosuperior> +
+  hence "(a \<bullet> (M *v t))\<^sup>2 =
+    (a \<bullet> (M *v a))\<^sup>2 * i\<^sup>2 +
     2 * (a \<bullet> (M *v a)) * (a \<bullet> (M *v r)) * i +
-    (a \<bullet> (M *v r))\<twosuperior>"
+    (a \<bullet> (M *v r))\<^sup>2"
     by (simp add: power2_eq_square algebra_simps)
   moreover from collinear_quadratic and `t = i *\<^sub>R a + r`
   have "a \<bullet> (M *v a) * (t \<bullet> (M *v t)) =
-    (a \<bullet> (M *v a))\<twosuperior> * i\<twosuperior> +
+    (a \<bullet> (M *v a))\<^sup>2 * i\<^sup>2 +
     2 * (a \<bullet> (M *v a)) * (a \<bullet> (M *v r)) * i +
     a \<bullet> (M *v a) * (r \<bullet> (M *v r))"
     by (simp add: power2_eq_square algebra_simps)
@@ -1086,7 +1086,7 @@ proof -
   have "p \<bullet> (M *v p) < 0" by (subst K2_abs [symmetric])
   hence "p$3 \<noteq> 0" by (rule M_neg_imp_z_non_zero)
   hence "?t$3 = 0" by simp
-  hence "?t \<bullet> (M *v ?t) = (?t$1)\<twosuperior> + (?t$2)\<twosuperior>"
+  hence "?t \<bullet> (M *v ?t) = (?t$1)\<^sup>2 + (?t$2)\<^sup>2"
     unfolding matrix_vector_mult_def and M_def and vector_def
     by (simp add: inner_vec_def setsum_3 power2_eq_square)
 
@@ -1094,15 +1094,15 @@ proof -
   with `q \<noteq> 0` and `?pp \<noteq> ?pq` and dependent_proj2_abs [of p q ?i 1]
   have "?t \<noteq> 0" by auto
   with `?t$3 = 0` have "?t$1 \<noteq> 0 \<or> ?t$2 \<noteq> 0" by (simp add: vec_eq_iff forall_3)
-  hence "(?t$1)\<twosuperior> > 0 \<or> (?t$2)\<twosuperior> > 0" by simp
-  moreover have "(?t$2)\<twosuperior> \<ge> 0" and "(?t$1)\<twosuperior> \<ge> 0" by simp_all
-  ultimately have "(?t$1)\<twosuperior> + (?t$2)\<twosuperior> > 0" by arith
-  with `?t \<bullet> (M *v ?t) = (?t$1)\<twosuperior> + (?t$2)\<twosuperior>` have "?t \<bullet> (M *v ?t) > 0" by simp
+  hence "(?t$1)\<^sup>2 > 0 \<or> (?t$2)\<^sup>2 > 0" by simp
+  moreover have "(?t$2)\<^sup>2 \<ge> 0" and "(?t$1)\<^sup>2 \<ge> 0" by simp_all
+  ultimately have "(?t$1)\<^sup>2 + (?t$2)\<^sup>2 > 0" by arith
+  with `?t \<bullet> (M *v ?t) = (?t$1)\<^sup>2 + (?t$2)\<^sup>2` have "?t \<bullet> (M *v ?t) > 0" by simp
   with mult_neg_pos [of "p \<bullet> (M *v p)"] and `p \<bullet> (M *v p) < 0`
   have "p \<bullet> (M *v p) * (?t \<bullet> (M *v ?t)) < 0" by simp
-  moreover have "(p \<bullet> (M *v ?t))\<twosuperior> \<ge> 0" by simp
+  moreover have "(p \<bullet> (M *v ?t))\<^sup>2 \<ge> 0" by simp
   ultimately
-  have "(p \<bullet> (M *v ?t))\<twosuperior> - p \<bullet> (M *v p) * (?t \<bullet> (M *v ?t)) > 0" by arith
+  have "(p \<bullet> (M *v ?t))\<^sup>2 - p \<bullet> (M *v p) * (?t \<bullet> (M *v ?t)) > 0" by arith
   with quarter_discrim_invariant [of ?t ?i p q]
   show "quarter_discrim p q > 0" by (unfold quarter_discrim_def, simp)
 qed
@@ -1211,8 +1211,8 @@ proof -
     and `?k = (-?b - sqrt (discrim ?a ?b ?c)) / (2 * ?a)`
     and `?a < 0` and discriminant_nonneg [of ?a ?b ?c ?j]
     and discriminant_nonneg [of ?a ?b ?c ?k]
-  have "p \<bullet> (M *v p) * ?j\<twosuperior> + 2 * (p \<bullet> (M *v q)) * ?j + q \<bullet> (M *v q) = 0"
-    and "p \<bullet> (M *v p) * ?k\<twosuperior> + 2 * (p \<bullet> (M *v q)) * ?k + q \<bullet> (M *v q) = 0"
+  have "p \<bullet> (M *v p) * ?j\<^sup>2 + 2 * (p \<bullet> (M *v q)) * ?j + q \<bullet> (M *v q) = 0"
+    and "p \<bullet> (M *v p) * ?k\<^sup>2 + 2 * (p \<bullet> (M *v q)) * ?k + q \<bullet> (M *v q) = 0"
     by (unfold S_intersection_coeffs_defs, auto)
   with `p \<noteq> 0` and `q \<noteq> 0` and `?pp \<noteq> ?pq` and S_quadratic'
   show "S_intersection1 p q \<in> S" and "S_intersection2 p q \<in> S"
@@ -1308,7 +1308,7 @@ proof -
     and proj2_incident_iff [of r p "polar p" q]
   obtain k where "q = proj2_abs (k *\<^sub>R ?u + ?v)" by auto
   with `r \<noteq> p` and `q \<in> S` and S_quadratic
-  have "?u \<bullet> (M *v ?u) * k\<twosuperior> + ?u \<bullet> (M *v ?v) * 2 * k + ?v \<bullet> (M *v ?v) = 0"
+  have "?u \<bullet> (M *v ?u) * k\<^sup>2 + ?u \<bullet> (M *v ?v) * 2 * k + ?v \<bullet> (M *v ?v) = 0"
     by simp
   moreover from `p \<in> S` have "?v \<bullet> (M *v ?v) = 0" by (unfold S_alt_def)
   moreover from `proj2_incident r (polar p)`
@@ -1401,7 +1401,7 @@ proof -
         and proj2_incident_iff [of s t l r]
       obtain i where "r = proj2_abs (i *\<^sub>R ?v + ?w)" by auto
       with `r \<in> S` and `t \<noteq> s` and S_quadratic
-      have "?a * i\<twosuperior> + ?b * i + ?c = 0" by simp
+      have "?a * i\<^sup>2 + ?b * i + ?c = 0" by simp
       with `?a \<noteq> 0` and discriminant_iff have "i = ?j \<or> i = ?k" by simp
       with `r = proj2_abs (i *\<^sub>R ?v + ?w)` have "r = ?p \<or> r = ?q" by auto }
     thus "proj2_incident r l \<longrightarrow> r = ?p \<or> r = ?q" ..
@@ -1526,11 +1526,11 @@ proof -
         obtain k where "q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r)"
           by auto
         from `proj2_rep p \<bullet> (M *v proj2_rep p) > 0`
-        have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<twosuperior> \<ge> 0"
+        have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2 \<ge> 0"
           by (simp add: mult_nonneg_nonneg)
         with `proj2_rep p \<bullet> (M *v proj2_rep ?r) = 0`
           and `proj2_rep ?r \<bullet> (M *v proj2_rep ?r) > 0`
-        have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<twosuperior>
+        have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2
           + proj2_rep p \<bullet> (M *v proj2_rep ?r) * 2 * k
           + proj2_rep ?r \<bullet> (M *v proj2_rep ?r)
           > 0"
@@ -4259,17 +4259,17 @@ proof -
     have "?qd > 0" by (simp add: quarter_discrim_positive)
     thus "?qd \<ge> 0" by simp
   qed
-  with real_sqrt_pow2 [of ?qd] have "?sqd\<twosuperior> = ?qd" by simp
+  with real_sqrt_pow2 [of ?qd] have "?sqd\<^sup>2 = ?qd" by simp
   hence "(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb"
     by (unfold quarter_discrim_def, simp add: algebra_simps power2_eq_square)
 
   from times_divide_times_eq [of
     "?aMb + ?sqd" "?aMb + ?sqd" "?aMb + ?sqd" "?aMb - ?sqd"]
   have "(?aMb + ?sqd) / (?aMb - ?sqd)
-    = (?aMb + ?sqd)\<twosuperior> / ((?aMb + ?sqd) * (?aMb - ?sqd))"
+    = (?aMb + ?sqd)\<^sup>2 / ((?aMb + ?sqd) * (?aMb - ?sqd))"
     by (simp add: power2_eq_square)
   with `(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb`
-  have "(?aMb + ?sqd) / (?aMb - ?sqd) = (?aMb + ?sqd)\<twosuperior> / (?aMa * ?bMb)" by simp
+  have "(?aMb + ?sqd) / (?aMb - ?sqd) = (?aMb + ?sqd)\<^sup>2 / (?aMa * ?bMb)" by simp
   hence "sqrt ((?aMb + ?sqd) / (?aMb - ?sqd))
     = \<bar>?aMb + ?sqd\<bar> / sqrt (?aMa * ?bMb)"
     by (simp add: real_sqrt_divide)
@@ -4277,10 +4277,10 @@ proof -
   from times_divide_times_eq [of
     "?aMb + ?sqd" "?aMb - ?sqd" "?aMb - ?sqd" "?aMb - ?sqd"]
   have "(?aMb - ?sqd) / (?aMb + ?sqd)
-    = (?aMb - ?sqd)\<twosuperior> / ((?aMb + ?sqd) * (?aMb - ?sqd))"
+    = (?aMb - ?sqd)\<^sup>2 / ((?aMb + ?sqd) * (?aMb - ?sqd))"
     by (simp add: power2_eq_square)
   with `(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb`
-  have "(?aMb - ?sqd) / (?aMb + ?sqd) = (?aMb - ?sqd)\<twosuperior> / (?aMa * ?bMb)" by simp
+  have "(?aMb - ?sqd) / (?aMb + ?sqd) = (?aMb - ?sqd)\<^sup>2 / (?aMa * ?bMb)" by simp
   hence "sqrt ((?aMb - ?sqd) / (?aMb + ?sqd))
     = \<bar>?aMb - ?sqd\<bar> / sqrt (?aMa * ?bMb)"
     by (simp add: real_sqrt_divide)
@@ -4329,8 +4329,8 @@ proof -
     and "vector [0,y,1] \<noteq> (0::real^3)" (is "?b \<noteq> 0")
     by (unfold vector_def, simp_all add: vec_eq_iff forall_3)
 
-  have "?a \<bullet> (M *v ?a) = x\<twosuperior> - 1" (is "?aMa = x\<twosuperior> - 1")
-    and "?b \<bullet> (M *v ?b) = y\<twosuperior> - 1" (is "?bMb = y\<twosuperior> - 1")
+  have "?a \<bullet> (M *v ?a) = x\<^sup>2 - 1" (is "?aMa = x\<^sup>2 - 1")
+    and "?b \<bullet> (M *v ?b) = y\<^sup>2 - 1" (is "?bMb = y\<^sup>2 - 1")
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
     by (simp_all add: setsum_3 power2_eq_square)
@@ -4342,9 +4342,9 @@ proof -
   have "cosh_dist ?pa ?pb = \<bar>?a \<bullet> (M *v ?b)\<bar> / sqrt (?aMa * ?bMb)"
     (is "cosh_dist ?pa ?pb = \<bar>?aMb\<bar> / sqrt (?aMa * ?bMb)")
     by (rule cosh_dist_formula)
-  also from `?aMa = x\<twosuperior> - 1` and `?bMb = y\<twosuperior> - 1`
-  have "\<dots> = \<bar>?aMb\<bar> / sqrt ((x\<twosuperior> - 1) * (y\<twosuperior> - 1))" by simp
-  finally have "cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<twosuperior>) * (1 - y\<twosuperior>))"
+  also from `?aMa = x\<^sup>2 - 1` and `?bMb = y\<^sup>2 - 1`
+  have "\<dots> = \<bar>?aMb\<bar> / sqrt ((x\<^sup>2 - 1) * (y\<^sup>2 - 1))" by simp
+  finally have "cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))"
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
     by (simp add: setsum_3 algebra_simps)
@@ -4359,12 +4359,12 @@ proof -
   have "cosh_dist ?po ?pa = \<bar>?oMa\<bar> / sqrt (?oMo * ?aMa)"
     and "cosh_dist ?po ?pb = \<bar>?oMb\<bar> / sqrt (?oMo * ?bMb)"
     by (unfold K2_centre_def, simp_all)
-  hence "cosh_dist ?po ?pa = 1 / sqrt (1 - x\<twosuperior>)"
-    and "cosh_dist ?po ?pb = 1 / sqrt (1 - y\<twosuperior>)"
+  hence "cosh_dist ?po ?pa = 1 / sqrt (1 - x\<^sup>2)"
+    and "cosh_dist ?po ?pb = 1 / sqrt (1 - y\<^sup>2)"
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
     by (simp_all add: setsum_3 power2_eq_square)
-  with `cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<twosuperior>) * (1 - y\<twosuperior>))`
+  with `cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))`
   show "cosh_dist ?pa ?pb = cosh_dist ?po ?pa * cosh_dist ?po ?pb"
     by (simp add: real_sqrt_mult)
 qed
@@ -4779,8 +4779,8 @@ lemma cross_ratio_in_terms_of_cosh_dist:
   assumes "are_endpoints_in_S p q a b"
   and "B\<^sub>\<real> (cart2_pt a) (cart2_pt b) (cart2_pt p)"
   shows "cross_ratio p q a b
-  = 2 * (cosh_dist a b)\<twosuperior> + 2 * cosh_dist a b * sqrt ((cosh_dist a b)\<twosuperior> - 1) - 1"
-  (is "?pqab = 2 * ?ab\<twosuperior> + 2 * ?ab * sqrt (?ab\<twosuperior> - 1) - 1")
+  = 2 * (cosh_dist a b)\<^sup>2 + 2 * cosh_dist a b * sqrt ((cosh_dist a b)\<^sup>2 - 1) - 1"
+  (is "?pqab = 2 * ?ab\<^sup>2 + 2 * ?ab * sqrt (?ab\<^sup>2 - 1) - 1")
 proof -
   from `are_endpoints_in_S p q a b`
   have "?ab = (sqrt ?pqab + 1 / sqrt ?pqab) / 2" by (rule cosh_dist_general)
@@ -4791,63 +4791,63 @@ proof -
   ultimately have "?pqab - 2 * ?ab * (sqrt ?pqab) + 1 = 0"
     by (simp add: algebra_simps real_sqrt_mult [symmetric])
   with `?pqab \<ge> 1` and discriminant_iff [of 1 "sqrt ?pqab" "- 2 * ?ab" 1]
-  have "sqrt ?pqab = (2 * ?ab + sqrt (4 * ?ab\<twosuperior> - 4)) / 2
-    \<or> sqrt ?pqab = (2 * ?ab - sqrt (4 * ?ab\<twosuperior> - 4)) / 2"
+  have "sqrt ?pqab = (2 * ?ab + sqrt (4 * ?ab\<^sup>2 - 4)) / 2
+    \<or> sqrt ?pqab = (2 * ?ab - sqrt (4 * ?ab\<^sup>2 - 4)) / 2"
     unfolding discrim_def
     by (simp add: real_sqrt_mult [symmetric] power2_eq_square minus_mult_left)
-  moreover have "sqrt (4 * ?ab\<twosuperior> - 4) = sqrt (4 * (?ab\<twosuperior> - 1))" by simp
-  hence "sqrt (4 * ?ab\<twosuperior> - 4) = 2 * sqrt (?ab\<twosuperior> - 1)"
+  moreover have "sqrt (4 * ?ab\<^sup>2 - 4) = sqrt (4 * (?ab\<^sup>2 - 1))" by simp
+  hence "sqrt (4 * ?ab\<^sup>2 - 4) = 2 * sqrt (?ab\<^sup>2 - 1)"
     by (unfold real_sqrt_mult) simp
-  ultimately have "sqrt ?pqab = 2 * (?ab + sqrt (?ab\<twosuperior> - 1)) / 2
-    \<or> sqrt ?pqab = 2 * (?ab - sqrt (?ab\<twosuperior> - 1)) / 2"
+  ultimately have "sqrt ?pqab = 2 * (?ab + sqrt (?ab\<^sup>2 - 1)) / 2
+    \<or> sqrt ?pqab = 2 * (?ab - sqrt (?ab\<^sup>2 - 1)) / 2"
     by simp
-  hence "sqrt ?pqab = ?ab + sqrt (?ab\<twosuperior> - 1)
-    \<or> sqrt ?pqab = ?ab - sqrt (?ab\<twosuperior> - 1)"
+  hence "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)
+    \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)"
     by (simp only: nonzero_mult_divide_cancel_left [of 2])
 
   from `are_endpoints_in_S p q a b`
   have "a \<in> hyp2" and "b \<in> hyp2" by (unfold are_endpoints_in_S_def) simp_all
   hence "?ab \<ge> 1" by (rule cosh_dist_at_least_1)
-  hence "?ab\<twosuperior> \<ge> 1" by simp
-  hence "sqrt (?ab\<twosuperior> - 1) \<ge> 0" by simp
-  hence "sqrt (?ab\<twosuperior> - 1) * sqrt (?ab\<twosuperior> - 1) = ?ab\<twosuperior> - 1"
+  hence "?ab\<^sup>2 \<ge> 1" by simp
+  hence "sqrt (?ab\<^sup>2 - 1) \<ge> 0" by simp
+  hence "sqrt (?ab\<^sup>2 - 1) * sqrt (?ab\<^sup>2 - 1) = ?ab\<^sup>2 - 1"
     by (simp add: real_sqrt_mult [symmetric])
-  hence "(?ab + sqrt (?ab\<twosuperior> - 1)) * (?ab - sqrt (?ab\<twosuperior> - 1)) = 1"
+  hence "(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1"
     by (simp add: algebra_simps power2_eq_square)
 
-  have "?ab - sqrt (?ab\<twosuperior> - 1) \<le> 1"
+  have "?ab - sqrt (?ab\<^sup>2 - 1) \<le> 1"
   proof (rule ccontr)
-    assume "\<not> (?ab - sqrt (?ab\<twosuperior> - 1) \<le> 1)"
-    hence "1 < ?ab - sqrt (?ab\<twosuperior> - 1)" by simp
-    also from `sqrt (?ab\<twosuperior> - 1) \<ge> 0`
-    have "\<dots> \<le> ?ab + sqrt (?ab\<twosuperior> - 1)" by simp
-    finally have "1 < ?ab + sqrt (?ab\<twosuperior> - 1)" by simp
-    with `1 < ?ab - sqrt (?ab\<twosuperior> - 1)`
+    assume "\<not> (?ab - sqrt (?ab\<^sup>2 - 1) \<le> 1)"
+    hence "1 < ?ab - sqrt (?ab\<^sup>2 - 1)" by simp
+    also from `sqrt (?ab\<^sup>2 - 1) \<ge> 0`
+    have "\<dots> \<le> ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
+    finally have "1 < ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
+    with `1 < ?ab - sqrt (?ab\<^sup>2 - 1)`
       and mult_strict_mono' [of
-      1 "?ab + sqrt (?ab\<twosuperior> - 1)" 1 "?ab - sqrt (?ab\<twosuperior> - 1)"]
-    have "1 < (?ab + sqrt (?ab\<twosuperior> - 1)) * (?ab - sqrt (?ab\<twosuperior> - 1))" by simp
-    with `(?ab + sqrt (?ab\<twosuperior> - 1)) * (?ab - sqrt (?ab\<twosuperior> - 1)) = 1`
+      1 "?ab + sqrt (?ab\<^sup>2 - 1)" 1 "?ab - sqrt (?ab\<^sup>2 - 1)"]
+    have "1 < (?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1))" by simp
+    with `(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1`
     show False by simp
   qed
 
-  have "sqrt ?pqab = ?ab + sqrt (?ab\<twosuperior> - 1)"
+  have "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)"
   proof (rule ccontr)
-    assume "sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<twosuperior> - 1)"
-    with `sqrt ?pqab = ?ab + sqrt (?ab\<twosuperior> - 1)
-      \<or> sqrt ?pqab = ?ab - sqrt (?ab\<twosuperior> - 1)`
-    have "sqrt ?pqab = ?ab - sqrt (?ab\<twosuperior> - 1)" by simp
-    with `?ab - sqrt (?ab\<twosuperior> - 1) \<le> 1` have "sqrt ?pqab \<le> 1" by simp
+    assume "sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<^sup>2 - 1)"
+    with `sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)
+      \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)`
+    have "sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)" by simp
+    with `?ab - sqrt (?ab\<^sup>2 - 1) \<le> 1` have "sqrt ?pqab \<le> 1" by simp
     with `?pqab \<ge> 1` have "sqrt ?pqab = 1" by simp
-    with `sqrt ?pqab = ?ab - sqrt (?ab\<twosuperior> - 1)`
-      and `(?ab + sqrt (?ab\<twosuperior> - 1)) * (?ab - sqrt (?ab\<twosuperior> - 1)) = 1`
-    have "?ab + sqrt (?ab\<twosuperior> - 1) = 1" by simp
-    with `sqrt ?pqab = 1` have "sqrt ?pqab = ?ab + sqrt (?ab\<twosuperior> - 1)" by simp
-    with `sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<twosuperior> - 1)` show False ..
+    with `sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)`
+      and `(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1`
+    have "?ab + sqrt (?ab\<^sup>2 - 1) = 1" by simp
+    with `sqrt ?pqab = 1` have "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
+    with `sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<^sup>2 - 1)` show False ..
   qed
-  moreover from `?pqab \<ge> 1` have "?pqab = (sqrt ?pqab)\<twosuperior>" by simp
-  ultimately have "?pqab = (?ab + sqrt (?ab\<twosuperior> - 1))\<twosuperior>" by simp
-  with `sqrt (?ab\<twosuperior> - 1) * sqrt (?ab\<twosuperior> - 1) = ?ab\<twosuperior> - 1`
-  show "?pqab = 2 * ?ab\<twosuperior> + 2 * ?ab * sqrt (?ab\<twosuperior> - 1) - 1"
+  moreover from `?pqab \<ge> 1` have "?pqab = (sqrt ?pqab)\<^sup>2" by simp
+  ultimately have "?pqab = (?ab + sqrt (?ab\<^sup>2 - 1))\<^sup>2" by simp
+  with `sqrt (?ab\<^sup>2 - 1) * sqrt (?ab\<^sup>2 - 1) = ?ab\<^sup>2 - 1`
+  show "?pqab = 2 * ?ab\<^sup>2 + 2 * ?ab * sqrt (?ab\<^sup>2 - 1) - 1"
     by (simp add: power2_eq_square algebra_simps)
 qed
 
@@ -4928,8 +4928,8 @@ proof -
   moreover
   from `are_endpoints_in_S p ?q a b` and `are_endpoints_in_S p ?q a c`
     and `B\<^sub>\<real> ?ca ?cb ?cp` and `B\<^sub>\<real> ?ca ?cc ?cp`
-  have "cross_ratio p ?q a b = 2 * ?ab\<twosuperior> + 2 * ?ab * sqrt (?ab\<twosuperior> - 1) - 1"
-    and "cross_ratio p ?q a c = 2 * ?ac\<twosuperior> + 2 * ?ac * sqrt (?ac\<twosuperior> - 1) - 1"
+  have "cross_ratio p ?q a b = 2 * ?ab\<^sup>2 + 2 * ?ab * sqrt (?ab\<^sup>2 - 1) - 1"
+    and "cross_ratio p ?q a c = 2 * ?ac\<^sup>2 + 2 * ?ac * sqrt (?ac\<^sup>2 - 1) - 1"
     by (simp_all add: cross_ratio_in_terms_of_cosh_dist)
   with `?ab = ?ac` have "cross_ratio p ?q a b = cross_ratio p ?q a c" by simp
   ultimately show "b = c" by (rule cross_ratio_unique)

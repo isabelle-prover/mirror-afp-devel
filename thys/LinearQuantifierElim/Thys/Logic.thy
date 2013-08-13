@@ -16,21 +16,21 @@ datatype 'a fm =
   TrueF | FalseF | Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
   Neg "'a fm" | ExQ "'a fm"
 
-abbreviation Imp where "Imp \<phi>\<^isub>1 \<phi>\<^isub>2 \<equiv> Or (Neg \<phi>\<^isub>1) \<phi>\<^isub>2"
+abbreviation Imp where "Imp \<phi>\<^sub>1 \<phi>\<^sub>2 \<equiv> Or (Neg \<phi>\<^sub>1) \<phi>\<^sub>2"
 abbreviation AllQ where "AllQ \<phi> \<equiv> Neg(ExQ(Neg \<phi>))"
 
 definition neg where
 "neg \<phi> = (if \<phi>=TrueF then FalseF else if \<phi>=FalseF then TrueF else Neg \<phi>)"
 
 definition "and" :: "'a fm \<Rightarrow> 'a fm \<Rightarrow> 'a fm" where
-"and \<phi>\<^isub>1 \<phi>\<^isub>2 =
- (if \<phi>\<^isub>1=TrueF then \<phi>\<^isub>2 else if \<phi>\<^isub>2=TrueF then \<phi>\<^isub>1 else
-  if \<phi>\<^isub>1=FalseF \<or> \<phi>\<^isub>2=FalseF then FalseF else And \<phi>\<^isub>1 \<phi>\<^isub>2)"
+"and \<phi>\<^sub>1 \<phi>\<^sub>2 =
+ (if \<phi>\<^sub>1=TrueF then \<phi>\<^sub>2 else if \<phi>\<^sub>2=TrueF then \<phi>\<^sub>1 else
+  if \<phi>\<^sub>1=FalseF \<or> \<phi>\<^sub>2=FalseF then FalseF else And \<phi>\<^sub>1 \<phi>\<^sub>2)"
 
 definition or :: "'a fm \<Rightarrow> 'a fm \<Rightarrow> 'a fm" where
-"or \<phi>\<^isub>1 \<phi>\<^isub>2 =
- (if \<phi>\<^isub>1=FalseF then \<phi>\<^isub>2 else if \<phi>\<^isub>2=FalseF then \<phi>\<^isub>1 else
-  if \<phi>\<^isub>1=TrueF \<or> \<phi>\<^isub>2=TrueF then TrueF else Or \<phi>\<^isub>1 \<phi>\<^isub>2)"
+"or \<phi>\<^sub>1 \<phi>\<^sub>2 =
+ (if \<phi>\<^sub>1=FalseF then \<phi>\<^sub>2 else if \<phi>\<^sub>2=FalseF then \<phi>\<^sub>1 else
+  if \<phi>\<^sub>1=TrueF \<or> \<phi>\<^sub>2=TrueF then TrueF else Or \<phi>\<^sub>1 \<phi>\<^sub>2)"
 
 definition list_conj :: "'a fm list \<Rightarrow> 'a fm" where
 "list_conj fs = foldr and fs TrueF"
@@ -44,8 +44,8 @@ fun atoms :: "'a fm \<Rightarrow> 'a set" where
 "atoms TrueF = {}" |
 "atoms FalseF = {}" |
 "atoms (Atom a) = {a}" |
-"atoms (And \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms \<phi>\<^isub>1 \<union> atoms \<phi>\<^isub>2" |
-"atoms (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms \<phi>\<^isub>1 \<union> atoms \<phi>\<^isub>2" |
+"atoms (And \<phi>\<^sub>1 \<phi>\<^sub>2) = atoms \<phi>\<^sub>1 \<union> atoms \<phi>\<^sub>2" |
+"atoms (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = atoms \<phi>\<^sub>1 \<union> atoms \<phi>\<^sub>2" |
 "atoms (Neg \<phi>) = atoms \<phi>" |
 "atoms (ExQ \<phi>) = atoms \<phi>"
 
@@ -53,8 +53,8 @@ fun map_fm :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("
 "map\<^bsub>fm\<^esub> h TrueF = TrueF" |
 "map\<^bsub>fm\<^esub> h FalseF = FalseF" |
 "map\<^bsub>fm\<^esub> h (Atom a) = Atom(h a)" |
-"map\<^bsub>fm\<^esub> h (And \<phi>\<^isub>1 \<phi>\<^isub>2) = And (map\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
-"map\<^bsub>fm\<^esub> h (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = Or (map\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
+"map\<^bsub>fm\<^esub> h (And \<phi>\<^sub>1 \<phi>\<^sub>2) = And (map\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
+"map\<^bsub>fm\<^esub> h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = Or (map\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
 "map\<^bsub>fm\<^esub> h (Neg \<phi>) = Neg (map\<^bsub>fm\<^esub> h \<phi>)" |
 "map\<^bsub>fm\<^esub> h (ExQ \<phi>) = ExQ (map\<^bsub>fm\<^esub> h \<phi>)"
 
@@ -65,8 +65,8 @@ fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm
 "amap\<^bsub>fm\<^esub> h TrueF = TrueF" |
 "amap\<^bsub>fm\<^esub> h FalseF = FalseF" |
 "amap\<^bsub>fm\<^esub> h (Atom a) = h a" |
-"amap\<^bsub>fm\<^esub> h (And \<phi>\<^isub>1 \<phi>\<^isub>2) = and (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
-"amap\<^bsub>fm\<^esub> h (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = or (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
+"amap\<^bsub>fm\<^esub> h (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
+"amap\<^bsub>fm\<^esub> h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
 "amap\<^bsub>fm\<^esub> h (Neg \<phi>) = neg (amap\<^bsub>fm\<^esub> h \<phi>)"
 
 lemma amap_fm_list_disj:
@@ -75,15 +75,15 @@ by(induct fs) (auto simp:list_disj_def or_def)
 
 fun qfree :: "'a fm \<Rightarrow> bool" where
 "qfree(ExQ f) = False" |
-"qfree(And \<phi>\<^isub>1 \<phi>\<^isub>2) = (qfree \<phi>\<^isub>1 \<and> qfree \<phi>\<^isub>2)" |
-"qfree(Or \<phi>\<^isub>1 \<phi>\<^isub>2) = (qfree \<phi>\<^isub>1 \<and> qfree \<phi>\<^isub>2)" |
+"qfree(And \<phi>\<^sub>1 \<phi>\<^sub>2) = (qfree \<phi>\<^sub>1 \<and> qfree \<phi>\<^sub>2)" |
+"qfree(Or \<phi>\<^sub>1 \<phi>\<^sub>2) = (qfree \<phi>\<^sub>1 \<and> qfree \<phi>\<^sub>2)" |
 "qfree(Neg \<phi>) = (qfree \<phi>)" |
 "qfree \<phi> = True"
 
-lemma qfree_and[simp]: "\<lbrakk> qfree \<phi>\<^isub>1; qfree \<phi>\<^isub>2 \<rbrakk> \<Longrightarrow> qfree(and \<phi>\<^isub>1 \<phi>\<^isub>2)"
+lemma qfree_and[simp]: "\<lbrakk> qfree \<phi>\<^sub>1; qfree \<phi>\<^sub>2 \<rbrakk> \<Longrightarrow> qfree(and \<phi>\<^sub>1 \<phi>\<^sub>2)"
 by(simp add:and_def)
 
-lemma qfree_or[simp]: "\<lbrakk> qfree \<phi>\<^isub>1; qfree \<phi>\<^isub>2 \<rbrakk> \<Longrightarrow> qfree(or \<phi>\<^isub>1 \<phi>\<^isub>2)"
+lemma qfree_or[simp]: "\<lbrakk> qfree \<phi>\<^sub>1; qfree \<phi>\<^sub>2 \<rbrakk> \<Longrightarrow> qfree(or \<phi>\<^sub>1 \<phi>\<^sub>2)"
 by(simp add:or_def)
 
 lemma qfree_neg[simp]: "qfree(neg \<phi>) = qfree \<phi>"
@@ -133,15 +133,15 @@ fun dnf :: "'a fm \<Rightarrow> 'a list list" where
 "dnf TrueF = [[]]" |
 "dnf FalseF = []" |
 "dnf (Atom \<phi>) = [[\<phi>]]" |
-"dnf (And \<phi>\<^isub>1 \<phi>\<^isub>2) = [d1 @ d2. d1 \<leftarrow> dnf \<phi>\<^isub>1, d2 \<leftarrow> dnf \<phi>\<^isub>2]" |
-"dnf (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = dnf \<phi>\<^isub>1 @ dnf \<phi>\<^isub>2"
+"dnf (And \<phi>\<^sub>1 \<phi>\<^sub>2) = [d1 @ d2. d1 \<leftarrow> dnf \<phi>\<^sub>1, d2 \<leftarrow> dnf \<phi>\<^sub>2]" |
+"dnf (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = dnf \<phi>\<^sub>1 @ dnf \<phi>\<^sub>2"
 
 fun nqfree :: "'a fm \<Rightarrow> bool" where
 "nqfree(Atom a) = True" |
 "nqfree TrueF = True" |
 "nqfree FalseF = True" |
-"nqfree (And \<phi>\<^isub>1 \<phi>\<^isub>2) = (nqfree \<phi>\<^isub>1 \<and> nqfree \<phi>\<^isub>2)" |
-"nqfree (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = (nqfree \<phi>\<^isub>1 \<and> nqfree \<phi>\<^isub>2)" |
+"nqfree (And \<phi>\<^sub>1 \<phi>\<^sub>2) = (nqfree \<phi>\<^sub>1 \<and> nqfree \<phi>\<^sub>2)" |
+"nqfree (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = (nqfree \<phi>\<^sub>1 \<and> nqfree \<phi>\<^sub>2)" |
 "nqfree \<phi> = False"
 
 lemma nqfree_qfree[simp]: "nqfree \<phi> \<Longrightarrow> qfree \<phi>"
@@ -155,8 +155,8 @@ fun "interpret" :: "('a \<Rightarrow> 'b list \<Rightarrow> bool) \<Rightarrow> 
 "interpret h TrueF xs = True" |
 "interpret h FalseF xs = False" |
 "interpret h (Atom a) xs = h a xs" |
-"interpret h (And \<phi>\<^isub>1 \<phi>\<^isub>2) xs = (interpret h \<phi>\<^isub>1 xs \<and> interpret h \<phi>\<^isub>2 xs)" |
-"interpret h (Or \<phi>\<^isub>1 \<phi>\<^isub>2) xs = (interpret h \<phi>\<^isub>1 xs | interpret h \<phi>\<^isub>2 xs)" |
+"interpret h (And \<phi>\<^sub>1 \<phi>\<^sub>2) xs = (interpret h \<phi>\<^sub>1 xs \<and> interpret h \<phi>\<^sub>2 xs)" |
+"interpret h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) xs = (interpret h \<phi>\<^sub>1 xs | interpret h \<phi>\<^sub>2 xs)" |
 "interpret h (Neg \<phi>) xs = (\<not> interpret h \<phi> xs)" |
 "interpret h (ExQ \<phi>) xs = (\<exists>x. interpret h \<phi> (x#xs))"
 
@@ -172,34 +172,34 @@ fixes anormal :: "'a \<Rightarrow> bool"
 assumes nqfree_aneg: "nqfree(aneg a)"
 assumes anormal_aneg: "anormal a \<Longrightarrow> \<forall>b\<in>atoms(aneg a). anormal b"
 
-fixes I\<^isub>a :: "'a \<Rightarrow> 'b list \<Rightarrow> bool"
-assumes I\<^isub>a_aneg: "interpret I\<^isub>a (aneg a) xs = (\<not> I\<^isub>a a xs)"
+fixes I\<^sub>a :: "'a \<Rightarrow> 'b list \<Rightarrow> bool"
+assumes I\<^sub>a_aneg: "interpret I\<^sub>a (aneg a) xs = (\<not> I\<^sub>a a xs)"
 
-fixes depends\<^isub>0 :: "'a \<Rightarrow> bool"
+fixes depends\<^sub>0 :: "'a \<Rightarrow> bool"
 and decr :: "'a \<Rightarrow> 'a" 
-assumes not_dep_decr: "\<not>depends\<^isub>0 a \<Longrightarrow> I\<^isub>a a (x#xs) = I\<^isub>a (decr a) xs"
-assumes anormal_decr: "\<not> depends\<^isub>0 a \<Longrightarrow> anormal a \<Longrightarrow> anormal(decr a)"
+assumes not_dep_decr: "\<not>depends\<^sub>0 a \<Longrightarrow> I\<^sub>a a (x#xs) = I\<^sub>a (decr a) xs"
+assumes anormal_decr: "\<not> depends\<^sub>0 a \<Longrightarrow> anormal a \<Longrightarrow> anormal(decr a)"
 
 begin
 
-fun atoms\<^isub>0 :: "'a fm \<Rightarrow> 'a list" where
-"atoms\<^isub>0 TrueF = []" |
-"atoms\<^isub>0 FalseF = []" |
-"atoms\<^isub>0 (Atom a) = (if depends\<^isub>0 a then [a] else [])" |
-"atoms\<^isub>0 (And \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms\<^isub>0 \<phi>\<^isub>1 @ atoms\<^isub>0 \<phi>\<^isub>2" |
-"atoms\<^isub>0 (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms\<^isub>0 \<phi>\<^isub>1 @ atoms\<^isub>0 \<phi>\<^isub>2" |
-"atoms\<^isub>0 (Neg \<phi>) = atoms\<^isub>0 \<phi>"
+fun atoms\<^sub>0 :: "'a fm \<Rightarrow> 'a list" where
+"atoms\<^sub>0 TrueF = []" |
+"atoms\<^sub>0 FalseF = []" |
+"atoms\<^sub>0 (Atom a) = (if depends\<^sub>0 a then [a] else [])" |
+"atoms\<^sub>0 (And \<phi>\<^sub>1 \<phi>\<^sub>2) = atoms\<^sub>0 \<phi>\<^sub>1 @ atoms\<^sub>0 \<phi>\<^sub>2" |
+"atoms\<^sub>0 (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = atoms\<^sub>0 \<phi>\<^sub>1 @ atoms\<^sub>0 \<phi>\<^sub>2" |
+"atoms\<^sub>0 (Neg \<phi>) = atoms\<^sub>0 \<phi>"
 
-abbreviation I where "I \<equiv> interpret I\<^isub>a"
+abbreviation I where "I \<equiv> interpret I\<^sub>a"
 
 fun nnf :: "'a fm \<Rightarrow> 'a fm" where
-"nnf (And \<phi>\<^isub>1 \<phi>\<^isub>2) = And (nnf \<phi>\<^isub>1) (nnf \<phi>\<^isub>2)" |
-"nnf (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = Or (nnf \<phi>\<^isub>1) (nnf \<phi>\<^isub>2)" |
+"nnf (And \<phi>\<^sub>1 \<phi>\<^sub>2) = And (nnf \<phi>\<^sub>1) (nnf \<phi>\<^sub>2)" |
+"nnf (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = Or (nnf \<phi>\<^sub>1) (nnf \<phi>\<^sub>2)" |
 "nnf (Neg TrueF) = FalseF" |
 "nnf (Neg FalseF) = TrueF" |
 "nnf (Neg (Neg \<phi>)) = (nnf \<phi>)" |
-"nnf (Neg (And \<phi>\<^isub>1 \<phi>\<^isub>2)) = (Or (nnf (Neg \<phi>\<^isub>1)) (nnf (Neg \<phi>\<^isub>2)))" |
-"nnf (Neg (Or \<phi>\<^isub>1 \<phi>\<^isub>2)) = (And (nnf (Neg \<phi>\<^isub>1)) (nnf (Neg \<phi>\<^isub>2)))" |
+"nnf (Neg (And \<phi>\<^sub>1 \<phi>\<^sub>2)) = (Or (nnf (Neg \<phi>\<^sub>1)) (nnf (Neg \<phi>\<^sub>2)))" |
+"nnf (Neg (Or \<phi>\<^sub>1 \<phi>\<^sub>2)) = (And (nnf (Neg \<phi>\<^sub>1)) (nnf (Neg \<phi>\<^sub>2)))" |
 "nnf (Neg (Atom a)) = aneg a" |
 "nnf \<phi> = \<phi>"
 
@@ -214,7 +214,7 @@ by (induct \<phi> rule:nnf.induct)(simp_all add: nqfree_aneg)
 lemma I_neg[simp]: "I (neg \<phi>) xs = I (Neg \<phi>) xs"
 by(simp add:neg_def)
 
-lemma I_and[simp]: "I (and \<phi>\<^isub>1 \<phi>\<^isub>2) xs = I (And \<phi>\<^isub>1 \<phi>\<^isub>2) xs"
+lemma I_and[simp]: "I (and \<phi>\<^sub>1 \<phi>\<^sub>2) xs = I (And \<phi>\<^sub>1 \<phi>\<^sub>2) xs"
 by(simp add:and_def)
 
 lemma I_list_conj[simp]:
@@ -226,7 +226,7 @@ proof -
   } thus ?thesis by(simp add:list_conj_def)
 qed
 
-lemma I_or[simp]: "I (or \<phi>\<^isub>1 \<phi>\<^isub>2) xs = I (Or \<phi>\<^isub>1 \<phi>\<^isub>2) xs"
+lemma I_or[simp]: "I (or \<phi>\<^sub>1 \<phi>\<^sub>2) xs = I (Or \<phi>\<^sub>1 \<phi>\<^sub>2) xs"
 by(simp add:or_def)
 
 lemma I_list_disj[simp]:
@@ -239,10 +239,10 @@ proof -
 qed
 
 lemma I_nnf: "I (nnf \<phi>) xs = I \<phi> xs"
-by(induct rule:nnf.induct)(simp_all add: I\<^isub>a_aneg)
+by(induct rule:nnf.induct)(simp_all add: I\<^sub>a_aneg)
 
 lemma I_dnf:
-"nqfree \<phi> \<Longrightarrow> (\<exists>as\<in>set (dnf \<phi>). \<forall>a\<in>set as. I\<^isub>a a xs) = I \<phi> xs"
+"nqfree \<phi> \<Longrightarrow> (\<exists>as\<in>set (dnf \<phi>). \<forall>a\<in>set as. I\<^sub>a a xs) = I \<phi> xs"
 by (induct \<phi>) (fastforce)+
 
 definition "normal \<phi> = (\<forall>a \<in> atoms \<phi>. anormal a)"
@@ -251,8 +251,8 @@ lemma normal_simps[simp]:
 "normal TrueF"
 "normal FalseF"
 "normal (Atom a) \<longleftrightarrow> anormal a"
-"normal (And \<phi>\<^isub>1 \<phi>\<^isub>2) \<longleftrightarrow> normal \<phi>\<^isub>1 \<and> normal \<phi>\<^isub>2"
-"normal (Or \<phi>\<^isub>1 \<phi>\<^isub>2) \<longleftrightarrow> normal \<phi>\<^isub>1 \<and> normal \<phi>\<^isub>2"
+"normal (And \<phi>\<^sub>1 \<phi>\<^sub>2) \<longleftrightarrow> normal \<phi>\<^sub>1 \<and> normal \<phi>\<^sub>2"
+"normal (Or \<phi>\<^sub>1 \<phi>\<^sub>2) \<longleftrightarrow> normal \<phi>\<^sub>1 \<and> normal \<phi>\<^sub>2"
 "normal (Neg \<phi>) \<longleftrightarrow> normal \<phi>"
 "normal (ExQ \<phi>) \<longleftrightarrow> normal \<phi>"
 by(auto simp:normal_def)
@@ -261,11 +261,11 @@ lemma normal_aneg[simp]: "anormal a \<Longrightarrow> normal (aneg a)"
 by (simp add:anormal_aneg normal_def)
 
 lemma normal_and[simp]:
-  "normal \<phi>\<^isub>1 \<Longrightarrow> normal \<phi>\<^isub>2 \<Longrightarrow> normal (and \<phi>\<^isub>1 \<phi>\<^isub>2)"
+  "normal \<phi>\<^sub>1 \<Longrightarrow> normal \<phi>\<^sub>2 \<Longrightarrow> normal (and \<phi>\<^sub>1 \<phi>\<^sub>2)"
 by (simp add:Logic.and_def)
 
 lemma normal_or[simp]:
-  "normal \<phi>\<^isub>1 \<Longrightarrow> normal \<phi>\<^isub>2 \<Longrightarrow> normal (or \<phi>\<^isub>1 \<phi>\<^isub>2)"
+  "normal \<phi>\<^sub>1 \<Longrightarrow> normal \<phi>\<^sub>2 \<Longrightarrow> normal (or \<phi>\<^sub>1 \<phi>\<^sub>2)"
 by (simp add:Logic.or_def)
 
 lemma normal_list_disj[simp]:

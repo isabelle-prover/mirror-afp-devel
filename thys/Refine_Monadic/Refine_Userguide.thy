@@ -62,22 +62,22 @@ text {*
   statements here. A complete reference can be found in 
   Section~\ref{sec:stmt_ref}.
 
-  A while-loop has the form @{term "WHILE b f \<sigma>\<^isub>0"}, where @{term "b"} is the
-  continuation condition, @{term "f"} is the loop body, and @{term "\<sigma>\<^isub>0"} is
+  A while-loop has the form @{term "WHILE b f \<sigma>\<^sub>0"}, where @{term "b"} is the
+  continuation condition, @{term "f"} is the loop body, and @{term "\<sigma>\<^sub>0"} is
   the initial state. In our case, the state used for the loop is a triple
   @{term "(V,s,m)"}, where @{term "V"} is the set of remaining elements,
   @{term "s"} is the sum of the elements seen so far, and @{term "m"} is 
   the maximum of the elements seen so far.
-  The @{term "WHILE b f \<sigma>\<^isub>0"} construct describes a partially correct loop,
+  The @{term "WHILE b f \<sigma>\<^sub>0"} construct describes a partially correct loop,
   i.e., it describes only those results that can be reached by finitely many
   iterations, and ignores infinite paths of the loop. In order to 
-  prove total correctness, the construct @{term "WHILE\<^isub>T b f \<sigma>\<^isub>0"} is used. It
+  prove total correctness, the construct @{term "WHILE\<^sub>T b f \<sigma>\<^sub>0"} is used. It
   fails if there exists an infinite execution of the loop.
 
-  A binding @{term [source] "do {x\<leftarrow>(S\<^isub>1::'a nres); S\<^isub>2}"} nondeterministically 
+  A binding @{term [source] "do {x\<leftarrow>(S\<^sub>1::'a nres); S\<^sub>2}"} nondeterministically 
   chooses a result of 
-  @{term "S\<^isub>1"}, binds it to variable @{term "x"}, and then continues with 
-  @{term "S\<^isub>2"}. If @{term "S\<^isub>1"} is @{const "FAIL"}, the 
+  @{term "S\<^sub>1"}, binds it to variable @{term "x"}, and then continues with 
+  @{term "S\<^sub>2"}. If @{term "S\<^sub>1"} is @{const "FAIL"}, the 
   bind statement also fails. 
 
   The syntactic form @{term [source] "do { let x=V; (S::'a \<Rightarrow> 'b nres)}"} 
@@ -116,11 +116,11 @@ text {*
   is rather straightforward. The main complication is introduced by the
   partially defined @{text "Max"}-operator of the Isabelle/HOL standard library.
   *}
-definition "sum_max_invar V\<^isub>0 \<equiv> \<lambda>(V,s::nat,m).
-             V\<subseteq>V\<^isub>0
-           \<and> s=\<Sum>(V\<^isub>0-V) 
-           \<and> m=(if (V\<^isub>0-V)={} then 0 else Max (V\<^isub>0-V)) 
-           \<and> finite (V\<^isub>0-V)"
+definition "sum_max_invar V\<^sub>0 \<equiv> \<lambda>(V,s::nat,m).
+             V\<subseteq>V\<^sub>0
+           \<and> s=\<Sum>(V\<^sub>0-V) 
+           \<and> m=(if (V\<^sub>0-V)={} then 0 else Max (V\<^sub>0-V)) 
+           \<and> finite (V\<^sub>0-V)"
 
 
 text {*
@@ -130,11 +130,11 @@ text {*
   as it makes the proof more readable.
   *}
 lemma sum_max_invar_step:
-  assumes "x\<in>V" "sum_max_invar V\<^isub>0 (V,s,m)"
-  shows "sum_max_invar V\<^isub>0 (V-{x},s+x,max m x)"
+  assumes "x\<in>V" "sum_max_invar V\<^sub>0 (V,s,m)"
+  shows "sum_max_invar V\<^sub>0 (V-{x},s+x,max m x)"
   txt {* In our case the proof is rather straightforward, it only
     requires the lemma @{thm [source] it_step_insert_iff}, that handles
-    the @{term "(V\<^isub>0-(V-{x}))"} terms that occur in the invariant. *}
+    the @{term "(V\<^sub>0-(V-{x}))"} terms that occur in the invariant. *}
   using assms unfolding sum_max_invar_def by (auto simp: it_step_insert_iff)
 
 text {*
@@ -167,7 +167,7 @@ theorem sum_max_correct:
 text {*
   In this proof, we specified the invariant explicitely.
   Alternatively, we may annotate the invariant at the while loop,
-  using the syntax @{term "WHILE\<^bsup>I\<^esup> b f \<sigma>\<^isub>0"}. Then, the verification condition
+  using the syntax @{term "WHILE\<^bsup>I\<^esup> b f \<sigma>\<^sub>0"}. Then, the verification condition
   generator will use the annotated invariant automatically.
 *}
 
@@ -178,13 +178,13 @@ text {*
   stating that the set of elements is finite.
 *}
 
-definition "sum_max'_invar V\<^isub>0 \<sigma> \<equiv> 
-  sum_max_invar V\<^isub>0 \<sigma> 
-  \<and> (let (V,_,_)=\<sigma> in finite (V\<^isub>0-V))"
+definition "sum_max'_invar V\<^sub>0 \<sigma> \<equiv> 
+  sum_max_invar V\<^sub>0 \<sigma> 
+  \<and> (let (V,_,_)=\<sigma> in finite (V\<^sub>0-V))"
 
 definition sum_max' :: "nat set \<Rightarrow> (nat\<times>nat) nres" where
   "sum_max' V \<equiv> do {
-    (_,s,m) \<leftarrow> WHILE\<^isub>T\<^bsup>sum_max'_invar V\<^esup> (\<lambda>(V,s,m). V\<noteq>{}) (\<lambda>(V,s,m). do {
+    (_,s,m) \<leftarrow> WHILE\<^sub>T\<^bsup>sum_max'_invar V\<^esup> (\<lambda>(V,s,m). V\<noteq>{}) (\<lambda>(V,s,m). do {
       x\<leftarrow>SPEC (\<lambda>x. x\<in>V); 
       let V=V-{x};
       let s=s+x;
@@ -322,7 +322,7 @@ text {*
 *}
 definition sum_max'_impl :: "nat ls \<Rightarrow> (nat\<times>nat) nres" where
   "sum_max'_impl V \<equiv> do {
-    (_,s,m) \<leftarrow> WHILE\<^isub>T (\<lambda>(V,s,m). \<not>ls_isEmpty V) (\<lambda>(V,s,m). do {
+    (_,s,m) \<leftarrow> WHILE\<^sub>T (\<lambda>(V,s,m). \<not>ls_isEmpty V) (\<lambda>(V,s,m). do {
       x\<leftarrow>RETURN (the (ls_sel' V (\<lambda>x. True)));
       let V=ls_delete x V;
       let s=s+x;
@@ -492,8 +492,8 @@ text {*
   In the @{text "sum_max"} example above, we used a while-loop to iterate over
   the elements of a set. As this pattern is used commonly, there is
   an abbreviation for it in the refinement framework. The construct 
-  @{term "FOREACH S f \<sigma>\<^isub>0"} iterates @{text "f::'x\<Rightarrow>'s\<Rightarrow>'s"} for each element 
-  in @{text "S::'x set"}, starting with state @{text "\<sigma>\<^isub>0::'s"}.
+  @{term "FOREACH S f \<sigma>\<^sub>0"} iterates @{text "f::'x\<Rightarrow>'s\<Rightarrow>'s"} for each element 
+  in @{text "S::'x set"}, starting with state @{text "\<sigma>\<^sub>0::'s"}.
   
   With foreach-loops, we could have written our example as follows:
 *}
@@ -666,39 +666,39 @@ section {* Reference *}
         nontermination.
       \item[@{term "RECT body"}] Recursion for total correctness. 
         Returns @{text "FAIL"} on nontermination.
-      \item[@{term "WHILE b f \<sigma>\<^isub>0"}] Partial correct while-loop. 
-        Start with state @{text "\<sigma>\<^isub>0"},
+      \item[@{term "WHILE b f \<sigma>\<^sub>0"}] Partial correct while-loop. 
+        Start with state @{text "\<sigma>\<^sub>0"},
         and repeatedly apply @{text "f"} as long as @{text "b"} holds for the
         current state. Non-terminating paths are ignored, i.e., they do not
         contribute a result.
-      \item[@{term "WHILE\<^isub>T b f \<sigma>\<^isub>0"}] Total correct while-loop. If there is a
+      \item[@{term "WHILE\<^sub>T b f \<sigma>\<^sub>0"}] Total correct while-loop. If there is a
         non-terminating path, the result is @{term "FAIL"}.
-      \item[@{term "WHILE\<^bsup>I\<^esup> b f \<sigma>\<^isub>0"}, @{term "WHILE\<^isub>T\<^bsup>I\<^esup> b f \<sigma>\<^isub>0"}] While-loop with
+      \item[@{term "WHILE\<^bsup>I\<^esup> b f \<sigma>\<^sub>0"}, @{term "WHILE\<^sub>T\<^bsup>I\<^esup> b f \<sigma>\<^sub>0"}] While-loop with
         annotated invariant. It is asserted that the invariant holds.
-      \item[@{term "FOREACH S f \<sigma>\<^isub>0"}] Foreach loop.
-        Start with state @{text "\<sigma>\<^isub>0"}, and transform
+      \item[@{term "FOREACH S f \<sigma>\<^sub>0"}] Foreach loop.
+        Start with state @{text "\<sigma>\<^sub>0"}, and transform
         the state with @{text "f x"} for each element @{text "x\<in>S"}. Asserts that 
         @{text "S"} is finite.
-      \item[@{term "FOREACH\<^bsup>I\<^esup> S f \<sigma>\<^isub>0"}] Foreach-loop with 
+      \item[@{term "FOREACH\<^bsup>I\<^esup> S f \<sigma>\<^sub>0"}] Foreach-loop with 
         annotated invariant. 
 
-        Alternative syntax: @{term "FOREACHi I S f \<sigma>\<^isub>0"}.
+        Alternative syntax: @{term "FOREACHi I S f \<sigma>\<^sub>0"}.
 
         The invariant is a predicate of type
         @{text "I::'a set \<Rightarrow> 'b \<Rightarrow> bool"}, where @{text "I it \<sigma>"} means, that
         the invariant holds for the remaining set of elements @{text "it"} and
         current state @{text "\<sigma>"}. 
-      \item[@{term "FOREACH\<^isub>C S c f \<sigma>\<^isub>0"}] Foreach-loop with explicit continuation 
+      \item[@{term "FOREACH\<^sub>C S c f \<sigma>\<^sub>0"}] Foreach-loop with explicit continuation 
         condition.
 
-        Alternative syntax: @{term "FOREACHc S c f \<sigma>\<^isub>0"}.
+        Alternative syntax: @{term "FOREACHc S c f \<sigma>\<^sub>0"}.
 
         If @{text "c::'\<sigma>\<Rightarrow>bool"} becomes false for the current state,
         the iteration immediately terminates.
-      \item[@{term "FOREACH\<^isub>C\<^bsup>I\<^esup> S c f \<sigma>\<^isub>0"}] Foreach-loop with explicit continuation 
+      \item[@{term "FOREACH\<^sub>C\<^bsup>I\<^esup> S c f \<sigma>\<^sub>0"}] Foreach-loop with explicit continuation 
         condition and annotated invariant.
 
-        Alternative syntax: @{term "FOREACHci I S c f \<sigma>\<^isub>0"}.
+        Alternative syntax: @{term "FOREACHci I S c f \<sigma>\<^sub>0"}.
       \item[@{text "partial_function (nrec)"}] Mode of the partial function 
         package for the nondeterminism monad.
     \end{description}

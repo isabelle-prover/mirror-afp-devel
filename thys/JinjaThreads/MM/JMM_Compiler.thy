@@ -136,9 +136,9 @@ definition if_bisimJ2JVM ::
     ('addr,'thread_id,status \<times> 'addr option \<times> 'addr frame list,'heap,'addr) state) bisim"
 where 
   "if_bisimJ2JVM = 
-   FWbisimulation_base.mbisim red_red0.init_fin_bisim red_red0.init_fin_bisim_wait \<circ>\<^isub>B
-   FWbisimulation_base.mbisim red0_Red1'.init_fin_bisim red0_Red1'.init_fin_bisim_wait \<circ>\<^isub>B
-   if_mbisim_Red1'_Red1 \<circ>\<^isub>B 
+   FWbisimulation_base.mbisim red_red0.init_fin_bisim red_red0.init_fin_bisim_wait \<circ>\<^sub>B
+   FWbisimulation_base.mbisim red0_Red1'.init_fin_bisim red0_Red1'.init_fin_bisim_wait \<circ>\<^sub>B
+   if_mbisim_Red1'_Red1 \<circ>\<^sub>B 
    FWbisimulation_base.mbisim Red1_execd.init_fin_bisim Red1_execd.init_fin_bisim_wait"
 
 definition if_tlsimJ2JVM ::
@@ -148,8 +148,8 @@ definition if_tlsimJ2JVM ::
                   'heap, 'addr, ('addr, 'thread_id) obs_event action) thread_action) bisim"
 where
   "if_tlsimJ2JVM = 
-   FWbisimulation_base.mta_bisim red_red0.init_fin_bisim \<circ>\<^isub>B 
-   FWbisimulation_base.mta_bisim red0_Red1'.init_fin_bisim \<circ>\<^isub>B op = \<circ>\<^isub>B 
+   FWbisimulation_base.mta_bisim red_red0.init_fin_bisim \<circ>\<^sub>B 
+   FWbisimulation_base.mta_bisim red0_Red1'.init_fin_bisim \<circ>\<^sub>B op = \<circ>\<^sub>B 
    FWbisimulation_base.mta_bisim Red1_execd.init_fin_bisim"
 
 end

@@ -6,42 +6,42 @@ context CFG begin
 
 inductive distance :: "'node \<Rightarrow> 'node \<Rightarrow> nat \<Rightarrow> bool"
 where distanceI:
-  "\<lbrakk>n -as\<rightarrow>\<^isub>\<iota>* n'; length as = x; \<forall>as'. n -as'\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> x \<le> length as'\<rbrakk>
+  "\<lbrakk>n -as\<rightarrow>\<^sub>\<iota>* n'; length as = x; \<forall>as'. n -as'\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> x \<le> length as'\<rbrakk>
   \<Longrightarrow> distance n n' x"
 
 
 lemma every_path_distance:
-  assumes "n -as\<rightarrow>\<^isub>\<iota>* n'"
+  assumes "n -as\<rightarrow>\<^sub>\<iota>* n'"
   obtains x where "distance n n' x" and "x \<le> length as"
 proof(atomize_elim)
   show "\<exists>x. distance n n' x \<and> x \<le> length as"
-  proof(cases "\<exists>as'. n -as'\<rightarrow>\<^isub>\<iota>* n' \<and> 
-                     (\<forall>asx. n -asx\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> length as' \<le> length asx)")
+  proof(cases "\<exists>as'. n -as'\<rightarrow>\<^sub>\<iota>* n' \<and> 
+                     (\<forall>asx. n -asx\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> length as' \<le> length asx)")
     case True
     then obtain as' 
-      where "n -as'\<rightarrow>\<^isub>\<iota>* n' \<and> (\<forall>asx. n -asx\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> length as' \<le> length asx)" 
+      where "n -as'\<rightarrow>\<^sub>\<iota>* n' \<and> (\<forall>asx. n -asx\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> length as' \<le> length asx)" 
       by blast
-    hence "n -as'\<rightarrow>\<^isub>\<iota>* n'" and all:"\<forall>asx. n -asx\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> length as' \<le> length asx"
+    hence "n -as'\<rightarrow>\<^sub>\<iota>* n'" and all:"\<forall>asx. n -asx\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> length as' \<le> length asx"
       by simp_all
     hence "distance n n' (length as')" by(fastforce intro:distanceI)
-    from `n -as\<rightarrow>\<^isub>\<iota>* n'` all have "length as' \<le> length as" by fastforce
+    from `n -as\<rightarrow>\<^sub>\<iota>* n'` all have "length as' \<le> length as" by fastforce
     with `distance n n' (length as')` show ?thesis by blast
   next
     case False
-    hence all:"\<forall>as'. n -as'\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> (\<exists>asx. n -asx\<rightarrow>\<^isub>\<iota>* n' \<and> length as' > length asx)"
+    hence all:"\<forall>as'. n -as'\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> (\<exists>asx. n -asx\<rightarrow>\<^sub>\<iota>* n' \<and> length as' > length asx)"
       by fastforce
     have "wf (measure length)" by simp
-    from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "as \<in> {as. n -as\<rightarrow>\<^isub>\<iota>* n'}" by simp
-    with `wf (measure length)` obtain as' where "as' \<in> {as. n -as\<rightarrow>\<^isub>\<iota>* n'}" 
-      and notin:"\<And>as''. (as'',as') \<in> (measure length) \<Longrightarrow> as'' \<notin> {as. n -as\<rightarrow>\<^isub>\<iota>* n'}"
+    from `n -as\<rightarrow>\<^sub>\<iota>* n'` have "as \<in> {as. n -as\<rightarrow>\<^sub>\<iota>* n'}" by simp
+    with `wf (measure length)` obtain as' where "as' \<in> {as. n -as\<rightarrow>\<^sub>\<iota>* n'}" 
+      and notin:"\<And>as''. (as'',as') \<in> (measure length) \<Longrightarrow> as'' \<notin> {as. n -as\<rightarrow>\<^sub>\<iota>* n'}"
       by(erule wfE_min)
-    from `as' \<in> {as. n -as\<rightarrow>\<^isub>\<iota>* n'}` have "n -as'\<rightarrow>\<^isub>\<iota>* n'" by simp
-    with all obtain asx where "n -asx\<rightarrow>\<^isub>\<iota>* n'"
+    from `as' \<in> {as. n -as\<rightarrow>\<^sub>\<iota>* n'}` have "n -as'\<rightarrow>\<^sub>\<iota>* n'" by simp
+    with all obtain asx where "n -asx\<rightarrow>\<^sub>\<iota>* n'"
       and "length as' > length asx"
       by blast
-    with notin have  "asx \<notin> {as. n -as\<rightarrow>\<^isub>\<iota>* n'}" by simp
-    hence "\<not> n -asx\<rightarrow>\<^isub>\<iota>* n'" by simp
-    with `n -asx\<rightarrow>\<^isub>\<iota>* n'` have False by simp
+    with notin have  "asx \<notin> {as. n -as\<rightarrow>\<^sub>\<iota>* n'}" by simp
+    hence "\<not> n -asx\<rightarrow>\<^sub>\<iota>* n'" by simp
+    with `n -asx\<rightarrow>\<^sub>\<iota>* n'` have False by simp
     thus ?thesis by simp
   qed
 qed
@@ -133,10 +133,10 @@ proof(atomize_elim)
                                                  valid_edge a' \<and> intra_kind(kind a') \<and>
                                                  targetnode a' = nx)
                  \<longrightarrow> \<not> distance (targetnode a) n' (x - 1)" by blast
-    from `distance n n' x` obtain as where "n -as\<rightarrow>\<^isub>\<iota>* n'" and "x = length as"
-      and all:"\<forall>as'. n -as'\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> x \<le> length as'"
+    from `distance n n' x` obtain as where "n -as\<rightarrow>\<^sub>\<iota>* n'" and "x = length as"
+      and all:"\<forall>as'. n -as'\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> x \<le> length as'"
       by(auto elim:distance.cases)
-    from `n -as\<rightarrow>\<^isub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind(kind a)"
+    from `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind(kind a)"
       by(simp_all add:intra_path_def)
     from this `x = length as` all imp show False
     proof(induct rule:path.induct)
@@ -150,15 +150,15 @@ proof(atomize_elim)
                                                  valid_edge a' \<and> intra_kind(kind a') \<and>
                                                  targetnode a' = nx)
                     \<longrightarrow> \<not> distance (targetnode a) n' (x - 1)`
-      note all = `\<forall>as'. n -as'\<rightarrow>\<^isub>\<iota>* n' \<longrightarrow> x \<le> length as'`
+      note all = `\<forall>as'. n -as'\<rightarrow>\<^sub>\<iota>* n' \<longrightarrow> x \<le> length as'`
       from `\<forall>a\<in>set (a#as). intra_kind (kind a)` 
       have "intra_kind (kind a)" and "\<forall>a\<in>set as. intra_kind (kind a)"
         by simp_all
       from `n'' -as\<rightarrow>* n'` `\<forall>a\<in>set as. intra_kind (kind a)`
-      have "n'' -as\<rightarrow>\<^isub>\<iota>* n'" by(simp add:intra_path_def)
+      have "n'' -as\<rightarrow>\<^sub>\<iota>* n'" by(simp add:intra_path_def)
       then obtain y where "distance n'' n' y"
         and "y \<le> length as" by(erule every_path_distance)
-      from `distance n'' n' y` obtain as' where "n'' -as'\<rightarrow>\<^isub>\<iota>* n'"
+      from `distance n'' n' y` obtain as' where "n'' -as'\<rightarrow>\<^sub>\<iota>* n'"
         and "y = length as'" by(auto elim:distance.cases)
       hence "n'' -as'\<rightarrow>* n'" and "\<forall>a\<in>set as'. intra_kind (kind a)"
         by(simp_all add:intra_path_def)
@@ -168,7 +168,7 @@ proof(atomize_elim)
         from `valid_edge a` `sourcenode a = n` `targetnode a = n''` `n'' -as'\<rightarrow>* n'`
         have "n -a#as'\<rightarrow>* n'" by -(rule path.Cons_path)
         with `\<forall>a\<in>set as'. intra_kind (kind a)` `intra_kind (kind a)`
-        have "n -a#as'\<rightarrow>\<^isub>\<iota>* n'" by(simp add:intra_path_def)
+        have "n -a#as'\<rightarrow>\<^sub>\<iota>* n'" by(simp add:intra_path_def)
         with all have "x \<le> length (a#as')" by blast
         with `x = length (a#as)` True `y = length as'` show False by simp
       next

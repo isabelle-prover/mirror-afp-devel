@@ -12,22 +12,22 @@ imports
   "../Common/ExternalCallWF"
 begin
 
-definition exec :: "'addr jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> 'addr instr list \<Rightarrow> ty\<^isub>i' err step_type"
+definition exec :: "'addr jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> 'addr instr list \<Rightarrow> ty\<^sub>i' err step_type"
 where
   "exec G maxs rT et bs \<equiv>
    err_step (size bs) (\<lambda>pc. app (bs!pc) G maxs rT pc (size bs) et) (\<lambda>pc. eff (bs!pc) G pc et)"
 
 locale JVM_sl =
-  fixes P :: "'addr jvm_prog" and mxs and mxl\<^isub>0
-  fixes Ts :: "ty list" and "is" :: "'addr instr list" and xt and T\<^isub>r
+  fixes P :: "'addr jvm_prog" and mxs and mxl\<^sub>0
+  fixes Ts :: "ty list" and "is" :: "'addr instr list" and xt and T\<^sub>r
 
   fixes mxl and A and r and f and app and eff and step
-  defines [simp]: "mxl \<equiv> 1+size Ts+mxl\<^isub>0"
+  defines [simp]: "mxl \<equiv> 1+size Ts+mxl\<^sub>0"
   defines [simp]: "A   \<equiv> states P mxs mxl"
   defines [simp]: "r   \<equiv> JVM_SemiType.le P mxs mxl"
   defines [simp]: "f   \<equiv> JVM_SemiType.sup P mxs mxl"
 
-  defines [simp]: "app \<equiv> \<lambda>pc. Effect.app (is!pc) P mxs T\<^isub>r pc (size is) xt"
+  defines [simp]: "app \<equiv> \<lambda>pc. Effect.app (is!pc) P mxs T\<^sub>r pc (size is) xt"
   defines [simp]: "eff \<equiv> \<lambda>pc. Effect.eff (is!pc) P pc xt"
   defines [simp]: "step \<equiv> err_step (size is) app eff"
 
@@ -38,16 +38,16 @@ locale start_context = JVM_sl +
   assumes C:  "is_class P C"
   assumes Ts: "set Ts \<subseteq> types P"
 
-  fixes first :: ty\<^isub>i' and start
+  fixes first :: ty\<^sub>i' and start
   defines [simp]: 
-  "first \<equiv> Some ([],OK (Class C) # map OK Ts @ replicate mxl\<^isub>0 Err)"
+  "first \<equiv> Some ([],OK (Class C) # map OK Ts @ replicate mxl\<^sub>0 Err)"
   defines [simp]:
   "start \<equiv> OK first # replicate (size is - 1) (OK None)"
 
 
 section {* Connecting JVM and Framework *}
 
-lemma (in JVM_sl) step_def_exec: "step \<equiv> exec P mxs T\<^isub>r xt is" 
+lemma (in JVM_sl) step_def_exec: "step \<equiv> exec P mxs T\<^sub>r xt is" 
   by (simp add: exec_def)  
 
 lemma special_ex_swap_lemma [iff]: 
@@ -393,7 +393,7 @@ lemma (in JVM_sl) eff_mono:
    apply (drule (2) succs_mono)
    apply blast
   apply simp
-  apply (erule eff\<^isub>i_mono)
+  apply (erule eff\<^sub>i_mono)
      apply simp
     apply assumption   
    apply clarsimp
@@ -433,11 +433,11 @@ lemma (in start_context) first_in_A [iff]: "OK first \<in> A"
 
 
 lemma (in JVM_sl) wt_method_def2:
-  "wt_method P C' Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s =
+  "wt_method P C' Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s =
   (is \<noteq> [] \<and> 
    size \<tau>s = size is \<and>
    OK ` set \<tau>s \<subseteq> states P mxs mxl \<and>
-   wt_start P C' Ts mxl\<^isub>0 \<tau>s \<and> 
+   wt_start P C' Ts mxl\<^sub>0 \<tau>s \<and> 
    wt_app_eff (sup_state_opt P) app eff \<tau>s)"
 (*<*)
   apply (unfold wt_method_def wt_app_eff_def wt_instr_def lesub_def check_types_def)

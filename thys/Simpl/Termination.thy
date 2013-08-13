@@ -53,18 +53,18 @@ where
 | Fault [intro,simp]: "\<Gamma>\<turnstile>c\<down>Fault f" 
 
 
-| Seq: "\<lbrakk>\<Gamma>\<turnstile>c\<^isub>1\<down>Normal s; \<forall>s'. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> s' \<longrightarrow> \<Gamma>\<turnstile>c\<^isub>2\<down>s'\<rbrakk>
+| Seq: "\<lbrakk>\<Gamma>\<turnstile>c\<^sub>1\<down>Normal s; \<forall>s'. \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> \<Rightarrow> s' \<longrightarrow> \<Gamma>\<turnstile>c\<^sub>2\<down>s'\<rbrakk>
         \<Longrightarrow>
-        \<Gamma>\<turnstile>Seq c\<^isub>1 c\<^isub>2\<down>(Normal s)"
+        \<Gamma>\<turnstile>Seq c\<^sub>1 c\<^sub>2\<down>(Normal s)"
 
-| CondTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>c\<^isub>1\<down>(Normal s)\<rbrakk> 
+| CondTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>c\<^sub>1\<down>(Normal s)\<rbrakk> 
              \<Longrightarrow>  
-             \<Gamma>\<turnstile>Cond b c\<^isub>1 c\<^isub>2\<down>(Normal s)"
+             \<Gamma>\<turnstile>Cond b c\<^sub>1 c\<^sub>2\<down>(Normal s)"
 
 
-| CondFalse: "\<lbrakk>s \<notin> b; \<Gamma>\<turnstile>c\<^isub>2\<down>(Normal s)\<rbrakk> 
+| CondFalse: "\<lbrakk>s \<notin> b; \<Gamma>\<turnstile>c\<^sub>2\<down>(Normal s)\<rbrakk> 
              \<Longrightarrow>  
-             \<Gamma>\<turnstile>Cond b c\<^isub>1 c\<^isub>2\<down>(Normal s)"
+             \<Gamma>\<turnstile>Cond b c\<^sub>1 c\<^sub>2\<down>(Normal s)"
 
 
 | WhileTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>c\<down>(Normal s); 
@@ -94,10 +94,10 @@ where
 
 | Abrupt [intro,simp]: "\<Gamma>\<turnstile>c\<down>Abrupt s"
 
-| Catch: "\<lbrakk>\<Gamma>\<turnstile>c\<^isub>1\<down>Normal s; 
-           \<forall>s'. \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s \<rangle> \<Rightarrow> Abrupt s' \<longrightarrow> \<Gamma>\<turnstile>c\<^isub>2\<down>Normal s'\<rbrakk>
+| Catch: "\<lbrakk>\<Gamma>\<turnstile>c\<^sub>1\<down>Normal s; 
+           \<forall>s'. \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s \<rangle> \<Rightarrow> Abrupt s' \<longrightarrow> \<Gamma>\<turnstile>c\<^sub>2\<down>Normal s'\<rbrakk>
           \<Longrightarrow>
-          \<Gamma>\<turnstile>Catch c\<^isub>1 c\<^isub>2\<down>Normal s"  
+          \<Gamma>\<turnstile>Catch c\<^sub>1 c\<^sub>2\<down>Normal s"  
 
 
 inductive_cases terminates_elim_cases [cases set]:
@@ -876,7 +876,7 @@ next
 qed (auto intro: terminates.intros)
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^isub>1 \<inter>\<^sub>g c\<^isub>2"} *}
+subsection {* Lemmas about @{term "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"} *}
 (* ************************************************************************* *)
 
 lemma inter_guards_terminates: 
@@ -1572,7 +1572,7 @@ theorem terminates_iff_terminates_merge_guards:
     terminates_merge_guards_to_terminates)
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^isub>1 \<subseteq>\<^sub>g c\<^isub>2"} *}
+subsection {* Lemmas about @{term "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"} *}
 (* ************************************************************************ *)
 
 lemma terminates_fewer_guards_Normal:

@@ -9,19 +9,19 @@ subsection{*Cooper*}
 text{* This section formalizes Cooper's algorithm~\cite{Cooper72}. *}
 
 lemma set_atoms0_iff:
- "qfree \<phi> \<Longrightarrow> a : set(Z.atoms\<^isub>0 \<phi>) \<longleftrightarrow> a : atoms \<phi> \<and> hd_coeff a \<noteq> 0"
+ "qfree \<phi> \<Longrightarrow> a : set(Z.atoms\<^sub>0 \<phi>) \<longleftrightarrow> a : atoms \<phi> \<and> hd_coeff a \<noteq> 0"
 by(induct \<phi>) (auto split:split_if_asm)
 
 definition
 "hd_coeffs1 \<phi> =
- (let m = zlcms(map hd_coeff (Z.atoms\<^isub>0 \<phi>))
+ (let m = zlcms(map hd_coeff (Z.atoms\<^sub>0 \<phi>))
   in And (Atom(Dvd m 0 [1])) (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>))"
 
 lemma I_hd_coeffs1:
 assumes "qfree \<phi>"
 shows "(\<exists>x. Z.I (hd_coeffs1 \<phi>) (x#xs)) = (\<exists>x. Z.I \<phi> (x#xs))" (is "?L = ?R")
 proof -
-  let ?l = "zlcms(map hd_coeff (Z.atoms\<^isub>0 \<phi>))"
+  let ?l = "zlcms(map hd_coeff (Z.atoms\<^sub>0 \<phi>))"
   have "?l>0" by(simp add: zlcms_pos set_atoms0_iff[OF `qfree \<phi>`])
   have "?L = (\<exists>x. ?l dvd x+0 \<and> Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 ?l) \<phi>) (x#xs))"
     by(simp add:hd_coeffs1_def)
@@ -33,25 +33,25 @@ proof -
 qed
 
 
-fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^isub>-") where
-"inf\<^isub>- (And \<phi>\<^isub>1 \<phi>\<^isub>2) = and (inf\<^isub>- \<phi>\<^isub>1) (inf\<^isub>- \<phi>\<^isub>2)" |
-"inf\<^isub>- (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = or (inf\<^isub>- \<phi>\<^isub>1) (inf\<^isub>- \<phi>\<^isub>2)" |
-"inf\<^isub>- (Atom(Le i (k#ks))) =
+fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
+"inf\<^sub>- (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
+"inf\<^sub>- (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
+"inf\<^sub>- (Atom(Le i (k#ks))) =
   (if k<0 then TrueF else if k>0 then FalseF else Atom(Le i (0#ks)))" |
-"inf\<^isub>- \<phi> = \<phi>"
+"inf\<^sub>- \<phi> = \<phi>"
 
 
 definition
-"qe_cooper\<^isub>1 \<phi> =
- (let as = Z.atoms\<^isub>0 \<phi>; d = zlcms(map divisor as); ls = lbounds as
-  in or (Disj [0..d - 1] (\<lambda>n. subst n [] (inf\<^isub>- \<phi>)))
+"qe_cooper\<^sub>1 \<phi> =
+ (let as = Z.atoms\<^sub>0 \<phi>; d = zlcms(map divisor as); ls = lbounds as
+  in or (Disj [0..d - 1] (\<lambda>n. subst n [] (inf\<^sub>- \<phi>)))
         (Disj ls (\<lambda>(i,ks).
            Disj [0..d - 1] (\<lambda>n. subst (i + n) (-ks) \<phi>))))"
 
 
 lemma min_inf:
-  "nqfree f \<Longrightarrow> \<forall>a\<in>set(Z.atoms\<^isub>0 f). hd_coeff_is1 a
-   \<Longrightarrow> \<exists>x.\<forall>y<x. Z.I (inf\<^isub>- f) (y # xs) = Z.I f (y # xs)"
+  "nqfree f \<Longrightarrow> \<forall>a\<in>set(Z.atoms\<^sub>0 f). hd_coeff_is1 a
+   \<Longrightarrow> \<exists>x.\<forall>y<x. Z.I (inf\<^sub>- f) (y # xs) = Z.I f (y # xs)"
   (is "_ \<Longrightarrow> _ \<Longrightarrow> \<exists>x. ?P f x")
 proof(induct f rule: min_inf.induct)
   case (3 i k ks)
@@ -79,8 +79,8 @@ qed simp_all
 
 
 lemma min_inf_repeats:
-  "nqfree \<phi> \<Longrightarrow> \<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd d \<Longrightarrow>
-  Z.I (inf\<^isub>- \<phi>) ((x - k*d)#xs) = Z.I (inf\<^isub>- \<phi>) (x#xs)"
+  "nqfree \<phi> \<Longrightarrow> \<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). divisor a dvd d \<Longrightarrow>
+  Z.I (inf\<^sub>- \<phi>) ((x - k*d)#xs) = Z.I (inf\<^sub>- \<phi>) (x#xs)"
 proof(induct \<phi> rule:min_inf.induct)
   case ("4_4" da i ks)
   show ?case
@@ -140,14 +140,14 @@ next
 qed simp_all
 
 
-lemma atoms_subset: "qfree f \<Longrightarrow> set(Z.atoms\<^isub>0(f::atom fm)) \<le> atoms f"
+lemma atoms_subset: "qfree f \<Longrightarrow> set(Z.atoms\<^sub>0(f::atom fm)) \<le> atoms f"
 by (induct f) auto
 
 (* copied from Amine *)
 lemma \<beta>:
-  "\<lbrakk> nqfree \<phi>;  \<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). hd_coeff_is1 a;
-     \<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd d; d > 0;
-     \<not>(\<exists>j\<in>{0 .. d - 1}. \<exists>(i,ks) \<in> set(lbounds(Z.atoms\<^isub>0 \<phi>)).
+  "\<lbrakk> nqfree \<phi>;  \<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). hd_coeff_is1 a;
+     \<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). divisor a dvd d; d > 0;
+     \<not>(\<exists>j\<in>{0 .. d - 1}. \<exists>(i,ks) \<in> set(lbounds(Z.atoms\<^sub>0 \<phi>)).
          x = i - \<langle>ks,xs\<rangle> + j); Z.I \<phi> (x#xs) \<rbrakk>
   \<Longrightarrow> Z.I \<phi> ((x-d)#xs)"
 proof(induct \<phi>)
@@ -253,12 +253,12 @@ done
 
 theorem cp_thm:
   assumes nq: "nqfree \<phi>"
-  and u: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). hd_coeff_is1 a"
-  and d: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd d"
+  and u: "\<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). hd_coeff_is1 a"
+  and d: "\<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). divisor a dvd d"
   and dp: "d > 0"
   shows "(\<exists>x. Z.I \<phi> (x#xs)) =
-   (\<exists>j\<in>{0..d - 1}. Z.I (inf\<^isub>- \<phi>) (j#xs) \<or>
-   (\<exists>(i,ks) \<in> set(lbounds(Z.atoms\<^isub>0 \<phi>)). Z.I \<phi> ((i - \<langle>ks,xs\<rangle> + j) # xs)))"
+   (\<exists>j\<in>{0..d - 1}. Z.I (inf\<^sub>- \<phi>) (j#xs) \<or>
+   (\<exists>(i,ks) \<in> set(lbounds(Z.atoms\<^sub>0 \<phi>)). Z.I \<phi> ((i - \<langle>ks,xs\<rangle> + j) # xs)))"
   (is "(\<exists>x. ?P (x)) = (\<exists> j\<in> ?D. ?M j \<or> (\<exists>(i,ks)\<in> ?B. ?P (?I i ks + j)))")
 proof-
   from min_inf[OF nq u] have th: "\<exists>z.\<forall>x<z. ?P x = ?M x" by blast
@@ -273,27 +273,27 @@ qed
 
 (* end of Amine *)
 
-lemma qfree_min_inf[simp]: "qfree \<phi> \<Longrightarrow> qfree (inf\<^isub>- \<phi>)"
+lemma qfree_min_inf[simp]: "qfree \<phi> \<Longrightarrow> qfree (inf\<^sub>- \<phi>)"
 by (induct \<phi> rule:min_inf.induct) simp_all
 
-lemma I_qe_cooper\<^isub>1:
+lemma I_qe_cooper\<^sub>1:
 assumes norm: "\<forall>a\<in>atoms \<phi>. divisor a \<noteq> 0"
-and hd: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). hd_coeff_is1 a" and "nqfree \<phi>"
-shows "Z.I (qe_cooper\<^isub>1 \<phi>) xs = (\<exists>x. Z.I \<phi> (x#xs))"
+and hd: "\<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). hd_coeff_is1 a" and "nqfree \<phi>"
+shows "Z.I (qe_cooper\<^sub>1 \<phi>) xs = (\<exists>x. Z.I \<phi> (x#xs))"
 proof -
-  let ?as = "Z.atoms\<^isub>0 \<phi>"
+  let ?as = "Z.atoms\<^sub>0 \<phi>"
   let ?d = "zlcms(map divisor ?as)"
   have "?d > 0" using norm atoms_subset[of \<phi>] `nqfree \<phi>`
     by(fastforce intro:zlcms_pos)
-  have alld: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd ?d" by(simp add:dvd_zlcms)
+  have alld: "\<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). divisor a dvd ?d" by(simp add:dvd_zlcms)
   from cp_thm[OF `nqfree \<phi>` hd alld `?d>0`]
   show ?thesis using `nqfree \<phi>`
-    by (simp add:qe_cooper\<^isub>1_def I_subst[symmetric] split_def algebra_simps) blast
+    by (simp add:qe_cooper\<^sub>1_def I_subst[symmetric] split_def algebra_simps) blast
 qed
 
 lemma divisor_hd_coeff1_neq0:
   "qfree \<phi> \<Longrightarrow> a \<in> atoms \<phi> \<Longrightarrow> divisor a \<noteq> 0 \<Longrightarrow>
-   divisor (hd_coeff1 (zlcms (map hd_coeff (Z.atoms\<^isub>0 \<phi>))) a) \<noteq> 0"
+   divisor (hd_coeff1 (zlcms (map hd_coeff (Z.atoms\<^sub>0 \<phi>))) a) \<noteq> 0"
 apply (case_tac a)
 
 apply simp
@@ -302,8 +302,8 @@ apply(case_tac list) apply simp apply(simp split:split_if_asm)
 apply simp
 apply(case_tac list) apply simp
 apply(clarsimp split:split_if_asm)
-apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^isub>0 \<phi>))")
- apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^isub>0 \<phi>)). i \<noteq> 0")
+apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
+ apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff dvd_mult_div_cancel zlcms0_iff)
  apply (simp add:set_atoms0_iff)
 apply(fastforce simp:image_def set_atoms0_iff Bex_def)
@@ -311,8 +311,8 @@ apply(fastforce simp:image_def set_atoms0_iff Bex_def)
 apply simp
 apply(case_tac list) apply simp
 apply(clarsimp split:split_if_asm)
-apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^isub>0 \<phi>))")
- apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^isub>0 \<phi>)). i \<noteq> 0")
+apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
+ apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff dvd_mult_div_cancel zlcms0_iff)
  apply (simp add:set_atoms0_iff)
 apply(fastforce simp:image_def set_atoms0_iff Bex_def)
@@ -323,9 +323,9 @@ lemma hd_coeff_is1_hd_coeff1:
 by (induct a rule: hd_coeff1.induct) (simp_all add:zsgn_def)
 
 lemma I_cooper1_hd_coeffs1: "Z.normal \<phi> \<Longrightarrow> nqfree \<phi>
-       \<Longrightarrow> Z.I (qe_cooper\<^isub>1(hd_coeffs1 \<phi>)) xs = (\<exists>x. Z.I \<phi> (x # xs))"
+       \<Longrightarrow> Z.I (qe_cooper\<^sub>1(hd_coeffs1 \<phi>)) xs = (\<exists>x. Z.I \<phi> (x # xs))"
 apply(simp add:Z.normal_def)
-apply(subst I_qe_cooper\<^isub>1)
+apply(subst I_qe_cooper\<^sub>1)
    apply(clarsimp simp:hd_coeffs1_def image_def set_atoms0_iff divisor_hd_coeff1_neq0)
   apply (clarsimp simp:hd_coeffs1_def qfree_map_fm set_atoms0_iff
                      hd_coeff_is1_hd_coeff1)
@@ -333,18 +333,18 @@ apply(subst I_qe_cooper\<^isub>1)
 apply(simp add: I_hd_coeffs1)
 done
 
-definition "qe_cooper = Z.lift_nnf_qe (qe_cooper\<^isub>1 \<circ> hd_coeffs1)"
+definition "qe_cooper = Z.lift_nnf_qe (qe_cooper\<^sub>1 \<circ> hd_coeffs1)"
 
-lemma qfree_cooper1_hd_coeffs1: "qfree \<phi> \<Longrightarrow> qfree (qe_cooper\<^isub>1 (hd_coeffs1 \<phi>))"
-by(auto simp:qe_cooper\<^isub>1_def hd_coeffs1_def qfree_map_fm
+lemma qfree_cooper1_hd_coeffs1: "qfree \<phi> \<Longrightarrow> qfree (qe_cooper\<^sub>1 (hd_coeffs1 \<phi>))"
+by(auto simp:qe_cooper\<^sub>1_def hd_coeffs1_def qfree_map_fm
         intro!: qfree_or qfree_and qfree_list_disj qfree_min_inf)
 
 
-lemma normal_min_inf: "Z.normal \<phi> \<Longrightarrow> Z.normal(inf\<^isub>- \<phi>)"
+lemma normal_min_inf: "Z.normal \<phi> \<Longrightarrow> Z.normal(inf\<^sub>- \<phi>)"
 by(induct \<phi> rule:min_inf.induct) simp_all
 
-lemma normal_cooper1: "Z.normal \<phi> \<Longrightarrow> Z.normal(qe_cooper\<^isub>1 \<phi>)"
-by(simp add:qe_cooper\<^isub>1_def Logic.or_def Z.normal_map_fm normal_min_inf split_def)
+lemma normal_cooper1: "Z.normal \<phi> \<Longrightarrow> Z.normal(qe_cooper\<^sub>1 \<phi>)"
+by(simp add:qe_cooper\<^sub>1_def Logic.or_def Z.normal_map_fm normal_min_inf split_def)
 
 lemma normal_hd_coeffs1: "qfree \<phi> \<Longrightarrow> Z.normal \<phi> \<Longrightarrow> Z.normal(hd_coeffs1 \<phi>)"
 by(auto simp: hd_coeffs1_def image_def set_atoms0_iff

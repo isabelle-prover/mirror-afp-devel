@@ -11,30 +11,30 @@ imports "../DFA/Abstract_BV" TF_JVM
 begin
 
 definition kiljvm :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 
-             instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' err list \<Rightarrow> ty\<^isub>i' err list"
+             instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i' err list \<Rightarrow> ty\<^sub>i' err list"
 where
-  "kiljvm P mxs mxl T\<^isub>r is xt \<equiv>
+  "kiljvm P mxs mxl T\<^sub>r is xt \<equiv>
   kildall (JVM_SemiType.le P mxs mxl) (JVM_SemiType.sup P mxs mxl) 
-          (exec P mxs T\<^isub>r xt is)"
+          (exec P mxs T\<^sub>r xt is)"
 
 definition wt_kildall :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
                  instr list \<Rightarrow> ex_table \<Rightarrow> bool"
 where
-  "wt_kildall P C' Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<equiv>
+  "wt_kildall P C' Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<equiv>
    0 < size is \<and> 
-   (let first  = Some ([],[OK (Class C')]@(map OK Ts)@(replicate mxl\<^isub>0 Err));
+   (let first  = Some ([],[OK (Class C')]@(map OK Ts)@(replicate mxl\<^sub>0 Err));
         start  = OK first#(replicate (size is - 1) (OK None));
-        result = kiljvm P mxs (1+size Ts+mxl\<^isub>0) T\<^isub>r is xt  start
+        result = kiljvm P mxs (1+size Ts+mxl\<^sub>0) T\<^sub>r is xt  start
     in \<forall>n < size is. result!n \<noteq> Err)"
 
-definition wf_jvm_prog\<^isub>k :: "jvm_prog \<Rightarrow> bool"
+definition wf_jvm_prog\<^sub>k :: "jvm_prog \<Rightarrow> bool"
 where
-  "wf_jvm_prog\<^isub>k P \<equiv>
-  wf_prog (\<lambda>P C' (M,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)). wt_kildall P C' Ts T\<^isub>r mxs mxl\<^isub>0 is xt) P"
+  "wf_jvm_prog\<^sub>k P \<equiv>
+  wf_prog (\<lambda>P C' (M,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)). wt_kildall P C' Ts T\<^sub>r mxs mxl\<^sub>0 is xt) P"
 
 
 theorem (in start_context) is_bcv_kiljvm:
-  "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^isub>r is xt)"
+  "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
 (*<*)
   apply (insert wf)
   apply (unfold kiljvm_def)
@@ -78,17 +78,17 @@ lemma (in start_context) start_in_A [intro?]:
 
 
 theorem (in start_context) wt_kil_correct:
-  assumes wtk: "wt_kildall P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt"
-  shows "\<exists>\<tau>s. wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
+  assumes wtk: "wt_kildall P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt"
+  shows "\<exists>\<tau>s. wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
 (*<*)
 proof -
   from wtk obtain res where    
-    result:   "res = kiljvm P mxs mxl T\<^isub>r is xt start" and
+    result:   "res = kiljvm P mxs mxl T\<^sub>r is xt start" and
     success:  "\<forall>n < size is. res!n \<noteq> Err" and
     instrs:   "0 < size is" 
     by (unfold wt_kildall_def) simp
       
-  have bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^isub>r is xt)"
+  have bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
     by (rule is_bcv_kiljvm)
     
   from instrs have "start \<in> list (size is) A" ..
@@ -119,7 +119,7 @@ proof -
     have "\<tau>s'!0 \<noteq> Err" by (unfold wt_step_def) simp
     then obtain \<tau>s0 where "\<tau>s'!0 = OK \<tau>s0" by auto
     ultimately
-    have "wt_start P C Ts mxl\<^isub>0 (map ok_val \<tau>s')" using l instrs
+    have "wt_start P C Ts mxl\<^sub>0 (map ok_val \<tau>s')" using l instrs
       by (unfold wt_start_def) 
          (simp add: lesub_def JVM_le_Err_conv Err.le_def)
   }
@@ -129,7 +129,7 @@ proof -
   have "wt_app_eff (sup_state_opt P) app eff (map ok_val \<tau>s')"
     by (auto intro: wt_err_imp_wt_app_eff simp add: l)
   ultimately
-  have "wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (map ok_val \<tau>s')"
+  have "wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (map ok_val \<tau>s')"
     using instrs by (simp add: wt_method_def2 check_types_def del: map_map)
   thus ?thesis by blast
 qed
@@ -137,15 +137,15 @@ qed
 
 
 theorem (in start_context) wt_kil_complete:
-  assumes wtm: "wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
-  shows "wt_kildall P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt"
+  assumes wtm: "wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
+  shows "wt_kildall P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt"
 (*<*)
 proof -
   from wtm obtain
     instrs:   "0 < size is" and
     length:   "length \<tau>s = length is" and 
     ck_type:  "check_types P mxs mxl (map OK \<tau>s)" and
-    wt_start: "wt_start P C Ts mxl\<^isub>0 \<tau>s" and
+    wt_start: "wt_start P C Ts mxl\<^sub>0 \<tau>s" and
     app_eff:  "wt_app_eff (sup_state_opt P) app eff \<tau>s"
     by (simp add: wt_method_def2 check_types_def)
 
@@ -158,7 +158,7 @@ proof -
           auto simp add: exec_def length states_def)
   hence wt_err: "wt_err_step (sup_state_opt P) step (map OK \<tau>s)" 
     by (simp add: length)
-  have is_bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^isub>r is xt)"
+  have is_bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
     by (rule is_bcv_kiljvm)
   moreover from instrs have "start \<in> list (size is) A" ..
   moreover
@@ -192,25 +192,25 @@ proof -
   from wt_err have "wt_step r Err step ?\<tau>s" 
     by (simp add: wt_err_step_def JVM_le_Err_conv)
   ultimately
-  have "\<forall>p. p < size is \<longrightarrow> kiljvm P  mxs mxl T\<^isub>r is xt start ! p \<noteq> Err" 
+  have "\<forall>p. p < size is \<longrightarrow> kiljvm P  mxs mxl T\<^sub>r is xt start ! p \<noteq> Err" 
     by (unfold is_bcv_def) blast
   with instrs 
-  show "wt_kildall P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt" by (unfold wt_kildall_def) simp
+  show "wt_kildall P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt" by (unfold wt_kildall_def) simp
 qed
 (*>*)
 
 
 theorem jvm_kildall_correct:
-  "wf_jvm_prog\<^isub>k P = wf_jvm_prog P"
+  "wf_jvm_prog\<^sub>k P = wf_jvm_prog P"
 (*<*)
 proof 
-  let ?\<Phi> = "\<lambda>C M. let (C,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)) = method P C M in 
-              SOME \<tau>s. wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt \<tau>s"
+  let ?\<Phi> = "\<lambda>C M. let (C,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)) = method P C M in 
+              SOME \<tau>s. wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt \<tau>s"
 
   -- "soundness"
-  assume wt: "wf_jvm_prog\<^isub>k P"
+  assume wt: "wf_jvm_prog\<^sub>k P"
   hence "wf_jvm_prog\<^bsub>?\<Phi>\<^esub> P"
-    apply (unfold wf_jvm_prog_phi_def wf_jvm_prog\<^isub>k_def)    
+    apply (unfold wf_jvm_prog_phi_def wf_jvm_prog\<^sub>k_def)    
     apply (erule wf_prog_lift)
     apply (auto dest!: start_context.wt_kil_correct [OF start_context.intro] 
                 intro: someI)
@@ -220,8 +220,8 @@ proof
 next
   -- "completeness"
   assume wt: "wf_jvm_prog P"
-  thus "wf_jvm_prog\<^isub>k P"
-    apply (unfold wf_jvm_prog_def wf_jvm_prog_phi_def wf_jvm_prog\<^isub>k_def)
+  thus "wf_jvm_prog\<^sub>k P"
+    apply (unfold wf_jvm_prog_def wf_jvm_prog_phi_def wf_jvm_prog\<^sub>k_def)
     apply (clarify)
     apply (erule wf_prog_lift)
     apply (auto intro!: start_context.wt_kil_complete start_context.intro)

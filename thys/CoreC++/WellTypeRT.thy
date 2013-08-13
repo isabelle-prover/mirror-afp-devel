@@ -75,10 +75,10 @@ where
   P,E,h \<turnstile> Var V : T"
 
 | WTrtBinOp:
-  "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2;
+  "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 : T\<^sub>1;  P,E,h \<turnstile> e\<^sub>2 : T\<^sub>2;
      case bop of Eq \<Rightarrow> T = Boolean
-               | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
+               | Add \<Rightarrow> T\<^sub>1 = Integer \<and> T\<^sub>2 = Integer \<and> T = Integer \<rbrakk>
+  \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T"
 
 | WTrtLAss:
   "\<lbrakk> E V = Some T;  P,E,h \<turnstile> e : T'; P \<turnstile> T' \<le> T \<rbrakk>
@@ -92,13 +92,13 @@ where
   "P,E,h \<turnstile> e : NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} : T"
 
 | WTrtFAss:
-"\<lbrakk>P,E,h \<turnstile> e\<^isub>1 : Class C; Cs \<noteq> [];
-  P \<turnstile> C has least F:T via Cs; P,E,h \<turnstile> e\<^isub>2 : T'; P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 : T"
+"\<lbrakk>P,E,h \<turnstile> e\<^sub>1 : Class C; Cs \<noteq> [];
+  P \<turnstile> C has least F:T via Cs; P,E,h \<turnstile> e\<^sub>2 : T'; P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2 : T"
 
 | WTrtFAssNT:
-  "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : NT; P,E,h \<turnstile> e\<^isub>2 : T'; P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 : T"
+  "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 : NT; P,E,h \<turnstile> e\<^sub>2 : T'; P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> P,E,h \<turnstile> e\<^sub>1\<bullet>F{Cs}:=e\<^sub>2 : T"
 
 | WTrtCall:
   "\<lbrakk> P,E,h \<turnstile> e : Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
@@ -119,11 +119,11 @@ where
   P,E,h \<turnstile> {V:T; e} : T'"
 
 | WTrtSeq:
-  "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
+  "\<lbrakk> P,E,h \<turnstile> e\<^sub>1 : T\<^sub>1;  P,E,h \<turnstile> e\<^sub>2 : T\<^sub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 : T\<^sub>2"
 
 | WTrtCond:
-  "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> e\<^isub>1 : T;  P,E,h \<turnstile> e\<^isub>2 : T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
+  "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> e\<^sub>1 : T;  P,E,h \<turnstile> e\<^sub>2 : T \<rbrakk>
+  \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 : T"
 
 | WTrtWhile:
   "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> c : T \<rbrakk>
@@ -163,14 +163,14 @@ inductive_simps [iff]:
   "P,E,h \<turnstile> (e#es) [:] Ts"
   "P,E,h \<turnstile> Val v : T"
   "P,E,h \<turnstile> Var V : T"
-  "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
+  "P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 : T\<^sub>2"
   "P,E,h \<turnstile> {V:T; e} : T'"
 
 
-lemma [simp]: "\<forall>Ts. (P,E,h \<turnstile> es\<^isub>1 @ es\<^isub>2 [:] Ts) =
-  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> P,E,h \<turnstile> es\<^isub>1 [:] Ts\<^isub>1 & P,E,h \<turnstile> es\<^isub>2 [:] Ts\<^isub>2)"
+lemma [simp]: "\<forall>Ts. (P,E,h \<turnstile> es\<^sub>1 @ es\<^sub>2 [:] Ts) =
+  (\<exists>Ts\<^sub>1 Ts\<^sub>2. Ts = Ts\<^sub>1 @ Ts\<^sub>2 \<and> P,E,h \<turnstile> es\<^sub>1 [:] Ts\<^sub>1 & P,E,h \<turnstile> es\<^sub>2 [:] Ts\<^sub>2)"
 
-apply(induct_tac es\<^isub>1)
+apply(induct_tac es\<^sub>1)
  apply simp
 apply clarsimp
 apply(erule thin_rl)
@@ -189,13 +189,13 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> new C : T"
   "P,E,h \<turnstile> Cast C e : T"
   "P,E,h \<turnstile> \<lparr>C\<rparr>e : T"
-  "P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
+  "P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T"
   "P,E,h \<turnstile> V:=e : T"
   "P,E,h \<turnstile> e\<bullet>F{Cs} : T"
   "P,E,h \<turnstile> e\<bullet>F{Cs} := v : T"
   "P,E,h \<turnstile> e\<bullet>M(es) : T"
   "P,E,h \<turnstile> e\<bullet>(C::)M(es) : T"
-  "P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
+  "P,E,h \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 : T"
   "P,E,h \<turnstile> while(e) c : T"
   "P,E,h \<turnstile> throw e : T"
 

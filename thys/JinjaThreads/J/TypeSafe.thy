@@ -181,36 +181,36 @@ next
   case RedInstanceOf thus ?case
     by(clarsimp)
 next
-  case (BinOpRed1 e\<^isub>1 s ta e\<^isub>1' s' bop e\<^isub>2 T E)
-  have red: "extTA,P,t \<turnstile> \<langle>e\<^isub>1, s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>1', s'\<rangle>"
-   and IH: "\<And>T E. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^isub>1:T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
-                 \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^isub>1' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" 
+  case (BinOpRed1 e\<^sub>1 s ta e\<^sub>1' s' bop e\<^sub>2 T E)
+  have red: "extTA,P,t \<turnstile> \<langle>e\<^sub>1, s\<rangle> -ta\<rightarrow> \<langle>e\<^sub>1', s'\<rangle>"
+   and IH: "\<And>T E. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^sub>1:T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
+                 \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^sub>1' : U \<and> P \<turnstile> U \<le> T"
+   and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T" 
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
-  from wt obtain T1 T2 where wt1: "P,E,hp s \<turnstile> e\<^isub>1 : T1"
-    and wt2: "P,E,hp s \<turnstile> e\<^isub>2 : T2" and wtbop: "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T" by auto
-  from IH[OF conf wt1 tconf] obtain T1' where wt1': "P,E,hp s' \<turnstile> e\<^isub>1' : T1'"
+  from wt obtain T1 T2 where wt1: "P,E,hp s \<turnstile> e\<^sub>1 : T1"
+    and wt2: "P,E,hp s \<turnstile> e\<^sub>2 : T2" and wtbop: "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T" by auto
+  from IH[OF conf wt1 tconf] obtain T1' where wt1': "P,E,hp s' \<turnstile> e\<^sub>1' : T1'"
     and sub: "P \<turnstile> T1' \<le> T1" by blast
   from WTrt_binop_widen_mono[OF wtbop sub widen_refl]
   obtain T' where wtbop': "P \<turnstile> T1'\<guillemotleft>bop\<guillemotright>T2 : T'" and sub': "P \<turnstile> T' \<le> T" by blast
   from wt1' WTrt_hext_mono[OF wt2 red_hext_incr[OF red]] wtbop'
-  have "P,E,hp s' \<turnstile> e\<^isub>1' \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T'" by(rule WTrtBinOp)
+  have "P,E,hp s' \<turnstile> e\<^sub>1' \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T'" by(rule WTrtBinOp)
   with sub' show ?case by blast
 next
-  case (BinOpRed2 e\<^isub>2 s ta e\<^isub>2' s' v\<^isub>1 bop T E)
-  have red: "extTA,P,t \<turnstile> \<langle>e\<^isub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>2',s'\<rangle>" by fact
-  have IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^isub>2:T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
-                 \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T" 
+  case (BinOpRed2 e\<^sub>2 s ta e\<^sub>2' s' v\<^sub>1 bop T E)
+  have red: "extTA,P,t \<turnstile> \<langle>e\<^sub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^sub>2',s'\<rangle>" by fact
+  have IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^sub>2:T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
+                 \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^sub>2' : U \<and> P \<turnstile> U \<le> T" 
     and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
-  have conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> (Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" by fact+
-  from wt obtain T1 T2 where wt1: "P,E,hp s \<turnstile> Val v\<^isub>1 : T1"
-    and wt2: "P,E,hp s \<turnstile> e\<^isub>2 : T2" and wtbop: "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T" by auto
-  from IH[OF conf wt2 tconf] obtain T2' where wt2': "P,E,hp s' \<turnstile> e\<^isub>2' : T2'"
+  have conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> (Val v\<^sub>1) \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T" by fact+
+  from wt obtain T1 T2 where wt1: "P,E,hp s \<turnstile> Val v\<^sub>1 : T1"
+    and wt2: "P,E,hp s \<turnstile> e\<^sub>2 : T2" and wtbop: "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T" by auto
+  from IH[OF conf wt2 tconf] obtain T2' where wt2': "P,E,hp s' \<turnstile> e\<^sub>2' : T2'"
     and sub: "P \<turnstile> T2' \<le> T2" by blast
   from WTrt_binop_widen_mono[OF wtbop widen_refl sub]
   obtain T' where wtbop': "P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2' : T'" and sub': "P \<turnstile> T' \<le> T" by blast
   from WTrt_hext_mono[OF wt1 red_hext_incr[OF red]] wt2' wtbop'
-  have "P,E,hp s' \<turnstile> Val v\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2' : T'" by(rule WTrtBinOp)
+  have "P,E,hp s' \<turnstile> Val v\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2' : T'" by(rule WTrtBinOp)
   with sub' show ?case by blast
 next
   case (RedBinOp bop v1 v2 v s)
@@ -468,70 +468,70 @@ next
   case RedFAccNull thus ?case unfolding sconf_def
     by(fastforce simp add: xcpt_subcls_Throwable[OF _ wf])
 next
-  case (FAssRed1 e s ta e' s' F D e\<^isub>2)
+  case (FAssRed1 e s ta e' s' F D e\<^sub>2)
   have red: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
    and IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D}:=e\<^isub>2 : T"
+   and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D}:=e\<^sub>2 : T"
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
   from wt have void: "T = Void" by blast
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
   { assume "P,E,hp s \<turnstile> e : NT"
     hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf _ tconf] by fastforce
-    moreover obtain T\<^isub>2 where "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2" using wt by auto
-    from this red_hext_incr[OF red] have  "P,E,hp s' \<turnstile> e\<^isub>2 : T\<^isub>2"
+    moreover obtain T\<^sub>2 where "P,E,hp s \<turnstile> e\<^sub>2 : T\<^sub>2" using wt by auto
+    from this red_hext_incr[OF red] have  "P,E,hp s' \<turnstile> e\<^sub>2 : T\<^sub>2"
       by(rule WTrt_hext_mono)
     ultimately have ?case using void by(blast intro!:WTrtFAssNT)
   }
   moreover
-  { fix T' C TF T\<^isub>2 fm
-    assume wt\<^isub>1: "P,E,hp s \<turnstile> e : T'" and icto: "class_type_of' T' = \<lfloor>C\<rfloor>" and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2"
-      and has: "P \<turnstile> C has F:TF (fm) in D" and sub: "P \<turnstile> T\<^isub>2 \<le> TF"
-    obtain U where wt\<^isub>1': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'"
-      using IH[OF conf wt\<^isub>1 tconf] by blast
-    have wt\<^isub>2': "P,E,hp s' \<turnstile> e\<^isub>2 : T\<^isub>2"
-      by(rule WTrt_hext_mono[OF wt\<^isub>2 red_hext_incr[OF red]])
+  { fix T' C TF T\<^sub>2 fm
+    assume wt\<^sub>1: "P,E,hp s \<turnstile> e : T'" and icto: "class_type_of' T' = \<lfloor>C\<rfloor>" and wt\<^sub>2: "P,E,hp s \<turnstile> e\<^sub>2 : T\<^sub>2"
+      and has: "P \<turnstile> C has F:TF (fm) in D" and sub: "P \<turnstile> T\<^sub>2 \<le> TF"
+    obtain U where wt\<^sub>1': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'"
+      using IH[OF conf wt\<^sub>1 tconf] by blast
+    have wt\<^sub>2': "P,E,hp s' \<turnstile> e\<^sub>2 : T\<^sub>2"
+      by(rule WTrt_hext_mono[OF wt\<^sub>2 red_hext_incr[OF red]])
     -- "Is @{term U} the null type or a class type?"
     have ?case
     proof(cases "U = NT")
       case True
-      with wt\<^isub>1' wt\<^isub>2' void show ?thesis by(blast intro!:WTrtFAssNT)
+      with wt\<^sub>1' wt\<^sub>2' void show ?thesis by(blast intro!:WTrtFAssNT)
     next
       case False
       with icto UsubC obtain C' where icto': "class_type_of' U = \<lfloor>C'\<rfloor>"
         and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C" by(rule widen_is_class_type_of)
       have "P \<turnstile> C' has F:TF (fm) in D" by(rule has_field_mono[OF has "subclass"])
-      with wt\<^isub>1' show ?thesis using wt\<^isub>2' sub void icto' by(blast intro:WTrtFAss)
+      with wt\<^sub>1' show ?thesis using wt\<^sub>2' sub void icto' by(blast intro:WTrtFAss)
     qed }
   ultimately show ?case using wt by blast
 next
-  case (FAssRed2 e\<^isub>2 s ta e\<^isub>2' s' v F D T E)
-  have red: "extTA,P,t \<turnstile> \<langle>e\<^isub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>2',s'\<rangle>"
-   and IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^isub>2 : T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
-                 \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> Val v\<bullet>F{D}:=e\<^isub>2 : T" 
+  case (FAssRed2 e\<^sub>2 s ta e\<^sub>2' s' v F D T E)
+  have red: "extTA,P,t \<turnstile> \<langle>e\<^sub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^sub>2',s'\<rangle>"
+   and IH: "\<And>E T. \<lbrakk>E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^sub>2 : T; P,hp s \<turnstile> t \<surd>t\<rbrakk>
+                 \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^sub>2' : U \<and> P \<turnstile> U \<le> T"
+   and conf: "E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> Val v\<bullet>F{D}:=e\<^sub>2 : T" 
    and tconf: "P,hp s \<turnstile> t \<surd>t" by fact+
   from wt have [simp]: "T = Void" by auto
   from wt show ?case
   proof (rule WTrt_elim_cases)
-    fix U C TF T\<^isub>2 fm
-    assume wt\<^isub>1: "P,E,hp s \<turnstile> Val v : U"
+    fix U C TF T\<^sub>2 fm
+    assume wt\<^sub>1: "P,E,hp s \<turnstile> Val v : U"
       and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
       and has: "P \<turnstile> C has F:TF (fm) in D"
-      and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2" and TsubTF: "P \<turnstile> T\<^isub>2 \<le> TF"
-    have wt\<^isub>1': "P,E,hp s' \<turnstile> Val v : U"
-      by(rule WTrt_hext_mono[OF wt\<^isub>1 red_hext_incr[OF red]])
-    obtain T\<^isub>2' where wt\<^isub>2': "P,E,hp s' \<turnstile> e\<^isub>2' : T\<^isub>2'" and T'subT: "P \<turnstile> T\<^isub>2' \<le> T\<^isub>2"
-      using IH[OF conf wt\<^isub>2 tconf] by blast
-    have "P,E,hp s' \<turnstile> Val v\<bullet>F{D}:=e\<^isub>2' : Void"
-      by(rule WTrtFAss[OF wt\<^isub>1' icto has wt\<^isub>2' widen_trans[OF T'subT TsubTF]])
+      and wt\<^sub>2: "P,E,hp s \<turnstile> e\<^sub>2 : T\<^sub>2" and TsubTF: "P \<turnstile> T\<^sub>2 \<le> TF"
+    have wt\<^sub>1': "P,E,hp s' \<turnstile> Val v : U"
+      by(rule WTrt_hext_mono[OF wt\<^sub>1 red_hext_incr[OF red]])
+    obtain T\<^sub>2' where wt\<^sub>2': "P,E,hp s' \<turnstile> e\<^sub>2' : T\<^sub>2'" and T'subT: "P \<turnstile> T\<^sub>2' \<le> T\<^sub>2"
+      using IH[OF conf wt\<^sub>2 tconf] by blast
+    have "P,E,hp s' \<turnstile> Val v\<bullet>F{D}:=e\<^sub>2' : Void"
+      by(rule WTrtFAss[OF wt\<^sub>1' icto has wt\<^sub>2' widen_trans[OF T'subT TsubTF]])
     thus ?case by auto
   next
-    fix T\<^isub>2 assume null: "P,E,hp s \<turnstile> Val v : NT" and wt\<^isub>2: "P,E,hp s \<turnstile> e\<^isub>2 : T\<^isub>2"
+    fix T\<^sub>2 assume null: "P,E,hp s \<turnstile> Val v : NT" and wt\<^sub>2: "P,E,hp s \<turnstile> e\<^sub>2 : T\<^sub>2"
     from null have "v = Null" by simp
     moreover
-    obtain T\<^isub>2' where "P,E,hp s' \<turnstile> e\<^isub>2' : T\<^isub>2' \<and> P \<turnstile> T\<^isub>2' \<le> T\<^isub>2"
-      using IH[OF conf wt\<^isub>2 tconf] by blast
+    obtain T\<^sub>2' where "P,E,hp s' \<turnstile> e\<^sub>2' : T\<^sub>2' \<and> P \<turnstile> T\<^sub>2' \<le> T\<^sub>2"
+      using IH[OF conf wt\<^sub>2 tconf] by blast
     ultimately show ?thesis by(fastforce intro:WTrtFAssNT)
   qed
 next

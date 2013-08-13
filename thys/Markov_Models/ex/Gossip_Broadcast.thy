@@ -7,7 +7,7 @@ theory Gossip_Broadcast
 begin
 
 lemma inj_on_upd_PiE: 
-  assumes "i \<notin> I" shows "inj_on (\<lambda>(x,f). f(i := x)) (M \<times> (\<Pi>\<^isub>E i\<in>I. A i))"
+  assumes "i \<notin> I" shows "inj_on (\<lambda>(x,f). f(i := x)) (M \<times> (\<Pi>\<^sub>E i\<in>I. A i))"
   unfolding PiE_def
 proof (safe intro!: inj_onI ext)
   fix f g :: "'a \<Rightarrow> 'b" and x y :: 'b
@@ -20,19 +20,19 @@ qed
 lemma setsum_folded_product:
   fixes I :: "'i set" and f :: "'s \<Rightarrow> 'i \<Rightarrow> 'a::{semiring_0, comm_monoid_mult}"
   assumes "finite I" "\<And>i. i \<in> I \<Longrightarrow> finite (S i)"
-  shows "(\<Sum>x\<in>Pi\<^isub>E I S. \<Prod>i\<in>I. f (x i) i) = (\<Prod>i\<in>I. \<Sum>s\<in>S i. f s i)"
+  shows "(\<Sum>x\<in>Pi\<^sub>E I S. \<Prod>i\<in>I. f (x i) i) = (\<Prod>i\<in>I. \<Sum>s\<in>S i. f s i)"
 using assms proof (induct I)
   case empty then show ?case by simp
 next
   case (insert i I)
-  have *: "Pi\<^isub>E (insert i I) S = (\<lambda>(x, f). f(i := x)) ` (S i \<times> Pi\<^isub>E I S)"
+  have *: "Pi\<^sub>E (insert i I) S = (\<lambda>(x, f). f(i := x)) ` (S i \<times> Pi\<^sub>E I S)"
     by (auto simp: PiE_def intro!: image_eqI ext dest: extensional_arb)
-  have "(\<Sum>x\<in>Pi\<^isub>E (insert i I) S. \<Prod>i\<in>insert i I. f (x i) i) = 
-    setsum ((\<lambda>x. \<Prod>i\<in>insert i I. f (x i) i) \<circ> ((\<lambda>(x, f). f(i := x)))) (S i \<times> Pi\<^isub>E I S)"
+  have "(\<Sum>x\<in>Pi\<^sub>E (insert i I) S. \<Prod>i\<in>insert i I. f (x i) i) = 
+    setsum ((\<lambda>x. \<Prod>i\<in>insert i I. f (x i) i) \<circ> ((\<lambda>(x, f). f(i := x)))) (S i \<times> Pi\<^sub>E I S)"
     unfolding * using insert by (intro setsum_reindex) (auto intro!: inj_on_upd_PiE)
-  also have "\<dots> = (\<Sum>(a, x)\<in>(S i \<times> Pi\<^isub>E I S). f a i * (\<Prod>i\<in>I. f (x i) i))"
+  also have "\<dots> = (\<Sum>(a, x)\<in>(S i \<times> Pi\<^sub>E I S). f a i * (\<Prod>i\<in>I. f (x i) i))"
     using insert by (force intro!: setsum_cong setprod_cong arg_cong2[where f="op *"])
-  also have "\<dots> = (\<Sum>a\<in>S i. f a i * (\<Sum>x\<in>Pi\<^isub>E I S. \<Prod>i\<in>I. f (x i) i))"
+  also have "\<dots> = (\<Sum>a\<in>S i. f a i * (\<Sum>x\<in>Pi\<^sub>E I S. \<Prod>i\<in>I. f (x i) i))"
     by (simp add: setsum_cartesian_product setsum_right_distrib)
   finally show ?case
     using insert by (simp add: setsum_left_distrib)
@@ -52,7 +52,7 @@ locale gossip_broadcast =
 begin
 
 definition
-  "states = ({..< size} \<times> {..< size}) \<rightarrow>\<^isub>E {listening, sending, sleeping}"
+  "states = ({..< size} \<times> {..< size}) \<rightarrow>\<^sub>E {listening, sending, sleeping}"
 
 definition "start = (\<lambda>x\<in>{..< size}\<times>{..< size}. listening)((0, 0) := sending)"
 

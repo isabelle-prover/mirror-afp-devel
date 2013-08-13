@@ -654,7 +654,7 @@ proof -
 qed
 
 lemma (in wf_digraph) reachable_vwalk_conv:
-  "u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v \<longleftrightarrow> (\<exists>p. vwalk p G \<and> hd p = u \<and> last p = v)" (is "?L \<longleftrightarrow> ?R")
+  "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v \<longleftrightarrow> (\<exists>p. vwalk p G \<and> hd p = u \<and> last p = v)" (is "?L \<longleftrightarrow> ?R")
 proof
   assume ?L then show ?R
   proof (induct rule: converse_reachable_induct)
@@ -686,7 +686,7 @@ next
 qed
 
 lemma (in wf_digraph) reachable_vpath_conv:
-  "u \<rightarrow>\<^isup>*\<^bsub>G\<^esub> v \<longleftrightarrow> (\<exists>p. vpath p G \<and> hd p = u \<and> last p = v)" (is "?L \<longleftrightarrow> ?R")
+  "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v \<longleftrightarrow> (\<exists>p. vpath p G \<and> hd p = u \<and> last p = v)" (is "?L \<longleftrightarrow> ?R")
 proof
   assume ?L then obtain p where "vwalk p G" "hd p = u" "last p = v"
     by (auto simp: reachable_vwalk_conv)

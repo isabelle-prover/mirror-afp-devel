@@ -45,21 +45,21 @@ record 'g vars = "'g state" +
  e_':: "(string \<times> nat) list \<times> string"
 
 
-definition "var\<^isub>n = [''n''\<mapsto> (\<lambda>x. n_'_update (\<lambda>_. x)),
+definition "var\<^sub>n = [''n''\<mapsto> (\<lambda>x. n_'_update (\<lambda>_. x)),
                     ''m''\<mapsto> (\<lambda>x. m_'_update (\<lambda>_. x))]"
-definition "upd\<^isub>n = gen_upd var\<^isub>n"
+definition "upd\<^sub>n = gen_upd var\<^sub>n"
 
-lemma upd\<^isub>n_ap: "upd\<^isub>n (fst (ap es (es',p))) = upd\<^isub>n es' \<circ> upd\<^isub>n es"
-  by (simp add: upd\<^isub>n_def gen_upd_ap)
+lemma upd\<^sub>n_ap: "upd\<^sub>n (fst (ap es (es',p))) = upd\<^sub>n es' \<circ> upd\<^sub>n es"
+  by (simp add: upd\<^sub>n_def gen_upd_ap)
 
 
 lemma
-"\<Gamma>\<turnstile>\<lbrace>\<acute>n=n\<^isub>0 \<and> (\<forall>i j. \<Gamma>\<turnstile> \<lbrace>\<acute>n=i \<and> \<acute>m=j\<rbrace> callClosure upd\<^isub>n \<acute>e \<lbrace>\<acute>r=i + j\<rbrace>)\<rbrace> 
+"\<Gamma>\<turnstile>\<lbrace>\<acute>n=n\<^sub>0 \<and> (\<forall>i j. \<Gamma>\<turnstile> \<lbrace>\<acute>n=i \<and> \<acute>m=j\<rbrace> callClosure upd\<^sub>n \<acute>e \<lbrace>\<acute>r=i + j\<rbrace>)\<rbrace> 
       \<acute>e :== (ap [(''n'',\<acute>n)] \<acute>e) 
-   \<lbrace>\<forall>j. \<Gamma>\<turnstile> \<lbrace>\<acute>m=j\<rbrace> callClosure upd\<^isub>n \<acute>e \<lbrace>\<acute>r=n\<^isub>0 + j\<rbrace>\<rbrace>"
+   \<lbrace>\<forall>j. \<Gamma>\<turnstile> \<lbrace>\<acute>m=j\<rbrace> callClosure upd\<^sub>n \<acute>e \<lbrace>\<acute>r=n\<^sub>0 + j\<rbrace>\<rbrace>"
 apply vcg_step
 apply clarify
-apply (rule ap_closure [where var=var\<^isub>n, folded upd\<^isub>n_def])
+apply (rule ap_closure [where var=var\<^sub>n, folded upd\<^sub>n_def])
 apply clarsimp
 apply (rename_tac s s')
 apply (erule_tac x="n_' s" in allE) 
@@ -68,7 +68,7 @@ apply (rule exI)
 apply (rule exI)
 apply (rule conjI)
 apply (assumption)
-apply (simp add: upd\<^isub>n_def gen_upd_def var\<^isub>n_def)
+apply (simp add: upd\<^sub>n_def gen_upd_def var\<^sub>n_def)
 done
 
 

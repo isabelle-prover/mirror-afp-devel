@@ -43,7 +43,7 @@ proof -
     proof(cases "sourcenode a = Entry")
       case True
       have "lift_valid_edge (valid_edge prog) sourcenode targetnode kind Entry Exit 
-        (NewEntry,(\<lambda>s. True)\<^isub>\<surd>,Node Entry)"
+        (NewEntry,(\<lambda>s. True)\<^sub>\<surd>,Node Entry)"
         by(fastforce intro:lve_Entry_edge)
       with While_CFGExit_wf_aux[of prog] `n = sourcenode a` True show ?thesis
         by(fastforce simp:CFG.valid_node_def[OF lift_CFG])
@@ -62,7 +62,7 @@ proof -
     proof(cases "targetnode a = Exit")
       case True
       have "lift_valid_edge (valid_edge prog) sourcenode targetnode kind Entry Exit 
-        (Node Exit,(\<lambda>s. True)\<^isub>\<surd>,NewExit)"
+        (Node Exit,(\<lambda>s. True)\<^sub>\<surd>,NewExit)"
         by(fastforce intro:lve_Exit_edge)
       with While_CFGExit_wf_aux[of prog] `n = targetnode a` True show ?thesis
         by(fastforce simp:CFG.valid_node_def[OF lift_CFG])
@@ -216,42 +216,42 @@ next
     by(cases n)(auto elim:labels.cases)
   thus ?case by(fastforce intro:WCFG_LAssSkip)
 next
-  case (Seq c\<^isub>1 c\<^isub>2)
-  note IH2 = `\<And>n. labels_nodes c\<^isub>2 n Skip \<Longrightarrow> c\<^isub>2 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
-  from `labels_nodes (c\<^isub>1;; c\<^isub>2) n Skip` obtain l where "n = (_ l _)"
-    and "l \<ge> #:c\<^isub>1" and "labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 _) Skip"
+  case (Seq c\<^sub>1 c\<^sub>2)
+  note IH2 = `\<And>n. labels_nodes c\<^sub>2 n Skip \<Longrightarrow> c\<^sub>2 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
+  from `labels_nodes (c\<^sub>1;; c\<^sub>2) n Skip` obtain l where "n = (_ l _)"
+    and "l \<ge> #:c\<^sub>1" and "labels_nodes c\<^sub>2 (_ l - #:c\<^sub>1 _) Skip"
     by(cases n)(auto elim:labels.cases)
-  from IH2[OF `labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 _) Skip`]
-  have "c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 _) -\<Up>id\<rightarrow> (_Exit_)" .
-  with `l \<ge> #:c\<^isub>1` have "c\<^isub>1;;c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 _) \<oplus> #:c\<^isub>1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> #:c\<^isub>1"
+  from IH2[OF `labels_nodes c\<^sub>2 (_ l - #:c\<^sub>1 _) Skip`]
+  have "c\<^sub>2 \<turnstile> (_ l - #:c\<^sub>1 _) -\<Up>id\<rightarrow> (_Exit_)" .
+  with `l \<ge> #:c\<^sub>1` have "c\<^sub>1;;c\<^sub>2 \<turnstile> (_ l - #:c\<^sub>1 _) \<oplus> #:c\<^sub>1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> #:c\<^sub>1"
     by(fastforce intro:WCFG_SeqSecond)
-  with `n = (_ l _)` `l \<ge> #:c\<^isub>1` show ?case by(simp add:id_def)
+  with `n = (_ l _)` `l \<ge> #:c\<^sub>1` show ?case by(simp add:id_def)
 next
-  case (Cond b c\<^isub>1 c\<^isub>2)
-  note IH1 = `\<And>n. labels_nodes c\<^isub>1 n Skip \<Longrightarrow> c\<^isub>1 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
-  note IH2 = `\<And>n. labels_nodes c\<^isub>2 n Skip \<Longrightarrow> c\<^isub>2 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
-  from `labels_nodes (if (b) c\<^isub>1 else c\<^isub>2) n Skip`
-  obtain l where "n = (_ l _)" and disj:"(l \<ge> 1 \<and> labels_nodes c\<^isub>1 (_ l - 1 _) Skip) \<or>
-    (l \<ge> #:c\<^isub>1 + 1 \<and> labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 - 1 _) Skip)"
+  case (Cond b c\<^sub>1 c\<^sub>2)
+  note IH1 = `\<And>n. labels_nodes c\<^sub>1 n Skip \<Longrightarrow> c\<^sub>1 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
+  note IH2 = `\<And>n. labels_nodes c\<^sub>2 n Skip \<Longrightarrow> c\<^sub>2 \<turnstile> n -\<Up>id\<rightarrow> (_Exit_)`
+  from `labels_nodes (if (b) c\<^sub>1 else c\<^sub>2) n Skip`
+  obtain l where "n = (_ l _)" and disj:"(l \<ge> 1 \<and> labels_nodes c\<^sub>1 (_ l - 1 _) Skip) \<or>
+    (l \<ge> #:c\<^sub>1 + 1 \<and> labels_nodes c\<^sub>2 (_ l - #:c\<^sub>1 - 1 _) Skip)"
     by(cases n) (fastforce elim:labels.cases)+
   from disj show ?case
   proof
-    assume "1 \<le> l \<and> labels_nodes c\<^isub>1 (_ l - 1 _) Skip"
-    hence "1 \<le> l" and "labels_nodes c\<^isub>1 (_ l - 1 _) Skip" by simp_all
-    from IH1[OF `labels_nodes c\<^isub>1 (_ l - 1 _) Skip`] 
-    have "c\<^isub>1 \<turnstile> (_ l - 1 _) -\<Up>id\<rightarrow> (_Exit_)" .
-    with `1 \<le> l` have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l - 1 _) \<oplus> 1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> 1"
+    assume "1 \<le> l \<and> labels_nodes c\<^sub>1 (_ l - 1 _) Skip"
+    hence "1 \<le> l" and "labels_nodes c\<^sub>1 (_ l - 1 _) Skip" by simp_all
+    from IH1[OF `labels_nodes c\<^sub>1 (_ l - 1 _) Skip`] 
+    have "c\<^sub>1 \<turnstile> (_ l - 1 _) -\<Up>id\<rightarrow> (_Exit_)" .
+    with `1 \<le> l` have "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> (_ l - 1 _) \<oplus> 1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> 1"
       by(fastforce intro:WCFG_CondThen)
     with `n = (_ l _)` `1 \<le> l` show ?case by(simp add:id_def)
   next
-    assume "#:c\<^isub>1 + 1 \<le> l \<and> labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 - 1 _) Skip"
-    hence "#:c\<^isub>1 + 1 \<le> l" and "labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 - 1 _) Skip" by simp_all
-    from IH2[OF `labels_nodes c\<^isub>2 (_ l - #:c\<^isub>1 - 1 _) Skip`]
-    have "c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 - 1 _) -\<Up>id\<rightarrow> (_Exit_)" .
-    with `#:c\<^isub>1 + 1 \<le> l` have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l - #:c\<^isub>1 - 1 _) \<oplus> (#:c\<^isub>1 + 1)
-      -\<Up>id\<rightarrow> (_Exit_) \<oplus> (#:c\<^isub>1 + 1)"
+    assume "#:c\<^sub>1 + 1 \<le> l \<and> labels_nodes c\<^sub>2 (_ l - #:c\<^sub>1 - 1 _) Skip"
+    hence "#:c\<^sub>1 + 1 \<le> l" and "labels_nodes c\<^sub>2 (_ l - #:c\<^sub>1 - 1 _) Skip" by simp_all
+    from IH2[OF `labels_nodes c\<^sub>2 (_ l - #:c\<^sub>1 - 1 _) Skip`]
+    have "c\<^sub>2 \<turnstile> (_ l - #:c\<^sub>1 - 1 _) -\<Up>id\<rightarrow> (_Exit_)" .
+    with `#:c\<^sub>1 + 1 \<le> l` have "if (b) c\<^sub>1 else c\<^sub>2 \<turnstile> (_ l - #:c\<^sub>1 - 1 _) \<oplus> (#:c\<^sub>1 + 1)
+      -\<Up>id\<rightarrow> (_Exit_) \<oplus> (#:c\<^sub>1 + 1)"
       by(fastforce intro:WCFG_CondElse)
-    with `n = (_ l _)` `#:c\<^isub>1 + 1 \<le> l` show ?case by(simp add:id_def)
+    with `n = (_ l _)` `#:c\<^sub>1 + 1 \<le> l` show ?case by(simp add:id_def)
   qed
 next
   case (While b c)
@@ -341,7 +341,7 @@ subsection {* Semantic Non-Interference for Standard Control Dependence *}
 lemma inner_node_exists:"\<exists>n. CFGExit.inner_node sourcenode targetnode 
   (valid_edge prog) (_Entry_) (_Exit_) n"
 proof -
-  have "prog \<turnstile> (_Entry_) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (_0_)" by(rule WCFG_Entry)
+  have "prog \<turnstile> (_Entry_) -(\<lambda>s. True)\<^sub>\<surd>\<rightarrow> (_0_)" by(rule WCFG_Entry)
   hence "CFG.valid_node sourcenode targetnode (valid_edge prog) (_0_)"
     by(auto simp:While_CFG.valid_node_def valid_edge_def)
   thus ?thesis by(auto simp:While_CFGExit.inner_node_def)

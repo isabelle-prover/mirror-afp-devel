@@ -13,24 +13,24 @@ bound as a test point. For dense linear orders it is not obvious how
 to realize this because we cannot name any intermediate point
 directly. *}
 
-fun asubst\<^isub>2 :: "nat \<Rightarrow> nat \<Rightarrow> atom \<Rightarrow> atom fm" where
-"asubst\<^isub>2 l u (Less 0 0) = FalseF" |
-"asubst\<^isub>2 l u (Less 0 (Suc j)) = Or (Atom(Less u j)) (Atom(Eq u j))" |
-"asubst\<^isub>2 l u (Less (Suc i) 0) = Or (Atom(Less i l)) (Atom(Eq i l))" |
-"asubst\<^isub>2 l u (Less (Suc i) (Suc j)) = Atom(Less i j)" |
-"asubst\<^isub>2 l u (Eq 0 0) = TrueF" |
-"asubst\<^isub>2 l u (Eq 0 _) = FalseF" |
-"asubst\<^isub>2 l u (Eq _ 0) = FalseF" |
-"asubst\<^isub>2 l u (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
+fun asubst\<^sub>2 :: "nat \<Rightarrow> nat \<Rightarrow> atom \<Rightarrow> atom fm" where
+"asubst\<^sub>2 l u (Less 0 0) = FalseF" |
+"asubst\<^sub>2 l u (Less 0 (Suc j)) = Or (Atom(Less u j)) (Atom(Eq u j))" |
+"asubst\<^sub>2 l u (Less (Suc i) 0) = Or (Atom(Less i l)) (Atom(Eq i l))" |
+"asubst\<^sub>2 l u (Less (Suc i) (Suc j)) = Atom(Less i j)" |
+"asubst\<^sub>2 l u (Eq 0 0) = TrueF" |
+"asubst\<^sub>2 l u (Eq 0 _) = FalseF" |
+"asubst\<^sub>2 l u (Eq _ 0) = FalseF" |
+"asubst\<^sub>2 l u (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation "subst\<^isub>2 l u \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>2 l u)"
+abbreviation "subst\<^sub>2 l u \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>2 l u)"
 
-lemma I_subst\<^isub>21:
- "nqfree f \<Longrightarrow> xs!l < xs!u \<Longrightarrow> DLO.I (subst\<^isub>2 l u f) xs
+lemma I_subst\<^sub>21:
+ "nqfree f \<Longrightarrow> xs!l < xs!u \<Longrightarrow> DLO.I (subst\<^sub>2 l u f) xs
  \<Longrightarrow> xs!l < x \<Longrightarrow> x < xs!u \<Longrightarrow> DLO.I f (x#xs)"
 proof(induct f arbitrary: x)
   case (Atom a) thus ?case
-    by (cases "(l,u,a)" rule: asubst\<^isub>2.cases) auto
+    by (cases "(l,u,a)" rule: asubst\<^sub>2.cases) auto
 qed auto
 
 definition
@@ -85,13 +85,13 @@ next
   case (Or f1 f2) thus ?case by (fastforce)
 qed simp+
 
-lemma I_subst\<^isub>22:
+lemma I_subst\<^sub>22:
  "nqfree f \<Longrightarrow> xs!l < x \<and> x < xs!u \<Longrightarrow> nolub f xs (xs!l) x (xs!u)
  \<Longrightarrow> \<forall>x\<in>{xs!l <..< xs!u}. DLO.I f (x#xs) \<and> x \<notin> EQ f xs
- \<Longrightarrow> DLO.I (subst\<^isub>2 l u f) xs"
+ \<Longrightarrow> DLO.I (subst\<^sub>2 l u f) xs"
 proof (induct f)
   case (Atom a) show ?case
-    apply (cases "(l,u,a)" rule: asubst\<^isub>2.cases)
+    apply (cases "(l,u,a)" rule: asubst\<^sub>2.cases)
     apply(insert Atom, auto simp: EQ_def nolub_def split:split_if_asm)
     done
 next
@@ -100,10 +100,10 @@ qed auto
 declare[[simp_depth_limit=50]]
 
 definition
-"qe_interior\<^isub>1 \<phi> =
-(let as = DLO.atoms\<^isub>0 \<phi>; lbs = lbounds as; ubs = ubounds as; ebs = ebounds as;
-     intrs = [And (Atom(Less l u)) (subst\<^isub>2 l u \<phi>). l\<leftarrow>lbs, u\<leftarrow>ubs]
- in list_disj (inf\<^isub>- \<phi> # inf\<^isub>+ \<phi> # intrs @ map (subst \<phi>) ebs))"
+"qe_interior\<^sub>1 \<phi> =
+(let as = DLO.atoms\<^sub>0 \<phi>; lbs = lbounds as; ubs = ubounds as; ebs = ebounds as;
+     intrs = [And (Atom(Less l u)) (subst\<^sub>2 l u \<phi>). l\<leftarrow>lbs, u\<leftarrow>ubs]
+ in list_disj (inf\<^sub>- \<phi> # inf\<^sub>+ \<phi> # intrs @ map (subst \<phi>) ebs))"
 
 lemma dense_interval:
 assumes "finite L" "finite U" "l : L" "u : U" "l < x" "x < u" "P(x::'a::dlo)"
@@ -137,46 +137,46 @@ qed
 
 
 theorem I_interior1:
-assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^isub>1 \<phi>) xs = (EX x. DLO.I \<phi> (x#xs))"
+assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^sub>1 \<phi>) xs = (EX x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
   assume ?QE
-  { assume "DLO.I (inf\<^isub>- \<phi>) xs"
+  { assume "DLO.I (inf\<^sub>- \<phi>) xs"
     hence ?EX using `?QE` min_inf[of \<phi> xs] `nqfree \<phi>`
-      by(auto simp add:qe_interior\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_interior\<^sub>1_def amap_fm_list_disj)
   } moreover
-  { assume  "DLO.I (inf\<^isub>+ \<phi>) xs"
+  { assume  "DLO.I (inf\<^sub>+ \<phi>) xs"
     hence ?EX using `?QE` plus_inf[of \<phi> xs] `nqfree \<phi>`
-      by(auto simp add:qe_interior\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_interior\<^sub>1_def amap_fm_list_disj)
   } moreover
-  { assume "\<not>DLO.I (inf\<^isub>- \<phi>) xs \<and> \<not>DLO.I (inf\<^isub>+ \<phi>) xs \<and>
+  { assume "\<not>DLO.I (inf\<^sub>- \<phi>) xs \<and> \<not>DLO.I (inf\<^sub>+ \<phi>) xs \<and>
             (\<forall>x\<in>EQ \<phi> xs. \<not>DLO.I \<phi> (x#xs))"
     with `?QE` `nqfree \<phi>` obtain l u
-      where "DLO.I (subst\<^isub>2 l u \<phi>) xs" and "xs!l < xs!u"
-      by(fastforce simp: qe_interior\<^isub>1_def set_lbounds set_ubounds I_subst EQ_conv_set_ebounds)
+      where "DLO.I (subst\<^sub>2 l u \<phi>) xs" and "xs!l < xs!u"
+      by(fastforce simp: qe_interior\<^sub>1_def set_lbounds set_ubounds I_subst EQ_conv_set_ebounds)
     moreover then obtain x where "xs!l < x \<and> x < xs!u" by(metis dense)
     ultimately have "DLO.I \<phi> (x # xs)"
-      using `nqfree \<phi>` I_subst\<^isub>21[OF `nqfree \<phi>` `xs!l < xs!u`] by simp
+      using `nqfree \<phi>` I_subst\<^sub>21[OF `nqfree \<phi>` `xs!l < xs!u`] by simp
     hence ?EX .. }
   ultimately show ?EX by blast
 next
-  let ?as = "DLO.atoms\<^isub>0 \<phi>" let ?E = "set(ebounds ?as)"
+  let ?as = "DLO.atoms\<^sub>0 \<phi>" let ?E = "set(ebounds ?as)"
   assume ?EX
   then obtain x where x: "DLO.I \<phi> (x#xs)" ..
-  { assume "DLO.I (inf\<^isub>- \<phi>) xs \<or> DLO.I (inf\<^isub>+ \<phi>) xs"
-    hence ?QE using `nqfree \<phi>` by(auto simp:qe_interior\<^isub>1_def)
+  { assume "DLO.I (inf\<^sub>- \<phi>) xs \<or> DLO.I (inf\<^sub>+ \<phi>) xs"
+    hence ?QE using `nqfree \<phi>` by(auto simp:qe_interior\<^sub>1_def)
   } moreover
   { assume "EX k : ?E. DLO.I (subst \<phi> k) xs"
-    hence ?QE by(force simp:qe_interior\<^isub>1_def) } moreover
-  { assume "\<not> DLO.I (inf\<^isub>- \<phi>) xs" and "\<not> DLO.I (inf\<^isub>+ \<phi>) xs"
+    hence ?QE by(force simp:qe_interior\<^sub>1_def) } moreover
+  { assume "\<not> DLO.I (inf\<^sub>- \<phi>) xs" and "\<not> DLO.I (inf\<^sub>+ \<phi>) xs"
     and "\<forall>k \<in> ?E. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)"
       using `nqfree \<phi>` by (force simp:set_ebounds EQ_def I_subst)
     hence "x \<notin> EQ \<phi> xs" using x by fastforce
     obtain l where "l : LB \<phi> xs" "l < x"
-      using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
+      using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     obtain u where "u : UB \<phi> xs" "x < u"
-      using UBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
+      using UBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<x \<and> x<u \<and> nolub \<phi> xs l x u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> DLO.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x innermost_intvl[OF `nqfree \<phi>` _ _ _ `x \<notin> EQ \<phi> xs`]
       by (simp add:nolub_def) fastforce
@@ -187,27 +187,27 @@ next
       "\<forall>y. xs!m < y \<and> y < xs!n \<longrightarrow> DLO.I \<phi> (y#xs)"
       by blast
     moreover
-    hence "DLO.I (subst\<^isub>2 m n \<phi>) xs" using noE
-      by(force intro!: I_subst\<^isub>22[OF `nqfree \<phi>`])
+    hence "DLO.I (subst\<^sub>2 m n \<phi>) xs" using noE
+      by(force intro!: I_subst\<^sub>22[OF `nqfree \<phi>`])
     ultimately have ?QE
-      by(fastforce simp add:qe_interior\<^isub>1_def bex_Un set_lbounds set_ubounds)
+      by(fastforce simp add:qe_interior\<^sub>1_def bex_Un set_lbounds set_ubounds)
   } ultimately show ?QE by blast
 qed
 
-lemma qfree_asubst\<^isub>2: "qfree (asubst\<^isub>2 l u a)"
-by(cases "(l,u,a)" rule:asubst\<^isub>2.cases) simp_all
+lemma qfree_asubst\<^sub>2: "qfree (asubst\<^sub>2 l u a)"
+by(cases "(l,u,a)" rule:asubst\<^sub>2.cases) simp_all
 
-lemma qfree_subst\<^isub>2: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>2 l u \<phi>)"
-by(induct \<phi>) (simp_all add:qfree_asubst\<^isub>2)
+lemma qfree_subst\<^sub>2: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^sub>2 l u \<phi>)"
+by(induct \<phi>) (simp_all add:qfree_asubst\<^sub>2)
 
-lemma qfree_interior1: "nqfree \<phi> \<Longrightarrow> qfree(qe_interior\<^isub>1 \<phi>)"
-apply(simp add:qe_interior\<^isub>1_def)
+lemma qfree_interior1: "nqfree \<phi> \<Longrightarrow> qfree(qe_interior\<^sub>1 \<phi>)"
+apply(simp add:qe_interior\<^sub>1_def)
 apply(rule qfree_list_disj)
-apply (auto simp:qfree_min_inf qfree_plus_inf qfree_subst\<^isub>2 qfree_map_fm)
+apply (auto simp:qfree_min_inf qfree_plus_inf qfree_subst\<^sub>2 qfree_map_fm)
 done
 
 
-definition "qe_interior = DLO.lift_nnf_qe qe_interior\<^isub>1"
+definition "qe_interior = DLO.lift_nnf_qe qe_interior\<^sub>1"
 
 lemma qfree_qe_interior: "qfree(qe_interior \<phi>)"
 by(simp add: qe_interior_def DLO.qfree_lift_nnf_qe qfree_interior1)

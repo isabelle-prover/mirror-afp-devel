@@ -95,14 +95,14 @@ apply(rule ext)
 apply blast
 done
 
-lemma [simp]: "wp (c\<^isub>1;c\<^isub>2) R = wp c\<^isub>1 (wp c\<^isub>2 R)"
+lemma [simp]: "wp (c\<^sub>1;c\<^sub>2) R = wp c\<^sub>1 (wp c\<^sub>2 R)"
 apply(unfold wp_def)
 apply(rule ext)
 apply blast
 done
 
 lemma [simp]:
- "wp (IF b THEN c\<^isub>1 ELSE c\<^isub>2) Q = (\<lambda>s. wp (if b s then c\<^isub>1 else c\<^isub>2) Q s)"
+ "wp (IF b THEN c\<^sub>1 ELSE c\<^sub>2) Q = (\<lambda>s. wp (if b s then c\<^sub>1 else c\<^sub>2) Q s)"
 apply(unfold wp_def)
 apply(rule ext)
 apply auto

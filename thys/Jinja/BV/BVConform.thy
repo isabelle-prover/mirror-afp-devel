@@ -22,14 +22,14 @@ notation (xsymbols)
   confT  ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
 
 abbreviation
-  confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool" 
+  confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool" 
             ("_,_ |- _ [:<=T] _" [51,51,51,51] 50) where
   "P,h |- vs [:<=T] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
 notation (xsymbols)
   confTs  ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
 
-definition conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^isub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
+definition conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^sub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
 where
   "conf_f P h \<equiv> \<lambda>(ST,LT) is (stk,loc,C,M,pc).
   P,h \<turnstile> stk [:\<le>] ST \<and> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT \<and> pc < size is"
@@ -40,21 +40,21 @@ lemma conf_f_def2:
   by (simp add: conf_f_def)
 
 
-primrec conf_fs :: "[jvm_prog,heap,ty\<^isub>P,mname,nat,ty,frame list] \<Rightarrow> bool"
+primrec conf_fs :: "[jvm_prog,heap,ty\<^sub>P,mname,nat,ty,frame list] \<Rightarrow> bool"
 where
-  "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 [] = True"
-| "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 (f#frs) =
+  "conf_fs P h \<Phi> M\<^sub>0 n\<^sub>0 T\<^sub>0 [] = True"
+| "conf_fs P h \<Phi> M\<^sub>0 n\<^sub>0 T\<^sub>0 (f#frs) =
   (let (stk,loc,C,M,pc) = f in
-  (\<exists>ST LT Ts T mxs mxl\<^isub>0 is xt.
+  (\<exists>ST LT Ts T mxs mxl\<^sub>0 is xt.
     \<Phi> C M ! pc = Some (ST,LT) \<and> 
-    (P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,is,xt) in C) \<and>
+    (P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^sub>0,is,xt) in C) \<and>
     (\<exists>D Ts' T' m D'.  
-       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> ST!n\<^isub>0 = Class D \<and>
-       P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^isub>0 \<le> T') \<and>
+       is!pc = (Invoke M\<^sub>0 n\<^sub>0) \<and> ST!n\<^sub>0 = Class D \<and>
+       P \<turnstile> D sees M\<^sub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^sub>0 \<le> T') \<and>
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 
-definition correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"
+definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"
                   ("_,_ |- _ [ok]"  [61,0,0] 61)
 where
   "correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs).
@@ -63,8 +63,8 @@ where
              [] \<Rightarrow> True
              | (f#fs) \<Rightarrow> P\<turnstile> h\<surd> \<and> 
              (let (stk,loc,C,M,pc) = f
-              in \<exists>Ts T mxs mxl\<^isub>0 is xt \<tau>.
-                    (P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl\<^isub>0,is,xt) in C) \<and>
+              in \<exists>Ts T mxs mxl\<^sub>0 is xt \<tau>.
+                    (P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl\<^sub>0,is,xt) in C) \<and>
                     \<Phi> C M ! pc = Some \<tau> \<and>
                     conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs))
   | Some x \<Rightarrow> frs = []" 
@@ -136,8 +136,8 @@ section {* correct-frames *}
 lemmas [simp del] = fun_upd_apply
 
 lemma conf_fs_hext:
-  "\<And>M n T\<^isub>r. 
-  \<lbrakk> conf_fs P h \<Phi> M n T\<^isub>r frs; h \<unlhd> h' \<rbrakk> \<Longrightarrow> conf_fs P h' \<Phi> M n T\<^isub>r frs"
+  "\<And>M n T\<^sub>r. 
+  \<lbrakk> conf_fs P h \<Phi> M n T\<^sub>r frs; h \<unlhd> h' \<rbrakk> \<Longrightarrow> conf_fs P h' \<Phi> M n T\<^sub>r frs"
 (*<*)
 apply (induct frs)
  apply simp

@@ -983,11 +983,11 @@ done
 subsection {* @{text between} *}
 
 definition between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list" where
- "between vs ram\<^isub>1 ram\<^isub>2 \<equiv>
-     let (pre\<^isub>1, post\<^isub>1) = splitAt ram\<^isub>1 vs in
-     if ram\<^isub>2 \<in> set post\<^isub>1
-     then let (pre\<^isub>2, post\<^isub>2) = splitAt ram\<^isub>2 post\<^isub>1 in pre\<^isub>2
-     else let (pre\<^isub>2, post\<^isub>2) = splitAt ram\<^isub>2 pre\<^isub>1 in post\<^isub>1 @ pre\<^isub>2"
+ "between vs ram\<^sub>1 ram\<^sub>2 \<equiv>
+     let (pre\<^sub>1, post\<^sub>1) = splitAt ram\<^sub>1 vs in
+     if ram\<^sub>2 \<in> set post\<^sub>1
+     then let (pre\<^sub>2, post\<^sub>2) = splitAt ram\<^sub>2 post\<^sub>1 in pre\<^sub>2
+     else let (pre\<^sub>2, post\<^sub>2) = splitAt ram\<^sub>2 pre\<^sub>1 in post\<^sub>1 @ pre\<^sub>2"
 
 lemma inbetween_inset:
  "x \<in> set(between xs a b) \<Longrightarrow> x \<in> set xs"

@@ -65,18 +65,18 @@ where
   "\<A> (new C) = \<lfloor>{}\<rfloor>"
 | "\<A> (Cast C e) = \<A> e"
 | "\<A> (Val v) = \<lfloor>{}\<rfloor>"
-| "\<A> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
+| "\<A> (e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2) = \<A> e\<^sub>1 \<squnion> \<A> e\<^sub>2"
 | "\<A> (Var V) = \<lfloor>{}\<rfloor>"
 | "\<A> (LAss V e) = \<lfloor>{V}\<rfloor> \<squnion> \<A> e"
 | "\<A> (e\<bullet>F{D}) = \<A> e"
-| "\<A> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
+| "\<A> (e\<^sub>1\<bullet>F{D}:=e\<^sub>2) = \<A> e\<^sub>1 \<squnion> \<A> e\<^sub>2"
 | "\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
 | "\<A> ({V:T; e}) = \<A> e \<ominus> V"
-| "\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-| "\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
+| "\<A> (e\<^sub>1;;e\<^sub>2) = \<A> e\<^sub>1 \<squnion> \<A> e\<^sub>2"
+| "\<A> (if (e) e\<^sub>1 else e\<^sub>2) =  \<A> e \<squnion> (\<A> e\<^sub>1 \<sqinter> \<A> e\<^sub>2)"
 | "\<A> (while (b) e) = \<A> b"
 | "\<A> (throw e) = None"
-| "\<A> (try e\<^isub>1 catch(C V) e\<^isub>2) = \<A> e\<^isub>1 \<sqinter> (\<A> e\<^isub>2 \<ominus> V)"
+| "\<A> (try e\<^sub>1 catch(C V) e\<^sub>2) = \<A> e\<^sub>1 \<sqinter> (\<A> e\<^sub>2 \<ominus> V)"
 
 | "\<A>s ([]) = \<lfloor>{}\<rfloor>"
 | "\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
@@ -88,19 +88,19 @@ where
   "\<D> (new C) A = True"
 | "\<D> (Cast C e) A = \<D> e A"
 | "\<D> (Val v) A = True"
-| "\<D> (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
+| "\<D> (e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2) A = (\<D> e\<^sub>1 A \<and> \<D> e\<^sub>2 (A \<squnion> \<A> e\<^sub>1))"
 | "\<D> (Var V) A = (V \<in>\<in> A)"
 | "\<D> (LAss V e) A = \<D> e A"
 | "\<D> (e\<bullet>F{D}) A = \<D> e A"
-| "\<D> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
+| "\<D> (e\<^sub>1\<bullet>F{D}:=e\<^sub>2) A = (\<D> e\<^sub>1 A \<and> \<D> e\<^sub>2 (A \<squnion> \<A> e\<^sub>1))"
 | "\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
 | "\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)"
-| "\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-| "\<D> (if (e) e\<^isub>1 else e\<^isub>2) A =
-  (\<D> e A \<and> \<D> e\<^isub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e))"
+| "\<D> (e\<^sub>1;;e\<^sub>2) A = (\<D> e\<^sub>1 A \<and> \<D> e\<^sub>2 (A \<squnion> \<A> e\<^sub>1))"
+| "\<D> (if (e) e\<^sub>1 else e\<^sub>2) A =
+  (\<D> e A \<and> \<D> e\<^sub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^sub>2 (A \<squnion> \<A> e))"
 | "\<D> (while (e) c) A = (\<D> e A \<and> \<D> c (A \<squnion> \<A> e))"
 | "\<D> (throw e) A = \<D> e A"
-| "\<D> (try e\<^isub>1 catch(C V) e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<lfloor>{V}\<rfloor>))"
+| "\<D> (try e\<^sub>1 catch(C V) e\<^sub>2) A = (\<D> e\<^sub>1 A \<and> \<D> e\<^sub>2 (A \<squnion> \<lfloor>{V}\<rfloor>))"
 
 | "\<D>s ([]) A = True"
 | "\<D>s (e#es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
@@ -163,8 +163,8 @@ text{* @{term"\<A>"} is sound w.r.t.\ the big step semantics: it
 computes a conservative approximation of the variables actually
 assigned to. *}
 
-lemma "P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> (!!A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> dom l\<^isub>1)"
-and "P \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> (!!A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> dom l\<^isub>1)"
+lemma "P \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>1,l\<^sub>1)\<rangle> \<Longrightarrow> (!!A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> dom l\<^sub>1)"
+and "P \<turnstile> \<langle>es,(h\<^sub>0,l\<^sub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^sub>1,l\<^sub>1)\<rangle> \<Longrightarrow> (!!A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> dom l\<^sub>1)"
 
 proof (induct rule:eval_evals_induct)
   case LAss thus ?case apply(simp add:dom_def hyperset_defs) apply blast

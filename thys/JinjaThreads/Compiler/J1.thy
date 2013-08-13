@@ -292,8 +292,8 @@ where
 | New1ArrayThrow: "uf,P,t \<turnstile>1 \<langle>newA T\<lfloor>Throw a\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Cast1Throw: "uf,P,t \<turnstile>1 \<langle>Cast C (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | InstanceOf1Throw: "uf,P,t \<turnstile>1 \<langle>(Throw a) instanceof T, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| Bin1OpThrow1: "uf,P,t \<turnstile>1 \<langle>(Throw a) \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| Bin1OpThrow2: "uf,P,t \<turnstile>1 \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| Bin1OpThrow1: "uf,P,t \<turnstile>1 \<langle>(Throw a) \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| Bin1OpThrow2: "uf,P,t \<turnstile>1 \<langle>(Val v\<^sub>1) \<guillemotleft>bop\<guillemotright> (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | LAss1Throw: "uf,P,t \<turnstile>1 \<langle>V:=(Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | AAcc1Throw1: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<lfloor>i\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | AAcc1Throw2: "uf,P,t \<turnstile>1 \<langle>(Val v)\<lfloor>Throw a\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
@@ -302,7 +302,7 @@ where
 | AAss1Throw3: "uf,P,t \<turnstile>1 \<langle>AAss (Val v) (Val i) (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | ALength1Throw: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | FAcc1Throw: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| FAss1Throw1: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>F{D}:=e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| FAss1Throw1: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>F{D}:=e\<^sub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | FAss1Throw2: "uf,P,t \<turnstile>1 \<langle>FAss (Val v) F D (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Call1ThrowObj: "uf,P,t \<turnstile>1 \<langle>(Throw a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Call1ThrowParams: "\<lbrakk> es = map Val vs @ Throw a # es' \<rbrakk> \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
@@ -317,8 +317,8 @@ where
 | Synchronized1Throw2Null:
   "\<lbrakk> xs ! V = Null; V < length xs \<rbrakk>
   \<Longrightarrow> uf,P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Throw ad, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h, xs)\<rangle>"
-| Seq1Throw: "uf,P,t \<turnstile>1 \<langle>(Throw a);;e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| Cond1Throw: "uf,P,t \<turnstile>1 \<langle>if (Throw a) e\<^isub>1 else e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| Seq1Throw: "uf,P,t \<turnstile>1 \<langle>(Throw a);;e\<^sub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| Cond1Throw: "uf,P,t \<turnstile>1 \<langle>if (Throw a) e\<^sub>1 else e\<^sub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | Throw1Throw: "uf,P,t \<turnstile>1 \<langle>throw(Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 
 inductive_cases red1_cases:

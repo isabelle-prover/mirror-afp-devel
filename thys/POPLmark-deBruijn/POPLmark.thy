@@ -71,7 +71,7 @@ datatype trm =
   | Abs type trm   ("(3\<lambda>:_./ _)" [0, 10] 10)
   | TAbs type trm  ("(3\<lambda><:_./ _)" [0, 10] 10)
   | App trm trm    (infixl "\<bullet>" 200)
-  | TApp trm type  (infixl "\<bullet>\<^isub>\<tau>" 200)
+  | TApp trm type  (infixl "\<bullet>\<^sub>\<tau>" 200)
 
 
 subsection {* Lifting and Substitution *}
@@ -81,83 +81,83 @@ One of the central operations of $\lambda$-calculus is {\it substitution}.
 In order to avoid that free variables in a term or type get ``captured''
 when substituting it for a variable occurring in the scope of a binder,
 we have to increment the indices of its free variables during substitution.
-This is done by the lifting functions @{text "\<up>\<^isub>\<tau> n k"} and @{text "\<up> n k"}
+This is done by the lifting functions @{text "\<up>\<^sub>\<tau> n k"} and @{text "\<up> n k"}
 for types and terms, respectively, which increment the indices of all free
 variables with indices @{text "\<ge> k"} by @{term n}. The lifting functions on
 types and terms are defined by
 *}
 
-primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^isub>\<tau>")
+primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^sub>\<tau>")
 where
-  "\<up>\<^isub>\<tau> n k (TVar i) = (if i < k then TVar i else TVar (i + n))"
-| "\<up>\<^isub>\<tau> n k Top = Top"
-| "\<up>\<^isub>\<tau> n k (T \<rightarrow> U) = \<up>\<^isub>\<tau> n k T \<rightarrow> \<up>\<^isub>\<tau> n k U"
-| "\<up>\<^isub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^isub>\<tau> n k T. \<up>\<^isub>\<tau> n (k + 1) U)"
+  "\<up>\<^sub>\<tau> n k (TVar i) = (if i < k then TVar i else TVar (i + n))"
+| "\<up>\<^sub>\<tau> n k Top = Top"
+| "\<up>\<^sub>\<tau> n k (T \<rightarrow> U) = \<up>\<^sub>\<tau> n k T \<rightarrow> \<up>\<^sub>\<tau> n k U"
+| "\<up>\<^sub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^sub>\<tau> n k T. \<up>\<^sub>\<tau> n (k + 1) U)"
 
 primrec lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
 where
   "\<up> n k (Var i) = (if i < k then Var i else Var (i + n))"
-| "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
-| "\<up> n k (\<lambda><:T. t) = (\<lambda><:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
+| "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^sub>\<tau> n k T. \<up> n (k + 1) t)"
+| "\<up> n k (\<lambda><:T. t) = (\<lambda><:\<up>\<^sub>\<tau> n k T. \<up> n (k + 1) t)"
 | "\<up> n k (s \<bullet> t) = \<up> n k s \<bullet> \<up> n k t"
-| "\<up> n k (t \<bullet>\<^isub>\<tau> T) = \<up> n k t \<bullet>\<^isub>\<tau> \<up>\<^isub>\<tau> n k T"
+| "\<up> n k (t \<bullet>\<^sub>\<tau> T) = \<up> n k t \<bullet>\<^sub>\<tau> \<up>\<^sub>\<tau> n k T"
 
 text {*
-It is useful to also define an ``unlifting'' function @{text "\<down>\<^isub>\<tau> n k"} for
+It is useful to also define an ``unlifting'' function @{text "\<down>\<^sub>\<tau> n k"} for
 decrementing all free variables with indices @{text "\<ge> k"} by @{term n}.
 Moreover, we need several substitution functions, denoted by
-\mbox{@{text "T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"}}, \mbox{@{text "t[k \<mapsto>\<^isub>\<tau> S]"}}, and \mbox{@{text "t[k \<mapsto> s]"}},
+\mbox{@{text "T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>"}}, \mbox{@{text "t[k \<mapsto>\<^sub>\<tau> S]"}}, and \mbox{@{text "t[k \<mapsto> s]"}},
 which substitute type variables in types, type variables in terms,
 and term variables in terms, respectively. They are defined as follows:
 *}
 
-primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>\<tau>" [300, 0, 0] 300)
+primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>\<tau>" [300, 0, 0] 300)
 where
-  "(TVar i)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> =
-     (if k < i then TVar (i - 1) else if i = k then \<up>\<^isub>\<tau> k 0 S else TVar i)"
-| "Top[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = Top"
-| "(T \<rightarrow> U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> \<rightarrow> U[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
-| "(\<forall><:T. U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = (\<forall><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. U[k+1 \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
+  "(TVar i)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> =
+     (if k < i then TVar (i - 1) else if i = k then \<up>\<^sub>\<tau> k 0 S else TVar i)"
+| "Top[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = Top"
+| "(T \<rightarrow> U)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> \<rightarrow> U[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>"
+| "(\<forall><:T. U)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = (\<forall><:T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>. U[k+1 \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
 
-primrec decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^isub>\<tau>")
+primrec decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^sub>\<tau>")
 where
-  "\<down>\<^isub>\<tau> 0 k T = T"
-| "\<down>\<^isub>\<tau> (Suc n) k T = \<down>\<^isub>\<tau> n k (T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>)"
+  "\<down>\<^sub>\<tau> 0 k T = T"
+| "\<down>\<^sub>\<tau> (Suc n) k T = \<down>\<^sub>\<tau> n k (T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>)"
 
 primrec subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
 where
   "(Var i)[k \<mapsto> s] = (if k < i then Var (i - 1) else if i = k then \<up> k 0 s else Var i)"
 | "(t \<bullet> u)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet> u[k \<mapsto> s]"
-| "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet>\<^isub>\<tau> \<down>\<^isub>\<tau> 1 k T"
-| "(\<lambda>:T. t)[k \<mapsto> s] = (\<lambda>:\<down>\<^isub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
-| "(\<lambda><:T. t)[k \<mapsto> s] = (\<lambda><:\<down>\<^isub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
+| "(t \<bullet>\<^sub>\<tau> T)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet>\<^sub>\<tau> \<down>\<^sub>\<tau> 1 k T"
+| "(\<lambda>:T. t)[k \<mapsto> s] = (\<lambda>:\<down>\<^sub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
+| "(\<lambda><:T. t)[k \<mapsto> s] = (\<lambda><:\<down>\<^sub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
 
-primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"    ("_[_ \<mapsto>\<^isub>\<tau> _]" [300, 0, 0] 300)
+primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"    ("_[_ \<mapsto>\<^sub>\<tau> _]" [300, 0, 0] 300)
 where
-  "(Var i)[k \<mapsto>\<^isub>\<tau> S] = (if k < i then Var (i - 1) else Var i)"
-| "(t \<bullet> u)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet> u[k \<mapsto>\<^isub>\<tau> S]"
-| "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
-| "(\<lambda>:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
-| "(\<lambda><:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
+  "(Var i)[k \<mapsto>\<^sub>\<tau> S] = (if k < i then Var (i - 1) else Var i)"
+| "(t \<bullet> u)[k \<mapsto>\<^sub>\<tau> S] = t[k \<mapsto>\<^sub>\<tau> S] \<bullet> u[k \<mapsto>\<^sub>\<tau> S]"
+| "(t \<bullet>\<^sub>\<tau> T)[k \<mapsto>\<^sub>\<tau> S] = t[k \<mapsto>\<^sub>\<tau> S] \<bullet>\<^sub>\<tau> T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>"
+| "(\<lambda>:T. t)[k \<mapsto>\<^sub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>. t[k+1 \<mapsto>\<^sub>\<tau> S])"
+| "(\<lambda><:T. t)[k \<mapsto>\<^sub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>. t[k+1 \<mapsto>\<^sub>\<tau> S])"
 
 text {*
 Lifting and substitution extends to typing contexts as follows:
 *}
 
-primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^isub>e")
+primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^sub>e")
 where
-  "\<up>\<^isub>e n k [] = []"
-| "\<up>\<^isub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^isub>e n k \<Gamma>"
+  "\<up>\<^sub>e n k [] = []"
+| "\<up>\<^sub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^sub>e n k \<Gamma>"
 
-primrec substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>e" [300, 0, 0] 300)
+primrec substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>e" [300, 0, 0] 300)
 where
-  "[][k \<mapsto>\<^isub>\<tau> T]\<^isub>e = []"
-| "(B \<Colon> \<Gamma>)[k \<mapsto>\<^isub>\<tau> T]\<^isub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^isub>\<tau> T]\<^isub>e"
+  "[][k \<mapsto>\<^sub>\<tau> T]\<^sub>e = []"
+| "(B \<Colon> \<Gamma>)[k \<mapsto>\<^sub>\<tau> T]\<^sub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^sub>\<tau> T]\<^sub>e"
 
-primrec decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^isub>e")
+primrec decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^sub>e")
 where
-  "\<down>\<^isub>e 0 k \<Gamma> = \<Gamma>"
-| "\<down>\<^isub>e (Suc n) k \<Gamma> = \<down>\<^isub>e n k (\<Gamma>[k \<mapsto>\<^isub>\<tau> Top]\<^isub>e)"
+  "\<down>\<^sub>e 0 k \<Gamma> = \<Gamma>"
+| "\<down>\<^sub>e (Suc n) k \<Gamma> = \<down>\<^sub>e n k (\<Gamma>[k \<mapsto>\<^sub>\<tau> Top]\<^sub>e)"
 
 text {*
 Note that in a context of the form @{term "B \<Colon> \<Gamma>"}, all variables in @{term B} with
@@ -171,14 +171,14 @@ quite standard for encodings using de Bruijn indices and can also be found in
 papers by Barras and Werner \cite{Barras-Werner-JAR} and Nipkow \cite{Nipkow-JAR01}.
 *}
 
-lemma liftE_length [simp]: "\<parallel>\<up>\<^isub>e n k \<Gamma>\<parallel> = \<parallel>\<Gamma>\<parallel>"
+lemma liftE_length [simp]: "\<parallel>\<up>\<^sub>e n k \<Gamma>\<parallel> = \<parallel>\<Gamma>\<parallel>"
   by (induct \<Gamma>) simp_all
 
-lemma substE_length [simp]: "\<parallel>\<Gamma>[k \<mapsto>\<^isub>\<tau> U]\<^isub>e\<parallel> = \<parallel>\<Gamma>\<parallel>"
+lemma substE_length [simp]: "\<parallel>\<Gamma>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e\<parallel> = \<parallel>\<Gamma>\<parallel>"
   by (induct \<Gamma>) simp_all
 
 lemma liftE_nth [simp]:
-  "(\<up>\<^isub>e n k \<Gamma>)\<langle>i\<rangle> = Option.map (mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
+  "(\<up>\<^sub>e n k \<Gamma>)\<langle>i\<rangle> = Option.map (mapB (\<up>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
   apply (induct \<Gamma> arbitrary: i)
   apply simp
   apply simp
@@ -188,7 +188,7 @@ lemma liftE_nth [simp]:
   done
 
 lemma substE_nth [simp]:
-  "(\<Gamma>[0 \<mapsto>\<^isub>\<tau> T]\<^isub>e)\<langle>i\<rangle> = Option.map (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
+  "(\<Gamma>[0 \<mapsto>\<^sub>\<tau> T]\<^sub>e)\<langle>i\<rangle> = Option.map (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
   apply (induct \<Gamma> arbitrary: i)
   apply simp
   apply simp
@@ -198,11 +198,11 @@ lemma substE_nth [simp]:
   done
 
 lemma liftT_liftT [simp]:
-  "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^isub>\<tau> n j (\<up>\<^isub>\<tau> m i T) = \<up>\<^isub>\<tau> (m + n) i T"
+  "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> (m + n) i T"
   by (induct T arbitrary: i j m n) simp_all
 
 lemma liftT_liftT' [simp]:
-  "i + m \<le> j \<Longrightarrow> \<up>\<^isub>\<tau> n j (\<up>\<^isub>\<tau> m i T) = \<up>\<^isub>\<tau> m i (\<up>\<^isub>\<tau> n (j - m) T)"
+  "i + m \<le> j \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> m i (\<up>\<^sub>\<tau> n (j - m) T)"
   apply (induct T arbitrary: i j m n)
   apply simp_all
   apply arith
@@ -211,41 +211,41 @@ lemma liftT_liftT' [simp]:
   apply arith
   done
 
-lemma lift_size [simp]: "size (\<up>\<^isub>\<tau> n k T) = size T"
+lemma lift_size [simp]: "size (\<up>\<^sub>\<tau> n k T) = size T"
   by (induct T arbitrary: k) simp_all
 
-lemma liftT0 [simp]: "\<up>\<^isub>\<tau> 0 i T = T"
+lemma liftT0 [simp]: "\<up>\<^sub>\<tau> 0 i T = T"
   by (induct T arbitrary: i) simp_all
 
 lemma lift0 [simp]: "\<up> 0 i t = t"
   by (induct t arbitrary: i) simp_all
 
 theorem substT_liftT [simp]:
-  "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^isub>\<tau> n k T)[k' \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau> = \<up>\<^isub>\<tau> (n - 1) k T"
+  "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>\<tau> n k T)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> (n - 1) k T"
   by (induct T arbitrary: k k') simp_all
 
 theorem liftT_substT [simp]:
-  "k \<le> k' \<Longrightarrow> \<up>\<^isub>\<tau> n k (T[k' \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau>) = \<up>\<^isub>\<tau> n k T[k' + n \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau>"
+  "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k (T[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n k T[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   apply (induct T arbitrary: k k')
   apply simp_all
   done
 
 theorem liftT_substT' [simp]: "k' < k \<Longrightarrow>
-  \<up>\<^isub>\<tau> n k (T[k' \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau>) = \<up>\<^isub>\<tau> n (k + 1) T[k' \<mapsto>\<^isub>\<tau> \<up>\<^isub>\<tau> n (k - k') U]\<^isub>\<tau>"
+  \<up>\<^sub>\<tau> n k (T[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n (k + 1) T[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>\<tau>"
   apply (induct T arbitrary: k k')
   apply simp_all
   apply arith
   done
 
 lemma liftT_substT_Top [simp]:
-  "k \<le> k' \<Longrightarrow> \<up>\<^isub>\<tau> n k' (T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>) = \<up>\<^isub>\<tau> n (Suc k') T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>"
+  "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k' (T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n (Suc k') T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
   apply (induct T arbitrary: k k')
   apply simp_all
   apply arith
   done
 
 lemma liftT_substT_strange:
-  "\<up>\<^isub>\<tau> n k T[n + k \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau> = \<up>\<^isub>\<tau> n (Suc k) T[k \<mapsto>\<^isub>\<tau> \<up>\<^isub>\<tau> n 0 U]\<^isub>\<tau>"
+  "\<up>\<^sub>\<tau> n k T[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> n (Suc k) T[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>\<tau>"
   apply (induct T arbitrary: n k)
   apply simp_all
   apply (thin_tac "\<And>x. PROP ?P x")
@@ -259,7 +259,7 @@ lemma lift_lift [simp]:
   by (induct t arbitrary: k k') simp_all
 
 lemma substT_substT:
-  "i \<le> j \<Longrightarrow> T[Suc j \<mapsto>\<^isub>\<tau> V]\<^isub>\<tau>[i \<mapsto>\<^isub>\<tau> U[j - i \<mapsto>\<^isub>\<tau> V]\<^isub>\<tau>]\<^isub>\<tau> = T[i \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau>[j \<mapsto>\<^isub>\<tau> V]\<^isub>\<tau>"
+  "i \<le> j \<Longrightarrow> T[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>\<tau> = T[i \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>"
   apply (induct T arbitrary: i j U V)
   apply (simp_all add: diff_Suc split add: nat.split)
   apply (thin_tac "\<And>x. PROP ?P x")
@@ -379,7 +379,7 @@ types and contexts:
 
 lemma wf_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
-  shows "\<up>\<^isub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
+  shows "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
   using H
   apply (induct "\<Delta> @ \<Gamma>" T arbitrary: \<Delta>)
   apply simp_all
@@ -402,14 +402,14 @@ lemma wf_weaken:
   apply simp
   done
 
-lemma wf_weaken': "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^isub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+lemma wf_weaken': "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp_all
   apply (drule_tac B=a in wf_weaken [of "[]", simplified])
   apply simp
   done
 
-lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow> \<up>\<^isub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
   apply (induct \<Delta>)
   apply simp
   apply (rule wf_Cons)
@@ -445,7 +445,7 @@ free type variables in @{term T} by @{term "Suc i"}:
 
 lemma wf_liftB:
   assumes H: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
-  shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^isub>\<tau> (Suc i) 0 T"
+  shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc i) 0 T"
   using H
   apply (induct arbitrary: i)
   apply simp
@@ -454,7 +454,7 @@ lemma wf_liftB:
   apply simp+
   apply (drule_tac x=nat in meta_spec)
   apply simp
-  apply (frule_tac T="\<up>\<^isub>\<tau> (Suc nat) 0 T" in wf_weaken [of "[]", simplified])
+  apply (frule_tac T="\<up>\<^sub>\<tau> (Suc nat) 0 T" in wf_weaken [of "[]", simplified])
   apply simp
   done
 
@@ -464,12 +464,12 @@ of types and contexts:
 *}
 
 theorem wf_subst:
-  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^isub>\<tau> U]\<^isub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> U]\<^isub>\<tau>"
+  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   apply (induct T arbitrary: \<Delta>)
   apply simp_all
   apply (rule conjI)
   apply (rule impI)
-  apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^isub>\<tau> U]\<^isub>e" in wf_weaken')
+  apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e" in wf_weaken')
   apply simp
   apply (rule impI conjI)+
   apply (erule well_formed_cases)
@@ -496,7 +496,7 @@ theorem wf_subst:
   apply simp
   done
 
-theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^isub>\<tau> U]\<^isub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
   apply (induct \<Delta>)
   apply simp
   apply (erule well_formedE_cases)
@@ -530,19 +530,19 @@ where
   SA_Top: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
 | SA_refl_TVar: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
 | SA_trans_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB U\<rfloor> \<Longrightarrow>
-    \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc i) 0 U <: T \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: T"
-| SA_arrow: "\<Gamma> \<turnstile> T\<^isub>1 <: S\<^isub>1 \<Longrightarrow> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2 \<Longrightarrow> \<Gamma> \<turnstile> S\<^isub>1 \<rightarrow> S\<^isub>2 <: T\<^isub>1 \<rightarrow> T\<^isub>2"
-| SA_all: "\<Gamma> \<turnstile> T\<^isub>1 <: S\<^isub>1 \<Longrightarrow> TVarB T\<^isub>1 \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2 \<Longrightarrow>
-    \<Gamma> \<turnstile> (\<forall><:S\<^isub>1. S\<^isub>2) <: (\<forall><:T\<^isub>1. T\<^isub>2)"
+    \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc i) 0 U <: T \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: T"
+| SA_arrow: "\<Gamma> \<turnstile> T\<^sub>1 <: S\<^sub>1 \<Longrightarrow> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> S\<^sub>1 \<rightarrow> S\<^sub>2 <: T\<^sub>1 \<rightarrow> T\<^sub>2"
+| SA_all: "\<Gamma> \<turnstile> T\<^sub>1 <: S\<^sub>1 \<Longrightarrow> TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2 \<Longrightarrow>
+    \<Gamma> \<turnstile> (\<forall><:S\<^sub>1. S\<^sub>2) <: (\<forall><:T\<^sub>1. T\<^sub>2)"
 
 text {*
 The rules @{text SA_Top} and @{text SA_refl_TVar}, which appear at the leaves of
 the derivation tree for a judgement @{term "\<Gamma> \<turnstile> T <: U"}, contain additional
 side conditions ensuring the well-formedness of the contexts and types involved.
 In order for the rule @{text SA_trans_TVar} to be applicable, the context @{term \<Gamma>}
-must be of the form \mbox{@{term "\<Gamma>\<^isub>1 @ B \<Colon> \<Gamma>\<^isub>2"}}, where @{term "\<Gamma>\<^isub>1"} has the length @{term i}.
+must be of the form \mbox{@{term "\<Gamma>\<^sub>1 @ B \<Colon> \<Gamma>\<^sub>2"}}, where @{term "\<Gamma>\<^sub>1"} has the length @{term i}.
 Since the indices of variables in @{term B} can only refer to variables defined in
-@{term "\<Gamma>\<^isub>2"}, they have to be incremented by @{term "Suc i"} to ensure that they point
+@{term "\<Gamma>\<^sub>2"}, they have to be incremented by @{term "Suc i"} to ensure that they point
 to the right variables in the larger context @{text \<Gamma>}.
 *}
 
@@ -594,7 +594,7 @@ that inserting a single type into the context preserves subtyping:
 lemma subtype_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> P <: Q"
   and wf: "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B"
-  shows "\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> P <: \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> Q" using H
+  shows "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> P <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> Q" using H
 proof (induct "\<Delta> @ \<Gamma>" P Q arbitrary: \<Delta>)
   case SA_Top
   with wf show ?case
@@ -609,24 +609,24 @@ next
   proof (cases "i < \<parallel>\<Delta>\<parallel>")
     case True
     with SA_trans_TVar
-    have "(\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma>)\<langle>i\<rangle> = \<lfloor>TVarB (\<up>\<^isub>\<tau> 1 (\<parallel>\<Delta>\<parallel> - Suc i) U)\<rfloor>"
+    have "(\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma>)\<langle>i\<rangle> = \<lfloor>TVarB (\<up>\<^sub>\<tau> 1 (\<parallel>\<Delta>\<parallel> - Suc i) U)\<rfloor>"
       by simp
     moreover from True SA_trans_TVar
-    have "\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>
-      \<up>\<^isub>\<tau> (Suc i) 0 (\<up>\<^isub>\<tau> 1 (\<parallel>\<Delta>\<parallel> - Suc i) U) <: \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
+    have "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>
+      \<up>\<^sub>\<tau> (Suc i) 0 (\<up>\<^sub>\<tau> 1 (\<parallel>\<Delta>\<parallel> - Suc i) U) <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
       by simp
-    ultimately have "\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> TVar i <: \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
+    ultimately have "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> TVar i <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
       by (rule subtyping.SA_trans_TVar)
     with True show ?thesis by simp
   next
     case False
     then have "Suc i - \<parallel>\<Delta>\<parallel> = Suc (i - \<parallel>\<Delta>\<parallel>)" by arith
-    with False SA_trans_TVar have "(\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma>)\<langle>Suc i\<rangle> = \<lfloor>TVarB U\<rfloor>"
+    with False SA_trans_TVar have "(\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma>)\<langle>Suc i\<rangle> = \<lfloor>TVarB U\<rfloor>"
       by simp
     moreover from False SA_trans_TVar
-    have "\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc (Suc i)) 0 U <: \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
+    have "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc (Suc i)) 0 U <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
       by simp
-    ultimately have "\<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> TVar (Suc i) <: \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
+    ultimately have "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> TVar (Suc i) <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
       by (rule subtyping.SA_trans_TVar)
     with False show ?thesis by simp
   qed
@@ -634,8 +634,8 @@ next
   case SA_arrow
   thus ?case by simp (iprover intro: subtyping.SA_arrow)
 next
-  case (SA_all T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2 \<Delta>)
-  with SA_all(4) [of "TVarB T\<^isub>1 \<Colon> \<Delta>"]
+  case (SA_all T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2 \<Delta>)
+  with SA_all(4) [of "TVarB T\<^sub>1 \<Colon> \<Delta>"]
   show ?case by simp (iprover intro: subtyping.SA_all)
 qed
 
@@ -649,7 +649,7 @@ using the previous result in the induction step:
 *}
 
 lemma subtype_weaken': -- {* A.2 *}
-  "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^isub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^isub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
+  "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
   apply (induct \<Delta>)
   apply simp_all
   apply (erule well_formedE_cases)
@@ -675,13 +675,13 @@ narrowing, which is by induction on the derivation of \mbox{@{term "\<Delta> @ T
 In the case corresponding to the rule @{text SA_trans_TVar}, we must prove
 \mbox{@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> TVar i <: T"}}. The only interesting case
 is the one where @{term "i = \<parallel>\<Delta>\<parallel>"}. By induction hypothesis, we know that
-@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (i+1) 0 Q <: T"} and
+@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (i+1) 0 Q <: T"} and
 @{term "(\<Delta> @ TVarB Q \<Colon> \<Gamma>)\<langle>i\<rangle> = \<lfloor>TVarB Q\<rfloor>"}.
 By assumption, we have @{term "\<Gamma> \<turnstile> P <: Q"} and hence 
-\mbox{@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (i+1) 0 P <: \<up>\<^isub>\<tau> (i+1) 0 Q"}} by weakening.
-Since @{term "\<up>\<^isub>\<tau> (i+1) 0 Q"} has the same size as @{term Q}, we can use
+\mbox{@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (i+1) 0 P <: \<up>\<^sub>\<tau> (i+1) 0 Q"}} by weakening.
+Since @{term "\<up>\<^sub>\<tau> (i+1) 0 Q"} has the same size as @{term Q}, we can use
 the transitivity property, which yields
-@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (i+1) 0 P <: T"}. The claim then follows
+@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (i+1) 0 P <: T"}. The claim then follows
 easily by an application of @{text SA_trans_TVar}.
 *}
 
@@ -706,7 +706,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
       case SA_trans_TVar
       thus ?case by (auto intro: subtyping.SA_trans_TVar)
     next
-      case (SA_arrow \<Gamma> T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2)
+      case (SA_arrow \<Gamma> T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
       note SA_arrow' = SA_arrow
       from SA_arrow(5) show ?case
       proof cases
@@ -714,13 +714,13 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         with SA_arrow show ?thesis
           by (auto intro: subtyping.SA_Top wf_arrow elim: wf_subtypeE)
       next
-        case (SA_arrow T\<^isub>1' T\<^isub>2')
-        from SA_arrow SA_arrow' have "\<Gamma> \<turnstile> S\<^isub>1 \<rightarrow> S\<^isub>2 <: T\<^isub>1' \<rightarrow> T\<^isub>2'"
-          by (auto intro!: subtyping.SA_arrow intro: less(1) [of "T\<^isub>1"] less(1) [of "T\<^isub>2"])
+        case (SA_arrow T\<^sub>1' T\<^sub>2')
+        from SA_arrow SA_arrow' have "\<Gamma> \<turnstile> S\<^sub>1 \<rightarrow> S\<^sub>2 <: T\<^sub>1' \<rightarrow> T\<^sub>2'"
+          by (auto intro!: subtyping.SA_arrow intro: less(1) [of "T\<^sub>1"] less(1) [of "T\<^sub>2"])
         with SA_arrow show ?thesis by simp
       qed
     next
-      case (SA_all \<Gamma> T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2)
+      case (SA_all \<Gamma> T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
       note SA_all' = SA_all
       from SA_all(5) show ?case
       proof cases
@@ -728,14 +728,14 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         with SA_all show ?thesis by (auto intro!:
           subtyping.SA_Top wf_all intro: wf_equallength elim: wf_subtypeE)
       next
-        case (SA_all T\<^isub>1' T\<^isub>2')
-        from SA_all SA_all' have "\<Gamma> \<turnstile> T\<^isub>1' <: S\<^isub>1"
+        case (SA_all T\<^sub>1' T\<^sub>2')
+        from SA_all SA_all' have "\<Gamma> \<turnstile> T\<^sub>1' <: S\<^sub>1"
           by - (rule less(1), simp_all)
-        moreover from SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2"
+        moreover from SA_all SA_all' have "TVarB T\<^sub>1' \<Colon> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2"
           by - (rule less(2) [of _ "[]", simplified], simp_all)
-        with SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2'"
+        with SA_all SA_all' have "TVarB T\<^sub>1' \<Colon> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2'"
           by - (rule less(1), simp_all)
-        ultimately have "\<Gamma> \<turnstile> (\<forall><:S\<^isub>1. S\<^isub>2) <: (\<forall><:T\<^isub>1'. T\<^isub>2')"
+        ultimately have "\<Gamma> \<turnstile> (\<forall><:S\<^sub>1. S\<^sub>2) <: (\<forall><:T\<^sub>1'. T\<^sub>2')"
           by (rule subtyping.SA_all)
         with SA_all show ?thesis by simp
       qed
@@ -772,9 +772,9 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
           from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
             by (auto elim!: wf_subtypeE)
           with `\<Gamma> \<turnstile> P <: Q`
-          have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^isub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^isub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
+          have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
             by (rule subtype_weaken')
-          with SA_trans_TVar True False have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^isub>\<tau> (Suc \<parallel>\<Delta>\<parallel>) 0 P <: T"
+          with SA_trans_TVar True False have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc \<parallel>\<Delta>\<parallel>) 0 P <: T"
             by - (rule tr, simp+)
           with True and False and SA_trans_TVar show ?thesis
             by (auto intro!: subtyping.SA_trans_TVar)
@@ -789,9 +789,9 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
       case SA_arrow
       thus ?case by (auto intro!: subtyping.SA_arrow)
     next
-      case (SA_all T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2)
+      case (SA_all T\<^sub>1 S\<^sub>1 S\<^sub>2 T\<^sub>2)
       thus ?case by (auto intro: subtyping.SA_all
-        SA_all(4) [of "TVarB T\<^isub>1 \<Colon> \<Delta>", simplified])
+        SA_all(4) [of "TVarB T\<^sub>1 \<Colon> \<Delta>", simplified])
     qed
   }
 qed
@@ -804,7 +804,7 @@ induction on the subtyping derivation:
 
 lemma substT_subtype: -- {* A.10 *}
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> S <: T"
-  shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta>[0 \<mapsto>\<^isub>\<tau> P]\<^isub>e @ \<Gamma> \<turnstile> S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P]\<^isub>\<tau> <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P]\<^isub>\<tau>"
+  shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau> <: T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
   using H
   apply (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" S T arbitrary: \<Delta>)
   apply simp_all
@@ -824,7 +824,7 @@ lemma substT_subtype: -- {* A.10 *}
   apply (erule wf_subtypeE)
   apply assumption
   apply (erule wf_subtypeE)
-  apply (drule_tac T=P and \<Delta>="\<Delta>[0 \<mapsto>\<^isub>\<tau> P]\<^isub>e" in wf_weaken')
+  apply (drule_tac T=P and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e" in wf_weaken')
   apply simp
   apply (rule conjI impI)+
   apply (rule SA_refl_TVar)
@@ -848,7 +848,7 @@ lemma substT_subtype: -- {* A.10 *}
   apply simp
   apply (rule conjI impI)+
   apply simp
-  apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^isub>\<tau> P]\<^isub>e" in subtype_weaken')
+  apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e" in subtype_weaken')
   apply (erule wf_subtypeE)+
   apply assumption
   apply simp
@@ -873,13 +873,13 @@ lemma substT_subtype: -- {* A.10 *}
   apply simp+
   apply (rule SA_all)
   apply simp
-  apply (drule_tac x="TVarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   done
 
 lemma subst_subtype:
   assumes H: "\<Delta> @ VarB V \<Colon> \<Gamma> \<turnstile> T <: U"
-  shows "\<down>\<^isub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> \<down>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T <: \<down>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> U"
+  shows "\<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T <: \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> U"
   using H
   apply (induct "\<Delta> @ VarB V \<Colon> \<Gamma>" T U arbitrary: \<Delta>)
   apply simp_all
@@ -932,7 +932,7 @@ lemma subst_subtype:
   apply simp+
   apply (rule SA_all)
   apply simp
-  apply (drule_tac x="TVarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   done
 
@@ -947,22 +947,22 @@ We are now ready to give a definition of the typing judgement @{text "\<Gamma> \
 inductive
   typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"    ("_ \<turnstile> _ : _" [50, 50, 50] 50)
 where
-  T_Var: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^isub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
-| T_Abs: "VarB T\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda>:T\<^isub>1. t\<^isub>2) : T\<^isub>1 \<rightarrow> \<down>\<^isub>\<tau> 1 0 T\<^isub>2"
-| T_App: "\<Gamma> \<turnstile> t\<^isub>1 : T\<^isub>1\<^isub>1 \<rightarrow> T\<^isub>1\<^isub>2 \<Longrightarrow> \<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1 \<Longrightarrow> \<Gamma> \<turnstile> t\<^isub>1 \<bullet> t\<^isub>2 : T\<^isub>1\<^isub>2"
-| T_TAbs: "TVarB T\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda><:T\<^isub>1. t\<^isub>2) : (\<forall><:T\<^isub>1. T\<^isub>2)"
-| T_TApp: "\<Gamma> \<turnstile> t\<^isub>1 : (\<forall><:T\<^isub>1\<^isub>1. T\<^isub>1\<^isub>2) \<Longrightarrow> \<Gamma> \<turnstile> T\<^isub>2 <: T\<^isub>1\<^isub>1 \<Longrightarrow>
-    \<Gamma> \<turnstile> t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 : T\<^isub>1\<^isub>2[0 \<mapsto>\<^isub>\<tau> T\<^isub>2]\<^isub>\<tau>"
+  T_Var: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^sub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
+| T_Abs: "VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda>:T\<^sub>1. t\<^sub>2) : T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2"
+| T_App: "\<Gamma> \<turnstile> t\<^sub>1 : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1 \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>1 \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2"
+| T_TAbs: "TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda><:T\<^sub>1. t\<^sub>2) : (\<forall><:T\<^sub>1. T\<^sub>2)"
+| T_TApp: "\<Gamma> \<turnstile> t\<^sub>1 : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2) \<Longrightarrow> \<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1 \<Longrightarrow>
+    \<Gamma> \<turnstile> t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>"
 | T_Sub: "\<Gamma> \<turnstile> t : S \<Longrightarrow> \<Gamma> \<turnstile> S <: T \<Longrightarrow> \<Gamma> \<turnstile> t : T"
 
 text {*
 Note that in the rule @{text T_Var}, the indices of the type @{term U} looked up in
 the context @{term \<Gamma>} need to be incremented in order for the type to be well-formed
-with respect to @{term \<Gamma>}. In the rule @{text T_Abs}, the type @{term "T\<^isub>2"} of the
-abstraction body @{term "t\<^isub>2"} may not contain the variable with index @{text 0},
+with respect to @{term \<Gamma>}. In the rule @{text T_Abs}, the type @{term "T\<^sub>2"} of the
+abstraction body @{term "t\<^sub>2"} may not contain the variable with index @{text 0},
 since it is a term variable. To compensate for the disappearance of the context
-element @{term "VarB T\<^isub>1"} in the conclusion of thy typing rule, the indices of all
-free type variables in @{term "T\<^isub>2"} have to be decremented by @{text 1}.
+element @{term "VarB T\<^sub>1"} in the conclusion of thy typing rule, the indices of all
+free type variables in @{term "T\<^sub>2"} have to be decremented by @{text 1}.
 *}
 
 theorem wf_typeE1:
@@ -1029,14 +1029,14 @@ lemma narrow_type: -- {* A.7 *}
   apply simp
   apply (simp split add: nat.split nat.split_asm)+
   apply (rule T_Abs [simplified])
-  apply (drule_tac x="VarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
-  apply (rule_tac T\<^isub>1\<^isub>1=T\<^isub>1\<^isub>1 in T_App)
+  apply (rule_tac T\<^sub>1\<^sub>1=T\<^sub>1\<^sub>1 in T_App)
   apply simp+
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
-  apply (rule_tac T\<^isub>1\<^isub>1=T\<^isub>1\<^isub>1 in T_TApp)
+  apply (rule_tac T\<^sub>1\<^sub>1=T\<^sub>1\<^sub>1 in T_TApp)
   apply simp
   apply (rule subtype_trans(2))
   apply assumption+
@@ -1058,14 +1058,14 @@ lemma Abs_type: -- {* A.13(1) *}
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:S. s) : T"
   shows "\<Gamma> \<turnstile> T <: U \<rightarrow> U' \<Longrightarrow>
     (\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> VarB S \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
-      \<Gamma> \<turnstile> \<down>\<^isub>\<tau> 1 0 S' <: U' \<Longrightarrow> P) \<Longrightarrow> P"
+      \<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 S' <: U' \<Longrightarrow> P) \<Longrightarrow> P"
   using H
 proof (induct \<Gamma> "\<lambda>:S. s" T arbitrary: U U' S s P)
-  case (T_Abs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2)
-  from `\<Gamma> \<turnstile> T\<^isub>1 \<rightarrow> \<down>\<^isub>\<tau> 1 0 T\<^isub>2 <: U \<rightarrow> U'`
-  obtain ty1: "\<Gamma> \<turnstile> U <: T\<^isub>1" and ty2: "\<Gamma> \<turnstile> \<down>\<^isub>\<tau> 1 0 T\<^isub>2 <: U'"
+  case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
+  from `\<Gamma> \<turnstile> T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U \<rightarrow> U'`
+  obtain ty1: "\<Gamma> \<turnstile> U <: T\<^sub>1" and ty2: "\<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U'"
     by cases simp_all
-  from ty1 `VarB T\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>2` ty2
+  from ty1 `VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2` ty2
   show ?case by (rule T_Abs)
 next
   case (T_Sub \<Gamma> S' T)
@@ -1078,7 +1078,7 @@ qed
 lemma Abs_type':
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:S. s) : U \<rightarrow> U'"
   and R: "\<And>S'. \<Gamma> \<turnstile> U <: S \<Longrightarrow> VarB S \<Colon> \<Gamma> \<turnstile> s : S' \<Longrightarrow>
-    \<Gamma> \<turnstile> \<down>\<^isub>\<tau> 1 0 S' <: U' \<Longrightarrow> P"
+    \<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 S' <: U' \<Longrightarrow> P"
   shows "P" using H subtype_refl' [OF H]
   by (rule Abs_type) (rule R)
 
@@ -1089,12 +1089,12 @@ lemma TAbs_type: -- {* A.13(2) *}
       TVarB U \<Colon> \<Gamma> \<turnstile> S' <: U' \<Longrightarrow> P) \<Longrightarrow> P"
   using H
 proof (induct \<Gamma> "\<lambda><:S. s" T arbitrary: U U' S s P)
-  case (T_TAbs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2)
-  from `\<Gamma> \<turnstile> (\<forall><:T\<^isub>1. T\<^isub>2) <: (\<forall><:U. U')`
-  obtain ty1: "\<Gamma> \<turnstile> U <: T\<^isub>1" and ty2: "TVarB U \<Colon> \<Gamma> \<turnstile> T\<^isub>2 <: U'"
+  case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
+  from `\<Gamma> \<turnstile> (\<forall><:T\<^sub>1. T\<^sub>2) <: (\<forall><:U. U')`
+  obtain ty1: "\<Gamma> \<turnstile> U <: T\<^sub>1" and ty2: "TVarB U \<Colon> \<Gamma> \<turnstile> T\<^sub>2 <: U'"
     by cases simp_all
-  from `TVarB T\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>2`
-  have "TVarB U \<Colon> \<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>2" using ty1
+  from `TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2`
+  have "TVarB U \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2" using ty1
     by (rule narrow_type [of "[]", simplified])
   with ty1 show ?case using ty2 by (rule T_TAbs)
 next
@@ -1122,7 +1122,7 @@ does not affect typing:
 lemma type_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow>
-    \<up>\<^isub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up> 1 \<parallel>\<Delta>\<parallel> t : \<up>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T" using H
+    \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up> 1 \<parallel>\<Delta>\<parallel> t : \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T" using H
   apply (induct "\<Delta> @ \<Gamma>" t T arbitrary: \<Delta>)
   apply simp_all
   apply (rule conjI)
@@ -1139,21 +1139,21 @@ lemma type_weaken:
   apply arith
   apply (rule refl)
   apply (rule T_Abs [THEN T_eq])
-  apply (drule_tac x="VarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply simp
-  apply (rule_tac T\<^isub>1\<^isub>1="\<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^isub>1\<^isub>1" in T_App)
+  apply (rule_tac T\<^sub>1\<^sub>1="\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^sub>1\<^sub>1" in T_App)
   apply simp
   apply simp
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (erule_tac T_TApp [THEN T_eq])
   apply (drule subtype_weaken)
   apply simp+
   apply (case_tac \<Delta>)
   apply (simp add: liftT_substT_strange [of _ 0, simplified])+
-  apply (rule_tac S="\<up>\<^isub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S" in T_Sub)
+  apply (rule_tac S="\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S" in T_Sub)
   apply simp
   apply (drule subtype_weaken)
   apply simp+
@@ -1165,7 +1165,7 @@ We can strengthen this result, so as to mean that concatenating a new context
 *}
 
 lemma type_weaken': -- {* A.5(6) *}
-  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^isub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp
   apply simp
@@ -1189,13 +1189,13 @@ disappearance of the variable.
 theorem subst_type: -- {* A.8 *}
   assumes H: "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> u : U \<Longrightarrow>
-    \<down>\<^isub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto> u] : \<down>\<^isub>\<tau> 1 \<parallel>\<Delta>\<parallel> T" using H
+    \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto> u] : \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T" using H
   apply (induct "\<Delta> @ VarB U \<Colon> \<Gamma>" t T arbitrary: \<Delta>)
   apply simp
   apply (rule conjI)
   apply (rule impI)
   apply simp
-  apply (drule_tac \<Delta>="\<Delta>[0 \<mapsto>\<^isub>\<tau> Top]\<^isub>e" in type_weaken')
+  apply (drule_tac \<Delta>="\<Delta>[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e" in type_weaken')
   apply (rule wfE_subst)
   apply assumption
   apply (rule wf_Top)
@@ -1220,15 +1220,15 @@ theorem subst_type: -- {* A.8 *}
   apply (simp (no_asm_simp))
   apply arith
   apply simp
-  apply (drule_tac x="VarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply (rule T_Abs [THEN T_eq])
   apply simp
   apply (simp add: substT_substT [symmetric])
   apply simp
-  apply (rule_tac T\<^isub>1\<^isub>1="T\<^isub>1\<^isub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>" in T_App)
+  apply (rule_tac T\<^sub>1\<^sub>1="T\<^sub>1\<^sub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>" in T_App)
   apply simp+
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply simp
   apply (rule T_TApp [THEN T_eq])
@@ -1236,7 +1236,7 @@ theorem subst_type: -- {* A.8 *}
   apply (rule subst_subtype [simplified])
   apply assumption
   apply (simp add: substT_substT [symmetric])
-  apply (rule_tac S="S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>" in T_Sub)
+  apply (rule_tac S="S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>" in T_Sub)
   apply simp
   apply simp
   apply (rule subst_subtype [simplified])
@@ -1246,7 +1246,7 @@ theorem subst_type: -- {* A.8 *}
 theorem substT_type: -- {* A.11 *}
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow>
-    \<Delta>[0 \<mapsto>\<^isub>\<tau> P]\<^isub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P]\<^isub>\<tau>" using H
+    \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" using H
   apply (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" t T arbitrary: \<Delta>)
   apply simp_all
   apply (rule impI conjI)+
@@ -1276,13 +1276,13 @@ theorem substT_type: -- {* A.11 *}
   apply arith
   apply arith
   apply (rule T_Abs [THEN T_eq])
-  apply (drule_tac x="VarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (simp add: substT_substT [symmetric])
-  apply (rule_tac T\<^isub>1\<^isub>1="T\<^isub>1\<^isub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P]\<^isub>\<tau>" in T_App)
+  apply (rule_tac T\<^sub>1\<^sub>1="T\<^sub>1\<^sub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" in T_App)
   apply simp+
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^isub>1 \<Colon> \<Delta>" in meta_spec)
+  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (rule T_TApp [THEN T_eq])
   apply simp
@@ -1290,7 +1290,7 @@ theorem substT_type: -- {* A.11 *}
   apply assumption
   apply assumption
   apply (simp add: substT_substT [symmetric])
-  apply (rule_tac S="S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P]\<^isub>\<tau>" in T_Sub)
+  apply (rule_tac S="S[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" in T_Sub)
   apply simp
   apply (rule substT_subtype)
   apply assumption
@@ -1330,11 +1330,11 @@ congruence rules.
 inductive
   eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<longmapsto>" 50)
 where
-  E_Abs: "v\<^isub>2 \<in> value \<Longrightarrow> (\<lambda>:T\<^isub>1\<^isub>1. t\<^isub>1\<^isub>2) \<bullet> v\<^isub>2 \<longmapsto> t\<^isub>1\<^isub>2[0 \<mapsto> v\<^isub>2]"
-| E_TAbs: "(\<lambda><:T\<^isub>1\<^isub>1. t\<^isub>1\<^isub>2) \<bullet>\<^isub>\<tau> T\<^isub>2 \<longmapsto> t\<^isub>1\<^isub>2[0 \<mapsto>\<^isub>\<tau> T\<^isub>2]"
+  E_Abs: "v\<^sub>2 \<in> value \<Longrightarrow> (\<lambda>:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet> v\<^sub>2 \<longmapsto> t\<^sub>1\<^sub>2[0 \<mapsto> v\<^sub>2]"
+| E_TAbs: "(\<lambda><:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]"
 | E_App1: "t \<longmapsto> t' \<Longrightarrow> t \<bullet> u \<longmapsto> t' \<bullet> u"
 | E_App2: "v \<in> value \<Longrightarrow> t \<longmapsto> t' \<Longrightarrow> v \<bullet> t \<longmapsto> v \<bullet> t'"
-| E_TApp: "t \<longmapsto> t' \<Longrightarrow> t \<bullet>\<^isub>\<tau> T \<longmapsto> t' \<bullet>\<^isub>\<tau> T"
+| E_TApp: "t \<longmapsto> t' \<Longrightarrow> t \<bullet>\<^sub>\<tau> T \<longmapsto> t' \<bullet>\<^sub>\<tau> T"
 
 text {*
 Here, the rules @{text E_Abs} and @{text E_TAbs} describe the ``immediate'' reductions,
@@ -1357,64 +1357,64 @@ proof (induct arbitrary: t')
   from `Var i \<longmapsto> t'`
   show ?case by cases
 next
-  case (T_Abs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2 t')
-  from `(\<lambda>:T\<^isub>1. t\<^isub>2) \<longmapsto> t'`
+  case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 t')
+  from `(\<lambda>:T\<^sub>1. t\<^sub>2) \<longmapsto> t'`
   show ?case by cases
 next
-  case (T_App \<Gamma> t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 t\<^isub>2 t')
-  from `t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto> t'`
+  case (T_App \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2 t')
+  from `t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t'`
   show ?case
   proof cases
-    case (E_Abs T\<^isub>1\<^isub>1' t\<^isub>1\<^isub>2)
-    with T_App have "\<Gamma> \<turnstile> (\<lambda>:T\<^isub>1\<^isub>1'. t\<^isub>1\<^isub>2) : T\<^isub>1\<^isub>1 \<rightarrow> T\<^isub>1\<^isub>2" by simp
+    case (E_Abs T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
+    with T_App have "\<Gamma> \<turnstile> (\<lambda>:T\<^sub>1\<^sub>1'. t\<^sub>1\<^sub>2) : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2" by simp
     then obtain S'
-      where T\<^isub>1\<^isub>1: "\<Gamma> \<turnstile> T\<^isub>1\<^isub>1 <: T\<^isub>1\<^isub>1'"
-      and t\<^isub>1\<^isub>2: "VarB T\<^isub>1\<^isub>1' \<Colon> \<Gamma> \<turnstile> t\<^isub>1\<^isub>2 : S'"
-      and S': "\<Gamma> \<turnstile> S'[0 \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau> <: T\<^isub>1\<^isub>2" by (rule Abs_type' [simplified]) blast
-    from `\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1`
-    have "\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1'" using T\<^isub>1\<^isub>1 by (rule T_Sub)
-    with t\<^isub>1\<^isub>2 have "\<Gamma> \<turnstile> t\<^isub>1\<^isub>2[0 \<mapsto> t\<^isub>2] : S'[0 \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>"
+      where T\<^sub>1\<^sub>1: "\<Gamma> \<turnstile> T\<^sub>1\<^sub>1 <: T\<^sub>1\<^sub>1'"
+      and t\<^sub>1\<^sub>2: "VarB T\<^sub>1\<^sub>1' \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : S'"
+      and S': "\<Gamma> \<turnstile> S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau> <: T\<^sub>1\<^sub>2" by (rule Abs_type' [simplified]) blast
+    from `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
+    have "\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1'" using T\<^sub>1\<^sub>1 by (rule T_Sub)
+    with t\<^sub>1\<^sub>2 have "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto> t\<^sub>2] : S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
       by (rule subst_type [where \<Delta>="[]", simplified])
-    hence "\<Gamma> \<turnstile> t\<^isub>1\<^isub>2[0 \<mapsto> t\<^isub>2] : T\<^isub>1\<^isub>2" using S' by (rule T_Sub)
+    hence "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto> t\<^sub>2] : T\<^sub>1\<^sub>2" using S' by (rule T_Sub)
     with E_Abs show ?thesis by simp
   next
     case (E_App1 t'')
-    from `t\<^isub>1 \<longmapsto> t''`
-    have "\<Gamma> \<turnstile> t'' : T\<^isub>1\<^isub>1 \<rightarrow> T\<^isub>1\<^isub>2" by (rule T_App)
-    hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^isub>2 : T\<^isub>1\<^isub>2" using `\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1`
+    from `t\<^sub>1 \<longmapsto> t''`
+    have "\<Gamma> \<turnstile> t'' : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2" by (rule T_App)
+    hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2" using `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
       by (rule typing.T_App)
     with E_App1 show ?thesis by simp
   next
     case (E_App2 t'')
-    from `t\<^isub>2 \<longmapsto> t''`
-    have "\<Gamma> \<turnstile> t'' : T\<^isub>1\<^isub>1" by (rule T_App)
-    with T_App(1) have "\<Gamma> \<turnstile> t\<^isub>1 \<bullet> t'' : T\<^isub>1\<^isub>2"
+    from `t\<^sub>2 \<longmapsto> t''`
+    have "\<Gamma> \<turnstile> t'' : T\<^sub>1\<^sub>1" by (rule T_App)
+    with T_App(1) have "\<Gamma> \<turnstile> t\<^sub>1 \<bullet> t'' : T\<^sub>1\<^sub>2"
       by (rule typing.T_App)
     with E_App2 show ?thesis by simp
   qed
 next
-  case (T_TAbs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2 t')
-  from `(\<lambda><:T\<^isub>1. t\<^isub>2) \<longmapsto> t'`
+  case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 t')
+  from `(\<lambda><:T\<^sub>1. t\<^sub>2) \<longmapsto> t'`
   show ?case by cases
 next
-  case (T_TApp \<Gamma> t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 t')
-  from `t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<longmapsto> t'`
+  case (T_TApp \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 t')
+  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t'`
   show ?case
   proof cases
-    case (E_TAbs T\<^isub>1\<^isub>1' t\<^isub>1\<^isub>2)
-    with T_TApp have "\<Gamma> \<turnstile> (\<lambda><:T\<^isub>1\<^isub>1'. t\<^isub>1\<^isub>2) : (\<forall><:T\<^isub>1\<^isub>1. T\<^isub>1\<^isub>2)" by simp
+    case (E_TAbs T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
+    with T_TApp have "\<Gamma> \<turnstile> (\<lambda><:T\<^sub>1\<^sub>1'. t\<^sub>1\<^sub>2) : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2)" by simp
     then obtain S'
-      where "TVarB T\<^isub>1\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>1\<^isub>2 : S'"
-      and "TVarB T\<^isub>1\<^isub>1 \<Colon> \<Gamma> \<turnstile> S' <: T\<^isub>1\<^isub>2" by (rule TAbs_type') blast
-    hence "TVarB T\<^isub>1\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>1\<^isub>2 : T\<^isub>1\<^isub>2" by (rule T_Sub)
-    hence "\<Gamma> \<turnstile> t\<^isub>1\<^isub>2[0 \<mapsto>\<^isub>\<tau> T\<^isub>2] : T\<^isub>1\<^isub>2[0 \<mapsto>\<^isub>\<tau> T\<^isub>2]\<^isub>\<tau>" using T_TApp(3)
+      where "TVarB T\<^sub>1\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : S'"
+      and "TVarB T\<^sub>1\<^sub>1 \<Colon> \<Gamma> \<turnstile> S' <: T\<^sub>1\<^sub>2" by (rule TAbs_type') blast
+    hence "TVarB T\<^sub>1\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : T\<^sub>1\<^sub>2" by (rule T_Sub)
+    hence "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2] : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>" using T_TApp(3)
       by (rule substT_type [where \<Delta>="[]", simplified])
     with E_TAbs show ?thesis by simp
   next
     case (E_TApp t'')
-    from `t\<^isub>1 \<longmapsto> t''`
-    have "\<Gamma> \<turnstile> t'' : (\<forall><:T\<^isub>1\<^isub>1. T\<^isub>1\<^isub>2)" by (rule T_TApp)
-    hence "\<Gamma> \<turnstile> t'' \<bullet>\<^isub>\<tau> T\<^isub>2 : T\<^isub>1\<^isub>2[0 \<mapsto>\<^isub>\<tau> T\<^isub>2]\<^isub>\<tau>" using `\<Gamma> \<turnstile> T\<^isub>2 <: T\<^isub>1\<^isub>1`
+    from `t\<^sub>1 \<longmapsto> t''`
+    have "\<Gamma> \<turnstile> t'' : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2)" by (rule T_TApp)
+    hence "\<Gamma> \<turnstile> t'' \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>" using `\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1`
       by (rule typing.T_TApp)
     with E_TApp show ?thesis by simp
   qed
@@ -1430,50 +1430,50 @@ text {*
 The progress theorem is also proved by induction on the derivation of
 @{term "[] \<turnstile> t : T"}. In the induction steps, we need the following two lemmas
 about {\it canonical forms}
-stating that closed values of types @{term "T\<^isub>1 \<rightarrow> T\<^isub>2"} and @{term "\<forall><:T\<^isub>1. T\<^isub>2"}
+stating that closed values of types @{term "T\<^sub>1 \<rightarrow> T\<^sub>2"} and @{term "\<forall><:T\<^sub>1. T\<^sub>2"}
 must be abstractions over term and type variables, respectively.
 *}
 
 lemma Fun_canonical: -- {* A.14(1) *}
-  assumes ty: "[] \<turnstile> v : T\<^isub>1 \<rightarrow> T\<^isub>2"
+  assumes ty: "[] \<turnstile> v : T\<^sub>1 \<rightarrow> T\<^sub>2"
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda>:S. t)" using ty
-proof (induct "[]::env" v "T\<^isub>1 \<rightarrow> T\<^isub>2" arbitrary: T\<^isub>1 T\<^isub>2)
+proof (induct "[]::env" v "T\<^sub>1 \<rightarrow> T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2)
   case T_Abs
   show ?case by iprover
 next
-  case (T_App t\<^isub>1 T\<^isub>1\<^isub>1 t\<^isub>2 T\<^isub>1 T\<^isub>2)
-  from `t\<^isub>1 \<bullet> t\<^isub>2 \<in> value`
+  case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 T\<^sub>1 T\<^sub>2)
+  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
   show ?case by cases
 next
-  case (T_TApp t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 T\<^isub>1 T\<^isub>2')
-  from `t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<in> value`
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1 T\<^sub>2')
+  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
   show ?case by cases
 next
-  case (T_Sub t S T\<^isub>1 T\<^isub>2)
-  from `[] \<turnstile> S <: T\<^isub>1 \<rightarrow> T\<^isub>2`
-  obtain S\<^isub>1 S\<^isub>2 where S: "S = S\<^isub>1 \<rightarrow> S\<^isub>2"
+  case (T_Sub t S T\<^sub>1 T\<^sub>2)
+  from `[] \<turnstile> S <: T\<^sub>1 \<rightarrow> T\<^sub>2`
+  obtain S\<^sub>1 S\<^sub>2 where S: "S = S\<^sub>1 \<rightarrow> S\<^sub>2"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+
 qed simp
 
 lemma TyAll_canonical: -- {* A.14(3) *}
-  assumes ty: "[] \<turnstile> v : (\<forall><:T\<^isub>1. T\<^isub>2)"
+  assumes ty: "[] \<turnstile> v : (\<forall><:T\<^sub>1. T\<^sub>2)"
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda><:S. t)" using ty
-proof (induct "[]::env" v "\<forall><:T\<^isub>1. T\<^isub>2" arbitrary: T\<^isub>1 T\<^isub>2)
-  case (T_App t\<^isub>1 T\<^isub>1\<^isub>1 t\<^isub>2 T\<^isub>1 T\<^isub>2)
-  from `t\<^isub>1 \<bullet> t\<^isub>2 \<in> value`
+proof (induct "[]::env" v "\<forall><:T\<^sub>1. T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2)
+  case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 T\<^sub>1 T\<^sub>2)
+  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
   show ?case by cases
 next
   case T_TAbs
   show ?case by iprover
 next
-  case (T_TApp t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 T\<^isub>1 T\<^isub>2')
-  from `t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<in> value`
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1 T\<^sub>2')
+  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
   show ?case by cases
 next
-  case (T_Sub t S T\<^isub>1 T\<^isub>2)
-  from `[] \<turnstile> S <: (\<forall><:T\<^isub>1. T\<^isub>2)`
-  obtain S\<^isub>1 S\<^isub>2 where S: "S = (\<forall><:S\<^isub>1. S\<^isub>2)"
+  case (T_Sub t S T\<^sub>1 T\<^sub>2)
+  from `[] \<turnstile> S <: (\<forall><:T\<^sub>1. T\<^sub>2)`
+  obtain S\<^sub>1 S\<^sub>2 where S: "S = (\<forall><:S\<^sub>1. S\<^sub>2)"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+
 qed simp
@@ -1488,49 +1488,49 @@ next
   case T_Abs
   from value.Abs show ?case ..
 next
-  case (T_App t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 t\<^isub>2)
-  hence "t\<^isub>1 \<in> value \<or> (\<exists>t'. t\<^isub>1 \<longmapsto> t')" by simp
+  case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2)
+  hence "t\<^sub>1 \<in> value \<or> (\<exists>t'. t\<^sub>1 \<longmapsto> t')" by simp
   thus ?case
   proof
-    assume t\<^isub>1_val: "t\<^isub>1 \<in> value"
-    with T_App obtain t S where t\<^isub>1: "t\<^isub>1 = (\<lambda>:S. t)"
+    assume t\<^sub>1_val: "t\<^sub>1 \<in> value"
+    with T_App obtain t S where t\<^sub>1: "t\<^sub>1 = (\<lambda>:S. t)"
       by (auto dest!: Fun_canonical)
-    from T_App have "t\<^isub>2 \<in> value \<or> (\<exists>t'. t\<^isub>2 \<longmapsto> t')" by simp
+    from T_App have "t\<^sub>2 \<in> value \<or> (\<exists>t'. t\<^sub>2 \<longmapsto> t')" by simp
     thus ?thesis
     proof
-      assume "t\<^isub>2 \<in> value"
-      with t\<^isub>1 have "t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto> t[0 \<mapsto> t\<^isub>2]"
+      assume "t\<^sub>2 \<in> value"
+      with t\<^sub>1 have "t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t[0 \<mapsto> t\<^sub>2]"
         by simp (rule eval.intros)
       thus ?thesis by iprover
     next
-      assume "\<exists>t'. t\<^isub>2 \<longmapsto> t'"
-      then obtain t' where "t\<^isub>2 \<longmapsto> t'" by iprover
-      with t\<^isub>1_val have "t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto> t\<^isub>1 \<bullet> t'" by (rule eval.intros)
+      assume "\<exists>t'. t\<^sub>2 \<longmapsto> t'"
+      then obtain t' where "t\<^sub>2 \<longmapsto> t'" by iprover
+      with t\<^sub>1_val have "t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t\<^sub>1 \<bullet> t'" by (rule eval.intros)
       thus ?thesis by iprover
     qed
   next
-    assume "\<exists>t'. t\<^isub>1 \<longmapsto> t'"
-    then obtain t' where "t\<^isub>1 \<longmapsto> t'" ..
-    hence "t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto> t' \<bullet> t\<^isub>2" by (rule eval.intros)
+    assume "\<exists>t'. t\<^sub>1 \<longmapsto> t'"
+    then obtain t' where "t\<^sub>1 \<longmapsto> t'" ..
+    hence "t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t' \<bullet> t\<^sub>2" by (rule eval.intros)
     thus ?thesis by iprover
   qed
 next
   case T_TAbs
   from value.TAbs show ?case ..
 next
-  case (T_TApp t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2)
-  hence "t\<^isub>1 \<in> value \<or> (\<exists>t'. t\<^isub>1 \<longmapsto> t')" by simp
+  case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
+  hence "t\<^sub>1 \<in> value \<or> (\<exists>t'. t\<^sub>1 \<longmapsto> t')" by simp
   thus ?case
   proof
-    assume "t\<^isub>1 \<in> value"
-    with T_TApp obtain t S where "t\<^isub>1 = (\<lambda><:S. t)"
+    assume "t\<^sub>1 \<in> value"
+    with T_TApp obtain t S where "t\<^sub>1 = (\<lambda><:S. t)"
       by (auto dest!: TyAll_canonical)
-    hence "t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<longmapsto> t[0 \<mapsto>\<^isub>\<tau> T\<^isub>2]" by simp (rule eval.intros)
+    hence "t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]" by simp (rule eval.intros)
     thus ?thesis by iprover
   next
-    assume "\<exists>t'. t\<^isub>1 \<longmapsto> t'"
-    then obtain t' where "t\<^isub>1 \<longmapsto> t'" ..
-    hence "t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<longmapsto> t' \<bullet>\<^isub>\<tau> T\<^isub>2" by (rule eval.intros)
+    assume "\<exists>t'. t\<^sub>1 \<longmapsto> t'"
+    then obtain t' where "t\<^sub>1 \<longmapsto> t'" ..
+    hence "t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t' \<bullet>\<^sub>\<tau> T\<^sub>2" by (rule eval.intros)
     thus ?thesis by iprover
   qed
 next

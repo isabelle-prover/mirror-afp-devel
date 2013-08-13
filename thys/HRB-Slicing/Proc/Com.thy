@@ -27,12 +27,12 @@ datatype expr
 
 
 fun binop :: "bop \<Rightarrow> val \<Rightarrow> val \<Rightarrow> val option"
-where "binop Eq v\<^isub>1 v\<^isub>2               = Some(Bool(v\<^isub>1 = v\<^isub>2))"
-  | "binop And (Bool b\<^isub>1) (Bool b\<^isub>2)  = Some(Bool(b\<^isub>1 \<and> b\<^isub>2))"
-  | "binop Less (Intg i\<^isub>1) (Intg i\<^isub>2) = Some(Bool(i\<^isub>1 < i\<^isub>2))"
-  | "binop Add (Intg i\<^isub>1) (Intg i\<^isub>2)  = Some(Intg(i\<^isub>1 + i\<^isub>2))"
-  | "binop Sub (Intg i\<^isub>1) (Intg i\<^isub>2)  = Some(Intg(i\<^isub>1 - i\<^isub>2))"
-  | "binop bop v\<^isub>1 v\<^isub>2                = None"
+where "binop Eq v\<^sub>1 v\<^sub>2               = Some(Bool(v\<^sub>1 = v\<^sub>2))"
+  | "binop And (Bool b\<^sub>1) (Bool b\<^sub>2)  = Some(Bool(b\<^sub>1 \<and> b\<^sub>2))"
+  | "binop Less (Intg i\<^sub>1) (Intg i\<^sub>2) = Some(Bool(i\<^sub>1 < i\<^sub>2))"
+  | "binop Add (Intg i\<^sub>1) (Intg i\<^sub>2)  = Some(Intg(i\<^sub>1 + i\<^sub>2))"
+  | "binop Sub (Intg i\<^sub>1) (Intg i\<^sub>2)  = Some(Intg(i\<^sub>1 - i\<^sub>2))"
+  | "binop bop v\<^sub>1 v\<^sub>2                = None"
 
 
 subsection {* Commands *}
@@ -51,8 +51,8 @@ datatype cmd
 fun num_inner_nodes :: "cmd \<Rightarrow> nat" ("#:_")
 where "#:Skip              = 1"
   | "#:(V:=e)              = 2"       (* additional Skip node *)
-  | "#:(c\<^isub>1;;c\<^isub>2)            = #:c\<^isub>1 + #:c\<^isub>2"
-  | "#:(if (b) c\<^isub>1 else c\<^isub>2) = #:c\<^isub>1 + #:c\<^isub>2 + 1"
+  | "#:(c\<^sub>1;;c\<^sub>2)            = #:c\<^sub>1 + #:c\<^sub>2"
+  | "#:(if (b) c\<^sub>1 else c\<^sub>2) = #:c\<^sub>1 + #:c\<^sub>2 + 1"
   | "#:(while (b) c)       = #:c + 2" (* additional Skip node *)
   | "#:(Call p es rets)    = 2"       (* additional Skip (=Return) node *)
 

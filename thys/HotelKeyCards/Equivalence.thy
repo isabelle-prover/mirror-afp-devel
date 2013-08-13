@@ -10,20 +10,20 @@ lemma [simp]: "safe (Exit g r # t) r' = safe t r'"
 apply(simp add:Trace.safe_def)
 apply(rule iffI)
  apply clarsimp
- apply(case_tac s\<^isub>3) apply simp
+ apply(case_tac s\<^sub>3) apply simp
  apply clarsimp
- apply(rule_tac x = s\<^isub>1 in exI)
- apply(rule_tac x = s\<^isub>2 in exI)
+ apply(rule_tac x = s\<^sub>1 in exI)
+ apply(rule_tac x = s\<^sub>2 in exI)
  apply simp
 apply clarsimp
-apply(rule_tac x = s\<^isub>1 in exI)
-apply(rule_tac x = s\<^isub>2 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
+apply(rule_tac x = s\<^sub>2 in exI)
 apply simp
 done
 
 lemma [simp]: "\<not> safe (Check_in g r c # t) r"
 apply(clarsimp simp add:Trace.safe_def)
-apply(case_tac s\<^isub>3) apply simp
+apply(case_tac s\<^sub>3) apply simp
 apply(cases c)
 apply auto
 done
@@ -32,14 +32,14 @@ lemma [simp]: "r \<noteq> r' \<Longrightarrow> safe (Check_in g r' c # t) r = sa
 apply(simp add:Trace.safe_def)
 apply(rule iffI)
  apply clarsimp
- apply(case_tac s\<^isub>3) apply simp
+ apply(case_tac s\<^sub>3) apply simp
  apply clarsimp
- apply(rule_tac x = s\<^isub>1 in exI)
- apply(rule_tac x = s\<^isub>2 in exI)
+ apply(rule_tac x = s\<^sub>1 in exI)
+ apply(rule_tac x = s\<^sub>2 in exI)
  apply simp
 apply clarsimp
-apply(rule_tac x = s\<^isub>1 in exI)
-apply(rule_tac x = s\<^isub>2 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
+apply(rule_tac x = s\<^sub>2 in exI)
 apply simp
 done
 
@@ -49,14 +49,14 @@ lemma [simp]: "r \<noteq> r' \<Longrightarrow> safe (Enter g r' c # t) r = safe 
 apply(simp add:Trace.safe_def)
 apply(rule iffI)
  apply clarsimp
- apply(case_tac s\<^isub>3) apply simp
+ apply(case_tac s\<^sub>3) apply simp
  apply clarsimp
- apply(rule_tac x = s\<^isub>1 in exI)
- apply(rule_tac x = s\<^isub>2 in exI)
+ apply(rule_tac x = s\<^sub>1 in exI)
+ apply(rule_tac x = s\<^sub>2 in exI)
  apply simp
 apply clarsimp
-apply(rule_tac x = s\<^isub>1 in exI)
-apply(rule_tac x = s\<^isub>2 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
+apply(rule_tac x = s\<^sub>2 in exI)
 apply simp
 done
 
@@ -68,32 +68,32 @@ by (induct s) (auto split:event.split)
 
 
 lemma ownsD: "owns s r = Some g \<Longrightarrow>
- EX s\<^isub>1 s\<^isub>2 c. s = s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1 \<and> no_Check_in s\<^isub>2 r"
+ EX s\<^sub>1 s\<^sub>2 c. s = s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and> no_Check_in s\<^sub>2 r"
 apply(induct s)
  apply simp
 apply (auto split:event.splits)
 apply(rule_tac x = s in exI)
 apply(rule_tac x = "[]" in exI)
 apply simp
-apply(rule_tac x = s\<^isub>1 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
 apply simp
-apply(rule_tac x = s\<^isub>1 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
 apply simp
-apply(rule_tac x = s\<^isub>1 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
 apply simp
 done
 
 lemma [simp]: "safe t r \<Longrightarrow> safe (Enter g r c # t) r"
 apply(clarsimp simp:Trace.safe_def)
-apply(rule_tac x = s\<^isub>1 in exI)
-apply(rule_tac x = s\<^isub>2 in exI)
+apply(rule_tac x = s\<^sub>1 in exI)
+apply(rule_tac x = s\<^sub>2 in exI)
 apply simp
 done
 
 lemma same_key2D:
-"hotel (s\<^isub>2 @ Check_in g r (k\<^isub>2,k) # s\<^isub>1) \<Longrightarrow>
- (k\<^isub>1,k) : cards(s\<^isub>2 @ Check_in g r (k\<^isub>2,k) # s\<^isub>1) g' \<Longrightarrow> g=g' \<and> k\<^isub>1=k\<^isub>2"
-apply(induct s\<^isub>2)
+"hotel (s\<^sub>2 @ Check_in g r (k\<^sub>2,k) # s\<^sub>1) \<Longrightarrow>
+ (k\<^sub>1,k) : cards(s\<^sub>2 @ Check_in g r (k\<^sub>2,k) # s\<^sub>1) g' \<Longrightarrow> g=g' \<and> k\<^sub>1=k\<^sub>2"
+apply(induct s\<^sub>2)
 apply clarsimp
 using [[simp_depth_limit = 5]]
 apply (auto simp:issued_app split:event.splits)
@@ -106,7 +106,7 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
  apply rule
  apply(frule_tac g=g in Trace.safe, assumption) apply simp
  apply(clarsimp simp add:Trace.safe_def)
- apply(case_tac s\<^isub>3)
+ apply(case_tac s\<^sub>3)
   apply clarsimp
  apply simp
  apply blast
@@ -116,8 +116,8 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
   apply(drule ownsD)
   apply(clarsimp simp add:Trace.safe_def)
   apply(frule (1) same_key2D)
-  apply(rule_tac x = s\<^isub>1 in exI)
-  apply(rule_tac x = s\<^isub>2 in exI)
+  apply(rule_tac x = s\<^sub>1 in exI)
+  apply(rule_tac x = s\<^sub>2 in exI)
   apply(rule_tac x = "[]" in exI)
   apply clarsimp
 done

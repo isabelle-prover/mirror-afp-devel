@@ -11,7 +11,7 @@ text {*
   we should also define a REC-combinator for ccpos! *)
 
 definition REC where "REC B x \<equiv> if (mono B) then (lfp B x) else top"
-definition RECT ("REC\<^isub>T") where "RECT B x \<equiv> if (mono B) then (gfp B x) else top"
+definition RECT ("REC\<^sub>T") where "RECT B x \<equiv> if (mono B) then (gfp B x) else top"
 
 lemma REC_unfold: "mono B \<Longrightarrow> REC B x = B (REC B) x"
   unfolding REC_def [abs_def]

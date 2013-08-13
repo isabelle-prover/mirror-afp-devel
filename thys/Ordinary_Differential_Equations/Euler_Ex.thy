@@ -151,7 +151,7 @@ locale example1_aux = fixes t0' x0' :: float and b r T::real
   assumes interval_pos: "t0' \<le> T"
 begin
 
-definition "B = (max \<bar>x0' - \<bar>b\<bar>\<bar> \<bar>x0' + \<bar>b\<bar>\<bar>)\<twosuperior> + max \<bar>T\<bar> \<bar>t0'\<bar>"
+definition "B = (max \<bar>x0' - \<bar>b\<bar>\<bar> \<bar>x0' + \<bar>b\<bar>\<bar>)\<^sup>2 + max \<bar>T\<bar> \<bar>t0'\<bar>"
 
 definition "L = 2 * max \<bar>x0' - abs b - abs r\<bar> \<bar>x0' + abs b + abs r\<bar>"
 
@@ -215,7 +215,7 @@ lemma f_bounded:
   assumes "x \<in> D"
   shows "\<bar>f (s, x)\<bar> \<le> B"
 proof -
-  have "abs (x\<twosuperior> - s) \<le> x^2 + abs s"
+  have "abs (x\<^sup>2 - s) \<le> x^2 + abs s"
     by (metis abs_power2 abs_triangle_ineq4)
   also have "abs s \<le> max (abs t0') (abs T)"
     using assms using T' by (auto intro: bounded_abs simp: i_def)
@@ -325,7 +325,7 @@ lemma i_max_correct: "\<And>i. i \<le> i_max \<Longrightarrow> E.Delta i \<le> T
   unfolding H_def T'_def t0'_def i_max_def
   by simp
 
-definition "euler_result i = euler_float e' (\<lambda>(t, x). x\<twosuperior> - t) x0' E.Delta i"
+definition "euler_result i = euler_float e' (\<lambda>(t, x). x\<^sup>2 - t) x0' E.Delta i"
 
 lemma convergence:
   assumes i: "i \<le> i_max"

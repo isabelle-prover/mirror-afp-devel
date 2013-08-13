@@ -155,23 +155,23 @@ inductive_simps WTrts_iffs [iff]:
 lemma WTrts_conv_list_all2: "P,E,h \<turnstile> es [:] Ts = list_all2 (WTrt P h E) es Ts"
 by(induct es arbitrary: Ts)(auto simp add: list_all2_Cons1 elim: WTrts.cases)
 
-lemma [simp]: "(P,E,h \<turnstile> es\<^isub>1 @ es\<^isub>2 [:] Ts) =
-  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> P,E,h \<turnstile> es\<^isub>1 [:] Ts\<^isub>1 & P,E,h \<turnstile> es\<^isub>2[:]Ts\<^isub>2)"
+lemma [simp]: "(P,E,h \<turnstile> es\<^sub>1 @ es\<^sub>2 [:] Ts) =
+  (\<exists>Ts\<^sub>1 Ts\<^sub>2. Ts = Ts\<^sub>1 @ Ts\<^sub>2 \<and> P,E,h \<turnstile> es\<^sub>1 [:] Ts\<^sub>1 & P,E,h \<turnstile> es\<^sub>2[:]Ts\<^sub>2)"
 by(auto simp add: WTrts_conv_list_all2 list_all2_append1 dest: list_all2_lengthD[symmetric])
 
 inductive_simps WTrt_iffs [iff]:
   "P,E,h \<turnstile> Val v : T"
   "P,E,h \<turnstile> Var v : T"
-  "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
+  "P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 : T\<^sub>2"
   "P,E,h \<turnstile> {V:T=vo; e} : T'"
 
 inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> newA T\<lfloor>i\<rceil> : U"
   "P,E,h \<turnstile> v :=e : T"
-  "P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
+  "P,E,h \<turnstile> if (e) e\<^sub>1 else e\<^sub>2 : T"
   "P,E,h \<turnstile> while(e) c : T"
   "P,E,h \<turnstile> throw e : T"
-  "P,E,h \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 : T"
+  "P,E,h \<turnstile> try e\<^sub>1 catch(C V) e\<^sub>2 : T"
   "P,E,h \<turnstile> Cast D e : T"
   "P,E,h \<turnstile> e instanceof U : T"
   "P,E,h \<turnstile> a\<lfloor>i\<rceil> : T"
@@ -179,7 +179,7 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> a\<bullet>length : T"
   "P,E,h \<turnstile> e\<bullet>F{D} : T"
   "P,E,h \<turnstile> e\<bullet>F{D} := v : T"
-  "P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
+  "P,E,h \<turnstile> e\<^sub>1 \<guillemotleft>bop\<guillemotright> e\<^sub>2 : T"
   "P,E,h \<turnstile> new C : T"
   "P,E,h \<turnstile> e\<bullet>M(es) : T"
   "P,E,h \<turnstile> sync(o') e : T"

@@ -21,7 +21,7 @@ where
 notation (xsymbols) 
   confT ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
 
-abbreviation confTs :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool"
+abbreviation confTs :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool"
             ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
 where
   "P,h |- vs [:<=T] Ts \<equiv> list_all2 (confT P h) vs Ts"
@@ -29,21 +29,21 @@ where
 notation (xsymbols)
   confTs ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
 
-definition conf_f :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> ty\<^isub>i \<Rightarrow> 'addr bytecode \<Rightarrow> 'addr frame \<Rightarrow> bool"
+definition conf_f :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> ty\<^sub>i \<Rightarrow> 'addr bytecode \<Rightarrow> 'addr frame \<Rightarrow> bool"
 where
   "conf_f P h \<equiv> \<lambda>(ST,LT) is (stk,loc,C,M,pc). P,h \<turnstile> stk [:\<le>] ST \<and> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT \<and> pc < size is"
 
-primrec conf_fs :: "['addr jvm_prog,'heap,ty\<^isub>P,mname,nat,ty,'addr frame list] \<Rightarrow> bool"
+primrec conf_fs :: "['addr jvm_prog,'heap,ty\<^sub>P,mname,nat,ty,'addr frame list] \<Rightarrow> bool"
 where
-  "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 [] = True"
+  "conf_fs P h \<Phi> M\<^sub>0 n\<^sub>0 T\<^sub>0 [] = True"
 
-| "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 (f#frs) =
+| "conf_fs P h \<Phi> M\<^sub>0 n\<^sub>0 T\<^sub>0 (f#frs) =
   (let (stk,loc,C,M,pc) = f in
-  (\<exists>ST LT Ts T mxs mxl\<^isub>0 is xt.
+  (\<exists>ST LT Ts T mxs mxl\<^sub>0 is xt.
     \<Phi> C M ! pc = Some (ST,LT) \<and> 
-    (P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^isub>0,is,xt)\<rfloor> in C) \<and>
+    (P \<turnstile> C sees M:Ts \<rightarrow> T = \<lfloor>(mxs,mxl\<^sub>0,is,xt)\<rfloor> in C) \<and>
     (\<exists>Ts' T' D m D'.  
-       is!pc = (Invoke M\<^isub>0 n\<^isub>0) \<and> class_type_of' (ST!n\<^isub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^isub>0 \<le> T') \<and>
+       is!pc = (Invoke M\<^sub>0 n\<^sub>0) \<and> class_type_of' (ST!n\<^sub>0) = \<lfloor>D\<rfloor> \<and> P \<turnstile> D sees M\<^sub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^sub>0 \<le> T') \<and>
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 primrec conf_xcp :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> 'addr option \<Rightarrow> 'addr instr \<Rightarrow> bool" where
@@ -55,7 +55,7 @@ end
 
 context JVM_heap_conf_base begin
 
-definition correct_state :: "[ty\<^isub>P,'thread_id,('addr, 'heap) jvm_state] \<Rightarrow> bool"
+definition correct_state :: "[ty\<^sub>P,'thread_id,('addr, 'heap) jvm_state] \<Rightarrow> bool"
                   ("_ |- _:_ [ok]"  [61,0,0] 61)
 where
   "correct_state \<Phi> t \<equiv> \<lambda>(xp,h,frs).
@@ -64,8 +64,8 @@ where
              [] \<Rightarrow> True
              | (f#fs) \<Rightarrow> 
              (let (stk,loc,C,M,pc) = f
-              in \<exists>Ts T mxs mxl\<^isub>0 is xt \<tau>.
-                    (P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(mxs,mxl\<^isub>0,is,xt)\<rfloor> in C) \<and>
+              in \<exists>Ts T mxs mxl\<^sub>0 is xt \<tau>.
+                    (P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(mxs,mxl\<^sub>0,is,xt)\<rfloor> in C) \<and>
                     \<Phi> C M ! pc = Some \<tau> \<and>
                     conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs \<and>
                     conf_xcp P h xp (is ! pc) ))"
@@ -158,8 +158,8 @@ lemma conf_f_hext:
 by(cases f, cases \<Phi>, auto simp add: conf_f_def intro: confs_hext confTs_hext)
 
 lemma conf_fs_hext:
-  "\<lbrakk> conf_fs P h \<Phi> M n T\<^isub>r frs; h \<unlhd> h' \<rbrakk> \<Longrightarrow> conf_fs P h' \<Phi> M n T\<^isub>r frs"
-apply (induct frs arbitrary: M n T\<^isub>r)
+  "\<lbrakk> conf_fs P h \<Phi> M n T\<^sub>r frs; h \<unlhd> h' \<rbrakk> \<Longrightarrow> conf_fs P h' \<Phi> M n T\<^sub>r frs"
+apply (induct frs arbitrary: M n T\<^sub>r)
  apply simp
 apply clarify
 apply (simp (no_asm_use))

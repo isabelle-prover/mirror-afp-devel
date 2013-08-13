@@ -189,11 +189,11 @@ lemma weakBisimParPresAuxSym:
   and   Q :: "('a, 'b, 'c) psi"
   and   R :: "('a, 'b, 'c) psi"
 
-  assumes "\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<approx> Q"
-  and     "extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>"
-  and     "A\<^isub>R \<sharp>* \<Psi>"
-  and     "A\<^isub>R \<sharp>* P"
-  and     "A\<^isub>R \<sharp>* Q"
+  assumes "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q"
+  and     "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>"
+  and     "A\<^sub>R \<sharp>* \<Psi>"
+  and     "A\<^sub>R \<sharp>* P"
+  and     "A\<^sub>R \<sharp>* Q"
 
   shows "\<Psi> \<rhd> R \<parallel> P \<approx> R \<parallel> Q"
 using assms
@@ -218,14 +218,14 @@ lemma guardedFrameStatEq:
 
   shows "extractFrame P \<simeq>\<^sub>F \<langle>\<epsilon>, \<one>\<rangle>"
 proof -
-  obtain A\<^isub>P \<Psi>\<^isub>P where FrR: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>"
+  obtain A\<^sub>P \<Psi>\<^sub>P where FrR: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>"
     by(rule freshFrame)
 
-  with `guarded P` have "\<Psi>\<^isub>P \<simeq> \<one>" and "((supp \<Psi>\<^isub>P)::name set) = {}"
+  with `guarded P` have "\<Psi>\<^sub>P \<simeq> \<one>" and "((supp \<Psi>\<^sub>P)::name set) = {}"
     by(metis guardedStatEq)+
-  from `supp \<Psi>\<^isub>P = {}` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>P" by(auto simp add: fresh_star_def fresh_def)
-  hence "\<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle> \<simeq>\<^sub>F \<langle>[], \<Psi>\<^isub>P\<rangle>" by(force intro: frameResFreshChain)
-  moreover from `\<Psi>\<^isub>P \<simeq> \<one>` have  "\<langle>[], \<Psi>\<^isub>P\<rangle> \<simeq>\<^sub>F \<langle>[], \<one>\<rangle>"
+  from `supp \<Psi>\<^sub>P = {}` have "A\<^sub>P \<sharp>* \<Psi>\<^sub>P" by(auto simp add: fresh_star_def fresh_def)
+  hence "\<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>[], \<Psi>\<^sub>P\<rangle>" by(force intro: frameResFreshChain)
+  moreover from `\<Psi>\<^sub>P \<simeq> \<one>` have  "\<langle>[], \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>[], \<one>\<rangle>"
     by(simp add: FrameStatEq_def FrameStatImp_def AssertionStatEq_def AssertionStatImp_def)
   ultimately show ?thesis using FrR by(rule_tac FrameStatEqTrans) auto
 qed
@@ -238,16 +238,16 @@ lemma guardedInsertAssertion:
 
   shows "insertAssertion (extractFrame P) \<Psi> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi>\<rangle>"
 proof -
-  obtain A\<^isub>P \<Psi>\<^isub>P where FrR: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>"
+  obtain A\<^sub>P \<Psi>\<^sub>P where FrR: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>"
     by(rule freshFrame)
 
-  with `guarded P` have "\<Psi>\<^isub>P \<simeq> \<one>" and "((supp \<Psi>\<^isub>P)::name set) = {}"
+  with `guarded P` have "\<Psi>\<^sub>P \<simeq> \<one>" and "((supp \<Psi>\<^sub>P)::name set) = {}"
     by(metis guardedStatEq)+
-  from `supp \<Psi>\<^isub>P = {}` have "A\<^isub>P \<sharp>* \<Psi>\<^isub>P" by(auto simp add: fresh_star_def fresh_def)
-  hence "\<langle>A\<^isub>P, \<Psi> \<otimes> \<Psi>\<^isub>P\<rangle> \<simeq>\<^sub>F \<langle>[], \<Psi> \<otimes> \<Psi>\<^isub>P\<rangle>" using `A\<^isub>P \<sharp>* \<Psi>` by(force intro: frameResFreshChain)
-  moreover from `\<Psi>\<^isub>P \<simeq> \<one>` have  "\<langle>\<epsilon>, \<Psi> \<otimes> \<Psi>\<^isub>P\<rangle> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>" by(force intro: compositionSym)
+  from `supp \<Psi>\<^sub>P = {}` have "A\<^sub>P \<sharp>* \<Psi>\<^sub>P" by(auto simp add: fresh_star_def fresh_def)
+  hence "\<langle>A\<^sub>P, \<Psi> \<otimes> \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>[], \<Psi> \<otimes> \<Psi>\<^sub>P\<rangle>" using `A\<^sub>P \<sharp>* \<Psi>` by(force intro: frameResFreshChain)
+  moreover from `\<Psi>\<^sub>P \<simeq> \<one>` have  "\<langle>\<epsilon>, \<Psi> \<otimes> \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle>" by(force intro: compositionSym)
   moreover have "\<langle>\<epsilon>, \<Psi> \<otimes> \<one>\<rangle> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi>\<rangle>" by(force intro: Identity)
-  ultimately show ?thesis using FrR `A\<^isub>P \<sharp>* \<Psi>`
+  ultimately show ?thesis using FrR `A\<^sub>P \<sharp>* \<Psi>`
     by(force intro: FrameStatEqTrans AssertionStatEqTrans)
 qed
 
@@ -258,7 +258,7 @@ lemma insertDoubleAssertionStatEq':
 
   shows "insertAssertion(insertAssertion F \<Psi>) \<Psi>' \<simeq>\<^sub>F (insertAssertion F) (\<Psi>' \<otimes> \<Psi>)"
 proof -
-  obtain A\<^isub>F \<Psi>\<^isub>F where "F = \<langle>A\<^isub>F, \<Psi>\<^isub>F\<rangle>" and "A\<^isub>F \<sharp>* \<Psi>" and "A\<^isub>F \<sharp>* \<Psi>'" and "A\<^isub>F \<sharp>* (\<Psi>' \<otimes> \<Psi>)"
+  obtain A\<^sub>F \<Psi>\<^sub>F where "F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" and "A\<^sub>F \<sharp>* \<Psi>" and "A\<^sub>F \<sharp>* \<Psi>'" and "A\<^sub>F \<sharp>* (\<Psi>' \<otimes> \<Psi>)"
     by(rule_tac C="(\<Psi>, \<Psi>')" in freshFrame) auto
   thus ?thesis
     by auto (metis frameIntAssociativity FrameStatEqSym)
@@ -327,12 +327,12 @@ proof -
   moreover from assms have "\<exists>Q. \<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> Q \<and> P' \<sim> Q \<parallel> !P"
   proof(nominal_induct rule: bangTauInduct)
     case(cPar1 P')
-    obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "A\<^isub>P \<sharp>* P"
+    obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>" and "A\<^sub>P \<sharp>* P"
       by(rule_tac C="(\<Psi>, P)" in freshFrame) auto
-    from `guarded P` FrP have "\<Psi>\<^isub>P \<simeq> \<one>" by(drule_tac guardedStatEq) auto
-    with `\<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>\<tau> \<prec> P'"
+    from `guarded P` FrP have "\<Psi>\<^sub>P \<simeq> \<one>" by(drule_tac guardedStatEq) auto
+    with `\<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>\<tau> \<prec> P'"
       by(rule_tac statEqTransition, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
-    hence "\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> P' \<parallel> P" using FrP `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` by(rule_tac Par1) auto 
+    hence "\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> P' \<parallel> P" using FrP `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P` by(rule_tac Par1) auto 
     moreover from `guarded P` have "P' \<parallel> !P \<sim> (P' \<parallel> P) \<parallel> (P \<parallel> !P)"
       by(metis bisimParPresSym bisimParAssoc bisimTransitive bisimParComm bangExt)
     ultimately show ?case by blast
@@ -344,22 +344,22 @@ proof -
     with PTrans show ?case by blast
   next
     case(cComm1 M N P' K xvec P'')
-    obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "A\<^isub>P \<sharp>* P" and "A\<^isub>P \<sharp>* M"
+    obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>" and "A\<^sub>P \<sharp>* P" and "A\<^sub>P \<sharp>* M"
       by(rule_tac C="(\<Psi>, P, M)" in freshFrame) auto
-    from `guarded P` FrP have "\<Psi>\<^isub>P \<simeq> \<one>" by(drule_tac guardedStatEq) auto
-    obtain A\<^isub>P' \<Psi>\<^isub>P' where FrP': "extractFrame P = \<langle>A\<^isub>P', \<Psi>\<^isub>P'\<rangle>" and "A\<^isub>P' \<sharp>* \<Psi>" and "A\<^isub>P' \<sharp>* P" and "A\<^isub>P' \<sharp>* K" and "A\<^isub>P' \<sharp>* A\<^isub>P"
-      by(rule_tac C="(\<Psi>, P, K, A\<^isub>P)" in freshFrame) auto
-    from `guarded P` FrP' have "\<Psi>\<^isub>P' \<simeq> \<one>" by(drule_tac guardedStatEq) auto
-    with `\<Psi> \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'` have "\<Psi> \<otimes> \<Psi>\<^isub>P' \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
+    from `guarded P` FrP have "\<Psi>\<^sub>P \<simeq> \<one>" by(drule_tac guardedStatEq) auto
+    obtain A\<^sub>P' \<Psi>\<^sub>P' where FrP': "extractFrame P = \<langle>A\<^sub>P', \<Psi>\<^sub>P'\<rangle>" and "A\<^sub>P' \<sharp>* \<Psi>" and "A\<^sub>P' \<sharp>* P" and "A\<^sub>P' \<sharp>* K" and "A\<^sub>P' \<sharp>* A\<^sub>P"
+      by(rule_tac C="(\<Psi>, P, K, A\<^sub>P)" in freshFrame) auto
+    from `guarded P` FrP' have "\<Psi>\<^sub>P' \<simeq> \<one>" by(drule_tac guardedStatEq) auto
+    with `\<Psi> \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'` have "\<Psi> \<otimes> \<Psi>\<^sub>P' \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
       by(rule_tac statEqTransition, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
     moreover from `\<Psi> \<rhd> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''` `guarded P` `xvec \<sharp>* P` `xvec \<sharp>* K`
     obtain Q where PTrans: "\<Psi> \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q" and "P'' \<sim> Q \<parallel> !P" 
       by(drule_tac bangActE) auto
-    from PTrans `\<Psi>\<^isub>P \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q"
+    from PTrans `\<Psi>\<^sub>P \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q"
       by(rule_tac statEqTransition, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
-    moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^isub>P \<simeq> \<one>` `\<Psi>\<^isub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>P' \<turnstile> M \<leftrightarrow> K"
+    moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^sub>P \<simeq> \<one>` `\<Psi>\<^sub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>P' \<turnstile> M \<leftrightarrow> K"
       by(rule_tac statEqEnt, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
-    ultimately have "\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q)" using FrP FrP' `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* M` `A\<^isub>P' \<sharp>* \<Psi>` `A\<^isub>P' \<sharp>* P` `A\<^isub>P' \<sharp>* K` `A\<^isub>P' \<sharp>* A\<^isub>P` `xvec \<sharp>* P`
+    ultimately have "\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q)" using FrP FrP' `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P` `A\<^sub>P \<sharp>* M` `A\<^sub>P' \<sharp>* \<Psi>` `A\<^sub>P' \<sharp>* P` `A\<^sub>P' \<sharp>* K` `A\<^sub>P' \<sharp>* A\<^sub>P` `xvec \<sharp>* P`
       by(rule_tac Comm1) (assumption | simp)+
     moreover from `P'' \<sim> Q \<parallel> !P` `guarded P` have "P' \<parallel> P'' \<sim> (P' \<parallel> Q) \<parallel> (P \<parallel> !P)"
       by(metis bisimTransitive bangExt bisimParPresSym bisimParAssoc bisimSymmetric) 
@@ -369,21 +369,21 @@ proof -
     ultimately show ?case by blast
   next
     case(cComm2 M N P' K xvec P'')
-    obtain A\<^isub>P \<Psi>\<^isub>P where FrP: "extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>" and "A\<^isub>P \<sharp>* \<Psi>" and "A\<^isub>P \<sharp>* P" and "A\<^isub>P \<sharp>* M"
+    obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>" and "A\<^sub>P \<sharp>* P" and "A\<^sub>P \<sharp>* M"
       by(rule_tac C="(\<Psi>, P, M)" in freshFrame) auto
-    from `guarded P` FrP have "\<Psi>\<^isub>P \<simeq> \<one>" by(drule_tac guardedStatEq) auto
-    obtain A\<^isub>P' \<Psi>\<^isub>P' where FrP': "extractFrame P = \<langle>A\<^isub>P', \<Psi>\<^isub>P'\<rangle>" and "A\<^isub>P' \<sharp>* \<Psi>" and "A\<^isub>P' \<sharp>* P" and "A\<^isub>P' \<sharp>* K" and "A\<^isub>P' \<sharp>* A\<^isub>P"
-      by(rule_tac C="(\<Psi>, P, K, A\<^isub>P)" in freshFrame) auto
-    from `guarded P` FrP' have "\<Psi>\<^isub>P' \<simeq> \<one>" by(drule_tac guardedStatEq) auto
-    with `\<Psi> \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'` have "\<Psi> \<otimes> \<Psi>\<^isub>P' \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
+    from `guarded P` FrP have "\<Psi>\<^sub>P \<simeq> \<one>" by(drule_tac guardedStatEq) auto
+    obtain A\<^sub>P' \<Psi>\<^sub>P' where FrP': "extractFrame P = \<langle>A\<^sub>P', \<Psi>\<^sub>P'\<rangle>" and "A\<^sub>P' \<sharp>* \<Psi>" and "A\<^sub>P' \<sharp>* P" and "A\<^sub>P' \<sharp>* K" and "A\<^sub>P' \<sharp>* A\<^sub>P"
+      by(rule_tac C="(\<Psi>, P, K, A\<^sub>P)" in freshFrame) auto
+    from `guarded P` FrP' have "\<Psi>\<^sub>P' \<simeq> \<one>" by(drule_tac guardedStatEq) auto
+    with `\<Psi> \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'` have "\<Psi> \<otimes> \<Psi>\<^sub>P' \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
       by(rule_tac statEqTransition, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
     moreover from `\<Psi> \<rhd> !P \<longmapsto>K\<lparr>N\<rparr> \<prec> P''` `guarded P`
     obtain Q where PTrans: "\<Psi> \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> Q" and "P'' \<sim> Q \<parallel> !P" by(rule_tac bangActE) auto
-    from PTrans `\<Psi>\<^isub>P \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> Q"
+    from PTrans `\<Psi>\<^sub>P \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> Q"
       by(rule_tac statEqTransition, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
-    moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^isub>P \<simeq> \<one>` `\<Psi>\<^isub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>P' \<turnstile> M \<leftrightarrow> K"
+    moreover from `\<Psi> \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^sub>P \<simeq> \<one>` `\<Psi>\<^sub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>P' \<turnstile> M \<leftrightarrow> K"
       by(rule_tac statEqEnt, auto) (metis Identity AssertionStatEqSym compositionSym AssertionStatEqTrans)
-    ultimately have "\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q)" using FrP FrP' `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* M` `A\<^isub>P' \<sharp>* \<Psi>` `A\<^isub>P' \<sharp>* P` `A\<^isub>P' \<sharp>* K` `A\<^isub>P' \<sharp>* A\<^isub>P` `xvec \<sharp>* P`
+    ultimately have "\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> Q)" using FrP FrP' `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P` `A\<^sub>P \<sharp>* M` `A\<^sub>P' \<sharp>* \<Psi>` `A\<^sub>P' \<sharp>* P` `A\<^sub>P' \<sharp>* K` `A\<^sub>P' \<sharp>* A\<^sub>P` `xvec \<sharp>* P`
       by(rule_tac Comm2) (assumption | simp)+
     moreover from `P'' \<sim> Q \<parallel> !P` `guarded P` have "P' \<parallel> P'' \<sim> (P' \<parallel> Q) \<parallel> (P \<parallel> !P)"
       by(metis bisimTransitive bangExt bisimParPresSym bisimParAssoc bisimSymmetric) 
@@ -413,43 +413,43 @@ proof -
   assume "\<And>Q. \<lbrakk>\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> Q; Q \<sim> P' \<parallel> !P\<rbrakk> \<Longrightarrow> thesis"
   moreover from `\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> P'` have "\<exists>Q. \<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> Q \<and> Q \<sim> P' \<parallel> !P"
   proof(induct rule: parTauCases[where C="()"])
-    case(cPar1 P' A\<^isub>P \<Psi>\<^isub>P)
-    from `\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>\<tau> \<prec> P'` have "(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<one> \<rhd> P \<longmapsto>\<tau> \<prec> P'" 
+    case(cPar1 P' A\<^sub>P \<Psi>\<^sub>P)
+    from `\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>\<tau> \<prec> P'` have "(\<Psi> \<otimes> \<Psi>\<^sub>P) \<otimes> \<one> \<rhd> P \<longmapsto>\<tau> \<prec> P'" 
       by(rule statEqTransition) (metis Identity AssertionStatEqSym)
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" by(rule_tac Par1) auto
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" using `guarded P` by(rule Bang)
-     hence "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P \<parallel> (P' \<parallel> !P)" using `extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P`
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" by(rule_tac Par1) auto
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" using `guarded P` by(rule Bang)
+     hence "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P \<parallel> (P' \<parallel> !P)" using `extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>` `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P`
        by(rule_tac Par2) auto
      hence "\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> P \<parallel> (P' \<parallel> !P)" using `guarded P` by(rule Bang)
      moreover have "P \<parallel> (P' \<parallel> !P) \<sim> P' \<parallel> P \<parallel> !P"
        by(metis bisimParAssoc bisimParComm bisimTransitive bisimSymmetric bisimParPres)
      ultimately show ?case by blast
    next
-    case(cPar2 P' A\<^isub>P \<Psi>\<^isub>P)
-    from `\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>\<tau> \<prec> P'` have "(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<one> \<rhd> P \<longmapsto>\<tau> \<prec> P'" 
+    case(cPar2 P' A\<^sub>P \<Psi>\<^sub>P)
+    from `\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>\<tau> \<prec> P'` have "(\<Psi> \<otimes> \<Psi>\<^sub>P) \<otimes> \<one> \<rhd> P \<longmapsto>\<tau> \<prec> P'" 
       by(rule statEqTransition) (metis Identity AssertionStatEqSym)
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" by(rule_tac Par1) auto
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" using `guarded P` by(rule Bang)
-     hence "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P \<parallel> (P' \<parallel> !P)" using `extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>` `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P`
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" by(rule_tac Par1) auto
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> !P \<longmapsto>\<tau> \<prec> P' \<parallel> !P" using `guarded P` by(rule Bang)
+     hence "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> P \<parallel> (P' \<parallel> !P)" using `extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>` `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P`
        by(rule_tac Par2) auto
      hence "\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> P \<parallel> (P' \<parallel> !P)" using `guarded P` by(rule Bang)
      moreover have "P \<parallel> (P' \<parallel> !P) \<sim> P \<parallel> P' \<parallel> !P"
        by(metis bisimParAssoc bisimSymmetric)
      ultimately show ?case by blast
    next
-     case(cComm1 \<Psi>\<^isub>P' M N P' A\<^isub>P \<Psi>\<^isub>P K xvec P'' A\<^isub>P')
-     from `extractFrame P = \<langle>A\<^isub>P', \<Psi>\<^isub>P'\<rangle>` `guarded P` have "\<Psi>\<^isub>P' \<simeq> \<one>" by(blast dest: guardedStatEq)
-     with `\<Psi> \<otimes> \<Psi>\<^isub>P' \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'` have "\<Psi> \<otimes> \<one> \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
+     case(cComm1 \<Psi>\<^sub>P' M N P' A\<^sub>P \<Psi>\<^sub>P K xvec P'' A\<^sub>P')
+     from `extractFrame P = \<langle>A\<^sub>P', \<Psi>\<^sub>P'\<rangle>` `guarded P` have "\<Psi>\<^sub>P' \<simeq> \<one>" by(blast dest: guardedStatEq)
+     with `\<Psi> \<otimes> \<Psi>\<^sub>P' \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'` have "\<Psi> \<otimes> \<one> \<rhd> P \<longmapsto>M\<lparr>N\<rparr> \<prec> P'"
        by(rule_tac statEqTransition, auto) (metis compositionSym AssertionStatEqSym)
-     moreover note `extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>`
-     moreover from `\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''` have "(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<one> \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''"
+     moreover note `extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>`
+     moreover from `\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''` have "(\<Psi> \<otimes> \<Psi>\<^sub>P) \<otimes> \<one> \<rhd> P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P''"
        by(rule statEqTransition) (metis Identity AssertionStatEqSym)
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<parallel> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (P'' \<parallel> !P)" using `xvec \<sharp>* P` by(force intro: Par1)
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (P'' \<parallel> !P)" using `guarded P` by(rule Bang)
-     moreover from `\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>P' \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^isub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<one> \<turnstile> M \<leftrightarrow> K"
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<parallel> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (P'' \<parallel> !P)" using `xvec \<sharp>* P` by(force intro: Par1)
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> !P \<longmapsto>K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (P'' \<parallel> !P)" using `guarded P` by(rule Bang)
+     moreover from `\<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>P' \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^sub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<one> \<turnstile> M \<leftrightarrow> K"
        by(rule_tac statEqEnt, auto) (metis compositionSym AssertionStatEqSym)
      ultimately have "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> (P'' \<parallel> !P))"
-       using `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* M` `A\<^isub>P \<sharp>* A\<^isub>P'` `A\<^isub>P' \<sharp>* \<Psi>` `A\<^isub>P' \<sharp>* P` `A\<^isub>P' \<sharp>* K` `xvec \<sharp>* P`
+       using `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P` `A\<^sub>P \<sharp>* M` `A\<^sub>P \<sharp>* A\<^sub>P'` `A\<^sub>P' \<sharp>* \<Psi>` `A\<^sub>P' \<sharp>* P` `A\<^sub>P' \<sharp>* K` `xvec \<sharp>* P`
        by(force intro: Comm1)
      hence "\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> (P'' \<parallel> !P))" using `guarded P` by(rule Bang)
      moreover have "\<lparr>\<nu>*xvec\<rparr>(P' \<parallel> (P'' \<parallel> !P)) \<sim> (\<lparr>\<nu>*xvec\<rparr>(P' \<parallel> P'')) \<parallel> !P" 
@@ -462,19 +462,19 @@ proof -
      qed
      ultimately show ?case by blast
    next
-     case(cComm2 \<Psi>\<^isub>P' M xvec N P' A\<^isub>P \<Psi>\<^isub>P K P'' A\<^isub>P')
-     from `extractFrame P = \<langle>A\<^isub>P', \<Psi>\<^isub>P'\<rangle>` `guarded P` have "\<Psi>\<^isub>P' \<simeq> \<one>" by(blast dest: guardedStatEq)
-     with `\<Psi> \<otimes> \<Psi>\<^isub>P' \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle>\<prec> P'` have "\<Psi> \<otimes> \<one> \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
+     case(cComm2 \<Psi>\<^sub>P' M xvec N P' A\<^sub>P \<Psi>\<^sub>P K P'' A\<^sub>P')
+     from `extractFrame P = \<langle>A\<^sub>P', \<Psi>\<^sub>P'\<rangle>` `guarded P` have "\<Psi>\<^sub>P' \<simeq> \<one>" by(blast dest: guardedStatEq)
+     with `\<Psi> \<otimes> \<Psi>\<^sub>P' \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle>\<prec> P'` have "\<Psi> \<otimes> \<one> \<rhd> P \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P'"
        by(rule_tac statEqTransition, auto) (metis compositionSym AssertionStatEqSym)
-     moreover note `extractFrame P = \<langle>A\<^isub>P, \<Psi>\<^isub>P\<rangle>`
-     moreover from `\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> P''` have "(\<Psi> \<otimes> \<Psi>\<^isub>P) \<otimes> \<one> \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> P''"
+     moreover note `extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>`
+     moreover from `\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> P''` have "(\<Psi> \<otimes> \<Psi>\<^sub>P) \<otimes> \<one> \<rhd> P \<longmapsto>K\<lparr>N\<rparr> \<prec> P''"
        by(rule statEqTransition) (metis Identity AssertionStatEqSym)
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> P \<parallel> !P \<longmapsto>K\<lparr>N\<rparr> \<prec> (P'' \<parallel> !P)" by(force intro: Par1)
-     hence "\<Psi> \<otimes> \<Psi>\<^isub>P \<rhd> !P \<longmapsto>K\<lparr>N\<rparr> \<prec> (P'' \<parallel> !P)" using `guarded P` by(rule Bang)
-     moreover from `\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<Psi>\<^isub>P' \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^isub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^isub>P \<otimes> \<one> \<turnstile> M \<leftrightarrow> K"
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> P \<parallel> !P \<longmapsto>K\<lparr>N\<rparr> \<prec> (P'' \<parallel> !P)" by(force intro: Par1)
+     hence "\<Psi> \<otimes> \<Psi>\<^sub>P \<rhd> !P \<longmapsto>K\<lparr>N\<rparr> \<prec> (P'' \<parallel> !P)" using `guarded P` by(rule Bang)
+     moreover from `\<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>P' \<turnstile> M \<leftrightarrow> K` `\<Psi>\<^sub>P' \<simeq> \<one>` have "\<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> \<one> \<turnstile> M \<leftrightarrow> K"
        by(rule_tac statEqEnt, auto) (metis compositionSym AssertionStatEqSym)
      ultimately have "\<Psi> \<rhd> P \<parallel> !P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> (P'' \<parallel> !P))"
-       using `A\<^isub>P \<sharp>* \<Psi>` `A\<^isub>P \<sharp>* P` `A\<^isub>P \<sharp>* M` `A\<^isub>P \<sharp>* A\<^isub>P'` `A\<^isub>P' \<sharp>* \<Psi>` `A\<^isub>P' \<sharp>* P` `A\<^isub>P' \<sharp>* K` `xvec \<sharp>* P`
+       using `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* P` `A\<^sub>P \<sharp>* M` `A\<^sub>P \<sharp>* A\<^sub>P'` `A\<^sub>P' \<sharp>* \<Psi>` `A\<^sub>P' \<sharp>* P` `A\<^sub>P' \<sharp>* K` `xvec \<sharp>* P`
        by(force intro: Comm2)
      hence "\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> \<lparr>\<nu>*xvec\<rparr>(P' \<parallel> (P'' \<parallel> !P))" using `guarded P` by(rule Bang)
      moreover have "\<lparr>\<nu>*xvec\<rparr>(P' \<parallel> (P'' \<parallel> !P)) \<sim> (\<lparr>\<nu>*xvec\<rparr>(P' \<parallel> P'')) \<parallel> !P" 
@@ -564,7 +564,7 @@ proof -
         by(metis weakBisimParPres weakBisimParComm weakBisimE(4) weakBisimTransitive)
       moreover note bisimParPresSym
       moreover have "bisim \<subseteq> weakBisim" by(auto dest: strongBisimWeakBisim)
-      moreover have "\<And>\<Psi> \<Psi>\<^isub>R P Q R A\<^isub>R. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^isub>R \<rhd> P \<approx> Q; extractFrame R = \<langle>A\<^isub>R, \<Psi>\<^isub>R\<rangle>; A\<^isub>R \<sharp>* \<Psi>; A\<^isub>R \<sharp>* P; A\<^isub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> R \<parallel> P \<approx> R \<parallel> Q"
+      moreover have "\<And>\<Psi> \<Psi>\<^sub>R P Q R A\<^sub>R. \<lbrakk>\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q; extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>; A\<^sub>R \<sharp>* P; A\<^sub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> R \<parallel> P \<approx> R \<parallel> Q"
         by(metis weakBisimParComm weakBisimTransitive weakBisimParPresAux)
       moreover note weakBisimResChainPres bisimResChainPres weakBisimScopeExtChainSym bisimScopeExtChainSym
       moreover have "\<And>\<Psi> P R S Q. \<lbrakk>\<Psi> \<rhd> P \<approx> R; (\<Psi>, R, S) \<in> ?Y; \<Psi> \<rhd> S \<sim> Q\<rbrakk> \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Y"

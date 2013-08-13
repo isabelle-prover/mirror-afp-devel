@@ -13,15 +13,15 @@ begin
 
 definition le :: "'a ord \<Rightarrow> 'b ord \<Rightarrow> ('a \<times> 'b) ord"
 where
-  "le r\<^isub>A r\<^isub>B = (\<lambda>(a\<^isub>1,b\<^isub>1) (a\<^isub>2,b\<^isub>2). a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 \<and> b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2)"
+  "le r\<^sub>A r\<^sub>B = (\<lambda>(a\<^sub>1,b\<^sub>1) (a\<^sub>2,b\<^sub>2). a\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>A\<^esub> a\<^sub>2 \<and> b\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>B\<^esub> b\<^sub>2)"
 
 definition sup :: "'a ebinop \<Rightarrow> 'b ebinop \<Rightarrow> ('a \<times> 'b) ebinop"
 where
-  "sup f g = (\<lambda>(a\<^isub>1,b\<^isub>1)(a\<^isub>2,b\<^isub>2). Err.sup Pair (a\<^isub>1 \<squnion>\<^sub>f a\<^isub>2) (b\<^isub>1 \<squnion>\<^sub>g b\<^isub>2))"
+  "sup f g = (\<lambda>(a\<^sub>1,b\<^sub>1)(a\<^sub>2,b\<^sub>2). Err.sup Pair (a\<^sub>1 \<squnion>\<^sub>f a\<^sub>2) (b\<^sub>1 \<squnion>\<^sub>g b\<^sub>2))"
 
 definition esl :: "'a esl \<Rightarrow> 'b esl \<Rightarrow> ('a \<times> 'b ) esl"
 where
-  "esl = (\<lambda>(A,r\<^isub>A,f\<^isub>A) (B,r\<^isub>B,f\<^isub>B). (A \<times> B, le r\<^isub>A r\<^isub>B, sup f\<^isub>A f\<^isub>B))"
+  "esl = (\<lambda>(A,r\<^sub>A,f\<^sub>A) (B,r\<^sub>B,f\<^sub>B). (A \<times> B, le r\<^sub>A r\<^sub>B, sup f\<^sub>A f\<^sub>B))"
 
 (*<*)
 abbreviation
@@ -36,15 +36,15 @@ abbreviation (xsymbols)
   "p \<sqsubseteq>(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 
 
-lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^isub>A,r\<^isub>B) y = le r\<^isub>A r\<^isub>B x y"
+lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^sub>A,r\<^sub>B) y = le r\<^sub>A r\<^sub>B x y"
 (*<*) by (simp add: lesub_def) (*>*)
 
-lemma le_prod_Pair_conv [iff]: "((a\<^isub>1,b\<^isub>1) \<sqsubseteq>(r\<^isub>A,r\<^isub>B) (a\<^isub>2,b\<^isub>2)) = (a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 & b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2)"
+lemma le_prod_Pair_conv [iff]: "((a\<^sub>1,b\<^sub>1) \<sqsubseteq>(r\<^sub>A,r\<^sub>B) (a\<^sub>2,b\<^sub>2)) = (a\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>A\<^esub> a\<^sub>2 & b\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>B\<^esub> b\<^sub>2)"
 (*<*) by (simp add: lesub_def le_def) (*>*)
 
 lemma less_prod_Pair_conv:
-  "((a\<^isub>1,b\<^isub>1) \<sqsubset>\<^bsub>Product.le r\<^isub>A r\<^isub>B\<^esub> (a\<^isub>2,b\<^isub>2)) = 
-  (a\<^isub>1 \<sqsubset>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 & b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2 | a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 & b\<^isub>1 \<sqsubset>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2)"
+  "((a\<^sub>1,b\<^sub>1) \<sqsubset>\<^bsub>Product.le r\<^sub>A r\<^sub>B\<^esub> (a\<^sub>2,b\<^sub>2)) = 
+  (a\<^sub>1 \<sqsubset>\<^bsub>r\<^sub>A\<^esub> a\<^sub>2 & b\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>B\<^esub> b\<^sub>2 | a\<^sub>1 \<sqsubseteq>\<^bsub>r\<^sub>A\<^esub> a\<^sub>2 & b\<^sub>1 \<sqsubset>\<^bsub>r\<^sub>B\<^esub> b\<^sub>2)"
 (*<*)
 apply (unfold lesssub_def)
 apply simp
@@ -52,7 +52,7 @@ apply blast
 done
 (*>*)
 
-lemma order_le_prod [iff]: "order(Product.le r\<^isub>A r\<^isub>B) = (order r\<^isub>A & order r\<^isub>B)"
+lemma order_le_prod [iff]: "order(Product.le r\<^sub>A r\<^sub>B) = (order r\<^sub>A & order r\<^sub>B)"
 (*<*)
 apply (unfold order_def)
 apply simp
@@ -63,7 +63,7 @@ done
 
 
 lemma acc_le_prodI [intro!]:
-  "\<lbrakk> acc A r\<^isub>A; acc B r\<^isub>B \<rbrakk> \<Longrightarrow> acc (A \<times> B) (Product.le r\<^isub>A r\<^isub>B)"
+  "\<lbrakk> acc A r\<^sub>A; acc B r\<^sub>B \<rbrakk> \<Longrightarrow> acc (A \<times> B) (Product.le r\<^sub>A r\<^sub>B)"
 (*<*)
 apply (unfold acc_def)
 apply (rule wf_subset)
@@ -84,7 +84,7 @@ apply blast
 done 
 (*>*)
 
-lemma unfold_plussub_lift2: "e\<^isub>1 \<squnion>\<^bsub>lift2 f\<^esub> e\<^isub>2 = lift2 f e\<^isub>1 e\<^isub>2"
+lemma unfold_plussub_lift2: "e\<^sub>1 \<squnion>\<^bsub>lift2 f\<^esub> e\<^sub>2 = lift2 f e\<^sub>1 e\<^sub>2"
 (*<*) by (simp add: plussub_def) (*>*)
 
 
@@ -128,7 +128,7 @@ qed
 (*>*)
 
 lemma err_semilat_Product_esl:
-  "\<And>L\<^isub>1 L\<^isub>2. \<lbrakk> err_semilat L\<^isub>1; err_semilat L\<^isub>2 \<rbrakk> \<Longrightarrow> err_semilat(Product.esl L\<^isub>1 L\<^isub>2)"
+  "\<And>L\<^sub>1 L\<^sub>2. \<lbrakk> err_semilat L\<^sub>1; err_semilat L\<^sub>2 \<rbrakk> \<Longrightarrow> err_semilat(Product.esl L\<^sub>1 L\<^sub>2)"
 (*<*)
 apply (unfold esl_def Err.sl_def)
 apply (simp (no_asm_simp) only: split_tupled_all)

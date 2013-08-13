@@ -28,10 +28,10 @@ by(simp add:pcs_def)
 lemma pcs_Cons [simp]: "pcs (x#xt) = {fst x ..< fst(snd x)} \<union> pcs xt"
 by(auto simp add: pcs_def)
 
-lemma pcs_append [simp]: "pcs(xt\<^isub>1 @ xt\<^isub>2) = pcs xt\<^isub>1 \<union> pcs xt\<^isub>2"
+lemma pcs_append [simp]: "pcs(xt\<^sub>1 @ xt\<^sub>2) = pcs xt\<^sub>1 \<union> pcs xt\<^sub>2"
 by(simp add:pcs_def)
 
-lemma [simp]: "pc < pc\<^isub>0 \<or> pc\<^isub>0+size(compE2 e) \<le> pc \<Longrightarrow> pc \<notin> pcs(compxE2 e pc\<^isub>0 d)"
+lemma [simp]: "pc < pc\<^sub>0 \<or> pc\<^sub>0+size(compE2 e) \<le> pc \<Longrightarrow> pc \<notin> pcs(compxE2 e pc\<^sub>0 d)"
 using pcs_subset by fastforce
 
 lemma [simp]: "pc < pc0 \<or> pc0+size(compEs2 es) \<le> pc \<Longrightarrow> pc \<notin> pcs(compxEs2 es pc0 d)"
@@ -40,7 +40,7 @@ using pcs_subset by fastforce
 lemma [simp]: "pc1 + size(compE2 e1) \<le> pc2 \<Longrightarrow> pcs(compxE2 e1 pc1 d1) \<inter> pcs(compxE2 e2 pc2 d2) = {}"
 using pcs_subset by fastforce
 
-lemma [simp]: "pc\<^isub>1 + size(compE2 e) \<le> pc\<^isub>2 \<Longrightarrow> pcs(compxE2 e pc\<^isub>1 d\<^isub>1) \<inter> pcs(compxEs2 es pc\<^isub>2 d\<^isub>2) = {}"
+lemma [simp]: "pc\<^sub>1 + size(compE2 e) \<le> pc\<^sub>2 \<Longrightarrow> pcs(compxE2 e pc\<^sub>1 d\<^sub>1) \<inter> pcs(compxEs2 es pc\<^sub>2 d\<^sub>2) = {}"
 using pcs_subset by fastforce
 
 lemma match_ex_table_append_not_pcs [simp]:
@@ -74,9 +74,9 @@ proof
 qed
 
 lemma match_ex_table_app[simp]:
-  "\<forall>xte \<in> set xt\<^isub>1. \<not> matches_ex_entry P D pc xte \<Longrightarrow>
-  match_ex_table P D pc (xt\<^isub>1 @ xt) = match_ex_table P D pc xt"
-by(induct xt\<^isub>1) simp_all
+  "\<forall>xte \<in> set xt\<^sub>1. \<not> matches_ex_entry P D pc xte \<Longrightarrow>
+  match_ex_table P D pc (xt\<^sub>1 @ xt) = match_ex_table P D pc xt"
+by(induct xt\<^sub>1) simp_all
 
 lemma match_ex_table_eq_NoneI [simp]:
   "\<forall>x \<in> set xtab. \<not> matches_ex_entry P C pc x \<Longrightarrow>
@@ -115,7 +115,7 @@ lemma shift_Cons_tuple [simp]:
   "shift n ((from, to, C, handler, depth) # xt) = (from + n, to + n, C, handler + n, depth) # shift n xt"
 by(simp add: shift_def)
 
-lemma shift_append [simp]: "shift n (xt\<^isub>1 @ xt\<^isub>2) = shift n xt\<^isub>1 @ shift n xt\<^isub>2"
+lemma shift_append [simp]: "shift n (xt\<^sub>1 @ xt\<^sub>2) = shift n xt\<^sub>1 @ shift n xt\<^sub>2"
 by(simp add:shift_def)
 
 lemma shift_shift [simp]: "shift m (shift n xt) = shift (m+n) xt"

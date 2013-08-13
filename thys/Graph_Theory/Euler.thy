@@ -77,7 +77,7 @@ qed
 lemma sym_reachableI_in_awalk:
   assumes walk: "awalk u p v" and
     w1: "w1 \<in> set (awalk_verts u p)" and w2: "w2 \<in> set (awalk_verts u p)"
-  shows "w1 \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> w2"
+  shows "w1 \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> w2"
 proof -
   from walk w1 obtain q r where "p = q @ r" "awalk u q w1" "awalk w1 r v"
     by (atomize_elim) (rule awalk_decomp)
@@ -89,7 +89,7 @@ proof -
     assume A: "w2 \<in> set (awalk_verts u q)"
     obtain s where "awalk w2 s w1"
       using awalk_decomp[OF `awalk u q w1` A] by blast
-    then have "w2 \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> w1" 
+    then have "w2 \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> w1" 
       by (intro reachable_awalkI reachable_mk_symmetricI)
     with symmetric_mk_symmetric show ?thesis by (rule symmetric_reachable)
   next
@@ -98,7 +98,7 @@ proof -
       using w2_in by blast
     obtain s where "awalk w1 s w2"
       using awalk_decomp[OF `awalk w1 r v` A] by blast
-    then show "w1 \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> w2" 
+    then show "w1 \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> w2" 
       by (intro reachable_awalkI reachable_mk_symmetricI)
   qed
 qed
@@ -111,7 +111,7 @@ proof -
   { fix w1 w2 assume "w1 \<in> verts G" "w2 \<in> verts G"
     then have "awalk u p v " "w1 \<in> set (awalk_verts u p)" "w2 \<in> set (awalk_verts u p)"
       using assms by (auto simp: euler_trail_def trail_def)
-    then have "w1 \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> w2" by (rule sym_reachableI_in_awalk) }
+    then have "w1 \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> w2" by (rule sym_reachableI_in_awalk) }
   ultimately show "connected G" by (rule connectedI)
 qed
 
@@ -517,10 +517,10 @@ proof -
     proof (rule H.connectedI)
       interpret sH: pair_fin_digraph "mk_symmetric ?H" ..
       fix u v assume "u \<in> verts ?H" "v \<in> verts ?H"
-      with con have "u \<rightarrow>\<^isup>*\<^bsub>mk_symmetric G\<^esub> v" by (auto simp: connected_def)
+      with con have "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v" by (auto simp: connected_def)
       moreover
       have "subgraph G ?H" by (auto simp: subgraph_def) unfold_locales
-      ultimately show "u \<rightarrow>\<^isup>*\<^bsub>with_proj (mk_symmetric ?H)\<^esub> v"
+      ultimately show "u \<rightarrow>\<^sup>*\<^bsub>with_proj (mk_symmetric ?H)\<^esub> v"
         by (blast intro: sH.reachable_mono subgraph_mk_symmetric)
     qed (simp add: verts_add_arc_conv)
   next

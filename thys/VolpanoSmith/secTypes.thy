@@ -251,19 +251,19 @@ text {* Low Equivalence is reflexive even if the involved states are undefined.
   equivalence relation. *}
 
 
-definition lowEquiv :: "typeEnv \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool" ("_ \<turnstile> _ \<approx>\<^isub>L _")
-where "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2 \<equiv> \<forall>v\<in>dom \<Gamma>. \<Gamma> v = Some Low \<longrightarrow> (s1 v = s2 v)"
+definition lowEquiv :: "typeEnv \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool" ("_ \<turnstile> _ \<approx>\<^sub>L _")
+where "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2 \<equiv> \<forall>v\<in>dom \<Gamma>. \<Gamma> v = Some Low \<longrightarrow> (s1 v = s2 v)"
 
 
-lemma lowEquivReflexive: "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s1" 
+lemma lowEquivReflexive: "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s1" 
 by(simp add:lowEquiv_def)
 
 lemma lowEquivSymmetric:
-  "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2 \<Longrightarrow> \<Gamma> \<turnstile> s2 \<approx>\<^isub>L s1"
+  "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2 \<Longrightarrow> \<Gamma> \<turnstile> s2 \<approx>\<^sub>L s1"
 by(simp add:lowEquiv_def)
 
 lemma lowEquivTransitive:
-  "\<lbrakk>\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2; \<Gamma> \<turnstile> s2 \<approx>\<^isub>L s3\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s3"
+  "\<lbrakk>\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2; \<Gamma> \<turnstile> s2 \<approx>\<^sub>L s3\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s3"
 by(simp add:lowEquiv_def)
 
 
@@ -273,17 +273,17 @@ subsubsection {* Non Interference *}
 
 definition nonInterference :: "typeEnv \<Rightarrow> com \<Rightarrow> bool"
 where "nonInterference \<Gamma> c \<equiv> 
-  (\<forall>s1 s2 s1' s2'. (\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2 \<and> \<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle> \<and> \<langle>c,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>) 
-    \<longrightarrow> \<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2')"
+  (\<forall>s1 s2 s1' s2'. (\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2 \<and> \<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle> \<and> \<langle>c,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>) 
+    \<longrightarrow> \<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2')"
 
 lemma nonInterferenceI: 
-  "\<lbrakk>\<And>s1 s2 s1' s2'. \<lbrakk>\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2; \<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>; \<langle>c,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>\<rbrakk>
-  \<Longrightarrow> \<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'\<rbrakk> \<Longrightarrow> nonInterference \<Gamma> c"
+  "\<lbrakk>\<And>s1 s2 s1' s2'. \<lbrakk>\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2; \<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>; \<langle>c,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>\<rbrakk>
+  \<Longrightarrow> \<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'\<rbrakk> \<Longrightarrow> nonInterference \<Gamma> c"
 by(auto simp:nonInterference_def)
 
 
 lemma interpretLow:
-  assumes "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and all:"\<forall>V\<in>fv e. \<Gamma> V = Some Low"
+  assumes "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and all:"\<forall>V\<in>fv e. \<Gamma> V = Some Low"
   shows "\<lbrakk>e\<rbrakk> s1 = \<lbrakk>e\<rbrakk> s2"
 using all
 proof (induct e)
@@ -310,7 +310,7 @@ qed
 
 
 lemma interpretLow2:
-  assumes "\<Gamma> \<turnstile> e : Low" and "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" shows "\<lbrakk>e\<rbrakk> s1 = \<lbrakk>e\<rbrakk> s2"
+  assumes "\<Gamma> \<turnstile> e : Low" and "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" shows "\<lbrakk>e\<rbrakk> s1 = \<lbrakk>e\<rbrakk> s2"
 proof -
   from `\<Gamma> \<turnstile> e : Low` have "fv e \<subseteq> dom \<Gamma>" by(auto dest:typeableFreevars)
   have "\<forall>x\<in> fv e. \<Gamma> x = Some Low"
@@ -318,17 +318,17 @@ proof -
     fix x assume "x \<in> fv e"
     with `\<Gamma> \<turnstile> e : Low` show "\<Gamma> x = Some Low" by(auto intro:exprTypingLow)
   qed
-  with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` show ?thesis by(rule interpretLow)
+  with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` show ?thesis by(rule interpretLow)
 qed
 
 
 lemma assignNIhighlemma:
-  assumes "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2"  and "\<Gamma> V = Some High" and "s1' = s1(V:= \<lbrakk>e\<rbrakk> s1)" 
+  assumes "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"  and "\<Gamma> V = Some High" and "s1' = s1(V:= \<lbrakk>e\<rbrakk> s1)" 
   and "s2' = s2(V:= \<lbrakk>e\<rbrakk> s2)"
-  shows "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+  shows "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
 proof -
   { fix V' assume "V' \<in> dom \<Gamma>" and  "\<Gamma> V' = Some Low"
-    from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`  `\<Gamma> V' = Some Low` have "s1 V' = s2 V'" 
+    from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`  `\<Gamma> V' = Some Low` have "s1 V' = s2 V'" 
       by(auto simp add:lowEquiv_def)
     have "s1' V' = s2' V'"
     proof(cases "V' = V")
@@ -348,19 +348,19 @@ qed
 
 
 lemma assignNIlowlemma:
-  assumes "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2"  and "\<Gamma> V = Some Low" and "\<Gamma> \<turnstile> e : Low" 
+  assumes "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"  and "\<Gamma> V = Some Low" and "\<Gamma> \<turnstile> e : Low" 
   and "s1' = s1(V:= \<lbrakk>e\<rbrakk> s1)" and "s2' = s2(V:= \<lbrakk>e\<rbrakk> s2)"
-  shows "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'" 
+  shows "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'" 
 proof -
   { fix V' assume "V' \<in> dom \<Gamma>" and  "\<Gamma> V' = Some Low"
-    from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`  `\<Gamma> V' = Some Low`
+    from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`  `\<Gamma> V' = Some Low`
     have "s1 V' = s2 V'" by(auto simp add:lowEquiv_def)
     have "s1' V' = s2' V'"
     proof(cases "V' = V")
       case True
       with `s1' = s1(V:= \<lbrakk>e\<rbrakk> s1)` `s2' = s2(V:= \<lbrakk>e\<rbrakk> s2)`
       have "s1' V' = \<lbrakk>e\<rbrakk> s1" and "s2' V' = \<lbrakk>e\<rbrakk> s2" by auto
-      from `\<Gamma> \<turnstile> e : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<lbrakk>e\<rbrakk> s1 = \<lbrakk>e\<rbrakk> s2" 
+      from `\<Gamma> \<turnstile> e : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` have "\<lbrakk>e\<rbrakk> s1 = \<lbrakk>e\<rbrakk> s2" 
         by(auto intro:interpretLow2)
       with `s1' V' = \<lbrakk>e\<rbrakk> s1` `s2' V' = \<lbrakk>e\<rbrakk> s2` show ?thesis by simp
     next
@@ -384,32 +384,32 @@ theorem SeqCompositionality:
   shows "nonInterference \<Gamma> (c1;;c2)"
 proof(rule nonInterferenceI)
   fix s1 s2 s1' s2'
-  assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>c1;;c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
+  assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>c1;;c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
     and "\<langle>c1;;c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
   from `\<langle>c1;;c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` obtain s1'' where "\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>"
     and "\<langle>c2,s1''\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" by(auto dest:Seq_reds)
   from `\<langle>c1;;c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>` obtain s2'' where "\<langle>c1,s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>"
     and "\<langle>c2,s2''\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>" by(auto dest:Seq_reds)
-  from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` `\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>` `\<langle>c1,s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>`
+  from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` `\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>` `\<langle>c1,s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>`
     `nonInterference \<Gamma> c1`
-  have "\<Gamma> \<turnstile> s1'' \<approx>\<^isub>L s2''" by(auto simp:nonInterference_def)
+  have "\<Gamma> \<turnstile> s1'' \<approx>\<^sub>L s2''" by(auto simp:nonInterference_def)
   with `\<langle>c2,s1''\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` `\<langle>c2,s2''\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>` `nonInterference \<Gamma> c2` 
-  show "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'" by(auto simp:nonInterference_def)
+  show "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'" by(auto simp:nonInterference_def)
 qed
 
 
 
 lemma WhileStepInduct:
   assumes while:"\<langle>while (b) c,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>"
-  and body:"\<And>s1 s2. \<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>  \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<Gamma>,High \<turnstile> c"
-  shows "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2"
+  and body:"\<And>s1 s2. \<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>  \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<Gamma>,High \<turnstile> c"
+  shows "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"
 using while
 proof (induct rule:while_reds_induct)
   case (false s) thus ?case by(auto simp add:lowEquiv_def)
 next 
   case (true s1 s3)
-  from body[OF `\<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s3\<rangle>`] have "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s3" by simp
-  with `\<Gamma> \<turnstile> s3 \<approx>\<^isub>L s2` show ?case by(auto intro:lowEquivTransitive)
+  from body[OF `\<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s3\<rangle>`] have "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s3" by simp
+  with `\<Gamma> \<turnstile> s3 \<approx>\<^sub>L s2` show ?case by(auto intro:lowEquivTransitive)
 qed
 
 
@@ -420,7 +420,7 @@ text {* In case control conditions from if/while are high, the body of an
 
 theorem highBodies:
   assumes "\<Gamma>,High \<turnstile> c" and "\<langle>c,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>"
-  shows "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2"
+  shows "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"
   -- {* all intermediate states must be well formed, otherwise the proof does not 
   work for uninitialized variables. Thus it is propagated through the 
   theorem conclusion *}
@@ -447,23 +447,23 @@ next
   thus ?case by(auto simp add:lowEquiv_def)
 next
   case (Seq c1 c2)
-  note IH1 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c1; \<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`
-  note IH2 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c2; \<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`
+  note IH1 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c1; \<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`
+  note IH2 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c2; \<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`
   from `\<Gamma>,High \<turnstile> c1;;c2` have "\<Gamma>,High \<turnstile> c1" and "\<Gamma>,High \<turnstile> c2"
     by(auto elim:secComTyping.cases)
   from `\<langle>c1;;c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>` 
   have "\<exists>s3. \<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s3\<rangle> \<and> \<langle>c2,s3\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>" by(auto intro:Seq_reds)
   then obtain s3 where "\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s3\<rangle>" and "\<langle>c2,s3\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>" by auto
   from IH1[OF `\<Gamma>,High \<turnstile> c1` `\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s3\<rangle>`]
-  have "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s3" by simp
+  have "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s3" by simp
   from IH2[OF `\<Gamma>,High \<turnstile> c2` `\<langle>c2,s3\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>`]
-  have "\<Gamma> \<turnstile> s3 \<approx>\<^isub>L s2" by simp
-  from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s3` `\<Gamma> \<turnstile> s3 \<approx>\<^isub>L s2` show ?case
+  have "\<Gamma> \<turnstile> s3 \<approx>\<^sub>L s2" by simp
+  from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s3` `\<Gamma> \<turnstile> s3 \<approx>\<^sub>L s2` show ?case
     by(auto intro:lowEquivTransitive)
 next
   case (Cond b c1 c2)
-  note IH1 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c1; \<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`
-  note IH2 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c2; \<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`
+  note IH1 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c1; \<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`
+  note IH2 = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c2; \<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`
   from `\<Gamma>,High \<turnstile> if (b) c1 else c2` have "\<Gamma>,High \<turnstile> c1" and "\<Gamma>,High \<turnstile> c2"
     by(auto elim:secComTyping.cases)
   from `\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>` 
@@ -482,10 +482,10 @@ next
   qed
 next
   case (While b c')
-  note IH = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c'; \<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`
+  note IH = `\<And>s1 s2. \<lbrakk>\<Gamma>,High \<turnstile> c'; \<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`
   from `\<Gamma>,High \<turnstile> while (b) c'` have "\<Gamma>,High \<turnstile> c'" by(auto elim:secComTyping.cases)
   from IH[OF this] 
-  have "\<And>s1 s2. \<lbrakk>\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" .
+  have "\<And>s1 s2. \<lbrakk>\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" .
   with `\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s2\<rangle>` `\<Gamma>,High \<turnstile> c'` 
   show ?case by(auto dest:WhileStepInduct)
 qed
@@ -497,17 +497,17 @@ lemma CondHighCompositionality:
   shows "nonInterference \<Gamma> (if (b) c1 else c2)"
 proof(rule nonInterferenceI)
   fix s1 s2 s1' s2'
-  assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
+  assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
     and "\<langle>if (b) c1 else c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
-  show "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+  show "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
   proof -
     from `\<Gamma>,High \<turnstile> if (b) c1 else c2` `\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>`
-    have "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s1'" by(auto dest:highBodies)
+    have "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s1'" by(auto dest:highBodies)
     from `\<Gamma>,High \<turnstile> if (b) c1 else c2` `\<langle>if (b) c1 else c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>`
-    have "\<Gamma> \<turnstile> s2 \<approx>\<^isub>L s2'" by(auto dest:highBodies)
-    with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2'" by(auto intro:lowEquivTransitive)
-    from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s1'` have "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s1" by(auto intro:lowEquivSymmetric)
-    with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2'` show ?thesis by(auto intro:lowEquivTransitive)
+    have "\<Gamma> \<turnstile> s2 \<approx>\<^sub>L s2'" by(auto dest:highBodies)
+    with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` have "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2'" by(auto intro:lowEquivTransitive)
+    from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s1'` have "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s1" by(auto intro:lowEquivSymmetric)
+    with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2'` show ?thesis by(auto intro:lowEquivTransitive)
   qed
 qed
 
@@ -518,13 +518,13 @@ lemma CondLowCompositionality:
   shows "nonInterference \<Gamma> (if (b) c1 else c2)"
 proof(rule nonInterferenceI)
   fix s1 s2 s1' s2'
-  assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
+  assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
     and "\<langle>if (b) c1 else c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
-  from `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2"
+  from `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` have "\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2"
     by(auto intro:interpretLow2)
   from `\<langle>if (b) c1 else c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` 
   have "\<lbrakk>b\<rbrakk> s1 = Some true \<or> \<lbrakk>b\<rbrakk> s1 = Some false" by(auto dest:Cond_True_or_False)
-  thus "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+  thus "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
   proof
     assume "\<lbrakk>b\<rbrakk> s1 = Some true"
     with `\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2` have "\<lbrakk>b\<rbrakk> s2 = Some true" by(auto intro:CondTrue_reds)
@@ -532,7 +532,7 @@ proof(rule nonInterferenceI)
     have "\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" by(auto intro:CondTrue_reds)
     from `\<lbrakk>b\<rbrakk> s2 = Some true` `\<langle>if (b) c1 else c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>`
     have "\<langle>c1,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>" by(auto intro:CondTrue_reds)
-    with `\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` `nonInterference \<Gamma> c1`
+    with `\<langle>c1,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` `nonInterference \<Gamma> c1`
     show ?thesis by(auto simp:nonInterference_def)
   next
     assume "\<lbrakk>b\<rbrakk> s1 = Some false"
@@ -541,7 +541,7 @@ proof(rule nonInterferenceI)
     have "\<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" by(auto intro:CondFalse_reds)
     from `\<lbrakk>b\<rbrakk> s2 = Some false` `\<langle>if (b) c1 else c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>`
     have "\<langle>c2,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>" by(auto intro:CondFalse_reds)
-    with `\<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` `nonInterference \<Gamma> c2`
+    with `\<langle>c2,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` `nonInterference \<Gamma> c2`
     show ?thesis by(auto simp:nonInterference_def)
   qed
 qed
@@ -552,17 +552,17 @@ lemma WhileHighCompositionality:
   shows "nonInterference \<Gamma> (while (b) c')"
 proof(rule nonInterferenceI)
   fix s1 s2 s1' s2'
-  assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>"
+  assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>"
     and "\<langle>while (b) c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
-  show "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+  show "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
   proof -
     from `\<Gamma>,High \<turnstile> while (b) c'` `\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>`
-    have "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s1'" by(auto dest:highBodies)
+    have "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s1'" by(auto dest:highBodies)
     from `\<Gamma>,High \<turnstile> while (b) c'` `\<langle>while (b) c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>`
-    have "\<Gamma> \<turnstile> s2 \<approx>\<^isub>L s2'" by(auto dest:highBodies)
-    with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2'" by(auto intro:lowEquivTransitive)
-    from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s1'` have "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s1" by(auto intro:lowEquivSymmetric)
-    with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2'` show ?thesis by(auto intro:lowEquivTransitive)
+    have "\<Gamma> \<turnstile> s2 \<approx>\<^sub>L s2'" by(auto dest:highBodies)
+    with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` have "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2'" by(auto intro:lowEquivTransitive)
+    from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s1'` have "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s1" by(auto intro:lowEquivSymmetric)
+    with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2'` show ?thesis by(auto intro:lowEquivTransitive)
   qed
 qed
 
@@ -573,26 +573,26 @@ lemma WhileLowStepInduct:
   and      while2: "\<langle>while (b) c',s2\<rangle>\<rightarrow>*\<langle>Skip,s2'\<rangle>" 
   and      "\<Gamma> \<turnstile> b : Low"
   and      body:"\<And>s1 s1' s2 s2'. \<lbrakk>\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>; \<langle>c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>;
-                                   \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2\<rbrakk>  \<Longrightarrow>  \<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
-  and      le: "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2"
-  shows    "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+                                   \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2\<rbrakk>  \<Longrightarrow>  \<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
+  and      le: "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"
+  shows    "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
 using while1 le while2
 proof (induct arbitrary:s2 rule:while_reds_induct)
   case (false s1)
-  from `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2" by(auto intro:interpretLow2)
+  from `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` have "\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2" by(auto intro:interpretLow2)
   with `\<lbrakk>b\<rbrakk> s1 = Some false` have "\<lbrakk>b\<rbrakk> s2 = Some false" by simp
   with `\<langle>while (b) c',s2\<rangle>\<rightarrow>*\<langle>Skip,s2'\<rangle>` have "s2 = s2'" by(auto intro:WhileFalse_reds)
-  with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` show ?case by auto
+  with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` show ?case by auto
 next 
   case (true s1 s1'')
-  note IH = `\<And>s2''. \<lbrakk>\<Gamma> \<turnstile> s1'' \<approx>\<^isub>L s2''; \<langle>while (b) c',s2''\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>\<rbrakk> 
-    \<Longrightarrow> \<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'`
-  from `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` have "\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2" by(auto intro:interpretLow2)
+  note IH = `\<And>s2''. \<lbrakk>\<Gamma> \<turnstile> s1'' \<approx>\<^sub>L s2''; \<langle>while (b) c',s2''\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>\<rbrakk> 
+    \<Longrightarrow> \<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'`
+  from `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` have "\<lbrakk>b\<rbrakk> s1 = \<lbrakk>b\<rbrakk> s2" by(auto intro:interpretLow2)
   with `\<lbrakk>b\<rbrakk> s1 = Some true` have "\<lbrakk>b\<rbrakk> s2 = Some true" by simp
   with `\<langle>while (b) c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>` obtain s2'' where "\<langle>c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>"
     and "\<langle>while (b) c',s2''\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>" by(auto dest:WhileTrue_reds)
-  from body[OF `\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>` `\<langle>c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2`]
-  have "\<Gamma> \<turnstile> s1'' \<approx>\<^isub>L s2''" .
+  from body[OF `\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>` `\<langle>c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2`]
+  have "\<Gamma> \<turnstile> s1'' \<approx>\<^sub>L s2''" .
   from IH[OF this `\<langle>while (b) c',s2''\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>`] show ?case .
 qed
 
@@ -603,18 +603,18 @@ lemma WhileLowCompositionality:
   shows "nonInterference \<Gamma> (while (b) c')"
 proof(rule nonInterferenceI)
   fix s1 s2 s1' s2'
-  assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
+  assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" 
     and "\<langle>while (b) c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
   { fix s1 s2 s1'' s2''
     assume "\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>" and "\<langle>c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>" 
-      and  "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2"  
-    with `nonInterference \<Gamma> c'` have "\<Gamma> \<turnstile> s1'' \<approx>\<^isub>L s2''"
+      and  "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2"  
+    with `nonInterference \<Gamma> c'` have "\<Gamma> \<turnstile> s1'' \<approx>\<^sub>L s2''"
       by(auto simp:nonInterference_def)
   }
   hence "\<And>s1 s1'' s2 s2''. \<lbrakk>\<langle>c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1''\<rangle>; \<langle>c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2''\<rangle>;
-                             \<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2\<rbrakk>  \<Longrightarrow>  \<Gamma> \<turnstile> s1'' \<approx>\<^isub>L s2''" by auto
+                             \<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2\<rbrakk>  \<Longrightarrow>  \<Gamma> \<turnstile> s1'' \<approx>\<^sub>L s2''" by auto
   with `\<langle>while (b) c',s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` `\<langle>while (b) c',s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>`
-    `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` show "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+    `\<Gamma> \<turnstile> b : Low` `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` show "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
     by(auto intro:WhileLowStepInduct)
 qed
 
@@ -629,11 +629,11 @@ proof (induct c arbitrary:T rule:com.induct)
   show ?case
   proof(rule nonInterferenceI)
     fix s1 s2 s1' s2'
-    assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>Skip,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" and "\<langle>Skip,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
+    assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>Skip,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" and "\<langle>Skip,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
     from `\<langle>Skip,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` have "s1 = s1'" by(auto dest:Skip_reds)
     from `\<langle>Skip,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>` have "s2 = s2'" by(auto dest:Skip_reds)
-    from `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` and `s1 = s1'` and `s2 = s2'`
-    show "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'" by simp
+    from `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` and `s1 = s1'` and `s2 = s2'`
+    show "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'" by simp
   qed
 next
   case (LAss V e)
@@ -643,17 +643,17 @@ next
   show ?case
   proof(rule nonInterferenceI)
     fix s1 s2 s1' s2'
-    assume "\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2" and "\<langle>V:=e,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" and "\<langle>V:=e,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
+    assume "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2" and "\<langle>V:=e,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>" and "\<langle>V:=e,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>"
     from `\<langle>V:=e,s1\<rangle> \<rightarrow>* \<langle>Skip,s1'\<rangle>` have "s1' = s1(V:=\<lbrakk>e\<rbrakk> s1)" by(auto intro:LAss_reds)
     from `\<langle>V:=e,s2\<rangle> \<rightarrow>* \<langle>Skip,s2'\<rangle>` have "s2' = s2(V:=\<lbrakk>e\<rbrakk> s2)" by(auto intro:LAss_reds)
-    from varprem show "\<Gamma> \<turnstile> s1' \<approx>\<^isub>L s2'"
+    from varprem show "\<Gamma> \<turnstile> s1' \<approx>\<^sub>L s2'"
     proof
       assume "\<Gamma> V = Some High"
-      with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` `s1' = s1(V:=\<lbrakk>e\<rbrakk> s1)` `s2' = s2(V:=\<lbrakk>e\<rbrakk> s2)`
+      with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` `s1' = s1(V:=\<lbrakk>e\<rbrakk> s1)` `s2' = s2(V:=\<lbrakk>e\<rbrakk> s2)`
       show ?thesis by(auto intro:assignNIhighlemma)
     next
       assume "\<Gamma> V = Some Low \<and> \<Gamma> \<turnstile> e : Low \<and> T = Low"
-      with `\<Gamma> \<turnstile> s1 \<approx>\<^isub>L s2` `s1' = s1(V:=\<lbrakk>e\<rbrakk> s1)` `s2' = s2(V:=\<lbrakk>e\<rbrakk> s2)`
+      with `\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2` `s1' = s1(V:=\<lbrakk>e\<rbrakk> s1)` `s2' = s2(V:=\<lbrakk>e\<rbrakk> s2)`
       show ?thesis by(auto intro:assignNIlowlemma)
     qed
   qed

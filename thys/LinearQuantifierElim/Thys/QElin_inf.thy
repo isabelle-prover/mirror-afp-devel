@@ -10,7 +10,7 @@ text{* This section formalizes Loos and Weispfenning's quantifier
 elimination procedure based on (the simulation of)
 infinitesimals~\cite{LoosW93}. *}
 
-fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^isub>+") where
+fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub>+") where
 "asubst_peps (r,cs) (Less s (d#ds)) =
   (if d=0 then Atom(Less s ds) else
    let u = s - d*r; v = d *\<^sub>s cs + ds; less = Atom(Less u v)
@@ -18,8 +18,8 @@ fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" (
 "asubst_peps rcs (Eq r (d#ds)) = (if d=0 then Atom(Eq r ds) else FalseF)" |
 "asubst_peps rcs a = Atom a"
 
-abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^isub>+")
-where "subst\<^isub>+ \<phi> rcs \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ rcs) \<phi>"
+abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^sub>+")
+where "subst\<^sub>+ \<phi> rcs \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>+ rcs) \<phi>"
 
 definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"
 
@@ -47,7 +47,7 @@ proof(induct f)
     case (Less r cs)[simp]
     show ?thesis
     proof (cases cs)
-      case Nil thus ?thesis using Atom by (simp add:depends\<^isub>R_def)
+      case Nil thus ?thesis using Atom by (simp add:depends\<^sub>R_def)
     next
       case (Cons c cs)[simp]
       hence "r < c*x + \<langle>cs,xs\<rangle>" using Atom by simp
@@ -62,13 +62,13 @@ proof(induct f)
           hence "?u \<le> y" using Atom `c<0`
             by (auto simp add: field_simps)
           with `x<?u` show False using Atom `c<0`
-            by(auto simp:depends\<^isub>R_def)
+            by(auto simp:depends\<^sub>R_def)
         qed } moreover
       { assume "c>0"
         hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using `r < c*x + \<langle>cs,xs\<rangle>`
           by (simp add: field_simps)
         then have "?l < y" using Atom `c>0`
-            by (auto simp:depends\<^isub>R_def Ball_def nolb_def)
+            by (auto simp:depends\<^sub>R_def Ball_def nolb_def)
                (metis linorder_not_le antisym order_less_trans)
         hence ?thesis using `c>0` by (simp add: field_simps)
       } ultimately show ?thesis by force
@@ -77,7 +77,7 @@ proof(induct f)
     case (Eq r cs)[simp]
     show ?thesis
     proof (cases cs)
-      case Nil thus ?thesis using Atom by (simp add:depends\<^isub>R_def)
+      case Nil thus ?thesis using Atom by (simp add:depends\<^sub>R_def)
     next
       case (Cons c cs)[simp]
       hence "r = c*x + \<langle>cs,xs\<rangle>" using Atom by simp
@@ -85,7 +85,7 @@ proof(induct f)
       moreover
       { assume "c\<noteq>0"
         hence ?thesis using `r = c*x + \<langle>cs,xs\<rangle>` Atom
-          by(auto simp: mult_ac depends\<^isub>R_def split:if_splits) }
+          by(auto simp: mult_ac depends\<^sub>R_def split:if_splits) }
       ultimately show ?thesis by force
     qed
   qed
@@ -111,7 +111,7 @@ unfolding EQ2_def by(blast intro:innermost_intvl)
 lemma I_subst_peps2:
  "nqfree f \<Longrightarrow> r+\<langle>cs,xs\<rangle> < x \<Longrightarrow> nolb f xs (r+\<langle>cs,xs\<rangle>) x
  \<Longrightarrow> \<forall>y \<in> {r+\<langle>cs,xs\<rangle> <.. x}. R.I f (y#xs) \<and> y \<notin> EQ2 f xs
- \<Longrightarrow> R.I (subst\<^isub>+ f (r,cs)) xs"
+ \<Longrightarrow> R.I (subst\<^sub>+ f (r,cs)) xs"
 proof(induct f)
   case FalseF thus ?case
     by simp (metis linorder_antisym_conv1 linorder_neq_iff)
@@ -134,7 +134,7 @@ next
       assume "d>0"
       hence "?U < x" and "\<forall>y. ?U < y \<and> y < x \<longrightarrow> y \<noteq> ?L"
         and "\<forall>y. ?U < y \<and> y \<le> x \<longrightarrow> ?L < y" using Atom 1
-        by(simp_all add:nolb_def depends\<^isub>R_def Ball_def field_simps)
+        by(simp_all add:nolb_def depends\<^sub>R_def Ball_def field_simps)
       hence "?L < ?U \<or> ?L = ?U"
         by (metis linorder_neqE_linordered_idom order_refl)
       hence ?thesis using Atom 1 `d>0`
@@ -142,7 +142,7 @@ next
     } ultimately show ?thesis by force
   next
     case 2 thus ?thesis using Atom
-      by(fastforce simp:nolb_def EQ2_def depends\<^isub>R_def field_simps split:split_if_asm)
+      by(fastforce simp:nolb_def EQ2_def depends\<^sub>R_def field_simps split:split_if_asm)
   qed (insert Atom, auto)
 next
   case Or thus ?case by(simp add:Ball_def)(metis order_refl innermost_intvl2)
@@ -150,7 +150,7 @@ qed simp_all
 declare[[simp_depth_limit=50]]
 
 lemma I_subst_peps:
-  "nqfree f \<Longrightarrow> R.I (subst\<^isub>+ f (r,cs)) xs \<Longrightarrow>
+  "nqfree f \<Longrightarrow> R.I (subst\<^sub>+ f (r,cs)) xs \<Longrightarrow>
   (\<exists>leps>r+\<langle>cs,xs\<rangle>. \<forall>x. r+\<langle>cs,xs\<rangle> < x \<and> x \<le> leps \<longrightarrow> R.I f (x#xs))"
 proof(induct f)
   case TrueF thus ?case by simp (metis less_add_one)
@@ -222,81 +222,81 @@ proof -
 qed
 
 definition
-"qe_eps\<^isub>1(f) =
-(let as = R.atoms\<^isub>0 f; lbs = lbounds as; ebs = ebounds as
- in list_disj (inf\<^isub>- f # map (subst\<^isub>+ f) lbs @ map (subst f) ebs))"
+"qe_eps\<^sub>1(f) =
+(let as = R.atoms\<^sub>0 f; lbs = lbounds as; ebs = ebounds as
+ in list_disj (inf\<^sub>- f # map (subst\<^sub>+ f) lbs @ map (subst f) ebs))"
 
 theorem I_eps1:
-assumes "nqfree f" shows "R.I (qe_eps\<^isub>1 f) xs = (\<exists>x. R.I f (x#xs))"
+assumes "nqfree f" shows "R.I (qe_eps\<^sub>1 f) xs = (\<exists>x. R.I f (x#xs))"
   (is "?QE = ?EX")
 proof
-  let ?as = "R.atoms\<^isub>0 f" let ?ebs = "ebounds ?as"
+  let ?as = "R.atoms\<^sub>0 f" let ?ebs = "ebounds ?as"
   assume ?QE
-  { assume "R.I (inf\<^isub>- f) xs"
+  { assume "R.I (inf\<^sub>- f) xs"
     hence ?EX using `?QE` min_inf[of f xs] `nqfree f`
-      by(auto simp add:qe_eps\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_eps\<^sub>1_def amap_fm_list_disj)
   } moreover
   { assume "\<forall>x \<in> EQ f xs. \<not>R.I f (x#xs)"
-           "\<not> R.I (inf\<^isub>- f) xs"
-    with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^isub>+ f (r,cs)) xs"
-      by(fastforce simp:qe_eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
+           "\<not> R.I (inf\<^sub>- f) xs"
+    with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^sub>+ f (r,cs)) xs"
+      by(fastforce simp:qe_eps\<^sub>1_def set_ebounds diff_divide_distrib eval_def
         diff_minus[symmetric] I_subst `nqfree f`)
     then obtain leps where "R.I f (leps#xs)"
       using I_subst_peps[OF `nqfree f`] by fastforce
     hence ?EX .. }
   ultimately show ?EX by blast
 next
-  let ?as = "R.atoms\<^isub>0 f" let ?ebs = "ebounds ?as"
+  let ?as = "R.atoms\<^sub>0 f" let ?ebs = "ebounds ?as"
   assume ?EX
   then obtain x where x: "R.I f (x#xs)" ..
-  { assume "R.I (inf\<^isub>- f) xs"
-    hence ?QE using `nqfree f` by(auto simp:qe_eps\<^isub>1_def)
+  { assume "R.I (inf\<^sub>- f) xs"
+    hence ?QE using `nqfree f` by(auto simp:qe_eps\<^sub>1_def)
   } moreover
   { assume "\<exists>rcs \<in> set ?ebs. R.I (subst f rcs) xs"
-    hence ?QE by(auto simp:qe_eps\<^isub>1_def) } moreover
-  { assume "\<not> R.I (inf\<^isub>- f) xs"
+    hence ?QE by(auto simp:qe_eps\<^sub>1_def) } moreover
+  { assume "\<not> R.I (inf\<^sub>- f) xs"
     and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
       by (force simp:set_ebounds I_subst diff_divide_distrib eval_def
         diff_minus[symmetric] split:split_if_asm)
     hence "x \<notin> EQ f xs" using x by fastforce
     obtain l where "l \<in> LB f xs" "l < x"
-      using LBex[OF `nqfree f` x `\<not> R.I(inf\<^isub>- f) xs` `x \<notin> EQ f xs`] ..
+      using LBex[OF `nqfree f` x `\<not> R.I(inf\<^sub>- f) xs` `x \<notin> EQ f xs`] ..
     have "\<exists>l\<in>LB f xs. l<x \<and> nolb f xs l x \<and>
             (\<forall>y. l < y \<and> y \<le> x \<longrightarrow> R.I f (y#xs))"
       using dense_interval[where P = "\<lambda>x. R.I f (x#xs)", OF finite_LB `l\<in>LB f xs` `l<x` x] x innermost_intvl[OF `nqfree f` _ _ `x \<notin> EQ f xs`]
       by (simp add:nolb_def)
     then obtain r c cs
-      where *: "Less r (c#cs) \<in> set(R.atoms\<^isub>0 f) \<and> c>0 \<and>
+      where *: "Less r (c#cs) \<in> set(R.atoms\<^sub>0 f) \<and> c>0 \<and>
             (r - \<langle>cs,xs\<rangle>)/c < x \<and> nolb f xs ((r - \<langle>cs,xs\<rangle>)/c) x
             \<and> (\<forall>y. (r - \<langle>cs,xs\<rangle>)/c < y \<and> y \<le> x \<longrightarrow> R.I f (y#xs))"
       by blast
-    then have "R.I (subst\<^isub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
+    then have "R.I (subst\<^sub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
       by(auto intro!: I_subst_peps2[OF `nqfree f`]
         simp:EQ2_def diff_divide_distrib algebra_simps)
     with * have ?QE
-      by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds) metis
+      by(simp add:qe_eps\<^sub>1_def bex_Un set_lbounds) metis
   } ultimately show ?QE by blast
 qed
 
-lemma qfree_asubst_peps: "qfree (asubst\<^isub>+ rcs a)"
+lemma qfree_asubst_peps: "qfree (asubst\<^sub>+ rcs a)"
 by(cases "(rcs,a)" rule:asubst_peps.cases) simp_all
 
-lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> rcs)"
+lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^sub>+ \<phi> rcs)"
 by(induct \<phi>) (simp_all add:qfree_asubst_peps)
 
-lemma qfree_qe_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(qe_eps\<^isub>1 \<phi>)"
-apply(simp add:qe_eps\<^isub>1_def)
+lemma qfree_qe_eps\<^sub>1: "nqfree \<phi> \<Longrightarrow> qfree(qe_eps\<^sub>1 \<phi>)"
+apply(simp add:qe_eps\<^sub>1_def)
 apply(rule qfree_list_disj)
 apply (auto simp:qfree_min_inf qfree_subst_peps qfree_map_fm)
 done
 
-definition "qe_eps = R.lift_nnf_qe qe_eps\<^isub>1"
+definition "qe_eps = R.lift_nnf_qe qe_eps\<^sub>1"
 
 lemma qfree_qe_eps: "qfree(qe_eps \<phi>)"
-by(simp add: qe_eps_def R.qfree_lift_nnf_qe qfree_qe_eps\<^isub>1)
+by(simp add: qe_eps_def R.qfree_lift_nnf_qe qfree_qe_eps\<^sub>1)
 
 lemma I_qe_eps: "R.I (qe_eps \<phi>) xs = R.I \<phi> xs"
-by(simp add:qe_eps_def R.I_lift_nnf_qe qfree_qe_eps\<^isub>1 I_eps1)
+by(simp add:qe_eps_def R.I_lift_nnf_qe qfree_qe_eps\<^sub>1 I_eps1)
 
 end

@@ -9,7 +9,7 @@ locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry
   fixes Exit::"'node"  ("'('_Exit'_')")
   assumes Exit_source [dest]: "\<lbrakk>valid_edge a; sourcenode a = (_Exit_)\<rbrakk> \<Longrightarrow> False"
   and Entry_Exit_edge: "\<exists>a. valid_edge a \<and> sourcenode a = (_Entry_) \<and>
-    targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^isub>\<surd>"
+    targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^sub>\<surd>"
   
 begin
 

@@ -51,7 +51,7 @@ lemma [iff]: "(A {\<sqsubseteq>\<^bsub>r\<^esub>} {}) = (A = {})"
   (*<*) by (cases "A={}") (auto simp add: lesubstep_type_def) (*>*)
 
 lemma lesubstep_union:
-  "\<lbrakk> A\<^isub>1 {\<sqsubseteq>\<^bsub>r\<^esub>} B\<^isub>1; A\<^isub>2 {\<sqsubseteq>\<^bsub>r\<^esub>} B\<^isub>2 \<rbrakk> \<Longrightarrow> A\<^isub>1 \<union> A\<^isub>2 {\<sqsubseteq>\<^bsub>r\<^esub>} B\<^isub>1 \<union> B\<^isub>2"
+  "\<lbrakk> A\<^sub>1 {\<sqsubseteq>\<^bsub>r\<^esub>} B\<^sub>1; A\<^sub>2 {\<sqsubseteq>\<^bsub>r\<^esub>} B\<^sub>2 \<rbrakk> \<Longrightarrow> A\<^sub>1 \<union> A\<^sub>2 {\<sqsubseteq>\<^bsub>r\<^esub>} B\<^sub>1 \<union> B\<^sub>2"
   (*<*) by (auto simp add: lesubstep_type_def) (*>*)
 
 lemma pres_typeD:

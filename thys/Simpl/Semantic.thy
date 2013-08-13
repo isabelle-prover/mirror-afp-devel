@@ -100,17 +100,17 @@ where
               \<Longrightarrow> 
               \<Gamma>\<turnstile>\<langle>Spec r,Normal s\<rangle> \<Rightarrow>  Stuck"
 
-| Seq: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow>  s'; \<Gamma>\<turnstile>\<langle>c\<^isub>2,s'\<rangle> \<Rightarrow>  t\<rbrakk>
+| Seq: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> \<Rightarrow>  s'; \<Gamma>\<turnstile>\<langle>c\<^sub>2,s'\<rangle> \<Rightarrow>  t\<rbrakk>
         \<Longrightarrow>
-        \<Gamma>\<turnstile>\<langle>Seq c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>  t" 
+        \<Gamma>\<turnstile>\<langle>Seq c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>  t" 
 
-| CondTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow>  t\<rbrakk> 
+| CondTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> \<Rightarrow>  t\<rbrakk> 
              \<Longrightarrow>  
-             \<Gamma>\<turnstile>\<langle>Cond b c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>  t"
+             \<Gamma>\<turnstile>\<langle>Cond b c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>  t"
 
-| CondFalse: "\<lbrakk>s \<notin> b; \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> \<Rightarrow>  t\<rbrakk> 
+| CondFalse: "\<lbrakk>s \<notin> b; \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s\<rangle> \<Rightarrow>  t\<rbrakk> 
               \<Longrightarrow>  
-              \<Gamma>\<turnstile>\<langle>Cond b c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>  t"
+              \<Gamma>\<turnstile>\<langle>Cond b c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>  t"
 
 | WhileTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow>  s'; \<Gamma>\<turnstile>\<langle>While b c,s'\<rangle> \<Rightarrow>  t\<rbrakk> 
               \<Longrightarrow>  
@@ -138,12 +138,12 @@ where
 
 | AbruptProp [intro,simp]: "\<Gamma>\<turnstile>\<langle>c,Abrupt s\<rangle> \<Rightarrow>  Abrupt s"
   
-| CatchMatch: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow>  Abrupt s'; \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s'\<rangle> \<Rightarrow>  t\<rbrakk>
+| CatchMatch: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> \<Rightarrow>  Abrupt s'; \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s'\<rangle> \<Rightarrow>  t\<rbrakk>
                \<Longrightarrow>
-               \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>  t" 
-| CatchMiss: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow>  t; \<not>isAbr t\<rbrakk>
+               \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>  t" 
+| CatchMiss: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> \<Rightarrow>  t; \<not>isAbr t\<rbrakk>
                \<Longrightarrow>
-               \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> \<Rightarrow>  t" 
+               \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> \<Rightarrow>  t" 
 
 inductive_cases exec_elim_cases [cases set]:
   "\<Gamma>\<turnstile>\<langle>c,Fault f\<rangle> \<Rightarrow>  t"
@@ -470,17 +470,17 @@ where
               \<Longrightarrow> 
               \<Gamma>\<turnstile>\<langle>Spec r,Normal s\<rangle> =n\<Rightarrow>  Stuck"
 
-| Seq: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow>  s'; \<Gamma>\<turnstile>\<langle>c\<^isub>2,s'\<rangle> =n\<Rightarrow>  t\<rbrakk>
+| Seq: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow>  s'; \<Gamma>\<turnstile>\<langle>c\<^sub>2,s'\<rangle> =n\<Rightarrow>  t\<rbrakk>
         \<Longrightarrow>
-        \<Gamma>\<turnstile>\<langle>Seq c\<^isub>1 c\<^isub>2,Normal s\<rangle> =n\<Rightarrow>  t" 
+        \<Gamma>\<turnstile>\<langle>Seq c\<^sub>1 c\<^sub>2,Normal s\<rangle> =n\<Rightarrow>  t" 
 
-| CondTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow>  t\<rbrakk> 
+| CondTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow>  t\<rbrakk> 
              \<Longrightarrow>  
-             \<Gamma>\<turnstile>\<langle>Cond b c\<^isub>1 c\<^isub>2,Normal s\<rangle> =n\<Rightarrow>  t"
+             \<Gamma>\<turnstile>\<langle>Cond b c\<^sub>1 c\<^sub>2,Normal s\<rangle> =n\<Rightarrow>  t"
 
-| CondFalse: "\<lbrakk>s \<notin> b; \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s\<rangle> =n\<Rightarrow>  t\<rbrakk> 
+| CondFalse: "\<lbrakk>s \<notin> b; \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s\<rangle> =n\<Rightarrow>  t\<rbrakk> 
               \<Longrightarrow>  
-              \<Gamma>\<turnstile>\<langle>Cond b c\<^isub>1 c\<^isub>2,Normal s\<rangle> =n\<Rightarrow>  t"
+              \<Gamma>\<turnstile>\<langle>Cond b c\<^sub>1 c\<^sub>2,Normal s\<rangle> =n\<Rightarrow>  t"
 
 | WhileTrue: "\<lbrakk>s \<in> b; \<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow>  s'; 
               \<Gamma>\<turnstile>\<langle>While b c,s'\<rangle> =n\<Rightarrow>  t\<rbrakk> 
@@ -509,12 +509,12 @@ where
 
 | AbruptProp [intro,simp]: "\<Gamma>\<turnstile>\<langle>c,Abrupt s\<rangle> =n\<Rightarrow>  Abrupt s"
   
-| CatchMatch: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow>  Abrupt s'; \<Gamma>\<turnstile>\<langle>c\<^isub>2,Normal s'\<rangle> =n\<Rightarrow> t\<rbrakk>
+| CatchMatch: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow>  Abrupt s'; \<Gamma>\<turnstile>\<langle>c\<^sub>2,Normal s'\<rangle> =n\<Rightarrow> t\<rbrakk>
                \<Longrightarrow>
-               \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> =n\<Rightarrow> t" 
-| CatchMiss: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> =n\<Rightarrow>  t; \<not>isAbr t\<rbrakk>
+               \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> =n\<Rightarrow> t" 
+| CatchMiss: "\<lbrakk>\<Gamma>\<turnstile>\<langle>c\<^sub>1,Normal s\<rangle> =n\<Rightarrow>  t; \<not>isAbr t\<rbrakk>
                \<Longrightarrow>
-               \<Gamma>\<turnstile>\<langle>Catch c\<^isub>1 c\<^isub>2,Normal s\<rangle> =n\<Rightarrow>  t"
+               \<Gamma>\<turnstile>\<langle>Catch c\<^sub>1 c\<^sub>2,Normal s\<rangle> =n\<Rightarrow>  t"
  
 inductive_cases execn_elim_cases [cases set]:
   "\<Gamma>\<turnstile>\<langle>c,Fault f\<rangle> =n\<Rightarrow>  t"
@@ -1547,7 +1547,7 @@ lemma exec_normalize_iff_exec:
   by (auto intro: exec_to_exec_normalize exec_normalize_to_exec)
     
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^isub>1 \<subseteq>\<^sub>g c\<^isub>2"} *}
+subsection {* Lemmas about @{term "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"} *}
 (* ************************************************************************ *)
 
 lemma execn_to_execn_subseteq_guards: "\<And>c s t n. \<lbrakk>c \<subseteq>\<^sub>g c'; \<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t\<rbrakk>
@@ -3771,7 +3771,7 @@ proof -
 qed
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^isub>1 \<inter>\<^sub>g c\<^isub>2"} *}
+subsection {* Lemmas about @{term "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"} *}
 (* ************************************************************************* *)
 
 lemma inter_guards_execn_Normal_noFault: 

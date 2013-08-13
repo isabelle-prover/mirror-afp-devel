@@ -21,10 +21,10 @@ inductive
 where
   (*<*)Do[iff]:(*>*) "f s \<noteq> {} \<Longrightarrow> Do f \<down> s"
 
-| (*<*)Semi[intro!]:(*>*) "\<lbrakk> c\<^isub>1 \<down> s\<^isub>0; \<forall>s\<^isub>1. s\<^isub>0 -c\<^isub>1\<rightarrow> s\<^isub>1 \<longrightarrow> c\<^isub>2 \<down> s\<^isub>1 \<rbrakk> \<Longrightarrow> (c\<^isub>1;c\<^isub>2) \<down> s\<^isub>0"
+| (*<*)Semi[intro!]:(*>*) "\<lbrakk> c\<^sub>1 \<down> s\<^sub>0; \<forall>s\<^sub>1. s\<^sub>0 -c\<^sub>1\<rightarrow> s\<^sub>1 \<longrightarrow> c\<^sub>2 \<down> s\<^sub>1 \<rbrakk> \<Longrightarrow> (c\<^sub>1;c\<^sub>2) \<down> s\<^sub>0"
 
-| (*<*)IfT[intro,simp]:(*>*) "\<lbrakk>  b s; c\<^isub>1 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c\<^isub>1 ELSE c\<^isub>2 \<down> s"
-| (*<*)IfF[intro,simp]:(*>*) "\<lbrakk> \<not>b s; c\<^isub>2 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c\<^isub>1 ELSE c\<^isub>2 \<down> s"
+| (*<*)IfT[intro,simp]:(*>*) "\<lbrakk>  b s; c\<^sub>1 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c\<^sub>1 ELSE c\<^sub>2 \<down> s"
+| (*<*)IfF[intro,simp]:(*>*) "\<lbrakk> \<not>b s; c\<^sub>2 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c\<^sub>1 ELSE c\<^sub>2 \<down> s"
 
 | (*<*)WhileFalse:(*>*) "\<not>b s \<Longrightarrow> WHILE b DO c \<down> s"
 | (*<*)WhileTrue:(*>*) "\<lbrakk> b s; c \<down> s; \<forall>t. s -c\<rightarrow> t \<longrightarrow> WHILE b DO c \<down> t \<rbrakk> \<Longrightarrow> WHILE b DO c \<down> s"
@@ -40,7 +40,7 @@ apply(erule termi.cases)
 apply blast+
 done
 
-lemma [iff]: "((c\<^isub>1;c\<^isub>2) \<down> s\<^isub>0) = (c\<^isub>1 \<down> s\<^isub>0 \<and> (\<forall>s\<^isub>1. s\<^isub>0 -c\<^isub>1\<rightarrow> s\<^isub>1 \<longrightarrow> c\<^isub>2 \<down> s\<^isub>1))"
+lemma [iff]: "((c\<^sub>1;c\<^sub>2) \<down> s\<^sub>0) = (c\<^sub>1 \<down> s\<^sub>0 \<and> (\<forall>s\<^sub>1. s\<^sub>0 -c\<^sub>1\<rightarrow> s\<^sub>1 \<longrightarrow> c\<^sub>2 \<down> s\<^sub>1))"
 apply(rule iffI)
  prefer 2
  apply(best intro:termi.intros)
@@ -48,8 +48,8 @@ apply(erule termi.cases)
 apply blast+
 done            
 
-lemma [iff]: "(IF b THEN c\<^isub>1 ELSE c\<^isub>2 \<down> s) =
-              ((if b s then c\<^isub>1 else c\<^isub>2) \<down> s)"
+lemma [iff]: "(IF b THEN c\<^sub>1 ELSE c\<^sub>2 \<down> s) =
+              ((if b s then c\<^sub>1 else c\<^sub>2) \<down> s)"
 apply simp
 apply(rule conjI)
 apply(rule impI)
