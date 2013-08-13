@@ -7,7 +7,6 @@ imports
   Lexicographic_Order
   Extend_Partial_Order
   "~~/src/HOL/Library/Cardinality"
-  "~~/src/HOL/Library/Quotient_Option"
 begin
 
 section {* An executable linear order on sets *}

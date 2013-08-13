@@ -3,7 +3,6 @@
 
 theory Lexicographic_Order imports
   List_Fusion
-  "~~/src/HOL/Library/Quotient_List"
   "~~/src/HOL/Library/Char_ord"
 begin
 

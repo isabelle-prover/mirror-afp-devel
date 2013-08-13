@@ -4,7 +4,6 @@
 theory RBT_Set2 
 imports
   RBT_Mapping2
-  "~~/src/HOL/Library/Quotient_Set"
 begin
 
 section {* Sets implemented by red-black trees *}

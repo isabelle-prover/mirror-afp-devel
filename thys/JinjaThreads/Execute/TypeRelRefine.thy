@@ -10,10 +10,6 @@ theory TypeRelRefine
 imports
   "../Common/TypeRel"
   "~~/src/HOL/Library/AList_Mapping"
-  "~~/src/HOL/Library/Quotient_Product"
-  "~~/src/HOL/Library/Quotient_List"
-  "~~/src/HOL/Library/Quotient_Option"
-  "~~/src/HOL/Library/Quotient_Set"
 begin
 
 subsection {* Auxiliary lemmata *}

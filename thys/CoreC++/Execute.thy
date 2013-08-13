@@ -9,9 +9,6 @@ header {* \isaheader{Code generation for Semantics and Type System} *}
 theory Execute
 imports BigStep WellType
   "~~/src/HOL/Library/AList_Mapping"
-  "~~/src/HOL/Library/Quotient_Product"
-  "~~/src/HOL/Library/Quotient_Set"
-  "~~/src/HOL/Library/Quotient_Option"
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 

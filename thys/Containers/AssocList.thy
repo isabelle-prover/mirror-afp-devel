@@ -145,9 +145,16 @@ by(simp add: update_conv_update_with set_update_with)
 lemma set_delete: "set (delete k al) = set al - {k} \<times> UNIV"
 by transfer(simp add: set_delete_aux)
 
+context
+begin
+interpretation lifting_syntax .
+
 lemma size_dalist_transfer [transfer_rule]:
-  "(fun_rel cr_alist op =) length size"
-by(auto simp add: size_alist_def[abs_def] cr_alist_def)
+  "(pcr_alist op= op= ===> op =) length size"
+unfolding size_alist_def[abs_def]
+by transfer_prover
+
+end
 
 lemma size_eq_card_dom_lookup: "size al = card (dom (DAList.lookup al))"
 by transfer (metis comp_apply distinct_card dom_map_of_conv_image_fst image_set length_map)

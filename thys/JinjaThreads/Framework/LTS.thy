@@ -8,7 +8,6 @@ theory LTS
 imports
   "../Basic/Auxiliary"
   "../../Coinductive/TLList"
-  "~~/src/HOL/Library/Quotient_Option"
 begin
 
 lemma option_rel_mono:

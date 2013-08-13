@@ -4,7 +4,6 @@
 theory List_Fusion
 imports 
   Main
-  "~~/src/HOL/Library/Quotient_Product"
 begin
 
 section {* Shortcut fusion for lists *}
@@ -162,6 +161,10 @@ declare
   list.next_def[code]
   list.unfoldr.simps[code]
 
+context
+begin
+interpretation lifting_syntax .
+
 lemma generator_has_next_transfer [transfer_rule]: 
   "(pcr_generator op = op = ===> op =) fst list.has_next"
 by(auto simp add: generator.pcr_cr_eq cr_generator_def list.has_next_def dest: sym)
@@ -169,6 +172,8 @@ by(auto simp add: generator.pcr_cr_eq cr_generator_def list.has_next_def dest: s
 lemma generator_next_transfer [transfer_rule]:
   "(pcr_generator op = op = ===> op =) snd list.next"
 by(auto simp add: generator.pcr_cr_eq cr_generator_def list.next_def)
+
+end
 
 lemma unfoldr_eq_Nil_iff [iff]:
   "list.unfoldr g s = [] \<longleftrightarrow> \<not> list.has_next g s"

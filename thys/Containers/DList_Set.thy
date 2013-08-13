@@ -4,7 +4,6 @@
 theory DList_Set imports 
   "Collection_Eq"
   "Equal"
-  "~~/src/HOL/Library/Quotient_List"
 begin
 
 section {* Sets implemented by distinct lists *}
@@ -312,6 +311,10 @@ proof transfer
   qed
 qed
 
+context
+begin
+interpretation lifting_syntax .
+
 lemma fold_transfer2 [transfer_rule]:
   assumes "is_equality A"
   shows "((A ===> pcr_set_dlist op = ===> pcr_set_dlist op =) ===>
@@ -334,6 +337,8 @@ proof(rule fun_relI)+
     thus ?case using insert by(simp add: cr_set_dlist_def)
   qed
 qed
+
+end
 
 lemma distinct_list_of_dlist:
   "distinct (list_of_dlist (dxs :: 'a set_dlist))"

@@ -35,6 +35,10 @@ by(simp_all)(transfer, rule)+
 
 lemma [code, code del]: "Mapping.is_empty = Mapping.is_empty" ..
 
+context
+begin
+interpretation lifting_syntax .
+
 lemma is_empty_transfer [transfer_rule]:
   "(pcr_mapping op = op = ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
 unfolding mapping.pcr_cr_eq
@@ -42,6 +46,8 @@ apply(rule fun_relI)
 apply(case_tac y)
 apply(simp add: Mapping.is_empty_def cr_mapping_def Mapping_inverse Mapping.keys.rep_eq)
 done
+
+end
 
 lemma is_empty_Mapping [code]:
   fixes t :: "('a :: corder, 'b) mapping_rbt" shows
@@ -95,12 +101,18 @@ qed
 
 lemma [code, code del]: "Mapping.size = Mapping.size" ..
 
+context
+begin
+interpretation lifting_syntax .
+
 lemma Mapping_size_transfer [transfer_rule]:
   "(pcr_mapping op = op = ===> op =) (card \<circ> dom) Mapping.size"
 apply(rule fun_relI)
 apply(case_tac y)
 apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse mapping.pcr_cr_eq cr_mapping_def)
 done
+
+end
 
 lemma size_Mapping [code]:
   fixes t :: "('a :: corder, 'b) mapping_rbt" shows

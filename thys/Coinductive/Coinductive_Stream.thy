@@ -6,8 +6,6 @@ header {* Coinductive streams *}
 theory Coinductive_Stream
 imports
   Quotient_Coinductive_List
-  "~~/src/HOL/Library/Quotient_Product"
-  "~~/src/HOL/Library/Quotient_Set"
 begin
 
 lemma id_power: "id ^^ n = id"

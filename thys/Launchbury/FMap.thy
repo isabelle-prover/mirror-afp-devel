@@ -1,5 +1,5 @@
 theory FMap
-  imports Main "~~/src/HOL/Quotient_Examples/FSet" "~~/src/HOL/Library/DAList"
+  imports Main "~~/src/HOL/Library/DAList"
 begin
 
 subsubsection {* The type of finite maps *}

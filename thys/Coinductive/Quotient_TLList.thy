@@ -10,11 +10,11 @@ theory Quotient_TLList imports
 begin
 
 lemma Basic_BNFs_sum_rel_Quotient_Sum_sum_rel:
-  "Basic_BNFs.sum_rel = Quotient_Sum.sum_rel"
+  "Basic_BNFs.sum_rel = Lifting_Sum.sum_rel"
 proof(intro ext)
   fix P Q x y
-  show "Basic_BNFs.sum_rel P Q x y = Quotient_Sum.sum_rel P Q x y"
-    by(cases "(P, Q, x, y)" rule: Quotient_Sum.sum_rel.cases) simp_all
+  show "Basic_BNFs.sum_rel P Q x y = Lifting_Sum.sum_rel P Q x y"
+    by(cases "(P, Q, x, y)" rule: Lifting_Sum.sum_rel.cases) simp_all
 qed
 
 lemma OO_transfer [transfer_rule]:
