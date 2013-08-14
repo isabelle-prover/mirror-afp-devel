@@ -9,14 +9,6 @@ theory Quotient_TLList imports
   TLList
 begin
 
-lemma Basic_BNFs_sum_rel_Quotient_Sum_sum_rel:
-  "Basic_BNFs.sum_rel = Lifting_Sum.sum_rel"
-proof(intro ext)
-  fix P Q x y
-  show "Basic_BNFs.sum_rel P Q x y = Lifting_Sum.sum_rel P Q x y"
-    by(cases "(P, Q, x, y)" rule: Lifting_Sum.sum_rel.cases) simp_all
-qed
-
 lemma OO_transfer [transfer_rule]:
   assumes [transfer_rule]: "bi_total B"
   shows "((A ===> B ===> op =) ===> (B ===> C ===> op =) ===> A ===> C ===> op =) op OO op OO"
@@ -127,18 +119,15 @@ subsection {* Transfer rules for transfer package *}
 
 lemma pre_tllist_set1_transfer [transfer_rule]:
   "(sum_rel A (prod_rel B C) ===> set_rel B) pre_tllist_set1 pre_tllist_set1"
-unfolding Basic_BNFs_sum_rel_Quotient_Sum_sum_rel[symmetric]
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set1_def set_rel_def collect_def sum_set_defs Basic_BNFs.sum_rel_def fsts_def split: sum.split_asm)
+by(auto simp add: Transfer.fun_rel_def pre_tllist_set1_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
 
 lemma pre_tllist_set2_transfer [transfer_rule]:
   "(sum_rel A (prod_rel B C) ===> set_rel A) pre_tllist_set2 pre_tllist_set2"
-unfolding Basic_BNFs_sum_rel_Quotient_Sum_sum_rel[symmetric]
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set2_def set_rel_def collect_def sum_set_defs snds_def Basic_BNFs.sum_rel_def split: sum.split_asm)
+by(auto simp add: Transfer.fun_rel_def pre_tllist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma pre_tllist_set3_transfer [transfer_rule]:
   "(sum_rel A (prod_rel B C) ===> set_rel C) pre_tllist_set3 pre_tllist_set3"
-unfolding Basic_BNFs_sum_rel_Quotient_Sum_sum_rel[symmetric]
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set3_def set_rel_def collect_def sum_set_defs snds_def Basic_BNFs.sum_rel_def split: sum.split_asm)
+by(auto simp add: Transfer.fun_rel_def pre_tllist_set3_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma tllist_Hset1_transfer [transfer_rule]:
   "((A ===> sum_rel B (prod_rel C A)) ===> A ===> set_rel C) tllist_Hset1 tllist_Hset1"
@@ -146,10 +135,9 @@ by(unfold tllist_Hset1_def[abs_def] tllist_Hset_rec1_def) transfer_prover
 
 lemma tllist_dtor_transfer [transfer_rule]:
   "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) tllist_dtor tllist_dtor"
-unfolding Basic_BNFs_sum_rel_Quotient_Sum_sum_rel[symmetric]
 apply(rule fun_relI)
 apply(erule tllist_all2_cases)
-apply(auto simp add: Basic_BNFs.sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
+apply(auto simp add: sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
 done
 
 lemma TNil_transfer [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"

@@ -64,7 +64,7 @@ by(auto intro!: ext simp add: flip_def)
 
 lemma option_rel_flip [flip_simps]:
   "option_rel (flip R) = flip (option_rel R)"
-by(simp add: fun_eq_iff option_rel_unfold flip_def)
+by(simp add: fun_eq_iff option_rel_def flip_def)
 
 lemma tllist_all2_flip [flip_simps]:
   "tllist_all2 (flip P) (flip Q) xs ys \<longleftrightarrow> tllist_all2 P Q ys xs"

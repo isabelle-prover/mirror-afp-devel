@@ -10,9 +10,6 @@ imports
   "Coinductive_Nat"
 begin
 
-hide_const(open) Basic_BNFs.prod_rel
-hide_fact(open) Basic_BNFs.prod_rel_def
-
 subsection {* Auxiliary lemmata *}
 
 lemma funpow_Suc_conv [simp]: "(Suc ^^ n) m = m + n"
