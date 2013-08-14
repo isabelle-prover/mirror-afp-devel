@@ -1267,6 +1267,43 @@ lemma tconcat_transfer [transfer_rule]:
 unfolding Transfer.fun_rel_def
 by transfer(auto intro: llist_all2_lconcatI dest: llist_all2_lfiniteD)
 
+lemma tllist_all2_rsp: 
+  assumes R1: "\<forall>x y. R1 x y \<longrightarrow> (\<forall>a b. R1 a b \<longrightarrow> S x a = T y b)"
+  and R2: "\<forall>x y. R2 x y \<longrightarrow> (\<forall>a b. R2 a b \<longrightarrow> S' x a = T' y b)"
+  and xsys: "tllist_all2 R1 R2 xs ys"
+  and xs'ys': "tllist_all2 R1 R2 xs' ys'"
+  shows "tllist_all2 S S' xs xs' = tllist_all2 T T' ys ys'"
+proof
+  assume "tllist_all2 S S' xs xs'"
+  with xsys xs'ys'
+  have "\<exists>xs xs'. tllist_all2 S S' xs xs' \<and> tllist_all2 R1 R2 xs ys \<and> tllist_all2 R1 R2 xs' ys'" by blast
+  thus "tllist_all2 T T' ys ys'"
+  proof(coinduct rule: tllist_all2_coinduct)
+    case (tllist_all2 ys ys')
+    then obtain xs xs' where "tllist_all2 S S' xs xs'" "tllist_all2 R1 R2 xs ys" "tllist_all2 R1 R2 xs' ys'"
+      by blast
+    thus ?case
+      by cases (auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TCons2 tllist_all2_TNil1 tllist_all2_TNil2 dest: R1[rule_format] R2[rule_format])
+  qed
+next
+  assume "tllist_all2 T T' ys ys'"
+  with xsys xs'ys'
+  have "\<exists>ys ys'. tllist_all2 T T' ys ys' \<and> tllist_all2 R1 R2 xs ys \<and> tllist_all2 R1 R2 xs' ys'" by blast
+  thus "tllist_all2 S S' xs xs'"
+  proof(coinduct rule: tllist_all2_coinduct)
+    case (tllist_all2 xs xs')
+    then obtain ys ys' where "tllist_all2 T T' ys ys'" "tllist_all2 R1 R2 xs ys" "tllist_all2 R1 R2 xs' ys'"
+      by blast
+    thus ?case
+      by cases(auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TCons2 tllist_all2_TNil1 tllist_all2_TNil2 dest: R1[rule_format] R2[rule_format])
+  qed
+qed
+
+lemma tllist_all2_transfer2 [transfer_rule]:
+  "((R1 ===> R1 ===> op =) ===> (R2 ===> R2 ===> op =) ===>
+    tllist_all2 R1 R2 ===> tllist_all2 R1 R2 ===> op =) tllist_all2 tllist_all2"
+by (simp add: tllist_all2_rsp fun_rel_def)
+
 end
 
 end

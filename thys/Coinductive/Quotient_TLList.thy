@@ -73,21 +73,7 @@ lemma tmap_preserve [quot_preserve]:
 using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3] Quotient3_abs_rep[OF q4]
 by(simp_all add: fun_eq_iff tllist.map_comp' o_def)
 
-lemma tmap_respect [quot_respect]:
-  "((R1 ===> R2) ===> (R3 ===> R4) ===> tllist_all2 R1 R3 ===> tllist_all2 R2 R4) tmap tmap"
-proof -
-  {
-    fix f f' g g' ts ts'
-    assume f: "(R1 ===> R2) f f'"
-      and g: "(R3 ===> R4) g g'"
-      and ts: "tllist_all2 R1 R3 ts ts'"
-    from ts have "tllist_all2 R2 R4 (tmap f g ts) (tmap f' g' ts')"
-      unfolding tllist_all2_tmap1 tllist_all2_tmap2
-      apply(rule tllist_all2_mono)
-      using f g by(auto elim: fun_relE)
-    }
-  thus ?thesis by (auto intro!: fun_relI)
-qed
+lemmas tmap_respect [quot_respect] = tmap_transfer2
 
 lemma Quotient3_tmap_Abs_Rep:
   "\<lbrakk>Quotient3 R1 Abs1 Rep1; Quotient3 R2 Abs2 Rep2\<rbrakk>
@@ -184,9 +170,7 @@ lemma TCons_preserve [quot_preserve]:
 using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] 
 by(simp add: fun_eq_iff tllist.map_comp' o_def tmap_id_id[unfolded id_def])
 
-lemma TCons_respect [quot_respect]:
-  "(R ===> tllist_all2 R Q ===> tllist_all2 R Q) TCons TCons"
-  by (auto intro!: fun_relI)
+lemmas TCons_respect [quot_respect] = TCons_transfer2
 
 lemma TNil_preserve [quot_preserve]:
   assumes "Quotient3 R2 Abs2 Rep2"
@@ -194,46 +178,9 @@ lemma TNil_preserve [quot_preserve]:
 using Quotient3_abs_rep[OF assms]
 by(simp add: fun_eq_iff)
 
-lemma LNil_respect [quot_respect]:
-  "(R2 ===> tllist_all2 R1 R2) TNil TNil"
-  by auto
+lemmas TNil_respect [quot_respect] = TNil_transfer2
 
-lemma tllist_all2_rsp: 
-  assumes R1: "\<forall>x y. R1 x y \<longrightarrow> (\<forall>a b. R1 a b \<longrightarrow> S x a = T y b)"
-  and R2: "\<forall>x y. R2 x y \<longrightarrow> (\<forall>a b. R2 a b \<longrightarrow> S' x a = T' y b)"
-  and xsys: "tllist_all2 R1 R2 xs ys"
-  and xs'ys': "tllist_all2 R1 R2 xs' ys'"
-  shows "tllist_all2 S S' xs xs' = tllist_all2 T T' ys ys'"
-proof
-  assume "tllist_all2 S S' xs xs'"
-  with xsys xs'ys'
-  have "\<exists>xs xs'. tllist_all2 S S' xs xs' \<and> tllist_all2 R1 R2 xs ys \<and> tllist_all2 R1 R2 xs' ys'" by blast
-  thus "tllist_all2 T T' ys ys'"
-  proof(coinduct rule: tllist_all2_coinduct)
-    case (tllist_all2 ys ys')
-    then obtain xs xs' where "tllist_all2 S S' xs xs'" "tllist_all2 R1 R2 xs ys" "tllist_all2 R1 R2 xs' ys'"
-      by blast
-    thus ?case
-      by cases (auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TCons2 tllist_all2_TNil1 tllist_all2_TNil2 dest: R1[rule_format] R2[rule_format])
-  qed
-next
-  assume "tllist_all2 T T' ys ys'"
-  with xsys xs'ys'
-  have "\<exists>ys ys'. tllist_all2 T T' ys ys' \<and> tllist_all2 R1 R2 xs ys \<and> tllist_all2 R1 R2 xs' ys'" by blast
-  thus "tllist_all2 S S' xs xs'"
-  proof(coinduct rule: tllist_all2_coinduct)
-    case (tllist_all2 xs xs')
-    then obtain ys ys' where "tllist_all2 T T' ys ys'" "tllist_all2 R1 R2 xs ys" "tllist_all2 R1 R2 xs' ys'"
-      by blast
-    thus ?case
-      by cases(auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TCons2 tllist_all2_TNil1 tllist_all2_TNil2 dest: R1[rule_format] R2[rule_format])
-  qed
-qed
-
-lemma tllist_all2_respect [quot_respect]:
-  "((R1 ===> R1 ===> op =) ===> (R2 ===> R2 ===> op =) ===>
-    tllist_all2 R1 R2 ===> tllist_all2 R1 R2 ===> op =) tllist_all2 tllist_all2"
-  by (simp add: tllist_all2_rsp Transfer.fun_rel_def)
+lemmas tllist_all2_respect [quot_respect] = tllist_all2_transfer
 
 lemma tllist_all2_prs:
   assumes q1: "Quotient3 R1 Abs1 Rep1"

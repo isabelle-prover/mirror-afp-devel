@@ -5,8 +5,8 @@
 theory Coinductive imports
   Coinductive_List_Prefix
   Coinductive_Stream
-  Quotient_TLList
   Quotient_Coinductive_List
+  Quotient_TLList
   Resumption
   Koenigslemma
 begin

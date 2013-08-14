@@ -104,17 +104,13 @@ lemma LCons_preserve [quot_preserve]:
 using Quotient3_abs_rep[OF assms]
 by(simp add: fun_eq_iff llist.map_comp' o_def)
 
-lemma LCons_respect [quot_respect]:
-  "(R ===> llist_all2 R ===> llist_all2 R) LCons LCons"
-  by (auto intro!: fun_relI)
+lemmas LCons_respect [quot_respect] = LCons_transfer 
 
 lemma LNil_preserve [quot_preserve]:
   "lmap Abs LNil = LNil"
 by simp
 
-lemma LNil_respect [quot_respect]:
-  "llist_all2 R LNil LNil"
-by simp
+lemmas LNil_respect [quot_respect] = LNil_transfer
 
 lemma lmap_preserve [quot_preserve]:
   assumes a: "Quotient3 R1 abs1 rep1"
@@ -127,26 +123,9 @@ by(simp_all add: fun_eq_iff llist.map_comp' o_def)
 lemma lmap_respect [quot_respect]:
   shows "((R1 ===> R2) ===> (llist_all2 R1) ===> llist_all2 R2) lmap lmap"
   and   "((R1 ===> op =) ===> (llist_all2 R1) ===> op =) lmap lmap"
-by (simp_all add: llist_all2_conv_all_lnth lmap_eq_lmap_conv_llist_all2 Transfer.fun_rel_def)
+by(fact lmap_transfer)(simp add: llist_all2_conv_all_lnth lmap_eq_lmap_conv_llist_all2 Transfer.fun_rel_def)
 
-lemma llist_all2_rsp:
-  assumes r: "\<forall>x y. R x y \<longrightarrow> (\<forall>a b. R a b \<longrightarrow> S x a = T y b)"
-  and l1: "llist_all2 R x y"
-  and l2: "llist_all2 R a b"
-  shows "llist_all2 S x a = llist_all2 T y b"
-proof(cases "llength x = llength a")
-  case True
-  thus ?thesis using l1 l2 
-    by(simp add: llist_all2_conv_all_lnth)(blast dest: r[rule_format])
-next
-  case False
-  with llist_all2_llengthD[OF l1] llist_all2_llengthD[OF l2]
-  show ?thesis by(simp add: llist_all2_conv_all_lnth)
-qed
-
-lemma llist_all2_respect [quot_respect]:
-  "((R ===> R ===> op =) ===> llist_all2 R ===> llist_all2 R ===> op =) llist_all2 llist_all2"
-  by (simp add: llist_all2_rsp Transfer.fun_rel_def)
+lemmas llist_all2_respect [quot_respect] = llist_all2_transfer
 
 lemma llist_all2_preserve [quot_preserve]:
   assumes "Quotient3 R Abs Rep"

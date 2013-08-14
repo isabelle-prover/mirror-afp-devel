@@ -4783,6 +4783,25 @@ lemma llist_all_transfer [transfer_rule]:
   "((A ===> op =) ===> llist_all2 A ===> op =) llist_all llist_all"
   unfolding llist_all_def[abs_def] by transfer_prover
 
+lemma llist_all2_rsp:
+  assumes r: "\<forall>x y. R x y \<longrightarrow> (\<forall>a b. R a b \<longrightarrow> S x a = T y b)"
+  and l1: "llist_all2 R x y"
+  and l2: "llist_all2 R a b"
+  shows "llist_all2 S x a = llist_all2 T y b"
+proof(cases "llength x = llength a")
+  case True
+  thus ?thesis using l1 l2 
+    by(simp add: llist_all2_conv_all_lnth)(blast dest: r[rule_format])
+next
+  case False
+  with llist_all2_llengthD[OF l1] llist_all2_llengthD[OF l2]
+  show ?thesis by(simp add: llist_all2_conv_all_lnth)
+qed
+
+lemma llist_all2_transfer [transfer_rule]:
+  "((R ===> R ===> op =) ===> llist_all2 R ===> llist_all2 R ===> op =) llist_all2 llist_all2"
+by (simp add: llist_all2_rsp Transfer.fun_rel_def)
+
 end
 
 end
