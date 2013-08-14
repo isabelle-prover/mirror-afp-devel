@@ -7,92 +7,49 @@ header {* Quotient preservation and respectfulness theorems for terminated coind
 
 theory Quotient_TLList imports
   TLList
+  "~~/src/HOL/Library/Quotient_Product"
+  "~~/src/HOL/Library/Quotient_Sum"
+  "~~/src/HOL/Library/Quotient_Set"
 begin
 
-lemma OO_transfer [transfer_rule]:
-  assumes [transfer_rule]: "bi_total B"
-  shows "((A ===> B ===> op =) ===> (B ===> C ===> op =) ===> A ===> C ===> op =) op OO op OO"
-unfolding OO_def[abs_def]
-by transfer_prover
+subsection {* Rules for the Quotient package *}
 
+lemma sum_case_preserve [quot_preserve]:
+  assumes q1: "Quotient3 R1 Abs1 Rep1"
+  and q2: "Quotient3 R2 Abs2 Rep2"
+  and q3: "Quotient3 R3 Abs3 Rep3"
+  shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep2) ---> sum_map Rep1 Rep3 ---> Abs2) sum_case = sum_case"
+using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3]
+by(simp add: fun_eq_iff split: sum.split)
+
+lemma sum_case_preserve2 [quot_preserve]:
+  assumes q: "Quotient3 R Abs Rep"
+  shows "((id ---> Rep) ---> (id ---> Rep) ---> id ---> Abs) sum_case = sum_case"
+using Quotient3_abs_rep[OF q]
+by(auto intro!: ext split: sum.split)
+
+lemma prod_case_preserve [quot_preserve]:
+  assumes q1: "Quotient3 R1 Abs1 Rep1"
+  and q2: "Quotient3 R2 Abs2 Rep2"
+  and q3: "Quotient3 R3 Abs3 Rep3"
+  shows "((Abs1 ---> Abs2 ---> Rep3) ---> map_pair Rep1 Rep2 ---> Abs3) prod_case = prod_case"
+using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3]
+by(simp add: fun_eq_iff split: prod.split)
+
+lemma prod_case_preserve2 [quot_preserve]:
+  assumes q: "Quotient3 R Abs Rep"
+  shows "((id ---> id ---> Rep) ---> id ---> Abs) prod_case = prod_case"
+using Quotient3_abs_rep[OF q]
+by(auto intro!: ext)
+
+lemma id_preserve [quot_preserve]:
+  assumes "Quotient3 R Abs Rep"
+  shows "(Rep ---> Abs) id = id"
+using Quotient3_abs_rep[OF assms]
+by(auto intro: ext)
 
 enriched_type tmap: tmap
    by(simp_all add: fun_eq_iff tmap_id_id tllist.map_comp')
-
-subsection {* Relator for type @{typ "('a, 'b) tllist"} *}
-
-lemma reflp_tllist_all2: 
-  assumes R: "reflp R" and Q: "reflp Q"
-  shows "reflp (tllist_all2 R Q)"
-proof(rule reflpI)
-  fix xs
-  show "tllist_all2 R Q xs xs"
-    apply(coinduct xs rule: tllist_all2_fun_coinduct)
-    using assms by(auto elim: reflpE)
-qed
-
-lemma tllist_all2_left_total[reflexivity_rule]:
-  assumes R: "left_total R"
-  and S: "left_total S"
-  shows "left_total (tllist_all2 R S)"
-proof (rule left_totalI)
-  fix xs
-  have *: "\<And>x. R x (SOME y. R x y)"
-    using R by(rule left_totalE)(rule someI_ex)
-  have **: "\<And>x. S x (SOME y. S x y)"
-    using S by(rule left_totalE)(rule someI_ex)
-
-  have "tllist_all2 R S xs (tmap (\<lambda>x. SOME y. R x y) (\<lambda>x. SOME y. S x y) xs)"
-    by(coinduct xs rule: tllist_all2_fun_coinduct)(auto simp add: * **)
-  thus "\<exists>ys. tllist_all2 R S xs ys" ..
-qed
-
-lemma tllist_all2_right_total[transfer_rule]:
-  assumes R: "right_total R"
-  and S: "right_total S"
-  shows "right_total (tllist_all2 R S)"
-  unfolding right_total_def
-proof
-  fix ys
-  have *: "\<And>y. R (SOME x. R x y) y"
-    using assms unfolding right_total_def by - (rule someI_ex, blast)
-  have **: "\<And>y. S (SOME x. S x y) y"
-    using assms unfolding right_total_def by - (rule someI_ex, blast)
-
-  have "tllist_all2 R S (tmap (\<lambda>y. SOME x. R x y) (\<lambda>y. SOME x. S x y) ys) ys"
-    by(coinduct ys rule: tllist_all2_fun_coinduct)(auto simp add: * **)
-  thus "\<exists>xs. tllist_all2 R S xs ys" ..
-qed
-
-lemma bi_total_tllist_all2 [transfer_rule]:
-  "\<lbrakk> bi_total A; bi_total B \<rbrakk> \<Longrightarrow> bi_total (tllist_all2 A B)"
-by(simp add: bi_total_conv_left_right tllist_all2_right_total tllist_all2_left_total)
-
-lemma left_unique_tllist_all2 [transfer_rule]:
-  assumes A: "left_unique A" and B: "left_unique B"
-  shows "left_unique (tllist_all2 A B)"
-proof(rule left_uniqueI)
-  fix xs ys zs
-  assume "tllist_all2 A B xs zs" "tllist_all2 A B ys zs"
-  hence "\<exists>zs. tllist_all2 A B xs zs \<and> tllist_all2 A B ys zs" by auto
-  thus "xs = ys"
-    by(coinduct xs ys rule: tllist.strong_coinduct)(auto 4 3 dest: left_uniqueD[OF A] left_uniqueD[OF B] tllist_all2_is_TNilD tllist_all2_thdD tllist_all2_tfinite1_terminalD intro: tllist_all2_ttlI)
-qed
-
-lemma right_unique_tllist_all2 [transfer_rule]:
-  assumes A: "right_unique A" and B: "right_unique B"
-  shows "right_unique (tllist_all2 A B)"
-proof(rule right_uniqueI)
-  fix xs ys zs
-  assume "tllist_all2 A B xs ys" "tllist_all2 A B xs zs"
-  hence "\<exists>xs. tllist_all2 A B xs ys \<and> tllist_all2 A B xs zs" by auto
-  thus "ys = zs"
-    by(coinduct ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: tllist_all2_is_TNilD right_uniqueD[OF B] right_uniqueD[OF A] tllist_all2_thdD tllist_all2_tfinite2_terminalD intro: tllist_all2_ttlI)
-qed
-
-lemma bi_unique_tllist_all2 [transfer_rule]:
-  "\<lbrakk> bi_unique A; bi_unique B \<rbrakk> \<Longrightarrow> bi_unique (tllist_all2 A B)"
-by(simp add: bi_unique_conv_left_right left_unique_tllist_all2 right_unique_tllist_all2)
 
 lemma symp_tllist_all2: "\<lbrakk> symp R; symp S \<rbrakk> \<Longrightarrow> symp (tllist_all2 R S)"
 by (rule sympI)(auto 4 3 simp add: tllist_all2_conv_all_tnth elim: sympE dest: lfinite_llength_enat not_lfinite_llength)
@@ -104,133 +61,7 @@ lemma tllist_equivp [quot_equiv]:
   "\<lbrakk> equivp R; equivp S \<rbrakk> \<Longrightarrow> equivp (tllist_all2 R S)"
   by (simp add: equivp_reflp_symp_transp reflp_tllist_all2 symp_tllist_all2 transp_tllist_all2)
 
-lemma tllist_all2_mono2 [relator_mono]:
-  assumes "A \<le> B" and "C \<le> D"
-  shows "(tllist_all2 A C) \<le> (tllist_all2 B D)"
-using assms by(auto intro: tllist_all2_mono)
-
-lemma tllist_all2_OO [relator_distr]:
-  "tllist_all2 A B OO tllist_all2 A' B' = tllist_all2 (A OO A') (B OO B')"
-by transfer(auto intro!: ext simp add: llist_all2_OO[symmetric] dest: llist_all2_lfiniteD)
-
-declare tllist_all2_eq [simp, id_simps, relator_eq]
-
-subsection {* Transfer rules for transfer package *}
-
-lemma pre_tllist_set1_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel B) pre_tllist_set1 pre_tllist_set1"
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set1_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
-
-lemma pre_tllist_set2_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel A) pre_tllist_set2 pre_tllist_set2"
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
-
-lemma pre_tllist_set3_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel C) pre_tllist_set3 pre_tllist_set3"
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set3_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
-
-lemma tllist_Hset1_transfer [transfer_rule]:
-  "((A ===> sum_rel B (prod_rel C A)) ===> A ===> set_rel C) tllist_Hset1 tllist_Hset1"
-by(unfold tllist_Hset1_def[abs_def] tllist_Hset_rec1_def) transfer_prover
-
-lemma tllist_dtor_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) tllist_dtor tllist_dtor"
-apply(rule fun_relI)
-apply(erule tllist_all2_cases)
-apply(auto simp add: sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
-done
-
-lemma TNil_transfer [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"
-by auto
-
-lemma TCons_transfer [transfer_rule]:
-  "(A ===> tllist_all2 A B ===> tllist_all2 A B) TCons TCons"
-unfolding Transfer.fun_rel_def by simp
-
-lemma tllist_case_transfer [transfer_rule]:
-  "((B ===> C) ===> (A ===> tllist_all2 A B ===> C) ===> tllist_all2 A B ===> C)
-    tllist_case tllist_case"
-unfolding Transfer.fun_rel_def
-by (simp add: tllist_all2_TNil1 tllist_all2_TNil2 split: tllist.split)
-
-lemma tllist_unfold_transfer [transfer_rule]:
-  "((A ===> op =) ===> (A ===> B) ===> (A ===> C) ===> (A ===> A) ===> A ===> tllist_all2 C B) tllist_unfold tllist_unfold"
-apply(rule fun_relI)+
-apply(erule tllist_all2_fun_coinduct_invar2[where X=A])
-apply(auto 4 4 elim: fun_relE)
-done
-
-lemma llist_corec_transfer [transfer_rule]:
-  "((A ===> op =) ===> (A ===> B) ===> (A ===> C) ===> (A ===> op =) ===> (A ===> tllist_all2 C B) ===> (A ===> A) ===> A ===> tllist_all2 C B) tllist_corec tllist_corec"
-apply(rule fun_relI)+
-apply(erule tllist_all2_fun_coinduct_invar2[where X=A])
-apply(auto 4 4 elim: fun_relE)
-done
-
-lemma ttl_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> tllist_all2 A B) ttl ttl"
-  unfolding ttl_def[abs_def] by transfer_prover
-
-lemma tset_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> set_rel A) tset tset"
-  unfolding tset_def by transfer_prover
-
-lemma tmap_transfer [transfer_rule]:
-  "((A ===> B) ===> (C ===> D) ===> tllist_all2 A C ===> tllist_all2 B D) tmap tmap"
-by(auto simp add: Transfer.fun_rel_def tllist_all2_tmap1 tllist_all2_tmap2 elim: tllist_all2_mono)
-
-lemma is_TNil_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> op =) is_TNil is_TNil"
-by(auto dest: tllist_all2_is_TNilD)
-
-lemma tappend_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> (B ===> tllist_all2 A C) ===> tllist_all2 A C) tappend tappend"
-by(auto intro: tllist_all2_tappendI elim: fun_relE)
-
-lemma lappendt_transfer [transfer_rule]:
-  "(llist_all2 A ===> tllist_all2 A B ===> tllist_all2 A B) lappendt lappendt"
-unfolding Transfer.fun_rel_def
-by transfer(auto intro: llist_all2_lappendI)
-
-lemma llist_of_tllist_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> llist_all2 A) llist_of_tllist llist_of_tllist"
-by(auto intro: llist_all2_tllist_of_llistI)
-
-lemma tllist_of_llist_transfer [transfer_rule]:
-  "(B ===> llist_all2 A ===> tllist_all2 A B) tllist_of_llist tllist_of_llist"
-by(auto intro!: fun_relI)
-
-lemma tlength_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> op =) tlength tlength"
-by(auto dest: tllist_all2_tlengthD)
-
-lemma tdropn_transfer [transfer_rule]:
-  "(op = ===> tllist_all2 A B ===> tllist_all2 A B) tdropn tdropn"
-unfolding Transfer.fun_rel_def
-by transfer(auto intro: llist_all2_ldropnI)
-
-lemma tfilter_transfer [transfer_rule]:
-  "(B ===> (A ===> op =) ===> tllist_all2 A B ===> tllist_all2 A B) tfilter tfilter"
-unfolding Transfer.fun_rel_def
-by transfer(auto intro: llist_all2_lfilterI dest: llist_all2_lfiniteD)
-
-lemma tconcat_transfer [transfer_rule]:
-  "(B ===> tllist_all2 (llist_all2 A) B ===> tllist_all2 A B) tconcat tconcat"
-unfolding Transfer.fun_rel_def
-by transfer(auto intro: llist_all2_lconcatI dest: llist_all2_lfiniteD)
-
-lift_definition tllist_all :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
-is "\<lambda>P Q (xs, b). llist_all P xs \<and> (lfinite xs \<longrightarrow> Q b)" 
-by auto
-
-lemma Domainp_tllist [relator_domain]:
-  assumes A: "Domainp A = P"
-  and B: "Domainp B = Q"
-  shows "Domainp (tllist_all2 A B) = (tllist_all P Q)"
-  unfolding Domainp_iff[abs_def]
-by(transfer fixing: A B P Q)(clarsimp simp add: fun_eq_iff Domainp_iff[symmetric] Domainp_llist[OF A] B)
-
-subsection {* Setup for quotient package *}
+declare tllist_all2_eq [simp, id_simps]
 
 lemma tmap_preserve [quot_preserve]:
   assumes q1: "Quotient3 R1 Abs1 Rep1"
@@ -268,7 +99,6 @@ lemma Quotient3_tllist_all2_tmap_tmapI:
   and q2: "Quotient3 R2 Abs2 Rep2"
   shows "tllist_all2 R1 R2 (tmap Rep1 Rep2 ts) (tmap Rep1 Rep2 ts)"
 by(coinduct ts rule: tllist_all2_fun_coinduct)(auto simp add: Quotient3_rep_reflp[OF q1] Quotient3_rep_reflp[OF q2])
-
 
 lemma tllist_all2_rel:
   assumes q1: "Quotient3 R1 Abs1 Rep1"

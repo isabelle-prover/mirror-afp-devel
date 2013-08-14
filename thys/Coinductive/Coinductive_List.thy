@@ -2510,11 +2510,6 @@ lemma llist_all2_mono:
   "\<lbrakk> llist_all2 P xs ys; \<And>x y. P x y \<Longrightarrow> P' x y \<rbrakk> \<Longrightarrow> llist_all2 P' xs ys"
 by(auto simp add: llist_all2_conv_all_lnth)
 
-lemma llist_all2_mono2 [relator_mono]:
-  assumes "A \<le> B"
-  shows "(llist_all2 A) \<le> (llist_all2 B)"
-using assms by(auto intro: llist_all2_mono)
-
 lemma llist_all2_left: "llist_all2 (\<lambda>x _. P x) xs ys \<longleftrightarrow> llength xs = llength ys \<and> (\<forall>x\<in>lset xs. P x)"
 by(fastforce simp add: llist_all2_conv_all_lnth lset_conv_lnth)
 
@@ -2680,32 +2675,7 @@ apply(drule llist_all2_lnthD)
 apply(erule (2) transpD)
 done
 
-lemma llist_all2_OO [relator_distr]:
-  "llist_all2 A OO llist_all2 B = llist_all2 (A OO B)"
-proof (intro ext iffI)
-  fix xs ys
-  let ?P = "\<lambda>x y z. A x z \<and> B z y"
-  have P: "\<And>x y. (A OO B) x y \<Longrightarrow> ?P x y (Eps (?P x y))"
-    by(rule someI_ex)(simp add: OO_def)
-
-  assume AB: "llist_all2 (A OO B) xs ys"
-  hence "llist_all2 A xs (lmap (\<lambda>(x, y). Eps (?P x y)) (lzip xs ys))"
-    apply(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)
-    using P by(auto dest: llist_all2_lhdD intro: llist_all2_ltlI)
-  moreover from AB
-  have "llist_all2 B (lmap (\<lambda>(x, y). Eps (?P x y)) (lzip xs ys)) ys"
-    apply(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)
-    using P by(auto dest: llist_all2_lhdD intro: llist_all2_ltlI)
-  ultimately show "(llist_all2 A OO llist_all2 B) xs ys"
-    unfolding OO_def by auto
-next
-  fix xs ys
-  assume "(llist_all2 A OO llist_all2 B) xs ys"
-  thus "llist_all2 (A OO B) xs ys" unfolding OO_def
-    by(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)(auto 4 3 dest: llist_all2_lhdD intro: llist_all2_ltlI)
-qed
-
-lemmas llist_all2_eq [simp, id_simps, relator_eq] = llist.rel_eq
+lemmas llist_all2_eq [simp, id_simps] = llist.rel_eq
 
 subsection {* The last element @{term "llast"} *}
 
@@ -4496,5 +4466,323 @@ by(simp add: llist_all2_conv_lzip)
 
 lemma (in monoid_add) llistsum_infllist: "llistsum (inf_llist f) = 0"
 by simp
+
+subsection {* Setup for Lifting/Transfer *}
+
+lemma bi_total_conv_left_right: "bi_total R \<longleftrightarrow> left_total R \<and> right_total R"
+by(simp add: left_total_def right_total_def bi_total_def)
+
+lemma bi_unique_conv_left_right: "bi_unique R \<longleftrightarrow> left_unique R \<and> right_unique R"
+by(auto simp add: left_unique_def right_unique_def bi_unique_def)
+
+lemma bi_uniqueDr: "\<lbrakk> bi_unique A; A x y; A x z \<rbrakk> \<Longrightarrow> y = z"
+by(simp add: bi_unique_def)
+
+lemma bi_uniqueDl: "\<lbrakk> bi_unique A; A x y; A z y \<rbrakk> \<Longrightarrow> x = z"
+by(simp add: bi_unique_def)
+
+lemma right_uniqueI: "(\<And>x y z. \<lbrakk> A x y; A x z \<rbrakk> \<Longrightarrow> y = z) \<Longrightarrow> right_unique A"
+unfolding right_unique_def by blast
+
+lemma right_uniqueD: "\<lbrakk> right_unique A; A x y; A x z \<rbrakk> \<Longrightarrow> y = z"
+unfolding right_unique_def by blast
+
+lemma left_uniqueI: "(\<And>x y z. \<lbrakk> A x z; A y z \<rbrakk> \<Longrightarrow> x = y) \<Longrightarrow> left_unique A"
+unfolding left_unique_def by blast
+
+lemma left_uniqueD: "\<lbrakk> left_unique A; A x z; A y z \<rbrakk> \<Longrightarrow> x = y"
+unfolding left_unique_def by blast
+
+subsubsection {* Relator and predicator properties *}
+
+definition llist_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool"
+where "llist_all P xs = (\<forall>x\<in>lset xs. P x)"
+
+declare llist_all2_eq[relator_eq]
+
+lemma llist_all2_mono2 [relator_mono]:
+  assumes "A \<le> B"
+  shows "(llist_all2 A) \<le> (llist_all2 B)"
+using assms by(auto intro: llist_all2_mono)
+
+lemma llist_all2_OO [relator_distr]:
+  "llist_all2 A OO llist_all2 B = llist_all2 (A OO B)"
+proof (intro ext iffI)
+  fix xs ys
+  let ?P = "\<lambda>x y z. A x z \<and> B z y"
+  have P: "\<And>x y. (A OO B) x y \<Longrightarrow> ?P x y (Eps (?P x y))"
+    by(rule someI_ex)(simp add: OO_def)
+
+  assume AB: "llist_all2 (A OO B) xs ys"
+  hence "llist_all2 A xs (lmap (\<lambda>(x, y). Eps (?P x y)) (lzip xs ys))"
+    apply(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)
+    using P by(auto dest: llist_all2_lhdD intro: llist_all2_ltlI)
+  moreover from AB
+  have "llist_all2 B (lmap (\<lambda>(x, y). Eps (?P x y)) (lzip xs ys)) ys"
+    apply(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)
+    using P by(auto dest: llist_all2_lhdD intro: llist_all2_ltlI)
+  ultimately show "(llist_all2 A OO llist_all2 B) xs ys"
+    unfolding OO_def by auto
+next
+  fix xs ys
+  assume "(llist_all2 A OO llist_all2 B) xs ys"
+  thus "llist_all2 (A OO B) xs ys" unfolding OO_def
+    by(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)(auto 4 3 dest: llist_all2_lhdD intro: llist_all2_ltlI)
+qed
+
+lemma Domainp_llist [relator_domain]:
+  assumes "Domainp A = P"
+  shows "Domainp (llist_all2 A) = (llist_all P)"
+  unfolding Domainp_iff[abs_def]
+proof
+  fix xs
+  from assms have P: "\<And>x. P x \<longleftrightarrow> (\<exists>y. A x y)"
+    by(auto simp add: Domainp_iff[abs_def])
+
+  show "(\<exists>ys. llist_all2 A xs ys) \<longleftrightarrow> llist_all P xs" (is "?lhs \<longleftrightarrow> ?rhs")
+  proof
+    assume ?lhs thus ?rhs
+      by(auto 4 3 simp add: llist_all_def in_lset_conv_lnth P dest: llist_all2_lnthD)
+  next
+    assume ?rhs
+    hence "llist_all2 A xs (lmap (\<lambda>x. SOME y. A x y) xs)"
+      by(coinduct xs rule: llist_all2_fun_coinduct_invar)(auto simp add: neq_LNil_conv llist_all_def P intro: someI)
+    thus ?lhs ..
+  qed
+qed
+
+lemma reflp_llist_all2 [reflexivity_rule]: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
+  by (auto intro!: reflpI elim: reflpE simp add: llist_all2_conv_all_lnth)
+
+lemma llist_all2_left_total [reflexivity_rule]:
+  assumes "left_total R"
+  shows "left_total (llist_all2 R)"
+proof (rule left_totalI)
+  fix xs
+  have *: "\<And>x. R x (SOME y. R x y)"
+    using assms by(rule left_totalE)(rule someI_ex)
+
+  have "llist_all2 R xs (lmap (\<lambda>x. SOME y. R x y) xs)"
+    by(coinduct xs rule: llist_all2_fun_coinduct)(auto simp add: *)
+  thus "\<exists>ys. llist_all2 R xs ys" ..
+qed
+
+lemma left_unique_llist_all2 [reflexivity_rule]:
+  assumes "left_unique A"
+  shows "left_unique (llist_all2 A)"
+proof(rule left_uniqueI)
+  fix xs ys zs
+  assume "llist_all2 A xs zs" "llist_all2 A ys zs"
+  hence "\<exists>zs. llist_all2 A xs zs \<and> llist_all2 A ys zs" by auto
+  thus "xs = ys"
+    by(coinduct xs ys rule: llist.strong_coinduct)(auto simp add: neq_LNil_conv llist_all2_LCons1 llist_all2_LCons2 dest: left_uniqueD[OF assms])
+qed
+
+lemma llist_all2_right_total [transfer_rule]:
+  assumes "right_total R"
+  shows "right_total (llist_all2 R)"
+  unfolding right_total_def
+proof
+  fix ys
+  have *: "\<And>y. R (SOME x. R x y) y"
+    using assms unfolding right_total_def by - (rule someI_ex, blast)
+
+  have "llist_all2 R (lmap (\<lambda>y. SOME x. R x y) ys) ys"
+    by(coinduct ys rule: llist_all2_fun_coinduct)(auto simp add: *)
+  thus "\<exists>xs. llist_all2 R xs ys" ..
+qed
+
+lemma bi_total_llist_all2 [transfer_rule]:
+  "bi_total A \<Longrightarrow> bi_total (llist_all2 A)"
+by(simp add: bi_total_conv_left_right llist_all2_right_total llist_all2_left_total)
+
+lemma right_unique_llist_all2 [transfer_rule]:
+  assumes "right_unique A"
+  shows "right_unique (llist_all2 A)"
+proof(rule right_uniqueI)
+  fix xs ys zs
+  assume "llist_all2 A xs ys" "llist_all2 A xs zs"
+  hence "\<exists>xs. llist_all2 A xs ys \<and> llist_all2 A xs zs" by auto
+  thus "ys = zs"
+    by(coinduct ys zs rule: llist.strong_coinduct)(auto simp add: neq_LNil_conv llist_all2_LCons1 llist_all2_LCons2 dest: right_uniqueD[OF assms])
+qed
+
+lemma bi_unique_list_all2 [transfer_rule]:
+  "bi_unique A \<Longrightarrow> bi_unique (llist_all2 A)"
+unfolding bi_unique_conv_left_right
+by(simp add: right_unique_llist_all2 left_unique_llist_all2)
+
+lemma llist_all2_invariant_commute [invariant_commute]:
+  "llist_all2 (Lifting.invariant P) = Lifting.invariant (llist_all P)" (is "?lhs = ?rhs")
+proof(intro ext iffI)
+  fix xs ys
+  assume "?lhs xs ys"
+  moreover hence "llist_all2 op = xs ys"
+    by(rule llist_all2_mono)(simp add: Lifting.invariant_def)
+  ultimately show "?rhs xs ys" unfolding Lifting.invariant_def
+    by(simp add: llist_all_def)
+qed(simp add: Lifting.invariant_def llist_all_def)
+
+subsubsection {* Quotient theorem for the Lifting package *}
+
+lemma Quotient_llist [quot_map]:
+  assumes "Quotient R Abs Rep T"
+  shows "Quotient (llist_all2 R) (lmap Abs) (lmap Rep) (llist_all2 T)"
+unfolding Quotient_alt_def
+proof(intro conjI strip)
+  from assms have 1: "\<And>x y. T x y \<Longrightarrow> Abs x = y"
+    unfolding Quotient_alt_def by simp
+  fix xs ys
+  assume "llist_all2 T xs ys"
+  thus "lmap Abs xs = ys"
+    by(coinduct xs ys rule: llist_fun_coinduct_invar2)(auto simp add: neq_LNil_conv 1)
+next
+  from assms have 2: "\<And>x. T (Rep x) x"
+    unfolding Quotient_alt_def by simp
+  fix xs
+  show "llist_all2 T (lmap Rep xs) xs" by(simp add: llist_all2_lmap1 2)
+next
+  from assms have 3: "R = (\<lambda>x y. T x (Abs x) \<and> T y (Abs y) \<and> Abs x = Abs y)"
+    unfolding Quotient_alt_def by(simp add: fun_eq_iff)
+  fix xs ys
+  show "llist_all2 R xs ys \<longleftrightarrow> llist_all2 T xs (lmap Abs xs) \<and> llist_all2 T ys (lmap Abs ys) \<and> lmap Abs xs = lmap Abs ys"
+    unfolding 3 lmap_eq_lmap_conv_llist_all2 by(auto simp add: llist_all2_conv_all_lnth)
+qed
+
+subsubsection {* Transfer rules for the Transfer package *}
+
+context
+begin
+interpretation lifting_syntax .
+
+lemma pre_llist_set1_transfer [transfer_rule]:
+  "(sum_rel op = (prod_rel A B) ===> set_rel A) pre_llist_set1 pre_llist_set1"
+by(auto simp add: Transfer.fun_rel_def pre_llist_set1_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
+
+lemma pre_llist_set2_transfer [transfer_rule]:
+  "(sum_rel op = (prod_rel A B) ===> set_rel B) pre_llist_set2 pre_llist_set2"
+by(auto simp add: Transfer.fun_rel_def pre_llist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+
+lemma llist_Hset_transfer [transfer_rule]:
+  "((A ===> sum_rel op = (prod_rel B A)) ===> A ===> set_rel B) llist_Hset llist_Hset"
+by(unfold llist_Hset_def[abs_def] llist_Hset_rec_def) transfer_prover
+
+lemma llist_dtor_transfer [transfer_rule]:
+  "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) llist_dtor llist_dtor"
+apply(rule fun_relI)
+apply(erule llist_all2_cases)
+apply(auto simp add: sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
+done
+
+lemma LNil_transfer [transfer_rule]: "llist_all2 P LNil LNil"
+by simp
+
+lemma LCons_transfer [transfer_rule]:
+  "(A ===> llist_all2 A ===> llist_all2 A) LCons LCons"
+unfolding Transfer.fun_rel_def by simp
+
+lemma llist_case_transfer [transfer_rule]:
+  "(B ===> (A ===> llist_all2 A ===> B) ===> llist_all2 A ===> B)
+    llist_case llist_case"
+unfolding Transfer.fun_rel_def by (simp split: llist.split)
+
+lemma llist_unfold_transfer [transfer_rule]:
+  "((A ===> op =) ===> (A ===> B) ===> (A ===> A) ===> A ===> llist_all2 B) llist_unfold llist_unfold"
+apply(rule fun_relI)+
+apply(erule llist_all2_fun_coinduct_invar2[where X=A])
+apply(auto 4 4 elim: fun_relE)
+done
+
+lemma llist_corec_transfer [transfer_rule]:
+  "((A ===> op =) ===> (A ===> B) ===> (A ===> op =) ===> (A ===> llist_all2 B) ===> (A ===> A) ===> A ===> llist_all2 B) llist_corec llist_corec"
+apply(rule fun_relI)+
+apply(erule llist_all2_fun_coinduct_invar2[where X=A])
+apply(auto 4 4 elim: fun_relE)
+done
+
+lemma ltl_transfer [transfer_rule]:
+  "(llist_all2 A ===> llist_all2 A) ltl ltl"
+  unfolding ltl_def[abs_def] by transfer_prover
+
+lemma lset_transfer [transfer_rule]:
+  "(llist_all2 A ===> set_rel A) lset lset"
+  unfolding lset_def by transfer_prover
+
+lemma lmap_transfer [transfer_rule]:
+  "((A ===> B) ===> llist_all2 A ===> llist_all2 B) lmap lmap"
+by(auto simp add: Transfer.fun_rel_def llist_all2_lmap1 llist_all2_lmap2 elim: llist_all2_mono)
+
+lemma lappend_transfer [transfer_rule]:
+  "(llist_all2 A ===> llist_all2 A ===> llist_all2 A) lappend lappend"
+by(auto simp add: Transfer.fun_rel_def intro: llist_all2_lappendI)
+
+lemma iterates_transfer [transfer_rule]:
+  "((A ===> A) ===> A ===> llist_all2 A) iterates iterates"
+unfolding iterates_def by transfer_prover
+
+lemma lfinite_transfer [transfer_rule]:
+  "(llist_all2 A ===> op =) lfinite lfinite"
+by(auto dest: llist_all2_lfiniteD)
+
+lemma llist_of_transfer [transfer_rule]:
+  "(list_all2 A ===> llist_all2 A) llist_of llist_of"
+unfolding llist_of_def by transfer_prover
+
+lemma llength_transfer [transfer_rule]:
+  "(llist_all2 A ===> op =) llength llength"
+by(auto dest: llist_all2_llengthD)
+
+lemma ltake_transfer [transfer_rule]:
+  "(op = ===> llist_all2 A ===> llist_all2 A) ltake ltake"
+by(auto intro: llist_all2_ltakeI)
+
+lemma ldropn_transfer [transfer_rule]:
+  "(op = ===> llist_all2 A ===> llist_all2 A) ldropn ldropn"
+unfolding ldropn_def[abs_def] by transfer_prover
+
+lemma ldrop_transfer [transfer_rule]:
+  "(op = ===> llist_all2 A ===> llist_all2 A) ldrop ldrop"
+by(auto intro: llist_all2_ldropI)
+
+lemma ltakeWhile_transfer [transfer_rule]:
+  "((A ===> op =) ===> llist_all2 A ===> llist_all2 A) ltakeWhile ltakeWhile"
+proof(rule fun_relI)+
+  fix P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool" and xs :: "'a llist" and ys :: "'b llist"
+  assume PQ: "(A ===> op =) P Q"
+  assume "llist_all2 A xs ys"
+  thus "llist_all2 A (ltakeWhile P xs) (ltakeWhile Q ys)"
+    apply(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)
+    using PQ by(auto 4 4 elim: fun_relE simp add: neq_LNil_conv llist_all2_LCons2 llist_all2_LCons1)
+qed
+
+lemma ldropWhile_transfer [transfer_rule]:
+  "((A ===> op =) ===> llist_all2 A ===> llist_all2 A) ldropWhile ldropWhile"
+unfolding ldropWhile_def[abs_def] by transfer_prover
+
+lemma lzip_ltransfer [transfer_rule]:
+  "(llist_all2 A ===> llist_all2 B ===> llist_all2 (prod_rel A B)) lzip lzip"
+by(auto intro: llist_all2_lzipI)
+
+lemma inf_llist_transfer [transfer_rule]:
+  "((op = ===> A) ===> llist_all2 A) inf_llist inf_llist"
+unfolding inf_llist_def[abs_def] by transfer_prover
+
+lemma lfilter_transfer [transfer_rule]:
+  "((A ===> op =) ===> llist_all2 A ===> llist_all2 A) lfilter lfilter"
+by(auto simp add: Transfer.fun_rel_def intro: llist_all2_lfilterI)
+
+lemma lconcat_transfer [transfer_rule]:
+  "(llist_all2 (llist_all2 A) ===> llist_all2 A) lconcat lconcat"
+by(auto intro: llist_all2_lconcatI)
+
+lemma lsublist_transfer [transfer_rule]:
+  "(llist_all2 A ===> op = ===> llist_all2 A) lsublist lsublist"
+unfolding lsublist_def[abs_def] by transfer_prover
+
+lemma llist_all_transfer [transfer_rule]:
+  "((A ===> op =) ===> llist_all2 A ===> op =) llist_all llist_all"
+  unfolding llist_all_def[abs_def] by transfer_prover
+
+end
 
 end

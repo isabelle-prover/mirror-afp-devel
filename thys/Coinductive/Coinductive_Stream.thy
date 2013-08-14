@@ -5,7 +5,7 @@ header {* Coinductive streams *}
 
 theory Coinductive_Stream
 imports
-  Quotient_Coinductive_List
+  Coinductive_List
 begin
 
 lemma id_power: "id ^^ n = id"
@@ -237,6 +237,10 @@ lemma llist_of_stream_stream_corec [simp]:
   "llist_of_stream (stream_corec SHD endORmore STL_more STL_end x) =
    llist_corec (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
 by(coinduct x rule: llist_fun_coinduct) auto
+
+context
+begin
+interpretation lifting_syntax .
 
 lemma stream_unfold_transfer [transfer_rule]:
   "(op = ===> op = ===> op = ===> pcr_stream op =) (llist_unfold (\<lambda>_. False)) stream_unfold"
@@ -484,5 +488,7 @@ apply transfer
 apply(rule_tac X="\<lambda>xs ys. \<not> lfinite xs \<and> \<not> lfinite ys \<and> X xs ys" in llist_all2_coinduct)
 apply auto
 done
+
+end
 
 end

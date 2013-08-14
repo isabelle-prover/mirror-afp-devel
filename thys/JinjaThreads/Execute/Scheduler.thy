@@ -1168,6 +1168,10 @@ proof -
   thus ?thesis1 "(\<And>ta. ?tso ta \<Longrightarrow> ?inv ta) \<Longrightarrow> ?thesis2" by blast+
 qed
 
+lemma option_map_id:
+  "Option.map id = id"
+  by (simp add: id_def Option.map.identity fun_eq_iff)
+
 lemma step_thread_eq_None_conv:
   assumes det: "\<alpha>.deterministic I"
   and invar: "state_invar s" "state_\<alpha> s \<in> I"
