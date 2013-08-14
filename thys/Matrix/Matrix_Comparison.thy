@@ -1755,7 +1755,7 @@ proof -
         from Suc(4) have ge: "m2 ! i ! n \<ge> m3 ! i ! n" by (simp del: upt_Suc)
         from times_right_mono[OF z ge] have p23: "?p2 \<ge> ?p3" .
         from compat2[OF plus_gt_left_mono[OF rec] plus_right_mono[OF p23]] have "?s2 + ?p2 \<succ> ?s3 + ?p3" .
-        with add_commute[of ?p2] add_commute[of ?p3] have "?p2 + ?s2 \<succ> ?p3 + ?s3" by simp
+        hence "?p2 + ?s2 \<succ> ?p3 + ?s3" unfolding add_commute[of ?p2] add_commute[of ?p3] .
         with sum2 sum3 show ?thesis by simp 
       next
         case True        
@@ -2215,5 +2215,36 @@ proof -
   qed
 qed
 end
+
+subsection {* Connection to ordered semirings *}
+
+definition mat_ordered_semiring :: "nat \<Rightarrow> nat \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ordered_semiring_scheme" where
+  "mat_ordered_semiring n sd gt b \<equiv> mat_ring n \<lparr>
+    ordered_semiring.geq = mat_ge,
+    gt = mat_gtI gt sd,
+    max = mat_max,
+    \<dots> = b\<rparr>"
+
+lemma mat_ordered_semiring: assumes "order_pair gt (d :: 'a :: ordered_semiring_1)" and sd_n: "sd \<le> n"
+  shows "ordered_semiring (mat_ordered_semiring n sd gt b :: ('a mat,'b) ordered_semiring_scheme)" (is "ordered_semiring ?R")
+proof -
+  interpret order_pair gt d by fact
+  interpret semiring ?R unfolding mat_ordered_semiring_def by (rule mat_semiring)
+  show ?thesis 
+    by (unfold_locales, unfold mat_ring_def mat_ordered_semiring_def ordered_semiring_record_simps,
+      auto intro: mat_max_comm mat_gt_compat[OF sd_n] mat_gt_compat2[OF sd_n] mat_ge_trans
+      mat_plus_left_mono mat_mult_left_mono mat_mult_right_mono mat_ge_refl mat_gt_imp_mat_ge
+      mat1_ge_mat0 mat_max_mono mat_max_ge mat_max_id)
+qed
+
+lemma (in one_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \<le> n" 
+  shows "ordered_semiring 
+    (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
+  by (rule mat_ordered_semiring[OF _ sd_n, of _ default], unfold_locales)
+
+lemma (in both_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \<le> n" 
+  shows "ordered_semiring 
+    (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
+  by (rule mat_ordered_semiring[OF _ sd_n, of _ default], unfold_locales)
 
 end

@@ -28,7 +28,7 @@ header {* Basic Operations on Matrices *}
 theory Matrix_Arith
 imports
   Utility
-  "~~/src/HOL/Algebra/Ring"
+  Ordered_Semiring
 begin
 
 text {*
@@ -1167,18 +1167,28 @@ declare vec0[simp del] mat0[simp del] vec0_plus[simp del] plus_vec0[simp del] pl
 
 subsection {* Connection to HOL-Algebra *}
 
-context monoid_add
-begin
-abbreviation mat_carrier :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat set"
-  where "mat_carrier nr nc \<equiv> Collect (mat nr nc)"
-end
-lemma (in monoid_add) mat_monoid: "monoid \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>"
-  by (unfold_locales, auto simp: mat_plus_assoc)
+definition mat_monoid :: "nat \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> (('a :: {plus,zero}) mat,'b) monoid_scheme" where
+  "mat_monoid nr nc b \<equiv> \<lparr> 
+    carrier = Collect (mat nr nc), 
+    mult = mat_plus, 
+    one = mat0 nr nc, 
+    \<dots> = b\<rparr>"
 
-lemma (in group_add) mat_group: "group \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>" (is "group ?R")
+definition mat_ring :: "nat \<Rightarrow> 'b \<Rightarrow> (('a :: {plus,zero,times,one}) mat,'b) ring_scheme" where
+  "mat_ring n b \<equiv> \<lparr> 
+    carrier = Collect (mat n n), 
+    mult = mat_mult n, 
+    one = mat1 n, 
+    zero = mat0 n n,
+    add = mat_plus,
+    \<dots> = b\<rparr>"
+
+lemma mat_monoid: "monoid (mat_monoid nr nc b :: (('a :: monoid_add) mat,'b)monoid_scheme)" 
+  by (unfold_locales, auto simp: mat_plus_assoc mat_monoid_def plus_mat0)
+
+lemma mat_group: "group (mat_monoid nr nc b :: (('a :: group_add) mat,'b)monoid_scheme)" (is "group ?G")
 proof -
-  interpret monoid ?R
-    by (rule mat_monoid)
+  interpret monoid ?G by (rule mat_monoid)
   {
     fix m :: "'a mat"
     assume wf: "mat nr nc m"
@@ -1193,50 +1203,57 @@ proof -
     qed (auto intro: wf)
   } note Units = this
   show ?thesis
-    by (unfold_locales, auto simp: Units_def Units)
+    by (unfold_locales, auto simp: mat_monoid_def Units_def Units)
 qed
 
-lemma (in comm_monoid_add) mat_comm_monoid: "comm_monoid \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>" (is "comm_monoid ?R")
+lemma mat_comm_monoid: 
+  "comm_monoid (mat_monoid nr nc b :: (('a :: comm_monoid_add) mat,'b)monoid_scheme)" (is "comm_monoid ?G")
 proof -
-  interpret monoid ?R
-    by (rule mat_monoid)
+  interpret monoid ?G by (rule mat_monoid)
   show ?thesis
-    by (unfold_locales, insert mat_plus_comm, auto)
+    by (unfold_locales, insert mat_plus_comm, auto simp: mat_monoid_def)
 qed
 
-lemma (in ab_group_add) mat_comm_group: 
-  shows "comm_group \<lparr> carrier = mat_carrier nr nc, mult = mat_plus, one = mat0 nr nc \<rparr>" (is "comm_group ?R")
+lemma mat_comm_group: 
+  "comm_group (mat_monoid nr nc b :: (('a :: ab_group_add) mat,'b)monoid_scheme)" (is "comm_group ?G")
 proof -
-  interpret group ?R by (rule mat_group)
-  interpret comm_monoid ?R by (rule mat_comm_monoid)
+  interpret group ?G by (rule mat_group)
+  interpret comm_monoid ?G by (rule mat_comm_monoid)
   show ?thesis ..
 qed
 
-lemma (in ring_1) mat_abelian_monoid: 
-  shows "abelian_monoid \<lparr> carrier =  mat_carrier n n, mult = mat_mult n, one = (mat1 n :: 'a mat), zero = mat0 n n, add = mat_plus \<rparr>"
-  (is "abelian_monoid \<lparr> carrier = ?c, mult = _, one = _, zero = ?z, add = ?a \<rparr>")
-proof -
-  interpret comm_group "\<lparr> carrier = ?c, mult = ?a, one = ?z \<rparr>" by (rule mat_comm_group)
-  show ?thesis unfolding abelian_monoid_def 
-    by (simp, unfold_locales) 
-qed
+lemma mat_abelian_monoid: "abelian_monoid (mat_ring n b :: (('a :: {comm_monoid_add,one,times}) mat,'b)ring_scheme)"
+  unfolding mat_ring_def
+  unfolding abelian_monoid_def using mat_comm_monoid[of n n, unfolded mat_monoid_def mat_ring_def]
+  by simp
 
-lemma (in ring_1) mat_abelian_group: 
-  shows "abelian_group \<lparr> carrier =  mat_carrier n n, mult = mat_mult n, one = (mat1 n :: 'a mat), zero = mat0 n n, add = mat_plus \<rparr>"
+lemma mat_abelian_group: "abelian_group (mat_ring n b :: (('a :: {ab_group_add,one,times}) mat,'b)ring_scheme)"
   (is "abelian_group ?R")
 proof -
   interpret abelian_monoid ?R by (rule mat_abelian_monoid)
-  show ?thesis  
-    by (unfold_locales, insert group.Units[OF mat_group, of n n], auto) 
+  show ?thesis
+  by (unfold_locales, rule group.Units, insert mat_group[of n n "()"],
+    simp add: mat_monoid_def mat_ring_def)
 qed
 
-lemma (in ring_1) mat_ring: 
-  shows "ring \<lparr> carrier =  mat_carrier n n, mult = mat_mult n, one = (mat1 n :: 'a mat), zero = mat0 n n, add = mat_plus \<rparr>"
+lemma mat_semiring: "semiring (mat_ring n b :: (('a :: semiring_1) mat,'b)ring_scheme)"
+  (is "semiring ?R")
+proof -
+  interpret abelian_monoid ?R by (rule mat_abelian_monoid)
+  show ?thesis 
+    by (unfold_locales, unfold mat_ring_def, insert 
+      mat_mult_assoc mat0_mult_left mat0_mult_right mat1_mult_left mat1_mult_right 
+      mat_mult_plus_distrib_left mat_mult_plus_distrib_right, auto)
+qed
+
+lemma mat_ring: "ring (mat_ring n b :: (('a :: ring_1) mat,'b)ring_scheme)"
   (is "ring ?R")
 proof -
   interpret abelian_group ?R by (rule mat_abelian_group)
   show ?thesis 
-    by (unfold_locales, insert mat_mult_assoc mat1_mult_left mat1_mult_right mat_mult_plus_distrib_left mat_mult_plus_distrib_right, auto)
+    by (unfold_locales, unfold mat_ring_def, insert 
+      mat_mult_assoc mat1_mult_left mat1_mult_right mat_mult_plus_distrib_left 
+      mat_mult_plus_distrib_right, auto)
 qed
 
 end
