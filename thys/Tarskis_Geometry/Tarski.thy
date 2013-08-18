@@ -48,15 +48,15 @@ subsection "Semimetric spaces satisfy the first three axioms"
 
 context semimetric
 begin
-  definition smC :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool" ("_ _ \<congruent>\<^bsub>sm\<^esub> _ _" [99,99,99,99] 50)
-    where [simp]: "a b \<congruent>\<^bsub>sm\<^esub> c d \<equiv> dist a b = dist c d"
+  definition smC :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool" ("_ _ \<congruent>\<^sub>s\<^sub>m _ _" [99,99,99,99] 50)
+    where [simp]: "a b \<congruent>\<^sub>s\<^sub>m c d \<equiv> dist a b = dist c d"
 end
 
 sublocale semimetric < tarski_first3 smC
 proof
-  from symm show "\<forall>a b. a b \<congruent>\<^bsub>sm\<^esub> b a" by simp
-  show "\<forall>a b p q r s. a b \<congruent>\<^bsub>sm\<^esub> p q \<and> a b \<congruent>\<^bsub>sm\<^esub> r s \<longrightarrow> p q \<congruent>\<^bsub>sm\<^esub> r s" by simp
-  show "\<forall>a b c. a b \<congruent>\<^bsub>sm\<^esub> c c \<longrightarrow> a = b" by simp
+  from symm show "\<forall>a b. a b \<congruent>\<^sub>s\<^sub>m b a" by simp
+  show "\<forall>a b p q r s. a b \<congruent>\<^sub>s\<^sub>m p q \<and> a b \<congruent>\<^sub>s\<^sub>m r s \<longrightarrow> p q \<congruent>\<^sub>s\<^sub>m r s" by simp
+  show "\<forall>a b c. a b \<congruent>\<^sub>s\<^sub>m c c \<longrightarrow> a = b" by simp
 qed
 
 subsection "Some consequences of the first three axioms"

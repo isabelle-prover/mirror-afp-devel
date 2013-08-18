@@ -2509,8 +2509,8 @@ definition
   "Z\<^sub>\<infinity> = {(z::ant). z \<noteq> -\<infinity> }" 
 
 definition
-  aug_minf :: "ant set"  ("Z\<^bsub>-\<infinity>\<^esub>") where
-  "Z\<^bsub>-\<infinity>\<^esub> = {(z::ant). z \<noteq> \<infinity> }"
+  aug_minf :: "ant set"  ("Z\<^sub>-\<^sub>\<infinity>") where
+  "Z\<^sub>-\<^sub>\<infinity> = {(z::ant). z \<noteq> \<infinity> }"
 
 lemma z_in_aug_inf:"ant z \<in> Z\<^sub>\<infinity>"
 apply (simp add:aug_inf_def)
@@ -2519,19 +2519,19 @@ done
 lemma Zero_in_aug_inf:"0 \<in> Z\<^sub>\<infinity>"
 by (simp only:Zero_ant_def, simp add: aug_inf_def)
 
-lemma z_in_aug_minf:"ant z \<in> Z\<^bsub>-\<infinity>\<^esub>"
+lemma z_in_aug_minf:"ant z \<in> Z\<^sub>-\<^sub>\<infinity>"
 by (simp add:aug_minf_def)
 
-lemma mem_aug_minf:"a \<in> Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> a = - \<infinity> \<or> (\<exists>z. a = ant z)" 
+lemma mem_aug_minf:"a \<in> Z\<^sub>-\<^sub>\<infinity> \<Longrightarrow> a = - \<infinity> \<or> (\<exists>z. a = ant z)" 
 by (cut_tac mem_ant[of a], simp add:aug_minf_def)
 
-lemma minus_an_in_aug_minf:" - an n \<in>  Z\<^bsub>-\<infinity>\<^esub>" 
+lemma minus_an_in_aug_minf:" - an n \<in>  Z\<^sub>-\<^sub>\<infinity>" 
 apply (simp add:an_def)
 apply (simp add:aminus)
 apply (simp add:z_in_aug_minf)
 done
 
-lemma Zero_in_aug_minf:"0 \<in> Z\<^bsub>-\<infinity>\<^esub>"
+lemma Zero_in_aug_minf:"0 \<in> Z\<^sub>-\<^sub>\<infinity>"
 by (simp add:Zero_ant_def aug_minf_def)
 
 lemma aadd_assoc_i: "\<lbrakk>x \<in> Z\<^sub>\<infinity>; y \<in> Z\<^sub>\<infinity>; z \<in> Z\<^sub>\<infinity>\<rbrakk> \<Longrightarrow> (x + y) + z = x + (y + z)"
@@ -2547,7 +2547,7 @@ apply ((erule disjE)+, (erule exE)+, simp,
 apply simp
 done
 
-lemma aadd_assoc_m: "\<lbrakk>x \<in> Z\<^bsub>-\<infinity>\<^esub>; y \<in> Z\<^bsub>-\<infinity>\<^esub>; z \<in> Z\<^bsub>-\<infinity>\<^esub>\<rbrakk> \<Longrightarrow> 
+lemma aadd_assoc_m: "\<lbrakk>x \<in> Z\<^sub>-\<^sub>\<infinity>; y \<in> Z\<^sub>-\<^sub>\<infinity>; z \<in> Z\<^sub>-\<^sub>\<infinity>\<rbrakk> \<Longrightarrow> 
                                  (x + y) + z = x + (y + z)"
 apply (cut_tac mem_ant[of "x"], 
        cut_tac mem_ant[of "y"], 
@@ -2798,7 +2798,7 @@ apply (cut_tac  mem_ant[of "x"], cut_tac  mem_ant[of "y"],
        simp)
 done
 
-lemma Zminf_pOp_closed:"\<lbrakk>x \<in> Z\<^bsub>-\<infinity>\<^esub>; y \<in> Z\<^bsub>-\<infinity>\<^esub>\<rbrakk> \<Longrightarrow> x + y \<in> Z\<^bsub>-\<infinity>\<^esub>"
+lemma Zminf_pOp_closed:"\<lbrakk>x \<in> Z\<^sub>-\<^sub>\<infinity>; y \<in> Z\<^sub>-\<^sub>\<infinity>\<rbrakk> \<Longrightarrow> x + y \<in> Z\<^sub>-\<^sub>\<infinity>"
 apply (cut_tac  mem_ant[of "x"], cut_tac  mem_ant[of "y"],
        simp add:aug_minf_def,
       (erule disjE)+, simp, erule exE, simp,
@@ -3627,7 +3627,7 @@ apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"], simp add:aug_inf_def,
         erule exE, simp add:amin_def, simp add:amin_def)
 done
 
-lemma amax_mem_m:"\<lbrakk>x \<in> Z\<^bsub>-\<infinity>\<^esub>; y \<in> Z\<^bsub>-\<infinity>\<^esub>\<rbrakk> \<Longrightarrow> amax x y \<in> Z\<^bsub>-\<infinity>\<^esub>"  
+lemma amax_mem_m:"\<lbrakk>x \<in> Z\<^sub>-\<^sub>\<infinity>; y \<in> Z\<^sub>-\<^sub>\<infinity>\<rbrakk> \<Longrightarrow> amax x y \<in> Z\<^sub>-\<^sub>\<infinity>"  
 apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"],
       simp add:aug_minf_def)
 apply ((erule disjE)+, simp add:amax_def,
@@ -3671,23 +3671,23 @@ lemma Amin_mem:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^sub>\<infinity> \<Long
 apply (simp add:Amin_memTr)
 done
 
-lemma Amax_memTr:"f \<in> {i. i \<le> n} \<rightarrow> Z\<^bsub>-\<infinity>\<^esub>  \<longrightarrow> Amax n f \<in>  Z\<^bsub>-\<infinity>\<^esub>" 
+lemma Amax_memTr:"f \<in> {i. i \<le> n} \<rightarrow> Z\<^sub>-\<^sub>\<infinity>  \<longrightarrow> Amax n f \<in>  Z\<^sub>-\<^sub>\<infinity>" 
 apply (induct_tac n,
        simp add:Pi_def)
 apply (rule impI,
-       frule_tac func_pre[of "f" _ "Z\<^bsub>-\<infinity>\<^esub>"],
+       frule_tac func_pre[of "f" _ "Z\<^sub>-\<^sub>\<infinity>"],
        simp, rule amax_mem_m, assumption+,
        simp add:Pi_def)
 done
 
-lemma Amax_mem:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> Amax n f \<in>  Z\<^bsub>-\<infinity>\<^esub>" 
+lemma Amax_mem:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^sub>-\<^sub>\<infinity> \<Longrightarrow> Amax n f \<in>  Z\<^sub>-\<^sub>\<infinity>" 
 apply (simp add:Amax_memTr)
 done
 
 lemma Amin_mem_mem:"\<forall>j\<le> n. f j \<in> Z\<^sub>\<infinity> \<Longrightarrow> Amin n f \<in> Z\<^sub>\<infinity>"
 by (rule Amin_mem, simp)
 
-lemma Amax_mem_mem:"\<forall>j \<le> n. f j \<in> Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> Amax n f \<in> Z\<^bsub>-\<infinity>\<^esub>"
+lemma Amax_mem_mem:"\<forall>j \<le> n. f j \<in> Z\<^sub>-\<^sub>\<infinity> \<Longrightarrow> Amax n f \<in> Z\<^sub>-\<^sub>\<infinity>"
 by (rule Amax_mem, simp)
 
 lemma Amin_leTr:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^sub>\<infinity> \<longrightarrow> (\<forall>j\<in>{i. i \<le> n}. Amin n f \<le> (f j))"
@@ -3709,7 +3709,7 @@ lemma Amin_le:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow>  Z\<^sub>\<infinity
 apply (simp add:Amin_leTr)
 done
 
-lemma Amax_geTr:"f \<in> {j. j \<le> n} \<rightarrow> Z\<^bsub>-\<infinity>\<^esub> \<longrightarrow> (\<forall>j\<in>{j. j \<le> n}. (f j) \<le> Amax n f)"
+lemma Amax_geTr:"f \<in> {j. j \<le> n} \<rightarrow> Z\<^sub>-\<^sub>\<infinity> \<longrightarrow> (\<forall>j\<in>{j. j \<le> n}. (f j) \<le> Amax n f)"
 apply (induct_tac n,
        rule impI, rule ballI,
        simp)
@@ -3723,7 +3723,7 @@ apply (cut_tac x = "Amax n f" and y = "f (Suc n)" in amax_ge_l,
        drule_tac x = j in spec, simp)
 done
 
-lemma Amax_ge:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> Z\<^bsub>-\<infinity>\<^esub>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
+lemma Amax_ge:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> Z\<^sub>-\<^sub>\<infinity>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
                                                  (f j) \<le> (Amax n f)"
 apply (simp add:Amax_geTr)
 done
@@ -3732,7 +3732,7 @@ lemma Amin_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^sub>\<infinity>
                                            (Amin n f) \<le> (f j)"
 by (rule Amin_le, simp, simp)
 
-lemma Amax_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^bsub>-\<infinity>\<^esub>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
+lemma Amax_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^sub>-\<^sub>\<infinity>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
                                            (f j) \<le> (Amax n f)"
 by (rule Amax_ge, simp, simp)
 
@@ -3964,7 +3964,7 @@ apply (simp add:diff_ant_def)
 apply (rule aadd_le_mono[of "a" "a'" "-b"], assumption+)
 done
 
-lemma aplus_le_aminus:"\<lbrakk> a \<in>  Z\<^bsub>-\<infinity>\<^esub>; b \<in>  Z\<^bsub>-\<infinity>\<^esub>; c \<in>  Z\<^bsub>-\<infinity>\<^esub>; -b \<in>  Z\<^bsub>-\<infinity>\<^esub>\<rbrakk> \<Longrightarrow> 
+lemma aplus_le_aminus:"\<lbrakk> a \<in>  Z\<^sub>-\<^sub>\<infinity>; b \<in>  Z\<^sub>-\<^sub>\<infinity>; c \<in>  Z\<^sub>-\<^sub>\<infinity>; -b \<in>  Z\<^sub>-\<^sub>\<infinity>\<rbrakk> \<Longrightarrow> 
                  ((a + b) \<le> (c::ant)) = (a \<le> c - b)"
 apply (rule iffI)
 apply (frule aadd_le_mono[of "a + b" "c" "-b"])

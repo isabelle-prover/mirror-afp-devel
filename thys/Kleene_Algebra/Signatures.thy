@@ -34,7 +34,7 @@ class star_op =
   fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [101] 100)
 
 class omega_op =
-  fixes omega :: "'a \<Rightarrow> 'a" ("_\<^bsup>\<omega>\<^esup>" [101] 100)
+  fixes omega :: "'a \<Rightarrow> 'a" ("_\<^sup>\<omega>" [101] 100)
 
 class residual_r_op =
   fixes residual_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60)

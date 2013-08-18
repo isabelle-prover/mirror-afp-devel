@@ -4801,7 +4801,7 @@ apply (cut_tac n = "fst c" in le_refl, blast)
 done 
 
 lemma (in PolynRg) deg_in_aug_minf:"p \<in> carrier R \<Longrightarrow>
-                                   deg R S X p \<in> Z\<^bsub>-\<infinity>\<^esub>"
+                                   deg R S X p \<in> Z\<^sub>-\<^sub>\<infinity>"
 apply (simp add:aug_minf_def deg_def an_def)
 done
 
