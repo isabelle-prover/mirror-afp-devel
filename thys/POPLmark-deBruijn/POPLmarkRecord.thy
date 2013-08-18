@@ -107,27 +107,27 @@ where
 | "\<parallel>(l, p)\<parallel>\<^sub>f = \<parallel>p\<parallel>\<^sub>p"
 
 primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^sub>\<tau>")
-  and liftrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT" ("\<up>\<^bsub>r\<tau>\<^esub>")
-  and liftfT :: "nat \<Rightarrow> nat \<Rightarrow> fldT \<Rightarrow> fldT" ("\<up>\<^bsub>f\<tau>\<^esub>")
+  and liftrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT" ("\<up>\<^sub>r\<^sub>\<tau>")
+  and liftfT :: "nat \<Rightarrow> nat \<Rightarrow> fldT \<Rightarrow> fldT" ("\<up>\<^sub>f\<^sub>\<tau>")
 where
   "\<up>\<^sub>\<tau> n k (TVar i) = (if i < k then TVar i else TVar (i + n))"
 | "\<up>\<^sub>\<tau> n k Top = Top"
 | "\<up>\<^sub>\<tau> n k (T \<rightarrow> U) = \<up>\<^sub>\<tau> n k T \<rightarrow> \<up>\<^sub>\<tau> n k U"
 | "\<up>\<^sub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^sub>\<tau> n k T. \<up>\<^sub>\<tau> n (k + 1) U)"
-| "\<up>\<^sub>\<tau> n k (RcdT fs) = RcdT (\<up>\<^bsub>r\<tau>\<^esub> n k fs)"
-| "\<up>\<^bsub>r\<tau>\<^esub> n k [] = []"
-| "\<up>\<^bsub>r\<tau>\<^esub> n k (f \<Colon> fs) = \<up>\<^bsub>f\<tau>\<^esub> n k f \<Colon> \<up>\<^bsub>r\<tau>\<^esub> n k fs"
-| "\<up>\<^bsub>f\<tau>\<^esub> n k (l, T) = (l, \<up>\<^sub>\<tau> n k T)"
+| "\<up>\<^sub>\<tau> n k (RcdT fs) = RcdT (\<up>\<^sub>r\<^sub>\<tau> n k fs)"
+| "\<up>\<^sub>r\<^sub>\<tau> n k [] = []"
+| "\<up>\<^sub>r\<^sub>\<tau> n k (f \<Colon> fs) = \<up>\<^sub>f\<^sub>\<tau> n k f \<Colon> \<up>\<^sub>r\<^sub>\<tau> n k fs"
+| "\<up>\<^sub>f\<^sub>\<tau> n k (l, T) = (l, \<up>\<^sub>\<tau> n k T)"
 
 primrec liftp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat" ("\<up>\<^sub>p")
-  and liftrp :: "nat \<Rightarrow> nat \<Rightarrow> rpat \<Rightarrow> rpat" ("\<up>\<^bsub>rp\<^esub>")
-  and liftfp :: "nat \<Rightarrow> nat \<Rightarrow> fpat \<Rightarrow> fpat" ("\<up>\<^bsub>fp\<^esub>")
+  and liftrp :: "nat \<Rightarrow> nat \<Rightarrow> rpat \<Rightarrow> rpat" ("\<up>\<^sub>r\<^sub>p")
+  and liftfp :: "nat \<Rightarrow> nat \<Rightarrow> fpat \<Rightarrow> fpat" ("\<up>\<^sub>f\<^sub>p")
 where
   "\<up>\<^sub>p n k (PVar T) = PVar (\<up>\<^sub>\<tau> n k T)"
-| "\<up>\<^sub>p n k (PRcd fs) = PRcd (\<up>\<^bsub>rp\<^esub> n k fs)"
-| "\<up>\<^bsub>rp\<^esub> n k [] = []"
-| "\<up>\<^bsub>rp\<^esub> n k (f \<Colon> fs) = \<up>\<^bsub>fp\<^esub> n k f \<Colon> \<up>\<^bsub>rp\<^esub> n k fs"
-| "\<up>\<^bsub>fp\<^esub> n k (l, p) = (l, \<up>\<^sub>p n k p)"
+| "\<up>\<^sub>p n k (PRcd fs) = PRcd (\<up>\<^sub>r\<^sub>p n k fs)"
+| "\<up>\<^sub>r\<^sub>p n k [] = []"
+| "\<up>\<^sub>r\<^sub>p n k (f \<Colon> fs) = \<up>\<^sub>f\<^sub>p n k f \<Colon> \<up>\<^sub>r\<^sub>p n k fs"
+| "\<up>\<^sub>f\<^sub>p n k (l, p) = (l, \<up>\<^sub>p n k p)"
 
 primrec lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
   and liftr :: "nat \<Rightarrow> nat \<Rightarrow> rcd \<Rightarrow> rcd" ("\<up>\<^sub>r")
@@ -146,28 +146,28 @@ where
 | "\<up>\<^sub>f n k (l, t) = (l, \<up> n k t)"
 
 primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>\<tau>" [300, 0, 0] 300)
-  and substrTT :: "rcdT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcdT"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^bsub>r\<tau>\<^esub>" [300, 0, 0] 300)
-  and substfTT :: "fldT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fldT"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^bsub>f\<tau>\<^esub>" [300, 0, 0] 300)
+  and substrTT :: "rcdT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcdT"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<^sub>\<tau>" [300, 0, 0] 300)
+  and substfTT :: "fldT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fldT"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<^sub>\<tau>" [300, 0, 0] 300)
 where
   "(TVar i)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> =
      (if k < i then TVar (i - 1) else if i = k then \<up>\<^sub>\<tau> k 0 S else TVar i)"
 | "Top[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = Top"
 | "(T \<rightarrow> U)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> \<rightarrow> U[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>"
 | "(\<forall><:T. U)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = (\<forall><:T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>. U[k+1 \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
-| "(RcdT fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = RcdT (fs[k \<mapsto>\<^sub>\<tau> S]\<^bsub>r\<tau>\<^esub>)"
-| "[][k \<mapsto>\<^sub>\<tau> S]\<^bsub>r\<tau>\<^esub> = []"
-| "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^bsub>r\<tau>\<^esub> = f[k \<mapsto>\<^sub>\<tau> S]\<^bsub>f\<tau>\<^esub> \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^bsub>r\<tau>\<^esub>"
-| "(l, T)[k \<mapsto>\<^sub>\<tau> S]\<^bsub>f\<tau>\<^esub> = (l, T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
+| "(RcdT fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> = RcdT (fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>\<tau>)"
+| "[][k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>\<tau> = []"
+| "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>\<tau> = f[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>\<tau> \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>\<tau>"
+| "(l, T)[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>\<tau> = (l, T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
 
 primrec substpT :: "pat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> pat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>p" [300, 0, 0] 300)
-  and substrpT :: "rpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rpat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^bsub>rp\<^esub>" [300, 0, 0] 300)
-  and substfpT :: "fpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fpat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^bsub>fp\<^esub>" [300, 0, 0] 300)
+  and substrpT :: "rpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rpat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<^sub>p" [300, 0, 0] 300)
+  and substfpT :: "fpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fpat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<^sub>p" [300, 0, 0] 300)
 where
   "(PVar T)[k \<mapsto>\<^sub>\<tau> S]\<^sub>p = PVar (T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
-| "(PRcd fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>p = PRcd (fs[k \<mapsto>\<^sub>\<tau> S]\<^bsub>rp\<^esub>)"
-| "[][k \<mapsto>\<^sub>\<tau> S]\<^bsub>rp\<^esub> = []"
-| "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^bsub>rp\<^esub> = f[k \<mapsto>\<^sub>\<tau> S]\<^bsub>fp\<^esub> \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^bsub>rp\<^esub>"
-| "(l, p)[k \<mapsto>\<^sub>\<tau> S]\<^bsub>fp\<^esub> = (l, p[k \<mapsto>\<^sub>\<tau> S]\<^sub>p)"
+| "(PRcd fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>p = PRcd (fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p)"
+| "[][k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p = []"
+| "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p = f[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>p \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p"
+| "(l, p)[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>p = (l, p[k \<mapsto>\<^sub>\<tau> S]\<^sub>p)"
 
 primrec decp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat"  ("\<down>\<^sub>p")
 where
@@ -258,10 +258,10 @@ where
   "\<down>\<^sub>e 0 k \<Gamma> = \<Gamma>"
 | "\<down>\<^sub>e (Suc n) k \<Gamma> = \<down>\<^sub>e n k (\<Gamma>[k \<mapsto>\<^sub>\<tau> Top]\<^sub>e)"
 
-primrec decrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT"  ("\<down>\<^bsub>r\<tau>\<^esub>")
+primrec decrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT"  ("\<down>\<^sub>r\<^sub>\<tau>")
 where
-  "\<down>\<^bsub>r\<tau>\<^esub> 0 k fTs = fTs"
-| "\<down>\<^bsub>r\<tau>\<^esub> (Suc n) k fTs = \<down>\<^bsub>r\<tau>\<^esub> n k (fTs[k \<mapsto>\<^sub>\<tau> Top]\<^bsub>r\<tau>\<^esub>)"
+  "\<down>\<^sub>r\<^sub>\<tau> 0 k fTs = fTs"
+| "\<down>\<^sub>r\<^sub>\<tau> (Suc n) k fTs = \<down>\<^sub>r\<^sub>\<tau> n k (fTs[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>)"
 
 text {*
 The lemmas about substitution and lifting are very similar to those needed
@@ -298,14 +298,14 @@ lemma substE_nth [simp]:
 
 lemma liftT_liftT [simp]:
   "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> (m + n) i T"
-  "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^bsub>r\<tau>\<^esub> n j (\<up>\<^bsub>r\<tau>\<^esub> m i rT) = \<up>\<^bsub>r\<tau>\<^esub> (m + n) i rT"
-  "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^bsub>f\<tau>\<^esub> n j (\<up>\<^bsub>f\<tau>\<^esub> m i fT) = \<up>\<^bsub>f\<tau>\<^esub> (m + n) i fT"
+  "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n j (\<up>\<^sub>r\<^sub>\<tau> m i rT) = \<up>\<^sub>r\<^sub>\<tau> (m + n) i rT"
+  "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n j (\<up>\<^sub>f\<^sub>\<tau> m i fT) = \<up>\<^sub>f\<^sub>\<tau> (m + n) i fT"
   by (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n) simp_all
 
 lemma liftT_liftT' [simp]:
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> m i (\<up>\<^sub>\<tau> n (j - m) T)"
-  "i + m \<le> j \<Longrightarrow> \<up>\<^bsub>r\<tau>\<^esub> n j (\<up>\<^bsub>r\<tau>\<^esub> m i rT) = \<up>\<^bsub>r\<tau>\<^esub> m i (\<up>\<^bsub>r\<tau>\<^esub> n (j - m) rT)"
-  "i + m \<le> j \<Longrightarrow> \<up>\<^bsub>f\<tau>\<^esub> n j (\<up>\<^bsub>f\<tau>\<^esub> m i fT) = \<up>\<^bsub>f\<tau>\<^esub> m i (\<up>\<^bsub>f\<tau>\<^esub> n (j - m) fT)"
+  "i + m \<le> j \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n j (\<up>\<^sub>r\<^sub>\<tau> m i rT) = \<up>\<^sub>r\<^sub>\<tau> m i (\<up>\<^sub>r\<^sub>\<tau> n (j - m) rT)"
+  "i + m \<le> j \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n j (\<up>\<^sub>f\<^sub>\<tau> m i fT) = \<up>\<^sub>f\<^sub>\<tau> m i (\<up>\<^sub>f\<^sub>\<tau> n (j - m) fT)"
   apply (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n)
   apply simp_all
   apply arith
@@ -316,22 +316,22 @@ lemma liftT_liftT' [simp]:
 
 lemma lift_size [simp]:
   "size (\<up>\<^sub>\<tau> n k T) = size T"
-  "list_size (prod_size (list_size char_size) size) (\<up>\<^bsub>r\<tau>\<^esub> n k rT) =
+  "list_size (prod_size (list_size char_size) size) (\<up>\<^sub>r\<^sub>\<tau> n k rT) =
      list_size (prod_size (list_size char_size) size) rT"
-  "prod_size (list_size char_size) size (\<up>\<^bsub>f\<tau>\<^esub> n k fT) =
+  "prod_size (list_size char_size) size (\<up>\<^sub>f\<^sub>\<tau> n k fT) =
      prod_size (list_size char_size) size fT"
   by (induct T and rT and fT arbitrary: k and k and k) simp_all
 
 lemma liftT0 [simp]:
   "\<up>\<^sub>\<tau> 0 i T = T"
-  "\<up>\<^bsub>r\<tau>\<^esub> 0 i rT = rT"
-  "\<up>\<^bsub>f\<tau>\<^esub> 0 i fT = fT"
+  "\<up>\<^sub>r\<^sub>\<tau> 0 i rT = rT"
+  "\<up>\<^sub>f\<^sub>\<tau> 0 i fT = fT"
   by (induct T and rT and fT arbitrary: i and i and i) simp_all
 
 lemma liftp0 [simp]:
   "\<up>\<^sub>p 0 i p = p"
-  "\<up>\<^bsub>rp\<^esub> 0 i fs = fs"
-  "\<up>\<^bsub>fp\<^esub> 0 i f = f"
+  "\<up>\<^sub>r\<^sub>p 0 i fs = fs"
+  "\<up>\<^sub>f\<^sub>p 0 i f = f"
   by (induct p and fs and f arbitrary: i and i and i) simp_all
 
 lemma lift0 [simp]:
@@ -342,14 +342,14 @@ lemma lift0 [simp]:
 
 theorem substT_liftT [simp]:
   "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>\<tau> n k T)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> (n - 1) k T"
-  "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^bsub>r\<tau>\<^esub> n k rT)[k' \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub> = \<up>\<^bsub>r\<tau>\<^esub> (n - 1) k rT"
-  "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^bsub>f\<tau>\<^esub> n k fT)[k' \<mapsto>\<^sub>\<tau> U]\<^bsub>f\<tau>\<^esub> = \<up>\<^bsub>f\<tau>\<^esub> (n - 1) k fT"
+  "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>r\<^sub>\<tau> n k rT)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> = \<up>\<^sub>r\<^sub>\<tau> (n - 1) k rT"
+  "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>f\<^sub>\<tau> n k fT)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau> = \<up>\<^sub>f\<^sub>\<tau> (n - 1) k fT"
   by (induct T and rT and fT arbitrary: k k' and k k' and k k') simp_all
 
 theorem liftT_substT [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k (T[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n k T[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
-  "k \<le> k' \<Longrightarrow> \<up>\<^bsub>r\<tau>\<^esub> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>) = \<up>\<^bsub>r\<tau>\<^esub> n k rT[k' + n \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>"
-  "k \<le> k' \<Longrightarrow> \<up>\<^bsub>f\<tau>\<^esub> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^bsub>f\<tau>\<^esub>) = \<up>\<^bsub>f\<tau>\<^esub> n k fT[k' + n \<mapsto>\<^sub>\<tau> U]\<^bsub>f\<tau>\<^esub>"
+  "k \<le> k' \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n k rT[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>"
+  "k \<le> k' \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n k fT[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>"
   apply (induct T and rT and fT arbitrary: k k' and k k' and k k')
   apply simp_all
   done
@@ -358,9 +358,9 @@ theorem liftT_substT' [simp]:
   "k' < k \<Longrightarrow>
      \<up>\<^sub>\<tau> n k (T[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n (k + 1) T[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>\<tau>"
   "k' < k \<Longrightarrow>
-     \<up>\<^bsub>r\<tau>\<^esub> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>) = \<up>\<^bsub>r\<tau>\<^esub> n (k + 1) rT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^bsub>r\<tau>\<^esub>"
+     \<up>\<^sub>r\<^sub>\<tau> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n (k + 1) rT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>r\<^sub>\<tau>"
   "k' < k \<Longrightarrow>
-     \<up>\<^bsub>f\<tau>\<^esub> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^bsub>f\<tau>\<^esub>) = \<up>\<^bsub>f\<tau>\<^esub> n (k + 1) fT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^bsub>f\<tau>\<^esub>"
+     \<up>\<^sub>f\<^sub>\<tau> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n (k + 1) fT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>f\<^sub>\<tau>"
   apply (induct T and rT and fT arbitrary: k k' and k k' and k k')
   apply simp_all
   apply arith
@@ -368,8 +368,8 @@ theorem liftT_substT' [simp]:
 
 lemma liftT_substT_Top [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k' (T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n (Suc k') T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
-  "k \<le> k' \<Longrightarrow> \<up>\<^bsub>r\<tau>\<^esub> n k' (rT[k \<mapsto>\<^sub>\<tau> Top]\<^bsub>r\<tau>\<^esub>) = \<up>\<^bsub>r\<tau>\<^esub> n (Suc k') rT[k \<mapsto>\<^sub>\<tau> Top]\<^bsub>r\<tau>\<^esub>"
-  "k \<le> k' \<Longrightarrow> \<up>\<^bsub>f\<tau>\<^esub> n k' (fT[k \<mapsto>\<^sub>\<tau> Top]\<^bsub>f\<tau>\<^esub>) = \<up>\<^bsub>f\<tau>\<^esub> n (Suc k') fT[k \<mapsto>\<^sub>\<tau> Top]\<^bsub>f\<tau>\<^esub>"
+  "k \<le> k' \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k' (rT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n (Suc k') rT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>"
+  "k \<le> k' \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n k' (fT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n (Suc k') fT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>f\<^sub>\<tau>"
   apply (induct T and rT and fT arbitrary: k k' and k k' and k k')
   apply simp_all
   apply arith
@@ -389,8 +389,8 @@ lemma liftT_decT [simp]:
 
 lemma liftT_substT_strange:
   "\<up>\<^sub>\<tau> n k T[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> n (Suc k) T[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>\<tau>"
-  "\<up>\<^bsub>r\<tau>\<^esub> n k rT[n + k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub> = \<up>\<^bsub>r\<tau>\<^esub> n (Suc k) rT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^bsub>r\<tau>\<^esub>"
-  "\<up>\<^bsub>f\<tau>\<^esub> n k fT[n + k \<mapsto>\<^sub>\<tau> U]\<^bsub>f\<tau>\<^esub> = \<up>\<^bsub>f\<tau>\<^esub> n (Suc k) fT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^bsub>f\<tau>\<^esub>"
+  "\<up>\<^sub>r\<^sub>\<tau> n k rT[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> = \<up>\<^sub>r\<^sub>\<tau> n (Suc k) rT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>r\<^sub>\<tau>"
+  "\<up>\<^sub>f\<^sub>\<tau> n k fT[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau> = \<up>\<^sub>f\<^sub>\<tau> n (Suc k) fT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>f\<^sub>\<tau>"
   apply (induct T and rT and fT arbitrary: n k and n k and n k)
   apply simp_all
   apply (thin_tac "\<And>x. PROP ?P x")
@@ -401,14 +401,14 @@ lemma liftT_substT_strange:
 
 lemma liftp_liftp [simp]:
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>p n' k' (\<up>\<^sub>p n k p) = \<up>\<^sub>p (n + n') k p"
-  "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^bsub>rp\<^esub> n' k' (\<up>\<^bsub>rp\<^esub> n k rp) = \<up>\<^bsub>rp\<^esub> (n + n') k rp"
-  "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^bsub>fp\<^esub> n' k' (\<up>\<^bsub>fp\<^esub> n k fp) = \<up>\<^bsub>fp\<^esub> (n + n') k fp"
+  "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>r\<^sub>p n' k' (\<up>\<^sub>r\<^sub>p n k rp) = \<up>\<^sub>r\<^sub>p (n + n') k rp"
+  "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>f\<^sub>p n' k' (\<up>\<^sub>f\<^sub>p n k fp) = \<up>\<^sub>f\<^sub>p (n + n') k fp"
   by (induct p and rp and fp arbitrary: k k' and k k' and k k') simp_all
 
 lemma liftp_psize[simp]:
   "\<parallel>\<up>\<^sub>p n k p\<parallel>\<^sub>p = \<parallel>p\<parallel>\<^sub>p"
-  "\<parallel>\<up>\<^bsub>rp\<^esub> n k fs\<parallel>\<^sub>r = \<parallel>fs\<parallel>\<^sub>r"
-  "\<parallel>\<up>\<^bsub>fp\<^esub> n k f\<parallel>\<^sub>f = \<parallel>f\<parallel>\<^sub>f"
+  "\<parallel>\<up>\<^sub>r\<^sub>p n k fs\<parallel>\<^sub>r = \<parallel>fs\<parallel>\<^sub>r"
+  "\<parallel>\<up>\<^sub>f\<^sub>p n k f\<parallel>\<^sub>f = \<parallel>f\<parallel>\<^sub>f"
   by (induct p and fs and f) simp_all
 
 lemma lift_lift [simp]:
@@ -437,9 +437,9 @@ lemma substT_substT:
   "i \<le> j \<Longrightarrow>
      T[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>\<tau> = T[i \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>"
   "i \<le> j \<Longrightarrow>
-     rT[Suc j \<mapsto>\<^sub>\<tau> V]\<^bsub>r\<tau>\<^esub>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^bsub>r\<tau>\<^esub> = rT[i \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>[j \<mapsto>\<^sub>\<tau> V]\<^bsub>r\<tau>\<^esub>"
+     rT[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>r\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>r\<^sub>\<tau> = rT[i \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>r\<^sub>\<tau>"
   "i \<le> j \<Longrightarrow>
-     fT[Suc j \<mapsto>\<^sub>\<tau> V]\<^bsub>f\<tau>\<^esub>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^bsub>f\<tau>\<^esub> = fT[i \<mapsto>\<^sub>\<tau> U]\<^bsub>f\<tau>\<^esub>[j \<mapsto>\<^sub>\<tau> V]\<^bsub>f\<tau>\<^esub>"
+     fT[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>f\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>f\<^sub>\<tau> = fT[i \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>f\<^sub>\<tau>"
   apply (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V)
   apply (simp_all add: diff_Suc split add: nat.split)
   apply (thin_tac "\<And>x. PROP ?P x")
@@ -521,52 +521,52 @@ lemma decE_decE [simp]: "\<down>\<^sub>e n k (\<down>\<^sub>e n' (k + n) \<Gamma
 lemma decE_length [simp]: "\<parallel>\<down>\<^sub>e n k \<Gamma>\<parallel> = \<parallel>\<Gamma>\<parallel>"
   by (induct \<Gamma>) simp_all
 
-lemma liftrT_assoc_None [simp]: "(\<up>\<^bsub>r\<tau>\<^esub> n k fs\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>l\<rangle>\<^sub>? = \<bottom>)"
+lemma liftrT_assoc_None [simp]: "(\<up>\<^sub>r\<^sub>\<tau> n k fs\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>l\<rangle>\<^sub>? = \<bottom>)"
   by (induct fs rule: list.induct) auto
 
-lemma liftrT_assoc_Some: "fs\<langle>l\<rangle>\<^sub>? = \<lfloor>T\<rfloor> \<Longrightarrow> \<up>\<^bsub>r\<tau>\<^esub> n k fs\<langle>l\<rangle>\<^sub>? = \<lfloor>\<up>\<^sub>\<tau> n k T\<rfloor>"
+lemma liftrT_assoc_Some: "fs\<langle>l\<rangle>\<^sub>? = \<lfloor>T\<rfloor> \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k fs\<langle>l\<rangle>\<^sub>? = \<lfloor>\<up>\<^sub>\<tau> n k T\<rfloor>"
   by (induct fs rule: list.induct) auto
 
-lemma liftrp_assoc_None [simp]: "(\<up>\<^bsub>rp\<^esub> n k fps\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fps\<langle>l\<rangle>\<^sub>? = \<bottom>)"
+lemma liftrp_assoc_None [simp]: "(\<up>\<^sub>r\<^sub>p n k fps\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fps\<langle>l\<rangle>\<^sub>? = \<bottom>)"
   by (induct fps rule: list.induct) auto
 
 lemma liftr_assoc_None [simp]: "(\<up>\<^sub>r n k fs\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>l\<rangle>\<^sub>? = \<bottom>)"
   by (induct fs rule: list.induct) auto
 
-lemma unique_liftrT [simp]: "unique (\<up>\<^bsub>r\<tau>\<^esub> n k fs) = unique fs"
+lemma unique_liftrT [simp]: "unique (\<up>\<^sub>r\<^sub>\<tau> n k fs) = unique fs"
   by (induct fs rule: list.induct) auto
 
-lemma substrTT_assoc_None [simp]: "(fs[k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>\<langle>a\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>a\<rangle>\<^sub>? = \<bottom>)"
+lemma substrTT_assoc_None [simp]: "(fs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>\<langle>a\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>a\<rangle>\<^sub>? = \<bottom>)"
   by (induct fs rule: list.induct) auto
 
 lemma substrTT_assoc_Some [simp]:
-  "fs\<langle>a\<rangle>\<^sub>? = \<lfloor>T\<rfloor> \<Longrightarrow> fs[k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>\<langle>a\<rangle>\<^sub>? = \<lfloor>T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>\<rfloor>"
+  "fs\<langle>a\<rangle>\<^sub>? = \<lfloor>T\<rfloor> \<Longrightarrow> fs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>\<langle>a\<rangle>\<^sub>? = \<lfloor>T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>\<rfloor>"
   by (induct fs rule: list.induct) auto
 
 lemma substrT_assoc_None [simp]: "(fs[k \<mapsto>\<^sub>\<tau> P]\<^sub>r\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>l\<rangle>\<^sub>? = \<bottom>)"
   by (induct fs rule: list.induct) auto
 
-lemma substrp_assoc_None [simp]: "(fps[k \<mapsto>\<^sub>\<tau> U]\<^bsub>rp\<^esub>\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fps\<langle>l\<rangle>\<^sub>? = \<bottom>)"
+lemma substrp_assoc_None [simp]: "(fps[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>p\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fps\<langle>l\<rangle>\<^sub>? = \<bottom>)"
   by (induct fps rule: list.induct) auto
 
 lemma substr_assoc_None [simp]: "(fs[k \<mapsto> u]\<^sub>r\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fs\<langle>l\<rangle>\<^sub>? = \<bottom>)"
   by (induct fs rule: list.induct) auto
 
-lemma unique_substrT [simp]: "unique (fs[k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>) = unique fs"
+lemma unique_substrT [simp]: "unique (fs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = unique fs"
   by (induct fs rule: list.induct) auto
 
-lemma liftrT_set: "(a, T) \<in> set fs \<Longrightarrow> (a, \<up>\<^sub>\<tau> n k T) \<in> set (\<up>\<^bsub>r\<tau>\<^esub> n k fs)"
+lemma liftrT_set: "(a, T) \<in> set fs \<Longrightarrow> (a, \<up>\<^sub>\<tau> n k T) \<in> set (\<up>\<^sub>r\<^sub>\<tau> n k fs)"
   by (induct fs rule: list.induct) auto
 
 lemma liftrT_setD:
-  "(a, T) \<in> set (\<up>\<^bsub>r\<tau>\<^esub> n k fs) \<Longrightarrow> \<exists>T'. (a, T') \<in> set fs \<and> T = \<up>\<^sub>\<tau> n k T'"
+  "(a, T) \<in> set (\<up>\<^sub>r\<^sub>\<tau> n k fs) \<Longrightarrow> \<exists>T'. (a, T') \<in> set fs \<and> T = \<up>\<^sub>\<tau> n k T'"
   by (induct fs rule: list.induct) auto
 
-lemma substrT_set: "(a, T) \<in> set fs \<Longrightarrow> (a, T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) \<in> set (fs[k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>)"
+lemma substrT_set: "(a, T) \<in> set fs \<Longrightarrow> (a, T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) \<in> set (fs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>)"
   by (induct fs rule: list.induct) auto
 
 lemma substrT_setD:
-  "(a, T) \<in> set (fs[k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub>) \<Longrightarrow> \<exists>T'. (a, T') \<in> set fs \<and> T = T'[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
+  "(a, T) \<in> set (fs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) \<Longrightarrow> \<exists>T'. (a, T') \<in> set fs \<and> T = T'[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   by (induct fs rule: list.induct) auto
 
 
@@ -580,36 +580,36 @@ all labels @{term l} in @{term fs} are {\it unique}.
 *}
 
 inductive
-  well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^bsub>wf\<^esub> _" [50, 50] 50)
+  well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f _" [50, 50] 50)
 where
-  wf_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i"
-| wf_Top: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> Top"
-| wf_arrow: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<rightarrow> U"
-| wf_all: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> (\<forall><:T. U)"
-| wf_RcdT: "unique fs \<Longrightarrow> \<forall>(l, T)\<in>set fs. \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs"
+  wf_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i"
+| wf_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f Top"
+| wf_arrow: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<rightarrow> U"
+| wf_all: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f (\<forall><:T. U)"
+| wf_RcdT: "unique fs \<Longrightarrow> \<forall>(l, T)\<in>set fs. \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs"
 
 inductive
-  well_formedE :: "env \<Rightarrow> bool"  ("_ \<turnstile>\<^bsub>wf\<^esub>" [50] 50)
-  and well_formedB :: "env \<Rightarrow> binding \<Rightarrow> bool"  ("_ \<turnstile>\<^bsub>wfB\<^esub> _" [50, 50] 50)
+  well_formedE :: "env \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f" [50] 50)
+  and well_formedB :: "env \<Rightarrow> binding \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f\<^sub>B _" [50, 50] 50)
 where
-  "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<equiv> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> type_ofB B"
-| wf_Nil: "[] \<turnstile>\<^bsub>wf\<^esub>"
-| wf_Cons: "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<equiv> \<Gamma> \<turnstile>\<^sub>w\<^sub>f type_ofB B"
+| wf_Nil: "[] \<turnstile>\<^sub>w\<^sub>f"
+| wf_Cons: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
 
 inductive_cases well_formed_cases:
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> Top"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<rightarrow> U"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> (\<forall><:T. U)"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> (RcdT fTs)"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f Top"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<rightarrow> U"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f (\<forall><:T. U)"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f (RcdT fTs)"
 
 inductive_cases well_formedE_cases:
-  "B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
 
-lemma wf_TVarB: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wf_TVarB: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   by (rule wf_Cons) simp_all
 
-lemma wf_VarB: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> VarB T \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wf_VarB: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> VarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   by (rule wf_Cons) simp_all
 
 lemma map_is_TVarb:
@@ -623,16 +623,16 @@ lemma map_is_TVarb:
   done
 
 lemma wf_equallength:
-  assumes H: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
-  shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^bsub>wf\<^esub> T" using H
+  assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
+  shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^sub>w\<^sub>f T" using H
   apply (induct arbitrary: \<Gamma>')
   apply (auto intro: well_formed.intros dest: map_is_TVarb)+
   apply (fastforce intro: well_formed.intros)
   done
 
 lemma wfE_replace:
-  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B' \<Longrightarrow> is_TVarB B' = is_TVarB B \<Longrightarrow>
-     \<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B' \<Longrightarrow> is_TVarB B' = is_TVarB B \<Longrightarrow>
+     \<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   apply (induct \<Delta>)
   apply simp
   apply (erule wf_Cons)
@@ -654,8 +654,8 @@ lemma wfE_replace:
   done
 
 lemma wf_weaken:
-  assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
-  shows "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
+  assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
+  shows "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
   using H
   apply (induct "\<Delta> @ \<Gamma>" T arbitrary: \<Delta>)
   apply simp_all
@@ -686,14 +686,14 @@ lemma wf_weaken:
   apply simp+
   done
 
-lemma wf_weaken': "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+lemma wf_weaken': "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp_all
   apply (drule_tac B=a in wf_weaken [of "[]", simplified])
   apply simp
   done
 
-lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   apply (induct \<Delta>)
   apply simp
   apply (rule wf_Cons)
@@ -713,8 +713,8 @@ lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrigh
   done
 
 lemma wf_liftB:
-  assumes H: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
-  shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc i) 0 T"
+  assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+  shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc i) 0 T"
   using H
   apply (induct arbitrary: i)
   apply simp
@@ -728,11 +728,11 @@ lemma wf_liftB:
   done
 
 theorem wf_subst:
-  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
-  "\<forall>(l, T) \<in> set (rT::rcdT). \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow>
-     \<forall>(l, T) \<in> set rT. \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
-  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow>
-     \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> snd fT[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
+  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
+  "\<forall>(l, T) \<in> set (rT::rcdT). \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow>
+     \<forall>(l, T) \<in> set rT. \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
+  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow>
+     \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd fT[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   apply (induct T and rT and fT arbitrary: \<Delta> and \<Delta> and \<Delta>)
   apply simp_all
   apply (rule conjI)
@@ -778,7 +778,7 @@ theorem wf_subst:
   apply (simp add: split_paired_all)
   done
 
-theorem wf_dec: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+theorem wf_dec: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta> arbitrary: T)
   apply simp
   apply simp
@@ -787,7 +787,7 @@ theorem wf_dec: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrigh
   apply simp
   done
 
-theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   apply (induct \<Delta>)
   apply simp
   apply (erule well_formedE_cases)
@@ -816,7 +816,7 @@ for all fields \mbox{@{term "(l, T)"}} contained in @{term fs'}, there exists a
 corresponding field @{term "(l, S)"} such that @{term S} is a subtype of @{term T}.
 If the list @{term fs'} is empty, @{text SA_Rcd} can appear as a leaf in
 the derivation tree of the subtyping judgement. Therefore, the introduction
-rule needs an additional premise @{term "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>"} to make sure that only
+rule needs an additional premise @{term "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"} to make sure that only
 subtyping judgements with well-formed contexts are derivable. Moreover,
 since @{term fs} can contain additional fields not present in @{term fs'},
 we also have to require that the type @{term "RcdT fs"} is well-formed.
@@ -829,29 +829,29 @@ are already well-formed.
 inductive
   subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [50, 50, 50] 50)
 where
-  SA_Top: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
-| SA_refl_TVar: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
+  SA_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
+| SA_refl_TVar: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
 | SA_trans_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB U\<rfloor> \<Longrightarrow>
     \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc i) 0 U <: T \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: T"
 | SA_arrow: "\<Gamma> \<turnstile> T\<^sub>1 <: S\<^sub>1 \<Longrightarrow> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> S\<^sub>1 \<rightarrow> S\<^sub>2 <: T\<^sub>1 \<rightarrow> T\<^sub>2"
 | SA_all: "\<Gamma> \<turnstile> T\<^sub>1 <: S\<^sub>1 \<Longrightarrow> TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2 \<Longrightarrow>
     \<Gamma> \<turnstile> (\<forall><:S\<^sub>1. S\<^sub>2) <: (\<forall><:T\<^sub>1. T\<^sub>2)"
-| SA_Rcd: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs \<Longrightarrow> unique fs' \<Longrightarrow>
+| SA_Rcd: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs \<Longrightarrow> unique fs' \<Longrightarrow>
     \<forall>(l, T)\<in>set fs'. \<exists>S. (l, S)\<in>set fs \<and> \<Gamma> \<turnstile> S <: T \<Longrightarrow> \<Gamma> \<turnstile> RcdT fs <: RcdT fs'"
 
 lemma wf_subtype_env:
   assumes PQ: "\<Gamma> \<turnstile> P <: Q"
-  shows "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>" using PQ
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f" using PQ
   by induct assumption+
 
 lemma wf_subtype:
   assumes PQ: "\<Gamma> \<turnstile> P <: Q"
-  shows "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> P \<and> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> Q" using PQ
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f P \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f Q" using PQ
   by induct (auto intro: well_formed.intros elim!: wf_equallength)
 
 lemma wf_subtypeE:
   assumes H: "\<Gamma> \<turnstile> T <: U"
-  and H': "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> P"
+  and H': "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> P"
   shows "P"
   apply (rule H')
   apply (rule wf_subtype_env)
@@ -861,16 +861,16 @@ lemma wf_subtypeE:
   done
 
 lemma subtype_refl: -- {* A.1 *}
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<forall>(l::name, T)\<in>set fTs. \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<longrightarrow> \<Gamma> \<turnstile> T <: T"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile> snd fT <: snd fT"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<forall>(l::name, T)\<in>set fTs. \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<longrightarrow> \<Gamma> \<turnstile> T <: T"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile> snd fT <: snd fT"
   by (induct T and fTs and fT arbitrary: \<Gamma> and \<Gamma> and \<Gamma>, simp_all add: split_paired_all, simp_all)
     (blast intro: subtyping.intros wf_Nil wf_TVarB bexpI intro!: ballpI
        elim: well_formed_cases ballpE elim!: bexpE)+
 
 lemma subtype_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> P <: Q"
-  and wf: "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B"
+  and wf: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B"
   shows "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> P <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> Q" using H
 proof (induct "\<Delta> @ \<Gamma>" P Q arbitrary: \<Delta>)
   case SA_Top
@@ -916,17 +916,17 @@ next
   show ?case by simp (iprover intro: subtyping.SA_all)
 next
   case (SA_Rcd fs fs')
-  with wf have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>" by simp (rule wfE_weaken)
-  moreover from `\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs`
-  have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> (RcdT fs)"
+  with wf have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f" by simp (rule wfE_weaken)
+  moreover from `\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs`
+  have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> (RcdT fs)"
     by (rule wf_weaken)
-  hence "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs)" by simp
-  moreover from SA_Rcd have "unique (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs')" by simp
-  moreover have "\<forall>(l, T)\<in>set (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs').
-    \<exists>S. (l, S)\<in>set (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs) \<and> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> S <: T"
+  hence "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs)" by simp
+  moreover from SA_Rcd have "unique (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs')" by simp
+  moreover have "\<forall>(l, T)\<in>set (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs').
+    \<exists>S. (l, S)\<in>set (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs) \<and> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> S <: T"
   proof (rule ballpI)
     fix l T
-    assume "(l, T) \<in> set (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs')"
+    assume "(l, T) \<in> set (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs')"
     then obtain T' where "(l, T') \<in> set fs'" and T: "T = \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T'"
       by (blast dest: liftrT_setD)
     with SA_Rcd obtain S where
@@ -935,19 +935,19 @@ next
       by fastforce
     with T have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S <: \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T'"
       by simp
-    moreover from lS have "(l, \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S) \<in> set (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs)"
+    moreover from lS have "(l, \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> S) \<in> set (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs)"
       by (rule liftrT_set)
     moreover note T
-    ultimately show "\<exists>S. (l, S)\<in>set (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs) \<and> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> S <: T"
+    ultimately show "\<exists>S. (l, S)\<in>set (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs) \<and> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> S <: T"
       by auto
   qed
-  ultimately have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> RcdT (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs) <: RcdT (\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fs')"
+  ultimately have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> RcdT (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs) <: RcdT (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs')"
     by (rule subtyping.SA_Rcd)
   thus ?case by simp
 qed
 
 lemma subtype_weaken': -- {* A.2 *}
-  "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
+  "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
   apply (induct \<Delta>)
   apply simp_all
   apply (erule well_formedE_cases)
@@ -1031,8 +1031,8 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         with SA_Rcd show ?thesis by (auto intro!: subtyping.SA_Top)
       next
         case (SA_Rcd fs\<^sub>2')
-        note `\<Gamma> \<turnstile>\<^bsub>wf\<^esub>`
-        moreover note `\<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs\<^sub>1`
+        note `\<Gamma> \<turnstile>\<^sub>w\<^sub>f`
+        moreover note `\<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs\<^sub>1`
         moreover note `unique fs\<^sub>2'`
         moreover have "\<forall>(l, T)\<in>set fs\<^sub>2'. \<exists>S. (l, S)\<in>set fs\<^sub>1 \<and> \<Gamma> \<turnstile> S <: T"
         proof (rule ballpI)
@@ -1079,7 +1079,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         show ?thesis
         proof (cases "i = \<parallel>\<Delta>\<parallel>")
           case True
-          from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+          from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
             by (auto intro: wfE_replace elim!: wf_subtypeE)
           with `\<Gamma> \<turnstile> P <: Q`
           have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
@@ -1104,11 +1104,11 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         SA_all(4) [of "TVarB T\<^sub>1 \<Colon> \<Delta>", simplified])
     next
       case (SA_Rcd fs fs')
-      from `\<Gamma> \<turnstile> P <: Q` have "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> P" by (rule wf_subtypeE)
-      with SA_Rcd have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+      from `\<Gamma> \<turnstile> P <: Q` have "\<Gamma> \<turnstile>\<^sub>w\<^sub>f P" by (rule wf_subtypeE)
+      with SA_Rcd have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
         by - (rule wfE_replace, simp+)
-      moreover from SA_Rcd have "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs" by simp
-      hence "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> RcdT fs" by (rule wf_equallength) simp_all
+      moreover from SA_Rcd have "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs" by simp
+      hence "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs" by (rule wf_equallength) simp_all
       moreover note `unique fs'`
       moreover from SA_Rcd
       have "\<forall>(l, T)\<in>set fs'. \<exists>S. (l, S)\<in>set fs \<and> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> S <: T"
@@ -1329,7 +1329,7 @@ inductive
   typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ : _" [50, 50, 50] 50)
   and typings :: "env \<Rightarrow> rcd \<Rightarrow> rcdT \<Rightarrow> bool"  ("_ \<turnstile> _ [:] _" [50, 50, 50] 50)
 where
-  T_Var: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^sub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
+  T_Var: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^sub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
 | T_Abs: "VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda>:T\<^sub>1. t\<^sub>2) : T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2"
 | T_App: "\<Gamma> \<turnstile> t\<^sub>1 : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1 \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>1 \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2"
 | T_TAbs: "TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda><:T\<^sub>1. t\<^sub>2) : (\<forall><:T\<^sub>1. T\<^sub>2)"
@@ -1340,18 +1340,18 @@ where
     \<Gamma> \<turnstile> (LET p = t\<^sub>1 IN t\<^sub>2) : \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T\<^sub>2"
 | T_Rcd: "\<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> Rcd fs : RcdT fTs"
 | T_Proj: "\<Gamma> \<turnstile> t : RcdT fTs \<Longrightarrow> fTs\<langle>l\<rangle>\<^sub>? = \<lfloor>T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile> t..l : T"
-| T_Nil: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile> [] [:] []"
+| T_Nil: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile> [] [:] []"
 | T_Cons: "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> fs\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow>
     \<Gamma> \<turnstile> (l, t) \<Colon> fs [:] (l, T) \<Colon> fTs"
 
 theorem wf_typeE1:
-  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
-  "\<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+  "\<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   by (induct set: typing typings) (blast elim: well_formedE_cases)+
 
 theorem wf_typeE2:
-  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
-  "\<Gamma>' \<turnstile> fs [:] fTs \<Longrightarrow> (\<forall>(l, T) \<in> set fTs. \<Gamma>' \<turnstile>\<^bsub>wf\<^esub> T) \<and>
+  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
+  "\<Gamma>' \<turnstile> fs [:] fTs \<Longrightarrow> (\<forall>(l, T) \<in> set fTs. \<Gamma>' \<turnstile>\<^sub>w\<^sub>f T) \<and>
      unique fTs \<and> (\<forall>l. (fs\<langle>l\<rangle>\<^sub>? = \<bottom>) = (fTs\<langle>l\<rangle>\<^sub>? = \<bottom>))"
   apply (induct set: typing typings)
   apply simp
@@ -1468,8 +1468,8 @@ lemma subtype_refl':
   assumes t: "\<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> T <: T"
 proof (rule subtype_refl)
-  from t show "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>" by (rule wf_typeE1)
-  from t show "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T" by (rule wf_typeE2)
+  from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f" by (rule wf_typeE1)
+  from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T" by (rule wf_typeE2)
 qed
 
 lemma Abs_type: -- {* A.13(1) *}
@@ -1637,21 +1637,21 @@ lemma ptyping_length [simp]:
 
 lemma lift_ptyping:
   "\<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> \<up>\<^sub>p n k p : \<up>\<^sub>\<tau> n k T \<Rightarrow> \<up>\<^sub>e n k \<Delta>"
-  "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> \<up>\<^bsub>rp\<^esub> n k fps [:] \<up>\<^bsub>r\<tau>\<^esub> n k fTs \<Rightarrow> \<up>\<^sub>e n k \<Delta>"
+  "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> \<up>\<^sub>r\<^sub>p n k fps [:] \<up>\<^sub>r\<^sub>\<tau> n k fTs \<Rightarrow> \<up>\<^sub>e n k \<Delta>"
   apply (induct set: ptyping ptypings)
   apply simp_all
   apply (rule P_Var)
   apply (erule P_Rcd)
   apply (rule P_Nil)
-  apply (drule_tac p="\<up>\<^sub>p n k p" and fps="\<up>\<^bsub>rp\<^esub> n k fps" in P_Cons)
+  apply (drule_tac p="\<up>\<^sub>p n k p" and fps="\<up>\<^sub>r\<^sub>p n k fps" in P_Cons)
   apply simp_all
   done
 
 lemma type_weaken:
-  "\<Delta> @ \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow>
+  "\<Delta> @ \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow>
      \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up> 1 \<parallel>\<Delta>\<parallel> t : \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
-  "\<Delta> @ \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow>
-     \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>r 1 \<parallel>\<Delta>\<parallel> fs [:] \<up>\<^bsub>r\<tau>\<^esub> 1 \<parallel>\<Delta>\<parallel> fTs"
+  "\<Delta> @ \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow>
+     \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>r 1 \<parallel>\<Delta>\<parallel> fs [:] \<up>\<^sub>r\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> fTs"
   apply (induct "\<Delta> @ \<Gamma>" t T and "\<Delta> @ \<Gamma>" fs fTs
     arbitrary: \<Delta> and \<Delta> set: typing typings)
   apply simp_all
@@ -1697,7 +1697,7 @@ lemma type_weaken:
   apply (simp add: add_ac)
   apply (rule T_Rcd)
   apply simp
-  apply (rule_tac fTs="\<up>\<^bsub>r\<tau>\<^esub> (Suc 0) \<parallel>\<Delta>\<parallel> fTs" in T_Proj)
+  apply (rule_tac fTs="\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fTs" in T_Proj)
   apply simp
   apply (erule_tac liftrT_assoc_Some)
   apply (rule T_Nil)
@@ -1708,7 +1708,7 @@ lemma type_weaken:
   done
 
 lemma type_weaken': -- {* A.5(6) *}
-  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp
   apply simp
@@ -1725,13 +1725,13 @@ the typing derivations for terms and lists of fields.
 
 lemma subst_ptyping:
   "\<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> p[k \<mapsto>\<^sub>\<tau> U]\<^sub>p : T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> \<Rightarrow> \<Delta>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e"
-  "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> fps[k \<mapsto>\<^sub>\<tau> U]\<^bsub>rp\<^esub> [:] fTs[k \<mapsto>\<^sub>\<tau> U]\<^bsub>r\<tau>\<^esub> \<Rightarrow> \<Delta>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e"
+  "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> fps[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>p [:] fTs[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> \<Rightarrow> \<Delta>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e"
   apply (induct set: ptyping ptypings)
   apply simp_all
   apply (rule P_Var)
   apply (erule P_Rcd)
   apply (rule P_Nil)
-  apply (drule_tac p="p[k \<mapsto>\<^sub>\<tau> U]\<^sub>p" and fps="fps[k \<mapsto>\<^sub>\<tau> U]\<^bsub>rp\<^esub>" in P_Cons)
+  apply (drule_tac p="p[k \<mapsto>\<^sub>\<tau> U]\<^sub>p" and fps="fps[k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>p" in P_Cons)
   apply simp+
   done
 
@@ -1739,7 +1739,7 @@ theorem subst_type: -- {* A.8 *}
   "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> u : U \<Longrightarrow>
      \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto> u] : \<down>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T"
   "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> u : U \<Longrightarrow>
-     \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> fs[\<parallel>\<Delta>\<parallel> \<mapsto> u]\<^sub>r [:] \<down>\<^bsub>r\<tau>\<^esub> 1 \<parallel>\<Delta>\<parallel> fTs"
+     \<down>\<^sub>e 1 0 \<Delta> @ \<Gamma> \<turnstile> fs[\<parallel>\<Delta>\<parallel> \<mapsto> u]\<^sub>r [:] \<down>\<^sub>r\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> fTs"
   apply (induct "\<Delta> @ VarB U \<Colon> \<Gamma>" t T and "\<Delta> @ VarB U \<Colon> \<Gamma>" fs fTs
     arbitrary: \<Delta> and \<Delta> set: typing typings)
   apply simp
@@ -1804,7 +1804,7 @@ theorem subst_type: -- {* A.8 *}
   apply (rule T_Rcd)
   apply simp
   apply simp
-  apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^bsub>r\<tau>\<^esub>" in T_Proj)
+  apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>" in T_Proj)
   apply simp
   apply (erule_tac substrTT_assoc_Some)
   apply simp
@@ -1820,7 +1820,7 @@ theorem substT_type: -- {* A.11 *}
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
      \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>"
   "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> \<Gamma> \<turnstile> P <: Q \<Longrightarrow>
-     \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r [:] fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^bsub>r\<tau>\<^esub>"
+     \<Delta>[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma> \<turnstile> fs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r [:] fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>"
   apply (induct "\<Delta> @ TVarB Q \<Colon> \<Gamma>" t T and "\<Delta> @ TVarB Q \<Colon> \<Gamma>" fs fTs
     arbitrary: \<Delta> and \<Delta> set: typing typings)
   apply simp_all
@@ -1878,7 +1878,7 @@ theorem substT_type: -- {* A.11 *}
   apply (simp add: add_ac)
   apply (rule T_Rcd)
   apply simp
-  apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^bsub>r\<tau>\<^esub>" in T_Proj)
+  apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>" in T_Proj)
   apply simp
   apply (erule_tac substrTT_assoc_Some)
   apply (rule T_Nil)

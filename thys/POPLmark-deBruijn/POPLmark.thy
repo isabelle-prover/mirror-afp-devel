@@ -282,12 +282,12 @@ the @{term i}th element of @{term \<Gamma>} must exist and have the form @{term 
 *}
 
 inductive
-  well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^bsub>wf\<^esub> _" [50, 50] 50)
+  well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f _" [50, 50] 50)
 where
-  wf_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i"
-| wf_Top: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> Top"
-| wf_arrow: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<rightarrow> U"
-| wf_all: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> (\<forall><:T. U)"
+  wf_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i"
+| wf_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f Top"
+| wf_arrow: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<rightarrow> U"
+| wf_all: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f (\<forall><:T. U)"
 
 text {*
 A context @{term "\<Gamma>"} is well-formed, if all types occurring in it only refer to type variables
@@ -295,33 +295,33 @@ declared ``further to the right'':
 *}
 
 inductive
-  well_formedE :: "env \<Rightarrow> bool"  ("_ \<turnstile>\<^bsub>wf\<^esub>" [50] 50)
-  and well_formedB :: "env \<Rightarrow> binding \<Rightarrow> bool"  ("_ \<turnstile>\<^bsub>wfB\<^esub> _" [50, 50] 50)
+  well_formedE :: "env \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f" [50] 50)
+  and well_formedB :: "env \<Rightarrow> binding \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f\<^sub>B _" [50, 50] 50)
 where
-  "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<equiv> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> type_ofB B"
-| wf_Nil: "[] \<turnstile>\<^bsub>wf\<^esub>"
-| wf_Cons: "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<equiv> \<Gamma> \<turnstile>\<^sub>w\<^sub>f type_ofB B"
+| wf_Nil: "[] \<turnstile>\<^sub>w\<^sub>f"
+| wf_Cons: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
 
 text {*
-The judgement @{text "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B"}, which denotes well-formedness of the binding @{term B}
-with respect to context @{term \<Gamma>}, is just an abbreviation for @{text "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> type_ofB B"}.
+The judgement @{text "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B"}, which denotes well-formedness of the binding @{term B}
+with respect to context @{term \<Gamma>}, is just an abbreviation for @{text "\<Gamma> \<turnstile>\<^sub>w\<^sub>f type_ofB B"}.
 We now present a number of properties of the well-formedness judgements that will be used
 in the proofs in the following sections.
 *}
 
 inductive_cases well_formed_cases:
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> Top"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<rightarrow> U"
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> (\<forall><:T. U)"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f Top"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<rightarrow> U"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f (\<forall><:T. U)"
 
 inductive_cases well_formedE_cases:
-  "B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
 
-lemma wf_TVarB: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wf_TVarB: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   by (rule wf_Cons) simp_all
 
-lemma wf_VarB: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> VarB T \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wf_VarB: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> VarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   by (rule wf_Cons) simp_all
 
 lemma map_is_TVarb:
@@ -340,8 +340,8 @@ A type that is well-formed in a context @{term \<Gamma>} is also well-formed in 
 *}
 
 lemma wf_equallength:
-  assumes H: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
-  shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^bsub>wf\<^esub> T" using H
+  assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
+  shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^sub>w\<^sub>f T" using H
   by (induct arbitrary: \<Gamma>') (auto intro: well_formed.intros dest: map_is_TVarb)
 
 text {*
@@ -350,8 +350,8 @@ the binding @{term B} by another well-formed binding @{term B'}:
 *}
 
 lemma wfE_replace:
-  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B' \<Longrightarrow> is_TVarB B' = is_TVarB B \<Longrightarrow>
-    \<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B' \<Longrightarrow> is_TVarB B' = is_TVarB B \<Longrightarrow>
+    \<Delta> @ B' \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   apply (induct \<Delta>)
   apply simp
   apply (erule wf_Cons)
@@ -378,8 +378,8 @@ types and contexts:
 *}
 
 lemma wf_weaken:
-  assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
-  shows "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
+  assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
+  shows "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T"
   using H
   apply (induct "\<Delta> @ \<Gamma>" T arbitrary: \<Delta>)
   apply simp_all
@@ -402,14 +402,14 @@ lemma wf_weaken:
   apply simp
   done
 
-lemma wf_weaken': "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+lemma wf_weaken': "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp_all
   apply (drule_tac B=a in wf_weaken [of "[]", simplified])
   apply simp
   done
 
-lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow> \<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   apply (induct \<Delta>)
   apply simp
   apply (rule wf_Cons)
@@ -444,8 +444,8 @@ free type variables in @{term T} by @{term "Suc i"}:
 *}
 
 lemma wf_liftB:
-  assumes H: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
-  shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<up>\<^sub>\<tau> (Suc i) 0 T"
+  assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"
+  shows "\<Gamma>\<langle>i\<rangle> = \<lfloor>VarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc i) 0 T"
   using H
   apply (induct arbitrary: i)
   apply simp
@@ -464,7 +464,7 @@ of types and contexts:
 *}
 
 theorem wf_subst:
-  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
+  "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   apply (induct T arbitrary: \<Delta>)
   apply simp_all
   apply (rule conjI)
@@ -496,7 +496,7 @@ theorem wf_subst:
   apply simp
   done
 
-theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
   apply (induct \<Delta>)
   apply simp
   apply (erule well_formedE_cases)
@@ -527,8 +527,8 @@ We now come to the definition of the subtyping judgement @{text "\<Gamma> \<turn
 inductive
   subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [50, 50, 50] 50)
 where
-  SA_Top: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
-| SA_refl_TVar: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
+  SA_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
+| SA_refl_TVar: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
 | SA_trans_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB U\<rfloor> \<Longrightarrow>
     \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc i) 0 U <: T \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: T"
 | SA_arrow: "\<Gamma> \<turnstile> T\<^sub>1 <: S\<^sub>1 \<Longrightarrow> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> S\<^sub>1 \<rightarrow> S\<^sub>2 <: T\<^sub>1 \<rightarrow> T\<^sub>2"
@@ -548,17 +548,17 @@ to the right variables in the larger context @{text \<Gamma>}.
 
 lemma wf_subtype_env:
   assumes PQ: "\<Gamma> \<turnstile> P <: Q"
-  shows "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>" using PQ
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f" using PQ
   by induct assumption+
 
 lemma wf_subtype:
   assumes PQ: "\<Gamma> \<turnstile> P <: Q"
-  shows "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> P \<and> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> Q" using PQ
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f P \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f Q" using PQ
   by induct (auto intro: well_formed.intros elim!: wf_equallength)
 
 lemma wf_subtypeE:
   assumes H: "\<Gamma> \<turnstile> T <: U"
-  and H': "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U \<Longrightarrow> P"
+  and H': "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> P"
   shows "P"
   apply (rule H')
   apply (rule wf_subtype_env)
@@ -573,7 +573,7 @@ that all types and contexts occurring in a subtyping judgement must be well-form
 *}
 
 lemma wf_subtype_conj:
-  "\<Gamma> \<turnstile> T <: U \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<and> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<and> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> U"
+  "\<Gamma> \<turnstile> T <: U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U"
   by (erule wf_subtypeE) iprover
 
 text {*
@@ -581,7 +581,7 @@ By induction on types, we can prove that the subtyping relation is reflexive:
 *}
 
 lemma subtype_refl: -- {* A.1 *}
-  "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
+  "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
   by (induct T arbitrary: \<Gamma>) (blast intro:
     subtyping.intros wf_Nil wf_TVarB elim: well_formed_cases)+
 
@@ -593,7 +593,7 @@ that inserting a single type into the context preserves subtyping:
 
 lemma subtype_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> P <: Q"
-  and wf: "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B"
+  and wf: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B"
   shows "\<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> P <: \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> Q" using H
 proof (induct "\<Delta> @ \<Gamma>" P Q arbitrary: \<Delta>)
   case SA_Top
@@ -649,7 +649,7 @@ using the previous result in the induction step:
 *}
 
 lemma subtype_weaken': -- {* A.2 *}
-  "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
+  "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
   apply (induct \<Delta>)
   apply simp_all
   apply (erule well_formedE_cases)
@@ -769,7 +769,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         show ?thesis
         proof (cases "i = \<parallel>\<Delta>\<parallel>")
           case True
-          from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub>"
+          from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
             by (auto elim!: wf_subtypeE)
           with `\<Gamma> \<turnstile> P <: Q`
           have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
@@ -947,7 +947,7 @@ We are now ready to give a definition of the typing judgement @{text "\<Gamma> \
 inductive
   typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"    ("_ \<turnstile> _ : _" [50, 50, 50] 50)
 where
-  T_Var: "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^sub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
+  T_Var: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^sub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
 | T_Abs: "VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda>:T\<^sub>1. t\<^sub>2) : T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2"
 | T_App: "\<Gamma> \<turnstile> t\<^sub>1 : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1 \<Longrightarrow> \<Gamma> \<turnstile> t\<^sub>1 \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2"
 | T_TAbs: "TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda><:T\<^sub>1. t\<^sub>2) : (\<forall><:T\<^sub>1. T\<^sub>2)"
@@ -967,12 +967,12 @@ free type variables in @{term "T\<^sub>2"} have to be decremented by @{text 1}.
 
 theorem wf_typeE1:
   assumes H: "\<Gamma> \<turnstile> t : T"
-  shows "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>" using H
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f" using H
   by induct (blast elim: well_formedE_cases)+
 
 theorem wf_typeE2:
   assumes H: "\<Gamma> \<turnstile> t : T"
-  shows "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T" using H
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T" using H
   apply induct
   apply simp
   apply (rule wf_liftB)
@@ -1005,7 +1005,7 @@ text {*
 Like for the subtyping judgement, we can again prove that all types and contexts
 involved in a typing judgement are well-formed:
 *}
-lemma wf_type_conj: "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<and> \<Gamma> \<turnstile>\<^bsub>wf\<^esub> T"
+lemma wf_type_conj: "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
   by (frule wf_typeE1, drule wf_typeE2) iprover
 
 text {*
@@ -1050,8 +1050,8 @@ lemma subtype_refl':
   assumes t: "\<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> T <: T"
 proof (rule subtype_refl)
-  from t show "\<Gamma> \<turnstile>\<^bsub>wf\<^esub>" by (rule wf_typeE1)
-  from t show "\<Gamma> \<turnstile>\<^bsub>wf\<^esub> T" by (rule wf_typeE2)
+  from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f" by (rule wf_typeE1)
+  from t show "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T" by (rule wf_typeE2)
 qed
 
 lemma Abs_type: -- {* A.13(1) *}
@@ -1121,7 +1121,7 @@ does not affect typing:
 
 lemma type_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> t : T"
-  shows "\<Gamma> \<turnstile>\<^bsub>wfB\<^esub> B \<Longrightarrow>
+  shows "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow>
     \<up>\<^sub>e 1 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile> \<up> 1 \<parallel>\<Delta>\<parallel> t : \<up>\<^sub>\<tau> 1 \<parallel>\<Delta>\<parallel> T" using H
   apply (induct "\<Delta> @ \<Gamma>" t T arbitrary: \<Delta>)
   apply simp_all
@@ -1165,7 +1165,7 @@ We can strengthen this result, so as to mean that concatenating a new context
 *}
 
 lemma type_weaken': -- {* A.5(6) *}
-  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^bsub>wf\<^esub> \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
+  "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
   apply (induct \<Delta>)
   apply simp
   apply simp
