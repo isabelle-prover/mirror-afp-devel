@@ -266,47 +266,53 @@ lemma is_ubD:
 lemma is_lub_bigger1 [iff]:  
   "is_lub (r^* ) x y y = ((x,y)\<in>r^* )"
 (*<*)
-apply (unfold is_lub_def is_ub_def)
-apply blast
-done
+  by (unfold is_lub_def is_ub_def) blast
 (*>*)
 
 lemma is_lub_bigger2 [iff]:
   "is_lub (r^* ) x y x = ((y,x)\<in>r^* )"
 (*<*)
-apply (unfold is_lub_def is_ub_def)
-apply blast 
-done
+  by (unfold is_lub_def is_ub_def) blast 
 (*>*)
 
 lemma extend_lub:
-  "\<lbrakk> single_valued r; is_lub (r^* ) x y u; (x',x) \<in> r \<rbrakk> 
-  \<Longrightarrow> EX v. is_lub (r^* ) x' y v"
+  assumes "single_valued r"
+    and "is_lub (r\<^sup>*) x y u"
+    and "(x', x) \<in> r"
+  shows "\<exists>v. is_lub (r\<^sup>*) x' y v"
 (*<*)
-apply (unfold is_lub_def is_ub_def)
-apply (case_tac "(y,x) \<in> r^*")
- apply (case_tac "(y,x') \<in> r^*")
-  apply blast
- apply (blast elim: converse_rtranclE dest: single_valuedD)
-apply (rule exI)
-apply (rule conjI)
- apply (blast intro: converse_rtrancl_into_rtrancl dest: single_valuedD)
-apply (blast intro: rtrancl_into_rtrancl converse_rtrancl_into_rtrancl 
-             elim: converse_rtranclE dest: single_valuedD)
-done
+proof (cases "(y, x) \<in> r\<^sup>*")
+  case True show ?thesis
+  proof (cases "(y, x') \<in> r\<^sup>*")
+    case True with `(y, x) \<in> r\<^sup>*` show ?thesis by blast
+  next
+    case False with True assms show ?thesis
+      by (unfold is_lub_def is_ub_def) (blast elim: converse_rtranclE dest: single_valuedD)
+  qed
+next
+  case False
+  from assms have "(x', u) \<in> r\<^sup>*" and "(y, u) \<in> r\<^sup>*"
+    by (auto simp add: is_lub_def is_ub_def)
+  moreover from False assms have "\<And>z. (x', z) \<in> r\<^sup>* \<Longrightarrow> (y, z) \<in> r\<^sup>* \<Longrightarrow> (u, z) \<in> r\<^sup>*"
+    by (unfold is_lub_def is_ub_def) (blast intro: rtrancl_into_rtrancl
+      converse_rtrancl_into_rtrancl elim: converse_rtranclE dest: single_valuedD)
+  ultimately have "is_lub (r\<^sup>*) x' y u"
+    by (unfold is_lub_def is_ub_def) blast
+  then show ?thesis ..
+qed
 (*>*)
 
-lemma single_valued_has_lubs [rule_format]:
-  "\<lbrakk> single_valued r; (x,u) \<in> r^* \<rbrakk> \<Longrightarrow> (\<forall>y. (y,u) \<in> r^* \<longrightarrow> 
-  (EX z. is_lub (r^* ) x y z))"
+lemma single_valued_has_lubs:
+  assumes "single_valued r"
+    and in_r: "(x, u) \<in> r\<^sup>*" "(y, u) \<in> r\<^sup>*"
+  shows "\<exists>z. is_lub (r\<^sup>*) x y z"
 (*<*)
-apply (erule converse_rtrancl_induct)
- apply clarify
- apply (erule converse_rtrancl_induct)
-  apply blast
- apply (blast intro: converse_rtrancl_into_rtrancl)
-apply (blast intro: extend_lub)
-done
+using in_r proof (induct arbitrary: y rule: converse_rtrancl_induct)
+  case base then show ?case by (induct rule: converse_rtrancl_induct)
+    (blast, blast intro: converse_rtrancl_into_rtrancl)
+next
+  case step with `single_valued r` show ?case by (blast intro: extend_lub)
+qed
 (*>*)
 
 lemma some_lub_conv:
