@@ -56,7 +56,7 @@ definition poslsts :: "'a set \<Rightarrow> 'a llist set"
 where "poslsts A \<equiv> A\<^sup>\<infinity> - {LNil}"
 
 notation (xsymbols)
-  inflsts ("(_\<^bsup>\<omega>\<^esup>)" [1000] 999) and
+  inflsts ("(_\<^sup>\<omega>)" [1000] 999) and
   fpslsts ("(_\<^sup>\<clubsuit>)" [1000] 999) and
   poslsts ("(_\<^sup>\<spadesuit>)" [1000] 999)
 
@@ -231,59 +231,59 @@ qed
 subsection{*Facts about infinite llists*}
 
 lemma inflstsI [intro]:
-  "\<lbrakk> x \<in> A\<^sup>\<infinity>; x \<in> UNIV\<^sup>\<star> \<Longrightarrow> False \<rbrakk> \<Longrightarrow> x \<in> A\<^bsup>\<omega>\<^esup>"
+  "\<lbrakk> x \<in> A\<^sup>\<infinity>; x \<in> UNIV\<^sup>\<star> \<Longrightarrow> False \<rbrakk> \<Longrightarrow> x \<in> A\<^sup>\<omega>"
 unfolding inflsts_def by clarsimp
 
 lemma inflstsE [elim]:
-  "\<lbrakk> x \<in> A\<^bsup>\<omega>\<^esup>; \<lbrakk> x \<in> A\<^sup>\<infinity>; x \<notin> UNIV\<^sup>\<star> \<rbrakk> \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
+  "\<lbrakk> x \<in> A\<^sup>\<omega>; \<lbrakk> x \<in> A\<^sup>\<infinity>; x \<notin> UNIV\<^sup>\<star> \<rbrakk> \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
   by (unfold inflsts_def) auto
 
-lemma inflsts_empty [simp]: "{}\<^bsup>\<omega>\<^esup> = {}"
+lemma inflsts_empty [simp]: "{}\<^sup>\<omega> = {}"
   by auto
 
-lemma infsubsetall: "x \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> x \<in> A\<^sup>\<infinity>"
+lemma infsubsetall: "x \<in> A\<^sup>\<omega> \<Longrightarrow> x \<in> A\<^sup>\<infinity>"
   by (auto intro: finite_lemma finsubsetall)
 
 lemma inflsts_mono:
-  "A \<subseteq> B \<Longrightarrow> A\<^bsup>\<omega>\<^esup> \<subseteq> B\<^bsup>\<omega>\<^esup>"
+  "A \<subseteq> B \<Longrightarrow> A\<^sup>\<omega> \<subseteq> B\<^sup>\<omega>"
   by (blast dest: alllsts_mono infsubsetall)
 
 lemma inflsts_cases [case_names LCons, cases set: inflsts, consumes 1]:
-  assumes sinf: "s \<in> A\<^bsup>\<omega>\<^esup>"
-  and R: "\<And>a l. \<lbrakk> l \<in> A\<^bsup>\<omega>\<^esup>; a \<in> A; s = a ## l \<rbrakk> \<Longrightarrow> R"
+  assumes sinf: "s \<in> A\<^sup>\<omega>"
+  and R: "\<And>a l. \<lbrakk> l \<in> A\<^sup>\<omega>; a \<in> A; s = a ## l \<rbrakk> \<Longrightarrow> R"
   shows "R"
 proof -
   from sinf have "s \<in> A\<^sup>\<infinity>" "s \<notin> UNIV\<^sup>\<star>"
     by auto
-  then obtain a l where "l \<in> A\<^bsup>\<omega>\<^esup>" and "a\<in>A" and "s = a ## l"
+  then obtain a l where "l \<in> A\<^sup>\<omega>" and "a\<in>A" and "s = a ## l"
     by (cases "s") auto
   thus ?thesis by (rule R)
 qed
 
-lemma inflstsI2: "\<lbrakk>a \<in> A; t \<in> A\<^bsup>\<omega>\<^esup>\<rbrakk> \<Longrightarrow> a ## t \<in> A\<^bsup>\<omega>\<^esup>"
+lemma inflstsI2: "\<lbrakk>a \<in> A; t \<in> A\<^sup>\<omega>\<rbrakk> \<Longrightarrow> a ## t \<in> A\<^sup>\<omega>"
   by  (auto elim: finlsts.cases)
 
 lemma infT_simp [simp]:
-  "r \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> r\<in>UNIV\<^bsup>\<omega>\<^esup>"
+  "r \<in> A\<^sup>\<omega> \<Longrightarrow> r\<in>UNIV\<^sup>\<omega>"
   by auto
 
 lemma  alllstsE [consumes 1, case_names finite infinite]:
-  "\<lbrakk> x\<in>A\<^sup>\<infinity>; x \<in> A\<^sup>\<star> \<Longrightarrow> P; x \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  "\<lbrakk> x\<in>A\<^sup>\<infinity>; x \<in> A\<^sup>\<star> \<Longrightarrow> P; x \<in> A\<^sup>\<omega> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   by (auto intro: finite_lemma simp: inflsts_def)
 
 
 lemma fin_inf_cases [case_names finite infinite]:
-  "\<lbrakk> r\<in>UNIV\<^sup>\<star> \<Longrightarrow> P; r \<in> UNIV\<^bsup>\<omega>\<^esup> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  "\<lbrakk> r\<in>UNIV\<^sup>\<star> \<Longrightarrow> P; r \<in> UNIV\<^sup>\<omega> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   by auto
 
-lemma  fin_Int_inf: "A\<^sup>\<star> \<inter> A\<^bsup>\<omega>\<^esup> = {}"
-  and   fin_Un_inf: "A\<^sup>\<star> \<union> A\<^bsup>\<omega>\<^esup> = A\<^sup>\<infinity>"
+lemma  fin_Int_inf: "A\<^sup>\<star> \<inter> A\<^sup>\<omega> = {}"
+  and   fin_Un_inf: "A\<^sup>\<star> \<union> A\<^sup>\<omega> = A\<^sup>\<infinity>"
   by (auto intro: finite_lemma finsubsetall)
 
-lemma notfin_inf [iff]: "(x \<notin> UNIV\<^sup>\<star>) = (x \<in> UNIV\<^bsup>\<omega>\<^esup>)"
+lemma notfin_inf [iff]: "(x \<notin> UNIV\<^sup>\<star>) = (x \<in> UNIV\<^sup>\<omega>)"
   by auto
 
-lemma notinf_fin [iff]: "(x \<notin> UNIV\<^bsup>\<omega>\<^esup>) = (x \<in> UNIV\<^sup>\<star>)"
+lemma notinf_fin [iff]: "(x \<notin> UNIV\<^sup>\<omega>) = (x \<in> UNIV\<^sup>\<star>)"
   by auto
 
 
@@ -292,7 +292,7 @@ section{*Lappend*}
 subsection{*Simplification*}
 
 lemma lapp_inf [simp]:
-  assumes "s \<in> A\<^bsup>\<omega>\<^esup>"
+  assumes "s \<in> A\<^sup>\<omega>"
   shows "s @@ t = s"
 using assms
 by(coinduct s rule: llist_fun_coinduct_invar)(auto elim: inflsts_cases)
@@ -368,42 +368,42 @@ next
     by (induct "r") auto
 qed
 
-lemma lapp_fin_infT: "\<lbrakk>s \<in> A\<^sup>\<star>; t \<in> A\<^bsup>\<omega>\<^esup>\<rbrakk> \<Longrightarrow> s @@ t \<in> A\<^bsup>\<omega>\<^esup>"
+lemma lapp_fin_infT: "\<lbrakk>s \<in> A\<^sup>\<star>; t \<in> A\<^sup>\<omega>\<rbrakk> \<Longrightarrow> s @@ t \<in> A\<^sup>\<omega>"
   by (induct rule: finlsts.induct)
      (auto intro: inflstsI2)
 
 lemma app_invT:
-  assumes "r \<in> A\<^sup>\<star>" shows "r @@ s \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> s \<in> A\<^bsup>\<omega>\<^esup>"
+  assumes "r \<in> A\<^sup>\<star>" shows "r @@ s \<in> A\<^sup>\<omega> \<Longrightarrow> s \<in> A\<^sup>\<omega>"
 using assms
 proof (induct arbitrary: s)
   case LNil_fin thus ?case by simp
 next
   case (LCons_fin a l)
-  from `(a ## l) @@ s \<in> A\<^bsup>\<omega>\<^esup>`
-  have "a ## (l @@ s) \<in> A\<^bsup>\<omega>\<^esup>" by simp
-  hence "l @@ s \<in> A\<^bsup>\<omega>\<^esup>" by (auto elim: inflsts_cases)
-  with LCons_fin show "s \<in> A\<^bsup>\<omega>\<^esup>" by blast
+  from `(a ## l) @@ s \<in> A\<^sup>\<omega>`
+  have "a ## (l @@ s) \<in> A\<^sup>\<omega>" by simp
+  hence "l @@ s \<in> A\<^sup>\<omega>" by (auto elim: inflsts_cases)
+  with LCons_fin show "s \<in> A\<^sup>\<omega>" by blast
 qed
 
 lemma lapp_inv2T:
-  assumes rsinf: "r @@ s \<in> A\<^bsup>\<omega>\<^esup>"
-  shows "r \<in> A\<^sup>\<star> \<and> s \<in> A\<^bsup>\<omega>\<^esup> \<or> r \<in> A\<^bsup>\<omega>\<^esup>"
+  assumes rsinf: "r @@ s \<in> A\<^sup>\<omega>"
+  shows "r \<in> A\<^sup>\<star> \<and> s \<in> A\<^sup>\<omega> \<or> r \<in> A\<^sup>\<omega>"
 proof (rule disjCI)
-  assume rnotinf: "r \<notin> A\<^bsup>\<omega>\<^esup>"
+  assume rnotinf: "r \<notin> A\<^sup>\<omega>"
   moreover from rsinf have rsall: "r@@s \<in> A\<^sup>\<infinity>"
     by auto
   hence "r \<in> A\<^sup>\<infinity>" by (rule lapp_all_invT)
   hence "r \<in> A\<^sup>\<star>" using rnotinf by (auto elim: alllstsE)
-  ultimately show "r \<in> A\<^sup>\<star> \<and> s \<in> A\<^bsup>\<omega>\<^esup>" using rsinf
+  ultimately show "r \<in> A\<^sup>\<star> \<and> s \<in> A\<^sup>\<omega>" using rsinf
     by (auto  intro: app_invT)
 qed
 
 lemma lapp_infT:
-  "(r @@ s \<in> A\<^bsup>\<omega>\<^esup>) = (r \<in> A\<^sup>\<star> \<and> s \<in> A\<^bsup>\<omega>\<^esup> \<or> r \<in> A\<^bsup>\<omega>\<^esup>)"
+  "(r @@ s \<in> A\<^sup>\<omega>) = (r \<in> A\<^sup>\<star> \<and> s \<in> A\<^sup>\<omega> \<or> r \<in> A\<^sup>\<omega>)"
   by (auto dest: lapp_inv2T intro: lapp_fin_infT)
 
 lemma lapp_allT_iff:
-  "(r @@ s \<in> A\<^sup>\<infinity>) = (r \<in> A\<^sup>\<star> \<and> s \<in> A\<^sup>\<infinity> \<or> r \<in> A\<^bsup>\<omega>\<^esup>)"
+  "(r @@ s \<in> A\<^sup>\<infinity>) = (r \<in> A\<^sup>\<star> \<and> s \<in> A\<^sup>\<infinity> \<or> r \<in> A\<^sup>\<omega>)"
   (is "?L = ?R")
 proof
   assume ?L thus ?R by (cases rule: alllstsE) (auto simp: lapp_infT intro: finsubsetall)
@@ -545,7 +545,7 @@ next
   qed
 qed
 
-lemma infinite_Some: "t \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> \<exists>a. t!!i = Some a"
+lemma infinite_Some: "t \<in> A\<^sup>\<omega> \<Longrightarrow> \<exists>a. t!!i = Some a"
   by (rule ccontr) (auto dest: None_lfinite)
 
 lemmas infinite_idx_SomeE = exE [OF infinite_Some]
@@ -630,12 +630,12 @@ lemma ltake_fin [iff]:
   "r \<down> i \<in> UNIV\<^sup>\<star>"
   by simp
 
-lemma llength_take [simp]: "t \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> llength (t\<down>i) = i"
+lemma llength_take [simp]: "t \<in> A\<^sup>\<omega> \<Longrightarrow> llength (t\<down>i) = i"
 proof (induct "i" arbitrary: t)
   case 0 thus ?case by simp
 next
   case (Suc j)
-  from `t \<in> A\<^bsup>\<omega>\<^esup>` `\<And>t. t \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> llength (t \<down> j) = j` show ?case
+  from `t \<in> A\<^sup>\<omega>` `\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> llength (t \<down> j) = j` show ?case
     by(cases) (auto simp: llength_LCons [of _ UNIV])
 qed
 
@@ -690,12 +690,12 @@ next
     by (cases "t") auto
 qed
 
-lemma ldrop_infT[simp]: "t \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> t \<up> i \<in> A\<^bsup>\<omega>\<^esup>"
+lemma ldrop_infT[simp]: "t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<omega>"
 proof (induct i arbitrary: t)
   case 0 thus ?case by simp
 next
   case (Suc n)
-  from `t \<in> A\<^bsup>\<omega>\<^esup>` `\<And>t. t \<in> A\<^bsup>\<omega>\<^esup> \<Longrightarrow> t \<up> n \<in> A\<^bsup>\<omega>\<^esup>` show ?case
+  from `t \<in> A\<^sup>\<omega>` `\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> n \<in> A\<^sup>\<omega>` show ?case
     by (cases "t") auto
 qed
 
@@ -714,9 +714,9 @@ next case (Suc n) thus ?case
     by (cases j, simp) (cases t, simp_all)
 qed
 
-lemma ldrop_inf_iffT [iff]: "(t \<up> i \<in> UNIV\<^bsup>\<omega>\<^esup>)  =  (t \<in> UNIV\<^bsup>\<omega>\<^esup>)"
+lemma ldrop_inf_iffT [iff]: "(t \<up> i \<in> UNIV\<^sup>\<omega>)  =  (t \<in> UNIV\<^sup>\<omega>)"
 proof
-  show "t\<up>i \<in> UNIV\<^bsup>\<omega>\<^esup> \<Longrightarrow> t \<in> UNIV\<^bsup>\<omega>\<^esup>"
+  show "t\<up>i \<in> UNIV\<^sup>\<omega> \<Longrightarrow> t \<in> UNIV\<^sup>\<omega>"
     by (rule ccontr) (auto dest: ldrop_finT)
 qed auto
 
@@ -816,7 +816,7 @@ lemma lconst_LNil [iff]: "lconst a \<noteq> LNil"
 
 lemma lconstT:
   assumes aA: "a \<in> A"
-  shows "lconst a \<in> A\<^bsup>\<omega>\<^esup>"
+  shows "lconst a \<in> A\<^sup>\<omega>"
 proof (rule inflstsI)
   show "lconst a \<in> A\<^sup>\<infinity>"
   proof (rule alllsts.coinduct [of "\<lambda>x. x = lconst a"], simp_all)
@@ -871,7 +871,7 @@ lemma le_LNil [iff]: "(s \<le> LNil) = (s = LNil)"
   by (auto simp: llist_le_def)
 
 lemma llist_inf_le:
-  "s \<in> A\<^bsup>\<omega>\<^esup>  \<Longrightarrow> (s\<le>t) = (s=t)"
+  "s \<in> A\<^sup>\<omega>  \<Longrightarrow> (s\<le>t) = (s=t)"
   by (unfold llist_le_def) auto
 
 lemma le_LCons [iff]: "(x ## xs \<le> y ## ys) = (x = y \<and> xs \<le> ys)"
@@ -977,12 +977,12 @@ lemma le_lappend [iff]: "r \<le> r @@ s"
   by (auto simp: llist_le_def)
 
 lemma take_inf_less:
-  "t \<in> UNIV\<^bsup>\<omega>\<^esup> \<Longrightarrow> t \<down> i < t"
+  "t \<in> UNIV\<^sup>\<omega> \<Longrightarrow> t \<down> i < t"
 proof (induct i arbitrary: t)
   case 0 thus ?case by (auto elim: inflsts_cases)
 next
   case (Suc i) 
-  from `t \<in> UNIV\<^bsup>\<omega>\<^esup>` show ?case
+  from `t \<in> UNIV\<^sup>\<omega>` show ?case
   proof (cases "t")
     case (LCons a l) with Suc show ?thesis
       by auto
@@ -1016,7 +1016,7 @@ definition suff :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
 where "suff A s \<equiv> {r. r \<in> A\<^sup>\<infinity> \<and> s \<le> r}"
 
 definition infsuff :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
-where "infsuff A s \<equiv> {r. r \<in> A\<^bsup>\<omega>\<^esup> \<and> s \<le> r}"
+where "infsuff A s \<equiv> {r. r \<in> A\<^sup>\<omega> \<and> s \<le> r}"
 
 definition prefix_closed :: "'a llist set \<Rightarrow> bool"
 where "prefix_closed A \<equiv> \<forall> t \<in> A. \<forall> s \<le> t. s \<in> A"
@@ -1077,10 +1077,10 @@ lemma suff_finpref_iff:
   by (auto simp: finpref_def suff_def)
 
 lemma infsuff_LNil [simp]:
-  "infsuff A LNil = A\<^bsup>\<omega>\<^esup>"
+  "infsuff A LNil = A\<^sup>\<omega>"
   by (simp add: infsuff_def)
 
-lemma infsuff_inf: "x \<in> infsuff A s \<Longrightarrow> x \<in> A\<^bsup>\<omega>\<^esup>"
+lemma infsuff_inf: "x \<in> infsuff A s \<Longrightarrow> x \<in> A\<^sup>\<omega>"
   by (auto simp: infsuff_def)
 
 lemma infsuff_mono2: "s \<le> t \<Longrightarrow> infsuff A t \<subseteq> infsuff A s"
@@ -1089,19 +1089,19 @@ lemma infsuff_mono2: "s \<le> t \<Longrightarrow> infsuff A t \<subseteq> infsuf
 lemma infsuff_appE:
   assumes   rA: "r \<in> A\<^sup>\<star>"
   and tinfsuff: "t \<in> infsuff A r"
-  obtains s where "s \<in> A\<^bsup>\<omega>\<^esup>" "t = r@@s"
+  obtains s where "s \<in> A\<^sup>\<omega>" "t = r@@s"
 proof-
   from tinfsuff obtain s where
-    tA: "t \<in> A\<^bsup>\<omega>\<^esup>" and trs: "t = r @@ s"
+    tA: "t \<in> A\<^sup>\<omega>" and trs: "t = r @@ s"
     by (auto simp: infsuff_def llist_le_def)
-  from rA trs tA have "s \<in> A\<^bsup>\<omega>\<^esup>"
+  from rA trs tA have "s \<in> A\<^sup>\<omega>"
     by (auto dest: app_invT)
   thus ?thesis using trs
     by (rule that)
 qed
 
 lemma finpref_infsuff [dest]:
-  "\<lbrakk> r \<in> finpref A t; t\<in>A\<^bsup>\<omega>\<^esup> \<rbrakk> \<Longrightarrow> t \<in> infsuff A r"
+  "\<lbrakk> r \<in> finpref A t; t\<in>A\<^sup>\<omega> \<rbrakk> \<Longrightarrow> t \<in> infsuff A r"
   by (auto simp: finpref_def infsuff_def)
 
 lemma infsuff_finpref:
@@ -1109,23 +1109,23 @@ lemma infsuff_finpref:
   by (auto simp: finpref_def infsuff_def)
 
 lemma infsuff_finpref_iff [iff]:
-  "\<lbrakk> r\<in>A\<^sup>\<star>; t\<in>A\<^bsup>\<omega>\<^esup> \<rbrakk> \<Longrightarrow> (t \<in> finpref A r) = (r \<in> infsuff A t)"
+  "\<lbrakk> r\<in>A\<^sup>\<star>; t\<in>A\<^sup>\<omega> \<rbrakk> \<Longrightarrow> (t \<in> finpref A r) = (r \<in> infsuff A t)"
   by (auto simp: finpref_def infsuff_def)
 
 lemma prefix_lemma:
-  assumes xinf: "x \<in> A\<^bsup>\<omega>\<^esup>"
-  and yinf: "y \<in> A\<^bsup>\<omega>\<^esup>"
+  assumes xinf: "x \<in> A\<^sup>\<omega>"
+  and yinf: "y \<in> A\<^sup>\<omega>"
   and R: "\<And> s. \<lbrakk> s \<in> A\<^sup>\<star>; s \<le> x\<rbrakk> \<Longrightarrow> s \<le> y"
   shows "x = y"
 proof-
-  let ?r = "\<lambda>x y. x\<in>A\<^bsup>\<omega>\<^esup> \<and> y\<in>A\<^bsup>\<omega>\<^esup> \<and> finpref A x \<subseteq> finpref A y"
+  let ?r = "\<lambda>x y. x\<in>A\<^sup>\<omega> \<and> y\<in>A\<^sup>\<omega> \<and> finpref A x \<subseteq> finpref A y"
   have "?r x y" using xinf yinf
     by (auto simp: finpref_def intro: R)
   thus ?thesis
   proof (coinduct rule: llist.strong_coinduct)
     case (Eq_llist a b)
-    hence ainf: "a \<in> A\<^bsup>\<omega>\<^esup>"
-      and binf: "b \<in> A\<^bsup>\<omega>\<^esup>" and pref: "finpref A a \<subseteq> finpref A b" by auto
+    hence ainf: "a \<in> A\<^sup>\<omega>"
+      and binf: "b \<in> A\<^sup>\<omega>" and pref: "finpref A a \<subseteq> finpref A b" by auto
     from ainf show ?case
     proof cases
       case (LCons a' l')
@@ -1141,7 +1141,7 @@ proof-
 qed 
 
 lemma inf_neqE:
-"\<lbrakk> x \<in>  A\<^bsup>\<omega>\<^esup>; y \<in> A\<^bsup>\<omega>\<^esup>; x \<noteq> y;
+"\<lbrakk> x \<in>  A\<^sup>\<omega>; y \<in> A\<^sup>\<omega>; x \<noteq> y;
   \<And>s. \<lbrakk> s\<in>A\<^sup>\<star>; s \<le> x; \<not> s \<le> y\<rbrakk> \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
   by (auto intro!: prefix_lemma)
 
@@ -1203,10 +1203,10 @@ lemma pfinpref_iff [iff]:
 section{* Safety and Liveness *}
 
 definition infsafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-where "infsafety A P \<equiv> \<forall> t \<in> A\<^bsup>\<omega>\<^esup>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
+where "infsafety A P \<equiv> \<forall> t \<in> A\<^sup>\<omega>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
 
 definition infliveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-where "infliveness A P \<equiv> \<forall> t \<in> A\<^sup>\<star>. \<exists> s \<in> A\<^bsup>\<omega>\<^esup>. t @@ s \<in> P"
+where "infliveness A P \<equiv> \<forall> t \<in> A\<^sup>\<star>. \<exists> s \<in> A\<^sup>\<omega>. t @@ s \<in> P"
 
 definition possafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
 where "possafety A P \<equiv> \<forall> t \<in> A\<^sup>\<spadesuit>. (\<forall> r \<in> pfinpref A t. \<exists> s \<in> A\<^sup>\<infinity>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
