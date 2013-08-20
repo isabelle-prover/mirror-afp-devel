@@ -25,14 +25,7 @@ def AFP(*args):
     """Main AFP test, excluding very large sessions"""
 
     afp_thys = path.join(args[2][1], 'thys')
-    return isabelle.isabelle_build(*(args + ("-j", afp_jobs, "-d", afp_thys, "-g", "AFP")), more_settings=afp_settings)
-
-@configuration(repos = [Isabelle, AFP], deps = [(AFP, [0, 1])])
-def AFP_big(*args):
-    """Large Sessions from AFP"""
-
-    afp_thys = path.join(args[2][1], 'thys')
-    return isabelle.isabelle_build(*(args + ("-j", afp_jobs, "-d", afp_thys, "-g", "AFP_big")), more_settings=afp_settings)
+    return isabelle.isabelle_build(*(args + ("-j", afp_jobs, "-d", afp_thys, "-g", "AFP")), more_settings=afp_settings, keep_results=False)
 
 
 # AFP-based Judgement Day configurations
