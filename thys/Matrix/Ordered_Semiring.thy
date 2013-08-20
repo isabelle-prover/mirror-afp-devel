@@ -25,6 +25,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 theory Ordered_Semiring 
 imports 
   "~~/src/HOL/Algebra/Ring"
+  "../Abstract-Rewriting/SN_Orders"
 begin
 
 locale semiring = abelian_monoid R + monoid R for R (structure) +
@@ -78,7 +79,46 @@ lemma wf_max0: "x \<in> carrier R \<Longrightarrow> Max \<zero> x \<in> carrier 
 lemma max0_id_pos: assumes x: "x \<succeq> \<zero>" and wf: "x \<in> carrier R"
   shows "Max \<zero> x = x" unfolding max_comm[OF zero_closed wf] by (rule max_id[OF wf zero_closed x])
 end
-
 hide_const (open) gt geq max
+
+subsection {* A connection between class based semirings and set based semirings *}
+
+definition class_semiring :: "'a itself \<Rightarrow> 'b \<Rightarrow> ('a :: {plus,times,one,zero},'b)ring_scheme" where
+  "class_semiring _ b \<equiv> \<lparr> carrier = UNIV, mult = op *, one = 1, zero = 0, add = op +, \<dots> = b\<rparr>"
+
+lemma class_semiring: "semiring (class_semiring (TYPE('a :: ordered_semiring_1)) b)"
+  unfolding class_semiring_def
+  by (unfold_locales, auto simp: field_simps)
+
+definition class_ordered_semiring :: "'a itself \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a,'b) ordered_semiring_scheme" where
+  "class_ordered_semiring a gt b \<equiv> class_semiring a \<lparr>
+    ordered_semiring.geq = op \<ge>,
+    gt = gt,
+    max = max,
+    \<dots> = b\<rparr>"
+
+lemma class_ordered_semiring: assumes "order_pair (gt :: ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool)) d"
+  shows "ordered_semiring 
+    (class_ordered_semiring (TYPE('a)) gt b)" 
+  (is "ordered_semiring ?R")
+proof -
+  interpret order_pair gt d by fact
+  interpret semiring ?R unfolding class_ordered_semiring_def by (rule class_semiring)
+  show ?thesis 
+    by (unfold_locales, unfold class_ordered_semiring_def class_semiring_def, auto
+    intro: compat compat2 gt_imp_ge ge_trans max_comm max_id max_mono ge_refl one_ge_zero
+     times_left_mono times_right_mono plus_left_mono)
+qed
+
+lemma (in one_mono_ordered_semiring_1) class_ordered_semiring:  
+  "ordered_semiring 
+    (class_ordered_semiring (TYPE('a)) op \<succ> b)" 
+  by (rule class_ordered_semiring[of _ default], unfold_locales)
+
+lemma (in both_mono_ordered_semiring_1) class_ordered_semiring:  
+  "ordered_semiring 
+    (class_ordered_semiring (TYPE('a)) op \<succ> b)" 
+  by (rule class_ordered_semiring[of _ default], unfold_locales)
+
 
 end

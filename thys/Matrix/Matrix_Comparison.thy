@@ -2225,10 +2225,11 @@ definition mat_ordered_semiring :: "nat \<Rightarrow> nat \<Rightarrow> ('a :: o
     max = mat_max,
     \<dots> = b\<rparr>"
 
-lemma mat_ordered_semiring: assumes "order_pair gt (d :: 'a :: ordered_semiring_1)" and sd_n: "sd \<le> n"
-  shows "ordered_semiring (mat_ordered_semiring n sd gt b :: ('a mat,'b) ordered_semiring_scheme)" (is "ordered_semiring ?R")
+lemma (in one_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \<le> n" 
+  shows "ordered_semiring 
+    (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
+  (is "ordered_semiring ?R")
 proof -
-  interpret order_pair gt d by fact
   interpret semiring ?R unfolding mat_ordered_semiring_def by (rule mat_semiring)
   show ?thesis 
     by (unfold_locales, unfold mat_ring_def mat_ordered_semiring_def ordered_semiring_record_simps,
@@ -2237,14 +2238,25 @@ proof -
       mat1_ge_mat0 mat_max_mono mat_max_ge mat_max_id)
 qed
 
-lemma (in one_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \<le> n" 
-  shows "ordered_semiring 
-    (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
-  by (rule mat_ordered_semiring[OF _ sd_n, of _ default], unfold_locales)
+definition mat_both_ordered_semiring :: "nat \<Rightarrow> ('a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ordered_semiring_scheme" where
+  "mat_both_ordered_semiring n gt b \<equiv> mat_ring n \<lparr>
+    ordered_semiring.geq = mat_ge,
+    gt = mat_comp_all gt,
+    max = mat_max,
+    \<dots> = b\<rparr>"
 
-lemma (in both_mono_ordered_semiring_1) mat_ordered_semiring: assumes sd_n: "sd \<le> n" 
+lemma (in both_mono_ordered_semiring_1) mat_both_ordered_semiring: assumes n: "n > 0" 
   shows "ordered_semiring 
-    (mat_ordered_semiring n sd op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
-  by (rule mat_ordered_semiring[OF _ sd_n, of _ default], unfold_locales)
+    (mat_both_ordered_semiring n op \<succ> b :: ('a mat,'b) ordered_semiring_scheme)" 
+  (is "ordered_semiring ?R")
+proof -
+  interpret semiring ?R unfolding mat_both_ordered_semiring_def by (rule mat_semiring)
+  show ?thesis 
+    by (unfold_locales, unfold mat_ring_def mat_both_ordered_semiring_def ordered_semiring_record_simps,
+      auto intro: mat_max_comm mat_ge_trans
+      mat_plus_left_mono mat_mult_left_mono mat_mult_right_mono mat_ge_refl
+      mat1_ge_mat0 mat_max_mono mat_max_ge mat_max_id mat_gt_arc_trans mat_gt_arc_imp_mat_ge
+      mat_gt_arc_compat mat_gt_arc_compat2)
+qed
 
 end

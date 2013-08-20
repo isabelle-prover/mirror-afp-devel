@@ -88,6 +88,13 @@ locale one_mono_ordered_semiring_1 = order_pair gt
   for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) + 
   assumes plus_gt_left_mono: "x \<succ> y \<Longrightarrow> x + z \<succ> y + z"
   and default_gt_zero: "default \<succ> 0"
+begin
+lemma plus_gt_right_mono: "x \<succ> y \<Longrightarrow> a + x \<succ> a + y"
+  unfolding add_commute[of a] by (rule plus_gt_left_mono)
+
+lemma plus_gt_both_mono: "x \<succ> y \<Longrightarrow> a \<succ> b \<Longrightarrow> x + a \<succ> y + b"
+  by (rule gt_trans[OF plus_gt_left_mono plus_gt_right_mono])
+end
 
 locale SN_one_mono_ordered_semiring_1 = one_mono_ordered_semiring_1 + order_pair + 
   assumes SN: "SN {(x,y) . y \<ge> 0 \<and> x \<succ> y}"
