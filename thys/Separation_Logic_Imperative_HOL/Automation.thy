@@ -732,7 +732,7 @@ method_setup vcg = {*
 )) *} "Seplogic: Verification Condition Generator"
 
 method_setup sep_auto = 
-  {* (Args.mode "nopre" -- Args.mode "nopost" -- Args.mode "plain") 
+  {* Scan.lift (Args.mode "nopre" -- Args.mode "nopost" -- Args.mode "plain") 
       --| Method.sections Seplogic_Auto.sep_auto_modifiers >>
   (fn ((nopre,nopost),plain) => fn ctxt => SIMPLE_METHOD' (
     CHANGED o Seplogic_Auto.sep_autosolve_tac 

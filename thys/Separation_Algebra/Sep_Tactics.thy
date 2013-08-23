@@ -39,15 +39,11 @@ ML {*
         SIMPLE_METHOD' (sep_subst_tac ctxt occs thms);
   fun sep_subst_asm_method ctxt occs thms =
         SIMPLE_METHOD' (sep_subst_asm_tac ctxt occs thms);
-
-  val sep_subst_parser =
-        Args.mode "asm"
-        -- Scan.lift (Scan.optional (Args.parens (Scan.repeat Parse.nat)) [0])
-        -- Attrib.thms;
 *}
 
 method_setup "sep_subst" = {*
-  sep_subst_parser >>
+  Scan.lift (Args.mode "asm" -- Scan.optional (Args.parens (Scan.repeat Parse.nat)) [0])
+      -- Attrib.thms >>
     (fn ((asm, occs), thms) => fn ctxt =>
       (if asm then sep_subst_asm_method else sep_subst_method) ctxt occs thms)
 *}

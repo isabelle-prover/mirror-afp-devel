@@ -104,15 +104,16 @@ setup {* Refine_dref_type.RELATES_rules.setup *}
 setup {* Refine_dref_type.pattern_rules.setup *}
 
 method_setup refine_dref_type = 
-  {* Args.mode "trace" -- Args.mode "nopost" >> (fn (tracing,nopost) => 
-    fn ctxt => (let
-      val ctxt = 
-        if tracing then Config.put Refine_dref_type.tracing true ctxt else ctxt; 
-    in
-      SIMPLE_METHOD (CHANGED (
-        Refine_dref_type.type_tac ctxt 
-        THEN (if nopost then all_tac else ALLGOALS (TRY o Refine.post_tac ctxt))))
-    end))
+  {* Scan.lift (Args.mode "trace" -- Args.mode "nopost") >> (fn (tracing,nopost) => 
+    fn ctxt =>
+      let
+        val ctxt = 
+          if tracing then Config.put Refine_dref_type.tracing true ctxt else ctxt; 
+      in
+        SIMPLE_METHOD (CHANGED (
+          Refine_dref_type.type_tac ctxt 
+          THEN (if nopost then all_tac else ALLGOALS (TRY o Refine.post_tac ctxt))))
+      end)
   *} 
   "Use type-based heuristics to instantiate data refinement relations"
 

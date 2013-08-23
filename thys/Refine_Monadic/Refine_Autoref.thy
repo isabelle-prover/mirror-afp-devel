@@ -218,7 +218,7 @@ setup {* Refine_Autoref.elim_thms.setup *}
 setup {* Refine_Autoref.simp_thms.setup *}
 
 method_setup refine_autoref =
-  {* (Args.mode "trace" -- Args.mode "ss" -- Attrib.thms) 
+  {* Scan.lift (Args.mode "trace" -- Args.mode "ss") -- Attrib.thms
     >> (fn ((trace,ss),as_thms) => fn ctxt 
          => Refine_Autoref.autoref_method trace ss as_thms ctxt) *} 
   "Refinement Framework: Automatic data refinement"
@@ -226,7 +226,7 @@ method_setup refine_autoref =
 
 (*
 method_setup refine_autoref =
-  {* (Args.mode "trace" -- Args.mode "ss" -- Attrib.thms) 
+  {* Scan.lift (Args.mode "trace" -- Args.mode "ss") -- Attrib.thms
     >> (fn ((trace,ss),as_thms) => fn ctxt => SIMPLE_METHOD' (
     CHANGED_PROP o Refine_Autoref.REPEAT_DETERM' (CHANGED_PROP o
       Refine_Autoref.autoref_tac (Refine_Autoref.dflt_config ctxt as_thms 
@@ -236,7 +236,7 @@ method_setup refine_autoref =
   "Refinement Framework: Automatic data refinement"
 *)
 (*method_setup refine_autoref_ss =
-  {* (Args.mode "notrace" -- Attrib.thms) 
+  {* Scan.lift (Args.mode "notrace") -- Attrib.thms
     >> (fn (notrace,as_thms) => fn ctxt => SIMPLE_METHOD' (
     CHANGED_PROP o (Refine_Autoref.autoref_tac 
         (Refine_Autoref.dflt_config ctxt as_thms (not notrace)) true ctxt))
