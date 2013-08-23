@@ -266,7 +266,7 @@ datatype expr = Const rat | Negation expr | Inverse expr | Addition expr expr | 
 
 text {* The function @{term "translation"} translates a given expression into its equivalent real. *}
 
-fun translation :: "expr => real" ("(2{|_|})")
+fun translation :: "expr => real" ("(2\<lbrace>_\<rbrace>)")
   where
   "translation (Const x) = of_rat x"|
   "translation (Negation e) = - translation e"|
@@ -275,12 +275,8 @@ fun translation :: "expr => real" ("(2{|_|})")
   "translation (Multiplication e1 e2) = translation e1 * translation e2"|
   "translation (Sqrt e) = (if translation e < 0 then 0 else sqrt (translation e))"
 
-notation (xsymbols)
- translation  ("(2\<lbrace>_\<rbrace>)")
-
-
 text {* Define the set of all the radicals of a given expression. For
-example, suppose @{term "expr"} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals. This can be translated as follows: $\lbrace expr\rbrace = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. Moreover, the set @{term "radicals"} of this expression is : $\{$Addition (Const @{term a}) (Sqrt (Const @{term b})), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$. *}
+example, suppose @{term "expr"} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals. This can be translated as follows: @{text "\<lbrace>expr\<rbrace> ="}~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. Moreover, the set @{term "radicals"} of this expression is : @{text "\<lbrace>"}Addition (Const @{term a}) (Sqrt (Const @{term b})), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}@{text "\<rbrace>"}. *}
 
 fun radicals :: "expr => expr set" 
   where
@@ -312,7 +308,7 @@ lemma radical_sqrt_correct_expr:
   apply (metis linorder_not_less translation.simps(6))
   done
 
-text {* The order of an expression is the maximum number of radicals one over another occuring in a given expression. Using the example above, suppose @{term "expr"} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\{expr\} = \sqrt{a + \sqrt{b} + \sqrt{c + \sqrt{\sqrt{d}}}}$. The order of @{term expr} is $max (2,3) = 3$. *}
+text {* The order of an expression is the maximum number of radicals one over another occuring in a given expression. Using the example above, suppose @{term "expr"} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: @{text "\<lbrace>expr\<rbrace> ="}~$\sqrt{a + \sqrt{b} + \sqrt{c + \sqrt{\sqrt{d}}}}$. The order of @{term expr} is $max (2,3) = 3$. *}
 
 fun order :: "expr => nat"
   where
@@ -362,7 +358,7 @@ lemma finite_radicals: "finite (radicals e)"
 
 text {* We define here a new set corresponding to the orders of each element in
 the set @{term "radicals"} of an expression @{term expr}. Using the example above, suppose
-@{term expr} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\lbrace expr\rbrace = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The set @{term "radicals"} of @{term expr} is $\{$Addition (Const @{term a}) Sqrt (Const @{term b}), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$; therefore, the set @{term "order_radicals"} of this set is $\{1,0,2,1,0\}$.
+@{term expr} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: @{text "\<lbrace>expr\<rbrace> ="}~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The set @{term "radicals"} of @{term expr} is $\{$Addition (Const @{term a}) Sqrt (Const @{term b}), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$; therefore, the set @{term "order_radicals"} of this set is $\{1,0,2,1,0\}$.
 *}
 
 fun order_radicals:: "expr set => nat set"
@@ -391,7 +387,7 @@ text {* This important lemma states that in an expression that has at least one
 radical, we can find an upmost radical @{term r} which is not radical of any other term
 of the expression @{term e}. It is also important to notice that this upmost radical is
 not necessarily unique and is not the term of highest order of the expression
-@{term e}. Using the example above, suppose @{term e} is of the form : @{term e} = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\lbrace e\rbrace = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The possible upmost radicals in this expression are Addition (Const @{term a}) (Sqrt (Const @{term b})) or Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))). *}
+@{term e}. Using the example above, suppose @{term e} is of the form : @{term e} = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: @{text "\<lbrace>e\<rbrace> ="}~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The possible upmost radicals in this expression are Addition (Const @{term a}) (Sqrt (Const @{term b})) or Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))). *}
 
 
 lemma upmost_radical_sqrt2:
@@ -402,7 +398,7 @@ lemma upmost_radical_sqrt2:
   by (metis finite_order_radicals finite_order_radicals_has_max in_radicals_smaller_order_contrap)
 
 
-text {* The following 7 lemmas are used to prove the main lemma @{term "radical_sqrt_normal_form"} which states that if an expression @{term e} has at least one radical then it can be written in a normal form. This means that there exist three radical expressions @{term a}, @{term b} and @{term r} such that $\lbrace e\rbrace = \lbrace a\rbrace + \lbrace b\rbrace * \sqrt{\lbrace r\rbrace}$ and the radicals of @{term a} are radicals of @{term e} but are not @{term r}, and the same goes for the radicals of @{term b} and @{term r}. It is important to notice that @{term a}, @{term b} and @{term r} are not unique and @{term "Sqrt r"} is not necessarily the term of highest order. *}
+text {* The following 7 lemmas are used to prove the main lemma @{term "radical_sqrt_normal_form"} which states that if an expression @{term e} has at least one radical then it can be written in a normal form. This means that there exist three radical expressions @{term a}, @{term b} and @{term r} such that @{text "\<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> * \<sqrt>\<lbrace>r\<rbrace>"} and the radicals of @{term a} are radicals of @{term e} but are not @{term r}, and the same goes for the radicals of @{term b} and @{term r}. It is important to notice that @{term a}, @{term b} and @{term r} are not unique and @{term "Sqrt r"} is not necessarily the term of highest order. *}
 
 lemma radical_sqrt_normal_form_sublemma:
   "((a::real) - b) * (a + b) = a * a - b * b"
