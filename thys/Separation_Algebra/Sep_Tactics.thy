@@ -16,64 +16,40 @@ text {* A number of proof methods to assist with reasoning about separation logi
 
 section {* Selection (move-to-front) tactics *}
 
-ML {*
-  fun sep_select_method n ctxt =
-        Method.SIMPLE_METHOD' (sep_select_tac ctxt n);
-  fun sep_select_asm_method n ctxt =
-        Method.SIMPLE_METHOD' (sep_select_asm_tac ctxt n);
-*}
-
 method_setup sep_select = {*
-  Scan.lift Parse.int >> sep_select_method
+  Scan.lift Parse.int >> (fn n => fn ctxt => SIMPLE_METHOD' (sep_select_tac ctxt n))
 *} "Select nth separation conjunct in conclusion"
 
 method_setup sep_select_asm = {*
-  Scan.lift Parse.int >> sep_select_asm_method
+  Scan.lift Parse.int >> (fn n => fn ctxt => SIMPLE_METHOD' (sep_select_asm_tac ctxt n))
 *} "Select nth separation conjunct in assumptions"
 
 
 section {* Substitution *}
 
-ML {*
-  fun sep_subst_method ctxt occs thms =
-        SIMPLE_METHOD' (sep_subst_tac ctxt occs thms);
-  fun sep_subst_asm_method ctxt occs thms =
-        SIMPLE_METHOD' (sep_subst_asm_tac ctxt occs thms);
-*}
-
 method_setup "sep_subst" = {*
-  Scan.lift (Args.mode "asm" -- Scan.optional (Args.parens (Scan.repeat Parse.nat)) [0])
-      -- Attrib.thms >>
-    (fn ((asm, occs), thms) => fn ctxt =>
-      (if asm then sep_subst_asm_method else sep_subst_method) ctxt occs thms)
+  Scan.lift (Args.mode "asm" -- Scan.optional (Args.parens (Scan.repeat Parse.nat)) [0]) --
+    Attrib.thms >> (fn ((asm, occs), thms) => fn ctxt =>
+      SIMPLE_METHOD' ((if asm then sep_subst_asm_tac else sep_subst_tac) ctxt occs thms))
 *}
 "single-step substitution after solving one separation logic assumption"
 
 
 section {* Forward Reasoning *}
 
-ML {*
-  fun sep_drule_method thms ctxt = SIMPLE_METHOD' (sep_dtac ctxt thms);
-  fun sep_frule_method thms ctxt = SIMPLE_METHOD' (sep_ftac ctxt thms);
-*}
-
 method_setup "sep_drule" = {*
-  Attrib.thms >> sep_drule_method
+  Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD' (sep_dtac ctxt thms))
 *} "drule after separating conjunction reordering"
 
 method_setup "sep_frule" = {*
-  Attrib.thms >> sep_frule_method
+  Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD' (sep_ftac ctxt thms))
 *} "frule after separating conjunction reordering"
 
 
 section {* Backward Reasoning *}
 
-ML {*
-  fun sep_rule_method thms ctxt = SIMPLE_METHOD' (sep_rtac ctxt thms)
-*}
-
 method_setup "sep_rule" = {*
-  Attrib.thms >> sep_rule_method
+  Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD' (sep_rtac ctxt thms))
 *} "applies rule after separating conjunction reordering"
 
 
@@ -121,37 +97,31 @@ ML {*
   fun sep_cancel_smart_tac_rules ctxt etacs =
       sep_cancel_smart_tac ctxt (FIRST' ([atac] @ etacs));
 
-  fun sep_cancel_method ctxt =
+  val sep_cancel_syntax = Method.sections [
+    Args.add -- Args.colon >> K (I, SepCancel_Rules.add)] >> K ();
+*}
+
+method_setup sep_cancel = {*
+  sep_cancel_syntax >> (fn _ => fn ctxt =>
     let
       val etacs = map etac (SepCancel_Rules.get ctxt);
     in
       SIMPLE_METHOD' (sep_cancel_smart_tac_rules ctxt etacs)
-    end;
-
-  val sep_cancel_syntax = Method.sections [
-    Args.add -- Args.colon >> K (I, SepCancel_Rules.add)];
-*}
-
-method_setup sep_cancel = {*
-  sep_cancel_syntax >> K sep_cancel_method
+    end)
 *} "Separating conjunction conjunct cancellation"
 
 text {*
   As above, but use blast with a depth limit to figure out where cancellation
   can be done. *}
 
-ML {*
-  fun sep_cancel_blast_method ctxt =
+method_setup sep_cancel_blast = {*
+  sep_cancel_syntax >> (fn _ => fn ctxt =>
     let
       val rules = SepCancel_Rules.get ctxt;
       val tac = Blast.depth_tac (ctxt addIs rules) 10;
     in
       SIMPLE_METHOD' (sep_cancel_smart_tac ctxt tac)
-    end;
-*}
-
-method_setup sep_cancel_blast = {*
-  sep_cancel_syntax >> K sep_cancel_blast_method
+    end)
 *} "Separating conjunction conjunct cancellation using blast"
 
 end
