@@ -193,13 +193,14 @@ fun unl_rewr thm =
      in
        unl |> rewr
      end;
-val att_unl_tac = Thm.rule_attribute (fn _ => unl_rewr); 
-val att_unl_rule_tac = Thm.rule_attribute (fn _ => Object_Logic.rulify o unl_rewr); 
 *}
-attribute_setup unlifted = {* Scan.succeed att_unl_tac *} 
-  "attribute to unlift intensional formulas"
-attribute_setup unlift_rule = {* Scan.succeed att_unl_rule_tac *} 
-  "attribute to unlift and rulify intensional formulas"
+attribute_setup unlifted = {*
+  Scan.succeed (Thm.rule_attribute (fn _ => unl_rewr))
+*} "unlift intensional formulas"
+
+attribute_setup unlift_rule = {*
+  Scan.succeed (Thm.rule_attribute (fn _ => Object_Logic.rulify o unl_rewr))
+*} "unlift and rulify intensional formulas"
 
 
 text {*
@@ -212,19 +213,16 @@ fun int_rewr thm =
      handle THM _ => (thm RS @{thm prefeq_reflection})
      handle THM _ => ((thm RS @{thm int_eq_true}) RS @{thm inteq_reflection})
      handle THM _ => ((thm RS @{thm pref_eq_true}) RS @{thm prefeq_reflection});
-
-val att_int_rew_tac =
-  Thm.rule_attribute (fn _ => int_rewr)
-
-val add_intensional_simp = Thm.declaration_attribute (fn th => Simplifier.map_ss (Simplifier.add_simp (int_rewr th)));
-
-fun empty_attribute _ = (NONE, NONE); 
 *}
 
-attribute_setup simp_unl = {* Attrib.add_del add_intensional_simp empty_attribute *} (* note only adding -- removing is ignored *)
-  "adds thm unlifted from rewrites from intensional formulas or preformulas"
+attribute_setup simp_unl = {*
+    Attrib.add_del
+      (Thm.declaration_attribute
+        (fn th => Simplifier.map_ss (Simplifier.add_simp (int_rewr th))))
+      (K (NONE, NONE))  (* note only adding -- removing is ignored *)
+*} "add thm unlifted from rewrites from intensional formulas or preformulas"
 
-attribute_setup int_rewrite = {* Scan.succeed att_int_rew_tac *} 
-  "attribute to produce rewrites from intensional formulas or preformulas"
+attribute_setup int_rewrite = {* Scan.succeed (Thm.rule_attribute (fn _ => int_rewr)) *}
+  "produce rewrites from intensional formulas or preformulas"
 
 end
