@@ -280,7 +280,7 @@ notation (xsymbols)
 
 
 text {* Define the set of all the radicals of a given expression. For
-example, suppose @{term "expr"} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals. This can be translated as follows: $\<lbrace>expr\<rbrace> = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. Moreover, the set @{term "radicals"} of this expression is : $\{$Addition (Const @{term a}) (Sqrt (Const @{term b})), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$. *}
+example, suppose @{term "expr"} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals. This can be translated as follows: $\lbrace expr\rbrace = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. Moreover, the set @{term "radicals"} of this expression is : $\{$Addition (Const @{term a}) (Sqrt (Const @{term b})), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$. *}
 
 fun radicals :: "expr => expr set" 
   where
@@ -362,7 +362,7 @@ lemma finite_radicals: "finite (radicals e)"
 
 text {* We define here a new set corresponding to the orders of each element in
 the set @{term "radicals"} of an expression @{term expr}. Using the example above, suppose
-@{term expr} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\<lbrace>expr\<rbrace> = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The set @{term "radicals"} of @{term expr} is $\{$Addition (Const @{term a}) Sqrt (Const @{term b}), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$; therefore, the set @{term "order_radicals"} of this set is $\{1,0,2,1,0\}$.
+@{term expr} is of the form : expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\lbrace expr\rbrace = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The set @{term "radicals"} of @{term expr} is $\{$Addition (Const @{term a}) Sqrt (Const @{term b}), Const @{term b}, Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term d}$\}$; therefore, the set @{term "order_radicals"} of this set is $\{1,0,2,1,0\}$.
 *}
 
 fun order_radicals:: "expr set => nat set"
@@ -391,7 +391,7 @@ text {* This important lemma states that in an expression that has at least one
 radical, we can find an upmost radical @{term r} which is not radical of any other term
 of the expression @{term e}. It is also important to notice that this upmost radical is
 not necessarily unique and is not the term of highest order of the expression
-@{term e}. Using the example above, suppose @{term e} is of the form : @{term e} = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\<lbrace>e\<rbrace> = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The possible upmost radicals in this expression are Addition (Const @{term a}) (Sqrt (Const @{term b})) or Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))). *}
+@{term e}. Using the example above, suppose @{term e} is of the form : @{term e} = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are rationals and which can be translated as follows: $\lbrace e\rbrace = \sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The possible upmost radicals in this expression are Addition (Const @{term a}) (Sqrt (Const @{term b})) or Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))). *}
 
 
 lemma upmost_radical_sqrt2:
@@ -402,7 +402,7 @@ lemma upmost_radical_sqrt2:
   by (metis finite_order_radicals finite_order_radicals_has_max in_radicals_smaller_order_contrap)
 
 
-text {* The following 7 lemmas are used to prove the main lemma @{term "radical_sqrt_normal_form"} which states that if an expression @{term e} has at least one radical then it can be written in a normal form. This means that there exist three radical expressions @{term a}, @{term b} and @{term r} such that $\<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> * \sqrt{\<lbrace>r\<rbrace>}$ and the radicals of @{term a} are radicals of @{term e} but are not @{term r}, and the same goes for the radicals of @{term b} and @{term r}. It is important to notice that @{term a}, @{term b} and @{term r} are not unique and @{term "Sqrt r"} is not necessarily the term of highest order. *}
+text {* The following 7 lemmas are used to prove the main lemma @{term "radical_sqrt_normal_form"} which states that if an expression @{term e} has at least one radical then it can be written in a normal form. This means that there exist three radical expressions @{term a}, @{term b} and @{term r} such that $\lbrace e\rbrace = \lbrace a\rbrace + \lbrace b\rbrace * \sqrt{\lbrace r\rbrace}$ and the radicals of @{term a} are radicals of @{term e} but are not @{term r}, and the same goes for the radicals of @{term b} and @{term r}. It is important to notice that @{term a}, @{term b} and @{term r} are not unique and @{term "Sqrt r"} is not necessarily the term of highest order. *}
 
 lemma radical_sqrt_normal_form_sublemma:
   "((a::real) - b) * (a + b) = a * a - b * b"
