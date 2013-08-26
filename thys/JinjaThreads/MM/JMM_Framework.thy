@@ -1757,7 +1757,7 @@ next
   case 1
   hence sc1: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps lmap_LCons lconcat_LCons tta
+    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps llist.map(2) lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
   from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 1 step.hyps(3)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by simp
@@ -1765,7 +1765,7 @@ next
   case 2
   hence sc1: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps lmap_LCons lconcat_LCons tta
+    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps llist.map(2) lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
   from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 2 step.hyps(4)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by(simp add: tta o_def)
@@ -2486,7 +2486,7 @@ proof -
           by(rule ta_seq_consist_into_non_speculative) simp
         also note E also note ltake_lappend2 also note E'
         also note E'_unfold also note lmap_lappend_distrib also note lmap_lappend_distrib 
-        also note lconcat_lappend also note lmap_LCons also note E'_r_m also note prod.simps(2)
+        also note lconcat_lappend also note llist.map(2) also note E'_r_m also note prod.simps(2)
         also note ltake_lappend2 also note lconcat_LCons also note ltake_lappend1
         also note non_speculative_lappend also note lmap_lappend_distrib also note non_speculative_lappend
         also have "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E')) = 
@@ -2701,7 +2701,7 @@ proof -
           apply(subst (1 2) ltake_lappend2, simp add: r_conv3)
           apply(subst lappend_eq_lappend_conv, simp)
           apply safe
-          unfolding lmap_LCons lconcat_LCons E'_r_m snd_conv fst_conv take_map
+          unfolding llist.map(2) lconcat_LCons E'_r_m snd_conv fst_conv take_map
           apply(subst ltake_lappend1)
            defer
            apply(subst append_take_drop_id[where xs="\<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>" and n=r_n, symmetric])
