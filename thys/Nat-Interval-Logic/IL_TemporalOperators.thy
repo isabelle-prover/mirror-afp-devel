@@ -1496,7 +1496,6 @@ apply (rule iffI)
   apply (subgoal_tac "t1 \<in> I \<down>< (t - t mod k) \<union> I \<down>\<ge> (t - t mod k)")
    prefer 2
    apply (simp add: cut_less_cut_ge_ident)
-   find_theorems "_ < iMin _" "_ \<notin> _"
   apply (subgoal_tac "t1 \<notin> I \<down>\<ge> (t - t mod k)")
    prefer 2
    apply (blast dest: not_less_iMin)

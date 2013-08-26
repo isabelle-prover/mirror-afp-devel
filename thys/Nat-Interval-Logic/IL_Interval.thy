@@ -1646,7 +1646,6 @@ apply (simp add: linorder_not_le linorder_not_less)
 thm iMOD_iTILL_iMODb_conv[of r "r + m * c" m]
 apply (rule_tac t=c and s="(r + m * c - r) div m" in subst, simp)
 apply (subst iMOD_iTILL_iMODb_conv[symmetric], simp)
-find_theorems "cut_le (_ \<inter> _)"
 apply (simp add: cut_le_Int_right iTILL_cut_le)
 thm iMOD_iTILL_iMODb_conv
 apply (simp add: iMOD_iTILL_iMODb_conv)

@@ -2399,7 +2399,6 @@ apply (case_tac "I \<inter> [\<dots>n * d + d - Suc 0] = {}")
  apply (rule Int_mono[OF order_refl])
  apply (simp add: iIN_iTILL_subset_conv)
  apply (simp add: diff_le_mono)
-find_theorems "_ div _ <= _" name: conv
 apply (subgoal_tac "Max (I \<inter> [\<dots>n * d + d - Suc 0]) div d \<le> n")
  prefer 2
  thm div_le_conv
