@@ -92,11 +92,6 @@ text {* lemmas about for generated constants *}
 lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
 by auto
 
-lemma stream_map_simps [simp, code]:
-  shows smap_SCons: "smap f (SCons x xs) = SCons (f x) (smap f xs)"
-unfolding smap_def SCons_def
-by(subst stream.ctor_dtor_unfold, simp add: stream.dtor_ctor)
-
 lemma [simp]:
   shows shd_smap: "shd (smap f xs) = f (shd xs)"
   and stl_smap: "stl (smap f xs) = smap f (stl xs)"
@@ -170,7 +165,7 @@ setup {*
 *}
 
 declare
-  llist_map_simps [nitpick_simp]
+  llist.map [nitpick_simp]
   llist.sels [nitpick_simp]
 
 

@@ -122,11 +122,6 @@ text {* lemmas about for generated constants *}
 lemma eq_LConsD: "xs = LCons y ys \<Longrightarrow> lhd xs = y \<and> ltl xs = ys"
 by auto
 
-lemma llist_map_simps [simp, code]:
-  shows lmap_LNil: "lmap f LNil = LNil"
-  and lmap_LCons: "lmap f (LCons x xs) = LCons (f x) (lmap f xs)"
-by simp+
-
 lemma [simp]:
   shows LNil_eq_llist_map: "LNil = lmap f xs \<longleftrightarrow> xs = LNil"
   and llist_map_eq_LNil: "lmap f xs = LNil \<longleftrightarrow> xs = LNil"
@@ -228,7 +223,7 @@ setup {*
 *}
 
 declare
-  llist_map_simps [nitpick_simp]
+  llist.map [nitpick_simp]
   llist.sels [nitpick_simp]
 
 text {* Setup for quickcheck *}
@@ -423,14 +418,8 @@ where "llistsum xs = (if lfinite xs then listsum (list_of xs) else 0)"
 
 subsection {* Properties of predefined functions *}
 
-lemmas lmap_simps = llist_map_simps
-
 lemmas lhd_LCons = llist.sels(1)
-
-lemma ltl_simps:
-  shows ltl_LNil: "ltl LNil = LNil"
-  and ltl_LCons: "ltl (LCons x xs) = xs"
-by simp_all
+lemmas ltl_simps = llist.sels(2,3)
 
 lemmas lhd_LCons_ltl = llist.collapse
 

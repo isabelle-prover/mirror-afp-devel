@@ -216,10 +216,7 @@ lemma TNil_eq_tllist_unfold [simp]:
   "TNil b = tllist_unfold IS_TNIL TNIL THD TTL a \<longleftrightarrow> IS_TNIL a \<and> b = TNIL a"
 by(auto simp add: tllist_unfold)
 
-lemma tmap_simps [nitpick_simp]:
-  "tmap f g (TNil b) = TNil (g b)"
-  "tmap f g (TCons x xs) = TCons (f x) (tmap f g xs)"
-by simp+
+declare tllist.map [nitpick_simp]
 
 lemma is_TNil_tmap [simp]: "is_TNil (tmap f g xs) \<longleftrightarrow> is_TNil xs"
 by(cases xs) simp_all
