@@ -46,8 +46,8 @@ method_setup regexp = {*
     end)
 *} "decide relation equalities via regular expressions"
 
-hide_const (open) le_rexp nPlus nTimes norm nullable bisimilar is_bisimulation closure step test
-  step pre_bisim add_atoms check_eqv rel word_rel rel_eq
+hide_const (open) le_rexp nPlus nTimes norm nullable bisimilar is_bisimulation closure
+  pre_bisim add_atoms check_eqv rel word_rel rel_eq
 
 text {* Example: *}
 
