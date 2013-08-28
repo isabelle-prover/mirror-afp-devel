@@ -444,7 +444,7 @@ abstract =
 
 [AVL-Trees]
 title = AVL Trees
-author = Tobias Nipkow <http://www4.in.tum.de/~nipkow/>, Cornelia Pusch 
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Cornelia Pusch 
 date = 2004-03-19
 topic = Computer Science/Data Structures
 abstract = Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.
@@ -824,7 +824,7 @@ abstract = Handling variable binding is one of the main difficulties in formal p
 
 [MiniML]
 title = Mini ML
-author = Wolfgang Naraschewski, Tobias Nipkow <http://www4.in.tum.de/~nipkow/>
+author = Wolfgang Naraschewski, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2004-03-19
 topic = Computer Science/Programming Languages/Type Systems
 abstract = This theory defines the type inference rules and the type inference algorithm <i>W</i> for MiniML (simply-typed lambda terms with <tt>let</tt>) due to Milner. It proves the soundness and completeness of <i>W</i> w.r.t. the rules. 
@@ -1442,7 +1442,7 @@ abstract = This works presents a formalization of the Girth-Chromatic number the
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs 
-author = Gertrud Bauer, Tobias Nipkow <http://www4.in.tum.de/~nipkow>
+author = Gertrud Bauer, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 date = 2006-05-22
 base = HOL/HOL-Library
 topic = Mathematics/Graph Theory
