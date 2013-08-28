@@ -3,6 +3,10 @@ body {
   background: #FFFFFF;
 }
 
+a:link    { color: #0000EE }
+a:visited { color: #551A8B }
+a:hover   { color: #0000EE }
+
 h1 {
  font: normal small-caps bold large sans-serif;
  color: #FFFFFF;
@@ -240,8 +244,8 @@ td.formatted {
 }
 
 a#bib {
-  text-decoration: none;
-  color:#000000;
+  text-decoration: underline;
+  color: #0000EE;
 }
 
 table.links {
@@ -286,8 +290,7 @@ div.list {
 div.list a:link { text-decoration:none }
 div.list a:visited { text-decoration:none }
 div.list a:hover { text-decoration:underline }
-div.list a:active { text-decoration:underline
-}
+div.list a:active { text-decoration:underline }
 div.list a:focus { text-decoration:underline }
 
 pre.bibtex { 

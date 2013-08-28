@@ -7,7 +7,7 @@ $(document).ready(function() {
 	$('td.formatted pre').each(function(n,pre) {
 		$(pre) .after($(pre).clone().hide())
 			.text( $(pre).text().split('\n')[0] )
-			.append(' <a id="bib" href="" onclick="show(this);return false;">[show]</a>');
+			.append(' <a id="bib" href="" onclick="show(this);return false;">[...]</a>');
 	});
 });
 
