@@ -277,34 +277,38 @@ lemma nullable_nderivs:
   "nullable (foldl (%r a. nderiv a r) r w) = (w : lang r)"
 by (induct w arbitrary: r) (simp_all add: nullable_iff lang_nderiv Deriv_def)
 
-lemma lang_eq_if_rtrancl: assumes
-  "!!r' s'. ((r0,s0),(r',s')) : {((r,s),(nderiv a r,nderiv a s))| r s a. a : atoms r0 \<union> atoms s0}^*
-  \<Longrightarrow> nullable r' = nullable s'"
-shows "lang r0 = lang s0"
-proof-
-  { fix w have "w \<in> lang r0 \<longleftrightarrow> w \<in> lang s0"
-    proof cases
-      assume "set w \<subseteq> atoms r0 \<union> atoms s0"
-      thus ?thesis using assms
-        by(fastforce simp add: rtrancl_nderiv_nderivs nullable_nderivs simp del:Un_iff)
+lemma lang_eq_ext: "(lang r = lang s) =
+  (\<forall>w \<in> lists(atoms r \<union> atoms s). w \<in> lang r \<longleftrightarrow> w \<in> lang s)" (is "?L = ?R")
+proof
+  assume ?L thus ?R by auto
+next
+  assume R: ?R
+  show ?L
+  proof(rule set_eqI)
+    fix w show "w \<in> lang r \<longleftrightarrow> w \<in> lang s"
+    proof (cases "set w \<subseteq> atoms r \<union> atoms s")
+      case True thus ?thesis using R by auto
     next
-      assume "\<not> set w \<subseteq> atoms r0 \<union> atoms s0"
-      thus ?thesis using atoms_lang by blast
+      case False thus ?thesis using R using atoms_lang by blast
     qed
-  }
-  thus ?thesis by blast
+  qed
 qed
 
-theorem closure_sound2:
-assumes result: "closure as (r,s) = Some([],R)"
+theorem closure_sound_complete:
+assumes result: "closure as (r,s) = Some(ws,R)"
 and atoms: "set as = atoms r \<union> atoms s"
-shows "lang r = lang s"
+shows "ws = [] \<longleftrightarrow> lang r = lang s"
 proof -
+  have leq: "(lang r = lang s) =
+  (\<forall>(r',s') \<in> {((r0,s0),(nderiv a r0,nderiv a s0))| r0 s0 a. a : set as}^* `` {(r,s)}.
+    nullable r' = nullable s')"
+    by(simp add: atoms rtrancl_nderiv_nderivs Ball_def lang_eq_ext imp_ex nullable_nderivs
+         del:Un_iff)
   have "{(x,y). y \<in> set ((\<lambda>(p,q). map (\<lambda>a. (nderiv a p, nderiv a q)) as) x)} =
     {((r,s), nderiv a r, nderiv a s) |r s a. a \<in> set as}"
     by auto
   with atoms rtrancl_while_Some[OF result[unfolded closure_def]]
-  show ?thesis by (auto intro!: lang_eq_if_rtrancl simp add: Ball_def)
+  show ?thesis by (auto simp add: leq Ball_def split: if_splits)
 qed
 
 subsection {* The overall procedure *}
