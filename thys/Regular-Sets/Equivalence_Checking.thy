@@ -241,31 +241,21 @@ text{* The equivalence check can be viewed as the product construction
 of two automata. The state space is the reflexive transitive closure of
 the pair of next-state functions, i.e. derivatives. *}
 
-fun nderivs :: "nat list \<Rightarrow> nat rexp \<Rightarrow> nat rexp" where
-"nderivs [] r = r" |
-"nderivs (a#as) r = nderivs as (nderiv a r)"
-
-lemma nderivs_append[simp]: "nderivs (xs @ ys) r = nderivs ys (nderivs xs r)"
-by(induction xs arbitrary: r) auto
-
-lemma nullable_nderivs: "nullable (nderivs w r) = (w : lang r)"
-by (induct w arbitrary: r) (simp_all add: nullable_iff lang_nderiv Deriv_def)
-
-lemma rtrancl_nderiv_nderivs:
-  "{((r,s),(nderiv a r,nderiv a s))| r s a. a : A}^* =
-   {((r,s),(nderivs w r,nderivs w s))| r s w. w : lists A}" (is "?L = ?R")
+lemma rtrancl_nderiv_nderivs: defines "nderivs == foldl (%r a. nderiv a r)"
+shows "{((r,s),(nderiv a r,nderiv a s))| r s a. a : A}^* =
+       {((r,s),(nderivs r w,nderivs s w))| r s w. w : lists A}" (is "?L = ?R")
 proof-
+  note [simp] = nderivs_def
   { fix r s r' s'
     have "((r,s),(r',s')) : ?L \<Longrightarrow> ((r,s),(r',s')) : ?R"
     proof(induction rule: converse_rtrancl_induct2)
-      case refl show ?case by auto (metis lists.Nil nderivs.simps(1))
+      case refl show ?case by (force intro!: foldl.simps(1)[symmetric])
     next
-      case step thus ?case
-        by auto (metis (full_types) Cons_in_lists_iff in_lists_conv_set nderivs.simps(2))
+      case step thus ?case by(force intro!: foldl.simps(2)[symmetric])
     qed
   } moreover
   { fix r s r' s'
-    { fix w have "\<forall>x\<in>set w. x \<in> A \<Longrightarrow> ((r, s), nderivs w r, nderivs w s) :?L"
+    { fix w have "\<forall>x\<in>set w. x \<in> A \<Longrightarrow> ((r, s), nderivs r w, nderivs s w) :?L"
       proof(induction w rule: rev_induct)
         case Nil show ?case by simp
       next
@@ -282,6 +272,10 @@ proof(induction r arbitrary: w)
 next
   case Star thus ?case by (fastforce simp add: star_conv_concat)
 qed auto
+
+lemma nullable_nderivs:
+  "nullable (foldl (%r a. nderiv a r) r w) = (w : lang r)"
+by (induct w arbitrary: r) (simp_all add: nullable_iff lang_nderiv Deriv_def)
 
 lemma lang_eq_if_rtrancl: assumes
   "!!r' s'. ((r0,s0),(r',s')) : {((r,s),(nderiv a r,nderiv a s))| r s a. a : atoms r0 \<union> atoms s0}^*
