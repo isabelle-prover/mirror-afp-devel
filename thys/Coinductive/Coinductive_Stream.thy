@@ -98,7 +98,7 @@ lemma [simp]:
 by(cases xs, simp_all)+
 
 lemma smap_ident [simp]: "smap (\<lambda>x. x) xs = xs"
-by(simp only: id_def[symmetric] stream.map_id')
+by(simp only: id_def[symmetric] stream.map_id)
 
 lemma smap_eq_SCons_conv:
   "smap f xs = SCons y ys \<longleftrightarrow> 
@@ -107,7 +107,7 @@ by(cases xs)(auto)
 
 lemma smap_id: 
   "smap id = id"
-by(simp add: fun_eq_iff stream.map_id')
+by(simp add: fun_eq_iff stream.map_id)
 
 lemma smap_stream_unfold:
   "smap f (stream_unfold SHD STL b) = stream_unfold (f \<circ> SHD) STL b"

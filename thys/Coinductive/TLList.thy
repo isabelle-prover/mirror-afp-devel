@@ -229,7 +229,7 @@ by(cases xs) simp_all
 
 lemma tmap_id_id [id_simps]:
   "tmap id id = id"
-by(simp add: fun_eq_iff tllist.map_id')
+by(simp add: fun_eq_iff tllist.map_id)
 
 lemma tmap_eq_TNil_conv:
   "tmap f g xs = TNil y \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
@@ -264,7 +264,7 @@ proof -
   have "\<forall>x\<in>tset xs. P x xs"
     apply(rule tllist.dtor_set1_induct)
     using assms
-    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map' split: sum.splits)
+    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
@@ -293,7 +293,7 @@ proof -
   have "\<forall>x\<in>tllist_set2 xs. P x xs"
     apply(rule tllist.dtor_set2_induct)
     using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map' split: sum.splits)
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
       apply(erule_tac x="b" in meta_allE)
@@ -1175,8 +1175,8 @@ lemma pre_tllist_set3_transfer [transfer_rule]:
 by(auto simp add: Transfer.fun_rel_def pre_tllist_set3_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma tllist_Hset1_transfer [transfer_rule]:
-  "((A ===> sum_rel B (prod_rel C A)) ===> A ===> set_rel C) tllist_Hset1 tllist_Hset1"
-by(unfold tllist_Hset1_def[abs_def] tllist_Hset_rec1_def) transfer_prover
+  "((A ===> sum_rel B (prod_rel C A)) ===> A ===> set_rel C) tllist.tllist_Hset1 tllist.tllist_Hset1"
+by(unfold tllist.tllist_Hset1_def[abs_def] tllist.tllist_Hset_rec1_def) transfer_prover
 
 lemma tllist_dtor_transfer [transfer_rule]:
   "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) tllist_dtor tllist_dtor"

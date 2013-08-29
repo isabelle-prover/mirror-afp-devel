@@ -133,7 +133,7 @@ lemma [simp]:
 by(cases xs, simp_all)+
 
 lemma lmap_ident [simp]: "lmap (\<lambda>x. x) xs = xs"
-by(simp only: id_def[symmetric] llist.map_id')
+by(simp only: id_def[symmetric] llist.map_id)
 
 lemma lmap_eq_LCons_conv:
   "lmap f xs = LCons y ys \<longleftrightarrow> 
@@ -142,7 +142,7 @@ by(cases xs)(auto)
 
 lemma lmap_id: 
   "lmap id = id"
-by(simp add: fun_eq_iff llist.map_id')
+by(simp add: fun_eq_iff llist.map_id)
 
 lemma llist_map_llist_unfold:
   "lmap f (llist_unfold IS_LNIL LHD LTL b) = llist_unfold IS_LNIL (f \<circ> LHD) LTL b"
@@ -197,7 +197,7 @@ proof -
   have "\<forall>x\<in>lset xs. P x xs"
     apply(rule llist.dtor_set_induct)
     using assms
-    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def' collect_def sum_set_simps sum.set_map' split: sum.splits)
+    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps)
@@ -511,7 +511,7 @@ lemma lset_lmember [code_unfold]:
   "x \<in> lset xs \<longleftrightarrow> lmember x xs"
 by(simp add: lmember_def)
 
-lemmas lset_lmap [simp] = llist.set_map'
+lemmas lset_lmap [simp] = llist.set_map
 
 
 
@@ -4063,7 +4063,7 @@ proof -
       by(coinduct xs n rule: llist_fun_coinduct2)(auto)
     hence "lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (?it (Suc n)))) =
            lmap fst (lfilter (\<lambda>(x, y). Suc y \<in> A) (lzip xs (?it n)))"
-      by(simp add: lfilter_lmap o_def split_def llist.map_comp') }
+      by(simp add: lfilter_lmap o_def split_def llist.map_comp) }
   thus ?thesis
     by(auto simp add: lsublist_def)(subst iterates, simp)+
 qed
@@ -4107,7 +4107,7 @@ qed
 
 lemma lsublist_lmap [simp]:
   "lsublist (lmap f xs) A = lmap f (lsublist xs A)"
-by(simp add: lsublist_def lzip_lmap1 llist.map_comp' lfilter_lmap o_def split_def)
+by(simp add: lsublist_def lzip_lmap1 llist.map_comp lfilter_lmap o_def split_def)
 
 lemma lfilter_conv_lsublist: 
   "lfilter P xs = lsublist xs {n. enat n < llength xs \<and> P (lnth xs n)}"
@@ -4171,7 +4171,7 @@ proof -
   from this[of 0 k] have "?it k = lmap (\<lambda>n. n + k) (?it 0)" by simp
   also note lzip_lmap2
   also note lfilter_lmap
-  also note llist.map_comp'
+  also note llist.map_comp
   also have "fst \<circ> (\<lambda>(x, y). (x, y + k)) = fst" 
     by(simp add: o_def split_def)
   also have "(\<lambda>(x, y). y \<in> A) \<circ> (\<lambda>(x, y). (x, y + k)) = (\<lambda>(x, y). y \<in> {n. n + k \<in> A})"
@@ -4653,8 +4653,8 @@ lemma pre_llist_set2_transfer [transfer_rule]:
 by(auto simp add: Transfer.fun_rel_def pre_llist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma llist_Hset_transfer [transfer_rule]:
-  "((A ===> sum_rel op = (prod_rel B A)) ===> A ===> set_rel B) llist_Hset llist_Hset"
-by(unfold llist_Hset_def[abs_def] llist_Hset_rec_def) transfer_prover
+  "((A ===> sum_rel op = (prod_rel B A)) ===> A ===> set_rel B) llist.llist_Hset llist.llist_Hset"
+by(unfold llist.llist_Hset_def[abs_def] llist.llist_Hset_rec_def) transfer_prover
 
 lemma llist_dtor_transfer [transfer_rule]:
   "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) llist_dtor llist_dtor"

@@ -49,7 +49,7 @@ using Quotient3_abs_rep[OF assms]
 by(auto intro: ext)
 
 enriched_type tmap: tmap
-   by(simp_all add: fun_eq_iff tmap_id_id tllist.map_comp')
+   by(simp_all add: fun_eq_iff tmap_id_id tllist.map_comp)
 
 lemma symp_tllist_all2: "\<lbrakk> symp R; symp S \<rbrakk> \<Longrightarrow> symp (tllist_all2 R S)"
 by (rule sympI)(auto 4 3 simp add: tllist_all2_conv_all_tnth elim: sympE dest: lfinite_llength_enat not_lfinite_llength)
@@ -71,14 +71,14 @@ lemma tmap_preserve [quot_preserve]:
   shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep4) ---> tmap Rep1 Rep3 ---> tmap Abs2 Abs4) tmap = tmap"
   and "((Abs1 ---> id) ---> (Abs2 ---> id) ---> tmap Rep1 Rep2 ---> id) tmap = tmap"
 using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3] Quotient3_abs_rep[OF q4]
-by(simp_all add: fun_eq_iff tllist.map_comp' o_def)
+by(simp_all add: fun_eq_iff tllist.map_comp o_def)
 
 lemmas tmap_respect [quot_respect] = tmap_transfer2
 
 lemma Quotient3_tmap_Abs_Rep:
   "\<lbrakk>Quotient3 R1 Abs1 Rep1; Quotient3 R2 Abs2 Rep2\<rbrakk>
   \<Longrightarrow> tmap Abs1 Abs2 (tmap Rep1 Rep2 ts) = ts"
-by(drule abs_o_rep)+(simp add: tllist.map_comp' tmap_id_id)
+by(drule abs_o_rep)+(simp add: tllist.map_comp tmap_id_id)
 
 lemma Quotient3_tllist_all2_tmap_tmapI:
   assumes q1: "Quotient3 R1 Abs1 Rep1"
@@ -168,7 +168,7 @@ lemma TCons_preserve [quot_preserve]:
   and q2: "Quotient3 R2 Abs2 Rep2"
   shows "(Rep1 ---> (tmap Rep1 Rep2) ---> (tmap Abs1 Abs2)) TCons = TCons"
 using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] 
-by(simp add: fun_eq_iff tllist.map_comp' o_def tmap_id_id[unfolded id_def])
+by(simp add: fun_eq_iff tllist.map_comp o_def tmap_id_id[unfolded id_def])
 
 lemmas TCons_respect [quot_respect] = TCons_transfer2
 

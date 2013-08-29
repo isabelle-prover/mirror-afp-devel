@@ -26,7 +26,7 @@ lemma id_preserve [quot_preserve]:
   using Quotient3_abs_rep [OF assms] by (simp add: fun_eq_iff)
 
 enriched_type lmap: lmap
-   by (simp_all add: fun_eq_iff id_def llist.map_comp')
+   by (simp_all add: fun_eq_iff id_def llist.map_comp)
 
 declare lmap_id [id_simps]
 
@@ -53,7 +53,7 @@ qed
 
 lemma Quotient_lmap_Abs_Rep:
   "Quotient3 R Abs Rep \<Longrightarrow> lmap Abs (lmap Rep a) = a"
-  by (drule abs_o_rep) (simp add: lmap_id llist.map_comp')
+  by (drule abs_o_rep) (simp add: lmap_id llist.map_comp)
 
 lemma llist_all2_rel:
   assumes "Quotient3 R Abs Rep"
@@ -102,7 +102,7 @@ lemma LCons_preserve [quot_preserve]:
   assumes "Quotient3 R Abs Rep"
   shows "(Rep ---> (lmap Rep) ---> (lmap Abs)) LCons = LCons"
 using Quotient3_abs_rep[OF assms]
-by(simp add: fun_eq_iff llist.map_comp' o_def)
+by(simp add: fun_eq_iff llist.map_comp o_def)
 
 lemmas LCons_respect [quot_respect] = LCons_transfer 
 
@@ -118,7 +118,7 @@ lemma lmap_preserve [quot_preserve]:
   shows "((abs1 ---> rep2) ---> (lmap rep1) ---> (lmap abs2)) lmap = lmap"
   and   "((abs1 ---> id) ---> lmap rep1 ---> id) lmap = lmap"
 using Quotient3_abs_rep[OF a] Quotient3_abs_rep[OF b]
-by(simp_all add: fun_eq_iff llist.map_comp' o_def)
+by(simp_all add: fun_eq_iff llist.map_comp o_def)
 
 lemma lmap_respect [quot_respect]:
   shows "((R1 ===> R2) ===> (llist_all2 R1) ===> llist_all2 R2) lmap lmap"
