@@ -797,7 +797,7 @@ proof(rule red_mthr.if.non_speculative_readI)
   from wf wf_start have ts_ok_start: "ts_ok (init_fin_lift (\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h)) (thr ?start_state) (shr ?start_state)"
     unfolding ts_ok_init_fin_lift_init_fin_lift_state shr_start_state by(rule J_start_state_sconf_type_ok)
   have sc': "non_speculative P ?start_vs (lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of ttas))))"
-    using sc by(simp add: lmap_lconcat llist.map_comp' o_def split_def lconcat_llist_of[symmetric])
+    using sc by(simp add: lmap_lconcat llist.map_comp o_def split_def lconcat_llist_of[symmetric])
 
   from start_state_vs_conf[OF wf_prog_wf_syscls[OF wf]]
   have vs_conf_start: "vs_conf P (shr ?start_state) ?start_vs"
@@ -991,7 +991,7 @@ proof -
   moreover from Red have tsa: "thread_start_actions_ok ?E"
     by(blast intro: red_mthr.thread_start_actions_ok_init_fin red_mthr.mthr.if.\<E>.intros)
   from sc have "ta_seq_consist P empty (lmap snd ?E)"
-    unfolding lmap_lappend_distrib lmap_lconcat llist.map_comp' split_def o_def lmap_llist_of map_map snd_conv
+    unfolding lmap_lappend_distrib lmap_lconcat llist.map_comp split_def o_def lmap_llist_of map_map snd_conv
     by(simp add: ta_seq_consist_lappend ta_seq_consist_start_heap_obs)
   from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF `?E \<in> ?\<E>`] this]
   obtain ws where "sequentially_consistent P (?E, ws)" "P \<turnstile> (?E, ws) \<surd>" by iprover

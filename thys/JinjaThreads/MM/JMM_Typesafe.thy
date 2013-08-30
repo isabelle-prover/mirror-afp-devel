@@ -353,7 +353,7 @@ proof -
     finally
     have ns1: "non_speculative P (vs_type_all P) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?m_E''))))"
       and ns2: "non_speculative P (w_values P (vs_type_all P) (map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?m_E''))))) (llist_of (take (Suc n_w) \<lbrace>ta_w\<rbrace>\<^bsub>o\<^esub>))"
-      by(simp_all add: lmap_lappend_distrib non_speculative_lappend split_beta lconcat_llist_of[symmetric] lmap_lconcat llist.map_comp' o_def split_def list_of_lmap[symmetric] del: list_of_lmap)
+      by(simp_all add: lmap_lappend_distrib non_speculative_lappend split_beta lconcat_llist_of[symmetric] lmap_lconcat llist.map_comp o_def split_def list_of_lmap[symmetric] del: list_of_lmap)
 
     have "vs_conf P (vs_type_all P)" by simp
     with \<sigma>_\<sigma>' wfx' ns1
@@ -362,7 +362,7 @@ proof -
       by(rule h.if_RedT_non_speculative_invar[unfolded h.mthr.if.RedT_def heap_independent])+
     
     have "concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?m_E'')) = map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?m_E'')))"
-      by(simp add: split_def lmap_lconcat llist.map_comp' o_def list_of_lconcat map_concat)
+      by(simp add: split_def lmap_lconcat llist.map_comp o_def list_of_lconcat map_concat)
     with vs_conf have "vs_conf P (w_values P (vs_type_all P) \<dots>)" by simp
     with red_w wfx' ns2
     have vs_conf': "vs_conf P (w_values P (w_values P (vs_type_all P) (map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?m_E''))))) (take (Suc n_w) \<lbrace>ta_w\<rbrace>\<^bsub>o\<^esub>))"
@@ -551,7 +551,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       hence len_EE'': "llength ?EE'' = enat (a' - n_a)"
         by(simp add: a_sum length_concat listsum_setsum_nth atLeast0LessThan length_list_of_conv_the_enat min_def split_beta lnth_ltake)
       have prefix: "lprefix ?EE'' (lmap snd E')" unfolding E''
-        by(subst (2) E'_unfold)(simp add: lmap_lappend_distrib  lmap_lconcat llist.map_comp' o_def split_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lprefix_lappend2I del: lmap_llist_of)
+        by(subst (2) E'_unfold)(simp add: lmap_lappend_distrib  lmap_lconcat llist.map_comp o_def split_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lprefix_lappend2I del: lmap_llist_of)
       
       have ns: "non_speculative P (vs_type_all P) ?EE''"
       proof(rule non_speculative_nthI)

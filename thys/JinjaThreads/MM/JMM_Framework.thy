@@ -180,7 +180,7 @@ proof(intro equalityI subsetI)
     have "E = lconcat (lfilter (\<lambda>xs. xs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))"
       unfolding E by(simp add: lconcat_lfilter_neq_LNil)
     also have "\<dots> = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E''))))"
-      by(simp add: E' lfilter_lmap llist.map_comp' o_def split_def)
+      by(simp add: E' lfilter_lmap llist.map_comp o_def split_def)
     also
     from `mthr.\<tau>Runs_table2 \<sigma> E''`
     have "lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) = 
@@ -1757,7 +1757,7 @@ next
   case 1
   hence sc1: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps llist.map(2) lconcat_LCons tta
+    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp o_def llist_of.simps llist.map(2) lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
   from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 1 step.hyps(3)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by simp
@@ -1765,7 +1765,7 @@ next
   case 2
   hence sc1: "non_speculative P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
     and sc2: "non_speculative P (w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas)))"
-    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def llist_of.simps llist.map(2) lconcat_LCons tta
+    unfolding lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp o_def llist_of.simps llist.map(2) lconcat_LCons tta
     by(simp_all add: non_speculative_lappend list_of_lconcat o_def)
   from if_redT_non_speculative_invar[OF step(2)[unfolded tta] _ sc1] if_redT_non_speculative_vs_conf[OF step(2)[unfolded tta], where vs = vs and n="length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] 2 step.hyps(4)[of "w_values P vs \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"] sc2 sc1
   show ?case by(simp add: tta o_def)
@@ -1925,7 +1925,7 @@ proof -
   finally have "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of (list_of (ltake (enat ra_m) E'))))))"
     by(simp add: split_def)
   hence sc': "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?obs_prefix)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat ra_m) E')))))"
-    unfolding lmap_lconcat llist.map_comp' o_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric]
+    unfolding lmap_lconcat llist.map_comp o_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric]
     by(simp add: split_beta o_def)
 
   from vs_conf_start have vs_conf_start: "vs_conf P (shr ?start_state) (w_values P (\<lambda>_. {}) (map snd ?obs_prefix))"
@@ -2013,7 +2013,7 @@ proof -
       also from `enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < enat (ra - length (lift_start_obs start_tid start_heap_obs))` `enat (ra - ?n) < llength E''`
       have "\<dots> = lnth (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) E')) (length (concat (map (\<lambda>(t, y). \<lbrace>y\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs)"
         unfolding E'
-        by(subst lnth_lmap[symmetric, where f=snd])(erule (1) less_trans, simp add: lmap_lconcat llist.map_comp' split_def o_def)
+        by(subst lnth_lmap[symmetric, where f=snd])(erule (1) less_trans, simp add: lmap_lconcat llist.map_comp split_def o_def)
       also from len_less
       have "enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < llength (lconcat (ltake (enat ra_m) (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) E')))"
         unfolding `list_of (ltake (enat ra_m) E') = ttas' @ (t', ta') # ttas''`[symmetric]
@@ -2243,7 +2243,7 @@ proof -
       note this(1) also
       have "lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E')))
             = llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E')))"
-        unfolding lmap_lconcat llist.map_comp' o_def split_def lconcat_llist_of[symmetric] map_map lmap_llist_of[symmetric]
+        unfolding lmap_lconcat llist.map_comp o_def split_def lconcat_llist_of[symmetric] map_map lmap_llist_of[symmetric]
         by simp
       finally have "ta_seq_consist P ?vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E'))))" .
       from if.sequential_completion[OF cut_and_update ta_seq_consist_convert_RA \<sigma>_\<sigma>'[folded mthr.if.RedT_def] this red_ra]
@@ -2266,7 +2266,7 @@ proof -
       have tsa_ok: "thread_start_actions_ok ?E_sc" by(rule thread_start_actions_ok_init_fin) 
         
       from sc have "ta_seq_consist P empty (lmap snd ?E_sc)"
-        by(simp add: lmap_lappend_distrib o_def lmap_lconcat llist.map_comp' split_def ta_seq_consist_lappend start_sc)
+        by(simp add: lmap_lappend_distrib o_def lmap_lconcat llist.map_comp split_def ta_seq_consist_lappend start_sc)
       from ta_seq_consist_imp_sequentially_consistent[OF tsa_ok jmm.\<E>_new_actions_for_fun[OF `?E_sc \<in> ?\<E>`] this]
       obtain ws_sc where "sequentially_consistent P (?E_sc, ws_sc)"
         and "P \<turnstile> (?E_sc, ws_sc) \<surd>" unfolding start_heap_obs_def[symmetric] by iprover
@@ -2491,7 +2491,7 @@ proof -
         also note non_speculative_lappend also note lmap_lappend_distrib also note non_speculative_lappend
         also have "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E')) = 
                   llist_of (concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))))"
-          by(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def split_def del: lmap_llist_of)
+          by(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp o_def split_def del: lmap_llist_of)
         ultimately
         have "non_speculative P (\<lambda>_. {}) (lmap snd (llist_of ?start_heap_obs))"
           and "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) 
@@ -2502,7 +2502,7 @@ proof -
           by(simp_all add: length_concat o_def split_def listsum_setsum_nth length_list_of_conv_the_enat less_min_eq1 atLeast0LessThan lnth_ltake split: split_if_asm cong: strong_setsum_cong)
         hence ns: "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) 
                      (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E')))))"
-          unfolding lconcat_llist_of[symmetric] lmap_lconcat lmap_llist_of[symmetric] llist.map_comp' o_def split_def
+          unfolding lconcat_llist_of[symmetric] lmap_lconcat lmap_llist_of[symmetric] llist.map_comp o_def split_def
           by(simp)
 
         from ns'
@@ -2549,7 +2549,7 @@ proof -
         with ns' eq[symmetric] have "non_speculative P (w_values P (\<lambda>_. {}) (map snd (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E')))))) (llist_of (map snd (map (Pair t_r) \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>)))"
           by(subst append_take_drop_id[where xs="\<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>" and n=r_n, symmetric])(simp add: o_def map_concat split_def lappend_llist_of_llist_of[symmetric] non_speculative_lappend del: append_take_drop_id lappend_llist_of_llist_of)
         with ns have ns'': "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E') @ [(t_r, ta'_r)]))))"
-          unfolding lconcat_llist_of[symmetric] map_append lappend_llist_of_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp'
+          unfolding lconcat_llist_of[symmetric] map_append lappend_llist_of_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp
           by(simp add: o_def split_def non_speculative_lappend list_of_lconcat map_concat)
         from \<sigma>_\<sigma>' red_ra' have "mthr.if.RedT ?start_state (list_of ?r_m_E' @ [(t_r, ta'_r)]) \<sigma>''''"
           unfolding mthr.if.RedT_def ..
@@ -2571,7 +2571,7 @@ proof -
         also let ?E' = "lappend (llist_of (lift_start_obs start_tid start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))) (lappend (llist_of (map (Pair t_r) (drop r_n \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub>))) (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ttas')))"
         have "?E = ?E'"
           using eq[symmetric]
-          by(simp add: lmap_lappend_distrib lappend_assoc lappend_llist_of_llist_of[symmetric] lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def split_def del: lmap_llist_of)(simp add: lappend_assoc[symmetric] lmap_lappend_distrib[symmetric] map_append[symmetric] lappend_llist_of_llist_of del: map_append)
+          by(simp add: lmap_lappend_distrib lappend_assoc lappend_llist_of_llist_of[symmetric] lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp o_def split_def del: lmap_llist_of)(simp add: lappend_assoc[symmetric] lmap_lappend_distrib[symmetric] map_append[symmetric] lappend_llist_of_llist_of del: map_append)
         finally have tsa': "thread_start_actions_ok ?E'" .
 
         from hb hb' eq[symmetric]
@@ -2695,7 +2695,7 @@ proof -
           apply(subst lconcat_llist_of[symmetric])
           apply(subst (3) lmap_llist_of[symmetric])
           apply(subst (3) lmap_llist_of[symmetric])
-          apply(subst llist.map_comp')
+          apply(subst llist.map_comp)
           apply(simp only: split_def o_def)
           apply(subst llist_of_list_of, simp)
           apply(subst (1 2) ltake_lappend2, simp add: r_conv3)

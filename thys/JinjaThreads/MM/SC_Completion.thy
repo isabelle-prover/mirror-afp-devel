@@ -997,7 +997,7 @@ proof(rule sc_completionI)
   from \<tau>Red \<tau>Red' have "s -\<triangleright>ttas @ ttas'\<rightarrow>* s''" unfolding RedT_def by(rule rtrancl3p_trans)
   moreover from sc sc' have "ta_seq_consist P vs (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (ttas @ ttas'))))"
     apply(simp add: lappend_llist_of_llist_of[symmetric] ta_seq_consist_lappend del: lappend_llist_of_llist_of)
-    apply(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp' o_def split_def del: lmap_llist_of)
+    apply(simp add: lconcat_llist_of[symmetric] lmap_llist_of[symmetric] llist.map_comp o_def split_def del: lmap_llist_of)
     done
   ultimately
   show "\<exists>ta' x'' m''. t \<turnstile> \<langle>x, shr s''\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle> \<and> actions_ok s'' t ta' \<and>
