@@ -543,11 +543,11 @@ lemma ccpo_gfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp Inf op \<ge> f
 
 abbreviation "chain_admissible P \<equiv> ccpo.admissible Sup op \<le> P"
 abbreviation "is_chain \<equiv> Complete_Partial_Order.chain (op \<le>)"
-lemmas chain_admissibleI[intro?] = ccpo.admissibleI[OF is_ccpo]
+lemmas chain_admissibleI[intro?] = ccpo.admissibleI[where lub=Sup and ord="op \<le>"]
 
 abbreviation "dual_chain_admissible P \<equiv> ccpo.admissible Inf (\<lambda>x y. y\<le>x) P"
 abbreviation "is_dual_chain \<equiv> Complete_Partial_Order.chain (\<lambda>x y. y\<le>x)"
-lemmas dual_chain_admissibleI[intro?] = ccpo.admissibleI[OF is_dual_ccpo]
+lemmas dual_chain_admissibleI[intro?] = ccpo.admissibleI[where lub=Inf and ord="op \<ge>"]
 
 lemma dual_chain_iff[simp]: "is_dual_chain C = is_chain C"
   unfolding chain_def

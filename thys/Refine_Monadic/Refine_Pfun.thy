@@ -16,7 +16,7 @@ interpretation nrec!:
 
 lemma nrec_admissible: "nrec.admissible (\<lambda>(f::'a \<Rightarrow> 'b nres).
   (\<forall>x0. f x0 \<le> SPEC (P x0)))"
-  apply (rule ccpo.admissibleI[OF nrec.ccpo])
+  apply (rule ccpo.admissibleI)
   apply (unfold fun_lub_def)
   apply (intro allI impI)
   apply (rule Sup_least)
@@ -99,7 +99,7 @@ proof -
   have [simp]: "\<And>A x. {y. \<exists>f\<in>A. y = f x} = (\<lambda>f. f x)`A" by auto
 
   show ?thesis
-    apply (rule ccpo.admissibleI[OF drec.ccpo])
+    apply (rule ccpo.admissibleI)
     apply (unfold fun_lub_def)
     apply clarsimp
     apply (drule_tac x=x in point_chainI)
