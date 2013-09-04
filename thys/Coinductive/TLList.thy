@@ -249,8 +249,6 @@ by(cases xs) auto
 lemma in_tset_ttlD: "x \<in> tset (ttl xs) \<Longrightarrow> x \<in> tset xs"
 using tset_ttl[of xs] by auto
 
-term tllist_case
-
 lemma tllist_case_def':
 "tllist_case tnil tcons xs = (case tllist_dtor xs of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
 apply (case_tac xs)
@@ -425,17 +423,39 @@ unfolding Quotient_alt_def cr_tllist_def by(auto intro: tllist_of_llist_cong)
 lemma reflp_tllist: "reflp (\<lambda>(xs, a) (ys, b). xs = ys \<and> (lfinite ys \<longrightarrow> a = b))"
 by(simp add: reflp_def)
 
+text {*
+  Collect transfer rules between @{typ "('a, 'b) tllist"} and @{typ "('a llist \<times> 'b)"}
+  in @{text "tllist2llist"} such that they can be recovered when the parametricity rules
+  take precedence later.
+*}
+ML {*
+structure TLList2LList_Rules = Named_Thms
+(
+  val name = @{binding tllist2llist}
+  val description = "transfer rules between tllist and llist"
+)
+*}
+setup TLList2LList_Rules.setup
+
 setup_lifting (no_code) Quotient_tllist reflp_tllist
+
+lemmas [tllist2llist] =
+  tllist.right_total
+  tllist.right_unique
+  tllist.rel_eq_transfer
+  tllist.domain
+  tllist.bi_total
+  tllist.id_abs_transfer
 
 context
 begin
 interpretation lifting_syntax .
 
-lemma TNil_transfer [transfer_rule]:
+lemma TNil_transfer [transfer_rule, tllist2llist]:
   "(B ===> pcr_tllist A B) (Pair LNil) TNil"
 by(auto simp add: pcr_tllist_def cr_tllist_def intro!: fun_relI relcomppI)
 
-lemma TCons_transfer [transfer_rule]:
+lemma TCons_transfer [transfer_rule, tllist2llist]:
   "(A ===> pcr_tllist A B ===> pcr_tllist A B) (apfst \<circ> LCons) TCons"
 by(auto 4 3 intro!: fun_relI relcomppI simp add: pcr_tllist_def prod_rel_def llist_all2_LCons1 cr_tllist_def)
 
@@ -443,7 +463,7 @@ lemma tmap_tllist_of_llist:
   "tmap f g (tllist_of_llist b xs) = tllist_of_llist (g b) (lmap f xs)"
 by(coinduct xs rule: tllist_fun_coinduct) auto
 
-lemma tmap_transfer [transfer_rule]:
+lemma tmap_transfer [transfer_rule, tllist2llist]:
   "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op =) (map_pair \<circ> lmap) tmap"
 by(auto intro!: fun_relI simp add: cr_tllist_def tllist.pcr_cr_eq tmap_tllist_of_llist)
 
@@ -472,27 +492,27 @@ lemma tset_tllist_of_llist [simp]:
   "tset (tllist_of_llist b xs) = lset xs"
 by(simp add: lset_llist_of_tllist[symmetric] del: lset_llist_of_tllist)
 
-lemma tset_transfer [transfer_rule]:
+lemma tset_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist op = op = ===> op =) (lset \<circ> fst) tset"
 by(auto simp add: cr_tllist_def tllist.pcr_cr_eq)
 
-lemma is_TNil_transfer [transfer_rule]:
+lemma is_TNil_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist op = op = ===> op =) (\<lambda>(xs, b). xs = LNil) is_TNil"
 by(auto simp add: tllist.pcr_cr_eq cr_tllist_def)
 
-lemma thd_transfer [transfer_rule]:
+lemma thd_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist op = op = ===> op =) (lhd \<circ> fst) thd"
 by(auto simp add: cr_tllist_def tllist.pcr_cr_eq)
 
-lemma ttl_transfer [transfer_rule]:
+lemma ttl_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist A B ===> pcr_tllist A B) (apfst ltl) ttl"
 by(auto simp add: pcr_tllist_def cr_tllist_def prod_rel_def intro!: fun_relI relcomppI intro: llist_all2_ltlI)
 
-lemma llist_of_tllist_transfer [transfer_rule]:
+lemma llist_of_tllist_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist op = B ===> op =) fst llist_of_tllist"
 by(auto simp add: pcr_tllist_def cr_tllist_def llist_all2_eq)
 
-lemma tllist_of_llist_transfer [transfer_rule]:
+lemma tllist_of_llist_transfer [transfer_rule, tllist2llist]:
   "(op = ===> op = ===> pcr_tllist op = op =) (\<lambda>b xs. (xs, b)) tllist_of_llist"
 by(auto simp add: tllist.pcr_cr_eq cr_tllist_def)
 
@@ -514,11 +534,11 @@ next
   thus ?thesis using False by auto
 qed
 
-lemma tllist_set2_transfer [transfer_rule]:
+lemma tllist_set2_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist A B ===> set_rel B) (\<lambda>(xs, b). if lfinite xs then {b} else {}) tllist_set2"
 by(auto 4 4 simp add: pcr_tllist_def cr_tllist_def dest: llist_all2_lfiniteD intro: set_relI)
 
-lemma tllist_all2_transfer [transfer_rule]:
+lemma tllist_all2_transfer [transfer_rule, tllist2llist]:
   "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op = ===> op =)
      (\<lambda>P Q (xs, b) (ys, b'). llist_all2 P xs ys \<and> (lfinite xs \<longrightarrow> Q b b')) tllist_all2"
 unfolding tllist.pcr_cr_eq
@@ -545,27 +565,34 @@ text {*
 lift_definition tappend :: "('a, 'b) tllist \<Rightarrow> ('b \<Rightarrow> ('a, 'c) tllist) \<Rightarrow> ('a, 'c) tllist"
 is "\<lambda>(xs, b) f. apfst (lappend xs) (f b)"
 by(auto simp add: split_def lappend_inf)
+declare tappend.transfer[tllist2llist]
 
 lift_definition lappendt :: "'a llist \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "apfst \<circ> lappend"
 by(simp add: split_def)
+declare lappendt.transfer[tllist2llist]
 
 lift_definition tfilter :: "'b \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "\<lambda>b P (xs, b'). (lfilter P xs, if lfinite xs then b' else b)"
 by(simp add: split_beta)
+declare tfilter.transfer[tllist2llist]
 
 lift_definition tconcat :: "'b \<Rightarrow> ('a llist, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "\<lambda>b (xss, b'). (lconcat xss, if lfinite xss then b' else b)"
 by(simp add: split_beta)
+declare tconcat.transfer[tllist2llist]
 
 lift_definition tnth :: "('a, 'b) tllist \<Rightarrow> nat \<Rightarrow> 'a"
 is "lnth \<circ> fst" by(auto)
+declare tnth.transfer[tllist2llist]
 
 lift_definition tlength :: "('a, 'b) tllist \<Rightarrow> enat"
 is "llength \<circ> fst" by auto
+declare tlength.transfer[tllist2llist]
 
 lift_definition tdropn :: "nat \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "apfst \<circ> ldropn" by auto
+declare tdropn.transfer[tllist2llist]
 
 abbreviation tfinite :: "('a, 'b) tllist \<Rightarrow> bool"
 where "tfinite xs \<equiv> lfinite (llist_of_tllist xs)"
@@ -597,7 +624,7 @@ lemma terminal_tllist_of_llist:
   "terminal (tllist_of_llist y xs) = (if lfinite xs then y else undefined)"
 by(simp add: terminal_tinfinite)
 
-lemma terminal_transfer [transfer_rule]:
+lemma terminal_transfer [transfer_rule, tllist2llist]:
   "(pcr_tllist A op = ===> op =) (\<lambda>(xs, b). if lfinite xs then b else undefined) terminal"
 by(auto simp add: cr_tllist_def pcr_tllist_def terminal_tllist_of_llist intro!: fun_relI dest: llist_all2_lfiniteD)
 
