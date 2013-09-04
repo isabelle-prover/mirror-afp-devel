@@ -72,7 +72,7 @@ lemma almost_full_onD:
   obtains i j where "i < j" and "P (f i) (f j)"
   using assms unfolding almost_full_on_def good_def by blast
 
-lemma almost_full_on [Pure.intro]:
+lemma almost_full_onI [Pure.intro]:
   "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> good P f) \<Longrightarrow> almost_full_on P A"
   unfolding almost_full_on_def by blast
 
@@ -137,7 +137,7 @@ proof -
 qed
 
 text {*Almost full relations do not admit infinite antichains.*}
-lemma almost_full_on_imp_not_antichain_on:
+lemma almost_full_on_imp_no_antichain_on:
   assumes "almost_full_on P A"
   shows "\<not> antichain_on P f A"
 proof
@@ -263,7 +263,7 @@ proof (rule set_eqI)
 qed
 
 
-subsection {* Adding a Bottom Element to a Wqo Set *}
+subsection {* Adding a Bottom Element to an Almost-Full Set *}
 
 fun
   option_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool"
@@ -333,7 +333,7 @@ lemma almost_full_on_reflclp_option_less:
   using almost_full_on_with_bot [OF assms] by simp
 
 
-subsection {* Disjoint Union of Wqo Sets *}
+subsection {* Disjoint Union of Almost-Full Sets *}
 
 fun
   sum_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
@@ -458,7 +458,7 @@ lemma almost_full_on_sum_less:
 
 subsection {* Dickson's Lemma *}
 
-text {*When two sets are wqo, then their Cartesian product is wqo.*}
+text {*When two sets are almost-full, then their Cartesian product is almost-full.*}
 
 definition
   prod_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
