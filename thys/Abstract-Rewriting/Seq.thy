@@ -124,6 +124,22 @@ lemma stepfun_imp_chainp:
   shows "chainp P (\<lambda>i. S ((f ^^ i) n))" (is "chainp P ?T")
   using stepfun_imp_chainp'[of n f P S] and assms by force
 
+lemma subchain:
+  assumes "\<forall>i::nat>n. \<exists>j>i. P (f i) (f j)"
+  shows "\<exists>\<phi>. (\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j) \<and> (\<forall>i. P (f (\<phi> i)) (f (\<phi> (Suc i))))"
+proof -
+  from assms have "\<forall>i\<in>{i. i > n}. \<exists>j>i. P (f i) (f j)" by simp
+  from bchoice [OF this] obtain g
+    where *: "\<forall>i>n. g i > i"
+    and **: "\<forall>i>n. P (f i) (f (g i))" by auto
+  def [simp]: \<phi> \<equiv> "\<lambda>i. (g ^^ i) (Suc n)"
+  from * have ***: "\<And>i. \<phi> i > n" by (induct_tac i) auto
+  then have "\<And>i. \<phi> i < \<phi> (Suc i)" using * by (induct_tac i) auto
+  then have "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (rule lift_Suc_mono_less)
+  moreover have "\<And>i. P (f (\<phi> i)) (f (\<phi> (Suc i)))" using ** and *** by simp
+  ultimately show ?thesis by blast
+qed
+
 text {*If for every @{term i} there is a later index @{term j} such that the
 corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.*}
 lemma steps_imp_chainp':
@@ -548,3 +564,4 @@ proof -
 qed
 
 end
+
