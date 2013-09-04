@@ -7,13 +7,15 @@
 header {* Well-Quasi-Orders *}
 
 theory Well_Quasi_Orders
-imports Almost_Full_Relations
+imports
+  Almost_Full_Relations
+  "../Regular-Sets/Regexp_Method"
 begin
 
 section {* Basic Definitions *}
 
 definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "wqo_on P A \<equiv> transp_on P A \<and> almost_full_on P A"
+  "wqo_on P A \<longleftrightarrow> transp_on P A \<and> almost_full_on P A"
 
 lemma wqo_onI [Pure.intro]:
   "\<lbrakk>transp_on P A; almost_full_on P A\<rbrakk> \<Longrightarrow> wqo_on P A"
@@ -41,23 +43,151 @@ lemma wqo_on_subset:
     and transp_on_subset [of A B P]
   unfolding wqo_on_def by blast
 
-lemma wqo_on_imp_wfp_on:
+subsection {* Equivalent Definitions *}
+
+text {*The following statements are equivalent:
+\begin{enumerate}
+\item @{term P} is a well-quasi-order.
+\item @{term P} does neither allow decreasing chains nor antichains.
+\item Every quasi-order extending @{term P} is well-founded.
+\end{enumerate}
+*}
+
+lemma wqo_not_decr_not_anti:
   assumes "wqo_on P A"
-  shows "wfp_on (strict P) A"
-    (is "wfp_on ?P A")
+  shows wqo_on_imp_wfp_on: "wfp_on (strict P) A"
+    and wqo_on_imp_no_antichain_on: "\<not> (\<exists>f. antichain_on P f A)"
+proof -
+  show "wfp_on (strict P) A"
+  proof (unfold wfp_on_def, rule notI)
+    assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict P (f (Suc i)) (f i)"
+    then obtain f where *: "chain_on ((strict P)\<inverse>\<inverse>) f A" by blast
+    from chain_on_transp_on_less [OF this]
+      and transp_on_strict [THEN transp_on_converse, OF assms [THEN wqo_on_imp_transp_on]]
+      have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
+    with assms show False
+      using * by (auto simp: wqo_on_def almost_full_on_def good_def) blast
+  qed
+next
+  from almost_full_on_imp_no_antichain_on [of P A] and assms
+    show "\<not> (\<exists>f. antichain_on P f A)"
+    by (auto simp: wqo_on_def)
+qed
+
+lemma every_extension_wf_imp_wqo:
+  assumes ext: "\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and>
+    reflp_on Q A \<and> transp_on Q A \<longrightarrow> wfp_on (strict Q) A"
+    and "qo_on P A"
+  shows "wqo_on P A"
+proof
+  from `qo_on P A`
+    have refl: "reflp_on P A"
+    and trans: "transp_on P A"
+    by (auto intro: qo_on_imp_reflp_on qo_on_imp_transp_on)
+  show "transp_on P A" by fact
+  show "almost_full_on P A"
+  proof
+    fix f :: "nat \<Rightarrow> 'a"
+    assume "\<forall>i. f i \<in> A"
+    then have A: "\<And>i. f i \<in> A" ..
+    show "good P f"
+    proof (rule ccontr)
+      assume "\<not> ?thesis"
+      then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by (auto simp: good_def)
+      then have *: "\<And>i j. P (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_leE)
+  
+      def [simp]: D \<equiv> "\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i"
+      def P' \<equiv> "restrict_to P A"
+      def [simp]: Q \<equiv> "(sup P' D)\<^sup>*\<^sup>*"
+
+      have **: "\<And>i j. (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j) \<Longrightarrow> i > j"
+      proof -
+        fix i j
+        assume "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j)"
+        then show "i > j"
+          apply (induct "f i" "f j" arbitrary: j)
+          apply (insert A, auto dest!: * simp: P'_def restrict_to_rtranclp [OF refl trans])
+          apply (metis "*" dual_order.strict_trans1 less_Suc_eq_le refl reflp_on_def)
+          by (metis le_imp_less_Suc less_trans)
+      qed
+
+      have "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y" by (auto simp: P'_def)
+      moreover have "reflp_on Q A" by (auto simp: reflp_on_def)
+      moreover have "transp_on Q A" by (auto simp: transp_on_def)
+      ultimately have "wfp_on (strict Q) A"
+        using ext [THEN spec, of Q] by blast
+      moreover have "\<forall>i. f i \<in> A \<and> strict Q (f (Suc i)) (f i)"
+      proof
+        fix i
+        have "\<not> Q (f i) (f (Suc i))"
+        proof
+          assume "Q (f i) (f (Suc i))"
+          then have "(sup P' D)\<^sup>*\<^sup>* (f i) (f (Suc i))" by auto
+          moreover have "(sup P' D)\<^sup>*\<^sup>* = sup (P'\<^sup>*\<^sup>*) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+)"
+          proof -
+            have "\<And>A B. (A \<union> B)\<^sup>* = A\<^sup>* \<union> A\<^sup>* O (B O A\<^sup>*)\<^sup>+" by regexp
+            from this [to_pred] show ?thesis by blast
+          qed
+          ultimately have "sup (P'\<^sup>*\<^sup>*) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) (f i) (f (Suc i))" by simp
+          then have "(P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) (f i) (f (Suc i))" by auto
+          then have "Suc i < i"
+            using ** apply auto
+            by (metis (lifting, mono_tags) max.semilattice_strict_iff_order relcompp.relcompI tranclp_into_tranclp2)
+          then show False by auto
+        qed
+        with A [of i] show "f i \<in> A \<and> strict Q (f (Suc i)) (f i)" by auto
+      qed
+      ultimately show False unfolding wfp_on_def by blast  
+    qed
+  qed
+qed
+
+lemma wqo_extension:
+  assumes wf: "wfp_on P A"
+    and anti: "\<not> (\<exists>f. antichain_on P f A)"
+    and subrel: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y"
+    and refl: "reflp_on Q A"
+    and trans: "transp_on Q A"
+  shows "wfp_on (strict Q) A"
 proof (rule ccontr)
-  have "transp_on ?P A" by (rule transp_on_imp_transp_on_strict [OF wqo_on_imp_transp_on [OF assms]])
-  hence "transp_on ?P\<inverse>\<inverse> A" by (rule transp_on_converse)
-  have "irreflp_on ?P A" ..
-  assume "\<not> wfp_on ?P A"
-  then obtain f where *: "\<forall>i. f i \<in> A"
-    and **: "\<forall>i. ?P (f (Suc i)) (f i)" by (auto simp: wfp_on_def)
-  from chain_on_transp_on_less [of f A"?P\<inverse>\<inverse>", OF _ `transp_on ?P\<inverse>\<inverse> A`] and * and **
-    have "\<forall>i j. i < j \<longrightarrow> ?P (f j) (f i)" by auto
-  with `irreflp_on ?P A` have "\<forall>i j. i < j \<longrightarrow> \<not> (P\<^sup>=\<^sup>= (f i) (f j))"
-    unfolding irreflp_on_def using * by force
-  hence "bad P f" by (auto simp: good_def)
-  with * and assms show False unfolding wqo_on_def almost_full_on_def by blast
+  have "transp_on (strict Q) A"
+    using trans unfolding transp_on_def by blast
+  then have *: "transp_on ((strict Q)\<inverse>\<inverse>) A" by (rule transp_on_converse)
+  assume "\<not> wfp_on (strict Q) A"
+  then obtain f :: "nat \<Rightarrow> 'a" where A: "\<And>i. f i \<in> A"
+    and "\<forall>i. strict Q (f (Suc i)) (f i)" unfolding wfp_on_def by blast+
+  then have "chain_on ((strict Q)\<inverse>\<inverse>) f A" by auto
+  from chain_on_transp_on_less [OF this *]
+    have *: "\<And>i j. i < j \<Longrightarrow> \<not> P (f i) (f j)"
+    using subrel and A by blast
+  show False
+  proof (cases)
+    assume "\<exists>k. \<forall>i>k. \<exists>j>i. P (f j) (f i)"
+    then obtain k where "\<forall>i>k. \<exists>j>i. P (f j) (f i)" by auto
+    from subchain [of k _ f, OF this] obtain g
+      where "\<And>i j. i < j \<Longrightarrow> g i < g j"
+      and "\<And>i. P (f (g (Suc i))) (f (g i))" by auto
+    with * have "\<And>i. P (f (g (Suc i))) (f (g i))" by blast
+    with wf [unfolded wfp_on_def not_ex, THEN spec, of "\<lambda>i. f (g i)"] and A
+      show False by fast
+  next
+    assume "\<not> (\<exists>k. \<forall>i>k. \<exists>j>i. P (f j) (f i))"
+    then have "\<forall>k. \<exists>i>k. \<forall>j>i. \<not> P (f j) (f i)" by auto
+    from choice [OF this] obtain h
+      where "\<forall>k. h k > k"
+      and **: "\<forall>k. (\<forall>j>h k. \<not> P (f j) (f (h k)))" by auto
+    def [simp]: \<phi> \<equiv> "\<lambda>i. (h ^^ Suc i) 0"
+    have "\<And>i. \<phi> i < \<phi> (Suc i)"
+      using `\<forall>k. h k > k` by (induct_tac i) auto
+    then have mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (metis lift_Suc_mono_less)
+    then have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (\<phi> j)) (f (\<phi> i))"
+      using ** by auto
+    with mono [THEN *]
+      have "\<forall>i j. i < j \<longrightarrow> incomparable P (f (\<phi> j)) (f (\<phi> i))" by blast
+    moreover have "\<exists>i j. i < j \<and> \<not> incomparable P (f (\<phi> i)) (f (\<phi> j))"
+      using anti [unfolded not_ex, THEN spec, of "\<lambda>i. f (\<phi> i)"] and A by blast
+    ultimately show False by blast
+  qed
 qed
 
 text {*The homomorphic image of a wqo set is wqo.*}
