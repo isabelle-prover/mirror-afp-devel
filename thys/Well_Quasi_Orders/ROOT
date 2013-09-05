@@ -4,6 +4,7 @@ session Well_Quasi_Orders (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/Seq"
+    "../Regular-Sets/Regexp_Method"
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Ramsey"
     "~~/src/HOL/Library/Order_Relation"
