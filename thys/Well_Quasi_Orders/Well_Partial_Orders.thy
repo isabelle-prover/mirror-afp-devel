@@ -21,6 +21,41 @@ lemma wpo_onI [Pure.intro]:
   "\<lbrakk>irreflp_on P A; transp_on P A; almost_full_on (P\<^sup>=\<^sup>=) A\<rbrakk> \<Longrightarrow> wpo_on P A"
   unfolding wpo_on_def po_on_def by blast
 
+subsection {* Equivalent Definitions *}
+
+text {*Given a partial-order @{term P}, the following statements are equivalent:
+\begin{enumerate}
+\item @{term P} is a almost-full.
+\item @{term P} does neither allow decreasing chains nor antichains.
+\item Every partial-order extending @{term P} is well-founded.
+\end{enumerate}
+*}
+
+lemma wpo_af_conv:
+  assumes "po_on P A"
+  shows "wpo_on P A \<longleftrightarrow> almost_full_on (P\<^sup>=\<^sup>=) A"
+  using assms by (metis wpo_on_def)
+
+lemma wpo_wf_and_no_antichain_conv:
+  assumes "po_on P A"
+  shows "wpo_on P A \<longleftrightarrow> wfp_on P A \<and> \<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)"
+  unfolding wpo_af_conv [OF assms]
+  using po_af_imp_wf_and_no_antichain [OF assms]
+    and wf_and_no_antichain_imp_po_extension_wf [of P A]
+    and every_po_extension_wf_imp_af [OF _ assms]
+    by blast
+
+lemma wpo_extensions_wf_conv:
+  assumes "po_on P A"
+  shows "wpo_on P A \<longleftrightarrow>
+    (\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and>
+    po_on Q A \<longrightarrow> wfp_on Q A)"
+  unfolding wpo_af_conv [OF assms]
+  using po_af_imp_wf_and_no_antichain [OF assms]
+    and wf_and_no_antichain_imp_po_extension_wf [of P A]
+    and every_po_extension_wf_imp_af [OF _ assms]
+    by blast
+
 lemma wpo_onD:
   "wpo_on P A \<Longrightarrow> irreflp_on P A \<and> transp_on P A \<and> almost_full_on (P\<^sup>=\<^sup>=) A"
   unfolding wpo_on_def po_on_def by blast

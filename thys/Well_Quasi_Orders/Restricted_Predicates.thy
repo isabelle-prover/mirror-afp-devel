@@ -693,17 +693,24 @@ lemma po_on_predecessors_eq_conv:
     unfolding antisymp_on_def reflp_on_def
     by blast
 
+
 lemma restrict_to_rtranclp:
+  assumes "transp_on P A"
+    and "x \<in> A" and "y \<in> A"
+  shows "(restrict_to P A)\<^sup>*\<^sup>* x y \<longleftrightarrow> P\<^sup>=\<^sup>= x y"
+proof -
+  { assume "(restrict_to P A)\<^sup>*\<^sup>* x y"
+    then have "P\<^sup>=\<^sup>= x y" using assms
+      by (induct) (auto, unfold transp_on_def, blast) }
+  with assms show ?thesis by auto
+qed
+
+lemma reflp_on_restrict_to_rtranclp:
   assumes "reflp_on P A" and "transp_on P A"
     and "x \<in> A" and "y \<in> A"
   shows "(restrict_to P A)\<^sup>*\<^sup>* x y \<longleftrightarrow> P x y"
-proof -
-  { assume "(restrict_to P A)\<^sup>*\<^sup>* x y"
-    then have "P x y" using assms
-      by (induct)
-         (auto simp: reflp_on_def, unfold transp_on_def, blast) }
-  with assms show ?thesis by auto
-qed
+  unfolding restrict_to_rtranclp [OF assms(2-)]
+  unfolding reflp_on_reflclp_simp [OF assms(1, 3-)] ..
 
 end
 

@@ -12,6 +12,7 @@ imports
   "~~/src/HOL/Library/Sublist"
   "~~/src/HOL/Library/Ramsey"
   Minimal_Bad_Sequences
+  "../Regular-Sets/Regexp_Method"
 begin
 
 
@@ -958,167 +959,303 @@ proof -
   then show ?thesis unfolding * .
 qed
 
-lemma irreflp_on_extension:
-  fixes A P f
-  defines "R \<equiv> (\<lambda>x y. (x \<in> A \<and> y \<in> A) \<and> (P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)))"
-  assumes A: "\<And>i::nat. f i \<in> A"
-    and bad: "bad P\<^sup>=\<^sup>= f"
-    and trans: "transp_on P A"
-    and irrefl: "irreflp_on P A"
-  shows "irreflp_on R\<^sup>+\<^sup>+ A"
-proof
-  def S \<equiv> "\<lambda>x y. x \<in> A \<and> y \<in> A \<and> (\<exists>i. P\<^sup>=\<^sup>= x (f (Suc i)) \<and> P\<^sup>=\<^sup>= (f i) y)"
-  from bad
-    have le: "\<And>i j. P\<^sup>=\<^sup>= (f i) (f j) \<Longrightarrow> j \<le> i"
-    unfolding good_def by (metis not_leE)
-  have RS: "\<And>x y z. R x y \<Longrightarrow> S y z \<Longrightarrow> S\<^sup>+\<^sup>+ x z"
-  proof -
-    fix x y z
-    assume "R x y" and "S y z"
-    from `R x y` have "x \<in> A" and "y \<in> A" by (auto simp: R_def)
-    from `R x y` have "P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)" by (auto simp: R_def)
-    then show "S\<^sup>+\<^sup>+ x z"
-    proof
-      assume "P x y"
-      with `x \<in> A` and `y \<in> A` and A and `S y z`
-        show ?thesis using trans unfolding transp_on_def S_def by blast
-    next
-      assume "\<exists>i. x = f (Suc i) \<and> y = f i"
-      then have "S x y" using `x \<in> A` and `y \<in> A` by (auto simp: S_def)
-      with `S y z` show ?thesis by auto
-    qed
-  qed
-  have RS': "\<And>x y z. R x y \<Longrightarrow> S\<^sup>+\<^sup>+ y z \<Longrightarrow> S\<^sup>+\<^sup>+ x z"
-  proof -
-    fix x y z assume "R x y" and "S\<^sup>+\<^sup>+ y z"
-    moreover from `S\<^sup>+\<^sup>+ y z` obtain u where "S y u" and "S\<^sup>*\<^sup>* u z" by (metis tranclpD)
-    ultimately have "S\<^sup>+\<^sup>+ x u" using RS by blast
-    with `S\<^sup>*\<^sup>* u z` show "S\<^sup>+\<^sup>+ x z" by auto
-  qed
-  have RS'': "\<And>x y z. R\<^sup>+\<^sup>+ x y \<Longrightarrow> S\<^sup>+\<^sup>+ y z \<Longrightarrow> S\<^sup>+\<^sup>+ x z"
-  proof -
-    fix x y z assume "R\<^sup>+\<^sup>+ x y" and "S\<^sup>+\<^sup>+ y z"
-    then show "S\<^sup>+\<^sup>+ x z" by (induct) (auto intro: RS')
-  qed
 
-  fix a
-  assume "a \<in> A"
-  show "\<not> R\<^sup>+\<^sup>+ a a"
-  proof
-    assume "R\<^sup>+\<^sup>+ a a"
-    then obtain x y where "R\<^sup>+\<^sup>+ x y" and "P\<^sup>=\<^sup>= a x" and "P\<^sup>=\<^sup>= y a" by blast
-    then have "S\<^sup>+\<^sup>+ x y" using `a \<in> A`
-    proof (induct arbitrary: a rule: tranclp_induct)
-      case (base y)
-      from base have "x \<in> A" and "y \<in> A" by (auto simp: R_def)
-      from base have "P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)" by (auto simp: R_def)
-      then show ?case
-      proof
-        assume "P x y" with `a \<in> A` and `x \<in> A` and `y \<in> A` and `P\<^sup>=\<^sup>= a x` and `P\<^sup>=\<^sup>= y a` 
-          have "P a a" using trans unfolding transp_on_def by blast
-        with irrefl and `a \<in> A` show ?thesis unfolding irreflp_on_def by blast
-      next
-        assume "\<exists>i. x = f (Suc i) \<and> y = f i"
-        then show ?thesis using `x \<in> A` and `y \<in> A` unfolding S_def by auto
-      qed
-    next
-      case (step y z)
-      from `R\<^sup>+\<^sup>+ x y` have "x \<in> A" and "y \<in> A" by (induct) (auto simp: R_def)
-      from `R y z` have "z \<in> A" by (auto simp: R_def)
-      from `P\<^sup>=\<^sup>= z a` and `P\<^sup>=\<^sup>= a x` and `z \<in> A` and `a \<in> A` and `x \<in> A`
-        have "P\<^sup>=\<^sup>= z x" using trans unfolding transp_on_def by blast
-      from `R y z` have "P y z \<or> (\<exists>i. y = f (Suc i) \<and> z = f i)" by (auto simp: R_def)
-      then show ?case
-      proof
-        assume "P y z"
-        then have "P\<^sup>=\<^sup>= y z" by auto
-        with `P\<^sup>=\<^sup>= z x` and `z \<in> A` and step
-          have "S\<^sup>+\<^sup>+ x y" by blast
-        then obtain u where "S\<^sup>*\<^sup>* x u" and "S u y" by (metis rtranclp.rtrancl_refl tranclp.cases tranclp_into_rtranclp)
-        with `P\<^sup>=\<^sup>= y z` and A and `y \<in> A` and `z \<in> A`
-          have "S u z" using trans unfolding transp_on_def S_def by blast
-        with `S\<^sup>*\<^sup>* x u` show ?thesis by auto
-      next
-        assume "\<exists>i. y = f (Suc i) \<and> z = f i"
-        then obtain i where "y = f (Suc i)" and "z = f i" by auto
-        then have "S\<^sup>+\<^sup>+ y z" using `y \<in> A` and `z \<in> A` unfolding S_def by blast
-        with `R\<^sup>+\<^sup>+ x y` show ?thesis by (rule RS'')
-      qed
-    qed
-    from tranclp_imp_stepfun [OF this] obtain g n
-      where "g 0 = x" and "g (Suc n) = y"
-      and "\<forall>i\<le>n. S (g i) (g (Suc i))"
-      and gA: "\<forall>i\<le>Suc n. g i \<in> A" unfolding S_def
-      by auto (metis le_Suc_eq order_refl)
-    then have "\<forall>i\<in>{0 ..< Suc n}. \<exists>j. P\<^sup>=\<^sup>= (g i) (f (Suc j)) \<and> P\<^sup>=\<^sup>= (f j) (g (Suc i))"
-      unfolding S_def by auto
-    from bchoice [OF this] obtain h
-      where *: "\<forall>i\<le>n. P\<^sup>=\<^sup>= (g i) (f (Suc (h i))) \<and> P\<^sup>=\<^sup>= (f (h i)) (g (Suc i))" by force
-    then have "\<forall>i<n. P\<^sup>=\<^sup>= (f (h i)) (f (Suc (h (Suc i))))"
-    proof (intro allI impI)
-      fix i assume "i < n"
-        then have "i \<le> n" and "Suc i \<le> n" and "i < Suc n" by auto
-      from * [rule_format, OF `i \<le> n`] and * [rule_format, OF `Suc i \<le> n`]
-        have "P\<^sup>=\<^sup>= (f (h i)) (g (Suc i))"
-        and "P\<^sup>=\<^sup>= (g (Suc i)) (f (Suc (h (Suc i))))" by auto
-      moreover
-      have "f (h i) \<in> A" and "g (Suc i) \<in> A" and "f (Suc (h (Suc i))) \<in> A"
-        using `i < Suc n` and A and gA by auto
-      ultimately
-        show "P\<^sup>=\<^sup>= (f (h i)) (f (Suc (h (Suc i))))"
-        using transp_on_imp_transp_on_reflclp [OF trans]
-        unfolding transp_on_def by blast
-    qed
-    with le have "\<forall>i<n. Suc (h (Suc i)) \<le> h i" by blast
-    then have "\<forall>i<n. h (Suc i) < h i" by auto
-    then have "h n \<le> h 0" by (induct n) auto
-    from gA and `g 0 = x` have "x \<in> A" by auto
-    from gA and `g (Suc n) = y` have "y \<in> A" by auto
-    from * and `g 0 = x` have "P\<^sup>=\<^sup>= x (f (Suc (h 0)))" by auto
-    with `P\<^sup>=\<^sup>= a x` have "P\<^sup>=\<^sup>= a (f (Suc (h 0)))"
-      using `a \<in> A` and `x \<in> A` and `f (Suc (h 0)) \<in> A`
-      and transp_on_imp_transp_on_reflclp [OF trans]
-      unfolding transp_on_def by blast
-    from * and `g (Suc n) = y` have "P\<^sup>=\<^sup>= (f (h n)) y" by auto
-    with `P\<^sup>=\<^sup>= y a` have "P\<^sup>=\<^sup>= (f (h n)) a"
-      using `y \<in> A` and `f (h n) \<in> A` and `a \<in> A`
-      and transp_on_imp_transp_on_reflclp [OF trans]
-      unfolding transp_on_def by blast
-    with `P\<^sup>=\<^sup>= a (f (Suc (h 0)))` have "P\<^sup>=\<^sup>= (f (h n)) (f (Suc (h 0)))"
-      using `f (h n) \<in> A` and `a \<in> A` and `f (Suc (h 0)) \<in> A`
-      and transp_on_imp_transp_on_reflclp [OF trans]
-      unfolding transp_on_def by blast
-    with le have "Suc (h 0) \<le> h n" by auto
-    with `h n \<le> h 0` show False by auto
+subsection {* Further Results *}
+
+text {*Given a quasi-order @{term P}, the following statements are equivalent:
+\begin{enumerate}
+\item @{term P} is almost-full.
+\item @{term P} does neither allow decreasing chains nor antichains.
+\item Every quasi-order extending @{term P} is well-founded.
+\end{enumerate}
+*}
+
+lemma qo_af_imp_wf_and_no_antichain:
+  assumes qo: "qo_on P A"
+    and af: "almost_full_on P A"
+  shows qo_af_imp_wf: "wfp_on (strict P) A"
+    and qo_af_imp_no_antichain: "\<not> (\<exists>f. antichain_on P f A)"
+proof -
+  show "wfp_on (strict P) A"
+  proof (unfold wfp_on_def, rule notI)
+    assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict P (f (Suc i)) (f i)"
+    then obtain f where *: "chain_on ((strict P)\<inverse>\<inverse>) f A" by blast
+    from chain_on_transp_on_less [OF this]
+      and transp_on_strict [THEN transp_on_converse, OF qo [THEN qo_on_imp_transp_on]]
+      have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
+    with af show False
+      using * by (auto simp: almost_full_on_def good_def)
+  qed
+next
+  from almost_full_on_imp_no_antichain_on [of P A] and assms
+    show "\<not> (\<exists>f. antichain_on P f A)" by (auto)
+qed
+
+lemma wf_and_no_antichain_imp_qo_extension_wf:
+  assumes wf: "wfp_on (strict P) A"
+    and anti: "\<not> (\<exists>f. antichain_on P f A)"
+    and subrel: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y"
+    and qo: "qo_on Q A"
+  shows "wfp_on (strict Q) A"
+proof (rule ccontr)
+  have "transp_on (strict Q) A"
+    using qo unfolding qo_on_def transp_on_def by blast
+  then have *: "transp_on ((strict Q)\<inverse>\<inverse>) A" by (rule transp_on_converse)
+  assume "\<not> wfp_on (strict Q) A"
+  then obtain f :: "nat \<Rightarrow> 'a" where A: "\<And>i. f i \<in> A"
+    and "\<forall>i. strict Q (f (Suc i)) (f i)" unfolding wfp_on_def by blast+
+  then have "chain_on ((strict Q)\<inverse>\<inverse>) f A" by auto
+  from chain_on_transp_on_less [OF this *]
+    have *: "\<And>i j. i < j \<Longrightarrow> \<not> P (f i) (f j)"
+    using subrel and A by blast
+  show False
+  proof (cases)
+    assume "\<exists>k. \<forall>i>k. \<exists>j>i. P (f j) (f i)"
+    then obtain k where "\<forall>i>k. \<exists>j>i. P (f j) (f i)" by auto
+    from subchain [of k _ f, OF this] obtain g
+      where "\<And>i j. i < j \<Longrightarrow> g i < g j"
+      and "\<And>i. P (f (g (Suc i))) (f (g i))" by auto
+    with * have "\<And>i. strict P (f (g (Suc i))) (f (g i))" by blast
+    with wf [unfolded wfp_on_def not_ex, THEN spec, of "\<lambda>i. f (g i)"] and A
+      show False by fast
+  next
+    assume "\<not> (\<exists>k. \<forall>i>k. \<exists>j>i. P (f j) (f i))"
+    then have "\<forall>k. \<exists>i>k. \<forall>j>i. \<not> P (f j) (f i)" by auto
+    from choice [OF this] obtain h
+      where "\<forall>k. h k > k"
+      and **: "\<forall>k. (\<forall>j>h k. \<not> P (f j) (f (h k)))" by auto
+    def [simp]: \<phi> \<equiv> "\<lambda>i. (h ^^ Suc i) 0"
+    have "\<And>i. \<phi> i < \<phi> (Suc i)"
+      using `\<forall>k. h k > k` by (induct_tac i) auto
+    then have mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (metis lift_Suc_mono_less)
+    then have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (\<phi> j)) (f (\<phi> i))"
+      using ** by auto
+    with mono [THEN *]
+      have "\<forall>i j. i < j \<longrightarrow> incomparable P (f (\<phi> j)) (f (\<phi> i))" by blast
+    moreover have "\<exists>i j. i < j \<and> \<not> incomparable P (f (\<phi> i)) (f (\<phi> j))"
+      using anti [unfolded not_ex, THEN spec, of "\<lambda>i. f (\<phi> i)"] and A by blast
+    ultimately show False by blast
   qed
 qed
 
-text {*If every extension of a partial-order is well-founded, then
-the partial order is almost-full.*}
-lemma wfp_on_extensions_imp_almost_full_on:
+lemma every_qo_extension_wf_imp_af:
+  assumes ext: "\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and>
+    qo_on Q A \<longrightarrow> wfp_on (strict Q) A"
+    and "qo_on P A"
+  shows "almost_full_on P A"
+proof
+  from `qo_on P A`
+    have refl: "reflp_on P A"
+    and trans: "transp_on P A"
+    by (auto intro: qo_on_imp_reflp_on qo_on_imp_transp_on)
+
+  fix f :: "nat \<Rightarrow> 'a"
+  assume "\<forall>i. f i \<in> A"
+  then have A: "\<And>i. f i \<in> A" ..
+  show "good P f"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by (auto simp: good_def)
+    then have *: "\<And>i j. P (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_leE)
+  
+    def [simp]: D \<equiv> "\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i"
+    def P' \<equiv> "restrict_to P A"
+    def [simp]: Q \<equiv> "(sup P' D)\<^sup>*\<^sup>*"
+
+    have **: "\<And>i j. (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j) \<Longrightarrow> i > j"
+    proof -
+      fix i j
+      assume "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j)"
+      then show "i > j"
+        apply (induct "f i" "f j" arbitrary: j)
+        apply (insert A, auto dest!: * simp: P'_def reflp_on_restrict_to_rtranclp [OF refl trans])
+        apply (metis "*" dual_order.strict_trans1 less_Suc_eq_le refl reflp_on_def)
+        by (metis le_imp_less_Suc less_trans)
+    qed
+
+    have "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y" by (auto simp: P'_def)
+    moreover have "qo_on Q A" by (auto simp: qo_on_def reflp_on_def transp_on_def)
+    ultimately have "wfp_on (strict Q) A"
+        using ext [THEN spec, of Q] by blast
+    moreover have "\<forall>i. f i \<in> A \<and> strict Q (f (Suc i)) (f i)"
+    proof
+      fix i
+      have "\<not> Q (f i) (f (Suc i))"
+      proof
+        assume "Q (f i) (f (Suc i))"
+        then have "(sup P' D)\<^sup>*\<^sup>* (f i) (f (Suc i))" by auto
+        moreover have "(sup P' D)\<^sup>*\<^sup>* = sup (P'\<^sup>*\<^sup>*) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+)"
+        proof -
+          have "\<And>A B. (A \<union> B)\<^sup>* = A\<^sup>* \<union> A\<^sup>* O (B O A\<^sup>*)\<^sup>+" by regexp
+          from this [to_pred] show ?thesis by blast
+        qed
+        ultimately have "sup (P'\<^sup>*\<^sup>*) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) (f i) (f (Suc i))" by simp
+        then have "(P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) (f i) (f (Suc i))" by auto
+        then have "Suc i < i"
+          using ** apply auto
+          by (metis (lifting, mono_tags) max.semilattice_strict_iff_order relcompp.relcompI tranclp_into_tranclp2)
+        then show False by auto
+      qed
+      with A [of i] show "f i \<in> A \<and> strict Q (f (Suc i)) (f i)" by auto
+    qed
+    ultimately show False unfolding wfp_on_def by blast  
+  qed
+qed
+
+lemma po_af_imp_wf_and_no_antichain:
   assumes po: "po_on P A"
-    and extends: "\<And>Q. \<lbrakk>po_on Q A; \<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y\<rbrakk> \<Longrightarrow> wfp_on Q A"
-  shows "almost_full_on P\<^sup>=\<^sup>= A"
+    and af: "almost_full_on (P\<^sup>=\<^sup>=) A"
+  shows po_af_imp_wf: "wfp_on P A"
+    and po_af_imp_no_antichain: "\<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)"
+proof -
+  show "wfp_on P A"
+  proof (unfold wfp_on_def, rule notI)
+    assume "\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)"
+    then obtain f where A: "\<And>i. f i \<in> A"
+      and *: "chain_on (P\<inverse>\<inverse>) f A" by blast
+    from chain_on_transp_on_less [OF * transp_on_converse [OF po [THEN po_on_imp_transp_on]]]
+      have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)" by blast
+    then have "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
+      using po_on_imp_antisymp_on [OF po] and A
+      and po_on_imp_irreflp_on [OF po]
+      unfolding antisymp_on_def irreflp_on_def
+      by (metis sup2CI)
+    with af show False
+      using * by (auto simp: almost_full_on_def good_def)
+  qed
+next
+  from almost_full_on_imp_no_antichain_on [of "P\<^sup>=\<^sup>=" A] and assms
+    show "\<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)" by (auto)
+qed
+
+lemma wf_and_no_antichain_imp_po_extension_wf:
+  assumes wf: "wfp_on P A"
+    and anti: "\<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)"
+    and subrel: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y"
+    and po: "po_on Q A"
+  shows "wfp_on Q A"
 proof (rule ccontr)
-  assume "\<not> almost_full_on P\<^sup>=\<^sup>= A"
-  then obtain f where A: "\<And>i::nat. f i \<in> A"
-    and "bad P\<^sup>=\<^sup>= f" by (auto simp: almost_full_on_def)
-  from `bad P\<^sup>=\<^sup>= f`
-    have le: "\<And>i j. P\<^sup>=\<^sup>= (f i) (f j) \<Longrightarrow> j \<le> i"
-    unfolding good_def by (metis not_leE)
-  def R \<equiv> "(\<lambda>x y. (x \<in> A \<and> y \<in> A) \<and> (P x y \<or> (\<exists>i. x = f (Suc i) \<and> y = f i)))"
-  let ?R = "R\<^sup>+\<^sup>+"
-  have **: "\<And>i. ?R (f (Suc i)) (f i)" using A by (auto simp: R_def)
-  then have "\<not> wfp_on ?R A" using A by (auto simp: wfp_on_def)
-  have irrefl: "irreflp_on P A" by (rule po [THEN po_on_imp_irreflp_on])
-  have trans: "transp_on P A" by (rule po [THEN po_on_imp_transp_on])
-  have "irreflp_on ?R A"
-    using irreflp_on_extension [OF A `bad P\<^sup>=\<^sup>= f` trans irrefl]
-    unfolding R_def by blast
-  moreover have "transp_on ?R A" by (auto simp: transp_on_def)
-  ultimately have "po_on ?R A" by (auto simp: po_on_def)
-  from extends [OF this] have "wfp_on ?R A" unfolding R_def by blast
-  with `\<not> wfp_on ?R A` show False by contradiction
+  have "transp_on Q A"
+    using po unfolding po_on_def transp_on_def by blast
+  then have *: "transp_on (Q\<inverse>\<inverse>) A" by (rule transp_on_converse)
+  assume "\<not> wfp_on Q A"
+  then obtain f :: "nat \<Rightarrow> 'a" where A: "\<And>i. f i \<in> A"
+    and "\<forall>i. Q (f (Suc i)) (f i)" unfolding wfp_on_def by blast+
+  then have "chain_on (Q\<inverse>\<inverse>) f A" by auto
+  from chain_on_transp_on_less [OF this *]
+    have "\<And>i j. i < j \<Longrightarrow> Q (f j) (f i)" by blast
+  then have "\<And>i j. i < j \<Longrightarrow> \<not> Q\<^sup>=\<^sup>= (f i) (f j)"
+      using po_on_imp_antisymp_on [OF po] and A
+      and po_on_imp_irreflp_on [OF po]
+      unfolding antisymp_on_def irreflp_on_def
+      by (metis sup2CI)
+  then have *: "\<And>i j. i < j \<Longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
+    using subrel and A by blast
+  show False
+  proof (cases)
+    assume "\<exists>k. \<forall>i>k. \<exists>j>i. P\<^sup>=\<^sup>= (f j) (f i)"
+    then obtain k where "\<forall>i>k. \<exists>j>i. P\<^sup>=\<^sup>= (f j) (f i)" by auto
+    from subchain [of k _ f, OF this] obtain g
+      where "\<And>i j. i < j \<Longrightarrow> g i < g j"
+      and "\<And>i. P\<^sup>=\<^sup>= (f (g (Suc i))) (f (g i))" by auto
+    with * have "\<And>i. P (f (g (Suc i))) (f (g i))"
+    by (metis lessI strict_reflclp_conv)
+    with wf [unfolded wfp_on_def not_ex, THEN spec, of "\<lambda>i. f (g i)"] and A
+      show False by fast
+  next
+    assume "\<not> (\<exists>k. \<forall>i>k. \<exists>j>i. P\<^sup>=\<^sup>= (f j) (f i))"
+    then have "\<forall>k. \<exists>i>k. \<forall>j>i. \<not> P\<^sup>=\<^sup>= (f j) (f i)" by auto
+    from choice [OF this] obtain h
+      where "\<forall>k. h k > k"
+      and **: "\<forall>k. (\<forall>j>h k. \<not> P\<^sup>=\<^sup>= (f j) (f (h k)))" by auto
+    def [simp]: \<phi> \<equiv> "\<lambda>i. (h ^^ Suc i) 0"
+    have "\<And>i. \<phi> i < \<phi> (Suc i)"
+      using `\<forall>k. h k > k` by (induct_tac i) auto
+    then have mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (metis lift_Suc_mono_less)
+    then have "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f (\<phi> j)) (f (\<phi> i))"
+      using ** by auto
+    with mono [THEN *]
+      have "\<forall>i j. i < j \<longrightarrow> incomparable (P\<^sup>=\<^sup>=) (f (\<phi> j)) (f (\<phi> i))" by blast
+    moreover have "\<exists>i j. i < j \<and> \<not> incomparable (P\<^sup>=\<^sup>=) (f (\<phi> i)) (f (\<phi> j))"
+      using anti [unfolded not_ex, THEN spec, of "\<lambda>i. f (\<phi> i)"] and A by blast
+    ultimately show False by blast
+  qed
+qed
+
+lemma every_po_extension_wf_imp_af:
+  assumes ext: "\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and>
+    po_on Q A \<longrightarrow> wfp_on Q A"
+    and "po_on P A"
+  shows "almost_full_on (P\<^sup>=\<^sup>=) A"
+proof
+  from `po_on P A`
+    have irrefl: "irreflp_on P A"
+    and trans: "transp_on P A"
+    by (auto intro: po_on_imp_irreflp_on po_on_imp_transp_on)
+
+  fix f :: "nat \<Rightarrow> 'a"
+  assume "\<forall>i. f i \<in> A"
+  then have A: "\<And>i. f i \<in> A" ..
+  show "good (P\<^sup>=\<^sup>=) f"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)" by (auto simp: good_def)
+    then have *: "\<And>i j. P\<^sup>=\<^sup>= (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_leE)
+  
+    def [simp]: D \<equiv> "\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i"
+    def P' \<equiv> "restrict_to P A"
+    def [simp]: Q \<equiv> "(sup P' D)\<^sup>+\<^sup>+"
+
+    have **: "\<And>i j. (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j) \<Longrightarrow> i > j"
+    proof -
+      fix i j
+      assume "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j)"
+      then show "i > j"
+        apply (induct "f i" "f j" arbitrary: j)
+        apply (insert A, auto dest!: * simp: P'_def)
+        apply (simp only: restrict_to_rtranclp [OF trans])
+        apply (metis (full_types) "*" Suc_n_not_le_n le_trans not_le sup2CI)
+        by (metis (hide_lams, no_types) "*" dual_order.strict_trans less_Suc_eq_le restrict_to_rtranclp trans)
+    qed
+
+    have "irreflp_on Q A"
+    proof
+      fix x
+      assume *: "x \<in> A"
+      show "\<not> Q x x"
+      proof
+        assume "Q x x"
+        then have "(sup P' D)\<^sup>+\<^sup>+ x x" by auto
+        moreover have "(sup P' D)\<^sup>+\<^sup>+ = sup (P'\<^sup>+\<^sup>+) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+)"
+        proof -
+          have "\<And>A B. (A \<union> B)\<^sup>+ = A\<^sup>+ \<union> A\<^sup>* O (B O A\<^sup>*)\<^sup>+" by regexp
+          from this [to_pred] show ?thesis by blast
+        qed
+        ultimately have "sup (P'\<^sup>+\<^sup>+) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) x x" by simp
+        then have "(P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) x x"
+          using * and `po_on P A`
+          by (metis P'_def ext irreflp_on_def sup2E wfp_on_imp_irreflp_on wfp_on_restrict_to_tranclp_wfp_on_conv)
+        then obtain b where "P'\<^sup>*\<^sup>* x b" and "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ b x" by blast
+        moreover from `(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ b x` obtain i
+          where [simp]: "b = f i" by (induct) auto
+        ultimately have "((D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ OO P'\<^sup>*\<^sup>*) (f i) (f i)" by auto
+        moreover have "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ OO P'\<^sup>*\<^sup>* = (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+"
+        proof -
+          have "\<And>A B. (A O B\<^sup>*)\<^sup>+ O B\<^sup>* = (A O B\<^sup>*)\<^sup>+" by regexp
+          from this [to_pred] show ?thesis .
+        qed
+        ultimately have "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f i)" by auto
+        with ** show False by blast
+      qed
+    qed
+    moreover have "transp_on Q A" by (auto simp: transp_on_def)
+    ultimately have "po_on Q A" by (auto simp: po_on_def)
+    moreover have "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y" by (auto simp: P'_def)
+    ultimately have "wfp_on Q A"
+        using ext [THEN spec, of Q] by blast
+    moreover have "\<forall>i. Q (f (Suc i)) (f i)" by auto
+    ultimately show False using A unfolding wfp_on_def by blast
+  qed
 qed
 
 end
