@@ -56,7 +56,7 @@ for class-instantiation.
 
 setup {*
   let 
-    fun derive dtyp_name thy = 
+    fun derive dtyp_name _ thy = 
       let
         val base_name = Long_Name.base_name dtyp_name
         val _ = Output.writeln ("proving that datatype " ^ base_name ^ " is countable")
@@ -69,7 +69,7 @@ setup {*
         val _ = Output.writeln ("registered " ^ base_name ^ " in class countable")
       in thy' end
   in 
-    Derive_Manager.register_derive "countable" "proves that a datatype is countable" derive 
+    Derive_Manager.register_derive "countable" "proves that a datatype is countable" derive
   end
 *}
 

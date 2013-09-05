@@ -5,7 +5,7 @@ sig
   val mk_hash : theory -> Datatype_Aux.info -> bool    -> term;
   
   (* creates and registers hash-functions for datatype *)
-  val derive : string -> theory -> theory
+  val derive : string -> string -> theory -> theory
 
   (* registers in derive-manager *)
   val setup : theory -> theory
@@ -98,7 +98,7 @@ fun mk_hash thy info bounded =
   in mk_rec 0 end
 
 
-fun derive dtyp_name thy = 
+fun derive dtyp_name _ thy = 
   let
     val tyco = dtyp_name
   

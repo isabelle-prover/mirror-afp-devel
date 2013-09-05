@@ -32,7 +32,7 @@ sig
   val mk_order_thms : theory -> Datatype_Aux.info -> thm list
 
   (* creates and registers (0 = ord, 1 = order, 2 = linear-order) for datatype *)
-  val derive : int -> string -> theory -> theory
+  val derive : int -> string -> string -> theory -> theory
 
   (* registeres method in Derive-Manager *)
   val setup : theory -> theory
@@ -559,7 +559,7 @@ fun mk_linear_thm thy info =
     thm
   end
 
-fun derive kind dtyp_name thy = 
+fun derive kind dtyp_name _ thy = 
   let
     val tyco = dtyp_name
 
