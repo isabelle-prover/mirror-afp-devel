@@ -9,6 +9,7 @@ session Well_Quasi_Orders (AFP) = HOL +
     "~~/src/HOL/Library/Ramsey"
     "~~/src/HOL/Library/Order_Relation"
     "~~/src/HOL/Library/Zorn"
+    "~~/src/HOL/Library/Multiset"
   theories
     "~~/src/HOL/Library/Sublist"
     Restricted_Predicates
@@ -18,6 +19,7 @@ session Well_Quasi_Orders (AFP) = HOL +
     Dickson_with_Transitivity
     Well_Quasi_Orders
     Well_Partial_Orders
+    Wpo_Extension
     Orders
     Finite_Tree
     Kruskal
@@ -25,7 +27,9 @@ session Well_Quasi_Orders (AFP) = HOL +
     Nash_Williams
     Kruskal_Tree
     Multiset_Extension
+    Wqo_Multiset
     Kruskal_Terms
+    Kruskal_Finite
     Wpo_Kruskal_Terms
   files
     "document/root.bib"
