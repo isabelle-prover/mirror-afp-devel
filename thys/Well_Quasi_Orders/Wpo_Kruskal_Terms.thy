@@ -1,3 +1,11 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Kruskal's Tree Theorem for Terms *}
+
 theory Wpo_Kruskal_Terms
 imports
   Well_Partial_Orders

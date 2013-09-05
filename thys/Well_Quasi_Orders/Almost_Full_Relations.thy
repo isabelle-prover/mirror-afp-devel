@@ -456,7 +456,7 @@ lemma almost_full_on_sum_less:
   using almost_full_on_Plus [OF assms] by simp
 
 
-subsection {* Dickson's Lemma *}
+subsection {* Dickson's Lemma for Almost-Full Relations *}
 
 text {*When two sets are almost-full, then their Cartesian product is almost-full.*}
 
@@ -570,7 +570,7 @@ lemma almost_full_on_prod_less:
   using almost_full_on_Sigma [OF assms] by simp
 
 
-subsection {* Embedding *}
+subsection {* List Embedding *}
 
 lemma reflp_on_list_hembeq:
   shows "reflp_on (list_hembeq P) (lists A)"
@@ -619,7 +619,7 @@ lemma wfp_on_suffix:
   by blast
 
 
-subsection {* Higman's Lemma *}
+subsection {* Higman's Lemma for Almost-Full Relations *}
 
 lemma infinite_wo_prefix:
   "infinite {j::nat. j > i}"
@@ -936,7 +936,7 @@ lemma eq_almost_full_on_finite_set:
   by (auto simp: reflp_on_def)
 
 
-subsection {*Natural Numbers*}
+subsection {* Natural Numbers *}
 
 lemma almost_full_on_UNIV_nat:
   "almost_full_on (op \<le>) (UNIV :: nat set)"

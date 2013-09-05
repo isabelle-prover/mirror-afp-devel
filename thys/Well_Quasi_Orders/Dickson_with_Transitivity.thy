@@ -1,6 +1,6 @@
 (* Author: Christian Sternagel, JAIST *)
 
-header {* Nash-Williams' Version of Dickson's Lemma *}
+header {* Nash-Williams' Proof of Dickson's Lemma *}
 
 theory Dickson_with_Transitivity
 imports

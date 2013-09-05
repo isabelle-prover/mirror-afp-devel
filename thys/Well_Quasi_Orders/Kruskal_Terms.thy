@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Kruskal's Tree Theorem -- Infinite Version for Terms *}
+header {* Kruskal's Tree Theorem for Almost-Full Relations -- Infinite Version for Terms *}
 
 theory Kruskal_Terms
 imports

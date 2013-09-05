@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Binary Predicates Restricted to Elements of a given Set *}
+header {* Binary Predicates Restricted to Elements of a Given Set *}
 
 theory Restricted_Predicates
 imports Main
@@ -367,7 +367,7 @@ lemma wfp_on_UNIV [simp]:
   unfolding wfp_on_iff_inductive_on inductive_on_def wfP_def wf_def by force
 
 
-subsection {*Measures on Sets (Instead of Full Types)*}
+subsection {* Measures on Sets (Instead of Full Types) *}
 
 definition
   inv_image_betw ::
@@ -672,7 +672,7 @@ lemma tranclp_stepfun_conv:
   using tranclp_imp_stepfun and stepfun_imp_tranclp by metis
 
 
-subsection {*Facts about predecessor sets.*}
+subsection {* Facts About Predecessor Sets *}
 
 lemma qo_on_predecessor_subset_conv':
   assumes "qo_on P A" and "B \<subseteq> A" and "C \<subseteq> A"

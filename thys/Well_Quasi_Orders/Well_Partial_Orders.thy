@@ -12,7 +12,7 @@ imports
   "~~/src/HOL/Library/Zorn"
 begin
 
-section {* Basic Definitions *}
+subsection {* Basic Definitions *}
 
 definition wpo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "wpo_on P A = (po_on P A \<and> almost_full_on (P\<^sup>=\<^sup>=) A)"
@@ -180,7 +180,7 @@ proof -
 qed
 
 
-subsection {* Dickson's Lemma for Wpo *}
+subsection {* Dickson's Lemma for Well-Partial-Orders *}
 
 lemma wpo_on_Sigma:
   fixes A1 :: "'a set" and A2 :: "'b set"
@@ -203,7 +203,7 @@ proof -
 qed
 
 
-subsection {* Higman's Lemma for Wpo *}
+subsection {* Higman's Lemma for Well-Partial-Orders *}
 
 lemma irreflp_on_list_hemb:
   "irreflp_on (list_hemb P) (lists A)"
@@ -284,7 +284,6 @@ proof -
   with `total_on Q A` and `wfp_on Q A`
     show ?thesis by blast
 qed
-
 
 lemma wpo_on_map:
   fixes P and Q and h

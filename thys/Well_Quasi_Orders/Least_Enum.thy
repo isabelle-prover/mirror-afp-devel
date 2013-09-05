@@ -1,6 +1,6 @@
 (* Author: Christian Sternagel, JAIST *)
 
-header {* Enumerations of well-ordered sets in increasing order *}
+header {* Enumerations of Well-Ordered Sets in Increasing Order *}
 
 theory Least_Enum
 imports Main

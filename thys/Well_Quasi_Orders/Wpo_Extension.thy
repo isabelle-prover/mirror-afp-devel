@@ -1,3 +1,11 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Extending Arbitrary Well-Founded Relations to Well-Partial-Orders *}
+
 theory Wpo_Extension
 imports Well_Partial_Orders
 begin

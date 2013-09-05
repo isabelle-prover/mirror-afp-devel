@@ -1,3 +1,11 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Relation Between Well-Quasi-Orders and Well-Partial-Orders *}
+
 theory Orders
 imports
   "Well_Quasi_Orders"

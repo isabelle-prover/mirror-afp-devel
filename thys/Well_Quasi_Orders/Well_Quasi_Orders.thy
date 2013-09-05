@@ -12,7 +12,7 @@ imports
   "../Regular-Sets/Regexp_Method"
 begin
 
-section {* Basic Definitions *}
+subsection {* Basic Definitions *}
 
 definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "wqo_on P A \<longleftrightarrow> transp_on P A \<and> almost_full_on P A"
@@ -275,7 +275,7 @@ proof -
 qed
 
 
-subsection {* Dickson's Lemma for Wqo *}
+subsection {* Dickson's Lemma *}
 
 lemma wqo_on_Sigma:
   fixes A1 :: "'a set" and A2 :: "'b set"
@@ -293,7 +293,7 @@ proof -
 qed
 
 
-subsection {* Higman's Lemma for Wqo *}
+subsection {* Higman's Lemma *}
 
 lemma wqo_on_lists:
   assumes "wqo_on P A" shows "wqo_on (list_hembeq P) (lists A)"
