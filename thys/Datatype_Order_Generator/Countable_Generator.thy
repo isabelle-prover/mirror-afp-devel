@@ -34,8 +34,8 @@ subsection "Introduction"
 text {*
 Brian Huffmann and Alexander Krauss have developed a tactic
 which automatically can prove that a datatype is countable.
-We just make this tactic available in the derive-manger so that
-one can conviently write \texttt{derive countable some-datatype}.
+We just make this tactic available in the derive-manager so that
+one can conveniently write \texttt{derive countable some-datatype}.
 *}
 
 subsection "Features and Limitations"

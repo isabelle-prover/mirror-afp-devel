@@ -47,6 +47,11 @@ sig
 
 (* like print_tac, but is turned off by default to not exceed tracing limit *)
   val my_print_tac : string -> tactic 
+
+  val define_overloaded : string * term -> local_theory -> thm * local_theory
+
+  val mk_def : typ -> string -> term -> term
+
 end
 
 
@@ -162,5 +167,20 @@ fun dt_number_recs dtys =
           in (j'',ijs @ ijs') end
   in dtrecs dtys 0
 end
+
+(* code copied from HOL/SPARK/TOOLS *)
+fun define_overloaded (def_name, eq) lthy =
+  let
+    val ((c, _), rhs) = eq |> Syntax.check_term lthy |>
+      Logic.dest_equals |>> dest_Free;
+    val ((_, (_, thm)), lthy') = Local_Theory.define
+      ((Binding.name c, NoSyn), ((Binding.name def_name, @{attributes [code]}), rhs)) lthy
+    val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy');
+    val thm' = singleton (Proof_Context.export lthy' ctxt_thy) thm
+  in (thm', lthy') 
+end
+
+fun mk_def T c rhs = Logic.mk_equals (Const (c, T), rhs)
+
 
 end
