@@ -292,6 +292,8 @@ proof -
   } ultimately show ?thesis by (auto simp: wqo_on_def)
 qed
 
+lemmas dickson = wqo_on_Sigma
+
 
 subsection {* Higman's Lemma *}
 
@@ -299,6 +301,8 @@ lemma wqo_on_lists:
   assumes "wqo_on P A" shows "wqo_on (list_hembeq P) (lists A)"
   using assms and almost_full_on_lists
     and transp_on_list_hembeq by (auto simp: wqo_on_def)
+
+lemmas higman = wqo_on_lists
 
 text {*Every reflexive and transitive relation on a finite set is a wqo.*}
 lemma finite_wqo_on:

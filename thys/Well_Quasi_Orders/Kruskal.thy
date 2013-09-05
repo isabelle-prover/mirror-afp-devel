@@ -161,6 +161,8 @@ next
     show "almost_full_on (tree_hembeq P) (trees A)" .
 qed
 
+lemmas kruskal = wqo_on_trees
+
 end
 
 end
