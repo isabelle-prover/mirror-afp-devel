@@ -6,7 +6,7 @@
 
 header {* Example Instance of Kruskal's Tree Theorem *}
 
-theory Kruskal_Tree
+theory Kruskal_Tree_Example
 imports Kruskal
 begin
 

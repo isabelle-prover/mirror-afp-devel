@@ -9,7 +9,7 @@ header {* Instances of Well-Quasi-Orders *}
 theory Wqo_Instances
 imports
   Well_Quasi_Orders
-  Kruskal_Tree
+  Kruskal_Tree_Example
 begin
 
 subsection {* The Option Type is Well-Quasi-Ordered *}

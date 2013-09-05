@@ -25,7 +25,7 @@ session Well_Quasi_Orders (AFP) = HOL +
     Kruskal
     Wqo_Instances
     Nash_Williams
-    Kruskal_Tree
+    Kruskal_Tree_Example
     Multiset_Extension
     Wqo_Multiset
     Kruskal_Terms
