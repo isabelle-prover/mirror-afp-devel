@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* A Locale for Finite Trees *}
+header {* A Locale for Finite Trees and Terms *}
 
 theory Finite_Tree
 imports
