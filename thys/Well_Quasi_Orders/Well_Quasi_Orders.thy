@@ -82,6 +82,10 @@ lemma wqo_extensions_wf_conv:
     and every_qo_extension_wf_imp_af [OF _ assms]
     by blast
 
+lemma wqo_on_imp_wfp_on:
+  "wqo_on P A \<Longrightarrow> wfp_on (strict P) A"
+  by (metis (no_types) wqo_on_imp_qo_on wqo_wf_and_no_antichain_conv)
+
 text {*The homomorphic image of a wqo set is wqo.*}
 lemma wqo_on_hom:
   assumes "transp_on Q (h ` A)"
