@@ -46,7 +46,10 @@ can only choose to not support enumrations.
 \item \texttt{instantiation dtyp :: (type,\ldots,type) cenum}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) set-impl}
 \end{itemize}
+
+The extension to \texttt{corder} is planned as future work. 
 *}
+
 
 subsection "Implementation Notes"
 

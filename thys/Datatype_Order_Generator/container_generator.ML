@@ -1,11 +1,11 @@
 signature CONTAINER_GENERATOR = 
 sig 
   (* if boolean is true, then Some op = is returned, else None *)
-  val mk_some_eq_or_none : theory -> Datatype_Aux.info -> sort -> bool -> term;
+  val mk_some_eq_or_none : typ -> bool -> term;
 
-  val mk_set_impl : theory -> Datatype_Aux.info -> sort -> string -> term;
+  val mk_set_impl : typ -> string -> term;
 
-  val mk_none_cenum : theory -> Datatype_Aux.info -> sort -> term;
+  val mk_none_cenum : typ -> term;
 
   val supported_set_impl : string
 
@@ -17,15 +17,12 @@ end
 
 structure Container_Generator : CONTAINER_GENERATOR =
 struct
-open Datatype_Aux; open Datatype; open Derive_Aux;
+open Derive_Aux;
 
 val supported_set_impl = "(rbt,dlist,monad,collect,choose)"
 
-fun mk_none_cenum thy info sort =
+fun mk_none_cenum ty =
   let 
-    val typ_subst = typ_subst_for_sort thy info sort 
-    val descr = #descr info
-    val ty = typ_of_dtyp descr (DtRec 0) |> typ_subst 
     val lty = Type (@{type_name list}, [ty])
     val fty = (ty --> @{typ bool}) --> @{typ bool}
     val oty = Type (@{type_name option},[
@@ -34,12 +31,8 @@ fun mk_none_cenum thy info sort =
   in res
 end
 
-
-fun mk_set_impl thy info sort choice = 
+fun mk_set_impl ty choice = 
   let 
-    val typ_subst = typ_subst_for_sort thy info sort 
-    val descr = #descr info
-    val ty = typ_of_dtyp descr (DtRec 0) |> typ_subst 
     val sity = @{typ set_impl}
     val pty = Type (@{type_name phantom},[ty,sity])
     val ph = Const (@{const_name phantom}, sity --> pty)
@@ -54,11 +47,8 @@ fun mk_set_impl thy info sort choice =
   in res
 end
 
-fun mk_some_eq_or_none thy info sort choice =
+fun mk_some_eq_or_none ty choice =
   let 
-    val typ_subst = typ_subst_for_sort thy info sort 
-    val descr = #descr info
-    val ty = typ_of_dtyp descr (DtRec 0) |> typ_subst 
     val eqt = ty --> ty --> @{typ bool}
     val eq = HOLogic.eq_const ty
     val oty = Type (@{type_name option},[eqt])
@@ -67,52 +57,50 @@ fun mk_some_eq_or_none thy info sort choice =
   in (if choice then some else none)
 end  
 
-fun derive_ceq dtyp_name param thy = 
+fun typ_and_vs_of_typname thy typ_name sort =
+  let 
+    val ar = Type.arity_number (Proof_Context.tsig_of (Proof_Context.init_global thy)) typ_name
+    val sorts = map (K sort) (1 upto ar)
+    val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
+    val ty = Type (typ_name,map TFree ty_vars)
+  in (ty,ty_vars)
+end
+
+fun derive_ceq typ_name param thy = 
   let
-    val tyco = dtyp_name
     val choice = if (param = "") then true else if param = "no" then false else 
       error "optional parameter for class ceq must be 'no'"
-    val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("use " ^ (if choice then "" else "no ") ^ "equality for datatype " 
+    val base_name = Long_Name.base_name typ_name
+    val _ = Output.writeln ("use " ^ (if choice then "" else "no ") ^ "equality for type " 
       ^ base_name)
     val sort = @{sort ceq}
-    val bsort = @{sort type}
-    val info = Datatype.the_info thy tyco
-    val vs_of_sort = 
-      let val i = Datatype.the_spec thy tyco |> #1 
-      in fn sort => map (fn (n,_) => (n, sort)) i end
-    val vs = vs_of_sort bsort
-    val ceq_rhs = mk_some_eq_or_none thy info bsort choice
+    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val ceq_rhs = mk_some_eq_or_none ty choice
     val ceq_ty = Term.fastype_of ceq_rhs
     val ceq_def = mk_def ceq_ty @{const_name ceq} ceq_rhs
-    val (ceq_thm,lthy) = Class.instantiation ([tyco],vs,sort) thy
+    val (ceq_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
       |> define_overloaded ("ceq_" ^ base_name ^ "_def", ceq_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
       THEN unfold_tac [ceq_thm] ctxt
       THEN force_tac ctxt 1) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")    
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")  
+  
   in thy' end
 
-fun derive_cenum dtyp_name param thy = 
+fun derive_cenum typ_name param thy = 
   let
-    val tyco = dtyp_name
     val choice = if (param = "no") then false else  
       error "currently only parameter 'no' is accepted for class cenum"
-    val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("use " ^ (if choice then "" else "no ") ^ "enum for datatype " 
+    val base_name = Long_Name.base_name typ_name
+    val _ = Output.writeln ("use " ^ (if choice then "" else "no ") ^ "enum for type " 
       ^ base_name)
     val sort = @{sort cenum}
-    val bsort = @{sort type}
-    val info = Datatype.the_info thy tyco
-    val vs_of_sort = 
-      let val i = Datatype.the_spec thy tyco |> #1 
-      in fn sort => map (fn (n,_) => (n, sort)) i end
-    val vs = vs_of_sort bsort
-    val cenum_rhs = mk_none_cenum thy info bsort
+    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val cenum_rhs = mk_none_cenum ty
     val cenum_ty = Term.fastype_of cenum_rhs
     val cenum_def = mk_def cenum_ty @{const_name cEnum} cenum_rhs
-    val (cenum_thm,lthy) = Class.instantiation ([tyco],vs,sort) thy
+    val (cenum_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
       |> define_overloaded ("cEnum_" ^ base_name ^ "_def", cenum_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
@@ -122,23 +110,17 @@ fun derive_cenum dtyp_name param thy =
   
   in thy' end
 
-fun derive_set_impl dtyp_name param thy = 
+fun derive_set_impl typ_name param thy = 
   let
-    val tyco = dtyp_name
-    val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("use " ^ param ^ " as set_impl for datatype " 
+    val base_name = Long_Name.base_name typ_name
+    val _ = Output.writeln ("use " ^ param ^ " as set_impl for type " 
       ^ base_name)
     val sort = @{sort set_impl}
-    val bsort = @{sort type}
-    val info = Datatype.the_info thy tyco
-    val vs_of_sort = 
-      let val i = Datatype.the_spec thy tyco |> #1 
-      in fn sort => map (fn (n,_) => (n, sort)) i end
-    val vs = vs_of_sort bsort
-    val set_impl_rhs = mk_set_impl thy info bsort param
+    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val set_impl_rhs = mk_set_impl ty param
     val set_impl_ty = Term.fastype_of set_impl_rhs
     val set_impl_def = mk_def set_impl_ty @{const_name set_impl} set_impl_rhs
-    val (_,lthy) = Class.instantiation ([tyco],vs,sort) thy
+    val (_,lthy) = Class.instantiation ([typ_name],vs,sort) thy
       |> define_overloaded ("set_impl_" ^ base_name ^ "_def", set_impl_def)     
     val thy' = Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac []) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class set_impl")  

@@ -25,7 +25,9 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header Examples
 
 theory Derive_Examples
-imports Derive
+imports 
+  Derive
+  Rat
 begin
 
 subsection "Register standard existing types"
@@ -33,6 +35,22 @@ subsection "Register standard existing types"
 derive linorder list
 derive linorder sum
 derive linorder prod
+
+text {* For registering container-classes, we are not restricted to datatypes. *}
+
+derive ceq rat
+derive (no) cenum rat
+derive (rbt) set_impl rat
+
+subsection "Support of function types in combination with containers"
+
+text {* \texttt{derive (no) ceq fun} does not work, since fun is already registered.
+Therefore, we use an isomorphic copy. *}
+
+typedef ('a,'b)FUN = "UNIV :: ('a \<Rightarrow> 'b)set" by auto
+derive (no) ceq FUN
+derive (no) cenum FUN
+derive (collect) set_impl FUN
 
 subsection "Without nested recursion"
 
@@ -42,7 +60,7 @@ derive hashable bintree
 derive countable bintree
 derive (no) cenum bintree
 derive ceq bintree
-derive (rbt) set_impl bintree (* one can also pick other choices than rbt like dlist, collect, ... *)
+derive (dlist) set_impl bintree (* one can also pick other choices than dlist like rbt, collect, ... *)
 
 subsection "Using other datatypes"
 
@@ -72,7 +90,7 @@ derive linorder tree
 derive hashable tree
 derive countable tree
 derive (no) cenum tree
-derive (no) ceq tree (* we can also choose to not support equality *)
+derive ceq tree 
 derive (collect) set_impl tree
 
 
@@ -104,7 +122,7 @@ derive ceq "term"
 derive (rbt) set_impl "term"
 derive (no) cenum lab
 derive ceq lab
-derive (rbt) set_impl lab
+derive (dlist) set_impl lab
 
 subsection "A complex datatype"
 text {*
@@ -122,6 +140,6 @@ derive hashable complex
 derive countable complex
 derive (no) cenum complex
 derive ceq complex
-derive (rbt) set_impl complex
+derive (dlist) set_impl complex
 
 end
