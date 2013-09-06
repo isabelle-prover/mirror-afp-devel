@@ -5,7 +5,7 @@
 *)
 
 (*
-Copyright 2012 René Thiemann
+Copyright 2013 René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -40,6 +40,9 @@ datatype 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree"
 derive linorder bintree
 derive hashable bintree
 derive countable bintree
+derive (no) cenum bintree
+derive ceq bintree
+derive (rbt) set_impl bintree (* one can also pick other choices than rbt like dlist, collect, ... *)
 
 subsection "Using other datatypes"
 
@@ -47,6 +50,9 @@ datatype nat_list_list = NNil | CCons "nat list" nat_list_list
 derive linorder nat_list_list
 derive hashable nat_list_list
 derive countable nat_list_list
+derive (no) cenum nat_list_list
+derive ceq nat_list_list
+derive (dlist) set_impl nat_list_list
 
 subsection "Explicit mutual recursion"
 
@@ -55,6 +61,9 @@ datatype 'a mtree = MEmpty | MNode 'a "'a mtree_list"
 derive linorder mtree
 derive hashable mtree
 derive countable mtree
+derive (no) cenum mtree
+derive ceq mtree
+derive (choose) set_impl mtree
 
 subsection "Implicit mutual recursion"
 
@@ -62,11 +71,18 @@ datatype 'a tree = Empty | Node 'a "'a tree list"
 derive linorder tree
 derive hashable tree
 derive countable tree
+derive (no) cenum tree
+derive (no) ceq tree (* we can also choose to not support equality *)
+derive (collect) set_impl tree
+
 
 datatype 'a ttree = TEmpty | TNode 'a "'a ttree list tree"
 derive linorder ttree
 derive hashable ttree
 derive countable ttree
+derive (no) cenum ttree
+derive ceq ttree
+derive (monad) set_impl ttree
 
 subsection "Examples from IsaFoR"
 
@@ -83,6 +99,12 @@ derive countable "term"
 derive countable lab
 derive hashable "term"
 derive hashable lab
+derive (no) cenum "term"
+derive ceq "term"
+derive (rbt) set_impl "term"
+derive (no) cenum lab
+derive ceq lab
+derive (rbt) set_impl lab
 
 subsection "A complex datatype"
 text {*
@@ -98,5 +120,8 @@ and ('a,'b)complex2 = D1 "('a,'b)complex ttree"
 derive linorder complex
 derive hashable complex
 derive countable complex
+derive (no) cenum complex
+derive ceq complex
+derive (rbt) set_impl complex
 
 end
