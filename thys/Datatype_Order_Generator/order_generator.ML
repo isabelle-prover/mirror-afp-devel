@@ -32,7 +32,7 @@ sig
   val mk_order_thms : theory -> Datatype_Aux.info -> thm list
 
   (* creates and registers (0 = ord, 1 = order, 2 = linear-order) for datatype *)
-  val derive : int -> string -> theory -> theory
+  val derive : int -> string -> string -> theory -> theory
 
   (* registeres method in Derive-Manager *)
   val setup : theory -> theory
@@ -559,7 +559,7 @@ fun mk_linear_thm thy info =
     thm
   end
 
-fun derive kind dtyp_name thy = 
+fun derive kind dtyp_name _ thy = 
   let
     val tyco = dtyp_name
 
@@ -573,20 +573,8 @@ fun derive kind dtyp_name thy =
       in fn sort => map (fn (n,s) => (n, sort)) i end
     val vs = vs_of_sort sort
     val less_rhs = mk_less_idx thy info sort |> fst |> (fn x => x 0)
-    val ty = Term.fastype_of less_rhs |> Term.dest_Type |> snd |> hd
-  
-    (* code copied from HOL/SPARK/TOOLS *)
-    fun mk_binrel_def T c rhs = Logic.mk_equals (Const (c, T --> T --> HOLogic.boolT), rhs)
-    fun define_overloaded (def_name, eq) lthy =
-      let
-        val ((c, _), rhs) = Syntax.check_term lthy eq
-          |> Logic.dest_equals |>> dest_Free;
-        val ((_, (_, thm)), lthy') = Local_Theory.define
-          ((Binding.name c, NoSyn), ((Binding.name def_name, @{attributes [code]}), rhs)) lthy
-        val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy');
-        val thm' = singleton (Proof_Context.export lthy' ctxt_thy) thm
-      in (thm', lthy') end;
-  
+    val ty = Term.fastype_of less_rhs |> Term.dest_Type |> snd |> hd  
+    fun mk_binrel_def T = mk_def (T --> T --> HOLogic.boolT)  
     val less_def = mk_binrel_def ty @{const_name less} less_rhs
     val x = Free ("x",ty)
     val y = Free ("y",ty)

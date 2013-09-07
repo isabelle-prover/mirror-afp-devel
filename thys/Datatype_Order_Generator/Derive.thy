@@ -5,7 +5,7 @@
 *)
 
 (*
-Copyright 2012 René Thiemann
+Copyright 2013 René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -28,10 +28,12 @@ imports
   Order_Generator
   Hash_Generator
   Countable_Generator
+  Container_Generator
 begin
 
 text{*
-We just load the commands to derive (linear) orders, hash-functions, and the
+We just load the commands to derive (linear) orders, hash-functions, classes from the
+container framework, and the
 command to show that a datatype is countable, so that now all of them are available.
 *}
 end

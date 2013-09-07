@@ -4,6 +4,10 @@ session Datatype_Order_Generator (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document=false]
     "../Collections/common/HashCode"
+    "../Containers/Collection_Order"
+    "../Containers/Collection_Eq"
+    "../Containers/Collection_Enum"
+    "../Containers/Set_Impl"
   theories
     Derive
     Derive_Examples
