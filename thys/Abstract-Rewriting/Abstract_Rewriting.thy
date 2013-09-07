@@ -82,6 +82,8 @@ notation (xsymbols)
 lemma symcl_converse:
   "(A\<^sup>\<leftrightarrow>)\<inverse> = A\<^sup>\<leftrightarrow>" by auto
 
+lemma symcl_Un: "(A \<union> B)\<^sup>\<leftrightarrow> = A\<^sup>\<leftrightarrow> \<union> B\<^sup>\<leftrightarrow>" by auto
+
 lemma no_step:
   assumes "A `` {a} = {}" shows "a \<in> NF A"
   using assms by (auto simp: NF_def)
