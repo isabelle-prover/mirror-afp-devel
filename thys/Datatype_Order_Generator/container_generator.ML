@@ -7,7 +7,7 @@ sig
 
   val mk_none_cenum : typ -> term;
 
-  val supported_set_impl : string
+  val mk_none_corder : typ -> term;
 
   (* registeres method in Derive-Manager *)
   val setup : theory -> theory
@@ -17,7 +17,7 @@ end
 
 structure Container_Generator : CONTAINER_GENERATOR =
 struct
-open Derive_Aux;
+open Derive_Aux; open Datatype; open Derive_Aux; open Order_Generator;
 
 val supported_set_impl = "(rbt,dlist,monad,collect,choose)"
 
@@ -28,6 +28,15 @@ fun mk_none_cenum ty =
     val oty = Type (@{type_name option},[
       Type (@{type_name prod},[lty, Type (@{type_name prod},[fty,fty])])])
     val res = Const (@{const_name None}, oty)
+  in res
+end
+
+fun mk_none_corder ty =
+  let 
+    val comp_ty = ty --> ty --> @{typ bool}
+    val prod_ty = Type (@{type_name prod},[comp_ty, comp_ty])
+    val opt_ty = Type (@{type_name option}, [prod_ty])
+    val res = Const (@{const_name None}, opt_ty)     
   in res
 end
 
@@ -126,7 +135,111 @@ fun derive_set_impl typ_name param thy =
     val _ = Output.writeln ("registered " ^ base_name ^ " in class set_impl")  
   in thy' end
 
+fun mk_linorder_thm dtyp_name lthy = 
+  let
+    val tyco = dtyp_name
+    val thy = Proof_Context.theory_of lthy
+
+    val base_name = Long_Name.base_name tyco
+    val _ = Output.writeln ("creating orders for datatype " ^ base_name)
+    val info = Datatype.the_info thy tyco  
+    val sort = @{sort linorder}
+    val less_term = mk_less_idx thy info sort |> fst |> (fn x => x 0)
+    val ty = Term.fastype_of less_term |> Term.dest_Type |> snd |> hd
+    val comp_ty = ty --> ty --> @{typ bool}
+    val class_ty = comp_ty -->  comp_ty --> @{typ bool}
+    val x = Free ("x",ty)
+    val y = Free ("y",ty)
+    val less_eq_term = lambda x (lambda y (HOLogic.mk_disj (less_term $ x $ y, HOLogic.mk_eq (x,y))))
+  
+    (* derive instance for locale linorder *)
+    val linorder_thm = 
+        let          
+          val [trans_eq,less,refl,antisym] = mk_order_thms thy info
+          val linear = mk_linear_thm thy info
+          fun order_tac {prems = _, context = ctxt} = 
+            my_print_tac "enter order" THEN
+            Locale.intro_locales_tac true ctxt [] THEN
+            my_print_tac "after intro_locale" THEN
+            rtac less 1 THEN
+            my_print_tac "after less" THEN
+            rtac refl 1 THEN
+            my_print_tac "after refl" THEN
+            rtac trans_eq 1 THEN atac 1 THEN atac 1 THEN
+            my_print_tac "after trans" THEN
+            rtac antisym 1 THEN atac 1 THEN atac 1 THEN
+            my_print_tac "after antisym" THEN
+            rtac linear 1
+          val thm = Goal.prove lthy [] [] 
+            (HOLogic.mk_Trueprop (Const (@{const_name class.linorder}, class_ty) $ less_eq_term $ less_term)) 
+            order_tac 
+          val _ = Output.writeln ("proved that " ^ base_name ^ " is in locale linorder")
+        in thm end   
+      
+  in linorder_thm end
+
+fun derive_no_corder typ_name thy = let
+    val base_name = Long_Name.base_name typ_name
+    val _ = Output.writeln ("do not use order for type " 
+      ^ base_name)
+    val sort = @{sort corder}
+    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val corder_rhs = mk_none_corder ty
+    val corder_ty = Term.fastype_of corder_rhs
+    val corder_def = mk_def corder_ty @{const_name corder} corder_rhs
+    val (corder_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
+      |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
+     
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
+      THEN unfold_tac [corder_thm] ctxt
+      THEN (REPEAT (force_tac ctxt 1))) lthy
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")  
+  
+  in thy' end
+
+fun derive_some_corder dtyp_name thy = let
+    val base_name = Long_Name.base_name dtyp_name
+    
+    val _ = Output.writeln ("creating corder for datatype " ^ base_name)
+    val info = Datatype.the_info thy dtyp_name
+    val sort = @{sort linorder}
+    val less = mk_less_idx thy info sort |> fst |> (fn x => x 0)
+    val comp_ty = Term.fastype_of less
+    val ty = comp_ty |> Term.dest_Type |> snd |> hd  
+    val x = Free ("x",ty)
+    val y = Free ("y",ty)
+    val less_eq = lambda x (lambda y (HOLogic.mk_disj (less $ x $ y, HOLogic.mk_eq (x,y))))
+    val vs_of_sort = 
+      let val i = Datatype.the_spec thy dtyp_name |> #1 
+      in fn sort => map (fn (n,_) => (n, sort)) i end
+    val vs = vs_of_sort sort
+    val linorder_thm = mk_linorder_thm dtyp_name (Proof_Context.init_global thy)
+    val prod_ty = Type (@{type_name prod},[comp_ty, comp_ty])
+    val opt_ty = Type (@{type_name option}, [prod_ty])
+    val some = Const (@{const_name Some}, prod_ty --> opt_ty) $ 
+      (Const (@{const_name "Pair"}, comp_ty --> comp_ty --> prod_ty) $ less_eq $ less)    
+    val corder_def = mk_def opt_ty @{const_name corder} some
+    val (corder_thm,lthy) = Class.instantiation ([dtyp_name],vs,@{sort corder}) thy
+      |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
+     
+    val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac []
+      THEN my_print_tac "after class instance"
+      THEN rtac (@{thm corder_intro} OF [linorder_thm]) 1
+      THEN my_print_tac "after corder_intro"
+      THEN unfold_tac [corder_thm] ctxt
+      THEN (REPEAT (blast_tac ctxt 1))
+      )) lthy
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")
+ in thy'
+end 
+
+fun derive_corder typ_name param thy = 
+  if param = "" then derive_some_corder typ_name thy else
+  if param = "no" then derive_no_corder typ_name thy else
+  error "(no) is only optional parameter for deriving corder"
+
 val setup = 
+  Derive_Manager.register_derive "corder" "derives an order for a datatype or (no) order for any type" derive_corder #>
   Derive_Manager.register_derive "ceq" "use (no) equality for class ceq" derive_ceq #>
   Derive_Manager.register_derive "cenum" "use (no) enumeration for class cenum" derive_cenum #>
   Derive_Manager.register_derive "set_impl" ("choose " ^ supported_set_impl ^ " as set_impl for a datatype") derive_set_impl

@@ -29,25 +29,31 @@ imports Derive_Manager
   "../Containers/Collection_Eq"
   "../Containers/Collection_Enum"
   "../Containers/Set_Impl"
+  "Order_Generator"
 begin
 
 subsection Introduction
 
 text {*
 This generator registers itself at the derive-manager for the classes \texttt{cenum},
-\texttt{ceq}, and \texttt{set-impl}.
+\texttt{ceq}, \texttt{corder}, and \texttt{set-impl}.
 To be more precise, one can choose whether one wants to take equality as function
-for \texttt{ceq}, or whether equality should not be supported. Moreover, one can choose
+for \texttt{ceq}, or whether equality should not be supported. The same can also
+be chosen for \texttt{corder}, where in the positive case one demands that the type is a datatype
+and that all non-recursive types of that datatype are in class \texttt{linorder}. 
+Moreover, one can choose
 the set implementation for \texttt{set-impl}, and for \texttt{cenum}, currently one
 can only choose to not support enumrations. 
 
 \begin{itemize}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) ceq}
-\item \texttt{instantiation dtyp :: (type,\ldots,type) cenum}
-\item \texttt{instantiation dtyp :: (type,\ldots,type) set-impl}
+\item \texttt{instantiation dtyp :: (type,\ldots,type) (no) ceq}
+\item \texttt{instantiation dtyp :: (linorder,\ldots,linorder) corder}
+\item \texttt{instantiation dtyp :: (type,\ldots,type) (no) corder}
+\item \texttt{instantiation dtyp :: (type,\ldots,type) (no) cenum}
+\item \texttt{instantiation dtyp :: (type,\ldots,type) (rbt,choose,dlist,collect,monad) set-impl}
 \end{itemize}
 
-The extension to \texttt{corder} is planned as future work. 
 *}
 
 
@@ -63,6 +69,9 @@ derived.
 *}
 
 subsection "Installing the generator"
+
+lemma corder_intro: "class.linorder le lt \<Longrightarrow> a = Some (le, lt)\<Longrightarrow> a = Some (le',lt') \<Longrightarrow> 
+  class.linorder le' lt'" by auto
 
 ML_file "container_generator.ML" 
 
