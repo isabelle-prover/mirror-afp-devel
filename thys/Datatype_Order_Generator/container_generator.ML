@@ -1,13 +1,5 @@
 signature CONTAINER_GENERATOR = 
 sig 
-  (* if boolean is true, then Some op = is returned, else None *)
-  val mk_some_eq_or_none : typ -> bool -> term;
-
-  val mk_set_impl : typ -> string -> term;
-
-  val mk_none_cenum : typ -> term;
-
-  val mk_none_corder : typ -> term;
 
   (* registeres method in Derive-Manager *)
   val setup : theory -> theory
@@ -64,6 +56,18 @@ fun mk_some_eq_or_none ty choice =
     val some = Const (@{const_name Some},eqt --> oty) $ eq
     val none = Const (@{const_name None},oty)
   in (if choice then some else none)
+end  
+
+fun mk_some_less_less_eq ty =
+  let 
+    val comp_ty = ty --> ty --> @{typ bool}
+    val less = Const (@{const_name "Orderings.less"}, comp_ty)
+    val less_eq = Const (@{const_name "Orderings.less_eq"}, comp_ty)
+    val pair_ty = Type (@{type_name prod},[comp_ty,comp_ty])
+    val pair = Const (@{const_name Pair}, comp_ty --> comp_ty --> pair_ty) $ less_eq $ less
+    val oty = Type (@{type_name option},[pair_ty])
+    val some = Const (@{const_name Some}, pair_ty --> oty) $ pair
+  in some
 end  
 
 fun typ_and_vs_of_typname thy typ_name sort =
@@ -197,6 +201,30 @@ fun derive_no_corder typ_name thy = let
   
   in thy' end
 
+fun derive_corder_linorder typ_name thy = 
+  let
+    val base_name = Long_Name.base_name typ_name
+    val _ = Output.writeln ("use linorder to derive corder for type " 
+      ^ base_name)
+    val sort = @{sort corder}
+    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort linorder}
+    val corder_rhs = mk_some_less_less_eq ty
+    val corder_ty = Term.fastype_of corder_rhs
+    val corder_def = mk_def corder_ty @{const_name corder} corder_rhs
+    val (corder_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
+      |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
+     
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
+      THEN unfold_tac [corder_thm] ctxt
+      THEN my_print_tac "after class intro"
+      THEN asm_full_simp_tac ctxt 1
+      THEN my_print_tac "after simp"
+      THEN Locale.intro_locales_tac true ctxt []) lthy
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")  
+  
+  in thy' end
+
+
 fun derive_some_corder dtyp_name thy = let
     val base_name = Long_Name.base_name dtyp_name
     
@@ -236,10 +264,11 @@ end
 fun derive_corder typ_name param thy = 
   if param = "" then derive_some_corder typ_name thy else
   if param = "no" then derive_no_corder typ_name thy else
-  error "(no) is only optional parameter for deriving corder"
+  if param = "linorder" then derive_corder_linorder typ_name thy else
+  error "(no) and (linorder) are only optional parameters for deriving corder"
 
 val setup = 
-  Derive_Manager.register_derive "corder" "derives an order for a datatype or (no) order for any type" derive_corder #>
+  Derive_Manager.register_derive "corder" "derives an order for a datatype or (no) order for any type, or uses (linorder) instance for corder" derive_corder #>
   Derive_Manager.register_derive "ceq" "use (no) equality for class ceq" derive_ceq #>
   Derive_Manager.register_derive "cenum" "use (no) enumeration for class cenum" derive_cenum #>
   Derive_Manager.register_derive "set_impl" ("choose " ^ supported_set_impl ^ " as set_impl for a datatype") derive_set_impl

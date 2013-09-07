@@ -40,6 +40,7 @@ text {* For registering container-classes, we are not restricted to datatypes. *
 
 derive ceq rat
 derive (no) cenum rat
+derive (linorder) corder rat (* reuse linorder from rat *)
 derive (collect) set_impl rat
 
 subsection "Support of function types in combination with containers"
@@ -61,7 +62,10 @@ derive hashable bintree
 derive countable bintree
 derive (no) cenum bintree
 derive ceq bintree
-derive corder bintree
+derive corder bintree (* this recreates a new order for bintree, independant of any order-definition 
+  for this datatype *)
+(* derive (linorder) corder bintree will reuse existing linorder, and is of course faster than 
+   the new generation *)
 derive (dlist) set_impl bintree (* one can also pick other choices than dlist like rbt, collect, ... *)
 
 subsection "Using other datatypes"
@@ -72,7 +76,7 @@ derive hashable nat_list_list
 derive countable nat_list_list
 derive (no) cenum nat_list_list
 derive ceq nat_list_list
-derive corder nat_list_list
+derive (linorder) corder nat_list_list
 derive (rbt) set_impl nat_list_list
 
 subsection "Explicit mutual recursion"
@@ -84,7 +88,7 @@ derive hashable mtree
 derive countable mtree
 derive (no) cenum mtree
 derive ceq mtree
-derive corder mtree
+derive  (linorder) corder mtree
 derive (choose) set_impl mtree
 
 subsection "Implicit mutual recursion"
@@ -95,7 +99,7 @@ derive hashable tree
 derive countable tree
 derive (no) cenum tree
 derive ceq tree
-derive corder tree 
+derive  (linorder) corder tree 
 derive (collect) set_impl tree
 
 
@@ -105,7 +109,7 @@ derive hashable ttree
 derive countable ttree
 derive (no) cenum ttree
 derive ceq ttree
-derive corder ttree
+derive (linorder) corder ttree
 derive (monad) set_impl ttree
 
 subsection "Examples from IsaFoR"
@@ -125,11 +129,11 @@ derive hashable "term"
 derive hashable lab
 derive (no) cenum "term"
 derive ceq "term"
-derive corder "term"
+derive (linorder) corder "term"
 derive (rbt) set_impl "term"
 derive (no) cenum lab
 derive ceq lab
-derive corder lab
+derive (linorder) corder lab
 derive (dlist) set_impl lab
 
 subsection "A complex datatype"
@@ -148,7 +152,7 @@ derive hashable complex
 derive countable complex
 derive (no) cenum complex
 derive ceq complex
-derive corder complex
+derive (linorder) corder complex
 derive (dlist) set_impl complex
 
 end

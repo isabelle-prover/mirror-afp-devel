@@ -41,6 +41,8 @@ To be more precise, one can choose whether one wants to take equality as functio
 for \texttt{ceq}, or whether equality should not be supported. The same can also
 be chosen for \texttt{corder}, where in the positive case one demands that the type is a datatype
 and that all non-recursive types of that datatype are in class \texttt{linorder}. 
+Furthermore, if a some type is already registered as linear order, then one
+can reuse these orders for \texttt{corder} by passing parameter (linorder).
 Moreover, one can choose
 the set implementation for \texttt{set-impl}, and for \texttt{cenum}, currently one
 can only choose to not support enumrations. 
@@ -49,6 +51,7 @@ can only choose to not support enumrations.
 \item \texttt{instantiation dtyp :: (type,\ldots,type) ceq}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (no) ceq}
 \item \texttt{instantiation dtyp :: (linorder,\ldots,linorder) corder}
+\item \texttt{instantiation dtyp :: (linorder,\ldots,linorder) (linorder) corder}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (no) corder}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (no) cenum}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (rbt,choose,dlist,collect,monad) set-impl}
