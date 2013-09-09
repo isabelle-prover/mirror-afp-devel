@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Support classes from Andreas Lochbihler's containers AFP-entry *}
+header {* Classes from AFP-entry Light-weight Containers *}
 
 theory Container_Generator
 imports Derive_Manager
@@ -57,6 +57,9 @@ can only choose to not support enumrations.
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (rbt,choose,dlist,collect,monad) set-impl}
 \end{itemize}
 
+For \texttt{ceq} and \texttt{corder}, is the parameter (no) is not used, then the corresponding
+\texttt{is-ceq/corder type}-theorems are also automatically generated and attributed with 
+\texttt{[simp, code-post]}.
 *}
 
 

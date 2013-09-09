@@ -13,6 +13,15 @@ open Derive_Aux; open Datatype; open Derive_Aux; open Order_Generator;
 
 val supported_set_impl = "(rbt,dlist,monad,collect,choose)"
 
+fun typ_and_vs_of_typname thy typ_name sort =
+  let 
+    val ar = Type.arity_number (Proof_Context.tsig_of (Proof_Context.init_global thy)) typ_name
+    val sorts = map (K sort) (1 upto ar)
+    val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
+    val ty = Type (typ_name,map TFree ty_vars)
+  in (ty,ty_vars)
+end
+
 fun mk_none_cenum ty =
   let 
     val lty = Type (@{type_name list}, [ty])
@@ -70,13 +79,26 @@ fun mk_some_less_less_eq ty =
   in some
 end  
 
-fun typ_and_vs_of_typname thy typ_name sort =
+fun mk_is_c_dots ty dots = 
   let 
-    val ar = Type.arity_number (Proof_Context.tsig_of (Proof_Context.init_global thy)) typ_name
-    val sorts = map (K sort) (1 upto ar)
-    val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
-    val ty = Type (typ_name,map TFree ty_vars)
-  in (ty,ty_vars)
+    val ity = Type (@{type_name itself}, [ty])
+    val it = Const (@{const_name "TYPE"},ity)
+    val res = Const (dots, ity --> @{typ bool}) $ it
+  in res
+end
+
+fun derive_is_c_dots_lemma ty const_name defs base_name thy  = let
+      val is_c_dots = HOLogic.mk_Trueprop (mk_is_c_dots ty const_name)
+      val thm = Goal.prove (Proof_Context.init_global thy) [] [] is_c_dots (fn {prems = _, context = ctxt} => 
+        unfold_tac (defs @ @{thms ID_Some option.simps}) ctxt
+        THEN blast_tac ctxt 1
+      )
+      val name = Long_Name.base_name const_name ^ "_" ^ base_name
+      val lthy_map = Local_Theory.note ((Binding.name name, 
+          @{attributes [simp,code_post]}), [thm]) #> #2
+      val thy' = Named_Target.theory_init thy |> lthy_map |> Local_Theory.exit_global
+      val _ = Output.writeln ("derived " ^ name ^ "-lemma")
+    in thy'
 end
 
 fun derive_ceq typ_name param thy = 
@@ -98,8 +120,11 @@ fun derive_ceq typ_name param thy =
       THEN unfold_tac [ceq_thm] ctxt
       THEN force_tac ctxt 1) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")  
-  
-  in thy' end
+    val thy'' = if choice then 
+        derive_is_c_dots_lemma ty @{const_name is_ceq} [ceq_thm, @{thm is_ceq_def}] base_name thy' 
+      else thy'
+
+  in thy'' end
 
 fun derive_cenum typ_name param thy = 
   let
@@ -221,8 +246,9 @@ fun derive_corder_linorder typ_name thy =
       THEN my_print_tac "after simp"
       THEN Locale.intro_locales_tac true ctxt []) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")  
-  
-  in thy' end
+    val thy'' = derive_is_c_dots_lemma ty @{const_name is_corder} [corder_thm, @{thm is_corder_def}] base_name thy'
+
+  in thy'' end
 
 
 fun derive_some_corder dtyp_name thy = let
@@ -258,7 +284,9 @@ fun derive_some_corder dtyp_name thy = let
       THEN (REPEAT (blast_tac ctxt 1))
       )) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")
- in thy'
+    val thy'' = derive_is_c_dots_lemma ty @{const_name is_corder} [corder_thm, @{thm is_corder_def}] base_name thy'
+
+ in thy''
 end 
 
 fun derive_corder typ_name param thy = 
