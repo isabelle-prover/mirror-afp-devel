@@ -194,6 +194,20 @@ proof (intro allI impI)
   qed
 qed
 
+lemma conversion_inv:
+  "(x, y) \<in> R\<^sup>\<leftrightarrow>\<^sup>* \<longleftrightarrow> (y, x) \<in> R\<^sup>\<leftrightarrow>\<^sup>*"
+  by (auto simp: conversion_def)
+     (metis (full_types) rtrancl_converseD symcl_converse)+
+
+
+lemma conversion_converse [simp]:
+  "(A\<^sup>\<leftrightarrow>\<^sup>*)\<inverse> = A\<^sup>\<leftrightarrow>\<^sup>*"
+  by (metis conversion_sym sym_conv_converse_eq)
+
+lemma conversion_rtrancl [simp]:
+  "(A\<^sup>\<leftrightarrow>\<^sup>*)\<^sup>* = A\<^sup>\<leftrightarrow>\<^sup>*"
+  by (metis conversion_def rtrancl_idemp)
+
 lemma rtrancl_join_join:
   assumes "(a, b) \<in> A\<^sup>*" and "(b, c) \<in> A\<^sup>\<down>" shows "(a, c) \<in> A\<^sup>\<down>"
 proof -
