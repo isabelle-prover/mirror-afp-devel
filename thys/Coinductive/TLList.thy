@@ -1201,10 +1201,6 @@ lemma pre_tllist_set3_transfer [transfer_rule]:
   "(sum_rel A (prod_rel B C) ===> set_rel C) pre_tllist_set3 pre_tllist_set3"
 by(auto simp add: Transfer.fun_rel_def pre_tllist_set3_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
-lemma tllist_Hset1_transfer [transfer_rule]:
-  "((A ===> sum_rel B (prod_rel C A)) ===> A ===> set_rel C) tllist.tllist_Hset1 tllist.tllist_Hset1"
-by(unfold tllist.tllist_Hset1_def[abs_def] tllist.tllist_Hset_rec1_def) transfer_prover
-
 lemma tllist_dtor_transfer [transfer_rule]:
   "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) tllist_dtor tllist_dtor"
 apply(rule fun_relI)
@@ -1245,7 +1241,7 @@ lemma ttl_transfer2 [transfer_rule]:
 
 lemma tset_transfer2 [transfer_rule]:
   "(tllist_all2 A B ===> set_rel A) tset tset"
-  unfolding tset_def by transfer_prover
+by (intro fun_relI set_relI) (auto simp only: in_tset_conv_tnth tllist_all2_conv_all_tnth Bex_def)
 
 lemma tmap_transfer2 [transfer_rule]:
   "((A ===> B) ===> (C ===> D) ===> tllist_all2 A C ===> tllist_all2 B D) tmap tmap"

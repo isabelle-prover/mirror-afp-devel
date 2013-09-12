@@ -4652,10 +4652,6 @@ lemma pre_llist_set2_transfer [transfer_rule]:
   "(sum_rel op = (prod_rel A B) ===> set_rel B) pre_llist_set2 pre_llist_set2"
 by(auto simp add: Transfer.fun_rel_def pre_llist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
-lemma llist_Hset_transfer [transfer_rule]:
-  "((A ===> sum_rel op = (prod_rel B A)) ===> A ===> set_rel B) llist.llist_Hset llist.llist_Hset"
-by(unfold llist.llist_Hset_def[abs_def] llist.llist_Hset_rec_def) transfer_prover
-
 lemma llist_dtor_transfer [transfer_rule]:
   "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) llist_dtor llist_dtor"
 apply(rule fun_relI)
@@ -4695,7 +4691,7 @@ lemma ltl_transfer [transfer_rule]:
 
 lemma lset_transfer [transfer_rule]:
   "(llist_all2 A ===> set_rel A) lset lset"
-  unfolding lset_def by transfer_prover
+by (intro fun_relI set_relI) (auto simp only: in_lset_conv_lnth llist_all2_conv_all_lnth Bex_def)
 
 lemma lmap_transfer [transfer_rule]:
   "((A ===> B) ===> llist_all2 A ===> llist_all2 B) lmap lmap"
