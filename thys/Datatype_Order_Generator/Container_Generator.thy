@@ -28,6 +28,7 @@ theory Container_Generator
 imports Derive_Manager
   "../Containers/Collection_Eq"
   "../Containers/Collection_Enum"
+  "../Containers/Mapping_Impl"
   "../Containers/Set_Impl"
   "Order_Generator"
 begin
@@ -36,7 +37,7 @@ subsection Introduction
 
 text {*
 This generator registers itself at the derive-manager for the classes \texttt{cenum},
-\texttt{ceq}, \texttt{corder}, and \texttt{set-impl}.
+\texttt{ceq}, \texttt{corder}, \texttt{set-impl}, and \texttt{mapping-impl}.
 To be more precise, one can choose whether one wants to take equality as function
 for \texttt{ceq}, or whether equality should not be supported. The same can also
 be chosen for \texttt{corder}, where in the positive case one demands that the type is a datatype
@@ -44,7 +45,7 @@ and that all non-recursive types of that datatype are in class \texttt{linorder}
 Furthermore, if a some type is already registered as linear order, then one
 can reuse these orders for \texttt{corder} by passing parameter (linorder).
 Moreover, one can choose
-the set implementation for \texttt{set-impl}, and for \texttt{cenum}, currently one
+the set- / mapping-implementation for \texttt{set-impl} / \texttt{mapping-impl}, and for \texttt{cenum}, currently one
 can only choose to not support enumrations. 
 
 \begin{itemize}
@@ -54,7 +55,8 @@ can only choose to not support enumrations.
 \item \texttt{instantiation dtyp :: (linorder,\ldots,linorder) (linorder) corder}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (no) corder}
 \item \texttt{instantiation dtyp :: (type,\ldots,type) (no) cenum}
-\item \texttt{instantiation dtyp :: (type,\ldots,type) (rbt,choose,dlist,collect,monad) set-impl}
+\item \texttt{instantiation dtyp :: (type,\ldots,type) (rbt,dlist,collect,monad,choose) set-impl}
+\item \texttt{instantiation dtyp :: (type,\ldots,type) (rbt,assoclist,mapping,choose) mapping-impl}
 \end{itemize}
 
 For \texttt{ceq} and \texttt{corder}, is the parameter (no) is not used, then the corresponding

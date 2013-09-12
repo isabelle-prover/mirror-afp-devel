@@ -42,6 +42,7 @@ derive ceq rat
 derive (no) cenum rat
 derive (linorder) corder rat (* reuse linorder from rat *)
 derive (collect) set_impl rat
+derive (rbt) mapping_impl rat
 
 subsection "Support of function types in combination with containers"
 

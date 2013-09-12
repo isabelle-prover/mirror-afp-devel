@@ -12,6 +12,8 @@ struct
 open Derive_Aux; open Datatype; open Derive_Aux; open Order_Generator;
 
 val supported_set_impl = "(rbt,dlist,monad,collect,choose)"
+val supported_mapping_impl = "(rbt,assoclist,mapping,choose)"
+
 
 fun typ_and_vs_of_typname thy typ_name sort =
   let 
@@ -56,6 +58,22 @@ fun mk_set_impl ty choice =
     val res = ph $ si
   in res
 end
+
+fun mk_mapping_impl ty choice = 
+  let 
+    val mity = @{typ mapping_impl}
+    val pty = Type (@{type_name phantom},[ty,mity])
+    val ph = Const (@{const_name phantom}, mity --> pty)
+    val mi = 
+      if choice = "rbt" then @{term mapping_RBT} else
+      if choice = "assoclist" then @{term mapping_Assoc_List} else
+      if choice = "mapping" then @{term mapping_Mapping} else
+      if choice = "choose" then @{term mapping_Choose} else
+      error ("invalid parameter for map_impl, choose one of " ^ supported_mapping_impl)
+    val res = ph $ mi
+  in res
+end
+
 
 fun mk_some_eq_or_none ty choice =
   let 
@@ -162,6 +180,22 @@ fun derive_set_impl typ_name param thy =
       |> define_overloaded ("set_impl_" ^ base_name ^ "_def", set_impl_def)     
     val thy' = Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac []) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class set_impl")  
+  in thy' end
+
+fun derive_mapping_impl typ_name param thy = 
+  let
+    val base_name = Long_Name.base_name typ_name
+    val _ = Output.writeln ("use " ^ param ^ " as mapping_impl for type " 
+      ^ base_name)
+    val sort = @{sort mapping_impl}
+    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val mapping_impl_rhs = mk_mapping_impl ty param
+    val mapping_impl_ty = Term.fastype_of mapping_impl_rhs
+    val mapping_impl_def = mk_def mapping_impl_ty @{const_name mapping_impl} mapping_impl_rhs
+    val (_,lthy) = Class.instantiation ([typ_name],vs,sort) thy
+      |> define_overloaded ("mapping_impl_" ^ base_name ^ "_def", mapping_impl_def)     
+    val thy' = Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac []) lthy
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class mapping_impl")  
   in thy' end
 
 fun mk_linorder_thm dtyp_name lthy = 
@@ -299,6 +333,7 @@ val setup =
   Derive_Manager.register_derive "corder" "derives an order for a datatype or (no) order for any type, or uses (linorder) instance for corder" derive_corder #>
   Derive_Manager.register_derive "ceq" "use (no) equality for class ceq" derive_ceq #>
   Derive_Manager.register_derive "cenum" "use (no) enumeration for class cenum" derive_cenum #>
-  Derive_Manager.register_derive "set_impl" ("choose " ^ supported_set_impl ^ " as set_impl for a datatype") derive_set_impl
+  Derive_Manager.register_derive "set_impl" ("choose " ^ supported_set_impl ^ " as set_impl for a datatype") derive_set_impl #>
+  Derive_Manager.register_derive "mapping_impl" ("choose " ^ supported_mapping_impl ^ " as mapping_impl for a datatype") derive_mapping_impl
 
 end
