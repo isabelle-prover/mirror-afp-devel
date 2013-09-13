@@ -1241,13 +1241,7 @@ lemma SN_imp_SN_trancl: "SN R \<Longrightarrow> SN (R\<^sup>+)"
 
 lemma SN_trancl_imp_SN:
   assumes "SN (R\<^sup>+)" shows "SN R"
-proof (rule ccontr)
-  assume "\<not> SN R"
-  then obtain s where "chain R s" unfolding SN_defs by auto
-  then have "chain (R\<^sup>+) s" by auto
-  then have "\<not> SN(R\<^sup>+)" unfolding SN_defs by auto
-  with assms show False by simp
-qed
+  using assms by (rule SN_on_trancl_imp_SN_on)
 
 lemma SN_trancl_SN_conv: "SN (R\<^sup>+) = SN R"
   using SN_trancl_imp_SN [of R] SN_imp_SN_trancl [of R] by blast
