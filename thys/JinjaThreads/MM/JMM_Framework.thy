@@ -152,10 +152,6 @@ qed
 
 end
 
-lemma tset_lappendt_lfinite [simp]: (* Move to Coinductive *)
-  "lfinite xs \<Longrightarrow> tset (lappendt xs ys) = lset xs \<union> tset ys"
-by transfer auto
-
 context \<tau>multithreaded_wf begin
 
 text {* Alternative characterisation for @{term "\<E>"} *}
