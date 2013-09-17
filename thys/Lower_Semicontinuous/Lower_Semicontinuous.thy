@@ -1176,7 +1176,7 @@ proof-
         { fix C::real
           have "(x, (1/u)*(C - v * z)) : Epigraph S f" unfolding Epigraph_def using a xy by auto
           hence "(u *\<^sub>R x + v *\<^sub>R y, C) : Epigraph S f"
-            using rhs mem_convex_2[of "Epigraph S f" "(x, (1/u)*(C - v * z))" "(y,z)" u v] uv yz a by auto
+            using rhs convexD[of "Epigraph S f" "(x, (1/u)*(C - v * z))" "(y,z)" u v] uv yz a by auto
           hence "(f (u *\<^sub>R x + v *\<^sub>R y) <= ereal C)" unfolding Epigraph_def by auto
         } hence "f (u *\<^sub>R x + v *\<^sub>R y) = -\<infinity>" using ereal_bot by auto
         hence ?thesis by auto }
@@ -1187,7 +1187,7 @@ proof-
         { fix C::real
           have "(y, (1/v)*(C - u * z)) : Epigraph S f" unfolding Epigraph_def using a xy by auto
           hence "(u *\<^sub>R x + v *\<^sub>R y, C) : Epigraph S f"
-            using rhs mem_convex_2[of "Epigraph S f" "(x,z)" "(y, (1/v)*(C - u * z))" u v] uv xz a by auto
+            using rhs convexD[of "Epigraph S f" "(x,z)" "(y, (1/v)*(C - u * z))" u v] uv xz a by auto
           hence "(f (u *\<^sub>R x + v *\<^sub>R y) <= ereal C)" unfolding Epigraph_def by auto
         } hence "f (u *\<^sub>R x + v *\<^sub>R y) = -\<infinity>" using ereal_bot by auto
         hence ?thesis by auto }
@@ -1197,7 +1197,7 @@ proof-
            apply (cases "f x", cases "f y") by auto
         hence "(x, fx) : Epigraph S f & (y, fy) : Epigraph S f" unfolding Epigraph_def using xy by auto
         hence "(u *\<^sub>R x + v *\<^sub>R y, u * fx + v * fy) : Epigraph S f"
-           using rhs mem_convex_2[of "Epigraph S f" "(x,fx)" "(y,fy)" u v] uv by auto
+           using rhs convexD[of "Epigraph S f" "(x,fx)" "(y,fy)" u v] uv by auto
         hence ?thesis unfolding Epigraph_def using fxy by auto
       } ultimately show ?thesis by blast
     qed
@@ -1209,7 +1209,7 @@ moreover
     fix u v ::real assume uv: "0 <= u" "0 <= v" "u + v = 1"
     hence le: "f x <= ereal fx & f y <= ereal fy" using xy unfolding Epigraph_def by auto
     have "x:S & y:S" using xy unfolding Epigraph_def by auto
-    moreover hence inS: "u *\<^sub>R x + v *\<^sub>R y : S" using assms uv mem_convex_2[of S] by auto
+    moreover hence inS: "u *\<^sub>R x + v *\<^sub>R y : S" using assms uv convexD[of S] by auto
     ultimately have "f(u *\<^sub>R x + v *\<^sub>R y) <= (ereal u) * f x + (ereal v) * f y"
       using lhs convex_on_ereal_mem[of S f x y u v] uv by auto
     also have "... <= (ereal u) * (ereal fx) + (ereal v) * (ereal fy)"
