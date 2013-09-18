@@ -87,7 +87,7 @@ lemma llist_unfold_code [code]:
    else LCons (LHD b) (llist_unfold IS_LNIL LHD LTL (LTL b)))"
 by(rule llist.expand) simp_all
 
-declare llist.sels [code]
+declare llist.sel [code]
 
 text {* Coinduction rules *}
 
@@ -224,7 +224,7 @@ setup {*
 
 declare
   llist.map [nitpick_simp]
-  llist.sels [nitpick_simp]
+  llist.sel [nitpick_simp]
 
 text {* Setup for quickcheck *}
 
@@ -418,8 +418,8 @@ where "llistsum xs = (if lfinite xs then listsum (list_of xs) else 0)"
 
 subsection {* Properties of predefined functions *}
 
-lemmas lhd_LCons = llist.sels(1)
-lemmas ltl_simps = llist.sels(2,3)
+lemmas lhd_LCons = llist.sel(1)
+lemmas ltl_simps = llist.sel(2,3)
 
 lemmas lhd_LCons_ltl = llist.collapse
 
@@ -461,7 +461,7 @@ apply(case_tac "x'=x")
 apply(simp_all add: find step)
 done
 
-lemmas lset_LNil = llist.sets(1)
+lemmas lset_LNil = llist.set(1)
 
 text {* Alternative definition of @{term lset} for nitpick *}
 

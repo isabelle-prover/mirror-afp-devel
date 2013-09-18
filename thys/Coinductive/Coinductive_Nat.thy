@@ -106,8 +106,8 @@ by (rule co.enat.split)
 
 abbreviation epred :: "enat => enat" where "epred \<equiv> co.epred"
 
-lemma epred_0 [simp]: "epred 0 = 0" by(rule co.enat.sels(1))
-lemma epred_eSuc [simp]: "epred (eSuc n) = n" by(rule co.enat.sels(2))
+lemma epred_0 [simp]: "epred 0 = 0" by(rule co.enat.sel(1))
+lemma epred_eSuc [simp]: "epred (eSuc n) = n" by(rule co.enat.sel(2))
 declare co.enat.collapse[simp]
 lemma epred_conv_minus: "epred n = n - 1"
 by(cases n rule: co.enat.exhaust)(simp_all)
