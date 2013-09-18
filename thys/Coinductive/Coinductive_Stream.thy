@@ -60,7 +60,7 @@ lemma stream_unfold_code [code]:
   "stream_unfold SHD STL b = SCons (SHD b) (stream_unfold SHD STL (STL b))"
 by(rule stream.expand) simp_all
 
-declare stream.sels [code]
+declare stream.sel [code]
 
 text {* Coinduction rules *}
 
@@ -166,7 +166,7 @@ setup {*
 
 declare
   llist.map [nitpick_simp]
-  llist.sels [nitpick_simp]
+  llist.sel [nitpick_simp]
 
 
 

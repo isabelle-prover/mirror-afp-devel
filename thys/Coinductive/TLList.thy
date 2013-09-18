@@ -48,12 +48,12 @@ apply(case_tac x)
 apply(simp_all add: terminal_def)
 done
 
-lemmas terminal_TNil [code, nitpick_simp] = tllist.sels(1)
+lemmas terminal_TNil [code, nitpick_simp] = tllist.sel(1)
 
 lemma terminal_TCons [simp, code, nitpick_simp]: "terminal (TCons x xs) = terminal xs"
 by simp
 
-declare tllist.sels(2)[simp del]
+declare tllist.sel(2)[simp del]
 
 lemma tllist_case_cert:
   assumes "CASE \<equiv> tllist_case c d"
