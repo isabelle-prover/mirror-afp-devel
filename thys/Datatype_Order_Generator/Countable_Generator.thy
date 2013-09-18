@@ -43,7 +43,7 @@ subsection "Features and Limitations"
 text {*
 We get similar limitation as for the order generator. 
 For mutual recursive datatypes, only
-for the first mentioned datatype the instantiations of the countable-class are
+for the first mentioned datatype the instantiations of the @{class countable}-class are
 derived. 
 *}
 
