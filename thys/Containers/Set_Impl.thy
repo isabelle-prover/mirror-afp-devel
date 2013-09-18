@@ -419,19 +419,8 @@ lemma [code, code del]:
 lemma [code, code del]:
   "Cardinality.subset' = Cardinality.subset'" ..
 
-lemma [code_unfold del]: 
-  "op \<subseteq> \<equiv> Cardinality.subset'" by simp
-
-lemma [code]: "Cardinality.subset' = op \<subseteq>"
-  by(rule Cardinality.subset'_def)
-
 lemma [code, code del]:
   "Cardinality.eq_set = Cardinality.eq_set" ..
-
-lemma [code_unfold del]:
-  "op = \<equiv> Cardinality.eq_set" by simp
-
-lemma [code]: "Cardinality.eq_set = op =" by(rule Cardinality.eq_set_def)
 
 lemma [code, code del]:
   "acc = acc" ..
@@ -1222,7 +1211,23 @@ proof -
   show ?thesis by(auto intro!: ext simp add: mk_eq_def)
 qed
 
-lemma subset_eq_code [code]:
+text {* 
+  Define a new constant for the subset operation
+  because @{theory Cardinality} introduces @{const "Cardinality.subset'"}
+  and rewrites @{const "subset"} to @{const "Cardinality.subset'"} 
+  based on the sort of the element type.
+*}
+
+definition subset_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool"
+where [simp, code del]: "subset_eq = op \<subseteq>"
+
+lemma subseteq_code [code]: "op \<subseteq> = subset_eq"
+by simp
+
+lemma subset'_code [code]: "Cardinality.subset' = subset_eq"
+by simp
+
+lemma subset_eq_code [folded subset_eq_def, code]:
   fixes A1 A2 :: "'a set"
   and rbt :: "'b :: corder set_rbt"
   and rbt1 rbt2 :: "'d :: {corder, ceq} set_rbt"
@@ -1253,7 +1258,13 @@ proof -
   show ?Collect_set_Compl ?Compl by auto
 qed
 
+hide_const (open) subset_eq
+hide_fact (open) subset_eq_def
+
 lemma [code, code del]: "(set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool) = set_eq" ..
+
+lemma eq_set_code [code]: "Cardinality.eq_set = set_eq"
+by(simp add: set_eq_def)
 
 lemma set_eq_code [code]:
   fixes rbt1 rbt2 :: "'b :: {corder, ceq} set_rbt" shows
