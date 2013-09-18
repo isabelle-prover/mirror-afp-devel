@@ -27,7 +27,7 @@ fun derive_options thy =
 fun print_info thy = 
   let
     val _ = Output.writeln "The following sorts can be derived"
-    val _ = derive_options thy |> map (fn (id,descr) => Output.writeln (id ^ ": " ^ descr)) 
+    val _ = derive_options thy |> sort_wrt fst |> map (fn (id,descr) => Output.writeln (id ^ ": " ^ descr)) 
   in () end
   
 

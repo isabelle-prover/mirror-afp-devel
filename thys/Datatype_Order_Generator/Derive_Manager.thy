@@ -43,13 +43,4 @@ There is also the diagnostic command \texttt{print-derives} which shows a list o
 what can currently be derived.
 *}
 
-(*
-setup {*
-  Derive_Manager.register_derive "dummy" "just a test of the deriving setup" (fn dtname => 
-  let val _ = Output.writeln ("testing deriving dummy on datatype " ^ dtname) in I end)
-*}
-
-print_derives
-derive dummy "term"
-*)
 end
