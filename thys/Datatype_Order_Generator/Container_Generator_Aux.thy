@@ -22,25 +22,26 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Loading derive-commands *}
-theory Derive
+header {* Classes from AFP-entry Light-weight Containers *}
+
+theory Container_Generator_Aux
 imports 
-  Order_Generator
-  Hash_Generator
-  Countable_Generator
-  Ceq_Generator
-  Cenum_Generator
-  Corder_Generator
-  Set_Impl_Generator
-  Mapping_Impl_Generator
+  Derive_Manager
+  "~~/src/HOL/Library/Phantom_Type"
+  "../Containers/Auxiliary"
 begin
 
-text{*
-We just load the commands to derive (linear) orders, hash-functions, classes from the
-container framework, and the
-command to show that a datatype is countable, so that now all of them are available.
+subsection Introduction
+
+text {* 
+  In the following, we provide generators for the major classes 
+  of the container framework: \texttt{ceq}, \texttt{corder}, \texttt{cenum},
+  \texttt{set-impl}, and \texttt{mapping-impl}. 
+
+  In this file we provide some common infrastructure on the ML-level which will
+  be used by the individual generators.
 *}
 
-print_derives
+ML_file "container_generator_aux.ML"
 
 end

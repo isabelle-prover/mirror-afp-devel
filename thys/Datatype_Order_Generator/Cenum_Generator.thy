@@ -22,25 +22,31 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Loading derive-commands *}
-theory Derive
-imports 
-  Order_Generator
-  Hash_Generator
-  Countable_Generator
-  Ceq_Generator
-  Cenum_Generator
-  Corder_Generator
-  Set_Impl_Generator
-  Mapping_Impl_Generator
+theory Cenum_Generator
+imports Container_Generator_Aux
+  "../Containers/Collection_Enum"
 begin
 
-text{*
-We just load the commands to derive (linear) orders, hash-functions, classes from the
-container framework, and the
-command to show that a datatype is countable, so that now all of them are available.
+subsection {* Generator for the @{class cenum}-class of the container framework *}
+
+text {*
+This generator registers itself at the derive-manager for the class @{class cenum}.
+To be more precise, one can currently only choose to not support enumeration 
+by passing "no" as parameter.  
+
+\begin{itemize}
+\item \texttt{instantiation type :: (type,\ldots,type) (no) cenum}
+\end{itemize}
 *}
 
-print_derives
+text {*
+This generator can be used for arbitrary types, not just datatypes. 
+*}
+
+ML_file "cenum_generator.ML"
+
+setup {*
+  Cenum_Generator.setup
+*}
 
 end

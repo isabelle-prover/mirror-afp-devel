@@ -8,9 +8,10 @@ session Datatype_Order_Generator (AFP) = "HOL-Library" +
     "../Containers/Collection_Eq"
     "../Containers/Collection_Enum"
     "../Containers/Set_Impl"
+    "../Containers/Mapping_Impl"
   theories
     Derive
-    Derive_Examples
+    Derive_Examples 
   files
     "document/root.bib"
     "document/root.tex"

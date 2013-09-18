@@ -3,6 +3,8 @@
 
 signature DERIVE_AUX = 
 sig 
+  val alist_to_string : (string * 'a)list -> string
+
   (* split_last [a,...,z] -> ([a,...,y],z) *)
   val split_last : 'a list -> 'a list * 'a
   
@@ -42,6 +44,11 @@ sig
 (* delivers a typ substitution which constrains all free type variables in datatype by sort *)
   val typ_subst_for_sort : theory -> Datatype_Aux.info -> sort -> typ -> typ
 
+(* delivers a full type from a type name by instantiating the type-variables of that
+   type with different variables of a given sort, also returns the chosen variables 
+   as second component *)
+  val typ_and_vs_of_typname : theory -> string -> sort -> typ * (string * sort) list
+
 (* identity and number recursive occurrences of datatypes *)
   val dt_number_recs : Datatype.dtyp list -> int * (int * int) list
 
@@ -61,6 +68,8 @@ open Datatype_Aux; open Datatype;
 
 val printing = false
 val my_print_tac = if printing then print_tac else (fn _ => Seq.single) 
+
+fun alist_to_string al = map fst al |> commas |> enclose "(" ")"
 
 fun split_last xs = (take (length xs - 1) xs, List.last xs)
 fun strip_cases ctac = ctac #> Seq.map snd
@@ -151,6 +160,16 @@ fun typ_subst_for_sort thy info sort =
     val spec = the_spec thy (#descr info |> hd |> (fn (_,(dty_name,_,_)) => dty_name))
     val typ_subst = Term.typ_subst_atomic (spec |> fst |> map (fn (n,s) => (TFree (n,s), TFree (n,sort)))) 
   in typ_subst end
+
+fun typ_and_vs_of_typname thy typ_name sort =
+  let 
+    val ar = Type.arity_number (Proof_Context.tsig_of (Proof_Context.init_global thy)) typ_name
+    val sorts = map (K sort) (1 upto ar)
+    val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
+    val ty = Type (typ_name,map TFree ty_vars)
+  in (ty,ty_vars)
+end
+
 
 fun dt_number_recs dtys = 
   let 
