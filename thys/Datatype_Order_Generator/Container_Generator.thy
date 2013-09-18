@@ -22,21 +22,19 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Loading derive-commands *}
-theory Derive
+theory Container_Generator
 imports 
-  Order_Generator
-  Hash_Generator
-  Countable_Generator
-  Container_Generator
+  Ceq_Generator
+  Cenum_Generator
+  Corder_Generator
+  Set_Impl_Generator
+  Mapping_Impl_Generator
 begin
 
-text{*
-We just load the commands to derive (linear) orders, hash-functions, classes from the
-container framework, and the
-command to show that a datatype is countable, so that now all of them are available.
-*}
+subsection {* Loading all generators for the containe framework *}
 
-print_derives
+text{*
+We just imported all generators for classes of the container framework.
+*}
 
 end

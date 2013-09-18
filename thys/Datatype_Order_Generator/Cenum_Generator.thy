@@ -27,7 +27,7 @@ imports Container_Generator_Aux
   "../Containers/Collection_Enum"
 begin
 
-subsection {* Generator for the @{class cenum}-class of the container framework *}
+subsection {* Generator for the @{class cenum}-class *}
 
 text {*
 This generator registers itself at the derive-manager for the class @{class cenum}.

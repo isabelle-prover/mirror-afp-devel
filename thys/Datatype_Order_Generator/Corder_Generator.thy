@@ -28,7 +28,7 @@ imports Container_Generator_Aux
   "Order_Generator"
 begin
 
-subsection {* Generator for the @{class corder}-class of the container framework *}
+subsection {* Generator for the @{class corder}-class *}
 
 text {*
 This generator registers itself at the derive-manager for the class

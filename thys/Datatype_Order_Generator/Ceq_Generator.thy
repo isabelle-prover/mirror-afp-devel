@@ -27,7 +27,7 @@ imports Container_Generator_Aux
   "../Containers/Collection_Eq"
 begin
 
-subsection {* Generator for the @{class ceq}-class of the container framework *}
+subsection {* Generator for the @{class ceq}-class *}
 
 text {*
 This generator registers itself at the derive-manager for the class @{class ceq}.

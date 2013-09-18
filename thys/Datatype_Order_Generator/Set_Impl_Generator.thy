@@ -28,7 +28,7 @@ imports
   "../Containers/Set_Impl"
 begin
 
-subsection {* Generator for the @{class set_impl}-class of the container framework *}
+subsection {* Generator for the @{class set_impl}-class *}
 
 text {*
 This generator registers itself at the derive-manager for the classes @{class set_impl}.

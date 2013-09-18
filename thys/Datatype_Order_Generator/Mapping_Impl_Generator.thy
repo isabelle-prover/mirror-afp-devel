@@ -28,7 +28,7 @@ imports
   "../Containers/Mapping_Impl"
 begin
 
-subsection {* Generator for the @{class mapping_impl}-class of the container framework *}
+subsection {* Generator for the @{class mapping_impl}-class *}
 
 text {*
 This generator registers itself at the derive-manager for the classes @{class mapping_impl}.
