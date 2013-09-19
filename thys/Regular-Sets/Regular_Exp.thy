@@ -40,7 +40,24 @@ primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable (Times r1 r2) = (nullable r1 \<and> nullable r2)" |
 "nullable (Star r) = True"
 
+fun map_rexp :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a rexp \<Rightarrow> 'b rexp" where
+"map_rexp f Zero = Zero" |
+"map_rexp f One = One" |
+"map_rexp f (Atom a) = Atom(f a)" |
+"map_rexp f (Plus r s) = Plus (map_rexp f r) (map_rexp f s) " |
+"map_rexp f (Times r s) = Times (map_rexp f r) (map_rexp f s) " |
+"map_rexp f (Star r) = Star(map_rexp f r)"
+
+
 lemma nullable_iff: "nullable r \<longleftrightarrow> [] \<in> lang r"
 by (induct r) (auto simp add: conc_def split: if_splits)
+
+text{* Composition on rhs usually complicates matters: *}
+lemma map_map_rexp:
+  "map_rexp f (map_rexp g r) = map_rexp (\<lambda>r. f (g r)) r"
+by (induction r) auto
+
+lemma map_rexp_ident[simp]: "map_rexp (\<lambda>x. x) = (\<lambda>r. r)"
+by (rule ext, induct_tac r) auto
 
 end

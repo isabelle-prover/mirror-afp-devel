@@ -8,7 +8,7 @@ begin
 
 text{* This theory is based on work by Brozowski \cite{Brzozowski64} and Antimirov \cite{Antimirov95}. *}
 
-subsection {* Brozowski's derivatives of regular expressions *}
+subsection {* Brzozowski's derivatives of regular expressions *}
 
 fun
   deriv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
