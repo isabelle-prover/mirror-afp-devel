@@ -198,7 +198,7 @@ val my_simp_set =
 
 fun mk_transitivity_thms thy (info : Datatype_Aux.info) = 
   let 
-    val ctxt = Proof_Context.init_global thy  (* FIXME proper context!? *)
+    val ctxt = Proof_Context.init_global thy
     (* first prove transitivity of < *)
     val trans_props = mk_trans_thm_trm thy info
     val sort = @{sort "order"}
@@ -339,7 +339,6 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
 
 fun mk_binary_thm thy (info : Datatype_Aux.info) prop_gen sort same_constructor_tac = 
   let 
-    val ctxt = Proof_Context.init_global thy  (* FIXME proper context!? *)
     val prop_props = mk_prop_trm thy info sort prop_gen
     val (mk_rec,nrec_args) = mk_less_idx thy info sort
     val typ_subst = typ_subst_for_sort thy info sort
