@@ -1866,7 +1866,7 @@ Here, one can choose
 the desired implementation via the parameter.
 
 \begin{itemize}
-\item \texttt{instantiation type :: (type,\ldots,type) (rbt,dlist,collect,monad,choose, or arbitrary long constant name) set-impl}
+\item \texttt{instantiation type :: (type,\ldots,type) (rbt,dlist,collect,monad,choose, or arbitrary constant name) set-impl}
 \end{itemize}
 *}
 
@@ -1883,7 +1883,7 @@ setup {*
 derive (dlist) set_impl unit
 derive (dlist) set_impl bool
 derive (rbt) set_impl nat
-derive ("Set_Impl.set_RBT") set_impl int (* shows usage of fully qualified constant names *)
+derive (set_RBT) set_impl int (* shows usage of constant names *)
 derive (dlist) set_impl Enum.finite_1
 derive (dlist) set_impl Enum.finite_2
 derive (dlist) set_impl Enum.finite_3

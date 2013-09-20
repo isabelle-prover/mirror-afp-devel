@@ -6,8 +6,8 @@ sig
 
   val mk_is_c_dots : typ -> string -> term 
   
-  (*                        const     sort    typ    choices            *)
-  val derive_set_map_impl : string -> sort -> typ -> (string * string) list 
+  (*                        const     sort    choices            *)
+  val derive_set_map_impl : string -> sort -> (string * term) list 
     -> string -> string -> theory -> theory
 
   (*                const_name, sort, mk_none,         typ_name *)
@@ -25,25 +25,27 @@ structure Containers_Generator : CONTAINERS_GENERATOR =
 struct
 open Derive_Aux; 
 
-fun mk_set_map_impl smi_ty smi_name choices ty choice = 
+fun mk_set_map_impl choices ty choice thy = 
   let 
+    val smi = case AList.lookup (op =) choices choice of
+      SOME smi => smi
+    | NONE => if choice = "" then error "you must provide some constant as parameter"
+        else Syntax.read_term (Proof_Context.init_global thy) choice
+    val smi_ty = fastype_of smi
     val pty = Type (@{type_name phantom},[ty,smi_ty])
     val ph = Const (@{const_name phantom}, smi_ty --> pty)
-    val smi = Const (case AList.lookup (op =) choices choice of
-      SOME smi => smi
-    | NONE => choice, smi_ty)
     val res = ph $ smi
   in res
 end
 
-fun derive_set_map_impl smi_const smi_sort smi_ty choices typ_name choice thy = 
+fun derive_set_map_impl smi_const smi_sort choices typ_name choice thy = 
   let
     val base_name = Long_Name.base_name typ_name
     val smi_name = Long_Name.base_name smi_const
     val _ = Output.writeln ("use " ^ choice ^ " as " ^ smi_name ^ " for type " 
       ^ base_name)
     val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
-    val set_map_impl_rhs = mk_set_map_impl smi_ty smi_name choices ty choice
+    val set_map_impl_rhs = mk_set_map_impl choices ty choice thy
     val set_map_impl_ty = Term.fastype_of set_map_impl_rhs
     val set_map_impl_def = mk_def set_map_impl_ty smi_const set_map_impl_rhs
     val (_,lthy) = Class.instantiation ([typ_name],vs,smi_sort) thy
