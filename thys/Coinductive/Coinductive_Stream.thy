@@ -5,40 +5,21 @@ header {* Coinductive streams *}
 
 theory Coinductive_Stream
 imports
+  "~~/src/HOL/BNF/Examples/Stream"
   Coinductive_List
 begin
 
-lemma id_power: "id ^^ n = id"
+lemma id_power [simp]: "id ^^ n = id"
 by(induct n) auto
 
-subsection {* Type definition *}
-
-codatatype (sset: 'a) stream (map: smap) = SCons (shd: 'a) (stl: "'a stream")
+lemma invariantI: "P x \<Longrightarrow> Lifting.invariant P x x"
+by(simp add: Lifting.invariant_def)
 
 text {*
   The following setup should be done by the BNF package.
 *}
 
-text {* congruence rule *}
-
 declare stream.map_cong [cong]
-
-text {* Code generator setup *}
-
-code_datatype SCons
-
-lemma stream_case_code [code]:
-  "stream_case d (SCons M N) = d M N"
-by simp_all
-
-lemma stream_case_cert:
-  assumes "CASE \<equiv> stream_case d"
-  shows "CASE (SCons M N) \<equiv> d M N"
-  using assms by simp
-
-setup {*
-  Code.add_case @{thm stream_case_cert}
-*}
 
 instantiation stream :: (equal) equal begin
 definition equal_stream :: "'a stream \<Rightarrow> 'a stream \<Rightarrow> bool"
@@ -47,24 +28,22 @@ instance proof qed(simp add: equal_stream_def)
 end
 
 lemma equal_stream_code [code]:
-  "equal_class.equal (SCons x xs) (SCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
+  "equal_class.equal (Stream x xs) (Stream y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
 by(simp_all add: equal_stream_def)
 
 lemma stream_corec_code [code]:
-  "stream_corec SHD endORmore STL_end STL_more b = SCons (SHD b) 
+  "stream_corec SHD endORmore STL_end STL_more b = Stream (SHD b) 
      (if endORmore b then STL_end b
       else stream_corec SHD endORmore STL_end STL_more (STL_more b))"
 by(rule stream.expand) simp_all
 
 lemma stream_unfold_code [code]:
-  "stream_unfold SHD STL b = SCons (SHD b) (stream_unfold SHD STL (STL b))"
+  "stream_unfold SHD STL b = Stream (SHD b) (stream_unfold SHD STL (STL b))"
 by(rule stream.expand) simp_all
-
-declare stream.sel [code]
 
 text {* Coinduction rules *}
 
-lemma stream_fun_coinduct_invar [consumes 1, case_names SCons]:
+lemma stream_fun_coinduct_invar [consumes 1, case_names Stream]:
   assumes "P x"
   and "\<And>x. P x
   \<Longrightarrow> shd (f x) = shd (g x) \<and>
@@ -73,7 +52,7 @@ lemma stream_fun_coinduct_invar [consumes 1, case_names SCons]:
 apply(rule stream.strong_coinduct[of "\<lambda>xs ys. \<exists>x. P x \<and> xs = f x \<and> ys = g x"])
 using assms by auto
 
-theorem stream_fun_coinduct [case_names SCons]:
+theorem stream_fun_coinduct [case_names Stream]:
   assumes 
   "\<And>x. shd (f x) = shd (g x) \<and>
       ((\<exists>x'. stl (f x) = f x' \<and> stl (g x) = g x') \<or> stl (f x) = stl (g x))"
@@ -87,22 +66,17 @@ lemmas stream_fun_coinduct_invar2 = stream_fun_coinduct_invar[where ?'a="'a \<ti
 lemmas stream_fun_coinduct_invar3 = stream_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
 lemmas stream_fun_coinduct_invar4 = stream_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c \<times> 'd", split_format (complete)]
 
-text {* lemmas about for generated constants *}
+text {* lemmas about generated constants *}
 
-lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
+lemma eq_StreamD: "xs = Stream y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
 by auto
-
-lemma [simp]:
-  shows shd_smap: "shd (smap f xs) = f (shd xs)"
-  and stl_smap: "stl (smap f xs) = smap f (stl xs)"
-by(cases xs, simp_all)+
 
 lemma smap_ident [simp]: "smap (\<lambda>x. x) xs = xs"
 by(simp only: id_def[symmetric] stream.map_id)
 
-lemma smap_eq_SCons_conv:
-  "smap f xs = SCons y ys \<longleftrightarrow> 
-  (\<exists>x xs'. xs = SCons x xs' \<and> y = f x \<and> ys = smap f xs')"
+lemma smap_eq_Stream_conv:
+  "smap f xs = y ## ys \<longleftrightarrow> 
+  (\<exists>x xs'. xs = x ## xs' \<and> y = f x \<and> ys = smap f xs')"
 by(cases xs)(auto)
 
 lemma smap_id: 
@@ -122,8 +96,8 @@ lemma stream_unfold_ltl_unroll:
   "stream_unfold SHD STL (STL b) = stream_unfold (SHD \<circ> STL) STL b"
 by(coinduct b rule: stream_fun_coinduct) auto
 
-lemma stream_unfold_eq_SCons [simp]:
-  "stream_unfold SHD STL b = SCons x xs \<longleftrightarrow>
+lemma stream_unfold_eq_Stream [simp]:
+  "stream_unfold SHD STL b = x ## xs \<longleftrightarrow>
   x = SHD b \<and> xs = stream_unfold SHD STL (STL b)"
 by(subst stream_unfold_code) auto
 
@@ -133,47 +107,56 @@ by(coinduct xs rule: stream_fun_coinduct) simp_all
 lemma sset_neq_empty [simp]: "sset xs \<noteq> {}"
 by(cases xs) simp_all
 
-lemma shd_in_sset [simp]: "shd xs \<in> sset xs"
-by(cases xs) auto
+lemmas shd_in_sset [simp] = shd_sset
 
 lemma sset_stl: "sset (stl xs) \<subseteq> sset xs"
 by(cases xs) auto
 
-lemma in_sset_stlD: "x \<in> sset (stl xs) \<Longrightarrow> x \<in> sset xs"
-using sset_stl[of xs] by auto
+lemmas in_sset_stlD = stl_sset
 
 text {* induction rules *}
 
-theorem stream_set_induct[consumes 1, case_names find step, induct set: sset]:
-  assumes y: "y \<in> sset s" and "\<And>s. P (shd s) s"
-  and "\<And>s y. \<lbrakk>y \<in> sset (stl s); P y (stl s)\<rbrakk> \<Longrightarrow> P y s"
-  shows "P y s"
-proof -
-  have "\<forall>y \<in> sset s. P y s"
-    apply (rule stream.dtor_set_induct)
-    using assms apply (auto simp add: shd_def stl_def fsts_def snds_def split_beta)
-    apply (metis fst_conv shd_def stream.collapse[unfolded SCons_def] stream.ctor_dtor stream.ctor_inject)
-    by (metis sndI stl_def stream.collapse[unfolded SCons_def] stream.ctor_dtor stream.ctor_inject)
-  thus ?thesis using y by blast
-qed
+theorems stream_set_induct = sset_induct1
 
 text {* Nitpick setup *}
-
-setup {*
-  Nitpick.register_codatatype @{typ "'a llist"} @{const_name llist_case}
-    (map dest_Const [@{term LNil}, @{term LCons}])
-*}
 
 declare
   llist.map [nitpick_simp]
   llist.sel [nitpick_simp]
 
+subsection {* Lemmas about operations from @{theory Stream} *}
+
+lemma szip_iterates:
+  "szip (siterate f a) (siterate g b) = siterate (map_pair f g) (a, b)"
+by(coinduct a b rule: stream_fun_coinduct2) auto
+
+lemma szip_smap1: "szip (smap f xs) ys = smap (apfst f) (szip xs ys)"
+by(coinduct xs ys rule: stream_fun_coinduct2) auto
+
+lemma szip_smap2: "szip xs (smap g ys) = smap (apsnd g) (szip xs ys)"
+by(coinduct xs ys rule: stream_fun_coinduct2) auto
+
+lemma szip_smap [simp]: "szip (smap f xs) (smap g ys) = smap (map_pair f g) (szip xs ys)"
+by(coinduct xs ys rule: stream_fun_coinduct2) auto
+
+lemma smap_fst_szip [simp]: "smap fst (szip xs ys) = xs"
+by(coinduct xs ys rule: stream_fun_coinduct2) auto
+
+lemma smap_snd_szip [simp]: "smap snd (szip xs ys) = ys"
+by(coinduct xs ys rule: stream_fun_coinduct2) auto
+
+lemma snth_shift: "snth (shift xs ys) n = (if n < length xs then xs ! n else snth ys (n - length xs))"
+by simp
+
+declare szip_unfold [simp, nitpick_simp]
+
+lemma szip_shift: 
+  "length xs = length us
+  \<Longrightarrow> szip (xs @- ys) (us @- zs) = zip xs us @- szip ys zs"
+by(induct xs arbitrary: us)(auto simp add: Suc_length_conv)
 
 
-
-
-
-subsection {* Link to @{typ "'a llist"} *}
+subsection {* Link @{typ "'a stream"} to @{typ "'a llist"} *}
 
 definition llist_of_stream :: "'a stream \<Rightarrow> 'a llist"
 where "llist_of_stream = llist_unfold (\<lambda>_. False) shd stl"
@@ -217,7 +200,7 @@ lemma stream_from_llist: "type_definition llist_of_stream stream_of_llist {xs. \
 by(unfold_locales) simp_all
 
 interpretation stream!: type_definition llist_of_stream stream_of_llist "{xs. \<not> lfinite xs}"
-by(rule stream_from_llist)
+by(fact stream_from_llist)
 
 setup_lifting (no_code) stream_from_llist
 
@@ -233,9 +216,63 @@ lemma llist_of_stream_stream_corec [simp]:
    llist_corec (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
 by(coinduct x rule: llist_fun_coinduct) auto
 
+lemma LCons_llist_of_stream [simp]: "LCons x (llist_of_stream xs) = llist_of_stream (x ## xs)"
+by(rule sym)(simp add: llist_of_stream_def)
+
+lemma lmap_llist_of_stream [simp]:
+  "lmap f (llist_of_stream xs) = llist_of_stream (smap f xs)"
+by(coinduct xs rule: llist_fun_coinduct) auto
+
+lemma lset_llist_of_stream [simp]: "lset (llist_of_stream xs) = sset xs" (is "?lhs = ?rhs")
+proof(intro set_eqI iffI)
+  fix x
+  assume "x \<in> ?lhs"
+  thus "x \<in> ?rhs"
+    by(induct "llist_of_stream xs" arbitrary: xs rule: llist_set_induct)(auto dest: in_sset_stlD)
+next
+  fix x
+  assume "x \<in> ?rhs"
+  thus "x \<in> ?lhs"
+  proof(induct)
+    case (shd xs)
+    thus ?case using lhd_in_lset[of "llist_of_stream xs"] by simp
+  next
+    case stl 
+    thus ?case
+      by(auto simp add: ltl_llist_of_stream[symmetric] simp del: ltl_llist_of_stream dest: in_lset_ltlD)
+  qed
+qed
+
+lemma lnth_list_of_stream [simp]:
+  "lnth (llist_of_stream xs) = snth xs"
+proof
+  fix n
+  show "lnth (llist_of_stream xs) n = snth xs n"
+    by(induction n arbitrary: xs)(simp_all add: lnth_0_conv_lhd lnth_ltl[symmetric])
+qed
+
+lemma llist_of_stream_siterates [simp]: "llist_of_stream (siterate f x) = iterates f x"
+by(coinduct x rule: llist_fun_coinduct) auto
+
+lemma lappend_llist_of_stream_conv_shift [simp]:
+  "lappend (llist_of xs) (llist_of_stream ys) = llist_of_stream (xs @- ys)"
+by(induct xs) simp_all
+
+lemma lzip_llist_of_stream [simp]:
+  "lzip (llist_of_stream xs) (llist_of_stream ys) = llist_of_stream (szip xs ys)"
+by(coinduct xs ys rule: llist_fun_coinduct2) auto
+
 context
 begin
 interpretation lifting_syntax .
+
+lemma lmap_infinite_transfer [transfer_rule]:
+  "(op = ===> Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> Lifting.invariant (\<lambda>xs. \<not> lfinite xs)) lmap lmap"
+by(simp add: fun_rel_def Lifting.invariant_def)
+
+lemma lset_infinite_transfer [transfer_rule]:
+  "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> op =) lset lset"
+by(simp add: fun_rel_def Lifting.invariant_def)
 
 lemma stream_unfold_transfer [transfer_rule]:
   "(op = ===> op = ===> op = ===> pcr_stream op =) (llist_unfold (\<lambda>_. False)) stream_unfold"
@@ -257,222 +294,64 @@ by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI)(frule
 lemma stl_transfer [transfer_rule]: "(pcr_stream A ===> pcr_stream A) ltl stl"
 by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI dest: llist_all2_ltlI)
 
-lemma llist_of_stream_SCons [simp]: "llist_of_stream (SCons x xs) = LCons x (llist_of_stream xs)"
-by(simp add: llist_of_stream_def)
+lemma llist_of_stream_transfer [transfer_rule]: "(pcr_stream op = ===> op =) id llist_of_stream"
+by(simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
 
-lemma SCons_transfer [transfer_rule]:
-  "(A ===> pcr_stream A ===> pcr_stream A) LCons SCons"
-by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI)
+lemma stream_of_llist_transfer [transfer_rule]: 
+  "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> pcr_stream op =) (\<lambda>xs. xs) stream_of_llist"
+by(simp add: Lifting.invariant_def fun_rel_def stream.pcr_cr_eq cr_stream_def)
 
-lemma lset_llist_of_stream [simp]: "lset (llist_of_stream xs) = sset xs" (is "?lhs = ?rhs")
-proof(intro set_eqI iffI)
-  fix x
-  assume "x \<in> ?lhs"
-  thus "x \<in> ?rhs"
-    by(induct "llist_of_stream xs" arbitrary: xs rule: llist_set_induct)(auto dest: in_sset_stlD)
-next
-  fix x
-  assume "x \<in> ?rhs"
-  thus "x \<in> ?lhs"
-  proof(induct)
-    case find
-    thus ?case by(transfer)(auto intro: lhd_in_lset)
-  next
-    case step 
-    thus ?case
-      by(auto simp add: ltl_llist_of_stream[symmetric] simp del: ltl_llist_of_stream dest: in_lset_ltlD)
-  qed
-qed
+lemma Stream_transfer [transfer_rule]:
+  "(A ===> pcr_stream A ===> pcr_stream A) LCons op ##"
+by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI intro: llist_all2_expand)
 
 lemma sset_transfer [transfer_rule]: "(pcr_stream A ===> set_rel A) lset sset"
 by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI set_relI dest: llist_all2_lsetD1 llist_all2_lsetD2)
-
-lemma llist_of_stream_smap [simp]:
-  "llist_of_stream (smap f xs) = lmap f (llist_of_stream xs)"
-by(coinduct xs rule: llist_fun_coinduct) auto
 
 lemma smap_transfer [transfer_rule]:
   "((A ===> B) ===> pcr_stream A ===> pcr_stream B) lmap smap"
 by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI dest: lmap_transfer[THEN fun_relD] elim: fun_relD)
 
-subsection {* Definition of derived operations *}
+lemma snth_transfer [transfer_rule]: "(pcr_stream op = ===> op =) lnth snth"
+by(rule fun_relI)(clarsimp simp add: stream.pcr_cr_eq cr_stream_def fun_eq_iff)
 
-lift_definition Stream :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a stream" is "inf_llist" by simp
+lemma siterate_transfer [transfer_rule]: 
+  "(op = ===> op = ===> pcr_stream op =) iterates siterate"
+by(rule fun_relI)+(clarsimp simp add: stream.pcr_cr_eq cr_stream_def)
 
-lift_definition snth :: "'a stream \<Rightarrow> nat \<Rightarrow> 'a" is "lnth" ..
+context
+  fixes xs
+  assumes inf: "\<not> lfinite xs"
+  notes [transfer_rule] = invariantI[where P="\<lambda>xs. \<not> lfinite xs", OF inf]  
+begin
 
-lift_definition sconst :: "'a \<Rightarrow> 'a stream" is "iterates id" by simp
-
-lift_definition iterates :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a stream" is "Coinductive_List.iterates" by simp
-
-lift_definition sappend :: "'a list \<Rightarrow> 'a stream \<Rightarrow> 'a stream" is "lappend \<circ> llist_of" by simp
-
-lift_definition szip :: "'a stream \<Rightarrow> 'b stream \<Rightarrow> ('a \<times> 'b) stream" is lzip by simp
-
-lift_definition stream_all2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a stream \<Rightarrow> 'b stream \<Rightarrow> bool"
-is llist_all2 ..
-
-subsection {* Converting between streams and functions: @{term Stream} and @{term snth} *}
-
-lemma Stream_rec [code]: "Stream f = SCons (f 0) (Stream (f \<circ> Suc))"
-by transfer (subst inf_llist_rec, simp add: o_def)
-
-lemma snth_Stream [simp]: "snth (Stream f) = f"
-by transfer (simp add: fun_eq_iff)
-
-lemma snth_SCons: "snth (SCons x xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> snth xs n')"
-by transfer (simp add: lnth_LCons)
-
-lemma snth_simps [simp, code, nitpick_simp]:
-  shows snth_SCons_0: "snth (SCons x xs) 0 = x"
-  and snth_SCons_Suc: "snth (SCons x xs) (Suc n) = snth xs n"
-by(simp_all add: snth_SCons)
-
-lemma Stream_snth [simp]: "Stream (snth xs) = xs"
+lemma smap_stream_of_llist [simp]:
+  shows "smap f (stream_of_llist xs) = stream_of_llist (lmap f xs)"
 by transfer simp
 
-lemma shd_Stream [simp]: "shd (Stream f) = f 0"
-by transfer simp
+lemma sset_stream_of_llist [simp]:
+  assumes "\<not> lfinite xs"
+  shows "sset (stream_of_llist xs) = lset xs"
+by transfer simp        
 
-lemma stl_Stream [simp]: "stl (Stream f) = Stream (\<lambda>n. f (Suc n))"
-by transfer simp
+end
 
-lemma sset_Stream [simp]: "sset (Stream f) = range f"
-by transfer simp
+lemma llist_all2_llist_of_stream [simp]: 
+  "llist_all2 P (llist_of_stream xs) (llist_of_stream ys) = stream_all2 P xs ys"
+apply(cases xs, cases ys)
+apply(simp add: llist_all2_def stream_all2_def)
+apply(safe elim!: GrpE)
+ apply(rule_tac b="stream_of_llist b" in relcomppI)
+  apply(auto intro!: GrpI)[2]
+apply(rule_tac b="llist_of_stream b" in relcomppI)
+ apply(auto intro!: GrpI)
+done
 
-lemma smap_Stream [simp]: "smap f (Stream g) = Stream (f \<circ> g)"
-by transfer simp
+lemma stream_all2_transfer [transfer_rule]:
+  "(op = ===> pcr_stream op = ===> pcr_stream op = ===> op =) llist_all2 stream_all2"
+by(simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
 
-subsubsection {* The constant stream @{term sconst} *}
-
-lemma sconst: "sconst a = SCons a (sconst a)"
-by transfer (subst iterates, simp)
-
-lemma snth_sconst [simp]: "snth (sconst a) n = a"
-by transfer (simp add: id_power)
-
-lemma shd_sconst [simp]: "shd (sconst a) = a"
-by transfer simp
-
-lemma stl_sconst [simp]: "stl (sconst a) = sconst a"
-by transfer simp
-
-lemma sconst_conv_Stream: "sconst a = Stream (\<lambda>_. a)" (is "?lhs = ?rhs")
-by(coinduct a rule: stream_fun_coinduct) auto
-
-lemma sset_sconst [simp]: "sset (sconst a) = {a}"
-by transfer (simp add: lset_iterates id_power)
-
-subsection{* Function iteration @{term iterates} *}
-
-lemma iterates [nitpick_simp]: "iterates f x = SCons x (iterates f (f x))"
-by transfer (rule iterates)
-
-lemma smap_iterates: "smap f (iterates f x) = iterates f (f x)"
-by transfer (rule lmap_iterates)
-
-lemma iterates_smap: "iterates f x = SCons x (smap f (iterates f x))"
-by transfer (rule iterates_lmap)
-
-lemma snth_iteretes [simp]: "snth (iterates f a) n = (f ^^ n) a"
-by transfer simp
-
-lemma shd_iterates [simp]: "shd (iterates f a) = a"
-by transfer simp
-
-lemma stl_iterates [simp]: "stl (iterates f a) = iterates f (f a)"
-by transfer simp
-
-lemma iterates_conv_Stream: "iterates f a = Stream (\<lambda>n. (f ^^ n) a)"
-by transfer (rule iterates_conv_inf_llist)
-
-lemma sset_iterates: "sset (iterates f a) = {(f ^^ n) a|n. True}"
-by transfer (rule lset_iterates)
-
-subsection {* Map for streams: @{term smap} *}
-
-lemma snth_smap [simp]: "snth (smap f xs) n = f (snth xs n)"
-by transfer (auto dest: not_lfinite_llength intro: lnth_lmap)
-
-lemma smap_sconst [simp]: "smap f (sconst a) = sconst (f a)"
-by(coinduct a rule: stream_fun_coinduct) auto
-
-subsection {* Prefixing a stream: @{term sappend} *}
-
-lemma shd_sappend: "shd (sappend xs ys) = (if xs = [] then shd ys else hd xs)"
-by transfer simp
-
-lemma stl_sappend: "stl (sappend xs ys) = (if xs = [] then stl ys else sappend (tl xs) ys)"
-by transfer (clarsimp simp add: neq_Nil_conv)
-
-lemma sappend_simps [simp, code, nitpick_simp]:
-  "sappend [] ys = ys"
-  "sappend (x # xs) ys = SCons x (sappend xs ys)"
-by(transfer, simp)+
-
-lemma snth_sappend:
-  "snth (sappend xs ys) n = (if n < length xs then xs ! n else snth ys (n - length xs))"
-by transfer (simp add: lnth_lappend)
-
-lemma sappend_assoc: "sappend (xs @ ys) zs = sappend xs (sappend ys zs)"
-by transfer(simp add: lappend_llist_of_llist_of[symmetric] lappend_assoc del: lappend_llist_of_llist_of)
-
-lemma smap_sappend: "smap f (sappend xs ys) = sappend (map f xs) (smap f ys)"
-by transfer (simp add: lmap_lappend_distrib)
-
-lemma sset_sappend [simp]: "sset (sappend xs ys) = set xs \<union> sset ys"
-by transfer simp
-
-subsection {* Zipping two streams: @{term szip} *}
-
-lemma szip_SCons [simp, code, nitpick_simp]: 
-  "szip (SCons x xs) (SCons y ys) = SCons (x, y) (szip xs ys)"
-by transfer simp
-
-lemma shd_szip [simp]: "shd (szip xs ys) = (shd xs, shd ys)"
-by transfer (auto intro: lhd_lzip)
-
-lemma stl_szip [simp]: "stl (szip xs ys) = szip (stl xs) (stl ys)"
-by transfer simp
-
-lemma szip_sconst1 [simp]: "szip (sconst a) xs = smap (Pair a) xs"
-by(coinduct xs rule: stream_fun_coinduct) auto
-
-lemma szip_sconst2 [simp]: "szip xs (sconst b) = smap (\<lambda>x. (x, b)) xs"
-by(coinduct xs rule: stream_fun_coinduct) auto
-
-lemma snth_szip [simp]: "snth (szip xs ys) n = (snth xs n, snth ys n)"
-by transfer (auto simp add: lnth_lzip dest!: not_lfinite_llength)
-
-lemma szip_sappend: 
-  "length xs = length us
-  \<Longrightarrow> szip (sappend xs ys) (sappend us zs) = sappend (zip xs us) (szip ys zs)"
-by(induct xs arbitrary: us)(auto simp add: Suc_length_conv)
-
-lemma szip_iterates:
-  "szip (iterates f a) (iterates g b) = iterates (map_pair f g) (a, b)"
-by transfer (simp add: lzip_iterates map_pair_def)
-
-lemma szip_smap1: "szip (smap f xs) ys = smap (\<lambda>(x, y). (f x, y)) (szip xs ys)"
-by transfer (simp add: lzip_lmap1)
-
-lemma szip_smap2: "szip xs (smap g ys) = smap (\<lambda>(x, y). (x, g y)) (szip xs ys)"
-by transfer (simp add: lzip_lmap2)
-
-lemma szip_smap [simp]: "szip (smap f xs) (smap g ys) = smap (\<lambda>(x, y). (f x, g y)) (szip xs ys)"
-by transfer (rule lzip_lmap)
-
-lemma smap_fst_szip [simp]: "smap fst (szip xs ys) = xs"
-by transfer (simp add: lmap_fst_lzip_conv_ltake not_lfinite_llength ltake_all)
-
-lemma smap_snd_szip [simp]: "smap snd (szip xs ys) = ys"
-by transfer (simp add: lmap_snd_lzip_conv_ltake not_lfinite_llength ltake_all)
-
-subsection {* @{term stream_all2} *}
-
-lemma stream_all2_SCons [simp, code, nitpick_simp]:
-  "stream_all2 P (SCons x xs) (SCons y ys) \<longleftrightarrow> P x y \<and> stream_all2 P xs ys"
-by transfer simp
+declare stream.rel_inject [nitpick_simp]
 
 lemma stream_all2_coinduct:
   assumes "X xs ys"
@@ -484,6 +363,81 @@ apply(rule_tac X="\<lambda>xs ys. \<not> lfinite xs \<and> \<not> lfinite ys \<a
 apply auto
 done
 
+lemma shift_transfer [transfer_rule]:
+  "(op = ===> pcr_stream op = ===> pcr_stream op =) (lappend \<circ> llist_of) shift"
+by(clarsimp simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
+
+lemma szip_transfer [transfer_rule]:
+  "(pcr_stream op = ===> pcr_stream op = ===> pcr_stream op =) lzip szip"
+by(simp add: stream.pcr_cr_eq cr_stream_def fun_rel_def)
+
+subsection {* Link @{typ "'a stream"} with @{typ "nat \<Rightarrow> 'a"} *}
+
+lift_definition of_seq :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a stream" is "inf_llist" by simp
+
+lemma of_seq_rec [code]: "of_seq f = f 0 ## of_seq (f \<circ> Suc)"
+by transfer (subst inf_llist_rec, simp add: o_def)
+
+lemma snth_of_seq [simp]: "snth (of_seq f) = f"
+by transfer (simp add: fun_eq_iff)
+
+lemma snth_Stream: "snth (x ## xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> snth xs n')"
+by(simp split: nat.split)
+
+lemma snth_Stream_simps [simp]:
+  shows snth_Stream_0: "(x ## xs) !! 0 = x"
+  and snth_Stream_Suc: "(x ## xs) !! Suc n = xs !! n"
+by(simp_all add: snth_Stream)
+
+lemma of_seq_snth [simp]: "of_seq (snth xs) = xs"
+by transfer simp
+
+lemma shd_of_seq [simp]: "shd (of_seq f) = f 0"
+by transfer simp
+
+lemma stl_of_seq [simp]: "stl (of_seq f) = of_seq (\<lambda>n. f (Suc n))"
+by transfer simp
+
+lemma sset_of_seq [simp]: "sset (of_seq f) = range f"
+by transfer simp
+
+lemma smap_of_seq [simp]: "smap f (of_seq g) = of_seq (f \<circ> g)"
+by transfer simp
+
+
+
+
+subsection{* Function iteration @{const siterate}  and @{term sconst} *}
+
+lemmas siterate [nitpick_simp] = siterate_code
+
+lemma smap_iterates: "smap f (siterate f x) = siterate f (f x)"
+by transfer (rule lmap_iterates)
+
+lemma siterate_smap: "siterate f x = Stream x (smap f (siterate f x))"
+by transfer (rule iterates_lmap)
+
+lemma siterate_conv_of_seq: "siterate f a = of_seq (\<lambda>n. (f ^^ n) a)"
+by transfer (rule iterates_conv_inf_llist)
+
+abbreviation sconst :: "'a \<Rightarrow> 'a stream" where "sconst \<equiv> siterate id"
+
+lemma sconst_conv_of_seq: "sconst a = of_seq (\<lambda>_. a)"
+by(simp add: siterate_conv_of_seq)
+
+lemma sset_sconst [simp]: "sset (sconst a) = {a}"
+by(simp add: sset_siterate)
+
+lemma smap_sconst [simp]: "smap f (sconst a) = sconst (f a)"
+by(coinduct a rule: stream_fun_coinduct) auto
+
+lemma szip_sconst1 [simp]: "szip (sconst a) xs = smap (Pair a) xs"
+by(coinduct xs rule: stream_fun_coinduct) auto
+
+lemma szip_sconst2 [simp]: "szip xs (sconst b) = smap (\<lambda>x. (x, b)) xs"
+by(coinduct xs rule: stream_fun_coinduct) auto
+
 end
 
 end
+
