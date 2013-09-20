@@ -80,10 +80,9 @@ setup {*
 
 subsection {* Type class instances for HOL types *}
 
-derive ceq unit
+derive (eq) ceq unit
 lemma [code]: "CEQ(unit) = Some (\<lambda>_ _. True)"
   unfolding ceq_unit_def by (simp, intro ext, auto)
-
 derive (eq) ceq bool
 derive (eq) ceq nat
 derive (eq) ceq int
@@ -97,27 +96,10 @@ derive (eq) ceq natural
 derive (eq) ceq nibble
 derive (eq) ceq char
 derive (eq) ceq String.literal
-
 derive ceq sum
-lemma is_ceq_sum [simp, code_post]:
-  "is_ceq TYPE('a + 'b) \<longleftrightarrow> is_ceq TYPE('a :: ceq) \<and> is_ceq TYPE('b :: ceq)"
-by(simp add: is_ceq_def ceq_sum_def ID_Some ID_None split: option.split)
-
 derive ceq prod
-lemma is_ceq_prod [simp, code_post]:
-  "is_ceq TYPE('a \<times> 'b) \<longleftrightarrow> is_ceq TYPE('a :: ceq) \<and> is_ceq TYPE('b :: ceq)"
-by(simp add: is_ceq_def ceq_prod_def ID_Some ID_None split: option.split)
-
 derive ceq list
-lemma is_ceq_list [simp, code_post]:
-  "is_ceq TYPE('a list) \<longleftrightarrow> is_ceq TYPE('a :: ceq)"
-by(simp add: is_ceq_def ceq_list_def ID_Some ID_None split: option.split)
-
 derive ceq option
-lemma is_ceq_option [simp, code_post]:
-  "is_ceq TYPE('a option) \<longleftrightarrow> is_ceq TYPE('a :: ceq)"
-by(simp add: is_ceq_def ceq_option_def ID_Some ID_None split: option.split)
-
 derive (no) ceq "fun"
 
 lemma is_ceq_fun [simp]: "\<not> is_ceq TYPE('a \<Rightarrow> 'b)"

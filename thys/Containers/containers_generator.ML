@@ -13,6 +13,9 @@ sig
   (*                const_name, sort, mk_none,         typ_name *)
   val derive_none : string -> sort -> (typ -> term) -> string -> theory -> theory
 
+  (*                             const_name  base_name *)
+  val register_is_c_dots_lemma : string -> string -> thm -> theory -> theory
+
   (*                           typ    const_name  defs      base_name *)
   val derive_is_c_dots_lemma : typ -> string -> thm list -> string -> theory -> theory
 
@@ -78,18 +81,22 @@ fun mk_is_c_dots ty dots =
   in res
 end
 
-fun derive_is_c_dots_lemma ty const_name defs base_name thy  = let
-      val is_c_dots = HOLogic.mk_Trueprop (mk_is_c_dots ty const_name)
-      val thm = Goal.prove (Proof_Context.init_global thy) [] [] is_c_dots (fn {prems = _, context = ctxt} => 
-        unfold_tac (defs @ @{thms ID_Some option.simps}) ctxt
-        THEN blast_tac ctxt 1
-      )
+fun register_is_c_dots_lemma const_name base_name thm thy = let
       val name = Long_Name.base_name const_name ^ "_" ^ base_name
       val lthy_map = Local_Theory.note ((Binding.name name, 
           @{attributes [simp,code_post]}), [thm]) #> #2
       val thy' = Named_Target.theory_init thy |> lthy_map |> Local_Theory.exit_global
       val _ = Output.writeln ("derived " ^ name ^ "-lemma")
     in thy'
+end
+
+fun derive_is_c_dots_lemma ty const_name defs base_name thy  = let
+      val is_c_dots = HOLogic.mk_Trueprop (mk_is_c_dots ty const_name)
+      val thm = Goal.prove (Proof_Context.init_global thy) [] [] is_c_dots (fn {prems = _, context = ctxt} => 
+        unfold_tac (defs @ @{thms ID_Some option.simps}) ctxt
+        THEN blast_tac ctxt 1
+      )
+    in register_is_c_dots_lemma const_name base_name thm thy
 end
 
 end

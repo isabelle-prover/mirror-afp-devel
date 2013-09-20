@@ -256,10 +256,24 @@ fun derive_ceq_ceq dtyp_name thy =
         THEN unfold_tac [ceq_thm] ctxt
         THEN split_tac ceq_eq_thm eq_vars
       end) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")  
-(* TODO: derive is_ceq-lemma *)
-(*    val thy'' = derive_is_c_dots_lemma ty @{const_name is_ceq} [ceq_thm, @{thm is_ceq_def}] base_name thy'  *)
-  in thy' end
+    val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")
+    val typ_subst = typ_subst_for_sort thy info sort 
+    val main_ty = typ_of_dtyp (#descr info) (DtRec 0) |> typ_subst
+    val param_tys = dest_Type main_ty |> snd   
+    fun mk_is_ceq ty = mk_is_c_dots ty @{const_name is_ceq}
+    val main_is_ceq = mk_is_ceq main_ty
+    val param_is_ceq = map mk_is_ceq param_tys
+    val is_ceq_thm_trm = HOLogic.mk_Trueprop (case param_is_ceq of 
+      [] => main_is_ceq
+    | _ => HOLogic.mk_eq (main_is_ceq,HOLogic_list_conj param_is_ceq))
+    val is_ceq_thm = Goal.prove (Proof_Context.init_global thy') [] [] is_ceq_thm_trm 
+      (fn {context = ctxt, prems = _} => 
+        simp_tac (Splitter.add_split @{thm option.split} ctxt 
+          addsimps (ceq_thm :: @{thms ID_Some ID_None is_ceq_def})
+        ) 1
+      )
+    val thy'' = register_is_c_dots_lemma @{const_name is_ceq} base_name is_ceq_thm thy' 
+  in thy'' end
 
 val derive_no_ceq = derive_none @{const_name ceq} @{sort ceq} mk_none_ceq
 
