@@ -364,11 +364,7 @@ derive (choose) mapping_impl expr
 derive (choose) set_impl expr'
 
 text {*
-  More complex cases such as taking the implementation preference of a type parameter must be done manually.%
-  \footnote{%
-    This also applies if you want an implementation of a container that is not part of containers.
-    At present, @{text derive} is not extensible. If you sorely need that, contact the author.
-  }
+  More complex cases such as taking the implementation preference of a type parameter must be done manually.
 *}
 
 instantiation expr' :: (mapping_impl) mapping_impl begin
@@ -934,6 +930,10 @@ by(simp add: mapping_impl_unit_def)
 
 value [code] "Mapping.empty :: (unit, int) mapping"
 
+text {*
+  You can also use your new pseudo-constructor with @{text derive} in instantiations, just give its full name as option:
+*}
+derive ("Containers_Userguide.mapping_Trie") mapping_impl simple_tycon
 
 section {* Changing the configuration *}
 
