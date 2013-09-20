@@ -152,7 +152,7 @@ text {*
 *}
 (*<*)end(*>*)
 
-derive ceq expr
+derive (eq) ceq expr
 
 datatype example = Example
 derive (no) ceq example
@@ -233,7 +233,7 @@ text {*
 (*<*)end(*>*)
 (*<*);(*>*)
 derive linorder expr
-derive corder expr
+derive (linorder) corder expr
 (*<*);(*>*)
 
 text {*
