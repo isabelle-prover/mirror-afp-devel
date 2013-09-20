@@ -2,7 +2,6 @@
    Author:     Andreas Lochbihler, ETH Zurich *)
 (*<*)
 theory Containers_Userguide imports
-  "../Datatype_Order_Generator/Order_Generator"
   Card_Datatype
   List_Proper_Interval
   Containers
@@ -931,9 +930,9 @@ by(simp add: mapping_impl_unit_def)
 value [code] "Mapping.empty :: (unit, int) mapping"
 
 text {*
-  You can also use your new pseudo-constructor with @{text derive} in instantiations, just give its full name as option:
+  You can also use your new pseudo-constructor with @{text derive} in instantiations, just give its name as option:
 *}
-derive ("Containers_Userguide.mapping_Trie") mapping_impl simple_tycon
+derive (mapping_Trie) mapping_impl simple_tycon
 
 section {* Changing the configuration *}
 
