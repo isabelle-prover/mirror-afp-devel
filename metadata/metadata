@@ -538,7 +538,10 @@ abstract =
 depends-on = Datatype_Order_Generator
 extra-history = 
   Change history:
-  [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)
+  [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
+  [2013-09-20]:
+        provide generators for canonical type class instantiations
+        (revision 159f4401f4a8 by Ren&eacute; Thiemann)
 
 [FileRefinement]
 title = File Refinement
