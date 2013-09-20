@@ -1,11 +1,13 @@
 (*  Title:      Containers/Mapping_Impl.thy
-    Author:     Andreas Lochbihler, KIT *)
+    Author:     Andreas Lochbihler, KIT
+                René Thiemann, UIBK *)
 
 theory Mapping_Impl imports 
   RBT_Mapping2
   AssocList
   "~~/src/HOL/Library/Mapping"
   Set_Impl
+  Containers_Generator
 begin
 
 section {* Different implementations of maps *}
@@ -205,60 +207,40 @@ lemma Mapping_empty_code [code, code_unfold]:
    mapping_empty (of_phantom MAPPING_IMPL('a))"
 by simp
 
-instantiation unit :: mapping_impl begin
-definition "MAPPING_IMPL(unit) = Phantom(unit) mapping_Assoc_List"
-instance ..
-end
+subsection {* Generator for the @{class mapping_impl}-class *}
 
-instantiation bool :: mapping_impl begin
-definition "MAPPING_IMPL(bool) = Phantom(bool) mapping_Assoc_List"
-instance ..
-end
+text {*
+This generator registers itself at the derive-manager for the classes @{class mapping_impl}.
+Here, one can choose
+the desired implementation via the parameter. 
 
-instantiation nat :: mapping_impl begin
-definition "MAPPING_IMPL(nat) \<equiv> Phantom(nat) mapping_RBT"
-instance ..
-end
+\begin{itemize}
+\item \texttt{instantiation type :: (type,\ldots,type) (rbt,assoclist,mapping,choose) mapping-impl}
+\end{itemize}
+*}
 
-instantiation int :: mapping_impl begin
-definition "MAPPING_IMPL(int) = Phantom(int) mapping_RBT"
-instance ..
-end
 
-instantiation Enum.finite_1 :: mapping_impl begin
-definition "MAPPING_IMPL(Enum.finite_1) = Phantom(Enum.finite_1) mapping_Assoc_List"
-instance ..
-end
+text {*
+This generator can be used for arbitrary types, not just datatypes. 
+*}
 
-instantiation Enum.finite_2 :: mapping_impl begin
-definition "MAPPING_IMPL(Enum.finite_2) = Phantom(Enum.finite_2) mapping_Assoc_List"
-instance ..
-end
+ML_file "mapping_impl_generator.ML" 
 
-instantiation Enum.finite_3 :: mapping_impl begin
-definition "MAPPING_IMPL(Enum.finite_3) = Phantom(Enum.finite_3) mapping_Assoc_List"
-instance ..
-end
+setup {*
+  Mapping_Impl_Generator.setup
+*}
 
-instantiation integer :: mapping_impl begin
-definition "MAPPING_IMPL(integer) = Phantom(integer) mapping_RBT"
-instance ..
-end
-
-instantiation natural :: mapping_impl begin
-definition "MAPPING_IMPL(natural) = Phantom(natural) mapping_RBT"
-instance ..
-end
-
-instantiation nibble :: mapping_impl begin
-definition "MAPPING_IMPL(nibble) = Phantom(nibble) mapping_Assoc_List"
-instance ..
-end
-
-instantiation char :: mapping_impl begin
-definition "MAPPING_IMPL(char) = Phantom(char) mapping_RBT"
-instance ..
-end
+derive (assoclist) mapping_impl unit
+derive (assoclist) mapping_impl bool
+derive (rbt) mapping_impl nat
+derive (rbt) mapping_impl int
+derive (assoclist) mapping_impl Enum.finite_1
+derive (assoclist) mapping_impl Enum.finite_2
+derive (assoclist) mapping_impl Enum.finite_3
+derive (rbt) mapping_impl integer
+derive (rbt) mapping_impl natural
+derive (assoclist) mapping_impl nibble
+derive (rbt) mapping_impl char
 
 instantiation sum :: (mapping_impl, mapping_impl) mapping_impl begin
 definition "MAPPING_IMPL('a + 'b) = Phantom('a + 'b) 
@@ -272,25 +254,15 @@ definition "MAPPING_IMPL('a * 'b) = Phantom('a * 'b)
 instance ..
 end
 
-instantiation list :: (type) mapping_impl begin
-definition "MAPPING_IMPL('a list) = Phantom('a list) mapping_Choose"
-instance ..
-end
-
-instantiation String.literal :: mapping_impl begin
-definition "MAPPING_IMPL(String.literal) = Phantom(String.literal) mapping_RBT"
-instance ..
-end
+derive (choose) mapping_impl list
+derive (rbt) mapping_impl String.literal
 
 instantiation option :: (mapping_impl) mapping_impl begin
 definition "MAPPING_IMPL('a option) = Phantom('a option) (of_phantom MAPPING_IMPL('a))"
 instance ..
 end
 
-instantiation set :: (type) mapping_impl begin
-definition "MAPPING_IMPL('a set) = Phantom('a set) mapping_Choose"
-instance ..
-end
+derive (choose) mapping_impl set
 
 instantiation phantom :: (type, mapping_impl) mapping_impl begin
 definition "MAPPING_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom) 

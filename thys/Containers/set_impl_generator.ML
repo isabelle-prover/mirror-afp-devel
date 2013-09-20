@@ -1,3 +1,5 @@
+(* Author:  René Thiemann, UIBK *)
+(* This generator was written as part of the IsaFoR/CeTA formalization. *)
 signature SET_IMPL_GENERATOR = 
 sig 
   
@@ -11,7 +13,7 @@ end
 
 structure Set_Impl_Generator : SET_IMPL_GENERATOR = 
 struct
-open Container_Generator_Aux; 
+open Containers_Generator; 
 open Derive_Aux;
 
 val supported_set_impl = [

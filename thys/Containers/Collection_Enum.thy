@@ -1,8 +1,10 @@
 (*  Title:      Containers/Collection_Enum.thy
-    Author:     Andreas Lochbihler, KIT *)
+    Author:     Andreas Lochbihler, KIT
+                René Thiemann, UIBK *)
 
 theory Collection_Enum imports
   Auxiliary
+  Container_Generator_Aux
 begin
 
 section {* A type class for optional enumerations *}
@@ -65,6 +67,29 @@ let
 in [(@{const_syntax cEnum}, cenum_tr')]
 end
 *}
+
+subsection {* Generator for the @{class cenum}-class *}
+
+text {*
+This generator registers itself at the derive-manager for the class @{class cenum}.
+To be more precise, one can currently only choose to not support enumeration 
+by passing "no" as parameter.  
+
+\begin{itemize}
+\item \texttt{instantiation type :: (type,\ldots,type) (no) cenum}
+\end{itemize}
+*}
+
+text {*
+This generator can be used for arbitrary types, not just datatypes. 
+*}
+
+ML_file "cenum_generator.ML"
+
+setup {*
+  Cenum_Generator.setup
+*}
+
 
 subsection {* Instantiations *}
 
@@ -269,34 +294,11 @@ definition "CENUM(char) = Some (enum_class.enum, enum_class.enum_all, enum_class
 instance by(intro_classes)(auto simp add: cEnum_char_def enum_UNIV enum_all_UNIV enum_ex_UNIV)
 end
 
-instantiation list :: (type) cenum begin
-definition "CENUM('a list) = None"
-instance by(intro_classes)(simp_all add: cEnum_list_def)
-end
-
-instantiation nat :: cenum begin
-definition "CENUM(nat) = None"
-instance by(intro_classes)(simp_all add: cEnum_nat_def)
-end
-
-instantiation int :: cenum begin
-definition "CENUM(int) = None"
-instance by(intro_classes)(simp_all add: cEnum_int_def)
-end
-
-instantiation integer :: cenum begin
-definition "CENUM(integer) = None"
-instance by(intro_classes)(simp_all add: cEnum_integer_def)
-end
-
-instantiation natural :: cenum begin
-definition "CENUM(natural) = None"
-instance by(intro_classes)(simp_all add: cEnum_natural_def)
-end
-
-instantiation String.literal :: cenum begin
-definition "CENUM(String.literal) = None"
-instance by(intro_classes)(simp_all add: cEnum_literal_def)
-end
+derive (no) cenum list
+derive (no) cenum nat
+derive (no) cenum int
+derive (no) cenum integer
+derive (no) cenum natural
+derive (no) cenum String.literal
 
 end

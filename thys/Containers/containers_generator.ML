@@ -1,5 +1,11 @@
-signature CONTAINER_GENERATOR_AUX = 
+(* Author:  René Thiemann, UIBK *)
+(* The generators have been written as part of the IsaFoR/CeTA formalization. *)
+
+signature CONTAINERS_GENERATOR = 
 sig 
+
+  val mk_is_c_dots : typ -> string -> term 
+  
   (*                        const     sort    typ    choices            *)
   val derive_set_map_impl : string -> sort -> typ -> (string * term) list 
     -> string -> string -> theory -> theory
@@ -12,7 +18,7 @@ sig
 
 end
 
-structure Container_Generator_Aux : CONTAINER_GENERATOR_AUX =
+structure Containers_Generator : CONTAINERS_GENERATOR =
 struct
 open Derive_Aux; 
 

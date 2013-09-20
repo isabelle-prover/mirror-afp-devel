@@ -1,11 +1,13 @@
 (*  Title:      Containers/Set_Impl.thy
-    Author:     Andreas Lochbihler, KIT *)
+    Author:     Andreas Lochbihler, KIT
+                René Thiemann, UIBK *)
 
 theory Set_Impl imports
   Collection_Enum
   DList_Set
   RBT_Set2
   Closure_Set
+  Containers_Generator
 begin
 
 section {* Different implementations of sets *}
@@ -1856,60 +1858,40 @@ lemma empty_code [code, code_unfold]:
   "({} :: 'a :: set_impl set) = set_empty (of_phantom SET_IMPL('a))"
 by simp
 
-instantiation unit :: set_impl begin
-definition "SET_IMPL(unit) = Phantom(unit) set_DList"
-instance ..
-end
+subsection {* Generator for the @{class set_impl}-class *}
 
-instantiation bool :: set_impl begin
-definition "SET_IMPL(bool) = Phantom(bool) set_DList"
-instance ..
-end
+text {*
+This generator registers itself at the derive-manager for the classes @{class set_impl}.
+Here, one can choose
+the desired implementation via the parameter. 
 
-instantiation nat :: set_impl begin
-definition "SET_IMPL(nat) \<equiv> Phantom(nat) set_RBT"
-instance ..
-end
+\begin{itemize}
+\item \texttt{instantiation type :: (type,\ldots,type) (rbt,dlist,collect,monad,choose) set-impl}
+\end{itemize}
+*}
 
-instantiation int :: set_impl begin
-definition "SET_IMPL(int) = Phantom(int) set_RBT"
-instance ..
-end
 
-instantiation Enum.finite_1 :: set_impl begin
-definition "SET_IMPL(Enum.finite_1) = Phantom(Enum.finite_1) set_DList"
-instance ..
-end
+text {*
+This generator can be used for arbitrary types, not just datatypes. 
+*}
 
-instantiation Enum.finite_2 :: set_impl begin
-definition "SET_IMPL(Enum.finite_2) = Phantom(Enum.finite_2) set_DList"
-instance ..
-end
+ML_file "set_impl_generator.ML" 
 
-instantiation Enum.finite_3 :: set_impl begin
-definition "SET_IMPL(Enum.finite_3) = Phantom(Enum.finite_3) set_DList"
-instance ..
-end
+setup {*
+  Set_Impl_Generator.setup
+*}
 
-instantiation integer :: set_impl begin
-definition "SET_IMPL(integer) = Phantom(integer) set_RBT"
-instance ..
-end
-
-instantiation natural :: set_impl begin
-definition "SET_IMPL(natural) = Phantom(natural) set_RBT"
-instance ..
-end
-
-instantiation nibble :: set_impl begin
-definition "SET_IMPL(nibble) = Phantom(nibble) set_DList"
-instance ..
-end
-
-instantiation char :: set_impl begin
-definition "SET_IMPL(char) = Phantom(char) set_RBT"
-instance ..
-end
+derive (dlist) set_impl unit
+derive (dlist) set_impl bool
+derive (rbt) set_impl nat
+derive (rbt) set_impl int
+derive (dlist) set_impl Enum.finite_1
+derive (dlist) set_impl Enum.finite_2
+derive (dlist) set_impl Enum.finite_3
+derive (rbt) set_impl integer
+derive (rbt) set_impl natural
+derive (dlist) set_impl nibble
+derive (rbt) set_impl char
 
 instantiation sum :: (set_impl, set_impl) set_impl begin
 definition "SET_IMPL('a + 'b) = Phantom('a + 'b) 
@@ -1923,30 +1905,16 @@ definition "SET_IMPL('a * 'b) = Phantom('a * 'b)
 instance ..
 end
 
-instantiation list :: (type) set_impl begin
-definition "SET_IMPL('a list) = Phantom('a list) set_Choose"
-instance ..
-end
-
-instantiation String.literal :: set_impl begin
-definition "SET_IMPL(String.literal) = Phantom(String.literal) set_RBT"
-instance ..
-end
+derive (choose) set_impl list
+derive (rbt) set_impl String.literal
 
 instantiation option :: (set_impl) set_impl begin
 definition "SET_IMPL('a option) = Phantom('a option) (of_phantom SET_IMPL('a))"
 instance ..
 end
 
-instantiation "fun" :: (type, type) set_impl begin
-definition "SET_IMPL('a \<Rightarrow> 'b) = Phantom('a \<Rightarrow> 'b) set_Monad"
-instance ..
-end
-
-instantiation set :: (type) set_impl begin
-definition "SET_IMPL('a set) = Phantom('a set) set_Choose"
-instance ..
-end
+derive (monad) set_impl "fun"
+derive (choose) set_impl set_impl
 
 instantiation phantom :: (type, set_impl) set_impl begin
 definition "SET_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom) (of_phantom SET_IMPL('b))"

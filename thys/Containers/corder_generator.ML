@@ -1,3 +1,6 @@
+(* Author:  René Thiemann, UIBK *)
+(* This generator was written as part of the IsaFoR/CeTA formalization. *)
+
 signature CORDER_GENERATOR = 
 sig 
   
@@ -17,7 +20,7 @@ end
 
 structure Corder_Generator : CORDER_GENERATOR = 
 struct
-open Container_Generator_Aux; 
+open Containers_Generator; 
 open Derive_Aux;
 open Datatype; 
 open Order_Generator;
@@ -38,9 +41,7 @@ fun mk_some_less_less_eq ty =
     val less_eq = Const (@{const_name "Orderings.less_eq"}, comp_ty)
     val pair_ty = Type (@{type_name prod},[comp_ty,comp_ty])
     val pair = Const (@{const_name Pair}, comp_ty --> comp_ty --> pair_ty) $ less_eq $ less
-    val oty = Type (@{type_name option},[pair_ty])
-    val some = Const (@{const_name Some}, pair_ty --> oty) $ pair
-  in some
+  in mk_Some pair
 end  
 
 fun mk_linorder_thm dtyp_name lthy = 
@@ -131,10 +132,8 @@ fun derive_some_corder dtyp_name thy = let
     val vs = vs_of_sort sort
     val linorder_thm = mk_linorder_thm dtyp_name (Proof_Context.init_global thy)
     val prod_ty = Type (@{type_name prod},[comp_ty, comp_ty])
-    val opt_ty = Type (@{type_name option}, [prod_ty])
-    val some = Const (@{const_name Some}, prod_ty --> opt_ty) $ 
-      (Const (@{const_name "Pair"}, comp_ty --> comp_ty --> prod_ty) $ less_eq $ less)    
-    val corder_def = mk_def opt_ty @{const_name corder} some
+    val some = Const (@{const_name "Pair"}, comp_ty --> comp_ty --> prod_ty) $ less_eq $ less |> mk_Some
+    val corder_def = mk_def (fastype_of some) @{const_name corder} some
     val (corder_thm,lthy) = Class.instantiation ([dtyp_name],vs,@{sort corder}) thy
       |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
      
