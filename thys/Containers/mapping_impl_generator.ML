@@ -18,10 +18,10 @@ open Containers_Generator;
 open Derive_Aux;
 
 val supported_mapping_impl = [
-  ("rbt", @{term mapping_RBT}),
-  ("assoclist", @{term mapping_Assoc_List}),
-  ("mapping", @{term mapping_Mapping}),
-  ("choose", @{term mapping_Choose})
+  ("rbt", @{const_name mapping_RBT}),
+  ("assoclist", @{const_name mapping_Assoc_List}),
+  ("mapping", @{const_name mapping_Mapping}),
+  ("choose", @{const_name mapping_Choose})
   ] 
 
 val derive_mapping_impl = derive_set_map_impl @{const_name mapping_impl} @{sort mapping_impl} @{typ mapping_impl}
