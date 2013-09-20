@@ -1914,7 +1914,7 @@ instance ..
 end
 
 derive (monad) set_impl "fun"
-derive (choose) set_impl set_impl
+derive (choose) set_impl set
 
 instantiation phantom :: (type, set_impl) set_impl begin
 definition "SET_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom) (of_phantom SET_IMPL('b))"
