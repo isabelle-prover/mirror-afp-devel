@@ -4,7 +4,7 @@
 
 theory Collection_Enum imports
   Auxiliary
-  Container_Generator_Aux
+  Containers_Generator
 begin
 
 section {* A type class for optional enumerations *}
