@@ -17,11 +17,11 @@ open Containers_Generator;
 open Derive_Aux;
 
 val supported_set_impl = [
-  ("rbt", @{term set_RBT}),
-  ("dlist", @{term set_DList}),
-  ("monad", @{term set_Monad}),
-  ("collect", @{term set_Collect}),
-  ("choose", @{term set_Choose})
+  ("rbt", @{const_name set_RBT}),
+  ("dlist", @{const_name set_DList}),
+  ("monad", @{const_name set_Monad}),
+  ("collect", @{const_name set_Collect}),
+  ("choose", @{const_name set_Choose})
   ]
 
 val derive_set_impl = derive_set_map_impl @{const_name set_impl} @{sort set_impl} @{typ set_impl}
@@ -29,6 +29,6 @@ val derive_set_impl = derive_set_map_impl @{const_name set_impl} @{sort set_impl
 
 val setup = 
   Derive_Manager.register_derive "set_impl" 
-    ("choose " ^ alist_to_string supported_set_impl ^ " as set_impl for a datatype") derive_set_impl
+    ("choose " ^ alist_to_string supported_set_impl ^ " or any constant_name as set_impl for a datatype") derive_set_impl
 
 end

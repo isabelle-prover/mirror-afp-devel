@@ -215,7 +215,7 @@ Here, one can choose
 the desired implementation via the parameter. 
 
 \begin{itemize}
-\item \texttt{instantiation type :: (type,\ldots,type) (rbt,assoclist,mapping,choose) mapping-impl}
+\item \texttt{instantiation type :: (type,\ldots,type) (rbt,assoclist,mapping,choose, or arbitrary long constant name) mapping-impl}
 \end{itemize}
 *}
 
@@ -233,7 +233,7 @@ setup {*
 derive (assoclist) mapping_impl unit
 derive (assoclist) mapping_impl bool
 derive (rbt) mapping_impl nat
-derive (rbt) mapping_impl int
+derive ("Mapping_Impl.mapping_RBT") mapping_impl int (* shows usage of fully qualified constant names *)
 derive (assoclist) mapping_impl Enum.finite_1
 derive (assoclist) mapping_impl Enum.finite_2
 derive (assoclist) mapping_impl Enum.finite_3

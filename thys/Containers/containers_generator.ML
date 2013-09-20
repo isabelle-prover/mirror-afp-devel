@@ -7,7 +7,7 @@ sig
   val mk_is_c_dots : typ -> string -> term 
   
   (*                        const     sort    typ    choices            *)
-  val derive_set_map_impl : string -> sort -> typ -> (string * term) list 
+  val derive_set_map_impl : string -> sort -> typ -> (string * string) list 
     -> string -> string -> theory -> theory
 
   (*                const_name, sort, mk_none,         typ_name *)
@@ -29,10 +29,9 @@ fun mk_set_map_impl smi_ty smi_name choices ty choice =
   let 
     val pty = Type (@{type_name phantom},[ty,smi_ty])
     val ph = Const (@{const_name phantom}, smi_ty --> pty)
-    val smi = case AList.lookup (op =) choices choice of
+    val smi = Const (case AList.lookup (op =) choices choice of
       SOME smi => smi
-    | NONE => error ("invalid parameter for " ^ smi_name ^ ", choose one of " ^ 
-      alist_to_string choices)
+    | NONE => choice, smi_ty)
     val res = ph $ smi
   in res
 end
