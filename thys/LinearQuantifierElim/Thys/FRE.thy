@@ -163,24 +163,25 @@ next
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> R.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. R.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x dense[OF `nqfree \<phi>` _ _ _ _ `x \<notin> EQ \<phi> xs`] by simp
     then obtain r c cs s d ds
-      where "Less r (c#cs) : set(R.atoms\<^sub>0 \<phi>) \<and> c>0 \<and>
-             Less s (d#ds) : set(R.atoms\<^sub>0 \<phi>) \<and> d<0 \<and>
-            (r - \<langle>cs,xs\<rangle>)/c < (s - \<langle>ds,xs\<rangle>)/d \<and>
-            (\<forall>y. (r - \<langle>cs,xs\<rangle>)/c < y \<and> y < (s - \<langle>ds,xs\<rangle>)/d \<longrightarrow> R.I \<phi> (y#xs))"
+      where "Less r (c # cs) : set (R.atoms\<^sub>0 \<phi>)" "Less s (d # ds) : set (R.atoms\<^sub>0 \<phi>)"
+          "\<And>y. (r - \<langle>cs,xs\<rangle>) / c < y \<Longrightarrow> y < (s - \<langle>ds,xs\<rangle>) / d \<Longrightarrow> R.I \<phi> (y # xs)"
+        and *: "c > 0" "d < 0" "(r - \<langle>cs,xs\<rangle>) / c < (s - \<langle>ds,xs\<rangle>) / d"
       by blast
-    moreover hence "(r - \<langle>cs,xs\<rangle>) / c < eval (between (r/c,(-1/c) *\<^sub>s cs) (s/d,(-1/d) *\<^sub>s ds)) xs \<and> eval (between (r/c,(-1/c) *\<^sub>s cs) (s/d,(-1/d) *\<^sub>s ds)) xs < (s - \<langle>ds,xs\<rangle>) / d"
-      apply(auto simp add: field_simps eval_def iprod_left_add_distrib)
-       apply(rule real_mult_less_iff1[of 2, THEN iffD1]) apply simp
-       apply simp
-       apply(rule real_mult_less_iff1[of "-d", THEN iffD1]) apply simp
-       apply (simp add:ring_distribs add_divide_distrib mult_ac)
-      apply(rule real_mult_less_iff1[of 2, THEN iffD1]) apply simp
-      apply simp
-      apply(rule real_mult_less_iff1[of "c", THEN iffD1]) apply simp
-      apply (simp add:algebra_simps add_divide_distrib diff_divide_distrib)
-      done
+    moreover
+      have "(r - \<langle>cs,xs\<rangle>) / c < eval (between (r / c, (-1 / c) *\<^sub>s cs) (s / d, (-1 / d) *\<^sub>s ds)) xs" (is ?P)
+        and "eval (between (r / c, (-1 / c) *\<^sub>s cs) (s / d, (-1 / d) *\<^sub>s ds)) xs < (s - \<langle>ds,xs\<rangle>) / d" (is ?Q)
+    proof -
+      from * have [simp]: "c * (c * (d * (d * 4))) > 0" by (auto simp add: sign_simps)
+      from * have "c * s + d * \<langle>cs,xs\<rangle> < d * r + c * \<langle>ds,xs\<rangle>"
+        by (simp add: field_simps)
+      with * have "(2 * c * c * d) * (d * r + c * \<langle>ds,xs\<rangle>)
+        < (2 * c * c * d) * (c * s + d * \<langle>cs,xs\<rangle>)"
+        and "(2 * c * d * d) * (c * s + d * \<langle>cs,xs\<rangle>)
+        < (2 * c * d * d) * (d * r + c * \<langle>ds,xs\<rangle>)" by simp_all
+      with * show ?P and ?Q by (auto simp add: field_simps eval_def iprod_left_add_distrib)
+    qed
     ultimately have ?FR
-      by(fastforce simp:FR\<^sub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst `nqfree \<phi>`)
+      by (fastforce simp: FR\<^sub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst `nqfree \<phi>`)
   } ultimately show ?FR by blast
 qed
 
