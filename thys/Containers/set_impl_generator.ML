@@ -1,3 +1,5 @@
+(* Author:  René Thiemann, UIBK *)
+(* This generator was written as part of the IsaFoR/CeTA formalization. *)
 signature SET_IMPL_GENERATOR = 
 sig 
   
@@ -11,7 +13,7 @@ end
 
 structure Set_Impl_Generator : SET_IMPL_GENERATOR = 
 struct
-open Container_Generator_Aux; 
+open Containers_Generator; 
 open Derive_Aux;
 
 val supported_set_impl = [
@@ -22,11 +24,11 @@ val supported_set_impl = [
   ("choose", @{term set_Choose})
   ]
 
-val derive_set_impl = derive_set_map_impl @{const_name set_impl} @{sort set_impl} @{typ set_impl}
+val derive_set_impl = derive_set_map_impl @{const_name set_impl} @{sort set_impl} 
   supported_set_impl
 
 val setup = 
   Derive_Manager.register_derive "set_impl" 
-    ("choose " ^ alist_to_string supported_set_impl ^ " as set_impl for a datatype") derive_set_impl
+    ("choose " ^ alist_to_string supported_set_impl ^ " or any constant of type set_impl for a datatype") derive_set_impl
 
 end

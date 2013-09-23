@@ -2,7 +2,6 @@
    Author:     Andreas Lochbihler, ETH Zurich *)
 (*<*)
 theory Containers_Userguide imports
-  "../Datatype_Order_Generator/Order_Generator"
   Card_Datatype
   List_Proper_Interval
   Containers
@@ -147,17 +146,30 @@ text {*
   Whenever possible, @{term "CEQ('a)"} should provide an executable equality operator.
   Otherwise, membership tests on such sets will raise an exception at run-time.
 
-  The instantiations of @{class ceq} follow the following pattern:
+  For data types, the @{text derive} command can automatically instantiates of @{class ceq},
+  we only have to tell it whether an equality operation should be provided or not (parameter @{text no}).
 *}
 (*<*)end(*>*)
 
-instantiation expr :: ceq begin
-definition "CEQ(expr) = Some op ="
-instance by(intro_classes)(simp add: ceq_expr_def)
+derive (eq) ceq expr
+
+datatype example = Example
+derive (no) ceq example
+
+text {*
+  In the remainder of this subsection, we look at how to manually instantiate a type for @{class ceq}.
+  First, the simple case of a type constructor @{text simple_tycon} without parameters that already is an instance of @{class equal}:
+*}
+typedecl simple_tycon
+arities simple_tycon :: equal
+
+instantiation simple_tycon :: ceq begin
+definition "CEQ(simple_tycon) = Some op ="
+instance by(intro_classes)(simp add: ceq_simple_tycon_def)
 end
 
 text {*
-  For polymorphic types, this is a bit more involved.
+  For polymorphic types, this is a bit more involved, as the next example with @{typ "'a expr'"} illustrates (note that we could have delegated all this to @{text derive}). 
   First, we need an operation that implements equality tests with respect to a given equality operation on the polymorphic type.
   For data types, we can use the relator which the transfer package (method @{text transfer}) requires and the BNF package from @{file "~~/src/HOL/BNF/BNF.thy"} generates automatically.
   As we have used the old datatype package for @{typ "'a expr'"}, we must define it manually:
@@ -214,17 +226,23 @@ text {*
   If you cannot or do not want to implement a linear order on your type, you can default to @{term "None"}.
   In that case, you will not be able to use your type as elements of sets or as keys in maps implemented by search trees.
 
-  If the type is already instantiates @{class linorder} and we wish to use that order also for the search tree, instantiation is again canonical.
-  (For our datatype @{typ "expr"}, we use Thiemann's order generator \cite{Thiemann2012AFP}.)
+  If the type is already instantiates @{class linorder} and we wish to use that order also for the search tree, instantiation is again canonical:
+  For our data type @{typ expr}, derive does everything!
 *}
 (*<*)end(*>*)
 (*<*);(*>*)
 derive linorder expr
+derive (linorder) corder expr
 (*<*);(*>*)
 
-instantiation expr :: corder begin
-definition "CORDER(expr) = Some (op \<le>, op <)"
-instance by(intro_classes)(simp add: corder_expr_def, unfold_locales)
+text {*
+  In general, the pattern for type constructors without parameters looks as follows:
+*}
+arities simple_tycon :: linorder
+
+instantiation simple_tycon :: corder begin
+definition "CORDER(simple_tycon) = Some (op \<le>, op <)"
+instance by(intro_classes)(simp add: corder_simple_tycon_def, unfold_locales)
 end
 
 (*<*)
@@ -238,7 +256,8 @@ lemma less_expr_iff:
 by(case_tac [!] e)(simp_all add: less_expr_def)
 (*>*)
 text {* 
-  For polymorphic types like @{typ "'a expr'"}, we must first define an order that thake the order on the type variable @{typ "'a"} as a parameter.
+  For polymorphic types like @{typ "'a expr'"}, we should not do everything manually:
+  Frist, we must define an order that takes the order on the type variable @{typ "'a"} as a parameter.
   This is necessary to maintain the separation between Isabelle/HOL's type classes (like @{class linorder}) and LC's.
   (Alternatively, you can also use the order generator and the same pattern as for @{typ expr}, but you will then never be able to use unorderable variable names in generated code for sets of expressions, e.g., @{typ "int set expr' set"} -- if you stick to the separation, such things will still be possible.)
 *}
@@ -333,21 +352,19 @@ text {*
   For maps, the choices are @{term "mapping_Assoc_List"} (associative list without duplicates), @{term "mapping_RBT"} (red-black tree), and @{term "mapping_Mapping"} (closures with function update).
   Again, there is also the @{term "mapping_Choose"} heuristics.
   
+  For simple cases, @{text derive} can be used again (even if the type is not a data type).
   Consider, e.g., the following instantiations:
   @{typ "expr set"} uses RBTs, @{typ "(expr, _) mapping"} and @{typ "'a expr' set"} use the heuristics, and @{typ "('a expr', _) mapping"} uses the same implementation as @{typ "('a, _) mapping"}.
 *}
 (*<*)end(*>*)
 
-instantiation expr :: "{set_impl, mapping_impl}" begin
-definition "SET_IMPL(expr) = Phantom(expr) set_RBT"
-definition "MAPPING_IMPL(expr) = Phantom(expr) mapping_Choose"
-instance ..
-end
+derive (rbt) set_impl expr
+derive (choose) mapping_impl expr
+derive (choose) set_impl expr'
 
-instantiation expr' :: (type) set_impl begin
-definition "SET_IMPL('a expr') = Phantom('a expr') set_Choose"
-instance ..
-end
+text {*
+  More complex cases such as taking the implementation preference of a type parameter must be done manually.
+*}
 
 instantiation expr' :: (mapping_impl) mapping_impl begin
 definition
@@ -455,10 +472,7 @@ definition "CENUM(expr) = None"
 instance by(intro_classes)(simp_all add: cEnum_expr_def)
 end
 
-instantiation expr' :: (type) cenum begin
-definition "CENUM('a expr') = None"
-instance by(intro_classes)(simp_all add: cEnum_expr'_def)
-end
+derive (no) cenum expr'
 
 text_raw {* \par\medskip \isastyletext For example, *}
 value [code] "({b. b = True}, {x. x > Lit 0})"
@@ -915,6 +929,10 @@ by(simp add: mapping_impl_unit_def)
 
 value [code] "Mapping.empty :: (unit, int) mapping"
 
+text {*
+  You can also use your new pseudo-constructor with @{text derive} in instantiations, just give its name as option:
+*}
+derive (mapping_Trie) mapping_impl simple_tycon
 
 section {* Changing the configuration *}
 

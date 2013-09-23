@@ -1,0 +1,332 @@
+(*  Title:      Word_Misc.thy
+    Author:     Andreas Lochbihler, ETH Zurich
+*)
+
+header {* More about words *}
+
+theory Word_Misc imports
+  "~~/src/HOL/Word/Word"
+  "Bits_Int"
+begin
+
+text {*
+  The separate code target @{text SML_word} collects setups for the 
+  code generator that PolyML does not provide.
+*}
+
+setup {* Code_Target.extend_target ("SML_word", (Code_ML.target_SML, K I)) *}
+
+code_identifier code_module Word_Misc \<rightharpoonup>
+  (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
+
+lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len0 word" is word_of_int .
+
+lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_integer n)"
+by(simp add: word_of_integer.rep_eq)
+
+lemma shiftr_zero_size: "size x \<le> n \<Longrightarrow> x >> n = (0 :: 'a :: len0 word)"
+by(rule word_eqI)(auto simp add: nth_shiftr dest: test_bit_size)
+
+lemma mask_full [simp]: "mask (len_of TYPE('a :: len)) = (-1 :: 'a word)"
+by(simp add: mask_def word_pow_0)
+
+lemma set_bit_beyond: fixes x :: "'a :: len0 word" shows
+  "size x \<le> n \<Longrightarrow> set_bit x n b = x"
+by(auto intro: word_eqI simp add: test_bit_set_gen word_size)
+
+lemma word_of_int_code [code abstract]:
+  "uint (word_of_int x :: 'a word) = x AND bin_mask (len_of TYPE('a :: len0))"
+by(simp add: uint_word_of_int and_bin_mask_conv_mod)
+
+
+lemma set_bits_K_False [simp]: "set_bits (\<lambda>_. False) = (0 :: 'a :: len0 word)"
+by(rule word_eqI)(simp add: test_bit.eq_norm)
+
+lemma test_bit_1' [simp]: "(1 :: 'a :: len0 word) !! n \<longleftrightarrow> 0 < len_of TYPE('a) \<and> n = 0"
+by(cases n)(simp_all only: one_word_def test_bit_wi bin_nth.simps, simp_all)
+
+lemma mask_0 [simp]: "mask 0 = 0"
+by(simp add: Word.mask_def)
+
+lemma shiftl0 [simp]: "x << 0 = (x :: 'a :: len0 word)"
+by (metis shiftl_rev shiftr_x_0 word_rev_gal)
+
+context fixes f :: "nat \<Rightarrow> bool" begin
+
+fun set_bits_aux :: "'a word \<Rightarrow> nat \<Rightarrow> 'a :: len0 word"
+where
+  "set_bits_aux w 0 = w"
+| "set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n"
+
+lemma set_bits_aux_conv: "set_bits_aux w n = (w << n) OR (set_bits f AND mask n)"
+apply(induct w n rule: set_bits_aux.induct)
+apply(auto 4 3 intro: word_eqI simp add: word_ao_nth nth_shiftl test_bit.eq_norm word_size not_less less_Suc_eq)
+done
+
+corollary set_bits_conv_set_bits_aux:
+  "set_bits f = (set_bits_aux 0 (len_of TYPE('a)) :: 'a :: len word)"
+by(simp add: set_bits_aux_conv)
+
+end
+
+lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len0 word) !! n \<longleftrightarrow> n < len_of TYPE('a) \<and> f n"
+by(auto simp add: word_set_bits_def test_bit_bl word_bl.Abs_inverse word_size)
+
+lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
+by(rule word_eqI)(simp add: word_test_bit_set_bits)
+
+text {*
+  Division on @{typ "'a word"} is unsigned, but Scala and OCaml only have signed division and modulus.
+*}
+definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "sdiv" 70)
+where [code]:
+  "x sdiv y =
+   (let x' = sint x; y' = sint y;
+        negative = (x' < 0) \<noteq> (y' < 0);
+        result = abs x' div abs y'
+    in word_of_int (if negative then -result else result))"
+
+definition word_smod :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "smod" 70)
+where [code]:
+  "x smod y =
+   (let x' = sint x; y' = sint y;
+        negative = (x' < 0);
+        result = abs x' mod abs y'
+    in word_of_int (if negative then -result else result))"
+
+lemma sdiv_smod_id: "(a sdiv b) * b + (a smod b) = a"
+proof -
+  note [simp] = word_sdiv_def word_smod_def
+  have F5: "\<forall>u\<Colon>'a word. - (- u) = u" by (metis word_sint.Rep_inverse' minus_minus wi_hom_neg)
+  have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis add_left_commute add_0_right)
+  have F8: "\<forall>(w\<Colon>'a word) (v\<Colon>int) u\<Colon>int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
+    by (metis word_sint.Rep_inverse wi_hom_syms(1) wi_hom_syms(3))
+  have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
+    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add_commute zmod_zdiv_equality)
+  hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
+  hence "word_of_int (sint a mod - sint b) + word_of_int (- (sint a div - sint b)) * b = a"
+    using F8 by(metis mult_commute mult_minus_left)
+  hence eq: "word_of_int (- (sint a div - sint b)) * b + word_of_int (sint a mod - sint b) = a" using F7 by metis
+
+  show ?thesis
+  proof(cases "sint a < 0")
+    case True note a = this
+    show ?thesis
+    proof(cases "sint b < 0")
+      case True
+      with a show ?thesis
+        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus semiring_div_class.mod_div_equality')
+    next
+      case False
+      from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
+        by (metis div_minus_right mod_minus_right)
+      with a False show ?thesis by simp
+    qed
+  next
+    case False note a = this
+    show ?thesis
+    proof(cases "sint b < 0")
+      case True
+      with a eq show ?thesis by simp
+    next
+      case False with a show ?thesis
+        by simp (metis wi_hom_add wi_hom_mult add_commute mult_commute word_sint.Rep_inverse add_commute zmod_zdiv_equality)
+    qed
+  qed
+qed
+
+lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> n \<ge> m \<and> n < 2 * (m :: nat)"
+by(metis div_less n_not_Suc_n not_leE Suc_1 div_by_0 lessI td_gal_lt One_nat_def Suc_1 comm_semiring_1_class.normalizing_semiring_rules(11) less_nat_zero_code mult_0 nat_mult_commute neq0_conv sdl)
+
+lemma word_div_lt_eq_0: 
+  fixes x :: "'a :: len word" 
+  shows "x < y \<Longrightarrow> x div y = 0"
+by(simp only: word_div_def zero_word_def uint_nat zdiv_int[symmetric] transfer_int_nat_numerals(1) word_less_def div_less)
+
+lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ len_of TYPE('a :: len)"
+by (metis One_nat_def len_gt_0 one_less_numeral_iff one_less_power semiring_norm(76))
+
+lemma unat_p2: "n < len_of TYPE('a :: len) \<Longrightarrow> unat (2 ^ n :: 'a word) = 2 ^ n"
+proof(induct n)
+  case 0 thus ?case by simp
+next
+  case (Suc n)
+  then obtain n' where "len_of TYPE('a) = Suc n'" by(cases "len_of TYPE('a)") simp_all
+  with Suc show ?case by(simp add: unat_word_ariths bintrunc_mod2p int_mod_eq')
+qed
+
+lemma div_half_nat: 
+  fixes x y :: nat 
+  assumes "y \<noteq> 0"
+  shows "(x div y, x mod y) = (let q = 2 * (x div 2 div y); r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
+proof -
+  let ?q = "2 * (x div 2 div y)"
+  have q: "?q = x div y - x div y mod 2"
+    by(metis div_mult2_eq nat_mult_commute mult_div_cancel)
+  let ?r = "x - ?q * y"
+  have r: "?r = x mod y + x div y mod 2 * y" 
+    by(simp add: q diff_mult_distrib div_mod_equality')(metis diff_diff_cancel mod_less_eq_dividend mod_mult2_eq nat_add_commute nat_mult_commute)
+  
+  show ?thesis
+  proof(cases "y \<le> x - ?q * y")
+    case True
+    hence "x div y mod 2 \<noteq> 0" unfolding r
+      by(metis Divides.mod_div_equality' True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) mult_div_cancel q)
+    hence "x div y = ?q + 1" unfolding q
+      by(metis le_add_diff_inverse mod_2_not_eq_zero_eq_one_nat mod_less_eq_dividend nat_add_commute)
+    moreover hence "x mod y = ?r - y"
+      by simp(metis Divides.mod_div_equality' diff_commute diff_diff_left mult_Suc)
+    ultimately show ?thesis using True by(simp add: Let_def)
+  next
+    case False
+    hence "x div y mod 2 = 0" unfolding r
+      by(simp add: not_le)(metis Nat.add_0_right assms div_less div_mult_self2 mod_div_trivial nat_mult_commute)
+    hence "x div y = ?q" unfolding q by simp
+    moreover hence "x mod y = ?r" by (metis mod_div_equality') 
+    ultimately show ?thesis using False by(simp add: Let_def)
+  qed
+qed
+
+lemma div_half_word:
+  fixes x y :: "'a :: len word" 
+  assumes "y \<noteq> 0"
+  shows "(x div y, x mod y) = (let q = (x >> 1) div y << 1; r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
+proof -
+  obtain n where n: "x = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases x)
+  obtain m where m: "y = of_nat m" "m < 2 ^ len_of TYPE('a)" by(cases y)
+  let ?q = "(x >> 1) div y << 1"
+  let ?q' = "2 * (n div 2 div m)"
+  have "n div 2 div m < 2 ^ len_of TYPE('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
+  hence q: "?q = of_nat ?q'" using n m
+    by(simp add: shiftr_def shiftr1_def bin_rest_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def)(simp only: int_numeral[symmetric] zdiv_int[symmetric] word_of_nat[symmetric] zdiff_int zmult_int unat_of_nat mod_less)
+
+  from assms have "m \<noteq> 0" using m by -(rule notI, simp)
+  
+  from n have "2 * (n div 2 div m) < 2 ^ len_of TYPE('a)"
+    by(metis mult_commute div_mult2_eq mult_div_cancel less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
+  moreover
+  have "2 * (n div 2 div m) * m < 2 ^ len_of TYPE('a)" using n unfolding div_mult2_eq[symmetric]
+    by(subst (2) mult_commute)(simp add: div_mod_equality' diff_mult_distrib mult_div_cancel div_mult2_eq)
+  moreover have "2 * (n div 2 div m) * m \<le> n"
+    by(metis div_mult2_eq div_mult_le nat_mult_assoc nat_mult_commute)
+  ultimately
+  have r: "x - ?q * y = of_nat (n - ?q' * m)" 
+    and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)" 
+    using n m unfolding q
+    by(simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat zmult_int word_of_nat[symmetric] zdiff_int word_le_nat_alt)
+  thus ?thesis using n m div_half_nat[OF `m \<noteq> 0`, of n] unfolding q
+    by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: split_if split: split_if_asm)
+qed
+
+
+lemma word_div_eq_1_iff: "n div m = 1 \<longleftrightarrow> n \<ge> m \<and> unat n < 2 * unat (m :: 'a :: len word)"
+apply(simp only: word_arith_nat_defs word_le_nat_alt nat_div_eq_Suc_0_iff[symmetric])
+apply(rule word_unat.Abs_inject)
+ apply(simp only: unat_div[symmetric] word_unat.Rep)
+apply(simp add: unats_def Suc_0_lt_2p_len_of)
+done
+
+text {* 
+  This algorithm implements unsigned division in terms of signed division.
+  Taken from Hacker's Delight.
+*}
+
+lemma divmod_via_sdivmod: 
+  fixes x y :: "'a :: len word" 
+  assumes "y \<noteq> 0"
+  shows
+  "(x div y, x mod y) = 
+  (if 1 << (len_of TYPE('a) - 1) \<le> y then if x < y then (0, x) else (1, x - y)
+   else let q = ((x >> 1) sdiv y) << 1;
+            r = x - q * y
+        in if r \<ge> y then (q + 1, r - y) else (q, r))"
+proof(cases "1 << (len_of TYPE('a) - 1) \<le> y")
+  case True
+  note y = this
+  show ?thesis
+  proof(cases "x < y")
+    case True
+    hence "x mod y = x"
+      by(cases x)(cases y, simp add: word_mod_def uint_nat unat_of_nat zmod_int[symmetric] word_of_nat[symmetric] mod_less word_less_nat_alt)
+    thus ?thesis using True y by(simp add: word_div_lt_eq_0)
+  next
+    case False
+    obtain n where n: "y = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases y)
+    have "unat x < 2 ^ len_of TYPE('a)" by(rule unat_lt2p)
+    also have "\<dots> = 2 * 2 ^ (len_of TYPE('a) - 1)"
+      by(metis Suc_pred len_gt_0 power_Suc One_nat_def)
+    also have "\<dots> \<le> 2 * n" using y n
+      by(simp add: word_le_nat_alt unat_of_nat unat_p2)
+    finally have div: "x div of_nat n = 1" using False n
+      by(simp add: word_div_eq_1_iff not_less word_le_nat_alt unat_of_nat)
+    moreover have "x mod y = x - x div y * y"
+      by (metis add_diff_cancel2 word_mod_div_equality)
+    with div n have "x mod y = x - y" by simp
+    ultimately show ?thesis using False y n by simp
+  qed
+next
+  case False
+  note y = this
+  obtain n where n: "x = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases x)
+  hence "int n div 2 + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)"
+    by(cases "len_of TYPE('a)")(simp_all, simp only: int_numeral[symmetric] zdiv_int[symmetric] zpower_int)
+  with y n have "sint (x >> 1) = uint (x >> 1)"
+    by(simp add: sint_uint sbintrunc_mod2p shiftr_div_2n)(simp add: int_mod_eq' uint_nat unat_of_nat)
+  moreover have "uint y + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)" using y
+    by(cases "len_of TYPE('a)")(simp_all add: not_le, metis lessI word_2p_lem word_less_def word_size)
+  hence "sint y = uint y" by(simp add: sint_uint sbintrunc_mod2p int_mod_eq')
+  ultimately show ?thesis using y
+    by(subst div_half_word[OF assms])(simp add: word_sdiv_def uint_div[symmetric])
+qed
+
+lemma word_of_int_via_signed:
+  fixes mask
+  assumes mask_def: "mask = bin_mask (len_of TYPE('a))"
+  and shift_def: "shift = 1 << len_of TYPE('a)"
+  and index_def: "index = len_of TYPE('a) - 1"
+  and overflow_def:"overflow = 1 << (len_of TYPE('a) - 1)"
+  and least_def: "least = - overflow"
+  shows
+  "(word_of_int i :: 'a :: len word) = 
+   (let i' = i AND mask
+    in if i' !! index then
+         if i' - shift < least \<or> overflow \<le> i' - shift then arbitrary1 i' else word_of_int (i' - shift)
+       else if i' < least \<or> overflow \<le> i' then arbitrary2 i' else word_of_int i')"
+proof -
+  def i' \<equiv> "i AND mask"
+  have "shift = mask + 1" unfolding assms by(simp add: bin_mask_p1_conv_shift)
+  hence "i' < shift" by(simp add: mask_def i'_def int_and_le)
+  show ?thesis
+  proof(cases "i' !! index")
+    case True
+    hence unf: "i' = overflow OR i'" unfolding assms i'_def
+      by(auto intro!: bin_eqI simp add: bin_nth_ops)
+    have "overflow \<le> i'" by(subst unf)(rule le_int_or, simp add: bin_sign_and assms i'_def)
+    hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
+      by(cases "len_of TYPE('a)")(simp_all add: not_less Bit_def)
+    moreover
+    have "overflow \<le> i' - shift \<longleftrightarrow> False" using `i' < shift` unfolding assms
+      by(cases "len_of TYPE('a)")(auto simp add: not_le Bit_def elim: less_le_trans)
+    moreover
+    have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using `i' < shift`
+      by(auto intro!: word_eqI simp add: i'_def shift_def mask_def bin_nth_ops bin_nth_minus_p2 bin_sign_and)
+    ultimately show ?thesis using True by(simp add: Let_def i'_def)
+  next
+    case False
+    hence "i' = i AND bin_mask (len_of TYPE('a) - 1)" unfolding assms i'_def
+      by(clarsimp simp add: i'_def bin_nth_ops intro!: bin_eqI)(cases "len_of TYPE('a)", auto simp add: less_Suc_eq)
+    also have "\<dots> \<le> bin_mask (len_of TYPE('a) - 1)" by(rule int_and_le) simp
+    also have "\<dots> < overflow" unfolding overflow_def
+      by(simp add: bin_mask_p1_conv_shift[symmetric])
+    also
+    have "least \<le> 0" unfolding least_def overflow_def by simp
+    have "0 \<le> i'" by(simp add: i'_def mask_def bin_mask_ge0)
+    hence "least \<le> i'" using `least \<le> 0` by simp
+    moreover
+    have "word_of_int i' = (word_of_int i :: 'a word)"
+      by(rule word_eqI)(auto simp add: i'_def bin_nth_ops mask_def)
+    ultimately show ?thesis using False by(simp add: Let_def i'_def)
+  qed
+qed
+
+end

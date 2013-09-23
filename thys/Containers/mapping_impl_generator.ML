@@ -1,3 +1,6 @@
+(* Author:  René Thiemann, UIBK *)
+(* This generator was written as part of the IsaFoR/CeTA formalization. *)
+
 signature MAPPING_IMPL_GENERATOR = 
 sig 
   
@@ -11,7 +14,7 @@ end
 
 structure Mapping_Impl_Generator : MAPPING_IMPL_GENERATOR = 
 struct
-open Container_Generator_Aux; 
+open Containers_Generator; 
 open Derive_Aux;
 
 val supported_mapping_impl = [
@@ -21,11 +24,11 @@ val supported_mapping_impl = [
   ("choose", @{term mapping_Choose})
   ] 
 
-val derive_mapping_impl = derive_set_map_impl @{const_name mapping_impl} @{sort mapping_impl} @{typ mapping_impl}
+val derive_mapping_impl = derive_set_map_impl @{const_name mapping_impl} @{sort mapping_impl}
   supported_mapping_impl
 
 val setup = 
   Derive_Manager.register_derive "mapping_impl" 
-    ("choose " ^ alist_to_string supported_mapping_impl ^ " as mapping_impl for a datatype") derive_mapping_impl
+    ("choose " ^ alist_to_string supported_mapping_impl ^ " or any constant of type mapping_impl for a datatype") derive_mapping_impl
 
 end

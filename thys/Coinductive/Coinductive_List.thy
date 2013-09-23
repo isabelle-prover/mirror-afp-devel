@@ -2595,6 +2595,12 @@ lemma llist_all2_ltlI:
   "llist_all2 P xs ys \<Longrightarrow> llist_all2 P (ltl xs) (ltl ys)"
 by(cases xs)(auto simp add: llist_all2_LCons1)
 
+lemma llist_all2_expand:
+  "\<lbrakk> xs = LNil \<longleftrightarrow> ys = LNil; 
+     \<lbrakk> xs \<noteq> LNil; ys \<noteq> LNil \<rbrakk> \<Longrightarrow> P (lhd xs) (lhd ys) \<and> llist_all2 P (ltl xs) (ltl ys) \<rbrakk>
+   \<Longrightarrow> llist_all2 P xs ys"
+by(cases xs)(auto simp add: neq_LNil_conv)
+
 lemma llist_all2_llength_ltakeWhileD:
   assumes major: "llist_all2 P xs ys"
   and Q: "\<And>x y. P x y \<Longrightarrow> Q1 x \<longleftrightarrow> Q2 y"

@@ -1,0 +1,19 @@
+chapter AFP
+
+session "Native_Word" = "HOL-Word" +
+  theories [document=false]
+    "~~/src/HOL/Library/Code_Target_Int"
+
+  theories
+    Bits_Int
+    Bits_Integer
+    Code_Target_Bits_Int
+    Word_Misc
+    Uint32
+    Uint16_Test
+    Uint8_Test
+    Uint_Userguide
+
+  files
+    "./document/root.tex"
+    "./document/root.bib"

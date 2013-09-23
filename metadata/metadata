@@ -538,7 +538,10 @@ abstract =
 depends-on = Datatype_Order_Generator
 extra-history = 
   Change history:
-  [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)
+  [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
+  [2013-09-20]:
+        provide generators for canonical type class instantiations
+        (revision 159f4401f4a8 by Ren&eacute; Thiemann)
 
 [FileRefinement]
 title = File Refinement
@@ -643,6 +646,9 @@ extra-history =
         construct codatatypes with the BNF package and adjust the definitions and proofs, 
         setup for lifting and transfer packages
         (revision f593eda5b2c0)<br>
+  [2013-09-20]:
+        stream theory uses type and operations from HOL/BNF/Examples/Stream
+        (revision 692809b2b262)<br>
 
 [Stream-Fusion]
 title = Stream Fusion
@@ -1511,3 +1517,10 @@ author = Lei Yu <mailto:ly271@cam.ac.uk>
 date = 2013-07-27
 topic = Computer Science/Data Structures
 abstract = This development provides a formal model of IEEE-754 floating-point arithmetic. This formalization, including formal specification of the standard and proofs of important properties of floating-point arithmetic, forms the foundation for verifying programs with floating-point computation. There is also a code generation setup for floats so that we can execute programs using this formalization in functional programming languages.
+
+[Native_Word]
+title = Native Word
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+date = 2013-09-17
+topic = Computer Science/Data Structures
+abstract = This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.

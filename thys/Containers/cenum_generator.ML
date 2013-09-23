@@ -1,3 +1,6 @@
+(* Author:  René Thiemann, UIBK *)
+(* This generator was written as part of the IsaFoR/CeTA formalization. *)
+
 signature CENUM_GENERATOR = 
 sig 
   
@@ -11,7 +14,7 @@ end
 
 structure Cenum_Generator : CENUM_GENERATOR = 
 struct
-open Container_Generator_Aux;
+open Containers_Generator;
 
 fun mk_none_cenum ty =
   let 

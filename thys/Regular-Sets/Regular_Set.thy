@@ -72,6 +72,26 @@ by auto
 lemma conc_subset_lists: "A \<subseteq> lists S \<Longrightarrow> B \<subseteq> lists S \<Longrightarrow> A @@ B \<subseteq> lists S"
 by(fastforce simp: conc_def in_lists_conv_set)
 
+lemma Nil_in_conc[simp]: "[] \<in> A @@ B \<longleftrightarrow> [] \<in> A \<and> [] \<in> B"
+by (metis append_is_Nil_conv concE concI)
+
+lemma concI_if_Nil1: "[] \<in> A \<Longrightarrow> xs : B \<Longrightarrow> xs \<in> A @@ B"
+by (metis append_Nil concI)
+
+lemma conc_Diff_if_Nil1: "[] \<in> A \<Longrightarrow> A @@ B = (A - {[]}) @@ B \<union> B"
+by (fastforce elim: concI_if_Nil1)
+
+lemma concI_if_Nil2: "[] \<in> B \<Longrightarrow> xs : A \<Longrightarrow> xs \<in> A @@ B"
+by (metis append_Nil2 concI)
+
+lemma conc_Diff_if_Nil2: "[] \<in> B \<Longrightarrow> A @@ B = A @@ (B - {[]}) \<union> A"
+by (fastforce elim: concI_if_Nil2)
+
+lemma singleton_in_conc:
+  "[x] : A @@ B \<longleftrightarrow> [x] : A \<and> [] : B \<or> [] : A \<and> [x] : B"
+by (fastforce simp: Cons_eq_append_conv append_eq_Cons_conv
+       conc_Diff_if_Nil1 conc_Diff_if_Nil2)
+
 
 subsection{* @{term "A ^^ n"} *}
 
