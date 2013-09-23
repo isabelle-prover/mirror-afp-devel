@@ -82,8 +82,6 @@ lemma llist_unfold_code [code]:
    else LCons (LHD b) (llist_unfold IS_LNIL LHD LTL (LTL b)))"
 by(rule llist.expand) simp_all
 
-declare llist.sel [code]
-
 text {* Coinduction rules *}
 
 lemma llist_fun_coinduct_invar [consumes 1, case_names LNil LCons]:
