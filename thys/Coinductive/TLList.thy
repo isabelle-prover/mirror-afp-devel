@@ -66,11 +66,6 @@ setup {*
   Code.add_case @{thm tllist_case_cert}
 *}
 
-setup {*
-  Nitpick.register_codatatype @{typ "('a, 'b) tllist"} @{const_name tllist_case}
-    (map dest_Const [@{term TNil}, @{term TCons}])
-*}
-
 text {* Coinduction rules *}
 
 lemma tllist_fun_coinduct_invar [consumes 1, case_names TNil TCons]:
@@ -215,8 +210,6 @@ by(auto simp add: tllist_unfold)
 lemma TNil_eq_tllist_unfold [simp]:
   "TNil b = tllist_unfold IS_TNIL TNIL THD TTL a \<longleftrightarrow> IS_TNIL a \<and> b = TNIL a"
 by(auto simp add: tllist_unfold)
-
-declare tllist.map [nitpick_simp]
 
 lemma is_TNil_tmap [simp]: "is_TNil (tmap f g xs) \<longleftrightarrow> is_TNil xs"
 by(cases xs) simp_all

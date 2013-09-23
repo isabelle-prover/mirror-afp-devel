@@ -208,17 +208,6 @@ proof -
 qed
 
 
-text {* Nitpick setup *}
-
-setup {*
-  Nitpick.register_codatatype @{typ "'a llist"} @{const_name llist_case}
-    (map dest_Const [@{term LNil}, @{term LCons}])
-*}
-
-declare
-  llist.map [nitpick_simp]
-  llist.sel [nitpick_simp]
-
 text {* Setup for quickcheck *}
 
 notation fcomp (infixl "o>" 60)

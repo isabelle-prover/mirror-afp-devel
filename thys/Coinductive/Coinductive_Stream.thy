@@ -118,12 +118,6 @@ text {* induction rules *}
 
 theorems stream_set_induct = sset_induct1
 
-text {* Nitpick setup *}
-
-declare
-  llist.map [nitpick_simp]
-  llist.sel [nitpick_simp]
-
 subsection {* Lemmas about operations from @{theory Stream} *}
 
 lemma szip_iterates:
@@ -350,8 +344,6 @@ done
 lemma stream_all2_transfer [transfer_rule]:
   "(op = ===> pcr_stream op = ===> pcr_stream op = ===> op =) llist_all2 stream_all2"
 by(simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
-
-declare stream.rel_inject [nitpick_simp]
 
 lemma stream_all2_coinduct:
   assumes "X xs ys"
