@@ -27,10 +27,6 @@ text {* Code generator setup *}
 
 code_datatype SCons
 
-lemma stream_case_code [code]:
-  "stream_case d (SCons M N) = d M N"
-by simp_all
-
 lemma stream_case_cert:
   assumes "CASE \<equiv> stream_case d"
   shows "CASE (SCons M N) \<equiv> d M N"

@@ -46,11 +46,6 @@ text {* Code generator setup *}
 
 code_datatype LNil LCons
 
-lemma llist_case_code [code]:
-  "llist_case c d LNil = c"
-  "llist_case c d (LCons M N) = d M N"
-by simp_all
-
 lemma llist_case_cert:
   assumes "CASE \<equiv> llist_case c d"
   shows "(CASE LNil \<equiv> c) &&& (CASE (LCons M N) \<equiv> d M N)"
