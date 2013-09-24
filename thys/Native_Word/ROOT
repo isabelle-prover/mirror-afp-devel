@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Native_Word" = "HOL-Word" +
+session "Native_Word" (AFP) = "HOL-Word" +
   theories [document=false]
     "~~/src/HOL/Library/Code_Target_Int"
 
