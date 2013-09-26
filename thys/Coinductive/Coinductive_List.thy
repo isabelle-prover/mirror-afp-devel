@@ -4444,32 +4444,6 @@ by(simp add: llist_all2_conv_lzip)
 lemma (in monoid_add) llistsum_infllist: "llistsum (inf_llist f) = 0"
 by simp
 
-subsection {* Setup for Lifting/Transfer *}
-
-lemma bi_total_conv_left_right: "bi_total R \<longleftrightarrow> left_total R \<and> right_total R"
-by(simp add: left_total_def right_total_def bi_total_def)
-
-lemma bi_unique_conv_left_right: "bi_unique R \<longleftrightarrow> left_unique R \<and> right_unique R"
-by(auto simp add: left_unique_def right_unique_def bi_unique_def)
-
-lemma bi_uniqueDr: "\<lbrakk> bi_unique A; A x y; A x z \<rbrakk> \<Longrightarrow> y = z"
-by(simp add: bi_unique_def)
-
-lemma bi_uniqueDl: "\<lbrakk> bi_unique A; A x y; A z y \<rbrakk> \<Longrightarrow> x = z"
-by(simp add: bi_unique_def)
-
-lemma right_uniqueI: "(\<And>x y z. \<lbrakk> A x y; A x z \<rbrakk> \<Longrightarrow> y = z) \<Longrightarrow> right_unique A"
-unfolding right_unique_def by blast
-
-lemma right_uniqueD: "\<lbrakk> right_unique A; A x y; A x z \<rbrakk> \<Longrightarrow> y = z"
-unfolding right_unique_def by blast
-
-lemma left_uniqueI: "(\<And>x y z. \<lbrakk> A x z; A y z \<rbrakk> \<Longrightarrow> x = y) \<Longrightarrow> left_unique A"
-unfolding left_unique_def by blast
-
-lemma left_uniqueD: "\<lbrakk> left_unique A; A x z; A y z \<rbrakk> \<Longrightarrow> x = y"
-unfolding left_unique_def by blast
-
 subsubsection {* Relator and predicator properties *}
 
 definition llist_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool"
