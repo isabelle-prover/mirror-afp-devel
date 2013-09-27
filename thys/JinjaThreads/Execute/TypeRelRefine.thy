@@ -210,13 +210,13 @@ by(auto simp add: sees_field_program sees_field_i_i_i_o_o_i_def intro: pred_eqI)
 lemma field_program [code]:
   "field (program Pi) C F = 
   (case Mapping.lookup (fst (snd (snd (snd (impl_of Pi))))) C of 
-    None \<Rightarrow> Predicate.not_unique bot
+    None \<Rightarrow> Code.abort (STR ''not_unique'') (\<lambda>_. Predicate.the bot)
   | Some m \<Rightarrow> 
     (case Mapping.lookup m F of
-       None \<Rightarrow> Predicate.not_unique bot
+       None \<Rightarrow> Code.abort (STR ''not_unique'') (\<lambda>_. Predicate.the bot)
      | Some (D', T, fd) \<Rightarrow> (D', T, fd)))"
-unfolding field_def not_unique_def
-by(cases Pi)(fastforce simp add: tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
+unfolding field_def
+by(cases Pi)(fastforce simp add: Predicate.the_def tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
 subsection {* Implementation for precomputing mappings *}
 

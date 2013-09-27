@@ -1254,7 +1254,7 @@ lemma the_only2_code [code]:
 unfolding singleton2_def the_only2_def by simp_all
 
 lemma the2_eq [code]:
-  "the2 A = singleton2 (\<lambda>x. Predicate.not_unique A) A"
+  "the2 A = singleton2 (\<lambda>x. Code.abort (STR ''not_unique'') (\<lambda>_. the2 A)) A"
 unfolding the2_def singleton2_def by(rule the_eq)
 
 end
