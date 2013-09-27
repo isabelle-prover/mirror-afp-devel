@@ -13,6 +13,8 @@ begin
 
 subsection {* Rules for the Quotient package *}
 
+declare llist_all2_eq[id_simps]
+
 lemma transpD: "\<lbrakk> transp R; R a b; R b c \<rbrakk> \<Longrightarrow> R a c"
   by (erule transpE) blast
 

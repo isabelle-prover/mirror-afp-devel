@@ -14,6 +14,12 @@ begin
 
 subsection {* Rules for the Quotient package *}
 
+lemma tmap_id_id [id_simps]:
+  "tmap id id = id"
+by(simp add: fun_eq_iff tllist.map_id)
+
+declare tllist_all2_eq[id_simps]
+
 lemma sum_case_preserve [quot_preserve]:
   assumes q1: "Quotient3 R1 Abs1 Rep1"
   and q2: "Quotient3 R2 Abs2 Rep2"

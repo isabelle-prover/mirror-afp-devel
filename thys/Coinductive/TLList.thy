@@ -220,10 +220,6 @@ by(cases xs) simp_all
 lemma ttl_tmap [simp]: "ttl (tmap f g xs) = tmap f g (ttl xs)"
 by(cases xs) simp_all
 
-lemma tmap_id_id [id_simps]:
-  "tmap id id = id"
-by(simp add: fun_eq_iff tllist.map_id)
-
 lemma tmap_eq_TNil_conv:
   "tmap f g xs = TNil y \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
 by(cases xs) simp_all
@@ -844,7 +840,7 @@ lemma tllist_all2_tnthD2:
   \<Longrightarrow> P (tnth xs n) (tnth ys n)"
 by(simp add: tllist_all2_conv_all_tnth)
 
-lemmas tllist_all2_eq [id_simps] = tllist.rel_eq
+lemmas tllist_all2_eq = tllist.rel_eq
 
 lemma tmap_eq_tmap_conv_tllist_all2:
   "tmap f g xs = tmap f' g' ys \<longleftrightarrow>

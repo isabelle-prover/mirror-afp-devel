@@ -2652,7 +2652,7 @@ apply(drule llist_all2_lnthD)
 apply(erule (2) transpD)
 done
 
-lemmas llist_all2_eq [simp, id_simps] = llist.rel_eq
+lemmas llist_all2_eq [simp] = llist.rel_eq
 
 subsection {* The last element @{term "llast"} *}
 
