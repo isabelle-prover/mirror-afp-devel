@@ -182,25 +182,25 @@ fun atomify_ty ctxt ty t =
     then mk_atom_fset_ty ty t
   else if is_atom_list ctxt ty
     then mk_atom_list_ty ty t
-  else raise TERM ("atomify", [t])
+  else raise TERM ("atomify: term is not an atom, set or list of atoms", [t])
 
 fun setify_ty ctxt ty t =
   if is_atom ctxt ty
-    then  HOLogic.mk_set @{typ atom} [mk_atom_ty ty t]
+    then HOLogic.mk_set @{typ atom} [mk_atom_ty ty t]
   else if is_atom_set ctxt ty
     then mk_atom_set_ty ty t
   else if is_atom_fset ctxt ty
     then @{term "fset :: atom fset => atom set"} $ mk_atom_fset_ty ty t
   else if is_atom_list ctxt ty
     then @{term "set :: atom list => atom set"} $ mk_atom_list_ty ty t
-  else raise TERM ("setify", [t])
+  else raise TERM ("setify: term is not an atom, set or list of atoms", [t])
 
 fun listify_ty ctxt ty t =
   if is_atom ctxt ty
     then HOLogic.mk_list @{typ atom} [mk_atom_ty ty t]
   else if is_atom_list ctxt ty
     then mk_atom_list_ty ty t
-  else raise TERM ("listify", [t])
+  else raise TERM ("listify: term is not an atom or list of atoms", [t])
 
 fun atomify ctxt t = atomify_ty ctxt (fastype_of t) t
 fun setify ctxt t  = setify_ty ctxt (fastype_of t) t
@@ -491,12 +491,11 @@ fun transform_prem2 ctxt names thm =
   map_thm ctxt (split_conj2 names) (etac conjunct2 1) thm
 
 
-(* transformes a theorem into one of the object logic *)
+(* transforms a theorem into one of the object logic *)
 val atomize = Conv.fconv_rule Object_Logic.atomize o forall_intr_vars;
 fun atomize_rule i thm =
   Conv.fconv_rule (Conv.concl_conv i Object_Logic.atomize) thm
 fun atomize_concl thm = atomize_rule (length (prems_of thm)) thm
-
 
 
 (* applies a tactic to a formula composed of conjunctions *)
@@ -510,7 +509,6 @@ fun conj_tac tac i =
   in
     SUBGOAL select i
   end
-
 
 end (* structure *)
 

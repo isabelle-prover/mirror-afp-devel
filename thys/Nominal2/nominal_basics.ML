@@ -1,5 +1,6 @@
-(*  Title:      nominal_basic.ML
+(*  Title:      nominal_basics.ML
     Author:     Christian Urban
+    Author:     Tjark Weber
 
   Basic functions for nominal.
 *)
@@ -23,9 +24,9 @@ sig
   val map4: ('a -> 'b -> 'c -> 'd -> 'e) -> 'a list -> 'b list -> 'c list -> 'd list -> 'e list
   val split_filter: ('a -> bool) -> 'a list -> 'a list * 'a list
   val fold_left: ('a * 'a -> 'a) -> 'a list -> 'a -> 'a
-  
+
   val is_true: term -> bool
- 
+
   val dest_listT: typ -> typ
   val dest_fsetT: typ -> typ
 
@@ -49,6 +50,10 @@ sig
   val mk_perm: term -> term -> term
   val dest_perm: term -> term * term
 
+  (* functions to deal with constants in local contexts *)
+  val long_name: Proof.context -> string -> string
+  val is_fixed: Proof.context -> term -> bool
+  val fixed_nonfixed_args: Proof.context -> term -> term * term list
 end
 
 
@@ -126,17 +131,14 @@ fun fold_left f [] z = z
   | fold_left f [x] z = x
   | fold_left f (x :: y :: xs) z = fold_left f (f (x, y) :: xs) z
 
-
-
 fun is_true @{term "Trueprop True"} = true
-  | is_true _ = false 
+  | is_true _ = false
 
 fun dest_listT (Type (@{type_name list}, [T])) = T
   | dest_listT T = raise TYPE ("dest_listT: list type expected", [T], [])
 
 fun dest_fsetT (Type (@{type_name fset}, [T])) = T
-  | dest_fsetT T = raise TYPE ("dest_fsetT: fset type expected", [T], []);
-
+  | dest_fsetT T = raise TYPE ("dest_fsetT: fset type expected", [T], [])
 
 fun mk_id trm = HOLogic.id_const (fastype_of trm) $ trm
 
@@ -146,7 +148,7 @@ fun mk_All (a, T) t =  HOLogic.all_const T $ Abs (a, T, t)
 
 fun mk_exists (a, T) t =  HOLogic.exists_const T $ Abs (a, T, t)
 
-fun sum_case_const ty1 ty2 ty3 = 
+fun sum_case_const ty1 ty2 ty3 =
   Const (@{const_name sum_case}, [ty1 --> ty3, ty2 --> ty3, Type (@{type_name sum}, [ty1, ty2])] ---> ty3)
 
 fun mk_sum_case trm1 trm2 =
@@ -155,12 +157,10 @@ fun mk_sum_case trm1 trm2 =
     val ty2 = domain_type (fastype_of trm2)
   in
     sum_case_const ty1 ty2 ty3 $ trm1 $ trm2
-  end 
+  end
 
-
-fun mk_equiv r = r RS @{thm eq_reflection};
-fun safe_mk_equiv r = mk_equiv r handle Thm.THM _ => r;
-
+fun mk_equiv r = r RS @{thm eq_reflection}
+fun safe_mk_equiv r = mk_equiv r handle Thm.THM _ => r
 
 fun mk_minus p = @{term "uminus::perm => perm"} $ p
 
@@ -172,7 +172,53 @@ fun mk_perm_ty ty p trm = perm_const ty $ p $ trm
 fun mk_perm p trm = mk_perm_ty (fastype_of trm) p trm
 
 fun dest_perm (Const (@{const_name "permute"}, _) $ p $ t) = (p, t)
-  | dest_perm t = raise TERM ("dest_perm", [t]);
+  | dest_perm t = raise TERM ("dest_perm", [t])
+
+
+(** functions to deal with constants in local contexts **)
+
+(* returns the fully qualified name of a constant *)
+fun long_name ctxt name =
+  case head_of (Syntax.read_term ctxt name) of
+    Const (s, _) => s
+  | _ => error ("Undeclared constant: " ^ quote name)
+
+(* returns true iff the argument term is a fixed Free *)
+fun is_fixed_Free ctxt (Free (s, _)) = Variable.is_fixed ctxt s
+  | is_fixed_Free _ _ = false
+
+(* returns true iff c is a constant or fixed Free applied to
+   fixed parameters *)
+fun is_fixed ctxt c =
+  let
+    val (c, args) = strip_comb c
+  in
+    (is_Const c orelse is_fixed_Free ctxt c)
+      andalso List.all (is_fixed_Free ctxt) args
+  end
+
+(* splits a list into the longest prefix containing only elements
+   that satisfy p, and the rest of the list *)
+fun chop_while p =
+  let
+    fun chop_while_aux acc [] =
+      (rev acc, [])
+      | chop_while_aux acc (x::xs) =
+      if p x then chop_while_aux (x::acc) xs else (rev acc, x::xs)
+  in
+    chop_while_aux []
+  end
+
+(* takes a combination "c $ fixed1 $ ... $ fixedN $ not-fixed $ ..."
+   to the pair ("c $ fixed1 $ ... $ fixedN", ["not-fixed", ...]). *)
+fun fixed_nonfixed_args ctxt c_args =
+  let
+    val (c, args)     = strip_comb c_args
+    val (frees, args) = chop_while (is_fixed_Free ctxt) args
+    val c_frees       = list_comb (c, frees)
+  in
+    (c_frees, args)
+  end
 
 end (* structure *)
 

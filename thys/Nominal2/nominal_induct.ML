@@ -173,7 +173,7 @@ val rule_spec = Scan.lift (Args.$$$ "rule" -- Args.colon) |-- Attrib.thms;
 in
 
 val nominal_induct_method =
-  Scan.lift (Args.mode Induct.no_simpN) --
+  Scan.lift (Args.mode Induct.no_simpN) -- 
     (Parse.and_list' (Scan.repeat (unless_more_args def_inst)) --
       avoiding -- fixing -- rule_spec) >>
   (fn (no_simp, (((x, y), z), w)) => fn ctxt =>

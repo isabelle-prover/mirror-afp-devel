@@ -212,7 +212,7 @@ lemma Rep_perm_swap:
 unfolding swap_def
 apply (rule Abs_perm_inverse)
 apply (rule permI)
-apply (auto simp add: bij_def inj_on_def surj_def)[1]
+apply (auto simp: bij_def inj_on_def surj_def)[1]
 apply (rule MOST_rev_mp [OF MOST_neq(1) [of a]])
 apply (rule MOST_rev_mp [OF MOST_neq(1) [of b]])
 apply (simp)
@@ -254,7 +254,7 @@ lemma swap_triple:
   shows "(a \<rightleftharpoons> c) + (b \<rightleftharpoons> c) + (a \<rightleftharpoons> c) = (a \<rightleftharpoons> b)"
   using assms
   by (rule_tac Rep_perm_ext)
-     (auto simp add: Rep_perm_simps fun_eq_iff)
+     (auto simp: Rep_perm_simps fun_eq_iff)
 
 
 section {* Permutation Types *}
@@ -354,7 +354,6 @@ lemma perm_eq_iff:
   unfolding permute_atom_def
   by (metis Rep_perm_ext ext)
 
-
 subsection {* Permutations for permutations *}
 
 instantiation perm :: pt
@@ -440,13 +439,13 @@ definition
 
 instance
 apply default
-apply (auto simp add: permute_set_def)
+apply (auto simp: permute_set_def)
 done
 
 end
 
 lemma permute_set_eq:
-  shows "p \<bullet> X = {x. - p \<bullet> x \<in> X}"
+ shows "p \<bullet> X = {x. - p \<bullet> x \<in> X}"
 unfolding permute_set_def
 by (auto) (metis permute_minus_cancel(1))
 
@@ -468,25 +467,25 @@ lemma swap_set_not_in:
   assumes a: "a \<notin> S" "b \<notin> S"
   shows "(a \<rightleftharpoons> b) \<bullet> S = S"
   unfolding permute_set_def
-  using a by (auto simp add: swap_atom)
+  using a by (auto simp: swap_atom)
 
 lemma swap_set_in:
   assumes a: "a \<in> S" "b \<notin> S" "sort_of a = sort_of b"
   shows "(a \<rightleftharpoons> b) \<bullet> S \<noteq> S"
   unfolding permute_set_def
-  using a by (auto simp add: swap_atom)
+  using a by (auto simp: swap_atom)
 
 lemma swap_set_in_eq:
   assumes a: "a \<in> S" "b \<notin> S" "sort_of a = sort_of b"
   shows "(a \<rightleftharpoons> b) \<bullet> S = (S - {a}) \<union> {b}"
   unfolding permute_set_def
-  using a by (auto simp add: swap_atom)
+  using a by (auto simp: swap_atom)
 
 lemma swap_set_both_in:
   assumes a: "a \<in> S" "b \<in> S"
   shows "(a \<rightleftharpoons> b) \<bullet> S = S"
   unfolding permute_set_def
-  using a by (auto simp add: swap_atom)
+  using a by (auto simp: swap_atom)
 
 lemma mem_permute_iff:
   shows "(p \<bullet> x) \<in> (p \<bullet> X) \<longleftrightarrow> x \<in> X"
@@ -769,7 +768,7 @@ ML_file "nominal_basics.ML"
 
 subsection {* Eqvt infrastructure *}
 
-text {* Setup of the theorem attributes @{text eqvt} and @{text eqvt_raw} *}
+text {* Setup of the theorem attributes @{text eqvt} and @{text eqvt_raw}. *}
 
 ML_file "nominal_thmdecls.ML"
 setup "Nominal_ThmDecls.setup"
@@ -865,7 +864,7 @@ lemma add_perm_eqvt [eqvt]:
 lemma swap_eqvt [eqvt]:
   shows "p \<bullet> (a \<rightleftharpoons> b) = (p \<bullet> a \<rightleftharpoons> p \<bullet> b)"
   unfolding permute_perm_def
-  by (auto simp add: swap_atom perm_eq_iff)
+  by (auto simp: swap_atom perm_eq_iff)
 
 lemma uminus_eqvt [eqvt]:
   fixes p q::"perm"
@@ -970,7 +969,7 @@ lemma mem_eqvt [eqvt]:
 lemma Collect_eqvt [eqvt]:
   shows "p \<bullet> {x. P x} = {x. (p \<bullet> P) x}"
   unfolding permute_set_eq permute_fun_def
-  by (auto simp add: permute_bool_def)
+  by (auto simp: permute_bool_def)
 
 lemma inter_eqvt [eqvt]:
   shows "p \<bullet> (A \<inter> B) = (p \<bullet> A) \<inter> (p \<bullet> B)"
@@ -1000,6 +999,11 @@ lemma UNIV_eqvt [eqvt]:
 lemma union_eqvt [eqvt]:
   shows "p \<bullet> (A \<union> B) = (p \<bullet> A) \<union> (p \<bullet> B)"
   unfolding Un_def by simp
+
+lemma UNION_eqvt [eqvt]:
+  shows "p \<bullet> (UNION A f) = (UNION (p \<bullet> A) (p \<bullet> f))"
+unfolding UNION_eq
+by (perm_simp) (simp)
 
 lemma Diff_eqvt [eqvt]:
   fixes A B :: "'a::pt set"
@@ -1055,11 +1059,11 @@ text {*
   given.
 *}
 
-class le_eqvt = ord +
-  assumes le_eqvt [eqvt]: "p \<bullet> (x \<le> y) = ((p \<bullet> x) \<le> (p \<bullet> (y::('a::{order, pt}))))"
+class le_eqvt = order +
+  assumes le_eqvt [eqvt]: "p \<bullet> (x \<le> y) = ((p \<bullet> x) \<le> (p \<bullet> (y::('a::{pt, order}))))"
 
 class inf_eqvt = Inf +
-  assumes inf_eqvt [eqvt]: "p \<bullet> (Inf X) = Inf (p \<bullet> (X::'a::{complete_lattice, pt} set))"
+  assumes inf_eqvt [eqvt]: "p \<bullet> (Inf X) = Inf (p \<bullet> (X::('a::{pt, complete_lattice}) set))"
 
 instantiation bool :: le_eqvt
 begin
@@ -1497,7 +1501,7 @@ apply (rule finite_supp_unique)
 apply (rule supports_perm)
 apply (rule finite_perm_lemma)
 apply (simp add: perm_swap_eq swap_eqvt)
-apply (auto simp add: perm_eq_iff swap_atom)
+apply (auto simp: perm_eq_iff swap_atom)
 done
 
 lemma fresh_perm: 
@@ -1507,7 +1511,11 @@ lemma fresh_perm:
 
 lemma supp_swap:
   shows "supp (a \<rightleftharpoons> b) = (if a = b \<or> sort_of a \<noteq> sort_of b then {} else {a, b})"
-  by (auto simp add: supp_perm swap_atom)
+  by (auto simp: supp_perm swap_atom)
+
+lemma fresh_swap:
+  shows "a \<sharp> (b \<rightleftharpoons> c) \<longleftrightarrow> (sort_of b \<noteq> sort_of c) \<or> b = c \<or> (a \<sharp> b \<and> a \<sharp> c)"
+  by (simp add: fresh_def supp_swap supp_atom)
 
 lemma fresh_zero_perm: 
   shows "a \<sharp> (0::perm)"
@@ -1523,12 +1531,12 @@ lemma fresh_plus_perm:
   shows "a \<sharp> (p + q)"
   using assms
   unfolding fresh_def
-  by (auto simp add: supp_perm)
+  by (auto simp: supp_perm)
 
 lemma supp_plus_perm:
   fixes p q::perm
   shows "supp (p + q) \<subseteq> supp p \<union> supp q"
-  by (auto simp add: supp_perm)
+  by (auto simp: supp_perm)
 
 lemma fresh_minus_perm:
   fixes p::perm
@@ -1602,6 +1610,17 @@ proof -
   then show "supp (p + q) = supp p \<union> supp q" using supp_plus_perm
     by blast
 qed
+
+lemma perm_eq_iff2:
+  fixes p q :: "perm"
+  shows "p = q \<longleftrightarrow> (\<forall>a::atom \<in> supp p \<union> supp q. p \<bullet> a = q \<bullet> a)"
+  unfolding perm_eq_iff
+  apply(auto)
+  apply(case_tac "a \<sharp> p \<and> a \<sharp> q")
+  apply(simp add: fresh_perm)
+  apply(simp add: fresh_def)
+  done
+
 
 instance perm :: fs
 by default (simp add: supp_perm finite_perm_lemma)
@@ -1706,7 +1725,7 @@ lemma fresh_Cons:
 
 lemma supp_append:
   shows "supp (xs @ ys) = supp xs \<union> supp ys"
-  by (induct xs) (auto simp add: supp_Nil supp_Cons)
+  by (induct xs) (auto simp: supp_Nil supp_Cons)
 
 lemma fresh_append:
   shows "a \<sharp> (xs @ ys) \<longleftrightarrow> a \<sharp> xs \<and> a \<sharp> ys"
@@ -1714,17 +1733,17 @@ lemma fresh_append:
 
 lemma supp_rev:
   shows "supp (rev xs) = supp xs"
-  by (induct xs) (auto simp add: supp_append supp_Cons supp_Nil)
+  by (induct xs) (auto simp: supp_append supp_Cons supp_Nil)
 
 lemma fresh_rev:
   shows "a \<sharp> rev xs \<longleftrightarrow> a \<sharp> xs"
-  by (induct xs) (auto simp add: fresh_append fresh_Cons fresh_Nil)
+  by (induct xs) (auto simp: fresh_append fresh_Cons fresh_Nil)
 
 lemma supp_removeAll:
   fixes x::"atom"
   shows "supp (removeAll x xs) = supp xs - {x}"
   by (induct xs)
-     (auto simp add: supp_Nil supp_Cons supp_atom)
+     (auto simp: supp_Nil supp_Cons supp_atom)
 
 lemma supp_of_atom_list:
   fixes as::"atom list"
@@ -1992,7 +2011,7 @@ lemma fresh_minus_atom_set:
   assumes "finite S"
   shows "a \<sharp> S - T \<longleftrightarrow> (a \<notin> T \<longrightarrow> a \<sharp> S)"
   unfolding fresh_def
-  by (auto simp add: supp_finite_atom_set assms)
+  by (auto simp: supp_finite_atom_set assms)
 
 lemma Union_supports_set:
   shows "(\<Union>x \<in> S. supp x) supports S"
@@ -2010,22 +2029,20 @@ lemma Union_of_finite_supp_sets:
   fixes S::"('a::fs set)"
   assumes fin: "finite S"   
   shows "finite (\<Union>x\<in>S. supp x)"
-  using fin by (induct) (auto simp add: finite_supp)
+  using fin by (induct) (auto simp: finite_supp)
 
 lemma Union_included_in_supp:
   fixes S::"('a::fs set)"
   assumes fin: "finite S"
   shows "(\<Union>x\<in>S. supp x) \<subseteq> supp S"
 proof -
-  have eqvt: "eqvt (\<lambda>S. \<Union> (supp ` S))" 
-    unfolding eqvt_def 
-    by (perm_simp) (simp)
+  have eqvt: "eqvt (\<lambda>S. \<Union>x \<in> S. supp x)" 
+    unfolding eqvt_def by simp 
   have "(\<Union>x\<in>S. supp x) = supp (\<Union>x\<in>S. supp x)"
     by (rule supp_finite_atom_set[symmetric]) (rule Union_of_finite_supp_sets[OF fin])
-  also have "\<dots> = supp ((\<lambda>S. \<Union> (supp ` S)) S)" by simp
   also have "\<dots> \<subseteq> supp S" using eqvt
     by (rule supp_fun_app_eqvt)
-  finally show "(\<Union>x\<in>S. supp x) \<subseteq> supp S" .
+  finally show "(\<Union>x\<in>S. supp x) \<subseteq> supp S" .  
 qed
 
 lemma supp_of_finite_sets:
@@ -2053,6 +2070,14 @@ lemma supp_of_finite_union:
   shows "supp (S \<union> T) = supp S \<union> supp T"
   using fin1 fin2
   by (simp add: supp_of_finite_sets)
+
+lemma fresh_finite_union:
+  fixes S T::"('a::fs) set"
+  assumes fin1: "finite S"
+  and     fin2: "finite T"
+  shows "a \<sharp> (S \<union> T) \<longleftrightarrow> a \<sharp> S \<and> a \<sharp> T"
+  unfolding fresh_def
+  by (simp add: supp_of_finite_union[OF fin1 fin2])
 
 lemma supp_of_finite_insert:
   fixes S::"('a::fs) set"
@@ -2164,7 +2189,7 @@ by (simp only: supp_of_multisets Union_finite_multiset)
 lemma supp_of_multiset_union:
   fixes M N::"('a::fs) multiset"
   shows "supp (M + N) = supp M \<union> supp N"
-  by (auto simp add: supp_of_multisets)
+  by (auto simp: supp_of_multisets)
 
 lemma supp_empty_mset [simp]:
   shows "supp {#} = {}"
@@ -2249,7 +2274,7 @@ lemma supp_finfun_const:
 lemma supp_finfun_update:
   shows "supp (finfun_update f x y) \<subseteq> supp(f, x, y)"
 using fresh_finfun_update
-by (auto simp add: fresh_def supp_Pair)
+by (auto simp: fresh_def supp_Pair)
     
 instance finfun :: (fs, fs) fs
   apply(default)
@@ -2301,7 +2326,7 @@ where
 
 lemma fresh_star_supp_conv:
   shows "supp x \<sharp>* y \<Longrightarrow> supp y \<sharp>* x"
-by (auto simp add: fresh_star_def fresh_def)
+by (auto simp: fresh_star_def fresh_def)
 
 lemma fresh_star_perm_set_conv:
   fixes p::"perm"
@@ -2318,25 +2343,25 @@ lemma fresh_star_atom_set_conv:
   shows "bs \<sharp>* as"
 using fresh
 unfolding fresh_star_def fresh_def
-by (auto simp add: supp_finite_atom_set fin)
+by (auto simp: supp_finite_atom_set fin)
 
 lemma atom_fresh_star_disjoint:
   assumes fin: "finite bs" 
   shows "as \<sharp>* bs \<longleftrightarrow> (as \<inter> bs = {})"
 
 unfolding fresh_star_def fresh_def
-by (auto simp add: supp_finite_atom_set fin)
+by (auto simp: supp_finite_atom_set fin)
 
 
 lemma fresh_star_Pair:
   shows "as \<sharp>* (x, y) = (as \<sharp>* x \<and> as \<sharp>* y)" 
-  by (auto simp add: fresh_star_def fresh_Pair)
+  by (auto simp: fresh_star_def fresh_Pair)
 
 lemma fresh_star_list:
   shows "as \<sharp>* (xs @ ys) \<longleftrightarrow> as \<sharp>* xs \<and> as \<sharp>* ys"
   and   "as \<sharp>* (x # xs) \<longleftrightarrow> as \<sharp>* x \<and> as \<sharp>* xs"
   and   "as \<sharp>* []"
-by (auto simp add: fresh_star_def fresh_Nil fresh_Cons fresh_append)
+by (auto simp: fresh_star_def fresh_Nil fresh_Cons fresh_append)
 
 lemma fresh_star_set:
   fixes xs::"('a::fs) list"
@@ -2356,11 +2381,11 @@ by (simp add: fresh_star_def fresh_def)
 
 lemma fresh_star_Un:
   shows "(as \<union> bs) \<sharp>* x = (as \<sharp>* x \<and> bs \<sharp>* x)"
-  by (auto simp add: fresh_star_def)
+  by (auto simp: fresh_star_def)
 
 lemma fresh_star_insert:
   shows "(insert a as) \<sharp>* x = (a \<sharp> x \<and> as \<sharp>* x)"
-  by (auto simp add: fresh_star_def)
+  by (auto simp: fresh_star_def)
 
 lemma fresh_star_Un_elim:
   "((as \<union> bs) \<sharp>* x \<Longrightarrow> PROP C) \<equiv> (as \<sharp>* x \<Longrightarrow> bs \<sharp>* x \<Longrightarrow> PROP C)"
@@ -2415,7 +2440,7 @@ lemma smaller_supp:
   shows "supp ((p \<bullet> a \<rightleftharpoons> a) + p) \<subset> supp p"
 proof -
   have "supp ((p \<bullet> a \<rightleftharpoons> a) + p) \<subseteq> supp p"
-    unfolding supp_perm by (auto simp add: swap_atom)
+    unfolding supp_perm by (auto simp: swap_atom)
   moreover
   have "a \<notin> supp ((p \<bullet> a \<rightleftharpoons> a) + p)" by (simp add: supp_perm)
   then have "supp ((p \<bullet> a \<rightleftharpoons> a) + p) \<noteq> supp p" using a by auto
@@ -2444,7 +2469,7 @@ proof -
     { assume "supp p \<noteq> {}"
       then obtain a where a0: "a \<in> supp p" by blast
       then have a1: "p \<bullet> a \<in> S" "a \<in> S" "sort_of (p \<bullet> a) = sort_of a" "p \<bullet> a \<noteq> a"
-        using as by (auto simp add: supp_atom supp_perm swap_atom)
+        using as by (auto simp: supp_atom supp_perm swap_atom)
       let ?q = "(p \<bullet> a \<rightleftharpoons> a) + p"
       have a2: "supp ?q \<subset> supp p" using a0 smaller_supp by simp
       then have "P ?q" using ih by simp
@@ -2492,7 +2517,7 @@ proof -
     then have "p = 0"
       by (induct p rule: perm_struct_induct) (simp_all)
   }
-  then show "supp p \<subseteq> {b} \<longleftrightarrow> p = 0" by (auto simp add: supp_zero_perm)
+  then show "supp p \<subseteq> {b} \<longleftrightarrow> p = 0" by (auto simp: supp_zero_perm)
 qed
 
 lemma supp_perm_pair:
@@ -2502,12 +2527,12 @@ proof -
   { assume "supp p \<subseteq> {a, b}"
     then have "p = 0 \<or> p = (b \<rightleftharpoons> a)"
       apply (induct p rule: perm_struct_induct) 
-      apply (auto simp add: swap_cancel supp_zero_perm supp_swap)
+      apply (auto simp: swap_cancel supp_zero_perm supp_swap)
       apply (simp add: swap_commute)
       done
   }
   then show "supp p \<subseteq> {a, b} \<longleftrightarrow> p = 0 \<or> p = (b \<rightleftharpoons> a)" 
-    by (auto simp add: supp_zero_perm supp_swap split: if_splits)
+    by (auto simp: supp_zero_perm supp_swap split: if_splits)
 qed
 
 lemma supp_perm_eq:
@@ -2569,9 +2594,6 @@ proof -
     then show "(p1 + p2) \<bullet> x = x" by simp
   qed
 qed
-
-
-
 
 lemma supp_perm_perm_eq:
   assumes a: "\<forall>a \<in> supp x. p \<bullet> a = q \<bullet> a"
@@ -2657,7 +2679,7 @@ proof -
     hence y: "y \<notin> As" "y \<notin> p \<bullet> Xs" "y \<notin> supp p" "sort_of y = sort_of x"
       by simp_all
     hence py: "p \<bullet> y = y" "x \<noteq> y" using `x \<in> As`
-      by (auto simp add: supp_perm)
+      by (auto simp: supp_perm)
     let ?q = "(x \<rightleftharpoons> y) + p"
     have q: "?q \<bullet> insert x Xs = insert y (p \<bullet> Xs)"
       unfolding insert_eqvt
@@ -2706,7 +2728,7 @@ apply(simp add: supp_Pair)
 apply(rule_tac x="p" in exI)
 apply(simp add: fresh_star_Pair)
 apply(rule fresh_star_supp_conv)
-apply(auto simp add: fresh_star_def)
+apply(auto simp: fresh_star_def)
 done
 
 lemma at_set_avoiding3:
@@ -2720,7 +2742,7 @@ apply(simp add: supp_Pair)
 apply(rule_tac x="p" in exI)
 apply(simp add: fresh_star_Pair)
 apply(rule fresh_star_supp_conv)
-apply(auto simp add: fresh_star_def)
+apply(auto simp: fresh_star_def)
 done
 
 lemma at_set_avoiding2_atom:
@@ -2759,7 +2781,7 @@ next
     have "\<forall>b \<in> (insert a bs). q \<bullet> b = p \<bullet> b" using 1 * by simp
     moreover 
     have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
-      using ** by (auto simp add: insert_eqvt)
+      using ** by (auto simp: insert_eqvt)
     ultimately 
     have "\<exists>q. (\<forall>b \<in> insert a bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" by blast
   }
@@ -2767,11 +2789,11 @@ next
   { assume 2: "q \<bullet> a \<noteq> p \<bullet> a"
     def q' \<equiv> "((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
     have "\<forall>b \<in> insert a bs. q' \<bullet> b = p \<bullet> b" using 2 * `a \<notin> bs` unfolding q'_def
-      by (auto simp add: swap_atom)
+      by (auto simp: swap_atom)
     moreover 
     { have "{q \<bullet> a, p \<bullet> a} \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
 	using ** 
-	apply (auto simp add: supp_perm insert_eqvt)
+	apply (auto simp: supp_perm insert_eqvt)
 	apply (subgoal_tac "q \<bullet> a \<in> bs \<union> p \<bullet> bs")
 	apply(auto)[1]
 	apply(subgoal_tac "q \<bullet> a \<in> {a. q \<bullet> a \<noteq> a}")
@@ -2782,7 +2804,7 @@ next
         unfolding supp_swap by auto
       moreover
       have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
-	using ** by (auto simp add: insert_eqvt)
+	using ** by (auto simp: insert_eqvt)
       ultimately 
       have "supp q' \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
         unfolding q'_def using supp_plus_perm by blast
@@ -2801,7 +2823,7 @@ proof -
   then obtain q 
     where *: "\<forall>b \<in> bs \<inter> supp p. q \<bullet> b = p \<bullet> b" and **: "supp q \<subseteq> (bs \<inter> supp p) \<union> (p \<bullet> (bs \<inter> supp p))"
     using set_renaming_perm by blast
-  from ** have "supp q \<subseteq> bs \<union> (p \<bullet> bs)" by (auto simp add: inter_eqvt)
+  from ** have "supp q \<subseteq> bs \<union> (p \<bullet> bs)" by (auto simp: inter_eqvt)
   moreover
   have "\<forall>b \<in> bs - supp p. q \<bullet> b = p \<bullet> b" 
     apply(auto)
@@ -2828,7 +2850,7 @@ proof (induct bs)
     have "q \<bullet> a = p \<bullet> a" using * 1 by (induct bs) (auto)
     then have "\<forall>b \<in> set (a # bs). q \<bullet> b = p \<bullet> b" using * by simp 
     moreover 
-    have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" using ** by (auto simp add: insert_eqvt)
+    have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" using ** by (auto simp: insert_eqvt)
     ultimately 
     have "\<exists>q. (\<forall>b \<in> set (a # bs). q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" by blast
   }
@@ -2836,11 +2858,11 @@ proof (induct bs)
   { assume 2: "a \<notin> set bs"
     def q' \<equiv> "((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
     have "\<forall>b \<in> set (a # bs). q' \<bullet> b = p \<bullet> b" 
-      unfolding q'_def using 2 * `a \<notin> set bs` by (auto simp add: swap_atom)
+      unfolding q'_def using 2 * `a \<notin> set bs` by (auto simp: swap_atom)
     moreover 
     { have "{q \<bullet> a, p \<bullet> a} \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))"
 	using **
-	apply (auto simp add: supp_perm insert_eqvt)
+	apply (auto simp: supp_perm insert_eqvt)
 	apply (subgoal_tac "q \<bullet> a \<in> set bs \<union> p \<bullet> set bs")
 	apply(auto)[1]
 	apply(subgoal_tac "q \<bullet> a \<in> {a. q \<bullet> a \<noteq> a}")
@@ -2851,7 +2873,7 @@ proof (induct bs)
         unfolding supp_swap by auto
       moreover
       have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" 
-	using ** by (auto simp add: insert_eqvt)
+	using ** by (auto simp: insert_eqvt)
       ultimately 
       have "supp q' \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" 
         unfolding q'_def using supp_plus_perm by blast
@@ -2928,31 +2950,39 @@ by (simp_all add: fresh_at_base)
 
 
 simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt => fn ctrm =>
-  let
-    fun first_is_neg lhs rhs [] = NONE
-      | first_is_neg lhs rhs (thm::thms) =
+  case term_of ctrm of @{term "HOL.Not"} $ (Const ("HOL.eq", _) $ lhs $ rhs) =>
+    let  
+
+      fun first_is_neg lhs rhs [] = NONE
+        | first_is_neg lhs rhs (thm::thms) =
           (case Thm.prop_of thm of
              _ $ (@{term "HOL.Not"} $ (Const ("HOL.eq", _) $ l $ r)) =>
                (if l = lhs andalso r = rhs then SOME(thm)
                 else if r = lhs andalso l = rhs then SOME(thm RS @{thm not_sym})
                 else first_is_neg lhs rhs thms)  
-           | _ => first_is_neg lhs rhs thms)
+        | _ => first_is_neg lhs rhs thms)
 
-    val simp_thms = @{thms fresh_Pair fresh_at_base atom_eq_iff}
-    val prems = Simplifier.prems_of ctxt
-      |> filter (fn thm => case Thm.prop_of thm of                    
-           _ $ (Const (@{const_name fresh}, _) $ _ $ _) => true | _ => false)
-      |> map (simplify (put_simpset HOL_basic_ss  ctxt addsimps simp_thms))
-      |> map HOLogic.conj_elims
-      |> flat
-  in 
-    case term_of ctrm of
-      @{term "HOL.Not"} $ (Const ("HOL.eq", _) $ lhs $ rhs) => 
-         (case first_is_neg lhs rhs prems of
-            SOME(thm) => SOME(thm RS @{thm Eq_TrueI})
-          | NONE => NONE)
-    | _ => NONE
-  end
+      val simp_thms = @{thms fresh_Pair fresh_at_base atom_eq_iff}
+      val prems = Simplifier.prems_of ctxt
+         |> filter (fn thm => case Thm.prop_of thm of                    
+            _ $ (Const (@{const_name fresh}, ty) $ (_ $ a) $ b) => 
+            (let 
+               val atms = a :: HOLogic.strip_tuple b
+             in
+               member (op=) atms lhs andalso member (op=) atms rhs
+             end) 
+            | _ => false)
+         |> map (simplify (put_simpset HOL_basic_ss  ctxt addsimps simp_thms))
+         |> map HOLogic.conj_elims
+         |> flat
+
+       
+    in 
+      case first_is_neg lhs rhs prems of
+        SOME(thm) => SOME(thm RS @{thm Eq_TrueI})
+      | NONE => NONE
+    end
+  | _ => NONE
 *}
 
 
@@ -3003,12 +3033,12 @@ lemma obtain_fresh':
   assumes fin: "finite (supp x)"
   obtains a::"'a::at_base" where "atom a \<sharp> x"
 using obtain_at_base[where X="supp x"]
-by (auto simp add: fresh_def fin)
+by (auto simp: fresh_def fin)
 
 lemma obtain_fresh:
   fixes x::"'b::fs"
   obtains a::"'a::at_base" where "atom a \<sharp> x"
-  by (rule obtain_fresh') (auto simp add: finite_supp)
+  by (rule obtain_fresh') (auto simp: finite_supp)
 
 lemma supp_finite_set_at_base:
   assumes a: "finite S"
@@ -3041,6 +3071,10 @@ lemma fresh_at_base_permute_iff [simp]:
   shows "atom (p \<bullet> a) \<sharp> p \<bullet> x \<longleftrightarrow> atom a \<sharp> x"
   unfolding atom_eqvt[symmetric]
   by (simp only: fresh_permute_iff)
+
+lemma fresh_at_base_permI: 
+  shows "atom a \<sharp> p \<Longrightarrow> p \<bullet> a = a"
+by (simp add: fresh_def supp_perm)
 
 
 section {* Infrastructure for concrete atom types *}
@@ -3227,11 +3261,9 @@ setup {* Sign.add_const_constraint
   (@{const_name "atom"}, SOME @{typ "'a::at_base \<Rightarrow> atom"}) *}
 
 
-
 section {* Library functions for the nominal infrastructure *}
 
 ML_file "nominal_library.ML"
-
 
 
 section {* The freshness lemma according to Andy Pitts *}
@@ -3242,7 +3274,7 @@ lemma freshness_lemma:
   shows  "\<exists>x. \<forall>a. atom a \<sharp> h \<longrightarrow> h a = x"
 proof -
   from a obtain b where a1: "atom b \<sharp> h" and a2: "atom b \<sharp> h b"
-    by (auto simp add: fresh_Pair)
+    by (auto simp: fresh_Pair)
   show "\<exists>x. \<forall>a. atom a \<sharp> h \<longrightarrow> h a = x"
   proof (intro exI allI impI)
     fix a :: 'a
@@ -3282,7 +3314,7 @@ next
   assume x: "\<forall>a. atom a \<sharp> h \<longrightarrow> h a = x"
   assume y: "\<forall>a. atom a \<sharp> h \<longrightarrow> h a = y"
   from a x y show "x = y" 
-    by (auto simp add: fresh_Pair)
+    by (auto simp: fresh_Pair)
 qed
 
 text {* packaging the freshness lemma into a function *}
@@ -3317,13 +3349,8 @@ lemma Fresh_apply':
   assumes a: "atom a \<sharp> h" "atom a \<sharp> h a"
   shows "Fresh h = h a"
   apply (rule Fresh_apply)
-  apply (auto simp add: fresh_Pair intro: a)
+  apply (auto simp: fresh_Pair intro: a)
   done
-
-lemma "1 = 1 &&& 2 = 2"
-apply(tactic {* ALLGOALS (asm_full_simp_tac @{context}) *})
-done
-
 
 simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _ => fn ctxt => fn ctrm =>
   let
@@ -3415,14 +3442,15 @@ lemma FRESH_disj_iff:
   shows "(FRESH x. P x \<or> Q x) \<longleftrightarrow> (FRESH x. P x) \<or> (FRESH x. Q x)"
 using P Q by (rule FRESH_binop_iff)
 
+
 section {* Automation for creating concrete atom types *}
 
-text {* at the moment only single-sort concrete atoms are supported *}
+text {* At the moment only single-sort concrete atoms are supported. *}
 
 ML_file "nominal_atoms.ML"
 
 
-section {* automatic equivariance procedure for inductive definitions *}
+section {* Automatic equivariance procedure for inductive definitions *}
 
 ML_file "nominal_eqvt.ML"
 

@@ -281,7 +281,7 @@ let
     let
       val AlphaResult {alpha_trms, alpha_bn_trms, alpha_raw_induct, alpha_intros, ...} = alpha_result
     in
-      Nominal_Eqvt.raw_equivariance (alpha_trms @ alpha_bn_trms) alpha_raw_induct alpha_intros lthy5
+      Nominal_Eqvt.raw_equivariance lthy5 (alpha_trms @ alpha_bn_trms) alpha_raw_induct alpha_intros
     end
 
   val alpha_eqvt_norm = map (Nominal_ThmDecls.eqvt_transform lthy5) alpha_eqvt

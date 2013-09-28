@@ -9,7 +9,7 @@ begin
 section {* Abstractions *}
 
 fun
-  alpha_set 
+  alpha_set
 where
   alpha_set[simp del]:
   "alpha_set (bs, x) R f p (cs, y) \<longleftrightarrow> 
@@ -51,7 +51,7 @@ lemma [mono]:
   and   "R1 \<le> R2 \<Longrightarrow> alpha_res bs R1 \<le> alpha_res bs R2"
   and   "R1 \<le> R2 \<Longrightarrow> alpha_lst cs R1 \<le> alpha_lst cs R2"
   by (case_tac [!] bs, case_tac [!] cs) 
-     (auto simp add: le_fun_def le_bool_def alphas)
+     (auto simp: le_fun_def le_bool_def alphas)
 
 section {* Equivariance *}
 
@@ -87,7 +87,7 @@ lemma alpha_sym:
   and   "(ds, x) \<approx>lst R f p (es, y) \<Longrightarrow> (es, y) \<approx>lst R f (- p) (ds, x)"
   unfolding alphas fresh_star_def
   using a
-  by (auto simp add: fresh_minus_perm)
+  by (auto simp: fresh_minus_perm)
 
 lemma alpha_trans:
   assumes a: "\<lbrakk>R (p \<bullet> x) y; R (q \<bullet> y) z\<rbrakk> \<Longrightarrow> R ((q + p) \<bullet> x) z"
@@ -204,7 +204,7 @@ lemma alphas_abs_sym:
   unfolding alphas
   unfolding fresh_star_def
   by (erule_tac [!] exE, rule_tac [!] x="-p" in exI)
-     (auto simp add: fresh_minus_perm)
+     (auto simp: fresh_minus_perm)
 
 lemma alphas_abs_trans:
   shows "\<lbrakk>(bs, x) \<approx>abs_set (cs, y); (cs, y) \<approx>abs_set (ds, z)\<rbrakk> \<Longrightarrow> (bs, x) \<approx>abs_set (ds, z)"
@@ -278,9 +278,9 @@ proof -
     using set_renaming_perm2 by blast
   from * have a: "p \<bullet> x = p' \<bullet> x" using supp_perm_perm_eq by auto
   from 0 have 1: "(supp x - as) \<sharp>* p" using *
-    by (auto simp add: fresh_star_def fresh_perm)
+    by (auto simp: fresh_star_def fresh_perm)
   then have 2: "(supp x - as) \<inter> supp p = {}"
-    by (auto simp add: fresh_star_def fresh_def)
+    by (auto simp: fresh_star_def fresh_def)
   have b: "supp x = (supp x - as) \<union> (supp x \<inter> as)" by auto
   have "supp p \<subseteq> supp x \<union> p' \<bullet> supp x" using ** by simp
   also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> (p' \<bullet> ((supp x - as) \<union> (supp x \<inter> as)))" 
@@ -303,7 +303,7 @@ qed
 lemma alpha_abs_res_minimal:
   assumes asm: "(as, x) \<approx>res (op =) supp p (as', x')"
   shows "(as \<inter> supp x, x) \<approx>res (op =) supp p (as' \<inter> supp x', x')"
-  using asm unfolding alpha_res by (auto simp add: Diff_Int)
+  using asm unfolding alpha_res by (auto simp: Diff_Int)
 
 lemma alpha_abs_res_abs_set:
   assumes asm: "(as, x) \<approx>res (op =) supp p (as', x')"
@@ -323,7 +323,7 @@ qed
 lemma alpha_abs_set_abs_res:
   assumes asm: "(as \<inter> supp x, x) \<approx>set (op =) supp p (as' \<inter> supp x', x')"
   shows "(as, x) \<approx>res (op =) supp p (as', x')"
-  using asm unfolding alphas by (auto simp add: Diff_Int)
+  using asm unfolding alphas by (auto simp: Diff_Int)
 
 lemma alpha_abs_res_stronger1:
   assumes asm: "(as, x) \<approx>res (op =) supp p' (as', x')"
@@ -344,15 +344,15 @@ proof -
   then have a: "p \<bullet> x = p' \<bullet> x" using supp_perm_perm_eq by auto
   from * have "\<forall>b \<in> as. p \<bullet> b = p' \<bullet> b" by blast
   then have zb: "p \<bullet> as = p' \<bullet> as" 
-    apply(auto simp add: permute_set_def)
+    apply(auto simp: permute_set_def)
     apply(rule_tac x="xa" in exI)
     apply(simp)
     done
   have zc: "p' \<bullet> as = as'" using asm by (simp add: alphas)
   from 0 have 1: "(supp x - as) \<sharp>* p" using *
-    by (auto simp add: fresh_star_def fresh_perm)
+    by (auto simp: fresh_star_def fresh_perm)
   then have 2: "(supp x - as) \<inter> supp p = {}"
-    by (auto simp add: fresh_star_def fresh_def)
+    by (auto simp: fresh_star_def fresh_def)
   have b: "supp x = (supp x - as) \<union> (supp x \<inter> as)" by auto
   have "supp p \<subseteq> supp x \<union> as \<union> p' \<bullet> supp x \<union> p' \<bullet> as" using ** using union_eqvt by blast
   also have "\<dots> = (supp x - as) \<union> (supp x \<inter> as) \<union> as \<union> (p' \<bullet> ((supp x - as) \<union> (supp x \<inter> as))) \<union> p' \<bullet> as" 
@@ -390,9 +390,9 @@ proof -
   then have zb: "p \<bullet> as = p' \<bullet> as" by (induct as) (auto)
   have zc: "p' \<bullet> set as = set as'" using asm by (simp add: alphas set_eqvt)
   from 0 have 1: "(supp x - set as) \<sharp>* p" using *
-    by (auto simp add: fresh_star_def fresh_perm)
+    by (auto simp: fresh_star_def fresh_perm)
   then have 2: "(supp x - set as) \<inter> supp p = {}"
-    by (auto simp add: fresh_star_def fresh_def)
+    by (auto simp: fresh_star_def fresh_def)
   have b: "supp x = (supp x - set as) \<union> (supp x \<inter> set as)" by auto
   have "supp p \<subseteq> supp x \<union> set as \<union> p' \<bullet> supp x \<union> p' \<bullet> set as" using ** using union_eqvt by blast
   also have "\<dots> = (supp x - set as) \<union> (supp x \<inter> set as) \<union> set as \<union> 
@@ -420,14 +420,14 @@ lemma alphas_abs_stronger:
   and   "(bs, x) \<approx>abs_lst (bs', x') \<longleftrightarrow> 
    (\<exists>p. (bs, x) \<approx>lst (op =) supp p (bs', x') \<and> supp p \<subseteq> set bs \<union> set bs')"
 apply(rule iffI)
-apply(auto simp add: alphas_abs alpha_abs_set_stronger1)[1]
-apply(auto simp add: alphas_abs)[1]
+apply(auto simp: alphas_abs alpha_abs_set_stronger1)[1]
+apply(auto simp: alphas_abs)[1]
 apply(rule iffI)
-apply(auto simp add: alphas_abs alpha_abs_res_stronger1)[1]
-apply(auto simp add: alphas_abs)[1]
+apply(auto simp: alphas_abs alpha_abs_res_stronger1)[1]
+apply(auto simp: alphas_abs)[1]
 apply(rule iffI)
-apply(auto simp add: alphas_abs alpha_abs_lst_stronger1)[1]
-apply(auto simp add: alphas_abs)[1]
+apply(auto simp: alphas_abs alpha_abs_lst_stronger1)[1]
+apply(auto simp: alphas_abs)[1]
 done
 
 lemma alpha_res_alpha_set:
@@ -603,7 +603,7 @@ lemma Abs_swap1:
   unfolding swap_set_not_in[OF a1 a2] 
   using a1 a2
   by (rule_tac [!] x="(a \<rightleftharpoons> b)" in exI)
-     (auto simp add: supp_perm swap_atom)
+     (auto simp: supp_perm swap_atom)
 
 lemma Abs_swap2:
   assumes a1: "a \<notin> (supp x) - (set bs)"
@@ -616,7 +616,7 @@ lemma Abs_swap2:
   unfolding swap_set_not_in[OF a1 a2]
   using a1 a2
   by (rule_tac [!] x="(a \<rightleftharpoons> b)" in exI)
-     (auto simp add: supp_perm swap_atom)
+     (auto simp: supp_perm swap_atom)
 
 lemma Abs_supports:
   shows "((supp x) - as) supports ([as]set. x)"
@@ -732,7 +732,7 @@ lemma Abs_fresh_star_iff:
   and   "as \<sharp>* ([bs]res. x) \<longleftrightarrow> (as - bs) \<sharp>* x"
   and   "as \<sharp>* ([cs]lst. x) \<longleftrightarrow> (as - set cs) \<sharp>* x"
   unfolding fresh_star_def
-  by (auto simp add: Abs_fresh_iff)
+  by (auto simp: Abs_fresh_iff)
 
 lemma Abs_fresh_star:
   fixes x::"'a::fs"
@@ -740,7 +740,7 @@ lemma Abs_fresh_star:
   and   "as \<subseteq> as' \<Longrightarrow> as \<sharp>* ([as']res. x)"
   and   "bs \<subseteq> set bs' \<Longrightarrow> bs \<sharp>* ([bs']lst. x)"
   unfolding fresh_star_def
-  by(auto simp add: Abs_fresh_iff)
+  by(auto simp: Abs_fresh_iff)
 
 lemma Abs_fresh_star2:
   fixes x::"'a::fs"
@@ -760,7 +760,7 @@ lemma Abs1_eq:
   and   "[{atom a}]res. x = [{atom a}]res. y \<longleftrightarrow> x = y"
   and   "[[atom a]]lst. x = [[atom a]]lst. y \<longleftrightarrow> x = y"
 unfolding Abs_eq_iff2 alphas
-by (auto simp add: supp_perm_singleton fresh_star_def fresh_zero_perm)
+by (auto simp: supp_perm_singleton fresh_star_def fresh_zero_perm)
 
 lemma Abs1_eq_iff_fresh:
   fixes x y::"'a::fs"
@@ -808,28 +808,28 @@ lemma Abs1_eq_iff_all:
   fixes x y::"'a::fs"
   and z::"'c::fs"
   and a b::"'b::at"
-  shows "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> (a, b, x, y, z) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
-  and   "[{atom a}]res. x = [{atom b}]res. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> (a, b, x, y, z) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
-  and   "[[atom a]]lst. x = [[atom b]]lst. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> (a, b, x, y, z) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
+  shows "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> z \<longrightarrow> atom c \<sharp> (a, b, x, y) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
+  and   "[{atom a}]res. x = [{atom b}]res. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> z \<longrightarrow> atom c \<sharp> (a, b, x, y) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
+  and   "[[atom a]]lst. x = [[atom b]]lst. y \<longleftrightarrow> (\<forall>c. atom c \<sharp> z \<longrightarrow> atom c \<sharp> (a, b, x, y) \<longrightarrow> (a \<leftrightarrow> c) \<bullet> x = (b \<leftrightarrow> c) \<bullet> y)"
 apply(auto) 
 apply(simp add: Abs1_eq_iff_fresh(1)[symmetric])
 apply(rule_tac ?'a="'b::at" and x="(a, b, x, y, z)" in obtain_fresh)
 apply(drule_tac x="aa" in spec)
 apply(simp)
 apply(subst Abs1_eq_iff_fresh(1))
-apply(auto simp add: fresh_Pair)[2]
+apply(auto simp: fresh_Pair)[2]
 apply(simp add: Abs1_eq_iff_fresh(2)[symmetric])
 apply(rule_tac ?'a="'b::at" and x="(a, b, x, y, z)" in obtain_fresh)
 apply(drule_tac x="aa" in spec)
 apply(simp)
 apply(subst Abs1_eq_iff_fresh(2))
-apply(auto simp add: fresh_Pair)[2]
+apply(auto simp: fresh_Pair)[2]
 apply(simp add: Abs1_eq_iff_fresh(3)[symmetric])
 apply(rule_tac ?'a="'b::at" and x="(a, b, x, y, z)" in obtain_fresh)
 apply(drule_tac x="aa" in spec)
 apply(simp)
 apply(subst Abs1_eq_iff_fresh(3))
-apply(auto simp add: fresh_Pair)[2]
+apply(auto simp: fresh_Pair)[2]
 done
 
 lemma Abs1_eq_iff:
@@ -918,7 +918,7 @@ lemma Abs1_eq_iff':
   shows "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> (b \<leftrightarrow> a) \<bullet> x = y \<and> atom b \<sharp> x)"
   and   "[{atom a}]res. x = [{atom b}]res. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> (b \<leftrightarrow> a) \<bullet> x = y \<and> atom b \<sharp> x)"
   and   "[[atom a]]lst. x = [[atom b]]lst. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> (b \<leftrightarrow> a) \<bullet> x = y \<and> atom b \<sharp> x)"
-using assms by (auto simp add: Abs1_eq_iff fresh_permute_left)
+using assms by (auto simp: Abs1_eq_iff fresh_permute_left)
 
 
 ML {*
@@ -1078,18 +1078,11 @@ lemma [eqvt]:
 lemma prod_fv_supp:
   shows "prod_fv supp supp = supp"
 by (rule ext)
-   (auto simp add: prod_fv.simps supp_Pair)
+   (auto simp: supp_Pair)
 
 lemma prod_alpha_eq:
   shows "prod_alpha (op=) (op=) = (op=)"
   unfolding prod_alpha_def
   by (auto intro!: ext)
 
-
-
-
-
-
-
 end
-

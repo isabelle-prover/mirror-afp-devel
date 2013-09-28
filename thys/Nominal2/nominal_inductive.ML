@@ -1,5 +1,6 @@
 (*  Title:      nominal_inductive.ML
     Author:     Christian Urban
+    Author:     Tjark Weber
 
     Infrastructure for proving strong induction theorems
     for inductive predicates involving nominal datatypes.
@@ -7,27 +8,26 @@
     Code based on an earlier version by Stefan Berghofer.
 *)
 
-
 signature NOMINAL_INDUCTIVE =
 sig
-  val prove_strong_inductive: string list -> string list -> term list list -> thm -> thm list -> 
+  val prove_strong_inductive: string list -> string list -> term list list -> thm -> thm list ->
     Proof.context -> Proof.state
-
   val prove_strong_inductive_cmd: xstring * (string * string list) list -> Proof.context -> Proof.state
 end
 
 structure Nominal_Inductive : NOMINAL_INDUCTIVE =
 struct
 
+fun mk_cplus p q =
+  Thm.apply (Thm.apply @{cterm "plus :: perm => perm => perm"} p) q
 
-fun mk_cplus p q = Thm.apply (Thm.apply @{cterm "plus :: perm => perm => perm"} p) q 
+fun mk_cminus p =
+  Thm.apply @{cterm "uminus :: perm => perm"} p
 
-fun mk_cminus p = Thm.apply @{cterm "uminus :: perm => perm"} p 
-
-fun minus_permute_intro_tac p = 
+fun minus_permute_intro_tac p =
   rtac (Drule.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE})
 
-fun minus_permute_elim p thm = 
+fun minus_permute_elim p thm =
   thm RS (Drule.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
 
 (* fixme: move to nominal_library *)
@@ -36,25 +36,28 @@ fun real_head_of (@{term Trueprop} $ t) = real_head_of t
   | real_head_of (Const (@{const_name all}, _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of (Const (@{const_name All}, _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of (Const ("HOL.induct_forall", _) $ Abs (_, _, t)) = real_head_of t
-  | real_head_of t = head_of t  
+  | real_head_of t = head_of t
 
 
-fun mk_vc_compat (avoid, avoid_trm) prems concl_args params = 
-  let
-    val vc_goal = concl_args
-      |> HOLogic.mk_tuple
-      |> mk_fresh_star avoid_trm 
-      |> HOLogic.mk_Trueprop
-      |> (curry Logic.list_implies) prems
-      |> fold_rev (Logic.all o Free) params
-    val finite_goal = avoid_trm
-      |> mk_finite
-      |> HOLogic.mk_Trueprop
-      |> (curry Logic.list_implies) prems
-      |> fold_rev (Logic.all o Free) params
-  in 
-    if null avoid then [] else [vc_goal, finite_goal]
-  end
+fun mk_vc_compat (avoid, avoid_trm) prems concl_args params =
+  if null avoid then
+    []
+  else
+    let
+      val vc_goal = concl_args
+        |> HOLogic.mk_tuple
+        |> mk_fresh_star avoid_trm
+        |> HOLogic.mk_Trueprop
+        |> (curry Logic.list_implies) prems
+        |> fold_rev (Logic.all o Free) params
+      val finite_goal = avoid_trm
+        |> mk_finite
+        |> HOLogic.mk_Trueprop
+        |> (curry Logic.list_implies) prems
+        |> fold_rev (Logic.all o Free) params
+    in
+      [vc_goal, finite_goal]
+    end
 
 (* fixme: move to nominal_library *)
 fun map_term prop f trm =
@@ -77,12 +80,15 @@ fun add_p_c p (c, c_ty) trm =
     |> (fn t => HOLogic.all_const @{typ perm} $  lambda p t)
   end
 
-fun induct_forall_const T = Const ("HOL.induct_forall", (T --> @{typ bool}) --> @{typ bool})
-fun mk_induct_forall (a, T) t =  induct_forall_const T $ Abs (a, T, t)
+fun induct_forall_const T =
+  Const ("HOL.induct_forall", (T --> @{typ bool}) --> @{typ bool})
+
+fun mk_induct_forall (a, T) t =
+  induct_forall_const T $ Abs (a, T, t)
 
 fun add_c_prop qnt Ps (c, c_name, c_ty) trm =
   let
-    fun add t = 
+    fun add t =
       let
         val (P, args) = strip_comb t
         val (P_name, P_ty) = dest_Free P
@@ -91,7 +97,7 @@ fun add_c_prop qnt Ps (c, c_name, c_ty) trm =
           |> qnt ? map (incr_boundvars 1)
       in
         list_comb (Free (P_name, (c_ty :: ty_args) ---> bool), c :: args')
-        |> qnt ? mk_induct_forall (c_name, c_ty)
+          |> qnt ? mk_induct_forall (c_name, c_ty)
       end
   in
     map_term (member (op =) Ps o head_of) add trm
@@ -100,7 +106,7 @@ fun add_c_prop qnt Ps (c, c_name, c_ty) trm =
 fun prep_prem Ps c_name c_ty (avoid, avoid_trm) (params, prems, concl) =
   let
     val prems' = prems
-      |> map (incr_boundvars 1) 
+      |> map (incr_boundvars 1)
       |> map (add_c_prop true Ps (Bound 0, c_name, c_ty))
 
     val avoid_trm' = avoid_trm
@@ -109,14 +115,14 @@ fun prep_prem Ps c_name c_ty (avoid, avoid_trm) (params, prems, concl) =
       |> (fn t => mk_fresh_star_ty c_ty t (Bound 0))
       |> HOLogic.mk_Trueprop
 
-    val prems'' = 
-      if null avoid 
-      then prems' 
+    val prems'' =
+      if null avoid
+      then prems'
       else avoid_trm' :: prems'
 
     val concl' = concl
-      |> incr_boundvars 1 
-      |> add_c_prop false Ps (Bound 0, c_name, c_ty)  
+      |> incr_boundvars 1
+      |> add_c_prop false Ps (Bound 0, c_name, c_ty)
   in
     mk_full_horn (params @ [(c_name, c_ty)]) prems'' concl'
   end
@@ -129,7 +135,7 @@ fun same_name (Free (a1, _), Free (a2, _)) = (a1 = a2)
 
 (* fixme: move to nominal_library *)
 fun map7 _ [] [] [] [] [] [] [] = []
-  | map7 f (x :: xs) (y :: ys) (z :: zs) (u :: us) (v :: vs) (r :: rs) (s :: ss) = 
+  | map7 f (x :: xs) (y :: ys) (z :: zs) (u :: us) (v :: vs) (r :: rs) (s :: ss) =
       f x y z u v r s :: map7 f xs ys zs us vs rs ss
 
 (* local abbreviations *)
@@ -137,18 +143,20 @@ fun map7 _ [] [] [] [] [] [] [] = []
 local
   open Nominal_Permeq
 in
-(* by default eqvt_strict_config contains unwanted @{thm permute_pure} *) 
 
-val eqvt_sconfig = eqvt_strict_config addpres @{thms permute_minus_cancel}
+  (* by default eqvt_strict_config contains unwanted @{thm permute_pure} *) 
 
-fun eqvt_stac ctxt = eqvt_tac ctxt eqvt_sconfig
-fun eqvt_srule ctxt = eqvt_rule ctxt eqvt_sconfig
+  val eqvt_sconfig = eqvt_strict_config addpres @{thms permute_minus_cancel}
+
+  fun eqvt_stac ctxt = eqvt_tac ctxt eqvt_sconfig
+  fun eqvt_srule ctxt = eqvt_rule ctxt eqvt_sconfig
 
 end
 
 val all_elims = 
   let
-     fun spec' ct = Drule.instantiate' [SOME (ctyp_of_term ct)] [NONE, SOME ct] @{thm spec}
+    fun spec' ct =
+      Drule.instantiate' [SOME (ctyp_of_term ct)] [NONE, SOME ct] @{thm spec}
   in
     fold (fn ct => fn th => th RS spec' ct)
   end
@@ -216,6 +224,7 @@ fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
 
 val supp_perm_eq' = @{lemma "fresh_star (supp (permute p x)) q ==> permute p x == permute (q + p) x" 
   by (simp add: supp_perm_eq)}
+
 val fresh_star_plus = @{lemma "fresh_star (permute q (permute p x)) c ==> fresh_star (permute (q + p) x) c" 
   by (simp add: permute_plus)}
 
@@ -322,8 +331,9 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
       |> map Logic.strip_horn
       |> split_list
 
-    val intr_concls_args = map (snd o strip_comb o HOLogic.dest_Trueprop) intr_concls 
-      
+    val intr_concls_args =
+      map (snd o fixed_nonfixed_args ctxt' o HOLogic.dest_Trueprop) intr_concls
+
     val avoid_trms = avoids
       |> (map o map) (setify ctxt') 
       |> map fold_union
@@ -385,35 +395,33 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
 
 fun prove_strong_inductive_cmd (pred_name, avoids) ctxt =
   let
-    val thy = Proof_Context.theory_of ctxt;
     val ({names, ...}, {raw_induct, intrs, ...}) =
-      Inductive.the_inductive ctxt (Sign.intern_const thy pred_name);
+      Inductive.the_inductive ctxt (long_name ctxt pred_name)
 
-    val rule_names = 
-      hd names
+    val rule_names = hd names
       |> the o Induct.lookup_inductP ctxt
       |> fst o Rule_Cases.get
       |> map (fst o fst)
 
-    val _ = (case duplicates (op = o pairself fst) avoids of
+    val case_names = map fst avoids
+    val _ = case duplicates (op =) case_names of
         [] => ()
-      | xs => error ("Duplicate case names: " ^ commas_quote (map fst xs)))
-
-    val _ = (case subtract (op =) rule_names (map fst avoids) of
+      | xs => error ("Duplicate case names: " ^ commas_quote xs)
+    val _ = case subtract (op =) rule_names case_names of
         [] => ()
-      | xs => error ("No such case(s) in inductive definition: " ^ commas_quote xs))
+      | xs => error ("No such case(s) in inductive definition: " ^ commas_quote xs)
 
     val avoids_ordered = order_default (op =) [] rule_names avoids
-      
+
     fun read_avoids avoid_trms intr =
       let
         (* fixme hack *)
         val (((_, ctrms), _), ctxt') = Variable.import true [intr] ctxt
         val trms = map (term_of o snd) ctrms
-        val ctxt'' = fold Variable.declare_term trms ctxt' 
+        val ctxt'' = fold Variable.declare_term trms ctxt'
       in
-        map (Syntax.read_term ctxt'') avoid_trms 
-      end 
+        map (Syntax.read_term ctxt'') avoid_trms
+      end
 
     val avoid_trms = map2 read_avoids avoids_ordered intrs
   in
@@ -422,11 +430,10 @@ fun prove_strong_inductive_cmd (pred_name, avoids) ctxt =
 
 (* outer syntax *)
 local
-
-  val single_avoid_parser = 
+  val single_avoid_parser =
     Parse.name -- (@{keyword ":"} |-- Parse.and_list1 Parse.term)
 
-  val avoids_parser = 
+  val avoids_parser =
     Scan.optional (@{keyword "avoids"} |-- Parse.enum1 "|" single_avoid_parser) []
 
   val main_parser = Parse.xname -- avoids_parser

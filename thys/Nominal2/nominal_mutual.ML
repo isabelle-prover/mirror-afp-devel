@@ -418,9 +418,6 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
 
     val (mutual' as Mutual {n', parts, ST, RST, ...}, lthy'') = define_projections fixes mutual fsum lthy'
 
-
-    (* XXX *)
-
     (* defining the auxiliary graph *)
     fun mk_cases (MutualPart {i', fvar as (n, T), ...}) =
       let

@@ -503,7 +503,7 @@ fun mk_uniqueness_case thy globals G f ihyp ih_intro G_cases compat_store clause
     fun elim_implies_eta A AB =
       Thm.bicompose {flatten = false, match = true, incremented = false} (false, A, 0) 1 AB
       |> Seq.list_of |> the_single
- 
+
     val uniqueness = G_cases
       |> Thm.forall_elim (cterm_of thy lhs)
       |> Thm.forall_elim (cterm_of thy y)
