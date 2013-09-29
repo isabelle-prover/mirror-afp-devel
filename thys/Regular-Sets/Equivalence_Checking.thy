@@ -266,33 +266,9 @@ proof-
   } ultimately show ?thesis by (auto simp: in_lists_conv_set) blast
 qed
 
-lemma atoms_lang: "w : lang r \<Longrightarrow> set w \<subseteq> atoms r"
-proof(induction r arbitrary: w)
-  case Times thus ?case by fastforce
-next
-  case Star thus ?case by (fastforce simp add: star_conv_concat)
-qed auto
-
 lemma nullable_nderivs:
   "nullable (foldl (%r a. nderiv a r) r w) = (w : lang r)"
 by (induct w arbitrary: r) (simp_all add: nullable_iff lang_nderiv Deriv_def)
-
-lemma lang_eq_ext: "(lang r = lang s) =
-  (\<forall>w \<in> lists(atoms r \<union> atoms s). w \<in> lang r \<longleftrightarrow> w \<in> lang s)" (is "?L = ?R")
-proof
-  assume ?L thus ?R by auto
-next
-  assume R: ?R
-  show ?L
-  proof(rule set_eqI)
-    fix w show "w \<in> lang r \<longleftrightarrow> w \<in> lang s"
-    proof (cases "set w \<subseteq> atoms r \<union> atoms s")
-      case True thus ?thesis using R by auto
-    next
-      case False thus ?thesis using R using atoms_lang by blast
-    qed
-  qed
-qed
 
 theorem closure_sound_complete:
 assumes result: "closure as (r,s) = Some(ws,R)"

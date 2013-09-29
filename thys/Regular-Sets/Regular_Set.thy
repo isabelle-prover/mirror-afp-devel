@@ -219,6 +219,15 @@ proof-
   } thus ?thesis by (auto simp: star_conv_concat)
 qed
 
+lemma star_unfold_left_Nil: "star A = (A - {[]}) @@ (star A) \<union> {[]}"
+by (metis insert_Diff_single star_insert_eps star_unfold_left)
+
+lemma star_Diff_Nil_fold: "(A - {[]}) @@ star A = star A - {[]}"
+proof -
+  have "[] \<notin> (A - {[]}) @@ star A" by simp
+  thus ?thesis using star_unfold_left_Nil by blast
+qed
+
 lemma star_decom: 
   assumes a: "x \<in> star A" "x \<noteq> []"
   shows "\<exists>a b. x = a @ b \<and> a \<noteq> [] \<and> a \<in> A \<and> b \<in> star A"

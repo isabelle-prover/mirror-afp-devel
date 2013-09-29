@@ -60,4 +60,28 @@ by (induction r) auto
 lemma map_rexp_ident[simp]: "map_rexp (\<lambda>x. x) = (\<lambda>r. r)"
 by (rule ext, induct_tac r) auto
 
+lemma atoms_lang: "w : lang r \<Longrightarrow> set w \<subseteq> atoms r"
+proof(induction r arbitrary: w)
+  case Times thus ?case by fastforce
+next
+  case Star thus ?case by (fastforce simp add: star_conv_concat)
+qed auto
+
+lemma lang_eq_ext: "(lang r = lang s) =
+  (\<forall>w \<in> lists(atoms r \<union> atoms s). w \<in> lang r \<longleftrightarrow> w \<in> lang s)" (is "?L = ?R")
+proof
+  assume ?L thus ?R by auto
+next
+  assume R: ?R
+  show ?L
+  proof(rule set_eqI)
+    fix w show "w \<in> lang r \<longleftrightarrow> w \<in> lang s"
+    proof (cases "set w \<subseteq> atoms r \<union> atoms s")
+      case True thus ?thesis using R by auto
+    next
+      case False thus ?thesis using R using atoms_lang by blast
+    qed
+  qed
+qed
+
 end
