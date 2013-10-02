@@ -198,7 +198,7 @@ proof-
   let ?test = "%(ws,_). ws \<noteq> [] \<and> (%(r,s). nullable r = nullable s)(hd ws)"
   let ?step = "(%(ws,R).
      let x = hd ws; new = filter (\<lambda>y. y \<notin> R) ((\<lambda>(r,s). map (\<lambda>a. (nderiv a r, nderiv a s)) as) x)
-     in (new @ tl ws, set new \<union> insert x R))"
+     in (new @ tl ws, set new \<union> R))"
   { fix st have "pre_bisim as r s st \<Longrightarrow> ?test st \<Longrightarrow> pre_bisim as r s (?step st)"
       unfolding pre_bisim_def
       by (cases st, auto simp: Let_def neq_Nil_conv Ball_def split_def split: list.splits prod.splits
