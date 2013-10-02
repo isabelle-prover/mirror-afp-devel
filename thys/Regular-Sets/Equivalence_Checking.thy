@@ -6,32 +6,11 @@ imports
   "~~/src/HOL/Library/While_Combinator"
 begin
 
-subsection {* Term ordering *}
-
-fun le_rexp :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
-where
-  "le_rexp Zero _ = True"
-| "le_rexp _ Zero = False"
-| "le_rexp One _ = True"
-| "le_rexp _ One = False"
-| "le_rexp (Atom a) (Atom b) = (a <= b)"
-| "le_rexp (Atom _) _ = True"
-| "le_rexp _ (Atom _) = False"
-| "le_rexp (Star r) (Star s) = le_rexp r s"
-| "le_rexp (Star _) _ = True"
-| "le_rexp _ (Star _) = False"
-| "le_rexp (Plus r r') (Plus s s') =
-    (if r = s then le_rexp r' s' else le_rexp r s)"
-| "le_rexp (Plus _ _) _ = True"
-| "le_rexp _ (Plus _ _) = False"
-| "le_rexp (Times r r') (Times s s') =
-    (if r = s then le_rexp r' s' else le_rexp r s)"
-
 subsection {* Normalizing operations *}
 
 text {* associativity, commutativity, idempotence, zero *}
 
-fun nPlus :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
+fun nPlus :: "'a::order rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "nPlus Zero r = r"
 | "nPlus r Zero = r"
@@ -46,11 +25,11 @@ where
       else Plus s r)"
 
 lemma lang_nPlus[simp]: "lang (nPlus r s) = lang (Plus r s)"
-by (induct r s rule: nPlus.induct) auto
+by (induction r s rule: nPlus.induct) auto
 
 text {* associativity, zero, one *}
 
-fun nTimes :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
+fun nTimes :: "'a::order rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "nTimes Zero _ = Zero"
 | "nTimes _ Zero = Zero"
@@ -60,9 +39,9 @@ where
 | "nTimes r s = Times r s"
 
 lemma lang_nTimes[simp]: "lang (nTimes r s) = lang (Times r s)"
-by (induct r s rule: nTimes.induct) (auto simp: conc_assoc)
+by (induction r s rule: nTimes.induct) (auto simp: conc_assoc)
 
-primrec norm :: "nat rexp \<Rightarrow> nat rexp"
+primrec norm :: "'a::order rexp \<Rightarrow> 'a rexp"
 where
   "norm Zero = Zero"
 | "norm One = One"
@@ -75,9 +54,9 @@ lemma lang_norm[simp]: "lang (norm r) = lang r"
 by (induct r) auto
 
 
-subsection {* Derivative *}
+subsection {* Normalizing Derivative *}
 
-primrec nderiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
+primrec nderiv :: "'a::order \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "nderiv _ Zero = Zero"
 | "nderiv _ One = Zero"
@@ -89,23 +68,23 @@ where
 | "nderiv a (Star r) = nTimes (nderiv a r) (Star r)"
 
 lemma lang_nderiv: "lang (nderiv a r) = Deriv a (lang r)"
-by (induct r) (auto simp: Let_def nullable_iff)
+by (induction r) (auto simp: Let_def nullable_iff)
 
 lemma deriv_no_occurrence: 
   "x \<notin> atoms r \<Longrightarrow> nderiv x r = Zero"
-by (induct r) auto
+by (induction r) auto
 
 lemma atoms_nPlus[simp]: "atoms (nPlus r s) = atoms r \<union> atoms s"
-by (induct r s rule: nPlus.induct) auto
+by (induction r s rule: nPlus.induct) auto
 
 lemma atoms_nTimes: "atoms (nTimes r s) \<subseteq> atoms r \<union> atoms s"
-by (induct r s rule: nTimes.induct) auto
+by (induction r s rule: nTimes.induct) auto
 
 lemma atoms_norm: "atoms (norm r) \<subseteq> atoms r"
-by (induct r) (auto dest!:subsetD[OF atoms_nTimes])
+by (induction r) (auto dest!:subsetD[OF atoms_nTimes])
 
 lemma atoms_nderiv: "atoms (nderiv a r) \<subseteq> atoms r"
-by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
+by (induction r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 
 subsection {* Bisimulation between languages and regular expressions *}
@@ -142,10 +121,10 @@ apply (rule bisimilar.coinduct[of R, OF `K \<sim> L`])
 apply (auto simp: assms)
 done
 
-type_synonym rexp_pair = "nat rexp * nat rexp"
-type_synonym rexp_pairs = "rexp_pair list"
+type_synonym 'a rexp_pair = "'a rexp * 'a rexp"
+type_synonym 'a rexp_pairs = "'a rexp_pair list"
 
-definition is_bisimulation ::  "nat list \<Rightarrow> rexp_pair set \<Rightarrow> bool"
+definition is_bisimulation ::  "'a::order list \<Rightarrow> 'a rexp_pair set \<Rightarrow> bool"
 where
 "is_bisimulation as R =
   (\<forall>(r,s)\<in> R. (atoms r \<union> atoms s \<subseteq> set as) \<and> (nullable r \<longleftrightarrow> nullable s) \<and>
@@ -159,7 +138,6 @@ proof -
   def ps' \<equiv> "insert (Zero, Zero) ps"
   from bisim have bisim': "is_bisimulation as ps'"
     by (auto simp: ps'_def is_bisimulation_def)
-
   let ?R = "\<lambda>K L. (\<exists>(r,s)\<in>ps'. K = lang r \<and> L = lang s)"
   show ?thesis
   proof (rule language_coinduct[where R="?R"])
@@ -198,12 +176,13 @@ qed
 subsection {* Closure computation *}
 
 definition closure ::
-  "nat list \<Rightarrow> rexp_pair \<Rightarrow> (rexp_pairs * rexp_pair set) option" where
+  "'a::order list \<Rightarrow> 'a rexp_pair \<Rightarrow> ('a rexp_pairs * 'a rexp_pair set) option"
+where
 "closure as = rtrancl_while (%(r,s). nullable r = nullable s)
   (%(r,s). map (\<lambda>a. (nderiv a r, nderiv a s)) as)"
 
-definition pre_bisim :: "nat list \<Rightarrow> nat rexp \<Rightarrow> nat rexp \<Rightarrow>
- rexp_pairs * rexp_pair set \<Rightarrow> bool"
+definition pre_bisim :: "'a::order list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp \<Rightarrow>
+ 'a rexp_pairs * 'a rexp_pair set \<Rightarrow> bool"
 where
 "pre_bisim as r s = (\<lambda>(ws,R).
  (r,s) \<in> R \<and> set ws \<subseteq> R \<and>
