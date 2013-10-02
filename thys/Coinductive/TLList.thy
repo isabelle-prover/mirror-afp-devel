@@ -53,7 +53,11 @@ lemmas terminal_TNil [code, nitpick_simp] = tllist.sel(1)
 lemma terminal_TCons [simp, code, nitpick_simp]: "terminal (TCons x xs) = terminal xs"
 by simp
 
-declare tllist.sel(2)[simp del]
+declare tllist.sel(2) [simp del]
+
+declare
+  tllist.unfold(1) [simp]
+  tllist.corec(1) [simp]
 
 lemma tllist_case_cert:
   assumes "CASE \<equiv> tllist_case c d"

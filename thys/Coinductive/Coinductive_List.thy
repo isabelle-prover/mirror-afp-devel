@@ -34,6 +34,10 @@ codatatype (lset: 'a) llist (map: lmap rel: llist_all2) =
     =: LNil (defaults lhd: undefined ltl: LNil)
   | LCons (lhd: 'a) (ltl: "'a llist")
 
+declare
+  llist.unfold(1) [simp]
+  llist.corec(1) [simp]
+
 text {*
   The following setup should be done by the BNF package.
 *}
@@ -151,7 +155,7 @@ lemma llist_unfold_ltl_unroll:
 by(coinduct b rule: llist_fun_coinduct) auto
 
 lemma ltl_llist_unfold:
-  "ltl (llist_unfold IS_LNIL LHD LTL a) = 
+  "ltl (llist_unfold IS_LNIL LHD LTL a) =
   (if IS_LNIL a then LNil else llist_unfold IS_LNIL LHD LTL (LTL a))"
 by(simp)
 
