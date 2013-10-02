@@ -3,7 +3,7 @@ header {* Ribbon proof interfaces *}
 theory Ribbons_Interfaces imports
   Ribbons_Basic
   Proofchain
-  "~~/src/HOL/Quotient_Examples/FSet"
+  "~~/src/HOL/Library/FSet"
 begin
 
 text {* Interfaces are the top and bottom boundaries through which diagrams 
@@ -14,26 +14,6 @@ text {* Interfaces are the top and bottom boundaries through which diagrams
   We define a datatype of concrete interfaces. We then quotient by the 
   associativity, commutativity and unity properties of our 
   horizontal-composition operator. *}
-
-subsection {* Some extra lemmas about finite sets *}
-
-lemma filter_subset: 
-  "filter_fset p X |\<subseteq>| X"
-by (descending, auto)
-
-lemma fset_diff_union: 
-  "A - (B |\<union>| C) = A - B - C"
-by (descending, auto)
-
-lemma fset_diff_union2:
-  assumes "B |\<subseteq>| A" 
-  shows "A - B |\<union>| B = A"
-using assms by (descending, auto)
-
-lemma rsp_fold_o:
-  assumes "rsp_fold f"
-  shows "rsp_fold (f \<circ> g)"
-by (metis (hide_lams, no_types) assms o_apply rsp_fold_def)
 
 subsection {* Syntax of interfaces *}
 
@@ -73,53 +53,49 @@ apply (intro sympI, simp add: equiv_int.sym)
 apply (intro transpI, elim equiv_int.trans, simp add: equiv_int.refl)
 done
 
-quotient_definition 
-  "Ribbon :: assertion \<Rightarrow> interface" 
-is "Ribbon_conc"
-done
+lift_definition 
+  Ribbon :: "assertion \<Rightarrow> interface" 
+is "Ribbon_conc" by (rule equiv_int.refl)
 
-quotient_definition
-  "Emp_int :: interface"
-is "\<epsilon>\<^sub>c"
-done
-notation Emp_int ("\<epsilon>")
 
-quotient_definition
-  "Exists_int :: string \<Rightarrow> interface \<Rightarrow> interface"
+lift_definition
+  Emp_int :: "interface" ("\<epsilon>")
+is "\<epsilon>\<^sub>c" .
+
+lift_definition
+  Exists_int :: "string \<Rightarrow> interface \<Rightarrow> interface"
 is "Exists_int_conc"
 by (rule equiv_int.cong_exists)
 
-quotient_definition
-  "HComp_int :: interface \<Rightarrow> interface \<Rightarrow> interface" 
-is "HComp_int_conc"
-by (auto simp add: equiv_int_cong_hcomp)
-notation HComp_int (infix "\<otimes>" 50)
+lift_definition
+  HComp_int :: "interface \<Rightarrow> interface \<Rightarrow> interface" (infix "\<otimes>" 50)
+is "HComp_int_conc" by (rule equiv_int_cong_hcomp)
 
 lemma hcomp_comm: 
   "(P \<otimes> Q) = (Q \<otimes> P)"
-by (lifting hcomp_conc_comm)
+by (rule hcomp_conc_comm[Transfer.transferred])
 
 lemma hcomp_assoc:
   "(P \<otimes> (Q \<otimes> R)) = ((P \<otimes> Q) \<otimes> R)"
-by (lifting hcomp_conc_assoc)
+by (rule hcomp_conc_assoc[Transfer.transferred])
 
 lemma emp_hcomp:
   "\<epsilon> \<otimes> P = P"
-by (lifting hcomp_conc_unit1)
+by (rule hcomp_conc_unit1[Transfer.transferred])
 
 lemma hcomp_emp:
   "P \<otimes> \<epsilon> = P"
-by (lifting hcomp_conc_unit2)
+by (rule hcomp_conc_unit2[Transfer.transferred])
 
-lemma rsp_hcomp:
-  "rsp_fold (op \<otimes>)"
-by (auto simp add:rsp_fold_def o_def, metis hcomp_comm hcomp_assoc)
+lemma comp_fun_commute_hcomp:
+  "comp_fun_commute (op \<otimes>)"
+by default (simp add: hcomp_assoc fun_eq_iff, metis hcomp_comm)
 
 subsection {* An iterated horizontal-composition operator *}
 
 definition iter_hcomp :: "('a fset) \<Rightarrow> ('a \<Rightarrow> interface) \<Rightarrow> interface"
 where
-  "iter_hcomp X f \<equiv> fold_fset (op \<otimes> \<circ> f) X \<epsilon>"
+  "iter_hcomp X f \<equiv> ffold (op \<otimes> \<circ> f) \<epsilon> X"
 
 syntax "iter_hcomp_syntax" :: 
   "'a \<Rightarrow> ('a fset) \<Rightarrow> ('a \<Rightarrow> interface) \<Rightarrow> interface"
@@ -132,49 +108,29 @@ term "\<Otimes>P|\<in>|Ps. f" -- "this isn't eta-expanded, so prints as written"
 lemma iter_hcomp_cong:
   assumes "\<forall>v \<in> fset vs. \<phi> v = \<phi>' v"
   shows "(\<Otimes>v|\<in>|vs. \<phi> v) = (\<Otimes>v|\<in>|vs. \<phi>' v)"
-proof -
-  have 1: "\<And>f g e. (\<And>v. v |\<in>| vs \<Longrightarrow> f v = g v) \<Longrightarrow>
-    rsp_fold f \<Longrightarrow> rsp_fold g \<Longrightarrow> fold_fset f vs e = fold_fset g vs e"
-  by (descending, unfold fold_once_def, auto, metis fold_cong set_remdups)
-  show ?thesis 
-  apply (unfold iter_hcomp_def)
-  apply (intro 1)
-  apply (auto simp add: rsp_hcomp rsp_fold_o assms in_fset)
-  done
-qed
+using assms unfolding iter_hcomp_def  
+by (auto simp add: fmember.rep_eq comp_fun_commute.comp_comp_fun_commute comp_fun_commute_hcomp 
+  intro: ffold_cong)
 
 lemma iter_hcomp_empty:
   shows "(\<Otimes>x |\<in>| {||}. p x) = \<epsilon>"
-by (metis iter_hcomp_def fold_empty_fset id_apply)
+by (metis comp_fun_commute.ffold_empty comp_fun_commute_hcomp iter_hcomp_def)
 
 lemma iter_hcomp_insert:
   assumes "v |\<notin>| ws"
-  shows "(\<Otimes>x |\<in>| insert_fset v ws. p x) = (p v \<otimes> (\<Otimes>x |\<in>| ws. p x))"
+  shows "(\<Otimes>x |\<in>| finsert v ws. p x) = (p v \<otimes> (\<Otimes>x |\<in>| ws. p x))"
 proof -
-  have "\<And>f v ws e. rsp_fold f \<Longrightarrow> v |\<notin>| ws \<Longrightarrow> 
-    fold_fset f (insert_fset v ws) e = (f v (fold_fset f ws e))"
-  apply (induct ws)
-  apply (descending, unfold fold_once_def, auto)[1]
-  apply (descending, unfold fold_once_def rsp_fold_def, auto)
-  apply (metis (hide_lams, no_types) fold_Cons fold_rev foldr_Cons
-    foldr_conv_fold o_eq_dest_lhs)
-  done
-  thus "?thesis"
-  by (metis iter_hcomp_def assms o_apply rsp_fold_o rsp_hcomp)
+  interpret comp_fun_commute "(op \<otimes> \<circ> p)"
+  by (metis comp_fun_commute.comp_comp_fun_commute comp_fun_commute_hcomp)
+  from assms show ?thesis unfolding iter_hcomp_def by auto
 qed
 
 lemma iter_hcomp_union:
   assumes "vs |\<inter>| ws = {||}"
   shows "(\<Otimes>x |\<in>| vs |\<union>| ws. p x) = ((\<Otimes>x |\<in>| vs. p x) \<otimes> (\<Otimes>x |\<in>| ws. p x))"
-apply (insert assms, induct vs)
-apply (metis emp_hcomp iter_hcomp_empty sup_bot_left)
-apply (subgoal_tac "x |\<notin>| (vs |\<union>| ws)")
-apply (unfold union_insert_fset iter_hcomp_insert)
-apply (subgoal_tac "vs |\<inter>| ws = {||}")
-apply (metis hcomp_assoc)
-apply (metis in_union_fset inter_insert_fset)
-apply (metis in_inter_fset in_union_fset insert_fsetI1 notin_empty_fset)
-done
+using assms
+by (induct vs) (auto simp add: emp_hcomp iter_hcomp_empty iter_hcomp_insert hcomp_assoc)
+
 
 subsection {* Semantics of interfaces *}
 
@@ -187,19 +143,17 @@ where
 | "conc_asn (\<epsilon>\<^sub>c) = Emp"
 | "conc_asn (Exists_int_conc x P) = Exists x (conc_asn P)"
 
-quotient_definition 
-  "asn :: interface \<Rightarrow> assertion"
+lift_definition 
+  asn :: "interface \<Rightarrow> assertion"
 is "conc_asn"
-apply (induct_tac rule:equiv_int.induct)
-apply (auto simp add: star_assoc star_comm star_rot emp_star)
-done
+by (induct_tac rule:equiv_int.induct) (auto simp add: star_assoc star_comm star_rot emp_star)
 
 lemma asn_simps [simp]:
   "asn (Ribbon p) = p"
   "asn (P \<otimes> Q) = (asn P) \<star> (asn Q)"
   "asn \<epsilon> = Emp"
   "asn (Exists_int x P) = Exists x (asn P)"
-by (descending, simp)+
+by (transfer, simp)+
 
 subsection {* Program variables mentioned in an interface. *}
 
@@ -211,19 +165,17 @@ where
 | "rd_conc_int (\<epsilon>\<^sub>c) = {}"
 | "rd_conc_int (Exists_int_conc x P) = rd_conc_int P"
 
-quotient_definition
-  "rd_int :: interface \<Rightarrow> string set"
+lift_definition
+  rd_int :: "interface \<Rightarrow> string set"
 is "rd_conc_int"
-apply (induct_tac rule: equiv_int.induct)
-apply auto
-done
+by (induct_tac rule: equiv_int.induct) auto
   
 text {* The program variables read by an interface are the same as those read 
   by its corresponding assertion. *}
 
 lemma rd_int_is_rd_ass:
   "rd_ass (asn P) = rd_int P"
-by (descending, induct_tac P, auto simp add: rd_star rd_exists rd_emp) 
+by (transfer, induct_tac P, auto simp add: rd_star rd_exists rd_emp) 
 
 text {* Here is an iterated version of the Hoare logic sequencing rule. *}
 

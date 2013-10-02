@@ -105,28 +105,28 @@ subsection {* Initial and terminal nodes *}
 definition
   initials :: "diagram \<Rightarrow> node fset"
 where
-  "initials G = filter_fset (\<lambda>v. (\<forall>e \<in> set G^E. v |\<notin>| thd3 e)) G^V"
+  "initials G = ffilter (\<lambda>v. (\<forall>e \<in> set G^E. v |\<notin>| thd3 e)) G^V"
 
 definition
    terminals :: "diagram \<Rightarrow> node fset"
 where
-  "terminals G = filter_fset (\<lambda>v. (\<forall>e \<in> set G^E. v |\<notin>| fst3 e)) G^V"
+  "terminals G = ffilter (\<lambda>v. (\<forall>e \<in> set G^E. v |\<notin>| fst3 e)) G^V"
 
 lemma no_edges_imp_all_nodes_initial:
   "initials (Graph V \<Lambda> []) = V"
-by (auto simp add: initials_def, descending, auto)
+by (auto simp add: initials_def)
 
 lemma no_edges_imp_all_nodes_terminal:
   "terminals (Graph V \<Lambda> []) = V"
-by (auto simp add: terminals_def, descending, auto)
+by (auto simp add: terminals_def)
 
 lemma initials_in_vertices:
    "initials G |\<subseteq>| G^V"
-by (unfold initials_def, rule filter_subset)
+unfolding initials_def by auto
 
 lemma terminals_in_vertices:
    "terminals G |\<subseteq>| G^V"
-by (unfold terminals_def, rule filter_subset)
+unfolding terminals_def by auto
 
 subsection {* Top and bottom interfaces *}
 

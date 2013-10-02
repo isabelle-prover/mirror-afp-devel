@@ -299,17 +299,17 @@ proof (insert assms, unfold initial_ps2_def, transfer)
   apply (unfold fun_eq_iff initials_def, intro allI)
   apply (unfold G_def G'_def V'_def E'_def)
   apply (unfold edges.simps vertices.simps)
-  apply (simp add: subset_fset in_fset e_in_E)
+  apply (simp add: less_eq_fset.rep_eq fmember.rep_eq e_in_E)
   apply (intro conjI impI)
   apply (elim bexE conjE)
   apply (rename_tac "f")
   apply (subgoal_tac "thd3 e |\<inter>| initials G = {||}")
   apply (insert S_initials, fold fset_cong)
-  apply (unfold subset_fset initials_def filter_fset)
-  apply (auto simp add: in_fset G_def e_in_E)[1]
-  apply (auto simp add: in_fset G_def e_in_E)[1]
-  apply (auto simp add: in_fset G_def e_in_E)[1]
-  apply (auto simp add: in_fset G_def e_in_E)[1]
+  apply (unfold less_eq_fset.rep_eq initials_def filter_fset)
+  apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
+  apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
+  apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
+  apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
   apply (elim conjE bexE)
   apply (insert wf_G)[1] 
   apply (unfold G_def vertices.simps edges.simps)
@@ -328,7 +328,7 @@ proof (insert assms, unfold initial_ps2_def, transfer)
   apply (unfold G_def vertices.simps edges.simps)
   apply (drule wf_dia_inv) back back 
   apply (metis (lifting) e_in_E Diff_iff G_def empty_iff fset_simps(1) 
-    in_inter_fset insertCI linearityD(2) notin_fset wf_G wf_dia_inv(4))
+    finter_iff insertCI linearityD(2) notin_fset wf_G wf_dia_inv(4))
   apply (elim bexE DiffE)
   apply (unfold singleton_iff)
   apply (insert wf_G)[1] 
@@ -341,21 +341,21 @@ proof (insert assms, unfold initial_ps2_def, transfer)
   apply (unfold G_def vertices.simps edges.simps)
   apply (drule wf_dia_inv) back back 
   apply (metis (lifting) e_in_E Diff_iff G_def empty_iff fset_simps(1) 
-    in_inter_fset insertCI linearityD(2) notin_fset wf_G wf_dia_inv(4))
+    finter_iff insertCI linearityD(2) notin_fset wf_G wf_dia_inv(4))
   apply (elim bexE)
   apply (insert wf_G) 
   apply (unfold G_def vertices.simps edges.simps)
   apply (drule wf_dia_inv) back back back back
-  apply (unfold subset_fset union_fset)
+  apply (unfold less_eq_fset.rep_eq union_fset)
   apply auto[1]
   apply (drule wf_dia_inv) back back back back
-  apply (unfold subset_fset union_fset)
+  apply (unfold less_eq_fset.rep_eq union_fset)
   apply auto[1]
   apply (drule wf_dia_inv) back back back back
-  apply (unfold subset_fset union_fset)
+  apply (unfold less_eq_fset.rep_eq union_fset)
   apply (auto simp add: e_in_E)[1]
   apply (drule wf_dia_inv) back back back back
-  apply (unfold subset_fset union_fset)
+  apply (unfold less_eq_fset.rep_eq union_fset)
   apply (auto simp add: e_in_E)[1]
   done
 qed
@@ -403,19 +403,39 @@ proof -
     show "set \<pi> = (fset (V - vs) - fset (S - vs)) 
       <+> set (removeAll e E)"
     apply (insert lins2D(1) lins2D(2) assms(2))
-    apply (unfold assms(3) vertices.simps edges.simps subset_fset, simp)
+    apply (unfold assms(3) vertices.simps edges.simps less_eq_fset.rep_eq, simp)
     apply (unfold diff_diff_eq)
-    apply auto
-    defer 1
-    apply (metis (lifting) InrI List.set.simps(2) 
+    proof -
+      have "\<forall>a aa b.
+       insert (Inr (vs, c, ws)) (set \<pi>) = (fset V - fset S) <+> set E \<longrightarrow>
+       fset vs \<subseteq> fset S \<longrightarrow>
+       Inr (vs, c, ws) \<notin> set \<pi> \<longrightarrow>
+       distinct \<pi> \<longrightarrow> (a, aa, b) \<in> set E \<longrightarrow> Inr (a, aa, b) \<notin> set \<pi> \<longrightarrow> b = ws"
+     by (metis (lifting) InrI List.set.simps(2) 
       Pair_eq set_ConsD sum.simps(2))
-    apply (metis (lifting) InrI List.set.simps(2) 
+     
+     moreover have "\<forall>a aa b.
+       insert (Inr (vs, c, ws)) (set \<pi>) = (fset V - fset S) <+> set E \<longrightarrow>
+       fset vs \<subseteq> fset S \<longrightarrow>
+       Inr (vs, c, ws) \<notin> set \<pi> \<longrightarrow>
+       distinct \<pi> \<longrightarrow> (a, aa, b) \<in> set E \<longrightarrow> Inr (a, aa, b) \<notin> set \<pi> \<longrightarrow> aa = c"
+     by (metis (lifting) InrI List.set.simps(2) 
       Pair_eq set_ConsD sum.simps(2))
-    apply (unfold insert_is_Un[of _ "set \<pi>"])
-    apply (fold assms(3))
-    apply (subgoal_tac "set \<pi> = ((fset V - fset S) <+> set E) - {Inr e}")
-    apply auto
-    done
+
+     moreover have "\<forall>x. insert (Inr (vs, c, ws)) (set \<pi>) = (fset V - fset S) <+> set E \<longrightarrow>
+         fset vs \<subseteq> fset S \<longrightarrow>
+         Inr (vs, c, ws) \<notin> set \<pi> \<longrightarrow>
+         distinct \<pi> \<longrightarrow> x \<in> set \<pi> \<longrightarrow> x \<in> (fset V - fset S) <+> set E - {(vs, c, ws)}"
+      apply (unfold insert_is_Un[of _ "set \<pi>"])
+      apply (fold assms(3))
+      apply clarify
+      apply (subgoal_tac "set \<pi> = ((fset V - fset S) <+> set E) - {Inr e}")
+      by auto
+    ultimately show "Inr (vs, c, ws) \<notin> set \<pi> \<and> distinct \<pi> \<Longrightarrow>
+      insert (Inr (vs, c, ws)) (set \<pi>) = (fset V - fset S) <+> set E \<Longrightarrow>
+      fset vs \<subseteq> fset S \<Longrightarrow> set \<pi> = (fset V - fset S) <+> set E - {(vs, c, ws)}"
+    by blast
+    qed
   next
     fix i j v e
     assume "i < length \<pi>" "j < length \<pi>" "\<pi> ! i = Inl v" 
@@ -443,12 +463,14 @@ text {* We wish to prove that every proofstate chain that can be obtained from
   nodes in @{term G}, plus the number of edges, minus the number of nodes in
   @{term S}. *}
 
+lemmas [simp] = fmember.rep_eq
+
 lemma wf_chains2:
   fixes k 
   assumes "S |\<subseteq>| initials G"
       and "wf_dia G"
       and "\<Pi> \<in> ps_chains2 S G"
-      and "card_fset G^V + length G^E = k + card_fset S"
+      and "fcard G^V + length G^E = k + fcard S"
   shows "wf_ps_chain \<Pi> \<and> (post \<Pi> = [ terminals G |=> Bot ])"
 using assms 
 proof (induct k arbitrary: S G \<Pi>)
@@ -457,10 +479,10 @@ proof (induct k arbitrary: S G \<Pi>)
   have "S |\<subseteq>| V" 
     using "0.prems"(1) initials_in_vertices[of "G"] 
     by (auto simp add: G_def)
-  have "card_fset V \<le> card_fset S"
+  have "fcard V \<le> fcard S"
     using "0.prems"(4) 
     by (unfold G_def, auto)
-  from card_subset_fset_eq[OF `S |\<subseteq>| V` this] have "S = V" by auto
+  from fcard_seteq[OF `S |\<subseteq>| V` this] have "S = V" by auto
   hence "E = []" using "0.prems"(4) by (unfold G_def, auto)
   have "initials G = V"
     by (unfold G_def `E=[]`, rule no_edges_imp_all_nodes_initial)
@@ -481,8 +503,7 @@ proof (induct k arbitrary: S G \<Pi>)
   apply (unfold `S=V`)
   apply (subgoal_tac "V - V = {||}", simp)
   apply (transfer, simp add: make_map_def)
-  apply (metis minus_in_fset remove_fset_cases)
-  done
+  by auto
 next
   case (Suc k)
   obtain V \<Lambda> E where G_def: "G = Graph V \<Lambda> E" by (metis diagram.exhaust)
@@ -501,8 +522,8 @@ next
     apply (-, unfold `\<pi> = []` lins2_def, simp_all)
     apply (unfold empty_eq_Plus_conv)
     apply (unfold G_def vertices.simps edges.simps, auto)
-    apply (fold subset_fset, auto simp add: `S |\<subseteq>| V` order_antisym)
-    done
+    by (metis `S |\<subseteq>| V` less_eq_fset.rep_eq subset_antisym)
+    
     with Suc.prems(4) have False by (simp add: G_def)
     thus ?thesis by auto
   next
@@ -515,7 +536,7 @@ next
 
       have "v |\<notin>| S \<and> v |\<in>| V"
       apply (subgoal_tac "v \<in> fset V - fset S")
-      apply (descending, simp)
+      apply (simp)
       apply (subgoal_tac "Inl v \<in> (fset V - fset S) <+> set E")
       apply (metis Inl_inject Inr_not_Inl PlusE)
       apply (metis lins2(1) lins2(2) Cons G_def Inl distinct.simps(2) 
@@ -525,23 +546,24 @@ next
       
       have v_initial_not_S: "v |\<in>| initials G - S"
       apply (unfold G_def initials_def vertices.simps edges.simps)
-      apply (unfold minus_in_fset)
+      apply (unfold fminus_iff)
       apply (unfold conj_commute, intro conjI, rule v_notin_S)
       apply (subgoal_tac 
-        "v \<in> fset (filter_fset (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V)")
-      apply (simp add: in_fset)
+        "v \<in> fset (ffilter (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V)")
+      apply (simp add: fmember.rep_eq)
       apply (unfold filter_fset, simp, unfold conj_commute)
       apply (intro conjI ballI notI)
-      apply (insert v_in_V, descending, auto)
+      apply (insert v_in_V, simp)
       proof -
         fix e :: edge
-        assume "v |\<in>| thd3 e"
+        assume "v \<in> fset (thd3 e)"
+        then have "v |\<in>| (thd3 e)" by auto
         assume "e \<in> set E"
         hence "Inr e \<in> set \<pi>" using lins2(2) by (auto simp add: G_def)
         then obtain j where 
           "j < length \<pi>" "0 < length \<pi>" "\<pi>!j = Inr e" "\<pi>!0 = Inl v"
         by (metis \<pi>_def x_def in_set_conv_nth length_pos_if_in_set nth_Cons_0)
-        from lins2(4)[OF this `v |\<in>| thd3 e`] show False by auto
+        with lins2(4)[OF this `v |\<in>| (thd3 e)`] show False by auto
       qed
       
       def S' \<equiv> "{|v|} |\<union>| S"
@@ -556,11 +578,9 @@ next
       proof (intro Suc.hyps[of "S'"])
         show "S' |\<subseteq>| initials G" 
         apply (unfold S'_def, auto)
-        apply (unfold subset_insert_fset, intro conjI)
-        apply (metis v_initial_not_S minus_in_fset)
-        apply (rule Suc(2))
-        done
-      next
+        apply (metis fmember.rep_eq fminus_iff v_initial_not_S)
+        by (metis Suc.prems(1) fmember.rep_eq fset_rev_mp)
+     next
         show "wf_dia G" by (rule Suc.prems(2))
       next
         show "\<Pi>' \<in> ps_chains2 S' G"
@@ -570,11 +590,11 @@ next
         apply (intro next_lins2_vertex)
         apply (fold x_def, fold \<pi>_def)
         apply (rule \<pi>_in)
-        apply (metis in_minus_fset v_initial_not_S)
-        done
+        by (metis v_notin_S)
       next
-        show "card_fset G^V + length G^E = k + card_fset S'"
-        by (unfold S'_def, auto simp add: v_notin_S Suc.prems(4))
+        show "fcard G^V + length G^E = k + fcard S'"
+         apply (unfold S'_def) 
+         by (auto simp add: Suc.prems(4) fcard_finsert_disjoint[OF v_notin_S])
       qed      
       hence
         wf_\<Pi>': "wf_ps_chain \<Pi>'" and
@@ -587,8 +607,8 @@ next
         |\<inter>| fdom ([ initials G - ({|v|} |\<union>| S) |=> Top ] \<oplus>
      [ S |=> Bot ]) = {||}" 
         by (metis (no_types) fdom_make_fmap fdom_union 
-          bot_least in_union_fset inter_insert_fset le_iff_inf 
-          minus_in_fset subset_insert_fset sup_ge1 v_initial_not_S)
+          bot_least funion_iff finter_finsert_left le_iff_inf 
+          fminus_iff finsert_fsubset sup_ge1 v_initial_not_S)
         show "wf_ps_chain \<Pi>"
         apply (unfold \<Pi>_def \<pi>_def x_def mk_ps_chain_cons)
         apply simp
@@ -600,17 +620,16 @@ next
         apply (fold wf_ps_chain_def, rule wf_\<Pi>')
         apply (intro wf_ps_triple_nodeI exI[of _ "\<sigma>"] conjI)
         apply (unfold \<sigma>_def fdom_union fdom_make_fmap)
-        apply (metis v_notin_S in_minus_fset in_union_fset insert_fsetI1)
+        apply (metis finsertI1 fminus_iff funion_iff v_notin_S)
         apply (unfold pre_\<Pi>' initial_ps2_def S'_def)
         apply (unfold fmap_add_commute[OF 1])
         apply (unfold fmap_add_assoc)
         apply (fold fmap_add_assoc[of _ "[ S |=> Bot ]"])
         apply (unfold make_fmap_union sup.commute[of "{|v|}"])
-        apply (unfold fset_diff_union)
-        apply (metis bot_least fset_diff_union2 
-          subset_insert_fset v_initial_not_S)
-        apply simp
-        done
+        apply (unfold fminus_funion)
+        using v_initial_not_S apply auto
+        by (metis (hide_lams, no_types) finsert_absorb finsert_fminus_single finter_fminus 
+            inf_commute inf_idem v_initial_not_S)
       next
         show "post \<Pi> = [ terminals G |=> Bot ]"  
         apply (unfold \<Pi>_def \<pi>_def x_def mk_ps_chain_cons, simp)
@@ -648,7 +667,7 @@ next
       
       have vs_in_S: "vs |\<subseteq>| S"
       apply (insert e_in_V[OF e_in_E])
-      apply (unfold subset_fset) 
+      apply (unfold less_eq_fset.rep_eq) 
       apply (intro subsetI)
       apply (unfold vs_def)
       apply (rule ccontr)
@@ -664,12 +683,12 @@ next
         then obtain i where 
           "i < length \<pi>" "0 < length \<pi>" "\<pi>!i = Inl v"  "\<pi>!0 = Inr e"
         by (metis Cons Inr in_set_conv_nth length_pos_if_in_set nth_Cons_0)
-        from lins(3)[OF this] show "False" by (auto simp add: in_fset a)
+        from lins(3)[OF this] show "False" by (auto simp add: fmember.rep_eq a)
       qed
 
       have "ws |\<inter>| (initials G) = {||}"
       apply (insert e_in_V[OF e_in_E])
-      apply (unfold initials_def subset_fset in_fset, fold fset_cong) 
+      apply (unfold initials_def less_eq_fset.rep_eq fmember.rep_eq, fold fset_cong) 
       apply (unfold ws_def G_def, auto simp add: e_in_E)
       done
       
@@ -695,8 +714,8 @@ next
         show "S' |\<subseteq>| initials G'" 
         apply (insert Suc.prems(1))
         apply (unfold G'_def G_def initials_def)
-        apply (unfold subset_fset S'_def E'_def V'_def)
-        apply (auto simp add: in_fset)
+        apply (unfold less_eq_fset.rep_eq S'_def E'_def V'_def)
+        apply (auto simp add: fmember.rep_eq)
         done
       next
         from Suc.prems(2) have "wf_dia (Graph V \<Lambda> E)" 
@@ -708,7 +727,7 @@ next
         apply (unfold vs_def)
         apply (intro wf_dia)
         apply (unfold linearity_def initials_def G_def)
-        apply (fold fset_cong, unfold subset_fset in_fset)
+        apply (fold fset_cong, unfold less_eq_fset.rep_eq fmember.rep_eq)
         apply (simp, simp)
         apply (unfold acyclicity_def, rule acyclic_subset)
         apply (auto simp add: distinct_removeAll)
@@ -721,24 +740,24 @@ next
         apply (unfold S'_def G'_def V'_def E'_def)
         apply (intro next_lins2_edge)
         apply (metis \<pi>_def G_def x_def \<pi>_in)
-        apply (auto simp add: vs_in_S e_def)
-        done
+        by (simp only: vs_in_S e_def)+
       next
         have "vs |\<subseteq>| V" by (metis (lifting) `S |\<subseteq>| V` order_trans vs_in_S)
         have "distinct E" using `linearity E` linearity_def by auto
-        show "card_fset G'^V + length G'^E = k + card_fset S'"
+        show "fcard G'^V + length G'^E = k + fcard S'"
         apply (insert Suc.prems(4))
         apply (unfold G_def G'_def vertices.simps edges.simps)
         apply (unfold V'_def E'_def S'_def)
-        apply (unfold card_minus_subset_fset[OF `vs |\<subseteq>| V`])
-        apply (unfold card_minus_subset_fset[OF `vs |\<subseteq>| S`])
+        apply (unfold fcard_funion_fsubset[OF `vs |\<subseteq>| V`])
+        apply (unfold fcard_funion_fsubset[OF `vs |\<subseteq>| S`])
         apply (fold distinct_remove1_removeAll[OF `distinct E`])  
         apply (unfold length_remove1)
         apply (simp add: e_in_E)
-        apply (drule arg_cong[of _ _ "\<lambda>x. x - card_fset vs - 1"])
-        apply (subst (asm) add_diff_assoc2[symmetric], simp add: `vs |\<subseteq>| V` card_fset_mono)
+        apply (drule arg_cong[of _ _ "\<lambda>x. x - fcard vs - 1"])
+        apply (subst (asm) add_diff_assoc2[symmetric]) 
+        apply (simp add: fcard_mono[OF `vs |\<subseteq>| V`])
         apply (subst add_diff_assoc, insert length_pos_if_in_set[OF e_in_E], arith, auto)
-        apply (subst add_diff_assoc, auto simp add: `vs |\<subseteq>| S` card_fset_mono)
+        apply (subst add_diff_assoc, auto simp add: fcard_mono[OF `vs |\<subseteq>| S`])
         done
       qed      
       hence
@@ -749,16 +768,16 @@ next
       have terms_same: "terminals G = terminals G'"
       apply (unfold G'_def G_def terminals_def edges.simps vertices.simps)
       apply (unfold E'_def V'_def)
-      apply (fold fset_cong, auto simp add: in_fset e_in_E vs_def)
+      apply (fold fset_cong, auto simp add: fmember.rep_eq e_in_E vs_def)
       done
 
       have 1: "fdom [ fst3 e |=> Bot ] |\<inter>| 
-        fdom([ filter_fset (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V - S |=> Top ] 
+        fdom([ ffilter (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V - S |=> Top ] 
         \<oplus> [ S - fst3 e |=> Bot ]) = {||}"
       apply (unfold fdom_union fdom_make_fmap)
       apply (fold fset_cong)
-      apply (auto simp add: in_fset)
-      apply (metis in_mono subset_fset vs_def vs_in_S)
+      apply (auto simp add: fmember.rep_eq)
+      apply (metis in_mono less_eq_fset.rep_eq vs_def vs_in_S)
       done
 
       show ?thesis
@@ -780,24 +799,24 @@ next
         apply (unfold pre_\<Pi>' initial_ps2_def initials_def)
         apply (insert vs_in_S acy[OF e_in_E])
         apply (fold fset_cong)
-        apply (unfold subset_fset)[1] 
+        apply (unfold less_eq_fset.rep_eq)[1] 
         apply (unfold G_def G'_def vs_def ws_def V'_def E'_def S'_def)
         apply (unfold vertices.simps edges.simps)
         apply (unfold fmap_add_commute[OF 1])
         apply (fold fmap_add_assoc)
         apply (unfold make_fmap_union)
-        apply (unfold fset_diff_union2)
-        apply (auto simp add: in_fset fdom_union fdom_make_fmap e_in_E)[1]
+        apply (auto simp add: fmember.rep_eq fdom_union fdom_make_fmap e_in_E)[1]
         apply simp
         apply (unfold fmap_add_assoc)
-        apply (unfold make_fmap_union)        
+        apply (unfold make_fmap_union)  
+        apply (metis (lifting) funion_absorb2 vs_def vs_in_S)
         apply (intro arg_cong2[of _ _ "[ S - fst3 e |=> Bot ]" 
             "[ S - fst3 e |=> Bot ]" "op \<oplus>"])
         apply (intro arg_cong2[of _ _ "Top" "Top" "make_fmap"])
         defer 1
         apply (simp, simp)       
         apply (fold fset_cong)
-        apply (unfold subset_fset in_fset, simp)
+        apply (unfold less_eq_fset.rep_eq fmember.rep_eq, simp)
         apply (elim conjE)
         apply (intro set_eqI iffI, simp_all) 
         apply (elim conjE, intro disjI conjI ballI, simp)
@@ -810,10 +829,10 @@ next
         apply (subst (asm) fset_simps)
         apply (insert disjoint_iff_not_equal)[1]
         apply blast
-        apply (metis G_def Suc(3) e_in_E set_mp subset_fset wf_dia_inv')
+        apply (metis G_def Suc(3) e_in_E set_mp less_eq_fset.rep_eq wf_dia_inv')
         prefer 2
         apply (metis (lifting) IntI Suc(2) `ws |\<inter>| initials G = {||}` 
-            empty_iff fset_simps(1) in_mono inter_fset subset_fset ws_def)
+            empty_iff fset_simps(1) in_mono inter_fset less_eq_fset.rep_eq ws_def)
         apply auto
         done
       next
@@ -837,8 +856,8 @@ corollary wf_chains:
   assumes "\<Pi> \<in> ps_chains G"
   shows "wf_ps_chain \<Pi> \<and> post \<Pi> = [ terminals G |=> Bot ]"
 apply (intro wf_chains2[of "{||}"], insert assms(2)) 
-apply (auto simp add: assms(1) ps_chains_is_ps_chains2_with_empty_S)
-done
+by (auto simp add: assms(1) ps_chains_is_ps_chains2_with_empty_S fcard_fempty)
+
 
 subsection {* Interface chains *}
 
@@ -1031,7 +1050,7 @@ next
         apply (unfold fst_\<Pi>i thd_\<Pi>i)
         apply (unfold ps_to_int_def)
         apply (unfold fdom_union fdom_make_fmap)
-        apply (unfold singleton_union_fset_left)
+        apply (unfold finsert_is_funion[symmetric])
         apply (insert v_notin_\<sigma>)
         apply (unfold iter_hcomp_insert)
         apply (unfold lookup_union2 lookup_make_fmap1)
@@ -1040,7 +1059,7 @@ next
           (lookup ([ {|v|} |=> Top ] \<oplus> \<sigma>) va) (\<Lambda> va) = 
           topbot_case top_ass bot_ass (lookup ([{|v|} |=> Bot] \<oplus> \<sigma>) va)(\<Lambda> va)")
         apply (unfold iter_hcomp_cong, simp)
-        apply (metis in_fset lookup_union1, simp)
+        apply (metis fmember.rep_eq lookup_union1, simp)
         done
       next
         case (Inr e)
@@ -1077,7 +1096,7 @@ next
         apply (subgoal_tac "v |\<notin>| fdom \<sigma>")
         apply (unfold lookup_union2)
         apply (metis lookup_make_fmap topbot.simps(4))
-        apply (metis fst_e_disjoint_\<sigma> in_inter_fset notin_empty_fset in_fset)
+        apply (metis fempty_iff finterI fmember.rep_eq)
         apply (insert thd_e_disjoint_\<sigma>)
         apply (unfold iter_hcomp_union)
         apply (subgoal_tac "\<forall>v \<in> fset (thd3 e). topbot_case top_ass bot_ass 
@@ -1090,12 +1109,11 @@ next
         apply simp
         apply (intro ballI)
         apply (subgoal_tac "v |\<in>| fdom \<sigma>")
-        apply (unfold lookup_union1, auto simp add: in_fset)
+        apply (unfold lookup_union1, auto simp add: fmember.rep_eq)
         apply (subgoal_tac "v |\<notin>| fdom \<sigma>")
         apply (unfold lookup_union2)
         apply (metis lookup_make_fmap topbot.simps(3))
-        apply (metis thd_e_disjoint_\<sigma> in_inter_fset notin_empty_fset in_fset)
-        done
+        by (metis fempty_iff finterI fmember.rep_eq)
       qed
     qed
   qed

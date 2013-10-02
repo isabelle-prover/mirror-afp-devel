@@ -2,7 +2,7 @@ header {* Finite partial functions *}
 
 theory Finite_Map imports
   Main
-  "~~/src/HOL/Quotient_Examples/FSet"
+  "~~/src/HOL/Library/FSet"
 begin
 
 text {* The type of finite partial functions is obtained by restricting the 
@@ -93,10 +93,9 @@ lemma inv_fset:
 using assms 
 apply (induct rule: finite_induct)
 apply (intro ex1I[of _ "{||}"])
-apply (metis fset_simps(1))
-apply (metis fset_cong fset_simps(1))
-apply (metis fset_cong fset_simps(2))
-done
+apply (metis bot_fset.rep_eq)
+apply (metis fset_cong bot_fset.rep_eq)
+by (metis finsert.rep_eq fset_inject)
 
 lemma fset_inv_fset:
   assumes "finite X"
@@ -144,19 +143,19 @@ using assms by (transfer, simp add: make_map_def)
 
 lemma lookup_make_fmap1:
   "lookup [ {|k|} |=> v ] k = v"
-by (metis fset_simps(2) insertI1 lookup_make_fmap)
+by (metis finsert.rep_eq insert_iff lookup_make_fmap)
 
 lemma lookup_union1:
   assumes "k |\<in>| fdom ys"
   shows "lookup (xs \<oplus> ys) k = lookup ys k"
 using assms 
-by (transfer, metis in_fset fset_dom_fset map_add_dom_app_simps(1) o_apply)
+by transfer (metis comp_apply fmember.rep_eq fset_dom_fset map_add_dom_app_simps(1))
 
 lemma lookup_union2:
   assumes "k |\<notin>| fdom ys"
   shows "lookup (xs \<oplus> ys) k = lookup xs k"
 using assms 
-by (transfer, metis in_fset fset_dom_fset map_add_dom_app_simps(3) o_apply)
+by transfer (metis comp_apply fmember.rep_eq fset_dom_fset map_add_dom_app_simps(3))
 
 lemma lookup_union3:
   assumes "k |\<notin>| fdom xs"
@@ -164,8 +163,6 @@ lemma lookup_union3:
 using assms
 apply (cases "k |\<in>| fdom ys")
 apply (simp add: lookup_union1)
-apply transfer
-apply (metis fset_dom_fset map_add_dom_app_simps(2) notin_fset o_apply)
-done
+by transfer (metis comp_apply fmember.rep_eq fset_dom_fset map_add_dom_app_simps(2))
 
 end
