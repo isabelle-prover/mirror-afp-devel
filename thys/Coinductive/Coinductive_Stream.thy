@@ -401,7 +401,7 @@ by transfer simp
 
 subsection{* Function iteration @{const siterate}  and @{term sconst} *}
 
-lemmas siterate [nitpick_simp] = siterate_code
+lemmas siterate [nitpick_simp] = siterate.code
 
 lemma smap_iterates: "smap f (siterate f x) = siterate f (f x)"
 by transfer (rule lmap_iterates)
