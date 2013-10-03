@@ -58,6 +58,7 @@ where "trace_toString = toString"
 
 code_identifier
   code_module Cardinality \<rightharpoonup> (SML) Set
+| code_module Conditionally_Complete_Lattices \<rightharpoonup> (SML) Set
 
 export_code
   wf_J_prog' exec_J_rr exec_J_rnd 
