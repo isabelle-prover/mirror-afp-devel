@@ -28,6 +28,12 @@ where
 | "derivs (c # s) r = derivs s (deriv c r)"
 
 
+lemma atoms_deriv_subset: "atoms (deriv x r) \<subseteq> atoms r"
+by (induction r) (auto)
+
+lemma atoms_derivs_subset: "atoms (derivs w r) \<subseteq> atoms r"
+by (induction w arbitrary: r) (auto dest: atoms_deriv_subset[THEN subsetD])
+
 lemma lang_deriv: "lang (deriv c r) = Deriv c (lang r)"
 by (induct r) (simp_all add: nullable_iff)
 
