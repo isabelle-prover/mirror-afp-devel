@@ -398,6 +398,9 @@ next
   qed
 qed
 
+lemma sqrt_int_pos: "sqrt_int x = Cons s ms \<Longrightarrow> s \<ge> 0"
+  using sqrt_int_empty_0_pos_neg[of x] by auto
+
 text {* With this knowledge, it is easy to define a square-root function on the naturals. *}
 
 definition sqrt_nat :: "nat \<Rightarrow> nat list"
@@ -517,6 +520,34 @@ proof -
     have "y \<in> ?l" unfolding d q using sn y yz by auto
   }
   ultimately show ?thesis by auto
+qed
+
+lemma sqr_rat_of_int: assumes x: "x * x = rat_of_int i"
+  shows "\<exists> j :: int. j * j = i"
+proof -
+  from x have mem: "x \<in> set (sqrt_rat (rat_of_int i))" by simp
+  from x have "rat_of_int i \<ge> 0" by (metis zero_le_square)
+  hence *: "quotient_of (rat_of_int i) = (i,1)" by (metis Rat.of_int_def quotient_of_int)
+  have 1: "sqrt_int 1 = [1,-1]" by code_simp
+  from mem sqrt_rat_def * split 1 
+  have x: "x \<in> rat_of_int ` {y. y * y = i}" by auto
+  thus ?thesis by auto
+qed
+
+lemma sqrt_rat_pos: assumes sqrt: "sqrt_rat x = Cons s ms" 
+  shows "s \<ge> 0"
+proof -
+  obtain z n where q: "quotient_of x = (z,n)" by force
+  note sqrt = sqrt[unfolded sqrt_rat_def q, simplified]
+  let ?sz = "sqrt_int z"
+  let ?sn = "sqrt_int n"
+  from q have n: "n > 0" by (rule quotient_of_denom_pos)
+  from sqrt obtain sz mz where sz: "?sz = sz # mz" by (cases ?sn, auto)
+  from sqrt obtain sn mn where sn: "?sn = sn # mn" by (cases ?sn, auto)
+  from sqrt_int_pos[OF sz] sqrt_int_pos[OF sn] have pos: "0 \<le> sz" "0 \<le> sn" by auto
+  from sqrt sz sn have s: "s = of_int sz / of_int sn" by auto
+  show ?thesis unfolding s using pos
+    by (metis of_int_0_le_iff zero_le_divide_iff)
 qed
 
 section {* Approximating square roots *}
