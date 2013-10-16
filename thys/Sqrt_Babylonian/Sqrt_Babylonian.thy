@@ -23,7 +23,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
 theory Sqrt_Babylonian
-imports Rat 
+imports NthRoot
 begin
 
 section Introduction
@@ -36,9 +36,12 @@ text {*
   a list of all integers / naturals / rationals $y$ where $y^2 = x$. 
   To this end, the Babylonian method has been adapted by using integer-divisions.
 
-  In addition to the precise algorithms, we also provide one approximation algorithm for 
+  In addition to the precise algorithms, we also provide three approximation algorithms. One works for 
   arbitrary linear ordered fields, where some number $y$ is computed such that
-  @{term "abs(y^2 - x) < \<epsilon>"}.
+  @{term "abs(y^2 - x) < \<epsilon>"}. Moreover, for the integers we provide algorithms to compute
+  @{term "floor (sqrt (x :: int))"} and @{term "ceiling (sqrt (x :: int))"} which are both based
+  on the underlying algorithm that is used to compute the precise square-roots on integers, if these 
+  exist.
 
   The major motivation for developing the precise algorithms was given by \ceta{} \cite{CeTA},
   a tool for certifiying termination proofs. Here, non-linear equations of the form
@@ -46,6 +49,23 @@ text {*
   For example, for the equation $(ax + by)^2 = 4x^2 - 12xy + 9y^2$ one easily figures out that
   $a^2 = 4, b^2 = 9$, and $ab = -6$, which results in a possible solution $a = \sqrt 4 = 2, b = - \sqrt 9 = -3$.
 *}
+
+section {* Auxiliary lemmas *}
+
+lemma div_is_floor_divide: "of_int (n div y) = \<lfloor>rat_of_int n / rat_of_int y\<rfloor>"
+  unfolding Fract_of_int_quotient[symmetric] floor_Fract by simp
+
+lemma divide_less_floor1: "n / y < of_int (floor (n / y)) + 1" 
+  by (metis floor_less_iff less_add_one of_int_1 of_int_add)
+
+lemma square_lesseq_square: "\<And> x y. 0 \<le> (x :: 'a :: linordered_field) \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x * x \<le> y * y) = (x \<le> y)"
+  by (metis mult_mono mult_strict_mono' not_less)
+
+lemma square_less_square: "\<And> x y. 0 \<le> (x :: 'a :: linordered_field) \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x * x < y * y) = (x < y)"
+  by (metis mult_mono mult_strict_mono' not_less)
+
+lemma sqrt_sqrt[simp]: "x \<ge> 0 \<Longrightarrow> sqrt x * sqrt x = x"
+  by (metis real_sqrt_pow2 power2_eq_square)
 
 section {* The Babylonian method *}
 
@@ -74,22 +94,22 @@ For the main algorithm we use the auxiliary guard @{term "\<not> (x < (0 :: int)
   about negative numbers for the termination argument and during the soundness proof. Moreover, since the elements
   $x_0, x_1, x_2,\dots$ are monotone decreasing, we abort as soon as $x_i^2 \leq n$. *}
 
-function sqrt_babylon_int_main :: "int \<Rightarrow> int \<Rightarrow> int option" where 
-  "sqrt_babylon_int_main x n = (if (x < 0 \<or> n < 0) then None else (if x * x \<le> n then (if x * x = n then Some x else None)
+function sqrt_babylon_int_main :: "int \<Rightarrow> int \<Rightarrow> int \<times> bool" where 
+  "sqrt_babylon_int_main x n = (if (x < 0 \<or> n < 0) then (0,False) else (if x * x \<le> n then (x, x * x = n)
     else sqrt_babylon_int_main ((n div x + x) div 2) n))"
     by pat_completeness auto
 
 text {* For the executable algorithm we omit the guard and use a let-construction *}
 
-partial_function (tailrec) sqrt_int_main :: "int \<Rightarrow> int \<Rightarrow> int option" where 
-  [code]: "sqrt_int_main x n = (let x2 = x * x in if x2 \<le> n then (if x2 = n then Some x else None)
+partial_function (tailrec) sqrt_int_main :: "int \<Rightarrow> int \<Rightarrow> int \<times> bool" where 
+  [code]: "sqrt_int_main x n = (let x2 = x * x in if x2 \<le> n then (x, x2 = n)
     else sqrt_int_main ((n div x + x) div 2) n)"
 
 text {* Once we have proven soundness of @{const sqrt_babylon_int_main} and equivalence to @{const sqrt_int_main}, it
   is easy to assemble the following algorithm which computes all square roots for arbitrary integers. *}
 
 definition sqrt_int :: "int \<Rightarrow> int list" where 
-  "sqrt_int x \<equiv> if x < 0 then [] else case sqrt_int_main x x of Some y \<Rightarrow> if y = 0 then [0] else [y,-y] | None \<Rightarrow> []"
+  "sqrt_int x \<equiv> if x < 0 then [] else case sqrt_int_main x x of (y,True) \<Rightarrow> if y = 0 then [0] else [y,-y] | _ \<Rightarrow> []"
 
 text {* For proving soundness, we first need some basic properties of integers. *}
 
@@ -102,6 +122,10 @@ qed auto
 
 lemma square_int_pos_mono: assumes x: "0 \<le> (x :: int)" and y: "0 \<le> y" 
   shows "(x * x \<le> y * y) = (x \<le> y)"
+  using assms by (metis mult_mono mult_strict_mono' not_less)
+
+lemma square_int_pos_strict_mono: assumes x: "0 \<le> (x :: int)" and y: "0 \<le> y" 
+  shows "(x * x < y * y) = (x < y)"
   using assms by (metis mult_mono mult_strict_mono' not_less)
 
 lemma square_int_pos_inj: assumes x: "0 \<le> (x :: int)" and y: "0 \<le> y" 
@@ -187,10 +211,12 @@ proof -
 qed 
 
 text {* We next prove that @{const sqrt_int_main} is a correct implementation of @{const sqrt_babylon_int_main}.
-We additionally prove that the result is always positive, which poses no overhead and allows to share
-the inductive proof.  
+We additionally prove that the result is always positive, a lower bound, and that the returned boolean indicates
+whether the result is a square or not. We proof all these results in one go, so that we can share the 
+inductive proof.  
  *}
-lemma sqrt_int_main_babylon_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = sqrt_babylon_int_main x n \<and> (sqrt_int_main x n = Some y \<longrightarrow> y \<ge> 0)"
+lemma sqrt_int_main_babylon_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> 
+  sqrt_int_main x n = sqrt_babylon_int_main x n \<and> (sqrt_int_main x n = (y,b) \<longrightarrow> y \<ge> 0 \<and> y * y \<le> n \<and> b = (y * y = n))"
 proof (induct x n rule: sqrt_babylon_int_main.induct)
   case (1 x n)
   hence id: "(x < 0 \<or> n < 0) = False" by auto
@@ -211,107 +237,138 @@ qed
 lemma sqrt_int_main: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = sqrt_babylon_int_main x n"
   using sqrt_int_main_babylon_pos by blast
 
-lemma sqrt_int_main_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = Some y \<Longrightarrow> y \<ge> 0" 
+lemma sqrt_int_main_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = (y,b) \<Longrightarrow> y \<ge> 0" 
   using sqrt_int_main_babylon_pos by blast
 
-text {* Soundness of @{const sqrt_babylon_int_main} is trivial. *}
-lemma sqrt_babylon_int_main_sound: "sqrt_babylon_int_main x n = Some y \<Longrightarrow> y * y = n"
-proof (induct x n rule: sqrt_babylon_int_main.induct)
-  case (1 x n)
-  from 1(2) have not: "\<not> (x < 0 \<or> n < 0)" by (cases "x < 0 \<or> n < 0", auto)
-  show ?case
-  proof (cases "x * x \<le> n")
-    case False
-    with 1(1)[OF not this] not 1(2) show ?thesis by simp
-  next
-    case True
-    thus ?thesis using 1(2) not by (cases "x * x = n", auto)
-  qed
-qed
+lemma sqrt_int_main_sound: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = (y,b) \<Longrightarrow> b = (y * y = n)"
+  using sqrt_int_main_babylon_pos by blast
 
-text {* For completeness, we first need the following crucial inquality, which would be
-  trivial if one would use standard division instead of integer division.
-  (Proving this equation has required a significant amount of time during the development,
-   as we first made several proof attemps which have been dead ends.) *}
-lemma square_inequality: "2 * x * y \<le> x * x div y * y + y * (y :: int)"
-proof -
-  have pos: "0 \<le> (y - x) * (y - x) div y * y" 
-    by (metis transfer_nat_int_function_closures div_0 eq_iff linear neg_imp_zdiv_nonneg_iff not_le split_mult_pos_le)
-  have "x * x div y * y + y * y = 
-    ((y - x) * (y - x) + y*(2*x - y)) div y * y + y * y" by (simp add: field_simps)
-  also have "\<dots> = 2*y*x - y*y + (y-x)*(y-x) div y * y + y * y"
-  proof (cases "y = 0")
-    case False
-    show ?thesis unfolding div_mult_self2[OF False] by (auto simp: field_simps)
-  qed simp
-  also have "\<dots> = 2*x*y + (y-x)*(y-x) div y * y" by (auto simp: field_simps)
-  also have "\<dots> \<ge> 2*x*y" using pos by auto
-  finally show ?thesis .
-qed 
-  
-lemma sqrt_babylon_int_main_complete: assumes x0: "x \<ge> 0"
-  shows "x * x = n \<Longrightarrow> y * y \<ge> n \<Longrightarrow> y \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_babylon_int_main y n = Some x"
+text {* In order to prove completeness of the algorithms, we provide sharp upper and lower bounds
+  for @{const sqrt_int_main}. *}
+
+lemma sqrt_int_main_lower: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = (y,b) \<Longrightarrow> y * y \<le> n" 
+  using sqrt_int_main_babylon_pos by blast
+
+lemma sqrt_babylon_int_main_upper: 
+  shows "y * y \<ge> n \<Longrightarrow> y \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_babylon_int_main y n = (x,b) \<Longrightarrow> n < (x + 1) * (x + 1)"
 proof (induct y n rule: sqrt_babylon_int_main.induct)
   case (1 y n)
-  have nx: "n = x * x" and xn: "x * x = n" using 1(2) by auto
-  from 1(4) have y0: "y \<ge> 0" .
-  from 1(5) have n0: "n \<ge> 0" .
+  from 1(3) have y0: "y \<ge> 0" .
+  from 1(4) have n0: "n \<ge> 0" .
+  def y' \<equiv> "(n div y + y) div 2"
+  from y0 n0 have y'0: "y' \<ge> 0" unfolding y'_def
+    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing zero_le_numeral)
   let ?sqrt = "sqrt_babylon_int_main"
-  from y0 n0 have not: "\<not> (y < 0 \<or> n < 0)" by auto
+  from 1(5) have sqrt: "?sqrt y n = (x,b)" by auto
+  from y0 n0 have not: "\<not> (y < 0 \<or> n < 0)" "(y < 0 \<or> n < 0) = False" by auto
+  note sqrt = sqrt[unfolded sqrt_babylon_int_main.simps[of y n] not(2) if_False, folded y'_def]
+  note IH = 1(1)[folded y'_def, OF not(1) _ _ y'0 n0]
   show ?case
   proof (cases "y * y \<le> n")
-    case False    
-    let ?sy = "(n div y + y) div 2"
-    let ?sx = "(n div x + x) div 2"
-    from False y0 n0 have id: "?sqrt y n = ?sqrt ?sy n" by auto
-    from False xn have "x * x \<le> y * y" by auto
-    from this[unfolded square_int_pos_mono[OF x0 y0]] have xy: "x \<le> y" by auto
-    have sx0: "?sx \<ge> 0" using transfer_nat_int_function_closures n0 x0 by auto
-    have sy0: "?sy \<ge> 0" using transfer_nat_int_function_closures n0 y0 by auto
-    show ?thesis unfolding id
-    proof (rule 1(1)[OF not False xn _ sy0 n0])
-      have "n = ?sx * ?sx" unfolding nx by simp
-      also have "\<dots> \<le> ?sy * ?sy" unfolding square_int_pos_mono[OF sx0 sy0]
-      proof -
-        have "?sx = 2 * x div 2" unfolding nx by simp
-        also have "\<dots> \<le> ?sy"
-        proof (rule zdiv_mono1)
-          show "2 * x \<le> n div y + y" 
-          proof (cases "y = 0")
-            case True 
-            thus ?thesis using xy by auto
-          next
-            case False
-            with y0 have y: "y > 0" by auto
-            show ?thesis
-            proof (rule mult_right_le_imp_le[OF _ y], unfold nx)
-              show "2 * x * y \<le> (x * x div y + y) * y" using square_inequality by (auto simp: field_simps)
-            qed
-          qed
-        qed simp
-        finally show "?sx \<le> ?sy" .
+    case False note yyn = this
+    with sqrt have sqrt: "?sqrt y' n = (x,b)" by simp
+    show ?thesis
+    proof (cases "n \<le> y' * y'")
+      case True
+      show ?thesis 
+        by (rule IH[OF False True sqrt])
+    next
+      case False
+      with sqrt have x: "x = y'" unfolding sqrt_babylon_int_main.simps[of y' n]
+        using n0 y'0 by simp
+      from yyn have yyn: "y * y > n" by simp
+      from False have yyn': "n > y' * y'" by auto
+      show ?thesis
+      proof (cases "n = 0")
+        case True
+        thus ?thesis 
+          by (metis comm_semiring_1_class.normalizing_semiring_rules(10) x y'0 zle_add1_eq_le zmult_zless_mono2)
+      next
+        case False note n00 = this
+        from yyn n0 have y00: "y \<noteq> 0" by auto
+        let ?y = "of_int y :: rat"
+        let ?n = "of_int n :: rat"
+        def Y \<equiv> ?y
+        def NY \<equiv> "?n / ?y"
+        def S \<equiv> "Y + NY"
+        def s \<equiv> "n div y + y"
+        from y00 y0 have y0: "?y > 0" by auto
+        from yyn have "(of_int (y * y - n) :: rat) > 0" by linarith
+        hence "?y * ?y - ?n > 0" by simp
+        with y0 have "Y - NY > 0" unfolding Y_def NY_def
+          by (metis diff_divide_eq_iff divide_less_cancel divide_pos_pos linordered_field_no_lb pos_divide_less_eq)                
+        hence "(Y - NY) * (Y - NY) > 0" 
+          by (metis mult_pos_pos)
+        also have "(Y - NY) * (Y - NY) = (Y + NY) * (Y + NY) - 4 * Y * NY" 
+          by (simp add: field_simps)
+        also have "4 * Y * NY = 4 * ?n" unfolding Y_def NY_def using y0 by auto
+        finally have ineq1: "((Y + NY) / 2) * ((Y + NY) / 2) > ?n" by simp
+        {
+          have "?n / ?y < of_int (floor (?n / ?y)) + 1" 
+            by (rule divide_less_floor1)
+          also have "floor (?n / ?y) = of_int (n div y)"
+            unfolding div_is_floor_divide ..
+          finally have less: "S < of_int s + 1" 
+            unfolding S_def Y_def NY_def s_def by auto
+          have "S / 2 < of_int (floor (S / 2)) + 1"
+            by (rule divide_less_floor1)
+          hence "S / 2 \<le> of_int (s div 2) + 1" using less by auto
+        }
+        hence ge: "of_int y' + 1 \<ge> (Y + NY) / 2" unfolding y'_def s_def S_def by simp
+        have pos1: "(Y + NY) / 2 \<ge> 0" unfolding Y_def NY_def using n0 y0
+          by (auto simp: field_simps)
+        have pos2: "of_int y' + (1 :: rat) \<ge> 0" using y'0 by auto
+        have ineq2: "(of_int y' + 1) * (of_int y' + 1) \<ge> ((Y + NY) / 2) * ((Y + NY) / 2)"
+          by (rule mult_mono[OF ge ge pos2 pos1])
+        from order.strict_trans2[OF ineq1 ineq2]
+        have "?n < of_int ((x + 1) * (x + 1))" unfolding x by simp
+        thus "n < (x + 1) * (x + 1)" by linarith
       qed
-      finally
-      show "n \<le> ?sy * ?sy" . 
     qed
   next
     case True
-    with 1(3) have yn: "y * y = n" by auto
-    with nx have "x * x = y * y" by auto
-    from square_int_pos_inj[OF x0 y0 this] yn not show ?thesis by auto
+    with sqrt have x: "x = y" by auto
+    with 1(2) True have n: "n = y * y" by auto
+    show ?thesis unfolding n x using y0 
+      by (simp add: field_simps)
   qed
 qed
 
-text {* Having proven soundness and completeness of @{const sqrt_babylon_int_main},
+lemma sqrt_int_main_upper: 
+  "x * x \<ge> n \<Longrightarrow> x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> sqrt_int_main x n = (y,b) \<Longrightarrow> n < (y + 1) * (y + 1)"
+  using sqrt_babylon_int_main_upper[of n x y b] sqrt_int_main[of x n] by auto
+
+text {* After having proven the bounds, we can show completeness of @{const sqrt_int_main}. *}
+
+lemma sqrt_int_main_complete: assumes x0: "x \<ge> 0"
+  and xx: "x * x = n"
+  and yy: "y * y \<ge> n"
+  and y0: "y \<ge> 0"
+  and n0: "n \<ge> 0"
+  shows "sqrt_int_main y n = (x,True)"
+proof -
+  note xx' = xx[symmetric]
+  obtain x' b where s: "sqrt_int_main y n = (x',b)" by force
+  from sqrt_int_main_pos[OF y0 n0 s] have x'0: "x' \<ge> 0" by auto
+  from sqrt_int_main_lower[OF y0 n0 s, unfolded xx']  
+  have "x' \<le> x" unfolding square_int_pos_mono[OF x'0 x0] .
+  moreover from sqrt_int_main_upper[OF yy y0 n0 s, unfolded xx']
+  have "x < x' + 1" using square_int_pos_strict_mono[OF x0, of "x' + 1"] x'0 by auto
+  ultimately have x': "x' = x" by linarith
+  from sqrt_int_main_sound[OF y0 n0, unfolded s, OF refl, unfolded xx']
+  show ?thesis unfolding s x' by auto
+qed  
+
+text {* Having proven soundness and completeness of @{const sqrt_int_main},
   it is easy to prove soundness of @{const sqrt_int}. *}
 
 lemma sqrt_int[simp]: "set (sqrt_int x) = {y. y * y = x}"
 proof -
   note d = sqrt_int_def
   show ?thesis
-  proof (cases "x < 0 \<or> sqrt_int_main x x = None")
+  proof (cases "x < 0 \<or> \<not> snd (sqrt_int_main x x)")
     case True
-    hence left: "set (sqrt_int x) = {}" unfolding d by (cases "x < 0", auto) 
+    hence left: "set (sqrt_int x) = {}" unfolding d by (cases "x < 0", simp, cases "sqrt_int_main x x", auto)  
     {
       fix y
       assume x: "y * y = x"
@@ -326,13 +383,14 @@ proof -
       qed
       then obtain y where x: "y * y = x" and y: "y \<ge> 0" by auto
       from y x have x0: "x \<ge> 0" by auto
-      from sqrt_babylon_int_main_complete[OF y x int_lesseq_square x0 x0] True
+      from sqrt_int_main_complete[OF y x int_lesseq_square x0 x0] True
       have False unfolding sqrt_int_main[OF x0 x0] by auto
     }
     with left show ?thesis by auto
   next
     case False
-    then obtain y where Some: "sqrt_int_main x x = Some y" and x: "x \<ge> 0" by auto
+    then obtain y where Some: "sqrt_int_main x x = (y, True)" and x: "x \<ge> 0" 
+      by (cases "sqrt_int_main x x", auto)
     hence left: "set (sqrt_int x) = {y,-y}" unfolding d by (cases "y = 0", auto)
     have "\<exists> z. z \<ge> 0 \<and> {y,-y} = {z,-z}"
     proof (cases "y \<ge> 0")
@@ -340,7 +398,8 @@ proof -
       show ?thesis by (rule exI[of _ "-y"], insert False, auto)
     qed auto
     then obtain z where z: "z \<ge> 0" and yz: "{y,-y} = {z,-z}" by auto
-    from sqrt_babylon_int_main_sound[OF Some[unfolded sqrt_int_main[OF x x]]] have y: "y * y = x" "-y * -y = x" by auto
+    from sqrt_int_main_sound[OF x x Some]
+    have y: "y * y = x" "-y * -y = x" by auto
     with yz have zz: "z * z = x" "-z * -z = x" by auto
     from y have "set (sqrt_int x) \<subseteq> {y. y * y = x}" unfolding left by auto
     moreover
@@ -365,6 +424,141 @@ proof -
   qed
 qed
 
+section {* Floor and ceiling of square roots *}
+
+text {* Using the bounds for @{const sqrt_int_main} we can easily design
+  algorithms which compute @{term "floor (sqrt x)"} and @{term "ceiling (sqrt x)"}.
+  To this end, we first develop algorithms for non-negative @{term x}, and later on
+  these are used for the general case. *}
+
+definition "sqrt_int_floor_pos x = fst (sqrt_int_main x x)"
+definition "sqrt_int_ceiling_pos x = (case sqrt_int_main x x of (y,b) \<Rightarrow> if b then y else y + 1)"
+
+lemma sqrt_int_floor_pos_lower: assumes x: "x \<ge> 0"
+  shows "sqrt_int_floor_pos x * sqrt_int_floor_pos x \<le> x"
+proof -
+  obtain y b where s: "sqrt_int_main x x = (y,b)" by force
+  from sqrt_int_main_lower[OF x x s] show ?thesis unfolding sqrt_int_floor_pos_def s by simp
+qed
+
+lemma sqrt_int_floor_pos_pos: assumes x: "x \<ge> 0"
+  shows "sqrt_int_floor_pos x \<ge> 0"
+proof -
+  obtain y b where s: "sqrt_int_main x x = (y,b)" by force
+  from sqrt_int_main_pos[OF x x s] show ?thesis unfolding sqrt_int_floor_pos_def s by simp
+qed
+
+lemma sqrt_int_floor_pos_upper: assumes x: "x \<ge> 0"
+  shows "(sqrt_int_floor_pos x + 1) * (sqrt_int_floor_pos x + 1) > x"
+proof -
+  obtain y b where s: "sqrt_int_main x x = (y,b)" by force
+  from sqrt_int_main_upper[OF int_lesseq_square x x s]
+  show ?thesis unfolding sqrt_int_floor_pos_def s by auto
+qed
+
+lemma sqrt_int_floor_pos: assumes x: "x \<ge> 0" 
+  shows "sqrt_int_floor_pos x = floor (sqrt (real x))"
+proof -
+  let ?s1 = "real_of_int (sqrt_int_floor_pos x)"
+  let ?s2 = "sqrt (real x)"
+  from sqrt_int_floor_pos_pos[OF x] have s1: "?s1 \<ge> 0" by simp
+  from x have s2: "?s2 \<ge> 0" by auto
+  from s1 have s11: "?s1 + 1 \<ge> 0" by auto
+  have id: "?s2 * ?s2 = real x" using x by simp
+  show ?thesis
+  proof (rule floor_unique[symmetric])
+    show "?s1 \<le> ?s2"
+      unfolding square_lesseq_square[OF s1 s2, symmetric]
+      unfolding id
+      using sqrt_int_floor_pos_lower[OF x] 
+      by (metis of_int_le_iff of_int_mult real_eq_of_int)
+    show "?s2 < ?s1 + 1"
+      unfolding square_less_square[OF s2 s11, symmetric]
+      unfolding id
+      using sqrt_int_floor_pos_upper[OF x]
+        by (metis real_eq_of_int real_of_int_add real_of_int_less_iff real_of_int_mult real_of_one)
+  qed
+qed
+
+lemma sqrt_int_ceiling_pos: assumes x: "x \<ge> 0"
+  shows "sqrt_int_ceiling_pos x = ceiling (sqrt (real x))"
+proof -
+  obtain y b where s: "sqrt_int_main x x = (y,b)" by force
+  from sqrt_int_main_pos[OF x x s] have y: "y \<ge> 0" by simp
+  let ?s = "sqrt_int_ceiling_pos x"
+  let ?sx = "sqrt (real x)"
+  note d = sqrt_int_ceiling_pos_def
+  show ?thesis
+  proof (cases b)
+    case True
+    hence id: "?s = y" unfolding s d by auto
+    from sqrt_int_main_sound[OF x x s] True have xy: "x = y * y" by auto
+    show ?thesis unfolding id xy using y 
+      by (metis ceiling_real_of_int id real_of_int_ge_zero_cancel_iff real_of_int_mult real_sqrt_mult_distrib2 sqrt_sqrt xy)
+  next
+    case False
+    hence id: "?s = sqrt_int_floor_pos x + 1" unfolding d sqrt_int_floor_pos_def s by simp
+    show ?thesis unfolding id sqrt_int_floor_pos[OF x]
+    proof (rule ceiling_unique[symmetric])
+      show "?sx \<le> real_of_int (\<lfloor>sqrt (real x)\<rfloor> + 1)"
+        by (metis real_of_int_add real_of_int_def real_of_int_floor_add_one_ge real_of_one)
+      let ?l = "real_of_int (\<lfloor>sqrt (real x)\<rfloor> + 1) - 1"
+      let ?m = "real_of_int \<lfloor>sqrt (real x)\<rfloor>"
+      have "?l = ?m" by simp
+      also have "\<dots> < ?sx" 
+      proof -
+        have le: "?m \<le> ?sx" by (rule of_int_floor_le)
+        have neq: "?m \<noteq> ?sx"
+        proof
+          assume "?m = ?sx"
+          hence "?m * ?m = ?sx * ?sx" by simp
+          also have "\<dots> = real x" using x by simp
+          finally have xs: "x = \<lfloor>sqrt (real x)\<rfloor> * \<lfloor>sqrt (real x)\<rfloor>" 
+            by (metis floor_real_of_int real_of_int_def real_of_int_mult)
+          hence "\<lfloor>sqrt (real x)\<rfloor> \<in> set (sqrt_int x)" by simp
+          with False s x show False unfolding sqrt_int_def by simp
+        qed
+        from le neq show ?thesis by arith
+      qed
+      finally show "?l < ?sx" .
+    qed
+  qed
+qed
+
+definition "sqrt_int_floor x = (if x \<ge> 0 then sqrt_int_floor_pos x else - sqrt_int_ceiling_pos (- x))"
+definition "sqrt_int_ceiling x = (if x \<ge> 0 then sqrt_int_ceiling_pos x else - sqrt_int_floor_pos (- x))"
+
+lemma sqrt_int_floor[simp]: "sqrt_int_floor x = floor (sqrt (real x))"
+proof -
+  note d = sqrt_int_floor_def
+  show ?thesis 
+  proof (cases "x \<ge> 0")
+    case True
+    with sqrt_int_floor_pos[OF True] show ?thesis unfolding d by simp
+  next
+    case False
+    hence "- x \<ge> 0" by auto
+    from False sqrt_int_ceiling_pos[OF this] show ?thesis unfolding d 
+      by (simp add: real_sqrt_minus ceiling_minus)
+  qed
+qed
+
+lemma sqrt_int_ceiling[simp]: "sqrt_int_ceiling x = ceiling (sqrt (real x))"
+proof -
+  note d = sqrt_int_ceiling_def
+  show ?thesis 
+  proof (cases "x \<ge> 0")
+    case True
+    with sqrt_int_ceiling_pos[OF True] show ?thesis unfolding d by simp
+  next
+    case False
+    hence "- x \<ge> 0" by auto
+    from False sqrt_int_floor_pos[OF this] show ?thesis unfolding d 
+      by (simp add: real_sqrt_minus floor_minus)
+  qed
+qed
+
+
 section {* Square roots for the naturals *}
 
 text {* The idea is to use the algorithm for the integers and then convert between naturals and integers.
@@ -381,8 +575,8 @@ next
   case False
   note d = sqrt_int_def
   from False have x: "x \<ge> 0" unfolding d by (cases "x \<ge> 0", auto)
-  from False x obtain y where main: "sqrt_int_main x x = Some y" unfolding d
-    by (cases "sqrt_int_main x x", auto)
+  from False x obtain y where main: "sqrt_int_main x x = (y,True)" unfolding d
+    by (cases "sqrt_int_main x x", case_tac b, auto)
   from sqrt_int_main_pos[OF x x main] have y: "y \<ge> 0" by auto
   show ?thesis
   proof (cases "y = 0")
