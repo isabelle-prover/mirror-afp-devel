@@ -1270,7 +1270,12 @@ license = LGPL
 abstract =
   We implement the Babylonian method to compute square roots of numbers.
   We provide precise algorithms for naturals, integers and rationals, and
-  offer an approximation algorithm for linear ordered fields.
+  offer an approximation algorithm for linear ordered fields. Moreover, there
+  are precise algorithms to compute the floor and the ceiling of the square root 
+  of an integer.
+extra-history = 
+  Change history:
+  [2013-10-16]: Added algorithms to compute floor and ceiling of sqrt of integers.
 
 [Markov_Models]
 title = Markov Models
