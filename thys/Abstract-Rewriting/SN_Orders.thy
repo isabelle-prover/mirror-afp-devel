@@ -305,5 +305,32 @@ proof -
   qed
 qed
 
+text {* non infinitesmal is the same as in the CADE07 bounded increase paper *}  
+
+definition non_inf :: "'a rel \<Rightarrow> bool"
+ where "non_inf r \<equiv> \<forall> a f. \<exists> i. (f i, f (Suc i)) \<notin> r \<or> (f i, a) \<notin> r"
+
+lemma non_infI[intro]: assumes "\<And> a f. \<lbrakk> \<And> i. (f i, f (Suc i)) \<in> r\<rbrakk> \<Longrightarrow> \<exists> i. (f i, a) \<notin> r"
+  shows "non_inf r"
+  using assms unfolding non_inf_def by blast
+
+lemma non_infE[elim]: assumes "non_inf r" and "\<And> i. (f i, f (Suc i)) \<notin> r \<or> (f i, a) \<notin> r \<Longrightarrow> P"
+  shows P
+  using assms unfolding non_inf_def by blast
+
+lemma non_inf_image: 
+  assumes ni: "non_inf r" and image: "\<And> a b. (a,b) \<in> s \<Longrightarrow> (f a, f b) \<in> r"
+  shows "non_inf s"
+proof
+  fix a g
+  assume s: "\<And> i. (g i, g (Suc i)) \<in> s"
+  def h \<equiv> "f o g"
+  from image[OF s] have h: "\<And> i. (h i, h (Suc i)) \<in> r" unfolding h_def comp_def .
+  from non_infE[OF ni, of h] have "\<And> a. \<exists> i. (h i, a) \<notin> r" using h by blast
+  thus "\<exists>i. (g i, a) \<notin> s" using image unfolding h_def comp_def by blast
+qed
+
+lemma SN_imp_non_inf: "SN r \<Longrightarrow> non_inf r"
+  by (intro non_infI, auto)
 
 end
