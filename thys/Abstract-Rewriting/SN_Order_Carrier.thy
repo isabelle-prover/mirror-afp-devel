@@ -65,74 +65,6 @@ proof (unfold_locales)
 qed (auto simp: field_simps power_strict_mono)
       
 
-
-subsection {* The standard semiring over the integers *}
-
-definition int_mono :: "int \<Rightarrow> bool" where "int_mono x \<equiv> x \<ge> 1"
-
-instantiation int :: large_ordered_semiring_1
-begin
-instance 
-proof 
-  fix y :: int
-  show "\<exists> x. of_nat x \<ge> y"
-    by (rule exI[of _ "nat y"], simp) 
-  fix x y z :: int
-qed (auto simp: mult_right_mono mult_left_mono mult_right_mono_neg)
-end
-
-interpretation int_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" int_mono
-proof (unfold_locales)
-  show "SN {(x,y). y \<ge> 0 \<and> (y :: int) < x}" (is "SN ?gt")
-  proof (rule ccontr, unfold SN_defs, clarify)
-    fix x f
-    assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?gt"
-    have main: "\<forall> i. f i + int i \<le> f 0"
-    proof 
-      fix i
-      show "f i + int i \<le> f 0"
-      proof (induct i)
-        case (Suc i)
-        with spec[OF steps, of i] show ?case by auto
-      qed simp
-    qed
-    have contra: "\<forall> i. int (Suc i) \<le> f 0" 
-    proof
-      fix i
-      from spec[OF main, of "Suc i"] spec[OF steps, of i] 
-      show "int (Suc i) \<le> f 0" by auto
-    qed
-    show False 
-    proof (cases "0 \<le> f 0")
-      case False
-      with spec[OF contra, of 0] show False by auto
-    next
-      case True
-      obtain n where "f 0 = int n" using zero_le_imp_eq_int[OF True] ..
-      with spec[OF contra, of n] show False by auto
-    qed
-  qed
-qed (auto simp: mult_strict_left_mono int_mono_def)
-
-
-
-interpretation int_poly: poly_order_carrier 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" True discrete
-proof (unfold_locales)
-  fix x y :: int
-  assume ge: "x \<ge> y"
-  then obtain k where k: "x - y = k" and kp: "0 \<le> k" by auto
-  then obtain nk where nk: "nk = nat k" and k: "x - y = int nk" by auto
-  show "\<exists> k. x = (op + 1 ^^ k) y"
-  proof (rule exI[of _ nk])
-    from k have "x = int nk + y" by simp
-    also have "\<dots> = (op + 1 ^^ nk) y"
-      by (induct nk, auto)
-    finally show "x = (op + 1 ^^ nk) y" .
-  qed
-qed (auto simp: field_simps power_strict_mono)
-
-
-
 subsection {* The standard semiring over the Archimedean fields using delta-orderings *}
 
 definition delta_gt :: "'a :: floor_ceiling \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where 
@@ -168,23 +100,10 @@ proof
   thus "\<exists> i. (f i, a) \<notin> ?r" by blast
 qed
 
-lemma non_inf_int_gt: "non_inf {(a,b :: int) . a > b}" (is "non_inf ?r")
-  by (rule non_inf_image[OF non_inf_delta_gt, of 1 _ rat_of_int], auto simp: delta_gt_def)
-
 lemma delta_gt_SN: assumes dpos: "\<delta> > 0" shows "SN {(x,y). 0 \<le> y \<and> delta_gt \<delta> x y}"
-proof
-  fix f
-  assume "\<forall>i. (f i, f (Suc i)) \<in> {(x, y). 0 \<le> y \<and> delta_gt \<delta> x y}" 
-  hence all: "\<And> i. (f i, f (Suc i)) \<in> {(x, y). 0 \<le> y \<and> delta_gt \<delta> x y}" ..
-  from non_inf_delta_gt[OF dpos] have ni: "non_inf {(a,b) . delta_gt \<delta> a b}" .
-  show False
-  proof (rule non_infE[OF ni])
-    fix i
-    assume "(f i, f (Suc i)) \<notin> {(a, b). delta_gt \<delta> a b} \<or> (f i, - \<delta>) \<notin> {(a, b). delta_gt \<delta> a b}"
-    with all[of i] have "\<not> delta_gt \<delta> (f i) (- \<delta>)" by auto
-    moreover from all[of "Suc i"] all[of i] have "f i \<ge> 0" using dpos unfolding delta_gt_def by auto
-    ultimately show False unfolding delta_gt_def by auto
-  qed
+proof -
+  from non_inf_imp_SN_bound[OF non_inf_delta_gt[OF dpos], of "- \<delta>"]
+  show ?thesis unfolding delta_gt_def by auto
 qed
 
 definition delta_mono :: "'a :: floor_ceiling \<Rightarrow> bool" where "delta_mono x \<equiv> x \<ge> 1"
@@ -312,6 +231,46 @@ proof
   show " \<exists>gt. SN_strict_mono_ordered_semiring_1 1 gt delta_mono \<and> (\<forall>x y. (x, y) \<in> set xysp \<longrightarrow> gt x y)" 
     by (intro exI conjI, rule delta_interpretation[OF dpos oned], rule orient1)
 qed
+
+
+subsection {* The standard semiring over the integers *}
+
+definition int_mono :: "int \<Rightarrow> bool" where "int_mono x \<equiv> x \<ge> 1"
+
+instantiation int :: large_ordered_semiring_1
+begin
+instance 
+proof 
+  fix y :: int
+  show "\<exists> x. of_nat x \<ge> y"
+    by (rule exI[of _ "nat y"], simp) 
+qed (auto simp: mult_right_mono mult_left_mono mult_right_mono_neg)
+end
+
+lemma non_inf_int_gt: "non_inf {(a,b :: int) . a > b}" (is "non_inf ?r")
+  by (rule non_inf_image[OF non_inf_delta_gt, of 1 _ rat_of_int], auto simp: delta_gt_def)
+
+interpretation int_SN: SN_strict_mono_ordered_semiring_1 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" int_mono
+proof (unfold_locales)
+  have [simp]: "\<And> x :: int . (-1 < x) = (0 \<le> x)" by auto
+  show "SN {(x,y). y \<ge> 0 \<and> (y :: int) < x}" 
+    using non_inf_imp_SN_bound[OF non_inf_int_gt, of "-1"] by auto
+qed (auto simp: mult_strict_left_mono int_mono_def)
+
+interpretation int_poly: poly_order_carrier 1 "op > :: int \<Rightarrow> int \<Rightarrow> bool" True discrete
+proof (unfold_locales)
+  fix x y :: int
+  assume ge: "x \<ge> y"
+  then obtain k where k: "x - y = k" and kp: "0 \<le> k" by auto
+  then obtain nk where nk: "nk = nat k" and k: "x - y = int nk" by auto
+  show "\<exists> k. x = (op + 1 ^^ k) y"
+  proof (rule exI[of _ nk])
+    from k have "x = int nk + y" by simp
+    also have "\<dots> = (op + 1 ^^ nk) y"
+      by (induct nk, auto)
+    finally show "x = (op + 1 ^^ nk) y" .
+  qed
+qed (auto simp: field_simps power_strict_mono)
 
 
 subsection {* The arctic semiring over the integers *}

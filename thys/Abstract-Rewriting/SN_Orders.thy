@@ -333,4 +333,7 @@ qed
 lemma SN_imp_non_inf: "SN r \<Longrightarrow> non_inf r"
   by (intro non_infI, auto)
 
+lemma non_inf_imp_SN_bound: "non_inf r \<Longrightarrow> SN {(a,b). (b,c) \<in> r \<and> (a,b) \<in> r}"
+  by (rule, auto)
+
 end
