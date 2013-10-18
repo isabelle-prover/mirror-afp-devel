@@ -70,35 +70,6 @@ setup {*
   Code.add_case @{thm tllist_case_cert}
 *}
 
-text {* Coinduction rules *}
-
-lemma tllist_fun_coinduct_invar [consumes 1, case_names TNil TCons]:
-  assumes "P x"
-  and "\<And>x. P x \<Longrightarrow> is_TNil (f x) \<longleftrightarrow> is_TNil (g x) \<and> (is_TNil (f x) \<longrightarrow> is_TNil (g x) \<longrightarrow> terminal (f x) = terminal (g x))"
-  and "\<And>x. \<lbrakk> P x; \<not> is_TNil (f x); \<not> is_TNil (g x) \<rbrakk> 
-  \<Longrightarrow> thd (f x) = thd (g x) \<and>
-     ((\<exists>x'. ttl (f x) = f x' \<and> ttl (g x) = g x' \<and> P x') \<or> ttl (f x) = ttl (g x))"
-  shows "f x = g x"
-apply(rule tllist.strong_coinduct[of "\<lambda>xs ys. \<exists>x. P x \<and> xs = f x \<and> ys = g x"])
-using assms by auto
-
-theorem tllist_fun_coinduct [case_names TNil TCons]:
-  assumes 
-  "\<And>x. is_TNil (f x) \<longleftrightarrow> is_TNil (g x) \<and> (is_TNil (f x) \<longrightarrow> is_TNil (g x) \<longrightarrow> terminal (f x) = terminal (g x))"
-  "\<And>x. \<lbrakk> \<not> is_TNil (f x); \<not> is_TNil (g x) \<rbrakk> 
-  \<Longrightarrow> thd (f x) = thd (g x) \<and>
-      ((\<exists>x'. ttl (f x) = f x' \<and> ttl (g x) = g x') \<or> ttl (f x) = ttl (g x))"
-  shows "f x = g x"
-apply(rule tllist_fun_coinduct_invar[where P="\<lambda>_. True" and f=f and g=g])
-using assms by(simp_all)
-
-lemmas tllist_fun_coinduct2 = tllist_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas tllist_fun_coinduct3 = tllist_fun_coinduct[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
-lemmas tllist_fun_coinduct4 = tllist_fun_coinduct[where ?'a="'a \<times> 'b \<times> 'c \<times> 'd", split_format (complete)]
-lemmas tllist_fun_coinduct_invar2 = tllist_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas tllist_fun_coinduct_invar3 = tllist_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
-lemmas tllist_fun_coinduct_invar4 = tllist_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c \<times> 'd", split_format (complete)]
-
 subsection {* Code generator setup *}
 
 instantiation tllist :: (equal,equal) equal begin
@@ -354,12 +325,12 @@ lemma tllist_of_llist_cong [cong]:
 proof(unfold `xs = xs'`)
   from assms have "lfinite xs' \<longrightarrow> b = b'" by simp
   thus "tllist_of_llist b xs' = tllist_of_llist b' xs'"
-    by(coinduct xs' rule: tllist_fun_coinduct_invar) auto
+    by(coinduction arbitrary: xs') auto
 qed
 
 lemma llist_of_tllist_inverse [simp]: 
   "tllist_of_llist (terminal b) (llist_of_tllist b) = b"
-by(coinduct b rule: tllist_fun_coinduct) simp_all
+by(coinduction arbitrary: b) simp_all
 
 lemma tllist_of_llist_LNil [simp, code, nitpick_simp]: "tllist_of_llist b LNil = TNil b"
 by(simp add: tllist_of_llist_def)
@@ -386,7 +357,7 @@ proof(intro iffI conjI impI)
 next
   assume ?lhs
   thus "xs = ys"
-    by(coinduct xs ys rule: llist_fun_coinduct_invar2)(auto simp add: neq_LNil_conv)
+    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv)
   assume "lfinite ys"
   thus "b = c" using `?lhs`
     unfolding `xs = ys` by(induct) simp_all
@@ -402,7 +373,7 @@ by(rule llist.expand) auto
 
 lemma tllist_of_llist_inverse [simp]:
   "llist_of_tllist (tllist_of_llist b xs) = xs"
-by(coinduct xs rule: llist_fun_coinduct) auto
+by(coinduction arbitrary: xs) auto
 
 
 definition cr_tllist :: "('a llist \<times> 'b) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
@@ -432,7 +403,7 @@ by(auto 4 3 intro!: fun_relI relcomppI simp add: pcr_tllist_def prod_rel_def lli
 
 lemma tmap_tllist_of_llist:
   "tmap f g (tllist_of_llist b xs) = tllist_of_llist (g b) (lmap f xs)"
-by(coinduct xs rule: tllist_fun_coinduct) auto
+by(coinduction arbitrary: xs) auto
 
 lemma tmap_transfer [transfer_rule]:
   "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op =) (map_pair \<circ> lmap) tmap"
@@ -718,7 +689,7 @@ lemma tllist_all2_TCons2:
   "tllist_all2 P Q ts' (TCons x ts) \<longleftrightarrow> (\<exists>x' ts''. ts' = TCons x' ts'' \<and> P x' x \<and> tllist_all2 P Q ts'' ts)"
 by transfer(fastforce simp add: llist_all2_LCons2 dest: llist_all2_lfiniteD)
 
-lemma tllist_all2_coinduct [consumes 1, case_names tllist_all2, case_conclusion tllist_all2 is_TNil TNil TCons]:
+lemma tllist_all2_coinduct [consumes 1, case_names tllist_all2, case_conclusion tllist_all2 is_TNil TNil TCons, coinduct pred: tllist_all2]:
   assumes "X xs ys"
   and "\<And>xs ys. X xs ys \<Longrightarrow>
   (is_TNil xs \<longleftrightarrow> is_TNil ys) \<and>
@@ -729,35 +700,13 @@ using assms
 apply(transfer fixing: P R)
 apply clarsimp
 apply(rule conjI)
- apply(erule llist_all2_coinduct, blast)
+ apply(erule llist_all2_coinduct, blast, blast)
 proof(rule impI)
   case (goal1 X xs b ys c)
   from `lfinite xs` `X (xs, b) (ys, c)`
   show "R b c"
     by(induct arbitrary: ys rule: lfinite_induct)(auto dest: goal1(2))
 qed
-
-lemma tllist_all2_fun_coinduct_invar [consumes 1, case_names is_TNil TNil TCons]:
-  assumes "X x"
-  and "\<And>x. X x \<Longrightarrow> is_TNil (f x) \<longleftrightarrow> is_TNil (g x)"
-  and "\<And>x. \<lbrakk> X x; is_TNil (f x); is_TNil (g x) \<rbrakk> \<Longrightarrow> R (terminal (f x)) (terminal (g x))"
-  and "\<And>x. \<lbrakk> X x; \<not> is_TNil (f x); \<not> is_TNil (g x) \<rbrakk>
-  \<Longrightarrow> P (thd (f x)) (thd (g x)) \<and> ((\<exists>x'. ttl (f x) = f x' \<and> ttl (g x) = g x' \<and> X x') \<or> tllist_all2 P R (ttl (f x)) (ttl (g x)))"
-  shows "tllist_all2 P R (f x) (g x)"
-apply(rule tllist_all2_coinduct[where X="\<lambda>xs ys. \<exists>x. X x \<and> xs = f x \<and> ys = g x"])
-using assms by(auto 6 4)
-
-lemma tllist_all2_fun_coinduct [case_names is_TNil TNil TCons]:
-  assumes "\<And>x. is_TNil (f x) \<longleftrightarrow> is_TNil (g x)"
-  and "\<And>x. \<lbrakk> is_TNil (f x); is_TNil (g x) \<rbrakk> \<Longrightarrow> R (terminal (f x)) (terminal (g x))"
-  and "\<And>x. \<lbrakk> \<not> is_TNil (f x); \<not> is_TNil (g x) \<rbrakk>
-  \<Longrightarrow> P (thd (f x)) (thd (g x)) \<and> ((\<exists>x'. ttl (f x) = f x' \<and> ttl (g x) = g x') \<or> tllist_all2 P R (ttl (f x)) (ttl (g x)))"
-  shows "tllist_all2 P R (f x) (g x)"
-apply(rule tllist_all2_fun_coinduct_invar[where X="\<lambda>_. True" and f=f and g=g])
-using assms by simp_all
-
-lemmas tllist_all2_fun_coinduct2 = tllist_all2_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas tllist_all2_fun_coinduct_invar2 = tllist_all2_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
 
 lemma tllist_all2_cases[consumes 1, case_names TNil TCons, cases pred]:
   assumes "tllist_all2 P Q xs ys"
@@ -870,10 +819,8 @@ apply(frule llist_all2_lfiniteD, simp add: lappend_inf)
 done
 
 lemma llist_all2_tllist_of_llistI:
-  assumes "tllist_all2 A B xs ys"
-  shows "llist_all2 A (llist_of_tllist xs) (llist_of_tllist ys)"
-using assms
-by(coinduct xs ys rule: llist_all2_fun_coinduct_invar2)(auto dest: tllist_all2_is_TNilD tllist_all2_thdD intro: tllist_all2_ttlI)
+  "tllist_all2 A B xs ys \<Longrightarrow> llist_all2 A (llist_of_tllist xs) (llist_of_tllist ys)"
+by(coinduction arbitrary: xs ys)(auto dest: tllist_all2_is_TNilD tllist_all2_thdD intro: tllist_all2_ttlI)
 
 lemma tllist_all2_tllist_of_llist [simp]:
   "tllist_all2 A B (tllist_of_llist b xs) (tllist_of_llist c ys) \<longleftrightarrow>
@@ -1049,7 +996,7 @@ lemma reflp_tllist_all2[reflexivity_rule]:
 proof(rule reflpI)
   fix xs
   show "tllist_all2 R Q xs xs"
-    apply(coinduct xs rule: tllist_all2_fun_coinduct)
+    apply(coinduction arbitrary: xs)
     using assms by(auto elim: reflpE)
 qed
 
@@ -1065,7 +1012,7 @@ proof (rule left_totalI)
     using S by(rule left_totalE)(rule someI_ex)
 
   have "tllist_all2 R S xs (tmap (\<lambda>x. SOME y. R x y) (\<lambda>x. SOME y. S x y) xs)"
-    by(coinduct xs rule: tllist_all2_fun_coinduct)(auto simp add: * **)
+    by(coinduction arbitrary: xs)(auto simp add: * **)
   thus "\<exists>ys. tllist_all2 R S xs ys" ..
 qed
 
@@ -1075,9 +1022,8 @@ lemma left_unique_tllist_all2 [reflexivity_rule]:
 proof(rule left_uniqueI)
   fix xs ys zs
   assume "tllist_all2 A B xs zs" "tllist_all2 A B ys zs"
-  hence "\<exists>zs. tllist_all2 A B xs zs \<and> tllist_all2 A B ys zs" by auto
   thus "xs = ys"
-    by(coinduct xs ys rule: tllist.strong_coinduct)(auto 4 3 dest: left_uniqueD[OF A] left_uniqueD[OF B] tllist_all2_is_TNilD tllist_all2_thdD tllist_all2_tfinite1_terminalD intro: tllist_all2_ttlI)
+    by(coinduction arbitrary: xs ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: left_uniqueD[OF A] left_uniqueD[OF B] tllist_all2_is_TNilD tllist_all2_thdD tllist_all2_tfinite1_terminalD intro: tllist_all2_ttlI)
 qed
 
 lemma tllist_all2_right_total[transfer_rule]:
@@ -1093,7 +1039,7 @@ proof
     using assms unfolding right_total_def by - (rule someI_ex, blast)
 
   have "tllist_all2 R S (tmap (\<lambda>y. SOME x. R x y) (\<lambda>y. SOME x. S x y) ys) ys"
-    by(coinduct ys rule: tllist_all2_fun_coinduct)(auto simp add: * **)
+    by(coinduction arbitrary: ys)(auto simp add: * **)
   thus "\<exists>xs. tllist_all2 R S xs ys" ..
 qed
 
@@ -1107,9 +1053,8 @@ lemma right_unique_tllist_all2 [transfer_rule]:
 proof(rule right_uniqueI)
   fix xs ys zs
   assume "tllist_all2 A B xs ys" "tllist_all2 A B xs zs"
-  hence "\<exists>xs. tllist_all2 A B xs ys \<and> tllist_all2 A B xs zs" by auto
   thus "ys = zs"
-    by(coinduct ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: tllist_all2_is_TNilD right_uniqueD[OF B] right_uniqueD[OF A] tllist_all2_thdD tllist_all2_tfinite2_terminalD intro: tllist_all2_ttlI)
+    by(coinduction arbitrary: xs ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: tllist_all2_is_TNilD right_uniqueD[OF B] right_uniqueD[OF A] tllist_all2_thdD tllist_all2_tfinite2_terminalD intro: tllist_all2_ttlI)
 qed
 
 lemma bi_unique_tllist_all2 [transfer_rule]:
@@ -1130,7 +1075,7 @@ proof(intro conjI strip)
   fix xs ys
   assume "tllist_all2 T1 T2 xs ys"
   thus "tmap Abs1 Abs2 xs = ys"
-    by(coinduct xs ys rule: tllist_fun_coinduct_invar2)(auto simp add: 1 2 dest: tllist_all2_is_TNilD tllist_all2_tfinite1_terminalD tllist_all2_thdD intro: tllist_all2_ttlI)
+    by(coinduction arbitrary: xs ys)(auto simp add: 1 2 dest: tllist_all2_is_TNilD tllist_all2_tfinite1_terminalD tllist_all2_thdD intro: tllist_all2_ttlI)
 next
   from assms have 1: "\<And>x. T1 (Rep1 x) x"
     and 2: "\<And>x. T2 (Rep2 x) x"
@@ -1191,17 +1136,32 @@ by (simp add: tllist_all2_TNil1 tllist_all2_TNil2 split: tllist.split)
 
 lemma tllist_unfold_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> C) ===> (A ===> A) ===> A ===> tllist_all2 C B) tllist_unfold tllist_unfold"
-apply(rule fun_relI)+
-apply(erule tllist_all2_fun_coinduct_invar2[where X=A])
-apply(auto 4 4 elim: fun_relE)
-done
+proof(rule fun_relI)+
+  fix IS_TNIL1 :: "'a \<Rightarrow> bool" and IS_TNIL2
+    TERMINAL1 TERMINAL2 THD1 THD2 TTL1 TTL2 x y
+  assume rel: "(A ===> op =) IS_TNIL1 IS_TNIL2" "(A ===> B) TERMINAL1 TERMINAL2"
+    "(A ===> C) THD1 THD2" "(A ===> A) TTL1 TTL2"
+    and "A x y"
+  show "tllist_all2 C B (tllist_unfold IS_TNIL1 TERMINAL1 THD1 TTL1 x) (tllist_unfold IS_TNIL2 TERMINAL2 THD2 TTL2 y)"
+    using `A x y`
+    apply(coinduction arbitrary: x y)
+    using rel by(auto 4 4 elim: fun_relE)
+qed
 
 lemma llist_corec_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> C) ===> (A ===> op =) ===> (A ===> tllist_all2 C B) ===> (A ===> A) ===> A ===> tllist_all2 C B) tllist_corec tllist_corec"
-apply(rule fun_relI)+
-apply(erule tllist_all2_fun_coinduct_invar2[where X=A])
-apply(auto 4 4 elim: fun_relE)
-done
+proof(rule fun_relI)+
+  fix IS_TNIL1 MORE1 :: "'a \<Rightarrow> bool" and IS_TNIL2
+    TERMINAL1 TERMINAL2 THD1 THD2 MORE2 STOP1 STOP2 TTL1 TTL2 x y
+  assume rel: "(A ===> op =) IS_TNIL1 IS_TNIL2" "(A ===> B) TERMINAL1 TERMINAL2"
+    "(A ===> C) THD1 THD2" "(A ===> op =) MORE1 MORE2"
+    "(A ===> tllist_all2 C B) STOP1 STOP2" "(A ===> A) TTL1 TTL2"
+    and "A x y"
+  show "tllist_all2 C B (tllist_corec IS_TNIL1 TERMINAL1 THD1 MORE1 STOP1 TTL1 x) (tllist_corec IS_TNIL2 TERMINAL2 THD2 MORE2 STOP2 TTL2 y)"
+    using `A x y`
+    apply(coinduction arbitrary: x y)
+    using rel by(auto 4 4 elim: fun_relE)
+qed
 
 lemma ttl_transfer2 [transfer_rule]:
   "(tllist_all2 A B ===> tllist_all2 A B) ttl ttl"
@@ -1263,25 +1223,17 @@ lemma tllist_all2_rsp:
   shows "tllist_all2 S S' xs xs' = tllist_all2 T T' ys ys'"
 proof
   assume "tllist_all2 S S' xs xs'"
-  with xsys xs'ys'
-  have "\<exists>xs xs'. tllist_all2 S S' xs xs' \<and> tllist_all2 R1 R2 xs ys \<and> tllist_all2 R1 R2 xs' ys'" by blast
-  thus "tllist_all2 T T' ys ys'"
-  proof(coinduct rule: tllist_all2_coinduct)
-    case (tllist_all2 ys ys')
-    then obtain xs xs' where "tllist_all2 S S' xs xs'" "tllist_all2 R1 R2 xs ys" "tllist_all2 R1 R2 xs' ys'"
-      by blast
+  with xsys xs'ys' show "tllist_all2 T T' ys ys'"
+  proof(coinduction arbitrary: ys ys' xs xs')
+    case (tllist_all2 ys ys' xs xs')
     thus ?case
       by cases (auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TCons2 tllist_all2_TNil1 tllist_all2_TNil2 dest: R1[rule_format] R2[rule_format])
   qed
 next
   assume "tllist_all2 T T' ys ys'"
-  with xsys xs'ys'
-  have "\<exists>ys ys'. tllist_all2 T T' ys ys' \<and> tllist_all2 R1 R2 xs ys \<and> tllist_all2 R1 R2 xs' ys'" by blast
-  thus "tllist_all2 S S' xs xs'"
-  proof(coinduct rule: tllist_all2_coinduct)
-    case (tllist_all2 xs xs')
-    then obtain ys ys' where "tllist_all2 T T' ys ys'" "tllist_all2 R1 R2 xs ys" "tllist_all2 R1 R2 xs' ys'"
-      by blast
+  with xsys xs'ys' show "tllist_all2 S S' xs xs'"
+  proof(coinduction arbitrary: xs xs' ys ys')
+    case (tllist_all2 xs xs' ys ys')
     thus ?case
       by cases(auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TCons2 tllist_all2_TNil1 tllist_all2_TNil2 dest: R1[rule_format] R2[rule_format])
   qed
