@@ -133,7 +133,7 @@ where "llist_of_stream = llist_unfold (\<lambda>_. False) shd stl"
 definition stream_of_llist :: "'a llist \<Rightarrow> 'a stream"
 where "stream_of_llist = stream_unfold lhd ltl"
 
-lemma llist_of_stream_neq_LNil [simp]: "llist_of_stream xs \<noteq> LNil"
+lemma lnull_llist_of_stream [simp]: "\<not> lnull (llist_of_stream xs)"
 by(simp add: llist_of_stream_def)
 
 lemma ltl_llist_of_stream [simp]: "ltl (llist_of_stream xs) = llist_of_stream (stl xs)"
@@ -256,7 +256,7 @@ apply(auto elim: fun_relE)
 done
 
 lemma shd_transfer [transfer_rule]: "(pcr_stream A ===> A) lhd shd"
-by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI)(frule llist_all2_lhdD, auto)
+by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI)(frule llist_all2_lhdD, auto dest: llist_all2_lnullD)
 
 lemma stl_transfer [transfer_rule]: "(pcr_stream A ===> pcr_stream A) ltl stl"
 by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI dest: llist_all2_ltlI)
