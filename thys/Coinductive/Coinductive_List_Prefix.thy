@@ -70,7 +70,7 @@ lemma llist_inf_simps [simp, code, nitpick_simp]:
 unfolding inf_llist_def by simp_all
 
 lemma llist_inf_eq_LNil [simp]:
-  "inf xs ys = LNil \<longleftrightarrow> (xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)"
+  "lnull (inf xs ys) \<longleftrightarrow> (xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)"
 by(simp add: inf_llist_def)
 
 lemma [simp]: assumes "xs \<noteq> LNil" "ys \<noteq> LNil" "lhd xs = lhd ys"
