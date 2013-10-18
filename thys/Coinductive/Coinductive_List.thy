@@ -1198,8 +1198,8 @@ by(auto simp add: lhd_def not_lnull_conv)
 
 lemmas lnth_0_conv_lhd = lhd_conv_lnth[symmetric]
 
-lemma lnth_ltl: "xs \<noteq> LNil \<Longrightarrow> lnth (ltl xs) n = lnth xs (Suc n)"
-by(auto simp add: neq_LNil_conv)
+lemma lnth_ltl: "\<not> lnull xs \<Longrightarrow> lnth (ltl xs) n = lnth xs (Suc n)"
+by(auto simp add: not_lnull_conv)
 
 lemma lhd_ldropn:
   "enat n < llength xs \<Longrightarrow> lhd (ldropn n xs) = lnth xs n"
@@ -4246,7 +4246,7 @@ lemma inf_llist_lprefix [simp]: "lprefix (inf_llist f) xs \<longleftrightarrow> 
 by(auto simp add: not_lfinite_lprefix_conv_eq)
 
 lemma inf_llist_lnth [simp]: "\<not> lfinite xs \<Longrightarrow> inf_llist (lnth xs) = xs"
-by(coinduction arbitrary: xs)(auto simp add: lnth_0_conv_lhd fun_eq_iff lnth_ltl lnth.simps(2) split: llist.split)
+by(coinduction arbitrary: xs)(auto simp add: lnth_0_conv_lhd fun_eq_iff lnth_ltl)
 
 lemma llist_exhaust:
   obtains (llist_of) ys where "xs = llist_of ys"
