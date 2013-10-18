@@ -10,6 +10,10 @@ begin
   errounously interpreted relative to the including project's path).
 *)
 
+definition ls_size where "ls_size \<equiv> ls.size"
+definition hs_size where "hs_size \<equiv> hs.size"
+definition rs_size where "rs_size \<equiv> rs.size"
+
 (* CAUTION: If this statement fails because the directory cannot be found, 
   you are probably including this library from another project, and the 
   relative path refers to that project's directory. As there seems to be 
@@ -26,6 +30,8 @@ export_code
   htai_empty htai_add_qi htai_add_rule
   htai_bwd_reduce htai_is_empty_witness
   htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
+
+  integer_of_nat nat_of_integer
 
   ls_size hs_size rs_size
   in SML 
@@ -50,6 +56,8 @@ export_code
   htai_bwd_reduce htai_is_empty_witness
   htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
 
+  integer_of_nat nat_of_integer
+
   ls_size hs_size rs_size
   in Haskell 
   module_name Ta
@@ -72,6 +80,8 @@ export_code
   htai_empty htai_add_qi htai_add_rule
   htai_bwd_reduce htai_is_empty_witness
   htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
+
+  integer_of_nat nat_of_integer
 
   ls_size hs_size rs_size
   in OCaml 

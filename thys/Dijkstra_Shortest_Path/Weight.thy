@@ -58,6 +58,9 @@ instance int :: weight ..
 instance rat :: weight ..
 instance real :: weight ..
 
+term top
+
+
 class top_weight = order_top + weight +
   assumes inf_add_right[simp]: "a + top = top"
 begin

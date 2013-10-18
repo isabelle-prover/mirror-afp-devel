@@ -1,7 +1,7 @@
 theory Benchmark_ICF 
 imports 
   Benchmark_Comparison
-  "../../Collections/Collections"
+  "../../Collections/ICF/CollectionsV1"
   "~~/src/HOL/Library/Code_Target_Nat"
 begin
 
@@ -148,8 +148,13 @@ done
 
 end
 
-definition rs_filter where "rs_filter = iflt_filter rs_inj_image_filter"
-lemmas rs_filter_impl = iflt_filter_correct[OF rs_inj_image_filter_impl, folded rs_filter_def]
+setup Locale_Code.open_block
+interpretation gen_rr: g_set_xy_loc rs_ops rs_ops by unfold_locales
+setup Locale_Code.close_block
+
+
+definition rs_filter where "rs_filter = iflt_filter gen_rr.g_inj_image_filter"
+lemmas rs_filter_impl = iflt_filter_correct[OF gen_rr.g_inj_image_filter_impl, folded rs_filter_def]
 interpretation rs: set_filter rs_\<alpha> rs_invar rs_\<alpha> rs_invar rs_filter using rs_filter_impl .
 
 interpretation rs: benchmark rs_\<alpha> rs_invar rs_empty rs_memb rs_ins rs_delete rs_size rs_filter

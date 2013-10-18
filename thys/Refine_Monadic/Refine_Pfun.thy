@@ -71,8 +71,11 @@ declaration {* Partial_Function.init "nrec" @{term nrec.fixp_fun}
   (*SOME @{thm fixp_induct_nrec'}*) NONE *}
 
 lemma bind_mono_pfun[partial_function_mono]:
-  "\<lbrakk> nrec.mono_body B; \<And>y. nrec.mono_body (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
-     nrec.mono_body (\<lambda>f. bind (B f) (\<lambda>y. C y f))"
+  fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c nres) \<Rightarrow> ('d nres)"
+  shows
+  "\<lbrakk> monotone (fun_ord op \<le>) op \<le> B; 
+    \<And>y. monotone (fun_ord op \<le>) op \<le> (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
+     monotone (fun_ord op \<le>) op \<le> (\<lambda>f. bind (B f) (\<lambda>y. C y f))"
   apply rule
   apply (rule Refine_Basic.bind_mono)
   apply (blast dest: monotoneD)+
@@ -114,11 +117,15 @@ proof -
 qed
 
 declaration {* Partial_Function.init "drec" @{term drec.fixp_fun}
-  @{term drec.mono_body} @{thm drec.fixp_rule_uc} @{thm drec.fixp_induct_uc} NONE *}
+  @{term drec.mono_body} @{thm drec.fixp_rule_uc} @{thm drec.fixp_induct_uc} 
+  NONE *}
 
 lemma drec_bind_mono_pfun[partial_function_mono]:
-  "\<lbrakk> drec.mono_body B; \<And>y. drec.mono_body (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
-     drec.mono_body (\<lambda>f. dbind (B f) (\<lambda>y. C y f))"
+  fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c dres) \<Rightarrow> ('d dres)"
+  shows
+  "\<lbrakk> monotone (fun_ord op \<le>) op \<le> B; 
+    \<And>y. monotone (fun_ord op \<le>) op \<le> (\<lambda>f. C y f) \<rbrakk> \<Longrightarrow> 
+     monotone (fun_ord op \<le>) op \<le> (\<lambda>f. dbind (B f) (\<lambda>y. C y f))"
   apply rule
   apply (rule dbind_mono)
   apply (blast dest: monotoneD)+

@@ -3,6 +3,11 @@ TODO List
 D - Done
 O - Obsolete
 
+2012-06-15
+  * Manuel encountered problems with rprod Id Id and set_rel Id not being 
+    simplified to Id (after refine_rcg). Can we fix these?
+
+
 2012-01-28:
   D* Chapter-Structure for proof document
   * Automatic definition of generated function. Also search for REC/RECT subterms

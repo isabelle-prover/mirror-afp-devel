@@ -171,4 +171,26 @@ ML {*
   end
 *}
 
+text {* Hide internal stuff *}
+
+notation (input) rel_ANNOT (infix ":::\<^sub>r" 10)
+notation (input) ind_ANNOT (infix "::#\<^sub>r" 10)
+
+
+locale autoref_syn begin
+  notation (input) APP (infixl "$" 900)
+  notation (input) rel_ANNOT (infix ":::" 10)
+  notation (input) ind_ANNOT (infix "::#" 10)
+  notation OP ("OP")
+  notation (input) ABS (binder "\<lambda>''" 10)
+end
+
+no_notation (input) APP (infixl "$" 900)
+no_notation (input) ABS (binder "\<lambda>''" 10)
+
+no_notation (input) rel_ANNOT (infix ":::" 10)
+no_notation (input) ind_ANNOT (infix "::#" 10)
+
+hide_const (open) PROTECT ANNOT OP APP ABS ID_FAIL rel_annot ind_annot
+
 end

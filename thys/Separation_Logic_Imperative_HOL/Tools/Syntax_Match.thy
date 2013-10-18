@@ -28,30 +28,31 @@ lemma [cong]: "syntax_fo_nomatch x y = syntax_fo_nomatch x y" by simp
 lemma [cong]: "syntax_nomatch x y = syntax_nomatch x y" by simp
 
 ML {*
-structure Syntax_Match =
-struct
+structure Syntax_Match = struct
   val nomatch_thm = @{thm syntax_nomatch_def};
   val fo_nomatch_thm = @{thm syntax_fo_nomatch_def};
 
   fun fo_nomatch_simproc ctxt credex = let
+    (*val ctxt = Simplifier.the_context ss;*)
     val thy = Proof_Context.theory_of ctxt;
 
     val redex = term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
-    (*val _ = tracing (@{make_string} credex);*)
+    (*val _ = tracing (PolyML.makestring credex);*)
 
-    fun fo_matches po = can (fn () => Pattern.first_order_match 
-      thy po (Vartab.empty, Vartab.empty)) ();
+    fun fo_matches po = (Pattern.first_order_match 
+      thy po (Vartab.empty, Vartab.empty); true) handle _ => false;
   in
     if fo_matches (pat,obj) then NONE else SOME fo_nomatch_thm
   end
 
   fun nomatch_simproc ctxt credex = let
+    (*val ctxt = Simplifier.the_context ss;*)
     val thy = Proof_Context.theory_of ctxt;
 
     val redex = term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
-    (*val _ = tracing (@{make_string} credex);*)
+    (*val _ = tracing (PolyML.makestring credex);*)
   in
     if Pattern.matches thy (pat,obj) then NONE else SOME nomatch_thm
   end

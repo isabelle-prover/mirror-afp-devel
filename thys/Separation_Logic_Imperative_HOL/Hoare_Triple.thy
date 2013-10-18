@@ -363,10 +363,61 @@ lemma if_rule:
   shows "<P> if b then f else g <Q>"
   using assms by auto
 
-lemma case_prod_rule: "(\<And>a b. x = (a, b) \<Longrightarrow> <P> f a b <Q>) \<Longrightarrow> <P> case x of (a, b) \<Rightarrow> f a b <Q>"
+lemma if_rule_split:
+  assumes  B: "b \<Longrightarrow> <P> f <Q1>"
+  assumes  NB: "\<not>b \<Longrightarrow> <P> g <Q2>"
+  assumes M: "\<And>x. (Q1 x * \<up>b) \<or>\<^sub>A (Q2 x * \<up>(\<not>b)) \<Longrightarrow>\<^sub>A Q x"
+  shows "<P> if b then f else g <Q>"
+  apply (cases b)
+  apply simp_all
+  apply (rule cons_post_rule)
+  apply (erule B)
+  apply (rule ent_trans[OF _ ent_disjI1[OF M]])
+  apply simp
+
+  apply (rule cons_post_rule)
+  apply (erule NB)
+  apply (rule ent_trans[OF _ ent_disjI2[OF M]])
+  apply simp
+  done
+
+lemma split_rule: 
+  assumes P: "<P> c <R>"
+  assumes Q: "<Q> c <R>"
+  shows "<P \<or>\<^sub>A Q> c <R>"
+  unfolding hoare_triple_def
+  apply (intro allI impI)
+  apply (elim conjE)
+  apply simp
+  apply (erule disjE)
+  using hoare_tripleD[OF P] apply simp
+  using hoare_tripleD[OF Q] apply simp
+  done
+
+lemmas decon_split_if = if_rule_split split_rule
+  -- "Use with care: Complete splitting of if statements"
+
+lemma prod_case_rule: 
+  "(\<And>a b. x = (a, b) \<Longrightarrow> <P> f a b <Q>) \<Longrightarrow> <P> case x of (a, b) \<Rightarrow> f a b <Q>"
   by (auto split: prod.split)
 
+lemma list_case_rule:
+  "\<lbrakk> l=[] \<Longrightarrow> <P> fn <Q>; \<And>x xs. l=x#xs \<Longrightarrow> <P> fc x xs <Q> \<rbrakk> \<Longrightarrow> 
+  <P> list_case fn fc l <Q>"
+  by (auto split: list.split)
+
+lemma option_case_rule:
+  "\<lbrakk> v=None \<Longrightarrow> <P> fn <Q>; \<And>x. v=Some x \<Longrightarrow> <P> fs x <Q> \<rbrakk> 
+  \<Longrightarrow> <P> option_case fn fs v <Q>"
+  by (auto split: option.split)
+
+lemma sum_case_rule:
+  "\<lbrakk> \<And>x. v=Inl x \<Longrightarrow> <P> fl x <Q>; 
+     \<And>x. v=Inr x \<Longrightarrow> <P> fr x <Q> \<rbrakk> 
+  \<Longrightarrow> <P> sum_case fl fr v <Q>"
+  by (auto split: sum.split)
+
 lemma let_rule: "(\<And>x. x = t \<Longrightarrow> <P> f x <Q>) \<Longrightarrow> <P> Let t f <Q>"
-  by (auto split: prod.split)
+  by (auto)
 
 end

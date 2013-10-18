@@ -25,8 +25,15 @@
 
 \renewcommand{\isamarkupcmt}[1]{\hangindent5ex{\isastylecmt --- #1}}
 
-\newcommand{\isaheader}[1]{\section{#1}}
-\renewcommand{\isamarkupheader}[1]{#1}
+\newcommand{\isaheader}[1]{#1}
+\newcommand{\isachapter}[1]{\chapter{#1}}
+\newcommand{\isasection}[1]{\section{#1}}
+
+\renewcommand{\isamarkupheader}[1]{\subsection{#1}}
+\renewcommand{\isamarkupchapter}[1]{\chapter{#1}}
+\renewcommand{\isamarkupsection}[1]{\subsection{#1}}
+\renewcommand{\isamarkupsubsection}[1]{\subsubsection{#1}}
+\renewcommand{\isamarkupsubsubsection}[1]{\paragraph{#1}}
 
 \makeatletter
 \newenvironment{abstract}{%

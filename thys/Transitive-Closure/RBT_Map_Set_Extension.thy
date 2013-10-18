@@ -26,8 +26,8 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 header {* Accessing values via keys *}
 
 theory RBT_Map_Set_Extension
-imports "../Collections/impl/RBTMapImpl" 
-  "../Collections/impl/RBTSetImpl"
+imports "../Collections/ICF/impl/RBTMapImpl" 
+  "../Collections/ICF/impl/RBTSetImpl"
   "../Matrix/Utility"
 begin
 
@@ -61,39 +61,41 @@ of the union is important so that new sets are added to the big union. *}
 (* perhaps there is a smarter way to use two iterates at the same time, however,
   when writing this theory this feature was not detected in the RBTSetImpl theory *)
 definition rs_subset :: "('a :: linorder) rs \<Rightarrow> 'a rs \<Rightarrow> 'a option"
-  where "rs_subset as bs \<equiv> rs_iteratei as (\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False) (\<lambda> a _. if rs_memb a bs then None else Some a) None"
+  where "rs_subset as bs \<equiv> rs.iteratei as (\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False) (\<lambda> a _. if rs.memb a bs then None else Some a) None"
 
-lemma rs_subset[simp]: "(rs_subset as bs = None) = (rs_\<alpha> as \<subseteq> rs_\<alpha> bs)"
+lemma rs_subset[simp]: "(rs_subset as bs = None) = (rs.\<alpha> as \<subseteq> rs.\<alpha> bs)"
 proof -
   let ?abort = "\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False"
-  let ?I = "\<lambda> aas maybe. (maybe = None) = (\<forall> a. a \<in> rs_\<alpha> as - aas \<longrightarrow> a \<in> rs_\<alpha> bs)"
+  let ?I = "\<lambda> aas maybe. (maybe = None) = (\<forall> a. a \<in> rs.\<alpha> as - aas \<longrightarrow> a \<in> rs.\<alpha> bs)"
   let ?it = "rs_subset as bs"
-  have "?I {} ?it \<or> (\<exists> it \<subseteq> rs_\<alpha> as. it \<noteq> {} \<and> \<not> ?abort ?it \<and> ?I it ?it)"
+  have "?I {} ?it \<or> (\<exists> it \<subseteq> rs.\<alpha> as. it \<noteq> {} \<and> \<not> ?abort ?it \<and> ?I it ?it)"
     unfolding rs_subset_def
-    by (rule rs.iteratei_rule_P[where I="?I"]) (auto simp: rs_correct)
+    by (rule rs.iteratei_rule_P[where I="?I"]) (auto simp: rs.correct)
   thus ?thesis by auto
 qed
     
 definition rs_subset_list :: "('a :: linorder) rs \<Rightarrow> 'a rs \<Rightarrow> 'a option"
-  where "rs_subset_list as bs \<equiv> sorted_list_subset (rs_to_list as) (rs_to_list bs)"
+  where "rs_subset_list as bs \<equiv> sorted_list_subset (rs.to_sorted_list as)
+  (rs.to_sorted_list bs)"
 
-lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs_\<alpha> as \<subseteq> rs_\<alpha> bs)"
+lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs.\<alpha> as \<subseteq> rs.\<alpha> bs)"
   unfolding rs_subset_list_def
-    sorted_list_subset[OF rs.to_list_sorted[OF TrueI, of as] rs.to_list_sorted[OF TrueI, of bs]]
-  by (simp add: rs_correct)
+    sorted_list_subset[OF rs.to_sorted_list_correct(3)[OF rs.invar, of as]
+    rs.to_sorted_list_correct(3)[OF rs.invar, of bs]]
+  by (simp add: rs.to_sorted_list_correct)
 
 definition rs_Union :: "('q :: linorder)rs list \<Rightarrow> 'q rs"
-where [code_unfold]: "rs_Union \<equiv> foldl rs_union (rs_empty ())"
+where [code_unfold]: "rs_Union \<equiv> foldl rs.union (rs.empty ())"
 
-lemma rs_Union[simp]: "rs_\<alpha> (rs_Union qs) = \<Union> (rs_\<alpha> ` set qs)"
+lemma rs_Union[simp]: "rs.\<alpha> (rs_Union qs) = \<Union> (rs.\<alpha> ` set qs)"
 proof -
   { 
     fix start
-    have "rs_\<alpha> (foldl rs_union start qs) = rs_\<alpha> start \<union> \<Union> (rs_\<alpha> ` set qs)"
-      by (induct qs arbitrary: start, auto simp: rs_correct)
-  } from this[of "rs_empty ()"]
+    have "rs.\<alpha> (foldl rs.union start qs) = rs.\<alpha> start \<union> \<Union> (rs.\<alpha> ` set qs)"
+      by (induct qs arbitrary: start, auto simp: rs.correct)
+  } from this[of "rs.empty ()"]
   show ?thesis unfolding rs_Union_def
-    by (auto simp: rs_correct)
+    by (auto simp: rs.correct)
 qed
 
 subsection {* Grouping values via keys *}
@@ -107,24 +109,24 @@ text {*
 
 
 fun elem_list_to_rm :: "('d \<Rightarrow> 'k :: linorder) \<Rightarrow> 'd list \<Rightarrow> ('k,'d list)rm"
-  where "elem_list_to_rm key [] = rm_empty ()"
+  where "elem_list_to_rm key [] = rm.empty ()"
       | "elem_list_to_rm key (d # ds) = (
               let rm = elem_list_to_rm key ds;
                   k = key d
-                  in case rm_\<alpha> rm k of
-                        None \<Rightarrow> rm_update_dj k [d] rm
-                     | Some data \<Rightarrow> rm_update k (d # data) rm
+                  in case rm.\<alpha> rm k of
+                        None \<Rightarrow> rm.update_dj k [d] rm
+                     | Some data \<Rightarrow> rm.update k (d # data) rm
          )"
 
 definition rm_set_lookup where "rm_set_lookup rm \<equiv> \<lambda> a. 
-  (case rm_\<alpha> rm a of None \<Rightarrow> [] | Some rules \<Rightarrow> rules)"
+  (case rm.\<alpha> rm a of None \<Rightarrow> [] | Some rules \<Rightarrow> rules)"
 
 
 lemma rm_to_list_empty[simp]:
-  "rm_to_list (rm_empty ()) = []" 
+  "rm.to_list (rm.empty ()) = []" 
 proof -
-  have "map_of (rm_to_list (rm_empty ())) = Map.empty" 
-    by (simp add: rm_correct)
+  have "map_of (rm.to_list (rm.empty ())) = Map.empty" 
+    by (simp add: rm.correct)
   moreover have map_of_empty_iff: "\<And>l. map_of l = Map.empty \<longleftrightarrow> l=[]"
     by (case_tac l) auto
   ultimately show ?thesis by metis
@@ -161,20 +163,20 @@ lemma finite_data: "finite data"
 proof
   show "finite {set (rm_set_lookup rm k) | k. True}" (is "finite ?L")
   proof - 
-    let ?rmset = "rm_\<alpha> rm"
+    let ?rmset = "rm.\<alpha> rm"
     let ?M = "?rmset ` Map.dom ?rmset"
     let ?N = "((\<lambda> e. set (case e of None \<Rightarrow> [] | Some ds \<Rightarrow> ds)) ` ?M)"
     let ?K = "?N \<union> {{}}"
-    from rm_\<alpha>_finite[of rm] have fin: "finite ?K" by auto 
+    from rm.finite[of rm] have fin: "finite ?K" by auto 
     show ?thesis 
     proof (rule finite_subset[OF _ fin], rule)
       fix ds
       assume "ds \<in> ?L"
       from this[unfolded rm_set_lookup_def]
-      obtain fn where ds: "ds = set (case rm_\<alpha> rm fn of None \<Rightarrow> []
+      obtain fn where ds: "ds = set (case rm.\<alpha> rm fn of None \<Rightarrow> []
           | Some ds \<Rightarrow> ds)" by auto
       show "ds \<in> ?K" 
-      proof (cases "rm_\<alpha> rm fn")
+      proof (cases "rm.\<alpha> rm fn")
         case None
         thus ?thesis unfolding ds by auto
       next
@@ -198,7 +200,7 @@ proof
   proof (induct ds arbitrary: k)
     case Nil
     thus ?case unfolding rm_set_lookup_def 
-      by (simp add: rm_correct)
+      by (simp add: rm.correct)
   next
     case (Cons d ds k)
     let ?el = "elem_list_to_rm key"
@@ -207,18 +209,18 @@ proof
     from Cons have ind:
       "\<And> k. ?l k ds = ?r k ds" by auto
     show "?l k (d # ds) = ?r k (d # ds)"
-    proof (cases "rm_\<alpha> (?el ds) (key d)")
+    proof (cases "rm.\<alpha> (?el ds) (key d)")
       case None
       from None ind[of "key d"] have r: "{da \<in> set ds. key da = key d} = {}"
         unfolding rm_set_lookup_def by auto
-      from None have el: "?el (d # ds) = rm_update_dj (key d) [d] (?el ds)"
+      from None have el: "?el (d # ds) = rm.update_dj (key d) [d] (?el ds)"
         by simp
-      from None have ndom: "key d \<notin> Map.dom (rm_\<alpha> (?el ds))" by auto
+      from None have ndom: "key d \<notin> Map.dom (rm.\<alpha> (?el ds))" by auto
       have r: "?r k (d # ds) = ?r k ds \<inter> {da. key da \<noteq> key d} \<union> {da . key da = k \<and> da = d}" (is "_ = ?r1 \<union> ?r2") using r by auto
       from ndom have l: "?l k (d # ds) = 
-        set (case (rm_\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> [d])) k of None \<Rightarrow> []
+        set (case (rm.\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> [d])) k of None \<Rightarrow> []
         | Some rules \<Rightarrow> rules)" (is "_ = ?l") unfolding el rm_set_lookup_def 
-        by (simp add: rm_correct)
+        by (simp add: rm.correct)
       {
         fix da
         assume "da \<in> ?r1 \<union> ?r2"
@@ -230,9 +232,9 @@ proof
         next
           assume "da \<in> ?r1"
           from this[unfolded ind[symmetric] rm_set_lookup_def]
-          obtain das where rm: "rm_\<alpha> (?el ds) k = Some das" and da: "da \<in> set das" and k: "key da \<noteq> key d" by (cases "rm_\<alpha> (?el ds) k", auto)
+          obtain das where rm: "rm.\<alpha> (?el ds) k = Some das" and da: "da \<in> set das" and k: "key da \<noteq> key d" by (cases "rm.\<alpha> (?el ds) k", auto)
           from ind[of k, unfolded rm_set_lookup_def] rm da k have k: "key d \<noteq> k" by auto
-          have rm: "(rm_\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> [d])) k = Some das"
+          have rm: "(rm.\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> [d])) k = Some das"
             unfolding rm[symmetric] using k by auto
           show ?thesis unfolding rm using da by auto
         qed
@@ -241,7 +243,7 @@ proof
       {
         fix da
         assume l: "da \<in> ?l"
-        let ?rm = "((rm_\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> [d])) k"
+        let ?rm = "((rm.\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> [d])) k"
         from l obtain das where rm: "?rm = Some das" and da: "da \<in> set das"
           by (cases ?rm, auto)
         have "da \<in> ?r1 \<union> ?r2" 
@@ -251,7 +253,7 @@ proof
           thus ?thesis using True by auto
         next
           case False
-          with rm have "rm_\<alpha> (?el ds) k = Some das" by auto
+          with rm have "rm.\<alpha> (?el ds) k = Some das" by auto
           from ind[of k, unfolded rm_set_lookup_def this] da False
           show ?thesis by auto
         qed
@@ -262,13 +264,13 @@ proof
       case (Some das)
       from Some ind[of "key d"] have das: "{da \<in> set ds. key da = key d} = set das"
         unfolding rm_set_lookup_def by auto
-      from Some have el: "?el (d # ds) = rm_update (key d) (d # das) (?el ds)"
+      from Some have el: "?el (d # ds) = rm.update (key d) (d # das) (?el ds)"
         by simp
-      from Some have dom: "key d \<in> Map.dom (rm_\<alpha> (?el ds))" by auto
+      from Some have dom: "key d \<in> Map.dom (rm.\<alpha> (?el ds))" by auto
       from dom have l: "?l k (d # ds) = 
-        set (case (rm_\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> (d # das))) k of None \<Rightarrow> []
+        set (case (rm.\<alpha> (elem_list_to_rm key ds)(key d \<mapsto> (d # das))) k of None \<Rightarrow> []
         | Some rules \<Rightarrow> rules)" (is "_ = ?l") unfolding el rm_set_lookup_def 
-        by (simp add: rm_correct)
+        by (simp add: rm.correct)
       have r: "?r k (d # ds) = ?r k ds \<union> {da. key da = k \<and> da = d}" (is "_ = ?r1 \<union> ?r2")  by auto
       {
         fix da
@@ -281,7 +283,7 @@ proof
         next
           assume "da \<in> ?r1"
           from this[unfolded ind[symmetric] rm_set_lookup_def]
-          obtain das' where rm: "rm_\<alpha> (?el ds) k = Some das'" and da: "da \<in> set das'" by (cases "rm_\<alpha> (?el ds) k", auto)
+          obtain das' where rm: "rm.\<alpha> (?el ds) k = Some das'" and da: "da \<in> set das'" by (cases "rm.\<alpha> (?el ds) k", auto)
           from ind[of k, unfolded rm_set_lookup_def rm] have das': "set das' = {d \<in> set ds. key d = k}" by auto
           show ?thesis 
           proof (cases "k = key d")
@@ -297,7 +299,7 @@ proof
       {
         fix da
         assume l: "da \<in> ?l"
-        let ?rm = "((rm_\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> d # das)) k"
+        let ?rm = "((rm.\<alpha> (elem_list_to_rm key ds))(key d \<mapsto> d # das)) k"
         from l obtain das' where rm: "?rm = Some das'" and da: "da \<in> set das'"
           by (cases ?rm, auto)
         have "da \<in> ?r1 \<union> ?r2" 
@@ -316,7 +318,7 @@ proof
           from da k show ?thesis using das by auto
         next
           case False
-          with rm have "rm_\<alpha> (?el ds) k = Some das'" by auto
+          with rm have "rm.\<alpha> (?el ds) k = Some das'" by auto
           from ind[of k, unfolded rm_set_lookup_def this] da False
           show ?thesis by auto
         qed

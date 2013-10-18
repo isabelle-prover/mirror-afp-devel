@@ -2,6 +2,7 @@ header {* \isaheader{Basic Concepts} *}
 theory Refine_Basic
 imports Main 
   "~~/src/HOL/Library/Monad_Syntax" 
+  "Refine_Misc"
   "Generic/RefineG_Recursion"
   "Generic/RefineG_Assert"
 begin
@@ -36,10 +37,12 @@ subsection {* Setup *}
         val description = "Refinement Framework: " ^
           "Simplifier rules for pointwise reasoning" )
 
+    (* Replaced by respective solvers in tagged solver
     structure refine_post = Named_Thms
       ( val name = @{binding refine_post}
         val description = "Refinement Framework: " ^
           "Postprocessing rules" )
+    *)
 
 
 
@@ -51,21 +54,26 @@ subsection {* Setup *}
       let 
         val ref_thms = (refine0.get ctxt 
           @ add_thms @ refine.get ctxt @ refine2.get ctxt);
-        val prod_simpset = (put_simpset HOL_basic_ss ctxt |> Splitter.add_split @{thm prod.split});
+        val prod_ss = (Splitter.add_split @{thm prod.split} 
+          (put_simpset HOL_basic_ss ctxt));
         val prod_simp_tac = 
           if Config.get ctxt no_prod_split then 
             K no_tac
           else
-            (simp_tac prod_simpset THEN' 
+            (simp_tac prod_ss THEN' 
               REPEAT_ALL_NEW (resolve_tac @{thms impI allI}));
       in
         REPEAT_ALL_NEW (DETERM o (resolve_tac ref_thms ORELSE' prod_simp_tac))
       end;
 
       fun post_tac ctxt = let
-        val thms = refine_post.get ctxt;
+        (*val thms = refine_post.get ctxt;*)
       in
-        REPEAT_ALL_NEW (match_tac thms ORELSE' triggered_mono_tac ctxt)
+        REPEAT_ALL_NEW (FIRST' [
+          eq_assume_tac,
+          (*match_tac thms,*)
+          SOLVED' (Tagged_Solver.solve_tac ctxt)]) 
+           (* TODO: Get rid of refine_post! Use tagged_solver instead *)
       end;
 
     end;
@@ -74,7 +82,7 @@ subsection {* Setup *}
   setup {* Refine.refine0.setup *}
   setup {* Refine.refine.setup *}
   setup {* Refine.refine2.setup *}
-  setup {* Refine.refine_post.setup *}
+  (*setup {* Refine.refine_post.setup *}*)
   setup {* Refine.refine_pw_simps.setup *}
 
   method_setup refine_rcg = 
@@ -83,11 +91,13 @@ subsection {* Setup *}
     )) *} 
     "Refinement framework: Generate refinement conditions"
 
+  (* Use tagged-solver instead!
   method_setup refine_post = 
     {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
       Refine.post_tac ctxt
     )) *} 
     "Refinement framework: Postprocessing of refinement goals"
+    *)
 
 
 subsection {* Nondeterministic Result Lattice and Monad *}
@@ -174,7 +184,7 @@ end
 abbreviation "FAIL \<equiv> top::'a nres"
 abbreviation "SUCCEED \<equiv> bot::'a nres"
 abbreviation "SPEC \<Phi> \<equiv> RES (Collect \<Phi>)"
-abbreviation "RETURN x \<equiv> RES {x}"
+definition "RETURN x \<equiv> RES {x}"
 
 text {* We try to hide the original @{text "FAILi"}-element as well as possible. 
 *}
@@ -189,34 +199,44 @@ lemma nres_simp_internals:
 
 lemma nres_inequalities[simp]: 
   "FAIL \<noteq> RES X"
-  "RES X \<noteq> FAIL"
   "FAIL \<noteq> SUCCEED" 
+  "FAIL \<noteq> RETURN x"
   "SUCCEED \<noteq> FAIL"
-  unfolding top_nres_def bot_nres_def 
+  "SUCCEED \<noteq> RETURN x"
+  "RES X \<noteq> FAIL"
+  "RETURN x \<noteq> FAIL"
+  "RETURN x \<noteq> SUCCEED"
+  unfolding top_nres_def bot_nres_def RETURN_def
   by auto
 
 lemma nres_more_simps[simp]:
-  "RES X = SUCCEED \<longleftrightarrow> X={}"
   "SUCCEED = RES X \<longleftrightarrow> X={}"
+  "RES X = SUCCEED \<longleftrightarrow> X={}"
+  "RES X = RETURN x \<longleftrightarrow> X={x}"
   "RES X = RES Y \<longleftrightarrow> X=Y"
-  unfolding top_nres_def bot_nres_def by auto
+  "RETURN x = RES X \<longleftrightarrow> {x}=X"
+  "RETURN x = RETURN y \<longleftrightarrow> x=y"
+  unfolding top_nres_def bot_nres_def RETURN_def by auto
 
 lemma nres_order_simps[simp]:
-  "SUCCEED \<le> M"
-  "M \<le> SUCCEED \<longleftrightarrow> M=SUCCEED"
-  "M \<le> FAIL"
-  "FAIL \<le> M \<longleftrightarrow> M=FAIL"
-  "RES X \<le> RES Y \<longleftrightarrow> X\<le>Y"
-  "Sup X = FAIL \<longleftrightarrow> FAIL\<in>X"
-  "FAIL = Sup X \<longleftrightarrow> FAIL\<in>X"
-  "FAIL\<in>X \<Longrightarrow> Sup X = FAIL"
-  "Sup (RES`A) = RES (Sup A)"
-  "A\<noteq>{} \<Longrightarrow> Inf (RES`A) = RES (Inf A)"
+  "\<And>M. SUCCEED \<le> M"
+  "\<And>M. M \<le> SUCCEED \<longleftrightarrow> M=SUCCEED"
+  "\<And>M. M \<le> FAIL"
+  "\<And>M. FAIL \<le> M \<longleftrightarrow> M=FAIL"
+  "\<And>X Y. RES X \<le> RES Y \<longleftrightarrow> X\<le>Y"
+  "\<And>X. Sup X = FAIL \<longleftrightarrow> FAIL\<in>X"
+  "\<And>X. FAIL = Sup X \<longleftrightarrow> FAIL\<in>X"
+  "\<And>X. FAIL\<in>X \<Longrightarrow> Sup X = FAIL"
+  "\<And>A. Sup (RES`A) = RES (Sup A)"
+  "\<And>A. A\<noteq>{} \<Longrightarrow> Inf (RES`A) = RES (Inf A)"
   "Inf {} = FAIL"
   "Inf UNIV = SUCCEED"
   "Sup {} = SUCCEED"
   "Sup UNIV = FAIL"
-  unfolding Sup_nres_def Inf_nres_def
+  "\<And>x y. RETURN x \<le> RETURN y \<longleftrightarrow> x=y"
+  "\<And>x Y. RETURN x \<le> RES Y \<longleftrightarrow> x\<in>Y"
+  "\<And>X y. RES X \<le> RETURN y \<longleftrightarrow> X \<subseteq> {y}"
+  unfolding Sup_nres_def Inf_nres_def RETURN_def
   by (auto simp add: bot_unique top_unique nres_simp_internals)
 
 lemma Sup_eq_RESE:
@@ -243,16 +263,18 @@ definition "inres S x \<equiv> RETURN x \<le> S"
 lemma nofail_simps[simp, refine_pw_simps]:
   "nofail FAIL \<longleftrightarrow> False"
   "nofail (RES X) \<longleftrightarrow> True"
+  "nofail (RETURN x) \<longleftrightarrow> True"
   "nofail SUCCEED \<longleftrightarrow> True"
   unfolding nofail_def
-  by simp_all
+  by (simp_all add: RETURN_def)
 
 lemma inres_simps[simp, refine_pw_simps]:
   "inres FAIL = (\<lambda>_. True)"
   "inres (RES X) = (\<lambda>x. x\<in>X)"
+  "inres (RETURN x) = (\<lambda>y. x=y)"
   "inres SUCCEED = (\<lambda>_. False)"
   unfolding inres_def [abs_def]
-  by (simp_all)
+  by (auto simp add: RETURN_def)
 
 lemma not_nofail_iff: 
   "\<not>nofail S \<longleftrightarrow> S=FAIL" by (cases S) auto
@@ -617,6 +639,61 @@ lemma abs_trans[trans]:
   using assms unfolding ac.galois[symmetric]
   by (rule conc_trans)
 
+(*
+definition "difun R \<equiv> 
+  \<forall>a a' c c'. (a,c)\<in>R \<and> (a',c')\<in>R \<and> (a,c')\<in>R \<longrightarrow> (a',c)\<in>R"
+
+lemma sv_is_difun: "single_valued R \<Longrightarrow> difun R"
+  unfolding single_valued_def difun_def
+  by auto
+
+definition "conc_fun' R m \<equiv> case m of
+  FAILi \<Rightarrow> FAIL
+| RES X \<Rightarrow> RES {c. \<exists>a\<in>X. (c,a)\<in>R}"
+
+definition "abs_fun' R m' \<equiv> case m' of
+  FAILi \<Rightarrow> FAIL
+| RES X' \<Rightarrow> RES {a. \<exists>c\<in>X'. (c,a)\<in>R}"
+
+lemma [simp]: 
+  "conc_fun' R FAIL = FAIL"
+  "conc_fun' R (RES X) = RES {c. \<exists>a\<in>X. (c,a)\<in>R}"
+  "abs_fun' R FAIL = FAIL"
+  "abs_fun' R (RES X') = RES {a. \<exists>c\<in>X'. (c,a)\<in>R}"
+  unfolding conc_fun'_def abs_fun'_def
+  by (auto split: nres.split)
+
+lemma ac_galois: 
+  "difun R \<Longrightarrow> galois_connection (abs_fun' R) (conc_fun' R)"
+  apply (unfold_locales)
+  apply rule
+  unfolding conc_fun'_def abs_fun'_def
+  apply (clarsimp split: nres.split nres.split_asm)
+  apply (intro conjI allI impI)
+  apply auto []
+  apply clarsimp
+
+  unfolding difun_def
+  apply clarsimp
+
+  apply (force split: nres.split nres.split_asm)
+  apply auto []
+  apply auto []
+
+  apply (auto split: nres.split nres.split_asm split_if_asm 
+    simp add: top_nres_def[symmetric]) []
+  apply (drule (1) set_mp)
+  apply auto []
+
+
+  apply (force split: nres.split nres.split_asm split_if_asm 
+    simp add: top_nres_def[symmetric]) []
+  done
+*)
+
+
+
+
 subsubsection {* Transitivity Reasoner Setup *}
 
 text {* WARNING: The order of the single statements is important here! *}
@@ -644,38 +721,6 @@ lemma abs_trans_additional[trans]:
     abs_trans[where R=Id and R'=R]
   by auto
 
-subsubsection {* Invariant and Abstraction Functions *}
-
-lemmas [refine_post] = single_valued_Id
-
-text {*
-  Quite often, the abstraction relation can be described as combination of an
-  abstraction function and an invariant, such that the invariant describes valid
-  values on the concrete domain, and the abstraction function maps valid concrete
-  values to its corresponding abstract value.
-*}
-definition build_rel where [simp]: "build_rel \<alpha> I \<equiv> {(c,a) . a=\<alpha> c \<and> I c}"
-abbreviation "br\<equiv>build_rel"
-lemmas br_def = build_rel_def
-
-lemma br_id[simp]: "br id (\<lambda>_. True) = Id"
-  unfolding build_rel_def by auto
-
-lemma br_chain: 
-  "(build_rel \<beta> J) O (build_rel \<alpha> I) = build_rel (\<alpha>\<circ>\<beta>) (\<lambda>s. J s \<and> I (\<beta> s))"
-  unfolding build_rel_def by auto
-
-lemma br_single_valued[simp, intro!,refine_post]: "single_valued (build_rel \<alpha> I)"
-  unfolding build_rel_def 
-  apply (rule single_valuedI)
-  apply auto
-  done
-
-(*lemmas [simp] = br_single_valued[simplified]*)
-
-lemma converse_br_sv_iff[simp]: 
-  "single_valued (converse (br \<alpha> I)) \<longleftrightarrow> inj_on \<alpha> (Collect I)"
-  by (auto intro!: inj_onI single_valuedI dest: single_valuedD inj_onD) []
 
 subsection {* Derived Program Constructs *}
 text {*
@@ -735,6 +780,33 @@ qed
   
 lemmas pw_REC = pw_REC_inres pw_REC_nofail
 
+lemma pw_RECT_nofail: "nofail (RECT B x) \<longleftrightarrow> mono B \<and>
+  (\<forall>F. (\<forall>y. nofail (B F y) \<longrightarrow>
+             nofail (F y) \<and> (\<forall>x. inres (F y) x \<longrightarrow> inres (B F y) x)) \<longrightarrow>
+        nofail (F x))"
+proof -
+  have "nofail (RECT B x) \<longleftrightarrow> (mono B \<and> (\<forall>F. (\<forall>y. F y \<le> B F y) \<longrightarrow> nofail (F x)))"
+    unfolding RECT_def gfp_def
+    by (auto simp: refine_pw_simps Sup_fun_def SUP_def
+      intro: le_funI dest: le_funD)
+  thus ?thesis
+    unfolding pw_le_iff .
+qed
+
+lemma pw_RECT_inres: "inres (RECT B x) x' = (mono B \<longrightarrow>
+   (\<exists>M. (\<forall>y. nofail (B M y) \<longrightarrow>
+             nofail (M y) \<and> (\<forall>x. inres (M y) x \<longrightarrow> inres (B M y) x)) \<and>
+        inres (M x) x'))"
+proof -
+  have "inres (RECT B x) x' \<longleftrightarrow> mono B \<longrightarrow> (\<exists>M. (\<forall>y. M y \<le> B M y) \<and> inres (M x) x')"
+    unfolding RECT_def gfp_def
+    by (auto simp: refine_pw_simps Sup_fun_def SUP_def
+      intro: le_funI dest: le_funD)
+  thus ?thesis unfolding pw_le_iff .
+qed
+  
+lemmas pw_RECT = pw_RECT_inres pw_RECT_nofail
+
 subsection {* Proof Rules *}
 
 subsubsection {* Proving Correctness *}
@@ -744,7 +816,7 @@ text {*
 *}
 
 lemma RETURN_rule[refine_vcg]: "\<Phi> x \<Longrightarrow> RETURN x \<le> SPEC \<Phi>"
-  by auto
+  by (auto simp: RETURN_def)
 lemma RES_rule[refine_vcg]: "\<lbrakk>\<And>x. x\<in>S \<Longrightarrow> \<Phi> x\<rbrakk> \<Longrightarrow> RES S \<le> SPEC \<Phi>"
   by auto
 lemma SUCCEED_rule[refine_vcg]: "SUCCEED \<le> SPEC \<Phi>" by auto
@@ -773,6 +845,7 @@ lemma bind_rule[refine_vcg]:
 
 lemma ASSUME_rule[refine_vcg]: "\<lbrakk>\<Phi> \<Longrightarrow> \<Psi> ()\<rbrakk> \<Longrightarrow> ASSUME \<Phi> \<le> SPEC \<Psi>"
   by (cases \<Phi>) auto
+
 lemma ASSERT_rule[refine_vcg]: "\<lbrakk>\<Phi>; \<Phi> \<Longrightarrow> \<Psi> ()\<rbrakk> \<Longrightarrow> ASSERT \<Phi> \<le> SPEC \<Psi>" by auto
 
 lemma prod_rule[refine_vcg]: 
@@ -799,6 +872,12 @@ lemma option_rule[refine_vcg]:
 
 lemma Let_rule[refine_vcg]:
   "f x \<le> SPEC \<Phi> \<Longrightarrow> Let x f \<le> SPEC \<Phi>" by auto
+
+lemma Let_rule':
+  assumes "\<And>x. x=v \<Longrightarrow> f x \<le> SPEC \<Phi>"
+  shows "Let v (\<lambda>x. f x) \<le> SPEC \<Phi>"
+  using assms by simp
+
 
 text {* The following lemma shows that greatest and least fixed point are equal,
   if we can provide a variant. *}
@@ -897,7 +976,7 @@ lemma RES_refine_sv:
   by (auto simp: conc_fun_RES dest: single_valuedD)
 
 lemma SPEC_refine: 
-  assumes "S \<le> SPEC (\<lambda>x. x\<in>Domain R \<and> (\<forall>(x,x')\<in>R. \<Phi> x'))"
+  assumes "S \<le> SPEC (\<lambda>x. x\<in>Domain R \<and> (\<forall>x'. (x,x')\<in>R \<longrightarrow> \<Phi> x'))"
   shows "S \<le> \<Down>R (SPEC \<Phi>)" 
   using assms by (force simp: pw_le_iff refine_pw_simps)
 
@@ -957,6 +1036,26 @@ lemma bind_refine[refine]:
     \<Longrightarrow> f x \<le> \<Down> R (f' x')"
   shows "bind M f \<le> \<Down> R (bind M' f')"
   apply (rule bind_refine') using assms by auto
+
+text {* Special cases for refinement of binding to @{text "RES"}
+  statements *}
+lemma bind_refine_RES:
+  "\<lbrakk>RES X \<le> \<Down> R' M';
+  \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
+  \<Longrightarrow> RES X \<guillemotright>= f \<le> \<Down> R (M' \<guillemotright>= f')"
+
+  "\<lbrakk>M \<le> \<Down> R' (RES X');
+  \<And>x x'. \<lbrakk>(x, x') \<in> R'; x' \<in> X' \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
+  \<Longrightarrow> M \<guillemotright>= f \<le> \<Down> R (RES X' \<guillemotright>= f')"
+
+  "\<lbrakk>RES X \<le> \<Down> R' (RES X');
+  \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X; x' \<in> X'\<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
+  \<Longrightarrow> RES X \<guillemotright>= f \<le> \<Down> R (RES X' \<guillemotright>= f')"
+  by (auto intro!: bind_refine')
+
+declare bind_refine_RES(1,2)[refine]
+declare bind_refine_RES(3)[refine]
+
 
 lemma ASSERT_refine[refine]:
   "\<lbrakk> \<Phi>'\<Longrightarrow>\<Phi> \<rbrakk> \<Longrightarrow> ASSERT \<Phi> \<le> \<Down>Id (ASSERT \<Phi>')"
@@ -1073,6 +1172,21 @@ lemma Let_unfold_refine[refine]:
   shows "Let x f \<le> \<Down>R (Let x' f')"
   using assms by auto
 
+text {* The next lemma is sometimes more convenient, as it prevents
+  large let-expressions from exploding by being completely unfolded. *}
+lemma Let_refine:
+  assumes "(x,x')\<in>R'"
+  assumes "\<And>x x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
+  shows "Let x f \<le>\<Down>R (Let x' f')"
+  using assms by auto
+
+lemma option_case_refine[refine]:
+  assumes "(x,x')\<in>Id"
+  assumes "fn \<le> \<Down>R fn'"
+  assumes "\<And>v v'. \<lbrakk>x=Some v; (v,v')\<in>Id\<rbrakk> \<Longrightarrow> fs v \<le> \<Down>R (fs' v')"
+  shows "option_case fn fs x \<le> \<Down>R (option_case fn' fs' x')"
+  using assms by (auto split: option.split)
+
 text {* It is safe to split conjunctions in refinement goals.*}
 declare conjI[refine]
 
@@ -1095,6 +1209,198 @@ lemma bind2let_refine[refine2]:
   apply fast
   done
 
+lemma bind2letRETURN_refine[refine2]:
+  assumes "RETURN x \<le> \<Down>R' M'"
+  assumes "\<And>x'. (x,x')\<in>R' \<Longrightarrow> RETURN (f x) \<le> \<Down>R (f' x')"
+  shows "RETURN (Let x f) \<le> \<Down>R (bind M' f')"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply fast
+  done
+
+lemma RETURN_as_SPEC_refine_sv[refine2]:
+  assumes "single_valued R"
+  assumes "M \<le> SPEC (\<lambda>c. (c,a)\<in>R)"
+  shows "M \<le> \<Down>R (RETURN a)"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  done
+
+lemma RES_sng_as_SPEC_refine_sv[refine2]:
+  assumes "single_valued R"
+  assumes "M \<le> SPEC (\<lambda>c. (c,a)\<in>R)"
+  shows "M \<le> \<Down>R (RES {a})"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  done
+
+lemma RETURN_as_SPEC_refine: 
+  "\<And>M R. M \<le> \<Down>R (SPEC (\<lambda>x. x=v)) \<Longrightarrow> M \<le>\<Down>R (RETURN v)"
+  by (simp add: RETURN_def)
+
+lemma intro_spec_refine_iff:
+  "(bind (RES X) f \<le> \<Down>R M) \<longleftrightarrow> (\<forall>x\<in>X. f x \<le> \<Down>R M)"
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply blast
+  done
+
+lemma intro_spec_refine[refine2]:
+  assumes "\<And>x. x\<in>X \<Longrightarrow> f x \<le> \<Down>R M"
+  shows "bind (RES X) f \<le> \<Down>R M"
+  using assms
+  by (simp add: intro_spec_refine_iff)
+
+
+text {* The following rules are intended for manual application, to reflect 
+  some common structural changes, that, however, are not suited to be applied
+  automatically. *}
+
+text {* Replacing a let by a deterministic computation *}
+lemma let2bind_refine:
+  assumes "m \<le> \<Down>R' (RETURN m')"
+  assumes "\<And>x x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
+  shows "bind m f \<le> \<Down>R (Let m' f')"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply blast
+  done
+
+text {* Introduce a new binding, without a structural match in the abstract 
+  program *}
+lemma intro_bind_refine:
+  assumes "m \<le> \<Down>R' (RETURN m')"
+  assumes "\<And>x. (x,m')\<in>R' \<Longrightarrow> f x \<le> \<Down>R m''"
+  shows "bind m f \<le> \<Down>R m''"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply blast
+  done
+
+lemma intro_bind_refine_id:
+  assumes "m \<le> (SPEC (op = m'))"
+  assumes "f m' \<le> \<Down>R m''"
+  shows "bind m f \<le> \<Down>R m''"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply blast
+  done
+
+subsection {* Relators *}
+
+definition nres_rel where 
+  nres_rel_def_internal: "nres_rel R \<equiv> {(c,a). c \<le> \<Down>R a}"
+
+lemma nres_rel_def: "\<langle>R\<rangle>nres_rel \<equiv> {(c,a). c \<le> \<Down>R a}"
+  by (simp add: nres_rel_def_internal relAPP_def)
+
+lemma nres_relD: "(c,a)\<in>\<langle>R\<rangle>nres_rel \<Longrightarrow> c \<le>\<Down>R a" by (simp add: nres_rel_def)
+lemma nres_relI: "c \<le>\<Down>R a \<Longrightarrow> (c,a)\<in>\<langle>R\<rangle>nres_rel" by (simp add: nres_rel_def)
+
+lemma param_RES[param]:
+  "(RES,RES) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>nres_rel"
+  unfolding set_rel_def nres_rel_def
+  by (auto intro: RES_refine)
+
+lemma param_RETURN[param]: 
+  "single_valued R \<Longrightarrow> (RETURN,RETURN) \<in> R \<rightarrow> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def RETURN_refine_sv)
+
+lemma param_bind[param]:
+  "(bind,bind) \<in> \<langle>Ra\<rangle>nres_rel \<rightarrow> (Ra\<rightarrow>\<langle>Rb\<rangle>nres_rel) \<rightarrow> \<langle>Rb\<rangle>nres_rel"
+  by (auto simp: nres_rel_def intro: bind_refine dest: fun_relD)
+
+subsection {* Autoref Setup *}
+
+consts i_nres :: "interface \<Rightarrow> interface"
+lemmas [autoref_rel_intf] = REL_INTFI[of nres_rel i_nres]
+
+(*lemma id_nres[autoref_id_self]: "ID_LIST 
+  (l SUCCEED FAIL bind (REC::_ \<Rightarrow> _ \<Rightarrow> _ nres,1) (RECT::_ \<Rightarrow> _ \<Rightarrow> _ nres,1))"
+  by simp_all
+*)
+(*definition [simp]: "op_RETURN x \<equiv> RETURN x"
+lemma [autoref_op_pat_def]: "RETURN x \<equiv> op_RETURN x" by simp
+*)
+
+definition [simp]: "op_nres_ASSERT_bnd \<Phi> m \<equiv> do {ASSERT \<Phi>; m}"
+
+context begin interpretation autoref_syn .
+lemma id_ASSERT[autoref_op_pat_def]:
+  "do {ASSERT \<Phi>; m} \<equiv> OP (op_nres_ASSERT_bnd \<Phi>)$m"
+  by simp
+
+definition [simp]: "op_nres_ASSUME_bnd \<Phi> m \<equiv> do {ASSUME \<Phi>; m}"
+lemma id_ASSUME[autoref_op_pat_def]:
+  "do {ASSUME \<Phi>; m} \<equiv> OP (op_nres_ASSUME_bnd \<Phi>)$m"
+  by simp
+
+end
+
+lemma autoref_SUCCEED[autoref_rules]: "(SUCCEED,SUCCEED) \<in> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def)
+
+lemma autoref_FAIL[autoref_rules]: "(FAIL,FAIL) \<in> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def)
+
+lemma autoref_RETURN[autoref_rules]: 
+  "PREFER single_valued R \<Longrightarrow> (RETURN,RETURN) \<in> R \<rightarrow> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def RETURN_refine_sv)
+
+lemma autoref_bind[autoref_rules]: 
+  "(bind,bind) \<in> \<langle>R1\<rangle>nres_rel \<rightarrow> (R1\<rightarrow>\<langle>R2\<rangle>nres_rel) \<rightarrow> \<langle>R2\<rangle>nres_rel"
+  apply (intro fun_relI)
+  apply (rule nres_relI)
+  apply (rule bind_refine)
+  apply (erule nres_relD)
+  apply (erule (1) fun_relD[THEN nres_relD])
+  done
+ 
+context begin interpretation autoref_syn .
+lemma autoref_ASSERT[autoref_rules]:
+  assumes "\<Phi> \<Longrightarrow> (m',m)\<in>\<langle>R\<rangle>nres_rel"
+  shows "(
+    m',
+    (OP (op_nres_ASSERT_bnd \<Phi>) ::: \<langle>R\<rangle>nres_rel \<rightarrow> \<langle>R\<rangle>nres_rel) $ m)\<in>\<langle>R\<rangle>nres_rel"
+  using assms unfolding nres_rel_def
+  by (simp add: ASSERT_refine_right)
+
+lemma autoref_ASSUME[autoref_rules]:
+  assumes "SIDE_PRECOND \<Phi>"
+  assumes "\<Phi> \<Longrightarrow> (m',m)\<in>\<langle>R\<rangle>nres_rel"
+  shows "(
+    m',
+    (OP (op_nres_ASSUME_bnd \<Phi>) ::: \<langle>R\<rangle>nres_rel \<rightarrow> \<langle>R\<rangle>nres_rel) $ m)\<in>\<langle>R\<rangle>nres_rel"
+  using assms unfolding nres_rel_def
+  by (simp add: ASSUME_refine_right)
+
+lemma autoref_REC[autoref_rules]:
+  assumes "(B,B')\<in>(Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
+  assumes "DEFER mono B"
+  shows "(REC B,
+    (OP REC 
+      ::: ((Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel)$B'
+    ) \<in> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
+  apply (intro fun_relI)
+  using assms
+  apply (auto simp: nres_rel_def intro!: REC_refine)
+  apply (simp add: fun_rel_def)
+  apply blast
+  done
+
+lemma autoref_RECT[autoref_rules]:
+  assumes "(B,B') \<in> (Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel"
+  assumes "DEFER mono B"
+  shows "(RECT B,
+    (OP RECT 
+      ::: ((Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel)$B'
+   ) \<in> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
+  apply (intro fun_relI)
+  using assms
+  apply (auto simp: nres_rel_def intro!: RECT_refine)
+  apply (simp add: fun_rel_def)
+  apply blast
+  done
+end
 
 subsection {* Convenience Rules*}
 text {*
@@ -1104,10 +1410,7 @@ text {*
 lemma ref_two_step: "A\<le>\<Down>R  B \<Longrightarrow> B\<le>    C \<Longrightarrow> A\<le>\<Down>R  C" 
   by (rule conc_trans_additional)
 
-lemma build_rel_SPEC: 
-  "M \<le> SPEC ( \<lambda>x. \<Phi> (\<alpha> x) \<and> I x) \<Longrightarrow> M \<le> \<Down>(build_rel \<alpha> I) (SPEC \<Phi>)"
-  by (auto simp: pw_le_iff refine_pw_simps)
-    
+   
 lemma pw_ref_sv_iff:
   shows "single_valued R \<Longrightarrow> S \<le> \<Down>R S' 
   \<longleftrightarrow> (nofail S' 
@@ -1127,6 +1430,9 @@ text {* Introduce an abstraction relation. Usage:
 *}
 lemma introR: "(a,a')\<in>R \<Longrightarrow> (a,a')\<in>R" .
 
+lemma intro_prgR: "c \<le> \<Down>R a \<Longrightarrow> c \<le> \<Down>R a" by auto
+
+
 lemma le_ASSERTI_pres:
   assumes "\<Phi> \<Longrightarrow> S \<le> do {ASSERT \<Phi>; S'}"
   shows "S \<le> do {ASSERT \<Phi>; S'}"
@@ -1144,5 +1450,46 @@ lemma RETURN_ref_RETURND:
   using assms
   apply (auto simp: pw_le_iff refine_pw_simps)
   done
+
+lemma SPEC_eq_is_RETURN:
+  "SPEC (op = x) = RETURN x"
+  "SPEC (\<lambda>x. x=y) = RETURN y"
+  by (auto simp: RETURN_def)
+
+lemma RETURN_SPEC_conv: "RETURN r = SPEC (\<lambda>x. x=r)"
+  by (simp add: RETURN_def)
+
+lemma build_rel_SPEC: 
+  "M \<le> SPEC ( \<lambda>x. \<Phi> (\<alpha> x) \<and> I x) \<Longrightarrow> M \<le> \<Down>(build_rel \<alpha> I) (SPEC \<Phi>)"
+  by (auto simp: pw_le_iff refine_pw_simps build_rel_def)
+
+lemma refine_IdD: "c \<le> \<Down>Id a \<Longrightarrow> c \<le> a" by simp
+
+lemma le_RES_nofailI:
+  assumes "a\<le>RES x"
+  shows "nofail a"
+  using assms
+  by (metis nofail_simps(2) pwD1)
+
+lemma sv_add_invar_refineI:
+  assumes "single_valued R"
+  assumes "f x \<le>\<Down>R (f' x')"
+    and "nofail (f x) \<Longrightarrow> f x \<le> SPEC I"
+  shows "f x \<le> \<Down> {(c, a). (c, a) \<in> R \<and> I c} (f' x')"
+  using assms
+  by (simp add: pw_le_iff refine_pw_simps sv_add_invar)
+
+
+lemma bind_RES_RETURN_eq: "bind (RES X) (\<lambda>x. RETURN (f x)) = 
+  RES { f x | x. x\<in>X }"
+  by (simp add: pw_eq_iff refine_pw_simps)
+    blast
+
+lemma bind_RES_RETURN2_eq: "bind (RES X) (\<lambda>(x,y). RETURN (f x y)) = 
+  RES { f x y | x y. (x,y)\<in>X }"
+  apply (simp add: pw_eq_iff refine_pw_simps)
+  apply blast
+  done
+
 
 end

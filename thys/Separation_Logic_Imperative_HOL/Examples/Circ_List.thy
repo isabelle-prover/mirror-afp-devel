@@ -36,14 +36,15 @@ lemma [simp]:
 
 subsection {* Precision *}
 lemma cs_prec: 
-  "\<forall>l l'. (h\<Turnstile>cs_list l p * F1 \<and>\<^sub>A cs_list l' p * F2) \<longrightarrow> l=l'"
-  apply (cases p)
+  "precise cs_list"
+  apply rule
+  apply (case_tac p)
   apply clarsimp
 
   apply clarsimp
   apply (subgoal_tac "x=xa \<and> n=na", simp)
 
-  apply (erule prec_frame[OF lseg_prec1])
+  apply (erule prec_frame_expl[OF lseg_prec1])
   apply frame_inference
   apply frame_inference
 

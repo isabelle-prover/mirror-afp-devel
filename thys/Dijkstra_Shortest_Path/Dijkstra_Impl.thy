@@ -1,6 +1,10 @@
 header {* Implementation of Dijkstra's-Algorithm using the ICF *}
 theory Dijkstra_Impl
-imports Dijkstra GraphSpec HashGraphImpl "~~/src/HOL/Library/Code_Target_Numeral"
+imports 
+  Dijkstra 
+  GraphSpec 
+  HashGraphImpl 
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin 
 text{*
   In this second refinement step, we use interfaces from the 
@@ -17,31 +21,20 @@ text{*
   Isabelle/HOL's code generator.
 *}
 
-
-text {*
-  Due to idiosyncrasies of the code generator, we have to split the
-  locale for the definitions, and the locale that assumes the preconditions.
-*}
-locale dijkstraC_def =
-  g!: StdGraphDefs g_ops +
-  mr!: StdMapDefs mr_ops +
-  qw!: StdUprioDefs qw_ops 
+locale dijkstraC =
+  g!: StdGraph g_ops + 
+  mr!: StdMap mr_ops +
+  qw!: StdUprio qw_ops
   for g_ops :: "('V,'W::weight,'G,'moreg) graph_ops_scheme"
-  and mr_ops :: "('V, (('V,'W) path \<times> 'W), 'mr, 'more_mr) map_ops_scheme"
-  and qw_ops :: "('V ,'W infty,'qw, 'more_qw) uprio_ops_scheme" 
-  and nodes_it :: "('V, 'W, 'qw, 'G) graph_nodes_it"
-  and succ_it :: "('V, 'W, ('qw\<times>'mr), 'G) graph_succ_it" 
-+
-  fixes v0 :: "'V"
-  fixes ga :: "('V,'W) graph"
-  fixes g :: 'G
+  and mr_ops :: "('V, (('V,'W) path \<times> 'W), 'mr,'more_mr) map_ops_scheme"
+  and qw_ops :: "('V ,'W infty,'qw,'more_qw) uprio_ops_scheme" 
 begin
   definition "\<alpha>sc == map_pair qw.\<alpha> mr.\<alpha>"
   definition "dinvarC_add == \<lambda>(wl,res). qw.invar wl \<and> mr.invar res"
 
-  definition cdinit :: "('qw\<times>'mr) nres" where
-    "cdinit \<equiv> do {
-      wl \<leftarrow> FOREACH (nodes ga) 
+  definition cdinit :: "'G \<Rightarrow> 'V \<Rightarrow> ('qw\<times>'mr) nres" where
+    "cdinit g v0 \<equiv> do {
+      wl \<leftarrow> FOREACH (nodes (g.\<alpha> g)) 
         (\<lambda>v wl. RETURN (qw.insert wl v Weight.Infty)) (qw.empty ());
       RETURN (qw.insert wl v0 (Num 0),mr.sng v0 ([],0))
     }"
@@ -53,12 +46,13 @@ begin
       RETURN (v,w,(wl',res))
     }"
 
-  definition cupdate :: "'V \<Rightarrow> 'W infty \<Rightarrow> ('qw\<times>'mr) \<Rightarrow> ('qw\<times>'mr) nres" where
-    "cupdate v wv \<sigma> = do {
+  definition cupdate :: "'G \<Rightarrow> 'V \<Rightarrow> 'W infty \<Rightarrow> ('qw\<times>'mr) \<Rightarrow> ('qw\<times>'mr) nres"
+    where
+    "cupdate g v wv \<sigma> = do {
       ASSERT (dinvarC_add \<sigma>);
       let (wl,res)=\<sigma>;
       let pv=mpath' (mr.lookup v res);
-      FOREACH (succ ga v) (\<lambda>(w',v') (wl,res).
+      FOREACH (succ (g.\<alpha> g) v) (\<lambda>(w',v') (wl,res).
         if (wv + Num w' < mpath_weight' (mr.lookup v' res)) then do {
           RETURN (qw.insert wl v' (wv+Num w'), 
                   mr.update v' ((v,w',v')#the pv,val wv + w') res)
@@ -67,42 +61,35 @@ begin
     }"
 
   definition cdijkstra where
-    "cdijkstra \<equiv> do {
-      \<sigma>0 \<leftarrow> cdinit; 
+    "cdijkstra g v0 \<equiv> do {
+      \<sigma>0 \<leftarrow> cdinit g v0; 
       (_,res) \<leftarrow> WHILE\<^sub>T (\<lambda>(wl,_). \<not> qw.isEmpty wl) 
-            (\<lambda>\<sigma>. do { (v,wv,\<sigma>') \<leftarrow> cpop_min \<sigma>; cupdate v wv \<sigma>' } )
+            (\<lambda>\<sigma>. do { (v,wv,\<sigma>') \<leftarrow> cpop_min \<sigma>; cupdate g v wv \<sigma>' } )
             \<sigma>0;
       RETURN res
     }"
 
 end
 
-locale dijkstraC =
-  dijkstraC_def g_ops mr_ops qw_ops nodes_it succ_it v0 ga g +
-  Dijkstra ga v0 +
-  g!: StdGraph g_ops + 
-  mr!: StdMap mr_ops +
-  qw!: StdUprio qw_ops +
-  g!: graph_nodes_it g.\<alpha> g.invar nodes_it +
-  g!: graph_succ_it g.\<alpha> g.invar succ_it
+locale dijkstraC_fixg = dijkstraC g_ops mr_ops qw_ops +
+  Dijkstra ga v0
   for g_ops :: "('V,'W::weight,'G,'moreg) graph_ops_scheme"
   and mr_ops :: "('V, (('V,'W) path \<times> 'W), 'mr,'more_mr) map_ops_scheme"
   and qw_ops :: "('V ,'W infty,'qw,'more_qw) uprio_ops_scheme" 
-  and nodes_it :: "('V, 'W, 'qw, 'G) graph_nodes_it"
-  and succ_it :: "('V, 'W, ('qw\<times>'mr), 'G) graph_succ_it" 
-  and ga::"('V,'W) graph" and V :: "'V set" and "v0"::'V and g :: 'G+
-  assumes in_abs: "g.\<alpha> g = ga"
-  assumes g_invar[simp, intro!]: "g.invar g"
+  and ga :: "('V,'W) graph" 
+  and v0 :: 'V +
+  fixes g :: 'G
+  assumes g_rel: "(g,ga)\<in>br g.\<alpha> g.invar"
 begin
-
   schematic_lemma cdinit_refines: 
     notes [refine] = inj_on_id
-    shows "cdinit \<le>\<Down>?R mdinit"
+    shows "cdinit g v0 \<le>\<Down>?R mdinit"
+    using g_rel
     unfolding cdinit_def mdinit_def
     apply (refine_rcg)
     apply (refine_dref_type)
-    apply (simp_all add: \<alpha>sc_def dinvarC_add_def
-      qw.correct mr.correct)
+    apply (simp_all add: \<alpha>sc_def dinvarC_add_def refine_rel_defs
+      qw.correct mr.correct refine_hsimp)
     done
 
   schematic_lemma cpop_min_refines:
@@ -111,171 +98,160 @@ begin
     unfolding cpop_min_def mpop_min_def
     apply (refine_rcg)
     apply (refine_dref_type)
-    apply (simp add: \<alpha>sc_def dinvarC_add_def)
-    apply (simp add: \<alpha>sc_def dinvarC_add_def)
+    apply (simp add: \<alpha>sc_def dinvarC_add_def refine_hsimp refine_rel_defs)
+    apply (simp add: \<alpha>sc_def dinvarC_add_def refine_hsimp refine_rel_defs)
     done
 
   schematic_lemma cupdate_refines:
     notes [refine] = inj_on_id
     shows "(\<sigma>,\<sigma>')\<in>build_rel \<alpha>sc dinvarC_add \<Longrightarrow> v=v' \<Longrightarrow> wv=wv' \<Longrightarrow> 
-    cupdate v wv \<sigma> \<le> \<Down>?R (mupdate v' wv' \<sigma>')"
+    cupdate g v wv \<sigma> \<le> \<Down>?R (mupdate v' wv' \<sigma>')"
     unfolding cupdate_def mupdate_def
+    using g_rel
     apply (refine_rcg)
     apply (refine_dref_type)
-    apply (simp_all add: \<alpha>sc_def dinvarC_add_def 
-      qw.correct mr.correct)
+    apply (simp_all add: \<alpha>sc_def dinvarC_add_def refine_rel_defs 
+      qw.correct mr.correct refine_hsimp)
     done
 
-  lemma cdijkstra_refines: "cdijkstra \<le> \<Down>(build_rel mr.\<alpha> mr.invar) mdijkstra"
+  lemma cdijkstra_refines: 
+    "cdijkstra g v0 \<le> \<Down>(build_rel mr.\<alpha> mr.invar) mdijkstra"
   proof -
     note [refine] = cdinit_refines cpop_min_refines cupdate_refines
     show ?thesis
       unfolding cdijkstra_def mdijkstra_def
+      using g_rel
       apply (refine_rcg)
 
-      apply (simp_all 
+      apply (auto
         split: prod.split prod.split_asm 
-        add: qw.correct mr.correct dinvarC_add_def \<alpha>sc_def)
+        simp add: qw.correct mr.correct dinvarC_add_def \<alpha>sc_def refine_hsimp
+          refine_rel_defs)
       done
   qed
+end
+
+context dijkstraC
+begin
+
+  thm g.nodes_it_is_iterator
 
   schematic_lemma idijkstra_refines_aux: 
-    notes [refine_transfer] = g_invar
-    shows "RETURN ?f \<le> cdijkstra"
+    assumes "g.invar g"
+    shows "RETURN ?f \<le> cdijkstra g v0"
+    using assms
     unfolding cdijkstra_def cdinit_def cpop_min_def cupdate_def 
-    unfolding in_abs[symmetric]
     apply (refine_transfer)
     done
 
-  thm idijkstra_refines_aux[no_vars]
+  concrete_definition idijkstra for g ?v0.0 uses idijkstra_refines_aux 
+
+  lemma idijkstra_refines: 
+    assumes "g.invar g"
+    shows "RETURN (idijkstra g v0) \<le> cdijkstra g v0"
+    using assms
+    by (rule idijkstra.refine) 
 
 end
 
+text {*
+  The following theorem states correctness of the algorithm independent
+  from the refinement framework.
 
-  text {* Copy-Pasted from the above lemma: *}
-  definition (in dijkstraC_def) "idijkstra \<equiv> 
- (let x = let x = nodes_it g (\<lambda>_. True)
-                   (\<lambda>x s. let s = s in upr_insert qw_ops s x infty.Infty)
-                   (upr_empty qw_ops ())
-          in (upr_insert qw_ops x v0 (Num (0\<Colon>'W)),
-              map_op_sng mr_ops v0 ([], 0\<Colon>'W));
-      (a, b) =
-        while (\<lambda>(wl, _). \<not> upr_isEmpty qw_ops wl)
-         (\<lambda>xa. let (a, b) =
-                     let (a, b) = xa; (aa, ba) = upr_pop qw_ops a
-                     in case ba of (ab, bb) \<Rightarrow> (aa, ab, bb, b)
-               in case b of
-                  (aa, ba) \<Rightarrow>
-                    let (ab, bb) = ba;
-                        xd = mpath' (map_op_lookup mr_ops a bb)
-                    in succ_it g a (\<lambda>_. True)
-                        (\<lambda>x s. let s = s
-                               in case x of
-                                  (ac, bc) \<Rightarrow>
-                                    case s of
-                                    (ad, bd) \<Rightarrow>
-if aa + Num ac < mpath_weight' (map_op_lookup mr_ops bc bd)
-then (upr_insert qw_ops ad bc (aa + Num ac),
-      map_op_update mr_ops bc ((a, ac, bc) # the xd, val aa + ac) bd)
-else (ad, bd))
-                        (ab, bb))
-         x
-  in b)
-"
+  Intuitively, the first goal states that the abstraction of the returned 
+  result is correct, the second goal states that the result
+  datastructure satisfies its invariant, and the third goal states 
+  that the cached weights in the returned result are correct.
+
+  Note that this is the main theorem for a user of Dijkstra's algorithm in some 
+  bigger context. It may also be specialized for concrete instances of the
+  implementation, as exemplarily done below.
+  *}
+theorem (in dijkstraC_fixg) idijkstra_correct:
+  shows
+  "weighted_graph.is_shortest_path_map ga v0 (\<alpha>r (mr.\<alpha> (idijkstra g v0)))" 
+    (is ?G1)
+  and "mr.invar (idijkstra g v0)" (is ?G2) 
+  and "Dijkstra.res_invarm (mr.\<alpha> (idijkstra g v0))" (is ?G3)
+proof -
+  from g_rel have I: "g.invar g" by (simp add: refine_rel_defs)
+
+  note idijkstra_refines[OF I]
+  also note cdijkstra_refines
+  also note mdijkstra_refines
+  finally have Z: "RETURN (idijkstra g v0) \<le> 
+    \<Down>(build_rel (\<alpha>r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
+      dijkstra'"
+    apply (subst (asm) conc_fun_chain)
+    apply rule
+    apply (simp only: br_chain)
+    done
+  also note dijkstra'_refines[simplified]
+  also note dijkstra_correct 
+  finally show ?G1 ?G2 ?G3 
+    by (auto elim: RETURN_ref_SPECD simp: refine_rel_defs)
+qed
+
+
+theorem (in dijkstraC) idijkstra_correct:
+  assumes INV: "g.invar g"
+  assumes V0: "v0 \<in> nodes (g.\<alpha> g)"
+  assumes nonneg_weights: "\<And>v w v'. (v,w,v')\<in>edges (g.\<alpha> g) \<Longrightarrow> 0\<le>w"
+  shows 
+  "weighted_graph.is_shortest_path_map (g.\<alpha> g) v0 
+      (Dijkstra.\<alpha>r (mr.\<alpha> (idijkstra g v0)))" (is ?G1)
+  and "Dijkstra.res_invarm (mr.\<alpha> (idijkstra g v0))" (is ?G2)
+proof -
+  interpret gv!: valid_graph "g.\<alpha> g" using g.valid INV .
+
+  interpret dcg: dijkstraC_fixg g_ops mr_ops qw_ops "g.\<alpha> g" v0 g
+    apply (rule dijkstraC_fixg.intro)
+    apply unfold_locales 
+    apply (simp_all add: hlg.finite INV V0 hlg_ops_def 
+      nonneg_weights refine_rel_defs)
+    done
+
+  from dcg.idijkstra_correct show ?G1 ?G2 by simp_all
+qed
 
 
 text {*
   Example instantiation with HashSet.based graph, 
   red-black-tree based result map, and finger-tree based priority queue.
 *}
-definition dijkstra_impl :: 
-  "('V::{hashable,linorder},'W::weight) hlg \<Rightarrow> 'V 
-  \<Rightarrow> ('V,('V,'W) path \<times> 'W) rm" where
-  "dijkstra_impl g v0 \<equiv> 
-    dijkstraC_def.idijkstra rm_ops aluprioi_ops hlg_nodes_it hlg_succ_it v0 g"
+setup Locale_Code.open_block
+interpretation hrf!: dijkstraC hlg_ops rm_ops aluprioi_ops
+  by unfold_locales
+setup Locale_Code.close_block
 
-lemmas [code] = dijkstraC_def.idijkstra_def
 
-text {*
-  Code can be exported to all available target languages:
+
+definition "hrf_dijkstra \<equiv> hrf.idijkstra"
+lemmas hrf_dijkstra_correct = hrf.idijkstra_correct[folded hrf_dijkstra_def]
+
+export_code hrf_dijkstra in SML file -
+export_code hrf_dijkstra in OCaml file -
+export_code hrf_dijkstra in Haskell file -
+export_code hrf_dijkstra in Scala file -
+
+definition hrfn_dijkstra :: "(nat,nat) hlg \<Rightarrow> _" 
+  where "hrfn_dijkstra \<equiv> hrf_dijkstra"
+
+export_code hrfn_dijkstra in SML file -
+
+lemmas hrfn_dijkstra_correct = 
+  hrf_dijkstra_correct[where ?'a = nat and ?'b = nat, folded hrfn_dijkstra_def]
+
+term hrfn_dijkstra
+term hlg.from_list
+
+definition "test_hrfn_dijkstra 
+  \<equiv> rm.to_list 
+    (hrfn_dijkstra (hlg.from_list ([0..<4],[(0,3,1),(0,4,2),(2,1,3),(1,4,3)])) 0)"
+
+ML_val {*
+  @{code test_hrfn_dijkstra}
+
 *}
-export_code dijkstra_impl in SML file -
-export_code dijkstra_impl in OCaml file -
-export_code dijkstra_impl in Haskell file -
-export_code dijkstra_impl in Scala file -
-
-
-context dijkstraC
-begin
-  lemma idijkstra_refines: "RETURN idijkstra \<le> cdijkstra"
-    by (rule idijkstra_refines_aux[folded idijkstra_def])
-  text {*
-    The following theorem states correctness of the algorithm independent
-    from the refinement framework.
-    
-    Intuitively, the first goal states that the abstraction of the returned 
-    result is correct, the second goal states that the result
-    datastructure satisfies its invariant, and the third goal states 
-    that the cached weights in the returned result are correct.
-
-    Note that this is the main theorem for a user of Dijkstra's algorithm in some 
-    bigger context. It may also be specialized for concrete instances of the
-    implementation, as exemplarily done below.
-    *}
-  theorem (in dijkstraC) idijkstra_correct:
-    shows
-    "weighted_graph.is_shortest_path_map ga v0 (\<alpha>r (mr.\<alpha> idijkstra))" (is ?G1)
-    and "mr.invar idijkstra" (is ?G2) 
-    and "res_invarm (mr.\<alpha> idijkstra)" (is ?G3)
-  proof -
-    note idijkstra_refines
-    also note cdijkstra_refines
-    also note mdijkstra_refines
-    finally have Z: "RETURN idijkstra \<le> 
-      \<Down>(build_rel (\<alpha>r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
-        dijkstra'"
-      apply (subst (asm) conc_fun_chain)
-      apply rule
-      apply (simp only: br_chain)
-      done
-    also note dijkstra'_refines[simplified]
-    also note dijkstra_correct 
-    finally show ?G1 ?G2 ?G3 
-      by (auto elim: RETURN_ref_SPECD)
-  qed
-
-end
-
-text {*
-  We also specialize the correctness theorem.
-  Note that the data structure invariant for red-black trees is encoded into
-  the type, and hence @{term "rm_invar"} is constantly @{text "True"}. Hence, it
-  is not stated in this theorem.
-*}
-theorem dijkstra_impl_correct:
-  assumes INV: "hlg_invar g"
-  assumes V0: "v0 \<in> nodes (hlg_\<alpha> g)"
-  assumes nonneg_weights: "\<And>v w v'. (v,w,v')\<in>edges (hlg_\<alpha> g) \<Longrightarrow> 0\<le>w"
-  shows 
-  "weighted_graph.is_shortest_path_map (hlg_\<alpha> g) v0 
-      (Dijkstra.\<alpha>r (rm_\<alpha> (dijkstra_impl g v0)))" (is ?G1)
-  and "Dijkstra.res_invarm (rm_\<alpha> (dijkstra_impl g v0))" (is ?G2)
-proof -
-  interpret hlgv!: valid_graph "hlg_\<alpha> g" using hlg.valid INV .
-  interpret hlgv!: 
-    graph_nodes_it "gop_\<alpha> hlg_ops" "gop_invar hlg_ops" hlg_nodes_it
-    by (auto simp: hlg_nodes_it_impl hlg_ops_def)
-  interpret hlgv!: graph_succ_it "gop_\<alpha> hlg_ops" "gop_invar hlg_ops" hlg_succ_it
-    by (auto simp: hlg_succ_it_impl hlg_ops_def)
-
-  interpret dc: dijkstraC hlg_ops rm_ops aluprioi_ops hlg_nodes_it hlg_succ_it 
-    "hlg_\<alpha> g"
-    apply unfold_locales 
-    apply (simp_all add: hlg.finite INV V0 hlg_ops_def nonneg_weights)
-    done
-
-  from dc.idijkstra_correct show ?G1 ?G2
-    by (auto simp: rm_ops_def dijkstra_impl_def)
-qed
 
 end

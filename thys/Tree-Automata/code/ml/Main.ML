@@ -1,6 +1,7 @@
 (*
   Performance check for tree automata stuff
 *)
+use "Unsynchronized.ML";
 use "test_setup.ML";
 
 use "pt_examples.ML";

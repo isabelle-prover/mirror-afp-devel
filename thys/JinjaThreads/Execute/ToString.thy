@@ -6,9 +6,10 @@ header {* \isaheader{String representation of types} *}
 theory ToString imports
   "../J/Expr"
   "../JVM/JVMInstructions"
-  "../../Collections/impl/TrieMapImpl"
+  (*"../../Collections/impl/TrieMapImpl"
   "../../Collections/impl/RBTMapImpl"
-  "../../Collections/common/Assoc_List"
+  "../../Collections/common/Assoc_List"*)
+  "../Basic/JT_ICF"
 begin
 
 class toString =

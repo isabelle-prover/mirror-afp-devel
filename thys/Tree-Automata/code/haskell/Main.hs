@@ -15,7 +15,7 @@ import Pt_examples;
 
 
 createFta (states, rules) =
-  foldl (\fta r -> htai_add_rule r fta) (foldl (\fta q -> htai_add_qi q fta) htai_empty states) rules;
+  foldl (\fta r -> htai_add_rule r fta) (foldl (\fta q -> htai_add_qi q fta) (htai_empty ()) states) rules;
 
 ftaPairs = map (\(a1,a2) -> (createFta a1, createFta a2)) allTests;
 

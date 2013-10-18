@@ -10,8 +10,7 @@ text {*
 
 locale imp_map = 
   fixes is_map :: "('k \<rightharpoonup> 'v) \<Rightarrow> 'm \<Rightarrow> assn"
-  assumes precise: 
-    "\<forall>m m'. h\<Turnstile>(is_map m p * F1) \<and>\<^sub>A (is_map m' p * F2) \<longrightarrow> m=m'"
+  assumes precise: "precise is_map"
 
 locale imp_map_empty = imp_map +
   constrains is_map :: "('k \<rightharpoonup> 'v) \<Rightarrow> 'm \<Rightarrow> assn"
@@ -72,5 +71,22 @@ locale imp_map_iterate = imp_map +
     "<is_it m p m' it> it_has_next it <\<lambda>r. is_it m p m' it * \<up>(r\<longleftrightarrow>m'\<noteq>Map.empty)>"
   assumes quit_iteration:
     "is_it m p m' it \<Longrightarrow>\<^sub>A is_map m p * true"
+
+locale imp_map_iterate' = imp_map +
+  constrains is_map :: "('k \<rightharpoonup> 'v) \<Rightarrow> 'm \<Rightarrow> assn"
+  fixes is_it :: "('k \<rightharpoonup> 'v) \<Rightarrow> 'm \<Rightarrow> ('k\<times>'v) list \<Rightarrow> 'it \<Rightarrow> assn"
+  fixes it_init :: "'m \<Rightarrow> ('it) Heap"
+  fixes it_has_next :: "'it \<Rightarrow> bool Heap"
+  fixes it_next :: "'it \<Rightarrow> (('k\<times>'v)\<times>'it) Heap"
+  assumes it_init_rule[sep_heap_rules]: 
+    "<is_map s p> it_init p <\<lambda>r. \<exists>\<^sub>Al. \<up>(map_of l = s) * is_it s p l r>\<^sub>t"
+  assumes it_next_rule[sep_heap_rules]: " 
+    <is_it m p (kv#l) it> 
+      it_next it 
+    <\<lambda>(kv',it'). is_it m p l it' * \<up>(kv'=kv)>"
+  assumes it_has_next_rule[sep_heap_rules]: 
+    "<is_it m p l it> it_has_next it <\<lambda>r. is_it m p l it * \<up>(r\<longleftrightarrow>l\<noteq>[])>"
+  assumes quit_iteration:
+    "is_it m p l it \<Longrightarrow>\<^sub>A is_map m p * true"
 
 end

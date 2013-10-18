@@ -1,7 +1,9 @@
 header {* Dijkstra's Algorithm *}
 theory Dijkstra
-  imports Graph Dijkstra_Misc 
-  "../Refine_Monadic/Refine" "../Refine_Monadic/Collection_Bindings"
+  imports 
+  Graph 
+  Dijkstra_Misc 
+  "../Collections/Refine_Dflt_ICF"
   Weight
 begin
 text {*
@@ -171,14 +173,25 @@ subsection "Dijkstra's Algorithm"
 
   text {* The following theorem states (total) correctness of Dijkstra's 
     algorithm. *}
+
   theorem dijkstra_correct: "dijkstra \<le> SPEC (is_shortest_path_map v0)"
     unfolding dijkstra_def
     unfolding dinit_def
     unfolding pop_min_def update_def [abs_def]
-    apply (intro 
+    thm refine_vcg
+
+    apply (refine_rcg
       WHILEIT_rule[where R="inv_image {(x,y). x<y} (card \<circ> fst)"]
-      refine_vcg conjI)
+      refine_vcg 
+    )
+
+    (* TODO/FIXME: Should we built in such massaging of the goal into 
+        refine_rcg ?*)
     apply (simp_all split: prod.split_asm)
+    apply (tactic {* 
+      ALLGOALS (Hypsubst.bound_hyp_subst_tac @{context}
+      THEN' asm_full_simp_tac @{context}
+      )*})
   proof -
     fix wl res v
     assume INV: "dinvar (wl,res)"
@@ -506,10 +519,9 @@ subsection "Dijkstra's Algorithm"
     shows "update' v' \<sigma>' \<le> \<Down>Id (update v \<sigma>)"
     apply (simp only: assms)
     unfolding update'_def update_def
-    apply (refine_rcg)
-    apply assumption
+    apply (refine_rcg refine_vcg)
 
-    apply (intro refine_vcg conjI)
+    (*apply (intro refine_vcg conjI)*)
     apply (simp_all only: singleton_iff)
   proof -
     fix wl res
@@ -824,7 +836,7 @@ begin
 
     apply (rule pw_ref_svI)
     apply rule
-    apply (auto simp add: refine_pw_simps \<alpha>s_def \<alpha>w_def
+    apply (auto simp add: refine_pw_simps \<alpha>s_def \<alpha>w_def refine_rel_defs
       split: prod.split prod.split_asm)
 
     apply (auto simp: dinvarm_def) []
@@ -850,6 +862,7 @@ begin
       FOREACH\<^bsup>uinvarm v (\<alpha>w wl) (\<alpha>r res)\<^esup> (succ G v) (\<lambda>(w',v') (wl,res). 
         if (wv + Num w' < mpath_weight' (res v')) then do {
           ASSERT (v'\<in>dom wl \<and> pv \<noteq> None);
+          ASSERT (wv \<noteq> Infty);
           RETURN (wl(v'\<mapsto>wv + Num w'),
                     res(v' \<mapsto> ((v,w',v')#the pv,val wv + w') ))
         } else RETURN (wl,res)
@@ -919,15 +932,19 @@ begin
 
     note [refine2] = inj_on_id
 
+    note [simp] = refine_rel_defs
+
     show "mupdate v wv \<sigma> \<le> \<Down>(build_rel \<alpha>s dinvarm) (update' v \<sigma>')" 
       using SREF WV
       unfolding mupdate_def update'_def
       apply -
 
       apply (refine_rcg)
-      apply simp_all [4]
+
+      apply simp_all [3]
       apply (simp add: \<alpha>s_def uinvarm_def)
       apply (simp_all add: \<alpha>s_def COND_refine THEN_refine(1-2)) [3]
+      apply (rule ccontr,simp)
       using THEN_refine(3,4)
       apply (auto simp: \<alpha>s_def) []
       txt {*The ELSE-case is trivial:*}
@@ -952,7 +969,7 @@ begin
       unfolding mdijkstra_def dijkstra'_def
       apply (refine_rcg)
       apply (simp_all split: prod.split
-        add: \<alpha>s_def \<alpha>w_def dinvarm_def)
+        add: \<alpha>s_def \<alpha>w_def dinvarm_def refine_rel_defs)
       done
   qed
 

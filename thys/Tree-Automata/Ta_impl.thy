@@ -6,11 +6,9 @@ header "Executable Implementation of Tree Automata"
 theory Ta_impl
 imports 
   Main
-
-  "~~/src/HOL/Library/Code_Target_Numeral" 
-  "../Collections/Collections" 
-
+  "../Collections/ICF/CollectionsV1" 
   Ta AbsAlgo
+  "~~/src/HOL/Library/Code_Target_Numeral" 
 begin
 
 
@@ -58,6 +56,30 @@ begin
 
 end
 
+subsubsection {* Ad-Hoc instantiations of generic Algorithms *}
+setup Locale_Code.open_block
+interpretation hll_idx!: build_index_loc hm_ops ls_ops ls_ops by unfold_locales
+interpretation ll_set_xy!: g_set_xy_loc ls_ops ls_ops 
+  by unfold_locales
+
+interpretation lh_set_xx!: g_set_xx_loc ls_ops hs_ops
+  by unfold_locales
+interpretation lll_iflt_cp: inj_image_filter_cp_loc ls_ops ls_ops ls_ops
+  by unfold_locales
+interpretation hhh_cart: cart_loc hs_ops hs_ops hs_ops by unfold_locales
+interpretation hh_set_xy!: g_set_xy_loc hs_ops hs_ops 
+  by unfold_locales
+
+interpretation llh_set_xyy!: g_set_xyy_loc ls_ops ls_ops hs_ops
+  by unfold_locales
+
+interpretation hh_map_to_nat!: map_to_nat_loc hs_ops hm_ops by unfold_locales
+interpretation hh_set_xy!: g_set_xy_loc hs_ops hs_ops by unfold_locales
+interpretation lh_set_xy!: g_set_xy_loc ls_ops hs_ops by unfold_locales
+interpretation hh_set_xx!: g_set_xx_loc hs_ops hs_ops by unfold_locales
+interpretation hs_to_fifo!: set_to_list_loc hs_ops fifo_ops by unfold_locales
+
+setup Locale_Code.close_block
 
 subsection "Generating Indices of Rules"
 text {*
@@ -74,7 +96,7 @@ text {*
 definition build_rule_index 
   :: "(('q,'l) ta_rule \<Rightarrow> 'i::hashable) \<Rightarrow> ('q,'l) ta_rule ls 
       \<Rightarrow> ('i,('q,'l) ta_rule ls) hm"
-  where "build_rule_index == hll_idx_build"
+  where "build_rule_index == hll_idx.idx_build"
 
 definition "build_rule_index_f \<delta> == build_rule_index (\<lambda>r. rhsl r) \<delta>"
 definition "build_rule_index_s \<delta> == build_rule_index (\<lambda>r. lhs r) \<delta>"
@@ -82,24 +104,24 @@ definition "build_rule_index_sf \<delta> == build_rule_index (\<lambda>r. (lhs r
 
 lemma build_rule_index_f_correct[simp]: 
   assumes I[simp, intro!]: "ls_invar \<delta>"
-  shows
-  "hl_idx_invar rhsl (ls_\<alpha> \<delta>) (build_rule_index_f \<delta>)"
-  by (unfold build_rule_index_f_def build_rule_index_def)
-     (simp add: hll_idx_build_correct)
+  shows "hll_idx.is_index rhsl (ls_\<alpha> \<delta>) (build_rule_index_f \<delta>)"
+  apply (unfold build_rule_index_f_def build_rule_index_def)
+  apply (simp add: hll_idx.idx_build_is_index)
+  done
 
 lemma build_rule_index_s_correct[simp]: 
   assumes I[simp, intro!]: "ls_invar \<delta>"
   shows
-  "hl_idx_invar lhs (ls_\<alpha> \<delta>) (build_rule_index_s \<delta>)"
+  "hll_idx.is_index lhs (ls_\<alpha> \<delta>) (build_rule_index_s \<delta>)"
   by (unfold build_rule_index_s_def build_rule_index_def)
-     (simp add: hll_idx_build_correct)
+     (simp add: hll_idx.idx_build_is_index)
 
 lemma build_rule_index_sf_correct[simp]: 
   assumes I[simp, intro!]: "ls_invar \<delta>"
   shows
-  "hl_idx_invar (\<lambda>r. (lhs r, rhsl r)) (ls_\<alpha> \<delta>) (build_rule_index_sf \<delta>)"
+  "hll_idx.is_index (\<lambda>r. (lhs r, rhsl r)) (ls_\<alpha> \<delta>) (build_rule_index_sf \<delta>)"
   by (unfold build_rule_index_sf_def build_rule_index_def)
-     (simp add: hll_idx_build_correct)
+     (simp add: hll_idx.idx_build_is_index)
 
 subsection "Tree Automaton with Optional Indices"
 
@@ -207,11 +229,11 @@ text {*
   This enforces generation of the index before applying lookup functions.
   *}
   -- "Lookup rules by function symbol"
-definition "hta_lookup_f f H == hl_idx_lookup f (the (hta_idx_f H))"
+definition "hta_lookup_f f H == hll_idx.lookup f (the (hta_idx_f H))"
   -- "Lookup rules by lhs-state"
-definition "hta_lookup_s q H == hl_idx_lookup q (the (hta_idx_s H))"
+definition "hta_lookup_s q H == hll_idx.lookup q (the (hta_idx_s H))"
   -- "Lookup rules by function symbol and lhs-state"
-definition "hta_lookup_sf q f H == hl_idx_lookup (q,f) (the (hta_idx_sf H))"
+definition "hta_lookup_sf q f H == hll_idx.lookup (q,f) (the (hta_idx_sf H))"
 
 
   -- "This locale defines the invariants of a tree automaton"
@@ -226,11 +248,11 @@ locale hashedTa =
   -- "The indices are correct, if present"
   assumes index_correct:
     "hta_idx_f H = Some idx_f 
-      \<Longrightarrow> hl_idx_invar rhsl (ls_\<alpha> (hta_\<delta> H)) idx_f"
+      \<Longrightarrow> hll_idx.is_index rhsl (ls_\<alpha> (hta_\<delta> H)) idx_f"
     "hta_idx_s H = Some idx_s 
-      \<Longrightarrow> hl_idx_invar lhs (ls_\<alpha> (hta_\<delta> H)) idx_s"
+      \<Longrightarrow> hll_idx.is_index lhs (ls_\<alpha> (hta_\<delta> H)) idx_s"
     "hta_idx_sf H = Some idx_sf 
-      \<Longrightarrow> hl_idx_invar (\<lambda>r. (lhs r, rhsl r)) (ls_\<alpha> (hta_\<delta> H)) idx_sf"
+      \<Longrightarrow> hll_idx.is_index (\<lambda>r. (lhs r, rhsl r)) (ls_\<alpha> (hta_\<delta> H)) idx_sf"
 
 begin
   -- "Inside this locale, some shorthand notations for the sets of 
@@ -245,7 +267,7 @@ begin
     apply (cases "hta_has_idx_f H")
     apply (unfold hta_has_idx_f_def hta_lookup_f_def)
     apply (auto 
-      simp add: hl_idx_lookup_correct[OF index_correct(1)] 
+      simp add: hll_idx.lookup_correct[OF index_correct(1)] 
                 index_def)
     done
 
@@ -255,7 +277,7 @@ begin
     apply (cases "hta_has_idx_s H")
     apply (unfold hta_has_idx_s_def hta_lookup_s_def)
     apply (auto 
-      simp add: hl_idx_lookup_correct[OF index_correct(2)] 
+      simp add: hll_idx.lookup_correct[OF index_correct(2)] 
                 index_def)
     done
 
@@ -266,7 +288,7 @@ begin
     apply (cases "hta_has_idx_sf H")
     apply (unfold hta_has_idx_sf_def hta_lookup_sf_def)
     apply (auto 
-      simp add: hl_idx_lookup_correct[OF index_correct(3)] 
+      simp add: hll_idx.lookup_correct[OF index_correct(3)] 
                 index_def)
     done
 
@@ -339,12 +361,13 @@ lemma r_match_by_laz: "r_match L l = list_all_zip (\<lambda>Q q. q\<in>Q) L l"
   by (unfold r_match_alt list_all_zip_alt)
       auto
 
--- "Executable function that computes the set of accepting states for 
+
+text "Executable function that computes the set of accepting states for 
     a given tree"
 fun faccs' where
   "faccs' H (NODE f ts) = (
     let Qs = List.map (faccs' H) ts in
-      ls_image_filter (\<lambda>r. case r of (q \<rightarrow> f' qs) \<Rightarrow> 
+      ll_set_xy.g_image_filter (\<lambda>r. case r of (q \<rightarrow> f' qs) \<Rightarrow> 
            if list_all_zip (\<lambda>Q q. ls_memb q Q) Qs qs then Some (lhs r) else None
                           ) 
                       (hta_lookup_f f H)
@@ -353,7 +376,7 @@ fun faccs' where
   -- "Executable algorithm to decide the word-problem. The first version 
       depends on the f-index to be present, the second version computes the 
       index if not present."
-definition "hta_mem' t H == \<not>lh_disjoint (faccs' H t) (hta_Qi H)"
+definition "hta_mem' t H == \<not>lh_set_xx.g_disjoint (faccs' H t) (hta_Qi H)"
 definition "hta_mem t H == hta_mem' t (hta_ensure_idx_f H)"
 
 context hashedTa
@@ -366,7 +389,7 @@ begin
   proof -
     have "?T1 \<and> ?T2"
       apply (induct rule: tree.induct)
-      apply (auto simp add: ls.image_filter_correct hta_lookup_f_correct)
+      apply (auto simp add: ll_set_xy.image_filter_correct hta_lookup_f_correct)
       done
     thus ?T1 ?T2 by auto
   qed
@@ -423,7 +446,7 @@ begin
           apply (case_tac qs)
           apply auto [2]
           apply (case_tac qs)
-          apply (auto simp add: ls_correct) [2]
+          apply (auto simp add: ls.correct) [2]
           done
         have 2: "!!qs. r_match ?Qs qs = list_all_zip (\<lambda>a b. ls_memb b a) Qsc qs"
           apply (unfold r_match_by_laz)
@@ -441,12 +464,12 @@ begin
                            list_all_zip (\<lambda>a b. ls_memb b a) Qsc qs}" 
           by (simp add: hta_lookup_f_correct)
         also have 
-          "\<dots> = ls_\<alpha> ( ls_image_filter 
+          "\<dots> = ls_\<alpha> ( ll_set_xy.g_image_filter 
                          ( \<lambda>r. case r of (q \<rightarrow> f' qs) \<Rightarrow> 
                              (if (list_all_zip (\<lambda>Q q. ls_memb q Q) Qsc qs) then Some (lhs r) else None))
                          (hta_lookup_f f H)
                      )"
-          apply (simp add: ls.image_filter_correct hta_lookup_f_correct)
+          apply (simp add: ll_set_xy.image_filter_correct hta_lookup_f_correct)
           apply (auto split: ta_rule.split)
           apply (rule_tac x=xa in exI)
           apply auto
@@ -457,7 +480,7 @@ begin
           done
         finally have 
           "{ q. \<exists>r\<in>?\<delta>. r_matchc q f ?Qs r } 
-           = ls_\<alpha> ( ls_image_filter 
+           = ls_\<alpha> ( ll_set_xy.g_image_filter 
                       (\<lambda>r. case r of (q \<rightarrow> f' qs) \<Rightarrow> 
                         (if (list_all_zip (\<lambda>Q q. ls_memb q Q) Qsc qs) then Some (lhs r) else None))
                       (hta_lookup_f f H))" .
@@ -476,7 +499,7 @@ begin
   lemma hta_mem'_correct: 
     "hta_has_idx_f H \<Longrightarrow> hta_mem' t H \<longleftrightarrow> t\<in>ta_lang (hta_\<alpha> H)"
     apply (unfold ta_lang_def hta_\<alpha>_def hta_mem'_def)
-    apply (auto simp add: lh.disjoint_correct faccs'_correct faccs_alt)
+    apply (auto simp add: lh_set_xx.disjoint_correct faccs'_correct faccs_alt)
     done
 
   theorem hta_mem_correct: "hta_mem t H \<longleftrightarrow> t\<in>ta_lang (hta_\<alpha> H)"
@@ -503,7 +526,7 @@ definition \<delta>_prod_h
   :: "('q1::hashable,'l::hashable) ta_rule ls 
       \<Rightarrow> ('q2::hashable,'l) ta_rule ls \<Rightarrow> ('q1\<times>'q2,'l) ta_rule ls" 
   where "\<delta>_prod_h \<delta>1 \<delta>2 == 
-    lll_inj_image_filter_cp (\<lambda>(r1,r2). r_prod r1 r2) 
+    lll_iflt_cp.inj_image_filter_cp (\<lambda>(r1,r2). r_prod r1 r2) 
                 (\<lambda>(r1,r2). rhsl r1 = rhsl r2 
                          \<and> length (rhsq r1) = length (rhsq r2)) 
                 \<delta>1 \<delta>2"
@@ -522,16 +545,18 @@ lemma \<delta>_prod_h_correct:
     "ls_\<alpha> (\<delta>_prod_h \<delta>1 \<delta>2) = \<delta>_prod (ls_\<alpha> \<delta>1) (ls_\<alpha> \<delta>2)"
     "ls_invar (\<delta>_prod_h \<delta>1 \<delta>2)"
   apply (unfold \<delta>_prod_def \<delta>_prod_h_def)
-  apply (subst lll_inj_image_filter_cp_correct)
+  apply (subst lll_iflt_cp.inj_image_filter_cp_correct)
+  apply simp_all [2]
   using r_prod_inj
-  apply (auto) [2]
-  apply auto
+  apply (auto intro!: inj_onI) []
+  apply auto []
   apply (case_tac xa, case_tac y, simp, blast)
   apply force
+  apply simp
   done
 
 definition "hta_prodWR H1 H2 == 
-  init_hta (hhh_cart (hta_Qi H1) (hta_Qi H2)) (\<delta>_prod_h (hta_\<delta> H1) (hta_\<delta> H2))"
+  init_hta (hhh_cart.cart (hta_Qi H1) (hta_Qi H2)) (\<delta>_prod_h (hta_\<delta> H1) (hta_\<delta> H2))"
 
 lemma hta_prodWR_correct_aux: 
   assumes A: "hashedTa H1" "hashedTa H2"
@@ -542,9 +567,9 @@ proof -
   interpret a1: hashedTa H1 + a2: hashedTa H2 using A .
   show ?T1 ?T2
     apply (unfold hta_prodWR_def init_hta_def hta_\<alpha>_def ta_prod_def)
-    apply (simp add: hhh_cart_correct \<delta>_prod_h_correct)
+    apply (simp add: hhh_cart.cart_correct \<delta>_prod_h_correct)
     apply (unfold_locales)
-    apply (simp_all add: hhh_cart_correct \<delta>_prod_h_correct)
+    apply (simp_all add: hhh_cart.cart_correct \<delta>_prod_h_correct)
     done
 qed
   
@@ -620,7 +645,7 @@ definition pa_initial
       \<Rightarrow> ('q2::hashable,'l) hashedTa 
       \<Rightarrow> ('q1,'q2,'l) pa_state"
 where "pa_initial H1 H2 == 
-  let Qip = hhh_cart (hta_Qi H1) (hta_Qi H2) in (
+  let Qip = hhh_cart.cart (hta_Qi H1) (hta_Qi H2) in (
     Qip,
     hs_to_list Qip,
     ls_empty ()
@@ -657,7 +682,7 @@ proof -
       case True 
       obtain Qh Wh where RF: "pa_upd_rule Q W qs = (Qh,Wh)" by force
       with True Cons.prems have [simp]: "Q'=Qh" "W'=Wh"
-        by (auto simp add: hs_correct)
+        by (auto simp add: hs.correct)
       from Cons.hyps[OF Cons.prems(1) RF] have
         "hs_invar Qh" 
         "hs_\<alpha> Qh = hs_\<alpha> Q \<union> set qs" 
@@ -667,7 +692,7 @@ proof -
     next
       case False
       with Cons.prems have RF: "pa_upd_rule (hs_ins q Q) (q#W) qs = (Q',W')"
-        by (auto simp add: hs_correct)
+        by (auto simp add: hs.correct)
 
       from Cons.hyps[OF _ RF] Cons.prems(1) have
         "hs_invar Q'" 
@@ -675,7 +700,7 @@ proof -
         "\<exists>Wn. distinct Wn 
               \<and> set Wn = set qs - insert q (hs_\<alpha> Q) 
               \<and> W' = Wn @ q # W"
-        by (auto simp add: hs_correct)
+        by (auto simp add: hs.correct)
       thus ?thesis using False by auto
     qed
   qed
@@ -895,7 +920,7 @@ proof -
     apply (auto simp add: det_wa_wa_def pa_det_algo_def pa_\<alpha>_def 
                           hta_\<alpha>_def pa_cond_def frp_algo_def frp_cond_def
                           pa_invar_def pa_step_def pa_initial_def 
-                          hs_correct ls_correct Let_def hhh_cart_correct 
+                          hs.correct ls.correct Let_def hhh_cart.cart_correct 
                 intro: frp_initial.intros
     ) [3]
     done
@@ -926,7 +951,7 @@ proof -
     apply (auto simp add: pa_invar_def frp_algo_def) [2]
     
     apply (simp add: det_wa_wa_def pa_det_algo_def pa_initial_def 
-                     pa_invar_add_def Let_def hhh_cart_correct ls_correct)
+                     pa_invar_add_def Let_def hhh_cart.cart_correct ls.correct)
     done
 qed
     
@@ -944,7 +969,7 @@ lemmas pa_inv_final =
     indices, if necessary"
 definition "hta_prod' H1 H2 ==
   let (Q,W,\<delta>d) = while pa_cond (pa_step H1 H2) (pa_initial H1 H2) in
-    init_hta (hhh_cart (hta_Qi H1) (hta_Qi H2)) \<delta>d
+    init_hta (hhh_cart.cart (hta_Qi H1) (hta_Qi H2)) \<delta>d
   "
 
 definition "hta_prod H1 H2 == 
@@ -973,7 +998,7 @@ proof -
     apply (unfold dwa.loop_def)
     apply (simp add: hta_prod'_def init_hta_def hta_\<alpha>_def pa_det_algo_def)
     apply (cases "(while pa_cond (pa_step H1 H2) (pa_initial H1 H2))")
-    apply (simp add: pa_\<alpha>_def hhh_cart_correct hta_\<alpha>_def)
+    apply (simp add: pa_\<alpha>_def hhh_cart.cart_correct hta_\<alpha>_def)
     done
 
   show ?T2
@@ -982,7 +1007,7 @@ proof -
     apply (case_tac s)
     apply (simp add: pa_det_algo_def pa_invar_add_def pa_invar_def init_hta_def)
     apply unfold_locales
-    apply (simp_all add: hhh_cart_correct)
+    apply (simp_all add: hhh_cart.cart_correct)
     done
 qed
 
@@ -1020,16 +1045,17 @@ definition hta_remap
   :: "('q::hashable \<Rightarrow> 'qn::hashable) \<Rightarrow> ('q,'l::hashable) hashedTa 
       \<Rightarrow> ('qn,'l) hashedTa" 
   where "hta_remap f H == 
-    init_hta (hs_image f (hta_Qi H)) (ls_image (remap_rule f) (hta_\<delta> H))"
+    init_hta (hh_set_xy.g_image f (hta_Qi H)) 
+      (ll_set_xy.g_image (remap_rule f) (hta_\<delta> H))"
   
 lemma (in hashedTa) hta_remap_correct:
   shows "hta_\<alpha> (hta_remap f H) = ta_remap f (hta_\<alpha> H)"
         "hashedTa (hta_remap f H)"
   apply (auto 
     simp add: hta_remap_def init_hta_def hta_\<alpha>_def 
-              hs.image_correct ls.image_correct ta_remap_def)
+              hh_set_xy.image_correct ll_set_xy.image_correct ta_remap_def)
   apply (unfold_locales)
-  apply (auto simp add: hs.image_correct ls.image_correct)
+  apply (auto simp add: hh_set_xy.image_correct ll_set_xy.image_correct)
   done
 
 
@@ -1042,15 +1068,16 @@ text {*
 
   -- "Set of states of a rule"
 fun rule_states_l where
-  "rule_states_l (q \<rightarrow> f qs) = ls_ins q (list_to_ls qs)"
+  "rule_states_l (q \<rightarrow> f qs) = ls_ins q (ls.from_list qs)"
 
 lemma rule_states_l_correct[simp]: 
   "ls_\<alpha> (rule_states_l r) = rule_states r"
   "ls_invar (rule_states_l r)"
-  by (cases r, simp add: ls_correct)+
+  by (cases r, simp add: ls.correct)+
 
 definition "hta_\<delta>_states H 
-  == (llh_Union_image id (ls_image_filter (\<lambda>r. Some (rule_states_l r)) (hta_\<delta> H)))"
+  == (llh_set_xyy.g_Union_image id (ll_set_xy.g_image_filter 
+       (\<lambda>r. Some (rule_states_l r)) (hta_\<delta> H)))"
 
 definition "hta_states H ==
   hs_union (hta_Qi H) (hta_\<delta>_states H)"
@@ -1061,15 +1088,16 @@ lemma (in hashedTa) hta_\<delta>_states_correct:
 proof (simp_all add: hta_\<alpha>_def hta_\<delta>_states_def)
   case goal1
   have 
-    [simp]: "ls_\<alpha> (ls_image_filter (\<lambda>x. Some (rule_states_l x)) \<delta>) 
+    [simp]: "ls_\<alpha> (ll_set_xy.g_image_filter (\<lambda>x. Some (rule_states_l x)) \<delta>) 
              = rule_states_l ` ls_\<alpha> \<delta>"
-    by (auto simp add: ls.image_filter_correct)
+    by (auto simp add: ll_set_xy.image_filter_correct)
   show ?case
     apply (simp add: \<delta>_states_def)
     apply (subst
-      llh.Union_image_correct[ of "(ls_image_filter (\<lambda>x. Some (rule_states_l x)) \<delta>)", 
-                         simplified])
-    apply (auto simp add: ls.image_filter_correct)
+      llh_set_xyy.Union_image_correct[
+        of "(ll_set_xy.g_image_filter (\<lambda>x. Some (rule_states_l x)) \<delta>)", 
+        simplified])
+    apply (auto simp add: ll_set_xy.image_filter_correct)
     done
 (*next
   case goal2 thus ?case
@@ -1082,11 +1110,11 @@ lemma (in hashedTa) hta_states_correct:
   "hs_\<alpha> (hta_states H) = ta_rstates (hta_\<alpha> H)"
   "hs_invar (hta_states H)"
   by (simp_all 
-    add: hta_states_def ta_rstates_def hs_correct hta_\<delta>_states_correct 
+    add: hta_states_def ta_rstates_def hs.correct hta_\<delta>_states_correct 
          hta_\<alpha>_def)
 
 definition "reindex_map H == 
-  \<lambda>q. the (hm_lookup q (hh_map_to_nat (hta_states H)))"
+  \<lambda>q. the (hm_lookup q (hh_map_to_nat.map_to_nat (hta_states H)))"
 
 definition hta_reindex 
   :: "('Q::hashable,'L::hashable) hashedTa \<Rightarrow> (nat,'L) hashedTa" where
@@ -1096,7 +1124,7 @@ declare hta_reindex_def [code del]
 
   -- "This version is more efficient, as the map is only computed once"
 lemma [code]: "hta_reindex H = (
-  let mp = (hh_map_to_nat (hta_states H)) in
+  let mp = (hh_map_to_nat.map_to_nat (hta_states H)) in
     hta_remap (\<lambda>q. the (hm_lookup q mp)) H)
   "
   by (simp add: Let_def hta_reindex_def reindex_map_def)
@@ -1105,15 +1133,17 @@ lemma [code]: "hta_reindex H = (
 lemma (in hashedTa) reindex_map_correct:
   "inj_on (reindex_map H) (ta_rstates (hta_\<alpha> H))"
 proof -
-  have [simp]: "reindex_map H = the \<circ> hm_\<alpha> (hh_map_to_nat (hta_states H))"
+  have [simp]: 
+    "reindex_map H = the \<circ> hm_\<alpha> (hh_map_to_nat.map_to_nat (hta_states H))"
     by (rule ext)
-       (simp add: reindex_map_def hm_correct hh_map_to_nat_correct(4) 
-                  hta_states_correct)
+       (simp add: reindex_map_def hm.correct 
+         hh_map_to_nat.map_to_nat_correct(4) 
+         hta_states_correct)
 
   show ?thesis
     apply (simp add: hta_states_correct(1)[symmetric])
     apply (rule inj_on_map_the)
-    apply (simp_all add: hh_map_to_nat_correct hta_states_correct(2))
+    apply (simp_all add: hh_map_to_nat.map_to_nat_correct hta_states_correct(2))
     done
 qed
 
@@ -1128,19 +1158,16 @@ theorem (in hashedTa) hta_reindex_correct:
 
 subsection "Union"
 
-
--- "Computes the union of two automata"
+text "Computes the union of two automata"
 definition hta_union 
   :: "('q1::hashable,'l::hashable) hashedTa 
       \<Rightarrow> ('q2::hashable,'l) hashedTa 
       \<Rightarrow> (('q1,'q2) ustate_wrapper,'l) hashedTa" 
   where "hta_union H1 H2 == 
-    init_hta (hs_union (hs_image USW1 (hta_Qi H1)) 
-                       (hs_image USW2 (hta_Qi H2))) 
-             (ls_union_dj (ls_image (remap_rule USW1) (hta_\<delta> H1)) 
-                          (ls_image (remap_rule USW2) (hta_\<delta> H2)))"
-
-
+    init_hta (hs_union (hh_set_xy.g_image USW1 (hta_Qi H1)) 
+                       (hh_set_xy.g_image USW2 (hta_Qi H2))) 
+             (ls_union_dj (ll_set_xy.g_image (remap_rule USW1) (hta_\<delta> H1)) 
+                          (ll_set_xy.g_image (remap_rule USW2) (hta_\<delta> H2)))"
 
 lemma hta_union_correct': 
   assumes TA: "hashedTa H1" "hashedTa H2"
@@ -1152,11 +1179,12 @@ proof -
   show ?T1 ?T2 
     apply (auto 
       simp add: hta_union_def init_hta_def hta_\<alpha>_def 
-                hs_correct ls_correct 
+                hs.correct ls.correct 
+                ll_set_xy.image_correct hh_set_xy.image_correct
                 ta_remap_def ta_union_def ta_union_wrap_def)
     apply (unfold_locales)
     apply (auto 
-      simp add: hs_correct ls_correct)
+      simp add: hs.correct ls.correct)
     done
 qed
 
@@ -1187,9 +1215,9 @@ lemma hta_empty_correct [simp, intro!]:
         "hashedTa (hta_empty ())"
   apply (auto
     simp add: init_hta_def hta_empty_def hta_\<alpha>_def \<delta>_states_def ta_empty_def
-              hs_correct ls_correct)
+              hs.correct ls.correct)
   apply (unfold_locales)
-  apply (auto simp add: hs_correct ls_correct)
+  apply (auto simp add: hs.correct ls.correct)
   done
 
 -- "Add an initial state to the automaton"
@@ -1205,9 +1233,9 @@ lemma (in hashedTa) hta_add_qi_correct[simp, intro!]:
         "hashedTa (hta_add_qi qi H)"
   apply (auto 
     simp add: init_hta_def hta_add_qi_def hta_\<alpha>_def \<delta>_states_def 
-              hs_correct)
+              hs.correct)
   apply (unfold_locales)
-  apply (auto simp add: hs_correct)
+  apply (auto simp add: hs.correct)
   done
 
 lemmas [simp, intro] = hashedTa.hta_add_qi_correct
@@ -1226,9 +1254,9 @@ lemma (in hashedTa) hta_add_rule_correct[simp, intro!]:
         "hashedTa (hta_add_rule r H)"
   apply (auto 
     simp add: init_hta_def hta_add_rule_def hta_\<alpha>_def 
-              \<delta>_states_def ls_correct)
+              \<delta>_states_def ls.correct)
   apply (unfold_locales)
-  apply (auto simp add: ls_correct)
+  apply (auto simp add: ls.correct)
   done
 
 lemmas [simp, intro] = hashedTa.hta_add_rule_correct
@@ -1237,7 +1265,7 @@ lemmas [simp, intro] = hashedTa.hta_add_rule_correct
   -- "Reduces an automaton to the given set of states"
 definition "hta_reduce H Q ==
   init_hta (hs_inter Q (hta_Qi H)) 
-           (ls_image_filter 
+           (ll_set_xy.g_image_filter 
               (\<lambda>r. if hs_memb (lhs r) Q \<and> list_all (\<lambda>q. hs_memb q Q) (rhsq r) then Some r else None) 
               (hta_\<delta> H))
 "
@@ -1250,16 +1278,17 @@ theorem (in hashedTa) hta_reduce_correct:
   apply (auto 
     simp add: 
       hta_reduce_def ta_reduce_def hta_\<alpha>_def init_hta_def 
-      hs_correct ls_correct
+      hs.correct ls.correct
     (*hs_correct ls_correct *)
       list_all_iff 
       reduce_rules_def rule_states_simp 
+      ll_set_xy.image_filter_correct
     split: 
       ta_rule.split_asm
   ) [1]
   apply (unfold_locales)
   apply (unfold hta_reduce_def init_hta_def)
-  apply (auto simp add: hs_correct ls_correct)
+  apply (auto simp add: hs.correct ls.correct)
   done
 
 
@@ -1314,8 +1343,8 @@ lemma rqrm_\<alpha>_lookup_update[simp]:
           ls_\<alpha> (rqrm_lookup rqrm q')
       )"
   by (simp 
-    add: rqrm_lookup_def rqrm_add_def rqrm_invar_def hm_correct 
-         ls_correct 
+    add: rqrm_lookup_def rqrm_add_def rqrm_invar_def hm.correct 
+         ls.correct 
     split: option.split_asm option.split)
 
 lemma rqrm_propD: 
@@ -1418,7 +1447,7 @@ where
 
   -- "Initial concrete state"
 definition brc_iq :: "('q,'l) ta_rule ls \<Rightarrow> 'q::hashable hs" 
-  where "brc_iq \<delta> == lh_image_filter (\<lambda>r. 
+  where "brc_iq \<delta> == lh_set_xy.g_image_filter (\<lambda>r. 
     if rhsq r = [] then Some (lhs r) else None) \<delta>"
 
 definition brc_rcm_init 
@@ -1450,7 +1479,7 @@ lemma brc_iq_correct:
   assumes [simp]: "ls_invar \<delta>"
   shows "hs_invar (brc_iq \<delta>)"
         "hs_\<alpha> (brc_iq \<delta>) = br_iq (ls_\<alpha> \<delta>)"
-  by (auto simp add: brc_iq_def br_iq_def lh.image_filter_correct)
+  by (auto simp add: brc_iq_def br_iq_def lh_set_xy.image_filter_correct)
 
 lemma brc_rcm_init_correct:
   assumes INV[simp]: "ls_invar \<delta>"
@@ -1533,7 +1562,7 @@ proof -
   from A show ?thesis
     apply (simp add: brc_step_def)
     apply (rule 
-      br'_inner_step_proof[OF ls_iteratei_impl, 
+      br'_inner_step_proof[OF ls.v1_iteratei_impl, 
          where cinvar="\<lambda>it (Q,W,rcm). (Q,W,rcm)\<in>brc_invar_add 
                                       \<and> set W \<subseteq> hs_\<alpha> Q" and 
                q="hd W"])
@@ -1722,9 +1751,9 @@ definition brec_initial
   where "brec_initial Qi \<delta> == 
   let iq=brc_iq \<delta> in 
     ( brec_iqm \<delta>, 
-      hs_to_fifo iq, 
+      hs_to_fifo.g_set_to_listr iq, 
       brc_rcm_init \<delta>,
-      hh_disjoint_witness iq Qi)"
+      hh_set_xx.g_disjoint_witness iq Qi)"
 
 definition brec_cond 
   :: "('q,'l) brec_state \<Rightarrow> bool" 
@@ -1843,7 +1872,7 @@ lemma brec_step_invar:
   apply (simp 
     add: brec_invar_def distinct_tl brec_cond_def fifo_correct
          )
-  apply (rule_tac s=b in fifo.popE)
+  apply (rule_tac s=b in fifo.removelE)
   apply simp
   apply simp
   apply simp
@@ -1884,13 +1913,13 @@ proof -
     apply (simp 
       add: brec_invar_def distinct_tl brec_cond_def fifo_correct
     )
-    apply (rule_tac s=W in fifo.popE)
+    apply (rule_tac s=W in fifo.removelE)
     apply simp
     apply simp
     apply simp
 
     apply (rule brw_inner_step_proof[
-      OF ls_iteratei_impl, 
+      OF ls.v1_iteratei_impl, 
       where cinvar="\<lambda>it \<Sigma>. \<Sigma>\<in>brec_invar_inner (hs_\<alpha> Qi)" and 
             q="hd (fifo_\<alpha> W)"])
     apply assumption
@@ -1923,16 +1952,16 @@ lemma brec_invar_initial:
     simp add: brec_invar_add_def brec_initial_def brc_iq_correct 
               brec_iqm_correct' hs_correct hs.isEmpty_correct Let_def 
               brc_rcm_init_correct br_iq_def 
-              hh.disjoint_witness_correct hs_to_fifo_correct 
+              hh_set_xx.disjoint_witness_correct 
+              hs_to_fifo.g_set_to_listr_correct 
     split: option.split)
-  apply (auto simp add: brc_iq_correct hh.disjoint_witness_None br_iq_def) [1]
+  apply (auto simp add: brc_iq_correct 
+    hh_set_xx.disjoint_witness_None br_iq_def) [1]
 
-  thm brc_iq_correct(1)
-
-  apply (drule hh.disjoint_witness_correct[simplified])
+  apply (drule hh_set_xx.disjoint_witness_correct[simplified])
   apply simp
 
-  apply (drule hh.disjoint_witness_correct[simplified])
+  apply (drule hh_set_xx.disjoint_witness_correct[simplified])
   apply (simp add: brc_iq_correct br_iq_def)
   done
 
@@ -1950,7 +1979,7 @@ lemma brec_initial_abs:
      \<Longrightarrow> brec_\<alpha> (brec_initial Qi \<delta>) \<in> brw_initial (ls_\<alpha> \<delta>)"
   by (auto simp add: brec_initial_def Let_def brec_\<alpha>_def 
                      brc_iq_correct brc_rcm_init_correct brec_iqm_correct 
-                     br_iq_def fifo_correct hs_to_fifo_correct 
+                     br_iq_def fifo_correct hs_to_fifo.g_set_to_listr_correct 
               intro: brw_initial.intros[unfolded br_iq_def])
 
 lemma brec_pref_brw:
@@ -2365,7 +2394,7 @@ export_code
   htai_bwd_reduce htai_is_empty_witness
   htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
 
-  ls_size hs_size rs_size
+  (*ls_size hs_size rs_size*)
   in SML 
   module_name Ta
   file -
@@ -2382,7 +2411,7 @@ export_code
   htai_bwd_reduce htai_is_empty_witness
   htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
 
-  ls_size hs_size rs_size
+  (*ls_size hs_size rs_size*)
   in Haskell 
   module_name Ta
   file -
@@ -2399,7 +2428,7 @@ export_code
   htai_bwd_reduce htai_is_empty_witness
   htai_ensure_idx_f htai_ensure_idx_s htai_ensure_idx_sf
 
-  ls_size hs_size rs_size
+  (*ls_size hs_size rs_size*)
   in OCaml 
   module_name Ta
   file -
@@ -2437,9 +2466,9 @@ ML {*
   @{code htai_ensure_idx_f};
   @{code htai_ensure_idx_s};
   @{code htai_ensure_idx_sf};
-  @{code ls_size};
+  (*@{code ls_size};
   @{code hs_size};
-  @{code rs_size}
+  @{code rs_size}*)
 *}
 
 end

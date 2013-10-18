@@ -6,9 +6,88 @@ begin
     transfers that include no data refinement.
     *}
 
+
+definition "REFINEG_TRANSFER_POST_SIMP x y \<equiv> x=y"
+definition [simp]: "REFINEG_TRANSFER_ALIGN x y == True"
+lemma REFINEG_TRANSFER_ALIGNI: "REFINEG_TRANSFER_ALIGN x y" by simp
+
+lemma START_REFINEG_TRANSFER: 
+  assumes "REFINEG_TRANSFER_ALIGN d c"
+  assumes "c\<le>a"
+  assumes "REFINEG_TRANSFER_POST_SIMP c d"
+  shows "d\<le>a"
+  using assms
+  by (simp add: REFINEG_TRANSFER_POST_SIMP_def)
+
+lemma STOP_REFINEG_TRANSFER: "REFINEG_TRANSFER_POST_SIMP c c" 
+  unfolding REFINEG_TRANSFER_POST_SIMP_def ..
+
 ML {*
-structure RefineG_Transfer =
-struct
+structure RefineG_Transfer = struct
+
+  structure Post_Processors = Theory_Data (
+    type T = (Proof.context -> tactic') Symtab.table
+    val empty = Symtab.empty
+    val extend = I
+    val merge = Symtab.join (K snd)
+  )
+
+  fun add_post_processor name tac =
+    Post_Processors.map (Symtab.update_new (name,tac))
+  fun delete_post_processor name =
+    Post_Processors.map (Symtab.delete name)
+  val get_post_processors = Post_Processors.get #> Symtab.dest
+
+  fun post_process_tac ctxt = let
+    val tacs = get_post_processors (Proof_Context.theory_of ctxt)
+      |> map (fn (_,tac) => tac ctxt)
+
+    val tac = REPEAT_DETERM' (CHANGED o EVERY' (map (fn t => TRY o t) tacs))
+  in
+    tac
+  end
+
+  structure Post_Simp = Generic_Data (
+      type T = simpset
+      val empty = HOL_basic_ss
+      val extend = I
+      val merge = Raw_Simplifier.merge_ss
+  )
+
+  fun post_simps_op f a context = let
+    val ctxt = Context.proof_of context
+    fun do_it ss = simpset_of (f (put_simpset ss ctxt, a))
+  in
+    Post_Simp.map do_it context
+  end
+    
+  val add_post_simps = post_simps_op (op addsimps)
+  val del_post_simps = post_simps_op (op delsimps)
+
+  fun get_post_ss ctxt = let
+    val ss = Post_Simp.get (Context.Proof ctxt)
+    val ctxt = put_simpset ss ctxt
+  in
+    ctxt
+  end
+
+  structure post_subst = Named_Thms
+    ( val name = @{binding refine_transfer_post_subst}
+      val description = "Refinement Framework: " ^ 
+        "Transfer postprocessing substitutions" );
+
+  fun post_subst_tac ctxt = let
+    val s_thms = post_subst.get ctxt
+    val dis_tac = (ALLGOALS (Tagged_Solver.solve_tac ctxt))
+    val cnv = Cond_Rewr_Conv.cond_rewrs_conv dis_tac s_thms
+    val ts_conv = Conv.top_sweep_conv cnv ctxt
+    val ss = get_post_ss ctxt
+  in
+    REPEAT o CHANGED o 
+    (Simplifier.simp_tac ss THEN' CONVERSION ts_conv)
+  end
+
+
   structure transfer = Named_Thms
     ( val name = @{binding refine_transfer}
       val description = "Refinement Framework: " ^ 
@@ -16,25 +95,76 @@ struct
 
   fun transfer_tac thms ctxt i st = let 
     val thms = thms @ transfer.get ctxt;
-    val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_prod_case_simp}
+    val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_prod_case_simp}
   in
     REPEAT_DETERM1 (
       COND (has_fewer_prems (nprems_of st)) no_tac (
         FIRST [
           Method.assm_tac ctxt i,
           resolve_tac thms i,
-          Refine_Misc.triggered_mono_tac ctxt i,
-          CHANGED_PROP (simp_tac simpset i)]
+          Tagged_Solver.solve_tac ctxt i,
+          CHANGED_PROP (simp_tac ss i)]
       )) st
   end
-  
+
+  (* Adjust right term to have same structure as left one *)
+  val align_tac = IF_EXGOAL (fn i => fn st =>
+    case Logic.concl_of_goal (prop_of st) i of
+      @{mpat "Trueprop (REFINEG_TRANSFER_ALIGN ?c _)"} => let
+        val thy = theory_of_thm st
+        val c = cterm_of thy c
+        val cT = ctyp_of_term c
+        
+        val rl = @{thm REFINEG_TRANSFER_ALIGNI}
+          |> Thm.incr_indexes (Thm.maxidx_of st + 1)
+          |> instantiate' [NONE,SOME cT] [NONE,SOME c]
+        (*val _ = tracing (@{make_string} rl)*)
+      in
+        rtac rl i st
+      end
+    | _ => Seq.empty
+  )
+
+  fun post_transfer_tac thms ctxt = let open Autoref_Tacticals in
+    rtac @{thm START_REFINEG_TRANSFER} 
+    THEN' align_tac 
+    THEN' IF_SOLVED (transfer_tac thms ctxt)
+      (post_process_tac ctxt THEN' rtac @{thm STOP_REFINEG_TRANSFER})
+      (K all_tac)
+
+  end
+
+  fun get_post_simp_rules context = Context.proof_of context
+      |> get_post_ss
+      |> simpset_of 
+      |> Raw_Simplifier.dest_ss
+      |> #simps |> map snd
+
+
+  local
+    val add_ps = Thm.declaration_attribute (add_post_simps o single)
+    val del_ps = Thm.declaration_attribute (del_post_simps o single)
+  in
+    val setup = I
+      #> add_post_processor "RefineG_Transfer.post_subst" post_subst_tac
+      #> post_subst.setup
+      #> transfer.setup
+      #> Attrib.setup @{binding refine_transfer_post_simp} 
+          (Attrib.add_del add_ps del_ps) 
+          ("declaration of transfer post simplification rules")
+      #> Global_Theory.add_thms_dynamic (
+           @{binding refine_transfer_post_simps}, get_post_simp_rules)
+
+  end
 end
 *}
 
-setup {* RefineG_Transfer.transfer.setup *}
+setup {* RefineG_Transfer.setup *}
 method_setup refine_transfer = 
-  {* Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD'
-    (RefineG_Transfer.transfer_tac thms ctxt)) 
+  {* Scan.lift (Args.mode "post") -- Attrib.thms 
+  >> (fn (post,thms) => fn ctxt => SIMPLE_METHOD'
+    ( if post then RefineG_Transfer.post_transfer_tac thms ctxt
+      else RefineG_Transfer.transfer_tac thms ctxt))
   *} "Invoke transfer rules"
 
 
@@ -67,6 +197,33 @@ lemma transfer_option[refine_transfer]:
   assumes "\<And>x. \<alpha> (fb x) \<le> Fb x"
   shows "\<alpha> (option_case fa fb x) \<le> option_case Fa Fb x"
   using assms by (auto split: option.split)
+
+lemma transfer_list[refine_transfer]:
+  assumes "\<alpha> fn \<le> Fn"
+  assumes "\<And>x xs. \<alpha> (fc x xs) \<le> Fc x xs"
+  shows "\<alpha> (list_case fn fc l) \<le> list_case Fn Fc l"
+  using assms by (auto split: list.split)
+
+
+lemma transfer_list_rec[refine_transfer]:
+  assumes FN: "\<And>s. \<alpha> (fn s) \<le> fn' s"
+  assumes FC: "\<And>x l rec rec' s. \<lbrakk> \<And>s. \<alpha> (rec s) \<le> (rec' s) \<rbrakk> 
+    \<Longrightarrow> \<alpha> (fc x l rec s) \<le> fc' x l rec' s"
+  shows "\<alpha> (list_rec fn fc l s) \<le> list_rec fn' fc' l s"
+  apply (induct l arbitrary: s)
+  apply (simp add: FN)
+  apply (simp add: FC)
+  done
+
+lemma transfer_nat_rec[refine_transfer]:
+  assumes FN: "\<And>s. \<alpha> (fn s) \<le> fn' s"
+  assumes FC: "\<And>n rec rec' s. \<lbrakk> \<And>s. \<alpha> (rec s) \<le> rec' s \<rbrakk> 
+    \<Longrightarrow> \<alpha> (fs n rec s) \<le> fs' n rec' s"
+  shows "\<alpha> (nat_rec fn fs n s) \<le> nat_rec fn' fs' n s"
+  apply (induct n arbitrary: s)
+  apply (simp add: FN)
+  apply (simp add: FC)
+  done
 
 end
 

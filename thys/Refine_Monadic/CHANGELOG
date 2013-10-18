@@ -1,4 +1,79 @@
 Changes of Refinement Framework since 2011-12-24:
+2013-09 Peter Lammich
+  * Made this dependent on Automatic_Refinement
+
+2012-11-30 Peter Lammich
+  * Added eq_assume_tac to Refine.post_tac
+
+2012-11-06 Peter Lammich
+  * Added knowledge that invar holds for initial state to WHILE refinement rules
+
+2012-10-05 Peter Lammich
+  * New autoref framework. MAJOR INCOMPATIBILITY
+    The new framework, although a prototype, is aimed at producing reasonable
+    translations with as few required configuration as possible. See examples
+    in ex/ directory for usage.
+  * Definitions of relators are now in lemm collection refine_rel_defs.
+    No longer in refine_hsimp. INCOMPATIBILITY
+
+2012-08-31 Peter Lammich
+  * Adaptions to new ICF v2
+  * Stronger REC/RECT rules: 
+  * Added abbreviations xx.R == br \alpha invar to ICF interfaces
+
+2012-07-10 Peter Lammich
+  * Maintenance changes
+  * Added fo_rule - method that applies theorems using first-order matching.
+    Works particular well with arg_cong, fun_cong.
+  * Removed definitions of standard relation combinators 
+    (rprod, map_set_rel, etc.) from standard simpset. They are now all in the
+    theorems collection refine_rel_defs. INCOMPATIBILITY: Add refine_rel_defs
+    to the simpset, but first try whether adding refine_hsimp does the job.
+  * Introduced ropt relation combinator, and changed setup for autoref_ex. 
+    Maybe INCOMPATIBILITY.
+
+2012-07-02 Peter Lammich
+  * Changed map_set_rel to pose additional invariant on concrete set: All 
+    elements must actually be mapped.
+  * Added nested-DFS algorithm with witness generation as example. The algorithm
+    uses the RECT-combinator to implement a nested DFS search for an accepting
+    cycle in a Buechi-automaton. It is a quite complex example that 
+    demonstrates how to use the RECT-combinators and automatic refinement.
+
+2012-06-25 Peter Lammich
+  * WHILExx_refine_genR and FOREACHxxx_refine_genR rules that allow to exploit
+    that the condition does not hold when the loop terminates.
+  * Changes imported from Neumann's Refine_Addition theory:
+      - Added REC(T)_rule_arbN for N=2,3
+      - Added bind2letRETURN_refine rules as [refine2], to account for pattern
+        RETURN (Let _ _) <= \<Down> R bind _ _
+
+2012-06-21 Peter Lammich
+  * Fine-tuned standard refinement setup: intro_spec_refine and bind_refine_RES
+    MAYBE INCOMPATIBILITY, but in most cases it should just do the right thing.
+  * Improved concrete_definition command. Now also exports a lemma 
+    name.refine.
+  * Added prepare_code_thms command, that processes a set of definition 
+    theorems, and declares code lemmas, handling recursion combinators.
+
+2012-06-18 Peter Lammich
+  * Added first version of concrete_definition command, that saves the user
+    from copy-pasting when making definitions out of refinement theorems.
+    See userguide for an example. 
+    INCOMPATIBILITY: In order to make the new command work under ProofGeneral,
+    you need to copy the keyword file Libs/Refine_Monadic/isar-keywords.el to
+    some appropriate directory, e.g. ~/.isabelle/etc
+
+2012-06-12 Peter Lammich:
+  * Bugfix: FOREACHc_rule was to weak (probably a typo).
+  * Added alternative FOREACH??i_rule', that allow for less redundant proofs
+    in some cases.
+  * Added support for option_case.
+  * More general proof rules for recursion combinator:
+    RECT_rule_arb and REC_rule_arb now allow for generalizing over variables
+    that occur in the specification, but not in the program.
+  * Improved rprems_tac such that it can cope with schematic type variables.
+    Now refine_autoref works with REC-combinators more cleanly.
 
 2012-04-23 Thomas Tuerk: Ordered FOREACH.
 

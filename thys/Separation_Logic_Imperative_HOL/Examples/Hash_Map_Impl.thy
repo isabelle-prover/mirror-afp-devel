@@ -60,6 +60,23 @@ interpretation hm!:
   imp_map_iterate is_hashmap hm_is_it hm_it_init hm_it_has_next hm_it_next
   by (rule hm_iterate_impl)
 
+(*
+definition "hm_is_it'' m ht l' it \<equiv> 
+  \<exists>\<^sub>Al. hm_is_it' l ht l' it * \<up>(map_of (concat l) = m)"
+
+lemma hm_iterate'_impl: 
+  "imp_map_iterate' is_hashmap hm_is_it'' hm_it_init hm_it_has_next hm_it_next"
+  apply unfold_locales
+  apply (rule hm_it_init_rule)
+  apply (erule hm_it_next_rule)
+  apply (rule hm_it_has_next_rule)
+  apply (rule ent_frame_fwd[OF hm_it_finish])
+  apply (frame_inference)
+  apply solve_entails
+  done
+
+*)
+
 export_code hm_new hm_lookup hm_update hm_delete hm_isEmpty hm_size 
   hm_it_init hm_it_has_next hm_it_next
   in SML_imp file -

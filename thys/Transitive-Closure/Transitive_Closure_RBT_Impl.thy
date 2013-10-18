@@ -53,27 +53,27 @@ relation for single states to lists of states, all results are united using
 @{const rs_Union}. The rest is standard. 
 *} 
 
-interpretation set_access "\<lambda> as bs. rs_union bs (list_to_rs as)" rs_\<alpha> rs_memb "rs_empty ()"
-  by (unfold_locales, auto simp: rs_correct)
+interpretation set_access "\<lambda> as bs. rs.union bs (rs.from_list as)" rs.\<alpha> rs.memb "rs.empty ()"
+  by (unfold_locales, auto simp: rs.correct)
 
 abbreviation rm_succ :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a list" where "rm_succ \<equiv> (\<lambda> r. let rm = elem_list_to_rm fst r in
-  (\<lambda> as. rs_to_list (rs_Union (map (\<lambda> a. list_to_rs (map snd (rm_set_lookup rm a))) as))))"
+  (\<lambda> as. rs.to_list (rs_Union (map (\<lambda> a. rs.from_list (map snd (rm_set_lookup rm a))) as))))"
 
 definition rtrancl_rbt_impl :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a rs"
   where "rtrancl_rbt_impl \<equiv> rtrancl_impl rm_succ
-  (\<lambda> as bs. rs_union bs (list_to_rs as)) rs_memb (rs_empty ())" 
+  (\<lambda> as bs. rs.union bs (rs.from_list as)) rs.memb (rs.empty ())" 
 
 definition trancl_rbt_impl :: "('a :: linorder \<times> 'a)list \<Rightarrow> 'a list \<Rightarrow> 'a rs"
   where "trancl_rbt_impl \<equiv> trancl_impl rm_succ
-  (\<lambda> as bs. rs_union bs (list_to_rs as)) rs_memb (rs_empty ())" 
+  (\<lambda> as bs. rs.union bs (rs.from_list as)) rs.memb (rs.empty ())" 
 
-lemma rtrancl_rbt_impl: "rs_\<alpha> (rtrancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^*}"
+lemma rtrancl_rbt_impl: "rs.\<alpha> (rtrancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^*}"
   unfolding rtrancl_rbt_impl_def
-  by (rule set_access_gen.rtrancl_impl, unfold_locales, unfold Let_def, simp add: rs_correct elem_list_to_rm.rm_set_lookup, force)
+  by (rule set_access_gen.rtrancl_impl, unfold_locales, unfold Let_def, simp add: rs.correct elem_list_to_rm.rm_set_lookup, force)
 
-lemma trancl_rbt_impl: "rs_\<alpha> (trancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^+}"
+lemma trancl_rbt_impl: "rs.\<alpha> (trancl_rbt_impl r as) = {b. \<exists> a \<in> set as. (a,b) \<in> (set r)^+}"
   unfolding trancl_rbt_impl_def
-  by (rule set_access_gen.trancl_impl, unfold_locales, unfold Let_def, simp add: rs_correct elem_list_to_rm.rm_set_lookup, force)
+  by (rule set_access_gen.trancl_impl, unfold_locales, unfold Let_def, simp add: rs.correct elem_list_to_rm.rm_set_lookup, force)
 
 subsection {* Precomputing closures for single states *}
 
@@ -83,22 +83,31 @@ text {* Storing all relevant entries is done by mapping all left-hand sides of t
 *}
 
 definition memo_rbt_rtrancl :: "('a :: linorder \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a rs)" 
-where "memo_rbt_rtrancl r \<equiv> let tr = rtrancl_rbt_impl r;
-                               rm = list_to_rm (map (\<lambda> a. (a,tr [a])) ((rs_to_list o list_to_rs o map fst) r))
-                             in (\<lambda> a. case rm_lookup a rm of None \<Rightarrow> list_to_rs [a] | Some as \<Rightarrow> as)"
+where "memo_rbt_rtrancl r \<equiv> 
+  let 
+    tr = rtrancl_rbt_impl r;
+    rm = rm.to_map 
+      (map (\<lambda> a. (a,tr [a])) ((rs.to_list o rs.from_list o map fst) r))
+  in (\<lambda>a. case rm.lookup a rm of 
+      None \<Rightarrow> rs.from_list [a] 
+    | Some as \<Rightarrow> as
+  )"
 
 lemma memo_rbt_rtrancl:
-  "rs_\<alpha> (memo_rbt_rtrancl r a) = {b. (a,b) \<in> (set r)^*}" (is "?l = ?r")
+  "rs.\<alpha> (memo_rbt_rtrancl r a) = {b. (a,b) \<in> (set r)^*}" (is "?l = ?r")
 proof -
-  let ?rm = "list_to_rm (map (\<lambda> a. (a, rtrancl_rbt_impl r [a])) ((rs_to_list o list_to_rs o map fst) r))"
+  let ?rm = "rm.to_map (
+      map (\<lambda>a. (a, rtrancl_rbt_impl r [a])) 
+        ((rs.to_list o rs.from_list o map fst) r)
+    )"
   show ?thesis
-  proof (cases "rm_lookup a ?rm")
+  proof (cases "rm.lookup a ?rm")
     case None
     have one: "?l = {a}"
       unfolding memo_rbt_rtrancl_def Let_def None
-      by (simp add: rs_correct)
-    from None[unfolded rm.lookup_correct[OF TrueI], simplified rm_correct map_of_eq_None_iff]
-    have a: "a \<notin> fst ` set r" by (simp add: rs_correct, force)
+      by (simp add: rs.correct)
+    from None[unfolded rm.lookup_correct[OF rm.invar], simplified rm.correct map_of_eq_None_iff]
+    have a: "a \<notin> fst ` set r" by (simp add: rs.correct, force)
     {
       fix b
       assume "b \<in> ?r"
@@ -111,8 +120,8 @@ proof -
     thus ?thesis unfolding one by simp
   next
     case (Some as) 
-    have as: "rs_\<alpha> as = {b. (a,b) \<in> (set r)^*}"
-      using map_of_SomeD[OF Some[unfolded rm.lookup_correct[OF TrueI], simplified rm_correct]]
+    have as: "rs.\<alpha> as = {b. (a,b) \<in> (set r)^*}"
+      using map_of_SomeD[OF Some[unfolded rm.lookup_correct[OF rm.invar], simplified rm.correct]]
         rtrancl_rbt_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_rbt_rtrancl_def Let_def Some by simp
   qed
@@ -121,21 +130,21 @@ qed
 
 definition memo_rbt_trancl :: "('a :: linorder \<times> 'a)list \<Rightarrow> ('a \<Rightarrow> 'a rs)" 
 where "memo_rbt_trancl r \<equiv> let tr = trancl_rbt_impl r;
-                               rm = list_to_rm (map (\<lambda> a. (a,tr [a])) ((rs_to_list o list_to_rs o map fst) r))
-                             in (\<lambda> a. case rm_lookup a rm of None \<Rightarrow> rs_empty () | Some as \<Rightarrow> as)"
+                               rm = rm.to_map (map (\<lambda> a. (a,tr [a])) ((rs.to_list o rs.from_list o map fst) r))
+                             in (\<lambda> a. case rm.lookup a rm of None \<Rightarrow> rs.empty () | Some as \<Rightarrow> as)"
 
 lemma memo_rbt_trancl:
-  "rs_\<alpha> (memo_rbt_trancl r a) = {b. (a,b) \<in> (set r)^+}" (is "?l = ?r")
+  "rs.\<alpha> (memo_rbt_trancl r a) = {b. (a,b) \<in> (set r)^+}" (is "?l = ?r")
 proof -
-  let ?rm = "list_to_rm (map (\<lambda> a. (a, trancl_rbt_impl r [a])) ((rs_to_list o list_to_rs o map fst) r))"
+  let ?rm = "rm.to_map (map (\<lambda> a. (a, trancl_rbt_impl r [a])) ((rs.to_list o rs.from_list o map fst) r))"
   show ?thesis
-  proof (cases "rm_lookup a ?rm")
+  proof (cases "rm.lookup a ?rm")
     case None
     have one: "?l = {}"
       unfolding memo_rbt_trancl_def Let_def None
-      by (simp add: rs_correct)
-    from None[unfolded rm.lookup_correct[OF TrueI], simplified rm_correct map_of_eq_None_iff]
-    have a: "a \<notin> fst ` set r" by (simp add: rs_correct, force)
+      by (simp add: rs.correct)
+    from None[unfolded rm.lookup_correct[OF rm.invar], simplified rm.correct map_of_eq_None_iff]
+    have a: "a \<notin> fst ` set r" by (simp add: rs.correct, force)
     {
       fix b
       assume "b \<in> ?r"
@@ -145,8 +154,8 @@ proof -
     thus ?thesis unfolding one by simp
   next
     case (Some as) 
-    have as: "rs_\<alpha> as = {b. (a,b) \<in> (set r)^+}"
-      using map_of_SomeD[OF Some[unfolded rm.lookup_correct[OF TrueI], simplified rm_correct]]
+    have as: "rs.\<alpha> as = {b. (a,b) \<in> (set r)^+}"
+      using map_of_SomeD[OF Some[unfolded rm.lookup_correct[OF rm.invar], simplified rm.correct]]
         trancl_rbt_impl[of r "[a]"] by force
     thus ?thesis unfolding memo_rbt_trancl_def Let_def Some by simp
   qed

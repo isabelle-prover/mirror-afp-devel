@@ -1,6 +1,6 @@
 header {* Miscellaneous Lemmas *}
 theory Sep_Misc
-imports Main "../../Collections/common/Misc"
+imports Main "../../Automatic_Refinement/Lib/Misc"
 begin
   text {* These lemmas are candidates to be pushed into the Isabelle/HOL 
     standard libraries *}

@@ -6,9 +6,12 @@ header "Abstract Tree Automata Algorithms"
 theory AbsAlgo
 imports 
   Ta 
-  "../Collections/examples/Exploration"
-  "../Collections/Collections"
+  "../Collections/Examples/ICF/Exploration"
+  "../Collections/ICF/CollectionsV1"
 begin
+
+no_notation fun_rel_syn (infixr "\<rightarrow>" 60)
+
 text_raw {*\label{sec:absalgo}*}
 text {* This theory defines tree automata algorithms on an abstract level, 
   that is using non-executable datatypes and constructs like sets, 

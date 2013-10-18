@@ -3,6 +3,7 @@ theory Autoref_Bindings_HOL
 imports "Tool/Autoref_Tool"
 begin
 
+
   subsection "Structural Expansion"
   text {*
     In some situations, autoref imitates the operations on typeclasses and
@@ -101,6 +102,7 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
 
   subsection "Standard Type Classes"
 
+context begin interpretation autoref_syn .
   text {*
     We allow these operators for all interfaces.
     *}
@@ -162,6 +164,8 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     "(Let,Let)\<in>Ra \<rightarrow> (Ra\<rightarrow>Rr) \<rightarrow> Rr"
     by (auto dest: fun_relD)
 
+end
+
   subsection "Unit"
   consts i_unit :: interface
   lemmas [autoref_rel_intf] = REL_INTFI[of unit_rel i_unit]
@@ -173,6 +177,7 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     consts i_nat :: interface
     lemmas [autoref_rel_intf] = REL_INTFI[of nat_rel i_nat]
 
+context begin interpretation autoref_syn .
     lemma pat_num_nat[autoref_op_pat]:
       "0::nat \<equiv> OP 0 :::\<^sub>i i_nat"
       "1::nat \<equiv> OP 1 :::\<^sub>i i_nat"
@@ -208,11 +213,13 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
         apply (fastforce simp: fun_rel_def)+
         done
     qed
+end
 
   subsection "Int"
     consts i_int :: interface
     lemmas [autoref_rel_intf] = REL_INTFI[of int_rel i_int]
 
+context begin interpretation autoref_syn .
     lemma pat_num_int[autoref_op_pat]:
       "0::int \<equiv> OP 0 :::\<^sub>i i_int"
       "1::int \<equiv> OP 1 :::\<^sub>i i_int"
@@ -244,11 +251,13 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
       "(op *, op *)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       "(op mod, op mod)\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       by auto
+end
   
   subsection "Product"
     consts i_prod :: "interface \<Rightarrow> interface \<Rightarrow> interface"
     lemmas [autoref_rel_intf] = REL_INTFI[of prod_rel i_prod]
 
+context begin interpretation autoref_syn .
     (*
     lemma [autoref_itype]:
       "Pair ::\<^sub>i Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod"
@@ -281,11 +290,13 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     lemma prod_eq_expand[autoref_struct_expand]: "op = = prod_eq op= op="
       unfolding prod_eq_def[abs_def]
       by (auto intro!: ext)
+end
 
   subsection "Option"
     consts i_option :: "interface \<Rightarrow> interface"
     lemmas [autoref_rel_intf] = REL_INTFI[of option_rel i_option]
 
+context begin interpretation autoref_syn .
     (*
     lemma [autoref_itype]:
       "None ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option"
@@ -341,11 +352,13 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     lemma option_eq_expand[autoref_struct_expand]: 
       "op = = option_eq op="
       by (auto intro!: ext simp: option_eq_def split: option.splits)
+end
 
   subsection "Sum-Types"
   consts i_sum :: "interface \<Rightarrow> interface \<Rightarrow> interface"
   lemmas [autoref_rel_intf] = REL_INTFI[of sum_rel i_sum]
 
+context begin interpretation autoref_syn .
   (*lemma [autoref_itype]:
     "(op = :: _+_ \<Rightarrow> _) ::\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i i_bool"
     "Inl ::\<^sub>i Il \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum"
@@ -376,12 +389,13 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
 
   lemma sum_eq_expand[autoref_struct_expand]: "op = = sum_eq op= op="
     by (auto intro!: ext simp: sum_eq_def split: sum.splits)
-
+end
 
 subsection "List"
   consts i_list :: "interface \<Rightarrow> interface"
   lemmas [autoref_rel_intf] = REL_INTFI[of list_rel i_list]
 
+context begin interpretation autoref_syn .
   (*
   term nth
   lemma [autoref_itype]:
@@ -563,6 +577,7 @@ subsection "List"
     "(\<lambda>s x. s@[x], op_list_append_elem) \<in> \<langle>R\<rangle>list_rel \<rightarrow> R \<rightarrow> \<langle>R\<rangle>list_rel"
     unfolding op_list_append_elem_def[abs_def] by parametricity
 
+end
 
 subsection "Examples"
 
@@ -632,5 +647,6 @@ schematic_lemma
   shows "(?f::?'c, [1,2] = [2,3::nat])\<in>?R"
   apply (autoref (keep_goal))
   done
+
 
 end

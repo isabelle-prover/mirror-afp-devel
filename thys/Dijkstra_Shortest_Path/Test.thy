@@ -1,6 +1,6 @@
 header {* Performance Test *}
 theory Test
-  imports Dijkstra_Impl(*_Adet*)
+  imports Dijkstra_Impl_Adet
 begin
 text {*
   In this theory, we test our implementation of Dijkstra's algorithm for larger,
@@ -32,16 +32,16 @@ type_synonym nat_res = "(nat,((nat,nat) path \<times> nat)) rm"
 type_synonym nat_list_res = "(nat \<times> (nat,nat) path \<times> nat) list"
 
 definition nat_dijkstra :: "(nat,nat) hlg \<Rightarrow> nat \<Rightarrow> nat_res" where
-  "nat_dijkstra \<equiv> dijkstra_impl"
+  "nat_dijkstra \<equiv> hrfn_dijkstra"
 
 definition hlg_from_list_nat :: "(nat,nat) adj_list \<Rightarrow>(nat,nat) hlg" where 
-  "hlg_from_list_nat \<equiv> hlg_from_list"
+  "hlg_from_list_nat \<equiv> hlg.from_list"
 
 definition 
   nat_res_to_list :: "nat_res \<Rightarrow> nat_list_res" 
-  where "nat_res_to_list \<equiv> rm_to_list"
+  where "nat_res_to_list \<equiv> rm.to_list"
 
-value "nat_res_to_list (nat_dijkstra (hlg_from_list (ran_graph 4 8912)) 0)"
+value "nat_res_to_list (nat_dijkstra (hlg_from_list_nat (ran_graph 4 8912)) 0)"
 
 ML_val {*
 let
@@ -52,19 +52,25 @@ let
   val cfg_print_res = true; (* Whether to output result at all *)
 
   (* Internals *)
-  fun string_of_edge (u,(w,v)) = 
-    "(" ^ string_of_int (@{code integer_of_nat} u)
-    ^ "," ^ string_of_int (@{code integer_of_nat} w)
-    ^ "," ^ string_of_int (@{code integer_of_nat} v) ^ ")";
+  fun string_of_edge (u,(w,v)) = let
+    val u = @{code integer_of_nat} u;
+    val w = @{code integer_of_nat} w;
+    val v = @{code integer_of_nat} v;
+  in
+    "(" ^ string_of_int u ^ "," ^ string_of_int w ^ "," ^ string_of_int v ^ ")"
+  end
 
-  fun print_entry (dest,(path,weight)) =
-    writeln (string_of_int (@{code integer_of_nat} dest)
-    ^ ": " ^ string_of_int (@{code integer_of_nat} weight) ^
-    ( if cfg_print_paths then 
-        " via [" ^ commas (map string_of_edge (rev path)) ^ "]"
-      else ""
+  fun print_entry (dest,(path,weight)) = let
+    val dest = @{code integer_of_nat} dest;
+    val weight = @{code integer_of_nat} weight;
+  in
+    writeln (string_of_int dest ^ ": " ^ string_of_int weight ^
+      ( if cfg_print_paths then 
+          " via [" ^ commas (map string_of_edge (rev path)) ^ "]"
+        else ""
+      )
     )
-  );
+  end
 
   fun print_res [] = ()
     | print_res (a::l) = let val _ = print_entry a in print_res l end;

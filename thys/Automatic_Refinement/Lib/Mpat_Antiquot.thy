@@ -7,27 +7,26 @@ typedecl term_struct
 typedecl typ_struct
 typedecl sort
 
-definition AS_PAT :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "AS\<^sub>p" 900)
+definition mpaq_AS_PAT :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "AS\<^sub>p" 900)
   where "a AS\<^sub>p s \<equiv> a"
 
-definition STRUCT :: "term_struct \<Rightarrow> 'a" where "STRUCT _ = undefined"
+definition mpaq_STRUCT :: "term_struct \<Rightarrow> 'a" where "mpaq_STRUCT _ = undefined"
 
-abbreviation AS_STRUCT :: "'a \<Rightarrow> term_struct \<Rightarrow> 'a" (infixl "AS\<^sub>s" 900)
-  where "a AS\<^sub>s s \<equiv> a AS\<^sub>p STRUCT s"
-
-
-consts
-  Const :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct"
-  Free :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct"
-  Var :: "string*nat \<Rightarrow> typ_struct \<Rightarrow> term_struct"
-  Bound :: "nat \<Rightarrow> term_struct"
-  Abs :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct \<Rightarrow> term_struct"
-  App :: "term_struct \<Rightarrow> term_struct \<Rightarrow> term_struct" (infixl "$$" 900)
+abbreviation mpaq_AS_STRUCT :: "'a \<Rightarrow> term_struct \<Rightarrow> 'a" (infixl "AS\<^sub>s" 900)
+  where "a AS\<^sub>s s \<equiv> a AS\<^sub>p mpaq_STRUCT s"
 
 consts
-  TFree :: "string \<Rightarrow> sort \<Rightarrow> typ_struct"
-  TVar :: "string*nat \<Rightarrow> sort \<Rightarrow> typ_struct"
-  Type :: "string \<Rightarrow> typ_struct list \<Rightarrow> typ_struct"
+  mpaq_Const :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct"
+  mpaq_Free :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct"
+  mpaq_Var :: "string*nat \<Rightarrow> typ_struct \<Rightarrow> term_struct"
+  mpaq_Bound :: "nat \<Rightarrow> term_struct"
+  mpaq_Abs :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct \<Rightarrow> term_struct"
+  mpaq_App :: "term_struct \<Rightarrow> term_struct \<Rightarrow> term_struct" (infixl "$$" 900)
+
+consts
+  mpaq_TFree :: "string \<Rightarrow> sort \<Rightarrow> typ_struct"
+  mpaq_TVar :: "string*nat \<Rightarrow> sort \<Rightarrow> typ_struct"
+  mpaq_Type :: "string \<Rightarrow> typ_struct list \<Rightarrow> typ_struct"
 
 ML {*
   (*
@@ -153,11 +152,11 @@ ML {*
         | s_indexname t = raise TERM ("Expected var or indexname-pair",[t])
 
       fun s_typ (Var ((name,_),_)) = name
-        | s_typ (Const(@{const_name "TFree"},_)$name$typ) 
+        | s_typ (Const(@{const_name "mpaq_TFree"},_)$name$typ) 
             = "TFree (" ^ s_string name ^ "," ^ s_typ typ ^ ")"
-        | s_typ (Const(@{const_name "TVar"},_)$name$typ)
+        | s_typ (Const(@{const_name "mpaq_TVar"},_)$name$typ)
             = "TVar (" ^ s_indexname name ^ "," ^ s_typ typ ^ ")"
-        | s_typ (Const(@{const_name "Type"},_)$name$args)
+        | s_typ (Const(@{const_name "mpaq_Type"},_)$name$args)
             = "Type (" ^ s_string name ^ "," ^ s_args args ^ ")"
         | s_typ t = raise TERM ("Expected var or type structure",[t])
       and s_args (Var ((name,_),_)) = name
@@ -166,17 +165,17 @@ ML {*
           | NONE => raise TERM ("Expected variable or type argument list",[t])
           )
 
-      fun swr (Const(@{const_name "Const"},_)$name$typ) 
+      fun swr (Const(@{const_name "mpaq_Const"},_)$name$typ) 
             = "Const (" ^ s_string name ^ ", " ^ s_typ typ ^ ")"
-        | swr (Const(@{const_name "Free"},_)$name$typ)
+        | swr (Const(@{const_name "mpaq_Free"},_)$name$typ)
             = "Free (" ^ s_string name ^ ", " ^ s_typ typ ^ ")"
-        | swr (Const(@{const_name "Var"},_)$name$typ)
+        | swr (Const(@{const_name "mpaq_Var"},_)$name$typ)
             = "Var (" ^ s_indexname name ^ ", " ^ s_typ typ ^ ")"
-        | swr (Const(@{const_name "Bound"},_)$idx)
+        | swr (Const(@{const_name "mpaq_Bound"},_)$idx)
             = "Bound " ^ s_index idx
-        | swr (Const(@{const_name "Abs"},_)$name$T$t)
+        | swr (Const(@{const_name "mpaq_Abs"},_)$name$T$t)
             = "Abs (" ^ s_string name ^ ", " ^ s_typ T ^ ", " ^ swr t ^ ")"
-        | swr (Const(@{const_name "App"},_)$t1$t2)
+        | swr (Const(@{const_name "mpaq_App"},_)$t1$t2)
             = "(" ^ swr t1 ^ ") $ (" ^ swr t2 ^ ")"
         | swr t = raise TERM ("Expected var or term structure",[t])
 
@@ -189,10 +188,10 @@ ML {*
         | vwr (Abs (x,T,t)) = "Abs (" ^ x ^ "," 
                 ^ x ^ "_T as " ^ twr T ^ "," 
                 ^ vwr t ^ ")"
-        | vwr (Const(@{const_name STRUCT},_)$t) = (
+        | vwr (Const(@{const_name mpaq_STRUCT},_)$t) = (
             swr t
           )
-        | vwr (trm as Const(@{const_name "AS_PAT"},_)$t$s) = ( 
+        | vwr (trm as Const(@{const_name "mpaq_AS_PAT"},_)$t$s) = ( 
             case t of
               (Var ((name,_),_)) => name ^ " as (" ^ vwr s ^ ")"
             | _ => raise TERM ("_AS_ must have identifier on LHS",[trm])
@@ -245,12 +244,14 @@ ML_val {*
     | dest_pair_lambda t = raise TERM ("dest_pair_lambda",[t])
 
 
-  fun foo @{mpat "[?a,?b AS\<^sub>s Bound ?i,?c AS\<^sub>p [?n]]"} = 
+  fun foo @{mpat "[?a,?b AS\<^sub>s mpaq_Bound ?i,?c AS\<^sub>p [?n]]"} = 
     (a,b,i,c,n)
   | foo t = raise TERM ("foo",[t])
 
 
 *}
+
+hide_type (open) term_struct typ_struct sort
 
 
 end

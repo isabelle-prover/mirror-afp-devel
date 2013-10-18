@@ -16,7 +16,7 @@ instance Ix Nat where {
 };
 
 type ArrayType = Arr.DiffArray Nat;
--- type ArrayType = Arr.Array Nat;
+--type ArrayType = Arr.Array Nat;
 
 -- we need to start at 1 and not 0, because the empty array
 -- is modelled by having s > e for (s,e) = bounds

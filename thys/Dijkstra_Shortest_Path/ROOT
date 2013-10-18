@@ -3,10 +3,7 @@ chapter AFP
 session Dijkstra_Shortest_Path (AFP) = Refine_Monadic +
   options [timeout = 600]
   theories [document = false]
-    "../Collections/Collections"
-    "../Refine_Monadic/Refine"
-    "../Refine_Monadic/Collection_Bindings"
-    "../Refine_Monadic/Autoref_Collection_Bindings"
+    "../Collections/Refine_Dflt_ICF"
     "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     Introduction
