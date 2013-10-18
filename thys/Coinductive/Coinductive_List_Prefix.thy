@@ -59,7 +59,7 @@ subsection {* Prefix ordering as a lower semilattice *}
 instantiation llist :: (type) semilattice_inf begin
 
 definition [code del]:
-  "inf xs ys =
+  "inf xs ys = 
    llist_unfold (\<lambda>(xs, ys). xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)
      (lhd \<circ> snd) (map_pair ltl ltl) (xs, ys)"
 
@@ -96,5 +96,8 @@ proof
 qed
 
 end
+
+lemma llength_inf [simp]: "llength (xs \<sqinter> ys) = llcp xs ys"
+by(coinduction arbitrary: xs ys rule: enat_coinduct)(auto simp add: llcp_eq_0_iff epred_llength epred_llcp)
 
 end
