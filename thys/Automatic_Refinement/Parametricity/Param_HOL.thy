@@ -1,0 +1,399 @@
+header {* \isaheader{Parametricity Theorems for HOL} *}
+theory Param_HOL
+imports Param_Tool
+begin
+
+lemma param_if[param]: 
+  assumes "(c,c')\<in>Id"
+  assumes "\<lbrakk>c;c'\<rbrakk> \<Longrightarrow> (t,t')\<in>R"
+  assumes "\<lbrakk>\<not>c;\<not>c'\<rbrakk> \<Longrightarrow> (e,e')\<in>R"
+  shows "(If c t e, If c' t' e')\<in>R"
+  using assms by auto
+
+lemma param_Let[param]: 
+  "(Let,Let)\<in>Ra \<rightarrow> (Ra\<rightarrow>Rr) \<rightarrow> Rr"
+  by (auto dest: fun_relD)
+
+lemma param_id[param]: "(id,id)\<in>R\<rightarrow>R" unfolding id_def by parametricity
+
+lemma param_fun_comp[param]: "(op o, op o) \<in> (Ra\<rightarrow>Rb) \<rightarrow> (Rc\<rightarrow>Ra) \<rightarrow> Rc\<rightarrow>Rb" 
+  unfolding comp_def[abs_def] by parametricity
+
+lemma param_fun_upd[param]: "
+  (op =, op =) \<in> Ra\<rightarrow>Ra\<rightarrow>Id 
+  \<Longrightarrow> (fun_upd,fun_upd) \<in> (Ra\<rightarrow>Rb) \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> Ra \<rightarrow> Rb"
+  unfolding fun_upd_def[abs_def]
+  by (parametricity)
+
+lemma param_bool[param]:
+  "(True,True)\<in>Id"
+  "(False,False)\<in>Id"
+  "(conj,conj)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(disj,disj)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(Not,Not)\<in>Id\<rightarrow>Id"
+  "(bool_case,bool_case)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
+  "(bool_rec,bool_rec)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
+  "(op \<longleftrightarrow>, op \<longleftrightarrow>)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op \<longrightarrow>, op \<longrightarrow>)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  by (auto split: bool.split simp: bool_case_def[symmetric])
+
+lemma param_nat1[param]:
+  "(0, 0::nat) \<in> Id"
+  "(Suc, Suc) \<in> Id \<rightarrow> Id"
+  "(1, 1::nat) \<in> Id"
+  "(numeral n::nat,numeral n::nat) \<in> Id"
+  "(op <, op <::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "(op \<le>, op \<le>::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "(op =, op =::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "(op +::nat\<Rightarrow>_,op +)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op -::nat\<Rightarrow>_,op -)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op *::nat\<Rightarrow>_,op *)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op div::nat\<Rightarrow>_,op div)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op mod::nat\<Rightarrow>_,op mod)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  by auto
+
+lemma param_nat_case[param]:
+  "(nat_case,nat_case)\<in>Ra \<rightarrow> (Id \<rightarrow> Ra) \<rightarrow> Id \<rightarrow> Ra"
+  apply (intro fun_relI)
+  apply (auto split: nat.split dest: fun_relD)
+  done
+
+lemma param_nat_rec[param]: 
+  "(nat_rec,nat_rec) \<in> R \<rightarrow> (Id \<rightarrow> R \<rightarrow> R) \<rightarrow> Id \<rightarrow> R"
+  apply (intro fun_relI)
+proof -
+  case (goal1 s s' f f' n n') thus ?case
+    apply (induct n' arbitrary: n s s')
+    apply (fastforce simp: fun_rel_def)+
+    done
+qed
+
+lemma param_int[param]:
+  "(0, 0::int) \<in> Id"
+  "(1, 1::int) \<in> Id"
+  "(numeral n::int,numeral n::int) \<in> Id"
+  "(op <, op <::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "(op \<le>, op \<le>::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "(op =, op =::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
+  "(op +::int\<Rightarrow>_,op +)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op -::int\<Rightarrow>_,op -)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op *::int\<Rightarrow>_,op *)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op div::int\<Rightarrow>_,op div)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "(op mod::int\<Rightarrow>_,op mod)\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  by auto
+
+lemma param_prod[param]:
+  "(Pair,Pair)\<in>Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel"
+  "(prod_case,prod_case) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
+  "(prod_rec,prod_rec) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
+  "(fst,fst)\<in>\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Ra"
+  "(snd,snd)\<in>\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rb"
+  by (auto dest: fun_relD split: prod.split 
+    simp: prod_rel_def prod_case_def[symmetric])
+
+lemma param_prod_case':
+  "\<lbrakk> (p,p')\<in>\<langle>Ra,Rb\<rangle>prod_rel;
+     \<And>a b a' b'. \<lbrakk> p=(a,b); p'=(a',b'); (a,a')\<in>Ra; (b,b')\<in>Rb \<rbrakk> 
+      \<Longrightarrow> (f a b, f' a' b')\<in>R
+    \<rbrakk> \<Longrightarrow> (prod_case f p, prod_case f' p') \<in> R"
+  by (auto split: prod.split)
+
+lemma param_map_pair[param]: 
+  "(map_pair, map_pair) 
+  \<in> (Ra\<rightarrow>Rb) \<rightarrow> (Rc\<rightarrow>Rd) \<rightarrow> \<langle>Ra,Rc\<rangle>prod_rel \<rightarrow> \<langle>Rb,Rd\<rangle>prod_rel"
+  unfolding map_pair_def[abs_def]
+  by parametricity
+
+lemma param_apfst[param]: 
+  "(apfst,apfst)\<in>(Ra\<rightarrow>Rb)\<rightarrow>\<langle>Ra,Rc\<rangle>prod_rel\<rightarrow>\<langle>Rb,Rc\<rangle>prod_rel"
+  unfolding apfst_def[abs_def] by parametricity
+
+lemma param_apsnd[param]: 
+  "(apsnd,apsnd)\<in>(Rb\<rightarrow>Rc)\<rightarrow>\<langle>Ra,Rb\<rangle>prod_rel\<rightarrow>\<langle>Ra,Rc\<rangle>prod_rel"
+  unfolding apsnd_def[abs_def] by parametricity
+
+lemma param_curry[param]: 
+  "(curry,curry) \<in> (\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rc) \<rightarrow> Ra \<rightarrow> Rb \<rightarrow> Rc"
+  unfolding curry_def by parametricity
+
+context partial_function_definitions begin
+  lemma 
+    assumes M: "monotone le_fun le_fun F" 
+    and M': "monotone le_fun le_fun F'"
+    assumes ADM: 
+      "admissible (\<lambda>a. \<forall>x xa. (x, xa) \<in> Rb \<longrightarrow> (a x, fixp_fun F' xa) \<in> Ra)"
+    assumes F: "(F,F')\<in>(Rb\<rightarrow>Ra)\<rightarrow>Rb\<rightarrow>Ra"
+    assumes A: "(x,x')\<in>Rb"
+    shows "(fixp_fun F x, fixp_fun F' x')\<in>Ra"
+    using A
+    apply (induct arbitrary: x x' rule: ccpo.fixp_induct[OF ccpo _ M])
+    apply (rule ADM)
+    apply (subst ccpo.fixp_unfold[OF ccpo M'])
+    apply (parametricity add: F)
+    done
+end
+
+
+lemma param_option[param]:
+  "(None,None)\<in>\<langle>R\<rangle>option_rel"
+  "(Some,Some)\<in>R \<rightarrow> \<langle>R\<rangle>option_rel"
+  "(option_case,option_case)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+  "(option_rec,option_rec)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+  by (auto split: option.split 
+    simp: option_rel_def option_case_def[symmetric]
+    dest: fun_relD)
+
+lemma param_option_case':
+  "\<lbrakk> (x,x')\<in>\<langle>Rv\<rangle>option_rel; 
+     \<lbrakk>x=None; x'=None \<rbrakk> \<Longrightarrow> (fn,fn')\<in>R;  
+     \<And>v v'. \<lbrakk> x=Some v; x'=Some v'; (v,v')\<in>Rv \<rbrakk> \<Longrightarrow> (fs v, fs' v')\<in>R
+   \<rbrakk> \<Longrightarrow> (option_case fn fs x, option_case fn' fs' x') \<in> R"
+  by (auto split: option.split)
+
+lemma the_paramL: "\<lbrakk>l\<noteq>None; (l,r)\<in>\<langle>R\<rangle>option_rel\<rbrakk> \<Longrightarrow> (the l, the r)\<in>R"
+  apply (cases l)
+  by (auto elim: option_relE)
+
+lemma the_paramR: "\<lbrakk>r\<noteq>None; (l,r)\<in>\<langle>R\<rangle>option_rel\<rbrakk> \<Longrightarrow> (the l, the r)\<in>R"
+  apply (cases l)
+  by (auto elim: option_relE)
+
+lemma the_default_param[param]: 
+  "(the_default, the_default) \<in> R \<rightarrow> \<langle>R\<rangle>option_rel \<rightarrow> R"
+  unfolding the_default_def
+  by parametricity
+
+lemma param_sum[param]:
+  "(Inl,Inl) \<in> Rl \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel"
+  "(Inr,Inr) \<in> Rr \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel"
+  "(sum_case,sum_case) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
+  "(sum_rec,sum_rec) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
+  by (fastforce split: sum.split dest: fun_relD 
+    simp: sum_case_def[symmetric])+
+
+lemma param_sum_case':
+  "\<lbrakk> (s,s')\<in>\<langle>Rl,Rr\<rangle>sum_rel;
+     \<And>l l'. \<lbrakk> s=Inl l; s'=Inl l'; (l,l')\<in>Rl \<rbrakk> \<Longrightarrow> (fl l, fl' l')\<in>R;
+     \<And>r r'. \<lbrakk> s=Inr r; s'=Inr r'; (r,r')\<in>Rr \<rbrakk> \<Longrightarrow> (fr r, fr' r')\<in>R
+   \<rbrakk> \<Longrightarrow> (sum_case fl fr s, sum_case fl' fr' s')\<in>R"
+  by (auto split: sum.split)
+
+lemma param_append[param]: 
+  "(append, append)\<in>\<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
+  by (auto simp: list_rel_def list_all2_appendI)
+
+lemma param_list1[param]:
+  "(Nil,Nil)\<in>\<langle>R\<rangle>list_rel"
+  "(Cons,Cons)\<in>R \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
+  "(list_case,list_case)\<in>Rr\<rightarrow>(R\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr"
+  apply (force dest: fun_relD split: list.split)+
+  done
+
+lemma param_list_rec[param]: 
+  "(list_rec,list_rec) 
+  \<in> Ra \<rightarrow> (Rb \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra \<rightarrow> Ra) \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra"
+proof (intro fun_relI)
+  case (goal1 a a' f f' l l')
+  from goal1(3) show ?case
+    using goal1(1,2)
+    apply (induct arbitrary: a a')
+    apply simp
+    apply (fastforce dest: fun_relD)
+    done
+qed
+
+lemma param_list_case':
+  "\<lbrakk> (l,l')\<in>\<langle>Rb\<rangle>list_rel;
+     \<lbrakk>l=[]; l'=[]\<rbrakk> \<Longrightarrow> (n,n')\<in>Ra;  
+     \<And>x xs x' xs'. \<lbrakk> l=x#xs; l'=x'#xs'; (x,x')\<in>Rb; (xs,xs')\<in>\<langle>Rb\<rangle>list_rel \<rbrakk> 
+     \<Longrightarrow> (c x xs, c' x' xs')\<in>Ra
+   \<rbrakk> \<Longrightarrow> (list_case n c l, list_case n' c' l') \<in> Ra"
+  by (auto split: list.split)
+    
+lemma param_map[param]: 
+  "(map,map)\<in>(R1\<rightarrow>R2) \<rightarrow> \<langle>R1\<rangle>list_rel \<rightarrow> \<langle>R2\<rangle>list_rel"
+  unfolding List.map_def by (parametricity)
+    
+lemma param_fold[param]: 
+  "(fold,fold)\<in>(Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs \<rightarrow> Rs"
+  "(foldl,foldl)\<in>(Rs\<rightarrow>Re\<rightarrow>Rs) \<rightarrow> Rs \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs"
+  "(foldr,foldr)\<in>(Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs \<rightarrow> Rs"
+  unfolding List.fold_def List.foldr_def List.foldl_def
+  by (parametricity)+
+
+schematic_lemma param_take[param]: "(take,take)\<in>(?R::(_\<times>_) set)"
+  unfolding take_def 
+  by (parametricity)
+
+schematic_lemma param_drop[param]: "(drop,drop)\<in>(?R::(_\<times>_) set)"
+  unfolding drop_def 
+  by (parametricity)
+
+schematic_lemma param_length[param]: 
+  "(length,length)\<in>(?R::(_\<times>_) set)"
+  unfolding List.list.list_size_overloaded_def 
+  by (parametricity)
+
+fun list_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
+  "list_eq eq [] [] \<longleftrightarrow> True"
+| "list_eq eq (a#l) (a'#l') 
+     \<longleftrightarrow> (if eq a a' then list_eq eq l l' else False)"
+| "list_eq _ _ _ \<longleftrightarrow> False"
+
+lemma param_list_eq[param]: "
+  (list_eq,list_eq) \<in> 
+    (R \<rightarrow> R \<rightarrow> Id) \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Id"
+proof (intro fun_relI)
+  case (goal1 eq eq' l1 l1' l2 l2')
+  thus ?case
+    apply -
+    apply (induct eq' l1' l2' arbitrary: l1 l2 rule: list_eq.induct)
+    apply (simp_all only: list_eq.simps |
+      elim list_relE |
+      parametricity 
+    )+
+    done
+qed
+
+lemma id_list_eq_aux[simp]: "(list_eq op =) = (op =)"
+proof (intro ext)
+  fix l1 l2 :: "'a list"
+  show "list_eq op = l1 l2 = (l1 = l2)"
+    apply (induct "op = :: 'a \<Rightarrow> _" l1 l2 rule: list_eq.induct)
+    apply simp_all
+    done
+qed
+
+lemma param_list_equals[param]:
+  "\<lbrakk> (op =, op =) \<in> R\<rightarrow>R\<rightarrow>Id \<rbrakk> 
+  \<Longrightarrow> (op =, op =) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Id"
+  unfolding id_list_eq_aux[symmetric]
+  by (parametricity) 
+
+lemma param_tl[param]:
+  "(tl,tl) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
+  unfolding tl_def
+  by (parametricity)
+
+
+primrec list_all_rec where
+  "list_all_rec P [] \<longleftrightarrow> True"
+| "list_all_rec P (a#l) \<longleftrightarrow> P a \<and> list_all_rec P l"
+
+primrec list_ex_rec where
+  "list_ex_rec P [] \<longleftrightarrow> False"
+| "list_ex_rec P (a#l) \<longleftrightarrow> P a \<or> list_ex_rec P l"
+
+lemma list_all_rec_eq: "(\<forall>x\<in>set l. P x) = list_all_rec P l"
+  by (induct l) auto
+
+lemma list_ex_rec_eq: "(\<exists>x\<in>set l. P x) = list_ex_rec P l"
+  by (induct l) auto
+
+lemma param_list_ball[param]:
+  "\<lbrakk>(P,P')\<in>(Ra\<rightarrow>Id); (l,l')\<in>\<langle>Ra\<rangle> list_rel\<rbrakk> 
+    \<Longrightarrow> (\<forall>x\<in>set l. P x, \<forall>x\<in>set l'. P' x) \<in> Id"
+  unfolding list_all_rec_eq
+  unfolding list_all_rec_def
+  by (parametricity)
+
+lemma param_list_bex[param]:
+  "\<lbrakk>(P,P')\<in>(Ra\<rightarrow>Id); (l,l')\<in>\<langle>Ra\<rangle> list_rel\<rbrakk> 
+    \<Longrightarrow> (\<exists>x\<in>set l. P x, \<exists>x\<in>set l'. P' x) \<in> Id"
+  unfolding list_ex_rec_eq[abs_def]
+  unfolding list_ex_rec_def
+  by (parametricity)
+
+lemma param_rev[param]: "(rev,rev) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
+  unfolding rev_def
+  by (parametricity)
+  
+lemma param_Ball[param]: "(Ball,Ball)\<in>\<langle>Ra\<rangle>set_rel\<rightarrow>(Ra\<rightarrow>Id)\<rightarrow>Id"
+  by (auto simp: set_rel_def dest: fun_relD)
+lemma param_Bex[param]: "(Bex,Bex)\<in>\<langle>Ra\<rangle>set_rel\<rightarrow>(Ra\<rightarrow>Id)\<rightarrow>Id"
+  apply (auto simp: set_rel_def dest: fun_relD)
+  apply (drule (1) set_mp)
+  apply (erule DomainE)
+  apply (auto dest: fun_relD)
+  done
+
+lemma param_foldli[param]: "(foldli, foldli) 
+  \<in> \<langle>Re\<rangle>list_rel \<rightarrow> (Rs\<rightarrow>Id) \<rightarrow> (Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> Rs \<rightarrow> Rs"
+  unfolding foldli_def
+  by parametricity
+
+lemma param_foldri[param]: "(foldri, foldri) 
+  \<in> \<langle>Re\<rangle>list_rel \<rightarrow> (Rs\<rightarrow>Id) \<rightarrow> (Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> Rs \<rightarrow> Rs"
+  unfolding foldri_def[abs_def]
+  by parametricity
+
+lemma param_nth[param]: 
+  assumes I: "i'<length l'"
+  assumes IR: "(i,i')\<in>nat_rel"
+  assumes LR: "(l,l')\<in>\<langle>R\<rangle>list_rel" 
+  shows "(l!i,l'!i') \<in> R"
+  using LR I IR
+  by (induct arbitrary: i i' rule: list_rel_induct) 
+     (auto simp: nth.simps split: nat.split)
+
+lemma param_replicate[param]:
+  "(replicate,replicate) \<in> nat_rel \<rightarrow> R \<rightarrow> \<langle>R\<rangle>list_rel"
+  unfolding replicate_def by parametricity
+
+term list_update
+lemma param_list_update[param]: 
+  "(list_update,list_update) \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> Ra \<rightarrow> \<langle>Ra\<rangle>list_rel"
+  unfolding list_update_def[abs_def] by parametricity
+
+lemma param_zip[param]:
+  "(zip, zip) \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> \<langle>\<langle>Ra,Rb\<rangle>prod_rel\<rangle>list_rel"
+    unfolding zip_def by parametricity
+
+lemma param_upt[param]:
+  "(upt, upt) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>list_rel"
+   unfolding upt_def[abs_def] by parametricity
+
+lemma param_concat[param]: "(concat, concat) \<in> 
+    \<langle>\<langle>R\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
+unfolding concat_def[abs_def] by parametricity
+
+
+subsection {*Sets*}
+
+lemma param_empty[param]:
+  "({},{})\<in>\<langle>R\<rangle>set_rel" by (auto simp: set_rel_def)
+
+lemma param_insert[param]:
+  "single_valued R \<Longrightarrow> (insert,insert)\<in>R\<rightarrow>\<langle>R\<rangle>set_rel\<rightarrow>\<langle>R\<rangle>set_rel"
+  by (auto simp: set_rel_def dest: single_valuedD)
+
+lemma param_union[param]:
+  "(op \<union>, op \<union>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
+  by (auto simp: set_rel_def)
+
+lemma param_inter[param]:
+  assumes "single_valued (R\<inverse>)"
+  shows "(op \<inter>, op \<inter>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
+  using assms by (auto dest: single_valuedD simp: set_rel_def)
+
+lemma param_diff[param]:
+  assumes "single_valued (R\<inverse>)"
+  shows "(op -, op -) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
+  using assms 
+  by (auto dest: single_valuedD simp: set_rel_def)
+
+lemma param_set[param]: 
+  "single_valued Ra \<Longrightarrow> (set,set)\<in>\<langle>Ra\<rangle>list_rel \<rightarrow> \<langle>Ra\<rangle>set_rel"
+proof 
+  fix l l'
+  assume A: "single_valued Ra"
+  assume "(l,l')\<in>\<langle>Ra\<rangle>list_rel"
+  thus "(set l, set l')\<in>\<langle>Ra\<rangle>set_rel"
+    apply (induct)
+    apply simp
+    apply simp
+    using A apply (parametricity)
+    done
+qed
+
+end

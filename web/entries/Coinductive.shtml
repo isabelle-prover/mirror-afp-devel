@@ -73,6 +73,9 @@ new codatatype stream with operations (with contributions by Peter Gammie)
 construct codatatypes with the BNF package and adjust the definitions and proofs,
 setup for lifting and transfer packages
 (revision f593eda5b2c0)<br>
+[2013-09-20]:
+stream theory uses type and operations from HOL/BNF/Examples/Stream
+(revision 692809b2b262)<br>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
