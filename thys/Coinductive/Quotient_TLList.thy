@@ -90,7 +90,7 @@ lemma Quotient3_tllist_all2_tmap_tmapI:
   assumes q1: "Quotient3 R1 Abs1 Rep1"
   and q2: "Quotient3 R2 Abs2 Rep2"
   shows "tllist_all2 R1 R2 (tmap Rep1 Rep2 ts) (tmap Rep1 Rep2 ts)"
-by(coinduct ts rule: tllist_all2_fun_coinduct)(auto simp add: Quotient3_rep_reflp[OF q1] Quotient3_rep_reflp[OF q2])
+by(coinduction arbitrary: ts)(auto simp add: Quotient3_rep_reflp[OF q1] Quotient3_rep_reflp[OF q2])
 
 lemma tllist_all2_rel:
   assumes q1: "Quotient3 R1 Abs1 Rep1"
@@ -148,7 +148,7 @@ proof(intro conjI strip)
   fix xs ys
   assume "tllist_all2 T1 T2 xs ys"
   thus "tmap Abs1 Abs2 xs = ys"
-    by(coinduct xs ys rule: tllist_fun_coinduct_invar2)(auto simp add: 1 2 dest: tllist_all2_is_TNilD tllist_all2_tfinite1_terminalD tllist_all2_thdD intro: tllist_all2_ttlI)
+    by(coinduction arbitrary: xs ys)(auto simp add: 1 2 dest: tllist_all2_is_TNilD tllist_all2_tfinite1_terminalD tllist_all2_thdD intro: tllist_all2_ttlI)
 next
   from assms have 1: "\<And>x. T1 (Rep1 x) x"
     and 2: "\<And>x. T2 (Rep2 x) x"
@@ -198,7 +198,7 @@ lemma tllist_all2_prs:
 proof
   assume ?lhs
   thus ?rhs
-  proof(coinduct rule: tllist_all2_coinduct)
+  proof(coinduct)
     case (tllist_all2 ts ts')
     thus ?case using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2]
       by(cases ts)(case_tac [!] ts', auto simp add: tllist_all2_TNil1 tllist_all2_TCons1)
@@ -206,7 +206,7 @@ proof
 next
   assume ?rhs
   thus ?lhs
-    apply(coinduct ts ts' rule: tllist_all2_fun_coinduct_invar2)
+    apply(coinduction arbitrary: ts ts')
     using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2]
     by(auto dest: tllist_all2_is_TNilD intro: tllist_all2_tfinite1_terminalD tllist_all2_thdD tllist_all2_ttlI)
 qed
@@ -234,8 +234,7 @@ lemma tllist_corec_preserve [quot_preserve]:
 proof(intro ext)
   fix IS_TNIL TNIL THD endORmore TTL_end TTL_more b
   show "?lhs IS_TNIL TNIL THD endORmore TTL_end TTL_more b = ?rhs IS_TNIL TNIL THD endORmore TTL_end TTL_more b"
-    (is "?lhs' b = ?rhs' b")
-    by(rule tllist_fun_coinduct[where f="?lhs'" and g="?rhs'" and x=b])(auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3] Quotient3_tmap_Abs_Rep[OF q3 q2])
+    by(coinduction arbitrary: b rule: tllist.strong_coinduct)(auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3] Quotient3_tmap_Abs_Rep[OF q3 q2])
 qed
 
 end

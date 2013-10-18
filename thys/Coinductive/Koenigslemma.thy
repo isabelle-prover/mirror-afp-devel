@@ -261,7 +261,7 @@ proof(intro bexI conjI)
   have "infinite (reachable_via graph (- insert n ns) n) \<and> finite ns"
     by(simp add: ns_def)
   thus "ldistinct (f (n, ns))"
-  proof(coinduct n ns rule: ldistinct_fun_coinduct_invar2)
+  proof(coinduction arbitrary: n ns)
     case (ldistinct n ns)
     then obtain "finite ns"
       and "infinite (reachable_via graph (- insert n ns) n)" by simp

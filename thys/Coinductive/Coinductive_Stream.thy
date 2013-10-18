@@ -41,31 +41,6 @@ lemma stream_unfold_code [code]:
   "stream_unfold SHD STL b = Stream (SHD b) (stream_unfold SHD STL (STL b))"
 by(rule stream.expand) simp_all
 
-text {* Coinduction rules *}
-
-lemma stream_fun_coinduct_invar [consumes 1, case_names Stream]:
-  assumes "P x"
-  and "\<And>x. P x
-  \<Longrightarrow> shd (f x) = shd (g x) \<and>
-     ((\<exists>x'. stl (f x) = f x' \<and> stl (g x) = g x' \<and> P x') \<or> stl (f x) = stl (g x))"
-  shows "f x = g x"
-apply(rule stream.strong_coinduct[of "\<lambda>xs ys. \<exists>x. P x \<and> xs = f x \<and> ys = g x"])
-using assms by auto
-
-theorem stream_fun_coinduct [case_names Stream]:
-  assumes 
-  "\<And>x. shd (f x) = shd (g x) \<and>
-      ((\<exists>x'. stl (f x) = f x' \<and> stl (g x) = g x') \<or> stl (f x) = stl (g x))"
-  shows "f x = g x"
-by(rule stream_fun_coinduct_invar[where P="\<lambda>_. True" and f=f and g=g])(simp_all add: assms)
-
-lemmas stream_fun_coinduct2 = stream_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas stream_fun_coinduct3 = stream_fun_coinduct[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
-lemmas stream_fun_coinduct4 = stream_fun_coinduct[where ?'a="'a \<times> 'b \<times> 'c \<times> 'd", split_format (complete)]
-lemmas stream_fun_coinduct_invar2 = stream_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas stream_fun_coinduct_invar3 = stream_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
-lemmas stream_fun_coinduct_invar4 = stream_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c \<times> 'd", split_format (complete)]
-
 text {* lemmas about generated constants *}
 
 lemma eq_StreamD: "xs = Stream y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
@@ -85,16 +60,16 @@ by(simp add: fun_eq_iff stream.map_id)
 
 lemma smap_stream_unfold:
   "smap f (stream_unfold SHD STL b) = stream_unfold (f \<circ> SHD) STL b"
-by(coinduct b rule: stream_fun_coinduct) auto
+by(coinduction arbitrary: b) auto
 
 lemma smap_stream_corec:
   "smap f (stream_corec SHD endORmore STL_end STL_more b) =
    stream_corec (f \<circ> SHD) endORmore (smap f \<circ> STL_end) STL_more b"
-by(coinduct b rule: stream_fun_coinduct) auto
+by(coinduction arbitrary: b rule: stream.strong_coinduct) auto
 
 lemma stream_unfold_ltl_unroll:
   "stream_unfold SHD STL (STL b) = stream_unfold (SHD \<circ> STL) STL b"
-by(coinduct b rule: stream_fun_coinduct) auto
+by(coinduction arbitrary: b) auto
 
 lemma stream_unfold_eq_Stream [simp]:
   "stream_unfold SHD STL b = x ## xs \<longleftrightarrow>
@@ -102,7 +77,7 @@ lemma stream_unfold_eq_Stream [simp]:
 by(subst stream_unfold_code) auto
 
 lemma stream_unfold_id [simp]: "stream_unfold shd stl xs = xs"
-by(coinduct xs rule: stream_fun_coinduct) simp_all
+by(coinduction arbitrary: xs) simp_all
 
 lemma sset_neq_empty [simp]: "sset xs \<noteq> {}"
 by(cases xs) simp_all
@@ -122,22 +97,22 @@ subsection {* Lemmas about operations from @{theory Stream} *}
 
 lemma szip_iterates:
   "szip (siterate f a) (siterate g b) = siterate (map_pair f g) (a, b)"
-by(coinduct a b rule: stream_fun_coinduct2) auto
+by(coinduction arbitrary: a b) auto
 
 lemma szip_smap1: "szip (smap f xs) ys = smap (apfst f) (szip xs ys)"
-by(coinduct xs ys rule: stream_fun_coinduct2) auto
+by(coinduction arbitrary: xs ys) auto
 
 lemma szip_smap2: "szip xs (smap g ys) = smap (apsnd g) (szip xs ys)"
-by(coinduct xs ys rule: stream_fun_coinduct2) auto
+by(coinduction arbitrary: xs ys) auto
 
 lemma szip_smap [simp]: "szip (smap f xs) (smap g ys) = smap (map_pair f g) (szip xs ys)"
-by(coinduct xs ys rule: stream_fun_coinduct2) auto
+by(coinduction arbitrary: xs ys) auto
 
 lemma smap_fst_szip [simp]: "smap fst (szip xs ys) = xs"
-by(coinduct xs ys rule: stream_fun_coinduct2) auto
+by(coinduction arbitrary: xs ys) auto
 
 lemma smap_snd_szip [simp]: "smap snd (szip xs ys) = ys"
-by(coinduct xs ys rule: stream_fun_coinduct2) auto
+by(coinduction arbitrary: xs ys) auto
 
 lemma snth_shift: "snth (shift xs ys) n = (if n < length xs then xs ! n else snth ys (n - length xs))"
 by simp
@@ -175,13 +150,11 @@ by(simp add: llist_of_stream_def)
 
 lemma stream_of_llist_llist_of_stream [simp]: 
   "stream_of_llist (llist_of_stream xs) = xs"
-by(coinduct xs rule: stream_fun_coinduct) simp_all
+by(coinduction arbitrary: xs) simp_all
 
-lemma llist_of_stream_stream_of_llist [simp]: 
-  assumes "\<not> lfinite xs"
-  shows "llist_of_stream (stream_of_llist xs) = xs"
-using assms
-by(coinduct xs rule: llist_fun_coinduct_invar) auto
+lemma llist_of_stream_stream_of_llist [simp]:
+  "\<not> lfinite xs \<Longrightarrow> llist_of_stream (stream_of_llist xs) = xs"
+by(coinduction arbitrary: xs) auto
 
 lemma lfinite_llist_of_stream [simp]: "\<not> lfinite (llist_of_stream xs)"
 proof
@@ -203,19 +176,19 @@ by(simp add: cr_stream_def Abs_stream_inverse)
 
 lemma llist_of_stream_stream_unfold [simp]: 
   "llist_of_stream (stream_unfold SHD STL x) = llist_unfold (\<lambda>_. False) SHD STL x"
-by(coinduct x rule: llist_fun_coinduct) auto
+by(coinduction arbitrary: x) auto
 
 lemma llist_of_stream_stream_corec [simp]:
   "llist_of_stream (stream_corec SHD endORmore STL_more STL_end x) =
    llist_corec (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
-by(coinduct x rule: llist_fun_coinduct) auto
+by(coinduction arbitrary: x rule: llist.strong_coinduct) auto
 
 lemma LCons_llist_of_stream [simp]: "LCons x (llist_of_stream xs) = llist_of_stream (x ## xs)"
 by(rule sym)(simp add: llist_of_stream_def)
 
 lemma lmap_llist_of_stream [simp]:
   "lmap f (llist_of_stream xs) = llist_of_stream (smap f xs)"
-by(coinduct xs rule: llist_fun_coinduct) auto
+by(coinduction arbitrary: xs) auto
 
 lemma lset_llist_of_stream [simp]: "lset (llist_of_stream xs) = sset xs" (is "?lhs = ?rhs")
 proof(intro set_eqI iffI)
@@ -246,7 +219,7 @@ proof
 qed
 
 lemma llist_of_stream_siterates [simp]: "llist_of_stream (siterate f x) = iterates f x"
-by(coinduct x rule: llist_fun_coinduct) auto
+by(coinduction arbitrary: x) auto
 
 lemma lappend_llist_of_stream_conv_shift [simp]:
   "lappend (llist_of xs) (llist_of_stream ys) = llist_of_stream (xs @- ys)"
@@ -254,7 +227,7 @@ by(induct xs) simp_all
 
 lemma lzip_llist_of_stream [simp]:
   "lzip (llist_of_stream xs) (llist_of_stream ys) = llist_of_stream (szip xs ys)"
-by(coinduct xs ys rule: llist_fun_coinduct2) auto
+by(coinduction arbitrary: xs ys) auto
 
 context
 begin
@@ -397,8 +370,6 @@ lemma smap_of_seq [simp]: "smap f (of_seq g) = of_seq (f \<circ> g)"
 by transfer simp
 
 
-
-
 subsection{* Function iteration @{const siterate}  and @{term sconst} *}
 
 lemmas siterate [nitpick_simp] = siterate.code
@@ -421,13 +392,13 @@ lemma sset_sconst [simp]: "sset (sconst a) = {a}"
 by(simp add: sset_siterate)
 
 lemma smap_sconst [simp]: "smap f (sconst a) = sconst (f a)"
-by(coinduct a rule: stream_fun_coinduct) auto
+by(coinduction arbitrary: a) auto
 
 lemma szip_sconst1 [simp]: "szip (sconst a) xs = smap (Pair a) xs"
-by(coinduct xs rule: stream_fun_coinduct) auto
+by(coinduction arbitrary: xs) auto
 
 lemma szip_sconst2 [simp]: "szip xs (sconst b) = smap (\<lambda>x. (x, b)) xs"
-by(coinduct xs rule: stream_fun_coinduct) auto
+by(coinduction arbitrary: xs) auto
 
 end
 

@@ -50,7 +50,7 @@ lemma llist_unfold_preserve [quot_preserve]:
 proof(intro ext)
   fix IS_LNIL LHD LTL a
   show "?lhs IS_LNIL LHD LTL a = ?rhs IS_LNIL LHD LTL a"
-    by(coinduct a rule: llist_fun_coinduct)(auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2])
+    by(coinduction arbitrary: a)(auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2])
 qed
 
 lemma Quotient_lmap_Abs_Rep:
@@ -149,7 +149,7 @@ lemma llist_corec_preserve [quot_preserve]:
 proof(intro ext)
   fix IS_LNIL LHD endORmore LTL_end LTL_more b
   show "?lhs IS_LNIL LHD endORmore LTL_end LTL_more b = ?rhs IS_LNIL LHD endORmore LTL_end LTL_more b"
-    by(coinduct b rule: llist_fun_coinduct)
+    by(coinduction arbitrary: b rule: llist.strong_coinduct)
       (auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient_lmap_Abs_Rep[OF q2])
 qed
 

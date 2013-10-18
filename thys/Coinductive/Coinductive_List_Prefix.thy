@@ -82,19 +82,15 @@ instance
 proof
   fix xs ys zs :: "'a llist"
   show "inf xs ys \<le> xs" unfolding le_llist_conv_lprefix
-    by(coinduct xs ys rule: lprefix_fun_coinduct2) auto
+    by(coinduction arbitrary: xs ys) auto
 
   show "inf xs ys \<le> ys" unfolding le_llist_conv_lprefix
-    by(coinduct xs ys rule: lprefix_fun_coinduct2) auto
+    by(coinduction arbitrary: xs ys) auto
 
   assume "xs \<le> ys" "xs \<le> zs"
-  hence "xs \<le> ys \<and> xs \<le> zs" by simp
   thus "xs \<le> inf ys zs" unfolding le_llist_conv_lprefix
-  proof(coinduct xs ys zs rule: lprefix_fun_coinduct_invar3)
-    case (LNil xs ys zs) 
-    thus ?case by(cases xs)(auto simp add: LCons_lprefix_conv)
-  next
-    case (LCons xs ys zs)
+  proof(coinduction arbitrary: xs ys zs)
+    case (lprefix xs ys zs)
     thus ?case by(cases xs)(auto 4 4 simp add: LCons_lprefix_conv)
   qed
 qed
