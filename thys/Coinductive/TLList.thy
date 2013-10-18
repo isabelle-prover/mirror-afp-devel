@@ -189,6 +189,9 @@ by(auto simp add: tllist_unfold)
 lemma is_TNil_tmap [simp]: "is_TNil (tmap f g xs) \<longleftrightarrow> is_TNil xs"
 by(cases xs) simp_all
 
+lemma tmap_is_TNil: "is_TNil xs \<Longrightarrow> tmap f g xs = TNil (g (terminal xs))"
+by(clarsimp simp add: is_TNil_def)
+
 lemma thd_tmap [simp]: "\<not> is_TNil xs \<Longrightarrow> thd (tmap f g xs) = f (thd xs)"
 by(cases xs) simp_all
 
@@ -202,7 +205,6 @@ by(cases xs) simp_all
 lemma TNil_eq_tmap_conv:
   "TNil y = tmap f g xs \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
 by(cases xs) auto
-
 
 lemma thd_in_tset [simp]: "\<not> is_TNil xs \<Longrightarrow> thd xs \<in> tset xs"
 by(cases xs) simp_all
@@ -280,12 +282,12 @@ qed
 subsection {* Connection with @{typ "'a llist"} *}
 
 definition tllist_of_llist :: "'b \<Rightarrow> 'a llist \<Rightarrow> ('a, 'b) tllist"
-where "tllist_of_llist b = tllist_unfold (\<lambda>xs. xs = LNil) (\<lambda>_. b) lhd ltl"
+where "tllist_of_llist b = tllist_unfold lnull (\<lambda>_. b) lhd ltl"
 
 definition llist_of_tllist :: "('a, 'b) tllist \<Rightarrow> 'a llist"
 where "llist_of_tllist = llist_unfold is_TNil thd ttl"
 
-lemma is_TNil_tllist_of_llist [simp]: "is_TNil (tllist_of_llist b xs) \<longleftrightarrow> xs = LNil"
+lemma is_TNil_tllist_of_llist [simp]: "is_TNil (tllist_of_llist b xs) \<longleftrightarrow> lnull xs"
 by(simp add: tllist_of_llist_def)
 
 lemma lhd_LNil: "lhd LNil = undefined"
@@ -300,20 +302,20 @@ by(cases xs)(simp_all add: tllist_of_llist_def thd_TNil lhd_LNil)
 lemma ttl_tllist_of_llist [simp]: "ttl (tllist_of_llist b xs) = tllist_of_llist b (ltl xs)"
 by(simp add: tllist_of_llist_def ttl_tllist_unfold)
 
-lemma llist_of_tllist_eq_LNil [simp]:
-  "llist_of_tllist xs = LNil \<longleftrightarrow> is_TNil xs"
+lemma lnull_llist_of_tllist [simp]:
+  "lnull (llist_of_tllist xs) \<longleftrightarrow> is_TNil xs"
 by(simp add: llist_of_tllist_def)
 
-lemma terminal_tllist_of_llist_LNil [simp]:
-  "xs = LNil \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
+lemma llist_of_tllist_eq_LNil:
+  "llist_of_tllist xs = LNil \<longleftrightarrow> is_TNil xs"
+using lnull_llist_of_tllist unfolding lnull_def .
+
+lemma terminal_tllist_of_llist_lnull [simp]:
+  "lnull xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
 by(simp add: tllist_of_llist_def)
 
 lemma lhd_llist_of_tllist [simp]: "\<not> is_TNil xs \<Longrightarrow> lhd (llist_of_tllist xs) = thd xs"
 by(simp add: llist_of_tllist_def)
-
-lemma LNil_eq_llist_unfold [simp]: (* Move to Coinductive_List *)
-  "LNil = llist_unfold IS_LNIL LHD LTL x \<longleftrightarrow> IS_LNIL x"
-by(auto dest: sym)
 
 lemma ltl_llist_of_tllist [simp]:
   "ltl (llist_of_tllist xs) = llist_of_tllist (ttl xs)"
@@ -357,7 +359,7 @@ proof(intro iffI conjI impI)
 next
   assume ?lhs
   thus "xs = ys"
-    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv)
+    by(coinduction arbitrary: xs ys)(auto simp add: lnull_def neq_LNil_conv)
   assume "lfinite ys"
   thus "b = c" using `?lhs`
     unfolding `xs = ys` by(induct) simp_all
@@ -403,7 +405,7 @@ by(auto 4 3 intro!: fun_relI relcomppI simp add: pcr_tllist_def prod_rel_def lli
 
 lemma tmap_tllist_of_llist:
   "tmap f g (tllist_of_llist b xs) = tllist_of_llist (g b) (lmap f xs)"
-by(coinduction arbitrary: xs) auto
+by(coinduction arbitrary: xs)(auto simp add: tmap_is_TNil)
 
 lemma tmap_transfer [transfer_rule]:
   "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op =) (map_pair \<circ> lmap) tmap"
@@ -439,7 +441,7 @@ lemma tset_transfer [transfer_rule]:
 by(auto simp add: cr_tllist_def tllist.pcr_cr_eq)
 
 lemma is_TNil_transfer [transfer_rule]:
-  "(pcr_tllist op = op = ===> op =) (\<lambda>(xs, b). xs = LNil) is_TNil"
+  "(pcr_tllist op = op = ===> op =) (\<lambda>(xs, b). lnull xs) is_TNil"
 by(auto simp add: tllist.pcr_cr_eq cr_tllist_def)
 
 lemma thd_transfer [transfer_rule]:
@@ -620,9 +622,13 @@ lemma tfilter_TCons [simp]:
   "tfilter b P (TCons a tr) = (if P a then TCons a (tfilter b P tr) else tfilter b P tr)"
 by transfer auto
 
+lemma is_TNil_tfilter[simp]:
+  "is_TNil (tfilter y P xs) \<longleftrightarrow> (\<forall>x \<in> tset xs. \<not> P x)"
+by transfer auto
+
 lemma tfilter_empty_conv:
   "tfilter y P xs = TNil y' \<longleftrightarrow> (\<forall>x \<in> tset xs. \<not> P x) \<and> (if tfinite xs then terminal xs = y' else y = y')"
-by transfer auto
+by transfer(clarsimp simp add: lfilter_eq_LNil)
 
 lemma tfilter_eq_TConsD:
   "tfilter a P ys = TCons x xs \<Longrightarrow>

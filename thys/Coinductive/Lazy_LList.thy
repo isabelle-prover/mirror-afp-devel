@@ -48,6 +48,9 @@ by(simp)
 lemma LCons_Lazy_llist [code, code_unfold]: "LCons x xs = Lazy_llist (\<lambda>_. Some (x, xs))"
 by simp
 
+lemma lnull_lazy [code]: "lnull = Option.is_none \<circ> force"
+by(simp add: lnull_def Option.is_none_def fun_eq_iff split: llist.split)
+
 lemma [code, code del]:
   "equal_class.equal = (equal_class.equal :: 'a :: equal llist \<Rightarrow> _)" ..
 

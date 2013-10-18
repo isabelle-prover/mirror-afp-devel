@@ -42,10 +42,10 @@ lemma paths_lappendD1:
 using assms
 apply coinduct
 apply(erule paths.cases)
-  apply simp
+  apply(simp add: lappend_eq_LNil_iff)
  apply(case_tac x)
   apply simp
- apply simp
+ apply(simp add: lappend_eq_LNil_iff)
 apply(case_tac x)
  apply simp
 apply(case_tac x22)
@@ -172,7 +172,7 @@ proof(intro bexI conjI)
   note ex_P_I = this
 
   { fix n ns
-    have "f (n, ns) \<noteq> LNil"
+    have "\<not> lnull (f (n, ns))"
       "lhd (f (n, ns)) = n"
       "ltl (f (n, ns)) = (let n' = SOME n'. ?P (n, ns) n' in f (n', insert n ns))"
       by(simp_all add: f_def LTL_def) }
