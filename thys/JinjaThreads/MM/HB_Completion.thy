@@ -32,57 +32,49 @@ inductive_simps ta_hb_consistent_LCons:
   "ta_hb_consistent P obs (LCons ob obs')"
 
 lemma ta_hb_consistent_into_non_speculative:
-  assumes "ta_hb_consistent P obs0 obs"
-  shows "non_speculative P (w_values P (\<lambda>_. {}) (map snd obs0)) (lmap snd obs)"
-proof -
-  def vs \<equiv> "w_values P (\<lambda>_. {}) (map snd obs0)"
-    and obs' \<equiv> "lmap snd obs"
-  with assms have "\<exists>obs obs0. ta_hb_consistent P obs0 obs \<and> vs = w_values P (\<lambda>_. {}) (map snd obs0) \<and> obs' = lmap snd obs"
-    (is "?CH vs obs'") by blast
-  thus "non_speculative P vs obs'"
-  proof(coinduct)
-    case (non_speculative vs obs')
-    then obtain obs0 obs where hb: "ta_hb_consistent P obs0 obs"
-      and vs: "vs = w_values P (\<lambda>_. {}) (map snd obs0)"
-      and obs': "obs' = lmap snd obs" by blast
-    from hb show ?case
-    proof(cases)
-      case LNil hence ?LNil by(simp add: obs')
-      thus ?thesis ..
-    next
-      case (LCons tob obs'')
-      note obs = `obs = LCons tob obs''`
-      obtain t ob where tob: "tob = (t, ob)" by(cases tob)
-      from `ta_hb_consistent P (obs0 @ [tob]) obs''` vs obs' tob obs
-      have "?CH (w_value P vs ob) (lmap snd obs'')" by(auto intro!: exI)
-      moreover {
-        fix ad al v
-        assume ob: "ob = NormalAction (ReadMem ad al v)"
-        with LCons tob obtain w where w: "w \<in> write_actions (llist_of (obs0 @ [tob]))"
-          and adal: "(ad, al) \<in> action_loc P (llist_of (obs0 @ [tob])) w"
-          and v: "value_written P (llist_of (obs0 @ [tob])) w (ad, al) = v" by auto
-        from w obtain "is_write_action (action_obs (llist_of (obs0 @ [tob])) w)" 
-          and w_actions: "w \<in> actions (llist_of (obs0 @ [tob]))" by cases
-        hence "v \<in> vs (ad, al)"
-        proof(cases)
-          case (WriteMem ad' al' v')
-          hence "NormalAction (WriteMem ad al v) \<in> set (map snd obs0)"
-            using adal ob tob v w_actions unfolding in_set_conv_nth
-            by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: split_if_asm)
-          thus ?thesis unfolding vs by(rule w_values_WriteMemD)
-        next
-          case (NewHeapElem ad' hT)
-          hence "NormalAction (NewHeapElem ad hT) \<in> set (map snd obs0)"
-            using adal ob tob v w_actions unfolding in_set_conv_nth
-            by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: split_if_asm)
-          thus ?thesis using NewHeapElem adal unfolding vs v[symmetric]
-            by(fastforce simp add: value_written.simps intro!: w_values_new_actionD intro: rev_image_eqI)
-        qed }
-      hence "case ob of NormalAction (ReadMem ad al v) \<Rightarrow> v \<in> vs (ad, al) | _ \<Rightarrow> True"
-        by(simp split: action.split obs_event.split)
-      ultimately have ?LCons using obs tob obs' by simp
-      thus ?thesis ..
-    qed
+  "ta_hb_consistent P obs0 obs
+  \<Longrightarrow> non_speculative P (w_values P (\<lambda>_. {}) (map snd obs0)) (lmap snd obs)"
+proof(coinduction arbitrary: obs0 obs)
+  case (non_speculative obs0 obs)
+  let ?vs = "w_values P (\<lambda>_. {}) (map snd obs0)"
+  let ?CH = "\<lambda>vs obs'. \<exists>obs0 obs. vs = w_values P (\<lambda>_. {}) (map snd obs0) \<and> obs' = lmap snd obs \<and> ta_hb_consistent P obs0 obs"
+  from non_speculative show ?case
+  proof(cases)
+    case LNil hence ?LNil by simp
+    thus ?thesis ..
+  next
+    case (LCons tob obs'')
+    note obs = `obs = LCons tob obs''`
+    obtain t ob where tob: "tob = (t, ob)" by(cases tob)
+    from `ta_hb_consistent P (obs0 @ [tob]) obs''` tob obs
+    have "?CH (w_value P ?vs ob) (lmap snd obs'')" by(auto intro!: exI)
+    moreover {
+      fix ad al v
+      assume ob: "ob = NormalAction (ReadMem ad al v)"
+      with LCons tob obtain w where w: "w \<in> write_actions (llist_of (obs0 @ [tob]))"
+        and adal: "(ad, al) \<in> action_loc P (llist_of (obs0 @ [tob])) w"
+        and v: "value_written P (llist_of (obs0 @ [tob])) w (ad, al) = v" by auto
+      from w obtain "is_write_action (action_obs (llist_of (obs0 @ [tob])) w)" 
+        and w_actions: "w \<in> actions (llist_of (obs0 @ [tob]))" by cases
+      hence "v \<in> ?vs (ad, al)"
+      proof(cases)
+        case (WriteMem ad' al' v')
+        hence "NormalAction (WriteMem ad al v) \<in> set (map snd obs0)"
+          using adal ob tob v w_actions unfolding in_set_conv_nth
+          by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: split_if_asm)
+        thus ?thesis by(rule w_values_WriteMemD)
+      next
+        case (NewHeapElem ad' hT)
+        hence "NormalAction (NewHeapElem ad hT) \<in> set (map snd obs0)"
+          using adal ob tob v w_actions unfolding in_set_conv_nth
+          by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: split_if_asm)
+        thus ?thesis using NewHeapElem adal unfolding v[symmetric]
+          by(fastforce simp add: value_written.simps intro!: w_values_new_actionD intro: rev_image_eqI)
+      qed }
+    hence "case ob of NormalAction (ReadMem ad al v) \<Rightarrow> v \<in> ?vs (ad, al) | _ \<Rightarrow> True"
+      by(simp split: action.split obs_event.split)
+    ultimately have ?LCons using obs tob by simp
+    thus ?thesis ..
   qed
 qed
 
@@ -260,12 +252,10 @@ proof -
     qed }
   note step' = this
 
-  from major have "\<exists>a. X E obs a" ..
-  thus ?thesis
-  proof(coinduct rule: ta_hb_consistent_coinduct_append)
+  from major show ?thesis
+  proof(coinduction arbitrary: E obs a rule: ta_hb_consistent_coinduct_append)
     case (ta_hb_consistent E obs)
-    then obtain a where "X E obs a" ..
-    thus ?case by(rule step')
+    thus ?case by simp(rule step')
   qed
 qed
 
@@ -513,15 +503,10 @@ proof(intro exI conjI strip)
 qed
 
 lemma ta_hb_consistent_not_ReadI:
-  assumes "\<And>t ad al v. (t, NormalAction (ReadMem ad al v)) \<notin> lset E"
-  shows "ta_hb_consistent P E' E"
-proof -
-  from assms have "\<forall>t ad al v. (t, NormalAction (ReadMem ad al v)) \<notin> lset E" by blast
-  thus ?thesis
-  proof(coinduct)
-    case (ta_hb_consistent E' E)
-    thus ?case by(cases E)(auto split: action.split obs_event.split, blast)
-  qed
+  "(\<And>t ad al v. (t, NormalAction (ReadMem ad al v)) \<notin> lset E) \<Longrightarrow> ta_hb_consistent P E' E"
+proof(coinduction arbitrary: E' E)
+  case (ta_hb_consistent E' E)
+  thus ?case by(cases E)(auto split: action.split obs_event.split, blast)
 qed
 
 context jmm_multithreaded begin
@@ -619,51 +604,45 @@ lemma complete_hb_in_Runs:
   assumes hb_c: "hb_completion s E"
   and ta_hb_consistent_convert_RA: "\<And>t E ln. ta_hb_consistent P E (llist_of (map (Pair t) (convert_RA ln)))"
   shows "mthr.Runs s (complete_hb s E)"
-proof -
-  def ttas \<equiv> "complete_hb s E"
-  with hb_c have "\<exists>E. hb_completion s E \<and> ttas = complete_hb s E" by blast
-  thus "mthr.Runs s ttas"
-  proof(coinduct s ttas rule: mthr.Runs.coinduct)
-    case (Runs s ttas)
-    then obtain E where hb_c: "hb_completion s E"
-      and ttas: "ttas = complete_hb s E" by blast
-    let ?P = "\<lambda>((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
-    show ?case
-    proof(cases "\<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'")
-      case False
-      with ttas have ?Stuck by(simp add: complete_hb_def)
-      thus ?thesis ..
+using hb_c
+proof(coinduction arbitrary: s E)
+  case (Runs s E)
+  let ?P = "\<lambda>((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
+  show ?case
+  proof(cases "\<exists>t ta s'. s -t\<triangleright>ta\<rightarrow> s'")
+    case False
+    then have ?Stuck by(simp add: complete_hb_def)
+    thus ?thesis ..
+  next
+    case True
+    let ?t = "fst (fst (Eps ?P))" and ?ta = "snd (fst (Eps ?P))" and ?s' = "snd (Eps ?P)"
+    from True obtain t ta s' where red: "s -t\<triangleright>ta\<rightarrow> s'" by blast
+    hence "\<exists>x. ?P x"
+    proof(cases)
+      case (redT_normal x x' m')
+      from hb_completionD[OF Runs _ _ `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>` `actions_ok s t ta`, of "[]" 0]
+      obtain ta' x'' m'' where "t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
+        and "actions_ok s t ta'" "ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))" 
+        by fastforce
+      moreover obtain ws' where "redT_updWs t (wset s) \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws'" by (metis redT_updWs_total)
+      ultimately show ?thesis using `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+        by(cases ta')(auto intro!: exI redT.redT_normal)
     next
-      case True
-      let ?t = "fst (fst (Eps ?P))" and ?ta = "snd (fst (Eps ?P))" and ?s' = "snd (Eps ?P)"
-      from True obtain t ta s' where red: "s -t\<triangleright>ta\<rightarrow> s'" by blast
-      hence "\<exists>x. ?P x"
-      proof(cases)
-        case (redT_normal x x' m')
-        from hb_completionD[OF hb_c _ _ `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>` `actions_ok s t ta`, of "[]" 0]
-        obtain ta' x'' m'' where "t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
-          and "actions_ok s t ta'" "ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))" 
-          by fastforce
-        moreover obtain ws' where "redT_updWs t (wset s) \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws'" by (metis redT_updWs_total)
-        ultimately show ?thesis using `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
-          by(cases ta')(auto intro!: exI redT.redT_normal)
-      next
-        case (redT_acquire x ln n)
-        thus ?thesis using ta_hb_consistent_convert_RA[of E t ln] 
-          by(auto intro!: exI redT.redT_acquire)
-      qed
-      hence "?P (Eps ?P)" by(rule someI_ex)
-      hence red: "s -?t\<triangleright>?ta\<rightarrow> ?s'"
-        and hb: "ta_hb_consistent P E (llist_of (map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>))"
-        by(simp_all add: split_beta)
-      moreover
-      from ta_hb_consistent_into_non_speculative[OF hb]
-      have "non_speculative P (w_values P (\<lambda>_. {}) (map snd E)) (llist_of \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)" by(simp add: o_def)
-      with hb_c red have "hb_completion ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)" by(rule hb_completion_shift1)
-      ultimately have ?Step using True
-        unfolding ttas complete_hb_def by(fastforce simp del: split_paired_Ex simp add: split_def)
-      thus ?thesis ..
+      case (redT_acquire x ln n)
+      thus ?thesis using ta_hb_consistent_convert_RA[of E t ln] 
+        by(auto intro!: exI redT.redT_acquire)
     qed
+    hence "?P (Eps ?P)" by(rule someI_ex)
+    hence red: "s -?t\<triangleright>?ta\<rightarrow> ?s'"
+      and hb: "ta_hb_consistent P E (llist_of (map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>))"
+      by(simp_all add: split_beta)
+    moreover
+    from ta_hb_consistent_into_non_speculative[OF hb]
+    have "non_speculative P (w_values P (\<lambda>_. {}) (map snd E)) (llist_of \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)" by(simp add: o_def)
+    with Runs red have "hb_completion ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)" by(rule hb_completion_shift1)
+    ultimately have ?Step using True
+      unfolding complete_hb_def by(fastforce simp del: split_paired_Ex simp add: split_def)
+    thus ?thesis ..
   qed
 qed
 
@@ -719,10 +698,11 @@ proof -
       with hb_c red' have hb_c': "hb_completion ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>)"
         by(rule hb_completion_shift1)
       show ?thesis
-      proof(cases "obs = LNil")
-        case True thus ?thesis ..
+      proof(cases "lnull obs")
+        case True thus ?thesis by(simp add: lnull_def)
       next
         case False
+        have eq: "(\<forall>t ta s'. \<not> s -t\<triangleright>ta\<rightarrow> s') = False" using True by auto
         { assume "\<lbrace>?ta\<rbrace>\<^bsub>o\<^esub> = []"
           moreover from obs False
           have "lfinite (ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = []) (complete_hb s E))"
@@ -734,10 +714,10 @@ proof -
             apply(auto simp add: split_beta simp del: split_paired_Ex split_paired_All split: split_if_asm)
             apply(auto simp add: lfinite_eq_range_llist_of)
             done }
-        hence ?lappend using True red hb hb_c' unfolding obs complete_hb_def
+        hence ?lappend using red hb hb_c' unfolding obs complete_hb_def
           apply(subst llist_unfold_code)
-          apply(simp add: split_beta del: split_paired_Ex)
-          apply(intro exI conjI impI refl disjI1|rule refl|assumption|simp_all)+
+          apply(simp add: split_beta eq del: split_paired_Ex split_paired_All split del: split_if)
+          apply(intro exI conjI impI refl disjI1|rule refl|assumption|simp_all add: llist_of_eq_LNil_conv)+
           done
         thus ?thesis ..
       qed
