@@ -91,7 +91,7 @@ proof -
   obtain stls1 where red1': "s1 -1-stls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd) stls1" by blast
   def tl1_to_tl2_def: tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (stls1 :: ('s1 \<times> 'tl1 \<times> 's1) llist). llist_unfold
-     (\<lambda>(s2, stls1). stls1 = LNil)
+     (\<lambda>(s2, stls1). lnull stls1)
      (\<lambda>(s2, stls1). let (s1, tl1, s1') = lhd stls1;
                         (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
                     in (s2, tl2, s2'))
@@ -101,12 +101,12 @@ proof -
      (s2, stls1)"
 
   have tl1_to_tl2_simps [simp]:
-    "\<And>s2 stls1. tl1_to_tl2 s2 stls1 = LNil \<longleftrightarrow> stls1 = LNil"
-    "\<And>s2 stls1. stls1 \<noteq> LNil \<Longrightarrow> lhd (tl1_to_tl2 s2 stls1) =
+    "\<And>s2 stls1. lnull (tl1_to_tl2 s2 stls1) \<longleftrightarrow> lnull stls1"
+    "\<And>s2 stls1. \<not> lnull stls1 \<Longrightarrow> lhd (tl1_to_tl2 s2 stls1) =
     (let (s1, tl1, s1') = lhd stls1;
          (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
      in (s2, tl2, s2'))"
-    "\<And>s2 stls1. stls1 \<noteq> LNil \<Longrightarrow> ltl (tl1_to_tl2 s2 stls1) =
+    "\<And>s2 stls1. \<not> lnull stls1 \<Longrightarrow> ltl (tl1_to_tl2 s2 stls1) =
     (let (s1, tl1, s1') = lhd stls1;
          (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
      in tl1_to_tl2 s2' (ltl stls1))"
@@ -117,15 +117,12 @@ proof -
     by(simp_all add: tl1_to_tl2_def split_beta)
 
   have [simp]: "llength (tl1_to_tl2 s2 stls1) = llength stls1"
-    by(coinduct s2 stls1 rule: enat_fun_coinduct2)(auto simp add: epred_llength split_beta)
+    by(coinduction arbitrary: s2 stls1 rule: enat_coinduct)(auto simp add: epred_llength split_beta)
 
-  def stls2: stls2 \<equiv> "tl1_to_tl2 s2 stls1"
-  with red1' bisim have "\<exists>s1 stls1. s1 -1-stls1\<rightarrow>*t \<infinity> \<and> stls2 = tl1_to_tl2 s2 stls1 \<and> s1 \<approx> s2" by blast
-  hence "s2 -2-stls2\<rightarrow>*t \<infinity>"
-  proof(coinduct)
-    case (inf_step_table s2 stls2)
-    then obtain s1 stls1 where red1': "s1 -1-stls1\<rightarrow>*t \<infinity>"
-      and stls2: "stls2 = tl1_to_tl2 s2 stls1" and bisim: "s1 \<approx> s2" by blast
+  from red1' bisim have "s2 -2-tl1_to_tl2 s2 stls1\<rightarrow>*t \<infinity>"
+  proof(coinduction arbitrary: s2 s1 stls1)
+    case (inf_step_table s2 s1 stls1)
+    note red1' = `s1 -1-stls1\<rightarrow>*t \<infinity>` and bisim = `s1 \<approx> s2`
     from red1' show ?case
     proof(cases)
       case (inf_step_tableI s1' stls1' tl1)
@@ -133,16 +130,14 @@ proof -
         and r: "s1 -1-tl1\<rightarrow> s1'" and reds1: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
       let ?tl2s2' = "SOME (tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
       let ?tl2 = "fst ?tl2s2'" let ?s2' = "snd ?tl2s2'"
-      from stls2 stls1 have "stls2 = LCons (s2, ?tl2s2') (tl1_to_tl2 ?s2' stls1')" by simp
-      moreover from simulation1[OF bisim r] obtain s2' tl2
+      from simulation1[OF bisim r] obtain s2' tl2
         where "s2 -2-tl2\<rightarrow> s2'" "s1' \<approx> s2'" "tl1 \<sim> tl2" by blast
       hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) (tl2, s2')" by simp
       hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) ?tl2s2'" by(rule someI)
       hence "s2 -2-?tl2\<rightarrow> ?s2'" "s1' \<approx> ?s2'" "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
-      ultimately show ?thesis using reds1 by(fastforce intro: prod_eqI)
+      then show ?thesis using reds1 stls1 by(fastforce intro: prod_eqI)
     qed
   qed
-  hence "s2 -2-tl1_to_tl2 s2 stls1\<rightarrow>*t \<infinity>" unfolding stls2 .
   hence "s2 -2-lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)\<rightarrow>* \<infinity>"
     by(rule r2.inf_step_table_imp_inf_step)
   moreover have "tls1 [[\<sim>]] lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)"
@@ -432,7 +427,7 @@ proof -
   obtain sstls1 where \<tau>inf1': "s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd \<circ> snd) sstls1" by blast
   def tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (sstls1 :: ('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist). llist_unfold
-     (\<lambda>(s2, sstls1). sstls1 = LNil)
+     (\<lambda>(s2, sstls1). lnull sstls1)
      (\<lambda>(s2, sstls1).
         let (s1, s1', tl1, s1'') = lhd sstls1;
             (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
@@ -445,13 +440,13 @@ proof -
         in (s2'', ltl sstls1))
      (s2, sstls1)"
   have [simp]:
-    "\<And>s2 sstls1. tl1_to_tl2 s2 sstls1 = LNil \<longleftrightarrow> sstls1 = LNil"
-    "\<And>s2 sstls1. sstls1 \<noteq> LNil \<Longrightarrow> lhd (tl1_to_tl2 s2 sstls1) =
+    "\<And>s2 sstls1. lnull (tl1_to_tl2 s2 sstls1) \<longleftrightarrow> lnull sstls1"
+    "\<And>s2 sstls1. \<not> lnull sstls1 \<Longrightarrow> lhd (tl1_to_tl2 s2 sstls1) =
         (let (s1, s1', tl1, s1'') = lhd sstls1;
             (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
                                      \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
         in (s2, s2', tl2, s2''))"
-    "\<And>s2 sstls1. sstls1 \<noteq> LNil \<Longrightarrow> ltl (tl1_to_tl2 s2 sstls1) =
+    "\<And>s2 sstls1. \<not> lnull sstls1 \<Longrightarrow> ltl (tl1_to_tl2 s2 sstls1) =
         (let (s1, s1', tl1, s1'') = lhd sstls1;
             (s2', tl2, s2'') = SOME (s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and>
                                      \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2
@@ -466,15 +461,15 @@ proof -
     by(simp_all add: tl1_to_tl2_def split_beta)
 
   have [simp]: "llength (tl1_to_tl2 s2 sstls1) = llength sstls1"
-    by(coinduct s2 sstls1 rule: enat_fun_coinduct2)(auto simp add: epred_llength split_beta)
+    by(coinduction arbitrary: s2 sstls1 rule: enat_coinduct)(auto simp add: epred_llength split_beta)
 
   def sstls2: sstls2 \<equiv> "tl1_to_tl2 s2 sstls1"
   with \<tau>inf1' bisim have "\<exists>s1 sstls1. s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity> \<and> sstls2 = tl1_to_tl2 s2 sstls1 \<and> s1 \<approx> s2" by blast
-  hence "s2 -\<tau>2-sstls2\<rightarrow>*t \<infinity>"
-  proof(coinduct)
-    case (\<tau>inf_step_table s2 sstls2)
-    then obtain s1 sstls1 where \<tau>inf': "s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>"
-      and sstls2: "sstls2 = tl1_to_tl2 s2 sstls1" and bisim: "s1 \<approx> s2" by blast
+
+  from \<tau>inf1' bisim have "s2 -\<tau>2-tl1_to_tl2 s2 sstls1\<rightarrow>*t \<infinity>"
+  proof(coinduction arbitrary: s2 s1 sstls1)
+    case (\<tau>inf_step_table s2 s1 sstls1)
+    note \<tau>inf' = `s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>` and bisim = `s1 \<approx> s2`
     from \<tau>inf' show ?case
     proof(cases)
       case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
@@ -484,8 +479,7 @@ proof -
       let ?P = "\<lambda>(s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
       let ?s2tl2s2' = "Eps ?P"
       let ?s2'' = "snd (snd ?s2tl2s2')"
-      from sstls2 sstls1 have "sstls2 = LCons (s2, ?s2tl2s2') (tl1_to_tl2 ?s2'' sstls1')" by simp
-      moreover from simulation_silents1[OF `s1 \<approx> s2` \<tau>s]
+      from simulation_silents1[OF `s1 \<approx> s2` \<tau>s]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
       from simulation1[OF `s1' \<approx> s2'` r n\<tau>] obtain s2'' s2''' tl2
         where "s2' -\<tau>2\<rightarrow>* s2''" 
@@ -493,7 +487,7 @@ proof -
       from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
       with rest have "?P (s2'', tl2, s2''')" by simp
       hence "?P ?s2tl2s2'" by(rule someI)
-      ultimately show ?thesis using reds1 by fastforce
+      then show ?thesis using reds1 sstls1 by fastforce
     next
       case \<tau>inf_step_table_Nil
       hence [simp]: "sstls1 = LNil" and "s1 -\<tau>1\<rightarrow> \<infinity>" by simp_all
@@ -501,7 +495,6 @@ proof -
       thus ?thesis using sstls2 by simp
     qed
   qed
-  hence "s2 -\<tau>2-tl1_to_tl2 s2 sstls1\<rightarrow>*t \<infinity>" unfolding sstls2 .
   hence "s2 -\<tau>2-lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)\<rightarrow>* \<infinity>"
     by(rule trsys2.\<tau>inf_step_table_into_\<tau>inf_step)
   moreover have "tls1 [[\<sim>]] lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)"
@@ -617,8 +610,6 @@ lemma no_move2_to_no_move1:
 using delay_bisimulation_diverge.no_move1_to_no_move2[OF delay_bisimulation_diverge_flip]
 unfolding flip_simps .
 
-lemmas (in -) tllist_all2_fun_coinduct_invar3 = tllist_all2_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
-
 lemma simulation_\<tau>Runs_table1:
   assumes bisim: "s1 \<approx> s2"
   and run1: "trsys1.\<tau>Runs_table s1 stlsss1"
@@ -648,15 +639,12 @@ proof(intro exI conjI)
       in TCons (tl2, s2'') (tls1_to_tls2 s2'' stlsss1))"
     by(rule tllist.expand)(simp_all add: split_beta)
 
-  def stlsss2 == "tls1_to_tls2 s2 stlsss1"
-  with bisim run1 have "\<exists>s1 stlsss1. s1 \<approx> s2 \<and> trsys1.\<tau>Runs_table s1 stlsss1 \<and> stlsss2 = tls1_to_tls2 s2 stlsss1"
-    by blast
-  thus "trsys2.\<tau>Runs_table s2 stlsss2"
-  proof coinduct
-    case (\<tau>Runs_table s2 stlsss2)
-    then obtain s1 stlsss1 where bisim: "s1 \<approx> s2"
-      and run1: "trsys1.\<tau>Runs_table s1 stlsss1"
-      and [simp]: "stlsss2 = tls1_to_tls2 s2 stlsss1" by blast
+  from bisim run1
+  show "trsys2.\<tau>Runs_table s2 (tls1_to_tls2 s2 stlsss1)"
+  proof(coinduction arbitrary: s2 s1 stlsss1)
+    case (\<tau>Runs_table s2 s1 stlsss1)
+    note bisim = `s1 \<approx> s2`
+      and run1 = `trsys1.\<tau>Runs_table s1 stlsss1`
     from run1 show ?case
     proof cases
       case (Terminate s1')
@@ -695,16 +683,11 @@ proof(intro exI conjI)
 
   let ?Tlsim = "\<lambda>(tl1, s1'') (tl2, s2''). tl1 \<sim> tl2 \<and> s1'' \<approx> s2''"
   let ?Bisim = "option_rel bisim"
-  from conjI[OF run1 bisim]
-  show "tllist_all2 ?Tlsim ?Bisim stlsss1 stlsss2"
-    unfolding stlsss2_def
-  proof(coinduct s1 s2 stlsss1 rule: tllist_all2_fun_coinduct_invar3)
-    case is_TNil 
-    thus ?case by simp
-  next
-    case (TNil s1 s2 stlsss1)
-    hence Runs: "trsys1.\<tau>Runs_table s1 stlsss1"
-      and bisim: "s1 \<approx> s2" by simp_all
+  from run1 bisim
+  show "tllist_all2 ?Tlsim ?Bisim stlsss1 (tls1_to_tls2 s2 stlsss1)"
+  proof(coinduction arbitrary: s1 s2 stlsss1)
+    case (tllist_all2 s1 s2 stlsss1)
+    note Runs = `trsys1.\<tau>Runs_table s1 stlsss1` and bisim = `s1 \<approx> s2`
     from Runs show ?case
     proof cases
       case (Terminate s1')
@@ -719,17 +702,6 @@ proof(intro exI conjI)
       hence "?P (Eps ?P)" by(rule someI)
       thus ?thesis using `stlsss1 = TNil \<lfloor>s1'\<rfloor>` bisim by(simp)
     next
-      case Diverge thus ?thesis by simp
-    next
-      case (Proceed s1' s1'' stlsss1' tl1)
-      with TNil show ?thesis by simp
-    qed
-  next
-    case (TCons s1 s2 stlsss1)
-    hence Runs: "trsys1.\<tau>Runs_table s1 stlsss1"
-      and bisim: "s1 \<approx> s2" by simp_all
-    from Runs `\<not> is_TNil stlsss1` show ?case
-    proof cases
       case (Proceed s1' s1'' stlsss1' tl1)
       from simulation_silents1[OF bisim `s1 -\<tau>1\<rightarrow>* s1'`]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1' \<approx> s2'" by blast
@@ -742,7 +714,7 @@ proof(intro exI conjI)
       hence "?P s2 stlsss1 (Eps (?P s2 stlsss1))" by(rule someI)
       thus ?thesis using `stlsss1 = TCons (tl1, s1'') stlsss1'` `trsys1.\<tau>Runs_table s1'' stlsss1'` bisim
         by auto blast
-    qed(simp_all)
+    qed simp
   qed
 qed
 

@@ -173,7 +173,7 @@ proof(intro equalityI subsetI)
   moreover 
   let ?tail = "\<lambda>E''. case terminal E'' of Inl (tls, s') \<Rightarrow> llist_of tls | Inr tls \<Rightarrow> tls"
   {
-    have "E = lconcat (lfilter (\<lambda>xs. xs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))"
+    have "E = lconcat (lfilter (\<lambda>xs. \<not> lnull xs) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E')))"
       unfolding E by(simp add: lconcat_lfilter_neq_LNil)
     also have "\<dots> = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E''))))"
       by(simp add: E' lfilter_lmap llist.map_comp o_def split_def)
@@ -182,52 +182,62 @@ proof(intro equalityI subsetI)
     have "lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) = 
           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil)))"
       (is "?lhs \<sigma> E'' = ?rhs \<sigma> E''")
-    proof(coinduct \<sigma> E'' rule: llist_fun_coinduct_invar2)
-      case (LNil \<sigma> E'')
-      thus ?case
-        by(cases "lfinite (llist_of_tllist E'')")(fastforce split: sum.split_asm simp add: split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF LNil] mthr.\<tau>Runs_table2_terminal_silentsD[OF LNil] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF LNil] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
-    next
-      case (LCons \<sigma> E'')
-      note \<tau>Runs' = `mthr.\<tau>Runs_table2 \<sigma> E''`
-      from LCons obtain tl tls' where "?lhs \<sigma> E'' = LCons tl tls'"
-        by(auto simp only: neq_LNil_conv)
-      then obtain tls s' s'' tlsstlss'
-        where tls': "tls' = lmap (\<lambda>(tls, s', tta, s''). tta) tlsstlss'"
-        and filter: "lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) (llist_of_tllist E'') = LCons (tls, s', tl, s'') tlsstlss'"
-        using LCons by(fastforce simp add: lmap_eq_LCons_conv)
-      from lfilter_eq_LConsD[OF filter]
-      obtain us vs where eq: "llist_of_tllist E'' = lappend us (LCons (tls, s', tl, s'') vs)"
-        and fin: "lfinite us"
-        and empty: "\<forall>(tls, s', (t, ta), s'')\<in>lset us. obs_a ta = []"
-        and neq_empty: "obs_a (snd tl) \<noteq> []"
-        and tlsstlss': "tlsstlss' = lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) vs"
-        by(auto simp add: split_beta)
-      from eq obtain E''' where E'': "E'' = lappendt us E'''" 
-        and eq': "llist_of_tllist E''' = LCons (tls, s', tl, s'') vs"
-        and terminal: "terminal E''' = terminal E''"
-        unfolding llist_of_tllist_eq_lappend_conv by auto
-      from \<tau>Runs' fin E'' obtain \<sigma>' where \<tau>Runs'': "mthr.\<tau>Runs_table2 \<sigma>' E'''"
-        by(auto dest: mthr.\<tau>Runs_table2_lappendtD)
-      then obtain \<sigma>'' E'''' where "mthr.\<tau>Runs_table2 \<sigma>'' E''''" "E''' = TCons (tls, s', tl, s'') E''''"
-        using eq' by cases auto
-      moreover from \<tau>Runs' E'' fin
-      have "\<forall>(tls, s, tl, s')\<in>lset us. \<forall>(t, ta)\<in>set tls. ta = \<epsilon>"
-        by(fastforce dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
-      hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) us)) = LNil"
-        using empty by(auto simp add: lfilter_empty_conv lset_lconcat_lfinite split_beta)
-      moreover from \<tau>Runs'' eq' have "snd ` set tls \<subseteq> {\<epsilon>}"
-        by(cases)(fastforce dest: silent_moves2_silentD)+
-      hence "[(t, ta)\<leftarrow>tls . obs_a ta \<noteq> []] = []"
-        by(auto simp add: filter_empty_conv split_beta)
-      ultimately show ?case
-        using LCons E'' fin tls' tlsstlss' filter eq' neq_empty
-        apply(auto simp add: lmap_lappend_distrib lappend_assoc split_beta filter_empty_conv simp del: split_paired_Ex)
-        apply(subst split_paired_Ex)
-        apply(auto simp del: split_paired_Ex)
-        done
+    proof(coinduction arbitrary: \<sigma> E'' rule: llist.strong_coinduct)
+      case (Eq_llist \<sigma> E'')
+      have ?lnull
+        by(cases "lfinite (llist_of_tllist E'')")(fastforce split: sum.split_asm simp add: split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF Eq_llist] mthr.\<tau>Runs_table2_terminal_silentsD[OF Eq_llist] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF Eq_llist] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+
+      moreover
+      have ?LCons
+      proof(intro impI conjI)
+        assume lhs': "\<not> lnull (lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')))"
+          (is "\<not> lnull ?lhs'")
+          and "\<not> lnull (lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (case terminal E'' of Inl (tls, s') \<Rightarrow> llist_of tls | Inr tls \<Rightarrow> tls) LNil))))"
+          (is "\<not> lnull ?rhs'")
+
+        note \<tau>Runs' = `mthr.\<tau>Runs_table2 \<sigma> E''`
+        from lhs' obtain tl tls' where "?lhs \<sigma> E'' = LCons tl tls'"
+          by(auto simp only: not_lnull_conv)
+        then obtain tls s' s'' tlsstlss'
+          where tls': "tls' = lmap (\<lambda>(tls, s', tta, s''). tta) tlsstlss'"
+          and filter: "lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) (llist_of_tllist E'') = LCons (tls, s', tl, s'') tlsstlss'"
+          using lhs' by(fastforce simp add: lmap_eq_LCons_conv)
+        from lfilter_eq_LConsD[OF filter]
+        obtain us vs where eq: "llist_of_tllist E'' = lappend us (LCons (tls, s', tl, s'') vs)"
+          and fin: "lfinite us"
+          and empty: "\<forall>(tls, s', (t, ta), s'')\<in>lset us. obs_a ta = []"
+          and neq_empty: "obs_a (snd tl) \<noteq> []"
+          and tlsstlss': "tlsstlss' = lfilter (\<lambda>(tls, s', (t, ta), s''). obs_a ta \<noteq> []) vs"
+          by(auto simp add: split_beta)
+        from eq obtain E''' where E'': "E'' = lappendt us E'''" 
+          and eq': "llist_of_tllist E''' = LCons (tls, s', tl, s'') vs"
+          and terminal: "terminal E''' = terminal E''"
+          unfolding llist_of_tllist_eq_lappend_conv by auto
+        from \<tau>Runs' fin E'' obtain \<sigma>' where \<tau>Runs'': "mthr.\<tau>Runs_table2 \<sigma>' E'''"
+          by(auto dest: mthr.\<tau>Runs_table2_lappendtD)
+        then obtain \<sigma>'' E'''' where "mthr.\<tau>Runs_table2 \<sigma>'' E''''" "E''' = TCons (tls, s', tl, s'') E''''"
+          using eq' by cases auto
+        moreover from \<tau>Runs' E'' fin
+        have "\<forall>(tls, s, tl, s')\<in>lset us. \<forall>(t, ta)\<in>set tls. ta = \<epsilon>"
+          by(fastforce dest: mthr.\<tau>Runs_table2_silentsD m\<tau>move_silentD simp add: mthr.silent_move2_def)
+        hence "lfilter (\<lambda>(t, ta). obs_a ta \<noteq> []) (lconcat (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) us)) = LNil"
+          using empty by(auto simp add: lfilter_empty_conv lset_lconcat_lfinite split_beta)
+        moreover from \<tau>Runs'' eq' have "snd ` set tls \<subseteq> {\<epsilon>}"
+          by(cases)(fastforce dest: silent_moves2_silentD)+
+        hence "[(t, ta)\<leftarrow>tls . obs_a ta \<noteq> []] = []"
+          by(auto simp add: filter_empty_conv split_beta)
+        ultimately 
+        show "lhd ?lhs' = lhd ?rhs'"
+          and "(\<exists>\<sigma> E''. ltl ?lhs' = lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) \<and>
+           ltl ?rhs' = lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (case terminal E'' of Inl (tls, s') \<Rightarrow> llist_of tls | Inr tls \<Rightarrow> tls) LNil))) \<and>
+           \<tau>trsys.\<tau>Runs_table2 redT m\<tau>move \<sigma> E'') \<or>
+          ltl ?lhs' = ltl ?rhs'"
+          using lhs' E'' fin tls' tlsstlss' filter eq' neq_empty
+          by(auto simp add: lmap_lappend_distrib lappend_assoc split_beta filter_empty_conv simp del: split_paired_Ex)
+      qed
+      ultimately show ?case ..
     qed
-    also have "lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) \<dots> = lfilter (\<lambda>obs. obs \<noteq> LNil) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))"
-      unfolding lfilter_lmap by(simp add: o_def split_def)
+    also have "lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) \<dots> = lfilter (\<lambda>obs. \<not> lnull obs) (lmap (\<lambda>(t, ta). llist_of (map (Pair t) (obs_a ta))) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil))))"
+      unfolding lfilter_lmap by(simp add: o_def split_def llist_of_eq_LNil_conv)
     finally have "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?E''')"
       by(simp add: lconcat_lfilter_neq_LNil) }
   ultimately show "E \<in> ?lhs" by(blast intro: \<E>.intros)

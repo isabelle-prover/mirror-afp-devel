@@ -309,54 +309,44 @@ proof -
     qed }
   note step' = this
 
-  from major have "\<exists>a. X vs obs a" ..
-  thus ?thesis
-  proof(coinduct rule: non_speculative_coinduct_append)
+  from major show ?thesis
+  proof(coinduction arbitrary: vs obs a rule: non_speculative_coinduct_append)
     case (non_speculative vs obs)
-    then obtain a where "X vs obs a" ..
-    thus ?case by(rule step')
+    thus ?case by simp(rule step')
   qed
 qed
 
 lemma non_speculative_nthI:
-  assumes
-  "\<And>i ad al v. 
-  \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v);
-    non_speculative P vs (ltake (enat i) obs) \<rbrakk> 
-  \<Longrightarrow> v \<in> w_values P vs (list_of (ltake (enat i) obs)) (ad, al)"
-  shows "non_speculative P vs obs"
-proof -
-  from assms
-  have "\<forall>i ad al v. enat i < llength obs \<longrightarrow> lnth obs i = NormalAction (ReadMem ad al v) \<longrightarrow>
-        non_speculative P vs (ltake (enat i) obs) \<longrightarrow>
-        v \<in> w_values P vs (list_of (ltake (enat i) obs)) (ad, al)" by blast
-  thus ?thesis
-  proof(coinduct rule: non_speculative.coinduct)
-    case (non_speculative vs obs)
-    hence nth:
-      "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v); 
-                     non_speculative P vs (ltake (enat i) obs) \<rbrakk> 
-      \<Longrightarrow> v \<in> w_values P vs (list_of (ltake (enat i) obs)) (ad, al)" by blast
-    show ?case
-    proof(cases obs)
-      case LNil thus ?thesis by simp
-    next
-      case (LCons ob obs')
-      { fix ad al v
-        assume "ob = NormalAction (ReadMem ad al v)"
-        with nth[of 0 ad al v] LCons
-        have "v \<in> vs (ad, al)" by(simp add: zero_enat_def[symmetric]) }
-      note base = this
-      moreover { 
-        fix i ad al v
-        assume "enat i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
-          and "non_speculative P (w_value P vs ob) (ltake (enat i) obs')"
-        with LCons nth[of "Suc i" ad al v] base
-        have "v \<in> w_values P (w_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al)"
-          by(clarsimp simp add: eSuc_enat[symmetric] split: obs_event.split action.split) }
-      ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
-      thus ?thesis ..
-    qed
+  "(\<And>i ad al v. 
+    \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v);
+      non_speculative P vs (ltake (enat i) obs) \<rbrakk> 
+    \<Longrightarrow> v \<in> w_values P vs (list_of (ltake (enat i) obs)) (ad, al))
+  \<Longrightarrow> non_speculative P vs obs"
+proof(coinduction arbitrary: vs obs rule: non_speculative.coinduct)
+  case (non_speculative vs obs)
+  hence nth:
+    "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v); 
+                   non_speculative P vs (ltake (enat i) obs) \<rbrakk> 
+    \<Longrightarrow> v \<in> w_values P vs (list_of (ltake (enat i) obs)) (ad, al)" by blast
+  show ?case
+  proof(cases obs)
+    case LNil thus ?thesis by simp
+  next
+    case (LCons ob obs')
+    { fix ad al v
+      assume "ob = NormalAction (ReadMem ad al v)"
+      with nth[of 0 ad al v] LCons
+      have "v \<in> vs (ad, al)" by(simp add: zero_enat_def[symmetric]) }
+    note base = this
+    moreover { 
+      fix i ad al v
+      assume "enat i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
+        and "non_speculative P (w_value P vs ob) (ltake (enat i) obs')"
+      with LCons nth[of "Suc i" ad al v] base
+      have "v \<in> w_values P (w_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al)"
+        by(clarsimp simp add: eSuc_enat[symmetric] split: obs_event.split action.split) }
+    ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
+    thus ?thesis ..
   qed
 qed
 

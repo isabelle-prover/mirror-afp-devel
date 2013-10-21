@@ -63,39 +63,34 @@ where
 
 lemma if_mthr_Runs_heap_read_typedI:
   fixes final and r :: "('addr, 't, 'x, 'heap, 'w, ('addr :: addr, 'thread_id) obs_event) semantics"
-  assumes Runs: "trsys.Runs (multithreaded_base.redT (final_thread.init_fin_final final) (multithreaded_base.init_fin final r) (map NormalAction \<circ> convert_RA)) s \<xi>"
-  (is "?Runs s \<xi>")
-  and read: "\<And>ad al v T. \<lbrakk> NormalAction (ReadMem ad al v) \<in> lset (lconcat (lmap (llist_of \<circ> obs_a \<circ> snd) \<xi>)); heap_base'.addr_loc_type TYPE('heap) typeof_addr P ad al T \<rbrakk> \<Longrightarrow> heap_base'.conf TYPE('heap) typeof_addr P v T"
+  assumes "trsys.Runs (multithreaded_base.redT (final_thread.init_fin_final final) (multithreaded_base.init_fin final r) (map NormalAction \<circ> convert_RA)) s \<xi>"
+  (is "trsys.Runs ?redT _ _")
+  and "\<And>ad al v T. \<lbrakk> NormalAction (ReadMem ad al v) \<in> lset (lconcat (lmap (llist_of \<circ> obs_a \<circ> snd) \<xi>)); heap_base'.addr_loc_type TYPE('heap) typeof_addr P ad al T \<rbrakk> \<Longrightarrow> heap_base'.conf TYPE('heap) typeof_addr P v T"
   (is "\<And>ad al v T. \<lbrakk> ?obs \<xi> ad al v; ?adal ad al T \<rbrakk> \<Longrightarrow> ?conf v T")
   shows "trsys.Runs (multithreaded_base.redT (final_thread.init_fin_final final) (if_heap_read_typed final r typeof_addr P) (map NormalAction \<circ> convert_RA)) s \<xi>"
-  (is "?Runs' s \<xi>")
-proof -
-  from Runs read
-  have "?Runs s \<xi> \<and> (\<forall>ad al v T. ?obs \<xi> ad al v \<longrightarrow> ?adal ad al T \<longrightarrow> ?conf v T)"
-    (is "trsys.Runs ?redT _ _ \<and> ?read \<xi>")
-    by blast
-  thus ?thesis (is "trsys.Runs ?redT' _ _")
-  proof(coinduct rule: trsys.Runs.coinduct[consumes 1, case_names Runs, case_conclusion Runs Stuck Step])
-    case (Runs s \<xi>)
-    hence Runs: "?Runs s \<xi>" and read: "?read \<xi>" by blast+
-    from Runs show ?case
-    proof(cases rule: trsys.Runs.cases[consumes 1, case_names Stuck Step])
-      case (Stuck S)
-      { fix tta s'
-        from `\<not> ?redT S tta s'` have "\<not> ?redT' S tta s'"
-          by(rule contrapos_nn)(fastforce simp add: multithreaded_base.redT.simps) }
-      hence ?Stuck using `\<xi> = LNil` unfolding `s = S` by blast
-      thus ?thesis ..
-    next
-      case (Step S s' ttas tta)
-      from `\<xi> = LCons tta ttas` read
-      have read1: "\<And>ad al v T. \<lbrakk> NormalAction (ReadMem ad al v) \<in> set \<lbrace>snd tta\<rbrace>\<^bsub>o\<^esub>; ?adal ad al T \<rbrakk> \<Longrightarrow> ?conf v T"
-        and read2: "?read ttas" by(auto simp add: o_def)
-      from `?redT S tta s'` read1
-      have "?redT' S tta s'" by(fastforce simp add: multithreaded_base.redT.simps)
-      hence ?Step using Step read2 `s = S` by blast
-      thus ?thesis ..
-    qed
+  (is "trsys.Runs ?redT' _ _")
+using assms
+proof(coinduction arbitrary: s \<xi> rule: trsys.Runs.coinduct[consumes 1, case_names Runs, case_conclusion Runs Stuck Step])
+  case (Runs s \<xi>)
+  let ?read = "\<lambda>\<xi>. (\<forall>ad al v T. ?obs \<xi> ad al v \<longrightarrow> ?adal ad al T \<longrightarrow> ?conf v T)"
+  note read = Runs(2)
+  from Runs(1) show ?case
+  proof(cases rule: trsys.Runs.cases[consumes 1, case_names Stuck Step])
+    case (Stuck S)
+    { fix tta s'
+      from `\<not> ?redT S tta s'` have "\<not> ?redT' S tta s'"
+        by(rule contrapos_nn)(fastforce simp add: multithreaded_base.redT.simps) }
+    hence ?Stuck using `\<xi> = LNil` unfolding `s = S` by blast
+    thus ?thesis ..
+  next
+    case (Step S s' ttas tta)
+    from `\<xi> = LCons tta ttas` read
+    have read1: "\<And>ad al v T. \<lbrakk> NormalAction (ReadMem ad al v) \<in> set \<lbrace>snd tta\<rbrace>\<^bsub>o\<^esub>; ?adal ad al T \<rbrakk> \<Longrightarrow> ?conf v T"
+      and read2: "?read ttas" by(auto simp add: o_def)
+    from `?redT S tta s'` read1
+    have "?redT' S tta s'" by(fastforce simp add: multithreaded_base.redT.simps)
+    hence ?Step using Step read2 `s = S` by blast
+    thus ?thesis ..
   qed
 qed
 
