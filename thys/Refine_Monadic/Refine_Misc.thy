@@ -1,6 +1,8 @@
 header {* \isaheader{Miscellanneous Lemmas and Tools} *}
 theory Refine_Misc
-imports "../Automatic_Refinement/Automatic_Refinement"
+imports 
+  "../Automatic_Refinement/Automatic_Refinement"
+  "../Containers/Unit_Instantiations"
 begin
 
 subsection {* ML-level stuff *}
@@ -612,15 +614,5 @@ subsubsection {* Key-Value Set *}
     "(k,v)\<in>map_to_set m \<Longrightarrow> (k,v')\<in>map_to_set m \<Longrightarrow> v = v'"
     by (auto simp: map_to_set_def)
 
-
-subsection {* Miscellaneous *}
-instantiation unit :: wellorder begin
-  definition [simp]: "(a::unit)\<le>b \<equiv> True"
-  definition [simp]: "a<(b::unit) \<equiv> False"
-  instance
-    apply intro_classes
-    apply auto
-    done
-end
 
 end
