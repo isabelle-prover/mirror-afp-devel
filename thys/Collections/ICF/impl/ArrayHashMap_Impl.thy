@@ -8,7 +8,7 @@ theory ArrayHashMap_Impl imports
   "../../Lib/Diff_Array"
   "../gen_algo/ListGA"
   "ListMapImpl"
-  "../../Iterator/Iterator"
+  "../../Iterator/Array_Iterator"
 begin
 
 text {*  Misc. *}

@@ -1,9 +1,8 @@
 header {* \isaheader{Iterator by get and size } *}
 theory Idx_Iterator
 imports
-  "../Lib/Diff_Array"
-  (*"Gen_Iterator"*)
-  (*"../GenCF/Intf/Intf_Comp"*)
+  SetIterator
+  "../../Automatic_Refinement/Automatic_Refinement"
 begin
 
 fun idx_iteratei_aux 
@@ -73,18 +72,6 @@ qed
 
 text {*  Misc. *}
 
-lemma idx_iteratei_aux_array_get_Array_conv_nth:
-  "idx_iteratei_aux array_get sz i (Array xs) c f \<sigma> = 
-   idx_iteratei_aux op ! sz i xs c f \<sigma>"
-apply(induct get\<equiv>"op ! :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz i xs c f \<sigma> rule: idx_iteratei_aux.induct)
-apply(subst (1 2) idx_iteratei_aux.simps)
-apply simp
-done
-
-lemma idx_iteratei_array_get_Array_conv_nth:
-  "idx_iteratei array_get array_length (Array xs) = idx_iteratei nth length xs"
-by(simp add: idx_iteratei_def fun_eq_iff idx_iteratei_aux_array_get_Array_conv_nth)
-
 lemma idx_iteratei_aux_nth_conv_foldli_drop:
   fixes xs :: "'b list"
   assumes "i \<le> length xs"
@@ -114,5 +101,4 @@ qed
 
 lemma idx_iteratei_nth_length_conv_foldli: "idx_iteratei nth length = foldli"
 by(rule ext)+(simp add: idx_iteratei_def idx_iteratei_aux_nth_conv_foldli_drop)
-
 end

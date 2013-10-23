@@ -1,7 +1,7 @@
 header {* \isaheader{Array Based Hash-Maps} *}
 theory Impl_Array_Hash_Map imports 
   "../../../Automatic_Refinement/Automatic_Refinement"
-  "../../Iterator/Iterator"
+  "../../Iterator/Array_Iterator"
   "../Gen/Gen_Map"
   "../Intf/Intf_Hash"
   "../Intf/Intf_Map"
