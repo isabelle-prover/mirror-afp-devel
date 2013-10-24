@@ -362,6 +362,8 @@ begin
     apply (parametricity)+
     done
 
+  (* TODO: Also do sel! *)
+
   lemma foldli_pick:
     assumes "l\<noteq>[]" 
     obtains x where "x\<in>set l" 
