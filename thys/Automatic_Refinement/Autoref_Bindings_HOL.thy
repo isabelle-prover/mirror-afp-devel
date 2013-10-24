@@ -577,6 +577,10 @@ context begin interpretation autoref_syn .
     "(\<lambda>s x. s@[x], op_list_append_elem) \<in> \<langle>R\<rangle>list_rel \<rightarrow> R \<rightarrow> \<langle>R\<rangle>list_rel"
     unfolding op_list_append_elem_def[abs_def] by parametricity
 
+
+  declare param_rev[autoref_rules]
+
+
 end
 
 subsection "Examples"
