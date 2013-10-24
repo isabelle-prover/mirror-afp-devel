@@ -195,14 +195,18 @@ assumes result: "closure as (r,s) = Some([],R)"
 and atoms: "atoms r \<union> atoms s \<subseteq> set as"
 shows "lang r = lang s"
 proof-
-  let ?test = "%(ws,_). ws \<noteq> [] \<and> (%(r,s). nullable r = nullable s)(hd ws)"
-  let ?step = "(%(ws,R).
-     let x = hd ws; new = remdups (filter (\<lambda>y. y \<notin> R) ((\<lambda>(r,s). map (\<lambda>a. (nderiv a r, nderiv a s)) as) x))
-     in (new @ tl ws, set new \<union> R))"
-  { fix st have "pre_bisim as r s st \<Longrightarrow> ?test st \<Longrightarrow> pre_bisim as r s (?step st)"
-      unfolding pre_bisim_def
-      by (cases st, auto simp: Let_def neq_Nil_conv Ball_def split_def split: list.splits prod.splits
-        dest!: subsetD[OF atoms_nderiv], blast+)
+  let ?test = "While_Combinator.rtrancl_while_test (%(r,s). nullable r = nullable s)"
+  let ?step = "While_Combinator.rtrancl_while_step (%(r,s). map (\<lambda>a. (nderiv a r, nderiv a s)) as)"
+  { fix st assume inv: "pre_bisim as r s st" and test: "?test st"
+    have "pre_bisim as r s (?step st)"
+    proof (cases st)
+      fix ws R assume "st = (ws, R)"
+      with test obtain r s t where st: "st = ((r, s) # t, R)" and "nullable r = nullable s"
+        by (cases ws) auto
+      with inv show ?thesis using atoms_nderiv[of _ r] atoms_nderiv[of _ s]
+        unfolding st rtrancl_while_test.simps rtrancl_while_step.simps pre_bisim_def Ball_def
+        by simp_all blast+
+    qed
  }
   moreover
   from atoms
