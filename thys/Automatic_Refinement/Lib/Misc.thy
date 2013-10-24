@@ -124,6 +124,8 @@ subsection {* Sets *}
   lemma set_notEmptyE: "\<lbrakk>S\<noteq>{}; !!x. x\<in>S \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (metis equals0I)
 
+  lemma inter_compl_diff_conv[simp]: "A \<inter> -B = A - B" by auto
+
   lemma setsum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows T: "setsum f A = setsum f (A-B) + setsum f B" proof -
     from P have 1: "A = (A-B) \<union> B" by auto
     have 2: "(A-B) \<inter> B = {}" by auto
@@ -172,6 +174,12 @@ subsection {* Sets *}
     assumes "y \<in> snd`S"
     obtains x where "(x,y)\<in>S"
     using assms by auto
+
+  lemma fst_image_mp: "\<lbrakk>fst`A \<subseteq> B; (x,y)\<in>A \<rbrakk> \<Longrightarrow> x\<in>B"
+    by (metis Domain.DomainI fst_eq_Domain in_mono)
+
+  lemma snd_image_mp: "\<lbrakk>snd`A \<subseteq> B; (x,y)\<in>A \<rbrakk> \<Longrightarrow> y\<in>B"
+    by (metis Range.intros set_rev_mp snd_eq_Range)
 
 
   subsubsection {* Finite Sets *}
@@ -3149,6 +3157,9 @@ qed
       apply (simp add: A finite_Range)
       done
   qed
+
+  lemma pair_vimage_is_Image[simp]: "(Pair u -` E) = E``{u}"
+    by auto
 
 
 subsection {* Ordering on @{text "option"}-Datatype *}
