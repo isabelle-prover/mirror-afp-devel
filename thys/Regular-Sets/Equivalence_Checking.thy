@@ -2,89 +2,9 @@ header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
 imports
-  Regular_Exp
+  NDerivative
   "~~/src/HOL/Library/While_Combinator"
 begin
-
-subsection {* Normalizing operations *}
-
-text {* associativity, commutativity, idempotence, zero *}
-
-fun nPlus :: "'a::order rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
-where
-  "nPlus Zero r = r"
-| "nPlus r Zero = r"
-| "nPlus (Plus r s) t = nPlus r (nPlus s t)"
-| "nPlus r (Plus s t) =
-     (if r = s then (Plus s t)
-     else if le_rexp r s then Plus r (Plus s t)
-     else Plus s (nPlus r t))"
-| "nPlus r s =
-     (if r = s then r
-      else if le_rexp r s then Plus r s
-      else Plus s r)"
-
-lemma lang_nPlus[simp]: "lang (nPlus r s) = lang (Plus r s)"
-by (induction r s rule: nPlus.induct) auto
-
-text {* associativity, zero, one *}
-
-fun nTimes :: "'a::order rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
-where
-  "nTimes Zero _ = Zero"
-| "nTimes _ Zero = Zero"
-| "nTimes One r = r"
-| "nTimes r One = r"
-| "nTimes (Times r s) t = Times r (nTimes s t)"
-| "nTimes r s = Times r s"
-
-lemma lang_nTimes[simp]: "lang (nTimes r s) = lang (Times r s)"
-by (induction r s rule: nTimes.induct) (auto simp: conc_assoc)
-
-primrec norm :: "'a::order rexp \<Rightarrow> 'a rexp"
-where
-  "norm Zero = Zero"
-| "norm One = One"
-| "norm (Atom a) = Atom a"
-| "norm (Plus r s) = nPlus (norm r) (norm s)"
-| "norm (Times r s) = nTimes (norm r) (norm s)"
-| "norm (Star r) = Star (norm r)"
-
-lemma lang_norm[simp]: "lang (norm r) = lang r"
-by (induct r) auto
-
-
-subsection {* Normalizing Derivative *}
-
-primrec nderiv :: "'a::order \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
-where
-  "nderiv _ Zero = Zero"
-| "nderiv _ One = Zero"
-| "nderiv a (Atom b) = (if a = b then One else Zero)"
-| "nderiv a (Plus r s) = nPlus (nderiv a r) (nderiv a s)"
-| "nderiv a (Times r s) =
-    (let r's = nTimes (nderiv a r) s
-     in if nullable r then nPlus r's (nderiv a s) else r's)"
-| "nderiv a (Star r) = nTimes (nderiv a r) (Star r)"
-
-lemma lang_nderiv: "lang (nderiv a r) = Deriv a (lang r)"
-by (induction r) (auto simp: Let_def nullable_iff)
-
-lemma deriv_no_occurrence: 
-  "x \<notin> atoms r \<Longrightarrow> nderiv x r = Zero"
-by (induction r) auto
-
-lemma atoms_nPlus[simp]: "atoms (nPlus r s) = atoms r \<union> atoms s"
-by (induction r s rule: nPlus.induct) auto
-
-lemma atoms_nTimes: "atoms (nTimes r s) \<subseteq> atoms r \<union> atoms s"
-by (induction r s rule: nTimes.induct) auto
-
-lemma atoms_norm: "atoms (norm r) \<subseteq> atoms r"
-by (induction r) (auto dest!:subsetD[OF atoms_nTimes])
-
-lemma atoms_nderiv: "atoms (nderiv a r) \<subseteq> atoms r"
-by (induction r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 
 subsection {* Bisimulation between languages and regular expressions *}
@@ -195,14 +115,18 @@ assumes result: "closure as (r,s) = Some([],R)"
 and atoms: "atoms r \<union> atoms s \<subseteq> set as"
 shows "lang r = lang s"
 proof-
-  let ?test = "%(ws,_). ws \<noteq> [] \<and> (%(r,s). nullable r = nullable s)(hd ws)"
-  let ?step = "(%(ws,R).
-     let x = hd ws; new = filter (\<lambda>y. y \<notin> R) ((\<lambda>(r,s). map (\<lambda>a. (nderiv a r, nderiv a s)) as) x)
-     in (new @ tl ws, set new \<union> R))"
-  { fix st have "pre_bisim as r s st \<Longrightarrow> ?test st \<Longrightarrow> pre_bisim as r s (?step st)"
-      unfolding pre_bisim_def
-      by (cases st, auto simp: Let_def neq_Nil_conv Ball_def split_def split: list.splits prod.splits
-        dest!: subsetD[OF atoms_nderiv], blast+)
+  let ?test = "While_Combinator.rtrancl_while_test (%(r,s). nullable r = nullable s)"
+  let ?step = "While_Combinator.rtrancl_while_step (%(r,s). map (\<lambda>a. (nderiv a r, nderiv a s)) as)"
+  { fix st assume inv: "pre_bisim as r s st" and test: "?test st"
+    have "pre_bisim as r s (?step st)"
+    proof (cases st)
+      fix ws R assume "st = (ws, R)"
+      with test obtain r s t where st: "st = ((r, s) # t, R)" and "nullable r = nullable s"
+        by (cases ws) auto
+      with inv show ?thesis using atoms_nderiv[of _ r] atoms_nderiv[of _ s]
+        unfolding st rtrancl_while_test.simps rtrancl_while_step.simps pre_bisim_def Ball_def
+        by simp_all blast+
+    qed
  }
   moreover
   from atoms

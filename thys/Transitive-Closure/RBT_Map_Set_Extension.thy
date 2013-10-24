@@ -85,7 +85,7 @@ lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs.\<alpha> as \<s
   by (simp add: rs.to_sorted_list_correct)
 
 definition rs_Union :: "('q :: linorder)rs list \<Rightarrow> 'q rs"
-where [code_unfold]: "rs_Union \<equiv> foldl rs.union (rs.empty ())"
+where "rs_Union \<equiv> foldl rs.union (rs.empty ())"
 
 lemma rs_Union[simp]: "rs.\<alpha> (rs_Union qs) = \<Union> (rs.\<alpha> ` set qs)"
 proof -
