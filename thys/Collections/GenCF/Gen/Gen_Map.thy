@@ -2,6 +2,16 @@ header {* \isaheader{Generic Map Algorithms} *}
 theory Gen_Map
 imports "../Intf/Intf_Map" "../../Iterator/Iterator"
 begin
+  lemma map_to_set_distinct_conv:
+    assumes "distinct tsl'" and "map_to_set m' = set tsl'"
+    shows "distinct (map fst tsl')"
+    apply (rule ccontr)
+    apply (drule not_distinct_decomp)
+    using assms
+    apply (clarsimp elim!: map_eq_concE)
+    by (metis (hide_lams, no_types) insert_iff map_to_set_inj)
+
+
   (* TODO: Make foldli explicit, such that it is seen by 
   iterator-optimizations! cf Gen_Set for how to do this! *)
   lemma foldli_add: "det_fold_map X 
@@ -274,5 +284,118 @@ begin
     apply (subst size_abort_isSng)
     apply parametricity
     done
- 
+
+
+  (* TODO: Also do sel! *)
+
+  lemma foldli_pick:
+    assumes "l\<noteq>[]" 
+    obtains k v where "(k,v)\<in>set l" 
+    and "(foldli l (option_case True (\<lambda>_. False)) (\<lambda>x _. Some x) None) 
+      = Some (k,v)"
+    using assms by (cases l) auto
+
+  definition gen_pick where
+    "gen_pick it s \<equiv> 
+      (the (it s (option_case True (\<lambda>_. False)) (\<lambda>x _. Some x) None))"
+
+
+
+context begin interpretation autoref_syn .
+
+  lemma gen_pick[autoref_rules_raw]:
+    assumes PRIO_TAG_GEN_ALGO
+    assumes IT: "SIDE_GEN_ALGO (is_map_to_list Rk Rv Rm it)"
+    assumes SV: "PREFER single_valued Rk" "PREFER single_valued Rv"
+    assumes NE: "SIDE_PRECOND (m'\<noteq>Map.empty)"
+    assumes SREF: "(m,m')\<in>\<langle>Rk,Rv\<rangle>Rm"
+    shows "(RETURN (gen_pick (\<lambda>x. foldli (it x)) m), 
+      (OP op_map_pick ::: \<langle>Rk,Rv\<rangle>Rm\<rightarrow>\<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel)$m')\<in>\<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel"
+  proof -
+    thm is_map_to_list_def is_map_to_sorted_listE
+
+    obtain tsl' where
+      [param]: "(it m,tsl') \<in> \<langle>Rk\<times>\<^sub>rRv\<rangle>list_rel" 
+      and IT': "RETURN tsl' \<le> it_to_sorted_list (\<lambda>_ _. True) (map_to_set m')"
+      using IT[unfolded autoref_tag_defs is_map_to_list_def] SREF
+      by (auto intro: is_map_to_sorted_listE)
+
+    from IT' NE have "tsl'\<noteq>[]" and [simp]: "m'=map_of tsl'" 
+      and DIS': "distinct (map fst tsl')"
+      unfolding it_to_sorted_list_def 
+      apply simp_all
+      apply (metis empty_set map_to_set_empty_iff(1))
+      apply (metis map_of_map_to_set map_to_set_distinct_conv)
+      apply (metis map_to_set_distinct_conv)
+      done
+
+    then obtain k v where "m' k = Some v" and
+      "(foldli tsl' (option_case True (\<lambda>_. False)) (\<lambda>x _. Some x) None) 
+        = Some (k,v)"
+      (is "?fld = _")
+      by (cases rule: foldli_pick) auto
+    moreover 
+    have "(RETURN (gen_pick (\<lambda>x. foldli (it x)) m), RETURN (the ?fld)) 
+      \<in> \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel"
+      unfolding gen_pick_def
+      using SV[unfolded autoref_tag_defs]
+      apply (parametricity add: the_paramR)
+      apply tagged_solver
+      using `?fld = Some (k,v)`
+      by simp
+    ultimately show ?thesis
+      apply (simp add: nres_rel_def)
+      apply (erule ref_two_step)
+      by simp
+  qed
+end
+
+
+  definition "gen_map_pick_remove pick del m \<equiv> do {
+    (k,v)\<leftarrow>pick m;
+    let m = del k m;
+    RETURN ((k,v),m)
+    }"
+  
+context begin interpretation autoref_syn .
+  lemma gen_map_pick_remove
+    [unfolded gen_map_pick_remove_def, autoref_rules_raw]:
+    assumes PRIO_TAG_GEN_ALGO
+    assumes SV: 
+      "PREFER single_valued Rk" "PREFER single_valued Rv"
+      "PREFER single_valued (\<langle>Rk,Rv\<rangle>Rm)"
+    assumes PICK: "SIDE_GEN_OP (
+      (pick m, 
+      (OP op_map_pick ::: \<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel)$m') \<in>
+      \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel)"
+    assumes DEL: "GEN_OP del op_map_delete (Rk \<rightarrow> \<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk,Rv\<rangle>Rm)"
+    assumes [param]: "(m,m')\<in>\<langle>Rk,Rv\<rangle>Rm"
+    shows "(gen_map_pick_remove pick del m, 
+      (OP op_map_pick_remove 
+        ::: \<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>(Rk\<times>\<^sub>rRv) \<times>\<^sub>r \<langle>Rk,Rv\<rangle>Rm\<rangle>nres_rel)$m')
+      \<in> \<langle>(Rk\<times>\<^sub>rRv) \<times>\<^sub>r \<langle>Rk,Rv\<rangle>Rm\<rangle>nres_rel"
+  proof -
+    note [param] = 
+      PICK[unfolded autoref_tag_defs] 
+      DEL[unfolded autoref_tag_defs]
+
+    note [relator_props] = SV[unfolded autoref_tag_defs]
+
+    have "(gen_map_pick_remove pick del m, 
+      do {    
+        (k,v)\<leftarrow>op_map_pick m';
+        let m' = op_map_delete k m';
+        RETURN ((k,v),m')
+      }) \<in> \<langle>(Rk\<times>\<^sub>rRv) \<times>\<^sub>r \<langle>Rk,Rv\<rangle>Rm\<rangle>nres_rel" (is "(_,?h):_")
+      unfolding gen_map_pick_remove_def[abs_def]
+      apply parametricity
+      apply tagged_solver
+      done
+    also have "?h = op_map_pick_remove m'"
+      by (auto simp add: pw_eq_iff refine_pw_simps)
+    finally show ?thesis by simp
+  qed
+end
+
+
 end

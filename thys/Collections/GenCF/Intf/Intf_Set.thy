@@ -15,6 +15,8 @@ definition [simp]: "op_set_filter P s \<equiv> {x\<in>s. P x}"
 definition [simp]: "op_set_sel P s \<equiv> SPEC (\<lambda>x. x\<in>s \<and> P x)"
 definition [simp]: "op_set_pick s \<equiv> SPEC (\<lambda>x. x\<in>s)"
 
+(* TODO: Do op_set_pick_remove (like op_map_pick_remove) *)
+
 context begin interpretation autoref_syn .
 lemma [autoref_op_pat]:
   "s - {x} \<equiv> op_set_delete$x$s"

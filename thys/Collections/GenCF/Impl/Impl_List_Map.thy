@@ -546,4 +546,56 @@ lemma pi'_list_map[icf_proper_iteratorI]:
   by (rule proper_it'I, rule pi_list_map)
 
 
+primrec list_map_pick_remove where
+  "list_map_pick_remove [] = undefined"
+| "list_map_pick_remove (kv#l) = (kv,l)"
+
+context begin interpretation autoref_syn .
+  lemma list_map_autoref_pick_remove[autoref_rules]:
+    assumes NE: "SIDE_PRECOND (m\<noteq>Map.empty)"
+    assumes R: "(l,m)\<in>\<langle>Rk,Rv\<rangle>list_map_rel"
+    assumes SV: 
+      "PREFER single_valued Rk" "PREFER single_valued Rv"
+    defines "Rres \<equiv> \<langle>(Rk\<times>\<^sub>rRv) \<times>\<^sub>r \<langle>Rk,Rv\<rangle>list_map_rel\<rangle>nres_rel"
+    shows "(
+        RETURN (list_map_pick_remove l),
+        (OP op_map_pick_remove ::: \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> Rres)$m
+      ) \<in> Rres"
+  proof -
+    note [relator_props] = SV[simplified]
+
+    from NE R obtain k v lr where 
+      [simp]: "l=(k,v)#lr"
+      by (cases l) (auto simp: list_map_rel_def br_def)
+    
+    thm list_map_rel_def
+    from R obtain l' where 
+      LL': "(l,l')\<in>\<langle>Rk\<times>\<^sub>rRv\<rangle>list_rel" and 
+      L'M: "(l',m)\<in>br map_of list_map_invar"
+      unfolding list_map_rel_def by auto
+    from LL' obtain k' v' lr' where
+      [simp]: "l' = (k',v')#lr'" and 
+        KVR: "(k,k')\<in>Rk" "(v,v')\<in>Rv" and
+        LRR: "(lr,lr')\<in>\<langle>Rk\<times>\<^sub>rRv\<rangle>list_rel"
+      by (fastforce elim!: list_relE)
+    
+    from L'M have 
+      MKV': "m k' = Some v'" and 
+      LRR': "(lr',m|`(-{k'}))\<in>br map_of list_map_invar"
+      by (auto 
+        simp: restrict_map_def map_of_eq_None_iff br_def list_map_invar_def
+        intro!: ext
+        intro: sym)
+      
+    from LRR LRR' have LM: "(lr,m|`(-{k'}))\<in>\<langle>Rk,Rv\<rangle>list_map_rel"
+      unfolding list_map_rel_def by auto
+
+    show ?thesis
+      apply (simp add: Rres_def)
+      apply (refine_rcg SPEC_refine_sv nres_relI refine_vcg)
+      using LM KVR MKV'
+      by auto
+  qed
+end
+
 end

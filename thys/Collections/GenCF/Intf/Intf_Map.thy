@@ -1,6 +1,6 @@
 header {*\isaheader{Map Interface}*}
 theory Intf_Map
-imports "../../../Automatic_Refinement/Automatic_Refinement"
+imports "../../../Refine_Monadic/Refine_Monadic"
 begin
 
 consts i_map :: "interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -17,6 +17,12 @@ definition [simp]: "op_map_ball m P \<equiv> Ball (map_to_set m) P"
 definition [simp]: "op_map_bex m P \<equiv> Bex (map_to_set m) P"
 definition [simp]: "op_map_size m \<equiv> card (dom m)"
 definition [simp]: "op_map_size_abort n m \<equiv> min n (card (dom m))"
+definition [simp]: "op_map_sel m P \<equiv> SPEC (\<lambda>(k,v). m k = Some v \<and> P k v)"
+definition [simp]: "op_map_pick m \<equiv> SPEC (\<lambda>(k,v). m k = Some v)"
+
+definition [simp]: "op_map_pick_remove m \<equiv> 
+  SPEC (\<lambda>((k,v),m'). m k = Some v \<and> m' = m |` (-{k}))"
+
 
 context begin interpretation autoref_syn .
 
@@ -38,18 +44,50 @@ lemma [autoref_op_pat]:
   "\<exists>k. {k} = dom m \<equiv> op_map_isSng$m"
   "1 = card (dom m) \<equiv> op_map_isSng$m"
 
-  "Ball (map_to_set m) P \<equiv> op_map_ball$m$P"
-  "Bex (map_to_set m) P \<equiv> op_map_bex$m$P"
+  "\<And>P. Ball (map_to_set m) P \<equiv> op_map_ball$m$P"
+  "\<And>P. Bex (map_to_set m) P \<equiv> op_map_bex$m$P"
 
   "card (dom m) \<equiv> op_map_size$m"
 
   "min n (card (dom m)) \<equiv> op_map_size_abort$n$m"
   "min (card (dom m)) n \<equiv> op_map_size_abort$n$m"
+
+  "\<And>P. SPEC (\<lambda>(k,v). m k=Some v \<and> P k v) \<equiv> op_map_sel$m$P"
+  "\<And>P. SPEC (\<lambda>(k,v). P k v \<and> m k=Some v) \<equiv> op_map_sel$m$P"
+
+  "\<And>P. SPEC (\<lambda>(k,v). m k = Some v) \<equiv> op_map_pick$m"
+  "\<And>P. SPEC (\<lambda>(k,v). (k,v) \<in> map_to_set m) \<equiv> op_map_pick$m"
   by (auto 
     intro!: eq_reflection ext
-    simp: restrict_map_def dom_eq_singleton_conv card_Suc_eq
+    simp: restrict_map_def dom_eq_singleton_conv card_Suc_eq map_to_set_def
     dest!: sym[of "Suc 0" "card (dom m)"] sym[of _ "dom m"]
   )
+
+  lemma [autoref_op_pat]: 
+    "SPEC (\<lambda>((k,v),m'). m k = Some v \<and> m' = m |` (-{k})) 
+      \<equiv> op_map_pick_remove$m"
+    by simp
+
+  lemma op_map_pick_remove_alt: "
+    do {((k,v),m) \<leftarrow> op_map_pick_remove m; f k v m}
+      = (
+    do {
+      (k,v)\<leftarrow>SPEC (\<lambda>(k,v). m k = Some v); 
+       let m=m |` (-{k});
+       f k v m
+    })"
+    unfolding op_map_pick_remove_def
+    apply (auto simp: pw_eq_iff refine_pw_simps)
+    done
+
+  lemma [autoref_op_pat]: 
+    "do {
+      (k,v)\<leftarrow>SPEC (\<lambda>(k,v). m k = Some v); 
+       let m=m |` (-{k});
+       f k v m
+    } \<equiv> do {((k,v),m) \<leftarrow> op_map_pick_remove m; f k v m}"
+    unfolding op_map_pick_remove_alt .
+
 
 end
 
@@ -68,6 +106,12 @@ lemma [autoref_itype]:
   "op_map_size_abort ::\<^sub>i i_nat \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i i_nat"
   "op ++ ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map"
   "map_of ::\<^sub>i \<langle>\<langle>Ik,Iv\<rangle>\<^sub>ii_prod\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map"
+
+  "op_map_sel ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i (Ik \<rightarrow>\<^sub>i Iv \<rightarrow>\<^sub>i i_bool) 
+    \<rightarrow>\<^sub>i \<langle>\<langle>Ik,Iv\<rangle>\<^sub>ii_prod\<rangle>\<^sub>ii_nres"
+  "op_map_pick ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>\<langle>Ik,Iv\<rangle>\<^sub>ii_prod\<rangle>\<^sub>ii_nres"
+  "op_map_pick_remove 
+    ::\<^sub>i \<langle>Ik,Iv\<rangle>\<^sub>ii_map \<rightarrow>\<^sub>i \<langle>\<langle>\<langle>Ik,Iv\<rangle>\<^sub>ii_prod,\<langle>Ik,Iv\<rangle>\<^sub>ii_map\<rangle>\<^sub>ii_prod\<rangle>\<^sub>ii_nres"
   by simp_all
 
 lemma hom_map1[autoref_hom]:
@@ -88,6 +132,10 @@ lemma hom_map2[autoref_hom]:
   "CONSTRAINT op_map_bex (\<langle>Rk,Rv\<rangle>Rm\<rightarrow>(\<langle>Rk,Rv\<rangle>prod_rel\<rightarrow>Id)\<rightarrow>Id)"
   "CONSTRAINT op_map_size (\<langle>Rk,Rv\<rangle>Rm\<rightarrow>Id)"
   "CONSTRAINT op_map_size_abort (Id\<rightarrow>\<langle>Rk,Rv\<rangle>Rm\<rightarrow>Id)"
+
+  "CONSTRAINT op_map_sel (\<langle>Rk,Rv\<rangle>Rm\<rightarrow>(Rk \<rightarrow> Rv \<rightarrow> bool_rel)\<rightarrow>\<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel)"
+  "CONSTRAINT op_map_pick (\<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel)"
+  "CONSTRAINT op_map_pick_remove (\<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>(Rk\<times>\<^sub>rRv)\<times>\<^sub>r\<langle>Rk,Rv\<rangle>Rm\<rangle>nres_rel)"
   by simp_all
 
 
