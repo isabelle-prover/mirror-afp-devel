@@ -17,7 +17,7 @@ proof
   let ?A = "m div 2^?n"
   let ?np = "(2::nat)^(?n+1) - 1"
 
-  from even have "2 dvd m" by (simp add: nat_even_iff_2_dvd) 
+  from even have "2 dvd m" by (simp add: even_iff_2_dvd) 
   with m0 have n1: "?n >= 1 " by (simp add: exponent_ge two_is_prime)
 
   from m0 have  "2^?n dvd m" by (rule power_exponent_dvd)

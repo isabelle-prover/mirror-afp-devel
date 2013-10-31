@@ -1397,7 +1397,7 @@ qed
 lemma odd_card: 
   assumes "finite A" "odd(card A)"
   shows "\<exists>x. x\<in>A" 
-by (metis all_not_in_conv assms(2) card_empty even_zero_nat) 
+by (metis all_not_in_conv assms(2) card_empty even_zero) 
 
 lemma (in valid_unMultigraph) extend_distinct_path: 
   assumes "finite E"  "is_trail v' ps v" 
