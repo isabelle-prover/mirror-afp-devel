@@ -381,7 +381,7 @@ lemma banach_fix_type:
   assumes c:"0 \<le> c" "c < 1"
       and lipschitz:"\<forall>x. \<forall>y. dist (f x) (f y) \<le> c * dist x y"
   shows "\<exists>!x. (f x = x)"
-  using assms banach_fix[OF complete_univ UNIV_not_empty assms(1,2) subset_UNIV, of f]
+  using assms banach_fix[OF complete_UNIV UNIV_not_empty assms(1,2) subset_UNIV, of f]
   by auto
 
 end

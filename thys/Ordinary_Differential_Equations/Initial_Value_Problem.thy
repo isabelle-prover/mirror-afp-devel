@@ -446,7 +446,7 @@ definition fixed_point where
 
 lemma fixed_point_unique: "\<exists>!x. P x = x"
   using lipschitz lipschitz_bound lipschitz_P interval
-      complete_univ iv_defined
+      complete_UNIV iv_defined
   by (intro banach_fix_type[where c="(T - t0)*L"])
      (auto intro: split_mult_pos_le simp: lipschitz_def)
 
