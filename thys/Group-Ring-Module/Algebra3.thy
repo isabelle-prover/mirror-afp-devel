@@ -4259,7 +4259,6 @@ lemma rtos_hom3:"\<lbrakk>(0::nat) < r; 0 < s; i \<le> (r * s - Suc 0) \<rbrakk>
 apply (simp add:rtos_def)
  apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"])
  apply simp apply simp
-apply (subst add_commute)
 apply (auto simp add: div_mult2_eq [symmetric] mult_commute)
 done
 
@@ -4894,10 +4893,9 @@ apply (simp add:rtos_def,
 apply simp
 apply (subgoal_tac "Suc ((s - Suc 0) * r + i div s) div r = 
                       ((s - Suc 0) * r + Suc (i div s)) div r",
-       simp del:add_Suc add_Suc_right)
-apply (rule rfn_tool1_1, assumption+)
+       simp del: add_Suc add_Suc_right)
 apply (subgoal_tac "Suc (i div s) < Suc (r - Suc 0)")
-apply (simp, simp del:Suc_pred, simp) 
+apply simp_all
 done
 
 lemma Suc_rtos_mod_r_1:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; Suc (rtos r s i) < r * s; i mod s = s - Suc 0; i  div s < r - Suc 0\<rbrakk>
