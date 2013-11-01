@@ -85,16 +85,6 @@ lemmas [code_unfold] =
 
 definition main :: "String.literal" where "main = STR ''main''"
 
-export_code 
-  ApprenticeChallenge_annotated
-  exec_J_rr 
-  J2JVM
-  Apprentice
-  main
-  Null
-  exec_JVM_rr
-in SML module_name JT file "/tmp/NEW"
-
 ML_val {*
   val _ = tracing "started";
   val program = @{code ApprenticeChallenge_annotated};
