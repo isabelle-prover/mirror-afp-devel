@@ -77,7 +77,7 @@ proof
       have "i \<otimes>\<^bsub>int_group\<^esub> -1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" 
         by (rule gen_span.gen_mult)
       thus "i - 1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" 
-        by (simp add: int_arith_rules)
+        by (simp add: algebra_simps minus_one [symmetric] del: minus_one)
     qed
   qed
 qed

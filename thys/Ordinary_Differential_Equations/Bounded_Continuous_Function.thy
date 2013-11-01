@@ -233,9 +233,7 @@ lemma minus_cont:
   fixes f g ::"'a \<Rightarrow> 'b"
   assumes f: "f \<in> bcontfun" and g: "g \<in> bcontfun"
   shows "(\<lambda>x. f x - g x) \<in> bcontfun"
-  unfolding diff_def
-  using assms
-  by (intro plus_cont uminus_cont)
+  using plus_cont [of f "- g"] assms by (simp add: uminus_cont fun_Compl_def)
 
 lemma Rep_bcontfun_minus[simp]:
   "Rep_bcontfun (f - g) x = Rep_bcontfun f x - Rep_bcontfun g x"

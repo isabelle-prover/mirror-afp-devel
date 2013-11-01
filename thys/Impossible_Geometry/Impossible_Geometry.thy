@@ -153,7 +153,7 @@ lemma real_sqrt_diff_squares_triangle_ineq:
   shows "sqrt ((a - c)^2 + (b - d)^2) \<le> sqrt (a^2 + b^2) + sqrt (c^2 + d^2)"
 proof -
   have "sqrt ((a - c)^2 + (b - d)^2) \<le> sqrt (a^2 + b^2) + sqrt ((-c)^2 + (-d)^2)"
-    by (metis diff_minus real_sqrt_sum_squares_triangle_ineq)
+    by (metis diff_conv_add_uminus real_sqrt_sum_squares_triangle_ineq)
   also have "... = sqrt (a^2 + b^2) + sqrt (c^2 + d^2)"
     by simp
   finally show ?thesis .
@@ -172,7 +172,7 @@ proof
       using real_sqrt_diff_squares_triangle_ineq 
              [of "abscissa (A) - abscissa (C)" "abscissa (B) - abscissa (C)" 
                  "ordinate (A) - ordinate (C)" "ordinate (B) - ordinate (C)"] 
-      by (simp add: point_diff_def) (simp add: algebra_simps)
+      by (simp only: point_diff_def) (simp add: algebra_simps)
     thus ?thesis
       by (simp add: point_dist_def)
   qed
@@ -241,7 +241,7 @@ y}, the subtraction $x - y$ is also in @{term "radical_sqrt"}. *}
 
 lemma radical_sqrt_rule_subtraction:
   "x \<in> radical_sqrt \<Longrightarrow> y \<in> radical_sqrt \<Longrightarrow> x-y \<in> radical_sqrt"
-by (metis diff_def radical_sqrt.intros(2) radical_sqrt.intros(4))
+by (metis diff_conv_add_uminus radical_sqrt.intros(2) radical_sqrt.intros(4))
 
 
 text {* Given two reals in @{term "radical_sqrt"} @{term x} and @{term
@@ -698,6 +698,7 @@ next
   case False
   hence sl0: "v \<noteq> 0"
     by (metis mult_eq_0_iff)
+  from Add Neg have Minus: "\<forall>x \<in> P. \<forall>y \<in> P. x - y \<in> P" by (simp only: diff_conv_add_uminus) blast
   have l2: "(u^3 + 3 * u * v^2 * s^2 + a * u^2 + a * v^2 * s^2 + b * u + c) + (3 * u^2 * v + v^3 * s^2 + 2 * a * u * v + b * v) * s = 0" 
     using eq0 z
     by algebra
@@ -725,8 +726,8 @@ next
       using Inv True
       by auto
     have "-(u*u*u + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) \<in> P" 
-      using a b c u v s Mult Add Neg Nats
-      by auto
+      using a b c u v s Mult Add Neg Minus Nats
+      by simp
     hence "- (u *u *u  + 3 * u * v *v * (s*s) + a * u *u + a * v*v * (s *s) + b * u + c) * (1 /(3 * u *u * v + v *v*v * (s *s) + 2 * a * u * v + b * v)) \<in> P" 
       using l103 Mult
       by metis
@@ -749,7 +750,7 @@ next
     also have "... = 0"
       by (simp add: algebra_simps power_def)
     finally show ?thesis 
-      by (metis a u Add Neg diff_def mult_2)
+      by (metis a u Add Neg diff_conv_add_uminus mult_2)
   qed
 qed
 
@@ -1187,14 +1188,14 @@ proof-
     by (metis absA absB radical_sqrt_rule_subtraction)
   have sl3: "(- abscissa A * (ordinate A - ordinate B) + ordinate A * (abscissa A - abscissa B)) \<in> radical_sqrt"
     using absA ordA ordB absB
-    by (metis ab_diff_minus radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
+    by (metis diff_conv_add_uminus radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
   have sl4: "(- (ordinate C - ordinate D)) \<in> radical_sqrt"
     by (metis ordC ordD minus_diff_eq radical_sqrt_rule_subtraction)
   have sl5: "(abscissa C - abscissa D) \<in> radical_sqrt"
     by (metis absC absD radical_sqrt_rule_subtraction)
   have sl6: "(- abscissa C * (ordinate C - ordinate D) + ordinate C * (abscissa C - abscissa D)) \<in> radical_sqrt"
     using absC ordC absD ordD
-    by (metis ab_diff_minus radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
+    by (metis diff_conv_add_uminus radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
   have "(- (ordinate A - ordinate B)) * (abscissa C - abscissa D) \<noteq> (abscissa A - abscissa B) * (- (ordinate C - ordinate D))"
     using notParallel parallel_def
     by (simp add: algebra_simps)
@@ -1233,7 +1234,7 @@ proof-
   have sl2: "(abscissa A - abscissa B) \<in> radical_sqrt"
     by (metis absA absB radical_sqrt_rule_subtraction)
   have sl3: "(- abscissa A * (ordinate A - ordinate B) + ordinate A * (abscissa A - abscissa B)) \<in> radical_sqrt" 
-    by (metis absA ordA absB ordB ab_diff_minus radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
+    by (metis absA ordA absB ordB diff_conv_add_uminus radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
   have "(abscissa D - abscissa E)^2 + (ordinate D - ordinate E)^2 \<in> radical_sqrt"
     by (metis power2_eq_square 
              absD absE ordD ordE radical_sqrt_rule_subtraction radical_sqrt.intros(5) radical_sqrt.intros(4) ) 
@@ -1422,8 +1423,8 @@ proof-
   have "\<exists>x \<in> Rats. x^3 + (- 3) * x = (1::real)"
     using x_eqn cubic_root_radical_sqrt_rational [of 0 "- 3" "- 1"] x
     by force
-  then obtain y::real where hypsy: "y: Rats & y^3 - 3 * y = 1"
-    by (metis is_num_normalize(8) minus_mult_left)
+  then obtain y :: real where "y \<in> Rats \<and> y ^ 3 + - 3 * y = 1" by blast
+  then have hypsy: "y \<in> Rats \<and> y ^ 3 - 3 * y = 1" by simp
    then obtain r where hypsr: "y = of_rat r" 
     by (metis Rats_cases hypsy)
   then obtain p where hypsp: "r = Fract (fst p) (snd p) & snd p > 0 & coprime (fst p) (snd p)" 

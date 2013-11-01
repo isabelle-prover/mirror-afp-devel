@@ -272,7 +272,7 @@ begin
 
 lemma permute_diff [simp]:
   shows "(p - q) \<bullet> x = p \<bullet> - q \<bullet> x"
-  unfolding diff_minus by simp
+  using permute_plus [of p "- q" x] by simp
 
 lemma permute_minus_cancel [simp]:
   shows "p \<bullet> - p \<bullet> x = x"
@@ -365,7 +365,7 @@ definition
 instance
 apply default
 apply (simp add: permute_perm_def)
-apply (simp add: permute_perm_def diff_minus minus_add add_assoc)
+apply (simp add: permute_perm_def algebra_simps)
 done
 
 end
@@ -373,12 +373,12 @@ end
 lemma permute_self: 
   shows "p \<bullet> p = p"
   unfolding permute_perm_def 
-  by (simp add: diff_minus add_assoc)
+  by (simp add: add_assoc)
 
 lemma pemute_minus_self:
   shows "- p \<bullet> p = p"
   unfolding permute_perm_def 
-  by (simp add: diff_minus add_assoc)
+  by (simp add: add_assoc)
 
 
 subsection {* Permutations for functions *}
@@ -870,7 +870,8 @@ lemma uminus_eqvt [eqvt]:
   fixes p q::"perm"
   shows "p \<bullet> (- q) = - (p \<bullet> q)"
   unfolding permute_perm_def
-  by (simp add: diff_minus minus_add add_assoc)
+  by (simp add: diff_add_eq_diff_diff_swap)
+
 
 subsubsection {* Equivariance of Logical Operators *}
 

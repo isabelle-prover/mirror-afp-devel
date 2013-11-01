@@ -135,7 +135,7 @@ lemma T_max: "E.Delta i_max = 0.5" by eval
 lemma i_max_correct: "\<And>i. i \<le> i_max \<Longrightarrow> E.Delta i \<le> T'"
   unfolding E.Delta_def
   unfolding H_def T'_def t0'_def i_max_def
-  by (simp add: diff_def)
+  by simp
 
 hide_const euler_result
 definition "euler_result i = euler_float e' E.f x0' E.Delta i"

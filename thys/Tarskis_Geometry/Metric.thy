@@ -56,7 +56,7 @@ proof
   show "norm_dist x y = 0 \<longleftrightarrow> x = y" by simp
   fix z
   from norm_triangle_ineq [of "x - y" "y - z"] have
-    "norm (x - z) \<le> norm (x - y) + norm (y - z)" by (simp add: diff_minus)
+    "norm (x - z) \<le> norm (x - y) + norm (y - z)" by simp
   with norm_minus_commute [of x y] show
     "norm_dist x z \<le> norm_dist y x + norm_dist y z" by simp
 qed

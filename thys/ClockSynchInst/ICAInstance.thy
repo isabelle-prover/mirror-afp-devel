@@ -87,7 +87,7 @@ lemma trans_inv':
         (\<Sum> l\<in>{..<np'}. fiX f p l) + real np' * x"
 apply (induct_tac np')
 apply (auto simp add: cfni_def  fiX_def real_of_nat_Suc 
-       distrib_right diff_minus lessThan_Suc)
+       distrib_right lessThan_Suc)
 done
 
 theorem trans_inv: 
@@ -272,7 +272,7 @@ proof-
     by simp
   also
   have "... = \<Delta> + \<bar>f p - g q + (g q - fiX g q r)\<bar>"
-    by (simp add: diff_minus)
+    by simp
   also
   from abs_triangle_ineq[where a = "f p - g q" and 
                                b = "g q - fiX g q r"] 
@@ -287,7 +287,7 @@ proof-
     by simp
   also
   have "... = 2 * \<Delta> + \<bar>f p - f q + (f q - g q) \<bar> " 
-    by (simp add: diff_minus)
+    by simp
   also
   from abs_triangle_ineq[where a = "f p - f q" and 
                                b = "f q - g q"] 
@@ -357,7 +357,7 @@ next
       from abs_triangle_ineq[where a = "f p - f r" and 
                                    b = "f r - g r"]
       have "... <= \<bar> f p - f r \<bar> + \<bar> f r - g r \<bar>" 
-        by (auto simp add: diff_minus)
+        by auto
       also
       from hbx hby1 hpC hrC have "... <= x + y" by force
       finally
@@ -376,7 +376,7 @@ next
       from abs_triangle_ineq[where a = "f p - f q" and 
                                    b = "f q - g q"]
       have "... <= \<bar> f p - f q \<bar> + \<bar> f q - g q \<bar>" 
-        by (auto simp add: diff_minus)
+        by auto
       also
       from hbx hby1 hpC hqC have "... <= x + y" by force
       finally
@@ -456,7 +456,7 @@ proof-
                     (\<Sum>l\<in>{..<np}. fiX g q l)\<bar> = 
     \<bar>(\<Sum>l\<in>{..<np}. fiX f p l -fiX g q l)\<bar>"
     (is "\<bar>?dif\<bar> = \<bar>?dif'\<bar>" )
-    by (simp add: diff_minus setsum_addf setsum_negf)
+    by (simp add: setsum_subtractf)
   also
   from abs_sum_np_ineq hC
   have " ... <=
@@ -500,8 +500,7 @@ proof-
   thus ?thesis
   proof-
     have "?dif_div_np = ?dif / real np"
-      by (auto simp add:  cfni_def distrib_right 
-        divide_inverse diff_minus)
+      by (simp add: cfni_def divide_inverse algebra_simps)
     hence "\<bar> cfni p f - cfni q g \<bar> = \<bar>?dif\<bar> / real np"
       by force
     with bound show "?thesis" 
@@ -650,7 +649,7 @@ have
     have
       "(cfni p f - f q) * real np = 
       (\<Sum>l\<in>{..<np}. fiX f p l) * real np / real np - f q * real np"
-      by (auto simp add:  cfni_def  diff_minus distrib_right)
+      by (simp add: cfni_def algebra_simps)
     also 
     have "... = 
       (\<Sum>l\<in>{..<np}. fiX f p l) - f q * real np"
@@ -658,7 +657,7 @@ have
     also
     from sum_div_card[where f="fiX f p" and n=np and q="- f q"]
     have "... = (\<Sum>l\<in>{..<np}. fiX f p l - f q)"
-      by (auto simp add:  diff_minus)
+      by simp
     finally
     have 
       "(cfni p f - f q) * real np = (\<Sum>l\<in>{..<np}. fiX f p l - f q)"

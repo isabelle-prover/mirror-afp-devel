@@ -710,8 +710,7 @@ next
     interpret ivp2: unique_on_bounded_strip i2 T2
       using bL Suc(2) nbs_nonneg strip `nb < snb` interval continuous lipschitz
       by unfold_locales (auto intro: continuous_on_subset
-        simp:ac_simps i2_def T2_def)
-
+        simp: ac_simps i2_def T2_def, metis `snb + - nb = b` minus_real_def)
     def i \<equiv> "i\<lparr>ivp_I := {t0..t0 + real (Suc (Suc n)) * b}\<rparr>"
     def T \<equiv> "t0 + real (Suc (Suc n)) * b"
     interpret ivp_c: connected_unique_solutions i i1 i2 T T1 T2

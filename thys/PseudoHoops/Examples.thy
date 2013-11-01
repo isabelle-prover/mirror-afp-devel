@@ -4,7 +4,8 @@ theory Examples
 imports SpecialPseudoHoops "../LatticeProperties/Lattice_Ordered_Group"
 begin
 
-
+declare add_uminus_conv_diff [simp del] right_minus [simp]
+lemmas diff_minus = diff_conv_add_uminus
 
 context lgroup
 begin
@@ -129,7 +130,6 @@ lemma [simp]: "a \<in> G \<Longrightarrow> Rep_G (Abs_G a) = a"
 
 lemma inf_def_1: "((a::'a G) l\<rightarrow> b) * a = Abs_G (inf (Rep_G a) (Rep_G b))"
   apply (simp add: times_def impl_def)
-  apply (simp add: diff_minus add_assoc)
   apply (subgoal_tac "sup (inf (Rep_G b) (Rep_G a)) 0 = inf (Rep_G a) (Rep_G b)")
   apply simp
   apply (rule antisym)
@@ -247,7 +247,6 @@ lemma lemma_W1: "((a::'a G) l\<rightarrow> b) r\<rightarrow> b = (b l\<rightarro
   apply (simp add: impl_def impr_def) 
   apply (simp add: diff_minus minus_add)
   apply (simp add: add_assoc)
-  apply (simp add: add_assoc [THEN sym])
   apply (subgoal_tac "Rep_G a \<squnion> Rep_G b = Rep_G b \<squnion> Rep_G a")
   apply simp
   apply (rule antisym)
@@ -258,7 +257,6 @@ lemma lemma_W2: "((a::'a G) r\<rightarrow> b) l\<rightarrow> b = (b r\<rightarro
   apply (simp add: impl_def impr_def) 
   apply (simp add: diff_minus minus_add)
   apply (simp add: add_assoc)
-  apply (simp add: add_assoc [THEN sym])
   apply (subgoal_tac "Rep_G a \<squnion> Rep_G b = Rep_G b \<squnion> Rep_G a")
   apply simp
   apply (rule antisym)
@@ -548,7 +546,6 @@ lemma normal_2: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply (simp add: G_def)
   apply (simp add: diff_minus)
   apply (simp add: add_assoc)
-  apply (simp add: add_assoc [THEN sym])
   apply (simp add: F_def2)
   apply (subgoal_tac "inf (sup (u + b) (0\<Colon>'a)) u \<in> G")
   apply simp
@@ -800,11 +797,10 @@ lemma impl_times: "(a l\<rightarrow> b) * a = (b l\<rightarrow> a) * (b::'a N)"
   apply (subgoal_tac "Rep_N a - Rep_N b + Rep_N b = Rep_N a")
   apply simp
   apply (rule antisym)
-  apply simp_all
-  by (simp_all add: diff_minus add_assoc)
+  by simp_all
  
 lemma impr_times: "a * (a r\<rightarrow> b) = (b::'a N) * (b r\<rightarrow> a)"
-  apply (simp add: impr_N_def impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
+  apply (simp add: impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
   apply (subgoal_tac "inf (Rep_N a + (- Rep_N a + Rep_N b)) (Rep_N a) = inf (Rep_N b + (- Rep_N b + Rep_N a)) (Rep_N b)")
   apply simp
   apply (simp add: add_assoc [THEN sym])
@@ -812,11 +808,7 @@ lemma impr_times: "a * (a r\<rightarrow> b) = (b::'a N) * (b r\<rightarrow> a)"
   by simp_all
 
 lemma impr_impl_times: "(a l\<rightarrow> b) * a = (a::'a N) * (a r\<rightarrow> b)"
-  apply (simp add: impr_N_def impl_N_def impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
-  apply (subgoal_tac "inf (Rep_N b - Rep_N a + Rep_N a) (Rep_N a) = inf (Rep_N a + (- Rep_N a + Rep_N b)) (Rep_N a)")
-  apply simp
-  apply (simp add: add_assoc diff_minus)
-  by (simp add: add_assoc [THEN sym])
+  by (simp add: impl_N_def impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
 
 lemma impl_ded: "(a::'a N) * b l\<rightarrow> c = a l\<rightarrow> b l\<rightarrow> c"
   apply (simp add: impl_N_def impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
@@ -1069,7 +1061,6 @@ lemma prod_4: "(b::'a N) r\<rightarrow> b * b \<le> a \<sqinter> (a r\<rightarro
   apply (simp add:  N_def)
   apply (simp add:  N_def)
   apply simp
-  apply (simp add: add_assoc [THEN sym])
   apply (rule_tac y = "- Rep_N a + Rep_N b" in order_trans)
   apply simp_all
   apply (rule_tac y = "Rep_N b" in order_trans)

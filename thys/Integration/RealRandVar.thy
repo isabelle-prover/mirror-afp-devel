@@ -535,6 +535,7 @@ proof -
   }
   with ms show ?thesis 
     by (simp add: rv_ge_iff)
+  thm rv_ge_iff
 qed
 
 text {*To show preservation of measurability by multiplication, it is
@@ -631,15 +632,7 @@ lemma realpow_two_binomial_iff: "(f+g::real)\<^sup>2 = f\<^sup>2 + 2*(f*g) + g\<
   by (simp add: power2_eq_square distrib_right distrib_left)(*>*) 
 
 lemma times_iff_sum_squares: "f*g = (f+g)\<^sup>2/4 - (f-g)\<^sup>2/(4::real)"
-(*<*)proof -
-  have a: "f-g = f+(-g)" by simp
-  hence "(f+g)\<^sup>2/4 - (f-g)\<^sup>2/4 = ((f+g)\<^sup>2 + - (f+(-g))\<^sup>2)/4" 
-    by (simp add: add_divide_distrib[THEN sym] a)
-  also have "\<dots> = f*g" 
-    by (simp add: realpow_two_binomial_iff) 
-  finally show ?thesis by (rule sym)
-qed(*>*)
-
+  by (simp add: power2_eq_square field_simps)
 
 theorem assumes f: "f \<in> rv M" and g: "g \<in> rv M" 
   shows rv_times_rv: "(\<lambda>w. f w * g w) \<in> rv M" 
@@ -647,7 +640,7 @@ proof -
   have "(\<lambda>w. f w * g w) = (\<lambda>w. (f w + g w)\<^sup>2/4 - (f w - g w)\<^sup>2/4)" 
     by (simp only: times_iff_sum_squares)
   also have "\<dots> = (\<lambda>w. (f w + g w)\<^sup>2*inverse 4 - (f w + - g w)\<^sup>2*inverse 4)"  
-    by (simp add: diff_minus)
+    by simp
   also from f g have "\<dots> \<in> rv M" 
   proof -
     from f g have "(\<lambda>w. (f w + g w)\<^sup>2)  \<in> rv M" 
@@ -656,12 +649,12 @@ proof -
       by (rule affine_rv)
     also from g have "(\<lambda>w. 0 + (g w)*-1 ) \<in> rv M" 
       by (rule affine_rv)
-    with f have "(\<lambda>w. (f w + - g w)\<^sup>2)  \<in> rv M" 
-      by (simp add: rv_plus_rv rv_square)
-    hence "(\<lambda>w. 0+(f w + - g w)\<^sup>2*-inverse 4) \<in> rv M" 
+    with f have "(\<lambda>w. (f w - g w)\<^sup>2)  \<in> rv M" 
+      by (simp add: rv_plus_rv rv_square diff_conv_add_uminus del: add_uminus_conv_diff)
+    hence "(\<lambda>w. 0+(f w - g w)\<^sup>2*-inverse 4) \<in> rv M" 
       by (rule affine_rv)
     ultimately show ?thesis 
-      by (simp add: rv_plus_rv diff_minus)
+      by (simp add: rv_plus_rv diff_conv_add_uminus del: add_uminus_conv_diff)
   qed txt{*\nopagebreak*}
   ultimately show ?thesis by simp
 qed 
@@ -678,7 +671,7 @@ theorem rv_minus_rv:
   from this g have "(\<lambda>t. -1*g t) \<in> rv M" by (rule rv_times_rv)
   hence "(\<lambda>t. -g t) \<in> rv M" by simp
   with f have "(\<lambda>t. f t +-g t) \<in> rv M" by (rule rv_plus_rv)
-  thus ?thesis by (simp add: diff_minus)
+  thus ?thesis by simp
 qed(*>*)
 text{*Measurability for limit functions of
     monotone convergent series is also surprisingly straightforward.*}

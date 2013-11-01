@@ -136,7 +136,7 @@ proof
             (\<forall>x\<in>EQ \<phi> xs. \<not>R.I \<phi> (x#xs))"
     with `?FR` obtain r cs s ds
       where "R.I (subst \<phi> (between (r,cs) (s,ds))) xs"
-      by(auto simp: FR\<^sub>1_def eval_def diff_minus[symmetric]
+      by(auto simp: FR\<^sub>1_def eval_def
         diff_divide_distrib set_ebounds I_subst `nqfree \<phi>`) blast
     hence "R.I \<phi> (eval (between (r,cs) (s,ds)) xs # xs)"
       by(simp add:I_subst `nqfree \<phi>`)

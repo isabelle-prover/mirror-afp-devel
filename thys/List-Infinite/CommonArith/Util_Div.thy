@@ -355,13 +355,7 @@ subsection {* Some additional lemmata about integer @{text div} and @{text mod} 
 
 lemma zmod_eq_imp_diff_mod_0:"
   (a::int) mod m = b mod m \<Longrightarrow> (b - a) mod m = 0"
-apply (simp only: diff_minus)
-apply (simp only: mod_add_eq[of b "-a" m])
-apply (simp add: zmod_zminus1_eq_if)
-done
-
-lemma "\<lbrakk> 0 \<le> (n::int); 0 \<le> m \<rbrakk> \<Longrightarrow> nat (n mod m) = nat n mod nat m"
-by (blast intro: nat_mod_distrib)
+  by (metis diff_minus_eq_add minus_minus mod_0 right_minus ring_div_class.mod_diff_right_eq)
 
 (*lemma int_mod_distrib: "int (n mod m) = int n mod int m"*)
 lemmas int_mod_distrib = zmod_int

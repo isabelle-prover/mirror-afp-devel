@@ -279,9 +279,7 @@ for this theorem. *}
 lemma prod_exp:
   fixes x::real
   shows "4*(x*y) = (x+y)^2 - (x-y)^2"
-apply (simp only: diff_minus)
-apply (simp add: power2_sum)
-done
+  by (simp add: power2_diff power2_sum)
 
 lemma abs_less_imp_sq_less [rule_format]:
   fixes x::real and y::real and z::real and w::real

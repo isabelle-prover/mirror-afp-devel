@@ -628,7 +628,7 @@ proof -
         with scaleR_left_distrib [of "-(r/s)" 1 "a - c"] have
           "b - c = (-(r/s) + 1) *\<^sub>R (a - c)" by simp
         moreover from `r/s < 0` have "-(r/s) + 1 > 1" by simp
-        ultimately have "a - c = (1 / (-(r/s) + 1)) *\<^sub>R (b - c)" by simp
+        ultimately have "a - c = (1 / (-(r/s) + 1)) *\<^sub>R (b - c)" by auto
         let ?l = "1 / (-(r/s) + 1)"
         from `-(r/s) + 1 > 1` and le_imp_inverse_le [of 1 "-(r/s) + 1"] have
           "?l \<le> 1" by simp

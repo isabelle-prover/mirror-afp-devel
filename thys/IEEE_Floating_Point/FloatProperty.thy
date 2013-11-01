@@ -968,7 +968,7 @@ lemma float_neg_add: "Finite a \<and> Finite b \<and> Finite (a - b) \<Longright
                     valof float_format (Rep_float (float_neg b)) =
                     valof float_format (Rep_float a) - 
                     valof float_format (Rep_float b)"
-by (metis float_neg_val is_num_normalize(8))
+by (metis comm_ring_1_class.normalizing_ring_rules(2) float_neg_val)
 
 lemma float_plus_minus: "Finite a \<and> Finite b \<and> Finite (a - b) \<Longrightarrow> (a + float_neg b) \<doteq> (a - b)"
 proof -

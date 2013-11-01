@@ -6217,7 +6217,7 @@ apply (cut_tac field_is_idom)
 apply (frule_tac n = "nat i" in Ring.npClose[of "K" "x"], assumption+,
        frule_tac n = "nat i" in Ring.npClose[of "K" "x\<^bsup>\<hyphen> K\<^esup>"], assumption+,
        frule_tac n = n in Ring.npClose[of "K" "x\<^bsup>\<hyphen> K\<^esup>"], assumption+ )
-apply (rule_tac a = "x^\<^bsup>K (nat (i - int n) - Suc 0)\<^esup>" and 
+apply (rule_tac a = "x^\<^bsup>K (nat (i + (-1 - int n)))\<^esup>" and 
        b = "x^\<^bsup>K (nat i)\<^esup> \<cdot>\<^sub>r (x\<^bsup>\<hyphen> K\<^esup>^\<^bsup>K n\<^esup> \<cdot>\<^sub>r x\<^bsup>\<hyphen> K\<^esup>)" and c = x in 
        Idomain.idom_mult_cancel_r[of "K"], assumption+)
  apply (simp add:Ring.npClose, rule Ring.ring_tOp_closed, assumption+,
@@ -6229,10 +6229,11 @@ apply (rule_tac a = "x^\<^bsup>K (nat (i - int n) - Suc 0)\<^esup>" and
  apply (rule Ring.ring_tOp_closed[of K], assumption+)
  apply (simp add: linvf)
  apply (subst Ring.ring_r_one[of K], assumption)
- apply (rule Ring.ring_tOp_closed[of K], assumption+, simp)
-
- apply arith
-apply simp
+ apply auto
+ apply (metis Ring.npClose)
+ apply (simp only: uminus_add_conv_diff [symmetric] add_assoc [symmetric])
+ apply simp
+ apply (metis Suc_diff_1 diff_0_eq_0 int_0 int_1 int_nat_eq le_add_same_cancel2 minus_one nat_1 negative_zle_0 neq0_conv not_zero_le_neg_numeral npow_suc plus_int_code(2) transfer_nat_int_numerals(2))
 done
 
 lemma (in Corps) npow_exp_minusTr2:"\<lbrakk>x \<in> carrier K; x \<noteq> \<zero>; 0 \<le> i; 0 \<le> j; 

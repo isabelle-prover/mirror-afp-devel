@@ -375,7 +375,7 @@ proof -
     also have "\<dots> \<le> (n * exp (- p n * (?nr n - 1) / 2)) powr ?nr n"
     proof -
       have "(1 - p n) powr ((?nr n - 1) / 2) \<le> exp (- p n) powr ((?nr n - 1) / 2)"
-        using A by (auto simp: powr_mono2 ab_diff_minus)
+        using A by (auto simp: powr_mono2 diff_conv_add_uminus simp del: add_uminus_conv_diff)
       also have "\<dots> = exp (- p n * (?nr n - 1) / 2)" by (auto simp: powr_def)
       finally show ?thesis
         using A by (auto simp: mult_pos_pos powr_mono2 powr_mult)

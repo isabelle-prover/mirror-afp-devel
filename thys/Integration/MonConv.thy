@@ -116,8 +116,7 @@ lemma assumes mon_conv: "x\<up>(y::real)"
 proof -
   from less have less': "0 < y-z" 
     by simp                
-  have "\<exists>n.\<forall>m. n \<le> m \<longrightarrow> \<bar>x m + - y\<bar> < y-z"
-  unfolding diff_minus [symmetric]
+  have "\<exists>n.\<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z"
   proof -
     from mon_conv have aux: "\<And>r. r > 0 \<Longrightarrow> \<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < r"
     unfolding real_mon_conv LIMSEQ_def dist_real_def by auto
@@ -127,9 +126,9 @@ proof -
   { fix m 
     from mon_conv have "x m \<le> y" 
       by (rule real_mon_conv_le)  
-    hence "\<bar>x m + - y\<bar> = y - x m" 
+    hence "\<bar>x m - y\<bar> = y - x m" 
       by arith                    
-    also assume "\<bar>x m + - y\<bar> < y-z"
+    also assume "\<bar>x m - y\<bar> < y - z"
     ultimately have "z < x m" 
       by arith                
   }
