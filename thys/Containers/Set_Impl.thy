@@ -506,7 +506,7 @@ lemma card_code [code]:
 by(auto simp add: RBT_set_def member_conv_keys distinct_card DList_set_def Let_def card_UNIV Compl_eq_Diff_UNIV card_Diff_subset_Int card_gt_0_iff finite_subset[of A UNIV] List.card_set dest: Collection_Eq.ID_ceq split: option.split)
 
 lemma is_UNIV_code [code]:
-  fixes rbt :: "'a :: cproper_interval set_rbt" 
+  fixes rbt :: "'a :: {cproper_interval, finite_UNIV} set_rbt" 
   and A :: "'b :: card_UNIV set" shows
   "is_UNIV A \<longleftrightarrow>
    (let a = CARD('b);
@@ -517,7 +517,7 @@ lemma is_UNIV_code [code]:
   (is ?generic)
   "is_UNIV (RBT_set rbt) = 
   (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''is_UNIV RBT_set: corder = None'') (\<lambda>_. is_UNIV (RBT_set rbt))
-                     | Some _ \<Rightarrow> finite (UNIV :: 'a set) \<and> proper_intrvl.exhaustive_fusion cproper_interval rbt_keys_generator (RBT_Set2.init rbt))"
+                     | Some _ \<Rightarrow> of_phantom (finite_UNIV :: 'a finite_UNIV) \<and> proper_intrvl.exhaustive_fusion cproper_interval rbt_keys_generator (RBT_Set2.init rbt))"
   (is ?rbt)
 proof -
   {
@@ -543,7 +543,7 @@ proof -
         by(auto simp add: linorder_proper_interval.exhaustive_correct[OF ID_corder_interval[OF linorder]] sorted_RBT_Set_keys is_UNIV_def RBT_set_conv_keys)
     qed }
   thus ?rbt
-    by(auto simp add: proper_intrvl.exhaustive_fusion_def unfoldr_rbt_keys_generator is_UNIV_def split: option.split)
+    by(auto simp add: finite_UNIV proper_intrvl.exhaustive_fusion_def unfoldr_rbt_keys_generator is_UNIV_def split: option.split)
 
   show ?generic
     by(auto simp add: Let_def is_UNIV_def dest: card_seteq[of UNIV A] dest!: card_ge_0_finite)
@@ -560,7 +560,7 @@ lemma is_empty_code [code]:
   "Set.is_empty (RBT_set rbt) \<longleftrightarrow> 
   (case ID CORDER('b) of None \<Rightarrow> Code.abort (STR ''is_empty RBT_set: corder = None'') (\<lambda>_. Set.is_empty (RBT_set rbt))
                   | Some _ \<Rightarrow> RBT_Set2.is_empty rbt)" (is ?RBT_set)
-  "Set.is_empty (Complement A) \<longleftrightarrow> is_UNIV A" (is ?Complement)
+  and is_empty_Complement: "Set.is_empty (Complement A) \<longleftrightarrow> is_UNIV A" (is ?Complement)
 proof -
   show ?DList_set
     by(clarsimp simp add: DList_set_def Set.is_empty_def DList_Set.member_empty_empty split: option.split)
@@ -598,8 +598,6 @@ lemma Set_member_code [code]:
   (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''member Set_Monad: ceq = None'') (\<lambda>_. x \<in> Set_Monad xs)
                  | Some eq \<Rightarrow> equal_base.list_member eq xs x)"
 by(auto simp add: DList_set_def RBT_set_def List.member_def split: option.split dest!: Collection_Eq.ID_ceq)
-
-lemma set_code [code]: "set = Set_Monad" by simp
 
 lemma Set_remove_code [code]:
   fixes rbt :: "'a :: corder set_rbt"
@@ -1400,14 +1398,14 @@ lemma product_code [code]:
    Set_Monad (fold (\<lambda>x. fold (\<lambda>y rest. (x, y) # rest) ys) xs [])"
   (is ?Set_Monad)
 
-  "Product_Type.product (DList_set dxs) B = 
-   (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''product DList_set1: ceq = None'') (\<lambda>_. Product_Type.product (DList_set dxs) B)
-                   | Some _ \<Rightarrow>  DList_Set.fold (\<lambda>x rest. Pair x ` B \<union> rest) dxs {})" 
+  "Product_Type.product (DList_set dxs) B1 = 
+   (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''product DList_set1: ceq = None'') (\<lambda>_. Product_Type.product (DList_set dxs) B1)
+                   | Some _ \<Rightarrow>  DList_Set.fold (\<lambda>x rest. Pair x ` B1 \<union> rest) dxs {})" 
   (is "?dlist1")
 
-  "Product_Type.product A (DList_set dys) = 
-   (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''product DList_set2: ceq = None'') (\<lambda>_. Product_Type.product A (DList_set dys))
-                   | Some _ \<Rightarrow> DList_Set.fold (\<lambda>y rest. (\<lambda>x. (x, y)) ` A \<union> rest) dys {})"
+  "Product_Type.product A1 (DList_set dys) = 
+   (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''product DList_set2: ceq = None'') (\<lambda>_. Product_Type.product A1 (DList_set dys))
+                   | Some _ \<Rightarrow> DList_Set.fold (\<lambda>y rest. (\<lambda>x. (x, y)) ` A1 \<union> rest) dys {})"
   (is "?dlist2")
 
   "Product_Type.product (DList_set dxs) (DList_set dys) = 
@@ -1415,6 +1413,16 @@ lemma product_code [code]:
                   | Some _ \<Rightarrow> 
      case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''product DList_set DList_set: ceq2 = None'') (\<lambda>_. Product_Type.product (DList_set dxs) (DList_set dys))
                     | Some _ \<Rightarrow> DList_set (DList_Set.product dxs dys))"
+
+  "Product_Type.product (RBT_set rbt1) B2 =
+  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''product RBT_set: corder1 = None'') (\<lambda>_. Product_Type.product (RBT_set rbt1) B2)
+                     | Some _ \<Rightarrow> RBT_Set2.fold (\<lambda>x rest. Pair x ` B2 \<union> rest) rbt1 {})"
+  (is "?rbt1")
+
+  "Product_Type.product A2 (RBT_set rbt2) =
+  (case ID CORDER('d) of None \<Rightarrow> Code.abort (STR ''product RBT_set: corder2 = None'') (\<lambda>_. Product_Type.product A2 (RBT_set rbt2))
+                     | Some _ \<Rightarrow> RBT_Set2.fold (\<lambda>y rest. (\<lambda>x. (x, y)) ` A2 \<union> rest) rbt2 {})"
+  (is "?rbt2")
 
   "Product_Type.product (RBT_set rbt1) (RBT_set rbt2) =
   (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''product RBT_set RBT_set: corder1 = None'') (\<lambda>_. Product_Type.product (RBT_set rbt1) (RBT_set rbt2))
@@ -1429,16 +1437,28 @@ proof -
   show ?Set_Monad by(auto simp add: Product_Type.product_def)
 
   { fix xs :: "'a list"
-    have "fold (\<lambda>x. op \<union> (Pair x ` B)) xs {} = set xs \<times> B"
+    have "fold (\<lambda>x. op \<union> (Pair x ` B1)) xs {} = set xs \<times> B1"
       by(induct xs rule: rev_induct) auto }
-  thus ?dlist1
-    by(simp add: Product_Type.product_def DList_set_def DList_Set.fold.rep_eq DList_Set.Collect_member split: option.split)
+  thus ?dlist1 
+    by(simp add: Product_Type.product_def DList_set_def DList_Set.fold.rep_eq DList_Set.Collect_member split: option.split) 
 
   { fix ys :: "'b list"
-    have "fold (\<lambda>y. op \<union> ((\<lambda>x. (x, y)) ` A)) ys {} = A \<times> set ys"
+    have "fold (\<lambda>y. op \<union> ((\<lambda>x. (x, y)) ` A1)) ys {} = A1 \<times> set ys"
       by(induct ys rule: rev_induct) auto }
   thus ?dlist2
     by(simp add: Product_Type.product_def DList_set_def DList_Set.fold.rep_eq DList_Set.Collect_member split: option.split)
+
+  { fix xs :: "'c list"
+    have "fold (\<lambda>x. op \<union> (Pair x ` B2)) xs {} = set xs \<times> B2"
+      by(induct xs rule: rev_induct) auto }
+  thus ?rbt1
+    by(simp add: Product_Type.product_def RBT_set_def RBT_Set2.member_product RBT_Set2.member_conv_keys fold_conv_fold_keys split: option.split)
+
+  { fix ys :: "'d list"
+    have "fold (\<lambda>y. op \<union> ((\<lambda>x. (x, y)) ` A2)) ys {} = A2 \<times> set ys"
+      by(induct ys rule: rev_induct) auto }
+  thus ?rbt2
+    by(simp add: Product_Type.product_def RBT_set_def RBT_Set2.member_product RBT_Set2.member_conv_keys fold_conv_fold_keys split: option.split)
 qed(auto simp add: RBT_set_def DList_set_def Product_Type.product_def DList_Set.product_member RBT_Set2.member_product split: option.split)
 
 lemma Id_on_code [code]: 
@@ -1919,6 +1939,40 @@ instantiation phantom :: (type, set_impl) set_impl begin
 definition "SET_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom) (of_phantom SET_IMPL('b))"
 instance ..
 end
+
+text {*
+  We enable automatic implementation selection for sets constructed by @{const set},
+  although they could be directly converted using @{const Set_Monad} in constant time.
+  However, then it is more likely that the parameters of binary operators have 
+  different implementations, which can lead to less efficient execution.
+
+  However, we test whether automatic selection picks @{const Set_Monad} anyway and
+  take a short-cut.
+*}
+
+definition set_aux :: "set_impl \<Rightarrow> 'a list \<Rightarrow> 'a set"
+where [simp, code del]: "set_aux _ = set"
+
+lemma set_aux_code [code]:
+  defines "conv \<equiv> foldl (\<lambda>s (x :: 'a). insert x s)"
+  shows
+  "set_aux impl = conv (set_empty impl)" (is "?thesis1")
+  "set_aux set_Choose = 
+   (case CORDER('a :: {corder, ceq}) of Some _  \<Rightarrow> conv (RBT_set RBT_Set2.empty)
+    | None \<Rightarrow> case CEQ('a) of None \<Rightarrow> Set_Monad
+              | Some _ \<Rightarrow> conv (DList_set DList_Set.empty))" (is "?thesis2")
+  "set_aux set_Monad = Set_Monad"
+proof -
+  have "conv {} = set"
+    by(rule ext)(induct_tac x rule: rev_induct, simp_all add: conv_def)
+  thus ?thesis1 ?thesis2
+    by(simp_all split: option.split)
+qed simp
+
+lemma set_code [code]:
+  fixes xs :: "'a :: set_impl list"
+  shows "set xs = set_aux (of_phantom (ID SET_IMPL('a))) xs"
+by(simp)
 
 subsection {* Pretty printing for sets *}
 

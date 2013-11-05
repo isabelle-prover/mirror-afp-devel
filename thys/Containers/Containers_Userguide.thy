@@ -1023,6 +1023,9 @@ text {*
       \\
     \end{tabular}
   \end{center}
+
+  The type classes @{class finite_UNIV}, @{class card_UNIV} and @{class cproper_interval} are only required to implement the operations on complements of a set.
+  If you are sure that your code does not need complements, you can manually delete the code equations involving @{const "Complement"}.
 *}
 
 subsection {* Exception raised at run-time *}
