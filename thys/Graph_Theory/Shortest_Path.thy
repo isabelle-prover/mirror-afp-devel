@@ -15,7 +15,7 @@ context wf_digraph begin
 
 (*Rename, as we are outside of any local context?*)
 definition \<mu> where
-  "\<mu> f u v \<equiv> INF p: {p. awalk u p v}. awalk_cost f p"
+  "\<mu> f u v \<equiv> INF p: {p. awalk u p v}. ereal (awalk_cost f p)"
 
 lemma shortest_path_inf:
   assumes "\<not>(u \<rightarrow>\<^sup>* v)"
@@ -73,7 +73,7 @@ qed
 lemma inf_over_nats:
   fixes a c :: real
   assumes "c < 0"
-  shows "(INF (i :: nat). a + i * c) = - \<infinity>"
+  shows "(INF (i :: nat). ereal (a + i * c)) = - \<infinity>"
 proof (rule INF_eqI)
   fix i :: nat show "- \<infinity> \<le> a + real i * c" by simp
 next
@@ -134,10 +134,10 @@ proof -
     unfolding ext_p_def by (blast intro: awalk_appendI)
   then have "{ext_p i|i. i \<in> UNIV} \<subseteq> {p. awalk u p v}"
     by auto
-  then have "(INF p:{p. awalk u p v}. awalk_cost f p)
-      \<le> (INF p: {ext_p i|i. i \<in> UNIV}. awalk_cost f p)"
+  then have "(INF p:{p. awalk u p v}. ereal (awalk_cost f p))
+      \<le> (INF p: {ext_p i|i. i \<in> UNIV}. ereal (awalk_cost f p))"
     by (auto intro: INF_superset_mono)
-  also have "\<dots> = (INF i: UNIV. awalk_cost f (ext_p i))"
+  also have "\<dots> = (INF i: UNIV. ereal (awalk_cost f (ext_p i)))"
     unfolding INF_def by (rule arg_cong[where f=Inf], auto)
   also have "\<dots> = - \<infinity>" unfolding ext_p_cost 
     by (rule inf_over_nats[OF `awalk_cost f c < 0`])
@@ -146,10 +146,10 @@ qed
 
 lemma walk_cheaper_path_imp_neg_cyc:
   assumes p_props: "awalk u p v"
-  assumes less_path_\<mu>: "awalk_cost f p < (INF p: {p. apath u p v}. awalk_cost f p)"
+  assumes less_path_\<mu>: "awalk_cost f p < (INF p: {p. apath u p v}. ereal (awalk_cost f p))"
   shows "\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u p) \<and> awalk_cost f c < 0"
 proof -
-  def path_\<mu>  \<equiv> "(INF p: {p. apath u p v}. awalk_cost f p)"
+  def path_\<mu>  \<equiv> "(INF p: {p. apath u p v}. ereal (awalk_cost f p))"
   then have "awalk u p v" and "awalk_cost f p < path_\<mu>"
     using p_props less_path_\<mu> by simp_all
   then show ?thesis
@@ -238,7 +238,7 @@ next
   then obtain p where p_props: "apath u p v"
     by (metis reachable_awalk apath_awalk_to_apath)
   then have "{p} \<subseteq> {p. apath u p v}" by simp
-  then have "\<mu> f u v \<le> (INF p: {p}. awalk_cost f p)"
+  then have "\<mu> f u v \<le> (INF p: {p}. ereal (awalk_cost f p))"
     unfolding \<mu>_def by (intro INF_superset_mono) (auto simp: apath_def)
   also have "\<dots> < \<infinity>" unfolding INF_def by (simp add: min_def)
   finally show "\<mu> f u v < \<infinity>" .
@@ -306,12 +306,12 @@ proof -
     have "awalk_to_apath ` set_walks \<subseteq> set_paths"
       unfolding set_walks_def set_paths_def
       by (intro subsetI) (auto elim: apath_awalk_to_apath)
-    then have "(INF p: set_paths. awalk_cost f p)
-      \<le> (INF p: awalk_to_apath ` set_walks. awalk_cost f p)"
+    then have "(INF p: set_paths. ereal (awalk_cost f p))
+      \<le> (INF p: awalk_to_apath ` set_walks. ereal (awalk_cost f p))"
       by (rule INF_superset_mono) simp
-    also have "\<dots> = (INF p: set_walks. awalk_cost f (awalk_to_apath p))"
+    also have "\<dots> = (INF p: set_walks. ereal (awalk_cost f (awalk_to_apath p)))"
       by (auto simp: INF_def intro!: arg_cong[where f="Inf"])
-    also have "\<dots> \<le> (INF p: set_walks. awalk_cost f p)"
+    also have "\<dots> \<le> (INF p: set_walks. ereal (awalk_cost f p))"
     proof -
       { fix p assume "p \<in> set_walks"
         then have "awalk u p v" by (auto simp: set_walks_def)

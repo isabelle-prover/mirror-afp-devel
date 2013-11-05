@@ -361,18 +361,31 @@ lemmas integrable_continuous[intro, simp]
 
 subsection {* Sup *}
 
+lemma bdd_above_cmult:
+  "0 \<le> (a :: 'a :: ordered_semiring) \<Longrightarrow> bdd_above S \<Longrightarrow> bdd_above ((\<lambda>x. a * x) ` S)"
+  by (metis bdd_above_def bdd_aboveI2 mult_left_mono)
+
 lemma Sup_real_mult:
   fixes a::real
-  assumes "0 < a"
-  assumes "S \<noteq> {}" "(\<And>x. x \<in> S \<Longrightarrow> 0 \<le> x \<and> x \<le> z)"
+  assumes "0 \<le> a"
+  assumes "S \<noteq> {}" "bdd_above S"
   shows "a * Sup S = Sup ((\<lambda>x. a * x) ` S)"
-using assms
-proof (intro antisym)
-  have "Sup S \<le> Sup (op * a ` S) / a" using assms
-    by (intro cSup_least mult_imp_le_div_pos cSup_upper[where z = "a * z"]) auto
-  thus "a * Sup S \<le> Sup (op * a ` S)"
-    by (simp add: ac_simps pos_le_divide_eq[OF assms(1)])
-qed (auto intro!: mult_mono cSup_least intro: cSup_upper)
+proof cases
+  assume "a = 0" with `S \<noteq> {}` show ?thesis
+    by (simp add: SUP_def[symmetric] cSUP_const)
+next
+  assume "a \<noteq> 0"
+  with `0 \<le> a` have "0 < a"
+    by simp
+  show ?thesis
+  proof (intro antisym)
+    have "Sup S \<le> Sup (op * a ` S) / a" using assms
+      by (intro cSup_least mult_imp_le_div_pos cSup_upper)
+         (auto simp: bdd_above_cmult assms `0 < a` less_imp_le)
+    thus "a * Sup S \<le> Sup (op * a ` S)"
+      by (simp add: ac_simps pos_le_divide_eq[OF `0<a`])
+  qed (insert assms `0 < a`, auto intro!: cSup_least cSup_upper)
+qed
 
 subsection {* Banach on type class *}
 

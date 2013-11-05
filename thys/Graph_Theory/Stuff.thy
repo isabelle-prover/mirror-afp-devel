@@ -36,6 +36,7 @@ proof (unfold INF_def)
 qed
 
 lemma not_mem_less_INF:
+  fixes f :: "_ \<Rightarrow> _::complete_lattice"
   assumes "f x < (INF s: S. f s)"
   assumes "x \<in> S"
   shows "False"

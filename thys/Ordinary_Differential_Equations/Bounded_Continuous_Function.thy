@@ -38,7 +38,7 @@ instantiation bcontfun :: (topological_space, metric_space) metric_space
 begin
 
 definition dist_bcontfun::"('a, 'b) bcontfun \<Rightarrow> ('a, 'b) bcontfun \<Rightarrow> real" where
-  "dist_bcontfun f g = Sup (range (\<lambda>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x)))"
+  "dist_bcontfun f g = (SUP x. dist (Rep_bcontfun f x) (Rep_bcontfun g x))"
 
 definition
   open_bcontfun::"('a, 'b) bcontfun set \<Rightarrow> bool" where
@@ -53,13 +53,12 @@ proof -
   have "Rep_bcontfun g \<in> bcontfun" using Rep_bcontfun .
   from bcontfunE'[OF this] guess z . note z = this
   show ?thesis unfolding dist_bcontfun_def
-  proof (intro cSup_upper)
-    fix d assume "d \<in> range (\<lambda>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x))"
-    then obtain x where "d = dist (Rep_bcontfun f x) (Rep_bcontfun g x)" ..
-    also have "\<dots> \<le> dist (Rep_bcontfun f x) undefined + dist (Rep_bcontfun g x) undefined"
+  proof (intro cSUP_upper bdd_aboveI2)
+    fix x 
+    have "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> dist (Rep_bcontfun f x) undefined + dist (Rep_bcontfun g x) undefined"
       by (rule dist_triangle2)
     also have "\<dots> \<le> y + z" using y(2)[of x] z(2)[of x] by (rule add_mono)
-    finally show "d \<le> y + z" .
+    finally show "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> y + z" .
   qed simp
 qed
 
@@ -67,7 +66,7 @@ lemma dist_bound:
   fixes f ::"('a, 'b) bcontfun"
   assumes "\<And>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> b"
   shows "dist f g \<le> b"
-  using assms by (auto simp: dist_bcontfun_def intro: cSup_least)
+  using assms by (auto simp: dist_bcontfun_def intro: cSUP_least)
 
 lemma dist_bounded_Abs:
   fixes f g ::"'a \<Rightarrow> 'b"
@@ -87,28 +86,27 @@ lemma dist_val_lt_imp_dist_fun_le:
   assumes "\<forall>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) < e"
   shows "dist f g \<le> e"
 unfolding dist_bcontfun_def
-proof (intro cSup_least)
+proof (intro cSUP_least)
   fix x
-  assume "x \<in> range (\<lambda>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x))"
-  then guess a ..
-  thus "x \<le> e" using assms[THEN spec[where x=a]] by (simp add: dist_norm)
+  show "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> e"
+    using assms[THEN spec[where x=x]] by (simp add: dist_norm)
 qed (simp)
 
 instance
 proof
   fix f g::"('a, 'b) bcontfun"
-  show "dist f g = 0 <-> f = g"
+  show "dist f g = 0 \<longleftrightarrow> f = g"
   proof
     have "\<And>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> dist f g" by (rule dist_bounded)
     also assume "dist f g = 0"
     finally  show "f = g" by (auto simp: Rep_bcontfun_inject[symmetric] Abs_bcontfun_inverse[OF ])
-  qed (auto simp: dist_bcontfun_def intro!: cSup_eq)
+  qed (auto simp: dist_bcontfun_def SUP_def intro!: cSup_eq)
 next
   fix f g h :: "('a, 'b) bcontfun"
   from bcontfunE[OF Rep_bcontfun[of f]] guess y . note y = this
   from bcontfunE[OF Rep_bcontfun[of g]] guess z . note z = this
   show "dist f g \<le> dist f h + dist g h"
-  proof (subst dist_bcontfun_def, safe intro!: cSup_least)
+  proof (subst dist_bcontfun_def, safe intro!: cSUP_least)
     fix x
     have "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le>
       dist (Rep_bcontfun f x) (Rep_bcontfun h x) + dist (Rep_bcontfun g x) (Rep_bcontfun h x)"
@@ -283,7 +281,7 @@ proof
   from bcontfunE[OF Rep_bcontfun[of g]] guess z . note z = this
   show "norm (f + g) \<le> norm f + norm g"
     unfolding norm_bcontfun_def
-  proof (subst dist_bcontfun_def, safe intro!: cSup_least)
+  proof (subst dist_bcontfun_def, safe intro!: cSUP_least)
     fix x
     have "dist (Rep_bcontfun (f + g) x) (Rep_bcontfun 0 x) \<le>
       dist (Rep_bcontfun f x) 0 + dist (Rep_bcontfun g x) 0"
@@ -300,19 +298,16 @@ next
   fix a and f g:: "('a, 'b) bcontfun"
   show "norm (a *\<^sub>R f) = \<bar>a\<bar> * norm f"
     unfolding norm_bcontfun_def
-  proof (cases "a = 0")
-    case False
+  proof -
     from bcontfunE[OF Rep_bcontfun[of f]] guess y . note y = this
     have "Sup (op * \<bar>a\<bar> ` range (\<lambda>x. dist (Rep_bcontfun f x) 0)) =
       \<bar>a\<bar> * Sup (range (\<lambda>x. dist (Rep_bcontfun f x) 0))"
-    proof (intro Sup_real_mult[symmetric])
+    proof (intro Sup_real_mult[symmetric] bdd_aboveI2)
       fix x
-      assume "x \<in> range (\<lambda>x. dist (Rep_bcontfun f x) 0)"
-      then guess b .. from this
-      show "0 \<le> x \<and> x \<le> norm f" using dist_bounded[of f b 0]
+      show "dist (Rep_bcontfun f x) 0 \<le> norm f" using dist_bounded[of f x 0]
         by (simp add: norm_bcontfun_def norm_conv_dist Abs_bcontfun_inverse zero_bcontfun_def
           const_bcontfun)
-    qed (simp_all add: False)
+    qed simp_all
     moreover
     have "range (\<lambda>x. dist (Rep_bcontfun (a *\<^sub>R f) x) 0) =
       (\<lambda>x. \<bar>a\<bar> * x) ` (range (\<lambda>x. dist (Rep_bcontfun f x) 0))"
@@ -320,8 +315,8 @@ next
     ultimately
     show "dist (a *\<^sub>R f) 0 = \<bar>a\<bar> * dist f 0"
       by (simp add: dist_bcontfun_def norm_conv_dist[symmetric] Abs_bcontfun_inverse
-        zero_bcontfun_def const_bcontfun)
-  qed simp
+        zero_bcontfun_def const_bcontfun SUP_def)
+  qed
 qed (auto simp: norm_bcontfun_def sgn_bcontfun_def)
 
 end
