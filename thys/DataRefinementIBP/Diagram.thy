@@ -33,7 +33,7 @@ $i$ ends in one of the situations $j$ such that $Q \, j$ is true.
 *}
 
 definition
-  "step D Q i = (INF j . D (i, j) (Q j))"
+  "step D Q i = (INF j . D (i, j) (Q j) :: _ :: complete_lattice)"
 
 definition
   "dmono D = (\<forall> ij . mono (D ij))"
@@ -165,10 +165,10 @@ locale DiagramTermination =
 begin
 
 definition
-  "SUP_L_P X u i = SUPR {v . pair v i < u} (\<lambda> v . X v i)" 
+  "SUP_L_P X u i = (SUP v:{v. pair v i < u}. X v i :: _ :: complete_lattice)" 
 
 definition 
-  "SUP_LE_P X u i = SUPR {v . pair v i \<le> u} (\<lambda> v . X v i)"
+  "SUP_LE_P X u i = (SUP v:{v. pair v i \<le> u}. X v i :: _ :: complete_lattice)"
 
 lemma SUP_L_P_upper:
   "pair v i < u \<Longrightarrow> P v i \<le> SUP_L_P P u i"
@@ -193,7 +193,7 @@ lemma SUP_SUP_L [simp]: "Sup (range (SUP_LE_P X)) = Sup (range X)"
   apply (rule SUP_LE_P_least)
   apply (rule SUP_upper, simp)
   apply (rule SUP_least)
-  apply (rule_tac y = "SUP_LE_P X (pair f x) x" in  order_trans)
+  apply (rule_tac y = "SUP_LE_P X (pair xa x) x" in  order_trans)
   apply (rule SUP_LE_P_upper, simp)
   by (rule SUP_upper, simp)
 

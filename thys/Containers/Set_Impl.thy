@@ -1692,6 +1692,9 @@ lemma SUPR_code [code]:
   fixes xs :: "'a :: complete_lattice list"
   and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
   and rbt :: "'c :: {complete_lattice, corder} set_rbt"
+  and f :: "'a \<Rightarrow> 'd::complete_lattice"
+  and g :: "'b \<Rightarrow> 'd::complete_lattice"
+  and h :: "'c \<Rightarrow> 'd::complete_lattice"
   shows
   "SUPR (Set_Monad xs) f = fold (sup \<circ> f) xs bot"
   "SUPR (DList_set dxs) g =
@@ -1706,6 +1709,9 @@ lemma INFI_code [code]:
   fixes xs :: "'a :: complete_lattice list"
   and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
   and rbt :: "'c :: {complete_lattice, corder} set_rbt"
+  and f :: "'a \<Rightarrow> 'd::complete_lattice"
+  and g :: "'b \<Rightarrow> 'd::complete_lattice"
+  and h :: "'c \<Rightarrow> 'd::complete_lattice"
   shows
   "INFI (Set_Monad xs) f = fold (inf \<circ> f) xs top"
   "INFI (DList_set dxs) g =
