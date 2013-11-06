@@ -117,7 +117,11 @@ text {*
   \begin{itemize}
   \item @{class ceq} (\S\ref{subsection:ceq}), @{class corder} (\S\ref{subsection:corder}), and @{class set_impl} (\S\ref{subsection:set_impl}) for @{typ "'a set"} in general
   \item @{class cenum} (\S\ref{subsection:cenum}) for set comprehensions @{term "{x. P x}"},
-  \item @{class card_UNIV}, @{class cproper_interval} for @{typ "'a set set"} and any deeper nesting of sets (\S\ref{subsection:card_UNIV}), and
+  \item @{class card_UNIV}, @{class cproper_interval} for @{typ "'a set set"} and any deeper nesting of sets (\S\ref{subsection:card_UNIV}),%
+   \footnote{%
+     These type classes are only required for set complements (see \S\ref{subsection:well:sortedness}).
+   }
+    and
   \item @{class equal},%
     \footnote{%
       We deviate here from the strict separation of type classes, because it does not make sense to store types in a map on which we do not have equality, because the most basic operation @{term "Mapping.lookup"} inherently requires equality.
@@ -491,6 +495,7 @@ text {*
   Then, @{term "- {b. b = True}"} becomes @{value "- {b. b = True}"}, but this applies to all complement invocations.
   For example, @{term [source] "UNIV :: bool set"} becomes @{value "UNIV :: bool set"}.
 *}
+(*<*)declare Set_uminus_cenum[code del] Set_uminus_code[code](*>*)
 
 subsection {* Nested sets *}
 text_raw {* \label{subsection:finite_UNIV} \label{subsection:card_UNIV} \label{subsection:cproper_interval} *}
@@ -987,6 +992,7 @@ text {*
 *}
 
 subsection {* Wellsortedness errors *}
+text_raw {* \label{subsection:well:sortedness} *}
 
 text {*
   LC uses its own hierarchy of type classes which is distinct from Isabelle/HOL's.
@@ -1024,9 +1030,21 @@ text {*
     \end{tabular}
   \end{center}
 
-  The type classes @{class finite_UNIV}, @{class card_UNIV} and @{class cproper_interval} are only required to implement the operations on complements of a set.
-  If you are sure that your code does not need complements, you can manually delete the code equations involving @{const "Complement"}.
+  The type classes @{class card_UNIV} and @{class cproper_interval} are only required to implement the operations on set complements.
+  If your code does not need complements, you can manually delete the code equations involving @{const "Complement"}, the theorem list @{thm [source] set_complement_code} collects them.
+  It is also recommended that you remove the pseudo-constructor @{const Complement} from the code generator.
+  Note that some set operations like @{term "A - B"} and @{const UNIV} have no code equations any more.
 *}
+declare set_complement_code[code del]
+code_datatype Collect_set DList_set RBT_set Set_Monad
+(*<*)
+datatype minimal_sorts = Minimal_Sorts bool
+derive (eq) ceq minimal_sorts
+derive (no) corder minimal_sorts
+derive (monad) set_impl minimal_sorts
+derive (no) cenum minimal_sorts
+value [code] "{Minimal_Sorts True} \<union> {} \<inter> Minimal_Sorts ` {True, False}"
+(*>*)
 
 subsection {* Exception raised at run-time *}
 text_raw {* \label{subsection:set_impl_unsupported_operation} *}
