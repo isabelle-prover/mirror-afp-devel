@@ -2,6 +2,8 @@ chapter AFP
 
 session Containers (AFP) = "Datatype_Order_Generator" +
   options [timeout = 600]
+  theories [document = false]
+    "../Regular-Sets/Regexp_Method"
   theories
     Auxiliary
     Card_Datatype
@@ -9,6 +11,7 @@ session Containers (AFP) = "Datatype_Order_Generator" +
     Collection_Order
     List_Proper_Interval
     Containers
+    Compatibility_Containers_Regular_Sets
     Containers_Userguide
   theories [document = false]
     Card_Datatype_Ex

@@ -3,6 +3,7 @@
 
 theory Auxiliary imports
   "~~/src/HOL/Library/Monad_Syntax"
+  "Unit_Instantiations"
 begin
 
 chapter {* An executable linear order on sets *}
@@ -94,26 +95,6 @@ by(simp add: ID_def)
 
 lemma ID_None: "ID None = None" 
 by(simp add: ID_def)
-
-text {* instantiations for unit *}
-
-instantiation unit :: "{complete_boolean_algebra, complete_linorder}" begin
-definition "top = ()"
-definition "bot = ()"
-definition [code_unfold]: "sup _ _ = ()"
-definition [code_unfold]: "inf _ _ = ()"
-definition [code_unfold]: "less_eq = (\<lambda>_ _ :: unit. True)"
-definition [code_unfold]: "less = (\<lambda>_ _ :: unit. False)"
-definition "Sup _ = ()"
-definition "Inf _ = ()"
-definition [simp, code_unfold]: "uminus = (\<lambda>_ :: unit. ())"
-
-lemma not_less_unit [simp]: "\<not> () < ()" by(simp add: less_unit_def)
-lemma le_unit [simp]: "() \<le> ()" by(simp add: less_eq_unit_def)
-
-instance by intro_classes simp_all
-end
-
 
 text {* lexicographic order on pairs *}
 

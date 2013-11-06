@@ -1,21 +1,16 @@
 chapter AFP
 
-session Refine_Monadic (AFP) = Collections +
-  options [timeout = 1200, document_variants = "document:outline=/proof,/ML:userguide"]
+session Refine_Monadic (AFP) = Automatic_Refinement +
+  options [timeout = 1200, document_variants = "document:outline=/proof,/ML"]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Lattice_Syntax"
     "~~/src/HOL/Library/Monad_Syntax"
     "~~/src/HOL/Word/Word"
   theories
-    Refine
-    Collection_Bindings
-    Autoref_Collection_Bindings
-    Refine_Userguide
-    "ex/Examples"
+    Refine_Monadic
+    "examples/Examples"
   files
     "document/railsetup.sty"
     "document/root.bib"
     "document/root.tex"
-    "document/root_userguide.bib"
-    "document/root_userguide.tex"

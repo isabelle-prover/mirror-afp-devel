@@ -93,8 +93,7 @@ begin
     apply (case_tac x, simp_all, case_tac [!] y, 
       simp_all, case_tac [!] z, simp_all) []
 
-    apply (case_tac x)
-    apply (auto simp add: Inf_dres_def) [3]
+    apply (case_tac x, auto simp: Inf_dres_def) []
 
     apply (case_tac z, simp_all add: Inf_dres_def) []
       apply (auto) [] 
@@ -138,11 +137,10 @@ begin
 
       apply (case_tac x, force+)[]
 
-    apply (auto simp: top_dres_def Inf_dres_def)
+      apply (auto simp: top_dres_def Inf_dres_def)
 
-    apply (auto simp: bot_dres_def Sup_dres_def)
-
-    done
+      apply (auto simp: bot_dres_def Sup_dres_def)
+  done
 
 end
 
@@ -368,15 +366,19 @@ text {*
 *}
 lemma dres_ne_bot_basic[refine_transfer]:
   "dFAIL \<noteq> dSUCCEED"
-  "dRETURN x \<noteq> dSUCCEED"
-  "\<lbrakk> m\<noteq>dSUCCEED; \<And>x. f x \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> dbind m f \<noteq> dSUCCEED"
-  "dASSERT \<Phi> \<noteq> dSUCCEED"
-  "\<lbrakk> m1\<noteq>dSUCCEED; m2\<noteq>dSUCCEED \<rbrakk> \<Longrightarrow> If b m1 m2 \<noteq> dSUCCEED"
-  "\<lbrakk> \<And>x. f x\<noteq>dSUCCEED \<rbrakk> \<Longrightarrow> Let x f \<noteq> dSUCCEED"
-  "\<lbrakk> \<And>x1 x2. g x1 x2 \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> prod_case g p \<noteq> dSUCCEED"
-  apply (auto split: prod.split)
-  apply (cases m, auto) []
-  apply (cases \<Phi>, auto) []
+  "\<And>x. dRETURN x \<noteq> dSUCCEED"
+  "\<And>m f. \<lbrakk> m\<noteq>dSUCCEED; \<And>x. f x \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> dbind m f \<noteq> dSUCCEED"
+  "\<And>\<Phi>. dASSERT \<Phi> \<noteq> dSUCCEED"
+  "\<And>b m1 m2. \<lbrakk> m1\<noteq>dSUCCEED; m2\<noteq>dSUCCEED \<rbrakk> \<Longrightarrow> If b m1 m2 \<noteq> dSUCCEED"
+  "\<And>x f. \<lbrakk> \<And>x. f x\<noteq>dSUCCEED \<rbrakk> \<Longrightarrow> Let x f \<noteq> dSUCCEED"
+  "\<And>g p. \<lbrakk> \<And>x1 x2. g x1 x2 \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> prod_case g p \<noteq> dSUCCEED"
+  "\<And>fn fs x. 
+    \<lbrakk> fn\<noteq>dSUCCEED; \<And>v. fs v \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> option_case fn fs x \<noteq> dSUCCEED"
+  "\<And>fn fc x. 
+    \<lbrakk> fn\<noteq>dSUCCEED; \<And>x xs. fc x xs \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> list_case fn fc x \<noteq> dSUCCEED"
+  apply (auto split: prod.split option.split list.split)
+  apply (case_tac m, auto) []
+  apply (case_tac \<Phi>, auto) []
   done
   
 lemma dres_ne_bot_RECT[rule_format, refine_transfer]:
@@ -420,4 +422,3 @@ lemma dres_ne_bot_dWHILET[refine_transfer]:
   done
 
 end
-

@@ -79,13 +79,13 @@ lemma is_hashmap'_prec:
   "\<forall>s s'. h\<Turnstile>(is_hashmap' m l ht * F1) \<and>\<^sub>A (is_hashmap' m' l' ht * F2)
   \<longrightarrow> l=l' \<and> m=m'"
   unfolding is_hashmap'_def
-  apply (auto simp add: is_hashtable_prec)
+  apply (auto simp add: preciseD[OF is_hashtable_prec])
   apply (subgoal_tac "l = l'")
-  by (auto simp add: is_hashtable_prec)
+  by (auto simp add: preciseD[OF is_hashtable_prec])
 
-lemma is_hashmap_prec:
-  "\<forall>m m'. h\<Turnstile>(is_hashmap m ht * F1) \<and>\<^sub>A (is_hashmap m' ht * F2) \<longrightarrow> m=m'"
-  unfolding is_hashmap_def
+lemma is_hashmap_prec: "precise is_hashmap"
+  unfolding is_hashmap_def[abs_def]
+  apply rule
   by (auto simp add: is_hashmap'_prec)
 
 abbreviation "hm_new \<equiv> ht_new"
@@ -479,6 +479,7 @@ lemma ls_copy_map_of:
   apply simp
 proof -
   case goal1
+  thm ht_hash_ls_insls[OF goal1(4)]
   note a = ht_hash_ls_insls[OF goal1(4), of "ls ! n"]
   note b = ht_distinct_ls_insls[OF goal1(5), of "ls ! n"]
   note c = length_ls_insls[OF goal1(6), of "ls ! n"]

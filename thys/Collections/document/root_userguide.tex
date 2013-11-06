@@ -41,13 +41,19 @@
 \parindent 0pt\parskip 0.5ex
 
 % Some dirty hacking to get nesting of sections right
-\renewcommand{\isamarkupheader}[1]{}
-\renewcommand{\isamarkupsubsection}[1]{\section{#1}}
-\renewcommand{\isamarkupsubsubsection}[1]{\subsection{#1}}
+\newcommand{\isaheader}[1]{#1}
+\newcommand{\isachapter}[1]{\chapter{#1}}
+\newcommand{\isasection}[1]{\section{#1}}
 
-% Just read the generated Userguide tex file
-\input{Userguide}
+\renewcommand{\isamarkupheader}[1]{\subsection{#1}}
+\renewcommand{\isamarkupchapter}[1]{\chapter{#1}}
+\renewcommand{\isamarkupsection}[1]{\subsection{#1}}
+\renewcommand{\isamarkupsubsection}[1]{\subsubsection{#1}}
+\renewcommand{\isamarkupsubsubsection}[1]{\paragraph{#1}}
 
+% Just read the generated Userguide tex files
+\input{ICF_Userguide}
+\input{Refine_Monadic_Userguide}
 % optional bibliography
 \bibliographystyle{abbrv}
 \bibliography{root}

@@ -4,7 +4,7 @@
 *)
 header "Tree Automata"
 theory Ta
-imports Main "../Collections/common/Misc" Tree
+imports Main "../Automatic_Refinement/Lib/Misc" Tree
 begin
 text_raw {*\label{sec:ta}*}
 

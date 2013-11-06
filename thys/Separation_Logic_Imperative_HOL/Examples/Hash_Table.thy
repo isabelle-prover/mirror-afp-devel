@@ -1,6 +1,6 @@
 header "Hash-Tables"
 theory Hash_Table
-  imports "../../Collections/common/HashCode" "../Sep_Main"
+  imports "../../Collections/Lib/HashCode" "../Sep_Main"
 begin
 
 subsection {* Datatype *}
@@ -64,11 +64,10 @@ definition is_hashtable
     \<and> 1 < length l)"
 
 lemma is_hashtable_prec:
-  "\<forall>s s'. h\<Turnstile>(is_hashtable l ht * F1) 
-    \<and>\<^sub>A (is_hashtable l' ht * F2) 
-    \<longrightarrow> l=l'"
+  "precise is_hashtable"
+  apply rule
   unfolding is_hashtable_def
-  by (auto simp add: snga_prec)
+  by (auto simp add: preciseD[OF snga_prec])
     
 text {* These rules are quite useful for automated methods, to avoid unfolding
   of definitions, that might be used folded in other lemmas, 

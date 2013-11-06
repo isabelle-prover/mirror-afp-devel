@@ -85,7 +85,7 @@ and can be instantiated for any data structure providing the required operations
 E.g., a generic algorithm may be parametrized over a set data structure, and then
 instantiated with a hashtable or a red-black tree.
 
-Th ICF features a data-refinement approach to prove an algorithm correct:
+The ICF features a data-refinement approach to prove an algorithm correct:
 First, the algorithm is specified using the abstract data structures. These are
 usually standard datatypes on Isabelle/HOL, and thus enjoy a good tool support
 for proving. Hence, the correctness proof is most conveniently performed on this
@@ -150,53 +150,6 @@ In \cite{SchM98}, {\em refinement monads} are studied.
 The basic constructions there are similar to ours. However, while we focus on
 data refinement, they focus on introducing commands with side-effects and a 
 predicate-transformer semantics to allow angelic nondeterminism.
-
-\section { Outline of this Submission }
-We briefly outline the most important files of this submission
-\begin{description}
-\item[./Generic] This directory contains some concepts that can be instantiated with
-  various monads.
-\begin{description}
-\item[./Generic/RefineG\_Assert.thy]
-  Generic Assertions.
-\item[./Generic/RefineG\_Recursion.thy]
-  Generic Recursion Combinators on arbitrary complete lattices.
-\item[./Generic/RefineG\_While.thy]
-  Generic While-Loops
-\item[./Generic/RefineG\_Transfer.thy]
-\end{description}    
-\item[./Refine\_Misc.thy] Miscellaneous lemmas.
-\item[./Refine\_Basic.thy] Definition of nondeterminism monad and refinement.
-\item[./Refine\_While.thy] Setup of WHILE-loops.
-\item[./Refine\_Foreach.thy] Setup of foreach-loops.
-\item[./Refine\_Det.thy] Deterministic result monad.
-\item[./Refine\_Transfer.thy] Configuration of transfer to deterministic program.
-
-
-\item[./Refine\_Heuristics.thy] Heuristics to guess refinement relations.
-\item[./Refine\_Autoref.thy] Automatic data refinement (prototype).
-
-\item[./Iterator\_Locale.thy] Generic description of iterators.
-\item[./Collection\_Bindings.thy] Integration with Isabelle Collection Framework.
-\item[./Autoref\_Collection\_Bindings.thy] ICF integration for automatic refinement.
-\item[./Refine\_Pfun.thy] Partial function package setup.
-\item[./Refine.thy] Main theory of refinement framework. This one should be 
-  imported by users.
-\item[./Refine\_Userguide.thy] Userguide.
-
-\item[./ex] Examples subdirectory.
-\begin{description}
-\item[./ex/Automatic\_Refinement.thy] Automatic data refinement example.
-\item[./ex/Breadth\_First\_Search.thy] Breadth first search (VSTTE 2012 competition, Task~5)
-\item[./ex/Bfs\_Impl.thy] Efficient implementation of breadth first search. 
-\item[./ex/Recursion.thy] Example for recursion combinators.
-\item[./ex/Refine\_Fold.thy] Example for partial function package use.
-\item[./ex/WordRefine.thy] Example for refinement to machine words.
-\end{description}
-
-\end{description}
-
-
 
 % generated text of all theories
 \input{session}

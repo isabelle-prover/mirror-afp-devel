@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DIR=$PWD
 LOG="/tmp/ta_tests.log"

@@ -10,8 +10,8 @@ text {*
 
 locale imp_list =
   fixes is_list :: "'a list \<Rightarrow> 'l \<Rightarrow> assn"
-  assumes precise: 
-    "\<forall>l l'. h\<Turnstile>(is_list l p * F1) \<and>\<^sub>A (is_list l' p * F2) \<longrightarrow> l=l'"
+  assumes precise: "precise is_list"
+    (*"\<forall>l l'. h\<Turnstile>(is_list l p * F1) \<and>\<^sub>A (is_list l' p * F2) \<longrightarrow> l=l'"*)
 
 locale imp_list_empty = imp_list +
   constrains is_list :: "'a list \<Rightarrow> 'l \<Rightarrow> assn"

@@ -9,11 +9,16 @@ imports Main
   Set_without_equal
   Set_Monad
   "../../Coinductive/Lazy_TLList"
+
+  (*
   "../../Collections/impl/ListSetImpl_Invar"
   "../../Collections/impl/RBTSetImpl"
   "../../Collections/impl/TrieMapImpl"
   "../../Collections/impl/ListMapImpl"
   "../../Collections/impl/Fifo"
+  *)
+  "../Basic/JT_ICF"
+  
   Auxiliary
 begin
 

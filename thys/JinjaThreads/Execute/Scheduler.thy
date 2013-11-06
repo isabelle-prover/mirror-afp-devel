@@ -9,9 +9,11 @@ imports
   State_Refinement
   "../Framework/FWProgressAux"
   "../Framework/FWLTS"
-  "../../Collections/spec/SetSpec"
+  (*"../../Collections/spec/SetSpec"
   "../../Collections/spec/MapSpec"
-  "../../Collections/spec/ListSpec"
+  "../../Collections/spec/ListSpec"*)
+  "../Basic/JT_ICF"
+
 begin
 
 text {*
@@ -686,6 +688,7 @@ proof -
       and s': "s' = (acquire_all (locks s) t (snd (the (thr_\<alpha> (thr s) t))), (thr_update t (fst (the (thr_\<alpha> (thr s) t)), no_wait_locks) (thr s), shr s), wset s, interrupts s)"
       by(auto simp add: execT_def Option_bind_eq_Some_conv thr.lookup_correct split_beta split del: option.split_asm)
     from schedule_Some_NoneD[OF schedule invar]
+
     obtain x ln n where t: "thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor>"
       and "0 < ln $ n" "\<not> waiting (ws_\<alpha> (wset s) t)" "may_acquire_all (locks s) t ln" by blast
     hence ?thesis1 using ta s' invar by(auto intro: \<alpha>.redT.redT_acquire simp add: thr.update_correct)

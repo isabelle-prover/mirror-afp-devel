@@ -9,27 +9,6 @@ and stepwise refined the specification to an executable DFS-algorithm using a ha
 Up to now, interfaces for sets and maps are specified and implemented using lists, red-black-trees, and hashing. Moreover, an amortized constant time 
 fifo-queue (based on two stacks) has been implemented. However, the framwork is extensible, i.e. new interfaces, algorithms and implementations can easily be added and integrated with the existing ones.
 
-\section{Future Work}
-There are several starting points for future work:
-
-\begin{itemize}
-  \item Currently, the generic algorithms are instantiated semi-automatically by an ad-hoc ruby script and a
-  manual description of the generic algorithms to be instantiated. However, the process of instantiating
-  generic algorithms could be fully mechanized, if one would add support for specifying interfaces, 
-  implementations and generic algorithms in Isabelle/HOL. 
-  
-  \item Generic algorithms are declared as functions that take the required functions as arguments.
-  While this is convenient for small generic algorithms, it can become tedious for larger algorithms,
-  involving many interfaces. 
-  Luckily, the generic algorithms defined in this library are rather small. For bigger developments, we currently recommend to
-  fix the used implementations, i.e. to define specific algorithms rather than generic ones. This is, for example, done in the 
-  DFS-search example (Section~\ref{thy:Exploration_Example}), where we fix hashsets instead of defining a generic algorithm for
-  all set implementations. Hence there is a need for exploring more convenient ways to specify generic algorithms.
-  
-%  \item What is called hashsets in this library are not true hashsets, as mapping hashcodes to buckets is done by a red-black tree instead
-%      of an array. This is more convenient for proofs in Isabelle/HOL, and has the advantage that no rehashing is needed if the map grows bigger, but it is also slower than array-based hashmaps. There is support for true arrays in Isabelle by means of a Heap-Monad \cite{BKHEM08} with the support for efficient code generation, that could probably be used to implement hashmaps with arrays.
-\end{itemize}
-
 \section {Trusted Code Base}
   In this section we shortly characterize on what our formal proofs depend, i.e. how to interpret the information contained in this formal proof and the fact that it
   is accepted by the Isabelle/HOL system.

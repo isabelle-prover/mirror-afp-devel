@@ -3,8 +3,8 @@ chapter AFP
 session "Transitive-Closure" (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
-    "../Collections/impl/RBTMapImpl"
-    "../Collections/impl/RBTSetImpl"
+    "../Collections/ICF/impl/RBTMapImpl"
+    "../Collections/ICF/impl/RBTSetImpl"
   theories
     Transitive_Closure_Impl
     Transitive_Closure_List_Impl

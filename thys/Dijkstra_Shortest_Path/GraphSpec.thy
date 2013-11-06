@@ -1,6 +1,8 @@
 header "Graph Interface"
 theory GraphSpec
-imports Main Graph "../Refine_Monadic/Refine" 
+imports Main Graph 
+  "../Collections/ICF/Collections" 
+  (*"../Collections/Lib/Proper_Iterator"*)
   (*"../Refine_Monadic/Refine_Autodet"*)
 begin
   text {*
@@ -58,27 +60,104 @@ begin
       "invar g \<Longrightarrow> \<alpha> (delete_edge v e v' g) = Graph.delete_edge v e v' (\<alpha> g)"
 
   type_synonym ('V,'W,'\<sigma>,'G) graph_nodes_it = "'G \<Rightarrow> ('V,'\<sigma>) set_iterator"
-  locale graph_nodes_it = graph +
-    constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    fixes nodes_it :: "'G \<Rightarrow> ('V,'\<sigma>) set_iterator"
-    assumes nodes_it_correct:
+
+  locale graph_nodes_it_defs =
+    fixes nodes_list_it :: "'G \<Rightarrow> ('V,'V list) set_iterator"
+  begin
+    definition "nodes_it g \<equiv> it_to_it (nodes_list_it g)"
+  end
+
+  locale graph_nodes_it = graph \<alpha> invar + graph_nodes_it_defs nodes_list_it 
+    for \<alpha> :: "'G \<Rightarrow> ('V,'W) graph" and invar and
+    nodes_list_it :: "'G \<Rightarrow> ('V,'V list) set_iterator"
+    +
+    assumes nodes_list_it_correct:
+      "invar g \<Longrightarrow> set_iterator (nodes_list_it g) (Graph.nodes (\<alpha> g))"
+  begin
+    lemma nodes_it_correct: 
       "invar g \<Longrightarrow> set_iterator (nodes_it g) (Graph.nodes (\<alpha> g))"
+      unfolding nodes_it_def
+      apply (rule it_to_it_correct)
+      by (rule nodes_list_it_correct)
+
+    lemma pi_nodes_it[icf_proper_iteratorI]: 
+      "proper_it (nodes_it S) (nodes_it S)"
+      unfolding nodes_it_def 
+      by (intro icf_proper_iteratorI)
+
+    lemma nodes_it_proper[proper_it]:
+      "proper_it' nodes_it nodes_it"
+      apply (rule proper_it'I)
+      by (rule pi_nodes_it)
+
+  end
 
   type_synonym ('V,'W,'\<sigma>,'G) graph_edges_it 
     = "'G \<Rightarrow> (('V\<times>'W\<times>'V),'\<sigma>) set_iterator"
-  locale graph_edges_it = graph +
-    constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    fixes edges_it :: "('V,'W,'\<sigma>,'G) graph_edges_it"
-    assumes edges_it_correct:
+
+  locale graph_edges_it_defs =
+    fixes edges_list_it :: "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it"
+  begin
+    definition "edges_it g \<equiv> it_to_it (edges_list_it g)"
+  end
+
+  locale graph_edges_it = graph \<alpha> invar + graph_edges_it_defs edges_list_it
+    for \<alpha> :: "'G \<Rightarrow> ('V,'W) graph" and invar and
+    edges_list_it :: "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it" 
+    +
+    assumes edges_list_it_correct:
+      "invar g \<Longrightarrow> set_iterator (edges_list_it g) (Graph.edges (\<alpha> g))"
+  begin
+    lemma edges_it_correct: 
       "invar g \<Longrightarrow> set_iterator (edges_it g) (Graph.edges (\<alpha> g))"
+      unfolding edges_it_def
+      apply (rule it_to_it_correct)
+      by (rule edges_list_it_correct)
+
+    lemma pi_edges_it[icf_proper_iteratorI]: 
+      "proper_it (edges_it S) (edges_it S)"
+      unfolding edges_it_def 
+      by (intro icf_proper_iteratorI)
+
+    lemma edges_it_proper[proper_it]:
+      "proper_it' edges_it edges_it"
+      apply (rule proper_it'I)
+      by (rule pi_edges_it)
+
+  end
 
   type_synonym ('V,'W,'\<sigma>,'G) graph_succ_it = 
     "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,'\<sigma>) set_iterator"
-  locale graph_succ_it = graph +
-    constrains \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    fixes succ_it :: "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,'\<sigma>) set_iterator"
-    assumes succ_it_correct:
+
+  locale graph_succ_it_defs =
+    fixes succ_list_it :: "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,('W\<times>'V) list) set_iterator"
+  begin
+    definition "succ_it g v \<equiv> it_to_it (succ_list_it g v)"
+  end
+
+  locale graph_succ_it = graph \<alpha> invar + graph_succ_it_defs succ_list_it
+    for \<alpha> :: "'G \<Rightarrow> ('V,'W) graph" and invar and
+    succ_list_it :: "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,('W\<times>'V) list) set_iterator" +
+    assumes succ_list_it_correct:
+      "invar g \<Longrightarrow> set_iterator (succ_list_it g v) (Graph.succ (\<alpha> g) v)"
+  begin
+    lemma succ_it_correct: 
       "invar g \<Longrightarrow> set_iterator (succ_it g v) (Graph.succ (\<alpha> g) v)"
+      unfolding succ_it_def
+      apply (rule it_to_it_correct)
+      by (rule succ_list_it_correct)
+
+    lemma pi_succ_it[icf_proper_iteratorI]: 
+      "proper_it (succ_it S v) (succ_it S v)"
+      unfolding succ_it_def 
+      by (intro icf_proper_iteratorI)
+
+    lemma succ_it_proper[proper_it]:
+      "proper_it' (\<lambda>S. succ_it S v) (\<lambda>S. succ_it S v)"
+      apply (rule proper_it'I)
+      by (rule pi_succ_it)
+
+  end
 
   subsection "Adjacency Lists"
   type_synonym ('V,'W) adj_list = "'V list \<times> ('V\<times>'W\<times>'V) list"
@@ -121,9 +200,15 @@ begin
     gop_delete_edge :: "('V,'W,'G) graph_delete_edge"
     gop_from_list :: "('V,'W,'G) graph_from_list"
     gop_to_list :: "('V,'W,'G) graph_to_list"
+    gop_nodes_list_it :: "'G \<Rightarrow> ('V,'V list) set_iterator"
+    gop_edges_list_it :: "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it"
+    gop_succ_list_it :: "'G \<Rightarrow> 'V \<Rightarrow> ('W\<times>'V,('W\<times>'V) list) set_iterator"    
 
-  locale StdGraphDefs =
-    fixes ops :: "('V,'W,'G,'m) graph_ops_scheme"
+  locale StdGraphDefs = 
+    graph_nodes_it_defs "gop_nodes_list_it ops"
+    + graph_edges_it_defs "gop_edges_list_it ops"
+    + graph_succ_it_defs "gop_succ_list_it ops"
+    for ops :: "('V,'W,'G,'m) graph_ops_scheme"
   begin
     abbreviation \<alpha> where "\<alpha> \<equiv> gop_\<alpha> ops"
     abbreviation invar where "invar \<equiv> gop_invar ops"
@@ -134,6 +219,9 @@ begin
     abbreviation delete_edge where "delete_edge \<equiv> gop_delete_edge ops"
     abbreviation from_list where "from_list \<equiv> gop_from_list ops"
     abbreviation to_list where "to_list \<equiv> gop_to_list ops"
+    abbreviation nodes_list_it where "nodes_list_it \<equiv> gop_nodes_list_it ops"
+    abbreviation edges_list_it where "edges_list_it \<equiv> gop_edges_list_it ops"
+    abbreviation succ_list_it  where "succ_list_it \<equiv> gop_succ_list_it ops"
   end
 
   locale StdGraph = StdGraphDefs +
@@ -144,7 +232,10 @@ begin
     graph_add_edge \<alpha> invar add_edge +
     graph_delete_edge \<alpha> invar delete_edge +
     graph_from_list \<alpha> invar from_list +
-    graph_to_list \<alpha> invar to_list
+    graph_to_list \<alpha> invar to_list +
+    graph_nodes_it \<alpha> invar nodes_list_it +
+    graph_edges_it \<alpha> invar edges_list_it +
+    graph_succ_it \<alpha> invar succ_list_it
   begin
     lemmas correct = empty_correct add_node_correct delete_node_correct 
       add_edge_correct delete_edge_correct

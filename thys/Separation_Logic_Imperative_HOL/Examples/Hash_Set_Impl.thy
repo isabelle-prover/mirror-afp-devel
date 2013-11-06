@@ -43,9 +43,10 @@ definition "is_hashset s ht \<equiv> is_hashmap (map_of_set s) ht"
 
 lemma hs_set_impl: "imp_set is_hashset"
   apply unfold_locales
+  apply rule
   unfolding is_hashset_def
   apply (subst map_of_set_eq'[symmetric])
-  by (metis is_hashmap_prec)
+  by (metis preciseD[OF is_hashmap_prec])
 interpretation hs!: imp_set is_hashset by (rule hs_set_impl)
 
 definition hs_new :: "'a::{heap,hashable} hashset Heap" 

@@ -11,8 +11,8 @@ abbreviation os_list :: "'a list \<Rightarrow> ('a\<Colon>heap) os_list \<Righta
 
 subsection {* Precision *}
 lemma os_prec: 
-  "\<forall>l l'. (h\<Turnstile>(os_list l p * F1) \<and>\<^sub>A (os_list l' p * F2)) \<longrightarrow> l=l'"
-  by (simp add: lseg_prec2)
+  "precise os_list"
+  by rule (simp add: lseg_prec2)
 
 lemma os_imp_list_impl: "imp_list os_list"
   apply unfold_locales

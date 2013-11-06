@@ -1,6 +1,6 @@
 header {* Automation *}
 theory Automation
-imports Hoare_Triple
+imports Hoare_Triple (*"../Lib/Refine_Util"*)
 begin
 
 text {*
@@ -279,7 +279,8 @@ lemma frame_rule_left:
   using frame_rule by (simp add: assn_aci)
 
 lemmas deconstruct_rules = 
-  bind_rule if_rule false_rule return_sp_rule let_rule case_prod_rule
+  bind_rule if_rule false_rule return_sp_rule let_rule 
+  prod_case_rule list_case_rule option_case_rule sum_case_rule
 
 lemmas heap_rules = 
   ref_rule
@@ -395,6 +396,7 @@ structure Seplogic_Auto = struct
   end;
 
   fun assn_simproc_fun ctxt credex = let
+    (*val ctxt = Simplifier.the_context ss*)
     val ([redex],ctxt') = Variable.import_terms true [term_of credex] ctxt;
     (*val _ = tracing (tr_term redex);*)
     val export = singleton (Variable.export ctxt' ctxt)
@@ -438,9 +440,9 @@ structure Seplogic_Auto = struct
 
       fun normalize_core t = let 
         val ((has_true,pures,ptrs),rt) = normalizer t;
-        (*val _ = tracing (@{make_string} ptrs);*)
+        (*val _ = tracing (PolyML.makestring ptrs);*)
         val similar = find_similar ptrs_key ptrs;
-        (*val _ = tracing (@{make_string} similar);*)
+        (*val _ = tracing (PolyML.makestring similar);*)
         val true_t = if has_true then SOME @{term "Assertions.top_assn"} 
           else NONE;
         val pures' = case pures of 
@@ -474,18 +476,16 @@ structure Seplogic_Auto = struct
       in t' end) terms;
     val new_form = list_comb (f,nterms);
 
-    val res_simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci};
+    val res_ss = (put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci});
     val result = Option.map (export o mk_meta_eq) (Arith_Data.prove_conv_nohyps
-      [simp_tac res_simpset 1] ctxt' (redex,new_form)
+      [simp_tac res_ss 1] ctxt' (redex,new_form)
     );
 
   in 
     result
-  end handle exc =>
-    if Exn.is_interrupt exc then reraise exc
-    else
-      (tracing ("assn_simproc failed with exception: "^ML_Compiler.exn_message exc);
-        NONE) (* Fail silently *);
+  end handle exc => 
+    (tracing ("assn_simproc failed with exception: "^PolyML.makestring exc); 
+      NONE) (* Fail silently *);
   
   val assn_simproc = Simplifier.make_simproc {
     lhss = [@{cpat "?h\<Turnstile>?P"},@{cpat "?P \<Longrightarrow>\<^sub>A ?Q"},
@@ -527,7 +527,8 @@ structure Seplogic_Auto = struct
   *)
   fun match_frame_tac imp_solve_tac ctxt = let
     (* Normalize star-lists *)
-    val norm_tac = simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_normalize});
+    val norm_tac = simp_tac (
+      put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_normalize});
 
     (* Strip star-lists *)
     val strip_tac = 
@@ -591,7 +592,8 @@ structure Seplogic_Auto = struct
     val preprocess_entails_tac = 
       dflt_tac ctxt 
       THEN' extract_ex_tac
-      THEN' simp_tac (put_simpset HOL_ss ctxt addsimps @{thms solve_ent_preprocess_simps});
+      THEN' simp_tac 
+        (put_simpset HOL_ss ctxt addsimps @{thms solve_ent_preprocess_simps});
 
     val match_entails_tac =
       resolve_tac @{thms entails_solve_init} 
@@ -621,13 +623,15 @@ structure Seplogic_Auto = struct
       val description = "Seplogic: " ^
         "VCG deconstruct rules" );
 
-  fun vcg_tac ctxt = let
+  fun heap_rule_tac ctxt h_thms = 
+    resolve_tac h_thms ORELSE' (
+    rtac @{thm fi_rule} THEN' (resolve_tac h_thms THEN_IGNORE_NEWGOALS
+    frame_inference_tac ctxt));
+
+  fun vcg_step_tac ctxt = let
     val h_thms = heap_rules.get ctxt;
     val d_thms = decon_rules.get ctxt;
-    val heap_rule_tac =
-      resolve_tac h_thms ORELSE' (
-      rtac @{thm fi_rule} THEN' (resolve_tac h_thms THEN_IGNORE_NEWGOALS
-      frame_inference_tac ctxt));
+    val heap_rule_tac = heap_rule_tac ctxt h_thms
 
     (* Apply consequence rule if postcondition is not a schematic var *)
     fun app_post_cons_tac i st = 
@@ -638,7 +642,7 @@ structure Seplogic_Auto = struct
       | _ => no_tac st;
 
   in
-    REPEAT_DETERM' (FIRST' [
+    (FIRST' [
       CHANGED o dflt_tac ctxt,
       REPEAT_ALL_NEW (resolve_tac @{thms normalize_rules}),
       CHANGED o (FIRST' [resolve_tac d_thms, heap_rule_tac]
@@ -647,6 +651,7 @@ structure Seplogic_Auto = struct
     ])
   end;
 
+  fun vcg_tac ctxt = REPEAT_DETERM' (vcg_step_tac ctxt)
 
   (***********************************)
   (*        Automatic Solver         *)
@@ -725,10 +730,26 @@ method_setup solve_entails = {*
   CHANGED o Seplogic_Auto.solve_entails_tac ctxt
 )) *} "Seplogic: Entailment Solver"
 
+method_setup heap_rule = {* 
+  Attrib.thms >>
+  (fn thms => fn ctxt => SIMPLE_METHOD' ( 
+    let
+      val thms = case thms of [] => Seplogic_Auto.heap_rules.get ctxt
+        | _ => thms
+    in
+      CHANGED o Seplogic_Auto.heap_rule_tac ctxt thms
+    end
+)) *} "Seplogic: Apply rule with frame inference"
+
+
 method_setup vcg = {* 
+  Scan.lift (Args.mode "ss") --
   Method.sections Seplogic_Auto.vcg_modifiers >>
-  (fn _ => fn ctxt => SIMPLE_METHOD' (
-  CHANGED o Seplogic_Auto.vcg_tac ctxt
+  (fn (ss,_) => fn ctxt => SIMPLE_METHOD' (
+  CHANGED o (
+    if ss then Seplogic_Auto.vcg_step_tac ctxt 
+    else Seplogic_Auto.vcg_tac ctxt
+  )
 )) *} "Seplogic: Verification Condition Generator"
 
 method_setup sep_auto = 
@@ -776,6 +797,15 @@ lemma mod_frame_fwd:
 
 text {* Apply precision rule with frame inference. *}
 lemma prec_frame:
+  assumes PREC: "precise P"
+  assumes M1: "h\<Turnstile>(R1 \<and>\<^sub>A R2)"
+  assumes F1: "R1 \<Longrightarrow>\<^sub>A P x p * F1"
+  assumes F2: "R2 \<Longrightarrow>\<^sub>A P y p * F2"
+  shows "x=y"
+  using preciseD[OF PREC] M1 F1 F2
+  by (metis entailsD mod_and_dist)
+
+lemma prec_frame_expl:
   assumes PREC: "\<forall>x y. (h\<Turnstile>(P x * F1) \<and>\<^sub>A (P y * F2)) \<longrightarrow> x=y"
   assumes M1: "h\<Turnstile>(R1 \<and>\<^sub>A R2)"
   assumes F1: "R1 \<Longrightarrow>\<^sub>A P x * F1"
@@ -783,6 +813,7 @@ lemma prec_frame:
   shows "x=y"
   using assms
   by (metis entailsD mod_and_dist)
+
 
 text {* Variant that is useful within induction proofs, where induction
   goes over @{text "x"} or @{text "y"} *}
@@ -803,6 +834,56 @@ lemma ent_wand_frameI:
   shows "P \<Longrightarrow>\<^sub>A S"
   using assms
   by (metis ent_frame_fwd ent_wandI mult_commute)
+
+subsubsection {* Manual Frame Inference *}
+
+lemma ent_true_drop: 
+  "P\<Longrightarrow>\<^sub>AQ*true \<Longrightarrow> P*R\<Longrightarrow>\<^sub>AQ*true"
+  "P\<Longrightarrow>\<^sub>AQ \<Longrightarrow> P\<Longrightarrow>\<^sub>AQ*true"
+  apply (metis assn_times_comm ent_star_mono ent_true merge_true_star_ctx)
+  apply (metis assn_one_left ent_star_mono ent_true star_aci(2))
+  done
+
+lemma fr_refl: "A\<Longrightarrow>\<^sub>AB \<Longrightarrow> A*C \<Longrightarrow>\<^sub>AB*C"
+  by (blast intro: ent_star_mono ent_refl)
+
+lemma fr_rot: "(A*B \<Longrightarrow>\<^sub>A C) \<Longrightarrow> (B*A \<Longrightarrow>\<^sub>A C)" 
+  by (simp add: assn_aci)
+
+lemma fr_rot_rhs: "(A \<Longrightarrow>\<^sub>A B*C) \<Longrightarrow> (A \<Longrightarrow>\<^sub>A C*B)" 
+  by (simp add: assn_aci)
+
+method_setup fr_rot = {* 
+  let
+    fun rot_tac ctxt = 
+      rtac @{thm fr_rot} THEN'
+      simp_tac (put_simpset HOL_basic_ss ctxt 
+        addsimps @{thms star_assoc[symmetric]})
+
+  in
+    Scan.lift Parse.nat >> 
+      (fn n => fn ctxt => SIMPLE_METHOD' (
+        fn i => REPEAT_DETERM_N n (rot_tac ctxt i)))
+
+  end
+*}
+
+method_setup fr_rot_rhs = {* 
+  let
+    fun rot_tac ctxt = 
+      rtac @{thm fr_rot_rhs} THEN'
+      simp_tac (put_simpset HOL_basic_ss ctxt 
+        addsimps @{thms star_assoc[symmetric]})
+
+  in
+    Scan.lift Parse.nat >> 
+      (fn n => fn ctxt => SIMPLE_METHOD' (
+        fn i => REPEAT_DETERM_N n (rot_tac ctxt i)))
+
+  end
+*}
+
+
 
 (*<*)
 subsection {* Test Cases *}
@@ -954,6 +1035,10 @@ text {*
   instantiating schematic variables. @{text "P"} and @{text "Q"} should be 
   assertions separated by @{text "*"}. Note that frame inference does no 
   simplification or other kinds of normalization.
+
+  The method @{text "heap_rule"} applies the specified heap rules, using
+  frame inference if necessary. If no rules are specified, the default 
+  heap rules are used.
 
   \paragraph{Verification Condition Generator}
   The verification condition generator processes goals of the form 

@@ -31,8 +31,9 @@ method_setup regexp = {*
     let
       val thy = Proof_Context.theory_of ctxt
       val regexp_conv = Code_Runtime.static_holds_conv thy
-      [@{const_name Zero}, @{const_name One}, @{const_name Atom}, @{const_name Plus},
-       @{const_name Times}, @{const_name Star}, 
+      [@{const_name "Nat.zero_nat_inst.zero_nat"}, @{const_name Suc},
+       @{const_name Zero}, @{const_name One}, @{const_name Atom},
+       @{const_name Plus}, @{const_name Times}, @{const_name Star}, 
        @{const_name check_eqv}, @{const_name Trueprop}]
     in
       SIMPLE_METHOD' (

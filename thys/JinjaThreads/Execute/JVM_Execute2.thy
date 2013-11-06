@@ -287,7 +287,7 @@ lemma JVM_rr:
   shows
   "sc_scheduler 
      JVM_final' (sc_mexec P) convert_RA
-     (JVM_rr.round_robin P n0) (pick_wakeup_via_sel (\<lambda>s P. rm_sel' s (\<lambda>(k,v). P k v))) JVM_rr.round_robin_invar
+     (JVM_rr.round_robin P n0) (pick_wakeup_via_sel (\<lambda>s P. rm_sel s (\<lambda>(k,v). P k v))) JVM_rr.round_robin_invar
      (sc_jvm_state_invar P \<Phi>)"
 unfolding sc_scheduler_def
 apply(rule JVM_rr.round_robin_scheduler)
@@ -323,7 +323,7 @@ lemma JVM_rnd:
   shows 
   "sc_scheduler
     JVM_final' (sc_mexec P) convert_RA
-    (JVM_rnd.random_scheduler P) (pick_wakeup_via_sel (\<lambda>s P. rm_sel' s (\<lambda>(k,v). P k v))) (\<lambda>_ _. True)
+    (JVM_rnd.random_scheduler P) (pick_wakeup_via_sel (\<lambda>s P. rm_sel s (\<lambda>(k,v). P k v))) (\<lambda>_ _. True)
     (sc_jvm_state_invar P \<Phi>)"
 unfolding sc_scheduler_def
 apply(rule JVM_rnd.random_scheduler_scheduler)

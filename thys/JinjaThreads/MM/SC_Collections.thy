@@ -7,9 +7,10 @@ header {* \isaheader{Sequential consistency with efficient data structures} *}
 theory SC_Collections
 imports
   "../Common/Conform"
-  "../../Collections/impl/RBTMapImpl"
+  (*"../../Collections/impl/RBTMapImpl"
   "../../Collections/impl/TrieMapImpl"
-  "../../Collections/impl/ListMapImpl"
+  "../../Collections/impl/ListMapImpl"*)
+  "../Basic/JT_ICF"
   MM
 begin
 
@@ -58,7 +59,7 @@ where
 
 definition init_fields_array :: "(vname \<times> ty) list \<Rightarrow> array_fields"
 where
-  "init_fields_array \<equiv> list_to_lm \<circ> map (\<lambda>(F, T). (F, default_val T))"
+  "init_fields_array \<equiv> lm.to_map \<circ> map (\<lambda>(F, T). (F, default_val T))"
 
 definition init_cells :: "ty \<Rightarrow> nat \<Rightarrow> array_cells"
 where "init_cells T n = foldl (\<lambda>cells i. rm_update i (default_val T) cells) (rm_empty ()) [0..<n]"
@@ -144,14 +145,14 @@ consts sc_spurious_wakeups :: bool
 
 lemma new_Addr_SomeD: "new_Addr h = \<lfloor>a\<rfloor> \<Longrightarrow> rm_lookup a h = None"
 apply(simp add: new_Addr_def)
-apply(drule rm.max_None[OF TrueI])
+apply(drule rm.max_None[OF rm.invar])
 apply(simp add: rm.lookup_correct rel_of_def)
 apply(clarsimp simp add: rm.lookup_correct)
-apply(frule rm.max_Some[OF TrueI])
+apply(frule rm.max_Some[OF rm.invar])
 apply(clarsimp simp add: rel_of_def)
 apply(rule ccontr)
 apply(clarsimp)
-apply(drule_tac k'="Suc a" in rm.max_Some(2)[OF TrueI])
+apply(drule_tac k'="Suc a" in rm.max_Some(2)[OF rm.invar])
 apply(auto simp add: rel_of_def)
 done
 

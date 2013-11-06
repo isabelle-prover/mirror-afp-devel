@@ -712,6 +712,22 @@ proof -
   with IMP show "(h',as\<union>as') \<Turnstile> R" by (blast dest: ent_fwd)
 qed
 
+lemma ent_disjI1:
+  assumes "P \<or>\<^sub>A Q \<Longrightarrow>\<^sub>A R" 
+  shows "P \<Longrightarrow>\<^sub>A R" using assms unfolding entails_def by simp
+
+lemma ent_disjI2:
+  assumes "P \<or>\<^sub>A Q \<Longrightarrow>\<^sub>A R" 
+  shows "Q \<Longrightarrow>\<^sub>A R" using assms unfolding entails_def by simp
+
+lemma ent_disjE: "\<lbrakk> A\<Longrightarrow>\<^sub>AC; B\<Longrightarrow>\<^sub>AC \<rbrakk> \<Longrightarrow> A\<or>\<^sub>AB \<Longrightarrow>\<^sub>AC"
+  unfolding entails_def by auto
+
+lemma ent_conjE1: "\<lbrakk>A\<Longrightarrow>\<^sub>AC\<rbrakk> \<Longrightarrow> A\<and>\<^sub>AB\<Longrightarrow>\<^sub>AC"
+  unfolding entails_def by (auto simp: mod_and_dist)
+lemma ent_conjE2: "\<lbrakk>B\<Longrightarrow>\<^sub>AC\<rbrakk> \<Longrightarrow> A\<and>\<^sub>AB\<Longrightarrow>\<^sub>AC"
+  unfolding entails_def by (auto simp: mod_and_dist)
+
 subsection {* Precision *}
 text {*
   Precision rules describe that parts of an assertion may depend only on the
@@ -720,22 +736,45 @@ text {*
 *}
 text {* Precision rules should have the form: 
   @{text [display] "\<forall>x y. (h\<Turnstile>(P x * F1) \<and>\<^sub>A (P y * F2)) \<longrightarrow> x=y"}*}
+definition "precise R \<equiv> \<forall>a a' h p F F'. 
+  h \<Turnstile> R a p * F \<and>\<^sub>A R a' p * F' \<longrightarrow> a = a'"
 
-lemma sngr_prec: "\<forall>x y. (h\<Turnstile>(p\<mapsto>\<^sub>rx * F1) \<and>\<^sub>A (p\<mapsto>\<^sub>ry * F2)) \<longrightarrow> x=y"
+lemma preciseI[intro?]: 
+  assumes "\<And>a a' h p F F'. h \<Turnstile> R a p * F \<and>\<^sub>A R a' p * F' \<Longrightarrow> a = a'"
+  shows "precise R"
+  using assms unfolding precise_def by blast
+
+lemma preciseD:
+  assumes "precise R"
+  assumes "h \<Turnstile> R a p * F \<and>\<^sub>A R a' p * F'"
+  shows "a=a'"
+  using assms unfolding precise_def by blast
+
+lemma preciseD':
+  assumes "precise R"
+  assumes "h \<Turnstile> R a p * F" 
+  assumes "h \<Turnstile> R a' p * F'"
+  shows "a=a'"
+  apply (rule preciseD)
+  apply (rule assms)
+  apply (simp only: mod_and_dist)
+  apply (blast intro: assms)
+  done
+
+lemma sngr_prec: "precise (\<lambda>x p. p\<mapsto>\<^sub>rx)"
+  apply rule
   apply (clarsimp simp: mod_and_dist)
   unfolding sngr_assn_def times_assn_def
   apply (simp add: Abs_assn_inverse)
-  apply (cases h)
   apply auto
   done
 
-lemma snga_prec: "\<forall>x y. (h\<Turnstile>(p\<mapsto>\<^sub>ax * F1) \<and>\<^sub>A (p\<mapsto>\<^sub>ay * F2)) \<longrightarrow> x=y"
+lemma snga_prec: "precise (\<lambda>x p. p\<mapsto>\<^sub>ax)"
+  apply rule
   apply (clarsimp simp: mod_and_dist)
   unfolding snga_assn_def times_assn_def
   apply (simp add: Abs_assn_inverse)
-  apply (cases h)
   apply auto
   done
-
 
 end

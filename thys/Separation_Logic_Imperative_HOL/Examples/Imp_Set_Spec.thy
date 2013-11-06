@@ -10,8 +10,7 @@ text {*
 
 locale imp_set =
   fixes is_set :: "'a set \<Rightarrow> 's \<Rightarrow> assn"
-  assumes precise: 
-    "\<forall>s s'. h\<Turnstile>(is_set s p * F1) \<and>\<^sub>A (is_set s' p * F2) \<longrightarrow> s=s'"
+  assumes precise: "precise is_set"
 
 locale imp_set_empty = imp_set +
   constrains is_set :: "'a set \<Rightarrow> 's \<Rightarrow> assn"

@@ -661,7 +661,7 @@ next
   obtain t' queue' where queue': "queue_dequeue queue = (t', queue')" by(cases "queue_dequeue queue")
   note [simp] = `t # \<alpha>queue' = queue_\<alpha> queue`[symmetric]
   { case 1
-    with queue' have [simp]: "t' = t" "\<alpha>queue' = queue_\<alpha> queue'" "queue_invar queue'" by(auto elim: queue.dequeueE)
+    with queue' have [simp]: "t' = t" "\<alpha>queue' = queue_\<alpha> queue'" "queue_invar queue'" by(auto elim: queue.removelE)
     from 1 queue' have invar': "round_robin_invar (queue_push t queue', n0) (dom (thr_\<alpha> (thr s)))"
       by(auto simp add: queue.push_correct)
     show ?case
@@ -687,7 +687,7 @@ next
     qed
   next
     case 2
-    with queue' have [simp]: "t' = t" "\<alpha>queue' = queue_\<alpha> queue'" "queue_invar queue'" by(auto elim: queue.dequeueE)
+    with queue' have [simp]: "t' = t" "\<alpha>queue' = queue_\<alpha> queue'" "queue_invar queue'" by(auto elim: queue.removelE)
     from 2 queue' have invar': "round_robin_invar (queue_push t queue', n0) (dom (thr_\<alpha> (thr s)))"
       by(auto simp add: queue.push_correct)
     show ?case
@@ -728,7 +728,7 @@ proof -
     case (Cons t \<alpha>queue')
     with invar \<sigma> obtain queue'
       where [simp]: "queue_dequeue queue = (t, queue')" "\<alpha>queue' = queue_\<alpha> queue'" "queue_invar queue'"
-      by(auto elim: queue.dequeueE)
+      by(auto elim: queue.removelE)
     from invar \<sigma> Cons have invar': "round_robin_invar (queue_push t queue', n) (dom (thr_\<alpha> (thr s)))"
       by(auto simp add: queue.push_correct)
     from invar \<sigma> Cons have invar'': "round_robin_invar (queue_enqueue t queue', n0) (dom (thr_\<alpha> (thr s)))"

@@ -1,86 +1,21 @@
 header {* \isaheader{Miscellanneous Lemmas and Tools} *}
 theory Refine_Misc
-imports Main "../Collections/common/Misc"
+imports 
+  "../Automatic_Refinement/Automatic_Refinement"
+  "../Containers/Unit_Instantiations"
 begin
 
 subsection {* ML-level stuff *}
+
 ML {*
-infix 0 THEN_ELSE';
-infix 1 THEN_ALL_NEW_FWD;
 
 structure Refine_Misc = struct
-  (************************)
-  (* Tacticals *)
-  (************************)
-
-  fun (tac1 THEN_ELSE' (tac2,tac3)) x = tac1 x THEN_ELSE (tac2 x,tac3 x);  
-
   (* Fail if goal index out of bounds. *)
+  (* Use IF_EXGOAL instead!
   fun wrap_nogoals tac i st = if nprems_of st < i then 
     no_tac st 
   else
-    tac i st;
-  
-  (* Apply tactic to subgoals in interval, in a forward manner, skipping over
-    emerging subgoals *)
-  exception FWD of string;
-  fun INTERVAL_FWD tac l u st =
-    if l>u then all_tac st 
-    else (tac l THEN (fn st' => let
-        val ofs = nprems_of st' - nprems_of st;
-      in
-        if ofs < ~1 then raise FWD ("INTERVAL_FWD -- tac solved more than one goal")
-        else INTERVAL_FWD tac (l+1+ofs) (u+ofs) st'
-      end)) st;
-
-  (* Apply tac2 to all subgoals emerged from tac1, in forward manner. *)
-  fun (tac1 THEN_ALL_NEW_FWD tac2) i st =
-    (tac1 i 
-    THEN (fn st' => INTERVAL_FWD tac2 i (i+nprems_of st'-nprems_of st) st')) st;
-
-  (* Repeat tac on subgoal. Determinize each step. 
-     Stop if tac fails or subgoal is solved. *)
-  fun REPEAT_DETERM' tac i st = let
-    val n = nprems_of st 
-  in
-    REPEAT_DETERM (COND (has_fewer_prems n) no_tac (tac i)) st
-  end
-
-  (* Apply tactic to all goals in a forward manner.
-    Newly generated goals are ignored.
-  *)
-  fun ALL_GOALS_FWD' tac i st =
-    (tac i THEN (fn st' => 
-      let
-        val i' = i + nprems_of st' + 1 - nprems_of st;
-      in
-        if i' <= nprems_of st' then
-          ALL_GOALS_FWD' tac i' st'
-        else
-          all_tac st'
-      end
-    )) st;
-
-  fun ALL_GOALS_FWD tac = ALL_GOALS_FWD' tac 1;
-
-  (********************)
-  (* Tactics *)
-  (********************)
-
-  (* Resolve with rule. Use first-order unification.
-    From cookbook, added exception handling *)
-  fun fo_rtac thm = Subgoal.FOCUS (fn {concl, ...} => 
-  let
-    val concl_pat = Drule.strip_imp_concl (cprop_of thm)
-    val insts = Thm.first_order_match (concl_pat, concl)
-  in
-    rtac (Drule.instantiate_normalize insts thm) 1
-  end handle Pattern.MATCH => no_tac )
-
-  (* Resolve with premises. From cookbook. *)
-  fun rprems_tac ctxt = 
-    Subgoal.FOCUS_PREMS (fn {prems,...} => resolve_tac prems 1) ctxt;
-
+    tac i st;*)
 
   (********************)
   (* Monotonicity Prover *)
@@ -91,10 +26,11 @@ structure Refine_Misc = struct
         val description = "Refinement Framework: " ^
           "Monotonicity rules" )
 
-    structure refine_mono_trigger = Named_Thms
+    (*structure refine_mono_trigger = Named_Thms
       ( val name = @{binding refine_mono_trigger}
         val description = "Refinement Framework: " ^
           "Triggering rules for monotonicity prover" )
+    *)
 
     (* Monotonicity prover: Solve by removing function arguments *)
     fun solve_le_tac ctxt = SOLVED' (REPEAT_ALL_NEW (
@@ -109,35 +45,52 @@ structure Refine_Misc = struct
       solve_le_tac ctxt
     ]);
 
-    (* Monotonicity prover: Match triggering rule, and solve 
-      resulting goals completely or fail.
-    *)
-    fun triggered_mono_tac ctxt = 
-      SOLVED' (
-        match_tac (refine_mono_trigger.get ctxt) 
-        THEN_ALL_NEW mono_prover_tac ctxt);
-  
+    fun untriggered_mono_tac ctxt = mono_prover_tac ctxt 
+      THEN_ALL_NEW (TRY o Tagged_Solver.solve_tac ctxt)
 
+    val declare_mono_triggers =
+      Tagged_Solver.add_triggers "Refine_Misc.refine_mono" 
+      (* TODO: Hack, how to get correct naming? *)
 
+    val setup = refine_mono.setup
+    val decl_setup = 
+      Tagged_Solver.declare_solver 
+        @{thms monoI monotoneI[of "op \<le>" "op \<le>"]} @{binding refine_mono}
+        "Autoref: Monotonicity prover" 
+        mono_prover_tac
 end;
 *}
 
-setup {* Refine_Misc.refine_mono.setup *}
-setup {* Refine_Misc.refine_mono_trigger.setup *}
+setup Refine_Misc.setup
+declaration Refine_Misc.decl_setup
+
 
 method_setup refine_mono = 
   {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
-    Refine_Misc.mono_prover_tac ctxt
+    Refine_Misc.untriggered_mono_tac ctxt
   )) *} 
   "Refinement framework: Monotonicity prover"
 
+
 text {* Basic configuration for monotonicity prover: *}
-lemmas [refine_mono, refine_mono_trigger] = monoI monotoneI[of "op \<le>" "op \<le>"]
+lemmas [refine_mono] = monoI monotoneI[of "op \<le>" "op \<le>"]
 lemmas [refine_mono] = TrueI le_funI order_refl
 
 lemma prod_case_mono[refine_mono]: 
   "\<lbrakk>\<And>a b. p=(a,b) \<Longrightarrow> f a b \<le> f' a b\<rbrakk> \<Longrightarrow> prod_case f p \<le> prod_case f' p"
   by (auto split: prod.split)
+
+lemma option_case_mono[refine_mono]:
+  assumes "fn \<le> fn'"
+  assumes "\<And>v. x=Some v \<Longrightarrow> fs v \<le> fs' v"
+  shows "option_case fn fs x \<le> option_case fn' fs' x"
+  using assms by (auto split: option.split)
+
+lemma list_case_mono[refine_mono]:
+  assumes "fn \<le> fn'"
+  assumes "\<And>x xs. l=x#xs \<Longrightarrow> fc x xs \<le> fc' x xs"
+  shows "list_case fn fc l \<le> list_case fn' fc' l"
+  using assms by (auto split: list.split)
 
 lemma if_mono[refine_mono]:
   assumes "b \<Longrightarrow> m1 \<le> m1'"
@@ -150,71 +103,11 @@ lemma let_mono[refine_mono]:
 
 
 subsection {* Uncategorized Lemmas *}
-
 lemma all_nat_split_at: "\<forall>i::'a::linorder<k. P i \<Longrightarrow> P k \<Longrightarrow> \<forall>i>k. P i 
   \<Longrightarrow> \<forall>i. P i"
   by (metis linorder_neq_iff)
 
-lemma list_all2_induct[consumes 1, case_names Nil Cons]:
-  assumes "list_all2 P l l'"
-  assumes "Q [] []"
-  assumes "\<And>x x' ls ls'. \<lbrakk> P x x'; list_all2 P ls ls'; Q ls ls' \<rbrakk> 
-    \<Longrightarrow> Q (x#ls) (x'#ls')"
-  shows "Q l l'"
-  using list_all2_lengthD[OF assms(1)] assms 
-  apply (induct rule: list_induct2)
-  apply auto
-  done
-
-lemma pair_set_inverse[simp]: "{(a,b). P a b}\<inverse> = {(b,a). P a b}"
-  by auto
-
-lemma comp_cong_right: "x = y \<Longrightarrow> f o x = f o y" by (simp)
-lemma comp_cong_left: "x = y \<Longrightarrow> x o f = y o f" by (simp)
-
-lemma nested_prod_case_simp: "(\<lambda>(a,b) c. f a b c) x y = 
-  (prod_case (\<lambda>a b. f a b y) x)"
-  by (auto split: prod.split)
-
-subsection {* Relations*}
-
-subsubsection {* Transitive Closure *}
-lemma rtrancl_apply_insert: "R\<^sup>*``(insert x S) = insert x (R\<^sup>*``(S\<union>R``{x}))"
-  apply (auto)
-  apply (erule converse_rtranclE)
-  apply auto [2]
-  apply (erule converse_rtranclE)
-  apply (auto intro: converse_rtrancl_into_rtrancl) [2]
-  done
-
-lemma rtrancl_last_visit_node:
-  assumes "(s,s')\<in>R\<^sup>*"
-  shows "s\<noteq>sh \<and> (s,s')\<in>(R \<inter> (UNIV \<times> (-{sh})))\<^sup>* \<or>
-          (s,sh)\<in>R\<^sup>* \<and> (sh,s')\<in>(R \<inter> (UNIV \<times> (-{sh})))\<^sup>*"
-  using assms
-proof (induct rule: converse_rtrancl_induct)
-  case base thus ?case by auto
-next
-  case (step s st)
-  moreover {
-    assume P: "(st,s')\<in> (R \<inter> UNIV \<times> - {sh})\<^sup>*"
-    {
-      assume "st=sh" with step have ?case
-        by auto
-    } moreover {
-      assume "st\<noteq>sh"
-      with `(s,st)\<in>R` have "(s,st)\<in>(R \<inter> UNIV \<times> - {sh})\<^sup>*" by auto
-      also note P
-      finally have ?case by blast
-    } ultimately have ?case by blast
-  } moreover {
-    assume P: "(st, sh) \<in> R\<^sup>* \<and> (sh, s') \<in> (R \<inter> UNIV \<times> - {sh})\<^sup>*"
-    with step(1) have ?case
-      by (auto dest: converse_rtrancl_into_rtrancl)
-  } ultimately show ?case by blast
-qed
-
-subsubsection {* Well-Foundedness *}
+subsection {* Well-Foundedness *}
 
 lemma wf_no_infinite_down_chainI:
   assumes "\<And>f. \<lbrakk>\<And>i. (f (Suc i), f i)\<in>r\<rbrakk> \<Longrightarrow> False"
@@ -545,9 +438,11 @@ abbreviation "chain_admissible P \<equiv> ccpo.admissible Sup op \<le> P"
 abbreviation "is_chain \<equiv> Complete_Partial_Order.chain (op \<le>)"
 lemmas chain_admissibleI[intro?] = ccpo.admissibleI[where lub=Sup and ord="op \<le>"]
 
+
 abbreviation "dual_chain_admissible P \<equiv> ccpo.admissible Inf (\<lambda>x y. y\<le>x) P"
 abbreviation "is_dual_chain \<equiv> Complete_Partial_Order.chain (\<lambda>x y. y\<le>x)"
-lemmas dual_chain_admissibleI[intro?] = ccpo.admissibleI[where lub=Inf and ord="op \<ge>"]
+lemmas dual_chain_admissibleI[intro?] = 
+  ccpo.admissibleI[where lub=Inf and ord="(\<lambda>x y. y\<le>x)"]
 
 lemma dual_chain_iff[simp]: "is_dual_chain C = is_chain C"
   unfolding chain_def
@@ -718,5 +613,6 @@ subsubsection {* Key-Value Set *}
   lemma map_to_set_inj:     
     "(k,v)\<in>map_to_set m \<Longrightarrow> (k,v')\<in>map_to_set m \<Longrightarrow> v = v'"
     by (auto simp: map_to_set_def)
+
 
 end

@@ -50,6 +50,7 @@ structure Refine_dref_type = struct
         "Type based heuristics introduction rules" 
   );
 
+
   val tracing = 
     Attrib.setup_config_bool @{binding refine_dref_tracing} (K false);
 
@@ -104,16 +105,16 @@ setup {* Refine_dref_type.RELATES_rules.setup *}
 setup {* Refine_dref_type.pattern_rules.setup *}
 
 method_setup refine_dref_type = 
-  {* Scan.lift (Args.mode "trace" -- Args.mode "nopost") >> (fn (tracing,nopost) => 
-    fn ctxt =>
-      let
-        val ctxt = 
-          if tracing then Config.put Refine_dref_type.tracing true ctxt else ctxt; 
-      in
-        SIMPLE_METHOD (CHANGED (
-          Refine_dref_type.type_tac ctxt 
-          THEN (if nopost then all_tac else ALLGOALS (TRY o Refine.post_tac ctxt))))
-      end)
+  {* Scan.lift (Args.mode "trace" -- Args.mode "nopost") 
+  >> (fn (tracing,nopost) => 
+    fn ctxt => (let
+      val ctxt = 
+        if tracing then Config.put Refine_dref_type.tracing true ctxt else ctxt; 
+    in
+      SIMPLE_METHOD (CHANGED (
+        Refine_dref_type.type_tac ctxt 
+        THEN (if nopost then all_tac else ALLGOALS (TRY o Refine.post_tac ctxt))))
+    end))
   *} 
   "Use type-based heuristics to instantiate data refinement relations"
 
@@ -142,31 +143,46 @@ text {*
 
 lemma Id_RELATES [refine_dref_RELATES]: "RELATES Id" by (simp add: RELATES_def)
 
-text {* Component-wise refinement for product types: *}
-definition [simp]: "rprod R1 R2 \<equiv> { ((a,b),(a',b')) . (a,a')\<in>R1 \<and> (b,b')\<in>R2 }"
+lemma prod_rel_RELATES[refine_dref_RELATES]: 
+  "RELATES Ra \<Longrightarrow> RELATES Rb \<Longrightarrow> RELATES (\<langle>Ra,Rb\<rangle>prod_rel)"
+  by (simp add: RELATES_def prod_rel_def)
 
-lemma rprod_RELATES[refine_dref_RELATES]: 
-  "RELATES Ra \<Longrightarrow> RELATES Rb \<Longrightarrow> RELATES (rprod Ra Rb)"
-  by (simp add: RELATES_def)
+declare prod_rel_sv[refine_hsimp]
+lemma prod_rel_iff[refine_hsimp]: 
+  "((a,b),(a',b'))\<in>\<langle>A,B\<rangle>prod_rel \<longleftrightarrow> (a,a')\<in>A \<and> (b,b')\<in>B"
+  by (auto simp: prod_rel_def)
 
-lemma rprod_sv[refine_hsimp, refine_post]: 
-  "\<lbrakk>single_valued R1; single_valued R2\<rbrakk> \<Longrightarrow> single_valued (rprod R1 R2)"
-  by (auto intro: single_valuedI dest: single_valuedD)
+lemma option_rel_RELATES[refine_dref_RELATES]: 
+  "RELATES Ra \<Longrightarrow> RELATES (\<langle>Ra\<rangle>option_rel)"
+  by (simp add: RELATES_def option_rel_def)
 
-text {* Pointwise refinement for set types: *}
-definition [simp]: "map_set_rel R \<equiv> build_rel (op `` R) (\<lambda>_. True)"
+declare option_rel_sv[refine_hsimp]
 
-lemma map_set_rel_sv[refine_hsimp, refine_post]: 
-  "single_valued (map_set_rel R)"
-  by (auto intro: single_valuedI dest: single_valuedD) []
+declare option_case_refine[refine del]
+lemma option_case_refine_ext[refine]:
+  assumes "(v,v')\<in>\<langle>Ra\<rangle>option_rel"
+  assumes "n \<le> \<Down> Rb n'"
+  assumes "\<And>x x'. \<lbrakk> v=Some x; v'=Some x'; (x, x') \<in> Ra \<rbrakk> 
+    \<Longrightarrow> f x \<le> \<Down> Rb (f' x')"
+  shows "option_case n f v \<le>\<Down>Rb (option_case n' f' v')"
+  using assms
+  by (auto split: option.split simp: option_rel_def)
 
-lemma map_set_rel_RELATES[refine_dref_RELATES]: 
-  "RELATES R \<Longrightarrow> RELATES (map_set_rel R)" by (simp add: RELATES_def)
+lemmas [refine_hsimp] = set_rel_sv set_rel_csv
 
-lemma prod_set_eq_is_Id[refine_hsimp]: 
-  "{(a,b). a=b} = Id" 
-  "{(a,b). b=a} = Id" 
-  by auto
+lemma set_rel_RELATES[refine_dref_RELATES]: 
+  "RELATES R \<Longrightarrow> RELATES (\<langle>R\<rangle>set_rel)" by (simp add: RELATES_def)
+
+lemma set_rel_empty_eq: "(S,S')\<in>\<langle>X\<rangle>set_rel \<Longrightarrow> S={} \<longleftrightarrow> S'={}"
+  by (auto simp: set_rel_def)
+
+lemma set_rel_sngD: "({a},{b})\<in>\<langle>R\<rangle>set_rel \<Longrightarrow> (a,b)\<in>R"
+  by (auto simp: set_rel_def)
+
+(*lemmas [refine_hsimp] = set_rel_empty set_rel_union set_rel_insert
+  set_rel_diff*)
+
+(*lemmas [refine_hsimp] = prod_set_eq_is_Id*)
 
 lemma Image_insert[refine_hsimp]: 
   "(a,b)\<in>R \<Longrightarrow> single_valued R \<Longrightarrow> R``insert a A = insert b (R``A)"
@@ -182,45 +198,9 @@ lemma Image_Inter[refine_hsimp]:
   "single_valued (converse R) \<Longrightarrow> R``(A\<inter>B) = R``A \<inter> R``B"
   by (auto dest: single_valuedD)
 
-text {* Pointwise refinement for list types: *}
-definition [simp]: "map_list_rel R \<equiv> {(l,l'). list_all2 (\<lambda>x x'. (x,x')\<in>R) l l'}"
+lemma list_rel_RELATES[refine_dref_RELATES]: 
+  "RELATES R \<Longrightarrow> RELATES (\<langle>R\<rangle>list_rel)" by (simp add: RELATES_def)
 
-lemma map_list_rel_RELATES[refine_dref_RELATES]: 
-  "RELATES R \<Longrightarrow> RELATES (map_list_rel R)" by (simp add: RELATES_def)
-
-lemma map_list_rel_sv_iff_raw: 
-  "single_valued (map_list_rel R) \<longleftrightarrow> single_valued R"
-  apply (intro iffI[rotated] single_valuedI allI impI)
-  apply clarsimp
-proof -
-  fix x y z
-  assume SV: "single_valued R"
-  assume "list_all2 (\<lambda>x x'. (x, x') \<in> R) x y" and
-    "list_all2 (\<lambda>x x'. (x, x') \<in> R) x z"
-  thus "y=z"
-    apply (induct arbitrary: z rule: list_all2_induct)
-    apply simp
-    apply (case_tac z)
-    apply force
-    apply (force intro: single_valuedD[OF SV])
-    done
-next
-  fix x y z
-  assume SV: "single_valued (map_list_rel R)"
-  assume "(x,y)\<in>R" "(x,z)\<in>R"
-  hence "([x],[y])\<in>map_list_rel R" and "([x],[z])\<in>map_list_rel R"
-    by auto
-  with single_valuedD[OF SV] show "y=z" by (auto simp del: map_list_rel_def)
-qed
-
-lemma map_list_rel_sv_iff[simp, refine_hsimp]:
-  "single_valuedP (list_all2 (\<lambda>x x'. (x, x') \<in> R)) = single_valued R"
-  by (rule map_list_rel_sv_iff_raw[simplified])
-
-lemma map_list_rel_sv[refine, refine_post]: 
-  "single_valued R \<Longrightarrow> single_valued (map_list_rel R)" 
-  by (simp)
-
-
+lemmas [refine_hsimp] = list_rel_sv_iff list_rel_simp
 
 end

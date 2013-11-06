@@ -64,6 +64,15 @@ proof (induct n arbitrary: f)
   finally show ?case unfolding Suc map_upt_Suc by simp
 qed simp
 
+lemma map_upt_split: assumes i: "i < n"
+  shows "map f [0 ..< n] = map f [0 ..< i] @ f i # map (\<lambda> j. f (j + Suc i)) [0 ..< n - Suc i]"
+proof -
+  from i have "n = i + Suc 0 + (n - Suc i)" by arith
+  hence id: "[0 ..< n] = [0 ..< i + Suc 0 + (n - Suc i)]" by simp
+  show ?thesis unfolding id
+    unfolding map_upt_add by auto
+qed
+
 lemma all_Suc_conv:
   "(\<forall>i<Suc n. P i) \<longleftrightarrow> P 0 \<and> (\<forall>i<n. P (Suc i))" (is "?l = ?r")
 proof

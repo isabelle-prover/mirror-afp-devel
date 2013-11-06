@@ -5,8 +5,8 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
   theories [document = false]
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"
-    "../Collections/common/HashCode"
-    "../Collections/common/Misc"
+    "../Collections/Lib/HashCode"
+    "../Automatic_Refinement/Lib/Misc"
     "Tools/Sep_Misc"
   theories
     Sep_Main

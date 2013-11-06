@@ -3,10 +3,14 @@ imports
   Random_Scheduler
   Round_Robin
   "../MM/SC_Collections"
+  (*
   "../../Collections/impl/RBTMapImpl"
   "../../Collections/impl/RBTSetImpl"
   "../../Collections/impl/Fifo"
   "../../Collections/impl/ListSetImpl_Invar"
+  *)
+  "../Basic/JT_ICF"
+  
 begin
 
 abbreviation sc_start_state_refine ::
@@ -48,7 +52,7 @@ locale sc_round_robin_base =
   round_robin_base
     final r convert_RA "output"
     rm_\<alpha> rm_invar rm_lookup rm_update 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     fifo_\<alpha> fifo_invar fifo_empty fifo_isEmpty fifo_enqueue fifo_dequeue fifo_push
   for final :: "'x \<Rightarrow> bool"
@@ -60,7 +64,7 @@ locale sc_round_robin =
   round_robin 
     final r convert_RA "output"
     rm_\<alpha> rm_invar rm_lookup rm_update 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     fifo_\<alpha> fifo_invar fifo_empty fifo_isEmpty fifo_enqueue fifo_dequeue fifo_push
   for final :: "'x \<Rightarrow> bool"
@@ -74,7 +78,7 @@ locale sc_random_scheduler_base =
   random_scheduler_base
     final r convert_RA "output"
     rm_\<alpha> rm_invar rm_lookup rm_update rm_iteratei 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     lsi_\<alpha> lsi_invar lsi_empty lsi_ins_dj lsi_to_list
   for final :: "'x \<Rightarrow> bool"
@@ -86,7 +90,7 @@ locale sc_random_scheduler =
   random_scheduler
     final r convert_RA "output"
     rm_\<alpha> rm_invar rm_lookup rm_update rm_iteratei 
-    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel'
+    rm_\<alpha> rm_invar rm_lookup rm_update rm_delete rm_iteratei rm_sel
     rs_\<alpha> rs_invar rs_memb rs_ins rs_delete
     lsi_\<alpha> lsi_invar lsi_empty lsi_ins_dj lsi_to_list
   for final :: "'x \<Rightarrow> bool"

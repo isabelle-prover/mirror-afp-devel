@@ -124,54 +124,153 @@ proof -
     using I0 MONO by auto
 qed
 
-
-lemma REC_rule:
-  fixes x::"'x"
+lemma REC_rule_arb:
+  fixes x::"'x" and arb::'arb
   assumes M: "mono body"
-  assumes I0: "\<Phi> x"
-  assumes IS: "\<And>f x. \<lbrakk> \<And>x. \<Phi> x \<Longrightarrow> f x \<le> M x; \<Phi> x \<rbrakk> 
-    \<Longrightarrow> body f x \<le> M x"
-  shows "REC body x \<le> M x"
+  assumes I0: "\<Phi> arb x"
+  assumes IS: "\<And>f arb x. \<lbrakk>
+    \<And>arb' x. \<Phi> arb' x \<Longrightarrow> f x \<le> M arb' x; \<Phi> arb x;
+    f \<le> REC body
+  \<rbrakk> \<Longrightarrow> body f x \<le> M arb x"
+  shows "REC body x \<le> M arb x"
 proof -
-  have "\<forall>x. \<Phi> x \<longrightarrow> lfp body x \<le> M x"
+  have "(\<forall>arb x. \<Phi> arb x \<longrightarrow> lfp body x \<le> M arb x) \<and> lfp body \<le> REC body"
     apply (rule lfp_cadm_induct[OF _ M])
       apply rule
       apply rule
       apply rule
-      unfolding Sup_fun_def
+      apply rule
+      apply rule
+      apply (unfold Sup_fun_def) []
       apply (rule SUP_least)
+      apply simp
+      apply (rule Sup_least)
       apply simp
 
       apply (rule)
       apply (rule)
+      apply (rule)
+      apply (rule)
       apply (rule IS)
       apply blast
-      apply assumption
+      apply blast
+      apply (blast)
+      apply (subst REC_unfold[OF M])
+      apply (rule monoD[OF M])
+      apply simp
     done
   thus ?thesis
     unfolding REC_def
     by (auto simp: I0 M)
 qed
 
+
+lemma RECT_rule_arb:
+  assumes M: "mono body"
+  assumes WF: "wf (V::('x\<times>'x) set)"
+  assumes I0: "\<Phi> (arb::'arb) (x::'x)"
+  assumes IS: "\<And>f arb x. \<lbrakk> 
+      \<And>arb' x'. \<lbrakk>\<Phi> arb' x'; (x',x)\<in>V\<rbrakk> \<Longrightarrow> f x' \<le> M arb' x'; 
+      \<Phi> arb x;
+      f \<le> RECT body
+    \<rbrakk>  \<Longrightarrow> body f x \<le> M arb x"
+  shows "RECT body x \<le> M arb x"
+proof -
+  have "(\<forall>arb. \<Phi> arb x \<longrightarrow> gfp body x \<le> M arb x)"
+    using WF
+    apply (induct x rule: wf_induct[consumes 1])
+    apply (intro allI impI)
+    apply (subst gfp_unfold[OF M])
+    apply (rule IS)
+    apply (simp)
+    apply simp
+    apply (simp add: RECT_def le_funI)
+    done
+  with I0 M show ?thesis unfolding RECT_def by auto
+qed
+
+lemma REC_rule:
+  fixes x::"'x"
+  assumes M: "mono body"
+  assumes I0: "\<Phi> x"
+  assumes IS: "\<And>f x. \<lbrakk> \<And>x. \<Phi> x \<Longrightarrow> f x \<le> M x; \<Phi> x; f \<le> REC body \<rbrakk> 
+    \<Longrightarrow> body f x \<le> M x"
+  shows "REC body x \<le> M x"
+  by (rule REC_rule_arb[where \<Phi>="\<lambda>_. \<Phi>" and M="\<lambda>_. M", OF assms])
+
 lemma RECT_rule:
   assumes M: "mono body"
   assumes WF: "wf (V::('x\<times>'x) set)"
   assumes I0: "\<Phi> (x::'x)"
-  assumes IS: "\<And>f x. \<lbrakk> \<And>x'. \<lbrakk>\<Phi> x'; (x',x)\<in>V\<rbrakk> \<Longrightarrow> f x' \<le> M x'; \<Phi> x \<rbrakk> 
-    \<Longrightarrow> body f x \<le> M x"
+  assumes IS: "\<And>f x. \<lbrakk> \<And>x'. \<lbrakk>\<Phi> x'; (x',x)\<in>V\<rbrakk> \<Longrightarrow> f x' \<le> M x'; \<Phi> x; 
+                        f \<le> RECT body
+    \<rbrakk> \<Longrightarrow> body f x \<le> M x"
   shows "RECT body x \<le> M x"
-proof -
-  have "\<Phi> x \<longrightarrow> gfp body x \<le> M x"
-    using WF
-    apply (induct x rule: wf_induct[consumes 1])
-    apply (rule impI)
-    apply (subst gfp_unfold[OF M])
-    apply (rule IS)
-    apply simp
-    apply simp
-    done
-  with I0 M show ?thesis unfolding RECT_def by auto
-qed
+  by (rule RECT_rule_arb[where \<Phi>="\<lambda>_. \<Phi>" and M="\<lambda>_. M", OF assms])
+
+
+
+
+(* TODO: Can we set-up induction method to work with such goals? *)
+lemma REC_rule_arb2:
+  assumes M: "mono body"
+  assumes I0: "\<Phi> (arb::'arb) (arc::'arc) (x::'x)"
+  assumes IS: "\<And>f arb arc x. \<lbrakk> 
+      \<And>arb' arc' x'. \<lbrakk>\<Phi> arb' arc' x' \<rbrakk> \<Longrightarrow> f x' \<le> M arb' arc' x'; 
+      \<Phi> arb arc x; f \<le> REC body
+    \<rbrakk>  \<Longrightarrow> body f x \<le> M arb arc x"
+  shows "REC body x \<le> M arb arc x"
+  apply (rule order_trans)
+  apply (rule REC_rule_arb[
+    where \<Phi>="split \<Phi>" and M="split M" and arb="(arb, arc)", 
+    OF M])
+  by (auto intro: assms)
+
+lemma REC_rule_arb3:
+  assumes M: "mono body"
+  assumes I0: "\<Phi> (arb::'arb) (arc::'arc) (ard::'ard) (x::'x)"
+  assumes IS: "\<And>f arb arc ard x. \<lbrakk> 
+      \<And>arb' arc' ard' x'. \<lbrakk>\<Phi> arb' arc' ard' x'\<rbrakk> \<Longrightarrow> f x' \<le> M arb' arc' ard' x';
+      \<Phi> arb arc ard x; f \<le> REC body 
+    \<rbrakk>  \<Longrightarrow> body f x \<le> M arb arc ard x"
+  shows "REC body x \<le> M arb arc ard x"
+  apply (rule order_trans)
+  apply (rule REC_rule_arb2[
+    where \<Phi>="split \<Phi>" and M="split M" and arb="(arb, arc)" and arc="ard", 
+    OF M])
+  by (auto intro: assms)
+
+lemma RECT_rule_arb2:
+  assumes M: "mono body"
+  assumes WF: "wf (V::'x rel)"
+  assumes I0: "\<Phi> (arb::'arb) (arc::'arc) (x::'x)"
+  assumes IS: "\<And>f arb arc x. \<lbrakk> 
+      \<And>arb' arc' x'. \<lbrakk>\<Phi> arb' arc' x'; (x',x)\<in>V\<rbrakk> \<Longrightarrow> f x' \<le> M arb' arc' x'; 
+      \<Phi> arb arc x;
+      f \<le> RECT body
+    \<rbrakk>  \<Longrightarrow> body f x \<le> M arb arc x"
+  shows "RECT body x \<le> M arb arc x"
+  apply (rule order_trans)
+  apply (rule RECT_rule_arb[
+    where \<Phi>="split \<Phi>" and M="split M" and arb="(arb, arc)", 
+    OF M WF])
+  by (auto intro: assms)
+
+lemma RECT_rule_arb3:
+  assumes M: "mono body"
+  assumes WF: "wf (V::'x rel)"
+  assumes I0: "\<Phi> (arb::'arb) (arc::'arc) (ard::'ard) (x::'x)"
+  assumes IS: "\<And>f arb arc ard x. \<lbrakk> 
+      \<And>arb' arc' ard' x'. \<lbrakk>\<Phi> arb' arc' ard' x'; (x',x)\<in>V\<rbrakk> \<Longrightarrow> f x' \<le> M arb' arc' ard' x'; 
+    \<Phi> arb arc ard x;
+    f \<le> RECT body
+  \<rbrakk>  \<Longrightarrow> body f x \<le> M arb arc ard x"
+  shows "RECT body x \<le> M arb arc ard x"
+  apply (rule order_trans)
+  apply (rule RECT_rule_arb2[
+    where \<Phi>="split \<Phi>" and M="split M" and arb="(arb, arc)" and arc="ard", 
+    OF M WF])
+  by (auto intro: assms)
 
 subsection {* Transfer *}
 

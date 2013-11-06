@@ -1,6 +1,7 @@
 header {* Generic Algorithms for Graphs *}
 theory GraphGA
-imports GraphSpec "../Collections/iterator/SetIteratorOperations"
+imports 
+  GraphSpec 
 begin
 
   definition gga_from_list :: 
@@ -51,86 +52,100 @@ begin
       
   term map_iterator_product
 
-  definition gga_edges_it ::
-    "('V,'W,'\<sigma>,'G) graph_nodes_it \<Rightarrow> ('V,'W,'\<sigma>,'G) graph_succ_it 
-    \<Rightarrow> ('V,'W,'\<sigma>,'G) graph_edges_it"
-    where "gga_edges_it ni si G \<equiv> set_iterator_product (ni G) (\<lambda>v. si G v)"
 
-(*
-    "gga_edges_it ni si G c f \<sigma>0 \<equiv> 
-      ni G c (
-        \<lambda>v \<sigma>. si G v c (\<lambda>(w,v') \<sigma>. f (v,w,v') \<sigma>) \<sigma>
-      ) \<sigma>0
-    "
-*)
+  locale gga_edges_it_defs =
+    graph_nodes_it_defs nodes_list_it +
+    graph_succ_it_defs succ_list_it
+    for nodes_list_it :: "('V,'W,'V list,'G) graph_nodes_it"
+    and succ_list_it :: "('V,'W,('W\<times>'V) list,'G) graph_succ_it"
+  begin
+    definition gga_edges_list_it ::
+      "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it"
+      where "gga_edges_list_it G \<equiv> set_iterator_product 
+        (nodes_it G) (succ_it G)"
+    local_setup {* Locale_Code.lc_decl_del @{term gga_edges_list_it} *}
+  end
+  setup {*
+    (Record_Intf.add_unf_thms_global @{thms 
+      gga_edges_it_defs.gga_edges_list_it_def[abs_def]
+    })
+  *} 
 
-  lemma gga_edges_it_correct:
-    fixes ni::"('V,'W,'\<sigma>,'G) graph_nodes_it"
-    fixes \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    assumes "graph_nodes_it \<alpha> invar ni"
-    assumes "graph_succ_it \<alpha> invar si"
-    shows "graph_edges_it \<alpha> invar (gga_edges_it ni si)"
-  proof -
-    interpret graph_nodes_it \<alpha> invar ni +
-      graph_succ_it \<alpha> invar si by fact+
-
-    show ?thesis
+  locale gga_edges_it = gga_edges_it_defs nodes_list_it succ_list_it 
+    + graph \<alpha> invar
+    + graph_nodes_it \<alpha> invar nodes_list_it
+    + graph_succ_it \<alpha> invar succ_list_it
+    for \<alpha> :: "'G \<Rightarrow> ('V,'W) graph" 
+    and invar 
+    and nodes_list_it :: "('V,'W,'V list,'G) graph_nodes_it"
+    and succ_list_it :: "('V,'W,('W\<times>'V) list,'G) graph_succ_it"  
+  begin
+    lemma gga_edges_list_it_impl:
+      shows "graph_edges_it \<alpha> invar gga_edges_list_it"
     proof
       fix g
       assume INV: "invar g"
-      
+
       from set_iterator_product_correct[OF 
         nodes_it_correct[OF INV] succ_it_correct[OF INV]]
-      have "set_iterator (set_iterator_product (ni g) (\<lambda>v. si g v))
+      have "set_iterator (set_iterator_product (nodes_it g) (\<lambda>v. succ_it g v))
         (SIGMA v:nodes (\<alpha> g). succ (\<alpha> g) v)
         " .
       also have "(SIGMA v:nodes (\<alpha> g). succ (\<alpha> g) v) = edges (\<alpha> g)" 
         unfolding succ_def 
         by (auto dest: valid_graph.E_validD[OF valid[OF INV]])
-      finally show "set_iterator (gga_edges_it ni si g) (edges (\<alpha> g))"
-        unfolding gga_edges_it_def .
+
+      finally show "set_iterator (gga_edges_list_it g) (edges (\<alpha> g))"
+        unfolding gga_edges_list_it_def .
     qed
-  qed
-        
-  definition gga_to_list :: 
-    "('V,'W,_,'G) graph_nodes_it \<Rightarrow> ('V,'W,_,'G) graph_edges_it \<Rightarrow> 
-     ('V,'W,'G) graph_to_list"
-    where 
-    "gga_to_list ni ei g \<equiv> 
-      (ni g (\<lambda>_. True) (op #) [], ei g (\<lambda>_. True) (op #) [])
-    "
+  end
 
-  lemma gga_to_list_correct:
-    fixes \<alpha> :: "'G \<Rightarrow> ('V,'W) graph"
-    assumes "graph_nodes_it \<alpha> invar ni"
-    assumes "graph_edges_it \<alpha> invar ei"
-    shows "graph_to_list \<alpha> invar (gga_to_list ni ei)"
-  proof -
-    interpret graph_nodes_it \<alpha> invar ni + 
-      graph_edges_it \<alpha> invar ei
-      by fact+
+  locale gga_to_list_defs_loc = 
+    graph_nodes_it_defs nodes_list_it
+    + graph_edges_it_defs edges_list_it
+    for nodes_list_it :: "('V,'W,'V list,'G) graph_nodes_it"
+    and edges_list_it :: "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it"  
+  begin
+    definition gga_to_list :: 
+      "('V,'W,'G) graph_to_list"
+      where 
+      "gga_to_list g \<equiv> 
+        (nodes_it g (\<lambda>_. True) (op #) [], edges_it g (\<lambda>_. True) (op #) [])
+      "
+  end
 
-    show ?thesis
+  locale gga_to_list_loc = gga_to_list_defs_loc nodes_list_it edges_list_it +
+    graph \<alpha> invar 
+    + graph_nodes_it \<alpha> invar nodes_list_it
+    + graph_edges_it \<alpha> invar edges_list_it
+    for \<alpha> :: "'G \<Rightarrow> ('V,'W) graph" and invar
+    and nodes_list_it :: "('V,'W,'V list,'G) graph_nodes_it"
+    and edges_list_it :: "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it"  
+  begin
+
+    lemma gga_to_list_correct:
+      shows "graph_to_list \<alpha> invar gga_to_list"
     proof 
       fix g
       assume [simp, intro!]: "invar g"
       then interpret valid_graph "\<alpha> g" by (rule valid)
 
-      have "set (ni g (\<lambda>_. True) (op #) []) = V"
+      have "set (nodes_it g (\<lambda>_. True) (op #) []) = V"
         apply (rule_tac I="\<lambda>it \<sigma>. set \<sigma> = V - it" 
           in set_iterator_rule_P[OF nodes_it_correct])
         by auto
-      moreover have "set (ei g (\<lambda>_. True) (op #) []) = E"
+      moreover have "set (edges_it g (\<lambda>_. True) (op #) []) = E"
         apply (rule_tac I="\<lambda>it \<sigma>. set \<sigma> = E - it" 
           in set_iterator_rule_P[OF edges_it_correct])
         by auto
-      ultimately show "adjl_\<alpha> (gga_to_list ni ei g) = \<alpha> g"
+      ultimately show "adjl_\<alpha> (gga_to_list g) = \<alpha> g"
         unfolding adjl_\<alpha>_def gga_to_list_def
         apply simp
         apply (rule graph.equality)
         apply (auto intro: E_validD)
         done
     qed
-  qed
+
+  end
 
 end

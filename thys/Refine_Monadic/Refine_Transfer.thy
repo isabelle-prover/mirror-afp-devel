@@ -3,7 +3,6 @@ theory Refine_Transfer
 imports
   Refine_Basic
   Refine_While
-  Refine_Foreach
   Refine_Det 
   "Generic/RefineG_Transfer"
 begin
@@ -111,6 +110,7 @@ interpretation det_while!: transfer_WHILE
   apply (auto intro: det_bind)
   done
 
+(*
 interpretation det_foreach!: 
   transfer_FOREACH nres_of dRETURN dbind "dres_case True True"
   apply unfold_locales
@@ -119,7 +119,29 @@ interpretation det_foreach!:
   apply (case_tac m)
   apply simp_all
   done
+*)
 
+(* Done generally in RefineG_Transfer
+lemma det_list_rec[refine_transfer]:
+  assumes FN: "\<And>s. RETURN (fn s) \<le> (fn' s)"
+  assumes FC: "\<And>x l rec rec' s. \<lbrakk> \<And>s. RETURN (rec s) \<le> (rec' s) \<rbrakk> 
+    \<Longrightarrow> RETURN (fc x l rec s) \<le> fc' x l rec' s"
+  shows "RETURN (list_rec fn fc l s) \<le> list_rec fn' fc' l s"
+  apply (induct l arbitrary: s)
+  apply (simp add: FN)
+  apply (simp add: FC)
+  done
+
+lemma det_nat_rec[refine_transfer]:
+  assumes FN: "\<And>s. RETURN (fn s) \<le> (fn' s)"
+  assumes FC: "\<And>n rec rec' s. \<lbrakk> \<And>s. RETURN (rec s) \<le> (rec' s) \<rbrakk> 
+    \<Longrightarrow> RETURN (fc x l rec s) \<le> fc' x l rec' s"
+  shows "RETURN (list_rec fn fc l s) \<le> list_rec fn' fc' l s"
+  apply (induct l arbitrary: s)
+  apply (simp add: FN)
+  apply (simp add: FC)
+  done
+*)
 
 subsection {* Transfer to Plain Function *}
 
@@ -138,12 +160,14 @@ interpretation plain_assert!: transfer_generic_Assert_remove
   RETURN
   by unfold_locales
 
+(*
 interpretation plain!: transfer_FOREACH RETURN "(\<lambda>x. x)" Let "(\<lambda>x. x)"
   apply (unfold_locales)
   apply (erule plain_bind, assumption)
   apply simp
   apply simp
   done
+*)
 
 subsection {* Total correctness in deterministic monad *}
 text {*
@@ -171,5 +195,19 @@ lemma the_resI:
   shows "RETURN (the_res S) \<le> S'"
   using assms
   by (cases S, simp_all)
+
+
+text {* The following rule sets up a refinement goal, a transfer goal, and a 
+  final optimization goal. *}
+definition "detTAG x \<equiv> x"
+lemma detTAGI: "x = detTAG x" unfolding detTAG_def by simp
+lemma autoref_detI:
+  assumes "(b,a)\<in>\<langle>R\<rangle>nres_rel"
+  assumes "RETURN c \<le> b"
+  assumes "c = detTAG d"
+  shows "(RETURN d, a)\<in>\<langle>R\<rangle>nres_rel"
+  using assms
+  unfolding nres_rel_def detTAG_def
+  by simp
 
 end

@@ -60,7 +60,8 @@ theory. One of those is Newman's lemma.
 
 [2010-09-17]: Added theories defining several (ordered)
 semirings related to strong normalization and giving some standard
-instances.
+instances. <br>
+[2013-10-16]: Generalized delta-orders from rationals to Archimedean fields.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
