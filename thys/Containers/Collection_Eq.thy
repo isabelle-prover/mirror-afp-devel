@@ -124,4 +124,65 @@ by(simp add: is_ceq_def ceq_set_def ID_None ID_Some split: option.split)
 lemma ID_ceq_set_not_None_iff [simp]: "ID CEQ('a set) \<noteq> None \<longleftrightarrow> ID CEQ('a :: ceq) \<noteq> None"
 by(simp add: ceq_set_def ID_def split: option.splits)
 
+text {* Instantiation for @{typ "'a Predicate.pred"} *}
+
+context fixes eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" begin
+
+definition member_pred :: "'a Predicate.pred \<Rightarrow> 'a \<Rightarrow> bool"
+where "member_pred P x \<longleftrightarrow> (\<exists>y. eq x y \<and> Predicate.eval P y)"
+
+definition member_seq :: "'a Predicate.seq \<Rightarrow> 'a \<Rightarrow> bool"
+where "member_seq xp = member_pred (Predicate.pred_of_seq xp)"
+
+lemma member_seq_code [code]: 
+  "member_seq seq.Empty x \<longleftrightarrow> False"
+  "member_seq (seq.Insert y P) x \<longleftrightarrow> eq x y \<or> member_pred P x"
+  "member_seq (seq.Join Q xq) x \<longleftrightarrow> member_pred Q x \<or> member_seq xq x"
+by(auto simp add: member_seq_def member_pred_def)
+
+lemma member_pred_code [code]:
+  "member_pred (Predicate.Seq f) = member_seq (f ())"
+by(simp add: member_seq_def Seq_def)
+
+definition leq_pred :: "'a Predicate.pred \<Rightarrow> 'a Predicate.pred \<Rightarrow> bool"
+where "leq_pred P Q \<longleftrightarrow> (\<forall>x. Predicate.eval P x \<longrightarrow> (\<exists>y. eq x y \<and> Predicate.eval Q y))"
+
+definition leq_seq :: "'a Predicate.seq \<Rightarrow> 'a Predicate.pred \<Rightarrow> bool"
+where "leq_seq xp Q \<longleftrightarrow> leq_pred (Predicate.pred_of_seq xp) Q"
+
+lemma leq_seq_code [code]:
+  "leq_seq seq.Empty Q \<longleftrightarrow> True"
+  "leq_seq (seq.Insert x P) Q \<longleftrightarrow> member_pred Q x \<and> leq_pred P Q"
+  "leq_seq (seq.Join P xp) Q \<longleftrightarrow> leq_pred P Q \<and> leq_seq xp Q"
+by(auto simp add: leq_seq_def leq_pred_def member_pred_def)
+
+lemma leq_pred_code [code]:
+  "leq_pred (Predicate.Seq f) Q \<longleftrightarrow> leq_seq (f ()) Q"
+by(simp add: leq_seq_def Seq_def)
+
+definition predicate_eq :: "'a Predicate.pred \<Rightarrow> 'a Predicate.pred \<Rightarrow> bool"
+where "predicate_eq P Q \<longleftrightarrow> leq_pred P Q \<and> leq_pred Q P"
+
+context assumes eq: "eq = op =" begin
+
+lemma member_pred_eq: "member_pred = Predicate.eval"
+unfolding fun_eq_iff member_pred_def by(simp add: eq)
+
+lemma member_seq_eq: "member_seq = Predicate.member"
+by(simp add: member_seq_def fun_eq_iff eval_member member_pred_eq)
+
+lemma leq_pred_eq: "leq_pred = op \<le>"
+unfolding fun_eq_iff leq_pred_def by(auto simp add: eq less_eq_pred_def)
+
+lemma predicate_eq_eq: "predicate_eq = op ="
+unfolding predicate_eq_def fun_eq_iff by(auto simp add: leq_pred_eq)
+
+end
+end
+
+instantiation Predicate.pred :: (ceq) ceq begin
+definition "CEQ('a Predicate.pred) = Option.map predicate_eq (ID CEQ('a))"
+instance by(intro_classes)(auto simp add: ceq_pred_def predicate_eq_eq dest: ID_ceq)
+end
+
 end
