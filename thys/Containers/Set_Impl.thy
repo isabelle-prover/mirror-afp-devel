@@ -1869,7 +1869,17 @@ hide_const (open) insert_monad union_monad
 subsection {* Type class instantiations *}
 
 datatype set_impl = Set_IMPL
-declare set_impl.eq.simps [code del]
+declare
+  set_impl.eq.simps [code del]
+  set_impl.size [code del]
+  set_impl.recs [code del]
+  set_impl.cases [code del]
+
+lemma [code]: 
+  fixes x :: set_impl
+  shows "size x = 0"
+  and "set_impl_size x = 0"
+by(case_tac [!] x) simp_all
 
 definition set_Choose :: set_impl where [simp]: "set_Choose = Set_IMPL"
 definition set_Collect :: set_impl where [simp]: "set_Collect = Set_IMPL"

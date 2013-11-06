@@ -145,7 +145,16 @@ apply(auto simp add: fun_eq_iff restrict_map_def)
 done
 
 datatype mapping_impl = Mapping_IMPL
-declare mapping_impl.eq.simps [code del]
+declare
+  mapping_impl.eq.simps [code del]
+  mapping_impl.recs [code del]
+  mapping_impl.cases [code del]
+
+lemma [code]:
+  fixes x :: mapping_impl
+  shows "size x = 0"
+  and "mapping_impl_size x = 0"
+by(case_tac [!] x) simp_all
 
 definition mapping_Choose :: mapping_impl where [simp]: "mapping_Choose = Mapping_IMPL"
 definition mapping_Assoc_List :: mapping_impl where [simp]: "mapping_Assoc_List = Mapping_IMPL"
