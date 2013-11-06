@@ -3,6 +3,7 @@ chapter AFP
 session "Native_Word" (AFP) = "HOL-Word" +
   theories [document=false]
     "~~/src/HOL/Library/Code_Target_Int"
+    "~~/src/HOL/Library/Code_Char"
 
   theories
     Bits_Int
@@ -12,6 +13,7 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Uint32
     Uint16_Test
     Uint8_Test
+    Native_Cast
     Uint_Userguide
 
   files
