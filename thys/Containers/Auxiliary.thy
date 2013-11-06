@@ -76,6 +76,9 @@ proof
   thus "\<exists>x. A = {x}" ..
 qed auto
 
+lemma card_eq_Suc_0_ex1: "card A = Suc 0 \<longleftrightarrow> (\<exists>!x. x \<in> A)"
+by(auto simp only: One_nat_def[symmetric] card_eq_1_iff)
+
 context linorder begin
 
 lemma sorted_last: "\<lbrakk> sorted xs; x \<in> set xs \<rbrakk> \<Longrightarrow> x \<le> last xs"
@@ -83,6 +86,8 @@ by(cases xs rule: rev_cases)(auto simp add: sorted_append)
 
 end
 
+lemma empty_filter_conv: "[] = filter P xs \<longleftrightarrow> (\<forall>x\<in>set xs. \<not> P x)"
+by(auto dest: sym simp add: filter_empty_conv)
 
 
 definition ID :: "'a \<Rightarrow> 'a" where "ID = id"

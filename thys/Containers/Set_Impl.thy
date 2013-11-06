@@ -427,6 +427,12 @@ lemma [code, code del]:
 lemma [code, code del]:
   "acc = acc" ..
 
+lemma [code, code del]:
+  "Bleast = Bleast" ..
+
+lemma [code, code del]:
+  "can_select = can_select" ..
+
 subsection {* Set implementations *}
 
 definition Collect_set :: "('a \<Rightarrow> bool) \<Rightarrow> 'a set"
@@ -1797,6 +1803,58 @@ proof -
   show ?dlist ?rbt
     by(auto split: option.split simp add: RBT_set_def DList_set_def DList_Set.fold.rep_eq Collect_member map_project_conv_fold RBT_Set2.fold_conv_fold_keys member_conv_keys del: equalityI)
 qed(auto simp add: List.map_project_def List.map_filter_def intro: rev_image_eqI)
+
+lemma Bleast_code [code]:
+  "Bleast A P = 
+  (if finite A then case filter P (sorted_list_of_set A) of [] \<Rightarrow> abort_Bleast A P | x # xs \<Rightarrow> x 
+   else abort_Bleast A P)"
+proof(cases "finite A")
+  case True
+  hence *: "A = set (sorted_list_of_set A)" by(simp add: sorted_list_of_set)
+  show ?thesis using True
+    by(subst (1 3) *)(unfold Bleast_code, simp add: sorted_sort_id)
+qed(simp add: abort_Bleast_def Bleast_def)
+
+lemma can_select_code [code]:
+  fixes xs :: "'a :: ceq list" 
+  and dxs :: "'a :: ceq set_dlist" 
+  and rbt :: "'b :: corder set_rbt" shows
+  "can_select P (Set_Monad xs) =
+  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''can_select Set_Monad: ceq = None'') (\<lambda>_. can_select P (Set_Monad xs))
+                 | Some eq \<Rightarrow> case filter P xs of Nil \<Rightarrow> False | x # xs \<Rightarrow> list_all (eq x) xs)"
+  (is ?Set_Monad)
+  "can_select Q (DList_set dxs) =
+  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''can_select DList_set: ceq = None'') (\<lambda>_. can_select Q (DList_set dxs))
+                  | Some _ \<Rightarrow> DList_Set.length (DList_Set.filter Q dxs) = 1)"
+  (is ?dlist)
+  "can_select R (RBT_set rbt) =
+  (case ID CORDER('b) of None \<Rightarrow> Code.abort (STR ''can_select RBT_set: corder = None'') (\<lambda>_. can_select R (RBT_set rbt))
+                 | Some _ \<Rightarrow> singleton_list_fusion (filter_generator R rbt_keys_generator) (RBT_Set2.init rbt))"
+  (is ?rbt)
+proof -
+  show ?Set_Monad
+    apply(auto split: option.split list.split dest!: ID_ceq[THEN equal.equal_eq] dest: filter_eq_ConsD simp add: can_select_def filter_empty_conv list_all_iff)
+    apply(drule filter_eq_ConsD, fastforce)
+    apply(drule filter_eq_ConsD, clarsimp, blast)
+    done
+  
+  show ?dlist
+    by(clarsimp simp add: can_select_def card_eq_length[symmetric] Set_member_code card_eq_Suc_0_ex1 simp del: card_eq_length split: option.split)
+  
+  note [simp del] = distinct_keys
+  show ?rbt
+    using distinct_keys[of rbt]
+    apply(auto simp add: can_select_def singleton_list_fusion_def unfoldr_filter_generator unfoldr_rbt_keys_generator Set_member_code member_conv_keys filter_empty_conv empty_filter_conv split: option.split list.split dest: filter_eq_ConsD)
+      apply(drule filter_eq_ConsD, fastforce)
+     apply(drule filter_eq_ConsD, fastforce simp add: empty_filter_conv)
+    apply(drule filter_eq_ConsD)
+    apply clarsimp
+    apply(drule Cons_eq_filterD)
+    apply clarify
+    apply(simp (no_asm_use))
+    apply blast
+    done
+qed
 
 lemma pred_of_set_code [code]:
   fixes dxs :: "'a :: ceq set_dlist" 

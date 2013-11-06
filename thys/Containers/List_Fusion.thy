@@ -4,6 +4,7 @@
 theory List_Fusion
 imports 
   Main
+  "~~/src/HOL/BNF/Coinduction"
 begin
 
 section {* Shortcut fusion for lists *}
@@ -14,6 +15,23 @@ apply(rule monotoneI)
 apply(drule (1) monotoneD)
 apply(auto simp add: Option.map_def flat_ord_def split: option.split)
 done
+
+lemma list_all2_coinduct [consumes 1, case_names Nil Cons, case_conclusion Cons hd tl, coinduct pred: list_all2]:
+  assumes X: "X xs ys"
+  and Nil': "\<And>xs ys. X xs ys \<Longrightarrow> xs = [] \<longleftrightarrow> ys = []"
+  and Cons': "\<And>xs ys. \<lbrakk> X xs ys; xs \<noteq> []; ys \<noteq> [] \<rbrakk> \<Longrightarrow> A (hd xs) (hd ys) \<and> (X (tl xs) (tl ys) \<or> list_all2 A (tl xs) (tl ys))"
+  shows "list_all2 A xs ys"
+using X
+proof(induction xs arbitrary: ys)
+  case Nil
+  from Nil'[OF this] show ?case by simp
+next
+  case (Cons x xs)
+  from Nil'[OF Cons.prems] Cons'[OF Cons.prems] Cons.IH
+  show ?case by(auto simp add: neq_Nil_conv)
+qed
+
+
 
 subsection {* The type of generators for finite lists *}
 
@@ -59,6 +77,21 @@ proof(rule terminatesI)
   qed
 qed
 
+lemma terminates_wfD:
+  assumes "terminates g"
+  shows "wf {(snd (snd g s), s) | s . fst g s}"
+proof(rule wfUNIVI)
+  fix thesis s
+  assume wf [rule_format]: "\<forall>s. (\<forall>s'. (s', s) \<in> {(snd (snd g s), s) |s. fst g s} \<longrightarrow> thesis s') \<longrightarrow> thesis s"
+  from assms have "s \<in> terminates_on g" by(auto simp add: terminates_def)
+  thus "thesis s" by induct (auto intro: wf)
+qed
+
+lemma terminates_wfE:
+  assumes "terminates g"
+  obtains R where "wf R" "\<And>s. fst g s \<Longrightarrow> (snd (snd g s), s) \<in> R"
+by(rule that)(rule terminates_wfD[OF assms], simp)
+
 context fixes g :: "('a, 's) raw_generator" begin
 
 partial_function (option) terminates_within :: "'s \<Rightarrow> nat option"
@@ -89,23 +122,6 @@ lemma terminates_within_unfold:
   "has_next s \<Longrightarrow> 
   terminates_within (has_next, next) s = Option.map (\<lambda>n. n + 1) (terminates_within (has_next, next) (snd (next s)))"
 by(simp add: terminates_within.simps)
-
-lemma terminates_wfE:
-  assumes "terminates g"
-  obtains R where "wf R" "\<And>s. fst g s \<Longrightarrow> (snd (snd g s), s) \<in> R"
-proof -
-  let ?R = "measure (\<lambda>s. the (terminates_within g s))"
-  have "wf ?R" by simp
-  moreover {
-    fix s
-    assume *: "fst g s"
-    from assms have "snd (snd g s) \<in> terminates_on g" by(rule terminatesD)
-    then obtain n where "terminates_within g (snd (snd g s)) = Some n"
-      unfolding terminates_on_conv_dom_terminates_within by(auto)
-    hence "(snd (snd g s), s) \<in> ?R" using *
-      by simp(subst terminates_within.simps, simp add: split_beta) }
-  ultimately show thesis by(rule that)
-qed
 
 typedef ('a, 's) generator = "{g :: ('a, 's) raw_generator. terminates g}"
   morphisms generator Generator
@@ -178,6 +194,10 @@ end
 lemma unfoldr_eq_Nil_iff [iff]:
   "list.unfoldr g s = [] \<longleftrightarrow> \<not> list.has_next g s"
 by(subst list.unfoldr.simps)(simp add: split_beta)
+
+lemma Nil_eq_unfoldr_iff [simp]:
+  "[] = list.unfoldr g s \<longleftrightarrow> \<not> list.has_next g s"
+by(auto intro: sym dest: sym)
 
 subsection {* Generators for @{typ "'a list"} *}
 
@@ -346,6 +366,7 @@ lemma unfoldr_append_generator:
    list.unfoldr g1 s1 @ list.unfoldr g2 s2"
 by(simp add: unfoldr_append_generator_Inl append_init_def)
 
+
 lift_definition zip_generator :: "('a, 's1) generator \<Rightarrow> ('b, 's2) generator \<Rightarrow> ('a \<times> 'b, 's1 \<times> 's2) generator"
   is "\<lambda>(has_next1, next1) (has_next2, next2). 
       (\<lambda>(s1, s2). has_next1 s1 \<and> has_next2 s2, 
@@ -418,6 +439,134 @@ by transfer simp
 lemma unfoldr_upto_generator:
   "list.unfoldr upto_generator n = [n..bound]"
 by(induct n taking: upto_generator rule: list.unfoldr.induct)(subst list.unfoldr.simps, subst upto.simps, auto)
+
+end
+
+context
+  fixes P :: "'a \<Rightarrow> bool"
+begin
+
+context 
+  fixes g :: "('a, 's) raw_generator"
+begin
+
+inductive filter_has_next :: "'s \<Rightarrow> bool"
+where
+  "\<lbrakk> fst g s; P (fst (snd g s)) \<rbrakk> \<Longrightarrow> filter_has_next s"
+| "\<lbrakk> fst g s; \<not> P (fst (snd g s)); filter_has_next (snd (snd g s)) \<rbrakk> \<Longrightarrow> filter_has_next s"
+
+partial_function (tailrec) filter_next :: "'s \<Rightarrow> 'a \<times> 's"
+where
+  "filter_next s = (let (x, s') = snd g s in if P x then (x, s') else filter_next s')"
+
+end
+
+lift_definition filter_generator :: "('a, 's) generator \<Rightarrow> ('a, 's) generator"
+  is "\<lambda>g. (filter_has_next g, filter_next g)"
+proof(rule wf_terminates)
+  fix g :: "('a, 's) raw_generator" and s
+  let ?R = "{(snd (snd g s), s) | s. fst g s}"
+  let ?g = "(filter_has_next g, filter_next g)"
+  assume "terminates g"
+  thus "wf (?R\<^sup>+)" by(rule terminates_wfD[THEN wf_trancl])
+  assume "fst ?g s"
+  hence "filter_has_next g s" by simp
+  thus "(snd (snd ?g s), s) \<in> ?R\<^sup>+"
+    by induct(subst filter_next.simps, auto simp add: split_beta filter_next.simps split del: split_if intro: trancl_into_trancl)
+qed
+
+lemma has_next_filter_generator:
+  "list.has_next (filter_generator g) s \<longleftrightarrow>
+  list.has_next g s \<and> (let (x, s') = list.next g s in if P x then True else list.has_next (filter_generator g) s')"
+apply(transfer)
+apply simp
+apply(subst filter_has_next.simps)
+apply auto
+done
+
+lemma next_filter_generator:
+   "list.next (filter_generator g) s =
+   (let (x, s') = list.next g s
+    in if P x then (x, s') else list.next (filter_generator g) s')"
+apply transfer
+apply simp
+apply(subst filter_next.simps)
+apply(simp cong: if_cong)
+done
+
+lemma has_next_filter_generator_induct [consumes 1, case_names find step]:
+  assumes "list.has_next (filter_generator g) s"
+  and find: "\<And>s. \<lbrakk> list.has_next g s; P (fst (list.next g s)) \<rbrakk> \<Longrightarrow> Q s"
+  and step: "\<And>s. \<lbrakk> list.has_next g s; \<not> P (fst (list.next g s)); Q (snd (list.next g s)) \<rbrakk> \<Longrightarrow> Q s"
+  shows "Q s"
+using assms by transfer(auto elim: filter_has_next.induct)
+
+lemma filter_generator_empty_conv:
+  "list.has_next (filter_generator g) s \<longleftrightarrow> (\<exists>x\<in>set (list.unfoldr g s). P x)" (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume "?lhs"
+  thus ?rhs
+  proof(induct rule: has_next_filter_generator_induct)
+    case (find s)
+    thus ?case
+      by(cases "list.next g s")(subst list.unfoldr.simps, auto)
+  next
+    case (step s)
+    thus ?case
+      by(cases "list.next g s")(subst list.unfoldr.simps, auto)
+  qed
+next
+  assume ?rhs
+  then obtain x where "x \<in> set (list.unfoldr g s)" "P x" by blast
+  thus ?lhs
+  proof(induct xs\<equiv>"list.unfoldr g s" arbitrary: s)
+    case Nil thus ?case by(simp del: Nil_eq_unfoldr_iff)
+  next
+    case (Cons x' xs)
+    from `x' # xs = list.unfoldr g s`[symmetric, simp]
+    have [simp]: "fst (list.next g s) = x' \<and> list.has_next g s \<and> list.unfoldr g (snd (list.next g s)) = xs"
+      by(subst (asm) list.unfoldr.simps)(simp add: split_beta split: split_if_asm)
+    from Cons.hyps(1)[of "snd (list.next g s)"] `x \<in> set (list.unfoldr g s)` `P x` show ?case
+      by(subst has_next_filter_generator)(auto simp add: split_beta)
+  qed
+qed
+
+lemma unfoldr_filter_generator:
+  "list.unfoldr (filter_generator g) s = filter P (list.unfoldr g s)"
+unfolding list_all2_eq
+proof(coinduction arbitrary: s)
+  case Nil
+  thus ?case by(simp add: filter_empty_conv filter_generator_empty_conv)
+next
+  case (Cons s)
+  hence "list.has_next (filter_generator g) s" by simp
+  thus ?case
+  proof(induction rule: has_next_filter_generator_induct)
+    case (find s)
+    thus ?case
+      apply(subst (1 2 3 5) list.unfoldr.simps)
+      apply(subst (1 2) has_next_filter_generator)
+      apply(subst next_filter_generator)
+      apply(simp add: split_beta)
+      apply(rule disjI1 exI conjI refl)+
+      apply(subst next_filter_generator)
+      apply(simp add: split_beta)
+      done
+  next
+    case (step s)
+    from step.hyps
+    have "list.unfoldr (filter_generator g) s = list.unfoldr (filter_generator g) (snd (list.next g s))"
+      apply(subst (1 2) list.unfoldr.simps)
+      apply(subst has_next_filter_generator)
+      apply(subst next_filter_generator)
+      apply(auto simp add: split_beta)
+      done
+    moreover from step.hyps
+    have "filter P (list.unfoldr g (snd (list.next g s))) = filter P (list.unfoldr g s)"
+      by(subst (2) list.unfoldr.simps)(auto simp add: split_beta)
+    ultimately show ?case using step.IH by simp
+  qed
+qed
 
 end
 
@@ -538,5 +687,13 @@ unfolding list_all2_fusion_def
 by(subst (1 2) list.unfoldr.simps)(simp add: split_beta)
 
 declare list_all2_fusion_def[symmetric, code_unfold]
+
+definition singleton_list_fusion :: "('a, 'state) generator \<Rightarrow> 'state \<Rightarrow> bool"
+where "singleton_list_fusion gen state = (case list.unfoldr gen state of [_] \<Rightarrow> True | _ \<Rightarrow> False)"
+
+lemma singleton_list_fusion_code [code]:
+  "singleton_list_fusion g s \<longleftrightarrow>
+  list.has_next g s \<and> \<not> list.has_next g (snd (list.next g s))"
+by(auto 4 5 simp add: singleton_list_fusion_def split: list.split split_if_asm prod.splits elim: list.unfoldr.elims dest: sym)
 
 end
