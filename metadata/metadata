@@ -1549,3 +1549,8 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2013-09-17
 topic = Computer Science/Data Structures
 abstract = This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
+extra-history =
+  Change history:
+  [2013-11-06]:
+        added conversion function between native words and characters
+        (revision fd23d9a7fe3a)
