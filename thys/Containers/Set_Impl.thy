@@ -797,30 +797,6 @@ qed
 lemma UNIV_code [code]: "UNIV = - {}"
 by(simp)
 
-lemma Inter_code [code]:
-  fixes dxs :: "'a :: ceq set set_dlist" 
-  and rbt :: "'b :: corder set set_rbt" shows
-  "Inter (Set_Monad xs) = fold op \<inter> xs UNIV"
-  "Inter (DList_set dxs) = 
-  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''Inter DList_set: ceq = None'') (\<lambda>_. Inter (DList_set dxs))
-                  | Some _ \<Rightarrow> DList_Set.fold op \<inter> dxs UNIV)"
-  "Inter (RBT_set rbt) =
-  (case ID CORDER('b) of None \<Rightarrow> Code.abort (STR ''Inter RBT_set: corder = None'') (\<lambda>_. Inter (RBT_set rbt))
-                     | Some _ \<Rightarrow> RBT_Set2.fold op \<inter> rbt UNIV)"
-by(auto simp add: DList_set_def Inf_member RBT_set_def RBT_Set2.fold_conv_fold_keys corder_set_def Inf_set_fold[symmetric] member_conv_keys ID_Some simp del: not_None_eq split: option.splits)
-
-lemma Union_code [code]:
-  fixes dxs :: "'a :: ceq set set_dlist"
-  and rbt :: "'b :: corder set set_rbt" shows
-  "Union (Set_Monad xs) = fold op \<union> xs {}"
-  "Union (DList_set dxs) =
-  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''Union DList_set: ceq = None'') (\<lambda>_. Union (DList_set dxs))
-                  | Some _ \<Rightarrow> DList_Set.fold op \<union> dxs {})"
-  "Union (RBT_set rbt) =
-  (case ID CORDER('b) of None \<Rightarrow> Code.abort (STR ''Union RBT_set: corder = None'') (\<lambda>_. Union (RBT_set rbt))
-                     | Some _ \<Rightarrow> RBT_Set2.fold op \<union> rbt {})"
-by(auto simp add: DList_set_def Sup_member RBT_set_def RBT_Set2.fold_conv_fold_keys corder_set_def Sup_set_fold[symmetric] member_conv_keys ID_Some simp del: not_None_eq split: option.splits)
-
 lemma Inf_fin_code [code]:
   fixes rbt :: "'a :: {corder, lattice} set_rbt"
   and dxs :: "'b :: {ceq, lattice} set_dlist" shows
@@ -849,33 +825,74 @@ lemma Sup_fin_code [code]:
                                  else RBT_Set2.fold1 sup rbt)"
 by(simp_all add: Sup_fin.set_eq_fold DList_set_def DList_Set.Sup_fin_member RBT_Set2.Sup_fin_member RBT_set_def del: set.simps split: option.splits)
 
-lemma Inf_code [code]:
+lemma Inf_code:
   fixes xs :: "'a :: complete_lattice list"
   and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
   and rbt :: "'c :: {complete_lattice, corder} set_rbt"
-  shows
-  "Inf (Set_Monad xs) = fold inf xs top"
+  shows Inf_Set_Monad: "Inf (Set_Monad xs) = fold inf xs top"
+  and Inf_DList_set:
   "Inf (DList_set dxs) =
   (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Inf DList_set: ceq = None'') (\<lambda>_. Inf (DList_set dxs))
                   | Some _ \<Rightarrow> DList_Set.fold inf dxs top)"
+  and Inf_RBT_set:
   "Inf (RBT_set rbt) =
   (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''Inf RBT_set: corder = None'') (\<lambda>_. Inf (RBT_set rbt))
                   | Some _ \<Rightarrow> RBT_Set2.fold inf rbt top)"
 by(auto simp add: DList_set_def RBT_set_def Inf_set_fold Collect_member DList_Set.fold.rep_eq RBT_Set2.member_conv_keys RBT_Set2.keys.rep_eq RBT_Set2.fold_conv_fold_keys split: option.split)
 
-lemma Sup_code [code]:
+lemma Sup_code:
   fixes xs :: "'a :: complete_lattice list"
   and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
   and rbt :: "'c :: {complete_lattice, corder} set_rbt"
-  shows
+  shows Sup_Set_Monad:
   "Sup (Set_Monad xs) = fold sup xs bot"
+  and Sup_DList_set:
   "Sup (DList_set dxs) =
   (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Sup DList_set: ceq = None'') (\<lambda>_. Sup (DList_set dxs))
                   | Some _ \<Rightarrow> DList_Set.fold sup dxs bot)"
+  and Sup_RBT_set:
   "Sup (RBT_set rbt) =
   (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''Sup RBT_set: corder = None'') (\<lambda>_. Sup (RBT_set rbt))
                   | Some _ \<Rightarrow> RBT_Set2.fold sup rbt bot)"
 by(auto simp add: DList_set_def RBT_set_def Sup_set_fold Collect_member DList_Set.fold.rep_eq RBT_Set2.member_conv_keys RBT_Set2.keys.rep_eq RBT_Set2.fold_conv_fold_keys split: option.split)
+
+lemmas Inter_code [code] = 
+  Inf_Set_Monad[where ?'a = "_ :: type set"]
+  Inf_DList_set[where ?'b = "_ :: ceq set"]
+  Inf_RBT_set[where ?'c = "_ :: corder set"]
+
+lemmas Union_code [code] =
+  Sup_Set_Monad[where ?'a="_ :: type set"]
+  Sup_DList_set[where ?'b="_ :: ceq set"]
+  Sup_RBT_set[where ?'c="_ :: corder set"]
+
+lemmas Predicate_Inf_code [code] =
+  Inf_Set_Monad[where ?'a = "_ :: type Predicate.pred"]
+  Inf_DList_set[where ?'b = "_ :: ceq Predicate.pred"]
+  -- {* no @{class corder} instance for @{typ "'a Predicate.pred"} yet *}
+(*  Inf_RBT_set[where ?'c = "_ :: corder Predicate.pred"] *)
+
+lemmas Predicate_Sup_code [code] =
+  Sup_Set_Monad[where ?'a = "_ :: type Predicate.pred"]
+  Sup_DList_set[where ?'b = "_ :: ceq Predicate.pred"]
+  -- {* no @{class corder} instance for @{typ "'a Predicate.pred"} yet *}
+(*  Sup_RBT_set[where ?'c = "_ :: corder Predicate.pred"] *)
+
+lemmas Inf_fun_code [code] =
+  Inf_Set_Monad[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+  Inf_DList_set[where ?'b = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+  Inf_RBT_set[where ?'c = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+
+lemmas Sup_fun_code [code] =
+  Sup_Set_Monad[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+  Sup_DList_set[where ?'b = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+  Sup_RBT_set[where ?'c = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+
+lemma INFI_code [code]: "INFI A f = Inf (f ` A)"
+by(rule INF_def)
+
+lemma SUPR_code [code]: "SUPR A f = Sup (f ` A)"
+by(rule SUP_def)
 
 lemma Min_code [code]:
   fixes xs :: "'a :: linorder list" 
@@ -1733,40 +1750,6 @@ lemma acc_code [code]:
   fixes A :: "('a :: {finite, card_UNIV} \<times> 'a) set" shows
   "acc A = bacc A (of_phantom (card_UNIV :: 'a card_UNIV))"
 by(simp add: card_UNIV acc_bacc_eq)
-
-lemma SUPR_code [code]:
-  fixes xs :: "'a :: complete_lattice list"
-  and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
-  and rbt :: "'c :: {complete_lattice, corder} set_rbt"
-  and f :: "'a \<Rightarrow> 'd::complete_lattice"
-  and g :: "'b \<Rightarrow> 'd::complete_lattice"
-  and h :: "'c \<Rightarrow> 'd::complete_lattice"
-  shows
-  "SUPR (Set_Monad xs) f = fold (sup \<circ> f) xs bot"
-  "SUPR (DList_set dxs) g =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''SUPR DList_set: ceq = None'') (\<lambda>_. SUPR (DList_set dxs) g)
-                  | Some _ \<Rightarrow> DList_Set.fold (sup \<circ> g) dxs bot)"
-  "SUPR (RBT_set rbt) h =
-  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''SUPR RBT_set: corder = None'') (\<lambda>_. SUPR (RBT_set rbt) h)
-                     | Some _ \<Rightarrow> RBT_Set2.fold (sup \<circ> h) rbt bot)"
-by(auto simp add: DList_set_def SUP_set_fold RBT_set_def Collect_member DList_Set.fold.rep_eq RBT_Set2.fold_conv_fold_keys member_conv_keys split: option.split)
-
-lemma INFI_code [code]:
-  fixes xs :: "'a :: complete_lattice list"
-  and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
-  and rbt :: "'c :: {complete_lattice, corder} set_rbt"
-  and f :: "'a \<Rightarrow> 'd::complete_lattice"
-  and g :: "'b \<Rightarrow> 'd::complete_lattice"
-  and h :: "'c \<Rightarrow> 'd::complete_lattice"
-  shows
-  "INFI (Set_Monad xs) f = fold (inf \<circ> f) xs top"
-  "INFI (DList_set dxs) g =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''INFI DList_set: ceq = None'') (\<lambda>_. INFI (DList_set dxs) g)
-                  | Some _ \<Rightarrow> DList_Set.fold (inf \<circ> g) dxs top)"
-  "INFI (RBT_set rbt) h =
-  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''INFI RBT_set: corder = None'') (\<lambda>_. INFI (RBT_set rbt) h)
-                     | Some _ \<Rightarrow> RBT_Set2.fold (inf \<circ> h) rbt top)"
-by(auto simp add: DList_set_def INF_set_fold RBT_set_def Collect_member DList_Set.fold.rep_eq RBT_Set2.fold_conv_fold_keys member_conv_keys split: option.split)
 
 lemma sorted_list_of_set_code [code]:
   fixes dxs :: "'a :: {linorder, ceq} set_dlist"
