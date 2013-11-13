@@ -755,20 +755,14 @@ by cases(auto intro: active_threads.intros)
 lemma exec_aux_into_Runs:
   assumes "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_\<alpha> s \<in> invariant"
   and "wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))"
-  shows "\<alpha>.mthr.Runs (state_\<alpha> s) (lmap snd (llist_of_tllist (exec_aux (\<sigma>, s))))"
+  shows "\<alpha>.mthr.Runs (state_\<alpha> s) (lmap snd (llist_of_tllist (exec_aux (\<sigma>, s))))" (is ?thesis1)
   and "tfinite (exec_aux (\<sigma>, s)) \<Longrightarrow> state_invar (terminal (exec_aux (\<sigma>, s)))" (is "_ \<Longrightarrow> ?thesis2")
 proof -
-  def ttls \<equiv> "lmap snd (llist_of_tllist (exec_aux (\<sigma>, s)))"
-  def s_\<alpha> \<equiv> "state_\<alpha> s"
-  have "\<exists>\<sigma> s. ttls = lmap snd (llist_of_tllist (exec_aux (\<sigma>, s))) \<and> s_\<alpha> = state_\<alpha> s \<and> state_invar s \<and> \<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s))) \<and> wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s)) \<and> state_\<alpha> s \<in> invariant"
-    using assms unfolding ttls_def s_\<alpha>_def by blast
-  thus "\<alpha>.mthr.Runs s_\<alpha> ttls"
-  proof(coinduct)
-    case (Runs s_\<alpha> ttls)
-    then obtain \<sigma> s where [simp]: "s_\<alpha> = state_\<alpha> s"
-      and [simp]: "ttls = lmap snd (llist_of_tllist (exec_aux (\<sigma>, s)))"
-      and invar: "state_invar s" "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_\<alpha> s \<in> invariant"
-      and wstok: "wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))" by blast
+  from assms show ?thesis1
+  proof(coinduction arbitrary: \<sigma> s) 
+    case (Runs \<sigma> s)
+    note invar = `state_invar s` `\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))` `state_\<alpha> s \<in> invariant`
+      and wstok = `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))`
     show ?case
     proof(cases "exec_aux (\<sigma>, s)")
       case (TNil s')

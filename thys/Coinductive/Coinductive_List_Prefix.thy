@@ -59,7 +59,7 @@ subsection {* Prefix ordering as a lower semilattice *}
 instantiation llist :: (type) semilattice_inf begin
 
 definition [code del]:
-  "inf xs ys =
+  "inf xs ys = 
    llist_unfold (\<lambda>(xs, ys). xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)
      (lhd \<circ> snd) (map_pair ltl ltl) (xs, ys)"
 
@@ -70,7 +70,7 @@ lemma llist_inf_simps [simp, code, nitpick_simp]:
 unfolding inf_llist_def by simp_all
 
 lemma llist_inf_eq_LNil [simp]:
-  "inf xs ys = LNil \<longleftrightarrow> (xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)"
+  "lnull (inf xs ys) \<longleftrightarrow> (xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)"
 by(simp add: inf_llist_def)
 
 lemma [simp]: assumes "xs \<noteq> LNil" "ys \<noteq> LNil" "lhd xs = lhd ys"
@@ -82,23 +82,22 @@ instance
 proof
   fix xs ys zs :: "'a llist"
   show "inf xs ys \<le> xs" unfolding le_llist_conv_lprefix
-    by(coinduct xs ys rule: lprefix_fun_coinduct2) auto
+    by(coinduction arbitrary: xs ys) auto
 
   show "inf xs ys \<le> ys" unfolding le_llist_conv_lprefix
-    by(coinduct xs ys rule: lprefix_fun_coinduct2) auto
+    by(coinduction arbitrary: xs ys) auto
 
   assume "xs \<le> ys" "xs \<le> zs"
-  hence "xs \<le> ys \<and> xs \<le> zs" by simp
   thus "xs \<le> inf ys zs" unfolding le_llist_conv_lprefix
-  proof(coinduct xs ys zs rule: lprefix_fun_coinduct_invar3)
-    case (LNil xs ys zs) 
-    thus ?case by(cases xs)(auto simp add: LCons_lprefix_conv)
-  next
-    case (LCons xs ys zs)
+  proof(coinduction arbitrary: xs ys zs)
+    case (lprefix xs ys zs)
     thus ?case by(cases xs)(auto 4 4 simp add: LCons_lprefix_conv)
   qed
 qed
 
 end
+
+lemma llength_inf [simp]: "llength (xs \<sqinter> ys) = llcp xs ys"
+by(coinduction arbitrary: xs ys rule: enat_coinduct)(auto simp add: llcp_eq_0_iff epred_llength epred_llcp)
 
 end

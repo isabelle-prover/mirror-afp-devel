@@ -295,7 +295,7 @@ lemma lapp_inf [simp]:
   assumes "s \<in> A\<^sup>\<omega>"
   shows "s @@ t = s"
 using assms
-by(coinduct s rule: llist_fun_coinduct_invar)(auto elim: inflsts_cases)
+by(coinduction arbitrary: s)(auto elim: inflsts_cases)
 
 lemma LNil_is_lappend_conv [iff]:
 "(LNil = s @@ t) = (s = LNil \<and> t = LNil)"

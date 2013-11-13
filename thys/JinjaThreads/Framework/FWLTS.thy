@@ -245,23 +245,19 @@ lemma \<tau>diverge_into_\<tau>mredT:
   assumes "\<tau>diverge t (x, shr s)"
   and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s t = None"
   shows "mthr.\<tau>diverge s"
-proof -
-  from assms have "\<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> \<tau>diverge t (x, shr s) \<and> wset s t = None" by blast
-  thus ?thesis
-  proof(coinduct)
-    case (\<tau>diverge s)
-    then obtain x where tst: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" and "\<tau>diverge t (x, shr s)" 
-      and "wset s t = None" by blast
-    from `\<tau>diverge t (x, shr s)` obtain x' m' where "silent_move t (x, shr s) (x', m')" 
-      and "\<tau>diverge t (x', m')" by cases auto
-    from `silent_move t (x, shr s) (x', m')` tst `wset s t = None`
-    have "\<tau>mredT s (redT_upd_\<epsilon> s t x' m')" by(rule silent_move_into_RedT_\<tau>_inv)
-    moreover have "thr (redT_upd_\<epsilon> s t x' m') t = \<lfloor>(x', no_wait_locks)\<rfloor>"
-      using tst by(auto simp add: redT_updLns_def)
-    moreover have "wset (redT_upd_\<epsilon> s t x' m') t = None" using `wset s t = None` by simp
-    moreover from `\<tau>diverge t (x', m')` have "\<tau>diverge t (x', shr (redT_upd_\<epsilon> s t x' m'))" by simp
-    ultimately show ?case using `\<tau>diverge t (x', m')` by blast
-  qed
+using assms
+proof(coinduction arbitrary: s x)
+  case (\<tau>diverge s x)
+  note tst = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+  from `\<tau>diverge t (x, shr s)` obtain x' m' where "silent_move t (x, shr s) (x', m')" 
+    and "\<tau>diverge t (x', m')" by cases auto
+  from `silent_move t (x, shr s) (x', m')` tst `wset s t = None`
+  have "\<tau>mredT s (redT_upd_\<epsilon> s t x' m')" by(rule silent_move_into_RedT_\<tau>_inv)
+  moreover have "thr (redT_upd_\<epsilon> s t x' m') t = \<lfloor>(x', no_wait_locks)\<rfloor>"
+    using tst by(auto simp add: redT_updLns_def)
+  moreover have "wset (redT_upd_\<epsilon> s t x' m') t = None" using `wset s t = None` by simp
+  moreover from `\<tau>diverge t (x', m')` have "\<tau>diverge t (x', shr (redT_upd_\<epsilon> s t x' m'))" by simp
+  ultimately show ?case using `\<tau>diverge t (x', m')` by blast
 qed
 
 lemma \<tau>diverge_\<tau>mredTD:

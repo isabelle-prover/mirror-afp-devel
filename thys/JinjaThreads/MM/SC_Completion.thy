@@ -437,74 +437,58 @@ proof -
     qed }
   note step' = this
 
-  from major have "\<exists>a. X vs obs a" ..
-  thus ?thesis
-  proof(coinduct rule: ta_seq_consist_coinduct_append)
-    case (ta_seq_consist vs obs)
-    then obtain a where "X vs obs a" ..
-    thus ?case by(rule step')
+  from major show ?thesis
+  proof(coinduction arbitrary: vs obs a rule: ta_seq_consist_coinduct_append)
+    case (ta_seq_consist vs obs a)
+    thus ?case by simp(rule step')
   qed
 qed
 
 lemma ta_seq_consist_nthI:
-  assumes
-  "\<And>i ad al v. 
-  \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v);
-    ta_seq_consist P vs (ltake (enat i) obs) \<rbrakk> 
-  \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>"
-  shows "ta_seq_consist P vs obs"
-proof -
-  from assms
-  have "\<forall>i ad al v. enat i < llength obs \<longrightarrow> lnth obs i = NormalAction (ReadMem ad al v) \<longrightarrow>
-        ta_seq_consist P vs (ltake (enat i) obs) \<longrightarrow>
-        (\<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>)" by blast
-  thus ?thesis
-  proof(coinduct rule: ta_seq_consist.coinduct)
-    case (ta_seq_consist vs obs)
-    hence nth:
-      "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v); 
-                     ta_seq_consist P vs (ltake (enat i) obs) \<rbrakk> 
-      \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>" by blast
-    show ?case
-    proof(cases obs)
-      case LNil thus ?thesis by simp
-    next
-      case (LCons ob obs')
-      { fix ad al v
-        assume "ob = NormalAction (ReadMem ad al v)"
-        with nth[of 0 ad al v] LCons
-        have "\<exists>b. vs (ad, al) = \<lfloor>(v, b)\<rfloor>"
-          by(simp add: zero_enat_def[symmetric]) }
-      note base = this
-      moreover { 
-        fix i ad al v
-        assume "enat i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
-          and "ta_seq_consist P (mrw_value P vs ob) (ltake (enat i) obs')"
-        with LCons nth[of "Suc i" ad al v] base
-        have "\<exists>b. mrw_values P (mrw_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al) = \<lfloor>(v, b)\<rfloor>"
-          by(clarsimp simp add: eSuc_enat[symmetric] split: obs_event.split action.split) }
-      ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
-      thus ?thesis ..
-    qed
+  "(\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v);
+      ta_seq_consist P vs (ltake (enat i) obs) \<rbrakk> 
+    \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>)
+  \<Longrightarrow> ta_seq_consist P vs obs"
+proof(coinduction arbitrary: vs obs)
+  case (ta_seq_consist vs obs)
+  hence nth:
+    "\<And>i ad al v. \<lbrakk> enat i < llength obs; lnth obs i = NormalAction (ReadMem ad al v); 
+                   ta_seq_consist P vs (ltake (enat i) obs) \<rbrakk> 
+    \<Longrightarrow> \<exists>b. mrw_values P vs (list_of (ltake (enat i) obs)) (ad, al) = \<lfloor>(v, b)\<rfloor>" by blast
+  show ?case
+  proof(cases obs)
+    case LNil thus ?thesis by simp
+  next
+    case (LCons ob obs')
+    { fix ad al v
+      assume "ob = NormalAction (ReadMem ad al v)"
+      with nth[of 0 ad al v] LCons
+      have "\<exists>b. vs (ad, al) = \<lfloor>(v, b)\<rfloor>"
+        by(simp add: zero_enat_def[symmetric]) }
+    note base = this
+    moreover { 
+      fix i ad al v
+      assume "enat i < llength obs'" "lnth obs' i = NormalAction (ReadMem ad al v)"
+        and "ta_seq_consist P (mrw_value P vs ob) (ltake (enat i) obs')"
+      with LCons nth[of "Suc i" ad al v] base
+      have "\<exists>b. mrw_values P (mrw_value P vs ob) (list_of (ltake (enat i) obs')) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+        by(clarsimp simp add: eSuc_enat[symmetric] split: obs_event.split action.split) }
+    ultimately have ?LCons using LCons by(simp split: action.split obs_event.split)
+    thus ?thesis ..
   qed
 qed
 
 lemma ta_seq_consist_into_non_speculative:
-  assumes "ta_seq_consist P vs obs"
-  and "\<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV"
-  shows "non_speculative P vs' obs"
-proof -
-  from assms have "\<exists>vs. ta_seq_consist P vs obs \<and> (\<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV)" by blast
-  thus ?thesis
-  proof(coinduct)
-    case (non_speculative vs' obs)
-    then obtain vs where "ta_seq_consist P vs obs" "\<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV" by best
-    thus ?case
-      apply cases
-      apply(auto split: action.split_asm obs_event.split_asm)
-      apply(rule exI, erule conjI, auto)+
-      done
-  qed
+  "\<lbrakk> ta_seq_consist P vs obs; \<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV \<rbrakk>
+  \<Longrightarrow> non_speculative P vs' obs"
+using assms
+proof(coinduction arbitrary: vs' obs vs)
+  case (non_speculative vs' obs vs)
+  thus ?case
+    apply cases
+    apply(auto split: action.split_asm obs_event.split_asm)
+    apply(rule exI, erule conjI, auto)+
+    done
 qed
 
 lemma llist_of_list_of_append:
@@ -1011,26 +995,22 @@ lemma complete_sc_in_Runs:
   and ta_seq_consist_convert_RA: "\<And>vs ln. ta_seq_consist P vs (llist_of (convert_RA ln))"
   shows "mthr.Runs s (complete_sc s vs)"
 proof -
-  def s' \<equiv> s and vs' \<equiv> vs
-  def ttas \<equiv> "complete_sc s' vs'"
   let ?ttas' = "\<lambda>ttas' :: ('thread_id \<times> ('l,'thread_id,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list.
                concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')"
   let "?vs ttas'" = "mrw_values P vs (?ttas' ttas')"
-  from s'_def vs'_def
-  have "s -\<triangleright>[]\<rightarrow>* s'" "ta_seq_consist P vs (llist_of (?ttas' []))" "vs' = ?vs []" by auto
-  hence "\<exists>ttas'. ttas = complete_sc s' (?vs ttas') \<and> s -\<triangleright>ttas'\<rightarrow>* s' \<and> ta_seq_consist P vs (llist_of (?ttas' ttas'))"
-    unfolding ttas_def by blast
-  thus "mthr.Runs s' ttas"
-  proof(coinduct s' ttas rule: mthr.Runs.coinduct)
-    case (Runs s' ttas)
-    then obtain ttas' where ttas: "ttas = complete_sc s' (?vs ttas')"
-      and Red: "s -\<triangleright>ttas'\<rightarrow>* s'"
-      and sc: "ta_seq_consist P vs (llist_of (?ttas' ttas'))" by blast
+
+  def s' \<equiv> s and vs' \<equiv> vs
+    and ttas \<equiv> "[] :: ('thread_id \<times> ('l,'thread_id,'x,'m,'w, ('addr, 'thread_id) obs_event action) thread_action) list"
+  hence "s -\<triangleright>ttas\<rightarrow>* s'" "ta_seq_consist P vs (llist_of (?ttas' ttas))" by auto
+  hence "mthr.Runs s' (complete_sc s' (?vs ttas))"
+  proof(coinduction arbitrary: s' ttas rule: mthr.Runs.coinduct)
+    case (Runs s' ttas')
+    note Red = `s -\<triangleright>ttas'\<rightarrow>* s'`
+      and sc = `ta_seq_consist P vs (llist_of (?ttas' ttas'))`
     show ?case
     proof(cases "\<exists>t' ta' s''. s' -t'\<triangleright>ta'\<rightarrow> s''")
       case False
-      hence "ttas = LNil" unfolding ttas complete_sc_def by(simp)
-      hence ?Stuck using False by simp
+      hence ?Stuck by(simp add: complete_sc_def)
       thus ?thesis ..
     next
       case True
@@ -1061,8 +1041,8 @@ proof -
       moreover with Red have "s -\<triangleright>ttas' @ [fst (Eps ?proceed)]\<rightarrow>* snd (Eps ?proceed)"
         by(auto simp add: split_beta RedT_def intro: rtrancl3p_step)
       moreover from True
-      have "ttas = LCons (fst (Eps ?proceed)) (complete_sc (snd (Eps ?proceed)) (?vs (ttas' @ [fst (Eps ?proceed)])))"
-        unfolding ttas complete_sc_def by(simp add: split_def)
+      have "complete_sc s' (?vs ttas') = LCons (fst (Eps ?proceed)) (complete_sc (snd (Eps ?proceed)) (?vs (ttas' @ [fst (Eps ?proceed)])))"
+        unfolding complete_sc_def by(simp add: split_def)
       moreover from sc `?proceed (Eps ?proceed)`
       have "ta_seq_consist P vs (llist_of (?ttas' (ttas' @ [fst (Eps ?proceed)])))"
         unfolding map_append concat_append lappend_llist_of_llist_of[symmetric] 
@@ -1072,6 +1052,7 @@ proof -
       thus ?thesis by simp
     qed
   qed
+  thus ?thesis by(simp add: s'_def ttas_def)
 qed
 
 lemma complete_sc_ta_seq_consist:
@@ -1157,7 +1138,7 @@ proof -
             unfolding lfinite_ltakeWhile by(fastforce simp add: split_def lconcat_eq_LNil)
           ultimately have "(complete_sc ?s' (?vs (ttas' @ [?tta])), a) \<in> ?R"
             unfolding a_def vs'_def csc_unfold
-            by(clarsimp simp add: split_def)(auto simp add: lfinite_eq_range_llist_of) }
+            by(clarsimp simp add: split_def llist_of_eq_LNil_conv)(auto simp add: lfinite_eq_range_llist_of) }
         moreover have "?obs (complete_sc ?s' (?vs (ttas' @ [?tta]))) = ?obs (complete_sc ?s' (mrw_values P vs' (list_of (llist_of \<lbrace>snd ?tta\<rbrace>\<^bsub>o\<^esub>))))"
           unfolding vs'_def by(simp add: split_def)
         moreover from `?proceed (Eps ?proceed)` Red

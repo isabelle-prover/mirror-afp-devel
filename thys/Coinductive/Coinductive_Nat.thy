@@ -320,12 +320,12 @@ apply(rule Le_enat.coinduct[unfolded Le_enat_eq_ile, where X="\<lambda>x y. (x, 
 apply(fastforce simp add: zero_enat_def dest: step intro: major)+
 done
 
-lemma enat_le_coinduct:
+lemma enat_le_coinduct[consumes 1, case_names le, case_conclusion le 0 eSuc]:
   assumes P: "P m n"
   and step:
     "\<And>m n. P m n 
      \<Longrightarrow> (n = 0 \<longrightarrow> m = 0) \<and>
-         (m \<noteq> 0 \<longrightarrow> n \<noteq> 0 \<longrightarrow> (\<exists>k. P (epred m) (epred n - k)) \<or> epred m \<le> epred n)"
+         (m \<noteq> 0 \<longrightarrow> n \<noteq> 0 \<longrightarrow> (\<exists>k n'. P (epred m) n' \<and> epred n = n' + k) \<or> epred m \<le> epred n)"
   shows "m \<le> n"
 proof -
   from P have "(m, n) \<in> {(m, n). P m n}" by simp
@@ -340,7 +340,7 @@ proof -
     next
       case (eSuc m')
       with step[OF `P m n`]
-      have "n \<noteq> 0" and disj: "(\<exists>k. P m' (epred n - k)) \<or> m' \<le> epred n" by auto
+      have "n \<noteq> 0" and disj: "(\<exists>k n'. P m' n' \<and> epred n = n' + k) \<or> m' \<le> epred n" by auto
       from `n \<noteq> 0` obtain n' where n': "n = eSuc n'"
         by(cases n rule: enat_coexhaust) auto
       from disj show ?thesis
@@ -349,63 +349,14 @@ proof -
         with eSuc n' show ?thesis 
           by(auto 4 3 intro: exI[where x="Suc 0"] simp add: eSuc_enat[symmetric] iadd_Suc_right zero_enat_def[symmetric])
       next
-        assume "\<exists>k. P m' (epred n - k)"
-        then obtain k where k: "P m' (epred n - k)" by blast
-        show ?thesis
-        proof(cases k)
-          case (enat k')
-          thus ?thesis using eSuc k n'
-            apply simp
-            apply(rule exI[where x="epred n - k"])
-            apply(rule exI[where x="Suc (min k' (the_enat n'))"])
-            apply(cases n')
-            apply(simp_all add: eSuc_enat)
-            done
-        next
-          case infinity
-          thus ?thesis using eSuc k n' 
-            apply(cases n')
-             apply simp_all
-             apply(rule exI[where x="0"])
-             apply(rule exI[where x="the_enat n"])
-            apply(auto simp add: eSuc_enat iadd_Suc_right intro!: exI[where x=\<infinity>])
-            done
-        qed
+        assume "\<exists>k n'. P m' n' \<and> epred n = n' + k"
+        then obtain k n'' where n'': "epred n = n'' + k" and k: "P m' n''" by blast
+        show ?thesis using eSuc k n' n''
+          by(cases k)(auto 4 3 simp add: iadd_Suc_right[symmetric] eSuc_enat intro: exI[where x=\<infinity>])
       qed
     qed
   qed
 qed
-
-lemma enat_le_fun_coinduct_invar [consumes 1, case_names 0 eSuc]:
-  assumes P: "P x"
-  and 0: "\<And>x. \<lbrakk> P x; g x = 0 \<rbrakk> \<Longrightarrow> f x = 0"
-  and eSuc: "\<And>x. \<lbrakk> P x; f x \<noteq> 0; g x \<noteq> 0 \<rbrakk>
-    \<Longrightarrow> (\<exists>x' k. epred (f x) = f x' \<and> epred (g x) = g x' + k \<and> P x') \<or> epred (f x) \<le> epred (g x)"
-  shows "f x \<le> g x"
-apply(rule enat_le_coinduct[where P="\<lambda>m n. \<exists>x. P x \<and> m = f x \<and> n = g x"])
-using P apply(auto)[1]
-apply(safe)
- apply(erule (1) 0)
-apply(drule (2) eSuc)
-apply(clarsimp)
-apply(case_tac k)
- apply  simp_all
-apply(case_tac "g x'")
- apply simp_all
-apply(rule_tac x="k" in exI)
-apply auto
-done
-
-lemma enat_le_fun_coinduct [case_names 0 eSuc]:
-  assumes "\<And>x. g x = 0 \<Longrightarrow> f x = 0"
-  and "\<And>x. \<lbrakk> f x \<noteq> 0; g x \<noteq> 0 \<rbrakk>
-    \<Longrightarrow> (\<exists>x' k. epred (f x) = f x' \<and> epred (g x) = g x' + k) \<or> epred (f x) \<le> epred (g x)"
-  shows "f x \<le> g x"
-apply(rule enat_le_fun_coinduct_invar[where P="\<lambda>_. True" and f=f and g=g])
-using assms by auto
-
-lemmas enat_le_fun_coinduct2 = enat_le_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas enat_le_fun_coinduct_invar2 = enat_le_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
 
 subsection {* Equality as greatest fixpoint *}
 
@@ -448,58 +399,18 @@ proof -
   qed
 qed
 
-lemma enat_equality_funI [consumes 1, case_names zero eSuc,
-                                      case_conclusion eSuc Eqzero EqeSuc]:
-  assumes fun_0: "f 0 = g 0"
-  and fun_eSuc: "!!n. f (eSuc n) = 0 \<and> g (eSuc n) = 0 \<or>
-                    (\<exists>n1 n2. f (eSuc n) = eSuc n1 \<and> g (eSuc n) = eSuc n2 \<and>
-                             ((\<exists>m. n1 = f m \<and> n2 = g m) \<or> n1 = n2))"
-  shows "f n = g n"
-proof -
-  have "(f n, g n) \<in> {(f n, g n)|n. True}" by auto
-  thus ?thesis
-  proof(coinduct rule: enat_equalityI)
-    case (Eq_enat n1 n2)
-    then obtain n where n: "n1 = f n" "n2 = g n" by auto
-    show ?case
-    proof(cases n rule: enat_coexhaust)
-      case 0 with fun_0 have "f n = g n" by simp
-      thus ?thesis using n by(cases "g n" rule: enat_coexhaust) simp_all
-    next
-      case (eSuc n')
-      with n fun_eSuc[of n'] show ?thesis by simp
-    qed
-  qed
-qed
-
-lemma enat_fun_coinduct_invar[consumes 1, case_names zero eSuc]:
-  assumes "P x"
-  and "\<And>x. P x \<Longrightarrow> f x = 0 \<longleftrightarrow> g x = 0"
-  and "\<And>x. \<lbrakk> P x; f x \<noteq> 0; g x \<noteq> 0 \<rbrakk> \<Longrightarrow> (\<exists>x'. epred (f x) = f x' \<and> epred (g x) = g x' \<and> P x') \<or> epred (f x) = epred (g x)"
-  shows "f x = g x"
-apply(rule enat_coinduct[where P="\<lambda>n m. \<exists>x. P x \<and> n = f x \<and> m = g x"])
-using assms by auto
-
-lemma enat_fun_coinduct[case_names zero eSuc]:
-  assumes "\<And>x. f x = 0 \<longleftrightarrow> g x = 0"
-  and "\<And>x. \<lbrakk> f x \<noteq> 0; g x \<noteq> 0 \<rbrakk> \<Longrightarrow> (\<exists>x'. epred (f x) = f x' \<and> epred (g x) = g x') \<or> epred (f x) = epred (g x)"
-  shows "f x = g x"
-by(rule enat_fun_coinduct_invar[where P="\<lambda>_. True" and f=f and g=g])(simp_all add: assms)
-
-lemmas enat_fun_coinduct2 = enat_fun_coinduct[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas enat_fun_coinduct3 = enat_fun_coinduct[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
-lemmas enat_fun_coinduct_invar2 = enat_fun_coinduct_invar[where ?'a="'a \<times> 'b", split_format (complete)]
-lemmas enat_fun_coinduct_invar3 = enat_fun_coinduct_invar[where ?'a="'a \<times> 'b \<times> 'c", split_format (complete)]
+lemma enat_coinduct2 [consumes 1, case_names zero eSuc]:
+  "\<lbrakk> P m n; \<And>m n. P m n \<Longrightarrow> m = 0 \<longleftrightarrow> n = 0; 
+     \<And>m n. \<lbrakk> P m n; m \<noteq> 0; n \<noteq> 0 \<rbrakk> \<Longrightarrow> P (epred m) (epred n) \<or> epred m = epred n \<rbrakk>
+  \<Longrightarrow> m = n"
+by(erule enat_coinduct) blast
 
 subsection {* Uniqueness of corecursion *}
 
 lemma enat_unfold_unique:
   assumes h: "!!x. h x = (if stop x then 0 else eSuc (h (next x)))"
   shows "h x = enat_unfold stop next x"
-apply(coinduct x rule: enat_fun_coinduct)
- apply(subst h, simp)
-apply(subst h, auto)
-done
+by(coinduction arbitrary: x rule: enat_coinduct)(subst (1 3) h, auto)
 
 subsection {* Misc. *}
 
