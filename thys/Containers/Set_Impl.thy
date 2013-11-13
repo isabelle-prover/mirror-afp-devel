@@ -425,7 +425,7 @@ lemma [code, code del]:
   "Cardinality.eq_set = Cardinality.eq_set" ..
 
 lemma [code, code del]:
-  "acc = acc" ..
+  "Wellfounded.acc = Wellfounded.acc" ..
 
 lemma [code, code del]:
   "Bleast = Bleast" ..
@@ -1754,7 +1754,7 @@ by(auto intro: rev_image_eqI simp add: Let_def)
 
 lemma acc_code [code]:
   fixes A :: "('a :: {finite, card_UNIV} \<times> 'a) set" shows
-  "acc A = bacc A (of_phantom (card_UNIV :: 'a card_UNIV))"
+  "Wellfounded.acc A = bacc A (of_phantom (card_UNIV :: 'a card_UNIV))"
 by(simp add: card_UNIV acc_bacc_eq)
 
 lemma sorted_list_of_set_code [code]:

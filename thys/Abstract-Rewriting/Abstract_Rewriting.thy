@@ -1078,7 +1078,7 @@ qed
 
 (* link SN_on to acc / accp *)
 lemma accp_imp_SN_on:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> accp g x"
+  assumes "\<And>x. x \<in> A \<Longrightarrow> Wellfounded.accp g x"
   shows "SN_on {(y, z). g z y} A"
 proof - {
   fix x assume "x \<in> A"
@@ -1100,36 +1100,36 @@ qed
 
 lemma SN_on_imp_accp:
   assumes "SN_on {(y, z). g z y} A"
-  shows "\<forall>x\<in>A. accp g x"
+  shows "\<forall>x\<in>A. Wellfounded.accp g x"
 proof
   fix x assume "x \<in> A"
-  with assms show "accp g x"
+  with assms show "Wellfounded.accp g x"
   proof (induct rule: SN_on_induct)
     case (IH x)
     show ?case
     proof
       fix y
       assume "g y x"
-      with IH show "accp g y" by simp
+      with IH show "Wellfounded.accp g y" by simp
     qed
   qed
 qed
 
 lemma SN_on_conv_accp:
-  "SN_on {(y, z). g z y} {x} = accp g x"
+  "SN_on {(y, z). g z y} {x} = Wellfounded.accp g x"
   using SN_on_imp_accp [of g "{x}"]
         accp_imp_SN_on [of "{x}" g]
   by auto
 
-lemma SN_on_conv_acc: "SN_on {(y, z). (z, y) \<in> r} {x} \<longleftrightarrow> x \<in> acc r"
+lemma SN_on_conv_acc: "SN_on {(y, z). (z, y) \<in> r} {x} \<longleftrightarrow> x \<in> Wellfounded.acc r"
   unfolding SN_on_conv_accp accp_acc_eq ..
 
 lemma acc_imp_SN_on:
-  assumes "x \<in> acc r" shows "SN_on {(y, z). (z, y) \<in> r} {x}"
+  assumes "x \<in> Wellfounded.acc r" shows "SN_on {(y, z). (z, y) \<in> r} {x}"
   using assms unfolding SN_on_conv_acc by simp
 
 lemma SN_on_imp_acc:
-  assumes "SN_on {(y, z). (z, y) \<in> r} {x}" shows "x \<in> acc r"
+  assumes "SN_on {(y, z). (z, y) \<in> r} {x}" shows "x \<in> Wellfounded.acc r"
   using assms unfolding SN_on_conv_acc by simp
 
 
