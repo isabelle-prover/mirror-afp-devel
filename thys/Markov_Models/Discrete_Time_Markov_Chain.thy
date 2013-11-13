@@ -124,7 +124,7 @@ lemma independent_cylinder:
 proof -
   { fix i s' assume "i \<le> n" "s' \<in> nat_case {s} A i"
     then have "\<P>(\<omega> in paths s'. (\<forall>j\<in>{i..<n}. \<omega> (j - i) \<in> A j)) = (\<Prod>i\<in>{i..<n}. (\<Sum>a\<in>A i. p a i))"
-    proof (induct arbitrary: s' rule: inc_induct)
+    proof (induction arbitrary: s' rule: inc_induct)
       case base then show ?case by simp
     next
       case (step i)
@@ -140,7 +140,7 @@ proof -
            (auto simp: space_PiM PiE_def
                  intro!: setsum_mono_zero_cong_right arg_cong2[where f="op *"] arg_cong2[where f=measure])
       also have "\<dots> = (\<Sum>a\<in>A i. p a i * (\<Prod>i\<in>{Suc i ..< n}. (\<Sum>a\<in>A i. p a i)))"
-        by (intro setsum_cong[OF refl], subst step(2)) auto
+        by (intro setsum_cong refl, subst step.IH) auto
       finally show "\<P>(\<omega> in paths s'. (\<forall>j\<in>{i ..< n}. \<omega> (j - i) \<in> A j)) = (\<Prod>i\<in>{i ..< n}. (\<Sum>a\<in>A i. p a i))"
         by (simp add: eq setsum_left_distrib)
     qed }
