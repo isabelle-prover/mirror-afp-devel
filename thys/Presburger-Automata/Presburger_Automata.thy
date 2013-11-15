@@ -3720,10 +3720,9 @@ definition
           else length js) n []) js @ [Leaf (length js)],
         map (\<lambda>j. j = 0) js @ [False]))"
 
-primrec nat_of_bool :: "bool \<Rightarrow> nat"
+abbreviation (input) nat_of_bool :: "bool \<Rightarrow> nat"
 where
-  "nat_of_bool False = 0"
-| "nat_of_bool True = 1"
+  "nat_of_bool \<equiv> of_bool"
 
 lemma nat_of_bool_bound: "nat_of_bool b < 2"
   by (cases b) simp_all
