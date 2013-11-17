@@ -100,7 +100,11 @@ This document concerns the theory of ribbon proofs: a diagrammatic proof system,
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-03-02.tar.gz">afp-<!--#echo var="name" -->-2013-03-02.tar.gz</a></li>
+<li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-02-16.tar.gz">afp-<!--#echo var="name" -->-2013-02-16.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
