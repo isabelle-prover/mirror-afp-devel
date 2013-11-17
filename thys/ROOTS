@@ -19,6 +19,7 @@ Circus
 ClockSynchInst
 CofGroups
 Coinductive
+Coinductive_Languages
 Collections
 Compiling-Exceptions-Correctly
 Completeness

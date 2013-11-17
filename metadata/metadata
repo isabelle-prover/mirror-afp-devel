@@ -261,6 +261,28 @@ extra-history =
   Change history:
   [2013-01-31]: Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.
 
+[Coinductive_Languages]
+title = A Codatatype of Formal Languages
+author = Dmitriy Traytel <mailto:traytel@in.tum.de>
+topic = Computer Science/Automata and Formal Languages
+date = 2013-11-15
+abstract = <p>We define formal languages as a codataype of infinite trees
+ branching over the alphabet. Each node in such a tree indicates whether the
+ path to this node constitutes a word inside or outside of the language. This
+ codatatype is isormorphic to the set of lists representation of languages,
+ but caters for definitions by corecursion and proofs by coinduction.</p>
+ <p>Regular operations on languages are then defined by primitive corecursion.
+ A difficulty arises here, since the standard definitions of concatenation and
+ iteration from the coalgebraic literature are not primitively
+ corecursive-they require guardedness up-to union/concatenation.
+ Without support for up-to corecursion, these operation must be defined as a
+ composition of primitive ones (and proved being equal to the standard
+ definitions). As an exercise in coinduction we also prove the axioms of
+ Kleene algebra for the defined regular operations.</p>
+ <p>Furthermore, a language for context-free grammars given by productions in
+ Greibach normal form and an initial nonterminal is constructed by primitive
+ corecursion, yielding an executable decision procedure for the word problem
+ without further ado.</p>
 
 [Tree-Automata]
 title = Tree Automata
