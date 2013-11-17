@@ -146,7 +146,7 @@ if [ "$1" != "-" ]; then
     mv $EXPORT.tar.gz $TARS/
 
     echo "Generating HTML for [$@]"
-    $ISABELLE_TOOL afp_build -- -c $@  || fail "isabelle afp_build failed on [$@]"
+    $ISABELLE_TOOL afp_build -- -v -c $@  || fail "isabelle afp_build failed on [$@]"
 
     cd $EXPORT/thys
     for ENTRY in $@; do
