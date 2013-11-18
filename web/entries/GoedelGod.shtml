@@ -41,7 +41,7 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Dana Scott’s version of G&ouml;del's proof of God’s existence is formalized in quantified
+Dana Scott's version of G&ouml;del's proof of God's existence is formalized in quantified
 modal logic KB (QML KB).
 QML KB is modeled as a fragment of classical higher-order logic (HOL);
 thus, the formalization is essentially a formalization in HOL.
