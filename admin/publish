@@ -14,7 +14,7 @@ AFP_VERSION=afp-$VERSION
 ISABELLE_VERSION=Isabelle$VERSION
 
 DEST=afp@web.sourceforge.net:htdocs/
-FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION
+FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION/
 SRC=hg.code.sf.net/p/afp/$AFP_VERSION
 
 if [ -n "$SF_LOGIN" ]; then
