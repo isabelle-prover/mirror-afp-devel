@@ -1610,7 +1610,7 @@ abstract = This theory contains a formalization of decreasing diagrams showing t
 [FocusStreamsCaseStudies]
 title = FocusStreamsCaseStudies
 author = Maria Spichkova
-date = 2013-11-01
+date = 2013-11-14
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
         in Focus,
@@ -1621,3 +1621,13 @@ abstract = This set of theories presents an Isabelle/HOL formalisation of stream
 	that cover different application areas: process control (Steam Boiler System),
 	data transmission (FlexRay communication protocol),
 	memory and processing components (Automotive-Gateway System).
+
+[GoedelGod]
+title = GoedelGod
+author = Christoph Benzmueller <http://page.mi.fu-berlin.de/cbenzmueller/>
+date = 2013-11-12
+topic = Logic
+abstract = Dana Scott’s version of G&ouml;del's proof of God’s existence is formalized in quantified
+      modal logic KB (QML KB).
+      QML KB is modeled as a fragment of classical higher-order logic (HOL);
+      thus, the formalization is essentially a formalization in HOL.

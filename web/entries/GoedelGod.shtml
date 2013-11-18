@@ -24,43 +24,38 @@
 <div align="center">
 <p>†</p>
 
-<h1><font class="first">F</font>ocusStreamsCaseStudies
+<h1><font class="first">G</font>oedelGod
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">FocusStreamsCaseStudies</td></tr>
+        <td class="data" width="80%">GoedelGod</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Maria Spichkova</td></tr>
+        <td class="data"><a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmueller</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-11-14</td></tr>
+        <td class="data">2013-11-12</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
-in Focus,
-a framework for formal specification and development of interactive systems.
-This is an extended and updated version of the formalisation, which was
-elaborated within the methodology "Focus on Isabelle".
-In addition, we also applied the formalisation on three case studies
-that cover different application areas: process control (Steam Boiler System),
-data transmission (FlexRay communication protocol),
-memory and processing components (Automotive-Gateway System).
+Dana Scott’s version of G&ouml;del's proof of God’s existence is formalized in quantified
+modal logic KB (QML KB).
+QML KB is modeled as a fragment of classical higher-order logic (HOL);
+thus, the formalization is essentially a formalization in HOL.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{FocusStreamsCaseStudies-AFP,
-  author  = {Maria Spichkova},
-  title   = {FocusStreamsCaseStudies},
+			<pre>@article{GoedelGod-AFP,
+  author  = {Christoph Benzmueller},
+  title   = {GoedelGod},
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/FocusStreamsCaseStudies.shtml},
+  note    = {\url{http://afp.sf.net/entries/GoedelGod.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -80,7 +75,7 @@ memory and processing components (Automotive-Gateway System).
 
 <p></p>
 
-<!--#set var="name" value="FocusStreamsCaseStudies" -->
+<!--#set var="name" value="GoedelGod" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
