@@ -9,9 +9,6 @@ imports
   Coinductive_List
 begin
 
-lemma id_power [simp]: "id ^^ n = id"
-by(induct n) auto
-
 lemma invariantI: "P x \<Longrightarrow> Lifting.invariant P x x"
 by(simp add: Lifting.invariant_def)
 
@@ -383,16 +380,8 @@ by transfer (rule iterates_lmap)
 lemma siterate_conv_of_seq: "siterate f a = of_seq (\<lambda>n. (f ^^ n) a)"
 by transfer (rule iterates_conv_inf_llist)
 
-abbreviation sconst :: "'a \<Rightarrow> 'a stream" where "sconst \<equiv> siterate id"
-
 lemma sconst_conv_of_seq: "sconst a = of_seq (\<lambda>_. a)"
 by(simp add: siterate_conv_of_seq)
-
-lemma sset_sconst [simp]: "sset (sconst a) = {a}"
-by(simp add: sset_siterate)
-
-lemma smap_sconst [simp]: "smap f (sconst a) = sconst (f a)"
-by(coinduction arbitrary: a) auto
 
 lemma szip_sconst1 [simp]: "szip (sconst a) xs = smap (Pair a) xs"
 by(coinduction arbitrary: xs) auto
