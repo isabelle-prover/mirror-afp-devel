@@ -28,6 +28,7 @@ CoreC++
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
+Decreasing-Diagrams
 Depth-First-Search
 Dijkstra_Shortest_Path
 DiskPaxos

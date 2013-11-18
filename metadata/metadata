@@ -1597,3 +1597,11 @@ abstract = G&ouml;del's two incompleteness theorems are formalised, following a 
 	in the formalised calculus upon which the theorem is based.
 	However, other technical problems had to be solved in order to complete the argument.
 
+[Decreasing-Diagrams]
+title = Decreasing Diagrams
+author = Harald Zankl <http://cl-informatik.uibk.ac.at/users/hzankl>
+license = LGPL
+depends-on = Abstract-Rewriting
+date = 2013-11-01
+topic = Logic/Rewriting
+abstract = This theory contains a formalization of decreasing diagrams showing that any locally decreasing abstract rewrite system is confluent. We consider the valley (van Oostrom, TCS 1994) and the conversion version (van Oostrom, RTA 2008) and closely follow the original proofs. As an application we prove Newman's lemma.
