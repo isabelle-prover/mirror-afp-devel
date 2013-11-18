@@ -40,6 +40,7 @@
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
 <a href="entries/Statecharts.shtml">Statecharts</a> &nbsp;
 <a href="entries/Stuttering_Equivalence.shtml">Stuttering_Equivalence</a> &nbsp;
+<a href="entries/Coinductive_Languages.shtml">Coinductive_Languages</a> &nbsp;
 <a href="entries/Tree-Automata.shtml">Tree-Automata</a> &nbsp;
 <a href="entries/Kleene_Algebra.shtml">Kleene_Algebra</a> &nbsp;
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
@@ -185,6 +186,8 @@
 <a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a> &nbsp;
 <a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a> &nbsp;
 <a href="entries/Sort_Encodings.shtml">Sort_Encodings</a> &nbsp;
+<a href="entries/HereditarilyFinite.shtml">HereditarilyFinite</a> &nbsp;
+<a href="entries/Incompleteness.shtml">Incompleteness</a> &nbsp;
 </div>
 
 <h3>Rewriting</h3>

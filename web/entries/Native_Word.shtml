@@ -45,6 +45,14 @@
 This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2013-11-06]:
+added conversion function between native words and characters
+(revision fd23d9a7fe3a)
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Native_Word-AFP,

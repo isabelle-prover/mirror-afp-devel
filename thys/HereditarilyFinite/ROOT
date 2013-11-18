@@ -1,0 +1,13 @@
+chapter AFP
+
+session HereditarilyFinite (AFP) = HOL +
+  description {* The Hereditarily Finite Sets *}
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Nat_Bijection"
+    "~~/src/HOL/Library/Wfrec"
+  theories
+    Rank Finite_Automata
+  files
+    "document/root.bib"
+    "document/root.tex"

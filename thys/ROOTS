@@ -19,6 +19,7 @@ Circus
 ClockSynchInst
 CofGroups
 Coinductive
+Coinductive_Languages
 Collections
 Compiling-Exceptions-Correctly
 Completeness
@@ -54,10 +55,12 @@ Graph_Theory
 Group-Ring-Module
 HRB-Slicing
 Heard_Of
+HereditarilyFinite
 HotelKeyCards
 Huffman
 IEEE_Floating_Point
 Impossible_Geometry
+Incompleteness
 Inductive_Confidentiality
 InformationFlowSlicing
 Integration

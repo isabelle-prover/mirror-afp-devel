@@ -1,0 +1,16 @@
+chapter AFP
+
+session Incompleteness (AFP) = HOL +
+  description {* The Incompleteness Theorems *}
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Nat_Bijection"
+    "~~/src/HOL/Library/Wfrec"
+    "$AFP/HereditarilyFinite/OrdArith"
+    "$AFP/Nominal2/Nominal2"
+  theories
+    Goedel_I
+    Goedel_II
+  files
+    "document/root.bib"
+    "document/root.tex"

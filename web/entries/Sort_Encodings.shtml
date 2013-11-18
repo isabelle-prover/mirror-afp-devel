@@ -119,7 +119,11 @@ point for other formalizations of first-order logic metatheory.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-07-04.tar.gz">afp-<!--#echo var="name" -->-2013-07-04.tar.gz</a></li>
+<li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-07-01.tar.gz">afp-<!--#echo var="name" -->-2013-07-01.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
