@@ -618,12 +618,10 @@ fixes init :: "'n::enum"
 and   prod :: "'n \<Rightarrow> ('t + 'n) language"
 begin
 
-abbreviation shallow_subst :: "('t + 'n) language \<Rightarrow> ('t + 'n) language" where
-  "shallow_subst r \<equiv> PLUS (r # map (\<lambda>N. Times (prod N) (\<dd> r (Inr N))) Enum.enum)"
-
 primcorec deep_subst :: "('t + 'n) language \<Rightarrow> 't language" where
-  "\<oo> (deep_subst r) = \<oo> (shallow_subst r)"
-| "\<dd> (deep_subst r) = (\<lambda>a. deep_subst (\<dd> (shallow_subst r) (Inl a)))"
+  "deep_subst r =
+     (let shallow_subst = PLUS (r # map (\<lambda>N. Times (prod N) (\<dd> r (Inr N))) Enum.enum)
+     in Lang (\<oo> shallow_subst) (\<lambda>a. deep_subst (\<dd> shallow_subst (Inl a))))"
 
 definition subst where
   "subst = deep_subst (prod init)"
@@ -686,7 +684,7 @@ lemma to_language_bij: "bij to_language"
   by (rule o_bij[of "Collect o in_language"]) (simp_all add: fun_eq_iff)
 
 (*<*)
-hide_const (open) TimesLR Times_Plus StarLR shallow_subst deep_subst subst
+hide_const (open) TimesLR Times_Plus StarLR deep_subst subst
 
 end
 (*>*)
