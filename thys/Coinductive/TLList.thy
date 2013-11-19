@@ -216,7 +216,7 @@ lemma in_tset_ttlD: "x \<in> tset (ttl xs) \<Longrightarrow> x \<in> tset xs"
 using tset_ttl[of xs] by auto
 
 lemma tllist_case_def':
-"tllist_case tnil tcons xs = (case tllist_dtor xs of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
+"tllist_case tnil tcons xs = (case dtor_tllist xs of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
 apply (case_tac xs)
 by auto (auto simp add: TNil_def TCons_def tllist.dtor_ctor)
 
@@ -1120,8 +1120,8 @@ lemma set3_pre_tllist_transfer [transfer_rule]:
   "(sum_rel A (prod_rel B C) ===> set_rel C) set3_pre_tllist set3_pre_tllist"
 by(auto simp add: Transfer.fun_rel_def set3_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
-lemma tllist_dtor_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) tllist_dtor tllist_dtor"
+lemma dtor_tllist_transfer [transfer_rule]:
+  "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) dtor_tllist dtor_tllist"
 apply(rule fun_relI)
 apply(erule tllist_all2_cases)
 apply(auto simp add: sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)

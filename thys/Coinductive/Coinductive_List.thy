@@ -160,7 +160,7 @@ lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
 lemma llist_case_def':
-"llist_case lnil lcons xs = (case llist_dtor xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
+"llist_case lnil lcons xs = (case dtor_llist xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
 apply (case_tac xs)
 by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor)
 
@@ -4527,8 +4527,8 @@ lemma set2_pre_llist_transfer [transfer_rule]:
   "(sum_rel op = (prod_rel A B) ===> set_rel B) set2_pre_llist set2_pre_llist"
 by(auto simp add: Transfer.fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
-lemma llist_dtor_transfer [transfer_rule]:
-  "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) llist_dtor llist_dtor"
+lemma dtor_llist_transfer [transfer_rule]:
+  "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) dtor_llist dtor_llist"
 apply(rule fun_relI)
 apply(erule llist_all2_cases)
 apply(auto simp add: sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
