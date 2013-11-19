@@ -69,9 +69,11 @@ lemma lang_eq_ext: "(lang r = lang s) =
   (\<forall>w \<in> lists(atoms r \<union> atoms s). w \<in> lang r \<longleftrightarrow> w \<in> lang s)"
   by (auto simp: atoms_lang[unfolded subset_iff])
 
-lemma lang_eq_ext_Nil_fold_Deriv: "lang r = lang s \<longleftrightarrow>
-  (\<forall>w\<in>lists (atoms r \<union> atoms s). [] \<in> fold Deriv w (lang r) \<longleftrightarrow> [] \<in> fold Deriv w (lang s))"
-  unfolding lang_eq_ext Nil_fold_Deriv ..
+lemma lang_eq_ext_Nil_fold_Deriv:
+  fixes r s
+  defines "\<BB> \<equiv> {(fold Deriv w (lang r), fold Deriv w (lang s))| w. w\<in>lists (atoms r \<union> atoms s)}"
+  shows "lang r = lang s \<longleftrightarrow> (\<forall>(K, L) \<in> \<BB>. [] \<in> K \<longleftrightarrow> [] \<in> L)"
+  unfolding lang_eq_ext \<BB>_def by (subst (1 2) Nil_fold_Deriv[symmetric]) auto
 
 
 subsection {* Term ordering *}
