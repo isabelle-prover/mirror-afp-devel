@@ -105,14 +105,14 @@ by(auto simp add: cr_uint32_def)
 lemma numeral_uint32 [code_unfold]: "numeral n = Uint32 (numeral n)"
 by transfer simp
 
-lemma Rep_uint32_neg_numeral [simp]: "Rep_uint32 (neg_numeral n) = neg_numeral n"
-by(simp only: neg_numeral_def uminus_uint32_def)(simp add: Abs_uint32_inverse)
+lemma Rep_uint32_neg_numeral [simp]: "Rep_uint32 (- numeral n) = - numeral n"
+by(simp only: uminus_uint32_def)(simp add: Abs_uint32_inverse)
 
 lemma uint32_neg_numeral_transfer [transfer_rule]:
-  "(fun_rel op = cr_uint32) neg_numeral neg_numeral"
+  "(fun_rel op = cr_uint32) (- numeral) (- numeral)"
 by(auto simp add: cr_uint32_def)
 
-lemma neg_numeral_uint32 [code_unfold]: "neg_numeral n = Uint32 (neg_numeral n)"
+lemma neg_numeral_uint32 [code_unfold]: "- numeral n = Uint32 (- numeral n)"
 by transfer(simp add: cr_uint32_def)
 
 lemma Abs_uint32_numeral [code_post]: "Abs_uint32 (numeral n) = numeral n"

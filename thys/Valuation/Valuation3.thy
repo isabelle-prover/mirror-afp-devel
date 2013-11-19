@@ -753,8 +753,8 @@ apply (subst limit_def)
   apply (thin_tac "f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup> (Vr K v) (an N + (ant \<bar>z\<bar> + ant \<bar>z\<bar>))\<^esup>")
   apply (simp add:an_def, simp add:aminus, (simp add:a_zpz)+)
   apply (subst aadd_commute)
-  apply (rule_tac i = 0 and j = "ant (int N + 2 * \<bar>z\<bar> + -2 * z)" and 
-         k = "n_val K v (f n \<plusminus> -\<^sub>a b) + ant (-2 * z)" in ale_trans)
+  apply (rule_tac i = 0 and j = "ant (int N + 2 * \<bar>z\<bar> - 2 * z)" and 
+         k = "n_val K v (f n \<plusminus> -\<^sub>a b) + ant (- (2 * z))" in ale_trans)
   apply (subst ant_0[THEN sym])
   apply (subst ale_zle, simp, assumption)
 
@@ -781,8 +781,8 @@ apply (subst limit_def)
   apply (thin_tac "f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup> (Vr K v) (an N + (ant \<bar>z\<bar> + ant \<bar>z\<bar>))\<^esup>")
   apply (simp add:an_def, simp add:aminus, (simp add:a_zpz)+)
   apply (subst aadd_commute)
-  apply (rule_tac i = "ant (int N)" and j = "ant (int N + 2 * \<bar>z\<bar> + -2 * z)" 
-        and k = "n_val K v (f n \<plusminus> -\<^sub>a b) + ant (-2 * z)" in ale_trans)
+  apply (rule_tac i = "ant (int N)" and j = "ant (int N + 2 * \<bar>z\<bar> - 2 * z)" 
+        and k = "n_val K v (f n \<plusminus> -\<^sub>a b) + ant (- (2 * z))" in ale_trans)
   apply (subst ale_zle, simp, assumption)
  
   apply simp

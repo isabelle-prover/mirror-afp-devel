@@ -98,8 +98,8 @@ by(auto simp add: cr_uint8_def)
 lemma numeral_uint8 [code_unfold]: "numeral n = Uint8 (numeral n)"
 by transfer simp
 
-lemma Rep_uint8_neg_numeral [simp]: "Rep_uint8 (neg_numeral n) = neg_numeral n"
-by(simp only: neg_numeral_def uminus_uint8_def)(simp add: Abs_uint8_inverse)
+lemma Rep_uint8_neg_numeral [simp]: "Rep_uint8 (- numeral n) = - numeral n"
+by(simp only: uminus_uint8_def)(simp add: Abs_uint8_inverse)
 
 context begin interpretation lifting_syntax .
 
@@ -107,12 +107,12 @@ lemma [transfer_rule]: "(op = ===> cr_uint8 ===> op =) (\<lambda>n m. cr_uint8 m
 by(auto 4 3 simp add: cr_uint8_def Rep_uint8_inject)
 
 lemma uint8_neg_numeral_transfer [transfer_rule]:
-  "(op = ===> cr_uint8) neg_numeral neg_numeral"
+  "(op = ===> cr_uint8) (- numeral) (- numeral)"
 by(auto simp add: cr_uint8_def)
 
 end
 
-lemma neg_numeral_uint8 [code_unfold]: "neg_numeral n = Uint8 (neg_numeral n)"
+lemma neg_numeral_uint8 [code_unfold]: "- numeral n = Uint8 (- numeral n)"
 by transfer(simp add: cr_uint8_def)
 
 lemma Abs_uint8_numeral [code_post]: "Abs_uint8 (numeral n) = numeral n"

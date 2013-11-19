@@ -114,6 +114,8 @@ next
     by simp
 qed
 
+declare E.ex_ivp.Delta_def [code] -- {* explicit is better than implicit *}
+
 hide_const error_bound error_bound'
 
 definition "error_bound = 2 * E.B'/ E.L * (exp (E.L * real (T' - t0') + 1) - 1) * H"

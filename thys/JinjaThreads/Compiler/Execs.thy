@@ -923,6 +923,10 @@ lemma exec_move_WhileI1:
   "exec_move ci P t e h s ta h' s' \<Longrightarrow> exec_move ci P t (while (e) e') h s ta h' s'"
 unfolding exec_move_def by auto
 
+lemma (in ab_group_add) uminus_minus_left_commute:
+  "- a - (b + c) = - b - (a + c)"
+  by (simp add: algebra_simps)
+
 lemma exec_move_While1:
   assumes pc: "pc < length (compE2 e)"
   shows "exec_move ci P t (while (e) e') h (stk, loc, pc, xcp) = exec_move ci P t e h (stk, loc, pc, xcp)"
@@ -932,8 +936,8 @@ proof(rule ext iffI)+
   let ?xt = "compxE2 e' (Suc 0) 0"
   fix ta h' s'
   assume "?lhs ta h' s'"
-  hence "exec_meth ci (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) t h (stk, loc, pc, xcp) ta h' s'"
-    by(simp add: exec_move_def shift_compxE2 add_ac)
+  then have "exec_meth ci (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) t h (stk, loc, pc, xcp) ta h' s'"
+    by (simp add: exec_move_def shift_compxE2 algebra_simps uminus_minus_left_commute)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_WhileI1)
 
@@ -947,7 +951,7 @@ proof -
     by(simp add: exec_move_def)
   hence "exec_meth ci (compP2 P) ((?E @ compE2 e1) @ ?E') (compxE2 e 0 0 @ shift (length ?E) (compxE2 e1 0 0)) t h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by -(rule exec_meth_append, rule append_exec_meth_xt, auto)
-  thus ?thesis by(simp add: shift_compxE2 exec_move_def add_ac)
+  thus ?thesis by (simp add: shift_compxE2 exec_move_def algebra_simps uminus_minus_left_commute)
 qed
 
 lemma exec_move_While2:
@@ -961,7 +965,7 @@ proof
   let ?E' = "[Pop, Goto (- int (length (compE2 e)) + (-2 - int (length (compE2 e')))), Push Unit]"
   assume ?lhs
   hence "exec_meth ci (compP2 P) ((?E @ compE2 e') @ ?E') (compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) t h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
-    by(simp add: exec_move_def shift_compxE2 add_ac)
+    by(simp add: exec_move_def shift_compxE2 algebra_simps uminus_minus_left_commute)
   thus ?rhs unfolding exec_move_def using pc
     by -(drule exec_meth_take, simp, drule exec_meth_drop_xt, auto)
 qed(rule exec_move_WhileI2)

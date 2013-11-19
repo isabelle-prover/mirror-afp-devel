@@ -277,9 +277,8 @@ lemma
   compute_powr_numeral:
     assumes "x > 0"
     shows "x powr numeral k = x ^ numeral k"
-    "x powr neg_numeral k = 1 / x ^ numeral k"
-  by (simp_all only: powr_realpow[OF `x>0`, symmetric] neg_numeral_def
-    powr_minus inverse_eq_divide real_of_nat_numeral)
+    "x powr - numeral k = 1 / x ^ numeral k"
+  using assms by (fact powr_numeral powr_neg_numeral)+
 
 interpretation E: example1 t0' x0' b r T H T' e'
 proof unfold_locales
@@ -302,6 +301,16 @@ next
     by simp
 qed
 
+declare E.ex_ivp.Delta_def [code] -- {* explicit is better than implicit *}
+
+lemma [code_unfold]: -- {* Workaround to avoid non-pattern @{term "0::int"} in LHS of code equations *}
+  "0 = int_of_integer 0"
+  by simp
+
+lemma [code_unfold]: -- {* Workaround to avoid non-pattern @{term "0::int"} in LHS of code equations *}
+  "- (int_of_integer (Code_Numeral.Pos k)) = int_of_integer (Code_Numeral.Neg k)"
+  by simp
+
 definition "error_bound = 2 * E.B'/ E.L * (exp (E.L * real (T' - t0') + 1) - 1) * H"
 
 definition "error_bound' = 0.001"
@@ -313,10 +322,6 @@ lemma error_bound: "error_bound \<le> error_bound'"
   by simp (approximation 20)
 
 definition i_max::nat where "i_max = 2 ^ 13"
-
-lemma [code_unfold]: -- {* Workaround to avoid non-pattern @{term "0::int"} in LHS of code equations *}
-  "0 = int_of_integer 0"
-  by simp
 
 lemma T_max: "E.Delta i_max = 0.5" by eval
 

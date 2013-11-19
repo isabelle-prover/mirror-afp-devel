@@ -4425,7 +4425,7 @@ next
      by(rule exec_meth_drop_xt_pc)(auto simp add: stack_xlift_compxE2)
    moreover have "-2 + (- int (length (compE2 e)) - int (length (compE2 c))) = - int (length (compE2 c)) + (-2 - int (length (compE2 e)))" by simp
    ultimately show ?thesis using stk'
-     by(auto simp add: shift_compxE2 stack_xlift_compxE2 add_ac)
+     by(auto simp add: shift_compxE2 stack_xlift_compxE2 algebra_simps uminus_minus_left_commute)
  next
     case False
     with pc have [simp]: "pc = length (compE2 e)" by simp
@@ -4485,7 +4485,7 @@ next
     by(rule exec_meth_drop_xt_pc)(auto simp add: stack_xlift_compxE2)
   moreover have "-2 + (- int (length (compE2 e)) - int (length (compE2 c))) = - int (length (compE2 c)) + (-2 - int (length (compE2 e)))" by simp
   ultimately show ?case using stk'
-    by(auto simp add: shift_compxE2 stack_xlift_compxE2 add_ac)
+    by(auto simp add: shift_compxE2 stack_xlift_compxE2 algebra_simps uminus_minus_left_commute)
 next
   case (bisim1Throw1 e n e' xs stk loc pc xcp)
   note bisim = `P,e,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`

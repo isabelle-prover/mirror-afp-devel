@@ -1441,11 +1441,11 @@ proof-
     using l5 l6 hypsp
     by simp
   hence l9: "Fract ((fst p)^3) ((snd p)^3) - (Fract (3 * (fst p)) (snd p)) = 1"
-    by (metis mult_1 mult_rat rat_number_collapse(3))
+    by (simp add: Fract_of_int_quotient)
   have "Fract (3 * (fst p)) (snd p) = Fract ((3 * (fst p)) * (snd p)) ((snd p) * (snd p))"
-    by (metis hypsp comm_semiring_1_class.normalizing_semiring_rules(7) mult_rat_cancel rel_simps(54))
+    by (simp add: Fract_of_int_quotient)
   hence "Fract (3 * (fst p)) (snd p) = Fract (((3 * (fst p)) * (snd p)) * (snd p)) (((snd p) * (snd p)) * (snd p))"
-    by (metis hypsp mult_rat)
+    by (simp add: Fract_of_int_quotient)
   hence "Fract (3 * (fst p)) (snd p) = Fract (3 * (fst p) * (snd p)^2) ((snd p)^3)"
     by (simp add: power_def algebra_simps)
   hence l10: "Fract ((fst p)^3) ((snd p)^3) - Fract (3 * (fst p) * (snd p)^2 ) ((snd p)^3) = 1" 

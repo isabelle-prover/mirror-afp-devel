@@ -402,7 +402,7 @@ proof -
       finally show ?thesis using r_bound by (auto simp: field_simps)
     qed
     also have "\<dots> \<le> n * n powr (- 3 / 2) * exp 1 powr (1 / 2)"
-      using p_bound by (simp add: powr_def exp_add)
+      using p_bound by (simp add: powr_def exp_add [symmetric])
     also have "\<dots> \<le> n powr (-1 / 2) * exp 1 powr (1 / 2)" by (simp add: powr_mult_base)
     also have "\<dots> = (exp 1 / n) powr (1/2)"
       by (simp add: powr_divide powr_minus_divide)

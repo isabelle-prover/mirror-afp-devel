@@ -100,8 +100,8 @@ lift_definition Uint16 :: "integer \<Rightarrow> uint16" is "word_of_int" .
 lemma Rep_uint16_numeral [simp]: "Rep_uint16 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint16_def Abs_uint16_inverse numeral.simps plus_uint16_def)
 
-lemma Rep_uint16_neg_numeral [simp]: "Rep_uint16 (neg_numeral n) = neg_numeral n"
-by(simp only: neg_numeral_def uminus_uint16_def)(simp add: Abs_uint16_inverse)
+lemma Rep_uint16_neg_numeral [simp]: "Rep_uint16 (- numeral n) = - numeral n"
+by(simp only: uminus_uint16_def)(simp add: Abs_uint16_inverse)
 
 context begin interpretation lifting_syntax .
 
@@ -109,7 +109,7 @@ lemma [transfer_rule]: "(op = ===> cr_uint16 ===> op =) (\<lambda>n m. cr_uint16
 by(auto 4 3 simp add: cr_uint16_def Rep_uint16_inject)
 
 lemma uint16_neg_numeral_transfer [transfer_rule]:
-  "(op = ===> cr_uint16) neg_numeral neg_numeral"
+  "(op = ===> cr_uint16) (- numeral) (- numeral)"
 by(auto simp add: cr_uint16_def)
 
 lemma numeral_uint16_transfer [transfer_rule]:
@@ -121,7 +121,7 @@ end
 lemma numeral_uint16 [code_unfold]: "numeral n = Uint16 (numeral n)"
 by transfer simp
 
-lemma neg_numeral_uint16 [code_unfold]: "neg_numeral n = Uint16 (neg_numeral n)"
+lemma neg_numeral_uint16 [code_unfold]: "- numeral n = Uint16 (- numeral n)"
 by transfer(simp add: cr_uint16_def)
 
 lemma Abs_uint16_numeral [code_post]: "Abs_uint16 (numeral n) = numeral n"
