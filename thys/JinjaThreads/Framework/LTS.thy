@@ -101,7 +101,7 @@ where
 definition inf_step2inf_step_table :: "'s \<Rightarrow> 'tl llist \<Rightarrow> ('s \<times> 'tl \<times> 's) llist"
 where
   "inf_step2inf_step_table s tls =
-   llist_unfold
+   unfold_llist
      (\<lambda>(s, tls). lnull tls)
      (\<lambda>(s, tls). (s, lhd tls, SOME s'. trsys s (lhd tls) s' \<and> s' -ltl tls\<rightarrow>* \<infinity>)) 
      (\<lambda>(s, tls). (SOME s'. trsys s (lhd tls) s' \<and> s' -ltl tls\<rightarrow>* \<infinity>, ltl tls))
@@ -210,7 +210,7 @@ lemma Runs_into_Runs_table:
   where "tls = lmap (\<lambda>(s, tl, s'). tl) stlss"
   and "Runs_table s stlss"
 proof -
-  def stlss \<equiv> "\<lambda>s tls. llist_unfold
+  def stlss \<equiv> "\<lambda>s tls. unfold_llist
     (\<lambda>(s, tls). lnull tls)
     (\<lambda>(s, tls). (s, lhd tls, SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls)))
     (\<lambda>(s, tls). (SOME s'. s -lhd tls\<rightarrow> s' \<and> Runs s' (ltl tls), ltl tls))
@@ -321,7 +321,7 @@ where
 definition \<tau>inf_step2\<tau>inf_step_table :: "'s \<Rightarrow> 'tl llist \<Rightarrow> ('s \<times> 's \<times> 'tl \<times> 's) llist"
 where
   "\<tau>inf_step2\<tau>inf_step_table s tls =
-   llist_unfold
+   unfold_llist
      (\<lambda>(s, tls). lnull tls)
      (\<lambda>(s, tls). let (s', s'') = SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -lhd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (lhd tls) s'' \<and> s'' -\<tau>-ltl tls\<rightarrow>* \<infinity>
         in (s, s', lhd tls, s''))
@@ -803,7 +803,7 @@ qed
 
 definition \<tau>Runs2\<tau>Runs_table :: "'s \<Rightarrow> ('tl, 's option) tllist \<Rightarrow> ('tl \<times> 's, 's option) tllist"
 where
-  "\<tau>Runs2\<tau>Runs_table s tls = tllist_unfold
+  "\<tau>Runs2\<tau>Runs_table s tls = unfold_tllist
      (\<lambda>(s, tls). is_TNil tls)
      (\<lambda>(s, tls). terminal tls)
      (\<lambda>(s, tls). (thd tls, SOME s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls))
@@ -908,7 +908,7 @@ proof
   let ?\<tau>diverge = "\<lambda>\<sigma>. \<sigma> -\<tau>\<rightarrow> \<infinity>"
   let ?proceed = "\<lambda>\<sigma> (tl, \<sigma>''). \<exists>\<sigma>'. \<sigma> -\<tau>\<rightarrow>* \<sigma>' \<and> \<sigma>' -tl\<rightarrow> \<sigma>'' \<and> \<not> \<tau>move \<sigma>' tl \<sigma>''"
 
-  def tls == "tllist_unfold
+  def tls == "unfold_tllist
      (\<lambda>\<sigma>. (\<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>') \<or> ?\<tau>diverge \<sigma>)
      (\<lambda>\<sigma>. if \<exists>\<sigma>'. ?\<tau>halt \<sigma> \<sigma>' then Some (SOME \<sigma>'. ?\<tau>halt \<sigma> \<sigma>') else None)
      (\<lambda>\<sigma>. fst (SOME tl\<sigma>'. ?proceed \<sigma> tl\<sigma>'))
@@ -941,7 +941,7 @@ proof
         ultimately have "?proceed \<sigma> (tl, \<sigma>'')" using \<sigma>_\<sigma>' by auto
         hence "?proceed \<sigma> (SOME tl\<sigma>. ?proceed \<sigma> tl\<sigma>)" by(rule someI)
         hence ?Proceed using False \<tau>halt unfolding \<tau>Runs
-          by(subst tllist_unfold) fastforce
+          by(subst unfold_tllist) fastforce
         thus ?thesis by simp
       qed
     qed
@@ -983,7 +983,7 @@ lemma \<tau>diverge_into_inf_step_silent_move2:
   assumes "s -\<tau>\<rightarrow> \<infinity>"
   obtains tls where "trsys.inf_step silent_move2 s tls"
 proof -
-  def tls \<equiv> "llist_unfold
+  def tls \<equiv> "unfold_llist
      (\<lambda>_. False)
      (\<lambda>s. fst (SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>))
      (\<lambda>s. snd (SOME (tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>))
@@ -1001,7 +1001,7 @@ proof -
     with `s' -\<tau>\<rightarrow> \<infinity>` have "?P (tl, s')" by simp
     hence "?P (Eps ?P)" by(rule someI)
     thus ?case using tls
-      by(subst (asm) llist_unfold_code)(auto)
+      by(subst (asm) unfold_llist_code)(auto)
   qed
   thus thesis by(rule that)
 qed
@@ -1184,7 +1184,7 @@ proof -
           None \<Rightarrow> Inr (SOME tls'. trsys.inf_step silent_move2 s tls')
         | Some s' \<Rightarrow> let tls' = SOME tls'. silent_moves2 s tls' s' in Inl (tls', s')"
   let ?P = "\<lambda>s tls (tls'', s', s''). silent_moves2 s tls'' s' \<and> s' -thd tls\<rightarrow> s'' \<and> \<not> \<tau>move s' (thd tls) s'' \<and> s'' \<Down> ttl tls"
-  def tlsstlss \<equiv> "\<lambda>s tls. tllist_unfold
+  def tlsstlss \<equiv> "\<lambda>s tls. unfold_tllist
       (\<lambda>(s, tls). is_TNil tls)
       (\<lambda>(s, tls). ?terminal s tls)
       (\<lambda>(s, tls). let (tls'', s', s'') = Eps (?P s tls) in (tls'', s', thd tls, s''))
@@ -1229,7 +1229,7 @@ proof -
       with Proceed have "?P s tls (tls'', s', s'')" by simp
       hence "?P s tls (Eps (?P s tls))" by(rule someI)
       hence ?Proceed using Proceed unfolding tlsstlss_def
-        by(subst tllist_unfold)(auto simp add: split_def)
+        by(subst unfold_tllist)(auto simp add: split_def)
       thus ?thesis by simp
     qed
   qed

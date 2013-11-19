@@ -37,8 +37,8 @@ primrec toString_heapobj :: "heapobj \<Rightarrow> String.literal" where
 instance proof qed
 end
 
-definition llist_case' where "llist_case' = llist_case"
-definition tllist_case' where "tllist_case' = tllist_case"
+definition case_llist' where "case_llist' = case_llist"
+definition case_tllist' where "case_tllist' = case_tllist"
 definition terminal' where "terminal' = terminal"
 definition llist_of_tllist' where "llist_of_tllist' = llist_of_tllist"
 definition thr' where "thr' = thr"
@@ -63,7 +63,7 @@ code_identifier
 export_code
   wf_J_prog' exec_J_rr exec_J_rnd 
   j_Program
-  purge llist_case' tllist_case' terminal' llist_of_tllist'
+  purge case_llist' case_tllist' terminal' llist_of_tllist'
   thr' shr' heap_toString thread_toString trace_toString
   in SML
   file "J_Execute.ML"
@@ -73,7 +73,7 @@ definition j2jvm :: "addr J_prog \<Rightarrow> addr jvm_prog" where "j2jvm = J2J
 export_code
   wf_jvm_prog' exec_JVM_rr exec_JVM_rnd j2jvm
   j_Program 
-  purge llist_case' tllist_case' terminal' llist_of_tllist'
+  purge case_llist' case_tllist' terminal' llist_of_tllist'
   thr' shr' heap_toString thread_toString' trace_toString
   in SML
   file "JVM_Execute2.ML"

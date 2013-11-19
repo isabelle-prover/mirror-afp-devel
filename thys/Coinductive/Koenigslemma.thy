@@ -144,7 +144,7 @@ theorem koenigslemma:
 proof(intro bexI conjI)
   let ?P = "\<lambda>(n, ns) n'. graph n n' \<and> infinite (reachable_via graph (- insert n (insert n' ns)) n') \<and> n' \<notin> insert n ns"
   def LTL == "\<lambda>(n, ns). let n' = SOME n'. ?P (n, ns) n' in (n', insert n ns)"
-  def f == "llist_unfold (\<lambda>_. False) fst LTL"
+  def f == "unfold_llist (\<lambda>_. False) fst LTL"
   def ns == "{} :: 'node set"
 
   { fix n ns

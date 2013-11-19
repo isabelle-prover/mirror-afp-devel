@@ -225,11 +225,11 @@ lemma tllist_all2_preserve2 [quot_preserve]:
   by (simp add: fun_eq_iff map_fun_def comp_def Quotient3_rel_rep[OF q1] Quotient3_rel_rep[OF q2]
     tllist_all2_eq)
 
-lemma tllist_corec_preserve [quot_preserve]: 
+lemma corec_tllist_preserve [quot_preserve]: 
   assumes q1: "Quotient3 R1 Abs1 Rep1"
   and q2: "Quotient3 R2 Abs2 Rep2"
   and q3: "Quotient3 R3 Abs3 Rep3"
-  shows "((Abs1 ---> id) ---> (Abs1 ---> Rep2) ---> (Abs1 ---> Rep3) ---> (Abs1 ---> id) ---> (Abs1 ---> tmap Rep3 Rep2) ---> (Abs1 ---> Rep1) ---> Rep1 ---> tmap Abs3 Abs2) tllist_corec = tllist_corec"
+  shows "((Abs1 ---> id) ---> (Abs1 ---> Rep2) ---> (Abs1 ---> Rep3) ---> (Abs1 ---> id) ---> (Abs1 ---> tmap Rep3 Rep2) ---> (Abs1 ---> Rep1) ---> Rep1 ---> tmap Abs3 Abs2) corec_tllist = corec_tllist"
   (is "?lhs = ?rhs")
 proof(intro ext)
   fix IS_TNIL TNIL THD endORmore TTL_end TTL_more b

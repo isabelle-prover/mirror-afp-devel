@@ -514,7 +514,7 @@ context jmm_multithreaded begin
 definition complete_hb :: "('l,'thread_id,'x,'m,'w) state \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) list
   \<Rightarrow> ('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
 where
-  "complete_hb s E = llist_unfold
+  "complete_hb s E = unfold_llist
      (\<lambda>(s, E). \<forall>t ta s'. \<not> s -t\<triangleright>ta\<rightarrow> s')
      (\<lambda>(s, E). fst (SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))))
      (\<lambda>(s, E). let ((t, ta), s') = SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))
@@ -709,13 +709,13 @@ proof -
             unfolding lfinite_ltakeWhile by(fastforce simp add: split_def lconcat_eq_LNil)
           ultimately have "(complete_hb ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>), a) \<in> ?R"
             using red unfolding a complete_hb_def
-            apply(subst (2) llist_unfold_code)
-            apply(subst (asm) llist_unfold_code)
+            apply(subst (2) unfold_llist_code)
+            apply(subst (asm) unfold_llist_code)
             apply(auto simp add: split_beta simp del: split_paired_Ex split_paired_All split: split_if_asm)
             apply(auto simp add: lfinite_eq_range_llist_of)
             done }
         hence ?lappend using red hb hb_c' unfolding obs complete_hb_def
-          apply(subst llist_unfold_code)
+          apply(subst unfold_llist_code)
           apply(simp add: split_beta eq del: split_paired_Ex split_paired_All split del: split_if)
           apply(intro exI conjI impI refl disjI1|rule refl|assumption|simp_all add: llist_of_eq_LNil_conv)+
           done

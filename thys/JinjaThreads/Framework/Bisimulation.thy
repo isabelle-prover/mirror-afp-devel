@@ -90,7 +90,7 @@ proof -
   from r1.inf_step_imp_inf_step_table[OF red1]
   obtain stls1 where red1': "s1 -1-stls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd) stls1" by blast
-  def tl1_to_tl2_def: tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (stls1 :: ('s1 \<times> 'tl1 \<times> 's1) llist). llist_unfold
+  def tl1_to_tl2_def: tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (stls1 :: ('s1 \<times> 'tl1 \<times> 's1) llist). unfold_llist
      (\<lambda>(s2, stls1). lnull stls1)
      (\<lambda>(s2, stls1). let (s1, tl1, s1') = lhd stls1;
                         (tl2, s2') = SOME (tl2, s2'). trsys2 s2 tl2 s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2
@@ -426,7 +426,7 @@ proof -
   from trsys1.\<tau>inf_step_imp_\<tau>inf_step_table[OF \<tau>inf1]
   obtain sstls1 where \<tau>inf1': "s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>" 
     and tls1: "tls1 = lmap (fst \<circ> snd \<circ> snd) sstls1" by blast
-  def tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (sstls1 :: ('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist). llist_unfold
+  def tl1_to_tl2 \<equiv> "\<lambda>(s2 :: 's2) (sstls1 :: ('s1 \<times> 's1 \<times> 'tl1 \<times> 's1) llist). unfold_llist
      (\<lambda>(s2, sstls1). lnull sstls1)
      (\<lambda>(s2, sstls1).
         let (s1, s1', tl1, s1'') = lhd sstls1;
@@ -617,7 +617,7 @@ lemma simulation_\<tau>Runs_table1:
 proof(intro exI conjI)
   let ?P = "\<lambda>(s2 :: 's2) (stlsss1 :: ('tl1 \<times> 's1, 's1 option) tllist) (tl2, s2'').
     \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and> snd (thd stlsss1) \<approx> s2'' \<and> fst (thd stlsss1) \<sim> tl2"
-  def tls1_to_tls2 == "\<lambda>s2 stlsss1. tllist_unfold
+  def tls1_to_tls2 == "\<lambda>s2 stlsss1. unfold_tllist
       (\<lambda>(s2, stlsss1). is_TNil stlsss1)
       (\<lambda>(s2, stlsss1). Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1))
       (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (tl2, s2''))

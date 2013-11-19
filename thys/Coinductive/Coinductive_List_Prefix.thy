@@ -60,7 +60,7 @@ instantiation llist :: (type) semilattice_inf begin
 
 definition [code del]:
   "inf xs ys = 
-   llist_unfold (\<lambda>(xs, ys). xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)
+   unfold_llist (\<lambda>(xs, ys). xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)
      (lhd \<circ> snd) (map_pair ltl ltl) (xs, ys)"
 
 lemma llist_inf_simps [simp, code, nitpick_simp]:

@@ -31,14 +31,14 @@ lemma equal_stream_code [code]:
   "equal_class.equal (Stream x xs) (Stream y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
 by(simp_all add: equal_stream_def)
 
-lemma stream_corec_code [code]:
-  "stream_corec SHD endORmore STL_end STL_more b = Stream (SHD b) 
+lemma corec_stream_code [code]:
+  "corec_stream SHD endORmore STL_end STL_more b = Stream (SHD b) 
      (if endORmore b then STL_end b
-      else stream_corec SHD endORmore STL_end STL_more (STL_more b))"
+      else corec_stream SHD endORmore STL_end STL_more (STL_more b))"
 by(rule stream.expand) simp_all
 
-lemma stream_unfold_code [code]:
-  "stream_unfold SHD STL b = Stream (SHD b) (stream_unfold SHD STL (STL b))"
+lemma unfold_stream_code [code]:
+  "unfold_stream SHD STL b = Stream (SHD b) (unfold_stream SHD STL (STL b))"
 by(rule stream.expand) simp_all
 
 text {* lemmas about generated constants *}
@@ -58,25 +58,25 @@ lemma smap_id:
   "smap id = id"
 by(simp add: fun_eq_iff stream.map_id)
 
-lemma smap_stream_unfold:
-  "smap f (stream_unfold SHD STL b) = stream_unfold (f \<circ> SHD) STL b"
+lemma smap_unfold_stream:
+  "smap f (unfold_stream SHD STL b) = unfold_stream (f \<circ> SHD) STL b"
 by(coinduction arbitrary: b) auto
 
-lemma smap_stream_corec:
-  "smap f (stream_corec SHD endORmore STL_end STL_more b) =
-   stream_corec (f \<circ> SHD) endORmore (smap f \<circ> STL_end) STL_more b"
+lemma smap_corec_stream:
+  "smap f (corec_stream SHD endORmore STL_end STL_more b) =
+   corec_stream (f \<circ> SHD) endORmore (smap f \<circ> STL_end) STL_more b"
 by(coinduction arbitrary: b rule: stream.strong_coinduct) auto
 
-lemma stream_unfold_ltl_unroll:
-  "stream_unfold SHD STL (STL b) = stream_unfold (SHD \<circ> STL) STL b"
+lemma unfold_stream_ltl_unroll:
+  "unfold_stream SHD STL (STL b) = unfold_stream (SHD \<circ> STL) STL b"
 by(coinduction arbitrary: b) auto
 
-lemma stream_unfold_eq_Stream [simp]:
-  "stream_unfold SHD STL b = x ## xs \<longleftrightarrow>
-  x = SHD b \<and> xs = stream_unfold SHD STL (STL b)"
-by(subst stream_unfold_code) auto
+lemma unfold_stream_eq_Stream [simp]:
+  "unfold_stream SHD STL b = x ## xs \<longleftrightarrow>
+  x = SHD b \<and> xs = unfold_stream SHD STL (STL b)"
+by(subst unfold_stream_code) auto
 
-lemma stream_unfold_id [simp]: "stream_unfold shd stl xs = xs"
+lemma unfold_stream_id [simp]: "unfold_stream shd stl xs = xs"
 by(coinduction arbitrary: xs) simp_all
 
 lemma sset_neq_empty [simp]: "sset xs \<noteq> {}"
@@ -128,10 +128,10 @@ by(induct xs arbitrary: us)(auto simp add: Suc_length_conv)
 subsection {* Link @{typ "'a stream"} to @{typ "'a llist"} *}
 
 definition llist_of_stream :: "'a stream \<Rightarrow> 'a llist"
-where "llist_of_stream = llist_unfold (\<lambda>_. False) shd stl"
+where "llist_of_stream = unfold_llist (\<lambda>_. False) shd stl"
 
 definition stream_of_llist :: "'a llist \<Rightarrow> 'a stream"
-where "stream_of_llist = stream_unfold lhd ltl"
+where "stream_of_llist = unfold_stream lhd ltl"
 
 lemma lnull_llist_of_stream [simp]: "\<not> lnull (llist_of_stream xs)"
 by(simp add: llist_of_stream_def)
@@ -174,13 +174,13 @@ setup_lifting (no_code) stream_from_llist
 lemma cr_streamI: "\<not> lfinite xs \<Longrightarrow> cr_stream xs (stream_of_llist xs)"
 by(simp add: cr_stream_def Abs_stream_inverse)
 
-lemma llist_of_stream_stream_unfold [simp]: 
-  "llist_of_stream (stream_unfold SHD STL x) = llist_unfold (\<lambda>_. False) SHD STL x"
+lemma llist_of_stream_unfold_stream [simp]: 
+  "llist_of_stream (unfold_stream SHD STL x) = unfold_llist (\<lambda>_. False) SHD STL x"
 by(coinduction arbitrary: x) auto
 
-lemma llist_of_stream_stream_corec [simp]:
-  "llist_of_stream (stream_corec SHD endORmore STL_more STL_end x) =
-   llist_corec (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
+lemma llist_of_stream_corec_stream [simp]:
+  "llist_of_stream (corec_stream SHD endORmore STL_more STL_end x) =
+   corec_llist (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
 by(coinduction arbitrary: x rule: llist.strong_coinduct) auto
 
 lemma LCons_llist_of_stream [simp]: "LCons x (llist_of_stream xs) = llist_of_stream (x ## xs)"
@@ -241,13 +241,13 @@ lemma lset_infinite_transfer [transfer_rule]:
   "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> op =) lset lset"
 by(simp add: fun_rel_def Lifting.invariant_def)
 
-lemma stream_unfold_transfer [transfer_rule]:
-  "(op = ===> op = ===> op = ===> pcr_stream op =) (llist_unfold (\<lambda>_. False)) stream_unfold"
+lemma unfold_stream_transfer [transfer_rule]:
+  "(op = ===> op = ===> op = ===> pcr_stream op =) (unfold_llist (\<lambda>_. False)) unfold_stream"
 by(auto simp add: stream.pcr_cr_eq cr_stream_def intro!: fun_relI)
 
-lemma stream_corec_transfer [transfer_rule]:
+lemma corec_stream_transfer [transfer_rule]:
   "(op = ===> op = ===> (op = ===> pcr_stream op =) ===> op = ===> op = ===> pcr_stream op=)
-   (llist_corec (\<lambda>_. False)) stream_corec"
+   (corec_llist (\<lambda>_. False)) corec_stream"
 apply(auto intro!: fun_relI simp add: cr_stream_def stream.pcr_cr_eq)
 apply(rule fun_cong) back
 apply(rule_tac x=yc in fun_cong)
