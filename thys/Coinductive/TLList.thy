@@ -228,7 +228,7 @@ proof -
   have "\<forall>x\<in>tset xs. P x xs"
     apply(rule tllist.dtor_set1_induct)
     using assms
-    apply(auto simp add: thd_def ttl_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
+    apply(auto simp add: thd_def ttl_def set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
@@ -249,15 +249,15 @@ proof -
   with `x \<in> tset xs` show ?thesis by blast
 qed
 
-theorem tllist_set2_induct[consumes 1, case_names find step]:
-  assumes "x \<in> tllist_set2 xs" and "\<And>xs. is_TNil xs \<Longrightarrow> P (terminal xs) xs"
-  and "\<And>xs y. \<lbrakk>\<not> is_TNil xs; y \<in> tllist_set2 (ttl xs); P y (ttl xs)\<rbrakk> \<Longrightarrow> P y xs"
+theorem set2_tllist_induct[consumes 1, case_names find step]:
+  assumes "x \<in> set2_tllist xs" and "\<And>xs. is_TNil xs \<Longrightarrow> P (terminal xs) xs"
+  and "\<And>xs y. \<lbrakk>\<not> is_TNil xs; y \<in> set2_tllist (ttl xs); P y (ttl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
 proof -
-  have "\<forall>x\<in>tllist_set2 xs. P x xs"
+  have "\<forall>x\<in>set2_tllist xs. P x xs"
     apply(rule tllist.dtor_set2_induct)
     using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def pre_tllist_set2_def pre_tllist_set3_def pre_tllist_set1_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def tllist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
       apply(erule_tac x="b" in meta_allE)
@@ -275,7 +275,7 @@ proof -
     apply(case_tac b)
     apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps)
     done
-  with `x \<in> tllist_set2 xs` show ?thesis by blast
+  with `x \<in> set2_tllist xs` show ?thesis by blast
 qed
 
 
@@ -464,22 +464,22 @@ lemma terminal_tllist_of_llist_lfinite [simp]:
   "lfinite xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
 by(induct rule: lfinite.induct) simp_all
 
-lemma tllist_set2_tllist_of_llist [simp]:
-  "tllist_set2 (tllist_of_llist b xs) = (if lfinite xs then {b} else {})"
+lemma set2_tllist_tllist_of_llist [simp]:
+  "set2_tllist (tllist_of_llist b xs) = (if lfinite xs then {b} else {})"
 proof(cases "lfinite xs")
   case True
   thus ?thesis by(induct) auto
 next
   case False
   { fix x
-    assume "x \<in> tllist_set2 (tllist_of_llist b xs)"
+    assume "x \<in> set2_tllist (tllist_of_llist b xs)"
     hence False using False
-      by(induct "tllist_of_llist b xs" arbitrary: xs rule: tllist_set2_induct) fastforce+ }
+      by(induct "tllist_of_llist b xs" arbitrary: xs rule: set2_tllist_induct) fastforce+ }
   thus ?thesis using False by auto
 qed
 
-lemma tllist_set2_transfer [transfer_rule]:
-  "(pcr_tllist A B ===> set_rel B) (\<lambda>(xs, b). if lfinite xs then {b} else {}) tllist_set2"
+lemma set2_tllist_transfer [transfer_rule]:
+  "(pcr_tllist A B ===> set_rel B) (\<lambda>(xs, b). if lfinite xs then {b} else {}) set2_tllist"
 by(auto 4 4 simp add: pcr_tllist_def cr_tllist_def dest: llist_all2_lfiniteD intro: set_relI)
 
 lemma tllist_all2_transfer [transfer_rule]:
@@ -1108,17 +1108,17 @@ context
 begin
 interpretation lifting_syntax .
 
-lemma pre_tllist_set1_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel B) pre_tllist_set1 pre_tllist_set1"
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set1_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
+lemma set1_pre_tllist_transfer [transfer_rule]:
+  "(sum_rel A (prod_rel B C) ===> set_rel B) set1_pre_tllist set1_pre_tllist"
+by(auto simp add: Transfer.fun_rel_def set1_pre_tllist_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
 
-lemma pre_tllist_set2_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel A) pre_tllist_set2 pre_tllist_set2"
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+lemma set2_pre_tllist_transfer [transfer_rule]:
+  "(sum_rel A (prod_rel B C) ===> set_rel A) set2_pre_tllist set2_pre_tllist"
+by(auto simp add: Transfer.fun_rel_def set2_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
-lemma pre_tllist_set3_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel C) pre_tllist_set3 pre_tllist_set3"
-by(auto simp add: Transfer.fun_rel_def pre_tllist_set3_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+lemma set3_pre_tllist_transfer [transfer_rule]:
+  "(sum_rel A (prod_rel B C) ===> set_rel C) set3_pre_tllist set3_pre_tllist"
+by(auto simp add: Transfer.fun_rel_def set3_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma tllist_dtor_transfer [transfer_rule]:
   "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) tllist_dtor tllist_dtor"

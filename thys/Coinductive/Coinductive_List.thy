@@ -100,8 +100,8 @@ lemma lnull_lmap [simp]: "lnull (lmap f xs) \<longleftrightarrow> lnull xs"
 by(cases xs) simp_all
 
 lemma
-  shows LNil_eq_llist_map: "LNil = lmap f xs \<longleftrightarrow> xs = LNil"
-  and llist_map_eq_LNil: "lmap f xs = LNil \<longleftrightarrow> xs = LNil"
+  shows LNil_eq_lmap: "LNil = lmap f xs \<longleftrightarrow> xs = LNil"
+  and lmap_eq_LNil: "lmap f xs = LNil \<longleftrightarrow> xs = LNil"
 by(cases xs,simp_all)+
 
 lemma [simp]:
@@ -121,11 +121,11 @@ lemma lmap_id:
   "lmap id = id"
 by(simp add: fun_eq_iff llist.map_id)
 
-lemma llist_map_llist_unfold:
+lemma lmap_llist_unfold:
   "lmap f (llist_unfold IS_LNIL LHD LTL b) = llist_unfold IS_LNIL (f \<circ> LHD) LTL b"
 by(coinduction arbitrary: b) auto
 
-lemma llist_map_llist_corec:
+lemma lmap_llist_corec:
   "lmap f (llist_corec IS_LNIL LHD endORmore TTL_end TTL_more b) =
    llist_corec IS_LNIL (f \<circ> LHD) endORmore (lmap f \<circ> TTL_end) TTL_more b"
 by(coinduction arbitrary: b rule: llist.strong_coinduct) auto
@@ -174,7 +174,7 @@ proof -
   have "\<forall>x\<in>lset xs. P x xs"
     apply(rule llist.dtor_set_induct)
     using assms
-    apply(auto simp add: lhd_def ltl_def pre_llist_set2_def pre_llist_set1_def fsts_def snds_def llist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
+    apply(auto simp add: lhd_def ltl_def set2_pre_llist_def set1_pre_llist_def fsts_def snds_def llist_case_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def)
@@ -872,6 +872,7 @@ lemma ltake_eSuc:
   (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> LCons x (ltake n xs'))"
 by(cases xs) simp_all
 
+term "(case n of 0 \<Rightarrow> LNil | eSuc n' \<Rightarrow> LNil)"
 lemma ltake_LCons [code, nitpick_simp]:
   "ltake n (LCons x xs) =
   (case n of 0 \<Rightarrow> LNil | eSuc n' \<Rightarrow> LCons x (ltake n' xs))"
@@ -1418,7 +1419,7 @@ proof
 qed
 
 lemma lmap_iterates: "lmap f (iterates f x) = iterates f (f x)"
-by(simp add: iterates_def llist_map_llist_unfold llist_unfold_ltl_unroll o_def)
+by(simp add: iterates_def lmap_llist_unfold llist_unfold_ltl_unroll o_def)
 
 lemma iterates_lmap: "iterates f x = LCons x (lmap f (iterates f x))"
 by(simp add: lmap_iterates)(rule iterates)
@@ -2523,7 +2524,7 @@ lemma lmap_eq_lmap_conv_llist_all2:
 proof
   assume ?lhs
   thus ?rhs
-    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv lnull_def LNil_eq_llist_map llist_map_eq_LNil)
+    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv lnull_def LNil_eq_lmap lmap_eq_LNil)
 next
   assume ?rhs
   thus ?lhs
@@ -4519,12 +4520,12 @@ begin
 interpretation lifting_syntax .
 
 lemma pre_llist_set1_transfer [transfer_rule]:
-  "(sum_rel op = (prod_rel A B) ===> set_rel A) pre_llist_set1 pre_llist_set1"
-by(auto simp add: Transfer.fun_rel_def pre_llist_set1_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
+  "(sum_rel op = (prod_rel A B) ===> set_rel A) set1_pre_llist set1_pre_llist"
+by(auto simp add: Transfer.fun_rel_def set1_pre_llist_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
 
-lemma pre_llist_set2_transfer [transfer_rule]:
-  "(sum_rel op = (prod_rel A B) ===> set_rel B) pre_llist_set2 pre_llist_set2"
-by(auto simp add: Transfer.fun_rel_def pre_llist_set2_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+lemma set2_pre_llist_transfer [transfer_rule]:
+  "(sum_rel op = (prod_rel A B) ===> set_rel B) set2_pre_llist set2_pre_llist"
+by(auto simp add: Transfer.fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma llist_dtor_transfer [transfer_rule]:
   "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) llist_dtor llist_dtor"
