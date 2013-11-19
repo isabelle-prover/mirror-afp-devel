@@ -44,13 +44,13 @@ declare language.coinduct[unfolded fun_rel_def, simplified, case_names Lang, coi
 (* code generation *)
 code_datatype Lang
 
-lemma language_case_cert:
-  assumes "CASE \<equiv> language_case c"
+lemma case_language_cert:
+  assumes "CASE \<equiv> case_language c"
   shows "CASE (Lang b d) \<equiv> c b d"
   using assms by simp_all
 
 setup {*
-  Code.add_case @{thm language_case_cert}
+  Code.add_case @{thm case_language_cert}
 *}
 (*>*)
 
