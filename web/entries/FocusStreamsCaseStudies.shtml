@@ -24,13 +24,20 @@
 <div align="center">
 <p> </p>
 
-<h1><font class="first">F</font>ocusStreamsCaseStudies
+<h1><font class="first">S</font>tream
+<font class="first">P</font>rocessing
+<font class="first">C</font>omponents:
+<font class="first">I</font>sabelle/HOL
+<font class="first">F</font>ormalisation
+and
+<font class="first">C</font>ase
+<font class="first">S</font>tudies
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">FocusStreamsCaseStudies</td></tr>
+        <td class="data" width="80%">Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data">Maria Spichkova</td></tr>
@@ -56,7 +63,7 @@ memory and processing components (Automotive-Gateway System).
         <td class="formatted">
 			<pre>@article{FocusStreamsCaseStudies-AFP,
   author  = {Maria Spichkova},
-  title   = {FocusStreamsCaseStudies},
+  title   = {Stream Processing Components: Isabelle/HOL Formalisation and Case Studies},
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2013,

@@ -1608,7 +1608,7 @@ topic = Logic/Rewriting
 abstract = This theory contains a formalization of decreasing diagrams showing that any locally decreasing abstract rewrite system is confluent. We consider the valley (van Oostrom, TCS 1994) and the conversion version (van Oostrom, RTA 2008) and closely follow the original proofs. As an application we prove Newman's lemma.
 
 [FocusStreamsCaseStudies]
-title = FocusStreamsCaseStudies
+title = Stream Processing Components: Isabelle/HOL Formalisation and Case Studies
 author = Maria Spichkova
 date = 2013-11-14
 topic = Computer Science/Programming Languages/Language Definitions
@@ -1623,7 +1623,7 @@ abstract = This set of theories presents an Isabelle/HOL formalisation of stream
 	memory and processing components (Automotive-Gateway System).
 
 [GoedelGod]
-title = GoedelGod
+title = G&ouml;del's God in Isabelle/HOL
 author = Christoph Benzmueller <http://page.mi.fu-berlin.de/cbenzmueller/>
 date = 2013-11-12
 topic = Logic
