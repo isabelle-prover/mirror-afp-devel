@@ -5,7 +5,7 @@
 *)
 
 theory Reactive_Processes
-imports Designs "~~/src/HOL/Library/Sublist"
+imports Designs
 begin
 
 subsection{* Reactive Processes \label{sec:UTP_Reactive_Processes} *}

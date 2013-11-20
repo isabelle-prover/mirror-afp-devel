@@ -3,7 +3,6 @@ chapter AFP
 session Jinja (AFP) = HOL +
   options [timeout = 1200, document_graph]
   theories [document = false]
-    "~~/src/HOL/Library/Sublist"
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Code_Target_Numeral"
   theories

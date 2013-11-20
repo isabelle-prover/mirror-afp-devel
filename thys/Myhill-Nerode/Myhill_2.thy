@@ -1,6 +1,6 @@
 (* Author: Xingyuan Zhang, Chunhan Wu, Christian Urban *)
 theory Myhill_2
-  imports Myhill_1 "~~/src/HOL/Library/Sublist"
+  imports Myhill_1
 begin
 
 section {* Second direction of MN: @{text "regular language \<Rightarrow> finite partition"} *}
