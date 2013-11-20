@@ -1,6 +1,6 @@
 chapter AFP
 
-session Well_Quasi_Orders (AFP) = HOL +
+session Well_Quasi_Orders (AFP) = "HOL-Cardinals" +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/Seq"
@@ -8,7 +8,6 @@ session Well_Quasi_Orders (AFP) = HOL +
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Ramsey"
     "~~/src/HOL/Library/Order_Relation"
-    "~~/src/HOL/Library/Zorn"
     "~~/src/HOL/Library/Multiset"
   theories
     "~~/src/HOL/Library/Sublist"

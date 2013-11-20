@@ -9,7 +9,7 @@ header {* Well-Partial-Orders *}
 theory Well_Partial_Orders
 imports
   Almost_Full_Relations
-  "~~/src/HOL/Library/Zorn"
+  "~~/src/HOL/Cardinals/Wellorder_Extension"
 begin
 
 subsection {* Basic Definitions *}
