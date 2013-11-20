@@ -73,7 +73,7 @@ lemma lang_eq_ext_Nil_fold_Deriv:
   fixes r s
   defines "\<BB> \<equiv> {(fold Deriv w (lang r), fold Deriv w (lang s))| w. w\<in>lists (atoms r \<union> atoms s)}"
   shows "lang r = lang s \<longleftrightarrow> (\<forall>(K, L) \<in> \<BB>. [] \<in> K \<longleftrightarrow> [] \<in> L)"
-  unfolding lang_eq_ext \<BB>_def by (subst (1 2) Nil_fold_Deriv[symmetric]) auto
+  unfolding lang_eq_ext \<BB>_def by (subst (1 2) in_fold_Deriv[of "[]", simplified, symmetric]) auto
 
 
 subsection {* Term ordering *}
