@@ -1,7 +1,7 @@
 header{* Preliminaries *}
 theory Preliminaries
 imports "~~/src/HOL/Cardinals/Cardinals"
-        "~~/src/HOL/BNF/Countable_Type"
+        "~~/src/HOL/BNF/Countable_Set_Type"
 begin
 
 
