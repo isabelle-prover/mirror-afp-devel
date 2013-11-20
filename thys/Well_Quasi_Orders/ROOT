@@ -1,6 +1,6 @@
 chapter AFP
 
-session Well_Quasi_Orders (AFP) = "HOL-Cardinals" +
+session Well_Quasi_Orders (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/Seq"
