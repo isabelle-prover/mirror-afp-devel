@@ -49,7 +49,7 @@ proof
       by (auto intro:gen_span.gen_inv)
     moreover
     have "-1 = inv\<^bsub>int_group\<^esub> 1" 
-      using int.inv_equality by auto
+      by (rule sym, rule int.inv_equality) simp_all
     ultimately
     have minus1: "-1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
       by (simp)
@@ -76,8 +76,8 @@ proof
       from `i \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>` and minus1
       have "i \<otimes>\<^bsub>int_group\<^esub> -1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" 
         by (rule gen_span.gen_mult)
-      thus "i - 1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" 
-        by (simp add: algebra_simps minus_one [symmetric] del: minus_one)
+      thus "i - 1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
+        by simp
     qed
   qed
 qed

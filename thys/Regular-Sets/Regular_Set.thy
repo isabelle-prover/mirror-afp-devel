@@ -294,6 +294,12 @@ lemma Derivs_simps [simp]:
   and   "Derivs (s1 @ s2) A = Derivs s2 (Derivs s1 A)"
 unfolding Derivs_def Deriv_def by auto
 
+lemma Nil_fold_Deriv: "[] \<in> fold Deriv w L \<longleftrightarrow> w \<in> L"
+  by (induct w arbitrary: L) (simp_all add: Deriv_def)
+
+lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
+  by (induct w arbitrary: L) simp_all
+
 
 subsection {* Arden's Lemma *}
 

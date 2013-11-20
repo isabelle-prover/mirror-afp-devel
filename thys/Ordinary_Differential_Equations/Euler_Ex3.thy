@@ -170,6 +170,8 @@ next
   show "T \<le> 1/2" by (simp add: T_def)
 qed
 
+declare E.ex_ivp.Delta_def [code] -- {* explicit is better than implicit *}
+
 definition "error_bound3 = 2 * E.B'/ E.L * (exp (E.L * real (T' - t0') + 1) - 1) * H"
 
 definition "error_bound3' = 0.0000151"

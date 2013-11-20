@@ -22,8 +22,8 @@ notation
   lappend  (infixr "@@" 65)
 
 translations
-  "case p of XCONST LNil \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightleftharpoons> "CONST llist_case a (\<lambda>x l. b) p"
-  "case p of XCONST LNil :: 'a \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightharpoonup> "CONST llist_case a (\<lambda>x l. b) p"
+  "case p of XCONST LNil \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightleftharpoons> "CONST case_llist a (\<lambda>x l. b) p"
+  "case p of XCONST LNil :: 'a \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightharpoonup> "CONST case_llist a (\<lambda>x l. b) p"
 
 
 lemmas llistE = llist.exhaust
@@ -166,7 +166,7 @@ where "finlsts_pred \<equiv> {(r,s). r \<in> UNIV\<^sup>\<star> \<and> (\<exists
 definition finlsts_rec :: "['b, ['a, 'a llist, 'b] \<Rightarrow> 'b] \<Rightarrow> 'a llist \<Rightarrow> 'b"
 where
   "finlsts_rec c d r \<equiv> if r \<in> UNIV\<^sup>\<star>
-  then (wfrec finlsts_pred (%f. llist_case c (%a r. d a r (f r))) r)
+  then (wfrec finlsts_pred (%f. case_llist c (%a r. d a r (f r))) r)
   else undefined"
 
 lemma finlsts_predI: "r \<in> A\<^sup>\<star> \<Longrightarrow> (r, a##r) \<in> finlsts_pred"

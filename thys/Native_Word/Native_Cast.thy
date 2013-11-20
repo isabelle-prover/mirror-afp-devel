@@ -156,6 +156,36 @@ code_printing
   (Haskell) "(Prelude.fromIntegral _ :: Uint32.Word32)" and
   (Scala) "(_).toInt"
 
+text {* 
+  Use @{const Rep_uint8'} etc. instead of @{const Rep_uint8} in code equations
+  for conversion functions to avoid exceptions during code generation when the
+  target language provides only some of the uint types.
+*}
+
+lemma uint8_of_uint16_code [code]:
+  "Rep_uint8 (uint8_of_uint16 x) = ucast (Rep_uint16' x)"
+by(simp add: uint8_of_uint16.rep_eq)
+
+lemma uint8_of_uint32_code [code]:
+  "Rep_uint8 (uint8_of_uint32 x) = ucast (Rep_uint32' x)"
+by(simp add: uint8_of_uint32.rep_eq)
+
+lemma uint16_of_uint8_code [code]:
+  "Rep_uint16 (uint16_of_uint8 x) = ucast (Rep_uint8' x)"
+by(simp add: uint16_of_uint8.rep_eq)
+
+lemma uint16_of_uint32_code [code]:
+  "Rep_uint16 (uint16_of_uint32 x) = ucast (Rep_uint32' x)"
+by(simp add: uint16_of_uint32.rep_eq)
+
+lemma uint32_of_uint8_code [code]:
+  "Rep_uint32 (uint32_of_uint8 x) = ucast (Rep_uint8' x)"
+by(simp add: uint32_of_uint8.rep_eq)
+
+lemma uint32_of_uint16_code [code]:
+  "Rep_uint32 (uint32_of_uint16 x) = ucast (Rep_uint16' x)"
+by(simp add: uint32_of_uint16.rep_eq)
+
 section {* Tests *}
 
 definition test_casts :: bool

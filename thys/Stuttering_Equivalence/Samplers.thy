@@ -517,10 +517,12 @@ proof -
                   show "?F (Suc i)"
                   proof (rule ccontr)
                     assume "\<not> ?thesis"
-                    hence "?mss (Suc k) \<le> f (?mssf k + Suc i)" 
+                    then have "?mss (Suc k) \<le> f (?mssf k + Suc i)" 
                       by (simp add: o_def)
-                    with contr have i: "?mss (Suc k) < f (?mssf k + Suc i)"
-                      by (auto simp: less_le)
+                    moreover from contr have "f (?mssf k + Suc i) \<noteq> ?mss (Suc k)"
+                      by blast
+                    ultimately have i: "?mss (Suc k) < f (?mssf k + Suc i)"
+                      by (simp add: less_le)
                     from f have "\<sigma> (?mss (Suc k)) = \<sigma> (f (?mssf k + i))"
                     proof (rule stutter_sampler_between)
                       from ih show "f (?mssf k + i) \<le> ?mss (Suc k)" 

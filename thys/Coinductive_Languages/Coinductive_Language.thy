@@ -4,7 +4,7 @@
 header {* A Codatatype of Formal Languages *}
 
 theory Coinductive_Language
-imports "~~/src/HOL/BNF/Examples/Stream"
+imports "~~/src/HOL/BNF/BNF"
 begin
 
 hide_const (open) Inter
@@ -44,13 +44,13 @@ declare language.coinduct[unfolded fun_rel_def, simplified, case_names Lang, coi
 (* code generation *)
 code_datatype Lang
 
-lemma language_case_cert:
-  assumes "CASE \<equiv> language_case c"
+lemma case_language_cert:
+  assumes "CASE \<equiv> case_language c"
   shows "CASE (Lang b d) \<equiv> c b d"
   using assms by simp_all
 
 setup {*
-  Code.add_case @{thm language_case_cert}
+  Code.add_case @{thm case_language_cert}
 *}
 (*>*)
 
@@ -618,12 +618,10 @@ fixes init :: "'n::enum"
 and   prod :: "'n \<Rightarrow> ('t + 'n) language"
 begin
 
-abbreviation shallow_subst :: "('t + 'n) language \<Rightarrow> ('t + 'n) language" where
-  "shallow_subst r \<equiv> PLUS (r # map (\<lambda>N. Times (prod N) (\<dd> r (Inr N))) Enum.enum)"
-
 primcorec deep_subst :: "('t + 'n) language \<Rightarrow> 't language" where
-  "\<oo> (deep_subst r) = \<oo> (shallow_subst r)"
-| "\<dd> (deep_subst r) = (\<lambda>a. deep_subst (\<dd> (shallow_subst r) (Inl a)))"
+  "deep_subst r =
+     (let shallow_subst = PLUS (r # map (\<lambda>N. Times (prod N) (\<dd> r (Inr N))) Enum.enum)
+     in Lang (\<oo> shallow_subst) (\<lambda>a. deep_subst (\<dd> shallow_subst (Inl a))))"
 
 definition subst where
   "subst = deep_subst (prod init)"
@@ -686,7 +684,7 @@ lemma to_language_bij: "bij to_language"
   by (rule o_bij[of "Collect o in_language"]) (simp_all add: fun_eq_iff)
 
 (*<*)
-hide_const (open) TimesLR Times_Plus StarLR shallow_subst deep_subst subst
+hide_const (open) TimesLR Times_Plus StarLR deep_subst subst
 
 end
 (*>*)

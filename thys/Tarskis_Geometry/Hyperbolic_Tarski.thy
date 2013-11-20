@@ -4794,7 +4794,7 @@ proof -
   have "sqrt ?pqab = (2 * ?ab + sqrt (4 * ?ab\<^sup>2 - 4)) / 2
     \<or> sqrt ?pqab = (2 * ?ab - sqrt (4 * ?ab\<^sup>2 - 4)) / 2"
     unfolding discrim_def
-    by (simp add: real_sqrt_mult [symmetric] power2_eq_square minus_mult_left)
+    by (simp add: real_sqrt_mult [symmetric] power2_eq_square)
   moreover have "sqrt (4 * ?ab\<^sup>2 - 4) = sqrt (4 * (?ab\<^sup>2 - 1))" by simp
   hence "sqrt (4 * ?ab\<^sup>2 - 4) = 2 * sqrt (?ab\<^sup>2 - 1)"
     by (unfold real_sqrt_mult) simp

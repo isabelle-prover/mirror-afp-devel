@@ -936,7 +936,7 @@ context jmm_multithreaded begin
 definition complete_sc :: "('l,'thread_id,'x,'m,'w) state \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> 
   ('thread_id \<times> ('l, 'thread_id, 'x, 'm, 'w, ('addr, 'thread_id) obs_event action) thread_action) llist"
 where
-  "complete_sc s vs = llist_unfold
+  "complete_sc s vs = unfold_llist
      (\<lambda>(s, vs). \<forall>t ta s'. \<not> s -t\<triangleright>ta\<rightarrow> s')
      (\<lambda>(s, vs). fst (SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))
      (\<lambda>(s, vs). let ((t, ta), s') = SOME ((t, ta), s'). s -t\<triangleright>ta\<rightarrow> s' \<and> ta_seq_consist P vs (llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)

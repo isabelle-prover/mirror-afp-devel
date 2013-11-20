@@ -117,15 +117,17 @@ context begin interpretation autoref_syn .
     "op * ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
     "0 ::\<^sub>i I"
     "1 ::\<^sub>i I"
+    "- 1 ::\<^sub>i I"
     "numeral x ::\<^sub>i I"
-    "neg_numeral x ::\<^sub>i I"
+    "- numeral x ::\<^sub>i I"
     by auto
 
   lemma pat_num_generic[autoref_op_pat]:
     "0 \<equiv> OP 0 :::\<^sub>i I"
     "1 \<equiv> OP 1 :::\<^sub>i I"
+    "- 1 \<equiv> OP (- 1) :::\<^sub>i I"
     "numeral x \<equiv> (OP (numeral x) :::\<^sub>i I)"
-    "neg_numeral x \<equiv> (OP (neg_numeral x) :::\<^sub>i I)"
+    "- numeral x \<equiv> (OP (- numeral x) :::\<^sub>i I)"
     by simp_all
 
   lemma [autoref_rules]: 
@@ -134,9 +136,10 @@ context begin interpretation autoref_syn .
     and "(op \<le>, op \<le>) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
     and "(op =, op =) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
     and "(numeral x,OP (numeral x) ::: Id) \<in> Id"
-    and "(neg_numeral x,OP (neg_numeral x) ::: Id) \<in> Id"
+    and "(-numeral x,OP (- numeral x) ::: Id) \<in> Id"
     and "(0,0) \<in> Id"
     and "(1,1) \<in> Id"
+    and "(- 1,- 1) \<in> Id"
     by auto
 
   subsection "Functional Combinators"
@@ -223,8 +226,9 @@ context begin interpretation autoref_syn .
     lemma pat_num_int[autoref_op_pat]:
       "0::int \<equiv> OP 0 :::\<^sub>i i_int"
       "1::int \<equiv> OP 1 :::\<^sub>i i_int"
+      "- 1::int \<equiv> OP (- 1) :::\<^sub>i i_int"
       "(numeral x)::int \<equiv> (OP (numeral x) :::\<^sub>i i_int)"
-      "(neg_numeral x)::int \<equiv> (OP (neg_numeral x) :::\<^sub>i i_int)"
+      "(- numeral x)::int \<equiv> (OP (- numeral x) :::\<^sub>i i_int)"
       by simp_all
 
     (*lemma [autoref_itype]:
