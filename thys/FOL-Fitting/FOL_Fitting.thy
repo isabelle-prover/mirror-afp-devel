@@ -2260,7 +2260,7 @@ theorem natded_complete: "closed 0 p \<Longrightarrow> list_all (closed 0) ps \<
   apply (rule exI ballI)+
   apply (rule_tac S="set (Neg p # ps)" in model_existence) 
   apply (rule deriv_consistency)
-  apply (rule nat_infinite)
+  apply (rule infinite_UNIV_nat)
   apply (simp del: set.simps)
   apply (rule exI)
   apply (rule conjI)
@@ -2271,7 +2271,7 @@ theorem natded_complete: "closed 0 p \<Longrightarrow> list_all (closed 0) ps \<
   apply (rule finite_UN_I)
   apply simp
   apply simp
-  apply (rule nat_infinite)
+  apply (rule infinite_UNIV_nat)
   apply simp
   apply fast
   apply simp

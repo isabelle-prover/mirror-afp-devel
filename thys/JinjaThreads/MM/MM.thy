@@ -36,7 +36,7 @@ by(auto simp add:new_Addr_def split:if_splits intro: LeastI)
 
 lemma new_Addr_SomeI:
   "finite (dom h) \<Longrightarrow> \<exists>a. new_Addr h = Some a"
-by(simp add: new_Addr_def) (metis finite_map_freshness nat_infinite)
+by(simp add: new_Addr_def) (metis finite_map_freshness infinite_UNIV_nat)
 
 subsection {* Code generation *}
 

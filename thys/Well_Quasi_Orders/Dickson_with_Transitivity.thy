@@ -42,7 +42,7 @@ proof
   moreover have "infinite {m. ?P m}"
   proof -
     have UNIV: "UNIV = ?T \<union> {m. ?P m}" by blast
-    show ?thesis using `finite ?T` and nat_infinite by (auto simp: UNIV)
+    show ?thesis using `finite ?T` and infinite_UNIV_nat by (auto simp: UNIV)
   qed
   ultimately obtain N where "\<forall>m\<ge>N. \<exists>n>m. q m \<le>\<^sub>1 q n"
     by (auto simp: finite_nat_set_iff_bounded) (metis not_less)

@@ -1265,7 +1265,7 @@ done
 lemma fresh_oid:
   "wf_heap P H \<Longrightarrow> (\<exists>oid. oid \<notin> dom H)"
 apply(erule wf_heapE) apply(clarsimp)
-apply(cut_tac nat_infinite) apply(frule_tac A = "dom H" in ex_new_if_finite)
+apply(cut_tac infinite_UNIV_nat) apply(frule_tac A = "dom H" in ex_new_if_finite)
 apply(assumption) apply(simp)
 done
 
