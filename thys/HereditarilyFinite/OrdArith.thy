@@ -558,7 +558,7 @@ lemma Rep_hf_0 [simp]: "Rep_hf 0 = 0"
 
 lemma hmem_imp_less: "x ⋿ y \<Longrightarrow> Rep_hf x < Rep_hf y"
 apply (auto simp: hmem_def hfset_def set_decode_def Abs_hf_inverse)
-apply (metis div_less even_zero_nat le_less_trans less_two_power not_less)
+apply (metis div_less even_zero le_less_trans less_two_power not_less)
 done
 
 lemma hsubset_imp_le: "x \<le> y \<Longrightarrow> Rep_hf x \<le> Rep_hf y"
