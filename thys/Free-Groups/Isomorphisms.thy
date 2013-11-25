@@ -506,7 +506,7 @@ over an infinite set has the same cardinality is established.
 *}
 
 lemma free_group_card_infinite:
-  assumes "infinite X"
+  assumes "\<not> finite X"
   shows "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
 proof-
   have "inj_on insert X"
@@ -519,11 +519,11 @@ proof-
     by (auto intro!:card_of_mono1 simp add:free_group_def)
   moreover
   have "|lists ((UNIV::bool set)\<times>X)| =o |(UNIV::bool set)\<times>X|"
-    using `infinite X`
+    using `\<not> finite X`
     by (auto intro:card_of_lists_infinite dest!:finite_cartesian_productD2)
   moreover
   have  "|(UNIV::bool set)\<times>X| =o |X|"
-    using `infinite X`
+    using `\<not> finite X`
     by (auto intro: card_of_Times_infinite[OF _ _ ordLess_imp_ordLeq[OF finite_ordLess_infinite2], THEN conjunct2])
   ultimately
   show "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
@@ -546,10 +546,10 @@ case False show ?thesis
   have "\<exists>f. bij_betw f Y X" by -(rule isomorphic_free_groups_bases_finite)
   thus "\<exists>f. bij_betw f X Y" by (auto intro: bij_betw_the_inv_into) next
 case False
-  from `infinite X` have "|X| =o |carrier \<F>\<^bsub>X\<^esub>|" 
+  from `\<not> finite X` have "|X| =o |carrier \<F>\<^bsub>X\<^esub>|" 
     by (rule free_group_card_infinite)
   moreover
-  from `infinite Y` have "|Y| =o |carrier \<F>\<^bsub>Y\<^esub>|" 
+  from `\<not> finite Y` have "|Y| =o |carrier \<F>\<^bsub>Y\<^esub>|" 
     by (rule free_group_card_infinite)
   moreover
   from iso have "|carrier \<F>\<^bsub>X\<^esub>| =o |carrier \<F>\<^bsub>Y\<^esub>|"
