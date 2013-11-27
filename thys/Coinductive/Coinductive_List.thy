@@ -6,7 +6,7 @@ header {* Potentially infinite lists as greatest fixed-point *}
 
 theory Coinductive_List
 imports
-  "~~/src/HOL/BNF/BNF"
+  "~~/src/HOL/Library/Simps_Case_Conv"
   "Coinductive_Nat"
 begin
 
@@ -90,6 +90,9 @@ lemma unfold_llist_code [code]:
   (if IS_LNIL b then LNil
    else LCons (LHD b) (unfold_llist IS_LNIL LHD LTL (LTL b)))"
 by(rule llist.expand) simp_all
+
+lemma corec_llist_never_stop: "corec_llist IS_LNIL LHD (\<lambda>_. False) MORE LTL x = unfold_llist IS_LNIL LHD LTL x"
+by(coinduction arbitrary: x) auto
 
 text {* lemmas about for generated constants *}
 
@@ -258,21 +261,14 @@ instance ..
 
 end
 
-
 subsection {* Function definitions *}
 
-definition lappend :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
-where 
-  "lappend xs ys = corec_llist
-    (\<lambda>xs. lnull xs \<and> lnull ys)
-    (\<lambda>xs. if lnull xs then lhd ys else lhd xs)
-    (\<lambda>xs. lnull xs)
-    (\<lambda>xs. ltl ys)
-    ltl
-    xs"
+primcorec lappend :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
+where
+  "lappend xs ys = (case xs of LNil \<Rightarrow> ys | LCons x xs' \<Rightarrow> LCons x (lappend xs' ys))"
 
-definition iterates :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a llist" 
-where "iterates = unfold_llist (\<lambda>_. False) id"
+primcorec iterates :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a llist" 
+where "iterates f x = LCons x (iterates f (f x))"
 
 inductive lfinite :: "'a llist \<Rightarrow> bool"
 where
@@ -291,10 +287,11 @@ definition llength :: "'a llist \<Rightarrow> enat"
 where [code del]:
   "llength = enat_unfold lnull ltl"
 
-definition ltake :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
-where [code del]:
-  "ltake n xs =
-   unfold_llist (\<lambda>(n, xs). n = 0 \<or> lnull xs) (lhd \<circ> snd) (map_pair epred ltl) (n, xs)"
+primcorec ltake :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
+where
+  "n = 0 \<or> lnull xs \<Longrightarrow> lnull (ltake n xs)"
+| "lhd (ltake n xs) = lhd xs"
+| "ltl (ltake n xs) = ltake (epred n) (ltl xs)"
 
 definition ldropn :: "nat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where "ldropn n xs = (ltl ^^ n) xs"
@@ -304,10 +301,11 @@ where
   "ldrop (enat n) xs = ldropn n xs"
 | "ldrop \<infinity> xs = LNil"
 
-definition ltakeWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
+primcorec ltakeWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
-  "ltakeWhile P = 
-   unfold_llist (\<lambda>xs. lnull xs \<or> \<not> P (lhd xs)) lhd ltl"
+  "lnull xs \<or> \<not> P (lhd xs) \<Longrightarrow> lnull (ltakeWhile P xs)"
+| "lhd (ltakeWhile P xs) = lhd xs"
+| "ltl (ltakeWhile P xs) = ltakeWhile P (ltl xs)"
 
 definition ldropWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where [code del]: "ldropWhile P xs = ldrop (llength (ltakeWhile P xs)) xs"
@@ -319,10 +317,11 @@ where
 
 declare lnth.simps [simp del]
 
-definition lzip :: "'a llist \<Rightarrow> 'b llist \<Rightarrow> ('a \<times> 'b) llist"
-where [code del]:
-  "lzip xs ys =
-   unfold_llist (\<lambda>(xs, ys). lnull xs \<or> lnull ys) (map_pair lhd lhd) (map_pair ltl ltl) (xs, ys)"
+primcorec lzip :: "'a llist \<Rightarrow> 'b llist \<Rightarrow> ('a \<times> 'b) llist"
+where
+  "lnull xs \<or> lnull ys \<Longrightarrow> lnull (lzip xs ys)"
+| "lhd (lzip xs ys) = (lhd xs, lhd ys)"
+| "ltl (lzip xs ys) = lzip (ltl xs) (ltl ys)"
 
 definition llast :: "'a llist \<Rightarrow> 'a"
 where [nitpick_simp]:
@@ -523,11 +522,14 @@ using assms by induct auto
 
 subsection {* @{term "lappend"} *}
 
+simps_of_case lappend_code [code, simp, nitpick_simp]: lappend.code
+
+lemmas lappend_LNil_LNil = lappend_code(1)[where ys = LNil]
+
 lemma lappend_simps [simp]:
-  shows lappend_LNil_LNil: "lappend LNil LNil = LNil"
-  and lhd_lappend: "lhd (lappend xs ys) = (if lnull xs then lhd ys else lhd xs)"
+  shows lhd_lappend: "lhd (lappend xs ys) = (if lnull xs then lhd ys else lhd xs)"
   and ltl_lappend: "ltl (lappend xs ys) = (if lnull xs then ltl ys else lappend (ltl xs) ys)"
-by(case_tac [!] ys)(simp_all add: lappend_def)
+by(case_tac [!] xs) simp_all
 
 lemma lnull_lappend [simp]:
   "lnull (lappend xs ys) \<longleftrightarrow> lnull xs \<and> lnull ys"
@@ -540,11 +542,6 @@ using lnull_lappend unfolding lnull_def .
 lemma LNil_eq_lappend_iff:
   "LNil = lappend xs ys \<longleftrightarrow> xs = LNil \<and> ys = LNil"
 by(auto dest: sym simp add: lappend_eq_LNil_iff)
-
-lemma lappend_code [simp, code, nitpick_simp]:
-  "lappend LNil ys = ys"
-  "lappend (LCons x xs) ys = LCons x (lappend xs ys)"
-by(auto intro: llist.expand simp add: lappend_def)
 
 lemma lappend_LNil2 [simp]: "lappend xs LNil = xs"
 by(coinduction arbitrary: xs) simp_all
@@ -858,25 +855,19 @@ by(simp add: gen_llength_def fun_eq_iff zero_enat_def)
 subsection {* Taking and dropping from lazy lists: @{term "ltake"} and @{term "ldrop"} *}
 
 lemma ltake_LNil [simp, code, nitpick_simp]: "ltake n LNil = LNil"
-by(simp add: ltake_def)
+by simp
 
 lemma ltake_0 [simp]: "ltake 0 xs = LNil"
 by(simp add: ltake_def)
 
 lemma ltake_eSuc_LCons [simp]: 
   "ltake (eSuc n) (LCons x xs) = LCons x (ltake n xs)"
-by(rule llist.expand)(simp_all add: ltake_def)
+by(rule llist.expand)(simp_all)
 
 lemma ltake_eSuc:
   "ltake (eSuc n) xs =
   (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> LCons x (ltake n xs'))"
 by(cases xs) simp_all
-
-term "(case n of 0 \<Rightarrow> LNil | eSuc n' \<Rightarrow> LNil)"
-lemma ltake_LCons [code, nitpick_simp]:
-  "ltake n (LCons x xs) =
-  (case n of 0 \<Rightarrow> LNil | eSuc n' \<Rightarrow> LCons x (ltake n' xs))"
-by(cases n rule: enat_coexhaust) simp_all
 
 lemma lnull_ltake [simp]: "lnull (ltake n xs) \<longleftrightarrow> lnull xs \<or> n = 0"
 by(cases n xs rule: enat_coexhaust[case_product llist.exhaust]) simp_all
@@ -886,6 +877,11 @@ by(cases n xs rule: enat_coexhaust[case_product llist.exhaust]) simp_all
 
 lemma LNil_eq_ltake_iff [simp]: "LNil = ltake n xs \<longleftrightarrow> xs = LNil \<or> n = 0"
 by(cases n xs rule: enat_coexhaust[case_product llist.exhaust]) simp_all
+
+lemma ltake_LCons [code, nitpick_simp]:
+  "ltake n (LCons x xs) =
+  (case n of 0 \<Rightarrow> LNil | eSuc n' \<Rightarrow> LCons x (ltake n' xs))"
+by(rule llist.expand)(simp_all split: co.enat.split)
 
 lemma lhd_ltake [simp]: "n \<noteq> 0 \<Longrightarrow> lhd (ltake n xs) = lhd xs"
 by(cases n xs rule: enat_coexhaust[case_product llist.exhaust]) simp_all
@@ -1396,20 +1392,10 @@ qed
 
 subsection{* iterates *}
 
-lemma iterates [code, nitpick_simp]: 
-  "iterates f x = LCons x (iterates f (f x))"
-by(rule llist.expand)(simp_all add: iterates_def)
-
-lemma lnull_iterates [simp]: "\<not> lnull (iterates f x)"
-by(subst iterates) simp
-
-lemma iterates_eq_LNil: "iterates f x \<noteq> LNil"
-using lnull_iterates unfolding lnull_def .
-
-lemma [simp]:
-  shows lhd_iterates: "lhd (iterates f x) = x"
-  and ltl_iterates: "ltl (iterates f x) = iterates f (f x)"
-by(subst iterates, simp)+
+lemmas iterates [code, nitpick_simp] = iterates.ctr
+  and lnull_iterates = iterates.simps(1)
+  and lhd_iterates = iterates.simps(2)
+  and ltl_iterates = iterates.simps(3)
 
 lemma lfinite_iterates [iff]: "\<not> lfinite (iterates f x)"
 proof
@@ -1419,7 +1405,7 @@ proof
 qed
 
 lemma lmap_iterates: "lmap f (iterates f x) = iterates f (f x)"
-by(simp add: iterates_def lmap_unfold_llist unfold_llist_ltl_unroll o_def)
+by(coinduction arbitrary: x) auto
 
 lemma iterates_lmap: "iterates f x = LCons x (lmap f (iterates f x))"
 by(simp add: lmap_iterates)(rule iterates)
@@ -1883,7 +1869,7 @@ lemma lzip_simps [simp, code, nitpick_simp]:
   "lzip LNil ys = LNil"
   "lzip xs LNil = LNil"
   "lzip (LCons x xs) (LCons y ys) = LCons (x, y) (lzip xs ys)"
-by(auto simp add: lzip_def intro: llist.expand)
+by(auto intro: llist.expand)
 
 lemma lnull_lzip [simp]: "lnull (lzip xs ys) \<longleftrightarrow> lnull xs \<or> lnull ys"
 by(simp add: lzip_def)
@@ -1891,18 +1877,13 @@ by(simp add: lzip_def)
 lemma lzip_eq_LNil_conv: "lzip xs ys = LNil \<longleftrightarrow> xs = LNil \<or> ys = LNil"
 using lnull_lzip unfolding lnull_def .
 
-lemma lhd_lzip [simp]: "\<lbrakk> \<not> lnull xs; \<not> lnull ys \<rbrakk> \<Longrightarrow> lhd (lzip xs ys) = (lhd xs, lhd ys)"
-by(simp add: lzip_def)
-
-lemma ltl_lzip [simp]: "ltl (lzip xs ys) = lzip (ltl xs) (ltl ys)"
-by(simp add: lzip_def ltl_unfold_llist)
+lemmas lhd_lzip = lzip.sel(1)
+  and ltl_lzip = lzip.sel(2)
 
 lemma lzip_eq_LCons_conv:
   "lzip xs ys = LCons z zs \<longleftrightarrow>
    (\<exists>x xs' y ys'. xs = LCons x xs' \<and> ys = LCons y ys' \<and> z = (x, y) \<and> zs = lzip xs' ys')"
-apply(cases xs, simp)
-apply(cases ys, auto)
-done
+by(cases xs ys rule: llist.exhaust[case_product llist.exhaust]) auto
 
 lemma lzip_lappend:
   "llength xs = llength us
@@ -2106,9 +2087,7 @@ by(cases xs) simp_all
 lemma ltakeWhile_eq_LNil_iff: "ltakeWhile P xs = LNil \<longleftrightarrow> (xs \<noteq> LNil \<longrightarrow> \<not> P (lhd xs))"
 using lnull_ltakeWhile unfolding lnull_def .
 
-lemma lhd_ltakeWhile [simp]:
-  "\<lbrakk> \<not> lnull xs; P (lhd xs) \<rbrakk> \<Longrightarrow> lhd (ltakeWhile P xs) = lhd xs"
-by(auto simp add: not_lnull_conv)
+lemmas lhd_ltakeWhile = ltakeWhile.sel(1)
 
 lemma ltl_ltakeWhile:
   "ltl (ltakeWhile P xs) = (if P (lhd xs) then ltakeWhile P (ltl xs) else LNil)"
@@ -2190,7 +2169,7 @@ lemma ltakeWhile_K_False [simp]: "ltakeWhile (\<lambda>_. False) xs = LNil"
 by(simp add: ltakeWhile_def)
 
 lemma ltakeWhile_K_True [simp]: "ltakeWhile (\<lambda>_. True) xs = xs"
-by(simp add: ltakeWhile_def)
+by(coinduction arbitrary: xs) simp
 
 lemma ldropWhile_K_False [simp]: "ldropWhile (\<lambda>_. False) = id"
 by(simp add: ldropWhile_def fun_eq_iff)
@@ -4558,6 +4537,29 @@ proof(rule fun_relI)+
     using rel by(auto 4 4 elim: fun_relE)
 qed
 
+lemma corec_llist_transfer [transfer_rule]:
+  "((A ===> op =) ===> (A ===> B) ===> (A ===> op =) ===> (A ===> llist_all2 B) ===> (A ===> A) ===> A ===> llist_all2 B) corec_llist corec_llist"
+proof(rule fun_relI)+
+  fix IS_LNIL1 :: "'a \<Rightarrow> bool" and IS_LNIL2 LHD1 LHD2
+    and STOP1 :: "'a \<Rightarrow> bool" and STOP2 MORE1 MORE2 LTL1 LTL2 x y
+  assume [transfer_rule]: "(A ===> op =) IS_LNIL1 IS_LNIL2 " "(A ===> B) LHD1 LHD2"
+    "(A ===> op =) STOP1 STOP2" "(A ===> llist_all2 B) MORE1 MORE2" "(A ===> A) LTL1 LTL2"
+  assume "A x y"
+  thus "llist_all2 B (corec_llist IS_LNIL1 LHD1 STOP1 MORE1 LTL1 x) (corec_llist IS_LNIL2 LHD2 STOP2 MORE2 LTL2 y)"
+  proof(coinduction arbitrary: x y)
+    case (LNil x y)[transfer_rule]
+    show ?case by simp transfer_prover
+  next
+    case (LCons x y)
+    note [transfer_rule] = `A x y`
+    have ?lhd by(simp add: LCons[simplified]) transfer_prover
+    moreover
+    have "STOP1 x = STOP2 y" "llist_all2 B (MORE1 x) (MORE2 y)" "A (LTL1 x) (LTL2 y)" by transfer_prover+
+    hence ?ltl by(auto simp add: LCons[simplified])
+    ultimately show ?case ..
+  qed
+qed    
+
 lemma ltl_transfer [transfer_rule]:
   "(llist_all2 A ===> llist_all2 A) ltl ltl"
   unfolding ltl_def[abs_def] by transfer_prover
@@ -4576,7 +4578,7 @@ by(auto simp add: Transfer.fun_rel_def intro: llist_all2_lappendI)
 
 lemma iterates_transfer [transfer_rule]:
   "((A ===> A) ===> A ===> llist_all2 A) iterates iterates"
-unfolding iterates_def by transfer_prover
+unfolding iterates_def split_def corec_llist_never_stop by transfer_prover
 
 lemma lfinite_transfer [transfer_rule]:
   "(llist_all2 A ===> op =) lfinite lfinite"

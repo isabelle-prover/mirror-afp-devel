@@ -281,14 +281,27 @@ qed
 
 subsection {* Connection with @{typ "'a llist"} *}
 
-definition tllist_of_llist :: "'b \<Rightarrow> 'a llist \<Rightarrow> ('a, 'b) tllist"
-where "tllist_of_llist b = unfold_tllist lnull (\<lambda>_. b) lhd ltl"
+context fixes b :: 'b begin
+primcorec tllist_of_llist :: "'a llist \<Rightarrow> ('a, 'b) tllist" where
+  "tllist_of_llist xs = (case xs of LNil \<Rightarrow> TNil b | LCons x xs' \<Rightarrow> TCons x (tllist_of_llist xs'))"
+end
 
-definition llist_of_tllist :: "('a, 'b) tllist \<Rightarrow> 'a llist"
-where "llist_of_tllist = unfold_llist is_TNil thd ttl"
+primcorec llist_of_tllist :: "('a, 'b) tllist \<Rightarrow> 'a llist"
+where "llist_of_tllist xs = (case xs of TNil _ \<Rightarrow> LNil | TCons x xs' \<Rightarrow> LCons x (llist_of_tllist xs'))"
 
 lemma is_TNil_tllist_of_llist [simp]: "is_TNil (tllist_of_llist b xs) \<longleftrightarrow> lnull xs"
 by(simp add: tllist_of_llist_def)
+
+simps_of_case tllist_of_llist_simps [simp, code, nitpick_simp]: tllist_of_llist.code
+
+lemmas tllist_of_llist_LNil = tllist_of_llist_simps(1)
+  and tllist_of_llist_LCons = tllist_of_llist_simps(2)
+
+lemma terminal_tllist_of_llist_lnull [simp]:
+  "lnull xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
+by(simp add: lnull_def)
+
+declare tllist_of_llist.sel(1)[simp del]
 
 lemma lhd_LNil: "lhd LNil = undefined"
 by(simp add: lhd_def)
@@ -297,10 +310,10 @@ lemma thd_TNil: "thd (TNil b) = undefined"
 by(simp add: thd_def)
 
 lemma thd_tllist_of_llist [simp]: "thd (tllist_of_llist b xs) = lhd xs"
-by(cases xs)(simp_all add: tllist_of_llist_def thd_TNil lhd_LNil)
+by(cases xs)(simp_all add: thd_TNil lhd_LNil)
 
 lemma ttl_tllist_of_llist [simp]: "ttl (tllist_of_llist b xs) = tllist_of_llist b (ltl xs)"
-by(simp add: tllist_of_llist_def ttl_unfold_tllist)
+by(cases xs) simp_all
 
 lemma lnull_llist_of_tllist [simp]:
   "lnull (llist_of_tllist xs) \<longleftrightarrow> is_TNil xs"
@@ -310,16 +323,19 @@ lemma llist_of_tllist_eq_LNil:
   "llist_of_tllist xs = LNil \<longleftrightarrow> is_TNil xs"
 using lnull_llist_of_tllist unfolding lnull_def .
 
-lemma terminal_tllist_of_llist_lnull [simp]:
-  "lnull xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
-by(simp add: tllist_of_llist_def)
+simps_of_case llist_of_tllist_simps [simp, code, nitpick_simp]: llist_of_tllist.code
+
+lemmas llist_of_tllist_TNil = llist_of_tllist_simps(1)
+  and llist_of_tllist_TCons = llist_of_tllist_simps(2)
+
+declare llist_of_tllist.sel [simp del]
 
 lemma lhd_llist_of_tllist [simp]: "\<not> is_TNil xs \<Longrightarrow> lhd (llist_of_tllist xs) = thd xs"
-by(simp add: llist_of_tllist_def)
+by(cases xs) simp_all
 
 lemma ltl_llist_of_tllist [simp]:
   "ltl (llist_of_tllist xs) = llist_of_tllist (ttl xs)"
-by(simp add: llist_of_tllist_def ltl_unfold_llist)
+by(cases xs) simp_all
 
 lemma tllist_of_llist_cong [cong]:
   assumes "xs = xs'" "lfinite xs' \<Longrightarrow> b = b'"
@@ -334,21 +350,11 @@ lemma llist_of_tllist_inverse [simp]:
   "tllist_of_llist (terminal b) (llist_of_tllist b) = b"
 by(coinduction arbitrary: b) simp_all
 
-lemma tllist_of_llist_LNil [simp, code, nitpick_simp]: "tllist_of_llist b LNil = TNil b"
-by(simp add: tllist_of_llist_def)
-
-lemma tllist_of_llist_LCons [simp, code, nitpick_simp]:
-  "tllist_of_llist b (LCons x xs) = TCons x (tllist_of_llist b xs)"
-by(rule tllist.expand) auto
-
 lemma tllist_of_llist_eq [simp]: "tllist_of_llist b' xs = TNil b \<longleftrightarrow> b = b' \<and> xs = LNil"
-unfolding tllist_of_llist_def
-by(auto simp add: tllist_of_llist_def)
+by(cases xs) auto
 
 lemma TNil_eq_tllist_of_llist [simp]: "TNil b = tllist_of_llist b' xs \<longleftrightarrow> b = b' \<and> xs = LNil"
-unfolding tllist_of_llist_def
-by(auto simp add: tllist_of_llist_def)
-
+by(cases xs) auto
 
 lemma tllist_of_llist_inject [simp]:
   "tllist_of_llist b xs = tllist_of_llist c ys \<longleftrightarrow> xs = ys \<and> (lfinite ys \<longrightarrow> b = c)"
@@ -364,14 +370,6 @@ next
   thus "b = c" using `?lhs`
     unfolding `xs = ys` by(induct) simp_all
 qed
-
-lemma llist_of_tllist_TNil [simp, code, nitpick_simp]:
-  "llist_of_tllist (TNil b) = LNil"
-by simp
-
-lemma llist_of_tllist_TCons [simp, code, nitpick_simp]:
-  "llist_of_tllist (TCons x xs) = LCons x (llist_of_tllist xs)"
-by(rule llist.expand) auto
 
 lemma tllist_of_llist_inverse [simp]:
   "llist_of_tllist (tllist_of_llist b xs) = xs"
