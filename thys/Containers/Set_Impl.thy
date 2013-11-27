@@ -1000,7 +1000,7 @@ lemma cless_set_code [code]:
   "cless_set A B \<longleftrightarrow>
   (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''cless_set: corder = None'') (\<lambda>_. cless_set A B)
               | Some (le, lt) \<Rightarrow>
-     if finite A \<and> finite B then ord.lexord (\<lambda>x y. lt y x) (csorted_list_of_set A) (csorted_list_of_set B)
+     if finite A \<and> finite B then ord.lexordp (\<lambda>x y. lt y x) (csorted_list_of_set A) (csorted_list_of_set B)
      else Code.abort (STR ''cless_set: infinite set'') (\<lambda>_. cless_set A B))"
   (is "?fin_fin")
   and cless_set_Complement2 [set_complement_code]:
@@ -1078,7 +1078,7 @@ lemma cless_eq_set_code [code]:
   (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''cless_eq_set: corder = None'') (\<lambda>_. cless_eq_set A B)
               | Some (le, lt) \<Rightarrow>
      if finite A \<and> finite B then 
-        ord.lexord_eq (\<lambda>x y. lt y x) (csorted_list_of_set A) (csorted_list_of_set B)
+        ord.lexordp_eq (\<lambda>x y. lt y x) (csorted_list_of_set A) (csorted_list_of_set B)
      else Code.abort (STR ''cless_eq_set: infinite set'') (\<lambda>_. cless_eq_set A B))"
   (is "?fin_fin")
   and cless_eq_set_Complement2 [set_complement_code]:

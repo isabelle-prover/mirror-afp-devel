@@ -343,7 +343,7 @@ by(auto simp add: sorted_Cons intro: Min_eqI)
 
 lemma set_less_aux_code:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk>
-  \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexord op > xs ys"
+  \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexordp op > xs ys"
 apply(induct xs ys rule: splice.induct)
 apply(simp_all add: empty_set_less_aux_finite_iff sorted_Cons_Min set_less_aux_rec neq_Nil_conv)
 apply(auto simp add: sorted_Cons cong: conj_cong)
@@ -351,12 +351,12 @@ done
 
 lemma set_less_eq_aux_code:
   assumes "sorted xs" "distinct xs" "sorted ys" "distinct ys"
-  shows "set xs \<sqsubseteq>' set ys \<longleftrightarrow> ord.lexord_eq op > xs ys"
+  shows "set xs \<sqsubseteq>' set ys \<longleftrightarrow> ord.lexordp_eq op > xs ys"
 proof -
   have dual: "class.linorder op \<ge> op >"
     by(rule linorder.dual_linorder) unfold_locales
   from assms show ?thesis
-    by(auto simp add: set_less_eq_aux_def finite_complement_partition linorder.lexord_eq_conv_lexord[OF dual] set_less_aux_code intro: sorted_distinct_set_unique)
+    by(auto simp add: set_less_eq_aux_def finite_complement_partition linorder.lexordp_eq_conv_lexord[OF dual] set_less_aux_code intro: sorted_distinct_set_unique)
 qed
 
 end

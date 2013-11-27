@@ -200,18 +200,18 @@ by(simp add: is_corder_def corder_prod_def ID_None ID_Some split: option.split)
 
 instantiation list :: (corder) corder begin
 definition "CORDER('a list) =
-  Option.map (\<lambda>(leq, lt). (\<lambda>xs ys. ord.lexord_eq lt xs ys, ord.lexord lt)) (ID CORDER('a))"
+  Option.map (\<lambda>(leq, lt). (\<lambda>xs ys. ord.lexordp_eq lt xs ys, ord.lexordp lt)) (ID CORDER('a))"
 instance
 proof
   fix leq lt
   assume "CORDER('a list) = Some (leq, lt)"
   then obtain leq_a lt_a where a: "ID CORDER('a) = Some (leq_a, lt_a)"
-    and leq: "\<And>xs ys. leq xs ys \<longleftrightarrow> ord.lexord_eq lt_a xs ys"
-    and lt: "\<And>xs ys. lt xs ys \<longleftrightarrow> ord.lexord lt_a xs ys"
+    and leq: "\<And>xs ys. leq xs ys \<longleftrightarrow> ord.lexordp_eq lt_a xs ys"
+    and lt: "\<And>xs ys. lt xs ys \<longleftrightarrow> ord.lexordp lt_a xs ys"
     by(auto simp add: corder_list_def)
   from a interpret a!: linorder leq_a lt_a by(rule ID_corder)
   show "class.linorder leq lt" unfolding leq[abs_def] lt[abs_def]
-    by(rule a.lexord_linorder)
+    by(rule a.lexordp_linorder)
 qed
 end
 
