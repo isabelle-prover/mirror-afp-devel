@@ -595,7 +595,7 @@ using assms proof (induct \<sigma>)
   thus ?thesis using dec by auto 
  next
   case False hence "\<alpha> \<in># r|as|-s ds r {\<beta>}" using Cons(2) by auto
-  hence x: "\<alpha> \<in># r|as| \<and> \<alpha> \<notin> ds r {\<beta>}" unfolding diff_def by (metis count_filter rel_simps(54)) 
+  hence x: "\<alpha> \<in># r|as| \<and> \<alpha> \<notin> ds r {\<beta>}" unfolding diff_def by (metis count_filter gr_implies_not0)
   from this obtain \<sigma>1 \<sigma>3 where "as = \<sigma>1 @ [\<alpha>] @ \<sigma>3" and w: "\<alpha> \<notin> dl r \<sigma>1" using Cons(1) by auto
   hence  "\<beta>#as = (\<beta>#\<sigma>1) @ [\<alpha>] @ \<sigma>3" and  "\<alpha> \<notin> dl r (\<beta>#\<sigma>1)" using x w unfolding dm_def dl_def ds_def by auto
   thus ?thesis by fast
@@ -1075,12 +1075,14 @@ lemma newman: assumes "WCR ars" and "SN ars" shows "CR ars"  proof -
     from A obtain \<tau> \<sigma> where ts: "{\<tau>,\<sigma>} \<subseteq> seq lrs" and l1: "length (snd \<tau>) = 1" and l2: "length (snd \<sigma>) = 1" and P: "P = (\<tau>,\<sigma>)"
      and p: "fst \<tau> = fst \<sigma>" unfolding local_peak_def peak_def by auto
 
-    from l1 obtain \<beta> b where 1: "snd \<tau> = [(\<beta>,b)]" by (metis PairE drop_1_Cons drop_eq_Nil impossible_Cons neq_Nil_conv rel_simps(39))  
+    from l1 obtain \<beta> b where 1: "snd \<tau> = [(\<beta>,b)]"
+      by (metis drop_1_Cons drop_eq_Nil impossible_Cons order_refl pair_collapse remdups_adj.cases)
     from this obtain a where tau: "\<tau> = (a,[(\<beta>,b)])" by (metis surjective_pairing)
     hence alb: "(a,\<beta>,b) \<in> lrs" using ts by (metis fst_conv insert_subset seq_tail1(2) snd_conv)
     have ab: "(a,b) \<in> ars" and a_eq: "a = \<beta>" using alb unfolding lab_eq by auto
 
-    from l2 obtain \<alpha> c where 2: "snd \<sigma> = [(\<alpha>,c)]" by (metis PairE drop_1_Cons drop_eq_Nil impossible_Cons neq_Nil_conv rel_simps(39))
+    from l2 obtain \<alpha> c where 2: "snd \<sigma> = [(\<alpha>,c)]"
+      by (metis PairE drop_1_Cons drop_eq_Nil impossible_Cons le_numeral_extra(4) remdups_adj.cases)
     hence sigma: "\<sigma> = (a,[(\<alpha>,c)])" using ts by (metis fst_conv p pair_collapse tau)
     hence alc: "(a,\<alpha>,c) \<in> lrs" using ts by (metis fst_conv insert_subset seq_tail1(2) snd_conv)
     hence ac: "(a,c) \<in> ars" and a_eq: "a = \<alpha>" using alb unfolding lab_eq by auto 
