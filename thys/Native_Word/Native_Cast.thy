@@ -157,34 +157,34 @@ code_printing
   (Scala) "(_).toInt"
 
 text {* 
-  Use @{const Rep_uint8'} etc. instead of @{const Rep_uint8} in code equations
+  Use @{const Abs_uint8'} etc. instead of @{const Rep_uint8} in code equations
   for conversion functions to avoid exceptions during code generation when the
   target language provides only some of the uint types.
 *}
 
 lemma uint8_of_uint16_code [code]:
-  "Rep_uint8 (uint8_of_uint16 x) = ucast (Rep_uint16' x)"
-by(simp add: uint8_of_uint16.rep_eq)
+  "uint8_of_uint16 x = Abs_uint8' (ucast (Rep_uint16' x))"
+by transfer simp
 
 lemma uint8_of_uint32_code [code]:
-  "Rep_uint8 (uint8_of_uint32 x) = ucast (Rep_uint32' x)"
-by(simp add: uint8_of_uint32.rep_eq)
+  "uint8_of_uint32 x = Abs_uint8' (ucast (Rep_uint32' x))"
+by transfer simp
 
 lemma uint16_of_uint8_code [code]:
-  "Rep_uint16 (uint16_of_uint8 x) = ucast (Rep_uint8' x)"
-by(simp add: uint16_of_uint8.rep_eq)
+  "uint16_of_uint8 x = Abs_uint16' (ucast (Rep_uint8' x))"
+by transfer simp
 
 lemma uint16_of_uint32_code [code]:
-  "Rep_uint16 (uint16_of_uint32 x) = ucast (Rep_uint32' x)"
-by(simp add: uint16_of_uint32.rep_eq)
+  "uint16_of_uint32 x = Abs_uint16' (ucast (Rep_uint32' x))"
+by transfer simp
 
 lemma uint32_of_uint8_code [code]:
-  "Rep_uint32 (uint32_of_uint8 x) = ucast (Rep_uint8' x)"
-by(simp add: uint32_of_uint8.rep_eq)
+  "uint32_of_uint8 x = Abs_uint32' (ucast (Rep_uint8' x))"
+by transfer simp
 
 lemma uint32_of_uint16_code [code]:
-  "Rep_uint32 (uint32_of_uint16 x) = ucast (Rep_uint16' x)"
-by(simp add: uint32_of_uint16.rep_eq)
+  "uint32_of_uint16 x = Abs_uint32' (ucast (Rep_uint16' x))"
+by transfer simp
 
 section {* Tests *}
 
