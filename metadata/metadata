@@ -1624,7 +1624,7 @@ abstract = This set of theories presents an Isabelle/HOL formalisation of stream
 
 [GoedelGod]
 title = G&ouml;del's God in Isabelle/HOL
-author = Christoph Benzmueller <http://page.mi.fu-berlin.de/cbenzmueller/>
+author = Christoph Benzmueller <http://page.mi.fu-berlin.de/cbenzmueller/> and Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
 date = 2013-11-12
 topic = Logic
 abstract = Dana Scott's version of G&ouml;del's proof of God's existence is formalized in quantified
