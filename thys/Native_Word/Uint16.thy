@@ -210,12 +210,24 @@ text {*
   If code generation raises Match, some equation probably contains @{term Rep_uint16} 
   ([code abstract] equations for @{typ uint16} may use @{term Rep_uint16} because
   these instances will be folded away.)
+
+  To convert @{typ "16 word"} values into @{typ uint16}, use @{term "Abs_uint16'"}.
 *}
 
 definition Rep_uint16' where [simp]: "Rep_uint16' = Rep_uint16"
 
+lemma Rep_uint16'_transfer [transfer_rule]:
+  "fun_rel cr_uint16 op = (\<lambda>x. x) Rep_uint16'"
+unfolding Rep_uint16'_def by(rule uint16.rep_transfer)
+
 lemma Rep_uint16'_code [code]: "Rep_uint16' x = (BITS n. x !! n)"
-unfolding Rep_uint16'_def by transfer simp
+by transfer simp
+
+lift_definition Abs_uint16' :: "16 word \<Rightarrow> uint16" is "\<lambda>x :: 16 word. x" .
+
+lemma Abs_uint16'_code [code]:
+  "Abs_uint16' x = Uint16 (integer_of_int (uint x))"
+by transfer simp
 
 lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint16 \<Rightarrow> _)" ..
 
@@ -519,7 +531,7 @@ have test_uint16 by code_simp
 have test_uint16 by normalization
 end
 
-hide_const test_uint16
+hide_const (open) test_uint16
 hide_fact test_uint16_def
 no_notation sshiftr_uint16 (infixl ">>>" 55)
 

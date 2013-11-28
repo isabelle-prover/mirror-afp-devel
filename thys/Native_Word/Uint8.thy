@@ -213,12 +213,24 @@ text {*
   If code generation raises Match, some equation probably contains @{term Rep_uint8} 
   ([code abstract] equations for @{typ uint8} may use @{term Rep_uint8} because
   these instances will be folded away.)
+
+  To convert @{typ "8 word"} values into @{typ uint8}, use @{term "Abs_uint8'"}.
 *}
 
 definition Rep_uint8' where [simp]: "Rep_uint8' = Rep_uint8"
 
+lemma Rep_uint8'_transfer [transfer_rule]:
+  "fun_rel cr_uint8 op = (\<lambda>x. x) Rep_uint8'"
+unfolding Rep_uint8'_def by(rule uint8.rep_transfer)
+
 lemma Rep_uint8'_code [code]: "Rep_uint8' x = (BITS n. x !! n)"
-unfolding Rep_uint8'_def by transfer simp
+by transfer simp
+
+lift_definition Abs_uint8' :: "8 word \<Rightarrow> uint8" is "\<lambda>x :: 8 word. x" .
+
+lemma Abs_uint8'_code [code]:
+  "Abs_uint8' x = Uint8 (integer_of_int (uint x))"
+by transfer simp
 
 lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint8 \<Rightarrow> _)" ..
 
