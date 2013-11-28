@@ -15,7 +15,8 @@ krauss@in.tum.de \
 noschinl@in.tum.de \
 kuncar@in.tum.de \
 ns441@cam.ac.uk \
-brianh@cs.pdx.edu"
+brianh@cs.pdx.edu \
+traytel@in.tum.de"
 
 # settings for preparing an Isabelle development snapshot
 DISTSRC=~/isadist
