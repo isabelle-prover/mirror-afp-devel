@@ -19,10 +19,16 @@ export_code test_uint16_emulation checking SML OCaml?
   -- {* test the other target languages as well *} Haskell? Scala
 
 notepad begin
+have Uint16.test_uint16 by eval
 have test_uint16_emulation by eval
 have test_uint16_emulation by normalization
 have test_uint16_emulation by code_simp
 end
+
+ML_val {* 
+  val true = @{code Uint16.test_uint16};
+  val true = @{code test_uint16_emulation};
+*}
 
 hide_const test_uint16_emulation
 hide_fact test_uint16_emulation_def
