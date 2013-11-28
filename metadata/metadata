@@ -1595,6 +1595,7 @@ abstract = The theory of hereditarily finite sets is formalised, following
 [Incompleteness]
 title = G&ouml;del's Incompleteness Theorems
 author = Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
+depends-on = HereditarilyFinite
 date = 2013-11-17
 topic = Logic
 abstract = G&ouml;del's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
@@ -1610,3 +1611,28 @@ depends-on = Abstract-Rewriting
 date = 2013-11-01
 topic = Logic/Rewriting
 abstract = This theory contains a formalization of decreasing diagrams showing that any locally decreasing abstract rewrite system is confluent. We consider the valley (van Oostrom, TCS 1994) and the conversion version (van Oostrom, RTA 2008) and closely follow the original proofs. As an application we prove Newman's lemma.
+
+[FocusStreamsCaseStudies]
+title = Stream Processing Components: Isabelle/HOL Formalisation and Case Studies
+author = Maria Spichkova
+date = 2013-11-14
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
+        in Focus,
+	a framework for formal specification and development of interactive systems.
+	This is an extended and updated version of the formalisation, which was
+	elaborated within the methodology "Focus on Isabelle".
+	In addition, we also applied the formalisation on three case studies
+	that cover different application areas: process control (Steam Boiler System),
+	data transmission (FlexRay communication protocol),
+	memory and processing components (Automotive-Gateway System).
+
+[GoedelGod]
+title = G&ouml;del's God in Isabelle/HOL
+author = Christoph Benzmueller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
+date = 2013-11-12
+topic = Logic
+abstract = Dana Scott's version of G&ouml;del's proof of God's existence is formalized in quantified
+      modal logic KB (QML KB).
+      QML KB is modeled as a fragment of classical higher-order logic (HOL);
+      thus, the formalization is essentially a formalization in HOL.

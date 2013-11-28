@@ -24,40 +24,50 @@
 <div align="center">
 <p> </p>
 
-<h1><font class="first">G</font>&ouml;del's
-<font class="first">I</font>ncompleteness
-<font class="first">T</font>heorems
+<h1><font class="first">S</font>tream
+<font class="first">P</font>rocessing
+<font class="first">C</font>omponents:
+<font class="first">I</font>sabelle/HOL
+<font class="first">F</font>ormalisation
+and
+<font class="first">C</font>ase
+<font class="first">S</font>tudies
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">G&ouml;del's Incompleteness Theorems</td></tr>
+        <td class="data" width="80%">Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Lawrence C. Paulson (lp15 /at/ cam /dot/ ac /dot/ uk)</td></tr>
+        <td class="data">Maria Spichkova</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-11-17</td></tr>
+        <td class="data">2013-11-14</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-G&ouml;del's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
-of multiplication (let alone that of a prime number)
-in the formalised calculus upon which the theorem is based.
-However, other technical problems had to be solved in order to complete the argument.
+This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
+in Focus,
+a framework for formal specification and development of interactive systems.
+This is an extended and updated version of the formalisation, which was
+elaborated within the methodology "Focus on Isabelle".
+In addition, we also applied the formalisation on three case studies
+that cover different application areas: process control (Steam Boiler System),
+data transmission (FlexRay communication protocol),
+memory and processing components (Automotive-Gateway System).
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Incompleteness-AFP,
-  author  = {Lawrence C. Paulson},
-  title   = {G&ouml;del's Incompleteness Theorems},
+			<pre>@article{FocusStreamsCaseStudies-AFP,
+  author  = {Maria Spichkova},
+  title   = {Stream Processing Components: Isabelle/HOL Formalisation and Case Studies},
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Incompleteness.shtml},
+  note    = {\url{http://afp.sf.net/entries/FocusStreamsCaseStudies.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -65,10 +75,6 @@ However, other technical problems had to be solved in order to complete the argu
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
-
-
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="HereditarilyFinite.shtml">HereditarilyFinite</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -81,7 +87,7 @@ However, other technical problems had to be solved in order to complete the argu
 
 <p></p>
 
-<!--#set var="name" value="Incompleteness" -->
+<!--#set var="name" value="FocusStreamsCaseStudies" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

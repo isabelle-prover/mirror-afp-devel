@@ -1,0 +1,81 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{mdwlist}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+\usepackage{focus}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\input{macros}
+
+\title{Stream processing components:\\ Isabelle/HOL formalisation and case studies}
+\author{Maria Spichkova}
+\maketitle
+
+
+\begin{abstract}
+This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced in
+  \Focus,
+a framework for formal specification and development of interactive systems.
+This is an extended and updated version of the formalisation, which was
+elaborated within the methodology ``\Focus on Isabelle'' \cite{spichkova}.
+In addition, we also applied the formalisation on three case studies
+that cover different application areas:
+process control (Steam Boiler System),
+data transmission (FlexRay communication protocol),
+memory and processing components (Automotive-Gateway System).
+\end{abstract}
+\tableofcontents
+
+\newpage
+\input{intro}
+
+
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\newpage
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{biblio2}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
