@@ -344,7 +344,7 @@ lemma Setsum_splitlist_nonempty:
 proof -
   have "{f ys zs |ys zs. xs = ys @ zs} = {f ys zs |ys zs. xs = ys @ zs \<and> ys = []} \<union> {f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
     by blast
-  thus ?thesis
+  thus ?thesis using [[simproc add: finite_Collect]]
     by (simp add: setsum_insert)
 qed
 
@@ -392,6 +392,7 @@ begin
       proof
         assume "f \<cdot> g \<le> g"
         hence 1: "\<And>u v. f $ u \<cdot> g $ v \<le> g $ (u @ v)"
+          using [[simproc add: finite_Collect]]
           apply (simp add: expand_fps_less_eq)
           apply (drule_tac x="u @ v" in spec)
           apply (simp add: times_fps_def)
@@ -403,6 +404,7 @@ begin
           apply (metis append_Nil)
         done
         show "f\<^sup>\<star> \<cdot> g \<le> g"
+          using [[simproc add: finite_Collect]]
           apply (auto intro!: setsum_less_eqI simp add: expand_fps_less_eq times_fps_def)
           apply (induct_tac "y" rule: length_induct)
           apply (case_tac "xs")
@@ -427,6 +429,7 @@ begin
       proof
         assume "g \<cdot> f \<le> g"
         hence 1: "\<And>u v. g $ u \<cdot> f $ v \<le> g $ (u @ v)"
+          using [[simproc add: finite_Collect]]
           apply (simp add: expand_fps_less_eq)
           apply (drule_tac x="u @ v" in spec)
           apply (simp add: times_fps_def)
@@ -438,6 +441,7 @@ begin
           apply (metis append_Nil2)
         done
         show "g \<cdot> f\<^sup>\<star> \<le> g"
+          using [[simproc add: finite_Collect]]
           apply (auto intro!: setsum_less_eqI simp add: expand_fps_less_eq times_fps_def)
           apply (rule_tac P="\<lambda>y. g $ y \<cdot> f\<^sup>\<star> $ z \<le> g $ (y @ z)" and x="y" in allE)
            prefer 2

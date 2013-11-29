@@ -199,6 +199,8 @@ lemma invariantI:
 using assms by (simp add: invariant_def)
 
 
+declare [[simproc add: finite_Collect]]
+
 lemma finite_Trn:
   assumes fin: "finite rhs"
   shows "finite {r. Trn Y r \<in> rhs}"
@@ -418,6 +420,8 @@ lemma Subst_all_preserves_finite:
   assumes finite: "finite ES"
   shows "finite (Subst_all ES Y yrhs)"
 using assms unfolding Subst_all_def by simp
+
+declare [[simproc del: finite_Collect]]
 
 lemma Subst_all_preserves_finite_rhs:
   "\<lbrakk>finite_rhs ES; finite yrhs\<rbrakk> \<Longrightarrow> finite_rhs (Subst_all ES Y yrhs)"

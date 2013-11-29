@@ -3295,7 +3295,7 @@ proof
         using lfinite_conv_llength_enat[of ?xs']
         by(auto simp add: lfinite_ltakeWhile)
       have "finite ({n. enat n < llength ?xs} \<inter> {n. P (lnth ?xs n)})" (is "finite ?A")
-        using LCons by(auto simp add: ltl_lfilter lfinite_ldropWhile)
+        using LCons [[simproc add: finite_Collect]] by(auto simp add: ltl_lfilter lfinite_ldropWhile)
       hence "finite ((\<lambda>m. n + 1 + m) ` ({n. enat n < llength ?xs} \<inter> {n. P (lnth ?xs n)}))"
         (is "finite (?f ` _)")
         by(rule finite_imageI)

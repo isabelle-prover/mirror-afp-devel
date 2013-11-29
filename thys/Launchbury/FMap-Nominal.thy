@@ -119,8 +119,7 @@ have "finite (ran m)" using assms by (rule finite_range)
   have "finite (\<Union> {{b. (x \<rightleftharpoons> b) \<bullet> m = m'} | m'. dom m' = dom m \<and> ran m' = ran m \<and> m' \<noteq> m})"
     by auto
   hence "finite {b. dom (?f b) = dom m \<and> ran (?f b) = ran m \<and> ?f b \<noteq> m}"
-    apply (auto elim!: finite_subset[rotated])
-    by (metis (lifting, full_types) mem_Collect_eq)
+    by (auto elim!: finite_subset[rotated])
  
   with `x \<notin> supp (ran m)` and `x \<notin> supp (dom m)`
   have "x \<notin> supp m" 
