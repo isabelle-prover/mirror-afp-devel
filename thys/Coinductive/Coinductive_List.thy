@@ -359,8 +359,11 @@ where
 | llexord_LCons_less: "r x y \<Longrightarrow> llexord r (LCons x xs) (LCons y ys)"
 | llexord_LNil [simp, intro!]: "llexord r LNil ys"
 
-definition lfilter :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
-where "lfilter P = unfold_llist (\<lambda>xs. \<forall>x\<in>lset xs. \<not> P x) (lhd \<circ> ldropWhile (Not \<circ> P)) (ltl \<circ> ldropWhile (Not \<circ> P))"
+primcorec (exhaustive) lfilter :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
+where
+  "\<forall>x\<in>lset xs. \<not> P x \<Longrightarrow> lnull (lfilter P xs)"
+| "lhd (lfilter P xs) = lhd (ldropWhile (Not \<circ> P) xs)"
+| "ltl (lfilter P xs) = lfilter P (ltl (ldropWhile (Not \<circ> P) xs))"
 
 definition lconcat :: "'a llist llist \<Rightarrow> 'a llist"
 where [code del]:
@@ -3117,7 +3120,7 @@ qed
 subsection {* The filter functional on lazy lists: @{term "lfilter"} *}
 
 lemma lfilter_LNil [simp]: "lfilter P LNil = LNil"
-by(simp add: lfilter_def)
+by simp
 
 lemma lfilter_LCons [simp]:
   "lfilter P (LCons x xs) = (if P x then LCons x (lfilter P xs) else lfilter P xs)"
@@ -3146,19 +3149,26 @@ using lnull_lfilter unfolding lnull_def .
 
 lemmas lfilter_empty_conv = lfilter_eq_LNil
 
-lemma lfilter_eq_LCons:
-  "lfilter P xs = LCons x xs' \<Longrightarrow>
-   \<exists>xs''. xs' = lfilter P xs'' \<and> ldropWhile (Not \<circ> P) xs = LCons x xs''"
-by(auto 4 4 simp add: lfilter_def intro: llist.expand)
-
 lemma lhd_lfilter [simp]: "lhd (lfilter P xs) = lhd (ldropWhile (Not \<circ> P) xs)"
 by(cases "\<exists>x\<in>lset xs. P x")(simp_all add: lfilter_def)
 
+lemma ltl_lfilter: "ltl (lfilter P xs) = lfilter P (ltl (ldropWhile (Not \<circ> P) xs))"
+by(cases "\<exists>x\<in>lset xs. P x") simp_all
+
+declare lfilter.simps[simp del]
+
+lemma lfilter_eq_LCons:
+  assumes "lfilter P xs = LCons x xs'"
+  shows "\<exists>xs''. xs' = lfilter P xs'' \<and> ldropWhile (Not \<circ> P) xs = LCons x xs''"
+using eq_LConsD[OF assms]
+apply(clarsimp simp add: ltl_lfilter)
+using assms by(auto 4 3 intro: llist.expand)
+
 lemma lfilter_K_True [simp]: "lfilter (%_. True) xs = xs"
-by(simp add: lfilter_def o_def)
+by(coinduction arbitrary: xs)(auto simp add: ltl_lfilter)
 
 lemma lfitler_K_False [simp]: "lfilter (\<lambda>_. False) xs = LNil"
-by(simp add: lfilter_def)
+by(simp)
 
 lemma lfilter_lappend_lfinite [simp]:
   "lfinite xs \<Longrightarrow> lfilter P (lappend xs ys) = lappend (lfilter P xs) (lfilter P ys)"
@@ -3173,7 +3183,7 @@ proof
   proof
     fix x
     assume x: "x \<in> lset (lfilter P xs)"
-    hence "lfilter P xs \<noteq> LNil" by clarify simp
+    hence "\<not> lnull (lfilter P xs)" by clarify simp
     with x have "x \<in> lset xs \<and> P x"
     proof(induct ys\<equiv>"lfilter P xs" arbitrary: xs rule: llist_set_induct)
       case find thus ?case
@@ -3183,11 +3193,11 @@ proof
       let ?xs' = "ltl (ldropWhile (Not \<circ> P) xs)"
       note x = `x \<in> lset (ltl (lfilter P xs))`
       hence "ltl (lfilter P xs) = lfilter P ?xs'"
-        by(auto simp add: lfilter_def ltl_unfold_llist split: split_if_asm)
+        by(simp add: ltl_lfilter)
       moreover from x
       have "\<not> lnull (lfilter P ?xs')"
-        by(simp add: lfilter_def ltl_unfold_llist o_def unfold_llist_code split: split_if_asm)
-      ultimately have "x \<in> lset ?xs' \<and> P x" unfolding lnull_def by(rule step.hyps(3))
+        by(simp add: lfilter_def corec_llist_never_stop split_def ltl_unfold_llist unfold_llist_code split: split_if_asm)
+      ultimately have "x \<in> lset ?xs' \<and> P x" by(rule step.hyps(3))
       thus ?case by(auto dest: in_lset_ltlD in_lset_ldropWhileD)
     qed
     thus "x \<in> {x \<in> lset xs. P x}" by simp
@@ -3203,9 +3213,6 @@ next
     with `P x` show "x \<in> lset (lfilter P xs)" by(simp add: lset_lappend)
   qed
 qed
-
-lemma ltl_lfilter: "ltl (lfilter P xs) = lfilter P (ltl (ldropWhile (Not \<circ> P) xs))"
-by(fastforce simp add: lfilter_def ltl_unfold_llist intro: llist.expand dest!: in_lset_ldropWhileD in_lset_ltlD)
 
 lemma [simp]:
   shows lhd_ldropWhile_lfilter:
