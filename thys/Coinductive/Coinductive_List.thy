@@ -335,7 +335,7 @@ where
 hide_fact (open) LNil LCons
 
 definition inf_llist :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a llist"
-where [code del]: "inf_llist f = unfold_llist (\<lambda>_. False) f Suc 0"
+where [code del]: "inf_llist f = lmap f (iterates Suc 0)"
 
 abbreviation repeat :: "'a \<Rightarrow> 'a llist"
 where "repeat \<equiv> iterates (\<lambda>x. x)"
@@ -4182,18 +4182,14 @@ lemma lhd_inf_llist [simp]: "lhd (inf_llist f) = f 0"
 by(simp add: inf_llist_def)
 
 lemma ltl_inf_llist [simp]: "ltl (inf_llist f) = inf_llist (\<lambda>n. f (Suc n))"
-unfolding inf_llist_def
-by(subst unfold_llist_ltl_unroll[simplified o_def, symmetric]) simp
+by(simp add: inf_llist_def lmap_iterates[symmetric] llist.map_comp)
 
 lemma inf_llist_rec [code, nitpick_simp]:
   "inf_llist f = LCons (f 0) (inf_llist (\<lambda>n. f (Suc n)))"
 by(rule llist.expand) simp_all
 
 lemma lfinite_inf_llist [iff]: "\<not> lfinite (inf_llist f)"
-proof
-  assume "lfinite (inf_llist f)"
-  thus False by(induct xs\<equiv>"inf_llist f" arbitrary: f rule: lfinite_induct) auto
-qed
+by(simp add: inf_llist_def)
 
 lemma iterates_conv_inf_llist:
   "iterates f a = inf_llist (\<lambda>n. (f ^^ n) a)"
@@ -4204,26 +4200,28 @@ lemma inf_llist_neq_llist_of [simp]:
    "inf_llist f \<noteq> llist_of xs"
 using lfinite_llist_of[of xs] lfinite_inf_llist[of f] by fastforce+
 
-lemma inf_llist_inj [simp]:
-  "inf_llist f = inf_llist g \<longleftrightarrow> f = g"
-proof
-  assume eq: "inf_llist f = inf_llist g"
-  show "f = g"
-  proof(rule ext)
-    fix n
-    from eq show "f n = g n"
-    proof(induct n arbitrary: f g)
-      case 0 
-      thus ?case by(auto dest: arg_cong[where f=lhd])
-    next
-      case (Suc n)
-      thus ?case by -(drule arg_cong[where f=ltl], auto)
-    qed
-  qed
-qed simp
+lemma lnth_inf_llist [simp]: "lnth (inf_llist f) n = f n"
+proof(induct n arbitrary: f)
+  case 0 thus ?case by(subst inf_llist_rec) simp
+next
+  case (Suc n)
+  from Suc[of "\<lambda>n. f (Suc n)"] show ?case
+    by(subst inf_llist_rec) simp
+qed
 
 lemma inf_llist_lprefix [simp]: "lprefix (inf_llist f) xs \<longleftrightarrow> xs = inf_llist f"
 by(auto simp add: not_lfinite_lprefix_conv_eq)
+
+lemma llength_inf_llist [simp]: "llength (inf_llist f) = \<infinity>"
+by(simp add: inf_llist_def)
+
+lemma lset_inf_llist [simp]: "lset (inf_llist f) = range f"
+by(auto simp add: lset_conv_lnth)
+
+lemma inf_llist_inj [simp]:
+  "inf_llist f = inf_llist g \<longleftrightarrow> f = g"
+unfolding inf_llist_def lmap_eq_lmap_conv_llist_all2
+by(simp add: iterates_conv_inf_llist fun_eq_iff)
 
 lemma inf_llist_lnth [simp]: "\<not> lfinite xs \<Longrightarrow> inf_llist (lnth xs) = xs"
 by(coinduction arbitrary: xs)(auto simp add: lnth_0_conv_lhd fun_eq_iff lnth_ltl)
@@ -4242,42 +4240,21 @@ next
   thus thesis by(rule that)
 qed
 
-lemma llength_inf_llist [simp]:
-  "llength (inf_llist f) = \<infinity>"
-by(rule not_lfinite_llength) auto
-
 lemma lappend_inf_llist [simp]: "lappend (inf_llist f) xs = inf_llist f"
 by(simp add: lappend_inf)
 
 lemma lmap_inf_llist [simp]: 
   "lmap f (inf_llist g) = inf_llist (f o g)"
-by(coinduction arbitrary: g)(auto simp add: o_def)
+by(simp add: inf_llist_def llist.map_comp)
 
 lemma ltake_enat_inf_llist [simp]:
   "ltake (enat n) (inf_llist f) = llist_of (map f [0..<n])"
-proof(induct n arbitrary: f)
-  case 0 thus ?case by(simp add: zero_enat_def[symmetric])
-next
-  case (Suc n)
-  have "ltake (enat (Suc n)) (inf_llist f) =
-        LCons (f 0) (ltake (enat n) (inf_llist (\<lambda>n. f (Suc n))))"
-    by(subst inf_llist_rec)(simp add: eSuc_enat[symmetric])
-  also note Suc[of "\<lambda>n. f (Suc n)"]
-  also have "map (\<lambda>a. f (Suc a)) [0..<n] = map f [1..<Suc n]" by(induct n) auto
-  also note llist_of.simps(2)[symmetric]
-  also have "f 0 # map f [1..<Suc n] = map f [0..<Suc n]" by(simp add: upt_rec)
-  finally show ?case .
-qed
+by(simp add: inf_llist_def ltake_iterates_Suc)
 
 lemma ldropn_inf_llist [simp]:
   "ldropn n (inf_llist f) = inf_llist (\<lambda>m. f (m + n))"
-proof(induct n arbitrary: f)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  from Suc[of "\<lambda>n. f (Suc n)"] show ?case
-    by(subst inf_llist_rec) simp
-qed
+unfolding inf_llist_def ldropn_lmap ldropn_iterates
+by(simp add: iterates_conv_inf_llist o_def)
 
 lemma ldrop_enat_inf_llist:
   "ldrop (enat n) (inf_llist f) = inf_llist (\<lambda>m. f (m + n))"
@@ -4310,18 +4287,6 @@ next
   with Cons[of "\<lambda>n. f (Suc n)"]
   show ?case by(subst inf_llist_rec)(simp)
 qed
-
-lemma lnth_inf_llist [simp]: "lnth (inf_llist f) n = f n"
-proof(induct n arbitrary: f)
-  case 0 thus ?case by(subst inf_llist_rec) simp
-next
-  case (Suc n)
-  from Suc[of "\<lambda>n. f (Suc n)"] show ?case
-    by(subst inf_llist_rec) simp
-qed
-
-lemma lset_inf_llist [simp]: "lset (inf_llist f) = range f"
-by(auto simp add: lset_conv_lnth)
 
 lemma llist_all2_inf_llist [simp]:
   "llist_all2 P (inf_llist f) (inf_llist g) \<longleftrightarrow> (\<forall>n. P (f n) (g n))"
