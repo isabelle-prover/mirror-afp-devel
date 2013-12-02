@@ -16,27 +16,8 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-declare stream.map_cong [cong]
-
-instantiation stream :: (equal) equal begin
-definition equal_stream :: "'a stream \<Rightarrow> 'a stream \<Rightarrow> bool"
-where [code del]: "equal_stream xs ys \<longleftrightarrow> xs = ys"
-instance proof qed(simp add: equal_stream_def)
-end
-
-lemma equal_stream_code [code]:
-  "equal_class.equal (Stream x xs) (Stream y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
-by(simp_all add: equal_stream_def)
-
-lemma corec_stream_code [code]:
-  "corec_stream SHD endORmore STL_end STL_more b = Stream (SHD b) 
-     (if endORmore b then STL_end b
-      else corec_stream SHD endORmore STL_end STL_more (STL_more b))"
-by(rule stream.expand) simp_all
-
-lemma unfold_stream_code [code]:
-  "unfold_stream SHD STL b = Stream (SHD b) (unfold_stream SHD STL (STL b))"
-by(rule stream.expand) simp_all
+declare stream.unfold [code]
+declare stream.corec [code]
 
 text {* lemmas about generated constants *}
 
@@ -71,7 +52,7 @@ by(coinduction arbitrary: b) auto
 lemma unfold_stream_eq_Stream [simp]:
   "unfold_stream SHD STL b = x ## xs \<longleftrightarrow>
   x = SHD b \<and> xs = unfold_stream SHD STL (STL b)"
-by(subst unfold_stream_code) auto
+by(subst stream.unfold) auto
 
 lemma unfold_stream_id [simp]: "unfold_stream shd stl xs = xs"
 by(coinduction arbitrary: xs) simp_all
@@ -392,4 +373,3 @@ by(coinduction arbitrary: xs) auto
 end
 
 end
-

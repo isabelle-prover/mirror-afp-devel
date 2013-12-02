@@ -59,32 +59,7 @@ declare
   tllist.unfold(1) [simp]
   tllist.corec(1) [simp]
 
-lemma case_tllist_cert:
-  assumes "CASE \<equiv> case_tllist c d"
-  shows "(CASE (TNil b) \<equiv> c b) &&& (CASE (TCons M N) \<equiv> d M N)"
-  using assms by simp_all
-
-code_datatype TNil TCons
-
-setup {*
-  Code.add_case @{thm case_tllist_cert}
-*}
-
 subsection {* Code generator setup *}
-
-instantiation tllist :: (equal,equal) equal begin
-
-definition equal_tllist :: "('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
-where [code del]: "equal_tllist xs ys \<longleftrightarrow> xs = ys"
-instance proof qed(simp add: equal_tllist_def)
-end
-
-lemma equal_tllist_code [code]:
-  "equal_class.equal (TNil b) (TNil b') \<longleftrightarrow> b = b'"
-  "equal_class.equal (TNil b) (TCons y ys) \<longleftrightarrow> False"
-  "equal_class.equal (TCons x xs) (TNil b') \<longleftrightarrow> False"
-  "equal_class.equal (TCons x xs) (TCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
-by(simp_all add: equal_tllist_def)
 
 text {* Setup for quickcheck *}
 
@@ -257,7 +232,9 @@ proof -
   have "\<forall>x\<in>set2_tllist xs. P x xs"
     apply(rule tllist.dtor_set2_induct)
     using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def[THEN meta_eq_to_obj_eq, THEN fun_cong]
+      set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def'
+      collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
       apply(erule_tac x="b" in meta_allE)
@@ -299,7 +276,7 @@ lemmas tllist_of_llist_LNil = tllist_of_llist_simps(1)
 
 lemma terminal_tllist_of_llist_lnull [simp]:
   "lnull xs \<Longrightarrow> terminal (tllist_of_llist b xs) = b"
-by(simp add: lnull_def)
+unfolding lnull_def by simp
 
 declare tllist_of_llist.sel(1)[simp del]
 
@@ -365,7 +342,7 @@ proof(intro iffI conjI impI)
 next
   assume ?lhs
   thus "xs = ys"
-    by(coinduction arbitrary: xs ys)(auto simp add: lnull_def neq_LNil_conv)
+    by(coinduction arbitrary: xs ys)(auto simp add: lnull_unabs_def neq_LNil_conv)
   assume "lfinite ys"
   thus "b = c" using `?lhs`
     unfolding `xs = ys` by(induct) simp_all
@@ -580,7 +557,7 @@ by(cases xs) auto
 
 subsection {* Appending two terminated lazy lists @{term "tappend" } *}
 
-lemma tappend_TNil [simp, code, nitpick_simp]: 
+lemma tappend_TNil [simp, code, nitpick_simp]:
   "tappend (TNil b) f = f b"
 by transfer auto
 
@@ -751,13 +728,6 @@ by(metis tllist_all2_tfinite1_terminalD tllist_all2_tfiniteD)
 lemma tllist_all2D_llist_all2_llist_of_tllist:
   "tllist_all2 P Q xs ys \<Longrightarrow> llist_all2 P (llist_of_tllist xs) (llist_of_tllist ys)"
 by(transfer) auto
-
-lemma tllist_all2_code [code]:
-  "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
-  "tllist_all2 P Q (TNil b) (TCons y ys) \<longleftrightarrow> False"
-  "tllist_all2 P Q (TCons x xs) (TNil b') \<longleftrightarrow> False"
-  "tllist_all2 P Q (TCons x xs) (TCons y ys) \<longleftrightarrow> P x y \<and> tllist_all2 P Q xs ys"
-by(simp_all add: tllist_all2_TNil1 tllist_all2_TNil2)
 
 lemma tllist_all2_is_TNilD:
   "tllist_all2 P Q xs ys \<Longrightarrow> is_TNil xs \<longleftrightarrow> is_TNil ys"
@@ -1219,7 +1189,7 @@ lemma tconcat_transfer [transfer_rule]:
 unfolding Transfer.fun_rel_def
 by transfer(auto intro: llist_all2_lconcatI dest: llist_all2_lfiniteD)
 
-lemma tllist_all2_rsp: 
+lemma tllist_all2_rsp:
   assumes R1: "\<forall>x y. R1 x y \<longrightarrow> (\<forall>a b. R1 a b \<longrightarrow> S x a = T y b)"
   and R2: "\<forall>x y. R2 x y \<longrightarrow> (\<forall>a b. R2 a b \<longrightarrow> S' x a = T' y b)"
   and xsys: "tllist_all2 R1 R2 xs ys"
