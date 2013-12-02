@@ -1631,3 +1631,10 @@ abstract = Dana Scott's version of G&ouml;del's proof of God's existence is form
       modal logic KB (QML KB).
       QML KB is modeled as a fragment of classical higher-order logic (HOL);
       thus, the formalization is essentially a formalization in HOL.
+
+[Tail_Recursive_Functions]
+title = A General Method for the Proof of Theorems on Tail-recursive Functions
+author = Pasquale Noce <mailto:pasquale.noce@arjowiggins-it.com>
+date = 2013-12-01
+topic = Computer Science/Functional Programming
+abstract = Tail-recursive function definitions are sometimes more straightforward than alternatives, but proving theorems on them may be roundabout because of the peculiar form of the resulting recursion induction rules. This paper describes a proof method that provides a general solution to this problem by means of suitable invariants over inductive sets, and illustrates the application of such method by examining two case studies.               
