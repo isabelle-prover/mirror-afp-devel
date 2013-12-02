@@ -38,6 +38,8 @@ declare
   llist.unfold(1) [simp]
   llist.corec(1) [simp]
 
+lemmas lnull_unabs_def = lnull_def[THEN meta_eq_to_obj_eq, THEN fun_cong]
+
 text {*
   The following setup should be done by the BNF package.
 *}
@@ -357,13 +359,13 @@ lemmas ltl_simps = llist.sel(2,3)
 lemmas lhd_LCons_ltl = llist.collapse(2)
 
 lemma lnull_ltlI [simp]: "lnull xs \<Longrightarrow> lnull (ltl xs)"
-by(simp add: lnull_def)
+unfolding lnull_def by simp
 
 lemma neq_LNil_conv: "xs \<noteq> LNil \<longleftrightarrow> (\<exists>x xs'. xs = LCons x xs')"
 by(cases xs) auto
 
 lemma not_lnull_conv: "\<not> lnull xs \<longleftrightarrow> (\<exists>x xs'. xs = LCons x xs')"
-by(simp add: lnull_def neq_LNil_conv)
+unfolding lnull_def by(simp add: neq_LNil_conv)
 
 lemma lset_LCons:
   "lset (LCons x xs) = insert x (lset xs)"
@@ -431,6 +433,8 @@ text {* code setup for @{term lset} *}
 
 definition gen_lset :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a set"
 where "gen_lset A xs = A \<union> lset xs"
+
+export_code lset in SML
 
 lemma gen_lset_code [code]:
   "gen_lset A LNil = A"
@@ -517,7 +521,7 @@ by(coinduction arbitrary: xs) simp_all
 
 lemma shows lappend_lnull1: "lnull xs \<Longrightarrow> lappend xs ys = ys"
   and lappend_lnull2: "lnull ys \<Longrightarrow> lappend xs ys = xs"
-by(simp_all add: lnull_def)
+unfolding lnull_def by simp_all
 
 lemma lappend_assoc: "lappend (lappend xs ys) zs = lappend xs (lappend ys zs)"
 by(coinduction arbitrary: xs rule: llist.strong_coinduct) auto
@@ -1187,7 +1191,7 @@ by(cases n)(simp_all add: lhd_ldropn)
 lemma lnth_beyond:
   "llength xs \<le> enat n \<Longrightarrow> lnth xs n = undefined (n - (case llength xs of enat m \<Rightarrow> m))"
 proof(induct n arbitrary: xs)
-  case 0 thus ?case by(simp add: zero_enat_def[symmetric] lnth_def lnull_def)
+  case 0 thus ?case by(simp add: zero_enat_def[symmetric] lnth_def lnull_unabs_def)
 next
   case Suc thus ?case
     by(cases xs)(simp_all add: zero_enat_def lnth_def eSuc_enat[symmetric] split: enat.split, auto simp add: eSuc_enat)
@@ -1585,7 +1589,7 @@ next
 qed
 
 lemma ltake_enat_eq_imp_eq: "(\<And>n. ltake (enat n) xs = ltake (enat n) ys) \<Longrightarrow> xs = ys"
-by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
+by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_unabs_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
 
 lemma ltake_enat_lprefix_imp_lprefix:
   assumes le: "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
@@ -1768,7 +1772,7 @@ lemma finite_lprefix_nitpick_simps [nitpick_simp]:
   "finite_lprefix LNil xs \<longleftrightarrow> True"
   "finite_lprefix xs (LCons y ys) \<longleftrightarrow> 
    xs = LNil \<or> (\<exists>xs'. xs = LCons y xs' \<and> finite_lprefix xs' ys)"
-by(simp_all add: lprefix_LCons_conv finite_lprefix_def lnull_def)
+by(simp_all add: lprefix_LCons_conv finite_lprefix_def lnull_unabs_def)
 
 lemma lprefix_nitpick_simps [nitpick_simp]:
   "lprefix xs ys = (if lfinite xs then finite_lprefix xs ys else xs = ys)"
@@ -2303,7 +2307,7 @@ lemma llist_all2_llengthD:
 by(simp add: llist_all2_conv_lzip)
 
 lemma llist_all2_lnullD: "llist_all2 P xs ys \<Longrightarrow> lnull xs \<longleftrightarrow> lnull ys"
-by(auto simp add: lnull_def)
+unfolding lnull_def by auto
 
 lemma llist_all2_all_lnthI:
   "\<lbrakk> llength xs = llength ys;
@@ -2472,7 +2476,7 @@ lemma lmap_eq_lmap_conv_llist_all2:
 proof
   assume ?lhs
   thus ?rhs
-    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv lnull_def LNil_eq_lmap lmap_eq_LNil)
+    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv lnull_unabs_def LNil_eq_lmap lmap_eq_LNil)
 next
   assume ?rhs
   thus ?lhs
@@ -2770,7 +2774,7 @@ lemma llexord_LCons_LCons [simp]:
 by(auto intro: llexord.intros elim: llexord.cases)
 
 lemma lnull_llexord [simp]: "lnull xs \<Longrightarrow> llexord r xs ys"
-by(simp add: lnull_def)
+unfolding lnull_def by simp
 
 lemma llexord_LNil_right [simp]:
   "lnull ys \<Longrightarrow> llexord r xs ys \<longleftrightarrow> lnull xs"
@@ -3464,7 +3468,7 @@ proof -
       show ?case
       proof(cases "lset xss \<subseteq> {xs. lnull xs}")
         case False
-        hence [simp]: "\<not> lnull xss" by(auto simp add: lnull_def)
+        hence [simp]: "\<not> lnull xss" unfolding lnull_def by auto
         from False have [simp]: "\<not> lnull (lhd xss)"
           using lhd_in_lset[of xss] Eq_llist by(auto simp del: lhd_in_lset)
         show ?thesis using Eq_llist
