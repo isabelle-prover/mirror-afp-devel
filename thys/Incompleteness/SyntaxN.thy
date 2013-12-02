@@ -1,7 +1,7 @@
 header{*Syntax of Terms and Formulas using Nominal Logic*}
 
 theory SyntaxN
-imports "$AFP/Nominal2/Nominal2" "$AFP/HereditarilyFinite/OrdArith"
+imports "../Nominal2/Nominal2" "../HereditarilyFinite/OrdArith"
 begin
 
 section{*Terms and Formulas*}

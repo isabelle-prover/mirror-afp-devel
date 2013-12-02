@@ -6,8 +6,8 @@ session Incompleteness (AFP) = HOL +
   theories [document = false]
     "~~/src/HOL/Library/Nat_Bijection"
     "~~/src/HOL/Library/Wfrec"
-    "$AFP/HereditarilyFinite/OrdArith"
-    "$AFP/Nominal2/Nominal2"
+    "../HereditarilyFinite/OrdArith"
+    "../Nominal2/Nominal2"
   theories
     Goedel_I
     Goedel_II

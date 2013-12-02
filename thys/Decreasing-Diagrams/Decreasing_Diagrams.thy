@@ -21,7 +21,7 @@ with the formalization. If not, see <http://www.gnu.org/licenses/>.
 header "Decreasing Diagrams"
 
 
-theory Decreasing_Diagrams imports "~~/src/HOL/Library/Multiset" "$AFP/Abstract-Rewriting/Abstract_Rewriting" begin
+theory Decreasing_Diagrams imports "~~/src/HOL/Library/Multiset" "../Abstract-Rewriting/Abstract_Rewriting" begin
 
 subsection  {* Valley Version *}
 
