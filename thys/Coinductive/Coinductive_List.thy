@@ -42,45 +42,12 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-text {* congruence rule *}
-
-declare llist.map_cong [cong]
-
 text {* Code generator setup *}
-
-code_datatype LNil LCons
-
-lemma case_llist_cert:
-  assumes "CASE \<equiv> case_llist c d"
-  shows "(CASE LNil \<equiv> c) &&& (CASE (LCons M N) \<equiv> d M N)"
-  using assms by simp_all
-
-setup {*
-  Code.add_case @{thm case_llist_cert}
-*}
-
-lemma lnull_code [code]:
-  "lnull LNil = True"
-  "lnull (LCons x xs) = False"
-by simp_all
-
-instantiation llist :: (equal) equal begin
-definition equal_llist :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
-where [code del]: "equal_llist xs ys \<longleftrightarrow> xs = ys"
-instance proof qed(simp add: equal_llist_def)
-end
-
-lemma equal_llist_code [code]:
-  "equal_class.equal LNil LNil \<longleftrightarrow> True"
-  "equal_class.equal LNil (LCons y ys) \<longleftrightarrow> False"
-  "equal_class.equal (LCons x xs) LNil \<longleftrightarrow> False"
-  "equal_class.equal (LCons x xs) (LCons y ys) \<longleftrightarrow> (if x = y then equal_class.equal xs ys else False)"
-by(simp_all add: equal_llist_def)
 
 lemma corec_llist_code [code]:
   "corec_llist IS_LNIL LHD endORmore LTL_end LTL_more b =
-  (if IS_LNIL b then LNil 
-   else LCons (LHD b) 
+  (if IS_LNIL b then LNil
+   else LCons (LHD b)
      (if endORmore b then LTL_end b
       else corec_llist IS_LNIL LHD endORmore LTL_end LTL_more (LTL_more b)))"
 by(rule llist.expand) simp_all
