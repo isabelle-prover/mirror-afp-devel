@@ -180,7 +180,7 @@ abstract = Some acute-angled triangles are special, e.g. right-angled or isoscel
 
 [LightweightJava]
 title = Lightweight Java
-author = Rok Strni&scaron;a <http://rok.strnisa.com/lj/>, Matthew Parkinson <http://research.microsoft.com/people/mattpark/>
+author = Rok Strniša <http://rok.strnisa.com/lj/>, Matthew Parkinson <http://research.microsoft.com/people/mattpark/>
 topic = Computer Science/Programming Languages/Language Definitions
 date = 2011-02-07
 abstract = A fully-formalized and extensible minimal imperative fragment of Java.
@@ -235,7 +235,7 @@ depends-on = Regular-Sets
 
 [Statecharts]
 title = Formalizing Statecharts using Hierarchical Automata
-author = Steffen Helke <mailto:helke@cs.tu-berlin.de>, Florian Kamm&uuml;ller <mailto:flokam@cs.tu-berlin.de>
+author = Steffen Helke <mailto:helke@cs.tu-berlin.de>, Florian Kammüller <mailto:flokam@cs.tu-berlin.de>
 topic = Computer Science/Automata and Formal Languages
 date = 2010-08-08
 abstract = We formalize in Isabelle/HOL the abtract syntax and a synchronous
@@ -352,7 +352,7 @@ abstract = This document contains formal correctness proofs of modern SAT solver
 title = Executable Transitive Closures of Finite Relations
 topic = Computer Science/Algorithms
 date = 2011-03-14
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
 depends-on = Collections, Abstract-Rewriting
@@ -361,7 +361,7 @@ depends-on = Collections, Abstract-Rewriting
 title = Executable Transitive Closures
 topic = Computer Science/Algorithms
 date = 2012-02-29
-author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract =
   We provide a generic work-list algorithm to compute the
@@ -380,7 +380,7 @@ depends-on = Regular-Sets
 
 [MuchAdoAboutTwo]
 title = Much Ado About Two
-author = Sascha B&ouml;hme <http://www4.in.tum.de/~boehmes/>
+author = Sascha Böhme <http://www4.in.tum.de/~boehmes/>
 date = 2007-11-06
 topic = Computer Science/Algorithms
 abstract = This article is an Isabelle formalisation of a paper with the same title. In a similar way as Knuth's 0-1-principle for sorting algorithms, that paper develops a 0-1-2-principle for parallel prefix computations.
@@ -401,7 +401,7 @@ abstract = We formalize the generalized Byzantine fault-tolerant clock synchroni
 
 [ClockSynchInst]
 title = Instances of Schneider's generalized protocol of clock synchronization
-author = Dami&aacute;n Barsotti <http://www.cs.famaf.unc.edu.ar/~damian/>
+author = Damián Barsotti <http://www.cs.famaf.unc.edu.ar/~damian/>
 date = 2006-03-15
 topic = Computer Science/Algorithms/Distributed
 abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.shtml">GenClock</a> in AFP).
@@ -483,7 +483,7 @@ abstract = The correctness is shown of binary search tree operations (lookup, in
 
 [Binomial-Queues]
 title = Functional Binomial Queues
-author = Ren&eacute; Neumann <mailto:neumannr@in.tum.de>
+author = René Neumann <mailto:neumannr@in.tum.de>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract = Priority queues are an important data structure and efficient implementations of them are crucial. We implement a functional variant of binomial queues in Isabelle/HOL and show its functional correctness. A verification against an abstract reference specification of priority queues has also been attempted, but could not be achieved to the full extent.
@@ -507,7 +507,7 @@ abstract =
 
 [Finger-Trees]
 title = Finger Trees
-author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan K&ouml;rner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan Körner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract =
@@ -582,7 +582,7 @@ extra-history =
   [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
   [2013-09-20]:
         provide generators for canonical type class instantiations
-        (revision 159f4401f4a8 by Ren&eacute; Thiemann)
+        (revision 159f4401f4a8 by René Thiemann)
 
 [FileRefinement]
 title = File Refinement
@@ -593,7 +593,7 @@ abstract = These theories illustrates the verification of basic file operations 
 
 [Datatype_Order_Generator]
 title = Generating linear orders for datatypes
-author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2012-08-07
 topic = Computer Science/Data Structures
 abstract =
@@ -626,7 +626,7 @@ abstract = We introduce a theory of infinite lists in HOL formalized as function
 title = Executable Matrix Operations on Matrices of Arbitrary Dimensions
 topic = Computer Science/Data Structures
 date = 2010-06-17
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 license = LGPL
 abstract =
   We provide the operations of matrix addition, multiplication,
@@ -658,7 +658,7 @@ title = Coinductive
 topic = Computer Science/Functional Programming
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2010-02-12
-abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
+abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of König's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
 extra-history =
   Change history:
   [2010-06-10]:
@@ -795,7 +795,7 @@ extra-history =
 
 [Locally-Nameless-Sigma]
 title = Locally Nameless Sigma Calculus
-author = Ludovic Henrio <mailto:Ludovic.Henrio@sophia.inria.fr>, Florian Kamm&uuml;ller <mailto:flokam@cs.tu-berlin.de>, Bianca Lutz <mailto:sowilo@cs.tu-berlin.de>, Henry Sudhof <mailto:hsudhof@cs.tu-berlin.de>
+author = Ludovic Henrio <mailto:Ludovic.Henrio@sophia.inria.fr>, Florian Kammüller <mailto:flokam@cs.tu-berlin.de>, Bianca Lutz <mailto:sowilo@cs.tu-berlin.de>, Henry Sudhof <mailto:hsudhof@cs.tu-berlin.de>
 date = 2010-04-30
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present a Theory of Objects based on the original functional sigma-calculus by Abadi and Cardelli but with an additional parameter to methods. We prove confluence of the operational semantics following the outline of Nipkow's proof of confluence for the lambda-calculus reusing his theory Commutation, a generic diamond lemma reduction. We furthermore formalize a simple type system for our sigma-calculus including a proof of type safety. The entire development uses the concept of Locally Nameless representation for binders. We reuse an earlier proof of confluence for a simpler sigma-calculus based on de Bruijn indices and lists to represent objects.
@@ -890,7 +890,7 @@ abstract = This document contains the full theory files accompanying article <i>
 
 [Possibilistic_Noninterference]
 title = Possibilistic Noninterference
-author = Andrei Popescu <mailto:uuomul@yahoo.com>, Johannes H&ouml;lzl <mailto:hoelzl@in.tum.de>
+author = Andrei Popescu <mailto:uuomul@yahoo.com>, Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2012-09-10
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
 abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
@@ -1015,7 +1015,7 @@ abstract = This article formalizes normalization by evaluation as implemented in
 [Program-Conflict-Analysis]
 title = Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors
 topic = Computer Science/Programming Languages/Static Analysis
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Markus M&uuml;ller-Olm <http://cs.uni-muenster.de/u/mmo/>
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Markus Müller-Olm <http://cs.uni-muenster.de/u/mmo/>
 date = 2007-12-14
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point.
 
@@ -1122,7 +1122,7 @@ title = First-Order Logic According to Fitting
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 date = 2007-08-02
 topic = Logic
-abstract = We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the L&ouml;wenheim-Skolem theorem.
+abstract = We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the Löwenheim-Skolem theorem.
 
 [SequentInvertibility]
 title = Invertibility in Sequent Calculi
@@ -1159,7 +1159,7 @@ topic = Logic
 title = Free Boolean Algebra
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2010-03-29
-abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
+abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (α)<i>formula</i> represent propositional formulas with uninterpreted variables from type α, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
 
 [Sort_Encodings]
 title = Sound and Complete Sort Encodings for First-Order Logic
@@ -1185,7 +1185,7 @@ abstract =
 title = Abstract Rewriting
 topic = Logic/Rewriting
 date = 2010-06-14
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 license = LGPL
 abstract =
   We present an Isabelle formalization of abstract rewriting (see, e.g.,
@@ -1253,7 +1253,7 @@ depends-on = Group-Ring-Module
 
 [Rank_Nullity_Theorem]
 title = Rank-Nullity Theorem in Linear Algebra
-author = Jose Divas�n <http://www.unirioja.es/cu/jodivaso>, Jes�s Aransay <http://www.unirioja.es/cu/jearansa>
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
 topic = Mathematics/Algebra
 date = 2013-01-16
 abstract = In this article we present a proof of the result known in Linear Algebra as the ``rank nullity Theorem'', which states that, given any linear form f from a finite dimensional vector space V to a vector space W, then the dimension of V is equal to the dimension of the kernel of f (which is a subspace of V) and the dimension of the range of f (which is a subspace of W). The proof presented here is based on the one given by Sheldon Axler in his book <i>Linear Algebra Done Right</i>. It makes use of the HOL-Multivariate-Analysis session of Isabelle, and of several of its results and definitions. As a corollary of the previous theorem, and taking advantage of the relationship between linear forms and matrices, we prove that, for every matrix A (which has associated a linear form between finite dimensional vector spaces), the sum of its null space and its column space (which is equal to the range of the linear form) is equal to the number of columns of A.
@@ -1275,14 +1275,14 @@ extra-note = Note: This article is of historical interest only. Lebesgue-style i
 
 [Ordinary_Differential_Equations]
 title = Ordinary Differential Equations
-author = Fabian Immler <http://home.in.tum.de/~immler>, Johannes H&ouml;lzl <http://home.in.tum.de/~hoelzl>
+author = Fabian Immler <http://home.in.tum.de/~immler>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
 topic = Mathematics/Analysis
 date = 2012-04-26
-abstract = We formalize initial value problems (IVPs) of ODEs and prove the existence of a unique solution, i.e. the Picard-Lindel�f theorem. We introduce general one-step methods for numerical approximation of the solution and provide an analysis regarding the local and global error of one-step methods. We give an executable specification of the Euler method to approximate the solution of IVPs and prove an explicit bound for the global error. We use arbitrary-precision floating-point numbers and also handle rounding errors when we truncate the numbers for efficiency reasons.
+abstract = We formalize initial value problems (IVPs) of ODEs and prove the existence of a unique solution, i.e. the Picard-Lindelöf theorem. We introduce general one-step methods for numerical approximation of the solution and provide an analysis regarding the local and global error of one-step methods. We give an executable specification of the Euler method to approximate the solution of IVPs and prove an explicit bound for the global error. We use arbitrary-precision floating-point numbers and also handle rounding errors when we truncate the numbers for efficiency reasons.
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, Ren&eacute; Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 date = 2010-08-10
 topic = Mathematics/Analysis
 license = LGPL
@@ -1305,7 +1305,7 @@ extra-history =
 
 [Sqrt_Babylonian]
 title = Computing Square Roots using the Babylonian Method
-author = Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2013-01-03
 topic = Mathematics/Analysis
 license = LGPL
@@ -1321,7 +1321,7 @@ extra-history =
 
 [Markov_Models]
 title = Markov Models
-author = Johannes H�lzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2012-01-03
 topic = Mathematics/Probability Theory, Computer Science/Automata and Formal Languages
 abstract = This is a formalization of Markov models in Isabelle/HOL. It
@@ -1551,12 +1551,12 @@ topic = Computer Science/Programming Languages/Logics
 abstract = This document concerns the theory of ribbon proofs: a diagrammatic proof system, based on separation logic, for verifying program correctness. We include the syntax, proof rules, and soundness results for two alternative formalisations of ribbon proofs. <p> Compared to traditional proof outlines, ribbon proofs emphasise the structure of a proof, so are intelligible and pedagogical. Because they contain less redundancy than proof outlines, and allow each proof step to be checked locally, they may be more scalable. Where proof outlines are cumbersome to modify, ribbon proofs can be visually manoeuvred to yield proofs of variant programs.
 
 [Koenigsberg_Friendship]
-title = The K&ouml;nigsberg Bridge Problem and the Friendship Theorem
+title = The Königsberg Bridge Problem and the Friendship Theorem
 author = Wenda Li <mailto:wl302@cam.ac.uk>
 date = 2013-07-19
 topic = Mathematics/Graph Theory
 depends-on = Dijkstra_Shortest_Path
-abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the K&ouml;nigsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
+abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
 
 [IEEE_Floating_Point]
 title = A Formal Model of IEEE Floating Point Arithmetic
@@ -1584,16 +1584,16 @@ abstract = The theory of hereditarily finite sets is formalised, following
 	All constructions that are possible in ZF set theory (Cartesian products, disjoint sums, natural numbers,
 	functions) without using infinite sets are possible here.
 	The definition of addition for the HF sets follows Kirby.
-	This development forms the foundation for the Isabelle proof of G&ouml;del's incompleteness theorems,
+	This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
 	which has been <a href="Incompleteness.shtml">formalised separately</a>.
 
 [Incompleteness]
-title = G&ouml;del's Incompleteness Theorems
+title = Gödel's Incompleteness Theorems
 author = Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
 depends-on = HereditarilyFinite
 date = 2013-11-17
 topic = Logic
-abstract = G&ouml;del's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
+abstract = Gödel's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
 	of multiplication (let alone that of a prime number)
 	in the formalised calculus upon which the theorem is based.
 	However, other technical problems had to be solved in order to complete the argument.
@@ -1623,11 +1623,11 @@ abstract = This set of theories presents an Isabelle/HOL formalisation of stream
 	memory and processing components (Automotive-Gateway System).
 
 [GoedelGod]
-title = G&ouml;del's God in Isabelle/HOL
-author = Christoph Benzmueller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
+title = Gödel's God in Isabelle/HOL
+author = Christoph Benzmpller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
 date = 2013-11-12
 topic = Logic
-abstract = Dana Scott's version of G&ouml;del's proof of God's existence is formalized in quantified
+abstract = Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
       modal logic KB (QML KB).
       QML KB is modeled as a fragment of classical higher-order logic (HOL);
       thus, the formalization is essentially a formalization in HOL.

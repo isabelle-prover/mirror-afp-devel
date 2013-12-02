@@ -1,4 +1,5 @@
-#! /usr/bin/python
+#!/usr/bin/env python
+# vim: set fileencoding=utf-8 :
 
 ##
 ## Dependencies: Python 2 (tested with Python 2.6)
@@ -14,6 +15,7 @@ from UserDict import DictMixin
 from optparse import OptionParser
 from sys import argv, stderr
 from functools import partial
+import codecs
 import ConfigParser
 import os
 import re
@@ -24,7 +26,7 @@ import re
 
 # string which will be replaced by output of a generator
 # $ denotes an (optional) parameter for the generator
-magic_str = "<!--gen$-->"
+magic_str = u"<!--gen$-->"
 
 # pattern for release tarball filename
 release_pattern = """^afp-(.*)-([0-9\-]{10}).tar.gz$"""
@@ -39,16 +41,16 @@ output_suffix = ".shtml"
 
 # wrapper for a link list of entries
 # {0}: link list
-html_topic_link_list = """<div class="list">\n{0}</div>\n\n"""
+html_topic_link_list = u"""<div class="list">\n{0}</div>\n\n"""
 
 # template for a single link to an entry on topic page, where
 # filename is the same as the display name
 # {0}: filename (without .shtml suffix) relative to 'entries' directory
-html_topic_link = """<a href="entries/{0}.shtml">{0}</a> &nbsp;\n"""
+html_topic_link = u"""<a href="entries/{0}.shtml">{0}</a> &nbsp;\n"""
 
 # list of headings
 # {0}: display name of heading
-html_topic_headings = [ "<h2>{0}</h2>\n\n", "<h3>{0}</h3>\n\n", "\n<strong>{0}:</strong>&nbsp;" ]
+html_topic_headings = [ u"<h2>{0}</h2>\n\n", u"<h3>{0}</h3>\n\n", u"\n<strong>{0}:</strong>&nbsp;" ]
 
 # denotes the heading level (beginning with 0), after which no
 # separate html_topic_link_list will be created
@@ -57,13 +59,13 @@ html_until_level = 1
 # link to an author
 # {0}: url
 # {1}: display name
-html_author_link = """<a href="{0}">{1}</a>"""
+html_author_link = u"""<a href="{0}">{1}</a>"""
 
 # wrapper for each year's entries displayed on index page
 # {0}: year in YYYY format
 # {1}: entries
-html_index_year = """
-<p> </p>
+html_index_year = u"""
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -81,30 +83,30 @@ html_index_year = """
 # {1}: filename (without .shtml suffix) relative to 'entries' directory
 # {2}: display name
 # {3}: list of html_author_link, comma-separated
-html_index_entry = """<tr><td class="entry">\n{0}:\n<a href="entries/{1}.shtml">{2}</a>\n<br>Author:\n{3}\n</td></tr>\n\n"""
+html_index_entry = u"""<tr><td class="entry">\n{0}:\n<a href="entries/{1}.shtml">{2}</a>\n<br>Author:\n{3}\n</td></tr>\n\n"""
 
 # heading wrapper on entry page
-html_entry_heading = "<h1>{0}</h1>\n<p></p>"
+html_entry_heading = u"<h1>{0}</h1>\n<p></p>"
 
 # capitalized word in heading on entry page
 # {0}: first character
 # {1}: other characters
-html_entry_capitalized = """<font class="first">{0}</font>{1}\n"""
+html_entry_capitalized = u"""<font class="first">{0}</font>{1}\n"""
 
 # link to license text
 # {0}: display title
 # {1}: url
-html_license_link = """<a href="{1}">{0}</a>"""
+html_license_link = u"""<a href="{1}">{0}</a>"""
 
 # link to another entry
 # {0}: display title
 # {1}: url
-html_entry_link = """<a href="{1}">{0}</a>"""
+html_entry_link = u"""<a href="{1}">{0}</a>"""
 
 # wrapper for a text column in header
 # {0}: title (e. g. 'Change history')
 # {1}: text
-html_entry_text_wrapper = """
+html_entry_text_wrapper = u"""
     <tr><td class="datahead" valign="top">{0}:</td>
         <td class="abstract">
 {1}
@@ -114,7 +116,7 @@ html_entry_text_wrapper = """
 # wrapper for a pre-formatted text column in header
 # {0}: title (e. g. 'BibTeX')
 # {1}: text
-html_entry_pre_text_wrapper = """
+html_entry_pre_text_wrapper = u"""
     <tr><td class="datahead" valign="top">{0}:</td>
         <td class="formatted">
 			<pre>{1}</pre>
@@ -130,7 +132,7 @@ html_entry_pre_text_wrapper = """
 # {5}: entry
 # {6}: depends-on
 # {{...}} is for escaping, because Py's format syntax collides with SSI
-html_entry_header_wrapper = """
+html_entry_header_wrapper = u"""
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
@@ -160,7 +162,7 @@ html_entry_header_wrapper = """
 <!--#set var="binfo" value="../browser_info/current/AFP/${{name}}" -->
 """
 
-html_entry_depends_on_wrapper = """
+html_entry_depends_on_wrapper = u"""
 
     <tr><td class="datahead">Depends on:</td>
         <td class="data">{0}</td></tr>
@@ -168,12 +170,12 @@ html_entry_depends_on_wrapper = """
 
 # list wrapper for older releases
 # {0}: list entries
-html_entry_older_list = "<ul>\n{0}\n</ul>"
+html_entry_older_list = u"<ul>\n{0}\n</ul>"
 
 # list entry for older releases
 # {0}: isabelle release (e. g. "2009")
 # {1}: release date (e. g. "2009-04-29")
-html_entry_older_release = """<li>Isabelle {0}: <a href="../release/afp-<!--#echo var="name" -->-{1}.tar.gz">afp-<!--#echo var="name" -->-{1}.tar.gz</a></li>\n"""
+html_entry_older_release = u"""<li>Isabelle {0}: <a href="../release/afp-<!--#echo var="name" -->-{1}.tar.gz">afp-<!--#echo var="name" -->-{1}.tar.gz</a></li>\n"""
 
 ### html output
 
@@ -184,7 +186,7 @@ html_entry_older_release = """<li>Isabelle {0}: <a href="../release/afp-<!--#ech
 # {3}: month
 # {4}: year
 # {{...}} is for escaping, because Py's format syntax collides with SSI
-bibtex_wrapper = """@article{{{0}-AFP,
+bibtex_wrapper = u"""@article{{{0}-AFP,
   author  = {{{1}}},
   title   = {{{2}}},
   journal = {{Archive of Formal Proofs}},
@@ -376,7 +378,7 @@ class Tree(object):
 	def add_to_topic(self, topic, entry):
 		if len(topic) > 0:
 			if topic[0] not in self.subtopics:
-				warn("In entry {0}: unknown (sub)topic {1}".format(entry, topic))
+				warn(u"In entry {0}: unknown (sub)topic {1}".format(entry, topic))
 			else:
 				self.subtopics[topic[0]].add_to_topic(topic[1:], entry)
 		else:
@@ -404,8 +406,8 @@ class Stats(object):
 	
 	def __str__(self):
 		return (
-			"Successfully read {0!s} template(s) ({1!s} failed)\n" +
-			"Successfully written {2!s} file(s) ({3!s} failed)"
+			u"Successfully read {0!s} template(s) ({1!s} failed)\n" +
+			u"Successfully written {2!s} file(s) ({3!s} failed)"
 		).format(
 			self.tpls - self.failed_tpls,
 			self.failed_tpls,
@@ -423,27 +425,27 @@ def debug(message, indent = 0, title = ""):
 		elif isinstance(message, dict):
 			debug(title + ": {" if title else "{", indent)
 			for key, value in message.items():
-				debug("{0} -> {1}".format(key, value), indent + 2)
+				debug(u"{0} -> {1}".format(key, value), indent + 2)
 			debug("}", indent)
 		else:
 			if title:
-				print >> stderr, ("Debug: {0}{1}: {2}".format(' ' * indent, title, message))
+				print >> stderr, (u"Debug: {0}{1}: {2}".format(' ' * indent, title, message))
 			else:
-				print >> stderr, ("Debug: {0}{1}".format(' ' * indent, message))
+				print >> stderr, (u"Debug: {0}{1}".format(' ' * indent, message))
 
 def warn(message):
 	if options.enable_warnings:
-		print >> stderr, ("Warning: {0}".format(message))
+		print >> stderr, (u"Warning: {0}".format(message))
 
 def notice(message):
 	if options.enable_warnings:
-		print >> stderr, ("Notice: {0}".format(message))
+		print >> stderr, (u"Notice: {0}".format(message))
 
 def error(message, exception = None, abort = False):
-	print >> stderr, ("Error: {0}".format(message))
+	print >> stderr, (u"Error: {0}".format(message))
 	if exception:
 		error("*** exception message:")
-		error("*** {0!s} {1!s}".format(exception, type(exception)))
+		error(u"*** {0!s} {1!s}".format(exception, type(exception)))
 	if abort:
 		error("Fatal. Aborting")
 		exit(1)
@@ -457,9 +459,9 @@ def check_fs(meta_entries, directory):
 	meta_entries = set(k for k, _ in meta_entries.items())
 	# check for entries not existing in filesystem
 	for fs_missing in meta_entries - fs_entries:
-		print >> stderr, ("Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing))
+		print >> stderr, (u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing))
 	for meta_missing in fs_entries - meta_entries:
-		print >> stderr, ("Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing))
+		print >> stderr, (u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing))
 	return len(fs_entries ^ meta_entries)
 
 # takes the 'raw' data from metadata file as input and performs:
@@ -476,7 +478,7 @@ def validate(entry, attributes):
 			if processor_str in globals():
 				processor = globals()[processor_str]
 			else:
-				error("In metadata: For key {0}: processor function {1} doesn't exist".format(key, processor_str), abort = True)
+				error(u"In metadata: For key {0}: processor function {1} doesn't exist".format(key, processor_str), abort = True)
 		else:
 			processor = lambda str, **kwargs: str
 		if key.endswith("*"):
@@ -505,11 +507,11 @@ def validate(entry, attributes):
 				else:
 					sane_attributes[key] = [process(s.strip()) for s in value.split(',')]
 	if missing_keys:
-		warn("In entry {0}: missing key(s) {1!s}".format(entry, missing_keys))
+		warn(u"In entry {0}: missing key(s) {1!s}".format(entry, missing_keys))
 
 	extraneous_keys = set(attributes.keys()) - processed_keys
 	if extraneous_keys:
-		warn("In entry {0}: unknown key(s) {1!s}. Have you misspelled them?".format(entry, list(extraneous_keys)))
+		warn(u"In entry {0}: unknown key(s) {1!s}. Have you misspelled them?".format(entry, list(extraneous_keys)))
 
 	return sane_attributes
 
@@ -517,8 +519,11 @@ def validate(entry, attributes):
 # specified. one can rely upon that they conform to the attribute_schema
 def parse(filename):
 	parser = ConfigParser.RawConfigParser(dict_type = Ordered_Dict)
-	parser.readfp(open(filename))
-	return Ordered_Dict((sec, validate(sec, dict(parser.items(sec)))) for sec in parser.sections())
+	try:
+		parser.readfp(codecs.open(filename, encoding='UTF-8', errors='strict'))
+		return Ordered_Dict((sec, validate(sec, dict(parser.items(sec)))) for sec in parser.sections())
+	except UnicodeDecodeError as ex:
+		error(u"In file {0}: invalid UTF-8 character".format(filename), exception = ex, abort = True)
 
 # reads the version file, composed of pairs of version number and release date
 def read_versions(filename):
@@ -529,13 +534,13 @@ def read_versions(filename):
 				try:
 					version, release_date = line.split(" = ")
 				except ValueError as ex:
-					error("In file {0}: Malformed association {1}".format(filename, line), exception = ex)
+					error(u"In file {0}: Malformed association {1}".format(filename, line), exception = ex)
 					error("Not processing releases")
 					return []
 				else:
 					versions.append((version, release_date.strip()))
 	except Exception as ex:
-		error("In file {0}: error".format(filename), exception = ex)
+		error(u"In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
 		return []
 	else:
@@ -557,7 +562,7 @@ def associate_releases(entries, versions, filename):
 				try:
 					entry, date = result.groups()
 				except ValueError as ex:
-					error("In file {0}: Malformed release {1}".format(filename, line.replace), exception = ex)
+					error(u"In file {0}: Malformed release {1}".format(filename, line.replace), exception = ex)
 				else:
 					if not entry in entries:
 						if not entry in warnings:
@@ -567,7 +572,7 @@ def associate_releases(entries, versions, filename):
 					else:
 						lines.append((entry, date))
 		for entry, releases in warnings.items():
-			warn("In file {0}: In release(s) {1!s}: Unknown entry {2}".format(filename, releases, entry))
+			warn(u"In file {0}: In release(s) {1!s}: Unknown entry {2}".format(filename, releases, entry))
 		lines.sort(reverse = True)
 		for line in lines:
 			found = False
@@ -581,9 +586,9 @@ def associate_releases(entries, versions, filename):
 					found = True
 					break
 			if not found:
-				warn("In file {0}: In release {1}: Release date {2} has no matching version".format(filename, line, date))
+				warn(u"In file {0}: In release {1}: Release date {2} has no matching version".format(filename, line, date))
 	except Exception as ex:
-		error("In file {0}: error".format(filename), exception = ex)
+		error(u"In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
 	finally:
 		debug([(entry, attributes['releases']) for entry, attributes in entries.items()], title = "Releases")
@@ -597,12 +602,12 @@ def read_topics(filename):
 			while line[count] == ' ':
 				count += 1
 			if count % 2:
-				raise Exception("Illegal indentation at line '{0}'".format(line))
+				raise Exception(u"Illegal indentation at line '{0}'".format(line))
 			level = count // 2
 			if level <= len(stack):
 				stack = stack[0:level]
 			else:
-				raise Exception("Illegal indentation at line '{0}'".format(line))
+				raise Exception(u"Illegal indentation at line '{0}'".format(line))
 			stack.append(line[count:len(line)-1])
 			tree.add_topic(stack)
 	return tree
@@ -637,7 +642,7 @@ def parse_extra(extra, **kwargs):
 
 def parse_license(license, **kwargs):
 	if license not in licenses:
-		raise ValueError("Unknown license {0}".formate(license))
+		raise ValueError(u"Unknown license {0}".formate(license))
 	return licenses[license]
 
 # extracts name and URL from 'name <URL>' as a pair
@@ -650,7 +655,7 @@ def parse_author(author, entry, key):
 			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
 		return author[:url_start].strip(), url
 	else:
-		notice("In entry {0}: For {1} {2} no URL specified".format(entry, key, author))
+		notice(u"In entry {0}: For {1} {2} no URL specified".format(entry, key, author))
 		return author, None
 
 # Extracts parts of a date, used in the bibtex files
@@ -679,7 +684,7 @@ def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignor
 				if ignore_mail:
 					return name
 				else:
-					return "{0} ({1})".format(name, url[7:])
+					return u"{0} ({1})".format(name, url[7:])
 			return html_author_link.format(url, name)
 		else:
 			return name
@@ -690,7 +695,7 @@ def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignor
 	elif len(authors) == 1:
 		return authors[0]
 	else:
-		return "{0}{1}{2}".format(
+		return u"{0}{1}{2}".format(
 	      spacer.join(authors[:len(authors)-1]),
 		  last_spacer,
 		  authors[len(authors)-1]
@@ -817,7 +822,7 @@ def scan_templates(entries):
 			else:
 				raise(Exception("File not found. Make sure the files defined in 'templates' dict exist".format(template_filename)))
 		except Exception as ex:
-			error("In template {0}: File couldn't be processed".format(template_filename), exception = ex)
+			error(u"In template {0}: File couldn't be processed".format(template_filename), exception = ex)
 			stats.failed_tpls += 1
 			return
 
@@ -838,27 +843,30 @@ def scan_templates(entries):
 def read_template(template_filename):
 	lines = []
 	result = []
-	with open(template_filename) as input:
-		log(template_filename)
-		found = False
-		for line in input:
-			stripped = line.strip()
-			if stripped.startswith(magic_str_start) and stripped.endswith(magic_str_end):
-				found = True
+	try:
+		with codecs.open(template_filename, encoding='UTF-8', errors='strict') as input:
+			log(u"Reading template {0}".format(template_filename))
+			found = False
+			for line in input:
+				stripped = line.strip()
+				if stripped.startswith(magic_str_start) and stripped.endswith(magic_str_end):
+					found = True
 
-				param = stripped[len(magic_str_start):len(stripped)-len(magic_str_end)]
-				if param.startswith(":"):
-					param = param[1:].strip()
-					debug("In file {0}: Found generator with parameter {1}".format(template_filename, param))
+					param = stripped[len(magic_str_start):len(stripped)-len(magic_str_end)]
+					if param.startswith(":"):
+						param = param[1:].strip()
+						debug(u"In file {0}: Found generator with parameter {1}".format(template_filename, param))
+					else:
+						debug(u"In file {0}: Found generator without parameter".format(template_filename))
+
+					result.append((lines, param))
+					lines = []
 				else:
-					debug("In file {0}: Found generator without parameter".format(template_filename))
-
-				result.append((lines, param))
-				lines = []
-			else:
-				lines.append(line)
-		if not found:
-			warn("In file {0}: No generator found".format(template_filename))
+					lines.append(line)
+			if not found:
+				warn(u"In file {0}: No generator found".format(template_filename))
+	except UnicodeDecodeError as ex:
+		error(u"In file {0}: invalid UTF-8 character".format(template_filename), exception = ex)
 
 	result.append((lines, None))
 	return result
@@ -866,10 +874,10 @@ def read_template(template_filename):
 # opens a file, invokes the generator and writes the result
 def write_output(filename, content, generator):
 	stats.gens += 1
-	debug("Writing result to "+filename)
+	debug(u"Writing result to "+filename)
 	failed = False
 	try:
-		with open(filename, 'w') as output:
+		with codecs.open(filename, mode='w', encoding='UTF-8', errors='strict') as output:
 			for lines, param in content:
 				for line in lines:
 					output.write(line)
@@ -881,12 +889,13 @@ def write_output(filename, content, generator):
 							result = generator(param)
 					except Exception as ex:
 						failed = True
-						error("For output file {0}: generator failed".format(filename), exception = ex)
+
+						error(u"For output file {0}: generator failed".format(filename), exception = ex)
 					else:
 						output.write(result)
 	except Exception as ex:
 		failed = True
-		error("For output file {0}: error".format(filename), exception = ex)
+		error(u"For output file {0}: error".format(filename), exception = ex)
 	finally:
 		if failed:
 			stats.failed_gens += 1
@@ -900,7 +909,7 @@ def write_output(filename, content, generator):
 def handle_template(entries, template, content):
 	def _ignore(entry, attributes):
 		if template in attributes['ignore']:
-			notice("In template {0}: ignoring entry {1} because ignore flag is set in metadata".format(template, entry))
+			notice(u"In template {0}: ignoring entry {1} because ignore flag is set in metadata".format(template, entry))
 			return True
 		else:
 			return False
@@ -908,7 +917,7 @@ def handle_template(entries, template, content):
 	dir, generator_str, for_each_func = templates[template]
 
 	if generator_str not in globals():
-		error("In template {0}: generator function {1} doesn't exist".format(template, generator_str))
+		error(u"In template {0}: generator function {1} doesn't exist".format(template, generator_str))
 		return
 	else:
 		generator = globals()[generator_str]
@@ -918,9 +927,9 @@ def handle_template(entries, template, content):
 		os.makedirs(dest_subdir)
 	except Exception as ex:
 		if os.path.exists(dest_subdir):
-			notice("In template {0}: directory {1} already existing".format(template, dest_subdir))
+			notice(u"In template {0}: directory {1} already existing".format(template, dest_subdir))
 		else:
-			error("In template {0}: directory {1} couldn't be created".format(template, dest_subdir), exception = ex)
+			error(u"In template {0}: directory {1} couldn't be created".format(template, dest_subdir), exception = ex)
 			return
 
 	not_ignored = [(entry, attributes) for entry, attributes in entries.items() if not _ignore(entry, attributes)]
@@ -944,9 +953,8 @@ def makefile(entries, dir):
 			output.write("\n\n")
 			for k, attributes in entries.items():
 				output.write(".PHONY: {0}\n".format(k))
-				output.write("{0}: {1}\n"
-						.format(k, " ".join(attributes["depends-on"])))
-				output.write("	make -C {0} -f IsaMakefile all\n\n".format(k))			
+				output.write("{0}: {1}\n".format(k, " ".join(attributes["depends-on"])))
+				output.write("\tmake -C {0} -f IsaMakefile all\n\n".format(k))
 	except IOException as ex:
 		failed = True
 		error("Error writing Makefile {0}".format(filename), exception = ex)
@@ -957,8 +965,7 @@ def check_deps(entries):
 	for key, attributes in entries.items():
 		deps = set(attributes["depends-on"])
 		if not deps.issubset(keys):
-			warn("In entry {0}: Missing dependencies {1}"
-					.format(key, deps - keys))
+			warn(u"In entry {0}: Missing dependencies {1}".format(key, deps - keys))
 
 if __name__ == "__main__":
 	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR | --makefile=THYS_DIR] metadata-dir")

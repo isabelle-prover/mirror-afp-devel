@@ -5,7 +5,7 @@
 <title>Archive of Formal Proofs</title>
 <link rel="stylesheet" type="text/css" href="front.css">
 <link rel="icon" href="images/favicon.ico" type="image/icon">
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -20,10 +20,10 @@
 	<!-- content -->
 
 <div align="center">
-<p> </p>
+<p>&nbsp;</p>
 <h1><font class="first">D</font>ownload the
 	<font class="first">A</font>rchive</h1>
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="descr">
 <tbody>
 	<tr><td class="head"><b>Current stable version</b> (for current Isabelle
@@ -45,7 +45,7 @@
 	<tr><td class="entry">
       <!--#flastmod file="release/afp-devel.tar.gz" -->:
       <a href="release/afp-devel.tar.gz"><tt>afp-devel.tar.gz</tt></a>     
-      [<!--#fsize file="release/afp-devel.tar.gz" -->]
+      [<!--#fsize file="release/afp-devel.tar.gz" -->]
 
       [<a href="status.shtml">entry status</a>]
   </td></tr></tr>
