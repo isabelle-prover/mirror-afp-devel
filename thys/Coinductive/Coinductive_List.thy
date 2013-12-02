@@ -44,6 +44,10 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
+text {* congruence rule *}
+
+declare llist.map_cong [cong]
+
 text {* Code generator setup *}
 
 lemma corec_llist_code [code]:
@@ -63,7 +67,7 @@ by(rule llist.expand) simp_all
 lemma corec_llist_never_stop: "corec_llist IS_LNIL LHD (\<lambda>_. False) MORE LTL x = unfold_llist IS_LNIL LHD LTL x"
 by(coinduction arbitrary: x) auto
 
-text {* lemmas about for generated constants *}
+text {* lemmas about generated constants *}
 
 lemma eq_LConsD: "xs = LCons y ys \<Longrightarrow> lhd xs = y \<and> ltl xs = ys"
 by auto

@@ -19,6 +19,10 @@ text {*
 declare stream.unfold [code]
 declare stream.corec [code]
 
+text {* congruence rule *}
+
+declare stream.map_cong [cong]
+
 text {* lemmas about generated constants *}
 
 lemma eq_StreamD: "xs = Stream y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
