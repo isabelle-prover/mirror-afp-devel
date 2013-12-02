@@ -40,18 +40,6 @@ yielding an executable decision procedure for the word problem without further a
 (*<*)
 (* custom coinduction theorem (getting rid of fun_rel) *)
 declare language.coinduct[unfolded fun_rel_def, simplified, case_names Lang, coinduct type: language]
-
-(* code generation *)
-code_datatype Lang
-
-lemma case_language_cert:
-  assumes "CASE \<equiv> case_language c"
-  shows "CASE (Lang b d) \<equiv> c b d"
-  using assms by simp_all
-
-setup {*
-  Code.add_case @{thm case_language_cert}
-*}
 (*>*)
 
 section {* Regular Languages *}
