@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-theory Lazy_TLList imports 
+theory Lazy_TLList imports
   TLList
   Lazy_LList
 begin
@@ -44,6 +44,12 @@ lemma equal_tllist_Lazy_tllist [code]:
    | Inl (x, xs') \<Rightarrow>
      (case ys () of Inr b' \<Rightarrow> False | Inl (y, ys') \<Rightarrow> if x = y then equal_class.equal xs' ys' else False))"
 by(auto simp add: equal_tllist_def)
+
+lemma [code, code del]: "thd = thd" "ttl = ttl" by rule+
+
+declare
+  thd_def [code]
+  ttl_def [code]
 
 lemma [code, code del]: "corec_tllist = corec_tllist" ..
 
@@ -160,14 +166,14 @@ declare sum.splits [split del]
 text {* Simple ML test for laziness *}
 
 ML_val {*
-  val zeros = @{code unfold_tllist} (fn x => false) (fn x => 0) (fn x => 0) (fn x => x) ();
+  val zeros = @{code unfold_tllist} (K false) (K 0) (K 0) I ();
   val thd = @{code thd} zeros;
   val ttl = @{code ttl} zeros;
   val ttl' = @{code force} ttl;
-  
+
   val tdrop = @{code tdropn} (@{code Suc} @{code "0::nat"}) zeros;
-  
-  val tfilter = @{code tfilter} 1 (fn _ => false) zeros;
+
+  val tfilter = @{code tfilter} 1 (K false) zeros;
 *}
 
 hide_const (open) force

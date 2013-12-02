@@ -438,8 +438,6 @@ text {* code setup for @{term lset} *}
 definition gen_lset :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a set"
 where "gen_lset A xs = A \<union> lset xs"
 
-export_code lset in SML
-
 lemma gen_lset_code [code]:
   "gen_lset A LNil = A"
   "gen_lset A (LCons x xs) = gen_lset (insert x A) xs"

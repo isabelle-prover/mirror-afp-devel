@@ -3,7 +3,7 @@
 *)
 header {* Explicit laziness in the code generator *}
 
-theory Lazy_LList imports 
+theory Lazy_LList imports
   Coinductive_List
 begin
 
@@ -28,7 +28,7 @@ where [simp, code del]: "force xs = (case xs of LNil \<Rightarrow> None | LCons 
 
 code_datatype Lazy_llist
 
-declare option.splits [split] 
+declare option.splits [split]
 
 lemma Lazy_llist_inject [simp]:
   "Lazy_llist xs = Lazy_llist ys \<longleftrightarrow> xs = ys"
@@ -49,7 +49,8 @@ lemma LCons_Lazy_llist [code, code_unfold]: "LCons x xs = Lazy_llist (\<lambda>_
 by simp
 
 lemma lnull_lazy [code]: "lnull = Option.is_none \<circ> force"
-by(simp add: lnull_def Option.is_none_def fun_eq_iff split: llist.split)
+unfolding lnull_def
+by (rule ext) (simp add: Option.is_none_def split: llist.split)
 
 lemma [code, code del]:
   "equal_class.equal = (equal_class.equal :: 'a :: equal llist \<Rightarrow> _)" ..
