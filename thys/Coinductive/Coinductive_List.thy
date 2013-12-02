@@ -359,11 +359,10 @@ where
 | llexord_LCons_less: "r x y \<Longrightarrow> llexord r (LCons x xs) (LCons y ys)"
 | llexord_LNil [simp, intro!]: "llexord r LNil ys"
 
-primcorec (exhaustive) lfilter :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
+primcorec lfilter :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
-  "\<forall>x\<in>lset xs. \<not> P x \<Longrightarrow> lnull (lfilter P xs)"
-| "lhd (lfilter P xs) = lhd (ldropWhile (Not \<circ> P) xs)"
-| "ltl (lfilter P xs) = lfilter P (ltl (ldropWhile (Not \<circ> P) xs))"
+  "lfilter P xs = 
+  (case ldropWhile (Not \<circ> P) xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> LCons x (lfilter P xs'))"
 
 definition lconcat :: "'a llist llist \<Rightarrow> 'a llist"
 where [code del]:
@@ -3150,10 +3149,10 @@ using lnull_lfilter unfolding lnull_def .
 lemmas lfilter_empty_conv = lfilter_eq_LNil
 
 lemma lhd_lfilter [simp]: "lhd (lfilter P xs) = lhd (ldropWhile (Not \<circ> P) xs)"
-by(cases "\<exists>x\<in>lset xs. P x")(simp_all add: lfilter_def)
+by(cases "lnull (ldropWhile (Not \<circ> P) xs)")(simp_all, simp add: lhd_def)
 
 lemma ltl_lfilter: "ltl (lfilter P xs) = lfilter P (ltl (ldropWhile (Not \<circ> P) xs))"
-by(cases "\<exists>x\<in>lset xs. P x") simp_all
+by(cases "lnull (ldropWhile (Not \<circ> P) xs)")(auto split: llist.split simp add: ldropWhile_eq_LNil_iff)
 
 declare lfilter.simps[simp del]
 
@@ -3182,22 +3181,15 @@ proof
   show "lset (lfilter P xs) \<subseteq> {x \<in> lset xs. P x}"
   proof
     fix x
-    assume x: "x \<in> lset (lfilter P xs)"
-    hence "\<not> lnull (lfilter P xs)" by clarify simp
-    with x have "x \<in> lset xs \<and> P x"
+    assume "x \<in> lset (lfilter P xs)"
+    hence "x \<in> lset xs \<and> P x"
     proof(induct ys\<equiv>"lfilter P xs" arbitrary: xs rule: llist_set_induct)
       case find thus ?case
-        by(simp add: lfilter_def lhd_ldropWhile_in_lset lhd_ldropWhile[where P="Not \<circ> P", simplified])
+        by(auto simp add: lhd_ldropWhile_in_lset lhd_ldropWhile[where P="Not \<circ> P", simplified] split: llist.split)
     next
       case (step x xs)
-      let ?xs' = "ltl (ldropWhile (Not \<circ> P) xs)"
-      note x = `x \<in> lset (ltl (lfilter P xs))`
-      hence "ltl (lfilter P xs) = lfilter P ?xs'"
-        by(simp add: ltl_lfilter)
-      moreover from x
-      have "\<not> lnull (lfilter P ?xs')"
-        by(simp add: lfilter_def corec_llist_never_stop split_def ltl_unfold_llist unfold_llist_code split: split_if_asm)
-      ultimately have "x \<in> lset ?xs' \<and> P x" by(rule step.hyps(3))
+      have "x \<in> lset (ltl (ldropWhile (Not \<circ> P) xs)) \<and> P x"
+        by(rule step.hyps(3))(simp add: ltl_lfilter)
       thus ?case by(auto dest: in_lset_ltlD in_lset_ldropWhileD)
     qed
     thus "x \<in> {x \<in> lset xs. P x}" by simp
