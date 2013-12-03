@@ -19,6 +19,7 @@ import codecs
 import ConfigParser
 import os
 import re
+from termcolor import colored
 
 # global config
 
@@ -405,14 +406,17 @@ class Stats(object):
 		self.failed_gens = 0
 	
 	def __str__(self):
-		return (
-			u"Successfully read {0!s} template(s) ({1!s} failed)\n" +
-			u"Successfully written {2!s} file(s) ({3!s} failed)"
-		).format(
-			self.tpls - self.failed_tpls,
-			self.failed_tpls,
-			self.gens - self.failed_gens,
-			self.failed_gens
+		failed_tpl_str = "({0!s} failed)".format(self.failed_tpls) if self.failed_tpls > 0 else ""
+		failed_gen_str = "({0!s} failed)".format(self.failed_gens) if self.failed_gens > 0 else ""
+
+		success_tpl_str = "Successfully read {0!s} template(s)".format(self.tpls - self.failed_tpls)
+		success_gen_str = "Successfully written {0!s} file(s)".format(self.gens - self.failed_gens)
+
+		return "{0} {1}\n{2} {3}".format(
+			colored(success_tpl_str, 'green', attrs=['bold']),
+			colored(failed_tpl_str, 'red', attrs=['bold']),
+			colored(success_gen_str, 'green', attrs=['bold']),
+			colored(failed_gen_str, 'red', attrs=['bold'])
 		)
 
 def debug(message, indent = 0, title = ""):
@@ -435,14 +439,14 @@ def debug(message, indent = 0, title = ""):
 
 def warn(message):
 	if options.enable_warnings:
-		print >> stderr, (u"Warning: {0}".format(message))
+		print >> stderr, (colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']))
 
 def notice(message):
 	if options.enable_warnings:
 		print >> stderr, (u"Notice: {0}".format(message))
 
 def error(message, exception = None, abort = False):
-	print >> stderr, (u"Error: {0}".format(message))
+	print >> stderr, (colored(u"Error: {0}".format(message), 'red', attrs=['bold']))
 	if exception:
 		error("*** exception message:")
 		error(u"*** {0!s} {1!s}".format(exception, type(exception)))
@@ -450,18 +454,15 @@ def error(message, exception = None, abort = False):
 		error("Fatal. Aborting")
 		exit(1)
 
-def log(message):
-	print(message)
-
 # performs a 'diff' between metadata and the actual filesystem contents
 def check_fs(meta_entries, directory):
 	fs_entries = set(e for e in os.listdir(directory) if os.path.isdir(os.path.join(directory, e)))
 	meta_entries = set(k for k, _ in meta_entries.items())
 	# check for entries not existing in filesystem
 	for fs_missing in meta_entries - fs_entries:
-		print >> stderr, (u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing))
+		print >> stderr, (colored(u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing), 'yellow', attrs=['bold']))
 	for meta_missing in fs_entries - meta_entries:
-		print >> stderr, (u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing))
+		print >> stderr, (colored(u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing), 'yellow', attrs=['bold']))
 	return len(fs_entries ^ meta_entries)
 
 # takes the 'raw' data from metadata file as input and performs:
@@ -647,6 +648,8 @@ def parse_license(license, **kwargs):
 
 # extracts name and URL from 'name <URL>' as a pair
 def parse_author(author, entry, key):
+	if author.find(" and ") != -1:
+		warn(u"In entry {0}: {1} field contains 'and'. Use ',' to separate authors.".format(entry, key))
 	url_start = author.find('<')
 	url_end = author.find('>')
 	if url_start != -1 and url_end != -1:
@@ -655,7 +658,7 @@ def parse_author(author, entry, key):
 			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
 		return author[:url_start].strip(), url
 	else:
-		notice(u"In entry {0}: For {1} {2} no URL specified".format(entry, key, author))
+		notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, author))
 		return author, None
 
 # Extracts parts of a date, used in the bibtex files
@@ -821,6 +824,10 @@ def scan_templates(entries):
 				handle_template(entries, template, read_template(template_filename))
 			else:
 				raise(Exception("File not found. Make sure the files defined in 'templates' dict exist".format(template_filename)))
+		except UnicodeDecodeError as ex:
+			error(u"In file {0}: invalid UTF-8 character".format(template_filename), exception = ex)
+			stats.failed_tpls += 1
+			return
 		except Exception as ex:
 			error(u"In template {0}: File couldn't be processed".format(template_filename), exception = ex)
 			stats.failed_tpls += 1
@@ -843,30 +850,27 @@ def scan_templates(entries):
 def read_template(template_filename):
 	lines = []
 	result = []
-	try:
-		with codecs.open(template_filename, encoding='UTF-8', errors='strict') as input:
-			log(u"Reading template {0}".format(template_filename))
-			found = False
-			for line in input:
-				stripped = line.strip()
-				if stripped.startswith(magic_str_start) and stripped.endswith(magic_str_end):
-					found = True
+	with codecs.open(template_filename, encoding='UTF-8', errors='strict') as input:
+		debug(u"Reading template {0}".format(template_filename))
+		found = False
+		for line in input:
+			stripped = line.strip()
+			if stripped.startswith(magic_str_start) and stripped.endswith(magic_str_end):
+				found = True
 
-					param = stripped[len(magic_str_start):len(stripped)-len(magic_str_end)]
-					if param.startswith(":"):
-						param = param[1:].strip()
-						debug(u"In file {0}: Found generator with parameter {1}".format(template_filename, param))
-					else:
-						debug(u"In file {0}: Found generator without parameter".format(template_filename))
-
-					result.append((lines, param))
-					lines = []
+				param = stripped[len(magic_str_start):len(stripped)-len(magic_str_end)]
+				if param.startswith(":"):
+					param = param[1:].strip()
+					debug(u"In file {0}: Found generator with parameter {1}".format(template_filename, param))
 				else:
-					lines.append(line)
-			if not found:
-				warn(u"In file {0}: No generator found".format(template_filename))
-	except UnicodeDecodeError as ex:
-		error(u"In file {0}: invalid UTF-8 character".format(template_filename), exception = ex)
+					debug(u"In file {0}: Found generator without parameter".format(template_filename))
+
+				result.append((lines, param))
+				lines = []
+			else:
+				lines.append(line)
+		if not found:
+			warn(u"In file {0}: No generator found".format(template_filename))
 
 	result.append((lines, None))
 	return result
@@ -944,8 +948,9 @@ def handle_template(entries, template, content):
 
 # creates a makefile
 def makefile(entries, dir):
+	filename = os.path.join(dir, "IsaMakefile")
 	try:
-		with open(os.path.join(dir, "IsaMakefile"), "w") as output:
+		with open(filename, "w") as output:
 			output.write(".PHONY: all\n")
 			output.write("all:")
 			for k, _ in entries.items():
@@ -955,7 +960,7 @@ def makefile(entries, dir):
 				output.write(".PHONY: {0}\n".format(k))
 				output.write("{0}: {1}\n".format(k, " ".join(attributes["depends-on"])))
 				output.write("\tmake -C {0} -f IsaMakefile all\n\n".format(k))
-	except IOException as ex:
+	except Exception as ex:
 		failed = True
 		error("Error writing Makefile {0}".format(filename), exception = ex)
 
@@ -996,7 +1001,9 @@ if __name__ == "__main__":
 	# perform check
 	if options.thys_dir:
 		count = check_fs(entries, options.thys_dir)
-		print("Checked directory {0}. Found {1} warnings".format(options.thys_dir, count))
+		output = "Checked directory {0}. Found {1} warnings.".format(options.thys_dir, count)
+		color = 'yellow' if count > 0 else 'green'
+		print(colored(output, color, attrs=['bold']))
 
 	# perform generation
 	if options.dest_dir:
