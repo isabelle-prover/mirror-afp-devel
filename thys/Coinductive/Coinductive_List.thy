@@ -2273,13 +2273,6 @@ lemmas llist_all2_LNil_LCons = llist.rel_distinct(1)
 lemmas llist_all2_LCons_LNil = llist.rel_distinct(2)
 lemmas llist_all2_LCons_LCons = llist.rel_inject(2)
 
-lemma llist_all2_code [code]:
-  "llist_all2 P LNil LNil = True"
-  "llist_all2 P LNil (LCons y ys) = False"
-  "llist_all2 P (LCons x xs) LNil = False"
-  "llist_all2 P (LCons x xs) (LCons y ys) \<longleftrightarrow> P x y \<and> llist_all2 P xs ys"
-by(simp_all)
-
 lemma llist_all2_LNil1 [simp]: "llist_all2 P LNil xs \<longleftrightarrow> xs = LNil" 
 by(cases xs) simp_all
 
@@ -2553,8 +2546,6 @@ apply(drule llist_all2_lnthD)
  apply simp
 apply(erule (2) transpD)
 done
-
-lemmas llist_all2_eq [simp] = llist.rel_eq
 
 subsection {* The last element @{term "llast"} *}
 
@@ -4280,37 +4271,11 @@ subsubsection {* Relator and predicator properties *}
 definition llist_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool"
 where "llist_all P xs = (\<forall>x\<in>lset xs. P x)"
 
-declare llist_all2_eq[relator_eq]
+lemmas llist_all2_eq [relator_eq, simp] = llist.rel_eq
 
-lemma llist_all2_mono2 [relator_mono]:
-  assumes "A \<le> B"
-  shows "(llist_all2 A) \<le> (llist_all2 B)"
-using assms by(auto intro: llist_all2_mono)
+lemmas llist_all2_mono2 [relator_mono] = llist.rel_mono
 
-lemma llist_all2_OO [relator_distr]:
-  "llist_all2 A OO llist_all2 B = llist_all2 (A OO B)"
-proof (intro ext iffI)
-  fix xs ys
-  let ?P = "\<lambda>x y z. A x z \<and> B z y"
-  have P: "\<And>x y. (A OO B) x y \<Longrightarrow> ?P x y (Eps (?P x y))"
-    by(rule someI_ex)(simp add: OO_def)
-
-  assume AB: "llist_all2 (A OO B) xs ys"
-  hence "llist_all2 A xs (lmap (\<lambda>(x, y). Eps (?P x y)) (lzip xs ys))"
-    apply(coinduction arbitrary: xs ys)
-    using P by(auto dest: llist_all2_lhdD llist_all2_lnullD intro: llist_all2_ltlI)
-  moreover from AB
-  have "llist_all2 B (lmap (\<lambda>(x, y). Eps (?P x y)) (lzip xs ys)) ys"
-    apply(coinduction arbitrary: xs ys)
-    using P by(auto dest: llist_all2_lhdD llist_all2_lnullD intro: llist_all2_ltlI)
-  ultimately show "(llist_all2 A OO llist_all2 B) xs ys"
-    unfolding OO_def by auto
-next
-  fix xs ys
-  assume "(llist_all2 A OO llist_all2 B) xs ys"
-  thus "llist_all2 (A OO B) xs ys" unfolding OO_def
-    by(coinduction arbitrary: xs ys)(auto 4 3 dest: llist_all2_lhdD llist_all2_lnullD intro: llist_all2_ltlI)
-qed
+lemmas llist_all2_OO [symmetric, relator_distr] = llist.rel_compp
 
 lemma Domainp_llist [relator_domain]:
   assumes "Domainp A = P"
