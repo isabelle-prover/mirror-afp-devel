@@ -699,7 +699,7 @@ proof -
         by(rule hb_completion_shift1)
       show ?thesis
       proof(cases "lnull obs")
-        case True thus ?thesis by(simp add: lnull_def)
+        case True thus ?thesis unfolding lnull_def by simp
       next
         case False
         have eq: "(\<forall>t ta s'. \<not> s -t\<triangleright>ta\<rightarrow> s') = False" using True by auto
