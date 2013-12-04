@@ -5,7 +5,7 @@
   <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -20,11 +20,11 @@
       <!-- content -->
 
 <div align="center">
-<p> </p>
+<p>&nbsp;</p>
 <h1><font class="first">A</font>rchive of
     <font class="first">F</font>ormal
     <font class="first">P</font>roofs</h1>
-<p> </p>
+<p>&nbsp;</p>
 
 <table width="80%" class="descr">
   <tbody>
@@ -48,7 +48,7 @@ Isabelle. Older versions of archive entries will remain available.</p>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
     <a href="http://www.nicta.com.au">National ICT Australia</a></li>
 <li><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>,
-    <a href="http://www.tum.de/">Technische Universität München</a></li>
+    <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
 <li><a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>,
     <a href="http://www.cam.ac.uk/">University of Cambridge</a></li>
 </ul>

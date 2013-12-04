@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">P</font>ossibilistic
 <font class="first">N</font>oninterference
@@ -34,7 +34,7 @@
         <td class="data" width="80%">Possibilistic Noninterference</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Andrei Popescu (uuomul /at/ yahoo /dot/ com) and Johannes H&ouml;lzl (hoelzl /at/ in /dot/ tum /dot/ de)</td></tr>
+        <td class="data">Andrei Popescu (uuomul /at/ yahoo /dot/ com) and Johannes Hölzl (hoelzl /at/ in /dot/ tum /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-09-10</td></tr>
@@ -56,7 +56,7 @@ of the conference Certified Programs and Proofs 2012.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Possibilistic_Noninterference-AFP,
-  author  = {Andrei Popescu and Johannes H&ouml;lzl},
+  author  = {Andrei Popescu and Johannes Hölzl},
   title   = {Possibilistic Noninterference},
   journal = {Archive of Formal Proofs},
   month   = sep,

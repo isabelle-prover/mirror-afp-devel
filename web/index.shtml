@@ -5,7 +5,7 @@
   <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -20,11 +20,11 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 <h1><font class="first">A</font>rchive of
     <font class="first">F</font>ormal
     <font class="first">P</font>roofs</h1>
-<p>�</p>
+<p>&nbsp;</p>
 
 <table width="80%" class="entries">
   <tbody>
@@ -47,7 +47,7 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 <p>&nbsp;</p>
 
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -70,7 +70,7 @@ Lawrence C. Paulson
 
 <tr><td class="entry">
 2013-11-17:
-<a href="entries/Incompleteness.shtml">G&ouml;del's Incompleteness Theorems</a>
+<a href="entries/Incompleteness.shtml">Gödel's Incompleteness Theorems</a>
 <br>Author:
 Lawrence C. Paulson
 </td></tr>
@@ -91,9 +91,9 @@ Maria Spichkova
 
 <tr><td class="entry">
 2013-11-12:
-<a href="entries/GoedelGod.shtml">G&ouml;del's God in Isabelle/HOL</a>
+<a href="entries/GoedelGod.shtml">Gödel's God in Isabelle/HOL</a>
 <br>Author:
-<a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmueller</a> and 
+<a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmpller</a> and 
 <a href="http://www.logic.at/staff/bruno/">Bruno Woltzenlogel Paleo</a>
 </td></tr>
 
@@ -143,7 +143,7 @@ Simon Wimmer and
 
 <tr><td class="entry">
 2013-07-19:
-<a href="entries/Koenigsberg_Friendship.shtml">The K&ouml;nigsberg Bridge Problem and the Friendship Theorem</a>
+<a href="entries/Koenigsberg_Friendship.shtml">The Königsberg Bridge Problem and the Friendship Theorem</a>
 <br>Author:
 Wenda Li
 </td></tr>
@@ -195,8 +195,8 @@ Wenda Li
 2013-01-16:
 <a href="entries/Rank_Nullity_Theorem.shtml">Rank-Nullity Theorem in Linear Algebra</a>
 <br>Author:
-<a href="http://www.unirioja.es/cu/jodivaso">Jose Divas�n</a> and 
-<a href="http://www.unirioja.es/cu/jearansa">Jes�s Aransay</a>
+<a href="http://www.unirioja.es/cu/jodivaso">Jose Divasón</a> and 
+<a href="http://www.unirioja.es/cu/jearansa">Jesús Aransay</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -212,7 +212,7 @@ Wenda Li
 2013-01-03:
 <a href="entries/Sqrt_Babylonian.shtml">Computing Square Roots using the Babylonian Method</a>
 <br>Author:
-Ren&eacute; Thiemann
+René Thiemann
 </td></tr>
 
 
@@ -220,7 +220,7 @@ Ren&eacute; Thiemann
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -263,14 +263,14 @@ T. J. M. Makarios
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic Noninterference</a>
 <br>Author:
 Andrei Popescu and 
-Johannes H&ouml;lzl
+Johannes Hölzl
 </td></tr>
 
 <tr><td class="entry">
 2012-08-07:
 <a href="entries/Datatype_Order_Generator.shtml">Generating linear orders for datatypes</a>
 <br>Author:
-Ren&eacute; Thiemann
+René Thiemann
 </td></tr>
 
 <tr><td class="entry">
@@ -361,7 +361,7 @@ Andrew Boyton
 <a href="entries/Ordinary_Differential_Equations.shtml">Ordinary Differential Equations</a>
 <br>Author:
 <a href="http://home.in.tum.de/~immler">Fabian Immler</a> and 
-<a href="http://home.in.tum.de/~hoelzl">Johannes H&ouml;lzl</a>
+<a href="http://home.in.tum.de/~hoelzl">Johannes Hölzl</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -384,7 +384,7 @@ Giuliano Losa
 2012-02-29:
 <a href="entries/Transitive-Closure-II.shtml">Executable Transitive Closures</a>
 <br>Author:
-Ren&eacute; Thiemann
+René Thiemann
 </td></tr>
 
 <tr><td class="entry">
@@ -413,7 +413,7 @@ Benedikt Nordhoff and
 2012-01-03:
 <a href="entries/Markov_Models.shtml">Markov Models</a>
 <br>Author:
-<a href="http://www.in.tum.de/~hoelzl">Johannes H�lzl</a> and 
+<a href="http://www.in.tum.de/~hoelzl">Johannes Hölzl</a> and 
 <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
@@ -422,7 +422,7 @@ Benedikt Nordhoff and
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -509,7 +509,7 @@ Joachim Breitner
 <a href="entries/Transitive-Closure.shtml">Executable Transitive Closures of Finite Relations</a>
 <br>Author:
 Christian Sternagel and 
-Ren&eacute; Thiemann
+René Thiemann
 </td></tr>
 
 <tr><td class="entry">
@@ -537,7 +537,7 @@ Ren&eacute; Thiemann
 2011-02-07:
 <a href="entries/LightweightJava.shtml">Lightweight Java</a>
 <br>Author:
-<a href="http://rok.strnisa.com/lj/">Rok Strni&scaron;a</a> and 
+<a href="http://rok.strnisa.com/lj/">Rok Strniša</a> and 
 <a href="http://research.microsoft.com/people/mattpark/">Matthew Parkinson</a>
 </td></tr>
 
@@ -560,7 +560,7 @@ Bogdan Grechuk
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -586,7 +586,7 @@ Joachim Breitner
 2010-10-28:
 <a href="entries/Binomial-Queues.shtml">Functional Binomial Queues</a>
 <br>Author:
-Ren&eacute; Neumann
+René Neumann
 </td></tr>
 
 <tr><td class="entry">
@@ -603,7 +603,7 @@ Finn Nielsen and
 <a href="entries/Finger-Trees.shtml">Finger Trees</a>
 <br>Author:
 Benedikt Nordhoff,
-Stefan K&ouml;rner and 
+Stefan Körner and 
 <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
 </td></tr>
 
@@ -619,7 +619,7 @@ Christian Doczkal
 <a href="entries/Polynomials.shtml">Executable Multivariate Polynomials</a>
 <br>Author:
 <a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and 
-<a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a>
+<a href="http://cl-informatik.uibk.ac.at/~thiemann">René Thiemann</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -627,7 +627,7 @@ Christian Doczkal
 <a href="entries/Statecharts.shtml">Formalizing Statecharts using Hierarchical Automata</a>
 <br>Author:
 Steffen Helke and 
-Florian Kamm&uuml;ller
+Florian Kammüller
 </td></tr>
 
 <tr><td class="entry">
@@ -649,7 +649,7 @@ Alexander Katovsky
 <a href="entries/Matrix.shtml">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a>
 <br>Author:
 <a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and 
-<a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a>
+<a href="http://cl-informatik.uibk.ac.at/~thiemann">René Thiemann</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -657,7 +657,7 @@ Alexander Katovsky
 <a href="entries/Abstract-Rewriting.shtml">Abstract Rewriting</a>
 <br>Author:
 <a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and 
-<a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a>
+<a href="http://cl-informatik.uibk.ac.at/~thiemann">René Thiemann</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -696,7 +696,7 @@ Matthew Wampler-Doty
 <a href="entries/Locally-Nameless-Sigma.shtml">Locally Nameless Sigma Calculus</a>
 <br>Author:
 Ludovic Henrio,
-Florian Kamm&uuml;ller,
+Florian Kammüller,
 Bianca Lutz and 
 Henry Sudhof
 </td></tr>
@@ -734,7 +734,7 @@ Henry Sudhof
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -833,7 +833,7 @@ Andrei Popescu
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -956,7 +956,7 @@ Norbert Schirmer
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -968,7 +968,7 @@ Norbert Schirmer
 <a href="entries/Program-Conflict-Analysis.shtml">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a>
 <br>Author:
 <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
-<a href="http://cs.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
+<a href="http://cs.uni-muenster.de/u/mmo/">Markus Müller-Olm</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -982,7 +982,7 @@ Norbert Schirmer
 2007-11-06:
 <a href="entries/MuchAdoAboutTwo.shtml">Much Ado About Two</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~boehmes/">Sascha B&ouml;hme</a>
+<a href="http://www4.in.tum.de/~boehmes/">Sascha Böhme</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -1025,7 +1025,7 @@ Hidetsune Kobayashi
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -1073,7 +1073,7 @@ Gertrud Bauer and
 2006-03-15:
 <a href="entries/ClockSynchInst.shtml">Instances of Schneider's generalized protocol of clock synchronization</a>
 <br>Author:
-<a href="http://www.cs.famaf.unc.edu.ar/~damian/">Dami&aacute;n Barsotti</a>
+<a href="http://www.cs.famaf.unc.edu.ar/~damian/">Damián Barsotti</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -1088,7 +1088,7 @@ Benjamin Porter
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -1160,7 +1160,7 @@ Kai Wirt
   </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
     <tr>

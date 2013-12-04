@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,10 +22,10 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">T</font>he
-<font class="first">K</font>&ouml;nigsberg
+<font class="first">K</font>önigsberg
 <font class="first">B</font>ridge
 <font class="first">P</font>roblem
 and
@@ -37,7 +37,7 @@ the
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">The K&ouml;nigsberg Bridge Problem and the Friendship Theorem</td></tr>
+        <td class="data" width="80%">The Königsberg Bridge Problem and the Friendship Theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data">Wenda Li (wl302 /at/ cam /dot/ ac /dot/ uk)</td></tr>
@@ -48,14 +48,14 @@ the
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the K&ouml;nigsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
+This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Koenigsberg_Friendship-AFP,
   author  = {Wenda Li},
-  title   = {The K&ouml;nigsberg Bridge Problem and the Friendship Theorem},
+  title   = {The Königsberg Bridge Problem and the Friendship Theorem},
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2013,

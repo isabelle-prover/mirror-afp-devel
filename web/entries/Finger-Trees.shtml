@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">F</font>inger
 <font class="first">T</font>rees
@@ -34,7 +34,7 @@
         <td class="data" width="80%">Finger Trees</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Benedikt Nordhoff (b_nord01 /at/ uni-muenster /dot/ de), Stefan K&ouml;rner (s_koer03 /at/ uni-muenster /dot/ de) and <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
+        <td class="data">Benedikt Nordhoff (b_nord01 /at/ uni-muenster /dot/ de), Stefan Körner (s_koer03 /at/ uni-muenster /dot/ de) and <a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-10-28</td></tr>
@@ -58,7 +58,7 @@ The code generator can be used to get efficient, verified code.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Finger-Trees-AFP,
-  author  = {Benedikt Nordhoff and Stefan K&ouml;rner and Peter Lammich},
+  author  = {Benedikt Nordhoff and Stefan Körner and Peter Lammich},
   title   = {Finger Trees},
   journal = {Archive of Formal Proofs},
   month   = oct,

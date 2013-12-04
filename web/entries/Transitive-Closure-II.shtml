@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">E</font>xecutable
 <font class="first">T</font>ransitive
@@ -35,7 +35,7 @@
         <td class="data" width="80%">Executable Transitive Closures</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Ren&eacute; Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
+        <td class="data">René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-02-29</td></tr>
@@ -60,7 +60,7 @@ termination proofs where large transitive closures have to be computed.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Transitive-Closure-II-AFP,
-  author  = {Ren&eacute; Thiemann},
+  author  = {René Thiemann},
   title   = {Executable Transitive Closures},
   journal = {Archive of Formal Proofs},
   month   = feb,
