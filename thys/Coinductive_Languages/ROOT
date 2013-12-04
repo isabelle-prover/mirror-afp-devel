@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Coinductive_Languages" = "HOL-BNF" +
+session "Coinductive_Languages" (AFP) = "HOL-BNF" +
   theories [document = false]
     "~~/src/HOL/BNF/Examples/Stream"
   theories
