@@ -2,7 +2,7 @@
 # vim: set fileencoding=utf-8 :
 
 ##
-## Dependencies: Python 2 (tested with Python 2.6)
+## Dependencies: Python 2.7
 ## 
 ## This script reads a metadata file and generates the topics.shtml,
 ## index.shtml and the entry pages on afp.sf.net.
@@ -11,7 +11,7 @@
 ## For adding new entries see ../doc/editors/new-entry-checkin.html
 ## 
 
-from UserDict import DictMixin
+from collections import OrderedDict
 from optparse import OptionParser
 from sys import argv, stderr
 from functools import partial
@@ -260,111 +260,9 @@ templates = {
 
 # end global config
 
-# class 'Ordered_Dict' to implement the Python 3.1 class in >= 2.5
-# from http://code.activestate.com/recipes/576693/
-# MIT license
-class Ordered_Dict(dict, DictMixin):
-
-    def __init__(self, *args, **kwds):
-        if len(args) > 1:
-            raise TypeError('expected at most 1 arguments, got %d' % len(args))
-        try:
-            self.__end
-        except AttributeError:
-            self.clear()
-        self.update(*args, **kwds)
-
-    def clear(self):
-        self.__end = end = []
-        end += [None, end, end]         # sentinel node for doubly linked list
-        self.__map = {}                 # key --> [key, prev, next]
-        dict.clear(self)
-
-    def __setitem__(self, key, value):
-        if key not in self:
-            end = self.__end
-            curr = end[1]
-            curr[2] = end[1] = self.__map[key] = [key, curr, end]
-        dict.__setitem__(self, key, value)
-
-    def __delitem__(self, key):
-        dict.__delitem__(self, key)
-        key, prev, next = self.__map.pop(key)
-        prev[2] = next
-        next[1] = prev
-
-    def __iter__(self):
-        end = self.__end
-        curr = end[2]
-        while curr is not end:
-            yield curr[0]
-            curr = curr[2]
-
-    def __reversed__(self):
-        end = self.__end
-        curr = end[1]
-        while curr is not end:
-            yield curr[0]
-            curr = curr[1]
-
-    def popitem(self, last=True):
-        if not self:
-            raise KeyError('dictionary is empty')
-        if last:
-            key = reversed(self).next()
-        else:
-            key = iter(self).next()
-        value = self.pop(key)
-        return key, value
-
-    def __reduce__(self):
-        items = [[k, self[k]] for k in self]
-        tmp = self.__map, self.__end
-        del self.__map, self.__end
-        inst_dict = vars(self).copy()
-        self.__map, self.__end = tmp
-        if inst_dict:
-            return (self.__class__, (items,), inst_dict)
-        return self.__class__, (items,)
-
-    def keys(self):
-        return list(self)
-
-    setdefault = DictMixin.setdefault
-    update = DictMixin.update
-    pop = DictMixin.pop
-    values = DictMixin.values
-    items = DictMixin.items
-    iterkeys = DictMixin.iterkeys
-    itervalues = DictMixin.itervalues
-    iteritems = DictMixin.iteritems
-
-    def __repr__(self):
-        if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, self.items())
-
-    def copy(self):
-        return self.__class__(self)
-
-    @classmethod
-    def fromkeys(cls, iterable, value=None):
-        d = cls()
-        for key in iterable:
-            d[key] = value
-        return d
-
-    def __eq__(self, other):
-        if isinstance(other, Ordered_Dict):
-            return len(self)==len(other) and self.items() == other.items()
-        return dict.__eq__(self, other)
-
-    def __ne__(self, other):
-        return not self == other
-
 class Tree(object):
 	def __init__(self):
-		self.subtopics = Ordered_Dict()
+		self.subtopics = OrderedDict()
 		self.entries = []
 
 	def add_topic(self, topic):
@@ -484,7 +382,7 @@ def validate(entry, attributes):
 			processor = lambda str, **kwargs: str
 		if key.endswith("*"):
 			shortkey = key[:len(key)-1]
-			result = Ordered_Dict()
+			result = OrderedDict()
 			process = partial(processor, entry = entry, shortkey = shortkey)
 			for appkey, str in attributes.items():
 				if appkey.startswith(shortkey + "-"):
@@ -519,10 +417,10 @@ def validate(entry, attributes):
 # reads the metadata file and returns a dict mapping each entry to the attributes
 # specified. one can rely upon that they conform to the attribute_schema
 def parse(filename):
-	parser = ConfigParser.RawConfigParser(dict_type = Ordered_Dict)
+	parser = ConfigParser.RawConfigParser(dict_type = OrderedDict)
 	try:
 		parser.readfp(codecs.open(filename, encoding='UTF-8', errors='strict'))
-		return Ordered_Dict((sec, validate(sec, dict(parser.items(sec)))) for sec in parser.sections())
+		return OrderedDict((sec, validate(sec, dict(parser.items(sec)))) for sec in parser.sections())
 	except UnicodeDecodeError as ex:
 		error(u"In file {0}: invalid UTF-8 character".format(filename), exception = ex, abort = True)
 
@@ -551,7 +449,7 @@ def read_versions(filename):
 # reads the list of entry releases (metadata/releases)
 def associate_releases(entries, versions, filename):
 	for _, attributes in entries.items():
-		attributes['releases'] = Ordered_Dict()
+		attributes['releases'] = OrderedDict()
 	prog = re.compile(release_pattern)
 	warnings = {}
 	try:
@@ -628,7 +526,7 @@ def collect_years(entries):
 		for entry, attributes in entries
 	]
 	extracted.sort(None, lambda (y, e, a): y, True)
-	years = Ordered_Dict()
+	years = OrderedDict()
 	for date, entry, attributes in extracted:
 		key = date[0:4] if date != 'unknown' else date
 		if key in years:
