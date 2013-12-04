@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">F</font>ree
 <font class="first">B</font>oolean
@@ -43,7 +43,7 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
+This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (α)<i>formula</i> represent propositional formulas with uninterpreted variables from type α, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

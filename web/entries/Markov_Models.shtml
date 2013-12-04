@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p> </p>
+<p>&nbsp;</p>
 
 <h1><font class="first">M</font>arkov
 <font class="first">M</font>odels
@@ -34,7 +34,7 @@
         <td class="data" width="80%">Markov Models</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.in.tum.de/~hoelzl">Johannes Hölzl</a> and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data"><a href="http://www.in.tum.de/~hoelzl">Johannes HÃ¶lzl</a> and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-01-03</td></tr>
@@ -55,7 +55,7 @@ ZeroConf and an analysis of the anonymity of the Crowds protocol.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Markov_Models-AFP,
-  author  = {Johannes Hölzl and Tobias Nipkow},
+  author  = {Johannes HÃ¶lzl and Tobias Nipkow},
   title   = {Markov Models},
   journal = {Archive of Formal Proofs},
   month   = jan,

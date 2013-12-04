@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">C</font>omputing
 <font class="first">S</font>quare
@@ -39,7 +39,7 @@ the
         <td class="data" width="80%">Computing Square Roots using the Babylonian Method</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Ren&eacute; Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
+        <td class="data">René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2013-01-03</td></tr>
@@ -64,7 +64,7 @@ of an integer.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Sqrt_Babylonian-AFP,
-  author  = {Ren&eacute; Thiemann},
+  author  = {René Thiemann},
   title   = {Computing Square Roots using the Babylonian Method},
   journal = {Archive of Formal Proofs},
   month   = jan,

@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p> </p>
+<p>&nbsp;</p>
 
 <h1><font class="first">C</font>oinductive
 </h1>
@@ -41,7 +41,7 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of K&ouml;nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
+This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of KÃ¶nig's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
         </td></tr>
 
     <tr><td class="datahead" valign="top">Change history:</td>

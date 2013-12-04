@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p> </p>
+<p>&nbsp;</p>
 
 <h1><font class="first">R</font>ank-Nullity
 <font class="first">T</font>heorem
@@ -37,7 +37,7 @@ in
         <td class="data" width="80%">Rank-Nullity Theorem in Linear Algebra</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.unirioja.es/cu/jodivaso">Jose Divasón</a> and <a href="http://www.unirioja.es/cu/jearansa">Jesús Aransay</a></td></tr>
+        <td class="data"><a href="http://www.unirioja.es/cu/jodivaso">Jose DivasÃ³n</a> and <a href="http://www.unirioja.es/cu/jearansa">JesÃºs Aransay</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2013-01-16</td></tr>
@@ -51,7 +51,7 @@ In this article we present a proof of the result known in Linear Algebra as the 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Rank_Nullity_Theorem-AFP,
-  author  = {Jose Divasón and Jesús Aransay},
+  author  = {Jose DivasÃ³n and JesÃºs Aransay},
   title   = {Rank-Nullity Theorem in Linear Algebra},
   journal = {Archive of Formal Proofs},
   month   = jan,

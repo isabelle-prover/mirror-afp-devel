@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">E</font>xecutable
 <font class="first">M</font>ultivariate
@@ -35,7 +35,7 @@
         <td class="data" width="80%">Executable Multivariate Polynomials</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and <a href="http://cl-informatik.uibk.ac.at/~thiemann">Ren&eacute; Thiemann</a></td></tr>
+        <td class="data"><a href="http://cl-informatik.uibk.ac.at/~griff">Christian Sternagel</a> and <a href="http://cl-informatik.uibk.ac.at/~thiemann">René Thiemann</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2010-08-10</td></tr>
@@ -66,7 +66,7 @@ been essential to  formalize polynomial interpretations.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Polynomials-AFP,
-  author  = {Christian Sternagel and Ren&eacute; Thiemann},
+  author  = {Christian Sternagel and René Thiemann},
   title   = {Executable Multivariate Polynomials},
   journal = {Archive of Formal Proofs},
   month   = aug,

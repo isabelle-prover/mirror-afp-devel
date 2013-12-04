@@ -7,7 +7,7 @@
   <script src="../jquery.min.js"></script>
   <script src="../script.js"></script>
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
       <!-- content -->
 
 <div align="center">
-<p>�</p>
+<p>&nbsp;</p>
 
 <h1><font class="first">L</font>ightweight
 <font class="first">J</font>ava
@@ -34,7 +34,7 @@
         <td class="data" width="80%">Lightweight Java</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://rok.strnisa.com/lj/">Rok Strni&scaron;a</a> and <a href="http://research.microsoft.com/people/mattpark/">Matthew Parkinson</a></td></tr>
+        <td class="data"><a href="http://rok.strnisa.com/lj/">Rok Strniša</a> and <a href="http://research.microsoft.com/people/mattpark/">Matthew Parkinson</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2011-02-07</td></tr>
@@ -48,7 +48,7 @@ A fully-formalized and extensible minimal imperative fragment of Java.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{LightweightJava-AFP,
-  author  = {Rok Strni&scaron;a and Matthew Parkinson},
+  author  = {Rok Strniša and Matthew Parkinson},
   title   = {Lightweight Java},
   journal = {Archive of Formal Proofs},
   month   = feb,
