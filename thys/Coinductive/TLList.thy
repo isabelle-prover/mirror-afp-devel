@@ -232,9 +232,9 @@ proof -
   have "\<forall>x\<in>set2_tllist xs. P x xs"
     apply(rule tllist.dtor_set2_induct)
     using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def[THEN meta_eq_to_obj_eq, THEN fun_cong]
-      set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def'
-      collect_def sum_set_simps sum.set_map split: sum.splits)
+    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def set2_pre_tllist_def
+      set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def
+      sum_set_simps sum.set_map split: sum.splits)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
       apply(erule_tac x="b" in meta_allE)
@@ -342,7 +342,7 @@ proof(intro iffI conjI impI)
 next
   assume ?lhs
   thus "xs = ys"
-    by(coinduction arbitrary: xs ys)(auto simp add: lnull_unabs_def neq_LNil_conv)
+    by(coinduction arbitrary: xs ys)(auto simp add: lnull_def neq_LNil_conv)
   assume "lfinite ys"
   thus "b = c" using `?lhs`
     unfolding `xs = ys` by(induct) simp_all

@@ -38,8 +38,6 @@ declare
   llist.unfold(1) [simp]
   llist.corec(1) [simp]
 
-lemmas lnull_unabs_def = lnull_def[THEN meta_eq_to_obj_eq, THEN fun_cong]
-
 text {*
   The following setup should be done by the BNF package.
 *}
@@ -1193,7 +1191,7 @@ by(cases n)(simp_all add: lhd_ldropn)
 lemma lnth_beyond:
   "llength xs \<le> enat n \<Longrightarrow> lnth xs n = undefined (n - (case llength xs of enat m \<Rightarrow> m))"
 proof(induct n arbitrary: xs)
-  case 0 thus ?case by(simp add: zero_enat_def[symmetric] lnth_def lnull_unabs_def)
+  case 0 thus ?case by(simp add: zero_enat_def[symmetric] lnth_def lnull_def)
 next
   case Suc thus ?case
     by(cases xs)(simp_all add: zero_enat_def lnth_def eSuc_enat[symmetric] split: enat.split, auto simp add: eSuc_enat)
@@ -1591,7 +1589,7 @@ next
 qed
 
 lemma ltake_enat_eq_imp_eq: "(\<And>n. ltake (enat n) xs = ltake (enat n) ys) \<Longrightarrow> xs = ys"
-by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_unabs_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
+by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
 
 lemma ltake_enat_lprefix_imp_lprefix:
   assumes le: "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
@@ -1774,7 +1772,7 @@ lemma finite_lprefix_nitpick_simps [nitpick_simp]:
   "finite_lprefix LNil xs \<longleftrightarrow> True"
   "finite_lprefix xs (LCons y ys) \<longleftrightarrow> 
    xs = LNil \<or> (\<exists>xs'. xs = LCons y xs' \<and> finite_lprefix xs' ys)"
-by(simp_all add: lprefix_LCons_conv finite_lprefix_def lnull_unabs_def)
+by(simp_all add: lprefix_LCons_conv finite_lprefix_def lnull_def)
 
 lemma lprefix_nitpick_simps [nitpick_simp]:
   "lprefix xs ys = (if lfinite xs then finite_lprefix xs ys else xs = ys)"
@@ -2471,7 +2469,7 @@ lemma lmap_eq_lmap_conv_llist_all2:
 proof
   assume ?lhs
   thus ?rhs
-    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv lnull_unabs_def LNil_eq_lmap lmap_eq_LNil)
+    by(coinduction arbitrary: xs ys)(auto simp add: neq_LNil_conv lnull_def LNil_eq_lmap lmap_eq_LNil)
 next
   assume ?rhs
   thus ?lhs
