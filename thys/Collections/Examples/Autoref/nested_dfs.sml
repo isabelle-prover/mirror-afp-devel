@@ -338,8 +338,8 @@ fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
 
 datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a;
 
-fun equal_list A_ (a :: lista) [] = false
-  | equal_list A_ [] (a :: lista) = false
+fun equal_list A_ [] (a :: lista) = false
+  | equal_list A_ (a :: lista) [] = false
   | equal_list A_ (aa :: listaa) (a :: lista) =
     eq A_ aa a andalso equal_list A_ listaa lista
   | equal_list A_ [] [] = true;
@@ -357,14 +357,14 @@ fun iam_empty x = (fn _ => FArray.IsabelleMapping.array_of_list []) x;
 
 fun the_res (DRETURN x) = x;
 
-fun equal_blue_witness A_ (Circ (v, list1a, list2a))
-  (Reach (v1, list1, v2, list2)) = false
-  | equal_blue_witness A_ (Reach (v1, list1a, v2, list2a))
-    (Circ (v, list1, list2)) = false
-  | equal_blue_witness A_ (Circ (v, list1, list2)) NO_CYC = false
+fun equal_blue_witness A_ (Reach (v1, list1a, v2, list2a))
+  (Circ (v, list1, list2)) = false
+  | equal_blue_witness A_ (Circ (v, list1a, list2a))
+    (Reach (v1, list1, v2, list2)) = false
   | equal_blue_witness A_ NO_CYC (Circ (v, list1, list2)) = false
-  | equal_blue_witness A_ (Reach (v1, list1, v2, list2)) NO_CYC = false
+  | equal_blue_witness A_ (Circ (v, list1, list2)) NO_CYC = false
   | equal_blue_witness A_ NO_CYC (Reach (v1, list1, v2, list2)) = false
+  | equal_blue_witness A_ (Reach (v1, list1, v2, list2)) NO_CYC = false
   | equal_blue_witness A_ (Circ (va, list1a, list2a)) (Circ (v, list1, list2)) =
     eq A_ va v andalso
       (equal_list A_ list1a list1 andalso equal_list A_ list2a list2)

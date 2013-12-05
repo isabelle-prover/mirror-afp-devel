@@ -391,6 +391,7 @@ lemma dres_ne_bot_RECT[rule_format, refine_transfer]:
   apply simp
   apply (intro impI)
   apply (erule gfp_cadm_induct[rotated])
+  apply simp
   apply (intro allI)
   apply (rule A)
   apply simp

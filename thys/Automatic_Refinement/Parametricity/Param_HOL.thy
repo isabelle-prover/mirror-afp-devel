@@ -122,12 +122,14 @@ context partial_function_definitions begin
     and M': "monotone le_fun le_fun F'"
     assumes ADM: 
       "admissible (\<lambda>a. \<forall>x xa. (x, xa) \<in> Rb \<longrightarrow> (a x, fixp_fun F' xa) \<in> Ra)"
+    assumes bot: "\<And>x xa. (x, xa) \<in> Rb \<Longrightarrow> (lub {}, fixp_fun F' xa) \<in> Ra"
     assumes F: "(F,F')\<in>(Rb\<rightarrow>Ra)\<rightarrow>Rb\<rightarrow>Ra"
     assumes A: "(x,x')\<in>Rb"
     shows "(fixp_fun F x, fixp_fun F' x')\<in>Ra"
     using A
     apply (induct arbitrary: x x' rule: ccpo.fixp_induct[OF ccpo _ M])
     apply (rule ADM)
+    apply(simp add: fun_lub_def bot)
     apply (subst ccpo.fixp_unfold[OF ccpo M'])
     apply (parametricity add: F)
     done

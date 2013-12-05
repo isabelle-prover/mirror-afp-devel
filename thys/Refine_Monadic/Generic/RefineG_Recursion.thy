@@ -146,7 +146,7 @@ proof -
       apply simp
       apply (rule Sup_least)
       apply simp
-
+      apply(simp add: le_funI)
       apply (rule)
       apply (rule)
       apply (rule)
@@ -287,16 +287,16 @@ proof clarsimp
     apply rule
     apply (intro allI)
 
-    apply (unfold Inf_fun_def INF_def)
+    apply (unfold Inf_fun_def INF_def)[1]
     apply (drule chain_dualI)
     apply (drule_tac x=x in point_chainI)
   
-    apply (case_tac "A={}")
-    apply simp
     apply (rule Inf_greatest)
-    apply (auto intro: le_funI) []
+    apply (auto intro: le_funI) [1]
 
     apply fact
+
+    apply(simp add: INF_def)
   
     using REF REC_EQ by force
 qed
@@ -327,7 +327,7 @@ proof (clarsimp simp add: `mono b`)
     apply (drule_tac x=x in point_chainI)
     apply (simp add: \<alpha>_dist)
     apply (rule Sup_least)
-    apply auto []
+    apply auto [2]
 
     apply clarsimp
     apply (subst lfp_unfold[OF `mono B`])

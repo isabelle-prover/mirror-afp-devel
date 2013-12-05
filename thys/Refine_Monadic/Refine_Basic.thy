@@ -914,7 +914,7 @@ proof -
       unfolding Sup_fun_def
       apply (rule SUP_least)
       apply simp
-
+      apply simp
       using IS 
       apply blast
     done
@@ -1123,6 +1123,7 @@ proof -
       unfolding Sup_fun_def
       apply (rule SUP_least)
       apply simp
+      apply simp
 
       apply (rule)+
       apply (subst lfp_unfold[OF M'])
@@ -1148,6 +1149,7 @@ proof -
       apply rule+
       unfolding Inf_fun_def
       apply (rule INF_greatest)
+      apply simp
       apply simp
 
       apply (rule)+

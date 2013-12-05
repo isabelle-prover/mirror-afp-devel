@@ -464,15 +464,14 @@ lemma point_chainI: "is_chain M \<Longrightarrow> is_chain ((\<lambda>f. f x)`M)
 text {* We transfer the admissible induction lemmas to complete
   lattices. *}
 lemma lfp_cadm_induct:
-  "\<lbrakk>chain_admissible P; mono f; \<And>x. P x \<Longrightarrow> P (f x)\<rbrakk> \<Longrightarrow> P (lfp f)"
-  apply (simp only: ccpo_mono_simp[symmetric] ccpo_lfp_simp[symmetric])
-  by (rule ccpo.fixp_induct[OF is_ccpo])
+  "\<lbrakk>chain_admissible P; mono f; P (Sup {}); \<And>x. P x \<Longrightarrow> P (f x)\<rbrakk> \<Longrightarrow> P (lfp f)"
+  by (simp only: ccpo_mono_simp[symmetric] ccpo_lfp_simp[symmetric])
+     (rule ccpo.fixp_induct[OF is_ccpo])
 
 lemma gfp_cadm_induct:
-  "\<lbrakk>dual_chain_admissible P; mono f; \<And>x. P x \<Longrightarrow> P (f x)\<rbrakk> \<Longrightarrow> P (gfp f)"
-  apply (simp only: dual_ccpo_mono_simp[symmetric] ccpo_gfp_simp[symmetric])
-  by (rule ccpo.fixp_induct[OF is_dual_ccpo])
-
+  "\<lbrakk>dual_chain_admissible P; mono f; P (Inf {}); \<And>x. P x \<Longrightarrow> P (f x)\<rbrakk> \<Longrightarrow> P (gfp f)"
+  by (simp only: dual_ccpo_mono_simp[symmetric] ccpo_gfp_simp[symmetric])
+     (rule ccpo.fixp_induct[OF is_dual_ccpo])
 
 subsubsection {* Continuity and Kleene Fixed Point Theorem *}
 definition "cont f \<equiv> \<forall>C. C\<noteq>{} \<longrightarrow> f (Sup C) = Sup (f`C)"
