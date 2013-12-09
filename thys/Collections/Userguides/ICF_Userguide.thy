@@ -404,7 +404,7 @@ text_raw {*\label{sec:userguide.design}*}
 
     For a more detailed discussion of the data refinement issue, we refer to
     the monadic refinement framework, that is available in the AFP 
-    (\url{http://afp.sourceforge.net/entries/Refine_Monadic.shtml})
+    (@{url "http://afp.sourceforge.net/entries/Refine_Monadic.shtml"})
     *}
 
   subsection {* Operation Records *}

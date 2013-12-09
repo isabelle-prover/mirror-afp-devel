@@ -27,13 +27,13 @@ section {* Introduction *}
  
  Isabelle is described in the textbook by Nipkow, 
  Paulson, and Wenzel \cite{Isabelle} and in tutorials available 
- at: \url{http://isabelle.in.tum.de}.
+ at: @{url "http://isabelle.in.tum.de"}.
  
 \subsection{Related Work}
 
  The formalization presented here is related to the THF \cite{J22} and 
  Coq \cite{Coq} formalizations at 
- \url{https://github.com/FormalTheology/GoedelGod/tree/master/Formalizations/}.
+ @{url "https://github.com/FormalTheology/GoedelGod/tree/master/Formalizations/"}.
  
  An older ontological argument by Anselm was formalized in PVS by John Rushby \cite{rushby}.
 *}

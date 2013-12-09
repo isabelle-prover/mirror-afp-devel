@@ -6,7 +6,7 @@ begin
 text {*
   This is a slightly modified version of Task~5 of our submission to
   the VSTTE 2011 verification competition 
-  (\url{https://sites.google.com/site/vstte2012/compet}). The task was to
+  (@{url "https://sites.google.com/site/vstte2012/compet"}). The task was to
   formalize a breadth-first-search algorithm.
 *}
 

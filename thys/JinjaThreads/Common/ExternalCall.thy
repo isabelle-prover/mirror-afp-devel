@@ -131,9 +131,9 @@ text {*
   because the interrupt flag is not stored inside the thread object.
   Starting a clone of a started thread with Sun JVM 1.6.0\_07 raises an illegal thread state exception,
   we just start another thread.
-  The thread at \texttt{http://mail.openjdk.java.net/pipermail/core-libs-dev/2010-August/004715.html} discusses 
+  The thread at @{url "http://mail.openjdk.java.net/pipermail/core-libs-dev/2010-August/004715.html"} discusses
   the general problem of thread cloning and argues against that.
-  The bug report \texttt{http://bugs.sun.com/bugdatabase/view\_bug.do?bug\_id=6968584} 
+  The bug report @{url "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6968584"}
   changes the Thread class implementation
   such that \texttt{Object.clone()} can no longer be accessed for Thread and subclasses in Java 7.
 

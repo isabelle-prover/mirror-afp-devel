@@ -144,7 +144,7 @@ section {* GHC Version of Mergesort *}
 
 text {*
 In the following we show that the mergesort implementation
-used in GHC (see \url{http://haskell.org/ghc/docs/7.0-latest/html/libraries/base-4.3.1.0/src/Data-List.html#sort})
+used in GHC (see @{url "http://haskell.org/ghc/docs/7.0-latest/html/libraries/base-4.3.1.0/src/Data-List.html#sort"})
 is a correct and stable sorting algorithm. Furthermore, experimental
 data suggests that generated code for this implementation is much more
 efficient than for the implementation provided by @{theory Multiset}.

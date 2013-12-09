@@ -36,7 +36,7 @@ text {*
   \end{itemize}
 
   The submission of the example you are reading is at
-  \url{http://afp.sf.net/release/afp-Example-Submission-current.tar.gz}.  
+  @{url "http://afp.sf.net/release/afp-Example-Submission-current.tar.gz"}.
 *}
 
 section "Proof styles"

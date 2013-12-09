@@ -26,7 +26,7 @@ test-cases, which we adress in the future).
 
 In order to enter Isabelle/\Circus specifications, an own parser has
 been developed (the the interested reader is referred to: 
-\url{http://www.lri.fr/~feliachi/IsabelleCircus/}). In the
+@{url "http://www.lri.fr/~feliachi/IsabelleCircus/"}). In the
 following, we will present our example both in high-level syntax
 implementing common textbook notation on \Circus\ as well as the
 semantic code resulting from these expressions in the context of 
