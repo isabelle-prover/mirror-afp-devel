@@ -168,6 +168,7 @@ afp-Coinductive-2012-05-24.tar.gz
 afp-Coinductive-2013-02-16.tar.gz
 afp-Coinductive-2013-03-02.tar.gz
 afp-Coinductive-2013-11-17.tar.gz
+afp-Coinductive_Languages-2013-11-17.tar.gz
 afp-Collections-2009-11-29.tar.gz
 afp-Collections-2009-12-12.tar.gz
 afp-Collections-2009-12-13.tar.gz
@@ -238,6 +239,8 @@ afp-Datatype_Order_Generator-2012-08-07.tar.gz
 afp-Datatype_Order_Generator-2013-02-16.tar.gz
 afp-Datatype_Order_Generator-2013-03-02.tar.gz
 afp-Datatype_Order_Generator-2013-11-17.tar.gz
+afp-Decreasing-Diagrams-2013-11-18.tar.gz
+afp-Decreasing-Diagrams-2013-12-02.tar.gz
 afp-Depth-First-Search-2004-06-24.tar.gz
 afp-Depth-First-Search-2005-10-14.tar.gz
 afp-Depth-First-Search-2007-11-27.tar.gz
@@ -357,6 +360,7 @@ afp-Flyspeck-Tame-2012-05-25.tar.gz
 afp-Flyspeck-Tame-2013-02-16.tar.gz
 afp-Flyspeck-Tame-2013-03-02.tar.gz
 afp-Flyspeck-Tame-2013-11-17.tar.gz
+afp-FocusStreamsCaseStudies-2013-11-18.tar.gz
 afp-Free-Boolean-Algebra-2010-03-29.tar.gz
 afp-Free-Boolean-Algebra-2010-06-30.tar.gz
 afp-Free-Boolean-Algebra-2011-02-11.tar.gz
@@ -428,6 +432,8 @@ afp-Girth_Chromatic-2012-02-06.tar.gz
 afp-Girth_Chromatic-2012-05-24.tar.gz
 afp-Girth_Chromatic-2013-02-16.tar.gz
 afp-Girth_Chromatic-2013-11-17.tar.gz
+afp-GoedelGod-2013-11-18.tar.gz
+afp-GoedelGod-2013-11-19.tar.gz
 afp-GraphMarkingIBP-2010-05-28.tar.gz
 afp-GraphMarkingIBP-2010-07-01.tar.gz
 afp-GraphMarkingIBP-2011-02-11.tar.gz
@@ -465,6 +471,7 @@ afp-Heard_Of-2012-07-30.tar.gz
 afp-Heard_Of-2013-02-16.tar.gz
 afp-Heard_Of-2013-03-02.tar.gz
 afp-Heard_Of-2013-11-17.tar.gz
+afp-HereditarilyFinite-2013-11-17.tar.gz
 afp-HotelKeyCards-2007-11-27.tar.gz
 afp-HotelKeyCards-2008-06-10.tar.gz
 afp-HotelKeyCards-2009-04-29.tar.gz
@@ -492,6 +499,8 @@ afp-Impossible_Geometry-2012-08-06.tar.gz
 afp-Impossible_Geometry-2012-08-07.tar.gz
 afp-Impossible_Geometry-2013-02-16.tar.gz
 afp-Impossible_Geometry-2013-11-17.tar.gz
+afp-Incompleteness-2013-11-17.tar.gz
+afp-Incompleteness-2013-12-02.tar.gz
 afp-Inductive_Confidentiality-2012-05-02.tar.gz
 afp-Inductive_Confidentiality-2012-05-24.tar.gz
 afp-Inductive_Confidentiality-2013-02-16.tar.gz
@@ -700,6 +709,8 @@ afp-Nat-Interval-Logic-2012-05-24.tar.gz
 afp-Nat-Interval-Logic-2013-02-16.tar.gz
 afp-Nat-Interval-Logic-2013-11-17.tar.gz
 afp-Native_Word-2013-11-17.tar.gz
+afp-Nominal2-2013-02-24.tar.gz
+afp-Nominal2-2013-11-17.tar.gz
 afp-NormByEval-2008-02-18.tar.gz
 afp-NormByEval-2008-02-22.tar.gz
 afp-NormByEval-2008-06-10.tar.gz
@@ -981,6 +992,7 @@ afp-TLA-2012-05-24.tar.gz
 afp-TLA-2013-02-16.tar.gz
 afp-TLA-2013-03-02.tar.gz
 afp-TLA-2013-11-17.tar.gz
+afp-Tail_Recursive_Functions-2013-12-02.tar.gz
 afp-Tarskis_Geometry-2012-11-08.tar.gz
 afp-Tarskis_Geometry-2012-11-09.tar.gz
 afp-Tarskis_Geometry-2013-02-16.tar.gz
