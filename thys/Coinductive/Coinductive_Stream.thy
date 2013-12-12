@@ -25,13 +25,13 @@ declare stream.map_cong [cong]
 
 text {* lemmas about generated constants *}
 
-lemma eq_StreamD: "xs = Stream y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
+lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
 by auto
 
 lemma smap_ident [simp]: "smap (\<lambda>x. x) xs = xs"
 by(simp only: id_def[symmetric] stream.map_id)
 
-lemma smap_eq_Stream_conv:
+lemma smap_eq_SCons_conv:
   "smap f xs = y ## ys \<longleftrightarrow> 
   (\<exists>x xs'. xs = x ## xs' \<and> y = f x \<and> ys = smap f xs')"
 by(cases xs)(auto)
@@ -359,7 +359,7 @@ lemmas siterate [nitpick_simp] = siterate.code
 lemma smap_iterates: "smap f (siterate f x) = siterate f (f x)"
 by transfer (rule lmap_iterates)
 
-lemma siterate_smap: "siterate f x = Stream x (smap f (siterate f x))"
+lemma siterate_smap: "siterate f x = SCons x (smap f (siterate f x))"
 by transfer (rule iterates_lmap)
 
 lemma siterate_conv_of_seq: "siterate f a = of_seq (\<lambda>n. (f ^^ n) a)"
