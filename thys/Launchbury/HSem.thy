@@ -605,8 +605,11 @@ subsubsection {* The heap semantics can also be defined inductively over the hea
                         \<squnion> (\<rho>\<^bsub>[fdom \<rho> \<union> heapVars ((x, e) # \<Gamma>)]\<^esub>)))" (is "_ = fix_on ?S ?R")
   apply (subst HSem_def'[OF assms(1)])
   proof(rule below_antisym)
+    let ?closed_on = "subpcpo_syn.closed_on ?S"
+    let ?cont_on = "subpcpo_syn.cont_on ?S"
+    let ?bottom_of = "subpcpo_syn.bottom_of ?S"
     interpret subpcpo ?S by (rule subpcpo_fjc)
-  
+
     let "?d" = "fdom \<rho> \<union> heapVars ((x, e) # \<Gamma>)"
   
     let "fix_on _ ?L" = "fix_on ?S
@@ -640,10 +643,10 @@ subsubsection {* The heap semantics can also be defined inductively over the hea
         done
     } note HSem_cond'_Gamma = this
   
-    have closedL: "closed_on ?L"
+    have closedL: "?closed_on ?L"
       by (rule closed_on_fjc[OF assms(1)])
   
-    have closedR1: "closed_on ?R1"
+    have closedR1: "?closed_on ?R1"
       apply (rule closed_onI)
       apply (rule HSem_ind)
       apply (rule adm_is_adm_on[OF subcpo_mem_adm[OF subcpo_fjc]])
@@ -665,7 +668,7 @@ subsubsection {* The heap semantics can also be defined inductively over the hea
       apply assumption
       done
       
-    have closedR2: "closed_on ?R2"
+    have closedR2: "?closed_on ?R2"
       apply (rule closed_onI)
       apply (rule down_closed_fjc[OF F_pres_compat''[OF assms(1)]], assumption)
       apply (rule fmap_belowI)
@@ -673,17 +676,17 @@ subsubsection {* The heap semantics can also be defined inductively over the hea
       apply (case_tac "xaa = x", simp_all)
       done    
       
-    have closedR3: "closed_on ?R3"
+    have closedR3: "?closed_on ?R3"
       apply (rule closed_onI)
       by (rule rho_fjc[OF assms(1)])
   
-    have closedR: "closed_on ?R"
+    have closedR: "?closed_on ?R"
       by (rule closed_on_join_fjc[OF closedR1 closed_on_join_fjc[OF closedR2 closedR3]])
   
-    have contL: "cont_on ?L"
+    have contL: "?cont_on ?L"
       by (rule cont_on_fjc[OF assms(1)])
       
-    have contR1: "cont_on ?R1"
+    have contR1: "?cont_on ?R1"
       apply (rule cont_onI2)
       apply (rule monofun_onI)
       apply (erule (2) HSem_monofun''[OF ESem_cont HSem_cond'_Gamma HSem_cond'_Gamma])
@@ -693,13 +696,13 @@ subsubsection {* The heap semantics can also be defined inductively over the hea
       apply (erule chain_on_is_chain)
       done
   
-    have contR2: "cont_on ?R2"
+    have contR2: "?cont_on ?R2"
       by (rule cont_is_cont_on[OF fmap_upd_cont[OF cont_const ESem_cont]])
   
-    have contR3: "cont_on ?R3"
+    have contR3: "?cont_on ?R3"
       by (rule cont_is_cont_on[OF cont_const])
   
-    have contR: "cont_on ?R"
+    have contR: "?cont_on ?R"
       apply (rule cont_on_join_fjc)
       apply (rule closedR1)
       apply (rule closed_on_join_fjc[OF closedR2 closedR3])
@@ -713,7 +716,7 @@ subsubsection {* The heap semantics can also be defined inductively over the hea
   
     note fix_on_condL = fix_on_cond_fjc[OF assms(1)]
   
-    have fix_on_condR: "fix_on_cond ?S bottom_of ?R"
+    have fix_on_condR: "fix_on_cond ?S ?bottom_of ?R"
       by (rule fix_on_condI[OF subpcpo_fjc refl closedR contR])
   
     have R_there: "fix_on ?S ?R \<in> ?S"
