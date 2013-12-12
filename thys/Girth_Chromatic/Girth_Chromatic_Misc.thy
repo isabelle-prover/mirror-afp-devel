@@ -84,7 +84,7 @@ next
   show ?thesis
   proof
     assume ?L
-    then have "\<lbrakk>enat k \<le> (if finite M then Big_Operators.Max M else \<infinity>); M \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>m\<in>M. enat k \<le> m"
+    then have "\<lbrakk>enat k \<le> (if finite M then Max M else \<infinity>); M \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>m\<in>M. enat k \<le> m"
       by (metis Max_in Sup_enat_def finite_enat_bounded linorder_linear)
     with `k \<noteq> 0` and `?L` show ?R
       unfolding Sup_enat_def
