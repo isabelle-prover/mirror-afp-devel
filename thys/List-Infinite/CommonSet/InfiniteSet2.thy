@@ -223,16 +223,6 @@ apply (rule infinite_super, assumption)
 apply simp
 done
  
-thm Big_Operators.setsum_constant
-
-thm Big_Operators.setprod_constant
-
-thm Big_Operators.setsum_bounded
-
-thm Big_Operators.card_UN_disjoint
-
-thm Big_Operators.card_Union_disjoint
-
 thm Finite_Set.card_image_le
 lemma icard_image_le: "icard (f ` A) \<le> icard A"
 apply (case_tac "finite A")
@@ -281,9 +271,6 @@ lemma icard_bij_eq: "
   icard A = icard B"
 by (simp add: order_eq_iff icard_inj_on_le)
 
-thm Big_Operators.card_SigmaI
-
-thm Big_Operators.card_cartesian_product
 lemma icard_cartesian_product: "icard (A \<times> B) = icard A * icard B"
 apply (case_tac "A = {} \<or> B = {}", fastforce)
 apply clarsimp

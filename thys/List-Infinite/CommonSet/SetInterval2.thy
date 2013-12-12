@@ -945,7 +945,6 @@ done
 
 print_locale Lattices.distrib_lattice
 
-thm Big_Operators.distrib_lattice.sup_Inf1_distrib
 lemma max_Min_eq_Min_max[rule_format]: "
   finite A \<Longrightarrow>
   A \<noteq> {} \<longrightarrow>
