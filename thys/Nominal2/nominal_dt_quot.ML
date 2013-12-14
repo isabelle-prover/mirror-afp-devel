@@ -338,7 +338,7 @@ fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps
         end)
   in
     induct_prove qtys (goals1 @ goals2) qinduct tac ctxt
-    |> map atomize
+    |> map (atomize ctxt)
     |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms fun_eq_iff[symmetric]}))
   end
 
@@ -591,14 +591,14 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
             (* for freshness conditions *) 
             val tac1 = SOLVED' (EVERY'
               [ simp_tac (put_simpset HOL_basic_ss ctxt'' addsimps peqs),
-                rewrite_goal_tac (@{thms fresh_star_Un[THEN eq_reflection]}),
+                rewrite_goal_tac ctxt'' (@{thms fresh_star_Un[THEN eq_reflection]}),
                 conj_tac (DETERM o resolve_tac fprops') ]) 
 
             (* for equalities between constructors *)
             val tac2 = SOLVED' (EVERY' 
               [ rtac (@{thm ssubst} OF prems),
-                rewrite_goal_tac (map safe_mk_equiv eq_iff_thms),
-                rewrite_goal_tac (map safe_mk_equiv abs_eqs),
+                rewrite_goal_tac ctxt'' (map safe_mk_equiv eq_iff_thms),
+                rewrite_goal_tac ctxt'' (map safe_mk_equiv abs_eqs),
                 conj_tac (DETERM o resolve_tac (@{thms refl} @ perm_bn_alphas)) ]) 
 
             (* proves goal "P" *)

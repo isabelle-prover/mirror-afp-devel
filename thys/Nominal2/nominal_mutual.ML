@@ -335,12 +335,12 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
         [thm] => thm
           |> Drule.gen_all 
           |> Thm.permute_prems 0 1
-          |> (fn thm => atomize_rule (length (prems_of thm) - 1) thm)
+          |> (fn thm => atomize_rule ctxt' (length (prems_of thm) - 1) thm)
       | thms => thms
           |> map Drule.gen_all 
           |> map (Rule_Cases.add_consumes 1)
           |> snd o Rule_Cases.strict_mutual_rule ctxt'
-          |> atomize_concl
+          |> atomize_concl ctxt'
 
     fun tac thm = rtac (Drule.gen_all thm) THEN_ALL_NEW atac
   in

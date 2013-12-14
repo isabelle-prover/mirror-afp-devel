@@ -36,7 +36,7 @@ ML {*
     val changed_conv: conv -> conv
     val repeat_top_sweep_conv: (Proof.context -> conv) -> Proof.context -> conv
 
-    val rem_dup_prems: thm -> thm
+    val rem_dup_prems: Proof.context -> thm -> thm
 
     (* Definition Theorems *)
     val dest_def_eq: term -> term * term
@@ -167,7 +167,7 @@ ML {*
     end
 
     (* Remove duplicate premises (stable) *)
-    fun rem_dup_prems thm = let
+    fun rem_dup_prems ctxt thm = let
       val prems = prems_of thm;
       val perm = prems
       |> tag_list 0 
@@ -180,7 +180,7 @@ ML {*
 
       val thm' = Drule.rearrange_prems perm thm
         |> Conv.fconv_rule 
-             (Raw_Simplifier.rewrite true @{thms meta_same_imp_rule});
+             (Raw_Simplifier.rewrite ctxt true @{thms meta_same_imp_rule});
     in thm' end;
 
     fun dest_def_eq (Const (@{const_name "=="},_)$l$r) = (l,r)
@@ -305,11 +305,11 @@ ML {*
 *}
 
 attribute_setup rem_dup_prems = {*
-  Scan.succeed (Thm.rule_attribute (K ICF_Tools.rem_dup_prems))
+  Scan.succeed (Thm.rule_attribute (ICF_Tools.rem_dup_prems o Context.proof_of))
 *} "Remove duplicate premises"
 
 method_setup dup_subgoals = {*
-  Scan.succeed (K (SIMPLE_METHOD (PRIMITIVE ICF_Tools.rem_dup_prems)))
+  Scan.succeed (fn ctxt => SIMPLE_METHOD (PRIMITIVE (ICF_Tools.rem_dup_prems ctxt)))
 *} "Remove duplicate subgoals"
 
 

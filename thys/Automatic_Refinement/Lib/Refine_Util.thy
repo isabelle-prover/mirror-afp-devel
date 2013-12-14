@@ -322,7 +322,7 @@ ML {*
       FIRST' (map (fn thm => fo_rtac thm ctxt) thms);
 
     (* Resolve with premises. Copied and adjusted from Goal.assume_rule_tac. *)
-    fun rprems_tac ctxt = Goal.norm_hhf_tac THEN' CSUBGOAL (fn (goal, i) =>
+    fun rprems_tac ctxt = Goal.norm_hhf_tac ctxt THEN' CSUBGOAL (fn (goal, i) =>
       let
         fun non_atomic (Const ("==>", _) $ _ $ _) = true
           | non_atomic (Const ("all", _) $ _) = true
@@ -340,7 +340,7 @@ ML {*
       );
 
     (* Resolve with premise. Copied and adjusted from Goal.assume_rule_tac. *)
-    fun rprem_tac n ctxt = Goal.norm_hhf_tac THEN' CSUBGOAL (fn (goal, i) =>
+    fun rprem_tac n ctxt = Goal.norm_hhf_tac ctxt THEN' CSUBGOAL (fn (goal, i) =>
       let
         val ((_, goal'), ctxt') = Variable.focus_cterm goal ctxt;
         val goal'' = Drule.cterm_rule 

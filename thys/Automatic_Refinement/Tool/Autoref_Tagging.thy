@@ -83,7 +83,7 @@ ML {*
     val mk_ANNOT_conv: cterm -> conv
     val mk_rel_ANNOT_conv: cterm -> conv
 
-    val ABS_beta_conv: conv
+    val ABS_beta_conv: Proof.context -> conv
 
     val rhs_conv: (Proof.context -> conv) -> Proof.context -> conv
   end
@@ -145,10 +145,10 @@ ML {*
         | strip_app_aux t args = (t,args)
     in strip_app_aux t [] end
       
-    fun untag_conv ctxt = Raw_Simplifier.rewrite 
+    fun untag_conv ctxt = Raw_Simplifier.rewrite ctxt
       true (Autoref_Tag_Defs.get ctxt)
 
-    val ABS_beta_conv = Raw_Simplifier.rewrite 
+    fun ABS_beta_conv ctxt = Raw_Simplifier.rewrite ctxt
       true @{thms ABS_beta}
   
     val mk_PROTECT_conv = Conv.rewr_conv @{thm PROTECT_def[symmetric]}

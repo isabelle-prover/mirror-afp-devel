@@ -271,7 +271,8 @@ let
     in
       raw_prove_eqvt raw_size_trms raw_induct_thms (raw_size_thms @ raw_perm_simps) 
         (Local_Theory.restore lthy_tmp)
-        |> map (rewrite_rule @{thms permute_nat_def[THEN eq_reflection]})
+        |> map (rewrite_rule (Local_Theory.restore lthy_tmp)
+            @{thms permute_nat_def[THEN eq_reflection]})
         |> map (fn thm => thm RS @{thm sym})
     end 
      
@@ -302,7 +303,7 @@ let
   val raw_funs_rsp_aux = 
     raw_fv_bn_rsp_aux lthy5 alpha_result raw_fvs raw_bns raw_fv_bns (raw_bn_defs @ raw_fv_defs) 
 
-  val raw_funs_rsp = map (Drule.eta_contraction_rule o mk_funs_rsp) raw_funs_rsp_aux
+  val raw_funs_rsp = map (Drule.eta_contraction_rule o mk_funs_rsp lthy5) raw_funs_rsp_aux
 
   fun match_const cnst th =
     (fst o dest_Const o snd o dest_comb o HOLogic.dest_Trueprop o prop_of) th =
@@ -315,12 +316,12 @@ let
 
   val raw_size_rsp = 
     raw_size_rsp_aux lthy5 alpha_result (raw_size_thms @ raw_size_eqvt)
-      |> map mk_funs_rsp
+      |> map (mk_funs_rsp lthy5)
 
   val raw_constrs_rsp = 
     raw_constrs_rsp lthy5 alpha_result raw_all_cns (alpha_bn_imp_thms @ raw_funs_rsp_aux) 
     
-  val alpha_permute_rsp = map mk_alpha_permute_rsp alpha_eqvt
+  val alpha_permute_rsp = map (mk_alpha_permute_rsp lthy5) alpha_eqvt
 
   val alpha_bn_rsp = 
     raw_alpha_bn_rsp alpha_result alpha_bn_equivp_thms alpha_bn_imp_thms

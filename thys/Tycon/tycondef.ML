@@ -155,10 +155,10 @@ fun add_fixdefs
     (* prove applied version of definitions *)
     fun prove_proj (lhs, rhs) =
       let
-        val tac = rewrite_goals_tac fixdef_thms THEN
-          simp_tac (Simplifier.global_context thy beta_ss) 1
+        fun tac ctxt = rewrite_goals_tac ctxt fixdef_thms THEN
+          simp_tac (put_simpset beta_ss ctxt) 1
         val goal = Logic.mk_equals (lhs, rhs)
-      in Goal.prove_global thy [] [] goal (K tac) end
+      in Goal.prove_global thy [] [] goal (tac o #context) end
     val proj_thms = map prove_proj projs
 
     (* mk_tuple lhss == fixpoint *)
@@ -322,7 +322,7 @@ fun define_map_functions
       in
         Goal.prove_global thy [] assms goal (fn {prems, context = ctxt, ...} =>
          EVERY
-          [rewrite_goals_tac map_apply_thms,
+          [rewrite_goals_tac ctxt map_apply_thms,
            rtac (map_cont_thm RS @{thm cont_fix_ind}) 1,
            REPEAT (resolve_tac adm_rules 1),
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps bottom_rules) 1,
@@ -526,11 +526,11 @@ fun domain_isomorphism
       let
         val goal = mk_eqs (mk_DEFL lhsT, mk_DEFL rhsT)
         val DEFL_simps = Global_Theory.get_thms thy "domain_defl_simps"
-        val tac =
-          rewrite_goals_tac (map mk_meta_eq DEFL_simps @ tc_defs)
+        fun tac ctxt =
+          rewrite_goals_tac ctxt (map mk_meta_eq DEFL_simps @ tc_defs)
           THEN TRY (resolve_tac defl_unfold_thms 1)
       in
-        Goal.prove_global thy [] [] goal (K tac)
+        Goal.prove_global thy [] [] goal (tac o #context)
       end
     val DEFL_eq_thms = map mk_DEFL_eq_thm dom_eqns
 
@@ -639,7 +639,7 @@ fun domain_isomorphism
       in
         Goal.prove_global thy [] assms goal (fn {prems, context = ctxt, ...} =>
          EVERY
-          [rewrite_goals_tac (defl_apply_thms @ map_apply_thms),
+          [rewrite_goals_tac ctxt (defl_apply_thms @ map_apply_thms),
            rtac (@{thm cont_parallel_fix_ind}
              OF [defl_cont_thm, map_cont_thm]) 1,
            REPEAT (resolve_tac adm_rules 1),
@@ -774,7 +774,7 @@ fun domain_isomorphism
         val fmap_def = singleton (Proof_Context.export lthy ctxt_thy) fmap_ldef
         fun tacf ctxt = EVERY
           [Class.default_intro_tac ctxt [],
-           rewrite_goals_tac (fmap_def :: tc_defs),
+           rewrite_goals_tac ctxt (fmap_def :: tc_defs),
            resolve_tac isodefl_thms 1,
            REPEAT (resolve_tac @{thms isodefl_ID_DEFL isodefl_LIFTDEFL isodefl_cast} 1)]
         val thy = lthy

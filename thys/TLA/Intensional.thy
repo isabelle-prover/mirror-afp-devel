@@ -269,10 +269,10 @@ text{*
   @{term "F w \<longrightarrow> G w"}.
 *}
 
-method_setup int_unlift = {* Scan.succeed
-  (K (SIMPLE_METHOD ((rtac @{thm intI} 
-                      THEN' rewrite_goal_tac @{thms intensional_rews}) 1))) *} 
-  "method to unlift and followed by intensional rewrites"
+method_setup int_unlift = {*
+  Scan.succeed (fn ctxt => SIMPLE_METHOD'
+    (rtac @{thm intI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
+*} "method to unlift and followed by intensional rewrites"
 
 lemma inteq_reflection: assumes P1: "\<turnstile> x=y" shows  "(x \<equiv> y)"
 proof -
@@ -317,9 +317,9 @@ lemma int_simps:
 
 lemmas intensional_simps[simp] = int_simps[THEN inteq_reflection]
 
-method_setup int_rewrite = {* Scan.succeed
-  (K (SIMPLE_METHOD ((rewrite_goal_tac @{thms intensional_simps}) 1))) *}
-  "rewrite method at intensional level"
+method_setup int_rewrite = {*
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (rewrite_goal_tac ctxt @{thms intensional_simps}))
+*} "rewrite method at intensional level"
 
 lemma Not_Rall: "\<turnstile> (\<not>(\<forall> x. F x)) = (\<exists> x. \<not>F x)"
   by auto

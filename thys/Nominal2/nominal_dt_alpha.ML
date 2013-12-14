@@ -33,8 +33,8 @@ sig
   val raw_alpha_bn_rsp: alpha_result -> thm list -> thm list -> thm list
   val raw_perm_bn_rsp: Proof.context -> alpha_result -> term list -> thm list -> thm list
   
-  val mk_funs_rsp: thm -> thm
-  val mk_alpha_permute_rsp: thm -> thm 
+  val mk_funs_rsp: Proof.context -> thm -> thm
+  val mk_alpha_permute_rsp: Proof.context -> thm -> thm 
 end
 
 structure Nominal_Dt_Alpha: NOMINAL_DT_ALPHA =
@@ -623,9 +623,9 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
   let
     val AlphaResult {alpha_trms, alpha_bn_trms, ...} = alpha_result 
 
-    val refl' = map (fold_rule [reflp_def'] o atomize) refl
-    val symm' = map (fold_rule [symp_def'] o atomize) symm
-    val trans' = map (fold_rule [transp_def'] o atomize) trans
+    val refl' = map (fold_rule ctxt [reflp_def'] o atomize ctxt) refl
+    val symm' = map (fold_rule ctxt [symp_def'] o atomize ctxt) symm
+    val trans' = map (fold_rule ctxt [transp_def'] o atomize ctxt) trans
 
     fun prep_goal t = 
       HOLogic.mk_Trueprop (Const (@{const_name "equivp"}, fastype_of t --> @{typ bool}) $ t) 
@@ -834,7 +834,7 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
     alpha_prove (alpha_trms @ alpha_bn_trms) goals alpha_raw_induct 
       (raw_prove_perm_bn_tac alpha_result simps) ctxt
      |> Proof_Context.export ctxt' ctxt
-     |> map atomize
+     |> map (atomize ctxt)
      |> map single
      |> map (curry (op OF) perm_bn_rsp)
   end
@@ -846,9 +846,9 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
 val fun_rsp = @{lemma
   "(!x y. R x y --> f x = f y) ==> (R ===> (op =)) f f" by (simp add: fun_rel_def)}
 
-fun mk_funs_rsp thm = 
+fun mk_funs_rsp ctxt thm = 
   thm
-  |> atomize
+  |> atomize ctxt
   |> single
   |> curry (op OF) fun_rsp
 
@@ -857,9 +857,9 @@ val permute_rsp = @{lemma
   "(!x y p. R x y --> R (permute p x) (permute p y)) 
      ==> ((op =) ===> R ===> R) permute permute"  by (simp add: fun_rel_def)}
 
-fun mk_alpha_permute_rsp thm = 
+fun mk_alpha_permute_rsp ctxt thm = 
   thm
-  |> atomize
+  |> atomize ctxt
   |> single
   |> curry (op OF) permute_rsp
 

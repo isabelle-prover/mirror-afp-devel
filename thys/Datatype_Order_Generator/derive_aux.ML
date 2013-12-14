@@ -18,7 +18,7 @@ sig
   val HOLogic_list_all : term list * term -> term
   
   (* rulifys P1 .. Pn in a thm P1 ==> ... ==> Pn ==> Q *)
-  val rulify_only_asm : thm -> thm
+  val rulify_only_asm : Proof.context -> thm -> thm
 
   (* instantiates a thm for given terms of given sort *)
   val instantiate' : theory -> sort -> term list -> thm -> thm
@@ -125,9 +125,9 @@ fun mk_Some t = let
     Const (@{const_name Some}, ty --> Type (@{type_name option}, [ty])) $ t
   end 
 
-fun rulify_only_asm thm = 
+fun rulify_only_asm ctxt thm = 
   (@{thm conjI[OF TrueI]} OF [thm]) (* add conj to prohibit rulify in conclusion *)
-  |> Object_Logic.rulify (* rulify everything, i.e., by preprocessing only the assms *)
+  |> Object_Logic.rulify ctxt (* rulify everything, i.e., by preprocessing only the assms *)
   |> (fn conj => (@{thm conjunct2} OF [conj])) (* drop conjunction again *)
 
 fun instantiate' thy sort vars thm = 
@@ -168,7 +168,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
       |> map (fn (x,imp) => lambda x imp)
     val insts = permute_for_ind_thm ps xs ind_thm      
     val ind_thm_inst = instantiate' thy sort insts ind_thm 
-    val ind_thm' = rulify_only_asm ind_thm_inst
+    val ind_thm' = rulify_only_asm (Proof_Context.init_global thy) ind_thm_inst
     val xs_strings = map (dest_Free #> fst) xs
     val conjunctive_thm = Goal.prove_global thy xs_strings [] ind_term 
       (fn {context = ctxt, ...} => 

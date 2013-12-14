@@ -33,9 +33,10 @@ lemma prefD[dest]: "|~ A \<Longrightarrow> w \<Turnstile> A"
 lemma prefI[intro!]: "(\<And> w. w \<Turnstile> A) \<Longrightarrow> |~ A"
   by (simp add: PreValid_def)
 
-method_setup pref_unlift = {* Scan.succeed
- (K (SIMPLE_METHOD ((rtac @{thm prefI} THEN' rewrite_goal_tac @{thms intensional_rews}) 1))) *} 
- "int_unlift for PreFormulas"
+method_setup pref_unlift = {*
+  Scan.succeed (fn ctxt => SIMPLE_METHOD'
+    (rtac @{thm prefI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
+*} "int_unlift for PreFormulas"
 
 lemma prefeq_reflection: assumes P1: "|~ x=y" shows  "(x \<equiv> y)"
 using P1 by (intro eq_reflection) force
@@ -185,21 +186,23 @@ subsection "Unlifting attributes and methods"
 
 text {* Attribute which unlifts an intensional formula or preformula *}
 ML {*
-fun unl_rewr thm = 
+fun unl_rewr ctxt thm = 
     let
        val unl = (thm RS @{thm intD}) handle THM _ => (thm RS @{thm prefD})
                                       handle THM _ => thm
-       val rewr = rewrite_rule @{thms intensional_rews} 
+       val rewr = rewrite_rule ctxt @{thms intensional_rews} 
      in
        unl |> rewr
      end;
 *}
 attribute_setup unlifted = {*
-  Scan.succeed (Thm.rule_attribute (fn _ => unl_rewr))
+  Scan.succeed (Thm.rule_attribute (unl_rewr o Context.proof_of))
 *} "unlift intensional formulas"
 
 attribute_setup unlift_rule = {*
-  Scan.succeed (Thm.rule_attribute (fn _ => Object_Logic.rulify o unl_rewr))
+  Scan.succeed
+    (Thm.rule_attribute
+      (Context.proof_of #> (fn ctxt => Object_Logic.rulify ctxt o unl_rewr ctxt)))
 *} "unlift and rulify intensional formulas"
 
 

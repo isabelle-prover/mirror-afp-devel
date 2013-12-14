@@ -99,9 +99,9 @@ sig
   val transform_prem2: Proof.context -> string list -> thm -> thm
 
   (* transformation into the object logic *)
-  val atomize: thm -> thm
-  val atomize_rule: int -> thm -> thm 
-  val atomize_concl: thm -> thm
+  val atomize: Proof.context -> thm -> thm
+  val atomize_rule: Proof.context -> int -> thm -> thm 
+  val atomize_concl: Proof.context -> thm -> thm
 
   (* applies a tactic to a formula composed of conjunctions *)
   val conj_tac: (int -> tactic) -> int -> tactic
@@ -492,10 +492,10 @@ fun transform_prem2 ctxt names thm =
 
 
 (* transforms a theorem into one of the object logic *)
-val atomize = Conv.fconv_rule Object_Logic.atomize o forall_intr_vars;
-fun atomize_rule i thm =
-  Conv.fconv_rule (Conv.concl_conv i Object_Logic.atomize) thm
-fun atomize_concl thm = atomize_rule (length (prems_of thm)) thm
+fun atomize ctxt = Conv.fconv_rule (Object_Logic.atomize ctxt) o forall_intr_vars;
+fun atomize_rule ctxt i thm =
+  Conv.fconv_rule (Conv.concl_conv i (Object_Logic.atomize ctxt)) thm
+fun atomize_concl ctxt thm = atomize_rule ctxt (length (prems_of thm)) thm
 
 
 (* applies a tactic to a formula composed of conjunctions *)
