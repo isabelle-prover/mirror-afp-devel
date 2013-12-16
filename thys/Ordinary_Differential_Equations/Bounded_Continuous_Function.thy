@@ -356,7 +356,7 @@ lemma ext_cont_def':
 unfolding ext_cont_def clamp_def ..
 
 lemma clamp_in_interval:
-  assumes "{a..b} \<noteq> {}"
+  assumes "a \<le> b"
   shows "clamp a b x \<in> {a..b}"
   unfolding clamp_def
   using interval_ne_empty(1)[of a b] assms
@@ -364,10 +364,10 @@ lemma clamp_in_interval:
 
 lemma dist_clamps_le_dist_args:
   fixes x::"'a::ordered_euclidean_space"
-  assumes "{a..b} \<noteq> {}"
+  assumes "a \<le> b"
   shows "dist (clamp a b y) (clamp a b x) \<le> dist y x"
 proof -
-    from interval_ne_empty(1)[of a b] assms have "(\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i)" ..
+    from interval_ne_empty(1)[of a b] assms have "(\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i)" by simp
     hence "(\<Sum>i\<in>Basis. (dist (clamp a b y \<bullet> i) (clamp a b x \<bullet> i))\<^sup>2)
     \<le> (\<Sum>i\<in>Basis. (dist (y \<bullet> i) (x \<bullet> i))\<^sup>2)"
       by (auto intro!: setsum_mono
@@ -380,7 +380,7 @@ qed
 lemma clamp_continuous_at:
   fixes f::"'a::ordered_euclidean_space \<Rightarrow> 'b::metric_space"
   fixes x
-  assumes "{a..b} \<noteq> {}"
+  assumes "a \<le> b"
   assumes f_cont: "continuous_on {a..b} f"
   shows "continuous (at x) (\<lambda>x. f (clamp a b x))"
 unfolding continuous_at_eps_delta
@@ -413,7 +413,7 @@ qed
 
 lemma clamp_continuous_on:
   fixes f::"'a::ordered_euclidean_space \<Rightarrow> 'b::metric_space"
-  assumes "{a..b} \<noteq> {}"
+  assumes "a \<le> b"
   assumes f_cont: "continuous_on {a..b} f"
   shows "continuous_on UNIV (\<lambda>x. f (clamp a b x))"
   using assms
@@ -421,7 +421,7 @@ lemma clamp_continuous_on:
 
 lemma clamp_bcontfun:
   fixes f::"'a::ordered_euclidean_space \<Rightarrow> 'b::real_normed_vector"
-  assumes "{a..b} \<noteq> {}"
+  assumes "a \<le> b"
   assumes continuous: "continuous_on {a..b} f"
   shows "(\<lambda>x. f (clamp a b x)) \<in> bcontfun"
 proof -

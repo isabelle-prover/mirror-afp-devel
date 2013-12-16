@@ -509,7 +509,7 @@ proof -
       apply (cases "L = 0", simp)
       apply (intro stepsize_inverse, auto simp: diff_le_iff)
       using grid_mono
-      by (rule euclidean_trans) simp_all
+      by (rule order.trans) simp_all
     finally have
       "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
       \<bar>r / 2\<bar>" .
@@ -553,7 +553,7 @@ proof -
       apply (cases "L = 0", simp)
       apply (intro stepsize_inverse, auto simp: diff_le_iff)
       using grid_mono
-      by (rule euclidean_trans) simp_all
+      by (rule order.trans) simp_all
     also
     assume "dist (grid_function (discrete_evolution incrs) (x (t 0) + s0) t j)
       (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le> \<bar>r / 2\<bar>"

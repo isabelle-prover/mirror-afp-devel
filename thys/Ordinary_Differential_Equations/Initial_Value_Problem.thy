@@ -522,12 +522,12 @@ lemma ext_cont_cong[cong]:
   assumes "\<And>t. t \<in> {t0..T} \<Longrightarrow> f t = g t"
   assumes "continuous_on {t0..T} f"
   assumes "continuous_on {s0..S} g"
-  assumes "{t0..T} \<noteq> {}"
+  assumes "t0 \<le> T"
   shows "ext_cont f t0 T = ext_cont g s0 S"
   unfolding assms ext_cont_def
-  using assms clamp_in_interval[OF `{t0..T}\<noteq>{}`]
+  using assms clamp_in_interval[OF `t0 \<le> T`]
   by (subst Rep_bcontfun_inject[symmetric]) simp
- 
+
 lemma (in unique_on_bounded_strip) solution_fixed_point:
   "P (ext_cont solution t0 T) = ext_cont solution t0 T"
 unfolding P_def
@@ -960,8 +960,11 @@ end
 
 sublocale unique_on_rectangle \<subseteq> unique_solution
 proof -
-  have "D \<noteq> {}" using rectangle b_nonneg by (simp add: interval_ne_empty inner_simps)
+  have "D \<noteq> {}" using rectangle b_nonneg
+    by (auto simp: algebra_simps intro!: add_nonneg_nonneg setsum_nonneg scaleR_nonneg_nonneg)
   hence not_empty: "{t0..T}\<times>D \<noteq> {}" using interval iv_defined by simp
+  hence rect_le: "(t0, x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) \<le> (T, x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i))"
+    by (auto simp: rectangle)
   {
     fix t::real and x y
     let ?fc = "ext_cont f (t0,x0 - (\<Sum>i\<in>Basis. b *\<^sub>R i)) (T,x0 + (\<Sum>i\<in>Basis. b *\<^sub>R i))"
@@ -971,8 +974,9 @@ proof -
     hence fst_x: "fst (?ca_x) = t" "fst (?ca_y) = t"
       by (simp_all add: clamp_def fst_eq_Basis)
     have "?ca_x \<in> {t0..T}\<times>D" "?ca_y \<in> {t0..T}\<times>D"
-      using clamp_in_interval[OF `{t0..T}\<times>D\<noteq>{}`[unfolded rectangle, folded pair_interval_iff]]
-      unfolding rectangle by auto
+      thm clamp_in_interval
+      using clamp_in_interval[OF rect_le]
+      unfolding rectangle pair_interval_iff by auto
     hence "(fst (?ca_x), snd (?ca_x)) \<in> {t0..T}\<times>D" "(fst (?ca_y), snd (?ca_y)) \<in> {t0..T}\<times>D"
       by auto
     hence "(t, snd (?ca_x)) \<in> {t0..T}\<times>D"
@@ -1012,7 +1016,7 @@ proof -
       apply (subst Abs_bcontfun_inverse[OF clamp_bcontfun])
       using `D \<noteq> {}` rectangle interval_notempty apply simp
       using continuous interval rectangle apply simp
-      apply (rule clamp_continuous_on) by auto
+      apply (rule clamp_continuous_on) using `D \<noteq> {}` by auto
   show "unique_solution i"
   proof (rule unique_solutionI)
     show "is_solution ivp_c.solution"

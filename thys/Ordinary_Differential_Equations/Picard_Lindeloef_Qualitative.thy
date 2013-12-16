@@ -99,7 +99,6 @@ proof -
     fix t x
     assume "tx \<in> {(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)}" "tx = (t, x)"
     hence "(t, x) \<in> {(t0, x0) - A..(t0, x0) + A}"
-      unfolding pair_le_iff
       using A a
       by (auto simp add: eucl_le[where 'a="real \<times> 'a"] eucl_le[where 'a='a] inner_simps in_prod_Basis_iff)
     with A v show "(t, x)\<in>cball (t0, x0) u \<inter> (I\<times>D)" using iv_defined
@@ -107,6 +106,7 @@ proof -
   qed
   hence subset: "{(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)} \<subseteq> cball (t0, x0) u \<inter> (I\<times>D)" by auto
   def R \<equiv> "{(t0, x0 - ?C a)..(t0 + a, x0 + ?C a)}"
+  have "(t0, x0) \<in> R" using a by (auto simp: R_def intro!: setsum_nonneg scaleR_nonneg_nonneg)
   have "R \<subseteq> I\<times>D" using subset by (simp add: R_def)
   have "bounded (f ` R)"
     using continuous_on_subset[where t="R"] `R\<subseteq>I\<times>D` continuous
@@ -115,8 +115,7 @@ proof -
   then obtain B where f_bounded: "\<And>x t. (t, x) \<in> R \<Longrightarrow> norm (f (t, x)) \<le> B"
     by (auto simp add: bounded_iff)
   have "0 \<le> norm (f (t0, x0))" using norm_ge_zero[of "f (t0, x0)"] by simp
-  also have "... \<le> B" using f_bounded iv_defined R_def a
-    by (auto simp: eucl_le[of x0] eucl_le[where y=x0] inner_simps)
+  also have "... \<le> B" using f_bounded[OF `(t0, x0) \<in> R`] .
   finally have "0 \<le> B" .
   obtain a' where a': "a' > 0" "a' < a / (B+1)" "a' < a"
   proof
@@ -143,7 +142,7 @@ proof -
       "(t, y) \<in> cball (t0, x0) u \<inter> (I\<times>D)"
       by auto
     hence "t\<in>cball t0 u \<inter> I" "x\<in>cball x0 u \<inter> D" "y\<in>cball x0 u \<inter> D"
-      by (auto simp: dist_Pair_Pair intro: euclidean_trans(3)
+      by (auto simp: dist_Pair_Pair intro: order.trans
         real_sqrt_sum_squares_ge1 real_sqrt_sum_squares_ge2)
     with L have "dist (f (t, x)) (f (t, y)) \<le> L * dist x y" by auto
   }
@@ -153,8 +152,9 @@ proof -
   ultimately
   interpret ivp_r: unique_on_rectangle j "min (t0 + a') T_max" a "B+1" L "ivp_D j"
     using a' a L `B\<ge>0` `t0 < T_max`
-    by unfold_locales (auto simp: inner_simps
-      j_def eucl_le[of x0] eucl_le[where y=x0] R_def lipschitz_def)
+    by unfold_locales
+      (auto simp: inner_simps j_def eucl_le[of x0] eucl_le[where y=x0] R_def lipschitz_def
+        intro!: setsum_nonneg scaleR_nonneg_nonneg)
 
   have "ivp_D j \<subseteq> D"
   proof safe

@@ -16,7 +16,7 @@ lemma fst_Basis[simp]: "i \<in> Basis \<Longrightarrow> (i, 0) \<in> Basis"
 lemma snd_Basis[simp]: "i \<in> Basis \<Longrightarrow> (0, i) \<in> Basis"
   by (simp add: Basis_prod_def)
 
-lemma fst_eq_Basis: 
+lemma fst_eq_Basis:
   fixes a :: "('a::euclidean_space) \<times> ('b::euclidean_space)"
   shows "fst a = (\<Sum>i\<in>Basis. (a \<bullet> (i, 0)) *\<^sub>R i)"
   by (cases a) (simp add: euclidean_representation)
@@ -51,77 +51,8 @@ lemma norm_nth_le:
 
 subsection {* Pairs *}
 
-subsubsection {* Ordering on Pairs *}
-
-lemma pair_le_iff[simp]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) \<le> (b1, b2) \<longleftrightarrow> a1 \<le> b1 \<and> a2 \<le> b2"
-  by (simp add: eucl_le[of "(a1, a2)"] eucl_le[of a1] eucl_le[of a2] Basis_prod_def ball_Un)
-
-lemma pair_le_intro[intro]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "a1 \<le> b1 \<Longrightarrow> a2 \<le> b2 \<Longrightarrow> (a1, a2) \<le> (b1, b2)" 
-  by simp
-
-lemma pair_le_elim1:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) \<le> (b1, b2) \<Longrightarrow> a1 \<le> b1"
-  by simp
-
-lemma pair_le_elim2:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) \<le> (b1, b2) \<Longrightarrow> a2 \<le> b2"
-  by simp
-
-lemma pair_le_elim[elim]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "(a1, a2) \<le> (b1, b2)"
-  shows "a1 \<le> b1" and "a2 \<le> b2"
-using assms
-by (auto elim: pair_le_elim1 pair_le_elim2)
-
-lemma pair_interval_ne_empty:
-  "{a1..a2} \<noteq> {} \<Longrightarrow> {b1..b2} \<noteq> {} \<Longrightarrow> {(a1, b1)..(a2, b2)} \<noteq> {}"
-  unfolding interval_ne_empty Basis_prod_def ball_Un by simp
-
-lemma pair_less_iff[simp]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) < (b1, b2) \<longleftrightarrow> a1 < b1 \<and> a2 < b2"
-  by (simp add: eucl_less[of "(a1, a2)"] eucl_less[of a1] eucl_less[of a2] Basis_prod_def ball_Un)
-
-lemma pair_less_intro[intro]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "a1 < b1 \<Longrightarrow> a2 < b2 \<Longrightarrow> (a1, a2) < (b1, b2)"
-  by simp
-
-lemma pair_less_elim1:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) < (b1, b2) \<Longrightarrow> a1 < b1"
-  by simp
-
-lemma pair_less_elim2:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  shows "(a1, a2) < (b1, b2) \<Longrightarrow> a2 < b2"
-  by simp
-
-lemma pair_less_elim[elim]:
-  fixes a1 b1::"'a::ordered_euclidean_space"
-  fixes a2 b2::"'b::ordered_euclidean_space"
-  assumes "(a1, a2) < (b1, b2)"
-  shows "a1 < b1" and "a2 < b2"
-using assms
-by (auto elim: pair_less_elim1 pair_less_elim2)
-
-lemma pair_interval_iff[simp]: "{(a1, a2)..(b1, b2)} = {a1..b1}\<times>{a2..b2}" by auto
+lemma pair_interval_iff[simp]: "{(a1, a2)..(b1, b2)} = {a1..b1}\<times>{a2..b2}"
+  by auto
 
 subsection {* Derivatives *}
 
