@@ -1075,10 +1075,9 @@ next
     have i2: "1 - ereal (a i) ~= \<infinity>" using ereal_minus(1)[of 1]
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric])
     let "?a j" = "a j / (1 - a i)"
-    { fix j assume "j : s"
-      hence "?a j >= 0"
-        using i0 insert divide_nonneg_pos
-        by fastforce } note a_nonneg = this
+    have a_nonneg: "\<And>j. j \<in> s \<Longrightarrow> 0 \<le> a j / (1 - a i)"
+      using i0 insert
+      by (metis insert_iff divide_nonneg_pos)
     have "(SUM j : insert i s. a j) = 1" using insert by auto
     hence "(SUM j : s. a j) = 1 - a i" using setsum.insert insert by fastforce
     hence "(SUM j : s. a j) / (1 - a i) = 1" using i0 by auto
