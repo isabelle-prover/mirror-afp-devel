@@ -234,8 +234,8 @@ by(simp add: program_def fun_eq_iff tabulate_program_def)
 subsubsection {* @{term "class" } *}
 
 lemma tabulate_class_code [code]:
-  "tabulate_class = assoc_list_to_mapping"
-by(rule ext)(simp add: tabulate_class_def assoc_list_to_mapping_def)
+  "tabulate_class = Mapping.of_alist"
+by(rule ext)(simp add: tabulate_class_def Mapping.of_alist_def)
 
 subsubsection {* @{term "subcls" } *}
 
@@ -390,7 +390,7 @@ by(auto dest: has_fields_fun)
 
 lemma tabulate_sees_field_code [code]:
   "tabulate_sees_field P =
-   Mapping.tabulate (map fst P) (\<lambda>C. assoc_list_to_mapping (map (\<lambda>((F, D), Tfm). (F, (D, Tfm))) (fields' P C)))"
+   Mapping.tabulate (map fst P) (\<lambda>C. Mapping.of_alist (map (\<lambda>((F, D), Tfm). (F, (D, Tfm))) (fields' P C)))"
 apply(simp add: tabulate_sees_field_def tabulate_def is_class_def fields'_def Fields'_eq_Fields Mapping_inject)
 apply(rule ext)
 apply clarsimp
@@ -398,7 +398,7 @@ apply(rule conjI)
  apply(clarsimp simp add: o_def)
  apply(subst map_of_map2[unfolded split_def])
  apply simp
- apply(clarsimp simp add: assoc_list_to_mapping_def Mapping_inject)
+ apply(clarsimp simp add: Mapping.of_alist_def Mapping_inject)
  apply(rule conjI)
   apply clarsimp
   apply(rule ext)
@@ -494,7 +494,7 @@ by(auto simp add: methods'_def)
 
 lemma tabulate_Method_code [code]:
   "tabulate_Method P =
-   Mapping.tabulate (map fst P) (\<lambda>C. assoc_list_to_mapping (map (\<lambda>(M, (rest, D)). (M, D, rest)) (methods' P C)))"
+   Mapping.tabulate (map fst P) (\<lambda>C. Mapping.of_alist (map (\<lambda>(M, (rest, D)). (M, D, rest)) (methods' P C)))"
 apply(simp add: tabulate_Method_def tabulate_def o_def lookup.rep_eq Mapping_inject)
 apply(rule ext)
 apply clarsimp
@@ -503,7 +503,7 @@ apply(rule conjI)
  apply(rule sym)
  apply(subst map_of_map2[unfolded split_def])
  apply(simp add: is_class_def)
- apply(simp add: assoc_list_to_mapping_def Mapping_inject)
+ apply(simp add: Mapping.of_alist_def Mapping_inject)
  apply(rule ext)
  apply(simp add: map_of_map2)
  apply(rule conjI)
