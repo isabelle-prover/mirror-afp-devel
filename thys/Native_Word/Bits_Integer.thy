@@ -5,7 +5,7 @@
 header {* Bit operations for target language integers *}
 
 theory Bits_Integer imports
-  Bits_Int
+  More_Bits_Int
 begin
 
 lemmas [transfer_rule] =

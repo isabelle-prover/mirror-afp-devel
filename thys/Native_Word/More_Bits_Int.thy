@@ -4,9 +4,9 @@
 
 header {* More bit operations on integers *}
 
-theory Bits_Int
+theory More_Bits_Int
 imports
-  "~~/src/HOL/Word/Bit_Bit"
+  "~~/src/HOL/Word/Bits_Bit"
   "~~/src/HOL/Word/Bool_List_Representation"
 begin
 
@@ -796,9 +796,11 @@ lemma int_of_integer_symbolic_aux_code [code nbe]:
 by(simp_all add: int_of_integer_symbolic_def)
 
 code_identifier
-  code_module Bits_Int \<rightharpoonup>
+  code_module More_Bits_Int \<rightharpoonup>
   (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
-| code_module Bit_Representation \<rightharpoonup>
+| code_module Bits_Int \<rightharpoonup>
+  (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
+| code_module Bits \<rightharpoonup>
   (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
 
 end

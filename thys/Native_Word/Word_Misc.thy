@@ -6,7 +6,7 @@ header {* More about words *}
 
 theory Word_Misc imports
   "~~/src/HOL/Word/Word"
-  "Bits_Int"
+  More_Bits_Int
 begin
 
 text {*
