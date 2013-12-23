@@ -23,8 +23,8 @@ bundle undefined_transfer = undefined_transfer[transfer_rule]
 section {* More lemmas about @{typ integer}s *}
 
 lemma bitval_integer_transfer [transfer_rule]:
-  "(fun_rel op = pcr_integer) bitval bitval"
-by(auto simp add: bitval_def integer.pcr_cr_eq cr_integer_def split: bit.split)
+  "(fun_rel op = pcr_integer) of_bool of_bool"
+by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
 lemma integer_of_nat_less_0_conv [simp]: "\<not> integer_of_nat n < 0"
 by(transfer) simp
@@ -57,8 +57,8 @@ section {* Bit operations on @{typ integer} *}
 text {* Bit operations on @{typ integer} are the same as on @{typ int} *}
 
 lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is bin_rest .
-lift_definition bin_last_integer :: "integer \<Rightarrow> bit" is bin_last .
-lift_definition Bit_integer :: "integer \<Rightarrow> bit \<Rightarrow> integer" is Bit .
+lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is bin_last .
+lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer" is Bit .
 
 instantiation integer :: bitss begin
 lift_definition bitAND_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "bitAND" .
@@ -308,15 +308,15 @@ lemma bin_rest_integer_code [code nbe]:
 by transfer(simp add: bin_rest_def)
 
 lemma bin_last_integer_code [code]:
-  "bin_last_integer i = (if i AND 1 = 0 then 0 else 1)"
+  "bin_last_integer i \<longleftrightarrow> i AND 1 \<noteq> 0"
 by transfer(rule bin_last_conv_AND)
 
 lemma bin_last_integer_nbe [code nbe]:
-  "bin_last_integer i = (if i mod 2 = 0 then 0 else 1)"
+  "bin_last_integer i \<longleftrightarrow> i mod 2 \<noteq> 0"
 by transfer(simp add: bin_last_def)
 
 lemma bitval_bin_last_integer [code_unfold]:
-  "bitval (bin_last_integer i) = i AND 1"
+  "of_bool (bin_last_integer i) = i AND 1"
 by transfer(rule bitval_bin_last)
 
 definition integer_test_bit :: "integer \<Rightarrow> integer \<Rightarrow> bool"
@@ -454,8 +454,8 @@ lemma integer_shiftr_code [code]:
 by(simp_all add: integer_shiftr_def shiftr_integer_def)
 
 lemma Bit_integer_code [code]:
-  "Bit_integer i 0 = i << 1"
-  "Bit_integer i 1 = (i << 1) + 1"
+  "Bit_integer i False = i << 1"
+  "Bit_integer i True = (i << 1) + 1"
 by(transfer, simp add: Bit_def shiftl_int_def)+
 
 lemma msb_integer_code [code]:
@@ -630,7 +630,7 @@ lemma bitAND_integer_unfold:
   "x AND y =
    (if x = 0 then 0
     else if x = -1 then y
-    else Bit_integer (bin_rest_integer x AND bin_rest_integer y) (bin_last_integer x AND bin_last_integer y))"
+    else Bit_integer (bin_rest_integer x AND bin_rest_integer y) (bin_last_integer x \<and> bin_last_integer y))"
 by transfer(rule bitAND_int.simps)
 
 lemma log2_simps [simp]:

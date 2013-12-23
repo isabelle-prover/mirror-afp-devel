@@ -78,8 +78,8 @@ lift_definition sshiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32
 lift_definition uint32_of_int :: "int \<Rightarrow> uint32" is "word_of_int" .
 
 lemma bitval_integer_transfer [transfer_rule]:
-  "(fun_rel op = pcr_integer) bitval bitval"
-by(auto simp add: bitval_def integer.pcr_cr_eq cr_integer_def split: bit.split)
+  "(fun_rel op = pcr_integer) of_bool of_bool"
+by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
 text {* Use pretty numerals from integer for pretty printing *}
 
