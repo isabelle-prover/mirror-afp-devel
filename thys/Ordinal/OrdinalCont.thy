@@ -29,7 +29,7 @@ lemma (in continuous) mono: "mono F"
   apply (simp split: nat.split)
  apply (clarify, rule order_antisym)
   apply (rule oLimit_leI)
-  apply (simp split: nat.split add: le_maxI1 le_maxI2)
+  apply (simp split: nat.split add: max.cobounded1 max.cobounded2)
  apply (simp, safe)
   apply (rule_tac n=0 in le_oLimitI, simp)
  apply (rule_tac n=1 in le_oLimitI, simp)

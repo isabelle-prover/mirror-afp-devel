@@ -288,7 +288,7 @@ proof (induct x rule: delete_max_induct)
     by (intro avl_mkt_bal_l) fastforce+
   then show ?case 
     by (auto simp: height_mkt_bal_l height_mkt_bal_l2
-      linorder_class.min_max.sup_absorb1 linorder_class.min_max.sup_absorb2
+      linorder_class.max.absorb1 linorder_class.max.absorb2
       split:prod.split simp del:mkt_bal_l.simps)
 next
   case (MKT n l rn rl rr rh h)

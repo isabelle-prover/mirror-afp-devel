@@ -343,7 +343,7 @@ lemma locs_rev_stks:
   # rev (take z (stks x (\<lambda>a. stk(y, a))))"
 apply (rule nth_equalityI)
  apply (simp)
-apply (auto simp: nth_append nth_Cons' (* nth_locs *) less_Suc_eq min_max.inf_absorb2 min_max.sup_absorb2)
+apply (auto simp: nth_append nth_Cons' (* nth_locs *) less_Suc_eq min.absorb2 max.absorb2)
 done
 
 lemma locs_invoke_purge:
@@ -590,7 +590,7 @@ proof -
            apply (rule nth_equalityI)
             apply simp
            apply (cases ST,
-                  auto simp: nth_Cons' nth_append min_max.inf_absorb1 min_max.inf_absorb2)
+                  auto simp: nth_Cons' nth_append min.absorb1 min.absorb2)
           apply (rule nth_equalityI)
            apply simp
           by (auto simp: (* nth_locs *) (* nth_stks *) rev_nth nth_Cons' nth_append min_def)
@@ -2097,7 +2097,7 @@ proof(unfold_locales)
           by (auto intro!: ext
                      simp: (* nth_locs *) nth_locss nth_Cons' nth_append rev_nth (* nth_stks *) 
                            not_less_eq_eq Suc_le_eq less_Suc_eq add_commute
-                           min_max.inf_absorb1 min_max.inf_absorb2 min_max.sup_absorb1 min_max.sup_absorb2)
+                           min.absorb1 min.absorb2 max.absorb1 max.absorb2)
         from frs' jvm_exec sem_step prog
         have c': "c' = (D,M',0)#c"
           by (auto elim!: sem.cases)

@@ -17,9 +17,9 @@ lemma max_mono:
   assumes mf: "mono f"
   shows       "max (f x) (f y) \<le> f (max x y)"
 proof -
-  from mf and le_maxI1 [of x y]
+  from mf and max.cobounded1 [of x y]
   have fx: "f x \<le> f (max x y)" by (rule monoD)
-  from mf and le_maxI2 [of y x]
+  from mf and max.cobounded2 [of y x]
   have fy: "f y \<le> f (max x y)" by (rule monoD)
   from fx and fy
   show "max (f x) (f y) \<le> f (max x y)" by auto
@@ -738,7 +738,7 @@ proof (unfold bv_add_def,rule length_nat_to_bv_upper_limit)
     by arith
   also have "... \<le>
       max (2 ^ length w1 - 1) (2 ^ length w2 - 1) + max (2 ^ length w1 - 1) (2 ^ length w2 - 1)"
-    by (rule add_mono,safe intro!: le_maxI1 le_maxI2)
+    by (rule add_mono,safe intro!: max.cobounded1 max.cobounded2)
   also have "... = 2 * max (2 ^ length w1 - 1) (2 ^ length w2 - 1)" by simp
   also have "... \<le> 2 ^ Suc (max (length w1) (length w2)) - 2"
   proof (cases "length w1 \<le> length w2")
@@ -1593,7 +1593,7 @@ proof (cases "bv_to_int w2 = 0")
     have "length (norm_signed w1) \<le> length w1"
       by (rule norm_signed_length)
     also have "... \<le> max (length w1) (length w2)"
-      by (rule le_maxI1)
+      by (rule max.cobounded1)
     also have "... \<le> Suc (max (length w1) (length w2))"
       by arith
     finally show "length (norm_signed w1) \<le> Suc (max (length w1) (length w2))" .

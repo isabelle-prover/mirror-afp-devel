@@ -283,7 +283,7 @@ done
 
 lemma take_eq_take_le_eq:
   "\<lbrakk> take n xs = take n ys; m \<le> n \<rbrakk> \<Longrightarrow> take m xs = take m ys"
-by(metis min_max.le_iff_inf take_take)
+by(metis min.absorb_iff1 take_take)
 
 lemma take_list_update_beyond:
   "n \<le> m \<Longrightarrow> take n (xs[m := x]) = take n xs"

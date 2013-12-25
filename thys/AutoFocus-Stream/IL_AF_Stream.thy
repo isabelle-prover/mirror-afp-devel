@@ -682,7 +682,7 @@ apply (case_tac "I \<down>> n = {}")
  apply simp
  apply (rule arg_cong[where f="\<lambda>x. f \<Down> x"])
  apply simp
- apply (rule min_eqR, rule min_max.le_supI1, rule less_imp_le)
+ apply (rule min_eqR, rule max.coboundedI1, rule less_imp_le)
  thm nat_cut_less_Max_less
  apply (simp add: nat_cut_less_Max_less)
 apply (simp add: cut_greater_Max_eq)

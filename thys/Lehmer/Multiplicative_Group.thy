@@ -31,7 +31,7 @@ lemma deg_add_eq:
 proof -
   let ?m = "max (deg R p) (deg R q)"
   from assms have "coeff P p ?m = \<zero> \<longleftrightarrow> coeff P q ?m \<noteq> \<zero>"
-    by (metis deg_belowI lcoeff_nonzero[OF deg_nzero_nzero] linear min_max.le_iff_sup min_max.sup_absorb1)
+    by (metis deg_belowI lcoeff_nonzero[OF deg_nzero_nzero] linear max.absorb_iff2 max.absorb1)
   then have "coeff P (p \<oplus>\<^bsub>P\<^esub> q) ?m \<noteq> \<zero>"
     using assms by auto
   then have "deg R (p \<oplus>\<^bsub>P\<^esub> q) \<ge> ?m"

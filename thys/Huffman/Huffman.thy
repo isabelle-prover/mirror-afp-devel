@@ -304,8 +304,8 @@ the default set of simplification rules.
 
 declare Int_Un_distrib [simp]
         Int_Un_distrib2 [simp]
-        min_max.sup_absorb1 [simp]
-        min_max.sup_absorb2 [simp]
+        max.absorb1 [simp]
+        max.absorb2 [simp]
 
 section {* Definition of Prefix Code Trees and Forests
            \label{trees-and-forests} *}

@@ -686,8 +686,8 @@ lemma Least_imp_disj_eq: "
   \<lbrakk> \<exists>x. P x; \<And>x. P x \<Longrightarrow> Q x \<rbrakk> \<Longrightarrow> 
   (LEAST (x::'a::wellorder). P x \<or> Q x) = (LEAST x. Q x)"
 apply (subst Least_disj, assumption, blast)
-apply (subst min_max.inf_commute)
-apply (rule min_max.le_iff_inf[THEN iffD1])
+apply (subst min.commute)
+apply (rule min.absorb_iff1[THEN iffD1])
 apply (rule Least_imp_le, assumption, blast)
 done
 
@@ -700,7 +700,7 @@ lemma Least_le_imp_le_disj: "
   (LEAST (x::'a::wellorder). P x \<or> Q x) = (LEAST (x::'a::wellorder). P x)"
 thm Least_imp_disj_eq
 apply (case_tac "\<exists>x. Q x")
- apply (simp only: Least_disj min_max.le_iff_inf[THEN iffD1, OF Least_le_imp_le])
+ apply (simp only: Least_disj min.absorb_iff1[THEN iffD1, OF Least_le_imp_le])
 apply simp
 done
 
@@ -898,19 +898,6 @@ thm lattice_class.axioms
 
 thm distrib_lattice_class_def
 
-
-
-
-print_locale distrib_lattice
-print_locale lattice
-print_locale distrib_lattice
-print_locale! distrib_lattice
-(*print_interps distrib_lattice*)
-thm distrib_lattice_class.axioms
-interpretation min_max2:
-  distrib_lattice min "op \<le> :: 'a::linorder \<Rightarrow> 'a \<Rightarrow> bool" "op <" max
-..
-
 lemma "class.distrib_lattice (min::('a::linorder \<Rightarrow> 'a \<Rightarrow> 'a)) (op \<le>) (op <) max"
 apply (subgoal_tac "class.order (op \<le>) (op <)")
  prefer 2
@@ -936,11 +923,11 @@ apply (rule class.distrib_lattice.intro)
   apply (rule conj_le_imp_min, assumption+)
  apply (rule class.semilattice_sup.intro, assumption)
  apply (rule class.semilattice_sup_axioms.intro)
-   apply (rule le_maxI1)
-  apply (rule le_maxI2)
+   apply (rule max.cobounded1)
+  apply (rule max.cobounded2)
  apply (rule conj_le_imp_max, assumption+)
 apply (rule class.distrib_lattice_axioms.intro)
-apply (rule min_max.sup_inf_distrib1)
+apply (rule max_min_distrib2)
 done
 
 print_locale Lattices.distrib_lattice
@@ -1128,7 +1115,7 @@ lemma iMin_remove: "n \<in> I \<Longrightarrow> iMin I = (if I - {n} = {} then n
 by (metis iMin_insert_remove insert_absorb)
 
 lemma iMin_subset_idem: "\<lbrakk> B \<noteq> {}; B \<subseteq> A \<rbrakk> \<Longrightarrow> min (iMin B) (iMin A) = iMin A"
-by (metis iMin_subset min_max.inf_absorb2)
+by (metis iMin_subset min.absorb2)
 
 lemma iMin_union_inter: "A \<inter> B \<noteq> {} \<Longrightarrow> min (iMin (A \<union> B)) (iMin (A \<inter> B)) = min (iMin A) (iMin B)"
 by (metis Int_empty_left Int_lower2 Un_absorb2 Un_assoc Un_empty iMin_Un)

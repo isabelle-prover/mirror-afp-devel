@@ -59,8 +59,8 @@ lemma p_min_asso: "p_min (p_min a b) c = p_min a (p_min b c)"
   apply (auto)
   apply (induct c)
   apply (auto)
-apply (metis min_max.sup_assoc)
-apply (metis min_max.inf_assoc)
+apply (metis max.assoc)
+apply (metis min.assoc)
   done
 
 lemma lp_mono: "class.monoid_add p_min Infty" by  unfold_locales  (auto simp add: p_min_asso)
@@ -228,13 +228,13 @@ lemma e_less_eq_mon1: "e_less_eq e x \<Longrightarrow> e_less_eq e (x + y)"
   apply (cases x) 
   apply (auto simp add: plus_def) 
   apply (cases y) 
-  apply (auto simp add: min_max.le_supI1)
+  apply (auto simp add: max.coboundedI1)
   done
 lemma e_less_eq_mon2: "e_less_eq e y \<Longrightarrow> e_less_eq e (x + y)"
   apply (cases x) 
   apply (auto simp add: plus_def) 
   apply (cases y) 
-  apply (auto simp add: min_max.le_supI2)
+  apply (auto simp add: max.coboundedI2)
   done
 lemmas e_less_eq_mon = 
   e_less_eq_mon1
@@ -248,7 +248,7 @@ lemma p_less_eq_mon:
   apply (cases z)
   apply (auto simp add: plesseq_def)
   apply (cases z)
-  apply (auto simp add: min_max.le_infI1)
+  apply (auto simp add: min.coboundedI1)
   done
 
 lemma p_less_eq_lem1:
@@ -333,7 +333,7 @@ lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longri
       apply auto
       apply (cases "map snd as")
       apply (auto simp add: infadd)
-      apply (metis min_max.le_infI2 snd_conv)
+      apply (metis min.coboundedI2 snd_conv)
       done
 qed
 

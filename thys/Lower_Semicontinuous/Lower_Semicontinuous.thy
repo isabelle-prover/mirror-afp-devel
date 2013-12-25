@@ -1330,8 +1330,8 @@ proof-
     using assms unfolding domain_def by auto
   moreover have "(%x. if x:S then (f x) else \<infinity>) = (%x. max (f x) (g x))"
     apply (subst fun_eq_iff) unfolding g_def apply auto
-    apply (metis ereal_less_eq(2) min_max.sup_absorb1)
-    by (metis ereal_less_eq(1) min_max.sup_absorb2)
+    apply (metis ereal_less_eq(2) max.absorb1)
+    by (metis ereal_less_eq(1) max.absorb2)
   ultimately show ?thesis using convex_ereal_max assms by auto
 qed
 
@@ -1776,7 +1776,7 @@ proof-
   moreover
   { assume "a>=b-e" hence "a:cball b e" unfolding cball_def dist_norm using `a<b` by auto }
   ultimately have "max a (b-e):cball b e"
-    by (metis min_max.sup_absorb1 min_max.sup_absorb2 linear)
+    by (metis max.absorb1 max.absorb2 linear)
   hence "max a (b-e):T" using e_def by auto
   moreover have "max a (b-e):{a..<b}" using e_def `a<b` by auto
   ultimately have "EX y:{a..<b}. y : T & y ~= b" by auto

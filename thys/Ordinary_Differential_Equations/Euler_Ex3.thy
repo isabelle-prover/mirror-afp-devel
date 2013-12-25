@@ -81,12 +81,12 @@ proof -
     by (metis abs_of_nonneg order_eq_iff sum_power2_ge_zero)
   also have "s^2 \<le> max (abs t0) (abs T) ^ 2" using assms
     apply (auto simp add: real_abs_le_square_iff[symmetric] bounded_abs i_def)
-    by (metis T'(2) bounded_abs min_max.le_inf_iff order_trans)
+    by (metis T'(2) bounded_abs min.bounded_iff order_trans)
   also have "x^2 \<le> max (abs (x0-abs b)) (abs (x0+abs b)) ^ 2" using assms
     by (auto simp add: real_abs_le_square_iff[symmetric] bounded_abs i_def)
   finally
   show ?thesis using T'
-    by (simp add: min_max.sup_commute B_def ex_ivp.i_def) (simp add: f_def)
+    by (simp add: max.commute B_def ex_ivp.i_def) (simp add: f_def)
 qed
 
 lemma lipschitz:

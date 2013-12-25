@@ -414,7 +414,7 @@ apply (subst polyn_c_max, assumption,
        thin_tac "deg_n R S X (polyn_expr R X (fst c) c) = c_max S c",
        thin_tac "deg_n R S X (polyn_expr R X (fst d) d) = c_max S d")
  
-  apply (subst polyn_add, assumption+, simp add: min_max.sup_absorb1 min_max.sup_absorb2)
+  apply (subst polyn_add, assumption+, simp add: max.absorb1 max.absorb2)
          
   apply (rule contrapos_pp, simp+,
          frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
@@ -456,7 +456,7 @@ apply (frule_tac c = c and k = "c_max S c" in polyn_expr_short, simp,
            polyn_expr R X (c_max S c) (c_max S c, snd c)",
         thin_tac "polyn_expr R X (c_max S d) d =
            polyn_expr R X (c_max S d) (c_max S d, snd d)")
-  apply (simp add: min_max.sup_absorb1 min_max.sup_absorb2)
+  apply (simp add: max.absorb1 max.absorb2)
   apply (frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
                   add_cf_pol_coeff, assumption+,
          rule_tac p = "polyn_expr R X (c_max S d)
@@ -1699,7 +1699,7 @@ apply (frule s_cf_expr[of "1\<^sub>r"], assumption+, (erule conjE)+)
  apply simp apply assumption
 done
 
-declare min_max.sup_absorb1 [simp] min_max.sup_absorb2 [simp]
+declare max.absorb1 [simp] max.absorb2 [simp]
 
 lemma (in PolynRg) erH_multTr:"\<lbrakk>PolynRg A B Y; h \<in> rHom S B; 
       pol_coeff S c\<rbrakk> \<Longrightarrow> 
@@ -3381,7 +3381,7 @@ apply (erule disjE)
         drule_tac a = j in forall_spec, assumption)
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 
- apply (simp add: min_max.sup_absorb1 min_max.sup_absorb2, subst add_cf_def, simp, rule impI,
+ apply (simp add: max.absorb1 max.absorb2, subst add_cf_def, simp, rule impI,
         drule_tac x = j in spec, 
         drule_tac a = j in forall_spec, assumption,
         frule_tac x = j and y = "fst (s_cf R S X q)" and 
@@ -5219,6 +5219,6 @@ apply (simp add:aadd_0_l, simp add:aadd_commute[of  _
                 "deg R S X (snd (Hpr\<^bsub> R S X t R' Y f g h\<^esub> m))"])
 done
 
-declare min_max.sup_absorb1 [simp del] min_max.sup_absorb2 [simp del]
+declare max.absorb1 [simp del] max.absorb2 [simp del]
 
 end

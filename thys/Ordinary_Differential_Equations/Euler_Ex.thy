@@ -87,7 +87,7 @@ proof -
     apply (cases "B' = 0", simp)
     using T' lipschitz B'_nonneg interval_notempty interval_nonneg' B_nonneg
     apply (auto
-      intro!: min_max.le_supI1 mult_left_mono divide_left_mono mult_nonneg_nonneg mult_pos_pos
+      intro!: max.coboundedI1 mult_left_mono divide_left_mono mult_nonneg_nonneg mult_pos_pos
       add_nonneg_pos
       simp: diff_less_iff diff_le_iff less_eq_float_def
     ) done
@@ -223,7 +223,7 @@ proof -
     by (auto simp add: real_abs_le_square_iff[symmetric] bounded_abs i_def)
   finally
   show ?thesis using T'
-    by (simp add: min_max.sup_commute B_def ex_ivp.i_def) (simp add: f_def)
+    by (simp add: max.commute B_def ex_ivp.i_def) (simp add: f_def)
 qed
 
 lemma lipschitz:

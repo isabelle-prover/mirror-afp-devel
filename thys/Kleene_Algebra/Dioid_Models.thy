@@ -693,7 +693,7 @@ begin
     show "x < y \<longleftrightarrow> x \<le> y \<and> x \<noteq> y"
       by (metis less_mreal_def)
     show "x + y = x \<or> x + y = y"
-      by (cases x, cases y, simp_all add: plus_mreal_def, metis linorder_le_cases min_max.le_iff_sup min_max.sup_absorb1)
+      by (cases x, cases y, simp_all add: plus_mreal_def, metis linorder_le_cases max.absorb_iff2 max.absorb1)
     show "x * (y + z) = x * y + x * z"
       by (cases x, cases y, cases z, simp_all add: plus_mreal_def times_mreal_def)     qed
 
@@ -767,7 +767,7 @@ begin
     show "x < y \<longleftrightarrow> x \<le> y \<and> x \<noteq> y"
       by (metis less_preal_def)
     show "x + y = x \<or> x + y = y"
-     by (cases x, cases y, simp_all add: plus_preal_def, metis linorder_le_cases min_max.inf_absorb2 min_max.le_iff_inf)
+     by (cases x, cases y, simp_all add: plus_preal_def, metis linorder_le_cases min.absorb2 min.absorb_iff1)
     show "x * (y + z) = x * y + x * z"
       by (cases x, cases y, cases z, simp_all add: plus_preal_def times_preal_def)   qed
 
@@ -841,7 +841,7 @@ begin
     show "x < y \<longleftrightarrow> x \<le> y \<and> x \<noteq> y"
       by (metis less_pnat_def)
     show "x + y = x \<or> x + y = y"
-      by (cases x, cases y, simp_all add: plus_pnat_def, metis linorder_le_cases min_max.inf_absorb2 min_max.le_iff_inf)
+      by (cases x, cases y, simp_all add: plus_pnat_def, metis linorder_le_cases min.absorb2 min.absorb_iff1)
     show "x * (y + z) = x * y + x * z"
       by (cases x, cases y, cases z, simp_all add: plus_pnat_def times_pnat_def)
   qed

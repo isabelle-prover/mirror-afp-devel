@@ -229,7 +229,7 @@ proof -
     show "?l i = ?r i" using vec_pre_gt[OF vl1[OF i] vl2[OF i]] by auto
   qed     
   show ?thesis
-  proof (simp only: Not_eq_iff[symmetric, of "mat_pre_gtI gt m1 m2"], unfold mat_pre_gtI_def set_zip l2 min_max.inf_idem l1[symmetric])
+  proof (simp only: Not_eq_iff[symmetric, of "mat_pre_gtI gt m1 m2"], unfold mat_pre_gtI_def set_zip l2 min.idem l1[symmetric])
     show "(\<not> (\<exists> (x,y) \<in> {(m1 ! i, m2 ! i) | i. i < nc}. vec_pre_gtI gt x y)) = (\<not> (\<exists> i<nc. \<exists> j<nr. gt (m1 ! i ! j) (m2 ! i ! j)))"
       using lr by auto
   qed

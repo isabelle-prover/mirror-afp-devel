@@ -242,7 +242,7 @@ lemma inf_prefix_length_commute[rule_format]:
 apply (unfold inf_prefix_length_def)
 thm equal_pair_count_mirror_pairwise
 apply (insert equal_pair_count_mirror_pairwise[of "zip xs ys" "zip ys xs"])
-apply (simp add: equal_pair_count_mirror_pairwise[of "zip xs ys" "zip ys xs"] min_ac mirror_pair_def)
+apply (simp add: equal_pair_count_mirror_pairwise[of "zip xs ys" "zip ys xs"] mirror_pair_def)
 done
 
 lemma inf_prefix_length_leL[intro]: 

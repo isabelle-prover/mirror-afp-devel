@@ -3702,7 +3702,7 @@ done
 
 lemma (in PolynRg) add_cf_len:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
       \<Longrightarrow> fst (add_cf S c d) = (max (fst c) (fst d))" 
-by (simp add: add_cf_def min_max.sup_absorb1 min_max.sup_absorb2)
+by (simp add: add_cf_def max.absorb1 max.absorb2)
 
 lemma (in PolynRg) polyn_expr_restrict1:"\<lbrakk>pol_coeff S (n, f);
     pol_coeff S (Suc (m + n), g)\<rbrakk> \<Longrightarrow> 
@@ -3737,7 +3737,7 @@ lemma (in PolynRg) add_cf_commute:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk
                            snd (add_cf S d c) j"
 apply (cut_tac subring, frule subring_Ring,
        frule Ring.ring_is_ag[of S])
-apply (simp add: add_cf_def min_max.sup_absorb1 min_max.sup_absorb2)
+apply (simp add: add_cf_def max.absorb1 max.absorb2)
 apply (case_tac "(fst c) = (fst d)", simp add: pol_coeff_def)
  apply (rule allI, rule impI,
         rule aGroup.ag_pOp_commute[of S], simp+)
@@ -3797,7 +3797,7 @@ apply (simp add:add_commute[of n])
   apply (cut_tac k = "Suc (na + n)" and f = "add_cf S (n, f) (Suc (na + n), g)"
           in polyn_expr_split)
   apply (frule_tac c = "(n, f)" and d = "(Suc (na + n), g)" in 
-          add_cf_len, assumption+, simp del: npow_suc add: min_max.sup_absorb1 min_max.sup_absorb2)
+          add_cf_len, assumption+, simp del: npow_suc add: max.absorb1 max.absorb2)
   apply (thin_tac "polyn_expr R X (Suc (na + n))
          (Suc (na + n), snd (add_cf S (n, f) (Suc (na + n), g))) =
         polyn_expr R X (na + n)
@@ -3842,7 +3842,7 @@ lemma (in PolynRg) polyn_add:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (m, g)\<r
 apply (cut_tac less_linear[of n m])
  apply (erule disjE,
         frule polyn_addTr1[of n f "m - n"],
-        drule_tac a = g in forall_spec, simp, simp add: min_max.sup_absorb1 min_max.sup_absorb2)
+        drule_tac a = g in forall_spec, simp, simp add: max.absorb1 max.absorb2)
 
  apply (erule disjE,
         simp add:polyn_add_n1) 

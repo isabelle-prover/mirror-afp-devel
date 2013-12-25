@@ -1453,7 +1453,7 @@ by (clarsimp simp: mult_commute[of k] f_last_message_hold_drop_mult)
 lemma f_last_message_hold_idem: "xs \<longmapsto>\<^sub>f k \<longmapsto>\<^sub>f k = xs \<longmapsto>\<^sub>f k"
 apply (case_tac "k = 0", simp)
 apply (simp add: list_eq_iff f_last_message_hold_nth f_last_message_hold_drop_mod[symmetric] f_last_message_hold_take[symmetric])
-apply (simp add: f_last_message_hold_le min_max.le_infI2 Suc_mod_le_divisor)
+apply (simp add: f_last_message_hold_le min.coboundedI2 Suc_mod_le_divisor)
 done
 
 thm f_shrink_nth

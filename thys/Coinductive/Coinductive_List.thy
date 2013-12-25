@@ -949,7 +949,7 @@ by(induct arbitrary: n)
 
 lemma ltake_eq_ltake_antimono:
   "\<lbrakk> ltake n xs = ltake n ys; m \<le> n \<rbrakk> \<Longrightarrow> ltake m xs = ltake m ys"
-by (metis ltake_ltake min_max.inf_absorb1)
+by (metis ltake_ltake min.absorb1)
 
 lemma ldropn_0 [simp]: "ldropn 0 xs = xs"
 by(simp add: ldropn_def)
