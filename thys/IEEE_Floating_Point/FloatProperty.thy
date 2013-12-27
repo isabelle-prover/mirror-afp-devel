@@ -28,11 +28,11 @@ lemma is_valid_defloat: " is_valid float_format (Rep_float a)"
 
 
 lemma float_cases: "Isnan a \<or> Infinity a \<or> Isnormal a \<or> Isdenormal a \<or> Iszero a"
-  by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def 
+  by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def Infinity_def Iszero_def Isnan_def
                   is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
 
 lemma float_cases_finite: "Isnan a \<or> Infinity a \<or> Finite a"
-by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def 
+by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def Infinity_def Isnan_def
                 is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
 
 lemma float_zero1: "Iszero Plus_zero"
@@ -62,16 +62,16 @@ lemma float_distinct: "\<not>(Isnan a \<and> Infinity a)"
                       "\<not>(Infinity a \<and> Iszero a)"
                       "\<not>(Isnormal a \<and> Isdenormal a)"
                       "\<not>(Isdenormal a \<and> Iszero a)"
-by (auto simp: emax_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+by (auto simp: emax_def Infinity_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma float_distinct_finite: "\<not>(Isnan a \<and> Finite a)" "\<not>(Infinity a \<and> Finite a)"
-  by (auto simp: emax_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+  by (auto simp: emax_def Infinity_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma finite_infinity: "Finite a \<Longrightarrow> \<not> (Infinity a)"
-  by (auto simp: emax_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+  by (auto simp: emax_def Infinity_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma finite_nan: "Finite a \<Longrightarrow> \<not> (Isnan a)"
-by (auto simp: emax_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+by (auto simp: emax_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 (* For every real number, the floating-point numbers closest to it always exist. *)
 lemma is_closest_exists: 
@@ -249,7 +249,7 @@ proof
   moreover have "\<not> Infinity a" using A1 float_distinct_finite by metis
   moreover have "\<not> Infinity b" using A2 float_distinct_finite by auto
   ultimately have "fcompare float_format (Rep_float a) (Rep_float b) = Lt"  
-    using  `Val a < Val b` fcompare_def by auto
+    using  `Val a < Val b` by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   then show "a < b" by (auto simp: less_float_def) 
 next
   assume "a < b"
@@ -269,17 +269,20 @@ next
     using nonNan nonInfinity_a 
     nonInfinity_b by auto
   moreover have "Val a < Val b \<Longrightarrow> fcompare float_format (Rep_float a) (Rep_float b) = Lt" 
-    using nonNan nonInfinity_a nonInfinity_b fcompare_def by auto
+    using nonNan nonInfinity_a nonInfinity_b  
+    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   moreover have "\<not>(((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
          \<not>((Infinity b) \<and> (sign (Rep_float b) = 1))) \<and>
          \<not>((Infinity b) \<and> (sign (Rep_float b) = 0)) \<and>
          \<not>(Val a < Val b) \<Longrightarrow>
          fcompare float_format (Rep_float a) (Rep_float b) \<noteq> Lt" 
-    using fcompare_def nonNan nonInfinity_a by auto
+    using fcompare_def nonNan nonInfinity_a 
+    by (auto simp add: Infinity_def Val_def fcompare_def)
   ultimately have "(((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
                    \<not>((Infinity b) \<and> (sign (Rep_float b) = 1))) \<or>
                    ((Infinity b) \<and> (sign (Rep_float b) = 0)) \<or>
-                   (Val a < Val b)" using lt by force
+                   (Val a < Val b)" 
+    using lt by force
   then show "Val a < Val b" 
     using fcompare_def lt nonInfinity_a nonInfinity_b nonNan assms Isnan_def 
     by auto
@@ -295,7 +298,7 @@ proof
   moreover have "\<not> Infinity a" using A1 by (metis float_distinct_finite)
   moreover have "\<not> Infinity b" using A2 float_distinct_finite by auto
   ultimately have "fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
-    using fcompare_def `Val a = Val b` by auto
+    using `Val a = Val b` by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   then show "a \<doteq> b" by (auto simp: float_eq_def)
 next
   assume "a \<doteq> b"
@@ -315,14 +318,14 @@ next
   moreover have "(Val a) = (Val b) \<Longrightarrow>
     fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
     using nonNan nonInfinity_a nonInfinity_b 
-    fcompare_def by auto
+    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   moreover have "\<not>(((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
     ((Infinity b) \<and> (sign (Rep_float b) = 1))) \<and> 
     \<not>(((Infinity a) \<and> 
     (sign (Rep_float a) = 0)) \<and> (Infinity b) \<and> (sign (Rep_float b) = 0))
     \<and> \<not>((Val a) = (Val b)) \<Longrightarrow> 
     fcompare float_format (Rep_float a) (Rep_float b) \<noteq> Eq"  
-    using fcompare_def nonNan nonInfinity_a by auto
+    using nonNan nonInfinity_a by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   ultimately have "((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
     ((Infinity b) \<and> (sign (Rep_float b) = 1)) 
     \<or>
@@ -350,7 +353,7 @@ qed
 
 (*Reflexivity of equality for non-NaNs*)
 lemma float_eq_refl [simp]: "(a \<doteq> a) \<longleftrightarrow> \<not>(Isnan a)"
-  by (auto simp: fcompare_def float_eq_def)
+  by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def float_eq_def)
 
 (*Properties about Ordering*)
 lemma float_lt_trans [simp]: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite c \<Longrightarrow> a < b \<and> b < c \<longrightarrow> a < c"
@@ -366,9 +369,9 @@ lemma float_le_neg [simp]: "Finite a \<Longrightarrow> Finite b \<Longrightarrow
 lemma float_le_infinity [simp]: "\<not> Isnan a \<Longrightarrow> a \<le> Plus_infinity"
 proof -
   assume "\<not> Isnan a"
-  then have "(fcompare float_format  (Rep_float a) (plus_infinity float_format) = Eq) \<or>
-             (fcompare float_format  (Rep_float a) (plus_infinity float_format) = Lt) " 
-    by (auto simp: fcompare_def is_nan_def is_infinity_def)
+  then have "(fcompare float_format (Rep_float a) (plus_infinity float_format) = Eq) \<or>
+             (fcompare float_format (Rep_float a) (plus_infinity float_format) = Lt)"
+             by (auto simp add: Isnan_def fcompare_def is_nan_def is_infinity_def)
   then show ?thesis by (auto simp: Plus_infinity_def less_eq_float_def
     Abs_float_inverse emax_def is_valid_def)
 qed
@@ -627,13 +630,13 @@ proof -
     (sign (Rep_float a) = sign (Rep_float b)) then sign (Rep_float a) else 0)
     (round float_format To_nearest ((Val a) + 
     (Val b))))" using B D 
-    by (auto simp: fadd_def plus_float_def)
+    by (auto simp: fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
   have G: "(b + a) =  Abs_float (zerosign float_format (if (Iszero a) \<and>
     (Iszero b) \<and>
     (sign (Rep_float a) = sign (Rep_float b)) then sign (Rep_float a) else 0)
     (round float_format To_nearest ((Val b) + 
     (Val a))))" using B D 
-    by (auto simp: fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def)
+    by (auto simp: fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def)
   have "(Val b) + (Val a) = 
     (Val a) + (Val b)" 
     by (simp add: add_commute)
@@ -644,7 +647,7 @@ proof -
     by arith
   then have "(a + b) = (b + a)" using F G by arith
   then show ?thesis using assms 
-    by (auto simp: fcompare_def emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
+    by (auto simp: fcompare_def emax_def Infinity_def Isnan_def Val_def is_nan_def is_normal_def is_denormal_def is_zero_def)
 qed
   
 (*Commutativity of multiplication*)
@@ -669,7 +672,7 @@ proof -
     (round float_format To_nearest ((Val b) * 
     (Val a))))"
     using B D 
-    by (auto simp: fmul_def times_float_def Abs_float_inverse is_nan_def is_infinity_def) 
+    by (auto simp: fmul_def times_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def) 
   have "(Val b) * (Val a) =
     (Val a) * (Val b)" 
     by simp
@@ -895,7 +898,7 @@ proof -
     then sign (Rep_float a) else 0)
         (round float_format To_nearest ((Val a) + 
          (Val (float_neg b)))))" using B C D E 
-    by (auto simp: fadd_def plus_float_def ) 
+    by (auto simp: fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
   then have G: "... = Abs_float (zerosign float_format 
     (if (Iszero a) \<and> 
         (Iszero  b) \<and>
@@ -915,7 +918,7 @@ proof -
      then sign (Rep_float a) else if (To_nearest = To_ninfinity) then 1 else 0)
         (round float_format To_nearest ((Val a) - 
         (Val b))))" using assms B C D fsub_def minus_float_def float_distinct_finite
-        by simp metis
+        by (simp add: Infinity_def Isnan_def Val_def) metis
   then have "(a - b) = Abs_float (zerosign float_format 
     (if (Iszero a) \<and> (Iszero  b) \<and> (sign (Rep_float a) \<noteq> sign (Rep_float b)) 
      then sign (Rep_float a) else 0)

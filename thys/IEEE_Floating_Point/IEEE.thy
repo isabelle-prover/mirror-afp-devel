@@ -386,8 +386,6 @@ by (simp add: is_valid_def)
 definition Val :: "float \<Rightarrow> real" where
 "Val a = valof (float_format) (Rep_float a)"
 
-declare Val_def [simp]
-
 definition Float :: "real \<Rightarrow> float" where
 "Float x = Abs_float (round float_format To_nearest x)"
 
@@ -415,12 +413,8 @@ definition Ulp :: "float \<Rightarrow> real" where
 definition Isnan :: "float \<Rightarrow> bool" where
 "Isnan a = is_nan float_format (Rep_float a)"
 
-declare Isnan_def [simp]
-
 definition Infinity :: "float \<Rightarrow> bool" where
 "Infinity a = is_infinity float_format (Rep_float a)"
-
-declare Infinity_def [simp]
 
 definition Isnormal :: "float \<Rightarrow> bool" where
 "Isnormal a = is_normal float_format (Rep_float a)"
