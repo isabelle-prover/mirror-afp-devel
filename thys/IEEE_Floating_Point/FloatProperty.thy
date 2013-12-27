@@ -10,16 +10,16 @@ section{* Proofs of Properties about Floating Point Arithmetic *}
 
 subsection{*Theorems derived from definitions*}                                                           
 
-lemma sign: "\<forall>a. sign a = fst a"
+lemma sign: "\<And>a. sign a = fst a"
 by auto
 
-lemma exponent: "\<forall> a. exponent a = fst (snd a)"
+lemma exponent: "\<And>a. exponent a = fst (snd a)"
 by auto
 
-lemma fraction: "\<forall> a. fraction a = snd (snd a)"
+lemma fraction: "\<And>a. fraction a = snd (snd a)"
 by auto
 
-lemma is_valid: "\<forall> x a. is_valid x a = ((sign a < (2::nat)) \<and> (exponent a < 2^(expwidth x))
+lemma is_valid: "\<And>x a. is_valid x a = ((sign a < (2::nat)) \<and> (exponent a < 2^(expwidth x))
                         \<and> (fraction a < 2^(fracwidth x)))"
 by (auto simp: is_valid_def emax_def)
 
@@ -64,14 +64,13 @@ lemma float_distinct: "\<not>(Isnan a \<and> Infinity a)"
                       "\<not>(Isdenormal a \<and> Iszero a)"
 by (auto simp: emax_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
-lemma float_distinct_finite: "\<not>(Isnan a \<and> Finite a)"
-                             "\<not>(Infinity a \<and> Finite a)"
+lemma float_distinct_finite: "\<not>(Isnan a \<and> Finite a)" "\<not>(Infinity a \<and> Finite a)"
   by (auto simp: emax_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma finite_infinity: "Finite a \<Longrightarrow> \<not> (Infinity a)"
   by (auto simp: emax_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
-lemma finite_nan: "Finite a \<Longrightarrow> \<not> is_nan float_format (Rep_float a)"
+lemma finite_nan: "Finite a \<Longrightarrow> \<not> (Isnan a)"
 by (auto simp: emax_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 (* For every real number, the floating-point numbers closest to it always exist. *)
@@ -614,8 +613,8 @@ subsection{*Algebraic properties about basic arithmetic*}
 lemma float_plus_comm: 
   assumes "Finite a" "Finite b" "Finite (a + b)" shows "(a + b) \<doteq> (b + a)"
 proof -
-  have B: "\<not>is_nan float_format (Rep_float a)"  
-          "\<not>is_nan float_format (Rep_float b)"
+  have B: "\<not>(Isnan a)"  
+          "\<not>(Isnan b)"
     using assms
       by (auto simp: finite_nan emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
   have D: "\<not>(Infinity a)" 
@@ -652,8 +651,8 @@ qed
 lemma float_mul_comm_eq:
   assumes "Finite a" "Finite b" shows "(a * b) = (b * a)"
 proof -
-  have B: "\<not>is_nan float_format (Rep_float a)"  
-          "\<not>is_nan float_format (Rep_float b)"
+  have B: "\<not>(Isnan a)"  
+          "\<not>(Isnan b)"
     using assms
       by (auto simp: finite_nan emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
   have D: "\<not>(Infinity a)" 
@@ -811,7 +810,8 @@ by (metis Finite_def float_neg_denormal float_neg_normal float_neg_zero)
 (* The sign of a and the sign of a's negation is different *)
 lemma float_neg_sign: "sign (Rep_float a) \<noteq> sign (Rep_float (float_neg a))"
 proof -
-  have "sign (Rep_float a) = 0 \<or> sign (Rep_float a) = 1" by (metis is_valid_defloat sign_0_1)
+  have "sign (Rep_float a) = 0 \<or> sign (Rep_float a) = 1" 
+    by (metis is_valid_defloat sign_0_1)
   moreover have "sign (Rep_float a) = 0 \<Longrightarrow> sign (Rep_float (float_neg a)) = 1" 
     by (cases a) (auto simp: fneg_def float_neg_def Abs_float_inverse is_valid_def)
   moreover have "sign (Rep_float a) = 1 \<Longrightarrow> sign (Rep_float (float_neg a)) = 0"
@@ -879,9 +879,9 @@ by (metis comm_ring_1_class.normalizing_ring_rules(2) float_neg_val)
 lemma float_plus_minus:
   assumes "Finite a" "Finite b" "Finite (a - b)" shows "(a + float_neg b) \<doteq> (a - b)"
 proof -
-  have B: "\<not>is_nan float_format (Rep_float a)" using assms
+  have B: "\<not>(Isnan a)" using assms
     by (auto simp: finite_nan emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
-  have C: "\<not>is_nan float_format (Rep_float (float_neg b))" using assms 
+  have C: "\<not>(Isnan (float_neg b))" using assms 
     by (metis finite_nan float_neg_finite)
   have D: "\<not>(Infinity a)" using assms
     by (auto simp: finite_infinity emax_def is_infinity_def 

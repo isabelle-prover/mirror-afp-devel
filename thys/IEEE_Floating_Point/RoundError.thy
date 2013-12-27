@@ -378,14 +378,9 @@ proof-
     threshold float_format" using threshold not_zero by (metis Val_def abs_less_iff)
   moreover have ab: "(a / b) = Abs_float (zerosign float_format 
     (if sign (Rep_float a) = sign (Rep_float b) then 0 else 1)
-    (round float_format To_nearest ((Val a) / 
-     (Val b))))"  
+    (round float_format To_nearest ((Val a) / (Val b))))"  
      using finite_a finite_b 
-    by (metis Val_def Infinity_def Iszero_def divide_float_def fdiv_def finite_infinity finite_nan not_zero)
-  moreover have sign01: "(
-    if sign (Rep_float a) = sign (Rep_float b) then 0 else 1) = 0 \<or> 
-    (if sign (Rep_float a) = sign (Rep_float b) then 0 else 1) = 1" using sign_0_1
-    by auto
+    by (metis Val_def Infinity_def Iszero_def Isnan_def divide_float_def fdiv_def finite_infinity finite_nan not_zero)
   moreover have "abs ((Val a) / 
         (Val b)) < threshold float_format" using threshold by auto
   ultimately have "is_finite float_format (Rep_float(a / b))" 
@@ -401,14 +396,13 @@ proof-
     valof float_format (zerosign float_format 
         (if (sign (Rep_float a) = sign (Rep_float b)) then 0 else 1)
         (round float_format To_nearest ((Val a) / 
-        (Val b)))) " using defloat_float_zerosign_round sign01 by auto
+        (Val b))))" using defloat_float_zerosign_round sign_0_1 by auto
   finally have val_ab: "Val (a / b) = valof float_format  (zerosign float_format 
         (if (sign (Rep_float a) = sign (Rep_float b)) then 0 else 1)
         (round float_format To_nearest ((Val a) / 
         (Val b))))" .
-  have zero: "is_zero float_format (round float_format To_nearest 
-    ((Val a) / (Val b))) \<Longrightarrow> 
-    (Val (a / b) = Val a / Val b + error (Val a / Val b))" 
+  have zero: "is_zero float_format (round float_format To_nearest (Val a / Val b)) \<Longrightarrow> 
+              Val (a / b) = Val a / Val b + error (Val a / Val b)" 
     proof -
       assume assm: 
         "is_zero float_format (round float_format To_nearest ((Val a) / 
