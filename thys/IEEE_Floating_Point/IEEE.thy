@@ -394,8 +394,6 @@ declare Float_def [simp]
 definition Sign :: "float \<Rightarrow> nat" where
 "Sign a = sign (Rep_float a)"
 
-declare Sign_def [simp]
-
 definition Exponent :: "float \<Rightarrow> nat" where
 "Exponent a = exponent (Rep_float a)"
 
