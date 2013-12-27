@@ -12,7 +12,6 @@ definition error :: "real \<Rightarrow> real" where
 "error x = Val(Abs_float(round float_format To_nearest x)) - x" 
 
 lemma bound_at_worst_lemma: 
-  fixes a x
   assumes threshold: "abs x < threshold float_format"
   assumes finite: "is_finite float_format a"
   shows "abs (valof float_format (round float_format To_nearest x) - x) \<le>
@@ -28,9 +27,7 @@ proof -
 qed
 
 lemma error_at_worst_lemma:
-  fixes a x
-  assumes "abs x < threshold float_format"
-  assumes "Finite a"
+  assumes "abs x < threshold float_format"  "Finite a"
   shows "abs(error x) \<le> abs(Val a - x) "
 proof -
   have "Finite a = is_finite float_format (Rep_float a)" using is_valid_defloat 
@@ -54,15 +51,12 @@ proof -
 qed
 
 lemma valof_scale_up:
-  fixes s e k f
   assumes "e \<noteq> 0"
   shows "valof float_format (s::nat, e + k, f) = 2^k * valof float_format (s, e, f)"
 using assms
-apply auto
-by (metis nat_add_commute power_add)
+by auto (metis nat_add_commute power_add)
 
 lemma is_finite_zerosign:
-  fixes a s x
   assumes "s = (0::nat) \<or> s = 1"
   assumes "is_finite float_format a"
   shows "is_finite float_format (zerosign float_format s a)"
@@ -71,7 +65,6 @@ by (metis exponent.simps fraction.simps is_finite_def is_zero_def
     minus_zero_def plus_zero_def zerosign_def zerosign_valid)
 
 lemma defloat_float_zerosign_round_finite:
-  fixes b x
   assumes threshold: "abs x < threshold float_format"
   assumes b: "b = 0 \<or> b = 1"
   shows "is_finite float_format (Rep_float(Abs_float 
@@ -89,17 +82,13 @@ qed
 
 lemma signzero_zero: "is_zero float_format a \<Longrightarrow> 
       valof float_format (zerosign float_format s a) = 0"
-apply (auto simp add: zerosign_def)
-done
+  by (auto simp add: zerosign_def)
 
 lemma val_zero: "is_zero float_format a \<Longrightarrow> 
       valof float_format a = 0"
-apply (cases a)
-apply (auto simp add: is_zero_def)
-done
+  by (cases a) (auto simp add: is_zero_def)
 
 lemma float_add:
-  fixes a b
   assumes finite_a: "Finite a" and finite_b: "Finite b" 
   assumes threshold: "abs (Val a + Val b) < threshold float_format"
   shows "Finite (a + b) \<and> (Val (a + b) = Val a + Val b + error (Val a + Val b))"
@@ -202,7 +191,6 @@ proof-
 qed
        
 lemma float_sub:
-  fixes a b
   assumes finite_a: "Finite a" and finite_b: "Finite b" 
   assumes threshold: "abs (Val a - Val b) < threshold float_format"
   shows "Finite (a - b) \<and> (Val (a - b) = Val a - Val b + error (Val a - Val b))"
@@ -380,7 +368,6 @@ qed
 
 
 lemma float_div:
-  fixes a b
   assumes finite_a: "Finite a" and finite_b: "Finite b"
   assumes not_zero: "\<not>Iszero b"
   assumes threshold: "abs (Val a / Val b) < threshold float_format"
