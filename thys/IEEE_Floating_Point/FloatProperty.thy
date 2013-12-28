@@ -38,10 +38,10 @@ by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def float_defs
                 is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
 
 lemma float_zero1: "Iszero Plus_zero"
-  by (auto simp: Abs_float_inverse is_zero_def is_valid_def)
+  by (auto simp: Iszero_def Abs_float_inverse is_zero_def is_valid_def)
 
 lemma float_zero2: "Iszero Minus_zero"
-  by (auto simp: Abs_float_inverse Minus_zero_def is_zero_def is_valid_def)
+  by (auto simp: Iszero_def Abs_float_inverse Minus_zero_def is_zero_def is_valid_def)
 
 lemma is_valid_special: "is_valid x (minus_infinity x)"
                         "is_valid x (plus_infinity x)"
@@ -64,7 +64,7 @@ lemma float_distinct: "\<not>(Isnan a \<and> Infinity a)"
                       "\<not>(Infinity a \<and> Iszero a)"
                       "\<not>(Isnormal a \<and> Isdenormal a)"
                       "\<not>(Isdenormal a \<and> Iszero a)"
-by (auto simp: emax_def Infinity_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+by (auto simp: emax_def float_defs is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma float_distinct_finite: "\<not>(Isnan a \<and> Finite a)" "\<not>(Infinity a \<and> Finite a)"
   by (auto simp: emax_def float_defs is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
@@ -625,12 +625,12 @@ proof -
     Abs_float (zerosign float_format (if Iszero a \<and> Iszero b \<and> Sign a = Sign b then Sign a else 0)
                    (round float_format To_nearest ((Val a) + (Val b))))" 
     using B D 
-    by (auto simp: Sign_def fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
+    by (auto simp: float_defs fadd_def plus_float_def) 
   have G: "(b + a) = 
     Abs_float (zerosign float_format (if Iszero a \<and> Iszero b \<and> Sign a = Sign b then Sign a else 0)
                   (round float_format To_nearest ((Val b) + (Val a))))" 
     using B D 
-    by (auto simp: Sign_def fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def)
+    by (auto simp: float_defs fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def)
   have "(Val b) + (Val a) = (Val a) + (Val b)" 
     by (simp add: add_commute)
   then have "round float_format To_nearest ((Val b) + (Val a)) = 
@@ -718,8 +718,7 @@ proof -
 qed
 
 lemma float_double_neg [simp]: "\<not>Isnan a \<Longrightarrow> float_neg (float_neg a) \<doteq> a"
-apply auto
-done
+  by auto
 
 (* The floating-point number a falls into the same category as the negation of a *)
 lemma neg_zero: "is_zero x a \<longleftrightarrow> is_zero x (fneg x m a)"
@@ -727,18 +726,18 @@ lemma neg_zero: "is_zero x a \<longleftrightarrow> is_zero x (fneg x m a)"
 
 lemma float_neg_zero: "Iszero a \<longleftrightarrow> Iszero (float_neg a)"
 proof -
-  have A: "Iszero a = (Iszero a)" by simp
   have B: "Iszero (float_neg a) = 
            is_zero float_format 
              (Rep_float (Abs_float (fneg float_format To_nearest (Rep_float a))))"
-    by (auto simp: float_neg_def)
+    by (auto simp: Iszero_def float_neg_def)
   have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))"
     by (cases a) (auto simp: Abs_float_inverse is_valid_def)
   then have C: "(Iszero (Abs_float (fneg float_format To_nearest (Rep_float a)))) = 
                 is_zero float_format (fneg float_format To_nearest (Rep_float a))" 
-    by (auto simp: Sign_def Abs_float_inverse fneg_def)
+    by (auto simp: float_defs Abs_float_inverse fneg_def)
   then have "... = (Iszero a)" by (metis Iszero_def neg_zero)
-  then show ?thesis using A B C by auto 
+  then show ?thesis
+    by (metis C float_neg_def) 
 qed
    
 lemma neg_infinity: "is_infinity x a \<longleftrightarrow> is_infinity x (fneg x m a)"
@@ -871,12 +870,13 @@ proof -
     by (metis finite_infinity)
   have E: "\<not>(Infinity (float_neg  b))" using assms 
     by (metis finite_infinity float_neg_finite) 
-  then have F: "(a + float_neg b) =  Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero (float_neg b)) \<and>((Sign a) = (Sign (float_neg b))) 
-    then (Sign a) else 0)
+  then have F: "(a + float_neg b) =  
+       Abs_float (zerosign float_format 
+          (if Iszero a \<and> Iszero (float_neg b) \<and> Sign a = Sign (float_neg b) 
+           then Sign a else 0)
         (round float_format To_nearest ((Val a) + (Val (float_neg b)))))" 
     using B C D E 
-    by (auto simp: Sign_def fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
+    by (auto simp: float_defs fadd_def plus_float_def) 
   then have G: "... = Abs_float (zerosign float_format 
     (if (Iszero a) \<and> 
         (Iszero  b) \<and>
@@ -892,14 +892,15 @@ proof -
         (round float_format To_nearest ((Val a) - 
         (Val b))))" 
     using assms float_neg_add by metis
-  have "(a - b) = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero  b) \<and> \<not>((Sign a) = (Sign b)) 
-     then (Sign a) else if (To_nearest = To_ninfinity) then 1 else 0)
-        (round float_format To_nearest ((Val a) - (Val b))))" 
+  have "(a - b) = 
+        Abs_float (zerosign float_format 
+            (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b
+             then (Sign a) else if (To_nearest = To_ninfinity) then 1 else 0)
+           (round float_format To_nearest (Val a - Val b)))" 
         using assms finite_infinity finite_nan
         by (simp only: fsub_def minus_float_def float_defs [symmetric] simp_thms if_False)
   then have "(a - b) = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero  b) \<and> ((Sign a) \<noteq> (Sign b)) 
+    (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b
      then (Sign a) else 0)
           (round float_format To_nearest ((Val a) - (Val b))))"  
     by auto

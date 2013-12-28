@@ -427,8 +427,6 @@ declare Isdenormal_def [simp]
 definition Iszero :: "float \<Rightarrow> bool" where
 "Iszero a = is_zero float_format (Rep_float a)"
 
-declare Iszero_def [simp]
-
 definition Finite :: "float \<Rightarrow> bool" where
 "Finite a = (Isnormal a \<or> Isdenormal a \<or> Iszero a)"
 
