@@ -26,6 +26,10 @@ proof -
   then show ?thesis using finite is_closest_def by (metis mem_Collect_eq)
 qed
 
+lemma defloat_float_round: "Rep_float (Abs_float (round float_format To_nearest x)) = 
+                            round (float_format) To_nearest x"
+  by (metis mem_Collect_eq Abs_float_inverse is_valid_round) 
+
 lemma error_at_worst_lemma:
   assumes "abs x < threshold float_format"  "Finite a"
   shows "abs(error x) \<le> abs(Val a - x) "

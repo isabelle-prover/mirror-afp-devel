@@ -362,12 +362,9 @@ section{*Specify float to be double  precision and round to even*}
 definition float_format :: "format" where
 "float_format = (11, 52)"
 
-declare float_format_def [simp]
-
 (*Define the float type*)
 typedef float = "{a. is_valid float_format a}"
-apply (rule_tac x = "(0::nat, 0, 0)" in exI)
-by (simp add: is_valid_def) 
+by (rule_tac x = "(0::nat, 0, 0)" in exI) (simp add: is_valid_def) 
 
 definition Val :: "float \<Rightarrow> real" where
 "Val a = valof (float_format) (Rep_float a)"

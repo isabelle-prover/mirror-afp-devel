@@ -9,7 +9,7 @@ theory FloatProperty imports IEEE begin
 section{* Proofs of Properties about Floating Point Arithmetic *}
 
 lemmas float_defs = Finite_def Infinity_def Iszero_def Isnan_def Val_def Sign_def
-                    Isnormal_def Isdenormal_def Fraction_def Exponent_def
+                    Isnormal_def Isdenormal_def Fraction_def Exponent_def float_format_def
 
 subsection{*Theorems derived from definitions*}                                                           
 
@@ -78,8 +78,8 @@ by (auto simp: emax_def float_defs is_nan_def is_infinity_def is_normal_def is_d
 
 (* For every real number, the floating-point numbers closest to it always exist. *)
 lemma is_closest_exists: 
-  fixes v::"representation \<Rightarrow> real" and s::"representation set" and x::real and a::representation
-  assumes finite:"finite s" 
+  fixes v::"representation \<Rightarrow> real" and s::"representation set" 
+  assumes finite: "finite s" 
   assumes non_empty: "\<not>(s = {})" 
   shows  "\<exists> a. is_closest v s x a"
 using finite non_empty
@@ -97,31 +97,26 @@ next
     proof -
       assume "s \<noteq> {}"
       obtain a where "is_closest v s x a" using insert.hyps by (metis `s \<noteq> {}`)
-      have "abs((v a) - x ) \<le> abs ((v z) - x) \<Longrightarrow> ?case"
-        proof -
-          assume "abs((v a) - x ) \<le> abs ((v z) - x)"
-          then have "is_closest v (insert z s) x a" 
-            by (metis (hide_lams, no_types) `is_closest v s x a` insert_iff is_closest_def)
-          then show ?thesis by metis
-        qed
+      then have "abs((v a) - x ) \<le> abs ((v z) - x) \<Longrightarrow> ?case"
+        by (metis insert_iff is_closest_def)
       moreover have "abs((v z) - x ) \<le> abs ((v a) - x) \<Longrightarrow> ?case"
-        proof -
-           assume z: "abs((v z) - x ) \<le> abs ((v a) - x)"
-           have "\<forall>b. b \<in> s \<longrightarrow> abs((v a) - x ) \<le> abs ((v b) - x)"
-             by (metis `is_closest v s x a` is_closest_def)
-           then have "\<forall>b. b \<in> (insert z s) \<longrightarrow> abs((v z) - x ) \<le> abs ((v b) - x)"
-             by (metis (full_types) insert_iff order_refl order_trans z)
-           then have "is_closest v (insert z s) x z" using is_closest_def `is_closest v s x a`
-             by (metis (mono_tags) insertI1)
-           then show ?thesis by metis
-         qed
+      proof -
+         assume z: "abs((v z) - x ) \<le> abs ((v a) - x)"
+         have "\<forall>b. b \<in> s \<longrightarrow> abs((v a) - x ) \<le> abs ((v b) - x)"
+           by (metis `is_closest v s x a` is_closest_def)
+         then have "\<forall>b. b \<in> (insert z s) \<longrightarrow> abs((v z) - x ) \<le> abs ((v b) - x)"
+           by (metis (full_types) insert_iff order_refl order_trans z)
+         then have "is_closest v (insert z s) x z" using is_closest_def `is_closest v s x a`
+           by (metis (mono_tags) insertI1)
+         then show ?thesis by metis
+       qed
       ultimately show ?thesis by (metis linear)
     qed
   ultimately show ?case by metis
 qed
 
 lemma closest_is_everything:
-  fixes v::"representation \<Rightarrow> real" and s::"representation set" and x::real and a::representation
+  fixes v::"representation \<Rightarrow> real" and s::"representation set" 
   assumes finite: "finite s"
   assumes non_empty: "\<not>(s = {})"
   shows "is_closest v s x (closest v p s x) \<and> 
@@ -131,16 +126,15 @@ by (rule someI_ex) (metis assms is_closest_exists [of s v x])
 
 lemma closest_in_set:
   fixes v::"representation \<Rightarrow> real" 
-  assumes "finite s"  "\<not>(s = {})"
+  assumes "finite s"  "s \<noteq> {}"
   shows "(closest v p s x) \<in> s"
   by (metis assms closest_is_everything is_closest_def)
 
 lemma closest_is_closest: 
   fixes v::"representation \<Rightarrow> real"
-  assumes finite: "finite s"
-  assumes non_empty: "\<not>(s = {})"
+  assumes "finite s"  "s \<noteq> {}"
   shows "is_closest v s x (closest v p s x)"
-by (metis closest_is_everything finite non_empty)
+by (metis closest_is_everything assms)
 
 lemma float_first_cross: 
   "{a::representation. fst a < m \<and> fst (snd a) < n \<and> snd (snd a) < p} =
@@ -157,15 +151,13 @@ lemma is_finite_subset: "{a :: representation. is_finite x a} \<subseteq> {a. is
   by (auto simp: is_finite_def)
 
 lemma match_float_finite:
-  assumes "({a :: representation. is_finite x a} \<subseteq> {a. is_valid x a})"
+  assumes "{a :: representation. is_finite x a} \<subseteq> {a. is_valid x a}"
   shows "finite {a. is_finite x a}"
-proof -
-  have "finite {a. is_valid x a}" using is_valid_finite by metis
-  thus ?thesis using assms by (metis finite_subset)
-qed
+by (metis assms finite_subset is_valid_finite)
+
 
 lemma is_finite_finite: "finite {a :: representation. is_finite x a}"
-by (metis is_finite_subset match_float_finite)
+  by (metis is_finite_subset match_float_finite)
 
 lemma is_valid_nonempty: "\<not>({a::representation. is_valid x a} = {})"
 proof -
@@ -184,8 +176,8 @@ lemma is_finite_closest:
   fixes v::"representation \<Rightarrow> real"
   shows "is_finite f (closest v p {a. is_finite f a} x)"
 proof -
-  have "closest v p {a. is_finite f a} x \<in> {a. is_finite f a}" using closest_in_set 
-    by (metis is_finite_finite is_finite_nonempty)
+  have "closest v p {a. is_finite f a} x \<in> {a. is_finite f a}"
+    by (metis is_finite_finite is_finite_nonempty closest_in_set)
   then show ?thesis by auto
 qed
 
@@ -196,29 +188,22 @@ by (metis is_finite_closest is_finite_def)
 
 lemma is_valid_round: "is_valid f (round f To_nearest x)"
 proof -
-  have "round f To_nearest x = (if x \<le> -(threshold f) 
-    then minus_infinity f 
-    else if x \<ge> threshold f
-    then plus_infinity f 
-    else (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x) )"
+  have "round f To_nearest x = 
+        (if x \<le> -(threshold f) then minus_infinity f 
+          else if x \<ge> threshold f then plus_infinity f 
+          else (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x) )"
     by (metis round.simps(1))
-  moreover have "is_valid f (minus_infinity f)" using is_valid_special by metis
-  moreover have "is_valid f (plus_infinity f)" using is_valid_special by metis
-  moreover have "is_valid f (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x)"
-    using is_valid_closest by auto
-  ultimately have "is_valid f (if x \<le> -(threshold f) 
-    then minus_infinity f 
-    else if x \<ge> threshold f
-    then plus_infinity f 
-    else (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x) )"
+  moreover have "is_valid f (minus_infinity f)" 
+                "is_valid f (plus_infinity f)" 
+                "is_valid f (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x)"
+    using is_valid_special is_valid_closest by auto
+  ultimately have "is_valid f (if x \<le> -(threshold f) then minus_infinity f 
+                          else if x \<ge> threshold f then plus_infinity f 
+                          else (closest (valof f) (\<lambda>a. even (fraction a)) {a. is_finite f a} x) )"
    by auto
   then have "is_valid f (round f To_nearest x)" by auto
   thus ?thesis by auto
 qed
-
-lemma defloat_float_round: "Rep_float (Abs_float (round float_format To_nearest x)) = 
-                            round (float_format) To_nearest x"
-  by (metis mem_Collect_eq Abs_float_inverse is_valid_round) 
 
 lemma zerosign_valid: 
   assumes  sign: "s = 0 \<or> s = 1" and valid: "is_valid x a"
@@ -381,11 +366,11 @@ proof -
 qed
 
 lemma [simp]: "Plus_zero \<le> Abs_float (topfloat float_format)"
-  by (auto simp: fcompare_def is_nan_def less_eq_float_def topfloat_def 
+  by (auto simp: fcompare_def is_nan_def less_eq_float_def topfloat_def float_format_def
        Abs_float_inverse emax_def is_infinity_def is_zero_def is_valid_def)
 
 lemma valof_topfloat: "valof float_format (topfloat float_format) = largest float_format"
-  by (simp add: emax_def topfloat_def largest_def)
+  by (simp add: emax_def float_format_def topfloat_def largest_def)
 
 lemma float_frac_le: "Finite a \<Longrightarrow> (Fraction a) \<le> 2^52 - 1"
   by (cases a) (auto simp: Abs_float_inverse float_defs is_valid_def)
@@ -411,14 +396,14 @@ proof -
   then have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le)
   have C: "(Exponent a) \<le> 2046" using A by (rule float_exp_le)
   then have "(Fraction a)/2^(fracwidth float_format) \<le> ((2^52 - 1)/2^(fracwidth float_format))" 
-    using B by auto 
+    using B by (auto simp: float_format_def)
   then have D: "(2 / (2^bias float_format)) *
     ((Fraction a)/2^(fracwidth float_format)) \<le>  
     (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
-    by (auto simp: bias_def)  
-  have H: "0<(1 + (Fraction a)/2^fracwidth float_format) \<and>
-    (1 + (Fraction a)/2^fracwidth float_format)
-    \<le> (1 + (2^52 - 1)/2^fracwidth float_format)"  using D by (auto simp: bias_def) 
+    by (auto simp: float_format_def bias_def)  
+  have H: "0 < 1 + (Fraction a)/2^fracwidth float_format \<and>
+     (1 + (Fraction a)/2^fracwidth float_format) \<le> (1 + (2^52 - 1)/2^fracwidth float_format)"  
+    using D by (auto simp: float_format_def bias_def) 
   have J: "(2::real)^(Exponent a) \<le> 2^2046" using C by (metis exp_less)
   then have K: "0<((2::real)^(Exponent a)) / (2^bias float_format)\<and>
     ((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
@@ -436,26 +421,27 @@ proof -
     (1 + (2^52 - 1)/2^fracwidth float_format) " by auto
   have "(-1) * (((2::real)^(Exponent a)) / (2^bias float_format)) *
     (1 + (Fraction a)/2^fracwidth float_format) \<le> 
-    (-1)^0 * ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" using L by auto
+    (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
+    using L by auto
   then have N: "(-1)^(Sign a) * (((2::real)^(Exponent a)) /
     (2^bias float_format)) *
     (1 + (Fraction a)/2^fracwidth float_format) \<le>  (-1)^0 * ((2^2046) / 
     (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " using M A float_sign_le by metis
+    (1 + (2^52 - 1)/2^fracwidth float_format) " 
+    using M A float_sign_le by metis
   have P: "(-1) * (2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) / 
     (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)"  using A B by (auto simp: bias_def)
+    (1 + (2^52 - 1)/2^fracwidth float_format)"  
+    using A B by (auto simp: float_format_def bias_def)
   have Q: "1 * (2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) /
     (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" using A B by (auto simp: bias_def)
-  then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * 
-    ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) / 
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " 
-    using P Q float_sign_le by (metis A)
+    (1 + (2^52 - 1)/2^fracwidth float_format)" 
+    using A B by (auto simp: float_format_def bias_def)
+  then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) \<le> 
+             (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
+    by (metis P Q float_sign_le)
   then have R: "
     (if (exponent(Rep_float a) = 0) 
     then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
@@ -471,10 +457,10 @@ proof -
          ((Fraction a)/2^(fracwidth float_format)) 
     else (-1)^(Sign a) * (((2::real)^(Exponent a)) / 
          (2^bias float_format)) * (1 + (Fraction a)/2^fracwidth float_format))" 
-    by (cases a) (auto simp: Sign_def float_defs Abs_float_inverse) 
+    by (cases a) (auto simp: float_defs Abs_float_inverse) 
   moreover have "valof (float_format) (topfloat float_format) =
         (-1)^0 * ((2^2046) / (2^bias float_format)) *(1 + (2^52 - 1)/2^fracwidth float_format)" 
-    by (auto simp: emax_def topfloat_def) 
+    by (auto simp: emax_def float_format_def topfloat_def) 
   ultimately have "valof (float_format) (Rep_float a) 
     \<le> valof (float_format) (topfloat float_format)" using R by auto
     then have "Val a \<le> Val Topfloat" 
@@ -736,12 +722,11 @@ lemma float_neg_normal: "Isnormal a \<longleftrightarrow> Isnormal (float_neg a)
 proof -
   have "is_valid float_format ((1 - (Sign a), (Exponent a), (Fraction a)))"
     by (cases a) (auto simp: float_defs Abs_float_inverse is_valid_def)
-  then have C: "is_normal float_format (Rep_float (Abs_float (fneg float_format To_nearest 
-    (Rep_float a)))) = 
-    is_normal float_format (fneg float_format To_nearest (Rep_float a))" 
+  then have "Isnormal (Abs_float (fneg float_format To_nearest (Rep_float a))) = 
+             is_normal float_format (fneg float_format To_nearest (Rep_float a))" 
      by (auto simp: Abs_float_inverse float_defs fneg_def)
-  then have "... = is_normal float_format (Rep_float a)" by (metis neg_normal)
-  then show ?thesis using C by (simp add: float_defs float_neg_def)
+  also have "... = (Isnormal a)" by (metis Isnormal_def neg_normal)
+  finally show ?thesis by (simp add: float_defs float_neg_def)
 qed
 
 lemma neg_denormal: "is_denormal x a \<longleftrightarrow> is_denormal x (fneg x m a)"
