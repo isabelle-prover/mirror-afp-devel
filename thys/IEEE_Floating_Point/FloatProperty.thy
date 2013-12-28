@@ -9,6 +9,7 @@ theory FloatProperty imports IEEE begin
 section{* Proofs of Properties about Floating Point Arithmetic *}
 
 lemmas float_defs = Finite_def Infinity_def Iszero_def Isnan_def Val_def Sign_def
+                    Isnormal_def Isdenormal_def
 
 subsection{*Theorems derived from definitions*}                                                           
 
@@ -743,18 +744,13 @@ lemma neg_normal: "is_normal x a \<longleftrightarrow> is_normal x (fneg x m a)"
 
 lemma float_neg_normal: "Isnormal a \<longleftrightarrow> Isnormal (float_neg a)"
 proof -
-  have A:  "Isnormal a = is_normal float_format (Rep_float a)" by simp
-  have B: "Isnormal (float_neg a) = is_normal float_format (Rep_float (Abs_float 
-    (fneg float_format To_nearest (Rep_float a))))"
-    by (auto simp: float_neg_def)
-  have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), 
-    fraction (Rep_float a)))"
+  have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))"
     by (cases a) (auto simp: Abs_float_inverse is_valid_def)
   then have C: "is_normal float_format (Rep_float (Abs_float (fneg float_format To_nearest 
     (Rep_float a)))) = is_normal float_format (fneg float_format To_nearest (Rep_float a))" 
      by (auto simp: Abs_float_inverse Sign_def fneg_def)
   then have "... = is_normal float_format (Rep_float a)" by (metis neg_normal)
-  then show ?thesis using A B C by auto 
+  then show ?thesis using C by (simp add: float_defs float_neg_def)
 qed
 
 lemma neg_denormal: "is_denormal x a \<longleftrightarrow> is_denormal x (fneg x m a)"
@@ -762,17 +758,13 @@ lemma neg_denormal: "is_denormal x a \<longleftrightarrow> is_denormal x (fneg x
 
 lemma float_neg_denormal: "Isdenormal a \<longleftrightarrow> Isdenormal (float_neg a)"
 proof -
-  have A: "Isdenormal a = is_denormal float_format (Rep_float a)" by simp
-  have B: "Isdenormal (float_neg a) = is_denormal float_format (Rep_float (Abs_float 
-    (fneg float_format To_nearest (Rep_float a))))"
-    by (auto simp: float_neg_def)
   have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))"
     by (cases a) (auto simp: Abs_float_inverse is_valid_def)
   then have C: "is_denormal float_format (Rep_float (Abs_float (fneg float_format To_nearest 
     (Rep_float a)))) = is_denormal float_format (fneg float_format To_nearest (Rep_float a))" 
     by (auto simp: Abs_float_inverse Sign_def fneg_def)
   then have "... = is_denormal float_format (Rep_float a)" by (metis neg_denormal)
-  then show ?thesis using A B C by auto 
+  then show ?thesis using C by (simp add: float_defs float_neg_def)
 qed
 
 

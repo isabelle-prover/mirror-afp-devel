@@ -383,12 +383,8 @@ definition Sign :: "float \<Rightarrow> nat" where
 definition Exponent :: "float \<Rightarrow> nat" where
 "Exponent a = exponent (Rep_float a)"
 
-declare Exponent_def [simp]
-
 definition Fraction :: "float \<Rightarrow> nat" where
 "Fraction a = fraction (Rep_float a)"
-
-declare Fraction_def [simp]
 
 definition Ulp :: "float \<Rightarrow> real" where
 "Ulp a = ulp float_format (Rep_float a)"
@@ -403,12 +399,8 @@ definition Infinity :: "float \<Rightarrow> bool" where
 definition Isnormal :: "float \<Rightarrow> bool" where
 "Isnormal a = is_normal float_format (Rep_float a)"
 
-declare Isnormal_def [simp]
-
 definition Isdenormal :: "float \<Rightarrow> bool" where
 "Isdenormal a = is_denormal float_format (Rep_float a)"
-
-declare Isdenormal_def [simp]
 
 definition Iszero :: "float \<Rightarrow> bool" where
 "Iszero a = is_zero float_format (Rep_float a)"
@@ -509,7 +501,6 @@ definition float_eq :: "float \<Rightarrow> float \<Rightarrow> bool"  (infixl "
 
 definition float_neg :: "float \<Rightarrow> float" where
 "float_neg a = Abs_float (fneg float_format To_nearest (Rep_float a))"
-
 
 definition float_abs :: "float \<Rightarrow> float" where
 "float_abs a = (if sign (Rep_float a) = 0 then a else float_neg a)"
