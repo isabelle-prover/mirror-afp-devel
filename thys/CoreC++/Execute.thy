@@ -1094,7 +1094,7 @@ qed
 
 subsection {* Examples *}
 
-declare [[values_timeout = 100]]
+declare [[values_timeout = 120]]
 
 values [expected "{Val (Intg 5)}"]
   "{fst (e', s') | e' s'. 
