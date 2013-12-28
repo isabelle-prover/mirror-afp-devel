@@ -372,8 +372,6 @@ definition Val :: "float \<Rightarrow> real" where
 definition Float :: "real \<Rightarrow> float" where
 "Float x = Abs_float (round float_format To_nearest x)"
 
-declare Float_def [simp]
-
 definition Sign :: "float \<Rightarrow> nat" where
 "Sign a = sign (Rep_float a)"
 
@@ -417,8 +415,6 @@ definition Bottomfloat :: "float" where
 
 definition Plus_zero :: "float" where
 "Plus_zero = Abs_float (plus_zero float_format)"
-
-declare Plus_zero_def [simp]
 
 definition Minus_zero :: "float" where
 "Minus_zero = Abs_float (minus_zero float_format)"

@@ -10,6 +10,7 @@ section{* Proofs of Properties about Floating Point Arithmetic *}
 
 lemmas float_defs = Finite_def Infinity_def Iszero_def Isnan_def Val_def Sign_def
                     Isnormal_def Isdenormal_def Fraction_def Exponent_def float_format_def
+                    Plus_zero_def Minus_zero_def
 
 subsection{*Theorems derived from definitions*}                                                           
 
@@ -39,10 +40,10 @@ by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def float_defs
                 is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
 
 lemma float_zero1: "Iszero Plus_zero"
-  by (auto simp: Iszero_def Abs_float_inverse is_zero_def is_valid_def)
+  by (auto simp: float_defs Abs_float_inverse is_zero_def is_valid_def)
 
 lemma float_zero2: "Iszero Minus_zero"
-  by (auto simp: Iszero_def Abs_float_inverse Minus_zero_def is_zero_def is_valid_def)
+  by (auto simp: float_defs Abs_float_inverse is_zero_def is_valid_def)
 
 lemma is_valid_special: "is_valid x (minus_infinity x)"
                         "is_valid x (plus_infinity x)"
@@ -367,7 +368,7 @@ qed
 
 lemma [simp]: "Plus_zero \<le> Abs_float (topfloat float_format)"
   by (auto simp: fcompare_def is_nan_def less_eq_float_def topfloat_def float_format_def
-       Abs_float_inverse emax_def is_infinity_def is_zero_def is_valid_def)
+       Abs_float_inverse emax_def is_infinity_def is_zero_def is_valid_def Plus_zero_def)
 
 lemma valof_topfloat: "valof float_format (topfloat float_format) = largest float_format"
   by (simp add: emax_def float_format_def topfloat_def largest_def)
@@ -390,19 +391,18 @@ lemma div_less: "(a::'a::linordered_field_inverse_zero) \<le> b \<and> c > 0 \<L
 lemma finite_topfloat: "Finite Topfloat"
 by (auto simp: float_defs Topfloat_def topfloat_def Abs_float_inverse emax_def is_normal_def is_valid_def)
 
-lemma float_le_topfloat: "Finite a \<Longrightarrow>  a \<le> Topfloat"
+lemma float_le_topfloat: 
+  assumes "Finite a" shows "a \<le> Topfloat"
 proof -
-  assume A: "Finite a"
-  then have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le)
-  have C: "(Exponent a) \<le> 2046" using A by (rule float_exp_le)
-  then have "(Fraction a)/2^(fracwidth float_format) \<le> ((2^52 - 1)/2^(fracwidth float_format))" 
+  have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le [OF assms])
+  have C: "(Exponent a) \<le> 2046" using assms by (rule float_exp_le)
+  then have "(Fraction a)/2^(fracwidth float_format) \<le> (2^52 - 1)/2^(fracwidth float_format)" 
     using B by (auto simp: float_format_def)
-  then have D: "(2 / (2^bias float_format)) *
-    ((Fraction a)/2^(fracwidth float_format)) \<le>  
-    (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
+  then have D: "(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) \<le>  
+                (2 / (2^bias float_format)) * ((2^52 - 1)/2^(fracwidth float_format))" 
     by (auto simp: float_format_def bias_def)  
-  have H: "0 < 1 + (Fraction a)/2^fracwidth float_format \<and>
-     (1 + (Fraction a)/2^fracwidth float_format) \<le> (1 + (2^52 - 1)/2^fracwidth float_format)"  
+  have H: "0 < 1 + (Fraction a)/2^fracwidth float_format"
+     "(1 + (Fraction a)/2^fracwidth float_format) \<le> (1 + (2^52 - 1)/2^fracwidth float_format)"  
     using D by (auto simp: float_format_def bias_def) 
   have J: "(2::real)^(Exponent a) \<le> 2^2046" using C by (metis exp_less)
   then have K: "0<((2::real)^(Exponent a)) / (2^bias float_format)\<and>
@@ -415,10 +415,10 @@ proof -
     ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" 
     by (metis H divide_zero_left pos_divide_less_eq mult_mono' less_eq_real_def)
-  then have M: "1 * (((2::real)^(Exponent a)) / (2^bias float_format)) *
+  then have M: "1 * ((2^(Exponent a)) / (2^bias float_format)) *
     (1 + (Fraction a)/2^fracwidth float_format) \<le> 
-    (-1)^0 * ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " by auto
+    (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
+    by auto
   have "(-1) * (((2::real)^(Exponent a)) / (2^bias float_format)) *
     (1 + (Fraction a)/2^fracwidth float_format) \<le> 
     (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
@@ -428,64 +428,65 @@ proof -
     (1 + (Fraction a)/2^fracwidth float_format) \<le>  (-1)^0 * ((2^2046) / 
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format) " 
-    using M A float_sign_le by metis
+    using M float_sign_le by metis
   have P: "(-1) * (2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) / 
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)"  
-    using A B by (auto simp: float_format_def bias_def)
+    using B by (auto simp: float_format_def bias_def)
   have Q: "1 * (2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) /
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using A B by (auto simp: float_format_def bias_def)
+    using B by (auto simp: float_format_def bias_def)
   then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) \<le> 
              (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
     by (metis P Q float_sign_le)
-  then have R: "
-    (if (exponent(Rep_float a) = 0) 
-    then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
-         ((Fraction a)/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * (((2::real)^(Exponent a))/
-         (2^bias float_format)) *
+  then have R: "(if ((Exponent a) = 0) 
+    then (-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) 
+    else (-1)^(Sign a) * ((2^(Exponent a))/ (2^bias float_format)) *
          (1 + (Fraction a)/2^fracwidth float_format)) \<le> 
-         (-1)^0 * ((2^2046) / (2^bias float_format)) *
-         (1 + (2^52 - 1)/2^fracwidth float_format)" using N by simp
+         (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
+    using N by simp
   have "valof (float_format) (Rep_float a) =  
-    (if (exponent(Rep_float a) = 0) 
-    then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
-         ((Fraction a)/2^(fracwidth float_format)) 
+    (if ((Exponent a) = 0) 
+    then (-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) 
     else (-1)^(Sign a) * (((2::real)^(Exponent a)) / 
          (2^bias float_format)) * (1 + (Fraction a)/2^fracwidth float_format))" 
     by (cases a) (auto simp: float_defs Abs_float_inverse) 
   moreover have "valof (float_format) (topfloat float_format) =
         (-1)^0 * ((2^2046) / (2^bias float_format)) *(1 + (2^52 - 1)/2^fracwidth float_format)" 
     by (auto simp: emax_def float_format_def topfloat_def) 
-  ultimately have "valof (float_format) (Rep_float a) 
-    \<le> valof (float_format) (topfloat float_format)" using R by auto
-    then have "Val a \<le> Val Topfloat" 
-      by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
+  ultimately have "(Val a) \<le> valof (float_format) (topfloat float_format)" 
+    using R Val_def by auto
+  then have "Val a \<le> Val Topfloat" 
+    by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
   thus ?thesis 
-    using A finite_topfloat by (simp add: emax_def)
+    using assms finite_topfloat by (simp add: emax_def)
 qed
      
-lemma float_val_le_largest: 
-  assumes "Finite a"
-  shows "Val a \<le> largest float_format"
+lemma topfloat_eq_largest: "Val Topfloat = largest float_format"
 proof -
   have "Val Topfloat = valof float_format (topfloat float_format)" 
       by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
-  also have "... = largest float_format" by (simp add: emax_def largest_def topfloat_def)
-  finally have "Val Topfloat = largest float_format" .
-  thus ?thesis using float_le_topfloat by (metis assms finite_topfloat float_le)
+  also have "... = largest float_format" 
+    by (simp add: emax_def largest_def float_format_def topfloat_def)
+  finally show ?thesis .
 qed
+  
+lemma float_val_le_largest: 
+  assumes "Finite a"
+  shows "Val a \<le> largest float_format"
+by (metis assms finite_topfloat float_le float_le_topfloat topfloat_eq_largest)
 
 lemma float_val_lt_threshold:
   assumes "Finite a"
   shows "Val a < threshold float_format"
 proof -
-  have "Val a \<le> largest float_format" using float_val_le_largest assms by simp
-  also have "... < threshold float_format" by (auto simp: largest_def threshold_def bias_def)
+  have "Val a \<le> largest float_format" 
+    by (rule float_val_le_largest [OF assms])
+  also have "... < threshold float_format" 
+    by (auto simp: float_format_def largest_def threshold_def bias_def)
   finally show ?thesis .
 qed
 
@@ -495,14 +496,14 @@ proof -
   then have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le)
   have C: "(Exponent a) \<le> 2046" using A by (rule float_exp_le)
   then have "((Fraction a)/2^(fracwidth float_format)) \<le> 
-    (( 2^52 - 1)/2^(fracwidth float_format))" using B  by auto 
+    (( 2^52 - 1)/2^(fracwidth float_format))" using B  by (auto simp: float_format_def) 
   then have D: "(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format))
-    \<le> (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
-    by (auto simp: bias_def) 
+        \<le> (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
+    by (auto simp: bias_def float_format_def) 
   have H: "0<(1 + (Fraction a)/2^fracwidth float_format) \<and>
     (1 + (Fraction a)/2^fracwidth float_format) \<le>
     (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using D by (auto simp: bias_def)
+    using D by (auto simp: bias_def float_format_def)
   have J: "(2::real)^(Exponent a) \<le> 2^2046" using C by (metis exp_less)
   then have K: "0<((2::real)^(Exponent a)) / (2^bias float_format) \<and>
     ((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
@@ -529,36 +530,37 @@ proof -
   have P: "(-1) * (2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
     (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)"  using A B by (auto simp: bias_def)
+    (1 + (2^52 - 1)/2^fracwidth float_format)"  
+    using A B by (auto simp: bias_def float_format_def)
   have Q: "1 * (2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) /
     (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" using A B by (auto simp: bias_def)
+    (1 + (2^52 - 1)/2^fracwidth float_format)" 
+    using A B by (auto simp: bias_def float_format_def)
   then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * 
     ((Fraction a)/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
     (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format) " 
-    using P Q float_sign_le by (metis A)
-  then have R: "
-    (if  (exponent(Rep_float a) = 0) 
+    by (metis  P Q float_sign_le)
+  then have R: "(if Exponent a = 0 
     then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
          ((Fraction a)/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * (((2::real)^(Exponent a)) / 
+    else (-1)^(Sign a) * ((2^(Exponent a)) / 
          (2^bias float_format)) *
          (1 + (Fraction a)/2^fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
          (2^bias float_format)) *
          (1 + (2^52 - 1)/2^fracwidth float_format)" using N by auto
   have "valof (float_format) (Rep_float a) = 
-    (if (exponent(Rep_float a) = 0) 
+    (if ((Exponent a) = 0) 
     then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
          ((Fraction a)/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * (((2::real)^(Exponent a)) / 
+    else (-1)^(Sign a) * ((2^(Exponent a)) / 
          (2^bias float_format)) * (1 + (Fraction a)/2^fracwidth float_format))" 
     by (cases a) (auto simp: float_defs Abs_float_inverse) 
   moreover have "valof (float_format) (bottomfloat float_format) =
       (-1)^1 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    by (auto simp: emax_def bottomfloat_def)
+    by (auto simp: emax_def float_format_def bottomfloat_def)
   ultimately have "valof (float_format) (Rep_float a) \<ge> valof (float_format) (bottomfloat float_format)" 
-    using R by auto
+    using R by (auto simp: float_format_def)
   then have "Val a \<ge> Val Bottomfloat" using Abs_float_inverse Bottomfloat_def is_valid_special
     by (metis Val_def mem_Collect_eq)
   thus ?thesis by auto
@@ -572,7 +574,7 @@ proof -
     using Bottomfloat_def Abs_float_inverse is_valid_special
     by (metis (full_types) Val_def mem_Collect_eq)
   also have "... = -largest float_format" 
-    by (auto simp: emax_def bias_def bottomfloat_def largest_def)
+    by (auto simp: emax_def bias_def bottomfloat_def float_format_def largest_def)
   finally have "Val Bottomfloat = -largest float_format" .
   thus ?thesis 
     using float_val_ge_bottomfloat by (metis assms)
@@ -585,7 +587,7 @@ proof -
   have largest: "Val a \<ge> -largest float_format" using float_val_ge_bottomfloat assms
     by (metis float_val_ge_largest)
   then have "-largest float_format > -(threshold float_format)"
-    by (auto simp: bias_def threshold_def largest_def)
+    by (auto simp: bias_def threshold_def float_format_def largest_def)
   then show ?thesis 
     by (metis largest less_le_trans)
 qed
@@ -626,19 +628,17 @@ qed
 lemma float_mul_comm_eq:
   assumes "Finite a" "Finite b" shows "(a * b) = (b * a)"
 proof -
-  have B: "\<not>(Isnan a)"  
-          "\<not>(Isnan b)"
+  have B: "\<not>(Isnan a)"  "\<not>(Isnan b)"
     using assms
       by (auto simp: finite_nan emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
-  have D: "\<not>(Infinity a)" 
-          "\<not>(Infinity b)"
+  have D: "\<not>(Infinity a)" "\<not>(Infinity b)"
     using assms
     by (auto simp: finite_infinity emax_def is_infinity_def is_normal_def is_denormal_def
       is_zero_def)
   then have F: "(a * b) = 
                   Abs_float (zerosign float_format 
                              (of_bool (Sign a \<noteq> Sign b))
-                             (round float_format To_nearest ((Val a) *  (Val b))))" 
+                             (round float_format To_nearest ((Val a) * (Val b))))" 
                "(b * a) =
                    Abs_float (zerosign float_format 
                          (of_bool (Sign a \<noteq> Sign b))
@@ -652,7 +652,7 @@ proof -
 qed
 
 lemma float_mul_comm: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite (a * b) \<Longrightarrow> (a * b) \<doteq> (b * a)"
-by (metis float_distinct_finite float_eq_refl float_mul_comm_eq)
+  by (metis float_eq float_mul_comm_eq)
 
 (*Showing --(-- a) = a*)
 lemma sign_double_neg [simp]: assumes "is_valid x a" shows "(1 - (1 - sign a)) = sign a"
@@ -817,44 +817,31 @@ qed
 
 (* Showing  a + (-b) = a - b *)
 lemma float_neg_add:
-   "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite (a - b) \<Longrightarrow> 
-        (Val a) + 
-                    (Val (float_neg b)) =
-        (Val a) - (Val b)"
+   "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite (a - b) \<Longrightarrow> (Val a) + (Val (float_neg b)) = (Val a) - (Val b)"
 by (metis comm_ring_1_class.normalizing_ring_rules(2) float_neg_val)
 
 lemma float_plus_minus:
   assumes "Finite a" "Finite b" "Finite (a - b)" shows "(a + float_neg b) \<doteq> (a - b)"
 proof -
-  have B: "\<not>(Isnan a)" using assms
-    by (metis finite_nan)
-  have C: "\<not>(Isnan (float_neg b))" using assms 
-    by (metis finite_nan float_neg_finite)
-  have D: "\<not>(Infinity a)" using assms
-    by (metis finite_infinity)
-  have E: "\<not>(Infinity (float_neg  b))" using assms 
-    by (metis finite_infinity float_neg_finite) 
+  have B: "\<not>(Isnan a)"  "\<not>(Isnan (float_neg b))" using assms 
+    by (auto simp: finite_nan float_neg_finite)
+  have D: "\<not>(Infinity a)"  "\<not>(Infinity (float_neg  b))" using assms 
+    by (auto simp: finite_infinity float_neg_finite)
   then have F: "(a + float_neg b) =  
        Abs_float (zerosign float_format 
           (if Iszero a \<and> Iszero (float_neg b) \<and> Sign a = Sign (float_neg b) 
            then Sign a else 0)
         (round float_format To_nearest ((Val a) + (Val (float_neg b)))))" 
-    using B C D E 
+    using B D 
     by (auto simp: float_defs fadd_def plus_float_def) 
   then have G: "... = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> 
-        (Iszero  b) \<and>
-        ((Sign a) \<noteq> (Sign b)) 
-     then (Sign a) else 0)
-        (round float_format To_nearest ((Val a) + 
-         (Val (float_neg b)))))"
+          (if (Iszero a) \<and> (Iszero  b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0)
+          (round float_format To_nearest ((Val a) + (Val (float_neg b)))))"
      using float_neg_sign1 float_neg_zero
      by auto
   then have H: "... = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) 
-     then (Sign a) else 0)
-        (round float_format To_nearest ((Val a) - 
-        (Val b))))" 
+    (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0)
+        (round float_format To_nearest ((Val a) - (Val b))))" 
     using assms float_neg_add by metis
   have "(a - b) = 
         Abs_float (zerosign float_format 
@@ -864,9 +851,8 @@ proof -
         using assms finite_infinity finite_nan
         by (simp only: of_bool_def fsub_def minus_float_def float_defs [symmetric] simp_thms if_False)
   then have "(a - b) = Abs_float (zerosign float_format 
-    (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b
-     then (Sign a) else 0)
-          (round float_format To_nearest ((Val a) - (Val b))))"  
+                         (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b then (Sign a) else 0)
+                         (round float_format To_nearest ((Val a) - (Val b))))"  
     by auto
   thus ?thesis using assms F H by (metis G float_eq)
 qed
