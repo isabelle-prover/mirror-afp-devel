@@ -303,39 +303,30 @@ proof-
   moreover have "\<not>Isnan a \<and> \<not>Isnan b" using finite_a finite_b by (metis float_distinct_finite)
   moreover have "\<not>Infinity a \<and> \<not>Infinity b" using finite_a finite_b
     by (metis float_distinct_finite)
-  ultimately have ab:"(a * b) = Abs_float (zerosign float_format (
-    if (Sign a) = (Sign b) then 0 else 1)
+  ultimately have ab:"(a * b) = Abs_float (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
     (round float_format To_nearest ((Val a) * (Val b))))"  
     using finite_a finite_b 
     by (auto simp: float_defs fmul_def times_float_def)
-  moreover have sign01: "(
-    if (Sign a) = (Sign b) then 0 else 1) = 0 \<or> 
-    (if (Sign a) = (Sign b) then 0 else 1) = 1" using sign_0_1
-    by auto
-  moreover have "abs ((Val a) * 
-        (Val b)) < threshold float_format" using threshold by auto
+  moreover have "abs ((Val a) * (Val b)) < threshold float_format" using threshold by auto
   ultimately have "is_finite float_format (Rep_float(a * b))" 
-    using defloat_float_zerosign_round_finite by auto
+    by (metis defloat_float_zerosign_round_finite of_bool_def) 
   then have "Finite (a * b)" 
     by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
   have "Val (a * b) = 
-   (Val(Abs_float(zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
-        (round float_format To_nearest ((Val a) * 
-        (Val b))))))" by (metis Val_def ab)
+        (Val(Abs_float(zerosign float_format (of_bool (Sign a \<noteq> Sign b))
+                      (round float_format To_nearest ((Val a) * (Val b))))))" 
+    by (metis Val_def ab)
   also have "... = 
     valof float_format (zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
+        (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) * (Val b))))"
-    using defloat_float_zerosign_round sign01 
-    by (auto simp: Infinity_def Isnan_def Val_def)
+    using defloat_float_zerosign_round
+    by (auto simp: float_defs of_bool_def)
   finally have val_ab: "Val (a * b) = valof float_format  (zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
-        (round float_format To_nearest ((Val a) * 
-        (Val b))))" .
-  have zero: "is_zero float_format (round float_format To_nearest 
-    ((Val a) * (Val b))) \<Longrightarrow> 
-    (Val (a * b) = Val a * Val b + error (Val a * Val b))" 
+        (of_bool (Sign a \<noteq> Sign b))
+        (round float_format To_nearest ((Val a) * (Val b))))" .
+  have zero: "is_zero float_format (round float_format To_nearest ((Val a) * (Val b))) \<Longrightarrow> 
+              (Val (a * b) = Val a * Val b + error (Val a * Val b))" 
     proof -
       assume assm: 
         "is_zero float_format (round float_format To_nearest ((Val a) * 
@@ -355,8 +346,7 @@ proof-
     proof -
       assume assm: "\<not>is_zero float_format (round float_format To_nearest 
         ((Val a) * (Val b)))"
-      have "Val (a * b) = valof float_format (zerosign float_format (if 
-        ((Sign a) = (Sign b)) then 0 else 1)
+      have "Val (a * b) = valof float_format (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) * 
         (Val b)))) " using val_ab by auto
       also have "... = valof float_format (round float_format To_nearest 
@@ -380,33 +370,35 @@ lemma float_div:
   assumes threshold: "abs (Val a / Val b) < threshold float_format"
   shows "Finite (a / b) \<and> (Val (a / b) = Val a / Val b + error (Val a / Val b))"
 proof-
-  have val_threshold: "((Val a)) / ((Val b)) < 
-    threshold float_format" using threshold not_zero by (metis Val_def abs_less_iff)
+  have val_threshold: "((Val a)) / ((Val b)) < threshold float_format" 
+    by (metis abs_less_iff threshold)
   moreover have ab: "(a / b) = Abs_float (zerosign float_format 
-    (if (Sign a) = (Sign b) then 0 else 1)
+    (of_bool (Sign a \<noteq> Sign b))
     (round float_format To_nearest ((Val a) / (Val b))))"  
-     using finite_a finite_b 
-    by (metis float_defs divide_float_def fdiv_def finite_infinity finite_nan not_zero)
+     using finite_a finite_b  
+     apply (simp only: of_bool_def  divide_float_def fdiv_def finite_infinity finite_nan not_zero float_defs [symmetric])
+     apply auto
+     done
   moreover have "abs ((Val a) / 
         (Val b)) < threshold float_format" using threshold by auto
   ultimately have "is_finite float_format (Rep_float(a / b))" 
-    using defloat_float_zerosign_round_finite by auto
+    by (metis defloat_float_zerosign_round_finite of_bool_def) 
   then have "Finite (a / b)" 
     by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
   have "Val (a / b) = 
    (Val(Abs_float(zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
+        (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) / 
         (Val b))))))" by (metis Val_def ab)
   also have "... = 
     valof float_format (zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
+        (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) / 
         (Val b))))" 
-    using defloat_float_zerosign_round sign_0_1 
-    by (auto simp: Infinity_def Isnan_def Val_def)
+    using defloat_float_zerosign_round  
+    by (auto simp: float_defs of_bool_def)
   finally have val_ab: "Val (a / b) = valof float_format  (zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
+        (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) / 
         (Val b))))" .
   have zero: "is_zero float_format (round float_format To_nearest (Val a / Val b)) \<Longrightarrow> 
@@ -431,7 +423,7 @@ proof-
       assume assm: "\<not>is_zero float_format (round float_format To_nearest 
         ((Val a) / (Val b)))"
       have "Val (a / b) = valof float_format (zerosign float_format 
-        (if ((Sign a) = (Sign b)) then 0 else 1)
+        (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) / 
         (Val b)))) " using val_ab by auto 
       also have "... = valof float_format (round float_format To_nearest 

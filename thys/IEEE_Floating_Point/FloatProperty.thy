@@ -49,7 +49,7 @@ lemma is_valid_special: "is_valid x (minus_infinity x)"
                         "is_valid x (bottomfloat x)"
                         "is_valid x (plus_zero x)"
                         "is_valid x (minus_zero x)"
-  by (auto simp: emax_def is_valid_def)
+  by (auto simp: emax_def is_valid_def minus_infinity_def plus_infinity_def topfloat_def bottomfloat_def)
 
 lemma sign_0_1: "is_valid x a \<Longrightarrow> (sign a = 0) \<or> (sign a = 1)"
   by (auto simp: is_valid_def)
@@ -373,17 +373,18 @@ proof -
   assume "\<not> Isnan a"
   then have "(fcompare float_format (Rep_float a) (plus_infinity float_format) = Eq) \<or>
              (fcompare float_format (Rep_float a) (plus_infinity float_format) = Lt)"
-             by (auto simp add: Isnan_def fcompare_def is_nan_def is_infinity_def)
-  then show ?thesis by (auto simp: Plus_infinity_def less_eq_float_def
-    Abs_float_inverse emax_def is_valid_def)
+             by (auto simp add: Isnan_def fcompare_def is_nan_def is_infinity_def plus_infinity_def)
+  then show ?thesis 
+    by (auto simp: Plus_infinity_def less_eq_float_def plus_infinity_def
+                   Abs_float_inverse emax_def is_valid_def)
 qed
 
 lemma [simp]: "Plus_zero \<le> Abs_float (topfloat float_format)"
-  by (auto simp: fcompare_def is_nan_def less_eq_float_def 
+  by (auto simp: fcompare_def is_nan_def less_eq_float_def topfloat_def 
        Abs_float_inverse emax_def is_infinity_def is_zero_def is_valid_def)
 
-lemma "valof float_format (topfloat float_format) = largest float_format"
-  by (auto simp: emax_def is_nan_def)
+lemma valof_topfloat: "valof float_format (topfloat float_format) = largest float_format"
+  by (simp add: emax_def topfloat_def largest_def)
 
 lemma float_frac_le: "Finite a \<Longrightarrow> fraction (Rep_float a) \<le> 2^52 - 1"
   by (cases a) (auto simp: Abs_float_inverse is_valid_def)
@@ -401,17 +402,15 @@ lemma div_less: "(a::'a::linordered_field_inverse_zero) \<le> b \<and> c > 0 \<L
   by (metis divide_le_cancel less_asym)
 
 lemma finite_topfloat: "Finite Topfloat"
-by (auto simp: float_defs Topfloat_def Abs_float_inverse emax_def is_normal_def is_valid_def)
+by (auto simp: float_defs Topfloat_def topfloat_def Abs_float_inverse emax_def is_normal_def is_valid_def)
 
 lemma float_le_topfloat: "Finite a \<Longrightarrow>  a \<le> Topfloat"
 proof -
   assume A: "Finite a"
   then have B: "fraction (Rep_float a) \<le> 2^52 - 1" by (rule float_frac_le)
   have C: "exponent (Rep_float a) \<le> 2046" using A by (rule float_exp_le)
-  then have "(fraction (Rep_float a)/2^(fracwidth float_format)) 
-    \<le> (( 2^52 - 1)/2^(fracwidth float_format))" 
- 
-    using B  by auto 
+  then have "fraction (Rep_float a)/2^(fracwidth float_format) \<le> ((2^52 - 1)/2^(fracwidth float_format))" 
+    using B by auto 
   then have D: "(2 / (2^bias float_format)) *
     (fraction (Rep_float a)/2^(fracwidth float_format)) \<le>  
     (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
@@ -474,12 +473,13 @@ proof -
     by (cases a) (auto simp: Sign_def Abs_float_inverse) 
   moreover have "valof (float_format) (topfloat float_format) =
     (-1::real)^0 * ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: emax_def) 
+    (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: emax_def topfloat_def) 
   ultimately have "valof (float_format) (Rep_float a) 
     \<le> valof (float_format) (topfloat float_format)" using R by auto
-    then have "Val a \<le> Val Topfloat" using Abs_float_inverse Abs_float_inverse Topfloat_def 
-    by (metis Val_def is_valid_special mem_Collect_eq)
-  thus ?thesis using A finite_topfloat by (simp add: emax_def)
+    then have "Val a \<le> Val Topfloat" 
+      by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
+  thus ?thesis 
+    using A finite_topfloat by (simp add: emax_def)
 qed
      
 lemma float_val_le_largest: 
@@ -487,20 +487,18 @@ lemma float_val_le_largest:
   shows "Val a \<le> largest float_format"
 proof -
   have "Val Topfloat = valof float_format (topfloat float_format)" 
-    using Topfloat_def Abs_float_inverse
-    by (metis (full_types) Val_def is_valid_special mem_Collect_eq)
-  also have "... = largest float_format" by (simp add: emax_def)
+      by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
+  also have "... = largest float_format" by (simp add: emax_def largest_def topfloat_def)
   finally have "Val Topfloat = largest float_format" .
   thus ?thesis using float_le_topfloat by (metis assms finite_topfloat float_le)
 qed
 
 lemma float_val_lt_threshold:
-  fixes a
   assumes "Finite a"
   shows "Val a < threshold float_format"
 proof -
   have "Val a \<le> largest float_format" using float_val_le_largest assms by simp
-  moreover have "... < threshold float_format" by (auto simp: bias_def)
+  also have "... < threshold float_format" by (auto simp: largest_def threshold_def bias_def)
   finally show ?thesis .
 qed
 
@@ -571,37 +569,39 @@ proof -
     by (cases a) (auto simp: Sign_def Abs_float_inverse) 
   moreover have "valof (float_format) (bottomfloat float_format) =
     (-1::real)^1 * ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: emax_def)
+    (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: emax_def bottomfloat_def)
   ultimately have "valof (float_format) (Rep_float a) \<ge> 
     valof (float_format) (bottomfloat float_format)" 
     using R by auto
-  then have "Val a \<ge> Val Bottomfloat" using Abs_float_inverse Abs_float_inverse Bottomfloat_def 
-    by (metis Val_def is_valid_special mem_Collect_eq)
+  then have "Val a \<ge> Val Bottomfloat" using Abs_float_inverse Bottomfloat_def is_valid_special
+    by (metis Val_def mem_Collect_eq)
   thus ?thesis by auto
 qed
 
 lemma float_val_ge_largest: 
-  fixes a
   assumes "Finite a"
   shows "Val a \<ge> -largest float_format"
 proof -
   have "Val Bottomfloat = valof float_format (bottomfloat float_format)" 
-    using Bottomfloat_def Abs_float_inverse
-    by (metis (full_types) Val_def is_valid_special mem_Collect_eq)
-  also have "... = -largest float_format" by (auto simp: emax_def bias_def)
+    using Bottomfloat_def Abs_float_inverse is_valid_special
+    by (metis (full_types) Val_def mem_Collect_eq)
+  also have "... = -largest float_format" 
+    by (auto simp: emax_def bias_def bottomfloat_def largest_def)
   finally have "Val Bottomfloat = -largest float_format" .
-  thus ?thesis using float_val_ge_bottomfloat by (metis assms)
+  thus ?thesis 
+    using float_val_ge_bottomfloat by (metis assms)
 qed
 
 lemma float_val_gt_threshold:
-  fixes a
   assumes "Finite a"
   shows "Val a > - threshold float_format"
 proof -
   have largest: "Val a \<ge> -largest float_format" using float_val_ge_bottomfloat assms
     by (metis float_val_ge_largest)
-  then have "-largest float_format > -(threshold float_format)" by (auto simp: bias_def)
-  then show ?thesis by (metis largest less_le_trans)
+  then have "-largest float_format > -(threshold float_format)"
+    by (auto simp: bias_def threshold_def largest_def)
+  then show ?thesis 
+    by (metis largest less_le_trans)
 qed
 
 
@@ -612,12 +612,10 @@ subsection{*Algebraic properties about basic arithmetic*}
 lemma float_plus_comm: 
   assumes "Finite a" "Finite b" "Finite (a + b)" shows "(a + b) \<doteq> (b + a)"
 proof -
-  have B: "\<not>(Isnan a)"  
-          "\<not>(Isnan b)"
+  have B: "\<not>(Isnan a)"  "\<not>(Isnan b)"
     using assms
       by (auto simp: finite_nan emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
-  have D: "\<not>(Infinity a)" 
-          "\<not>(Infinity b)"
+  have D: "\<not>(Infinity a)" "\<not>(Infinity b)"
     using assms
     by (auto simp: finite_infinity emax_def is_infinity_def is_normal_def is_denormal_def
       is_zero_def)
@@ -631,11 +629,8 @@ proof -
                   (round float_format To_nearest ((Val b) + (Val a))))" 
     using B D 
     by (auto simp: float_defs fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def)
-  have "(Val b) + (Val a) = (Val a) + (Val b)" 
+  have "round float_format To_nearest ((Val b) + (Val a)) = round float_format To_nearest ((Val a) + (Val b))"
     by (simp add: add_commute)
-  then have "round float_format To_nearest ((Val b) + (Val a)) = 
-    round float_format To_nearest ((Val a) + (Val b)) "
-    by arith
   then have "(a + b) = (b + a)" using F G by arith
   then show ?thesis using assms 
     by (auto simp: fcompare_def emax_def float_defs is_nan_def is_normal_def is_denormal_def is_zero_def)
@@ -656,11 +651,11 @@ proof -
       is_zero_def)
   then have F: "(a * b) = 
                   Abs_float (zerosign float_format 
-                             (if (Sign a) = (Sign b) then 0 else 1)
+                             (of_bool (Sign a \<noteq> Sign b))
                              (round float_format To_nearest ((Val a) *  (Val b))))" 
                "(b * a) =
                    Abs_float (zerosign float_format 
-                         (if (Sign a) = (Sign b) then 0 else 1)
+                         (of_bool (Sign a \<noteq> Sign b))
                          (round float_format To_nearest ((Val b) * (Val a))))"
     using B D 
     by (auto simp: Sign_def fmul_def times_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def) 
@@ -895,10 +890,10 @@ proof -
   have "(a - b) = 
         Abs_float (zerosign float_format 
             (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b
-             then (Sign a) else if (To_nearest = To_ninfinity) then 1 else 0)
+             then (Sign a) else of_bool (To_nearest = To_ninfinity))
            (round float_format To_nearest (Val a - Val b)))" 
         using assms finite_infinity finite_nan
-        by (simp only: fsub_def minus_float_def float_defs [symmetric] simp_thms if_False)
+        by (simp only: of_bool_def fsub_def minus_float_def float_defs [symmetric] simp_thms if_False)
   then have "(a - b) = Abs_float (zerosign float_format 
     (if Iszero a \<and> Iszero b \<and> Sign a \<noteq> Sign b
      then (Sign a) else 0)

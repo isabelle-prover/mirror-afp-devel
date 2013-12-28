@@ -90,12 +90,8 @@ subsection{*Special values*}
 definition plus_infinity :: "format \<Rightarrow> representation" where
 "plus_infinity x = (0, emax x, 0)"
 
-declare plus_infinity_def [simp]
-
 definition minus_infinity :: "format \<Rightarrow> representation" where
 "minus_infinity x = (1, emax x, 0)"
-
-declare minus_infinity_def [simp]
 
 definition plus_zero :: "format \<Rightarrow> representation" where
 "plus_zero x = (0, 0, 0)"
@@ -110,12 +106,8 @@ declare minus_zero_def [simp]
 definition topfloat :: "format \<Rightarrow> representation" where
 "topfloat x = (0, (emax x - 1), 2^(fracwidth x) - 1)"
 
-declare topfloat_def [simp]
-
 definition bottomfloat :: "format \<Rightarrow> representation" where
 "bottomfloat x = (1, (emax x - 1), 2^(fracwidth x) - 1)" 
-
-declare bottomfloat_def [simp]
 
 subsection{*Negation operation on floating point values*}
 
@@ -140,19 +132,13 @@ definition largest :: "format \<Rightarrow> real" where
 "largest x = (2^(emax x - 1) / 2^bias x) * (2 - 1/(2^fracwidth x))"
 
 
-declare largest_def [simp]
-
 (*threshold, used for checking overflow *)
 definition threshold :: "format \<Rightarrow> real" where
 "threshold x = (2^(emax x - 1) / 2^bias x) * (2 - 1/(2^(Suc(fracwidth x))))"
 
-declare threshold_def [simp]
-
 (*ulp*)
 definition ulp :: "format \<Rightarrow> representation \<Rightarrow> real" where
 "ulp x a = valof x (0, exponent a, 1) - valof x (0, exponent a, 0)"
-
-declare ulp_def [simp]
 
 (*Enumerated type for rounding modes*)
 datatype roundmode = To_nearest | float_To_zero | To_pinfinity | To_ninfinity
