@@ -8,6 +8,8 @@ theory FloatProperty imports IEEE begin
 
 section{* Proofs of Properties about Floating Point Arithmetic *}
 
+lemmas float_defs = Finite_def Infinity_def Iszero_def Isnan_def Val_def Sign_def
+
 subsection{*Theorems derived from definitions*}                                                           
 
 lemma sign: "\<And>a. sign a = fst a"
@@ -28,11 +30,11 @@ lemma is_valid_defloat: " is_valid float_format (Rep_float a)"
 
 
 lemma float_cases: "Isnan a \<or> Infinity a \<or> Isnormal a \<or> Isdenormal a \<or> Iszero a"
-  by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def Infinity_def Iszero_def Isnan_def
+  by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def float_defs
                   is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
 
 lemma float_cases_finite: "Isnan a \<or> Infinity a \<or> Finite a"
-by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def Infinity_def Isnan_def
+by (cases a) (auto simp: Abs_float_inverse emax_def is_nan_def float_defs
                 is_infinity_def is_normal_def is_denormal_def is_zero_def is_valid_def)
 
 lemma float_zero1: "Iszero Plus_zero"
@@ -65,13 +67,13 @@ lemma float_distinct: "\<not>(Isnan a \<and> Infinity a)"
 by (auto simp: emax_def Infinity_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma float_distinct_finite: "\<not>(Isnan a \<and> Finite a)" "\<not>(Infinity a \<and> Finite a)"
-  by (auto simp: emax_def Infinity_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+  by (auto simp: emax_def float_defs is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma finite_infinity: "Finite a \<Longrightarrow> \<not> (Infinity a)"
-  by (auto simp: emax_def Infinity_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+  by (auto simp: emax_def float_defs is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 lemma finite_nan: "Finite a \<Longrightarrow> \<not> (Isnan a)"
-by (auto simp: emax_def Isnan_def is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
+by (auto simp: emax_def float_defs is_nan_def is_infinity_def is_normal_def is_denormal_def is_zero_def)
 
 (* For every real number, the floating-point numbers closest to it always exist. *)
 lemma is_closest_exists: 
@@ -260,27 +262,27 @@ next
   then have nonInfinity_a: "\<not> (Infinity a)" by auto
   have "\<not> Infinity b" using A2 float_distinct_finite by auto
   then have nonInfinity_b: "\<not> (Infinity b)" by auto
-  have "((Infinity a) \<and> (sign (Rep_float a) = 1)) \<Longrightarrow>
-        \<not>((Infinity b) \<and> (sign (Rep_float b) = 1)) \<Longrightarrow> 
+  have "((Infinity a) \<and> ((Sign a) = 1)) \<Longrightarrow>
+        \<not>((Infinity b) \<and> ((Sign b) = 1)) \<Longrightarrow> 
         fcompare float_format (Rep_float a) (Rep_float b) = Lt" 
     using nonNan nonInfinity_a by auto
-  moreover have "(Infinity b) \<and> (sign (Rep_float b) = 0) \<Longrightarrow> 
+  moreover have "(Infinity b) \<and> ((Sign b) = 0) \<Longrightarrow> 
     fcompare float_format (Rep_float a) (Rep_float b) = Lt" 
     using nonNan nonInfinity_a 
     nonInfinity_b by auto
   moreover have "Val a < Val b \<Longrightarrow> fcompare float_format (Rep_float a) (Rep_float b) = Lt" 
     using nonNan nonInfinity_a nonInfinity_b  
     by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
-  moreover have "\<not>(((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
-         \<not>((Infinity b) \<and> (sign (Rep_float b) = 1))) \<and>
-         \<not>((Infinity b) \<and> (sign (Rep_float b) = 0)) \<and>
+  moreover have "\<not>(((Infinity a) \<and> ((Sign a) = 1)) \<and>
+         \<not>((Infinity b) \<and> ((Sign b) = 1))) \<and>
+         \<not>((Infinity b) \<and> ((Sign b) = 0)) \<and>
          \<not>(Val a < Val b) \<Longrightarrow>
          fcompare float_format (Rep_float a) (Rep_float b) \<noteq> Lt" 
     using fcompare_def nonNan nonInfinity_a 
-    by (auto simp add: Infinity_def Val_def fcompare_def)
-  ultimately have "(((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
-                   \<not>((Infinity b) \<and> (sign (Rep_float b) = 1))) \<or>
-                   ((Infinity b) \<and> (sign (Rep_float b) = 0)) \<or>
+    by (auto simp add: Infinity_def Val_def Sign_def fcompare_def)
+  ultimately have "(((Infinity a) \<and> ((Sign a) = 1)) \<and>
+                   \<not>((Infinity b) \<and> ((Sign b) = 1))) \<or>
+                   ((Infinity b) \<and> ((Sign b) = 0)) \<or>
                    (Val a < Val b)" 
     using lt by force
   then show "Val a < Val b" 
@@ -308,29 +310,29 @@ next
   then have  nonInfinity_a: "\<not> (Infinity a)" by auto
   have "\<not> Infinity b" using A2 float_distinct_finite by auto
   then have nonInfinity_b: "\<not> (Infinity b)" by auto
-  have "((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
-    ((Infinity b) \<and> (sign (Rep_float b) = 1)) \<Longrightarrow> 
+  have "((Infinity a) \<and> ((Sign a) = 1)) \<and>
+    ((Infinity b) \<and> ((Sign b) = 1)) \<Longrightarrow> 
     fcompare float_format (Rep_float a) (Rep_float b) = Eq" using nonNan nonInfinity_a by auto
   moreover have "((Infinity a) \<and> 
-    (sign (Rep_float a) = 0)) \<and> (Infinity b) \<and> (sign (Rep_float b) = 0)
+    ((Sign a) = 0)) \<and> (Infinity b) \<and> ((Sign b) = 0)
     \<Longrightarrow> fcompare float_format (Rep_float a) (Rep_float b) = Eq"
     using nonNan nonInfinity_a by auto
   moreover have "(Val a) = (Val b) \<Longrightarrow>
     fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
     using nonNan nonInfinity_a nonInfinity_b 
     by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
-  moreover have "\<not>(((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
-    ((Infinity b) \<and> (sign (Rep_float b) = 1))) \<and> 
+  moreover have "\<not>(((Infinity a) \<and> ((Sign a) = 1)) \<and>
+    ((Infinity b) \<and> ((Sign b) = 1))) \<and> 
     \<not>(((Infinity a) \<and> 
-    (sign (Rep_float a) = 0)) \<and> (Infinity b) \<and> (sign (Rep_float b) = 0))
+    ((Sign a) = 0)) \<and> (Infinity b) \<and> ((Sign b) = 0))
     \<and> \<not>((Val a) = (Val b)) \<Longrightarrow> 
     fcompare float_format (Rep_float a) (Rep_float b) \<noteq> Eq"  
     using nonNan nonInfinity_a by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
-  ultimately have "((Infinity a) \<and> (sign (Rep_float a) = 1)) \<and>
-    ((Infinity b) \<and> (sign (Rep_float b) = 1)) 
+  ultimately have "((Infinity a) \<and> ((Sign a) = 1)) \<and>
+    ((Infinity b) \<and> ((Sign b) = 1)) 
     \<or>
     ((Infinity a) \<and> 
-    (sign (Rep_float a) = 0)) \<and> (Infinity b) \<and> (sign (Rep_float b) = 0)
+    ((Sign a) = 0)) \<and> (Infinity b) \<and> ((Sign b) = 0)
     \<or> 
     (Val a) = (Val b)" using eq by force  
   then have "(Val a) = (Val b)" using A1 A2
@@ -387,16 +389,10 @@ lemma float_frac_le: "Finite a \<Longrightarrow> fraction (Rep_float a) \<le> 2^
   by (cases a) (auto simp: Abs_float_inverse is_valid_def)
 
 lemma float_exp_le: "Finite a \<Longrightarrow> exponent (Rep_float a) \<le> 2046"
-  by (cases a) (auto simp: emax_def is_normal_def is_denormal_def is_zero_def)
+  by (cases a) (auto simp: emax_def float_defs is_normal_def is_denormal_def is_zero_def)
 
-lemma float_sign_le: "Finite a \<Longrightarrow> (-1::real)^sign (Rep_float a) = 1
-                       \<or> (-1::real)^sign (Rep_float a) = -1"
-proof -
-  assume "Finite a"
-  then have "sign (Rep_float a) = 0 \<or> sign (Rep_float a) = 1" 
-    by (metis is_valid_defloat sign_0_1)
-  thus ?thesis by auto
-qed
+lemma float_sign_le: "(-1::real)^(Sign a) = 1 \<or> (-1::real)^(Sign a) = -1"
+by (metis neg_one_even_power neg_one_odd_power)
 
 lemma exp_less: "(a::nat) \<le> b \<Longrightarrow> (2::real)^a \<le> 2^b"
   by auto
@@ -405,7 +401,7 @@ lemma div_less: "(a::'a::linordered_field_inverse_zero) \<le> b \<and> c > 0 \<L
   by (metis divide_le_cancel less_asym)
 
 lemma finite_topfloat: "Finite Topfloat"
-by (auto simp: Topfloat_def Abs_float_inverse emax_def is_normal_def is_valid_def)
+by (auto simp: float_defs Topfloat_def Abs_float_inverse emax_def is_normal_def is_valid_def)
 
 lemma float_le_topfloat: "Finite a \<Longrightarrow>  a \<le> Topfloat"
 proof -
@@ -442,7 +438,7 @@ proof -
     (1 + fraction (Rep_float a)/2^fracwidth float_format) \<le> 
     (-1::real)^0 * ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" using L by auto
-  then have N: "(-1::real)^sign (Rep_float a) * (((2::real)^exponent (Rep_float a)) /
+  then have N: "(-1::real)^(Sign a) * (((2::real)^exponent (Rep_float a)) /
     (2^bias float_format)) *
     (1 + fraction (Rep_float a)/2^fracwidth float_format) \<le>  (-1::real)^0 * ((2^2046) / 
     (2^bias float_format)) *
@@ -455,27 +451,27 @@ proof -
     (fraction (Rep_float a)/2^(fracwidth float_format)) \<le> (-1::real)^0 * ((2^2046) /
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" using A B by (auto simp: bias_def)
-  then have "(-1::real)^sign (Rep_float a) *(2 / (2^bias float_format)) * 
+  then have "(-1::real)^(Sign a) *(2 / (2^bias float_format)) * 
     (fraction (Rep_float a)/2^(fracwidth float_format)) \<le> (-1::real)^0 * ((2^2046) / 
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format) " 
     using P Q float_sign_le by (metis A)
   then have R: "
     (if (exponent(Rep_float a) = 0) 
-    then (-1::real)^sign (Rep_float a) *(2 / (2^bias float_format)) * 
+    then (-1::real)^(Sign a) *(2 / (2^bias float_format)) * 
          (fraction (Rep_float a)/2^(fracwidth float_format)) 
-    else (-1::real)^sign (Rep_float a) * (((2::real)^exponent (Rep_float a))/
+    else (-1::real)^(Sign a) * (((2::real)^exponent (Rep_float a))/
          (2^bias float_format)) *
          (1 + fraction (Rep_float a)/2^fracwidth float_format)) \<le> 
          (-1::real)^0 * ((2^2046) / (2^bias float_format)) *
          (1 + (2^52 - 1)/2^fracwidth float_format)" using N by simp
   have "valof (float_format) (Rep_float a) =  
     (if (exponent(Rep_float a) = 0) 
-    then (-1::real)^sign (Rep_float a) *(2 / (2^bias float_format)) * 
+    then (-1::real)^(Sign a) *(2 / (2^bias float_format)) * 
          (fraction (Rep_float a)/2^(fracwidth float_format)) 
-    else (-1::real)^sign (Rep_float a) * (((2::real)^exponent (Rep_float a)) / 
+    else (-1::real)^(Sign a) * (((2::real)^exponent (Rep_float a)) / 
          (2^bias float_format)) * (1 + fraction (Rep_float a)/2^fracwidth float_format))" 
-    by (cases a) (auto simp: Abs_float_inverse) 
+    by (cases a) (auto simp: Sign_def Abs_float_inverse) 
   moreover have "valof (float_format) (topfloat float_format) =
     (-1::real)^0 * ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: emax_def) 
@@ -540,7 +536,7 @@ proof -
     (1 + fraction (Rep_float a)/2^fracwidth float_format) \<ge> 
     (-1::real)^1 * ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" using L by (auto simp: bias_def)
-  then have N: "(-1::real)^sign (Rep_float a) * (((2::real)^exponent (Rep_float a)) / 
+  then have N: "(-1::real)^(Sign a) * (((2::real)^exponent (Rep_float a)) / 
     (2^bias float_format)) *
     (1 + fraction (Rep_float a)/2^fracwidth float_format) \<ge>  (-1::real)^1 * ((2^2046) / 
     (2^bias float_format)) *
@@ -553,26 +549,26 @@ proof -
     (fraction (Rep_float a)/2^(fracwidth float_format)) \<ge> (-1::real)^1 * ((2^2046) /
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" using A B by (auto simp: bias_def)
-  then have "(-1::real)^sign (Rep_float a) *(2 / (2^bias float_format)) * 
+  then have "(-1::real)^(Sign a) *(2 / (2^bias float_format)) * 
     (fraction (Rep_float a)/2^(fracwidth float_format)) \<ge> (-1::real)^1 * ((2^2046) / 
     (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format) " 
     using P Q float_sign_le by (metis A)
   then have R: "
     (if  (exponent(Rep_float a) = 0) 
-    then (-1::real)^sign (Rep_float a) *(2 / (2^bias float_format)) * 
+    then (-1::real)^(Sign a) *(2 / (2^bias float_format)) * 
          (fraction (Rep_float a)/2^(fracwidth float_format)) 
-    else (-1::real)^sign (Rep_float a) * (((2::real)^exponent (Rep_float a)) / 
+    else (-1::real)^(Sign a) * (((2::real)^exponent (Rep_float a)) / 
          (2^bias float_format)) *
          (1 + fraction (Rep_float a)/2^fracwidth float_format)) \<ge> (-1::real)^1 * ((2^2046) / 
          (2^bias float_format)) *
          (1 + (2^52 - 1)/2^fracwidth float_format)" using N by auto
   have "valof (float_format) (Rep_float a) = 
     (if (exponent(Rep_float a) = 0) 
-    then (-1::real)^sign (Rep_float a) *(2 / (2^bias float_format)) * 
+    then (-1::real)^(Sign a) *(2 / (2^bias float_format)) * 
          (fraction (Rep_float a)/2^(fracwidth float_format)) 
-    else (-1::real)^sign (Rep_float a) * (((2::real)^exponent (Rep_float a)) / 
+    else (-1::real)^(Sign a) * (((2::real)^exponent (Rep_float a)) / 
          (2^bias float_format)) * (1 + fraction (Rep_float a)/2^fracwidth float_format))" 
-    by (cases a) (auto simp: Abs_float_inverse) 
+    by (cases a) (auto simp: Sign_def Abs_float_inverse) 
   moreover have "valof (float_format) (bottomfloat float_format) =
     (-1::real)^1 * ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: emax_def)
@@ -625,29 +621,24 @@ proof -
     using assms
     by (auto simp: finite_infinity emax_def is_infinity_def is_normal_def is_denormal_def
       is_zero_def)
-  then have F: "(a + b) =  Abs_float (zerosign float_format (if (Iszero a)
-    \<and> (Iszero b) \<and>
-    (sign (Rep_float a) = sign (Rep_float b)) then sign (Rep_float a) else 0)
-    (round float_format To_nearest ((Val a) + 
-    (Val b))))" using B D 
-    by (auto simp: fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
-  have G: "(b + a) =  Abs_float (zerosign float_format (if (Iszero a) \<and>
-    (Iszero b) \<and>
-    (sign (Rep_float a) = sign (Rep_float b)) then sign (Rep_float a) else 0)
-    (round float_format To_nearest ((Val b) + 
-    (Val a))))" using B D 
-    by (auto simp: fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def)
-  have "(Val b) + (Val a) = 
-    (Val a) + (Val b)" 
+  then have F: "(a + b) =  
+    Abs_float (zerosign float_format (if Iszero a \<and> Iszero b \<and> Sign a = Sign b then Sign a else 0)
+                   (round float_format To_nearest ((Val a) + (Val b))))" 
+    using B D 
+    by (auto simp: Sign_def fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
+  have G: "(b + a) = 
+    Abs_float (zerosign float_format (if Iszero a \<and> Iszero b \<and> Sign a = Sign b then Sign a else 0)
+                  (round float_format To_nearest ((Val b) + (Val a))))" 
+    using B D 
+    by (auto simp: Sign_def fadd_def plus_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def)
+  have "(Val b) + (Val a) = (Val a) + (Val b)" 
     by (simp add: add_commute)
-  then have "round float_format To_nearest ((Val b) +
-    (Val a)) = 
-    round float_format To_nearest ((Val a) + 
-    (Val b)) "
+  then have "round float_format To_nearest ((Val b) + (Val a)) = 
+    round float_format To_nearest ((Val a) + (Val b)) "
     by arith
   then have "(a + b) = (b + a)" using F G by arith
   then show ?thesis using assms 
-    by (auto simp: fcompare_def emax_def Infinity_def Isnan_def Val_def is_nan_def is_normal_def is_denormal_def is_zero_def)
+    by (auto simp: fcompare_def emax_def float_defs is_nan_def is_normal_def is_denormal_def is_zero_def)
 qed
   
 (*Commutativity of multiplication*)
@@ -663,24 +654,19 @@ proof -
     using assms
     by (auto simp: finite_infinity emax_def is_infinity_def is_normal_def is_denormal_def
       is_zero_def)
-  then have F: "(a * b) = Abs_float (zerosign float_format 
-    (if sign (Rep_float a) = sign (Rep_float b) then 0 else 1)
-    (round float_format To_nearest ((Val a) * 
-    (Val b))))" 
-    "(b * a) = Abs_float (zerosign float_format 
-    (if sign (Rep_float a) = sign (Rep_float b) then 0 else 1)
-    (round float_format To_nearest ((Val b) * 
-    (Val a))))"
+  then have F: "(a * b) = 
+                  Abs_float (zerosign float_format 
+                             (if (Sign a) = (Sign b) then 0 else 1)
+                             (round float_format To_nearest ((Val a) *  (Val b))))" 
+               "(b * a) =
+                   Abs_float (zerosign float_format 
+                         (if (Sign a) = (Sign b) then 0 else 1)
+                         (round float_format To_nearest ((Val b) * (Val a))))"
     using B D 
-    by (auto simp: fmul_def times_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def) 
-  have "(Val b) * (Val a) =
-    (Val a) * (Val b)" 
-    by simp
-  then have "round float_format To_nearest ((Val b) *
-             (Val a)) =  
-    round float_format To_nearest ((Val a) *
-    (Val b))"
-    by metis
+    by (auto simp: Sign_def fmul_def times_float_def Abs_float_inverse is_nan_def is_infinity_def Infinity_def Isnan_def Val_def) 
+  have "round float_format To_nearest ((Val b) * (Val a)) =  
+        round float_format To_nearest ((Val a) * (Val b))"
+    by (metis mult_commute)
   then show ?thesis using F by arith
 qed
 
@@ -702,31 +688,31 @@ proof -
   have B: "float_neg a = Abs_float (fneg (float_format) To_nearest (Rep_float a))"
     by (simp add: float_neg_def) 
   then have C: "... = 
-    Abs_float (1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a))"
-    by (simp add: fneg_def)
+    Abs_float (1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a))"
+    by (simp add: Sign_def fneg_def)
   then have D: "float_neg (float_neg a) = 
     Abs_float (fneg float_format To_nearest (Rep_float (Abs_float (
-    1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a)))))"
+    1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))))"
     by (simp add: float_neg_def)
-  have E: "is_valid float_format ((1 - sign (Rep_float a), exponent (Rep_float a), 
+  have E: "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), 
     fraction (Rep_float a)))"
     by (cases a)  (auto simp:  Abs_float_inverse is_valid_def)
   then have "Abs_float (fneg float_format To_nearest (Rep_float (Abs_float (
-    1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a))))) = 
+    1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a))))) = 
     Abs_float (fneg float_format To_nearest  (
-    1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a)))"
+    1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))"
     by (simp add: Abs_float_inverse)
   then have "float_neg (float_neg a) = 
     Abs_float (fneg float_format To_nearest (
-    1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a)))" using D by simp
+    1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))" using D by simp
   then have "float_neg (float_neg a) = 
-    Abs_float (1 - (1 - sign (Rep_float a)), exponent (Rep_float a), fraction (Rep_float a))" 
+    Abs_float (1 - (1 - (Sign a)), exponent (Rep_float a), fraction (Rep_float a))" 
     by (auto simp: fneg_def)
-  then have "... = Abs_float (sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a))"
-    by (metis is_valid_defloat sign_double_neg)
+  then have "... = Abs_float ((Sign a), exponent (Rep_float a), fraction (Rep_float a))"
+    by (metis Sign_def is_valid_defloat sign_double_neg)
   then have "float_neg (float_neg a) = a" 
-    by (metis Rep_float_inverse `float_neg (float_neg a) = 
-    Abs_float (1 - (1 - sign (Rep_float a)), exponent (Rep_float a), fraction (Rep_float a))
+    by (metis Sign_def Rep_float_inverse `float_neg (float_neg a) = 
+    Abs_float (1 - (1 - (Sign a)), exponent (Rep_float a), fraction (Rep_float a))
     ` exponent.simps fraction.cases fraction.simps sign.simps)
   then show ?thesis using A by auto
 qed
@@ -746,18 +732,14 @@ proof -
            is_zero float_format 
              (Rep_float (Abs_float (fneg float_format To_nearest (Rep_float a))))"
     by (auto simp: float_neg_def)
-  have "is_valid float_format ((1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a)))"
+  have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))"
     by (cases a) (auto simp: Abs_float_inverse is_valid_def)
-  then have C: "(Iszero (Abs_float (fneg float_format To_nearest 
-       (Rep_float a)))) = is_zero float_format (fneg float_format To_nearest (Rep_float a))" 
-    by (auto simp: Abs_float_inverse fneg_def)
+  then have C: "(Iszero (Abs_float (fneg float_format To_nearest (Rep_float a)))) = 
+                is_zero float_format (fneg float_format To_nearest (Rep_float a))" 
+    by (auto simp: Sign_def Abs_float_inverse fneg_def)
   then have "... = (Iszero a)" by (metis Iszero_def neg_zero)
   then show ?thesis using A B C by auto 
 qed
-   
-lemma float_neg_zero1: "(Iszero a) = 
-                        (Iszero (float_neg a))"
-  by (metis Iszero_def float_neg_zero)
    
 lemma neg_infinity: "is_infinity x a \<longleftrightarrow> is_infinity x (fneg x m a)"
   by (auto simp: fneg_def is_infinity_def)
@@ -771,19 +753,18 @@ proof -
   have B: "Isnormal (float_neg a) = is_normal float_format (Rep_float (Abs_float 
     (fneg float_format To_nearest (Rep_float a))))"
     by (auto simp: float_neg_def)
-  have "is_valid float_format ((1 - sign (Rep_float a), exponent (Rep_float a), 
+  have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), 
     fraction (Rep_float a)))"
     by (cases a) (auto simp: Abs_float_inverse is_valid_def)
   then have C: "is_normal float_format (Rep_float (Abs_float (fneg float_format To_nearest 
     (Rep_float a)))) = is_normal float_format (fneg float_format To_nearest (Rep_float a))" 
-     by (auto simp: Abs_float_inverse fneg_def)
+     by (auto simp: Abs_float_inverse Sign_def fneg_def)
   then have "... = is_normal float_format (Rep_float a)" by (metis neg_normal)
   then show ?thesis using A B C by auto 
 qed
 
 lemma neg_denormal: "is_denormal x a \<longleftrightarrow> is_denormal x (fneg x m a)"
-apply (auto simp: fneg_def is_denormal_def)
-done
+  by (auto simp: fneg_def is_denormal_def)
 
 lemma float_neg_denormal: "Isdenormal a \<longleftrightarrow> Isdenormal (float_neg a)"
 proof -
@@ -791,11 +772,11 @@ proof -
   have B: "Isdenormal (float_neg a) = is_denormal float_format (Rep_float (Abs_float 
     (fneg float_format To_nearest (Rep_float a))))"
     by (auto simp: float_neg_def)
-  have "is_valid float_format ((1 - sign (Rep_float a), exponent (Rep_float a), fraction (Rep_float a)))"
+  have "is_valid float_format ((1 - (Sign a), exponent (Rep_float a), fraction (Rep_float a)))"
     by (cases a) (auto simp: Abs_float_inverse is_valid_def)
   then have C: "is_denormal float_format (Rep_float (Abs_float (fneg float_format To_nearest 
     (Rep_float a)))) = is_denormal float_format (fneg float_format To_nearest (Rep_float a))" 
-    by (auto simp: Abs_float_inverse fneg_def)
+    by (auto simp: Abs_float_inverse Sign_def fneg_def)
   then have "... = is_denormal float_format (Rep_float a)" by (metis neg_denormal)
   then show ?thesis using A B C by auto 
 qed
@@ -811,20 +792,19 @@ lemma float_neg_finite: "Finite a \<Longrightarrow> Finite (float_neg a)"
 by (metis Finite_def float_neg_denormal float_neg_normal float_neg_zero)
 
 (* The sign of a and the sign of a's negation is different *)
-lemma float_neg_sign: "sign (Rep_float a) \<noteq> sign (Rep_float (float_neg a))"
+lemma float_neg_sign: "(Sign a) \<noteq> (Sign (float_neg a))"
 proof -
-  have "sign (Rep_float a) = 0 \<or> sign (Rep_float a) = 1" 
-    by (metis is_valid_defloat sign_0_1)
-  moreover have "sign (Rep_float a) = 0 \<Longrightarrow> sign (Rep_float (float_neg a)) = 1" 
-    by (cases a) (auto simp: fneg_def float_neg_def Abs_float_inverse is_valid_def)
-  moreover have "sign (Rep_float a) = 1 \<Longrightarrow> sign (Rep_float (float_neg a)) = 0"
-    by (cases a) (auto simp: fneg_def float_neg_def Abs_float_inverse is_valid_def)
+  have "(Sign a) = 0 \<or> (Sign a) = 1" 
+    by (metis Sign_def is_valid_defloat sign_0_1)
+  moreover have "(Sign a) = 0 \<Longrightarrow> (Sign (float_neg a)) = 1" 
+    by (cases a) (auto simp: Sign_def fneg_def float_neg_def Abs_float_inverse is_valid_def)
+  moreover have "(Sign a) = 1 \<Longrightarrow> (Sign (float_neg a)) = 0"
+    by (cases a) (auto simp: Sign_def fneg_def float_neg_def Abs_float_inverse is_valid_def)
   ultimately show ?thesis  by (metis zero_neq_one)
 qed
 
-lemma float_neg_sign1: "(sign (Rep_float a) = sign (Rep_float (float_neg b))) \<longleftrightarrow>
-                        (sign (Rep_float a) \<noteq> sign (Rep_float  b))"
-by (metis float_neg_sign is_valid_defloat sign_0_1)
+lemma float_neg_sign1: "((Sign a) = (Sign (float_neg b))) \<longleftrightarrow> ((Sign a) \<noteq> (Sign  b))"
+by (metis Sign_def float_neg_sign is_valid_defloat sign_0_1)
 
 lemma neg_val: 
   assumes "is_finite float_format a"
@@ -851,23 +831,24 @@ lemma float_neg_val:
     shows "(Val (float_neg b)) = - (Val b)"
 proof -
   have "(Val (float_neg b)) = 
-    valof float_format (sign (Rep_float (float_neg b)),
-    exponent (Rep_float (float_neg b)), fraction (Rep_float (float_neg b))) "
-    by (metis Val_def PairE exponent.simps fraction.simps sign.simps)
-  have B: "... = valof float_format ((1 - sign (Rep_float b),
+    valof float_format ((Sign (float_neg b)),
+    exponent (Rep_float (float_neg b)), fraction (Rep_float (float_neg b)))"
+    by (metis Sign_def Val_def PairE exponent.simps fraction.simps sign.simps)
+  have B: "... = valof float_format ((1 - (Sign b),
     exponent (Rep_float b), fraction (Rep_float b)))"
-    using float_neg_def fneg_def Abs_float_inverse by (cases b) (auto simp: is_valid_def) 
+    using float_neg_def fneg_def Abs_float_inverse 
+    by (cases b) (auto simp: Sign_def is_valid_def) 
   have C: "(Val b) = 
-    valof float_format ((sign (Rep_float b), exponent (Rep_float b), fraction (Rep_float b)))" 
-    by (metis Val_def exponent.simps fraction.simps prod.exhaust sign.simps)
-  have D: "sign (Rep_float b) = 0 \<longleftrightarrow> 1 - sign (Rep_float b) = 1" by arith
-  have E: "sign (Rep_float b) = 1 \<longleftrightarrow> 1 - sign (Rep_float b) = 0" 
-    using is_valid_defloat sign_0_1 by (metis D diff_self_eq_0) 
+    valof float_format (((Sign b), exponent (Rep_float b), fraction (Rep_float b)))" 
+    by (metis Sign_def Val_def exponent.simps fraction.simps prod.exhaust sign.simps)
+  have D: "(Sign b) = 0 \<longleftrightarrow> 1 - (Sign b) = 1" by arith
+  have E: "(Sign b) = 1 \<longleftrightarrow> 1 - (Sign b) = 0" 
+    using is_valid_defloat sign_0_1 by (metis Sign_def D diff_self_eq_0) 
   then have "valof float_format (0, exponent (Rep_float b), fraction (Rep_float b)) = 
     - valof float_format (1, exponent (Rep_float b),
     fraction (Rep_float b)) " by auto
   thus ?thesis using assms B C D  
-    by (metis Val_def comm_monoid_diff_class.diff_cancel exponent.simps 
+    by (metis Val_def Sign_def comm_monoid_diff_class.diff_cancel exponent.simps 
           fraction.simps is_valid_defloat minus_minus prod.exhaust sign.simps sign_0_1) 
 qed
 
@@ -883,45 +864,43 @@ lemma float_plus_minus:
   assumes "Finite a" "Finite b" "Finite (a - b)" shows "(a + float_neg b) \<doteq> (a - b)"
 proof -
   have B: "\<not>(Isnan a)" using assms
-    by (auto simp: finite_nan emax_def is_nan_def is_normal_def is_denormal_def is_zero_def)
+    by (metis finite_nan)
   have C: "\<not>(Isnan (float_neg b))" using assms 
     by (metis finite_nan float_neg_finite)
   have D: "\<not>(Infinity a)" using assms
-    by (auto simp: finite_infinity emax_def is_infinity_def 
-      is_normal_def is_denormal_def is_zero_def)
+    by (metis finite_infinity)
   have E: "\<not>(Infinity (float_neg  b))" using assms 
     by (metis finite_infinity float_neg_finite) 
   then have F: "(a + float_neg b) =  Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> 
-        (Iszero (float_neg b)) \<and>
-        (sign (Rep_float a) = sign (Rep_float (float_neg b))) 
-    then sign (Rep_float a) else 0)
-        (round float_format To_nearest ((Val a) + 
-         (Val (float_neg b)))))" using B C D E 
-    by (auto simp: fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
+    (if (Iszero a) \<and> (Iszero (float_neg b)) \<and>((Sign a) = (Sign (float_neg b))) 
+    then (Sign a) else 0)
+        (round float_format To_nearest ((Val a) + (Val (float_neg b)))))" 
+    using B C D E 
+    by (auto simp: Sign_def fadd_def plus_float_def Infinity_def Isnan_def Val_def) 
   then have G: "... = Abs_float (zerosign float_format 
     (if (Iszero a) \<and> 
         (Iszero  b) \<and>
-        (sign (Rep_float a) \<noteq> sign (Rep_float b)) 
-     then sign (Rep_float a) else 0)
+        ((Sign a) \<noteq> (Sign b)) 
+     then (Sign a) else 0)
         (round float_format To_nearest ((Val a) + 
-         (Val (float_neg b))))) " using float_neg_sign1 float_neg_zero1
+         (Val (float_neg b)))))"
+     using float_neg_sign1 float_neg_zero
      by auto
   then have H: "... = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero b) \<and> (sign (Rep_float a) \<noteq> sign (Rep_float b)) 
-     then sign (Rep_float a) else 0)
+    (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) 
+     then (Sign a) else 0)
         (round float_format To_nearest ((Val a) - 
         (Val b))))" 
     using assms float_neg_add by metis
   have "(a - b) = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero  b) \<and> \<not>(sign (Rep_float a) = sign (Rep_float b)) 
-     then sign (Rep_float a) else if (To_nearest = To_ninfinity) then 1 else 0)
-        (round float_format To_nearest ((Val a) - 
-        (Val b))))" using assms B C D fsub_def minus_float_def float_distinct_finite
-        by (simp add: Infinity_def Isnan_def Val_def) metis
+    (if (Iszero a) \<and> (Iszero  b) \<and> \<not>((Sign a) = (Sign b)) 
+     then (Sign a) else if (To_nearest = To_ninfinity) then 1 else 0)
+        (round float_format To_nearest ((Val a) - (Val b))))" 
+        using assms finite_infinity finite_nan
+        by (simp only: fsub_def minus_float_def float_defs [symmetric] simp_thms if_False)
   then have "(a - b) = Abs_float (zerosign float_format 
-    (if (Iszero a) \<and> (Iszero  b) \<and> (sign (Rep_float a) \<noteq> sign (Rep_float b)) 
-     then sign (Rep_float a) else 0)
+    (if (Iszero a) \<and> (Iszero  b) \<and> ((Sign a) \<noteq> (Sign b)) 
+     then (Sign a) else 0)
           (round float_format To_nearest ((Val a) - (Val b))))"  
     by auto
   thus ?thesis using assms F H by (metis G float_eq)

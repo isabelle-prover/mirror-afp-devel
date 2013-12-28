@@ -432,8 +432,6 @@ declare Iszero_def [simp]
 definition Finite :: "float \<Rightarrow> bool" where
 "Finite a = (Isnormal a \<or> Isdenormal a \<or> Iszero a)"
 
-declare Finite_def [simp]
-
 definition Isintegral :: "float \<Rightarrow> bool" where
 "Isintegral a = is_integral float_format (Rep_float a)"
 
