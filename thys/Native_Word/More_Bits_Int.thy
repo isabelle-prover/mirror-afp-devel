@@ -353,26 +353,7 @@ lemma int_xor_code [code]: fixes i j :: int shows
 by(fold int_not_neg_numeral)(simp_all add: int_numeral_bitXOR_num int_xor_not cong: option.case_cong)
 
 
-section {* Instantiation of bits and bitss *}
-
-instantiation int :: bitss begin
-definition [iff]: "i !! n \<longleftrightarrow> bin_nth i n"
-definition "lsb i = (i :: int) !! 0"
-definition "set_bit i n b = bin_sc n b i"
-definition
-  "set_bits f =
-  (if \<exists>n. \<forall>n'\<ge>n. \<not> f n' then 
-     let n = LEAST n. \<forall>n'\<ge>n. \<not> f n'
-     in bl_to_bin (rev (map f [0..<n]))
-   else if \<exists>n. \<forall>n'\<ge>n. f n' then
-     let n = LEAST n. \<forall>n'\<ge>n. f n'
-     in sbintrunc n (bl_to_bin (True # rev (map f [0..<n])))
-   else 0 :: int)"
-definition "shiftl x n = (x :: int) * 2 ^ n"
-definition "shiftr x n = (x :: int) div 2 ^ n"
-definition "msb x \<longleftrightarrow> (x :: int) < 0"
-instance ..
-end
+section {* More on bits and bitss operations *}
 
 inductive wf_set_bits_int :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" 
   for f :: "nat \<Rightarrow> bool"
