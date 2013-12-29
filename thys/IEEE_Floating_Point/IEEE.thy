@@ -158,7 +158,6 @@ where
 
 subsection{*Rounding*}
 fun round :: "format \<Rightarrow> roundmode \<Rightarrow> real \<Rightarrow> representation" where
-
  "round x To_nearest y = 
            (if y \<le> -(threshold x) 
             then minus_infinity x 
@@ -166,14 +165,14 @@ fun round :: "format \<Rightarrow> roundmode \<Rightarrow> real \<Rightarrow> re
             then plus_infinity x 
             else (closest (valof x) (\<lambda>a. even (fraction a)) {a. is_finite x a} y) )"
 
-|"round x float_To_zero y = 
+| "round x float_To_zero y = 
            (if y < -(largest x) 
             then (bottomfloat x)
             else if y > largest x
             then (topfloat x)
             else (closest (valof x) (\<lambda>a. True) {a. (is_finite x a) \<and> abs(valof x a) \<le> abs y} y))"
 
-|"round x To_pinfinity y =
+| "round x To_pinfinity y =
            (if y < -(largest x)
             then (bottomfloat x)
             else if y > largest x
