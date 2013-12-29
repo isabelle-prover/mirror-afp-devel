@@ -186,24 +186,17 @@ proof -
 qed
 
 lemma zerosign_valid: 
-  assumes "s < 2"  "is_valid x a"
+  assumes "is_valid x a"
   shows "is_valid x (zerosign x s a)"
-proof -
-  have "is_valid x (s, exponent a, fraction a)" using assms
-    by (auto simp: is_valid_def)
-  thus ?thesis using assms is_valid_special 
-    by (metis zerosign_def)
-qed
+using is_valid_special by (metis assms zerosign_def)
 
 lemma defloat_float_zerosign_round: 
-  assumes "s < 2"
-  shows "Rep_float(Abs_float (zerosign float_format s (round float_format To_nearest x))) =
-         zerosign float_format s (round float_format To_nearest x)"
-by (metis assms is_valid_round mem_Collect_eq zerosign_valid Abs_float_inverse)
+       "Rep_float(Abs_float (zerosign float_format s (round float_format To_nearest x))) =
+        zerosign float_format s (round float_format To_nearest x)"
+  by (metis is_valid_round mem_Collect_eq zerosign_valid Abs_float_inverse)
 
 
 subsection{*Properties about ordering and bounding*}
-
 
 (*Lifting of non-exceptional comparisons*)
 lemma float_lt [simp]: 
@@ -211,21 +204,19 @@ lemma float_lt [simp]:
   shows "(a < b \<longleftrightarrow> Val a < Val b)"
 proof 
   assume "Val a < Val b"
-  have "\<not> (Isnan a \<or> Isnan b)" using assms float_distinct_finite by metis
-  moreover have "\<not> Infinity a"  "\<not> Infinity b" using assms float_distinct_finite by auto
+  moreover have "\<not>(Isnan a)"  "\<not>(Isnan b)"  "\<not>(Infinity a)" "\<not>(Infinity b)"
+    using assms by (auto simp: finite_nan finite_infinity)
   ultimately have "fcompare float_format (Rep_float a) (Rep_float b) = Lt"  
-    using  `Val a < Val b` by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
+    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   then show "a < b" by (auto simp: less_float_def) 
 next
   assume "a < b"
   then have lt: "fcompare float_format (Rep_float a) (Rep_float b) = Lt"
     by (simp add: less_float_def)
-  have non: "\<not> (Isnan a \<or> Isnan b)"  "\<not> Infinity a"  "\<not> Infinity b" 
-    using assms float_distinct_finite by auto
-  then have "Val a < Val b \<Longrightarrow> fcompare float_format (Rep_float a) (Rep_float b) = Lt" 
-    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
+  have "\<not>(Isnan a)"  "\<not>(Isnan b)"  "\<not>(Infinity a)" "\<not>(Infinity b)"
+    using assms by (auto simp: finite_nan finite_infinity)
   then show "Val a < Val b" 
-    using lt non assms 
+    using lt assms 
     by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: split_if_asm)
 qed  
 
@@ -234,21 +225,20 @@ lemma float_eq [simp]:
   shows "(a \<doteq> b) \<longleftrightarrow> (Val a = Val b)"
 proof 
   assume "Val a = Val b"
-  have non: "\<not> (Isnan a \<or> Isnan b)"  "\<not> Infinity a"  "\<not> Infinity b" 
+  have "\<not>(Isnan a)"  "\<not>(Isnan b)"  "\<not>(Infinity a)" "\<not>(Infinity b)"
     using assms float_distinct_finite by auto
   then have "fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
-    using `Val a = Val b` by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
+    using `Val a = Val b` 
+    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   then show "a \<doteq> b" by (auto simp: float_eq_def)
 next
   assume "a \<doteq> b"
   then have eq: "fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
     by (simp add: float_eq_def)
-  have non: "\<not> (Isnan a \<or> Isnan b)"  "\<not> Infinity a"  "\<not> Infinity b" 
+  have "\<not>(Isnan a)"  "\<not>(Isnan b)"  "\<not>(Infinity a)" "\<not>(Infinity b)"
     using assms float_distinct_finite by auto
-  then have "Val a = Val b \<Longrightarrow> fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
-    by (auto simp add: Infinity_def Isnan_def Val_def fcompare_def)
   then show "Val a = Val b" 
-    using eq non assms 
+    using eq assms 
     by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: split_if_asm)
 qed 
 
@@ -256,14 +246,10 @@ lemma float_le [simp]:
   assumes "Finite a" "Finite b"
   shows "(a \<le> b) \<longleftrightarrow> (Val a \<le> Val b)"
 proof -
-  have "(a \<le> b) \<longleftrightarrow> fcompare float_format (Rep_float a) (Rep_float b) = Lt \<or>
-                     fcompare float_format (Rep_float a) (Rep_float b) = Eq" 
-    using less_eq_float_def by auto
-  also have "... \<longleftrightarrow> flt float_format (Rep_float a) (Rep_float b) \<or> 
-                     feq float_format (Rep_float a) (Rep_float b)" 
-    by auto
-  also have "... \<longleftrightarrow> a < b \<or> a \<doteq> b" using less_float_def float_eq_def by auto
-  finally show ?thesis using assms by auto
+  have "(a \<le> b) \<longleftrightarrow>  a < b \<or> a \<doteq> b"
+    by (auto simp add: less_eq_float_def less_float_def float_eq_def)
+  then show ?thesis  
+    by (auto simp add: assms)
 qed
 
 (*Reflexivity of equality for non-NaNs*)
@@ -284,17 +270,9 @@ lemma float_le_neg: "Finite a \<Longrightarrow> Finite b \<Longrightarrow> \<not
   by auto
 
 (*Properties about bounding*)
-lemma float_le_infinity [simp]: 
-  assumes "\<not> Isnan a" shows "a \<le> Plus_infinity"
-proof -
-  have "(fcompare float_format (Rep_float a) (plus_infinity float_format) = Eq) \<or>
-        (fcompare float_format (Rep_float a) (plus_infinity float_format) = Lt)"
-    using assms
-    by (auto simp add: Isnan_def fcompare_def is_nan_def is_infinity_def plus_infinity_def)
-  then show ?thesis 
-    by (auto simp: Plus_infinity_def less_eq_float_def plus_infinity_def
-                   Abs_float_inverse emax_def is_valid_def)
-qed
+lemma float_le_infinity [simp]: "\<not> Isnan a \<Longrightarrow> a \<le> Plus_infinity"
+  by (auto simp: Isnan_def fcompare_def is_nan_def is_infinity_def plus_infinity_def Plus_infinity_def 
+                 less_eq_float_def Abs_float_inverse emax_def is_valid_def)
 
 lemma [simp]: "Plus_zero \<le> Abs_float (topfloat float_format)"
   by (auto simp: fcompare_def is_nan_def less_eq_float_def topfloat_def float_format_def
@@ -330,75 +308,49 @@ by auto
 lemma float_le_topfloat: 
   assumes "Finite a" shows "a \<le> Topfloat"
 proof -
-  have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le [OF assms])
-  have C: "(Exponent a) \<le> 2046" using assms by (rule float_exp_le)
-  then have "(Fraction a)/2^(fracwidth float_format) \<le> (2^52 - 1)/2^(fracwidth float_format)" 
-    using B by (auto simp: float_format_def)
-  then have D: "(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) \<le>  
-                (2 / (2^bias float_format)) * ((2^52 - 1)/2^(fracwidth float_format))" 
-    by (auto simp: float_format_def bias_def)  
-  have H: "0 < 1 + (Fraction a)/2^fracwidth float_format"
-     "(1 + (Fraction a)/2^fracwidth float_format) \<le> (1 + (2^52 - 1)/2^fracwidth float_format)"  
-    using D by (auto simp: float_format_def bias_def) 
-  have J: "(2::real)^(Exponent a) \<le> 2^2046" using C by (metis exp_less)
-  then have K: "0<((2::real)^(Exponent a)) / (2^bias float_format)\<and>
-    ((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
-    using div_less by (metis zero_less_divide_iff zero_less_numeral zero_less_power)  
-  then have L: "0 < (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<and>
-    (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<le>
-    ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    by (metis H divide_zero_left pos_divide_less_eq mult_mono' less_eq_real_def)
-  then have M: "1 * ((2^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<le> 
-    (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    by auto
-  have "(-1) * (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<le> 
-    (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using L by auto
-  then have N: "(-1)^(Sign a) * (((2::real)^(Exponent a)) /
-    (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<le>  (-1)^0 * ((2^2046) / 
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " 
-    using M float_sign_le by metis
-  have P: "(-1) * (2 / (2^bias float_format)) * 
-    ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) / 
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)"  
-    using B by (auto simp: float_format_def bias_def)
-  have Q: "1 * (2 / (2^bias float_format)) * 
-    ((Fraction a)/2^(fracwidth float_format)) \<le> (-1)^0 * ((2^2046) /
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using B by (auto simp: float_format_def bias_def)
-  then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) \<le> 
-             (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    by (metis P Q float_sign_le)
-  then have R: "(if ((Exponent a) = 0) 
-    then (-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * ((2^(Exponent a))/ (2^bias float_format)) *
-         (1 + (Fraction a)/2^fracwidth float_format)) \<le> 
-         (-1)^0 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using N by simp
-  have "Val a =  
-    (if ((Exponent a) = 0) 
-    then (-1)^(Sign a) *(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * (((2::real)^(Exponent a)) / 
-         (2^bias float_format)) * (1 + (Fraction a)/2^fracwidth float_format))" 
-    by (cases a) (auto simp: float_defs Abs_float_inverse) 
-  moreover have "valof (float_format) (topfloat float_format) =
-        (-1)^0 * ((2^2046) / (2^bias float_format)) *(1 + (2^52 - 1)/2^fracwidth float_format)" 
+  have vt: "valof float_format (topfloat float_format) =
+        ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
     by (auto simp: emax_def float_format_def topfloat_def) 
-  ultimately have "Val a \<le> valof (float_format) (topfloat float_format)" 
-    using R Val_def by auto
+  have frale: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le [OF assms])
+  moreover have exple: "(Exponent a) \<le> 2046" using assms by (rule float_exp_le)
+  ultimately have "Fraction a/2^(fracwidth float_format) \<le> (2^52 - 1)/2^(fracwidth float_format)" 
+    by (auto simp: float_format_def)
+  then have "(2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le>  
+             (2 / (2^bias float_format)) * ((2^52 - 1)/2^(fracwidth float_format))" 
+    by (auto simp: float_format_def bias_def)  
+  then have ineq: "0 < 1 + Fraction a/2^fracwidth float_format"
+          "(1 + Fraction a/2^fracwidth float_format) \<le> 1 + (2^52 - 1)/2^fracwidth float_format"  
+    by (auto simp: float_format_def bias_def) 
+  then have "0 < ((2::real)^(Exponent a)) / (2^bias float_format)"
+    by (metis zero_less_divide_iff zero_less_numeral zero_less_power)
+  then have gt0: "0 < (2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format)"
+    using ineq by (metis zero_less_mult_iff) 
+  moreover have "((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
+    by (metis exple exp_less div_less zero_less_numeral zero_less_power)  
+  ultimately have 
+      "(2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format) \<le>
+       valof float_format (topfloat float_format)"
+    by (metis vt ineq divide_zero_left pos_divide_less_eq mult_mono' less_eq_real_def)
+  then have "1 * (2^Exponent a / 2^bias float_format) * (1 + Fraction a / 2^fracwidth float_format) \<le> 
+                valof float_format (topfloat float_format)" 
+            "-1* (2^Exponent a / 2^bias float_format) * (1 + Fraction a / 2^fracwidth float_format) \<le> 
+                valof float_format (topfloat float_format)"  
+    using gt0 by auto
+  then have nzexp: --{*nonzero exponent case*}
+    "(-1)^(Sign a) * (2^Exponent a / 2^bias float_format) *
+     (1 + Fraction a/2^fracwidth float_format) \<le> valof float_format (topfloat float_format)" 
+    by (metis float_sign_le)
+  have "-1* (2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le> valof float_format (topfloat float_format)"  
+       "1 * (2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le> valof float_format (topfloat float_format)" 
+    using frale vt by (auto simp: float_format_def bias_def)
+  then have  --{*zero exponent case*}
+      "(-1)^(Sign a)*(2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format)) \<le> 
+         valof float_format (topfloat float_format)" 
+    by (metis float_sign_le)
   then have "Val a \<le> Val Topfloat" 
-    by (simp add: Abs_float_inverse Topfloat_def is_valid_special Val_def)
-  thus ?thesis 
-    using assms finite_topfloat by (simp add: emax_def)
+    using nzexp by (cases a) (auto simp: float_defs Abs_float_inverse Topfloat_def is_valid_special) 
+  thus ?thesis
+    by (metis assms finite_topfloat float_le) 
 qed
      
 lemma topfloat_eq_largest: "Val Topfloat = largest float_format"
@@ -431,13 +383,13 @@ proof -
   assume A: "Finite a"
   then have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le)
   have C: "(Exponent a) \<le> 2046" using A by (rule float_exp_le)
-  then have "((Fraction a)/2^(fracwidth float_format)) \<le> 
+  then have "(Fraction a/2^(fracwidth float_format)) \<le> 
     (( 2^52 - 1)/2^(fracwidth float_format))" using B  by (auto simp: float_format_def) 
-  then have D: "(2 / (2^bias float_format)) * ((Fraction a)/2^(fracwidth float_format))
+  then have D: "(2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format))
         \<le> (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
     by (auto simp: bias_def float_format_def) 
-  have H: "0<(1 + (Fraction a)/2^fracwidth float_format) \<and>
-    (1 + (Fraction a)/2^fracwidth float_format) \<le>
+  have H: "0<(1 + Fraction a/2^fracwidth float_format) \<and>
+    (1 + Fraction a/2^fracwidth float_format) \<le>
     (1 + (2^52 - 1)/2^fracwidth float_format)" 
     using D by (auto simp: bias_def float_format_def)
   have J: "(2::real)^(Exponent a) \<le> 2^2046" using C by (metis exp_less)
@@ -445,52 +397,52 @@ proof -
     ((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
     using div_less by (metis zero_less_divide_iff zero_less_numeral zero_less_power)
   then have L: "0 < (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<and>
+    (1 + Fraction a/2^fracwidth float_format) \<and>
     (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<le> ((2^2046) / (2^bias float_format)) *
+    (1 + Fraction a/2^fracwidth float_format) \<le> ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)"  
     by (metis H divide_zero_left pos_divide_less_eq mult_mono' less_eq_real_def)
   then have M: "1 * (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<ge> 
+    (1 + Fraction a/2^fracwidth float_format) \<ge> 
     (-1)^1 * ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: bias_def)
   have "(-1) * (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<ge> 
+    (1 + Fraction a/2^fracwidth float_format) \<ge> 
     (-1)^1 * ((2^2046) / (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" using L by (auto simp: bias_def)
   then have N: "(-1)^(Sign a) * (((2::real)^(Exponent a)) / 
     (2^bias float_format)) *
-    (1 + (Fraction a)/2^fracwidth float_format) \<ge>  (-1)^1 * ((2^2046) / 
+    (1 + Fraction a/2^fracwidth float_format) \<ge>  (-1)^1 * ((2^2046) / 
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format) " using M A float_sign_le by metis
   have P: "(-1) * (2 / (2^bias float_format)) * 
-    ((Fraction a)/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
+    (Fraction a/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)"  
     using A B by (auto simp: bias_def float_format_def)
   have Q: "1 * (2 / (2^bias float_format)) * 
-    ((Fraction a)/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) /
+    (Fraction a/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) /
     (2^bias float_format)) *
     (1 + (2^52 - 1)/2^fracwidth float_format)" 
     using A B by (auto simp: bias_def float_format_def)
   then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * 
-    ((Fraction a)/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
+    (Fraction a/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
     (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format) " 
     by (metis  P Q float_sign_le)
   then have R: "(if Exponent a = 0 
     then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
-         ((Fraction a)/2^(fracwidth float_format)) 
+         (Fraction a/2^(fracwidth float_format)) 
     else (-1)^(Sign a) * ((2^(Exponent a)) / 
          (2^bias float_format)) *
-         (1 + (Fraction a)/2^fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
+         (1 + Fraction a/2^fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
          (2^bias float_format)) *
          (1 + (2^52 - 1)/2^fracwidth float_format)" using N by auto
   have "Val a = 
     (if ((Exponent a) = 0) 
     then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
-         ((Fraction a)/2^(fracwidth float_format)) 
+         (Fraction a/2^(fracwidth float_format)) 
     else (-1)^(Sign a) * ((2^(Exponent a)) / 
-         (2^bias float_format)) * (1 + (Fraction a)/2^fracwidth float_format))" 
+         (2^bias float_format)) * (1 + Fraction a/2^fracwidth float_format))" 
     by (cases a) (auto simp: float_defs Abs_float_inverse) 
   moreover have "valof (float_format) (bottomfloat float_format) =
       (-1)^1 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 

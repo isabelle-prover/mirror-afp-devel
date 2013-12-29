@@ -15,6 +15,7 @@ type_synonym format = "nat \<times> nat"
 type_synonym representation = "nat \<times> nat \<times> nat" 
 
 subsection {*Derived parameters for floating point formats*}
+
 fun expwidth :: "format \<Rightarrow> nat" where
 "expwidth (ew, fw) = ew" 
 
@@ -24,16 +25,14 @@ fun fracwidth :: "format \<Rightarrow> nat" where
 definition wordlength :: "format \<Rightarrow> nat" where
 "wordlength x = (expwidth(x) + fracwidth(x) + 1)"
 
-
 definition emax :: "format \<Rightarrow> nat" where
 "emax x =  2^(expwidth x) - 1"
-
 
 definition bias :: "format \<Rightarrow> nat" where
 "bias x = 2^(expwidth x - 1) - 1 "
 
-
 subsection {*Predicates for the four IEEE formats*}
+
 definition is_single :: "format \<Rightarrow> bool" where
 "is_single x = ((expwidth x = 8) \<and> (wordlength x = 32))"
 
@@ -57,29 +56,24 @@ fun fraction :: "representation \<Rightarrow> nat" where
 "fraction (s, e, f) = f"
 
 subsection{*Partition of numbers into disjoint classes*}
+
 definition is_nan :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_nan x a = ((exponent a = emax x) \<and> \<not>(fraction a = 0))"
-
 
 definition is_infinity :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_infinity x a = ((exponent a = emax x) \<and> (fraction a = 0))"
 
-
 definition is_normal :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_normal x a = ((0 < exponent a) \<and> (exponent a < emax x))"
-
 
 definition is_denormal :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_denormal x a = ((exponent a = 0) \<and> \<not>(fraction a = 0))"
 
-
 definition is_zero :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_zero x a = ((exponent a = 0) \<and> (fraction a = 0))"
 
-
 definition is_valid :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_valid x a = (sign a < 2 \<and> (exponent a < 2^(expwidth x) \<and> (fraction a < 2^(fracwidth x))))"
-
 
 definition is_finite :: "format \<Rightarrow> representation \<Rightarrow> bool" where
 "is_finite x a = ((is_valid x a) \<and> ((is_normal x a) \<or> (is_denormal x a) \<or> (is_zero x a)))"
