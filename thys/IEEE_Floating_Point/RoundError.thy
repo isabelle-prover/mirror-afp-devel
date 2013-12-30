@@ -60,15 +60,14 @@ using assms
 by auto (metis nat_add_commute power_add)
 
 lemma is_finite_zerosign:
-  assumes "s < 2"  "is_finite float_format a"
+  assumes "is_finite float_format a"
   shows "is_finite float_format (zerosign float_format s a)"
 using assms
-by (metis exponent.simps fraction.simps is_finite_def is_zero_def 
+by (metis (full_types) exponent.simps fraction.simps is_finite_def is_zero_def 
     minus_zero_def plus_zero_def zerosign_def zerosign_valid)
 
 lemma defloat_float_zerosign_round_finite:
   assumes threshold: "abs x < threshold float_format"
-  assumes s: "s < 2"
   shows "is_finite float_format
          (zerosign float_format s (round float_format To_nearest x))"
 proof -
@@ -78,7 +77,7 @@ proof -
   then have "is_finite float_format (round float_format To_nearest x) "
     by (metis is_finite_closest)
   then show ?thesis
-    using s is_finite_zerosign by auto
+    using is_finite_zerosign by auto
 qed
 
 lemma signzero_zero: "is_zero float_format a \<Longrightarrow> 
@@ -100,17 +99,15 @@ proof-
     using assms float_distinct_finite by auto
   ultimately have ab: "(a + b) = Abs_float (zerosign float_format 
     (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0)
-        (round float_format To_nearest ((Val a) + (Val b))))" 
+        (round float_format To_nearest (Val a + Val b)))" 
     using finite_a finite_b 
     by (auto simp add: float_defs fadd_def plus_float_def)
-  moreover have sign01: "(if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0) < 2"
-    using sign_0_1 by (simp add: float_defs) (metis is_valid_defloat)
-  moreover have "abs ((Val a) + (Val b)) < threshold float_format" 
+  moreover have "abs (Val a + Val b) < threshold float_format" 
     using threshold by auto
   ultimately have finite_ab: 
     "is_finite float_format (Rep_float(Abs_float (zerosign float_format 
         (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0)
-            (round float_format To_nearest ((Val a) + (Val b))))))" 
+            (round float_format To_nearest (Val a + Val b)))))" 
     by (metis defloat_float_zerosign_round defloat_float_zerosign_round_finite)
   then have  "is_finite float_format (Rep_float(a + b))" by (metis ab)
   then have  "Finite (a + b)" 
@@ -118,28 +115,24 @@ proof-
   have "Val (a + b) = 
         (Val (Abs_float (zerosign float_format 
               (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0)
-              (round float_format To_nearest ((Val a) + (Val b))))))" 
+              (round float_format To_nearest (Val a + Val b)))))" 
     by (metis ab)
   also have "... = 
     valof float_format (zerosign float_format 
           (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0)
-          (round float_format To_nearest ((Val a) + (Val b))))" 
-    using defloat_float_zerosign_round sign01
+          (round float_format To_nearest (Val a + Val b)))" 
+    using defloat_float_zerosign_round 
     by (auto simp: Infinity_def Isnan_def Val_def)
-  finally have val_ab: "Val (a + b) = valof float_format (zerosign float_format 
-    (if (Iszero a) \<and> 
-        (Iszero b) \<and>
-        ((Sign a) = (Sign b)) 
-     then (Sign a) else 0)
+  finally have val_ab: "Val (a + b) =
+    valof float_format (zerosign float_format 
+        (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0)
         (round float_format To_nearest ((Val a) + 
         (Val b))))" .
-  have zero: "is_zero float_format (round float_format To_nearest 
-    ((Val a) + (Val b))) \<Longrightarrow> 
+  have zero: "is_zero float_format (round float_format To_nearest (Val a + Val b)) \<Longrightarrow> 
     (Val (a + b) = Val a + Val b + error (Val a + Val b))" 
     proof -
       assume assm: 
-        "is_zero float_format (round float_format To_nearest ((Val a) + 
-                     (Val b)))"
+        "is_zero float_format (round float_format To_nearest (Val a + Val b))"
       then have ab0: "Val (a + b) = 0"  by (metis signzero_zero val_ab)
       have "Val a + Val b + error (Val a + Val b) = 
          valof float_format (round float_format To_nearest ((Val a) + 
@@ -149,18 +142,13 @@ proof-
       then have "Val a + Val b + error (Val a + Val b) = 0" using assm  by (metis val_zero)
       then show ?thesis using ab0 by auto
     qed
-  have not_zero: "\<not>is_zero float_format (round float_format To_nearest 
-    ((Val a) + (Val b))) \<Longrightarrow> 
+  have not_zero: "\<not>is_zero float_format (round float_format To_nearest (Val a + Val b)) \<Longrightarrow> 
     (Val (a + b) = Val a + Val b + error (Val a + Val b))"
     proof -
-      assume assm: "\<not>is_zero float_format (round float_format To_nearest 
-        ((Val a) + (Val b)))"
+      assume assm: "\<not>is_zero float_format (round float_format To_nearest (Val a + Val b))"
       have "Val (a + b) = valof float_format (zerosign float_format 
-        (if (Iszero a) \<and> (Iszero b) \<and>
-            ((Sign a) = (Sign b)) 
-         then (Sign a) else 0)
-            (round float_format To_nearest ((Val a) + 
-            (Val b)))) " using val_ab by auto
+        (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) = (Sign b)) then (Sign a) else 0)
+            (round float_format To_nearest (Val a + Val b))) " using val_ab by auto
       also have "... = valof float_format (round float_format To_nearest 
         ((Val a) + 
         (Val b)))" using zerosign_def by (metis assm)
@@ -184,12 +172,10 @@ proof-
     using assms by (auto simp: finite_nan finite_infinity)
   ultimately have ab: "(a - b) = Abs_float (zerosign float_format 
     (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0)
-        (round float_format To_nearest ((Val a) - (Val b))))" 
+        (round float_format To_nearest (Val a - Val b)))" 
     using finite_a finite_b 
     by (auto simp add: float_defs fsub_def minus_float_def)
-  moreover have sign01: "(if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0) < 2"
-    using sign_0_1 by (simp add: float_defs) (metis is_valid_defloat)
-  moreover have "abs ((Val a) - (Val b)) < threshold float_format" 
+  moreover have "abs (Val a - Val b) < threshold float_format" 
     using threshold by auto
   ultimately have "is_finite float_format (Rep_float(a - b))" 
     by (metis defloat_float_zerosign_round_finite defloat_float_zerosign_round) 
@@ -197,26 +183,24 @@ proof-
     by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
   have "Val (a - b) = 
     (Val (Abs_float (zerosign float_format (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0)
-        (round float_format To_nearest ((Val a) - (Val b))))))" 
+        (round float_format To_nearest (Val a - Val b)))))" 
     by (metis ab)
   also have "... = 
     valof float_format (zerosign float_format 
     (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0)
         (round float_format To_nearest ((Val a) - 
         (Val b))))" 
-    using defloat_float_zerosign_round sign01 
+    using defloat_float_zerosign_round 
     by (auto simp: Infinity_def Isnan_def Val_def)
   finally have val_ab: "Val (a - b) = valof float_format (zerosign float_format 
     (if (Iszero a) \<and> (Iszero b) \<and> ((Sign a) \<noteq> (Sign b)) then (Sign a) else 0)
-        (round float_format To_nearest ((Val a) - 
-        (Val b))))" .
+        (round float_format To_nearest (Val a - Val b)))" .
   have zero: "is_zero float_format (round float_format To_nearest 
-    ((Val a) - (Val b))) \<Longrightarrow> 
+    (Val a - Val b)) \<Longrightarrow> 
     (Val (a - b) = Val a - Val b + error (Val a - Val b))" 
     proof -
       assume assm: 
-        "is_zero float_format (round float_format To_nearest ((Val a) - 
-         (Val b)))"
+        "is_zero float_format (round float_format To_nearest (Val a - Val b))"
       then have ab0: "Val (a - b) = 0" using val_ab by (metis signzero_zero)
       have "Val a - Val b + error (Val a - Val b) = 
         valof float_format (round float_format To_nearest ((Val a) - 
@@ -226,12 +210,11 @@ proof-
       then have "Val a - Val b + error (Val a - Val b) = 0" using assm  by (metis val_zero)
       then show ?thesis using ab0 by auto
     qed
-  have not_zero: "\<not>is_zero float_format (round float_format To_nearest 
-    ((Val a)  -  (Val b))) \<Longrightarrow> 
+  have not_zero: "\<not>is_zero float_format (round float_format To_nearest (Val a - Val b)) \<Longrightarrow> 
     (Val (a - b) = Val a - Val b + error (Val a - Val b))"
     proof -
       assume assm: "\<not>is_zero float_format (round float_format To_nearest 
-        ((Val a) - (Val b)))"
+        (Val a - Val b))"
       have "Val (a - b) = valof float_format (zerosign float_format 
         (if (Iszero a) \<and> (Iszero b) \<and>
             ((Sign a) \<noteq> (Sign b)) 
@@ -239,7 +222,7 @@ proof-
             (round float_format To_nearest ((Val a) - 
             (Val b)))) " using val_ab by auto
        also have "... = valof float_format (round float_format To_nearest 
-         ((Val a) - (Val b)))" 
+         (Val a - Val b))" 
          using zerosign_def by (metis assm)
        also have "... = Val a - Val b + error (Val a - Val b)" using error_def 
          by (metis Val_def ab_group_add_class.add_diff_cancel_left 
@@ -250,9 +233,6 @@ proof-
   then have "(Val (a - b) = Val a - Val b + error (Val a - Val b))" using zero by metis
   thus ?thesis by (metis `Finite (a - b)`) 
 qed      
-
-lemma of_bool_lt_2: "of_bool p < (2::nat)"
-  by (simp add: of_bool_def)
 
 lemma float_mul:
   fixes a b
@@ -265,32 +245,32 @@ proof-
   have non: "\<not> Isnan a" "\<not> Isnan b"  "\<not> Infinity a"  "\<not> Infinity b" 
     using assms float_distinct_finite by auto
   then have ab: "(a * b) = Abs_float (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-    (round float_format To_nearest ((Val a) * (Val b))))"  
+    (round float_format To_nearest (Val a * Val b)))"  
     using finite_a finite_b 
     by (auto simp: float_defs fmul_def times_float_def)
-  moreover have "abs ((Val a) * (Val b)) < threshold float_format" 
+  moreover have "abs (Val a * Val b) < threshold float_format" 
     using threshold by auto
   ultimately have "is_finite float_format (Rep_float(a * b))" 
-    by (metis of_bool_lt_2 defloat_float_zerosign_round_finite defloat_float_zerosign_round)
+    by (metis defloat_float_zerosign_round_finite defloat_float_zerosign_round)
   then have "Finite (a * b)" 
     by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
   have "Val (a * b) = 
         (Val(Abs_float(zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-                      (round float_format To_nearest ((Val a) * (Val b))))))" 
+                      (round float_format To_nearest (Val a * Val b)))))" 
     by (metis ab)
   also have "... = 
     valof float_format (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest ((Val a) * (Val b))))"
+        (round float_format To_nearest (Val a * Val b)))"
     using defloat_float_zerosign_round
     by (auto simp: float_defs of_bool_def)
   finally have val_ab: "Val (a * b) = valof float_format  (zerosign float_format 
         (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest ((Val a) * (Val b))))" .
-  have zero: "is_zero float_format (round float_format To_nearest ((Val a) * (Val b))) \<Longrightarrow> 
+        (round float_format To_nearest (Val a * Val b)))" .
+  have zero: "is_zero float_format (round float_format To_nearest (Val a * Val b)) \<Longrightarrow> 
               (Val (a * b) = Val a * Val b + error (Val a * Val b))" 
     proof -
       assume assm: 
-        "is_zero float_format (round float_format To_nearest ((Val a) * (Val b)))"
+        "is_zero float_format (round float_format To_nearest (Val a * Val b))"
       then have ab0: "Val (a * b) = 0" using val_ab by (metis signzero_zero)
       have "Val a * Val b + error (Val a * Val b) = 
         valof float_format (round float_format To_nearest ((Val a) * 
@@ -301,11 +281,11 @@ proof-
       then show ?thesis using ab0 by auto
     qed
   have not_zero: "\<not>is_zero float_format (round float_format To_nearest 
-    ((Val a) * (Val b))) \<Longrightarrow> 
+    (Val a * Val b)) \<Longrightarrow> 
     (Val (a * b) = Val a * Val b + error (Val a * Val b))"
     proof -
       assume assm: "\<not>is_zero float_format (round float_format To_nearest 
-        ((Val a) * (Val b)))"
+        (Val a * Val b))"
       have "Val (a * b) = valof float_format (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
         (round float_format To_nearest ((Val a) * 
         (Val b)))) " using val_ab by auto
@@ -331,58 +311,53 @@ lemma float_div:
 proof-
   have val_threshold: "((Val a)) / ((Val b)) < threshold float_format" 
     by (metis abs_less_iff threshold)
-  moreover have ab: "(a / b) = Abs_float (zerosign float_format 
-    (of_bool (Sign a \<noteq> Sign b))
-    (round float_format To_nearest ((Val a) / (Val b))))"  
+  moreover have ab: "(a / b) = Abs_float (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
+                           (round float_format To_nearest (Val a / Val b)))"  
      using finite_a finite_b  
-     apply (simp only: of_bool_def  divide_float_def fdiv_def finite_infinity finite_nan not_zero float_defs [symmetric])
-     apply auto
-     done
-  moreover have "abs ((Val a) / (Val b)) < threshold float_format" 
+     by (simp add: divide_float_def fdiv_def finite_infinity finite_nan not_zero float_defs [symmetric])
+  moreover have "abs (Val a / Val b) < threshold float_format" 
     using threshold by auto
   ultimately have "is_finite float_format (Rep_float(a / b))" 
-    by (metis of_bool_lt_2 defloat_float_zerosign_round_finite defloat_float_zerosign_round) 
+    by (metis defloat_float_zerosign_round_finite defloat_float_zerosign_round) 
   then have "Finite (a / b)" 
     by (metis Finite_def Isdenormal_def Isnormal_def Iszero_def is_finite_def)
   have "Val (a / b) = 
-   (Val(Abs_float(zerosign float_format 
-        (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest ((Val a) / (Val b))))))" 
+        (Val (Abs_float(zerosign float_format (of_bool (Sign a \<noteq> Sign b))
+             (round float_format To_nearest (Val a / Val b)))))" 
     by (metis  ab)
   also have "... = 
-    valof float_format (zerosign float_format 
-        (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest ((Val a) / (Val b))))" 
+    valof float_format (zerosign float_format (of_bool (Sign a \<noteq> Sign b))
+        (round float_format To_nearest (Val a / Val b)))" 
     using defloat_float_zerosign_round  
     by (auto simp: float_defs of_bool_def)
   finally have val_ab: "Val (a / b) = valof float_format  (zerosign float_format 
         (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest ((Val a) / (Val b))))" .
+        (round float_format To_nearest (Val a / Val b)))" .
   have zero: "is_zero float_format (round float_format To_nearest (Val a / Val b)) \<Longrightarrow> 
               Val (a / b) = Val a / Val b + error (Val a / Val b)" 
     proof -
       assume assm: 
-        "is_zero float_format (round float_format To_nearest ((Val a) / (Val b)))"
+        "is_zero float_format (round float_format To_nearest (Val a / Val b))"
       then have ab0: "Val (a / b) = 0" 
         using val_ab by (metis signzero_zero)
       have "Val a / Val b + error (Val a / Val b) = 
-        valof float_format (round float_format To_nearest ((Val a) / 
-        (Val b)))" using error_def assm
-        by (metis Val_def comm_semiring_1_class.normalizing_semiring_rules(24) 
-        defloat_float_round diff_add_cancel)
-      then have "Val a / Val b + error (Val a / Val b) = 0" using assm  by (metis val_zero)
-      then show ?thesis using ab0 by auto
+        valof float_format (round float_format To_nearest (Val a / Val b))" 
+        using error_def assm
+        by (metis Val_def add_commute defloat_float_round diff_add_cancel)
+      then have "Val a / Val b + error (Val a / Val b) = 0" 
+        using assm  by (metis val_zero)
+      then show ?thesis 
+        using ab0 by auto
     qed
-  have not_zero: "\<not>is_zero float_format (round float_format To_nearest 
-    ((Val a) /  (Val b))) \<Longrightarrow> 
+  have not_zero: "\<not>is_zero float_format (round float_format To_nearest (Val a / Val b)) \<Longrightarrow> 
     (Val (a / b) = Val a / Val b + error (Val a / Val b))"
     proof -
-      assume assm: "\<not>is_zero float_format (round float_format To_nearest ((Val a) / (Val b)))"
+      assume assm: "\<not>is_zero float_format (round float_format To_nearest (Val a / Val b))"
       have "Val (a / b) = valof float_format (zerosign float_format 
         (of_bool (Sign a \<noteq> Sign b))
-        (round float_format To_nearest ((Val a) / (Val b))))" 
+        (round float_format To_nearest (Val a / Val b)))" 
         using val_ab by auto 
-      also have "... = valof float_format (round float_format To_nearest ((Val a) / (Val b)))" 
+      also have "... = valof float_format (round float_format To_nearest (Val a / Val b))" 
         using zerosign_def 
         by (metis signzero_zero val_zero)
       also have "... = Val a / Val b + error (Val a / Val b)" using error_def 

@@ -325,7 +325,8 @@ proof -
     by (metis zero_less_divide_iff zero_less_numeral zero_less_power)
   then have gt0: "0 < (2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format)"
     using ineq by (metis zero_less_mult_iff) 
-  moreover have "((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
+  moreover 
+  have "((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
     by (metis exple exp_less div_less zero_less_numeral zero_less_power)  
   ultimately have 
       "(2^Exponent a / 2^bias float_format) * (1 + Fraction a/2^fracwidth float_format) \<le>
@@ -352,7 +353,7 @@ proof -
   thus ?thesis
     by (metis assms finite_topfloat float_le) 
 qed
-     
+
 lemma topfloat_eq_largest: "Val Topfloat = largest float_format"
 proof -
   have "Val Topfloat = valof float_format (topfloat float_format)" 
@@ -376,108 +377,6 @@ proof -
   also have "... < threshold float_format" 
     by (auto simp: float_format_def largest_def threshold_def bias_def)
   finally show ?thesis .
-qed
-
-lemma float_val_ge_bottomfloat:  "Finite a \<Longrightarrow> Val a \<ge> Val Bottomfloat"
-proof -
-  assume A: "Finite a"
-  then have B: "(Fraction a) \<le> 2^52 - 1" by (rule float_frac_le)
-  have C: "(Exponent a) \<le> 2046" using A by (rule float_exp_le)
-  then have "(Fraction a/2^(fracwidth float_format)) \<le> 
-    (( 2^52 - 1)/2^(fracwidth float_format))" using B  by (auto simp: float_format_def) 
-  then have D: "(2 / (2^bias float_format)) * (Fraction a/2^(fracwidth float_format))
-        \<le> (2 / (2^bias float_format)) * (( 2^52 - 1)/2^(fracwidth float_format))" 
-    by (auto simp: bias_def float_format_def) 
-  have H: "0<(1 + Fraction a/2^fracwidth float_format) \<and>
-    (1 + Fraction a/2^fracwidth float_format) \<le>
-    (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using D by (auto simp: bias_def float_format_def)
-  have J: "(2::real)^(Exponent a) \<le> 2^2046" using C by (metis exp_less)
-  then have K: "0<((2::real)^(Exponent a)) / (2^bias float_format) \<and>
-    ((2::real)^(Exponent a)) / (2^bias float_format) \<le> (2^2046) / (2^bias float_format)"
-    using div_less by (metis zero_less_divide_iff zero_less_numeral zero_less_power)
-  then have L: "0 < (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + Fraction a/2^fracwidth float_format) \<and>
-    (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + Fraction a/2^fracwidth float_format) \<le> ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)"  
-    by (metis H divide_zero_left pos_divide_less_eq mult_mono' less_eq_real_def)
-  then have M: "1 * (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + Fraction a/2^fracwidth float_format) \<ge> 
-    (-1)^1 * ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " by (auto simp: bias_def)
-  have "(-1) * (((2::real)^(Exponent a)) / (2^bias float_format)) *
-    (1 + Fraction a/2^fracwidth float_format) \<ge> 
-    (-1)^1 * ((2^2046) / (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" using L by (auto simp: bias_def)
-  then have N: "(-1)^(Sign a) * (((2::real)^(Exponent a)) / 
-    (2^bias float_format)) *
-    (1 + Fraction a/2^fracwidth float_format) \<ge>  (-1)^1 * ((2^2046) / 
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format) " using M A float_sign_le by metis
-  have P: "(-1) * (2 / (2^bias float_format)) * 
-    (Fraction a/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)"  
-    using A B by (auto simp: bias_def float_format_def)
-  have Q: "1 * (2 / (2^bias float_format)) * 
-    (Fraction a/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) /
-    (2^bias float_format)) *
-    (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    using A B by (auto simp: bias_def float_format_def)
-  then have "(-1)^(Sign a) *(2 / (2^bias float_format)) * 
-    (Fraction a/2^(fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
-    (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format) " 
-    by (metis  P Q float_sign_le)
-  then have R: "(if Exponent a = 0 
-    then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
-         (Fraction a/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * ((2^(Exponent a)) / 
-         (2^bias float_format)) *
-         (1 + Fraction a/2^fracwidth float_format)) \<ge> (-1)^1 * ((2^2046) / 
-         (2^bias float_format)) *
-         (1 + (2^52 - 1)/2^fracwidth float_format)" using N by auto
-  have "Val a = 
-    (if ((Exponent a) = 0) 
-    then (-1)^(Sign a) *(2 / (2^bias float_format)) * 
-         (Fraction a/2^(fracwidth float_format)) 
-    else (-1)^(Sign a) * ((2^(Exponent a)) / 
-         (2^bias float_format)) * (1 + Fraction a/2^fracwidth float_format))" 
-    by (cases a) (auto simp: float_defs Abs_float_inverse) 
-  moreover have "valof (float_format) (bottomfloat float_format) =
-      (-1)^1 * ((2^2046) / (2^bias float_format)) * (1 + (2^52 - 1)/2^fracwidth float_format)" 
-    by (auto simp: emax_def float_format_def bottomfloat_def)
-  ultimately have "Val a \<ge> valof (float_format) (bottomfloat float_format)" 
-    using R by (auto simp: float_format_def)
-  then have "Val a \<ge> Val Bottomfloat" using Abs_float_inverse Bottomfloat_def is_valid_special
-    by (metis Val_def mem_Collect_eq)
-  thus ?thesis by auto
-qed
-
-lemma float_val_ge_largest: 
-  assumes "Finite a"
-  shows "Val a \<ge> -largest float_format"
-proof -
-  have "Val Bottomfloat = valof float_format (bottomfloat float_format)" 
-    using Bottomfloat_def Abs_float_inverse is_valid_special
-    by (metis (full_types) Val_def mem_Collect_eq)
-  also have "... = -largest float_format" 
-    by (auto simp: emax_def bias_def bottomfloat_def float_format_def largest_def)
-  finally have "Val Bottomfloat = -largest float_format" .
-  thus ?thesis 
-    using float_val_ge_bottomfloat by (metis assms)
-qed
-
-lemma float_val_gt_threshold:
-  assumes "Finite a"
-  shows "Val a > - threshold float_format"
-proof -
-  have largest: "Val a \<ge> -largest float_format" using float_val_ge_bottomfloat assms
-    by (metis float_val_ge_largest)
-  then have "-largest float_format > -(threshold float_format)"
-    by (auto simp: bias_def threshold_def float_format_def largest_def)
-  then show ?thesis 
-    by (metis largest less_le_trans)
 qed
 
 
@@ -684,6 +583,71 @@ proof -
     by (simp add: float_neg_sign1 float_neg_add) 
   finally show ?thesis using assms ab 
     by (metis float_eq)
+qed
+
+lemma bottomfloat_eq_m_largest: "Val Bottomfloat = - largest float_format"
+proof -
+  have "Val Bottomfloat = valof float_format (bottomfloat float_format)" 
+      by (simp add: Abs_float_inverse Bottomfloat_def is_valid_special Val_def)
+  also have "... = - largest float_format" 
+    by (simp add: emax_def largest_def float_format_def bottomfloat_def)
+  finally show ?thesis .
+qed
+  
+lemma Bottomfloat_m_Topfloat: "Val Bottomfloat = - Val Topfloat"
+  by (metis bottomfloat_eq_m_largest topfloat_eq_largest)
+
+lemma float_val_ge_bottomfloat:  "Finite a \<Longrightarrow> Val a \<ge> Val Bottomfloat"
+  by (metis Bottomfloat_m_Topfloat float_neg_finite float_neg_val float_val_le_largest minus_minus 
+            neg_le_iff_le topfloat_eq_largest)
+
+lemma finite_Bottomfloat: "Finite Bottomfloat"
+  by (auto simp: float_defs Bottomfloat_def bottomfloat_def Abs_float_inverse 
+                 emax_def is_normal_def is_valid_def)
+
+lemma float_ge_bottomfloat: "Finite a \<Longrightarrow> a \<ge> Bottomfloat"
+  by (metis finite_Bottomfloat float_le float_val_ge_bottomfloat)
+
+lemma sign_Rep_Topfloat [simp]: "sign (Rep_float Topfloat) = 0"
+using is_valid_special
+by (auto simp add: Abs_float_inverse Topfloat_def topfloat_def)
+
+lemma exponent_Rep_Topfloat [simp]: "exponent (Rep_float Topfloat) = emax float_format - Suc 0"
+using is_valid_special
+by (auto simp add: Abs_float_inverse Topfloat_def topfloat_def)
+
+lemma fraction_Rep_Topfloat [simp]: "fraction (Rep_float Topfloat) = 2 ^ fracwidth float_format - Suc 0"
+using is_valid_special
+by (auto simp add: Abs_float_inverse Topfloat_def topfloat_def)
+
+lemma Bottomfloat_fneg_Topfloat: "Bottomfloat = float_neg Topfloat"
+using is_valid_special 
+by (auto simp add: Abs_float_inject float_neg_def fneg_def Bottomfloat_def bottomfloat_def)
+
+lemma float_val_ge_largest: 
+  assumes "Finite a"
+  shows "Val a \<ge> -largest float_format"
+proof -
+  have "Val Bottomfloat = valof float_format (bottomfloat float_format)" 
+    using Bottomfloat_def Abs_float_inverse is_valid_special
+    by (metis (full_types) Val_def mem_Collect_eq)
+  also have "... = -largest float_format" 
+    by (auto simp: emax_def bias_def bottomfloat_def float_format_def largest_def)
+  finally have "Val Bottomfloat = -largest float_format" .
+  thus ?thesis 
+    using float_val_ge_bottomfloat by (metis assms)
+qed
+
+lemma float_val_gt_threshold:
+  assumes "Finite a"
+  shows "Val a > - threshold float_format"
+proof -
+  have largest: "Val a \<ge> -largest float_format" using float_val_ge_bottomfloat assms
+    by (metis float_val_ge_largest)
+  then have "-largest float_format > -(threshold float_format)"
+    by (auto simp: bias_def threshold_def float_format_def largest_def)
+  then show ?thesis 
+    by (metis largest less_le_trans)
 qed
 
 (* Showing abs (-a) = abs (a) *)
