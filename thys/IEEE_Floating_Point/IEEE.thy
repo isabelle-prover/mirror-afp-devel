@@ -421,7 +421,7 @@ definition Plus_infinity :: "float" where
 instantiation float :: plus begin
 
 definition plus_float :: "float \<Rightarrow> float \<Rightarrow> float" where
-" a + b = Abs_float (fadd float_format To_nearest (Rep_float a)  (Rep_float b))"
+"a + b = Abs_float (fadd float_format To_nearest (Rep_float a) (Rep_float b))"
 
 instance ..
 end
@@ -490,5 +490,9 @@ definition float_neg :: "float \<Rightarrow> float" where
 
 definition float_abs :: "float \<Rightarrow> float" where
 "float_abs a = (if sign (Rep_float a) = 0 then a else float_neg a)"
+
+(***************"1 + Epsilon" property**************)
+definition normalizes :: "real \<Rightarrow> bool" where
+"normalizes x = (1/ (2::real)^(bias float_format - 1) \<le> \<bar>x\<bar> \<and> \<bar>x\<bar> < threshold float_format)"
 
 end
