@@ -491,4 +491,8 @@ definition float_neg :: "float \<Rightarrow> float" where
 definition float_abs :: "float \<Rightarrow> float" where
 "float_abs a = (if sign (Rep_float a) = 0 then a else float_neg a)"
 
+(***************"1 + Epsilon" property**************)
+definition normalizes :: "real \<Rightarrow> bool" where
+"normalizes x = (1/ (2::real)^(bias float_format - 1) \<le> \<bar>x\<bar> \<and> \<bar>x\<bar> < threshold float_format)"
+
 end
