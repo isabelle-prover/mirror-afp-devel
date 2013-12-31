@@ -421,7 +421,7 @@ definition Plus_infinity :: "float" where
 instantiation float :: plus begin
 
 definition plus_float :: "float \<Rightarrow> float \<Rightarrow> float" where
-" a + b = Abs_float (fadd float_format To_nearest (Rep_float a)  (Rep_float b))"
+"a + b = Abs_float (fadd float_format To_nearest (Rep_float a) (Rep_float b))"
 
 instance ..
 end
