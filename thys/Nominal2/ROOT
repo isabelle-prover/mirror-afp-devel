@@ -1,7 +1,5 @@
-chapter AFP
-
-(* This session is expect to be merged into the Isabelle distribution 
-   before the next release *)
+(* This session is expected to be merged into the Isabelle distribution
+   before the next release *)  (* FIXME since 21-Feb-2013 *)
 
 session "Nominal2" = HOLCF +
   options [document = false]
