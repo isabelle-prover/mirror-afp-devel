@@ -84,7 +84,7 @@ setup {*
             |> HOLogic.mk_Trueprop
             |> cterm_of (Proof_Context.theory_of ctxt)
 
-          val res_thm = Goal.prove_internal [] goal (fn _ => 
+          val res_thm = Goal.prove_internal ctxt [] goal (fn _ => 
             REPEAT (rtac @{thm fun_relI} 1)
             THEN (rtac thm 1)
             THEN (ALLGOALS atac)

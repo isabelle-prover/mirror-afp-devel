@@ -6,8 +6,6 @@ keywords "concrete_definition" :: thy_decl
   and "uses"
 begin
 
-ML_val Goal.prove_internal
-
 text {*
   This theory provides a tool for extracting definitions from terms, and
   for generating code equations for recursion combinators.
@@ -164,7 +162,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   (* Obtain new def_thm *)
   val def_unfold_ss = 
     put_simpset HOL_basic_ss lthy addsimps (orig_def_thm::def_thms)
-  val new_def_thm = Goal.prove_internal 
+  val new_def_thm = Goal.prove_internal lthy
     [] (Logic.mk_equals (lhs,rhs') |> cert) (K (simp_tac def_unfold_ss 1))
 
   (* Obtain new theorem by folding with defs of generated constants *)

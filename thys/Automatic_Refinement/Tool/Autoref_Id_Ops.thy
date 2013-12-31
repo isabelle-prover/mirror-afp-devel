@@ -630,7 +630,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
       |> HOLogic.mk_Trueprop
       |> cterm_of thy
 
-    val thm = Goal.prove_internal [] res (fn _ => rtac @{thm REL_OF_INTF_I} 1)
+    val thm = Goal.prove_internal ctxt [] res (fn _ => rtac @{thm REL_OF_INTF_I} 1)
   in thm end
 
 

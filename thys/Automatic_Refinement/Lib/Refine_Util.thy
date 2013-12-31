@@ -133,7 +133,7 @@ ML {*
     val ite_conv: conv -> conv -> conv -> conv
 
     val cfg_trace_f_tac_conv: bool Config.T
-    val f_tac_conv: (term -> term) -> tactic -> conv
+    val f_tac_conv: Proof.context -> (term -> term) -> tactic -> conv
 
     (* Parsing *)
     val parse_bool_config: string -> bool Config.T -> bool context_parser
@@ -335,7 +335,7 @@ ML {*
           (Drule.strip_imp_prems goal'');
 
         val ethms = Rs |> map (fn R =>
-          (Raw_Simplifier.norm_hhf (Thm.trivial R)));
+          (Simplifier.norm_hhf ctxt (Thm.trivial R)));
       in eresolve_tac ethms i end
       );
 
@@ -347,7 +347,7 @@ ML {*
           (singleton (Variable.export ctxt' ctxt)) goal';
 
         val R = nth (Drule.strip_imp_prems goal'') (n - 1)
-        val rl = Raw_Simplifier.norm_hhf (Thm.trivial R)
+        val rl = Simplifier.norm_hhf ctxt (Thm.trivial R)
       in
         etac rl i
       end
@@ -555,9 +555,9 @@ ML {*
         ) tm;
         val ct' = Thm.instantiate_cterm (tym,tm') pat;
 
-        val rthm = Goal.prove_internal [] (mk_equals_ct (ct,ct'))
+        val rthm = Goal.prove_internal ctxt [] (mk_equals_ct (ct,ct'))
           (K (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms conv_tag_def}) 1))
-        |> Goal.norm_result
+        |> Goal.norm_result ctxt
       in 
         fixup_vars ct rthm 
       end handle Pattern.MATCH 
@@ -622,19 +622,17 @@ ML {*
         Attrib.setup_config_bool @{binding trace_f_tac_conv} (K false)
 
       (* Transform term and prove equality to original by tactic *)
-      fun f_tac_conv f tac ct = let
+      fun f_tac_conv ctxt f tac ct = let
         val t = term_of ct
         val t' = f t
-        val thy = theory_of_cterm ct
         val goal = Logic.mk_equals (t,t')
-        val _ = if Config.get_global thy cfg_trace_f_tac_conv then
-          Syntax.pretty_term_global thy goal 
-          |> Pretty.string_of |> tracing
+        val _ = if Config.get ctxt cfg_trace_f_tac_conv then
+          tracing (Syntax.string_of_term ctxt goal)
         else ()
 
-        val goal = cterm_of thy goal
+        val goal = cterm_of (Proof_Context.theory_of ctxt) goal
 
-        val thm = Goal.prove_internal [] goal (K tac)
+        val thm = Goal.prove_internal ctxt [] goal (K tac)
       in
         thm
       end
