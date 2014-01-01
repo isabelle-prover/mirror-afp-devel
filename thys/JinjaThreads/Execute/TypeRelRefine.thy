@@ -293,7 +293,7 @@ where "check_acyclicity _ _ = ()"
 definition cyclic_class_hierarchy :: unit 
 where [code del]: "cyclic_class_hierarchy = ()"
 
-code_abort cyclic_class_hierarchy
+declare [[code abort: cyclic_class_hierarchy]]
 
 lemma check_acyclicity_code:
   "check_acyclicity mapping P =

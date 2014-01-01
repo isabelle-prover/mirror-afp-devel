@@ -333,11 +333,11 @@ where
 
 definition div0_uint8 :: "uint8 \<Rightarrow> uint8"
 where [code del]: "div0_uint8 x = undefined (op div :: uint8 \<Rightarrow> _) x (0 :: uint8)"
-code_abort div0_uint8
+declare [[code abort: div0_uint8]]
 
 definition mod0_uint8 :: "uint8 \<Rightarrow> uint8"
 where [code del]: "mod0_uint8 x = undefined (op mod :: uint8 \<Rightarrow> _) x (0 :: uint8)"
-code_abort mod0_uint8
+declare [[code abort: mod0_uint8]]
 
 lemma uint8_divmod_code [code]:
   "uint8_divmod x y =

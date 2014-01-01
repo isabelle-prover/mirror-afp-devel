@@ -28,7 +28,7 @@ text {*
 definition "code_abort" :: "(unit \<Rightarrow> 'a) \<Rightarrow> 'a"
 where [simp, code del]: "code_abort f = f ()"
 
-code_abort "code_abort"
+declare [[code abort: "code_abort"]]
 
 hide_const (open) "code_abort"
 

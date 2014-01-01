@@ -24,12 +24,12 @@ definition single :: "'a \<Rightarrow> 'a set"
 definition undefined :: "'a set"
   where [simp]: "undefined = Collect HOL.undefined"
 
-code_abort undefined
+declare [[code abort: undefined]]
 
 definition Undefined :: "unit \<Rightarrow> 'a set"
   where "Undefined _ = Collect HOL.undefined"
 
-code_abort Undefined
+declare [[code abort: Undefined]]
 
 lemma undefined_code [code_unfold]:
   "undefined = Undefined ()"

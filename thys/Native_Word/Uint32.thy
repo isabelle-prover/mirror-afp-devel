@@ -414,11 +414,11 @@ where [code del]:
 
 definition div0_uint32 :: "uint32 \<Rightarrow> uint32"
 where [code del]: "div0_uint32 x = undefined (op div :: uint32 \<Rightarrow> _) x (0 :: uint32)"
-code_abort div0_uint32
+declare [[code abort: div0_uint32]]
 
 definition mod0_uint32 :: "uint32 \<Rightarrow> uint32"
 where [code del]: "mod0_uint32 x = undefined (op mod :: uint32 \<Rightarrow> _) x (0 :: uint32)"
-code_abort mod0_uint32
+declare [[code abort: mod0_uint32]]
 
 lemma uint32_divmod_code [code]:
   "uint32_divmod x y =

@@ -252,7 +252,7 @@ qed (simp add: equal_node_def)
 
 end
 
-code_abort "HOL.equal :: node \<Rightarrow> node \<Rightarrow> bool"
+declare [[code abort: "HOL.equal :: node \<Rightarrow> node \<Rightarrow> bool"]]
 
 export_code dfs dfs2 in SML file "dfs.ML"
 
