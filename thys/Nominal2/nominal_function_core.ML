@@ -485,7 +485,8 @@ fun mk_uniqueness_case thy globals G f ihyp ih_intro G_cases compat_store clause
     val rhsC = Pattern.rewrite_term thy [(fvar, f)] [] rhs
 
     val ih_intro_case =
-      full_simplify (Simplifier.global_context thy HOL_basic_ss addsimps [case_hyp]) ih_intro
+      full_simplify (put_simpset HOL_basic_ss (Proof_Context.init_global thy) addsimps [case_hyp])
+        ih_intro
 
     fun prep_RC (RCInfo {llRI, RIvs, CCas, ...}) = 
         (llRI RS ih_intro_case)
@@ -519,7 +520,8 @@ fun mk_uniqueness_case thy globals G f ihyp ih_intro G_cases compat_store clause
       ex1I |> instantiate' [SOME (ctyp_of thy ranT)] [SOME P2, SOME (cterm_of thy rhsC)]
       |> curry (op COMP) existence
       |> curry (op COMP) uniqueness
-      |> simplify (Simplifier.global_context thy HOL_basic_ss addsimps [case_hyp RS sym])
+      |> simplify
+          (put_simpset HOL_basic_ss (Proof_Context.init_global thy) addsimps [case_hyp RS sym])
       |> Thm.implies_intr (cprop_of case_hyp)
       |> fold_rev (Thm.implies_intr o cprop_of) ags
       |> fold_rev Thm.forall_intr cqs
@@ -734,7 +736,7 @@ fun mk_psimps thy globals R clauses valthms f_iff graph_is_function =
         |> Thm.forall_intr (cterm_of thy z)
         |> (fn it => it COMP valthm)
         |> Thm.implies_intr lhs_acc
-        |> asm_simplify (Simplifier.global_context thy HOL_basic_ss addsimps [f_iff])
+        |> asm_simplify (put_simpset HOL_basic_ss (Proof_Context.init_global thy) addsimps [f_iff])
         |> fold_rev (Thm.implies_intr o cprop_of) ags
         |> fold_rev forall_intr_rename (map fst oqs ~~ cqs)
       end
@@ -889,7 +891,8 @@ fun mk_nest_term_case thy globals R' ihyp clause =
       qglr=(oqs, _, _, _), ...} = clause
 
     val ih_case =
-      full_simplify (Simplifier.global_context thy HOL_basic_ss addsimps [case_hyp]) ihyp
+      full_simplify (put_simpset HOL_basic_ss (Proof_Context.init_global thy) addsimps [case_hyp])
+        ihyp
 
     fun step (fixes, assumes) (_ $ arg) u (sub,(hyps,thms)) =
       let
@@ -979,7 +982,7 @@ fun mk_nest_term_rule thy globals R R_cases clauses =
     |> Thm.forall_intr (cterm_of thy R')
     |> Thm.forall_elim (cterm_of thy (inrel_R))
     |> curry op RS wf_in_rel
-    |> full_simplify (Simplifier.global_context thy HOL_basic_ss addsimps [in_rel_def])
+    |> full_simplify (put_simpset HOL_basic_ss (Proof_Context.init_global thy) addsimps [in_rel_def])
     |> Thm.forall_intr (cterm_of thy Rrel)
   end
 
