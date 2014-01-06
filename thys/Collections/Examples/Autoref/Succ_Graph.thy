@@ -63,7 +63,7 @@ schematic_lemma succ_of_list_impl:
   done
 
 concrete_definition succ_of_list_impl uses succ_of_list_impl
-export_code succ_of_list_impl in SML file -
+export_code succ_of_list_impl in SML
 
 definition acc_of_list :: "nat list \<Rightarrow> nat set" 
   where "acc_of_list l \<equiv> fold insert l {}"
@@ -78,6 +78,6 @@ schematic_lemma acc_of_list_impl:
   done
 
 concrete_definition acc_of_list_impl uses acc_of_list_impl
-export_code acc_of_list_impl in SML file -
+export_code acc_of_list_impl in SML
 
 end

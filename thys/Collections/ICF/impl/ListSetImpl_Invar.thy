@@ -101,6 +101,6 @@ definition test_codegen where "test_codegen \<equiv> (
   lsi.from_list
 )"
 
-export_code test_codegen in SML file -
+export_code test_codegen in SML
 
 end

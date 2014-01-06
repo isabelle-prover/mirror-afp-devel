@@ -229,15 +229,15 @@ setup Locale_Code.close_block
 definition "hrf_dijkstra \<equiv> hrf.idijkstra"
 lemmas hrf_dijkstra_correct = hrf.idijkstra_correct[folded hrf_dijkstra_def]
 
-export_code hrf_dijkstra in SML file -
-export_code hrf_dijkstra in OCaml file -
-export_code hrf_dijkstra in Haskell file -
-export_code hrf_dijkstra in Scala file -
+export_code hrf_dijkstra in SML
+export_code hrf_dijkstra in OCaml
+export_code hrf_dijkstra in Haskell
+export_code hrf_dijkstra in Scala
 
 definition hrfn_dijkstra :: "(nat,nat) hlg \<Rightarrow> _" 
   where "hrfn_dijkstra \<equiv> hrf_dijkstra"
 
-export_code hrfn_dijkstra in SML file -
+export_code hrfn_dijkstra in SML
 
 lemmas hrfn_dijkstra_correct = 
   hrf_dijkstra_correct[where ?'a = nat and ?'b = nat, folded hrfn_dijkstra_def]

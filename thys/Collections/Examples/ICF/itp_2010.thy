@@ -50,7 +50,7 @@ text {*
 
   lemmas hs_set_i_impl = hs.set_i_impl[folded hs_seti_def]
 
-export_code hs_seti in SML file -
+export_code hs_seti in SML
 
   -- "Code generation"
   ML {* @{code hs_seti} *} 
@@ -251,6 +251,6 @@ subsubsection "Using abbreviations"
 
   definition "test_set == my_ins (1::nat) (my_ins 2 (my_ins 3 (my_empty ())))"
 
-  export_code avg_aux avg filter_le_avg test_set in SML module_name Test file -
+  export_code avg_aux avg filter_le_avg test_set in SML module_name Test
 
 end

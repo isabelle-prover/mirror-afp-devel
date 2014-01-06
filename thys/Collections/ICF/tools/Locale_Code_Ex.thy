@@ -83,10 +83,10 @@ lemma "foo 3 4 = 34578" by eval
 lemma "bar 3 4 = 354189" by eval
 
 text {* Exported code *}
-export_code foo bar in SML file -
-export_code foo bar in OCaml file -
-export_code foo bar in Haskell file -
-export_code foo bar in Scala file -
+export_code foo bar in SML
+export_code foo bar in OCaml
+export_code foo bar in Haskell
+export_code foo bar in Scala
 
 text {* Inlined code *}
 ML_val {*

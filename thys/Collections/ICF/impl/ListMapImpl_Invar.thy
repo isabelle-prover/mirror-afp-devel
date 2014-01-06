@@ -152,6 +152,6 @@ definition "test_codegen \<equiv> (
   lmi_from_list_dj
   )"
 
-export_code test_codegen in SML file -
+export_code test_codegen in SML
 
 end
