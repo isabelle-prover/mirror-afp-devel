@@ -168,7 +168,7 @@ where
               | (InfU x) \<Rightarrow> \<infinity>"
 
 -- "removing the first k elements from a finite (nonempty) timed stream"
-primrec
+axiomatization
   fin_nth :: "'a fstream \<Rightarrow> nat \<Rightarrow> 'a"
 where 
    fin_nth_Cons:

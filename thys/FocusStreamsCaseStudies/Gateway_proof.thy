@@ -769,5 +769,4 @@ proof -
     by (simp add: GatewaySystem_L2)
 qed
 
-
 end

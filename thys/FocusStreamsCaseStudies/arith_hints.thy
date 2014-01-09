@@ -24,9 +24,8 @@ lemma arith_mod_nzero:
       and h2:"0 < i"
   shows "0 < (n * t + i) mod n"
 proof -
-  from h1 and h2 have  sg1:"(i + n * t) mod n = i"
-    by (simp add: mod_mult_self2)
-  also have sg2:"n * t + i = i + n * t"  by simp
+  from h1 and h2 have  sg1:"(i + n * t) mod n = i"  by auto
+  from h1 and h2 have sg2:"n * t + i = i + n * t"  by simp
   from this and h1 and h2 show ?thesis
     by (simp (no_asm_simp))
 qed
@@ -38,8 +37,7 @@ lemma arith_mult_neq_nzero1:
       and h2:"0 < i"
   shows "i + n * t \<noteq> n * q"
 proof -
-  from h1 and h2 have sg1:"(i + n * t) mod n = i"
-    by (simp add: mod_mult_self2)
+  from h1 and h2 have sg1:"(i + n * t) mod n = i"  by auto
   also have sg2:"(n * q) mod n = 0"  by simp
   from this and h1 and h2 have "(i + n * t) mod n \<noteq> (n * q) mod n"
     by simp

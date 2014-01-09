@@ -114,9 +114,9 @@ qed
 
 
 lemma Add_Less: 
-  assumes "0 < b"
-  shows "(Suc a - b < Suc a) = True"
-using assms by arith
+  assumes "0 < b" 
+  shows "(((Suc a) - b) < Suc a) = True"
+using assms by auto
 
 
 lemma list_length_hint1: 

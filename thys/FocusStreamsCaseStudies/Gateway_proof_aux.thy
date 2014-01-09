@@ -400,11 +400,11 @@ lemma aux_lemma_lose_1:
       and h2:"ka\<le>Suc d"
   shows      "lose (Suc (Suc (t + k + ka))) = x"
 proof -
-  from h2 have sg1:"k + (2::nat) + ka \<le> (2::nat) * d + ((4::nat) + k)" by arith
-  from h2 and sg1 have sg2:"Suc (Suc (k + ka)) \<le>2 * d + (4 + k)" by arith
+  from h2 have sg1:"k + (2::nat) + ka \<le> (2::nat) * d + ((4::nat) + k)" by auto
+  from h2 and sg1 have sg2:"Suc (Suc (k + ka)) \<le>2 * d + (4 + k)" by auto
   from sg1 and sg2 and h1 and h2  obtain j where a1:"j = k + (2::nat) + ka"
                                      and a2:"lose (t + j) = x"
-    by arith
+    by blast
   have sg3:"Suc (Suc (t + (k + ka))) = Suc (Suc (t + k + ka))" by arith
   from a1 and a2 and sg3 show ?thesis  by simp
 qed
