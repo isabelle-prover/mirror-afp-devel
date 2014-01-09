@@ -87,9 +87,6 @@ lift_definition Uint32 :: "integer \<Rightarrow> uint32" is "word_of_integer" .
 
 context begin interpretation lifting_syntax .
 
-lemma [transfer_rule]: "(op = ===> cr_uint32 ===> op =) (\<lambda>n m. cr_uint32 m n) op ="
-by(auto 4 3 simp add: cr_uint32_def Rep_uint32_inject)
-
 lemma Uint32_transfer_word_of_int [transfer_rule]: "(pcr_integer ===> cr_uint32) word_of_int Uint32"
 by(rule fun_relI)(simp add: cr_uint32_def integer.pcr_cr_eq cr_integer_def Uint32.rep_eq word_of_integer.rep_eq)
 

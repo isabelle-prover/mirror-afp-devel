@@ -105,9 +105,6 @@ by(simp only: uminus_uint16_def)(simp add: Abs_uint16_inverse)
 
 context begin interpretation lifting_syntax .
 
-lemma [transfer_rule]: "(op = ===> cr_uint16 ===> op =) (\<lambda>n m. cr_uint16 m n) op ="
-by(auto 4 3 simp add: cr_uint16_def Rep_uint16_inject)
-
 lemma uint16_neg_numeral_transfer [transfer_rule]:
   "(op = ===> cr_uint16) (- numeral) (- numeral)"
 by(auto simp add: cr_uint16_def)

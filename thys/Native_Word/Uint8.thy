@@ -103,9 +103,6 @@ by(simp only: uminus_uint8_def)(simp add: Abs_uint8_inverse)
 
 context begin interpretation lifting_syntax .
 
-lemma [transfer_rule]: "(op = ===> cr_uint8 ===> op =) (\<lambda>n m. cr_uint8 m n) op ="
-by(auto 4 3 simp add: cr_uint8_def Rep_uint8_inject)
-
 lemma uint8_neg_numeral_transfer [transfer_rule]:
   "(op = ===> cr_uint8) (- numeral) (- numeral)"
 by(auto simp add: cr_uint8_def)
