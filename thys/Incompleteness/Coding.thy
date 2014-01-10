@@ -408,27 +408,6 @@ lemma subst_fm_trans_commute_eq:
   "du = trans_tm [] u \<Longrightarrow> subst_dbfm du i (trans_fm [] A) = trans_fm [] (A(i::=u))"
   by (metis subst_fm_trans_commute)
 
-lemma wf_subst_dbfm:
-  assumes "wf_dbfm A" and "wf_dbtm u"
-  shows "wf_dbfm (subst_dbfm u name A)"
-using assms
-proof (nominal_induct avoiding: name u rule: wf_dbfm.strong_induct)
-  case (Eq tm1 tm2) thus ?case
-    by (auto simp: wf_subst_dbtm)
-next
-  case (Mem tm1 tm2) thus ?case
-    by (auto simp: wf_subst_dbtm)
-next
-  case (Disj fm1 fm2) thus ?case
-    by auto
-next
-  case (Neg fm) thus ?case
-    by auto
-next
-  case (Ex fm name j) thus ?case
-    by (auto simp: dbfm_abst_swap_subst)
-qed
-
 
 section{*Quotations*}
 
@@ -585,9 +564,6 @@ lemma quot_dbtm_fresh [simp]: "s \<sharp> (quot_dbtm t)"
 lemma quot_tm_fresh [simp]: fixes t::tm shows "s \<sharp> \<lceil>t\<rceil>"
   by (simp add: quot_tm_def)
 
-lemma quot_tm_permute [simp]: fixes t:: tm shows "p \<bullet> \<lceil>t\<rceil> = \<lceil>t\<rceil>"
-  by (metis fresh_star_def perm_supp_eq quot_tm_fresh)
-
 lemma quot_Zero [simp]: "\<lceil>Zero\<rceil> = Zero"
   by (simp add: quot_tm_def)
 
@@ -595,9 +571,6 @@ lemma quot_Var: "\<lceil>Var x\<rceil> = SUCC (ORD_OF (nat_of_name x))"
   by (simp add: quot_tm_def)
 
 lemma quot_Eats: "\<lceil>Eats x y\<rceil> = HPair (HTuple 1) (HPair \<lceil>x\<rceil> \<lceil>y\<rceil>)"
-  by (simp add: quot_tm_def)
-
-lemma quot_tm_inject [iff]: fixes t :: tm shows "quot t = quot u \<longleftrightarrow> t=u"
   by (simp add: quot_tm_def)
 
 text{*irrelevance of the environment for quotations, because they are ground terms*}
@@ -641,12 +614,6 @@ lemma quot_Neg: "\<lceil>Neg A\<rceil> = HPair (HTuple 4) (\<lceil>A\<rceil>)"
 
 lemma quot_Ex: "\<lceil>Ex i A\<rceil> = HPair (HTuple 5) (quot_dbfm (trans_fm [i] A))"
   by (simp add: quot_fm_def)
-
-lemma quot_fm_inject [iff]: fixes A :: fm  shows "quot A = quot B \<longleftrightarrow> A=B"
-by (simp add: quot_fm_def)
-
-lemma eval_quot_tm_ignore: fixes t:: tm shows "\<lbrakk>\<lceil>t\<rceil>\<rbrakk>e = \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e'"
-  by (metis eval_quot_dbtm_ignore quot_tm_def)
 
 lemma eval_quot_fm_ignore: fixes A:: fm shows "\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e'"
   by (metis eval_quot_dbfm_ignore quot_fm_def)
@@ -742,10 +709,6 @@ lemma q_Eats_iff [iff]: "q_Eats x y = q_Eats x' y' \<longleftrightarrow> x=x' \<
 
 lemma quot_subst_eq: "\<lceil>A(i::=t)\<rceil> = quot_dbfm (subst_dbfm (trans_tm [] t) i (trans_fm [] A))"
   by (metis quot_fm_def subst_fm_trans_commute)
-
-lemma quot_Ex_abst_eq:
-  "\<lceil>Ex i A\<rceil> = Q_Ex (quot_dbfm (abst_dbfm i 0 (trans_fm [] A)))"
-  by (metis abst_trans_fm quot_Ex)
 
 lemma Q_Succ_cong: "H \<turnstile> x EQ x' \<Longrightarrow> H \<turnstile> Q_Succ x EQ Q_Succ x'"
   by (metis HPair_cong Refl)
@@ -898,24 +861,6 @@ termination
 lemma fresh_vquot_dbfm [simp]: "i \<sharp> vquot_dbfm V fm \<longleftrightarrow> i \<sharp> fm \<or> i \<notin> atom ` V"
   by (induct fm rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
 
-lemma vquot_dbfm_inject_lemma [simp]: "vquot_dbfm V A = vquot_dbfm V B \<longleftrightarrow> A=B"
-proof (induct A arbitrary: B rule: dbfm.induct)
-  case (DBMem t u) show ?case
-    by (induct B rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
-next
-  case (DBEq t u) show ?case
-    by (induct B rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
-next
-  case (DBDisj A B') thus ?case
-    by (induct B rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
-next
-  case (DBNeg A) thus ?case
-    by (induct B rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
-next
-  case (DBEx A) thus ?case
-    by (induct B rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
-qed
-
 class vquot =
   fixes vquot :: "'a \<Rightarrow> name set \<Rightarrow> tm"  ("\<lfloor>_\<rfloor>_"  [0,1000]1000)
 
@@ -925,9 +870,6 @@ begin
     where "vquot_tm t V = vquot_dbtm V (trans_tm [] t)"
   instance ..
 end
-
-lemma vquot_tm_fresh [simp]: fixes t::tm shows "i \<sharp> \<lfloor>t\<rfloor>V \<longleftrightarrow> i \<sharp> t \<or> i \<notin> atom ` V"
-  by (simp add: vquot_tm_def)
 
 lemma vquot_dbtm_empty [simp]: "vquot_dbtm {} t = quot_dbtm t"
   by (induct t rule: dbtm.induct) auto
@@ -961,11 +903,6 @@ lemma vquot_fm_insert:
   fixes A::fm shows "atom i \<notin> supp A \<Longrightarrow> \<lfloor>A\<rfloor>(insert i V) = \<lfloor>A\<rfloor>V"
   by (auto simp: vquot_fm_def supp_conv_fresh intro: vquot_dbfm_eq)
 
-lemma subst_fresh_vquot_dbfm:
-  "atom j \<sharp> (e,\<alpha>) \<Longrightarrow> subst j u (vquot_dbfm V (trans_fm e \<alpha>)) = vquot_dbfm V (trans_fm e \<alpha>)"
-  by (simp add: fresh_Pair)
-
 declare HTuple.simps [simp del]
-unused_thms
 
 end
