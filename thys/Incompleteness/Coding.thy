@@ -361,10 +361,6 @@ lemma dbtm_abst_ignore [simp]:
   "abst_dbtm name i (abst_dbtm name j t) = abst_dbtm name j t"
   by (induct t rule: dbtm.induct) auto
 
-lemma dbfm_abst_ignore [simp]:
-  "abst_dbfm name i (abst_dbfm name j A) = abst_dbfm name j A"
-  by (nominal_induct A arbitrary: i j rule: dbfm.strong_induct) auto
-
 lemma abst_dbtm_fresh_ignore [simp]: "atom name \<sharp> u \<Longrightarrow> abst_dbtm name j u = u"
   by (induct u rule: dbtm.induct) auto
 

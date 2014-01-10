@@ -603,17 +603,6 @@ proof -
     by (metis assms(1) cut1)
 qed
 
-lemma HaddP_SUCC_D2: "{ HaddP x (SUCC y) (SUCC z) } \<turnstile> HaddP x y z"
-proof -
-  obtain z'::name where z': "atom z' \<sharp> (x,y,z)" 
-    by (metis obtain_fresh)
-  show ?thesis
-    apply (rule cut_same [OF HaddP_SUCC_Ex2 [where z'=z']], blast)
-    using z' apply auto
-    apply (blast intro: HaddP_cong [OF Refl Refl, THEN Iff_MP2_same])
-    done
-qed
-
 lemma HaddP_SUCC1: "{ HaddP x y z } \<turnstile> HaddP (SUCC x) y (SUCC z)" (*<*)
 proof -
   obtain i::name and j::name and z'::name

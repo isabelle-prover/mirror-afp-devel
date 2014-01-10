@@ -58,14 +58,8 @@ by auto
 termination
   by lexicographic_order
 
-lemma Equality_axP_fresh_iff [simp]: "a \<sharp> Equality_axP x \<longleftrightarrow> a \<sharp> x"
-  by auto
-
 lemma eval_fm_Equality_axP [simp]: "eval_fm e (Equality_axP x) \<longleftrightarrow> \<lbrakk>x\<rbrakk>e \<in> Equality_ax"
   by (auto simp: Equality_ax_def intro: eval_quot_fm_ignore)
-
-lemma Equality_axP_sf [iff]: "Sigma_fm (Equality_axP t)"
-  by auto
 
 subsection {*The predicate @{text HF_axP}, for the HF Axioms*}
 
@@ -78,9 +72,6 @@ by auto
 
 termination
   by lexicographic_order
-
-lemma HF_axP_fresh_iff [simp]: "a \<sharp> HF_axP x \<longleftrightarrow> a \<sharp> x"
-  by auto
 
 lemma eval_fm_HF_axP [simp]: "eval_fm e (HF_axP x) \<longleftrightarrow> \<lbrakk>x\<rbrakk>e \<in> HF_ax"
   by (auto simp: HF_ax_def intro: eval_quot_fm_ignore)

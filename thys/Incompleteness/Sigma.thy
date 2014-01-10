@@ -42,9 +42,6 @@ lemma ground_fresh[simp]:
 unfolding ground_aux_def ground_fm_aux_def fresh_def
 by simp_all
 
-lemma ground_eval_tm_forget: "ground t \<Longrightarrow> \<lbrakk>t\<rbrakk>e = \<lbrakk>t\<rbrakk>e'"
-  by (induct t rule: tm.induct) auto
-
 
 section{*Sigma Formulas*}
 

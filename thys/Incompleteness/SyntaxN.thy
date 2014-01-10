@@ -1208,12 +1208,6 @@ proof -
     by (metis Assume cut1)
 qed
 
-lemma Eq_imp_subst_fm_Iff: "H \<turnstile> t EQ u \<Longrightarrow> H \<turnstile> A(i::=t) IFF A(i::=u)"
-  by (metis Eq_subst_fm_Iff cut_same)
-
-lemma Var_Eq_subst_Eq: "insert (Var i EQ t) H \<turnstile> subst i t u EQ u"
-  by (metis Assume Eq_subst_tm_Iff Sym cut1 subst_tm_id)
-
 lemma Var_Eq_subst_Iff: "insert (Var i EQ t) H \<turnstile> A(i::=t) IFF A"
   by (metis Eq_subst_fm_Iff Iff_sym subst_fm_id)
 

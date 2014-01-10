@@ -508,9 +508,6 @@ qed
 lemma Ord_IN_Ord: "H \<turnstile> l IN k \<Longrightarrow> H \<turnstile> OrdP k \<Longrightarrow> H \<turnstile> OrdP l"
   by (metis Ord_IN_Ord0 cut_same)
 
-lemma OrdP_SUCC_D: "insert (OrdP (SUCC k)) H \<turnstile> OrdP k"
-  by (metis Mem_Eats_I2 Ord_IN_Ord0 Refl SUCC_def)
-
 lemma OrdP_I:
   assumes "insert (Var y IN x) H \<turnstile> (Var y) SUBS x"
       and "insert (Var z IN Var y) (insert (Var y IN x) H) \<turnstile> (Var z) SUBS (Var y)"
@@ -767,15 +764,6 @@ lemma OrdNotEqP_E: "H \<turnstile> x EQ y \<Longrightarrow> insert (x NEQ y) H \
 
   
 section {*Predecessor of an Ordinal*}
-
-lemma OrdP_Mem_SUCC_lemma: "{ OrdP x, y IN x } \<turnstile> SUCC y IN x OR x EQ SUCC y"
-  apply (rule OrdP_linear [of _ x "SUCC y"])
-  apply (auto intro!: Disj_CI Mem_SUCC_EH)
-    apply (metis Assume OrdP_SUCC_I Ord_IN_Ord0)
-   apply (metis Mem_not_sym insert_commute) 
-  apply (rule cut_same [where A="y IN y"], auto)
-  apply (metis Assume EQ_imp_SUBS Subset_D thin1)
-  done
 
 lemma OrdP_set_max_lemma:
   assumes j: "atom (j::name) \<sharp> i" and k: "atom (k::name) \<sharp> (i,j)"
@@ -1120,9 +1108,6 @@ lemma HFST: "{HPair a b EQ HPair c d} \<turnstile> a EQ c"
 
 lemma b_EQ_d_1: "{a EQ c, a EQ d, b EQ c} \<turnstile> b EQ d"
   by (metis Assume thin1 Sym Trans)
-
-lemma b_EQ_d_2: "{a EQ c, a EQ d, Eats (Eats Zero b) a EQ Eats (Eats Zero c) c} \<turnstile> b EQ d"
-  by (metis Doubleton_E [THEN rotate3] insert_absorb2 insert_commute b_EQ_d_1)
 
 lemma HSND: "{HPair a b EQ HPair c d} \<turnstile> b EQ d"
   unfolding HPair_def
