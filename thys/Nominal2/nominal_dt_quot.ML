@@ -230,7 +230,7 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
     val tac = 
       EVERY' [ rtac @{thm supports_finite},
                resolve_tac qsupports_thms,
-               asm_simp_tac (put_simpset HOL_ss ctxt
+               asm_simp_tac (put_simpset HOL_ss ctxt'
                 addsimps @{thms finite_supp supp_Pair finite_Un}) ]
   in
     Goal.prove ctxt' [] [] goals
@@ -572,7 +572,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
                             REPEAT o (etac @{thm conjE})]) [fthm] ctxt
   
             val abs_eq_thms = flat 
-             (map (abs_eq_thm ctxt fprops (term_of fperm) parms bn_eqvt permute_bns) bclauses)
+             (map (abs_eq_thm ctxt' fprops (term_of fperm) parms bn_eqvt permute_bns) bclauses)
 
             val ((_, eqs), ctxt'') = Obtain.result
               (fn ctxt'' => EVERY1 
@@ -585,8 +585,8 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
             val (abs_eqs, peqs) = split_filter is_abs_eq eqs
 
             val fprops' = 
-              map (eqvt_rule ctxt (eqvt_strict_config addpres permute_bns)) fprops
-              @ map (eqvt_rule ctxt (eqvt_strict_config addpres bn_eqvt)) fprops
+              map (eqvt_rule ctxt'' (eqvt_strict_config addpres permute_bns)) fprops
+              @ map (eqvt_rule ctxt'' (eqvt_strict_config addpres bn_eqvt)) fprops
 
             (* for freshness conditions *) 
             val tac1 = SOLVED' (EVERY'
@@ -736,16 +736,15 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
         end) ctxt
       THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss ctxt)
  
-    (* FIXME proper goal context *)
-    val size_simp_tac = 
-      simp_tac (put_simpset size_ss lthy'' addsimps (@{thms comp_def snd_conv} @ size_thms))
+    fun size_simp_tac ctxt = 
+      simp_tac (put_simpset size_ss ctxt addsimps (@{thms comp_def snd_conv} @ size_thms))
   in
     Goal.prove_multi lthy'' [] prems' concls
-      (fn {prems, context} => 
-        Induction_Schema.induction_schema_tac context prems  
-        THEN RANGE (map (pat_tac context) exhausts) 1
-        THEN prove_termination_ind context 1
-        THEN ALLGOALS size_simp_tac)
+      (fn {prems, context = ctxt} => 
+        Induction_Schema.induction_schema_tac ctxt prems  
+        THEN RANGE (map (pat_tac ctxt) exhausts) 1
+        THEN prove_termination_ind ctxt 1
+        THEN ALLGOALS (size_simp_tac ctxt))
     |> Proof_Context.export lthy'' lthy
   end
 
