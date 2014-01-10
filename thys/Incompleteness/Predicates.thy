@@ -1137,19 +1137,16 @@ lemma Doubleton_subset:
     shows    "insert ((Eats X a) SUBS (Eats (Eats Zero d) c)) H \<turnstile> A"
     apply (rule Subset_E [OF Assume])
     apply (rule Mem_Eats_I2 [OF Refl])
-    by (metis (full_types) Eats_Subset_E Mem_Eats_E Mem_Zero_E assms insert_absorb2 insert_commute)
-
-lemma EQ_swap: "insert (a IN b) (insert (x EQ y) H) \<turnstile> A \<Longrightarrow> insert (x EQ y) (insert (a IN b) H) \<turnstile> A"
-  by (rule rotate2)
+    by (metis Eats_Subset_E Mem_Eats_E Mem_Zero_E assms insert_absorb2 insert_commute)
 
 lemma Doubleton_E:
   assumes "insert (a EQ c) (insert (b EQ d) H) \<turnstile> A"
           "insert (a EQ d) (insert (b EQ c) H) \<turnstile> A"
     shows    "insert ((Eats (Eats Zero b) a) EQ (Eats (Eats Zero d) c)) H \<turnstile> A"
 apply (rule Equality_E) using assms
-apply (auto intro!: Doubleton_subset Zero_SubsetE EQ_swap)
+apply (auto intro!: Doubleton_subset Zero_SubsetE rotate2 [of "a IN b"])
 apply (rule_tac [!] rotate3) 
-apply (auto intro!: Zero_SubsetE EQ_swap)
+apply (auto intro!: Zero_SubsetE rotate2 [of "a IN b"])
 apply (metis Sym_L insert_commute thin1)+
 done
   

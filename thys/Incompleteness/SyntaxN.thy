@@ -62,12 +62,6 @@ lemma forget_subst_tm [simp]: "atom a \<sharp> tm \<Longrightarrow> subst a x tm
 lemma subst_tm_id [simp]: "subst a (Var a) tm = tm"
   by (induct tm rule: tm.induct) simp_all
 
-lemma fresh_subst: "j \<sharp> (x,t) \<Longrightarrow> j \<sharp> subst i x t"
-  by simp
-
-lemma fresh_subst_self [simp]: "atom i \<sharp> x \<Longrightarrow> atom i \<sharp> subst i x t"
-  by (induct t rule: tm.induct) auto
-
 lemma subst_tm_commute [simp]:
   "atom j \<sharp> tm \<Longrightarrow> subst j u (subst i t tm) = subst i (subst j u t) tm"
   by (induct tm rule: tm.induct) (auto simp: fresh_Pair)
@@ -109,19 +103,9 @@ lemma fresh_subst_fm_if [simp]:
   "j \<sharp> (A(i::=x)) \<longleftrightarrow> (atom i \<sharp> A \<and> j \<sharp> A) \<or> (j \<sharp> x \<and> (j \<sharp> A \<or> j = atom i))"
   by (nominal_induct A avoiding: i x rule: fm.strong_induct) (auto simp: fresh_at_base)
 
-lemma fresh_subst_fm: "j \<sharp> (x,A) \<Longrightarrow> j \<sharp> (A(i::=x))"
-  by simp
-
-lemma fresh_subst_fm_self [simp]: "atom i \<sharp> x \<Longrightarrow> atom i \<sharp> A(i::=x)"
-  by (nominal_induct A avoiding: i x rule: fm.strong_induct) auto
-
 lemma subst_fm_commute [simp]:
   "atom j \<sharp> A \<Longrightarrow> (A(i::=t))(j::=u) = A(i ::= subst j u t)"
   by (nominal_induct A avoiding: i j t u rule: fm.strong_induct) (auto simp: fresh_at_base)
-
-lemma subst_fm_commute2 [simp]:
-  "\<lbrakk>atom j \<sharp> t; atom i \<sharp> u; i \<noteq> j\<rbrakk> \<Longrightarrow> (A(i::=t))(j::=u) = (A(j::=u))(i::=t)"
-  by (nominal_induct A avoiding: i j t u rule: fm.strong_induct) auto
 
 lemma repeat_subst_fm [simp]: "(A(i::=t))(i::=u) = A(i ::= subst i u t)"
   by (nominal_induct A avoiding: i t u rule: fm.strong_induct) auto
@@ -306,14 +290,8 @@ abbreviation Imp :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "IMP" 125)
 abbreviation All :: "name \<Rightarrow> fm \<Rightarrow> fm"
   where "All i A \<equiv> Neg (Ex i (Neg A))"
 
-text{*the bounded universal quantifier, for creating Sigma formulas*}
-
-abbreviation All2 :: "name \<Rightarrow> tm \<Rightarrow> fm \<Rightarrow> fm"
+abbreviation All2 :: "name \<Rightarrow> tm \<Rightarrow> fm \<Rightarrow> fm" --{*bounded universal quantifier, for Sigma formulas*}
   where "All2 i t A \<equiv> All i ((Var i IN t) IMP A)"
-
-lemma eval_fm_All2 [simp]:
-   "atom i \<sharp> t \<Longrightarrow> eval_fm e (All2 i t A) \<longleftrightarrow> (\<forall>x. x ⋿ \<lbrakk>t\<rbrakk>e \<longrightarrow> eval_fm (finfun_update e i x) A)"
-  by simp
 
 subsubsection{*Conjunction*}
 
@@ -926,9 +904,6 @@ lemma Iff_MP_left: "H \<turnstile> A IFF B \<Longrightarrow> insert A H \<turnst
 
 lemma Iff_MP_left': "H \<turnstile> A IFF B \<Longrightarrow> insert B H \<turnstile> C \<Longrightarrow> insert A H \<turnstile> C"
   by (metis Iff_MP_left Iff_sym)
-
-lemma Neg_Neg_iff: "H \<turnstile> Neg (Neg A) IFF A"
-  by (metis Assume Iff_I NegNeg_E NegNeg_I)
 
 lemma Swap: "insert (Neg B) H \<turnstile> A \<Longrightarrow> insert (Neg A) H \<turnstile> B"
   by (metis NegNeg_D Neg_mono)

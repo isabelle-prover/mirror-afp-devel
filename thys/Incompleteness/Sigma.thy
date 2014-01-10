@@ -79,7 +79,7 @@ lemma ss_fm_imp_Sigma_fm [intro]: "ss_fm A \<Longrightarrow> Sigma_fm A"
   by (metis Iff_refl Sigma_fm_def order_refl)
 
 lemma Sigma_fm_Fls [iff]: "Sigma_fm Fls"
-  by (rule Sigma_fm_Iff [of _ "Ex i (Var i IN Var i)"])  (auto intro: ss_fm_imp_Sigma_fm)
+  by (rule Sigma_fm_Iff [of _ "Ex i (Var i IN Var i)"]) auto
 
 subsection{* Closure properties for Sigma-formulas *}
 
@@ -487,7 +487,7 @@ lemma eval_fm_All2_Iff_elts:
   "ground t \<Longrightarrow> eval_fm e (All2 i t A) \<longleftrightarrow> (\<forall>u \<in> elts t. eval_fm e (A(i::=u)))"
 apply (induct t rule: tm.induct)
 apply auto [2]
-apply (simp add: eval_fm_All2_Eats del: eval_fm.simps eval_fm_All2)
+apply (simp add: eval_fm_All2_Eats del: eval_fm.simps)
 done
 
 lemma prove_elts_imp_prove_All2:

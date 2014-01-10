@@ -376,16 +376,6 @@ lemma abst_dbtm_fresh_ignore [simp]: "atom name \<sharp> u \<Longrightarrow> abs
 lemma abst_dbfm_fresh_ignore [simp]: "atom name \<sharp> A \<Longrightarrow> abst_dbfm name j A = A"
   by (induct A arbitrary: j rule: dbfm.induct) auto
 
-lemma dbtm_abst_swap:
-  "name \<noteq> name' \<Longrightarrow> i\<noteq>j \<Longrightarrow>
-   abst_dbtm name i (abst_dbtm name' j t) = abst_dbtm name' j (abst_dbtm name i t)"
-  by (induct t rule: dbtm.induct) auto
-
-lemma dbfm_abst_swap:
-  "name \<noteq> name' \<Longrightarrow> i\<noteq>j \<Longrightarrow>
-   abst_dbfm name i (abst_dbfm name' j A) = abst_dbfm name' j (abst_dbfm name i A)"
-  by (induct A arbitrary: i j rule: dbfm.induct) (auto simp: dbtm_abst_swap)
-
 lemma dbtm_subst_ignore [simp]:
   "subst_dbtm u name (abst_dbtm name j t) = abst_dbtm name j t"
   by (induct t rule: dbtm.induct) auto
@@ -976,5 +966,6 @@ lemma subst_fresh_vquot_dbfm:
   by (simp add: fresh_Pair)
 
 declare HTuple.simps [simp del]
+unused_thms
 
 end

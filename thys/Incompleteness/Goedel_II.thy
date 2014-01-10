@@ -18,9 +18,6 @@ lemma HR_imp_eq_H: "HR x z \<Longrightarrow> z = \<lbrakk>HF x\<rbrakk>e"
   apply (erule BuildSeq2_induct, auto simp add: q_defs WR_iff_eq_W [where e=e])
   done
 
-lemma SeqHR_Ord_D: "SeqHR x y s k \<Longrightarrow> Ord x \<Longrightarrow> WR x y"
-  unfolding SeqHR_def by (induct x y rule: BuildSeq2_induct, auto)
-
 lemma HR_Ord_D: "HR x y \<Longrightarrow> Ord x \<Longrightarrow> WR x y"
   by (metis HF_Ord HR_imp_eq_H WR_iff_eq_W)
 
@@ -73,6 +70,8 @@ proof -
   thus "\<not> {} \<turnstile> Neg (PfP \<lceil>Fls\<rceil>)"
     by (metis Iff_MP2_same Neg_mono cut1 diag)
 qed
+
+unused_thms Nominal2 OrdArith - 
 
 end
 
