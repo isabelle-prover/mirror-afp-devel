@@ -1,6 +1,6 @@
 theory "Nominal-HOLCF"
 imports
-  "Nominal/Nominal/Nominal2" "Nominal-Utils" "~~/src/HOL/HOLCF/HOLCF"
+  "../Nominal2/Nominal2" "Nominal-Utils" "~~/src/HOL/HOLCF/HOLCF"
 begin
 
 

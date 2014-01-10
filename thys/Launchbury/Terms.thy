@@ -1,5 +1,5 @@
 theory Terms
-  imports Main  "./Nominal/Nominal/Nominal2" 
+  imports Main  "../Nominal2/Nominal2" 
 begin
 
 subsubsection {* Variables (names) and expressions *}
