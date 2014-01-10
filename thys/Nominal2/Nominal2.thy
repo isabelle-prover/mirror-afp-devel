@@ -48,8 +48,6 @@ val induct_attr = Attrib.internal (K Induct.induct_simp_add)
 
 section{* Interface for nominal_datatype *}
 
-ML {* print_depth 50 *}
-
 ML {*
 fun get_cnstrs dts =
   map snd dts
