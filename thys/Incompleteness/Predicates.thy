@@ -511,9 +511,6 @@ lemma Ord_IN_Ord: "H \<turnstile> l IN k \<Longrightarrow> H \<turnstile> OrdP k
 lemma OrdP_SUCC_D: "insert (OrdP (SUCC k)) H \<turnstile> OrdP k"
   by (metis Mem_Eats_I2 Ord_IN_Ord0 Refl SUCC_def)
 
-lemma OrdP_SUCC_E [intro!]: "insert (OrdP k) H \<turnstile> A \<Longrightarrow> insert (OrdP (SUCC k)) H \<turnstile> A"
-  by (metis insert_commute thin1  cut_same [OF OrdP_SUCC_D])
-
 lemma OrdP_I:
   assumes "insert (Var y IN x) H \<turnstile> (Var y) SUBS x"
       and "insert (Var z IN Var y) (insert (Var y IN x) H) \<turnstile> (Var z) SUBS (Var y)"
@@ -780,12 +777,6 @@ lemma OrdP_Mem_SUCC_lemma: "{ OrdP x, y IN x } \<turnstile> SUCC y IN x OR x EQ 
   apply (metis Assume EQ_imp_SUBS Subset_D thin1)
   done
 
-lemma OrdP_Mem_SUCC:
-  assumes "H \<turnstile> OrdP x" "H \<turnstile> y IN x" "insert (SUCC y IN x) H \<turnstile> A" "insert (x EQ SUCC y) H \<turnstile> A" 
-    shows "H \<turnstile> A"
-    using cut2 [OF OrdP_Mem_SUCC_lemma] assms
-    by (metis Disj_E cut_same)
-  
 lemma OrdP_set_max_lemma:
   assumes j: "atom (j::name) \<sharp> i" and k: "atom (k::name) \<sharp> (i,j)"
   shows "{} \<turnstile> (Neg (Var i EQ Zero) AND (All2 j (Var i) (OrdP (Var j)))) IMP 
@@ -831,12 +822,6 @@ proof -
     done
 qed
 
-lemma OrdP_set_max:
-  assumes "atom (j::name) \<sharp> i" "atom (k::name) \<sharp> (i,j)"
-          "insert (Var i EQ Zero) H \<turnstile> Fls" "H \<turnstile> (All2 j (Var i) (OrdP (Var j)))"
-    shows "H \<turnstile> Ex j (Var j IN Var i AND (All2 k (Var i) (Var k SUBS Var j)))"
-  by (metis Conj_I Neg_I OrdP_set_max_lemma [THEN MP_null] assms)
-  
 lemma OrdP_max_imp:
   assumes j: "atom j \<sharp> (x)" and k: "atom k \<sharp> (x,j)"
   shows  "{ OrdP x, Neg (x EQ Zero) } \<turnstile> Ex j (Var j IN x AND (All2 k x (Var k SUBS Var j)))"
@@ -859,12 +844,6 @@ proof -
   ultimately show ?thesis
    by (metis rcut1)
 qed
-
-lemma OrdP_max:
-  assumes ord: "H \<turnstile> OrdP x" and zero: "insert (x EQ Zero) H \<turnstile> Fls" 
-      and j: "atom j \<sharp> (x)" and k: "atom k \<sharp> (x,j)"
-    shows  "H \<turnstile> Ex j (Var j IN x AND (All2 k x (Var k SUBS Var j)))"
-by (metis Neg_I cut2 [OF OrdP_max_imp] assms)
 
 declare OrdP.simps [simp del]
 
@@ -987,9 +966,6 @@ proof -
     by (auto simp: HFun_Sigma.simps [of z _ z' x y x' y'])
 qed
 
-lemma HFun_Sigma_cong: "H \<turnstile> r EQ r' \<Longrightarrow> H \<turnstile> HFun_Sigma r IFF HFun_Sigma r'"
-  by (rule P1_cong) auto
-
 lemma HFun_Sigma_Zero: "H \<turnstile> HFun_Sigma Zero"
 proof -
   obtain x::name and y::name and z::name and x'::name and y'::name and z'::name and z''::name
@@ -1095,9 +1071,6 @@ lemma HDomain_Incl_Subset: "H \<turnstile> HDomain_Incl r k \<Longrightarrow> H 
 lemma HDomain_Incl_Mem_Ord: "H \<turnstile> HDomain_Incl r k \<Longrightarrow> H \<turnstile> k' IN k \<Longrightarrow> H \<turnstile> OrdP k \<Longrightarrow> H \<turnstile> HDomain_Incl r k'"
   by (metis HDomain_Incl_Subset OrdP_Mem_imp_Subset)
 
-lemma HDomain_Incl_SUCC: "H \<turnstile> HDomain_Incl r (SUCC d) \<Longrightarrow> H \<turnstile> HDomain_Incl r d"
-  by (metis HDomain_Incl_Subset SUCC_def Subset_Eats_I)
-
 lemma HDomain_Incl_Zero [simp]: "H \<turnstile> HDomain_Incl r Zero"
 proof -
   obtain x::name and y::name and z::name 
@@ -1131,20 +1104,12 @@ lemma HDomain_Incl_Eats_I: "H \<turnstile> HDomain_Incl r d \<Longrightarrow> H 
 
 section {*@{term HPair} is Provably Injective*}
 
-lemma Doubleton_subset:
-  assumes "insert (X SUBS (Eats (Eats Zero d) c)) (insert (a EQ c) H) \<turnstile> A"
-      and "insert (X SUBS (Eats (Eats Zero d) c)) (insert (a EQ d) H) \<turnstile> A"
-    shows    "insert ((Eats X a) SUBS (Eats (Eats Zero d) c)) H \<turnstile> A"
-    apply (rule Subset_E [OF Assume])
-    apply (rule Mem_Eats_I2 [OF Refl])
-    by (metis Eats_Subset_E Mem_Eats_E Mem_Zero_E assms insert_absorb2 insert_commute)
-
 lemma Doubleton_E:
   assumes "insert (a EQ c) (insert (b EQ d) H) \<turnstile> A"
           "insert (a EQ d) (insert (b EQ c) H) \<turnstile> A"
     shows    "insert ((Eats (Eats Zero b) a) EQ (Eats (Eats Zero d) c)) H \<turnstile> A"
 apply (rule Equality_E) using assms
-apply (auto intro!: Doubleton_subset Zero_SubsetE rotate2 [of "a IN b"])
+apply (auto intro!: Zero_SubsetE rotate2 [of "a IN b"])
 apply (rule_tac [!] rotate3) 
 apply (auto intro!: Zero_SubsetE rotate2 [of "a IN b"])
 apply (metis Sym_L insert_commute thin1)+

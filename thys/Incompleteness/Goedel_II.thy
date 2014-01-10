@@ -71,7 +71,5 @@ proof -
     by (metis Iff_MP2_same Neg_mono cut1 diag)
 qed
 
-unused_thms Nominal2 OrdArith - 
-
 end
 

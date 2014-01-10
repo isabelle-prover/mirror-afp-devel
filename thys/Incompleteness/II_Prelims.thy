@@ -997,45 +997,6 @@ proof -
     by (rule cut2) (auto intro: assms)
 qed
 
-lemma HaddP_Subset1: "{ HaddP x y z } \<turnstile> x SUBS z"
-proof -
-  obtain i::name and j::name and z'::name
-   where atoms: "atom i \<sharp> (x,y,z)"  "atom j \<sharp> (i,x,y,z)"  "atom z' \<sharp> (x,i,j)"
-    by (metis obtain_fresh)
-  have "{OrdP (Var i)} \<turnstile> All j (HaddP x (Var i) (Var j) IMP x SUBS (Var j))"
-       (is "_ \<turnstile> ?scheme")
-    proof (rule OrdInd2H)
-      show "{} \<turnstile> ?scheme(i::=Zero)"
-        using atoms apply auto
-        by (metis EQ_imp_SUBS HaddP_Zero_D2 rcut1)
-    next
-      show "{} \<turnstile> All i (OrdP (Var i) IMP ?scheme IMP ?scheme(i::=SUCC (Var i)))"
-        using atoms
-        apply auto
-        apply (rule cut_same [OF HaddP_SUCC_Ex2 [where z'=z']], auto)
-        apply (rule Ex_I [where x="Var z'"], auto)
-        apply (rule Var_Eq_subst_Iff [THEN Iff_MP_same, THEN rotate3], simp)
-        apply (metis AssumeH(2) Subset_SUCC Subset_trans)
-        done
-    qed
-  hence "{OrdP (Var i)} \<turnstile> (HaddP x (Var i) (Var j) IMP x SUBS (Var j))(j::=z)"
-    by (rule All_D)
-  hence "{OrdP (Var i)} \<turnstile>(HaddP x (Var i) z IMP x SUBS z)"
-    using atoms by auto
-  hence "{} \<turnstile> HaddP x (Var i) z IMP x SUBS z"
-    by (metis HaddP_imp_OrdP Imp_cut)
-  hence "{} \<turnstile> (HaddP x (Var i) z IMP x SUBS z)(i::=y)"
-    using atoms by (force intro!: Subst)
-  thus ?thesis
-    using atoms by simp (metis anti_deduction)
-qed
-
-lemma HaddP_Subset2: "{ HaddP x y z, OrdP x } \<turnstile> y SUBS z"
-  by (metis HaddP_Subset1 HaddP_commute cut_same thin2)
-
-lemma HaddP_mono: "{y' IN y, HaddP x y z, OrdP x} \<turnstile> y' IN z"
-  by (blast intro: Subset_D HaddP_Subset2 [THEN cut2])
-
 
 section {*A Shifted Sequence*}
 

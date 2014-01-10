@@ -12,9 +12,6 @@ section {*Predicates for atomic terms*}
 
 subsection {*Free Variables*}
 
-lemma name_of_nat_inject [simp]: "name_of_nat x = name_of_nat y \<longleftrightarrow> x=y"
-  by (metis nat_of_name_name_eq)
-
 definition is_Var :: "hf \<Rightarrow> bool" where "is_Var x \<equiv> Ord x \<and> 0 ⋿ x"
 
 definition VarP :: "tm \<Rightarrow> fm" where "VarP x \<equiv> OrdP x AND Zero IN x"
@@ -109,22 +106,10 @@ definition decode_Ind :: "hf \<Rightarrow> nat"
 lemma is_Ind_pair_iff [simp]: "is_Ind \<langle>x, y\<rangle> \<longleftrightarrow> x = htuple 6 \<and> Ord y"
   by (auto simp: is_Ind_def)
 
-lemma decode_Ind_inject [simp]: "is_Ind x \<Longrightarrow> is_Ind x' \<Longrightarrow> decode_Ind x = decode_Ind x' \<longleftrightarrow> x=x'"
-  by (auto simp: is_Ind_def decode_Ind_def nat_of_ord_inject)
- 
 subsection {*Various syntactic lemmas*}
-
-lemma not_is_Var_Eats [simp]: "~ is_Var (q_Eats y z)"
-  by (simp add: is_Var_def q_Eats_def)
-
-lemma is_Ind_q_Ind: "Ord n \<Longrightarrow> is_Ind (q_Ind n)"
-  by (simp add: q_Ind_def)
 
 lemma eval_Var_q: "\<lbrakk>\<lceil>Var i\<rceil>\<rbrakk> e = q_Var i"
   by (simp add: quot_tm_def q_Var_def)
-
-lemma decode_quot_Var [simp]: "decode_Var \<lbrakk>\<lceil>Var i\<rceil>\<rbrakk>e = i"
-  by (metis decode_Var_q_Var eval_Var_q)
 
 lemma is_Var_eval_Var [simp]: "is_Var \<lbrakk>\<lceil>Var i\<rceil>\<rbrakk>e"
   by (metis decode_Var_q_Var is_Var_imp_decode_Var is_Var_q_Var)
@@ -473,14 +458,8 @@ declare AbstTermP.simps [simp del]
 
 subsection {*Correctness: It Coincides with Abstraction over real terms*}
 
-lemma not_is_Var_0 [iff]: "\<not> is_Var 0"
-  by (metis hmem_not_refl is_Var_def)
-
 lemma not_is_Var_is_Ind: "is_Var v \<Longrightarrow> \<not> is_Ind v"
   by (auto simp: is_Var_def is_Ind_def)
-
-lemma AbstTerm_0 [iff]: "AbstTerm (q_Var i) (ord_of n) 0 0"
-  by (auto simp: AbstTerm_def SeqStTerm_def q_Var_def intro!: BuildSeq2_exI)
 
 lemma AbstTerm_imp_abst_dbtm:
   assumes "AbstTerm v i x x'"
@@ -570,9 +549,6 @@ lemma SubstTermP_cong:
   "\<lbrakk>H \<turnstile> v EQ v'; H \<turnstile> i EQ i'; H \<turnstile> t EQ t'; H \<turnstile> u EQ u'\<rbrakk>
    \<Longrightarrow> H \<turnstile> SubstTermP v i t u IFF SubstTermP v' i' t' u'"
   by (rule P4_cong) auto
-
-lemma ground_SubstTermP [simp]: "ground_fm (SubstTermP v y x x') \<longleftrightarrow> ground v \<and> ground y \<and> ground x \<and> ground x'"
-  by (auto simp: supp_conv_fresh ground_aux_def ground_fm_aux_def)
 
 declare SubstTermP.simps [simp del]
 
@@ -1204,9 +1180,6 @@ nominal_primrec SeqFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> 
 termination (eqvt)
   by lexicographic_order
 
-lemma exists_Term: "\<exists>x. Term x"
-  by (metis Term_quot_tm)
-
 lemma
   shows SeqFormP_fresh_iff [simp]:
        "a \<sharp> SeqFormP s k t \<longleftrightarrow> a \<sharp> s \<and> a \<sharp> k \<and> a \<sharp> t" (is ?thesis1)
@@ -1223,7 +1196,7 @@ proof -
     by auto
   show ?thesis2 using atoms
     by (simp cong: conj_cong add: LstSeq_imp_Ord SeqForm_def BuildSeq_def Builds_def
-             HBall_def HBex_def q_defs exists_Term
+             HBall_def HBex_def q_defs 
              Seq_iff_app [of "\<lbrakk>s\<rbrakk>e", OF LstSeq_imp_Seq_succ]
              Ord_trans [of _ _ "succ \<lbrakk>k\<rbrakk>e"])
 qed

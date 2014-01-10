@@ -825,10 +825,6 @@ proof -
     by (metis cut_same assms thin2)
 qed
 
-lemma Imp_mono:
-  assumes A:"insert B H \<turnstile> A" and B: "insert C H \<turnstile> D" shows "insert (A IMP C) H \<turnstile> B IMP D"
-  by (metis A B Disj_mono Neg_mono)
-
 lemma Disj_E:
   assumes A: "insert A H \<turnstile> C" and B: "insert B H \<turnstile> C" shows "insert (A OR B) H \<turnstile> C"
   by (metis A B Disj_mono NegNeg_I Peirce)
@@ -982,9 +978,6 @@ lemma All_E: "insert (A(i::=x)) H \<turnstile> B \<Longrightarrow> insert (All i
 
 lemma All_E': "H \<turnstile> All i A \<Longrightarrow> insert (A(i::=x)) H \<turnstile> B \<Longrightarrow> H \<turnstile> B"
   by (metis All_D cut_same)
-
-lemma All_mono: "insert A H \<turnstile> B \<Longrightarrow> \<forall>C \<in> H. atom i \<sharp> C \<Longrightarrow> insert (All i A) H \<turnstile> (All i B)"
-  by (metis Ex_mono Neg_mono)
 
 lemma All2_E: "\<lbrakk>atom i \<sharp> t; H \<turnstile> x IN t; insert (A(i::=x)) H \<turnstile> B\<rbrakk> \<Longrightarrow> insert (All2 i t A) H \<turnstile> B"
   apply (rule All_E [where x=x], auto)
@@ -1398,12 +1391,6 @@ lemma truth_provable: "H \<turnstile> (Neg Fls)"
 
 lemma ExFalso: "H \<turnstile> Fls \<Longrightarrow> H \<turnstile> A"
   by (metis Neg_D truth_provable)
-
-lemma Neg_Iff_Iff: "H \<turnstile> Neg A IFF (A IMP Fls)"
-  by (metis (full_types) Disj_E Disj_I1 Fls_E Hyp Iff_I insertI1)
-
-lemma Neg_Iff: "H \<turnstile> Neg A IFF (A IFF Fls)"
-  by (auto simp: Iff_def)
 
 subsection{*More properties of @{term Zero}*}
 

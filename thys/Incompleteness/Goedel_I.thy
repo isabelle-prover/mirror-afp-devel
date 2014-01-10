@@ -119,9 +119,6 @@ qed
 lemma WR_succ: "Ord i \<Longrightarrow> WR (succ i) (q_Eats y y) = WR i y"
   by (metis WR_succ_iff q_Eats_iff)
 
-lemma WR_determ: "\<lbrakk>Ord x; WR x y; WR x y'\<rbrakk> \<Longrightarrow> y'=y"
-  by (induct x arbitrary: y y' rule: Ord_induct2) (auto simp: WR0_iff WR_succ_iff)
-
 lemma WR_ord_of: "WR (ord_of i) \<lbrakk>\<lceil>ORD_OF i\<rceil>\<rbrakk>e"
   by (induct i) (auto simp: WR0_iff WR_succ_iff quot_Succ q_defs)
 

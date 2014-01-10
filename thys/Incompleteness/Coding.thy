@@ -357,11 +357,6 @@ lemma wf_dbfm_trans_fm: "wf_dbfm (trans_fm [] A)"
 lemma wf_dbfm_iff_is_fm: "wf_dbfm x \<longleftrightarrow> (\<exists>A::fm. x = trans_fm [] A)"
   by (metis wf_dbfm_imp_is_fm wf_dbfm_trans_fm)
 
-lemma wf_subst_dbtm:
-  assumes t: "wf_dbtm t" and u: "wf_dbtm u"
-    shows "wf_dbtm (subst_dbtm u i t)"
-  using t  by (induct rule: wf_dbtm.induct) (auto simp: u)
-
 lemma dbtm_abst_ignore [simp]:
   "abst_dbtm name i (abst_dbtm name j t) = abst_dbtm name j t"
   by (induct t rule: dbtm.induct) auto
@@ -372,9 +367,6 @@ lemma dbfm_abst_ignore [simp]:
 
 lemma abst_dbtm_fresh_ignore [simp]: "atom name \<sharp> u \<Longrightarrow> abst_dbtm name j u = u"
   by (induct u rule: dbtm.induct) auto
-
-lemma abst_dbfm_fresh_ignore [simp]: "atom name \<sharp> A \<Longrightarrow> abst_dbfm name j A = A"
-  by (induct A arbitrary: j rule: dbfm.induct) auto
 
 lemma dbtm_subst_ignore [simp]:
   "subst_dbtm u name (abst_dbtm name j t) = abst_dbtm name j t"
@@ -460,15 +452,6 @@ lemma nat_of_name_name_eq [simp]: "nat_of_name (name_of_nat n) = n"
 lemma name_of_nat_nat_of_name [simp]: "name_of_nat (nat_of_name i) = i"
   by (metis nat_of_name_inject nat_of_name_name_eq)
 
-lemma ORD_OF_inject [simp]: "(ORD_OF i = ORD_OF j) = (i = j)"
-proof (induct i arbitrary: j)
-  case 0 show ?case
-    by (metis ORD_OF.simps SUCC_def nat.exhaust tm.distinct(4))
-next
-  case (Suc i) thus ?case
-    by (cases j) (auto simp: SUCC_def)
-qed
-
 lemma HPair_neq_ORD_OF [simp]: "HPair x y \<noteq> ORD_OF i"
   by (metis Not_Ord_hpair Ord_ord_of eval_tm_HPair eval_tm_ORD_OF)
 
@@ -542,9 +525,6 @@ next
   case (DBEx A) thus ?case
     by (induct B rule: dbfm.induct) (simp_all add: htuple_minus_1)
 qed
-
-lemma quot_dbfm_inject [iff]: "quot_dbfm A = quot_dbfm B \<longleftrightarrow> A=B"
-  by (metis quot_dbfm_inject_lemma)
 
 
 class quot =
@@ -780,9 +760,6 @@ lemma quot_dbtm_coding [simp]: "coding_tm (quot_dbtm t)"
   apply (metis ORD_OF.simps(2) Ord)
   done
 
-lemma quot_tm_coding [simp]: fixes t::tm shows "coding_tm \<lceil>t\<rceil>"
-  by (metis quot_dbtm_coding quot_tm_def)
-
 lemma quot_dbfm_coding [simp]: "coding_tm (quot_dbfm fm)"
   by (induct fm rule: dbfm.induct, auto)
 
@@ -798,9 +775,6 @@ declare coding_hf.intros [intro]
 
 lemma coding_hf_0 [intro]: "coding_hf 0"
   by (metis coding_hf.Ord ord_of.simps(1))
-
-lemma coding_hf_htuple [intro]: "coding_hf (htuple k)"
-  by (induct k) auto
 
 inductive_simps coding_hf_hpair [simp]: "coding_hf (\<langle>x,y\<rangle>)"
 
@@ -825,25 +799,6 @@ termination
 
 lemma fresh_vquot_dbtm [simp]: "i \<sharp> vquot_dbtm V tm \<longleftrightarrow> i \<sharp> tm \<or> i \<notin> atom ` V"
   by (induct tm rule: dbtm.induct) (auto simp: fresh_at_base pure_fresh)
-
-lemma vquot_dbtm_inject [simp]: "vquot_dbtm V t = vquot_dbtm V u \<longleftrightarrow> t=u"
-proof (induct t arbitrary: u rule: dbtm.induct)
-  case DBZero show ?case
-    by (induct u rule: dbtm.induct) (auto simp: HPair_def SUCC_def)
-next
-  case (DBVar name) show ?case
-    by (induct u rule: dbtm.induct) (auto simp: HPair_def SUCC_def)
-next
-  case (DBInd k) show ?case
-      apply (induct u rule: dbtm.induct)
-      apply(auto simp: HPair_def HTuple_minus_1 SUCC_def)
-      by (metis tm.distinct(3) tm.eq_iff(3))
-next
-  case (DBEats t1 t2) thus ?case
-      apply (induct u rule: dbtm.induct)
-      apply(auto simp: HPair_def HTuple_minus_1 SUCC_def)
-      by (metis tm.distinct(3) tm.eq_iff(3))
-qed
 
 text{*Infinite support, so we cannot use nominal primrec.*}
 function vquot_dbfm :: "name set \<Rightarrow> dbfm \<Rightarrow> tm"
