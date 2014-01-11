@@ -2397,7 +2397,6 @@ export_code
   (*ls_size hs_size rs_size*)
   in SML 
   module_name Ta
-  file -
 
 
 export_code 
@@ -2414,7 +2413,6 @@ export_code
   (*ls_size hs_size rs_size*)
   in Haskell 
   module_name Ta
-  file -
   (string_classes)
 
 export_code 
@@ -2431,7 +2429,6 @@ export_code
   (*ls_size hs_size rs_size*)
   in OCaml 
   module_name Ta
-  file -
 
 (* If this statement fails with an error from ML, this indicates a problem 
   with the code-generator. The most frequent problem in this context is, that

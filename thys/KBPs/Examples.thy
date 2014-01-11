@@ -24,7 +24,7 @@ export_code
   "robot_ClockAlg"
   "robot_SPRSingleDFS"
   "robot_SPRSingleAlg"
-in Haskell file - (string_classes)
+in Haskell (string_classes)
 
 end
 (*>*)

@@ -79,9 +79,9 @@ export_code
   fti_foldl
   fti_foldr
   fti_count
-  in Haskell file -
-  in OCaml file -
-  in SML file -
+  in Haskell
+  in OCaml
+  in SML
 
 ML_val {*
   val t1 = @{code fti_toTree}

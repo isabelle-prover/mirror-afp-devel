@@ -51,9 +51,9 @@ export_code
   bh_deleteMin
   bh_insert
   bh_meld
-  in Haskell file -
-  in OCaml file -
-  in SML file -
+  in Haskell
+  in OCaml
+  in SML
 
 ML_val {*
   (* ** Binomial Heaps ** *)
