@@ -68,7 +68,7 @@ sig
     'a -> (* property_generator *)
     sort -> 
     (* same_constructor_tac *)
-    (Proof.context -> thm list -> thm list -> thm -> (thm list -> tactic) -> int -> term list -> 
+    (Proof.context -> thm list -> thm list -> thm -> (Proof.context -> thm list -> tactic) -> int -> term list -> 
      term list -> string * Datatype_Aux.dtyp list -> (Datatype.dtyp -> term -> term -> term) -> tactic) 
     -> thm
 
@@ -310,16 +310,20 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Datatype_Aux
         val y = hd ys
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
         val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> the_info thy
-        val simp_set =
-          put_simpset my_simp_set ctxt addsimps (simps_of_info info) @ (simps_of_info linfo)
-        val solve_with_tac = (fn thms => mk_solve_with_tac thms (force_tac simp_set 1))
+        fun solve_with_tac ctxt thms =
+          let val simp_ctxt =
+            (ctxt
+              |> Context_Position.set_visible false
+              |> put_simpset my_simp_set)
+              addsimps (simps_of_info info @ simps_of_info linfo)
+          in mk_solve_with_tac thms (force_tac simp_ctxt 1) end
         fun case_tac ctxt = mk_case_tac ctxt [[SOME y]] (#exhaust linfo)
         fun sub_case_tac (ctxt,k,prems,iparams_y) = 
           let 
             val case_hyp_y = hd prems 
           in 
             if not (j = k) 
-            then my_print_tac ("different constructors ") THEN solve_with_tac (case_hyp_y :: ihprems) (* different constructor *) 
+            then my_print_tac ("different constructors ") THEN solve_with_tac ctxt (case_hyp_y :: ihprems) (* different constructor *) 
             else
               let 
                 val params_y = map (snd #> term_of) iparams_y
