@@ -1,0 +1,104 @@
+%
+\begin{isabellebody}%
+\def\isabellecontext{Secrecy{\isacharunderscore}types}%
+%
+\isamarkupheader{Auxiliary data types%
+}
+\isamarkuptrue%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{theory}\isamarkupfalse%
+\ Secrecy{\isacharunderscore}types\isanewline
+\isakeyword{imports}\ Main\isanewline
+\isakeyword{begin}\isanewline
+\isanewline
+%
+\isamarkupcmt{We assume disjoint sets: Data of data values,%
+}
+\isanewline
+%
+\isamarkupcmt{Secrets of unguessable values, Keys - set of cryptographic  keys.%
+}
+\ \ \isanewline
+%
+\isamarkupcmt{Based on these sets, we specify the sets EncType of encryptors that may be%
+}
+\isanewline
+%
+\isamarkupcmt{used for encryption or decryption, and Expression of expression items.%
+}
+\isanewline
+%
+\isamarkupcmt{The specification (component) identifiers should be listed in the set specID,%
+}
+\isanewline
+%
+\isamarkupcmt{the channel indentifiers should be listed in the set chanID.%
+}
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+\ \isanewline
+\isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ Keys\ {\isacharequal}\ CKey\ {\isacharbar}\ CKeyP\ {\isacharbar}\ SKey\ {\isacharbar}\ SKeyP\ {\isacharbar}\ genKey\ \isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ Secrets\ {\isacharequal}\ secretD\ {\isacharbar}\ N\ {\isacharbar}\ NA\isanewline
+\isacommand{type{\isacharunderscore}synonym}\isamarkupfalse%
+\ Var\ \ {\isacharequal}\ {\isachardoublequoteopen}nat{\isachardoublequoteclose}\isanewline
+\isacommand{type{\isacharunderscore}synonym}\isamarkupfalse%
+\ Data\ {\isacharequal}\ {\isachardoublequoteopen}nat{\isachardoublequoteclose}\isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ KS\ \ \ \ \ \ \ \ \ \ {\isacharequal}\ kKS\ Keys\ {\isacharbar}\ sKS\ Secrets\isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ EncType\ \ {\isacharequal}\ kEnc\ Keys\ {\isacharbar}\ vEnc\ Var\isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ specID\ {\isacharequal}\ sComp{\isadigit{1}}\ {\isacharbar}\ sComp{\isadigit{2}}\ {\isacharbar}\ sComp{\isadigit{3}}\ {\isacharbar}\ sComp{\isadigit{4}}\isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ Expression\ {\isacharequal}\ kE\ Keys\ {\isacharbar}\ sE\ Secrets\ {\isacharbar}\ dE\ Data\ {\isacharbar}\ idE\ specID\ \isanewline
+\isacommand{datatype}\isamarkupfalse%
+\ chanID\ {\isacharequal}\ ch{\isadigit{1}}\ {\isacharbar}\ ch{\isadigit{2}}\ \ \ {\isacharbar}\ ch{\isadigit{3}}\ \ {\isacharbar}\ ch{\isadigit{4}}\isanewline
+\isanewline
+\isacommand{primrec}\isamarkupfalse%
+\ Expression{\isadigit{2}}KSL{\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}Expression\ list\ {\isasymRightarrow}\ KS\ list{\isachardoublequoteclose}\ \isanewline
+\isakeyword{where}\isanewline
+\ \ \ {\isachardoublequoteopen}Expression{\isadigit{2}}KSL\ {\isacharbrackleft}{\isacharbrackright}\ {\isacharequal}\ {\isacharbrackleft}{\isacharbrackright}{\isachardoublequoteclose}\ {\isacharbar}\isanewline
+\ \ \ {\isachardoublequoteopen}Expression{\isadigit{2}}KSL\ {\isacharparenleft}x{\isacharhash}xs{\isacharparenright}\ {\isacharequal}\ \isanewline
+\ \ \ \ \ {\isacharparenleft}{\isacharparenleft}case\ x\ of\ {\isacharparenleft}kE\ m{\isacharparenright}\ {\isasymRightarrow}\ {\isacharbrackleft}kKS\ m{\isacharbrackright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharbar}\ {\isacharparenleft}sE\ m{\isacharparenright}\ {\isasymRightarrow}\ {\isacharbrackleft}sKS\ m{\isacharbrackright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharbar}\ {\isacharparenleft}dE\ m{\isacharparenright}\ {\isasymRightarrow}\ {\isacharbrackleft}{\isacharbrackright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharbar}\ {\isacharparenleft}idE\ m{\isacharparenright}\ {\isasymRightarrow}\ {\isacharbrackleft}{\isacharbrackright}{\isacharparenright}\ {\isacharat}\ Expression{\isadigit{2}}KSL\ xs{\isacharparenright}\ {\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{primrec}\isamarkupfalse%
+\ KS{\isadigit{2}}Expression{\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}KS\ {\isasymRightarrow}\ Expression{\isachardoublequoteclose}\ \isanewline
+\isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}KS{\isadigit{2}}Expression\ {\isacharparenleft}kKS\ m{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}kE\ m{\isacharparenright}{\isachardoublequoteclose}\ \ {\isacharbar}\isanewline
+\ \ {\isachardoublequoteopen}KS{\isadigit{2}}Expression\ {\isacharparenleft}sKS\ m{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}sE\ m{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isacommand{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+\end{isabellebody}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "root"
+%%% End:
