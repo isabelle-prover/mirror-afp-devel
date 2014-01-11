@@ -131,11 +131,11 @@ fun eq_prop_gen xs [eq] =
 fun mk_eq_thm thy info = 
   let
     val sort = @{sort "type"}
-    fun main_tac _ ih_hyps ih_prems y_prem solve_with_tac _ _ _ _ _ = 
+    fun main_tac ctxt ih_hyps ih_prems y_prem solve_with_tac _ _ _ _ _ = 
       (* TODO: for more complicated (wrt. nesting) datatypes, this simple tactic fails !
         e.g., datatype test = Foo "(test * test)list"    fails whereas 
               datatype test = Foo "(test option)list"    succeeds *)
-      solve_with_tac (y_prem :: ih_prems @ ih_hyps)
+      solve_with_tac ctxt (y_prem :: ih_prems @ ih_hyps)
     fun eqs ty = K (HOLogic.eq_const ty)
     val thm = mk_binary_thm (mk_prop_trm eqs) (mk_eq_idx eqs) @{const_name HOL.eq} thy info eq_prop_gen sort main_tac
   in 
