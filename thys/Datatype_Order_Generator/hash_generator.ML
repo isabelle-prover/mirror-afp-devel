@@ -103,7 +103,7 @@ fun derive dtyp_name _ thy =
     val tyco = dtyp_name
   
     val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("creating hashcode for datatype " ^ base_name)
+    val _ = writeln ("creating hashcode for datatype " ^ base_name)
     val sort = @{sort hashable}
     val info = Datatype.the_info thy tyco
     val vs_of_sort = 
@@ -128,13 +128,13 @@ fun derive dtyp_name _ thy =
   
     fun hash_tac ctxt = 
       my_print_tac "enter hash " THEN
-      unfold_tac hash_thms ctxt THEN
+      unfold_tac ctxt hash_thms THEN
       my_print_tac "after unfolding" THEN
       rtac @{thm hash_mod_lemma} 1 THEN atac 1 THEN
       my_print_tac "after hash_mod" THEN
       simp_tac ctxt 1
     val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN hash_tac ctxt)) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class hashable")
+    val _ = writeln ("registered " ^ base_name ^ " in class hashable")
   
   in thy' end
 

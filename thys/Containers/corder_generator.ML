@@ -50,7 +50,7 @@ fun mk_linorder_thm dtyp_name lthy =
     val thy = Proof_Context.theory_of lthy
 
     val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("creating orders for datatype " ^ base_name)
+    val _ = writeln ("creating orders for datatype " ^ base_name)
     val info = Datatype.the_info thy tyco  
     val sort = @{sort linorder}
     val less_term = mk_less_idx thy info sort |> fst |> (fn x => x 0)
@@ -82,7 +82,7 @@ fun mk_linorder_thm dtyp_name lthy =
           val thm = Goal.prove lthy [] [] 
             (HOLogic.mk_Trueprop (Const (@{const_name class.linorder}, class_ty) $ less_eq_term $ less_term)) 
             order_tac 
-          val _ = Output.writeln ("proved that " ^ base_name ^ " is in locale linorder")
+          val _ = writeln ("proved that " ^ base_name ^ " is in locale linorder")
         in thm end   
       
   in linorder_thm end
@@ -92,8 +92,7 @@ val derive_no_corder = derive_none @{const_name corder} @{sort corder} mk_none_c
 fun derive_corder_linorder typ_name thy = 
   let
     val base_name = Long_Name.base_name typ_name
-    val _ = Output.writeln ("use linorder to derive corder for type " 
-      ^ base_name)
+    val _ = writeln ("use linorder to derive corder for type " ^ base_name)
     val sort = @{sort corder}
     val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort linorder}
     val corder_rhs = mk_some_less_less_eq ty
@@ -103,12 +102,12 @@ fun derive_corder_linorder typ_name thy =
       |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
-      THEN unfold_tac [corder_thm] ctxt
+      THEN unfold_tac ctxt [corder_thm]
       THEN my_print_tac "after class intro"
       THEN asm_full_simp_tac ctxt 1
       THEN my_print_tac "after simp"
       THEN Locale.intro_locales_tac true ctxt []) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")  
+    val _ = writeln ("registered " ^ base_name ^ " in class corder")
     val thy'' = derive_is_c_dots_lemma ty @{const_name is_corder} [corder_thm, @{thm is_corder_def}] base_name thy'
 
   in thy'' end
@@ -117,7 +116,7 @@ fun derive_corder_linorder typ_name thy =
 fun derive_some_corder dtyp_name thy = let
     val base_name = Long_Name.base_name dtyp_name
     
-    val _ = Output.writeln ("creating corder for datatype " ^ base_name)
+    val _ = writeln ("creating corder for datatype " ^ base_name)
     val info = Datatype.the_info thy dtyp_name
     val sort = @{sort linorder}
     val less = mk_less_idx thy info sort |> fst |> (fn x => x 0)
@@ -141,10 +140,10 @@ fun derive_some_corder dtyp_name thy = let
       THEN my_print_tac "after class instance"
       THEN rtac (@{thm corder_intro} OF [linorder_thm]) 1
       THEN my_print_tac "after corder_intro"
-      THEN unfold_tac [corder_thm] ctxt
+      THEN unfold_tac ctxt [corder_thm]
       THEN (REPEAT (blast_tac ctxt 1))
       )) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")
+    val _ = writeln ("registered " ^ base_name ^ " in class corder")
     val thy'' = derive_is_c_dots_lemma ty @{const_name is_corder} [corder_thm, @{thm is_corder_def}] base_name thy'
 
  in thy''
