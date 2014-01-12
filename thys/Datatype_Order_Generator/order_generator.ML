@@ -522,7 +522,7 @@ fun derive kind dtyp_name _ thy =
         
           fun order_tac ctxt = 
             my_print_tac "enter order" THEN
-            unfold_tac less_thms ctxt THEN
+            unfold_tac ctxt less_thms THEN
             my_print_tac "after unfolding" THEN
             rtac less 1 THEN
             my_print_tac "after less" THEN
@@ -545,7 +545,7 @@ fun derive kind dtyp_name _ thy =
           val lthy = Class.instantiation ([tyco],vs,sort) thy''
           val linear = mk_linear_thm thy info
           fun order_tac ctxt = 
-            unfold_tac less_thms ctxt THEN
+            unfold_tac ctxt less_thms THEN
             rtac linear 1 
           val thy''' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
           val _ = Output.writeln ("registered " ^ base_name ^ " in class linorder")

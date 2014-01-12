@@ -69,7 +69,7 @@ fun derive_none const sort mk_none typ_name thy =
       |> define_overloaded (const_name ^ "_" ^ base_name ^ "_def", const_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
-      THEN unfold_tac [none_thm] ctxt
+      THEN unfold_tac ctxt [none_thm]
       THEN (REPEAT (force_tac ctxt 1))) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class " ^ sort_name)    
   in thy' end
@@ -94,7 +94,7 @@ end
 fun derive_is_c_dots_lemma ty const_name defs base_name thy  = let
       val is_c_dots = HOLogic.mk_Trueprop (mk_is_c_dots ty const_name)
       val thm = Goal.prove (Proof_Context.init_global thy) [] [] is_c_dots (fn {prems = _, context = ctxt} => 
-        unfold_tac (defs @ @{thms ID_Some option.simps}) ctxt
+        unfold_tac ctxt (defs @ @{thms ID_Some option.simps})
         THEN blast_tac ctxt 1
       )
     in register_is_c_dots_lemma const_name base_name thm thy

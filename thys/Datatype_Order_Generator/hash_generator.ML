@@ -128,7 +128,7 @@ fun derive dtyp_name _ thy =
   
     fun hash_tac ctxt = 
       my_print_tac "enter hash " THEN
-      unfold_tac hash_thms ctxt THEN
+      unfold_tac ctxt hash_thms THEN
       my_print_tac "after unfolding" THEN
       rtac @{thm hash_mod_lemma} 1 THEN atac 1 THEN
       my_print_tac "after hash_mod" THEN

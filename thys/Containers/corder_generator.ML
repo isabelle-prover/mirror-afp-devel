@@ -103,7 +103,7 @@ fun derive_corder_linorder typ_name thy =
       |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
-      THEN unfold_tac [corder_thm] ctxt
+      THEN unfold_tac ctxt [corder_thm]
       THEN my_print_tac "after class intro"
       THEN asm_full_simp_tac ctxt 1
       THEN my_print_tac "after simp"
@@ -141,7 +141,7 @@ fun derive_some_corder dtyp_name thy = let
       THEN my_print_tac "after class instance"
       THEN rtac (@{thm corder_intro} OF [linorder_thm]) 1
       THEN my_print_tac "after corder_intro"
-      THEN unfold_tac [corder_thm] ctxt
+      THEN unfold_tac ctxt [corder_thm]
       THEN (REPEAT (blast_tac ctxt 1))
       )) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class corder")

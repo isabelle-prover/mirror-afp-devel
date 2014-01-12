@@ -184,7 +184,7 @@ fun mk_ceq_thm thy info =
         in prem end 
         ) prems' 
       in
-        unfold_tac prems ctxt
+        unfold_tac ctxt prems
         THEN rtac @{thm ext} 1
         THEN rtac @{thm ext} 1
         THEN rtac eq_thm 1
@@ -224,8 +224,8 @@ fun derive_ceq_ceq dtyp_name thy =
       |> define_overloaded ("ceq_" ^ base_name ^ "_def", ceq_def)
     val thy' = Class.prove_instantiation_exit (fn ctxt => let
         fun split_tac ceq_eq_thm [] = 
-          unfold_tac @{thms option.simps(1)} ctxt
-          THEN unfold_tac [ceq_eq_thm] ctxt
+          unfold_tac ctxt @{thms option.simps(1)}
+          THEN unfold_tac ctxt [ceq_eq_thm]
           THEN blast_tac ctxt 1
         |  split_tac ceq_eq_thm (_ :: rest) = fn thm => let
             val ID_trm = Thm.prems_of thm |> hd 
@@ -240,20 +240,20 @@ fun derive_ceq_ceq dtyp_name thy =
               in 
                 if k = 1 then 
                   Method.insert_tac [prem] 1
-                  THEN unfold_tac [ID_eq_thm] ctxt
-                  THEN unfold_tac @{thms option.cases} ctxt
+                  THEN unfold_tac ctxt [ID_eq_thm]
+                  THEN unfold_tac ctxt @{thms option.cases}
                   THEN split_tac (ceq_eq_thm OF [ID_eq_thm]) rest
               else 
                   Method.insert_tac [prem] 1
-                  THEN unfold_tac [ID_eq_thm] ctxt
-                  THEN unfold_tac @{thms option.simps} ctxt
+                  THEN unfold_tac ctxt [ID_eq_thm]
+                  THEN unfold_tac ctxt @{thms option.simps}
               end
           in 
             mk_case_tac ctxt [[SOME ID_trm]] @{thm option.exhaust} sub_case_tac thm
           end
       in 
         Class.intro_classes_tac []
-        THEN unfold_tac [ceq_thm] ctxt
+        THEN unfold_tac ctxt [ceq_thm]
         THEN split_tac ceq_eq_thm eq_vars
       end) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")
@@ -291,7 +291,7 @@ fun derive_eq_ceq typ_name thy =
       |> define_overloaded ("ceq_" ^ base_name ^ "_def", ceq_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
-      THEN unfold_tac [ceq_thm] ctxt
+      THEN unfold_tac ctxt [ceq_thm]
       THEN force_tac ctxt 1) lthy
     val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")  
     val thy'' = derive_is_c_dots_lemma ty @{const_name is_ceq} [ceq_thm, @{thm is_ceq_def}] base_name thy' 
