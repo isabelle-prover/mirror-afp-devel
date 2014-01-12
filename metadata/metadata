@@ -1319,6 +1319,20 @@ extra-history =
   Change history:
   [2013-10-16]: Added algorithms to compute floor and ceiling of sqrt of integers.
 
+[Sturm_Sequences]
+title = Sturm's Theorem
+author = Manuel Eberl <http://in.tum.de/~eberlm>
+date = 2014-01-11
+topic = Mathematics/Analysis
+abstract = Sturm's Theorem states that polynomial sequences with certain
+  properties, so-called Sturm sequences, can be used to count the number
+  of real roots of a real polynomial. This work contains a proof of
+  Sturm's Theorem and code for constructing Sturm sequences efficiently.
+  It also provides the “sturm” proof method, which can decide certain
+  statements about the roots of real polynomials, such as “the polynomial
+  P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
+  &#8712; &#8477;”.
+
 [Markov_Models]
 title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
