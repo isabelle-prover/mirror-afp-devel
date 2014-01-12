@@ -210,7 +210,7 @@ fun derive_ceq_ceq dtyp_name thy =
     val tyco = dtyp_name
  
     val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("creating equality for datatype " ^ base_name)
+    val _ = writeln ("creating equality for datatype " ^ base_name)
     val sort = @{sort ceq}
     val info = Datatype.the_info thy tyco
     val vs_of_sort =
@@ -256,7 +256,7 @@ fun derive_ceq_ceq dtyp_name thy =
         THEN unfold_tac ctxt [ceq_thm]
         THEN split_tac ceq_eq_thm eq_vars
       end) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")
+    val _ = writeln ("registered " ^ base_name ^ " in class ceq")
     val typ_subst = typ_subst_for_sort thy info sort 
     val main_ty = typ_of_dtyp (#descr info) (DtRec 0) |> typ_subst
     val param_tys = dest_Type main_ty |> snd   
@@ -280,8 +280,7 @@ val derive_no_ceq = derive_none @{const_name ceq} @{sort ceq} mk_none_ceq
 fun derive_eq_ceq typ_name thy = 
   let
     val base_name = Long_Name.base_name typ_name
-    val _ = Output.writeln ("use equality for class ceq and type " 
-      ^ base_name)
+    val _ = writeln ("use equality for class ceq and type " ^ base_name)
     val sort = @{sort ceq}
     val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
     val ceq_rhs = mk_some_eq ty
@@ -293,7 +292,7 @@ fun derive_eq_ceq typ_name thy =
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
       THEN unfold_tac ctxt [ceq_thm]
       THEN force_tac ctxt 1) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class ceq")  
+    val _ = writeln ("registered " ^ base_name ^ " in class ceq")  
     val thy'' = derive_is_c_dots_lemma ty @{const_name is_ceq} [ceq_thm, @{thm is_ceq_def}] base_name thy' 
   in thy'' end
 

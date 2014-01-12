@@ -487,7 +487,7 @@ fun derive kind dtyp_name _ thy =
 
     (* first register in class ord *)
     val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("creating orders for datatype " ^ base_name)
+    val _ = writeln ("creating orders for datatype " ^ base_name)
     val sort = @{sort ord}
     val info = Datatype.the_info thy tyco
     val vs_of_sort = 
@@ -508,7 +508,7 @@ fun derive kind dtyp_name _ thy =
     val less_thms = [less_thm, less_eq_thm]
      
     val thy' = Class.prove_instantiation_exit (K (Class.intro_classes_tac [])) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class ord")
+    val _ = writeln ("registered " ^ base_name ^ " in class ord")
   
     (* next register in class order *)
     val thy'' = 
@@ -532,7 +532,7 @@ fun derive kind dtyp_name _ thy =
             my_print_tac "after trans" THEN
             rtac antisym 1 THEN atac 1 THEN atac 1
           val thy'' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
-          val _ = Output.writeln ("registered " ^ base_name ^ " in class order")
+          val _ = writeln ("registered " ^ base_name ^ " in class order")
         in thy'' end 
   
     (* next register in class linorder *)
@@ -548,7 +548,7 @@ fun derive kind dtyp_name _ thy =
             unfold_tac ctxt less_thms THEN
             rtac linear 1 
           val thy''' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
-          val _ = Output.writeln ("registered " ^ base_name ^ " in class linorder")
+          val _ = writeln ("registered " ^ base_name ^ " in class linorder")
         in thy''' end
   
   in thy''' end

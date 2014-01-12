@@ -42,8 +42,7 @@ fun derive_set_map_impl smi_const smi_sort choices typ_name choice thy =
   let
     val base_name = Long_Name.base_name typ_name
     val smi_name = Long_Name.base_name smi_const
-    val _ = Output.writeln ("use " ^ choice ^ " as " ^ smi_name ^ " for type " 
-      ^ base_name)
+    val _ = writeln ("use " ^ choice ^ " as " ^ smi_name ^ " for type " ^ base_name)
     val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
     val set_map_impl_rhs = mk_set_map_impl choices ty choice thy
     val set_map_impl_ty = Term.fastype_of set_map_impl_rhs
@@ -51,7 +50,7 @@ fun derive_set_map_impl smi_const smi_sort choices typ_name choice thy =
     val (_,lthy) = Class.instantiation ([typ_name],vs,smi_sort) thy
       |> define_overloaded (smi_name ^ "_" ^ base_name ^ "_def", set_map_impl_def)     
     val thy' = Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac []) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class " ^ smi_name)  
+    val _ = writeln ("registered " ^ base_name ^ " in class " ^ smi_name)  
   in thy' end
 
 fun derive_none const sort mk_none typ_name thy = 
@@ -59,8 +58,7 @@ fun derive_none const sort mk_none typ_name thy =
     val base_name = Long_Name.base_name typ_name
     val const_name = Long_Name.base_name const
     val sort_name = hd sort |> Long_Name.base_name
-    val _ = Output.writeln ("use None as trivial implementation of " ^ sort_name ^ " for type " 
-      ^ base_name)
+    val _ = writeln ("use None as trivial implementation of " ^ sort_name ^ " for type " ^ base_name)
     val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
     val none_rhs = mk_none ty
     val none_ty = Term.fastype_of none_rhs
@@ -71,7 +69,7 @@ fun derive_none const sort mk_none typ_name thy =
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
       THEN unfold_tac ctxt [none_thm]
       THEN (REPEAT (force_tac ctxt 1))) lthy
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class " ^ sort_name)    
+    val _ = writeln ("registered " ^ base_name ^ " in class " ^ sort_name)    
   in thy' end
  
 fun mk_is_c_dots ty dots = 
@@ -87,7 +85,7 @@ fun register_is_c_dots_lemma const_name base_name thm thy = let
       val lthy_map = Local_Theory.note ((Binding.name name, 
           @{attributes [simp,code_post]}), [thm]) #> #2
       val thy' = Named_Target.theory_init thy |> lthy_map |> Local_Theory.exit_global
-      val _ = Output.writeln ("derived " ^ name ^ "-lemma")
+      val _ = writeln ("derived " ^ name ^ "-lemma")
     in thy'
 end
 
