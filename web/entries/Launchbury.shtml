@@ -108,6 +108,7 @@ In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury pr
   </tr>
     <tr><td class="links">Older releases:
 <ul>
+<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
 <li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-02-25.tar.gz">afp-<!--#echo var="name" -->-2013-02-25.tar.gz</a></li>
 <li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-02-24.tar.gz">afp-<!--#echo var="name" -->-2013-02-24.tar.gz</a></li>
 

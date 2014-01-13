@@ -51,6 +51,32 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 <table width="80%" class="entries">
   <tbody>
     <tr>
+	  <td class="head">2014</td>
+	</tr>
+
+<tr><td class="entry">
+2014-01-11:
+<a href="entries/Sturm_Sequences.shtml">Sturm's Theorem</a>
+<br>Author:
+<a href="http://in.tum.de/~eberlm">Manuel Eberl</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-01-11:
+<a href="entries/CryptoBasedCompositionalProperties.shtml">Compositional Properties of Crypto-Based Components</a>
+<br>Author:
+<a href="maria.spichkova@rmit.edu.au">Maria Spichkova</a>
+</td></tr>
+
+
+
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<table width="80%" class="entries">
+  <tbody>
+    <tr>
 	  <td class="head">2013</td>
 	</tr>
 
@@ -93,7 +119,7 @@ Maria Spichkova
 2013-11-12:
 <a href="entries/GoedelGod.shtml">Gödel's God in Isabelle/HOL</a>
 <br>Author:
-<a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmpller</a> and 
+<a href="http://page.mi.fu-berlin.de/cbenzmueller/">Christoph Benzmüller</a> and 
 <a href="http://www.logic.at/staff/bruno/">Bruno Woltzenlogel Paleo</a>
 </td></tr>
 

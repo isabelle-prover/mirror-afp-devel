@@ -25,6 +25,7 @@ Compiling-Exceptions-Correctly
 Completeness
 Containers
 CoreC++
+CryptoBasedCompositionalProperties
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
@@ -134,6 +135,7 @@ Sort_Encodings
 Sqrt_Babylonian
 Statecharts
 Stream-Fusion
+Sturm_Sequences
 Stuttering_Equivalence
 SumSquares
 TLA

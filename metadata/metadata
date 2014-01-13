@@ -1319,6 +1319,20 @@ extra-history =
   Change history:
   [2013-10-16]: Added algorithms to compute floor and ceiling of sqrt of integers.
 
+[Sturm_Sequences]
+title = Sturm's Theorem
+author = Manuel Eberl <http://in.tum.de/~eberlm>
+date = 2014-01-11
+topic = Mathematics/Analysis
+abstract = Sturm's Theorem states that polynomial sequences with certain
+  properties, so-called Sturm sequences, can be used to count the number
+  of real roots of a real polynomial. This work contains a proof of
+  Sturm's Theorem and code for constructing Sturm sequences efficiently.
+  It also provides the “sturm” proof method, which can decide certain
+  statements about the roots of real polynomials, such as “the polynomial
+  P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
+  &#8712; &#8477;”.
+
 [Markov_Models]
 title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -1629,7 +1643,7 @@ abstract = This set of theories presents an Isabelle/HOL formalisation of stream
 
 [GoedelGod]
 title = Gödel's God in Isabelle/HOL
-author = Christoph Benzmpller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
+author = Christoph Benzmüller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
 date = 2013-11-12
 topic = Logic
 abstract = Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
@@ -1642,4 +1656,11 @@ title = A General Method for the Proof of Theorems on Tail-recursive Functions
 author = Pasquale Noce <mailto:pasquale.noce@arjowiggins-it.com>
 date = 2013-12-01
 topic = Computer Science/Functional Programming
-abstract = Tail-recursive function definitions are sometimes more straightforward than alternatives, but proving theorems on them may be roundabout because of the peculiar form of the resulting recursion induction rules. This paper describes a proof method that provides a general solution to this problem by means of suitable invariants over inductive sets, and illustrates the application of such method by examining two case studies.               
+abstract = Tail-recursive function definitions are sometimes more straightforward than alternatives, but proving theorems on them may be roundabout because of the peculiar form of the resulting recursion induction rules. This paper describes a proof method that provides a general solution to this problem by means of suitable invariants over inductive sets, and illustrates the application of such method by examining two case studies.
+
+[CryptoBasedCompositionalProperties]
+title = Compositional Properties of Crypto-Based Components
+author = Maria Spichkova <maria.spichkova@rmit.edu.au>
+date = 2014-01-11
+topic = Computer Science/Security
+abstract = This paper presents an Isabelle/HOL set of theories which allows the specification of crypto-based components and the verification of their composition properties wrt. cryptographic aspects. We introduce a formalisation of the security property of data secrecy, the corresponding definitions and proofs. Please note that here we import the Isabelle/HOL theory ListExtras.thy, presented in the AFP entry FocusStreamsCaseStudies-AFP.

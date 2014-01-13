@@ -40,7 +40,7 @@ and
         <td class="data" width="80%">Stream Processing Components: Isabelle/HOL Formalisation and Case Studies</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="https://sites.google.com/site/mspichkova">Maria Spichkova</a></td></tr>
+        <td class="data">Maria Spichkova</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2013-11-14</td></tr>
@@ -114,7 +114,10 @@ memory and processing components (Automotive-Gateway System).
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-18.tar.gz">afp-<!--#echo var="name" -->-2013-11-18.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
