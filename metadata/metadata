@@ -1623,7 +1623,7 @@ abstract = This theory contains a formalization of decreasing diagrams showing t
 
 [FocusStreamsCaseStudies]
 title = Stream Processing Components: Isabelle/HOL Formalisation and Case Studies
-author = Maria Spichkova
+author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
 date = 2013-11-14
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
@@ -1655,7 +1655,7 @@ abstract = Tail-recursive function definitions are sometimes more straightforwar
 
 [CryptoBasedCompositionalProperties]
 title = Compositional Properties of Crypto-Based Components
-author = Maria Spichkova <maria.spichkova@rmit.edu.au>
+author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
 date = 2014-01-11
 topic = Computer Science/Security
 abstract = This paper presents an Isabelle/HOL set of theories which allows the specification of crypto-based components and the verification of their composition properties wrt. cryptographic aspects. We introduce a formalisation of the security property of data secrecy, the corresponding definitions and proofs. Please note that here we import the Isabelle/HOL theory ListExtras.thy, presented in the AFP entry FocusStreamsCaseStudies-AFP.
