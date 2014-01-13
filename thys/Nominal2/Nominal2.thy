@@ -1,4 +1,4 @@
-theory Nominal2
+etheory Nominal2
 imports 
   Nominal2_Base Nominal2_Abs Nominal2_FCB
 keywords
@@ -446,7 +446,9 @@ let
         addsimps @{thms prod_fv_supp prod_alpha_eq Abs_eq_iff[symmetric]}))
 
   (* filters the theorems that are of the form "qfv = supp" *)
-  fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ lhs $ _)) = member (op=) qfvs lhs
+  val qfv_names = map (fst o dest_Const) qfvs
+  fun is_qfv_thm (@{term Trueprop} $ (Const (@{const_name HOL.eq}, _) $ Const (lhs, _) $ _)) = 
+    member (op=) qfv_names lhs
   | is_qfv_thm _ = false
 
   val qsupp_constrs = qfv_defs
