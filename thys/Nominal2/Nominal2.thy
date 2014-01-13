@@ -1,4 +1,4 @@
-etheory Nominal2
+theory Nominal2
 imports 
   Nominal2_Base Nominal2_Abs Nominal2_FCB
 keywords
