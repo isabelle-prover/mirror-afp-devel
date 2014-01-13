@@ -1,12 +1,14 @@
-session "MySession" = "HOL" +
+chapter AFP
+
+session "FocusStreamsCaseStudies" (AFP) = "HOL" +
   options [document = pdf]
   theories
-   ArithExtras 
-   ListExtras 
-   arith_hints 
+   ArithExtras
+   ListExtras
+   arith_hints
    BitBoolTS
-   stream 
-   JoinSplitTime   
+   stream
+   JoinSplitTime
    SteamBoiler
    SteamBoiler_proof
    FR_types
@@ -14,7 +16,7 @@ session "MySession" = "HOL" +
    FR_proof
    Gateway_types
    Gateway
-   Gateway_proof 
+   Gateway_proof
  files "document/intro.tex"
    "document/macros.tex"
    "document/root.tex"
