@@ -248,21 +248,21 @@ lemma correctCompositionKeys_subcomp1:
 assumes "correctCompositionKeys C"
         and "x \<in> subcomponents C" 
         and "xb \<in> specKeys C"
-shows     "\<exists> x \<in> subcomponents C. (xb \<in> specKeys x)"
+shows "\<exists> x \<in> subcomponents C. (xb \<in> specKeys x)"
 using assms by (simp add: correctCompositionKeys_def, auto)
 
 lemma correctCompositionSecrets_subcomp1:
 assumes "correctCompositionSecrets C" 
         and "x \<in> subcomponents C"
         and "s \<in> specSecrets C"
-shows     "\<exists> x \<in> subcomponents C. (s \<in> specSecrets x)"
+shows  "\<exists> x \<in> subcomponents C. (s \<in> specSecrets x)"
 using assms by (simp add: correctCompositionSecrets_def, auto)
 
 lemma correctCompositionKeys_subcomp2:
 assumes "correctCompositionKeys C"
        and "xb \<in> subcomponents C"
        and "xc \<in> specKeys xb"
-shows    "xc \<in> specKeys C"
+shows "xc \<in> specKeys C"
 using assms by (simp add: correctCompositionKeys_def, auto)
 
 lemma correctCompositionSecrets_subcomp2:
@@ -320,13 +320,13 @@ next
 qed 
 
 lemma correctCompositionKS_subcomp1:
-assumes h1:"correctCompositionKS C"
-       and h2:"x \<in> subcomponents C"
-       and h3:"xa \<in> specKeys C"
+assumes "correctCompositionKS C"
+       and h1:"x \<in> subcomponents C"
+       and "xa \<in> specKeys C"
 shows    "\<exists> y \<in> subcomponents C. (xa \<in> specKeys y)"
 proof (cases "subcomponents C = {}")
   assume "subcomponents C = {}"
-  from this and h2 show ?thesis by simp 
+  from this and h1 show ?thesis by simp 
 next
   assume "subcomponents C \<noteq> {}"
   from this and assms show ?thesis 
@@ -334,13 +334,13 @@ next
 qed
 
 lemma correctCompositionKS_subcomp2:
-assumes h1:"correctCompositionKS C"
-        and h2:"x \<in> subcomponents C"
-        and h3:"xa \<in> specSecrets C"
+assumes "correctCompositionKS C"
+        and h1:"x \<in> subcomponents C"
+        and "xa \<in> specSecrets C"
 shows    "\<exists> y \<in> subcomponents C. xa \<in> specSecrets y"
 proof (cases "subcomponents C = {}")
   assume "subcomponents C = {}"
-  from this and h2 show ?thesis by simp 
+  from this and h1 show ?thesis by simp 
 next
   assume "subcomponents C \<noteq> {}"
   from this and assms show ?thesis 
@@ -427,7 +427,8 @@ assumes "ine PQ E"
        and "subcomponents PQ = {P,Q}"
        and "correctCompositionIn PQ"
 shows "ine P E  \<or> ine Q E"
-using assms by (simp add: ine_def correctCompositionIn_def, auto)
+using assms 
+by (simp add: ine_def correctCompositionIn_def, auto)
 
 theorem TBtheorem1b:
 assumes "ineM PQ M E"
@@ -474,32 +475,32 @@ using assms by (simp add: ine_def correctCompositionIn_def, auto )
 
 theorem TBlemma3b:
 assumes h1:"\<not> (ineM P M E)"
-    and h2:"\<not> (ineM Q M E)"
-    and h3:"subcomponents PQ = {P,Q}"
-    and h4:"correctCompositionIn PQ"
-    and h5:"ch \<in> M" 
-    and h6:"ch \<in> ins PQ"
-    and h7:"exprChannel ch E"
-  shows "False"
+       and h2:"\<not> (ineM Q M E)"
+       and subPQ:"subcomponents PQ = {P,Q}"
+       and cCompI:"correctCompositionIn PQ"
+       and chM:"ch \<in> M" 
+       and chPQ:"ch \<in> ins PQ"
+       and eCh:"exprChannel ch E"
+shows "False"
 proof (cases "ch \<in> ins P")
   assume a1:"ch \<in> ins P"
-  from a1 and h5 and h7 have "ineM P M E" by (simp add: ineM_L1)
+  from a1 and chM and eCh have "ineM P M E" by (simp add: ineM_L1)
   from this and h1 show ?thesis by simp
 next
   assume a2:"ch \<notin> ins P" 
-  from h3 and h4 and h6 have "(ch \<in> ins P) \<or> (ch \<in> ins Q)"
+  from subPQ and cCompI and chPQ have "(ch \<in> ins P) \<or> (ch \<in> ins Q)"
     by (simp add: correctCompositionIn_L2)
   from this and a2 have "ch \<in> ins Q" by simp 
-  from this and h5 and h7 have "ineM Q M E" by (simp add: ineM_L1)
+  from this and chM and eCh have "ineM Q M E" by (simp add: ineM_L1)
   from this and h2 show ?thesis by simp
 qed
 
 theorem TBtheorem3b:
-assumes h1:"\<not> (ineM P M E)"
-    and h2:"\<not> (ineM Q M E)"
-    and h3:"subcomponents PQ = {P,Q}"
-    and h4:"correctCompositionIn PQ"
-  shows    "\<not> (ineM PQ M E)"
+assumes "\<not> (ineM P M E)"
+       and "\<not> (ineM Q M E)"
+       and "subcomponents PQ = {P,Q}"
+       and "correctCompositionIn PQ"
+shows    "\<not> (ineM PQ M E)"
 using assms by (metis TBtheorem1b)    
 
 theorem TBtheorem4a_empty:

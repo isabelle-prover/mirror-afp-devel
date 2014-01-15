@@ -109,21 +109,14 @@ using assms by (metis eoutKnowsECorrect_def)
 lemma know2knows_k: 
 assumes "know A (kKS m)"
 shows    "knows A [kE m]" 
-proof - 
-  from assms have sg1:"KS2Expression (kKS m) = kE m" by simp 
-  from assms have sg2: "knows A [KS2Expression (kKS m)]"      
-     by (simp only: know1k)
-  from sg2 and sg1 show ?thesis  by simp
-qed
+using assms
+by (metis KS2Expression.simps(1) know1k)
 
 lemma knows2know_k: 
 assumes "knows A [kE m]" 
 shows    "know A (kKS m)"
 using assms
-proof - 
-  from assms have "kE m = KS2Expression (kKS m)" by simp 
-  from assms  and this show ?thesis  by (simp only: know1k)
-qed
+by (metis KS2Expression.simps(1) know1k)
 
 lemma know2knowsPQ_k: 
 assumes "know P (kKS m) \<or> know Q (kKS m)"
@@ -239,22 +232,18 @@ shows     "\<not> eout A (sE m)"
 using assms by (metis eout_know_nonKS_s)
 
 lemma adv_not_know1:
-assumes h1:"out P \<subseteq> ins A"
-        and h2:"\<not> know A (kKS m)" 
+assumes "out P \<subseteq> ins A"
+        and "\<not> know A (kKS m)" 
 shows    "\<not> eout P (kE m)" 
-proof - 
-  from h2 have "\<not> ine A (kE m)" by (simp add: not_know_k_not_ine)
-  from this and h1 show ?thesis by (simp add: ine_def eout_def, auto)
-qed
+using assms
+by (metis (full_types) eout_def ine_ins_neg1 not_know_k_not_ine set_rev_mp)
 
 lemma  adv_not_know2:
-assumes h1:"out P \<subseteq> ins A"
-       and h2:"\<not> know A (sKS m)"
+assumes "out P \<subseteq> ins A"
+       and "\<not> know A (sKS m)"
 shows    "\<not> eout P (sE m)"
-proof -
-  from h2 have "\<not> ine A (sE m)" by (simp add: not_know_s_not_ine)
-  from this and h1 show ?thesis by (simp add: ine_def eout_def, auto)
-qed
+using assms
+by (metis (full_types) eout_def ine_ins_neg1 not_know_s_not_ine set_rev_mp)
 
 lemma LocalSecrets_L1:
 assumes "(kKS) key \<in> LocalSecrets P"  
@@ -269,12 +258,12 @@ shows    "kKS key \<in> \<Union>(LocalSecrets ` subcomponents P)"
 using assms by (simp only: LocalSecretsDef, auto)
 
 lemma know_composition1:
-assumes h1:"m \<notin> specKeysSecrets P"
-       and h2:"m \<notin> specKeysSecrets Q"
-       and h3:"know P m"
-       and h4:"subcomponents PQ = {P,Q}" 
-       and h5:"correctCompositionIn PQ"
-       and h6:"correctCompositionKS PQ"
+assumes notKSP:"m \<notin> specKeysSecrets P"
+       and notKSQ:"m \<notin> specKeysSecrets Q"
+       and "know P m"
+       and subPQ:"subcomponents PQ = {P,Q}" 
+       and cCompI:"correctCompositionIn PQ"
+       and cCompKS:"correctCompositionKS PQ"
 shows    "know PQ m"
 proof (cases m)
   fix key
@@ -283,13 +272,14 @@ proof (cases m)
   proof (cases  "ine P (kE key)") 
      assume a11:"ine P (kE key)" 
      from this have a11ext:"ine P (kE key) | ine Q (kE key)" by simp
-     from h4 and h6 and h1 and h2 have "m \<notin> specKeysSecrets PQ" 
+     from subPQ and cCompKS and notKSP and notKSQ 
+       have "m \<notin> specKeysSecrets PQ" 
        by (rule correctCompositionKS_neg1) 
      from this and a1 have sg1:"kKS key \<notin> specKeysSecrets PQ" by simp
-     from a1 and a11ext and h6  show ?thesis
+     from a1 and a11ext and cCompKS  show ?thesis
      proof (cases "loc PQ = {}")
        assume a11locE:"loc PQ = {}"
-       from a11ext and h4 and h5 and a11locE have "ine PQ (kE key)" 
+       from a11ext and subPQ and cCompI and a11locE have "ine PQ (kE key)" 
          by (rule TBtheorem4a_empty) 
        from this and a1 show ?thesis by auto
      next 
@@ -310,13 +300,13 @@ proof (cases m)
   proof (cases  "ine P (sE secret)") 
      assume a21:"ine P (sE secret)" 
      from this have a21ext:"ine P (sE secret) | ine Q (sE secret)" by simp
-     from h4 and h6 and h1 and h2 have "m \<notin> specKeysSecrets PQ" 
+     from subPQ and cCompKS and notKSP and notKSQ have "m \<notin> specKeysSecrets PQ" 
        by (rule correctCompositionKS_neg1) 
      from this and a2 have sg2:"sKS secret \<notin> specKeysSecrets PQ" by simp
-     from a2 and a21ext and h6  show ?thesis
+     from a2 and a21ext and cCompKS  show ?thesis
      proof (cases "loc PQ = {}")
        assume a21locE:"loc PQ = {}"
-       from a21ext and h4 and h5 and a21locE have "ine PQ (sE secret)" 
+       from a21ext and subPQ and cCompI and a21locE have "ine PQ (sE secret)" 
          by (rule TBtheorem4a_empty) 
        from this and a2 show ?thesis by auto
      next 
@@ -328,7 +318,7 @@ proof (cases m)
    next
      assume a12:"\<not> ine P (sE secret)"
      from this and a2 and assms show ?thesis
-       by (auto, simp add:  LocalSecretsComposition1)
+     by (metis LocalSecretsComposition1 know.simps(2))
    qed
 qed
 
@@ -369,54 +359,49 @@ shows    "\<not> (ine PQ (sE secret))"
 using assms by (metis TBtheorem3a not_know_s_not_ine)
 
 lemma know_composition_neg1:
-assumes h1:"m \<notin> specKeysSecrets P"
-       and h2:"m \<notin> specKeysSecrets Q"
-       and h3:"\<not> know P m"
-       and h4:"\<not> know Q m"
-       and h5:"subcomponents PQ = {P,Q}"
-       and h6:"correctCompositionLoc PQ"
-       and h7:"correctCompositionIn PQ"
-      and h8:"correctCompositionKS PQ"
+assumes notknowP:"\<not> know P m"
+       and notknowQ:"\<not> know Q m"
+       and subPQ:"subcomponents PQ = {P,Q}"
+       and cCompLoc:"correctCompositionLoc PQ"
+       and cCompI:"correctCompositionIn PQ"
 shows    "\<not> know PQ m"
 proof (cases m)
   fix key
   assume a1:"m = kKS key"
-  from h3 and a1 have sg1:"\<not> know P (kKS key)" by simp
+  from notknowP and a1 have sg1:"\<not> know P (kKS key)" by simp
   then have sg1a:"\<not> ine P (kE key)" by simp
   from sg1 have sg1b:"kKS key \<notin> LocalSecrets P" by simp
-  from h4 and a1 have sg2:"\<not> know Q (kKS key)" by simp
+  from notknowQ and a1 have sg2:"\<not> know Q (kKS key)" by simp
   then  have sg2a:"\<not> ine Q (kE key)" by simp
   from sg2 have sg2b:"kKS key \<notin> LocalSecrets Q" by simp
-  from sg1 and sg2 and h5 and h7 have sg3:"\<not> ine PQ (kE key)"
+  from sg1 and sg2 and subPQ and cCompI have sg3:"\<not> ine PQ (kE key)"
     by (rule know_composition_neg_ine_k)
-  from h5 and h6 and sg1a and sg2a and sg1b and sg2b have sg4:
+  from subPQ and cCompLoc and sg1a and sg2a and sg1b and sg2b have sg4:
   "kKS key \<notin> LocalSecrets PQ" 
     by (rule LocalSecretsComposition_neg1_k)
   from sg3 and sg4 and a1 show ?thesis by simp
 next 
   fix secret
   assume a2:"m = sKS secret"
-  from h3 and a2 have sg1:"\<not> know P (sKS secret)" by simp
+  from notknowP and a2 have sg1:"\<not> know P (sKS secret)" by simp
   then have sg1a:"\<not> ine P (sE secret)" by simp
   from sg1 have sg1b:"sKS secret \<notin> LocalSecrets P" by simp
-  from h4 and a2 have sg2:"\<not> know Q (sKS secret)" by simp
+  from notknowQ and a2 have sg2:"\<not> know Q (sKS secret)" by simp
   then have sg2a:"\<not> ine Q (sE secret)" by simp
   from sg2 have sg2b:"sKS secret \<notin> LocalSecrets Q" by simp
-  from sg1 and sg2 and h5 and h7 have sg3:"\<not> ine PQ (sE secret)"
+  from sg1 and sg2 and subPQ and cCompI have sg3:"\<not> ine PQ (sE secret)"
     by (rule know_composition_neg_ine_s) 
-  from h5 and h6 and sg1a and sg2a and sg1b and sg2b have sg4:
+  from subPQ and cCompLoc and sg1a and sg2a and sg1b and sg2b have sg4:
   "sKS secret \<notin> LocalSecrets PQ"  
     by (rule LocalSecretsComposition_neg1_s)
   from sg3 and sg4 and a2 show ?thesis by simp
 qed
 
 lemma know_decomposition:
-assumes h1:"m \<notin> specKeysSecrets P" 
-       and h2:"m \<notin> specKeysSecrets Q"
-       and h3:"know PQ m"
-       and h4:"subcomponents PQ = {P,Q}" 
-       and h5:"correctCompositionIn PQ"
-       and h6:"correctCompositionLoc PQ"
+assumes knowPQ:"know PQ m"
+       and subPQ:"subcomponents PQ = {P,Q}" 
+       and cCompI:"correctCompositionIn PQ"
+       and cCompLoc:"correctCompositionLoc PQ"
 shows "know P m \<or> know Q m"
 proof (cases m)
   fix key
@@ -424,13 +409,13 @@ proof (cases m)
   from this show ?thesis
   proof (cases "ine PQ (kE key)")
     assume a11:"ine PQ (kE key)"
-    from this and h4 and h5 and a1 have 
+    from this and subPQ and cCompI and a1 have 
      "ine P (kE key)  \<or> ine Q (kE key)"
       by (simp add: TBtheorem1a)
     from this and a1 show ?thesis by auto
   next
     assume a12:"\<not> ine PQ (kE key)"
-    from this and h3 and a1 have sg2:"kKS key \<in> LocalSecrets PQ" by auto
+    from this and knowPQ and a1 have sg2:"kKS key \<in> LocalSecrets PQ" by auto
     show ?thesis 
     proof (cases "know Q m")
       assume "know Q m"
@@ -445,7 +430,7 @@ proof (cases m)
         from this and a1 show ?thesis by simp
       next
         assume "kKS key \<notin> LocalSecrets P"
-        from sg2 and h4 and h6 and sg3a and this and sg3b have "ine P (kE key)"
+        from sg2 and subPQ and cCompLoc and sg3a and this and sg3b have "ine P (kE key)"
           by (simp add: LocalSecretsComposition_ine1_k)
         from this and a1 show ?thesis by simp
       qed
@@ -457,13 +442,13 @@ next
   from this show ?thesis
   proof (cases "ine PQ (sE secret)")
     assume a21:"ine PQ (sE secret)"
-    from this and h4 and h5 and a2 have
+    from this and subPQ and cCompI and a2 have
      "ine P (sE secret)  \<or> ine Q (sE secret)"
       by (simp add: TBtheorem1a)
     from this and a2 show ?thesis by auto
   next
     assume a22:"\<not> ine PQ (sE secret)"
-    from this and h3 and a2 have sg5:
+    from this and knowPQ and a2 have sg5:
      "sKS secret \<in> LocalSecrets PQ" by auto
     show ?thesis 
     proof (cases "know Q m")
@@ -479,7 +464,7 @@ next
         from this and a2 show ?thesis by simp
       next
         assume "sKS secret \<notin> LocalSecrets P"
-        from sg5 and h4 and h6 and sg6a and this and sg6b have 
+        from sg5 and subPQ and cCompLoc and sg6a and this and sg6b have 
          "ine P (sE secret)"
           by (simp add: LocalSecretsComposition_ine1_s)
         from this and a2 show ?thesis by simp
@@ -489,28 +474,20 @@ next
 qed
 
 lemma eout_knows_nonKS_k:
- assumes h1:"m \<notin> (specKeys A)"
-         and h2:"eout A (kE m)"
-         and h3:"eoutKnowsECorrect A (kE m)"
+ assumes "m \<notin> (specKeys A)"
+         and "eout A (kE m)"
+         and "eoutKnowsECorrect A (kE m)"
    shows "knows A [kE m]"
-proof -
-  from h3 and h2 have 
-  "(\<exists> k. (kE m) = (kE k) \<and> (k \<in> specKeys A)) \<or> (knows A [kE m])"
-    by (simp only: eoutKnowsECorrect_def, auto) 
-  from this and h1 show ?thesis by simp
-qed
+using assms
+by (metis Expression.distinct(1) Expression.inject(1) eoutKnowsECorrect_L1)
 
 lemma eout_knows_nonKS_s:
  assumes h1:"m \<notin> specSecrets A"
          and h2:"eout A (sE m)"
          and h3:"eoutKnowsECorrect A (sE m)"
    shows "knows A [sE m]"
-proof -
-  from h3 and h2 have 
-  "(\<exists> s. (sE m) = (sE s) \<and> (s \<in> specSecrets A)) \<or> (knows A [sE m])"
-     by (simp only: eoutKnowsECorrect_def, auto) 
-  from this and h1 show ?thesis by simp
-qed
+using assms
+by (metis Expression.distinct(1) Expression.inject(2) eoutKnowsECorrect_def)
 
 lemma not_knows_k_not_ine:
 assumes "\<not> knows A [kE m]"
@@ -687,14 +664,14 @@ using assms by (metis knows_concat_2)
 
 lemma knows_composition3:
  fixes e::"Expression list"
- assumes h1:"knows P e"
-     and h2:"subcomponents PQ = {P,Q}"
-     and h3:"correctCompositionIn PQ"
-     and h4:"correctCompositionKS PQ"
-     and h5:"\<forall> (m::Expression). ((m mem e) \<longrightarrow> 
-        ((\<exists> z1. m = (kE z1)) \<or> (\<exists> z2. m = (sE z2))))"
-     and h6:"notSpecKeysSecretsExpr P e"
-     and h7:"notSpecKeysSecretsExpr Q e" 
+ assumes "knows P e"
+     and subPQ:"subcomponents PQ = {P,Q}"
+     and cCompI:"correctCompositionIn PQ"
+     and cCompKS:"correctCompositionKS PQ"
+     and "\<forall> (m::Expression). ((m mem e) \<longrightarrow> 
+            ((\<exists> z1. m = (kE z1)) \<or> (\<exists> z2. m = (sE z2))))"
+     and "notSpecKeysSecretsExpr P e"
+     and "notSpecKeysSecretsExpr Q e" 
  shows "knows PQ e"
 using assms
 proof (induct e)
@@ -717,7 +694,7 @@ next
     from a1 and Cons have sg5:"(kKS z) \<notin> specKeysSecrets Q" 
       by (simp add: notSpecKeysSecretsExpr_def)
     from sg1 and a1 have sg6:"knows P [kE z]" by simp
-    from sg4 and sg5 and sg6 and h2 and h3 and h4  
+    from sg4 and sg5 and sg6 and subPQ and cCompI and cCompKS  
       have "knows PQ [kE z]" 
       by (rule knows_composition1_k)
     from this and sg2a and a1 show ?case by (simp add: knows_concat_3)
@@ -730,7 +707,7 @@ next
     from a2 and Cons have sg9:"(sKS z) \<notin> specKeysSecrets Q"
       by (simp add: notSpecKeysSecretsExpr_def)
     from sg1 and a2 have sg10:"knows P [sE z]" by simp 
-    from sg8 and sg9 and sg10 and h2 and h3 and h4  
+    from sg8 and sg9 and sg10 and subPQ and cCompI and cCompKS  
       have "knows PQ [sE z]" 
       by (rule knows_composition1_s)
     from this and sg2a and a2 show ?case by (simp add: knows_concat_3)
@@ -738,13 +715,13 @@ next
 qed 
  
 lemma knows_composition4:
- assumes h1:"knows Q e"
-     and h2:"subcomponents PQ = {P,Q}" 
-     and h3:"correctCompositionIn PQ"
-     and h4:"correctCompositionKS PQ"
-     and h5:"\<forall> m. m mem e \<longrightarrow> ((\<exists> z. m = kE z) \<or> (\<exists> z. m = sE z))"
-     and h6:"notSpecKeysSecretsExpr P e"
-     and h7:"notSpecKeysSecretsExpr Q e" 
+ assumes "knows Q e"
+     and subPQ:"subcomponents PQ = {P,Q}" 
+     and cCompI:"correctCompositionIn PQ"
+     and cCompKS:"correctCompositionKS PQ"
+     and "\<forall> m. m mem e \<longrightarrow> ((\<exists> z. m = kE z) \<or> (\<exists> z. m = sE z))"
+     and "notSpecKeysSecretsExpr P e"
+     and "notSpecKeysSecretsExpr Q e" 
  shows "knows PQ e"
 using assms
 proof (induct e)
@@ -767,7 +744,7 @@ next
     from a1 and Cons have sg5:"(kKS z) \<notin> specKeysSecrets Q"
       by (simp add: notSpecKeysSecretsExpr_def)
     from sg1 and a1 have sg6:"knows Q [kE z]" by simp
-    from sg4 and sg5 and sg6 and h2 and h3 and h4  
+    from sg4 and sg5 and sg6 and subPQ and cCompI and cCompKS 
       have "knows PQ [kE z]" 
       by (rule knows_composition2_k)
     from this and sg2a and a1 show ?case by (simp add: knows_concat_3)
@@ -780,7 +757,7 @@ next
     from a2 and Cons have sg9:"(sKS z) \<notin> specKeysSecrets Q"
       by (simp add: notSpecKeysSecretsExpr_def)
     from sg1 and a2 have sg10:"knows Q [sE z]" by simp 
-    from sg8 and sg9 and sg10 and h2 and h3 and h4  
+    from sg8 and sg9 and sg10 and subPQ and cCompI and cCompKS  
       have "knows PQ [sE z]" 
       by (rule knows_composition2_s)
     from this and sg2a and a2 show ?case by (simp add: knows_concat_3)
@@ -796,6 +773,7 @@ assumes "knows P e \<or> knows Q e"
        and "notSpecKeysSecretsExpr P e"
        and "notSpecKeysSecretsExpr Q e" 
 shows "knows PQ e"
-using assms by (metis knows_composition3 knows_composition4)
+using assms 
+by (metis knows_composition3 knows_composition4)
 
 end 
