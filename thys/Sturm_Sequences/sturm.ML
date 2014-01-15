@@ -173,11 +173,11 @@ struct
       end
 
     fun sturm_tac ctxt keep_goal i =
-        prune_params_tac
-        THEN TRY (Object_Logic.full_atomize_tac i)
+        prune_params_tac ctxt
+        THEN TRY (Object_Logic.full_atomize_tac ctxt i)
         THEN TRY (EqSubst.eqsubst_tac ctxt [1] @{thms sturm_imp_conv} i)
         THEN TRY (convert_meta_spec_tac ctxt i)
-        THEN TRY (Object_Logic.full_atomize_tac i)
+        THEN TRY (Object_Logic.full_atomize_tac ctxt i)
         THEN sturm_preprocess_tac ctxt i
         THEN sturm_main_tac ctxt keep_goal i
 

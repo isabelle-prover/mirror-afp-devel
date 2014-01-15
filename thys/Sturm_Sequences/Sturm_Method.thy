@@ -233,7 +233,7 @@ lemma poly_no_roots_less_leq:
   "(\<forall>x. a < x \<and> x \<le> b \<longrightarrow> poly p x \<noteq> 0) \<longleftrightarrow>
    ((a \<ge> b \<or> (p \<noteq> 0 \<and> count_roots_between p a b = 0)))"
   by (auto simp: count_roots_between_correct card_eq_0_iff not_le 
-           intro: poly_roots_finite)
+           dest: poly_roots_finite)
 
 lemma poly_pos_between_less_leq:
   "(\<forall>x. a < x \<and> x \<le> b \<longrightarrow> poly p x > 0) \<longleftrightarrow>
@@ -250,7 +250,7 @@ apply (force simp add: count_roots_between_correct card_eq_0_iff)
 apply (elim conjE disjE, simp, intro allI)
 apply (rename_tac x, case_tac "x = a")
 apply (auto simp add: count_roots_between_correct card_eq_0_iff
-            intro: poly_roots_finite)
+            dest: poly_roots_finite)
 done
 
 lemma poly_pos_between_leq_leq:
@@ -289,7 +289,7 @@ next
         by (subst poly_card_roots_less_less, auto simp: count_roots_between_def)
     thus ?case using goal2
         by (cases "p = 0", simp, subst (asm) card_eq_0_iff, 
-            auto intro: poly_roots_finite)
+            auto dest: poly_roots_finite)
 qed
 
 lemma poly_pos_between_less_less:

@@ -428,12 +428,12 @@ proof
   def l \<equiv> "Min ?roots' - 1"
   def u \<equiv> "Max ?roots' + 1"
 
-  from `finite ?roots` have A: "finite ?roots'" "?roots' \<noteq> {}" by auto
-  from min_max.Inf_le_Sup[OF A] 
-      show "l \<le> u" unfolding l_def u_def by simp
-  from Min_le[OF A(1)] have l_props: "\<And>x. x\<le>l \<Longrightarrow> poly p x \<noteq> 0"
+  from `finite ?roots` have A: "finite ?roots'"  by auto
+  from Min_le[OF this, of 0] and Max_ge[OF this, of 0]
+      show "l \<le>  u" by (simp add: l_def u_def)
+  from Min_le[OF A] have l_props: "\<And>x. x\<le>l \<Longrightarrow> poly p x \<noteq> 0"
       by (fastforce simp: l_def)
-  from Max_ge[OF A(1)] have u_props: "\<And>x. x\<ge>u \<Longrightarrow> poly p x \<noteq> 0"
+  from Max_ge[OF A] have u_props: "\<And>x. x\<ge>u \<Longrightarrow> poly p x \<noteq> 0"
       by (fastforce simp: u_def)
   from l_props u_props show [simp]: "poly p l \<noteq> 0" "poly p u \<noteq> 0" by auto
 
