@@ -12,23 +12,23 @@ text_raw {*
 ~\\
 An component $A$ knows a secret $m$ (or some secret expression $m$)  that does not belong to its local sectrets , if
 \begin{itemize}
-	\item %
-	$A$  may eventually get the secret $m$,
-	\item 
-	$m$ belongs to the set $LS_A$ of its local secrets, 
-	\item %
-	$A$ knows some list of expressions $m_2$ which is an concatenations of $m$ and some list of expressions $m_1$,
-	\item %
-	$m$ is a concatenation of some lists of secrets $m_1$ and $m_2$, and $A$ knows both these secrets,
-	\item %
-	$A$ knows some secret key $k^{-1}$ and the result of the encryption of the $m$ with the corresponding public key,
-	\item %
-	$A$ knows some public key $k$ and the result of the signature creation of the $m$ with the corresponding private key,%
-	\item %
-	$m$ is an encryption of some secret $m_1$ with a public key $k$, and $A$ knows both $m_1$ and $k$,
-	\item %
-	$m$ is the result of the signature creation of the $m_1$ with the key $k$, and $A$ knows both $m_1$ and $k$.
-	%($m = Sign(k, m_1)  \wedge \knows{A}{m_1} \wedge \knows{A}{k}$).
+  \item %
+  $A$  may eventually get the secret $m$,
+  \item 
+  $m$ belongs to the set $LS_A$ of its local secrets, 
+  \item %
+  $A$ knows some list of expressions $m_2$ which is an concatenations of $m$ and some list of expressions $m_1$,
+  \item %
+  $m$ is a concatenation of some lists of secrets $m_1$ and $m_2$, and $A$ knows both these secrets,
+  \item %
+  $A$ knows some secret key $k^{-1}$ and the result of the encryption of the $m$ with the corresponding public key,
+  \item %
+  $A$ knows some public key $k$ and the result of the signature creation of the $m$ with the corresponding private key,%
+  \item %
+  $m$ is an encryption of some secret $m_1$ with a public key $k$, and $A$ knows both $m_1$ and $k$,
+  \item %
+  $m$ is the result of the signature creation of the $m_1$ with the key $k$, and $A$ knows both $m_1$ and $k$.
+  %($m = Sign(k, m_1)  \wedge \knows{A}{m_1} \wedge \knows{A}{k}$).
 \end{itemize}
 *}
 
