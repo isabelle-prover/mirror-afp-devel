@@ -10,7 +10,6 @@ theory JoinSplitTime
 imports stream arith_hints
 begin
 
-
 subsection  {* Join time units *}
 
 primrec
@@ -20,7 +19,6 @@ join_ti_0:
  "join_ti s x 0 = s x" |
 join_ti_Suc:
  "join_ti s x (Suc i) = (join_ti s x i) @ (s (x + (Suc i)))"
-
 
 primrec
   fin_join_ti ::"'a fstream \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list"
@@ -38,12 +36,10 @@ where
         0  \<Rightarrow> []
   |(Suc i) \<Rightarrow>  join_ti s (n*t) i)"
 
-
 lemma join_ti_hint1:
   assumes "join_ti s x (Suc i) = []"
   shows   "join_ti s x i = []"
 using assms by auto
-
 
 lemma join_ti_hint2:
   assumes "join_ti s x (Suc i) = []"
@@ -54,26 +50,17 @@ lemma join_ti_hint3:
   assumes "join_ti s x (Suc i) = []"
   shows   "s (x + i) = []"
 using assms by (induct i, auto)
- 
 
 lemma join_ti_empty_join:
-  assumes h1:"i \<le> n"
-      and h2:"join_ti s x n = []"
+  assumes "i \<le> n"
+         and "join_ti s x n = []"
   shows      "s (x+i) = []"
 using assms 
 proof (induct n)
-  case 0 
-  from this show ?case by auto
+  case 0 then show ?case by auto
 next 
-  case (Suc n)
-  from this show ?case 
-  proof (cases "i = Suc n")
-    assume a1:"i = Suc n"  
-    from a1 and Suc show ?thesis by simp
-  next 
-    assume a2:"i \<noteq> Suc n"
-    from a2 and Suc show ?thesis by simp
-  qed
+  case (Suc n) then show ?case
+  by (metis join_ti_hint1 join_ti_hint2 le_SucE) 
 qed
   
 lemma join_ti_empty_ti:
@@ -81,12 +68,10 @@ lemma join_ti_empty_ti:
   shows    "join_ti s x n = []"
 using assms by (induct n, auto)
  
-
 lemma join_ti_1nempty:
   assumes "\<forall> i. 0 < i \<and> i < Suc n \<longrightarrow> s (x+i) = []" 
-  shows   "join_ti s x n = s x"
+  shows    "join_ti s x n = s x"
 using assms by (induct n, auto)
- 
 
 lemma join_time1t: "\<forall> t. join_time s (1::nat) t = s t"
 by (simp add: join_time_def)
@@ -95,72 +80,63 @@ by (simp add: join_time_def)
 lemma join_time1: "join_time s 1 = s"
 by (simp add: fun_eq_iff join_time_def)
 
-
 lemma join_time_empty1:
   assumes h1:"i < n"
-      and h2:"join_time s n t = []"
+         and h2:"join_time s n t = []"
   shows      "s (n*t + i) = []"
 proof (cases n) 
-  assume a1:"n = 0"
-  from assms and a1 show ?thesis by (simp add: join_time_def)
+  assume "n = 0"
+  from assms and this show ?thesis by (simp add: join_time_def)
 next
   fix x
   assume a2:"n = Suc x"
   from assms and a2 have sg1:"join_ti s (t + x * t) x = []"    
     by (simp add: join_time_def)
-  from a2 and h1 have sg2:"i \<le> x" by simp
-  from sg2 and sg1 and a2 show ?thesis by (simp add: join_ti_empty_join)
+  from a2 and h1 have "i \<le> x" by simp
+  from this and sg1 and a2 show ?thesis by (simp add: join_ti_empty_join)
 qed
-
 
 lemma fin_join_ti_hint1:
   assumes "fin_join_ti s x (Suc i) = []"
   shows   "fin_join_ti s x i = []"
 using assms by auto
 
-
 lemma fin_join_ti_hint2:
   assumes "fin_join_ti s x (Suc i) = []"
   shows    "nth s (x + (Suc i)) = []"
 using assms by auto
  
-
 lemma fin_join_ti_hint3:
   assumes "fin_join_ti s x (Suc i) = []"
-  shows   "nth s (x + i) = []"
+  shows    "nth s (x + i) = []"
 using assms by (induct i, auto)
 
-
 lemma fin_join_ti_empty_join:
-  assumes h1:"i \<le> n"
-      and h2:"fin_join_ti s x n = []"
+  assumes "i \<le> n"
+         and "fin_join_ti s x n = []"
   shows      "nth s (x+i) = []"
 using assms
 proof (induct n)
-  case 0
-  from this show ?case by auto
+  case 0 then show ?case by auto
 next
-  case (Suc n)
-  from this show ?case
+  case (Suc n) then show ?case
   proof (cases "i = Suc n")
-    assume a1:"i = Suc n"
-    from Suc and a1 show ?thesis by simp
+    assume "i = Suc n"
+    from Suc and this show ?thesis by simp
   next
-    assume a2:"i \<noteq> Suc n"
-    from Suc and a2 show ?thesis by simp
+    assume "i \<noteq> Suc n"
+    from Suc and this show ?thesis by simp
   qed
 qed
 
-  
 lemma fin_join_ti_empty_ti:
   assumes "\<forall> i \<le> n. nth s (x+i) = []"
-  shows   "fin_join_ti s x n = []"
+  shows    "fin_join_ti s x n = []"
 using assms by (induct n, auto)
-
 
 lemma fin_join_ti_1nempty:
   assumes "\<forall> i. 0 < i \<and> i < Suc n \<longrightarrow> nth s (x+i) = []" 
-  shows "fin_join_ti s x n = nth s x"
+  shows    "fin_join_ti s x n = nth s x"
 using assms  by (induct n, auto)
 
 
@@ -182,20 +158,20 @@ by (simp add: fun_eq_iff split_time_def)
 
 lemma split_time_mod: 
   assumes "t mod n \<noteq> 0"
-  shows   "split_time s n t = []"
+  shows    "split_time s n t = []"
 using assms by (simp add: split_time_def)
 
 lemma split_time_nempty: 
   assumes "0 < n"
-  shows   "split_time s n (n * t) = s t"
+  shows    "split_time s n (n * t) = s t"
 using assms by (simp add: split_time_def)
 
 lemma split_time_nempty_Suc:
   assumes "0 < n"
   shows   "split_time s (Suc n) ((Suc n) * t) = split_time s n (n * t)"
 proof - 
-  have sg0:"0 < Suc n" by simp
-  from sg0 have sg1:"split_time s (Suc n) ((Suc n) * t) =  s t"
+  have "0 < Suc n" by simp
+  then have sg1:"split_time s (Suc n) ((Suc n) * t) =  s t"
     by (rule split_time_nempty)
   from assms have sg2:"split_time s n (n * t) = s t"  
     by (rule split_time_nempty)
@@ -203,19 +179,20 @@ proof -
 qed
 
 lemma split_time_empty:
-  assumes h1:"i < n" and h2:"0 < i"
-  shows "split_time s n (n * t + i) = []"
-proof - 
-  from assms have sg1:"0 < (n * t + i) mod n" by (simp add: arith_mod_nzero)
-  from assms and sg1 show ?thesis by (simp add: split_time_def)
+  assumes "i < n" and h2:"0 < i"
+  shows    "split_time s n (n * t + i) = []" 
+proof -
+  from assms have "0 < (n * t + i) mod n" by (simp add: arith_mod_nzero)
+  from assms and this show ?thesis by (simp add: split_time_def)
 qed
 
 lemma split_time_empty_Suc:
-  assumes h1:"i < n" and h2:"0 < i"
+  assumes h1:"i < n" 
+         and h2:"0 < i"
   shows "split_time s (Suc n) ((Suc n)* t + i)  = split_time s n (n * t + i)"
 proof - 
-  from h1 have sg1:"i < Suc n" by simp
-  from sg1 and h2 have sg2:"split_time s (Suc n) (Suc n * t + i) = []"
+  from h1 have "i < Suc n" by simp
+  from this and h2 have sg2:"split_time s (Suc n) (Suc n * t + i) = []"
     by (rule split_time_empty)
   from assms have sg3:"split_time s n (n * t + i) = []"
     by (rule split_time_empty)
@@ -241,13 +218,13 @@ lemma join_split_i:
   assumes "0 < n"
   shows   "join_time (split_time s n) n i = s i"
 proof (cases n)
-  assume a1:"n = 0"
+  assume "n = 0"
   from this and assms show ?thesis by simp
 next
   fix k
   assume a2:"n = Suc k"
   have sg0:"0 < Suc k" by simp
-  from sg0 have sg1:"(split_time s (Suc k)) (Suc k * i) = s i"
+  then have sg1:"(split_time s (Suc k)) (Suc k * i) = s i"
     by (rule split_time_nempty)
   have sg2:"i + k * i = (Suc k) * i" by simp
   have sg3:"\<forall> j. 0 < j \<and> j < Suc k \<longrightarrow> split_time s (Suc k) (Suc k * i + j) = []"
@@ -257,7 +234,6 @@ next
     by (rule join_ti_1nempty)
   from a2 and sg4 and sg1 show ?thesis by (simp add: join_time_def)
 qed
-
 
 lemma join_split:
   assumes "0 < n"

@@ -417,7 +417,6 @@ where
            then fst_remdups xs
            else (x#xs)))"
 
- 
 -- "time interval operator"
 definition
   ti :: "'a fstream \<Rightarrow> nat \<Rightarrow> 'a list"
@@ -443,7 +442,6 @@ where
    \<forall> (t::nat) i j. (i:IdSet) \<and> (j:IdSet) \<and>  
    ((nS i) t) \<noteq> []  \<longrightarrow> ((nS j) t) = []"  
 
-    
 -- "insuring that all channels in a sheaf are disjunct"
 -- "indices in the sheaf are represented using natural numbers"
 definition              
@@ -478,16 +476,14 @@ where
 -- "auxiliary lemmas "
 lemma length_inf_drop_hint1: 
   assumes "s k \<noteq> []"
-  shows "length (inf_drop k s 0) \<noteq> 0"
+  shows    "length (inf_drop k s 0) \<noteq> 0"
 using assms
 by (auto simp: inf_drop_def)
-
 
 lemma length_inf_drop_hint2:
 "(s 0 \<noteq> [] \<longrightarrow> length (inf_drop 0 s 0) < Suc i 
   \<longrightarrow> Suc i - length (inf_drop 0 s 0) < Suc i)"
   by (simp add: inf_drop_def list_length_hint1)
-
 
 -- "taking the prefix of n data elements from an infinite timed stream"
 -- "(defined over natural numbers)"
@@ -514,7 +510,6 @@ where
          else [take (Suc i) (s 0)] 
          )
      )"
-
 
 -- "taking the prefix of n data elements from an infinite untimed stream"
 -- "(defined over natural numbers)"
@@ -607,25 +602,25 @@ where
 
 subsection {* Properties of operators *}
 
-
 lemma inf_last_ti_nonempty_k:
   assumes "inf_last_ti dt t \<noteq> []"
-  shows "inf_last_ti dt (t + k) \<noteq> []"
-using assms  by (induct k, auto)
-
+  shows    "inf_last_ti dt (t + k) \<noteq> []"
+using assms  
+by (induct k, auto)
 
 lemma inf_last_ti_nonempty:
   assumes "s t \<noteq> []"
-  shows "inf_last_ti s (t + k) \<noteq> []"
-using assms  by (induct k, auto, induct t, auto)
+  shows    "inf_last_ti s (t + k) \<noteq> []"
+using assms  
+by (induct k, auto, induct t, auto)
 
 lemma arith_sum_t2k:
 "t + 2 + k = (Suc t) + (Suc k)" 
 by arith 
 
 lemma inf_last_ti_Suc2:
-  assumes h1:"dt (Suc t) \<noteq> [] \<or> dt (Suc (Suc t)) \<noteq> []"
-  shows      "inf_last_ti dt (t + 2 + k) \<noteq> []"
+  assumes "dt (Suc t) \<noteq> [] \<or> dt (Suc (Suc t)) \<noteq> []"
+  shows    "inf_last_ti dt (t + 2 + k) \<noteq> []"
 proof (cases "dt (Suc t) \<noteq> []")
   assume a1:"dt (Suc t) \<noteq> []"
   from a1 have sg2:"inf_last_ti dt ((Suc t) + (Suc k)) \<noteq> []" 
@@ -633,7 +628,7 @@ proof (cases "dt (Suc t) \<noteq> []")
   from sg2 show ?thesis by (simp add: arith_sum_t2k) 
 next
   assume a2:"\<not> dt (Suc t) \<noteq> []"
-  from a2 and h1 have sg1:"dt (Suc (Suc t)) \<noteq> []" by simp
+  from a2 and assms have sg1:"dt (Suc (Suc t)) \<noteq> []" by simp
   from sg1 have sg2:"inf_last_ti dt (Suc (Suc t) + k) \<noteq> []" 
     by (rule inf_last_ti_nonempty)
   from sg2 show ?thesis by auto
@@ -643,34 +638,34 @@ qed
 subsubsection {* Lemmas for concatenation operator *}
 
 lemma fin_length_append:
-"fin_length (x@y) = (fin_length x) + (fin_length y)"
-  by (induct x, auto)
+  "fin_length (x@y) = (fin_length x) + (fin_length y)"
+by (induct x, auto)
 
-lemma fin_append_Nil:
-"fin_inf_append [] z = z"
-  by (simp add: fin_inf_append_def)
+lemma fin_append_Nil:  "fin_inf_append [] z = z"
+by (simp add: fin_inf_append_def)
 
 lemma correct_fin_inf_append1:
   assumes "s1 = fin_inf_append [x] s"
-  shows "s1 (Suc i) = s i"
-using assms  by (simp add: fin_inf_append_def)
+  shows    "s1 (Suc i) = s i"
+using assms  
+by (simp add: fin_inf_append_def)
 
 lemma correct_fin_inf_append2:
-"fin_inf_append [x] s (Suc i) = s i"
-  by (simp add: fin_inf_append_def)
+  "fin_inf_append [x] s (Suc i) = s i"
+by (simp add: fin_inf_append_def)
 
 lemma fin_append_com_Nil1:
-"fin_inf_append [] (fin_inf_append y z) 
- = fin_inf_append ([] @ y) z"
-  by (simp add: fin_append_Nil)
+  "fin_inf_append [] (fin_inf_append y z) 
+   = fin_inf_append ([] @ y) z"
+by (simp add: fin_append_Nil)
 
 lemma fin_append_com_Nil2:
-"fin_inf_append x (fin_inf_append [] z) = fin_inf_append (x @ []) z"
-  by (simp add: fin_append_Nil)
-
+  "fin_inf_append x (fin_inf_append [] z) 
+  = fin_inf_append (x @ []) z"
+by (simp add: fin_append_Nil)
 
 lemma fin_append_com_i:
-"fin_inf_append x (fin_inf_append y z) i = fin_inf_append (x @ y) z i "
+  "fin_inf_append x (fin_inf_append y z) i = fin_inf_append (x @ y) z i "
 proof (cases x)
   assume Nil:"x = []"
   thus ?thesis by (simp add: fin_append_com_Nil1)
@@ -689,102 +684,80 @@ next
 qed
 
 
-
 subsubsection {* Lemmas for operators $ts$ and $msg$ *}
 
 lemma ts_msg1:
   assumes "ts p"
-  shows "msg 1 p"
-using assms by (simp add: ts_def msg_def)
-
+  shows    "msg 1 p"
+using assms 
+by (simp add: ts_def msg_def)
 
 lemma ts_inf_tl:
   assumes "ts x"
-  shows "ts (inf_tl x)"
-using assms  by (simp add: ts_def inf_tl_def)
+  shows    "ts (inf_tl x)"
+using assms  
+by (simp add: ts_def inf_tl_def)
 
 lemma ts_length_hint1:
- assumes h1:"ts x"
-  shows "x i \<noteq> []"
+ assumes "ts x"
+ shows    "x i \<noteq> []"
 proof - 
-  from h1 have sg1:"length (x i) = Suc 0"  by (simp add: ts_def)
+  from assms have sg1:"length (x i) = Suc 0"  by (simp add: ts_def)
   thus ?thesis by auto
 qed
 
 lemma ts_length_hint2:
- assumes h1:"ts x"
-  shows "length (x i) = Suc (0::nat)"
+ assumes "ts x"
+ shows    "length (x i) = Suc (0::nat)"
 using assms
-  by (simp add: ts_def)
+by (simp add: ts_def)
 
 lemma ts_Least_0:
-  assumes h1:"ts x"
-  shows "(LEAST i. (x i) \<noteq> [] ) = (0::nat)"
-using assms
+  assumes "ts x"
+  shows    "(LEAST i. (x i) \<noteq> [] ) = (0::nat)"
 proof - 
-  from h1 have sg1:"x 0 \<noteq> []" by (rule ts_length_hint1)
-  thus ?thesis
+  from assms have sg1:"x 0 \<noteq> []" by (rule ts_length_hint1)
+  thus ?thesis 
   apply (simp add: Least_def)
   by auto
 qed
 
-
-lemma inf_tl_Suc:
-"inf_tl x i = x (Suc i)"
-  by (simp add: inf_tl_def) 
-
+lemma inf_tl_Suc: "inf_tl x i = x (Suc i)"
+by (simp add: inf_tl_def) 
 
 lemma ts_Least_Suc0:
-  assumes h1:"ts x"
-  shows "(LEAST i. x (Suc i) \<noteq> []) = 0"
+  assumes "ts x"
+  shows    "(LEAST i. x (Suc i) \<noteq> []) = 0"
 proof -
-  from h1 have sg1:"x (Suc 0) \<noteq> []" by (simp add: ts_length_hint1)
+  from assms have "x (Suc 0) \<noteq> []" by (simp add: ts_length_hint1)
   thus ?thesis by (simp add: Least_def, auto)
 qed
 
-
 lemma ts_inf_make_untimed_inf_tl:
-  assumes h1:"ts x"
-  shows "inf_make_untimed (inf_tl x) i = inf_make_untimed x (Suc i)"
+  assumes "ts x"
+  shows     "inf_make_untimed (inf_tl x) i = inf_make_untimed x (Suc i)"
 using assms
-  apply (simp add: inf_make_untimed_def) 
-  proof (induct i)
-    case 0
-    from h1 show ?case
-      by (simp add: ts_length_hint1 ts_length_hint2)
-  next
-    case (Suc i)
-    from h1 show ?case
-      by (simp add: ts_length_hint1 ts_length_hint2)
- qed
-
+apply (simp add: inf_make_untimed_def)
+by (metis Suc_less_eq gr_implies_not0 ts_length_hint1 ts_length_hint2) 
 
 lemma ts_inf_make_untimed1_inf_tl:
-  assumes h1:"ts x"
-  shows "inf_make_untimed1 (inf_tl x) i = inf_make_untimed1 x (Suc i)"
+  assumes "ts x"
+  shows    "inf_make_untimed1 (inf_tl x) i = inf_make_untimed1 x (Suc i)"
 using assms
-  proof (induct i)
-    case 0
-    from h1 show ?case
-      by (simp add: ts_length_hint1 ts_length_hint2)
-  next
-    case (Suc i)
-    from h1 show ?case
-      by (simp add: ts_length_hint1 ts_length_hint2)
- qed
-
+by (metis inf_make_untimed_def ts_inf_make_untimed_inf_tl)
 
 lemma msg_nonempty1:
-  assumes h1:"msg (Suc 0) a" and h2:"a t = aa # l"
+  assumes h1:"msg (Suc 0) a" 
+         and h2:"a t = aa # l"
   shows "l = []"
 proof - 
-  from h1 have sg1:"length (a t) \<le> Suc 0" by (simp add: msg_def)
-  from h2 and sg1 show ?thesis by auto
+  from h1 have "length (a t) \<le> Suc 0" by (simp add: msg_def)
+  from h2 and this show ?thesis by auto
 qed
 
-
 lemma msg_nonempty2:
-  assumes h1:"msg (Suc 0) a" and h2:"a t  \<noteq> []"
+  assumes h1:"msg (Suc 0) a" 
+         and h2:"a t  \<noteq> []"
   shows "length (a t) = (Suc 0)"
 proof - 
   from h1 have sg1:"length (a t) \<le> Suc 0" by (simp add: msg_def)
@@ -796,20 +769,20 @@ qed
 subsubsection {* Lemmas for $inf\_truncate$ *}
 
 lemma inf_truncate_nonempty:
-  assumes h1:"z i \<noteq> []"
-  shows "inf_truncate z i \<noteq> []"
+  assumes "z i \<noteq> []"
+  shows    "inf_truncate z i \<noteq> []"
 proof (induct i)
     case 0
-    from h1 show ?case by auto
+    from assms  show ?case by auto
   next
     case (Suc i)
-     from h1 show ?case by auto
+     from assms show ?case by auto
 qed
 
 
 lemma concat_inf_truncate_nonempty:
-  assumes h1: "z i \<noteq> []"
-  shows "concat (inf_truncate z i) \<noteq> []"
+  assumes  "z i \<noteq> []"
+  shows      "concat (inf_truncate z i) \<noteq> []"
 using assms
 proof (induct i)
     case 0
@@ -819,56 +792,35 @@ proof (induct i)
     thus ?case by auto
 qed
   
-
 lemma concat_inf_truncate_nonempty_a:
-  assumes h1:"z i = [a]" 
-  shows "concat (inf_truncate z i) \<noteq> []"
+  assumes "z i = [a]" 
+  shows    "concat (inf_truncate z i) \<noteq> []"
 using assms
-proof (induct i)
-    case 0
-    thus ?case by auto
-  next
-    case (Suc i)
-    thus ?case by auto
-qed
-  
+by (metis concat_inf_truncate_nonempty list.distinct(1))
 
 lemma concat_inf_truncate_nonempty_el:
-  assumes h1:"z i \<noteq> []" 
-  shows "concat (inf_truncate z i) \<noteq> []"
+  assumes "z i \<noteq> []" 
+  shows    "concat (inf_truncate z i) \<noteq> []"
 using assms
-proof (induct i)
-    case 0
-    thus ?case by auto
-  next
-    case (Suc i)
-    thus ?case by auto
-qed
-
+by (metis concat_inf_truncate_nonempty)
 
 lemma inf_truncate_append:
-"(inf_truncate z i @ [z (Suc i)]) = inf_truncate z (Suc i)"
-proof (induct i)
-    case 0
-    thus ?case by auto
-  next
-    case (Suc i)
-    thus ?case by auto
-qed
+  "(inf_truncate z i @ [z (Suc i)]) = inf_truncate z (Suc i)"
+using assms
+by (metis inf_truncate.simps(2))
 
 
 subsubsection {* Lemmas for $fin\_make\_untimed$ *} 
 
-
 lemma fin_make_untimed_append:
-  assumes h1:"fin_make_untimed x \<noteq> []"
-  shows "fin_make_untimed (x @ y) \<noteq> []"
+  assumes "fin_make_untimed x \<noteq> []"
+  shows    "fin_make_untimed (x @ y) \<noteq> []"
 using assms by (simp add: fin_make_untimed_def)
 
 
 lemma fin_make_untimed_inf_truncate_Nonempty:
-  assumes h1:"z k \<noteq> []"
-      and h2:"k \<le> i"
+  assumes "z k \<noteq> []"
+         and "k \<le> i"
   shows "fin_make_untimed (inf_truncate z i) \<noteq> []"
 using assms
   apply (simp add: fin_make_untimed_def)
@@ -884,85 +836,74 @@ using assms
         by auto
     next
       assume "\<not> k \<le> i"
-      from Suc and this have sg1:"k = Suc i" by arith
+      from Suc and this have "k = Suc i" by arith
       from Suc and this show "\<exists>xs\<in>set (inf_truncate z (Suc i)). xs \<noteq> []"
         by auto
      qed
 qed
 
-
 lemma last_fin_make_untimed_append:
-"last (fin_make_untimed (z @ [[a]])) = a"
-  by (simp add: fin_make_untimed_def)
-
+  "last (fin_make_untimed (z @ [[a]])) = a"
+by (simp add: fin_make_untimed_def)
 
 lemma last_fin_make_untimed_inf_truncate:
-  assumes h1:"z i = [a]"
-  shows "last (fin_make_untimed (inf_truncate z i)) = a"
+  assumes "z i = [a]"
+  shows    "last (fin_make_untimed (inf_truncate z i)) = a"
 using assms
 proof (induction i)
-  case 0
-    from this show ?case by (simp add: fin_make_untimed_def)
+   case 0  thus ?case by (simp add: fin_make_untimed_def)
 next
-    case (Suc i)
-    thus ?case 
-    by (simp add: fin_make_untimed_def)
+   case (Suc i)  thus ?case by (simp add: fin_make_untimed_def)
 qed
 
-
 lemma fin_make_untimed_append_empty:
-"fin_make_untimed (z @ [[]]) = fin_make_untimed z"
-  by (simp add: fin_make_untimed_def)
-
+  "fin_make_untimed (z @ [[]]) = fin_make_untimed z"
+by (simp add: fin_make_untimed_def)
 
 lemma fin_make_untimed_inf_truncate_append_a:
-"fin_make_untimed (inf_truncate z i @ [[a]]) ! 
+  "fin_make_untimed (inf_truncate z i @ [[a]]) ! 
   (length (fin_make_untimed (inf_truncate z i @ [[a]])) - Suc 0) = a"
-  by (simp add: fin_make_untimed_def)
-
+by (simp add: fin_make_untimed_def)
 
 lemma fin_make_untimed_inf_truncate_Nonempty_all:
-  assumes h1:"z k \<noteq> []" 
-  shows "\<forall> i. k \<le> i \<longrightarrow> fin_make_untimed (inf_truncate z i) \<noteq> []"
+  assumes "z k \<noteq> []" 
+  shows    "\<forall> i. k \<le> i \<longrightarrow> fin_make_untimed (inf_truncate z i) \<noteq> []"
 using assms by (simp add:  fin_make_untimed_inf_truncate_Nonempty)
 
-
 lemma fin_make_untimed_inf_truncate_Nonempty_all0:
-  assumes h1:"z 0 \<noteq> []"
-  shows "\<forall> i. fin_make_untimed (inf_truncate z i) \<noteq> []"
+  assumes "z 0 \<noteq> []"
+  shows    "\<forall> i. fin_make_untimed (inf_truncate z i) \<noteq> []"
 using assms by (simp add: fin_make_untimed_inf_truncate_Nonempty)
 
-
 lemma fin_make_untimed_inf_truncate_Nonempty_all0a:
-  assumes h1:"z 0 = [a]"
-  shows "\<forall> i. fin_make_untimed (inf_truncate z i) \<noteq> []"
+  assumes "z 0 = [a]"
+  shows    "\<forall> i. fin_make_untimed (inf_truncate z i) \<noteq> []"
 using assms by (simp add: fin_make_untimed_inf_truncate_Nonempty_all0)
 
-
 lemma fin_make_untimed_inf_truncate_Nonempty_all_app:
-  assumes h1:"z 0 = [a]" 
-  shows "\<forall> i. fin_make_untimed (inf_truncate z i @ [z (Suc i)]) \<noteq> []"
+  assumes "z 0 = [a]" 
+  shows    "\<forall> i. fin_make_untimed (inf_truncate z i @ [z (Suc i)]) \<noteq> []"
 proof 
   fix i
-  from h1 have sg1:"fin_make_untimed (inf_truncate z i) \<noteq> []"
+  from assms have "fin_make_untimed (inf_truncate z i) \<noteq> []"
     by (simp add: fin_make_untimed_inf_truncate_Nonempty_all0a)
-  from h1 and sg1 show "fin_make_untimed (inf_truncate z i @ [z (Suc i)]) \<noteq> []"
+  from assms and this show 
+    "fin_make_untimed (inf_truncate z i @ [z (Suc i)]) \<noteq> []"
     by (simp add: fin_make_untimed_append)
 qed
 
-
 lemma fin_make_untimed_nth_length:
-  assumes h1:"z i = [a]"
+  assumes "z i = [a]"
   shows 
   "fin_make_untimed (inf_truncate z i) ! 
      (length (fin_make_untimed (inf_truncate z i)) - Suc 0)
     = a"
 proof - 
-from h1 have sg1:"last (fin_make_untimed (inf_truncate z i)) = a"
+from assms have sg1:"last (fin_make_untimed (inf_truncate z i)) = a"
   by (simp add: last_fin_make_untimed_inf_truncate)
-from h1 have sg2:"concat (inf_truncate z i) \<noteq> []"
+from assms have sg2:"concat (inf_truncate z i) \<noteq> []"
   by (rule concat_inf_truncate_nonempty_a)
-from h1 and sg1 and sg2 show ?thesis 
+from assms and sg1 and sg2 show ?thesis 
   by (simp add: fin_make_untimed_def last_nth_length)
 qed
 
@@ -971,26 +912,24 @@ subsubsection {* Lemmas for $inf\_disj$ and $inf\_disjS$ *}
 
 lemma inf_disj_index:
   assumes h1:"inf_disj n nS"
-      and h2:"nS k t \<noteq> []"
-      and h3:"k < n"
-  shows "(SOME i. i < n \<and>  nS i t \<noteq> []) = k"
+         and "nS k t \<noteq> []"
+         and "k < n"
+  shows  "(SOME i. i < n \<and>  nS i t \<noteq> []) = k"
 proof - 
   from h1 have "\<forall> j. k < n \<and> j < n \<and> k \<noteq> j \<and> nS k t \<noteq> [] \<longrightarrow> nS j t = []"
     by (simp add: inf_disj_def, auto)
   from this and assms show ?thesis by auto
 qed
  
-
 lemma inf_disjS_index:
   assumes h1:"inf_disjS IdSet nS"
-      and h2:"k:IdSet"
-      and h3:"nS k t \<noteq> []"
+      and "k:IdSet"
+      and "nS k t \<noteq> []"
   shows "(SOME i. (i:IdSet) \<and> nSend i t \<noteq> []) = k"
 proof -
   from h1 have "\<forall> j. k \<in> IdSet \<and> j \<in> IdSet \<and> nS k t \<noteq> [] \<longrightarrow> nS j t = []"
     by (simp add: inf_disjS_def, auto)
   from this and assms show ?thesis by auto
 qed
-
 
 end

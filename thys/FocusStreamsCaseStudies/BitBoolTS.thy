@@ -22,7 +22,7 @@ where
 
 lemma ts_bit_stream_One:
   assumes h1:"ts x"
-      and h2:"x i \<noteq> [Zero]"
+         and h2:"x i \<noteq> [Zero]"
   shows "x i = [One]"
 proof -
   from h1 have sg1:"length (x i) = Suc 0" 
@@ -44,10 +44,9 @@ proof -
   qed
 qed
 
-
 lemma ts_bit_stream_Zero:
   assumes h1:"ts x"
-      and h2:"x i \<noteq> [One]"
+         and h2:"x i \<noteq> [One]"
   shows "x i = [Zero]"
 proof -
   from h1 have sg1:"length (x i) = Suc 0" 
@@ -69,10 +68,9 @@ proof -
   qed
 qed
 
-
 lemma ts_bool_True:
   assumes h1:"ts x"
-      and h2:"x i \<noteq> [False]"
+         and h2:"x i \<noteq> [False]"
   shows "x i = [True]"
 proof -
   from h1 have sg1:"length (x i) = Suc 0" 
@@ -83,15 +81,14 @@ proof -
     from this and sg1 show ?thesis by simp
   next
   fix a l assume Cons:"x i = a # l"
-    from this and sg1 have sg2:"x i = [a]" by simp
+    from this and sg1 have "x i = [a]" by simp
     from this and h2 show ?thesis by auto
   qed
 qed
 
-
 lemma ts_bool_False:
   assumes h1:"ts x"
-      and h2:"x i \<noteq> [True]"
+         and h2:"x i \<noteq> [True]"
   shows "x i = [False]"
 proof -
   from h1 have sg1:"length (x i) = Suc 0" 
@@ -102,22 +99,21 @@ proof -
     from this and sg1 show ?thesis by simp
   next
   fix a l assume Cons:"x i = a # l"
-    from this and sg1 have sg2:"x i = [a]" by simp
+    from this and sg1 have "x i = [a]" by simp
     from this and h2 show ?thesis by auto
   qed
 qed
 
-
 lemma ts_bool_True_False:
   fixes x::"bool istream"
-  assumes h1:"ts x" 
+  assumes "ts x" 
   shows "x i = [True] \<or> x i = [False]"
 proof (cases "x i = [True]")
   assume "x i = [True]"
-  from this and h1 show ?thesis by simp
+  from this and assms show ?thesis by simp
 next
   assume "x i \<noteq> [True]"
-  from this and h1 show ?thesis by (simp add: ts_bool_False)
+  from this and assms show ?thesis by (simp add: ts_bool_False)
 qed
 
 end 
