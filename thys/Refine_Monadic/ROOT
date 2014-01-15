@@ -11,6 +11,5 @@ session Refine_Monadic (AFP) = Automatic_Refinement +
     Refine_Monadic
     "examples/Examples"
   files
-    "document/railsetup.sty"
     "document/root.bib"
     "document/root.tex"
