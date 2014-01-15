@@ -91,8 +91,8 @@ proof -
     proof (cases "a \<in> atom ` S")
       assume "a \<in> atom ` S"
       then have "\<forall>b \<in> UNIV - S. (a \<rightleftharpoons> atom b) \<bullet> S \<noteq> S"
-	apply(clarify)
-	
+        apply(clarify)
+        
       show "a \<in> supp S"
   }
   then show "supp S = UNIV" by auto

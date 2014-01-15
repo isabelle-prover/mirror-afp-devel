@@ -1428,21 +1428,21 @@ proof
   proof -
     { assume "a \<notin> supp p" "a \<notin> supp q"
       then have "(p + q) \<bullet> a = (q + p) \<bullet> a" 
-	by (simp add: supp_perm)
+        by (simp add: supp_perm)
     }
     moreover
     { assume a: "a \<in> supp p" "a \<notin> supp q"
       then have "p \<bullet> a \<in> supp p" by (simp add: supp_perm)
       then have "p \<bullet> a \<notin> supp q" using asm by auto
       with a have "(p + q) \<bullet> a = (q + p) \<bullet> a" 
-	by (simp add: supp_perm)
+        by (simp add: supp_perm)
     }
     moreover
     { assume a: "a \<notin> supp p" "a \<in> supp q"
       then have "q \<bullet> a \<in> supp q" by (simp add: supp_perm)
       then have "q \<bullet> a \<notin> supp p" using asm by auto 
       with a have "(p + q) \<bullet> a = (q + p) \<bullet> a" 
-	by (simp add: supp_perm)
+        by (simp add: supp_perm)
     }
     ultimately show "(p + q) \<bullet> a = (q + p) \<bullet> a" 
       using asm by blast
@@ -2609,18 +2609,18 @@ next
       by (auto simp add: swap_atom)
     moreover 
     { have "{q \<bullet> a, p \<bullet> a} \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
-	using ** 
-	apply (auto simp add: supp_perm insert_eqvt)
-	apply (subgoal_tac "q \<bullet> a \<in> bs \<union> p \<bullet> bs")
-	apply(auto)[1]
-	apply(subgoal_tac "q \<bullet> a \<in> {a. q \<bullet> a \<noteq> a}")
-	apply(blast)
-	apply(simp)
-	done
+        using ** 
+        apply (auto simp add: supp_perm insert_eqvt)
+        apply (subgoal_tac "q \<bullet> a \<in> bs \<union> p \<bullet> bs")
+        apply(auto)[1]
+        apply(subgoal_tac "q \<bullet> a \<in> {a. q \<bullet> a \<noteq> a}")
+        apply(blast)
+        apply(simp)
+        done
       then have "supp (q \<bullet> a \<rightleftharpoons> p \<bullet> a) \<subseteq> insert a bs \<union> p \<bullet> insert a bs" by (simp add: supp_swap)
       moreover
       have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
-	using ** by (auto simp add: insert_eqvt)
+        using ** by (auto simp add: insert_eqvt)
       ultimately 
       have "supp q' \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
         unfolding q'_def using supp_plus_perm by blast
@@ -2677,18 +2677,18 @@ proof (induct bs)
       unfolding q'_def using 2 * `a \<notin> set bs` by (auto simp add: swap_atom)
     moreover 
     { have "{q \<bullet> a, p \<bullet> a} \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))"
-	using **
-	apply (auto simp add: supp_perm insert_eqvt)
-	apply (subgoal_tac "q \<bullet> a \<in> set bs \<union> p \<bullet> set bs")
-	apply(auto)[1]
-	apply(subgoal_tac "q \<bullet> a \<in> {a. q \<bullet> a \<noteq> a}")
-	apply(blast)
-	apply(simp)
-	done
+        using **
+        apply (auto simp add: supp_perm insert_eqvt)
+        apply (subgoal_tac "q \<bullet> a \<in> set bs \<union> p \<bullet> set bs")
+        apply(auto)[1]
+        apply(subgoal_tac "q \<bullet> a \<in> {a. q \<bullet> a \<noteq> a}")
+        apply(blast)
+        apply(simp)
+        done
       then have "supp (q \<bullet> a \<rightleftharpoons> p \<bullet> a) \<subseteq> set (a # bs) \<union> p \<bullet> set (a # bs)" by (simp add: supp_swap)
       moreover
       have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" 
-	using ** by (auto simp add: insert_eqvt)
+        using ** by (auto simp add: insert_eqvt)
       ultimately 
       have "supp q' \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" 
         unfolding q'_def using supp_plus_perm by blast

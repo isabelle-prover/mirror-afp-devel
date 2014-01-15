@@ -246,11 +246,11 @@ proof -
     next
       case AStore
       with xexec check_ins show ?thesis
-	by(auto simp add: split_beta split: split_if_asm intro: hext_heap_write)
+        by(auto simp add: split_beta split: split_if_asm intro: hext_heap_write)
     next
       case Putfield
       with xexec check_ins show ?thesis
-	by(auto intro: hext_heap_write simp add: split_beta split: split_if_asm)
+        by(auto intro: hext_heap_write simp add: split_beta split: split_if_asm)
     next
       case (Invoke M n)
       with xexec check_ins show ?thesis

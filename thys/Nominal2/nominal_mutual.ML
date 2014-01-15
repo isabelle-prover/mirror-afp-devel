@@ -224,7 +224,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
 
     val ([p], ctxt'') = ctxt'
       |> fold Variable.declare_term args  
-      |> Variable.variant_fixes ["p"] 		   
+      |> Variable.variant_fixes ["p"]
     val p = Free (p, @{typ perm})
 
     val simpset =

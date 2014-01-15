@@ -52,7 +52,7 @@ sig
   val supp_rel_ty: typ -> typ
   val supp_rel_const: typ -> term
   val mk_supp_rel_ty: typ -> term -> term -> term
-  val mk_supp_rel: term -> term -> term		       
+  val mk_supp_rel: term -> term -> term
 
   val supports_const: typ -> term
   val mk_supports_ty: typ -> term -> term -> term

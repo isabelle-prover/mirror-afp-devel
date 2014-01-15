@@ -570,7 +570,7 @@ fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt =
           eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN' rtac @{thm refl},
           asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ])
   end
-			  
+
 fun prove_trans_tac alpha_result raw_dt_thms alpha_eqvt ctxt =
   let
     val AlphaResult {alpha_names, alpha_bn_names, alpha_intros, alpha_cases, ...} = alpha_result
@@ -819,7 +819,7 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
     val perm_bn_ty = range_type o range_type o fastype_of
     val ty_assoc = (alpha_tys @ alpha_bn_tys) ~~ (alpha_trms @ alpha_bn_trms)
 
-    val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt		   
+    val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
     val p = Free (p, @{typ perm})
 
     fun mk_prop t =
