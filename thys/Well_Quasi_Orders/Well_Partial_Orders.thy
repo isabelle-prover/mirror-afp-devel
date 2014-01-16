@@ -374,4 +374,3 @@ proof
 qed
 
 end
-

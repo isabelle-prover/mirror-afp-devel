@@ -2,8 +2,7 @@
    Author:     Andreas Lochbihler, KIT *)
 
 theory Extend_Partial_Order
-imports
-  "~~/src/HOL/Library/Zorn"
+imports Main
 begin
 
 section {* Every partial order can be extended to a total order *}

@@ -1,7 +1,6 @@
 header {* \isaheader{Orderings By Comparison Operator} *}
 theory Intf_Comp
 imports 
-  "~~/src/HOL/Library/Zorn"
   "../../../Automatic_Refinement/Automatic_Refinement"
 begin
 
