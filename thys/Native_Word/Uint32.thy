@@ -585,8 +585,8 @@ by transfer(simp add: msb_nth)
 lemma msb_uint32_code [code]: "msb x \<longleftrightarrow> uint32_test_bit x 31"
 by(simp add: uint32_test_bit_def uint32_msb_test_bit)
 
-lemma uint32_of_int_code [code]: "uint32_of_int i = (BITS n. i !! n)"
-by transfer(simp add: word_of_int_conv_set_bits test_bit_int_def[abs_def])
+lemma uint32_of_int_code [code]: "uint32_of_int i = Uint32 (integer_of_int i)"
+by transfer simp
 
 section {* Tests *}
 

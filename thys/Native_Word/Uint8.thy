@@ -501,8 +501,8 @@ by transfer(simp add: msb_nth)
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
 by(simp add: uint8_test_bit_def uint8_msb_test_bit)
 
-lemma uint8_of_int_code [code]: "uint8_of_int i = (BITS n. i !! n)"
-by transfer(simp add: word_of_int_conv_set_bits test_bit_int_def[abs_def])
+lemma uint8_of_int_code [code]: "uint8_of_int i = Uint8 (integer_of_int i)"
+by transfer simp
 
 section {* Tests *}
 

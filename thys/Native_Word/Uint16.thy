@@ -467,8 +467,8 @@ by transfer(simp add: msb_nth)
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint16_test_bit x 15"
 by(simp add: uint16_test_bit_def uint16_msb_test_bit)
 
-lemma uint16_of_int_code [code]: "uint16_of_int i = (BITS n. i !! n)"
-by transfer(simp add: word_of_int_conv_set_bits test_bit_int_def[abs_def])
+lemma uint16_of_int_code [code]: "uint16_of_int i = Uint16 (integer_of_int i)"
+by transfer simp
 
 section {* Tests *}
 
