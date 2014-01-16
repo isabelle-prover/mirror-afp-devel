@@ -7,7 +7,7 @@
 header {* Recursive Definitions *}
 
 theory OrdinalRec
-imports OrdinalCont "~~/src/HOL/Library/Wfrec"
+imports OrdinalCont
 begin
 
 definition
