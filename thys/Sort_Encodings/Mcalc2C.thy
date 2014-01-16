@@ -56,7 +56,7 @@ by adding indistinguishable elements *}
 context ModelIkPolMcalc2C begin
 
 (* The projection from univ to a structure: *)
-definition "proj \<sigma> a \<equiv> if intT \<sigma> a then a else pickT \<sigma>"
+definition proj where "proj \<sigma> a \<equiv> if intT \<sigma> a then a else pickT \<sigma>"
 
 lemma intT_proj[simp]: "intT \<sigma> (proj \<sigma> a)"
 unfolding proj_def using pickT by auto
