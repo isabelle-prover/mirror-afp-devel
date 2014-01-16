@@ -44,7 +44,7 @@ for
         <td class="data" width="80%">Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="brucker@spamfence.net">Achim D. Brucker</a>, <a href="frederic.tuong@lri.fr">Frédéric Tuong</a> and <a href="wolff@lri.fr">Burkhart Wolff</a></td></tr>
+        <td class="data">Achim D. Brucker (brucker /at/ spamfence /dot/ net), Frédéric Tuong (frederic /dot/ tuong /at/ lri /dot/ fr) and Burkhart Wolff (wolff /at/ lri /dot/ fr)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2014-01-16</td></tr>

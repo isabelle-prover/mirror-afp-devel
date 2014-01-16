@@ -1588,7 +1588,7 @@ abstract = This entry makes machine words and machine arithmetic available for c
 
 [HereditarilyFinite]
 title = The Hereditarily Finite Sets
-author = Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 date = 2013-11-17
 topic = Logic
 abstract = The theory of hereditarily finite sets is formalised, following
@@ -1603,7 +1603,7 @@ abstract = The theory of hereditarily finite sets is formalised, following
 
 [Incompleteness]
 title = Gödel's Incompleteness Theorems
-author = Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 depends-on = HereditarilyFinite
 date = 2013-11-17
 topic = Logic
@@ -1662,7 +1662,7 @@ abstract = This paper presents an Isabelle/HOL set of theories which allows the 
 
 [Featherweight_OCL]
 title = Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5
-author =  Achim D. Brucker <brucker@spamfence.net>, Frédéric Tuong <frederic.tuong@lri.fr>, Burkhart Wolff <wolff@lri.fr>
+author =  Achim D. Brucker <mailto:brucker@spamfence.net>, Frédéric Tuong <mailto:frederic.tuong@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>
 date = 2014-01-16
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = The Unified Modeling Language (UML) is one of the few modeling
