@@ -1659,3 +1659,25 @@ author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
 date = 2014-01-11
 topic = Computer Science/Security
 abstract = This paper presents an Isabelle/HOL set of theories which allows the specification of crypto-based components and the verification of their composition properties wrt. cryptographic aspects. We introduce a formalisation of the security property of data secrecy, the corresponding definitions and proofs. Please note that here we import the Isabelle/HOL theory ListExtras.thy, presented in the AFP entry FocusStreamsCaseStudies-AFP.
+
+[Featherweight_OCL]
+title = Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5
+author =  Achim D. Brucker <brucker@spamfence.net>, Frédéric Tuong <frederic.tuong@lri.fr>, Burkhart Wolff <wolff@lri.fr>
+date = 2014-01-16
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = The Unified Modeling Language (UML) is one of the few modeling
+	 languages that is widely used in industry. While UML is mostly known
+	 as diagrammatic modeling language (e.g., visualizing class models),
+	 it is complemented by a textual language, called Object Constraint
+	 Language (OCL). OCL is based on a
+	 three-valued logic that turns UML into a formal language.
+	 Unfortunately the semantics of this specification language, captured
+	 in the "Annex A" of the OCL standard, leads to different
+	 interpretations of corner cases.  We formalize the core of OCL:
+	 denotational definitions, a logical calculus and
+	 operational rules that allow for the execution of OCL expressions by
+	 a mixture of term rewriting and code compilation.  Our formalization
+	 reveals several inconsistencies and contradictions in the current
+	 version of the OCL standard.  Overall, this document is
+	 intended to provide the basis for a machine-checked text "Annex A"
+	 of the OCL standard targeting at tool implementors.

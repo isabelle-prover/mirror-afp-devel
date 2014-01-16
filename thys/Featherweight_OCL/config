@@ -6,4 +6,4 @@ NOTIFY="brucker@spamfence.net wolff@lri.fr frederic.tuong@lri.fr"
 
 # Participate in frequent (nightly) build (only for small submissions)
 # values: "yes" "no"
-FREQUENT="no"
+FREQUENT="yes"
