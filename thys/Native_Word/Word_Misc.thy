@@ -39,6 +39,14 @@ lemma word_of_int_code [code abstract]:
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 
+context begin interpretation lifting_syntax .
+
+lemma shiftl_transfer [transfer_rule]:
+  "(pcr_word ===> op = ===> pcr_word) op << op <<"
+by(auto intro!: fun_relI word_eqI simp add: word.pcr_cr_eq cr_word_def word_size nth_shiftl)
+
+end
+
 lemma set_bits_K_False [simp]: "set_bits (\<lambda>_. False) = (0 :: 'a :: len0 word)"
 by(rule word_eqI)(simp add: test_bit.eq_norm)
 
@@ -50,6 +58,32 @@ by(simp add: Word.mask_def)
 
 lemma shiftl0 [simp]: "x << 0 = (x :: 'a :: len0 word)"
 by (metis shiftl_rev shiftr_x_0 word_rev_gal)
+
+lemma mask_1: "mask 1 = 1"
+by(simp add: mask_def)
+
+lemma mask_Suc_0: "mask (Suc 0) = 1"
+by(simp add: mask_def)
+
+lemma mask_numeral: "mask (numeral n) = 2 * mask (pred_numeral n) + 1"
+unfolding mask_def by transfer(simp, simp add: shiftl_int_def)
+
+lemma bin_last_bintrunc: "bin_last (bintrunc l n) = (l > 0 \<and> bin_last n)"
+by(cases l) simp_all
+
+lemma word_and_1:
+  fixes n :: "_ word"
+  shows "n AND 1 = (if n !! 0 then 1 else 0)"
+by transfer(rule bin_rl_eqI, simp_all add: bin_rest_trunc bin_last_bintrunc)
+
+lemma bintrunc_shiftl: "bintrunc n (m << i) = bintrunc (n - i) m << i"
+proof(induct i arbitrary: n)
+  case (Suc i)
+  thus ?case by(cases n) simp_all
+qed simp
+
+lemma uint_shiftl: "uint (n << i) = bintrunc (size n) (uint n << i)"
+unfolding word_size by transfer(simp add: bintrunc_shiftl)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
 
@@ -327,6 +361,27 @@ proof -
       by(rule word_eqI)(auto simp add: i'_def bin_nth_ops mask_def)
     ultimately show ?thesis using False by(simp add: Let_def i'_def)
   qed
+qed
+
+lemma word_and_mask_or_conv_and_mask:
+  "n !! index \<Longrightarrow> (n AND mask index) OR (1 << index) = n AND mask (index + 1)"
+by(rule word_eqI)(auto simp add: word_ao_nth word_size nth_shiftl simp del: shiftl_1)
+
+lemma uint_and_mask_or_full:
+  fixes n :: "'a :: len word"
+  assumes "n !! (len_of TYPE('a) - 1)"
+  and "mask1 = mask (len_of TYPE('a) - 1)"
+  and "mask2 = 1 << len_of TYPE('a) - 1"
+  shows "uint (n AND mask1) OR mask2 = uint n"
+proof -
+  have "mask2 = uint (1 << len_of TYPE('a) - 1 :: 'a word)" using assms
+    by(simp add: uint_shiftl word_size bintrunc_shiftl del: shiftl_1)(metis One_nat_def Suc_diff_Suc bintrunc_minus bintrunc_shiftl diff_self_eq_0 len_gt_0 len_num1 lessI uint_1 uint_word_arith_bintrs(9))
+  hence "uint (n AND mask1) OR mask2 = uint (n AND mask1 OR (1 << len_of TYPE('a) - 1 :: 'a word))"
+    by(simp add: uint_or)
+  also have "\<dots> = uint (n AND mask (len_of TYPE('a) - 1 + 1))"
+    using assms by(simp only: word_and_mask_or_conv_and_mask)
+  also have "\<dots> = uint n" by simp
+  finally show ?thesis .
 qed
 
 end

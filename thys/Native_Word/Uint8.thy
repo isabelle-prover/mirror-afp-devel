@@ -84,6 +84,15 @@ lift_definition sshiftr_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> uint8" (
 
 lift_definition uint8_of_int :: "int \<Rightarrow> uint8" is "word_of_int" .
 
+definition uint8_of_nat :: "nat \<Rightarrow> uint8"
+where "uint8_of_nat = uint8_of_int \<circ> int"
+
+lift_definition int_of_uint8 :: "uint8 \<Rightarrow> int" is "uint" .
+lift_definition nat_of_uint8 :: "uint8 \<Rightarrow> nat" is "unat" .
+
+definition integer_of_uint8 :: "uint8 \<Rightarrow> integer"
+where "integer_of_uint8 = integer_of_int o int_of_uint8"
+
 text {* Use pretty numerals from integer for pretty printing *}
 
 lift_definition Uint8 :: "integer \<Rightarrow> uint8" is "word_of_int" .
@@ -504,6 +513,38 @@ by(simp add: uint8_test_bit_def uint8_msb_test_bit)
 lemma uint8_of_int_code [code]: "uint8_of_int i = Uint8 (integer_of_int i)"
 by transfer simp
 
+lemma int_of_uint8_code [code]:
+  "int_of_uint8 x = int_of_integer (integer_of_uint8 x)"
+by(simp add: integer_of_uint8_def)
+
+lemma nat_of_uint8_code [code]:
+  "nat_of_uint8 x = nat_of_integer (integer_of_uint8 x)"
+unfolding integer_of_uint8_def by transfer (simp add: unat_def)
+
+definition integer_of_uint8_signed :: "uint8 \<Rightarrow> integer"
+where
+  "integer_of_uint8_signed n = (if n !! 7 then undefined integer_of_uint8 n else integer_of_uint8 n)"
+
+lemma integer_of_uint8_signed_code [code]:
+  "integer_of_uint8_signed n =
+  (if n !! 7 then undefined integer_of_uint8 n else integer_of_int (uint (Rep_uint8' n)))"
+unfolding integer_of_uint8_signed_def integer_of_uint8_def
+including undefined_transfer by transfer simp
+
+lemma integer_of_uint8_code [code]:
+  "integer_of_uint8 n =
+  (if n !! 7 then integer_of_uint8_signed (n AND 0x7F) OR 0x80 else integer_of_uint8_signed n)"
+unfolding integer_of_uint8_def integer_of_uint8_signed_def o_def
+including undefined_transfer
+by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
+
+code_printing
+  constant "integer_of_uint8" \<rightharpoonup>
+  (SML) "Word8.toInt _ : IntInf.int" and
+  (Haskell) "Prelude.toInteger"
+| constant "integer_of_uint8_signed" \<rightharpoonup>
+  (Scala) "BigInt"
+
 section {* Tests *}
 
 definition test_uint8 where
@@ -551,10 +592,13 @@ definition test_uint8 where
    , True, False, False, True
    , True, False, False
    , True, False, True, False
-   ]
-  )"
+   ]) \<and>
+  ([integer_of_uint8 0, integer_of_uint8 0x7F, integer_of_uint8 0x80, integer_of_uint8 0xAA]
+  =
+   [0, 0x7F, 0x80, 0xAA])"
 
 export_code test_uint8 checking SML Haskell? Scala
+
 notepad begin
 have test_uint8 by eval
 have test_uint8 by code_simp

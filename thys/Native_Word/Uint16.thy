@@ -93,6 +93,15 @@ lift_definition sshiftr_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> uint16
 
 lift_definition uint16_of_int :: "int \<Rightarrow> uint16" is "word_of_int" .
 
+definition uint16_of_nat :: "nat \<Rightarrow> uint16"
+where "uint16_of_nat = uint16_of_int \<circ> int"
+
+lift_definition int_of_uint16 :: "uint16 \<Rightarrow> int" is "uint" .
+lift_definition nat_of_uint16 :: "uint16 \<Rightarrow> nat" is "unat" .
+
+definition integer_of_uint16 :: "uint16 \<Rightarrow> integer"
+where "integer_of_uint16 = integer_of_int o int_of_uint16"
+
 text {* Use pretty numerals from integer for pretty printing *}
 
 lift_definition Uint16 :: "integer \<Rightarrow> uint16" is "word_of_int" .
@@ -470,6 +479,24 @@ by(simp add: uint16_test_bit_def uint16_msb_test_bit)
 lemma uint16_of_int_code [code]: "uint16_of_int i = Uint16 (integer_of_int i)"
 by transfer simp
 
+lemma int_of_uint16_code [code]:
+  "int_of_uint16 x = int_of_integer (integer_of_uint16 x)"
+by(simp add: integer_of_uint16_def)
+
+lemma nat_of_uint16_code [code]:
+  "nat_of_uint16 x = nat_of_integer (integer_of_uint16 x)"
+unfolding integer_of_uint16_def by transfer (simp add: unat_def)
+
+lemma integer_of_uint16_code [code]:
+  "integer_of_uint16 n = integer_of_int (uint (Rep_uint16' n))"
+unfolding integer_of_uint16_def by transfer auto
+
+code_printing
+  constant "integer_of_uint16" \<rightharpoonup>
+  (SML_word) "Word16.toInt _ : IntInf.int" and
+  (Haskell) "Prelude.toInteger" and
+  (Scala) "BigInt"
+
 section {* Tests *}
 
 definition test_uint16 where
@@ -517,8 +544,10 @@ definition test_uint16 where
    , True, False, False, True
    , True, False, False
    , True, False, True, False
-   ]
-  )"
+   ]) \<and>
+  ([integer_of_uint16 0, integer_of_uint16 0x7FFF, integer_of_uint16 0x8000, integer_of_uint16 0xAAAA]
+  =
+   [0, 0x7FFF, 0x8000, 0xAAAA])"
 
 export_code test_uint16 checking Haskell? Scala
 export_code test_uint16 in SML_word

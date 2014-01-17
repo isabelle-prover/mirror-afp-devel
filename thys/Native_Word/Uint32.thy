@@ -77,6 +77,15 @@ lift_definition sshiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32
 
 lift_definition uint32_of_int :: "int \<Rightarrow> uint32" is "word_of_int" .
 
+definition uint32_of_nat :: "nat \<Rightarrow> uint32"
+where "uint32_of_nat = uint32_of_int \<circ> int"
+
+lift_definition int_of_uint32 :: "uint32 \<Rightarrow> int" is "uint" .
+lift_definition nat_of_uint32 :: "uint32 \<Rightarrow> nat" is "unat" .
+
+definition integer_of_uint32 :: "uint32 \<Rightarrow> integer"
+where "integer_of_uint32 = integer_of_int o int_of_uint32"
+
 lemma bitval_integer_transfer [transfer_rule]:
   "(fun_rel op = pcr_integer) of_bool of_bool"
 by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
@@ -240,7 +249,6 @@ def test_bit(x: Int, n: BigInt) : Boolean =
 
 } /* object Uint32 */*}
 code_reserved Scala Uint32
-
 
 text {*
   OCaml's conversion from Big\_int to int32 demands that the value fits int a signed 32-bit integer.
@@ -588,6 +596,39 @@ by(simp add: uint32_test_bit_def uint32_msb_test_bit)
 lemma uint32_of_int_code [code]: "uint32_of_int i = Uint32 (integer_of_int i)"
 by transfer simp
 
+lemma int_of_uint32_code [code]:
+  "int_of_uint32 x = int_of_integer (integer_of_uint32 x)"
+by(simp add: integer_of_uint32_def)
+
+lemma nat_of_uint32_code [code]:
+  "nat_of_uint32 x = nat_of_integer (integer_of_uint32 x)"
+unfolding integer_of_uint32_def by transfer (simp add: unat_def)
+
+definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
+where
+  "integer_of_uint32_signed n = (if n !! 31 then undefined integer_of_uint32 n else integer_of_uint32 n)"
+
+lemma integer_of_uint32_signed_code [code]:
+  "integer_of_uint32_signed n =
+  (if n !! 31 then undefined integer_of_uint32 n else integer_of_int (uint (Rep_uint32' n)))"
+unfolding integer_of_uint32_signed_def integer_of_uint32_def
+including undefined_transfer by transfer simp
+
+lemma integer_of_uint32_code [code]:
+  "integer_of_uint32 n =
+  (if n !! 31 then integer_of_uint32_signed (n AND 0x7FFFFFFF) OR 0x80000000 else integer_of_uint32_signed n)"
+unfolding integer_of_uint32_def integer_of_uint32_signed_def o_def
+including undefined_transfer
+by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
+
+code_printing
+  constant "integer_of_uint32" \<rightharpoonup>
+  (SML) "Word32.toInt _ : IntInf.int" and
+  (Haskell) "Prelude.toInteger"
+| constant "integer_of_uint32_signed" \<rightharpoonup>
+  (OCaml) "Big'_int.big'_int'_of'_int32" and
+  (Scala) "BigInt"
+
 section {* Tests *}
 
 definition test_uint32 where
@@ -635,7 +676,10 @@ definition test_uint32 where
    , True, False, False, True
    , True, False, False
    , True, False, True, False
-   ])"
+   ]) \<and>
+  ([integer_of_uint32 0, integer_of_uint32 0x7FFFFFFF, integer_of_uint32 0x80000000, integer_of_uint32 0xAAAAAAAA]
+  =
+   [0, 0x7FFFFFFF, 0x80000000, 0xAAAAAAAA])"
 
 export_code test_uint32 checking SML Haskell? OCaml? Scala
 

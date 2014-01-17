@@ -534,6 +534,12 @@ by(induct n) simp_all
 lemma shiftl_lt_0 [simp]: fixes i :: int shows "i << n < 0 \<longleftrightarrow> i < 0"
 by (metis not_le shiftl_ge_0)
 
+lemma int_shiftl_test_bit: "(n << i :: int) !! m \<longleftrightarrow> m \<ge> i \<and> n !! (m - i)"
+proof(induction i)
+  case (Suc n)
+  thus ?case by(cases m) simp_all
+qed simp
+
 lemma bin_mask_p1_conv_shift: "bin_mask n + 1 = 1 << n"
 by(induct n) simp_all
 
