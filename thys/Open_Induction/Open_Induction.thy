@@ -10,7 +10,6 @@ header {* Open Induction *}
 theory Open_Induction
 imports
   Main
-  "~~/src/HOL/Library/Zorn"
   "../Well_Quasi_Orders/Restricted_Predicates"
 begin
 

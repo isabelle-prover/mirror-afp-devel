@@ -16,7 +16,6 @@ imports
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Monad_Syntax"
-  "~~/src/HOL/Library/Wfrec"
   "~~/src/HOL/Library/Infinite_Set"
 begin
 

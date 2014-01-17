@@ -2,7 +2,7 @@
 
 header "Arrow's Theorem for Strict Linear Orders"
 
-theory Arrow_Order imports Main "~~/src/HOL/Library/FuncSet" "~~/src/HOL/Library/Zorn"
+theory Arrow_Order imports Main "~~/src/HOL/Library/FuncSet"
 begin
 
 text{* This theory formalizes the third proof due to

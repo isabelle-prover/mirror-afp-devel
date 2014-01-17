@@ -1,6 +1,6 @@
 header{*V-Sets, Epsilon Closure, Ranks*}
 
-theory Rank imports "~~/src/HOL/Library/Wfrec" Ordinal
+theory Rank imports Ordinal
 begin
 
 section{*V-sets*}

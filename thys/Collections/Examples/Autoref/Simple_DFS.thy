@@ -16,10 +16,6 @@ text {*
 
 subsection {* Definition *}
 
-(*hide_const Zorn.succ (* That was in the way and conflicted with the
-  prefered parameter name. As this is a demo, we want a nice definition,
-  so just hiding what is in the way! *)*)
-
 text {* Recursive DFS-Algorithm. 
   @{text "E"} is the edge relation of the graph, @{text "vd"} the node to 
   search for, and @{text "v0"} the start node.
