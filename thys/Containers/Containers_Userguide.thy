@@ -175,7 +175,7 @@ end
 text {*
   For polymorphic types, this is a bit more involved, as the next example with @{typ "'a expr'"} illustrates (note that we could have delegated all this to @{text derive}). 
   First, we need an operation that implements equality tests with respect to a given equality operation on the polymorphic type.
-  For data types, we can use the relator which the transfer package (method @{text transfer}) requires and the BNF package from @{file "~~/src/HOL/BNF/BNF.thy"} generates automatically.
+  For data types, we can use the relator which the transfer package (method @{text transfer}) requires and the BNF package generates automatically.
   As we have used the old datatype package for @{typ "'a expr'"}, we must define it manually:
 *}
 

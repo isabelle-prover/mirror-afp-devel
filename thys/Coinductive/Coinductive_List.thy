@@ -6,6 +6,7 @@ header {* Potentially infinite lists as greatest fixed-point *}
 
 theory Coinductive_List
 imports
+  "~~/src/HOL/Library/Infinite_Set"
   "~~/src/HOL/Library/Simps_Case_Conv"
   "Coinductive_Nat"
 begin

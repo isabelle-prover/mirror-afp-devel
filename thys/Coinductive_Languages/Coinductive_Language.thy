@@ -658,7 +658,7 @@ lemma to_language_in_language[simp]: "to_language (Collect (in_language L)) = L"
   by (coinduction arbitrary: L) auto
 
 lemma in_language_bij: "bij (Collect o in_language)"
-proof (rule bijI, unfold o_apply, safe)
+proof (rule bijI', unfold o_apply, safe)
   fix L R :: "'a language" assume "Collect (in_language L) = Collect (in_language R)"
   then show "L = R" unfolding set_eq_iff mem_Collect_eq
     by (coinduction arbitrary: L R) (metis in_language.simps)

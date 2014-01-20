@@ -4,7 +4,7 @@
 theory List_Fusion
 imports 
   Main
-  "~~/src/HOL/BNF/Coinduction"
+  "~~/src/HOL/Coinduction"
 begin
 
 section {* Shortcut fusion for lists *}

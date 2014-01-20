@@ -5,7 +5,7 @@ header {* Coinductive streams *}
 
 theory Coinductive_Stream
 imports
-  "~~/src/HOL/BNF/Examples/Stream"
+  "~~/src/HOL/BNF_Examples/Stream"
   Coinductive_List
 begin
 
