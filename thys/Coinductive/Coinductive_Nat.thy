@@ -7,7 +7,6 @@ header {* Coinductive natural numbers *}
 
 theory Coinductive_Nat imports
   "~~/src/HOL/Library/Extended_Nat"
-  "~~/src/HOL/BNF/BNF"
 begin
 
 lemmas eSuc_plus = iadd_Suc

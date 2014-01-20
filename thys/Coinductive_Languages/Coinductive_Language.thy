@@ -4,7 +4,7 @@
 header {* A Codatatype of Formal Languages *}
 
 theory Coinductive_Language
-imports "~~/src/HOL/BNF/BNF"
+imports Main
 begin
 
 hide_const (open) Inter
