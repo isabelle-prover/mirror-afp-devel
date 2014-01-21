@@ -4401,11 +4401,11 @@ interpretation lifting_syntax .
 
 lemma pre_llist_set1_transfer [transfer_rule]:
   "(sum_rel op = (prod_rel A B) ===> set_rel A) set1_pre_llist set1_pre_llist"
-by(auto simp add: Transfer.fun_rel_def set1_pre_llist_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
+by(auto simp add: fun_rel_def set1_pre_llist_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
   "(sum_rel op = (prod_rel A B) ===> set_rel B) set2_pre_llist set2_pre_llist"
-by(auto simp add: Transfer.fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+by(auto simp add: fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma dtor_llist_transfer [transfer_rule]:
   "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) dtor_llist dtor_llist"
@@ -4419,12 +4419,12 @@ by simp
 
 lemma LCons_transfer [transfer_rule]:
   "(A ===> llist_all2 A ===> llist_all2 A) LCons LCons"
-unfolding Transfer.fun_rel_def by simp
+unfolding fun_rel_def by simp
 
 lemma case_llist_transfer [transfer_rule]:
   "(B ===> (A ===> llist_all2 A ===> B) ===> llist_all2 A ===> B)
     case_llist case_llist"
-unfolding Transfer.fun_rel_def by (simp split: llist.split)
+unfolding fun_rel_def by (simp split: llist.split)
 
 lemma unfold_llist_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> A) ===> A ===> llist_all2 B) unfold_llist unfold_llist"
@@ -4471,11 +4471,11 @@ by (intro fun_relI set_relI) (auto simp only: in_lset_conv_lnth llist_all2_conv_
 
 lemma lmap_transfer [transfer_rule]:
   "((A ===> B) ===> llist_all2 A ===> llist_all2 B) lmap lmap"
-by(auto simp add: Transfer.fun_rel_def llist_all2_lmap1 llist_all2_lmap2 elim: llist_all2_mono)
+by(auto simp add: fun_rel_def llist_all2_lmap1 llist_all2_lmap2 elim: llist_all2_mono)
 
 lemma lappend_transfer [transfer_rule]:
   "(llist_all2 A ===> llist_all2 A ===> llist_all2 A) lappend lappend"
-by(auto simp add: Transfer.fun_rel_def intro: llist_all2_lappendI)
+by(auto simp add: fun_rel_def intro: llist_all2_lappendI)
 
 lemma iterates_transfer [transfer_rule]:
   "((A ===> A) ===> A ===> llist_all2 A) iterates iterates"
@@ -4530,7 +4530,7 @@ unfolding inf_llist_def[abs_def] by transfer_prover
 
 lemma lfilter_transfer [transfer_rule]:
   "((A ===> op =) ===> llist_all2 A ===> llist_all2 A) lfilter lfilter"
-by(auto simp add: Transfer.fun_rel_def intro: llist_all2_lfilterI)
+by(auto simp add: fun_rel_def intro: llist_all2_lfilterI)
 
 lemma lconcat_transfer [transfer_rule]:
   "(llist_all2 (llist_all2 A) ===> llist_all2 A) lconcat lconcat"
@@ -4561,7 +4561,7 @@ qed
 
 lemma llist_all2_transfer [transfer_rule]:
   "((R ===> R ===> op =) ===> llist_all2 R ===> llist_all2 R ===> op =) llist_all2 llist_all2"
-by (simp add: llist_all2_rsp Transfer.fun_rel_def)
+by (simp add: llist_all2_rsp fun_rel_def)
 
 end
 
