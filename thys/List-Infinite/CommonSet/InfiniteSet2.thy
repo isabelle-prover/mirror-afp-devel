@@ -292,7 +292,7 @@ by (simp add: icard_cartesian_product mult_eSuc_right)
 
 
 
-thm Finite_Set.card_Pow
+thm Power.card_Pow
 
 thm Finite_Set.dvd_partition
 
