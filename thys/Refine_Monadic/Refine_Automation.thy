@@ -331,7 +331,7 @@ end;
 setup {*
   let
     fun parse_cpat cxt = let 
-      val (t,(context,tks)) = Scan.lift Args.name_source cxt 
+      val (t,(context,tks)) = Scan.lift Args.name_inner_syntax cxt 
       val thy = Context.theory_of context
       val ctxt = Context.proof_of context
       val t = Proof_Context.read_term_pattern ctxt t
@@ -364,7 +364,7 @@ ML {* Outer_Syntax.local_theory
     -- Parse_Spec.opt_attribs
     -- Scan.optional (Parse.$$$ "for" |-- Scan.repeat1 Args.var) []
     --| Parse.$$$ "uses" -- Parse_Spec.xthm
-    -- Scan.optional (Parse.$$$ "is" |-- Scan.repeat1 Args.name_source) []
+    -- Scan.optional (Parse.$$$ "is" |-- Scan.repeat1 Args.name_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
       case Attrib.eval_thms lthy [raw_thm] of

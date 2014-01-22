@@ -161,7 +161,7 @@ local
 
 
   val read = Scan.lift (Scan.option (Args.name --| Args.colon)) -- 
-    (Args.context -- Scan.lift (Parse.position Args.name_source))
+    (Args.context -- Scan.lift (Parse.position Args.name_inner_syntax))
 
   fun process (env,(ctxt,(raw_t,pos))) = let
     val t = Proof_Context.read_term_pattern ctxt raw_t
