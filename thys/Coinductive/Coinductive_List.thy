@@ -3356,6 +3356,16 @@ next
                            lappend_assoc[symmetric])
 qed
 
+lemma ldistinct_lfilterI: "ldistinct xs \<Longrightarrow> ldistinct (lfilter P xs)"
+proof(coinduction arbitrary: xs)
+  case (ldistinct xs)
+  from `\<not> lnull (lfilter P xs)` obtain x ys
+    where "lfilter P xs = LCons x ys"
+    by(auto simp only: not_lnull_conv)
+  with lfilter_eq_LConsD[OF this]
+  show ?case using `ldistinct xs` by(auto simp add: ldistinct_lappend)
+qed
+
 lemma ldistinct_lfilterD:
   "\<lbrakk> ldistinct (lfilter P xs); enat n < llength xs; enat m < llength xs; P a; lnth xs n = a; lnth xs m = a \<rbrakk> \<Longrightarrow> m = n"
 proof(induct n m rule: wlog_linorder_le)
