@@ -78,7 +78,7 @@ where
 lemma lang_nInter[simp]: "lang S (nInter r s) = lang S (Inter r s)"
 by (induct r s rule: nInter.induct) (auto)
 
-primrec norm :: "nat rexp \<Rightarrow> nat rexp"
+primrec_new norm :: "nat rexp \<Rightarrow> nat rexp"
 where
   "norm Zero = Zero"
 | "norm One = One"
@@ -95,7 +95,7 @@ by (induct r) auto
 
 subsection {* Derivative *}
 
-primrec nderiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
+primrec_new nderiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
   "nderiv _ Zero = Zero"
 | "nderiv _ One = Zero"
@@ -270,7 +270,7 @@ qed
 
 subsection {* The overall procedure *}
 
-primrec add_atoms :: "nat rexp \<Rightarrow> nat list \<Rightarrow> nat list"
+primrec_new add_atoms :: "nat rexp \<Rightarrow> nat list \<Rightarrow> nat list"
 where
   "add_atoms Zero = id"
 | "add_atoms One = id"

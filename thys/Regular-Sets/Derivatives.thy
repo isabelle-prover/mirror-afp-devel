@@ -10,7 +10,7 @@ text{* This theory is based on work by Brozowski \cite{Brzozowski64} and Antimir
 
 subsection {* Brzozowski's derivatives of regular expressions *}
 
-fun
+primrec_new
   deriv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "deriv c (Zero) = Zero"
@@ -21,7 +21,7 @@ where
     (if nullable r1 then Plus (Times (deriv c r1) r2) (deriv c r2) else Times (deriv c r1) r2)"
 | "deriv c (Star r) = Times (deriv c r) (Star r)"
 
-fun 
+primrec 
   derivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "derivs [] r = r"
@@ -55,7 +55,7 @@ subsection {* Antimirov's partial derivatives *}
 abbreviation
   "Timess rs r \<equiv> (\<Union>r' \<in> rs. {Times r' r})"
 
-fun
+primrec_new
   pderiv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp set"
 where
   "pderiv c Zero = {}"
@@ -66,7 +66,7 @@ where
     (if nullable r1 then Timess (pderiv c r1) r2 \<union> pderiv c r2 else Timess (pderiv c r1) r2)"
 | "pderiv c (Star r) = Timess (pderiv c r) (Star r)"
 
-fun
+primrec
   pderivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> ('a rexp) set"
 where
   "pderivs [] r = {r}"
