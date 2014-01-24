@@ -120,7 +120,6 @@ text{*
 
 (* XXX Remove when we remove the Number_Theory import *)
 hide_const (open) Multiset.mult
-declare Cong.induct'_nat[induct del]
 
 lemma dvd_div_ge_1 :
   fixes a b :: nat

@@ -893,20 +893,21 @@ qed
 
 lemma rotate_diff:"rotate m xs=rotate n xs \<Longrightarrow>rotate (m-n) xs = xs"
 proof (induct m arbitrary:n)
-  case zero
+  case 0
   thus ?case by auto
 next 
-  case (plus1 m')
+  case (Suc m')
   hence "n=0 \<Longrightarrow> ?case" by auto
   moreover have "n\<noteq>0 \<Longrightarrow>?case" 
     proof -
       assume "n\<noteq>0" 
-      then obtain n' where "n=n'+1" by (metis Suc_eq_plus1 nat.exhaust)
+      then obtain n' where n': "n = Suc n'" by (metis nat.exhaust)
       hence "rotate m' xs = rotate n' xs" 
-        using `rotate (m' + 1) xs = rotate n xs` rotate_eq rotate_Suc 
+        using `rotate (Suc m') xs = rotate n xs` rotate_eq rotate_Suc 
         by auto
-      hence "rotate (m' - n') xs = xs" using plus1.hyps by auto
-      moreover have "m' + 1 - n = m'-n'" using `n=n'+1` by auto
+      hence "rotate (m' - n') xs = xs" by (metis Suc.hyps) 
+      moreover have "Suc m' - n = m'-n'"
+        by (metis n' diff_Suc_Suc) 
       ultimately show ?case by auto
     qed
   ultimately show ?case by fast 
@@ -931,7 +932,7 @@ proof (rule ccontr)
           obtain v3 where "adjacent v1 v3" using friend_assm[OF `v1\<in>V` `v2\<in>V` `v1\<noteq>v2`] by auto
           hence "card {n. adjacent v1 n} \<noteq> 0" using adjacent_finite[OF `finite E`] by auto
           moreover have "card {n. adjacent v1 n} = 0" using k_adj[OF `v1\<in>V`] 
-            by (metis `k = 0` assms(2) degree_adjacent)
+            by (metis `k = 0`)
           ultimately show False by simp
         qed
       moreover have "even k" using even_degree[OF friend_assm] 
