@@ -406,7 +406,8 @@ ML {*
     fun eqsubst_inst_tac ctxt asm occL insts thm = 
       Subgoal.FOCUS (
         fn {context=ctxt,...} => let
-          val thm' = thm |> Rule_Insts.read_instantiate ctxt insts
+          val ctxt' = ctxt |> Proof_Context.set_mode Proof_Context.mode_schematic  (* FIXME !? *)
+          val thm' = thm |> Rule_Insts.read_instantiate ctxt' insts []
         in eqsubst_tac' ctxt asm occL [thm'] 1 end
       ) ctxt
 

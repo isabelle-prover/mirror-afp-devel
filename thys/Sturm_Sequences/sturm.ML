@@ -81,7 +81,7 @@ struct
                      NONE => Seq.empty
                    | SOME n => 
                        let val n' = (if ty = @{typ nat} then "" else "%_. ") ^ Int.toString (HOLogic.dest_nat n)
-                       in  Seq.single (read_instantiate ctxt [(idxname, n')] thm)
+                       in  Seq.single (read_instantiate ctxt [(idxname, n')] [] thm)
                        end
                   end
         | _ => Seq.single thm
