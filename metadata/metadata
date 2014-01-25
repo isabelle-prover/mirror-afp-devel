@@ -1681,3 +1681,16 @@ abstract = The Unified Modeling Language (UML) is one of the few modeling
 	 version of the OCL standard.  Overall, this document is
 	 intended to provide the basis for a machine-checked text "Annex A"
 	 of the OCL standard targeting at tool implementors.
+
+[Relation_Algebra]
+title = Relation Algebra
+author =  Georg Struth <mailto:g.struth@sheffield.ac.uk>, Tjark Weber <mailto:tjark.weber@it.uu.se>
+date = 2014-01-25
+topic = Mathematics/Algebra
+abstract = Tarski's algebra of binary relations is formalised along the lines of
+	the standard textbooks of Maddux and Schmidt and Ströhlein. This
+	includes relation-algebraic concepts such as subidentities, vectors and
+	a domain operation as well as various notions associated to functions.
+	Relation algebras are also expanded by a reflexive transitive closure
+	operation, and they are linked with Kleene algebras and models of binary
+	relations and Boolean matrices.
