@@ -53,7 +53,7 @@ end = struct
 
 datatype node = Node of Arith.int;
 
-fun equal_nodea _ _ = raise Fail "equal_node";
+fun equal_nodea _ _ = raise Fail "DFS.equal_node_inst.equal_node";
 
 val equal_node = {equal = equal_nodea} : node HOL.equal;
 

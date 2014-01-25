@@ -180,43 +180,43 @@ end;
 
 
 structure HPY_new : sig
+  datatype nat = Nat of IntInf.int
+  val integer_of_nat : nat -> IntInf.int
+  val equal_nata : nat -> nat -> bool
   type 'a equal
   val equal : 'a equal -> 'a -> 'a -> bool
-  val eq : 'a equal -> 'a -> 'a -> bool
-  datatype nat = Nat of IntInf.int
-  datatype num = One | Bit0 of num | Bit1 of num
-  val map : ('a -> 'b) -> 'a list -> 'b list
-  val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+  val equal_nat : nat equal
+  val less_eq_nat : nat -> nat -> bool
   type 'a ord
   val less_eq : 'a ord -> 'a -> 'a -> bool
   val less : 'a ord -> 'a -> 'a -> bool
-  val integer_of_nat : nat -> IntInf.int
-  val less_eq_nat : nat -> nat -> bool
   val less_nat : nat -> nat -> bool
   val ord_nat : nat ord
-  val one_nat : nat
-  val foldli : 'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  val equal_nata : nat -> nat -> bool
-  val equal_nat : nat equal
-  val plus_nat : nat -> nat -> nat
   val ord_integer : IntInf.int ord
-  val max : 'a ord -> 'a -> 'a -> 'a
-  val minus_nat : nat -> nat -> nat
-  val times_nat : nat -> nat -> nat
+  datatype num = One | Bit0 of num | Bit1 of num
   datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a
-  val equal_list : 'a equal -> 'a list -> 'a list -> bool
   datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
     Circ of 'a * 'a list * 'a list
+  val eq : 'a equal -> 'a -> 'a -> bool
+  val map : ('a -> 'b) -> 'a list -> 'b list
+  val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+  val foldli : 'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
   val dbind : 'a dres -> ('a -> 'b dres) -> 'b dres
   val array_set :
     'a FArray.IsabelleMapping.ArrayType ->
       nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
   val iam_empty : unit -> ('a option) FArray.IsabelleMapping.ArrayType
   val the_res : 'a dres -> 'a
+  val equal_list : 'a equal -> 'a list -> 'a list -> bool
   val equal_blue_witness :
     'a equal -> 'a blue_witness -> 'a blue_witness -> bool
   val map2set_insert : ('a -> unit -> 'b -> 'c) -> 'a -> 'b -> 'c
+  val times_nat : nat -> nat -> nat
+  val max : 'a ord -> 'a -> 'a -> 'a
+  val minus_nat : nat -> nat -> nat
   val nat_of_integer : IntInf.int -> nat
+  val plus_nat : nat -> nat -> nat
+  val one_nat : nat
   val iam_increment : nat -> nat -> nat
   val array_set_oo :
     (unit -> 'a FArray.IsabelleMapping.ArrayType) ->
@@ -285,14 +285,40 @@ structure HPY_new : sig
   val succ_of_list_impl_int : (IntInf.int * IntInf.int) list -> nat -> nat list
 end = struct
 
+datatype nat = Nat of IntInf.int;
+
+fun integer_of_nat (Nat x) = x;
+
+fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
+
 type 'a equal = {equal : 'a -> 'a -> bool};
 val equal = #equal : 'a equal -> 'a -> 'a -> bool;
 
-fun eq A_ a b = equal A_ a b;
+val equal_nat = {equal = equal_nata} : nat equal;
 
-datatype nat = Nat of IntInf.int;
+fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
+
+type 'a ord = {less_eq : 'a -> 'a -> bool, less : 'a -> 'a -> bool};
+val less_eq = #less_eq : 'a ord -> 'a -> 'a -> bool;
+val less = #less : 'a ord -> 'a -> 'a -> bool;
+
+fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
+
+val ord_nat = {less_eq = less_eq_nat, less = less_nat} : nat ord;
+
+val ord_integer =
+  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
+    less = (fn a => fn b => IntInf.< (a, b))}
+  : IntInf.int ord;
 
 datatype num = One | Bit0 of num | Bit1 of num;
+
+datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a;
+
+datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
+  Circ of 'a * 'a list * 'a list;
+
+fun eq A_ a b = equal A_ a b;
 
 fun map f [] = []
   | map f (x :: xs) = f x :: map f xs;
@@ -300,52 +326,9 @@ fun map f [] = []
 fun fold f (x :: xs) s = fold f xs (f x s)
   | fold f [] s = s;
 
-type 'a ord = {less_eq : 'a -> 'a -> bool, less : 'a -> 'a -> bool};
-val less_eq = #less_eq : 'a ord -> 'a -> 'a -> bool;
-val less = #less : 'a ord -> 'a -> 'a -> bool;
-
-fun integer_of_nat (Nat x) = x;
-
-fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
-
-fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
-
-val ord_nat = {less_eq = less_eq_nat, less = less_nat} : nat ord;
-
-val one_nat : nat = Nat (1 : IntInf.int);
-
 fun foldli [] c f sigma = sigma
   | foldli (x :: xs) c f sigma =
     (if c sigma then foldli xs c f (f x sigma) else sigma);
-
-fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
-
-val equal_nat = {equal = equal_nata} : nat equal;
-
-fun plus_nat m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
-
-val ord_integer =
-  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
-    less = (fn a => fn b => IntInf.< (a, b))}
-  : IntInf.int ord;
-
-fun max A_ a b = (if less_eq A_ a b then b else a);
-
-fun minus_nat m n =
-  Nat (max ord_integer 0 (IntInf.- (integer_of_nat m, integer_of_nat n)));
-
-fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
-
-datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a;
-
-fun equal_list A_ [] (a :: lista) = false
-  | equal_list A_ (a :: lista) [] = false
-  | equal_list A_ (aa :: listaa) (a :: lista) =
-    eq A_ aa a andalso equal_list A_ listaa lista
-  | equal_list A_ [] [] = true;
-
-datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
-  Circ of 'a * 'a list * 'a list;
 
 fun dbind DFAILi f = DFAILi
   | dbind DSUCCEEDi f = DSUCCEEDi
@@ -356,6 +339,12 @@ fun array_set a = FArray.IsabelleMapping.array_set a o integer_of_nat;
 fun iam_empty x = (fn _ => FArray.IsabelleMapping.array_of_list []) x;
 
 fun the_res (DRETURN x) = x;
+
+fun equal_list A_ [] (a :: lista) = false
+  | equal_list A_ (a :: lista) [] = false
+  | equal_list A_ (aa :: listaa) (a :: lista) =
+    eq A_ aa a andalso equal_list A_ listaa lista
+  | equal_list A_ [] [] = true;
 
 fun equal_blue_witness A_ (Reach (v1, list1a, v2, list2a))
   (Circ (v, list1, list2)) = false
@@ -377,7 +366,18 @@ fun equal_blue_witness A_ (Reach (v1, list1a, v2, list2a))
 
 fun map2set_insert i k s = i k () s;
 
+fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
+
+fun max A_ a b = (if less_eq A_ a b then b else a);
+
+fun minus_nat m n =
+  Nat (max ord_integer 0 (IntInf.- (integer_of_nat m, integer_of_nat n)));
+
 fun nat_of_integer k = Nat (max ord_integer 0 k);
+
+fun plus_nat m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
+
+val one_nat : nat = Nat (1 : IntInf.int);
 
 fun iam_increment l idx =
   max ord_nat (minus_nat (plus_nat idx one_nat) l)
