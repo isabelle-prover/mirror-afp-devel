@@ -1094,7 +1094,7 @@ qed
 
 ML {*
   bind_thm ("tranclp_induct2", Split_Rule.split_rule @{context}
-    (read_instantiate @{context} [(("a", 0), "(aa,ab)"), (("b", 0), "(ba,bb)")] []
+    (Rule_Insts.read_instantiate @{context} [(("a", 0), "(aa,ab)"), (("b", 0), "(ba,bb)")] []
       @{thm tranclp_induct}));
 *}
 
@@ -2162,7 +2162,7 @@ qed
 
 ML {*
   bind_thm ("trancl_induct2", Split_Rule.split_rule @{context}
-    (read_instantiate @{context} [(("a", 0), "(aa,ab)"), (("b", 0), "(ba,bb)")] []
+    (Rule_Insts.read_instantiate @{context} [(("a", 0), "(aa,ab)"), (("b", 0), "(ba,bb)")] []
       @{thm trancl_induct}));
 *}
 
