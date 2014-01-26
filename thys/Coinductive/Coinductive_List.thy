@@ -600,7 +600,7 @@ using assms
 proof(induct)
   case find thus ?case by(auto intro: exI[where x=LNil])
 next
-  case step thus ?case by(fastforce intro: exI[where x="LCons a b", standard])
+  case step thus ?case by(fastforce intro: exI[where x="LCons a b" for a b])
 qed
 
 lemma split_llist: "x \<in> lset xs \<Longrightarrow> \<exists>ys zs. xs = lappend ys (LCons x zs) \<and> lfinite ys"
@@ -1248,7 +1248,7 @@ next
   next
     case (step x' xs)
     thus ?case 
-      by(auto 4 4 intro: exI[where x="Suc n", standard] ileI1 simp add: eSuc_enat[symmetric])
+      by(auto 4 4 intro: exI[where x="Suc n" for n] ileI1 simp add: eSuc_enat[symmetric])
   qed
 qed
 
@@ -1406,7 +1406,7 @@ proof -
   { fix x
     def n \<equiv> "0 :: nat"
     have "(lmap f ^^ n) (h x) = (lmap f ^^ n) (iterates f x)"
-      by(coinduction arbitrary: n)(auto simp add: funpow_swap1 lmap_iterates intro: exI[where x="Suc n", standard]) }
+      by(coinduction arbitrary: n)(auto simp add: funpow_swap1 lmap_iterates intro: exI[where x="Suc n" for n]) }
   thus ?thesis by auto
 qed
 
@@ -1590,7 +1590,7 @@ next
 qed
 
 lemma ltake_enat_eq_imp_eq: "(\<And>n. ltake (enat n) xs = ltake (enat n) ys) \<Longrightarrow> xs = ys"
-by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n", standard])
+by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n" for n])
 
 lemma ltake_enat_lprefix_imp_lprefix:
   assumes le: "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
@@ -3893,7 +3893,7 @@ proof -
       by(auto intro: llist_all2_ltlI simp add: not_lnull_conv llist_all2_LCons1)
     thus ?case using xsys rest xs ys xss yss
       by(cases "lnull (ltl xs)" "lnull (ltl ys)" rule: bool.exhaust[case_product bool.exhaust])
-        (auto 4 3 dest: llist_all2_lhdD llist_all2_ltlI llist_all2_lnullD simp add: lappend_lnull1 intro: exI[where x="LCons a c", standard])
+        (auto 4 3 dest: llist_all2_lhdD llist_all2_ltlI llist_all2_lnullD simp add: lappend_lnull1 intro: exI[where x="LCons a c" for a c])
   qed
   thus ?thesis unfolding xss'_def yss'_def lconcat_def by simp
 qed

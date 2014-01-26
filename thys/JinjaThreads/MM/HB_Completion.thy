@@ -242,7 +242,7 @@ proof -
           next
             assume "ta_hb_consistent P (E @ list_of obs') obs''"
             thus ?thesis using obs True
-              by cases (auto 4 3 cong: action.case_cong obs_event.case_cong intro: exI[where x="LCons x LNil", standard] simp add: ta_hb_consistent_LCons)
+              by cases (auto 4 3 cong: action.case_cong obs_event.case_cong intro: exI[where x="LCons x LNil" for x] simp add: ta_hb_consistent_LCons)
           qed
         next
           case False

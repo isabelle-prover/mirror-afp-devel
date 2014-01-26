@@ -126,7 +126,7 @@ apply (rule_tac x = "Class D" in bexI)
  apply assumption
 apply clarify
 apply (clarsimp simp: Class_widen2)
-apply (insert rtrancl_r_diff_Id [symmetric, standard, of "subcls1 P"])
+apply (insert rtrancl_r_diff_Id [symmetric, of "subcls1 P"])
 apply simp
 apply (erule rtranclE)
  apply blast

@@ -15,7 +15,7 @@ lemmas tyrel_dflt_bool_set[autoref_tyrel] =
   ty_REL[where 'a="bool set" and R="\<langle>Id\<rangle>list_set_rel"]
 
 lemmas tyrel_dflt_nat_map[autoref_tyrel] = 
-  ty_REL[where R="\<langle>nat_rel,Rv\<rangle>dflt_rm_rel", standard]
+  ty_REL[where R="\<langle>nat_rel,Rv\<rangle>dflt_rm_rel"] for R
 
 lemmas tyrel_dflt = tyrel_dflt_nat_set tyrel_dflt_bool_set tyrel_dflt_nat_map
 

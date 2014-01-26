@@ -173,7 +173,7 @@ proof(induct t)
     apply(erule meta_allE)+
     apply(erule meta_impE)
     apply(rule disjI1)
-    apply(fastforce intro: exI[where x="a # b", standard])+
+    apply(fastforce intro: exI[where x="a # b" for a b])+
     done
 qed
 

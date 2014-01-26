@@ -167,7 +167,7 @@ proof (intro allI)
       apply frame_inference
       apply frame_inference
 
-      apply (drule_tac p=aa in prec_frame[OF sngr_prec, standard])
+      apply (drule_tac p=aa in prec_frame[OF sngr_prec])
       apply frame_inference
       apply frame_inference
       apply simp
@@ -205,7 +205,7 @@ proof (intro allI)
       apply frame_inference
       apply frame_inference
 
-      apply (drule_tac p=a in prec_frame[OF sngr_prec, standard])
+      apply (drule_tac p=a in prec_frame[OF sngr_prec])
       apply frame_inference
       apply frame_inference
       apply simp

@@ -2275,7 +2275,7 @@ apply(erule disjE)
  apply(simp (no_asm) add:is_sublist_def)
  apply(rule_tac x = "as @ v # bs" in exI)
  apply simp
-apply(rule_tac m = "|as|+1" in is_nextElem_rotate_eq[THEN iffD1,standard])
+apply(rule_tac m1 = "|as|+1" in is_nextElem_rotate_eq[THEN iffD1])
 apply simp
 apply(simp add:rotate_drop_take)
 apply(rule is_nextElem_sublistI)

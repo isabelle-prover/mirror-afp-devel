@@ -27,9 +27,9 @@ unfolding fplus_def fzero_def
 by (simp add: coerce_simp plusU_zeroU_right)
 
 lemmas mplus_mzero_left =
-  fplus_fzero_left [where 'f="'m::monad_zero_plus", standard]
+  fplus_fzero_left [where 'f="'m::monad_zero_plus"] for f
 
 lemmas mplus_mzero_right =
-  fplus_fzero_right [where 'f="'m::monad_zero_plus", standard]
+  fplus_fzero_right [where 'f="'m::monad_zero_plus"] for f
 
 end

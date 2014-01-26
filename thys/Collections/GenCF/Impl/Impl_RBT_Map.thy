@@ -860,7 +860,7 @@ lemma rbt_map_rel_sv[relator_props]:
   apply (rule br_sv)
   done
 
-lemmas [autoref_rel_intf] = REL_INTFI[of "rbt_map_rel x" i_map, standard]
+lemmas [autoref_rel_intf] = REL_INTFI[of "rbt_map_rel x" i_map] for x
 
 
 subsection {* Second Part: Binding *}
@@ -1106,6 +1106,6 @@ lemmas autoref_rbt_rules =
   autoref_rbt_union
 
 lemmas autoref_rbt_rules_linorder[autoref_rules_raw] = 
-  autoref_rbt_rules[where Rk="Rk::(_\<times>_::linorder) set", standard]
+  autoref_rbt_rules[where Rk="Rk"] for Rk :: "(_\<times>_::linorder) set"
 
 end

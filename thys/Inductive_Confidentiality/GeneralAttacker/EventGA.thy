@@ -47,7 +47,7 @@ done
 
 subsection{*Function @{term knows}*}
 
-lemmas parts_insert_knows_A = parts_insert [of _ "knows A evs", standard]
+lemmas parts_insert_knows_A = parts_insert [of _ "knows A evs"] for A evs
 
 lemma knows_Says [simp]:
      "knows A (Says A' B X # evs) = insert X (knows A evs)"
@@ -79,10 +79,10 @@ done
 text{*Elimination rules: derive contradictions from old Says events containing
   items known to be fresh*}
 lemmas Says_imp_parts_knows = 
-       Says_imp_knows [THEN parts.Inj, THEN revcut_rl, standard] 
+       Says_imp_knows [THEN parts.Inj, THEN revcut_rl] 
 
 lemmas knows_partsEs =
-     Says_imp_parts_knows parts.Body [THEN revcut_rl, standard]
+     Says_imp_parts_knows parts.Body [THEN revcut_rl]
 
 lemmas Says_imp_analz = Says_imp_knows [THEN analz.Inj]
 
@@ -163,7 +163,7 @@ by (force
     intro: analz_subset_parts [THEN subsetD] parts_mono [THEN [2] rev_subsetD])
 
 
-lemmas analz_impI = impI [where P = "Y \<notin> analz (knows A evs)", standard]
+lemmas analz_impI = impI [where P = "Y \<notin> analz (knows A evs)"] for A evs
 
 ML
 {*
@@ -179,7 +179,7 @@ method_setup analz_mono_contra = {*
 
 text{*Useful for case analysis on whether a hash is a spoof or not*}
 
-lemmas syan_impI = impI [where P = "Y \<notin> synth (analz (knows A evs))", standard]
+lemmas syan_impI = impI [where P = "Y \<notin> synth (analz (knows A evs))"] for Y A evs
 
 ML
 {*

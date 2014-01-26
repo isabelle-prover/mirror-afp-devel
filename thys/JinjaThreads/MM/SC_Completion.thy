@@ -427,7 +427,7 @@ proof -
           next
             assume "ta_seq_consist P (mrw_values P vs (list_of obs')) obs''"
             thus ?thesis using obs True
-              by cases(auto cong: action.case_cong obs_event.case_cong intro: exI[where x="LCons x LNil", standard])
+              by cases(auto cong: action.case_cong obs_event.case_cong intro: exI[where x="LCons x LNil" for x])
           qed
         next
           case False

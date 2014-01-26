@@ -73,7 +73,7 @@ proof -
     show "committed (?\<phi> 0) = {}"
       by(auto simp add: actions_def zero_enat_def[symmetric])
     show actions_E: "actions E = (\<Union>n. action_translation (?\<phi> n) ` committed (?\<phi> n))"
-      by(auto simp add: actions_def less_le_trans[where y="enat n", standard] split: split_if_asm)
+      by(auto simp add: actions_def less_le_trans[where y="enat n" for n] split: split_if_asm)
     hence committed_subset_E: "\<And>n. action_translation (?\<phi> n) ` committed (?\<phi> n) \<subseteq> actions E" by fastforce
 
     { fix n

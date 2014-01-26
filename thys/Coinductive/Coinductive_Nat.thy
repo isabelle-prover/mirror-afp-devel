@@ -223,7 +223,7 @@ proof(cases "\<exists>n. stop ((next ^^ n) a)")
     finally show ?thesis using False n n'
       by(auto simp add: eSuc_enat[symmetric] funpow_swap1 enat_unfold_def)
   qed
-qed(auto simp add: enat_unfold_def funpow_swap1 elim: allE[where x=0] allE[where x="Suc n", standard])
+qed(auto simp add: enat_unfold_def funpow_swap1 elim: allE[where x=0] allE[where x="Suc n" for n])
 
 lemma enat_unfold_stop [simp]: "stop a \<Longrightarrow> enat_unfold stop next a = 0"
 by(simp add: enat_unfold)

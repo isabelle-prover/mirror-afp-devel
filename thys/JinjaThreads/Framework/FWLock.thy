@@ -304,7 +304,7 @@ proof(induct l t las rule: lock_actions_ok.induct)
   next
     case False
     with 2 show ?thesis
-      by(fastforce simp add: Cons_eq_append_conv elim: allE[where x="LA # xs", standard])
+      by(fastforce simp add: Cons_eq_append_conv elim: allE[where x="LA # xs" for xs])
   qed
 qed simp
 

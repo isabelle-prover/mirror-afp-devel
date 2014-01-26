@@ -54,8 +54,8 @@ definition succ_of_list :: "(nat\<times>nat) list \<Rightarrow> nat \<Rightarrow
     
 schematic_lemma succ_of_list_impl:
   notes [autoref_tyrel] = 
-    ty_REL[where 'a="nat\<rightharpoonup>nat set" and R="\<langle>nat_rel,R\<rangle>iam_map_rel", standard]
-    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>list_set_rel", standard]
+    ty_REL[where 'a="nat\<rightharpoonup>nat set" and R="\<langle>nat_rel,R\<rangle>iam_map_rel" for R]
+    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>list_set_rel"]
 
   shows "(?f::?'c,succ_of_list) \<in> ?R"
   unfolding succ_of_list_def[abs_def]
@@ -70,7 +70,7 @@ definition acc_of_list :: "nat list \<Rightarrow> nat set"
 
 schematic_lemma acc_of_list_impl:
   notes [autoref_tyrel] = 
-    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel", standard]
+    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel" for R]
 
   shows "(?f::?'c,acc_of_list) \<in> ?R"
   unfolding acc_of_list_def[abs_def]

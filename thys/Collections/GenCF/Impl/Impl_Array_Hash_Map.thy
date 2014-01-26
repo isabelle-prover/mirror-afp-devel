@@ -68,7 +68,7 @@ definition ahm_rel_def_internal: "ahm_rel bhc Rk Rv =
 lemma ahm_rel_def: "\<langle>Rk, Rv\<rangle> ahm_rel bhc \<equiv>
      \<langle>Rk,Rv\<rangle> ahm_map_rel O ahm_map_rel' (abstract_bounded_hashcode Rk bhc)" 
     unfolding relAPP_def ahm_rel_def_internal .
-lemmas [autoref_rel_intf] = REL_INTFI[of "ahm_rel bhc" i_map, standard]
+lemmas [autoref_rel_intf] = REL_INTFI[of "ahm_rel bhc" i_map] for bhc
 
 abbreviation "dflt_ahm_rel \<equiv> ahm_rel bounded_hashcode"
 
@@ -1584,7 +1584,7 @@ lemmas autoref_ahm_rules =
   autoref_ahm_size
 
 lemmas autoref_ahm_rules_hashable[autoref_rules_raw]
-  = autoref_ahm_rules[where Rk="Rk::(_\<times>_::hashable) set", standard]
+  = autoref_ahm_rules[where Rk="Rk"] for Rk :: "(_\<times>_::hashable) set"
 
 
 end

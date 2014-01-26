@@ -990,6 +990,6 @@ case goal1
       done
   qed
   thus ?case
-    by (rule subst[where s = "insert q Q", standard, rotated], auto)
+    by (rule subst[where s = "insert q Q" for q Q, rotated], auto)
 qed
 end

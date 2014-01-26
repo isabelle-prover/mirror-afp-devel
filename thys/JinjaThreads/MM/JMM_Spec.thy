@@ -844,7 +844,7 @@ apply(rule thread_start_actions_okI)
 apply(drule_tac a=a in thread_start_actions_okD)
   apply(simp add: actions_def)
   apply(metis Suc_ile_eq enat_le_plus_same(1) xtr6)
-apply(auto simp add: action_obs_def lnth_lappend1 actions_def action_tid_def le_less_trans[where y="enat a", standard])
+apply(auto simp add: action_obs_def lnth_lappend1 actions_def action_tid_def le_less_trans[where y="enat a" for a])
 done
 
 lemma wf_execI [intro?]:

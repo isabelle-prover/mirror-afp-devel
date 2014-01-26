@@ -235,18 +235,18 @@ lemma add_leaves_binop_subset:
    (\<Union>x\<in>set (add_leaves b xs). \<Union>y\<in>set (add_leaves b' ys). {f x y})"
   apply (induct f b b' arbitrary: xs ys rule: bdd_binop.induct)
   apply auto
-  apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> List.insert y ys]" in
-    rev_subsetD [OF _ add_leaves_mono, standard])
+  apply (drule_tac ys1="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> List.insert y ys]" in
+    rev_subsetD [OF _ add_leaves_mono])
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
   apply (simp add: image_eq_UN)
-  apply (drule_tac ys="[f x y. x \<leftarrow> List.insert x xs, y \<leftarrow> add_leaves l ys]" in
-    rev_subsetD [OF _ add_leaves_mono, standard])
+  apply (drule_tac ys1="[f x y. x \<leftarrow> List.insert x xs, y \<leftarrow> add_leaves l ys]" in
+    rev_subsetD [OF _ add_leaves_mono])
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
   apply (simp add: image_eq_UN)
-  apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l\<^sub>1 xs, y \<leftarrow> add_leaves l\<^sub>2 ys]" in
-    rev_subsetD [OF _ add_leaves_mono, standard])
+  apply (drule_tac ys1="[f x y. x \<leftarrow> add_leaves l\<^sub>1 xs, y \<leftarrow> add_leaves l\<^sub>2 ys]" in
+    rev_subsetD [OF _ add_leaves_mono])
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
   apply (simp add: image_eq_UN)

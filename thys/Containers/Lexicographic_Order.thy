@@ -19,7 +19,7 @@ lemma lexordp_take_index_conv:
   (is "?lhs = ?rhs")
 proof
   assume ?lhs thus ?rhs
-    by induct (auto 4 3 del: disjCI intro: disjI2 exI[where x="Suc i", standard])
+    by induct (auto 4 3 del: disjCI intro: disjI2 exI[where x="Suc i" for i])
 next
   assume ?rhs (is "?prefix \<or> ?less") thus ?lhs 
   proof
