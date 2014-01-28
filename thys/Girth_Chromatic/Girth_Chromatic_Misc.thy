@@ -2,7 +2,7 @@ theory Girth_Chromatic_Misc
 imports
   "~~/src/HOL/Main"
   "~~/src/HOL/Library/Extended_Real"
-  "~~/src/HOL/Library/Binomial"
+  "~~/src/HOL/Number_Theory/Binomial"
 begin
 
 section {* Auxilliary lemmas and setup *}

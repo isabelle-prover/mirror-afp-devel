@@ -4,7 +4,7 @@ imports
   Girth_Chromatic_Misc
   "~~/src/HOL/Probability/Probability"
 
-  "~~/src/HOL/Library/Binomial"
+  "~~/src/HOL/Number_Theory/Binomial"
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
