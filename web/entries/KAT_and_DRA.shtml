@@ -1,0 +1,126 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">K</font>leene
+<font class="first">A</font>lgebra
+with
+<font class="first">T</font>ests
+and
+<font class="first">D</font>emonic
+<font class="first">R</font>efinement
+<font class="first">A</font>lgebras
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Kleene Algebra with Tests and Demonic Refinement Algebras</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.dcs.shef.ac.uk/~alasdair">Alasdair Armstrong</a>, <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a> and <a href="http://www.dcs.shef.ac.uk/~georg">Georg Struth</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-01-23</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We formalise Kleene algebra with tests (KAT) and demonic refinement
+algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification
+and correctness proofs in the partial correctness setting. While DRA
+targets similar applications in the context of total correctness. Our
+formalisation contains the two most important models of these algebras:
+binary relations in the case of KAT and predicate transformers in the
+case of DRA. In addition, we derive the inference rules for Hoare logic
+in KAT and its relational model and present a simple formally verified
+program verification tool prototype based on the algebraic approach.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{KAT_and_DRA-AFP,
+  author  = {Alasdair Armstrong and Victor B. F. Gomes and Georg Struth},
+  title   = {Kleene Algebra with Tests and Demonic Refinement Algebras},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/KAT_and_DRA.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="KAT_and_DRA" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

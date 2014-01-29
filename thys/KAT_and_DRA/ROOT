@@ -1,0 +1,22 @@
+chapter AFP
+session KAT_and_DRA (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "$AFP/Kleene_Algebra/Signatures"
+    "$AFP/Kleene_Algebra/Dioid" 
+    "$AFP/Kleene_Algebra/Kleene_Algebra"
+    "$AFP/Kleene_Algebra/Kleene_Algebra_Models"
+  theories
+    DRA
+    "SingleSorted/KAT"
+    "SingleSorted/DRAT"
+    "SingleSorted/DRA_Models"
+    "SingleSorted/KAT_Models"
+    "SingleSorted/FolkTheorem"
+    "SingleSorted/Verification_Tool_Proto"
+    "TwoSorted/KAT2"
+    "TwoSorted/DRAT2"
+	
+  files
+    "document/root.tex"
+    "document/root.bib"
