@@ -946,6 +946,22 @@ abstract =
  hierarchy and its models as a generic algebraic middle-layer from which
  programming applications can quickly be explored, implemented and verified.
 
+[KAT_and_DRA]
+title = Kleene Algebra with Tests and Demonic Refinement Algebras
+author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
+date = 2014-01-23
+topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
+abstract =
+ We formalise Kleene algebra with tests (KAT) and demonic refinement 
+ algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification 
+ and correctness proofs in the partial correctness setting. While DRA 
+ targets similar applications in the context of total correctness. Our 
+ formalisation contains the two most important models of these algebras: 
+ binary relations in the case of KAT and predicate transformers in the 
+ case of DRA. In addition, we derive the inference rules for Hoare logic 
+ in KAT and its relational model and present a simple formally verified 
+ program verification tool prototype based on the algebraic approach.
+
 [BytecodeLogicJmlTypes]
 title = A Bytecode Logic for JML and Types
 author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
