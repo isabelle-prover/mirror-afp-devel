@@ -24,46 +24,42 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">T</font>he
-<font class="first">H</font>ereditarily
-<font class="first">F</font>inite
-<font class="first">S</font>ets
+<h1><font class="first">S</font>econdary
+<font class="first">S</font>ylow
+<font class="first">T</font>heorems
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">The Hereditarily Finite Sets</td></tr>
+        <td class="data" width="80%">Secondary Sylow Theorems</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a></td></tr>
+        <td class="data">Jakob von Raumer (jakob /dot/ raumer /at/ student /dot/ kit /dot/ edu)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-11-17</td></tr>
+        <td class="data">2014-01-28</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-The theory of hereditarily finite sets is formalised, following
-the <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">development</a> of Swierczkowski.
-An HF set is a finite collection of other HF sets; they enjoy an induction principle
-and satisfy all the axioms of ZF set theory apart from the axiom of infinity, which is negated.
-All constructions that are possible in ZF set theory (Cartesian products, disjoint sums, natural numbers,
-functions) without using infinite sets are possible here.
-The definition of addition for the HF sets follows Kirby.
-This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
-which has been <a href="Incompleteness.shtml">formalised separately</a>.
+These theories extend the existing proof of the first Sylow theorem
+(written by Florian Kammueller and L. C. Paulson) by what are often
+called the second, third and fourth Sylow theorems. These theorems
+state propositions about the number of Sylow p-subgroups of a group
+and the fact that they are conjugate to each other. The proofs make
+use of an implementation of group actions and their properties.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{HereditarilyFinite-AFP,
-  author  = {Lawrence C. Paulson},
-  title   = {The Hereditarily Finite Sets},
+			<pre>@article{Secondary_Sylow-AFP,
+  author  = {Jakob von Raumer},
+  title   = {Secondary Sylow Theorems},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/HereditarilyFinite.shtml},
+  month   = jan,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/Secondary_Sylow.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -83,7 +79,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
 
 <p></p>
 
-<!--#set var="name" value="HereditarilyFinite" -->
+<!--#set var="name" value="Secondary_Sylow" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -110,10 +106,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

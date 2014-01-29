@@ -24,46 +24,61 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">T</font>he
-<font class="first">H</font>ereditarily
-<font class="first">F</font>inite
-<font class="first">S</font>ets
+<h1><font class="first">F</font>eatherweight
+<font class="first">O</font>CL:
+<font class="first">A</font>
+<font class="first">P</font>roposal
+for
+a
+<font class="first">M</font>achine-Checked
+<font class="first">F</font>ormal
+<font class="first">S</font>emantics
+for
+<font class="first">O</font>CL
+2.5
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">The Hereditarily Finite Sets</td></tr>
+        <td class="data" width="80%">Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a></td></tr>
+        <td class="data">Achim D. Brucker (brucker /at/ spamfence /dot/ net), Frédéric Tuong (frederic /dot/ tuong /at/ lri /dot/ fr) and Burkhart Wolff (wolff /at/ lri /dot/ fr)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-11-17</td></tr>
+        <td class="data">2014-01-16</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-The theory of hereditarily finite sets is formalised, following
-the <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">development</a> of Swierczkowski.
-An HF set is a finite collection of other HF sets; they enjoy an induction principle
-and satisfy all the axioms of ZF set theory apart from the axiom of infinity, which is negated.
-All constructions that are possible in ZF set theory (Cartesian products, disjoint sums, natural numbers,
-functions) without using infinite sets are possible here.
-The definition of addition for the HF sets follows Kirby.
-This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
-which has been <a href="Incompleteness.shtml">formalised separately</a>.
+The Unified Modeling Language (UML) is one of the few modeling
+languages that is widely used in industry. While UML is mostly known
+as diagrammatic modeling language (e.g., visualizing class models),
+it is complemented by a textual language, called Object Constraint
+Language (OCL). OCL is based on a
+three-valued logic that turns UML into a formal language.
+Unfortunately the semantics of this specification language, captured
+in the "Annex A" of the OCL standard, leads to different
+interpretations of corner cases.  We formalize the core of OCL:
+denotational definitions, a logical calculus and
+operational rules that allow for the execution of OCL expressions by
+a mixture of term rewriting and code compilation.  Our formalization
+reveals several inconsistencies and contradictions in the current
+version of the OCL standard.  Overall, this document is
+intended to provide the basis for a machine-checked text "Annex A"
+of the OCL standard targeting at tool implementors.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{HereditarilyFinite-AFP,
-  author  = {Lawrence C. Paulson},
-  title   = {The Hereditarily Finite Sets},
+			<pre>@article{Featherweight_OCL-AFP,
+  author  = {Achim D. Brucker and Frédéric Tuong and Burkhart Wolff},
+  title   = {Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/HereditarilyFinite.shtml},
+  month   = jan,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/Featherweight_OCL.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -83,7 +98,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
 
 <p></p>
 
-<!--#set var="name" value="HereditarilyFinite" -->
+<!--#set var="name" value="Featherweight_OCL" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -110,10 +125,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

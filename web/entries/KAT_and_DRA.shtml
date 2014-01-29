@@ -24,46 +24,51 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">T</font>he
-<font class="first">H</font>ereditarily
-<font class="first">F</font>inite
-<font class="first">S</font>ets
+<h1><font class="first">K</font>leene
+<font class="first">A</font>lgebra
+with
+<font class="first">T</font>ests
+and
+<font class="first">D</font>emonic
+<font class="first">R</font>efinement
+<font class="first">A</font>lgebras
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">The Hereditarily Finite Sets</td></tr>
+        <td class="data" width="80%">Kleene Algebra with Tests and Demonic Refinement Algebras</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a></td></tr>
+        <td class="data"><a href="http://www.dcs.shef.ac.uk/~alasdair">Alasdair Armstrong</a>, <a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a> and <a href="http://www.dcs.shef.ac.uk/~georg">Georg Struth</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-11-17</td></tr>
+        <td class="data">2014-01-23</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-The theory of hereditarily finite sets is formalised, following
-the <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">development</a> of Swierczkowski.
-An HF set is a finite collection of other HF sets; they enjoy an induction principle
-and satisfy all the axioms of ZF set theory apart from the axiom of infinity, which is negated.
-All constructions that are possible in ZF set theory (Cartesian products, disjoint sums, natural numbers,
-functions) without using infinite sets are possible here.
-The definition of addition for the HF sets follows Kirby.
-This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
-which has been <a href="Incompleteness.shtml">formalised separately</a>.
+
+We formalise Kleene algebra with tests (KAT) and demonic refinement
+algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification
+and correctness proofs in the partial correctness setting. While DRA
+targets similar applications in the context of total correctness. Our
+formalisation contains the two most important models of these algebras:
+binary relations in the case of KAT and predicate transformers in the
+case of DRA. In addition, we derive the inference rules for Hoare logic
+in KAT and its relational model and present a simple formally verified
+program verification tool prototype based on the algebraic approach.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{HereditarilyFinite-AFP,
-  author  = {Lawrence C. Paulson},
-  title   = {The Hereditarily Finite Sets},
+			<pre>@article{KAT_and_DRA-AFP,
+  author  = {Alasdair Armstrong and Victor B. F. Gomes and Georg Struth},
+  title   = {Kleene Algebra with Tests and Demonic Refinement Algebras},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/HereditarilyFinite.shtml},
+  month   = jan,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/KAT_and_DRA.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -83,7 +88,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
 
 <p></p>
 
-<!--#set var="name" value="HereditarilyFinite" -->
+<!--#set var="name" value="KAT_and_DRA" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -110,10 +115,7 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

@@ -1,0 +1,60 @@
+% $Id: root.tex,v 1.2 2007-11-12 21:00:45 nipkow Exp $
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+% use only when needed
+%\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
+                                       % \<sqsupset>, \<mho>, \<Join>, 
+                                       % \<lhd>, \<lesssim>, \<greatersim>,
+                                       % \<lessapprox>, \<greaterapprox>,
+                                       % \<triangleq>, \<yen>, \<lozenge>
+%\usepackage[greek,english]{babel}     % greek for \<euro>,
+                                       % english for \<guillemotleft>, 
+                                       %             \<guillemotright>
+                                       % default language = last
+%\usepackage[latin1]{inputenc}         % for \<onesuperior>, \<onequarter>,
+                                       % \<twosuperior>, \<onehalf>,
+                                       % \<threesuperior>, \<threequarters>,
+                                       % \<degree>
+%\usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
+%\usepackage{eufrak}                   % for \<AA> ... \<ZZ>, \<aa> ... \<zz>
+                                       % (only needed if amssymb not used)
+%\usepackage{textcomp}                 % for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Kleene Algebra with Tests and Demonic Refinement Algebras}
+\author{Alasdair Armstrong \and Victor B. F. Gomes \and Georg Struth}
+\maketitle
+
+\begin{abstract}
+We formalise Kleene algebra with tests (KAT) and demonic refinement algebra
+(DRA) in Isabelle/HOL. KAT is relevant for program verification and correctness
+proofs in the partial correctness setting. While DRA targets similar
+applications in the context of total correctness. Our formalisation contains the
+two most important models of these algebras: binary relations in the case of KAT and
+predicate transformers in the case of DRA. In addition, we derive the inference
+rules for Hoare logic in KAT and its relational model and present a simple
+formally verified program verification tool prototype based on the algebraic
+approach.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

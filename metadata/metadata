@@ -946,6 +946,22 @@ abstract =
  hierarchy and its models as a generic algebraic middle-layer from which
  programming applications can quickly be explored, implemented and verified.
 
+[KAT_and_DRA]
+title = Kleene Algebra with Tests and Demonic Refinement Algebras
+author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
+date = 2014-01-23
+topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
+abstract =
+ We formalise Kleene algebra with tests (KAT) and demonic refinement
+ algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification
+ and correctness proofs in the partial correctness setting. While DRA
+ targets similar applications in the context of total correctness. Our
+ formalisation contains the two most important models of these algebras:
+ binary relations in the case of KAT and predicate transformers in the
+ case of DRA. In addition, we derive the inference rules for Hoare logic
+ in KAT and its relational model and present a simple formally verified
+ program verification tool prototype based on the algebraic approach.
+
 [BytecodeLogicJmlTypes]
 title = A Bytecode Logic for JML and Types
 author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
@@ -1593,7 +1609,7 @@ extra-history =
 
 [HereditarilyFinite]
 title = The Hereditarily Finite Sets
-author = Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 date = 2013-11-17
 topic = Logic
 abstract = The theory of hereditarily finite sets is formalised, following
@@ -1608,7 +1624,7 @@ abstract = The theory of hereditarily finite sets is formalised, following
 
 [Incompleteness]
 title = Gödel's Incompleteness Theorems
-author = Lawrence C. Paulson <mailto:lp15@cam.ac.uk>
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 depends-on = HereditarilyFinite
 date = 2013-11-17
 topic = Logic
@@ -1664,3 +1680,50 @@ author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
 date = 2014-01-11
 topic = Computer Science/Security
 abstract = This paper presents an Isabelle/HOL set of theories which allows the specification of crypto-based components and the verification of their composition properties wrt. cryptographic aspects. We introduce a formalisation of the security property of data secrecy, the corresponding definitions and proofs. Please note that here we import the Isabelle/HOL theory ListExtras.thy, presented in the AFP entry FocusStreamsCaseStudies-AFP.
+
+[Featherweight_OCL]
+title = Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5
+author =  Achim D. Brucker <mailto:brucker@spamfence.net>, Frédéric Tuong <mailto:frederic.tuong@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>
+date = 2014-01-16
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = The Unified Modeling Language (UML) is one of the few modeling
+	 languages that is widely used in industry. While UML is mostly known
+	 as diagrammatic modeling language (e.g., visualizing class models),
+	 it is complemented by a textual language, called Object Constraint
+	 Language (OCL). OCL is based on a
+	 three-valued logic that turns UML into a formal language.
+	 Unfortunately the semantics of this specification language, captured
+	 in the "Annex A" of the OCL standard, leads to different
+	 interpretations of corner cases.  We formalize the core of OCL:
+	 denotational definitions, a logical calculus and
+	 operational rules that allow for the execution of OCL expressions by
+	 a mixture of term rewriting and code compilation.  Our formalization
+	 reveals several inconsistencies and contradictions in the current
+	 version of the OCL standard.  Overall, this document is
+	 intended to provide the basis for a machine-checked text "Annex A"
+	 of the OCL standard targeting at tool implementors.
+
+[Relation_Algebra]
+title = Relation Algebra
+author = Georg Struth <mailto:g.struth@sheffield.ac.uk>, Tjark Weber <mailto:tjark.weber@it.uu.se>
+date = 2014-01-25
+topic = Mathematics/Algebra
+abstract = Tarski's algebra of binary relations is formalised along the lines of
+	the standard textbooks of Maddux and Schmidt and Ströhlein. This
+	includes relation-algebraic concepts such as subidentities, vectors and
+	a domain operation as well as various notions associated to functions.
+	Relation algebras are also expanded by a reflexive transitive closure
+	operation, and they are linked with Kleene algebras and models of binary
+	relations and Boolean matrices.
+
+[Secondary_Sylow]
+title = Secondary Sylow Theorems
+author = Jakob von Raumer <mailto:jakob.raumer@student.kit.edu>
+date = 2014-01-28
+topic = Mathematics/Algebra
+abstract = These theories extend the existing proof of the first Sylow theorem
+		(written by Florian Kammueller and L. C. Paulson) by what are often
+		called the second, third and fourth Sylow theorems. These theorems
+		state propositions about the number of Sylow p-subgroups of a group
+		and the fact that they are conjugate to each other. The proofs make
+		use of an implementation of group actions and their properties.

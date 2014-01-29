@@ -38,6 +38,7 @@ Example-Submission
 FFT
 FOL-Fitting
 FeatherweightJava
+Featherweight_OCL
 Fermat3_4
 FileRefinement
 FinFun
@@ -71,6 +72,7 @@ Integration
 Jinja
 JinjaThreads
 JiveDataStoreModel
+KAT_and_DRA
 KBPs
 Kleene_Algebra
 Koenigsberg_Friendship
@@ -119,10 +121,12 @@ Rank_Nullity_Theorem
 Recursion-Theory-I
 Refine_Monadic
 Regular-Sets
+Relation_Algebra
 Ribbon_Proofs
 Robbins-Conjecture
 SATSolverVerification
 SIFPL
+Secondary_Sylow
 SenSocialChoice
 Separation_Algebra
 Separation_Logic_Imperative_HOL
