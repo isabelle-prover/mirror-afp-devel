@@ -10,6 +10,9 @@ theory Kleene_Algebra
 imports Dioid
 begin
 
+nitpick_params [timeout = 120]
+
+
 subsection {* Left Near Kleene Algebras *}
 
 text {* Extending the hierarchy developed in @{theory Dioid} we now
