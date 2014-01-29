@@ -952,14 +952,14 @@ author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. 
 date = 2014-01-23
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
- We formalise Kleene algebra with tests (KAT) and demonic refinement 
- algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification 
- and correctness proofs in the partial correctness setting. While DRA 
- targets similar applications in the context of total correctness. Our 
- formalisation contains the two most important models of these algebras: 
- binary relations in the case of KAT and predicate transformers in the 
- case of DRA. In addition, we derive the inference rules for Hoare logic 
- in KAT and its relational model and present a simple formally verified 
+ We formalise Kleene algebra with tests (KAT) and demonic refinement
+ algebra (DRA) in Isabelle/HOL. KAT is relevant for program verification
+ and correctness proofs in the partial correctness setting. While DRA
+ targets similar applications in the context of total correctness. Our
+ formalisation contains the two most important models of these algebras:
+ binary relations in the case of KAT and predicate transformers in the
+ case of DRA. In addition, we derive the inference rules for Hoare logic
+ in KAT and its relational model and present a simple formally verified
  program verification tool prototype based on the algebraic approach.
 
 [BytecodeLogicJmlTypes]
@@ -1700,7 +1700,7 @@ abstract = The Unified Modeling Language (UML) is one of the few modeling
 
 [Relation_Algebra]
 title = Relation Algebra
-author =  Georg Struth <mailto:g.struth@sheffield.ac.uk>, Tjark Weber <mailto:tjark.weber@it.uu.se>
+author = Georg Struth <mailto:g.struth@sheffield.ac.uk>, Tjark Weber <mailto:tjark.weber@it.uu.se>
 date = 2014-01-25
 topic = Mathematics/Algebra
 abstract = Tarski's algebra of binary relations is formalised along the lines of
@@ -1710,3 +1710,15 @@ abstract = Tarski's algebra of binary relations is formalised along the lines of
 	Relation algebras are also expanded by a reflexive transitive closure
 	operation, and they are linked with Kleene algebras and models of binary
 	relations and Boolean matrices.
+
+[Secondary_Sylow]
+title = Secondary Sylow Theorems
+author = Jakob von Raumer <mailto:jakob.raumer@student.kit.edu>
+date = 2014-01-28
+topic = Mathematics/Algebra
+abstract = These theories extend the existing proof of the first Sylow theorem
+		(written by Florian Kammueller and L. C. Paulson) by what are often
+		called the second, third and fourth Sylow theorems. These theorems
+		state propositions about the number of Sylow p-subgroups of a group
+		and the fact that they are conjugate to each other. The proofs make
+		use of an implementation of group actions and their properties.
