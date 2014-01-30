@@ -7,7 +7,7 @@
 header {* Basis for Demonic Refinement Algebras  *}
 
 theory DRA_Base
-  imports "$AFP/Kleene_Algebra/Kleene_Algebra"
+  imports "../Kleene_Algebra/Kleene_Algebra"
 begin
 
 text {*

@@ -2,10 +2,10 @@ chapter AFP
 session KAT_and_DRA (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
-    "$AFP/Kleene_Algebra/Signatures"
-    "$AFP/Kleene_Algebra/Dioid" 
-    "$AFP/Kleene_Algebra/Kleene_Algebra"
-    "$AFP/Kleene_Algebra/Kleene_Algebra_Models"
+    "../Kleene_Algebra/Signatures"
+    "../Kleene_Algebra/Dioid" 
+    "../Kleene_Algebra/Kleene_Algebra"
+    "../Kleene_Algebra/Kleene_Algebra_Models"
   theories
     DRA
     "SingleSorted/KAT"

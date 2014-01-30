@@ -6,7 +6,7 @@
 header {* Models for Kleene Algebra with Tests *}
 
 theory KAT_Models
-  imports "$AFP/Kleene_Algebra/Kleene_Algebra_Models" KAT
+  imports "../../Kleene_Algebra/Kleene_Algebra_Models" KAT
 begin
 
 text {*
