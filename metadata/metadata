@@ -211,6 +211,23 @@ extra-history =
   [2012-05-10]: Tobias Nipkow added extended regular expressions<br>
   [2012-05-10]: Tobias Nipkow added equivalence checking with partial derivatives
 
+[Regex_Equivalence]
+title = Unified Decision Procedures for Regular Expression Equivalence
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow>, Dmitriy Traytel <mailto:traytel@in.tum.de>
+topic = Computer Science/Automata and Formal Languages
+date = 2014-01-30
+abstract =
+ We formalize a unified framework for verified decision procedures for regular
+ expression equivalence. Five recently published formalizations of such
+ decision procedures (three based on derivatives, two on marked regular
+ expressions) can be obtained as instances of the framework. We discover that
+ the two approaches based on marked regular expressions, which were previously
+ thought to be the same, are different, and one seems to produce uniformly
+ smaller automata.  The common framework makes it possible to compare the
+ performance of the different decision procedures in a meaningful way.
+ <a href="http://www.in.tum.de/~nipkow/pubs/regex_equiv.html">
+ The formalization is described in this paper</a>.
+
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu, Xingyuan Zhang, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
