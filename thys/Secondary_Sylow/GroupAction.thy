@@ -5,10 +5,8 @@
 
 theory GroupAction
 imports
-  "~~/src/HOL/Algebra/Group"
   "~~/src/HOL/Algebra/Bij"
   "~~/src/HOL/Algebra/Sylow"
-  "~~/src/HOL/Algebra/Coset"
 begin
 
 section {* Group Actions *}
@@ -473,7 +471,8 @@ proof -
   with orderG have "finite (carrier G)" unfolding order_def by (metis card_infinite less_nat_zero_code)
   with m have "order G = card (orbit m) * card (stabilizer m)" by (metis orbit_size)
   with orderG m have "p ^ a = card N * card (stabilizer m)" by simp
-  with `card N > 1` show ?thesis by (metis dvd_mult2 gcd_lcm_complete_lattice_nat.bot.extremum_unique nat_dvd_not_less prime prime_def prime_divexp prime_factor zero_less_one)
+  with `card N > 1` show ?thesis
+    by (metis dvd_mult2 dvd_mult_cancel1 nat_dvd_not_less nat_mult_1 prime prime_dvd_power_nat prime_factor_nat prime_nat_def zero_less_one) 
 qed
 
 text {* As a result of the last lemma the only orbits that count modulo

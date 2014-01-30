@@ -4,8 +4,7 @@
 *)
 
 theory SubgroupConjugation
-imports
-  "GroupAction"
+imports GroupAction
 begin
 
 section {* Conjugation of Subgroups and Cosets *}
