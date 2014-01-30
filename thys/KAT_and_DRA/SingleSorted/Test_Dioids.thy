@@ -6,7 +6,7 @@
 header {* Test Dioids *}
 
 theory Test_Dioids
-  imports "$AFP/Kleene_Algebra/Dioid"
+  imports "../../Kleene_Algebra/Dioid"
 begin
 
 text {*
