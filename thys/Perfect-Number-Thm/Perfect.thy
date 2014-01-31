@@ -9,8 +9,8 @@ definition  perfect :: "nat => bool" where
 
 theorem perfect_number_theorem:
   assumes even: "even m" and perfect: "perfect m"
-  shows "\<exists> n . m = 2^n*(2^(n+1) - 1) \<and> prime (2^(n+1) - 1)"
-proof
+  shows "\<exists> n . m = 2^n*(2^(n+1) - 1) \<and> prime ((2::nat)^(n+1) - 1)"
+proof                                         
   from perfect have m0: "m>0" by (auto simp add: perfect_def)
 
   let ?n = "exponent 2 m" 
@@ -18,18 +18,18 @@ proof
   let ?np = "(2::nat)^(?n+1) - 1"
 
   from even have "2 dvd m" by (simp add: even_iff_2_dvd) 
-  with m0 have n1: "?n >= 1 " by (simp add: exponent_ge two_is_prime)
+  with m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
 
   from m0 have  "2^?n dvd m" by (rule power_exponent_dvd)
   hence "m = 2^?n*?A" by (simp only: dvd_mult_div_cancel) 
   with m0 have mdef: "m=2^?n*?A & coprime 2 ?A"
-    by (simp add: two_is_prime coprime_exponent)
+    by (simp add: coprime_exponent)
   moreover with m0 have a0: "?A>0" by (metis nat_0_less_mult_iff)
   moreover
   { from perfect have "2*m=sigma(m)" by (simp add: perfect_def)
     with mdef have "2^(?n+1)*?A=sigma(2^?n*?A)" by auto
   } ultimately have "2^(?n+1)*?A=sigma(2^?n)*sigma(?A)"
-    by (simp add: sigma_semimultiplicative two_is_prime)
+    by (simp add: sigma_semimultiplicative)
   hence formula: "2^(?n+1)*?A=(?np)*sigma(?A)"
     by (simp only: sigma_prime_power_two)
 
@@ -38,9 +38,10 @@ proof
 
   let ?B = "?A div ?np"
 
-  from formula have "?np dvd 2^(?n+1)*?A" by auto
-  hence             "?np dvd ?A"
-    by (metis Suc_eq_plus1_left Suc_pred' add_is_0 coprime_divprod coprime_minus1 two_is_prime zero_less_prime_power zero_neq_one)
+  from formula have "?np dvd ?A * 2^(?n+1)"
+    by (metis mult_commute dvd_def) 
+  hence             "?np dvd ?A" 
+    by (metis coprime_dvd_mult_nat coprime_minus_one_nat power_eq_0_iff zero_neq_numeral)
   hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
   with a0 have  b0: "?B>0" by (metis gr0I mult_is_0)
 
@@ -72,16 +73,15 @@ theorem Euclid_book9_prop36:
   assumes p: "prime (2^(n+1) - (1::nat))"
   shows "perfect ((2^n)*(2^(n+1) - 1))"
 proof (unfold perfect_def, auto)
-  from assms show "(2::nat)*2^n > Suc 0" by (auto simp add: prime_def)
+  from assms show "(2::nat)*2^n > Suc 0" by (auto simp add: prime_nat_def)
 next
-  have p2: "prime 2" by (rule two_is_prime)
-  moreover from p have "prime (2^(n+1) - 1)" by simp
-  moreover have "2 ~= ((2::nat)^(n+1) - 1)" by simp arith
-  ultimately have "coprime 2 (2^(n+1) - 1)" by (rule distinct_prime_coprime)
-  with p p2 have "prime 2" "coprime 2 (2^(n+1) - 1)" "2^(n+1) - 1 > (0::nat)"
-    by (auto simp add: prime_def)
-  hence  "sigma (2^n*(2^(n+1) - 1)) = (sigma(2^n))*(sigma(2^(n+1) - 1))"
-    by (simp only: sigma_semimultiplicative)
+  have "2 ~= ((2::nat)^(n+1) - 1)" by simp arith
+  then have "coprime (2::nat) (2^(n+1) - 1)"
+    by (metis p primes_coprime_nat two_is_prime_nat) 
+  moreover with p have "2^(n+1) - 1 > (0::nat)"
+    by (auto simp add: prime_nat_def)
+  ultimately have  "sigma (2^n*(2^(n+1) - 1)) = (sigma(2^n))*(sigma(2^(n+1) - 1))"
+    by (metis sigma_semimultiplicative two_is_prime_nat)
   also from assms have "... = (sigma(2^(n)))*(2^(n+1))"
     by (auto simp add: prime_imp_sigma)
   also have "... = (2^(n+1) - 1)*(2^(n+1))" by(simp add: sigma_prime_power_two)

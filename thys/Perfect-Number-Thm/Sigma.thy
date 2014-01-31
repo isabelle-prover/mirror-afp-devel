@@ -5,10 +5,10 @@ imports PerfectBasics "~~/src/HOL/Library/Infinite_Set"
 begin
 
 definition divisors :: "nat => nat set" where
-"divisors (m::nat) == {(n::nat) . (n::nat) dvd m}"
+    "divisors (m::nat) == {n . n dvd m}"
 
 definition sigma :: "nat => nat" where
-"sigma m == \<Sum> n  |n dvd m . n"
+    "sigma m == \<Sum> n | n dvd m . n"
 
 lemma sigma_divisors: "sigma(n) = \<Sum> (divisors(n))"
 by (auto simp: sigma_def divisors_def)
@@ -41,7 +41,7 @@ lemma sigma1[simp]: "sigma(1) = 1"
 by (simp add: sigma_def)
 
 lemma prime_divisors: "prime (p::nat) <-> divisors p = {1,p} & p>1"
-by (auto simp add: divisors_def prime_def)
+by (auto simp add: divisors_def prime_nat_def)
 
 lemma prime_imp_sigma: "prime (p::nat) ==> sigma(p) = p+1"
 proof -
@@ -64,24 +64,24 @@ qed
 lemma sigma_imp_divisors: "sigma(n)=n+1 ==> n>1 & divisors n = {n,1}"
 proof
   assume ass:"sigma(n)=n+1"
-  hence "n~=0 & n~=1"
+  hence "n\<noteq>0 & n\<noteq>1"
     by (metis Suc_eq_plus1 n_not_Suc_n sigma0 sigma1)
   thus conc1: "n>1" by simp
 
   show "divisors n = {n,1}" (*TODO: use sigma_third_divisor *)
   proof (rule ccontr)
-    assume "divisors n ~= {n,1}"
-    with conc1 have "divisors n ~= {n,1} & 1<n" by auto
+    assume "divisors n \<noteq> {n,1}"
+    with conc1 have "divisors n \<noteq> {n,1} & 1<n" by auto
     moreover
     from ass conc1 have "1 : divisors(n) & n : divisors n & ~0 : divisors n"
       by (simp add: dvd_def divisors_def)
     ultimately
-    have  "(EX a. a~=n & a~=1 & 1<n & a : divisors n) & 0 ~: divisors n" by auto
-    hence "(EX a. a~=n & a~=1 & 1<n & a~=0 & a : divisors n)" by metis
-    hence "EX a . a~=n & a~=1 & 1~=n & a~=0 & finite {1,a,n} & finite (divisors n) & {1,a,n} <= divisors n" by auto
-    hence "EX a. a~=n & a~=1 & 1~=n & a~=0 & \<Sum> {1,a,n} <= sigma n"
+    have  "(\<exists>a. a\<noteq>n & a\<noteq>1 & 1<n & a : divisors n) & 0 ~: divisors n" by auto
+    hence "(\<exists>a. a\<noteq>n & a\<noteq>1 & 1<n & a\<noteq>0 & a : divisors n)" by metis
+    hence "\<exists>a . a\<noteq>n & a\<noteq>1 & 1\<noteq>n & a\<noteq>0 & finite {1,a,n} & finite (divisors n) & {1,a,n} <= divisors n" by auto
+    hence "\<exists>a. a\<noteq>n & a\<noteq>1 & 1\<noteq>n & a\<noteq>0 & \<Sum> {1,a,n} <= sigma n"
       by (metis setsum_mono2_nat sigma_divisors)
-    hence "EX a. a~=0 & (1+a+n) <= sigma n" by auto
+    hence "\<exists>a. a\<noteq>0 & (1+a+n) <= sigma n" by auto
     hence "1+n<sigma n" by auto (*TODO: this step can be deleted, should i?*)
     with ass show "False" by auto
   qed
@@ -96,6 +96,7 @@ proof -
 qed
 
 lemma pr_pow_div_eq_sm_pr_pow: 
+  fixes p::nat
   assumes prime: "prime p"
   shows "{d . d dvd p^n} = {p^f| f . f<=n}"
 proof
@@ -103,8 +104,9 @@ proof
   proof
     fix x
     assume "x: {p ^ f | f . f <= n}"
-    hence "EX i . x = p^i & i<= n"   by auto
-    with prime have  "x dvd p^n" by (auto simp add: divides_primepow)
+    hence "\<exists>i . x = p^i & i<= n"   by auto
+    with prime have  "x dvd p^n"
+      by (metis le_imp_power_dvd) 
     thus "x : { d . d dvd p^n}" by auto
   qed
   next
@@ -113,7 +115,7 @@ proof
     fix x
     assume "x : {d . d dvd p^n}"
     hence "x dvd p^n" by auto
-    with prime obtain "i" where  "i <= n & x = p^i"
+    with prime obtain "i" where  "i <= n & x = p^i" using prime_dvd_power_nat_iff prime_dvd_power_nat
       by (auto simp only: divides_primepow)
     hence "x = p^i & i <=n" by auto
     thus "x : { p^f | f . f<=n }" by auto
@@ -140,24 +142,24 @@ theorem sigma_primepower:
 proof -
   assume "prime p"
   hence "sigma(p^(e::nat)) = (\<Sum>i=0 .. e . p^i)"
-    by (simp add: pr_pow_div_eq_sm_pr_pow sigma_def rewrite_sum_of_powers prime_def)
+    by (simp add: pr_pow_div_eq_sm_pr_pow sigma_def rewrite_sum_of_powers prime_nat_def)
   thus "(p - 1)*sigma(p^e)=p^(e+1) - 1" by (simp only: simplify_sum_of_powers)
 qed
 
 lemma sigma_prime_power_two: "sigma(2^(n::nat)) = 2^(n+1) - 1"
 proof -
   have "(2 - 1)*sigma(2^(n::nat))=2^(n+1) - 1"
-    by (auto simp only: sigma_primepower two_is_prime)
+    by (auto simp only: sigma_primepower two_is_prime_nat)
   thus ?thesis by simp
 qed
 
-declare [[simproc del: finite_Collect]]
 lemma prodsums_eq_sumprods:
+fixes p::nat and m::nat
 assumes "coprime p m"
 shows "(\<Sum>{p^f|f. f<=n})*(\<Sum>{b. b dvd m}) = (\<Sum> {p^f*b| f b. f <= n & b dvd m})"
 proof-
   have "ALL x f. x dvd m \<longrightarrow> coprime (p ^ f) x"
-    by(metis assms coprime_commute coprime_divisors coprime_exp dvd.eq_iff)
+    by (metis assms coprime_exp_nat gcd_1_nat gcd_nat.absorb_iff1 gcd_nat.commute gcd_semilattice_nat.inf_left_commute)
   thus ?thesis
     by(auto simp: imp_ex setsum_mult_setsum_if_inj[OF mult_inj_if_coprime_nat]
             intro!: arg_cong[where f = "setsum (%x. x)"])
@@ -165,6 +167,7 @@ qed
 declare [[simproc add: finite_Collect]]
 
 lemma rewrite_for_sigma_semimultiplicative:
+fixes p::nat
 assumes "prime p"
 shows "{p^f*b |f b. f<=n & b dvd m} = {a*b |a b. a dvd (p^n) & b dvd m}"
 proof
@@ -183,21 +186,21 @@ qed
 
 
 lemma div_decomp_comp:
-  "coprime m n \<Longrightarrow> a dvd m*n <-> (EX b c . a = b * c & b dvd m & c dvd n)"
-by (auto simp only: division_decomp mult_dvd_mono)
+  fixes a::nat
+  shows "coprime m n \<Longrightarrow> a dvd m*n \<longleftrightarrow> (\<exists>b c. a = b * c & b dvd m & c dvd n)"
+by (auto simp only: division_decomp_nat mult_dvd_mono)
 
-(*TODO logischer volgorde maken *)
 theorem sigma_semimultiplicative:
   assumes p: "prime p" and cop: "coprime p m"
   shows "sigma (p^n) * sigma m = sigma (p^n * m)" (is "?l = ?r")
 proof -
   from cop have cop2: "coprime (p^n) m"
-    by (auto simp add: coprime_exp coprime_commute)
+    by (auto simp add: coprime_exp_nat gcd_commute_nat)
   have "?l = (\<Sum> {a . a dvd p^n})*(\<Sum> {b . b dvd m})" by (simp add: sigma_def)
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)
   also from cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
-    by (auto simp add: prodsums_eq_sumprods prime_def)
+    by (auto simp add: prodsums_eq_sumprods prime_nat_def)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) & b dvd m})"
     by(rule seteq_imp_setsumeq,rule rewrite_for_sigma_semimultiplicative[OF p])
   finally have "?l = \<Sum>{c. c dvd (p^n*m)}" by (subst div_decomp_comp[OF cop2])
