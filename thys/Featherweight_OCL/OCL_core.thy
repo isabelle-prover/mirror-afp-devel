@@ -1127,9 +1127,9 @@ apply(simp add:invalid_def null_def null_fun_def)
 by(auto simp: OclValid_def defined_def false_def true_def  bot_fun_def null_fun_def
         split:split_if_asm)
 
-lemmas foundation17 = foundation16[THEN iffD1,standard]
+lemmas foundation17 = foundation16[THEN iffD1]
 (* correcter rule; the previous is deprecated *)
-lemmas foundation17' = foundation16'[THEN iffD1,standard]
+lemmas foundation17' = foundation16'[THEN iffD1]
 
 lemma foundation18: "\<tau> \<Turnstile> (\<upsilon> X) = (X \<tau> \<noteq> invalid \<tau>)"
 by(auto simp: OclValid_def valid_def false_def true_def bot_fun_def invalid_def
@@ -1141,7 +1141,7 @@ by(auto simp: OclValid_def valid_def false_def true_def bot_fun_def
         split:split_if_asm)
 
 
-lemmas foundation19 = foundation18[THEN iffD1,standard]
+lemmas foundation19 = foundation18[THEN iffD1]
 
 lemma foundation20 : "\<tau> \<Turnstile> (\<delta> X) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> X"
 by(simp add: foundation18 foundation16 invalid_def)
