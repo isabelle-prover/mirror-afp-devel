@@ -263,18 +263,11 @@ lemma csorted_list_of_set_split:
   (ID CORDER('a) = None \<or> \<not> finite A \<longrightarrow> P undefined)"
 by(auto simp add: csorted_list_of_set_def linorder.sorted_list_of_set[OF ID_corder])
 
-
 code_modulename SML
   Set Set_Impl
   Set_Impl Set_Impl
 
 subsection {* Delete code equation with set as constructor *}
-
-lemma [code, code del]:
-  "Set.empty = Set.empty" ..
-
-lemma [code, code del]:
-  "Set.is_empty = Set.is_empty" ..
 
 lemma is_empty_unfold [code_unfold]:
   "set_eq A {} = Set.is_empty A"
@@ -291,147 +284,75 @@ lemma is_UNIV_unfold [code_unfold]:
   "set_eq UNIV A \<longleftrightarrow> is_UNIV A"
 by(auto simp add: is_UNIV_def set_eq_def)
 
-lemma [code, code del]:
-  "uminus_set_inst.uminus_set = uminus_set_inst.uminus_set" ..
-
-lemma [code, code del]:
-  "Set.member = Set.member" ..
-
 lemma [code_unfold del, symmetric, code_post del]:
   "x \<in> set xs \<equiv> List.member xs x" 
 by(simp add: List.member_def)
 
-lemma [code, code del]:
-  "Set.insert = Set.insert" ..
-
-lemma [code, code del]:
-  "Set.remove = Set.remove" ..
-
-lemma [code, code del]:
-  "UNIV = UNIV" ..
-
-lemma [code, code del]:
-  "Set.filter = Set.filter" ..
-
-lemma [code, code del]:
-  "image = image" ..
-
-lemma [code, code del]:
-  "Set.subset_eq = Set.subset_eq" ..
-
-lemma [code, code del]:
-  "Ball = Ball" ..
-
-lemma [code, code del]:
-  "Bex = Bex" ..
-
-lemma [code, code del]:
-  "Set.union = Set.union" ..
-
-lemma [code, code del]:
-  "minus_set_inst.minus_set = minus_set_inst.minus_set" ..
-
-lemma [code, code del]:
-  "Set.inter = Set.inter" ..
-
-lemma [code, code del]:
-  "card = card" ..
-
-lemma [code, code del]:
-  "Set.bind = Set.bind" ..
-
-lemma [code, code del]:
-  "the_elem = the_elem" ..
-
-lemma [code, code del]:
-  "Pow = Pow" ..
-
-lemma [code, code del]:
-  "setsum = setsum" ..
-
-lemma [code, code del]:
-  "Product_Type.product = Product_Type.product"  ..
-
-lemma [code, code del]:
-  "Id_on = Id_on" ..
-
-lemma [code, code del]:
-  "Image = Image" ..
-
-lemma [code, code del]:
-  "trancl = trancl" ..
-
-lemma [code, code del]:
-  "relcomp = relcomp" ..
-
-lemma [code, code del]:
-  "wf = wf" ..
-
-lemma [code, code del]:
-  "Min = Min" ..
-
-lemma [code, code del]:
-  "Inf_fin = Inf_fin" ..
-
-lemma [code, code del]:
-  "INFI = INFI" ..
-
-lemma [code, code del]:
-  "Max = Max" ..
-
-lemma [code, code del]:
-  "Sup_fin = Sup_fin" ..
-
-lemma [code, code del]:
-  "SUPR = SUPR" ..
-
-lemma [code, code del]:
-  "(Inf :: 'a set set \<Rightarrow> 'a set) = Inf" ..
-
-lemma [code, code del]:
-  "(Sup :: 'a set set \<Rightarrow> 'a set) = Sup" ..
-
-lemma [code, code del]:
-  "sorted_list_of_set = sorted_list_of_set" ..
-
-lemma [code, code del]: 
-  "List.map_project = List.map_project" ..
-
-lemma [code, code del]:
-  "Sup_pred_inst.Sup_pred = Sup_pred_inst.Sup_pred" ..
-
-lemma [code, code del]: "finite = finite" ..
-lemma [code, code del]: "Cardinality.finite' = Cardinality.finite'" ..
 lemma [code_unfold del, symmetric, code_post del]:
   "finite \<equiv> Cardinality.finite'" by(simp)
-declare finite'_def[code]
 
-lemma [code, code del]: "card = card" ..
-lemma [code, code del]: "Cardinality.card' = Cardinality.card'" ..
 lemma [code_unfold del, symmetric, code_post del]:
   "card \<equiv> Cardinality.card'" by simp
-declare card'_def[code]
 
-lemma [code, code del]:
-  "Inf_pred_inst.Inf_pred = Inf_pred_inst.Inf_pred" ..
+declare [[code drop:
+  Set.empty
+  Set.is_empty
+  uminus_set_inst.uminus_set
+  Set.member
+  Set.insert
+  Set.remove
+  UNIV
+  Set.filter
+  image
+  Set.subset_eq
+  Ball
+  Bex
+  Set.union
+  minus_set_inst.minus_set
+  Set.inter
+  card
+  Set.bind
+  the_elem
+  Pow
+  setsum
+  Product_Type.product
+  Id_on
+  Image
+  trancl
+  relcomp
+  wf
+  Min
+  Inf_fin
+  INFI
+  Max
+  Sup_fin
+  SUPR
+  "Inf :: 'a set set \<Rightarrow> 'a set"
+  "Sup :: 'a set set \<Rightarrow> 'a set"
+  sorted_list_of_set
+  List.map_project
+  Sup_pred_inst.Sup_pred
+  finite
+  Cardinality.finite'
+  card
+  Cardinality.card'
+  Inf_pred_inst.Inf_pred
+  pred_of_set
+  Cardinality.subset'
+  Cardinality.eq_set
+  Wellfounded.acc
+  Bleast
+  can_select
+  "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool"
+  irrefl
+  bacc
+  set_of_pred
+  set_of_seq
+  ]]
 
-lemma [code, code del]:
-  "pred_of_set = pred_of_set" ..
-
-lemma [code, code del]:
-  "Cardinality.subset' = Cardinality.subset'" ..
-
-lemma [code, code del]:
-  "Cardinality.eq_set = Cardinality.eq_set" ..
-
-lemma [code, code del]:
-  "Wellfounded.acc = Wellfounded.acc" ..
-
-lemma [code, code del]:
-  "Bleast = Bleast" ..
-
-lemma [code, code del]:
-  "can_select = can_select" ..
+declare 
+  finite'_def[code]
+  card'_def[code]
 
 subsection {* Set implementations *}
 
@@ -1324,8 +1245,6 @@ qed
 hide_const (open) subset_eq
 hide_fact (open) subset_eq_def
 
-lemma [code, code del]: "(set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool) = set_eq" ..
-
 lemma eq_set_code [code]: "Cardinality.eq_set = set_eq"
 by(simp add: set_eq_def)
 
@@ -1719,8 +1638,6 @@ proof -
     by(auto simp add: RBT_set_def DList_set_def member_conv_keys ID_Some corder_prod_def ceq_prod_def Collect_member RBT_Set2.fold_conv_fold_keys' RBT_Set2.keys.rep_eq DList_Set.fold.rep_eq set_relcomp_set dest: equal.equal_eq[OF ID_ceq] split: option.split del: equalityI)
 qed
 
-lemma [code, code del]: "irrefl = irrefl" ..
-
 lemma irrefl_code [code]:
   fixes r :: "('a :: {ceq, corder} \<times> 'a) set" shows
   "irrefl r \<longleftrightarrow> 
@@ -1742,8 +1659,6 @@ lemma wf_code [code]:
   (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''wf DList_set: ceq = None'') (\<lambda>_. wf (DList_set dxs))
                      | Some _ \<Rightarrow> acyclic (DList_set dxs))"
 by(auto simp add: wf_iff_acyclic_if_finite split: option.split del: iffI)(simp_all add: wf_iff_acyclic_if_finite finite_code corder_prod_def ceq_prod_def ID_Some)
-
-lemma [code, code del]: "bacc = bacc" ..
 
 lemma bacc_code [code]:
   "bacc R 0 = - snd ` R"
@@ -1889,9 +1804,6 @@ lemma union_monad_code [code]:
   "union_monad (Set_Monad xs) (Set_Monad ys) = Set_Monad (xs @ ys)"
 by(simp)
 
-lemma [code, code del]: "set_of_pred = set_of_pred" ..
-lemma [code, code del]: "set_of_seq = set_of_seq" ..
-
 lemma set_of_pred_code [code]:
   "set_of_pred (Predicate.Seq f) = 
   (case f () of seq.Empty \<Rightarrow> Set_Monad []
@@ -1975,7 +1887,7 @@ let
 in [(@{syntax_const "_SET_IMPL"}, K set_impl_tr)] end
 *}
 
-lemma [code, code del]: "{} = {}" ..
+declare [[code drop: "{}"]]
 
 lemma empty_code [code, code_unfold]: 
   "({} :: 'a :: set_impl set) = set_empty (of_phantom SET_IMPL('a))"

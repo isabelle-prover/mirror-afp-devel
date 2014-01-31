@@ -28,14 +28,14 @@ code_datatype Assoc_List_Mapping RBT_Mapping Mapping
 
 subsection {* Map operations *}
 
-lemma [code, code del]: "Mapping.lookup = Mapping.lookup" ..
+declare [[code drop: Mapping.lookup]]
 
 lemma lookup_Mapping_code [code]:
   "Mapping.lookup (Assoc_List_Mapping al) = DAList.lookup al"
   "Mapping.lookup (RBT_Mapping t) = RBT_Mapping2.lookup t"
 by(simp_all)(transfer, rule)+
 
-lemma [code, code del]: "Mapping.is_empty = Mapping.is_empty" ..
+declare [[code drop: Mapping.is_empty]]
 
 context
 begin
@@ -62,7 +62,7 @@ apply(simp_all split: option.split)
 apply(transfer, simp)
 done
 
-lemma [code, code del]: "Mapping.update = Mapping.update" ..
+declare [[code drop: Mapping.update]]
 
 lemma update_Mapping [code]:
   fixes t :: "('a :: corder, 'b) mapping_rbt" shows
@@ -73,7 +73,7 @@ lemma update_Mapping [code]:
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.insert k v t))" (is ?RBT)
 by(simp_all split: option.split)(transfer, simp)+
 
-lemma [code, code del]: "Mapping.delete = Mapping.delete" ..
+declare [[code drop: Mapping.delete]]
 
 lemma delete_Mapping [code]:
   fixes t :: "('a :: corder, 'b) mapping_rbt" shows
@@ -84,7 +84,7 @@ lemma delete_Mapping [code]:
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.delete k t))"
 by(simp_all split: option.split)(transfer, simp)+
 
-lemma [code, code del]: "Mapping.keys = Mapping.keys" ..
+declare [[code drop: Mapping.keys]]
 
 theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f) t) = Option.map f \<circ> rbt_lookup t"
 by(induct t)(simp_all add: fun_eq_iff)
@@ -101,7 +101,7 @@ proof -
     by(simp add: RBT_set_def)(transfer, auto simp add: ord.rbt_lookup_map_const o_def)
 qed
 
-lemma [code, code del]: "Mapping.size = Mapping.size" ..
+declare [[code drop: Mapping.size]]
 
 context
 begin
@@ -133,7 +133,7 @@ apply(simp_all add: ord.is_rbt_rbt_sorted)
 done
 
 
-lemma [code, code del]: "Mapping.tabulate = Mapping.tabulate" ..
+declare [[code drop: Mapping.tabulate]]
 
 lemma tabulate_Mapping [code]:
   "Mapping.tabulate xs f = fold (\<lambda>k m. Mapping.update k (f k) m) xs Mapping.empty"
@@ -209,7 +209,7 @@ let
 in [(@{syntax_const "_MAPPING_IMPL"}, K mapping_impl_tr)] end
 *}
 
-lemma [code, code del]: "Mapping.empty = Mapping.empty" ..
+declare [[code drop: Mapping.empty]]
 
 lemma Mapping_empty_code [code, code_unfold]: 
   "(Mapping.empty :: ('a :: mapping_impl, 'b) mapping) =
