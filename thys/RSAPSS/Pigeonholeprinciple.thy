@@ -318,11 +318,8 @@ lemma permtimeslist: "perm xs ys \<Longrightarrow> timeslist xs = timeslist ys"
 lemma timeslistpositives: "timeslist (positives n) = fac n"
   by (induct n) auto
 
-lemma pdvdnot: "\<lbrakk>prime p; \<not> p dvd x; \<not> p dvd y\<rbrakk> \<Longrightarrow> \<not> p dvd x*y"
-  apply (auto)
-  apply (insert prime_dvd_mult [of p x y])
-  apply simp
-  done
+lemma pdvdnot: fixes p::nat shows "\<lbrakk>prime p; \<not> p dvd x; \<not> p dvd y\<rbrakk> \<Longrightarrow> \<not> p dvd x*y"
+by (metis prime_dvd_mult_eq_nat)
 
 lemma lessdvdnot: "\<lbrakk>Suc (x::nat) < p\<rbrakk> \<Longrightarrow> \<not> p dvd Suc x"
   apply auto
@@ -331,21 +328,13 @@ lemma lessdvdnot: "\<lbrakk>Suc (x::nat) < p\<rbrakk> \<Longrightarrow> \<not> p
   apply auto
   done
 
-lemma pnotdvdall:"\<lbrakk>prime p; p dvd (Suc n)*(fac n); \<not> p dvd fac n; Suc n < p\<rbrakk> \<Longrightarrow> False"
-  apply (insert lessdvdnot [of n p])
-  apply (insert pdvdnot [of p "Suc n" "fac n"])
-  apply auto
-  done
+lemma pnotdvdall: "\<lbrakk>prime p; p dvd (Suc n)*(fac n); \<not> p dvd fac n; Suc n < p\<rbrakk> \<Longrightarrow> False"
+by (metis lessdvdnot prime_dvd_mult_eq_nat)
 
 lemma primefact: "prime p \<Longrightarrow> (n::nat) < p \<Longrightarrow> fac n mod p \<noteq> 0"
   apply (induct n)
-   apply (simp add: prime_def)
+   apply (simp add: prime_nat_def)
   apply (simp only: fac.simps dvd_eq_mod_eq_0 [symmetric])
-  apply clarify
-  apply (drule meta_mp)
-   apply simp
-  apply (insert lessdvdnot pdvdnot [of "p" "fac n" "Suc n"] pnotdvdall)
-  apply auto
-  done
+  by (metis Suc_lessD pnotdvdall)
 
 end

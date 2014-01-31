@@ -50,18 +50,18 @@ lemma cryptinverts_hilf4:
   apply (simp add: cryptinverts_hilf2 cryptinverts_hilf3 mult_assoc [symmetric])+
   done
 
-lemma primmultgreater: "\<lbrakk> prime p; prime q; p \<noteq> 2; q \<noteq> 2\<rbrakk> \<Longrightarrow> 2 < p*q"
-  apply (simp add:prime_def)
+lemma primmultgreater: fixes p::nat shows "\<lbrakk> prime p; prime q; p \<noteq> 2; q \<noteq> 2\<rbrakk> \<Longrightarrow> 2 < p*q"
+  apply (simp add: prime_nat_def)
   apply (insert mult_le_mono [of 2 p 2 q])
   apply auto
   done
 
-lemma primmultgreater2: "\<lbrakk>prime p; prime q; p \<noteq> q\<rbrakk> \<Longrightarrow>  2 < p*q"
+lemma primmultgreater2: fixes p::nat shows "\<lbrakk>prime p; prime q; p \<noteq> q\<rbrakk> \<Longrightarrow>  2 < p*q"
   apply (cases "p = 2")
    apply simp+
-  apply (simp add: prime_def)
+  apply (simp add: prime_nat_def)
   apply (cases "q = 2")
-   apply (simp add: prime_def)
+   apply (simp add: prime_nat_def)
   apply (erule primmultgreater)
   apply auto
   done
@@ -72,7 +72,7 @@ lemma cryptinverts: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; m < n;
   apply (insert cryptcorrect [of "p*q" "rsa_crypt m e (p * q)" d])
   apply (insert cryptcorrect [of "p*q" m e])
   apply (insert primmultgreater2 [of p q])
-  apply (simp add: prime_def)
+  apply (simp add: prime_nat_def)
   apply (simp add: remainderexp [of "m^e" "p*q" d] power_mult [symmetric])
   done
 

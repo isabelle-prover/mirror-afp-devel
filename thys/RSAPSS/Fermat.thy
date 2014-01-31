@@ -114,19 +114,19 @@ lemma predd: "pred p = p - (1::nat)"
   by (induct p) auto
 
 lemma alllesseqps: "p \<noteq> 0 \<Longrightarrow> alllesseq (S n m p) (pred p)"
-  by (induct n) (auto simp add: predI mod_less_divisor)
+  by (induct n) (auto simp add: predI)
 
 lemma lengths: "length (S n m p) = n"
   by (induct n) auto
 
-lemma suconeless: "prime p \<Longrightarrow> p - 1 < p"
-  by (induct p) (auto simp add: prime_def)
+lemma suconeless:fixes p::nat shows  "prime p \<Longrightarrow> p - 1 < p"
+  by (induct p) (auto simp add: prime_nat_def)
 
-lemma primenotzero: "prime p \<Longrightarrow> p \<noteq> 0"
-  by (auto simp add: prime_def)
+lemma primenotzero:   fixes p::nat shows "prime p \<Longrightarrow> p \<noteq> 0"
+  by (auto simp add: prime_nat_def)
 
 lemma onemodprime: "prime p \<Longrightarrow> 1 mod p = (1::nat)"
-  by (induct p) (auto simp add: prime_def)
+  by (induct p) (auto simp add: prime_nat_def)
 
 lemma fermat: "\<lbrakk>prime p; m mod p \<noteq> 0\<rbrakk> \<Longrightarrow> m^(p-(1::nat)) mod p = 1"
   apply (frule onemodprime[symmetric], simp)
@@ -147,8 +147,6 @@ lemma fermat: "\<lbrakk>prime p; m mod p \<noteq> 0\<rbrakk> \<Longrightarrow> m
   apply (insert lengths[of "p-Suc 0" m p, symmetric])
   apply (insert pigeonholeprinciple [of "S (p-Suc 0) m p"])
   apply (auto)
-  apply (drule permtimeslist)
-  apply (simp add: timeslistpositives) 
-  done
+  by (metis permtimeslist timeslistpositives)
 
 end

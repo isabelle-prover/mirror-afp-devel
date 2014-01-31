@@ -4,10 +4,10 @@
 *)
 
 
-header "Extensions to the Word theory required for PSS" 
+header "Extensions to the Word theory required for PSS"
 
 theory Wordarith
-imports WordOperations "~~/src/HOL/Old_Number_Theory/Primes"
+imports WordOperations "~~/src/HOL/Number_Theory/Primes"
 begin
 
 definition
@@ -33,13 +33,13 @@ definition
 
 lemma rnddvd: "b dvd a \<Longrightarrow> roundup a b * b = a"
   by (auto simp add: roundup dvd_eq_mod_eq_0)
- 
+
 lemma bv_to_nat_zero_prepend: "bv_to_nat a = bv_to_nat (\<zero>#a)"
   by auto
 
 primrec remzero:: "bv \<Rightarrow> bv" where
   "remzero [] = []"
-| "remzero (a#b) = (if a = \<one> then (a#b) else remzero b)" 
+| "remzero (a#b) = (if a = \<one> then (a#b) else remzero b)"
 
 lemma remzeroeq: "bv_to_nat a = bv_to_nat (remzero a)"
 proof (induct a)
@@ -70,7 +70,7 @@ qed
 
 lemma remzero_replicate: "remzero ((replicate n \<zero>)@l) = remzero l"
 by (induct n, auto)
- 
+
 lemma length_bvxor_bound: "a <= length l \<Longrightarrow> a <= length (bvxor l l2)"
 proof (induct a)
   case 0
@@ -113,7 +113,7 @@ proof (cases "1<n")
       assume "n<=3" and "Suc 0<n"
       then show "n=2 \<or> n=3" by auto
     next
-      assume "~n<=3" then have "3<n" by simp 
+      assume "~n<=3" then have "3<n" by simp
       then have "1 < n div 2" by arith
       then show "n=2 \<or> n=3" using b by simp
     qed
@@ -234,22 +234,16 @@ proof (induct n rule: nat_to_bv_helper_legacy_induct)
   qed
 qed
 
-lemma prime_hd_non_zero: assumes a: "prime p" and b: "prime q" shows "hd (nat_to_bv (p*q)) ~= \<zero>"
+lemma prime_hd_non_zero: 
+  fixes p::nat assumes a: "prime p" and b: "prime q" shows "hd (nat_to_bv (p*q)) ~= \<zero>"
 proof -
-  have c: "\<And> p. prime p \<Longrightarrow> (1::nat) < p"
-  proof -
-    fix p
-    assume d: "prime p" 
-    then show "1 < p" by (simp add: prime_def)
-  qed
-  have "1 < p" using c and a by simp
-  moreover have "1 < q" using c and b by simp
-  ultimately have "0 < p*q" by simp
+  have "0 < p*q"
+    by (metis a b mult_is_0 neq0_conv zero_not_prime_nat) 
   then show ?thesis using hd_one[of "p*q"] and nat_to_bv_def by auto
 qed
 
-lemma primerew: "\<lbrakk>m dvd p; m~=1; m~=p\<rbrakk> \<Longrightarrow> ~ prime p"
-  by (auto simp add: prime_def)
+lemma primerew: fixes p::nat shows  "\<lbrakk>m dvd p; m~=1; m~=p\<rbrakk> \<Longrightarrow> ~ prime p"
+  by (auto simp add: prime_nat_def)
 
 
 lemma two_dvd_exp: "0<x \<Longrightarrow> (2::nat) dvd 2^x"
@@ -258,11 +252,11 @@ lemma two_dvd_exp: "0<x \<Longrightarrow> (2::nat) dvd 2^x"
 lemma exp_prod1: "\<lbrakk>1<b;2^x=2*(b::nat)\<rbrakk> \<Longrightarrow> 2 dvd b"
 proof -
   assume a: "1<b" and b: "2^x=2*(b::nat)"
-  have s1: "1<x" 
+  have s1: "1<x"
   proof (cases "1<x")
     assume "1<x" then show ?thesis by simp
   next
-   assume x: "~1 < x" then have "2^x <= (2::nat)" using b 
+   assume x: "~1 < x" then have "2^x <= (2::nat)" using b
    proof (cases "x=0")
       assume "x=0" then show "2^x <= (2::nat)" by simp
     next
@@ -294,11 +288,11 @@ lemma odd_mul_odd: "\<lbrakk>~(2::nat) dvd p; ~2 dvd q\<rbrakk> \<Longrightarrow
   apply (simp add: mod_mult_right_eq)
   done
 
-lemma prime_equal: "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
+lemma prime_equal: fixes p::nat shows "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
 proof -
   assume a: "prime p" and b: "prime q" and c: "2^x=p*q"
-  from a have d: "1 < p" by (simp add: prime_def)
-  moreover from b have e: "1<q" by (simp add: prime_def)
+  from a have d: "1 < p" by (simp add: prime_nat_def)
+  moreover from b have e: "1<q" by (simp add: prime_nat_def)
   show "p=q"
   proof (cases "p=2")
     assume p: "p=2" then have "2 dvd q" using c and exp_prod1[of q x] and e by simp
@@ -307,7 +301,7 @@ proof -
   next
     assume p: "p~=2" show "p=q"
     proof (cases "q=2")
-      assume q: "q=2" then have "2 dvd p" using c and exp_prod1[of p x] and d by simp 
+      assume q: "q=2" then have "2 dvd p" using c and exp_prod1[of p x] and d by simp
       then have "2=p" using primerew[of 2 p] and a by auto
       then show ?thesis using p by simp
     next
@@ -316,7 +310,7 @@ proof -
         from p have "~ 2 dvd p" using primerew and a by auto
         moreover from q have "~2 dvd q" using primerew and b by auto
         ultimately have "~2 dvd p*q" by (simp add: odd_mul_odd)
-        moreover have "(2::nat) dvd 2^x" 
+        moreover have "(2::nat) dvd 2^x"
         proof (cases "x=0")
           assume "x=0" then have "(2::nat)^x=1" by simp
           then show ?thesis using c and d and e by simp

@@ -1,12 +1,12 @@
 (*  Title:      RSAPSS/Pdifference.thy
 
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
-    Copyright:  2005 - Technische Universität Darmstadt 
+    Copyright:  2005 - Technische Universität Darmstadt
 *)
 header "Positive differences"
 
 theory Pdifference
-imports "~~/src/HOL/Old_Number_Theory/Primes" Mod
+imports "~~/src/HOL/Number_Theory/Primes" Mod
 begin
 
 definition
@@ -69,8 +69,9 @@ lemma equalmodstrick2: "a mod p = b mod p \<Longrightarrow> pdifference a b mod 
   apply simp
   done
 
-lemma primekeyrewrite: "\<lbrakk>prime p; p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"
-  apply (drule prime_dvd_mult)
+lemma primekeyrewrite:
+  fixes p::nat shows "\<lbrakk>prime p; p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"
+  apply (drule prime_dvd_mult_nat)
   apply auto
   done
 
