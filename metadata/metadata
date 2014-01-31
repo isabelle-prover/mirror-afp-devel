@@ -1717,7 +1717,10 @@ abstract = The Unified Modeling Language (UML) is one of the few modeling
 
 [Relation_Algebra]
 title = Relation Algebra
-author = Georg Struth <mailto:g.struth@sheffield.ac.uk>, Tjark Weber <mailto:tjark.weber@it.uu.se>
+author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>,
+	 Simon Foster <mailto:simon.foster@york.ac.uk>,
+         Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>,
+         Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2014-01-25
 topic = Mathematics/Algebra
 abstract = Tarski's algebra of binary relations is formalised along the lines of
