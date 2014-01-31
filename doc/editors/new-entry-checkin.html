@@ -17,10 +17,10 @@ release branch and development version.</p>
 
 <ul>
 <li>
-Start by making a directory <code>~/afp</code> where the different branches 
+Start by making a directory <code>~/afp</code> where the different branches
 will go.
 </li>
-	
+
 <li>To set up the release version, in that directory do (fill in 20XX and login)<br>
 <code>hg clone ssh://&lt;login&gt;@hg.code.sf.net/p/afp/afp-20XX release</code>
 </li>
@@ -52,13 +52,13 @@ properly public with the next Isabelle release (they are only available as
 
 <li>create/adjust <tt>config</tt> file (template in <tt>thys/Example-Submission/config</tt>)</li>
 
-<li>make sure there is a <tt>thys/entryname/ROOT</tt> file and add <code>entryname</code> to <code>thys/ROOTS</code>. For the former see the template in <tt>thys/Example-Submission/ROOT</tt>. In particular the entry should be in chapter AFP, and group <tt>(AFP)</tt>, i.e. 
+<li>make sure there is a <tt>thys/entryname/ROOT</tt> file and add <code>entryname</code> to <code>thys/ROOTS</code>. For the former see the template in <tt>thys/Example-Submission/ROOT</tt>. In particular the entry should be in chapter AFP, and group <tt>(AFP)</tt>, i.e.
   <pre>
     chapter AFP
-    
+
     session foo (AFP) = bar +
   </pre></li>
-	
+
 <li>to check, run in <tt>afp/release/thys</tt><br>
 <code>../admin/testall -r Isabelle20XX -c &lt;name&gt;</code><br>
 (be sure to have ISABELLE_RELEASES set to the path where Isabelle releases are kept, e.g. /home/proj/isabelle/)
@@ -75,7 +75,7 @@ for this file to preserve special characters. If the entry uses a new topic or
 category, add it to metadata/topics (make sure there is an empty line at the
 end of the file). </li>
 
-<li>Generate the new web site by running <code>admin/sitegen</code>.</li>
+<li>Generate the new web site by running <code>../admin/sitegen</code>.</li>
 
 <li>Use <code>hg st</code> and <code>hg diff</code> to make sure the generated html makes sense. The diff should be small and concern the new entry only.</li>
 
@@ -86,10 +86,10 @@ end of the file). </li>
 <li>to publish the changes to the web, run<br>
 <code>
 cd ~/afp/release/admin<br>
-./publish -r Isabelle200X &lt;name&gt;
+./publish -r Isabelle201X &lt;name&gt;
 </code>
 <p>
-This will check out the Isabelle200X (=release) version of the archive from
+This will check out the Isabelle201X (=release) version of the archive from
 sourceforge, will run the session &lt;name&gt; to generate
 HTML, produce a <code>.tar.gz</code> for the archive and for the entry, and will update the
 web pages on the server. The script will ask before it copies, so you can check locally if everything is as you want it.
