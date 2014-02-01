@@ -6,12 +6,22 @@
 header "Correctness proof for RSA"
 
 theory Cryptinverts
-imports Fermat Crypt
+imports  Crypt Productdivides  "~~/src/HOL/Number_Theory/Residues" 
 begin
 
 text {* 
   In this theory we show, that a RSA encrypted message can be decrypted
 *}
+
+primrec pred:: "nat \<Rightarrow> nat"
+where
+  "pred 0 = 0"
+| "pred (Suc a) = a"
+
+lemma fermat:
+  assumes "prime p" "m mod p \<noteq> 0" shows "m^(p-(1::nat)) mod p = 1"
+using fermat_theorem_nat [of p m] assms
+by (metis cong_nat_def dvd_eq_mod_eq_0 Divides.mod_less prime_gt_1_nat)
 
 lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p = m mod p"
   apply (cases "m mod p = 0")
@@ -19,12 +29,8 @@ lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p
   apply (simp only: mult_commute [of k "pred p"]
     power_mult mod_mult_right_eq [of "m" "(m^pred p)^k" "p"]
     remainderexp [of "m^pred p" "p" "k", symmetric])
-  apply (insert fermat [of p m])
-  apply (simp add: predd)
-  apply (subst One_nat_def [symmetric])
-  apply (subst onemodprime)
-  apply auto
-  done
+  apply (insert fermat [of p m], auto)
+by (metis Cryptinverts.pred.simps Suc_pred mod_mult_right_eq mult_cancel1 mult_eq_1_iff nat_mult_assoc nat_mult_commute nat_power_eq_Suc_0_iff not_gr0)
 
 lemma cryptinverts_hilf2: "prime p \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod p = m mod p"
   apply (simp add: mult_commute [of "k * pred p" "pred q"] mult_assoc [symmetric])
