@@ -52,8 +52,8 @@ proof -
             unfolding inj_on_def using 1 2 `A1 \<in> F` `A2 \<in> F` by blast
           from D have "Suc m \<le> card (inter D ` F)" by auto
           also have "... < card (inter ?E ` F)"
-            apply (rule card_less_if_surj_not_inj[of _ "inter D"])
-            by (auto simp add: image_image 3 4 `finite F`)
+            by (rule card_less_if_surj_not_inj[of _ "inter D"])
+              (auto simp add: image_image 3 4 `finite F`)
           finally show ?thesis .
         qed
         ultimately have "?E\<subseteq>X \<and> card ?E \<le> Suc m \<and> Suc m + 1 \<le> card (inter ?E ` F)" 
