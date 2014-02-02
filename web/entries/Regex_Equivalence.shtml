@@ -24,42 +24,51 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">R</font>elation
-<font class="first">A</font>lgebra
+<h1><font class="first">U</font>nified
+<font class="first">D</font>ecision
+<font class="first">P</font>rocedures
+for
+<font class="first">R</font>egular
+<font class="first">E</font>xpression
+<font class="first">E</font>quivalence
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Relation Algebra</td></tr>
+        <td class="data" width="80%">Unified Decision Procedures for Regular Expression Equivalence</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>, Simon Foster (simon /dot/ foster /at/ york /dot/ ac /dot/ uk), <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a> and <a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a></td></tr>
+        <td class="data"><a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a> and Dmitriy Traytel (traytel /at/ in /dot/ tum /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-01-25</td></tr>
+        <td class="data">2014-01-30</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Tarski's algebra of binary relations is formalised along the lines of
-the standard textbooks of Maddux and Schmidt and Ströhlein. This
-includes relation-algebraic concepts such as subidentities, vectors and
-a domain operation as well as various notions associated to functions.
-Relation algebras are also expanded by a reflexive transitive closure
-operation, and they are linked with Kleene algebras and models of binary
-relations and Boolean matrices.
+
+We formalize a unified framework for verified decision procedures for regular
+expression equivalence. Five recently published formalizations of such
+decision procedures (three based on derivatives, two on marked regular
+expressions) can be obtained as instances of the framework. We discover that
+the two approaches based on marked regular expressions, which were previously
+thought to be the same, are different, and one seems to produce uniformly
+smaller automata.  The common framework makes it possible to compare the
+performance of the different decision procedures in a meaningful way.
+<a href="http://www.in.tum.de/~nipkow/pubs/regex_equiv.html">
+The formalization is described in this paper</a>.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Relation_Algebra-AFP,
-  author  = {Alasdair Armstrong and Simon Foster and Georg Struth and Tjark Weber},
-  title   = {Relation Algebra},
+			<pre>@article{Regex_Equivalence-AFP,
+  author  = {Tobias Nipkow and Dmitriy Traytel},
+  title   = {Unified Decision Procedures for Regular Expression Equivalence},
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Relation_Algebra.shtml},
+  note    = {\url{http://afp.sf.net/entries/Regex_Equivalence.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -79,7 +88,7 @@ relations and Boolean matrices.
 
 <p></p>
 
-<!--#set var="name" value="Relation_Algebra" -->
+<!--#set var="name" value="Regex_Equivalence" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

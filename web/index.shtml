@@ -55,6 +55,14 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-01-30:
+<a href="entries/Regex_Equivalence.shtml">Unified Decision Procedures for Regular Expression Equivalence</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a> and 
+Dmitriy Traytel
+</td></tr>
+
+<tr><td class="entry">
 2014-01-28:
 <a href="entries/Secondary_Sylow.shtml">Secondary Sylow Theorems</a>
 <br>Author:
@@ -65,8 +73,10 @@ Jakob von Raumer
 2014-01-25:
 <a href="entries/Relation_Algebra.shtml">Relation Algebra</a>
 <br>Author:
-Georg Struth and 
-Tjark Weber
+<a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>,
+Simon Foster,
+<a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a> and 
+<a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a>
 </td></tr>
 
 <tr><td class="entry">
