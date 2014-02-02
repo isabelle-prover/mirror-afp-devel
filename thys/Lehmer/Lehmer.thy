@@ -14,21 +14,6 @@ text {*
   Pratt~\cite{pratt1975certificate}.
 *}
 
-(* XXX add to Isabelle! *)
-lemma prime_phi:
-  assumes  "2 \<le> p" "phi p = (nat p) - 1" shows "prime p"
-proof -
-  have "{x. 0 < x \<and> x < p \<and> coprime x p} = {1..p - 1}"
-    using assms unfolding phi_def by (intro card_seteq) fastforce+
-  then have cop: "\<And>x. x \<in> {1..p - 1} \<Longrightarrow> coprime x p" by blast
-
-  { fix x assume *: "1 < x" "x < p" and "x dvd p"
-    from * have "coprime x p" by (auto intro: cop)
-    with `x dvd p` `1 < x` have "False" by auto }
-  then show ?thesis unfolding prime_int_code
-    using `2 \<le> p` by fastforce
-qed
-
 lemma coprime_power_nat:
   fixes a b :: nat assumes "0 < n" shows "coprime a (b ^ n) \<longleftrightarrow> coprime a b"
   using assms
@@ -80,9 +65,8 @@ proof -
     by (intro euler_theorem[transferred]) auto
   then have "phi (int p) \<ge> p - 1 \<or> phi (int p) = 0"
     using min_cong1[of "phi (int p)"] by fastforce
-  then have "prime (int p)" using phi_leq[transferred, of p] phi_nonzero `2 \<le> p`
+  then show "prime p" using phi_leq[transferred, of p] phi_nonzero `2 \<le> p`
     by (auto intro: prime_phi)
-  then show ?thesis by (simp add: prime_int_def)
 qed
 
 lemma prime_factors_elem:
@@ -228,7 +212,8 @@ lemma converse_lehmer_weak:
     qed
     hence "coprime a p" using prime_imp_coprime_nat[OF prime_p]  by (simp add: gcd_commute_nat)
     hence "coprime (int a) (int p)" by (simp add: transfer_int_nat_gcd(1))
-    have "phi (int p) = p - 1" by (simp add: prime_int_def phi_prime prime_p)
+    have "phi (int p) = p - 1"
+      by (metis nat_int phi_prime prime_p) 
     hence "[a^(p - 1) = 1] (mod p)" using euler_theorem[OF _ `coprime (int a) (int p)`]
       by (simp add: of_nat_power transfer_int_nat_cong[symmetric])
   }
