@@ -119,7 +119,7 @@ theorem atoms_ACI_norm: "atoms \<guillemotleft>r\<guillemotright> = atoms r"
 proof (induct r)
   case (Plus r1 r2) thus ?case
    using atoms_toplevel_summands[of "\<guillemotleft>r1\<guillemotright>"] atoms_toplevel_summands[of "\<guillemotleft>r2\<guillemotright>"]
-   by(simp add: atoms_flatten_PLUS ball_Un)
+   by(simp add: atoms_flatten_PLUS ball_Un Un_commute)
 qed auto
 
 
