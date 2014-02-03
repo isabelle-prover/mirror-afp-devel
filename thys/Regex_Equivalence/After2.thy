@@ -9,23 +9,14 @@ imports
 begin
 (*>*)
 
-datatype 'a mrexp2 =
-  Zero2 |
-  One2 |
-  Atom2 bool 'a |
-  Plus2 "'a mrexp2" "'a mrexp2" bool bool |
-  Times2 "'a mrexp2" "'a mrexp2" bool bool |
-  Star2 "'a mrexp2" bool
-
-wrap_free_constructors (rep_compat)
-  [Zero2, One2, Atom2, Plus2, Times2, Star2]
-  rexp2_case
-  [is_Zero2, is_One2, is_Atom2, is_Plus2, is_Times2, is_Star2]
-  [[], [], [fin, _], [_, _, fin, nul], [_, _, fin, nul], [_, fin]]
-  [[fin: False, nul: False], [fin: False, nul: True],
-   [nul: "\<lambda>(m::bool) (a::'a). False"],
-   [], [], [nul: "\<lambda>(r::'a mrexp2) (f::bool). True"]]
-  by pat_completeness auto
+datatype_new 'a mrexp2 =
+  Zero2 (defaults fin: False nul: False) |
+  One2 (defaults fin: False nul: True) |
+  Atom2 (fin: bool) 'a  (defaults nul: "\<lambda>(m::bool) (a::'a). False") |
+  Plus2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
+  Times2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
+  Star2 "'a mrexp2" (fin: bool) (defaults nul: "\<lambda>(r::'a mrexp2) (f::bool). True")
+datatype_new_compat mrexp2
 
 primrec mrexps2 :: "'a rexp \<Rightarrow> ('a mrexp2) set" where
   "mrexps2 Zero = {Zero2}"
@@ -42,7 +33,7 @@ definition[simp]: "plus2 r s == Plus2 r s (fin r \<or> fin s) (nul r \<or> nul s
 definition[simp]: "times2 r s == Times2 r s (fin r \<and> nul s \<or> fin s) (nul r \<and> nul s)"
 definition[simp]: "star2 r == Star2 r (fin r)"
 
-fun empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
+primrec_new empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
 "empty_mrexp2 Zero = Zero2" |
 "empty_mrexp2 One = One2" |
 "empty_mrexp2 (Atom x) = Atom2 False x" |
@@ -50,7 +41,7 @@ fun empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
 "empty_mrexp2 (Times r s) = times2 (empty_mrexp2 r) (empty_mrexp2 s)" |
 "empty_mrexp2 (Star r) = star2 (empty_mrexp2 r)"
 
-fun shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mrexp2" where
+primrec_new shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mrexp2" where
 "shift2 _ One2 _ = One2" |
 "shift2 _ Zero2 _ = Zero2" |
 "shift2 m (Atom2 _ x) c = Atom2 (m \<and> (x=c)) x" |
@@ -58,7 +49,7 @@ fun shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mr
 "shift2 m (Times2 r s _ _) c = times2 (shift2 m r c) (shift2 (m \<and> nul r \<or> fin r) s c)" |
 "shift2 m (Star2 r _) c =  star2 (shift2 (m \<or> fin r) r c)"
 
-fun strip2 where
+primrec_new strip2 where
 "strip2 Zero2 = Zero" |
 "strip2 One2 = One" |
 "strip2 (Atom2 m x) = Atom (m, x)" |
@@ -69,7 +60,7 @@ fun strip2 where
 lemma strip_mrexps2: "(strip o strip2) ` mrexps2 r = {r}"
 by (induction r) (auto simp: set_eq_subset subset_iff image_iff)
 
-fun ok2 :: "'a mrexp2 \<Rightarrow> bool" where
+primrec_new ok2 :: "'a mrexp2 \<Rightarrow> bool" where
 "ok2 Zero2 = True" |
 "ok2 One2 = True" |
 "ok2 (Atom2 _ _) = True" |
@@ -86,7 +77,7 @@ lemma ok2_nul_nullable[simp]: "ok2 r \<Longrightarrow> nul r = nullable (strip2 
   by (induct r) auto
 
 lemma strip2_shift2: "ok2 r \<Longrightarrow> strip2(shift2 m r c) = shift m (strip2 r) c"
-apply(induction m r c rule: shift2.induct)
+apply(induction r arbitrary: m)
 apply (auto simp: disj_commute)
 done
 
@@ -96,7 +87,7 @@ apply auto
 done
 
 lemma ok2_shift2: "ok2 r \<Longrightarrow> ok2(shift2 m r c)"
-apply(induction m r c rule: shift2.induct)
+apply(induction r arbitrary: m)
 apply auto
 done
 

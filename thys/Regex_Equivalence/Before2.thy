@@ -11,26 +11,16 @@ begin
 
 declare Let_def[simp]
 
-datatype 'a mrexp3 =
-  Zero3 |
-  One3 |
-  Atom3 bool 'a |
-  Plus3 "'a mrexp3" "'a mrexp3" "'a set" bool |
-  Times3 "'a mrexp3" "'a mrexp3" "'a set" bool |
-  Star3 "'a mrexp3" "'a set"
+datatype_new 'a mrexp3 =
+  Zero3 (defaults fin1: "{}" nul: False) |
+  One3 (defaults fin1: "{}" nul: True) |
+  Atom3 bool 'a (defaults fin1: "\<lambda>(m::bool) (a::'a). if m then {a} else {}" nul: "\<lambda>(m::bool) (a::'a). False") |
+  Plus3 "'a mrexp3" "'a mrexp3" (fin1: "'a set") (nul: bool) |
+  Times3 "'a mrexp3" "'a mrexp3" (fin1: "'a set") (nul: bool) |
+  Star3 "'a mrexp3" (fin1: "'a set") (defaults nul: "\<lambda>(_::'a mrexp3) (_::'a set). True")
+datatype_new_compat mrexp3
 
-wrap_free_constructors (rep_compat)
-  [Zero3, One3, Atom3, Plus3, Times3, Star3]
-  rexp3_case
-  [is_Zero3, is_One3, is_Atom3, is_Plus3, is_Times3, is_Star3]
-  [[], [], [_, _], [_, _, fin1, nul], [_, _, fin1, nul], [_, fin1]]
-  [[fin1: "{}", nul: False],
-   [fin1: "{}", nul: True],
-   [fin1: "\<lambda>(m::bool) (a::'a). if m then {a} else {}", nul: "\<lambda>(m::bool) (a::'a). False"],
-   [], [], [nul: "\<lambda>(_::'a mrexp3) (_::'a set). True"]]
-  by pat_completeness auto
-
-primrec final3 where
+primrec_new final3 where
   "final3 Zero3 = False"
 | "final3 One3 = False"
 | "final3 (Atom3 m a) = m"
@@ -38,7 +28,7 @@ primrec final3 where
 | "final3 (Times3 r s _ _) = (final3 s \<or> nul s \<and> final3 r)"
 | "final3 (Star3 r _) = final3 r"
 
-primrec mrexps3 :: "'a rexp \<Rightarrow> ('a mrexp3) set" where
+primrec_new mrexps3 :: "'a rexp \<Rightarrow> ('a mrexp3) set" where
   "mrexps3 Zero = {Zero3}"
 | "mrexps3 One = {One3} "
 | "mrexps3 (Atom a) = {Atom3 True a, Atom3 False a}"
@@ -57,7 +47,7 @@ definition[simp]: "times3 r s ==
   let ns = nul s in Times3 r s (fin1 s \<union> (if ns then fin1 r else {})) (nul r \<and> ns)"
 definition[simp]: "star3 r == Star3 r (fin1 r)"
 
-fun follow3 :: "bool \<Rightarrow> 'a mrexp3 \<Rightarrow> 'a mrexp3" where
+primrec_new follow3 :: "bool \<Rightarrow> 'a mrexp3 \<Rightarrow> 'a mrexp3" where
 "follow3 m Zero3 = Zero3" |
 "follow3 m One3 = One3" |
 "follow3 m (Atom3 _ a) = Atom3 m a" |
@@ -66,7 +56,7 @@ fun follow3 :: "bool \<Rightarrow> 'a mrexp3 \<Rightarrow> 'a mrexp3" where
   times3 (follow3 m r) (follow3 (final3 r \<or> m \<and> nul r) s)" |
 "follow3 m (Star3 r _) = star3(follow3 (final3 r \<or> m) r)"
 
-fun empty_mrexp3 :: "'a rexp \<Rightarrow> 'a mrexp3" where
+primrec_new empty_mrexp3 :: "'a rexp \<Rightarrow> 'a mrexp3" where
 "empty_mrexp3 Zero = Zero3" |
 "empty_mrexp3 One = One3" |
 "empty_mrexp3 (Atom x) = Atom3 False x" |
@@ -74,7 +64,7 @@ fun empty_mrexp3 :: "'a rexp \<Rightarrow> 'a mrexp3" where
 "empty_mrexp3 (Times r s) = times3 (empty_mrexp3 r) (empty_mrexp3 s)" |
 "empty_mrexp3 (Star r) = star3 (empty_mrexp3 r)"
 
-fun move3 :: "'a \<Rightarrow> 'a mrexp3 \<Rightarrow> bool \<Rightarrow> 'a mrexp3" where
+primrec_new move3 :: "'a \<Rightarrow> 'a mrexp3 \<Rightarrow> bool \<Rightarrow> 'a mrexp3" where
 "move3 _ One3 _ = One3" |
 "move3 _ Zero3 _ = Zero3" |
 "move3 c (Atom3 _ a) m = Atom3 m a" |
@@ -83,7 +73,7 @@ fun move3 :: "'a \<Rightarrow> 'a mrexp3 \<Rightarrow> bool \<Rightarrow> 'a mre
   times3 (move3 c r m) (move3 c s (c \<in> fin1 r \<or> m \<and> nul r))" |
 "move3 c (Star3 r _) m = star3 (move3 c r (c \<in> fin1 r \<or> m))"
 
-fun strip3 where
+primrec_new strip3 where
 "strip3 Zero3 = Zero" |
 "strip3 One3 = One" |
 "strip3 (Atom3 m x) = Atom (m, x)" |
@@ -94,7 +84,7 @@ fun strip3 where
 lemma strip_mrexps3: "(strip o strip3) ` mrexps3 r = {r}"
 by (induction r) (auto simp: set_eq_subset subset_iff image_iff)
 
-fun ok3 :: "'a mrexp3 \<Rightarrow> bool" where
+primrec_new ok3 :: "'a mrexp3 \<Rightarrow> bool" where
 "ok3 Zero3 = True" |
 "ok3 One3 = True" |
 "ok3 (Atom3 _ _) = True" |
@@ -135,7 +125,7 @@ lemma strip3_empty_mrexp3[simp]: "strip3 (empty_mrexp3 r) = empty_mrexp r"
   by (induct r) auto
 
 lemma strip3_move3: "ok3 r \<Longrightarrow> strip3(move3 m r c) = move m (strip3 r) c"
-apply(induction m r c rule: move3.induct)
+apply(induction r arbitrary: c)
 apply (auto simp: disj_commute)
 done
 
@@ -150,7 +140,7 @@ apply auto
 done
 
 lemma ok3_move3: "ok3 r \<Longrightarrow> ok3(move3 m r c)"
-apply(induction m r c rule: move3.induct)
+apply(induction r arbitrary: c)
 apply auto
 done
 

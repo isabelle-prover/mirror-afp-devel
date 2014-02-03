@@ -4,11 +4,11 @@ header "Regular Expressions Equivalence Framework"
 
 (*<*)
 theory Automaton
-imports "../Regular-Sets/Regular_Exp" Rtrancl_While
+imports "../Regular-Sets/Regular_Exp" "~~/src/HOL/Library/While_Combinator"
 begin
 (*>*)
 
-primrec add_atoms :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> 'a list"
+primrec_new add_atoms :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
   "add_atoms Zero = id"
 | "add_atoms One = id"

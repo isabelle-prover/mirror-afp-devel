@@ -8,9 +8,6 @@ imports Derivatives_Finite "~~/src/HOL/BNF/Ctr_Sugar"
 begin
 (*>*)
 
-wrap_free_constructors (rep_compat) [Zero, One, Atom, Plus, Times, Star] rexp_case
-  by pat_completeness auto
-
 lemma pderiv_not_is_Zero_is_Plus[simp]: "\<forall>x \<in> pderiv a r. \<not> is_Zero x \<and> \<not> is_Plus x"
   by (induct r) auto
 
@@ -68,7 +65,7 @@ lemma flatten_PLUS_inject: "\<lbrakk>\<forall>x \<in> R \<union> S. \<not> is_Ze
   (flatten PLUS R = flatten PLUS S) = (R = S)"
   by (rule trans[OF PLUS_inject sorted_list_of_set_inject]) auto
 
-primrec pset where
+primrec_new pset where
   "pset Zero = {}"
 | "pset One = {One}"
 | "pset (Atom a) = {Atom a}"
@@ -111,7 +108,7 @@ fun pnTimes :: "'a::linorder rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp" w
 | "pnTimes (Plus r s) t = pnPlus (pnTimes r t) (pnTimes s t)"
 | "pnTimes r s = Times r s"
 
-primrec pnorm_alt :: "'a::linorder rexp \<Rightarrow> 'a rexp" where
+primrec_new pnorm_alt :: "'a::linorder rexp \<Rightarrow> 'a rexp" where
   "pnorm_alt Zero = Zero"
 | "pnorm_alt One = One"
 | "pnorm_alt (Atom a) = Atom a"
@@ -285,7 +282,7 @@ proof (induction w arbitrary: s)
   qed (simp add: pnorm_def pset_deriv)
 qed simp
 
-fun
+primrec_new
   pnderiv :: "'a :: linorder \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "pnderiv c (Zero) = Zero"
