@@ -60,6 +60,7 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
         <li>No use of the command <code>back</code></li>
         <li>Instantiations must not use Isabelle-generated names such as <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid such names.</li>
         <li><code>apply</code> scripts should be indented by subgoal as in the Isabelle distribution. If an <code>apply</code> command is applied to a state with <code>n+1</code> subgoals, it must be indented by <code>n</code> spaces relative to the first <code>apply</code> in the sequence.</li>
+        <li>We prefer structured Isar proofs over apply style, but do not mandate them.</li>
     </ul>
 
     <p>There is a <a href="submit-template">submission template</a>
