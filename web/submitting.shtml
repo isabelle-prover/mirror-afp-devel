@@ -47,12 +47,20 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
         or LGPL if accepted.</li>
     </ul>
 
-		<p>The submission should follow these Isabelle style guidelines:</p>
-		<ul>
-		<li>No use of the command <code>back</code></li>
-		<li>Instantiations must not use Isabelle-generated names such as <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid such names.</li>
-		<li><code>apply</code> scripts should be indented by subgoal as in the Isabelle distribution. If an <code>apply</code> command is applied to a state with <code>n+1</code> subgoals, it must be indented by <code>n</code> spaces relative to the first <code>apply</code> in the sequence.</li>
-		</ul>
+    <p>The submission must build with the current Isabelle release version.
+       Submissions for older Isabelle versions are not accepted.</p>
+    
+    <p>In exceptional circumstances,
+    submissions for the Isabelle development version may be acceptable, but publication of the entry on
+    the front page will be deferred until the next Isabelle release.
+    If you feel this is necessary for your submission, please contact the editors.</p>
+
+    <p>The submission should follow these Isabelle style guidelines:</p>
+    <ul>
+        <li>No use of the command <code>back</code></li>
+        <li>Instantiations must not use Isabelle-generated names such as <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid such names.</li>
+        <li><code>apply</code> scripts should be indented by subgoal as in the Isabelle distribution. If an <code>apply</code> command is applied to a state with <code>n+1</code> subgoals, it must be indented by <code>n</code> spaces relative to the first <code>apply</code> in the sequence.</li>
+    </ul>
 
     <p>There is a <a href="submit-template">submission template</a>
     available and an
