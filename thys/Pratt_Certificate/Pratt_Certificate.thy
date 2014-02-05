@@ -1,7 +1,7 @@
 theory Pratt_Certificate
 imports
   Complex_Main
-  Lehmer
+  "../Lehmer/Lehmer"
 begin
 
 section {* Pratt's Primality Certificates *}
@@ -107,7 +107,8 @@ proof (induction c arbitrary: p a x t)
     obtain q z where "x=q*z" "Prime q \<in> set ys \<and> Triple p a z \<in> set ys"
                and cong:"[a^((p - 1) div q) \<noteq> 1] (mod p)" using Cons.prems x_y by auto
     then have factors_IH:"(\<forall> r \<in> prime_factors z . [a^((p - 1) div r) \<noteq> 1] (mod p))" "prime q" "z>0"
-      using Cons.IH Cons.prems `x>0` `y=Triple p a x` by auto
+      using Cons.IH Cons.prems `x>0` `y=Triple p a x` 
+      by force+
     then have "prime_factors x = prime_factors z \<union> {q}"  using `x =q*z` `x>0`
       by (simp add:prime_factors_product_nat prime_factors_prime)
     then have "(\<forall> q \<in> prime_factors x . [a^((p - 1) div q) \<noteq> 1] (mod p)) \<and> 0 < x"
