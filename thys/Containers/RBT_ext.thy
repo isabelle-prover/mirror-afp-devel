@@ -4,7 +4,7 @@
 theory RBT_ext
 imports
   "~~/src/HOL/Library/RBT_Impl"
-  Auxiliary
+  Containers_Auxiliary
   List_Fusion
 begin
 

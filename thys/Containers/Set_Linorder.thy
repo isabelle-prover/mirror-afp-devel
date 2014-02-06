@@ -3,7 +3,7 @@
 
 theory Set_Linorder 
 imports
-  Auxiliary
+  Containers_Auxiliary
   Lexicographic_Order
   Extend_Partial_Order
   "~~/src/HOL/Library/Cardinality"

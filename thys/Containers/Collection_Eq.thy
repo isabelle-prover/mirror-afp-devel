@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, KIT
                 René Thiemann, UIBK *)
 theory Collection_Eq imports
-  Auxiliary
+  Containers_Auxiliary
   Containers_Generator
 begin
 

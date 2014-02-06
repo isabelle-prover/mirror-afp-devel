@@ -3,7 +3,7 @@
                 René Thiemann, UIBK *)
 
 theory Collection_Enum imports
-  Auxiliary
+  Containers_Auxiliary
   Containers_Generator
 begin
 

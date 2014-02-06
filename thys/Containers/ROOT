@@ -5,7 +5,7 @@ session Containers (AFP) = "Datatype_Order_Generator" +
   theories [document = false]
     "../Regular-Sets/Regexp_Method"
   theories
-    Auxiliary
+    Containers_Auxiliary
     Card_Datatype
     Set_Linorder
     Collection_Order

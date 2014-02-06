@@ -1,7 +1,7 @@
-(*  Title:      Containers/Auxiliary.thy
+(*  Title:      Containers/Containers_Auxiliary.thy
     Author:     Andreas Lochbihler, KIT *)
 
-theory Auxiliary imports
+theory Containers_Auxiliary imports
   "~~/src/HOL/Library/Monad_Syntax"
   "Unit_Instantiations"
 begin
