@@ -488,12 +488,13 @@ lemmas [code] = array_set_oo'_def[unfolded array_set_oo_def[abs_def]]
 
 subsubsection {* Code generator setup for Haskell *}
 
-code_type array 
-  (Haskell "Array.ArrayType/ _")
+code_printing type_constructor array \<rightharpoonup>
+  (Haskell) "Array.ArrayType/ _"
 
 code_reserved Haskell array_of_list
 
-code_include Haskell "Array" {*
+code_printing code_module "Array" \<rightharpoonup>
+  (Haskell) {*
 import qualified Data.Array.Diff as Arr;
 --import qualified Data.Array as Arr;
 import Data.Array.IArray;
@@ -556,7 +557,8 @@ text {*
   old versions.
  *}
 
-code_include SML "STArray"
+code_printing code_module "STArray" \<rightharpoonup>
+  (SML)
 {*
 structure STArray = struct
 
@@ -756,7 +758,8 @@ subsection {* Code Generator Setup for Scala *}
 text {*
   We use a DiffArray-Implementation in Scala.
 *}
-code_include Scala "DiffArray" {*
+code_printing code_module "DiffArray" \<rightharpoonup>
+  (Scala) {*
 object DiffArray {
 
 	import scala.collection.mutable.ArraySeq

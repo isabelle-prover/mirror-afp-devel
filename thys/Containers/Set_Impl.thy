@@ -263,9 +263,8 @@ lemma csorted_list_of_set_split:
   (ID CORDER('a) = None \<or> \<not> finite A \<longrightarrow> P undefined)"
 by(auto simp add: csorted_list_of_set_def linorder.sorted_list_of_set[OF ID_corder])
 
-code_modulename SML
-  Set Set_Impl
-  Set_Impl Set_Impl
+code_identifier code_module Set \<rightharpoonup> (SML) Set_Impl
+  | code_module Set_Impl \<rightharpoonup> (SML) Set_Impl
 
 subsection {* Delete code equation with set as constructor *}
 

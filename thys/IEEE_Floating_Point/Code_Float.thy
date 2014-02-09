@@ -10,71 +10,55 @@ begin
 
 section{*Code Generation Setup for Floats*}
 
-code_type float
-  (SML   "real")
-  (OCaml "float")
+code_printing type_constructor float \<rightharpoonup>
+  (SML) "real" and (OCaml) "float"
 
-code_const "Plus_zero :: float"
-  (SML   "0.0")
-  (OCaml "0.0")
+code_printing constant "Plus_zero :: float" \<rightharpoonup>
+  (SML) "0.0" and (OCaml) "0.0"
 declare Plus_zero_def[code del]
 
 definition One :: float where
 "One = Abs_float (0, bias float_format, 0)"
 declare One_def[code del]
 
-code_const "One :: float"
-  (SML   "1.0")
-  (OCaml "1.0")
+code_printing constant "One :: float" \<rightharpoonup>
+  (SML) "1.0" and (OCaml) "1.0"
 declare one_real_code[code_unfold del]
 
-code_const "float_eq :: float \<Rightarrow> float \<Rightarrow> bool"
-  (SML   "Real.== ((_), (_))")
-  (OCaml "Pervasives.(=)")
+code_printing constant "float_eq :: float \<Rightarrow> float \<Rightarrow> bool" \<rightharpoonup>
+  (SML) "Real.== ((_:real), (_))" and (OCaml) "Pervasives.(=)"
 declare float_eq_def[code del]
 
-code_const "Orderings.less_eq :: float \<Rightarrow> float \<Rightarrow> bool"
-  (SML   "Real.<= ((_), (_))")
-  (OCaml "Pervasives.(<=)")
+code_printing constant "Orderings.less_eq :: float \<Rightarrow> float \<Rightarrow> bool" \<rightharpoonup>
+  (SML) "Real.<= ((_), (_))" and (OCaml) "Pervasives.(<=)"
 declare less_float_def [code del]
 
-code_const "Orderings.less :: float \<Rightarrow> float \<Rightarrow> bool"
-  (SML   "Real.< ((_), (_))")
-  (OCaml "Pervasives.(<)")
+code_printing constant "Orderings.less :: float \<Rightarrow> float \<Rightarrow> bool" \<rightharpoonup>
+  (SML) "Real.< ((_), (_))" and (OCaml) "Pervasives.(<)"
 declare less_eq_float_def[code del]
 
-code_const "op + :: float \<Rightarrow> float \<Rightarrow> float"
-  (SML   "Real.+ ((_), (_))")
-  (OCaml "Pervasives.( +. )")
+code_printing constant "op + :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+  (SML) "Real.+ ((_), (_))" and (OCaml) "Pervasives.( +. )"
 declare plus_float_def[code del]
 
-code_const "op * :: float \<Rightarrow> float \<Rightarrow> float"
-  (SML   "Real.* ((_), (_))")
-  (OCaml "Pervasives.( *. )")
+code_printing constant "op * :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+  (SML) "Real.* ((_), (_))" and (OCaml) "Pervasives.( *. )"
 declare times_float_def [code del]
 
-code_const "op - :: float \<Rightarrow> float \<Rightarrow> float"
-  (SML   "Real.- ((_), (_))")
-  (OCaml "Pervasives.( -. )")
+code_printing constant "op - :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+  (SML) "Real.- ((_), (_))" and (OCaml) "Pervasives.( -. )"
 declare minus_float_def [code del]
 
-code_const "float_neg :: float \<Rightarrow> float"
-  (SML   "Real.~")
-  (OCaml "Pervasives.( ~-. )")
+code_printing constant "float_neg :: float \<Rightarrow> float" \<rightharpoonup>
+  (SML) "Real.~" and (OCaml) "Pervasives.( ~-. )"
 declare float_neg_def [code del]
 
-code_const "op / :: float \<Rightarrow> float \<Rightarrow> float"
-  (SML   "Real.'/ ((_), (_))")
-  (OCaml "Pervasives.( '/. )")
+code_printing constant "op / :: float \<Rightarrow> float \<Rightarrow> float" \<rightharpoonup>
+  (SML) "Real.'/ ((_), (_))" and (OCaml) "Pervasives.( '/. )"
 declare divide_float_def [code del]
 
-code_const "float_eq :: float \<Rightarrow> float \<Rightarrow> bool"
-  (SML   "Real.== ((_:real), (_))")
-
-
-code_const "float_sqrt :: float \<Rightarrow> float"
-  (SML   "Math.sqrt")
-  (OCaml "Pervasives.sqrt")
+code_printing constant "float_sqrt :: float \<Rightarrow> float" \<rightharpoonup>
+  (SML) "Math.sqrt" and (OCaml) "Pervasives.sqrt"
 declare sqrt_def[code del]
 
 

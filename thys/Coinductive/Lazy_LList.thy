@@ -7,17 +7,9 @@ theory Lazy_LList imports
   Coinductive_List
 begin
 
-code_modulename SML
-  Lazy_LList Coinductive_List
-
-code_modulename OCaml
-  Lazy_LList Coinductive_List
-
-code_modulename Haskell
-  Lazy_LList Coinductive_List
-
-code_modulename Scala
-  Lazy_LList Coinductive_List
+code_identifier
+  code_module Lazy_LList \<rightharpoonup>
+    (SML) Coinductive_List and (OCaml) Coinductive_List and (Haskell) Coinductive_List and (Scala) Coinductive_List
 
 definition Lazy_llist :: "(unit \<Rightarrow> ('a \<times> 'a llist) option) \<Rightarrow> 'a llist"
 where [simp]:
