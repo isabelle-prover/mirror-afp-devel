@@ -35,8 +35,7 @@ definition "ref = (UNIV::nat set)"
 
 typedef ref = ref by (simp add: ref_def)
 
-code_type ref
-  (SML "int")
+code_datatype Abs_ref
 
 lemma finite_nat_ex_max: 
   assumes fin: "finite (N::nat set)"
