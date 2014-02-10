@@ -216,7 +216,7 @@ let test_bit x n =
   Int32.compare 
     (Int32.logand x (Int32.shift_left Int32.one (Big_int.int_of_big_int n)))
     Int32.zero
-  != 0;;
+  <> 0;;
 
 end;; (*struct Uint32*)*}
 code_reserved OCaml Uint32
@@ -357,7 +357,7 @@ code_printing
 | constant "HOL.equal :: uint32 \<Rightarrow> _ \<Rightarrow> bool" \<rightharpoonup>
   (SML) "!((_ : Word32.word) = _)" and
   (Haskell) infix 4 "==" and
-  (OCaml) "(Int32.compare _ _ == 0)" and
+  (OCaml) "(Int32.compare _ _ = 0)" and
   (Scala) infixl 5 "=="
 | class_instance uint32 :: equal \<rightharpoonup>
   (Haskell) -
