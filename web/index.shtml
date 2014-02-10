@@ -62,6 +62,13 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 </td></tr>
 
 <tr><td class="entry">
+2014-02-06:
+<a href="entries/Real_Impl.shtml">Implementing field extensions of the form Q[sqrt(b)]</a>
+<br>Author:
+René Thiemann
+</td></tr>
+
+<tr><td class="entry">
 2014-01-30:
 <a href="entries/Regex_Equivalence.shtml">Unified Decision Procedures for Regular Expression Equivalence</a>
 <br>Author:
