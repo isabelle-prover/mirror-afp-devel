@@ -1,3 +1,20 @@
+[Real_Impl]
+title = Implementing field extensions of the form Q[sqrt(b)]
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+date = 2014-02-06
+license = LGPL
+topic = Mathematics/Analysis
+abstract =
+  We apply data refinement to implement the real numbers, where we support all
+  numbers in the field extension Q[sqrt(b)], i.e., all numbers of the form p +
+  q * sqrt(b) for rational numbers p and q and some fixed natural number b. To
+  this end, we also developed algorithms to precisely compute roots of a
+  rational number, and to perform a factorization of natural numbers which
+  eliminates duplicate prime factors.
+  <p>
+  Our results have been used to certify termination proofs which involve
+  polynomial interpretations over the reals.
+
 [ShortestPath]
 title = An Axiomatic Characterization of the Single-Source Shortest Path Problem
 author = Christine Rizkallah <https://www.mpi-inf.mpg.de/~crizkall/>

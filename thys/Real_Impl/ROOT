@@ -1,0 +1,14 @@
+chapter AFP
+
+session Real_Impl (AFP) = HOL +
+  options [timeout = 300]
+  theories [document = false]
+    "../Sqrt_Babylonian/Sqrt_Babylonian"
+    "../Cauchy/CauchysMeanTheorem"
+    "Show_Instances"
+    "~~/src/HOL/Number_Theory/UniqueFactorization"
+  theories
+    Real_Unique_Impl
+  files
+    "document/root.bib"
+    "document/root.tex"
