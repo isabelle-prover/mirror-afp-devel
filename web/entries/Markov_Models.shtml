@@ -50,6 +50,7 @@ rewards.
 As application of these models we formalize probabilistic model
 checking of pCTL formulas, analysis of IPv4 address allocation in
 ZeroConf and an analysis of the anonymity of the Crowds protocol.
+<a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
