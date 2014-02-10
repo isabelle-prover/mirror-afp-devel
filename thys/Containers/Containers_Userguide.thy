@@ -165,7 +165,8 @@ text {*
   First, the simple case of a type constructor @{text simple_tycon} without parameters that already is an instance of @{class equal}:
 *}
 typedecl simple_tycon
-arities simple_tycon :: equal
+axiomatization where simple_tycon_equal: "OFCLASS(simple_tycon, equal_class)"
+instance simple_tycon :: equal by (rule simple_tycon_equal)
 
 instantiation simple_tycon :: ceq begin
 definition "CEQ(simple_tycon) = Some op ="
@@ -242,7 +243,8 @@ derive (linorder) corder expr
 text {*
   In general, the pattern for type constructors without parameters looks as follows:
 *}
-arities simple_tycon :: linorder
+axiomatization where simple_tycon_linorder: "OFCLASS(simple_tycon, linorder_class)"
+instance simple_tycon :: linorder by (rule simple_tycon_linorder)
 
 instantiation simple_tycon :: corder begin
 definition "CORDER(simple_tycon) = Some (op \<le>, op <)"

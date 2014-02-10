@@ -26,7 +26,8 @@ text {*
 *}
 
 typedecl Proc -- {* the set of processes *}
-arities Proc :: finite
+axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
+instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
   "N \<equiv> card (UNIV::Proc set)"

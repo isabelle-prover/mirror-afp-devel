@@ -26,8 +26,9 @@ text {*
   of the generic HO model.
 *}
 
-typedecl Proc
-arities Proc :: finite
+typedecl Proc -- {* the set of processes *}
+axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
+instance Proc :: finite by (rule Proc_finite)
 
 abbreviation
   "N \<equiv> card (UNIV::Proc set)"   -- {* number of processes *}

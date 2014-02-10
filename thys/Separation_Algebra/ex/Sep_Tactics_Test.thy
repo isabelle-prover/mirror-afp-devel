@@ -13,7 +13,8 @@ typedecl p
 typedecl val
 typedecl heap
 
-arities heap :: sep_algebra
+axiomatization where heap_sep_algebra: "OFCLASS(heap, sep_algebra_class)"
+instance heap :: sep_algebra by (rule heap_sep_algebra)
 
 axiomatization
   points_to :: "p \<Rightarrow> val \<Rightarrow> heap \<Rightarrow> bool" and
