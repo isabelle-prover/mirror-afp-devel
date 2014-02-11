@@ -142,7 +142,7 @@ let
       val lthy'' = Class.prove_instantiation_instance (K (
         Class.intro_classes_tac []
         THEN rtac assoc_thm 1
-        THEN unfold_tac [def_thm] lthy'
+        THEN unfold_tac lthy' [def_thm] 
         THEN rtac @{thm shows_list_aux_assoc} 1
         THEN rtac @{thm ballI} 1
         THEN rtac assoc_thm 1
