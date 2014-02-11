@@ -81,7 +81,7 @@ lemma real_code_unfold_dels:
   "0 \<equiv> (of_rat 0 :: real)"
   "1 \<equiv> (of_rat 1 :: real)"
   "numeral k \<equiv> (of_rat (numeral k) :: real)"
-  "neg_numeral k \<equiv> (of_rat (neg_numeral k) :: real)"
+  "- numeral k \<equiv> (of_rat (- numeral k) :: real)"
   by simp_all
 
 lemma real_standard_impls:
@@ -330,13 +330,13 @@ lemma ma_plus:
   "(real_of r1 + real_of r2) = (if ma_compatible r1 r2
     then real_of (ma_plus r1 r2) else     
     Code.abort (STR ''different base'') (\<lambda> _. real_of r1 + real_of r2))"
-  by (transfer, auto split: prod.split simp: field_simps of_rat_add)
+  by (transfer', auto split: prod.split simp: field_simps of_rat_add)
     
 lemma ma_times:
   "(real_of r1 * real_of r2) = (if ma_compatible r1 r2
     then real_of (ma_times r1 r2) else     
     Code.abort (STR ''different base'') (\<lambda> _. real_of r1 * real_of r2))"
-  by transfer (auto split: prod.split simp: field_simps of_rat_mult of_rat_add)
+  by transfer' (auto split: prod.split simp: field_simps of_rat_mult of_rat_add)
   
 lemma ma_equal:
   "HOL.equal (real_of r1) (real_of r2) = (if ma_compatible r1 r2
