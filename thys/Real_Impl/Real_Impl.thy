@@ -509,4 +509,13 @@ declare real_code_unfold_dels[code_unfold del]
 declare real_standard_impls[code]
 declare ma_code_eqns[code]
 
+text {* Some tests with small numbers. To work on larger number, one should
+  additionally import the theories for efficient calculation on numbers *}
+
+value "\<lfloor>101.1 * (3 * sqrt 2 + 6 * sqrt 0.5)\<rfloor>"
+value "\<lfloor>606.2 * sqrt 2 + 0.001\<rfloor>"
+value "101.1 * (3 * sqrt 2 + 6 * sqrt 0.5) = 606.2 * sqrt 2 + 0.001"
+value "101.1 * (3 * sqrt 2 + 6 * sqrt 0.5) > 606.2 * sqrt 2 + 0.001"
+value "(sqrt 0.1 \<in> \<rat>, sqrt -0.09 \<in> \<rat>)"
+
 end
