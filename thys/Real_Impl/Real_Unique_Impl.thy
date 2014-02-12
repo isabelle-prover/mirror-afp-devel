@@ -61,9 +61,6 @@ lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bo
 lift_definition mau_equal :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_identity by simp
 lift_definition mau_is_rat :: "mini_alg_unique \<Rightarrow> bool" is ma_is_rat by simp
 
-lifting_forget literal.lifting
-lifting_update literal.lifting
-
 lemma mau_floor: "floor (real_of_u r) = mau_floor r" 
   using ma_floor by (transfer, auto)
 lemma mau_inverse: "inverse (real_of_u r) = real_of_u (mau_inverse r)" 

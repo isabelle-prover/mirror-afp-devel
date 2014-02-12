@@ -96,9 +96,6 @@ typedef mini_alg =
   q = 0 \<or> b \<in> sqrt_irrat}"
   by auto
 
-lifting_forget literal.lifting
-lifting_update literal.lifting
-
 setup_lifting type_definition_mini_alg
 
 lift_definition real_of :: "mini_alg \<Rightarrow> real" is
