@@ -11,33 +11,6 @@ theory Native_Cast imports
   Uint32
 begin
 
-text {* Setup @{const integer_of_char} for symbolic evaluation 
-  %This should actually be done in @{theory Code_Char}.
-*}
-
-declare integer_of_char_def [code del]
-
-lemma integer_of_nat_0: "integer_of_nat 0 = 0"
-by transfer simp
-
-lemma integer_of_nat_1: "integer_of_nat 1 = 1"
-by transfer simp
-
-lemma integer_of_nat_numeral:
-  "integer_of_nat (numeral n) = numeral n"
-by transfer simp
-
-lemmas integer_of_char_code [code] =
-  nat_of_char_simps[
-    THEN arg_cong[where f="integer_of_nat"],
-    unfolded integer_of_nat_numeral integer_of_nat_1 integer_of_nat_0,
-    folded fun_cong[OF integer_of_char_def, unfolded o_apply]]
-
-lemma char_of_integer_code [code]:
-  "char_of_integer n = enum_class.enum ! (nat_of_integer n mod 256)"
-by(simp add: char_of_integer_def char_of_nat_def)
-
-
 text {* Auxiliary stuff *}
 
 context begin interpretation lifting_syntax .
