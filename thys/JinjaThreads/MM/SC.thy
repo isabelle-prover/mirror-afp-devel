@@ -27,7 +27,7 @@ datatype heapobj
   | Arr ty fields cells
     -- "element type, fields (from object), and list of each cell's content"
 
-lemma heapobj_rec [simp]: "heapobj_rec = heapobj_case"
+lemma rec_heapobj [simp]: "rec_heapobj = case_heapobj"
 by(auto intro!: ext split: heapobj.split)
 
 primrec obj_ty  :: "heapobj \<Rightarrow> htype"
@@ -161,7 +161,7 @@ notation sc.confs ("_,_ \<turnstile>sc _ [:\<le>] _" [51,51,51,51] 50)
 notation sc.hext ("_ \<unlhd>sc _" [51,51] 50)
 
 lemma sc_start_heap_ok: "sc_start_heap_ok P"
-apply(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def sys_xcpts_list_def option_case_conv_if new_Addr_SomeI del: blank.simps split del: option.split split_if)
+apply(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def sys_xcpts_list_def case_option_conv_if new_Addr_SomeI del: blank.simps split del: option.split split_if)
 done
 
 lemma sc_wf_start_state_iff:

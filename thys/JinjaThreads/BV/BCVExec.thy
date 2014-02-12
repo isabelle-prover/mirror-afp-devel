@@ -15,7 +15,7 @@ lemmas [code_unfold] = exec_lub_def
 lemmas [code] = JVM_le_unfold[THEN meta_eq_to_obj_eq]
 
 lemma err_code [code]:
-  "Err.err A = Collect (err_case True (\<lambda>x. x \<in> A))"
+  "Err.err A = Collect (case_err True (\<lambda>x. x \<in> A))"
 by(auto simp add: err_def split: err.split)
 
 lemma list_code [code]:
@@ -24,7 +24,7 @@ unfolding list_def
 by(auto intro!: ext simp add: list_all_iff)
 
 lemma opt_code [code]:
-  "opt A = Collect (option_case True (\<lambda>x. x \<in> A))"
+  "opt A = Collect (case_option True (\<lambda>x. x \<in> A))"
 by(auto simp add: opt_def split: option.split)
 
 lemma Times_code [code_unfold]:

@@ -27,7 +27,7 @@ datatype heapobj
   = Obj cname fields                    -- "class instance with class name and fields"
   | Arr ty nat array_fields array_cells                 -- "element type, size, fields and cell contents"
 
-lemma heapobj_rec [simp]: "heapobj_rec = heapobj_case"
+lemma rec_heapobj [simp]: "rec_heapobj = case_heapobj"
 by(auto intro!: ext split: heapobj.split)
 
 primrec obj_ty  :: "heapobj \<Rightarrow> htype"
@@ -199,7 +199,7 @@ lemma new_Addr_SomeI: "\<exists>a. new_Addr h = Some a"
 by(simp add: new_Addr_def)
 
 lemma sc_start_heap_ok: "sc_start_heap_ok P"
-by(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def option_case_conv_if new_Addr_SomeI sys_xcpts_list_def del: blank.simps split del: option.split split_if)
+by(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def case_option_conv_if new_Addr_SomeI sys_xcpts_list_def del: blank.simps split del: option.split split_if)
 
 lemma sc_wf_start_state_iff:
   "sc_wf_start_state P C M vs \<longleftrightarrow> (\<exists>Ts T meth D. P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>meth\<rfloor> in D \<and> P,sc_start_heap P \<turnstile>sc vs [:\<le>] Ts)"

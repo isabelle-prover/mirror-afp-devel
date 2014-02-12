@@ -205,8 +205,8 @@ fun recover_mutual_psimp all_orig_fdefs parts ctxt (fname, _, _, args, rhs)
     |> export
   end
 
-val inl_perm = @{lemma "x = Inl y ==> Sum_Type.Projl (permute p x) = permute p (Sum_Type.Projl x)" by simp}
-val inr_perm = @{lemma "x = Inr y ==> Sum_Type.Projr (permute p x) = permute p (Sum_Type.Projr x)" by simp}
+val inl_perm = @{lemma "x = Inl y ==> projl (permute p x) = permute p (projl x)" by simp}
+val inr_perm = @{lemma "x = Inr y ==> projr (permute p x) = permute p (projr x)" by simp}
 
 fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _)
   import (export : thm -> thm) sum_psimp_eq =
@@ -229,8 +229,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
 
     val simpset =
       put_simpset HOL_basic_ss ctxt'' addsimps 
-      @{thms permute_sum.simps[symmetric] Pair_eqvt[symmetric]} @
-      @{thms Projr.simps Projl.simps} @
+      @{thms permute_sum.simps[symmetric] Pair_eqvt[symmetric] sum.sel} @
       [(cond MRS eqvt_thm) RS @{thm sym}] @ 
       [inl_perm, inr_perm, simp] 
     val goal_lhs = mk_perm p (list_comb (f, args))
@@ -432,7 +431,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
         Syntax.check_term lthy'' (mk_comp_dummy inj_fun fun_var)
       end
 
-    val sum_case_exp = map mk_cases parts
+    val case_sum_exp = map mk_cases parts
       |> SumTree.mk_sumcases RST 
    
     val (G_name, G_type) = dest_Free G 
@@ -441,7 +440,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val GIntros_aux = GIntro_thms
       |> map prop_of
       |> map (Term.subst_free subst)
-      |> map (subst_all sum_case_exp)
+      |> map (subst_all case_sum_exp)
 
     val ((G_aux, GIntro_aux_thms, _, G_aux_induct), lthy''') = 
       Nominal_Function_Core.inductive_def ((Binding.name G_name_aux, G_type), NoSyn) GIntros_aux lthy''
@@ -474,7 +473,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val goal_iff2 = Logic.mk_implies (G_prem, G_aux_prem)
       |> all x |> all y
 
-    val simp_thms = @{thms Projl.simps Projr.simps sum.inject sum.cases sum.distinct o_apply}
+    val simp_thms = @{thms sum.sel sum.inject sum.cases sum.distinct o_apply}
     val simpset0 = put_simpset HOL_basic_ss lthy''' addsimps simp_thms
     val simpset1 = put_simpset HOL_ss lthy''' addsimps simp_thms
 

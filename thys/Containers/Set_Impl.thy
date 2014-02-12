@@ -41,7 +41,7 @@ apply(simp_all add: quicksort_acc.psimps quicksort_part.psimps)
 done
 
 termination
-apply(relation "measure (sum_case (\<lambda>(_, xs). 2 * length xs ^ 2) (\<lambda>(_, _, lts, eqs, gts, zs). 2 * (length lts + length eqs + length gts + length zs) ^ 2 + length zs + 1))")
+apply(relation "measure (case_sum (\<lambda>(_, xs). 2 * length xs ^ 2) (\<lambda>(_, _, lts, eqs, gts, zs). 2 * (length lts + length eqs + length gts + length zs) ^ 2 + length zs + 1))")
 apply(simp_all add: power2_eq_square add_mult_distrib add_mult_distrib2 length_quicksort_accp)
 done
 

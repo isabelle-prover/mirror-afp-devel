@@ -985,22 +985,18 @@ recdef inter_guards "inv_image com_rel fst"
 (hints cong add: option.case_cong if_cong  
        recdef_wf: wf_com_rel simp: com_rel.intros)
 
-
 lemma inter_guards_strip_eq:
   "\<And>c. (c1 \<inter>\<^sub>g c2) = Some c  \<Longrightarrow> 
     (strip_guards UNIV c = strip_guards UNIV c1) \<and> 
     (strip_guards UNIV c = strip_guards UNIV c2)"
 apply (induct c1 c2 rule: inter_guards.induct) 
 prefer 8 
-apply (simp split: split_if_asm  add: not_None_eq)
+apply (simp split: split_if_asm)
 apply hypsubst
 apply simp
-apply (rule conjI)
-apply  (rule ext)
-apply  (erule_tac x=s in allE, erule exE)
-apply  simp
 apply (rule ext)
 apply (erule_tac x=s in allE, erule exE)
+apply (erule_tac x=s in allE)
 apply fastforce
 apply (fastforce split: option.splits split_if_asm)+
 done
@@ -1174,6 +1170,5 @@ lemma subseteq_guards_refl: "c \<subseteq>\<^sub>g c"
   by (induct c) auto
 
 (* Antisymmetry and transitivity should hold as well\<dots> *)
-
 
 end

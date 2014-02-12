@@ -76,20 +76,20 @@ text {* Basic configuration for monotonicity prover: *}
 lemmas [refine_mono] = monoI monotoneI[of "op \<le>" "op \<le>"]
 lemmas [refine_mono] = TrueI le_funI order_refl
 
-lemma prod_case_mono[refine_mono]: 
-  "\<lbrakk>\<And>a b. p=(a,b) \<Longrightarrow> f a b \<le> f' a b\<rbrakk> \<Longrightarrow> prod_case f p \<le> prod_case f' p"
+lemma case_prod_mono[refine_mono]: 
+  "\<lbrakk>\<And>a b. p=(a,b) \<Longrightarrow> f a b \<le> f' a b\<rbrakk> \<Longrightarrow> case_prod f p \<le> case_prod f' p"
   by (auto split: prod.split)
 
-lemma option_case_mono[refine_mono]:
+lemma case_option_mono[refine_mono]:
   assumes "fn \<le> fn'"
   assumes "\<And>v. x=Some v \<Longrightarrow> fs v \<le> fs' v"
-  shows "option_case fn fs x \<le> option_case fn' fs' x"
+  shows "case_option fn fs x \<le> case_option fn' fs' x"
   using assms by (auto split: option.split)
 
-lemma list_case_mono[refine_mono]:
+lemma case_list_mono[refine_mono]:
   assumes "fn \<le> fn'"
   assumes "\<And>x xs. l=x#xs \<Longrightarrow> fc x xs \<le> fc' x xs"
-  shows "list_case fn fc l \<le> list_case fn' fc' l"
+  shows "case_list fn fc l \<le> case_list fn' fc' l"
   using assms by (auto split: list.split)
 
 lemma if_mono[refine_mono]:
@@ -184,7 +184,7 @@ proof (rule wf_no_infinite_down_chainI, simp)
   qed
 
   txt {* Construct chain in @{text "S'"}*}
-  def g'\<equiv>"nat_rec x0' (\<lambda>i x. SOME x'. 
+  def g'\<equiv>"rec_nat x0' (\<lambda>i x. SOME x'. 
           (x,x')\<in>S' \<and> (f' (Suc i),x')\<in>R \<and> (x0', x')\<in>S'\<^sup>* )"
   {
     fix i

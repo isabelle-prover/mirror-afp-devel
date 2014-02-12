@@ -37,8 +37,8 @@ apply(induct y_cl_var_var'_v_list)
  apply(subgoal_tac "{a. a \<noteq> x' \<longrightarrow> (\<exists>y. L a = Some y)} = {a. a = x' \<or> (\<exists>y. L a = Some y)}")
  apply(simp add: Collect_disj_eq) apply(force)
 apply(clarsimp simp add: map_add_def dom_def split: split_if_asm)
-apply(subgoal_tac "{aa. aa \<noteq> x_var a \<longrightarrow> aa \<noteq> x' \<longrightarrow> (\<exists>y. option_case (L aa) Some (map_of (map (\<lambda>(y, cl, var, var', y). (x_var var', y)) y_cl_var_var'_v_list) aa) = Some y)} =
-                   {aa. aa = x_var a \<or> (aa = x' \<or> (\<exists>y. option_case (L aa) Some (map_of (map (\<lambda>(y, cl, var, var', y). (x_var var', y)) y_cl_var_var'_v_list) aa) = Some y))}")
+apply(subgoal_tac "{aa. aa \<noteq> x_var a \<longrightarrow> aa \<noteq> x' \<longrightarrow> (\<exists>y. case_option (L aa) Some (map_of (map (\<lambda>(y, cl, var, var', y). (x_var var', y)) y_cl_var_var'_v_list) aa) = Some y)} =
+                   {aa. aa = x_var a \<or> (aa = x' \<or> (\<exists>y. case_option (L aa) Some (map_of (map (\<lambda>(y, cl, var, var', y). (x_var var', y)) y_cl_var_var'_v_list) aa) = Some y))}")
 apply(simp add: Collect_disj_eq) apply(force)
 done
 
@@ -333,7 +333,7 @@ done
 
 lemma find_type_lift_opts[rule_format]:
   "(\<forall>x\<in>set cl_var_ty_list. (\<lambda>(cl_k, var_k, ty_k). find_type_f P ctx cl_k = Some ty_k) x) \<longrightarrow>
-      lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl_k, var_k, ty_k). vd_def cl_k var_k) cl_var_ty_list)) =
+      lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl_k, var_k, ty_k). vd_def cl_k var_k) cl_var_ty_list)) =
       Some (map (\<lambda>(cl, var, ty). ty) cl_var_ty_list)"
 by (induct cl_var_ty_list, auto)
 
@@ -343,7 +343,7 @@ by (induct path, auto split: option.splits)
 
 lemma lift_opts_map:
   "\<forall>x\<in>set cl_var_ty_list. (\<lambda>(cl_k, var_k, ty_k). find_type_f P ctx cl_k = Some ty_k) x \<Longrightarrow>
-      lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl_k, var_k, ty_k). vd_def cl_k var_k) cl_var_ty_list)) = Some (map (\<lambda>(cl, var, ty). ty) cl_var_ty_list)"
+      lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl_k, var_k, ty_k). vd_def cl_k var_k) cl_var_ty_list)) = Some (map (\<lambda>(cl, var, ty). ty) cl_var_ty_list)"
 by (induct cl_var_ty_list, auto)
 
 lemma m_in_list[rule_format]:
@@ -354,18 +354,19 @@ by (induct meth_def_meth_list, auto simp add: method_name_f_def split: meth_def.
 
 lemma m_image_eq[rule_format]:
   "meth_def_def (meth_sig_def cl m list2) meth_body \<in> set meth_defs \<longrightarrow>
-      m \<in> meth_def_case (\<lambda>meth_sig meth_body. case meth_sig of meth_sig_def cl meth vds \<Rightarrow> meth) ` set meth_defs"
+      m \<in> case_meth_def (\<lambda>meth_sig meth_body. case meth_sig of meth_sig_def cl meth vds \<Rightarrow> meth) ` set meth_defs"
 by (induct meth_defs, auto)
 
 lemma fmdip_to_mip[rule_format]:
   "find_meth_def_in_path_f path m = Some ctxmd \<longrightarrow> m \<in> set (methods_in_path_f (map snd path))"
 apply(induct path) apply(simp) apply(clarsimp simp add: class_methods_f_def split: option.splits cld.splits)
+apply(rename_tac aa bb)
 apply(case_tac aa) apply(case_tac meth_sig) apply(clarsimp) apply(frule find_md_m_match') apply(clarsimp)
 apply(frule find_meth_def_in_list_mem) apply(frule m_image_eq) apply(assumption)
 done
 
 lemma lift_opts_for_all[rule_format]:
-  "lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl, var, ty). vd_def cl var) cl_var_ty_list)) = None \<and>
+  "lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl, var, ty). vd_def cl var) cl_var_ty_list)) = None \<and>
    (\<forall>x\<in>set cl_var_ty_list. (\<lambda>(cl, var, ty). find_type_f P ctx_def cl = Some ty) x) \<longrightarrow> False"
 apply(induct cl_var_ty_list) apply(simp) apply(clarsimp) apply(case_tac ctx) apply(simp) done
 
@@ -374,8 +375,8 @@ lemma mty_preservation'''':
     find_cld_f P ctx (fqn_def dcl'') = Some (ctx, cld_def dcl'' cl'' fds'' mds'');
     find_path_rec_f P ctx cl'' [(ctx, cld_def dcl'' cl'' fds'' mds'')] = Some path;
     find_meth_def_in_path_f path m = Some (ctx'', meth_def_def (meth_sig_def cl_r m' vds) mb);
-    find_type_f P ctx'' cl_r = Some ty_r; lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx'' clk)) vds) = Some tys;
-    lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx' clk)) vds') = Some tys'; find_type_f P ctx' cl_r' = Some ty_r';
+    find_type_f P ctx'' cl_r = Some ty_r; lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx'' clk)) vds) = Some tys;
+    lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx' clk)) vds') = Some tys'; find_type_f P ctx' cl_r' = Some ty_r';
     find_meth_def_in_path_f ((ctx, cld_def dcl' (cl_fqn (fqn_def dcl'')) fds' mds') # path) m = Some (ctx', meth_def_def (meth_sig_def cl_r' m'' vds') mb');
     wf_program P\<rbrakk>
        \<Longrightarrow> tys' = tys \<and> ty_r' = ty_r"
@@ -391,7 +392,7 @@ apply(subgoal_tac "m \<in> snd ` set meth_def_meth_list")
  apply(clarsimp) apply(frule_tac f = snd in imageI) apply(simp) apply(thin_tac "m \<in> snd ` set meth_def_meth_list") apply(clarsimp)
  apply(clarsimp simp add: mtype_f_def split: option.splits meth_def.splits meth_sig.splits)
  apply(clarsimp simp add: find_meth_def_f_def find_path_f_def superclass_name_f_def split: option.splits split_if_asm)
- apply(frule path_append) apply(frule_tac path = ad in path_append) apply(clarsimp)
+ apply(frule path_append) apply(rename_tac ad) apply(frule_tac path = ad in path_append) apply(clarsimp)
  apply(frule_tac prefix = "[(ctx_def, cld_def dcl'' cl'' fds'' mds'')]" and suffix = path'' and
                  prefix' = "[(ctx_def, cld_def dcl' (cl_fqn (fqn_def dcl'')) (map (\<lambda>(cl, f, ty). fd_def cl f) cl_f_ty_list) (map fst meth_def_meth_list)),
                                  (ctx_def, cld_def dcl'' cl'' fds'' mds'')]" in fpr_same_suffix[rule_format]) apply(simp)
@@ -423,7 +424,7 @@ apply(subgoal_tac "\<forall>aa b ab bb. (a = ab \<and> cld_def dcl' (cl_fqn (fqn
                                          (\<forall>x\<in>set suffix.
                                              (\<lambda>(ctx', cld').
                                                  (\<exists>prefix' suffix'.
-                                                     option_case None (prod_case (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx' (fqn_def (class_name_f cld'))) =
+                                                     case_option None (case_prod (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx' (fqn_def (class_name_f cld'))) =
                                                      Some (prefix' @ suffix')) \<and>
                                                  mtype_f P (ty_def ctx' (class_name_f cld')) m = Some mty \<longrightarrow>
                                                  mtype_f P (ty_def ab dcl) m = Some mty)
@@ -440,7 +441,7 @@ apply(thin_tac "\<And>aa b x y.
                             case x of
                             (ctx', cld') \<Rightarrow>
                               (\<exists>prefix' suffix'.
-                                  option_case None
+                                  case_option None
                                    (\<lambda>(ctx', cld).
                                        find_path_rec_f P ctx' (superclass_name_f cld)
                                         (prefix' @ [(ctx', cld)]))
@@ -459,7 +460,7 @@ apply(subgoal_tac "(\<exists>prefix' suffix'. find_path_rec_f P ab (case bb of c
  apply(rule)
   apply(clarsimp simp add: find_meth_def_f_def) apply(subgoal_tac "\<exists>path'. find_path_f P a (cl_fqn (fqn_def dcl')) = Some path'")
    apply(case_tac b) apply(clarsimp simp add: find_path_f_def superclass_name_f_def split: split_if_asm option.splits)
-   apply(frule_tac path = path' in path_append) apply(frule_tac path = ag in path_append) apply(clarify)
+   apply(frule_tac path = path' in path_append) apply(rename_tac ag ah) apply(frule_tac path = ag in path_append) apply(clarify)
    apply(frule_tac suffix = path''a and suffix' = path''b and prefix' = "[(ac, cld_def list1a cla list2a list3)]" in fpr_same_suffix[rule_format], force)
    apply(simp) apply(clarify) apply(clarsimp simp add: class_methods_f_def split: option.splits)
   apply(clarsimp simp add: find_path_f_def superclass_name_f_def split: option.splits split_if_asm)
@@ -467,7 +468,7 @@ apply(subgoal_tac "(\<exists>prefix' suffix'. find_path_rec_f P ab (case bb of c
   apply(frule_tac suffix = path''a and prefix' = "[(a, cld_def dcl' (cl_fqn (fqn_def dcl'')) fds' mds'), (ac, b)]" in fpr_same_suffix') back apply(simp) apply(simp)
  apply(clarsimp) apply(rule)
   apply(clarsimp) apply(frule_tac ty_x_d = "(ty_def a dcl')" in wf_method_from_find[simplified]) apply(simp) apply(clarsimp)
-  apply(erule wf_methE) apply(case_tac ag) apply(clarsimp)
+  apply(erule wf_methE) apply(rename_tac ag ah ai aj ak al am an ao ap aq ar as at au av) apply(case_tac ag) apply(clarsimp)
  apply(clarsimp) apply(rule)
   apply(clarsimp) apply(frule_tac ty_x_d = "(ty_def a dcl')" in wf_method_from_find[simplified]) apply(simp) apply(clarsimp)
   apply(erule wf_methE) apply(clarsimp) apply(cut_tac lift_opts_for_all) apply(assumption) apply(rule) apply(simp) apply(assumption)
@@ -505,7 +506,7 @@ apply(assumption+) apply(rule) apply(simp add: find_path_f_def) apply(assumption
 lemma lift_opts_for_all_true[rule_format]:
   "\<forall>y_ty_list.
       (\<forall>x\<in>set cl_var_ty_list. (\<lambda>(cl_k, var_k, ty_k). find_type_f P ctx cl_k = Some ty_k) x) \<and>
-      lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl_k, var_k, ty_k). vd_def cl_k var_k) cl_var_ty_list)) = Some (map snd y_ty_list) \<longrightarrow>
+      lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) (map (\<lambda>(cl_k, var_k, ty_k). vd_def cl_k var_k) cl_var_ty_list)) = Some (map snd y_ty_list) \<longrightarrow>
           map (\<lambda>(cl, var, ty). ty) cl_var_ty_list = map snd y_ty_list"
 by (induct cl_var_ty_list, auto split: option.splits)
 
@@ -548,7 +549,7 @@ lemma top_not_subtype[rule_format]:
 by (rule, drule supertype_top, simp)
 
 lemma f_in_found_fds:
-  "ftype_in_fds_f P ctx fds f = ty_opt_bot_opt (Some ty_f) \<longrightarrow> f \<in> fd_case (\<lambda>cl f. f) ` set fds"
+  "ftype_in_fds_f P ctx fds f = ty_opt_bot_opt (Some ty_f) \<longrightarrow> f \<in> case_fd (\<lambda>cl f. f) ` set fds"
 by (induct fds, auto split: fd.splits)
 
 lemma ftype_fields[rule_format]:
@@ -572,7 +573,7 @@ apply(subgoal_tac "\<forall>aa ba aaa bb.
            \<longrightarrow> (\<forall>suffix. find_path_rec_f P aaa (superclass_name_f bb) (path @ [(aaa, bb)]) = Some (path @ (aaa, bb) # suffix) \<longrightarrow>
                        (\<forall>x\<in>set suffix.
                            (\<lambda>(ctx, cld). (\<exists>prefix' suffix'.
-                                             option_case None (prod_case (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx (fqn_def (class_name_f cld))) =
+                                             case_option None (case_prod (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx (fqn_def (class_name_f cld))) =
                                              Some (prefix' @ suffix') \<and>
                                              f \<in> set (fields_in_path_f suffix')) \<longrightarrow>
                                          f \<in> set (fields_in_path_f suffix))
@@ -589,7 +590,7 @@ apply(thin_tac "\<And>aa ba x y.
                      case x of
                      (ctx, cld) \<Rightarrow>
                        (\<exists>prefix' suffix'.
-                           option_case None
+                           case_option None
                             (\<lambda>(ctx', cld).
                                 find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))
                             (find_cld_f P ctx (fqn_def (class_name_f cld))) =
@@ -680,7 +681,7 @@ apply(subgoal_tac "\<forall>aa ba aaa bb.
            \<longrightarrow> (\<forall>suffix. find_path_rec_f P aaa (superclass_name_f bb) (path @ [(aaa, bb)]) = Some (path @ (aaa, bb) # suffix) \<longrightarrow>
                        (\<forall>x\<in>set suffix.
                            (\<lambda>(ctx, cld). (\<exists>prefix' suffix'.
-                                             option_case None (prod_case (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx (fqn_def (class_name_f cld))) =
+                                             case_option None (case_prod (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx (fqn_def (class_name_f cld))) =
                                              Some (prefix' @ suffix') \<and>
                                              ftype_in_path_f P suffix' f = Some ty) \<longrightarrow>
                                          ftype_in_path_f P suffix f = Some ty)
@@ -1003,9 +1004,9 @@ lemma map_of_ty_k':
      x' \<notin> (\<lambda>(y, cl, var, var', v). x_var var') ` set y_cl_var_var'_v_list; map fst y_cl_var_var'_v_list = map fst y_ty_list;
      map (\<lambda>(cl, var, ty). ty) cl_var_ty_list = map snd y_ty_list; map (\<lambda>(y, cl, var, u). var) y_cl_var_var'_v_list = map (\<lambda>(cl, var, ty). var) cl_var_ty_list;
      map_of (map (\<lambda>(cl, var, y). (x_var var, y)) cl_var_ty_list) (x_var var) = Some ty_var\<rbrakk>
-    \<Longrightarrow> (if x_var (option_case var (x_case (\<lambda>var'. var') var) (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var))) = x' then Some ty_x_m
+    \<Longrightarrow> (if x_var (case_option var (case_x (\<lambda>var'. var') var) (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var))) = x' then Some ty_x_m
         else (\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)))
-              (x_var (option_case var (x_case (\<lambda>var'. var') var)
+              (x_var (case_option var (case_x (\<lambda>var'. var') var)
                        (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var))))) =
        Some ty_var"
 apply(frule exists_var') apply(simp add: weaken_list_var) apply(simp) apply(clarsimp split del: split_if) apply(clarsimp)
@@ -1123,9 +1124,9 @@ lemma subtype_through_tr:
               then Some ty_x_m
               else (\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)))
                     (case if x = x_this then Some x' else map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) x of None \<Rightarrow> x | Some x' \<Rightarrow> x'))
-           (if x_var (option_case var (x_case (\<lambda>var'. var') var) (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var))) = x' then Some ty_x_m
+           (if x_var (case_option var (case_x (\<lambda>var'. var') var) (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var))) = x' then Some ty_x_m
            else (\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)))
-                 (x_var (option_case var (x_case (\<lambda>var'. var') var)
+                 (x_var (case_option var (case_x (\<lambda>var'. var') var)
                           (if x_var var = x_this then Some x' else map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var)))))"
 apply(rule_tac ty = ty_x and ty' = ty_var in sty_optionI)
   apply(simp add: var_k_of_ty_k)
@@ -1300,7 +1301,7 @@ apply(simp) apply(simp) apply(simp)
 done
 
 lemma lift_opts_ft_length[rule_format]:
-  "\<forall>tys. lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx_o clk)) vds) = Some tys \<longrightarrow> length tys = length vds"
+  "\<forall>tys. lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx_o clk)) vds) = Some tys \<longrightarrow> length tys = length vds"
 by (induct vds, auto split: vd.splits option.splits)
 
 lemma fpr_mem_has_path'[rule_format]:
@@ -1315,7 +1316,7 @@ apply(subgoal_tac "\<forall>aa ba aaa bb.
            \<longrightarrow> (\<forall>suffix. find_path_rec_f P aaa (superclass_name_f bb) (path @ [(aaa, bb)]) = Some (path @ (aaa, bb) # suffix) \<longrightarrow>
                        (\<forall>x\<in>set suffix.
                            (\<lambda>(ctx', cld').
-                               \<forall>prefix'. \<exists>suffix'. option_case None (prod_case (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx' (fqn_def (class_name_f cld'))) =
+                               \<forall>prefix'. \<exists>suffix'. case_option None (case_prod (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))) (find_cld_f P ctx' (fqn_def (class_name_f cld'))) =
                                                    Some suffix')
                             x))")
 defer
@@ -1331,7 +1332,7 @@ apply(thin_tac "\<And>aa ba x y.
                      (ctx', cld') \<Rightarrow>
                        \<forall>prefix'.
                           \<exists>suffix'.
-                             option_case None
+                             case_option None
                               (\<lambda>(ctx', cld).
                                   find_path_rec_f P ctx' (superclass_name_f cld) (prefix' @ [(ctx', cld)]))
                               (find_cld_f P ctx' (fqn_def (class_name_f cld'))) =
@@ -1380,7 +1381,7 @@ apply(erule wf_objectE) apply(simp) apply(simp)
 done
 
 lemma [iff]:
-  "length (tr_ss_f (map_of (zip (map (vd_case (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) ss') = length ss'"
+  "length (tr_ss_f (map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) ss') = length ss'"
 by (induct ss', auto)
 
 lemma collect_suc_eq_lt[simp]:
@@ -1395,46 +1396,46 @@ done
 
 lemma [iff]:
   "\<forall>y_ty_list vars vars' vs. length y_ty_list = length vds \<and> length vars = length vds \<and> length vars' = length vds \<and> length vs = length vds \<longrightarrow>
-   map (\<lambda>(y, cl, var, var', v). vd_def cl var) (zip (map fst y_ty_list) (zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip (map (vd_case (\<lambda>cl var. var)) vds) (zip vars' vs)))) = vds"
+   map (\<lambda>(y, cl, var, var', v). vd_def cl var) (zip (map fst y_ty_list) (zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip (map (case_vd (\<lambda>cl var. var)) vds) (zip vars' vs)))) = vds"
 apply(induct vds) apply(simp) apply(clarsimp simp add: set_zip length_Suc_conv split: vd.splits)
 done
 
 lemma vars'_eq[rule_format]:
   "\<forall>y_ty_list vds vars vs. length y_ty_list = length vars' \<and> length vds = length vars' \<and> length vars = length vars' \<and> length vs = length vars' \<longrightarrow>
-   (\<lambda>(y, cl, var, var', v). x_var var') ` set (zip (map fst y_ty_list) (zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip vars (zip vars' vs)))) = x_var ` set vars'"
+   (\<lambda>(y, cl, var, var', v). x_var var') ` set (zip (map fst y_ty_list) (zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip vars (zip vars' vs)))) = x_var ` set vars'"
 apply(induct vars') apply(simp) apply(clarsimp simp add: set_zip length_Suc_conv)
 done
 
 lemma [iff]:
   "\<forall>y_ty_list vds vars vs. length y_ty_list = length vars' \<and> length vds = length vars' \<and> length vars = length vars' \<and> length vs = length vars' \<longrightarrow>
-   map (\<lambda>(y, cl, var, var', v). var') (zip (map fst y_ty_list) (zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip vars (zip vars' vs)))) = vars'"
+   map (\<lambda>(y, cl, var, var', v). var') (zip (map fst y_ty_list) (zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip vars (zip vars' vs)))) = vars'"
 apply(induct vars') apply(simp) apply(clarsimp simp add: set_zip length_Suc_conv)
 done
 
 lemma [iff]:
   "\<forall>y_ty_list vds vars vs. length y_ty_list = length vars' \<and> length vds = length vars' \<and> length vars = length vars' \<and> length vs = length vars' \<longrightarrow>
    map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var'))
-       (zip (map fst y_ty_list) (zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip (map (vd_case (\<lambda>cl var. var)) vds) (zip vars' vs)))) =
-     zip (map (vd_case (\<lambda>cl. x_var)) vds) (map x_var vars')"
+       (zip (map fst y_ty_list) (zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip (map (case_vd (\<lambda>cl var. var)) vds) (zip vars' vs)))) =
+     zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars')"
 apply(induct vars') apply(simp) apply(clarsimp simp add: set_zip length_Suc_conv split: vd.splits)
 done
 
 lemma [iff]:
   "\<forall>vds vars vars' vs. length vds = length y_ty_list \<and> length vars = length y_ty_list \<and> length vars' = length y_ty_list \<and> length vs = length y_ty_list \<longrightarrow>
-   map (\<lambda>(y, cl, var, var', v). y) (zip (map fst y_ty_list) (zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip vars (zip vars' vs)))) = map fst y_ty_list"
+   map (\<lambda>(y, cl, var, var', v). y) (zip (map fst y_ty_list) (zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip vars (zip vars' vs)))) = map fst y_ty_list"
 apply(induct y_ty_list) apply(simp) apply(clarsimp simp add: set_zip length_Suc_conv)
 done
 
 lemma lift_opts_mapping:
   "\<forall>vds vars vars' vs. length vds = length y_ty_list \<and> length vars = length y_ty_list \<and> length vars' = length y_ty_list \<and> length vs = length y_ty_list \<longrightarrow>
    lift_opts (map (\<lambda>(y, ty). L y) y_ty_list) = Some vs \<longrightarrow>
-   (\<forall>x\<in>set (zip (map fst y_ty_list) (zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip (map (vd_case (\<lambda>cl var. var)) vds) (zip vars' vs)))). (\<lambda>(y, cl, var, var', v). L y = Some v) x)"
+   (\<forall>x\<in>set (zip (map fst y_ty_list) (zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip (map (case_vd (\<lambda>cl var. var)) vds) (zip vars' vs)))). (\<lambda>(y, cl, var, var', v). L y = Some v) x)"
 apply(induct y_ty_list) apply(simp) apply(clarsimp simp add: set_zip length_Suc_conv split: vd.splits option.splits)
 apply(rename_tac y1 y_ty_list v2 vs cl1 var1 var'1 v1 vds vars var'2 vars' i cl2 var2)
 apply(erule_tac x = vds in allE) apply(erule_tac x = vars in allE) apply(erule_tac x = vars' in allE)
 apply(simp) apply(case_tac i) apply(simp) apply(rename_tac j) apply(clarsimp)
 apply(erule_tac x = "map fst y_ty_list ! j" in allE) apply(clarsimp)
-apply(case_tac "zip (map (vd_case (\<lambda>cl var. cl)) vds) (zip (map (vd_case (\<lambda>cl var. var)) vds) (zip vars' vs)) ! j") apply(rename_tac cl1 var1 var'1 v1)
+apply(case_tac "zip (map (case_vd (\<lambda>cl var. cl)) vds) (zip (map (case_vd (\<lambda>cl var. var)) vds) (zip vars' vs)) ! j") apply(rename_tac cl1 var1 var'1 v1)
 apply(erule_tac x = cl1 in allE) apply(erule_tac x = var1 in allE) apply(erule_tac x = var'1 in allE) apply(erule_tac x = v1 in allE)
 apply(clarsimp) apply(erule_tac x = j in allE) apply(simp)
 done
@@ -1444,8 +1445,8 @@ lemma length_y_ty_list_vs[rule_format]:
 by (induct y_ty_list, auto split: option.splits)
 
 lemma translation_eq:
-  "\<forall>x\<in>set (zip (tr_ss_f (map_of (zip (map (vd_case (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) ss') ss').
-             (\<lambda>(s'', s'). tr_s (map_of (zip (map (vd_case (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) s' s'') x"
+  "\<forall>x\<in>set (zip (tr_ss_f (map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) ss') ss').
+             (\<lambda>(s'', s'). tr_s (map_of (zip (map (case_vd (\<lambda>cl. x_var)) vds) (map x_var vars'))(x_this \<mapsto> x')) s' s'') x"
 apply(induct ss') apply(simp add: tr_rel_f_eq)+ done
 
 

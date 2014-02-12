@@ -358,7 +358,8 @@ lemma conf_xcp_conf_xcp':
 by(cases xcp) auto
 
 lemma conf_xcp'_compP [simp]: "conf_xcp' (compP f P) = conf_xcp' P"
-by(simp add: fun_eq_iff conf_xcp'_def option_case_def[symmetric])
+by(clarsimp simp add: fun_eq_iff conf_xcp'_def) (rename_tac x, case_tac x, auto)
+
 
 end
 

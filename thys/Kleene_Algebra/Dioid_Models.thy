@@ -327,10 +327,10 @@ lemma p_fusion_last:
   and "ps \<noteq> []"
   and "qs \<noteq> []"
   shows "List.last (p_fusion ps qs) = List.last qs"
-  by (metis (hide_lams, no_types) List.last.simps List.last_append append_Nil2 assms hd.simps neq_Nil_conv p_fusion.simps(3))
+  by (metis (hide_lams, no_types) List.last.simps List.last_append append_Nil2 assms list.sel(1) neq_Nil_conv p_fusion.simps(3))
 
 lemma p_fusion_hd: "\<lbrakk>ps \<noteq> []; qs \<noteq> []\<rbrakk> \<Longrightarrow> hd (p_fusion ps qs) = hd ps"
-  by (metis list.exhaust p_fusion.simps(3) append_Cons hd.simps)
+  by (metis list.exhaust p_fusion.simps(3) append_Cons list.sel(1))
 
 lemma nonempty_p_fusion: "\<lbrakk>ps \<noteq> []; qs \<noteq> []\<rbrakk> \<Longrightarrow> p_fusion ps qs \<noteq> []"
   by (metis list.exhaust append_Cons p_fusion.simps(3) list.simps(2))
@@ -383,7 +383,7 @@ proof (rule set_eqI)
         by (auto simp add: p_one_def p_prod_def, metis nonempty_p_fusion not_Cons_self)
     next
       case Cons thus ?thesis
-        by (auto simp add: p_one_def p_prod_def, metis append_Cons append_Nil hd.simps neq_Nil_conv p_fusion.simps(3), metis Cons_eq_appendI hd.simps last_ConsL list.simps(3) p_fusion.simps(3) self_append_conv2)
+        by (auto simp add: p_one_def p_prod_def, metis append_Cons append_Nil list.sel(1) neq_Nil_conv p_fusion.simps(3), metis Cons_eq_appendI list.sel(1) last_ConsL list.simps(3) p_fusion.simps(3) self_append_conv2)
     qed
 qed
 
@@ -396,7 +396,7 @@ proof (rule set_eqI)
         by (auto simp add: p_one_def p_prod_def, metis nonempty_p_fusion not_Cons_self2, metis p_fusion.simps(1))
     next
       case Cons thus ?thesis
-        by (auto simp add: p_one_def p_prod_def, metis append_Nil2 neq_Nil_conv p_fusion.simps(3), metis hd.simps list.simps(2) p_fusion.simps(3) self_append_conv)
+        by (auto simp add: p_one_def p_prod_def, metis append_Nil2 neq_Nil_conv p_fusion.simps(3), metis list.sel(1) list.simps(2) p_fusion.simps(3) self_append_conv)
     qed
 qed
 

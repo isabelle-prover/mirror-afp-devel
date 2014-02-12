@@ -64,18 +64,18 @@ by auto
 
 (* Helper lemmas provided by Christian Urban *)
 
-lemma Projl_permute:
+lemma projl_permute:
   assumes a: "\<exists>y. f = Inl y"
-  shows "(p \<bullet> (Sum_Type.Projl f)) = Sum_Type.Projl (p \<bullet> f)"
+  shows "(p \<bullet> (projl f)) = projl (p \<bullet> f)"
 using a by auto
 
-lemma Projr_permute:
+lemma projr_permute:
   assumes a: "\<exists>y. f = Inr y"
-  shows "(p \<bullet> (Sum_Type.Projr f)) = Sum_Type.Projr (p \<bullet> f)"
+  shows "(p \<bullet> (projr f)) = projr (p \<bullet> f)"
 using a by auto
 
-nominal_primrec  (default "sum_case (\<lambda>x. Inl undefined) (\<lambda>x. Inr undefined)",
-                  invariant "\<lambda> a r . (\<forall> as y z . ((a = Inr (as, y, z) \<and> set (bn as) \<sharp>* (y, z)) \<longrightarrow> bn (Sum_Type.Projr r) = bn as))")
+nominal_primrec  (default "case_sum (\<lambda>x. Inl undefined) (\<lambda>x. Inr undefined)",
+                  invariant "\<lambda> a r . (\<forall> as y z . ((a = Inr (as, y, z) \<and> set (bn as) \<sharp>* (y, z)) \<longrightarrow> bn (projr r) = bn as))")
   subst :: "exp \<Rightarrow> var \<Rightarrow> var \<Rightarrow> exp" ("_[_::=_]" [1000,100,100] 1000)
 and
   subst_assn :: "assn \<Rightarrow> var \<Rightarrow> var \<Rightarrow> assn" ("_[_::a=_]" [1000,100,100] 1000)
@@ -91,7 +91,7 @@ proof-
 have eqvt_at_subst: "\<And> e y z . eqvt_at subst_subst_assn_sumC (Inl (e, y, z)) \<Longrightarrow> eqvt_at (\<lambda>(a, b, c). subst a b c) (e, y, z)"
   apply(simp add: eqvt_at_def subst_def)
   apply(rule)
-  apply(subst Projl_permute)
+  apply(subst projl_permute)
   apply(thin_tac "?X")+
   apply (simp add: subst_subst_assn_sumC_def)
   apply (simp add: THE_default_def)
@@ -102,26 +102,26 @@ have eqvt_at_subst: "\<And> e y z . eqvt_at subst_subst_assn_sumC (Inl (e, y, z)
   apply simp
   apply(cases rule: subst_subst_assn_graph.cases)
   apply(assumption)
-  apply(rule_tac x="Sum_Type.Projl x" in exI)
+  apply(rule_tac x="projl x" in exI)
   apply(clarify)
   apply (rule the1_equality)
   apply blast 
-  apply(simp (no_asm) only: Projl.simps)
-  apply(rule_tac x="Sum_Type.Projl x" in exI)
+  apply(simp (no_asm) only: sum.sel(1))
+  apply(rule_tac x="projl x" in exI)
   apply(clarify)
   apply (rule the1_equality)
   apply blast 
-  apply(simp (no_asm) only: Projl.simps)
-  apply(rule_tac x="Sum_Type.Projl x" in exI)
+  apply(simp (no_asm) only: sum.sel(1))
+  apply(rule_tac x="projl x" in exI)
   apply(clarify)
   apply (rule the1_equality)
   apply blast 
-  apply(simp (no_asm) only: Projl.simps)
-  apply(rule_tac x="Sum_Type.Projl x" in exI)
+  apply(simp (no_asm) only: sum.sel(1))
+  apply(rule_tac x="projl x" in exI)
   apply(clarify)
   apply (rule the1_equality)
   apply blast 
-  apply(simp (no_asm) only: Projl.simps)
+  apply(simp (no_asm) only: sum.sel(1))
   apply (metis Inr_not_Inl)
   apply (metis Inr_not_Inl)
   apply(simp)
@@ -132,7 +132,7 @@ done
 have eqvt_at_subst_assn: "\<And> as y z . eqvt_at subst_subst_assn_sumC (Inr (as, y, z)) \<Longrightarrow> eqvt_at (\<lambda>(a, b, c). subst_assn a b c) (as, y, z)"
   apply(simp add: eqvt_at_def subst_assn_def)
   apply(rule)
-  apply(subst Projr_permute)
+  apply(subst projr_permute)
   apply(thin_tac "?X")+
   apply (simp add: subst_subst_assn_sumC_def)
   apply (simp add: THE_default_def)
@@ -144,17 +144,17 @@ have eqvt_at_subst_assn: "\<And> as y z . eqvt_at subst_subst_assn_sumC (Inr (as
   apply(cases rule: subst_subst_assn_graph.cases)
   apply(assumption)
   apply (metis (mono_tags) Inr_not_Inl)+
-  apply(rule_tac x="Sum_Type.Projr x" in exI)
+  apply(rule_tac x="projr x" in exI)
   apply(clarify)
   apply (rule the1_equality)
   apply auto[1]
-  apply(simp (no_asm) only: Projr.simps)
+  apply(simp (no_asm) only: sum.sel(2))
   
-  apply(rule_tac x="Sum_Type.Projr x" in exI)
+  apply(rule_tac x="projr x" in exI)
   apply(clarify)
   apply (rule the1_equality)
   apply auto[1]
-  apply(simp (no_asm) only: Projr.simps)
+  apply(simp (no_asm) only: sum.sel(2))
   
   apply(simp)
   apply(perm_simp)

@@ -876,17 +876,17 @@ definition
   ps_to_int :: "[diagram, proofstate] \<Rightarrow> interface"
 where
   "ps_to_int G \<sigma> \<equiv> 
-    \<Otimes>v |\<in>| fdom \<sigma>. topbot_case top_ass bot_ass (lookup \<sigma> v) (G^\<Lambda> v)"
+    \<Otimes>v |\<in>| fdom \<sigma>. case_topbot top_ass bot_ass (lookup \<sigma> v) (G^\<Lambda> v)"
 
 definition
   ps_chain_to_int_chain :: "[diagram, ps_chain] \<Rightarrow> int_chain"
 where 
   "ps_chain_to_int_chain G \<Pi> \<equiv>
-    chainmap (ps_to_int G) ((sum_case (Inl \<circ> G^\<Lambda>) (Inr \<circ> snd3))) \<Pi>"
+    chainmap (ps_to_int G) ((case_sum (Inl \<circ> G^\<Lambda>) (Inr \<circ> snd3))) \<Pi>"
 
 lemma ps_chain_to_int_chain_simp:
   "ps_chain_to_int_chain (Graph V \<Lambda> E) \<Pi> =
-    chainmap (ps_to_int (Graph V \<Lambda> E)) ((sum_case (Inl \<circ> \<Lambda>) (Inr \<circ> snd3))) \<Pi>"
+    chainmap (ps_to_int (Graph V \<Lambda> E)) ((case_sum (Inl \<circ> \<Lambda>) (Inr \<circ> snd3))) \<Pi>"
 by (simp add: ps_chain_to_int_chain_def)
 
 subsection {* Soundness proof *}
@@ -977,9 +977,9 @@ next
     by (auto simp add: prov_triple.frame no_var_interference)
     assume len_cs: "length cs = length \<pi>"
     assume "\<forall>i<length \<pi>. 
-      sum_case (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi> ! i) (cs ! i)"
+      case_sum (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi> ! i) (cs ! i)"
     hence \<pi>_cs: "\<And>i. i < length \<pi> \<Longrightarrow>
-      sum_case (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi> ! i) (cs ! i)" by auto
+      case_sum (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi> ! i) (cs ! i)" by auto
     assume G_def: "G = Graph V \<Lambda> E"
     assume c_def: "c = foldr op ;; cs Skip"
     assume \<pi>_lin: "\<pi> \<in> lins (Graph V \<Lambda> E)"
@@ -1007,11 +1007,11 @@ next
     apply (unfold fdom_make_fmap)
     apply (unfold G_def labelling.simps, fold G_def)
     apply (subgoal_tac "\<forall>v \<in> fset (initials G). top_ass (\<Lambda> v) = 
-      topbot_case top_ass bot_ass (lookup [ initials G |=> Top ] v) (\<Lambda> v)")
+      case_topbot top_ass bot_ass (lookup [ initials G |=> Top ] v) (\<Lambda> v)")
     apply (unfold iter_hcomp_cong, simp)
     apply (metis lookup_make_fmap topbot.simps(3))
     apply (subgoal_tac "\<forall>v \<in> fset (terminals G). bot_ass (\<Lambda> v) = 
-      topbot_case top_ass bot_ass (lookup [ terminals G |=> Bot ] v) (\<Lambda> v)")
+      case_topbot top_ass bot_ass (lookup [ terminals G |=> Bot ] v) (\<Lambda> v)")
     apply (unfold iter_hcomp_cong, simp)
     apply (metis lookup_make_fmap topbot.simps(4), simp)
     apply (unfold G_def, fold ps_chain_to_int_chain_simp G_def)
@@ -1055,9 +1055,9 @@ next
         apply (unfold iter_hcomp_insert)
         apply (unfold lookup_union2 lookup_make_fmap1)
         apply (unfold G_def labelling.simps)
-        apply (subgoal_tac "\<forall>va \<in> fset (fdom \<sigma>). topbot_case top_ass bot_ass 
+        apply (subgoal_tac "\<forall>va \<in> fset (fdom \<sigma>). case_topbot top_ass bot_ass 
           (lookup ([ {|v|} |=> Top ] \<oplus> \<sigma>) va) (\<Lambda> va) = 
-          topbot_case top_ass bot_ass (lookup ([{|v|} |=> Bot] \<oplus> \<sigma>) va)(\<Lambda> va)")
+          case_topbot top_ass bot_ass (lookup ([{|v|} |=> Bot] \<oplus> \<sigma>) va)(\<Lambda> va)")
         apply (unfold iter_hcomp_cong, simp)
         apply (metis fmember.rep_eq lookup_union1, simp)
         done
@@ -1088,7 +1088,7 @@ next
         apply (unfold fdom_union fdom_make_fmap)
         apply (insert fst_e_disjoint_\<sigma>)
         apply (unfold iter_hcomp_union)
-        apply (subgoal_tac "\<forall>v \<in> fset (fst3 e). topbot_case top_ass bot_ass 
+        apply (subgoal_tac "\<forall>v \<in> fset (fst3 e). case_topbot top_ass bot_ass 
           (lookup ([ fst3 e |=> Bot ] \<oplus> \<sigma>) v) (\<Lambda> v) = bot_ass (\<Lambda> v)")
         apply (unfold iter_hcomp_cong)
         apply (simp)
@@ -1099,12 +1099,12 @@ next
         apply (metis fempty_iff finterI fmember.rep_eq)
         apply (insert thd_e_disjoint_\<sigma>)
         apply (unfold iter_hcomp_union)
-        apply (subgoal_tac "\<forall>v \<in> fset (thd3 e). topbot_case top_ass bot_ass 
+        apply (subgoal_tac "\<forall>v \<in> fset (thd3 e). case_topbot top_ass bot_ass 
           (lookup ([ thd3 e |=> Top ] \<oplus> \<sigma>) v) (\<Lambda> v) = top_ass (\<Lambda> v)")
         apply (unfold iter_hcomp_cong)
-        apply (subgoal_tac "\<forall>v \<in> fset (fdom \<sigma>). topbot_case top_ass bot_ass 
+        apply (subgoal_tac "\<forall>v \<in> fset (fdom \<sigma>). case_topbot top_ass bot_ass 
           (lookup ([ thd3 e |=> Top ] \<oplus> \<sigma>) v) (\<Lambda> v) = 
-          topbot_case top_ass bot_ass (lookup ([fst3 e |=> Bot] \<oplus> \<sigma>) v) (\<Lambda> v)")
+          case_topbot top_ass bot_ass (lookup ([fst3 e |=> Bot] \<oplus> \<sigma>) v) (\<Lambda> v)")
         apply (unfold iter_hcomp_cong)
         apply simp
         apply (intro ballI)

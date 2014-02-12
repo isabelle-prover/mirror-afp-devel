@@ -163,7 +163,7 @@ proof(intro equalityI subsetI)
   assume "E \<in> ?rhs"
   then obtain E' where E: "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
     and \<tau>Runs: "mthr.\<tau>Runs \<sigma> E'" by(blast)
-  obtain E'' where E': "E' = tmap (\<lambda>(tls, s', tl, s''). tl) (sum_case (\<lambda>(tls, s'). \<lfloor>s'\<rfloor>) Map.empty) E''"
+  obtain E'' where E': "E' = tmap (\<lambda>(tls, s', tl, s''). tl) (case_sum (\<lambda>(tls, s'). \<lfloor>s'\<rfloor>) Map.empty) E''"
     and \<tau>Runs': "mthr.\<tau>Runs_table2 \<sigma> E''"
     using \<tau>Runs by(rule mthr.\<tau>Runs_into_\<tau>Runs_table2)
   have "mthr.Runs \<sigma> (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) 

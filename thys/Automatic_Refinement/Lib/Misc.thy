@@ -344,8 +344,8 @@ lemma inj_on_map_inv_f [simp]: "\<lbrakk>set l \<subseteq> A; inj_on f A\<rbrakk
 lemma comp_cong_right: "x = y \<Longrightarrow> f o x = f o y" by (simp)
 lemma comp_cong_left: "x = y \<Longrightarrow> x o f = y o f" by (simp)
 
-lemma nested_prod_case_simp: "(\<lambda>(a,b) c. f a b c) x y = 
-  (prod_case (\<lambda>a b. f a b y) x)"
+lemma nested_case_prod_simp: "(\<lambda>(a,b) c. f a b c) x y = 
+  (case_prod (\<lambda>a b. f a b y) x)"
   by (auto split: prod.split)
 
 lemma fn_fst_conv: "(\<lambda>x. (f (fst x))) = (\<lambda>(a,_). f a)"
@@ -1317,7 +1317,7 @@ qed
 
 lemma sorted_hd_last:
   "\<lbrakk>sorted l; l\<noteq>[]\<rbrakk> \<Longrightarrow> hd l \<le> last l"
-  by (metis List.last_in_set eq_iff hd.simps last.simps sorted.cases)
+  by (metis List.last_in_set eq_iff list.sel(1) last.simps sorted.cases)
 
 lemma (in linorder) sorted_hd_min: 
   "\<lbrakk>xs \<noteq> []; sorted xs\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. hd xs \<le> x"

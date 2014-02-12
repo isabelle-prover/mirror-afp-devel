@@ -453,10 +453,10 @@ primrec
 where
   "transdb_inv (DBVar i) \<Gamma> c k = Var (\<Gamma> i)"
 | "transdb_inv (DBApp t1 t2) \<Gamma> c k = App (transdb_inv t1 \<Gamma> c k) (transdb_inv t2 \<Gamma> c k)"
-| "transdb_inv (DBAbsN e) \<Gamma> c k = AbsN (c + k) (transdb_inv e (nat_case (c + k) \<Gamma>) c (k + 1))"
-| "transdb_inv (DBAbsV e) \<Gamma> c k = AbsV (c + k) (transdb_inv e (nat_case (c + k) \<Gamma>) c (k + 1))"
+| "transdb_inv (DBAbsN e) \<Gamma> c k = AbsN (c + k) (transdb_inv e (case_nat (c + k) \<Gamma>) c (k + 1))"
+| "transdb_inv (DBAbsV e) \<Gamma> c k = AbsV (c + k) (transdb_inv e (case_nat (c + k) \<Gamma>) c (k + 1))"
 | "transdb_inv (DBDiverge) \<Gamma> c k = Diverge"
-| "transdb_inv (DBFix e) \<Gamma> c k = Fix (c + k) (transdb_inv e (nat_case (c + k) \<Gamma>) c (k + 1))"
+| "transdb_inv (DBFix e) \<Gamma> c k = Fix (c + k) (transdb_inv e (case_nat (c + k) \<Gamma>) c (k + 1))"
 | "transdb_inv (DBtt) \<Gamma> c k = tt"
 | "transdb_inv (DBff) \<Gamma> c k = ff"
 | "transdb_inv (DBCond i t e) \<Gamma> c k =
@@ -569,10 +569,10 @@ proof(induct e arbitrary: \<Gamma> k)
   case (DBAbsN e \<Gamma> k) thus ?case
     apply -
     apply (drule_tac x="Suc k" in meta_spec)
-    apply (drule_tac x="nat_case k \<Gamma>" in meta_spec)
+    apply (drule_tac x="case_nat k \<Gamma>" in meta_spec)
     apply simp
     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> v < Suc k")
-     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> nat_case k \<Gamma> v = k - v")
+     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> case_nat k \<Gamma> v = k - v")
       apply rule
        apply (subgoal_tac "Suc (k - Suc i) = k - i")
         apply simp
@@ -590,10 +590,10 @@ next
   case (DBAbsV e \<Gamma> k) thus ?case
     apply -
     apply (drule_tac x="Suc k" in meta_spec)
-    apply (drule_tac x="nat_case k \<Gamma>" in meta_spec)
+    apply (drule_tac x="case_nat k \<Gamma>" in meta_spec)
     apply simp
     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> v < Suc k")
-     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> nat_case k \<Gamma> v = k - v")
+     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> case_nat k \<Gamma> v = k - v")
       apply rule
        apply (subgoal_tac "Suc (k - Suc i) = k - i")
         apply simp
@@ -611,10 +611,10 @@ next
   case (DBFix e \<Gamma> k) thus ?case
     apply -
     apply (drule_tac x="Suc k" in meta_spec)
-    apply (drule_tac x="nat_case k \<Gamma>" in meta_spec)
+    apply (drule_tac x="case_nat k \<Gamma>" in meta_spec)
     apply simp
     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> v < Suc k")
-     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> nat_case k \<Gamma> v = k - v")
+     apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> case_nat k \<Gamma> v = k - v")
       apply rule
        apply (subgoal_tac "Suc (k - Suc i) = k - i")
         apply simp
@@ -1299,7 +1299,7 @@ lemma closed_closing_subst [intro, simp]:
 lemma subst_closing_subst:
   assumes "\<forall>v. freedb e v \<and> k < v \<longrightarrow> closed (\<Gamma> (v - Suc k))"
   assumes "closed X"
-  shows "(closing_subst e \<Gamma> (Suc k))<X/k> = closing_subst e (nat_case X \<Gamma>) k"
+  shows "(closing_subst e \<Gamma> (Suc k))<X/k> = closing_subst e (case_nat X \<Gamma>) k"
   using assms
   apply (induct e arbitrary: i k)
   apply (auto simp: not_less_eq split: nat.split)
@@ -1399,8 +1399,8 @@ next
       apply simp
      apply blast
     apply (drule_tac x="env_ext_db\<cdot>x\<cdot>\<rho>" in meta_spec)
-    apply (drule_tac x="nat_case X \<Gamma>" in meta_spec)
-    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> nat_case X \<Gamma> v \<and> closed (nat_case X \<Gamma> v)")
+    apply (drule_tac x="case_nat X \<Gamma>" in meta_spec)
+    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat X \<Gamma> v \<and> closed (case_nat X \<Gamma> v)")
      apply blast
     apply (auto simp: env_ext_db_def split: nat.splits)
     done
@@ -1419,14 +1419,14 @@ next
      apply (subst subst_closing_subst)
        apply simp
       apply (simp add: eval_to)
-     apply (metis closed_closing_subst closed_def closed_val eval_to nat_case_0 nat_case_Suc not0_implies_Suc) (* FIXME urk *)
+     apply (metis closed_closing_subst closed_def closed_val eval_to nat.cases not0_implies_Suc) (* FIXME urk *)
     apply simp
     apply (subst subst_closing_subst)
       apply simp
      apply blast
     apply (drule_tac x="env_ext_db\<cdot>x\<cdot>\<rho>" in meta_spec)
-    apply (drule_tac x="nat_case V \<Gamma>" in meta_spec)
-    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> nat_case V \<Gamma> v \<and> closed (nat_case V \<Gamma> v)")
+    apply (drule_tac x="case_nat V \<Gamma>" in meta_spec)
+    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat V \<Gamma> v \<and> closed (case_nat V \<Gamma> v)")
      apply blast
     apply (auto simp: env_ext_db_def split: nat.splits)
     apply (erule ca_lrE)
@@ -1450,8 +1450,8 @@ next
     apply (rule fix_ind)
       apply simp_all
     apply (drule_tac x="env_ext_db\<cdot>x\<cdot>\<rho>" in meta_spec)
-    apply (drule_tac x="nat_case (closing_subst (DBFix e) \<Gamma> 0) \<Gamma>" in meta_spec)
-    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> nat_case (closing_subst (DBFix e) \<Gamma> 0) \<Gamma> v \<and> closed (nat_case (closing_subst (DBFix e) \<Gamma> 0) \<Gamma> v)")
+    apply (drule_tac x="case_nat (closing_subst (DBFix e) \<Gamma> 0) \<Gamma>" in meta_spec)
+    apply (subgoal_tac "\<forall>v. freedb e v \<longrightarrow> env_ext_db\<cdot>x\<cdot>\<rho>\<cdot>v \<triangleleft> case_nat (closing_subst (DBFix e) \<Gamma> 0) \<Gamma> v \<and> closed (case_nat (closing_subst (DBFix e) \<Gamma> 0) \<Gamma> v)")
      apply clarsimp
      apply (erule ca_lrE) back
       apply auto[1]

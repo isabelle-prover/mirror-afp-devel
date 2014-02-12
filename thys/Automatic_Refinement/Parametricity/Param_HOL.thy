@@ -25,17 +25,20 @@ lemma param_fun_upd[param]: "
   unfolding fun_upd_def[abs_def]
   by (parametricity)
 
+lemma rec_bool_is_case: "old.rec_bool = case_bool"
+  by (rule ext)+ (auto split: bool.split)
+
 lemma param_bool[param]:
   "(True,True)\<in>Id"
   "(False,False)\<in>Id"
   "(conj,conj)\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "(disj,disj)\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "(Not,Not)\<in>Id\<rightarrow>Id"
-  "(bool_case,bool_case)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
-  "(bool_rec,bool_rec)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
+  "(case_bool,case_bool)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
+  "(old.rec_bool,old.rec_bool)\<in>R\<rightarrow>R\<rightarrow>Id\<rightarrow>R"
   "(op \<longleftrightarrow>, op \<longleftrightarrow>)\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "(op \<longrightarrow>, op \<longrightarrow>)\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  by (auto split: bool.split simp: bool_case_def[symmetric])
+  by (auto split: bool.split simp: rec_bool_is_case)
 
 lemma param_nat1[param]:
   "(0, 0::nat) \<in> Id"
@@ -52,14 +55,14 @@ lemma param_nat1[param]:
   "(op mod::nat\<Rightarrow>_,op mod)\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto
 
-lemma param_nat_case[param]:
-  "(nat_case,nat_case)\<in>Ra \<rightarrow> (Id \<rightarrow> Ra) \<rightarrow> Id \<rightarrow> Ra"
+lemma param_case_nat[param]:
+  "(case_nat,case_nat)\<in>Ra \<rightarrow> (Id \<rightarrow> Ra) \<rightarrow> Id \<rightarrow> Ra"
   apply (intro fun_relI)
   apply (auto split: nat.split dest: fun_relD)
   done
 
-lemma param_nat_rec[param]: 
-  "(nat_rec,nat_rec) \<in> R \<rightarrow> (Id \<rightarrow> R \<rightarrow> R) \<rightarrow> Id \<rightarrow> R"
+lemma param_rec_nat[param]: 
+  "(rec_nat,rec_nat) \<in> R \<rightarrow> (Id \<rightarrow> R \<rightarrow> R) \<rightarrow> Id \<rightarrow> R"
   apply (intro fun_relI)
 proof -
   case (goal1 s s' f f' n n') thus ?case
@@ -82,20 +85,23 @@ lemma param_int[param]:
   "(op mod::int\<Rightarrow>_,op mod)\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto
 
+lemma rec_prod_is_case: "old.rec_prod = case_prod"
+  by (rule ext)+ (auto split: bool.split)
+
 lemma param_prod[param]:
   "(Pair,Pair)\<in>Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel"
-  "(prod_case,prod_case) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
-  "(prod_rec,prod_rec) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
+  "(case_prod,case_prod) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
+  "(old.rec_prod,old.rec_prod) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
   "(fst,fst)\<in>\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Ra"
   "(snd,snd)\<in>\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rb"
   by (auto dest: fun_relD split: prod.split 
-    simp: prod_rel_def prod_case_def[symmetric])
+    simp: prod_rel_def rec_prod_is_case)
 
-lemma param_prod_case':
+lemma param_case_prod':
   "\<lbrakk> (p,p')\<in>\<langle>Ra,Rb\<rangle>prod_rel;
      \<And>a b a' b'. \<lbrakk> p=(a,b); p'=(a',b'); (a,a')\<in>Ra; (b,b')\<in>Rb \<rbrakk> 
       \<Longrightarrow> (f a b, f' a' b')\<in>R
-    \<rbrakk> \<Longrightarrow> (prod_case f p, prod_case f' p') \<in> R"
+    \<rbrakk> \<Longrightarrow> (case_prod f p, case_prod f' p') \<in> R"
   by (auto split: prod.split)
 
 lemma param_map_pair[param]: 
@@ -139,17 +145,17 @@ end
 lemma param_option[param]:
   "(None,None)\<in>\<langle>R\<rangle>option_rel"
   "(Some,Some)\<in>R \<rightarrow> \<langle>R\<rangle>option_rel"
-  "(option_case,option_case)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
-  "(option_rec,option_rec)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+  "(case_option,case_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+  "(rec_option,rec_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
   by (auto split: option.split 
-    simp: option_rel_def option_case_def[symmetric]
+    simp: option_rel_def case_option_def[symmetric]
     dest: fun_relD)
 
-lemma param_option_case':
+lemma param_case_option':
   "\<lbrakk> (x,x')\<in>\<langle>Rv\<rangle>option_rel; 
      \<lbrakk>x=None; x'=None \<rbrakk> \<Longrightarrow> (fn,fn')\<in>R;  
      \<And>v v'. \<lbrakk> x=Some v; x'=Some v'; (v,v')\<in>Rv \<rbrakk> \<Longrightarrow> (fs v, fs' v')\<in>R
-   \<rbrakk> \<Longrightarrow> (option_case fn fs x, option_case fn' fs' x') \<in> R"
+   \<rbrakk> \<Longrightarrow> (case_option fn fs x, case_option fn' fs' x') \<in> R"
   by (auto split: option.split)
 
 lemma the_paramL: "\<lbrakk>l\<noteq>None; (l,r)\<in>\<langle>R\<rangle>option_rel\<rbrakk> \<Longrightarrow> (the l, the r)\<in>R"
@@ -165,19 +171,22 @@ lemma the_default_param[param]:
   unfolding the_default_def
   by parametricity
 
+lemma rec_sum_is_case: "old.rec_sum = case_sum"
+  by (rule ext)+ (auto split: sum.split)
+
 lemma param_sum[param]:
   "(Inl,Inl) \<in> Rl \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel"
   "(Inr,Inr) \<in> Rr \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel"
-  "(sum_case,sum_case) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
-  "(sum_rec,sum_rec) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
+  "(case_sum,case_sum) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
+  "(old.rec_sum,old.rec_sum) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
   by (fastforce split: sum.split dest: fun_relD 
-    simp: sum_case_def[symmetric])+
+    simp: rec_sum_is_case)+
 
-lemma param_sum_case':
+lemma param_case_sum':
   "\<lbrakk> (s,s')\<in>\<langle>Rl,Rr\<rangle>sum_rel;
      \<And>l l'. \<lbrakk> s=Inl l; s'=Inl l'; (l,l')\<in>Rl \<rbrakk> \<Longrightarrow> (fl l, fl' l')\<in>R;
      \<And>r r'. \<lbrakk> s=Inr r; s'=Inr r'; (r,r')\<in>Rr \<rbrakk> \<Longrightarrow> (fr r, fr' r')\<in>R
-   \<rbrakk> \<Longrightarrow> (sum_case fl fr s, sum_case fl' fr' s')\<in>R"
+   \<rbrakk> \<Longrightarrow> (case_sum fl fr s, case_sum fl' fr' s')\<in>R"
   by (auto split: sum.split)
 
 lemma param_append[param]: 
@@ -187,12 +196,12 @@ lemma param_append[param]:
 lemma param_list1[param]:
   "(Nil,Nil)\<in>\<langle>R\<rangle>list_rel"
   "(Cons,Cons)\<in>R \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
-  "(list_case,list_case)\<in>Rr\<rightarrow>(R\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr"
+  "(case_list,case_list)\<in>Rr\<rightarrow>(R\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr"
   apply (force dest: fun_relD split: list.split)+
   done
 
-lemma param_list_rec[param]: 
-  "(list_rec,list_rec) 
+lemma param_rec_list[param]: 
+  "(rec_list,rec_list) 
   \<in> Ra \<rightarrow> (Rb \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra \<rightarrow> Ra) \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra"
 proof (intro fun_relI)
   case (goal1 a a' f f' l l')
@@ -204,12 +213,12 @@ proof (intro fun_relI)
     done
 qed
 
-lemma param_list_case':
+lemma param_case_list':
   "\<lbrakk> (l,l')\<in>\<langle>Rb\<rangle>list_rel;
      \<lbrakk>l=[]; l'=[]\<rbrakk> \<Longrightarrow> (n,n')\<in>Ra;  
      \<And>x xs x' xs'. \<lbrakk> l=x#xs; l'=x'#xs'; (x,x')\<in>Rb; (xs,xs')\<in>\<langle>Rb\<rangle>list_rel \<rbrakk> 
      \<Longrightarrow> (c x xs, c' x' xs')\<in>Ra
-   \<rbrakk> \<Longrightarrow> (list_case n c l, list_case n' c' l') \<in> Ra"
+   \<rbrakk> \<Longrightarrow> (case_list n c l, case_list n' c' l') \<in> Ra"
   by (auto split: list.split)
     
 lemma param_map[param]: 
@@ -274,7 +283,7 @@ lemma param_list_equals[param]:
 
 lemma param_tl[param]:
   "(tl,tl) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
-  unfolding tl_def
+  unfolding tl_def[abs_def]
   by (parametricity)
 
 

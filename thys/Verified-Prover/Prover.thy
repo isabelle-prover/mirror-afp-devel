@@ -343,11 +343,11 @@ lemma FEval_cong: "\<forall>e1 e2. (\<forall>x. x \<in> set (fv A) --> e1 x = e2
      apply(simp add: Let_def ) apply(intro allI impI) apply(rule and_lem) apply(force) apply(force)
     apply(simp add: Let_def ) apply(intro allI impI) apply(rule or_lem) apply(force) apply(force)
    apply(simp add: Let_def ) apply(intro allI impI) apply(rule ball_eq_ball) apply(rule) 
-   apply(drule_tac x="nat_case m e1" in spec) apply(drule_tac x="nat_case m e2" in spec) apply(erule impE)
+   apply(drule_tac x="case_nat m e1" in spec) apply(drule_tac x="case_nat m e2" in spec) apply(erule impE)
     apply(rule) apply(rule) apply(case_tac x) apply(simp) apply(simp)
    apply(assumption)
   apply(simp add: Let_def ) apply(intro allI impI) apply(rule bex_eq_bex) apply(rule) 
-  apply(drule_tac x="nat_case m e1" in spec) apply(drule_tac x="nat_case m e2" in spec) apply(erule impE)
+  apply(drule_tac x="case_nat m e1" in spec) apply(drule_tac x="case_nat m e2" in spec) apply(erule impE)
    apply(rule) apply(rule) apply(case_tac x) apply(simp) apply(simp)
   apply(assumption)
   done
@@ -395,11 +395,11 @@ lemma FEval_subst: "\<forall>e f. (FEval MI e (subst f A)) = (FEval MI (e o f) A
      apply(simp)
     apply(simp)
    apply(simp (no_asm_use)) apply(simp) apply(rule,rule) apply(rule ball_eq_ball) apply(rule) apply(simp add: bump_def)
-   apply(subgoal_tac "(%u. nat_case m e (case u of 0 => 0 | Suc n => Suc (f n))) = (nat_case m (%n. e (f n)))") apply(simp)
+   apply(subgoal_tac "(%u. case_nat m e (case u of 0 => 0 | Suc n => Suc (f n))) = (case_nat m (%n. e (f n)))") apply(simp)
    apply(rule ext) apply(case_tac u)
     apply(simp) apply(simp)
   apply(simp (no_asm_use)) apply(simp) apply(rule,rule) apply(rule bex_eq_bex) apply(rule) apply(simp add: bump_def)
-  apply(subgoal_tac "(%u. nat_case m e (case u of 0 => 0 | Suc n => Suc (f n))) = (nat_case m (%n. e (f n)))") apply(simp)
+  apply(subgoal_tac "(%u. case_nat m e (case u of 0 => 0 | Suc n => Suc (f n))) = (case_nat m (%n. e (f n)))") apply(simp)
   apply(rule ext) apply(case_tac u)
    apply(simp) apply(simp)
   done
@@ -412,10 +412,10 @@ lemma bump_id_suc[simp]: "bump id x (Suc n) = Suc n" apply(simp add: bump_def) d
 lemma bump_id_0[simp]: "bump id 0 = id" apply(rule ext) apply(simp add: bump_def) apply(case_tac x) apply(auto) done
 *)
 
-lemma FEval_finst: "FEval mo e (finst A u) = FEval mo (nat_case (e u) e) A"
+lemma FEval_finst: "FEval mo e (finst A u) = FEval mo (case_nat (e u) e) A"
   apply(simp add: finst_def)
   apply(simp add: FEval_subst) 
-  apply(subgoal_tac "(e o nat_case u (%n. n)) = (nat_case (e u) e)") apply(simp)
+  apply(subgoal_tac "(e o case_nat u (%n. n)) = (case_nat (e u) e)") apply(simp)
   apply(rule ext)
   apply(case_tac x,auto)
   done
@@ -444,7 +444,7 @@ lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==
 
   apply(rule disjI1)
   apply(simp)
-  apply(subgoal_tac "FEval (M,I) (nat_case m (e(u :=m))) f = FEval (M,I) (nat_case m e) f")
+  apply(subgoal_tac "FEval (M,I) (case_nat m (e(u :=m))) f = FEval (M,I) (case_nat m e) f")
    apply(simp)
   apply(rule FEval_cong[rule_format])
 
@@ -480,7 +480,7 @@ lemma sound_FAll': "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) =
     apply(simp)
    apply(rule SEval_cong[rule_format]) apply(simp add: sfv_cons) apply(force)
   apply(simp)
-  apply(subgoal_tac "FEval (M,I) (nat_case m (e(u :=m))) f = FEval (M,I) (nat_case m e) f")
+  apply(subgoal_tac "FEval (M,I) (case_nat m (e(u :=m))) f = FEval (M,I) (case_nat m e) f")
    apply(simp)
   apply(rule FEval_cong[rule_format])
   apply(case_tac x, simp)
@@ -501,7 +501,7 @@ lemma sound_FAll: "u \<notin> sfv ((0,FAll f)#s) ==> SEval m e (map snd (s@[(0,f
   apply(simp)
   apply(rule disjI1)
   apply(simp add: FEval_finst)
-  apply(subgoal_tac "FEval m (nat_case (e u) e) f = FEval m (nat_case x e) f") apply(simp)
+  apply(subgoal_tac "FEval m (case_nat (e u) e) f = FEval m (case_nat x e) f") apply(simp)
   apply(rule FEval_cong[rule_format])
   apply(case_tac xa)
   apply(simp)

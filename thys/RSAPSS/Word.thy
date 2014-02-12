@@ -2215,7 +2215,7 @@ lemmas [simp] = length_nat_non0
 primrec fast_bv_to_nat_helper :: "[bit list, num] => num" where
     fast_bv_to_nat_Nil: "fast_bv_to_nat_helper [] k = k"
   | fast_bv_to_nat_Cons: "fast_bv_to_nat_helper (b#bs) k =
-      fast_bv_to_nat_helper bs ((bit_case Num.Bit0 Num.Bit1 b) k)"
+      fast_bv_to_nat_helper bs ((case_bit Num.Bit0 Num.Bit1 b) k)"
 
 declare fast_bv_to_nat_helper.simps [code del]
 

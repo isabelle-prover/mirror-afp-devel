@@ -231,7 +231,7 @@ lemma lemma7:
   shows "|\<A> f \<beta> ve| \<lessapprox> \<aA> f |\<beta>| ve_a"
 proof(cases f)
 case (R _ v)
-  from assms have assm': "\<And>v b. option_case {} abs_d (ve (v,b)) \<lessapprox> ve_a (v,|b| )"
+  from assms have assm': "\<And>v b. case_option {} abs_d (ve (v,b)) \<lessapprox> ve_a (v,|b| )"
     by (auto simp add:d_approx_def abs_venv_def venv_approx_def smap_less_def elim!:allE)
   show ?thesis
     proof(cases "\<beta> (binder v)")

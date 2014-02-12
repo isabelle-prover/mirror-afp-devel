@@ -198,7 +198,7 @@ text {*
 
   The constructor @{term Word} has @{typ "32 word"} in its type, so
   we have to lift it to @{text "Word'"}, and the same holds for the
-  case combinator @{term val_case}, which @{term val_case'} replaces.%
+  case combinator @{term case_val}, which @{term case_val'} replaces.%
   \footnote{%
     Note that we should not declare a case translation for the new
     case combinator because this will break parsing case expressions
@@ -206,7 +206,7 @@ text {*
   }
   Next, we set up the code generator accordingly:
   @{term Bool} and @{term Word'} are the new constructors for @{typ val},
-  and @{term val_case'} is the new case combinator with an appropriate 
+  and @{term case_val'} is the new case combinator with an appropriate 
   case certificate.%
   \footnote{%
     Case certificates tell the code generator to replace the HOL
@@ -220,7 +220,7 @@ text {*
     \cite[Def.\ 27]{Haftmann2009PhD}. For a datatype @{text dt}
     with constructors @{text "C\<^sub>1"} to @{text "C\<^sub>n"}
     where each constructor @{text "C\<^sub>i"} takes @{text "k\<^sub>i"} parameters,
-    the certificate for the case combinator @{text "dt_case"}
+    the certificate for the case combinator @{text "case_dt"}
     looks as follows:
 
     {
@@ -233,7 +233,7 @@ text {*
     }
   }
   We delete the code equations for the old constructor @{term Word}
-  and case combinator @{term val_case} such that the code generator
+  and case combinator @{term case_val} such that the code generator
   reports missing adaptations.
 *}
 
@@ -241,18 +241,18 @@ lift_definition Word' :: "uint32 \<Rightarrow> val" is Word .
 
 code_datatype Bool Word'
 
-lift_definition val_case' :: "(bool \<Rightarrow> 'a) \<Rightarrow> (uint32 \<Rightarrow> 'a) \<Rightarrow> val \<Rightarrow> 'a" is val_case .
+lift_definition case_val' :: "(bool \<Rightarrow> 'a) \<Rightarrow> (uint32 \<Rightarrow> 'a) \<Rightarrow> val \<Rightarrow> 'a" is case_val .
 
 lemmas [code, simp] = val.cases [Transfer.transferred]
 
-lemma val_case'_cert:
+lemma case_val'_cert:
   fixes bool word' b w
-  assumes "CASE \<equiv> val_case' bool word'"
+  assumes "CASE \<equiv> case_val' bool word'"
   shows "(CASE (Bool b) \<equiv> bool b) &&& (CASE (Word' w) \<equiv> word' w)"
 by(simp_all add: assms)
-setup {* Code.add_case @{thm val_case'_cert} *}
+setup {* Code.add_case @{thm case_val'_cert} *}
 
-lemma [code, code del]: "val_case = val_case" ..
+lemma [code, code del]: "case_val = case_val" ..
 lemma [code, code del]: "Word = Word" ..
 
 subsection {* Make functions use functions on machine words *}

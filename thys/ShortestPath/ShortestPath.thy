@@ -70,7 +70,7 @@ lemma tail_value_helper:
   assumes "distinct p"
   assumes "p \<noteq> []"
   shows "p = [hd p]"
-  by (metis assms distinct.simps(2) hd.simps neq_Nil_conv last_ConsR last_in_set)
+  by (metis assms distinct.simps(2) list.sel(1) neq_Nil_conv last_ConsR last_in_set)
 
 lemma (in basic_sp) dist_le_cost:
   fixes v :: 'a

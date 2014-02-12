@@ -84,8 +84,8 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     "op \<longrightarrow> ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "disj ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "Not ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
-    "bool_case ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i I"
-    "bool_rec ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i I"
+    "case_bool ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i I"
+    "old.rec_bool ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i I"
     by auto
 
   lemma autoref_bool[autoref_rules]:
@@ -93,11 +93,11 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
     "(conj,conj)\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
     "(disj,disj)\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
     "(Not,Not)\<in>bool_rel\<rightarrow>bool_rel"
-    "(bool_case,bool_case)\<in>R\<rightarrow>R\<rightarrow>bool_rel\<rightarrow>R"
-    "(bool_rec,bool_rec)\<in>R\<rightarrow>R\<rightarrow>bool_rel\<rightarrow>R"
+    "(case_bool,case_bool)\<in>R\<rightarrow>R\<rightarrow>bool_rel\<rightarrow>R"
+    "(old.rec_bool,old.rec_bool)\<in>R\<rightarrow>R\<rightarrow>bool_rel\<rightarrow>R"
     "(op \<longleftrightarrow>, op \<longleftrightarrow>)\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
     "(op \<longrightarrow>, op \<longrightarrow>)\<in>bool_rel\<rightarrow>bool_rel\<rightarrow>bool_rel"
-    by (auto split: bool.split simp: bool_case_def[symmetric])
+    by (auto split: bool.split simp: rec_bool_is_case)
 
 
   subsection "Standard Type Classes"
@@ -202,13 +202,13 @@ context begin interpretation autoref_syn .
       "(op mod, op mod)\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
       by auto
     
-    lemma autoref_nat_case[autoref_rules]: 
-      "(nat_case,nat_case)\<in>Ra \<rightarrow> (Id \<rightarrow> Ra) \<rightarrow> Id \<rightarrow> Ra"
+    lemma autoref_case_nat[autoref_rules]: 
+      "(case_nat,case_nat)\<in>Ra \<rightarrow> (Id \<rightarrow> Ra) \<rightarrow> Id \<rightarrow> Ra"
       apply (intro fun_relI)
       apply (auto split: nat.split dest: fun_relD)
       done
 
-    lemma autoref_nat_rec: "(nat_rec,nat_rec) \<in> R \<rightarrow> (Id \<rightarrow> R \<rightarrow> R) \<rightarrow> Id \<rightarrow> R"
+    lemma autoref_rec_nat: "(rec_nat,rec_nat) \<in> R \<rightarrow> (Id \<rightarrow> R \<rightarrow> R) \<rightarrow> Id \<rightarrow> R"
       apply (intro fun_relI)
     proof -
       case (goal1 s s' f f' n n') thus ?case
@@ -265,8 +265,8 @@ context begin interpretation autoref_syn .
     (*
     lemma [autoref_itype]:
       "Pair ::\<^sub>i Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod"
-      "prod_case ::\<^sub>i (Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i I"
-      "prod_rec ::\<^sub>i (Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i I"
+      "case_prod ::\<^sub>i (Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i I"
+      "old.rec_prod ::\<^sub>i (Ia \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i I"
       "fst ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i Ia"
       "snd ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i Ib"
       "(op = :: _\<times>_ \<Rightarrow> _) ::\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i \<langle>Ia,Ib\<rangle>\<^sub>ii_prod \<rightarrow>\<^sub>i i_bool"
@@ -275,12 +275,12 @@ context begin interpretation autoref_syn .
 
     lemma prod_refine[autoref_rules]:
       "(Pair,Pair)\<in>Ra \<rightarrow> Rb \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel"
-      "(prod_case,prod_case) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
-      "(prod_rec,prod_rec) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
+      "(case_prod,case_prod) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
+      "(old.rec_prod,old.rec_prod) \<in> (Ra \<rightarrow> Rb \<rightarrow> Rr) \<rightarrow> \<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rr"
       "(fst,fst)\<in>\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Ra"
       "(snd,snd)\<in>\<langle>Ra,Rb\<rangle>prod_rel \<rightarrow> Rb"
       by (auto dest: fun_relD split: prod.split 
-        simp: prod_rel_def prod_case_def[symmetric])
+        simp: prod_rel_def rec_prod_is_case)
 
     definition "prod_eq eqa eqb x1 x2 \<equiv> 
       case x1 of (a1,b1) \<Rightarrow> case x2 of (a2,b2) \<Rightarrow> eqa a1 a2 \<and> eqb b1 b2"
@@ -306,8 +306,8 @@ context begin interpretation autoref_syn .
       "None ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option"
       "Some ::\<^sub>i I \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_option"
       "the ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
-      "option_case ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
-      "option_rec ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
+      "case_option ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
+      "rec_option ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
       "(op = :: _ option \<Rightarrow> _) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i i_bool"
       by auto
       *)
@@ -315,10 +315,10 @@ context begin interpretation autoref_syn .
     lemma autoref_opt[autoref_rules]:
       "(None,None)\<in>\<langle>R\<rangle>option_rel"
       "(Some,Some)\<in>R \<rightarrow> \<langle>R\<rangle>option_rel"
-      "(option_case,option_case)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
-      "(option_rec,option_rec)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+      "(case_option,case_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+      "(rec_option,rec_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
       by (auto split: option.split 
-        simp: option_rel_def option_case_def[symmetric]
+        simp: option_rel_def case_option_def[symmetric]
         dest: fun_relD)
 
     lemma autoref_the[autoref_rules]:
@@ -367,17 +367,17 @@ context begin interpretation autoref_syn .
     "(op = :: _+_ \<Rightarrow> _) ::\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i i_bool"
     "Inl ::\<^sub>i Il \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum"
     "Inr ::\<^sub>i Ir \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum"
-    "sum_case ::\<^sub>i (Il\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i (Ir \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i I"
-    "sum_rec ::\<^sub>i (Il\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i (Ir \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i I"
+    "case_sum ::\<^sub>i (Il\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i (Ir \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i I"
+    "old.rec_sum ::\<^sub>i (Il\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i (Ir \<rightarrow>\<^sub>i I) \<rightarrow>\<^sub>i \<langle>Il,Ir\<rangle>\<^sub>ii_sum \<rightarrow>\<^sub>i I"
     by auto*)
 
   lemma autoref_sum[autoref_rules]:
     "(Inl,Inl) \<in> Rl \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel"
     "(Inr,Inr) \<in> Rr \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel"
-    "(sum_case,sum_case) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
-    "(sum_rec,sum_rec) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
+    "(case_sum,case_sum) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
+    "(old.rec_sum,old.rec_sum) \<in> (Rl \<rightarrow> R) \<rightarrow> (Rr \<rightarrow> R) \<rightarrow> \<langle>Rl,Rr\<rangle>sum_rel \<rightarrow> R"
     by (fastforce split: sum.split dest: fun_relD 
-      simp: sum_case_def[symmetric])+
+      simp: rec_sum_is_case)+
 
   definition "sum_eq eql eqr s1 s2 \<equiv> 
     case (s1,s2) of 
@@ -407,8 +407,8 @@ context begin interpretation autoref_syn .
     "[] ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
     "op # ::\<^sub>i I \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
     "op @ ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list"
-    "list_case ::\<^sub>i Ir \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>i\<langle>I\<rangle>\<^sub>ii_list\<rightarrow>\<^sub>iIr) \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ir"
-    "list_rec ::\<^sub>i Ir \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>i\<langle>I\<rangle>\<^sub>ii_list\<rightarrow>\<^sub>iIr\<rightarrow>\<^sub>iIr) \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ir"
+    "case_list ::\<^sub>i Ir \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>i\<langle>I\<rangle>\<^sub>ii_list\<rightarrow>\<^sub>iIr) \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ir"
+    "rec_list ::\<^sub>i Ir \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>i\<langle>I\<rangle>\<^sub>ii_list\<rightarrow>\<^sub>iIr\<rightarrow>\<^sub>iIr) \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ir"
     "map ::\<^sub>i (I1\<rightarrow>\<^sub>iI2) \<rightarrow>\<^sub>i \<langle>I1\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i \<langle>I2\<rangle>\<^sub>ii_list"
     "foldl ::\<^sub>i (Ia\<rightarrow>\<^sub>iIb\<rightarrow>\<^sub>iIa) \<rightarrow>\<^sub>i Ia \<rightarrow>\<^sub>i \<langle>Ib\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ia"
     "foldr ::\<^sub>i (Ia\<rightarrow>\<^sub>iIb\<rightarrow>\<^sub>iIb) \<rightarrow>\<^sub>i \<langle>Ia\<rangle>\<^sub>ii_list \<rightarrow>\<^sub>i Ib \<rightarrow>\<^sub>i Ib"
@@ -431,11 +431,11 @@ context begin interpretation autoref_syn .
   lemma refine_list[autoref_rules]:
     "(Nil,Nil)\<in>\<langle>R\<rangle>list_rel"
     "(Cons,Cons)\<in>R \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
-    "(list_case,list_case)\<in>Rr\<rightarrow>(R\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr"
+    "(case_list,case_list)\<in>Rr\<rightarrow>(R\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>list_rel\<rightarrow>Rr"
     apply (force dest: fun_relD split: list.split)+
     done
 
-  lemma autoref_list_rec[autoref_rules]: "(list_rec,list_rec) 
+  lemma autoref_rec_list[autoref_rules]: "(rec_list,rec_list) 
     \<in> Ra \<rightarrow> (Rb \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra \<rightarrow> Ra) \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra"
   proof (intro fun_relI)
     case (goal1 a a' f f' l l')
@@ -540,7 +540,7 @@ context begin interpretation autoref_syn .
 
   lemma autoref_tl[autoref_rules]:
     "(tl,tl) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
-    unfolding tl_def
+    unfolding tl_def[abs_def]
     by autoref
 
   definition [simp]: "is_Nil a \<equiv> case a of [] \<Rightarrow> True | _ \<Rightarrow> False"

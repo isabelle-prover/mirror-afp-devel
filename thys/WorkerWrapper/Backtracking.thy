@@ -33,12 +33,12 @@ define the syntax for our language using a HOL datatype:
 datatype expr = const nat | add expr expr | disj expr expr | fail
 (*<*)
 
-lemma expr_case_cont[cont2cont]:
+lemma case_expr_cont[cont2cont]:
   assumes f1: "\<And>y. cont (\<lambda>x. f1 x y)"
   assumes f2: "\<And>y z. cont (\<lambda>x. f2 x y z)"
   assumes f3: "\<And>y z. cont (\<lambda>x. f3 x y z)"
   assumes f4: "cont (\<lambda>x. f4 x)"
-  shows "cont (\<lambda>x. expr_case (f1 x) (f2 x) (f3 x) (f4 x) expr)"
+  shows "cont (\<lambda>x. case_expr (f1 x) (f2 x) (f3 x) (f4 x) expr)"
   using assms by (cases expr) simp_all
 
 (* Presumably obsolete in the HG version, not so in Isabelle2011. *)

@@ -101,7 +101,7 @@ unfolding Allreg_def by auto
 lemma [simp]:
   shows "(\<Union>a. {[a]})\<star> = UNIV"
 apply(auto)
-apply(induct_tac x rule: list.induct)
+apply(induct_tac x)
 apply(auto)
 apply(subgoal_tac "[a] @ list \<in> (\<Union>a. {[a]})\<star>")
 apply(simp)

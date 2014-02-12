@@ -158,13 +158,13 @@ lemma option_rel_RELATES[refine_dref_RELATES]:
 
 declare option_rel_sv[refine_hsimp]
 
-declare option_case_refine[refine del]
-lemma option_case_refine_ext[refine]:
+declare case_option_refine[refine del]
+lemma case_option_refine_ext[refine]:
   assumes "(v,v')\<in>\<langle>Ra\<rangle>option_rel"
   assumes "n \<le> \<Down> Rb n'"
   assumes "\<And>x x'. \<lbrakk> v=Some x; v'=Some x'; (x, x') \<in> Ra \<rbrakk> 
     \<Longrightarrow> f x \<le> \<Down> Rb (f' x')"
-  shows "option_case n f v \<le>\<Down>Rb (option_case n' f' v')"
+  shows "case_option n f v \<le>\<Down>Rb (case_option n' f' v')"
   using assms
   by (auto split: option.split simp: option_rel_def)
 

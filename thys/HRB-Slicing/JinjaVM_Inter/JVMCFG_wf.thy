@@ -262,7 +262,8 @@ next
 next
   case (3 C P M pc nt)
   with V_in_ParamUses that show ?thesis
-    using [[simproc del: list_to_set_comprehension]] by (cases nt, auto) (case_tac "instrs_of (PROG P) C M ! a", simp_all, fastforce)
+    using [[simproc del: list_to_set_comprehension]]
+    by (cases nt, auto) (rename_tac a b, case_tac "instrs_of (PROG P) C M ! a", simp_all, fastforce)
 qed
 
 lemma sees_method_fun_wf:

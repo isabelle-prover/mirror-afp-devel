@@ -23,7 +23,7 @@ text {*
 definition unfold_tllist' :: "('a \<Rightarrow> 'b \<times> 'a + 'c) \<Rightarrow> 'a \<Rightarrow> ('b, 'c) tllist"
 where [code del]: 
   "unfold_tllist' f = 
-   unfold_tllist (\<lambda>a. \<exists>c. f a = Inr c) (Sum_Type.Projr \<circ> f) (fst \<circ> Sum_Type.Projl \<circ> f) (snd \<circ> Sum_Type.Projl \<circ> f)"
+   unfold_tllist (\<lambda>a. \<exists>c. f a = Inr c) (projr \<circ> f) (fst \<circ> projl \<circ> f) (snd \<circ> projl \<circ> f)"
 
 lemma unfold_tllist' [code]:
   "unfold_tllist' f a =
@@ -1124,7 +1124,7 @@ lemma step_thread_correct:
   and invar: "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   shows
   "Option.map (apsnd (apsnd \<sigma>_\<alpha>)) (step_thread update_state s t) = \<alpha>.step_thread (\<sigma>_\<alpha> \<circ> update_state) (state_\<alpha> s) t" (is ?thesis1)
-  and "(\<And>ta. FWThread.thread_oks (thr_\<alpha> (thr s)) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<Longrightarrow> \<sigma>_invar (update_state ta) (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) \<Longrightarrow> option_case True (\<lambda>(t, taxm, \<sigma>). \<sigma>_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (step_thread update_state s t)"
+  and "(\<And>ta. FWThread.thread_oks (thr_\<alpha> (thr s)) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<Longrightarrow> \<sigma>_invar (update_state ta) (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) \<Longrightarrow> case_option True (\<lambda>(t, taxm, \<sigma>). \<sigma>_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (step_thread update_state s t)"
   (is "(\<And>ta. ?tso ta \<Longrightarrow> ?inv ta) \<Longrightarrow> ?thesis2")
 proof -
   have "?thesis1 \<and> ((\<forall>ta. ?tso ta \<longrightarrow> ?inv ta) \<longrightarrow> ?thesis2)"

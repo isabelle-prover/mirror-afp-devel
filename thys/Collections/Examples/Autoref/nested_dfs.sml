@@ -340,10 +340,10 @@ fun iam_empty x = (fn _ => FArray.IsabelleMapping.array_of_list []) x;
 
 fun the_res (DRETURN x) = x;
 
-fun equal_list A_ [] (a :: lista) = false
-  | equal_list A_ (a :: lista) [] = false
-  | equal_list A_ (aa :: listaa) (a :: lista) =
-    eq A_ aa a andalso equal_list A_ listaa lista
+fun equal_list A_ [] (x21 :: x22) = false
+  | equal_list A_ (x21 :: x22) [] = false
+  | equal_list A_ (x21 :: x22) (y21 :: y22) =
+    eq A_ x21 y21 andalso equal_list A_ x22 y22
   | equal_list A_ [] [] = true;
 
 fun equal_blue_witness A_ (Reach (v1, list1a, v2, list2a))

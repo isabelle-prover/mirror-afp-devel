@@ -385,7 +385,7 @@ lemma viewnres_cases:
   by (cases r) auto
 
 lemma viewnres_split: 
-  "P (option_case f1 (prod_case f2) x) = 
+  "P (case_option f1 (case_prod f2) x) = 
   ((x = None \<longrightarrow> P f1) \<and> (\<forall>a b. x = Some (a,b) \<longrightarrow> P (f2 a b)))"
   by (auto split: option.split prod.split)
 

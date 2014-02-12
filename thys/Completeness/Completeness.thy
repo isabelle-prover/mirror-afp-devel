@@ -318,7 +318,7 @@ lemma containsNotTerminal: "[| branch subs gamma f; !n . ~proofTree (tree subs (
   apply(case_tac "SATAxiom (sequent (f n))")
   apply(blast dest: SATAxiomEq[THEN iffD2])
   apply(drule_tac x=n in spec)
-  apply (simp add:  subs_def subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def contains_def terminal_def nforms_def split_beta branch_def split: list.split signs.split expand_formula_case, force)
+  apply (simp add:  subs_def subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def contains_def terminal_def nforms_def split_beta branch_def split: list.split signs.split expand_case_formula, force)
   done
 
 lemma containsPropagates: "!!f.

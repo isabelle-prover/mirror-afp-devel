@@ -313,7 +313,7 @@ lemma array_length_list: "array_length a = length (list_of_array a)"
 
 subsection {* Parametricity lemmas *}
 
-lemma array_rec_is_case[simp]: "array_rec=array_case"
+lemma rec_array_is_case[simp]: "rec_array = case_array"
   apply (intro ext)
   apply (auto split: array.split)
   done
@@ -350,33 +350,33 @@ lemma param_Array[param]:
   apply (simp add: array_rel_def)
   done
 
-lemma param_array_rec[param]:
-  "(array_rec,array_rec) \<in> (\<langle>Ra\<rangle>list_rel \<rightarrow> Rb) \<rightarrow> \<langle>Ra\<rangle>array_rel \<rightarrow> Rb"
+lemma param_rec_array[param]:
+  "(rec_array,rec_array) \<in> (\<langle>Ra\<rangle>list_rel \<rightarrow> Rb) \<rightarrow> \<langle>Ra\<rangle>array_rel \<rightarrow> Rb"
   apply (intro fun_relI)
   apply (rename_tac f f' a a', case_tac a, case_tac a')
   apply (auto dest: fun_relD array_relD)
   done
 
-lemma param_array_case[param]:
-  "(array_case,array_case) \<in> (\<langle>Ra\<rangle>list_rel \<rightarrow> Rb) \<rightarrow> \<langle>Ra\<rangle>array_rel \<rightarrow> Rb"
+lemma param_case_array[param]:
+  "(case_array,case_array) \<in> (\<langle>Ra\<rangle>list_rel \<rightarrow> Rb) \<rightarrow> \<langle>Ra\<rangle>array_rel \<rightarrow> Rb"
   apply (clarsimp split: array.split)
   apply (drule array_relD)
   by parametricity
 
-lemma param_array_case1':
+lemma param_case_array1':
   assumes "(a,a')\<in>\<langle>Ra\<rangle>array_rel"
   assumes "\<And>l l'. \<lbrakk> a=Array l; a'=Array l'; (l,l')\<in>\<langle>Ra\<rangle>list_rel \<rbrakk> 
     \<Longrightarrow> (f l,f' l') \<in> Rb"
-  shows "(array_case f a,array_case f' a') \<in> Rb"
+  shows "(case_array f a,case_array f' a') \<in> Rb"
   using assms
   apply (clarsimp split: array.split)
   apply (drule array_relD)
   apply parametricity
   by (rule refl)+
 
-lemmas param_array_case2' = param_array_case1'[folded array_rec_is_case]
+lemmas param_case_array2' = param_case_array1'[folded rec_array_is_case]
   
-lemmas param_array_case' = param_array_case1' param_array_case2'
+lemmas param_case_array' = param_case_array1' param_case_array2'
 
 lemma param_array_length[param]:
     "(array_length,array_length) \<in> \<langle>Rb\<rangle>array_rel \<rightarrow> nat_rel"

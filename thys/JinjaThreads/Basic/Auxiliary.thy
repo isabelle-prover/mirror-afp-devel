@@ -323,7 +323,7 @@ lemma dropWhile_eq_ConsD:
 by(induct xs)(auto split: split_if_asm)
 
 lemma dropWhile_eq_hd_conv: "dropWhile P xs = hd xs # rest \<longleftrightarrow> xs \<noteq> [] \<and> rest = tl xs \<and> \<not> P (hd xs)"
-by (metis append_Nil append_is_Nil_conv dropWhile_eq_Cons_conv hd.simps neq_Nil_conv takeWhile_dropWhile_id takeWhile_eq_Nil_conv tl.simps(2))
+by (metis append_Nil append_is_Nil_conv dropWhile_eq_Cons_conv list.sel(1) neq_Nil_conv takeWhile_dropWhile_id takeWhile_eq_Nil_conv list.sel(3))
 
 lemma dropWhile_eq_same_conv: "dropWhile P xs = xs \<longleftrightarrow> (xs = [] \<or> \<not> P (hd xs))"
 by (metis dropWhile.simps(1) eq_Nil_appendI hd_dropWhile takeWhile_dropWhile_id takeWhile_eq_Nil_conv)
@@ -402,7 +402,7 @@ lemma disjCE:
   obtains P | "Q" "\<not> P"
 using assms by blast
 
-lemma option_case_conv_if:
+lemma case_option_conv_if:
   "(case v of None \<Rightarrow> f | Some x \<Rightarrow> g x) = (if \<exists>a. v = Some a then g (the v) else f)"
 by(simp)
 
@@ -577,8 +577,7 @@ lemma if_else_if_else_eq_if_else [simp]:
   "(if b then x else if b then y else z) = (if b then x else z)"
 by(simp)
 
-
-lemma prod_rec_split [simp]: "prod_rec = split"
+lemma rec_prod_split [simp]: "old.rec_prod = split"
 by(simp add: fun_eq_iff)
 
 lemma inj_Pair_snd [simp]: "inj (Pair x)"

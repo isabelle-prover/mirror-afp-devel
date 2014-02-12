@@ -747,6 +747,3 @@ val _ = Outer_Syntax.local_theory @{command_spec "nominal_datatype"}
 
 
 end
-
-
-

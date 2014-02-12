@@ -213,12 +213,12 @@ text {* The following lemma enables the inductive definition below to be
   easier to prove monotonic. *}
 
 lemma coms_mono_helper:
-  "(\<forall>i<length \<pi>. sum_case (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi>!i) (cs!i)) 
+  "(\<forall>i<length \<pi>. case_sum (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi>!i) (cs!i)) 
   = 
   ((\<forall>i. i<length \<pi> \<and> (\<exists>v. (\<pi>!i) = Inl v) \<longrightarrow> 
-    coms_ass (\<Lambda> (Sum_Type.Projl (\<pi>!i))) (cs!i)) \<and>
+    coms_ass (\<Lambda> (projl (\<pi>!i))) (cs!i)) \<and>
   (\<forall>i. i<length \<pi> \<and> (\<exists>e. (\<pi>!i) = Inr e) \<longrightarrow> 
-    coms_com (snd3 (Sum_Type.Projr (\<pi>!i))) (cs!i)))"
+    coms_com (snd3 (projr (\<pi>!i))) (cs!i)))"
 apply (intro iffI)
 apply auto[1]
 apply (intro allI impI, case_tac "\<pi>!i", auto)
@@ -244,7 +244,7 @@ where
     coms_com (Choose_dia G H) (Choose c d)"
 | coms_loop: "coms_dia G c \<Longrightarrow> coms_com (Loop_dia G) (Loop c)"
 | coms_main: "\<lbrakk> \<pi> \<in> lins (Graph V \<Lambda> E); length cs = length \<pi>;
-    \<forall>i<length \<pi>. sum_case (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi>!i) (cs!i) \<rbrakk> 
+    \<forall>i<length \<pi>. case_sum (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi>!i) (cs!i) \<rbrakk> 
     \<Longrightarrow> coms_dia (Graph V \<Lambda> E) (foldr (op ;;) cs Skip)"
 monos 
   coms_mono_helper

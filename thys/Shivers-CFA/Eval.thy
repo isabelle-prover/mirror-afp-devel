@@ -52,33 +52,32 @@ text {*
 To be able to do case analysis on the custom datatypes @{text lambda}, @{text d}, @{text call} and @{text prim} inside a function defined with @{text fixrec}, we need continuity results for them. These are all of the same shape and proven by case analysis on the discriminator.
 *}
 
-lemma cont2cont_lambda_case [simp, cont2cont]:
+lemma cont2cont_case_lambda [simp, cont2cont]:
   assumes "\<And>a b c. cont (\<lambda>x. f x a b c)"
-  shows "cont (\<lambda>x. lambda_case (f x) l)"
+  shows "cont (\<lambda>x. case_lambda (f x) l)"
 using assms
 by (cases l) auto
 
-lemma cont2cont_d_case [simp, cont2cont]:
+lemma cont2cont_case_d [simp, cont2cont]:
   assumes "\<And>y. cont (\<lambda>x. f1 x y)"
      and  "\<And>y. cont (\<lambda>x. f2 x y)"
      and  "\<And>y. cont (\<lambda>x. f3 x y)"
     and   "cont (\<lambda>x. f4 x)"
-  shows "cont (\<lambda>x. d_case (f1 x) (f2 x) (f3 x) (f4 x) d)"
+  shows "cont (\<lambda>x. case_d (f1 x) (f2 x) (f3 x) (f4 x) d)"
 using assms
 by (cases d) auto
 
-value call_case
-lemma cont2cont_call_case [simp, cont2cont]:
+lemma cont2cont_case_call [simp, cont2cont]:
   assumes "\<And>a b c. cont (\<lambda>x. f1 x a b c)"
      and  "\<And>a b c. cont (\<lambda>x. f2 x a b c)"
-  shows "cont (\<lambda>x. call_case (f1 x) (f2 x) c)"
+  shows "cont (\<lambda>x. case_call (f1 x) (f2 x) c)"
 using assms
 by (cases c) auto
 
-lemma cont2cont_prim_case [simp, cont2cont]:
+lemma cont2cont_case_prim [simp, cont2cont]:
   assumes "\<And>y. cont (\<lambda>x. f1 x y)"
      and  "\<And>y z. cont (\<lambda>x. f2 x y z)"
-  shows "cont (\<lambda>x. prim_case (f1 x) (f2 x) p)"
+  shows "cont (\<lambda>x. case_prim (f1 x) (f2 x) p)"
 using assms
 by (cases p) auto
 

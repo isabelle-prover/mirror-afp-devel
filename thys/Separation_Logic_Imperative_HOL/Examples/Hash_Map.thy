@@ -1037,7 +1037,7 @@ lemma hm_it_next_rule': "l'\<noteq>[] \<Longrightarrow>
   apply (auto simp: butlast_append) []
   apply (auto simp: butlast_append) []
 proof -
-  case goal1
+  case (goal1 nat _ _ _ aa ba)
   from `xa\<in>set (take (Suc nat) l)` 
   obtain i where "i<Suc nat" "xa = l!i"
     by (auto simp: take_set)

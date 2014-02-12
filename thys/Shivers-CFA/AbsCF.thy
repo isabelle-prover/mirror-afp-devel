@@ -70,31 +70,31 @@ text {*
 And yet again, cont2cont results need to be shown for our custom data types.
 *}
 
-lemma cont2cont_lambda_case [simp, cont2cont]:
+lemma cont2cont_case_lambda [simp, cont2cont]:
   assumes "\<And>a b c. cont (\<lambda>x. f x a b c)"
-  shows "cont (\<lambda>x. lambda_case (f x) l)"
+  shows "cont (\<lambda>x. case_lambda (f x) l)"
 using assms
 by (cases l) auto
 
-lemma cont2cont_proc_case [simp, cont2cont]:
+lemma cont2cont_case_proc [simp, cont2cont]:
   assumes "\<And>y. cont (\<lambda>x. f1 x y)"
      and  "\<And>y. cont (\<lambda>x. f2 x y)"
      and  "cont (\<lambda>x. f3 x)"
-  shows "cont (\<lambda>x. proc_case (f1 x) (f2 x) (f3 x) d)"
+  shows "cont (\<lambda>x. case_proc (f1 x) (f2 x) (f3 x) d)"
 using assms
 by (cases d) auto
 
-lemma cont2cont_call_case [simp, cont2cont]:
+lemma cont2cont_case_call [simp, cont2cont]:
   assumes "\<And>a b c. cont (\<lambda>x. f1 x a b c)"
      and  "\<And>a b c. cont (\<lambda>x. f2 x a b c)"
-  shows "cont (\<lambda>x. call_case (f1 x) (f2 x) c)"
+  shows "cont (\<lambda>x. case_call (f1 x) (f2 x) c)"
 using assms
 by (cases c) auto
 
-lemma cont2cont_prim_case [simp, cont2cont]:
+lemma cont2cont_case_prim [simp, cont2cont]:
   assumes "\<And>y. cont (\<lambda>x. f1 x y)"
      and  "\<And>y z. cont (\<lambda>x. f2 x y z)"
-  shows "cont (\<lambda>x. prim_case (f1 x) (f2 x) p)"
+  shows "cont (\<lambda>x. case_prim (f1 x) (f2 x) p)"
 using assms
 by (cases p) auto
 

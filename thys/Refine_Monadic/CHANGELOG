@@ -68,7 +68,7 @@ Changes of Refinement Framework since 2011-12-24:
   * Bugfix: FOREACHc_rule was to weak (probably a typo).
   * Added alternative FOREACH??i_rule', that allow for less redundant proofs
     in some cases.
-  * Added support for option_case.
+  * Added support for case_option.
   * More general proof rules for recursion combinator:
     RECT_rule_arb and REC_rule_arb now allow for generalizing over variables
     that occur in the specification, but not in the program.

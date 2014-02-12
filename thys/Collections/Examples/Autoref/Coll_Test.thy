@@ -185,7 +185,7 @@ schematic_lemma "(?f::?'c,
 text {* A hairy case for the operator identification heuristics for maps: *}
 schematic_lemma 
   shows "(?f::?'c,
-  \<lambda>m (x::'a::linorder) (y::'b::linorder). option_case
+  \<lambda>m (x::'a::linorder) (y::'b::linorder). case_option
     None
     (\<lambda>m'. m' y)
     (m x)
@@ -195,7 +195,7 @@ schematic_lemma
 
 schematic_lemma 
   shows "(?f::?'c,
-  \<lambda>m (x::'a::hashable) (y::'b::hashable). option_case
+  \<lambda>m (x::'a::hashable) (y::'b::hashable). case_option
     None
     (\<lambda>m'. m' y)
     (m x)
@@ -206,7 +206,7 @@ schematic_lemma
 
 schematic_lemma 
   shows "(?f::?'c,
-  \<lambda>m (x::'a::hashable) (y::'b::linorder). option_case
+  \<lambda>m (x::'a::hashable) (y::'b::linorder). case_option
     None
     (\<lambda>m'. m' y)
     (m (x:::Id))

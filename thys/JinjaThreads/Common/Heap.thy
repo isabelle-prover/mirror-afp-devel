@@ -25,7 +25,7 @@ datatype addr_loc =
     CField cname vname
   | ACell nat
 
-lemma addr_loc_rec [simp]: "addr_loc_rec = addr_loc_case"
+lemma rec_addr_loc [simp]: "rec_addr_loc = case_addr_loc"
 by(auto simp add: fun_eq_iff split: addr_loc.splits)
 
 primrec is_volatile :: "'m prog \<Rightarrow> addr_loc \<Rightarrow> bool"

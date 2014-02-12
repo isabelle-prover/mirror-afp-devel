@@ -4592,7 +4592,7 @@ next
     apply (case_tac "vol!Suc i") apply simp+
     apply (subgoal_tac "\<not> is_duplicateEdge g f a aa")
      apply (thin_tac "\<forall>i<|vol| - Suc 0. \<not> (case vol ! i of None \<Rightarrow> False
-        | Some a \<Rightarrow> option_case False (is_duplicateEdge g f a) (vol ! (i+1)))")
+        | Some a \<Rightarrow> case_option False (is_duplicateEdge g f a) (vol ! (i+1)))")
      apply (simp add: is_duplicateEdge_def)
      apply (subgoal_tac "a \<in> set (removeNones vol) \<and> aa \<in> set (removeNones vol)")
       apply (rule conjI)

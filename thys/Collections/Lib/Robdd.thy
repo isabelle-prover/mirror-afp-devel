@@ -2760,18 +2760,18 @@ next
   note indhyp_4 = goal3(4)[of False, OF _ _ _ invar_rr red_rr, simplified]
   note indhyp_5 = goal3(5)[OF _ invar_n invar(2), simplified]
 
-  from invar_ll have ll_sem: "\<And>a b. robdd_\<alpha> ll (\<lambda>v. nat_case b a (v - n)) = robdd_\<alpha> ll 
+  from invar_ll have ll_sem: "\<And>a b. robdd_\<alpha> ll (\<lambda>v. case_nat b a (v - n)) = robdd_\<alpha> ll 
                                      (\<lambda>v. a (v - Suc n))"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc n"]) 
     apply (simp_all split: nat.splits)
-    apply (metis diff_Suc nat_case_Suc)
+    apply (metis diff_Suc nat.cases(2))
   done
 
-  from invar_rr have rr_sem: "\<And>a b. robdd_\<alpha> rr (\<lambda>v. nat_case b a (v - n)) = robdd_\<alpha> rr 
+  from invar_rr have rr_sem: "\<And>a b. robdd_\<alpha> rr (\<lambda>v. case_nat b a (v - n)) = robdd_\<alpha> rr 
                                      (\<lambda>v. a (v - Suc n))"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc n"]) 
     apply (simp_all split: nat.splits)
-    apply (metis diff_Suc nat_case_Suc)
+    apply (metis diff_Suc nat.cases(2))
   done
 
   show ?case

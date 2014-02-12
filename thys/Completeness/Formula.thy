@@ -127,7 +127,7 @@ datatype signs = Pos | Neg
 lemma signsE: "\<lbrakk> signs = Neg \<Longrightarrow> P; signs = Pos \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   apply(cases signs, auto) done
 
-lemma expand_signs_case: "Q(signs_case vpos vneg F) = ( 
+lemma expand_case_signs: "Q(case_signs vpos vneg F) = ( 
   (F = Pos --> Q (vpos)) & 
   (F = Neg --> Q (vneg)) 
  )"
@@ -193,8 +193,8 @@ lemma sizelemmas: "size A < size (FConj z A B)"
   "size A < size (FAll  z A)"
   by auto
 
-lemma expand_formula_case:
-  "Q(formula_case fatom fconj fall F) = ( 
+lemma expand_case_formula:
+  "Q(case_formula fatom fconj fall F) = ( 
   (! z P vs  . F = FAtom z P vs  --> Q (fatom z P vs)) & 
   (! z A0 A1 . F = FConj z A0 A1 --> Q (fconj z A0 A1)) & 
   (! z A     . F = FAll  z A     --> Q (fall  z A)) 
