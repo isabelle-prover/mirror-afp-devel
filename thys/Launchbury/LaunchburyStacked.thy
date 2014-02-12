@@ -394,7 +394,7 @@ qed
 lemma reds_fresh: " \<lbrakk> \<Gamma> : (y, e) # \<Gamma>' \<Down>d \<Delta> : (y, z) # \<Delta>';
    atom (x::var) \<sharp> (\<Gamma> , e)
   \<rbrakk> \<Longrightarrow> atom x \<sharp> (\<Delta>, z) \<or> x \<in> heapVars \<Delta>"
-by (metis (hide_lams, no_types) hd.simps reds_fresh' snd_conv)
+by (metis (hide_lams, no_types) list.sel(1) reds_fresh' snd_conv)
 
 end
 

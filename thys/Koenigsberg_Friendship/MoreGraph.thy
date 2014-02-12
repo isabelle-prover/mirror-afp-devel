@@ -1709,7 +1709,7 @@ proof -
           moreover have "xs = takeWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) (tl nvs)" 
             using `x # xs = takeWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) nvs` 
             by (metis (lifting, no_types) append_Cons list.distinct(1) takeWhile.simps(2) 
-                takeWhile_dropWhile_id tl.simps(2))
+                takeWhile_dropWhile_id list.sel(3))
           ultimately have "valid_graph.is_path (del_unEdge v w v' G) x3 xs n'" 
             using Cons by auto
           moreover have "x\<noteq>(v,w,v') \<and> x\<noteq>(v',w,v)" 

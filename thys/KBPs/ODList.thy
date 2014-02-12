@@ -399,7 +399,7 @@ proof (cases dxs)
   with dxs show "P dxs" by simp
 qed
 
-lemma odlist_case [case_names empty insert, cases type: odlist]:
+lemma odlist_cases [case_names empty insert, cases type: odlist]:
   assumes empty: "dxs = empty \<Longrightarrow> P"
   assumes insert: "\<And>x xs. \<lbrakk> dxs = fromList (x # xs); distinct (x # xs); sorted (x # xs) \<rbrakk>
                             \<Longrightarrow> P"

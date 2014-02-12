@@ -280,7 +280,7 @@ lemma frame_rule_left:
 
 lemmas deconstruct_rules = 
   bind_rule if_rule false_rule return_sp_rule let_rule 
-  prod_case_rule list_case_rule option_case_rule sum_case_rule
+  case_prod_rule case_list_rule case_option_rule case_sum_rule
 
 lemmas heap_rules = 
   ref_rule

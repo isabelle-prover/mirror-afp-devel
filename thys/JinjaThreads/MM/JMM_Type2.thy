@@ -15,7 +15,7 @@ section {* Definitions *}
 
 datatype addr = Address htype nat   -- "heap type and sequence number"
 
-lemma addr_rec_conv_addr_case [simp]: "addr_rec = addr_case"
+lemma rec_addr_conv_case_addr [simp]: "rec_addr = case_addr"
 by(auto intro!: ext split: addr.split)
 
 instantiation addr :: addr begin

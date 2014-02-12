@@ -95,7 +95,7 @@ qed
 
 subsection {* Probability of a erroneous allocation *}
 
-definition "P_err s = \<P>(\<omega> in paths s. nat_case s \<omega> \<in> until S {error})"
+definition "P_err s = \<P>(\<omega> in paths s. case_nat s \<omega> \<in> until S {error})"
 
 lemma P_err_ok: "P_err ok = 0"
 proof -
@@ -103,7 +103,7 @@ proof -
     by (rule reachable_closed) auto
   then show "P_err ok = 0"
     unfolding P_err_def 
-    by (subst prob_Collect_eq_0) (auto simp add: AE_nuntil_iff_not_reachable simp del: nat_case_until_iff)
+    by (subst prob_Collect_eq_0) (auto simp add: AE_nuntil_iff_not_reachable simp del: case_nat_until_iff)
 qed
 
 lemma P_err_error[simp]: "P_err error = 1"
@@ -153,7 +153,7 @@ lemma reachable_start_error:
 
 lemma AE_reaches_error_or_ok:
   assumes "s \<in> S"
-  shows "AE \<omega> in paths s. nat_case s \<omega> \<in> until S {error, ok}"
+  shows "AE \<omega> in paths s. case_nat s \<omega> \<in> until S {error, ok}"
   apply (subst AE_until_iff_reachable[OF `s \<in> S` finite_Diff, OF finite_S])
 proof (intro disjCI conjI `s\<in>S` ballI)
   fix t assume "t \<in> reachable (S - {error, ok}) s \<union> {s} - {error, ok}"
@@ -166,7 +166,7 @@ qed auto
 
 subsection {* Expected runtime of an allocation run *}
 
-definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} (nat_case s \<omega>) \<partial>paths s)"
+definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} (case_nat s \<omega>) \<partial>paths s)"
 
 lemma cost_from_start:
   "(R start::ereal) =
@@ -188,7 +188,7 @@ proof -
     using R' by simp
 
   have "R ok = 0" "R error = 0"
-    unfolding R_def by (simp_all add: reward_until_nat_case_0)
+    unfolding R_def by (simp_all add: reward_until_case_nat_0)
   with R' have R'_ok: "R' ok = 0" and R'_error: "R' error = 0"
     by simp_all
 

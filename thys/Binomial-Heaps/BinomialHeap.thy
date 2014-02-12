@@ -162,7 +162,7 @@ lemma set_to_rank_invar: "\<lbrakk>\<forall> t' \<in> set bq. rank t < rank t'; 
   \<Longrightarrow>  rank_invar (t # bq)"
 apply(induct bq arbitrary: t)
 apply(simp)
-by (metis hd.simps hd_in_set list.distinct(1) rank_invar.simps(3))
+by (metis list.sel(1) hd_in_set list.distinct(1) rank_invar.simps(3))
 
 
 lemma rank_invar_hd_cons: 

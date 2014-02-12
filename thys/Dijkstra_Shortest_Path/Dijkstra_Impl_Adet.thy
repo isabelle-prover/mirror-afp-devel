@@ -54,8 +54,8 @@ lemmas [autoref_rel_intf] = REL_INTFI[of infty_rel i_infty]
 lemma autoref_infty[param,autoref_rules]:
   "(Infty,Infty)\<in>\<langle>R\<rangle>infty_rel"
   "(Num,Num)\<in>R\<rightarrow>\<langle>R\<rangle>infty_rel"
-  "(infty_case,infty_case)\<in>Rr\<rightarrow>(R\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>infty_rel\<rightarrow>Rr"
-  "(infty_rec,infty_rec)\<in>Rr\<rightarrow>(R\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>infty_rel\<rightarrow>Rr"
+  "(case_infty,case_infty)\<in>Rr\<rightarrow>(R\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>infty_rel\<rightarrow>Rr"
+  "(rec_infty,rec_infty)\<in>Rr\<rightarrow>(R\<rightarrow>Rr)\<rightarrow>\<langle>R\<rangle>infty_rel\<rightarrow>Rr"
   unfolding infty_rel_def
   by (auto dest: fun_relD)
   

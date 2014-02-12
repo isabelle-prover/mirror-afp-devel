@@ -100,7 +100,7 @@ datatype 'addr extCallRet =
   | RetExc 'addr
   | RetStaySame
 
-lemma extCallRet_rec [simp]: "extCallRet_rec = extCallRet_case"
+lemma rec_extCallRet [simp]: "rec_extCallRet = case_extCallRet"
 by(auto simp add: fun_eq_iff split: extCallRet.split)
 
 context heap_base begin

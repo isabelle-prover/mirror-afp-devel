@@ -351,10 +351,10 @@ lemma times_Nat_eval[simp]: "(box\<cdot>x :: Nat) * box\<cdot>y = box\<cdot>(x *
 
 definition
   Nat_case :: "'a::domain \<rightarrow> (Nat \<rightarrow> 'a) \<rightarrow> Nat \<rightarrow> 'a" where
-  "Nat_case \<equiv> \<Lambda> z s n. unbox\<cdot>n >>= (\<Lambda> n'. nat_case z (\<lambda>n''. s\<cdot>(box\<cdot>(Discr n''))) (undiscr n'))"
+  "Nat_case \<equiv> \<Lambda> z s n. unbox\<cdot>n >>= (\<Lambda> n'. case_nat z (\<lambda>n''. s\<cdot>(box\<cdot>(Discr n''))) (undiscr n'))"
 
-lemma cont_nat_case[simp]:
-  "\<lbrakk>cont (\<lambda>x. f x); \<And>n. cont (\<lambda>x. g x n) \<rbrakk> \<Longrightarrow> cont (\<lambda>x. nat_case (f x) (g x) n)"
+lemma cont_case_nat[simp]:
+  "\<lbrakk>cont (\<lambda>x. f x); \<And>n. cont (\<lambda>x. g x n) \<rbrakk> \<Longrightarrow> cont (\<lambda>x. case_nat (f x) (g x) n)"
   by (cases n, simp_all)
 
 lemma Nat_case_strict[simp]: "Nat_case\<cdot>z\<cdot>s\<cdot>\<bottom> = \<bottom>" by (simp add: Nat_case_def)
@@ -381,7 +381,7 @@ proof -
   with nu show ?thesis unfolding one_Nat_def by simp
 qed
 
-lemma Nat_case_nat_case: "Nat_case\<cdot>z\<cdot>s\<cdot>(box\<cdot>(Discr n)) = nat_case z (\<lambda>n'. s\<cdot>(box\<cdot>(Discr n'))) n"
+lemma Nat_case_case_nat: "Nat_case\<cdot>z\<cdot>s\<cdot>(box\<cdot>(Discr n)) = case_nat z (\<lambda>n'. s\<cdot>(box\<cdot>(Discr n'))) n"
   by (simp add: Nat_case_def)
 
 lemma Nat_casedist[case_names bottom zero Suc]:

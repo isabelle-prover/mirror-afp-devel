@@ -505,7 +505,7 @@ val strip_guards_simps = @{thms Language.strip_guards_simps};
 val dest_Guard_simps = @{thms Language.dest_Guard_simps};
 val is_Guard_simps = @{thms Language.is_Guard_simps};
 val com_cases_simps = @{thms Language.com.cases};
-val the_simps = @{thms the.simps};
+val option_sel = @{thms option.sel};
 val strip_idem = @{thm strip_idem};
 val dom_strip = @{thm dom_strip};
 val Ex_True = @{thm Ex_True};
@@ -607,8 +607,8 @@ fun but_last [] = raise Empty
   | but_last [x] = []
   | but_last (x::xs) = x::but_last xs;
 
-fun dest_splits (Const (@{const_name prod_case},_)$Abs (n,T,t)) = (n,T)::dest_splits t
-  | dest_splits (Const (@{const_name prod_case},_)$Abs (n,T,t)$_) = (n,T)::dest_splits t
+fun dest_splits (Const (@{const_name case_prod},_)$Abs (n,T,t)) = (n,T)::dest_splits t
+  | dest_splits (Const (@{const_name case_prod},_)$Abs (n,T,t)$_) = (n,T)::dest_splits t
   | dest_splits (Abs (n,T,_)) = [(n,T)]
   | dest_splits _ = [];
 
@@ -2752,7 +2752,7 @@ fun while_tac ctxt state_kind inv cont_tac tac mode t i=
 fun dest_split (Abs (x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;
      in ((x,T)::vs,fn t' => Abs (x,T,recomb t'),bdy) end
-  | dest_split (c as Const (@{const_name prod_case},_)$Abs(x,T,t)) =
+  | dest_split (c as Const (@{const_name case_prod},_)$Abs(x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;
      in ((x,T)::vs,fn t' => c$Abs (x,T,recomb t'),bdy) end
   | dest_split t = ([],I,t);
@@ -3543,7 +3543,7 @@ fun proc_lookup_simp_tac ctxt i st =
                               [suffix bodyP pname,
                                suffix (body_def_sfx^"_def") pname,
                                suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
-    in simp_tac (put_simpset HOL_basic_ss ctxt addsimps thms@strip_simps@the_simps) i st end) ()
+    in simp_tac (put_simpset HOL_basic_ss ctxt addsimps thms@strip_simps@option_sel) i st end) ()
   |> the_default (Seq.single st);
 
 fun proc_lookup_in_dom_simp_tac ctxt i st =

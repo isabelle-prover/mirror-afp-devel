@@ -610,7 +610,7 @@ lemma round_robin_step_correct:
   shows
   "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin_step n0 \<sigma> s t) = 
    \<alpha>.round_robin_step n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) t" (is ?thesis1)
-  and "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin_step n0 \<sigma> s t)"
+  and "case_option True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin_step n0 \<sigma> s t)"
   (is ?thesis2)
 proof -
   have "?thesis1 \<and> ?thesis2"
@@ -647,7 +647,7 @@ lemma round_robin_reschedule_correct:
   and t0: "t0 \<in> set (queue_\<alpha> queue)"
   shows "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin_reschedule t0 queue n0 s) =
      \<alpha>.round_robin_reschedule t0 (queue_\<alpha> queue) n0 (state_\<alpha> s)"
-  and "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin_reschedule t0 queue n0 s)"
+  and "case_option True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin_reschedule t0 queue n0 s)"
 using t0 invar
 proof(induct "queue_\<alpha> queue" arbitrary: queue n rule: round_robin_reschedule_induct)
   case head
@@ -702,7 +702,7 @@ next
       have "round_robin_invar (queue_enqueue t queue', n0) (dom (thr_\<alpha> (thr s)))"
         by(auto simp add: queue.enqueue_correct queue.push_correct)
       ultimately 
-      have "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (option_case (dom (thr_\<alpha> (thr s))) (\<lambda>(ta, x', m'). dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>}) taxm)) (round_robin_reschedule t0 (queue_enqueue t queue') n0 s)"
+      have "case_option True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case_option (dom (thr_\<alpha> (thr s))) (\<lambda>(ta, x', m'). dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>}) taxm)) (round_robin_reschedule t0 (queue_enqueue t queue') n0 s)"
         using `state_invar s` `state_\<alpha> s \<in> I` by(rule rotate.hyps)
       thus ?thesis using None `t \<noteq> t0` invar' queue'
         by(subst round_robin_reschedule.simps)(auto simp add: queue.enqueue_correct queue.push_correct)
@@ -716,7 +716,7 @@ lemma round_robin_correct:
   shows "Option.map (apsnd (apsnd round_robin_\<alpha>)) (round_robin n0 \<sigma> s) =
          \<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s)"
     (is ?thesis1)
-  and "option_case True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin n0 \<sigma> s)"
+  and "case_option True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (round_robin n0 \<sigma> s)"
     (is ?thesis2)
 proof -
   obtain queue n where \<sigma>: "\<sigma> = (queue, n)" by(cases \<sigma>)

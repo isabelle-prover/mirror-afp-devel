@@ -452,6 +452,7 @@ lemma wf_liftB:
   apply (simp split add: nat.split_asm)
   apply (frule_tac B="VarB T" in wf_weaken [of "[]", simplified])
   apply simp+
+  apply (rename_tac nat)
   apply (drule_tac x=nat in meta_spec)
   apply simp
   apply (frule_tac T="\<up>\<^sub>\<tau> (Suc nat) 0 T" in wf_weaken [of "[]", simplified])
@@ -476,6 +477,7 @@ theorem wf_subst:
   apply (rule wf_TVar)
   apply (simp split add: nat.split_asm)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> nat - Suc 0")
+  apply (rename_tac nata)
   apply (subgoal_tac "nat - Suc \<parallel>\<Delta>\<parallel> = nata")
   apply (simp (no_asm_simp))
   apply arith
@@ -858,6 +860,7 @@ lemma substT_subtype: -- {* A.10 *}
   apply (rule SA_trans_TVar)
   apply (simp split add: nat.split_asm)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
+  apply (rename_tac nat)
   apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
   apply (simp (no_asm_simp))
   apply arith
@@ -917,6 +920,7 @@ lemma subst_subtype:
   apply (simp split add: nat.split_asm)
   apply (rule SA_trans_TVar)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
+  apply (rename_tac nat)
   apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
   apply (simp (no_asm_simp))
   apply arith
@@ -1206,6 +1210,7 @@ theorem subst_type: -- {* A.8 *}
   apply (erule wfE_subst)
   apply (rule wf_Top)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
+  apply (rename_tac nat)
   apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
   apply (simp (no_asm_simp))
   apply arith
@@ -1257,6 +1262,7 @@ theorem substT_type: -- {* A.11 *}
   apply assumption
   apply (simp split add: nat.split_asm)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
+  apply (rename_tac nat)
   apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
   apply (simp (no_asm_simp))
   apply arith

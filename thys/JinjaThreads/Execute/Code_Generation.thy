@@ -40,10 +40,10 @@ by(rule ext)(simp add: Predicate.single_bind eq.equation)
 lemma eq_o_i_conv_single: "eq_o_i = Predicate.single"
 by(rule ext)(simp add: Predicate.single_bind eq.equation)
 
-lemma sup_exp_case_exp_case_same:
+lemma sup_case_exp_case_exp_same:
   "sup_class.sup 
-    (exp_case cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
-    (exp_case cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) =
+    (case_exp cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
+    (case_exp cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) =
   (case e of
     new C \<Rightarrow> sup_class.sup (cNew C) (cNew' C)
   | newArray T e \<Rightarrow> sup_class.sup (cNewArray T e) (cNewArray' T e)
@@ -71,11 +71,11 @@ apply(cases e)
 apply(simp_all)
 done
 
-lemma sup_exp_case_exp_case_other:
+lemma sup_case_exp_case_exp_other:
   fixes p :: "'a :: semilattice_sup" shows
   "sup_class.sup 
-    (exp_case cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
-    (sup_class.sup (exp_case cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) p) =
+    (case_exp cNew cNewArray cCast cInstanceOf cVal cBinOp cVar cLAss cAAcc cAAss cALen cFAcc cFAss cCall cBlock cSync cInSync cSeq cCond cWhile cThrow cTry e)
+    (sup_class.sup (case_exp cNew' cNewArray' cCast' cInstanceOf' cVal' cBinOp' cVar' cLAss' cAAcc' cAAss' cALen' cFAcc' cFAss' cCall' cBlock' cSync' cInSync' cSeq' cCond' cWhile' cThrow' cTry' e) p) =
   sup_class.sup (case e of
     new C \<Rightarrow> sup_class.sup (cNew C) (cNew' C)
   | newArray T e \<Rightarrow> sup_class.sup (cNewArray T e) (cNewArray' T e)
@@ -109,8 +109,8 @@ by(rule sup_absorb2)auto
 lemma sup_bot2: "sup_class.sup a bot = (a :: 'a :: {semilattice_sup, order_bot})"
 by(rule sup_absorb1) auto
 
-lemma sup_val_case_val_case_same:
-  "sup_class.sup (val_case cUnit cNull cBool cIntg cAddr v) (val_case cUnit' cNull' cBool' cIntg' cAddr' v) =
+lemma sup_case_val_case_val_same:
+  "sup_class.sup (case_val cUnit cNull cBool cIntg cAddr v) (case_val cUnit' cNull' cBool' cIntg' cAddr' v) =
    (case v of
      Unit \<Rightarrow> sup_class.sup cUnit cUnit'
    | Null \<Rightarrow> sup_class.sup cNull cNull'
@@ -121,20 +121,20 @@ apply(cases v)
 apply simp_all
 done
 
-lemma sup_bool_case_bool_case_same:
-  "sup_class.sup (bool_case t f b) (bool_case t' f' b) =
+lemma sup_case_bool_case_bool_same:
+  "sup_class.sup (case_bool t f b) (case_bool t' f' b) =
   (if b then sup_class.sup t t' else sup_class.sup f f')"
 by simp
 
 lemmas predicate_code_inline [code_unfold] =
   Predicate.single_bind Predicate.bind_single split
   eq_i_o_conv_single eq_o_i_conv_single
-  sup_exp_case_exp_case_same sup_exp_case_exp_case_other unit.cases
-  sup_bot1 sup_bot2 sup_val_case_val_case_same sup_bool_case_bool_case_same
+  sup_case_exp_case_exp_same sup_case_exp_case_exp_other unit.cases
+  sup_bot1 sup_bot2 sup_case_val_case_val_same sup_case_bool_case_bool_same
 
-lemma op_ty_case_ty_case_same:
-  "f (ty_case cVoid cBoolean cInteger cNT cClass cArray e)
-     (ty_case cVoid' cBoolean' cInteger' cNT' cClass' cArray' e) =
+lemma op_case_ty_case_ty_same:
+  "f (case_ty cVoid cBoolean cInteger cNT cClass cArray e)
+     (case_ty cVoid' cBoolean' cInteger' cNT' cClass' cArray' e) =
   (case e of
      Void \<Rightarrow> f cVoid cVoid'
    | Boolean \<Rightarrow> f cBoolean cBoolean'
@@ -144,23 +144,23 @@ lemma op_ty_case_ty_case_same:
    | Array T \<Rightarrow> f (cArray T) (cArray' T))"
 by(simp split: ty.split)
 
-declare op_ty_case_ty_case_same[where f="sup_class.sup", code_unfold]
+declare op_case_ty_case_ty_same[where f="sup_class.sup", code_unfold]
 
-lemma op_bop_case_bop_case_same:
-  "f (bop_case cEq cNotEq cLessThan cLessOrEqual cGreaterThan cGreaterOrEqual cAdd cSubtract cMult cDiv cMod cBinAnd cBinOr cBinXor cShiftLeft cShiftRightZeros cShiftRightSigned bop)
-     (bop_case cEq' cNotEq' cLessThan' cLessOrEqual' cGreaterThan' cGreaterOrEqual' cAdd' cSubtract' cMult' cDiv' cMod' cBinAnd' cBinOr' cBinXor' cShiftLeft' cShiftRightZeros' cShiftRightSigned' bop)
-  = bop_case (f cEq cEq') (f cNotEq cNotEq') (f cLessThan cLessThan') (f cLessOrEqual cLessOrEqual') (f cGreaterThan cGreaterThan') (f cGreaterOrEqual cGreaterOrEqual') (f cAdd cAdd') (f cSubtract cSubtract') (f cMult cMult') (f cDiv cDiv') (f cMod cMod') (f cBinAnd cBinAnd') (f cBinOr cBinOr') (f cBinXor cBinXor') (f cShiftLeft cShiftLeft') (f cShiftRightZeros cShiftRightZeros') (f cShiftRightSigned cShiftRightSigned') bop"
+lemma op_case_bop_case_bop_same:
+  "f (case_bop cEq cNotEq cLessThan cLessOrEqual cGreaterThan cGreaterOrEqual cAdd cSubtract cMult cDiv cMod cBinAnd cBinOr cBinXor cShiftLeft cShiftRightZeros cShiftRightSigned bop)
+     (case_bop cEq' cNotEq' cLessThan' cLessOrEqual' cGreaterThan' cGreaterOrEqual' cAdd' cSubtract' cMult' cDiv' cMod' cBinAnd' cBinOr' cBinXor' cShiftLeft' cShiftRightZeros' cShiftRightSigned' bop)
+  = case_bop (f cEq cEq') (f cNotEq cNotEq') (f cLessThan cLessThan') (f cLessOrEqual cLessOrEqual') (f cGreaterThan cGreaterThan') (f cGreaterOrEqual cGreaterOrEqual') (f cAdd cAdd') (f cSubtract cSubtract') (f cMult cMult') (f cDiv cDiv') (f cMod cMod') (f cBinAnd cBinAnd') (f cBinOr cBinOr') (f cBinXor cBinXor') (f cShiftLeft cShiftLeft') (f cShiftRightZeros cShiftRightZeros') (f cShiftRightSigned cShiftRightSigned') bop"
 by(simp split: bop.split)
 
-lemma sup_bop_case_bop_case_other [code_unfold]:
+lemma sup_case_bop_case_bop_other [code_unfold]:
   fixes p :: "'a :: semilattice_sup" shows
-  "sup_class.sup (bop_case cEq cNotEq cLessThan cLessOrEqual cGreaterThan cGreaterOrEqual cAdd cSubtract cMult cDiv cMod cBinAnd cBinOr cBinXor cShiftLeft cShiftRightZeros cShiftRightSigned bop)
-     (sup_class.sup (bop_case cEq' cNotEq' cLessThan' cLessOrEqual' cGreaterThan' cGreaterOrEqual' cAdd' cSubtract' cMult' cDiv' cMod' cBinAnd' cBinOr' cBinXor' cShiftLeft' cShiftRightZeros' cShiftRightSigned' bop) p)
-  = sup_class.sup (bop_case (sup_class.sup cEq cEq') (sup_class.sup cNotEq cNotEq') (sup_class.sup cLessThan cLessThan') (sup_class.sup cLessOrEqual cLessOrEqual') (sup_class.sup cGreaterThan cGreaterThan') (sup_class.sup cGreaterOrEqual cGreaterOrEqual') (sup_class.sup cAdd cAdd') (sup_class.sup cSubtract cSubtract') (sup_class.sup cMult cMult') (sup_class.sup cDiv cDiv') (sup_class.sup cMod cMod') (sup_class.sup cBinAnd cBinAnd') (sup_class.sup cBinOr cBinOr') (sup_class.sup cBinXor cBinXor') (sup_class.sup cShiftLeft cShiftLeft') (sup_class.sup cShiftRightZeros cShiftRightZeros') (sup_class.sup cShiftRightSigned cShiftRightSigned') bop) p"
+  "sup_class.sup (case_bop cEq cNotEq cLessThan cLessOrEqual cGreaterThan cGreaterOrEqual cAdd cSubtract cMult cDiv cMod cBinAnd cBinOr cBinXor cShiftLeft cShiftRightZeros cShiftRightSigned bop)
+     (sup_class.sup (case_bop cEq' cNotEq' cLessThan' cLessOrEqual' cGreaterThan' cGreaterOrEqual' cAdd' cSubtract' cMult' cDiv' cMod' cBinAnd' cBinOr' cBinXor' cShiftLeft' cShiftRightZeros' cShiftRightSigned' bop) p)
+  = sup_class.sup (case_bop (sup_class.sup cEq cEq') (sup_class.sup cNotEq cNotEq') (sup_class.sup cLessThan cLessThan') (sup_class.sup cLessOrEqual cLessOrEqual') (sup_class.sup cGreaterThan cGreaterThan') (sup_class.sup cGreaterOrEqual cGreaterOrEqual') (sup_class.sup cAdd cAdd') (sup_class.sup cSubtract cSubtract') (sup_class.sup cMult cMult') (sup_class.sup cDiv cDiv') (sup_class.sup cMod cMod') (sup_class.sup cBinAnd cBinAnd') (sup_class.sup cBinOr cBinOr') (sup_class.sup cBinXor cBinXor') (sup_class.sup cShiftLeft cShiftLeft') (sup_class.sup cShiftRightZeros cShiftRightZeros') (sup_class.sup cShiftRightSigned cShiftRightSigned') bop) p"
 apply(cases bop)
 apply(simp_all add: inf_sup_aci sup.assoc)
 done
 
-declare op_bop_case_bop_case_same[where f="sup_class.sup", code_unfold]
+declare op_case_bop_case_bop_same[where f="sup_class.sup", code_unfold]
 
 end

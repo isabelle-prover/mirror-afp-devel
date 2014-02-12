@@ -101,7 +101,7 @@ lift_definition keys :: "('a, 'b) mapping_rbt \<Rightarrow> 'a set" is "set \<ci
 
 lift_definition fold :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> 'c \<Rightarrow> 'c" is "RBT_Impl.fold" ..
 
-lift_definition is_empty :: "('a, 'b) mapping_rbt \<Rightarrow> bool" is "rbt_case True (\<lambda>_ _ _ _ _. False)" ..
+lift_definition is_empty :: "('a, 'b) mapping_rbt \<Rightarrow> bool" is "case_rbt True (\<lambda>_ _ _ _ _. False)" ..
 
 lift_definition filter :: "('a \<times> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt" is
   "\<lambda>P t. rbtreeify (List.filter P (RBT_Impl.entries t))"
@@ -167,7 +167,7 @@ lemma lookup_empty [simp]:
 by transfer (simp add: fun_eq_iff ord.rbt_lookup.simps)
 
 lemma fold_conv_fold:
-  "fold f t = List.fold (prod_case f) (entries t)"
+  "fold f t = List.fold (case_prod f) (entries t)"
 by transfer(simp add: RBT_Impl.fold_def)
 
 lemma is_empty_empty [simp]:

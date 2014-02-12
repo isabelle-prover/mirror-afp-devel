@@ -193,7 +193,7 @@ fun mk_ceq_thm thy info =
      val success = mk_Some rec_t
      val res_ty = fastype_of success
      val none = Const (@{const_name None}, res_ty)
-     val case_name = @{const_name option_case}
+     val case_name = @{const_name case_option}
      val rhs = fold_rev (fn eq_var => fn t => let
          val eq_ty = fastype_of eq_var
          val case_t = Const (case_name, res_ty --> (eq_ty --> res_ty) --> Type (@{type_name option}, [eq_ty]) --> res_ty)         

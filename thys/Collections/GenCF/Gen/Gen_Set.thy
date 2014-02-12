@@ -367,12 +367,12 @@ begin
   lemma foldli_pick:
     assumes "l\<noteq>[]" 
     obtains x where "x\<in>set l" 
-    and "(foldli l (option_case True (\<lambda>_. False)) (\<lambda>x _. Some x) None) = Some x"
+    and "(foldli l (case_option True (\<lambda>_. False)) (\<lambda>x _. Some x) None) = Some x"
     using assms by (cases l) auto
 
   definition gen_pick where
     "gen_pick it s \<equiv> 
-      (the (it s (option_case True (\<lambda>_. False)) (\<lambda>x _. Some x) None))"
+      (the (it s (case_option True (\<lambda>_. False)) (\<lambda>x _. Some x) None))"
 
 context begin interpretation autoref_syn .
   lemma gen_pick[autoref_rules_raw]:
@@ -393,7 +393,7 @@ context begin interpretation autoref_syn .
     from IT' NE have "tsl'\<noteq>[]" and [simp]: "s'=set tsl'" 
       unfolding it_to_sorted_list_def by simp_all
     then obtain x where "x\<in>s'" and
-      "(foldli tsl' (option_case True (\<lambda>_. False)) (\<lambda>x _. Some x) None) = Some x"
+      "(foldli tsl' (case_option True (\<lambda>_. False)) (\<lambda>x _. Some x) None) = Some x"
       (is "?fld = _")
       by (blast elim: foldli_pick)
     moreover 

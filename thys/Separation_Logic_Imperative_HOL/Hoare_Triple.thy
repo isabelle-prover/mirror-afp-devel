@@ -397,24 +397,24 @@ lemma split_rule:
 lemmas decon_split_if = if_rule_split split_rule
   -- "Use with care: Complete splitting of if statements"
 
-lemma prod_case_rule: 
+lemma case_prod_rule: 
   "(\<And>a b. x = (a, b) \<Longrightarrow> <P> f a b <Q>) \<Longrightarrow> <P> case x of (a, b) \<Rightarrow> f a b <Q>"
   by (auto split: prod.split)
 
-lemma list_case_rule:
+lemma case_list_rule:
   "\<lbrakk> l=[] \<Longrightarrow> <P> fn <Q>; \<And>x xs. l=x#xs \<Longrightarrow> <P> fc x xs <Q> \<rbrakk> \<Longrightarrow> 
-  <P> list_case fn fc l <Q>"
+  <P> case_list fn fc l <Q>"
   by (auto split: list.split)
 
-lemma option_case_rule:
+lemma case_option_rule:
   "\<lbrakk> v=None \<Longrightarrow> <P> fn <Q>; \<And>x. v=Some x \<Longrightarrow> <P> fs x <Q> \<rbrakk> 
-  \<Longrightarrow> <P> option_case fn fs v <Q>"
+  \<Longrightarrow> <P> case_option fn fs v <Q>"
   by (auto split: option.split)
 
-lemma sum_case_rule:
+lemma case_sum_rule:
   "\<lbrakk> \<And>x. v=Inl x \<Longrightarrow> <P> fl x <Q>; 
      \<And>x. v=Inr x \<Longrightarrow> <P> fr x <Q> \<rbrakk> 
-  \<Longrightarrow> <P> sum_case fl fr v <Q>"
+  \<Longrightarrow> <P> case_sum fl fr v <Q>"
   by (auto split: sum.split)
 
 lemma let_rule: "(\<And>x. x = t \<Longrightarrow> <P> f x <Q>) \<Longrightarrow> <P> Let t f <Q>"

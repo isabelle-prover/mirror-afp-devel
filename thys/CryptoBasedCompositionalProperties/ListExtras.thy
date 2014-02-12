@@ -89,13 +89,13 @@ lemma list_length_hint2:
 assumes "length x  = Suc 0"
 shows    "[hd x] = x"
 using assms  
-by (metis Zero_neq_Suc hd.simps length_Suc_conv neq_Nil_conv)
+by (metis Zero_neq_Suc list.sel(1) length_Suc_conv neq_Nil_conv)
 
 lemma list_length_hint2a: 
 assumes "length l = Suc 0"
 shows    "tl l = []"
 using assms
-by (metis list_length_hint2 tl.simps(2)) 
+by (metis list_length_hint2 list.sel(3)) 
 
 lemma list_length_hint3: 
 assumes "length l = Suc 0"

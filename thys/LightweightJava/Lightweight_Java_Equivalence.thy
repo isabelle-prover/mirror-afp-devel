@@ -259,7 +259,7 @@ where
 "fields_in_path_f (ctxcld#ctxclds) =
   (map (\<lambda>fd. case fd of fd_def cl f \<Rightarrow> f) (class_fields_f (snd ctxcld)))
      @ fields_in_path_f ctxclds"
-lemma cl_f_list_map: "map (fd_case (\<lambda>cl f. f)) (map (\<lambda>(x, y). fd_def x y) cl_f_list) = map (\<lambda>(cl_XXX, f_XXX). f_XXX) cl_f_list"
+lemma cl_f_list_map: "map (case_fd (\<lambda>cl f. f)) (map (\<lambda>(x, y). fd_def x y) cl_f_list) = map (\<lambda>(cl_XXX, f_XXX). f_XXX) cl_f_list"
 by (induct cl_f_list, auto)
 
 lemma fip_ind_to_f: "\<forall>fs. fields_in_path clds fs \<longrightarrow> fields_in_path_f clds = fs"
@@ -268,13 +268,13 @@ apply(induct clds)
 apply(clarsimp)
 apply(erule fields_in_path.cases) apply(simp) by(clarsimp simp add: cl_f_list_map)
 
-lemma fd_map_split: "map (fd_case (\<lambda>cl f. f)) (map (\<lambda>(x, y). fd_def x y) list) = map (\<lambda>(cl, f). f) list"
+lemma fd_map_split: "map (case_fd (\<lambda>cl f. f)) (map (\<lambda>(x, y). fd_def x y) list) = map (\<lambda>(cl, f). f) list"
 apply(induct list) apply(simp) apply(clarsimp) done
 
-lemma fd_map_split': "map (\<lambda>(x, y). fd_def x y) (map (fd_case Pair) list) = list"
+lemma fd_map_split': "map (\<lambda>(x, y). fd_def x y) (map (case_fd Pair) list) = list"
 apply(induct list) apply(simp split: fd.splits)+ done
 
-lemma fd_map_split'': "map ((\<lambda>(x, y). fd_def x y) \<circ> fd_case Pair) list = list"
+lemma fd_map_split'': "map ((\<lambda>(x, y). fd_def x y) \<circ> case_fd Pair) list = list"
 apply(induct list)  apply(simp split: fd.splits)+ done
 
 lemma [simp]: "\<forall>fs. (fields_in_path ctxclds fs) = (fields_in_path_f ctxclds = fs)"
@@ -289,7 +289,7 @@ apply(rule)
  apply(simp add: fip_ind_to_f fd_map_split)
 apply(clarsimp)
 apply(rule_tac cld = b and ctxcld_list = ctxclds
-           and cl_f_list = "map (fd_case (\<lambda>cl f. (cl, f))) (class_fields_f b)" in fip_consI[simplified])
+           and cl_f_list = "map (case_fd (\<lambda>cl f. (cl, f))) (class_fields_f b)" in fip_consI[simplified])
   apply(simp add: fd_map_split'')
  apply(simp add: fd_map_split')
 apply(clarsimp split: fd.splits)
@@ -326,7 +326,7 @@ where
 
 lemma meth_def_map[THEN mp]:
   "(\<forall>x \<in> set list. (\<lambda>(md, cl, m, vds, mb). md = meth_def_def (meth_sig_def cl m vds) mb) x)
-     \<longrightarrow> map (meth_def_case (\<lambda>ms mb. case ms of meth_sig_def cl m vds \<Rightarrow> m)) (map (\<lambda>(md, cl, m, vds, mb). md) list) = map (\<lambda>(md, cl, m, vds, mb). m) list"
+     \<longrightarrow> map (case_meth_def (\<lambda>ms mb. case ms of meth_sig_def cl m vds \<Rightarrow> m)) (map (\<lambda>(md, cl, m, vds, mb). md) list) = map (\<lambda>(md, cl, m, vds, mb). m) list"
 by (induct list, auto)
 
 lemma meth_def_map':
@@ -492,7 +492,7 @@ where
 
 lemma lift_opts_ind[rule_format]:
   "(\<forall>x\<in>set list. (\<lambda>(cl, var, ty). find_type_f P ctx cl = Some ty) x)
-       \<longrightarrow> lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk) \<circ> (\<lambda>(cl, var, ty). vd_def cl var)) list) = Some (map (\<lambda>(cl, var, ty). ty) list)"
+       \<longrightarrow> lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk) \<circ> (\<lambda>(cl, var, ty). vd_def cl var)) list) = Some (map (\<lambda>(cl, var, ty). ty) list)"
 by (induct list, auto)
 
 lemma find_md_m_match'[rule_format]:
@@ -504,7 +504,7 @@ lemma find_md_m_match:
 apply(induct path) apply(simp) apply(clarsimp split: option.splits) by(rule find_md_m_match')
 
 lemma vds_map_length:
-  "length (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) vds) = length vds"
+  "length (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) vds) = length vds"
 by (induct vds, auto)
 
 lemma lift_opts_length[rule_format]:
@@ -512,7 +512,7 @@ lemma lift_opts_length[rule_format]:
 apply(induct ty_opts) apply(simp) by(clarsimp split: option.splits)
 
 lemma vds_tys_length_eq[rule_format]:
-  "lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) vds) = Some tys \<longrightarrow> length vds = length tys"
+  "lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) vds) = Some tys \<longrightarrow> length vds = length tys"
 apply(rule) apply(drule lift_opts_length) apply(simp add: vds_map_length) done
 
 lemma vds_tys_length_eq'[rule_format]:
@@ -526,7 +526,7 @@ apply(induct tys) apply(simp) apply(clarsimp) apply(case_tac vds) apply(clarsimp
 apply(split vd.splits) apply(simp) done
 
 lemma lift_opts_find_type[rule_format]:
-  "\<forall>tys. lift_opts (map (vd_case (\<lambda>clk vark. find_type_f P ctx clk)) vds) = Some tys
+  "\<forall>tys. lift_opts (map (case_vd (\<lambda>clk vark. find_type_f P ctx clk)) vds) = Some tys
       \<longrightarrow> (\<forall>(vd, ty) \<in> set (zip vds tys). case vd of vd_def cl var \<Rightarrow> find_type_f P ctx cl = Some ty)"
 apply(induct vds) apply(simp) apply(clarsimp split: vd.splits option.splits) apply(rename_tac cl' var)
 apply(drule_tac x = "(vd_def cl' var, b)" in bspec, simp) apply(force) done
@@ -695,7 +695,7 @@ apply(subgoal_tac "find_path_rec_f P ctx' (superclass_name_f cld') (path' @ [(ct
               (\<forall>ctxcld\<in>set path.
                   ctxcld = (ctx', cld') \<or>
                   ctxcld \<in> set path' \<or>
-                  (\<forall>path_fqn. option_case None (prod_case (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (path'' @ [(ctx', cld)])))
+                  (\<forall>path_fqn. case_option None (case_prod (\<lambda>ctx' cld. find_path_rec_f P ctx' (superclass_name_f cld) (path'' @ [(ctx', cld)])))
                                (find_cld_f P (fst ctxcld) (fqn_def (class_name_f (snd ctxcld)))) =
                               Some path_fqn \<longrightarrow>
                               (\<forall>path'''. path_fqn = path'' @ path''' \<longrightarrow> (\<exists>path_rest. path = path_rest @ path'''))))")
@@ -847,7 +847,7 @@ lemma set_zip_tr[simp]: "(s, s') \<in> set (zip ss (tr_ss_f T ss)) \<longrightar
 lemma [iff]: "length ss = length (tr_ss_f T ss)" by (induct ss, auto)
 
 lemma tr_ss_map:
-  "tr_ss_f T (map fst s_s'_list) = map snd s_s'_list \<and> (\<forall>x\<in>set s_s'_list. prod_case (tr_s T) x) \<and>
+  "tr_ss_f T (map fst s_s'_list) = map snd s_s'_list \<and> (\<forall>x\<in>set s_s'_list. case_prod (tr_s T) x) \<and>
    (a, b) \<in> set s_s'_list \<longrightarrow> tr_s T a (tr_s_f T a)"
 apply(induct s_s'_list) by auto
 

@@ -112,7 +112,7 @@ interpretation det_while!: transfer_WHILE
 
 (*
 interpretation det_foreach!: 
-  transfer_FOREACH nres_of dRETURN dbind "dres_case True True"
+  transfer_FOREACH nres_of dRETURN dbind "case_dres True True"
   apply unfold_locales
   apply (blast intro: det_bind)
   apply simp
@@ -122,21 +122,21 @@ interpretation det_foreach!:
 *)
 
 (* Done generally in RefineG_Transfer
-lemma det_list_rec[refine_transfer]:
+lemma det_rec_list[refine_transfer]:
   assumes FN: "\<And>s. RETURN (fn s) \<le> (fn' s)"
   assumes FC: "\<And>x l rec rec' s. \<lbrakk> \<And>s. RETURN (rec s) \<le> (rec' s) \<rbrakk> 
     \<Longrightarrow> RETURN (fc x l rec s) \<le> fc' x l rec' s"
-  shows "RETURN (list_rec fn fc l s) \<le> list_rec fn' fc' l s"
+  shows "RETURN (rec_list fn fc l s) \<le> rec_list fn' fc' l s"
   apply (induct l arbitrary: s)
   apply (simp add: FN)
   apply (simp add: FC)
   done
 
-lemma det_nat_rec[refine_transfer]:
+lemma det_rec_nat[refine_transfer]:
   assumes FN: "\<And>s. RETURN (fn s) \<le> (fn' s)"
   assumes FC: "\<And>n rec rec' s. \<lbrakk> \<And>s. RETURN (rec s) \<le> (rec' s) \<rbrakk> 
     \<Longrightarrow> RETURN (fc x l rec s) \<le> fc' x l rec' s"
-  shows "RETURN (list_rec fn fc l s) \<le> list_rec fn' fc' l s"
+  shows "RETURN (rec_list fn fc l s) \<le> rec_list fn' fc' l s"
   apply (induct l arbitrary: s)
   apply (simp add: FN)
   apply (simp add: FC)

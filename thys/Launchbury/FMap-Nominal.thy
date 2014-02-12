@@ -164,7 +164,7 @@ lemma the_lookup_eqvt:
   "x \<in> fdom m \<Longrightarrow> \<pi> \<bullet> (m f! x) = (\<pi> \<bullet> m) f! (\<pi> \<bullet> x)"
   apply (transfer fixing: x) 
   apply auto
-  by (metis Some_eqvt permute_fun_app_eq the.simps)
+  by (metis Some_eqvt permute_fun_app_eq option.sel)
 
 lemma fempty_eqvt[eqvt, simp]:
   "\<pi> \<bullet> fempty = fempty"

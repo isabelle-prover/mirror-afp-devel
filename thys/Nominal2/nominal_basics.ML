@@ -35,8 +35,8 @@ sig
   val mk_All: (string * typ) -> term -> term
   val mk_exists: (string * typ) -> term -> term
 
-  val sum_case_const: typ -> typ -> typ -> term
-  val mk_sum_case: term -> term -> term
+  val case_sum_const: typ -> typ -> typ -> term
+  val mk_case_sum: term -> term -> term
  
   val mk_equiv: thm -> thm
   val safe_mk_equiv: thm -> thm
@@ -148,15 +148,15 @@ fun mk_All (a, T) t =  HOLogic.all_const T $ Abs (a, T, t)
 
 fun mk_exists (a, T) t =  HOLogic.exists_const T $ Abs (a, T, t)
 
-fun sum_case_const ty1 ty2 ty3 =
-  Const (@{const_name sum_case}, [ty1 --> ty3, ty2 --> ty3, Type (@{type_name sum}, [ty1, ty2])] ---> ty3)
+fun case_sum_const ty1 ty2 ty3 =
+  Const (@{const_name case_sum}, [ty1 --> ty3, ty2 --> ty3, Type (@{type_name sum}, [ty1, ty2])] ---> ty3)
 
-fun mk_sum_case trm1 trm2 =
+fun mk_case_sum trm1 trm2 =
   let
     val ([ty1], ty3) = strip_type (fastype_of trm1)
     val ty2 = domain_type (fastype_of trm2)
   in
-    sum_case_const ty1 ty2 ty3 $ trm1 $ trm2
+    case_sum_const ty1 ty2 ty3 $ trm1 $ trm2
   end
 
 fun mk_equiv r = r RS @{thm eq_reflection}

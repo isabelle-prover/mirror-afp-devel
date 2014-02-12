@@ -258,21 +258,25 @@ lemma FOREACHoci_refine_genR:
   prefer 3 apply auto []
   apply simp_all[13]
   apply auto []
-  apply (case_tac aa, auto simp: FOREACH_cond_def) []
+  apply (rename_tac a b d e f g h i) 
+  apply (case_tac h, auto simp: FOREACH_cond_def) []
   apply auto []
   apply (auto simp: FOREACH_cond_def) []
   apply (clarsimp simp: FOREACH_cond_def)
   apply (rule ccontr)
-  apply (case_tac aaa)
+  apply (rename_tac a b d e f)
+  apply (case_tac b)
   apply (auto simp: sorted_by_rel_append) [2]
 
   apply (auto simp: FOREACH_cond_def) []
-  apply (case_tac aaa)
+  apply (rename_tac a b d e)
+  apply (case_tac b)
   apply (auto) [2]
 
   apply (clarsimp simp: FOREACH_cond_def)
   apply (rule ccontr)
-  apply (case_tac aaa)
+  apply (rename_tac a b d e f)
+  apply (case_tac b)
   apply (auto simp: sorted_by_rel_append) [2]
 
   apply (clarsimp simp: FOREACH_cond_def)
@@ -283,11 +287,16 @@ lemma FOREACHoci_refine_genR:
   apply (clarsimp simp: map_tl)
   apply (intro conjI)
 
-  apply (case_tac aaa, auto) []
-  apply (case_tac aaa, auto) []
-  apply (case_tac aaa, auto simp: sorted_by_rel_append) []
-  apply (case_tac aaa, auto simp: sorted_by_rel_append) []
-  apply (case_tac aaa, auto) []
+  apply (rename_tac a b d e f g)
+  apply (case_tac b, auto) []
+  apply (rename_tac a b d e f g)
+  apply (case_tac b, auto) []
+  apply (rename_tac a b d e f g)
+  apply (case_tac b, auto simp: sorted_by_rel_append) []
+  apply (rename_tac a b d e f g)
+  apply (case_tac b, auto simp: sorted_by_rel_append) []
+  apply (rename_tac a b d e f g)
+  apply (case_tac b, auto) []
 
   apply (rule introR[where R="{((xs,\<sigma>),(xs',\<sigma>')). 
       xs'=map \<alpha> xs \<and> \<Phi> (set xs) \<sigma> \<and> \<Phi>' (set xs') \<sigma>' \<and>
@@ -1081,7 +1090,7 @@ lemma nfoldli_transfer_dres[refine_transfer]:
   fixes l :: "'a list" and c:: "'b \<Rightarrow> bool"
   assumes FR: "\<And>x s. nres_of (f x s) \<le> f' x s"
   shows "nres_of 
-    (foldli l (dres_case False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN s)) 
+    (foldli l (case_dres False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN s)) 
     \<le> (nfoldli l c f' s)"
 proof (induct l arbitrary: s)
   case Nil thus ?case by auto
@@ -1226,7 +1235,7 @@ proof -
 qed
 
 definition "dres_it_FOREACH tsl s c f \<sigma> \<equiv> 
-  tsl s \<guillemotright>= (\<lambda>l. foldli l (dres_case False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN \<sigma>))"
+  tsl s \<guillemotright>= (\<lambda>l. foldli l (case_dres False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN \<sigma>))"
 
 lemma it_FOREACH_transfer_dres[refine_transfer]:
   assumes "\<And>s. nres_of (tsl s) \<le> (TSL s)"
@@ -1268,16 +1277,16 @@ qed
 lemma foldli_mono_dres_aux2:
   assumes STRICT: "\<And>x. f x bot = bot" "\<And>x. f' x top = top"
   assumes A: "\<And>a x x'. x\<le>x' \<Longrightarrow> f a x \<le> f' a x'"
-  shows "foldli l (dres_case False False c) f \<sigma> 
-    \<le> foldli l (dres_case False False c) f' \<sigma>"
+  shows "foldli l (case_dres False False c) f \<sigma> 
+    \<le> foldli l (case_dres False False c) f' \<sigma>"
   apply (rule foldli_mono_dres_aux1)
   apply (simp_all split: dres.split_asm add: STRICT A)
   done
 
 lemma foldli_mono_dres[refine_mono]:
   assumes A: "\<And>a x. f a x \<le> f' a x"
-  shows "foldli l (dres_case False False c) (\<lambda>x s. dbind s (f x)) \<sigma> 
-    \<le> foldli l (dres_case False False c) (\<lambda>x s. dbind s (f' x)) \<sigma>"
+  shows "foldli l (case_dres False False c) (\<lambda>x s. dbind s (f x)) \<sigma> 
+    \<le> foldli l (case_dres False False c) (\<lambda>x s. dbind s (f' x)) \<sigma>"
   apply (rule foldli_mono_dres_aux2)
   apply (simp_all)
   apply (rule dbind_mono)
@@ -1435,7 +1444,7 @@ lemma LIST_FOREACH'_transfer_nres[refine_transfer]:
   shows "nres_of (
     do {
       xs\<leftarrow>tsl; 
-      foldli xs (dres_case False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN \<sigma>)
+      foldli xs (case_dres False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN \<sigma>)
     }) \<le> LIST_FOREACH' tsl' c f' \<sigma>"
   unfolding LIST_FOREACH'_def
   using assms

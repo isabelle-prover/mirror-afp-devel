@@ -771,7 +771,7 @@ proof -
               then obtain ps where "hd ps=x" "length ps=2" "adj_path v ps" "last ps=v" 
                 using hds l2_eq_v by auto
               thus "adjacent v x" 
-                by (metis (full_types) adj_path.simps(2) hd.simps length_0_conv neq_Nil_conv 
+                by (metis (full_types) adj_path.simps(2) list.sel(1) length_0_conv neq_Nil_conv 
                   zero_neq_numeral)
             qed
           moreover have "\<And>x. x\<in>{n. adjacent v n} \<Longrightarrow> x\<in>hds" 
@@ -965,14 +965,14 @@ proof (rule ccontr)
               moreover obtain ps' where "ps'=v#ps" by auto
               ultimately have "adj_path v (tl ps')" and "hd ps'=v" and "length ps'=l+1" by auto
               thus "ps \<in> tl ` {ps. ext v ps}" 
-                by (metis `ps' = v # ps` ext imageI mem_Collect_eq tl.simps(2))
+                by (metis `ps' = v # ps` ext imageI mem_Collect_eq list.sel(3))
             qed
           ultimately have "tl ` {ps. ext v ps} = {ps. length ps=l \<and> adj_path v ps}" by fast
           moreover have "inj_on tl {ps. ext v ps}"  unfolding inj_on_def 
             proof (rule,rule,rule)
               fix x y assume "x \<in> Collect (ext v)"  "y \<in> Collect (ext v)"  "tl x = tl y"
               hence "hd x=hd y" and "x\<noteq>[]" and "y\<noteq>[]"using ext by auto
-              thus "x=y" using `tl x= tl y` by (metis hd.simps list.exhaust tl.simps(2))
+              thus "x=y" using `tl x= tl y` by (metis list.sel(1,3) list.exhaust)
             qed
           moreover have "card {ps. length ps=l \<and> adj_path v ps} = k^l" 
             using path_count[OF k_adj,of v l]  `4 \<le> k` `v \<in> V` assms(3)
@@ -1056,9 +1056,9 @@ proof (rule ccontr)
                       then obtain y where "adjacent (last ps) y" "x=ps@[y]" using qs app by auto
                       moreover hence "adj_path (hd x) (tl x)" 
                         by (cases "tl ps = []", metis adj_path.simps(1) adj_path.simps(2) 
-                          adjacent_V(2) append_Nil hd.simps hd_append snoc_eq_iff_butlast 
-                          tl.simps(2) tl_append2, metis `adj_path (hd ps) (tl ps)` adj_path_app 
-                          hd_append last_tl tl.simps(1) tl_append2)
+                          adjacent_V(2) append_Nil list.sel(1,3) hd_append snoc_eq_iff_butlast 
+                          tl_append2, metis `adj_path (hd ps) (tl ps)` adj_path_app hd_append
+                          last_tl list.sel(2) tl_append2)
                       ultimately show "ext ps x" using ext by (metis snoc_eq_iff_butlast)
                     qed
                   moreover have "\<And>x. x\<in>{ps'. ext ps ps'}\<Longrightarrow> x\<in> app`qs"
@@ -1084,7 +1084,7 @@ proof (rule ccontr)
                               length_0_conv length_tl nat_add_commute)
                           moreover have "adj_path (hd x) (tl ps @ [last x])"
                             using `adj_path (hd x) (tl x)` `butlast x=ps` `x \<noteq> []`
-                            by (metis append_butlast_last_id calculation tl.simps(1) tl_append2)
+                            by (metis append_butlast_last_id calculation list.sel(2) tl_append2)
                           ultimately have "adjacent (last (tl ps)) (last x)" 
                             using adj_path_app'[of "hd x" "tl ps" "last x"]
                             by auto
@@ -1142,7 +1142,7 @@ proof (rule ccontr)
                     qed
                   moreover have "last (butlast x) = hd x" 
                     by (metis `butlast x = ps` `last ps = hd ps` `x \<noteq> []` adjacent_no_loop 
-                      butlast.simps(2) calculation(3) hd.simps last_ConsL neq_Nil_conv)
+                      butlast.simps(2) calculation(3) list.sel(1) last_ConsL neq_Nil_conv)
                   ultimately show "length x = l + 2 \<and> adj_path (hd x) (tl x) 
                       \<and> adjacent (last x) (hd x) \<and> last (butlast x) = hd x"
                     by auto
@@ -1162,7 +1162,7 @@ proof (rule ccontr)
                       moreover have "hd ps=hd x" 
                         using ps `length x=l+2` 
                         by (metis (full_types) ` adjacent (last x) (hd x) ` adjacent_no_loop 
-                          append_Nil append_butlast_last_id butlast.simps(1) hd.simps hd_append2)
+                          append_Nil append_butlast_last_id butlast.simps(1) list.sel(1) hd_append2)
                       hence "adj_path (hd ps) (tl ps)" using adj_path_butlast 
                         by (metis `adj_path (hd x) (tl x)` butlast_tl ps)
                       moreover have "last ps = hd ps" 
@@ -1192,9 +1192,9 @@ proof (rule ccontr)
                 using T C_star by auto
               hence "last ps\<in>V" 
                 using adj_path_V[OF `adj_path (hd ps) (tl ps)`] 
-                by (metis butlast.simps(2) butlast_tl diff_add_inverse even_sum_nat hd.simps 
-                  last_ConsL last_in_set last_tl length_butlast nat_add_commute neq_Nil_conv 
-                  odd_1_nat set_mp tl.simps(2))
+                by (metis butlast.simps(2) butlast_tl diff_add_inverse even_sum_nat list.sel(1,3)
+                  last_ConsL last_in_set last_tl length_butlast nat_add_commute neq_Nil_conv
+                  odd_1_nat set_mp)
               hence "\<exists>n. adjacent (last ps) n \<and> adjacent (hd ps) n"
                 using adj_path_V'[OF `adj_path (hd ps) (tl ps)`] `last ps\<noteq>hd ps`  
                   friend_assm[of "last ps" "hd ps"]
@@ -1210,9 +1210,9 @@ proof (rule ccontr)
               moreover have "adj_path (hd x) (tl x)" 
                 proof -
                   have "last (tl ps)=last ps" using `length ps=l+1` 
-                    by (metis `last ps \<noteq> hd ps` hd.simps last_ConsL last_tl neq_Nil_conv tl.simps(2))
+                    by (metis `last ps \<noteq> hd ps` list.sel(1,3) last_ConsL last_tl neq_Nil_conv)
                   moreover have "length ps\<noteq>1" using `last ps \<noteq> hd ps` 
-                    by (metis Suc_eq_plus1_left gen_length_code(1) gen_length_def hd.simps 
+                    by (metis Suc_eq_plus1_left gen_length_code(1) gen_length_def list.sel(1) 
                       last_ConsL length_Suc_conv neq_Nil_conv)
                   hence "tl ps\<noteq>[]" using `length ps=l+1` 
                     by (metis add_diff_cancel_right' length_splice length_tl nat_add_commute 
@@ -1224,7 +1224,7 @@ proof (rule ccontr)
                   moreover have "tl ps @ [last x]=tl x" 
                     using `x=app ps` app 
                     by (metis ` last x = (SOME n. adjacent (last ps) n \<and> adjacent (hd ps) n) ` 
-                      ` tl ps \<noteq> [] ` tl.simps(1) tl_append2)
+                      ` tl ps \<noteq> [] ` list.sel(2) tl_append2)
                   ultimately show ?thesis using `hd x=hd ps` by auto
                 qed
               moreover have "adjacent (last x) (hd x)" 
@@ -1289,7 +1289,7 @@ proof (rule ccontr)
                               thus ?case 
                                 by (metis butlast.simps(2) in_set_butlastD last.simps last_in_set 
                                   length_butlast length_greater_0_conv length_pos_if_in_set 
-                                  length_tl tl.simps(2))
+                                  length_tl list.sel(3))
                             qed
                           ultimately show ?case by force 
                         qed
@@ -1311,7 +1311,7 @@ proof (rule ccontr)
                     qed
                   moreover have "hd (butlast x)=hd x" using `length x=l+2`
                     by (metis `adjacent (last x) (hd x)` adjacent_no_loop append_butlast_last_id 
-                      butlast.simps(1) hd.simps hd_append)
+                      butlast.simps(1) list.sel(1) hd_append)
                   hence  "hd (butlast x)\<in>V" using adj_path_V'[OF `adj_path (hd x) (tl x)`] by auto
                   moreover have "last (butlast x)\<noteq>hd (butlast x)" 
                     using `last (butlast x)\<noteq>hd x` `hd (butlast x)=hd x` by auto
@@ -1410,12 +1410,12 @@ proof (rule ccontr)
             proof -
               have "x\<noteq>[]" using `length x=p` `prime p` by auto
               hence "adjacent (last (rotate1 x)) (hd (rotate1 x))=adjacent (hd x) (hd (tl x))"
-                by (metis ` adjacent (last x) (hd x) ` adjacent_no_loop append_Nil hd.simps 
-                  hd_append2 last_snoc list.exhaust rotate1_hd_tl tl.simps(2))
+                by (metis ` adjacent (last x) (hd x) ` adjacent_no_loop append_Nil list.sel(1,3)
+                  hd_append2 last_snoc list.exhaust rotate1_hd_tl)
               also have "...=True" using `adj_path (hd x) (tl x)` 
                 using `adjacent (last x) (hd x)` `x \<noteq> []`
                 by (metis  adj_path.simps(2) adjacent_no_loop append1_eq_conv append_Nil 
-                  append_butlast_last_id hd.simps list.exhaust tl.simps(2))
+                  append_butlast_last_id list.sel(1,3) list.exhaust)
               finally show ?thesis by auto
             qed
           moreover have "adj_path (hd (rotate1 x)) (tl (rotate1 x))" 
@@ -1424,9 +1424,9 @@ proof (rule ccontr)
               then obtain y ys where "y=hd x" "ys=tl x" by auto
               hence  "adj_path y ys" and "adjacent (last ys) y" and "ys\<noteq>[]" 
                 by (metis `adj_path (hd x) (tl x)`, metis `adjacent (last x) (hd x)` `y = hd x` 
-                  `ys = tl x` adjacent_no_loop hd.simps last.simps last_tl list.exhaust tl.simps(2)
-                  , metis `adjacent (last x) (hd x)` `x \<noteq> []` `ys = tl x` adjacent_no_loop hd.simps 
-                  last_ConsL neq_Nil_conv tl.simps(2))
+                  `ys = tl x` adjacent_no_loop list.sel(1,3) last.simps last_tl list.exhaust
+                  , metis `adjacent (last x) (hd x)` `x \<noteq> []` `ys = tl x` adjacent_no_loop list.sel(1,3)
+                  last_ConsL neq_Nil_conv)
               hence "adj_path (hd (rotate1 x)) (tl (rotate1 x))
                   =adj_path (hd (ys@[y])) (tl (ys@[y]))" 
                 using `x\<noteq>[]` `y=hd x` `ys=tl x` by (metis rotate1_hd_tl)
@@ -1434,7 +1434,7 @@ proof (rule ccontr)
                 by (metis `ys \<noteq> []` hd_append tl_append2)
               also have "...=True" 
                 using adj_path_app[OF `adj_path y ys` `ys\<noteq>[]` `adjacent (last ys) y`] `ys\<noteq>[]`
-                by (metis adj_path.simps(2) append_Cons hd.simps list.exhaust tl.simps(2))
+                by (metis adj_path.simps(2) append_Cons list.sel(1,3) list.exhaust)
               finally show ?thesis by auto
             qed
           moreover have "length (rotate1 x) = p" using `length x=p` by auto
@@ -1497,7 +1497,7 @@ proof (rule ccontr)
                     hence "length (tl x)\<ge>1" by force
                     hence "tl x\<noteq>[]" by force
                     ultimately have "adjacent (hd x) (hd (tl x))" 
-                      by (metis adj_path.simps(2) hd.simps list.exhaust)
+                      by (metis adj_path.simps(2) list.sel(1) list.exhaust)
                     thus ?thesis by (metis adjacent_no_loop)
                   qed
                 ultimately have False by auto } 

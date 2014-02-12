@@ -374,7 +374,7 @@ fun prod_size_const T1 T2 =
   end
 
 fun snd_const T1 T2 =
-  Const ("Product_Type.snd", HOLogic.mk_prodT (T1, T2) --> T2) 
+  Const (@{const_name Product_Type.snd}, HOLogic.mk_prodT (T1, T2) --> T2) 
 
 
 fun mk_measure_trm f ctxt T = 

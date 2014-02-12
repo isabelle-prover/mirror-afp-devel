@@ -43,8 +43,8 @@ lemma [autoref_op_pat]:
 
 lemma [autoref_op_pat]:
   "SPEC (\<lambda>(u,v). (u,v)\<in>s) \<equiv> op_set_pick$s"
-  "SPEC (\<lambda>(u,v). P u v \<and> (u,v)\<in>s) \<equiv> op_set_sel$(prod_case P)$s"
-  "SPEC (\<lambda>(u,v). (u,v)\<in>s \<and> P u v) \<equiv> op_set_sel$(prod_case P)$s"
+  "SPEC (\<lambda>(u,v). P u v \<and> (u,v)\<in>s) \<equiv> op_set_sel$(case_prod P)$s"
+  "SPEC (\<lambda>(u,v). (u,v)\<in>s \<and> P u v) \<equiv> op_set_sel$(case_prod P)$s"
   by (auto intro!: eq_reflection)
 end
 

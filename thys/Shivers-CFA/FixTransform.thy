@@ -42,9 +42,9 @@ text {*
 As so often when working with @{theory HOLCF}, some continuity lemmas are required.
 *}
 
-lemma cont2cont_sum_case[simp,cont2cont]:
+lemma cont2cont_case_sum[simp,cont2cont]:
   assumes "cont f" and "cont g"
-  shows "cont (\<lambda>x. sum_case (f x) (g x) s)"
+  shows "cont (\<lambda>x. case_sum (f x) (g x) s)"
 using assms
 by (cases s, auto intro:cont2cont_fun)
 

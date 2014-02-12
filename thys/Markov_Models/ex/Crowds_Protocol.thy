@@ -278,7 +278,7 @@ proof -
     by (rule_tac reachable.step[OF reachable.step[OF reachable.start], of "Init j" _ "Mix j"])
        (auto simp: E_Start E_Init E_Mix)
 
-  have "AE \<omega> in paths Start. nat_case Start \<omega> \<in> until valid_states {End}"
+  have "AE \<omega> in paths Start. case_nat Start \<omega> \<in> until valid_states {End}"
   proof (subst AE_until_iff_reachable, safe)
     fix s assume *: "reachable (valid_states - {End}) s \<inter> {End} = {}"
     assume "s \<in> reachable (valid_states - {End}) Start"
@@ -307,7 +307,7 @@ lemma AE_term: "AE \<omega> in \<PP>. term \<omega>"
   apply eventually_elim
 proof (safe intro!: term_def[THEN iffD2])
   fix \<omega> n assume \<omega>: "\<omega> \<in> space \<PP>" and "\<omega> n = End"
-    and not_zero: "\<forall>i. \<omega> i \<in> E (nat_case Start \<omega> i)"
+    and not_zero: "\<forall>i. \<omega> i \<in> E (case_nat Start \<omega> i)"
   from not_zero[THEN spec, of 0] not_zero[THEN spec, of 1]
   have "\<omega> 0 \<in> range Init" "\<omega> 1 \<in> range Mix"
     by (auto simp: E_Start E_Init)

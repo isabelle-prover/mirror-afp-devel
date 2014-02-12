@@ -95,7 +95,7 @@ structure RefineG_Transfer = struct
 
   fun transfer_tac thms ctxt i st = let 
     val thms = thms @ transfer.get ctxt;
-    val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_prod_case_simp}
+    val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_case_prod_simp}
   in
     REPEAT_DETERM1 (
       COND (has_fewer_prems (nprems_of st)) no_tac (
@@ -184,7 +184,7 @@ lemma transfer_if[refine_transfer]:
 
 lemma transfer_prod[refine_transfer]:
   assumes "\<And>a b. \<alpha> (f a b) \<le> F a b"
-  shows "\<alpha> (prod_case f x) \<le> (prod_case F x)"
+  shows "\<alpha> (case_prod f x) \<le> (case_prod F x)"
   using assms by (auto split: prod.split)
 
 lemma transfer_Let[refine_transfer]:
@@ -195,31 +195,31 @@ lemma transfer_Let[refine_transfer]:
 lemma transfer_option[refine_transfer]:
   assumes "\<alpha> fa \<le> Fa"
   assumes "\<And>x. \<alpha> (fb x) \<le> Fb x"
-  shows "\<alpha> (option_case fa fb x) \<le> option_case Fa Fb x"
+  shows "\<alpha> (case_option fa fb x) \<le> case_option Fa Fb x"
   using assms by (auto split: option.split)
 
 lemma transfer_list[refine_transfer]:
   assumes "\<alpha> fn \<le> Fn"
   assumes "\<And>x xs. \<alpha> (fc x xs) \<le> Fc x xs"
-  shows "\<alpha> (list_case fn fc l) \<le> list_case Fn Fc l"
+  shows "\<alpha> (case_list fn fc l) \<le> case_list Fn Fc l"
   using assms by (auto split: list.split)
 
 
-lemma transfer_list_rec[refine_transfer]:
+lemma transfer_rec_list[refine_transfer]:
   assumes FN: "\<And>s. \<alpha> (fn s) \<le> fn' s"
   assumes FC: "\<And>x l rec rec' s. \<lbrakk> \<And>s. \<alpha> (rec s) \<le> (rec' s) \<rbrakk> 
     \<Longrightarrow> \<alpha> (fc x l rec s) \<le> fc' x l rec' s"
-  shows "\<alpha> (list_rec fn fc l s) \<le> list_rec fn' fc' l s"
+  shows "\<alpha> (rec_list fn fc l s) \<le> rec_list fn' fc' l s"
   apply (induct l arbitrary: s)
   apply (simp add: FN)
   apply (simp add: FC)
   done
 
-lemma transfer_nat_rec[refine_transfer]:
+lemma transfer_rec_nat[refine_transfer]:
   assumes FN: "\<And>s. \<alpha> (fn s) \<le> fn' s"
   assumes FC: "\<And>n rec rec' s. \<lbrakk> \<And>s. \<alpha> (rec s) \<le> rec' s \<rbrakk> 
     \<Longrightarrow> \<alpha> (fs n rec s) \<le> fs' n rec' s"
-  shows "\<alpha> (nat_rec fn fs n s) \<le> nat_rec fn' fs' n s"
+  shows "\<alpha> (rec_nat fn fs n s) \<le> rec_nat fn' fs' n s"
   apply (induct n arbitrary: s)
   apply (simp add: FN)
   apply (simp add: FC)

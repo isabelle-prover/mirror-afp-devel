@@ -671,7 +671,7 @@ theorem assumes fin: "finite (UNIV :: 'a set)"
 proof -
   note fin' [simp] = finite_subset[OF subset_UNIV fin]
 
-  def above \<equiv> "option_case UNIV (Collect \<circ> less)"
+  def above \<equiv> "case_option UNIV (Collect \<circ> less)"
   have above_simps [simp]: "above None = UNIV" "\<And>x. above (Some x) = {y. x < y}"
     and above_upclosed: "\<And>x y ao. \<lbrakk> x \<in> above ao; x < y \<rbrakk> \<Longrightarrow> y \<in> above ao"
     and proper_interval_Some2: "\<And>x ao. proper_interval ao (Some x) \<longleftrightarrow> (\<exists>z\<in>above ao. z < x)"
@@ -1221,7 +1221,7 @@ lemma proper_interval_set_Compl_aux:
 proof -
   note [simp] = finite_subset[OF subset_UNIV fin]
 
-  def above \<equiv> "option_case UNIV (Collect \<circ> less)"
+  def above \<equiv> "case_option UNIV (Collect \<circ> less)"
   have above_simps [simp]: "above None = UNIV" "\<And>x. above (Some x) = {y. x < y}"
     and above_upclosed: "\<And>x y ao. \<lbrakk> x \<in> above ao; x < y \<rbrakk> \<Longrightarrow> y \<in> above ao"
     and proper_interval_Some2: "\<And>x ao. proper_interval ao (Some x) \<longleftrightarrow> (\<exists>z\<in>above ao. z < x)"
@@ -1832,7 +1832,7 @@ lemma proper_interval_Compl_set_aux:
 proof -
   note [simp] = finite_subset[OF subset_UNIV fin]
 
-  def above \<equiv> "option_case UNIV (Collect \<circ> less)"
+  def above \<equiv> "case_option UNIV (Collect \<circ> less)"
   have above_simps [simp]: "above None = UNIV" "\<And>x. above (Some x) = {y. x < y}"
     and above_upclosed: "\<And>x y ao. \<lbrakk> x \<in> above ao; x < y \<rbrakk> \<Longrightarrow> y \<in> above ao"
     and proper_interval_Some2: "\<And>x ao. proper_interval ao (Some x) \<longleftrightarrow> (\<exists>z\<in>above ao. z < x)"

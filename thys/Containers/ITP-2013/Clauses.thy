@@ -26,7 +26,7 @@ where
 | "cnf (not (b and b')) = cnf (not b or not b')"
 | "cnf (not (b or b')) = cnf (not b and not b')"
 by pat_completeness simp_all
-termination by(relation "measure (bexp_rec (\<lambda>_. 1) (\<lambda>_ n. 3 * n + 1) (\<lambda>_ _ n m. n + m + 1) (\<lambda>_ _ n m. n + m + 1))") simp_all
+termination by(relation "measure (rec_bexp (\<lambda>_. 1) (\<lambda>_ n. 3 * n + 1) (\<lambda>_ _ n m. n + m + 1) (\<lambda>_ _ n m. n + m + 1))") simp_all
 declare UN_cong[fundef_cong]
 
 definition test 

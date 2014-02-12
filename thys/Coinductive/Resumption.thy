@@ -41,7 +41,7 @@ by(auto simp add: DTBranch_def dest: Lim_inject)
 text {* Lemmas for @{term Datatype.ntrunc} and @{term "Datatype.Lim"} *}
 
 lemma ndepth_Push_Node_Inl_aux:
-     "nat_case (Inl n) f k = Inr 0 \<Longrightarrow> Suc (LEAST x. f x = Inr 0) <= k"
+     "case_nat (Inl n) f k = Inr 0 \<Longrightarrow> Suc (LEAST x. f x = Inr 0) <= k"
 apply (induct "k", auto)
 apply (erule Least_le)
 done
@@ -77,9 +77,9 @@ definition BRANCH :: "'c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Data
 
 text {* case operator *}
 
-definition RESUMPTION_case :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> (('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree \<Rightarrow> 'e"
+definition case_RESUMPTION :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> (('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree \<Rightarrow> 'e"
 where 
-  "RESUMPTION_case t l br =
+  "case_RESUMPTION t l br =
    Datatype.Case (t o inv (Datatype.Leaf o Inr o Inr))
                  (Datatype.Case (Datatype.Split (\<lambda>x. l (inv (Datatype.Leaf o Inr o Inl) x)))
                                 (Datatype.Split (\<lambda>x. DTBranch (br (inv (Datatype.Leaf o Inl) x)))))"
@@ -96,11 +96,11 @@ lemma [iff]:
   and BRANCH_inject: "BRANCH c rs = BRANCH c' rs' \<longleftrightarrow> c = c' \<and> rs = rs'"
 by(auto simp add: TERMINAL_def LINEAR_def BRANCH_def dest: Lim_inject)
 
-lemma RESUMPTION_case_simps [simp]:
-  shows RESUMPTION_case_TERMINAL: "RESUMPTION_case t l br (TERMINAL a) = t a"
-  and RESUMPTION_case_LINEAR: "RESUMPTION_case t l br (LINEAR b r) = l b r"
-  and RESUMPTION_case_BRANCH: "RESUMPTION_case t l br (BRANCH c rs) = br c rs"
-apply(simp_all add: RESUMPTION_case_def TERMINAL_def LINEAR_def BRANCH_def o_def)
+lemma case_RESUMPTION_simps [simp]:
+  shows case_RESUMPTION_TERMINAL: "case_RESUMPTION t l br (TERMINAL a) = t a"
+  and case_RESUMPTION_LINEAR: "case_RESUMPTION t l br (LINEAR b r) = l b r"
+  and case_RESUMPTION_BRANCH: "case_RESUMPTION t l br (BRANCH c rs) = br c rs"
+apply(simp_all add: case_RESUMPTION_def TERMINAL_def LINEAR_def BRANCH_def o_def)
 apply(rule arg_cong) back
 apply(blast intro: injI inv_f_f)
 apply(rule arg_cong) back
@@ -172,33 +172,33 @@ by(simp_all add: Terminal_def Linear_def Branch_def Abs_resumption_inverse resum
 
 text {* Case operator *}
 
-definition resumption_case :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> ('a,'b,'c,'d) resumption \<Rightarrow> 'e) \<Rightarrow>
+definition case_resumption :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> ('a,'b,'c,'d) resumption \<Rightarrow> 'e) \<Rightarrow>
                             ('c \<Rightarrow> ('d \<Rightarrow> ('a,'b,'c,'d) resumption) \<Rightarrow> 'e) \<Rightarrow> ('a,'b,'c,'d) resumption \<Rightarrow> 'e"
 where [code del]:
-  "resumption_case t l br r =
-   RESUMPTION_case t (\<lambda>b r. l b (Abs_resumption r)) (\<lambda>c rs. br c (\<lambda>d. Abs_resumption (rs d))) (Rep_resumption r)"
+  "case_resumption t l br r =
+   case_RESUMPTION t (\<lambda>b r. l b (Abs_resumption r)) (\<lambda>c rs. br c (\<lambda>d. Abs_resumption (rs d))) (Rep_resumption r)"
 
-lemma resumption_case_simps [simp, code]:
-  shows resumption_case_Terminal: "resumption_case t l br (Terminal a) = t a"
-  and resumption_case_Linear: "resumption_case t l br (Linear b r) = l b r"
-  and resumption_case_Branch: "resumption_case t l br (Branch c rs) = br c rs"
-by(simp_all add: Terminal_def Linear_def Branch_def resumption_case_def Abs_resumption_inverse resumption.intros Rep_resumption Rep_resumption_inverse)
+lemma case_resumption_simps [simp, code]:
+  shows case_resumption_Terminal: "case_resumption t l br (Terminal a) = t a"
+  and case_resumption_Linear: "case_resumption t l br (Linear b r) = l b r"
+  and case_resumption_Branch: "case_resumption t l br (Branch c rs) = br c rs"
+by(simp_all add: Terminal_def Linear_def Branch_def case_resumption_def Abs_resumption_inverse resumption.intros Rep_resumption Rep_resumption_inverse)
 
-declare [[case_translation resumption_case Terminal Linear Branch]]
+declare [[case_translation case_resumption Terminal Linear Branch]]
 
-lemma resumption_case_cert:
-  assumes "CASE \<equiv> resumption_case t l br"
+lemma case_resumption_cert:
+  assumes "CASE \<equiv> case_resumption t l br"
   shows "(CASE (Terminal a) \<equiv> t a) &&& (CASE (Linear b r) \<equiv> l b r) &&& (CASE (Branch c rs) \<equiv> br c rs)"
 using assms by simp_all
 
 code_datatype Terminal Linear Branch
 
 setup {*
-  Code.add_case @{thm resumption_case_cert}
+  Code.add_case @{thm case_resumption_cert}
 *}
 
 setup {*
-  Nitpick.register_codatatype @{typ "('a,'b,'c,'d) resumption"} @{const_name resumption_case}
+  Nitpick.register_codatatype @{typ "('a,'b,'c,'d) resumption"} @{const_name case_resumption}
                               (map dest_Const [@{term Terminal}, @{term Linear}, @{term Branch}])
 *}
 
@@ -231,14 +231,14 @@ proof(cases x)
 qed
 
 lemma resumption_split:
-  "P (resumption_case t l br r) \<longleftrightarrow> 
+  "P (case_resumption t l br r) \<longleftrightarrow> 
   (\<forall>a. r = Terminal a \<longrightarrow> P (t a)) \<and>
   (\<forall>b r'. r = Linear b r' \<longrightarrow> P (l b r')) \<and>
   (\<forall>c rs. r = Branch c rs \<longrightarrow> P (br c rs))"
 by(cases r) simp_all
 
 lemma resumption_split_asm:
-  "P (resumption_case t l br r) \<longleftrightarrow>
+  "P (case_resumption t l br r) \<longleftrightarrow>
   \<not> ((\<exists>a. r = Terminal a \<and> \<not> P (t a)) \<or>
      (\<exists>b r'. r = Linear b r' \<and> \<not> P (l b r')) \<or>
      (\<exists>c rs. r = Branch c rs \<and> \<not> P (br c rs)))"

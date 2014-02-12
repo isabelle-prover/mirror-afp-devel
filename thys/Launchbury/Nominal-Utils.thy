@@ -94,8 +94,8 @@ subsubsection {* Additional equivariance lemmas *}
 lemma range_eqvt: "\<pi> \<bullet> range Y = range (\<pi> \<bullet> Y)"
   unfolding image_eqvt UNIV_eqvt ..
 
-lemma option_case_eqvt[eqvt]:
-  "\<pi> \<bullet> option_case d f x = option_case (\<pi> \<bullet> d) (\<pi> \<bullet> f) (\<pi> \<bullet> x)"
+lemma case_option_eqvt[eqvt]:
+  "\<pi> \<bullet> case_option d f x = case_option (\<pi> \<bullet> d) (\<pi> \<bullet> f) (\<pi> \<bullet> x)"
   by(cases x)(simp_all)
 
 lemma funpow_eqvt[simp,eqvt]:

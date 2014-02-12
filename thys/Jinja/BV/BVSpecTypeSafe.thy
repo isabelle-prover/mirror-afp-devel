@@ -130,7 +130,7 @@ next
     proof -
       from wf less loc have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by simp blast
       moreover from D h have "P,h \<turnstile> Addr xcp :\<le> Class D" 
-        by (simp add: conf_def obj_ty_def prod_case_unfold)
+        by (simp add: conf_def obj_ty_def case_prod_unfold)
       with less stk
       have "P,h \<turnstile> Addr xcp # drop (length stk - d') stk  [:\<le>] ST'" 
         by (auto intro!: list_all2_dropI)
@@ -302,7 +302,7 @@ proof -
         by (blast dest: exec_instr_xcpt_h)
       ultimately
       show ?thesis using xt match
-        by (auto simp add: relevant_entries_def conf_def prod_case_unfold intro: that)
+        by (auto simp add: relevant_entries_def conf_def case_prod_unfold intro: that)
     next
       case Throw with xp match preh 
       have "is_relevant_entry P (ins!pc) pc (f,t,D,pc',d')"
@@ -312,7 +312,7 @@ proof -
         by (blast dest: exec_instr_xcpt_h)
       ultimately
       show ?thesis using xt match
-        by (auto simp add: relevant_entries_def conf_def prod_case_unfold intro: that)
+        by (auto simp add: relevant_entries_def conf_def case_prod_unfold intro: that)
     qed auto
 
     with eff obtain ST' LT' where

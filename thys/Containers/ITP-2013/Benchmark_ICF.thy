@@ -138,7 +138,7 @@ done
 lemma apfst_fst: "apfst f x = (f (fst x), snd x)"
 by(cases x) simp
 
-lemma prod_case_apfst: "(case (apfst f z) of (x, y) \<Rightarrow> g x y) = (case z of (x, y) \<Rightarrow> g (f x) y)"
+lemma case_prod_apfst: "(case (apfst f z) of (x, y) \<Rightarrow> g x y) = (case z of (x, y) \<Rightarrow> g (f x) y)"
 by(cases z) simp
 
 lemma \<alpha>_complete: "complete n seed = Benchmark_Comparison.complete n seed"

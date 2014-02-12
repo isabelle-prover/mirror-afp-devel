@@ -20,8 +20,8 @@ lemmas continuousD = continuous.cont
 
 lemma (in continuous) mono: "mono F"
  apply (rule monoI)
- apply (cut_tac f="nat_case x (\<lambda>n. y)" in cont)
- apply (subgoal_tac "\<forall>x y. oLimit (nat_case x (\<lambda>n. y)) = max x y")
+ apply (cut_tac f="case_nat x (\<lambda>n. y)" in cont)
+ apply (subgoal_tac "\<forall>x y. oLimit (case_nat x (\<lambda>n. y)) = max x y")
   apply (subgoal_tac "\<forall>x y n. F (case n of 0 \<Rightarrow> x | Suc n \<Rightarrow> y)
                           = (case n of 0 \<Rightarrow> F x | Suc n \<Rightarrow> F y)")
    apply (simp add: max_def)

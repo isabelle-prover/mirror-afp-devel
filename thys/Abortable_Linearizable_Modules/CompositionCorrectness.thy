@@ -182,7 +182,7 @@ proof  (induct xs, force)
     fix ys
     assume "a # xs = ys @ zs \<and> hd zs = x \<and> zs \<noteq> [] \<and> x \<notin> set ys" and "a = x"
     hence "x # xs = ys @ zs" and "x \<notin> set ys" and "hd zs = x" and "zs \<noteq> []" by auto
-    from `x # xs = ys @ zs` and `x \<notin> set ys` have "ys = []"   by (metis hd.simps hd_append hd_in_set)
+    from `x # xs = ys @ zs` and `x \<notin> set ys` have "ys = []"   by (metis list.sel(1) hd_append hd_in_set)
     with `a = x` and `x # xs = ys @ zs` show "dropWhile (\<lambda>x'. x' \<noteq> x) (a # xs) = zs" by auto
   next
     fix ys
@@ -190,7 +190,7 @@ proof  (induct xs, force)
     hence "a # xs = ys @ zs" and "hd zs = x" and "zs \<noteq> []" and "x \<notin> set ys" by auto
     obtain ys' where "xs = ys' @ zs" and "x \<notin> set ys'"
     proof -
-      from `a # xs = ys @ zs` and `hd zs = x` and `a \<noteq> x` obtain ys' where "ys = a # ys'" apply clarify by (metis Cons_eq_append_conv hd.simps)
+      from `a # xs = ys @ zs` and `hd zs = x` and `a \<noteq> x` obtain ys' where "ys = a # ys'" apply clarify by (metis Cons_eq_append_conv list.sel(1))
       moreover with `x \<notin> set ys` have "x \<notin> set ys'" by auto
       moreover from `ys = a # ys'` and `a # xs = ys @ zs` have "xs = ys' @ zs" by auto
       ultimately show "(\<And>ys'. \<lbrakk>xs = ys' @ zs; x \<notin> set ys'\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis" by auto
@@ -1064,7 +1064,7 @@ proof -
                     qed
                     moreover have "h = dropWhile (\<lambda> r . r \<noteq> pending ?t c) (hist ?t)"
                     proof -
-                      from `pending s1 c \<in> set (hist s1)` obtain rs1 rs2 where "hist s1 = rs2 @ rs1" and "hd rs1 = pending s1 c" and "rs1 \<noteq> []" and "pending s1 c \<notin> set rs2"  by (metis hd.simps in_set_conv_decomp_first list.simps(3))
+                      from `pending s1 c \<in> set (hist s1)` obtain rs1 rs2 where "hist s1 = rs2 @ rs1" and "hd rs1 = pending s1 c" and "rs1 \<noteq> []" and "pending s1 c \<notin> set rs2"  by (metis list.sel(1) in_set_conv_decomp_first list.simps(3))
                       with `pending ?t c = pending s1 c` and dropWhile_lemma[of "hist s1" rs1 "pending s1 c"] and pre_s1 have "h = rs1" by auto
                       moreover have "dropWhile (\<lambda> r . r \<noteq> pending ?t c) (hist ?t) = rs1"
                       proof -

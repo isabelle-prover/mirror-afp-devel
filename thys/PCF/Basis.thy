@@ -30,8 +30,8 @@ lemma oo_below:
   "\<lbrakk> f \<sqsubseteq> f'; g \<sqsubseteq> g' \<rbrakk> \<Longrightarrow> f oo g \<sqsubseteq> f' oo g'"
   by (simp add: oo_def cfun_below_iff monofun_cfun)
 
-lemma cont_nat_case[simp]:
-  "\<lbrakk>cont (\<lambda>x. f x); \<And>n. cont (\<lambda>x. g x n) \<rbrakk> \<Longrightarrow> cont (\<lambda>x. nat_case (f x) (g x) n)"
+lemma cont_case_nat[simp]:
+  "\<lbrakk>cont (\<lambda>x. f x); \<And>n. cont (\<lambda>x. g x n) \<rbrakk> \<Longrightarrow> cont (\<lambda>x. case_nat (f x) (g x) n)"
   by (cases n, simp_all)
 
 lemma cont2cont_if_below_const [cont2cont, simp]:

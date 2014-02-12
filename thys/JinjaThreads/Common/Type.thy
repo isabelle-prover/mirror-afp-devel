@@ -180,7 +180,7 @@ where
 | "class_type_of' (Array T) = \<lfloor>Object\<rfloor>"
 | "class_type_of' _ = None" 
 
-lemma htype_rec_case [simp]: "htype_rec = htype_case"
+lemma rec_htype_is_case [simp]: "rec_htype = case_htype"
 by(auto simp add: fun_eq_iff split: htype.split)
 
 lemma ty_of_htype_eq_convs [simp]:

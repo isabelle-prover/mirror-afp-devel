@@ -146,7 +146,7 @@ lemma valid_perm_lookup_fst_eq_snd:
 lemma valid_perm_add_minus: "valid_perm a \<Longrightarrow> perm_apply (map swap_pair a) (perm_apply a e) = e"
   apply (auto simp add: filter_map_swap_pair filter_eq_nil filter_rev_eq_nil perm_apply_def split: list.split)
   apply (metis filter_eq_nil(2) neq_Nil_conv valid_perm_def)
-  apply (metis hd.simps hd_in_set image_eqI list.simps(2) member_project project_set snd_conv)
+  apply (metis list.sel(1) hd_in_set image_eqI list.simps(2) member_project project_set snd_conv)
   apply (frule filter_fst_eq(1))
   apply (frule filter_fst_eq(2))
   apply (auto simp add: swap_pair_def)

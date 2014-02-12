@@ -849,7 +849,7 @@ lemma ASSUME_rule[refine_vcg]: "\<lbrakk>\<Phi> \<Longrightarrow> \<Psi> ()\<rbr
 lemma ASSERT_rule[refine_vcg]: "\<lbrakk>\<Phi>; \<Phi> \<Longrightarrow> \<Psi> ()\<rbrakk> \<Longrightarrow> ASSERT \<Phi> \<le> SPEC \<Psi>" by auto
 
 lemma prod_rule[refine_vcg]: 
-  "\<lbrakk>\<And>a b. p=(a,b) \<Longrightarrow> S a b \<le> SPEC \<Phi>\<rbrakk> \<Longrightarrow> prod_case S p \<le> SPEC \<Phi>"
+  "\<lbrakk>\<And>a b. p=(a,b) \<Longrightarrow> S a b \<le> SPEC \<Phi>\<rbrakk> \<Longrightarrow> case_prod S p \<le> SPEC \<Phi>"
   by (auto split: prod.split)
 
 (* TODO: Add a simplifier setup that normalizes nested case-expressions to
@@ -867,7 +867,7 @@ lemma if_rule[refine_vcg]:
 
 lemma option_rule[refine_vcg]: 
   "\<lbrakk> v=None \<Longrightarrow> S1 \<le> SPEC \<Phi>; \<And>x. v=Some x \<Longrightarrow> f2 x \<le> SPEC \<Phi>\<rbrakk> 
-  \<Longrightarrow> option_case S1 f2 v \<le> SPEC \<Phi>"
+  \<Longrightarrow> case_option S1 f2 v \<le> SPEC \<Phi>"
   by (auto split: option.split)
 
 lemma Let_rule[refine_vcg]:
@@ -1182,11 +1182,11 @@ lemma Let_refine:
   shows "Let x f \<le>\<Down>R (Let x' f')"
   using assms by auto
 
-lemma option_case_refine[refine]:
+lemma case_option_refine[refine]:
   assumes "(x,x')\<in>Id"
   assumes "fn \<le> \<Down>R fn'"
   assumes "\<And>v v'. \<lbrakk>x=Some v; (v,v')\<in>Id\<rbrakk> \<Longrightarrow> fs v \<le> \<Down>R (fs' v')"
-  shows "option_case fn fs x \<le> \<Down>R (option_case fn' fs' x')"
+  shows "case_option fn fs x \<le> \<Down>R (case_option fn' fs' x')"
   using assms by (auto split: option.split)
 
 text {* It is safe to split conjunctions in refinement goals.*}

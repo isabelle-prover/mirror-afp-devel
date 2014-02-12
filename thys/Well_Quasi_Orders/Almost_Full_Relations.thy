@@ -391,7 +391,7 @@ proof
       ultimately have "infinite ?J" unfolding ** [symmetric] by (rule Diff_infinite_finite)
       then have "\<forall>i. \<exists>j>i. j \<in> ?J" by (simp add: infinite_nat_iff_unbounded)
       then interpret infinitely_many1 "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
-      let ?f = "\<lambda>i. Sum_Type.Projr (f (enum i))"
+      let ?f = "\<lambda>i. projr (f (enum i))"
       have ***: "\<forall>i. \<exists>x\<in>B. f (enum i) = Inr x" using enum_P by auto
       have B: "\<forall>i. ?f i \<in> B"
       proof
@@ -421,7 +421,7 @@ proof
       assume "infinite ?I"
       then have "\<forall>i. \<exists>j>i. j \<in> ?I" by (simp add: infinite_nat_iff_unbounded)
       then interpret infinitely_many1 "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
-      let ?f = "\<lambda>i. Sum_Type.Projl (f (enum i))"
+      let ?f = "\<lambda>i. projl (f (enum i))"
       have ***: "\<forall>i. \<exists>x\<in>A. f (enum i) = Inl x" using enum_P by auto
       have A: "\<forall>i. ?f i \<in> A"
       proof
@@ -547,7 +547,7 @@ proof (rule ccontr)
     by (metis SigmaE fst_conv, metis SigmaE snd_conv)
   from bad have "\<forall>i j. i < j \<longrightarrow> \<not> ?P (f i) (f j)" by (auto simp: good_def)
   then have "\<forall>i j. i < j \<longrightarrow> ?W (f i) (f j) \<or> ?B (f i) (f j)"
-    unfolding prod_le_def by (metis (lifting, mono_tags) prod_case_beta)
+    unfolding prod_le_def by (metis (lifting, mono_tags) case_prod_beta)
   from trans_subseq [of ?W _ ?B, OF this]
     obtain g :: "nat seq" where mono: "\<forall>i j. i < j \<longrightarrow> g i < g j"
       and or: "(\<forall>i j. i < j \<longrightarrow> ?W (f (g i)) (f (g j))) \<or>

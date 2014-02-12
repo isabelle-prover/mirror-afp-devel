@@ -371,11 +371,11 @@ lemma dres_ne_bot_basic[refine_transfer]:
   "\<And>\<Phi>. dASSERT \<Phi> \<noteq> dSUCCEED"
   "\<And>b m1 m2. \<lbrakk> m1\<noteq>dSUCCEED; m2\<noteq>dSUCCEED \<rbrakk> \<Longrightarrow> If b m1 m2 \<noteq> dSUCCEED"
   "\<And>x f. \<lbrakk> \<And>x. f x\<noteq>dSUCCEED \<rbrakk> \<Longrightarrow> Let x f \<noteq> dSUCCEED"
-  "\<And>g p. \<lbrakk> \<And>x1 x2. g x1 x2 \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> prod_case g p \<noteq> dSUCCEED"
+  "\<And>g p. \<lbrakk> \<And>x1 x2. g x1 x2 \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> case_prod g p \<noteq> dSUCCEED"
   "\<And>fn fs x. 
-    \<lbrakk> fn\<noteq>dSUCCEED; \<And>v. fs v \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> option_case fn fs x \<noteq> dSUCCEED"
+    \<lbrakk> fn\<noteq>dSUCCEED; \<And>v. fs v \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> case_option fn fs x \<noteq> dSUCCEED"
   "\<And>fn fc x. 
-    \<lbrakk> fn\<noteq>dSUCCEED; \<And>x xs. fc x xs \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> list_case fn fc x \<noteq> dSUCCEED"
+    \<lbrakk> fn\<noteq>dSUCCEED; \<And>x xs. fc x xs \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> case_list fn fc x \<noteq> dSUCCEED"
   apply (auto split: prod.split option.split list.split)
   apply (case_tac m, auto) []
   apply (case_tac \<Phi>, auto) []

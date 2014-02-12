@@ -179,7 +179,7 @@ and reward :: "'s eform \<Rightarrow> (nat \<Rightarrow> 's) \<Rightarrow> ereal
 "svalid (Neg F)        = S - svalid F" |
 "svalid (And F1 F2)    = svalid F1 \<inter> svalid F2" |
 "svalid (Prob rel r F) = {s \<in> S. inrealrel rel r (prob s (pvalid s F)) }" |
-"svalid (Exp rel r F)  = {s \<in> S. inrealrel rel r (\<integral>\<^sup>+ \<omega>. reward F (nat_case s \<omega>) \<partial>paths s) }" |
+"svalid (Exp rel r F)  = {s \<in> S. inrealrel rel r (\<integral>\<^sup>+ \<omega>. reward F (case_nat s \<omega>) \<partial>paths s) }" |
 
 "pvalid s (X F)        = {w \<in> UNIV \<rightarrow> S. w 0 \<in> svalid F}" |
 "pvalid s (U k F1 F2)  =
@@ -213,9 +213,9 @@ lemma reward_nonneg: "\<omega> \<in> UNIV \<rightarrow> S \<Longrightarrow> 0 \<
   by (cases F) (auto intro!: setsum_nonneg add_nonneg_nonneg)
 
 lemma pvalid_eq_until:
-  "s \<in> S \<Longrightarrow> pvalid s (U\<^sup>\<infinity> F1 F2) = nat_case s -` until (svalid F1) (svalid F2) \<inter> (UNIV\<rightarrow>S)"
+  "s \<in> S \<Longrightarrow> pvalid s (U\<^sup>\<infinity> F1 F2) = case_nat s -` until (svalid F1) (svalid F2) \<inter> (UNIV\<rightarrow>S)"
   apply (simp add: until_def)
-  apply (subst (2) Ex_nat_case_eq)
+  apply (subst (2) Ex_case_nat_eq)
   apply (auto simp add: all_less_Suc_split space_PiM)
   done
 
@@ -275,9 +275,9 @@ qed auto
 
 lemma Prob0_iff:
   assumes "\<Phi> \<subseteq> S" "\<Psi> \<subseteq> S"
-  shows "Prob0 \<Phi> \<Psi> = {s\<in>S. AE \<omega> in paths s. nat_case s \<omega> \<notin> until \<Phi> \<Psi>}" (is "_ = ?U")
+  shows "Prob0 \<Phi> \<Psi> = {s\<in>S. AE \<omega> in paths s. case_nat s \<omega> \<notin> until \<Phi> \<Psi>}" (is "_ = ?U")
   unfolding Prob0_iff_reachable[OF assms]
-  by (auto simp add: AE_nuntil_iff_not_reachable simp del: nat_case_until_iff cong: conj_cong)
+  by (auto simp add: AE_nuntil_iff_not_reachable simp del: case_nat_until_iff cong: conj_cong)
 
 subsubsection {* @{text Prob1} *}
 
@@ -286,7 +286,7 @@ definition Prob1 where
 
 lemma Prob1_iff:
   assumes "\<Phi> \<subseteq> S" "\<Psi> \<subseteq> S"
-  shows "Prob1 (Prob0 \<Phi> \<Psi>) \<Phi> \<Psi> = {s\<in>S. AE \<omega> in paths s. nat_case s \<omega> \<in> until \<Phi> \<Psi>}"
+  shows "Prob1 (Prob0 \<Phi> \<Psi>) \<Phi> \<Psi> = {s\<in>S. AE \<omega> in paths s. case_nat s \<omega> \<in> until \<Phi> \<Psi>}"
     (is "Prob1 ?P0 _ _ = {s\<in>S. ?pU s}")
 proof -
   let ?\<Delta> = "\<lambda>R. {s\<in>\<Phi>-\<Psi>. R \<inter> E s \<noteq> {}}" and ?C = "\<lambda>R. \<exists>s\<in>\<Phi> - \<Psi>. R \<inter> E s \<noteq> {} \<and> s \<notin> R"
@@ -322,7 +322,7 @@ proof -
       using `\<Phi> \<subseteq> S` finite_S by (auto dest: finite_subset)
     { fix s assume s: "s \<in> S" "s \<in> \<Phi>" "s \<notin> \<Psi>" "s \<notin> R"
       with R have "s \<notin> ?P0" by auto
-      have "AE \<omega> in paths s. nat_case s \<omega> \<in> until \<Phi> \<Psi>"
+      have "AE \<omega> in paths s. case_nat s \<omega> \<in> until \<Phi> \<Psi>"
       proof (rule AE_until)
         show "s \<in> \<Phi>" by fact
         show "s \<in> S" by fact
@@ -347,8 +347,8 @@ proof -
           from t in_s have "t \<notin> \<Psi> \<and> (t \<in> \<Phi> \<longrightarrow> reachable (\<Phi> - \<Psi>) t \<inter> \<Psi> = {})"
             by auto
           with `t \<in> S` assms
-          have "AE \<omega> in paths t. nat_case t \<omega> \<notin> until \<Phi> \<Psi>"
-            by (auto simp: AE_nuntil_iff_not_reachable simp del: nat_case_until_iff)
+          have "AE \<omega> in paths t. case_nat t \<omega> \<notin> until \<Phi> \<Psi>"
+            by (auto simp: AE_nuntil_iff_not_reachable simp del: case_nat_until_iff)
           then have "t \<in> ?P0"
             using `t \<in> S` assms by (simp add: Prob0_iff)
           then have "t \<in> R" using R by auto
@@ -390,18 +390,18 @@ qed
 
 lemma Prob0_I:
   assumes "\<Phi> \<subseteq> S" "\<Psi> \<subseteq> S" "s \<in> S"
-  assumes *: "\<forall>n \<omega>. \<omega> : UNIV \<rightarrow> S \<and> nat_case s \<omega> n \<in> \<Psi> \<and> (\<forall>i<n. nat_case s \<omega> i \<in> \<Phi>) \<longrightarrow> (\<exists>i<n. \<omega> i \<notin> E (nat_case s \<omega> i))"
+  assumes *: "\<forall>n \<omega>. \<omega> : UNIV \<rightarrow> S \<and> case_nat s \<omega> n \<in> \<Psi> \<and> (\<forall>i<n. case_nat s \<omega> i \<in> \<Phi>) \<longrightarrow> (\<exists>i<n. \<omega> i \<notin> E (case_nat s \<omega> i))"
   shows "s \<in> Prob0 \<Phi> \<Psi>"
 proof -
-  have "AE \<omega> in paths s. nat_case s \<omega> \<notin> until \<Phi> \<Psi>"
+  have "AE \<omega> in paths s. case_nat s \<omega> \<notin> until \<Phi> \<Psi>"
     using AE_all_enabled[OF `s \<in> S`] AE_space
     apply eventually_elim
   proof rule
-    fix \<omega> assume E: "\<forall>i. \<omega> i \<in> E (nat_case s \<omega> i)" and "nat_case s \<omega> \<in> until \<Phi> \<Psi>"
+    fix \<omega> assume E: "\<forall>i. \<omega> i \<in> E (case_nat s \<omega> i)" and "case_nat s \<omega> \<in> until \<Phi> \<Psi>"
       and \<omega>: "\<omega> \<in> space (paths s)"
-    then obtain n where "nat_case s \<omega> n \<in> \<Psi>" "\<forall>i<n. nat_case s \<omega> i \<in> \<Phi>"
+    then obtain n where "case_nat s \<omega> n \<in> \<Psi>" "\<forall>i<n. case_nat s \<omega> i \<in> \<Phi>"
       unfolding until_def by auto
-    with * \<omega> have "\<exists>i<n. \<omega> i \<notin> E (nat_case s \<omega> i)" by (auto simp: space_PiM)
+    with * \<omega> have "\<exists>i<n. \<omega> i \<notin> E (case_nat s \<omega> i)" by (auto simp: space_PiM)
     with E show False by auto
   qed
   with assms show ?thesis by (simp add: Prob0_iff)
@@ -461,36 +461,36 @@ proof -
     have "s \<in> S" using s unfolding M_def by auto
     have "s \<in> Prob0 \<Phi> \<Psi>"
     proof (safe intro!: Prob0_I[OF in_S(1,2) `s \<in> S`])
-      fix n \<omega> assume \<omega>: "nat_case s \<omega> n \<in> \<Psi>" "\<forall>i<n. nat_case s \<omega> i \<in> \<Phi>" "\<omega> \<in> UNIV \<rightarrow> S"
-      have "\<bar>\<Delta> (nat_case s \<omega> n)\<bar> = 0" using s `nat_case s \<omega> n \<in> \<Psi>` in_S 2 by auto
-      with `0 < \<bar>\<Delta> s\<bar>` `s \<in> M` have "nat_case s \<omega> n \<notin> M" by (auto simp: M_def)
+      fix n \<omega> assume \<omega>: "case_nat s \<omega> n \<in> \<Psi>" "\<forall>i<n. case_nat s \<omega> i \<in> \<Phi>" "\<omega> \<in> UNIV \<rightarrow> S"
+      have "\<bar>\<Delta> (case_nat s \<omega> n)\<bar> = 0" using s `case_nat s \<omega> n \<in> \<Psi>` in_S 2 by auto
+      with `0 < \<bar>\<Delta> s\<bar>` `s \<in> M` have "case_nat s \<omega> n \<notin> M" by (auto simp: M_def)
       moreover with `s \<in> M` have "n \<noteq> 0" by (intro notI) auto
       ultimately have "\<omega> (n - 1) \<notin> M" by (auto simp: gr0_conv_Suc)
       from smallest[where P="\<lambda>i. \<omega> i \<notin> M", OF this]
       guess i . note \<omega>_i = this
 
-      have "\<exists>i<n. \<tau> (nat_case s \<omega> i) (\<omega> i) = 0"
+      have "\<exists>i<n. \<tau> (case_nat s \<omega> i) (\<omega> i) = 0"
       proof (rule exI[of _ i], rule)
         show "i < n" using \<omega>_i `n \<noteq> 0` by simp
-        show "\<tau> (nat_case s \<omega> i) (\<omega> i) = 0"
+        show "\<tau> (case_nat s \<omega> i) (\<omega> i) = 0"
         proof (rule M_closed)
-          show "nat_case s \<omega> i \<in> S" using \<omega>(2) `i < n` in_S by auto
+          show "case_nat s \<omega> i \<in> S" using \<omega>(2) `i < n` in_S by auto
           show "\<omega> i \<in> S"
             using \<omega>(1) \<omega>(2) `i < n` in_S
             by (cases "Suc i < n") (auto simp: not_less le_Suc_eq)
-          show "nat_case s \<omega> i \<in> M"
+          show "case_nat s \<omega> i \<in> M"
           proof (cases i)
             case 0 with `s \<in> M` show ?thesis by simp
           next
             case (Suc i') with \<omega>_i(2)[of i'] show ?thesis by simp
           qed
-          with s show "\<bar>\<Delta> (nat_case s \<omega> i)\<bar> \<noteq> 0" by (auto simp: M_def)
+          with s show "\<bar>\<Delta> (case_nat s \<omega> i)\<bar> \<noteq> 0" by (auto simp: M_def)
         qed fact
       qed
       then guess i ..
-      with \<omega>(3) `s\<in>S` have "\<omega> i \<notin> E (nat_case s \<omega> i)" "i < n"
+      with \<omega>(3) `s\<in>S` have "\<omega> i \<notin> E (case_nat s \<omega> i)" "i < n"
          by (auto simp: Pi_iff E_iff)
-      then show "\<exists>i<n. \<omega> i \<notin> E (nat_case s \<omega> i)" by auto
+      then show "\<exists>i<n. \<omega> i \<notin> E (case_nat s \<omega> i)" by auto
     qed
     ultimately have False using in_S by auto }
   moreover
@@ -570,12 +570,12 @@ next
   case (Suc k)
   { fix A B q' assume "A \<subseteq> S" "B \<subseteq> S" "q' \<in> S"
     then have "{w \<in> UNIV \<rightarrow> S. q' \<in> B \<or> (\<exists>i<k. w i \<in> B \<and> (\<forall>j<i. w j \<in> A) \<and> q' \<in> A)} =
-      nat_case q' -` {w \<in> UNIV \<rightarrow> S. \<exists>i<Suc k. w i \<in> B \<and> (\<forall>j<i. w j \<in> A)} \<inter> (UNIV \<rightarrow> S)"
+      case_nat q' -` {w \<in> UNIV \<rightarrow> S. \<exists>i<Suc k. w i \<in> B \<and> (\<forall>j<i. w j \<in> A)} \<inter> (UNIV \<rightarrow> S)"
       by (auto split: nat.split simp: Pi_iff gr0_conv_Suc all_conj_distrib) blast }
   note eq = this
   note `q\<in>S`[simp]
   with Suc show ?case
-    by (simp add: prob_eq_sum[of q] eq svalid_subset_S space_PiM nat_case_in_funcset \<tau>_distr)
+    by (simp add: prob_eq_sum[of q] eq svalid_subset_S space_PiM case_nat_in_funcset \<tau>_distr)
 qed
 
 lemma Prob0_imp_not_Psi:
@@ -593,8 +593,8 @@ subsubsection {* Finite expected reward *}
 
 lemma positive_integral_reward_finite:
   assumes "s \<in> S"
-  assumes until: "AE \<omega> in paths s. nat_case s \<omega> \<in> until S (svalid F)"
-  shows "(\<integral>\<^sup>+ \<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s) \<noteq> \<infinity>"
+  assumes until: "AE \<omega> in paths s. case_nat s \<omega> \<in> until S (svalid F)"
+  shows "(\<integral>\<^sup>+ \<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s) \<noteq> \<infinity>"
 proof -
   let ?F = "svalid F"
 
@@ -606,30 +606,30 @@ proof -
     using s0_in_S s0_in_S by (rule Mr)
   finally have "0 \<le> Mr" .
 
-  let "?t \<omega>" = "hitting_time ?F (nat_case s \<omega>)"
-  have "(\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s)
-    \<le> (\<integral>\<^sup>+\<omega>. ereal Mr * ereal (((of_nat \<circ> hitting_time ?F) \<circ> nat_case s) \<omega>) \<partial>paths s)"
+  let "?t \<omega>" = "hitting_time ?F (case_nat s \<omega>)"
+  have "(\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)
+    \<le> (\<integral>\<^sup>+\<omega>. ereal Mr * ereal (((of_nat \<circ> hitting_time ?F) \<circ> case_nat s) \<omega>) \<partial>paths s)"
     using until
   proof (intro positive_integral_mono_AE, elim AE_mp, intro AE_I2 impI)
-    fix \<omega> assume \<omega>: "\<omega> \<in> space (paths s)" "nat_case s \<omega> \<in> until S ?F"
+    fix \<omega> assume \<omega>: "\<omega> \<in> space (paths s)" "case_nat s \<omega> \<in> until S ?F"
     from untilE[OF \<omega>(2)] guess n . note n = this
         
-    from n have "reward (Future F) (nat_case s \<omega>) =
-      (\<Sum>i<?t \<omega>. \<rho>  (nat_case s \<omega> i) + \<iota>  (nat_case s \<omega> i) (\<omega> i))"
+    from n have "reward (Future F) (case_nat s \<omega>) =
+      (\<Sum>i<?t \<omega>. \<rho>  (case_nat s \<omega> i) + \<iota>  (case_nat s \<omega> i) (\<omega> i))"
       by (auto simp add: hitting_time_def)
     also have "\<dots> \<le> (\<Sum>i<?t \<omega>. Mr)" 
       unfolding ereal_less_eq using \<omega> `s \<in> S`
       by (intro setsum_mono Mr) (auto simp: space_PiM)
     also have "\<dots> = Mr * ereal (of_nat (?t \<omega>))"
       by (simp add: field_simps)
-    finally show "reward (Future F) (nat_case s \<omega>) \<le> Mr * ereal ((real_of_nat \<circ> hitting_time ?F \<circ> nat_case s) \<omega>)"
+    finally show "reward (Future F) (case_nat s \<omega>) \<le> Mr * ereal ((real_of_nat \<circ> hitting_time ?F \<circ> case_nat s) \<omega>)"
       by simp
   qed
-  also have "\<dots> = Mr * (\<integral>\<^sup>+\<omega>. ereal (((of_nat \<circ> hitting_time ?F) \<circ> nat_case s) \<omega>) \<partial>paths s)"
+  also have "\<dots> = Mr * (\<integral>\<^sup>+\<omega>. ereal (((of_nat \<circ> hitting_time ?F) \<circ> case_nat s) \<omega>) \<partial>paths s)"
     using measurable_hitting_time `0 \<le> Mr` `s \<in> S`
     apply (subst positive_integral_cmult)
     apply (rule borel_measurable_ereal)
-    using measurable_comp[OF measurable_nat_case measurable_hitting_time]
+    using measurable_comp[OF measurable_case_nat measurable_hitting_time]
     apply (auto simp: comp_def cong: measurable_cong_sets)
     done
   also have "\<dots> < \<infinity>"
@@ -665,7 +665,7 @@ next
     from s `s \<in> S` svalid_subset_S have "s \<in> svalid F1"
       by (rule_tac ccontr) (auto simp: Prob0_iff)
     with `s' \<in> S` s
-    have "pvalid s' (U\<^sup>\<infinity> F1 F2) = nat_case s' -` pvalid s (U\<^sup>\<infinity> F1 F2) \<inter> (UNIV \<rightarrow> S)"
+    have "pvalid s' (U\<^sup>\<infinity> F1 F2) = case_nat s' -` pvalid s (U\<^sup>\<infinity> F1 F2) \<inter> (UNIV \<rightarrow> S)"
       by (cases "s' \<in> svalid F2" "s' \<in> svalid F1" rule: bool.exhaust[case_product bool.exhaust])
          (auto split: nat.split simp: Pi_iff gr0_conv_Suc space_PiM) }
   with prob_eq_sum[OF `s \<in> S` pvalid_sets, of _ "U\<^sup>\<infinity> F1 F2"]
@@ -704,28 +704,28 @@ lemma infinite_reward:
   defines "N \<equiv> Prob0 S (svalid F)" (is "_ \<equiv> Prob0 S ?F")
   defines "Y \<equiv> Prob1 N S (svalid F)"
   assumes s: "s \<in> S" "s \<notin> Y"
-  shows "(\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s) = \<infinity>"
+  shows "(\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s) = \<infinity>"
 proof -
-  from s have "prob s (nat_case s -` until S ?F \<inter> space (paths s)) \<noteq> 1" "s \<in> S"
+  from s have "prob s (case_nat s -` until S ?F \<inter> space (paths s)) \<noteq> 1" "s \<in> S"
     unfolding Y_def N_def using svalid_subset_S
     by (auto simp add: Prob1_iff space_PiM PiE_def AE_in_set_eq_1[symmetric])
-  then have not_until: "\<not> (AE \<omega> in paths s. \<omega> \<in> nat_case s -` until S ?F \<inter> space (paths s))"
-    by (subst AE_in_set_eq_1) (auto intro!: measurable_sets measurable_nat_case)
+  then have not_until: "\<not> (AE \<omega> in paths s. \<omega> \<in> case_nat s -` until S ?F \<inter> space (paths s))"
+    by (subst AE_in_set_eq_1) (auto intro!: measurable_sets measurable_case_nat)
   let ?R = "reward (Future F)"
   show ?thesis
   proof (rule ccontr)
     assume "\<not> ?thesis"
     from positive_integral_PInf_AE[OF _ this] `s\<in>S`
-    have "AE x in paths s. reward (Future F) (nat_case s x) \<noteq> \<infinity>"
+    have "AE x in paths s. reward (Future F) (case_nat s x) \<noteq> \<infinity>"
       by (simp del: reward.simps)
-    then have "AE \<omega> in paths s. \<omega> \<in> nat_case s -` until S ?F \<inter> space (paths s)"
+    then have "AE \<omega> in paths s. \<omega> \<in> case_nat s -` until S ?F \<inter> space (paths s)"
     proof (rule AE_mp, intro AE_I2 impI IntI)
       fix \<omega> assume "\<omega> \<in> space (paths s)"
-      moreover assume "reward (Future F) (nat_case s \<omega>) \<noteq> \<infinity>"
-      then obtain i where "nat_case s \<omega> i \<in> ?F"
+      moreover assume "reward (Future F) (case_nat s \<omega>) \<noteq> \<infinity>"
+      then obtain i where "case_nat s \<omega> i \<in> ?F"
         by (auto split: split_if_asm)
-      ultimately show "\<omega> \<in> nat_case s -` until S ?F"
-        using `s \<in> S` by (auto intro!: untilI[where n=i] simp: space_PiM simp del: nat_case_until_iff)
+      ultimately show "\<omega> \<in> case_nat s -` until S ?F"
+        using `s \<in> S` by (auto intro!: untilI[where n=i] simp: space_PiM simp del: case_nat_until_iff)
     qed
     with not_until show False ..
   qed
@@ -738,20 +738,20 @@ lemma existence_of_ExpFuture:
   assumes N_def: "N \<equiv> Prob0 S (svalid F)" (is "_ \<equiv> Prob0 S ?F")
   assumes Y_def: "Y \<equiv> Prob1 N S (svalid F)"
   assumes s: "s \<in> S" "s \<notin> S - (Y - ?F)"
-  shows "real (\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s)
+  shows "real (\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)
     - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s' \<omega>) \<partial>paths s'))"
+    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s' \<omega>) \<partial>paths s'))"
 proof -
   let ?R = "reward (Future F)"
 
   from s have "s \<in> Prob1 (Prob0 S ?F) S ?F"
     unfolding Y_def N_def by auto
-  then have AE_until: "AE \<omega> in paths s. nat_case s \<omega> \<in> until S (svalid F)"
+  then have AE_until: "AE \<omega> in paths s. case_nat s \<omega> \<in> until S (svalid F)"
     using Prob1_iff[of S ?F] svalid_subset_S by auto
 
   from s have "s \<notin> ?F" by auto
 
-  let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future F) (nat_case s' \<omega>) \<partial>paths s'"
+  let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future F) (case_nat s' \<omega>) \<partial>paths s'"
   have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ereal (\<tau> s s' * real (?E s')))"
   proof (rule setsum_cong)
     fix s' assume "s' \<in> S"
@@ -769,30 +769,30 @@ proof -
   qed simp
 
   from AE_until
-  have "AE \<omega> in paths s. ?R (nat_case s \<omega>) = \<rho> s + \<iota> s (\<omega> 0) + ?R \<omega>"
+  have "AE \<omega> in paths s. ?R (case_nat s \<omega>) = \<rho> s + \<iota> s (\<omega> 0) + ?R \<omega>"
   proof eventually_elim
-    fix \<omega> assume "nat_case s \<omega> \<in> until S ?F"
+    fix \<omega> assume "case_nat s \<omega> \<in> until S ?F"
     with `s \<notin> ?F` `s \<in> S` svalid_subset_S
     have "\<omega> \<in> until S ?F"
       by simp
     from untilE[OF this] guess n . note n = this
     then have n_eq: "(LEAST i. \<omega> i \<in> ?F) = n"
       by (intro Least_equality) (auto simp: not_less[symmetric])
-    moreover have "(LEAST i. nat_case s \<omega> i \<in> ?F) =
-      Suc (LEAST i. nat_case s \<omega> (Suc i) \<in> ?F)"
+    moreover have "(LEAST i. case_nat s \<omega> i \<in> ?F) =
+      Suc (LEAST i. case_nat s \<omega> (Suc i) \<in> ?F)"
       using n `s \<notin> ?F` by (intro Least_Suc[of _ "Suc n"]) auto
-    then have Suc_n_eq: "(LEAST i. nat_case s \<omega> i \<in> ?F) = Suc n"
+    then have Suc_n_eq: "(LEAST i. case_nat s \<omega> i \<in> ?F) = Suc n"
       using n_eq by simp
     
     have "(\<exists>i. \<omega> i \<in> svalid F)"
       using n by auto
-    moreover have "\<exists>i. nat_case s \<omega> i \<in> svalid F"
+    moreover have "\<exists>i. case_nat s \<omega> i \<in> svalid F"
       using n by (auto intro!: exI[of _ "Suc n"])
-    ultimately show "?R (nat_case s \<omega>) = (\<rho> s + \<iota> s (\<omega> 0)) + ?R \<omega>"
+    ultimately show "?R (case_nat s \<omega>) = (\<rho> s + \<iota> s (\<omega> 0)) + ?R \<omega>"
       by (simp add: Suc_n_eq n_eq lessThan_Suc_eq_insert_0 setsum_reindex zero_notin_Suc_image
                del: setsum_lessThan_Suc)
   qed
-  then have "(\<integral>\<^sup>+\<omega>. ?R (nat_case s \<omega>) \<partial>paths s)
+  then have "(\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
     = (\<integral>\<^sup>+\<omega>. (\<rho> s + \<iota> s (\<omega> 0)) + ?R \<omega> \<partial>paths s)"
     by (rule positive_integral_cong_AE)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> 0)\<partial>paths s) +
@@ -806,9 +806,9 @@ proof -
     by (subst positive_integral_paths_0)
        (auto simp: field_simps setsum_addf \<tau>_distr positive_integral_K
                    setsum_right_distrib[symmetric])
-  finally show "real (\<integral>\<^sup>+\<omega>. ?R (nat_case s \<omega>) \<partial>paths s)
+  finally show "real (\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
     - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. ?R (nat_case s' \<omega>) \<partial>paths s'))"
+    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. ?R (case_nat s' \<omega>) \<partial>paths s'))"
     apply (simp del: reward.simps)
     apply (subst positive_integral_eq_sum[OF `s \<in> S` reward_measurable])
     apply (simp del: reward.simps add: *)
@@ -821,8 +821,8 @@ lemma uniqueness_of_ExpFuture:
   assumes Y_def: "Y \<equiv> Prob1 N S (svalid F)"
   assumes const_def: "const \<equiv> \<lambda>s. if s \<in> Y \<and> s \<notin> svalid F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0"
   assumes sol: "\<And>s. s\<in>S \<Longrightarrow> (\<Sum>s'\<in>S. LES (S - Y \<union> ?F) s s' * l s') = const s"
-  shows "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s)"
-    (is "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. ?R (nat_case s \<omega>) \<partial>paths s)")
+  shows "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)"
+    (is "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)")
 proof (rule unique)
   show "S \<subseteq> S" "?F \<subseteq> S" using svalid_subset_S by auto
   show "S - (Y - ?F) \<subseteq> S" "Prob0 S ?F \<subseteq> S - (Y - ?F)" "?F \<subseteq> S - (Y - ?F)"
@@ -831,9 +831,9 @@ proof (rule unique)
        (auto simp add: Prob0_iff dest!: AE_contr)
 next
   fix s assume "s \<in> S" "s \<notin> S - (Y - ?F)"
-  then show "real (\<integral>\<^sup>+\<omega>. ?R (nat_case s \<omega>) \<partial>paths s)
+  then show "real (\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
     - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. ?R (nat_case s' \<omega>) \<partial>paths s'))"
+    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. ?R (case_nat s' \<omega>) \<partial>paths s'))"
     by (rule existence_of_ExpFuture[OF N_def Y_def])
 next
   fix s assume "s \<in> S" "s \<notin> S - (Y - ?F)"
@@ -851,11 +851,11 @@ next
   fix s assume s: "s \<in> S - (Y - ?F)"
   with sol[of s] have "l s = 0"
     by (cases "s \<in> ?F") (simp_all add: const_def LES_def single_l)
-  also have "0 = real (\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s)"
+  also have "0 = real (\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)"
   proof cases
     assume "s \<in> ?F"
     with s svalid_subset_S have s: "s \<in> ?F" "s \<in> S" by auto
-    then have "\<And>\<omega>. (LEAST i. nat_case s \<omega> i \<in> ?F) = 0" "\<And>\<omega>. \<exists>i. nat_case s \<omega> i \<in> ?F"
+    then have "\<And>\<omega>. (LEAST i. case_nat s \<omega> i \<in> ?F) = 0" "\<And>\<omega>. \<exists>i. case_nat s \<omega> i \<in> ?F"
       by (auto intro!: Least_equality exI[of _ 0])
     then show ?thesis by simp
   next
@@ -864,7 +864,7 @@ next
     with infinite_reward[of s F] show ?thesis
       by (simp add: Y_def N_def del: reward.simps)
   qed
-  finally show "l s = real (\<integral>\<^sup>+\<omega>. ?R (nat_case s \<omega>) \<partial>paths s)" .
+  finally show "l s = real (\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)" .
 qed
 
 subsection {* Soundness of @{const Sat} *}
@@ -907,12 +907,12 @@ next
 next
   case (8 rel r k)
   { fix s assume "s \<in> S"
-    then have "ExpCumm s k = (\<integral>\<^sup>+ x. ereal (\<Sum>i<k. \<rho> (nat_case s x i) + \<iota> (nat_case s x i) (x i)) \<partial>paths s)"
+    then have "ExpCumm s k = (\<integral>\<^sup>+ x. ereal (\<Sum>i<k. \<rho> (case_nat s x i) + \<iota> (case_nat s x i) (x i)) \<partial>paths s)"
     proof (induct k arbitrary: s)
       case 0 then show ?case by simp
     next
       case (Suc k) 
-      have "(\<integral>\<^sup>+\<omega>. ereal (\<Sum>i<Suc k. \<rho> (nat_case s \<omega> i) + \<iota> (nat_case s \<omega> i) (\<omega> i)) \<partial>paths s)
+      have "(\<integral>\<^sup>+\<omega>. ereal (\<Sum>i<Suc k. \<rho> (case_nat s \<omega> i) + \<iota> (case_nat s \<omega> i) (\<omega> i)) \<partial>paths s)
         = (\<integral>\<^sup>+\<omega>. ereal (\<rho> s + \<iota> s (\<omega> 0)) + ereal (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>paths s)"
         by (auto intro!: positive_integral_cong
                  simp: setsum_reindex lessThan_Suc_eq_insert_0 zero_notin_Suc_image)
@@ -939,7 +939,7 @@ next
 next
   case (9 rel r k)
   { fix s assume "s \<in> S"
-    then have "ExpState s k = (\<integral>\<^sup>+ x. ereal (\<rho> (nat_case s x k)) \<partial>paths s)"
+    then have "ExpState s k = (\<integral>\<^sup>+ x. ereal (\<rho> (case_nat s x k)) \<partial>paths s)"
     proof (induct k arbitrary: s)
       case 0 with emeasure_space_1 show ?case by simp
     next
@@ -964,7 +964,7 @@ next
     unfolding ExpFuture_def N_def Y_def const_def by auto
 
   let "?R \<omega>" = "reward (Future F) \<omega>"
-  have l_eq: "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. ?R (nat_case s \<omega>) \<partial>paths s)"
+  have l_eq: "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)"
   proof (rule uniqueness_of_ExpFuture[OF N_def Y_def const_def])
     fix s assume "s \<in> S"
     show "\<And>s. s\<in>S \<Longrightarrow> (\<Sum>s'\<in>S. LES (S - Y \<union> ?F) s s' * l s') = const s"
@@ -974,17 +974,17 @@ next
   { fix s assume [simp]: "s \<in> S" "s \<in> Y"
     then have "s \<in> Prob1 (Prob0 S ?F) S ?F"
       unfolding Y_def N_def by auto
-    then have "AE \<omega> in paths s. nat_case s \<omega> \<in> until S ?F"
+    then have "AE \<omega> in paths s. case_nat s \<omega> \<in> until S ?F"
       using svalid_subset_S by (auto simp add: Prob1_iff)
     from positive_integral_reward_finite[OF `s \<in> S`] this positive_integral_positive
-    have "\<bar>\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s\<bar> \<noteq> \<infinity>"
+    have "\<bar>\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s\<bar> \<noteq> \<infinity>"
       by (simp add: positive_integral_positive)
-    with l_eq `s \<in> S` have "ereal (l s) = (\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s)"
+    with l_eq `s \<in> S` have "ereal (l s) = (\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)"
       by auto }
   moreover
   { fix s assume "s \<in> S" "s \<notin> Y"
     with infinite_reward[of s F]
-    have "\<infinity> = (\<integral>\<^sup>+\<omega>. reward (Future F) (nat_case s \<omega>) \<partial>paths s)"
+    have "\<infinity> = (\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)"
       by (simp add: Y_def N_def) }
   ultimately show ?case
     apply (auto simp add: EF F simp del: reward.simps)
@@ -1028,7 +1028,7 @@ proof (induct F rule: Sat.induct)
           from s s_not_0 `s \<in> S` svalid_subset_S have "s \<in> svalid \<Phi>"
             by (rule_tac ccontr) (auto simp: Prob0_iff)
           with `s' \<in> S` s
-          have "pvalid s' (U\<^sup>\<infinity> \<Phi> \<Psi>) = nat_case s' -` pvalid s (U\<^sup>\<infinity> \<Phi> \<Psi>) \<inter> (UNIV \<rightarrow> S)"
+          have "pvalid s' (U\<^sup>\<infinity> \<Phi> \<Psi>) = case_nat s' -` pvalid s (U\<^sup>\<infinity> \<Phi> \<Psi>) \<inter> (UNIV \<rightarrow> S)"
             by (cases "s' \<in> svalid \<Phi>" "s' \<in> svalid \<Psi>" rule: bool.exhaust[case_product bool.exhaust])
           (auto split: nat.split simp: Pi_iff gr0_conv_Suc) }
         note * = this
@@ -1057,7 +1057,7 @@ next
   def N \<equiv> "Prob0 S ?F"
   def Y \<equiv> "Prob1 N S ?F"
   def const \<equiv> "\<lambda>s. if s \<in> Y \<and> s \<notin> ?F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0"
-  let "?E s'" = "\<integral>\<^sup>+ \<omega>. reward (Future \<Phi>) (nat_case s' \<omega>) \<partial>paths s'"
+  let "?E s'" = "\<integral>\<^sup>+ \<omega>. reward (Future \<Phi>) (case_nat s' \<omega>) \<partial>paths s'"
   have "\<exists>l. gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
   proof (rule gauss_jordan'_complete[OF _ uniqueness_of_ExpFuture[OF N_def Y_def const_def]])
     show "\<forall>s\<in>S. (\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real (?E s')) = const s"
@@ -1069,7 +1069,7 @@ next
         show ?thesis
         proof cases
           assume "s \<in> Y"
-          with s have "\<And>\<omega>. \<exists>i. nat_case s \<omega> i \<in> svalid \<Phi>" "\<And>\<omega>. (LEAST i. nat_case s \<omega> i \<in> svalid \<Phi>) = 0"
+          with s have "\<And>\<omega>. \<exists>i. case_nat s \<omega> i \<in> svalid \<Phi>" "\<And>\<omega>. (LEAST i. case_nat s \<omega> i \<in> svalid \<Phi>) = 0"
             by (auto intro!: exI[of _ 0] Least_equality)
           with `s \<in> S` s `s \<in> Y` show ?thesis
             by (simp add: LES_def const_def single_l)
