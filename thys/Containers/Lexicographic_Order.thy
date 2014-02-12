@@ -25,7 +25,7 @@ next
   proof
     assume "?prefix"
     hence "ys = xs @ hd (drop (length xs) ys) # tl (drop (length xs) ys)"
-      by (metis append_Nil2 append_take_drop_id list.sel(1,2) less_not_refl list.exhaust)
+      by (metis append_Nil2 append_take_drop_id less_not_refl list.collapse)
     thus ?thesis unfolding lexordp_iff by blast
   next
     assume "?less"
