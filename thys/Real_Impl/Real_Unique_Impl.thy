@@ -357,5 +357,6 @@ value "\<lfloor>324 * sqrt 7 + 0.001\<rfloor>"
 value "101.1 * (sqrt 18 + 6 * sqrt 0.5) = 324 * sqrt 7 + 0.001"
 value "101.1 * (sqrt 18 + 6 * sqrt 0.5) > 324 * sqrt 7 + 0.001"
 value "show_real (101.1 * (sqrt 18 + 6 * sqrt 0.5))"
+value "(sqrt 0.1 \<in> \<rat>, sqrt -0.09 \<in> \<rat>)"
 
 end
