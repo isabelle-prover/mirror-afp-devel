@@ -3,9 +3,9 @@ structure Product_Type : sig
   val snd : 'a * 'b -> 'b
 end = struct
 
-fun fst (a, b) = a;
+fun fst (x1, x2) = x1;
 
-fun snd (a, b) = b;
+fun snd (x1, x2) = x2;
 
 end; (*struct Product_Type*)
 
