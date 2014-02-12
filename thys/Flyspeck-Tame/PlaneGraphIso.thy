@@ -415,6 +415,7 @@ apply(rule conjI)
  apply fastforce
 apply auto
  apply fastforce
+apply (rename_tac x a y)
 apply(subgoal_tac "m x = Some a")
  prefer 2 apply (fastforce)
 apply(subgoal_tac "m y = Some a")
