@@ -96,6 +96,9 @@ typedef mini_alg =
   q = 0 \<or> b \<in> sqrt_irrat}"
   by auto
 
+lifting_forget literal.lifting
+lifting_update literal.lifting
+
 setup_lifting type_definition_mini_alg
 
 lift_definition real_of :: "mini_alg \<Rightarrow> real" is
@@ -330,13 +333,13 @@ lemma ma_plus:
   "(real_of r1 + real_of r2) = (if ma_compatible r1 r2
     then real_of (ma_plus r1 r2) else     
     Code.abort (STR ''different base'') (\<lambda> _. real_of r1 + real_of r2))"
-  by (transfer', auto split: prod.split simp: field_simps of_rat_add)
+  by transfer (auto split: prod.split simp: field_simps of_rat_add)
     
 lemma ma_times:
   "(real_of r1 * real_of r2) = (if ma_compatible r1 r2
     then real_of (ma_times r1 r2) else     
     Code.abort (STR ''different base'') (\<lambda> _. real_of r1 * real_of r2))"
-  by transfer' (auto split: prod.split simp: field_simps of_rat_mult of_rat_add)
+  by transfer (auto split: prod.split simp: field_simps of_rat_mult of_rat_add)
   
 lemma ma_equal:
   "HOL.equal (real_of r1) (real_of r2) = (if ma_compatible r1 r2
