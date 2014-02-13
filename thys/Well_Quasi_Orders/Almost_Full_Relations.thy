@@ -488,49 +488,31 @@ lemma trans_subseq:
   fixes f :: "'a seq"
     and P (infix "\<le>\<^sub>1" 50)
     and Q (infix "\<le>\<^sub>2" 50)
-  assumes *: "\<forall>i j. i < j \<longrightarrow> f i \<le>\<^sub>1 f j \<or> f i \<le>\<^sub>2 f j"
+  assumes "\<forall>i j. i < j \<longrightarrow> f i \<le>\<^sub>1 f j \<or> f i \<le>\<^sub>2 f j"
   shows "\<exists>\<phi>::nat seq. (\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j) \<and>
     ((\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>1 f (\<phi> j)) \<or>
      (\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>2 f (\<phi> j)))"
 proof -
-  def h \<equiv> "\<lambda>I. if (\<exists>i j. i \<in> I \<and> j \<in> I \<and> i < j \<and> f i \<le>\<^sub>1 f j) then 0 else Suc 0"
-  have inf: "infinite (UNIV::nat set)" by blast
-  have "\<forall>i\<in>UNIV. \<forall>j\<in>UNIV. i \<noteq> j \<longrightarrow> h {i, j} < 2" by (auto simp: h_def)
-  from Ramsey2 [OF inf this] obtain I :: "nat set" and c
-    where "infinite I" and "c < 2" and **: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = c" by blast
-  from `infinite I` have "\<forall>i. \<exists>j>i. j \<in> I" by (simp add: infinite_nat_iff_unbounded)
-  then interpret infinitely_many1 "\<lambda>i. i \<in> I" by (unfold_locales) assumption
-  def [simp]: \<phi> \<equiv> "enum"
-  let ?f = "f \<circ> \<phi>"
-  from `c < 2` have "c = 0 \<or> c = 1" by arith
-  then show ?thesis
-  proof
-    assume [simp]: "c = 0"
-    have "\<forall>i j. i < j \<longrightarrow> ?f i \<le>\<^sub>1 ?f j"
-    proof (intro allI impI)
-      fix i j :: nat
-      assume "i < j"
-      with enum_less have "\<phi> i < \<phi> j" by auto
-      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using enum_P by auto
-      ultimately have "h {\<phi> i, \<phi> j} = 0" using ** by auto
-      with `\<phi> i < \<phi> j` show "?f i \<le>\<^sub>1 ?f j"
-        by (auto simp: h_def) (metis Suc_neq_Zero order_less_not_sym)
-    qed
-    then show ?thesis using enum_less by auto
-  next
-    assume [simp]: "c = 1"
-    have "\<forall>i j. i < j \<longrightarrow> ?f i \<le>\<^sub>2 ?f j"
-    proof (intro allI impI)
-      fix i j :: nat
-      assume "i < j"
-      with enum_less have "\<phi> i < \<phi> j" by auto
-      moreover have "\<phi> i \<in> I" and "\<phi> j \<in> I" using enum_P by auto
-      ultimately have "h {\<phi> i, \<phi> j} = 1" using ** by auto
-      with `\<phi> i < \<phi> j` show "?f i \<le>\<^sub>2 ?f j"
-        using * by (auto simp: h_def) (metis Suc_n_not_n)
-    qed
-    then show ?thesis using enum_less by auto
-  qed
+  def h \<equiv> "\<lambda>I. if (\<exists>i j. I = {i, j} \<and> i < j \<and> f i \<le>\<^sub>1 f j) then 0 else Suc 0"
+  have "infinite (UNIV :: nat set)"
+    and "\<forall>i\<in>UNIV. \<forall>j\<in>UNIV. i \<noteq> j \<longrightarrow> h {i, j} < 2" by (auto simp: h_def)
+  from Ramsey2 [OF this] obtain I :: "nat set" and c
+    where "infinite I" and "c < 2" and *: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = c" by blast
+  then interpret infinitely_many1 "\<lambda>i. i \<in> I"
+    by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
+  def \<phi> \<equiv> enum
+
+  have less: "\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j" using enum_less by (simp add: \<phi>_def)
+  then have h: "\<And>i j. i < j \<Longrightarrow> h {\<phi> i, \<phi> j} = c" using enum_P and * by (force simp add: \<phi>_def)
+  { assume "c = 0"
+    then have "\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>1 f (\<phi> j)"
+      using h and less by (auto simp: h_def doubleton_eq_iff) (metis Suc_neq_Zero order_less_not_sym) }
+  moreover
+  { assume "c = 1"
+    then have "\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>2 f (\<phi> j)"
+      using h and less and assms by (auto simp: h_def) (metis n_not_Suc_n) }
+  moreover have "c = 0 \<or> c = 1" using `c < 2` by force
+  ultimately show ?thesis using less by blast
 qed
 
 lemma almost_full_on_Sigma:
