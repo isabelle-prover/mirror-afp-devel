@@ -33,7 +33,7 @@ class prefunctor = "tycon" +
 text {* The @{text functor} class extends @{text prefunctor} with an
 axiom stating that @{text fmapU} preserves composition. *}
 
-class functor = prefunctor +
+class "functor" = prefunctor +
   assumes fmapU_fmapU [coerce_simp]:
     "\<And>f g (xs::udom\<cdot>'a::tycon).
       fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"

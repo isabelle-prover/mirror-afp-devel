@@ -19,7 +19,7 @@ newtype ErrorT e m a = ErrorT { runErrorT :: m (Error e a) }
 text {* We can formalize this definition directly using @{text
 tycondef}. \medskip *}
 
-tycondef 'a\<cdot>('f::functor,'e::"domain") errorT =
+tycondef 'a\<cdot>('f::"functor",'e::"domain") errorT =
   ErrorT (runErrorT :: "('a\<cdot>'e error)\<cdot>'f")
 
 lemma coerce_errorT_abs [simp]: "coerce\<cdot>(errorT_abs\<cdot>x) = errorT_abs\<cdot>(coerce\<cdot>x)"
@@ -81,7 +81,7 @@ lemma runErrorT_fmapU [simp]:
   "runErrorT\<cdot>(fmapU\<cdot>f\<cdot>m) = fmap\<cdot>(fmap\<cdot>f)\<cdot>(runErrorT\<cdot>m)"
 by (induct m rule: errorT_induct) simp
 
-instance errorT :: (functor, "domain") functor
+instance errorT :: ("functor", "domain") "functor"
 proof
   fix f g and xs :: "udom\<cdot>('a, 'b) errorT"
   show "fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"

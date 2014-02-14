@@ -9,7 +9,7 @@ hide_const (open) Fixrec.mplus
 class plusU = tycon +
   fixes plusU :: "udom\<cdot>'a \<rightarrow> udom\<cdot>'a \<rightarrow> udom\<cdot>'a::tycon"
 
-class functor_plus = plusU + functor +
+class functor_plus = plusU + "functor" +
   assumes fmapU_plusU [coerce_simp]:
     "fmapU\<cdot>f\<cdot>(plusU\<cdot>a\<cdot>b) = plusU\<cdot>(fmapU\<cdot>f\<cdot>a)\<cdot>(fmapU\<cdot>f\<cdot>b)"
   assumes plusU_assoc:

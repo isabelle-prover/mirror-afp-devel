@@ -19,7 +19,7 @@ data ResT m a = Done a | More (m (ResT m a))
 text {* The above datatype definition can be translated directly into
 HOLCF using @{text tycondef}. \medskip *}
 
-tycondef 'a\<cdot>('f::functor) resT =
+tycondef 'a\<cdot>('f::"functor") resT =
   Done (lazy "'a") | More (lazy "('a\<cdot>'f resT)\<cdot>'f")
 
 lemma coerce_resT_abs [simp]: "coerce\<cdot>(resT_abs\<cdot>x) = resT_abs\<cdot>(coerce\<cdot>x)"
@@ -63,14 +63,14 @@ apply (subst fix_eq, simp add: Done_def)
 apply (subst fix_eq, simp add: More_def)
 done
 
-instance resT :: (functor) functor
+instance resT :: ("functor") "functor"
 proof
   fix f g :: "udom \<rightarrow> udom" and xs :: "udom\<cdot>'a resT"
   show "fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"
     by (induct xs rule: resT_induct, simp_all add: fmap_fmap)
 qed
 
-instantiation resT :: (functor) monad
+instantiation resT :: ("functor") monad
 begin
 
 fixrec bindU_resT :: "udom\<cdot>'a resT \<rightarrow> (udom \<rightarrow> udom\<cdot>'a resT) \<rightarrow> udom\<cdot>'a resT"

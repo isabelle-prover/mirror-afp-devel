@@ -35,7 +35,7 @@ class monad = prefunctor +
   assumes bindU_bindU:
     "\<And>xs f g. bindU\<cdot>(bindU\<cdot>xs\<cdot>f)\<cdot>g = bindU\<cdot>xs\<cdot>(\<Lambda> x. bindU\<cdot>(f\<cdot>x)\<cdot>g)"
 
-instance monad \<subseteq> functor
+instance monad \<subseteq> "functor"
 proof
   fix f g :: "udom \<rightarrow> udom" and xs :: "udom\<cdot>'a"
   show "fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"

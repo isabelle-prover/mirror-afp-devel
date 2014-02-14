@@ -40,7 +40,7 @@ proof
   fix w :: "'a list" show "derivs w = fold deriv w" by (induct w) auto
 qed
 
-enriched_type map_rexp by (simp_all only: o_def id_def map_map_rexp map_rexp_ident)
+functor map_rexp by (simp_all only: o_def id_def map_map_rexp map_rexp_ident)
 
 quotient_type 'a ACI_rexp = "'a rexp" / ACI
   morphisms rep_ACI_rexp ACI_class
