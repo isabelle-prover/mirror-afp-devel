@@ -694,4 +694,46 @@ proof (atomize_elim)
   } ultimately show ?thesis by blast
 qed
 
+lemma pdevs_val_add: "pdevs_val (\<lambda>i. e i + f i) xs = pdevs_val e xs + pdevs_val f xs"
+  by (auto simp: pdevs_val_pdevs_domain algebra_simps setsum_addf)
+
+lemma pdevs_val_cmul: "pdevs_val (\<lambda>i. u * e i) xs = u *\<^sub>R pdevs_val e xs"
+  by (auto simp: pdevs_val_pdevs_domain scaleR_setsum_right)
+
+lemma atLeastAtMost_absI: "- a \<le> a \<Longrightarrow> \<bar>x::real\<bar> \<le> \<bar>a\<bar> \<Longrightarrow> x \<in> atLeastAtMost (- a) a"
+  by auto
+
+lemma divide_atLeastAtMost_1_absI: "\<bar>x::real\<bar> \<le> \<bar>a\<bar> \<Longrightarrow> x/a \<in> {-1 .. 1}"
+  by (intro atLeastAtMost_absI) (auto simp: divide_le_eq_1)
+
+lemma convex_scaleR_aux: "u + v = 1 \<Longrightarrow> u *\<^sub>R x + v *\<^sub>R x = (x::'a::real_vector)"
+  by (metis scaleR_add_left scaleR_one)
+
+lemma convex_mult_aux: "u + v = 1 \<Longrightarrow> u * x + v * x = (x::real)"
+  using convex_scaleR_aux[of u v x] by simp
+
+lemma convex_Affine: "convex (Affine X)"
+proof (rule convexI)
+  fix x y::'a and u v::real
+  assume "x \<in> Affine X" "y \<in> Affine X" and convex: "0 \<le> u" "0 \<le> v" "u + v = 1"
+  then obtain e f where x: "x = aform_val e X" "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+    and y: "y = aform_val f X" "f \<in> UNIV \<rightarrow> {-1 .. 1}"
+    by (auto simp: Affine_def valuate_def)
+  let ?conv = "\<lambda>i. u * e i + v * f i"
+  {
+    fix i
+    have "\<bar>?conv i\<bar> \<le> u * \<bar>e i\<bar> + v * \<bar>f i\<bar>"
+      using convex by (intro order_trans[OF abs_triangle_ineq]) (simp add: abs_mult)
+    also have "\<dots> \<le> 1"
+      using convex x y
+      by (intro convex_bound_le) (auto simp: Pi_iff abs_real_def)
+    finally have "?conv i \<le> 1" "-1 \<le> ?conv i"
+      by (auto simp: abs_real_def split: split_if_asm)
+  }
+  thus "u *\<^sub>R x + v *\<^sub>R y \<in> Affine X"
+    using convex x y
+    by (auto simp: Affine_def valuate_def aform_val_def pdevs_val_add pdevs_val_cmul algebra_simps
+      convex_scaleR_aux intro!: image_eqI[where x="?conv"])
+qed
+
 end
