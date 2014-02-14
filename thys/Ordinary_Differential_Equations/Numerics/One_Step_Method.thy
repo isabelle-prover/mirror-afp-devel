@@ -1,7 +1,7 @@
 header{* One-Step Methods *}
 theory One_Step_Method
 imports
-  Initial_Value_Problem "~~/src/HOL/Library/Float"
+  "../IVP/Initial_Value_Problem" "~~/src/HOL/Library/Float"
 begin
 text{*\label{sec:osm}*}
 

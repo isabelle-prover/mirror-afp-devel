@@ -1,6 +1,6 @@
 header{* Examples *}
 theory Euler_Ex
-  imports Runge_Kutta "~~/src/HOL/Decision_Procs/Approximation"
+  imports "../Numerics/Runge_Kutta" "~~/src/HOL/Decision_Procs/Approximation"
 begin
 text{*\label{sec:example}*}
 
