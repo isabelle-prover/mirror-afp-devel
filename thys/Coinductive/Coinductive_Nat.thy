@@ -74,7 +74,7 @@ qed
 
 locale co begin
 
-wrap_free_constructors (no_code) ["0::enat", eSuc] case_enat [=] [[], [epred]] [[epred: "0::enat"]]
+free_constructors (no_code) ["0::enat", eSuc] case_enat [=] [[], [epred]] [[epred: "0::enat"]]
   apply (erule enat_coexhaust, assumption)
  apply (rule eSuc_inject)
 by (rule zero_ne_eSuc)
