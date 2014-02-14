@@ -314,7 +314,7 @@ end
 end
 
 lemma sorted_RBT_Set_keys: 
-  "Option.map fst (ID CORDER('a :: corder)) = Some le 
+  "map_option fst (ID CORDER('a :: corder)) = Some le 
   \<Longrightarrow> linorder.sorted le (RBT_Set2.keys rbt)"
 by transfer(auto simp add: RBT_Set2.keys.rep_eq RBT_Impl.keys_def linorder.rbt_sorted_entries[OF ID_corder] ord.is_rbt_rbt_sorted)
 

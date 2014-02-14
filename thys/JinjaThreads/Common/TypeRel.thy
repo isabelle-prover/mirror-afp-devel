@@ -209,11 +209,11 @@ inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightha
   for P :: "'m prog"
 where 
 sees_methods_Object:
- "\<lbrakk> class P Object = Some(D,fs,ms); Mm = Option.map (\<lambda>m. (m,Object)) \<circ> map_of ms \<rbrakk>
+ "\<lbrakk> class P Object = Some(D,fs,ms); Mm = map_option (\<lambda>m. (m,Object)) \<circ> map_of ms \<rbrakk>
   \<Longrightarrow> P \<turnstile> Object sees_methods Mm"
 | sees_methods_rec:
  "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D sees_methods Mm;
-    Mm' = Mm ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
+    Mm' = Mm ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
   \<Longrightarrow> P \<turnstile> C sees_methods Mm'"
 
 lemma sees_methods_fun:
@@ -226,9 +226,9 @@ next
   case (sees_methods_rec C D fs ms Dres Cres Cres')
   from `P \<turnstile> C sees_methods Cres'` `C \<noteq> Object` `class P C = \<lfloor>(D, fs, ms)\<rfloor>`
   obtain Dres' where Dmethods': "P \<turnstile> D sees_methods Dres'"
-    and Cres': "Cres' = Dres' ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms)"
+    and Cres': "Cres' = Dres' ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms)"
     by cases auto
-  from sees_methods_rec.IH[OF Dmethods'] `Cres = Dres ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms)` Cres'
+  from sees_methods_rec.IH[OF Dmethods'] `Cres = Dres ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms)` Cres'
   show ?case by simp
 qed
 
@@ -267,7 +267,7 @@ next
     and subC: "\<forall>M m D. Mm2 M = Some(m,D) \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C" by blast
   obtain fs ms where "class": "class P C'' = Some(C',fs,ms)" "C'' \<noteq> Object"
     using subcls1D[OF sub1] by blast
-  let ?Mm3 = "Option.map (\<lambda>m. (m,C'')) \<circ> map_of ms"
+  let ?Mm3 = "map_option (\<lambda>m. (m,C'')) \<circ> map_of ms"
   have "P \<turnstile> C'' sees_methods (Mm ++ Mm2) ++ ?Mm3"
     using sees_methods_rec[OF "class" C'sees refl] Mm' by simp
   hence "?Q C'' C ((Mm ++ Mm2) ++ ?Mm3) (Mm2++?Mm3)"

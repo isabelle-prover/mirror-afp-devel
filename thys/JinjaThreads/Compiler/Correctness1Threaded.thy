@@ -717,7 +717,7 @@ lemma if_bisim_J1_J1_start:
 proof -
   from assms have "mbisim_Red1'_Red1 (J1_start_state P C M vs) (J1_start_state P C M vs)" by(rule bisim_J1_J1_start)
   thus ?thesis
-    by(simp add: if_mbisim_Red1'_Red1_def mbisim_Red1'_Red1_def)(simp add: init_fin_lift_state_conv_simps init_fin_descend_thr_def thr_init_fin_list_state' o_def Option.map.compositionality Option.map.identity split_beta)
+    by(simp add: if_mbisim_Red1'_Red1_def mbisim_Red1'_Red1_def)(simp add: init_fin_lift_state_conv_simps init_fin_descend_thr_def thr_init_fin_list_state' o_def map_option.compositionality map_option.identity split_beta)
 qed
 
 lemma if_Red1'_Red1_bisim_into_weak:

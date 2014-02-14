@@ -477,7 +477,7 @@ structure Seplogic_Auto = struct
     val new_form = list_comb (f,nterms);
 
     val res_ss = (put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci});
-    val result = Option.map (export o mk_meta_eq) (Arith_Data.prove_conv_nohyps
+    val result = map_option (export o mk_meta_eq) (Arith_Data.prove_conv_nohyps
       [simp_tac res_ss 1] ctxt' (redex,new_form)
     );
 

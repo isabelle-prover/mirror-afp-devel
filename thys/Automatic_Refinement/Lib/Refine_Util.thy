@@ -464,7 +464,7 @@ ML {*
     fun cterm_instantiate' instl thm = let
       fun err msg =
         raise TERM ("instantiate': " ^ msg,
-          map_filter (Option.map Thm.term_of) instl);
+          map_filter (map_option Thm.term_of) instl);
 
       fun inst_of (v, ct) =
         (Thm.cterm_of (Thm.theory_of_cterm ct) (Var v), ct)

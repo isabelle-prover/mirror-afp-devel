@@ -223,7 +223,7 @@ lemma param_case_list':
     
 lemma param_map[param]: 
   "(map,map)\<in>(R1\<rightarrow>R2) \<rightarrow> \<langle>R1\<rangle>list_rel \<rightarrow> \<langle>R2\<rangle>list_rel"
-  unfolding List.map_def by (parametricity)
+  unfolding map_rec[abs_def] by (parametricity)
     
 lemma param_fold[param]: 
   "(fold,fold)\<in>(Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs \<rightarrow> Rs"
@@ -401,8 +401,7 @@ proof
   assume "(l,l')\<in>\<langle>Ra\<rangle>list_rel"
   thus "(set l, set l')\<in>\<langle>Ra\<rangle>set_rel"
     apply (induct)
-    apply simp
-    apply simp
+    apply simp_all
     using A apply (parametricity)
     done
 qed

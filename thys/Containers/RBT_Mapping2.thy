@@ -206,11 +206,11 @@ lemma lookup_bulkload [simp]:
 by transfer(simp add: linorder.rbt_lookup_rbt_bulkload[OF mapping_linorder])
 
 lemma lookup_map_entry [simp]:
-  "lookup (map_entry (k :: 'a) f t) = (lookup t)(k := Option.map f (lookup t k))"
+  "lookup (map_entry (k :: 'a) f t) = (lookup t)(k := map_option f (lookup t k))"
 by transfer(simp add: ID_corder_neq_None linorder.rbt_lookup_rbt_map_entry[OF mapping_linorder])
 
 lemma lookup_map [simp]:
-  "lookup (map f t) (k :: 'a) = Option.map (f k) (lookup t k)"
+  "lookup (map f t) (k :: 'a) = map_option (f k) (lookup t k)"
 by transfer(simp add: linorder.rbt_lookup_map[OF mapping_linorder])
 
 lemma RBT_lookup_empty [simp]:
@@ -272,7 +272,7 @@ by(simp add: corder_prod_def ID_corder_neq_None ID_corder_neq_None' ID_Some spli
 lemma lookup_product: 
   "lookup (product f rbt1 rbt2) (a :: 'a, b :: 'b) = 
   (case lookup rbt1 a of None \<Rightarrow> None
-   | Some c \<Rightarrow> Option.map (f a c b) (lookup rbt2 b))"
+   | Some c \<Rightarrow> map_option (f a c b) (lookup rbt2 b))"
 using mapping_linorder mapping_linorder'
 by transfer(simp add: cless_prod_eq_less_prod ID_corder_neq_None ID_corder_neq_None' rbt_lookup_rbt_product)
 

@@ -218,7 +218,7 @@ where
     "map_ran f [] = []"
   | "map_ran f (p#ps) = (fst p, f (fst p) (snd p)) # map_ran f ps"
 
-lemma map_ran_conv: "map_of (map_ran f al) k = Option.map (f k) (map_of al k)"
+lemma map_ran_conv: "map_of (map_ran f al) k = map_option (f k) (map_of al k)"
   by (induct al) auto
 
 lemma dom_map_ran: "fst ` set (map_ran f al) = fst ` set al"

@@ -104,7 +104,7 @@ where
                    | Some a \<Rightarrow> {(rm_update a (blank P hT) h, a)})"
 
 definition sc_typeof_addr :: "heap \<Rightarrow> addr \<Rightarrow> htype option"
-where "sc_typeof_addr h a = Option.map obj_ty (rm_lookup a h)"
+where "sc_typeof_addr h a = map_option obj_ty (rm_lookup a h)"
 
 inductive sc_heap_read :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 for h :: heap and a :: addr

@@ -450,7 +450,7 @@ context begin interpretation autoref_syn .
   lemma refine_map[autoref_rules]: 
     "(map,map)\<in>(R1\<rightarrow>R2) \<rightarrow> \<langle>R1\<rangle>list_rel \<rightarrow> \<langle>R2\<rangle>list_rel"
     using [[autoref_sbias = -1]]
-    unfolding List.map_def
+    unfolding map_rec[abs_def]
     by autoref
 
   lemma refine_fold[autoref_rules]: 

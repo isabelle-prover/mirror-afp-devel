@@ -963,7 +963,7 @@ and "peak ars P" shows "(\<exists> \<sigma>' \<tau>'. DD ars r (fst P,snd P,\<si
     have x1:"((?\<upsilon>,\<kappa>), (\<tau>,?\<alpha>)) \<in> pex r" using lemma3_6[OF assms(1) beta_ne dec]
      unfolding pex_def measure_def decompose labels_def tau_dec apply auto using union_commute by metis
     have "(lexmax r (labels \<tau>) + lexmax r (labels (?\<alpha>)), lexmax r (labels \<tau>) + lexmax r (labels \<sigma>)) \<in> mul_eq r" (is "(?l,?r) \<in> _")
-     unfolding sigma_dec labels_def snd_conv map.simps lexmax.simps diff_from_empty apply auto by (metis lemma2_6_6_a[OF assms(1)] lemma2_6_2_a mset_le_exists_conv assms(1))
+     unfolding sigma_dec labels_def snd_conv list.map lexmax.simps diff_from_empty apply auto by (metis lemma2_6_6_a[OF assms(1)] lemma2_6_2_a mset_le_exists_conv assms(1))
     hence "((?\<upsilon>,\<kappa>),P) \<in> pex r" using x1 unfolding sigma_s pex_def measure_def decompose using mul_and_mul_eq_imp_mul[OF assms(1)] by auto
     from this obtain \<kappa>' \<upsilon>' where IH1: "DD ars r (?\<upsilon>,\<kappa>,\<kappa>',\<upsilon>')" using 1(1)[OF _ P_IH1] unfolding decompose by auto
     hence kappa':"\<kappa>'\<in>seq ars" and upsilon': "\<upsilon>'\<in>seq ars" using D unfolding DD_def diagram_def by auto
@@ -1302,8 +1302,8 @@ next
        y2: "lst (snd t', ts) = lst_conv (snd t', map (Pair True) ts)" and
        y3: "labels (snd t', ts) = labels_conv (snd t', map (Pair True) ts)" using Cons(1)[OF x] by auto
   have k: "(s,(True,fst t',snd t')#map (Pair True) ts) \<in> conv ars" using step y1 conv.intros by fast
-  moreover have "lst (s,(fst t',snd t')#ts) = lst_conv (s, map (Pair True) ((fst t',snd t')#ts))" using y2 unfolding map.simps lst_def lst_conv.simps by auto
-  moreover have "labels (s,(fst t',snd t')#ts) = labels_conv (s,map (Pair True) ((fst t',snd t')#ts))" using y3 unfolding map.simps labels_def labels_conv_def by auto
+  moreover have "lst (s,(fst t',snd t')#ts) = lst_conv (s, map (Pair True) ((fst t',snd t')#ts))" using y2 unfolding list.map lst_def lst_conv.simps by auto
+  moreover have "labels (s,(fst t',snd t')#ts) = labels_conv (s,map (Pair True) ((fst t',snd t')#ts))" using y3 unfolding list.map labels_def labels_conv_def by auto
   ultimately show ?case by auto
 qed
 
@@ -1680,7 +1680,7 @@ and "peak ars P" shows "(\<exists> \<sigma>' \<tau>'. DD ars r (fst P,snd P,\<si
     have x1:"((?\<upsilon>,\<kappa>), (\<tau>,?\<alpha>)) \<in> pex r" using lemma3_6[OF assms(1) beta_ne dec]
      unfolding pex_def measure_def decompose labels_def tau_dec apply auto using union_commute by metis
     have "(lexmax r (labels \<tau>) + lexmax r (labels (?\<alpha>)), lexmax r (labels \<tau>) + lexmax r (labels \<sigma>)) \<in> mul_eq r" (is "(?l,?r) \<in> _")
-     unfolding sigma_dec labels_def snd_conv map.simps lexmax.simps diff_from_empty apply auto by (metis lemma2_6_6_a[OF assms(1)] lemma2_6_2_a mset_le_exists_conv assms(1))
+     unfolding sigma_dec labels_def snd_conv list.map lexmax.simps diff_from_empty apply auto by (metis lemma2_6_6_a[OF assms(1)] lemma2_6_2_a mset_le_exists_conv assms(1))
     hence "((?\<upsilon>,\<kappa>),P) \<in> pex r" using x1 unfolding sigma_s pex_def measure_def decompose using mul_and_mul_eq_imp_mul[OF assms(1)] by auto
     from this obtain \<kappa>' \<upsilon>' where IH1: "DD ars r (?\<upsilon>,\<kappa>,\<kappa>',\<upsilon>')" using 1(1)[OF _ P_IH1] unfolding decompose by auto
     hence kappa':"\<kappa>'\<in>seq ars" and upsilon': "\<upsilon>'\<in>seq ars" using D unfolding DD_def diagram_def by auto

@@ -1191,8 +1191,8 @@ by (induct xs) (simp_all add: permute_pure)
 
 subsubsection {* Equivariance for @{typ "'a option"} *}
 
-lemma option_map_eqvt[eqvt]:
-  shows "p \<bullet> (Option.map f x) = Option.map (p \<bullet> f) (p \<bullet> x)"
+lemma map_option_eqvt[eqvt]:
+  shows "p \<bullet> (map_option f x) = map_option (p \<bullet> f) (p \<bullet> x)"
   by (cases x) (simp_all)
 
 

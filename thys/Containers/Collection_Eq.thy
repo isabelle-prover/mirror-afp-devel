@@ -181,7 +181,7 @@ end
 end
 
 instantiation Predicate.pred :: (ceq) ceq begin
-definition "CEQ('a Predicate.pred) = Option.map predicate_eq (ID CEQ('a))"
+definition "CEQ('a Predicate.pred) = map_option predicate_eq (ID CEQ('a))"
 instance by(intro_classes)(auto simp add: ceq_pred_def predicate_eq_eq dest: ID_ceq)
 end
 

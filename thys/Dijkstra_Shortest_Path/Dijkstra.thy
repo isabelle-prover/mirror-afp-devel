@@ -778,7 +778,7 @@ begin
     by (auto split: option.split option.split_asm)
 
   lemma mpath'_correct: "\<lbrakk>dinvarm (wl,res)\<rbrakk> \<Longrightarrow>
-    mpath' (res v) = Option.map rev (\<alpha>r res v)"
+    mpath' (res v) = map_option rev (\<alpha>r res v)"
     unfolding dinvarm_def \<alpha>r_def
     by (auto split: option.split option.split_asm)
 
@@ -911,7 +911,7 @@ begin
         unfolding \<alpha>w_def \<alpha>r_def by (auto split: option.split_asm)
     
       hence "\<And>x. \<alpha>w wl' = \<alpha>w (wl'(v'\<mapsto>x))" by (auto simp: \<alpha>w_def)
-      moreover have "mpath' (res v) = Option.map rev (\<alpha>r res v)" using DINV 
+      moreover have "mpath' (res v) = map_option rev (\<alpha>r res v)" using DINV 
         by (simp add: mpath'_correct)
       ultimately have
         "\<alpha>w wl' = \<alpha>w (wl'(v' \<mapsto> mpath_weight' (res v) + Num w')) 

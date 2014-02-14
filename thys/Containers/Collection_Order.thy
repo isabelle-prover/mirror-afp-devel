@@ -200,7 +200,7 @@ by(simp add: is_corder_def corder_prod_def ID_None ID_Some split: option.split)
 
 instantiation list :: (corder) corder begin
 definition "CORDER('a list) =
-  Option.map (\<lambda>(leq, lt). (\<lambda>xs ys. ord.lexordp_eq lt xs ys, ord.lexordp lt)) (ID CORDER('a))"
+  map_option (\<lambda>(leq, lt). (\<lambda>xs ys. ord.lexordp_eq lt xs ys, ord.lexordp lt)) (ID CORDER('a))"
 instance
 proof
   fix leq lt
@@ -221,7 +221,7 @@ by(simp add: is_corder_def corder_list_def ID_def)
 
 instantiation option :: (corder) corder begin
 definition "CORDER('a option) =
-  Option.map (\<lambda>(leq, lt). (\<lambda>x y. case x of None \<Rightarrow> True | Some x' \<Rightarrow> case y of None \<Rightarrow> False | Some y' \<Rightarrow> leq x' y',
+  map_option (\<lambda>(leq, lt). (\<lambda>x y. case x of None \<Rightarrow> True | Some x' \<Rightarrow> case y of None \<Rightarrow> False | Some y' \<Rightarrow> leq x' y',
                            \<lambda>x y. case y of None \<Rightarrow> False | Some y' \<Rightarrow> case x of None \<Rightarrow> True | Some x' \<Rightarrow> lt x' y')) 
     (ID CORDER('a))"
 instance
@@ -247,7 +247,7 @@ lemma is_corder_fun [simp]: "\<not> is_corder TYPE('a \<Rightarrow> 'b)"
 by(simp add: is_corder_def corder_fun_def ID_None)
 
 instantiation set :: (corder) corder begin
-definition "CORDER('a set) = Option.map (\<lambda>(leq, lt). (ord.set_less_eq leq, ord.set_less leq)) (ID CORDER('a))"
+definition "CORDER('a set) = map_option (\<lambda>(leq, lt). (ord.set_less_eq leq, ord.set_less leq)) (ID CORDER('a))"
 instance by(intro_classes)(auto simp add: corder_set_def intro: linorder.set_less_eq_linorder ID_corder)
 end
 

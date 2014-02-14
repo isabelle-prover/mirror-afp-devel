@@ -86,7 +86,7 @@ by(simp_all split: option.split)(transfer, simp)+
 
 declare [[code drop: Mapping.keys]]
 
-theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f) t) = Option.map f \<circ> rbt_lookup t"
+theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f) t) = map_option f \<circ> rbt_lookup t"
 by(induct t)(simp_all add: fun_eq_iff)
 
 lemma keys_Mapping [code]:

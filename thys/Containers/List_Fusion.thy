@@ -10,10 +10,10 @@ begin
 section {* Shortcut fusion for lists *}
 
 lemma Option_map_mono [partial_function_mono]:
-  "mono_option f \<Longrightarrow> mono_option (\<lambda>x. Option.map g (f x))"
+  "mono_option f \<Longrightarrow> mono_option (\<lambda>x. map_option g (f x))"
 apply(rule monotoneI)
 apply(drule (1) monotoneD)
-apply(auto simp add: Option.map_def flat_ord_def split: option.split)
+apply(auto simp add: map_option_case flat_ord_def split: option.split)
 done
 
 lemma list_all2_coinduct [consumes 1, case_names Nil Cons, case_conclusion Cons hd tl, coinduct pred: list_all2]:
@@ -99,7 +99,7 @@ where
   "terminates_within s =
    (let (has_next, next) = g
     in if has_next s then 
-          Option.map (\<lambda>n. n + 1) (terminates_within (snd (next s))) 
+          map_option (\<lambda>n. n + 1) (terminates_within (snd (next s))) 
        else Some 0)"
 
 lemma terminates_on_conv_dom_terminates_within:
@@ -120,7 +120,7 @@ end
 
 lemma terminates_within_unfold:
   "has_next s \<Longrightarrow> 
-  terminates_within (has_next, next) s = Option.map (\<lambda>n. n + 1) (terminates_within (has_next, next) (snd (next s)))"
+  terminates_within (has_next, next) s = map_option (\<lambda>n. n + 1) (terminates_within (has_next, next) (snd (next s)))"
 by(simp add: terminates_within.simps)
 
 typedef ('a, 's) generator = "{g :: ('a, 's) raw_generator. terminates g}"

@@ -354,10 +354,10 @@ by(induct rule: mthr.\<tau>rtrancl3p.induct)(auto dest: redT_silent_moves_preser
 end
 
 definition init_fin_lift_state :: "status \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> ('l,'t,status \<times> 'x,'m,'w) state"
-where "init_fin_lift_state s \<sigma> = (locks \<sigma>, (\<lambda>t. Option.map (\<lambda>(x, ln). ((s, x), ln)) (thr \<sigma> t), shr \<sigma>), wset \<sigma>, interrupts \<sigma>)"
+where "init_fin_lift_state s \<sigma> = (locks \<sigma>, (\<lambda>t. map_option (\<lambda>(x, ln). ((s, x), ln)) (thr \<sigma> t), shr \<sigma>), wset \<sigma>, interrupts \<sigma>)"
 
 definition init_fin_descend_thr :: "('l,'t,'status \<times> 'x) thread_info \<Rightarrow> ('l,'t,'x) thread_info"
-where "init_fin_descend_thr ts = Option.map (\<lambda>((s, x), ln). (x, ln)) \<circ> ts"
+where "init_fin_descend_thr ts = map_option (\<lambda>((s, x), ln). (x, ln)) \<circ> ts"
 
 definition init_fin_descend_state :: "('l,'t,'status \<times> 'x,'m,'w) state \<Rightarrow> ('l,'t,'x,'m,'w) state"
 where "init_fin_descend_state \<sigma> = (locks \<sigma>, (init_fin_descend_thr (thr \<sigma>), shr \<sigma>), wset \<sigma>, interrupts \<sigma>)"
@@ -377,11 +377,11 @@ lemma init_fin_lift_state_conv_simps:
   and wset_init_fin_lift_state: "wset (init_fin_lift_state s \<sigma>) = wset \<sigma>"
   and interrupts_init_fin_lift_stae: "interrupts (init_fin_lift_state s \<sigma>) = interrupts \<sigma>"
   and thr_init_fin_list_state: 
-  "thr (init_fin_lift_state s \<sigma>) t = Option.map (\<lambda>(x, ln). ((s, x), ln)) (thr \<sigma> t)"
+  "thr (init_fin_lift_state s \<sigma>) t = map_option (\<lambda>(x, ln). ((s, x), ln)) (thr \<sigma> t)"
 by(simp_all add: init_fin_lift_state_def)
 
 lemma thr_init_fin_list_state': 
-  "thr (init_fin_lift_state s \<sigma>) = Option.map (\<lambda>(x, ln). ((s, x), ln)) \<circ> thr \<sigma>"
+  "thr (init_fin_lift_state s \<sigma>) = map_option (\<lambda>(x, ln). ((s, x), ln)) \<circ> thr \<sigma>"
 by(simp add: fun_eq_iff thr_init_fin_list_state)
 
 lemma init_fin_descend_thr_Some_conv [simp]:
@@ -406,7 +406,7 @@ lemma init_fin_descend_state_simps [simp]:
 by(simp_all add: init_fin_descend_state_def)
 
 lemma init_fin_descend_thr_update [simp]:
-  "init_fin_descend_thr (ts(t := v)) = (init_fin_descend_thr ts)(t := Option.map (\<lambda>((status, x), ln). (x, ln)) v)"
+  "init_fin_descend_thr (ts(t := v)) = (init_fin_descend_thr ts)(t := map_option (\<lambda>((status, x), ln). (x, ln)) v)"
 by(simp add: init_fin_descend_thr_def fun_eq_iff)
 
 lemma ts_ok_init_fin_descend_state: 

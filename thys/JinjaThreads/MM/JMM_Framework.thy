@@ -1655,7 +1655,7 @@ lemma if_redT_non_speculative_invar:
   and vs: "vs_conf P (shr s) vs"
   shows "ts_ok (init_fin_lift wfx) (thr s') (shr s')"
 proof -
-  let ?s = "\<lambda>s. (locks s, (\<lambda>t. Option.map (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
+  let ?s = "\<lambda>s. (locks s, (\<lambda>t. map_option (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
   
   from ts_ok have ts_ok': "ts_ok wfx (thr (?s s)) (shr (?s s))" by(auto intro!: ts_okI dest: ts_okD)
   from vs have vs': "vs_conf P (shr (?s s)) vs" by simp
@@ -1703,7 +1703,7 @@ lemma if_redT_non_speculative_vs_conf:
   and vs: "vs_conf P (shr s) vs"
   shows "vs_conf P (shr s') (w_values P vs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
 proof -
-  let ?s = "\<lambda>s. (locks s, (\<lambda>t. Option.map (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
+  let ?s = "\<lambda>s. (locks s, (\<lambda>t. map_option (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
   
   from ts_ok have ts_ok': "ts_ok wfx (thr (?s s)) (shr (?s s))" by(auto intro!: ts_okI dest: ts_okD)
   from vs have vs': "vs_conf P (shr (?s s)) vs" by simp

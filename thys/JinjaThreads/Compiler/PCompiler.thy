@@ -12,7 +12,7 @@ imports
 begin
 
 definition compM :: "(mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a mdecl' \<Rightarrow> 'b mdecl'"
-where "compM f \<equiv> \<lambda>(M, Ts, T, m). (M, Ts, T, Option.map (f M Ts T) m)"
+where "compM f \<equiv> \<lambda>(M, Ts, T, m). (M, Ts, T, map_option (f M Ts T) m)"
 
 definition compC :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a cdecl \<Rightarrow> 'b cdecl"
 where "compC f  \<equiv>  \<lambda>(C,D,Fdecls,Mdecls). (C,D,Fdecls, map (compM (f C)) Mdecls)"
@@ -26,7 +26,7 @@ preserved by it (like the subclass relation). *}
 
 lemma map_of_map4:
   "map_of (map (\<lambda>(x,a,b,c).(x,a,b,f x a b c)) ts) =
-  (\<lambda>x. Option.map (\<lambda>(a,b,c).(a,b,f x a b c)) (map_of ts x))"
+  (\<lambda>x. map_option (\<lambda>(a,b,c).(a,b,f x a b c)) (map_of ts x))"
 apply(induct ts)
  apply simp
 apply(rule ext)
@@ -48,7 +48,7 @@ lemma [simp]: "is_class (compP f P) C = is_class P C"
 (*<*)by(auto simp:is_class_def dest: class_compP class_compPD)(*>*)
 
 
-lemma [simp]: "class (compP f P) C = Option.map (\<lambda>c. snd(compC f (C,c))) (class P C)"
+lemma [simp]: "class (compP f P) C = map_option (\<lambda>c. snd(compC f (C,c))) (class P C)"
 (*<*)
 apply(cases P)
 apply(simp add:compC_def class_def map_of_map4)
@@ -58,13 +58,13 @@ done
 
 lemma sees_methods_compP:
   "P \<turnstile> C sees_methods Mm \<Longrightarrow>
-  compP f P \<turnstile> C sees_methods (\<lambda>M. Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,Option.map (f D M Ts T) m),D)) (Mm M))"
+  compP f P \<turnstile> C sees_methods (\<lambda>M. map_option (\<lambda>((Ts,T,m),D). ((Ts,T,map_option (f D M Ts T) m),D)) (Mm M))"
 (*<*)
 apply(erule Methods.induct)
  apply(rule sees_methods_Object)
   apply(erule class_compP)
  apply(rule ext)
- apply(simp add:compM_def map_of_map4 option_map_comp)
+ apply(simp add:compM_def map_of_map4 option.map_comp)
  apply(case_tac "map_of ms M")
   apply simp
  apply fastforce
@@ -73,20 +73,20 @@ apply(rule sees_methods_rec)
   apply assumption
  apply assumption
 apply(rule ext)
-apply(simp add:map_add_def compM_def map_of_map4 option_map_comp split:option.split)
+apply(simp add:map_add_def compM_def map_of_map4 option.map_comp split:option.split)
 done
 (*>*)
 
 
 lemma sees_method_compP:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
-  compP f P \<turnstile> C sees M: Ts\<rightarrow>T = Option.map (f D M Ts T) m in D"
+  compP f P \<turnstile> C sees M: Ts\<rightarrow>T = map_option (f D M Ts T) m in D"
 (*<*)by(fastforce elim:sees_methods_compP simp add:Method_def)(*>*)
 
 
 lemma [simp]:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<Longrightarrow>
-  method (compP f P) C M = (D,Ts,T,Option.map (f D M Ts T) m)"
+  method (compP f P) C M = (D,Ts,T,map_option (f D M Ts T) m)"
 (*<*)
 apply(drule sees_method_compP)
 apply(simp add:method_def)
@@ -100,7 +100,7 @@ done
 lemma sees_methods_compPD:
   "\<lbrakk> cP \<turnstile> C sees_methods Mm'; cP = compP f P \<rbrakk> \<Longrightarrow>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and>
-        Mm' = (\<lambda>M. Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,Option.map (f D M Ts T) m),D)) (Mm M))"
+        Mm' = (\<lambda>M. map_option (\<lambda>((Ts,T,m),D). ((Ts,T,map_option (f D M Ts T) m),D)) (Mm M))"
 (*<*)
 apply(erule Methods.induct)
  apply(clarsimp simp:compC_def)
@@ -108,7 +108,7 @@ apply(erule Methods.induct)
  apply(rule conjI, erule sees_methods_Object)
  apply(rule refl)
  apply(rule ext)
- apply(simp add:compM_def map_of_map4 option_map_comp)
+ apply(simp add:compM_def map_of_map4 option.map_comp)
  apply(case_tac "map_of b M")
   apply simp
  apply fastforce
@@ -117,14 +117,14 @@ apply(rule exI, rule conjI)
 apply(erule (2) sees_methods_rec)
  apply(rule refl)
 apply(rule ext)
-apply(simp add:map_add_def compM_def map_of_map4 option_map_comp split:option.split)
+apply(simp add:map_add_def compM_def map_of_map4 option.map_comp split:option.split)
 done
 (*>*)
 
 
 lemma sees_method_compPD:
   "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = fm in D \<Longrightarrow>
-  \<exists>m. P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<and> Option.map (f D M Ts T) m = fm"
+  \<exists>m. P \<turnstile> C sees M: Ts\<rightarrow>T = m in D \<and> map_option (f D M Ts T) m = fm"
 (*<*)
 apply(simp add:Method_def)
 apply clarify
@@ -294,7 +294,7 @@ proof -
   { fix m
     assume mset': "m \<in> set ms'"
     then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m, auto)
-    with ms' obtain body where mf: "body' = Option.map (f C M Ts' T') body"
+    with ms' obtain body where mf: "body' = map_option (f C M Ts' T') body"
       and mset: "(M, Ts', T', body) \<in> set ms" using mset'
       by(clarsimp simp add: image_iff compM_def)
     moreover from mset xsrc wfcP1 have "wf_mdecl wf\<^sub>1 P C (M,Ts',T',body)"
@@ -313,7 +313,7 @@ proof -
     { fix m
       assume mset': "m \<in> set ms'"
       obtain M Ts T body' where m: "m = (M, Ts, T, body')" by(cases m)
-      with mset' ms' obtain body where mf: "body' = Option.map (f C M Ts T) body"
+      with mset' ms' obtain body where mf: "body' = map_option (f C M Ts T) body"
         and mset: "(M, Ts, T, body) \<in> set ms"
         by(clarsimp simp add: image_iff compM_def)
       from wf1 CObj mset
@@ -363,12 +363,12 @@ proof -
   { fix m
     assume mset': "m \<in> set ms'"
     then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m)
-    hence mset: "(M, Ts', T', Option.map (f C M Ts' T') body') \<in> set (map (compM (f C)) ms')" using mset'
+    hence mset: "(M, Ts', T', map_option (f C M Ts' T') body') \<in> set (map (compM (f C)) ms')" using mset'
       by(auto simp add: image_iff compM_def intro: rev_bexI)
-    moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = Option.map (f C M Ts' T') body' in C"
+    moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = map_option (f C M Ts' T') body' in C"
       by(auto intro: mdecl_visible)
     moreover from mset wfcP1[rule_format, OF xsrc]
-    have "wf_mdecl wf\<^sub>1 (compP f P) C (M,Ts',T',Option.map (f C M Ts' T') body')"
+    have "wf_mdecl wf\<^sub>1 (compP f P) C (M,Ts',T',map_option (f C M Ts' T') body')"
       by(auto simp add: wf_cdecl_def)
     ultimately have "wf_mdecl wf\<^sub>2 P C m" using m
       by(cases body')(simp add: wf_mdecl_def, auto intro: wf1_imp_wf2) }
@@ -475,7 +475,7 @@ text {* compiler composition *}
 
 lemma compM_compM:
   "compM f (compM g md) = compM (\<lambda>M Ts T. f M Ts T \<circ> g M Ts T) md"
-by(cases md)(simp add: compM_def option_map_comp o_def)
+by(cases md)(simp add: compM_def option.map_comp o_def)
 
 lemma compC_compC:
   "compC f (compC g cd) = compC (\<lambda>C M Ts T. f C M Ts T \<circ> g C M Ts T) cd"

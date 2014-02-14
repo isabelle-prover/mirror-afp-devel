@@ -87,7 +87,7 @@ by(auto split: llist.splits)
 declare [[code drop: lmap]]
 
 lemma lmap_Lazy_llist [code]:
-  "lmap f (Lazy_llist xs) = Lazy_llist (\<lambda>_. Option.map (map_pair f (lmap f)) (xs ()))"
+  "lmap f (Lazy_llist xs) = Lazy_llist (\<lambda>_. map_option (map_pair f (lmap f)) (xs ()))"
 by simp
 
 declare [[code drop: lfinite]]
@@ -142,7 +142,7 @@ declare [[code drop: lzip]]
 
 lemma lzip_Lazy_llist [code]:
   "lzip (Lazy_llist xs) (Lazy_llist ys) =
-  Lazy_llist (\<lambda>_. Option.bind (xs ()) (\<lambda>(x, xs'). Option.map (\<lambda>(y, ys'). ((x, y), lzip xs' ys')) (ys ())))"
+  Lazy_llist (\<lambda>_. Option.bind (xs ()) (\<lambda>(x, xs'). map_option (\<lambda>(y, ys'). ((x, y), lzip xs' ys')) (ys ())))"
 by auto
 
 declare [[code drop: gen_lset]]

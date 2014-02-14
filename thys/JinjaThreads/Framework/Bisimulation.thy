@@ -619,17 +619,17 @@ proof(intro exI conjI)
     \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and> snd (thd stlsss1) \<approx> s2'' \<and> fst (thd stlsss1) \<sim> tl2"
   def tls1_to_tls2 == "\<lambda>s2 stlsss1. unfold_tllist
       (\<lambda>(s2, stlsss1). is_TNil stlsss1)
-      (\<lambda>(s2, stlsss1). Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1))
+      (\<lambda>(s2, stlsss1). map_option (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1))
       (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (tl2, s2''))
       (\<lambda>(s2, stlsss1). let (tl2, s2'') = Eps (?P s2 stlsss1) in (s2'', ttl stlsss1))
       (s2, stlsss1)"
   have [simp]:
     "\<And>s2 stlsss1. is_TNil (tls1_to_tls2 s2 stlsss1) \<longleftrightarrow> is_TNil stlsss1"
-    "\<And>s2 stlsss1. is_TNil stlsss1 \<Longrightarrow> terminal (tls1_to_tls2 s2 stlsss1) = Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1)"
+    "\<And>s2 stlsss1. is_TNil stlsss1 \<Longrightarrow> terminal (tls1_to_tls2 s2 stlsss1) = map_option (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') (terminal stlsss1)"
     "\<And>s2 stlsss1. \<not> is_TNil stlsss1 \<Longrightarrow> thd (tls1_to_tls2 s2 stlsss1) = (let (tl2, s2'') = Eps (?P s2 stlsss1) in (tl2, s2''))"
     "\<And>s2 stlsss1. \<not> is_TNil stlsss1 \<Longrightarrow> ttl (tls1_to_tls2 s2 stlsss1) = (let (tl2, s2'') = Eps (?P s2 stlsss1) in tls1_to_tls2 s2'' (ttl stlsss1))"
     "\<And>s2 os1. tls1_to_tls2 s2 (TNil os1) = 
-               TNil (Option.map (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') os1)"
+               TNil (map_option (\<lambda>s1'. SOME s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl s2''. \<not> s2' -2-tl\<rightarrow> s2'') \<and> s1' \<approx> s2') os1)"
     by(simp_all add: tls1_to_tls2_def split_beta)
   have [simp]:
     "\<And>s2 s1 s1' tl1 s1'' stlsss1. 

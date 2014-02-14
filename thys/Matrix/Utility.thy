@@ -182,7 +182,7 @@ next
   case (Cons b bs)
   have id: "(\<Sum>j\<leftarrow>as. f b j + g b j) = listsum (map (f b) as) + listsum (map (g b) as)"
     by (induct as, auto simp: ac_simps)
-  show ?case unfolding map.simps concat.simps listsum_append
+  show ?case unfolding list.map concat.simps listsum_append
     unfolding Cons
     unfolding id 
     by (simp add: ac_simps)

@@ -396,7 +396,7 @@ interpretation least!: semilattice least proof
 qed (auto simp add: least_def split: option.split)
 
 definition min :: "('a::linorder, 'b) binqueue \<Rightarrow> 'a option" where
-  "min xs = fold least (map (Option.map priority) xs) None"
+  "min xs = fold least (map (map_option priority) xs) None"
 
 lemma min_simps [simp]:
   "min [] = None"
@@ -406,7 +406,7 @@ lemma min_simps [simp]:
     fun_eq_iff least.left_commute del: least_simps)
 
 lemma [code]:
-  "min xs = fold (\<lambda> x. least (Option.map priority x)) xs None"
+  "min xs = fold (\<lambda> x. least (map_option priority x)) xs None"
   by (simp add: min_def fold_map o_def)
 
 lemma min_single:
@@ -473,9 +473,9 @@ qed simp_all
 
 lemma min_exists:
   assumes "min xs = Some a"
-  shows "Some a \<in> Option.map priority ` set xs"
+  shows "Some a \<in> map_option priority ` set xs"
 proof (rule ccontr)
-  assume "Some a \<notin> Option.map priority ` set xs"
+  assume "Some a \<notin> map_option priority ` set xs"
   then have "\<forall>x \<in> set xs. x = None \<or> priority (the x) \<noteq> a" by (induct xs) auto
   then have "min xs \<noteq> Some a"  
   proof (induct xs arbitrary: a)
@@ -506,16 +506,16 @@ lemma find_simps [simp, code]:
   by (simp_all add: find_def)
 
 lemma find_works:
-  assumes "Some a \<in> set (map (Option.map priority) xs)"
+  assumes "Some a \<in> set (map (map_option priority) xs)"
   shows "\<exists>t. find a xs = Some t \<and> priority t = a"
   using assms by (induct xs) auto
 
 lemma find_works_not_None:
-  "Some a \<in> set (map (Option.map priority) xs) \<Longrightarrow> find a xs \<noteq> None"
+  "Some a \<in> set (map (map_option priority) xs) \<Longrightarrow> find a xs \<noteq> None"
   by (drule find_works) auto
 
 lemma find_None:
-  "find a xs = None \<Longrightarrow> Some a \<notin> set (map (Option.map priority) xs)"
+  "find a xs = None \<Longrightarrow> Some a \<notin> set (map (map_option priority) xs)"
   by (auto simp add: find_works_not_None)
 
 lemma find_exist:

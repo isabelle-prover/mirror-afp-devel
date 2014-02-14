@@ -1070,7 +1070,7 @@ where
       else Some (inverse_aform' p d a)}"
   --"TODO: prove correctness for the negative case of inverse-affine"
 | "approx_realarith p (Minus a) vs m =
-    Option.map uminus_aform (approx_realarith p a vs m)"
+    map_option uminus_aform (approx_realarith p a vs m)"
 | "approx_realarith p (Num f) vs m =
     Some (num_aform f)"
 | "approx_realarith p (Var i b) vs m =
@@ -1273,7 +1273,7 @@ fun approx_euclarith :: "nat \<Rightarrow> ('a::ordered_euclidean_space, 'b::ord
       Some (add_aform a1 a2)
     }"
 | "approx_euclarith p (ScaleR a b) vs m =
-    Option.map (\<lambda>a. aform_scaleR a b) (approx_realarith p a vs m::real aform option)"
+    map_option (\<lambda>a. aform_scaleR a b) (approx_realarith p a vs m::real aform option)"
 
 
 lemma approx_euclarith_Elem:

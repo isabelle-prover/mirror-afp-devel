@@ -43,7 +43,7 @@ adhoc_overloading
   abs abs_cnt
 
 definition abs_benv :: "benv \<Rightarrow> 'c::contour_a \<abenv>"
-  where "abs_benv \<beta> = Option.map abs_cnt \<circ> \<beta>"
+  where "abs_benv \<beta> = map_option abs_cnt \<circ> \<beta>"
 
 adhoc_overloading
   abs abs_benv

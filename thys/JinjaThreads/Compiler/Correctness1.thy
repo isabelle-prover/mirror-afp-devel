@@ -1682,7 +1682,7 @@ next
   moreover {
     note `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` 
     moreover note ha
-    moreover have "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = Option.map (\<lambda>(pns, body). compE1 (this # pns) body) \<lfloor>(pns, body)\<rfloor> in D"
+    moreover have "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = map_option (\<lambda>(pns, body). compE1 (this # pns) body) \<lfloor>(pns, body)\<rfloor> in D"
       using sees unfolding compP1_def by(rule sees_method_compP)
     hence sees': "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = \<lfloor>compE1 (this # pns) body\<rfloor> in D" by simp
     moreover from len have "length vs = length Ts" by simp
