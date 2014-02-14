@@ -1496,6 +1496,13 @@ date = 2012-02-06
 topic = Mathematics/Graph Theory
 abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
 
+[Random_Graph_Subgraph_Threshold]
+title = Properties of Random Graphs -- Subgraph Containment
+author = Lars Hupel <mailto:hupel@in.tum.de>
+date = 2014-02-13
+topic = Mathematics/Graph Theory, Mathematics/Probability Theory
+abstract = Random graphs are graphs with a fixed number of vertices, where each edge is present with a fixed probability. We are interested in the probability that a random graph contains a certain pattern, for example a cycle or a clique. A very high edge probability gives rise to perhaps too many edges (which degrades performance for many algorithms), whereas a low edge probability might result in a disconnected graph. We prove a theorem about a threshold probability such that a higher edge probability will asymptotically almost surely produce a random graph with the desired subgraph. 
+
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs
 author = Gertrud Bauer, Tobias Nipkow <http://www.in.tum.de/~nipkow>
