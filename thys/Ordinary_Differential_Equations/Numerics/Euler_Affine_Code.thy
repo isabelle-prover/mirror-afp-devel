@@ -8,7 +8,7 @@ imports
   "../../Affine_Arithmetic/Affine_Arithmetic"
 begin
 
-text{*\label{sec:euleraform}*}
+text{*\label{sec:euleraformcode}*}
 
 record ('a, 'b, 'c) options =
   precision :: nat

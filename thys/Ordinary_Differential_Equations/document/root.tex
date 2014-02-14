@@ -11,72 +11,105 @@
 \urlstyle{rm}
 \isabellestyle{it}
 
-\newcommand{\Nat}{\mathbb{N}}
-\newcommand{\Real}{\mathbb{R}}
-\newcommand{\Float}{\mathbb{F}}
-\newcommand{\Bool}{\mathbb{B}}
-\newcommand{\Eucl}[1]{\mathbb{R}^{#1}}
-\newcommand{\UNIV}{\mathcal{U}}
-\newcommand{\bcontfun}{\ensuremath{\mathcal{\overline{C}}}}
-\newcommand{\grid}{\ensuremath{\Delta}}
-\newcommand{\Kdo}{\textit{\textbf{do}}}
-\newcommand{\Kif}{\textit{\textbf{if}}}
-\newcommand{\Kthen}{\textit{\textbf{then}}}
-\newcommand{\Kelse}{\textit{\textbf{else}}}
+\newcommand{\etal}{\emph{et al.}}
+\newcommand{\keyword}[1]{\ensuremath{\textsf{\textbf{#1}}}}
+\newcommand{\Klemma}{\keyword{lemma}}
+\newcommand{\Ktheorem}{\keyword{theorem}}
+\newcommand{\Kif}{\keyword{if}}
+\newcommand{\Klet}{\keyword{let}}
+\newcommand{\Kleft}{\boldsymbol \leftarrow}
+\newcommand{\Kdo}{\keyword{do}}
+\newcommand{\Kin}{\keyword{in}}
+\newcommand{\Kthen}{\keyword{then}}
+\newcommand{\Kelse}{\keyword{else}}
 
-\newcommand{\Cfloat}[1]{\ensuremath{(#1)_\Float}}
-\newcommand{\Creal}[1]{\ensuremath{(#1)_\Real}}
+\newcommand{\identifier}[1]{\textsl{\textsf{#1}}}
+\newcommand{\Iaexp}{\identifier{aexp}}
+\newcommand{\IAffine}{\identifier{Affine}}
+\newcommand{\IAffines}{\identifier{Affines}}
+\newcommand{\Iaffineofivl}{\identifier{affine-of-ivl}}
+\newcommand{\IAdd}{\identifier{Add}}
+\newcommand{\Iaddaffine}{\identifier{add-affine}}
+\newcommand{\IAddE}{\identifier{AddE}}
+\newcommand{\IBasis}{\identifier{Basis}}
+\newcommand{\Ibinop}{\identifier{binop}}
+\newcommand{\Ibox}{\identifier{box}}
+\newcommand{\Icenter}{\identifier{center}}
+\newcommand{\Icoeff}{\identifier{coeff}}
+\newcommand{\Icoeffs}{\identifier{coeffs}}
+\newcommand{\Iapprox}{\identifier{approx}}
+\newcommand{\ID}{\identifier{D}}
+\newcommand{\Ideg}{\identifier{deg}}
+\newcommand{\Idim}{\identifier{dim}}
+\newcommand{\Idivl}{\identifier{div}^-}
+\newcommand{\Idivr}{\identifier{div}^+}
+\newcommand{\Ieexp}{\identifier{eexp}}
+\newcommand{\IElem}{\identifier{elem}}
+\newcommand{\Ieulerseries}{\identifier{euler-series}}
+\newcommand{\Ieulerstep}{\identifier{euler-step}}
+\newcommand{\Ifalse}{\identifier{False}}
+\newcommand{\Ifilter}{\identifier{filter}}
+\newcommand{\Ifold}{\identifier{fold}}
+\newcommand{\Ifor}{\identifier{for}}
+\newcommand{\Ifst}{\identifier{fst}}
+\newcommand{\IFloat}{\identifier{Float}}
+\newcommand{\Iindices}{\identifier{indices}}
+\newcommand{\IInverse}{\identifier{Inverse}}
+\newcommand{\Iinverseaffine}{\identifier{inverse-affine}}
+\newcommand{\Iivp}{\identifier{ivp}}
+\newcommand{\Ilen}{\identifier{len}}
+\newcommand{\Imap}{\identifier{map}}
+\newcommand{\Imerge}{\identifier{merge}}
+\newcommand{\IMinus}{\identifier{Minus}}
+\newcommand{\Iminusaffine}{\identifier{minus-affine}}
+\newcommand{\IMult}{\identifier{Mult}}
+\newcommand{\Imultaffine}{\identifier{mult-affine}}
+\newcommand{\INone}{\identifier{None}}
+\newcommand{\INum}{\identifier{Num}}
+\newcommand{\Irad}{\identifier{rad}}
+\newcommand{\Iradup}{\identifier{rad}^+}
+\newcommand{\Iround}{\identifier{round}}
+\newcommand{\IScale}{\identifier{Scale}}
+\newcommand{\Iscaleaffine}{\identifier{scale-affine}}
+\newcommand{\Isol}{\identifier{sol}}
+\newcommand{\ISome}{\identifier{Some}}
+\newcommand{\Isplit}{\identifier{split}}
+\newcommand{\Isummarize}{\identifier{summarize}}
+\newcommand{\To}{\Rightarrow}
+\newcommand{\Itrue}{\identifier{True}}
+\newcommand{\Itruncatedown}{\identifier{trunc}^-}
+\newcommand{\Itruncateup}{\identifier{trunc}^+}
+\newcommand{\Iroundbinop}{\identifier{round-binop}}
+\newcommand{\UNIV}[1]{\mathcal{U}_{#1}}
+\newcommand{\Iunzip}{\identifier{unzip}}
+\newcommand{\IVar}{\identifier{Var}}
+\newcommand{\Izip}{\identifier{zip}}
 
-\newcommand{\keyword}[1]{\ensuremath{\textsl{\textsf{#1}}}}
-\newcommand{\bkeyword}[1]{\ensuremath{\textsl{\textsf{\textbf{#1}}}}}
+\newcommand{\Tset}[1]{#1\,\identifier{set}}
+\newcommand{\Tlist}[1]{#1\,\identifier{list}}
+\newcommand{\Taffine}[1]{#1\,\identifier{affine}}
+\newcommand{\Toption}[1]{#1\,\identifier{option}}
+\newcommand{\Tbcontfun}[2]{#1\To_{\identifier{bc}}#2}
+\newcommand{\Tfinmap}[2]{#1\rightharpoondown_{\identifier{f}}#2}
+\newcommand{\Tfilter}[1]{#1\,\identifier{filter}}
 
-\newcommand{\Kunique}[1]{\ensuremath{\keyword{#1}}}
+\newcommand{\Bool}{\ensuremath{\mathbb{B}}}
+\newcommand{\Real}{\ensuremath{\mathbb{R}}}
+\newcommand{\Float}{\ensuremath{\mathbb{F}}}
+\newcommand{\Eucl}[1]{\ensuremath{\mathbb{R}^{#1}}}
+\newcommand{\Complex}{\ensuremath{\mathbb{C}}}
+\newcommand{\Nat}{\ensuremath{\mathbb{N}}}
+\newcommand{\Integer}{\ensuremath{\mathbb{Z}}}
 
-\newcommand{\Kabsbc}{\ensuremath{\keyword{Abs}_{\;\bcontfun}}}
-\newcommand{\Kboundedderiv}{\keyword{deriv-bnd}}
-\newcommand{\Kbound}{\keyword{bound}}
-\newcommand{\Kclamp}{\keyword{clamp}}
-\newcommand{\Kcomplete}{\keyword{complete}}
-\newcommand{\Kconsistent}{\keyword{consistent}}
-\newcommand{\Kconvergent}{\keyword{convergent}}
-\newcommand{\Kcontinuous}{\keyword{continuous}}
-\newcommand{\Kcontinue}{\keyword{continue}}
-\newcommand{\KE}{\keyword{E}}
-\newcommand{\Keuler}{\keyword{euler}}
-\newcommand{\Keulerf}{\ensuremath{\widetilde{\Keuler}}{}}
-\newcommand{\Keulerrect}{\keyword{euler-on-rectangle}}
-\newcommand{\Keulerround}{\keyword{euler-rounded}}
-\newcommand{\KFloat}{\keyword{Float}}
-\newcommand{\Kgridfunction}{\keyword{gf}}
-\newcommand{\Khassolution}{\keyword{has-solution}}
-\newcommand{\Khmax}{\ensuremath{h_{max}}}
-\newcommand{\Khmin}{\ensuremath{h_{min}}}
-\newcommand{\Kinf}{\keyword{inf}}
-\newcommand{\Kisinterval}{\keyword{is-interval}}
-\newcommand{\Kissolution}{\keyword{is-solution}}
-\newcommand{\Kivp}{\keyword{ivp}}
-\newcommand{\Klipschitz}{\keyword{lipschitz}}
-\newcommand{\Klipschitzl}{\keyword{local-lipschitz}}
-\newcommand{\Kmaxstep}{\keyword{step-bnd}}
-\newcommand{\Kopen}{\keyword{open}}
-\newcommand{\KP}{\keyword{P}}
-\newcommand{\KPb}{\ensuremath{\overline{\keyword{P}}}}
-\newcommand{\Kpsieuler}{\ensuremath{\psi_{\mathsf{euler}}}}
-\newcommand{\Kpsifeuler}{\ensuremath{\overline{\psi_{\mathsf{euler}}}}}
-\newcommand{\Krepbc}{\ensuremath{\keyword{Rep}_{\,\bcontfun}}}
-\newcommand{\Kround}{\keyword{round}}
-\newcommand{\Krounded}{\keyword{rounded}}
-\newcommand{\Ksolution}{\keyword{solution}}
-\newcommand{\Kstable}{\keyword{stable}}
-\newcommand{\Ksup}{\keyword{sup}}
-\newcommand{\Kusolution}{\keyword{unique-solution}}
-\newcommand{\Kubinterval}{\Kunique{bnd-strip}}
-\newcommand{\Kuinterval}{\Kunique{strip}}
-\newcommand{\Kurectangle}{\Kunique{rect}}
-\newcommand{\Kuopen}{\Kunique{open-domain}}
+\newcommand{\ToDO}[1]{{\color{red}\textbf{TODO:} #1}}
+\newcommand{\Todo}[1]{{\color{red}[#1]}}
 
-\title{Numerical Analysis of Ordinary Differential Equations}
-\author{Fabian Immler and Johannes Hölzl}
+\newcommand{\limseq}{\xrightarrow{\hspace*{2em}}}
+\newcommand{\interpret}[1]{\ensuremath{[\![#1]\!]}}
+
+\title{Formally Verified Computation of Enclosures of Solutions of Ordinary
+Differential Equations}
+\author{Fabian Immler}
 
 \begin{document}
 
@@ -84,108 +117,66 @@
 
 \begin{abstract}
 
-  Since many ordinary differential equations (ODEs) do not have a
-  closed solution, approximating them is an important problem in
-  numerical analysis. This work formalizes a method to approximate
-  solutions of ODEs in Isabelle/HOL.
+Ordinary differential equations (ODEs) are ubiquitous when modeling continuous
+dynamics. Classical numerical methods compute approximations of the solution,
+however without any guarantees on the quality of the approximation.
+Nevertheless, methods have been developed that are supposed to compute
+enclosures of the solution.
 
-  We formalize initial value problems (IVPs) of ODEs and prove the
-  existence of a unique solution, i.e.\ the Picard-Lindelöf
-  theorem. We introduce general one-step methods for numerical
-  approximation of the solution and provide an analysis regarding the
-  local and global error of one-step methods.
+In this paper, we demonstrate that enclosures of the solution can be verified
+with a high level of rigor: We implement a functional algorithm that computes
+enclosures of solutions of ODEs in the interactive theorem prover Isabelle/HOL,
+where we formally verify (and have mechanically checked) the safety of the
+enclosures against the existing theory of ODEs in Isabelle/HOL.
 
-  We give an executable specification of the Euler method to
-  approximate the solution of IVPs. With user-supplied proofs for
-  bounds of the differential equation we can prove an explicit bound
-  for the global error. We use arbitrary-precision floating-point
-  numbers and also handle rounding errors when we truncate the numbers
-  for efficiency reasons.
+Our algorithm works with dyadic rational numbers with statically fixed precision
+and is based on the well-known Euler method. We abstract discretization and
+round-off errors in the domain of affine forms. Code can be extracted from the
+verified algorithm and experiments indicate that the extracted code exhibits
+reasonable efficiency.
 
 \end{abstract}
 
 \section{Relations to the paper}
 
-Our paper~\cite{immlerhoelzl} is structured
-roughly according to the sources you find here. In the following list we
-show which notions of the paper correspond to which parts of the source code:
+Here we relate the contents of our NFM~2014 paper~\cite{Immler2014} with the sources you find here.
+In the following list we show which notions and theorems in the
+paper correspond to which parts of the source code. If you are (still) interested in the relations
+to our ITP~2012 paper~\cite{immlerhoelzl}, you should take a look at the document of older releases
+ (before Isabelle~2013-1) of this AFP entry.
 
-\begin{itemize}
-\item Arbitrary Precision Floats ($\KFloat$): Included in the Library of the
-  Isabelle/HOL distribution and in section `Floating-Point Numbers'
-\item Bounded Continuous Functions ($\bcontfun$): Typedef \textit{bcontfun}
-  in Section \ref{sec:bcontfun}
-\item Initial Value Problems in Section \ref{sec:solutions}:
-  \begin{itemize}
-  \item IVP $\Kivp$: Definition as locale \textit{ivp}
-  \item $\Kissolution$, $\Ksolution$, $\Kusolution$: Definition
-    \textit{is-solution}, Definition \textit{solution}, Locale
-    \textit{unique-solution}
-  \item Combining solutions in Section \ref{sec:combining-solutions}
-  \end{itemize}
-\item Quantitative Picard-Lindeloef:
-  \begin{itemize}
-  \item Lipschitz continuity $\Klipschitz$: Definition
-    \textit{lipschitz} in Section \ref{sec:lipschitz}
-  \item Unique solution on bounded interval $\Kubinterval$: Locale
-    \textit{unique-on-bounded-strip} in Section \ref{sec:pl-bi}
-  \item Theorem 1 (Picard-Lindeloef): Sublocale
-    \textit{unique-on-bounded-strip} $\subseteq$
-    \textit{unique-solution} in Section \ref{sec:ivp-ubs}
-  \item Unique solution on arbitrary interval $\Kuinterval$: Locale
-    \textit{unique-on-strip} in Section \ref{sec:pl-us}
-  \item Unique solution on rectangular domain $\Kurectangle$: Locale
-    \textit{unique-on-rectangle} in Section \ref{sec:pl-rect}
-  \item Theorem 2 (Picard-Lindeloef on a restricted domain): Sublocale
-    \textit{unique-on-rectangle} $\subseteq$
-    \textit{unique-solution} in Section \ref{sec:pl-rect}
- \end{itemize}
-\item Qualitative Picard-Lindeloef: Section \ref{sec:qpl},
- \begin{itemize}
-  \item Local Lipschitz continuity $\Klipschitzl$: Definition
-    \textit{local-lipschitz} in Section \ref{sec:qpl-lipschitz}
-  \item Open domain $\Kuopen$: Locale \textit{unique-on-open} in
-    Section \ref{sec:qpl-lipschitz}
-  \item Set of solutions $\Phi$: Definition \textit{PHI} in Section \ref{sec:qpl-global-solution}
-  \item Theorem 3 (Maximal existence interval): Lemma \textit{global-solution} in
-    Section \ref{sec:qpl-global-solution}
-  \end{itemize}
-\item One-step methods: Section \ref{sec:osm}
-  \begin{itemize}
-  \item Grid $\Delta$: Locale \textit{grid} in Section \ref{sec:osm-grid}
-  \item Discrete Evolution $\Psi$: Definition
-    \textit{discrete-evolution} in Section \ref{sec:osm-definition}
-  \item Grid-function $\Kgridfunction$: Definition
-    \textit{grid-function} in Section \ref{sec:osm-definition}
-  \item Consistency $\Kconsistent$: Definition \textit{consistent} in
-    Section \ref{sec:osm-consistent}
-  \item Assumptions for convergence $\Kconvergent + \Kmaxstep$:
-    Locales \textit{consistent-one-step},
-    \textit{convergent-one-step}, \textit{max-step} in Section
-    \ref{sec:osm-cons-imp-conv}
-  \item Theorem 4 (Convergence of One-Step methods): Lemma
-    \textit{convergence} in Section \ref{sec:osm-cons-imp-conv}
-  \item Stability $\Kstable$: Locale \textit{stable-one-step} in
-    Section \ref{sec:osm-stability}
-  \item Theorem 5 (Stability of One-Step methods): Lemma
-    \textit{stability} in Section \ref{sec:osm-stability}
- \end{itemize}
-\item Euler method: Section \ref{sec:rk}
-  \begin{itemize}
-  \item Definition $\Keuler^f$: Definition \textit{euler} in Section
-    \ref{sec:rk-definition}
-  \item $\Kboundedderiv$: Locale \textit{bounded-derivative} in
-    Section \ref{sec:rk-euler-cons}
-  \item Theorem 6 (Convergence of Euler): Lemma \textit{convergence} in
-    Section \ref{sec:rk-euler-conv-on-rect}
-  \item $\Keulerround$: Locale \textit{euler-rounded-on-rectangle} in
-    Section \ref{sec:rk-euler-stable}
-  \item Theorem 7 (Convergence of the approximate Euler method on
-    $\Float$): Lemma \textit{convergence-qfloat} in Section
-    \ref{sec:rk-euler-stable}
-  \end{itemize}
-\item Example: Section \ref{sec:example}
-\end{itemize}
+\begin{enumerate}
+\item Introduction
+\item Background
+  \begin{enumerate}
+  \item Real numbers: Representation of real numbers with dyadic floats is set up in the separate
+    entry Affine Arithmetic~\cite{Immler2014b}
+  \item Euclidean Space: definition in image Multivariate-Analysis
+  \item Derivatives: definition in Multivariate-Analysis
+  \item Notes on Taylor Series Expansion in Euclidean Space: A formal proof of a similar problem
+    with just the mean value theorem is given in Section~\ref{sec:countermvt}
+  \item Ordinary Differential Equations
+    \begin{itemize}
+    \item Definition~1: Definition \textit{ivp} in Section~\ref{sec:solutions}
+    \item Definition~2: Definition \textit{solution} in Section~\ref{sec:solutions}
+    \item Theorem~3: In Section~\ref{sec:plclosed} resp. Section~\ref{sec:ivp-ubs}
+    \item Theorem~4: In Section~\ref{sec:setconsistent}
+    \end{itemize}
+  \end{enumerate}
+\item Affine Arithmetic: see the separate entry Affine Arithmetic~\cite{Immler2014b}
+\item Approximation of ODEs:\\
+  Assumptions are in locales \textit{approximate-ivp} and \textit{approximate-sets} in
+  Section~\ref{sec:euleraform}
+  \begin{enumerate}
+  \item Euler Step: Definitions in locale \textit{approximate-ivp0} in Section~\ref{sec:euleraformcode} \\
+    Theorem~7 and Theorem~8 are in Lemma \textit{unique-on-euler-step}
+  \item Euler Series: Definitions in locale \textit{approximate-ivp0} in Section~\ref{sec:euleraformcode} \\
+    Theorem~9 is Lemma \textit{intervals-of-accum}
+  \end{enumerate}
+\item Experiments: Oil reservoir problem in Section~\ref{sec:exampleoil}, Second example in
+  Section~\ref{sec:example1}
+\item Conclusion
+\end{enumerate}
 
 \tableofcontents
 

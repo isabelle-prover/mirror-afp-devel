@@ -6,6 +6,8 @@ imports
   Euler_Affine_Code
 begin
 
+text{*\label{sec:euleraform}*}
+
 lemma inf_le_sup_same1: "inf a (b::'a::ordered_euclidean_space) \<le> sup a d"
   by (metis inf.coboundedI1 sup.cobounded1)
 
