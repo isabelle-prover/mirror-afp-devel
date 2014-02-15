@@ -40,12 +40,13 @@ proof (rule ccontr)
   note refl = reflp_on_tree_hembeq [of P A]
   
   assume "\<not> ?thesis"
-  then obtain f where "\<forall>i. f i \<in> trees A" and "bad ?P f"
+  then obtain f where "f \<in> tree_mbs.BAD ?P"
     unfolding almost_full_on_def by blast
-  from tree_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at subtree ?A ?P m n"
+  from tree_mbs.mbs [OF this] obtain m
+    where bad: "bad ?P m"
+    and min: "tree_mbs.minimal ?P m"
     and in_trees: "\<And>i. m i \<in> trees A"
-    by blast
+    by (auto simp: tree_mbs.minimal_def)
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
   have [simp]: "\<And>i. mk (root (m i)) (succs (m i)) = m i" by (metis in_trees root_succs)
 
@@ -91,7 +92,9 @@ proof (rule ccontr)
     moreover have "subtree (c ?n) (m ?n)"
       using in_succs_imp_subtree [OF in_trees] and in_succs by simp
     ultimately have "good ?P c"
-      using mb [of ?n, unfolded tree_mbs.min_at_def, rule_format] by simp
+      using min [unfolded tree_mbs.minimal_def tree_mbs.gbseq_def]
+      apply auto
+      by (metis `\<forall>i<\<phi> 0. c i = m i` `subtree (c (\<phi> 0)) (m (\<phi> 0))`)
     with `bad ?P c` have False by blast
   }
   hence no_special_bad_seq: "\<not> (\<exists>t \<phi>. (\<forall>i. t i \<in> set (s (\<phi> i)) \<and> \<phi> 0 \<le> \<phi> i) \<and> bad ?P t)" by blast
