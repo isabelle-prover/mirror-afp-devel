@@ -690,8 +690,8 @@ next
             by(rule dyn_unique)
           from subcls least wf has have "Ts = Ts''" and leq:"P \<turnstile> T' \<le> T"
             by -(drule leq_method_subtypes,simp_all,blast)+
-          hence "length Ts = length Ts''" by (simp add:list_all2_def)
-          with sub have "length Ts' = length Ts''" by (simp add:list_all2_def)
+          hence "length Ts = length Ts''" by (simp add:list_all2_iff)
+          with sub have "length Ts' = length Ts''" by (simp add:list_all2_iff)
           with WTrts_same_length[OF wtes] vs have length:"length vs = length Ts''"
             by simp
           from has_least_wf_mdecl[OF wf least] 
@@ -734,8 +734,8 @@ next
               (drule wf_sees_method_fun,auto)
           with subcls wf notempty has path have "Ts = Ts''" and leq:"P \<turnstile> T' \<le> T"
             by -(drule leq_methods_subtypes,simp_all,blast)+
-          hence "length Ts = length Ts''" by (simp add:list_all2_def)
-          with sub have "length Ts' = length Ts''" by (simp add:list_all2_def)
+          hence "length Ts = length Ts''" by (simp add:list_all2_iff)
+          with sub have "length Ts' = length Ts''" by (simp add:list_all2_iff)
           with WTrts_same_length[OF wtes] vs have length:"length vs = length Ts''"
             by simp
           from select_method_wf_mdecl[OF wf select]
@@ -818,7 +818,7 @@ next
           by (auto simp add:path_via_def path_unique_def)
         obtain Ds where Ds:"Ds = (Cs'@\<^sub>pCs'')@\<^sub>pCs" by simp
         from es obtain vs where vs:"es = map Val vs" by auto
-        from sub have "length Ts' = length Ts" by (simp add:list_all2_def)
+        from sub have "length Ts' = length Ts" by (simp add:list_all2_iff)
         with WTrts_same_length[OF wtes] vs have length:"length vs = length Ts"
           by simp
         from has_least_wf_mdecl[OF wf method]

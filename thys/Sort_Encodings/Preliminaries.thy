@@ -253,7 +253,7 @@ by (metis (lifting) list_all2_length list_all_length)
 
 lemma list_all2_list_all_2[simp]:
 "list_all2 f xs xs \<longleftrightarrow> list_all (\<lambda> x. f x x) xs"
-unfolding list_all2_def list_all_iff
+unfolding list_all2_iff list_all_iff
 by (metis splitD splitI2 zip_same)
 
 lemma list_all2_map_map:

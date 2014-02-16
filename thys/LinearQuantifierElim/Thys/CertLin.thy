@@ -112,7 +112,7 @@ lemma cyclic_dnfD: "qfree f \<Longrightarrow> contradict_dnf (dnf(R.nnf f)) \<Lo
 apply(subst R.I_nnf[symmetric])
 apply(subst R.I_dnf[symmetric])
 apply(erule R.nqfree_nnf)
-apply(auto simp add:contradict_dnf_def list_all2_def in_set_conv_nth)
+apply(auto simp add:contradict_dnf_def list_all2_iff in_set_conv_nth)
 apply(drule_tac x="(dnf(R.nnf f) ! i, css!i)" in bspec)
 apply (auto simp:set_zip)
 apply(drule_tac xs=xs in contradictD)
