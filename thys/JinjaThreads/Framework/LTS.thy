@@ -10,8 +10,8 @@ imports
   "../../Coinductive/TLList"
 begin
 
-lemma option_rel_mono:
-  "\<lbrakk> option_rel R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> option_rel R' x y"
+lemma rel_option_mono:
+  "\<lbrakk> rel_option R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> rel_option R' x y"
 by(cases x)(case_tac [!] y, auto)
 
 lemma nth_concat_conv:
@@ -62,9 +62,9 @@ lemma prod_rel_flip [flip_simps]:
   "prod_rel (flip R) (flip S) = flip (prod_rel R S)"
 by(auto intro!: ext simp add: flip_def)
 
-lemma option_rel_flip [flip_simps]:
-  "option_rel (flip R) = flip (option_rel R)"
-by(simp add: fun_eq_iff option_rel_def flip_def)
+lemma rel_option_flip [flip_simps]:
+  "rel_option (flip R) = flip (rel_option R)"
+by(simp add: fun_eq_iff rel_option_def flip_def)
 
 lemma tllist_all2_flip [flip_simps]:
   "tllist_all2 (flip P) (flip Q) xs ys \<longleftrightarrow> tllist_all2 P Q ys xs"
