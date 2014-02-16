@@ -832,8 +832,7 @@ apply(auto)
 done
 
 lemma lex_p_eq: "((n',x'), (n,x)) \<in> lex_p = (n'<n \<or> n'=n \<and> x'<x) "
-apply(unfold lex_p_def)
-apply(simp add: in_lex_prod)
+apply(simp add: lex_p_def)
 done
 
 lemma loc_upb_lex_0: "c_fst n mod 7 = 0 \<Longrightarrow> c_assoc_have_key (pr_gr (loc_upb n x)) (c_pair n x) = 0"

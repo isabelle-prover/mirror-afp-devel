@@ -169,7 +169,7 @@ proof -
   have S2: "u < 2^(log2 u+1)" by (rule log2_gt)
   then have S3: "u < (2^log2 u)*2" by simp
   have "(2::nat) > 0" by simp
-  then have "(2::nat)^log2 u > 0" by (simp add: zero_less_power)
+  then have "(2::nat)^log2 u > 0" by simp
   then have S4: "(2::nat)^log2 u div 2^log2 u = 1" by auto
   from S1 have S5: "(2::nat)^log2 u div 2^log2 u  \<le> u div 2^log2 u" by (rule div_le_mono)
   with S4 have S6: "1 \<le> u div 2^log2 u" by auto
