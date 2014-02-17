@@ -10,7 +10,7 @@ text{* This theory is based on work by Brozowski \cite{Brzozowski64} and Antimir
 
 subsection {* Brzozowski's derivatives of regular expressions *}
 
-primrec_new
+primrec
   deriv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "deriv c (Zero) = Zero"
@@ -55,7 +55,7 @@ subsection {* Antimirov's partial derivatives *}
 abbreviation
   "Timess rs r \<equiv> (\<Union>r' \<in> rs. {Times r' r})"
 
-primrec_new
+primrec
   pderiv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp set"
 where
   "pderiv c Zero = {}"

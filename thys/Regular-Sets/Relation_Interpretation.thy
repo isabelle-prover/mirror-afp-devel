@@ -4,7 +4,7 @@ theory Relation_Interpretation
 imports Regular_Exp
 begin
 
-primrec_new rel :: "('a \<Rightarrow> ('b * 'b) set) \<Rightarrow> 'a rexp \<Rightarrow> ('b * 'b) set"
+primrec rel :: "('a \<Rightarrow> ('b * 'b) set) \<Rightarrow> 'a rexp \<Rightarrow> ('b * 'b) set"
 where
   "rel v Zero = {}" |
   "rel v One = Id" |

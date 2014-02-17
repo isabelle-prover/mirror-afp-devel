@@ -60,7 +60,7 @@ primrec_new strip2 where
 lemma strip_mrexps2: "(strip o strip2) ` mrexps2 r = {r}"
 by (induction r) (auto simp: set_eq_subset subset_iff image_iff)
 
-primrec_new ok2 :: "'a mrexp2 \<Rightarrow> bool" where
+primrec ok2 :: "'a mrexp2 \<Rightarrow> bool" where
 "ok2 Zero2 = True" |
 "ok2 One2 = True" |
 "ok2 (Atom2 _ _) = True" |

@@ -4,7 +4,7 @@ theory Regexp_Method
 imports Equivalence_Checking Relation_Interpretation
 begin
 
-primrec_new rel_of_regexp :: "('a * 'a) set list \<Rightarrow> nat rexp \<Rightarrow> ('a * 'a) set" where
+primrec rel_of_regexp :: "('a * 'a) set list \<Rightarrow> nat rexp \<Rightarrow> ('a * 'a) set" where
 "rel_of_regexp vs Zero  = {}" |
 "rel_of_regexp vs One  = Id" |
 "rel_of_regexp vs (Atom i)  = vs ! i" |

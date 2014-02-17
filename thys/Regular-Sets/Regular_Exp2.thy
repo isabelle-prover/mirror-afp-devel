@@ -21,7 +21,7 @@ context
 fixes S :: "'a set"
 begin
 
-primrec_new lang :: "'a rexp => 'a lang" where
+primrec lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |
 "lang One = {[]}" |
 "lang (Atom a) = {[a]}" |
@@ -36,7 +36,7 @@ end
 lemma lang_subset_lists: "atoms r \<subseteq> S \<Longrightarrow> lang S r \<subseteq> lists S"
 by(induction r)(auto simp: conc_subset_lists star_subset_lists)
 
-primrec_new nullable :: "'a rexp \<Rightarrow> bool" where
+primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable (Zero) = False" |
 "nullable (One) = True" |
 "nullable (Atom c) = False" |

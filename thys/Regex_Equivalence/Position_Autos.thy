@@ -16,7 +16,7 @@ type_synonym 'a mrexp = "(bool * 'a) rexp"
 
 abbreviation "strip \<equiv> map_rexp snd"
 
-primrec_new mrexps :: "'a rexp \<Rightarrow> ('a mrexp) set" where
+primrec mrexps :: "'a rexp \<Rightarrow> ('a mrexp) set" where
   "mrexps Zero = {Zero}"
 | "mrexps One = {One}"
 | "mrexps (Atom a) = {Atom (True, a), Atom (False, a)}"

@@ -65,7 +65,7 @@ lemma flatten_PLUS_inject: "\<lbrakk>\<forall>x \<in> R \<union> S. \<not> is_Ze
   (flatten PLUS R = flatten PLUS S) = (R = S)"
   by (rule trans[OF PLUS_inject sorted_list_of_set_inject]) auto
 
-primrec_new pset where
+primrec pset where
   "pset Zero = {}"
 | "pset One = {One}"
 | "pset (Atom a) = {Atom a}"
@@ -108,7 +108,7 @@ fun pnTimes :: "'a::linorder rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp" w
 | "pnTimes (Plus r s) t = pnPlus (pnTimes r t) (pnTimes s t)"
 | "pnTimes r s = Times r s"
 
-primrec_new pnorm_alt :: "'a::linorder rexp \<Rightarrow> 'a rexp" where
+primrec pnorm_alt :: "'a::linorder rexp \<Rightarrow> 'a rexp" where
   "pnorm_alt Zero = Zero"
 | "pnorm_alt One = One"
 | "pnorm_alt (Atom a) = Atom a"
@@ -282,7 +282,7 @@ proof (induction w arbitrary: s)
   qed (simp add: pnorm_def pset_deriv)
 qed simp
 
-primrec_new
+primrec
   pnderiv :: "'a :: linorder \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "pnderiv c (Zero) = Zero"

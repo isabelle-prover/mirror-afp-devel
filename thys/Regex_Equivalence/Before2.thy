@@ -20,7 +20,7 @@ datatype_new 'a mrexp3 =
   Star3 "'a mrexp3" (fin1: "'a set") (defaults nul: "\<lambda>(_::'a mrexp3) (_::'a set). True")
 datatype_new_compat mrexp3
 
-primrec_new final3 where
+primrec final3 where
   "final3 Zero3 = False"
 | "final3 One3 = False"
 | "final3 (Atom3 m a) = m"
@@ -28,7 +28,7 @@ primrec_new final3 where
 | "final3 (Times3 r s _ _) = (final3 s \<or> nul s \<and> final3 r)"
 | "final3 (Star3 r _) = final3 r"
 
-primrec_new mrexps3 :: "'a rexp \<Rightarrow> ('a mrexp3) set" where
+primrec mrexps3 :: "'a rexp \<Rightarrow> ('a mrexp3) set" where
   "mrexps3 Zero = {Zero3}"
 | "mrexps3 One = {One3} "
 | "mrexps3 (Atom a) = {Atom3 True a, Atom3 False a}"
@@ -47,7 +47,7 @@ definition[simp]: "times3 r s ==
   let ns = nul s in Times3 r s (fin1 s \<union> (if ns then fin1 r else {})) (nul r \<and> ns)"
 definition[simp]: "star3 r == Star3 r (fin1 r)"
 
-primrec_new follow3 :: "bool \<Rightarrow> 'a mrexp3 \<Rightarrow> 'a mrexp3" where
+primrec follow3 :: "bool \<Rightarrow> 'a mrexp3 \<Rightarrow> 'a mrexp3" where
 "follow3 m Zero3 = Zero3" |
 "follow3 m One3 = One3" |
 "follow3 m (Atom3 _ a) = Atom3 m a" |
@@ -56,7 +56,7 @@ primrec_new follow3 :: "bool \<Rightarrow> 'a mrexp3 \<Rightarrow> 'a mrexp3" wh
   times3 (follow3 m r) (follow3 (final3 r \<or> m \<and> nul r) s)" |
 "follow3 m (Star3 r _) = star3(follow3 (final3 r \<or> m) r)"
 
-primrec_new empty_mrexp3 :: "'a rexp \<Rightarrow> 'a mrexp3" where
+primrec empty_mrexp3 :: "'a rexp \<Rightarrow> 'a mrexp3" where
 "empty_mrexp3 Zero = Zero3" |
 "empty_mrexp3 One = One3" |
 "empty_mrexp3 (Atom x) = Atom3 False x" |
@@ -64,7 +64,7 @@ primrec_new empty_mrexp3 :: "'a rexp \<Rightarrow> 'a mrexp3" where
 "empty_mrexp3 (Times r s) = times3 (empty_mrexp3 r) (empty_mrexp3 s)" |
 "empty_mrexp3 (Star r) = star3 (empty_mrexp3 r)"
 
-primrec_new move3 :: "'a \<Rightarrow> 'a mrexp3 \<Rightarrow> bool \<Rightarrow> 'a mrexp3" where
+primrec move3 :: "'a \<Rightarrow> 'a mrexp3 \<Rightarrow> bool \<Rightarrow> 'a mrexp3" where
 "move3 _ One3 _ = One3" |
 "move3 _ Zero3 _ = Zero3" |
 "move3 c (Atom3 _ a) m = Atom3 m a" |
@@ -73,7 +73,7 @@ primrec_new move3 :: "'a \<Rightarrow> 'a mrexp3 \<Rightarrow> bool \<Rightarrow
   times3 (move3 c r m) (move3 c s (c \<in> fin1 r \<or> m \<and> nul r))" |
 "move3 c (Star3 r _) m = star3 (move3 c r (c \<in> fin1 r \<or> m))"
 
-primrec_new strip3 where
+primrec strip3 where
 "strip3 Zero3 = Zero" |
 "strip3 One3 = One" |
 "strip3 (Atom3 m x) = Atom (m, x)" |
@@ -84,7 +84,7 @@ primrec_new strip3 where
 lemma strip_mrexps3: "(strip o strip3) ` mrexps3 r = {r}"
 by (induction r) (auto simp: set_eq_subset subset_iff image_iff)
 
-primrec_new ok3 :: "'a mrexp3 \<Rightarrow> bool" where
+primrec ok3 :: "'a mrexp3 \<Rightarrow> bool" where
 "ok3 Zero3 = True" |
 "ok3 One3 = True" |
 "ok3 (Atom3 _ _) = True" |
