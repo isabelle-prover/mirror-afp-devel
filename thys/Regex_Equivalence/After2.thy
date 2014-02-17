@@ -33,7 +33,7 @@ definition[simp]: "plus2 r s == Plus2 r s (fin r \<or> fin s) (nul r \<or> nul s
 definition[simp]: "times2 r s == Times2 r s (fin r \<and> nul s \<or> fin s) (nul r \<and> nul s)"
 definition[simp]: "star2 r == Star2 r (fin r)"
 
-primrec_new empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
+primrec empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
 "empty_mrexp2 Zero = Zero2" |
 "empty_mrexp2 One = One2" |
 "empty_mrexp2 (Atom x) = Atom2 False x" |
@@ -41,7 +41,7 @@ primrec_new empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
 "empty_mrexp2 (Times r s) = times2 (empty_mrexp2 r) (empty_mrexp2 s)" |
 "empty_mrexp2 (Star r) = star2 (empty_mrexp2 r)"
 
-primrec_new shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mrexp2" where
+primrec shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mrexp2" where
 "shift2 _ One2 _ = One2" |
 "shift2 _ Zero2 _ = Zero2" |
 "shift2 m (Atom2 _ x) c = Atom2 (m \<and> (x=c)) x" |
@@ -49,7 +49,7 @@ primrec_new shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarro
 "shift2 m (Times2 r s _ _) c = times2 (shift2 m r c) (shift2 (m \<and> nul r \<or> fin r) s c)" |
 "shift2 m (Star2 r _) c =  star2 (shift2 (m \<or> fin r) r c)"
 
-primrec_new strip2 where
+primrec strip2 where
 "strip2 Zero2 = Zero" |
 "strip2 One2 = One" |
 "strip2 (Atom2 m x) = Atom (m, x)" |
