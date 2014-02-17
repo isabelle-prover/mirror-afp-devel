@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Random_Graph_Subgraph_Threshold" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories [document = false]
+    "../Girth_Chromatic/Girth_Chromatic"
+    "../Girth_Chromatic/Girth_Chromatic_Misc"
+  theories
+    Subgraph_Threshold
+  files
+    "document/root.tex"

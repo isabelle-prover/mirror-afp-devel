@@ -1,3 +1,27 @@
+[Selection_Heap_Sort]
+title = Verification of Selection and Heap Sort Using Locales
+author = Danijela Petrovic <www.matf.bg.ac.rs/~danijela>
+date = 2014-02-11
+topic = Computer Science/Algorithms
+abstract =
+  Stepwise program refinement techniques can be used to simplify
+  program verification. Programs are better understood since their
+  main properties are clearly stated, and verification of rather
+  complex algorithms is reduced to proving simple statements
+  connecting successive program specifications. Additionally, it is
+  easy to analyze similar algorithms and to compare their properties
+  within a single formalization. Usually, formal analysis is not done
+  in educational setting due to complexity of verification and a lack
+  of tools and procedures to make comparison easy. Verification of an
+  algorithm should not only give correctness proof, but also better
+  understanding of an algorithm. If the verification is based on small
+  step program refinement, it can become simple enough to be
+  demonstrated within the university-level computer science
+  curriculum. In this paper we demonstrate this and give a formal
+  analysis of two well known algorithms (Selection Sort and Heap Sort)
+  using proof assistant Isabelle/HOL and program refinement
+  techniques.
+
 [Real_Impl]
 title = Implementing field extensions of the form Q[sqrt(b)]
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
@@ -1510,6 +1534,13 @@ author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
 abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
+
+[Random_Graph_Subgraph_Threshold]
+title = Properties of Random Graphs -- Subgraph Containment
+author = Lars Hupel <mailto:hupel@in.tum.de>
+date = 2014-02-13
+topic = Mathematics/Graph Theory, Mathematics/Probability Theory
+abstract = Random graphs are graphs with a fixed number of vertices, where each edge is present with a fixed probability. We are interested in the probability that a random graph contains a certain pattern, for example a cycle or a clique. A very high edge probability gives rise to perhaps too many edges (which degrades performance for many algorithms), whereas a low edge probability might result in a disconnected graph. We prove a theorem about a threshold probability such that a higher edge probability will asymptotically almost surely produce a random graph with the desired subgraph. 
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs
