@@ -51,6 +51,7 @@
 <h3>Algorithms</h3>
 
 <div class="list">
+<a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;

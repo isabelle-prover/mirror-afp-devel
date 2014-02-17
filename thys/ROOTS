@@ -95,8 +95,8 @@ MiniML
 MonoBoolTranAlgebra
 MuchAdoAboutTwo
 Myhill-Nerode
-Native_Word
 Nat-Interval-Logic
+Native_Word
 Nominal2
 NormByEval
 Open_Induction
@@ -130,6 +130,7 @@ Robbins-Conjecture
 SATSolverVerification
 SIFPL
 Secondary_Sylow
+Selection_Heap_Sort
 SenSocialChoice
 Separation_Algebra
 Separation_Logic_Imperative_HOL
