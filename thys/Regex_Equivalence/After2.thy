@@ -16,7 +16,7 @@ datatype_new 'a mrexp2 =
   Plus2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
   Times2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
   Star2 "'a mrexp2" (fin: bool) (defaults nul: "\<lambda>(r::'a mrexp2) (f::bool). True")
-datatype_new_compat mrexp2
+datatype_compat mrexp2
 
 primrec mrexps2 :: "'a rexp \<Rightarrow> ('a mrexp2) set" where
   "mrexps2 Zero = {Zero2}"
