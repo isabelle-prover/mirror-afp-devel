@@ -26,6 +26,7 @@ header {* Prime products *}
 theory Prime_Product
 imports 
   NthRoot_Impl
+  "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
 text {*

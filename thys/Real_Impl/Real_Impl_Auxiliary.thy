@@ -27,7 +27,6 @@ theory Real_Impl_Auxiliary
 imports 
   "~~/src/HOL/Transcendental"
   "~~/src/HOL/Number_Theory/UniqueFactorization"
-  "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
 lemma multiplicity_prime: assumes p: "prime (i :: nat)" and ji: "j \<noteq> i"
@@ -157,6 +156,24 @@ proof (cases "x \<ge> 0")
   from False have y: "y \<ge> 0" "x = - y" by (auto simp: y_def)
   thus ?thesis by (auto simp: of_rat_minus)
 qed auto
+
+lemma mod_div_equality_int: "(n :: int) div x * x = n - n mod x"
+  using mod_div_equality[of n x] by arith
+
+lemma div_is_floor_divide: "of_int (n div y) = \<lfloor>rat_of_int n / rat_of_int y\<rfloor>"
+  unfolding Fract_of_int_quotient[symmetric] floor_Fract by simp
+
+lemma divide_less_floor1: "n / y < of_int (floor (n / y)) + 1" 
+  by (metis floor_less_iff less_add_one of_int_1 of_int_add)
+
+lemma square_lesseq_square: "\<And> x y. 0 \<le> (x :: 'a :: linordered_field) \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x * x \<le> y * y) = (x \<le> y)"
+  by (metis mult_mono mult_strict_mono' not_less)
+
+lemma square_less_square: "\<And> x y. 0 \<le> (x :: 'a :: linordered_field) \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x * x < y * y) = (x < y)"
+  by (metis mult_mono mult_strict_mono' not_less)
+
+lemma sqrt_sqrt[simp]: "x \<ge> 0 \<Longrightarrow> sqrt x * sqrt x = x"
+  by (metis real_sqrt_pow2 power2_eq_square)
 
 lemma abs_lesseq_square: "abs (x :: real) \<le> abs y \<longleftrightarrow> x * x \<le> y * y"
   using square_lesseq_square[of "abs x" "abs y"] by auto

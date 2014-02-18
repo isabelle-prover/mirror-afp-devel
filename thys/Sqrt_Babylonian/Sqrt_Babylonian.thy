@@ -23,7 +23,8 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
 theory Sqrt_Babylonian
-imports NthRoot
+imports 
+  "../Real_Impl/Real_Impl_Auxiliary"
 begin
 
 section Introduction
@@ -49,23 +50,6 @@ text {*
   For example, for the equation $(ax + by)^2 = 4x^2 - 12xy + 9y^2$ one easily figures out that
   $a^2 = 4, b^2 = 9$, and $ab = -6$, which results in a possible solution $a = \sqrt 4 = 2, b = - \sqrt 9 = -3$.
 *}
-
-section {* Auxiliary lemmas *}
-
-lemma div_is_floor_divide: "of_int (n div y) = \<lfloor>rat_of_int n / rat_of_int y\<rfloor>"
-  unfolding Fract_of_int_quotient[symmetric] floor_Fract by simp
-
-lemma divide_less_floor1: "n / y < of_int (floor (n / y)) + 1" 
-  by (metis floor_less_iff less_add_one of_int_1 of_int_add)
-
-lemma square_lesseq_square: "\<And> x y. 0 \<le> (x :: 'a :: linordered_field) \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x * x \<le> y * y) = (x \<le> y)"
-  by (metis mult_mono mult_strict_mono' not_less)
-
-lemma square_less_square: "\<And> x y. 0 \<le> (x :: 'a :: linordered_field) \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x * x < y * y) = (x < y)"
-  by (metis mult_mono mult_strict_mono' not_less)
-
-lemma sqrt_sqrt[simp]: "x \<ge> 0 \<Longrightarrow> sqrt x * sqrt x = x"
-  by (metis real_sqrt_pow2 power2_eq_square)
 
 section {* The Babylonian method *}
 
@@ -137,9 +121,6 @@ proof -
   from xy yx show ?thesis by auto
 qed
     
-lemma mod_div_equality_int: "(n :: int) div x * x = n - n mod x"
-  using mod_div_equality[of n x] by arith
-
 lemma iteration_mono_eq: assumes xn: "x * x = (n :: int)"
   shows "(n div x + x) div 2 = x" unfolding xn[symmetric]
   by simp

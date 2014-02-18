@@ -2,6 +2,8 @@ chapter AFP
 
 session Sqrt_Babylonian (AFP) = HOL +
   options [timeout = 600]
+  theories[document = false]
+    "../Real_Impl/Real_Impl_Auxiliary"
   theories
     Sqrt_Babylonian
   files
