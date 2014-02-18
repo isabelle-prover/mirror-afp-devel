@@ -668,6 +668,17 @@ definition
 lemma het_gt_0_imp_noteq_ne: "het l > 0 \<Longrightarrow> list_neq l (mean l) \<noteq> []"
   unfolding het_def by simp
 
+lemma het_gt_0I: assumes a: "a \<in> set xs" and b: "b \<in> set xs" and neq: "a \<noteq> b"
+  shows "het xs > 0"
+proof (rule ccontr)
+  assume "\<not> ?thesis"
+  hence "het xs = 0" by auto
+  from this[unfolded het_def] have "list_neq xs (mean xs) = []" by simp
+  from arg_cong[OF this, of set] have mean: "\<And> x. x \<in> set xs \<Longrightarrow> x = mean xs" by auto
+  from mean[OF a] mean[OF b] neq show False by auto
+qed
+
+
 text {* @{text "\<gamma>-eq"}: Two lists are $\gamma$-equivalent if and only
 if they both have the same number of elements and the same arithmetic
 means. *}
