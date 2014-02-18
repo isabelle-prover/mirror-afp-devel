@@ -6,8 +6,9 @@ session Real_Impl (AFP) = HOL +
     "../Cauchy/CauchysMeanTheorem"
     "Show_Instances"
     "~~/src/HOL/Number_Theory/UniqueFactorization"
+    "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
   theories
-    "../Real_Impl/Real_Impl_Auxiliary"
+    Real_Impl_Auxiliary
     "../Real_Impl/NthRoot_Impl"
   theories [document = false] 
     "../Sqrt_Babylonian/Sqrt_Babylonian"

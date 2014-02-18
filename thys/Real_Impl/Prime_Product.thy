@@ -25,6 +25,7 @@ header {* Prime products *}
 
 theory Prime_Product
 imports 
+  Real_Impl_Auxiliary
   "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 

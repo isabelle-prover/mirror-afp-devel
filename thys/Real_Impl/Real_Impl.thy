@@ -25,7 +25,6 @@ header {* A representation of real numbers via triples *}
 
 theory Real_Impl
 imports 
-  "../Real_Impl/Real_Impl_Auxiliary"
   "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 

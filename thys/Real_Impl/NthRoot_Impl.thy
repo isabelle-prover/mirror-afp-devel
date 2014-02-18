@@ -25,7 +25,7 @@ header {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
 imports 
-  "../Real_Impl/Real_Impl_Auxiliary"
+  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
   "../Cauchy/CauchysMeanTheorem"
 begin
 

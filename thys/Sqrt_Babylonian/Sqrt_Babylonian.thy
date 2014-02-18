@@ -24,6 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 theory Sqrt_Babylonian
 imports 
+  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
   "../Real_Impl/NthRoot_Impl"
 begin
 
