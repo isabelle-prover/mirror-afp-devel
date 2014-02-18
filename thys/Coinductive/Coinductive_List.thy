@@ -233,6 +233,19 @@ instance ..
 
 end
 
+instantiation llist :: (narrowing) narrowing begin
+
+function narrowing_llist where
+  "narrowing_llist n = Quickcheck_Narrowing.sum
+    (Quickcheck_Narrowing.cons LNil)
+    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons LCons) narrowing) narrowing_llist)
+    n"
+by pat_completeness simp
+termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
+
+instance ..
+end
+
 subsection {* Function definitions *}
 
 primcorec lappend :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
