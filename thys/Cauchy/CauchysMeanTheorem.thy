@@ -849,9 +849,9 @@ text {* Furthermore we present an important result - that a
 homogeneous collection has equal geometric and arithmetic means. *}
 
 lemma het_base:
-  shows "pos x \<and> x\<noteq>[] \<and> het x = 0 \<Longrightarrow> gmean x = mean x"
+  shows "pos x \<and> het x = 0 \<Longrightarrow> gmean x = mean x"
 proof -
-  assume ass: "pos x \<and> x\<noteq>[] \<and> het x = 0"
+  assume ass: "pos x \<and> het x = 0"
   hence
     xne: "x\<noteq>[]" and
     hetx: "het x = 0" and
@@ -1165,5 +1165,45 @@ proof -
     thus ?thesis by simp
   qed
 qed
+
+text {* In the equality version we prove that the geometric mean
+  is identical to the arithmetic mean iff the collection is 
+  homogeneous. *}
+theorem CauchysMeanTheorem_Eq:
+  fixes z::"real list"
+  assumes "pos z"
+  shows "gmean z = mean z \<longleftrightarrow> het z = 0"
+proof 
+  assume "het z = 0"
+  with het_base[of z] `pos z` show "gmean z = mean z" by auto
+next
+  assume eq: "gmean z = mean z"
+  show "het z = 0"
+  proof (rule ccontr)
+    assume "het z \<noteq> 0"
+    hence "het z > 0" by auto
+    moreover obtain k where "k = het z" by simp
+    moreover with calculation `pos z` existence_of_het0 have
+      "\<exists>y. gmean y > gmean z \<and> \<gamma>_eq (z,y) \<and> het y = 0 \<and> pos y" by auto
+    then obtain \<alpha> where
+      "gmean \<alpha> > gmean z \<and> \<gamma>_eq (z,\<alpha>) \<and> het \<alpha> = 0 \<and> pos \<alpha>" ..
+    with het_base \<gamma>_eq_def pos_imp_ne have
+      "mean z = mean \<alpha>" and
+      "gmean \<alpha> > gmean z" and
+      "gmean \<alpha> = mean \<alpha>" by auto
+    hence "gmean z < mean z" by simp
+    thus False using eq by auto
+  qed
+qed
+ 
+corollary CauchysMeanTheorem_Less:
+  fixes z::"real list"
+  assumes "pos z" and "het z > 0"
+  shows "gmean z < mean z"
+  using 
+    CauchysMeanTheorem[OF `pos z`] 
+    CauchysMeanTheorem_Eq[OF `pos z`]
+    `het z > 0`
+    by auto
 
 end
