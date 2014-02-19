@@ -62,7 +62,7 @@ We provide a wrapper around the partial-function command that supports mutual re
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

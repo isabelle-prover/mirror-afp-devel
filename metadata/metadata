@@ -716,6 +716,7 @@ title = Mutually Recursive Partial Functions
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 topic = Computer Science/Functional Programming
 date = 2014-02-18
+license = LGPL
 abstract = We provide a wrapper around the partial-function command that supports mutual recursion.
 
 [Coinductive]
