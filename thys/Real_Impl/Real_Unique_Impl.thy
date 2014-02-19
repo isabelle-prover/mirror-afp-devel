@@ -42,24 +42,24 @@ typedef mini_alg_unique =
 
 setup_lifting type_definition_mini_alg_unique
 
-lift_definition real_of_u :: "mini_alg_unique \<Rightarrow> real" is real_of by simp
-lift_definition mau_floor :: "mini_alg_unique \<Rightarrow> int" is ma_floor by simp
+lift_definition real_of_u :: "mini_alg_unique \<Rightarrow> real" is real_of .
+lift_definition mau_floor :: "mini_alg_unique \<Rightarrow> int" is ma_floor .
 lift_definition mau_of_rat :: "rat \<Rightarrow> mini_alg_unique" is ma_of_rat by (transfer, auto)
-lift_definition mau_rat :: "mini_alg_unique \<Rightarrow> rat" is ma_rat by simp
-lift_definition mau_base :: "mini_alg_unique \<Rightarrow> nat" is ma_base by simp
-lift_definition mau_coeff :: "mini_alg_unique \<Rightarrow> rat" is ma_coeff by simp
+lift_definition mau_rat :: "mini_alg_unique \<Rightarrow> rat" is ma_rat .
+lift_definition mau_base :: "mini_alg_unique \<Rightarrow> nat" is ma_base .
+lift_definition mau_coeff :: "mini_alg_unique \<Rightarrow> rat" is ma_coeff .
 lift_definition mau_uminus :: "mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_uminus by (transfer, auto)
-lift_definition mau_compatible :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_compatible by simp
-lift_definition mau_ge_0 :: "mini_alg_unique \<Rightarrow> bool" is ma_ge_0 by (transfer, auto)
+lift_definition mau_compatible :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_compatible .
+lift_definition mau_ge_0 :: "mini_alg_unique \<Rightarrow> bool" is ma_ge_0 .
 lift_definition mau_inverse :: "mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_inverse 
   by (transfer, auto simp: ma_normalize_def Let_def split: if_splits)
 lift_definition mau_plus :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_plus
   by (transfer, auto simp: ma_normalize_def split: if_splits)
 lift_definition mau_times :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_times 
   by (transfer, auto simp: ma_normalize_def split: if_splits)
-lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bool" is "op =" by simp
-lift_definition mau_equal :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_identity by simp
-lift_definition mau_is_rat :: "mini_alg_unique \<Rightarrow> bool" is ma_is_rat by simp
+lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bool" is "op =" .
+lift_definition mau_equal :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_identity .
+lift_definition mau_is_rat :: "mini_alg_unique \<Rightarrow> bool" is ma_is_rat .
 
 lemma mau_floor: "floor (real_of_u r) = mau_floor r" 
   using ma_floor by (transfer, auto)
@@ -326,9 +326,9 @@ lift_definition ma_show_real :: "mini_alg \<Rightarrow> string" is
       if q = 0 then shows p [] else 
       if p = 0 then qb [] else
       if q < 0 then ((shows p \<circ> qb) []) 
-      else ((shows p \<circ> shows ''+'' \<circ> qb) [])" by simp
+      else ((shows p \<circ> shows ''+'' \<circ> qb) [])" .
 
-lift_definition mau_show_real :: "mini_alg_unique \<Rightarrow> string" is ma_show_real by simp
+lift_definition mau_show_real :: "mini_alg_unique \<Rightarrow> string" is ma_show_real .
 
 definition show_real :: "real \<Rightarrow> string" where
   "show_real x = (if (\<exists> y. x = real_of_u y) then mau_show_real (THE y. x = real_of_u y) else [])"
