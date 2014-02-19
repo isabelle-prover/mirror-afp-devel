@@ -7,7 +7,7 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "../Regular-Sets/Regular_Exp"
     "../Regular-Sets/NDerivative"
     "~~/src/HOL/BNF/Ctr_Sugar"
-    "~~/src/HOL/ex/Interpretation_with_Defs"
+    "~~/src/Tools/Permanent_Interpretation"
   theories
     Regex_Equivalence
   files

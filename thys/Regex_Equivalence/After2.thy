@@ -148,12 +148,12 @@ instance by intro_classes (transfer, auto simp: eq_mrexp2_eq)
 
 end
 
-interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
-  defines after2_closure is "rexp_DA.closure delta_okm nullable_okm"
-  and     check_eqv_a2 is "rexp_DA.check_eqv init_okm delta_okm nullable_okm"
-  and     reachable_a2 is "rexp_DA.reachable init_okm delta_okm"
-  and     automaton_a2 is "rexp_DA.automaton init_okm delta_okm"
-  and     match_a2 is "rexp_DA.match init_okm delta_okm nullable_okm"
+permanent_interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
+  defining after2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
+    and check_eqv_a2 = "rexp_DA.check_eqv init_okm delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
+    and reachable_a2 = "rexp_DA.reachable (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp2) delta_okm"
+    and automaton_a2 = "rexp_DA.automaton (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp2) delta_okm"
+    and match_a2 = "rexp_DA.match init_okm delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
 proof
   case goal1 show "lang_okm (init_okm r) = lang r"
     by transfer (auto simp: split_beta init_a_def nonfinal_empty_mrexp Lm_follow Lm_empty
