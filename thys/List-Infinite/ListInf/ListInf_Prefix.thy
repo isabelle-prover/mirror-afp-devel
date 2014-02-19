@@ -3,10 +3,10 @@
     Author:     David Trachtenherz
 *)
 
-header {* Prefixes on finite and infinite lists *}
+header {* Prefices on finite and infinite lists *}
 
 theory ListInf_Prefix
-imports ListInf
+imports "~~/src/HOL/Library/Sublist" ListInf
 begin
 
 
@@ -517,27 +517,27 @@ lemma i_take_length_prefix_conv: "prefixeq (f \<Down> length xs) xs = (xs \<sqsu
 thm prefixeq_length_le_eq_conv
 by (simp add: iprefix_eq_iprefix_take prefixeq_length_le_eq_conv[symmetric])
 
-thm List_Prefix.prefixeqI
+thm Sublist.prefixeqI
 lemma iprefixI[intro?]: "f = xs \<frown> g \<Longrightarrow> xs \<sqsubseteq> f"
 by (unfold iprefix_def, simp)
-thm List_Prefix.prefixeqE
+thm Sublist.prefixeqE
 lemma iprefixE[elim?]: "\<lbrakk> xs \<sqsubseteq> f; \<And>g. f = xs \<frown> g \<Longrightarrow> C \<rbrakk> \<Longrightarrow> C"
 by (unfold iprefix_def, blast)
 
 
-thm List_Prefix.Nil_prefixeq
+thm Sublist.Nil_prefixeq
 lemma Nil_iprefix[iff]: "[] \<sqsubseteq> f"
 by (unfold iprefix_def, simp)
 
-thm List_Prefix.same_prefixeq_prefixeq
+thm Sublist.same_prefixeq_prefixeq
 lemma same_prefix_iprefix[simp]: "(xs @ ys \<sqsubseteq> xs \<frown> f) = (ys \<sqsubseteq> f)"
 by (simp add: iprefix_eq_iprefix_take)
 
-thm List_Prefix.prefixeq_prefixeq
+thm Sublist.prefixeq_prefixeq
 lemma prefix_iprefix[simp]: "prefixeq xs ys \<Longrightarrow> xs \<sqsubseteq> ys \<frown> f"
 by (clarsimp simp: prefixeq_def iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
 
-thm List_Prefix.append_prefixeqD
+thm Sublist.append_prefixeqD
 lemma append_iprefixD: "xs @ ys \<sqsubseteq> f \<Longrightarrow> xs \<sqsubseteq> f"
 by (clarsimp simp: iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
 
@@ -545,7 +545,7 @@ lemma iprefix_length_le_imp_prefixeq: "
   \<lbrakk> xs \<sqsubseteq> ys \<frown> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefixeq xs ys"
 by (clarsimp simp: iprefix_eq_iprefix_take_ex take_is_prefixeq)
 
-thm List_Prefix.prefixeq_append
+thm Sublist.prefixeq_append
 lemma iprefix_i_append: "
   (xs \<sqsubseteq> ys \<frown> f) = (prefixeq xs ys \<or> (\<exists>zs. xs = ys @ zs \<and> zs \<sqsubseteq> f))"
 apply (rule iffI)
@@ -565,14 +565,14 @@ lemma iprefix_same_length_le: "
   \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefixeq xs ys"
 by (clarsimp simp: iprefix_eq_iprefix_take_ex i_take_prefixeq_le_conv)
 
-thm List_Prefix.prefixeq_same_cases
+thm Sublist.prefixeq_same_cases
 lemma iprefix_same_cases: "
   \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> prefixeq xs ys \<or> prefixeq ys xs"
 apply (case_tac "length xs \<le> length ys")
 apply (simp add: iprefix_same_length_le)+
 done
 
-thm List_Prefix.set_mono_prefixeq
+thm Sublist.set_mono_prefixeq
 lemma set_mono_iprefix: "xs \<sqsubseteq> f \<Longrightarrow> set xs \<subseteq> range f"
 by (unfold iprefix_def, fastforce)
 

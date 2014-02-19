@@ -6,7 +6,7 @@
 header {* \isaheader{Correctness of Stage 2} *}
 
 theory Correctness2
-imports Compiler2
+imports "~~/src/HOL/Library/Sublist" Compiler2
 begin
 
 (*<*)hide_const (open) Throw(*>*)
