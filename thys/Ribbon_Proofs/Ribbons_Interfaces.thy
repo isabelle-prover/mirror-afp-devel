@@ -55,7 +55,7 @@ done
 
 lift_definition 
   Ribbon :: "assertion \<Rightarrow> interface" 
-is "Ribbon_conc" by (rule equiv_int.refl)
+is "Ribbon_conc" .
 
 
 lift_definition

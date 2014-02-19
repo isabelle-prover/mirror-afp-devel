@@ -131,8 +131,7 @@ where "Set_RBT \<equiv> Mapping_RBT"
 subsection {* Primitive operations *}
 
 lift_definition member :: "'a :: corder set_rbt \<Rightarrow> 'a \<Rightarrow> bool" is
-  "\<lambda>t x. x \<in> dom (ord.rbt_lookup cless t)"
-by simp
+  "\<lambda>t x. x \<in> dom (ord.rbt_lookup cless t)" .
 
 abbreviation empty :: "'a :: corder set_rbt"
 where "empty \<equiv> RBT_Mapping2.empty"
@@ -167,11 +166,11 @@ by(auto 4 3 intro: linorder.is_rbt_rbt_minus ID_corder)
 abbreviation filter :: "('a :: corder \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "filter P \<equiv> RBT_Mapping2.filter (P \<circ> fst)"
 
-lift_definition fold :: "('a :: corder \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_rbt \<Rightarrow> 'b \<Rightarrow> 'b" is "\<lambda>f. RBT_Impl.fold (\<lambda>a _. f a)" ..
+lift_definition fold :: "('a :: corder \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_rbt \<Rightarrow> 'b \<Rightarrow> 'b" is "\<lambda>f. RBT_Impl.fold (\<lambda>a _. f a)" .
 
-lift_definition fold1 :: "('a :: corder \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a" is "RBT_Impl_fold1" ..
+lift_definition fold1 :: "('a :: corder \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a" is "RBT_Impl_fold1" .
 
-lift_definition keys :: "'a :: corder set_rbt \<Rightarrow> 'a list" is "RBT_Impl.keys" ..
+lift_definition keys :: "'a :: corder set_rbt \<Rightarrow> 'a list" is "RBT_Impl.keys" .
 
 abbreviation all :: "('a :: corder \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> bool"
 where "all P \<equiv> RBT_Mapping2.all (\<lambda>k _. P k)"

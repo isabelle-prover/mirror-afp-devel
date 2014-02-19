@@ -162,8 +162,8 @@ lift_definition init_okm :: "'a rexp \<Rightarrow> 'a ok_mrexp3" is init_m
 lift_definition delta_okm :: "'a \<Rightarrow> 'a ok_mrexp3 \<Rightarrow> 'a ok_mrexp3" is
   "\<lambda>a (r, m). (move3 a r False, a \<in> fin1 r)"
   unfolding mem_Collect_eq split_beta fst_conv by (intro ok3_move3) simp
-lift_definition nullable_okm :: "'a ok_mrexp3 \<Rightarrow> bool" is "snd" ..
-lift_definition lang_okm :: "'a ok_mrexp3 \<Rightarrow> 'a lang" is "\<lambda>(r, m). L_b (strip3 r, m)" ..
+lift_definition nullable_okm :: "'a ok_mrexp3 \<Rightarrow> bool" is "snd" .
+lift_definition lang_okm :: "'a ok_mrexp3 \<Rightarrow> 'a lang" is "\<lambda>(r, m). L_b (strip3 r, m)" .
 
 
 instantiation ok_mrexp3 :: (equal) "equal"
@@ -188,7 +188,7 @@ lemma eq_mrexp3_eq: "\<lbrakk>ok3 r; ok3 s\<rbrakk> \<Longrightarrow> eq_mrexp3 
   by (metis eq_mrexp3_imp_eq eq_mrexp3_refl)
 
 lift_definition equal_ok_mrexp3 :: "'a ok_mrexp3 \<Rightarrow> 'a ok_mrexp3 \<Rightarrow> bool"
-   is "\<lambda>(r1, b1) (r3, b3). b1 = b3 \<and> eq_mrexp3 r1 r3" ..
+   is "\<lambda>(r1, b1) (r3, b3). b1 = b3 \<and> eq_mrexp3 r1 r3" .
 
 instance by intro_classes (transfer, auto simp: eq_mrexp3_eq)
 

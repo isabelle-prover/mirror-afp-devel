@@ -95,10 +95,10 @@ lift_definition update_with :: "'v \<Rightarrow> 'k \<Rightarrow> ('v \<Rightarr
 lift_definition delete :: "'k \<Rightarrow> ('k, 'v) alist \<Rightarrow> ('k, 'v) alist" is "delete_aux"
 by simp
 
-lift_definition keys :: "('k, 'v) alist \<Rightarrow> 'k set" is "set \<circ> map fst" ..
+lift_definition keys :: "('k, 'v) alist \<Rightarrow> 'k set" is "set \<circ> map fst" .
 
 lift_definition set :: "('key, 'val) alist \<Rightarrow> ('key \<times> 'val) set"
-is "List.set" ..
+is "List.set" .
 
 lemma lookup_update_with [simp]: 
   "DAList.lookup (update_with v k f al) = (DAList.lookup al)(k \<mapsto> case DAList.lookup al k of None \<Rightarrow> f v | Some v \<Rightarrow> f v)"

@@ -14,8 +14,7 @@ typedef ('a, 'b) slist =
 
 setup_lifting type_definition_slist
 
-lift_definition map_of_slist::"(nat, 'a::zero) slist \<Rightarrow> nat \<Rightarrow> 'a option" is map_of
-  ..
+lift_definition map_of_slist::"(nat, 'a::zero) slist \<Rightarrow> nat \<Rightarrow> 'a option" is map_of .
 
 lemma finite_dom_map_of_slist[intro, simp]: "finite (dom (map_of_slist xs))"
   by transfer (auto simp: finite_dom_map_of)
@@ -40,8 +39,7 @@ primrec degree_list::"(nat \<times> 'a::zero) list \<Rightarrow> nat" where
   "degree_list [] = 0"
 | "degree_list (x#xs) = (if snd x = 0 then degree_list xs else Suc (fst x))"
 
-lift_definition degree_slist::"(nat, 'a::zero) slist \<Rightarrow> nat" is degree_list
-  ..
+lift_definition degree_slist::"(nat, 'a::zero) slist \<Rightarrow> nat" is degree_list .
 
 lemma degree_list_eq_zeroD:
   assumes "degree_list xs = 0"
@@ -164,7 +162,7 @@ lemma compute_add_pdevs[code]: "add_pdevs (Pdevs xs) (Pdevs ys) = Pdevs (add_sli
 
 subsection {* Set of Coefficients *}
 
-lift_definition set_slist::"(nat, 'a::real_vector) slist \<Rightarrow> (nat * 'a) set" is set ..
+lift_definition set_slist::"(nat, 'a::real_vector) slist \<Rightarrow> (nat * 'a) set" is set .
 
 lemma finite_set_slist[intro, simp]: "finite (set_slist xs)"
   by transfer simp
@@ -172,7 +170,7 @@ lemma finite_set_slist[intro, simp]: "finite (set_slist xs)"
 subsection {* Domain *}
 
 lift_definition list_of_slist::"('a::linorder, 'b::zero) slist \<Rightarrow> ('a * 'b) list"
-  is "\<lambda>xs. filter (\<lambda>x. snd x \<noteq> 0) xs" ..
+  is "\<lambda>xs. filter (\<lambda>x. snd x \<noteq> 0) xs" .
 
 lemma compute_pdevs_domain[code]: "pdevs_domain (Pdevs xs) = set (map fst (list_of_slist xs))"
   unfolding pdevs_domain_def
@@ -217,7 +215,7 @@ subsection {* Application *}
 
 text {* TODO: slightly more efficient---sorted---implementation... *}
 lift_definition slist_apply::"('a::linorder, 'b::zero) slist \<Rightarrow> 'a \<Rightarrow> 'b" is
-  "\<lambda>xs i. the_default 0 (map_of xs i)" ..
+  "\<lambda>xs i. the_default 0 (map_of xs i)" .
 
 lemma compute_pdevs_apply[code]: "pdevs_apply (Pdevs x) i = slist_apply x i"
   by transfer (auto simp: Pdevs_raw_def)
@@ -226,7 +224,7 @@ lemma compute_pdevs_apply[code]: "pdevs_apply (Pdevs x) i = slist_apply x i"
 subsection {* Total Deviation *}
 
 lift_definition tdev_slist::"(nat, 'a::ordered_euclidean_space) slist \<Rightarrow> 'a" is
-  "listsum o map (abs o snd)" ..
+  "listsum o map (abs o snd)" .
 
 lemma tdev_slist_setsum: "tdev_slist xs = setsum (abs \<circ> snd) (set_slist xs)"
   by transfer (auto simp: distinct_map listsum_distinct_conv_setsum_set[symmetric] o_def)
@@ -463,7 +461,7 @@ lemma compute_pdev_upd[code]: "pdev_upd (Pdevs xs) n x = Pdevs (update_slist n x
 subsection {* Approximate Total Deviation *}
 
 lift_definition fold_slist::"('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> (nat, 'a::zero) slist \<Rightarrow> 'b \<Rightarrow> 'b"
-  is "\<lambda>f xs z. fold (f o snd) (filter (\<lambda>x. snd x \<noteq> 0) xs) z" ..
+  is "\<lambda>f xs z. fold (f o snd) (filter (\<lambda>x. snd x \<noteq> 0) xs) z" .
 
 lemma Pdevs_raw_Cons:
   "Pdevs_raw ((a, b) # xs) = (\<lambda>i. if i = a then b else Pdevs_raw xs i)"
