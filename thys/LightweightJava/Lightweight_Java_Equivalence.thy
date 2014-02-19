@@ -6,8 +6,6 @@
 
 theory Lightweight_Java_Equivalence imports Lightweight_Java_Definition begin
 
-hide_const (open) List_Prefix.prefix
-
 (* BEGIN: HELPER FUNCTIONS *)
 
 lemma map_id[simp]: "map id list = list" by (induct list) auto
