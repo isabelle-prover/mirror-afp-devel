@@ -421,11 +421,11 @@ begin
 
 lemma Inf_fin_member: 
   "dxs \<noteq> empty \<Longrightarrow> Inf_fin (Collect (member (dxs :: 'a set_dlist))) = fold inf (tl dxs) (hd dxs)"
-by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Inf_fin.set_eq_fold simp del: set.simps)
+by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Inf_fin.set_eq_fold simp del: set_simps)
 
 lemma Sup_fin_member: 
   "dxs \<noteq> empty \<Longrightarrow> Sup_fin (Collect (member (dxs :: 'a set_dlist))) = fold sup (tl dxs) (hd dxs)"
-by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Sup_fin.set_eq_fold simp del: set.simps)
+by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Sup_fin.set_eq_fold simp del: set_simps)
 
 end
 

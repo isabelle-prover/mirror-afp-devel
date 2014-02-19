@@ -2261,7 +2261,7 @@ theorem natded_complete: "closed 0 p \<Longrightarrow> list_all (closed 0) ps \<
   apply (rule_tac S="set (Neg p # ps)" in model_existence) 
   apply (rule deriv_consistency)
   apply (rule infinite_UNIV_nat)
-  apply (simp del: set.simps)
+  apply (simp del: set_simps)
   apply (rule exI)
   apply (rule conjI)
   apply (rule refl)

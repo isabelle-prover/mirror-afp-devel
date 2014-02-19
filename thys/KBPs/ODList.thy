@@ -76,7 +76,7 @@ lemma msort_distinct_sorted[simp]:
 lemma msort_set[simp]:
   "set (msort xs) = set xs"
   by (induct xs rule: msort.induct)
-     (simp_all, metis List.set.simps(2) append_take_drop_id set_append) (* thankyou sledgehammer! *)
+     (simp_all, metis List.set_simps(2) append_take_drop_id set_append) (* thankyou sledgehammer! *)
 
 lemma msort_remdups[simp]:
   "remdups (msort xs) = msort xs"

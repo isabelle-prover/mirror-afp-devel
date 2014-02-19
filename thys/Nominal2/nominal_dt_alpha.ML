@@ -685,7 +685,7 @@ fun raw_fv_bn_rsp_aux ctxt alpha_result fvs bns fv_bns simps =
     val prop3 = map2 (fn t1 => fn t2 => (t1, fn (x, y) => mk_eq' t2 x y)) alpha_bn_trms fv_bns
 
     val simpset =
-      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_fv.simps set.simps append.simps} 
+      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_fv.simps set_simps append.simps} 
       @ @{thms Un_assoc Un_insert_left Un_empty_right Un_empty_left}) 
   in
     alpha_prove (alpha_trms @ alpha_bn_trms) (prop1 @ prop2 @ prop3) alpha_raw_induct 

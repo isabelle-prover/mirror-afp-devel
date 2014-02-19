@@ -1524,7 +1524,7 @@ fun approximate_affine (name, term) lthy =
         THEN REPEAT (
           TRY (REPEAT (rtac (@{thm length_eq_ConsI}) 1))
           THEN rtac @{thm length_eq_NilI} 1)
-        THEN Local_Defs.unfold_tac context @{thms zip_Cons_Cons zip_Nil set.simps}
+        THEN Local_Defs.unfold_tac context @{thms zip_Cons_Cons zip_Nil set_simps}
         THEN blast_tac context 1
         )
     val correct_thm = singleton (Proof_Context.export lthy5 lthy'') interpret_eq_thm
