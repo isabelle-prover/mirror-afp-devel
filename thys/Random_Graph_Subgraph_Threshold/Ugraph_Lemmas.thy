@@ -4,7 +4,7 @@ theory Ugraph_Lemmas
 imports
   Prob_Lemmas
   "../Girth_Chromatic/Girth_Chromatic"
-  Big_Operators
+  Lattices_Big
 begin
 
 text{* The complete graph is a graph where all possible edges are present. It is wellformed by
@@ -455,11 +455,11 @@ definition density :: "ugraph \<Rightarrow> real" where
 text{* The maximum density of a graph is the density of its densest nonempty subgraph. *}
 
 definition max_density :: "ugraph \<Rightarrow> real" where
-"max_density G = Big_Operators.Max (density ` nonempty_subgraphs G)"
+"max_density G = Lattices_Big.Max (density ` nonempty_subgraphs G)"
 
 text{* We prove some obvious results about the maximum density, such as that there is a subgraph
 which has the maximum density and that the (maximum) density is preserved by isomorphisms. The
-proofs are a bit complicated by the fact that most facts about @{term Big_Operators.Max} require
+proofs are a bit complicated by the fact that most facts about @{term Lattices_Big.Max} require
 non-emptiness of the target set, but we need that anyway to get a value out of it. *}
 
 lemma subgraph_has_max_density:

@@ -1,5 +1,4 @@
 (*  Title:      Jinja/J/execute_WellType.thy
-    ID:         $Id: execute_WellType.thy,v 1.4 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)

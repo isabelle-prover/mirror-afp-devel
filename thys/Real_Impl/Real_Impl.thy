@@ -25,7 +25,7 @@ header {* A representation of real numbers via triples *}
 
 theory Real_Impl
 imports 
-  Real_Impl_Auxiliary 
+  "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
 text {* We represent real numbers of the form $p + q \cdot \sqrt{b}$ for $p,q \in \rats$, $n \in \nats$
