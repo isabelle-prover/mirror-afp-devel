@@ -707,7 +707,7 @@ fun raw_size_rsp_aux ctxt alpha_result simps =
   
     val simpset =
       put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_alpha_def prod_rel_def 
-      permute_prod_def prod.cases prod.recs})
+      permute_prod_def prod.case prod.rec})
 
     val tac = (TRY o REPEAT o etac @{thm exE}) THEN' asm_full_simp_tac simpset
   in
@@ -721,7 +721,7 @@ fun raw_constr_rsp_tac ctxt alpha_intros simps =
   let
     val pre_simpset = put_simpset HOL_ss ctxt addsimps @{thms fun_rel_def}
     val post_simpset = put_simpset HOL_ss ctxt addsimps @{thms alphas prod_alpha_def prod_rel_def 
-      prod_fv.simps fresh_star_zero permute_zero prod.cases} @ simps
+      prod_fv.simps fresh_star_zero permute_zero prod.case} @ simps
   in
     asm_full_simp_tac pre_simpset
     THEN' REPEAT o (resolve_tac @{thms allI impI})

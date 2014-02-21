@@ -241,7 +241,7 @@ fun derive_ceq_ceq dtyp_name thy =
                 if k = 1 then 
                   Method.insert_tac [prem] 1
                   THEN unfold_tac ctxt [ID_eq_thm]
-                  THEN unfold_tac ctxt @{thms option.cases}
+                  THEN unfold_tac ctxt @{thms option.case}
                   THEN split_tac (ceq_eq_thm OF [ID_eq_thm]) rest
               else 
                   Method.insert_tac [prem] 1

@@ -147,8 +147,8 @@ done
 datatype mapping_impl = Mapping_IMPL
 declare
   mapping_impl.eq.simps [code del]
-  mapping_impl.recs [code del]
-  mapping_impl.cases [code del]
+  mapping_impl.rec [code del]
+  mapping_impl.case [code del]
 
 lemma [code]:
   fixes x :: mapping_impl

@@ -151,7 +151,7 @@ lemma dres_cases[cases type, case_names dSUCCEED dRETURN dFAIL]:
   obtains "x=dSUCCEED" | r where "x=dRETURN r" | "x=dFAIL" 
   unfolding bot_dres_def top_dres_def by (cases x) auto
 
-lemmas [simp] = dres.cases(1,2)[folded top_dres_def bot_dres_def]
+lemmas [simp] = dres.case(1,2)[folded top_dres_def bot_dres_def]
 
 lemma dres_order_simps[simp]:
   "x\<le>dSUCCEED \<longleftrightarrow> x=dSUCCEED" 

@@ -1824,8 +1824,8 @@ datatype set_impl = Set_IMPL
 declare
   set_impl.eq.simps [code del]
   set_impl.size [code del]
-  set_impl.recs [code del]
-  set_impl.cases [code del]
+  set_impl.rec [code del]
+  set_impl.case [code del]
 
 lemma [code]: 
   fixes x :: set_impl

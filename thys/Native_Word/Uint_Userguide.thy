@@ -243,7 +243,7 @@ code_datatype Bool Word'
 
 lift_definition case_val' :: "(bool \<Rightarrow> 'a) \<Rightarrow> (uint32 \<Rightarrow> 'a) \<Rightarrow> val \<Rightarrow> 'a" is case_val .
 
-lemmas [code, simp] = val.cases [Transfer.transferred]
+lemmas [code, simp] = val.case [Transfer.transferred]
 
 lemma case_val'_cert:
   fixes bool word' b w

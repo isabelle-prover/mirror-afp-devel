@@ -129,7 +129,7 @@ by simp
 lemmas predicate_code_inline [code_unfold] =
   Predicate.single_bind Predicate.bind_single split
   eq_i_o_conv_single eq_o_i_conv_single
-  sup_case_exp_case_exp_same sup_case_exp_case_exp_other unit.cases
+  sup_case_exp_case_exp_same sup_case_exp_case_exp_other unit.case
   sup_bot1 sup_bot2 sup_case_val_case_val_same sup_case_bool_case_bool_same
 
 lemma op_case_ty_case_ty_same:
