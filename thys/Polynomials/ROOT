@@ -1,6 +1,6 @@
 chapter AFP
 
-session Polynomials (AFP) = HOL +
+session Polynomials (AFP) = "Abstract-Rewriting" +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"

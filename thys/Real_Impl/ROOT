@@ -1,6 +1,6 @@
 chapter AFP
 
-session Real_Impl (AFP) = HOL +
+session Real_Impl (AFP) = Cauchy +
   options [timeout = 300]
   theories [document = false]
     "../Cauchy/CauchysMeanTheorem"
