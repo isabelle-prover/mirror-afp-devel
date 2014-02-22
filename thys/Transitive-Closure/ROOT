@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Transitive-Closure" (AFP) = HOL +
+session "Transitive-Closure" (AFP) = Collections +
   options [timeout = 600]
   theories [document = false]
     "../Collections/ICF/impl/RBTMapImpl"
