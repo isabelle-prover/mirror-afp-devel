@@ -2764,14 +2764,14 @@ next
                                      (\<lambda>v. a (v - Suc n))"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc n"]) 
     apply (simp_all split: nat.splits)
-    apply (metis diff_Suc nat.cases(2))
+    apply (metis diff_Suc nat.case(2))
   done
 
   from invar_rr have rr_sem: "\<And>a b. robdd_\<alpha> rr (\<lambda>v. case_nat b a (v - n)) = robdd_\<alpha> rr 
                                      (\<lambda>v. a (v - Suc n))"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc n"]) 
     apply (simp_all split: nat.splits)
-    apply (metis diff_Suc nat.cases(2))
+    apply (metis diff_Suc nat.case(2))
   done
 
   show ?case

@@ -90,7 +90,7 @@ where
                    | Some a \<Rightarrow> {(h(a \<mapsto> blank P hT), a)})"
 
 definition sc_typeof_addr :: "heap \<Rightarrow> addr \<Rightarrow> htype option"
-where "sc_typeof_addr h a = Option.map obj_ty (h a)"
+where "sc_typeof_addr h a = map_option obj_ty (h a)"
 
 inductive sc_heap_read :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 for h :: heap and a :: addr

@@ -769,14 +769,14 @@ lift_definition empty :: "('k :: cbl, 'v) trie"
   by(simp add: trie_keys_empty)
 
 lift_definition lookup :: "('k :: cbl, 'v) trie \<Rightarrow> 'k \<Rightarrow> 'v option"
-  is "\<lambda>t. trie_lookup t \<circ> to_bl" ..
+  is "\<lambda>t. trie_lookup t \<circ> to_bl" .
 
 lift_definition update :: "'k \<Rightarrow> 'v \<Rightarrow> ('k :: cbl, 'v) trie \<Rightarrow> ('k, 'v) trie"
   is "trie_update \<circ> to_bl"
   by(auto simp add: trie_keys_dom_lookup trie_lookup_update)
 
 lift_definition keys :: "('k :: cbl, 'v) trie \<Rightarrow> 'k set"
-  is "\<lambda>t. from_bl ` trie_keys t" ..
+  is "\<lambda>t. from_bl ` trie_keys t" .
 
 text {*
   And now we go for the properties.

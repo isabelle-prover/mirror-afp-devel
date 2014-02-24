@@ -40,7 +40,7 @@ where
 lemma lang_nTimes[simp]: "lang (nTimes r s) = lang (Times r s)"
 by (induction r s rule: nTimes.induct) (auto simp: conc_assoc)
 
-primrec_new norm :: "'a::order rexp \<Rightarrow> 'a rexp"
+primrec norm :: "'a::order rexp \<Rightarrow> 'a rexp"
 where
   "norm Zero = Zero"
 | "norm One = One"
@@ -52,7 +52,7 @@ where
 lemma lang_norm[simp]: "lang (norm r) = lang r"
 by (induct r) auto
 
-primrec_new nderiv :: "'a::order \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
+primrec nderiv :: "'a::order \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "nderiv _ Zero = Zero"
 | "nderiv _ One = Zero"

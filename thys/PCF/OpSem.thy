@@ -1419,7 +1419,7 @@ next
      apply (subst subst_closing_subst)
        apply simp
       apply (simp add: eval_to)
-     apply (metis closed_closing_subst closed_def closed_val eval_to nat.cases not0_implies_Suc) (* FIXME urk *)
+     apply (metis closed_closing_subst closed_def closed_val eval_to nat.case not0_implies_Suc)
     apply simp
     apply (subst subst_closing_subst)
       apply simp

@@ -1655,7 +1655,7 @@ lemma if_redT_non_speculative_invar:
   and vs: "vs_conf P (shr s) vs"
   shows "ts_ok (init_fin_lift wfx) (thr s') (shr s')"
 proof -
-  let ?s = "\<lambda>s. (locks s, (\<lambda>t. Option.map (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
+  let ?s = "\<lambda>s. (locks s, (\<lambda>t. map_option (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
   
   from ts_ok have ts_ok': "ts_ok wfx (thr (?s s)) (shr (?s s))" by(auto intro!: ts_okI dest: ts_okD)
   from vs have vs': "vs_conf P (shr (?s s)) vs" by simp
@@ -1703,7 +1703,7 @@ lemma if_redT_non_speculative_vs_conf:
   and vs: "vs_conf P (shr s) vs"
   shows "vs_conf P (shr s') (w_values P vs (take n \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>))"
 proof -
-  let ?s = "\<lambda>s. (locks s, (\<lambda>t. Option.map (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
+  let ?s = "\<lambda>s. (locks s, (\<lambda>t. map_option (\<lambda>((status, x), ln). (x, ln)) (thr s t), shr s), wset s, interrupts s)"
   
   from ts_ok have ts_ok': "ts_ok wfx (thr (?s s)) (shr (?s s))" by(auto intro!: ts_okI dest: ts_okD)
   from vs have vs': "vs_conf P (shr (?s s)) vs" by simp
@@ -2746,13 +2746,13 @@ qed
 end
 
 lemma w_value_mrw_value_conf:
-  assumes "Option.set (vs' adal) \<subseteq> vs adal \<times> UNIV"
-  shows "Option.set (mrw_value P vs' ob adal) \<subseteq> w_value P vs ob adal \<times> UNIV"
+  assumes "set_option (vs' adal) \<subseteq> vs adal \<times> UNIV"
+  shows "set_option (mrw_value P vs' ob adal) \<subseteq> w_value P vs ob adal \<times> UNIV"
 using assms by(cases adal)(cases ob rule: w_value_cases, auto)
 
 lemma w_values_mrw_values_conf:
-  assumes "Option.set (vs' adal) \<subseteq> vs adal \<times> UNIV"
-  shows "Option.set (mrw_values P vs' obs adal) \<subseteq> w_values P vs obs adal \<times> UNIV"
+  assumes "set_option (vs' adal) \<subseteq> vs adal \<times> UNIV"
+  shows "set_option (mrw_values P vs' obs adal) \<subseteq> w_values P vs obs adal \<times> UNIV"
 using assms
 by(induct obs arbitrary: vs' vs)(auto del: subsetI intro: w_value_mrw_value_conf)
 
@@ -2950,7 +2950,7 @@ proof(rule if.cut_and_updateI)
     unfolding lappend_llist_of_llist_of[symmetric] vs_def
     by(simp add: non_speculative_lappend E_def non_speculative_start_heap_obs del: lappend_llist_of_llist_of)
 
-  have vs_vs'': "\<And>adal. Option.set (?vs' adal) \<subseteq> ?vs adal \<times> UNIV"
+  have vs_vs'': "\<And>adal. set_option (?vs' adal) \<subseteq> ?vs adal \<times> UNIV"
     by(rule w_values_mrw_values_conf)(auto simp add: vs'_def vs_def del: subsetI intro: w_values_mrw_values_conf)
   from Red wt ns vs
   have wt': "ts_ok (init_fin_lift wfx) (thr s') (shr s')"
@@ -3019,7 +3019,7 @@ proof(rule if.cut_and_updateI)
           by(rule subsetD[OF mrw_values_dom_mono])
         then obtain v' b where v': "mrw_values P ?vs' (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (ad, al) = \<lfloor>(v', b)\<rfloor>" by auto
         moreover from vs_vs''[of "(ad, al)"]
-        have "Option.set (mrw_values P ?vs' (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (ad, al)) \<subseteq> w_values P ?vs (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (ad, al) \<times> UNIV"
+        have "set_option (mrw_values P ?vs' (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (ad, al)) \<subseteq> w_values P ?vs (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (ad, al) \<times> UNIV"
           by(rule w_values_mrw_values_conf)
         ultimately have "v' \<in> w_values P ?vs (take i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) (ad, al)" by simp
         moreover from sc'

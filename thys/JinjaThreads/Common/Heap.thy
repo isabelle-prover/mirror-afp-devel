@@ -48,7 +48,7 @@ begin
 
 fun typeof_h :: "'heap \<Rightarrow> 'addr val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
 where
-  "typeof\<^bsub>h\<^esub> (Addr a) = Option.map ty_of_htype (typeof_addr h a)"
+  "typeof\<^bsub>h\<^esub> (Addr a) = map_option ty_of_htype (typeof_addr h a)"
 | "typeof\<^bsub>h\<^esub>  v = typeof v"
 
 definition cname_of :: "'heap \<Rightarrow> 'addr \<Rightarrow> cname"

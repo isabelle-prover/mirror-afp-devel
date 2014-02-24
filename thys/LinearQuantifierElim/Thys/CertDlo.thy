@@ -50,7 +50,7 @@ lemma cyclic_dnfD: "qfree f \<Longrightarrow> cyclic_dnf (dnf(DLO.nnf f)) \<Long
 apply(subst DLO.I_nnf[unfolded nnf_def, symmetric])
 apply(subst DLO.I_dnf[symmetric])
 apply(erule DLO.nqfree_nnf[unfolded nnf_def])
-apply(auto simp add:cyclic_dnf_def list_all2_def in_set_conv_nth)
+apply(auto simp add:cyclic_dnf_def list_all2_iff in_set_conv_nth)
 apply(drule_tac x="(dnf(DLO.nnf f) ! i, iss!i)" in bspec)
 apply (auto simp:set_zip)
 apply(drule_tac xs=xs in cycleD)

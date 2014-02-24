@@ -304,7 +304,7 @@ fun mk_bn_supp_abs_tac ctxt trm =
 val thms1 = @{thms supp_Pair supp_eqvt[symmetric] Un_assoc conj_assoc}
 val thms2 = @{thms de_Morgan_conj Collect_disj_eq finite_Un}
 val thms3 = @{thms alphas prod_alpha_def prod_fv.simps prod_rel_def permute_prod_def 
-  prod.recs prod.cases prod.inject not_True_eq_False empty_def[symmetric] finite.emptyI}
+  prod.rec prod.case prod.inject not_True_eq_False empty_def[symmetric] finite.emptyI}
 
 fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps 
   fv_bn_eqvts qinduct bclausess ctxt =
@@ -355,7 +355,7 @@ fun prove_bns_finite qtys qbns qinduct qbn_simps ctxt =
 
     val props = map mk_goal qbns
     val ss_tac = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps (qbn_simps @ 
-      @{thms set.simps set_append finite_insert finite.emptyI finite_Un}))
+      @{thms set_simps set_append finite_insert finite.emptyI finite_Un}))
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt
   end
@@ -532,7 +532,7 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
           |> (fn t => HOLogic.mk_exists ("q", @{typ "perm"}, t))
           |> HOLogic.mk_Trueprop  
  
-        val ss = fprops @ @{thms set.simps set_append union_eqvt}
+        val ss = fprops @ @{thms set_simps set_append union_eqvt}
           @ @{thms fresh_star_Un fresh_star_Pair fresh_star_list fresh_star_singleton fresh_star_fset
           fresh_star_set} 
   
@@ -580,7 +580,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
                      REPEAT o (etac @{thm conjE}),
                      REPEAT o (dtac setify),
                      full_simp_tac (put_simpset HOL_basic_ss ctxt''
-                      addsimps @{thms set_append set.simps})]) abs_eq_thms ctxt'
+                      addsimps @{thms set_append set_simps})]) abs_eq_thms ctxt'
 
             val (abs_eqs, peqs) = split_filter is_abs_eq eqs
 

@@ -28,7 +28,7 @@ preserved by it (like the subclass relation). *}
 
 lemma map_of_map4:
   "map_of (map (\<lambda>(x,a,b,c).(x,a,b,f c)) ts) =
-  Option.map (\<lambda>(a,b,c).(a,b,f c)) \<circ> (map_of ts)"
+  map_option (\<lambda>(a,b,c).(a,b,f c)) \<circ> (map_of ts)"
 (*<*)
 apply(induct ts)
  apply simp
@@ -54,7 +54,7 @@ lemma [simp]: "is_class (compP f P) C = is_class P C"
 (*<*)by(auto simp:is_class_def dest: class_compP class_compPD)(*>*)
 
 
-lemma [simp]: "class (compP f P) C = Option.map (\<lambda>c. snd(compC f (C,c))) (class P C)"
+lemma [simp]: "class (compP f P) C = map_option (\<lambda>c. snd(compC f (C,c))) (class P C)"
 (*<*)
 apply(simp add:compP_def compC_def class_def map_of_map4)
 apply(simp add:split_def)
@@ -64,13 +64,13 @@ done
 
 lemma sees_methods_compP:
   "P \<turnstile> C sees_methods Mm \<Longrightarrow>
-  compP f P \<turnstile> C sees_methods (Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
+  compP f P \<turnstile> C sees_methods (map_option (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
 (*<*)
 apply(erule Methods.induct)
  apply(rule sees_methods_Object)
   apply(erule class_compP)
  apply(rule ext)
- apply(simp add:compM_def map_of_map4 option_map_comp)
+ apply(simp add:compM_def map_of_map4 option.map_comp)
  apply(case_tac "map_of ms x")
   apply simp
  apply fastforce
@@ -79,7 +79,7 @@ apply(rule sees_methods_rec)
   apply assumption
  apply assumption
 apply(rule ext)
-apply(simp add:map_add_def compM_def map_of_map4 option_map_comp split:option.split)
+apply(simp add:map_add_def compM_def map_of_map4 option.map_comp split:option.split)
 done
 (*>*)
 
@@ -106,7 +106,7 @@ done
 lemma sees_methods_compPD:
   "\<lbrakk> cP \<turnstile> C sees_methods Mm'; cP = compP f P \<rbrakk> \<Longrightarrow>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and>
-        Mm' = (Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
+        Mm' = (map_option (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
 (*<*)
 apply(erule Methods.induct)
  apply(clarsimp simp:compC_def)
@@ -114,7 +114,7 @@ apply(erule Methods.induct)
  apply(rule conjI, erule sees_methods_Object)
  apply(rule refl)
  apply(rule ext)
- apply(simp add:compM_def map_of_map4 option_map_comp)
+ apply(simp add:compM_def map_of_map4 option.map_comp)
  apply(case_tac "map_of b x")
   apply simp
  apply fastforce
@@ -123,7 +123,7 @@ apply(rule exI, rule conjI)
 apply(erule (2) sees_methods_rec)
  apply(rule refl)
 apply(rule ext)
-apply(simp add:map_add_def compM_def map_of_map4 option_map_comp split:option.split)
+apply(simp add:map_add_def compM_def map_of_map4 option.map_comp split:option.split)
 done
 (*>*)
 

@@ -13,7 +13,7 @@ begin
 
 subsection {* Definitions *}
 
-record ('o1,'a1,'o2,'a2) functor =
+record ('o1,'a1,'o2,'a2) "functor" =
   om :: "'o1 \<Rightarrow> 'o2"
   am :: "'a1 \<Rightarrow> 'a2"
 
@@ -38,7 +38,7 @@ locale two_cats = AA: category AA + BB: category BB
     and "preserves_comp G \<equiv>
       \<forall>f\<in>Ar\<^bsub>AA\<^esub>. \<forall>g\<in>Ar\<^bsub>AA\<^esub>. Cod\<^bsub>AA\<^esub> f = Dom\<^bsub>AA\<^esub> g \<longrightarrow> G\<^bsub>\<a>\<^esub> (g \<bullet>\<^bsub>AA\<^esub> f) = (G\<^bsub>\<a>\<^esub> g) \<bullet>\<^bsub>BB\<^esub> (G\<^bsub>\<a>\<^esub> f)"
 
-locale functor = two_cats +
+locale "functor" = two_cats +
   fixes F (structure)
   assumes F_preserves_arrows: "F\<^bsub>\<a>\<^esub> : Ar\<^bsub>AA\<^esub> \<rightarrow> Ar\<^bsub>BB\<^esub>"
     and F_preserves_objects: "F\<^bsub>\<o>\<^esub> : Ob\<^bsub>AA\<^esub> \<rightarrow> Ob\<^bsub>BB\<^esub>"
@@ -66,7 +66,7 @@ subsection {* Simple Lemmas *}
 
 text {* For example: *}
 
-lemma (in functor) "Functor F : AA \<longrightarrow> BB" ..
+lemma (in "functor") "Functor F : AA \<longrightarrow> BB" ..
 
 
 lemma functors_preserve_arrows [intro]:
@@ -82,7 +82,7 @@ proof-
 qed
 
 
-lemma (in functor) functors_preserve_homsets:
+lemma (in "functor") functors_preserve_homsets:
   assumes 1: "A \<in> Ob\<^bsub>AA\<^esub>"
   and 2: "B \<in> Ob\<^bsub>AA\<^esub>"
   and 3: "f \<in> Hom\<^bsub>AA\<^esub> A B"

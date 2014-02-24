@@ -411,7 +411,7 @@ proof -
        fset vs \<subseteq> fset S \<longrightarrow>
        Inr (vs, c, ws) \<notin> set \<pi> \<longrightarrow>
        distinct \<pi> \<longrightarrow> (a, aa, b) \<in> set E \<longrightarrow> Inr (a, aa, b) \<notin> set \<pi> \<longrightarrow> b = ws"
-     by (metis (lifting) InrI List.set.simps(2) 
+     by (metis (lifting) InrI List.set_simps(2) 
       Pair_eq set_ConsD sum.simps(2))
      
      moreover have "\<forall>a aa b.
@@ -419,7 +419,7 @@ proof -
        fset vs \<subseteq> fset S \<longrightarrow>
        Inr (vs, c, ws) \<notin> set \<pi> \<longrightarrow>
        distinct \<pi> \<longrightarrow> (a, aa, b) \<in> set E \<longrightarrow> Inr (a, aa, b) \<notin> set \<pi> \<longrightarrow> aa = c"
-     by (metis (lifting) InrI List.set.simps(2) 
+     by (metis (lifting) InrI List.set_simps(2) 
       Pair_eq set_ConsD sum.simps(2))
 
      moreover have "\<forall>x. insert (Inr (vs, c, ws)) (set \<pi>) = (fset V - fset S) <+> set E \<longrightarrow>

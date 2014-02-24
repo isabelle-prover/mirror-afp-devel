@@ -145,12 +145,6 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma atLeastAtMost_absI: "- a \<le> a \<Longrightarrow> \<bar>x::real\<bar> \<le> \<bar>a\<bar> \<Longrightarrow> x \<in> atLeastAtMost (- a) a"
-  by auto
-
-lemma divide_atLeastAtMost_1_absI: "\<bar>x::real\<bar> \<le> \<bar>a\<bar> \<Longrightarrow> x/a \<in> {-1 .. 1}"
-  by (intro atLeastAtMost_absI) (auto simp: divide_le_eq_1)
-
 lemma in_ivl_affine_of_ivlE:
   assumes "k \<in> {l .. u}"
   obtains e where "e \<in> UNIV \<rightarrow> {-1 .. 1}" "k = aform_val e (aform_of_ivl l u)"
@@ -239,6 +233,15 @@ lemma truncate_up_lt: "x < y \<Longrightarrow> x < truncate_up prec y"
 lemma truncate_up_pos_eq[simp]: "0 < truncate_up p x \<longleftrightarrow> 0 < x"
   by (auto simp: truncate_up_lt) (metis (poly_guards_query) not_le truncate_up_nonpos)
 
+lemma inner_scaleR_pdevs_0: "inner_scaleR_pdevs 0 One_pdevs = zero_pdevs"
+  unfolding inner_scaleR_pdevs_def
+  by transfer (auto simp: unop_pdevs_raw_def)
+
+lemma Affine_aform_of_point: "x \<in> Affine (aform_of_point x)"
+  apply (auto simp: aform_of_point_def aform_of_ivl_def Affine_def aform_val_def
+      pdevs_of_ivl_def inner_scaleR_pdevs_0 valuate_def
+      intro!: image_eqI[where x="\<lambda>_. 0"])
+  by (metis (mono_tags, hide_lams) pth_1 real_sum_of_halves scaleR_add_left scaleR_add_right)
 
 subsection {* Approximate Operations *}
 
@@ -1070,7 +1073,7 @@ where
       else Some (inverse_aform' p d a)}"
   --"TODO: prove correctness for the negative case of inverse-affine"
 | "approx_realarith p (Minus a) vs m =
-    Option.map uminus_aform (approx_realarith p a vs m)"
+    map_option uminus_aform (approx_realarith p a vs m)"
 | "approx_realarith p (Num f) vs m =
     Some (num_aform f)"
 | "approx_realarith p (Var i b) vs m =
@@ -1273,7 +1276,7 @@ fun approx_euclarith :: "nat \<Rightarrow> ('a::ordered_euclidean_space, 'b::ord
       Some (add_aform a1 a2)
     }"
 | "approx_euclarith p (ScaleR a b) vs m =
-    Option.map (\<lambda>a. aform_scaleR a b) (approx_realarith p a vs m::real aform option)"
+    map_option (\<lambda>a. aform_scaleR a b) (approx_realarith p a vs m::real aform option)"
 
 
 lemma approx_euclarith_Elem:
@@ -1521,10 +1524,9 @@ fun approximate_affine (name, term) lthy =
         THEN REPEAT (
           TRY (REPEAT (rtac (@{thm length_eq_ConsI}) 1))
           THEN rtac @{thm length_eq_NilI} 1)
-        THEN Local_Defs.unfold_tac context @{thms zip_Cons_Cons zip_Nil set.simps}
+        THEN Local_Defs.unfold_tac context @{thms zip_Cons_Cons zip_Nil set_simps}
         THEN blast_tac context 1
         )
-    val _ = writeln "Hi2"
     val correct_thm = singleton (Proof_Context.export lthy5 lthy'') interpret_eq_thm
     val (_, lthy''') = Local_Theory.notes [((name, []), [([correct_thm], [])])] lthy''
   in
@@ -1707,6 +1709,29 @@ proof -
     by (force simp: valuate_def Joints2_def Joints_def i_def)
   thus ?thesis
     by (auto simp: valuate_def Joints2_def Joints_def)
+qed
+
+text {* disjointness overapproximation *}
+
+definition disjoint_aforms where
+  "disjoint_aforms X Y =
+    (let iX = Inf_aform X; sX = Sup_aform X; iY = Inf_aform Y; sY = Sup_aform Y
+    in list_ex (\<lambda>i. sX \<bullet> i < iY \<bullet> i \<or> sY \<bullet> i < iX \<bullet> i) Basis_list)"
+
+lemma disjoint_aforms:
+  assumes "disjoint_aforms X Y"
+  shows "Affine X \<inter> Affine Y = {}"
+proof -
+  have "Affine X \<subseteq> {Inf_aform X .. Sup_aform X}" "Affine Y \<subseteq> {Inf_aform Y .. Sup_aform Y}"
+    by (auto simp: Affine_def valuate_def Inf_aform Sup_aform)
+  moreover
+  from assms have "{Inf_aform X .. Sup_aform X} \<inter> {Inf_aform Y .. Sup_aform Y} = {}"
+    apply (auto simp: disjoint_aforms_def Affine_def valuate_def list_ex_iff aform_val_def
+      algebra_simps eucl_le[where 'a='a])
+    apply (metis le_less_trans not_le)
+    apply (metis le_less_trans not_le)
+    done
+  ultimately show ?thesis by auto
 qed
 
 end

@@ -97,7 +97,7 @@ qed
 
 end
 
-lemma llength_inf [simp]: "llength (xs \<sqinter> ys) = llcp xs ys"
+lemma llength_inf [simp]: "llength (inf xs ys) = llcp xs ys"
 by(coinduction arbitrary: xs ys rule: enat_coinduct)(auto simp add: llcp_eq_0_iff epred_llength epred_llcp)
 
 end

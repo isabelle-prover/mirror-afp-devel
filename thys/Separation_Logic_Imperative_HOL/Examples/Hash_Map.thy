@@ -558,7 +558,7 @@ lemma ls_delete_map_of:
   apply (induct l rule: ls_delete.induct)
   apply simp
   apply (auto simp add: map_of_eq_None_iff Let_def)
-  by (metis ComplD ComplI Compl_insert Option.set.simps(2) 
+  by (metis ComplD ComplI Compl_insert option.set(2) 
     insertE insertI2 map_upd_eq_restrict restrict_map_def)
 
 lemma update_ls_delete_map_of: 
@@ -1109,7 +1109,7 @@ lemma hm_it_init_rule:
   apply (case_tac l,auto) []
   apply (simp)
   apply (subst (asm) (2) concat_take_Suc_app_nth)
-  apply (case_tac l,auto simp: map_append) []
+  apply (case_tac l,auto) []
   apply (subst map_of_rev_distinct)
   apply auto
   done
@@ -1118,7 +1118,7 @@ lemma hm_it_has_next_rule:
   "<hm_is_it m ht m' it> hm_it_has_next it 
     <\<lambda>r. hm_is_it m ht m' it * \<up>(r\<longleftrightarrow>m'\<noteq>Map.empty)>"
   unfolding is_hashmap'_def hm_is_it_def hm_is_it'_def hm_it_has_next_def
-  by (sep_auto split: nat.split_asm nat.split list.split)
+  by (sep_auto split: nat.split list.split)
 
 lemma hm_it_finish: "hm_is_it m p m' it \<Longrightarrow>\<^sub>A is_hashmap m p"
   unfolding hm_is_it_def hm_is_it'_def is_hashmap_def is_hashmap'_def

@@ -211,7 +211,7 @@ theorem J2JVM_correct1:
   and wf_start: "wf_start_state P C M vs"
   and red: "red_mthr.mthr.\<tau>Runs P s \<xi>"
   obtains \<xi>' 
-  where "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'" "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'"
+  where "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'" "tllist_all2 tlsimJ2JVM (rel_option bisimJ2JVM) \<xi> \<xi>'"
   and "\<And>s'. \<lbrakk> tfinite \<xi>; terminal \<xi> = \<lfloor>s'\<rfloor>; red_mthr.mfinal s' \<rbrakk>
       \<Longrightarrow> tfinite \<xi>' \<and> terminal \<xi>' = \<lfloor>mexception s'\<rfloor>"
   and "\<And>s'. \<lbrakk> tfinite \<xi>; terminal \<xi> = \<lfloor>s'\<rfloor>; red_mthr.deadlock P s' \<rbrakk>
@@ -226,7 +226,7 @@ proof -
 
   from delay_bisimulation_diverge.simulation_\<tau>Runs1[OF divfin, OF bisim red] obtain \<xi>' 
     where exec: "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'" 
-    and tlsim: "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'" by blast
+    and tlsim: "tllist_all2 tlsimJ2JVM (rel_option bisimJ2JVM) \<xi> \<xi>'" by blast
   moreover {
     fix s'
     assume fin: "tfinite \<xi>" and s': "terminal \<xi> = \<lfloor>s'\<rfloor>" and final: "red_mthr.mfinal s'"
@@ -315,7 +315,7 @@ theorem J2JVM_correct2:
   and wf_start: "wf_start_state P C M vs"
   and exec: "execd_mthr.mthr.\<tau>Runs (J2JVM P) cs \<xi>'"
   obtains \<xi> 
-  where "red_mthr.mthr.\<tau>Runs P s \<xi>" "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'"
+  where "red_mthr.mthr.\<tau>Runs P s \<xi>" "tllist_all2 tlsimJ2JVM (rel_option bisimJ2JVM) \<xi> \<xi>'"
   and "\<And>cs'. \<lbrakk> tfinite \<xi>'; terminal \<xi>' = \<lfloor>cs'\<rfloor>; exec_mthr.mfinal cs' \<rbrakk>
       \<Longrightarrow> \<exists>s'. tfinite \<xi> \<and> terminal \<xi> = \<lfloor>s'\<rfloor> \<and> cs' = mexception s' \<and> bisimJ2JVM s' cs'"
   and "\<And>cs'. \<lbrakk> tfinite \<xi>'; terminal \<xi>' = \<lfloor>cs'\<rfloor>; execd_mthr.deadlock (J2JVM P) cs' \<rbrakk>
@@ -330,7 +330,7 @@ proof -
 
   from delay_bisimulation_diverge.simulation_\<tau>Runs2[OF divfin, OF bisim exec] obtain \<xi>
     where red: "red_mthr.mthr.\<tau>Runs P s \<xi>" 
-    and tlsim: "tllist_all2 tlsimJ2JVM (option_rel bisimJ2JVM) \<xi> \<xi>'" by blast
+    and tlsim: "tllist_all2 tlsimJ2JVM (rel_option bisimJ2JVM) \<xi> \<xi>'" by blast
   moreover {
     fix cs'
     assume fin: "tfinite \<xi>'" and cs': "terminal \<xi>' = \<lfloor>cs'\<rfloor>" and final: "exec_mthr.mfinal cs'"

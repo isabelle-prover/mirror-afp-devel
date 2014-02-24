@@ -71,7 +71,7 @@ setup_lifting type_definition_mapping_rbt'
 
 context fixes dummy :: "'a :: corder" begin
 
-lift_definition lookup :: "('a, 'b) mapping_rbt \<Rightarrow> 'a \<rightharpoonup> 'b" is "ord.rbt_lookup cless" ..
+lift_definition lookup :: "('a, 'b) mapping_rbt \<Rightarrow> 'a \<rightharpoonup> 'b" is "ord.rbt_lookup cless" .
 
 lift_definition empty :: "('a, 'b) mapping_rbt" is "RBT_Impl.Empty"
 by(simp add: ord.Empty_is_rbt)
@@ -95,13 +95,13 @@ by(simp add: ord.rbt_map_entry_is_rbt)
 lift_definition map :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'c) mapping_rbt" is "RBT_Impl.map"
 by(simp add: ord.map_is_rbt)
 
-lift_definition entries :: "('a, 'b) mapping_rbt \<Rightarrow> ('a \<times> 'b) list" is "RBT_Impl.entries" ..
+lift_definition entries :: "('a, 'b) mapping_rbt \<Rightarrow> ('a \<times> 'b) list" is "RBT_Impl.entries" .
 
-lift_definition keys :: "('a, 'b) mapping_rbt \<Rightarrow> 'a set" is "set \<circ> RBT_Impl.keys" ..
+lift_definition keys :: "('a, 'b) mapping_rbt \<Rightarrow> 'a set" is "set \<circ> RBT_Impl.keys" .
 
-lift_definition fold :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> 'c \<Rightarrow> 'c" is "RBT_Impl.fold" ..
+lift_definition fold :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> 'c \<Rightarrow> 'c" is "RBT_Impl.fold" .
 
-lift_definition is_empty :: "('a, 'b) mapping_rbt \<Rightarrow> bool" is "case_rbt True (\<lambda>_ _ _ _ _. False)" ..
+lift_definition is_empty :: "('a, 'b) mapping_rbt \<Rightarrow> bool" is "case_rbt True (\<lambda>_ _ _ _ _. False)" .
 
 lift_definition filter :: "('a \<times> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt" is
   "\<lambda>P t. rbtreeify (List.filter P (RBT_Impl.entries t))"
@@ -118,10 +118,10 @@ is "ord.rbt_inter_with_key cless"
 by(auto 4 3 intro: linorder.rbt_interwk_is_rbt ID_corder ord.is_rbt_rbt_sorted)
 
 lift_definition all :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> bool" 
-is "RBT_Impl_rbt_all" ..
+is "RBT_Impl_rbt_all" .
 
 lift_definition ex :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> bool"
-is "RBT_Impl_rbt_ex" ..
+is "RBT_Impl_rbt_ex" .
 
 lift_definition product ::
   "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e) \<Rightarrow> ('a, 'b) mapping_rbt
@@ -135,7 +135,7 @@ is "RBT_Impl_diag"
 by(auto simp add: corder_prod_def ID_Some ID_None is_rbt_RBT_Impl_diag split: option.split_asm)
 
 lift_definition init :: "('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b, 'c) rbt_generator_state"
-is "rbt_init" ..
+is "rbt_init" .
 
 end
 
@@ -206,11 +206,11 @@ lemma lookup_bulkload [simp]:
 by transfer(simp add: linorder.rbt_lookup_rbt_bulkload[OF mapping_linorder])
 
 lemma lookup_map_entry [simp]:
-  "lookup (map_entry (k :: 'a) f t) = (lookup t)(k := Option.map f (lookup t k))"
+  "lookup (map_entry (k :: 'a) f t) = (lookup t)(k := map_option f (lookup t k))"
 by transfer(simp add: ID_corder_neq_None linorder.rbt_lookup_rbt_map_entry[OF mapping_linorder])
 
 lemma lookup_map [simp]:
-  "lookup (map f t) (k :: 'a) = Option.map (f k) (lookup t k)"
+  "lookup (map f t) (k :: 'a) = map_option (f k) (lookup t k)"
 by transfer(simp add: linorder.rbt_lookup_map[OF mapping_linorder])
 
 lemma RBT_lookup_empty [simp]:
@@ -272,7 +272,7 @@ by(simp add: corder_prod_def ID_corder_neq_None ID_corder_neq_None' ID_Some spli
 lemma lookup_product: 
   "lookup (product f rbt1 rbt2) (a :: 'a, b :: 'b) = 
   (case lookup rbt1 a of None \<Rightarrow> None
-   | Some c \<Rightarrow> Option.map (f a c b) (lookup rbt2 b))"
+   | Some c \<Rightarrow> map_option (f a c b) (lookup rbt2 b))"
 using mapping_linorder mapping_linorder'
 by transfer(simp add: cless_prod_eq_less_prod ID_corder_neq_None ID_corder_neq_None' rbt_lookup_rbt_product)
 

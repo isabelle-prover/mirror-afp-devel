@@ -135,6 +135,20 @@ instance ..
 
 end
 
+instantiation tllist :: (narrowing, narrowing) narrowing begin
+
+function narrowing_tllist
+where
+  "narrowing_tllist n = Quickcheck_Narrowing.sum
+    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons TNil) narrowing)
+    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons TCons) narrowing) narrowing_tllist)
+    n"
+by pat_completeness auto
+termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
+
+instance ..
+end
+
 text {* More lemmas about generated constants *}
 
 lemma ttl_unfold_tllist:

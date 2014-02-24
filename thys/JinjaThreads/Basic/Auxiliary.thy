@@ -105,12 +105,12 @@ lemma map_of_SomeI:
   "\<lbrakk> distinct_fst kxs; (k,x) \<in> set kxs \<rbrakk> \<Longrightarrow> map_of kxs k = Some x"
 (*<*)by (induct kxs) (auto simp:fun_upd_apply)(*>*)
 
-lemma option_rel_Some1:
-  "option_rel R (Some x) y \<longleftrightarrow> (\<exists>y'. y = Some y' \<and> R x y')"
+lemma rel_option_Some1:
+  "rel_option R (Some x) y \<longleftrightarrow> (\<exists>y'. y = Some y' \<and> R x y')"
 by(cases y) simp_all
 
-lemma option_rel_Some2:
-  "option_rel R x (Some y) \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> R x' y)"
+lemma rel_option_Some2:
+  "rel_option R x (Some y) \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> R x' y)"
 by(cases x) simp_all
 
 subsection {* Using @{term list_all2} for relations *}

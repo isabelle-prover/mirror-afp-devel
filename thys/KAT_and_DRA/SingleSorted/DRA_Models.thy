@@ -107,11 +107,9 @@ text {*
 
 instantiation bool_op :: (type) dioid_one_zerol 
 begin
-  lift_definition less_eq_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is fun_order
-    by auto
+  lift_definition less_eq_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is fun_order .
 
-  lift_definition less_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is "op <."
-    by auto
+  lift_definition less_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> bool" is "op <." .
 
   lift_definition zero_bool_op :: "'a bool_op" is "bot"
     by (auto simp: bot_def fun_union_def fun_order_def mono_def)

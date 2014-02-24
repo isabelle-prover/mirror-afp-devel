@@ -1220,7 +1220,7 @@ lemma membership_simps:
   "x \<in> set (y # ys) \<longleftrightarrow> x = y \<or> x \<in> set ys"
   by simp_all
 
-lemmas ss = list.simps if_True if_False flatten.simps map.simps
+lemmas ss = list.simps if_True if_False flatten.simps list.map
   bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv
   form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def
   Let_def newvar_def subs.simps split_beta append_Nil append_Cons

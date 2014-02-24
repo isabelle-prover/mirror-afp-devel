@@ -1,6 +1,6 @@
 chapter AFP
 
-session Matrix (AFP) = HOL +
+session Matrix (AFP) = "Abstract-Rewriting" +
   options [timeout = 600]
   theories [document = false]
     "../Abstract-Rewriting/SN_Orders"

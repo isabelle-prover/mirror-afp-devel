@@ -108,7 +108,7 @@ by (metis set_empty2 set_list_set)
 
 lemma distinct_set_eq_Singl[simp]: "distinct al \<Longrightarrow> set al = {a} \<longleftrightarrow> al = [a]"
 apply(cases al, simp)
-by (metis (lifting) List.set.simps distinct.simps
+by (metis (lifting) List.set_simps distinct.simps
            distinct_singleton empty_not_insert insert_eq_iff set_empty2)
 
 lemma list_Singl[simp]: "list {b} = [b]"
@@ -220,7 +220,7 @@ assumes "\<And>x. x \<in> set xs \<Longrightarrow> \<exists>y. f x y"
 shows "\<exists> ys. list_all2 f xs ys"
 using assms apply(induct xs)
 apply fastforce
-by (metis set.simps insertCI list_all2_Cons)
+by (metis set_simps insertCI list_all2_Cons)
 
 lemma list_all2_cong[fundef_cong]:
 assumes "xs1 = ys1" and "xs2 = ys2"
@@ -253,7 +253,7 @@ by (metis (lifting) list_all2_length list_all_length)
 
 lemma list_all2_list_all_2[simp]:
 "list_all2 f xs xs \<longleftrightarrow> list_all (\<lambda> x. f x x) xs"
-unfolding list_all2_def list_all_iff
+unfolding list_all2_iff list_all_iff
 by (metis splitD splitI2 zip_same)
 
 lemma list_all2_map_map:

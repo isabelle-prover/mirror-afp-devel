@@ -406,7 +406,7 @@ proof(intro conjI impI)
   def xl \<equiv> "getVars (arOf f)"
   have l[simp]: "length xl = length al" "length al = length (arOf f)"
                 "length (getTvars (arOf f)) = length (arOf f)"
-  unfolding xl_def using al unfolding list_all2_def by auto
+  unfolding xl_def using al unfolding list_all2_iff by auto
   have 1[simp]: "\<And> i. i < length (arOf f) \<Longrightarrow> tpOfV (xl!i) = (arOf f)!i"
   unfolding xl_def by auto
   have xl[simp]: "distinct xl" unfolding xl_def using distinct_getVars by auto

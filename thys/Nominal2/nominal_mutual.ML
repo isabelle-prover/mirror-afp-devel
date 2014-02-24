@@ -473,7 +473,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val goal_iff2 = Logic.mk_implies (G_prem, G_aux_prem)
       |> all x |> all y
 
-    val simp_thms = @{thms sum.sel sum.inject sum.cases sum.distinct o_apply}
+    val simp_thms = @{thms sum.sel sum.inject sum.case sum.distinct o_apply}
     val simpset0 = put_simpset HOL_basic_ss lthy''' addsimps simp_thms
     val simpset1 = put_simpset HOL_ss lthy''' addsimps simp_thms
 

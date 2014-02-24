@@ -178,7 +178,7 @@ lemma substE_length [simp]: "\<parallel>\<Gamma>[k \<mapsto>\<^sub>\<tau> U]\<^s
   by (induct \<Gamma>) simp_all
 
 lemma liftE_nth [simp]:
-  "(\<up>\<^sub>e n k \<Gamma>)\<langle>i\<rangle> = Option.map (mapB (\<up>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
+  "(\<up>\<^sub>e n k \<Gamma>)\<langle>i\<rangle> = map_option (mapB (\<up>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
   apply (induct \<Gamma> arbitrary: i)
   apply simp
   apply simp
@@ -188,7 +188,7 @@ lemma liftE_nth [simp]:
   done
 
 lemma substE_nth [simp]:
-  "(\<Gamma>[0 \<mapsto>\<^sub>\<tau> T]\<^sub>e)\<langle>i\<rangle> = Option.map (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
+  "(\<Gamma>[0 \<mapsto>\<^sub>\<tau> T]\<^sub>e)\<langle>i\<rangle> = map_option (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
   apply (induct \<Gamma> arbitrary: i)
   apply simp
   apply simp

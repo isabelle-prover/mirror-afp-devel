@@ -31,7 +31,7 @@ done
 
 subsection {* Class instance proofs *}
 
-instance maybe :: functor
+instance maybe :: "functor"
 apply default
 apply (induct_tac xs rule: maybe.induct, simp_all)
 done

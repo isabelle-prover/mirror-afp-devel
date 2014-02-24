@@ -91,14 +91,14 @@ qed
 lemma map_of_alist_product:
   "map_of (alist_product xs ys) (a, c) = 
   (case map_of xs a of None \<Rightarrow> None
-   | Some b \<Rightarrow> Option.map (f a b c) (map_of ys c))"
+   | Some b \<Rightarrow> map_option (f a b c) (map_of ys c))"
 proof(induction xs)
   case Nil thus ?case by simp
 next
   case (Cons x xs)
   obtain a b where x: "x = (a, b)" by (cases x)
   let ?map = "map (\<lambda>(c, d). ((a, c), f a b c d)) ys"
-  have "map_of ?map (a, c) = Option.map (f a b c) (map_of ys c)"
+  have "map_of ?map (a, c) = map_option (f a b c) (map_of ys c)"
     by(induct ys) auto
   moreover {
     fix a' assume "a' \<noteq> a"
@@ -172,7 +172,7 @@ lemma rbt_lookup_rbt_product:
   "\<lbrakk> ord.is_rbt op \<sqsubset>\<^sub>a rbt1; ord.is_rbt op \<sqsubset>\<^sub>b rbt2 \<rbrakk>
   \<Longrightarrow> ord.rbt_lookup op \<sqsubset> (rbt_product f rbt1 rbt2) (a, c) =
      (case ord.rbt_lookup op \<sqsubset>\<^sub>a rbt1 a of None \<Rightarrow> None
-      | Some b \<Rightarrow> Option.map (f a b c) (ord.rbt_lookup op \<sqsubset>\<^sub>b rbt2 c))"
+      | Some b \<Rightarrow> map_option (f a b c) (ord.rbt_lookup op \<sqsubset>\<^sub>b rbt2 c))"
 by(simp add: rbt_product_def linorder.rbt_lookup_rbtreeify[OF linorder_prod] linorder.is_rbt_rbtreeify[OF linorder_prod] sorted_alist_product linorder.rbt_sorted_entries[OF lin_a] ord.is_rbt_rbt_sorted linorder.distinct_entries[OF lin_a] linorder.rbt_sorted_entries[OF lin_b] distinct_alist_product linorder.distinct_entries[OF lin_b] map_of_alist_product linorder.map_of_entries[OF lin_a] linorder.map_of_entries[OF lin_b] cong: option.case_cong)
 
 end

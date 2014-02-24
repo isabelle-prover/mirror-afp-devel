@@ -58,11 +58,11 @@ lemma init_fin_lift_state_mbisimI:
   "s \<approx>m s' \<Longrightarrow>
   FWbisimulation_base.mbisim init_fin_bisim init_fin_bisim_wait (init_fin_lift_state Running s) (init_fin_lift_state Running s')"
 apply(rule FWbisimulation_base.mbisimI)
-      apply(simp add: thr_init_fin_list_state' o_def dom_option_map mbisim_finite1)
+      apply(simp add: thr_init_fin_list_state' o_def dom_map_option mbisim_finite1)
      apply(simp add: locks_init_fin_lift_state mbisim_def)
     apply(simp add: wset_init_fin_lift_state mbisim_def)
    apply(simp add: interrupts_init_fin_lift_stae mbisim_def)
-  apply(clarsimp simp add: wset_init_fin_lift_state mbisim_def thr_init_fin_list_state' o_def wset_thread_ok_conv_dom dom_option_map del: subsetI)
+  apply(clarsimp simp add: wset_init_fin_lift_state mbisim_def thr_init_fin_list_state' o_def wset_thread_ok_conv_dom dom_map_option del: subsetI)
  apply(drule_tac t=t in mbisim_thrNone_eq)
  apply(simp add: thr_init_fin_list_state)
 apply(clarsimp simp add: thr_init_fin_list_state shr_init_fin_lift_state wset_init_fin_lift_state init_fin_bisim_iff)

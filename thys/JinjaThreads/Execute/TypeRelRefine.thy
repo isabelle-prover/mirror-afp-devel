@@ -21,20 +21,20 @@ lemma rtranclp_tranclpE:
 using assms
 by(cases)(blast dest: rtranclp_into_tranclp1)+
 
-lemma map_of_map2: "map_of (map (\<lambda>(k, v). (k, f k v)) xs) k = Option.map (f k) (map_of xs k)"
+lemma map_of_map2: "map_of (map (\<lambda>(k, v). (k, f k v)) xs) k = map_option (f k) (map_of xs k)"
 by(induct xs) auto
 
 lemma map_of_map_K: "map_of (map (\<lambda>k. (k, c)) xs) k = (if k \<in> set xs then Some c else None)"
 by(induct xs) auto
 
 lift_definition map_values :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'c) mapping"
-is "\<lambda>f m k. Option.map (f k) (m k)" .
+is "\<lambda>f m k. map_option (f k) (m k)" .
 
 lemma map_values_Mapping [simp]: 
-  "map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. Option.map (f k) (m k))"
+  "map_values f (Mapping.Mapping m) = Mapping.Mapping (\<lambda>k. map_option (f k) (m k))"
 by(rule map_values.abs_eq)
 
-lemma map_Mapping: "Mapping.map f g (Mapping.Mapping m) = Mapping.Mapping (Option.map g \<circ> m \<circ> f)"
+lemma map_Mapping: "Mapping.map f g (Mapping.Mapping m) = Mapping.Mapping (map_option g \<circ> m \<circ> f)"
 by(rule map.abs_eq)
 
 abbreviation subclst :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"

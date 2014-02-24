@@ -218,7 +218,7 @@ proof (induct rule:red_reds_inducts)
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
     using wt method hp by (auto dest:sees_method_fun)
   from wtes subs have length_vs: "length vs = length Ts"
-    by(fastforce simp:list_all2_def dest!:WTrts_same_length)
+    by(fastforce simp:list_all2_iff dest!:WTrts_same_length)
   from sees_wf_mdecl[OF wf method] obtain T''
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"

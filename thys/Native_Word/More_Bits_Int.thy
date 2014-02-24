@@ -207,10 +207,10 @@ where
 | "bitAND_num num.One (num.Bit0 n) = None"
 | "bitAND_num num.One (num.Bit1 n) = Some num.One"
 | "bitAND_num (num.Bit0 m) num.One = None"
-| "bitAND_num (num.Bit0 m) (num.Bit0 n) = Option.map num.Bit0 (bitAND_num m n)"
-| "bitAND_num (num.Bit0 m) (num.Bit1 n) = Option.map num.Bit0 (bitAND_num m n)"
+| "bitAND_num (num.Bit0 m) (num.Bit0 n) = map_option num.Bit0 (bitAND_num m n)"
+| "bitAND_num (num.Bit0 m) (num.Bit1 n) = map_option num.Bit0 (bitAND_num m n)"
 | "bitAND_num (num.Bit1 m) num.One = Some num.One"
-| "bitAND_num (num.Bit1 m) (num.Bit0 n) = Option.map num.Bit0 (bitAND_num m n)"
+| "bitAND_num (num.Bit1 m) (num.Bit0 n) = map_option num.Bit0 (bitAND_num m n)"
 | "bitAND_num (num.Bit1 m) (num.Bit1 n) = (case bitAND_num m n of None \<Rightarrow> Some num.One | Some n' \<Rightarrow> Some (num.Bit1 n'))"
 
 fun bitXOR_num :: "num \<Rightarrow> num \<Rightarrow> num option"
@@ -219,11 +219,11 @@ where
 | "bitXOR_num num.One (num.Bit0 n) = Some (num.Bit1 n)"
 | "bitXOR_num num.One (num.Bit1 n) = Some (num.Bit0 n)"
 | "bitXOR_num (num.Bit0 m) num.One = Some (num.Bit1 m)"
-| "bitXOR_num (num.Bit0 m) (num.Bit0 n) = Option.map num.Bit0 (bitXOR_num m n)"
+| "bitXOR_num (num.Bit0 m) (num.Bit0 n) = map_option num.Bit0 (bitXOR_num m n)"
 | "bitXOR_num (num.Bit0 m) (num.Bit1 n) = Some (case bitXOR_num m n of None \<Rightarrow> num.One | Some n' \<Rightarrow> num.Bit1 n')"
 | "bitXOR_num (num.Bit1 m) num.One = Some (num.Bit0 m)"
 | "bitXOR_num (num.Bit1 m) (num.Bit0 n) = Some (case bitXOR_num m n of None \<Rightarrow> num.One | Some n' \<Rightarrow> num.Bit1 n')"
-| "bitXOR_num (num.Bit1 m) (num.Bit1 n) = Option.map num.Bit0 (bitXOR_num m n)"
+| "bitXOR_num (num.Bit1 m) (num.Bit1 n) = map_option num.Bit0 (bitXOR_num m n)"
 
 fun bitORN_num :: "num \<Rightarrow> num \<Rightarrow> num"
 where
@@ -243,11 +243,11 @@ where
 | "bitANDN_num num.One (num.Bit0 n) = Some num.One"
 | "bitANDN_num num.One (num.Bit1 n) = None"
 | "bitANDN_num (num.Bit0 m) num.One = Some (num.Bit0 m)"
-| "bitANDN_num (num.Bit0 m) (num.Bit0 n) = Option.map num.Bit0 (bitANDN_num m n)"
-| "bitANDN_num (num.Bit0 m) (num.Bit1 n) = Option.map num.Bit0 (bitANDN_num m n)"
+| "bitANDN_num (num.Bit0 m) (num.Bit0 n) = map_option num.Bit0 (bitANDN_num m n)"
+| "bitANDN_num (num.Bit0 m) (num.Bit1 n) = map_option num.Bit0 (bitANDN_num m n)"
 | "bitANDN_num (num.Bit1 m) num.One = Some (num.Bit0 m)"
 | "bitANDN_num (num.Bit1 m) (num.Bit0 n) = (case bitANDN_num m n of None \<Rightarrow> Some num.One | Some n' \<Rightarrow> Some (num.Bit1 n'))"
-| "bitANDN_num (num.Bit1 m) (num.Bit1 n) = Option.map num.Bit0 (bitANDN_num m n)"
+| "bitANDN_num (num.Bit1 m) (num.Bit1 n) = map_option num.Bit0 (bitANDN_num m n)"
 
 lemma int_numeral_bitOR_num: "numeral n OR numeral m = (numeral (bitOR_num n m) :: int)"
 by(induct n m rule: bitOR_num.induct) simp_all

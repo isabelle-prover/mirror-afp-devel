@@ -17,7 +17,7 @@ lemma actions_ok1_ex_actions_ok2:
   and "ta1 \<sim>m ta2"
   obtains s2 where "r2.actions_ok s2 t ta2"
 proof -
-  let ?s2 = "(locks s1, (\<lambda>t. Option.map (\<lambda>(x1, ln). (SOME x2. if final1 x1 then final2 x2 else \<not> final2 x2, ln)) (thr s1 t), undefined), wset s1, interrupts s1)"
+  let ?s2 = "(locks s1, (\<lambda>t. map_option (\<lambda>(x1, ln). (SOME x2. if final1 x1 then final2 x2 else \<not> final2 x2, ln)) (thr s1 t), undefined), wset s1, interrupts s1)"
   from `ta1 \<sim>m ta2` have "\<lbrace>ta1\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" by(simp add: ta_bisim_def)
   with `r1.actions_ok s1 t ta1` have cao1: "r1.cond_action_oks s1 t \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" by auto
   have "r2.cond_action_oks ?s2 t \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" unfolding r2.cond_action_oks_conv_set

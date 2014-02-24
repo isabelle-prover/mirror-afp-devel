@@ -16,7 +16,7 @@ datatype_new 'a mrexp2 =
   Plus2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
   Times2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
   Star2 "'a mrexp2" (fin: bool) (defaults nul: "\<lambda>(r::'a mrexp2) (f::bool). True")
-datatype_new_compat mrexp2
+datatype_compat mrexp2
 
 primrec mrexps2 :: "'a rexp \<Rightarrow> ('a mrexp2) set" where
   "mrexps2 Zero = {Zero2}"
@@ -33,7 +33,7 @@ definition[simp]: "plus2 r s == Plus2 r s (fin r \<or> fin s) (nul r \<or> nul s
 definition[simp]: "times2 r s == Times2 r s (fin r \<and> nul s \<or> fin s) (nul r \<and> nul s)"
 definition[simp]: "star2 r == Star2 r (fin r)"
 
-primrec_new empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
+primrec empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
 "empty_mrexp2 Zero = Zero2" |
 "empty_mrexp2 One = One2" |
 "empty_mrexp2 (Atom x) = Atom2 False x" |
@@ -41,7 +41,7 @@ primrec_new empty_mrexp2 :: "'a rexp \<Rightarrow> 'a mrexp2" where
 "empty_mrexp2 (Times r s) = times2 (empty_mrexp2 r) (empty_mrexp2 s)" |
 "empty_mrexp2 (Star r) = star2 (empty_mrexp2 r)"
 
-primrec_new shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mrexp2" where
+primrec shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarrow> 'a mrexp2" where
 "shift2 _ One2 _ = One2" |
 "shift2 _ Zero2 _ = Zero2" |
 "shift2 m (Atom2 _ x) c = Atom2 (m \<and> (x=c)) x" |
@@ -49,7 +49,7 @@ primrec_new shift2 :: "bool \<Rightarrow> 'a mrexp2 \<Rightarrow> 'a \<Rightarro
 "shift2 m (Times2 r s _ _) c = times2 (shift2 m r c) (shift2 (m \<and> nul r \<or> fin r) s c)" |
 "shift2 m (Star2 r _) c =  star2 (shift2 (m \<or> fin r) r c)"
 
-primrec_new strip2 where
+primrec strip2 where
 "strip2 Zero2 = Zero" |
 "strip2 One2 = One" |
 "strip2 (Atom2 m x) = Atom (m, x)" |
@@ -60,7 +60,7 @@ primrec_new strip2 where
 lemma strip_mrexps2: "(strip o strip2) ` mrexps2 r = {r}"
 by (induction r) (auto simp: set_eq_subset subset_iff image_iff)
 
-primrec_new ok2 :: "'a mrexp2 \<Rightarrow> bool" where
+primrec ok2 :: "'a mrexp2 \<Rightarrow> bool" where
 "ok2 Zero2 = True" |
 "ok2 One2 = True" |
 "ok2 (Atom2 _ _) = True" |
@@ -116,8 +116,8 @@ lift_definition init_okm :: "'a rexp \<Rightarrow> 'a ok_mrexp2" is "\<lambda>r.
 lift_definition delta_okm :: "'a \<Rightarrow> 'a ok_mrexp2 \<Rightarrow> 'a ok_mrexp2" is
   "\<lambda>a (m, r). (False, shift2 m r a)"
   unfolding mem_Collect_eq split_beta snd_conv by (intro ok2_shift2) simp
-lift_definition nullable_okm :: "'a ok_mrexp2 \<Rightarrow> bool" is "\<lambda>(m, r). fin r \<or> m \<and> nul r" ..
-lift_definition lang_okm :: "'a ok_mrexp2 \<Rightarrow> 'a lang" is "\<lambda>(m, r). L_a (m, strip2 r)" ..
+lift_definition nullable_okm :: "'a ok_mrexp2 \<Rightarrow> bool" is "\<lambda>(m, r). fin r \<or> m \<and> nul r" .
+lift_definition lang_okm :: "'a ok_mrexp2 \<Rightarrow> 'a lang" is "\<lambda>(m, r). L_a (m, strip2 r)" .
 
 
 instantiation ok_mrexp2 :: (equal) "equal"
@@ -142,18 +142,18 @@ lemma eq_mrexp2_eq: "\<lbrakk>ok2 r; ok2 s\<rbrakk> \<Longrightarrow> eq_mrexp2 
   by (metis eq_mrexp2_imp_eq eq_mrexp2_refl)
 
 lift_definition equal_ok_mrexp2 :: "'a ok_mrexp2 \<Rightarrow> 'a ok_mrexp2 \<Rightarrow> bool"
-   is "\<lambda>(b1,r1) (b2, r2). b1 = b2 \<and> eq_mrexp2 r1 r2" ..
+   is "\<lambda>(b1,r1) (b2, r2). b1 = b2 \<and> eq_mrexp2 r1 r2" .
 
 instance by intro_classes (transfer, auto simp: eq_mrexp2_eq)
 
 end
 
-interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
-  defines after2_closure is "rexp_DA.closure delta_okm nullable_okm"
-  and     check_eqv_a2 is "rexp_DA.check_eqv init_okm delta_okm nullable_okm"
-  and     reachable_a2 is "rexp_DA.reachable init_okm delta_okm"
-  and     automaton_a2 is "rexp_DA.automaton init_okm delta_okm"
-  and     match_a2 is "rexp_DA.match init_okm delta_okm nullable_okm"
+permanent_interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
+  defining after2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
+    and check_eqv_a2 = "rexp_DA.check_eqv init_okm delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
+    and reachable_a2 = "rexp_DA.reachable (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp2) delta_okm"
+    and automaton_a2 = "rexp_DA.automaton (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp2) delta_okm"
+    and match_a2 = "rexp_DA.match init_okm delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
 proof
   case goal1 show "lang_okm (init_okm r) = lang r"
     by transfer (auto simp: split_beta init_a_def nonfinal_empty_mrexp Lm_follow Lm_empty

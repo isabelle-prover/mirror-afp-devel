@@ -8,7 +8,7 @@ text {*
   This version has non-lifted product, and a non-lifted function space.
 *}
 
-tycondef 'a\<cdot>('f::functor, 's) stateT =
+tycondef 'a\<cdot>('f::"functor", 's) stateT =
   StateT (runStateT :: "'s \<rightarrow> ('a \<times> 's)\<cdot>'f")
 
 lemma coerce_stateT_abs [simp]: "coerce\<cdot>(stateT_abs\<cdot>x) = stateT_abs\<cdot>(coerce\<cdot>x)"
@@ -56,7 +56,7 @@ lemma runStateT_fmapU [simp]:
     fmap\<cdot>(\<Lambda>(x, s'). (f\<cdot>x, s'))\<cdot>(runStateT\<cdot>m\<cdot>s)"
 by (cases m rule: stateT_cases, simp)
 
-instantiation stateT :: (functor, "domain") functor
+instantiation stateT :: ("functor", "domain") "functor"
 begin
 
 instance

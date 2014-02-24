@@ -84,8 +84,7 @@ where "dom_fset f \<equiv> THE x. fset x = dom f"
 
 lift_definition
   fdom :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k fset"
-is "dom_fset"
-by auto
+is "dom_fset" .
 
 lemma inv_fset:
   assumes "finite X"
@@ -133,8 +132,7 @@ subsection {* Lookup *}
 
 lift_definition
   lookup :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k \<Rightarrow> 'v"
-is "op \<circ> the"
-by auto
+is "op \<circ> the" .
 
 lemma lookup_make_fmap:
   assumes "k \<in> fset ks"

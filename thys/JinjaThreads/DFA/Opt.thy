@@ -229,11 +229,11 @@ apply blast
 done 
 (*>*)
 
-lemma option_map_in_optionI:
+lemma map_option_in_optionI:
   "\<lbrakk> ox \<in> opt S; \<forall>x\<in>S. ox = Some x \<longrightarrow> f x \<in> S \<rbrakk> 
-  \<Longrightarrow> Option.map f ox \<in> opt S"
+  \<Longrightarrow> map_option f ox \<in> opt S"
 (*<*)
-apply (unfold Option.map_def)
+apply (unfold map_option_case)
 apply (simp split: option.split)
 apply blast
 done 

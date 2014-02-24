@@ -400,7 +400,7 @@ let
 
   val _ = trace_msg (K "Lifting of theorems...")  
   val eq_iff_simps = @{thms alphas permute_prod.simps prod_fv.simps prod_alpha_def prod_rel_def
-    prod.cases} 
+    prod.case} 
 
   val ([ qdistincts, qeq_iffs, qfv_defs, qbn_defs, qperm_simps, qfv_qbn_eqvts, 
          qbn_inducts, qsize_eqvt, [qinduct], qexhausts, qsize_simps, qperm_bn_simps, 

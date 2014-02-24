@@ -749,7 +749,7 @@ proof -
           moreover have "- set (y # ys) \<inter> above (Some x) = - set (y # ys) \<inter> above ao - {x}"
             using False x_ao by(auto simp add: proper_interval_Some2 intro: above_upclosed)
           ultimately show ?thesis using True False IH
-            by(simp del: set.simps)(subst (2) set_less_eq_aux_rec, simp_all add: x_ao)
+            by(simp del: set_simps)(subst (2) set_less_eq_aux_rec, simp_all add: x_ao)
         qed
       next
         case False
@@ -1061,7 +1061,7 @@ next
   show ?thesis using assms unfolding Cons exhaustive.simps
     apply(subst exhaustive_above_iff)
     apply(auto simp add: sorted_Cons less_le proper_interval_simps not_less)
-    by (metis List.set.simps(2) UNIV_I eq_iff set_ConsD)
+    by (metis List.set_simps(2) UNIV_I eq_iff set_ConsD)
 qed
 
 theorem proper_interval_set_aux:

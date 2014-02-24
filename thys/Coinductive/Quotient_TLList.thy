@@ -54,7 +54,7 @@ lemma id_preserve [quot_preserve]:
 using Quotient3_abs_rep[OF assms]
 by(auto intro: ext)
 
-enriched_type tmap: tmap
+functor tmap: tmap
    by(simp_all add: fun_eq_iff tmap_id_id tllist.map_comp)
 
 lemma symp_tllist_all2: "\<lbrakk> symp R; symp S \<rbrakk> \<Longrightarrow> symp (tllist_all2 R S)"

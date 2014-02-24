@@ -1,6 +1,6 @@
 header {* Bounded Continuous Functions *}
 theory Bounded_Continuous_Function
-imports Auxiliarities
+imports "../ODE_Auxiliarities"
 begin
 
 text{*\label{sec:bcontfun}*}
@@ -34,6 +34,10 @@ lemma bcontfunI':
   "continuous_on UNIV f \<Longrightarrow> (\<And>x. dist (f x) undefined \<le> b) \<Longrightarrow> f \<in> bcontfun"
   using bcontfunI by metis
 
+lemma continuous_on_Rep_bcontfun[intro, simp]: "continuous_on T (Rep_bcontfun x)"
+  using Rep_bcontfun[of x]
+  by (auto simp: bcontfun_def intro: continuous_on_subset)
+
 instantiation bcontfun :: (topological_space, metric_space) metric_space
 begin
 
@@ -49,12 +53,18 @@ lemma dist_bounded:
   shows "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> dist f g"
 proof -
   have "Rep_bcontfun f \<in> bcontfun" using Rep_bcontfun .
-  from bcontfunE'[OF this] guess y . note y = this
+  from bcontfunE'[OF this] obtain y where y:
+    "continuous_on UNIV (Rep_bcontfun f)"
+    "\<And>x. dist (Rep_bcontfun f x) undefined \<le> y"
+    by auto
   have "Rep_bcontfun g \<in> bcontfun" using Rep_bcontfun .
-  from bcontfunE'[OF this] guess z . note z = this
+  from bcontfunE'[OF this] obtain z where z:
+    "continuous_on UNIV (Rep_bcontfun g)"
+    "\<And>x. dist (Rep_bcontfun g x) undefined \<le> z"
+    by auto
   show ?thesis unfolding dist_bcontfun_def
   proof (intro cSUP_upper bdd_aboveI2)
-    fix x 
+    fix x
     have "dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> dist (Rep_bcontfun f x) undefined + dist (Rep_bcontfun g x) undefined"
       by (rule dist_triangle2)
     also have "\<dots> \<le> y + z" using y(2)[of x] z(2)[of x] by (rule add_mono)
@@ -103,8 +113,6 @@ proof
   qed (auto simp: dist_bcontfun_def SUP_def intro!: cSup_eq)
 next
   fix f g h :: "('a, 'b) bcontfun"
-  from bcontfunE[OF Rep_bcontfun[of f]] guess y . note y = this
-  from bcontfunE[OF Rep_bcontfun[of g]] guess z . note z = this
   show "dist f g \<le> dist f h + dist g h"
   proof (subst dist_bcontfun_def, safe intro!: cSUP_least)
     fix x
@@ -117,6 +125,37 @@ next
   qed
 qed (simp add: open_bcontfun_def)
 end
+
+lemma closed_Pi_bcontfun:
+  fixes I::"'a::metric_space set" and X::"'a \<Rightarrow> 'b::complete_space set"
+  assumes "\<And>i. i \<in> I \<Longrightarrow> closed (X i)"
+  shows "closed (Abs_bcontfun ` (Pi I X \<inter> bcontfun))"
+  unfolding closed_sequential_limits
+proof safe
+  fix f l
+  assume seq: "\<forall>n. f n \<in> Abs_bcontfun ` (Pi I X \<inter> bcontfun)" and lim: "f ----> l"
+  have lim_fun: "\<forall>e>0. \<exists>N. \<forall>n\<ge>N. \<forall>x. dist (Rep_bcontfun (f n) x) (Rep_bcontfun l x) < e"
+    using LIMSEQ_imp_Cauchy[OF lim, simplified Cauchy_def] metric_LIMSEQ_D[OF lim]
+    by (intro uniformly_cauchy_imp_uniformly_convergent[where P="%_. True", simplified])
+      (metis dist_fun_lt_imp_dist_val_lt)+
+  show "l \<in> Abs_bcontfun ` (Pi I X \<inter> bcontfun)"
+  proof (rule, safe)
+    fix x assume "x \<in> I"
+    hence "closed (X x)" using assms by simp
+    moreover have "eventually (\<lambda>xa. Rep_bcontfun (f xa) x \<in> X x) sequentially"
+    proof (rule always_eventually, safe)
+      fix i
+      from seq[THEN spec, of i] `x \<in> I`
+      show "Rep_bcontfun (f i) x \<in> X x"
+        by (auto simp: Abs_bcontfun_inverse)
+    qed
+    moreover note sequentially_bot
+    moreover have "(\<lambda>n. Rep_bcontfun (f n) x) ----> Rep_bcontfun l x"
+      using lim_fun by (blast intro!: metric_LIMSEQ_I)
+    ultimately show "Rep_bcontfun l x \<in> X x"
+      by (rule Lim_in_closed_set)
+  qed (auto simp: Rep_bcontfun Rep_bcontfun_inverse)
+qed
 
 subsection {* Complete Space *}
 
@@ -158,7 +197,7 @@ proof
     with limit_function[THEN spec, of"e/2"]
     have "\<exists>N. \<forall>n\<ge>N. \<forall>x. dist (Rep_bcontfun (f n) x) (g x) < e/2"
       by simp
-    then guess N .. note N=this
+    then obtain N where N: "\<forall>n\<ge>N. \<forall>x. dist (Rep_bcontfun (f n) x) (g x) < e / 2" by auto
     show "\<exists>N. \<forall>n\<ge>N. dist (f n) (Abs_bcontfun g) < e"
     proof (rule, safe)
       fix n
@@ -191,8 +230,11 @@ lemma plus_cont:
   assumes f: "f \<in> bcontfun" and g: "g \<in> bcontfun"
   shows "(\<lambda>x. f x + g x) \<in> bcontfun"
 proof -
-  from bcontfunE'[OF f] guess y .
-  moreover from bcontfunE'[OF g] guess z .
+  from bcontfunE'[OF f] obtain y where "continuous_on UNIV f" "\<And>x. dist (f x) undefined \<le> y"
+    by auto
+  moreover
+  from bcontfunE'[OF g] obtain z where "continuous_on UNIV g" "\<And>x. dist (g x) undefined \<le> z"
+    by auto
   ultimately show ?thesis
   proof (intro bcontfunI)
     fix x
@@ -214,7 +256,8 @@ lemma uminus_cont:
   assumes "f \<in> bcontfun"
   shows "(\<lambda>x. - f x) \<in> bcontfun"
 proof -
-  from bcontfunE[OF assms, of 0] guess y .
+  from bcontfunE[OF assms, of 0] obtain y where "continuous_on UNIV f" "\<And>x. dist (f x) 0 \<le> y"
+    by auto
   thus ?thesis
   proof (intro bcontfunI)
     fix x
@@ -242,7 +285,8 @@ lemma scaleR_cont:
   assumes "f \<in> bcontfun"
   shows " (\<lambda>x. a *\<^sub>R f x) \<in> bcontfun"
 proof -
-  from bcontfunE[OF assms, of 0] guess y .
+  from bcontfunE[OF assms, of 0] obtain y where "continuous_on UNIV f" "\<And>x. dist (f x) 0 \<le> y"
+    by auto
   thus ?thesis
   proof (intro bcontfunI)
     fix x assume "\<And>x. dist (f x) 0 \<le> y"
@@ -277,8 +321,6 @@ proof
   show "dist f g = norm (f - g)"
     by (simp add: norm_bcontfun_def dist_bcontfun_def zero_bcontfun_def
     Abs_bcontfun_inverse const_bcontfun norm_conv_dist[symmetric] dist_norm)
-  from bcontfunE[OF Rep_bcontfun[of f]] guess y . note y = this
-  from bcontfunE[OF Rep_bcontfun[of g]] guess z . note z = this
   show "norm (f + g) \<le> norm f + norm g"
     unfolding norm_bcontfun_def
   proof (subst dist_bcontfun_def, safe intro!: cSUP_least)
@@ -299,7 +341,6 @@ next
   show "norm (a *\<^sub>R f) = \<bar>a\<bar> * norm f"
     unfolding norm_bcontfun_def
   proof -
-    from bcontfunE[OF Rep_bcontfun[of f]] guess y . note y = this
     have "Sup (op * \<bar>a\<bar> ` range (\<lambda>x. dist (Rep_bcontfun f x) 0)) =
       \<bar>a\<bar> * Sup (range (\<lambda>x. dist (Rep_bcontfun f x) 0))"
     proof (intro Sup_real_mult[symmetric] bdd_aboveI2)
@@ -392,9 +433,9 @@ proof (safe)
   moreover
   note f_cont[simplified continuous_on_iff]
   ultimately
-  have
-    "\<exists>d>0. \<forall>x'\<in>{a..b}. dist x' (clamp a b x) < d \<longrightarrow> dist (f x') (f (clamp a b x)) < e" by fast
-  then guess d .. note d=this
+  obtain d where d: "0 < d"
+    "\<And>x'. x' \<in> {a..b} \<Longrightarrow> dist x' (clamp a b x) < d \<Longrightarrow> dist (f x') (f (clamp a b x)) < e"
+    by force
   show "\<exists>d>0. \<forall>x'. dist x' x < d \<longrightarrow>
     dist (f (clamp a b x')) (f (clamp a b x)) < e"
   proof (rule+)
@@ -436,6 +477,12 @@ proof -
   qed (simp add: clamp_continuous_on assms)
 qed
 
+lemma integral_clamp:
+  "integral {t0::real..clamp t0 t1 x} f =
+    (if x < t0 then 0 else if x \<le> t1 then integral {t0..x} f else integral {t0..t1} f)"
+  by (auto simp: clamp_def)
+
+
 declare [[coercion Rep_bcontfun]]
 
 lemma ext_cont_cancel[simp]:
@@ -450,5 +497,17 @@ proof (subst Abs_bcontfun_inverse[OF clamp_bcontfun])
     using x unfolding clamp_def mem_interval
     by (intro arg_cong[where f=f] euclidean_eqI[where 'a='a]) (simp add: not_less)
 qed auto
+
+lemma ext_cont_cong:
+  assumes "t0 = s0"
+  assumes "t1 = s1"
+  assumes "\<And>t. t \<in> {t0..t1} \<Longrightarrow> f t = g t"
+  assumes "continuous_on {t0..t1} f"
+  assumes "continuous_on {s0..s1} g"
+  assumes "t0 \<le> t1"
+  shows "ext_cont f t0 t1 = ext_cont g s0 s1"
+  unfolding assms ext_cont_def
+  using assms clamp_in_interval[OF `t0 \<le> t1`]
+  by (subst Rep_bcontfun_inject[symmetric]) simp
 
 end

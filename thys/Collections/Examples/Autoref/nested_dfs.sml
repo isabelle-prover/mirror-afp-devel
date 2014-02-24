@@ -198,9 +198,9 @@ structure HPY_new : sig
   datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
     Circ of 'a * 'a list * 'a list
   val eq : 'a equal -> 'a -> 'a -> bool
-  val map : ('a -> 'b) -> 'a list -> 'b list
   val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
   val foldli : 'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
+  val map : ('a -> 'b) -> 'a list -> 'b list
   val dbind : 'a dres -> ('a -> 'b dres) -> 'b dres
   val array_set :
     'a FArray.IsabelleMapping.ArrayType ->
@@ -320,15 +320,15 @@ datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
 
 fun eq A_ a b = equal A_ a b;
 
-fun map f [] = []
-  | map f (x :: xs) = f x :: map f xs;
-
 fun fold f (x :: xs) s = fold f xs (f x s)
   | fold f [] s = s;
 
 fun foldli [] c f sigma = sigma
   | foldli (x :: xs) c f sigma =
     (if c sigma then foldli xs c f (f x sigma) else sigma);
+
+fun map fi [] = []
+  | map fi (x21a :: x22a) = fi x21a :: map fi x22a;
 
 fun dbind DFAILi f = DFAILi
   | dbind DSUCCEEDi f = DSUCCEEDi

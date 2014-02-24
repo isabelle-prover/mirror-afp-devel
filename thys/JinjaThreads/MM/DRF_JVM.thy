@@ -15,7 +15,7 @@ begin
 subsection {* DRF guarantee for the JVM *}
 
 abbreviation (input) ka_xcp :: "'addr option \<Rightarrow> 'addr set"
-where "ka_xcp \<equiv> Option.set"
+where "ka_xcp \<equiv> set_option"
 
 primrec jvm_ka :: "'addr jvm_thread_state \<Rightarrow> 'addr set"
 where

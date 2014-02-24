@@ -7,7 +7,7 @@ begin
 class zeroU = tycon +
   fixes zeroU :: "udom\<cdot>'a::tycon"
 
-class functor_zero = zeroU + functor +
+class functor_zero = zeroU + "functor" +
   assumes fmapU_zeroU [coerce_simp]:
     "fmapU\<cdot>f\<cdot>zeroU = zeroU"
 

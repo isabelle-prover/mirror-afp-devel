@@ -1034,7 +1034,7 @@ next
     by (fastforce dest:WTrts_same_length)
   with eqs subs
   have length_vs:"length (Ref(a,Cs')#vs) = length (Class(last Cs')#Ts)"
-    by (simp add:list_all2_def)
+    by (simp add:list_all2_iff)
   from subs eqs have "P \<turnstile> (Class(last Cs')#Ts'') [\<le>] (Class(last Cs')#Ts)"
     by (simp add:fun_of_def)
   with wt_blocks[OF length_pns length_vs type] wtbody map eq

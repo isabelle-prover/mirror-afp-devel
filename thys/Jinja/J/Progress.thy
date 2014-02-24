@@ -387,7 +387,7 @@ next
         from wte e_addr obtain fs where ha: "h a = Some(C,fs)" by auto
         show ?thesis
           using e_addr ha method WTrts_same_length[OF wtes] sub es sees_wf_mdecl[OF wf method]
-          by (fastforce intro!: RedCall simp:list_all2_def wf_mdecl_def)
+          by (fastforce intro!: RedCall simp:list_all2_iff wf_mdecl_def)
       next
         assume "\<not>(\<exists>vs. es = map Val vs)"
         hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"

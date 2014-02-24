@@ -489,7 +489,7 @@ val conj_assoc = @{thm HOL.conj_assoc};
 val snd_guaranteeStripPair = @{thm Language.snd_guaranteeStripPair};
 val lookup_Some_in_dom = @{thm Hoare.lookup_Some_in_dom};
 val strip_simps =
-  @{thm Language.strip_simp} :: @{thm option_map_Some} :: @{thms Language.strip_guards_simps};
+  @{thm Language.strip_simp} :: @{thm option.map(2)} :: @{thms Language.strip_guards_simps};
 val normalize_simps =
  [while_def, @{thm Language.bseq_def}, @{thm List.append_Nil}, @{thm List.append_Cons}] @
   @{thms List.list.cases} @
@@ -504,7 +504,7 @@ val guards_simps = @{thms Language.guards.simps};
 val strip_guards_simps = @{thms Language.strip_guards_simps};
 val dest_Guard_simps = @{thms Language.dest_Guard_simps};
 val is_Guard_simps = @{thms Language.is_Guard_simps};
-val com_cases_simps = @{thms Language.com.cases};
+val com_cases_simps = @{thms Language.com.case};
 val option_sel = @{thms option.sel};
 val strip_idem = @{thm strip_idem};
 val dom_strip = @{thm dom_strip};

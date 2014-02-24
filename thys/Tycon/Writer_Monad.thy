@@ -60,7 +60,7 @@ done
 
 subsection {* Class instance proofs *}
 
-instance writer :: ("domain") functor
+instance writer :: ("domain") "functor"
 proof
   fix f g :: "udom \<rightarrow> udom" and xs :: "udom\<cdot>'a writer"
   show "fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"

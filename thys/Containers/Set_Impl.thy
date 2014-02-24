@@ -735,7 +735,7 @@ lemma Inf_fin_code [code]:
   (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''Inf_fin RBT_set: corder = None'') (\<lambda>_. Inf_fin (RBT_set rbt))
                      | Some _ \<Rightarrow> if RBT_Set2.is_empty rbt then Code.abort (STR ''Inf_fin RBT_set: empty set'') (\<lambda>_. Inf_fin (RBT_set rbt))
                                  else RBT_Set2.fold1 inf rbt)"
-by(simp_all add: Inf_fin.set_eq_fold DList_set_def DList_Set.Inf_fin_member RBT_Set2.Inf_fin_member RBT_set_def del: set.simps split: option.splits)
+by(simp_all add: Inf_fin.set_eq_fold DList_set_def DList_Set.Inf_fin_member RBT_Set2.Inf_fin_member RBT_set_def del: set_simps split: option.splits)
 
 lemma Sup_fin_code [code]:
   fixes rbt :: "'a :: {corder, lattice} set_rbt"
@@ -749,7 +749,7 @@ lemma Sup_fin_code [code]:
   (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''Sup_fin RBT_set: corder = None'') (\<lambda>_. Sup_fin (RBT_set rbt))
                      | Some _ \<Rightarrow> if RBT_Set2.is_empty rbt then Code.abort (STR ''Sup_fin RBT_set: empty set'') (\<lambda>_. Sup_fin (RBT_set rbt))
                                  else RBT_Set2.fold1 sup rbt)"
-by(simp_all add: Sup_fin.set_eq_fold DList_set_def DList_Set.Sup_fin_member RBT_Set2.Sup_fin_member RBT_set_def del: set.simps split: option.splits)
+by(simp_all add: Sup_fin.set_eq_fold DList_set_def DList_Set.Sup_fin_member RBT_Set2.Sup_fin_member RBT_set_def del: set_simps split: option.splits)
 
 lemma Inf_code:
   fixes xs :: "'a :: complete_lattice list"
@@ -836,11 +836,11 @@ lemma Min_code [code]:
     if RBT_Set2.is_empty rbt then Code.abort (STR ''Min RBT_set: empty set'') (\<lambda>_. Min (RBT_set rbt))
     else RBT_Set2.fold1 min rbt)" (is ?rbt)
 proof -
-  show ?Monad by(simp del: set.simps add: Min.set_eq_fold)
+  show ?Monad by(simp del: set_simps add: Min.set_eq_fold)
   show ?DList
-    by(clarsimp simp add: DList_set_def DList_Set.Collect_member split: option.split)(transfer, clarsimp simp add: neq_Nil_conv Min.set_eq_fold simp del: set.simps)
+    by(clarsimp simp add: DList_set_def DList_Set.Collect_member split: option.split)(transfer, clarsimp simp add: neq_Nil_conv Min.set_eq_fold simp del: set_simps)
   show ?rbt
-    by(clarsimp simp add: RBT_set_conv_keys split: option.split)(transfer, drule non_empty_rbt_keys, clarsimp simp add: neq_Nil_conv RBT_Impl_fold1_def Min.set_eq_fold simp del: set.simps)
+    by(clarsimp simp add: RBT_set_conv_keys split: option.split)(transfer, drule non_empty_rbt_keys, clarsimp simp add: neq_Nil_conv RBT_Impl_fold1_def Min.set_eq_fold simp del: set_simps)
 qed
 
 lemma Max_code [code]:
@@ -859,11 +859,11 @@ lemma Max_code [code]:
     if RBT_Set2.is_empty rbt then Code.abort (STR ''Max RBT_set: empty set'') (\<lambda>_. Max (RBT_set rbt))
     else RBT_Set2.fold1 max rbt)" (is ?rbt)
 proof -
-  show ?Monad by(simp del: set.simps add: Max.set_eq_fold)
+  show ?Monad by(simp del: set_simps add: Max.set_eq_fold)
   show ?DList
-    by(clarsimp simp add: DList_set_def DList_Set.Collect_member split: option.split)(transfer, clarsimp simp add: neq_Nil_conv Max.set_eq_fold simp del: set.simps)
+    by(clarsimp simp add: DList_set_def DList_Set.Collect_member split: option.split)(transfer, clarsimp simp add: neq_Nil_conv Max.set_eq_fold simp del: set_simps)
   show ?rbt
-    by(clarsimp simp add: RBT_set_conv_keys split: option.split)(transfer, drule non_empty_rbt_keys, clarsimp simp add: neq_Nil_conv RBT_Impl_fold1_def Max.set_eq_fold simp del: set.simps)
+    by(clarsimp simp add: RBT_set_conv_keys split: option.split)(transfer, drule non_empty_rbt_keys, clarsimp simp add: neq_Nil_conv RBT_Impl_fold1_def Max.set_eq_fold simp del: set_simps)
 qed
 
 text {*
@@ -1355,12 +1355,12 @@ proof -
   have comm: "comp_fun_commute (\<lambda>x. op + (f x))" by default (auto simp: add_ac)
 
   show ?Set_Monad using equal.equal_eq[where ?'a='a, OF equal_ceq]
-    by(auto simp add: setsum.eq_fold fold_singleton comp_fun_commute.fold_set_fold_remdups[OF comm] o_def simp del: set.simps not_None_eq split: option.split list.split)(auto simp add: o_def List.member_def)
+    by(auto simp add: setsum.eq_fold fold_singleton comp_fun_commute.fold_set_fold_remdups[OF comm] o_def simp del: set_simps not_None_eq split: option.split list.split)(auto simp add: o_def List.member_def)
 
   have "ID CEQ('a) \<noteq> None \<Longrightarrow> distinct (list_of_dlist dxs)"
     by transfer(auto simp add: equal.equal_eq[OF equal_ceq])
   thus ?DList
-    by(auto simp add: DList_set_def setsum.eq_fold DList_Set.Collect_member o_def comp_fun_commute.fold_set_fold_remdups[OF comm] DList_Set.fold_def distinct_remdups_id simp del: set.simps split: option.split list.split)
+    by(auto simp add: DList_set_def setsum.eq_fold DList_Set.Collect_member o_def comp_fun_commute.fold_set_fold_remdups[OF comm] DList_Set.fold_def distinct_remdups_id simp del: set_simps split: option.split list.split)
 
   have comm: "comp_fun_commute (\<lambda>x. op + (g x))" by default (auto simp: add_ac)
   show ?rbt
@@ -1824,8 +1824,8 @@ datatype set_impl = Set_IMPL
 declare
   set_impl.eq.simps [code del]
   set_impl.size [code del]
-  set_impl.recs [code del]
-  set_impl.cases [code del]
+  set_impl.rec [code del]
+  set_impl.case [code del]
 
 lemma [code]: 
   fixes x :: set_impl

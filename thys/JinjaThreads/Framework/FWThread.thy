@@ -229,13 +229,13 @@ lemma thread_oks_convert_new_thread_action [simp]:
 by(induct ts tas rule: thread_oks.induct)(simp_all add: thread_oks_ts_change[OF redT_updT'_convert_new_thread_action_eq_None])
 
 lemma map_redT_updT:
-  "Option.map (map_pair f id) (redT_updT ts ta t) = 
-  redT_updT (\<lambda>t. Option.map (map_pair f id) (ts t)) (convert_new_thread_action f ta) t"
+  "map_option (map_pair f id) (redT_updT ts ta t) = 
+  redT_updT (\<lambda>t. map_option (map_pair f id) (ts t)) (convert_new_thread_action f ta) t"
 by(cases ta) auto
 
 lemma map_redT_updTs:
-  "Option.map (map_pair f id) (redT_updTs ts tas t) = 
-  redT_updTs (\<lambda>t. Option.map (map_pair f id) (ts t)) (map (convert_new_thread_action f) tas) t"
+  "map_option (map_pair f id) (redT_updTs ts tas t) = 
+  redT_updTs (\<lambda>t. map_option (map_pair f id) (ts t)) (map (convert_new_thread_action f) tas) t"
 by(induct tas arbitrary: ts)(auto simp add: map_redT_updT)
 
 end

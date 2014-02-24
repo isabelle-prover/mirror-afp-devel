@@ -1434,7 +1434,7 @@ apply (case_tac xp)
 apply clarify
 apply(case_tac frs)
  apply simp
-apply(clarsimp simp only: exec.simps set.simps)
+apply(clarsimp simp only: exec.simps set_simps)
 apply(erule (1) exception_step_conform)
 done
 

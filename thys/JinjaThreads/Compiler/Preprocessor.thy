@@ -27,7 +27,7 @@ lemma fixes is_lub
 proof(induct rule: WT_WTs.inducts)
   case (WTCall E e U C M Ts T meth D es Ts')
   from `P \<turnstile> C sees M: Ts\<rightarrow>T = meth in D`
-  have "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = Option.map (f D M Ts T) meth in D"
+  have "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = map_option (f D M Ts T) meth in D"
     by(auto dest: sees_method_compP[where f=f])
   with WTCall show ?case by(auto)
 qed(auto simp del: fun_upd_apply)
@@ -82,7 +82,7 @@ proof -
       unfolding annotate_code_def annotate_def
       by -(rule arg_cong[where f="THE_default body"], auto intro!: ext intro: Anno_code_into_Anno[OF wf'] Anno_into_Anno_code[OF wf']) }
   thus ?thesis unfolding annotate_prog_code_def annotate_prog_def
-    by(cases P)(auto simp add: compC_def compM_def annotate_Mb_def annotate_Mb_code_def Option.map_def)
+    by(cases P)(auto simp add: compC_def compM_def annotate_Mb_def annotate_Mb_code_def map_option_case)
 qed
 
 end

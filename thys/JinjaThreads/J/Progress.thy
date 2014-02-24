@@ -657,7 +657,7 @@ next
         proof(cases meth)
           case (Some pnsbody)
           with esTs e_addr ha sees subtype es sees_wf_mdecl[OF wf sees] icto
-          show ?thesis by(cases pnsbody) (fastforce intro!: RedCall simp:list_all2_def wf_mdecl_def)
+          show ?thesis by(cases pnsbody) (fastforce intro!: RedCall simp:list_all2_iff wf_mdecl_def)
         next
           case None
           with sees wf have "D\<bullet>M(Ts) :: T" by(auto intro: sees_wf_native)

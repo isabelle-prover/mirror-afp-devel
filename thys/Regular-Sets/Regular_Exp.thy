@@ -13,9 +13,9 @@ datatype_new (atoms: 'a) rexp =
   Plus "('a rexp)" "('a rexp)" |
   Times "('a rexp)" "('a rexp)" |
   Star "('a rexp)"
-datatype_new_compat rexp
+datatype_compat rexp
 
-primrec_new lang :: "'a rexp => 'a lang" where
+primrec lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |
 "lang One = {[]}" |
 "lang (Atom a) = {[a]}" |
@@ -23,7 +23,7 @@ primrec_new lang :: "'a rexp => 'a lang" where
 "lang (Times r s) = conc (lang r) (lang s)" |
 "lang (Star r) = star(lang r)"
 
-primrec_new nullable :: "'a rexp \<Rightarrow> bool" where
+primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable (Zero) = False" |
 "nullable (One) = True" |
 "nullable (Atom c) = False" |

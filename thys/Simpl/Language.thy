@@ -471,10 +471,10 @@ where
 
 definition strip:: "'f set \<Rightarrow> 
                    ('p \<Rightarrow> ('s,'p,'f) com option) \<Rightarrow> ('p \<Rightarrow> ('s,'p,'f) com option)"
-  where "strip F \<Gamma> = (\<lambda>p. Option.map (strip_guards F) (\<Gamma> p))"
+  where "strip F \<Gamma> = (\<lambda>p. map_option (strip_guards F) (\<Gamma> p))"
 
 
-lemma strip_simp [simp]: "(strip F \<Gamma>) p = Option.map (strip_guards F) (\<Gamma> p)"
+lemma strip_simp [simp]: "(strip F \<Gamma>) p = map_option (strip_guards F) (\<Gamma> p)"
   by (simp add: strip_def)
 
 lemma dom_strip: "dom (strip F \<Gamma>) = dom \<Gamma>"

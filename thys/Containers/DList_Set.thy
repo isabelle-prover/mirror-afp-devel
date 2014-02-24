@@ -165,24 +165,24 @@ by(auto simp add: equal_base.list_distinct_filter)
 
 text {* Derived operations: *}
 
-lift_definition null :: "'a :: ceq set_dlist \<Rightarrow> bool" is List.null ..
+lift_definition null :: "'a :: ceq set_dlist \<Rightarrow> bool" is List.null .
 
-lift_definition member :: "'a :: ceq set_dlist \<Rightarrow> 'a \<Rightarrow> bool" is "equal_base.list_member ceq'" ..
+lift_definition member :: "'a :: ceq set_dlist \<Rightarrow> 'a \<Rightarrow> bool" is "equal_base.list_member ceq'" .
 
-lift_definition length :: "'a :: ceq set_dlist \<Rightarrow> nat" is List.length ..
+lift_definition length :: "'a :: ceq set_dlist \<Rightarrow> nat" is List.length .
 
-lift_definition fold :: "('a :: ceq \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_dlist \<Rightarrow> 'b \<Rightarrow> 'b" is List.fold ..
+lift_definition fold :: "('a :: ceq \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_dlist \<Rightarrow> 'b \<Rightarrow> 'b" is List.fold .
 
-lift_definition foldr :: "('a :: ceq \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_dlist \<Rightarrow> 'b \<Rightarrow> 'b" is List.foldr ..
+lift_definition foldr :: "('a :: ceq \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_dlist \<Rightarrow> 'b \<Rightarrow> 'b" is List.foldr .
 
-lift_definition hd :: "'a :: ceq set_dlist \<Rightarrow> 'a" is "List.hd" ..
+lift_definition hd :: "'a :: ceq set_dlist \<Rightarrow> 'a" is "List.hd" .
 
 lift_definition tl :: "'a :: ceq set_dlist \<Rightarrow> 'a set_dlist" is "List.tl"
 by(auto simp add: equal_base.list_distinct_tl)
 
-lift_definition dlist_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a :: ceq set_dlist \<Rightarrow> bool" is "list_all" ..
+lift_definition dlist_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a :: ceq set_dlist \<Rightarrow> bool" is "list_all" .
 
-lift_definition dlist_ex :: "('a \<Rightarrow> bool) \<Rightarrow> 'a :: ceq set_dlist \<Rightarrow> bool" is "list_ex" ..
+lift_definition dlist_ex :: "('a \<Rightarrow> bool) \<Rightarrow> 'a :: ceq set_dlist \<Rightarrow> bool" is "list_ex" .
 
 definition union :: "'a :: ceq set_dlist \<Rightarrow> 'a set_dlist \<Rightarrow> 'a set_dlist" where
   "union = fold insert"
@@ -421,11 +421,11 @@ begin
 
 lemma Inf_fin_member: 
   "dxs \<noteq> empty \<Longrightarrow> Inf_fin (Collect (member (dxs :: 'a set_dlist))) = fold inf (tl dxs) (hd dxs)"
-by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Inf_fin.set_eq_fold simp del: set.simps)
+by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Inf_fin.set_eq_fold simp del: set_simps)
 
 lemma Sup_fin_member: 
   "dxs \<noteq> empty \<Longrightarrow> Sup_fin (Collect (member (dxs :: 'a set_dlist))) = fold sup (tl dxs) (hd dxs)"
-by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Sup_fin.set_eq_fold simp del: set.simps)
+by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Sup_fin.set_eq_fold simp del: set_simps)
 
 end
 

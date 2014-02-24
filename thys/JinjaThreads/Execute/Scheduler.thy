@@ -354,7 +354,7 @@ text {*
 definition pick_wakeup_via_sel :: 
   "('m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> 't \<times> 'w wait_set_status) 
   \<Rightarrow> 's \<Rightarrow> 't \<Rightarrow> 'w \<Rightarrow> 'm_w \<Rightarrow> 't option"
-where "pick_wakeup_via_sel ws_sel \<sigma> t w ws = Option.map fst (ws_sel ws (\<lambda>t w'. w' = InWS w))"
+where "pick_wakeup_via_sel ws_sel \<sigma> t w ws = map_option fst (ws_sel ws (\<lambda>t w'. w' = InWS w))"
 
 lemma pick_wakeup_spec_via_sel:
   assumes sel: "map_sel' ws_\<alpha> ws_invar ws_sel"
@@ -1123,7 +1123,7 @@ lemma step_thread_correct:
   assumes det: "\<alpha>.deterministic I"
   and invar: "\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   shows
-  "Option.map (apsnd (apsnd \<sigma>_\<alpha>)) (step_thread update_state s t) = \<alpha>.step_thread (\<sigma>_\<alpha> \<circ> update_state) (state_\<alpha> s) t" (is ?thesis1)
+  "map_option (apsnd (apsnd \<sigma>_\<alpha>)) (step_thread update_state s t) = \<alpha>.step_thread (\<sigma>_\<alpha> \<circ> update_state) (state_\<alpha> s) t" (is ?thesis1)
   and "(\<And>ta. FWThread.thread_oks (thr_\<alpha> (thr s)) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<Longrightarrow> \<sigma>_invar (update_state ta) (dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) \<Longrightarrow> case_option True (\<lambda>(t, taxm, \<sigma>). \<sigma>_invar \<sigma> (case taxm of None \<Rightarrow> dom (thr_\<alpha> (thr s)) | Some (ta, x', m') \<Rightarrow> dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>})) (step_thread update_state s t)"
   (is "(\<And>ta. ?tso ta \<Longrightarrow> ?inv ta) \<Longrightarrow> ?thesis2")
 proof -
@@ -1165,16 +1165,12 @@ proof -
   thus ?thesis1 "(\<And>ta. ?tso ta \<Longrightarrow> ?inv ta) \<Longrightarrow> ?thesis2" by blast+
 qed
 
-lemma option_map_id:
-  "Option.map id = id"
-  by (simp add: id_def Option.map.identity fun_eq_iff)
-
 lemma step_thread_eq_None_conv:
   assumes det: "\<alpha>.deterministic I"
   and invar: "state_invar s" "state_\<alpha> s \<in> I"
   shows "step_thread update_state s t = None \<longleftrightarrow> t \<notin> \<alpha>.active_threads (state_\<alpha> s)"
 using assms step_thread_correct(1)[OF det _ invar(1), of "\<lambda>_ _. True", of id update_state t]
-by(simp add: option_map_id \<alpha>.step_thread_eq_None_conv)
+by(simp add: map_option.id \<alpha>.step_thread_eq_None_conv)
 
 lemma step_thread_Some_NoneD:
   assumes det: "\<alpha>.deterministic I"
@@ -1182,7 +1178,7 @@ lemma step_thread_Some_NoneD:
   and invar: "state_invar s" "state_\<alpha> s \<in> I"
   shows "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state (K$ [], [], [], [], [], convert_RA ln)"
 using assms step_thread_correct(1)[OF det _ invar(1), of "\<lambda>_ _. True", of id update_state t']
-by(fastforce simp add: option_map_id dest: \<alpha>.step_thread_Some_NoneD[OF sym])
+by(fastforce simp add: map_option.id dest: \<alpha>.step_thread_Some_NoneD[OF sym])
 
 lemma step_thread_Some_SomeD:
   assumes det: "\<alpha>.deterministic I"
@@ -1190,7 +1186,7 @@ lemma step_thread_Some_SomeD:
   and invar: "state_invar s" "state_\<alpha> s \<in> I"
   shows "\<exists>x. thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> Predicate.eval (r t (x, shr s)) (ta, x', m') \<and> actions_ok s t ta \<and> \<sigma>' = update_state ta"
 using assms step_thread_correct(1)[OF det _ invar(1), of "\<lambda>_ _. True", of id update_state t']
-by(auto simp add: option_map_id dest: \<alpha>.step_thread_Some_SomeD[OF det sym])
+by(auto simp add: map_option.id dest: \<alpha>.step_thread_Some_SomeD[OF det sym])
 
 end
 

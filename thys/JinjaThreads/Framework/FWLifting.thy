@@ -104,10 +104,10 @@ lemma ts_inv_ok_upd_ts:
   "\<lbrakk> ts t = \<lfloor>x\<rfloor>; ts_inv_ok ts I \<rbrakk> \<Longrightarrow> ts_inv_ok (ts(t \<mapsto> x')) I"
 by(auto dest!: ts_inv_okD intro!: ts_inv_okI split: if_splits)
 
-lemma ts_inv_upd_option_map:
+lemma ts_inv_upd_map_option:
   assumes "ts_inv P I ts m"
   and "\<And>x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P (the (I t)) t (fst (f (x, ln))) m"
-  shows "ts_inv P I (ts(t := (Option.map f (ts t)))) m"
+  shows "ts_inv P I (ts(t := (map_option f (ts t)))) m"
 using assms
 by(fastforce intro!: ts_invI split: split_if_asm dest: ts_invD)
 

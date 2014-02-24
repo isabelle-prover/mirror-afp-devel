@@ -268,17 +268,17 @@ lemma map_iterator_abs_genord_I2 :
   assumes it_OK: "map_iterator_genord iti m R'"
       and invar: "\<And>k v. m k = Some v \<Longrightarrow> invar v"
       and R_OK: "\<And>k v k' v'. invar v \<Longrightarrow> invar v' \<Longrightarrow> R' (k, v) (k', v') \<Longrightarrow> R (k, \<alpha> v) (k', \<alpha> v')"
-      and m'_eq: "m' = ((Option.map \<alpha>) o m)"
+      and m'_eq: "m' = ((map_option \<alpha>) o m)"
   shows "map_iterator_abs_genord \<alpha> invar iti m' R"
 proof -
   let ?\<alpha>' = "\<lambda>(k,v). (k, \<alpha> v)"
   let ?invar' = "\<lambda>(k,v). invar v"
 
-  have \<alpha>_rewr: "?\<alpha>' ` (map_to_set m) = map_to_set ((Option.map \<alpha>) o m)"
+  have \<alpha>_rewr: "?\<alpha>' ` (map_to_set m) = map_to_set ((map_option \<alpha>) o m)"
     by (auto simp add: map_to_set_def)
  
   note rule' = set_iterator_abs_genord_I2[OF it_OK[unfolded set_iterator_def], 
-    of ?invar' R ?\<alpha>' "map_to_set (Option.map \<alpha> \<circ> m)", unfolded \<alpha>_rewr map_iterator_abs_genord_def[symmetric]]
+    of ?invar' R ?\<alpha>' "map_to_set (map_option \<alpha> \<circ> m)", unfolded \<alpha>_rewr map_iterator_abs_genord_def[symmetric]]
 
   show ?thesis
     unfolding m'_eq
@@ -290,7 +290,7 @@ qed
 lemma map_iterator_abs_genord_remove_abs2 :
   assumes iti: "map_iterator_abs_genord \<alpha> invar iti m R"
   obtains m' where "map_iterator_genord iti m' (\<lambda>(k, v) (k', v'). R (k, \<alpha> v) (k', \<alpha> v'))"
-       "(Option.map \<alpha>) o m' = m" "\<And>k v. m' k = Some v \<Longrightarrow> invar v"
+       "(map_option \<alpha>) o m' = m" "\<And>k v. m' k = Some v \<Longrightarrow> invar v"
   proof -
     let ?\<alpha>' = "\<lambda>(k,v). (k, \<alpha> v)"
     let ?invar' = "\<lambda>(k,v). invar v"
@@ -323,7 +323,7 @@ lemma map_iterator_abs_genord_remove_abs2 :
       by (auto simp add: distinct_map inj_on_def Ball_def)
     hence "map_to_set m = map_to_set (map_of (map ?\<alpha>' lc))"
       by (simp add: \<alpha>_props map_to_set_map_of)
-    hence m_eq: "Option.map \<alpha> \<circ> map_of lc = m"
+    hence m_eq: "map_option \<alpha> \<circ> map_of lc = m"
       by (simp add: map_of_map[symmetric] map_to_set_cong)
 
     from that[of ?m'] it' lc_invar \<alpha>_props(1) show ?thesis
@@ -350,7 +350,7 @@ proof -
 
   from map_iterator_abs_genord_remove_abs2 [OF iti_OK]
   obtain m' where m'_props: "map_iterator_genord iti m' (\<lambda>x y. R (?\<alpha>' x) (?\<alpha>' y))"
-     "m = Option.map \<alpha> \<circ> m'" "\<And>k v. m' k = Some v \<Longrightarrow> invar v" 
+     "m = map_option \<alpha> \<circ> m'" "\<And>k v. m' k = Some v \<Longrightarrow> invar v" 
      by (auto simp add: split_def) 
 
   have dom_m'_eq[simp]: "dom m' = dom m"
@@ -394,7 +394,7 @@ proof -
 
   from map_iterator_abs_genord_remove_abs2 [OF iti_OK]
   obtain m' where m'_props: "map_iterator_genord iti m' (\<lambda>x y. R (?\<alpha>' x) (?\<alpha>' y))"
-     "m = Option.map \<alpha> \<circ> m'" "\<And>k v. m' k = Some v \<Longrightarrow> invar v" 
+     "m = map_option \<alpha> \<circ> m'" "\<And>k v. m' k = Some v \<Longrightarrow> invar v" 
      by (auto simp add: split_def) 
 
   have dom_m'_eq[simp]: "dom m' = dom m"
@@ -558,7 +558,7 @@ qed
 lemma map_iterator_abs_I2 :
   assumes it_OK: "map_iterator iti m"
       and invar: "\<And>k v. m k = Some v \<Longrightarrow> invar v"
-      and m'_eq: "m' = Option.map \<alpha> \<circ> m"
+      and m'_eq: "m' = map_option \<alpha> \<circ> m"
   shows "map_iterator_abs \<alpha> invar iti m'"
 using assms
 unfolding map_iterator_abs_def set_iterator_def

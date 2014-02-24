@@ -25,9 +25,8 @@ header {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
 imports 
-  Real_Impl_Auxiliary
+  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
   "../Cauchy/CauchysMeanTheorem"
-  "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
 text {*
@@ -41,13 +40,13 @@ These algorithms will later be necessary to do a prime product factorization (fo
 
 subsection {* Logarithm *}
 
-text {* For computing the p-th root of a number n, we must choose a starting value
+text {* For computing the $p$-th root of a number $n$, we must choose a starting value
   in the iteration. Here, we use @{term "2 ^ (nat \<lceil>of_int \<lceil>log 2 n\<rceil> / p\<rceil>)"}.
   Of course, this requires an algorithm to compute logarithms.
   Here, we just multiply with the base, until we exceed the argument. *}
 
 text {* We use a partial efficient algorithm, which does not terminate on 
-  corner-cases, like b = 0 or p = 1, and invoke it properly afterwards.
+  corner-cases, like $b = 0$ or $p = 1$, and invoke it properly afterwards.
   Then there is a second algorithm which terminates on these corner-cases by additional
   guards and on which we can perform induction.
 *} 
@@ -215,10 +214,10 @@ qed
 lemma start_value: assumes x: "x \<ge> 0" and p: "p > 0" shows "x \<le> (start_value x p) ^ p" "start_value x p \<ge> 0" 
   using start_value_main[OF x p] by auto
 
-text {* We now define the Newton iteration to compute the p-th root. We are working on the integers,
+text {* We now define the Newton iteration to compute the $p$-th root. We are working on the integers,
   where every @{term "op /"} is replaced by @{term "op div"}. We are proving several things within
-  a locale which ensures that @{term "p > 0"}, and where pm denotes p Minus 1.
-  within *}
+  a locale which ensures that $p > 0$, and where $pm = p - 1$.
+  *}
 
 locale fixed_root =
   fixes p pm :: nat
@@ -237,15 +236,14 @@ partial_function (tailrec) root_int_main' :: "nat \<Rightarrow> int \<Rightarrow
   [code]: "root_int_main' pm ipm ip x n = (let xpm = x^pm; xp = xpm * x in if xp \<le> n then (x, xp = n)
     else root_int_main' pm ipm ip ((n div xpm + x * ipm) div ip) n)"
 
-text {* In the following algorithm, we consider corner-cases and 
-  start the iteration. Since our upper bound is not tight enough, we need one postprocessing step.
+text {* In the following algorithm, we  
+  start the iteration. 
   It will compute @{term "\<lfloor>root p n\<rfloor>"} and a boolean to indicate whether the root is exact. *}
 
 definition root_int_main :: "nat \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   "root_int_main p n \<equiv> if p = 0 then (1,n = 1) else
      let pm = p - 1
-       in case root_int_main' pm (int pm) (int p) (start_value n p) n of
-      (x,b) \<Rightarrow> if b then (x,b) else if (x+1)^(Suc pm) = n then (x+1,True) else (x,b)"
+       in root_int_main' pm (int pm) (int p) (start_value n p) n"
   
 text {* Once we have proven soundness of @{const fixed_root.root_newton_int_main} and equivalence 
   to @{const root_int_main}, it
@@ -385,16 +383,14 @@ lemma root_main'_sound: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow>
   using root_main'_newton_pos by blast
 
 text {* In order to prove completeness of the algorithms, we provide sharp upper and lower bounds
-  for @{const root_main'}. *}
+  for @{const root_main'}. For the upper bounds, we use Cauchy's mean theorem where we added
+  the non-strict variant to Porter's formalization of this theorem. *}
 
 lemma root_main'_lower: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> y ^ p \<le> n" 
   using root_main'_newton_pos by blast
 
-(* unfortunately, we currently cannot prove the strict inequality n < (x + 1) ^ p,
-   since our proof is based on Cauchy's mean theorem which is only available in a
-   non-strict version. *)
 lemma root_newton_int_main_upper: 
-  shows "y ^ p \<ge> n \<Longrightarrow> y \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_newton_int_main y n = (x,b) \<Longrightarrow> n \<le> (x + 1) ^ p"
+  shows "y ^ p \<ge> n \<Longrightarrow> y \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_newton_int_main y n = (x,b) \<Longrightarrow> n < (x + 1) ^ p"
 proof (induct y n rule: root_newton_int_main.induct)
   case (1 y n)
   from 1(3) have y0: "y \<ge> 0" .
@@ -422,6 +418,12 @@ proof (induct y n rule: root_newton_int_main.induct)
         using n0 y'0 by simp
       from yyn have yyn: "y^p > n" by simp
       from False have yyn': "n > y' ^ p" by auto
+      {
+        assume pm: "pm = 0"
+        have y': "y' = n" unfolding y'_def p pm by simp
+        with yyn' have False unfolding p pm by auto
+      } 
+      hence pm0: "pm > 0" by auto
       show ?thesis
       proof (cases "n = 0")
         case True
@@ -447,17 +449,28 @@ proof (induct y n rule: root_newton_int_main.induct)
         have pos: "pos ?ls" unfolding pos_def using NY0 y0 by auto
         have "root p ?n = gmean ?ls" unfolding gmean_def using y0
           by (auto simp: p NY_def prod)
-        also have "\<dots> \<le> mean ?ls"
-          by (rule CauchysMeanTheorem[OF pos]) (* here we would like to have the strict decrease *)
+        also have "\<dots> < mean ?ls"
+        proof (rule CauchysMeanTheorem_Less[OF pos het_gt_0I])
+          show "NY \<in> set ?ls" by simp
+          from pm0 show "?y \<in> set ?ls" by simp
+          have "NY < ?y" 
+          proof -
+            from yyn have less: "?n < ?y ^ Suc pm" unfolding p 
+              by (metis of_int_less_iff of_int_power)
+            have "NY < ?y ^ Suc pm / ?y ^ pm" unfolding NY_def
+              by (rule divide_strict_right_mono[OF less], insert y0, auto)
+            thus ?thesis using y0 by auto
+          qed
+          thus "NY \<noteq> ?y" by blast
+        qed
         also have "\<dots> = (NY + Y) / real p" 
           by (simp add: mean_def sum p)
-        finally have *: "root p ?n \<le> (NY + Y) / real p" . 
-        from this[unfolded NY_def Y_def] 
+        finally have *: "root p ?n < (NY + Y) / real p" .  
         have "?n = (root p ?n)^p" using n0
           by (metis neq0_conv p0 real_root_pow_pos)
-        also have "\<dots> \<le> ((NY + Y) / real p)^p"
-          by (rule power_mono[OF *], insert n0 p, auto)
-        finally have ineq1: "?n \<le> ((NY + Y) / real p)^p" by auto
+        also have "\<dots> < ((NY + Y) / real p)^p"
+          by (rule power_strict_mono[OF *], insert n0 p, auto)
+        finally have ineq1: "?n < ((NY + Y) / real p)^p" by auto
         {
           def s \<equiv> "n div y ^ pm + y * int pm"
           def S \<equiv> "NY + Y"
@@ -499,24 +512,23 @@ proof (induct y n rule: root_newton_int_main.induct)
         have pos2: "of_int y' + (1 :: rat) \<ge> 0" using y'0 by auto
         have ineq2: "(of_int y' + 1) ^ p \<ge> ((NY + Y) / p) ^ p"
           by (rule power_mono[OF ge pos1])
-        from order.trans[OF ineq1 ineq2] 
-        have "?n \<le> of_int ((x + 1) ^ p)" unfolding x 
+        from order.strict_trans2[OF ineq1 ineq2] 
+        have "?n < of_int ((x + 1) ^ p)" unfolding x 
           by (metis of_int_1 of_int_add of_int_power) 
-        thus "n \<le> (x + 1) ^ p " by simp
+        thus "n < (x + 1) ^ p " by simp
       qed
     qed
   next
     case True
     with rt have x: "x = y" by simp
     with 1(2) True have n: "n = y ^ p" by auto
-    have 10: "(1 :: int) \<ge> 0" by auto
     show ?thesis unfolding n x using y0 unfolding p 
-      by (metis 10 add_increasing2 order_refl power_mono)
+      by (metis add_le_less_mono add_less_cancel_left lessI less_add_one monoid_add_class.add.right_neutral ordered_cancel_comm_monoid_diff_class.le_iff_add power_strict_mono)
   qed
 qed
 
 lemma root_main'_upper: 
-  "x ^ p \<ge> n \<Longrightarrow> x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> n \<le> (y + 1) ^ p"
+  "x ^ p \<ge> n \<Longrightarrow> x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> n < (y + 1) ^ p"
   using root_newton_int_main_upper[of n x y b] root_main'[of x n] by auto
 end
 
@@ -534,22 +546,16 @@ proof (cases "p = 0")
 next
   case False
   from False have p_0: "p > 0" by auto
-  obtain z c where rm': "root_int_main' (p - 1) (int (p - 1)) (int p) (start_value n p) n = (z,c)" by force
   from False have "(p = 0) = False" by simp
-  note rm = rm[unfolded root_int_main_def this if_False Let_def rm' split]
+  from rm[unfolded root_int_main_def this Let_def]
+  have rm: "root_int_main' (p - 1) (int (p - 1)) (int p) (start_value n p) n = (y,b)" by simp
   from start_value[OF n p_0] have start: "n \<le> (start_value n p)^p" "0 \<le> start_value n p" by auto
   interpret fixed_root p "p - 1"
     by (unfold_locales, insert False, auto)
-  from root_main'_pos[OF start(2) n rm'] have z: "z \<ge> 0" .
-  from root_main'_sound[OF start(2) n rm'] have c: "c = (z ^ p = n)" .
-  from root_main'_lower[OF start(2) n rm'] have low: "z ^ p \<le> n" .
-  from root_main'_upper[OF start n rm'] have up: "n \<le> (z + 1) ^ p" .
-  from z rm have y: "y \<ge> 0" by (auto split: if_splits)
-  have "y < y + 1" by simp
-  from power_strict_mono[OF this y p_0]  have less: "y ^ p < (y + 1)^ p" by auto
-  have "b = (y ^ p = n) \<and> y ^ p \<le> n \<and> n < (y + 1)^p"
-    by (cases c, insert less z c low up rm False, auto split: if_splits)
-  hence b: "b = (y ^ p = n)" and low: "y ^ p \<le> n" and up: "n < (y+1)^p" by blast+
+  from root_main'_pos[OF start(2) n rm] have y: "y \<ge> 0" .
+  from root_main'_sound[OF start(2) n rm] have b: "b = (y ^ p = n)" .
+  from root_main'_lower[OF start(2) n rm] have low: "y ^ p \<le> n" .
+  from root_main'_upper[OF start n rm] have up: "n < (y + 1) ^ p" .
   {
     assume n: "x ^ p = n" and x: "x \<ge> 0"
     with low up have low: "y ^ p \<le> x ^ p" and up: "x ^ p < (y+1) ^ p" by auto
@@ -912,7 +918,7 @@ qed
 
 subsection {* Upgrading algorithms to the rationals *}
 
-text {* The main observation to lift everything to the integers is the fact, that one
+text {* The main observation to lift everything from the integers to the rationals is the fact, that one
   can reformulate $\frac{a}{b}^{1/p}$ as $\frac{(ab^{p-1})^{1/p}}b$. *}
 
 definition root_rat_floor :: "nat \<Rightarrow> rat \<Rightarrow> int" where 

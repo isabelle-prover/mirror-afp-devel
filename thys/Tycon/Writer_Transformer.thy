@@ -29,7 +29,7 @@ newtype WriterT w m a = WriterT { runWriterT :: m (Writer w a) }
 text {* We can translate this definition directly into HOLCF using
 @{text tycondef}. \medskip *}
 
-tycondef 'a\<cdot>('m::functor,'w) writerT =
+tycondef 'a\<cdot>('m::"functor",'w) writerT =
   WriterT (runWriterT :: "('a\<cdot>'w writer)\<cdot>'m")
 
 lemma coerce_writerT_abs [simp]:
@@ -102,7 +102,7 @@ lemma runWriterT_fmapU [simp]:
   "runWriterT\<cdot>(fmapU\<cdot>f\<cdot>m) = fmap\<cdot>(fmap\<cdot>f)\<cdot>(runWriterT\<cdot>m)"
 by (induct m rule: writerT_induct) simp
 
-instance writerT :: (functor, "domain") functor
+instance writerT :: ("functor", "domain") "functor"
 proof
   fix f g :: "udom \<rightarrow> udom" and xs :: "udom\<cdot>('a,'b) writerT"
   show "fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"

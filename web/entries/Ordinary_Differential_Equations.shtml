@@ -46,6 +46,12 @@
 We formalize initial value problems (IVPs) of ODEs and prove the existence of a unique solution, i.e. the Picard-Lindelöf theorem. We introduce general one-step methods for numerical approximation of the solution and provide an analysis regarding the local and global error of one-step methods. We give an executable specification of the Euler method to approximate the solution of IVPs and prove an explicit bound for the global error. We use arbitrary-precision floating-point numbers and also handle rounding errors when we truncate the numbers for efficiency reasons.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2014-02-13]: added an implementation of the Euler method based on affine arithmetic
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Ordinary_Differential_Equations-AFP,

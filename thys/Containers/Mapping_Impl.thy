@@ -86,7 +86,7 @@ by(simp_all split: option.split)(transfer, simp)+
 
 declare [[code drop: Mapping.keys]]
 
-theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f) t) = Option.map f \<circ> rbt_lookup t"
+theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f) t) = map_option f \<circ> rbt_lookup t"
 by(induct t)(simp_all add: fun_eq_iff)
 
 lemma keys_Mapping [code]:
@@ -147,8 +147,8 @@ done
 datatype mapping_impl = Mapping_IMPL
 declare
   mapping_impl.eq.simps [code del]
-  mapping_impl.recs [code del]
-  mapping_impl.cases [code del]
+  mapping_impl.rec [code del]
+  mapping_impl.case [code del]
 
 lemma [code]:
   fixes x :: mapping_impl

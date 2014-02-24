@@ -70,7 +70,7 @@ proves a @{text prefunctor} class instance automatically. For the
 @{text functor} instance we only need to prove the composition law,
 which we can do by induction. *}
 
-instance llist :: functor
+instance llist :: "functor"
 proof
   fix f g and xs :: "udom\<cdot>llist"
   show "fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"

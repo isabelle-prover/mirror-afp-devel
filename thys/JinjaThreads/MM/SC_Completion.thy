@@ -479,7 +479,7 @@ proof(coinduction arbitrary: vs obs)
 qed
 
 lemma ta_seq_consist_into_non_speculative:
-  "\<lbrakk> ta_seq_consist P vs obs; \<forall>adal. Option.set (vs adal) \<subseteq> vs' adal \<times> UNIV \<rbrakk>
+  "\<lbrakk> ta_seq_consist P vs obs; \<forall>adal. set_option (vs adal) \<subseteq> vs' adal \<times> UNIV \<rbrakk>
   \<Longrightarrow> non_speculative P vs' obs"
 using assms
 proof(coinduction arbitrary: vs' obs vs)
