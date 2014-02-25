@@ -22,8 +22,8 @@ sig
   val eqvt_rule: Proof.context -> eqvt_config -> thm -> thm
   val eqvt_tac: Proof.context -> eqvt_config -> int -> tactic
 
-  val perm_simp_meth: thm list * string list -> Proof.context -> Method.method
-  val perm_strict_simp_meth: thm list * string list -> Proof.context -> Method.method
+  val perm_simp_meth: thm list * string list -> Proof.context -> Proof.method
+  val perm_strict_simp_meth: thm list * string list -> Proof.context -> Proof.method
   val args_parser: (thm list * string list) context_parser
 
   val trace_eqvt: bool Config.T

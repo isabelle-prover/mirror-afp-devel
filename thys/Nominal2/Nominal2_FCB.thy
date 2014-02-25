@@ -9,7 +9,7 @@ text {*
 *}
 
 ML {*
-val all_trivials : (Proof.context -> Method.method) context_parser =
+val all_trivials : (Proof.context -> Proof.method) context_parser =
 Scan.succeed (fn ctxt =>
  let
    val tac = TRYALL (SOLVED' (full_simp_tac ctxt))
