@@ -127,7 +127,7 @@ ML {*
     |> the |> #2 |> map (Thm.transfer thy);
   in thms end
 
-  fun thm_from_main name = thms_from_main name |> Facts.the_single name
+  fun thm_from_main name = thms_from_main name |> Facts.the_single (name, Position.none)
 *)
     (* Unfold with simpset 
     fun unfold_ss ss = let
