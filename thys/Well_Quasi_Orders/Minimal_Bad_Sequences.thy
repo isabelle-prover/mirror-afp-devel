@@ -219,16 +219,10 @@ lemmas
 
 text {*If there is at least one bad sequence, then there is also a minimal one.*}
 lemma lower_bound_ex:
-  assumes "h \<in> BAD P"
+  assumes h: "h \<in> BAD P"
   shows "\<exists>f \<in> BAD P. \<forall>g. (f, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
-proof (cases "BAD P = {}")
-  assume "BAD P = {}"
-  with `h \<in> BAD P` show ?thesis by auto
-next
-  assume "BAD P \<noteq> {}"
-  then obtain g where g: "g \<in> BAD P" by blast
-
-  from lb_mem [OF g]
+proof -
+  from lb_mem [OF h]
     have *: "\<And>j. lb j \<in> ith (eq_upto (BAD P) lb j) j" .
   then have "\<forall>i. lb i \<in> A" by (auto simp: min_elt_def eq_upto_def BAD_def) (metis)
   moreover have "bad P lb"
@@ -249,7 +243,7 @@ next
     assume "(lb, g) \<in> gbseq"
     then obtain i where "\<forall>i. lb i \<in> A" and "\<forall>i. g i \<in> A"
       and "\<forall>j < i. lb j = g j" and "less (g i) (lb i)" by auto
-    with lb_minimal [OF g, of _ i]
+    with lb_minimal [OF h, of _ i]
       have *: "g i \<notin> ith (eq_upto (BAD P) lb i) i" by auto
     show "g \<notin> BAD P"
     proof
