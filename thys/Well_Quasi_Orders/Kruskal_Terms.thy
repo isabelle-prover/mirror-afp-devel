@@ -205,11 +205,11 @@ proof (rule ccontr)
 
   assume "\<not> ?thesis"
   then obtain f where "f \<in> term_mbs.BAD ?P"
-    unfolding almost_full_on_def by blast
+    unfolding almost_full_on_def term_mbs.BAD_def by blast
   from term_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
     and min: "term_mbs.minimal ?P m"
     and in_terms: "\<And>i. m i \<in> terms F"
-    by (auto simp: term_mbs.minimal_def)
+    by (auto simp: term_mbs.minimal_def term_mbs.BAD_def)
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
   have [simp]: "\<And>i. mk (root (m i)) (succs (m i)) = m i" by (metis in_terms root_mk succs_mk terms.cases)
 
@@ -258,7 +258,7 @@ proof (rule ccontr)
       using in_succs_imp_subtree and in_terms and in_succs
       by (fastforce dest!: terms_imp_trees)
     ultimately have "good ?P c"
-      using min [unfolded term_mbs.minimal_def term_mbs.gbseq_def]
+      using min [unfolded term_mbs.BAD_def term_mbs.minimal_def term_mbs.gbseq_def]
       apply auto
       by (metis `\<forall>i<\<phi> 0. c i = m i` `subtree (c (\<phi> 0)) (m (\<phi> 0))`)
     with `bad ?P c` have False by blast

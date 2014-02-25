@@ -62,7 +62,7 @@ lemma (in mbs) mbs':
   assumes "\<not> almost_full_on P A"
   shows "\<exists>g. minimal P g"
   using assms and mbs
-  unfolding almost_full_on_def by blast
+  unfolding almost_full_on_def BAD_def by blast
 
 lemma almost_full_onD:
   fixes f :: "nat \<Rightarrow> 'a" and A :: "'a set"
@@ -679,15 +679,15 @@ proof (rule ccontr)
 
   assume "\<not> ?thesis"
   then obtain f where "f \<in> list_mbs.BAD ?P"
-    unfolding almost_full_on_def by blast
+    unfolding almost_full_on_def list_mbs.BAD_def by blast
   from list_mbs.mbs [OF this] obtain m
     where min: "list_mbs.minimal ?P m" ..
   then have non_empty: "\<And>i. m i \<noteq> []"
-    using bad_imp_not_Nil by (auto simp: list_mbs.minimal_def)
+    using bad_imp_not_Nil by (auto simp: list_mbs.BAD_def list_mbs.minimal_def)
   moreover obtain h t where [simp]: "\<And>i. h i = hd (m i)" "\<And>i. t i = tl (m i)" by force
   ultimately have [simp]: "\<And>i. hd (m i) # tl (m i) = m i" by auto
   from min have in_lists: "\<And>i. m i \<in> ?A"
-    and "bad ?P m" by (auto simp: list_mbs.minimal_def)
+    and "bad ?P m" by (auto simp: list_mbs.BAD_def list_mbs.minimal_def)
 
   {
     assume "\<exists>\<phi>::nat seq. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>)"
@@ -721,11 +721,11 @@ proof (rule ccontr)
     qed
     have "\<forall>i. c i \<in> lists A"
       using min and non_empty
-      by (simp add: c_def list_mbs.minimal_def) (metis suffix_lists suffix_tl)
+      by (simp add: c_def list_mbs.minimal_def list_mbs.BAD_def) (metis suffix_lists suffix_tl)
     moreover have "\<forall>i<?n. c i = m i" by auto
     moreover have "suffix (c ?n) (m ?n)" using non_empty by auto
     ultimately have "good ?P c"
-      using min [unfolded list_mbs.minimal_def list_mbs.gbseq_def]
+      using min [unfolded list_mbs.BAD_def list_mbs.minimal_def list_mbs.gbseq_def]
       apply auto
       by (metis `\<And>i. t i = tl (m i)` c_def diff_self_eq_0 less_not_refl)
     with `bad ?P c` have False by blast

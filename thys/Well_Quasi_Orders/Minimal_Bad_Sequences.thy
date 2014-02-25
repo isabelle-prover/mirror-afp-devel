@@ -68,7 +68,7 @@ lemma less_not_eq [simp]:
 text {*The set of all sequences over @{term A}.*}
 abbreviation "SEQ \<equiv> {f::'a seq. \<forall>i. f i \<in> A}"
 text {*The set of all bad sequences over @{term A}.*}
-abbreviation "BAD P \<equiv> {f::'a seq. (\<forall>i. f i \<in> A) \<and> bad P f}"
+definition "BAD P \<equiv> {f::'a seq. (\<forall>i. f i \<in> A) \<and> bad P f}"
 
 text {*A partial order on infinite bad sequences. Needed for the
 partial order variant of Zorn's lemma.*}
@@ -130,68 +130,73 @@ lemma min_elt_minimal:
   shows "y \<notin> B"
   using someI_ex [OF min_elt_ex [OF assms(1)]] and assms(2-) by (auto simp: min_elt_def)
 
-context
-  fixes P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
-begin
+end
 
-text {*The restriction of @{term "BAD P"} to sequences that are equal to a given sequence @{term f}
-up to position @{term i}.*}
-definition eq_upto :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq set"
+text {*The restriction of a set @{term "B"} of sequences to sequences that are equal to a given
+sequence @{term f} up to position @{term i}.*}
+definition eq_upto :: "'a seq set \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq set"
 where
-  "eq_upto f i = {g \<in> BAD P. \<forall>j < i. f j = g j}"
+  "eq_upto B f i = {g \<in> B. \<forall>j < i. f j = g j}"
 
 lemma eq_upto_conv [simp]:
-  "g \<in> eq_upto f i \<longleftrightarrow> g \<in> BAD P \<and> (\<forall>j < i. f j = g j)"
+  "g \<in> eq_upto B f i \<longleftrightarrow> g \<in> B \<and> (\<forall>j < i. f j = g j)"
   by (simp add: eq_upto_def)
 
 lemma eq_upto_0 [simp]:
-  "eq_upto f 0 = BAD P"
+  "eq_upto B f 0 = B"
   by (auto simp: eq_upto_def)
 
 lemma eq_upto_id [simp, intro]:
-  "f \<in> BAD P \<Longrightarrow> f \<in> eq_upto f i"
+  "f \<in> B \<Longrightarrow> f \<in> eq_upto B f i"
   by (simp add: eq_upto_def)
 
 lemma eq_upto_cong [fundef_cong]:
   assumes "\<And>j. j < i \<Longrightarrow> f j = g j"
-  shows "eq_upto f i = eq_upto g i"
+  shows "eq_upto B f i = eq_upto B g i"
   using assms by (auto simp: eq_upto_def)
+
+lemma eq_upto_mono:
+  "i < j \<Longrightarrow> eq_upto B f j \<subseteq> eq_upto B f i"
+  by auto
+
+context mbs
+begin
+
+context
+  fixes P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+begin
 
 text {*A lower bound to all sequences in a set of sequences @{term B}.*}
 fun lb :: "'a seq" where
   "lb 0 = min_elt (ith (BAD P) 0)" |
-  "lb (Suc i) = min_elt (ith (eq_upto lb (Suc i)) (Suc i))"
+  "lb (Suc i) = min_elt (ith (eq_upto (BAD P) lb (Suc i)) (Suc i))"
 
 text {*Short definition of the lower bound.*}
 lemma lb:
-  "lb i = min_elt (ith (eq_upto lb i) i)"
+  "lb i = min_elt (ith (eq_upto (BAD P) lb i) i)"
   by (induct i) simp_all
 
 declare lb.simps [simp del]
 
-lemma eq_upto_mono:
-  "i < j \<Longrightarrow> eq_upto f j \<subseteq> eq_upto f i"
-  by auto
-
-lemma eq_upto_mem:
-  assumes "f \<in> eq_upto g i"
+lemma eq_upto_BAD_mem:
+  assumes "f \<in> eq_upto (BAD P) g i"
   shows "f j \<in> A"
-  using assms by (auto simp: gebseq_def)
+  using assms by (auto simp: gebseq_def BAD_def)
 
 text {*When the given chain is not empty, then filtering it w.r.t.~positions in @{term lb}
 never yields an empty set of sequences.*}
 lemma eq_upto_non_empty:
   assumes "BAD P \<noteq> {}"
-  shows "eq_upto lb i \<noteq> {}"
+  shows "eq_upto (BAD P) lb i \<noteq> {}"
 proof (induct i)
   case 0
   with assms show ?case by simp
 next
-  let ?A = "\<lambda>i. ith (eq_upto lb i) i"
+  let ?A = "\<lambda>i. ith (eq_upto (BAD P) lb i) i"
   case (Suc i)
   then have "?A i \<noteq> {}" by (force simp: ith_def)
-  moreover have "eq_upto lb i \<subseteq> eq_upto lb 0" using eq_upto_mono by auto
-  ultimately have "A \<inter> ?A i \<noteq> {}" by (force dest: eq_upto_mem)
+  moreover have "eq_upto (BAD P) lb i \<subseteq> eq_upto (BAD P) lb 0" using eq_upto_mono by auto
+  ultimately have "A \<inter> ?A i \<noteq> {}" by (force dest: eq_upto_BAD_mem)
   from min_elt_mem [OF this, folded lb] obtain f
     where "f \<in> BAD P" and "\<forall>j < Suc i. lb j = f j" by (force simp: less_Suc_eq)
   then show ?case by force
@@ -199,11 +204,11 @@ qed
 
 lemma non_empty_ith:
   assumes "g \<in> BAD P"
-  shows "A \<inter> ith (eq_upto lb i) i \<noteq> {}"
+  shows "A \<inter> ith (eq_upto (BAD P) lb i) i \<noteq> {}"
 proof -
   from assms have "BAD P \<noteq> {}" by auto
   from eq_upto_non_empty [OF this]
-    show ?thesis by auto (metis IntI empty_iff equals0I ith_conv eq_upto_mem)
+    show ?thesis by auto (metis IntI empty_iff equals0I ith_conv eq_upto_BAD_mem)
 qed
 
 lemmas
@@ -224,20 +229,20 @@ next
   then obtain g where g: "g \<in> BAD P" by blast
 
   from lb_mem [OF g]
-    have *: "\<And>j. lb j \<in> ith (eq_upto lb j) j" .
-  then have "\<forall>i. lb i \<in> A" by (auto simp: min_elt_def eq_upto_def) (metis)
+    have *: "\<And>j. lb j \<in> ith (eq_upto (BAD P) lb j) j" .
+  then have "\<forall>i. lb i \<in> A" by (auto simp: min_elt_def eq_upto_def BAD_def) (metis)
   moreover have "bad P lb"
   proof
     assume "good P lb"
     then obtain i j where "i < j" and "P (lb i) (lb j)" by (auto simp: good_def)
-    with * have "lb j \<in> ith (eq_upto lb j) j" by (auto simp: min_elt_def)
-    then obtain g where "g \<in> eq_upto lb j" and g: "g j = lb j" by force
+    with * have "lb j \<in> ith (eq_upto (BAD P) lb j) j" by (auto simp: min_elt_def)
+    then obtain g where "g \<in> eq_upto (BAD P) lb j" and g: "g j = lb j" by force
     then have "\<forall>k < j. g k = lb k" by auto
     with `i < j` and `P (lb i) (lb j)` and g have "P (g i) (g j)" by auto
     with `i < j` have "good P g" by (auto simp: good_def)
-    with `g \<in> eq_upto lb j` show False by (auto simp: gebseq_def)
+    with `g \<in> eq_upto (BAD P) lb j` show False by (auto simp: gebseq_def BAD_def)
   qed
-  ultimately have "lb \<in> BAD P" by simp
+  ultimately have "lb \<in> BAD P" by (simp add: BAD_def)
   moreover have "\<forall>g. (lb, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
   proof (intro allI impI)
     fix g
@@ -245,12 +250,12 @@ next
     then obtain i where "\<forall>i. lb i \<in> A" and "\<forall>i. g i \<in> A"
       and "\<forall>j < i. lb j = g j" and "less (g i) (lb i)" by auto
     with lb_minimal [OF g, of _ i]
-      have *: "g i \<notin> ith (eq_upto lb i) i" by auto
+      have *: "g i \<notin> ith (eq_upto (BAD P) lb i) i" by auto
     show "g \<notin> BAD P"
     proof
       assume "g \<in> BAD P"
-      then have "g \<in> eq_upto lb i" using `\<forall>j < i. lb j = g j` by (auto simp: eq_upto_def)
-      then have "g i \<in> ith (eq_upto lb i) i" by auto
+      then have "g \<in> eq_upto (BAD P) lb i" using `\<forall>j < i. lb j = g j` by (auto simp: eq_upto_def)
+      then have "g i \<in> ith (eq_upto (BAD P) lb i) i" by auto
       with * show False by contradiction
     qed
   qed
@@ -275,7 +280,7 @@ lemma mbs:
   shows "\<exists>f. minimal P f"
 proof -
   from lower_bound_ex [OF assms]
-    show ?thesis by (auto simp: minimal_def gbseq_conv) metis
+    show ?thesis by (auto simp: minimal_def gbseq_conv BAD_def) metis
 qed
 
 end
