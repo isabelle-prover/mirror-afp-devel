@@ -104,33 +104,6 @@ lemma gbseqE [elim!]:
   shows "Q"
   using assms by (auto simp: gbseq_def)
 
-lemma gbseq_imp_gebseq:
-  "(f, g) \<in> gbseq \<Longrightarrow> (f, g) \<in> gebseq" by auto
-
-lemma Field_gebseq [simp]:
-  "Field gebseq = SEQ"
-  by (auto simp: Field_def gebseq_def)
-
-lemma gebseq_refl:
-  "refl_on (Field gebseq) gebseq"
-  unfolding Field_gebseq by (auto simp add: refl_on_def gebseq_def)
-
-lemma gebseq_trans:
-  "(f, g) \<in> gebseq \<Longrightarrow> (g, h) \<in> gebseq \<Longrightarrow> (f, h) \<in> gebseq"
-  by (auto) (metis (mono_tags) dual_order.strict_trans less_trans linorder_neqE_nat)
-
-lemma Preorder_gebseq:
-  "Preorder gebseq"
-  using gebseq_refl by (auto simp: preorder_on_def trans_def gebseq_refl elim!: gebseq_trans)
-
-lemma gebseq_antisym:
-  "antisym gebseq"
-  by (auto simp: antisym_def) (metis less_not_eq less_trans linorder_neqE_nat)
-
-lemma Partial_order_gebseq:
-  "Partial_order gebseq"
-  using Preorder_gebseq and gebseq_antisym by (simp add: partial_order_on_def)
-
 text {*The @{term i}-th "column" of a set @{term B} of infinite sequences.*}
 definition "ith B i = {f i | f. f \<in> B}"
 
