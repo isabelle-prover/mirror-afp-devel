@@ -136,62 +136,62 @@ begin
 
 text {*The restriction of @{term "BAD P"} to sequences that are equal to a given sequence @{term f}
 up to position @{term i}.*}
-definition similar_upto :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq set"
+definition eq_upto :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq set"
 where
-  "similar_upto f i = {g \<in> BAD P. \<forall>j < i. f j = g j}"
+  "eq_upto f i = {g \<in> BAD P. \<forall>j < i. f j = g j}"
 
-lemma similar_upto_conv [simp]:
-  "g \<in> similar_upto f i \<longleftrightarrow> g \<in> BAD P \<and> (\<forall>j < i. f j = g j)"
-  by (simp add: similar_upto_def)
+lemma eq_upto_conv [simp]:
+  "g \<in> eq_upto f i \<longleftrightarrow> g \<in> BAD P \<and> (\<forall>j < i. f j = g j)"
+  by (simp add: eq_upto_def)
 
-lemma similar_upto_0 [simp]:
-  "similar_upto f 0 = BAD P"
-  by (auto simp: similar_upto_def)
+lemma eq_upto_0 [simp]:
+  "eq_upto f 0 = BAD P"
+  by (auto simp: eq_upto_def)
 
-lemma similar_upto_id [simp, intro]:
-  "f \<in> BAD P \<Longrightarrow> f \<in> similar_upto f i"
-  by (simp add: similar_upto_def)
+lemma eq_upto_id [simp, intro]:
+  "f \<in> BAD P \<Longrightarrow> f \<in> eq_upto f i"
+  by (simp add: eq_upto_def)
 
-lemma similar_upto_cong [fundef_cong]:
+lemma eq_upto_cong [fundef_cong]:
   assumes "\<And>j. j < i \<Longrightarrow> f j = g j"
-  shows "similar_upto f i = similar_upto g i"
-  using assms by (auto simp: similar_upto_def)
+  shows "eq_upto f i = eq_upto g i"
+  using assms by (auto simp: eq_upto_def)
 
 text {*A lower bound to all sequences in a set of sequences @{term B}.*}
 fun lb :: "'a seq" where
   "lb 0 = min_elt (ith (BAD P) 0)" |
-  "lb (Suc i) = min_elt (ith (similar_upto lb (Suc i)) (Suc i))"
+  "lb (Suc i) = min_elt (ith (eq_upto lb (Suc i)) (Suc i))"
 
 text {*Short definition of the lower bound.*}
 lemma lb:
-  "lb i = min_elt (ith (similar_upto lb i) i)"
+  "lb i = min_elt (ith (eq_upto lb i) i)"
   by (induct i) simp_all
 
 declare lb.simps [simp del]
 
-lemma similar_upto_mono:
-  "i < j \<Longrightarrow> similar_upto f j \<subseteq> similar_upto f i"
+lemma eq_upto_mono:
+  "i < j \<Longrightarrow> eq_upto f j \<subseteq> eq_upto f i"
   by auto
 
-lemma similar_upto_mem:
-  assumes "f \<in> similar_upto g i"
+lemma eq_upto_mem:
+  assumes "f \<in> eq_upto g i"
   shows "f j \<in> A"
   using assms by (auto simp: gebseq_def)
 
 text {*When the given chain is not empty, then filtering it w.r.t.~positions in @{term lb}
 never yields an empty set of sequences.*}
-lemma similar_upto_non_empty:
+lemma eq_upto_non_empty:
   assumes "BAD P \<noteq> {}"
-  shows "similar_upto lb i \<noteq> {}"
+  shows "eq_upto lb i \<noteq> {}"
 proof (induct i)
   case 0
   with assms show ?case by simp
 next
-  let ?A = "\<lambda>i. ith (similar_upto lb i) i"
+  let ?A = "\<lambda>i. ith (eq_upto lb i) i"
   case (Suc i)
   then have "?A i \<noteq> {}" by (force simp: ith_def)
-  moreover have "similar_upto lb i \<subseteq> similar_upto lb 0" using similar_upto_mono by auto
-  ultimately have "A \<inter> ?A i \<noteq> {}" by (force dest: similar_upto_mem)
+  moreover have "eq_upto lb i \<subseteq> eq_upto lb 0" using eq_upto_mono by auto
+  ultimately have "A \<inter> ?A i \<noteq> {}" by (force dest: eq_upto_mem)
   from min_elt_mem [OF this, folded lb] obtain f
     where "f \<in> BAD P" and "\<forall>j < Suc i. lb j = f j" by (force simp: less_Suc_eq)
   then show ?case by force
@@ -199,11 +199,11 @@ qed
 
 lemma non_empty_ith:
   assumes "g \<in> BAD P"
-  shows "A \<inter> ith (similar_upto lb i) i \<noteq> {}"
+  shows "A \<inter> ith (eq_upto lb i) i \<noteq> {}"
 proof -
   from assms have "BAD P \<noteq> {}" by auto
-  from similar_upto_non_empty [OF this]
-    show ?thesis by auto (metis IntI empty_iff equals0I ith_conv similar_upto_mem)
+  from eq_upto_non_empty [OF this]
+    show ?thesis by auto (metis IntI empty_iff equals0I ith_conv eq_upto_mem)
 qed
 
 lemmas
@@ -224,18 +224,18 @@ next
   then obtain g where g: "g \<in> BAD P" by blast
 
   from lb_mem [OF g]
-    have *: "\<And>j. lb j \<in> ith (similar_upto lb j) j" .
-  then have "\<forall>i. lb i \<in> A" by (auto simp: min_elt_def similar_upto_def) (metis)
+    have *: "\<And>j. lb j \<in> ith (eq_upto lb j) j" .
+  then have "\<forall>i. lb i \<in> A" by (auto simp: min_elt_def eq_upto_def) (metis)
   moreover have "bad P lb"
   proof
     assume "good P lb"
     then obtain i j where "i < j" and "P (lb i) (lb j)" by (auto simp: good_def)
-    with * have "lb j \<in> ith (similar_upto lb j) j" by (auto simp: min_elt_def)
-    then obtain g where "g \<in> similar_upto lb j" and g: "g j = lb j" by force
+    with * have "lb j \<in> ith (eq_upto lb j) j" by (auto simp: min_elt_def)
+    then obtain g where "g \<in> eq_upto lb j" and g: "g j = lb j" by force
     then have "\<forall>k < j. g k = lb k" by auto
     with `i < j` and `P (lb i) (lb j)` and g have "P (g i) (g j)" by auto
     with `i < j` have "good P g" by (auto simp: good_def)
-    with `g \<in> similar_upto lb j` show False by (auto simp: gebseq_def)
+    with `g \<in> eq_upto lb j` show False by (auto simp: gebseq_def)
   qed
   ultimately have "lb \<in> BAD P" by simp
   moreover have "\<forall>g. (lb, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
@@ -245,12 +245,12 @@ next
     then obtain i where "\<forall>i. lb i \<in> A" and "\<forall>i. g i \<in> A"
       and "\<forall>j < i. lb j = g j" and "less (g i) (lb i)" by auto
     with lb_minimal [OF g, of _ i]
-      have *: "g i \<notin> ith (similar_upto lb i) i" by auto
+      have *: "g i \<notin> ith (eq_upto lb i) i" by auto
     show "g \<notin> BAD P"
     proof
       assume "g \<in> BAD P"
-      then have "g \<in> similar_upto lb i" using `\<forall>j < i. lb j = g j` by (auto simp: similar_upto_def)
-      then have "g i \<in> ith (similar_upto lb i) i" by auto
+      then have "g \<in> eq_upto lb i" using `\<forall>j < i. lb j = g j` by (auto simp: eq_upto_def)
+      then have "g i \<in> ith (eq_upto lb i) i" by auto
       with * show False by contradiction
     qed
   qed
