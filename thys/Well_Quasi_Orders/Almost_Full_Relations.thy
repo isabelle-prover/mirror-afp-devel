@@ -62,7 +62,7 @@ lemma (in mbs) mbs':
   assumes "\<not> almost_full_on P A"
   shows "\<exists>g. minimal P g"
   using assms and mbs
-  unfolding almost_full_on_def BAD_def by blast
+  unfolding almost_full_on_def by blast
 
 lemma almost_full_onD:
   fixes f :: "nat \<Rightarrow> 'a" and A :: "'a set"
@@ -679,7 +679,7 @@ proof (rule ccontr)
 
   assume "\<not> ?thesis"
   then obtain f where "f \<in> list_mbs.BAD ?P"
-    unfolding almost_full_on_def list_mbs.BAD_def by blast
+    unfolding almost_full_on_def by blast
   from list_mbs.mbs [OF this] obtain m
     where min: "list_mbs.minimal ?P m" ..
   then have non_empty: "\<And>i. m i \<noteq> []" using bad_imp_not_Nil by auto

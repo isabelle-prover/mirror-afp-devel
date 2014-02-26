@@ -117,6 +117,12 @@ lemma gbseqE [elim!]:
   shows "Q"
   using assms by (auto simp: gbseq_def)
 
+text {*A minimal bad sequence is a bad sequence such that any sequence in @{term "SEQ A"}
+that is strictly smaller w.r.t. @{term "gbseq"} is good.*}
+definition minimal :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a seq \<Rightarrow> bool"
+where
+  [iff]: "minimal P f \<longleftrightarrow> f \<in> BAD P \<and> (\<forall>g \<in> SEQ A. (f, g) \<in> gbseq \<longrightarrow> good P g)"
+
 text {*The @{term i}-th "column" of a set @{term B} of infinite sequences.*}
 definition "ith B i = {f i | f. f \<in> B}"
 
@@ -200,12 +206,20 @@ lemma eq_upto_BAD_mem:
   shows "f j \<in> A"
   using assms by (auto)
 
+text {*Assume that there is some infinite bad sequence @{term h}.*}
+context
+  fixes h :: "'a seq"
+  assumes BAD_ex: "h \<in> BAD P"
+begin
+
 text {*When there is a bad sequence, then filtering @{term "BAD P"} w.r.t.~positions in @{term lb}
 never yields an empty set of sequences.*}
 lemma eq_upto_BAD_non_empty:
-  assumes "BAD P \<noteq> {}"
-  shows "eq_upto (BAD P) lb i \<noteq> {}"
+  "eq_upto (BAD P) lb i \<noteq> {}"
 proof (induct i)
+  case 0
+  show ?case using BAD_ex by auto
+next
   let ?A = "\<lambda>i. ith (eq_upto (BAD P) lb i) i"
   case (Suc i)
   then have "?A i \<noteq> {}" by auto
@@ -214,16 +228,11 @@ proof (induct i)
   from min_elt_mem [OF this, folded lb] obtain f
     where "f \<in> eq_upto (BAD P) lb (Suc i)" by (force simp: ith_conv less_Suc_eq)
   then show ?case by blast
-qed (simp add: assms)
+qed
 
 lemma non_empty_ith:
-  assumes "g \<in> BAD P"
   shows "A \<inter> ith (eq_upto (BAD P) lb i) i \<noteq> {}"
-proof -
-  have "BAD P \<noteq> {}" using assms by blast
-  from eq_upto_BAD_non_empty [OF this, of i]
-    show ?thesis by auto
-qed
+  using eq_upto_BAD_non_empty [of i] by auto
 
 lemmas
   lb_minimal = non_empty_ith [THEN min_elt_minimal, of , folded lb]
@@ -231,65 +240,57 @@ lemmas
 lemmas
   lb_mem = non_empty_ith [THEN min_elt_mem, folded lb]
 
-text {*If there is at least one bad sequence, then there is also a minimal one.*}
-lemma lower_bound_ex:
-  assumes "h \<in> BAD P"
-  shows "\<exists>f \<in> BAD P. \<forall>g. (f, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
+text {*@{term "lb"} is a infinite bad sequence.*}
+lemma lb_BAD:
+  "lb \<in> BAD P"
 proof -
-  from lb_mem [OF assms]
-    have *: "\<And>j. lb j \<in> ith (eq_upto (BAD P) lb j) j" .
+  have *: "\<And>j. lb j \<in> ith (eq_upto (BAD P) lb j) j" by (rule lb_mem)
   then have "\<forall>i. lb i \<in> A" by (auto simp: ith_conv) (metis eq_upto_BAD_mem)
-  moreover have "bad P lb"
-  proof
-    assume "good P lb"
+  moreover
+  { assume "good P lb"
     then obtain i j where "i < j" and "P (lb i) (lb j)" by (auto simp: good_def)
-    with * have "lb j \<in> ith (eq_upto (BAD P) lb j) j" by (auto simp: min_elt_def)
-    then obtain g where "g \<in> eq_upto (BAD P) lb j" and g: "g j = lb j" by force
-    then have "\<forall>k < j. g k = lb k" by auto
-    with `i < j` and `P (lb i) (lb j)` and g have "P (g i) (g j)" by auto
+    from * have "lb j \<in> ith (eq_upto (BAD P) lb j) j" by (auto)
+    then obtain g where "g \<in> eq_upto (BAD P) lb j" and "g j = lb j" by force
+    then have "\<forall>k \<le> j. g k = lb k" by (auto simp: order_le_less)
+    with `i < j` and `P (lb i) (lb j)` have "P (g i) (g j)" by auto
     with `i < j` have "good P g" by (auto simp: good_def)
-    with `g \<in> eq_upto (BAD P) lb j` show False by auto
-  qed
-  ultimately have "lb \<in> BAD P" by blast
-  moreover have "\<forall>g. (lb, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
-  proof (intro allI impI)
-    fix g
-    assume "(lb, g) \<in> gbseq"
-    then obtain i where "g i \<in> A" and "less (g i) (lb i)"
-      and eq: "\<forall>j < i. lb j = g j" by auto
-    with lb_minimal [OF assms]
-      have *: "g i \<notin> ith (eq_upto (BAD P) lb i) i" by auto
-    show "g \<notin> BAD P"
-    proof
-      assume "g \<in> BAD P"
-      then have "g \<in> eq_upto (BAD P) lb i" using eq by auto
-      then have "g i \<in> ith (eq_upto (BAD P) lb i) i" by auto
-      with * show False by contradiction
-    qed
-  qed
+    with `g \<in> eq_upto (BAD P) lb j` have False by auto }
   ultimately show ?thesis by blast
 qed
 
-end
+text {*There is no infinite bad sequence that is strictly smaller than @{term lb}.*}
+lemma lb_lower_bound:
+  "\<forall>g. (lb, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
+proof (intro allI impI)
+  fix g
+  assume "(lb, g) \<in> gbseq"
+  then obtain i where "g i \<in> A" and "less (g i) (lb i)"
+    and "\<forall>j < i. lb j = g j" by auto
+  moreover with lb_minimal
+    have "g i \<notin> ith (eq_upto (BAD P) lb i) i" by auto
+  ultimately show "g \<notin> BAD P" by blast
+qed
+
+text {*If there is at least one bad sequence, then there is also a minimal one.*}
+lemma lower_bound_ex:
+  "\<exists>f \<in> BAD P. \<forall>g. (f, g) \<in> gbseq \<longrightarrow> g \<notin> BAD P"
+  using lb_BAD and lb_lower_bound by blast
 
 lemma gbseq_conv:
   "(f, g) \<in> gbseq \<longleftrightarrow> f \<noteq> g \<and> (f, g) \<in> gebseq"
   by (auto) (metis less_not_eq)
 
-text {*A minimal bad sequence is a bad sequence such that any sequence in @{term "SEQ A"}
-that is strictly smaller w.r.t. @{term "gbseq"} is good.*}
-definition minimal :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a seq \<Rightarrow> bool"
-where
-  [iff]: "minimal P f \<longleftrightarrow> f \<in> BAD P \<and> (\<forall>g \<in> SEQ A. (f, g) \<in> gbseq \<longrightarrow> good P g)"
-
 text {*If there is a bad sequence, then there is a minimal bad sequence.*}
 lemma mbs:
-  assumes "h \<in> BAD P"
-  shows "\<exists>f. minimal P f"
+  "\<exists>f. minimal P f"
 proof -
   from lower_bound_ex [OF assms]
     show ?thesis by (auto simp: gbseq_conv) (metis)
 qed
+
+end
+
+end
 
 end
 
