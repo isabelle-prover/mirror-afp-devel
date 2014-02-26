@@ -60,13 +60,7 @@ lemma fmap_lub_raw_dom[simp]: "dom (fmap_lub_raw S) = dom (S 0)"
   by (auto simp add: fmap_lub_raw_def dom_def)  
 
 lift_definition fmap_lub :: "(nat \<Rightarrow> ('key f\<rightharpoonup> 'value::po)) \<Rightarrow> 'key f\<rightharpoonup> 'value" is "fmap_lub_raw"
-  unfolding Lifting.invariant_def
-  apply auto
-  apply (erule  meta_allE[of _ 0])
-  apply auto[1]
-  apply (subgoal_tac "fun1 = fun2")
-  apply auto
-  done
+by auto
 
 lemma fmap_below_dom:
   "a \<sqsubseteq> b \<Longrightarrow> fdom a = fdom b"
