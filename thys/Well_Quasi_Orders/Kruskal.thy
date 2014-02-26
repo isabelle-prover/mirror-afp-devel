@@ -46,7 +46,7 @@ proof (rule ccontr)
     where bad: "bad ?P m"
     and min: "tree_mbs.minimal ?P m"
     and in_trees: "\<And>i. m i \<in> trees A"
-    by (auto simp: tree_mbs.minimal_def tree_mbs.BAD_def)
+    by auto
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
   have [simp]: "\<And>i. mk (root (m i)) (succs (m i)) = m i" by (metis in_trees root_succs)
 
@@ -92,8 +92,8 @@ proof (rule ccontr)
     moreover have "subtree (c ?n) (m ?n)"
       using in_succs_imp_subtree [OF in_trees] and in_succs by simp
     ultimately have "good ?P c"
-      using min [unfolded tree_mbs.BAD_def tree_mbs.minimal_def tree_mbs.gbseq_def]
-      apply auto
+      using min
+      apply (auto simp: tree_mbs.gbseq_def)
       by (metis `\<forall>i<\<phi> 0. c i = m i` `subtree (c (\<phi> 0)) (m (\<phi> 0))`)
     with `bad ?P c` have False by blast
   }
