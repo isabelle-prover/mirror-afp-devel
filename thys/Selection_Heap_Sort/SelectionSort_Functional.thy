@@ -35,7 +35,7 @@ definition remove_max where
 lemma max_Max_commute: 
   "finite A \<Longrightarrow> max (Max (insert m A)) x = max m (Max (insert x A))"
   apply (cases "A = {}", simp)  
-  by (metis Max_insert min_max.sup_commute min_max.sup_left_commute)
+  by (metis Max_insert max.commute max.left_commute)
 
 text{* The function really returned the
 maximum value. *}

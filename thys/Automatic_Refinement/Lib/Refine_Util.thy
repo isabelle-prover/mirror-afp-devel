@@ -79,7 +79,7 @@ ML {*
     val eqsubst_inst_tac: Proof.context -> bool -> int list 
       -> (indexname * string) list -> thm -> int -> tactic
 
-    val eqsubst_inst_meth: (Proof.context -> Method.method) context_parser
+    val eqsubst_inst_meth: (Proof.context -> Proof.method) context_parser
 
     (* Parsing *)
     val ->> : 'a context_parser *('a * Context.generic -> 'b * Context.generic)
