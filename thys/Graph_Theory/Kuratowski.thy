@@ -121,8 +121,8 @@ definition gen_contr_graph :: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Righta
      parcs = {(u,v). \<exists>p. pre_digraph.gen_iapath G V u p v}
      \<rparr>"
 
-abbreviation (input) contracted_graph :: "'a pair_pre_digraph \<Rightarrow> 'a pair_pre_digraph" where
-  "contracted_graph G \<equiv> gen_contr_graph G (verts3 G)"
+abbreviation (input) contr_graph :: "'a pair_pre_digraph \<Rightarrow> 'a pair_pre_digraph" where
+  "contr_graph G \<equiv> gen_contr_graph G (verts3 G)"
 
 
 
@@ -426,7 +426,7 @@ subsection {* Slim graphs *}
 
 text {*
   We define the notion of a slim graph. The idea is that for a slim graph @{term G}, @{term G}
-  is a subdivision of @{term "contracted_graph G"}.
+  is a subdivision of @{term "contr_graph G"}.
 *}
 
 context pair_pre_digraph begin
@@ -447,9 +447,9 @@ definition choose_iapath :: "'a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) 
       chosen_path = (\<lambda>u v. SOME p. iapath u p v)
     in if direct_arc (u,v) = (u,v) then chosen_path u v else rev_path (chosen_path v u))"
 
-(* XXX: Replace "parcs (contracted_graph G)" by its definition *)
+(* XXX: Replace "parcs (contr_graph G)" by its definition *)
 definition slim_paths :: "('a \<times> ('a \<times> 'a) awalk \<times> 'a) set" where
-  "slim_paths \<equiv> (\<lambda>e. (fst e, choose_iapath (fst e) (snd e), snd e)) ` parcs (contracted_graph G)"
+  "slim_paths \<equiv> (\<lambda>e. (fst e, choose_iapath (fst e) (snd e), snd e)) ` parcs (contr_graph G)"
 
 definition slim_verts :: "'a set" where
   "slim_verts \<equiv> verts3 G \<union> (\<Union>(u,p,_) \<in> slim_paths. set (awalk_verts u p))"
@@ -568,7 +568,7 @@ next
     then have "iapath u p v" and "p \<noteq> []" by (auto dest: slim_paths_in_G)
     then have "iapath v (rev_path p) u" and "rev_path p \<noteq> []"
       by (auto simp: gen_iapath_rev_path)
-    then have "(v,u) \<in> parcs (contracted_graph G)"
+    then have "(v,u) \<in> parcs (contr_graph G)"
       by (auto simp: gen_contr_graph_def)
     moreover
     from `iapath u p v` have "u \<noteq> v"
@@ -619,7 +619,7 @@ proof
 qed
 
 lemma contr_graph_slim_eq:
-   "gen_contr_graph slim (verts3 G) = contracted_graph G"
+   "gen_contr_graph slim (verts3 G) = contr_graph G"
   using giapath_if_slim_giapath slim_giapath_if_giapath by (fastforce simp: gen_contr_graph_def)
 
 lemma verts3_slim_in_verts3:
@@ -803,7 +803,7 @@ qed
 lemma (in pair_graph) contracted_no_degree2_simp:
   assumes subd: "subdivision G H"
   assumes two_less_deg2: "verts3 G = pverts G"
-  shows "contracted_graph H = G"
+  shows "contr_graph H = G"
 using subd
 proof (induct rule: subdivision.induct)
   case base
@@ -826,15 +826,15 @@ next
   from divide(1,2) interpret S: pair_graph ?sH
     by (rule H.pair_graph_subdivide)
   obtain u v where e_conv:"e = (u,v)" by (cases e) auto
-  have "contracted_graph ?sH = contracted_graph H"
+  have "contr_graph ?sH = contr_graph H"
   proof -
     have V_cond: "verts3 H \<subseteq> pverts H" by (auto simp: verts3_def)
     have "verts3 H = verts3 ?sH"
       using divide by (simp add: H.verts3_subdivide)
-    then have v: "pverts (contracted_graph ?sH) = pverts (contracted_graph H)"
+    then have v: "pverts (contr_graph ?sH) = pverts (contr_graph H)"
       by (auto simp: gen_contr_graph_def)
     moreover
-    then have "parcs (contracted_graph ?sH) = parcs (contracted_graph H)"
+    then have "parcs (contr_graph ?sH) = parcs (contr_graph H)"
       unfolding gen_contr_graph_def
       by (auto dest: H.gen_iapath_co_path[OF divide(1,2) V_cond]
           H.gen_iapath_sd_path[OF divide(1,2) V_cond])
@@ -888,7 +888,7 @@ qed
 lemma K33_contractedI:
   assumes subd: "subdivision G H"
   assumes k33: "K\<^bsub>3,3\<^esub> G"
-  shows "K\<^bsub>3,3\<^esub> (contracted_graph H)"
+  shows "K\<^bsub>3,3\<^esub> (contr_graph H)"
 proof -
   interpret pgG: pair_graph G using k33 by (rule pair_graphI_complete_bipartite)
   show ?thesis
@@ -898,7 +898,7 @@ qed
 lemma K5_contractedI:
   assumes subd: "subdivision G H"
   assumes k5: "K\<^bsub>5\<^esub> G"
-  shows "K\<^bsub>5\<^esub> (contracted_graph H)"
+  shows "K\<^bsub>5\<^esub> (contr_graph H)"
 proof -
   interpret pgG: pair_graph G using k5 by (rule pair_graphI_complete)
   show ?thesis
@@ -1241,7 +1241,7 @@ next
 qed
 
 lemma  contr_is_subgraph_subdivision:
-  shows "\<exists>H. subgraph (with_proj H) G \<and> subdivision (contracted_graph G) H"
+  shows "\<exists>H. subgraph (with_proj H) G \<and> subdivision (contr_graph G) H"
 proof -
   interpret sG: pair_pseudo_graph slim
     by (rule pair_pseudo_graph_slim)
@@ -1255,12 +1255,12 @@ theorem final_theorem:
   fixes K :: "'a pair_pre_digraph"
   assumes subgraph_K: "subgraph K G"
   assumes spd_K: "pair_pseudo_graph K"
-  assumes kuratowski: "K\<^bsub>3,3\<^esub> (contracted_graph K) \<or> K\<^bsub>5\<^esub> (contracted_graph K)"
+  assumes kuratowski: "K\<^bsub>3,3\<^esub> (contr_graph K) \<or> K\<^bsub>5\<^esub> (contr_graph K)"
   shows "\<not>planar G"
 proof -
   interpret spd_K: pair_pseudo_graph K by (fact spd_K)
   obtain H where subgraph_H: "subgraph (with_proj H) K"
-      and subdiv_H:"subdivision (contracted_graph K) H"
+      and subdiv_H:"subdivision (contr_graph K) H"
     by atomize_elim (rule spd_K.contr_is_subgraph_subdivision)
   from subdiv_H and kuratowski
   have "\<exists>K. subdivision K H \<and> (K\<^bsub>3,3\<^esub> K \<or> K\<^bsub>5\<^esub> K)" by blast
@@ -1270,11 +1270,11 @@ qed
 
 theorem certificate_characterization:
   defines "kuratowski \<equiv> \<lambda>G. K\<^bsub>3,3\<^esub> G \<or> K\<^bsub>5\<^esub> G"
-  shows "kuratowski (contracted_graph G) \<longleftrightarrow> (\<exists>H. kuratowski H \<and> subdivision H slim \<and> verts3 G = verts3 slim)" (is "?L \<longleftrightarrow> ?R")
+  shows "kuratowski (contr_graph G) \<longleftrightarrow> (\<exists>H. kuratowski H \<and> subdivision H slim \<and> verts3 G = verts3 slim)" (is "?L \<longleftrightarrow> ?R")
 proof
   assume ?L
   interpret S: pair_pseudo_graph slim by (rule pair_pseudo_graph_slim)
-  have "subdivision (contracted_graph G) slim"
+  have "subdivision (contr_graph G) slim"
   proof -
     have *: "S.is_slim (verts3 G)" by (rule slim_is_slim)
     show ?thesis using contr_graph_slim_eq S.subdivision_gen_contr[OF *] by auto
@@ -1286,9 +1286,9 @@ proof
       using verts_slim_in_G verts3_slim_in_verts3 by auto
   next
     fix v assume "v \<in> ?r"
-    have "v \<in> verts3 (contracted_graph G)"
+    have "v \<in> verts3 (contr_graph G)"
     proof -
-      have "v \<in> verts (contracted_graph G)"
+      have "v \<in> verts (contr_graph G)"
         using `v \<in> ?r` by (auto simp: verts3_def gen_contr_graph_def)
       then show ?thesis
         using `?L` unfolding kuratowski_def by (auto simp: verts3_K33 verts3_K5)
@@ -1311,7 +1311,7 @@ next
 qed
 
 definition certify :: "'a pair_pre_digraph \<Rightarrow> bool" where
-  "certify cert \<equiv> let C = contracted_graph cert in subgraph cert G \<and> (K\<^bsub>3,3\<^esub> C \<or> K\<^bsub>5\<^esub>C)"
+  "certify cert \<equiv> let C = contr_graph cert in subgraph cert G \<and> (K\<^bsub>3,3\<^esub> C \<or> K\<^bsub>5\<^esub>C)"
 
 theorem certify_complete:
   assumes "pair_pseudo_graph cert"
