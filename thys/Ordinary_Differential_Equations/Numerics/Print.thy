@@ -15,8 +15,12 @@ definition print::"String.literal \<Rightarrow> unit" where "print x = ()"
 definition int_to_string::"int \<Rightarrow> String.literal"
   where "int_to_string x = STR ''''"
 
+context includes integer.lifting begin
+
 lift_definition integer_to_string::"integer \<Rightarrow> String.literal"
   is int_to_string .
+
+end
 
 lemma [code]: "integer_to_string x = STR ''''"
   by (simp add: integer_to_string_def int_to_string_def)
@@ -31,6 +35,9 @@ code_printing
 | constant "integer_to_string :: integer \<Rightarrow> String.literal" \<rightharpoonup> (SML) "Int.toString"
 
 consts float2_float10::"int \<Rightarrow> bool \<Rightarrow> int \<Rightarrow> int \<Rightarrow> (int * int)"
+
+context includes integer.lifting begin
+
 lift_definition float2_float10_integer::"integer \<Rightarrow> bool \<Rightarrow> integer \<Rightarrow> integer \<Rightarrow> (integer * integer)"
   is float2_float10 .
 
@@ -38,6 +45,8 @@ lemma float2_float10_code[code]: "float2_float10 x b m e =
   (case float2_float10_integer (integer_of_int x) b (integer_of_int m) (integer_of_int e) of (a, b) \<Rightarrow>
   (int_of_integer a, int_of_integer b))"
   by transfer simp
+
+end
 
 code_printing
   code_module "Float2_Float10" \<rightharpoonup> (SML)

@@ -109,7 +109,7 @@ lemma numeral_uint32_transfer [transfer_rule]:
 by(auto simp add: cr_uint32_def)
 
 lemma numeral_uint32 [code_unfold]: "numeral n = Uint32 (numeral n)"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma Rep_uint32_neg_numeral [simp]: "Rep_uint32 (- numeral n) = - numeral n"
 by(simp only: uminus_uint32_def)(simp add: Abs_uint32_inverse)
@@ -119,7 +119,7 @@ lemma uint32_neg_numeral_transfer [transfer_rule]:
 by(auto simp add: cr_uint32_def)
 
 lemma neg_numeral_uint32 [code_unfold]: "- numeral n = Uint32 (- numeral n)"
-by transfer(simp add: cr_uint32_def)
+including integer.lifting by transfer(simp add: cr_uint32_def)
 
 lemma Abs_uint32_numeral [code_post]: "Abs_uint32 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint32_def numeral.simps plus_uint32_def Abs_uint32_inverse)
@@ -262,7 +262,7 @@ lemma Uint32_code [code]:
   "Uint32 i = 
   (let i' = i AND 0xFFFFFFFF
    in if i' !! 31 then Uint32_signed (i' - 0x100000000) else Uint32_signed i')"
-including undefined_transfer unfolding Uint32_signed_def
+including undefined_transfer integer.lifting unfolding Uint32_signed_def
 by transfer(rule word_of_int_via_signed, simp_all add: bin_mask_numeral)
 
 lemma Uint32_signed_code [code abstract]:
@@ -299,7 +299,7 @@ lift_definition Abs_uint32' :: "32 word \<Rightarrow> uint32" is "\<lambda>x :: 
 
 lemma Abs_uint32'_code [code]:
   "Abs_uint32' x = Uint32 (integer_of_int (uint x))"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint32 \<Rightarrow> _)" ..
 
@@ -467,7 +467,7 @@ where [code del]:
 
 lemma test_bit_uint32_code [code]:
   "test_bit x n \<longleftrightarrow> n < 32 \<and> uint32_test_bit x (integer_of_nat n)"
-including undefined_transfer unfolding uint32_test_bit_def
+including undefined_transfer integer.lifting unfolding uint32_test_bit_def
 by transfer(auto cong: conj_cong dest: test_bit_size simp add: word_size)
 
 lemma uint32_test_bit_code [code]:
@@ -490,7 +490,7 @@ where [code del]:
 
 lemma set_bit_uint32_code [code]:
   "set_bit x n b = (if n < 32 then uint32_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer unfolding uint32_set_bit_def
+including undefined_transfer integer.lifting unfolding uint32_set_bit_def
 by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
 
 lemma uint32_set_bit_code [code abstract]:
@@ -527,7 +527,7 @@ where [code del]:
   "uint32_shiftl x n = (if n < 0 \<or> 32 \<le> n then undefined (shiftl :: uint32 \<Rightarrow> _) x n else x << (nat_of_integer n))"
 
 lemma shiftl_uint32_code [code]: "x << n = (if n < 32 then uint32_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer unfolding uint32_shiftl_def
+including undefined_transfer integer.lifting unfolding uint32_shiftl_def
 by transfer(simp add: not_less shiftl_zero_size word_size)
 
 lemma uint32_shiftl_code [code abstract]:
@@ -546,7 +546,7 @@ where [code del]:
   "uint32_shiftr x n = (if n < 0 \<or> 32 \<le> n then undefined (shiftr :: uint32 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
 
 lemma shiftr_uint32_code [code]: "x >> n = (if n < 32 then uint32_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer unfolding uint32_shiftr_def
+including undefined_transfer integer.lifting unfolding uint32_shiftr_def
 by transfer(simp add: not_less shiftr_zero_size word_size)
 
 lemma uint32_shiftr_code [code abstract]:
@@ -572,7 +572,7 @@ by(rule word_eqI)(simp add: nth_sshiftr word_size)
 lemma sshiftr_uint32_code [code]:
   "x >>> n = 
   (if n < 32 then uint32_sshiftr x (integer_of_nat n) else if x !! 31 then -1 else 0)"
-including undefined_transfer unfolding uint32_sshiftr_def
+including undefined_transfer integer.lifting unfolding uint32_sshiftr_def
 by transfer(simp add: not_less sshiftr_beyond word_size)
 
 lemma uint32_sshiftr_code [code abstract]:
@@ -594,7 +594,7 @@ lemma msb_uint32_code [code]: "msb x \<longleftrightarrow> uint32_test_bit x 31"
 by(simp add: uint32_test_bit_def uint32_msb_test_bit)
 
 lemma uint32_of_int_code [code]: "uint32_of_int i = Uint32 (integer_of_int i)"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma int_of_uint32_code [code]:
   "int_of_uint32 x = int_of_integer (integer_of_uint32 x)"
@@ -602,7 +602,7 @@ by(simp add: integer_of_uint32_def)
 
 lemma nat_of_uint32_code [code]:
   "nat_of_uint32 x = nat_of_integer (integer_of_uint32 x)"
-unfolding integer_of_uint32_def by transfer (simp add: unat_def)
+unfolding integer_of_uint32_def including integer.lifting by transfer (simp add: unat_def)
 
 definition integer_of_uint32_signed :: "uint32 \<Rightarrow> integer"
 where
@@ -618,7 +618,7 @@ lemma integer_of_uint32_code [code]:
   "integer_of_uint32 n =
   (if n !! 31 then integer_of_uint32_signed (n AND 0x7FFFFFFF) OR 0x80000000 else integer_of_uint32_signed n)"
 unfolding integer_of_uint32_def integer_of_uint32_signed_def o_def
-including undefined_transfer
+including undefined_transfer integer.lifting
 by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
 
 code_printing

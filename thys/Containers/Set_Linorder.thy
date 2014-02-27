@@ -2122,22 +2122,26 @@ instance by intro_classes (auto intro: less_add_one, metis less_add_one minus_le
 end
 
 instantiation integer :: proper_interval begin
+context includes integer.lifting begin
 lift_definition proper_interval_integer :: "integer proper_interval" is "proper_interval" .
 instance by(intro_classes)(transfer, simp only: proper_interval_simps)+
 end
+end
 lemma proper_interval_integer_simps [code]:
-  fixes x y :: integer and xo yo :: "integer option" shows
+  includes integer.lifting fixes x y :: integer and xo yo :: "integer option" shows
   "proper_interval (Some x) (Some y) = (1 < y - x)"
   "proper_interval None yo = True"
   "proper_interval xo None = True"
 by(transfer, simp)+
 
 instantiation natural :: proper_interval begin
+context includes natural.lifting begin
 lift_definition proper_interval_natural :: "natural proper_interval" is "proper_interval" .
 instance by(intro_classes)(transfer, simp only: proper_interval_simps)+
 end
+end
 lemma proper_interval_natural_simps [code]:
-  fixes x y :: natural and xo :: "natural option" shows
+  includes natural.lifting fixes x y :: natural and xo :: "natural option" shows
   "proper_interval xo None = True"
   "proper_interval None (Some y) \<longleftrightarrow> y > 0"
   "proper_interval (Some x) (Some y) \<longleftrightarrow> y - x > 1"

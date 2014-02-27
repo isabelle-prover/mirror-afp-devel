@@ -19,10 +19,14 @@ setup {* Code_Target.extend_target ("SML_word", (Code_ML.target_SML, I)) *}
 code_identifier code_module Word_Misc \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
 
+context
+includes integer.lifting
+begin
 lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len0 word" is word_of_int .
 
 lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_integer n)"
 by(simp add: word_of_integer.rep_eq)
+end
 
 lemma shiftr_zero_size: "size x \<le> n \<Longrightarrow> x >> n = (0 :: 'a :: len0 word)"
 by(rule word_eqI)(auto simp add: nth_shiftr dest: test_bit_size)
