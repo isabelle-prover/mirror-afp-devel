@@ -1,4 +1,4 @@
-(* Title:  Graph_Theory.thy
+  (* Title:  Graph_Theory.thy
    Author: Lars Noschinski, TU München
 *)
 

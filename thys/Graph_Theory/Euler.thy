@@ -16,9 +16,6 @@ text {*
 
 subsection {* Trails and Euler Trails *}
 
-definition (in pre_digraph) trail :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
-  "trail u p v \<equiv> awalk u p v \<and> distinct p"
-
 definition (in pre_digraph) euler_trail :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
   "euler_trail u p v \<equiv> trail u p v \<and> set p = arcs G \<and> set (awalk_verts u p) = verts G"
 
@@ -385,7 +382,7 @@ proof -
           with `trail u p u` obtain q where q: "set p = set q" "trail (tail G a) q (tail G a)"
             by (rule rotate_trailE') blast
           with True a_in have *: "trail (tail G a) (q @ [a]) (head G a)"
-            by (fastforce simp: awlast_of_awalk trail_def awalk_simps )
+            by (fastforce simp: trail_def awalk_simps )
           moreover
           from q Suc have "length q = length p"
             by (simp add: trail_def distinct_card[symmetric])
@@ -397,7 +394,7 @@ proof -
           with `trail u p u` obtain q where q: "set p = set q" "trail (head G a) q (head G a)"
             by (rule rotate_trailE') blast
           with False a_in have *: "trail (tail G a) (a # q) (head G a)"
-            by (fastforce simp: awlast_of_awalk trail_def awalk_simps )
+            by (fastforce simp: trail_def awalk_simps )
           moreover
           from q Suc have "length q = length p"
             by (simp add: trail_def distinct_card[symmetric])

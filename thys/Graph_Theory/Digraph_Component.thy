@@ -795,7 +795,7 @@ lemma strongly_connected_non_disj:
   shows "strongly_connected (union G H)"
 proof
   from sc show "verts (union G H) \<noteq> {}"
-    unfolding strongly_connected_def by (auto simp: verts_union)
+    unfolding strongly_connected_def by simp
 next
   let ?x = "union G H"
   fix u v w assume "u \<in> verts ?x" and "v \<in> verts ?x"
@@ -808,10 +808,10 @@ next
     by (rule subgraphs_of_union[OF _ _ ], fact+)+
   have reach_uw: "u \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> w"
     using `u \<in> verts ?x` subg w_in_both sc
-    by (auto simp: verts_union intro: pre_digraph.reachable_mono)
+    by (auto intro: pre_digraph.reachable_mono)
   also have reach_wv: "w \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> v"
     using `v \<in> verts ?x` subg w_in_both sc
-    by (auto simp: verts_union intro: pre_digraph.reachable_mono)
+    by (auto intro: pre_digraph.reachable_mono)
   finally (x.reachable_trans) show "u \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> v" .
 qed
 

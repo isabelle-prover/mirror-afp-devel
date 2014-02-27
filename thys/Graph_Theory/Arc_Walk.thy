@@ -48,6 +48,10 @@ using assms by (cases es) auto
 definition awalk :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
   "awalk u p v \<equiv> u \<in> verts G \<and> set p \<subseteq> arcs G \<and> cas u p v"
 
+(* XXX: rename to atrail? *)
+definition (in pre_digraph) trail :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
+  "trail u p v \<equiv> awalk u p v \<and> distinct p"
+
 definition apath :: "'a \<Rightarrow>'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
   "apath u p v \<equiv> awalk u p v \<and> distinct (awalk_verts u p)"
 
@@ -117,6 +121,10 @@ lemma awalk_Nil_iff:
   "awalk u [] v \<longleftrightarrow> u = v \<and> u \<in> verts G"
 unfolding awalk_def by auto
 
+lemma trail_Nil_iff:
+  "trail u [] v \<longleftrightarrow> u = v \<and> u \<in> verts G"
+  by (auto simp: trail_def awalk_Nil_iff)
+
 lemma apath_Nil_iff: "apath u [] v \<longleftrightarrow> u = v \<and> u \<in> verts G"
   by (auto simp: apath_def awalk_Nil_iff)
 
@@ -132,8 +140,12 @@ lemma hd_in_awalk_verts:
   by (case_tac [!]p) (auto simp: apath_def)
 
 lemma awalk_Cons_iff:
-  "awalk u (e # es) w \<longleftrightarrow> e \<in> arcs G \<and> u = tail G e \<and> awalk (head G e) es w" (is "?L \<longleftrightarrow> ?R")
+  "awalk u (e # es) w \<longleftrightarrow> e \<in> arcs G \<and> u = tail G e \<and> awalk (head G e) es w"
   by (auto simp: awalk_def)
+
+lemma trail_Cons_iff:
+  "trail u (e # es ) w \<longleftrightarrow> e \<in> arcs G \<and> u = tail G e \<and> e \<notin> set es \<and> trail (head G e) es w"
+  by (auto simp: trail_def awalk_Cons_iff)
 
 lemma apath_Cons_iff:
   "apath u (e # es) w \<longleftrightarrow> e \<in> arcs G \<and> tail G e = u \<and> apath (head G e) es w
@@ -141,6 +153,7 @@ lemma apath_Cons_iff:
 by (auto simp: apath_def awalk_Cons_iff)
 
 lemmas awalk_simps = awalk_Nil_iff awalk_Cons_iff
+lemmas trail_simps = trail_Nil_iff trail_Cons_iff
 lemmas apath_simps = apath_Nil_iff apath_Cons_iff
 
 lemma arc_implies_awalk:
@@ -217,10 +230,10 @@ lemma set_awalk_verts_not_Nil:
   using assms by (intro set_awalk_verts_not_Nil_cas) blast
 
 lemma
-  awhd_of_awalk: "awalk u p v \<Longrightarrow> awhd u p = u" and
-  awlast_of_awalk: "awalk u p v \<Longrightarrow> awlast u p = v"
-by auto
-lemmas awends_of_awalk = awhd_of_awalk awlast_of_awalk
+  awhd_of_awalk: "awalk u p v \<Longrightarrow> NOMATCH (awhd u p) u \<Longrightarrow> awhd u p = u" and
+  awlast_of_awalk: "awalk u p v \<Longrightarrow> NOMATCH (awlast u p) v \<Longrightarrow> awlast u p = v"
+  unfolding NOMATCH_def by auto
+lemmas awends_of_awalk[simp] = awhd_of_awalk awlast_of_awalk
 
 lemma awalk_verts_arc1:
   assumes "e \<in> set p"
@@ -484,8 +497,6 @@ using assms by (auto simp: apath_def awalk_verts_append)
 
 
 
-
-
 subsection {* Cycles *}
 
 definition closed_w :: "'b awalk \<Rightarrow> bool" where
@@ -642,31 +653,39 @@ qed
 
 subsection {* Paths *}
 
-lemma (in fin_digraph) apaths_finite:
-  shows "finite {p. apath u p v}"
+lemma (in fin_digraph) length_apath:
+  assumes "apath u p v"
+  shows "length p \<le> card (verts G)"
 proof -
-  have "{p. apath u p v}
-    \<subseteq> {es. set es \<subseteq> arcs G \<and> length es \<le> card (verts G)}"
-  proof (clarify, rule conjI)
-    fix p assume "apath u p v"
-    then show "set p \<subseteq> arcs G" by (auto simp: apath_def)
+  have "length p \<le> length (awalk_verts u p)"
+    by (auto simp: awalk_verts_conv)
+  also have "\<dots> = card (set (awalk_verts u p))"
+    using `apath u p v` by (auto simp: apath_def distinct_card)
+  also have "\<dots> \<le> card (verts G)"
+    using `apath u p v` unfolding apath_def awalk_conv
+    by (auto intro: card_mono)
+  finally show ?thesis .
+qed
 
-    show "length p \<le> card (verts G)"
-    proof -
-      have "length p \<le> length (awalk_verts u p)"
-        by (auto simp: awalk_verts_conv)
-      also have "\<dots> = card (set (awalk_verts u p))"
-        using `apath u p v` by (auto simp: apath_def distinct_card)
-      also have "\<dots> \<le> card (verts G)"
-        using `apath u p v`
-        by (auto simp: apath_def awalk_conv intro: card_mono)
-      finally show ?thesis .
-    qed
-  qed
+lemma (in fin_digraph) apaths_finite_triple:
+  shows "finite {(u,p,v). apath u p v}"
+proof -
+  have "\<And>u p v. awalk u p v \<Longrightarrow> distinct (awalk_verts u p) \<Longrightarrow>length p \<le> card (verts G)"
+    by (rule length_apath) (auto simp: apath_def)
+  then have "{(u,p,v). apath u p v} \<subseteq> verts G \<times> {es. set es \<subseteq> arcs G \<and> length es \<le> card (verts G)} \<times> verts G"
+    by (auto simp: apath_def)
   moreover have "finite ..."
     using finite_verts finite_arcs
     by (intro finite_cartesian_product finite_lists_length_le)
   ultimately show ?thesis by (rule finite_subset)
+qed
+
+lemma (in fin_digraph) apaths_finite:
+  shows "finite {p. apath u p v}"
+proof -
+  have "{p. apath u p v} \<subseteq> (fst o snd) ` {(u,p,v). apath u p v}"
+    by (force intro: image_eqI)
+  with apaths_finite_triple show ?thesis  by (rule finite_surj)
 qed
 
 fun is_awalk_cyc_decomp :: "'b awalk =>
@@ -713,7 +732,7 @@ proof
   obtain u' w' v' where obt_awalk: "awalk u' q w'" "awalk w' r w'" "awalk w' s v'"
     using awalk_cyc_decomp_has_prop[OF p_props] and dec by auto
   then have "awalk u' p v'"
-    using `p = q @ r @ s` by (auto simp: awends_of_awalk)
+    using `p = q @ r @ s` by simp
   then have "u = u'" and "v = v'" using `p \<noteq> []` `awalk u p v` by (metis awalk_ends)+
   then have "awalk u q w'" "awalk w' r w'" "awalk w' s v"
     using obt_awalk by auto
