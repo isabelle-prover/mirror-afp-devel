@@ -44,7 +44,9 @@ ML {*
       in res end
       else ft thy thms;
 
-      fun s_functrans thy thms = let
+      fun s_functrans ctxt thms =
+        let
+        val thy = Proof_Context.theory_of ctxt;
         val trs = Data.get thy;
         val process = fold (fn (_,_,tr) => fn thm => tr thy thm) trs;
         val process' = fold (fn (_,name,tr) => fn thm => let
