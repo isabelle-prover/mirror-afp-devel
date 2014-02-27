@@ -235,6 +235,10 @@ end
 
 instantiation llist :: (narrowing) narrowing begin
 
+context 
+includes integer.lifting
+begin
+
 function narrowing_llist where
   "narrowing_llist n = Quickcheck_Narrowing.sum
     (Quickcheck_Narrowing.cons LNil)
@@ -244,6 +248,7 @@ by pat_completeness simp
 termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
 
 instance ..
+end
 end
 
 subsection {* Function definitions *}

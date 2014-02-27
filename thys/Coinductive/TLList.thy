@@ -137,6 +137,10 @@ end
 
 instantiation tllist :: (narrowing, narrowing) narrowing begin
 
+context
+includes integer.lifting
+begin
+
 function narrowing_tllist
 where
   "narrowing_tllist n = Quickcheck_Narrowing.sum
@@ -144,9 +148,11 @@ where
     (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons TCons) narrowing) narrowing_tllist)
     n"
 by pat_completeness auto
-termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
+termination by (relation "measure nat_of_integer") (simp_all, transfer, simp)
 
 instance ..
+
+end
 end
 
 text {* More lemmas about generated constants *}
