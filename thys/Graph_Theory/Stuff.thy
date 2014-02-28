@@ -36,7 +36,7 @@ proof (unfold INF_def)
 qed
 
 lemma not_mem_less_INF:
-  fixes f :: "_ \<Rightarrow> _::complete_lattice"
+  fixes f :: "'a \<Rightarrow> 'b :: complete_lattice"
   assumes "f x < (INF s: S. f s)"
   assumes "x \<in> S"
   shows "False"
@@ -123,6 +123,29 @@ by (induct rule: inc_induct) (auto simp: card_Suc_eq)
 
 lemma list_set_tl: "x \<in> set (tl xs) \<Longrightarrow> x \<in> set xs"
 by (cases xs) auto
+
+
+section {* NOMATCH simproc *}
+
+text {*
+ The simplification procedure can be used to avoid simplification of terms of a certain form
+*}
+
+definition NOMATCH :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "NOMATCH val pat \<equiv> True"
+lemma NOMATCH_cong[cong]: "NOMATCH val pat = NOMATCH val pat" by (rule refl)
+
+simproc_setup NOMATCH ("NOMATCH val pat") = {* fn _ => fn ctxt => fn ct =>
+  let
+    val thy = Proof_Context.theory_of ctxt
+    val dest_binop = Term.dest_comb #> apfst (Term.dest_comb #> snd)
+    val m = Pattern.matches thy (dest_binop (Thm.term_of ct))
+  in if m then NONE else SOME @{thm NOMATCH_def} end
+*}
+
+text {*
+  This setup ensures that a rewrite rule of the form @{term "NOMATCH val pat \<Longrightarrow> t"}
+  is only applied, if the pattern @{term pat} does not match the value @{term val}.
+*}
 
 
 end

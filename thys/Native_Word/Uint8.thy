@@ -95,6 +95,9 @@ where "integer_of_uint8 = integer_of_int o int_of_uint8"
 
 text {* Use pretty numerals from integer for pretty printing *}
 
+context
+includes integer.lifting
+begin
 lift_definition Uint8 :: "integer \<Rightarrow> uint8" is "word_of_int" .
 
 lemma Rep_uint8_numeral [simp]: "Rep_uint8 (numeral n) = numeral n"
@@ -110,16 +113,18 @@ by transfer simp
 lemma Rep_uint8_neg_numeral [simp]: "Rep_uint8 (- numeral n) = - numeral n"
 by(simp only: uminus_uint8_def)(simp add: Abs_uint8_inverse)
 
-context begin interpretation lifting_syntax .
+end
+
+context includes integer.lifting begin interpretation lifting_syntax .
 
 lemma uint8_neg_numeral_transfer [transfer_rule]:
   "(op = ===> cr_uint8) (- numeral) (- numeral)"
 by(auto simp add: cr_uint8_def)
 
-end
-
 lemma neg_numeral_uint8 [code_unfold]: "- numeral n = Uint8 (- numeral n)"
 by transfer(simp add: cr_uint8_def)
+
+end
 
 lemma Abs_uint8_numeral [code_post]: "Abs_uint8 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint8_def numeral.simps plus_uint8_def Abs_uint8_inverse)
@@ -234,9 +239,8 @@ by transfer simp
 
 lift_definition Abs_uint8' :: "8 word \<Rightarrow> uint8" is "\<lambda>x :: 8 word. x" .
 
-lemma Abs_uint8'_code [code]:
-  "Abs_uint8' x = Uint8 (integer_of_int (uint x))"
-by transfer simp
+lemma Abs_uint8'_code [code]: "Abs_uint8' x = Uint8 (integer_of_int (uint x))"
+including integer.lifting by transfer simp
 
 lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint8 \<Rightarrow> _)" ..
 
@@ -386,7 +390,7 @@ where [code del]:
 
 lemma test_bit_uint8_code [code]:
   "test_bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
-including undefined_transfer unfolding uint8_test_bit_def
+including undefined_transfer integer.lifting unfolding uint8_test_bit_def
 by transfer(auto cong: conj_cong dest: test_bit_size simp add: word_size)
 
 lemma uint8_test_bit_code [code]:
@@ -407,7 +411,7 @@ where [code del]:
 
 lemma set_bit_uint8_code [code]:
   "set_bit x n b = (if n < 8 then uint8_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer unfolding uint8_set_bit_def
+including undefined_transfer integer.lifting unfolding uint8_set_bit_def
 by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
 
 lemma uint8_set_bit_code [code abstract]:
@@ -444,7 +448,7 @@ where [code del]:
   "uint8_shiftl x n = (if n < 0 \<or> 8 \<le> n then undefined (shiftl :: uint8 \<Rightarrow> _) x n else x << (nat_of_integer n))"
 
 lemma shiftl_uint8_code [code]: "x << n = (if n < 8 then uint8_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer unfolding uint8_shiftl_def
+including undefined_transfer integer.lifting unfolding uint8_shiftl_def
 by transfer(simp add: not_less shiftl_zero_size word_size)
 
 lemma uint8_shiftl_code [code abstract]:
@@ -463,7 +467,7 @@ where [code del]:
   "uint8_shiftr x n = (if n < 0 \<or> 8 \<le> n then undefined (shiftr :: uint8 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
 
 lemma shiftr_uint8_code [code]: "x >> n = (if n < 8 then uint8_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer unfolding uint8_shiftr_def
+including undefined_transfer integer.lifting unfolding uint8_shiftr_def
 by transfer(simp add: not_less shiftr_zero_size word_size)
 
 lemma uint8_shiftr_code [code abstract]:
@@ -489,7 +493,7 @@ by(rule word_eqI)(simp add: nth_sshiftr word_size)
 lemma sshiftr_uint8_code [code]:
   "x >>> n = 
   (if n < 8 then uint8_sshiftr x (integer_of_nat n) else if x !! 7 then -1 else 0)"
-including undefined_transfer unfolding uint8_sshiftr_def
+including undefined_transfer integer.lifting unfolding uint8_sshiftr_def
 by transfer (simp add: not_less sshiftr_beyond word_size)
 
 lemma uint8_sshiftr_code [code abstract]:
@@ -511,7 +515,7 @@ lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
 by(simp add: uint8_test_bit_def uint8_msb_test_bit)
 
 lemma uint8_of_int_code [code]: "uint8_of_int i = Uint8 (integer_of_int i)"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma int_of_uint8_code [code]:
   "int_of_uint8 x = int_of_integer (integer_of_uint8 x)"
@@ -519,7 +523,7 @@ by(simp add: integer_of_uint8_def)
 
 lemma nat_of_uint8_code [code]:
   "nat_of_uint8 x = nat_of_integer (integer_of_uint8 x)"
-unfolding integer_of_uint8_def by transfer (simp add: unat_def)
+unfolding integer_of_uint8_def including integer.lifting by transfer (simp add: unat_def)
 
 definition integer_of_uint8_signed :: "uint8 \<Rightarrow> integer"
 where
@@ -535,7 +539,7 @@ lemma integer_of_uint8_code [code]:
   "integer_of_uint8 n =
   (if n !! 7 then integer_of_uint8_signed (n AND 0x7F) OR 0x80 else integer_of_uint8_signed n)"
 unfolding integer_of_uint8_def integer_of_uint8_signed_def o_def
-including undefined_transfer
+including undefined_transfer integer.lifting
 by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_Suc_0 intro!: uint_and_mask_or_full[symmetric])
 
 code_printing

@@ -226,7 +226,7 @@ next
     by (auto simp: awalk_simps intro: arcs_symmetric)
 
   from walks have "awalk v (rev_path es @ [(snd e, fst e)]) u"
-    by (auto simp: awends_of_awalk)
+    by simp
   moreover
   have "tl (awalk_verts (awlast v (rev_path es)) [(snd e, fst e)]) = [fst e]"
     by auto
@@ -243,14 +243,14 @@ next
   from Cons 2 have "awalk (snd e) [(snd e, fst e)] u"
     by (auto simp: awalk_simps intro: arcs_symmetric)
   ultimately show "awalk v (rev_path (e # es)) u"
-    by (auto simp: awends_of_awalk)
+    by simp
 qed
 
 lemma (in pair_pseudo_graph) awalk_rev_path[simp]:
   "awalk v (rev_path p) u = awalk u p v" (is "?L = ?R")
 by (metis awalk_rev_path' rev_path_rev_path)
 
-lemma (in pair_pseudo_graph) apath_rev_path:
+lemma (in pair_pseudo_graph) apath_rev_path[simp]:
   "apath v (rev_path p) u = apath u p v"
 by (auto simp: awalk_verts_rev_path apath_def)
 
@@ -451,7 +451,7 @@ proof -
         by (simp add: sd_path_id)
 
       from A ab have [simp]: "x \<noteq> y"
-        by (simp add: apath_Cons_iff) (metis awalkI_apath awalk_verts_non_Nil awhd_of_awalk hd_in_set )
+        by (simp add: apath_Cons_iff) (metis awalkI_apath awalk_verts_non_Nil awhd_of_awalk hd_in_set NOMATCH_def)
  
       from A have "S.apath b (sd_path (x,y) w es) v" "u = a" "u \<noteq> w"
         using ab hyps elems by (auto simp: apath_Cons_iff wellformed')

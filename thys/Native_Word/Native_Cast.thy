@@ -28,7 +28,7 @@ end
 lemma integer_of_char_char_of_integer [simp]:
   "0 \<le> x \<Longrightarrow> integer_of_char (char_of_integer x) = x mod 256"
 unfolding integer_of_char_def char_of_integer_def o_apply nat_of_char_of_nat
-by transfer(auto dest: nat_mod_distrib[of _ 256, symmetric])
+including integer.lifting by transfer(auto dest: nat_mod_distrib[of _ 256, symmetric])
 
 lemma char_of_integer_integer_of_char [simp]:
   "char_of_integer (integer_of_char x) = x"
@@ -38,10 +38,10 @@ lemma int_lt_numeral [simp]: "int x < numeral n \<longleftrightarrow> x < numera
 by (metis nat_numeral zless_nat_eq_int_zless)
 
 lemma int_of_integer_ge_0: "0 \<le> int_of_integer x \<longleftrightarrow> 0 \<le> x"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma integer_of_char_ge_0 [simp]: "0 \<le> integer_of_char x"
-by transfer simp
+including integer.lifting by transfer simp
 
 
 section {* Conversions between @{typ uint8} and @{typ char} *}
@@ -55,7 +55,7 @@ where "char_of_uint8 = char_of_integer \<circ> integer_of_int \<circ> uint \<cir
 lemma uint8_of_char_char_of_uint8 [simp]:
   "uint8_of_char (char_of_uint8 x) = x"
 apply(simp add: uint8_of_char_def char_of_uint8_def)
-apply transfer
+including integer.lifting apply transfer
 apply(simp add: mod_pos_pos_trivial uint_bounded[where ?'a=8, simplified])
 done
 
@@ -66,7 +66,7 @@ proof -
     char_of_integer (of_int (int_of_integer (integer_of_char x) mod 256))"
     by(simp add: uint8_of_char_def char_of_uint8_def Uint8.rep_eq uint_word_of_int)
   also { have "int_of_integer (integer_of_char x) < 256"
-      by transfer(simp add: nat_of_char_less_256) }
+      including integer.lifting by transfer(simp add: nat_of_char_less_256) }
   hence "\<dots> = x"
     by(simp add: semiring_numeral_div_class.mod_less int_of_integer_ge_0)
   finally show ?thesis .

@@ -104,7 +104,9 @@ where "integer_of_uint16 = integer_of_int o int_of_uint16"
 
 text {* Use pretty numerals from integer for pretty printing *}
 
+context includes integer.lifting begin
 lift_definition Uint16 :: "integer \<Rightarrow> uint16" is "word_of_int" .
+end
 
 lemma Rep_uint16_numeral [simp]: "Rep_uint16 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint16_def Abs_uint16_inverse numeral.simps plus_uint16_def)
@@ -125,10 +127,10 @@ by(auto simp add: cr_uint16_def)
 end
 
 lemma numeral_uint16 [code_unfold]: "numeral n = Uint16 (numeral n)"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma neg_numeral_uint16 [code_unfold]: "- numeral n = Uint16 (- numeral n)"
-by transfer(simp add: cr_uint16_def)
+including integer.lifting by transfer(simp add: cr_uint16_def)
 
 lemma Abs_uint16_numeral [code_post]: "Abs_uint16 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint16_def numeral.simps plus_uint16_def Abs_uint16_inverse)
@@ -233,7 +235,7 @@ lift_definition Abs_uint16' :: "16 word \<Rightarrow> uint16" is "\<lambda>x :: 
 
 lemma Abs_uint16'_code [code]:
   "Abs_uint16' x = Uint16 (integer_of_int (uint x))"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint16 \<Rightarrow> _)" ..
 
@@ -353,8 +355,8 @@ where [code del]:
 
 lemma test_bit_uint16_code [code]:
   "test_bit x n \<longleftrightarrow> n < 16 \<and> uint16_test_bit x (integer_of_nat n)"
-unfolding uint16_test_bit_def
-including undefined_transfer by transfer(auto cong: conj_cong dest: test_bit_size simp add: word_size)
+unfolding uint16_test_bit_def including undefined_transfer integer.lifting 
+by transfer(auto cong: conj_cong dest: test_bit_size simp add: word_size)
 
 lemma uint16_test_bit_code [code]:
   "uint16_test_bit w n =
@@ -374,7 +376,7 @@ where [code del]:
 
 lemma set_bit_uint16_code [code]:
   "set_bit x n b = (if n < 16 then uint16_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer unfolding uint16_set_bit_def
+including undefined_transfer integer.lifting unfolding uint16_set_bit_def
 by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
 
 lemma uint16_set_bit_code [code abstract]:
@@ -410,7 +412,7 @@ where [code del]:
   "uint16_shiftl x n = (if n < 0 \<or> 16 \<le> n then undefined (shiftl :: uint16 \<Rightarrow> _) x n else x << (nat_of_integer n))"
 
 lemma shiftl_uint16_code [code]: "x << n = (if n < 16 then uint16_shiftl x (integer_of_nat n) else 0)"
-including undefined_transfer unfolding uint16_shiftl_def
+including undefined_transfer integer.lifting unfolding uint16_shiftl_def
 by transfer(simp add: not_less shiftl_zero_size word_size)
 
 lemma uint16_shiftl_code [code abstract]:
@@ -429,7 +431,7 @@ where [code del]:
   "uint16_shiftr x n = (if n < 0 \<or> 16 \<le> n then undefined (shiftr :: uint16 \<Rightarrow> _) x n else x >> (nat_of_integer n))"
 
 lemma shiftr_uint16_code [code]: "x >> n = (if n < 16 then uint16_shiftr x (integer_of_nat n) else 0)"
-including undefined_transfer unfolding uint16_shiftr_def
+including undefined_transfer integer.lifting unfolding uint16_shiftr_def
 by transfer(simp add: not_less shiftr_zero_size word_size)
 
 lemma uint16_shiftr_code [code abstract]:
@@ -455,7 +457,7 @@ by(rule word_eqI)(simp add: nth_sshiftr word_size)
 lemma sshiftr_uint16_code [code]:
   "x >>> n = 
   (if n < 16 then uint16_sshiftr x (integer_of_nat n) else if x !! 15 then -1 else 0)"
-including undefined_transfer unfolding uint16_sshiftr_def
+including undefined_transfer integer.lifting unfolding uint16_sshiftr_def
 by transfer (simp add: not_less sshiftr_beyond word_size)
 
 lemma uint16_sshiftr_code [code abstract]:
@@ -477,7 +479,7 @@ lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint16_test_bit x 15"
 by(simp add: uint16_test_bit_def uint16_msb_test_bit)
 
 lemma uint16_of_int_code [code]: "uint16_of_int i = Uint16 (integer_of_int i)"
-by transfer simp
+including integer.lifting by transfer simp
 
 lemma int_of_uint16_code [code]:
   "int_of_uint16 x = int_of_integer (integer_of_uint16 x)"
@@ -485,7 +487,7 @@ by(simp add: integer_of_uint16_def)
 
 lemma nat_of_uint16_code [code]:
   "nat_of_uint16 x = nat_of_integer (integer_of_uint16 x)"
-unfolding integer_of_uint16_def by transfer (simp add: unat_def)
+unfolding integer_of_uint16_def including integer.lifting by transfer (simp add: unat_def)
 
 lemma integer_of_uint16_code [code]:
   "integer_of_uint16 n = integer_of_int (uint (Rep_uint16' n))"

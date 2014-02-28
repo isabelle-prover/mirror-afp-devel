@@ -15,9 +15,13 @@ text {* shallowly embed log and power *}
 definition log2::"int \<Rightarrow> int"
   where "log2 a = floor (log 2 (real a))"
 
+context includes integer.lifting begin
+
 lift_definition log2_integer :: "integer \<Rightarrow> integer"
   is "log2 :: int \<Rightarrow> int"
   .
+
+end
 
 lemma [code]: "log2 (int_of_integer a) = int_of_integer (log2_integer a)"
   by (simp add: log2_integer.rep_eq)
@@ -29,9 +33,13 @@ code_printing
 definition power_int::"int \<Rightarrow> int \<Rightarrow> int"
   where "power_int a b = a ^ (nat b)"
 
+context includes integer.lifting begin
+
 lift_definition power_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer"
   is "power_int :: int \<Rightarrow> int \<Rightarrow> int"
   .
+
+end
 
 code_printing
   constant "power_integer :: integer \<Rightarrow> _ \<Rightarrow> _" \<rightharpoonup>

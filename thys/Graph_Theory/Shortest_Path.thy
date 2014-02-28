@@ -46,7 +46,7 @@ fun mk_cycles_path :: "nat
 lemma mk_cycles_path_awalk:
   assumes "awalk u c u"
   shows "awalk u (mk_cycles_path n c) u"
-using assms by (induct n) (auto simp: awalk_Nil_iff awlast_of_awalk)
+using assms by (induct n) (auto simp: awalk_Nil_iff)
 
 lemma mk_cycles_awalk_cost:
   assumes "awalk u p u"

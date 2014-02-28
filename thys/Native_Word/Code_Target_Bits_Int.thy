@@ -25,6 +25,10 @@ lemma [code, code del]: "shiftl = (shiftl :: int \<Rightarrow> _)" ..
 lemma [code, code del]: "shiftr = (shiftr :: int \<Rightarrow> _)" ..
 lemma [code, code del]: "int_of_integer_symbolic = int_of_integer_symbolic" ..
 
+context
+includes integer.lifting
+begin
+
 lemma bitAND_int_code [code]:
   "int_of_integer i AND int_of_integer j = int_of_integer (i AND j)"
 by transfer simp
@@ -72,6 +76,8 @@ by transfer simp
 lemma int_of_integer_symbolic_code [code]:
   "int_of_integer_symbolic = int_of_integer"
 by(simp add: int_of_integer_symbolic_def[abs_def])
+
+end
 
 code_identifier code_module Code_Target_Bits_Int \<rightharpoonup>
   (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
