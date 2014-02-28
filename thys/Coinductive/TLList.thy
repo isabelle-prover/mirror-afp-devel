@@ -211,9 +211,9 @@ lemma in_tset_ttlD: "x \<in> tset (ttl xs) \<Longrightarrow> x \<in> tset xs"
 using tset_ttl[of xs] by auto
 
 lemma case_tllist_def':
-"case_tllist tnil tcons xs = (case dtor_tllist xs of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
+"case_tllist tnil tcons xs = (case Rep_tllist_pre_tllist (dtor_tllist xs) of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
 apply (case_tac xs)
-by auto (auto simp add: TNil_def TCons_def tllist.dtor_ctor)
+by auto (auto simp add: TNil_def TCons_def tllist.dtor_ctor Abs_tllist_pre_tllist_inverse)
 
 theorem tllist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> tset xs" and "\<And>xs. \<not> is_TNil xs \<Longrightarrow> P (thd xs) xs"
@@ -227,19 +227,19 @@ proof -
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
-       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
      apply(case_tac b)
-     apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps)[2]
+     apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)[2]
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)
      apply(case_tac b)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
     apply(case_tac b)
-    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps)
+    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
     done
   with `x \<in> tset xs` show ?thesis by blast
 qed
@@ -256,21 +256,21 @@ proof -
       set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def
       sum_set_simps sum.set_map split: sum.splits)
      apply(case_tac b)
-      apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+      apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
       apply(erule_tac x="b" in meta_allE)
       apply(erule meta_impE)
        apply fastforce
-      apply(simp add: tllist.dtor_ctor)
-     apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps)
+      apply(simp add: tllist.dtor_ctor Abs_tllist_pre_tllist_inverse)
+     apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)
      apply(case_tac b)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
-     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
+      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
     apply(case_tac b)
-    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps)
+    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
     done
   with `x \<in> set2_tllist xs` show ?thesis by blast
 qed
@@ -1097,22 +1097,22 @@ begin
 interpretation lifting_syntax .
 
 lemma set1_pre_tllist_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel B) set1_pre_tllist set1_pre_tllist"
-by(auto simp add: fun_rel_def set1_pre_tllist_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
+  "(rel_pre_tllist A B C ===> set_rel A) set1_pre_tllist set1_pre_tllist"
+by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set1_pre_tllist_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
 
 lemma set2_pre_tllist_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel A) set2_pre_tllist set2_pre_tllist"
-by(auto simp add: fun_rel_def set2_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_tllist A B C ===> set_rel B) set2_pre_tllist set2_pre_tllist"
+by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set2_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma set3_pre_tllist_transfer [transfer_rule]:
-  "(sum_rel A (prod_rel B C) ===> set_rel C) set3_pre_tllist set3_pre_tllist"
-by(auto simp add: fun_rel_def set3_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_tllist A B C ===> set_rel C) set3_pre_tllist set3_pre_tllist"
+by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set3_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma dtor_tllist_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> sum_rel B (prod_rel A (tllist_all2 A B))) dtor_tllist dtor_tllist"
+  "(tllist_all2 A B ===> rel_pre_tllist A B (tllist_all2 A B)) dtor_tllist dtor_tllist"
 apply(rule fun_relI)
 apply(erule tllist_all2_cases)
-apply(auto simp add: sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
+apply(auto simp add: rel_pre_tllist_def vimage2p_def Abs_tllist_pre_tllist_inverse sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
 done
 
 lemma TNil_transfer2 [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"
