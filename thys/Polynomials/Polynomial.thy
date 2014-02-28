@@ -77,51 +77,6 @@ lemma eval_monom_list[simp]: "eval_monom \<alpha> (m @ n) = eval_monom \<alpha> 
   by (induct m, auto simp: field_simps)
 
 
-fun "extract" :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a \<times> 'a list) option" where
-  "extract p [] = None"
-| "extract p (x # xs) = (if p x then Some ([], x, xs) else 
-  (case extract p xs of
-    None \<Rightarrow> None
-  | Some (ys, y, zs) \<Rightarrow> Some (x#ys, y, zs)))"
-
-lemma extract_None: "extract p xs = None \<Longrightarrow> \<forall>x\<in>set xs. \<not> p x"
-proof (induct xs, simp)
-  case (Cons x xs)
-  show ?case 
-  proof (cases "p x")
-    case True
-    hence False using Cons(2) by simp
-    thus ?thesis ..
-  next
-    case False
-    with Cons show ?thesis by (cases "extract p xs", auto)
-  qed
-qed
-
-lemma extract_Some:
-  assumes "extract p xs = Some (ys, y, zs)" 
-  shows "xs = ys @ y # zs \<and> p y"
-using assms
-proof (induct xs arbitrary: ys, simp)
-  case (Cons x xs)
-  show ?case 
-  proof (cases "p x")
-    case True
-    thus ?thesis using Cons(2) by auto
-  next
-    case False
-    show ?thesis 
-    proof (cases "extract p xs")
-      case None
-      with Cons(2) False show ?thesis by simp
-    next
-      case (Some res)
-      with False Cons(2) obtain us where rec: "extract p xs = Some (us, y, zs)" and ys: "ys = x # us" by (cases res, auto)
-      from Cons(1)[OF rec] ys show ?thesis by simp        
-    qed
-  qed
-qed
-
 text {*
 equality of monomials should be able to identify $x^2 \cdot y$ with $y \cdot x^2$,
 essentially, it checks for permutations. Checking of permutations 
@@ -132,7 +87,7 @@ most once in a monomial.
 fun eq_monom :: "'v monom \<Rightarrow> 'v monom \<Rightarrow> bool" (infix "=m" 51) where
   "[] =m n = (n = [])" 
 | "(x,p) # m =m n =
-  (case extract (\<lambda>yq. fst yq = x) n of
+  (case List.extract (\<lambda>yq. fst yq = x) n of
     None \<Rightarrow> False
   | Some (n1,(_,q),n2) \<Rightarrow> p = q \<and> m =m (n1 @ n2))"
 
@@ -143,7 +98,7 @@ proof (induct m)
   proof (cases xp)
     case (Pair x p)
     show ?thesis
-      by (simp add: Pair Cons)
+      by (simp add: Pair Cons extract_Cons_code)
   qed
 qed simp
 
@@ -175,16 +130,16 @@ next
   obtain x p where xp: "xp = (x,p)" by (cases xp, auto)
   with Cons(2) have p: "0 < p" and x: "x \<notin> fst ` set m" and m: "monom_inv m" unfolding monom_inv_def by auto
   show ?case 
-  proof (cases "extract (\<lambda> yq. fst yq = x) n")
+  proof (cases "List.extract (\<lambda> yq. fst yq = x) n")
     case None
-    from extract_None[OF this] have not1: "x \<notin> fst ` set n" by auto
+    hence not1: "x \<notin> fst ` set n" by (auto simp: extract_None_iff)
     show ?thesis
       by (simp add: xp Cons None, rule exI[of _ x], simp add: sum_var_list_not[OF not1], simp add: sum_var_list_def p)
   next
     case (Some res)
     obtain n1 yq n2 where "res = (n1,yq,n2)" by (cases res, auto)
     then obtain y q where "res = (n1,(y,q),n2)" by (cases yq, auto)
-    with extract_Some[OF Some[simplified this]] have n: "n = n1 @ (x,q) # n2" and res: "res = (n1,(x,q),n2)"  by auto
+    with extract_SomeE[OF Some[simplified this]] have n: "n = n1 @ (x,q) # n2" and res: "res = (n1,(x,q),n2)"  by auto
     from Cons(3)[unfolded n] have q: "1 \<le> q" and n1n2: "x \<notin> fst ` (set (n1 @ n2))" and n1n2m: "monom_inv (n1 @ n2)" unfolding  monom_inv_def by auto
     show ?thesis 
     proof (cases "p = q")
@@ -231,14 +186,14 @@ proof (induct m arbitrary: n)
   proof (cases xp)
     case (Pair x p)
     show ?thesis 
-    proof (cases "extract (\<lambda> yq. fst yq = x) n")
+    proof (cases "List.extract (\<lambda> yq. fst yq = x) n")
       case None
       with Cons Pair show ?thesis by auto
     next
       case (Some res)
       obtain n1 yq n2 where "res = (n1,yq,n2)" by (cases res, auto)
       then obtain y q where res: "res = (n1,(y,q),n2)" by (cases yq, auto)
-      from extract_Some[OF Some[simplified res]] mCons(2)  Some Pair res have n: "n = n1 @ (x,p) # n2" and rec: "m =m (n1 @ n2)" by auto
+      from extract_SomeE[OF Some[simplified res]] mCons(2)  Some Pair res have n: "n = n1 @ (x,p) # n2" and rec: "m =m (n1 @ n2)" by auto
       show ?thesis by (simp add: Pair mCons(1)[OF rec] n field_simps)
     qed
   qed
@@ -285,15 +240,15 @@ proof(intro iffI allI, rule eq_monom)
       from ass[OF xm] have "\<And> v. eval_monom (?ass v) (xp # m) = v * v^pp" by (simp add: Pair p)
       with Cons(4) have eval: "\<And> v. eval_monom (?ass v) n = v * v^pp" by auto
       show ?thesis 
-      proof (cases "extract (\<lambda> yq. fst yq = x) n")
+      proof (cases "List.extract (\<lambda> yq. fst yq = x) n")
         case None
-        from extract_None[OF this] ass[of n] have "\<And> v. eval_monom (?ass v) n = 1" by auto
+        with ass[of n] have "\<And> v. eval_monom (?ass v) n = 1" by (auto simp: extract_None_iff)
         from this[of 0] eval[of 0] show ?thesis by simp
       next
         case (Some res)
         obtain n1 yq n2 where "res = (n1,yq,n2)" by (cases res, auto)
         then obtain y q where "res = (n1,(y,q),n2)" by (cases yq, auto)        
-        from extract_Some[OF Some[simplified this]] mCons(2)  Some Pair this have n: "n = n1 @ (x,q) # n2" and res: "res = (n1,(x,q),n2)" by auto
+        from extract_SomeE[OF Some[simplified this]] mCons(2)  Some Pair this have n: "n = n1 @ (x,q) # n2" and res: "res = (n1,(x,q),n2)" by auto
         from mCons(3)[unfolded n] have xn: "x \<notin> fst ` (set (n1 @ n2))" unfolding monom_inv_def by auto
         have "\<And> v. eval_monom (?ass v) n = v^q * eval_monom (?ass v) (n1 @ n2)" unfolding n by (auto simp: field_simps)
         from eval[unfolded this ass[OF xn]] have id: "\<And> v :: 'a. v^p = v^q" using p by auto
@@ -335,7 +290,7 @@ abbreviation monom_vars :: "'v monom \<Rightarrow> 'v set"
 
 fun monom_mult :: "'v monom \<Rightarrow> 'v monom \<Rightarrow> 'v monom"
 where "monom_mult [] n = n"
-  |   "monom_mult ((x,p) # m) n = (case extract (\<lambda> yq. fst yq = x) n of
+  |   "monom_mult ((x,p) # m) n = (case List.extract (\<lambda> yq. fst yq = x) n of
                            None \<Rightarrow> (x,p) # monom_mult m n 
                          | Some (n1,(_,q),n2) \<Rightarrow> (x,p+q) # monom_mult m (n1 @ n2))"
 
@@ -346,14 +301,14 @@ proof (induct m1 arbitrary: m2)
   proof (cases xp)
     case (Pair x p)
     show ?thesis 
-    proof (cases "extract (\<lambda> yq. fst yq = x) m2")
+    proof (cases "List.extract (\<lambda> yq. fst yq = x) m2")
       case None
       with Cons Pair show ?thesis by auto 
     next
       case (Some res)
       obtain n1 yq n2 where "res = (n1,yq,n2)" by (cases res, auto)
       then obtain y q where res: "res = (n1,(y,q),n2)" by (cases yq, auto)
-      from extract_Some[OF Some[simplified res]] Some Pair res have m2: "m2 = n1 @ (x,q) # n2"
+      from extract_SomeE[OF Some[simplified res]] Some Pair res have m2: "m2 = n1 @ (x,q) # n2"
         and rec: "monom_mult (xp # m) m2 = (x, p+q) # monom_mult m (n1 @ n2)" by auto
       show ?thesis by (simp only: rec, simp add: mCons Pair m2)
     qed
@@ -369,16 +324,16 @@ next
   obtain x p where xp: "xp = (x,p)" by (cases xp) auto
   from xp Cons(2) have m1: "monom_inv m1" and x: "x \<notin> monom_vars m1" and p: "1 \<le> p" by (auto simp: monom_inv_def)
   show ?case 
-  proof (cases "extract (\<lambda> yq. fst yq = x) m2")
+  proof (cases "List.extract (\<lambda> yq. fst yq = x) m2")
     case None
-    from extract_None[OF this] have "x \<notin> monom_vars m2" by auto
+    hence "x \<notin> monom_vars m2" by (auto simp: extract_None_iff)
     from x this have x: "x \<notin> monom_vars (monom_mult m1 m2)" by (simp add: monom_mult_vars)
     with None Cons(1)[OF m1 Cons(3)] x p xp show ?thesis by (auto simp: monom_inv_def)
   next
     case (Some res)
     obtain n1 yq n2 where "res = (n1,yq,n2)" by (cases res, auto)
     then obtain y q where res: "res = (n1,(y,q),n2)" by (cases yq, auto)
-    from extract_Some[OF Some[simplified res]] Some xp res have m2: "m2 = n1 @ (x,q) # n2"
+    from extract_SomeE[OF Some[simplified res]] Some xp res have m2: "m2 = n1 @ (x,q) # n2"
       and rec: "monom_mult (xp # m1) m2 = (x, p+q) # monom_mult m1 (n1 @ n2)" by auto
     from Cons(3) m2 have xn1: "x \<notin> monom_vars (n1 @ n2)"
       and n1n2: "monom_inv (n1 @ n2)" and q: "1 \<le> q" by (auto simp: monom_inv_def)
@@ -402,7 +357,7 @@ proof -
       obtain y p where yp: "yp = (y,p)" by (cases yp, auto)
       hence id: "sum_var_list (yp # m) x = (if x = y then p else 0) + sum_var_list m x" unfolding sum_var_list_def by auto
       show ?case
-      proof (cases "extract (\<lambda> zq. fst zq = y) n")
+      proof (cases "List.extract (\<lambda> zq. fst zq = y) n")
         case None
         have "sum_var_list (monom_mult (yp # m) n) x = (if x = y then p else 0) + sum_var_list (monom_mult m n) x"
           by (simp add: yp None sum_var_list_def)
@@ -412,7 +367,7 @@ proof -
         case (Some res)
         obtain n1 zq n2 where "res = (n1,zq,n2)" by (cases res, auto)
         then obtain z q where res: "res = (n1,(z,q),n2)" by (cases zq, auto)
-        from extract_Some[OF Some[simplified res]] Some res yp have n: "n = n1 @ (y,q) # n2"
+        from extract_SomeE[OF Some[simplified res]] Some res yp have n: "n = n1 @ (y,q) # n2"
           and rec: "sum_var_list (monom_mult (yp # m) n) x  = (if x = y then p+q else 0) + sum_var_list (monom_mult m (n1 @ n2)) x" 
           unfolding sum_var_list_def by auto
         show ?thesis
@@ -432,14 +387,14 @@ proof (induct m arbitrary: n)
   proof (cases xp)
     case (Pair x p)
     show ?thesis 
-    proof (cases "extract (\<lambda> yq. fst yq = x) n")
+    proof (cases "List.extract (\<lambda> yq. fst yq = x) n")
       case None
       with Cons Pair show ?thesis by (auto simp: field_simps)
     next
       case (Some res)
       obtain n1 yq n2 where "res = (n1,yq,n2)" by (cases res, auto)
       then obtain y q where res: "res = (n1,(y,q),n2)" by (cases yq, auto)
-      from extract_Some[OF Some[simplified res]] Some Pair res have n: "n = n1 @ (x,q) # n2" 
+      from extract_SomeE[OF Some[simplified res]] Some Pair res have n: "n = n1 @ (x,q) # n2" 
         and rec: "monom_mult (xp # m) n = (x, p+q) # monom_mult m (n1 @ n2)" by auto
       show ?thesis by (simp only: rec, simp add: Pair mCons[of "n1 @ n2"] n field_simps power_add)
     qed
@@ -483,7 +438,7 @@ where "eval_poly \<alpha> [] = 0"
 
 fun poly_add :: "('v,'a)poly \<Rightarrow> ('v,'a :: semiring_0)poly \<Rightarrow> ('v,'a)poly"
 where "poly_add [] q = q"
-   |  "poly_add ((m,c) # p) q = (case extract (\<lambda> mc. fst mc =m m) q of
+   |  "poly_add ((m,c) # p) q = (case List.extract (\<lambda> mc. fst mc =m m) q of
                                 None \<Rightarrow> (m,c) # poly_add p q
                               | Some (q1,(_,d),q2) \<Rightarrow> if (c+d = 0) then poly_add p (q1 @ q2) else (m,c+d) # poly_add p (q1 @ q2))"
 
@@ -500,13 +455,13 @@ proof (induct p1 arbitrary: p2)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   hence m: "m \<in> poly_monoms (mc # p1)" by auto
   show ?case
-  proof (cases "extract (\<lambda> nd. fst nd =m m) p2")
+  proof (cases "List.extract (\<lambda> nd. fst nd =m m) p2")
     case None
     with Cons m show ?thesis by (auto simp: mc)
   next
     case (Some res)
     obtain q1 md q2 where res: "res = (q1,md,q2)" by (cases res, auto)
-    from extract_Some[OF Some[simplified res]] res obtain m' d where q: "p2 = q1 @ (m',d) # q2" and res: "res = (q1,(m',d),q2)" and mm': "m' =m m" by (cases md, auto)
+    from extract_SomeE[OF Some[simplified res]] res obtain m' d where q: "p2 = q1 @ (m',d) # q2" and res: "res = (q1,(m',d),q2)" and mm': "m' =m m" by (cases md, auto)
     show ?thesis
       by (simp add: mc Some res, rule subset_trans[OF Cons[of "q1 @ q2"]], auto simp: q)
   qed
@@ -519,9 +474,9 @@ proof (induct p arbitrary: q)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   with Cons(2) have p: "poly_inv p" and m: "monom_inv m" and c: "c \<noteq> 0" and mp: "\<forall> (mm,dd) \<in> set p. (\<not> mm =m m)" unfolding poly_inv_def by auto
   show ?case
-  proof (cases "extract (\<lambda> mc. fst mc =m m) q")
+  proof (cases "List.extract (\<lambda> mc. fst mc =m m) q")
     case None
-    from extract_None[OF this] have mq: "\<forall> (mm,dd) \<in> set q. \<not> mm =m m" by auto
+    hence mq: "\<forall> (mm,dd) \<in> set q. \<not> mm =m m" by (auto simp: extract_None_iff)
     { 
       fix mm dd
       assume "(mm,dd) \<in> set (poly_add p q)"
@@ -539,7 +494,7 @@ proof (induct p arbitrary: q)
   next
     case (Some res)
     obtain q1 md q2 where res: "res = (q1,md,q2)" by (cases res, auto)
-    from extract_Some[OF Some[simplified res]] res obtain m' d where q: "q = q1 @ (m',d) # q2" and res: "res = (q1,(m',d),q2)" and mm': "m' =m m" by (cases md, auto)
+    from extract_SomeE[OF Some[simplified res]] res obtain m' d where q: "q = q1 @ (m',d) # q2" and res: "res = (q1,(m',d),q2)" and mm': "m' =m m" by (cases md, auto)
     from q Cons(3) have q1q2: "poly_inv (q1 @ q2)" and m': "monom_inv m'" unfolding poly_inv_def by (auto simp: distinct_eq_append)
     from Cons(1)[OF p q1q2]  have main1: "poly_inv (poly_add p (q1 @ q2))" .
     {
@@ -586,13 +541,13 @@ proof (induct p arbitrary: q)
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   show ?case
-  proof (cases "extract (\<lambda> mc. fst mc =m m) q")
+  proof (cases "List.extract (\<lambda> mc. fst mc =m m) q")
     case None
     show ?thesis by (simp add: Cons[of q] mc None field_simps)
   next
     case (Some res)
     obtain q1 md q2 where res: "res = (q1,md,q2)" by (cases res, auto)
-    from extract_Some[OF Some[simplified res]] res obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" by (cases md, auto)
+    from extract_SomeE[OF Some[simplified res]] res obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" by (cases md, auto)
     {
       fix x
       assume c: "c + d = 0"
@@ -1297,18 +1252,18 @@ subsection {* Executable and sufficient criteria to compare polynomials and ensu
 
 text {* poly\_split extracts the coefficient for a given monomial and returns additionally the remaining polynomial *}
 definition poly_split :: "('v monom) \<Rightarrow> ('v,'a :: zero)poly \<Rightarrow> 'a \<times> ('v,'a)poly" 
-  where "poly_split m p \<equiv> case extract (\<lambda> (n,_). m =m n) p of None \<Rightarrow> (0,p) | Some (p1,(_,c),p2) \<Rightarrow> (c, p1 @ p2)"
+  where "poly_split m p \<equiv> case List.extract (\<lambda> (n,_). m =m n) p of None \<Rightarrow> (0,p) | Some (p1,(_,c),p2) \<Rightarrow> (c, p1 @ p2)"
 
 lemma poly_split: assumes "poly_split m p = (c,q)"
   shows "p =p (m,c) # q"
-proof (cases "extract (\<lambda> (n,_). m =m n) p")
+proof (cases "List.extract (\<lambda> (n,_). m =m n) p")
   case None
   with assms have "(c,q) = (0,p)" unfolding poly_split_def by auto
   thus ?thesis unfolding eq_poly_def by auto
 next
   case (Some res)
   obtain p1 mc p2 where "res = (p1,mc,p2)" by (cases res, auto)
-  with extract_Some[OF Some[simplified this]] obtain a m' where p: "p = p1 @ (m',a) # p2" and m': "m =m m'" and res: "res = (p1,(m',a),p2)" by (cases mc, auto)
+  with extract_SomeE[OF Some[simplified this]] obtain a m' where p: "p = p1 @ (m',a) # p2" and m': "m =m m'" and res: "res = (p1,(m',a),p2)" by (cases mc, auto)
   from Some res assms have c: "c = a" and q: "q = p1 @ p2" unfolding poly_split_def by auto
   show ?thesis unfolding eq_poly_def by (simp add: p c q eq_monom[OF m'] field_simps)
 qed 
@@ -1320,7 +1275,7 @@ using poly_split[OF assms] unfolding eq_poly_def by auto
 (* we assume that the polynomial invariant is present, otherwise this check might fail, e.g., on 0 =p 0 + 0 *)
 fun check_poly_eq :: "('v,'a :: semiring_0)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool"
 where "check_poly_eq [] q = (q = [])"
-    | "check_poly_eq ((m,c) # p) q = (case extract (\<lambda> nd. fst nd =m m) q of
+    | "check_poly_eq ((m,c) # p) q = (case List.extract (\<lambda> nd. fst nd =m m) q of
                                          None \<Rightarrow> False
                                        | Some (q1,(_,d),q2) \<Rightarrow> c = d \<and> check_poly_eq p (q1 @ q2))"
 
@@ -1337,13 +1292,13 @@ proof
     case (Cons mc p)
     obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
     show ?case
-    proof (cases "extract (\<lambda> mc. fst mc =m m) q")
+    proof (cases "List.extract (\<lambda> mc. fst mc =m m) q")
       case None
       with Cons(2) show ?thesis unfolding mc by simp
     next
       case (Some res)
       obtain q1 md q2 where "res = (q1,md,q2)" by (cases res, auto)
-      with extract_Some[OF Some[simplified this]] obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" 
+      with extract_SomeE[OF Some[simplified this]] obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" 
         by (cases md, auto)
       from Cons(2) Some mc res have rec: "check_poly_eq p (q1 @ q2)" and c: "c = d" by auto
       from Cons(1)[OF rec] have p: "eval_poly \<alpha> p = eval_poly \<alpha> (q1 @ q2)" .
@@ -1357,7 +1312,7 @@ declare check_poly_eq.simps[simp del]
 
 fun check_poly_ge :: "('v,'a :: ordered_semiring_0)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool"
 where "check_poly_ge [] q = list_all (\<lambda> (_,d). 0 \<ge> d) q"
-    | "check_poly_ge ((m,c) # p) q = (case extract (\<lambda> nd. fst nd =m m) q of
+    | "check_poly_ge ((m,c) # p) q = (case List.extract (\<lambda> nd. fst nd =m m) q of
                                          None \<Rightarrow> c \<ge> 0 \<and> check_poly_ge p q
                                        | Some (q1,(_,d),q2) \<Rightarrow> c \<ge> d \<and> check_poly_ge p (q1 @ q2))"
 
@@ -1393,7 +1348,7 @@ next
   case (Cons mc p)
   obtain m c where mc: "mc = (m,c)" by (cases mc, auto)
   show ?case
-  proof (cases "extract (\<lambda> mc. fst mc =m m) q")
+  proof (cases "List.extract (\<lambda> mc. fst mc =m m) q")
     case None
     with Cons(2) have rec: "check_poly_ge p q" and c: "c \<ge> 0" using mc by auto
     from Cons(1)[OF rec] have rec: "p \<ge>p q" .
@@ -1410,7 +1365,7 @@ next
   next
     case (Some res)
     obtain q1 md q2 where "res = (q1,md,q2)" by (cases res, auto)
-    with extract_Some[OF Some[simplified this]] obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" 
+    with extract_SomeE[OF Some[simplified this]] obtain m' d where q: "q = q1 @ (m',d) # q2" and m': "m' =m m" and res: "res = (q1,(m',d),q2)" 
       by (cases md, auto)
     from Cons(2) Some mc res have rec: "check_poly_ge p (q1 @ q2)" and c: "c \<ge> d" by auto
     from Cons(1)[OF rec] have p: "p \<ge>p q1 @ q2" .
@@ -1468,7 +1423,7 @@ unfolding zero_poly_def
 proof (rule check_poly_ge)
   from assms have "\<And> m c. (m,c) \<in> set p \<Longrightarrow> c \<ge> 0" unfolding check_poly_weak_mono_all_def by (auto simp: list_all_iff)
   thus "check_poly_ge p []"
-    by (induct p, simp add: check_poly_ge.simps,  clarify, auto simp: check_poly_ge.simps)
+    by (induct p, simp add: check_poly_ge.simps,  clarify, auto simp: check_poly_ge.simps extract_Nil_code)
 qed
 
 

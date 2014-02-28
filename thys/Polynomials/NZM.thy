@@ -43,12 +43,12 @@ lemma assumes b: "b + a > 0" and a: "(a :: int) \<ge> 0"
 proof (cases "a = 0")
   case True
   with b have b: "b > 0 \<and> b \<noteq> 0" by auto
-  show ?thesis using b True
-    by (simp add: b True poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
+  show ?thesis using b True 
+    by (simp add: b True extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
 next
   case False
   show ?thesis using False a b
-    by (simp add: b False poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
+    by (simp add: b False extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_gt_def check_poly_ge.simps check_poly_strict_mono_discrete_def poly_split_def, auto)
 qed
 
 lemma assumes b: "b + a \<ge> 0" and a: "(a :: int) \<ge> 0" 
@@ -57,11 +57,11 @@ proof (cases "a = 0")
   case True
   with b have b: "0 \<le> b" by auto
   show ?thesis using b True
-    by (simp add: b True poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
+    by (simp add: b True extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
 next
   case False
   show ?thesis using False a b
-    by (simp add: b False poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
+    by (simp add: b False extract_def poly_add.simps eq_monom.simps poly_mult.simps monom_mult_poly.simps monom_mult.simps poly_subst.simps monom_subst.simps poly_power.simps one_poly_def zero_poly_def check_poly_ge.simps check_poly_weak_mono_discrete_def, auto)
 qed
 
 
