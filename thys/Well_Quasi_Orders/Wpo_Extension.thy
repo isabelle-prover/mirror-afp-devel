@@ -79,7 +79,7 @@ proof
     assume "~ ?thesis"
     then obtain f where *: "\<And>i::nat. f i \<in> A" and
       "\<And>i j. i < j \<Longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
-      unfolding almost_full_on_def good_def by blast
+      unfolding almost_full_on_def by (auto dest: badE)
     with `total_on P A` have "\<And>i j. i < j \<Longrightarrow> P (f j) (f i)"
       unfolding total_on_def by blast
     then have "\<forall>i. P (f (Suc i)) (f i)" by auto

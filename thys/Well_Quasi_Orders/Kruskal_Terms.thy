@@ -206,8 +206,9 @@ proof (rule ccontr)
   assume "\<not> ?thesis"
   then obtain f where "f \<in> term_mbs.BAD ?P"
     unfolding almost_full_on_def term_mbs.BAD_def by blast
-  from term_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and min: "term_mbs.minimal ?P m"
+  from term_mbs.mbs [OF this] obtain m
+    where bad: "m \<in> term_mbs.BAD ?P"
+    and min: "\<forall>g. (m, g) \<in> term_mbs.gseq \<longrightarrow> good ?P g"
     and in_terms: "\<And>i. m i \<in> terms F"
     by (auto)
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
@@ -229,7 +230,7 @@ proof (rule ccontr)
       then obtain i j where "i < j" and *: "?P (c i) (c j)" by (auto simp: good_def)
       {
         assume "j < ?n" with `i < j` and * have "?P (m i) (m j)" by simp
-        with `i < j` and `bad ?P m` have False by (auto simp: good_def)
+        with `i < j` and bad have False by (auto simp: good_def)
       } moreover {
         let ?i' = "i - ?n" and ?j' = "j - ?n"
         assume "?n \<le> i" with `i < j` and * have "?P (t ?i') (t ?j')" by simp
@@ -247,7 +248,7 @@ proof (rule ccontr)
           using term_hembeq_subtreeeq and in_terms
           by blast
         moreover from ge [of "?j'"] and `i < ?n` have "i < \<phi> ?j'" by auto
-        ultimately have False using `bad ?P m` by (auto simp: good_def)
+        ultimately have False using bad by (auto simp: good_def)
       } ultimately show False by arith
     qed
     have "\<forall>i. c i \<in> terms F"
@@ -258,8 +259,8 @@ proof (rule ccontr)
       using in_succs_imp_subtree and in_terms and in_succs
       by (fastforce dest!: terms_imp_trees)
     ultimately have "good ?P c"
-      using min
-      apply (auto simp: term_mbs.gbseq_def)
+      using bad and min
+      apply (auto simp: term_mbs.gseq_def)
       by (metis `\<forall>i<\<phi> 0. c i = m i` `subtree (c (\<phi> 0)) (m (\<phi> 0))`)
     with `bad ?P c` have False by blast
   }
@@ -318,7 +319,7 @@ proof (rule ccontr)
       using terms_root_succs [OF in_terms] by auto
   ultimately have "?P (m i) (m j)"
     using term_hembeq_list_hembeq [of P "r i" "s i" "r j" "s j" F] by auto
-  with `i < j` and `bad ?P m` show False by (auto simp: good_def)
+  with `i < j` and bad show False by (auto simp: good_def)
 qed
 
 text {*Multiset of function symbol / arity pairs.*}

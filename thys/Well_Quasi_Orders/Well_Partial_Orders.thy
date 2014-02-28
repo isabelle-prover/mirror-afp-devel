@@ -364,7 +364,7 @@ proof
       have **: "\<And>i j. i < j \<Longrightarrow> P\<^sup>=\<^sup>= (f (g i)) (f (g j))" .
     let ?g = "\<lambda>i. h (f (g i))"
     from * and subset have B: "\<And>i. ?g i \<in> B" by auto
-    with `almost_full_on Q\<^sup>=\<^sup>= B` [unfolded almost_full_on_def good_def, THEN spec, of ?g]
+    with `almost_full_on Q\<^sup>=\<^sup>= B` [unfolded almost_full_on_def good_def, THEN bspec, of ?g]
       obtain i j :: nat
       where "i < j" and "Q\<^sup>=\<^sup>= (?g i) (?g j)" by blast
     with ** [OF `i < j`] have "P'\<^sup>=\<^sup>= (f (g i)) (f (g j))"
@@ -374,3 +374,4 @@ proof
 qed
 
 end
+

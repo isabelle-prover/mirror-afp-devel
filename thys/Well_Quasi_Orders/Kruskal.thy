@@ -43,8 +43,8 @@ proof (rule ccontr)
   then obtain f where "f \<in> tree_mbs.BAD ?P"
     unfolding almost_full_on_def tree_mbs.BAD_def by blast
   from tree_mbs.mbs [OF this] obtain m
-    where bad: "bad ?P m"
-    and min: "tree_mbs.minimal ?P m"
+    where bad: "m \<in> tree_mbs.BAD ?P"
+    and min: "\<forall>g. (m, g) \<in> tree_mbs.gseq \<longrightarrow> good ?P g"
     and in_trees: "\<And>i. m i \<in> trees A"
     by auto
   obtain r s where [simp]: "\<And>i. r i = root (m i)" "\<And>i. s i = succs (m i)" by force
@@ -66,7 +66,7 @@ proof (rule ccontr)
       then obtain i j where "i < j" and *: "?P (c i) (c j)" by (auto simp: good_def)
       {
         assume "j < ?n" with `i < j` and * have "?P (m i) (m j)" by simp
-        with `i < j` and `bad ?P m` have False by (auto simp: good_def)
+        with `i < j` and bad have False by (auto simp: good_def)
       } moreover {
         let ?i' = "i - ?n" and ?j' = "j - ?n"
         assume "?n \<le> i" with `i < j` and * have "?P (t ?i') (t ?j')" by simp
@@ -81,7 +81,7 @@ proof (rule ccontr)
         with * have "?P (m i) (t ?j')" by auto
         with subtree have "?P (m i) (m (\<phi> ?j'))" using tree_hembeq_subtreeeq [of P] by blast
         moreover from ge [of "?j'"] and `i < ?n` have "i < \<phi> ?j'" by auto
-        ultimately have False using `bad ?P m` by (auto simp: good_def)
+        ultimately have False using bad by (auto simp: good_def)
       } ultimately show False by arith
     qed
     have "\<forall>i. c i \<in> trees A"
@@ -92,8 +92,8 @@ proof (rule ccontr)
     moreover have "subtree (c ?n) (m ?n)"
       using in_succs_imp_subtree [OF in_trees] and in_succs by simp
     ultimately have "good ?P c"
-      using min
-      apply (auto simp: tree_mbs.gbseq_def)
+      using bad and min
+      apply (auto simp: tree_mbs.gseq_def)
       by (metis `\<forall>i<\<phi> 0. c i = m i` `subtree (c (\<phi> 0)) (m (\<phi> 0))`)
     with `bad ?P c` have False by blast
   }
@@ -149,7 +149,7 @@ proof (rule ccontr)
     by (auto simp: prod_le_def)
   from tree_hembeq_list_hembeq [OF this]
     have "?P (m i) (m j)" by auto
-  with `i < j` and `bad ?P m` show False by (auto simp: good_def)
+  with `i < j` and bad show False by (auto simp: good_def)
 qed
 
 lemma wqo_on_trees:
