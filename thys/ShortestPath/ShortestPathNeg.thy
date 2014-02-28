@@ -235,8 +235,10 @@ case False
         using ewu[OF False] tail_in_verts by simp
       hence "awalk s (pwalk (tail G e) @ [e]) v"
         using ee(1-3) vG
-        by (auto simp: awlast_of_awalk awalk_simps simp del: pwalk.simps)
-      thus ?thesis using False ee(2) pwalk.simps by auto
+        by (auto simp: awalk_simps simp del: pwalk.simps)
+      also have "pwalk (tail G e) @ [e] = pwalk v"
+        using False ee(2) unfolding pwalk.simps[where v=v] by auto
+      finally show ?thesis .
     qed
   qed
 qed
