@@ -52,7 +52,7 @@ proof
     by (simp add: f_def)
   from le1.enumchain_mono have f_mono: "\<And>i. f i < f (Suc i)" by (simp add: f_def)+
   obtain i j where "i < j" and "q' (f i) \<le>\<^sub>2 q' (f j)"
-    using af2 [unfolded almost_full_on_def, THEN spec, of "\<lambda>i. q' (f i)"] and q'
+    using af2 [unfolded almost_full_on_def, THEN bspec, of "\<lambda>i. q' (f i)"] and q'
     by (auto simp: good_def)
   moreover have "f i < f j" using f_mono and `i < j` by (metis lift_Suc_mono_less)
   moreover have "q (f i) \<le>\<^sub>1 q (f j)"

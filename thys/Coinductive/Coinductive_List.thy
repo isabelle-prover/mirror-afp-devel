@@ -135,9 +135,9 @@ lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
 lemma case_llist_def':
-"case_llist lnil lcons xs = (case dtor_llist xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
+"case_llist lnil lcons xs = (case Rep_llist_pre_llist (dtor_llist xs) of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
 apply (case_tac xs)
-by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor)
+by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor Abs_llist_pre_llist_inverse)
 
 text {* induction rules *}
 
@@ -152,16 +152,16 @@ proof -
     apply(auto simp add: lhd_def ltl_def set2_pre_llist_def set1_pre_llist_def fsts_def snds_def case_llist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
-      apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def)
+      apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def Abs_llist_pre_llist_inverse)
      apply(case_tac b)
-     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps)[2]
+     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps Abs_llist_pre_llist_inverse)[2]
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)
-     apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def)
+     apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def Abs_llist_pre_llist_inverse)
     apply(case_tac b)
-    apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps)
+    apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps Abs_llist_pre_llist_inverse)
     done
   with `x \<in> lset xs` show ?thesis by blast
 qed
@@ -235,6 +235,10 @@ end
 
 instantiation llist :: (narrowing) narrowing begin
 
+context 
+includes integer.lifting
+begin
+
 function narrowing_llist where
   "narrowing_llist n = Quickcheck_Narrowing.sum
     (Quickcheck_Narrowing.cons LNil)
@@ -244,6 +248,7 @@ by pat_completeness simp
 termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
 
 instance ..
+end
 end
 
 subsection {* Function definitions *}
@@ -4422,19 +4427,19 @@ context
 begin
 interpretation lifting_syntax .
 
-lemma pre_llist_set1_transfer [transfer_rule]:
-  "(sum_rel op = (prod_rel A B) ===> set_rel A) set1_pre_llist set1_pre_llist"
-by(auto simp add: fun_rel_def set1_pre_llist_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
+lemma set1_pre_llist_transfer [transfer_rule]:
+  "(rel_pre_llist A B ===> set_rel A) set1_pre_llist set1_pre_llist"
+by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set1_pre_llist_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
-  "(sum_rel op = (prod_rel A B) ===> set_rel B) set2_pre_llist set2_pre_llist"
-by(auto simp add: fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_llist A B ===> set_rel B) set2_pre_llist set2_pre_llist"
+by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma dtor_llist_transfer [transfer_rule]:
-  "(llist_all2 A ===> sum_rel op = (prod_rel A (llist_all2 A))) dtor_llist dtor_llist"
+  "(llist_all2 A ===> rel_pre_llist A (llist_all2 A)) dtor_llist dtor_llist"
 apply(rule fun_relI)
 apply(erule llist_all2_cases)
-apply(auto simp add: sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
+apply(auto simp add: rel_pre_llist_def vimage2p_def Abs_llist_pre_llist_inverse sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
 done
 
 lemma LNil_transfer [transfer_rule]: "llist_all2 P LNil LNil"

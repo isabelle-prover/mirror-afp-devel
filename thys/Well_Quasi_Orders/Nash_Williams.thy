@@ -368,6 +368,10 @@ fun minimal_bad_seq :: "('a seq \<Rightarrow> nat \<Rightarrow> 'a seq) \<Righta
     let g = minimal_bad_seq A f n in
     repl (Suc n) g (A g n))"
 
+lemma choice2:
+  "\<forall>x y. P x y \<longrightarrow> (\<exists>z. Q x y z) \<Longrightarrow> \<exists>f. \<forall>x y. P x y \<longrightarrow> Q x y (f x y)"
+  using bchoice [of "{(x, y). P x y}" "\<lambda>(x, y) z. Q x y z"] by force
+
 lemma wqo_on_finite_subsets:
   fixes A :: "'a set"
   assumes "wqo_on P A"

@@ -27,8 +27,8 @@ proof
   moreover have "almost_full_on P\<^sup>=\<^sup>= A"
     by (rule `wpo_on P A` [THEN wpo_on_imp_almost_full_on])
   ultimately show "almost_full_on Q A"
-    unfolding P_def reflp_on_def almost_full_on_def good_def
-    by (auto) (metis)
+    unfolding P_def reflp_on_def almost_full_on_def
+    by (auto simp: good_def) (metis)
 qed
 
 lemma qo_on_imp_po_on_strict:
@@ -88,7 +88,7 @@ proof
   proof
     fix f
     assume *: "\<forall>i::nat. f i \<in> A"
-    from af [unfolded almost_full_on_def, THEN spec, THEN mp, OF this]
+    with af [unfolded almost_full_on_def, THEN bspec, unfolded SEQ_iff, OF this]
       show "good P\<^sup>=\<^sup>= f"
       using * and eq
       unfolding P_def good_def

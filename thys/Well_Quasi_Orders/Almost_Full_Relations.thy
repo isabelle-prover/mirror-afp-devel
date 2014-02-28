@@ -56,14 +56,11 @@ qed
 subsection {* Basic Definitions and Facts *}
 
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "almost_full_on P A \<equiv> \<forall>f. (\<forall>i. f i \<in> A) \<longrightarrow> good P f"
+  "almost_full_on P A \<longleftrightarrow> (\<forall>f \<in> SEQ A. good P f)"
 
 lemma (in mbs) mbs':
   assumes "\<not> almost_full_on P A"
-  shows "\<exists>g.
-    bad P g \<and>
-    (\<forall>n. min_at P g n) \<and>
-    (\<forall>i. g i \<in> A)"
+  shows "\<exists>m \<in> BAD P. \<forall>g. (m, g) \<in> gseq \<longrightarrow> good P g"
   using assms and mbs
   unfolding almost_full_on_def by blast
 
@@ -71,7 +68,7 @@ lemma almost_full_onD:
   fixes f :: "nat \<Rightarrow> 'a" and A :: "'a set"
   assumes "almost_full_on P A" and "\<And>i. f i \<in> A"
   obtains i j where "i < j" and "P (f i) (f j)"
-  using assms unfolding almost_full_on_def good_def by blast
+  using assms unfolding almost_full_on_def by blast
 
 lemma almost_full_onI [Pure.intro]:
   "(\<And>f. \<forall>i. f i \<in> A \<Longrightarrow> good P f) \<Longrightarrow> almost_full_on P A"
@@ -163,7 +160,7 @@ proof
   presume *: "\<And>i::nat. f i \<in> A"
   let ?f = "\<lambda>i. h (f i)"
   from * and subset have "\<And>i. h (f i) \<in> B" by auto
-  with `almost_full_on Q B` [unfolded almost_full_on_def, THEN spec, of ?f]
+  with `almost_full_on Q B` [unfolded almost_full_on_def, THEN bspec, of ?f]
     show "good ?P f" unfolding good_def by blast
 qed simp
 
@@ -225,7 +222,7 @@ proof (rule ccontr)
   assume "\<not> almost_full_on P\<^sup>=\<^sup>= A"
   then obtain f :: "nat \<Rightarrow> 'a" where *: "\<And>i. f i \<in> A"
     and "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
-    unfolding almost_full_on_def good_def by blast
+    unfolding almost_full_on_def by (auto dest: badE)
   with `total_on P A` have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)"
     unfolding total_on_def by blast
   then have "\<And>i. P (f (Suc i)) (f i)" by auto
@@ -681,14 +678,15 @@ proof (rule ccontr)
   note refl = reflp_on_list_hembeq [of P A]
 
   assume "\<not> ?thesis"
-  then obtain f where "\<forall>i. f i \<in> lists A" and "bad ?P f"
+  then obtain f where "f \<in> list_mbs.BAD ?P"
     unfolding almost_full_on_def by blast
-  from list_mbs.mbs [OF this] obtain m where bad: "bad ?P m"
-    and mb: "\<And>n. mbs.min_at suffix ?A ?P m n"
-    and in_lists: "\<And>i. m i \<in> ?A" by blast
+  from list_mbs.mbs [OF this] obtain m
+    where bad: "m \<in> list_mbs.BAD ?P"
+    and min: "\<forall>g. (m, g) \<in> list_mbs.gseq \<longrightarrow> good ?P g" ..
   then have non_empty: "\<And>i. m i \<noteq> []" using bad_imp_not_Nil by auto
   moreover obtain h t where [simp]: "\<And>i. h i = hd (m i)" "\<And>i. t i = tl (m i)" by force
   ultimately have [simp]: "\<And>i. hd (m i) # tl (m i) = m i" by auto
+  from bad and min have in_lists: "\<And>i. m i \<in> ?A" and "bad ?P m" by auto
 
   {
     assume "\<exists>\<phi>::nat seq. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>)"
@@ -721,12 +719,14 @@ proof (rule ccontr)
       } ultimately show False by arith
     qed
     have "\<forall>i. c i \<in> lists A"
-      using in_lists and non_empty
-      by (simp add: c_def) (metis suffix_lists suffix_tl)
+      using bad and min and non_empty
+      by (auto simp: c_def) (metis in_lists_conv_set suffix_lists suffix_tl)
     moreover have "\<forall>i<?n. c i = m i" by auto
     moreover have "suffix (c ?n) (m ?n)" using non_empty by auto
     ultimately have "good ?P c"
-      using mb [of ?n, unfolded list_mbs.min_at_def, rule_format, of c] by blast
+      using bad and min
+      apply (auto simp: list_mbs.gseq_iff)
+      by (metis `\<And>i. t i = tl (m i)` c_def diff_self_eq_0 less_not_refl)
     with `bad ?P c` have False by blast
   }
   then have no_special_bad_seq: "\<not> (\<exists>\<phi>. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>))" by blast
