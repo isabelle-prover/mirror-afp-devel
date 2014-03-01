@@ -1,6 +1,6 @@
 header "Specification of RIPEMD-160"
 theory RMD
-imports Word
+imports "~~/src/HOL/Word/Word"
 begin
 
 

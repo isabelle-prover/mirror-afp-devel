@@ -379,7 +379,7 @@ lemma uint_and_mask_or_full:
   shows "uint (n AND mask1) OR mask2 = uint n"
 proof -
   have "mask2 = uint (1 << len_of TYPE('a) - 1 :: 'a word)" using assms
-    by(simp add: uint_shiftl word_size bintrunc_shiftl del: shiftl_1)(metis One_nat_def Suc_diff_Suc bintrunc_minus bintrunc_shiftl diff_self_eq_0 len_gt_0 len_num1 lessI uint_1 uint_word_arith_bintrs(9))
+    by(simp add: uint_shiftl word_size bintrunc_shiftl del: shiftl_1)(metis One_nat_def Suc_diff_Suc bintrunc_minus bintrunc_shiftl diff_self_eq_0 len_gt_0 len_num1 lessI uint_1 uint_word_arith_bintrs(8))
   hence "uint (n AND mask1) OR mask2 = uint (n AND mask1 OR (1 << len_of TYPE('a) - 1 :: 'a word))"
     by(simp add: uint_or)
   also have "\<dots> = uint (n AND mask (len_of TYPE('a) - 1 + 1))"

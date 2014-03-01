@@ -564,7 +564,7 @@ proof -
     unfolding round_def
     unfolding steps_to_steps'
     unfolding step_hyp[symmetric]
-    by (simp add: uint_word_ariths(2) rdmods
+    by (simp add: uint_word_ariths(1) rdmods
       uint_word_of_int_id[OF ca_init_borders]
       uint_word_of_int_id[OF cb_init_borders]
       uint_word_of_int_id[OF cc_init_borders]
