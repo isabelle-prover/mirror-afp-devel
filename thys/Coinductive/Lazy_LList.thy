@@ -69,7 +69,7 @@ declare [[code drop: unfold_llist]]
 lemma unfold_llist_Lazy_llist [code]:
   "unfold_llist IS_LNIL LHD LTL b =
   Lazy_llist (\<lambda>_. if IS_LNIL b then None else Some (LHD b, unfold_llist IS_LNIL LHD LTL (LTL b)))"
-by(subst unfold_llist_code) simp
+by(subst unfold_llist.code) simp
 
 declare [[code drop: case_llist]]
 
