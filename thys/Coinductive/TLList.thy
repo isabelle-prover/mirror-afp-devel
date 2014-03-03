@@ -55,8 +55,14 @@ by simp
 
 declare tllist.sel(2) [simp del]
 
+primcorec unfold_tllist :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> ('c, 'b) tllist" where
+  "p a \<Longrightarrow> unfold_tllist p g1 g21 g22 a = TNil (g1 a)" |
+  "\<not> p a \<Longrightarrow>
+  unfold_tllist p g1 g21 g22 a =
+  TCons (g21 a) (unfold_tllist p g1 g21 g22 (g22 a))"
+
 declare
-  tllist.unfold(1) [simp]
+  unfold_tllist.ctr(1) [simp]
   tllist.corec(1) [simp]
 
 subsection {* Code generator setup *}
@@ -211,9 +217,9 @@ lemma in_tset_ttlD: "x \<in> tset (ttl xs) \<Longrightarrow> x \<in> tset xs"
 using tset_ttl[of xs] by auto
 
 lemma case_tllist_def':
-"case_tllist tnil tcons xs = (case Rep_tllist_pre_tllist (dtor_tllist xs) of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
+"case_tllist tnil tcons xs = (case dtor_tllist xs of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
 apply (case_tac xs)
-by auto (auto simp add: TNil_def TCons_def tllist.dtor_ctor Abs_tllist_pre_tllist_inverse)
+by auto (auto simp add: TNil_def TCons_def tllist.dtor_ctor BNF_Comp.id_bnf_comp_def)
 
 theorem tllist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> tset xs" and "\<And>xs. \<not> is_TNil xs \<Longrightarrow> P (thd xs) xs"
@@ -227,19 +233,19 @@ proof -
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
-       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
      apply(case_tac b)
-     apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)[2]
+     apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)
      apply(case_tac b)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
     apply(case_tac b)
-    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
     done
   with `x \<in> tset xs` show ?thesis by blast
 qed
@@ -256,21 +262,21 @@ proof -
       set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def
       sum_set_simps sum.set_map split: sum.splits)
      apply(case_tac b)
-      apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+      apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
       apply(erule_tac x="b" in meta_allE)
       apply(erule meta_impE)
        apply fastforce
-      apply(simp add: tllist.dtor_ctor Abs_tllist_pre_tllist_inverse)
-     apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+      apply(simp add: tllist.dtor_ctor BNF_Comp.id_bnf_comp_def)
+     apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)
      apply(case_tac b)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
-     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
+     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
     apply(case_tac b)
-    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps Abs_tllist_pre_tllist_inverse)
+    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
     done
   with `x \<in> set2_tllist xs` show ?thesis by blast
 qed
@@ -285,9 +291,6 @@ end
 
 primcorec llist_of_tllist :: "('a, 'b) tllist \<Rightarrow> 'a llist"
 where "llist_of_tllist xs = (case xs of TNil _ \<Rightarrow> LNil | TCons x xs' \<Rightarrow> LCons x (llist_of_tllist xs'))"
-
-lemma is_TNil_tllist_of_llist [simp]: "is_TNil (tllist_of_llist b xs) \<longleftrightarrow> lnull xs"
-by(simp add: tllist_of_llist_def)
 
 simps_of_case tllist_of_llist_simps [simp, code, nitpick_simp]: tllist_of_llist.code
 
@@ -312,13 +315,9 @@ by(cases xs)(simp_all add: thd_TNil lhd_LNil)
 lemma ttl_tllist_of_llist [simp]: "ttl (tllist_of_llist b xs) = tllist_of_llist b (ltl xs)"
 by(cases xs) simp_all
 
-lemma lnull_llist_of_tllist [simp]:
-  "lnull (llist_of_tllist xs) \<longleftrightarrow> is_TNil xs"
-by(simp add: llist_of_tllist_def)
-
 lemma llist_of_tllist_eq_LNil:
   "llist_of_tllist xs = LNil \<longleftrightarrow> is_TNil xs"
-using lnull_llist_of_tllist unfolding lnull_def .
+using llist_of_tllist.disc_iff(1) unfolding lnull_def .
 
 simps_of_case llist_of_tllist_simps [simp, code, nitpick_simp]: llist_of_tllist.code
 
@@ -1112,7 +1111,7 @@ lemma dtor_tllist_transfer [transfer_rule]:
   "(tllist_all2 A B ===> rel_pre_tllist A B (tllist_all2 A B)) dtor_tllist dtor_tllist"
 apply(rule fun_relI)
 apply(erule tllist_all2_cases)
-apply(auto simp add: rel_pre_tllist_def vimage2p_def Abs_tllist_pre_tllist_inverse sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
+apply(auto simp add: rel_pre_tllist_def vimage2p_def BNF_Comp.id_bnf_comp_def sum_rel_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
 done
 
 lemma TNil_transfer2 [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"

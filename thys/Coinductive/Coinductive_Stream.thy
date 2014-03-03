@@ -12,11 +12,13 @@ begin
 lemma invariantI: "P x \<Longrightarrow> Lifting.invariant P x x"
 by(simp add: Lifting.invariant_def)
 
+primcorec unfold_stream :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b stream" where
+  "unfold_stream g1 g2 a = g1 a ## unfold_stream g1 g2 (g2 a)"
+
 text {*
   The following setup should be done by the BNF package.
 *}
 
-declare stream.unfold [code]
 declare stream.corec [code]
 
 text {* congruence rule *}
@@ -56,7 +58,7 @@ by(coinduction arbitrary: b) auto
 lemma unfold_stream_eq_Stream [simp]:
   "unfold_stream SHD STL b = x ## xs \<longleftrightarrow>
   x = SHD b \<and> xs = unfold_stream SHD STL (STL b)"
-by(subst stream.unfold) auto
+by(subst unfold_stream.ctr) auto
 
 lemma unfold_stream_id [simp]: "unfold_stream shd stl xs = xs"
 by(coinduction arbitrary: xs) simp_all

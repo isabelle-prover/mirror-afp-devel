@@ -35,8 +35,16 @@ codatatype (lset: 'a) llist (map: lmap rel: llist_all2) =
     lnull: LNil (defaults lhd: undefined ltl: LNil)
   | LCons (lhd: 'a) (ltl: "'a llist")
 
+text {*
+  Coiterator setup.
+*}
+
+primcorec unfold_llist :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b llist" where
+  "p a \<Longrightarrow> unfold_llist p g21 g22 a = LNil" |
+  "_ \<Longrightarrow> unfold_llist p g21 g22 a = LCons (g21 a) (unfold_llist p g21 g22 (g22 a))"
+thm unfold_llist.disc
 declare
-  llist.unfold(1) [simp]
+  unfold_llist.ctr(1) [simp]
   llist.corec(1) [simp]
 
 text {*
@@ -55,12 +63,6 @@ lemma corec_llist_code [code]:
    else LCons (LHD b)
      (if endORmore b then LTL_end b
       else corec_llist IS_LNIL LHD endORmore LTL_end LTL_more (LTL_more b)))"
-by(rule llist.expand) simp_all
-
-lemma unfold_llist_code [code]:
-  "unfold_llist IS_LNIL LHD LTL b =
-  (if IS_LNIL b then LNil
-   else LCons (LHD b) (unfold_llist IS_LNIL LHD LTL (LTL b)))"
 by(rule llist.expand) simp_all
 
 lemma corec_llist_never_stop: "corec_llist IS_LNIL LHD (\<lambda>_. False) MORE LTL x = unfold_llist IS_LNIL LHD LTL x"
@@ -117,7 +119,7 @@ by(simp)
 lemma unfold_llist_eq_LCons [simp]:
   "unfold_llist IS_LNIL LHD LTL b = LCons x xs \<longleftrightarrow>
   \<not> IS_LNIL b \<and> x = LHD b \<and> xs = unfold_llist IS_LNIL LHD LTL (LTL b)"
-by(subst unfold_llist_code) auto
+by(subst unfold_llist.code) auto
 
 lemma unfold_llist_id [simp]: "unfold_llist lnull lhd ltl xs = xs"
 by(coinduction arbitrary: xs) simp_all
@@ -135,9 +137,9 @@ lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
 lemma case_llist_def':
-"case_llist lnil lcons xs = (case Rep_llist_pre_llist (dtor_llist xs) of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
+"case_llist lnil lcons xs = (case dtor_llist xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
 apply (case_tac xs)
-by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor Abs_llist_pre_llist_inverse)
+by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor BNF_Comp.id_bnf_comp_def)
 
 text {* induction rules *}
 
@@ -152,16 +154,16 @@ proof -
     apply(auto simp add: lhd_def ltl_def set2_pre_llist_def set1_pre_llist_def fsts_def snds_def case_llist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
-      apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def Abs_llist_pre_llist_inverse)
+      apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
      apply(case_tac b)
-     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps Abs_llist_pre_llist_inverse)[2]
+     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)
-     apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def Abs_llist_pre_llist_inverse)
+     apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
     apply(case_tac b)
-    apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps Abs_llist_pre_llist_inverse)
+    apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
     done
   with `x \<in> lset xs` show ?thesis by blast
 qed
@@ -2097,7 +2099,7 @@ lemma ltakeWhile_nth: "enat i < llength (ltakeWhile P xs) \<Longrightarrow> lnth
 by(rule lprefix_lnthD[OF lprefix_ltakeWhile])
 
 lemma ltakeWhile_all: "\<forall>x\<in>lset xs. P x \<Longrightarrow> ltakeWhile P xs = xs"
-by(coinduction arbitrary: xs)(auto 4 3 simp add: ltl_ltakeWhile dest: in_lset_ltlD)
+by(coinduction arbitrary: xs)(auto 4 3 simp add: ltl_ltakeWhile simp del: ltakeWhile.disc_iff dest: in_lset_ltlD)
 
 lemma lset_ltakeWhileD:
   assumes "x \<in> lset (ltakeWhile P xs)"
@@ -2212,7 +2214,7 @@ unfolding llength_ltakeWhile_all[symmetric] llength_eq_infty_conv_lfinite[symmet
 by(auto)(auto simp add: llength_eq_infty_conv_lfinite lfinite_ltakeWhile intro: sym)
 
 lemma lzip_ltakeWhile_fst: "lzip (ltakeWhile P xs) ys = ltakeWhile (P \<circ> fst) (lzip xs ys)"
-by(coinduction arbitrary: xs ys)(auto simp add: ltl_ltakeWhile)
+by(coinduction arbitrary: xs ys)(auto simp add: ltl_ltakeWhile simp del: simp del: ltakeWhile.disc_iff)
 
 lemma lzip_ltakeWhile_snd: "lzip xs (ltakeWhile P ys) = ltakeWhile (P \<circ> snd) (lzip xs ys)"
 by(coinduction arbitrary: xs ys)(auto simp add: ltl_ltakeWhile)
@@ -4439,7 +4441,7 @@ lemma dtor_llist_transfer [transfer_rule]:
   "(llist_all2 A ===> rel_pre_llist A (llist_all2 A)) dtor_llist dtor_llist"
 apply(rule fun_relI)
 apply(erule llist_all2_cases)
-apply(auto simp add: rel_pre_llist_def vimage2p_def Abs_llist_pre_llist_inverse sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
+apply(auto simp add: rel_pre_llist_def vimage2p_def BNF_Comp.id_bnf_comp_def sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
 done
 
 lemma LNil_transfer [transfer_rule]: "llist_all2 P LNil LNil"
@@ -4579,7 +4581,7 @@ lemma llist_all2_rsp:
   shows "llist_all2 S x a = llist_all2 T y b"
 proof(cases "llength x = llength a")
   case True
-  thus ?thesis using l1 l2 
+  thus ?thesis using l1 l2
     by(simp add: llist_all2_conv_all_lnth)(blast dest: r[rule_format])
 next
   case False
