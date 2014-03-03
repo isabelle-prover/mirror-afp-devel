@@ -71,7 +71,7 @@ lemma unfold_tllist_Lazy_tllist [code]:
   "unfold_tllist IS_TNIL TNIL THD TTL b = Lazy_tllist
   (\<lambda>_. if IS_TNIL b then Inr (TNIL b)
        else Inl (THD b, unfold_tllist IS_TNIL TNIL THD TTL (TTL b)))"
-by(rule tllist.expand) simp_all
+by(rule tllist.expand)auto
 
 declare [[code drop: case_tllist]]
 
