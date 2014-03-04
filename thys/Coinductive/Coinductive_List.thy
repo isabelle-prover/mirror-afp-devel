@@ -2783,7 +2783,7 @@ qed
 
 lemma llexord_LCons_LCons [simp]:
   "llexord r (LCons x xs) (LCons y ys) \<longleftrightarrow> (x = y \<and> llexord r xs ys \<or> r x y)"
-by(auto intro: llexord.intros elim: llexord.cases)
+by(auto intro: llexord.intros(1,2) elim: llexord.cases)
 
 lemma lnull_llexord [simp]: "lnull xs \<Longrightarrow> llexord r xs ys"
 unfolding lnull_def by simp
@@ -3013,7 +3013,7 @@ proof(rule iffI)
         by(simp add: ltake_lappend1)
       moreover have "r (lnth xs (length zs')) (lnth ys (length zs'))"
         using LCons `r (lhd xs') y`
-        by(simp add: lappend_llist_of_LCons lnth_lappend1 lnth_llist_of)
+        by(simp add: lappend_llist_of_LCons lnth_lappend1)
       ultimately have ?B by blast
       thus ?thesis ..
     qed
@@ -3711,7 +3711,7 @@ proof(induct n arbitrary: xss)
     hence "xss' ! i \<in> set xss'" unfolding in_set_conv_nth by blast
     with LNil have "xss' ! i = LNil" by auto
     moreover from `i \<in> {..< length xss'}` have "lnth xss i = xss' ! i"
-      unfolding xss by(simp add: lnth_lappend1 lnth_llist_of)
+      unfolding xss by(simp add: lnth_lappend1)
     ultimately show "llength (lnth xss i) = 0" by simp
   qed
   hence "enat 0 = (\<Sum>i<length xss'. llength (lnth xss i)) + enat 0"
@@ -3747,7 +3747,7 @@ next
     assume i: "i < length xss'"
     hence "xss' ! i = LNil" using LNil unfolding set_conv_nth by auto
     hence "lnth xss i = LNil" using i unfolding xss
-      by(simp add: lnth_lappend1 lnth_llist_of) }
+      by(simp add: lnth_lappend1) }
   note lnth_prefix = this
 
   show ?case
@@ -4112,7 +4112,7 @@ proof
   assume "lfinite (lsublist xs A)"
   hence "lfinite xs \<or> 
          finite {n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)}"
-    by(simp add: lsublist_def llength_lzip lfinite_lfilter)
+    by(simp add: lsublist_def lfinite_lfilter)
   also have "{n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
             {n. enat n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
   finally show "lfinite xs \<or> finite A"
@@ -4123,7 +4123,7 @@ next
   have "{n. enat n < llength xs \<and> (\<lambda>(x, y). y \<in> A) (lnth (lzip xs (iterates Suc 0)) n)} =
         {n. enat n < llength xs \<and> n \<in> A}" by(auto simp add: lnth_lzip)
   ultimately show "lfinite (lsublist xs A)"
-    by(auto simp add: lsublist_def llength_lzip lfinite_lfilter)
+    by(auto simp add: lsublist_def lfinite_lfilter)
 qed
 
 subsection {* @{term "llist_sum"} *}

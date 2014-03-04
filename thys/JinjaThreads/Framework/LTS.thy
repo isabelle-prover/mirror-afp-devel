@@ -942,7 +942,7 @@ proof
         ultimately have "?proceed \<sigma> (tl, \<sigma>'')" using \<sigma>_\<sigma>' by auto
         hence "?proceed \<sigma> (SOME tl\<sigma>. ?proceed \<sigma> tl\<sigma>)" by(rule someI)
         hence ?Proceed using False \<tau>halt unfolding \<tau>Runs
-          by(subst unfold_tllist) fastforce
+          by(subst unfold_tllist.code) fastforce
         thus ?thesis by simp
       qed
     qed

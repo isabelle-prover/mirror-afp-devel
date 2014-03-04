@@ -21,7 +21,7 @@ lemma split_fst: "R (fst p) = (\<forall>x y. p = (x, y) \<longrightarrow> R x)"
 by(cases p) simp
 
 lemma split_fst_asm: "R (fst p) \<longleftrightarrow> (\<not> (\<exists>x y. p = (x, y) \<and> \<not> R x))"
-by(cases p)(simp)
+by(cases p) simp
 
 subsection {* Type definition *}
 
@@ -173,18 +173,13 @@ by(cases xs) simp_all
 lemma terminal_ttl [simp]: "terminal (ttl xs) = terminal xs"
 by(cases xs) simp_all
 
-lemma unfold_tllist: 
-  "unfold_tllist IS_TNIL TNIL THD TTL a =
-  (if IS_TNIL a then TNil (TNIL a) else TCons (THD a) (unfold_tllist IS_TNIL TNIL THD TTL (TTL a)))"
-by(auto intro: tllist.expand)
-
 lemma unfold_tllist_eq_TNil [simp]:
   "unfold_tllist IS_TNIL TNIL THD TTL a = TNil b \<longleftrightarrow> IS_TNIL a \<and> b = TNIL a"
-by(auto simp add: unfold_tllist)
+by(auto simp add: unfold_tllist.code)
 
 lemma TNil_eq_unfold_tllist [simp]:
   "TNil b = unfold_tllist IS_TNIL TNIL THD TTL a \<longleftrightarrow> IS_TNIL a \<and> b = TNIL a"
-by(auto simp add: unfold_tllist)
+by(auto simp add: unfold_tllist.code)
 
 lemma is_TNil_tmap [simp]: "is_TNil (tmap f g xs) \<longleftrightarrow> is_TNil xs"
 by(cases xs) simp_all
