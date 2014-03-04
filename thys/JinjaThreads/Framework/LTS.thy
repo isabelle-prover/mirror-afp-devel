@@ -1230,7 +1230,7 @@ proof -
       with Proceed have "?P s tls (tls'', s', s'')" by simp
       hence "?P s tls (Eps (?P s tls))" by(rule someI)
       hence ?Proceed using Proceed unfolding tlsstlss_def
-        by(subst unfold_tllist)(auto simp add: split_def)
+        by(subst unfold_tllist.code)(auto simp add: split_def)
       thus ?thesis by simp
     qed
   qed
@@ -1361,7 +1361,7 @@ lemma \<tau>rtrancl3p_False_eq_rtrancl3p: "\<tau>trsys.\<tau>rtrancl3p r (\<lamb
 proof(intro ext iffI)
   fix s tls s'
   assume "\<tau>trsys.\<tau>rtrancl3p r (\<lambda>s tl s'. False) s tls s'"
-  thus "rtrancl3p r s tls s'" by(rule \<tau>trsys.\<tau>rtrancl3p.induct)(blast intro: rtrancl3p_refl rtrancl3p_step_converse)+
+  thus "rtrancl3p r s tls s'" by(rule \<tau>trsys.\<tau>rtrancl3p.induct)(blast intro: rtrancl3p_step_converse)+
 next
   fix s tls s'
   assume "rtrancl3p r s tls s'"
