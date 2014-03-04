@@ -164,8 +164,8 @@ declare [[code drop: llist_all2]]
 lemma llist_all2_Lazy_llist [code]:
   "llist_all2 P (Lazy_llist xs) (Lazy_llist ys) =
   (case xs () of None \<Rightarrow> ys () = None 
-      | Some (x, xs') \<Rightarrow> case ys () of None \<Rightarrow> False 
-                           | Some (y, ys') \<Rightarrow> P x y \<and> llist_all2 P xs' ys')"
+      | Some (x, xs') \<Rightarrow> (case ys () of None \<Rightarrow> False 
+                            | Some (y, ys') \<Rightarrow> P x y \<and> llist_all2 P xs' ys'))"
 by auto
 
 declare [[code drop: lhd]]
@@ -187,7 +187,7 @@ lemma llast_Lazy_llist [code]:
   (case xs () of 
     None \<Rightarrow> undefined 
   | Some (x, xs') \<Rightarrow> 
-    case force xs' of None \<Rightarrow> x | Some (x', xs'') \<Rightarrow> llast (LCons x' xs''))"
+    (case force xs' of None \<Rightarrow> x | Some (x', xs'') \<Rightarrow> llast (LCons x' xs'')))"
 by(auto simp add: llast_def zero_enat_def eSuc_def split: enat.split llist.splits)
 
 declare [[code drop: ldistinct]]
@@ -204,7 +204,7 @@ lemma lprefix_Lazy_llist [code]:
   (case xs () of 
     None \<Rightarrow> True
   | Some (x, xs') \<Rightarrow> 
-    case ys () of None \<Rightarrow> False | Some (y, ys') \<Rightarrow> x = y \<and> lprefix xs' ys')"
+    (case ys () of None \<Rightarrow> False | Some (y, ys') \<Rightarrow> x = y \<and> lprefix xs' ys'))"
 by auto
 
 declare [[code drop: lstrict_prefix]]
@@ -214,7 +214,7 @@ lemma lstrict_prefix_Lazy_llist [code]:
   (case ys () of
     None \<Rightarrow> False 
   | Some (y, ys') \<Rightarrow> 
-    case xs () of None \<Rightarrow> True | Some (x, xs') \<Rightarrow> x = y \<and> lstrict_prefix xs' ys')"
+    (case xs () of None \<Rightarrow> True | Some (x, xs') \<Rightarrow> x = y \<and> lstrict_prefix xs' ys'))"
 by auto
 
 declare [[code drop: llcp]]
@@ -222,8 +222,8 @@ declare [[code drop: llcp]]
 lemma llcp_Lazy_llist [code]:
   "llcp (Lazy_llist xs) (Lazy_llist ys) =
   (case xs () of None \<Rightarrow> 0 
-   | Some (x, xs') \<Rightarrow> case ys () of None \<Rightarrow> 0
-                     | Some (y, ys') \<Rightarrow> if x = y then eSuc (llcp xs' ys') else 0)"
+   | Some (x, xs') \<Rightarrow> (case ys () of None \<Rightarrow> 0
+                     | Some (y, ys') \<Rightarrow> if x = y then eSuc (llcp xs' ys') else 0))"
 by auto
 
 declare [[code drop: llexord]]
@@ -233,7 +233,7 @@ lemma llexord_Lazy_llist [code]:
   (case xs () of 
     None \<Rightarrow> True 
   | Some (x, xs') \<Rightarrow> 
-    case ys () of None \<Rightarrow> False | Some (y, ys') \<Rightarrow> r x y \<or> x = y \<and> llexord r xs' ys')"
+    (case ys () of None \<Rightarrow> False | Some (y, ys') \<Rightarrow> r x y \<or> x = y \<and> llexord r xs' ys'))"
 by auto
 
 declare [[code drop: lfilter]]

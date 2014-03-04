@@ -57,9 +57,8 @@ declare tllist.sel(2) [simp del]
 
 primcorec unfold_tllist :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> ('c, 'b) tllist" where
   "p a \<Longrightarrow> unfold_tllist p g1 g21 g22 a = TNil (g1 a)" |
-  "\<not> p a \<Longrightarrow>
-  unfold_tllist p g1 g21 g22 a =
-  TCons (g21 a) (unfold_tllist p g1 g21 g22 (g22 a))"
+  "_ \<Longrightarrow> unfold_tllist p g1 g21 g22 a =
+     TCons (g21 a) (unfold_tllist p g1 g21 g22 (g22 a))"
 
 declare
   unfold_tllist.ctr(1) [simp]

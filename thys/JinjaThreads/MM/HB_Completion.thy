@@ -709,13 +709,13 @@ proof -
             unfolding lfinite_ltakeWhile by(fastforce simp add: split_def lconcat_eq_LNil)
           ultimately have "(complete_hb ?s' (E @ map (Pair ?t) \<lbrace>?ta\<rbrace>\<^bsub>o\<^esub>), a) \<in> ?R"
             using red unfolding a complete_hb_def
-            apply(subst (2) unfold_llist_code)
-            apply(subst (asm) unfold_llist_code)
+            apply(subst (2) unfold_llist.code)
+            apply(subst (asm) unfold_llist.code)
             apply(auto simp add: split_beta simp del: split_paired_Ex split_paired_All split: split_if_asm)
             apply(auto simp add: lfinite_eq_range_llist_of)
             done }
         hence ?lappend using red hb hb_c' unfolding obs complete_hb_def
-          apply(subst unfold_llist_code)
+          apply(subst unfold_llist.code)
           apply(simp add: split_beta eq del: split_paired_Ex split_paired_All split del: split_if)
           apply(intro exI conjI impI refl disjI1|rule refl|assumption|simp_all add: llist_of_eq_LNil_conv)+
           done

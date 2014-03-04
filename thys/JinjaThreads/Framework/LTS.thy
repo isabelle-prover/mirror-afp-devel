@@ -56,7 +56,7 @@ by(induct rule: rtranclp_induct)(auto intro: rtranclp.rtrancl_into_rtrancl simp 
 
 lemma rtranclp_flip [flip_simps]:
   "(flip r)^** = flip r^**"
-by(auto intro!: ext iffI simp add: flip_conv flip_flip intro: rtranclp_flipD)
+by(auto intro!: ext simp add: flip_conv intro: rtranclp_flipD)
 
 lemma prod_rel_flip [flip_simps]:
   "prod_rel (flip R) (flip S) = flip (prod_rel R S)"
@@ -812,6 +812,7 @@ where
 
 lemma is_TNil_\<tau>Runs2\<tau>Runs_table [simp]:
   "is_TNil (\<tau>Runs2\<tau>Runs_table s tls) \<longleftrightarrow> is_TNil tls"
+  thm unfold_tllist.disc
 by(simp add: \<tau>Runs2\<tau>Runs_table_def)
 
 lemma thd_\<tau>Runs2\<tau>Runs_table [simp]:
@@ -1001,7 +1002,7 @@ proof -
     with `s' -\<tau>\<rightarrow> \<infinity>` have "?P (tl, s')" by simp
     hence "?P (Eps ?P)" by(rule someI)
     thus ?case using tls
-      by(subst (asm) unfold_llist_code)(auto)
+      by(subst (asm) unfold_llist.code)(auto)
   qed
   thus thesis by(rule that)
 qed
