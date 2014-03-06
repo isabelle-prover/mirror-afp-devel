@@ -24,7 +24,7 @@ lemma case_sum_preserve [quot_preserve]:
   assumes q1: "Quotient3 R1 Abs1 Rep1"
   and q2: "Quotient3 R2 Abs2 Rep2"
   and q3: "Quotient3 R3 Abs3 Rep3"
-  shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep2) ---> sum_map Rep1 Rep3 ---> Abs2) case_sum = case_sum"
+  shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep2) ---> map_sum Rep1 Rep3 ---> Abs2) case_sum = case_sum"
 using Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3]
 by(simp add: fun_eq_iff split: sum.split)
 
