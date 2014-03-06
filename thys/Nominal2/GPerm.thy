@@ -53,7 +53,7 @@ quotient_type
   by (rule perm_eq_equivp)
 
 definition perm_add_raw where
-  "perm_add_raw p q = map (map_pair id (perm_apply p)) q @ [a\<leftarrow>p. fst a \<notin> fst ` set q]"
+  "perm_add_raw p q = map (map_prod id (perm_apply p)) q @ [a\<leftarrow>p. fst a \<notin> fst ` set q]"
 
 lemma perm_apply_del[simp]:
   "e \<noteq> b \<Longrightarrow> perm_apply [a\<leftarrow>l. fst a \<noteq> b] e = perm_apply l e"
@@ -162,9 +162,9 @@ lemma uminus_perm_raw_rsp[simp]:
   "perm_eq x y \<Longrightarrow> perm_eq (map swap_pair x) (map swap_pair y)"
   by (auto simp add: fun_eq_iff perm_apply_minus[symmetric] perm_eq_def)
 
-lemma fst_snd_map_pair[simp]:
-  "fst ` map_pair f g ` set l = f ` fst ` set l"
-  "snd ` map_pair f g ` set l = g ` snd ` set l"
+lemma fst_snd_map_prod[simp]:
+  "fst ` map_prod f g ` set l = f ` fst ` set l"
+  "snd ` map_prod f g ` set l = g ` snd ` set l"
   by (induct l) auto
 
 lemma fst_diff[simp]:

@@ -396,7 +396,7 @@ lemma tmap_tllist_of_llist:
 by(coinduction arbitrary: xs)(auto simp add: tmap_is_TNil)
 
 lemma tmap_transfer [transfer_rule]:
-  "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op =) (map_pair \<circ> lmap) tmap"
+  "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op =) (map_prod \<circ> lmap) tmap"
 by(auto intro!: fun_relI simp add: cr_tllist_def tllist.pcr_cr_eq tmap_tllist_of_llist)
 
 lemma lset_llist_of_tllist [simp]:
@@ -576,7 +576,7 @@ by transfer auto
 
 lemma tappend_TCons [simp, code, nitpick_simp]:
   "tappend (TCons a tr) f = TCons a (tappend tr f)"
-by transfer(auto simp add: apfst_def map_pair_def split: prod.splits)
+by transfer(auto simp add: apfst_def map_prod_def split: prod.splits)
 
 subsection {* Appending a terminated lazy list to a lazy list @{term "lappendt"} *}
 
@@ -801,7 +801,7 @@ lemma tllist_all2_tappendI:
      \<Longrightarrow> tllist_all2 P R (xs' (terminal xs)) (ys' (terminal ys)) \<rbrakk>
   \<Longrightarrow> tllist_all2 P R (tappend xs xs') (tappend ys ys')"
 apply transfer
-apply(auto 4 3 simp add: apfst_def map_pair_def lappend_inf split: prod.split_asm dest: llist_all2_lfiniteD intro: llist_all2_lappendI)
+apply(auto 4 3 simp add: apfst_def map_prod_def lappend_inf split: prod.split_asm dest: llist_all2_lfiniteD intro: llist_all2_lappendI)
 apply(frule llist_all2_lfiniteD, simp add: lappend_inf)
 done
 

@@ -1674,7 +1674,7 @@ proof -
 
       with tst NormalAction `redT_upd s t ta x' m s'` have "mthr.redT (?s s) (t, TA) (?s s')"
         using map_redT_updTs[of snd "thr s" "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"]
-        by(auto intro!: mthr.redT.intros simp add: split_def map_pair_def o_def fun_eq_iff)
+        by(auto intro!: mthr.redT.intros simp add: split_def map_prod_def o_def fun_eq_iff)
       moreover note ts_ok' vs'
       moreover from `ta = convert_TA_initial (convert_obs_initial TA)` have "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>" by(auto)
       with sc have "non_speculative P vs (llist_of (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>))" by simp
@@ -1722,7 +1722,7 @@ proof -
 
       with tst NormalAction `redT_upd s t ta x' m s'` have "mthr.redT (?s s) (t, TA) (?s s')"
         using map_redT_updTs[of snd "thr s" "\<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"]
-        by(auto intro!: mthr.redT.intros simp add: split_def map_pair_def o_def fun_eq_iff)
+        by(auto intro!: mthr.redT.intros simp add: split_def map_prod_def o_def fun_eq_iff)
       moreover note ts_ok' vs'
       moreover from `ta = convert_TA_initial (convert_obs_initial TA)` have "\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>" by(auto)
       with sc have "non_speculative P vs (llist_of (take n (map NormalAction \<lbrace>TA\<rbrace>\<^bsub>o\<^esub>)))" by simp

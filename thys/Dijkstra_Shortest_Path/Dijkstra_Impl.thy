@@ -29,7 +29,7 @@ locale dijkstraC =
   and mr_ops :: "('V, (('V,'W) path \<times> 'W), 'mr,'more_mr) map_ops_scheme"
   and qw_ops :: "('V ,'W infty,'qw,'more_qw) uprio_ops_scheme" 
 begin
-  definition "\<alpha>sc == map_pair qw.\<alpha> mr.\<alpha>"
+  definition "\<alpha>sc == map_prod qw.\<alpha> mr.\<alpha>"
   definition "dinvarC_add == \<lambda>(wl,res). qw.invar wl \<and> mr.invar res"
 
   definition cdinit :: "'G \<Rightarrow> 'V \<Rightarrow> ('qw\<times>'mr) nres" where

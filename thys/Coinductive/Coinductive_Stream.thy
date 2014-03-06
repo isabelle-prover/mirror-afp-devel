@@ -80,7 +80,7 @@ theorems stream_set_induct = sset_induct1
 subsection {* Lemmas about operations from @{theory Stream} *}
 
 lemma szip_iterates:
-  "szip (siterate f a) (siterate g b) = siterate (map_pair f g) (a, b)"
+  "szip (siterate f a) (siterate g b) = siterate (map_prod f g) (a, b)"
 by(coinduction arbitrary: a b) auto
 
 lemma szip_smap1: "szip (smap f xs) ys = smap (apfst f) (szip xs ys)"
@@ -89,7 +89,7 @@ by(coinduction arbitrary: xs ys) auto
 lemma szip_smap2: "szip xs (smap g ys) = smap (apsnd g) (szip xs ys)"
 by(coinduction arbitrary: xs ys) auto
 
-lemma szip_smap [simp]: "szip (smap f xs) (smap g ys) = smap (map_pair f g) (szip xs ys)"
+lemma szip_smap [simp]: "szip (smap f xs) (smap g ys) = smap (map_prod f g) (szip xs ys)"
 by(coinduction arbitrary: xs ys) auto
 
 lemma smap_fst_szip [simp]: "smap fst (szip xs ys) = xs"

@@ -104,10 +104,10 @@ lemma param_case_prod':
     \<rbrakk> \<Longrightarrow> (case_prod f p, case_prod f' p') \<in> R"
   by (auto split: prod.split)
 
-lemma param_map_pair[param]: 
-  "(map_pair, map_pair) 
+lemma param_map_prod[param]: 
+  "(map_prod, map_prod) 
   \<in> (Ra\<rightarrow>Rb) \<rightarrow> (Rc\<rightarrow>Rd) \<rightarrow> \<langle>Ra,Rc\<rangle>prod_rel \<rightarrow> \<langle>Rb,Rd\<rangle>prod_rel"
-  unfolding map_pair_def[abs_def]
+  unfolding map_prod_def[abs_def]
   by parametricity
 
 lemma param_apfst[param]: 

@@ -1056,7 +1056,7 @@ lemma [quot_respect]:
 lemma [quot_preserve]:
   assumes q1: "Quotient3 R1 abs1 rep1"
   and     q2: "Quotient3 R2 abs2 rep2"
-  shows "((abs1 ---> id) ---> (abs2 ---> id) ---> map_pair rep1 rep2 ---> id) prod_fv = prod_fv"
+  shows "((abs1 ---> id) ---> (abs2 ---> id) ---> map_prod rep1 rep2 ---> id) prod_fv = prod_fv"
   by (simp add: fun_eq_iff Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2])
 
 lemma [mono]: 

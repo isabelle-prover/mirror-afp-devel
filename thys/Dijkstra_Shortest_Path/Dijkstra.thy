@@ -759,7 +759,7 @@ begin
   definition \<alpha>r::"('V,'W) mres \<Rightarrow> 'V \<rightharpoonup> ('V,'W) path" where 
     "\<alpha>r \<equiv> \<lambda>res v. case res v of None \<Rightarrow> None | Some (p,w) \<Rightarrow> Some (rev p)"
   definition \<alpha>s:: "('V,'W) mstate \<Rightarrow> ('V,'W) state" where
-    "\<alpha>s \<equiv> map_pair \<alpha>w \<alpha>r"
+    "\<alpha>s \<equiv> map_prod \<alpha>w \<alpha>r"
 
   text {* Additional invariants for the new state. They guarantee that
     the cached weights are consistent.*}

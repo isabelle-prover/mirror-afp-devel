@@ -88,7 +88,7 @@ where
 fun jvm_mstate_of_jvm_mstate' :: 
   "(addr,thread_id,addr jvm_thread_state',heap,addr) state \<Rightarrow> (addr,thread_id,addr jvm_thread_state,heap,addr) state"
 where
-  "jvm_mstate_of_jvm_mstate' (ls, (ts, m), ws) = (ls, (\<lambda>t. map_option (map_pair jvm_thread_state_of_jvm_thread_state' id) (ts t), m), ws)"
+  "jvm_mstate_of_jvm_mstate' (ls, (ts, m), ws) = (ls, (\<lambda>t. map_option (map_prod jvm_thread_state_of_jvm_thread_state' id) (ts t), m), ws)"
 
 definition sc_jvm_state_invar :: "addr jvm_prog \<Rightarrow> ty\<^sub>P \<Rightarrow> (addr,thread_id,addr jvm_thread_state',heap,addr) state set"
 where

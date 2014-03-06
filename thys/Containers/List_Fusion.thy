@@ -265,7 +265,7 @@ by transfer clarsimp
 
 lemma next_map_generator [simp]:
   "list.next (map_generator g) = apfst f \<circ> list.next g"
-by transfer(simp add: fun_eq_iff split_beta apfst_def map_pair_def)
+by transfer(simp add: fun_eq_iff split_beta apfst_def map_prod_def)
 
 lemma unfoldr_map_generator:
   "list.unfoldr (map_generator g) = map f \<circ> list.unfoldr g"
@@ -274,7 +274,7 @@ proof(rule ext)
   fix s
   show "?lhs s = ?rhs s"
     by(induct s taking: "map_generator g" rule: list.unfoldr.induct)
-      (subst (1 2) list.unfoldr.simps, auto simp add: split_beta apfst_def map_pair_def)
+      (subst (1 2) list.unfoldr.simps, auto simp add: split_beta apfst_def map_prod_def)
 qed
 
 end
@@ -346,7 +346,7 @@ lemma next_append_generator [simp]:
      let (x, s1') = list.next g1 s1 in (x, Inl (s1', s2))
    else list.next (append_generator g1 g2) (Inr s2))"
   "list.next (append_generator g1 g2) (Inr s2) = apsnd Inr (list.next g2 s2)"
-by(transfer, simp add: apsnd_def map_pair_def)+
+by(transfer, simp add: apsnd_def map_prod_def)+
 
 lemma unfoldr_append_generator_Inr: 
   "list.unfoldr (append_generator g1 g2) (Inr s2) = list.unfoldr g2 s2"
@@ -357,7 +357,7 @@ lemma unfoldr_append_generator_Inl:
    list.unfoldr g1 s1 @ list.unfoldr g2 s2"
 apply(induct s1 taking: g1 rule: list.unfoldr.induct)
 apply(subst (1 2 3) list.unfoldr.simps)
-apply(auto split: prod.splits simp add: apsnd_def map_pair_def unfoldr_append_generator_Inr)
+apply(auto split: prod.splits simp add: apsnd_def map_prod_def unfoldr_append_generator_Inr)
 apply(simp add: list.unfoldr_simps)
 done
 

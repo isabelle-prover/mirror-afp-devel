@@ -76,11 +76,11 @@ where "frame_of_frame' \<equiv> snd"
 
 definition jvm_state_of_jvm_state' :: "('addr, 'heap) jvm_state' \<Rightarrow> ('addr, 'heap) jvm_state"
 where [simp]: 
-  "jvm_state_of_jvm_state' = map_pair id (map_pair id (map frame_of_frame'))"
+  "jvm_state_of_jvm_state' = map_prod id (map_prod id (map frame_of_frame'))"
 
 definition jvm_thread_state_of_jvm_thread_state' :: "'addr jvm_thread_state' \<Rightarrow> 'addr jvm_thread_state"
 where [simp]:
-  "jvm_thread_state_of_jvm_thread_state' = map_pair id (map frame_of_frame')"
+  "jvm_thread_state_of_jvm_thread_state' = map_prod id (map frame_of_frame')"
 
 definition jvm_thread_action_of_jvm_thread_action' ::
   "('addr, 'thread_id, 'heap) jvm_thread_action' \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action"
@@ -90,7 +90,7 @@ where [simp]:
 definition jvm_ta_state_of_jvm_ta_state' ::
   "('addr, 'thread_id, 'heap) jvm_ta_state' \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_ta_state"
 where [simp]:
-  "jvm_ta_state_of_jvm_ta_state' = map_pair jvm_thread_action_of_jvm_thread_action' jvm_state_of_jvm_state'"
+  "jvm_ta_state_of_jvm_ta_state' = map_prod jvm_thread_action_of_jvm_thread_action' jvm_state_of_jvm_state'"
 
 fun frame'_ok :: "'addr jvm_prog \<Rightarrow> 'addr frame' \<Rightarrow> bool"
 where 
@@ -140,7 +140,7 @@ lemma frame_of_frame'_inverse [simp]: "frame_of_frame' \<circ> frame'_of_frame P
 by(clarsimp simp add: fun_eq_iff)
 
 lemma convert_new_thread_action_frame_of_frame'_inverse [simp]:
-  "convert_new_thread_action (map_pair id (map frame_of_frame')) \<circ> convert_new_thread_action (jvm_thread_state'_of_jvm_thread_state P) = id"
+  "convert_new_thread_action (map_prod id (map frame_of_frame')) \<circ> convert_new_thread_action (jvm_thread_state'_of_jvm_thread_state P) = id"
 by(auto intro!: convert_new_thread_action_eqI simp add: fun_eq_iff List.map.id)
 
 primrec extRet2JVM' :: 
