@@ -180,106 +180,15 @@ end;
 
 
 structure HPY_new : sig
-  datatype nat = Nat of IntInf.int
+  type nat
   val integer_of_nat : nat -> IntInf.int
-  val equal_nata : nat -> nat -> bool
-  type 'a equal
-  val equal : 'a equal -> 'a -> 'a -> bool
-  val equal_nat : nat equal
-  val less_eq_nat : nat -> nat -> bool
-  type 'a ord
-  val less_eq : 'a ord -> 'a -> 'a -> bool
-  val less : 'a ord -> 'a -> 'a -> bool
-  val less_nat : nat -> nat -> bool
-  val ord_nat : nat ord
-  val ord_integer : IntInf.int ord
-  datatype num = One | Bit0 of num | Bit1 of num
-  datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a
-  datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
-    Circ of 'a * 'a list * 'a list
-  val eq : 'a equal -> 'a -> 'a -> bool
-  val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-  val foldli : 'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  val map : ('a -> 'b) -> 'a list -> 'b list
-  val dbind : 'a dres -> ('a -> 'b dres) -> 'b dres
-  val array_set :
-    'a FArray.IsabelleMapping.ArrayType ->
-      nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
-  val iam_empty : unit -> ('a option) FArray.IsabelleMapping.ArrayType
-  val the_res : 'a dres -> 'a
-  val equal_list : 'a equal -> 'a list -> 'a list -> bool
-  val equal_blue_witness :
-    'a equal -> 'a blue_witness -> 'a blue_witness -> bool
-  val map2set_insert : ('a -> unit -> 'b -> 'c) -> 'a -> 'b -> 'c
-  val times_nat : nat -> nat -> nat
-  val max : 'a ord -> 'a -> 'a -> 'a
-  val minus_nat : nat -> nat -> nat
+  type 'a dres
+  type 'a blue_witness
   val nat_of_integer : IntInf.int -> nat
-  val plus_nat : nat -> nat -> nat
-  val one_nat : nat
-  val iam_increment : nat -> nat -> nat
-  val array_set_oo :
-    (unit -> 'a FArray.IsabelleMapping.ArrayType) ->
-      'a FArray.IsabelleMapping.ArrayType ->
-        nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
-  val array_length : 'a FArray.IsabelleMapping.ArrayType -> nat
-  val array_grow :
-    'a FArray.IsabelleMapping.ArrayType ->
-      nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
-  val iam_update :
-    nat ->
-      'a -> ('a option) FArray.IsabelleMapping.ArrayType ->
-              ('a option) FArray.IsabelleMapping.ArrayType
-  val array_get_oo : 'a -> 'a FArray.IsabelleMapping.ArrayType -> nat -> 'a
-  val iam_alpha :
-    ('a option) FArray.IsabelleMapping.ArrayType -> nat -> 'a option
-  val iam_lookup :
-    nat -> ('a option) FArray.IsabelleMapping.ArrayType -> 'a option
-  val iam_delete :
-    nat ->
-      ('a option) FArray.IsabelleMapping.ArrayType ->
-        ('a option) FArray.IsabelleMapping.ArrayType
-  val prep_wit_blue : 'a equal -> 'a -> 'a blue_witness -> 'a blue_witness
-  val init_wit_blue : 'a equal -> 'a -> ('a list * 'a) option -> 'a blue_witness
-  val map2set_memb : ('a -> 'b -> 'c option) -> 'a -> 'b -> bool
-  val is_None : 'a option -> bool
-  val red_init_witness : 'a -> 'a -> ('a list * 'a) option
-  val prep_wit_red : 'a -> ('a list * 'a) option -> ('a list * 'a) option
-  val red_dfs_impl_0 :
-    (unit option) FArray.IsabelleMapping.ArrayType ->
-      (nat -> nat list) ->
-        (unit option) FArray.IsabelleMapping.ArrayType * nat ->
-          ((unit option) FArray.IsabelleMapping.ArrayType *
-            (nat list * nat) option)
-            dres
-  val red_dfs_impl :
-    nat ->
-      (unit option) FArray.IsabelleMapping.ArrayType ->
-        (unit option) FArray.IsabelleMapping.ArrayType ->
-          (nat -> nat list) ->
-            (unit option) FArray.IsabelleMapping.ArrayType *
-              (nat list * nat) option
-  val ndfs_impl_0 :
-    (nat -> nat list) ->
-      (unit option) FArray.IsabelleMapping.ArrayType ->
-        (unit option) FArray.IsabelleMapping.ArrayType *
-          ((unit option) FArray.IsabelleMapping.ArrayType *
-            ((unit option) FArray.IsabelleMapping.ArrayType * nat)) ->
-          ((unit option) FArray.IsabelleMapping.ArrayType *
-            ((unit option) FArray.IsabelleMapping.ArrayType *
-              ((unit option) FArray.IsabelleMapping.ArrayType *
-                nat blue_witness)))
-            dres
-  val extract_res : 'a blue_witness -> ('a * ('a list * 'a list)) option
   val ndfs_impl :
     (nat -> nat list) ->
       (unit option) FArray.IsabelleMapping.ArrayType ->
         nat -> (nat * (nat list * nat list)) option
-  val glist_member : ('a -> 'a -> bool) -> 'a -> 'a list -> bool
-  val glist_insert : ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list
-  val acc_of_list_impl :
-    nat list -> (unit option) FArray.IsabelleMapping.ArrayType
-  val succ_of_list_impl : (nat * nat) list -> nat -> nat list
   val acc_of_list_impl_int :
     IntInf.int list -> (unit option) FArray.IsabelleMapping.ArrayType
   val succ_of_list_impl_int : (IntInf.int * IntInf.int) list -> nat -> nat list
@@ -328,7 +237,7 @@ fun foldli [] c f sigma = sigma
     (if c sigma then foldli xs c f (f x sigma) else sigma);
 
 fun map fi [] = []
-  | map fi (x21a :: x22a) = fi x21a :: map fi x22a;
+  | map fi (x21a :: x22) = fi x21a :: map fi x22;
 
 fun dbind DFAILi f = DFAILi
   | dbind DSUCCEEDi f = DSUCCEEDi
