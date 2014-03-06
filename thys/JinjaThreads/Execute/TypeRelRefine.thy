@@ -81,7 +81,7 @@ typedef 'm prog_impl = "{P :: 'm prog_impl'. wf_prog_impl' P}"
 proof
   show "([], Mapping.empty, Mapping.empty, Mapping.empty, Mapping.empty) \<in> ?prog_impl"
     apply clarsimp
-    by transfer (simp_all add: fun_eq_iff is_class_def fun_relI)
+    by transfer (simp_all add: fun_eq_iff is_class_def rel_funI)
 qed
 
 lemma impl_of_ProgImpl [simp]:

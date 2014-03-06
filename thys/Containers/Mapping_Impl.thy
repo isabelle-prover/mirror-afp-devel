@@ -44,7 +44,7 @@ interpretation lifting_syntax .
 lemma is_empty_transfer [transfer_rule]:
   "(pcr_mapping op = op = ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
 unfolding mapping.pcr_cr_eq
-apply(rule fun_relI)
+apply(rule rel_funI)
 apply(case_tac y)
 apply(simp add: Mapping.is_empty_def cr_mapping_def Mapping_inverse Mapping.keys.rep_eq)
 done
@@ -109,7 +109,7 @@ interpretation lifting_syntax .
 
 lemma Mapping_size_transfer [transfer_rule]:
   "(pcr_mapping op = op = ===> op =) (card \<circ> dom) Mapping.size"
-apply(rule fun_relI)
+apply(rule rel_funI)
 apply(case_tac y)
 apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse mapping.pcr_cr_eq cr_mapping_def)
 done

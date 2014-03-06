@@ -321,7 +321,7 @@ lemma fold_transfer2 [transfer_rule]:
     (pcr_set_dlist op = :: 'a list \<Rightarrow> 'a set_dlist \<Rightarrow> bool) ===> pcr_set_dlist op = ===> pcr_set_dlist op =)
      List.fold DList_Set.fold"
 unfolding Transfer.Rel_def set_dlist.pcr_cr_eq
-proof(rule fun_relI)+
+proof(rule rel_funI)+
   fix f :: "'a \<Rightarrow> 'b list \<Rightarrow> 'b list" and g and xs :: "'a list" and ys and b :: "'b list" and c
   assume fg: "(A ===> cr_set_dlist ===> cr_set_dlist) f g"
   assume "cr_set_dlist xs ys" "cr_set_dlist b c"
@@ -333,7 +333,7 @@ proof(rule fun_relI)+
     have "A y y" and "cr_set_dlist (list_of_dlist c) c"
       using assms by(simp_all add: cr_set_dlist_def is_equality_def)
     with fg have "cr_set_dlist (f y (list_of_dlist c)) (g y c)"
-      by -(drule (1) fun_relD)+
+      by -(drule (1) rel_funD)+
     thus ?case using insert by(simp add: cr_set_dlist_def)
   qed
 qed
