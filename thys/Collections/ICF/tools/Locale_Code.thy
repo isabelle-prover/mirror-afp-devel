@@ -193,7 +193,7 @@ structure Locale_Code :LOCALE_CODE = struct
         | pname _ = Name.uu;
     in  
       space_implode "_" (Long_Name.base_name fname::map pname params)
-      |> gen_variant (can (Proof_Context.read_const_proper lthy false))
+      |> gen_variant (can (Proof_Context.read_const lthy {proper = true, strict = false}))
     end;
   in
     fun inst_pat_eq (cpat,thms) = 
