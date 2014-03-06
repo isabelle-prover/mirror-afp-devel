@@ -2512,7 +2512,7 @@ by(coinduction arbitrary: xs ys rule: enat_coinduct)(auto 4 3 simp add: not_lnul
 
 lemma llist_all2_lzipI:
   "\<lbrakk> llist_all2 P xs ys; llist_all2 P' xs' ys' \<rbrakk>
-  \<Longrightarrow> llist_all2 (prod_rel P P') (lzip xs xs') (lzip ys ys')"
+  \<Longrightarrow> llist_all2 (rel_prod P P') (lzip xs xs') (lzip ys ys')"
 by(coinduction arbitrary: xs xs' ys ys')(auto 6 6 dest: llist_all2_lhdD llist_all2_lnullD intro: llist_all2_ltlI)
 
 lemma llist_all2_ltakeI:
@@ -4551,7 +4551,7 @@ lemma ldropWhile_transfer [transfer_rule]:
 unfolding ldropWhile_def[abs_def] by transfer_prover
 
 lemma lzip_ltransfer [transfer_rule]:
-  "(llist_all2 A ===> llist_all2 B ===> llist_all2 (prod_rel A B)) lzip lzip"
+  "(llist_all2 A ===> llist_all2 B ===> llist_all2 (rel_prod A B)) lzip lzip"
 by(auto intro: llist_all2_lzipI)
 
 lemma inf_llist_transfer [transfer_rule]:

@@ -389,7 +389,7 @@ by(auto simp add: pcr_tllist_def cr_tllist_def intro!: fun_relI relcomppI)
 
 lemma TCons_transfer [transfer_rule]:
   "(A ===> pcr_tllist A B ===> pcr_tllist A B) (apfst \<circ> LCons) TCons"
-by(auto 4 3 intro!: fun_relI relcomppI simp add: pcr_tllist_def prod_rel_def llist_all2_LCons1 cr_tllist_def)
+by(auto 4 3 intro!: fun_relI relcomppI simp add: pcr_tllist_def rel_prod_def llist_all2_LCons1 cr_tllist_def)
 
 lemma tmap_tllist_of_llist:
   "tmap f g (tllist_of_llist b xs) = tllist_of_llist (g b) (lmap f xs)"
@@ -438,7 +438,7 @@ by(auto simp add: cr_tllist_def tllist.pcr_cr_eq)
 
 lemma ttl_transfer [transfer_rule]:
   "(pcr_tllist A B ===> pcr_tllist A B) (apfst ltl) ttl"
-by(auto simp add: pcr_tllist_def cr_tllist_def prod_rel_def intro!: fun_relI relcomppI intro: llist_all2_ltlI)
+by(auto simp add: pcr_tllist_def cr_tllist_def rel_prod_def intro!: fun_relI relcomppI intro: llist_all2_ltlI)
 
 lemma llist_of_tllist_transfer [transfer_rule]:
   "(pcr_tllist op = B ===> op =) fst llist_of_tllist"

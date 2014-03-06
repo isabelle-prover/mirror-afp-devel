@@ -399,7 +399,7 @@ let
   val qperm_bns = map #qconst qperm_bns_info
 
   val _ = trace_msg (K "Lifting of theorems...")  
-  val eq_iff_simps = @{thms alphas permute_prod.simps prod_fv.simps prod_alpha_def prod_rel_def
+  val eq_iff_simps = @{thms alphas permute_prod.simps prod_fv.simps prod_alpha_def rel_prod_def
     prod.case} 
 
   val ([ qdistincts, qeq_iffs, qfv_defs, qbn_defs, qperm_simps, qfv_qbn_eqvts, 

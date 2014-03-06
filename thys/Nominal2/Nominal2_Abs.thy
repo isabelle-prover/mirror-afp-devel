@@ -1045,12 +1045,12 @@ where
 definition 
   prod_alpha :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool)"
 where
- "prod_alpha = prod_rel"
+ "prod_alpha = rel_prod"
 
 lemma [quot_respect]:
-  shows "((R1 ===> op =) ===> (R2 ===> op =) ===> prod_rel R1 R2 ===> op =) prod_fv prod_fv"
+  shows "((R1 ===> op =) ===> (R2 ===> op =) ===> rel_prod R1 R2 ===> op =) prod_fv prod_fv"
   unfolding fun_rel_def
-  unfolding prod_rel_def
+  unfolding rel_prod_def
   by auto
 
 lemma [quot_preserve]:
@@ -1067,7 +1067,7 @@ lemma [mono]:
 lemma [eqvt]: 
   shows "p \<bullet> prod_alpha A B x y = prod_alpha (p \<bullet> A) (p \<bullet> B) (p \<bullet> x) (p \<bullet> y)"
   unfolding prod_alpha_def
-  unfolding prod_rel_def
+  unfolding rel_prod_def
   by (perm_simp) (rule refl)
 
 lemma [eqvt]: 

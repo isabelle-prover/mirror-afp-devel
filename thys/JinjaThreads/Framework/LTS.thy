@@ -58,8 +58,8 @@ lemma rtranclp_flip [flip_simps]:
   "(flip r)^** = flip r^**"
 by(auto intro!: ext simp add: flip_conv intro: rtranclp_flipD)
 
-lemma prod_rel_flip [flip_simps]:
-  "prod_rel (flip R) (flip S) = flip (prod_rel R S)"
+lemma rel_prod_flip [flip_simps]:
+  "rel_prod (flip R) (flip S) = flip (rel_prod R S)"
 by(auto intro!: ext simp add: flip_def)
 
 lemma rel_option_flip [flip_simps]:

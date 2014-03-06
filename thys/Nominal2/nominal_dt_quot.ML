@@ -303,7 +303,7 @@ fun mk_bn_supp_abs_tac ctxt trm =
 
 val thms1 = @{thms supp_Pair supp_eqvt[symmetric] Un_assoc conj_assoc}
 val thms2 = @{thms de_Morgan_conj Collect_disj_eq finite_Un}
-val thms3 = @{thms alphas prod_alpha_def prod_fv.simps prod_rel_def permute_prod_def 
+val thms3 = @{thms alphas prod_alpha_def prod_fv.simps rel_prod_def permute_prod_def 
   prod.rec prod.case prod.inject not_True_eq_False empty_def[symmetric] finite.emptyI}
 
 fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps 
