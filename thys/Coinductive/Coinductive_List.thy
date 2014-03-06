@@ -4430,12 +4430,12 @@ begin
 interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
-  "(rel_pre_llist A B ===> set_rel A) set1_pre_llist set1_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set1_pre_llist_def set_rel_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"
+by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
-  "(rel_pre_llist A B ===> set_rel B) set2_pre_llist set2_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set2_pre_llist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_llist A B ===> rel_set B) set2_pre_llist set2_pre_llist"
+by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma dtor_llist_transfer [transfer_rule]:
   "(llist_all2 A ===> rel_pre_llist A (llist_all2 A)) dtor_llist dtor_llist"
@@ -4496,8 +4496,8 @@ lemma ltl_transfer [transfer_rule]:
   unfolding ltl_def[abs_def] by transfer_prover
 
 lemma lset_transfer [transfer_rule]:
-  "(llist_all2 A ===> set_rel A) lset lset"
-by (intro fun_relI set_relI) (auto simp only: in_lset_conv_lnth llist_all2_conv_all_lnth Bex_def)
+  "(llist_all2 A ===> rel_set A) lset lset"
+by (intro fun_relI rel_setI) (auto simp only: in_lset_conv_lnth llist_all2_conv_all_lnth Bex_def)
 
 lemma lmap_transfer [transfer_rule]:
   "((A ===> B) ===> llist_all2 A ===> llist_all2 B) lmap lmap"

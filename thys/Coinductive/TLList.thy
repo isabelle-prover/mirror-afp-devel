@@ -467,8 +467,8 @@ next
 qed
 
 lemma set2_tllist_transfer [transfer_rule]:
-  "(pcr_tllist A B ===> set_rel B) (\<lambda>(xs, b). if lfinite xs then {b} else {}) set2_tllist"
-by(auto 4 4 simp add: pcr_tllist_def cr_tllist_def dest: llist_all2_lfiniteD intro: set_relI)
+  "(pcr_tllist A B ===> rel_set B) (\<lambda>(xs, b). if lfinite xs then {b} else {}) set2_tllist"
+by(auto 4 4 simp add: pcr_tllist_def cr_tllist_def dest: llist_all2_lfiniteD intro: rel_setI)
 
 lemma tllist_all2_transfer [transfer_rule]:
   "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op = ===> op =)
@@ -1090,16 +1090,16 @@ begin
 interpretation lifting_syntax .
 
 lemma set1_pre_tllist_transfer [transfer_rule]:
-  "(rel_pre_tllist A B C ===> set_rel A) set1_pre_tllist set1_pre_tllist"
-by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set1_pre_tllist_def set_rel_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
+  "(rel_pre_tllist A B C ===> rel_set A) set1_pre_tllist set1_pre_tllist"
+by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set1_pre_tllist_def rel_set_def collect_def sum_set_defs sum_rel_def fsts_def split: sum.split_asm)
 
 lemma set2_pre_tllist_transfer [transfer_rule]:
-  "(rel_pre_tllist A B C ===> set_rel B) set2_pre_tllist set2_pre_tllist"
-by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set2_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_tllist A B C ===> rel_set B) set2_pre_tllist set2_pre_tllist"
+by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set2_pre_tllist_def rel_set_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma set3_pre_tllist_transfer [transfer_rule]:
-  "(rel_pre_tllist A B C ===> set_rel C) set3_pre_tllist set3_pre_tllist"
-by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set3_pre_tllist_def set_rel_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+  "(rel_pre_tllist A B C ===> rel_set C) set3_pre_tllist set3_pre_tllist"
+by(auto simp add: rel_pre_tllist_def vimage2p_def fun_rel_def set3_pre_tllist_def rel_set_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
 
 lemma dtor_tllist_transfer [transfer_rule]:
   "(tllist_all2 A B ===> rel_pre_tllist A B (tllist_all2 A B)) dtor_tllist dtor_tllist"
@@ -1155,8 +1155,8 @@ lemma ttl_transfer2 [transfer_rule]:
   unfolding ttl_def[abs_def] by transfer_prover
 
 lemma tset_transfer2 [transfer_rule]:
-  "(tllist_all2 A B ===> set_rel A) tset tset"
-by (intro fun_relI set_relI) (auto simp only: in_tset_conv_tnth tllist_all2_conv_all_tnth Bex_def)
+  "(tllist_all2 A B ===> rel_set A) tset tset"
+by (intro fun_relI rel_setI) (auto simp only: in_tset_conv_tnth tllist_all2_conv_all_tnth Bex_def)
 
 lemma tmap_transfer2 [transfer_rule]:
   "((A ===> B) ===> (C ===> D) ===> tllist_all2 A C ===> tllist_all2 B D) tmap tmap"

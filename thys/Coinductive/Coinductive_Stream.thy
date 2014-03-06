@@ -256,8 +256,8 @@ lemma Stream_transfer [transfer_rule]:
   "(A ===> pcr_stream A ===> pcr_stream A) LCons op ##"
 by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI intro: llist_all2_expand)
 
-lemma sset_transfer [transfer_rule]: "(pcr_stream A ===> set_rel A) lset sset"
-by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI set_relI dest: llist_all2_lsetD1 llist_all2_lsetD2)
+lemma sset_transfer [transfer_rule]: "(pcr_stream A ===> rel_set A) lset sset"
+by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI rel_setI dest: llist_all2_lsetD1 llist_all2_lsetD2)
 
 lemma smap_transfer [transfer_rule]:
   "((A ===> B) ===> pcr_stream A ===> pcr_stream B) lmap smap"
