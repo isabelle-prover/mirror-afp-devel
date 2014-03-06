@@ -219,9 +219,9 @@ val add_thms_parser = Scan.optional (Scan.lift (Args.add -- Args.colon) |--
    Scan.repeat (unless_more_args Attrib.multi_thm) >> flat) [];
 
 val exclude_consts_parser = Scan.optional (Scan.lift ((Args.$$$ "exclude") -- Args.colon) |-- 
-  (Scan.repeat (Args.const true))) []
+  (Scan.repeat (Args.const {proper = true, strict = true}))) []
 
-val args_parser =  add_thms_parser -- exclude_consts_parser 
+val args_parser = add_thms_parser -- exclude_consts_parser 
 
 fun perm_simp_meth (thms, consts) ctxt =
   SIMPLE_METHOD (HEADGOAL (eqvt_tac ctxt (eqvt_relaxed_config addpres thms addexcls consts)))
