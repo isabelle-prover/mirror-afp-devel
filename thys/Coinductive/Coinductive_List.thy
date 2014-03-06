@@ -4431,17 +4431,17 @@ interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def sum_rel_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def rel_sum_def split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set B) set2_pre_llist set2_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def sum_rel_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
 
 lemma dtor_llist_transfer [transfer_rule]:
   "(llist_all2 A ===> rel_pre_llist A (llist_all2 A)) dtor_llist dtor_llist"
 apply(rule fun_relI)
 apply(erule llist_all2_cases)
-apply(auto simp add: rel_pre_llist_def vimage2p_def BNF_Comp.id_bnf_comp_def sum_rel_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
+apply(auto simp add: rel_pre_llist_def vimage2p_def BNF_Comp.id_bnf_comp_def rel_sum_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
 done
 
 lemma LNil_transfer [transfer_rule]: "llist_all2 P LNil LNil"
