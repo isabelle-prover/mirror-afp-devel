@@ -47,7 +47,7 @@ context begin interpretation lifting_syntax .
 
 lemma shiftl_transfer [transfer_rule]:
   "(pcr_word ===> op = ===> pcr_word) op << op <<"
-by(auto intro!: fun_relI word_eqI simp add: word.pcr_cr_eq cr_word_def word_size nth_shiftl)
+by(auto intro!: rel_funI word_eqI simp add: word.pcr_cr_eq cr_word_def word_size nth_shiftl)
 
 end
 

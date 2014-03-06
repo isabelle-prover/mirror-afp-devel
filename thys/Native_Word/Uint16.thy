@@ -121,7 +121,7 @@ lemma uint16_neg_numeral_transfer [transfer_rule]:
 by(auto simp add: cr_uint16_def)
 
 lemma numeral_uint16_transfer [transfer_rule]:
-  "(fun_rel op = cr_uint16) numeral numeral"
+  "(rel_fun op = cr_uint16) numeral numeral"
 by(auto simp add: cr_uint16_def)
 
 end
@@ -225,7 +225,7 @@ text {*
 definition Rep_uint16' where [simp]: "Rep_uint16' = Rep_uint16"
 
 lemma Rep_uint16'_transfer [transfer_rule]:
-  "fun_rel cr_uint16 op = (\<lambda>x. x) Rep_uint16'"
+  "rel_fun cr_uint16 op = (\<lambda>x. x) Rep_uint16'"
 unfolding Rep_uint16'_def by(rule uint16.rep_transfer)
 
 lemma Rep_uint16'_code [code]: "Rep_uint16' x = (BITS n. x !! n)"

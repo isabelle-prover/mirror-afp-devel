@@ -719,7 +719,7 @@ fun raw_size_rsp_aux ctxt alpha_result simps =
 
 fun raw_constr_rsp_tac ctxt alpha_intros simps = 
   let
-    val pre_simpset = put_simpset HOL_ss ctxt addsimps @{thms fun_rel_def}
+    val pre_simpset = put_simpset HOL_ss ctxt addsimps @{thms rel_fun_def}
     val post_simpset = put_simpset HOL_ss ctxt addsimps @{thms alphas prod_alpha_def rel_prod_def 
       prod_fv.simps fresh_star_zero permute_zero prod.case} @ simps
   in
@@ -738,15 +738,15 @@ fun raw_constrs_rsp ctxt alpha_result constrs simps =
         NONE => HOLogic.eq_const ty
       | SOME alpha => alpha 
   
-    fun fun_rel_app (t1, t2) = 
-      Const (@{const_name "fun_rel"}, dummyT) $ t1 $ t2
+    fun rel_fun_app (t1, t2) = 
+      Const (@{const_name "rel_fun"}, dummyT) $ t1 $ t2
 
     fun prep_goal trm =
       trm
       |> strip_type o fastype_of
       |> (fn (tys, ty) => tys @ [ty])
       |> map lookup
-      |> foldr1 fun_rel_app
+      |> foldr1 rel_fun_app
       |> (fn t => t $ trm $ trm)
       |> Syntax.check_term ctxt
       |> HOLogic.mk_Trueprop
@@ -762,7 +762,7 @@ fun raw_constrs_rsp ctxt alpha_result constrs simps =
 
 val rsp_equivp =
   @{lemma "[|equivp Q; !!x y. R x y ==> Q x y|] ==> (R ===> R ===> op =) Q Q"
-    by (simp only: fun_rel_def equivp_def, metis)}
+    by (simp only: rel_fun_def equivp_def, metis)}
 
 
 (* we have to reorder the alpha_bn_imps theorems in order
@@ -791,7 +791,7 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
 (* rsp for permute_bn functions *)
 
 val perm_bn_rsp = @{lemma "(!x y p. R x y --> R (f p x) (f p y)) ==> (op= ===> R ===> R) f f"
- by (simp add: fun_rel_def)}
+ by (simp add: rel_fun_def)}
 
 fun raw_prove_perm_bn_tac alpha_result simps ctxt = 
   SUBPROOF (fn {prems, context, ...} => 
@@ -844,7 +844,7 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
 (* transformation of the natural rsp-lemmas into standard form *)
 
 val fun_rsp = @{lemma
-  "(!x y. R x y --> f x = f y) ==> (R ===> (op =)) f f" by (simp add: fun_rel_def)}
+  "(!x y. R x y --> f x = f y) ==> (R ===> (op =)) f f" by (simp add: rel_fun_def)}
 
 fun mk_funs_rsp ctxt thm = 
   thm
@@ -855,7 +855,7 @@ fun mk_funs_rsp ctxt thm =
 
 val permute_rsp = @{lemma 
   "(!x y p. R x y --> R (permute p x) (permute p y)) 
-     ==> ((op =) ===> R ===> R) permute permute"  by (simp add: fun_rel_def)}
+     ==> ((op =) ===> R ===> R) permute permute"  by (simp add: rel_fun_def)}
 
 fun mk_alpha_permute_rsp ctxt thm = 
   thm

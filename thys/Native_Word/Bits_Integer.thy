@@ -27,7 +27,7 @@ includes integer.lifting
 begin
 
 lemma bitval_integer_transfer [transfer_rule]:
-  "(fun_rel op = pcr_integer) of_bool of_bool"
+  "(rel_fun op = pcr_integer) of_bool of_bool"
 by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
 lemma integer_of_nat_less_0_conv [simp]: "\<not> integer_of_nat n < 0"
@@ -37,7 +37,7 @@ lemma int_of_integer_pow: "int_of_integer (x ^ n) = int_of_integer x ^ n"
 by(induct n) simp_all
 
 lemma pow_integer_transfer [transfer_rule]:
-  "(fun_rel pcr_integer (fun_rel op = pcr_integer)) op ^ op ^"
+  "(rel_fun pcr_integer (rel_fun op = pcr_integer)) op ^ op ^"
 by(auto 4 3 simp add: integer.pcr_cr_eq cr_integer_def int_of_integer_pow)
 
 lemma sub1_lt_0_iff [simp]: "Code_Numeral.sub n num.One < 0 \<longleftrightarrow> False"

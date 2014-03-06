@@ -17,11 +17,11 @@ context begin interpretation lifting_syntax .
 
 lemma char_of_integer_transfer [transfer_rule]:
   "(pcr_integer ===> op =) (\<lambda>n. char_of_nat (nat n)) char_of_integer"
-by(simp add: integer.pcr_cr_eq cr_integer_def fun_rel_def char_of_integer_def nat_of_integer_def)
+by(simp add: integer.pcr_cr_eq cr_integer_def rel_fun_def char_of_integer_def nat_of_integer_def)
 
 lemma integer_of_char_transfer [transfer_rule]:
   "(op = ===> pcr_integer) (\<lambda>n. int (nat_of_char n)) integer_of_char"
-by(simp add: integer.pcr_cr_eq cr_integer_def fun_rel_def integer_of_char_def)
+by(simp add: integer.pcr_cr_eq cr_integer_def rel_fun_def integer_of_char_def)
 
 end
 

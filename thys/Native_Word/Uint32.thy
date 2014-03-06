@@ -87,7 +87,7 @@ definition integer_of_uint32 :: "uint32 \<Rightarrow> integer"
 where "integer_of_uint32 = integer_of_int o int_of_uint32"
 
 lemma bitval_integer_transfer [transfer_rule]:
-  "(fun_rel op = pcr_integer) of_bool of_bool"
+  "(rel_fun op = pcr_integer) of_bool of_bool"
 by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
 text {* Use pretty numerals from integer for pretty printing *}
@@ -97,7 +97,7 @@ lift_definition Uint32 :: "integer \<Rightarrow> uint32" is "word_of_integer" .
 context begin interpretation lifting_syntax .
 
 lemma Uint32_transfer_word_of_int [transfer_rule]: "(pcr_integer ===> cr_uint32) word_of_int Uint32"
-by(rule fun_relI)(simp add: cr_uint32_def integer.pcr_cr_eq cr_integer_def Uint32.rep_eq word_of_integer.rep_eq)
+by(rule rel_funI)(simp add: cr_uint32_def integer.pcr_cr_eq cr_integer_def Uint32.rep_eq word_of_integer.rep_eq)
 
 end
 
@@ -105,7 +105,7 @@ lemma Rep_uint32_numeral [simp]: "Rep_uint32 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint32_def Abs_uint32_inverse numeral.simps plus_uint32_def)
 
 lemma numeral_uint32_transfer [transfer_rule]:
-  "(fun_rel op = cr_uint32) numeral numeral"
+  "(rel_fun op = cr_uint32) numeral numeral"
 by(auto simp add: cr_uint32_def)
 
 lemma numeral_uint32 [code_unfold]: "numeral n = Uint32 (numeral n)"
@@ -115,7 +115,7 @@ lemma Rep_uint32_neg_numeral [simp]: "Rep_uint32 (- numeral n) = - numeral n"
 by(simp only: uminus_uint32_def)(simp add: Abs_uint32_inverse)
 
 lemma uint32_neg_numeral_transfer [transfer_rule]:
-  "(fun_rel op = cr_uint32) (- numeral) (- numeral)"
+  "(rel_fun op = cr_uint32) (- numeral) (- numeral)"
 by(auto simp add: cr_uint32_def)
 
 lemma neg_numeral_uint32 [code_unfold]: "- numeral n = Uint32 (- numeral n)"
@@ -289,7 +289,7 @@ text {*
 definition Rep_uint32' where [simp]: "Rep_uint32' = Rep_uint32"
 
 lemma Rep_uint32'_transfer [transfer_rule]:
-  "fun_rel cr_uint32 op = (\<lambda>x. x) Rep_uint32'"
+  "rel_fun cr_uint32 op = (\<lambda>x. x) Rep_uint32'"
 unfolding Rep_uint32'_def by(rule uint32.rep_transfer)
 
 lemma Rep_uint32'_code [code]: "Rep_uint32' x = (BITS n. x !! n)"

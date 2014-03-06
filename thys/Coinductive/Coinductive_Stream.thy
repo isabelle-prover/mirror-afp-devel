@@ -219,56 +219,56 @@ interpretation lifting_syntax .
 
 lemma lmap_infinite_transfer [transfer_rule]:
   "(op = ===> Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> Lifting.invariant (\<lambda>xs. \<not> lfinite xs)) lmap lmap"
-by(simp add: fun_rel_def Lifting.invariant_def)
+by(simp add: rel_fun_def Lifting.invariant_def)
 
 lemma lset_infinite_transfer [transfer_rule]:
   "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> op =) lset lset"
-by(simp add: fun_rel_def Lifting.invariant_def)
+by(simp add: rel_fun_def Lifting.invariant_def)
 
 lemma unfold_stream_transfer [transfer_rule]:
   "(op = ===> op = ===> op = ===> pcr_stream op =) (unfold_llist (\<lambda>_. False)) unfold_stream"
-by(auto simp add: stream.pcr_cr_eq cr_stream_def intro!: fun_relI)
+by(auto simp add: stream.pcr_cr_eq cr_stream_def intro!: rel_funI)
 
 lemma corec_stream_transfer [transfer_rule]:
   "(op = ===> op = ===> (op = ===> pcr_stream op =) ===> op = ===> op = ===> pcr_stream op=)
    (corec_llist (\<lambda>_. False)) corec_stream"
-apply(auto intro!: fun_relI simp add: cr_stream_def stream.pcr_cr_eq)
+apply(auto intro!: rel_funI simp add: cr_stream_def stream.pcr_cr_eq)
 apply(rule fun_cong) back
 apply(rule_tac x=yc in fun_cong)
 apply(rule_tac x=xb in arg_cong)
-apply(auto elim: fun_relE)
+apply(auto elim: rel_funE)
 done
 
 lemma shd_transfer [transfer_rule]: "(pcr_stream A ===> A) lhd shd"
-by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI)(frule llist_all2_lhdD, auto dest: llist_all2_lnullD)
+by(auto simp add: pcr_stream_def cr_stream_def intro!: rel_funI relcomppI)(frule llist_all2_lhdD, auto dest: llist_all2_lnullD)
 
 lemma stl_transfer [transfer_rule]: "(pcr_stream A ===> pcr_stream A) ltl stl"
-by(auto simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI dest: llist_all2_ltlI)
+by(auto simp add: pcr_stream_def cr_stream_def intro!: rel_funI relcomppI dest: llist_all2_ltlI)
 
 lemma llist_of_stream_transfer [transfer_rule]: "(pcr_stream op = ===> op =) id llist_of_stream"
-by(simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
+by(simp add: rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
 lemma stream_of_llist_transfer [transfer_rule]: 
   "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> pcr_stream op =) (\<lambda>xs. xs) stream_of_llist"
-by(simp add: Lifting.invariant_def fun_rel_def stream.pcr_cr_eq cr_stream_def)
+by(simp add: Lifting.invariant_def rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
 lemma Stream_transfer [transfer_rule]:
   "(A ===> pcr_stream A ===> pcr_stream A) LCons op ##"
-by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI intro: llist_all2_expand)
+by(auto simp add: cr_stream_def pcr_stream_def intro!: rel_funI relcomppI intro: llist_all2_expand)
 
 lemma sset_transfer [transfer_rule]: "(pcr_stream A ===> rel_set A) lset sset"
-by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: fun_relI relcomppI rel_setI dest: llist_all2_lsetD1 llist_all2_lsetD2)
+by(auto 4 3 simp add: pcr_stream_def cr_stream_def intro!: rel_funI relcomppI rel_setI dest: llist_all2_lsetD1 llist_all2_lsetD2)
 
 lemma smap_transfer [transfer_rule]:
   "((A ===> B) ===> pcr_stream A ===> pcr_stream B) lmap smap"
-by(auto simp add: cr_stream_def pcr_stream_def intro!: fun_relI relcomppI dest: lmap_transfer[THEN fun_relD] elim: fun_relD)
+by(auto simp add: cr_stream_def pcr_stream_def intro!: rel_funI relcomppI dest: lmap_transfer[THEN rel_funD] elim: rel_funD)
 
 lemma snth_transfer [transfer_rule]: "(pcr_stream op = ===> op =) lnth snth"
-by(rule fun_relI)(clarsimp simp add: stream.pcr_cr_eq cr_stream_def fun_eq_iff)
+by(rule rel_funI)(clarsimp simp add: stream.pcr_cr_eq cr_stream_def fun_eq_iff)
 
 lemma siterate_transfer [transfer_rule]: 
   "(op = ===> op = ===> pcr_stream op =) iterates siterate"
-by(rule fun_relI)+(clarsimp simp add: stream.pcr_cr_eq cr_stream_def)
+by(rule rel_funI)+(clarsimp simp add: stream.pcr_cr_eq cr_stream_def)
 
 context
   fixes xs
@@ -300,7 +300,7 @@ done
 
 lemma stream_all2_transfer [transfer_rule]:
   "(op = ===> pcr_stream op = ===> pcr_stream op = ===> op =) llist_all2 stream_all2"
-by(simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
+by(simp add: rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
 lemma stream_all2_coinduct:
   assumes "X xs ys"
@@ -314,11 +314,11 @@ done
 
 lemma shift_transfer [transfer_rule]:
   "(op = ===> pcr_stream op = ===> pcr_stream op =) (lappend \<circ> llist_of) shift"
-by(clarsimp simp add: fun_rel_def stream.pcr_cr_eq cr_stream_def)
+by(clarsimp simp add: rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
 lemma szip_transfer [transfer_rule]:
   "(pcr_stream op = ===> pcr_stream op = ===> pcr_stream op =) lzip szip"
-by(simp add: stream.pcr_cr_eq cr_stream_def fun_rel_def)
+by(simp add: stream.pcr_cr_eq cr_stream_def rel_fun_def)
 
 subsection {* Link @{typ "'a stream"} with @{typ "nat \<Rightarrow> 'a"} *}
 

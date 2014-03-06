@@ -665,8 +665,8 @@ qed
 subsection {* Max *}
 
 lemma max_transfer[transfer_rule]:
-  assumes [transfer_rule]: "(fun_rel A (fun_rel A (op =))) (op \<le>) (op \<le>)"
-  shows "(fun_rel A (fun_rel A A)) max max"
+  assumes [transfer_rule]: "(rel_fun A (rel_fun A (op =))) (op \<le>) (op \<le>)"
+  shows "(rel_fun A (rel_fun A A)) max max"
   unfolding max_def[abs_def]
   by transfer_prover
 

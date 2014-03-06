@@ -4431,15 +4431,15 @@ interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def rel_sum_def split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set B) set2_pre_llist set2_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def fun_rel_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
 
 lemma dtor_llist_transfer [transfer_rule]:
   "(llist_all2 A ===> rel_pre_llist A (llist_all2 A)) dtor_llist dtor_llist"
-apply(rule fun_relI)
+apply(rule rel_funI)
 apply(erule llist_all2_cases)
 apply(auto simp add: rel_pre_llist_def vimage2p_def BNF_Comp.id_bnf_comp_def rel_sum_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
 done
@@ -4449,28 +4449,28 @@ by simp
 
 lemma LCons_transfer [transfer_rule]:
   "(A ===> llist_all2 A ===> llist_all2 A) LCons LCons"
-unfolding fun_rel_def by simp
+unfolding rel_fun_def by simp
 
 lemma case_llist_transfer [transfer_rule]:
   "(B ===> (A ===> llist_all2 A ===> B) ===> llist_all2 A ===> B)
     case_llist case_llist"
-unfolding fun_rel_def by (simp split: llist.split)
+unfolding rel_fun_def by (simp split: llist.split)
 
 lemma unfold_llist_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> A) ===> A ===> llist_all2 B) unfold_llist unfold_llist"
-proof(rule fun_relI)+
+proof(rule rel_funI)+
   fix IS_LNIL1 :: "'a \<Rightarrow> bool" and IS_LNIL2 LHD1 LHD2 LTL1 LTL2 x y
   assume rel: "(A ===> op =) IS_LNIL1 IS_LNIL2" "(A ===> B) LHD1 LHD2" "(A ===> A) LTL1 LTL2"
     and "A x y"
   from `A x y`
   show "llist_all2 B (unfold_llist IS_LNIL1 LHD1 LTL1 x) (unfold_llist IS_LNIL2 LHD2 LTL2 y)"
     apply(coinduction arbitrary: x y)
-    using rel by(auto 4 4 elim: fun_relE)
+    using rel by(auto 4 4 elim: rel_funE)
 qed
 
 lemma corec_llist_transfer [transfer_rule]:
   "((A ===> op =) ===> (A ===> B) ===> (A ===> op =) ===> (A ===> llist_all2 B) ===> (A ===> A) ===> A ===> llist_all2 B) corec_llist corec_llist"
-proof(rule fun_relI)+
+proof(rule rel_funI)+
   fix IS_LNIL1 :: "'a \<Rightarrow> bool" and IS_LNIL2 LHD1 LHD2
     and STOP1 :: "'a \<Rightarrow> bool" and STOP2 MORE1 MORE2 LTL1 LTL2 x y
   assume [transfer_rule]: "(A ===> op =) IS_LNIL1 IS_LNIL2 " "(A ===> B) LHD1 LHD2"
@@ -4497,15 +4497,15 @@ lemma ltl_transfer [transfer_rule]:
 
 lemma lset_transfer [transfer_rule]:
   "(llist_all2 A ===> rel_set A) lset lset"
-by (intro fun_relI rel_setI) (auto simp only: in_lset_conv_lnth llist_all2_conv_all_lnth Bex_def)
+by (intro rel_funI rel_setI) (auto simp only: in_lset_conv_lnth llist_all2_conv_all_lnth Bex_def)
 
 lemma lmap_transfer [transfer_rule]:
   "((A ===> B) ===> llist_all2 A ===> llist_all2 B) lmap lmap"
-by(auto simp add: fun_rel_def llist_all2_lmap1 llist_all2_lmap2 elim: llist_all2_mono)
+by(auto simp add: rel_fun_def llist_all2_lmap1 llist_all2_lmap2 elim: llist_all2_mono)
 
 lemma lappend_transfer [transfer_rule]:
   "(llist_all2 A ===> llist_all2 A ===> llist_all2 A) lappend lappend"
-by(auto simp add: fun_rel_def intro: llist_all2_lappendI)
+by(auto simp add: rel_fun_def intro: llist_all2_lappendI)
 
 lemma iterates_transfer [transfer_rule]:
   "((A ===> A) ===> A ===> llist_all2 A) iterates iterates"
@@ -4537,13 +4537,13 @@ by(auto intro: llist_all2_ldropI)
 
 lemma ltakeWhile_transfer [transfer_rule]:
   "((A ===> op =) ===> llist_all2 A ===> llist_all2 A) ltakeWhile ltakeWhile"
-proof(rule fun_relI)+
+proof(rule rel_funI)+
   fix P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool" and xs :: "'a llist" and ys :: "'b llist"
   assume PQ: "(A ===> op =) P Q"
   assume "llist_all2 A xs ys"
   thus "llist_all2 A (ltakeWhile P xs) (ltakeWhile Q ys)"
     apply(coinduction arbitrary: xs ys)
-    using PQ by(auto 4 4 elim: fun_relE simp add: not_lnull_conv llist_all2_LCons2 llist_all2_LCons1)
+    using PQ by(auto 4 4 elim: rel_funE simp add: not_lnull_conv llist_all2_LCons2 llist_all2_LCons1)
 qed
 
 lemma ldropWhile_transfer [transfer_rule]:
@@ -4560,7 +4560,7 @@ unfolding inf_llist_def[abs_def] by transfer_prover
 
 lemma lfilter_transfer [transfer_rule]:
   "((A ===> op =) ===> llist_all2 A ===> llist_all2 A) lfilter lfilter"
-by(auto simp add: fun_rel_def intro: llist_all2_lfilterI)
+by(auto simp add: rel_fun_def intro: llist_all2_lfilterI)
 
 lemma lconcat_transfer [transfer_rule]:
   "(llist_all2 (llist_all2 A) ===> llist_all2 A) lconcat lconcat"
@@ -4591,7 +4591,7 @@ qed
 
 lemma llist_all2_transfer [transfer_rule]:
   "((R ===> R ===> op =) ===> llist_all2 R ===> llist_all2 R ===> op =) llist_all2 llist_all2"
-by (simp add: llist_all2_rsp fun_rel_def)
+by (simp add: llist_all2_rsp rel_fun_def)
 
 end
 

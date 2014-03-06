@@ -38,8 +38,8 @@ normal form and an initial nonterminal is constructed by primitive corecursion,
 yielding an executable decision procedure for the word problem without further ado.
 *}
 (*<*)
-(* custom coinduction theorem (getting rid of fun_rel) *)
-declare language.coinduct[unfolded fun_rel_def, simplified, case_names Lang, coinduct type: language]
+(* custom coinduction theorem (getting rid of rel_fun) *)
+declare language.coinduct[unfolded rel_fun_def, simplified, case_names Lang, coinduct type: language]
 (*>*)
 
 section {* Regular Languages *}
@@ -93,14 +93,14 @@ inductive Plus_cong where
 | Base[intro]: "R x y \<Longrightarrow> Plus_cong R x y"
 | Plus[intro]: "\<lbrakk>Plus_cong R x y; Plus_cong R x' y'\<rbrakk> \<Longrightarrow> Plus_cong R (Plus x x') (Plus y y')"
 
-lemma language_coinduct_upto_Plus[unfolded fun_rel_def, simplified, case_names Lang, consumes 1]: 
+lemma language_coinduct_upto_Plus[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]: 
   assumes R: "R L K" and hyp:
-    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> fun_rel op = (Plus_cong R) (\<dd> L) (\<dd> K))"
+    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K))"
   shows "L = K"
 proof (coinduct rule: language.coinduct[of "Plus_cong R"])
   fix L K assume "Plus_cong R L K"
-  then show "\<oo> L = \<oo> K \<and> fun_rel op = (Plus_cong R) (\<dd> L) (\<dd> K)" using hyp
-    by (induct rule: Plus_cong.induct) (auto simp: fun_rel_def)
+  then show "\<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K)" using hyp
+    by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def)
 qed (intro Base R)
 
 lemma Plus_OneL[simp]: "\<oo> r \<Longrightarrow> Plus One r = r"
@@ -175,7 +175,7 @@ theorem Times_ZeroR[simp]: "Times r Zero = Zero"
   by (coinduction arbitrary: r) auto
 
 theorem Times_OneL[simp]: "Times One r = r"
-  by (coinduction arbitrary: r rule: language.strong_coinduct) (simp add: fun_rel_def)
+  by (coinduction arbitrary: r rule: language.strong_coinduct) (simp add: rel_fun_def)
 
 theorem Times_OneR[simp]: "Times r One = r"
   by (coinduction arbitrary: r) simp
@@ -272,14 +272,14 @@ inductive regular_cong where
 | Not[intro]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
     regular_cong R (Not x) (Not y)"
 
-lemma language_coinduct_upto_regular[unfolded fun_rel_def, simplified, case_names Lang, consumes 1]: 
+lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]: 
   assumes R: "R L K" and hyp:
-    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> fun_rel op = (regular_cong R) (\<dd> L) (\<dd> K))"
+    "(\<And>L K. R L K \<Longrightarrow> \<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K))"
   shows "L = K"
 proof (coinduct rule: language.coinduct[of "regular_cong R"])
   fix L K assume "regular_cong R L K"
-  then show "\<oo> L = \<oo> K \<and> fun_rel op = (regular_cong R) (\<dd> L) (\<dd> K)" using hyp
-    by (induct rule: regular_cong.induct) (auto simp: fun_rel_def)
+  then show "\<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K)" using hyp
+    by (induct rule: regular_cong.induct) (auto simp: rel_fun_def)
 qed (intro Base R)
 
 lemma Star_unfoldR: "Star r = Plus One (Times (Star r) r)"

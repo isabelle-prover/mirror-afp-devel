@@ -104,7 +104,7 @@ lemma Rep_uint8_numeral [simp]: "Rep_uint8 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint8_def Abs_uint8_inverse numeral.simps plus_uint8_def)
 
 lemma numeral_uint8_transfer [transfer_rule]:
-  "(fun_rel op = cr_uint8) numeral numeral"
+  "(rel_fun op = cr_uint8) numeral numeral"
 by(auto simp add: cr_uint8_def)
 
 lemma numeral_uint8 [code_unfold]: "numeral n = Uint8 (numeral n)"
@@ -231,7 +231,7 @@ text {*
 definition Rep_uint8' where [simp]: "Rep_uint8' = Rep_uint8"
 
 lemma Rep_uint8'_transfer [transfer_rule]:
-  "fun_rel cr_uint8 op = (\<lambda>x. x) Rep_uint8'"
+  "rel_fun cr_uint8 op = (\<lambda>x. x) Rep_uint8'"
 unfolding Rep_uint8'_def by(rule uint8.rep_transfer)
 
 lemma Rep_uint8'_code [code]: "Rep_uint8' x = (BITS n. x !! n)"

@@ -479,14 +479,14 @@ lemma [quot_respect]:
   shows "(op= ===> op= ===> alpha_abs_set) Pair Pair"
   and   "(op= ===> op= ===> alpha_abs_res) Pair Pair"
   and   "(op= ===> op= ===> alpha_abs_lst) Pair Pair"
-  unfolding fun_rel_def
+  unfolding rel_fun_def
   by (auto intro: alphas_abs_refl)
 
 lemma [quot_respect]:
   shows "(op= ===> alpha_abs_set ===> alpha_abs_set) permute permute"
   and   "(op= ===> alpha_abs_res ===> alpha_abs_res) permute permute"
   and   "(op= ===> alpha_abs_lst ===> alpha_abs_lst) permute permute"
-  unfolding fun_rel_def
+  unfolding rel_fun_def
   by (auto intro: alphas_abs_eqvt simp only: Pair_eqvt)
 
 lemma Abs_eq_iff:
@@ -1049,7 +1049,7 @@ where
 
 lemma [quot_respect]:
   shows "((R1 ===> op =) ===> (R2 ===> op =) ===> rel_prod R1 R2 ===> op =) prod_fv prod_fv"
-  unfolding fun_rel_def
+  unfolding rel_fun_def
   unfolding rel_prod_def
   by auto
 

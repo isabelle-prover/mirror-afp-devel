@@ -618,7 +618,7 @@ subsection {* Permutations for @{typ "'a fset"} *}
 
 lemma permute_fset_rsp[quot_respect]:
   shows "(op = ===> list_eq ===> list_eq) permute permute"
-  unfolding fun_rel_def
+  unfolding rel_fun_def
   by (simp add: set_eqvt[symmetric])
 
 instantiation fset :: (pt) pt
