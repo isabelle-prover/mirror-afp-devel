@@ -210,9 +210,8 @@ ML {*
 
     (* Types of f and R must match! *)
     fun mk_CONSTRAINT_rl thy (ps,c) = let
-      open HOLogic
-      val ps = map (mk_CONSTRAINT #> mk_Trueprop) ps
-      val c = mk_CONSTRAINT c |> mk_Trueprop
+      val ps = map (mk_CONSTRAINT #> HOLogic.mk_Trueprop) ps
+      val c = mk_CONSTRAINT c |> HOLogic.mk_Trueprop
       val g = Logic.list_implies (ps,c)
       val thm = Goal.prove_global thy [] [] g (K (rtac @{thm CONSTRAINTI} 1)) 
     in 
@@ -473,7 +472,7 @@ ML {*
     val get_hom_rules = hom_rules.get
 
     local
-      open HOLogic Relators
+      open Relators
       fun 
         repl @{mpat "?R\<rightarrow>?S"} ctab = let
           val (R,ctab) = repl R ctab
@@ -488,10 +487,10 @@ ML {*
             SOME R => (R,(ctxt,tab))
           | NONE => let
               val aT = fastype_of R |> strip_type |> #2 
-                |> dest_setT |> dest_prodT |> #2
-              val (cT,ctxt) = yield_singleton Variable.invent_types typeS ctxt
+                |> HOLogic.dest_setT |> HOLogic.dest_prodT |> #2
+              val (cT,ctxt) = yield_singleton Variable.invent_types HOLogic.typeS ctxt
               val cT = TFree cT
-              val T = map fastype_of args ---> mk_setT (mk_prodT (cT,aT))
+              val T = map fastype_of args ---> HOLogic.mk_setT (HOLogic.mk_prodT (cT,aT))
               val (R',ctxt) = yield_singleton Variable.variant_fixes "R" ctxt
               val R' = list_relAPP args (Free (R',T))
               val tab = Termtab.update (R,R') tab
@@ -572,11 +571,10 @@ ML {*
         val thy = theory_of_thm st
 
         fun get_constraint t = let
-          open HOLogic
           val T = fastype_of t
-          val res = Const (@{const_name TYREL},T-->boolT) $ t
+          val res = Const (@{const_name TYREL}, T --> HOLogic.boolT) $ t
         in
-          res |> mk_Trueprop |> cterm_of thy
+          res |> HOLogic.mk_Trueprop |> cterm_of thy
         end
         
         val relators = fold (add_relators_of_subgoal st) (i upto j) []

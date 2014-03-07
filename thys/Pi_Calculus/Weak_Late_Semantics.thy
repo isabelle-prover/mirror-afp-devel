@@ -6,11 +6,11 @@ theory Weak_Late_Semantics
   imports Weak_Late_Step_Semantics
 begin
 
-consts weakTransition :: "(pi \<times> residual) set"
-syntax "weakLateTransition_judge" :: "pi \<Rightarrow> residual \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>l\<^sup>^_" [80, 80] 80)
-defs weakTransition_def:
-  "weakTransition \<equiv> Weak_Late_Step_Semantics.transition \<union> {x. \<exists>P. x = (P, \<tau> \<prec> P)}"
-translations "P \<Longrightarrow>\<^sub>l\<^sup>^Rs" \<rightleftharpoons> "(P, Rs) \<in> Weak_Late_Semantics.weakTransition"
+definition weakTransition :: "(pi \<times> residual) set"
+  where "weakTransition \<equiv> Weak_Late_Step_Semantics.transition \<union> {x. \<exists>P. x = (P, \<tau> \<prec> P)}"
+
+abbreviation weakLateTransition_judge :: "pi \<Rightarrow> residual \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>l\<^sup>^_" [80, 80] 80)
+  where "P \<Longrightarrow>\<^sub>l\<^sup>^Rs \<equiv> (P, Rs) \<in> weakTransition"
 
 lemma transitionI:
   fixes P  :: pi

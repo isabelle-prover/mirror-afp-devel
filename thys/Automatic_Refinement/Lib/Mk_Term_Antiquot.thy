@@ -102,12 +102,11 @@ local
       else "T_" ^ name ^ "_" ^ string_of_int idx
 
     local 
-      open ML_Syntax 
-
       fun wrv (TVar (("_",_),_)) = "_"
-        | wrv (TVar (iname,_)) =  name_of_T iname
-        | wrv (T as TFree _) =  print_typ T
-        | wrv (Type arg) = "Type " ^ print_pair print_string (print_list wrv) arg
+        | wrv (TVar (iname,_)) = name_of_T iname
+        | wrv (T as TFree _) = ML_Syntax.print_typ T
+        | wrv (Type arg) =
+            "Type " ^ ML_Syntax.print_pair ML_Syntax.print_string (ML_Syntax.print_list wrv) arg
 
       fun is_special (TVar _) = false | is_special _ = true
   
@@ -116,7 +115,7 @@ local
           Pretty.str ("mk_term type error: Argument for ?" ^ name ^ " does not match type"),
           Pretty.brk 1, Syntax.pretty_typ ctxt T
         ]
-      |> Pretty.str_of |> print_string
+      |> Pretty.str_of |> ML_Syntax.print_string
   
       fun pr_fastype name = case env of
         SOME env => "fastype_of1 (" ^ env ^ ", " ^ name ^ ")"
@@ -134,23 +133,25 @@ local
     end
 
     local
-      open ML_Syntax
+      fun print_typ (Type arg) =
+            "Type " ^ ML_Syntax.print_pair ML_Syntax.print_string (ML_Syntax.print_list print_typ) arg
+        | print_typ (TFree arg) =
+            "TFree " ^ ML_Syntax.print_pair ML_Syntax.print_string ML_Syntax.print_sort arg
+        | print_typ (TVar (iname, _)) = name_of_T iname;
 
-      fun print_typ (Type arg) = "Type " ^ print_pair print_string (print_list print_typ) arg
-        | print_typ (TFree arg) = "TFree " ^ print_pair print_string print_sort arg
-        | print_typ (TVar (iname,_)) = name_of_T iname;
-
-      fun print_term (Const arg) = "Const " ^ print_pair print_string print_typ arg
-        | print_term (Free arg) = "Free " ^ print_pair print_string print_typ arg
-        | print_term (Var ((name,_),_)) = name
-        | print_term (Bound i) = "Bound " ^ print_int i
+      fun print_term (Const arg) =
+            "Const " ^ ML_Syntax.print_pair ML_Syntax.print_string print_typ arg
+        | print_term (Free arg) =
+            "Free " ^ ML_Syntax.print_pair ML_Syntax.print_string ML_Syntax.print_typ arg
+        | print_term (Var ((name, _), _)) = name
+        | print_term (Bound i) = "Bound " ^ ML_Syntax.print_int i
         | print_term (Abs (s, T, t)) = 
             if String.isPrefix "v_" s then
               "Abs (" ^ unprefix "v_" s ^ ", " ^ print_typ T ^ ", " ^ print_term t ^ ")"
             else
-              "Abs (" ^ print_string s ^ ", " ^ print_typ T ^ ", " ^ print_term t ^ ")"
-        | print_term (t1 $ t2) = atomic (print_term t1) ^ " $ " ^ atomic (print_term t2);
-
+              "Abs (" ^ ML_Syntax.print_string s ^ ", " ^ print_typ T ^ ", " ^ print_term t ^ ")"
+        | print_term (t1 $ t2) =
+            ML_Syntax.atomic (print_term t1) ^ " $ " ^ ML_Syntax.atomic (print_term t2);
     in
       val et = print_term t
       val e = "(" ^ matchers vars et ^ ")"

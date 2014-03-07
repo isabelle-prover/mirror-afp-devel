@@ -63,8 +63,6 @@ ML {*
   *)
 
   local
-    open ML_Syntax
-
     fun replace_dummy' (Const ("dummy_pattern", T)) i =
           (Var (("_dummy_", i), T), i + 1)
       | replace_dummy' (Abs (x, T, t)) i =
@@ -130,20 +128,20 @@ ML {*
 
     fun write (with_types, t) = let
       fun twr_aux (Type (name,Ts)) 
-            = "Type (" ^ print_string name ^ ", " ^ print_list twr_aux Ts ^ ")"
-        | twr_aux (TFree (name,_)) = "TFree (" ^ print_string name ^ ", _)"
+            = "Type (" ^ ML_Syntax.print_string name ^ ", " ^ ML_Syntax.print_list twr_aux Ts ^ ")"
+        | twr_aux (TFree (name,_)) = "TFree (" ^ ML_Syntax.print_string name ^ ", _)"
         | twr_aux (TVar ((name,_),_)) = name
   
       val twr = if with_types then twr_aux else K "_"
 
       fun s_string (Var ((name,_),_)) = name
         | s_string t = case try HOLogic.dest_string t of
-            SOME s => print_string s
+            SOME s => ML_Syntax.print_string s
           | NONE => raise TERM ("Expected var or string literal",[t])
 
       fun s_index (Var ((name,_),_)) = name
         | s_index t = case try HOLogic.dest_nat t of
-            SOME n => print_int n
+            SOME n => ML_Syntax.print_int n
           | NONE => raise TERM ("Expected var or nat literal",[t])
 
       fun s_indexname (Var ((name,_),_)) = name
@@ -161,7 +159,7 @@ ML {*
         | s_typ t = raise TERM ("Expected var or type structure",[t])
       and s_args (Var ((name,_),_)) = name
         | s_args t = ( case try HOLogic.dest_list t of
-            SOME l => print_list s_typ l
+            SOME l => ML_Syntax.print_list s_typ l
           | NONE => raise TERM ("Expected variable or type argument list",[t])
           )
 
@@ -180,10 +178,10 @@ ML {*
         | swr t = raise TERM ("Expected var or term structure",[t])
 
       fun vwr (Const (name,T)) 
-            = "Const (" ^ print_string name ^ ", " ^ twr T ^ ")"
+            = "Const (" ^ ML_Syntax.print_string name ^ ", " ^ twr T ^ ")"
         | vwr (Var ((name,_),_)) = name
         | vwr (Free (name,T)) = "Free (" ^ name ^ ", " ^ twr T ^ ")"
-        | vwr (Bound i) = "Bound " ^ print_int i
+        | vwr (Bound i) = "Bound " ^ ML_Syntax.print_int i
         | vwr (Abs ("_",T,t)) = "Abs (_," ^ twr T ^ "," ^ vwr t ^ ")"
         | vwr (Abs (x,T,t)) = "Abs (" ^ x ^ "," 
                 ^ x ^ "_T as " ^ twr T ^ "," 
