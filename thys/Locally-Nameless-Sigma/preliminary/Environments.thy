@@ -21,9 +21,8 @@ where
      (if (x \<notin> dom e) then (Env (e(x \<mapsto> a))) else Malformed)" 
 | add_mal: "Malformed<x:a> = Malformed"
 
-syntax (xsymbols)
-  add :: "('a environment) \<Rightarrow> string \<Rightarrow> 'a \<Rightarrow> (string ~=> 'a)"   
-  ("_\<lparr>_:_\<rparr>" [90, 0, 0] 91)
+notation (xsymbols)
+  add  ("_\<lparr>_:_\<rparr>" [90, 0, 0] 91)
 
 (* domains of environments, i.e. the set of used variable names *)
 primrec
