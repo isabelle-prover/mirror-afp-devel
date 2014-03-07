@@ -405,10 +405,9 @@ ML {*
       natural_relator_from_term (t as Const (name,T)) = let
         fun err msg = raise TERM (msg,[t])
   
-        open HOLogic
         val (argTs,bodyT) = strip_type T
-        val (conTs,absTs) = argTs |> map (dest_setT #> dest_prodT) |> split_list
-        val (bconT,babsT) = bodyT |> dest_setT |> dest_prodT
+        val (conTs,absTs) = argTs |> map (HOLogic.dest_setT #> HOLogic.dest_prodT) |> split_list
+        val (bconT,babsT) = bodyT |> HOLogic.dest_setT |> HOLogic.dest_prodT
         val (Tcon,bconTs) = dest_Type bconT
         val (Tcon',babsTs) = dest_Type babsT
   
