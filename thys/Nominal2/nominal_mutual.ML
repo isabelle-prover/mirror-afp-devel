@@ -13,7 +13,6 @@ Mutual recursive nominal function definitions.
 
 signature NOMINAL_FUNCTION_MUTUAL =
 sig
-
   val prepare_nominal_function_mutual : Nominal_Function_Common.nominal_function_config
     -> string (* defname *)
     -> ((string * typ) * mixfix) list
@@ -22,9 +21,7 @@ sig
     -> ((thm (* goalstate *)
         * (thm -> Nominal_Function_Common.nominal_function_result) (* proof continuation *)
        ) * local_theory)
-
 end
-
 
 structure Nominal_Function_Mutual: NOMINAL_FUNCTION_MUTUAL =
 struct
@@ -95,8 +92,8 @@ fun analyze_eqs ctxt defname fs eqs =
     val dresultTs = distinct (op =) resultTs
     val n' = length dresultTs
 
-    val RST = Balanced_Tree.make (uncurry SumTree.mk_sumT) dresultTs
-    val ST = Balanced_Tree.make (uncurry SumTree.mk_sumT) argTs
+    val RST = Balanced_Tree.make (uncurry Sum_Tree.mk_sumT) dresultTs
+    val ST = Balanced_Tree.make (uncurry Sum_Tree.mk_sumT) argTs
 
     val fsum_type = ST --> RST
 
@@ -108,7 +105,7 @@ fun analyze_eqs ctxt defname fs eqs =
         val vars = map_index (fn (j,T) => Free ("x" ^ string_of_int j, T)) caTs (* FIXME: Bind xs properly *)
         val i' = find_index (fn Ta => Ta = resultT) dresultTs + 1
 
-        val f_exp = SumTree.mk_proj RST n' i' (Free fsum_var $ SumTree.mk_inj ST num i (foldr1 HOLogic.mk_prod vars))
+        val f_exp = Sum_Tree.mk_proj RST n' i' (Free fsum_var $ Sum_Tree.mk_inj ST num i (foldr1 HOLogic.mk_prod vars))
         val def = Term.abstract_over (Free fsum_var, fold_rev lambda vars f_exp)
 
         val rew = (n, fold_rev lambda vars f_exp)
@@ -124,8 +121,8 @@ fun analyze_eqs ctxt defname fs eqs =
         val rhs' = rhs
              |> map_aterms (fn t as Free (n, _) => the_default t (AList.lookup (op =) rews n) | t => t)
       in
-        (qs, gs, SumTree.mk_inj ST num i (foldr1 (mk_prod_abs qs) args),
-         Envir.beta_norm (SumTree.mk_inj RST n' i' rhs'))
+        (qs, gs, Sum_Tree.mk_inj ST num i (foldr1 (mk_prod_abs qs) args),
+         Envir.beta_norm (Sum_Tree.mk_inj RST n' i' rhs'))
       end
 
     val qglrs = map convert_eqs fqgars
@@ -271,21 +268,21 @@ fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
       end
 
     val Ps = map2 mk_P parts newPs
-    val case_exp = SumTree.mk_sumcases HOLogic.boolT Ps
+    val case_exp = Sum_Tree.mk_sumcases HOLogic.boolT Ps
 
     val induct_inst =
       Thm.forall_elim (cert case_exp) induct
-      |> full_simplify (put_simpset SumTree.sumcase_split_ss ctxt)
+      |> full_simplify (put_simpset Sum_Tree.sumcase_split_ss ctxt)
       |> full_simplify (put_simpset HOL_basic_ss ctxt addsimps all_f_defs)
 
     fun project rule (MutualPart {cargTs, i, ...}) k =
       let
         val afs = map_index (fn (j,T) => Free ("a" ^ string_of_int (j + k), T)) cargTs (* FIXME! *)
-        val inj = SumTree.mk_inj ST n i (foldr1 HOLogic.mk_prod afs)
+        val inj = Sum_Tree.mk_inj ST n i (foldr1 HOLogic.mk_prod afs)
       in
         (rule
          |> Thm.forall_elim (cert inj)
-         |> full_simplify (put_simpset SumTree.sumcase_split_ss ctxt)
+         |> full_simplify (put_simpset Sum_Tree.sumcase_split_ss ctxt)
          |> fold_rev (Thm.forall_intr o cert) (afs @ newPs),
          k + length cargTs)
       end
@@ -426,13 +423,13 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
       let
         val (tys, ty) = strip_type T
         val fun_var = Free (n ^ "_aux", HOLogic.mk_tupleT tys --> ty)
-        val inj_fun = absdummy dummyT (SumTree.mk_inj RST n' i' (Bound 0))
+        val inj_fun = absdummy dummyT (Sum_Tree.mk_inj RST n' i' (Bound 0))
       in
         Syntax.check_term lthy'' (mk_comp_dummy inj_fun fun_var)
       end
 
     val case_sum_exp = map mk_cases parts
-      |> SumTree.mk_sumcases RST 
+      |> Sum_Tree.mk_sumcases RST 
    
     val (G_name, G_type) = dest_Free G 
     val G_name_aux = G_name ^ "_aux"
@@ -455,10 +452,10 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
 
     fun mk_inj_goal  (MutualPart {i', ...}) =
       let
-        val injs = SumTree.mk_inj ST n' i' (Bound 0)
+        val injs = Sum_Tree.mk_inj ST n' i' (Bound 0)
         val projs = y
-          |> SumTree.mk_proj RST n' i'
-          |> SumTree.mk_inj RST n' i'
+          |> Sum_Tree.mk_proj RST n' i'
+          |> Sum_Tree.mk_inj RST n' i'
       in
         Const (@{const_name "All"}, dummyT) $ absdummy dummyT
           (HOLogic.mk_imp (HOLogic.mk_eq(x, injs), HOLogic.mk_eq(projs, y)))

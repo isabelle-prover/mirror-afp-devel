@@ -390,7 +390,7 @@ fun prove_termination_ind ctxt =
     fun mk_size_measure T =
       case T of    
         (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
-           SumTree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
+           Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
       | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
            HOLogic.mk_comp (mk_size_measure T2, snd_const T1 T2)
       | _ => HOLogic.size_const T
@@ -406,7 +406,7 @@ let
   fun mk_size_measure T =
     case T of    
       (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
-         SumTree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
+         Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
     | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
          prod_size_const T1 T2 $ (mk_size_measure T1) $ (mk_size_measure T2)
     | _ => HOLogic.size_const T
