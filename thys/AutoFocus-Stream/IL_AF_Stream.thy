@@ -24,15 +24,12 @@ text {*
 consts
   f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl "\<Join>\<^sub>f" 100)
   i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl "\<Join>\<^sub>i" 100)
-syntax (xsymbols)
-  "_f_join" :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"   (infixl "\<Join>\<^sub>" 100)
-  "_i_join" :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist" (infixl "\<Join>\<^sub>" 100)
-syntax (HTML output)
-  "_f_join" :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"   (infixl "\<Join>\<^sub>" 100)
-  "_i_join" :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist" (infixl "\<Join>\<^sub>" 100)
-translations
-  "_f_join xs n" \<rightleftharpoons> "CONST f_join xs n"
-  "_i_join f n" \<rightleftharpoons> "CONST i_join f n"
+notation (xsymbols)
+  f_join  (infixl "\<Join>\<^sub>" 100) and
+  i_join  (infixl "\<Join>\<^sub>" 100)
+notation (HTML output)
+  f_join  (infixl "\<Join>\<^sub>" 100) and
+  i_join  (infixl "\<Join>\<^sub>" 100)
 
 text {*
   The function @{text i_f_join} can be used for the case,
@@ -45,12 +42,10 @@ text {*
   and returns a finite stream. *}
 consts
   i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
-syntax (xsymbols)
-  "_i_f_join" :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list" (infixl "\<Join>\<^sub>" 100)
-syntax (HTML output)
-  "_i_f_join" :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list" (infixl "\<Join>\<^sub>" 100)
-translations
-  "_i_f_join f n" \<rightleftharpoons> "CONST i_f_join f n"
+notation (xsymbols)
+  i_f_join  (infixl "\<Join>\<^sub>" 100)
+notation (HTML output)
+  i_f_join  (infixl "\<Join>\<^sub>" 100)
 
 text {* 
   The function @{text i_f_join} should be used
