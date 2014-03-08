@@ -275,8 +275,7 @@ let
   val def_term = Logic.mk_equals (lhs_term,f_term) 
     |> fold Logic.all param_terms;
 
-  val attribs = map (Attrib.intern_src (Proof_Context.theory_of lthy)) 
-    attribs_raw;
+  val attribs = map (Attrib.check_src lthy) attribs_raw;
 
   val ((_,(_,def_thm)),lthy) = Specification.definition 
     (SOME (fun_name,NONE,Mixfix.NoSyn),((Binding.empty,attribs),def_term)) lthy;
