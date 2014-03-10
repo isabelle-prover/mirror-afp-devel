@@ -287,12 +287,13 @@ ML {*
       val ctxt = Proof_Context.init_global thy;
       val match_prefix = if Long_Name.is_qualified mpat then mpat
         else Long_Name.qualify (Context.theory_name thy) mpat;
-      val names = Sign.consts_of thy |> Consts.dest |> #constants 
-      |> Name_Space.dest_table ctxt
-      |> filter (fn 
-          (name,(_,SOME _)) => Long_Name.qualifier name = match_prefix 
-        | _ => false)
-      |> map #1
+      val {const_space, constants, ...} = Sign.consts_of thy |> Consts.dest;
+      val names = 
+      Name_Space.dest_table' ctxt const_space constants
+      |> map_filter (fn
+          ((name, _), (_, SOME _)) =>
+            if Long_Name.qualifier name = match_prefix then SOME name else NONE
+        | _ => NONE)
       val _ = if null names then 
         warning ("ICF_Tools.revert_abbrevs: No names with prefix: " 
           ^ match_prefix) 

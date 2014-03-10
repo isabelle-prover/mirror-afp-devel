@@ -16,12 +16,12 @@ structure Revert_Abbrev :REVERT_ABBREV = struct
   (* Revert all abbreviations whose name matches the given matcher *)
   fun revert_abbrev_matching match_fun thy = let
     val ctxt = Proof_Context.init_global thy;
-    val names = Sign.consts_of thy |> Consts.dest |> #constants 
-    |> Name_Space.dest_table ctxt
-    |> filter (fn 
-        (name,(_,SOME _)) => match_fun name
-      | _ => false)
-    |> map #1
+    val {const_space, constants, ...} = Sign.consts_of thy |> Consts.dest;
+    val names =
+    Name_Space.dest_table' ctxt const_space constants
+    |> map_filter (fn 
+        ((name, _), (_, SOME _)) => if match_fun name then SOME name else NONE
+      | _ => NONE)
     val _ = if null names then 
       warning ("revert_abbrevs: No matching constants") 
     else ();
