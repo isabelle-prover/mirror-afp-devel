@@ -289,7 +289,7 @@ ML {*
         else Long_Name.qualify (Context.theory_name thy) mpat;
       val {const_space, constants, ...} = Sign.consts_of thy |> Consts.dest;
       val names = 
-      Name_Space.dest_table' ctxt const_space constants
+      Name_Space.extern_entries ctxt const_space (Symtab.dest constants)
       |> map_filter (fn
           ((name, _), (_, SOME _)) =>
             if Long_Name.qualifier name = match_prefix then SOME name else NONE
