@@ -222,7 +222,7 @@ ML {*
 *}
 
 setup {*
-  ML_Antiquote.inline @{binding "mpat"} mpat_antiquot
+  ML_Antiquotation.inline @{binding "mpat"} mpat_antiquot
 *}
 
 subsection {* Examples *}
