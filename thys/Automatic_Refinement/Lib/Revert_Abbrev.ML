@@ -18,7 +18,7 @@ structure Revert_Abbrev :REVERT_ABBREV = struct
     val ctxt = Proof_Context.init_global thy;
     val {const_space, constants, ...} = Sign.consts_of thy |> Consts.dest;
     val names =
-    Name_Space.extern_entries ctxt const_space (Symtab.dest constants)
+    Name_Space.extern_entries ctxt const_space constants
     |> map_filter (fn 
         ((name, _), (_, SOME _)) => if match_fun name then SOME name else NONE
       | _ => NONE)
