@@ -34,10 +34,10 @@ where "calls  (Lambda l vs c) = callsC c"
     | "callsV _     = {}"
 
 lemma finite_lambdas[simp]: "finite (lambdas l)" and "finite (lambdasC c)" "finite (lambdasV v)"
-by (induct rule: lambdas_lambdasC_lambdasV.induct, auto, blast)
+by (induct rule: lambdas_lambdasC_lambdasV.induct, auto)
 
 lemma finite_calls[simp]: "finite (calls l)" and "finite (callsC c)" "finite (callsV v)"
-by (induct rule: calls_callsC_callsV.induct, auto, blast)
+by (induct rule: calls_callsC_callsV.induct, auto)
 
 fun vars :: "lambda \<Rightarrow> var set"
 and varsC :: "call \<Rightarrow> var set"
@@ -50,7 +50,7 @@ where "vars (Lambda _ vs c) = set vs \<union> varsC c"
     | "varsV _  = {}"
 
 lemma finite_vars[simp]: "finite (vars l)" and "finite (varsC c)" "finite (varsV v)"
-by (induct rule: vars_varsC_varsV.induct, auto, blast)
+by (induct rule: vars_varsC_varsV.induct, auto)
 
 fun label :: "lambda + call \<Rightarrow> label"
 where "label (Inl (Lambda l _ _)) = l"
@@ -68,7 +68,7 @@ where "labels (Lambda l vs c) = {l} \<union> labelsC c"
     | "labelsV _  = {}"
 
 lemma finite_labels[simp]: "finite (labels l)" and "finite (labelsC c)" "finite (labelsV v)"
-by (induct rule: labels_labelsC_labelsV.induct, auto, blast)
+by (induct rule: labels_labelsC_labelsV.induct, auto)
 
 fun prims :: "lambda \<Rightarrow> prim set"
 and primsC :: "call \<Rightarrow> prim set"
@@ -82,7 +82,7 @@ where "prims (Lambda _ vs c) = primsC c"
     | "primsV (C l v) = {}"
 
 lemma finite_prims[simp]: "finite (prims l)" and "finite (primsC c)" "finite (primsV v)"
-by (induct rule: labels_labelsC_labelsV.induct, auto, blast)
+by (induct rule: labels_labelsC_labelsV.induct, auto)
 
 fun vals :: "lambda \<Rightarrow> val set"
 and valsC :: "call \<Rightarrow> val set"

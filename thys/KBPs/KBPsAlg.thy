@@ -302,7 +302,7 @@ lemma k_invariantTOD:
 lemma k_invariantAD:
   "\<lbrakk> k_isNode ec; k_memb ec A; k_invariant A \<rbrakk>
      \<Longrightarrow> \<exists>acts. lookup aOps (aActs A) ec = Some acts \<and> set acts = set (simAction a ec)"
-  unfolding k_invariant_def by simp
+  unfolding k_invariant_def by blast
 
 lemma k_invariantTD:
   "\<lbrakk> k_isNode ec; k_memb ec A; obs \<in> simObs a ` set (simTrans a ec); k_invariant A \<rbrakk>

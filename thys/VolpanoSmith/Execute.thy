@@ -36,12 +36,12 @@ proof -
     fix \<Gamma> e1 e2 lev bop
     assume "x = \<Gamma>" "xa = e1\<guillemotleft>bop\<guillemotright> e2" "xb = High"
     "\<Gamma> \<turnstile> e1 : High" "\<Gamma> \<turnstile> e2 : lev"
-    from secExprTyping(5-6) this show thesis by (cases lev) (auto, blast)
+    from secExprTyping(5-6) this show thesis by (cases lev) (auto)
   next
     fix \<Gamma> e1 e2 lev bop
     assume "x = \<Gamma>" "xa = e1\<guillemotleft>bop\<guillemotright> e2" "xb = High"
     "\<Gamma> \<turnstile> e1 : lev" "\<Gamma> \<turnstile> e2 : High"
-    from secExprTyping(6-7) this show thesis by (cases lev) (auto, blast)
+    from secExprTyping(6-7) this show thesis by (cases lev) (auto)
   qed
 qed
 
@@ -59,7 +59,7 @@ proof -
     from secComTyping(1-2) this show thesis by (cases T) auto
   next
     fix \<Gamma> V T e assume "x = \<Gamma>" "xa = T" "xb = V:=e" "\<Gamma> V = Some High"
-    from secComTyping(3-4) this show thesis by (cases T) (auto, blast)
+    from secComTyping(3-4) this show thesis by (cases T) (auto)
   next
     fix \<Gamma> e V
     assume "x = \<Gamma>" "xa = Low" "xb = V:=e" "\<Gamma> \<turnstile> e : Low" "\<Gamma> V = Some Low"

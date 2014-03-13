@@ -179,7 +179,7 @@ next
       using UBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<x \<and> x<u \<and> nolub \<phi> xs l x u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> DLO.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x innermost_intvl[OF `nqfree \<phi>` _ _ _ `x \<notin> EQ \<phi> xs`]
-      by (simp add:nolub_def) fastforce
+      by (simp add:nolub_def)
     then obtain m n where
       "Less (Suc m) 0 : set ?as" "Less 0 (Suc n) : set ?as"
       "xs!m < x \<and> x < xs!n"

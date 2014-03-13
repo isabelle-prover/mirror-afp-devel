@@ -738,7 +738,6 @@ theorem alt_consistency:
   prefer 2
   apply assumption
   apply simp
-  apply (rule conjI, (rule refl)+)
   apply iprover
   apply (erule conjE')
   apply (rule allI impI)+
@@ -756,7 +755,6 @@ theorem alt_consistency:
   apply assumption
   apply simp
   apply iprover
-  apply iprover
   apply (erule conjE')
   apply (rule allI impI)+
   apply (erule allE impE)+
@@ -765,7 +763,6 @@ theorem alt_consistency:
   apply assumption
   apply simp
   apply iprover
-  apply iprover
   apply (erule conjE')
   apply (rule allI impI)+
   apply (erule allE impE)+
@@ -773,7 +770,6 @@ theorem alt_consistency:
   prefer 2
   apply assumption
   apply simp
-  apply iprover
   apply iprover
   apply (erule conjE')
   apply (rule allI impI)+

@@ -23,8 +23,7 @@ lemma filter_i: "F \<in> filters \<Longrightarrow> a \<in> F \<Longrightarrow> b
   by (simp add: filters_def)
 
 lemma filter_ii: "F \<in> filters \<Longrightarrow> a \<in> F \<Longrightarrow> a \<le> b \<Longrightarrow> b \<in> F"
- apply (simp add: filters_def)
- by blast
+ by (simp add: filters_def)
 
 lemma filter_iii [simp]: "F \<in> filters \<Longrightarrow> 1 \<in> F"
  apply (simp add: filters_def)

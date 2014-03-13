@@ -335,7 +335,7 @@ lemma sorted_merge_induct[consumes 1, case_names Nil IH]:
       \<Longrightarrow> P xs (y#ys)"
   shows "P xs ys"
   using assms(2-) assms(1)
-  by (induction_schema) (case_tac ys, simp_all, force, lexicographic_order)
+  by (induction_schema) (case_tac ys, simp_all, lexicographic_order)
  
 lemma filter_by_key_dropWhile[simp]:
   assumes "sorted (map key xs)"

@@ -131,9 +131,7 @@ apply (cases "is_exn \<sigma>")
 apply (simp add: run.simps)
 apply (cases "execute f (the_state \<sigma>)")
 apply (simp add: run.simps bind_def)
-apply (auto simp add: bind_def run.simps)
-apply (cases \<sigma>)
-by auto
+by (auto simp add: bind_def run.simps)
 
 lemma runE'[run_elims]:
   assumes "run (f >> g) \<sigma> \<sigma>'' res"

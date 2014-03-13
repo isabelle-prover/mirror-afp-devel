@@ -1151,7 +1151,7 @@ proof -
                         apply (rule splitFace_f12_oldF_neq)
                           apply (subgoal_tac "pre_splitFace g v w f [countVertices g..<countVertices g + n]")
                            apply assumption apply (simp add: pre) apply assumption+
-                        apply (simp add: splitFace_def split_def) apply force
+                        apply (simp add: splitFace_def split_def)
                        apply (rule normFaces_distinct)
                        apply (rule minGraphProps8a) apply assumption apply (simp add: minGraphProps4 vertices_graph)
                       apply (simp add: normFaces_def)
@@ -1170,7 +1170,6 @@ proof -
                          apply assumption apply simp apply (rule splitFace_f12_oldF_neq)
                           apply (subgoal_tac "pre_splitFace g v w f [countVertices g..<countVertices g + n]") apply assumption
                           apply (simp add: pre) apply assumption apply (simp add: splitFace_def split_def)
-                        apply force
                        apply (rule normFaces_distinct)
                        apply (rule minGraphProps8a') apply assumption apply (simp add: minGraphProps4)
                       apply simp
@@ -1455,7 +1454,7 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
     apply (rule vs1_vs2_empty)
    apply (subgoal_tac "pre_split_face f' v a ws")
     apply (simp add: f12_def f21_def split_face_distinct1' split_face_distinct2')
-   apply simp
+   apply (simp add: pre_splitFace_pre_split_face[OF pre_F'])
   apply (simp add: vertices_graph fla)
  apply (simp add: nth_append del:replacefacesAt_simps)
  apply (subgoal_tac "distinct (faces g')")
@@ -1465,16 +1464,15 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
    apply (rule ccontr) apply simp
    apply (case_tac "x = f'") apply simp apply simp
    apply (subgoal_tac "va \<in> \<V> g'") apply (simp add: fla vertices_graph)
-   apply (rule minGraphProps9) apply simp apply force apply simp
+   apply (rule minGraphProps9) apply simp apply force
+   apply (simp add: fla) apply (metis minGraphProps9')
   apply (simp add: ws_def fla)
  apply (rule minGraphProps11') apply simp
 apply (subgoal_tac "v \<in> \<V> g' \<and> a \<in> \<V> g'")
  apply (simp only: fla in_vertices_graph)
 apply (subgoal_tac "f' \<in> \<F> g'")
  apply (subgoal_tac "v \<in> \<V> f' \<and> a \<in> \<V> f'") apply (simp only: minGraphProps9) apply force
- apply (subgoal_tac "pre_split_face f' v a ws") apply (simp only: pre_split_face_def) apply force
- apply (rule pre_splitFace_pre_split_face) apply assumption
-by (simp only: pre_splitFace_def)
+by force
 qed
 
 lemma splitFace_holds_faces_subset:

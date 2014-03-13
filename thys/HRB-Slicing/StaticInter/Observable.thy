@@ -174,7 +174,7 @@ case (Cons x xs)
       from nsx Cons
       have "obs_intra z S \<noteq> {} \<longrightarrow>
         (\<exists>x''\<in>set (zs @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-        by clarsimp(erule_tac x="[]" in allE,auto)
+        by clarsimp
       with False have "\<exists>x''\<in>set (zs @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S"
         by simp
       with `xs = zs@n#nsx'` 

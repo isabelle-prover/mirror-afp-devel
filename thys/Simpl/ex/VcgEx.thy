@@ -131,16 +131,12 @@ lemma "\<Gamma>\<turnstile> \<lbrace>a = a \<and> b = b\<rbrace> \<acute>M :== a
   
 
 lemma "\<Gamma>\<turnstile> \<lbrace>True\<rbrace> \<acute>M :== a;; \<acute>N :== b \<lbrace>\<acute>M = a \<and> \<acute>N = b\<rbrace>"
-  apply vcg 
-  apply simp
-  done
+  by vcg
 
 lemma "\<Gamma>\<turnstile> \<lbrace>\<acute>M = a \<and> \<acute>N = b\<rbrace>
                 \<acute>I :== \<acute>M;; \<acute>M :== \<acute>N;; \<acute>N :== \<acute>I
               \<lbrace>\<acute>M = b \<and> \<acute>N = a\<rbrace>"
-  apply vcg
-  apply simp
-  done
+  by vcg
 
 text {*
 We can also perform verification conditions generation step by step by using
@@ -154,7 +150,6 @@ lemma "\<Gamma>\<turnstile> \<lbrace>\<acute>M = a \<and> \<acute>N = b\<rbrace>
   apply vcg_step
   apply vcg_step
   apply vcg_step
-  apply simp
   done
 
 text {*
@@ -1423,10 +1418,7 @@ done
 text {* Instead of annotations one can also directly use previously proven lemmas.*}
 lemma foo_lemma: "\<forall>n m. \<Gamma>\<turnstile> \<lbrace>\<acute>N = n \<and> \<acute>M = m\<rbrace> \<acute>N :== \<acute>N + 1;; \<acute>M :== \<acute>M + 1   
                      \<lbrace>\<acute>N = n + 1 \<and> \<acute>M = m + 1\<rbrace>"
-  apply vcg
-  apply simp
-  done
-
+  by vcg
 
 
 lemma "\<Gamma>\<turnstile> \<lbrace>\<acute>N = n \<and> \<acute>M = m\<rbrace> LEMMA foo_lemma 

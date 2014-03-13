@@ -108,9 +108,7 @@ lemma (in state_space)
 
 lemma (in state_space)
   shows "\<Gamma>\<turnstile> \<lbrace>True\<rbrace> \<acute>M :== a;; \<acute>N :== b \<lbrace>\<acute>M = a \<and> \<acute>N = b\<rbrace>"
-  apply vcg 
-  apply simp
-  done
+  by vcg
 
 lemma (in state_space)
   shows "\<Gamma>\<turnstile> \<lbrace>\<acute>M = a \<and> \<acute>N = b\<rbrace>

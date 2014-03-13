@@ -718,7 +718,7 @@ lemma ntrs_stack_top_decomp_s:
   shows "P"
 using A 
 proof (cases rule: ntrs.cases)
-  case ntrs_step then obtain u' v p w where CASE: "ee=LCall p#w" "s'=v#u'#r" "((u#r,c),LCall p,(entry fg p#u'#r,c))\<in>trss fg" "(([entry fg p],c),w,([v],c'))\<in>trcl (trss fg)" by (simp,blast)
+  case ntrs_step then obtain u' v p w where CASE: "ee=LCall p#w" "s'=v#u'#r" "((u#r,c),LCall p,(entry fg p#u'#r,c))\<in>trss fg" "(([entry fg p],c),w,([v],c'))\<in>trcl (trss fg)" by (simp)
   from trss_stack_decomp_s[where s="[u]", simplified, OF CASE(3)] have SDC: "(([u], c), LCall p, ([entry fg p, u'], c)) \<in> trss fg" by auto
   with CASE(1,4) have "(([u],c),ee,([v,u'],c'))\<in>ntrs fg" by (auto intro!: ntrs.ntrs_step)
   moreover from SDC have "(u,Call p,u')\<in>edges fg" by (auto elim!: trss.cases)

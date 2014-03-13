@@ -235,7 +235,7 @@ lemma CACH_INVS:
 apply (simp add: ins_is_def Cachera_def deriv_def derivAssum_def, clarsimp)
 
 apply (rule INVS) apply assumption+ 
-apply (simp add: mkSPEC_def) apply fastforce apply assumption apply simp apply (simp add: heap_def)
+apply (simp add: mkSPEC_def) apply fastforce apply simp apply (simp add: heap_def)
 apply (simp add: mkState_def)
 apply (erule CONSEQ)
 apply clarsimp
@@ -1389,11 +1389,11 @@ prefer 2 apply (simp add: TP_MST_def)
 apply (rule_tac x=y in exI, simp)
 apply (rule TP_epxr_Sound) apply assumption 
   apply (erule translation_good) apply assumption+
-  apply (simp add: mkSPEC_def Cachera_def) apply fastforce
+  apply (simp add: mkSPEC_def Cachera_def)
 
 apply (drule compileExpr_Prop1) apply fastforce apply clarsimp
 apply (simp add: Segment_def) 
-apply (rule, rule, rule, rule, simp add: mkSPEC_def Cachera_def) apply fastforce
+apply (rule, rule, rule, rule, simp add: mkSPEC_def Cachera_def)
 apply clarsimp apply (rule, rule AL_emp1) 
 apply (erule_tac x=ll in allE)+ 
 apply clarsimp 

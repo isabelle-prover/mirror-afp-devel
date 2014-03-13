@@ -715,7 +715,6 @@ apply rule
             apply (erule IfT, simp) 
       apply (erule impE, simp add: SP_pre_def) apply (rule, rule, rule, rule) prefer 2 
             apply (rule, rule, erule IfT, simp) apply fastforce
-            apply clarsimp
          apply (erule_tac x=ma in allE, clarsimp)
            apply (erule_tac x=h in allE, erule_tac x=v in allE, clarsimp)
            apply (simp add: SP_post_def)

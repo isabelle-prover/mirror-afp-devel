@@ -917,8 +917,7 @@ case 0
  then have "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable (ext R R2 M N)" using a' by simp
  then have "([], \<Gamma> \<Rightarrow>* \<Delta>) \<in> (ext R R2 M N)" by (cases) auto      
  then obtain  r S where "r \<in> R" and split:"(extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta>) \<or> extendConc S r = ([],\<Gamma> \<Rightarrow>* \<Delta>))" 
-      apply (rule ext.cases) apply (auto simp add:extendRule_def extend_def extendConc_def)
-      apply (insert e) by auto
+      apply (rule ext.cases) by (auto simp add:extendRule_def extend_def extendConc_def)
  then obtain c where "r = ([],c)" by (cases r) (auto simp add:extendRule_def extendConc_def)
  with `r \<in> R` have "r \<in> Ax \<or> (r \<in> upRules \<union> (p_e R2 M N) \<union> modRules2)" using b c d e by auto
  with `r = ([],c)` have "r \<in> Ax" apply auto apply (rule upRules.cases,auto)
@@ -1181,8 +1180,8 @@ proof-
  have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
  then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
            apply (auto simp add:Ball_def extend_def) 
-           apply (drule_tac x=xa in spec,simp) apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
-           apply (drule_tac x=xa in spec,simp) by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
+           apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
+           by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
  have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
  then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
  moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p'" using eq
@@ -1425,8 +1424,8 @@ proof-
  have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
  then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
            apply (auto simp add:Ball_def extend_def) 
-           apply (drule_tac x=xa in spec,simp) apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
-           apply (drule_tac x=xa in spec,simp) by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
+           apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
+           by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
  have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
  then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
  moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p'" using eq
@@ -1745,13 +1744,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
        ca: "r = extendRule (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'') r'" and 
        cb: "r' \<in> R2" and
      cc:  "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
-  (*<*)using modRule1Characterise[where Ps="fst r" and C="snd r" and M=M1 and N=M2 and R=R2] apply auto
-             apply (drule_tac x=\<Gamma> in meta_spec) apply (drule_tac x=\<Delta> in meta_spec)
-               apply (drule_tac x=ps in meta_spec) apply (drule_tac x="\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>" in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x=F in meta_spec) apply auto
-                apply (drule_tac x=\<Gamma> in meta_spec) apply (drule_tac x=\<Delta> in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x="\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>" in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x=F in meta_spec)(*>*) by auto
+  (*<*)using modRule1Characterise[where Ps="fst r" and C="snd r" and M=M1 and N=M2 and R=R2] by auto
   obtain \<Gamma>1 \<Delta>1 where "S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)" by (cases S) auto
   moreover
     {assume "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)"
@@ -2099,13 +2092,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                 ca: "r = extendRule (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'') r'" and 
                 cb: "r' \<in> R2" and
                 cc:  "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
-                using modRule1Characterise[where Ps="fst r" and C="snd r" and M=M1 and N=M2 and R=R2] apply auto
-                apply (drule_tac x=\<Gamma> in meta_spec) apply (drule_tac x=\<Delta> in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x="\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>" in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x=F in meta_spec) apply auto
-                apply (drule_tac x=\<Gamma> in meta_spec) apply (drule_tac x=\<Delta> in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x="\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>" in meta_spec)
-                apply (drule_tac x=ps in meta_spec) apply (drule_tac x=F in meta_spec) by auto
+                using modRule1Characterise[where Ps="fst r" and C="snd r" and M=M1 and N=M2 and R=R2] by auto
             obtain \<Gamma>1 \<Delta>1 where "S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)" by (cases S) auto
             moreover
                {assume "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)"

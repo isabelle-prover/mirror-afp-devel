@@ -535,7 +535,7 @@ lemma cdep_edge_cases:
     \<And>a Q r p fs a'. \<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges a;
                   parent_node n = targetnode a; parent_node n' = sourcenode a'\<rbrakk> \<Longrightarrow> P;
     \<And>m. \<lbrakk>n = CFG_node m; m = parent_node n'; n \<noteq> n'\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-by -(erule SDG_edge.cases,auto,fastforce)
+by -(erule SDG_edge.cases,auto)
 
 
 lemma SDG_edge_valid_SDG_node:
@@ -2061,7 +2061,7 @@ lemma sum_edge_cases:
        n = Actual_in (sourcenode a,x); n' = Actual_out (targetnode a',x');
        (p,ins,outs) \<in> set procs; x < length ins; x' < length outs\<rbrakk> \<Longrightarrow> P\<rbrakk>
   \<Longrightarrow> P"
-by -(erule sum_SDG_edge.cases,auto,fastforce+)
+by -(erule sum_SDG_edge.cases,auto)
 
 
 

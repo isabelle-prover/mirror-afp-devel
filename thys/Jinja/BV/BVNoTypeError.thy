@@ -83,7 +83,7 @@ proof -
     then obtain stk reg C M pc frs' where
       xcp [simp]: "xcp = None" and
       frs [simp]: "frs = (stk,reg,C,M,pc)#frs'" 
-      by (clarsimp simp add: neq_Nil_conv) fast
+      by (clarsimp simp add: neq_Nil_conv)
 
     from conforms obtain  ST LT Ts T mxs mxl ins xt where
       hconf:  "P \<turnstile> h \<surd>" and

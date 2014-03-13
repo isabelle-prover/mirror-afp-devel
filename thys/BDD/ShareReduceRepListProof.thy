@@ -102,7 +102,6 @@ apply   (rule_tac x="[]" in exI)
 apply   (rule_tac x="ns" in exI)
 using [[simp_depth_limit = 2]]
 apply   (simp (no_asm_use))
-apply   blast (* From precondition to invariant *)
 prefer 2
 using [[simp_depth_limit = 4]]
 apply (clarsimp)

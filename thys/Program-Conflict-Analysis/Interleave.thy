@@ -127,8 +127,6 @@ lemma interleave_cases[cases set, case_names empty left right]: "\<lbrakk>l\<in>
   apply simp
   apply (erule cons_interleave_cases)
   apply simp_all
-  apply blast
-  apply blast
   done
 
 lemma interleave_elem_induct[induct set, case_names empty left right]: 

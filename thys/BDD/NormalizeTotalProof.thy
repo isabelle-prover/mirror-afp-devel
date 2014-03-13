@@ -1464,16 +1464,9 @@ next
                     have no_dag: "Dag no low high (Node Tip no Tip)"
                       by simp 
                     with pret_dag no_in_pret have not_in_pret: "(Node Tip no Tip) \<le> pret"
-                      apply -
-                      apply (rule set_of_subdag)
-                      apply auto
-                      done
+                      by (metis set_of_subdag)
                     with prebdt_pret have "\<exists>bdt2. bdt (Node Tip no Tip) var = Some bdt2"
-                      apply -
-                      apply (rotate_tac 1)
-                      apply (drule subbdt_ex)
-                      apply auto
-                      done
+                      by (metis subbdt_ex)
                     with onesvno show ?thesis 
                       by simp
                   qed
@@ -1483,30 +1476,19 @@ next
             next
               assume hno_nNull: "high no \<noteq> Null"
               with pret_dag prebdt_pret no_in_pret   have lno_nNull: "low no \<noteq> Null"
-                apply -
-                apply (drule balanced_bdt)
-                apply assumption+
-                apply simp
-                done
+                by (metis balanced_bdt)
                   (*-------------------normalize_prop fuer (high no)------------------------*)
               
               from no_in_pret nonNull hno_nNull pret_dag  
               have hno_in_pret: "high no \<in> set_of pret"
-                apply -
-                apply (rule_tac x=no in subelem_set_of_high)
-                apply assumption+
-                done
+                by (metis subelem_set_of_high)
               with wf_ll 
               have hno_in_ll: "high no \<in> set (ll ! (var (high no)))" 
                 by (simp add: wf_ll_def)
               from pret_dag ord_pret  no_in_pret lno_nNull hno_nNull 
               
               have varhnos_varno: "var (high no) < var no"
-                apply -
-                apply (drule var_ordered_children)
-                apply assumption+
-                apply auto
-                done
+                by (metis var_ordered_children)
               with varno have varhnos_n: "var (high no) < n" by simp
               with hno_in_ll have hno_in_Nodesn: "high no \<in> Nodes n ll"
                 apply (simp add: Nodes_def)

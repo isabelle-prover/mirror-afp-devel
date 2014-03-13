@@ -349,7 +349,7 @@ proof -
   moreover
   {
     assume ux: "u = x" and vNEy: "v \<noteq> y"
-    with uv xyA iia swf wp sd have ?thesis by (auto intro: j_decisive_xy)
+    with uv xyA iia swf wp sd have ?thesis by(auto intro: j_decisive_xy[of x y])
   }
   moreover
   {
@@ -364,20 +364,20 @@ proof -
   moreover
   {
     assume uNExy: "u \<notin> {x,y}" and vx: "v = x"
-    with uv xyA iia swf wp sd have ?thesis by (auto intro: j_decisive_xy)
+    with uv xyA iia swf wp sd have ?thesis by (auto intro: j_decisive_xy[of x y])
   }
   moreover
   {
     assume uNExy: "u \<notin> {x,y}" and vy: "v = y"
-    with uv xyA iia swf wp sd have ?thesis by (auto intro: j_decisive_xy)
+    with uv xyA iia swf wp sd have ?thesis by (auto intro: j_decisive_xy[of x y])
   }
   moreover
   {
     assume uNExy: "u \<notin> {x,y}" and vNExy: "v \<notin> {x,y}"
     with uv xyA iia swf wp sd
-    have "decisive swf A Is {j} x u" by (auto intro: j_decisive_xy)
+    have "decisive swf A Is {j} x u" by (auto intro: j_decisive_xy[where x=x and z=u])
     hence sdxu: "semidecisive swf A Is {j} x u" by (rule d_imp_sd)
-    with uNExy vNExy uv xyA iia swf wp have ?thesis by (auto intro: j_decisive_xy)
+    with uNExy vNExy uv xyA iia swf wp have ?thesis by (auto intro: j_decisive_xy[of x])
   }
   ultimately show ?thesis by blast
 qed

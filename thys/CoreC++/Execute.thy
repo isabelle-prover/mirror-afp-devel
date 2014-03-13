@@ -333,11 +333,10 @@ code_pred
   OverriderMethodDefs'
 apply(clarsimp simp add: OverriderMethodDefs'_def MinimalMethodDefs'_def MethodDefs'_def OverriderMethodDefs_def appendPath_def leq_path_unfold)
 apply(case_tac "last xb = hd Cs'")
- apply(simp, blast)
+ apply(simp)
 
 apply(thin_tac "PROP ?P")
 apply(simp add: leq_path1_def)
-apply blast
 done
 
 

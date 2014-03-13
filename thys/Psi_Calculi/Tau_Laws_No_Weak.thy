@@ -206,9 +206,7 @@ proof(induct rule: weakCongI)
     obtain p where "set p \<subseteq> set yvec \<times> set(p \<bullet> yvec)" and "(p \<bullet> yvec) \<sharp>* N" and "(p \<bullet> yvec) \<sharp>* P" and "(p \<bullet> yvec) \<sharp>* Q" and "(p \<bullet> yvec) \<sharp>* \<sigma>"
       by(rule_tac xvec=yvec and c="(N, P, Q, \<sigma>)" in name_list_avoiding) auto
     thus ?case using `wellFormedSubst \<sigma>` tauLaw4PsiCong[where \<alpha>="pInput (substTerm.seqSubst M \<sigma>) (p \<bullet> yvec) (substTerm.seqSubst (p \<bullet> N) \<sigma>)"]
-      apply(simp add: inputChainAlpha' eqvts)
-      apply(subst inputChainAlpha'[where p=p and xvec=yvec], auto simp add: eqvts)
-      by(subst inputChainAlpha'[where p=p and xvec=yvec], auto simp add: eqvts)
+      by(simp add: inputChainAlpha' eqvts)
   next
     case(pOutput M N)
     thus ?case using  `wellFormedSubst \<sigma>` tauLaw4PsiCong[where \<alpha>="pOutput (substTerm.seqSubst M \<sigma>) (substTerm.seqSubst N \<sigma>)"]

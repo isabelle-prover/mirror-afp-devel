@@ -167,16 +167,15 @@ lemma clock_simVal:
 
 lemma clock_sim_f:
   "sim_f Clock.MC clock_simMC clock_sim"
-  apply (rule sim_fI)
-  apply (simp add: clock_simRels_def clock_sim_def)
-  apply (intro conjI)
+apply (rule sim_fI)
+apply (simp add: clock_simRels_def clock_sim_def)
+apply (intro conjI)
+   apply (fastforce intro!: imageI)
   apply (fastforce intro!: imageI)
-  apply (fastforce intro!: imageI)
-  apply (fastforce dest: Clock.mkM_simps(2))
-  apply (fastforce intro!: imageI dest: Clock.mkM_simps(2))
-  apply (rule_tac x=v in image_eqI)
-  apply simp_all
-  done
+ apply (fastforce dest: Clock.mkM_simps(2))
+apply (rule_tac x=v in image_eqI)
+ apply simp_all
+done
 
 lemma clock_sim_r:
   "sim_r Clock.MC clock_simMC clock_sim"

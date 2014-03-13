@@ -1060,47 +1060,47 @@ apply (erule ex1E,
        (erule conjE)+,
        rename_tac k h,
        frule_tac f = k in Ring.mHom_func[of R _ MN1 MN], assumption)
- apply (subgoal_tac "f \<in> (M \<times>\<^sub>c N) \<rightarrow> (carrier MN)")
+apply (subgoal_tac "f \<in> (M \<times>\<^sub>c N) \<rightarrow> (carrier MN)")
  prefer 2 apply (simp add:universal_property_def bilinear_map_def)
- apply (frule_tac f = h in Ring.mHom_func[of R _ MN MN1], assumption,
+apply (frule_tac f = h in Ring.mHom_func[of R _ MN MN1], assumption,
         frule_tac  g = h and h = k in compose_assoc [of "f" "M \<times>\<^sub>c N" 
          "carrier MN" _ "carrier MN1" _ "carrier MN"], assumption+,
         simp)
- apply (subgoal_tac "g \<in> (M \<times>\<^sub>c N) \<rightarrow> (carrier MN1)")
+apply (subgoal_tac "g \<in> (M \<times>\<^sub>c N) \<rightarrow> (carrier MN1)")
  prefer 2 apply (simp add:universal_property_def bilinear_map_def)
- apply (frule_tac g = k and h = h in compose_assoc [of "g" "M \<times>\<^sub>c N"
+apply (frule_tac g = k and h = h in compose_assoc [of "g" "M \<times>\<^sub>c N"
         "carrier MN1" _ "carrier MN" _ "carrier MN1"], assumption+,
         simp)
- apply (subgoal_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN\<^esub>) f = f")
+apply (subgoal_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN\<^esub>) f = f")
  prefer 2 
  apply (frule Module.mId_mHom [of MN R],
         frule_tac f = "mId\<^bsub>MN\<^esub>" in Ring.mHom_func[of R _ MN MN], assumption,
         frule  composition [of f "M \<times>\<^sub>c N" "carrier MN" "mId\<^bsub>MN\<^esub>" "carrier MN"],
          assumption+,
         rule funcset_eq [of _ "M \<times>\<^sub>c N"] )
- apply (simp add:compose_def restrict_def extensional_def,
+   apply (simp add:compose_def restrict_def extensional_def,
         simp add:universal_property_def bilinear_map_def)
  apply (simp add:compose_def mId_def funcset_mem del:Pi_I')
- apply (rotate_tac -4)
- apply (frule sym,
+apply (rotate_tac -4)
+apply (frule sym,
         thin_tac "f = compose (M \<times>\<^sub>c N) (compose (carrier MN) k h) f")
- apply (subgoal_tac "(compose (carrier MN) k h) = mId\<^bsub>MN\<^esub>")
+apply (subgoal_tac "(compose (carrier MN) k h) = mId\<^bsub>MN\<^esub>")
  apply (subgoal_tac "(compose (carrier MN1) h k) = (mId\<^bsub>MN1\<^esub>)") 
- apply (simp add:misomorphic_def)
- apply (frule_tac f = h and g = k in Module.mHom_mId_bijec [of MN R MN1],
+  apply (simp add:misomorphic_def)
+  apply (frule_tac f = h and g = k in Module.mHom_mId_bijec [of MN R MN1],
             assumption+)
- apply blast  (* compose (carrier MN1) h k = mId\<^sub>MN1 *)
+  apply blast  (* compose (carrier MN1) h k = mId\<^sub>MN1 *)
  apply (subgoal_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN1\<^esub>) g = g")
- prefer 2 
- apply (frule Module.mId_mHom [of MN1 R])
- apply (subgoal_tac "mId\<^bsub>MN1\<^esub>  \<in> carrier MN1 \<rightarrow> carrier MN1")
- prefer 2 apply (simp add:mHom_def aHom_def)
-apply (frule  composition [of "g" "M \<times>\<^sub>c N" "carrier MN1" "mId\<^bsub>MN1\<^esub>" 
+  prefer 2 
+  apply (frule Module.mId_mHom [of MN1 R])
+  apply (subgoal_tac "mId\<^bsub>MN1\<^esub>  \<in> carrier MN1 \<rightarrow> carrier MN1")
+   prefer 2 apply (simp add:mHom_def aHom_def)
+  apply (frule  composition [of "g" "M \<times>\<^sub>c N" "carrier MN1" "mId\<^bsub>MN1\<^esub>" 
       "carrier MN1"], assumption+,
       rule funcset_eq [of _ "M \<times>\<^sub>c N"],
       simp add:compose_def restrict_def extensional_def,
       simp add:universal_property_def bilinear_map_def)
-apply (simp add:compose_def mId_def,
+  apply (simp add:compose_def mId_def,
        simp add:funcset_mem del:Pi_I',
        frule sym,
        thin_tac "g = compose (M \<times>\<^sub>c N) (compose (carrier MN1) h k) g",
@@ -1129,47 +1129,46 @@ apply (simp add:compose_def mId_def,
         thin_tac "ka \<in> mHom R MN1 MN1 \<and> compose (M \<times>\<^sub>c N) ka g = g",
         thin_tac "\<forall>y. y \<in> mHom R MN1 MN1 \<and> 
                                compose (M \<times>\<^sub>c N) y g = g \<longrightarrow> y = ka") 
- apply simp
+  apply simp
  apply (thin_tac "mId\<^bsub>MN1\<^esub>  \<in> mHom R MN1 MN1",
         thin_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN1\<^esub> ) g = g",
         thin_tac "ka \<in> mHom R MN1 MN1 \<and> compose (M \<times>\<^sub>c N) ka g = g",
         thin_tac "mId\<^bsub>MN1\<^esub>  = ka")
  apply (subgoal_tac "(compose (carrier MN1) h k) \<in> mHom R MN1 MN1")
- apply simp
-apply (thin_tac "\<forall>y. y \<in> mHom R MN1 MN1 \<and> 
+  apply simp
+ apply (thin_tac "\<forall>y. y \<in> mHom R MN1 MN1 \<and> 
              compose (M \<times>\<^sub>c N) y g = g \<longrightarrow> y = ka") 
 
  apply (frule_tac f = k and g = h in  Module.mHom_compos[of MN R MN1 MN1], 
                         assumption+)
  apply (simp add:compos_def)  (** compose (carrier MN1) h k = mId\<^bsub>MN1\<^esub> done **)
   (* compose (carrier MN) k h = mId\<^sub>MN *)
- apply (frule Module.mId_mHom [of MN R])
- apply (subgoal_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN\<^esub>) f = f")
+apply (frule Module.mId_mHom [of MN R])
+apply (subgoal_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN\<^esub>) f = f")
  prefer 2
  apply (frule_tac f = "mId\<^bsub>MN\<^esub>" in Ring.mHom_func[of R _ MN MN], assumption)
-apply (frule  composition [of "f" "M \<times>\<^sub>c N" "carrier MN" "mId\<^bsub>MN\<^esub>" "carrier MN"],
+ apply (frule  composition [of "f" "M \<times>\<^sub>c N" "carrier MN" "mId\<^bsub>MN\<^esub>" "carrier MN"],
         assumption+)
 apply (frule tensor_prod_uniqueTr [of "R" "M" "N" "MN" "MN" "f" "f"], 
        assumption+)
- apply (erule ex1E)
- apply (subgoal_tac "mId\<^bsub>MN\<^esub> = ka") prefer 2 
-  apply (thin_tac "compose (M \<times>\<^sub>c N) k g = f",
+apply (erule ex1E)
+apply (subgoal_tac "mId\<^bsub>MN\<^esub> = ka") prefer 2 
+ apply (thin_tac "compose (M \<times>\<^sub>c N) k g = f",
          thin_tac "compose (M \<times>\<^sub>c N) h f = g",
          thin_tac "ka \<in> mHom R MN MN \<and> compose (M \<times>\<^sub>c N) ka f = f")
  apply blast
- apply (rotate_tac -1) apply (frule sym, thin_tac "mId\<^bsub>MN\<^esub>  = ka")
- apply simp
- apply (thin_tac "compose (M \<times>\<^sub>c N) k g = f",
+apply (rotate_tac -1) apply (frule sym, thin_tac "mId\<^bsub>MN\<^esub>  = ka")
+apply (thin_tac "compose (M \<times>\<^sub>c N) k g = f",
         thin_tac "compose (M \<times>\<^sub>c N) h f = g",
         thin_tac "k \<in> carrier MN1 \<rightarrow> carrier MN",
         thin_tac "f \<in> M \<times>\<^sub>c N \<rightarrow> carrier MN",
         thin_tac "h \<in> carrier MN \<rightarrow> carrier MN1",
         thin_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN\<^esub>) f = f")
- apply (subgoal_tac "(compose (carrier MN) k h) \<in> mHom R MN MN")
- apply simp+
- apply (frule_tac f = h and g = k in Module.mHom_compos[of MN1 R MN "MN"], 
+apply (subgoal_tac "(compose (carrier MN) k h) \<in> mHom R MN MN")
+ apply simp
+apply (frule_tac f = h and g = k in Module.mHom_compos[of MN1 R MN "MN"], 
                         assumption+)
- apply (simp add:compos_def)
+apply (metis compos_def)
 done
 
 chapter "Construction of an abelian group"

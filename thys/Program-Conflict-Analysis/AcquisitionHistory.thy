@@ -96,7 +96,7 @@ lemma \<alpha>ah_cases[cases set, case_names hd tl]: "\<lbrakk>
     !!e w'. \<lbrakk>w=e#w'; m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w'\<rbrakk> \<Longrightarrow> P; 
     !!e w'. \<lbrakk>w=e#w'; m\<notin>fst e; x\<in>\<alpha>ah w' m\<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-  by (cases w) (simp_all split: split_if_asm, blast+)
+  by (cases w) (simp_all split: split_if_asm)
 
 lemma \<alpha>ah_cons_cases[cases set, case_names hd tl]: "\<lbrakk>
     x\<in>\<alpha>ah (e#w') m;  

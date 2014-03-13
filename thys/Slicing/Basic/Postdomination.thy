@@ -225,8 +225,7 @@ proof(atomize_elim)
       apply(drule_tac s="(_Exit_)" in sym)
       apply simp
       apply(drule Exit_source)
-      apply simp_all
-      by fastforce
+      by simp_all
     with `sourcenode a -asx\<rightarrow>* (_Exit_)` have "sourcenode a -[]@ax#asx'\<rightarrow>* (_Exit_)"
       by simp
     hence "valid_edge ax" and "sourcenode a = sourcenode ax"

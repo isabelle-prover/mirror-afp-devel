@@ -77,7 +77,7 @@ proof -
   from h1 and h4 and h5 and h6 have sg1:"disjoint (schedule (nC i)) (schedule (nC j))"
     by (simp add: DisjointSchedules_def) 
   from h2 and h4 and h5 have sg2:"cycleLength (nC i) = cycleLength (nC j)"
-    by (simp only: IdenticCycleLength_def, blast) 
+    by (metis IdenticCycleLength_def)
   from sg1 and h3 have sg3:"\<not> (t mod (cycleLength (nC i))) mem (schedule (nC j))" 
     by (simp add: mem_notdisjoint2)
   from sg2 and sg3 show ?thesis by simp
@@ -119,7 +119,7 @@ proof -
   from a1 and sg5 have sg6:"(t mod (cycleLength (nC i))) mem (schedule (nC i))" 
      by (simp add: Scheduler_L1)
   from h2 and h5 and h6 have sg7:"cycleLength (nC i) = cycleLength (nC j)"
-    by (simp only: IdenticCycleLength_def, blast)  
+    by (metis IdenticCycleLength_def)  
   from sg3 and sg6 have sg8:"\<not> (t mod (cycleLength (nC i))) mem (schedule (nC j))" 
     by (simp add: mem_notdisjoint2)
   from sg8 and sg7 have sg9:"\<not> (t mod (cycleLength (nC j))) mem (schedule (nC j))" 
@@ -153,7 +153,7 @@ assumes h1:"DisjointSchedules n nC"
 shows "nSend j t = []"
 proof - 
   from h2 and h5 and h6 have sg1:"cycleLength (nC i) = cycleLength (nC j)"
-    by (simp only: IdenticCycleLength_def, blast)  
+    by (metis IdenticCycleLength_def)  
   from h1 and h5 and h6 and h7 have sg2:"disjoint (schedule (nC i)) (schedule (nC j))"
     by (simp add: DisjointSchedules_def) 
   from sg2 and h4 have sg3:"\<not> (t mod (cycleLength (nC i))) mem (schedule (nC j))" 
@@ -453,7 +453,7 @@ proof -
   from a1 and h5 have sg5:"activation1 t \<noteq> []"
      by (simp add: Scheduler_L3)
  from h4 and h6 and h7 have sg6:"cycleLength (nC k) = cycleLength (nC j)"
-    by (simp only: IdenticCycleLength_def, blast)  
+    by (metis IdenticCycleLength_def)  
   from h3 and h6 and h7 and h8 have sg7:"disjoint (schedule (nC k)) (schedule (nC j))"
     by (simp add: DisjointSchedules_def) 
   from sg7 and h5 have sg8:"\<not> (t mod (cycleLength (nC k))) mem (schedule (nC j))" 

@@ -141,8 +141,6 @@ lemma listToFuns_ext:
    using map_id_clunky[OF xs]
    apply auto[1]
    apply (rule_tac x="f xa" in exI)
-   apply simp
-   apply (rule_tac x=xa in image_eqI)
     apply simp
    apply simp
   using d

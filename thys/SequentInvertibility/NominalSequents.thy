@@ -709,8 +709,8 @@ have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (ext
 have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
 then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
           apply (auto simp add:Ball_def extend_def) 
-          apply (drule_tac x=xa in spec,simp) apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
-          apply (drule_tac x=xa in spec,simp) by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
+          apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
+          by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
 have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
 then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
 moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p'" using eq
@@ -908,8 +908,8 @@ have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (ext
 have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
 then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
           apply (auto simp add:Ball_def extend_def) 
-          apply (drule_tac x=xa in spec,simp) apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
-          apply (drule_tac x=xa in spec,simp) by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
+          apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
+          by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
 have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
 then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
 moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p'" using eq

@@ -446,7 +446,7 @@ apply (erule Step.cases)
   apply clarsimp apply (drule GotoElim1) apply simp apply clarsimp
   apply clarsimp apply (drule IfElim1) apply simp apply clarsimp
   apply clarsimp apply (drule IfElim1) apply simp apply clarsimp
-  apply clarsimp apply (drule InvokeElim1) apply simp apply fastforce apply clarsimp
+  apply clarsimp apply (drule InvokeElim1) apply simp apply clarsimp
     apply (erule thin_rl)
     apply (simp add: mbody_is_def, clarsimp)
     apply (drule Frame_deterministic, assumption, clarsimp)

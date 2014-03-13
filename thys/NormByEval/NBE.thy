@@ -2013,8 +2013,6 @@ apply rule
  apply(rule_tac x=j in exI)
  apply simp
  apply(case_tac "i=j")
-  apply simp
-  apply(rule_tac x=nm' in exI)
   apply(erule_tac x=rs' in meta_allE)
   apply(erule_tac x=nm' in meta_allE)
   apply (clarsimp simp: all_set_conv_all_nth)
@@ -2053,7 +2051,6 @@ apply metis
 apply clarify
 apply simp
 apply rule
-apply metis
 apply (metis rtrancl_trans)
 done
 
@@ -2080,7 +2077,7 @@ proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
   show ?case
     apply(subst no_match.simps)
     apply(rule_tac x=i in exI)
-    using 1 a b
+    using 1(2-5) a b
     apply clarsimp
     apply(rule 1(1)[of i nm' _ nm' "map dterm rs" rs])
     apply simp_all

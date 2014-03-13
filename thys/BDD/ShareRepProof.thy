@@ -104,7 +104,6 @@ apply    clarify
 apply    (rule_tac x="[]" in exI)
 apply    (rule_tac x=ns in exI)
 apply    (simp (no_asm_use))
-apply    blast  (* From precondition to invariant *)
 prefer 2
 apply   clarify
 apply   (rule conjI)

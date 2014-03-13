@@ -318,7 +318,7 @@ apply (unfold RootEx_def Root_def)
 apply (erule ex1E)
 apply (erule conjE)
 apply (rule someI2)
-apply auto
+apply blast+
 done
 
 lemma RootEx_Root_ran [simp]:
@@ -327,7 +327,7 @@ apply (unfold RootEx_def Root_def)
 apply (erule ex1E)
 apply (erule conjE)
 apply (rule someI2)
-apply auto
+apply blast+
 done
 
 lemma RootEx_States_Subset [simp]:

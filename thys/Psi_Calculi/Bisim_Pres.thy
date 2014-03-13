@@ -330,7 +330,6 @@ proof -
       apply auto
       apply(subgoal_tac "\<exists>A\<^sub>R \<Psi>\<^sub>R. extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle> \<and> A\<^sub>R \<sharp>* (xvec, \<Psi>, P, Q, R)")
       apply auto
-      apply blast
       apply(rule_tac F="extractFrame R" and C="(xvec, \<Psi>, P, Q, R)" in freshFrame)
       by auto
 

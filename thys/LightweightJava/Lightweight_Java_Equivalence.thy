@@ -670,13 +670,7 @@ lemma fpr_same_suffix:
              \<longrightarrow> suffix = suffix')"
 apply(induct_tac P ctx cl prefix rule: find_path_rec_f.induct)
  apply(clarsimp)
-apply(clarsimp split: option.splits)
-apply(frule path_append) apply(clarify)
-apply(clarsimp)
-apply(case_tac fqn) apply(rename_tac dcl) apply(clarify) apply(frule find_cld_name_eq) apply(clarsimp)
-apply(frule_tac ?path_fqn = "prefix' @ suffix'" in fpr_sub_path_simp) apply(simp) apply(simp) apply(simp) apply(erule exE)
-apply(simp)
-done
+by (metis fpr_same_suffix' option.inject same_append_eq)
 
 lemma fpr_mid_path'[rule_format]:
   "find_path_rec_f P ctx cl path' = Some path \<longrightarrow>
@@ -697,18 +691,18 @@ apply(subgoal_tac "find_path_rec_f P ctx' (superclass_name_f cld') (path' @ [(ct
                                (find_cld_f P (fst ctxcld) (fqn_def (class_name_f (snd ctxcld)))) =
                               Some path_fqn \<longrightarrow>
                               (\<forall>path'''. path_fqn = path'' @ path''' \<longrightarrow> (\<exists>path_rest. path = path_rest @ path'''))))")
-apply(clarsimp)
-apply(drule_tac x = "(ctx'', cld'')" in bspec, simp) apply(clarsimp)
-apply(simp add: superclass_name_f_def)
-apply(case_tac cld') apply(rename_tac dcl' cl' fds' mds') apply(clarsimp simp add: class_name_f_def)
-apply(case_tac fqn) apply(rename_tac dcl'') apply(clarsimp)
-apply(frule find_cld_name_eq) apply(clarsimp)
-apply(frule path_append) apply(frule_tac path = "path'' @ path'''" in path_append) apply(clarsimp)
-apply(rule_tac x = path' in exI) apply(clarsimp)
-apply(frule_tac suffix = path''a and prefix' = "path'' @ [(ctx', cld_def dcl' cl' fds' mds')]" and
+ apply(erule impE) apply simp
+ apply(drule_tac x = "(ctx'', cld'')" in bspec, simp) apply(clarsimp)
+ apply(simp add: superclass_name_f_def)
+ apply(case_tac cld') apply(rename_tac dcl' cl' fds' mds') apply(clarsimp simp add: class_name_f_def)
+ apply(case_tac fqn) apply(rename_tac dcl'') apply(clarsimp)
+ apply(frule find_cld_name_eq) apply(clarsimp)
+ apply(frule path_append) apply(frule_tac path = "path'' @ path'''" in path_append) apply(clarsimp)
+ apply(rule_tac x = path' in exI) apply(clarsimp)
+ apply(frule_tac suffix = path''a and prefix' = "path'' @ [(ctx', cld_def dcl' cl' fds' mds')]" and
                 suffix' = path''aa in fpr_same_suffix[rule_format]) apply(simp)
-apply(force) apply(simp)
-apply(force)
+ apply(force)
+apply(simp)
 done
 
 lemma fpr_mid_path:

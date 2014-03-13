@@ -934,7 +934,7 @@ and "peak ars P" shows "(\<exists> \<sigma>' \<tau>'. DD ars r (fst P,snd P,\<si
  show ?thesis using assms(4) proof (induct rule:wf_induct_rule[OF wf])
   case (1 P)
   obtain s \<tau> \<sigma> where decompose:"P = (\<tau>,\<sigma>)" and tau:"\<tau> \<in> seq ars" and sigma:"\<sigma> \<in> seq ars"
-   and tau_s: "fst \<tau> = s" and sigma_s: "fst \<sigma> = s" using 1 unfolding peak_def apply auto by fast
+   and tau_s: "fst \<tau> = s" and sigma_s: "fst \<sigma> = s" using 1 unfolding peak_def by auto
   show ?case proof (cases "snd \<tau>")
    case Nil from mirror_DD[OF assms(1) i trivial_DD[OF sigma]]
    show ?thesis using tau_s sigma_s Nil surjective_pairing unfolding decompose fst_conv snd_conv DD_def by metis
@@ -1031,7 +1031,7 @@ lemma seq_vs_steps: shows "(a,b) \<in> (unlabel ars)^* = (\<exists>ss. fst ss = 
 lemma D_imp_CR: assumes "\<forall>P. (peak ars P \<longrightarrow> (\<exists> \<sigma>' \<tau>'. DD ars r (fst P,snd P,\<sigma>',\<tau>')))" shows "CR (unlabel ars)" proof
  fix a b c assume A: "(a,b) \<in> (unlabel ars)^*" and B: "(a,c) \<in> (unlabel ars)^*" show "(b,c) \<in> (unlabel ars)\<^sup>\<down>" proof -
   obtain ss1 ss2 where " peak ars (ss1,ss2)" and b: "lst ss1 = b" and c: "lst ss2 = c"
-   unfolding peak_def using A B unfolding seq_vs_steps apply auto by fast
+   unfolding peak_def using A B unfolding seq_vs_steps by auto
   from this obtain ss3 ss4 where dia: "diagram ars (ss1,ss2,ss3,ss4)" using assms(1) unfolding DD_def apply auto using surjective_pairing by metis
   from dia obtain d where ss3: "ss3 \<in> seq ars" and ss4: "ss4 \<in> seq ars"
    and ss3_1: "fst ss3 = b" and ss3_2: "lst ss3 = d" and ss4_1: "fst ss4 = c" and ss4_2:"lst ss4 = d"
@@ -1643,7 +1643,7 @@ and "peak ars P" shows "(\<exists> \<sigma>' \<tau>'. DD ars r (fst P,snd P,\<si
  show ?thesis using assms(4) proof (induct rule:wf_induct_rule[OF wf])
   case (1 P)
   obtain s \<tau> \<sigma> where decompose:"P = (\<tau>,\<sigma>)" and tau:"\<tau> \<in> seq ars" and sigma:"\<sigma> \<in> seq ars"
-   and tau_s: "fst \<tau> = s" and sigma_s: "fst \<sigma> = s" using 1 unfolding peak_def apply auto by fast
+   and tau_s: "fst \<tau> = s" and sigma_s: "fst \<sigma> = s" using 1 unfolding peak_def by auto
   show ?case proof (cases "snd \<tau>")
    case Nil from mirror_DD[OF assms(1) i trivial_DD[OF sigma]]
    show ?thesis using tau_s sigma_s Nil surjective_pairing unfolding decompose fst_conv snd_conv DD_def by metis

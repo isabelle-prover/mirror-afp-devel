@@ -2983,7 +2983,7 @@ next
 next
   case(cComm1 \<Psi> \<Psi>\<^sub>Q P M N P' A\<^sub>P \<Psi>\<^sub>P Q K xvec Q' A\<^sub>Q C \<alpha> P'')
   thus ?case using rComm1
-    apply(auto simp add: residualInject)
+    apply(auto)
     apply(drule_tac x="M\<lparr>N\<rparr>" in meta_spec)
     apply(drule_tac x="K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle>" in meta_spec)
     apply(drule_tac x=P' in meta_spec)
@@ -3005,7 +3005,7 @@ next
     apply auto
     apply(subgoal_tac "\<And>C. Prop C (\<Psi> \<otimes> \<Psi>\<^sub>P) Q (K\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle>) Q' A\<^sub>Q \<Psi>\<^sub>Q")
     apply(subgoal_tac "\<And>C. Prop C (\<Psi> \<otimes> \<Psi>\<^sub>Q) P (M\<lparr>N\<rparr>) P' A\<^sub>P \<Psi>\<^sub>P")
-    by auto
+    by(auto simp add: residualInject)
 next
   case(cComm2 \<Psi> \<Psi>\<^sub>Q P M xvec N P' A\<^sub>P \<Psi>\<^sub>P Q K Q' A\<^sub>Q C \<alpha> Q'')
   thus ?case using rComm2
@@ -5493,7 +5493,7 @@ next
     moreover hence "\<dots> = \<lparr>\<nu>*(q \<bullet> xvec@y#(p \<bullet> yvec))\<rparr>((q@(x, y)#p) \<bullet> N) \<prec>' ((q@(x, y)#p) \<bullet> P')"
       by(simp only: pt2[OF pt_name_inst] boundOutputApp BOresChain.simps)
     ultimately show ?thesis
-      by(simp only: residualInject) blast
+      by(simp only: residualInject)
   qed
   moreover have "\<Psi> \<rhd> ([(x, y)] \<bullet> P) \<longmapsto>M\<lparr>\<nu>*((q \<bullet> xvec)@(p \<bullet> yvec))\<rparr>\<langle>((q@(x, y)#p) \<bullet> N)\<rangle> \<prec> ((q@(x, y)#p) \<bullet> P')"
   proof -

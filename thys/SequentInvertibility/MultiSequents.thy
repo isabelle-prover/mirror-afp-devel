@@ -841,8 +841,8 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
                  by (simp add:Ball_def)
             then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
                  apply (auto simp add:Ball_def extend_def) 
-                 apply (drule_tac x=xa in spec,simp) apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
-                 apply (drule_tac x=xa in spec,simp) by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
+                 apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
+                 by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
             have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps`
                  by (auto simp add:Ball_def Bex_def)
             then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 
@@ -1153,8 +1153,8 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  by (simp add:Ball_def)
             then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
                  apply (auto simp add:Ball_def extend_def) 
-                 apply (drule_tac x=xa in spec,simp) apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
-                 apply (drule_tac x=xa in spec,simp) by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
+                 apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
+                 by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
             have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps`
                  by (auto simp add:Ball_def Bex_def)
             then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 
