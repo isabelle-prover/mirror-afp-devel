@@ -175,7 +175,7 @@ in
 end
 *}
 
-setup {* ML_Antiquote.inline @{binding mk_term} mk_term_antiquot *}
+setup {* ML_Antiquotation.inline @{binding mk_term} mk_term_antiquot *}
 
 
 subsection "Examples"
