@@ -4321,8 +4321,8 @@ proof -
         and bisim0: "P,blocks1 0 (Class D0#Ts0) body0,h \<turnstile> (E, xs') \<leftrightarrow> (stk0, loc0, pc0, None)"
         and lenxs0: "max_vars E \<le> length xs'"
         and call0: "call1 E = \<lfloor>(a', M', vs')\<rfloor>"
-        by cases(auto, fastforce)
-      
+        by cases auto
+ 
       let ?ee = "inline_call e E"
         
       from bisim0 call0 have pc0: "pc0 < length (compE2 (blocks1 0 (Class D0#Ts0) body0))"

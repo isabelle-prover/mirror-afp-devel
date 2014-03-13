@@ -409,7 +409,7 @@ lemma mfinal_no_redT:
   assumes redT: "s -t\<triangleright>ta\<rightarrow> s'" and mfinal: "mfinal s"
   shows False
 using redT mfinalD[OF mfinal, of t]
-by cases(fastforce dest: final_no_red)+
+by cases (metis final_no_red, metis neq_no_wait_locks_conv)
 
 end
 

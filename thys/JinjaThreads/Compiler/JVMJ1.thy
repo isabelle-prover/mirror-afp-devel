@@ -941,7 +941,7 @@ next
     next
       case False
       with exec xcp stk obtain U el A len I where [simp]: "v = Addr A" and hA: "typeof_addr h A = \<lfloor>Array_type U len\<rfloor>"
-        and [simp]: "v2 = Intg I" by(auto simp add: exec_move_def exec_meth_instr is_Ref_def conf_def split: split_if_asm) blast+
+        and [simp]: "v2 = Intg I" by(auto simp add: exec_move_def exec_meth_instr is_Ref_def conf_def split: split_if_asm)
       show ?thesis
       proof(cases "0 <=s I \<and> sint I < int len")
         case True

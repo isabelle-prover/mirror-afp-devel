@@ -437,7 +437,7 @@ lemma exec_ta_satisfiable:
 proof -
   obtain xcp h frs where [simp]: "s = (xcp, h, frs)" by(cases s)
   from assms obtain stk loc C M pc frs' where [simp]: "frs = (stk, loc, C, M, pc) # frs'"
-    by(cases frs)(auto simp add: exec_1_iff, blast)
+    by(cases frs)(auto simp add: exec_1_iff)
   show ?thesis
   proof(cases xcp)
     case Some with assms show ?thesis by(auto simp add: exec_1_iff lock_ok_las_def finfun_upd_apply split_paired_Ex)
@@ -579,7 +579,7 @@ next
         and [simp]: "xcp = None"
         apply(cases xcp)
         apply(simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def confs_conv_map split_beta split: split_if_asm option.splits)
-        apply(auto simp add: lock_ok_las'_def, blast+)[2]
+        apply(auto simp add: lock_ok_las'_def)[2]
         apply(fastforce simp add: is_native.simps lock_ok_las'_def dest: sees_method_fun)+
         done
       from exec Ta n a sees Invoke wtext obtain ta' va m''

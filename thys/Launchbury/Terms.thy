@@ -190,7 +190,6 @@ next case (goal3 P x) show ?case
     thus P using Inr goal3
       apply (rule_tac ya ="a1" in exp_assn.strong_exhaust(2))
       apply (auto)
-      apply blast+
     done
   qed
 qed

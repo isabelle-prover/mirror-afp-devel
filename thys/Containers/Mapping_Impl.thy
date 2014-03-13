@@ -127,9 +127,6 @@ apply(transfer, simp add: dom_map_of_conv_image_fst set_map[symmetric] distinct_
 apply transfer
 apply(clarsimp simp add: size_eq_card_dom_lookup)
 apply(simp add: linorder.rbt_lookup_keys[OF ID_corder] ord.is_rbt_rbt_sorted RBT_Impl.keys_def distinct_card linorder.distinct_entries[OF ID_corder] del: set_map)
-apply(subst distinct_card)
-apply(rule linorder.distinct_entries[OF ID_corder], assumption)
-apply(simp_all add: ord.is_rbt_rbt_sorted)
 done
 
 

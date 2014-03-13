@@ -421,8 +421,6 @@ subsection {* Standard Setup *}
     apply (subst RBT_Impl.compare_height.simps)
     apply (subst compare_height.simps)
     apply (auto split: rbt.split)
-
-    apply (rprems, (intro conjI, (rule refl)+)+)+
     done
 
   term RBT_Impl.skip_red
@@ -454,8 +452,7 @@ subsection {* Standard Setup *}
       rule: compare_height.induct)
     apply (subst (2) compare_height.simps)
     apply (subst compare_height.simps)
-    apply (parametricity add: param_case_prod' param_case_rbt',
-      (simp only: Pair_eq, intro conjI, (rule refl)+)+) []
+    apply (parametricity add: param_case_prod' param_case_rbt', (simp only: Pair_eq)+) []
     done
 
   lemma compare_height_param[param]:

@@ -1126,7 +1126,7 @@ next
       by(auto simp add: in_set_conv_decomp)
     with tasim obtain tas2 X2 M2 tas2' where "\<lbrace>ta2\<rbrace>\<^bsub>t\<^esub> = tas2 @ NewThread T X2 M2 # tas2'"
       "length tas2 = length tas2" "length tas1' = length tas2'" and Bisim: "T \<turnstile> (X1, M1) \<approx> (X2, M2)"
-      by(auto simp add: list_all2_append1 list_all2_Cons1 ta_bisim_def, blast intro: sym)
+      by(auto simp add: list_all2_append1 list_all2_Cons1 ta_bisim_def)
     hence ntset': "NewThread T X2 M2 \<in> set \<lbrace>ta2\<rbrace>\<^bsub>t\<^esub>" by auto
     with tsT' `t \<noteq> T` aoe2 s2' have "thr s2' T = \<lfloor>(X2, no_wait_locks)\<rfloor>"
       by(auto intro: redT_updTs_new_thread_ts)

@@ -624,7 +624,7 @@ proof -
     pc': "pc+1 < size ins" and 
     \<Phi>': "\<Phi> C M!(pc+1) = Some (ST',LT')" and
     ST': "P \<turnstile> ST'' [\<le>] ST'" and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'"
-    by clarsimp blast
+    by clarsimp
 
   from stk ST obtain v ref stk' where 
     stk': "stk = v#ref#stk'" and
@@ -1451,7 +1451,7 @@ proof -
     and ST: "P,h \<turnstile> stk [:\<le>] ST"
     and LT: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT"
     and pc: "pc < length is"
-    by(auto simp add: defs1) blast
+    by(auto simp add: defs1)
   show ?thesis
   proof(cases xcp)
     case Some thus ?thesis
