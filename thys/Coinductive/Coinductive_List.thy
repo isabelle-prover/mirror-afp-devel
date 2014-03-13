@@ -152,12 +152,14 @@ proof -
     apply(rule llist.dtor_set_induct)
     using assms
     apply(auto simp add: lhd_def ltl_def set2_pre_llist_def set1_pre_llist_def fsts_def snds_def case_llist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
+     apply(rename_tac b h t)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
      apply(case_tac b)
      apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
     apply(rotate_tac -2)
+    apply(rename_tac b xa h t)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
     apply(erule meta_impE)

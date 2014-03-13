@@ -224,6 +224,7 @@ proof -
     apply(rule tllist.dtor_set1_induct)
     using assms
     apply(auto simp add: thd_def ttl_def set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
+     apply(rename_tac b h t)
      apply(erule_tac x="b" in meta_allE)
      apply(erule meta_impE)
       apply(case_tac b)
@@ -231,6 +232,7 @@ proof -
       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
      apply(case_tac b)
      apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
+    apply(rename_tac b xa h t)
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
@@ -255,6 +257,7 @@ proof -
     apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def set2_pre_tllist_def
       set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def
       sum_set_simps sum.set_map split: sum.splits)
+     apply(rename_tac b y)
      apply(case_tac b)
       apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
       apply(erule_tac x="b" in meta_allE)
@@ -262,6 +265,7 @@ proof -
        apply fastforce
       apply(simp add: tllist.dtor_ctor BNF_Comp.id_bnf_comp_def)
      apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
+     apply(rename_tac b xa h t)
     apply(rotate_tac -2)
     apply(erule_tac x="b" in meta_allE)
     apply(erule_tac x="xa" in meta_allE)
