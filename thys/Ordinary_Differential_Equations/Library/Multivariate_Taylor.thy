@@ -37,24 +37,10 @@ lemma (in approachable_on) diff_chain_componentwise:
   defines "\<phi> \<equiv> (\<lambda>t. f (g t))"
   shows "FDERIV \<phi> t : J :> (\<lambda>x. (\<Sum>i\<in>Basis. (Dg x \<bullet> i) *\<^sub>R (Df i)))"
 proof -
-  have "g t \<in> G" using assms by auto
-  from f_deriv have f_diff: "f differentiable (g t) in G"
-    by (rule differentiableI)
-  have frechet_Df: "frechet_derivative f (at (g t) within G) = Df"
-    using f_deriv f_diff approachable `t \<in> J` `g t \<in> G`
-    by (auto intro!: frechet_derivative_unique_within
-      simp: frechet_derivative_works approachable_at_def)
-  have f_jacobian:
-    "FDERIV f (g t) : G :> (\<lambda>h. \<Sum>i\<in>Basis. (\<Sum>b\<in>Basis. (Df b \<bullet> i) *\<^sub>R (h \<bullet> b)) *\<^sub>R i)"
-    using Derivative.jacobian_works[of _ f] f_diff by (simp add: frechet_Df)
-  have "Df = (\<lambda>h. \<Sum>i\<in>Basis. (\<Sum>b\<in>Basis. (Df b \<bullet> i) *\<^sub>R (h \<bullet> b)) *\<^sub>R i)"
-    using f_deriv f_jacobian
-    by (auto intro: frechet_derivative_unique_within_approach[OF approachable, OF `g t \<in> G`])
-  also have "\<dots> = (\<lambda>h. (\<Sum>i\<in>Basis. ((\<Sum>b\<in>Basis. (h \<bullet> b) *\<^sub>R (Df b)) \<bullet> i) *\<^sub>R i))"
-    by (simp add: field_simps inner_setsum_left)
-  also have "\<dots> = (\<lambda>h. (\<Sum>b\<in>Basis. (h \<bullet> b) *\<^sub>R (Df b)))"
-    by (simp add: euclidean_representation)
-  finally have Df: "Df = (\<lambda>h. \<Sum>b\<in>Basis. (h \<bullet> b) *\<^sub>R Df b)" .
+  interpret Df: linear Df
+    using f_deriv by (rule derivative_is_linear)
+  have Df: "Df = (\<lambda>h. \<Sum>b\<in>Basis. (h \<bullet> b) *\<^sub>R Df b)"
+    by (simp only: Df.scaleR [symmetric] Df.setsum [symmetric] euclidean_representation)
   have "\<phi> = f o g" by (auto simp add: \<phi>_def)
   hence "FDERIV \<phi> t : J :> (Df \<circ> Dg)"
     using `t \<in> J` `g \` J \<subseteq> G`
