@@ -304,7 +304,7 @@ lemma node_sos_cases [elim]:
   (\<And>i i' i''. \<lbrakk> a = connect(i', i'');    R' = R; p = p'; i \<noteq> i'; i \<noteq> i'' \<rbrakk> \<Longrightarrow> P) \<Longrightarrow>
   (\<And>i i' i''. \<lbrakk> a = disconnect(i', i''); R' = R; p = p'; i \<noteq> i'; i \<noteq> i'' \<rbrakk> \<Longrightarrow> P) \<Longrightarrow>
   P"
-  by (erule node_sos.cases, simp_all) metis+
+  by (erule node_sos.cases) simp_all
 
 subsection "Table 4: Structural operational semantics for partial network expressions "
 

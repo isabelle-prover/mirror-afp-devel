@@ -525,7 +525,7 @@ lemma transfer_tau:
          `net_ips s = net_tree_ips n` `net_ips s' = net_ips s`
          `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
       have "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-        unfolding \<sigma>'_def by - (rule ext, clarsimp, metis some_the_fst_netgmap)
+        unfolding \<sigma>'_def by - (rule ext, clarsimp)
 
     hence "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
       by (rule prod_eqI, simp)
@@ -560,7 +560,7 @@ lemma transfer_tau:
       moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                     `ns' = NodeS ii s' R'` and `ii = i`
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (metis (lifting, full_types) fun_upd_same the.simps)
+          unfolding \<sigma>'_def by clarsimp (metis (full_types, lifting) fun_upd_same option.sel) 
       ultimately have "((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using `(s, a, s') \<in> trans (np i)` by (rule trans)
 
@@ -739,7 +739,7 @@ lemma transfer_deliver:
          `net_ips s = net_tree_ips n` `net_ips s' = net_ips s`
          `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
       have "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-        unfolding \<sigma>'_def by - (rule ext, clarsimp, metis some_the_fst_netgmap)
+        unfolding \<sigma>'_def by - (rule ext, clarsimp)
 
     hence "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
       by (rule prod_eqI, simp)
@@ -773,7 +773,7 @@ lemma transfer_deliver:
       moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                     `ns' = NodeS ii s' R'` and `ii = i`
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (metis (lifting, full_types) fun_upd_same the.simps)
+          unfolding \<sigma>'_def by clarsimp (metis (lifting, full_types) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), deliver d, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using `(s, deliver d, s') \<in> trans (np i)` by (rule trans)
 
@@ -983,7 +983,7 @@ lemma transfer_arrive':
           from `s = s'` `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                         `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)`
                         `ns = NodeS ii s R` and `ns' = NodeS ii s' R`
-            have "\<sigma>' ii = \<sigma> ii" by simp (metis the.simps)
+            have "\<sigma>' ii = \<sigma> ii" by simp (metis option.sel)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), {}\<not>{ii}:arrive(m), (\<sigma>', NodeS ii (snd (sr s)) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_arrive)
@@ -1113,7 +1113,7 @@ lemma transfer_arrive:
     proof (rule prod_eqI)
       from `net_ips s' = net_tree_ips n`
         show "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-          unfolding \<sigma>'_def by - (rule ext, clarsimp, metis some_the_fst_netgmap)
+          unfolding \<sigma>'_def by - (rule ext, clarsimp)
     qed simp
 
     moreover with assms(1-3)
@@ -1472,7 +1472,7 @@ lemma pnet_reachable_transfer':
        and "(s, a, s') \<in> trans (closed (pnet np any))"
     from this(2) obtain \<sigma> \<zeta> where "netgmap sr s = netmask (net_tree_ips any) (\<sigma>, \<zeta>)"
                               and "(\<sigma>, \<zeta>) \<in> ?oreachable any"
-      by clarsimp (metis (lifting))
+      by clarsimp
     from `s \<in> reachable (closed (pnet np any)) TT` this(1) `wf_net_tree any`
          and `(s, a, s') \<in> trans (closed (pnet np any))`
       obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))"
@@ -1739,7 +1739,6 @@ sublocale openproc_parq \<subseteq> openproc "\<lambda>i. np i \<langle>\<langle
                             and "\<sigma> i  = fst (sr p)"
                             and "\<sigma>' i = fst (sr p')"
       by (clarsimp split: split_split_asm)
-         (metis surjective_pairing)
     from this(1-2) and `(s, a, s') \<in> trans (np i \<langle>\<langle> qp)`
       have "((p, q), a, (p', q')) \<in> parp_sos (trans (np i)) (trans qp)" by simp
     hence "((\<sigma>, (snd (sr p), q)), a, (\<sigma>', (snd (sr p'), q'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"

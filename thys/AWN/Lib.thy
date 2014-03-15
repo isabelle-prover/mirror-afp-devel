@@ -18,7 +18,7 @@ lemma TT_True [intro, simp]: "TT a"
   unfolding TT_def by simp
 
 lemma in_set_tl: "x \<in> set (tl xs) \<Longrightarrow> x \<in> set xs"
-  by (metis butlast_snoc in_set_butlastD rotate1_hd_tl set_rotate1 tl.simps(1))
+  by (metis Nil_tl insert_iff list.collapse set_simps(2))
 
 lemma nat_le_eq_or_lt [elim]:
     fixes x :: nat

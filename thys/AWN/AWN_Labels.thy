@@ -50,10 +50,10 @@ lemma labels_termination:
   proof -
     have labels_rel': "labels_rel = (\<lambda>gq gp. (gq, gp) \<in> {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q})"
       by (rule ext)+ (auto simp: labels_rel.simps intro: microstep.intros elim: microstep.cases)
-    from `wellformed(\<Gamma>)` have "\<forall>x. x \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    from `wellformed(\<Gamma>)` have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       unfolding wellformed_def by (simp add: wf_acc_iff)
-    hence "p \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
-    hence "(\<Gamma>, p) \<in> acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    hence "p \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
+    hence "(\<Gamma>, p) \<in> Wellfounded.acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       by (rule acc_induct) (auto intro: accI)
     thus "labels_dom (\<Gamma>, p)"
       unfolding labels_rel' by (subst accp_acc_eq)

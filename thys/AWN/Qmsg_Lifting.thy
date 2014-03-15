@@ -96,7 +96,7 @@ lemma par_qmsg_oreachable:
     then obtain p ms q where "pq = (p, (ms, q))"
                          and "(\<sigma>, p) \<in> init A"
                          and "(ms, q) \<in> init qmsg"
-      by (clarsimp simp del: \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps) metis
+      by (clarsimp simp del: \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps)
     from this(2) have "(\<sigma>, p) \<in> oreachable A ?owS (other U {i})" ..
     moreover from `(ms, q) \<in> init qmsg` have "(ms, q) \<in> reachable qmsg (recvmsg (R \<sigma>))" ..
     moreover from `(ms, q) \<in> init qmsg` have "ms = []"

@@ -312,11 +312,11 @@ lemma sterms_termination:
       "sterms_rel = (\<lambda>gq gp. (gq, gp) \<in> {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q})"
       by (rule ext)+ (auto simp: sterms_rel.simps elim: microstep.cases)
 
-    from assms have "\<forall>x. x \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    from assms have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       unfolding wellformed_def by (simp add: wf_acc_iff)
-    hence "p \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
+    hence "p \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
 
-    hence "(\<Gamma>, p) \<in> acc {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    hence "(\<Gamma>, p) \<in> Wellfounded.acc {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       by (rule acc_induct) (auto intro: accI)
 
     thus "sterms_dom (\<Gamma>, p)" unfolding sterms_rel' accp_acc_eq .
@@ -621,10 +621,10 @@ lemma dterms_termination:
   proof -
     have dterms_rel': "dterms_rel = (\<lambda>gq gp. (gq, gp) \<in> {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q})"
       by (rule ext)+ (auto simp: dterms_rel.simps elim: microstep.cases)
-    from `wellformed(\<Gamma>)` have "\<forall>x. x \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    from `wellformed(\<Gamma>)` have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       unfolding wellformed_def by (simp add: wf_acc_iff)
-    hence "p \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
-    hence "(\<Gamma>, p) \<in> acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    hence "p \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
+    hence "(\<Gamma>, p) \<in> Wellfounded.acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       by (rule acc_induct) (auto intro: accI)
     thus "dterms_dom (\<Gamma>, p)"
       unfolding dterms_rel' by (subst accp_acc_eq)
