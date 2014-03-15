@@ -56,91 +56,93 @@ end
 instantiation MonoTran :: (complete_boolean_algebra) mbt_algebra
 begin
 
-definition 
-  dual_MonoTran_def: "x ^ o = Abs_MonoTran (dual_fun (Rep_MonoTran x))"
+lift_definition dual_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran"
+  is dual_fun
+  by (fact mono_dual_fun)
 
-definition
-  omega_MonoTran_def: "x ^ \<omega> = Abs_MonoTran (omega_fun (Rep_MonoTran x))"
+lift_definition omega_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran"
+  is omega_fun
+  by (fact mono_omega_fun)
 
-definition 
-  star_MonoTran_def: "x ^ * = Abs_MonoTran (star_fun (Rep_MonoTran x))"
+lift_definition star_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran"
+  is star_fun
+  by (fact mono_star_fun)
 
-definition
-  dual_star_MonoTran_def: "(x::('a MonoTran)) ^ \<otimes> = ((x ^ o) ^ *) ^ o"
+definition dual_star_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran"
+where
+  "(x::('a MonoTran)) ^ \<otimes> = ((x ^ o) ^ *) ^ o"
   
 instance proof
   fix x y :: "'a MonoTran" show "(x \<le> y) = (y ^ o \<le> x ^ o)"
-    apply (simp add: dual_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-    apply (simp add: dual_fun_def le_fun_def)
-    apply safe
+    apply transfer
+    apply (auto simp add: fun_eq_iff le_fun_def)
+    apply (drule_tac x = "-xa" in spec)
     apply simp
-    apply (drule_tac x = "-xa" in spec) 
-    by simp
+    done
 next
   fix x :: "'a MonoTran" show "(x ^ o) ^ o = x"
-    apply (simp add: dual_MonoTran_def Abs_MonoTran_inverse)
-    by (simp add: dual_fun_def Rep_MonoTran_inverse)
+    apply transfer
+    apply (simp add: fun_eq_iff)
+    done
 next
   fix x y :: "'a MonoTran" show "(x * y) ^ o = x ^ o * y ^ o"
-    apply (simp add: dual_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse)
-    apply (simp add: dual_fun_def)
-    apply (subgoal_tac "(\<lambda>p . - Rep_MonoTran x (Rep_MonoTran y (- p))) = ((\<lambda>p . - Rep_MonoTran x (- p)) \<circ> (\<lambda>p . - Rep_MonoTran y (- p)))")
-    apply simp_all
-    by (simp add: fun_eq_iff)
+    apply transfer
+    apply (simp add: fun_eq_iff)
+    done
 next
   show "(1\<Colon>'a MonoTran) ^ o = 1"
-    apply (simp add: dual_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
-    by (simp add: dual_fun_def id_def)
-
+    apply transfer
+    apply (simp add: fun_eq_iff)
+    done
 next
   fix x :: "'a MonoTran" show "\<top> * x = \<top>"
-    apply (simp add: top_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse)
-    by (simp add: top_fun_def o_def)
+    apply transfer
+    apply (simp add: fun_eq_iff)
+    done
 next
   fix x y z :: "'a MonoTran" show "(x \<sqinter> y) * z = (x * z) \<sqinter> (y * z)"
-    apply (simp add: inf_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse)
-    by (simp add: inf_fun_def o_def)
+    apply transfer
+    apply (simp add: fun_eq_iff)
+    done
 next
   fix x y z :: "'a MonoTran" assume A: "x \<le> y" from A show " z * x \<le> z * y"
-    apply (simp add: less_eq_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse)
-    apply (cut_tac x = z in Rep_MonoTran)
-    by (simp add: le_fun_def MonoTran_def mono_def o_def)
+    apply transfer
+    apply (auto simp add: le_fun_def elim: monoE)
+    done
 next
   fix x :: "'a MonoTran" show "x * \<top> \<sqinter> (x ^ o * \<bottom>) = \<bottom>"
-    apply (simp add: inf_MonoTran_def times_MonoTran_def top_MonoTran_def bot_MonoTran_def dual_MonoTran_def Abs_MonoTran_inverse)
-    by (simp add: inf_fun_def bot_fun_def dual_fun_def o_def top_fun_def inf_compl_bot)
-
+    apply transfer
+    apply (simp add: fun_eq_iff inf_compl_bot)
+    done
+next
   fix x :: "'a MonoTran" show "x ^ \<omega> = x * x ^ \<omega> \<sqinter> 1"
-    apply (simp add: omega_MonoTran_def times_MonoTran_def inf_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
+    apply transfer
+    apply (simp add: fun_eq_iff)
     apply (simp add: omega_fun_def Omega_fun_def)
-    apply (subst lfp_unfold, simp_all)
-    apply (cut_tac x = x in Rep_MonoTran)
-    by (unfold Omega_fun_def [THEN sym], simp)
+    apply (subst lfp_unfold, simp_all add: ac_simps)
+    apply (auto intro!: mono_comp mono_comp_fun)
+    done
 next
   fix x y z :: "'a MonoTran" assume A: "x * z \<sqinter> y \<le> z" from A show "x ^ \<omega> * y \<le> z"
-    apply (simp add: omega_MonoTran_def times_MonoTran_def less_eq_MonoTran_def inf_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
-    apply (cut_tac f = "Rep_MonoTran x" and g = "Rep_MonoTran y" in lfp_omega)
-    apply (cut_tac x = x in Rep_MonoTran)
-    apply simp_all
-    apply (simp add: lfp_def)
+    apply transfer
+    apply (auto simp add: lfp_omega lfp_def)
     apply (rule Inf_lower)
-    by (simp add: Omega_fun_def)
+    apply (auto simp add: Omega_fun_def ac_simps)
+    done
 next
   fix x :: "'a MonoTran" show "x ^ * = x * x ^ * \<sqinter> 1"
-    apply (simp add: star_MonoTran_def times_MonoTran_def inf_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
-    apply (simp add: star_fun_def Omega_fun_def)
-    apply (subst gfp_unfold, simp_all)
-    apply (cut_tac x = x in Rep_MonoTran)
-    by (unfold Omega_fun_def [THEN sym], simp)
+    apply transfer
+    apply (auto simp add: star_fun_def Omega_fun_def)
+    apply (subst gfp_unfold, simp_all add: ac_simps)
+    apply (auto intro!: mono_comp mono_comp_fun)
+    done
 next
   fix x y z :: "'a MonoTran" assume A: "z \<le> x * z \<sqinter> y" from A show "z \<le> x ^ * * y"
-    apply (simp add: star_MonoTran_def times_MonoTran_def less_eq_MonoTran_def inf_MonoTran_def one_MonoTran_def Abs_MonoTran_inverse)
-    apply (cut_tac f = "Rep_MonoTran x" and g = "Rep_MonoTran y" in gfp_star)
-    apply (cut_tac x = x in Rep_MonoTran)
-    apply simp_all
-    apply (simp add: gfp_def)
+    apply transfer
+    apply (auto simp add: gfp_star gfp_def)
     apply (rule Sup_upper)
-    by (simp add: Omega_fun_def)
+    apply (auto simp add: Omega_fun_def)
+    done
 next
   fix x :: "'a MonoTran" show "x ^ \<otimes> = ((x ^ o) ^ *) ^ o"
     by (simp add: dual_star_MonoTran_def) 
@@ -332,32 +334,44 @@ lemma assertion_disjunctive: "x \<in> assertion \<Longrightarrow> x \<in> disjun
     finally show "x * (y \<squnion> z) = x * y \<squnion> x * z" .
   qed
 
-lemma Abs_MonoTran_injective: "x \<in> MonoTran \<Longrightarrow> y \<in> MonoTran \<Longrightarrow> Abs_MonoTran x = Abs_MonoTran y \<Longrightarrow> x = y"
+lemma Abs_MonoTran_injective: "mono x \<Longrightarrow> mono y \<Longrightarrow> Abs_MonoTran x = Abs_MonoTran y \<Longrightarrow> x = y"
   apply (subgoal_tac "Rep_MonoTran (Abs_MonoTran x) = Rep_MonoTran (Abs_MonoTran y)")
   apply (subst (asm) Abs_MonoTran_inverse, simp)
   by (subst (asm) Abs_MonoTran_inverse, simp_all)
 end
 
 lemma mbta_MonoTran_disjunctive: "Rep_MonoTran ` disjunctive = Apply.disjunctive"
-  apply safe
-  apply (simp add: disjunctive_def Apply.disjunctive_def, safe)
-  apply (simp add: sup_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse Rep_MonoTran_inverse)
-    apply (drule_tac x = "Abs_MonoTran (\<lambda> u . y)" in spec)
-    apply (drule_tac x = "Abs_MonoTran (\<lambda> u . z)" in spec)
-    apply (simp add: Abs_MonoTran_inverse Rep_MonoTran_inverse)
-    apply (cut_tac x = "Rep_MonoTran xa \<circ> (\<lambda>u\<Colon>'a. y) \<squnion> (\<lambda>u\<Colon>'a. z)" 
-      and y = "((Rep_MonoTran xa \<circ> (\<lambda>u\<Colon>'a. y)) \<squnion> (Rep_MonoTran xa \<circ> (\<lambda>u\<Colon>'a. z)))" in Abs_MonoTran_injective)
-    apply simp_all
-    apply (simp add: fun_eq_iff sup_fun_def o_def)
-    apply (simp add: image_def)
-    apply (subgoal_tac "x \<in> MonoTran")
-    apply (rule_tac x = "Abs_MonoTran x" in bexI)
-    apply (simp add: Abs_MonoTran_inverse)
-    apply (simp add: disjunctive_def sup_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse Rep_MonoTran_inverse)
-    apply safe
-    apply (rule_tac f = "Abs_MonoTran" in fun_eq)
-    apply (simp add: Apply.disjunctive_def fun_eq_iff o_def sup_fun_def)
-    by (subst MonoTran_def, simp)
+  apply (simp add: disjunctive_def Apply.disjunctive_def)
+  apply transfer
+  apply auto
+  proof -
+    fix f :: "'a \<Rightarrow> 'a" and a b
+    assume prem: "\<forall>y. mono y \<longrightarrow> (\<forall>z. mono z \<longrightarrow> f \<circ> y \<squnion> z = (f \<circ> y) \<squnion> (f \<circ> z))"
+    { fix g h :: "'b \<Rightarrow> 'a"
+      assume "mono g" and "mono h"
+      then have "f \<circ> g \<squnion> h = (f \<circ> g) \<squnion> (f \<circ> h)"
+        using prem by blast
+    } note * = this
+    assume "mono f"
+    show "f (a \<squnion> b) = f a \<squnion> f b" (is "?P = ?Q")
+    proof (rule order_antisym)
+      show "?P \<le> ?Q"
+        using * [of "\<lambda>_. a" "\<lambda>_. b"] by (simp add: comp_def fun_eq_iff)
+    next
+      from `mono f` show "?Q \<le> ?P" by (rule Lattices.semilattice_sup_class.mono_sup)
+    qed
+  next
+    fix f :: "'a \<Rightarrow> 'a"
+    assume "\<forall>y z. f (y \<squnion> z) = f y \<squnion> f z"
+    then have *: "\<And>y z. f (y \<squnion> z) = f y \<squnion> f z" by blast
+    show "mono f"
+    proof
+      fix a b :: 'a
+      assume "a \<le> b"
+      then show "f a \<le> f b"
+        unfolding sup.order_iff * [symmetric] by simp
+    qed
+  qed
 
 lemma assertion_MonoTran: "assertion = Abs_MonoTran ` assertion_fun"
     apply (safe)
@@ -754,12 +768,14 @@ end
 subsection{*Monotonic Boolean trasformers algebra with post condition statement*}
 
 definition
-  "post_fun (p::'a::order) q = (if p \<le> q then \<top> else \<bottom>)"
+  "post_fun (p::'a::order) q = (if p \<le> q then (\<top>::'b::{order_bot,order_top}) else \<bottom>)"
 
-lemma post_mono [simp]: "(post_fun (p::_::{order_bot,order_top})) \<in> MonoTran"
-   apply (simp add: post_fun_def MonoTran_def mono_def, safe)
-   apply (subgoal_tac "p \<le> y", simp)
-   by (rule_tac y = x in order_trans, simp_all)
+lemma mono_post_fun [simp]: "mono (post_fun (p::_::{order_bot,order_top}))"
+  apply (simp add: post_fun_def mono_def, safe)
+  apply (subgoal_tac "p \<le> y", simp)
+  apply (rule_tac y = x in order_trans)
+  apply simp_all
+  done
 
 lemma post_top [simp]: "post_fun p p = \<top>"
   by (simp add: post_fun_def)
@@ -775,20 +791,20 @@ class post_mbt_algebra = mbt_algebra +
 
 instantiation MonoTran :: (complete_boolean_algebra) post_mbt_algebra
 begin
-definition
-  post_MonoTran_def: "post x = Abs_MonoTran (post_fun ((Rep_MonoTran x) \<top>))"
+
+lift_definition post_MonoTran :: "'a::complete_boolean_algebra MonoTran \<Rightarrow> 'a::complete_boolean_algebra MonoTran"
+  is "\<lambda>x. post_fun (x \<top>)"
+  by (rule mono_post_fun)
+
 instance proof
-have op_p_MonoTran [simp]: "\<And>p::'a . op \<sqinter> p \<in> MonoTran"
-   apply (simp add: MonoTran_def mono_def, safe)
-   by (rule_tac y = x in order_trans, simp_all)
   fix x :: "'a MonoTran" show "post x * x * \<top> = \<top>"
-    apply (simp add: post_MonoTran_def times_MonoTran_def top_MonoTran_def 
-      Abs_MonoTran_inverse Rep_MonoTran_inverse)
-   by (simp add:  top_fun_def o_def)
+    apply transfer
+    apply (simp add: fun_eq_iff)
+    done
   fix x y :: "'a MonoTran" show "y * x * \<top> \<sqinter> post x \<le> y"
-    apply (simp add: post_MonoTran_def times_MonoTran_def top_MonoTran_def Abs_MonoTran_inverse 
-      Rep_MonoTran_inverse inf_MonoTran_def less_eq_MonoTran_def)
-    by (simp add: le_fun_def bot_fun_def inf_fun_def top_fun_def o_def)
+    apply transfer
+    apply (simp add: le_fun_def)
+    done
 qed
    
 end
@@ -798,22 +814,12 @@ subsection{*Complete monotonic Boolean transformers algebra*}
 class complete_mbt_algebra = post_mbt_algebra + complete_distrib_lattice +
   assumes Inf_comp: "(Inf X) * z = (INF x : X . (x * z))"
 
-
-instantiation MonoTran :: (complete_boolean_algebra) complete_mbt_algebra
-begin
-
-instance proof
-  fix z :: "'a MonoTran" fix X show "Inf X * z = (INF x:X. x * z)"
-    apply (simp add: INF_def Inf_MonoTran_def times_MonoTran_def Inf_comp_fun Abs_MonoTran_inverse sup_Inf)
-    apply (subgoal_tac "{g\<Colon>'a \<Rightarrow> 'a. \<exists>m\<Colon>'a MonoTran\<in>X. g = Rep_MonoTran m \<circ> Rep_MonoTran z} = 
-        Rep_MonoTran ` (\<lambda>x\<Colon>'a MonoTran. Abs_MonoTran (Rep_MonoTran x \<circ> Rep_MonoTran z)) ` X")
-    apply simp
-    apply (simp add: image_def, safe)
-    apply (rule_tac x = "Abs_MonoTran (Rep_MonoTran m \<circ> Rep_MonoTran z)" in exI)
-    apply (simp_all add: Abs_MonoTran_inverse)
-    by auto
-qed
-end
+instance MonoTran :: (complete_boolean_algebra) complete_mbt_algebra
+  apply intro_classes
+  unfolding INF_def
+  apply transfer
+  apply (simp add: Inf_comp_fun INF_def [symmetric])
+  done
 
 context complete_mbt_algebra begin
 lemma dual_Inf: "(Inf X) ^ o = (SUP x: X . x ^ o)"

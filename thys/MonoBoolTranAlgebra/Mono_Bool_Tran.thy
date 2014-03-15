@@ -1,8 +1,9 @@
 header {* Monotonic Boolean Transformers *}
 
-theory  Mono_Bool_Tran
-imports "../LatticeProperties/Complete_Lattice_Prop"
-   "../LatticeProperties/Conj_Disj"
+theory Mono_Bool_Tran
+imports
+  "../LatticeProperties/Complete_Lattice_Prop"
+  "../LatticeProperties/Conj_Disj"
 begin
 
 text{*
@@ -25,257 +26,314 @@ over a complete lattice.
 notation
   bot ("\<bottom>") and
   top ("\<top>") and
-  inf (infixl "\<sqinter>" 70)
-  and sup (infixl "\<squnion>" 65)
+  inf (infixl "\<sqinter>" 70) and
+  sup (infixl "\<squnion>" 65) and
+  Inf ("\<Sqinter>_" [900] 900) and
+  Sup ("\<Squnion>_" [900] 900)
 
-definition "MonoTran = {f::'a::order \<Rightarrow> 'a . mono f}"
+syntax (xsymbols)
+  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Sqinter>_./ _)" [0, 10] 10)
+  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Sqinter>_\<in>_./ _)" [0, 0, 10] 10)
+  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Squnion>_./ _)" [0, 10] 10)
+  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Squnion>_\<in>_./ _)" [0, 0, 10] 10)
 
-typedef 'a MonoTran = "MonoTran :: ('a::order \<Rightarrow> 'a) set"
+lemma Inf_comp_fun:
+  "\<Sqinter>M \<circ> f = (\<Sqinter>m\<in>M. m \<circ> f)"
+  by (simp add: fun_eq_iff)
+
+lemma INF_comp_fun:
+  "(\<Sqinter>a\<in>A. g a) \<circ> f = (\<Sqinter>a\<in>A. g a \<circ> f)"
+  by (simp add: fun_eq_iff)
+
+lemma Sup_comp_fun:
+  "\<Squnion>M \<circ> f = (\<Squnion>m\<in>M. m \<circ> f)"
+  by (simp add: fun_eq_iff)
+
+lemma SUP_comp_fun:
+  "(\<Squnion>a\<in>A. g a) \<circ> f = (\<Squnion>a\<in>A. g a \<circ> f)"
+  by (simp add: fun_eq_iff)
+
+lemma (in order) mono_const [simp]:
+  "mono (\<lambda>_. c)"
+  by (auto intro: monoI)
+
+lemma (in order) mono_id [simp]:
+  "mono id"
+  by (auto intro: order_class.monoI)
+
+lemma (in order) mono_comp [simp]:
+  "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f \<circ> g)"
+  by (auto intro!: monoI elim!: monoE order_class.monoE)
+
+lemma (in bot) mono_bot [simp]:
+  "mono \<bottom>"
+  by (auto intro: monoI)
+
+lemma (in top) mono_top [simp]:
+  "mono \<top>"
+  by (auto intro: monoI)
+
+lemma (in semilattice_inf) mono_inf [simp]:
+  assumes "mono f" and "mono g"
+  shows "mono (f \<sqinter> g)"
 proof
-  show "id \<in> MonoTran" by (simp add: MonoTran_def mono_def)
+  fix a b
+  assume "a \<le> b"
+  have "f a \<sqinter> g a \<le> f a" by simp
+  also from `mono f` `a \<le> b` have "\<dots> \<le> f b" by (auto elim: monoE)
+  finally have *: "f a \<sqinter> g a \<le> f b" .
+  have "f a \<sqinter> g a \<le> g a" by simp
+  also from `mono g` `a \<le> b` have "\<dots> \<le> g b" by (auto elim: monoE)
+  finally have **: "f a \<sqinter> g a \<le> g b" .
+  from * ** show "(f \<sqinter> g) a \<le> (f \<sqinter> g) b" by auto
 qed
 
-lemma [simp]: "Rep_MonoTran x \<in> MonoTran"
-  by (rule Rep_MonoTran)
+lemma (in semilattice_sup) mono_sup [simp]:
+  assumes "mono f" and "mono g"
+  shows "mono (f \<squnion> g)"
+proof
+  fix a b
+  assume "a \<le> b"
+  from `mono f` `a \<le> b` have "f a \<le> f b" by (auto elim: monoE)
+  also have "f b \<le> f b \<squnion> g b" by simp
+  finally have *: "f a \<le> f b \<squnion> g b" .
+  from `mono g` `a \<le> b` have "g a \<le> g b" by (auto elim: monoE)
+  also have "g b \<le> f b \<squnion> g b" by simp
+  finally have **: "g a \<le> f b \<squnion> g b" .
+  from * ** show "(f \<squnion> g) a \<le> (f \<squnion> g) b" by auto
+qed
+
+lemma (in complete_lattice) mono_Inf [simp]:
+  assumes "A \<subseteq> {f. mono f}"
+  shows "mono (\<Sqinter>A)"
+proof
+  fix a b
+  assume "a \<le> b"
+  { fix f
+    assume "f \<in> A"
+    with assms have "mono f" by auto
+    with `a \<le> b` have "f a \<le> f b" by (auto elim: monoE)
+  }
+  then have "(\<Sqinter>f\<in>A. f a) \<le> (\<Sqinter>f\<in>A. f b)"
+    by (auto intro: complete_lattice_class.INF_greatest complete_lattice_class.INF_lower2)
+  then show "(\<Sqinter>A) a \<le> (\<Sqinter>A) b" by simp
+qed
+
+lemma (in complete_lattice) mono_Sup [simp]:
+  assumes "A \<subseteq> {f. mono f}"
+  shows "mono (\<Squnion>A)"
+proof
+  fix a b
+  assume "a \<le> b"
+  { fix f
+    assume "f \<in> A"
+    with assms have "mono f" by auto
+    with `a \<le> b` have "f a \<le> f b" by (auto elim: monoE)
+  }
+  then have "(\<Squnion>f\<in>A. f a) \<le> (\<Squnion>f\<in>A. f b)"
+    by (auto intro: complete_lattice_class.SUP_least complete_lattice_class.SUP_upper2)
+  then show "(\<Squnion>A) a \<le> (\<Squnion>A) b" by simp
+qed
+
+typedef 'a MonoTran = "{f::'a::order \<Rightarrow> 'a . mono f}"
+proof
+  show "id \<in> ?MonoTran" by simp
+qed
+
+lemma [simp]:
+  "mono (Rep_MonoTran f)"
+  using Rep_MonoTran [of f] by simp
+
+setup_lifting type_definition_MonoTran
 
 instantiation MonoTran :: (order) order
 begin
 
-definition
-  less_eq_MonoTran_def: "(x \<le> y) = (Rep_MonoTran x \<le> Rep_MonoTran y)"
+lift_definition less_eq_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran \<Rightarrow> bool"
+  is less_eq .
 
-definition
-  less_MonoTran_def: "((x::'a MonoTran) < y) = (x \<le> y \<and> \<not> y \<le> x)"
+lift_definition less_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran \<Rightarrow> bool"
+  is less .
 
-instance proof
-  fix x y :: "'a MonoTran" show "(x < y) = (x \<le> y \<and> \<not> y \<le> x)"
-    by (simp add: less_MonoTran_def)
-next
-  fix x :: "'a MonoTran" show "x \<le> x"
-    by (simp add: less_eq_MonoTran_def)
-next
-  fix x y z :: "'a MonoTran" assume A: "x \<le> y" assume B: "y \<le> z" from A B show "x \<le> z"
-    by (simp add: less_eq_MonoTran_def)
-next
-  fix x y :: "'a MonoTran" assume A: "x \<le> y" assume B: "y \<le> x" from A B show "x = y"
-    apply (simp add: less_eq_MonoTran_def)
-    apply (subgoal_tac "Abs_MonoTran (Rep_MonoTran y) = Abs_MonoTran (Rep_MonoTran x)")
-    apply (subst (asm) Rep_MonoTran_inverse, subst (asm) Rep_MonoTran_inverse, simp)
-    by simp
-qed
+instance
+  by intro_classes (transfer, auto intro: order_antisym)+
+
 end
-
-lemma [simp]: "(\<lambda> u . v) \<in> MonoTran"
-  by (simp add: MonoTran_def mono_def)
-
-lemma comp_MonoTran [simp]: "f \<in> MonoTran \<Longrightarrow> g \<in> MonoTran \<Longrightarrow> f o g \<in> MonoTran"
-  by (simp add: MonoTran_def mono_def)
-
-lemma [simp]: "id \<in> MonoTran"
-  by (simp add: MonoTran_def mono_def)
 
 instantiation MonoTran :: (order) monoid_mult
 begin
 
-definition
-  one_MonoTran_def: "1 = Abs_MonoTran id"
+lift_definition one_MonoTran :: "'a MonoTran"
+  is id
+  by (fact mono_id)
 
-definition
-  times_MonoTran_def: "x * y = Abs_MonoTran (Rep_MonoTran x  o Rep_MonoTran y)"
+lift_definition times_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran \<Rightarrow> 'a MonoTran"
+  is comp
+  by (fact mono_comp)
 
-instance proof
-  fix a b c :: "'a MonoTran" show "a * b * c = a * (b * c)"
-    by (simp add: times_MonoTran_def Abs_MonoTran_inverse o_assoc)
-  next
-  fix a :: "'a MonoTran" show "1 * a = a"
-    by (simp add: one_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse Rep_MonoTran_inverse)
-  next
-  fix a :: "'a MonoTran" show "a * 1 = a"
-    by (simp add: one_MonoTran_def times_MonoTran_def Abs_MonoTran_inverse Rep_MonoTran_inverse)
-qed
+instance
+  by intro_classes (transfer, auto)+
+
 end
-
-lemma [simp]: "\<bottom> \<in> MonoTran"
-  by (simp add: MonoTran_def mono_def bot_fun_def)
 
 instantiation MonoTran :: (order_bot) order_bot
 begin
 
-definition
-  bot_MonoTran_def: "\<bottom> = Abs_MonoTran \<bottom>"
+lift_definition bot_MonoTran :: "'a MonoTran"
+  is \<bottom>
+  by (fact mono_bot)
 
-instance proof
-  fix x :: "'a MonoTran" show "\<bottom> \<le> x"
-    by (simp add: bot_MonoTran_def Abs_MonoTran_inverse less_eq_MonoTran_def)
-qed
+instance
+  by intro_classes (transfer, simp)
+
 end
-
-lemma [simp]: "\<top> \<in> MonoTran"
-  by (simp add: MonoTran_def mono_def top_fun_def)
 
 instantiation MonoTran :: (order_top) order_top
 begin
 
-definition
-  top_MonoTran_def: "\<top> = Abs_MonoTran \<top>"
+lift_definition top_MonoTran :: "'a MonoTran"
+  is \<top>
+  by (fact mono_top)
 
-instance proof
-  fix x :: "'a MonoTran" show "x \<le> \<top>"
-    by (simp add: top_MonoTran_def Abs_MonoTran_inverse less_eq_MonoTran_def)
-qed
+instance
+  by intro_classes (transfer, simp)
+
 end
-
-lemma inf_MonoTran [simp]: "f \<in> MonoTran \<Longrightarrow> g \<in> MonoTran \<Longrightarrow> f \<sqinter> g \<in> MonoTran"
-  apply (simp add: MonoTran_def mono_def inf_fun_def)
-  apply safe
-  apply (rule_tac y = "f x" in order_trans)
-  apply simp_all
-  apply (rule_tac y = "g x" in order_trans)
-  by simp_all
-
-lemma sup_MonoTran [simp]: "f \<in> MonoTran \<Longrightarrow> g \<in> MonoTran \<Longrightarrow> f \<squnion> g \<in> MonoTran"
-  apply (simp add: MonoTran_def mono_def sup_fun_def)
-  apply safe
-  apply (rule_tac y = "f y" in order_trans)
-  apply simp_all
-  apply (rule_tac y = "g y" in order_trans)
-  by simp_all
-
-text{*
-The type of monotonic transformers on a lattice is also a lattice
-*}
 
 instantiation MonoTran :: (lattice) lattice
 begin
-definition
-  inf_MonoTran_def: "x \<sqinter> y = Abs_MonoTran (Rep_MonoTran x \<sqinter> Rep_MonoTran y)"
 
-definition
-  sup_MonoTran_def: "x \<squnion> y = Abs_MonoTran (Rep_MonoTran x \<squnion> Rep_MonoTran y)"
+lift_definition inf_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran \<Rightarrow> 'a MonoTran"
+  is inf
+  by (fact mono_inf)
 
-instance proof
-  fix x y :: "'a MonoTran" show "x \<sqinter> y \<le> x"
-    by (simp add: inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse) 
-  fix x y :: "'a MonoTran" show "x \<sqinter> y \<le> y"
-    by (simp add: inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-  fix x y z :: "'a MonoTran" assume A: "x \<le> y" assume B: "x \<le> z" from A B show "x \<le> y \<sqinter> z"
-    by (simp add: inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-next
-  fix x y :: "'a MonoTran" show "x \<le> x \<squnion> y"
-    by (simp add: sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse) 
-  fix x y :: "'a MonoTran" show "y \<le> x \<squnion> y"
-    by (simp add: sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-  fix x y z :: "'a MonoTran" assume A: "y \<le> x" assume B: "z \<le> x" from A B show "y \<squnion> z \<le> x"
-    by (simp add: sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-qed
+lift_definition sup_MonoTran :: "'a MonoTran \<Rightarrow> 'a MonoTran \<Rightarrow> 'a MonoTran"
+  is sup
+  by (fact mono_sup)
+
+instance
+  by intro_classes (transfer, simp)+
 
 end
 
-instantiation MonoTran :: (distrib_lattice) distrib_lattice
-begin
-instance proof
-  fix x y z :: "'a MonoTran" show "x \<squnion> y \<sqinter> z = (x \<squnion> y) \<sqinter> (x \<squnion> z)"
-    by (simp add: sup_MonoTran_def inf_MonoTran_def sup_inf_distrib Abs_MonoTran_inverse)
-qed
-
-end
-
-context complete_lattice begin
-subclass order_top proof qed
-end
-
-context complete_lattice begin
-subclass order_bot proof qed
-end
-
-lemma Sup_MonoTran [simp]: "X \<subseteq> MonoTran \<Longrightarrow> Sup X \<in> MonoTran"
-  apply (simp add: MonoTran_def mono_def Sup_fun_def)
-  apply safe
-  apply (rule SUP_least)
-  apply (rule_tac y = "f y" in order_trans) 
-  apply blast
-  by (rule SUP_upper, blast)
-
-
-lemma Inf_MonoTran [simp]: "X \<subseteq> MonoTran \<Longrightarrow> Inf X \<in> MonoTran"
-  apply (simp add: MonoTran_def mono_def Inf_fun_def)
-  apply safe
-  apply (rule INF_greatest)
-  apply (rule_tac y = "f x" in order_trans) 
-  apply (rule INF_lower, blast)
-  by blast
-
-lemma [simp]: "Rep_MonoTran ` A \<subseteq> MonoTran"
-  apply (rule subsetI)
-  apply (simp add: image_def, safe)
-  by (rule Rep_MonoTran) 
+instance MonoTran :: (distrib_lattice) distrib_lattice
+  by intro_classes (transfer, rule sup_inf_distrib1)
 
 instantiation MonoTran :: (complete_lattice) complete_lattice
 begin
 
-definition
-  Sup_MonoTran_def: "Sup X = Abs_MonoTran (Sup (Rep_MonoTran`X))"
+lift_definition Inf_MonoTran :: "'a MonoTran set \<Rightarrow> 'a MonoTran"
+  is Inf
+  by (rule mono_Inf) auto
 
-definition
-  Inf_MonoTran_def: "Inf X = Abs_MonoTran (Inf (Rep_MonoTran`X))"
+lift_definition Sup_MonoTran :: "'a MonoTran set \<Rightarrow> 'a MonoTran"
+  is Sup
+  by (rule mono_Sup) auto
 
-instance proof
-  fix x :: "'a MonoTran" fix A assume A: "x \<in> A" from A show "Inf A \<le> x"
-    apply (simp add: Inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-    by (rule Inf_lower, blast)
-next
-  fix z :: "'a MonoTran" fix A assume A: "\<And> x . x \<in> A \<Longrightarrow> z \<le> x" from A show "z \<le> Inf A"
-    apply (simp add: Inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-    by (rule Inf_greatest, blast)
-next
-  fix x :: "'a MonoTran" fix A assume A: "x \<in> A" from A show "x \<le> Sup A"
-    apply (simp add: Sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-    by (rule Sup_upper, blast)
-next
-  fix z :: "'a MonoTran" fix A assume A: "\<And> x . x \<in> A \<Longrightarrow> x \<le> z" from A show "Sup A \<le> z"
-    apply (simp add: Sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse)
-    by (rule Sup_least, blast)
-next
-  show "Inf {} = (\<top>::'a MonoTran)"
-    by (auto simp: Inf_MonoTran_def top_MonoTran_def)
-next
-  show "Sup {} = (\<bottom>::'a MonoTran)"
-    by (auto simp: Sup_MonoTran_def bot_MonoTran_def)
-qed
+instance
+  by intro_classes (transfer, simp add: Inf_lower Sup_upper Inf_greatest Sup_least)+
+
 end
 
-instantiation MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
+context
 begin
-instance proof
-  fix x :: "'a MonoTran" fix Y :: "'a MonoTran set" show "x \<sqinter> Sup Y = (SUP y:Y. x \<sqinter> y)"
-    apply (simp add: SUP_def Sup_MonoTran_def inf_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse inf_Sup)
-    apply (simp add: image_def)
-    apply (subgoal_tac "{y . \<exists>xa . (\<exists>x \<in> Y . xa = Rep_MonoTran x) \<and> y = Rep_MonoTran x \<sqinter> xa} 
-       = {y . \<exists>xa . (\<exists>xb\<Colon>'a MonoTran\<in>Y. xa = Abs_MonoTran (Rep_MonoTran x \<sqinter> Rep_MonoTran xb)) \<and> y = Rep_MonoTran xa}")
-    apply (simp, safe)
-    apply (rule_tac x = "Abs_MonoTran (Rep_MonoTran x \<sqinter> Rep_MonoTran xb)" in exI)
-    by (simp_all add: Abs_MonoTran_inverse, auto)
-next
-  fix x :: "'a MonoTran" fix Y show "x \<squnion> Inf Y = (INF y:Y. x \<squnion> y)"
-    apply (simp add: INF_def Inf_MonoTran_def sup_MonoTran_def less_eq_MonoTran_def Abs_MonoTran_inverse sup_Inf)
-    apply (simp add: image_def)
-    apply (subgoal_tac "{y . \<exists>xa . (\<exists>x \<in> Y . xa = Rep_MonoTran x) \<and> y = Rep_MonoTran x \<squnion> xa} 
-      = {y . \<exists>xa . (\<exists>xb \<in>Y. xa = Abs_MonoTran (Rep_MonoTran x \<squnion> Rep_MonoTran xb)) \<and> y = Rep_MonoTran xa}")
-    apply (simp, safe)
-    apply (rule_tac x = "Abs_MonoTran (Rep_MonoTran x \<squnion> Rep_MonoTran xb)" in exI)
-    by (simp_all add: Abs_MonoTran_inverse, auto)
+
+interpretation lifting_syntax .
+
+lift_definition INF_trash :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a MonoTran) \<Rightarrow> 'a::complete_lattice MonoTran"
+  is INFI
+  unfolding INF_def [abs_def]
+  by (rule mono_Inf) auto -- {* FIXME just a neat trick to get transfer rules for INF *}
+
+lemma [transfer_rule]:
+  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFI INFI"
+proof -
+  have "INF_trash = INFI"
+    apply (rule ext)+
+    unfolding INF_def
+    apply transfer
+    apply (simp add: INF_def)
+    done
+  from INF_trash.transfer [simplified this] show ?thesis .
 qed
+
+lift_definition SUP_trash :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a MonoTran) \<Rightarrow> 'a::complete_lattice MonoTran"
+  is SUPR
+  unfolding SUP_def [abs_def]
+  by (rule mono_Sup) auto -- {* FIXME just a neat trick to get transfer rules for SUP *}
+
+lemma [transfer_rule]:
+  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPR SUPR"
+proof -
+  have "SUP_trash = SUPR"
+    apply (rule ext)+
+    unfolding SUP_def
+    apply transfer
+    apply (simp add: SUP_def)
+    done
+  from SUP_trash.transfer [simplified this] show ?thesis .
+qed
+
 end
 
+hide_const INF_trash SUP_trash
+
+instance MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
+  apply intro_classes
+  apply (unfold INF_def SUP_def)
+  apply (transfer, simp add: inf_Sup sup_Inf INF_def SUP_def)+
+  done
 
 definition
-  "dual_fun (f::'a::boolean_algebra \<Rightarrow> 'a) = (\<lambda> p . - (f (- p)))"
+  "dual_fun (f::'a::boolean_algebra \<Rightarrow> 'a) = uminus \<circ> f \<circ> uminus"
 
-lemma [simp]: "f \<in> MonoTran \<Longrightarrow> dual_fun f \<in> MonoTran"
-  by (simp add: MonoTran_def dual_fun_def mono_def)
+lemma dual_fun_apply [simp]:
+  "dual_fun f p = - f (- p)"
+  by (simp add: dual_fun_def)
+
+lemma mono_dual_fun [simp]:
+  "mono f \<Longrightarrow> mono (dual_fun f)"
+  apply (rule monoI)
+  apply (erule monoE)
+  apply (auto)
+  done
+
+lemma (in order) mono_inf_fun [simp]:
+  fixes x :: "'b::semilattice_inf"
+  shows "mono (inf x)"
+  by (auto intro!: order_class.monoI semilattice_inf_class.inf_mono)
+
+lemma (in order) mono_sup_fun [simp]:
+  fixes x :: "'b::semilattice_sup"
+  shows "mono (sup x)"
+  by (auto intro!: order_class.monoI semilattice_sup_class.sup_mono)
+
+lemma mono_comp_fun:
+  fixes f :: "'a::order \<Rightarrow> 'b::order"
+  shows "mono f \<Longrightarrow> mono (op \<circ> f)"
+  by (rule monoI) (auto simp add: le_fun_def elim: monoE)
 
 definition
-  "Omega_fun f g = (\<lambda> h . (f o h) \<sqinter> g)"
+  "Omega_fun f g = inf g \<circ> comp f"
+
+lemma Omega_fun_apply [simp]:
+  "Omega_fun f g h p = (g p \<sqinter> f (h p))"
+  by (simp add: Omega_fun_def)
+
+lemma mono_Omega_fun [simp]:
+  "mono f \<Longrightarrow> mono (Omega_fun f g)"
+  unfolding Omega_fun_def
+  by (auto intro: mono_comp mono_comp_fun)
+
+lemma mono_mono_Omega_fun [simp]:
+  fixes f :: "'b::order \<Rightarrow> 'a::semilattice_inf" and g :: "'c::semilattice_inf \<Rightarrow> 'a"
+  shows "mono f \<Longrightarrow> mono g \<Longrightarrow> mono_mono (Omega_fun f g)"
+  apply (auto simp add: mono_mono_def Omega_fun_def)
+  apply (rule mono_comp)
+  apply (rule mono_inf_fun)
+  apply (rule mono_comp_fun)
+  apply assumption
+  done
 
 definition 
   "omega_fun f = lfp (Omega_fun f id)"
@@ -283,58 +341,34 @@ definition
 definition
   "star_fun f = gfp (Omega_fun f id)"
 
-lemma [simp]: "f \<in> MonoTran \<Longrightarrow> mono f"
-  by (unfold MonoTran_def, simp)
+lemma mono_omega_fun [simp]:
+  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes "mono f"
+  shows "mono (omega_fun f)"
+proof
+  fix a b :: 'a
+  assume "a \<le> b"
+  from assms have "mono (lfp (Omega_fun f id))"
+    by (auto intro: mono_mono_Omega_fun)
+  with `a \<le> b` show "omega_fun f a \<le> omega_fun f b"
+    by (auto simp add: omega_fun_def elim: monoE)
+qed
 
-lemma [simp]: "f \<in> MonoTran \<Longrightarrow> Omega_fun f g \<in> MonoTran"
-  apply (simp add: Omega_fun_def mono_def MonoTran_def)
-  apply safe
-  apply (simp add: le_fun_def inf_fun_def id_def o_def)
-  apply safe
-  apply (rule_tac y = "f (x xa)" in order_trans)
-  by simp_all
+lemma mono_star_fun [simp]:
+  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes "mono f"
+  shows "mono (star_fun f)"
+proof
+  fix a b :: 'a
+  assume "a \<le> b"
+  from assms have "mono (gfp (Omega_fun f id))"
+    by (auto intro: mono_mono_Omega_fun)
+  with `a \<le> b` show "star_fun f a \<le> star_fun f b"
+    by (auto simp add: star_fun_def elim: monoE)
+qed
 
-lemma [simp]: "f \<in> MonoTran \<Longrightarrow> omega_fun f \<in> MonoTran" 
-  apply (unfold omega_fun_def MonoTran_def Omega_fun_def, simp)
-  apply (rule lfp_mono)
-  apply (simp add: mono_mono_def mono_def)
-  apply safe
-  apply (rule_tac y = "f \<circ> x" in order_trans)
-  apply simp
-  apply (simp add: le_fun_def inf_fun_def id_def o_def)
-  apply (rule_tac y = "f (fa x)" in order_trans)
-  apply simp_all
-  apply (rule_tac y = "x" in order_trans)
-  by simp_all
-
-lemma [simp]: "f \<in> MonoTran \<Longrightarrow> star_fun f \<in> MonoTran" 
-  apply (unfold star_fun_def MonoTran_def Omega_fun_def, simp)
-  apply (rule gfp_mono)
-  apply (simp add: mono_mono_def mono_def)
-  apply safe
-  apply (rule_tac y = "f \<circ> x" in order_trans)
-  apply simp
-  apply (simp add: le_fun_def inf_fun_def id_def o_def)
-  apply (rule_tac y = "f (fa x)" in order_trans)
-  apply simp_all
-  apply (rule_tac y = "x" in order_trans)
-  by simp_all
-
-lemma Sup_comp_fun: "(Sup M) o f = Sup {g . \<exists> m \<in> M . g = m o f}"
-  apply (simp add: fun_eq_iff Sup_fun_def o_def)
-  apply safe
-  apply (simp add: SUP_def image_def)
-  apply (subgoal_tac "{y . \<exists>fa \<in> M . y = fa (f x)} = {y . \<exists>fa . (\<exists>m \<in> M . \<forall>x . fa x = m (f x)) \<and> y = fa x}")
-  by auto
-
-lemma Inf_comp_fun: "(Inf M) o f = Inf {g . \<exists> m \<in> M . g = m o f}"
-  apply (simp add: fun_eq_iff Inf_fun_def o_def)
-  apply safe
-  apply (simp add: INF_def image_def)
-  apply (subgoal_tac "{y . \<exists>fa \<in> M . y = fa (f x)} = {y . \<exists>fa . (\<exists>m \<in> M . \<forall>x\<Colon>'a. fa x = m (f x)) \<and> y = fa x}")
-  by auto
-
-lemma lfp_omega_lowerbound: "f \<in> MonoTran \<Longrightarrow> Omega_fun f g A \<le> A \<Longrightarrow> (omega_fun f) o g \<le> A"
+lemma lfp_omega_lowerbound:
+  "mono f \<Longrightarrow> Omega_fun f g A \<le> A \<Longrightarrow> omega_fun f \<circ> g \<le> A"
   apply (simp add: omega_fun_def)
   apply (rule_tac P = "\<lambda> x . x \<circ> g \<le> A" and f = "Omega_fun f id" in lfp_ordinal_induct)
   apply simp_all
@@ -344,12 +378,13 @@ lemma lfp_omega_lowerbound: "f \<in> MonoTran \<Longrightarrow> Omega_fun f g A 
   apply simp_all
   apply (rule_tac y = "f (S (g x))" in order_trans)
   apply simp_all
-  apply (simp add: mono_def MonoTran_def)
+  apply (simp add: mono_def) apply (auto simp add: ac_simps)
   apply (unfold Sup_comp_fun)
-  apply (rule Sup_least)
+  apply (rule SUP_least)
   by auto
 
-lemma gfp_omega_upperbound: "f \<in> MonoTran \<Longrightarrow> A \<le> Omega_fun f g A \<Longrightarrow> A \<le> (star_fun f) o g"
+lemma gfp_omega_upperbound:
+  "mono f \<Longrightarrow> A \<le> Omega_fun f g A \<Longrightarrow> A \<le> star_fun f \<circ> g"
   apply (simp add: star_fun_def)
   apply (rule_tac P = "\<lambda> x . A \<le> x \<circ> g" and f = "Omega_fun f id" in gfp_ordinal_induct)
   apply simp_all
@@ -359,32 +394,37 @@ lemma gfp_omega_upperbound: "f \<in> MonoTran \<Longrightarrow> A \<le> Omega_fu
   apply simp_all
   apply (rule_tac y = "f (A x)" in order_trans)
   apply simp_all
-  apply (simp add: mono_def MonoTran_def)
+  apply (simp add: mono_def)
   apply (unfold Inf_comp_fun)
-  apply (rule Inf_greatest)
+  apply (rule INF_greatest)
   by auto
 
-lemma lfp_omega_greatest: "(\<forall> u . Omega_fun f g u \<le> u \<longrightarrow> A \<le> u) \<Longrightarrow> A \<le> (omega_fun f) o g"
+lemma lfp_omega_greatest:
+  assumes "\<And>u. Omega_fun f g u \<le> u \<Longrightarrow> A \<le> u"
+  shows "A \<le> omega_fun f \<circ> g"
   apply (unfold omega_fun_def)
   apply (simp add: lfp_def)
   apply (unfold Inf_comp_fun)
-  apply (rule Inf_greatest)
+  apply (rule INF_greatest)
   apply simp
-  apply safe
-  apply (drule_tac x = "m o g" in spec)
-  by (simp add: le_fun_def o_def inf_fun_def Omega_fun_def)
+  apply (rule assms)
+  apply (simp add: le_fun_def)
+  done
 
-lemma gfp_star_least: "(\<forall> u . u \<le> Omega_fun f g u \<longrightarrow> u \<le> A) \<Longrightarrow> (star_fun f) o g \<le> A"
+lemma gfp_star_least:
+  assumes "\<And>u. u \<le> Omega_fun f g u \<Longrightarrow> u \<le> A"
+  shows "star_fun f \<circ> g \<le> A"
   apply (unfold star_fun_def)
   apply (simp add: gfp_def)
   apply (unfold Sup_comp_fun)
-  apply (rule Sup_least)
+  apply (rule SUP_least)
   apply simp
-  apply safe
-  apply (drule_tac x = "m o g" in spec)
-  by (simp add: le_fun_def o_def inf_fun_def Omega_fun_def)
+  apply (rule assms)
+  apply (simp add: le_fun_def)
+  done
 
-lemma lfp_omega: "f \<in> MonoTran \<Longrightarrow> ((omega_fun f) o g) = lfp (Omega_fun f g)"
+lemma lfp_omega:
+  "mono f \<Longrightarrow> omega_fun f \<circ> g = lfp (Omega_fun f g)"
   apply (rule antisym)
   apply (rule lfp_omega_lowerbound)
   apply simp_all
@@ -398,15 +438,14 @@ lemma lfp_omega: "f \<in> MonoTran \<Longrightarrow> ((omega_fun f) o g) = lfp (
   apply (rule Inf_lower)
   apply simp
   apply (rule lfp_omega_greatest)
-  apply safe
   apply (simp add: lfp_def)
   apply (rule Inf_lower)
   by simp
 
-lemma gfp_star: "f \<in> MonoTran \<Longrightarrow> ((star_fun f) o g) = gfp (Omega_fun f g)"
+lemma gfp_star:
+  "mono f \<Longrightarrow> star_fun f \<circ> g = gfp (Omega_fun f g)"
   apply (rule antisym)
   apply (rule gfp_star_least)
-  apply safe
   apply (simp add: gfp_def)
   apply (rule Sup_upper, simp)
   apply (rule gfp_omega_upperbound)
@@ -421,10 +460,12 @@ lemma gfp_star: "f \<in> MonoTran \<Longrightarrow> ((star_fun f) o g) = gfp (Om
   apply (rule Sup_upper)
   by simp
 
-definition "assert_fun p q = (p \<sqinter> q :: 'a::semilattice_inf)"
+definition
+  "assert_fun p q = (p \<sqinter> q :: 'a::semilattice_inf)"
 
-lemma assert_fun_MonoTran [simp]: "(assert_fun p) \<in> MonoTran"
-  apply (simp add: assert_fun_def MonoTran_def mono_def, safe)
+lemma mono_assert_fun [simp]:
+  "mono (assert_fun p)"
+  apply (simp add: assert_fun_def mono_def, safe)
   by (rule_tac y = x in order_trans, simp_all)
 
 lemma assert_fun_le_id [simp]: "assert_fun p \<le> id"
@@ -432,10 +473,10 @@ lemma assert_fun_le_id [simp]: "assert_fun p \<le> id"
 
 lemma assert_fun_disjunctive [simp]: "assert_fun (p::'a::distrib_lattice) \<in> Apply.disjunctive"
   by (simp add: assert_fun_def Apply.disjunctive_def inf_sup_distrib)
-  
-definition
-  "assertion_fun = {x . \<exists> p . x = assert_fun p}"
 
+definition
+  "assertion_fun = range assert_fun"
+  
 lemma assert_cont:
   "(x :: 'a::boolean_algebra \<Rightarrow> 'a)  \<le> id \<Longrightarrow> x \<in> Apply.disjunctive \<Longrightarrow> x = assert_fun (x \<top>)"
   apply (rule antisym)
@@ -458,7 +499,7 @@ lemma assert_cont:
 
 lemma assertion_fun_disj_less_one: "assertion_fun = Apply.disjunctive \<inter> {x::'a::boolean_algebra \<Rightarrow> 'a . x \<le> id}"
   apply safe
-  apply (simp_all add: assertion_fun_def, auto)
+  apply (simp_all add: assertion_fun_def, auto simp add: image_def)
   apply (rule_tac x = "x \<top>" in exI)
   by (rule assert_cont, simp_all)
 
@@ -468,8 +509,8 @@ lemma assert_fun_dual: "((assert_fun p) o \<top>) \<sqinter> (dual_fun (assert_f
 lemma assertion_fun_dual: "x \<in> assertion_fun \<Longrightarrow> (x o \<top>) \<sqinter> (dual_fun x) = x"
   by (simp add: assertion_fun_def, safe, simp add: assert_fun_dual)
 
-lemma assertion_fun_MonoTran [simp]: "x \<in> assertion_fun \<Longrightarrow> x \<in> MonoTran"
-  by (unfold assertion_fun_def MonoTran_def, auto)
+lemma assertion_fun_MonoTran [simp]: "x \<in> assertion_fun \<Longrightarrow> mono x"
+  by (unfold assertion_fun_def, auto)
 
 lemma assertion_fun_le_one [simp]: "x \<in> assertion_fun \<Longrightarrow> x \<le> id"
   by (unfold assertion_fun_def, auto)
