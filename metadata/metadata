@@ -1,3 +1,29 @@
+[AWN]
+title = Mechanization of the Algebra for Wireless Networks (AWN)
+author = Timothy Bourke <http://www.tbrk.org>
+date = 2014-03-08
+topic = Computer Science/Process Calculi
+abstract =
+ <p>
+ AWN is a process algebra developed for modelling and analysing
+ protocols for Mobile Ad hoc Networks (MANETs) and Wireless Mesh
+ Networks (WMNs). AWN models comprise five distinct layers:
+ sequential processes, local parallel compositions, nodes, partial
+ networks, and complete networks.</p>
+ <p>
+ This development mechanises the original operational semantics of
+ AWN and introduces a variant 'open' operational semantics that
+ enables the compositional statement and proof of invariants across
+ distinct network nodes. It supports labels (for weakening
+ invariants) and (abstract) data state manipulations. A framework for
+ compositional invariant proofs is developed, including a tactic
+ (inv_cterms) for inductive invariant proofs of sequential processes,
+ lifting rules for the open versions of the higher layers, and a rule
+ for transferring lifted properties back to the standard semantics. A
+ notion of 'control terms' reduces proof obligations to the subset of
+ subterms that act directly (in contrast to operators for combining
+ terms and joining processes).</p>
+
 [Selection_Heap_Sort]
 title = Verification of Selection and Heap Sort Using Locales
 author = Danijela Petrovic <http://www.matf.bg.ac.rs/~danijela>

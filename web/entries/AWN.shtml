@@ -1,0 +1,136 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">M</font>echanization
+of
+the
+<font class="first">A</font>lgebra
+for
+<font class="first">W</font>ireless
+<font class="first">N</font>etworks
+(AWN)
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Mechanization of the Algebra for Wireless Networks (AWN)</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.tbrk.org">Timothy Bourke</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-03-08</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+<p>
+AWN is a process algebra developed for modelling and analysing
+protocols for Mobile Ad hoc Networks (MANETs) and Wireless Mesh
+Networks (WMNs). AWN models comprise five distinct layers:
+sequential processes, local parallel compositions, nodes, partial
+networks, and complete networks.</p>
+<p>
+This development mechanises the original operational semantics of
+AWN and introduces a variant 'open' operational semantics that
+enables the compositional statement and proof of invariants across
+distinct network nodes. It supports labels (for weakening
+invariants) and (abstract) data state manipulations. A framework for
+compositional invariant proofs is developed, including a tactic
+(inv_cterms) for inductive invariant proofs of sequential processes,
+lifting rules for the open versions of the higher layers, and a rule
+for transferring lifted properties back to the standard semantics. A
+notion of 'control terms' reduces proof obligations to the subset of
+subterms that act directly (in contrast to operators for combining
+terms and joining processes).</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{AWN-AFP,
+  author  = {Timothy Bourke},
+  title   = {Mechanization of the Algebra for Wireless Networks (AWN)},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/AWN.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="AWN" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
