@@ -56,7 +56,7 @@ manner.</p>
 Example: you are using Isabelle2013, and have downloaded your afp directory to
 <code>/home/myself/afp</code>. You would add the line
 <code>/home/myself/afp</code> to the file
-<code>~/.isabelle/Isabelle2013/components</code>. Note that shell expansion,
+<code>~/.isabelle/Isabelle2013/etc/components</code>. Note that shell expansion,
 e.g. <code>~/afp</code>, will not work in this file.
 
 </td></tr>
