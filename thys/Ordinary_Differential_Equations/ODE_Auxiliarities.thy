@@ -24,7 +24,7 @@ lemma linear_compose: "(\<lambda>xa. a + xa * b) = (\<lambda>x. a + x) o (\<lamb
 
 lemma image_linear_atLeastAtMost: "(\<lambda>xa. a + xa * b) ` {c..d::real} =
   (if c \<le> d then if b > 0 then {a + c * b .. a + d * b} else {a + d * b .. a + c * b} else {})"
-  by (simp add: linear_compose image_comp image_mult_atLeastAtMost image_add_atLeastAtMost)
+  by (simp add: linear_compose image_comp [symmetric] image_mult_atLeastAtMost image_add_atLeastAtMost)
 
 lemma min_zero_mult_nonneg_le: "0 \<le> h' \<Longrightarrow> h' \<le> h \<Longrightarrow> min 0 (h * k::real) \<le> h' * k"
   by (metis dual_order.antisym le_cases min_le_iff_disj mult_eq_0_iff mult_le_0_iff mult_right_mono_neg)

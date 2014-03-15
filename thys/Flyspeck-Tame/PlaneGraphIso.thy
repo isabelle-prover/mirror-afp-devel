@@ -282,7 +282,7 @@ proof-
     done
   show ?thesis
     apply(auto simp add: is_pr_Hom_def quotient_def Iso_def Image_def
-      map_comp_map[symmetric] image_compose simp del: map_map map_comp_map)
+      map_comp_map[symmetric] image_comp simp del: map_map map_comp_map)
     apply (metis congs_map[of _ _ g] congs_trans f1 g1)
     by (metis congs_map[of _ _ g] congs_sym congs_trans f2 g2)
 qed
@@ -444,7 +444,7 @@ apply(insert map_image_eq[of "dom m' - dom m" "m++m'" "Some o f"])
 apply(subgoal_tac "dom m - dom m' \<subseteq> dom(m++m')")
  prefer 2 apply(fastforce)
 apply(insert map_image_eq[of "dom m - dom m'" "m++m'" "Some o f"])
-apply (clarsimp simp add:image_compose)
+apply (clarsimp simp add: image_comp [symmetric])
 apply blast
 done
 

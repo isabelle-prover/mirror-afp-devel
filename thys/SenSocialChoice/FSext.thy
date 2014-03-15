@@ -89,7 +89,7 @@ proof -
   from G H cardAB have I: "inj_on (h \<circ> g) A"
     unfolding bij_betw_def by - (rule comp_inj_on, simp_all)
   from G H cardAB have "(h \<circ> g) ` A = B"
-    unfolding bij_betw_def by (simp add: image_compose)
+    unfolding bij_betw_def by (simp add: image_comp [symmetric])
   with I have "bij_betw (h \<circ> g) A B"
     unfolding bij_betw_def by blast
   thus thesis ..

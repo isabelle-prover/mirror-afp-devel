@@ -558,7 +558,7 @@ lemma S_lift' :
  assumes S_all_def : "(\<tau> :: '\<AA> st) \<Turnstile> \<delta> S"
    shows "\<exists>S'. (\<lambda>a (_::'\<AA> st). a) ` \<lceil>\<lceil>Rep_Set_0 (S \<tau>)\<rceil>\<rceil> = (\<lambda>a (_::'\<AA> st). \<lfloor>a\<rfloor>) ` S'"
   apply(rule_tac x = "(\<lambda>a. \<lceil>a\<rceil>) ` \<lceil>\<lceil>Rep_Set_0 (S \<tau>)\<rceil>\<rceil>" in exI)
-  apply(simp only: image_comp[symmetric])
+  apply(simp only: image_comp)
   apply(simp add: comp_def)
   apply(rule image_cong, fast)
   (* *)

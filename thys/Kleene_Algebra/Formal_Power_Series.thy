@@ -209,7 +209,7 @@ proof (rule fps_ext)
       by (simp add: times_fps_def)
   next
     case Cons thus ?thesis
-      by (simp add: fps_mult_image splitset_eq_splitset_fun image_compose[symmetric] one_fps_def comp_def image_constant_conv)
+      by (simp add: fps_mult_image splitset_eq_splitset_fun image_comp one_fps_def comp_def image_constant_conv)
   qed
 qed
 

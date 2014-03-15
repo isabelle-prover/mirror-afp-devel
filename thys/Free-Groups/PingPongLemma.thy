@@ -352,8 +352,8 @@ proof-
          have "\<forall> i \<in> I. G.lift g (\<iota> i) = g i"
            using `g \<in> (I \<rightarrow> carrier G)`         
            by (auto simp add:insert_def G.lift_def G.lift_gi_def intro:G.r_one)
-         hence "G.lift g ` (\<iota> ` I) = g ` I "
-           by (auto intro!: image_cong simp add: image_compose[THEN sym])
+         then have "G.lift g ` (\<iota> ` I) = g ` I "
+           by (auto intro!: image_cong simp add: image_comp [symmetric, THEN sym])
          thus ?thesis by simp
        qed
      also have "\<dots> = carrier G" using assms by simp

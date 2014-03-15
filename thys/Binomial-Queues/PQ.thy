@@ -126,7 +126,7 @@ proof -
   from map_snd_alist_of [of q]
     have "set (map (the \<circ> priority q) (values q)) = set (map snd (alist_of q))"
       by (simp only:)
-  then show ?thesis by (simp add: image_compose)
+  then show ?thesis by (simp add: image_comp)
 qed
 
 lemma Min_snd_alist_of:

@@ -223,7 +223,7 @@ by simp
 
 lemma map_ugraph_trans: "map_ugraph (g \<circ> f) = (map_ugraph g) \<circ> (map_ugraph f)"
 unfolding fun_eq_iff
-by auto (metis imageI image_compose)+
+by auto (metis imageI image_comp)+
 
 lemma map_ugraph_wellformed:
   assumes "uwellformed G" and "inj_on f (uverts G)"

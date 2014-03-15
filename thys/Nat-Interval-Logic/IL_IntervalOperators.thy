@@ -515,7 +515,7 @@ by (simp add: iT_Plus_neg_Plus_le_cut_eq cut_ge_Min_all)
 lemma iT_Plus_neg_Plus_ge_cut_eq: "
   b \<le> a \<Longrightarrow> (I \<oplus>- a) \<oplus> b = (I \<down>\<ge> a) \<oplus>- (a - b)"
 apply (simp add: iT_Plus_neg_image_conv iT_Plus_def cut_cut_ge max_eqL)
-apply (subst image_compose[symmetric])
+apply (subst image_comp)
 apply (rule image_cong, simp)
 apply (simp add: cut_ge_mem_iff)
 done

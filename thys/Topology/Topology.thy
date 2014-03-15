@@ -42,7 +42,7 @@ lemma diff_diff_inter: "\<lbrakk>B \<subseteq> A; B \<subseteq> X\<rbrakk> \<Lon
 lemmas diffsimps = double_diff Diff_Un vimage_Diff
   Diff_Int_distrib Diff_Int
 
-lemma vimage_compose:
+lemma vimage_comp:
 "f: A \<rightarrow> B \<Longrightarrow> A \<inter> (f -` B \<inter> f -` g -` m)= A \<inter> (g \<circ> f) -` m "
   by (auto dest: funcset_mem)
 
@@ -1177,12 +1177,12 @@ qed
 
 lemma cnt_compose:
   "\<lbrakk> f \<in> cnt S T; g \<in> cnt T U \<rbrakk> \<Longrightarrow> (g \<circ> f) \<in> cnt S U "
-  by (auto intro!: cntI funcset_comp elim!: cntE simp add: vimage_compose)
+  by (auto intro!: cntI funcset_comp elim!: cntE simp add: vimage_comp)
 
 lemma continuous_compose:
   "\<lbrakk> continuous f S T; continuous g T U \<rbrakk> \<Longrightarrow> continuous (g \<circ> f) S U"
   by (auto intro!: continuousI funcset_comp
-       elim!: continuousE simp add: vimage_compose)
+       elim!: continuousE simp add: vimage_comp)
 
 
 lemma id_continuous:

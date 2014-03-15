@@ -271,8 +271,8 @@ lemma range_ConsD: "y \<in> range ([x] \<frown> f) \<Longrightarrow> y = x \<or>
 by simp
 
 thm List.set_map
-lemma range_o[simp]: "range (f \<circ> g) = f ` range g"
-by (rule image_compose)
+lemma range_o [simp]: "range (f \<circ> g) = f ` range g"
+by (simp add: image_comp)
 
 thm List.in_set_conv_decomp
 lemma in_range_conv_decomp: "
