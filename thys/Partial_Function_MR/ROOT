@@ -1,0 +1,11 @@
+chapter AFP
+
+session Partial_Function_MR (AFP) = HOL +
+  options [timeout = 300]
+  theories [document = false]
+   "~~/src/HOL/Library/Monad_Syntax"
+  theories
+    Partial_Function_MR_Examples
+  files
+    "document/root.bib"
+    "document/root.tex"

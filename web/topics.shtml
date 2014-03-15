@@ -97,6 +97,7 @@
 <h3>Functional Programming</h3>
 
 <div class="list">
+<a href="entries/Partial_Function_MR.shtml">Partial_Function_MR</a> &nbsp;
 <a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
 <a href="entries/Tycon.shtml">Tycon</a> &nbsp;
@@ -106,6 +107,7 @@
 <h3>Process Calculi</h3>
 
 <div class="list">
+<a href="entries/AWN.shtml">AWN</a> &nbsp;
 <a href="entries/CCS.shtml">CCS</a> &nbsp;
 <a href="entries/Pi_Calculus.shtml">Pi_Calculus</a> &nbsp;
 <a href="entries/Psi_Calculi.shtml">Psi_Calculi</a> &nbsp;

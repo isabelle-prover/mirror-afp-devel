@@ -24,59 +24,61 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">V</font>erification
+<h1><font class="first">M</font>echanization
 of
-<font class="first">S</font>election
-and
-<font class="first">H</font>eap
-<font class="first">S</font>ort
-<font class="first">U</font>sing
-<font class="first">L</font>ocales
+the
+<font class="first">A</font>lgebra
+for
+<font class="first">W</font>ireless
+<font class="first">N</font>etworks
+(AWN)
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Verification of Selection and Heap Sort Using Locales</td></tr>
+        <td class="data" width="80%">Mechanization of the Algebra for Wireless Networks (AWN)</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.matf.bg.ac.rs/~danijela">Danijela Petrovic</a></td></tr>
+        <td class="data"><a href="http://www.tbrk.org">Timothy Bourke</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-02-11</td></tr>
+        <td class="data">2014-03-08</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-Stepwise program refinement techniques can be used to simplify
-program verification. Programs are better understood since their
-main properties are clearly stated, and verification of rather
-complex algorithms is reduced to proving simple statements
-connecting successive program specifications. Additionally, it is
-easy to analyze similar algorithms and to compare their properties
-within a single formalization. Usually, formal analysis is not done
-in educational setting due to complexity of verification and a lack
-of tools and procedures to make comparison easy. Verification of an
-algorithm should not only give correctness proof, but also better
-understanding of an algorithm. If the verification is based on small
-step program refinement, it can become simple enough to be
-demonstrated within the university-level computer science
-curriculum. In this paper we demonstrate this and give a formal
-analysis of two well known algorithms (Selection Sort and Heap Sort)
-using proof assistant Isabelle/HOL and program refinement
-techniques.
+<p>
+AWN is a process algebra developed for modelling and analysing
+protocols for Mobile Ad hoc Networks (MANETs) and Wireless Mesh
+Networks (WMNs). AWN models comprise five distinct layers:
+sequential processes, local parallel compositions, nodes, partial
+networks, and complete networks.</p>
+<p>
+This development mechanises the original operational semantics of
+AWN and introduces a variant 'open' operational semantics that
+enables the compositional statement and proof of invariants across
+distinct network nodes. It supports labels (for weakening
+invariants) and (abstract) data state manipulations. A framework for
+compositional invariant proofs is developed, including a tactic
+(inv_cterms) for inductive invariant proofs of sequential processes,
+lifting rules for the open versions of the higher layers, and a rule
+for transferring lifted properties back to the standard semantics. A
+notion of 'control terms' reduces proof obligations to the subset of
+subterms that act directly (in contrast to operators for combining
+terms and joining processes).</p>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Selection_Heap_Sort-AFP,
-  author  = {Danijela Petrovic},
-  title   = {Verification of Selection and Heap Sort Using Locales},
+			<pre>@article{AWN-AFP,
+  author  = {Timothy Bourke},
+  title   = {Mechanization of the Algebra for Wireless Networks (AWN)},
   journal = {Archive of Formal Proofs},
-  month   = feb,
+  month   = mar,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Selection_Heap_Sort.shtml},
+  note    = {\url{http://afp.sf.net/entries/AWN.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -96,7 +98,7 @@ techniques.
 
 <p></p>
 
-<!--#set var="name" value="Selection_Heap_Sort" -->
+<!--#set var="name" value="AWN" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

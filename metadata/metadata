@@ -1,6 +1,32 @@
+[AWN]
+title = Mechanization of the Algebra for Wireless Networks (AWN)
+author = Timothy Bourke <http://www.tbrk.org>
+date = 2014-03-08
+topic = Computer Science/Process Calculi
+abstract =
+ <p>
+ AWN is a process algebra developed for modelling and analysing
+ protocols for Mobile Ad hoc Networks (MANETs) and Wireless Mesh
+ Networks (WMNs). AWN models comprise five distinct layers:
+ sequential processes, local parallel compositions, nodes, partial
+ networks, and complete networks.</p>
+ <p>
+ This development mechanises the original operational semantics of
+ AWN and introduces a variant 'open' operational semantics that
+ enables the compositional statement and proof of invariants across
+ distinct network nodes. It supports labels (for weakening
+ invariants) and (abstract) data state manipulations. A framework for
+ compositional invariant proofs is developed, including a tactic
+ (inv_cterms) for inductive invariant proofs of sequential processes,
+ lifting rules for the open versions of the higher layers, and a rule
+ for transferring lifted properties back to the standard semantics. A
+ notion of 'control terms' reduces proof obligations to the subset of
+ subterms that act directly (in contrast to operators for combining
+ terms and joining processes).</p>
+
 [Selection_Heap_Sort]
 title = Verification of Selection and Heap Sort Using Locales
-author = Danijela Petrovic <www.matf.bg.ac.rs/~danijela>
+author = Danijela Petrovic <http://www.matf.bg.ac.rs/~danijela>
 date = 2014-02-11
 topic = Computer Science/Algorithms
 abstract =
@@ -710,6 +736,14 @@ author = Jasmin Christian Blanchette <http://www4.in.tum.de/~blanchet>
 date = 2008-10-15
 topic = Computer Science/Data Structures
 abstract = Huffman's algorithm is a procedure for constructing a binary tree with minimum weighted path length. This report presents a formal proof of the correctness of Huffman's algorithm written using Isabelle/HOL. Our proof closely follows the sketches found in standard algorithms textbooks, uncovering a few snags in the process. Another distinguishing feature of our formalization is the use of custom induction rules to help Isabelle's automatic tactics, leading to very short proofs for most of the lemmas.
+
+[Partial_Function_MR]
+title = Mutually Recursive Partial Functions
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Computer Science/Functional Programming
+date = 2014-02-18
+license = LGPL
+abstract = We provide a wrapper around the partial-function command that supports mutual recursion.
 
 [Coinductive]
 title = Coinductive
