@@ -51,6 +51,7 @@
 <h3>Algorithms</h3>
 
 <div class="list">
+<a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
@@ -96,6 +97,7 @@
 <h3>Functional Programming</h3>
 
 <div class="list">
+<a href="entries/Partial_Function_MR.shtml">Partial_Function_MR</a> &nbsp;
 <a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
 <a href="entries/Tycon.shtml">Tycon</a> &nbsp;
@@ -105,6 +107,7 @@
 <h3>Process Calculi</h3>
 
 <div class="list">
+<a href="entries/AWN.shtml">AWN</a> &nbsp;
 <a href="entries/CCS.shtml">CCS</a> &nbsp;
 <a href="entries/Pi_Calculus.shtml">Pi_Calculus</a> &nbsp;
 <a href="entries/Psi_Calculi.shtml">Psi_Calculi</a> &nbsp;
@@ -176,6 +179,7 @@
 <a href="entries/RSAPSS.shtml">RSAPSS</a> &nbsp;
 <a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a> &nbsp;
 <a href="entries/CryptoBasedCompositionalProperties.shtml">CryptoBasedCompositionalProperties</a> &nbsp;
+<a href="entries/Probabilistic_Noninterference.shtml">Probabilistic_Noninterference</a> &nbsp;
 </div>
 
 <h2>Logic</h2>
@@ -229,6 +233,7 @@
 <h3>Analysis</h3>
 
 <div class="list">
+<a href="entries/Real_Impl.shtml">Real_Impl</a> &nbsp;
 <a href="entries/Lower_Semicontinuous.shtml">Lower_Semicontinuous</a> &nbsp;
 <a href="entries/Cauchy.shtml">Cauchy</a> &nbsp;
 <a href="entries/Integration.shtml">Integration</a> &nbsp;
@@ -242,6 +247,7 @@
 
 <div class="list">
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
+<a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;
 </div>
 
 <h3>Number Theory</h3>
@@ -282,6 +288,7 @@
 <a href="entries/Graph_Theory.shtml">Graph_Theory</a> &nbsp;
 <a href="entries/Max-Card-Matching.shtml">Max-Card-Matching</a> &nbsp;
 <a href="entries/Girth_Chromatic.shtml">Girth_Chromatic</a> &nbsp;
+<a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;
 <a href="entries/Flyspeck-Tame.shtml">Flyspeck-Tame</a> &nbsp;
 <a href="entries/Koenigsberg_Friendship.shtml">Koenigsberg_Friendship</a> &nbsp;
 </div>

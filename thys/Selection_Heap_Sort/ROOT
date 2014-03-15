@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Selection_Heap_Sort" (AFP) = "HOL-Library" +
+  description {*
+    Author:  Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade
+    
+    Verification of Functional Selection and Heap Sort Using Locales.
+  *}
+  theories
+    Sort
+    RemoveMax
+    SelectionSort_Functional
+    Heap
+    HeapFunctional
+    HeapImperative
+  files "document/root.tex"
