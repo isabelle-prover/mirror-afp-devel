@@ -34,7 +34,7 @@
         <td class="data" width="80%">Probabilistic Noninterference</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://home.in.tum.de/~hoelzl">Johannes Hölzl</a> and <a href="http://www21.in.tum.de/~popescua">Andrei Popescu</a></td></tr>
+        <td class="data"><a href="http://www21.in.tum.de/~popescua">Andrei Popescu</a> and <a href="http://home.in.tum.de/~hoelzl">Johannes Hölzl</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2014-03-11</td></tr>
@@ -48,7 +48,7 @@ We formalize a probabilistic noninterference for a multi-threaded language with 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Probabilistic_Noninterference-AFP,
-  author  = {Johannes Hölzl and Andrei Popescu},
+  author  = {Andrei Popescu and Johannes Hölzl},
   title   = {Probabilistic Noninterference},
   journal = {Archive of Formal Proofs},
   month   = mar,

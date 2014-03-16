@@ -1827,7 +1827,7 @@ abstract = These theories extend the existing proof of the first Sylow theorem
 
 [Probabilistic_Noninterference]
 title = Probabilistic Noninterference
-author = Johannes Hölzl <http://home.in.tum.de/~hoelzl>, Andrei Popescu <http://www21.in.tum.de/~popescua>
+author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
 date = 2014-03-11
 topic = Computer Science/Security
 abstract = We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
