@@ -20,6 +20,17 @@ datatype 'a dual = dual 'a
 primrec undual :: "'a dual \<Rightarrow> 'a" where
   undual_dual: "undual (dual x) = x"
 
+lemma dual_undual [simp]: "dual (undual x') = x'"
+  by (cases x') simp
+
+lemma undual_comp_dual [simp]:
+  "undual \<circ> dual = id"
+  by (simp add: fun_eq_iff)
+
+lemma dual_comp_undual [simp]:
+  "dual \<circ> undual = id"
+  by (simp add: fun_eq_iff)
+
 lemma dual_eq_iff: "x = y \<longleftrightarrow> undual x = undual y"
   by (induct x, induct y, simp)
 
@@ -50,9 +61,6 @@ text {*
   \medskip Functions @{term dual} and @{term undual} are inverse to
   each other; this entails the following fundamental properties.
 *}
-
-lemma dual_undual [simp]: "dual (undual x') = x'"
-  by (cases x') simp
 
 text {*
   \medskip Since @{term dual} (and @{term undual}) are both injective
@@ -266,19 +274,27 @@ instantiation dual :: (complete_lattice) complete_lattice
 begin
 
 definition
-  "Sup A \<equiv> dual (Inf (undual ` A))"
+  "Sup A \<equiv> dual (INFI A undual)"
 
 definition
-  "Inf A \<equiv> dual (Sup (undual ` A))"
+  "Inf A \<equiv> dual (SUPR A undual)"
 
 instance
 apply intro_classes
 apply (auto simp: less_eq_dual_def less_dual_def Sup_dual_def Inf_dual_def
-                  Inf_lower Sup_upper
-           intro: Inf_greatest Sup_least)
+                  INF_lower SUP_upper
+           intro: INF_greatest SUP_least)
 done
 
 end
+
+lemma SUP_dual_unfold:
+  "SUPR A f = dual (INFI A (undual \<circ> f))"
+  by (simp add: SUP_def Sup_dual_def)
+
+lemma INF_dual_unfold:
+  "INFI A f = dual (SUPR A (undual \<circ> f))"
+  by (simp add: INF_def Inf_dual_def)
 
 text {*
   Apparently, the @{text \<Sqinter>} and @{text \<Squnion>} operations are dual to each
@@ -294,10 +310,10 @@ theorem dual_Sup [intro?]: "dual (Sup A) = Inf (dual ` A)"
 (* BH: Why not [simp]? *)
 
 lemma undual_Inf: "undual (Inf A) = Sup (undual ` A)"
-  unfolding Inf_dual_def by (rule undual_dual)
+  unfolding Inf_dual_def by simp
 
 lemma undual_Sup: "undual (Sup A) = Inf (undual ` A)"
-  unfolding Sup_dual_def by (rule undual_dual)
+  unfolding Sup_dual_def by simp
 
 theorem dual_Inf' [iff?]:
     "(Inf (dual ` A) = dual s) = (Sup A = s)"

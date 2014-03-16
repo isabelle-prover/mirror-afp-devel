@@ -542,7 +542,7 @@ next
          (auto simp: bdd_above_cmult assms `0 < a` less_imp_le)
     thus "a * Sup S \<le> Sup (op * a ` S)"
       by (simp add: ac_simps pos_le_divide_eq[OF `0<a`])
-  qed (insert assms `0 < a`, auto intro!: cSup_least cSup_upper)
+  qed (insert assms `0 < a`, auto intro!: cSUP_least cSup_upper)
 qed
 
 subsection {* Linorder *}
@@ -633,7 +633,7 @@ lemma onorm_eqI:
   assumes "\<And>y. norm y = 1 \<Longrightarrow> norm (f y) \<le> x"
   shows "onorm f = x"
   using assms
-  by (auto intro!: cSup_eq_maximum simp: onorm_def SUP_def)
+  by (auto intro!: cSup_eq_maximum simp: onorm_def SUP_def simp del: Sup_image_eq)
 
 lemma onorm_snd:
   "onorm (snd::('a::euclidean_space*'b::euclidean_space \<Rightarrow> 'b)) = 1"

@@ -1032,7 +1032,7 @@ proof
     "Sup_aform (msum_aform' X Y) = Sup_aform X + Sup_aform Y"
     by (auto simp: Inf_aform_msum_aform Sup_aform_msum_aform)
   show "Inf_aform X \<le> Inf (Affine X)" "Sup (Affine X) \<le> Sup_aform X"
-    by (auto simp: Affine_def valuate_def Inf_aform Sup_aform intro!: cInf_greatest cSup_least)
+    by (auto simp: Affine_def valuate_def Inf_aform Sup_aform intro!: cINF_greatest cSUP_least)
   {
     fix l u::'a assume le: "l \<le> u"
     show "Sup_aform (aform_of_ivl l u) = u"

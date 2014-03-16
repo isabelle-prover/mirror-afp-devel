@@ -401,11 +401,9 @@ lemma dres_ne_bot_RECT[rule_format, refine_transfer]:
   apply (intro allI)
   apply (drule_tac x=x in point_chainI)
   apply (erule dres_Inf_chain_cases)
-  apply (auto simp: Inf_fun_def INF_def dest!: subset_singletonD) []
-  apply (auto simp: Inf_fun_def INF_def) []
-  apply (auto simp: Inf_fun_def INF_def) []
+  apply (auto simp: INF_def simp del: Inf_image_eq dest!: subset_singletonD)
+  apply auto
   apply metis
-  apply simp
   done
 
 lemma dres_ne_bot_dWHILEIT[refine_transfer]:

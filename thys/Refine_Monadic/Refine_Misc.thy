@@ -482,6 +482,8 @@ lemma contI[intro?]: "\<lbrakk>\<And>C. C\<noteq>{} \<Longrightarrow> f (Sup C) 
   unfolding cont_def by auto
 lemma contD: "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = Sup (f`C)" 
   unfolding cont_def by auto
+lemma contD': "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = SUPR C f" 
+  using contD by simp
 
 lemma strictD[dest]: "strict f \<Longrightarrow> f bot = bot" 
   unfolding strict_def by auto
@@ -505,7 +507,7 @@ lemma inf_distribD'[simp]:
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "inf_distrib f \<Longrightarrow> f (Sup C) = Sup (f`C)"
   apply (cases "C={}")
-  apply (auto dest: inf_distribD contD)
+  apply (auto dest: inf_distribD contD')
   done
 
 lemma inf_distribI':
@@ -552,7 +554,7 @@ next
   show "lfp f \<le> (SUP i. (f^^i) bot)"
     apply (rule lfp_lowerbound)
     unfolding SUP_def
-    apply (simp add: contD[OF CONT])
+    apply (simp add: contD [OF CONT] del: Sup_image_eq)
     apply (rule Sup_subset_mono)
     apply (auto)
     apply (rule_tac x="Suc i" in range_eqI)

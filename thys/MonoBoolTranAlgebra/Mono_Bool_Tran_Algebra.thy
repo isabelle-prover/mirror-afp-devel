@@ -824,38 +824,36 @@ instance MonoTran :: (complete_boolean_algebra) complete_mbt_algebra
 context complete_mbt_algebra begin
 lemma dual_Inf: "(Inf X) ^ o = (SUP x: X . x ^ o)"
   apply (rule antisym)
-  apply (simp_all add: SUP_def)
   apply (subst dual_le, simp)
   apply (rule Inf_greatest)
   apply (subst dual_le, simp)
-  apply (rule Sup_upper, simp)
-  apply (rule Sup_least, safe)
+  apply (rule SUP_upper, simp)
+  apply (rule SUP_least)
   apply (subst dual_le, simp)
   by (rule Inf_lower, simp)
 
 lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
   apply (rule antisym)
-  apply (simp_all add: INF_def)
-  apply (rule Inf_greatest, safe)
+  apply (rule INF_greatest)
   apply (subst dual_le, simp)
   apply (rule Sup_upper, simp)
   apply (subst dual_le, simp)
   apply (rule Sup_least)
   apply (subst dual_le, simp)
-  by (rule Inf_lower, simp)
+  by (rule INF_lower, simp)
 
 lemma INFI_comp: "(INFI A f) * z = (INF a : A . (f a) * z)"
-  apply (simp add: INF_def Inf_comp)
+  unfolding INF_def Inf_comp
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
 
 lemma dual_INFI: "(INFI A f) ^ o = (SUP a : A . (f a) ^ o)"
-  apply (simp add: INF_def dual_Inf SUP_def)
+  unfolding INF_def SUP_def Inf_comp dual_Inf
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
 lemma dual_SUPR: "(SUPR A f) ^ o = (INF a : A . (f a) ^ o)"
-  apply (simp add: INF_def dual_Sup SUP_def)
+  unfolding INF_def dual_Sup SUP_def
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
@@ -864,7 +862,7 @@ lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
   by (simp add: dual_comp dual_Sup dual_SUPR INFI_comp)
 
 lemma SUPR_comp: "(SUPR A f) * z = (SUP a : A . (f a) * z)"
-  apply (simp add: SUP_def Sup_comp)
+  unfolding SUP_def Sup_comp
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
 
@@ -874,7 +872,7 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
   apply safe
   apply (rule Sup_least)
   apply blast
-  apply (simp add: Sup_comp dual_Sup SUP_def Sup_inf)
+  apply (simp add: Sup_comp dual_Sup SUP_def Sup_inf del: Sup_image_eq)
   apply (subgoal_tac "((\<lambda>y . y \<sqinter> INFI X dual) ` (\<lambda>x . x * \<top>) ` X) = X")
   apply simp
   proof -
@@ -890,8 +888,7 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
         also have "\<dots> = x \<sqinter> INFI X dual" by (unfold  inf_assoc [THEN sym], cut_tac A, cut_tac C, auto)
         also have "\<dots> = x"
           apply (rule antisym, simp_all)
-          apply (simp add: INF_def)
-          apply (rule Inf_greatest, safe)
+          apply (rule INF_greatest)
           apply (cut_tac A C)
           apply (rule_tac y = 1 in order_trans)
           apply auto[1]

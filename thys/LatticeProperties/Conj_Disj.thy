@@ -110,8 +110,8 @@ lemma "Apply.Conjunctive = Comp.Conjunctive"
       (\<forall>xb\<Colon>'a. f xb = x (xa xb))) \<and> y = f bot} = {y\<Colon>'a. \<exists>xa\<Colon>'a\<in>X. y = x xa}")
   apply (simp add: INF_def image_def, safe)
   apply simp_all
-  apply auto[1]
-  apply auto [1]
+  apply auto
+  apply (metis (full_types) Collect_const UNIV_I mem_Collect_eq)
   apply (rule_tac x = "\<lambda> u . x xaa" in exI)
   by auto
 
@@ -150,12 +150,10 @@ lemma apply_comp_Disjunctive: "Apply.Disjunctive = Comp.Disjunctive"
   apply (subgoal_tac "{y. \<exists>f::'a \<Rightarrow> 'a. (\<exists>y\<in>X. \<forall>x. f x = y) \<and> y = f bot} = X 
     \<and> {y. \<exists>f::'a \<Rightarrow> 'a. (\<exists>xa. (\<exists>y\<in>X. \<forall>x. xa x = y) \<and> (\<forall>xb. f xb = x (xa xb))) \<and> y = f bot} = {y. \<exists>xa\<in>X. y = x xa}")
   apply (simp add: SUP_def image_def, safe)
-  apply simp_all
-  apply auto[1]
-  apply auto [1]
+  apply auto
+  apply (metis (full_types) Collect_const UNIV_I mem_Collect_eq)
   apply (rule_tac x = "\<lambda> u . x xaa" in exI)
   by auto
-
 
 lemma [simp]: "(F::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<in> Apply.Conjunctive \<Longrightarrow> F \<in> Apply.conjunctive"
   apply (simp add: Apply.Conjunctive_def Apply.conjunctive_def)
@@ -215,9 +213,9 @@ lemma weak_fusion: "h \<in> Apply.Disjunctive \<Longrightarrow> mono f \<Longrig
   apply (rule_tac f = g in monoD, simp_all)
   apply (rule lfp_lemma2, simp)
   apply (simp add: Apply.DisjunctiveD)
-  by (rule Sup_least, blast)
+  by (rule SUP_least, blast)
 
 lemma inf_Disj: "(\<lambda> (x::'a::complete_distrib_lattice) . inf x y) \<in> Apply.Disjunctive"
-  by (simp add: Apply.Disjunctive_def fun_eq_iff Sup_inf SUP_def)
+  by (simp add: Apply.Disjunctive_def fun_eq_iff Sup_inf)
 
 end

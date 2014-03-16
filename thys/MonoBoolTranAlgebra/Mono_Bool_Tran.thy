@@ -252,7 +252,7 @@ proof -
     apply (rule ext)+
     unfolding INF_def
     apply transfer
-    apply (simp add: INF_def)
+    apply simp
     done
   from INF_trash.transfer [simplified this] show ?thesis .
 qed
@@ -269,7 +269,7 @@ proof -
     apply (rule ext)+
     unfolding SUP_def
     apply transfer
-    apply (simp add: SUP_def)
+    apply simp
     done
   from SUP_trash.transfer [simplified this] show ?thesis .
 qed
@@ -281,7 +281,7 @@ hide_const INF_trash SUP_trash
 instance MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
   apply intro_classes
   apply (unfold INF_def SUP_def)
-  apply (transfer, simp add: inf_Sup sup_Inf INF_def SUP_def)+
+  apply (transfer, simp add: inf_Sup sup_Inf)+
   done
 
 definition

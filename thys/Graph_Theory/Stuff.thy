@@ -32,7 +32,7 @@ proof (unfold INF_def)
   from assms
   have "finite (f ` S)" "f ` S \<noteq> {}" by auto
   then show "Inf (f ` S) \<in> f ` S"
-    by (simp add: ereal_Inf_finite_Min)
+    using ereal_Inf_finite_Min [of "f ` S"]  by simp
 qed
 
 lemma not_mem_less_INF:

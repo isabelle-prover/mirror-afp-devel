@@ -50,7 +50,7 @@ lemma enat_in_INF:
   obtains x where "x \<in> S" and "(INF x: S. f x) = f x"
 proof -
   from assms have "(INF x: S. f x) \<in> f ` S"
-    unfolding INF_def using enat_in_Inf by auto
+    using enat_in_Inf [of "f ` S"] by auto
   then obtain x where "x \<in> S" "(INF x: S. f x) = f x" by auto
   then show ?thesis ..
 qed

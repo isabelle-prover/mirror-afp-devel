@@ -107,11 +107,11 @@ proof -
     apply clarsimp
     apply (drule_tac x=x in point_chainI)
     apply (erule dres_Sup_chain_cases)
-    apply (simp only:)
+    apply (simp only: SUP_def)
     apply simp
-    apply (simp only:)
+    apply (simp only: SUP_def)
     apply auto []
-    apply (simp only:)
+    apply (simp only: SUP_def)
     apply force
     done
 qed

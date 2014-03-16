@@ -20,19 +20,19 @@ context complete_lattice begin
 lemma inf_Inf: assumes nonempty: "A \<noteq> {}"
    shows "inf x (Inf A) = Inf ((inf x) ` A)"
   apply (rule antisym, simp_all)
-  apply (rule Inf_greatest)
-  apply (simp add: image_def, safe, simp)
+  apply (rule INF_greatest)
+  apply (safe, simp)
   apply (rule_tac y = "Inf A" in order_trans, simp_all)
   apply (rule Inf_lower, simp)
   apply (cut_tac nonempty)
   apply safe
   apply (erule notE)
   apply (rule_tac y = "inf x xa" in order_trans)
-  apply (rule Inf_lower, simp add: image_def, blast)
+  apply (rule INF_lower, blast)
   apply simp
   apply (rule Inf_greatest)
   apply (rule_tac y = "inf x xa" in order_trans)
-  apply (rule Inf_lower)
+  apply (rule INF_lower)
   apply (simp add: image_def)
   by auto
 
@@ -105,8 +105,11 @@ end
 
 lemma Sup_less_fun_eq:
   "((Sup_less P w) i) = (Sup_less (\<lambda> v . P v i)) w"
-  apply (simp add: Sup_less_def Sup_fun_def SUP_def)
-  by (rule_tac f = Sup in arg_cong, auto)
+  apply (simp add: Sup_less_def fun_eq_iff)
+  apply (auto simp add: SUP_def image_def simp del: Sup_image_eq)
+  apply (rule arg_cong [of _ _ Sup])
+  apply auto
+  done
 
 theorem fp_wf_induction:
   "f x  = x \<Longrightarrow> mono f \<Longrightarrow> (\<forall> w . (y w) \<le> f (Sup_less y w)) \<Longrightarrow> Sup (range y) \<le> x"

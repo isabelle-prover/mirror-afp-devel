@@ -66,7 +66,7 @@ lemma nres_transfer:
     apply (subgoal_tac "A={dFAIL,dRETURN r}", auto) []
 
     apply (drule imageI[where f=nres_of])
-    apply (auto intro: bot_Inf[symmetric]) []
+    apply (auto intro: bot_Inf [symmetric] simp add: INF_def simp del: Inf_image_eq) []
   done
 
 lemma nres_correctD:

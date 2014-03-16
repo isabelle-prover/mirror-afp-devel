@@ -109,8 +109,8 @@ proof
   proof
     have "\<And>x. dist (Rep_bcontfun f x) (Rep_bcontfun g x) \<le> dist f g" by (rule dist_bounded)
     also assume "dist f g = 0"
-    finally  show "f = g" by (auto simp: Rep_bcontfun_inject[symmetric] Abs_bcontfun_inverse[OF ])
-  qed (auto simp: dist_bcontfun_def SUP_def intro!: cSup_eq)
+    finally  show "f = g" by (auto simp: Rep_bcontfun_inject[symmetric] Abs_bcontfun_inverse)
+  qed (auto simp: dist_bcontfun_def SUP_def simp del: Sup_image_eq intro!: cSup_eq)
 next
   fix f g h :: "('a, 'b) bcontfun"
   show "dist f g \<le> dist f h + dist g h"
@@ -356,7 +356,7 @@ next
     ultimately
     show "dist (a *\<^sub>R f) 0 = \<bar>a\<bar> * dist f 0"
       by (simp add: dist_bcontfun_def norm_conv_dist[symmetric] Abs_bcontfun_inverse
-        zero_bcontfun_def const_bcontfun SUP_def)
+        zero_bcontfun_def const_bcontfun SUP_def del: Sup_image_eq)
   qed
 qed (auto simp: norm_bcontfun_def sgn_bcontfun_def)
 

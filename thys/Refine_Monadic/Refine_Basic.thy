@@ -225,10 +225,15 @@ lemma nres_order_simps[simp]:
   "\<And>M. FAIL \<le> M \<longleftrightarrow> M=FAIL"
   "\<And>X Y. RES X \<le> RES Y \<longleftrightarrow> X\<le>Y"
   "\<And>X. Sup X = FAIL \<longleftrightarrow> FAIL\<in>X"
+  "\<And>X f. SUPR X f = FAIL \<longleftrightarrow> FAIL \<in> f ` X"
   "\<And>X. FAIL = Sup X \<longleftrightarrow> FAIL\<in>X"
+  "\<And>X f. FAIL = SUPR X f \<longleftrightarrow> FAIL \<in> f ` X"
   "\<And>X. FAIL\<in>X \<Longrightarrow> Sup X = FAIL"
-  "\<And>A. Sup (RES`A) = RES (Sup A)"
+  "\<And>X. FAIL\<in>f ` X \<Longrightarrow> SUPR X f = FAIL"
+  "\<And>A. Sup (RES ` A) = RES (Sup A)"
+  "\<And>A. SUPR A RES = RES (Sup A)"
   "\<And>A. A\<noteq>{} \<Longrightarrow> Inf (RES`A) = RES (Inf A)"
+  "\<And>A. A\<noteq>{} \<Longrightarrow> INFI A RES = RES (Inf A)"
   "Inf {} = FAIL"
   "Inf UNIV = SUCCEED"
   "Sup {} = SUCCEED"
@@ -236,7 +241,7 @@ lemma nres_order_simps[simp]:
   "\<And>x y. RETURN x \<le> RETURN y \<longleftrightarrow> x=y"
   "\<And>x Y. RETURN x \<le> RES Y \<longleftrightarrow> x\<in>Y"
   "\<And>X y. RES X \<le> RETURN y \<longleftrightarrow> X \<subseteq> {y}"
-  unfolding Sup_nres_def Inf_nres_def RETURN_def
+  unfolding Sup_nres_def Inf_nres_def SUP_def INF_def RETURN_def
   by (auto simp add: bot_unique top_unique nres_simp_internals)
 
 lemma Sup_eq_RESE:
@@ -366,6 +371,9 @@ lemma pw_Sup_inres[refine_pw_simps]: "inres (Sup X) r \<longleftrightarrow> (\<e
   apply (simp)
   done
 
+lemma pw_SUP_inres [refine_pw_simps]: "inres (SUPR X f) r \<longleftrightarrow> (\<exists>M\<in>X. inres (f M) r)"
+  using pw_Sup_inres [of "f ` X"] by simp
+
 lemma pw_Sup_nofail[refine_pw_simps]: "nofail (Sup X) \<longleftrightarrow> (\<forall>x\<in>X. nofail x)"
   apply (cases "Sup X")
   apply force
@@ -373,6 +381,9 @@ lemma pw_Sup_nofail[refine_pw_simps]: "nofail (Sup X) \<longleftrightarrow> (\<f
   apply (erule Sup_eq_RESE)
   apply auto
   done
+
+lemma pw_SUP_nofail [refine_pw_simps]: "nofail (SUPR X f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
+  using pw_Sup_nofail [of "f ` X"] by simp
 
 lemma pw_inf_nofail[refine_pw_simps]:
   "nofail (inf a b) \<longleftrightarrow> nofail a \<or> nofail b"
@@ -399,6 +410,9 @@ lemma pw_Inf_nofail[refine_pw_simps]: "nofail (Inf C) \<longleftrightarrow> (\<e
   apply auto []
   done
 
+lemma pw_INF_nofail [refine_pw_simps]: "nofail (INFI C f) \<longleftrightarrow> (\<exists>x\<in>C. nofail (f x))"
+  using pw_Inf_nofail [of "f ` C"] by simp
+
 lemma pw_Inf_inres[refine_pw_simps]: "inres (Inf C) r \<longleftrightarrow> (\<forall>M\<in>C. inres M r)"
   apply (unfold Inf_nres_def)
   apply auto
@@ -409,6 +423,9 @@ lemma pw_Inf_inres[refine_pw_simps]: "inres (Inf C) r \<longleftrightarrow> (\<f
   apply force
   apply force
   done
+
+lemma pw_INF_inres [refine_pw_simps]: "inres (INFI C f) r \<longleftrightarrow> (\<forall>M\<in>C. inres (f M) r)"
+  using pw_Inf_inres [of "f ` C"] by simp
 
 
 subsubsection {* Monad Operators *}
@@ -758,8 +775,7 @@ proof -
   have "nofail (REC B x) \<longleftrightarrow> mono B \<and>
   (\<exists>F. (\<forall>x. B F x \<le> F x) \<and> nofail (F x))"
     unfolding REC_def lfp_def
-    by (auto simp: refine_pw_simps Inf_fun_def INF_def
-      intro: le_funI dest: le_funD)
+    by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis
     unfolding pw_le_iff .
 qed
@@ -773,8 +789,7 @@ proof -
   have "inres (REC B x) x' 
     \<longleftrightarrow> (mono B \<longrightarrow> (\<forall>F. (\<forall>x''. B F x'' \<le> F x'') \<longrightarrow> inres (F x) x'))"
     unfolding REC_def lfp_def
-    by (auto simp: refine_pw_simps Inf_fun_def INF_def
-      intro: le_funI dest: le_funD)
+    by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis unfolding pw_le_iff .
 qed
   
@@ -787,8 +802,7 @@ lemma pw_RECT_nofail: "nofail (RECT B x) \<longleftrightarrow> mono B \<and>
 proof -
   have "nofail (RECT B x) \<longleftrightarrow> (mono B \<and> (\<forall>F. (\<forall>y. F y \<le> B F y) \<longrightarrow> nofail (F x)))"
     unfolding RECT_def gfp_def
-    by (auto simp: refine_pw_simps Sup_fun_def SUP_def
-      intro: le_funI dest: le_funD)
+    by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis
     unfolding pw_le_iff .
 qed
@@ -800,8 +814,7 @@ lemma pw_RECT_inres: "inres (RECT B x) x' = (mono B \<longrightarrow>
 proof -
   have "inres (RECT B x) x' \<longleftrightarrow> mono B \<longrightarrow> (\<exists>M. (\<forall>y. M y \<le> B M y) \<and> inres (M x) x')"
     unfolding RECT_def gfp_def
-    by (auto simp: refine_pw_simps Sup_fun_def SUP_def
-      intro: le_funI dest: le_funD)
+    by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis unfolding pw_le_iff .
 qed
   
@@ -832,9 +845,14 @@ lemma Sup_img_rule_complete:
   apply (rule pw_leI)
   apply (auto simp: pw_le_iff refine_pw_simps) []
   done
+
+lemma SUP_img_rule_complete: 
+  "(\<forall>x. x\<in>S \<longrightarrow> f x \<le> SPEC \<Phi>) \<longleftrightarrow> SUPR S f \<le> SPEC \<Phi>"
+  using Sup_img_rule_complete [of S f] by simp
+
 lemma Sup_img_rule[refine_vcg]: 
   "\<lbrakk> \<And>x. x\<in>S \<Longrightarrow> f x \<le> SPEC \<Phi> \<rbrakk> \<Longrightarrow> Sup(f`S) \<le> SPEC \<Phi>"
-  by (auto simp: Sup_img_rule_complete[symmetric])
+  by (auto simp: SUP_img_rule_complete[symmetric])
 
 text {* This lemma is just to demonstrate that our rule is complete. *}
 lemma bind_rule_complete: "bind M f \<le> SPEC \<Phi> \<longleftrightarrow> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>)"
@@ -1492,6 +1510,5 @@ lemma bind_RES_RETURN2_eq: "bind (RES X) (\<lambda>(x,y). RETURN (f x y)) =
   apply (simp add: pw_eq_iff refine_pw_simps)
   apply blast
   done
-
 
 end

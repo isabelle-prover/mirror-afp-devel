@@ -128,18 +128,18 @@ the recursive program is correct $\models SUP\ p\ \{| lfp\  F |\}\  y$
 *}
 
 lemma assert_Sup: "{.\<Squnion> (X::'a::complete_distrib_lattice set).} = \<Squnion> (assert ` X)"
-  by (simp add: fun_eq_iff assert_def Sup_fun_def Sup_inf)
+  by (simp add: fun_eq_iff assert_def Sup_inf)
 
 lemma assert_Sup_range: "{.\<Squnion> (range (p::'W \<Rightarrow> 'a::complete_distrib_lattice)).} = \<Squnion> (range (assert o p))"
-  by (simp add: fun_eq_iff assert_def Sup_fun_def Sup_inf)
+  by (simp add: fun_eq_iff assert_def SUP_inf)
 
 lemma Sup_range_comp: "(\<Squnion> range p) o S = \<Squnion> (range (\<lambda> w . ((p w) o S)))"
-  by (simp add: fun_eq_iff Sup_fun_def)
+  by (simp add: fun_eq_iff)
 
 lemma Sup_less_comp: "(Sup_less P) w o S = Sup_less (\<lambda> w . ((P w) o S)) w"
-  apply (simp add: Sup_less_def fun_eq_iff Sup_fun_def SUP_def, safe)
+  apply (simp add: Sup_less_def fun_eq_iff, safe)
   apply (subgoal_tac "((\<lambda>f. f (S x)) ` {y. \<exists>v<w. \<forall>x. y x = P v x}) = ((\<lambda>f. f x) ` {y. \<exists>v<w. \<forall>x. y x = P v (S x)})")
-  by auto
+  by (auto simp add: SUP_def simp del: Sup_image_eq)
 
 lemma Sup_less_assert: "Sup_less (\<lambda>w. {. (p w)::'a::complete_distrib_lattice .}) w = {.Sup_less p w.}"
   apply (simp add: Sup_less_def assert_Sup image_def)
@@ -152,7 +152,7 @@ declare mono_comp[simp]
 theorem hoare_fixpoint:
   "mono_mono F \<Longrightarrow>
    (!! w f . mono f \<and> \<Turnstile> Sup_less p w {| f |} y \<Longrightarrow> \<Turnstile> p w {| F f |} y) \<Longrightarrow> \<Turnstile> (Sup (range p)) {| lfp F |} y"
-  apply (simp add: mono_mono_def hoare_refinement_post assert_Sup_range Sup_range_comp)
+  apply (simp add: mono_mono_def hoare_refinement_post assert_Sup_range Sup_range_comp del: Sup_image_eq)
   apply (rule lfp_wf_induction)
   apply auto
   apply (simp add: Sup_less_comp [THEN sym])

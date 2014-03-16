@@ -325,7 +325,7 @@ proof (clarsimp simp add: `mono b`)
 
     apply (unfold Sup_fun_def SUP_def)
     apply (drule_tac x=x in point_chainI)
-    apply (simp add: \<alpha>_dist)
+    apply (simp add: \<alpha>_dist SUP_def del: Sup_image_eq)
     apply (rule Sup_least)
     apply auto [2]
 

@@ -125,7 +125,7 @@ must decrease according to a well founded and transitive relation.
 theorem hoare_diagram:
   "dmono D \<Longrightarrow> (\<forall> w i j . \<Turnstile> X w i  {| D(i,j) |} Sup_less X w j) \<Longrightarrow> 
     \<Turnstile> (Sup (range X)) {| pt D |} (Sup(range X) \<sqinter> -(grd (step D)))"
-  apply (simp add: hoare_step pt_def)
+  apply (simp add: hoare_step pt_def del: Sup_image_eq)
   apply (rule hoare_fixpoint)
   apply auto
   apply (simp add: dgr_def)
@@ -135,7 +135,7 @@ theorem hoare_diagram:
   apply auto
   apply (simp add: hoare_assume)
   apply (rule le_infI1)
-  by (rule Sup_upper, auto)
+  by (rule SUP_upper, auto)
 
 text{*
 This theorem is a more general form of the more familiar form with a variant $t$
@@ -172,24 +172,25 @@ definition
 
 lemma SUP_L_P_upper:
   "pair v i < u \<Longrightarrow> P v i \<le> SUP_L_P P u i"
-  by (simp add: SUP_L_P_def SUP_def Sup_upper)
+  by (auto simp add: SUP_L_P_def intro: SUP_upper)
 
 lemma SUP_L_P_least:
   "(!! v . pair v i < u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_L_P P u i \<le> Q"
-  by (simp add: SUP_L_P_def SUP_def, rule Sup_least, auto)
+  by (simp add: SUP_L_P_def, rule SUP_least, auto)
 
 lemma SUP_LE_P_upper:
   "pair v i \<le> u \<Longrightarrow> P v i \<le> SUP_LE_P P u i"
-  by (simp add: SUP_LE_P_def SUP_def Sup_upper)
+  by (auto simp add: SUP_LE_P_def intro: SUP_upper)
 
 lemma SUP_LE_P_least:
   "(!! v . pair v i \<le> u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_LE_P P u i \<le> Q"
-  by (simp add: SUP_LE_P_def SUP_def, rule Sup_least, auto)
+  by (simp add: SUP_LE_P_def, rule SUP_least, auto)
 
 lemma SUP_SUP_L [simp]: "Sup (range (SUP_LE_P X)) = Sup (range X)"
   apply (simp add: fun_eq_iff Sup_fun_def, clarify)
   apply (rule antisym)
   apply (rule SUP_least)
+  unfolding comp_def
   apply (rule SUP_LE_P_least)
   apply (rule SUP_upper, simp)
   apply (rule SUP_least)
@@ -217,9 +218,9 @@ theorem (in DiagramTermination) hoare_diagram2:
   "dmono D \<Longrightarrow> (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<Longrightarrow> 
     \<Turnstile> (Sup (range X)) {| pt D |} ((Sup (range  X)) \<sqinter> (-(grd (step D))))"
   apply (frule_tac X = "SUP_LE_P X" in hoare_diagram)
-  apply auto
-  apply (simp add: SUP_LE_P_def SUP_def)
-  apply (unfold hoare_Sup [THEN sym])
+  apply (auto simp del: Sup_image_eq)
+  apply (simp add: SUP_LE_P_def)
+  apply (unfold SUP_def hoare_Sup [THEN sym])
   apply auto
   apply (rule_tac Q = "SUP_L_P X (pair p i) j" in hoare_mono)
   apply auto
@@ -240,7 +241,7 @@ theorem (in DiagramTermination) hoare_diagram3:
   apply (rule hoare_mono)
   apply auto
   apply (rule hoare_pre)
-  apply auto
+  apply (auto simp add: SUP_def simp del: Sup_image_eq)
   apply (rule hoare_diagram2)
   by auto
 
