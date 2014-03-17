@@ -10,22 +10,22 @@ ML_file "partial_function_mr.ML"
               
 subsection {*Register the "option"-monad*}
 
-text {*Obviously, the map-function for the @{type option}-monad is @{term Option.map}.*}
+text {*Obviously, the map-function for the @{type option}-monad is @{term map_option}.*}
 
 text {*First, derive the required identity lemma.*}
 
-lemma option_map_id: "Option.map (\<lambda> x. x) x = x" 
+lemma option_map_id: "map_option (\<lambda> x. x) x = x" 
   by (cases x, auto)
 
-text {*Second, register @{term Option.map} as being monotone.*}
+text {*Second, register @{term map_option} as being monotone.*}
 lemma option_map_mono[partial_function_mono]:
   assumes mf: "mono_option B"
-  shows "mono_option (\<lambda>f. Option.map h (B f))"
+  shows "mono_option (\<lambda>f. map_option h (B f))"
 proof (rule monotoneI)
   fix f g :: "'a \<Rightarrow> 'b option" assume fg: "fun_ord option_ord f g"
   with mf
   have "option_ord (B f) (B g)" by (rule monotoneD[of _ _ _ f g])
-  then show "option_ord (Option.map h (B f)) (Option.map h (B g))"
+  then show "option_ord (map_option h (B f)) (map_option h (B g))"
     unfolding flat_ord_def by auto    
 qed
 
@@ -52,10 +52,10 @@ text {*And finally perform the registration. We need
 declaration {* Partial_Function_MR.init 
   "option" 
   (fn (mt, t_to_ss, mtT, msT, t_to_sTs) =>
-      list_comb (Const (@{const_name Option.map}, t_to_sTs ---> mtT --> msT), t_to_ss) $ mt)
+      list_comb (Const (@{const_name map_option}, t_to_sTs ---> mtT --> msT), t_to_ss) $ mt)
   (fn (_,argTs) => Type (@{type_name option}, argTs))
   (fn mT => ([],Term.dest_Type mT |> #2)) 
-  @{thms option_map_comp} 
+  @{thms option.map_comp} 
   @{thms option_map_id}
 *}
 

@@ -96,8 +96,8 @@ fun mk_proj [_] t _ = t
   val moreT = mk_choiceT more;
   val allT = mk_sumT (ty,moreT)
   in
-    if n = 0 then Const (@{const_name Sum_Type.Projl}, allT --> ty) $ t
-    else mk_proj more (Const (@{const_name Sum_Type.Projr}, allT --> moreT) $ t) (n-1)
+    if n = 0 then Const (@{const_name Sum_Type.projl}, allT --> ty) $ t
+    else mk_proj more (Const (@{const_name Sum_Type.projr}, allT --> moreT) $ t) (n-1)
   end
   | mk_proj _ _ _ = error "mk_proj [] _ _"
 
@@ -199,7 +199,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
       | combine_cases (cs :: more) (inT :: moreTy) = let
         val moreT = mk_choiceT moreTy
         val sumT = mk_sumT (inT, moreT)
-        val case_const = Const (@{const_name sum_case},(inT --> glob_resT) --> (moreT --> glob_resT) --> sumT --> glob_resT)        
+        val case_const = Const (@{const_name case_sum},(inT --> glob_resT) --> (moreT --> glob_resT) --> sumT --> glob_resT)        
       in case_const $ cs $ combine_cases more moreTy end
       | combine_cases _ _ = error "combine_cases with incompatible argument lists";
     val glob_x_name = "x_" ^ glob_fname
@@ -262,8 +262,8 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
       val cglob_x = cert glob_x
       val simp_thm = Drule.cterm_instantiate [(cschematic_x,cglob_x)] thm
       in (
-        unfold_tac [simp_thm] ctxt
-      THEN unfold_tac fdefs ctxt
+        unfold_tac ctxt [simp_thm]
+      THEN unfold_tac ctxt fdefs
       ) end)
     fun mk_simp_thm n = let
       val args = nth all_args n
@@ -276,12 +276,12 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
       val rhs = list_comb (list_comb (F,fs), args);
       val eq1 = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,mhs))
       val eq2 = HOLogic.mk_Trueprop (HOLogic.mk_eq (mhs,rhs))      
-      val simp_thm1 = Goal.prove lthy arg_names [] eq1 (fn {prems = _, context = ctxt} => unfold_tac [fdef] ctxt)
+      val simp_thm1 = Goal.prove lthy arg_names [] eq1 (fn {prems = _, context = ctxt} => unfold_tac ctxt [fdef])
       val simp_thm2 = Goal.prove lthy arg_names [] eq2 (fn {prems = _, context = ctxt} => 
-          unfold_tac [glob_simp_thm] ctxt
-          THEN unfold_tac @{thms sum.simps curry_def split} ctxt
-          THEN unfold_tac (@{thm o_def} :: monad_map_comp) ctxt
-          THEN unfold_tac (monad_map_id @ @{thms Projl_Inl Projr_Inr}) ctxt)        
+          unfold_tac ctxt [glob_simp_thm]
+          THEN unfold_tac ctxt @{thms sum.simps curry_def split}
+          THEN unfold_tac ctxt (@{thm o_def} :: monad_map_comp)
+          THEN unfold_tac ctxt (monad_map_id @ @{thms sum.sel}))        
       in @{thm trans} OF [simp_thm1,simp_thm2] end
     val simp_thms = map mk_simp_thm nums
     fun register n lthy = let
