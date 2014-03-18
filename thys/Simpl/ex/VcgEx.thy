@@ -706,7 +706,7 @@ be derived from the general @{thm [source] HoarePartial.ProcRec} rule. An ML fun
 this work:
 *}
 
-ML {* bind_thm ("ProcRec2", Hoare.gen_proc_rec @{context} Hoare.Partial 2) *}
+ML {* ML_Thms.bind_thm ("ProcRec2", Hoare.gen_proc_rec @{context} Hoare.Partial 2) *}
 
 
 lemma (in odd_even_clique)

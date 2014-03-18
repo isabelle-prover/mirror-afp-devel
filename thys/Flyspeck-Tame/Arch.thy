@@ -9,7 +9,7 @@ begin
 setup {* fn thy =>
   let
     val T = @{typ "integer list list list"}
-    val dir = Thy_Load.master_directory thy
+    val dir = Resources.master_directory thy
   in
     thy |>
     Code_Runtime.polyml_as_definition
