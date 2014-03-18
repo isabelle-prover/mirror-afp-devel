@@ -287,15 +287,14 @@ proof -
   from sums have "summable (\<lambda>i. measure M (mkdisjoint A i))" 
     by (rule sums_summable)
 
-  hence "(\<lambda>n. \<Sum>i=0..<n. measure M (mkdisjoint A i))
+  hence "(\<lambda>n. \<Sum>i<n. measure M (mkdisjoint A i))
     ----> (\<Sum>i. measure M (mkdisjoint A i))"
-    by (rule summable_sumr_LIMSEQ_suminf)
+    by (rule summable_LIMSEQ)
                                          
-  hence "(\<lambda>n. \<Sum>i=0..<Suc n. measure M (mkdisjoint A i))
-    ----> (\<Sum>i. measure M (mkdisjoint A i))"
+  hence "(\<lambda>n. \<Sum>i<Suc n. measure M (mkdisjoint A i)) ----> (\<Sum>i. measure M (mkdisjoint A i))"
     by (rule LIMSEQ_Suc)
   
-  ultimately have "(\<lambda>n. \<Sum>i=0..<Suc n. measure M (mkdisjoint A i))
+  ultimately have "(\<lambda>n. \<Sum>i<Suc n. measure M (mkdisjoint A i))
     ----> (measure M (\<Union>i. mkdisjoint A i))" by simp
     
   also 
@@ -349,16 +348,16 @@ proof -
       "\<forall>i. (Suc n)\<le>i \<longrightarrow> measure M (if i \<le> n then mkdisjoint A i else {}) = 0"
       by (simp add: measure_space_def positive_def)
     hence "(\<lambda>i. measure M (if i \<le> n then mkdisjoint A i else {})) sums
-      (\<Sum>i=0..<Suc n. measure M (if i \<le> n then mkdisjoint A i else {}))"
-      by (rule series_zero)
+      (\<Sum>i<Suc n. measure M (if i \<le> n then mkdisjoint A i else {}))"
+      by (intro sums_finite) auto
     hence "(\<Sum>i. measure M (if i \<le> n then mkdisjoint A i else {})) = 
-      (\<Sum>i=0..<Suc n. measure M (if i \<le> n then mkdisjoint A i else {}))"
+      (\<Sum>i<Suc n. measure M (if i \<le> n then mkdisjoint A i else {}))"
       by (rule sums_unique[THEN sym])
     also
-    have "\<dots> = (\<Sum>i=0..<Suc n. measure M (mkdisjoint A i))"
-      by (simp cong: setsum_ivl_cong)
+    have "\<dots> = (\<Sum>i<Suc n. measure M (mkdisjoint A i))"
+      by simp
     finally have 
-      "measure M (A n) = (\<Sum>i=0..<Suc n. measure M (mkdisjoint A i))" .
+      "measure M (A n) = (\<Sum>i<Suc n. measure M (mkdisjoint A i))" .
   }
   
   ultimately have 
@@ -449,8 +448,8 @@ lemma measure_additive: assumes ms: "measure_space M"
       using ms
       by (cases m) (auto simp add: measure_space_def positive_def) 
   qed
-  hence "(\<lambda>n. measure M (trivial_series2 a b n)) sums (\<Sum>n=0..<Suc(Suc 0). measure M (trivial_series2 a b n))"
-    by (rule series_zero)
+  hence "(\<lambda>n. measure M (trivial_series2 a b n)) sums (\<Sum>n<Suc(Suc 0). measure M (trivial_series2 a b n))"
+    by (intro sums_finite) auto
   moreover
   have "(\<Sum>n=0..<Suc(Suc 0). measure M (trivial_series2 a b n)) =
     measure M a + measure M b"

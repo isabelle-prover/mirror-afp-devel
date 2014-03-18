@@ -188,7 +188,7 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
   hence "\<forall>m. (Suc (Max R)) \<le> m \<longrightarrow> measure M (if m\<in>R then B m else {}) = 0"
     by simp
   hence "(\<lambda>n. measure M (if n \<in> R then B n else {})) sums (\<Sum>x=0..<Suc(Max R). measure M (if x\<in>R then B x else {}))"
-    by (rule series_zero)
+    by (intro sums_finite) auto
   hence "(\<Sum>x=0..<Suc(Max R). measure M (if x\<in>R then B x else {})) = suminf (\<lambda>n. measure M (if n \<in> R then B n else {}))"
     by (rule sums_unique)
   also from ms dis meas have "(\<lambda>n. measure M (if n \<in> R then B n else {})) sums measure M (\<Union>i\<in>R. B i)"
