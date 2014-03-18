@@ -164,7 +164,7 @@ proof -
     finally
     have "B * (h ^ p * (exp (L * T2 + 1) - 1)) / L \<le>
       r * ((exp (L * T2 + 1) - 1) / (exp (L * T1 + 1) - 1))"
-      using B_pos `L > 0` interval eg `r \<ge> 0`
+      using B_pos `L > 0` eg `r \<ge> 0`
       by (simp add: ac_simps)
     also have "... \<le> r" using `T1 \<ge> T2` `0 \<le> T2`
     proof (cases "T1 = 0")
@@ -439,7 +439,7 @@ proof -
   have
     "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
     (B / L * (exp (L * (t j - t 0) + 1) - 1)) * max_stepsize j ^ p"
-    using `p > 0` `L \<ge> 0` `B \<ge> 0` `t j \<le> t1` interval
+    using `p > 0` `L \<ge> 0` `B \<ge> 0` `t j \<le> t1`
       max_stepsize_nonneg
       consistence_error lipschitz_grid
     by (intro error_accumulation[OF max_step]) (auto intro!:

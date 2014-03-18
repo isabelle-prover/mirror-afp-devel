@@ -185,10 +185,10 @@ proof -
   {
     have "integral {0..1} (\<lambda>t. ode (x (t0 + t * (t1 - t0)))) \<le> integral {0..1} (\<lambda>t::real . u)"
       using ode_lu
-      by (auto simp: eucl_le[where 'a='a] intro!: order_trans[OF integral_component_ubound] cnt)
+      by (auto simp: eucl_le[where 'a='a] intro!: order_trans[OF integral_component_ubound_real] cnt)
     moreover have "integral {0..1} (\<lambda>t::real . l) \<le> integral {0..1} (\<lambda>t. ode (x (t0 + t * (t1 - t0))))"
       using ode_lu
-      by (auto simp: eucl_le[where 'a='a] intro!: order_trans[OF _ integral_component_lbound] cnt)
+      by (auto simp: eucl_le[where 'a='a] intro!: order_trans[OF _ integral_component_lbound_real] cnt)
     ultimately have "integral {0..1} (\<lambda>t. ode (x (t0 + t * (t1 - t0)))) \<in> {l .. u}"
       by simp
     hence "(t1 - t0) *\<^sub>R integral {0..1} (\<lambda>t. ode (x (t0 + t * (t1 - t0)))) \<in> {(t1 - t0) *\<^sub>R l .. (t1 - t0) *\<^sub>R u}"
@@ -491,7 +491,8 @@ interpretation compact_domain X
 
 interpretation derivative_on_convex T X f "\<lambda>(t, x) (dt, dx). ode_d x dx"
   by default
-    (auto simp: step_ivp_def step_less set_of_appr_eq convex_interval nonneg_step less_imp_le
+    (auto simp: step_ivp_def step_less set_of_appr_eq  nonneg_step less_imp_le convex_real_interval
+      convex_closed_interval
       simp del: inf_of_appr sup_of_appr
       intro!: has_derivative_eq_intros has_derivative_eq_rhs[OF has_derivative_compose, of snd])
 
@@ -560,7 +561,7 @@ next
     by (blast intro: set_of_apprs_Cons)
   thus "(case (t, x) of (t, x) \<Rightarrow> \<lambda>(dt, dx). ode_d x dx) (1, d) \<in> {inf_of_appr D .. sup_of_appr D}"
     by auto
-qed (simp add: is_interval_interval)
+qed (simp add: is_interval_closed_interval)
 
 lemma solution_t0': "solution t0 = x0"
   using solution_t0 by (simp add: step_ivp_def)
@@ -660,7 +661,8 @@ proof -
       by (metis inf_sup_ord(1) le_supI1)
     have "{(h' * h' / 2) *\<^sub>R inf_of_appr D .. (h' * h' / 2) *\<^sub>R sup_of_appr D} \<subseteq>
         {inf 0 ((h * h / 2) *\<^sub>R inf_of_appr D) .. sup 0 ((h * h / 2) *\<^sub>R sup_of_appr D)}"
-    proof (rule subset_interval_imp, safe)
+      unfolding interval_cbox
+    proof (rule subset_box_imp, safe)
       fix i::'a assume "i \<in> Basis"
       show "inf 0 ((h * h / 2) *\<^sub>R inf_of_appr D) \<bullet> i \<le> (h' * h' / 2) *\<^sub>R inf_of_appr D \<bullet> i"
         using assms
@@ -717,7 +719,7 @@ proof (unfold_locales, safe)
     using `w > 0`
     using fderiv' cont_fderiv w'
     by unfold_locales
-      (auto intro!: convex_interval compact_interval split_beta'
+      (auto intro!: convex_closed_interval compact_interval split_beta'
         continuous_on_intros add_nonneg_nonneg
         intro: continuous_on_subset
         simp: algebra_simps eucl_le[where 'a='a])
@@ -768,7 +770,7 @@ proof -
     assume "ivp.is_solution (euler_ivp t0 x0 t1) x"
     hence "\<And>t. t\<in>{t0 .. t1} \<Longrightarrow> x t = ivp.solution max_ivp t"
       using J(5)[where K="{t0 .. t1}"]
-      by (auto simp: euler_ivp_def global_ivp_def max_ivp_def is_interval_interval)
+      by (auto simp: euler_ivp_def global_ivp_def max_ivp_def is_interval_closed_interval)
   } note solution_eqI = this
   interpret euler: unique_solution "(euler_ivp t0 x0 t1)"
   proof

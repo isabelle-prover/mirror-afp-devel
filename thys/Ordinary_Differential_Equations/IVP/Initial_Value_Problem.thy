@@ -132,13 +132,11 @@ lemma restriction_of_solution:
   shows "ivp.is_solution (i\<lparr>ivp_t0:=t1, ivp_x0:=x t1, ivp_T:=T'\<rparr>) x"
 proof -
   interpret ivp': ivp "i\<lparr>ivp_t0:=t1, ivp_x0:=x t1, ivp_T:=T'\<rparr>"
-    using assms iv_defined interval is_solutionD[OF x_sol]
+    using assms iv_defined is_solutionD[OF x_sol]
     by unfold_locales simp_all
   show ?thesis
     using is_solutionD[OF x_sol] assms
-    by (intro ivp'.is_solutionI) (auto intro:
-    has_vector_derivative_within_subset[where t=T' and s=T]
-      simp: interval)
+    by (intro ivp'.is_solutionI) (auto intro: has_vector_derivative_within_subset[where t=T' and s=T])
 qed
 
 end
@@ -463,7 +461,7 @@ proof (rule iter_spaceI)
   have cont: "continuous_on {t0..t1} (P_inner (Rep_bcontfun g))"
     using assms Rep_bcontfun[of g, simplified bcontfun_def]
     by (auto simp: interval iter_space_def Abs_bcontfun_inverse P_inner_def interval_notempty
-      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous continuous_f)
+      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous_real continuous_f)
   from ext_cont_cancel[OF _ cont] assms
   show "Rep_bcontfun (P g) t0 = x0"
      "\<And>t. t \<in> T \<Longrightarrow> Rep_bcontfun (P g) t \<in> X"
@@ -624,7 +622,7 @@ proof
     using interval iv_defined continuous fixed_point_continuous fixed_point
     unfolding P_def P_inner_def[abs_def]
     by (subst ext_cont_cancel) (auto simp add: iter_space_def Abs_bcontfun_inverse
-      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous
+      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous_real
       continuous_f intro: continuous_on_subset)
   finally show "fixed_point t0 = x0" .
 next
@@ -648,7 +646,7 @@ next
     apply (simp_all)
     using fixed_point fixed_point_continuous continuous interval
     by (subst ext_cont_cancel) (auto simp add: iter_space_def Abs_bcontfun_inverse
-      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous
+      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous_real
       continuous_f intro: continuous_on_subset)
   moreover
   have "fixed_point t \<in> X"
@@ -837,7 +835,7 @@ lemma setsum_inner_Basis_one: "i \<in> Basis \<Longrightarrow> (\<Sum>x\<in>Basi
 lemma cball_in_cube:
   fixes y::"'a::ordered_euclidean_space"
   shows "cball y r \<subseteq> {y - r *\<^sub>R One..y + r *\<^sub>R One}"
-  unfolding interval scaleR_setsum_right
+  unfolding scaleR_setsum_right interval_cbox cbox_def
 proof safe
   fix x i::'a assume "i \<in> Basis" "x \<in> cball y r"
   with dist_component_le[OF `i \<in> Basis`, of y x]
@@ -1048,7 +1046,7 @@ end
 
 sublocale unique_on_rectangle \<subseteq> unique_on_closed
 proof
-  show "0 \<le> L" "closed X" using lipschitz' by (simp_all add: rectangle closed_interval)
+  show "0 \<le> L" "closed X" using lipschitz' by (simp_all add: rectangle)
   fix t assume "t \<in> T" with lipschitz' show "lipschitz X (\<lambda>x. f (t, x)) L" by simp
 qed (rule integral_in_bounds)
 

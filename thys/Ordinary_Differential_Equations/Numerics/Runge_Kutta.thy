@@ -141,9 +141,9 @@ next
     (h\<^sup>2 / 2) *\<^sub>R (\<Sum>i\<in>Basis. ((?p (tt i)) \<bullet> i) *\<^sub>R i)" (is "?d = _")
     by (auto simp: discrete_evolution_def euler_increment)
   also have "\<dots> \<in> op *\<^sub>R (h\<^sup>2 / 2) ` F'"
-    apply (rule image_eqI[OF refl mem_interval_componentwiseI[OF f'_ivl_bounded(1)]])
+    apply (rule image_eqI[OF refl mem_box_componentwiseI[OF f'_ivl_bounded(1)]])
     using T tt ht
-    apply (force simp: interval Pi_iff intro: f_set_bounded x image_eqI[OF refl f'_ivl_bounded(3)])
+    apply (force simp: Pi_iff intro: f_set_bounded x image_eqI[OF refl f'_ivl_bounded(3)])
     done
   finally show ?thesis .
 qed
@@ -187,12 +187,12 @@ proof
   proof (rule lipschitzI)
     fix x y
     let ?I = "T \<times> X"
-    have "convex ?I" by (intro convex convex_Times convex_interval)
+    have "convex ?I" by (intro convex convex_Times)
     moreover have "\<forall>x\<in>?I. (f has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
       using f' f'_bounded
-      by (auto simp add: interval intro!: onorm_norm1 f'_bounded derivative_is_linear)
+      by (auto simp add: intro!: onorm_norm1 f'_bounded derivative_is_linear)
     moreover assume "x \<in> X" "y \<in> X"
-    with `t \<in> T` have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by (simp_all add: interval)
+    with `t \<in> T` have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
     ultimately have "norm (f (t, x) - f (t, y)) \<le> B' * norm ((t, x) - (t, y))"
       by (rule differentiable_bound)
     thus "dist (f (t, x)) (f (t, y)) \<le> B' * dist x y"
@@ -212,7 +212,7 @@ proof
   show "bounded (X \<times> cball 0 B)" using X_bounded by (auto intro!: bounded_Times)
   show "is_interval {-(B' * (B + 1)) *\<^sub>R One.. (B' * (B + 1)) *\<^sub>R One::'a}"
     "bounded {-(B' * (B + 1)) *\<^sub>R One.. (B' * (B + 1)) *\<^sub>R One::'a}"
-    by (auto intro!: is_interval_interval bounded_closed_interval)
+    by (auto intro!: is_interval_closed_interval bounded_closed_interval)
   fix t x assume "t \<in> T" "x \<in> X"
   thus "(x, f (t, x)) \<in> X \<times> cball 0 B"
     by (auto simp: dist_norm f_bounded)

@@ -454,14 +454,11 @@ subsection {* Integration *}
 
 lemmas content_real[simp]
 
-lemma integral_atLeastAtMost[simp]:
-  "integral {a .. b} (\<lambda>x. c) = content {a .. b} *\<^sub>R c"
-  by auto
-
 lemma integral_real_singleton[simp]:
   "integral {a::real} f = 0"
   using integral_refl[of a f] by simp
 lemmas integrable_continuous[intro, simp]
+  and integrable_continuous_real[intro, simp]
 
 lemma mvt_integral:
   fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space"
@@ -514,10 +511,10 @@ qed
 subsection {* conditionally complete lattice *}
 
 lemma bounded_imp_bdd_above: "bounded S \<Longrightarrow> bdd_above (S :: 'a::ordered_euclidean_space set)"
-  by (auto intro: bdd_above_mono dest!: bounded_subset_closed_interval)
+  by (auto intro: bdd_above_mono dest!: bounded_subset_cbox)
 
 lemma bounded_imp_bdd_below: "bounded S \<Longrightarrow> bdd_below (S :: 'a::ordered_euclidean_space set)"
-  by (auto intro: bdd_below_mono dest!: bounded_subset_closed_interval)
+  by (auto intro: bdd_below_mono dest!: bounded_subset_cbox)
 
 lemma bdd_above_cmult:
   "0 \<le> (a :: 'a :: ordered_semiring) \<Longrightarrow> bdd_above S \<Longrightarrow> bdd_above ((\<lambda>x. a * x) ` S)"

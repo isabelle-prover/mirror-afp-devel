@@ -400,7 +400,7 @@ lemma clamp_in_interval:
   assumes "a \<le> b"
   shows "clamp a b x \<in> {a..b}"
   unfolding clamp_def
-  using interval_ne_empty(1)[of a b] assms
+  using box_ne_empty(1)[of a b] assms
   by (auto simp add: eucl_le[of a] eucl_le[where y=b])
 
 lemma dist_clamps_le_dist_args:
@@ -408,9 +408,10 @@ lemma dist_clamps_le_dist_args:
   assumes "a \<le> b"
   shows "dist (clamp a b y) (clamp a b x) \<le> dist y x"
 proof -
-    from interval_ne_empty(1)[of a b] assms have "(\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i)" by simp
+    from box_ne_empty(1)[of a b] assms have "(\<forall>i\<in>Basis. a \<bullet> i \<le> b \<bullet> i)"
+      by (simp add: cbox_def eucl_le[where 'a='a])
     hence "(\<Sum>i\<in>Basis. (dist (clamp a b y \<bullet> i) (clamp a b x \<bullet> i))\<^sup>2)
-    \<le> (\<Sum>i\<in>Basis. (dist (y \<bullet> i) (x \<bullet> i))\<^sup>2)"
+        \<le> (\<Sum>i\<in>Basis. (dist (y \<bullet> i) (x \<bullet> i))\<^sup>2)"
       by (auto intro!: setsum_mono
         simp add: clamp_def dist_real_def real_abs_le_square_iff[symmetric])
     thus ?thesis
@@ -494,8 +495,8 @@ lemma ext_cont_cancel[simp]:
   unfolding ext_cont_def
 proof (subst Abs_bcontfun_inverse[OF clamp_bcontfun])
   show "f (clamp a b x) = f x"
-    using x unfolding clamp_def mem_interval
-    by (intro arg_cong[where f=f] euclidean_eqI[where 'a='a]) (simp add: not_less)
+    using x unfolding clamp_def mem_box
+    by (intro arg_cong[where f=f] euclidean_eqI[where 'a='a]) (simp add: not_less eucl_le[where 'a='a])
 qed auto
 
 lemma ext_cont_cong:

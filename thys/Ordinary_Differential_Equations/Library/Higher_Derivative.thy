@@ -78,10 +78,10 @@ proof (rule approachableI)
     case True thus ?thesis
       apply(rule_tac x="(min (b\<bullet>i - a\<bullet>i)  e) / 2" in exI)
       using lt[OF i] and `e>0` and x
-      unfolding mem_interval
+      unfolding interval_cbox mem_box
       using i by (auto simp add: field_simps inner_simps inner_Basis)
   next
-    note * = x[unfolded mem_interval, THEN bspec, OF i]
+    note * = x[unfolded interval_cbox mem_box, THEN bspec, OF i]
     case False moreover have "a \<bullet> i < x \<bullet> i" using False * by auto
     moreover {
       have "a \<bullet> i * 2 + min (x \<bullet> i - a \<bullet> i) e \<le> a\<bullet>i *2 + x\<bullet>i - a\<bullet>i"
@@ -95,7 +95,7 @@ proof (rule approachableI)
     ultimately show ?thesis
       apply(rule_tac x="- (min (x\<bullet>i - a\<bullet>i) e) / 2" in exI)
       using lt[OF i] and `e>0` and x
-      unfolding mem_interval
+      unfolding interval_cbox mem_box
       using i by (auto simp add: field_simps inner_simps inner_Basis)
   qed
 qed
@@ -154,7 +154,7 @@ lemma
 proof -
   let ?G = "(\<lambda>x. x0 + x *\<^sub>R a) ` {0..1}"
   have "?G = op + x0 ` (\<lambda>x. x *\<^sub>R a) ` {0..1}" by auto
-  also have "convex \<dots>" by (intro convex_translation convex_left_scaling convex_interval)
+  also have "convex \<dots>" by (intro convex_translation convex_left_scaling convex_closed_interval)
   finally have "convex ?G" .
   moreover have "?G \<subseteq> G" "x0 \<in> ?G" "x0 + a \<in> ?G" using assms by (auto intro: image_eqI[where x=1])
   ultimately show ?thesis
