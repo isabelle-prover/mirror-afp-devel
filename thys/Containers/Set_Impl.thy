@@ -814,10 +814,10 @@ lemmas Sup_fun_code [code] =
   Sup_DList_set[where ?'b = "_ :: type \<Rightarrow> _ :: complete_lattice"]
   Sup_RBT_set[where ?'c = "_ :: type \<Rightarrow> _ :: complete_lattice"]
 
-lemma INFI_code [code]: "INFI A f = Inf (f ` A)"
+lemma INF_code [code]: "INFI A f = Inf (f ` A)"
 by(rule INF_def)
 
-lemma SUPR_code [code]: "SUPR A f = Sup (f ` A)"
+lemma SUP_code [code]: "SUPR A f = Sup (f ` A)"
 by(rule SUP_def)
 
 lemma Min_code [code]:

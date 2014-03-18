@@ -842,26 +842,26 @@ lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
   apply (subst dual_le, simp)
   by (rule INF_lower, simp)
 
-lemma INFI_comp: "(INFI A f) * z = (INF a : A . (f a) * z)"
+lemma INF_comp: "(INFI A f) * z = (INF a : A . (f a) * z)"
   unfolding INF_def Inf_comp
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
 
-lemma dual_INFI: "(INFI A f) ^ o = (SUP a : A . (f a) ^ o)"
+lemma dual_INF: "(INFI A f) ^ o = (SUP a : A . (f a) ^ o)"
   unfolding INF_def SUP_def Inf_comp dual_Inf
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
-lemma dual_SUPR: "(SUPR A f) ^ o = (INF a : A . (f a) ^ o)"
+lemma dual_SUP: "(SUPR A f) ^ o = (INF a : A . (f a) ^ o)"
   unfolding INF_def dual_Sup SUP_def
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
 lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
   apply (rule dual_eq)
-  by (simp add: dual_comp dual_Sup dual_SUPR INFI_comp)
+  by (simp add: dual_comp dual_Sup dual_SUP INF_comp)
 
-lemma SUPR_comp: "(SUPR A f) * z = (SUP a : A . (f a) * z)"
+lemma SUP_comp: "(SUPR A f) * z = (SUP a : A . (f a) * z)"
   unfolding SUP_def Sup_comp
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto

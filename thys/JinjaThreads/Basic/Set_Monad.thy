@@ -4,7 +4,7 @@ imports
   "~~/src/HOL/Library/Monad_Syntax"
 begin
 
-lemma member_SUPR: (* FIXME delete candidate: should be subsumed by default simpset as soon as SUP_apply is included *)
+lemma member_SUP: (* FIXME delete candidate: should be subsumed by default simpset as soon as SUP_apply is included *)
   "x \<in> UNION A f = (SUP B:A. (\<lambda>x. x \<in> f B)) x"
   by auto
 
