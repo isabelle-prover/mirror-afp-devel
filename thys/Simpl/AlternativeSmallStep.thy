@@ -225,7 +225,7 @@ apply (simp_all del: fun_upd_apply,(blast intro: step.intros)+)
 done
 
 ML {*
-  bind_thm ("trancl_induct3", Split_Rule.split_rule @{context}
+  ML_Thms.bind_thm ("trancl_induct3", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context} [(("a", 0), "(ax,ay,az)"), (("b", 0), "(bx,by,bz)")] []
       @{thm tranclp_induct}));
 *}
@@ -552,7 +552,7 @@ inductive_cases execs_elim_cases [cases set]:
  "\<Gamma>\<turnstile>\<langle>c#cs,css,s\<rangle> \<Rightarrow> t"
 
 ML {*
-  bind_thm ("converse_rtrancl_induct3", Split_Rule.split_rule @{context}
+  ML_Thms.bind_thm ("converse_rtrancl_induct3", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context} [(("a", 0), "(cs,css,s)"), (("b", 0), "(cs',css',t)")] []
       @{thm converse_rtranclp_induct}));
 *}
@@ -976,7 +976,7 @@ qed
 
 
 ML {*
-  bind_thm ("rtrancl_induct3", Split_Rule.split_rule @{context}
+  ML_Thms.bind_thm ("rtrancl_induct3", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context} [(("a", 0), "(ax,ay,az)"), (("b", 0), "(bx,by,bz)")] []
      @{thm rtranclp_induct}));
 *}

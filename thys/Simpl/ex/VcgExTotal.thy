@@ -307,7 +307,7 @@ and
                          IF 0 < \<acute>M THEN CALL coast(\<acute>N,\<acute>M- 1) FI"
 
 
-ML {* bind_thm ("HoareTotal_ProcRec2", Hoare.gen_proc_rec @{context} Hoare.Total 2)*}
+ML {* ML_Thms.bind_thm ("HoareTotal_ProcRec2", Hoare.gen_proc_rec @{context} Hoare.Total 2)*}
 
 
 lemma (in pedal_coast_clique)
