@@ -9,9 +9,9 @@ subsection {* Example 3 *}
 
 approximate_affine e3 "\<lambda>(t, x). (1::real, x*x + t*t::real)"
 
-lemma e3_fderiv: "FDERIV (\<lambda>(t, x). (1::real, x*x + t*t::real)) x : X :>
-  (\<lambda>(x, y) (h, j). (0, 2 * (j * y) + 2 * (h * x))) x"
-       by (auto intro!: FDERIV_eq_intros simp: split_beta')
+lemma e3_fderiv: "((\<lambda>(t, x). (1::real, x*x + t*t::real)) has_derivative
+  (\<lambda>(x, y) (h, j). (0, 2 * (j * y) + 2 * (h * x))) x) (at x within X)"
+       by (auto intro!: has_derivative_eq_intros simp: split_beta')
 
 approximate_affine e3_d "\<lambda>(x, y) (h, j). (0::real, 2 * (j * y) + 2 * (h * x)::real)"
 

@@ -120,7 +120,7 @@ locale approximate_ivp = approximate_ivp0 + approximate_sets +
     "[x] \<in> set_of_apprs [X'] \<Longrightarrow>
     ode_approx optns X' = Some A \<Longrightarrow>
     [ode x, x] \<in> set_of_apprs [A, X']"
-  assumes fderiv[FDERIV_intros]: "x \<in> X \<Longrightarrow> FDERIV ode x : X :> ode_d x"
+  assumes fderiv[has_derivative_intros]: "x \<in> X \<Longrightarrow> (ode has_derivative ode_d x) (at x within X)"
   assumes ode_d_approx:
     "[x, dx] \<in> set_of_apprs [X', DX'] \<Longrightarrow>
      ode_d_approx optns X' DX' = (Some D') \<Longrightarrow>
@@ -133,8 +133,8 @@ locale approximate_ivp = approximate_ivp0 + approximate_sets +
       in every step *}
 begin
 
-lemma fderiv'[FDERIV_intros]: "FDERIV (\<lambda>(t, y). ode y) (t, x) : X :> (\<lambda>(t, x) (dt, dx). ode_d x dx) (t, x)"
-  by (auto intro!: FDERIV_eq_intros FDERIV_compose[of snd])
+lemma fderiv'[has_derivative_intros]: "((\<lambda>(t, y). ode y) has_derivative (\<lambda>(t, x) (dt, dx). ode_d x dx) (t, x)) (at (t, x) within X)"
+  by (auto intro!: has_derivative_eq_intros has_derivative_compose[of snd])
 
 lemma picard_approx:
   assumes appr: "ode_approx optns X = Some Y"
@@ -167,7 +167,7 @@ proof -
   } note ode_lu = this
   have cont_ode_x: "continuous_on {t0..t1} (\<lambda>xa. ode (x xa))"
     using ivl
-    by (auto intro!: FDERIV_continuous_on[OF fderiv] continuous_on_compose2[of _ ode _ x] cont)
+    by (auto intro!: has_derivative_continuous_on[OF fderiv] continuous_on_compose2[of _ ode _ x] cont)
   have cmp: "(\<lambda>t. ode (x (t0 + t * (t1 - t0)))) = (\<lambda>t. ode (x t)) o (\<lambda>t. (t0 + t * (t1 - t0)))"
     by auto
   have cnt: "continuous_on {0 .. 1}(\<lambda>t. ode (x (t0 + t * (t1 - t0))))"
@@ -484,7 +484,7 @@ qed
 interpretation continuous T X f
   using iv_defined
   by unfold_locales (auto simp add: step_ivp_def split_beta
-    intro!: continuous_on_compose2[of _ ode _ snd] FDERIV_continuous_on[OF fderiv] continuous_on_intros)
+    intro!: continuous_on_compose2[of _ ode _ snd] has_derivative_continuous_on[OF fderiv] continuous_on_intros)
 
 interpretation compact_domain X
   by default (auto simp: step_ivp_def set_of_appr_eq compact_interval)
@@ -493,7 +493,7 @@ interpretation derivative_on_convex T X f "\<lambda>(t, x) (dt, dx). ode_d x dx"
   by default
     (auto simp: step_ivp_def step_less set_of_appr_eq convex_interval nonneg_step less_imp_le
       simp del: inf_of_appr sup_of_appr
-      intro!: FDERIV_eq_intros FDERIV_eq_rhs[OF FDERIV_compose, of snd])
+      intro!: has_derivative_eq_intros has_derivative_eq_rhs[OF has_derivative_compose, of snd])
 
 interpretation unique_on_closed_cont_diff "step_ivp t0 x0 t1 CX" t1 "\<lambda>(t, x) (dt, dx). ode_d x dx"
 proof unfold_locales
@@ -697,7 +697,7 @@ proof (unfold_locales, safe)
   show "open (ivp_T ?ivp)" "open (ivp_X ?ivp)"
     by (auto simp: global_ivp_def)
   show "continuous_on (ivp_T ?ivp \<times> ivp_X ?ivp) (ivp_f ?ivp)"
-    by (auto simp: global_ivp_def intro!: continuous_on_intros fderiv' FDERIV_continuous_on)
+    by (auto simp: global_ivp_def intro!: continuous_on_intros fderiv' has_derivative_continuous_on)
   fix I t x
   assume "t \<in> (ivp_T ?ivp)" "x \<in> (ivp_X ?ivp)"
   --{* TODO: make local lipschitz based on open sets *}

@@ -116,13 +116,13 @@ locale approachable_on = fixes G
 locale higher_derivative = approachable_on G for G::"'a::euclidean_space set" +
   fixes f::"'a\<Rightarrow>'b::real_normed_vector" and n
   fixes Ds::"'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b"
-  assumes Ds_0[FDERIV_intros]: "a \<in> G \<Longrightarrow> FDERIV f a : G :> Ds [] a"
-  assumes Ds_Suc[FDERIV_intros]:
-    "a \<in> G \<Longrightarrow> length ds < n \<Longrightarrow> FDERIV (\<lambda>a. Ds ds a d) a : G :> (\<lambda>i. Ds (d#ds) a i)"
+  assumes Ds_0[has_derivative_intros]: "a \<in> G \<Longrightarrow> (f has_derivative Ds [] a) (at a within G)"
+  assumes Ds_Suc[has_derivative_intros]:
+    "a \<in> G \<Longrightarrow> length ds < n \<Longrightarrow> ((\<lambda>a. Ds ds a d) has_derivative (\<lambda>i. Ds (d#ds) a i)) (at a within G)"
 begin
 
 lemma linear_Ds: "\<And>a. n \<ge> length ds \<Longrightarrow> a \<in> G \<Longrightarrow> linear (Ds ds a)"
-  by (cases ds) (auto intro!: derivative_is_linear FDERIV_intros)
+  by (cases ds) (auto intro!: derivative_is_linear has_derivative_intros)
 
 end
 
@@ -148,7 +148,7 @@ lemma
   differentiable_bound_line:
   fixes f::"'a::euclidean_space \<Rightarrow> 'b::euclidean_space"
   assumes "\<And>t. t \<in> {0..1} \<Longrightarrow> x0 + t *\<^sub>R a \<in> G"
-  assumes f': "\<And>x. x \<in> G \<Longrightarrow> FDERIV f x : G :> f' x"
+  assumes f': "\<And>x. x \<in> G \<Longrightarrow> (f has_derivative f' x) (at x within G)"
   assumes B: "\<forall>x\<in>{0..1}. onorm (f' (x0 + x *\<^sub>R a)) \<le> B"
   shows "norm (f (x0 + a) - f x0) \<le> norm a * B"
 proof -
@@ -158,7 +158,7 @@ proof -
   finally have "convex ?G" .
   moreover have "?G \<subseteq> G" "x0 \<in> ?G" "x0 + a \<in> ?G" using assms by (auto intro: image_eqI[where x=1])
   ultimately show ?thesis
-    using FDERIV_subset[OF f' `?G \<subseteq> G`] B
+    using has_derivative_subset[OF f' `?G \<subseteq> G`] B
       differentiable_bound[of "(\<lambda>x. x0 + x *\<^sub>R a) ` {0..1}" f f' B "x0 + a" x0]
     by (auto simp: ac_simps)
 qed
@@ -166,15 +166,15 @@ qed
 lemma differentiable_bound_derivative:
   fixes f::"'a::euclidean_space \<Rightarrow> 'b::euclidean_space"
   assumes "\<And>t. t \<in> {0..1} \<Longrightarrow> a + t *\<^sub>R (b - a) \<in> S"
-  assumes f'[FDERIV_intros]: "\<And>x. x \<in> S \<Longrightarrow> FDERIV f x : S :> f' x"
+  assumes f'[has_derivative_intros]: "\<And>x. x \<in> S \<Longrightarrow> (f has_derivative f' x) (at x within S)"
   assumes B: "\<forall>x\<in>S. onorm (f' x - f' x0) \<le> B"
   assumes "x0 \<in> S"
   shows "norm (f b - f a - f' x0 (b - a)) \<le> norm (b - a) * B"
 proof -
   def g \<equiv> "\<lambda>x. f x - f' x0 x"
-  have g: "\<And>x. x \<in> S \<Longrightarrow> FDERIV g x : S :> (\<lambda>i. f' x i - f' x0 i)"
+  have g: "\<And>x. x \<in> S \<Longrightarrow> (g has_derivative (\<lambda>i. f' x i - f' x0 i)) (at x within S)"
     unfolding g_def using assms
-    by (auto intro!: FDERIV_eq_intros bounded_linear.FDERIV[OF derivative_linear, OF f'])
+    by (auto intro!: has_derivative_eq_intros bounded_linear.has_derivative[OF derivative_linear, OF f'])
   from B have B: "\<forall>x\<in>{0..1}. onorm (\<lambda>i. f' (a + x *\<^sub>R (b - a)) i - f' x0 i) \<le> B"
      using assms by (auto simp: fun_diff_def)
   from differentiable_bound_line[OF assms(1) g B] `x0 \<in> S`
@@ -188,8 +188,8 @@ locale higher_continuous_derivative = higher_derivative +
 locale second_derivative =
   approachable_on G for G +
   fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space" and f' f''
-  assumes first_fderiv[FDERIV_intros]: "\<And>a. a \<in> G \<Longrightarrow> FDERIV f a : G :> f' a"
-  assumes second_fderiv[FDERIV_intros]: "\<And>a i. a \<in> G \<Longrightarrow> FDERIV (\<lambda>a. f' a i) a : G :> f'' a i"
+  assumes first_fderiv[has_derivative_intros]: "\<And>a. a \<in> G \<Longrightarrow> (f has_derivative f' a) (at a within G)"
+  assumes second_fderiv[has_derivative_intros]: "\<And>a i. a \<in> G \<Longrightarrow> ((\<lambda>a. f' a i) has_derivative f'' a i) (at a within G)"
 begin
 
 lemma continuous_on_first: "\<And>i. continuous_on G (\<lambda>a. f' a i)"
@@ -207,7 +207,7 @@ lemmas first_linear_simps [simp] =
   linear_setsum[OF linear_first]
 
 lemma second_unique:
-  "FDERIV (\<lambda>a. f' a i) a : G :> F'' \<Longrightarrow> a \<in> G \<Longrightarrow> f'' a i = F''"
+  "((\<lambda>a. f' a i) has_derivative F'') (at a within G) \<Longrightarrow> a \<in> G \<Longrightarrow> f'' a i = F''"
   using frechet_derivative_unique_within_approach[OF approachable _ second_fderiv] by simp
 
 lemma bilinear_second: assumes "a \<in> G" shows "bilinear (f'' a)"
@@ -216,9 +216,9 @@ proof safe
   fix j
   show "linear (f'' a j)" by (rule derivative_is_linear[OF second_fderiv, OF `a \<in> G`])
   have "\<And>i1 i2. (\<lambda>j. f'' a (i1 + i2) j) = (\<lambda>j. f'' a i1 j + f'' a i2 j)"
-    using `a \<in> G`  by (intro second_unique[OF FDERIV_transform]) (auto intro!: FDERIV_intros)
+    using `a \<in> G`  by (intro second_unique[OF has_derivative_transform]) (auto intro!: has_derivative_intros)
   moreover have "\<And>c i1. f'' a (c *\<^sub>R i1) = (\<lambda>j. c *\<^sub>R f'' a i1 j)"
-    using `a \<in> G`  by (intro second_unique[OF FDERIV_transform]) (auto intro!: FDERIV_intros)
+    using `a \<in> G`  by (intro second_unique[OF has_derivative_transform]) (auto intro!: has_derivative_intros)
   ultimately show "linear (\<lambda>i. f'' a i j)" by (intro linearI) simp_all
 qed
 
@@ -297,7 +297,7 @@ proof -
         by eventually_elim force
     } note filter_iI = this
     {
-      from second_fderiv[OF `a \<in> G`, of i, simplified FDERIV_iff_norm, THEN conjunct2,
+      from second_fderiv[OF `a \<in> G`, of i, simplified has_derivative_iff_norm, THEN conjunct2,
         THEN tendstoD, OF `0 < e`]
       have "eventually (\<lambda>x. norm (f' x i - f' a i - f'' a i (x - a)) / norm (x - a) \<le> e)
           (at a within G)"
@@ -320,18 +320,18 @@ proof -
       proof eventually_elim
         case elim
         hence ijsub: "(\<lambda>t. ?ij t u) ` {0..1} \<subseteq> G" and isub: "(\<lambda>t. ?i t u) ` {0..1} \<subseteq> G" by auto
-        note FDERIV_subset[OF _ ijsub, FDERIV_intros]
-        note FDERIV_subset[OF _ isub, FDERIV_intros]
+        note has_derivative_subset[OF _ ijsub, has_derivative_intros]
+        note has_derivative_subset[OF _ isub, has_derivative_intros]
         let ?g' = "\<lambda>t. (\<lambda>ua. u *\<^sub>R ua *\<^sub>R (f' (?ij t u) i - (f' (?i t u) i)))"
         {
           fix t::real assume "t \<in> {0..1}"
           with elim have linear_f': "\<And>c x. f' (?ij t u) (c *\<^sub>R x) = c *\<^sub>R f' (?ij t u) x"
               "\<And>c x. f' (?i t u) (c *\<^sub>R x) = c *\<^sub>R f' (?i t u) x"
             using linear_cmul[OF derivative_is_linear, OF first_fderiv] by auto
-          have "FDERIV (?g u) t : {0..1} :> ?g' t"
+          have "((?g u) has_derivative ?g' t) (at t within {0..1})"
             using elim `t \<in> {0..1}`
-            by (auto intro!: FDERIV_eq_intros FDERIV_in_compose[of  "\<lambda>t. ?ij t u" _ _ _ f]
-                FDERIV_in_compose[of  "\<lambda>t. ?i t u" _ _ _ f]
+            by (auto intro!: has_derivative_eq_intros has_derivative_in_compose[of  "\<lambda>t. ?ij t u" _ _ _ f]
+                has_derivative_in_compose[of  "\<lambda>t. ?i t u" _ _ _ f]
               simp: linear_f' scaleR_diff_right mult_commute)
         } note g' = this
         from elim(1) `i \<noteq> 0` `j \<noteq> 0` `0 < e` have f'ij: "\<And>t. t \<in> {0..1} \<Longrightarrow>
@@ -624,12 +624,12 @@ lemma
 proof (induct ds arbitrary: i j)
   case Nil
   interpret second_derivative_lrect G f "Ds []" "\<lambda>x i. Ds [i] x"
-    by unfold_locales (auto intro!: FDERIV_intros Nil)
+    by unfold_locales (auto intro!: has_derivative_intros Nil)
   show ?case by (rule symmetric_second_derivative[OF `a \<in> G`])
 next
   case (Cons e es k j)
   then interpret second_derivative_lrect G "\<lambda>x. Ds es x i" "Ds (i#es)" "\<lambda>x j.  Ds (j # i # es) x" for i
-    by unfold_locales (auto intro!: FDERIV_eq_intros Cons approachable)
+    by unfold_locales (auto intro!: has_derivative_eq_intros Cons approachable)
   show ?case by (rule symmetric_second_derivative[OF `a \<in> G`])
 qed
 
@@ -667,21 +667,21 @@ locale traj_with_higher_derivatives = higher_derivative _ _ _ Ds
   assumes x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f (s, x s)) (at s within {t..u})"
 begin
 
-lemma FDERIV_x[FDERIV_intros]: "\<And>s. s \<in> {t..u} \<Longrightarrow> FDERIV x s : {t..u} :> (\<lambda>xa. xa *\<^sub>R f (s, x s))"
+lemma has_derivativex[has_derivative_intros]: "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_derivative (\<lambda>xa. xa *\<^sub>R f (s, x s))) (at s within {t..u})"
   using x'
-  by (auto intro!: FDERIV_eq_intros simp: has_vector_derivative_def)
+  by (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def)
 
 lemma
   assumes x_in: "\<And>s. s \<in> {t..u} \<Longrightarrow> (s, x s) \<in> G"
   shows "\<And>s. s \<in> {t..u} \<Longrightarrow> ((\<lambda>s. f (s, x s)) has_vector_derivative
     Ds [] (s, x s) (1, f (s, x s))) (at s within {t..u})"
-  apply (auto intro!: FDERIV_eq_intros simp: has_vector_derivative_def)
-  apply (rule FDERIV_eq_rhs)
-  apply (rule FDERIV_in_compose[where g=f])
-  apply (rule FDERIV_eq_intros refl)+
+  apply (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def)
+  apply (rule has_derivative_eq_rhs)
+  apply (rule has_derivative_in_compose[where g=f])
+  apply (rule has_derivative_eq_intros refl)+
   apply simp
   apply (rule refl)+
-  apply (rule FDERIV_subset)
+  apply (rule has_derivative_subset)
   apply (rule Ds_0)
   apply (rule x_in)
   apply simp

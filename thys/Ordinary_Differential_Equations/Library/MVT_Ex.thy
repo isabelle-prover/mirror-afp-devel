@@ -17,7 +17,7 @@ lemma MVT_wrong: assumes
   shows "False"
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
-    by (auto intro!: FDERIV_eq_intros)
+    by (auto intro!: has_derivative_eq_intros)
   from assms[OF this, of "(1, 1)" "(1, 1)"] obtain t where t: "0 < t" "t < 1" and
     "cos 1 - cos 2 = sin (1 + t)" "sin 2 - sin 1 = cos (1 + t)"
     by auto
@@ -36,7 +36,7 @@ lemma MVT_wrong2: assumes
   shows "False"
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
-    by (auto intro!: FDERIV_eq_intros)
+    by (auto intro!: has_derivative_eq_intros)
   from assms[OF this, of "(1, 1)" "(1, 1)"] obtain x where x: "1 \<le> x" "x \<le> 2" and
     "cos 2 - cos 1 = - sin x" "sin 2 - sin 1 = cos x"
     by auto
@@ -50,7 +50,7 @@ qed
 
 lemma MVT_corrected:
   fixes f::"'a::ordered_euclidean_space\<Rightarrow>'b::euclidean_space"
-  assumes fderiv: "(\<And>x. x \<in> D \<Longrightarrow> FDERIV f x : D :> J x)"
+  assumes fderiv: "\<And>x. x \<in> D \<Longrightarrow> (f has_derivative J x) (at x within D)"
   assumes line_in: "\<And>x. x \<in> {0..1} \<Longrightarrow> a + x *\<^sub>R u \<in> D"
   shows "(\<exists>t\<in>Basis\<rightarrow>{0<..<1}. (f (a + u) - f a) = (\<Sum>i\<in>Basis. (J (a + t i *\<^sub>R u) u \<bullet> i) *\<^sub>R i))"
 proof -
@@ -59,11 +59,11 @@ proof -
     assume "i \<in> Basis"
     have subset: "((\<lambda>x. a + x *\<^sub>R u) ` {0..1}) \<subseteq> D"
       using line_in by force
-    have "\<forall>x\<in> {0 .. 1}. FDERIV (\<lambda>b. f (a + b *\<^sub>R u) \<bullet> i) x : {0..1} :> (\<lambda>b. b *\<^sub>R J (a + x *\<^sub>R u) u \<bullet> i)"
+    have "\<forall>x\<in> {0 .. 1}. ((\<lambda>b. f (a + b *\<^sub>R u) \<bullet> i) has_derivative (\<lambda>b. b *\<^sub>R J (a + x *\<^sub>R u) u \<bullet> i)) (at x within {0..1})"
       using line_in
-      by (auto intro!: FDERIV_eq_intros
-        FDERIV_subset[OF _ subset]
-        FDERIV_in_compose[where f="\<lambda>x. a + x *\<^sub>R u"]
+      by (auto intro!: has_derivative_eq_intros
+        has_derivative_subset[OF _ subset]
+        has_derivative_in_compose[where f="\<lambda>x. a + x *\<^sub>R u"]
         fderiv line_in
         simp add: linear.scaleR[OF derivative_is_linear[OF fderiv]])
     with zero_less_one
@@ -81,7 +81,7 @@ qed
 
 lemma MVT_ivl:
   fixes f::"'a::ordered_euclidean_space\<Rightarrow>'b::ordered_euclidean_space"
-  assumes fderiv: "(\<And>x. x \<in> D \<Longrightarrow> FDERIV f x : D :> J x)"
+  assumes fderiv: "\<And>x. x \<in> D \<Longrightarrow> (f has_derivative J x) (at x within D)"
   assumes J_ivl: "\<And>x. x \<in> D \<Longrightarrow> J x u \<in> {J0 .. J1}"
   assumes line_in: "\<And>x. x \<in> {0..1} \<Longrightarrow> a + x *\<^sub>R u \<in> D"
   shows "f (a + u) - f a \<in> {J0..J1}"
@@ -114,7 +114,7 @@ lemma MVT:
 
 lemma MVT_ivl':
   fixes f::"'a::ordered_euclidean_space\<Rightarrow>'b::ordered_euclidean_space"
-  assumes fderiv: "(\<And>x. x \<in> D \<Longrightarrow> FDERIV f x : D :> J x)"
+  assumes fderiv: "(\<And>x. x \<in> D \<Longrightarrow> (f has_derivative J x) (at x within D))"
   assumes J_ivl: "\<And>x. x \<in> D \<Longrightarrow> J x (a - b) \<in> {J0..J1}"
   assumes line_in: "\<And>x. x \<in> {0..1} \<Longrightarrow> b + x *\<^sub>R (a - b) \<in> D"
   shows "f a \<in> {f b + J0..f b + J1}"

@@ -16,11 +16,10 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma oil_fderiv: "FDERIV (\<lambda>(y::real, z::real). (z, z * z + -3 * inverse (inverse 1000 + y * y)))
-   x : X
-   :> (case x of (y, z) \<Rightarrow> \<lambda>(dy, dz).
-    (dz, 2 * dz * z + 6 * (inverse (inverse 1000 + y * y) * (dy * (y * inverse (inverse 1000 + y * y))))))"
-  by (auto intro!: FDERIV_eq_intros simp: oil_deriv_ok split_beta inverse_eq_divide)
+lemma oil_fderiv: "((\<lambda>(y::real, z::real). (z, z * z + -3 * inverse (inverse 1000 + y * y))) has_derivative
+   (case x of (y, z) \<Rightarrow> \<lambda>(dy, dz). (dz, 2 * dz * z + 6 * (inverse (inverse 1000 + y * y) * (dy * (y * inverse (inverse 1000 + y * y)))))))
+   (at x within X)"
+  by (auto intro!: has_derivative_eq_intros simp: oil_deriv_ok split_beta inverse_eq_divide)
 
 approximate_affine oil_d "\<lambda>(y::real, z) (dy, dz). (dz, 2 * dz * z  + 6 * (inverse (inverse 1000 + y*y) * (dy * (y * inverse (inverse 1000 + y*y)))))"
 

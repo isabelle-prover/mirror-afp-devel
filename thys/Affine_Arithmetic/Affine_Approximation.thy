@@ -701,17 +701,17 @@ definition inverse_aform'::"nat \<Rightarrow> nat \<Rightarrow> real aform \<Rig
 lemma
   linear_lower:
   fixes x::real
-  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> DERIV f x : {a .. b} :> f' x"
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> (f has_field_derivative f' x) (at x within {a .. b})"
   assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> f' x \<le> u"
   assumes "x \<in> {a .. b}"
   shows "f b + u * (x - b) \<le> f x"
 proof -
   from assms(2-)
-    mvt_very_simple[of x b f "\<lambda>x i. i * f' x",
+    mvt_very_simple[of x b f "\<lambda>x. op * (f' x)",
       rule_format,
-      OF _ FDERIV_subset[OF assms(1)[simplified deriv_fderiv]]]
+      OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
   obtain y where "y \<in> {x .. b}"  "f b - f x = (b - x) * f' y"
-    by (auto simp: Bex_def)
+    by (auto simp: Bex_def ac_simps)
   moreover hence "f' y \<le> u" using assms by auto
   ultimately have "f b - f x \<le> (b - x) * u"
     by (auto intro!: mult_left_mono)
@@ -721,17 +721,17 @@ qed
 lemma
   linear_upper:
   fixes x::real
-  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> DERIV f x : {a .. b} :> f' x"
+  assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> (f has_field_derivative f' x) (at x within {a .. b})"
   assumes "\<And>x. x \<in> {a .. b} \<Longrightarrow> f' x \<le> u"
   assumes "x \<in> {a .. b}"
   shows "f x \<le> f a + u * (x - a)"
 proof -
   from assms(2-)
-    mvt_very_simple[of a x f "\<lambda>x i. i * f' x",
+    mvt_very_simple[of a x f "\<lambda>x. op * (f' x)",
       rule_format,
-      OF _ FDERIV_subset[OF assms(1)[simplified deriv_fderiv]]]
+      OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
   obtain y where "y \<in> {a .. x}"  "f x - f a = (x - a) * f' y"
-    by (auto simp: Bex_def)
+    by (auto simp: Bex_def ac_simps)
   moreover hence "f' y \<le> u" using assms by auto
   ultimately have "(x - a) * u \<ge> f x - f a"
     by (auto intro!: mult_left_mono)
@@ -746,7 +746,7 @@ lemma
   shows inverse_linear_lower: "inverse b + alpha * (x - b) \<le> inverse x" (is ?lower)
     and inverse_linear_upper: "inverse x \<le> inverse a + alpha * (x - a)" (is ?upper)
 proof -
-  have deriv_inv: "\<And>x. x \<in> {a .. b} \<Longrightarrow> DERIV inverse x : {a .. b} :> (- inverse (x*x))"
+  have deriv_inv: "\<And>x. x \<in> {a .. b} \<Longrightarrow> (inverse has_field_derivative - inverse (x*x)) (at x within {a .. b})"
     using assms
     by (auto intro!: DERIV_intros)
   show ?lower

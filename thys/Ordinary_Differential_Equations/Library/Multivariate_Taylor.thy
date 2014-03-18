@@ -30,24 +30,24 @@ qed
 
 lemma (in approachable_on) diff_chain_componentwise:
   fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space"
-  assumes f_deriv: "FDERIV f (g t) : G :> Df"
-  assumes g_deriv: "FDERIV g t : J :> Dg"
+  assumes f_deriv: "(f has_derivative Df) (at (g t) within G)"
+  assumes g_deriv: "(g has_derivative Dg) (at t within J)"
   assumes "g ` J \<subseteq> G"
   assumes "t \<in> J"
   defines "\<phi> \<equiv> (\<lambda>t. f (g t))"
-  shows "FDERIV \<phi> t : J :> (\<lambda>x. (\<Sum>i\<in>Basis. (Dg x \<bullet> i) *\<^sub>R (Df i)))"
+  shows "(\<phi> has_derivative (\<lambda>x. (\<Sum>i\<in>Basis. (Dg x \<bullet> i) *\<^sub>R (Df i)))) (at t within J)"
 proof -
   interpret Df: linear Df
     using f_deriv by (rule derivative_is_linear)
   have Df: "Df = (\<lambda>h. \<Sum>b\<in>Basis. (h \<bullet> b) *\<^sub>R Df b)"
     by (simp only: Df.scaleR [symmetric] Df.setsum [symmetric] euclidean_representation)
   have "\<phi> = f o g" by (auto simp add: \<phi>_def)
-  hence "FDERIV \<phi> t : J :> (Df \<circ> Dg)"
+  hence "(\<phi> has_derivative Df \<circ> Dg) (at t within J)"
     using `t \<in> J` `g \` J \<subseteq> G`
     by (auto intro: has_derivative_at_within
         intro!: diff_chain_within has_derivative_within_subset[OF f_deriv]
         g_deriv[simplified has_vector_derivative_def])
-  hence "FDERIV \<phi> t : J :> (\<lambda>x. (\<Sum>b\<in>Basis. (Dg x \<bullet> b) *\<^sub>R (Df b)))"
+  hence "(\<phi> has_derivative (\<lambda>x. (\<Sum>b\<in>Basis. (Dg x \<bullet> b) *\<^sub>R (Df b)))) (at t within J)"
     using `t \<in> J` by (subst (asm) Df) (auto simp: o_def)
   thus ?thesis by (simp add: ac_simps)
 qed
@@ -93,7 +93,7 @@ proof -
   moreover from `H \<noteq> 0` H_nonneg have "sumH \<noteq> 0"
     by (subst (asm) euclidean_all_zero_iff[symmetric]) (auto simp: sumH_def)
   ultimately have "sumH > 0" by simp
-  have line_fderiv[FDERIV_intros]: "\<And>t. FDERIV line t : {0..1} :> (\<lambda>t. t *\<^sub>R H)"
+  have line_fderiv[has_derivative_intros]: "\<And>t. (line has_derivative (\<lambda>t. t *\<^sub>R H)) (at t within {0..1})"
     unfolding line_def by (subst add_commute)
       (intro has_derivative_add_const scaleR_left_has_derivative has_derivative_id)
   hence line_deriv: "\<And>t. (line has_vector_derivative H) (at t within {0..1})"
@@ -104,12 +104,12 @@ proof -
   {
     fix d::'a and k::nat and t::real
     assume "t \<in> {0..1}" "k < n" hence "line t \<in> G" using line_in_G by auto
-    have FDERIV_Ds_line: "\<And>ds d. length ds < n \<Longrightarrow> d \<in> Basis \<Longrightarrow>
-        FDERIV (\<lambda>x. Ds ds (line x) d) t : {0..1} :>
-        (\<lambda>x. \<Sum>i\<in>Basis. (x *\<^sub>R H \<bullet> i) *\<^sub>R Ds (i#ds) (line t) d)"
+    have has_derivativeDs_line: "\<And>ds d. length ds < n \<Longrightarrow> d \<in> Basis \<Longrightarrow>
+        ((\<lambda>x. Ds ds (line x) d) has_derivative (\<lambda>x. \<Sum>i\<in>Basis. (x *\<^sub>R H \<bullet> i) *\<^sub>R Ds (i#ds) (line t) d))
+        (at t within {0..1})"
       using line_in_G `t \<in> {0..1}` `line t \<in> G`
       by (intro diff_chain_componentwise)
-        (auto intro!: FDERIV_eq_intros simp: symmetric_higher_derivative)
+        (auto intro!: has_derivative_eq_intros simp: symmetric_higher_derivative)
     have "((\<lambda>t. sumDs k (line t)) has_vector_derivative
         (\<Sum>d\<in>Basis. \<Sum>ds\<in>listsN k Basis. \<Sum>i\<in>Basis.
           ((H \<bullet> i) *\<^sub>R (fold (\<lambda>d p. (H \<bullet> d) * p) (d#ds) 1) *\<^sub>R Ds (i # ds) (line t) d)))
@@ -117,7 +117,7 @@ proof -
         (is "(_ has_vector_derivative ?sumsum) _")
       unfolding has_vector_derivative_def sumDs_def
       using zero_less_Suc[of n] `k < n`
-      by (auto intro!: FDERIV_eq_intros FDERIV_Ds_line
+      by (auto intro!: has_derivative_eq_intros has_derivativeDs_line
         simp: field_simps inverse_eq_divide scaleR_setsum_right)
     also
     have "?sumsum = sumDs (Suc k) (line t)"
@@ -144,7 +144,7 @@ proof -
     apply (auto intro!: Ds_0)
     apply (simp add: sumDs_def sumH_def scaleR_setsum_left[symmetric])
     unfolding has_vector_derivative_def
-    apply (rule diff_chain_componentwise[THEN FDERIV_eq_rhs])
+    apply (rule diff_chain_componentwise[THEN has_derivative_eq_rhs])
     apply (rule Ds_0)
     using line_in_G apply force
     apply (rule line_fderiv)

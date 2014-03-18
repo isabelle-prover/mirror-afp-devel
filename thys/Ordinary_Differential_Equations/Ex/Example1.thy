@@ -9,8 +9,8 @@ subsection {* Example 1 *}
 text {* \label{sec:example1} *}
 approximate_affine e1 "\<lambda>(t::real, y::real). (1::real, y*y + - t)"
 
-lemma e1_fderiv: "FDERIV (\<lambda>(t::real, y::real). (1::real, y * y + - t)) x : X :> (\<lambda>(a, b) (c, d). (0, 2 * (b * d) + - c)) x"
-  by (auto intro!: FDERIV_eq_intros simp: split_beta)
+lemma e1_fderiv: "((\<lambda>(t::real, y::real). (1::real, y * y + - t)) has_derivative (\<lambda>(a, b) (c, d). (0, 2 * (b * d) + - c)) x) (at x within X)"
+  by (auto intro!: has_derivative_eq_intros simp: split_beta)
 
 approximate_affine e1_d "\<lambda>(a::real, b::real) (c::real, d::real). (0::real, 2 * (b * d) + - c)"
 

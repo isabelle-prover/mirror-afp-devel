@@ -109,8 +109,8 @@ next
   from tx assms have "0 \<le> norm (f (t, x t))" by simp
   have x_diff: "\<And>s. s \<in> ?T \<Longrightarrow> x differentiable at s within ?T"
     by (rule differentiableI, rule x'[simplified has_vector_derivative_def])
-  have f': "\<And>t x. t \<in> ?T \<Longrightarrow> x \<in> X \<Longrightarrow> FDERIV f (t, x) : (?T \<times> X) :> f' (t, x)"
-    using T by (intro FDERIV_subset[OF f']) auto
+  have f': "\<And>t x. t \<in> ?T \<Longrightarrow> x \<in> X \<Longrightarrow> (f has_derivative f' (t, x)) (at (t, x) within (?T \<times> X))"
+    using T by (intro has_derivative_subset[OF f']) auto
   let ?p = "(\<lambda>t. f' (t, x t) (1, f (t, x t)))"
   def diff \<equiv> "\<lambda>n::nat. if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else ?p"
   have diff_0[simp]: "diff 0 = x" by (simp add: diff_def)
@@ -119,15 +119,15 @@ next
     assume mta: "m < 2" "t \<le> ta" "ta \<le> t + h"
     have image_subset: "(\<lambda>xa. (xa, x xa)) ` {t..u} \<subseteq> {t..u} \<times> X"
       using assms by auto
-    note FDERIV_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, FDERIV_intros]
-    note FDERIV_subset[OF _ image_subset, FDERIV_intros]
-    note f'[FDERIV_intros]
-    note x'[simplified has_vector_derivative_def, FDERIV_intros]
+    note has_derivative_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, has_derivative_intros]
+    note has_derivative_subset[OF _ image_subset, has_derivative_intros]
+    note f'[has_derivative_intros]
+    note x'[simplified has_vector_derivative_def, has_derivative_intros]
     have [simp]: "\<And>c x'. c *\<^sub>R f' (ta, x ta) x' = f' (ta, x ta) (c *\<^sub>R x')"
       using mta ht assms by (auto intro!: f' linear_cmul[symmetric] derivative_is_linear)
     have "((\<lambda>t. f (t, x t)) has_vector_derivative f' (ta, x ta) (1, f (ta, x ta))) (at ta within {t..u})"
       unfolding has_vector_derivative_def
-      using assms ht mta by (auto intro!: FDERIV_eq_intros)
+      using assms ht mta by (auto intro!: has_derivative_eq_intros)
     hence "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
       using mta ht
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x')
@@ -188,7 +188,7 @@ proof
     fix x y
     let ?I = "T \<times> X"
     have "convex ?I" by (intro convex convex_Times convex_interval)
-    moreover have "\<forall>x\<in>?I. FDERIV f x : ?I :> f' x" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
+    moreover have "\<forall>x\<in>?I. (f has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
       using f' f'_bounded
       by (auto simp add: interval intro!: onorm_norm1 f'_bounded derivative_is_linear)
     moreover assume "x \<in> X" "y \<in> X"

@@ -163,7 +163,7 @@ lemma (in ivp) singleton_has_solutionI:
   assumes "T = {t0}"
   shows "has_solution i"
   by unfold_locales (auto simp: has_vector_derivative_def assms
-    intro!: FDERIV_singletonI bounded_linear_scaleR_left iv_defined exI[where x="\<lambda>x. x0"])
+    intro!: has_derivative_singletonI bounded_linear_scaleR_left iv_defined exI[where x="\<lambda>x. x0"])
 
 locale unique_solution = has_solution +
   assumes unique_solution: "\<And>y t. is_solution y \<Longrightarrow> t \<in> T \<Longrightarrow> y t = solution t"
@@ -1124,7 +1124,7 @@ locale derivative_on_convex =
   fixes T X and f::"(real \<times> 'a::ordered_euclidean_space) \<Rightarrow> 'a" and f'
   assumes convex: "convex T" "convex X"
   assumes nonempty: "T \<noteq> {}" "X \<noteq> {}"
-  assumes f': "\<And>t x. t \<in> T \<Longrightarrow> x \<in> X \<Longrightarrow> FDERIV f (t, x) : (T \<times> X) :> f' (t, x)"
+  assumes f': "\<And>t x. t \<in> T \<Longrightarrow> x \<in> X \<Longrightarrow> (f has_derivative f' (t, x)) (at (t, x) within (T \<times> X))"
 
 locale compact_domain =
   fixes X assumes compact: "compact X"
@@ -1157,7 +1157,7 @@ proof -
   proof (rule exI[where x= B], safe)
     fix t x assume "t \<in> T" "x \<in> X"
     interpret bounded_linear "f' (t, x)"
-      by (auto simp: i_def algebra_simps intro!: FDERIV_bounded_linear[OF f'[OF `t \<in> T` `x \<in> X`]])
+      by (auto simp: i_def algebra_simps intro!: has_derivative_bounded_linear[OF f'[OF `t \<in> T` `x \<in> X`]])
     show "onorm (f' (t, x)) \<le> B"
     proof (rule onorm, safe)
       show "linear (f' (t, x))" by fact

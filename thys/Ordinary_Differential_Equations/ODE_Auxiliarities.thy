@@ -141,15 +141,15 @@ lemma continuous_Sigma:
 subsection {* Differentiability *}
 
 lemma differentiable_Pair [simp]:
-  "f differentiable x in s \<Longrightarrow> g differentiable x in s \<Longrightarrow> (\<lambda>x. (f x, g x)) differentiable x in s"
-  unfolding isDiff_def by (blast intro: FDERIV_Pair)
+  "f differentiable at x within s \<Longrightarrow> g differentiable at x within s \<Longrightarrow> (\<lambda>x. (f x, g x)) differentiable at x within s"
+  unfolding differentiable_def by (blast intro: has_derivative_Pair)
 
 lemma (in bounded_linear)
   differentiable:
-  assumes "isDiff (at x within s) g"
-  shows "isDiff (at x within s) (\<lambda>x. f (g x))"
+  assumes "g differentiable (at x within s)"
+  shows " (\<lambda>x. f (g x)) differentiable (at x within s)"
   using assms[simplified frechet_derivative_works]
-  by (intro differentiableI) (rule FDERIV)
+  by (intro differentiableI) (rule has_derivative)
 
 lemmas
   differentiable_mult_right[intro] = bounded_linear.differentiable[OF bounded_linear_mult_right] and
@@ -159,8 +159,8 @@ lemmas
 
 lemma (in bounded_bilinear)
   differentiable:
-  assumes f: "isDiff (at x within s) f" and g: "isDiff (at x within s) g"
-  shows "isDiff (at x within s) (\<lambda>x. prod (f x) (g x))"
+  assumes f: "f differentiable at x within s" and g: "g differentiable at x within s"
+  shows "(\<lambda>x. prod (f x) (g x)) differentiable at x within s"
   using assms[simplified frechet_derivative_works]
   by (intro differentiableI) (rule FDERIV)
 
@@ -170,23 +170,23 @@ lemmas
 
 lemma differentiable_transform_within_weak:
   assumes "x \<in> s" "\<And>x'. x'\<in>s \<Longrightarrow> g x' = f x'" "f differentiable at x within s"
-  shows "isDiff (at x within s) g"
+  shows "g differentiable at x within s"
   using assms by (intro differentiable_transform_within[OF zero_less_one, where g=g]) auto
 
 lemma differentiable_compose_at:
-  "isDiff (at x) f \<Longrightarrow> isDiff (at (f x)) g \<Longrightarrow> isDiff (at x) (\<lambda>x. g (f x))"
+  "f differentiable (at x) \<Longrightarrow> g differentiable (at (f x)) \<Longrightarrow> (\<lambda>x. g (f x)) differentiable (at x)"
   unfolding o_def[symmetric]
   by (rule differentiable_chain_at)
 
 lemma differentiable_compose_within:
-  "isDiff (at x within s) f \<Longrightarrow> isDiff (at(f x) within (f ` s)) g \<Longrightarrow>
-  isDiff (at x within s) (\<lambda>x. g (f x))"
+  "f differentiable (at x within s) \<Longrightarrow> g differentiable (at(f x) within (f ` s)) \<Longrightarrow>
+  (\<lambda>x. g (f x)) differentiable (at x within s)"
   unfolding o_def[symmetric]
   by (rule differentiable_chain_within)
 
 lemma differentiable_setsum[intro, simp]:
-  assumes "finite s" "\<forall>a\<in>s. Derivative.differentiable (f a) net"
-  shows "Derivative.differentiable (\<lambda>x. setsum (\<lambda>a. f a x) s) net"
+  assumes "finite s" "\<forall>a\<in>s. (f a) differentiable net"
+  shows "(\<lambda>x. setsum (\<lambda>a. f a x) s) differentiable net"
 proof-
  guess f' using bchoice[OF assms(2)[unfolded differentiable_def]] ..
  thus ?thesis unfolding differentiable_def apply-
@@ -196,24 +196,24 @@ qed
 
 subsection {* Derivatives *}
 
-lemma FDERIV_singletonI: "bounded_linear g \<Longrightarrow> FDERIV f x : {x} :> g"
-  by (rule FDERIV_I_sandwich[where e=1]) (auto intro!: bounded_linear_scaleR_left)
+lemma has_derivative_singletonI: "bounded_linear g \<Longrightarrow> (f has_derivative g) (at x within {x})"
+  by (rule has_derivativeI_sandwich[where e=1]) (auto intro!: bounded_linear_scaleR_left)
 
 lemma vector_derivative_eq_rhs: "(f has_vector_derivative f') F \<Longrightarrow> f' = g' \<Longrightarrow> (f has_vector_derivative g') F"
   by simp
 
-lemma FDERIV_transform:
+lemma has_derivative_transform:
   assumes "x \<in> s" "\<And>x. x \<in> s \<Longrightarrow> g x = f x"
-  assumes "FDERIV f x : s :> f'"
-  shows "FDERIV g x : s :> f'"
+  assumes "(f has_derivative f') (at x within s)"
+  shows "(g has_derivative f') (at x within s)"
   using assms by (intro has_derivative_transform_within[OF zero_less_one, where g=g]) auto
 
-lemma FDERIV_If_in_closed:
-  assumes f':"\<And>x. x \<in> s \<Longrightarrow> FDERIV f x : s :> f' x"
-  assumes g':"\<And>x. x \<in> t \<Longrightarrow> FDERIV g x : t :> g' x"
+lemma has_derivative_If_in_closed:
+  assumes f':"\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)"
+  assumes g':"\<And>x. x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
   assumes connect: "\<And>x. x \<in> s \<inter> t \<Longrightarrow> f x = g x" "\<And>x. x \<in> s \<inter> t \<Longrightarrow> f' x = g' x"
   assumes "closed t" "closed s" "x \<in> s \<union> t"
-  shows "FDERIV (\<lambda>x. if x \<in> s then f x else g x) x : (s \<union> t) :> (if x \<in> s then f' x else g' x)"
+  shows "((\<lambda>x. if x \<in> s then f x else g x) has_derivative (if x \<in> s then f' x else g' x)) (at x within (s \<union> t))"
   (is "(?if has_derivative ?if') _")
   unfolding has_derivative_within
 proof (safe intro!: tendstoI)
@@ -241,7 +241,7 @@ proof (safe intro!: tendstoI)
     with tendstoD[OF g'[OF `x \<in> t`] `0 < e`] have ?thesis unfolding eventually_at_filter 
       by eventually_elim (insert `x \<in> t` `x \<notin> s`, auto simp: connect)
   } ultimately show ?thesis by blast
-qed (insert assms, auto intro!: FDERIV_bounded_linear f' g')
+qed (insert assms, auto intro!: has_derivative_bounded_linear f' g')
 
 lemma linear_continuation:
   assumes f':"\<And>x. x \<in> {a .. b} \<Longrightarrow> (f has_vector_derivative f' x) (at x within {a .. b})"
@@ -254,20 +254,20 @@ lemma linear_continuation:
   (is "(?h has_vector_derivative ?h' x) _")
 proof -
   have un: "{a .. b} \<union> {b .. c} = {a .. c}" using assms by auto
-  note FDERIV_If_in_closed[FDERIV_intros]
-  note f'[simplified has_vector_derivative_def, FDERIV_intros]
-  note g'[simplified has_vector_derivative_def, FDERIV_intros]
+  note has_derivative_If_in_closed[has_derivative_intros]
+  note f'[simplified has_vector_derivative_def, has_derivative_intros]
+  note g'[simplified has_vector_derivative_def, has_derivative_intros]
   have if': "((\<lambda>x. if x \<in> {a .. b} then f x else g x) has_vector_derivative
     (\<lambda>x. if x \<le> b then f' x else g' x) x) (at x within {a .. b}\<union>{b .. c})"
     unfolding has_vector_derivative_def
     using assms
     apply -
-    apply (rule FDERIV_eq_intros refl | assumption)+
+    apply (rule has_derivative_eq_intros refl | assumption)+
     apply auto
     done
   show ?thesis
     unfolding has_vector_derivative_def
-    by (rule FDERIV_transform[OF x _ if'[simplified un has_vector_derivative_def]]) simp
+    by (rule has_derivative_transform[OF x _ if'[simplified un has_vector_derivative_def]]) simp
 qed
 
 lemma exists_linear_continuation:
@@ -281,10 +281,10 @@ proof (rule, safe)
   have [simp]:
     "\<And>x. x \<in> {a .. b} \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" "\<And>x. x \<in> {a .. b} \<Longrightarrow> (x \<le> a \<longleftrightarrow> x = a)"
     "\<And>x. x \<le> a \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" using `a \<le> b` by auto
-  note FDERIV_If_in_closed[FDERIV_intros] f'[simplified has_vector_derivative_def, FDERIV_intros]
+  note has_derivative_If_in_closed[has_derivative_intros] f'[simplified has_vector_derivative_def, has_derivative_intros]
   have "(?fc has_vector_derivative f' x) (at x within {a .. b} \<union> ({..a} \<union> {b..}))"
     using `x \<in> {a .. b}` `a \<le> b`
-    by (auto intro!: FDERIV_eq_intros simp: has_vector_derivative_def
+    by (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def
       simp del: atMost_iff atLeastAtMost_iff)
   moreover have "{a .. b} \<union> ({..a} \<union> {b..}) = UNIV" by auto
   ultimately show "(?fc has_vector_derivative f' x) (at x)" by simp
@@ -296,7 +296,7 @@ lemma Pair_has_vector_derivative:
   assumes f: "(f has_vector_derivative f') (at x within s)"
       and g: "(g has_vector_derivative g') (at x within s)"
   shows "((\<lambda>x. (f x, g x)) has_vector_derivative (f', g')) (at x within s)"
-  using assms by (auto simp: has_vector_derivative_def intro!: FDERIV_eq_intros)
+  using assms by (auto simp: has_vector_derivative_def intro!: has_derivative_eq_intros)
 
 lemma has_vector_derivative_imp:
   assumes "x \<in> s"
@@ -381,18 +381,18 @@ text {* TODO: include this into the attribute DERIV-intros?! *}
 lemma DERIV_compose_FDERIV:
   fixes f::"real\<Rightarrow>real"
   assumes "DERIV f (g x) :> f'"
-  assumes "FDERIV g x : s :> g'"
-  shows "FDERIV (\<lambda>x. f (g x)) x : s :> (\<lambda>x. g' x * f')"
-  using assms FDERIV_compose[of g g' x s f "\<lambda>x. x * f'"]
-  by (auto simp: deriv_fderiv)
+  assumes "(g has_derivative g') (at x within s)"
+  shows "((\<lambda>x. f (g x)) has_derivative (\<lambda>x. g' x * f')) (at x within s)"
+  using assms has_derivative_compose[of g g' x s f "op * f'"]
+  by (auto simp: has_field_derivative_def ac_simps)
 
-lemmas FDERIV_sin[FDERIV_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
-  and  FDERIV_cos[FDERIV_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
-  and  FDERIV_exp[FDERIV_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
-  and  FDERIV_ln[FDERIV_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
+lemmas has_derivative_sin[has_derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
+  and  has_derivative_cos[has_derivative_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
+  and  has_derivative_exp[has_derivative_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
+  and  has_derivative_ln[has_derivative_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
 
-lemma FDERIV_continuous_on:
-  "(\<And>x. x \<in> s \<Longrightarrow> FDERIV f x : s :> f' x) \<Longrightarrow> continuous_on s f"
+lemma has_derivative_continuous_on:
+  "(\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
   by (auto intro!: differentiable_imp_continuous_on differentiableI simp: differentiable_on_def)
 
 lemma taylor_up_within:
@@ -410,8 +410,9 @@ proof -
     by (metis atLeastAtMost_iff)
   then guess d' unfolding choice_iff .. note d' = this
   let ?diff = "\<lambda>m. if m = n then diff m else d' m"
-  have "?taylor (?diff 0) ?diff" using d' by (intro taylor_up[OF _ _ _ `a \<le> c`])
-    (auto simp: deriv_fderiv has_vector_derivative_def INIT INTERV)
+  have "?taylor (?diff 0) ?diff" using d'
+    by (intro taylor_up[OF _ _ _ `a \<le> c`])
+       (auto simp: has_field_derivative_def has_vector_derivative_def INIT INTERV mult_commute_abs)
   thus "?taylor f diff" using d' INTERV INIT by auto
 qed
 
@@ -435,7 +436,7 @@ proof -
     have DERIV_0: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (diff 0) t \<bullet> i = f t \<bullet> i" using INIT by simp
     have DERIV_Suc: "\<And>m t. m < n \<Longrightarrow> a \<le> t \<Longrightarrow> t \<le> b \<Longrightarrow>
       ((\<lambda>t. (diff m) t \<bullet> i) has_vector_derivative (diff (Suc m) t \<bullet> i)) (at t within {a .. b})"
-      using DERIV by (auto intro!: FDERIV_eq_intros simp: has_vector_derivative_def)
+      using DERIV by (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def)
     from taylor_up_within[OF INIT(1) DERIV_0 DERIV_Suc INTERV]
     show "\<exists>t>c. t < b \<and> f b \<bullet> i =
       (\<Sum>m = 0..<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
@@ -464,22 +465,22 @@ lemmas integrable_continuous[intro, simp]
 
 lemma mvt_integral:
   fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space"
-  assumes f'[FDERIV_intros]: "\<And>x. x \<in> S \<Longrightarrow> FDERIV f x : S :> f' x"
+  assumes f'[has_derivative_intros]: "\<And>x. x \<in> S \<Longrightarrow> (f has_derivative f' x) (at x within S)"
   assumes f'_cont: "\<And>i. i \<in> Basis \<Longrightarrow> continuous_on S (\<lambda>t. f' t i)"
   assumes line_in: "\<And>t. t \<in> {0..1} \<Longrightarrow> x + t *\<^sub>R y \<in> S"
   shows "f (x + y) - f x = integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R y) y)" (is ?th1)
    and  "f (x + y) - f x = (\<Sum>a\<in>Basis. (y \<bullet> a) *\<^sub>R integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R y) a))" (is ?th2)
 proof -
   from assms have subset: "(\<lambda>xa. x + xa *\<^sub>R y) ` {0..1} \<subseteq> S" by auto
-  note FDERIV_subset[OF _ subset, FDERIV_intros]
-  note FDERIV_in_compose[where f="(\<lambda>xa. x + xa *\<^sub>R y)" and g = f, FDERIV_intros]
+  note has_derivative_subset[OF _ subset, has_derivative_intros]
+  note has_derivative_in_compose[where f="(\<lambda>xa. x + xa *\<^sub>R y)" and g = f, has_derivative_intros]
   note continuous_on_compose2[where f="(\<lambda>xa. x + xa *\<^sub>R y)", continuous_on_intros]
   note continuous_on_subset[OF _ subset, continuous_on_intros]
   have "\<And>t. t \<in> {0..1} \<Longrightarrow>
     ((\<lambda>t. f (x + t *\<^sub>R y)) has_vector_derivative f' (x + t *\<^sub>R y) y) (at t within {0..1})"
     using assms
     by (auto simp: has_vector_derivative_def linear_cmul[OF derivative_is_linear[OF f'], symmetric]
-      intro!: FDERIV_eq_intros)
+      intro!: has_derivative_eq_intros)
   from fundamental_theorem_of_calculus[rule_format, OF _ this]
   show ?th1
     by (auto intro!: integral_unique[symmetric])
