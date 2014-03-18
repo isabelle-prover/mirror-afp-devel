@@ -10,20 +10,13 @@ imports
   "~~/src/HOL/Library/Code_Target_Int"
 begin
 
-lemma [code, code del]: "bitAND = (bitAND :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "bitOR = (bitOR :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "bitXOR = (bitXOR :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "bitNOT = (bitNOT :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "bin_last = bin_last" ..
-lemma [code, code del]: "bin_rest = bin_rest" ..
-lemma [code, code del]: "bin_nth = bin_nth" ..
-lemma [code, code del]: "Bit = Bit" ..
-lemma [code, code del]: "test_bit = (test_bit :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "lsb = (lsb :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "set_bit = (set_bit :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "shiftl = (shiftl :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "shiftr = (shiftr :: int \<Rightarrow> _)" ..
-lemma [code, code del]: "int_of_integer_symbolic = int_of_integer_symbolic" ..
+declare [[code drop:
+  "bitAND :: int \<Rightarrow> _" "bitOR :: int \<Rightarrow> _" "bitXOR :: int \<Rightarrow> _" "bitNOT :: int \<Rightarrow> _"
+  "lsb :: int \<Rightarrow> _" "set_bit :: int \<Rightarrow> _" "test_bit :: int \<Rightarrow> _"
+  "shiftl :: int \<Rightarrow> _" "shiftr :: int \<Rightarrow> _"
+  bin_last bin_rest bin_nth Bit
+  int_of_integer_symbolic
+  ]]
 
 context
 includes integer.lifting
@@ -75,7 +68,7 @@ by transfer simp
 
 lemma int_of_integer_symbolic_code [code]:
   "int_of_integer_symbolic = int_of_integer"
-by(simp add: int_of_integer_symbolic_def[abs_def])
+by(simp add: int_of_integer_symbolic_def)
 
 end
 
