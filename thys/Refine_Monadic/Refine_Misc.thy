@@ -482,7 +482,7 @@ lemma contI[intro?]: "\<lbrakk>\<And>C. C\<noteq>{} \<Longrightarrow> f (Sup C) 
   unfolding cont_def by auto
 lemma contD: "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = Sup (f`C)" 
   unfolding cont_def by auto
-lemma contD': "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = SUPR C f" 
+lemma contD': "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = SUPREMUM C f" 
   using contD by simp
 
 lemma strictD[dest]: "strict f \<Longrightarrow> f bot = bot" 

@@ -225,15 +225,15 @@ lemma nres_order_simps[simp]:
   "\<And>M. FAIL \<le> M \<longleftrightarrow> M=FAIL"
   "\<And>X Y. RES X \<le> RES Y \<longleftrightarrow> X\<le>Y"
   "\<And>X. Sup X = FAIL \<longleftrightarrow> FAIL\<in>X"
-  "\<And>X f. SUPR X f = FAIL \<longleftrightarrow> FAIL \<in> f ` X"
+  "\<And>X f. SUPREMUM X f = FAIL \<longleftrightarrow> FAIL \<in> f ` X"
   "\<And>X. FAIL = Sup X \<longleftrightarrow> FAIL\<in>X"
-  "\<And>X f. FAIL = SUPR X f \<longleftrightarrow> FAIL \<in> f ` X"
+  "\<And>X f. FAIL = SUPREMUM X f \<longleftrightarrow> FAIL \<in> f ` X"
   "\<And>X. FAIL\<in>X \<Longrightarrow> Sup X = FAIL"
-  "\<And>X. FAIL\<in>f ` X \<Longrightarrow> SUPR X f = FAIL"
+  "\<And>X. FAIL\<in>f ` X \<Longrightarrow> SUPREMUM X f = FAIL"
   "\<And>A. Sup (RES ` A) = RES (Sup A)"
-  "\<And>A. SUPR A RES = RES (Sup A)"
+  "\<And>A. SUPREMUM A RES = RES (Sup A)"
   "\<And>A. A\<noteq>{} \<Longrightarrow> Inf (RES`A) = RES (Inf A)"
-  "\<And>A. A\<noteq>{} \<Longrightarrow> INFI A RES = RES (Inf A)"
+  "\<And>A. A\<noteq>{} \<Longrightarrow> INFIMUM A RES = RES (Inf A)"
   "Inf {} = FAIL"
   "Inf UNIV = SUCCEED"
   "Sup {} = SUCCEED"
@@ -371,7 +371,7 @@ lemma pw_Sup_inres[refine_pw_simps]: "inres (Sup X) r \<longleftrightarrow> (\<e
   apply (simp)
   done
 
-lemma pw_SUP_inres [refine_pw_simps]: "inres (SUPR X f) r \<longleftrightarrow> (\<exists>M\<in>X. inres (f M) r)"
+lemma pw_SUP_inres [refine_pw_simps]: "inres (SUPREMUM X f) r \<longleftrightarrow> (\<exists>M\<in>X. inres (f M) r)"
   using pw_Sup_inres [of "f ` X"] by simp
 
 lemma pw_Sup_nofail[refine_pw_simps]: "nofail (Sup X) \<longleftrightarrow> (\<forall>x\<in>X. nofail x)"
@@ -382,7 +382,7 @@ lemma pw_Sup_nofail[refine_pw_simps]: "nofail (Sup X) \<longleftrightarrow> (\<f
   apply auto
   done
 
-lemma pw_SUP_nofail [refine_pw_simps]: "nofail (SUPR X f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
+lemma pw_SUP_nofail [refine_pw_simps]: "nofail (SUPREMUM X f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
   using pw_Sup_nofail [of "f ` X"] by simp
 
 lemma pw_inf_nofail[refine_pw_simps]:
@@ -410,7 +410,7 @@ lemma pw_Inf_nofail[refine_pw_simps]: "nofail (Inf C) \<longleftrightarrow> (\<e
   apply auto []
   done
 
-lemma pw_INF_nofail [refine_pw_simps]: "nofail (INFI C f) \<longleftrightarrow> (\<exists>x\<in>C. nofail (f x))"
+lemma pw_INF_nofail [refine_pw_simps]: "nofail (INFIMUM C f) \<longleftrightarrow> (\<exists>x\<in>C. nofail (f x))"
   using pw_Inf_nofail [of "f ` C"] by simp
 
 lemma pw_Inf_inres[refine_pw_simps]: "inres (Inf C) r \<longleftrightarrow> (\<forall>M\<in>C. inres M r)"
@@ -424,7 +424,7 @@ lemma pw_Inf_inres[refine_pw_simps]: "inres (Inf C) r \<longleftrightarrow> (\<f
   apply force
   done
 
-lemma pw_INF_inres [refine_pw_simps]: "inres (INFI C f) r \<longleftrightarrow> (\<forall>M\<in>C. inres (f M) r)"
+lemma pw_INF_inres [refine_pw_simps]: "inres (INFIMUM C f) r \<longleftrightarrow> (\<forall>M\<in>C. inres (f M) r)"
   using pw_Inf_inres [of "f ` C"] by simp
 
 
@@ -847,7 +847,7 @@ lemma Sup_img_rule_complete:
   done
 
 lemma SUP_img_rule_complete: 
-  "(\<forall>x. x\<in>S \<longrightarrow> f x \<le> SPEC \<Phi>) \<longleftrightarrow> SUPR S f \<le> SPEC \<Phi>"
+  "(\<forall>x. x\<in>S \<longrightarrow> f x \<le> SPEC \<Phi>) \<longleftrightarrow> SUPREMUM S f \<le> SPEC \<Phi>"
   using Sup_img_rule_complete [of S f] by simp
 
 lemma Sup_img_rule[refine_vcg]: 

@@ -842,17 +842,17 @@ lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
   apply (subst dual_le, simp)
   by (rule INF_lower, simp)
 
-lemma INF_comp: "(INFI A f) * z = (INF a : A . (f a) * z)"
+lemma INF_comp: "(INFIMUM A f) * z = (INF a : A . (f a) * z)"
   unfolding INF_def Inf_comp
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
 
-lemma dual_INF: "(INFI A f) ^ o = (SUP a : A . (f a) ^ o)"
+lemma dual_INF: "(INFIMUM A f) ^ o = (SUP a : A . (f a) ^ o)"
   unfolding INF_def SUP_def Inf_comp dual_Inf
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
 
-lemma dual_SUP: "(SUPR A f) ^ o = (INF a : A . (f a) ^ o)"
+lemma dual_SUP: "(SUPREMUM A f) ^ o = (INF a : A . (f a) ^ o)"
   unfolding INF_def dual_Sup SUP_def
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
   by auto
@@ -861,7 +861,7 @@ lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
   apply (rule dual_eq)
   by (simp add: dual_comp dual_Sup dual_SUP INF_comp)
 
-lemma SUP_comp: "(SUPR A f) * z = (SUP a : A . (f a) * z)"
+lemma SUP_comp: "(SUPREMUM A f) * z = (SUP a : A . (f a) * z)"
   unfolding SUP_def Sup_comp
   apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
   by auto
@@ -873,19 +873,19 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
   apply (rule Sup_least)
   apply blast
   apply (simp add: Sup_comp dual_Sup SUP_def Sup_inf del: Sup_image_eq)
-  apply (subgoal_tac "((\<lambda>y . y \<sqinter> INFI X dual) ` (\<lambda>x . x * \<top>) ` X) = X")
+  apply (subgoal_tac "((\<lambda>y . y \<sqinter> INFIMUM X dual) ` (\<lambda>x . x * \<top>) ` X) = X")
   apply simp
   proof -
     assume A: "X \<subseteq> {x. x \<le> 1 \<and> x * \<top> \<sqinter> x ^ o = x}"
-    have B [simp]: "!! x . x \<in> X \<Longrightarrow>  x * \<top> \<sqinter> (INFI X dual) = x"
+    have B [simp]: "!! x . x \<in> X \<Longrightarrow>  x * \<top> \<sqinter> (INFIMUM X dual) = x"
       proof -
         fix x
         assume C: "x \<in> X"
-        have "x * \<top> \<sqinter> INFI X dual = x * \<top> \<sqinter> (x ^ o \<sqinter> INFI X dual)"
-          apply (subgoal_tac "INFI X dual = (x ^ o \<sqinter> INFI X dual)", simp)
+        have "x * \<top> \<sqinter> INFIMUM X dual = x * \<top> \<sqinter> (x ^ o \<sqinter> INFIMUM X dual)"
+          apply (subgoal_tac "INFIMUM X dual = (x ^ o \<sqinter> INFIMUM X dual)", simp)
           apply (rule antisym, simp_all)
           by (unfold INF_def, rule Inf_lower, cut_tac C, simp)
-        also have "\<dots> = x \<sqinter> INFI X dual" by (unfold  inf_assoc [THEN sym], cut_tac A, cut_tac C, auto)
+        also have "\<dots> = x \<sqinter> INFIMUM X dual" by (unfold  inf_assoc [THEN sym], cut_tac A, cut_tac C, auto)
         also have "\<dots> = x"
           apply (rule antisym, simp_all)
           apply (rule INF_greatest)
@@ -893,9 +893,9 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
           apply (rule_tac y = 1 in order_trans)
           apply auto[1]
           by (subst dual_le, auto)
-        finally show "x * \<top> \<sqinter> INFI X dual = x" .
+        finally show "x * \<top> \<sqinter> INFIMUM X dual = x" .
       qed
-      show "(\<lambda>y. y \<sqinter> INFI X dual) ` (\<lambda>x . x * \<top>) ` X = X"
+      show "(\<lambda>y. y \<sqinter> INFIMUM X dual) ` (\<lambda>x . x * \<top>) ` X = X"
         by (unfold image_def, auto)
     qed
 

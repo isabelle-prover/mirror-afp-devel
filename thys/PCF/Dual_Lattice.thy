@@ -274,10 +274,10 @@ instantiation dual :: (complete_lattice) complete_lattice
 begin
 
 definition
-  "Sup A \<equiv> dual (INFI A undual)"
+  "Sup A \<equiv> dual (INFIMUM A undual)"
 
 definition
-  "Inf A \<equiv> dual (SUPR A undual)"
+  "Inf A \<equiv> dual (SUPREMUM A undual)"
 
 instance
 apply intro_classes
@@ -289,11 +289,11 @@ done
 end
 
 lemma SUP_dual_unfold:
-  "SUPR A f = dual (INFI A (undual \<circ> f))"
+  "SUPREMUM A f = dual (INFIMUM A (undual \<circ> f))"
   by (simp add: SUP_def Sup_dual_def)
 
 lemma INF_dual_unfold:
-  "INFI A f = dual (SUPR A (undual \<circ> f))"
+  "INFIMUM A f = dual (SUPREMUM A (undual \<circ> f))"
   by (simp add: INF_def Inf_dual_def)
 
 text {*

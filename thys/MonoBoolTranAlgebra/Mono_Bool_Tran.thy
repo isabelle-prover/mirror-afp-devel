@@ -241,14 +241,14 @@ begin
 interpretation lifting_syntax .
 
 lift_definition INF_trash :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a MonoTran) \<Rightarrow> 'a::complete_lattice MonoTran"
-  is INFI
+  is INFIMUM
   unfolding INF_def [abs_def]
   by (rule mono_Inf) auto -- {* FIXME just a neat trick to get transfer rules for INF *}
 
 lemma [transfer_rule]:
-  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFI INFI"
+  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"
 proof -
-  have "INF_trash = INFI"
+  have "INF_trash = INFIMUM"
     apply (rule ext)+
     unfolding INF_def
     apply transfer
@@ -258,14 +258,14 @@ proof -
 qed
 
 lift_definition SUP_trash :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a MonoTran) \<Rightarrow> 'a::complete_lattice MonoTran"
-  is SUPR
+  is SUPREMUM
   unfolding SUP_def [abs_def]
   by (rule mono_Sup) auto -- {* FIXME just a neat trick to get transfer rules for SUP *}
 
 lemma [transfer_rule]:
-  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPR SUPR"
+  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPREMUM SUPREMUM"
 proof -
-  have "SUP_trash = SUPR"
+  have "SUP_trash = SUPREMUM"
     apply (rule ext)+
     unfolding SUP_def
     apply transfer

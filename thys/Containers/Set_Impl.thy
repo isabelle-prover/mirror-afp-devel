@@ -322,10 +322,10 @@ declare [[code drop:
   wf
   Min
   Inf_fin
-  INFI
+  INFIMUM
   Max
   Sup_fin
-  SUPR
+  SUPREMUM
   "Inf :: 'a set set \<Rightarrow> 'a set"
   "Sup :: 'a set set \<Rightarrow> 'a set"
   sorted_list_of_set
@@ -814,10 +814,10 @@ lemmas Sup_fun_code [code] =
   Sup_DList_set[where ?'b = "_ :: type \<Rightarrow> _ :: complete_lattice"]
   Sup_RBT_set[where ?'c = "_ :: type \<Rightarrow> _ :: complete_lattice"]
 
-lemma INF_code [code]: "INFI A f = Inf (f ` A)"
+lemma INF_code [code]: "INFIMUM A f = Inf (f ` A)"
 by(rule INF_def)
 
-lemma SUP_code [code]: "SUPR A f = Sup (f ` A)"
+lemma SUP_code [code]: "SUPREMUM A f = Sup (f ` A)"
 by(rule SUP_def)
 
 lemma Min_code [code]:
