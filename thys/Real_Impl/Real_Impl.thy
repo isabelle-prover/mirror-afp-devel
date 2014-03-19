@@ -235,7 +235,7 @@ proof (transfer, unfold Let_def, clarsimp)
     from sqrt_irrat[OF b', of p'] b_def p_def q_def False have nnull: "p + q * sqrt b \<noteq> 0" by auto
     have "?thesis \<longleftrightarrow> (p + q * sqrt b) * inverse (p + q * sqrt b) =
       (p + q * sqrt b) * ((p - q * sqrt b) * inverse (p * p - b * (q * q)))" 
-      unfolding real_mult_left_cancel[OF nnull] by auto
+      unfolding mult_left_cancel[OF nnull] by auto
     also have "(p + q * sqrt b) * inverse (p + q * sqrt b) = 1" using nnull by auto
     also have "(p + q * sqrt b) * ((p - q * sqrt b) * inverse (p * p - b * (q * q)))
       = (p * p - b * (q * q)) * inverse (p * p - b * (q * q))"
