@@ -172,7 +172,7 @@ proof -
   have "0 \<le> norm (f' (t, x) d)" by simp
   also have "... \<le> B'"
     apply (rule order_trans)
-     apply (rule onorm[OF derivative_is_linear[OF f']])
+     apply (rule onorm[OF has_derivative_bounded_linear[OF f']])
        using tx
        apply (auto intro!: f'_bounded f' derivative_is_linear)
     done
@@ -190,7 +190,7 @@ proof
     have "convex ?I" by (intro convex convex_Times)
     moreover have "\<forall>x\<in>?I. (f has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
       using f' f'_bounded
-      by (auto simp add: intro!: onorm_norm1 f'_bounded derivative_is_linear)
+      by (auto simp add: intro!: f'_bounded derivative_is_linear)
     moreover assume "x \<in> X" "y \<in> X"
     with `t \<in> T` have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
     ultimately have "norm (f (t, x) - f (t, y)) \<le> B' * norm ((t, x) - (t, y))"
@@ -220,7 +220,7 @@ next
   fix t and x d::'a assume "t \<in> T" "(x, d) \<in> X \<times> cball 0 B"
   hence "x \<in> X" "norm d \<le> B" by (auto simp: dist_norm)
   have "norm (f' (t, x) (1, d)) \<le> onorm (f' (t, x)) * norm (1::real, d)"
-    by (auto intro!: onorm derivative_is_linear f' `t \<in> T` `x \<in> X`)
+    by (auto intro!: onorm has_derivative_bounded_linear f' `t \<in> T` `x \<in> X`)
   also have "\<dots> \<le> B' * (B + 1)"
     by (auto intro!: mult_mono f'_bounded f_bounded `t \<in> T` `x \<in> X` f'_bound_nonneg
       order_trans[OF norm_Pair_le] `norm d \<le> B`)

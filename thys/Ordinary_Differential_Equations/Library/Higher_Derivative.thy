@@ -362,8 +362,7 @@ proof -
         proof
           fix t::real assume "t \<in> {0..1}"
           show "onorm (?d t) \<le> 2 * u * u * e * (norm i + norm j)"
-          proof (rule onorm, safe)
-            show "linear (?d t)" by (rule linearI) (simp_all add: algebra_simps)
+          proof (rule onorm_le)
             fix x
             have "norm (?d t x) =
                 norm ((u * x) *\<^sub>R (f' (?ij t u) i - f' (?i t u) i - f' (a + u *\<^sub>R j) i + f' a i))"
@@ -631,31 +630,6 @@ next
   then interpret second_derivative_lrect G "\<lambda>x. Ds es x i" "Ds (i#es)" "\<lambda>x j.  Ds (j # i # es) x" for i
     by unfold_locales (auto intro!: has_derivative_eq_intros Cons approachable)
   show ?case by (rule symmetric_second_derivative[OF `a \<in> G`])
-qed
-
-end
-
-locale bounded_higher_derivative = higher_derivative _ _ _ Ds
-  for Ds :: "'a::euclidean_space list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b::euclidean_space" +
-  fixes Bs::"nat \<Rightarrow> real"
-  assumes domain_notempty: "G \<noteq> {}"
-  assumes onorm_Ds: "\<And>a. a \<in> G \<Longrightarrow> i = length xs \<Longrightarrow> i \<le> n \<Longrightarrow>
-    onorm (Ds xs a) \<le> Bs i"
-begin
-
-lemma Bs_nonneg: assumes "i \<le> n" shows "Bs i \<ge> 0"
-proof -
-  from domain_notempty obtain g where g: "g \<in> G" by auto
-  show ?thesis
-    using domain_notempty assms
-    apply (simp add: ex_in_conv[symmetric])
-    apply (rule order_trans)
-    apply (rule onorm_pos_le)
-    apply (rule linear_Ds[OF _ `g \<in> G`])
-    defer
-    apply (rule onorm_Ds[OF `g \<in> G` length_replicate[symmetric]])
-    apply auto
-    done
 qed
 
 end

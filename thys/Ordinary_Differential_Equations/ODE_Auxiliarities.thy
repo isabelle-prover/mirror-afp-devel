@@ -42,24 +42,6 @@ lemma scaleR_dist_distrib_left:
 lemma ex_norm_eq_1: "\<exists>x. norm (x::'a::euclidean_space) = 1"
   by (metis vector_choose_size zero_le_one)
 
-lemma onorm_norm1:
-  fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space"
-  assumes linear: "linear f"
-  assumes n1: "\<And>x. norm x = 1 \<Longrightarrow> norm (f x) \<le> b"
-  shows "onorm f \<le> b"
-proof (rule onorm[OF linear], safe, cases)
-  fix x::'a
-  assume "x \<noteq> 0"
-  have "norm (f x) = norm (f ((norm x *\<^sub>R inverse (norm x) *\<^sub>R x)))"
-    by (simp add: inverse_eq_divide)
-  also have "\<dots> = norm x * norm (f (inverse (norm x) *\<^sub>R x))"
-    by (subst linear_cmul[OF linear]) simp
-  also have "\<dots> \<le> norm x * b"
-    by (auto intro!: mult_left_mono n1 simp: inverse_eq_divide `x \<noteq> 0`)
-  finally show "norm (f x) \<le> b * norm x" by (simp add: ac_simps)
-qed (simp add: linear_0[OF linear])
-
-
 subsection {* Euclidean Components *}
 
 lemma sqrt_le_rsquare:
@@ -401,7 +383,7 @@ lemma taylor_up_within:
     ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. c < t & t < b &
-    f b = setsum (%m. (diff m c / real (fact m)) * (b - c)^m) {0..<n} +
+    f b = (\<Sum>m<n. (diff m c / real (fact m)) * (b - c)^m)+
       (diff n t / real (fact n)) * (b - c)^n" (is "?taylor f diff")
 proof -
   from exists_linear_continuation[of a b, OF DERIV]
@@ -423,12 +405,12 @@ lemma taylor_up_within_vector:
     ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. (\<forall>i\<in>Basis::'a set. c < t i & t i < b) \<and>
-    f b = setsum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R real (fact m))) {0..<n} +
+    f b = setsum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R real (fact m))) {..<n} +
       setsum (\<lambda>x. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R real (fact n)) \<bullet> x) *\<^sub>R x) Basis"
 proof -
   obtain t where t: "\<forall>i\<in>Basis::'a set. t i > c \<and> t i < b \<and>
     f b \<bullet> i =
-      (\<Sum>m = 0..<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
+      (\<Sum>m<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
       diff n (t i) \<bullet> i / real (fact n) * (b - c) ^ n"
   proof (atomize_elim, rule bchoice, safe)
     fix i::'a
@@ -439,12 +421,12 @@ proof -
       using DERIV by (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def)
     from taylor_up_within[OF INIT(1) DERIV_0 DERIV_Suc INTERV]
     show "\<exists>t>c. t < b \<and> f b \<bullet> i =
-      (\<Sum>m = 0..<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
+      (\<Sum>m<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
       diff n t \<bullet> i / real (fact n) * (b - c) ^ n" by simp
   qed
   have "f b = (\<Sum>i\<in>Basis. (f b \<bullet> i) *\<^sub>R i)" by (rule euclidean_representation[symmetric])
   also have "\<dots> =
-      (\<Sum>i\<in>Basis. ((\<Sum>m = 0..<n. (b - c) ^ m *\<^sub>R (diff m c /\<^sub>R real (fact m))) \<bullet> i) *\<^sub>R i) +
+      (\<Sum>i\<in>Basis. ((\<Sum>m<n. (b - c) ^ m *\<^sub>R (diff m c /\<^sub>R real (fact m))) \<bullet> i) *\<^sub>R i) +
       (\<Sum>x\<in>Basis. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R real (fact n)) \<bullet> x) *\<^sub>R x)"
     using t by (simp add: setsum.distrib inner_setsum_left inverse_eq_divide algebra_simps)
   finally show ?thesis using t by (auto simp: euclidean_representation)
@@ -603,6 +585,7 @@ lemma trunc_err_eq_zero_iff:
 lemma mantissa_Float_0[simp]: "mantissa (Float 0 e) = 0"
   by (metis float_of_real float_zero mantissa_eq_zero_iff zero_float_def)
 
+
 subsection {* Lists *}
 
 lemma listsum_nonneg:
@@ -616,6 +599,7 @@ proof -
   finally show ?thesis .
 qed
 
+
 subsection {* Set(sum) *}
 
 lemma setsum_eq_nonzero: "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) = (\<Sum>a\<in>{a\<in>A. f a \<noteq> 0}. f a)"
@@ -624,41 +608,6 @@ lemma setsum_eq_nonzero: "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) = (\<S
 lemma singleton_subsetI:"i \<in> B \<Longrightarrow> {i} \<subseteq> B"
   by auto
 
-subsection {* Operator norm *}
-
-lemma onorm_eqI:
-  assumes "norm (f y) = x" "norm y = 1"
-  assumes "\<And>y. norm y = 1 \<Longrightarrow> norm (f y) \<le> x"
-  shows "onorm f = x"
-  using assms
-  by (auto intro!: cSup_eq_maximum simp: onorm_def SUP_def simp del: Sup_image_eq)
-
-lemma onorm_snd:
-  "onorm (snd::('a::euclidean_space*'b::euclidean_space \<Rightarrow> 'b)) = 1"
-proof -
-  obtain b::'b where "b \<in> Basis" by (metis all_not_in_conv nonempty_Basis)
-  hence "norm (snd (0, b)) = 1" "norm (0, b) = 1" by (auto simp: norm_prod_def)
-  thus ?thesis
-    by (rule onorm_eqI) (metis norm_prod_def real_sqrt_sum_squares_ge2)
-qed
-
-lemma onorm_fst:
-  "onorm (fst::('a::euclidean_space*'b::euclidean_space \<Rightarrow> 'a)) = 1"
-proof -
-  obtain b::'a where "b \<in> Basis" by (metis all_not_in_conv nonempty_Basis)
-  hence "norm (fst (b, 0)) = 1" "norm (b, 0) = 1" by (auto simp: norm_prod_def)
-  thus ?thesis
-    by (rule onorm_eqI) (metis norm_prod_def real_sqrt_sum_squares_ge1)
-qed
-
-lemma onorm_cmul:
-  assumes "bounded_linear f"
-  shows "onorm (\<lambda>x::'a::euclidean_space. c *\<^sub>R x) = abs c"
-proof -
-  from vector_choose_size[of 1] obtain x::'a where "norm (c *\<^sub>R x) = abs c" "norm x = 1" by auto
-  thus ?thesis
-    by (rule onorm_eqI) simp
-qed
 
 subsection {* Max *}
 

@@ -86,7 +86,7 @@ lemma
   assumes "H \<noteq> 0"
   assumes line_in_G: "line ` {0..1} \<subseteq> G"
   shows "\<exists>tt\<in>Basis\<rightarrow>{0<..<1}.
-    f (X + H) = (\<Sum>m = 0..<Suc n. (diff m X /\<^sub>R real (fact m))) +
+    f (X + H) = (\<Sum>m<Suc n. (diff m X /\<^sub>R real (fact m))) +
       (\<Sum>x\<in>Basis. ((diff (Suc n) (line (tt x)) /\<^sub>R real (fact (Suc n))) \<bullet> x) *\<^sub>R x)"
 proof -
   from H_nonneg have "sumH \<ge> 0" by (auto simp: sumH_def intro!: setsum_nonneg)
@@ -157,7 +157,7 @@ proof -
     OF zero_less_Suc[of n] diff_0 diff_Suc order_refl zero_less_one]
   obtain tt where "(\<forall>i\<in>Basis. 0 < tt i \<and> tt i < 1)"
     "f (X + H) =
-      (\<Sum>m = 0..<Suc n. (diff m X /\<^sub>R real (fact m))) +
+      (\<Sum>m<Suc n. (diff m X /\<^sub>R real (fact m))) +
       (\<Sum>x\<in>Basis. ((diff (Suc n) (line (tt x)) /\<^sub>R real (fact (Suc n))) \<bullet> x) *\<^sub>R x)"
     by (auto simp: line_def)
   thus ?thesis by auto

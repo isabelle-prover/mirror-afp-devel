@@ -1157,9 +1157,7 @@ proof -
     interpret bounded_linear "f' (t, x)"
       by (auto simp: i_def algebra_simps intro!: has_derivative_bounded_linear[OF f'[OF `t \<in> T` `x \<in> X`]])
     show "onorm (f' (t, x)) \<le> B"
-    proof (rule onorm, safe)
-      show "linear (f' (t, x))" by fact
-    next
+    proof (rule onorm_le, safe)
       fix a b
       from scaleR[of "inverse (norm (a, b))" "(a, b)"]
       have "norm (f' (t, x) (a, b)) =
@@ -1202,8 +1200,11 @@ proof (unfold_locales, rule lipschitzI)
 next
   from nonempty_domains obtain t x where t: "t \<in> T" and x: "x \<in> X" by auto
   show "0 \<le> onorm_bound"
-    unfolding onorm_bound
-    by (rule order_trans[OF onorm_pos_le onorm_bound[OF t x]], rule derivative_is_linear[OF f'[OF t x]])
+    apply (rule order_trans)
+    apply (rule onorm_pos_le)
+    apply (rule has_derivative_bounded_linear[OF f'[OF t x]])
+    apply (rule onorm_bound[OF t x])
+    done
 qed
 
 end
