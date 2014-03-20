@@ -118,25 +118,25 @@ next
   fix v s t assume "le_rexp (Star s) t" thus "le_rexp (Atom v) t" by (cases t) auto
 next
   fix r s t
-  assume IH: "\<And>t. local.le_rexp r s \<Longrightarrow> local.le_rexp s t \<Longrightarrow> local.le_rexp r t"
+  assume IH: "\<And>t. le_rexp r s \<Longrightarrow> le_rexp s t \<Longrightarrow> le_rexp r t"
     and "le_rexp (Star r) (Star s)" "le_rexp (Star s) t"
-  thus "local.le_rexp (Star r) t" by (cases t) auto
+  thus "le_rexp (Star r) t" by (cases t) auto
 next
   fix r s1 s2 t assume "le_rexp (Plus s1 s2) t" thus "le_rexp (Star r) t" by (cases t) auto
 next
   fix r s1 s2 t assume "le_rexp (Times s1 s2) t" thus "le_rexp (Star r) t" by (cases t) auto
 next
   fix r1 r2 s1 s2 t
-  assume "\<And>t. r1 = s1 \<Longrightarrow> local.le_rexp r2 s2 \<Longrightarrow> local.le_rexp s2 t \<Longrightarrow> local.le_rexp r2 t"
-         "\<And>t. r1 \<noteq> s1 \<Longrightarrow> local.le_rexp r1 s1 \<Longrightarrow> local.le_rexp s1 t \<Longrightarrow> local.le_rexp r1 t"
+  assume "\<And>t. r1 = s1 \<Longrightarrow> le_rexp r2 s2 \<Longrightarrow> le_rexp s2 t \<Longrightarrow> le_rexp r2 t"
+         "\<And>t. r1 \<noteq> s1 \<Longrightarrow> le_rexp r1 s1 \<Longrightarrow> le_rexp s1 t \<Longrightarrow> le_rexp r1 t"
          "le_rexp (Plus r1 r2) (Plus s1 s2)" "le_rexp (Plus s1 s2) t"
   thus "le_rexp (Plus r1 r2) t" by (cases t) (auto split: split_if_asm intro: le_rexp_antisym)
 next
   fix r1 r2 s1 s2 t assume "le_rexp (Times s1 s2) t" thus "le_rexp (Plus r1 r2) t" by (cases t) auto
 next
   fix r1 r2 s1 s2 t
-  assume "\<And>t. r1 = s1 \<Longrightarrow> local.le_rexp r2 s2 \<Longrightarrow> local.le_rexp s2 t \<Longrightarrow> local.le_rexp r2 t"
-         "\<And>t. r1 \<noteq> s1 \<Longrightarrow> local.le_rexp r1 s1 \<Longrightarrow> local.le_rexp s1 t \<Longrightarrow> local.le_rexp r1 t"
+  assume "\<And>t. r1 = s1 \<Longrightarrow> le_rexp r2 s2 \<Longrightarrow> le_rexp s2 t \<Longrightarrow> le_rexp r2 t"
+         "\<And>t. r1 \<noteq> s1 \<Longrightarrow> le_rexp r1 s1 \<Longrightarrow> le_rexp s1 t \<Longrightarrow> le_rexp r1 t"
          "le_rexp (Times r1 r2) (Times s1 s2)" "le_rexp (Times s1 s2) t"
   thus "le_rexp (Times r1 r2) t" by (cases t) (auto split: split_if_asm intro: le_rexp_antisym)
 qed auto

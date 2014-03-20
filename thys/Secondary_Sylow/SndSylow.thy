@@ -308,7 +308,7 @@ proof -
       with NG g Qsize have "conjugation_action (p ^ a) g Q = P" unfolding conjugation_action_def using subgroup_imp_subset by force
       with g NfixesQ show "Q = P" by auto
     qed
-    moreover from finite_G PSize have "P \<in> conjP.fixed_points" using local.P_fixed_point_of_P_conj by auto
+    moreover from finite_G PSize have "P \<in> conjP.fixed_points" using P_fixed_point_of_P_conj by auto
     ultimately have "conjP.fixed_points = {P}" by fastforce
     hence one:"card conjP.fixed_points = 1" by (auto simp: card_Suc_eq)
     with prime_p have "card conjP.fixed_points < p" unfolding prime_nat_def by auto

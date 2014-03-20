@@ -1350,7 +1350,7 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
     have ss: "(quote_all p' (insert i V))
               \<turnstile> PfP (ssubst \<lfloor>A\<rfloor>(insert i V) (insert i V) F') IMP 
                 PfP (ssubst \<lfloor>Ex i A\<rfloor>(insert i V) (insert i V) F')" 
-      apply (rule local.qp'.quote_all_MonPon_PfP_ssubst [OF SpecI])
+      apply (rule qp'.quote_all_MonPon_PfP_ssubst [OF SpecI])
       using ExI  apply auto
       done
     hence "insert A (quote_all p' (insert i V)) 
@@ -1366,12 +1366,12 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
       by (auto simp: insert_commute ss_simp qa_p')
     hence Exi': "insert (Ex i' (QuoteP (Var i) (Var i'))) (insert A (quote_all p V)) 
                  \<turnstile> PfP (ssubst \<lfloor>Ex i A\<rfloor>V V F)"
-      by (auto intro!: local.qp.fresh_ssubst_fm) (auto simp: ExI i' fresh_quote_all_mem)
+      by (auto intro!: qp.fresh_ssubst_fm) (auto simp: ExI i' fresh_quote_all_mem)
     have "insert A (quote_all p V) \<turnstile> PfP (ssubst \<lfloor>Ex i A\<rfloor>V V F)" 
       using i'  by (auto intro: cut0 [OF exists_QuoteP Exi']) 
     thus "insert (Ex i A) (quote_all p V) \<turnstile> PfP (ssubst \<lfloor>Ex i A\<rfloor>V V F)"
       apply (rule Ex_E, simp)
-      apply (rule local.qp.fresh_ssubst_fm)  using i ExI
+      apply (rule qp.fresh_ssubst_fm)  using i ExI
       apply (auto simp: fresh_quote_all_mem)
       done
    next

@@ -1772,7 +1772,7 @@ proof
         and tt': "spr_jview a t' = spr_jview a t"
         and aec': "toSet aec' = (rel_ext (envObs_rel (envObs a)) \<inter> set (spr_trans (fst ec) (snd ec))
                                                        \<times> set (spr_trans (fst ec) (snd ec))) `` {(tFirst t', s)}"
-        and cec': "cec' = ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aec') (fromList (local.spr_trans (fst ec) (fst ec)))"
+        and cec': "cec' = ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aec') (fromList (spr_trans (fst ec) (fst ec)))"
       unfolding spr_simTrans_def
       using spr_trans_aec[OF assms]
       apply (auto split: split_split_asm)
@@ -1874,7 +1874,7 @@ next
     with t'sC tt' xt's show "x \<in> ?lhs"
       unfolding spr_simTrans_def
       apply clarsimp
-      apply (rule_tac x="(ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC (fromList rx)) (fromList (local.spr_trans (fst ec) (fst ec))), fromList rx)" in image_eqI)
+      apply (rule_tac x="(ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC (fromList rx)) (fromList (spr_trans (fst ec) (fst ec))), fromList rx)" in image_eqI)
        prefer 2
        apply (rule_tac x="rx" in image_eqI)
         apply simp
@@ -2189,7 +2189,7 @@ definition
 lemma (in FiniteDetBroadcastEnvironment)
   "mkSPRDetAuto agents jkbp envInit envAction envTrans envVal envObsC envObs
  = (\<lambda>a. alg_mk_auto acts_MapOps trans_MapOps
-           (local.spr_simInit a)
+           (spr_simInit a)
            (SPRDetAutoDFS agents jkbp envInit envAction envTrans envVal envObsC envObs a))"
   unfolding mkSPRDetAuto_def mkAlgAuto_def SPRDetAutoDFS_def alg_mk_auto_def by (simp add: Let_def)
 

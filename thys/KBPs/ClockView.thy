@@ -1080,7 +1080,7 @@ lemma clock_trans_aux:
       and ec: "clock_simAbs ec = Clock.sim_equiv_class a' t'"
       and tC: "t \<in> Clock.jkbpCn (tLength t')"
       and eact: "eact \<in> set (envAction (tLast t))"
-  shows "(aact \<in> set (listToFuns (\<lambda>a. local.clock_simAction a (fst ec, clock_knowledge envObs (fst ec) a (tLast t)))
+  shows "(aact \<in> set (listToFuns (\<lambda>a. clock_simAction a (fst ec, clock_knowledge envObs (fst ec) a (tLast t)))
                             (toList agents)))
      \<longleftrightarrow> (\<forall>a. aact a \<in> set (jAction (Clock.MCn (tLength t')) t a))"
   using assms
@@ -1267,7 +1267,7 @@ next
     apply (clarsimp simp: toSet_def[symmetric] Set.image_def clock_simAbs_def
                 simp del: split_paired_Ex)
 
-    apply (rule_tac x="clock_mkSuccs (envObs a) (envObs a s) (local.clock_trans aa aa)" in exI)
+    apply (rule_tac x="clock_mkSuccs (envObs a) (envObs a s) (clock_trans aa aa)" in exI)
     apply safe
       apply auto[1]
      apply (rule_tac x="tLast x" in exI)

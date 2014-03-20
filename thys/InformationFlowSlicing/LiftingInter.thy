@@ -1061,7 +1061,7 @@ proof -
       and "knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "i < length ins" and "(p, ins, outs) \<in> set procs"
       and "pred (knd a) s" and "pred (knd a) s'"
       and "\<forall>V\<in>lift_ParamUses ParamUses (src a) ! i. state_val s V = state_val s' V"
-    thus "params fs (state_val s) ! i = local.CFG.params fs (state_val s') ! i"
+    thus "params fs (state_val s) ! i = CFG.params fs (state_val s') ! i"
     proof(induct rule:lift_valid_edge.induct)
       case (lve_edge a e)
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
