@@ -269,7 +269,7 @@ proof -
               rule ker_in_span)
         also have "... = (\<Sum>x\<in>W. ((g \<circ> f) x) *\<^sub>R f x)" unfolding o_def ..
         also have "... = f (\<Sum>x\<in>W. ((g \<circ> f) x) *\<^sub>R x)" 
-          using linear_setsum_mul [symmetric, OF l finite_W] .
+          using linear_setsum_mul [symmetric, OF l] .
         finally have f_sum_zero:"f (\<Sum>x\<in>W. (g \<circ> f) x *\<^sub>R x) = 0" by (rule sym)
         hence "(\<Sum>x\<in>W. (g \<circ> f) x *\<^sub>R x) \<in> ker_f" unfolding ker_f_def by simp
         hence "\<exists>h. (\<Sum>v\<in>B. h v *\<^sub>R v) = (\<Sum>x\<in>W. (g \<circ> f) x *\<^sub>R x)"
