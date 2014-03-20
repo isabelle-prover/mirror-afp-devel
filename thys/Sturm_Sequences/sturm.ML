@@ -170,13 +170,13 @@ struct
          | _ => Seq.empty
       end
 
-    fun sturm_tac ctxt keep_goal i =
-        prune_params_tac ctxt
-        THEN TRY (Object_Logic.full_atomize_tac ctxt i)
-        THEN TRY (EqSubst.eqsubst_tac ctxt [1] @{thms sturm_imp_conv} i)
-        THEN TRY (convert_meta_spec_tac ctxt i)
-        THEN TRY (Object_Logic.full_atomize_tac ctxt i)
-        THEN sturm_preprocess_tac ctxt i
-        THEN sturm_main_tac ctxt keep_goal i
+    fun sturm_tac ctxt keep_goal = SELECT_GOAL
+       (prune_params_tac ctxt
+        THEN TRY (Object_Logic.full_atomize_tac ctxt 1)
+        THEN TRY (EqSubst.eqsubst_tac ctxt [1] @{thms sturm_imp_conv} 1)
+        THEN TRY (convert_meta_spec_tac ctxt 1)
+        THEN TRY (Object_Logic.full_atomize_tac ctxt 1)
+        THEN sturm_preprocess_tac ctxt 1
+        THEN sturm_main_tac ctxt keep_goal 1)
 
 end;
