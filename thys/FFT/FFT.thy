@@ -173,6 +173,7 @@ proof -
   txt {* Main part of the proof *}
   have "(\<Sum>i=0..<n. (root n ^ k) ^ i) =
     ((root n ^ k) ^ n - 1) / (root n ^ k - 1)"
+    unfolding atLeast0LessThan
     apply (rule geometric_sum)
     apply (unfold root_def)
     apply (simp add: DeMoivre)
@@ -200,6 +201,7 @@ proof -
   txt {* Main part of the proof *}
   have "(\<Sum>i=0..<n. ((1 / root n) ^ k) ^ i) =
     (((1 / root n) ^ k) ^ n - 1) / ((1 / root n) ^ k - 1)"
+    unfolding atLeast0LessThan
     apply (rule geometric_sum)
     apply (simp add: nonzero_inverse_eq_divide [THEN sym] root_nonzero)
     apply (unfold root_def)
