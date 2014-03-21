@@ -569,7 +569,7 @@ let
   (* FIXME: local version *)
   (* val (_, spec_ctxt') = Proof_Context.add_fixes constr_trms spec_ctxt *)
 
-  val thy' = Sign.add_consts_i constr_trms (Proof_Context.theory_of spec_ctxt)
+  val thy' = Sign.add_consts constr_trms (Proof_Context.theory_of spec_ctxt)
 in
   (dts', thy')
 end
@@ -591,7 +591,7 @@ let
 
 in
   (Local_Theory.exit_global lthy')
-  |> Sign.add_consts_i bn_funs'
+  |> Sign.add_consts bn_funs'
   |> pair (bn_funs', bn_eqs) 
 end 
 *}
