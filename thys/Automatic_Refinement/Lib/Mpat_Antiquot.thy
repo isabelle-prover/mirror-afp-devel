@@ -63,7 +63,7 @@ ML {*
   *)
 
   local
-    fun replace_dummy' (Const ("dummy_pattern", T)) i =
+    fun replace_dummy' (Const (@{const_name Pure.dummy_pattern}, T)) i =
           (Var (("_dummy_", i), T), i + 1)
       | replace_dummy' (Abs (x, T, t)) i =
           let val (t', i') = replace_dummy' t i
