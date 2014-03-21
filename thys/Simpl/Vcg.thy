@@ -118,7 +118,7 @@ syntax
   "_grds"          :: "[grd, grds] \<Rightarrow> grds" ("_,/ _" [999,1000] 1000)
   "_guards"        :: "grds \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" 
                                             ("(_/\<longmapsto> _)" [60, 21] 23)                                                           
-  "_quote"       :: "'b => ('a => 'b)"       (*("(.'(_').)" [0] 1000)*)
+  "_quote"       :: "'b => ('a => 'b)"
   "_antiquoteCur0"  :: "('a => 'b) => 'b"       ("\<acute>_" [1000] 1000)
   "_antiquoteCur"  :: "('a => 'b) => 'b"
   "_antiquoteOld0"  :: "('a => 'b) => 'a => 'b"       ("\<^bsup>_\<^esup>_" [1000,1000] 1000)
