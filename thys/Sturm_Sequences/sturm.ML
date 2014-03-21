@@ -66,7 +66,7 @@ struct
 
   fun sturm_card_eq_instantiate_tac ctxt _ thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("prop", _) $ prop => prop
+        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
                                 | _ => prop
         val prop = case prop of Const ("Pure.conjunction", _) $ 
                                     (Const ("Pure.term", _) $ _) $ prop => prop
@@ -89,7 +89,7 @@ struct
 
   fun sturm_card_eq_tac ctxt i thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("prop", _) $ prop => prop
+        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
                                 | _ => prop
         val prop = case prop of Const ("Pure.conjunction", _) $ 
                                     (Const ("Pure.term", _) $ _) $ prop => prop
@@ -125,7 +125,7 @@ struct
 
   fun sturm_prop_tac ctxt i thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("prop", _) $ prop => prop
+        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
                                  | _ => prop
         val prop = case prop of Const ("Pure.conjunction", _) $ 
                                     (Const ("Pure.term", _) $ _) $ prop => prop
@@ -140,7 +140,7 @@ struct
 
   fun sturm_main_tac ctxt keep_goal i thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("prop", _) $ prop => prop
+        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
                                | _  => prop
         val prop = case prop of Const ("Pure.conjunction", _) $ 
                                     (Const ("Pure.term", _) $ _) $ prop => prop

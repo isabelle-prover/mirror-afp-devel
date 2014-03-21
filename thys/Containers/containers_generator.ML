@@ -75,7 +75,7 @@ fun derive_none const sort mk_none typ_name thy =
 fun mk_is_c_dots ty dots = 
   let 
     val ity = Type (@{type_name itself}, [ty])
-    val it = Const (@{const_name "TYPE"},ity)
+    val it = Const (@{const_name Pure.type},ity)
     val res = Const (dots, ity --> @{typ bool}) $ it
   in res
 end

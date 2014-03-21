@@ -60,7 +60,7 @@ fun gen_thm decomp (t,ct) =
   in recomb (map (gen_thm decomp) (ts~~cts)) end;
 
 
-fun dest_prop (Const ("prop", _) $ P) = P
+fun dest_prop (Const (@{const_name Pure.prop}, _) $ P) = P
   | dest_prop t = raise TERM ("dest_prop", [t]);
 
 fun prem_of thm = #1 (Logic.dest_implies (dest_prop (prop_of thm)));
@@ -90,7 +90,7 @@ fun list_exists (vs, x) =
   fold_rev (fn (x, T) => fn P => HOLogic.exists_const T $ Abs (x, T, P)) vs x;
 
 fun spec' cv thm =
-  let (* thm = prop ((all x. P x) ==> Q), where "all" is meta or HOL *) 
+  let (* thm = Pure.prop ((all x. P x) ==> Q), where "all" is meta or HOL *) 
       val (ct1,ct2) = thm |> cprop_of |> Thm.dest_comb |> #2 
                       |> Thm.dest_comb |> #2 |> Thm.dest_comb;
   in
