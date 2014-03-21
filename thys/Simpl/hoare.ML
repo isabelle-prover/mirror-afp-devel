@@ -2023,7 +2023,7 @@ fun dest_hoare t =
     let
       val triple =
         (strip_qnt_body @{const_name "All"} o
-          HOLogic.dest_Trueprop o strip_qnt_body @{const_name all}) t;
+          HOLogic.dest_Trueprop o strip_qnt_body @{const_name Pure.all}) t;
     in
       dest_hoare_raw triple
     end;
@@ -2051,7 +2051,7 @@ fun get_aux_tvar rule =
 fun strip_vars t =
   let
     val bdy = (HOLogic.dest_Trueprop o Logic.strip_assums_concl) t;
-  in strip_qnt_vars @{const_name all} t @ strip_qnt_vars @{const_name All} bdy end;
+  in strip_qnt_vars @{const_name Pure.all} t @ strip_qnt_vars @{const_name All} bdy end;
 
 
 local
@@ -2125,7 +2125,7 @@ fun gen_context_thms ctxt thy mode params G T F =
         (* FIXME: Use future Proof_Context.rename_vars or make closed term and remove by hand *)
         (*
         fun free_params ps t = foldr (fn ((x,xT),t) => snd (variant_abs (x,xT,t))) (ps,t);
-        val PpQA' = mkCallQuadruple (strip_qnt_body "all" (free_params params (Term.list_all (vars,PpQA))));
+        val PpQA' = mkCallQuadruple (strip_qnt_body @{const_name Pure.all} (free_params params (Term.list_all (vars,PpQA))));
         *)
         val params' = (Variable.variant_frees ctxt [PpQA] params);
         val bnds = map Bound (0 upto (length vars  - 1));
@@ -3487,14 +3487,14 @@ in
 fun solve_modifies_tac ctxt state_kind state_space i =
   let
     val thy = Proof_Context.theory_of ctxt;
-    fun is_split_state (trm as (Const (@{const_name all},_)$Abs(x,T,t))) =
+    fun is_split_state (trm as (Const (@{const_name Pure.all},_)$Abs(x,T,t))) =
       if state_space trm <> 0 then
         try (fn () =>
           let
             fun seed (upd$v$st) = seed st
               | seed (globals$t) = (1,t) (* split only state pair *)
               | seed t = (~1,t) (* split globals completely *)
-            val all_vars = strip_qnt_vars @{const_name all} t;
+            val all_vars = strip_qnt_vars @{const_name Pure.all} t;
             val concl = HOLogic.dest_Trueprop (Logic.strip_assums_concl t);
             val ex_vars = strip_qnt_vars @{const_name Ex} concl;
             val state = Bound (length all_vars + length ex_vars);
@@ -3668,7 +3668,7 @@ fun get_state_space_in_subset_eq thy t =
   try (fn () =>
     let
       val (subset_eq,_) =
-        (strip_comb o HOLogic.dest_Trueprop o strip_qnt_body @{const_name all}) t;
+        (strip_comb o HOLogic.dest_Trueprop o strip_qnt_body @{const_name Pure.all}) t;
       val Ts = map snd (strip_vars t);
       val T = fastype_of1 (Ts,subset_eq);
       val Type (_, [_,Type (_, [Type (_, [state_spaceT]), _])]) = T; 

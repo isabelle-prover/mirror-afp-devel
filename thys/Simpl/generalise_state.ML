@@ -107,7 +107,7 @@ fun spec' cv thm =
                  (cterm_of thy (Var (sV,vT)),cv)])
                 spec
            end
-      | Const ("all",_)
+      | Const (@{const_name Pure.all},_)
         => let 
              val thy = theory_of_thm thm; 
              val (Var (sP,_)$Var (sV,sVT)) = concl_of meta_spec;
@@ -173,9 +173,9 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
          val cf = snd (Thm.dest_comb ct);
          val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
          val Free (x',_) = term_of cx';
-         val (Const ("all",_)$Abs (s,_,_)) = genAll |> prems_of |> hd |> dest_prop;
+         val (Const (@{const_name Pure.all},_)$Abs (s,_,_)) = genAll |> prems_of |> hd |> dest_prop;
          val genAll' = Drule.rename_bvars [(s,x)] genAll;
-         val (Const ("all",_)$Abs (s',_,_)) = genAllShift |> prems_of |> hd |> dest_prop;
+         val (Const (@{const_name Pure.all},_)$Abs (s',_,_)) = genAllShift |> prems_of |> hd |> dest_prop;
          val genAllShift' = Drule.rename_bvars [(s',x)] genAllShift;
        in if SplitState.isState (allc$Abs abst)
           then ([term_of cb],[cb], fn [thm] => 
@@ -196,7 +196,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
          val cf = snd (Thm.dest_comb ct);
          val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
          val Free (x',_) = term_of cx';
-         val (Const ("all",_)$Abs (s,_,_)) = genEx |> prems_of |> hd |> dest_prop;
+         val (Const (@{const_name Pure.all},_)$Abs (s,_,_)) = genEx |> prems_of |> hd |> dest_prop;
          val genEx' = Drule.rename_bvars [(s,x)] genEx;
        in if SplitState.isState (exc$Abs abst)
           then ([term_of cb],[cb], fn [thm] => 
@@ -218,7 +218,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
                val genImp' = Thm.instantiate ([],[(X,cP)]) genImp;
              in genImp' SIMPLE_OF [thm] end)
        end 
-  | decomp ctxt (Const ("==>",_)$P$Q, ct) =
+  | decomp ctxt (Const (@{const_name Pure.imp},_)$P$Q, ct) =
        let 
          val [cP,cQ] = (snd (Drule.strip_comb ct));
        in ([Q],[cQ],fn [thm] =>
@@ -230,15 +230,15 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
                val genImpl' = Thm.instantiate ([],[(X,cP)]) genImpl;
              in genImpl' SIMPLE_OF [thm] end) 
        end
-  | decomp ctxt ((allc as Const ("all",_)) $ f, ct) =
+  | decomp ctxt ((allc as Const (@{const_name Pure.all},_)) $ f, ct) =
        let 
          val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
          val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
          val Free (x',_) = term_of cx';
-         val (Const ("all",_)$Abs (s,_,_)) = gen_all |> prems_of |> hd |> dest_prop;
+         val (Const (@{const_name Pure.all},_)$Abs (s,_,_)) = gen_all |> prems_of |> hd |> dest_prop;
          val gen_all' = Drule.rename_bvars [(s,x)] gen_all;
-         val (Const ("all",_)$Abs (s',_,_)) = gen_allShift |> prems_of |> hd |> dest_prop;
+         val (Const (@{const_name Pure.all},_)$Abs (s',_,_)) = gen_allShift |> prems_of |> hd |> dest_prop;
          val gen_allShift' = Drule.rename_bvars [(s',x)] gen_allShift;
        in if SplitState.isState (allc$Abs abst)
           then ([term_of cb],[cb], fn [thm] => 

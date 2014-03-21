@@ -298,7 +298,7 @@ fun fresh_args ctxt f =
 (* decompses a formula into params, premises and a conclusion *)
 fun strip_full_horn trm =
   let
-    fun strip_outer_params (Const ("all", _) $ Abs (a, T, t)) = strip_outer_params t |>> cons (a, T)
+    fun strip_outer_params (Const (@{const_name Pure.all}, _) $ Abs (a, T, t)) = strip_outer_params t |>> cons (a, T)
     | strip_outer_params B = ([], B)
 
     val (params, body) = strip_outer_params trm

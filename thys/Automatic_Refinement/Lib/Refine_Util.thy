@@ -198,7 +198,7 @@ ML {*
       | is_TFree _ = false
 
     fun is_def_thm thm = case thm |> prop_of of
-      Const (@{const_name "=="},_)$_$_ => true | _ => false
+      Const (@{const_name "Pure.eq"},_)$_$_ => true | _ => false
 
 
     type tactic' = int -> tactic
@@ -324,8 +324,8 @@ ML {*
     (* Resolve with premises. Copied and adjusted from Goal.assume_rule_tac. *)
     fun rprems_tac ctxt = Goal.norm_hhf_tac ctxt THEN' CSUBGOAL (fn (goal, i) =>
       let
-        fun non_atomic (Const ("==>", _) $ _ $ _) = true
-          | non_atomic (Const ("all", _) $ _) = true
+        fun non_atomic (Const (@{const_name Pure.imp}, _) $ _ $ _) = true
+          | non_atomic (Const (@{const_name Pure.all}, _) $ _) = true
           | non_atomic _ = false;
 
         val ((_, goal'), ctxt') = Variable.focus_cterm goal ctxt;

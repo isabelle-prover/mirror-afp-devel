@@ -183,14 +183,14 @@ ML {*
              (Raw_Simplifier.rewrite ctxt true @{thms meta_same_imp_rule});
     in thm' end;
 
-    fun dest_def_eq (Const (@{const_name "=="},_)$l$r) = (l,r)
+    fun dest_def_eq (Const (@{const_name Pure.eq},_)$l$r) = (l,r)
     | dest_def_eq (Const (@{const_name HOL.Trueprop},_)
                     $(Const (@{const_name HOL.eq},_)$l$r)) = (l,r)
     | dest_def_eq t = raise TERM ("No definitional equation",[t]);
 
     fun norm_def_thm thm =
       case concl_of thm of
-        (Const (@{const_name "=="},_)$_$_) => thm
+        (Const (@{const_name Pure.eq},_)$_$_) => thm
       | _ => thm RS eq_reflection;
 
     val dt_lhs = dest_def_eq #> fst;

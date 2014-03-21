@@ -32,8 +32,8 @@ fun minus_permute_elim p thm =
 
 (* fixme: move to nominal_library *)
 fun real_head_of (@{term Trueprop} $ t) = real_head_of t
-  | real_head_of (Const ("==>", _) $ _ $ t) = real_head_of t
-  | real_head_of (Const (@{const_name all}, _) $ Abs (_, _, t)) = real_head_of t
+  | real_head_of (Const (@{const_name Pure.imp}, _) $ _ $ t) = real_head_of t
+  | real_head_of (Const (@{const_name Pure.all}, _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of (Const (@{const_name All}, _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of (Const ("HOL.induct_forall", _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of t = head_of t

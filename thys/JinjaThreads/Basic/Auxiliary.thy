@@ -412,7 +412,7 @@ by(simp)
 (* rearrange parameters and premises to allow application of one-point-rules *)
 (* adapted from Tools/induct.ML and Isabelle Developer Workshop 2010 *)
 
-simproc_setup rearrange_eqs ("all t") = {* 
+simproc_setup rearrange_eqs ("Pure.all t") = {* 
 let
   fun swap_params_conv ctxt i j cv =
     let

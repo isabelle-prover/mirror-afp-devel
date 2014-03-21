@@ -112,7 +112,7 @@ fun key_of_raw_thm context thm =
          Syntax.string_of_term (Context.proof_of context) (prop_of thm))
   in
     case prop_of thm of
-      Const ("==", _) $ (Const (@{const_name "permute"}, _) $ p $ c) $ c' =>
+      Const (@{const_name Pure.eq}, _) $ (Const (@{const_name "permute"}, _) $ p $ c) $ c' =>
         if is_Var p andalso is_fixed (Context.proof_of context) c andalso c aconv c' then
           c
         else
@@ -256,7 +256,7 @@ in
 fun eqvt_transform ctxt thm =
   (case prop_of thm of @{const "Trueprop"} $ _ =>
     thm_4_of_1 ctxt thm
-  | @{const "==>"} $ _ $ _ =>
+  | @{const Pure.imp} $ _ $ _ =>
     thm_4_of_1 ctxt (thm_1_of_2 ctxt thm)
   | _ =>
     error msg)
@@ -279,7 +279,7 @@ fun eqvt_and_raw_transform ctxt thm =
     in
       (th', thm_4_of_1 ctxt thm)
     end
-  | @{const "==>"} $ _ $ _ =>
+  | @{const Pure.imp} $ _ $ _ =>
     let
       val th1 = thm_1_of_2 ctxt thm
     in

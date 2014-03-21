@@ -291,7 +291,7 @@ fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
   end
 
 
-fun forall_elim s (Const ("all", _) $ Abs (_, _, t)) = subst_bound (s, t)
+fun forall_elim s (Const (@{const_name Pure.all}, _) $ Abs (_, _, t)) = subst_bound (s, t)
   | forall_elim _ t = t
 
 val forall_elim_list = fold forall_elim
@@ -316,7 +316,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
     val acc_prems = 
      map prop_of induct_thms
      |> map2 forall_elim_list argss 
-     |> map (strip_qnt_body "all")
+     |> map (strip_qnt_body @{const_name Pure.all})
      |> map (curry Logic.nth_prem 1)
      |> map HOLogic.dest_Trueprop
 
