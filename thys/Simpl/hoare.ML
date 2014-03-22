@@ -78,37 +78,16 @@ val use_cond_inv_modifies = Attrib.setup_config_bool @{binding hoare_use_cond_in
 
 val hoare_trace = Attrib.setup_config_bool @{binding hoare_trace} (K false);
 
-val call_prfx = "_Call_";
-val call_ass_prfx = "_CallAss_";
-val guarded_call_prfx = "_GuardedCall_";
-val guarded_call_ass_prfx = "_GuardedCallAss_";
 val body_def_sfx = "_body";
-val actualsT  = Type ("Vcg.actuals",[]);
-val callT     = dummyT (* Type ("Vcg.call",[]) *);
 
 val programN = "\<Gamma>";
-val hoareL = "hoare";
 val hoare_ctxtL = "hoare";
-val specL = "_spec";
-val implL = "_impl";
-val varL = "_vars";
 val procL = "_proc";
 
 val bodyP = "_impl";
 
-val hoareN = "hoare";
-val callN = "Language.Call";
-val whileN = "Language.com.While";
-val implsfx = "_spec";
 val modifysfx = "_modifies";
-val modexN = "Hoare.mex";
-val modeqN = "Hoare.meq";
 
-val updatesfx = "_update";
-val hoarePartialN = "HoarePartial";
-val hoareTotalN = "HoareTotal";
-val modify_callN = "HoarePartial.ModifyReturnNoAbr";
-val modretN = "return'";
 val KNF = @{const_name StateFun.K_statefun};
 
 
@@ -159,14 +138,6 @@ val Guard = get_rule GuardPartial GuardTotal;
 val GuardStripPartial = @{thm HoarePartial.GuardStrip};
 val GuardStripTotal = @{thm HoareTotal.GuardStrip};
 val GuardStrip = get_rule GuardStripPartial GuardStripTotal;
-
-val GuardStripUNIVPartial = UNIV_I RSN (3,GuardStripPartial);
-val GuardStripUNIVTotal   = UNIV_I RSN (3,GuardStripTotal);
-val GuardStripUNIV = get_rule GuardStripUNIVPartial GuardStripUNIVTotal;
-
-val GuardSwapPartial = @{thm HoarePartial.GuardSwap};
-val GuardSwapTotal = @{thm HoareTotal.GuardSwap};
-val GuardSwap = get_rule GuardSwapPartial GuardSwapTotal;
 
 val GuaranteeAsGuardPartial = @{thm HoarePartial.GuaranteeAsGuard};
 val GuaranteeAsGuardTotal = @{thm HoareTotal.GuaranteeAsGuard};
@@ -317,10 +288,6 @@ val FCallPartial = @{thm HoarePartial.FCall};
 val FCallTotal = @{thm HoareTotal.FCall};
 val FCall = get_rule FCallPartial FCallTotal;
 
-val ProcRecPartial = @{thm HoarePartial.ProcRecList};
-val ProcRecTotal = @{thm HoareTotal.ProcRecList};
-val ProcRec = get_rule ProcRecPartial ProcRecTotal;
-
 val ProcRecPartialSpecs = @{thm HoarePartial.ProcRecSpecs};
 val ProcRecTotalSpecs = @{thm HoareTotal.ProcRecSpecs};
 val ProcRecSpecs = get_rule ProcRecPartialSpecs ProcRecTotalSpecs;
@@ -394,10 +361,6 @@ val AugmentContextPartial = @{thm HoarePartial.augment_context'};
 val AugmentContextTotal = @{thm HoareTotal.augment_context'};
 val AugmentContext = get_rule AugmentContextPartial AugmentContextTotal;
 
-val AugmentFaultsUNIVPartial = @{thm HoarePartial.augment_FaultsUNIV};
-val AugmentFaultsUNIVTotal = @{thm HoareTotal.augment_FaultsUNIV};
-val AugmentFaultsUNIV = get_rule AugmentFaultsUNIVPartial AugmentFaultsUNIVTotal;
-
 val AugmentEmptyFaultsPartial = @{thm HoarePartial.augment_emptyFaults};
 val AugmentEmptyFaultsTotal = @{thm HoareTotal.augment_emptyFaults};
 val AugmentEmptyFaults = get_rule AugmentEmptyFaultsPartial AugmentEmptyFaultsTotal;
@@ -422,17 +385,9 @@ val LemAnnoNoAbruptPartial = @{thm HoarePartial.LemAnnoNoAbrupt};
 val LemAnnoNoAbruptTotal = @{thm HoareTotal.LemAnnoNoAbrupt};
 val LemAnnoNoAbrupt = get_rule LemAnnoNoAbruptPartial LemAnnoNoAbruptTotal;
 
-val CombineStripPartial = @{thm HoarePartial.CombineStrip''};
-val CombineStripTotal = @{thm HoareTotal.CombineStrip''};
-val CombineStrip = get_rule CombineStripPartial CombineStripTotal;
-
-val TerminationPartialStrip = @{thm HoareTotalProps.TerminationPartialStrip};
-
-val ReannotateWhile = @{thm HoarePartial.reannotateWhile};
 val ReannotateWhileNoGuard = @{thm HoarePartial.reannotateWhileNoGuard};
 
 val TotalToPartial = @{thm HoareTotal.hoaret_to_hoarep'};
-val Strip = @{thm HoarePartial.hoarep_strip};
 
 val Compl_Collect = @{thm Hoare.Compl_Collect};
 val CollectInt_iff = @{thm Hoare.CollectInt_iff};
@@ -484,9 +439,7 @@ val unit_UN = @{thm Hoare.unit_UN};
 val subset_singleton_insert1 = @{thm Hoare.subset_singleton_insert1};
 val subset_singleton_insert2 = @{thm Hoare.subset_singleton_insert2};
 val conjE_simp = @{thm Hoare.conjE_simp};
-val assoc_simps = @{thms Hoare.assoc.simps};
 val conj_assoc = @{thm HOL.conj_assoc};
-val snd_guaranteeStripPair = @{thm Language.snd_guaranteeStripPair};
 val lookup_Some_in_dom = @{thm Hoare.lookup_Some_in_dom};
 val strip_simps =
   @{thm Language.strip_simp} :: @{thm option.map(2)} :: @{thms Language.strip_guards_simps};
@@ -552,13 +505,6 @@ fun absfree_name ((a,T,body)) =
       | (T'::_) => Abs (a,T',body'))
   end;
 
-(*Quantification over a list of free variables names*)
-fun list_all_free_name ([], t: term) = t
-  | list_all_free_name ((a,T)::vars, t) =
-      let val (t' as Abs (_,T',_)) = (absfree_name(a, T, list_all_free_name(vars,t)));
-      in Logic.all_const T' $ t' end;
-
-
 (* first_subterm
  * yields result x of P for first subterm for which P is (SOME x),
    and all bound variables on the path
@@ -603,18 +549,10 @@ fun last [] = raise Empty
   | last [x] = x
   | last (x::xs) = last xs;
 
-fun but_last [] = raise Empty
-  | but_last [x] = []
-  | but_last (x::xs) = x::but_last xs;
-
 fun dest_splits (Const (@{const_name case_prod},_)$Abs (n,T,t)) = (n,T)::dest_splits t
   | dest_splits (Const (@{const_name case_prod},_)$Abs (n,T,t)$_) = (n,T)::dest_splits t
   | dest_splits (Abs (n,T,_)) = [(n,T)]
   | dest_splits _ = [];
-
-fun pairs []  = []
-  | pairs [x] = error "pairs: odd number of elements"
-  | pairs (x::y::xs) = (x,y)::pairs xs;
 
 fun idx eq [] x = ~1
   | idx eq (x::rs) y =
@@ -655,12 +593,6 @@ fun stateT_ids T =
                  | SOME gT => (case stateT_id gT of
                                  NONE => SOME [sT]
                                 | SOME gT' => SOME [sT,gT'])));
-
-
-fun extension_id thy stateN =
-  (case Record.get_extension thy stateN of
-     SOME (e,_) => SOME (unsuffix Record.ext_typeN e)
-   | NONE => NONE);
 
 datatype par_kind = In | Out
 
@@ -900,24 +832,6 @@ fun add_active_procs phi ps ctxt =
   in Hoare_Data.put data ctxt end;
 
 
-fun add_wp_tacs tacs ctxt =
-  let
-      val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
-           vcg_simps,...}
-            = Hoare_Data.get ctxt;
-      val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
-                   (wp_tacs@tacs) hoare_tacs vcg_simps;
-  in Hoare_Data.put data ctxt end;
-
-fun add_hoare_tacs tacs ctxt =
-  let
-      val {proc_info,active_procs, default_state_kind, generate_guard,wp_tacs,hoare_tacs,
-           vcg_simps,...}
-            = Hoare_Data.get ctxt;
-      val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
-                   wp_tacs (hoare_tacs@tacs) vcg_simps;
-  in Hoare_Data.put data ctxt end;
-
 fun map_vcg_simps f ctxt =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
@@ -1012,7 +926,7 @@ fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 
 fun check_procedures_definition procs thy =
     let
-        val _ = Theory.requires thy "Hoare" "Hoare definitions";
+        val _ = Theory.requires thy (Context.theory_name @{theory Hoare}) "Hoare definitions";
         val ctxt = Proof_Context.init_global thy;
 
         fun already_defined name =
@@ -2870,11 +2784,6 @@ fun mk_proc_assoc thms =
 
 
 
-val initial_wp_tacs =
-  let fun seq_tac cont ctxt mode i =
-            EVERY [rtac (Seq mode) i,trace_tac ctxt "Seq",cont false (i+1)]
-  in [("seq_tac",seq_tac)] end;
-
 fun mk_hoare_tac cont ctxt mode i (name,tac) =
      EVERY [trace_tac ctxt ("trying: " ^ name),tac cont ctxt mode i];
 
@@ -3129,13 +3038,6 @@ fun sort_vars ctxt T vars =
   in sort (rev_order o compare) vars end;
 
 
-fun rebind olds news inc (t as (Bound i)) =
-      (Bound ( (sel_idx news (sel_name (nth olds (i-inc))) + inc))
-       handle Subscript => t)
-  | rebind olds news inc (t1 $ t2) = rebind olds news inc t1 $ rebind olds news inc t2
-  | rebind olds news inc (Abs (x,T,t)) = Abs (x,T,rebind olds news (inc+1) t)
-  | rebind olds news inc t = t;
-
 fun fold_state_prop loc glob app abs other inc s res (t as (Const (sel,_)$Free (s',_))) =
          if s'=s
          then if is_state_var sel
@@ -3195,9 +3097,7 @@ end;
 structure FunSplitState : SPLIT_STATE =
 struct
 
- val globalsN = "globals";
- val full_globalsN = @{const_name StateSpace.state.globals};
- val localsN  = "locals";
+val full_globalsN = @{const_name StateSpace.state.globals};
 
 
 fun isState (Const _$Abs (s,T,t)) =
@@ -3234,9 +3134,6 @@ fun component_type (Const _$_$_$(sel$_)) = range_type (fastype_of sel)
 
 fun component_name (Const _$_$_$((Const (sel,_)$_))) = sel
   | component_name t = raise TERM ("FunSplitState.component_name",[t]);
-
-fun is_global (Const _$_$_$(Const (g,_)$_))  = (g=full_globalsN)
-  | is_global t = raise TERM ("FunSplitState.is_global",[t]);
 
 fun sel_type (Const _$destr$_$_) = range_type (fastype_of destr)
   | sel_type t = raise TERM ("FunSplitState.sel_type",[t]);
@@ -3315,11 +3212,6 @@ fun split_state ctxt s T t =
 fun abs_var ctxt t =
     (remdeco' (sel_name t),sel_type t)
   | abs_var _ t = raise TERM ("FunSplitState.abs_var",[t]);
-
-fun lookup' _ [] _ = NONE
-  | lookup' eq ((key, value)::xs) key' =
-      if eq (key', key) then SOME (key,value)
-      else lookup' eq xs key';
 
 (* Proof for: EX x_1 ... x_n. P x_1 ... x_n
  *            ==> EX s. P (lookup destr_1 "x_1" s) ... (lookup destr_n "x_n" s)
@@ -3581,8 +3473,6 @@ fun HoareRuleTac ctxt insts st =
 
 fun HoareCallRuleTac state_kind state_space ctxt thms i st =
   let
-    val thy = Proof_Context.theory_of ctxt;
-
     fun dest_All (Const (@{const_name All},_)$t) = SOME t
       | dest_All _ = NONE;
 

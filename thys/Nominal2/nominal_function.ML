@@ -205,7 +205,7 @@ fun gen_add_nominal_function do_print prep default_constraint fixspec eqns confi
   end
 
 val add_nominal_function =
-  gen_add_nominal_function false Specification.check_spec (Type_Infer.anyT HOLogic.typeS)
+  gen_add_nominal_function false Specification.check_spec (Type_Infer.anyT @{sort type})
 fun add_nominal_function_cmd a b c d int = 
   gen_add_nominal_function int Specification.read_spec "_::type" a b c d
 
@@ -220,7 +220,7 @@ fun gen_nominal_function do_print prep default_constraint fixspec eqns config lt
   end
 
 val nominal_function =
-  gen_nominal_function false Specification.check_spec (Type_Infer.anyT HOLogic.typeS)
+  gen_nominal_function false Specification.check_spec (Type_Infer.anyT @{sort type})
 fun nominal_function_cmd a b c int = 
   gen_nominal_function int Specification.read_spec "_::type" a b c
 

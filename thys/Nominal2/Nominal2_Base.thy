@@ -2952,13 +2952,12 @@ by (simp_all add: fresh_at_base)
 
 
 simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt => fn ctrm =>
-  case term_of ctrm of @{term "HOL.Not"} $ (Const ("HOL.eq", _) $ lhs $ rhs) =>
+  case term_of ctrm of @{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ lhs $ rhs) =>
     let  
-
       fun first_is_neg lhs rhs [] = NONE
         | first_is_neg lhs rhs (thm::thms) =
           (case Thm.prop_of thm of
-             _ $ (@{term "HOL.Not"} $ (Const ("HOL.eq", _) $ l $ r)) =>
+             _ $ (@{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ l $ r)) =>
                (if l = lhs andalso r = rhs then SOME(thm)
                 else if r = lhs andalso l = rhs then SOME(thm RS @{thm not_sym})
                 else first_is_neg lhs rhs thms)  
@@ -2977,8 +2976,6 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt =>
          |> map (simplify (put_simpset HOL_basic_ss  ctxt addsimps simp_thms))
          |> map HOLogic.conj_elims
          |> flat
-
-       
     in 
       case first_is_neg lhs rhs prems of
         SOME(thm) => SOME(thm RS @{thm Eq_TrueI})
