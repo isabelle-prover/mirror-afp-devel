@@ -1012,7 +1012,7 @@ fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 
 fun check_procedures_definition procs thy =
     let
-        val _ = Theory.requires thy "Hoare" "Hoare definitions";
+        val _ = Theory.requires thy (Context.theory_name @{theory Hoare}) "Hoare definitions";
         val ctxt = Proof_Context.init_global thy;
 
         fun already_defined name =
