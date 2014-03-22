@@ -488,7 +488,7 @@ ML {*
           | NONE => let
               val aT = fastype_of R |> strip_type |> #2 
                 |> HOLogic.dest_setT |> HOLogic.dest_prodT |> #2
-              val (cT,ctxt) = yield_singleton Variable.invent_types HOLogic.typeS ctxt
+              val (cT,ctxt) = yield_singleton Variable.invent_types @{sort type} ctxt
               val cT = TFree cT
               val T = map fastype_of args ---> HOLogic.mk_setT (HOLogic.mk_prodT (cT,aT))
               val (R',ctxt) = yield_singleton Variable.variant_fixes "R" ctxt

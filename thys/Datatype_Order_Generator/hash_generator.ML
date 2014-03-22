@@ -113,7 +113,7 @@ fun derive dtyp_name _ thy =
     val hash_rhs = mk_hash thy info false
     val hashb_rhs = mk_hash thy info true
     val ty = Term.fastype_of hash_rhs |> Term.dest_Type |> snd |> hd
-    val ty_it = Type ("itself", [ty])
+    val ty_it = Type (@{type_name itself}, [ty])
     val hashs_rhs = lambda (Free ("x",ty_it)) (HOLogic.mk_number @{typ nat} (create_def_size ty))
 
     val hash_def = mk_def (ty --> @{typ nat}) @{const_name hashcode} hash_rhs

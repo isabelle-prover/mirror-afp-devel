@@ -75,7 +75,7 @@ setup {*
         if length args = 0 then 
           thm
         else let
-          val cT = TVar(("'c",0), HOLogic.typeS)
+          val cT = TVar(("'c",0), @{sort type})
           val c = Var (("c",0),cT)
           val R = Var (("R",0), HOLogic.mk_setT (HOLogic.mk_prodT (cT, fastype_of f)))
           val goal = 
