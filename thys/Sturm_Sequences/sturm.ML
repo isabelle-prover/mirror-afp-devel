@@ -21,7 +21,7 @@ struct
           @{thms sturm_id_PR_prio0}]
   val sturm_PR_tag_intro_thmss = [@{thms PR_TAG_intro_prio2}, @{thms PR_TAG_intro_prio1}, @{thms PR_TAG_intro_prio0}]
 
-  fun extract_PR_tags (t as (Const ("Sturm_Method.PR_TAG", _) $ _)) acc = t :: acc
+  fun extract_PR_tags (t as (Const (@{const_name PR_TAG}, _) $ _)) acc = t :: acc
     | extract_PR_tags (s $ t) acc = extract_PR_tags s (extract_PR_tags t acc)
     | extract_PR_tags (Abs (_,_,t)) acc = extract_PR_tags t acc
     | extract_PR_tags _ acc = acc
@@ -50,8 +50,8 @@ struct
     let val thy = Proof_Context.theory_of ctxt
         fun matches thm =
           case concl_of thm of
-            Const ("HOL.Trueprop", _) $ (Const ("HOL.eq", _) $ 
-                (Const ("Finite_Set.card", _) $ s') $ _)
+            Const (@{const_name Trueprop}, _) $ (Const (@{const_name HOL.eq}, _) $ 
+                (Const (@{const_name Finite_Set.card}, _) $ s') $ _)
               => Pattern.matches thy (s',s)
           | _ => 
               let val _ = Output.urgent_message ("Warning: invalid theorem in " ^
@@ -66,10 +66,10 @@ struct
 
   fun sturm_card_eq_instantiate_tac ctxt _ thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                 | _ => prop
-        val prop = case prop of Const ("Pure.conjunction", _) $ 
-                                    (Const ("Pure.term", _) $ _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
+                                    (Const (@{const_name Pure.term}, _) $ _) $ prop => prop
                                  | _ => prop
         val (lhs,rhs) = prop |> HOLogic.dest_Trueprop |> HOLogic.dest_eq
         val vars = Term.add_vars rhs []
@@ -89,15 +89,15 @@ struct
 
   fun sturm_card_eq_tac ctxt i thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                 | _ => prop
-        val prop = case prop of Const ("Pure.conjunction", _) $ 
-                                    (Const ("Pure.term", _) $ _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
+                                    (Const (@{const_name Pure.term}, _) $ _) $ prop => prop
                                  | _ => prop
         val s = case prop of
-                        Const ("HOL.Trueprop", _) $
-                        (Const ("HOL.eq", _) $ 
-                          (Const ("Finite_Set.card", _) $ s) $ _)
+                        Const (@{const_name Trueprop}, _) $
+                        (Const (@{const_name HOL.eq}, _) $ 
+                          (Const (@{const_name Finite_Set.card}, _) $ s) $ _)
                         => s;
         val thm' = find_sturm_card_eq_thm ctxt s
     in  case thm' of
@@ -110,7 +110,7 @@ struct
     let val thy = Proof_Context.theory_of ctxt
         fun matches thm =
           case concl_of thm of
-            Const ("HOL.Trueprop", _) $ (Const ("HOL.eq", _) $ prop' $ _)
+            Const (@{const_name Trueprop}, _) $ (Const (@{const_name HOL.eq}, _) $ prop' $ _)
               => Pattern.matches thy (prop',prop)
           | _ => 
               let val _ = Output.urgent_message ("Warning: invalid theorem in " ^
@@ -125,12 +125,12 @@ struct
 
   fun sturm_prop_tac ctxt i thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                  | _ => prop
-        val prop = case prop of Const ("Pure.conjunction", _) $ 
-                                    (Const ("Pure.term", _) $ _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
+                                    (Const (@{const_name Pure.term}, _) $ _) $ prop => prop
                                  | _ => prop
-        val prop = case prop of Const ("HOL.Trueprop", _) $ prop => prop
+        val prop = case prop of Const (@{const_name Trueprop}, _) $ prop => prop
                                  | _ => prop
         val thm' = find_sturm_prop_thm ctxt prop
     in  case thm' of
@@ -140,15 +140,15 @@ struct
 
   fun sturm_main_tac ctxt keep_goal i thm =
     let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
-        val prop = case prop of Const ("Pure.prop", _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                | _  => prop
-        val prop = case prop of Const ("Pure.conjunction", _) $ 
-                                    (Const ("Pure.term", _) $ _) $ prop => prop
+        val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
+                                    (Const (@{const_name Pure.term}, _) $ _) $ prop => prop
                                  | _ => prop
         val tac = case prop of
-                Const ("HOL.Trueprop", _) $
-                  (Const ("HOL.eq", _) $ 
-                    (Const ("Finite_Set.card", _) $ _) $ _) 
+                Const (@{const_name Trueprop}, _) $
+                  (Const (@{const_name HOL.eq}, _) $ 
+                    (Const (@{const_name Finite_Set.card}, _) $ _) $ _) 
                   => sturm_card_eq_tac
               | _ => sturm_prop_tac;
     in  ((tac ctxt i
