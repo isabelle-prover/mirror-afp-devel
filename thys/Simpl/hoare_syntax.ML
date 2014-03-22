@@ -94,10 +94,6 @@ val Null = Syntax.free "Simpl_Heap.Null";   (* FIXME ?? *)
 
 (** utils **)
 
-fun foldl1 f []  = raise Empty
-  | foldl1 f [x] = x
-  | foldl1 f (x::xs) = f x (foldl1 f xs)
-
 (* transpose [[a,b],[c,d],[e,f]] = [[a,c,d],[b,d,f]] *)
 fun transpose [[]] = [[]]
   | transpose ([]::xs) = []
@@ -108,7 +104,6 @@ fun maxprefix eq ([], ys) = []
   | maxprefix eq ((x::xs),(y::ys)) = if eq (x,y)
                                      then x::maxprefix eq (xs,ys)
                                      else []
-
 
 fun maxprefixs eq [] = []
   | maxprefixs eq [[]] = []
@@ -371,9 +366,6 @@ fun app_quote_mult_tr' ctxt is_selector f (t :: ts) =
       Term.list_comb (f $ quote_mult_tr' ctxt is_selector antiquoteCur antiquoteOld  t, ts)
   | app_quote_mult_tr' _ _ _ _ = raise Match;
 
-
-fun global_upd_tr upd s =
-  Syntax.free globals_updateN $ (K_rec_syntax (upd (Syntax.free globalsN $ s))) $ s;
 
 fun atomic_var_tr ctxt ps name value =
   update_comp ctxt ps true false name value;
@@ -1545,11 +1537,6 @@ fun nnew_tr' ctxt
 
       in Syntax.const @{syntax_const "_NNew"} $ l $ size $ inits' end
   | nnew_tr' _ _ = raise Match;
-
-
-fun faccess_tr' ((t as (Const (@{syntax_const "_antiquoteCur"}, _) $ Const h)) $ r) =
-      Syntax.const @{syntax_const "_faccess"} $ faccess_tr' r $ t
-  | faccess_tr' t = t;
 
 
 fun switch_tr' ctxt [v, vs] =
