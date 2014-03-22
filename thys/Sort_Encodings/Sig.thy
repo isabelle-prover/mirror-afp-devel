@@ -91,7 +91,7 @@ unfolding UN_Un_distrib[symmetric] by blast
 lemma tpart1_Int_tpart2[simp]:
 assumes "tinfinite V" shows "tpart1 V \<inter> tpart2 V = {}"
 using assms part1_Int_part2 unfolding tinfinite_def tpart1_def tpart2_def
-unfolding Int_UN_distrib2 apply auto apply (case_tac "i = j", auto)
+unfolding Int_UN_distrib2 apply auto apply (case_tac "xa = xb", auto)
 using part1_su part2_su by blast (* fixme: clean proof *)
 
 lemma tpart1_su:

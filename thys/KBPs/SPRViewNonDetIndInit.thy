@@ -189,7 +189,7 @@ proof(induct rule: trace_induct2)
     apply clarsimp
     unfolding envInit_def sSplice_def
     apply clarsimp
-    apply (rule_tac x="aa(a := aaa a)" in bexI)
+    apply (rule_tac x="x(a := xa a)" in bexI)
     using listToFun_splice[OF agents]
     apply auto
     done

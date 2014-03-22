@@ -932,14 +932,14 @@ lemma clock_simAction_jAction:
   apply clarsimp
   apply rule
    apply clarsimp
-   apply (rule_tac x=aa in bexI)
+   apply (rule_tac x=xa in bexI)
     apply simp
    apply clarsimp
    apply (subst eval_models[OF tC aec cec, symmetric])
      using tC aec cec subj
      apply simp_all
   apply clarsimp
-  apply (rule_tac x=aa in bexI)
+  apply (rule_tac x=xa in bexI)
    apply (rule refl)
   apply clarsimp
   apply (subst eval_models[OF tC aec cec])
@@ -1119,7 +1119,7 @@ proof
   show "?lhs \<subseteq> ?rhs"
     unfolding clock_trans_def
     apply (clarsimp simp: toSet_def[symmetric] common_abs[OF assms] common_abs_def)
-    apply (rule_tac x=a in exI)
+    apply (rule_tac x=xa in exI)
     apply clarsimp
     apply (rule Clock.jkbpCn_jkbpC_inc[where n="Suc (tLength t)"])
     apply (auto simp: Let_def iff: clock_trans_aux[OF tC ec])

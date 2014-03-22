@@ -1580,7 +1580,7 @@ proof(intro conjI strip)
 
   from assms have C_0: "committed (J 0) = {}" by(simp add: is_commit_sequence_def)
   hence "(\<Union>n. ?\<phi> n ` ?C n) = (\<Union>n. action_translation (J n) ` committed (J n))"
-    by -(rule UN_cong, simp_all)
+    by -(rule SUP_cong, simp_all)
   also have "\<dots> = actions E" using assms by(simp add: is_commit_sequence_def)
   finally show "actions E = (\<Union>n. ?\<phi> n ` ?C n)" .. 
 
@@ -1638,7 +1638,7 @@ proof(intro conjI strip)
 
   from assms have C_0: "committed (J 0) = {}" by(simp add: is_commit_sequence_def)
   hence "(\<Union>n. ?\<phi> n ` ?C n) = (\<Union>n. action_translation (J n) ` committed (J n))"
-    by -(rule UN_cong, simp_all)
+    by -(rule SUP_cong, simp_all)
   also have "\<dots> = actions E" using assms by(simp add: is_commit_sequence_def)
   finally show "actions E = (\<Union>n. ?\<phi> n ` ?C n)" .. 
 

@@ -3107,7 +3107,7 @@ next
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. \<Union>i\<in>set_of_bv (nfa_steps N q (insertll v (butlast bs) xs)). set_of_bv (bdd_lookup (fst N ! i) (insertl v (last bs) x)))"
     by (simp add: UN_UN_lenset)
   also from N2 B have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_trans N (nfa_steps N q (insertll v (butlast bs) xs)) (insertl v (last bs) x)))" (is "?L = ?R")
-    by (simp add: subsetbdd_set_of_bv[folded nfa_trans_def] cong: strong_UN_cong)
+    by (simp add: subsetbdd_set_of_bv[folded nfa_trans_def])
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v (butlast bs) xs @ [insertl v (last bs) x])))"
     by simp
   also have "\<dots> = (\<Union>bs\<in>{x. length x = Suc (length xs)}. set_of_bv (nfa_steps N q (insertll v (butlast bs @ [last bs]) (xs @ [x]))))" by (auto simp: insertll_append)

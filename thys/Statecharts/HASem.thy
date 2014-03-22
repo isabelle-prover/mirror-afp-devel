@@ -944,7 +944,7 @@ lemma Conf_ChiRel:
    "\<lbrakk> (S,T) \<in> ChiRel (HA ST); T \<in> Conf ST \<rbrakk> \<Longrightarrow> S \<in> Conf ST"
 apply (cut_tac ST=ST in UniqueSucStates_Status) 
 apply (unfold UniqueSucStates_def)
-apply auto
+apply (auto cong del: strong_SUP_cong)
 apply (unfold ChiRel_def Chi_def restrict_def)
 apply simp
 apply safe

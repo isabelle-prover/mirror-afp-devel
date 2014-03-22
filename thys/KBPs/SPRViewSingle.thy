@@ -586,7 +586,7 @@ proof -
   show ?thesis
     unfolding spr_simAction_def jAction_def
     apply clarsimp
-    apply (rule UN_cong)
+    apply (rule SUP_cong)
      apply simp_all
      apply (rule Collect_cong)
      apply rule
@@ -636,7 +636,7 @@ next
       apply induct
       unfolding SPR.mkM_def
       apply auto
-      apply (cut_tac a=a in envSingleAgent)
+      apply (cut_tac a=x in envSingleAgent)
       apply simp
       done
     from t''C t''O have "t'' \<in> ?Y" by simp }
@@ -767,7 +767,7 @@ proof
       apply (rule_tac n="Suc (tLength t')" in SPR.jkbpCn_jkbpC_inc)
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
 
-      apply (rule_tac x="aa" in exI)
+      apply (rule_tac x=xa in exI)
       apply (rule_tac x="\<lambda>a'. aact" in exI)
       apply auto
       apply (subst envSingleAgent)

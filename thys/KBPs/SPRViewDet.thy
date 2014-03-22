@@ -1258,7 +1258,7 @@ lemma spr_action_jaction:
   apply clarsimp
   apply rule
    apply clarsimp
-   apply (rule_tac x=aa in bexI)
+   apply (rule_tac x=xa in bexI)
     apply simp
    apply clarsimp
    apply (subst eval_models[OF tC ec, symmetric])
@@ -1267,7 +1267,7 @@ lemma spr_action_jaction:
     apply (rule agent_absI)
     apply simp_all
   apply clarsimp
-  apply (rule_tac x=aa in bexI)
+  apply (rule_tac x=xa in bexI)
    apply simp
   apply clarsimp
   apply (subst eval_models[OF tC ec])
@@ -1469,7 +1469,6 @@ proof
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
       apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
 
-      apply (rule_tac x=aa in exI)
       apply (rule_tac x=x in exI)
       apply simp
       apply (subst (asm) spr_simAction)
@@ -1613,7 +1612,6 @@ proof
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
       apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
 
-      apply (rule_tac x=aa in exI)
       apply (rule_tac x=x in exI)
       apply simp
       apply (subst (asm) spr_simAction)

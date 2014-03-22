@@ -2167,7 +2167,8 @@ lemma Union_included_multiset:
 proof -
   have "(\<Union>{supp x | x. x \<in># M}) = (\<Union>{supp x | x. x \<in> set_of M})" by simp
   also have "... \<subseteq> (\<Union>x \<in> set_of M. supp x)" by auto
-  also have "... = supp (set_of M)" by (simp add: subst supp_of_finite_sets)
+  also have "... = supp (set_of M)"
+    by (simp add: supp_of_finite_sets)
   also have " ... \<subseteq> supp M" by (rule supp_set_of)
   finally show "(\<Union>{supp x | x. x \<in># M}) \<subseteq> supp M" .
 qed

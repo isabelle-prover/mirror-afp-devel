@@ -311,7 +311,7 @@ proof -
       hence "(\<Union>i. if i\<le>n then mkdisjoint A i else {}) = 
         (\<Union>i\<in>{..n}. if i\<le>n then mkdisjoint A i else {}) 
         \<union>  (\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {})" 
-        by (auto simp add: UN_Un)
+        by (auto split: if_splits)
       moreover
       { have "(\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {}) = {}"
           by force }

@@ -1,5 +1,5 @@
 theory "HOLCF-Set"
- imports HOLCF
+ imports "~~/src/HOL/HOLCF/HOLCF"
 begin
 
 text {*
