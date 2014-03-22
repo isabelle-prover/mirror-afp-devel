@@ -2246,26 +2246,26 @@ declare fast_bv_to_nat_Cons [simp del]
 declare fast_bv_to_nat_Cons0 [simp]
 declare fast_bv_to_nat_Cons1 [simp]
 
-simproc_setup bv_to_nat ("Word.bv_to_nat (x # xs)") = {*
+simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
   fn _ => fn ctxt => fn ct =>
     let
       val thy = Proof_Context.theory_of ctxt
-      fun is_const_bool (Const(@{const_name "True"},_)) = true
-        | is_const_bool (Const(@{const_name "False"},_)) = true
+      fun is_const_bool (Const(@{const_name True},_)) = true
+        | is_const_bool (Const(@{const_name False},_)) = true
         | is_const_bool _ = false
-      fun is_const_bit (Const("Word.bit.Zero",_)) = true
-        | is_const_bit (Const("Word.bit.One",_)) = true
+      fun is_const_bit (Const(@{const_name Zero},_)) = true
+        | is_const_bit (Const(@{const_name One},_)) = true
         | is_const_bit _ = false
-      fun vec_is_usable (Const("List.list.Nil",_)) = true
-        | vec_is_usable (Const("List.list.Cons",_) $ b $ bs) =
+      fun vec_is_usable (Const(@{const_name Nil},_)) = true
+        | vec_is_usable (Const(@{const_name Cons},_) $ b $ bs) =
             vec_is_usable bs andalso is_const_bit b
         | vec_is_usable _ = false
-      val fast2_th = @{thm "Word.fast_bv_to_nat_def"};
-      fun proc (Const("Word.bv_to_nat",_) $ (Const("List.list.Cons",_) $ Const("Word.bit.One",_) $ t)) =
+      fun proc (Const(@{const_name bv_to_nat},_) $
+        (Const(@{const_name Cons},_) $ Const(@{const_name One},_) $ t)) =
             if vec_is_usable t then
               SOME (Drule.cterm_instantiate
-                [(cterm_of thy (Var(("bs",0),Type("List.list",[Type("Word.bit",[])]))),
-                  cterm_of thy t)] fast2_th)
+                [(cterm_of thy (Var(("bs",0),Type(@{type_name list},[Type(@{type_name bit},[])]))),
+                  cterm_of thy t)] @{thm fast_bv_to_nat_def})
             else NONE
         | proc _ = NONE
     in proc (term_of ct) end
