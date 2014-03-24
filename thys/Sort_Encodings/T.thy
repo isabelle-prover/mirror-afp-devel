@@ -501,7 +501,7 @@ unfolding TE.wtE_def proof safe
 qed
 
 lemma int_tNN[simp]:
-assumes T: "Ik.wt T" and \<xi>: "Ik.wtE \<xi>"
+assumes T: "Ik.Ik.wt T" and \<xi>: "Ik.wtE \<xi>"
 shows "TE.int (eenv \<xi>) (tNN T) = Ik.int \<xi> T"
 using T proof(induct T)
   case (Var x) let ?\<sigma> = "TE.tpOfV x"  show ?case
@@ -527,7 +527,7 @@ next
     hence i: "i < length ?ar" using l by simp
     hence 1: "TE.int (eenv \<xi>) (tNN (Tl!i)) = Ik.int \<xi> (Tl!i)"
     using Fn by (auto simp: list_all_length)
-    have 2: "?ar ! i = Ik.tpOf (Tl!i)" using Fn i by simp
+    have 2: "?ar ! i = Ik.Ik.tpOf (Tl!i)" using Fn i by simp
     have 3: "intT (?ar ! i) (Ik.int \<xi> (Tl ! i))"
     unfolding 2 apply(rule wt_int)
     using Fn \<xi> i by (auto simp: list_all_length)
@@ -539,14 +539,14 @@ next
 qed
 
 lemma map_int_tNN[simp]:
-assumes Tl: "list_all Ik.wt Tl" and \<xi>: "Ik.wtE \<xi>"
+assumes Tl: "list_all Ik.Ik.wt Tl" and \<xi>: "Ik.wtE \<xi>"
 shows
-"map2 ntsem (map Ik.tpOf Tl) (map (Ik.int \<xi>) Tl) =
+"map2 ntsem (map Ik.Ik.tpOf Tl) (map (Ik.int \<xi>) Tl) =
  map (TE.int (eenv \<xi>) \<circ> tNN) Tl"
 proof-
   {fix i assume i: "i < length Tl"
-   hence wt: "Ik.wt (Tl!i)" using Tl unfolding list_all_length by simp
-   have "intT (Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using Ik.wt_int[OF \<xi> wt] .
+   hence wt: "Ik.Ik.wt (Tl!i)" using Tl unfolding list_all_length by simp
+   have "intT (Ik.Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using Ik.wt_int[OF \<xi> wt] .
   }
   thus ?thesis
   using assms unfolding intT_def list_all_length
@@ -554,7 +554,7 @@ proof-
 qed
 
 lemma int_t[simp]:
-assumes T: "Ik.wt T" and \<xi>: "Ik.wtE \<xi>"
+assumes T: "Ik.Ik.wt T" and \<xi>: "Ik.wtE \<xi>"
 shows "TE.int (eenv \<xi>) (tT T) = Ik.int \<xi> T"
 using T proof(induct T)
   case (Var x) let ?\<sigma> = "tpOfV x"  show ?case
@@ -573,7 +573,7 @@ next
   case (Fn f Tl)
   let ?e\<xi> = "eenv \<xi>"  let ?ar = "arOf f"  let ?r = "resOf f"
   have l: "length ?ar = length Tl" using Fn by simp
-  have ar: "?ar = map Ik.tpOf Tl" using Fn by simp
+  have ar: "?ar = map Ik.Ik.tpOf Tl" using Fn by simp
   have 0: "map2 ntsem ?ar (map (Ik.int \<xi>) Tl) = map (TE.int ?e\<xi> \<circ> tNN) Tl"
   unfolding ar apply(rule map_int_tNN[OF _ \<xi>]) using Fn by simp
   show ?case apply(cases "unprot ?r \<or> protFw ?r")
@@ -581,14 +581,14 @@ next
 qed
 
 lemma map_int_t[simp]:
-assumes Tl: "list_all Ik.wt Tl" and \<xi>: "Ik.wtE \<xi>"
+assumes Tl: "list_all Ik.Ik.wt Tl" and \<xi>: "Ik.wtE \<xi>"
 shows
-"map2 ntsem (map Ik.tpOf Tl) (map (Ik.int \<xi>) Tl) =
+"map2 ntsem (map Ik.Ik.tpOf Tl) (map (Ik.int \<xi>) Tl) =
  map (TE.int (eenv \<xi>) \<circ> tT) Tl"
 proof-
   {fix i assume i: "i < length Tl"
-   hence wt: "Ik.wt (Tl!i)" using Tl unfolding list_all_length by simp
-   have "intT (Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using wt_int[OF \<xi> wt] .
+   hence wt: "Ik.Ik.wt (Tl!i)" using Tl unfolding list_all_length by simp
+   have "intT (Ik.Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using wt_int[OF \<xi> wt] .
   }
   thus ?thesis
   using assms unfolding intT_def list_all_length
@@ -596,20 +596,20 @@ proof-
 qed
 
 lemma satL_tL[simp]:
-assumes l: "Ik.wtL l" and \<xi>: "Ik.wtE \<xi>"
+assumes l: "Ik.Ik.wtL l" and \<xi>: "Ik.wtE \<xi>"
 shows "TE.satL (eenv \<xi>) (tL l) \<longleftrightarrow> Ik.satL \<xi> l"
 using assms apply(cases l) by (case_tac [!] atm) (auto simp add: intP_def)
 
 lemma satC_tC[simp]:
-assumes l: "Ik.wtC c" and \<xi>: "Ik.wtE \<xi>"
+assumes l: "Ik.Ik.wtC c" and \<xi>: "Ik.wtE \<xi>"
 shows "TE.satC (eenv \<xi>) (tC c) \<longleftrightarrow> Ik.satC \<xi> c"
 unfolding TE.satC_def Ik.satC_def
-using assms by (induct c, auto simp add: Ik.wtC_def tC_def)
+using assms by (induct c, auto simp add: Ik.Ik.wtC_def tC_def)
 
 lemma satPB_tPB[simp]:
 assumes \<xi>: "Ik.wtE \<xi>"
 shows "TE.satPB (eenv \<xi>) (tC ` \<Phi>) \<longleftrightarrow> Ik.satPB \<xi> \<Phi>"
-using Ik.wt_\<Phi> assms unfolding TE.satPB_def Ik.satPB_def by (auto simp add: Ik.wtPB_def)
+using Ik.wt_\<Phi> assms unfolding TE.satPB_def Ik.satPB_def by (auto simp add: Ik.Ik.wtPB_def)
 
 lemma completeness: "Ik.SAT \<Phi>"
 unfolding Ik.SAT_def proof safe
