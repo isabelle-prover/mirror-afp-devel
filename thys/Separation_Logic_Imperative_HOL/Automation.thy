@@ -440,9 +440,7 @@ structure Seplogic_Auto = struct
 
       fun normalize_core t = let 
         val ((has_true,pures,ptrs),rt) = normalizer t;
-        (*val _ = tracing (PolyML.makestring ptrs);*)
         val similar = find_similar ptrs_key ptrs;
-        (*val _ = tracing (PolyML.makestring similar);*)
         val true_t = if has_true then SOME @{term "Assertions.top_assn"} 
           else NONE;
         val pures' = case pures of 
@@ -483,9 +481,11 @@ structure Seplogic_Auto = struct
 
   in 
     result
-  end handle exc => 
-    (tracing ("assn_simproc failed with exception: "^PolyML.makestring exc); 
-      NONE) (* Fail silently *);
+  end handle exc =>
+    if Exn.is_interrupt exc then reraise exc
+    else
+      (tracing ("assn_simproc failed with exception\n:" ^ ML_Compiler.exn_message exc);
+        NONE) (* Fail silently *);
   
   val assn_simproc = Simplifier.make_simproc {
     lhss = [@{cpat "?h\<Turnstile>?P"},@{cpat "?P \<Longrightarrow>\<^sub>A ?Q"},
