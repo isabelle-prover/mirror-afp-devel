@@ -38,7 +38,6 @@ structure Syntax_Match = struct
 
     val redex = term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
-    (*val _ = tracing (PolyML.makestring credex);*)
 
     fun fo_matches po = (Pattern.first_order_match 
       thy po (Vartab.empty, Vartab.empty); true) handle _ => false;
@@ -52,7 +51,6 @@ structure Syntax_Match = struct
 
     val redex = term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
-    (*val _ = tracing (PolyML.makestring credex);*)
   in
     if Pattern.matches thy (pat,obj) then NONE else SOME nomatch_thm
   end

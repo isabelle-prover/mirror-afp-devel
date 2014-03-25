@@ -96,6 +96,7 @@ val regexes = fst (fold_map (fn f => fn r => f r) (map (list_n 100 o regex) size
   (Generator.new ()));
 *}
 
+declare [[ML_print_depth 100000]]
 ML {*
 fun alph Rexp.Zero = 0
   | alph Rexp.One = 0
@@ -103,9 +104,9 @@ fun alph Rexp.Zero = 0
   | alph (Rexp.Plus (r, s)) = alph r + alph s
   | alph (Rexp.Times (r, s)) = alph r + alph s
   | alph (Rexp.Star r) = alph r;
-print_depth 100000;
 map (map alph) regexes
 *}
+declare [[ML_print_depth 10]]
 *)
 
 ML {*
