@@ -388,4 +388,27 @@ proof -
   finally show ?thesis .
 qed
 
+section {* Quickcheck conversion functions *}
+
+notation scomp (infixl "\<circ>\<rightarrow>" 60)
+
+definition qc_random_cnv :: 
+  "(natural \<Rightarrow> 'a::term_of) \<Rightarrow> natural \<Rightarrow> Random.seed
+    \<Rightarrow> ('a \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
+  where "qc_random_cnv a_of_natural i = Random.range (i + 1) \<circ>\<rightarrow> (\<lambda>k. Pair (
+       let n = a_of_natural k
+       in (n, \<lambda>_. Code_Evaluation.term_of n)))"
+
+no_notation scomp (infixl "\<circ>\<rightarrow>" 60)
+
+definition qc_exhaustive_cnv :: "(natural \<Rightarrow> 'a) \<Rightarrow> _"
+  where "qc_exhaustive_cnv a_of_natural f d 
+  = Quickcheck_Exhaustive.exhaustive (%x. f (a_of_natural x)) d"
+
+definition qc_full_exhaustive_cnv ::
+  "(natural \<Rightarrow> ('a::term_of)) \<Rightarrow> ('a \<times> (unit \<Rightarrow> term) \<Rightarrow> (bool \<times> term list) option)
+  \<Rightarrow> natural \<Rightarrow> (bool \<times> term list) option" where
+  "qc_full_exhaustive_cnv a_of_natural f d = Quickcheck_Exhaustive.full_exhaustive 
+  (%(x, xt). f (a_of_natural x, %_. Code_Evaluation.term_of (a_of_natural x))) d"
+
 end
