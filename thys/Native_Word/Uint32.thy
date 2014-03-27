@@ -92,14 +92,9 @@ by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
 text {* Use pretty numerals from integer for pretty printing *}
 
-lift_definition Uint32 :: "integer \<Rightarrow> uint32" is "word_of_integer" .
+context includes integer.lifting begin
 
-context begin interpretation lifting_syntax .
-
-lemma Uint32_transfer_word_of_int [transfer_rule]: "(pcr_integer ===> cr_uint32) word_of_int Uint32"
-by(rule rel_funI)(simp add: cr_uint32_def integer.pcr_cr_eq cr_integer_def Uint32.rep_eq word_of_integer.rep_eq)
-
-end
+lift_definition Uint32 :: "integer \<Rightarrow> uint32" is "word_of_int" .
 
 lemma Rep_uint32_numeral [simp]: "Rep_uint32 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint32_def Abs_uint32_inverse numeral.simps plus_uint32_def)
@@ -109,17 +104,15 @@ lemma numeral_uint32_transfer [transfer_rule]:
 by(auto simp add: cr_uint32_def)
 
 lemma numeral_uint32 [code_unfold]: "numeral n = Uint32 (numeral n)"
-including integer.lifting by transfer simp
+by transfer simp
 
 lemma Rep_uint32_neg_numeral [simp]: "Rep_uint32 (- numeral n) = - numeral n"
 by(simp only: uminus_uint32_def)(simp add: Abs_uint32_inverse)
 
-lemma uint32_neg_numeral_transfer [transfer_rule]:
-  "(rel_fun op = cr_uint32) (- numeral) (- numeral)"
-by(auto simp add: cr_uint32_def)
-
 lemma neg_numeral_uint32 [code_unfold]: "- numeral n = Uint32 (- numeral n)"
-including integer.lifting by transfer(simp add: cr_uint32_def)
+by transfer(simp add: cr_uint32_def)
+
+end
 
 lemma Abs_uint32_numeral [code_post]: "Abs_uint32 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint32_def numeral.simps plus_uint32_def Abs_uint32_inverse)

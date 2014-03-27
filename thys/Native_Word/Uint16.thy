@@ -105,8 +105,8 @@ where "integer_of_uint16 = integer_of_int o int_of_uint16"
 text {* Use pretty numerals from integer for pretty printing *}
 
 context includes integer.lifting begin
+
 lift_definition Uint16 :: "integer \<Rightarrow> uint16" is "word_of_int" .
-end
 
 lemma Rep_uint16_numeral [simp]: "Rep_uint16 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint16_def Abs_uint16_inverse numeral.simps plus_uint16_def)
@@ -114,23 +114,17 @@ by(induction n)(simp_all add: one_uint16_def Abs_uint16_inverse numeral.simps pl
 lemma Rep_uint16_neg_numeral [simp]: "Rep_uint16 (- numeral n) = - numeral n"
 by(simp only: uminus_uint16_def)(simp add: Abs_uint16_inverse)
 
-context begin interpretation lifting_syntax .
-
-lemma uint16_neg_numeral_transfer [transfer_rule]:
-  "(op = ===> cr_uint16) (- numeral) (- numeral)"
-by(auto simp add: cr_uint16_def)
-
 lemma numeral_uint16_transfer [transfer_rule]:
   "(rel_fun op = cr_uint16) numeral numeral"
 by(auto simp add: cr_uint16_def)
 
-end
-
 lemma numeral_uint16 [code_unfold]: "numeral n = Uint16 (numeral n)"
-including integer.lifting by transfer simp
+by transfer simp
 
 lemma neg_numeral_uint16 [code_unfold]: "- numeral n = Uint16 (- numeral n)"
-including integer.lifting by transfer(simp add: cr_uint16_def)
+by transfer(simp add: cr_uint16_def)
+
+end
 
 lemma Abs_uint16_numeral [code_post]: "Abs_uint16 (numeral n) = numeral n"
 by(induction n)(simp_all add: one_uint16_def numeral.simps plus_uint16_def Abs_uint16_inverse)

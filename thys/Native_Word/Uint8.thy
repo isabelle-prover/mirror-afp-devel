@@ -95,9 +95,8 @@ where "integer_of_uint8 = integer_of_int o int_of_uint8"
 
 text {* Use pretty numerals from integer for pretty printing *}
 
-context
-includes integer.lifting
-begin
+context includes integer.lifting begin
+
 lift_definition Uint8 :: "integer \<Rightarrow> uint8" is "word_of_int" .
 
 lemma Rep_uint8_numeral [simp]: "Rep_uint8 (numeral n) = numeral n"
@@ -112,14 +111,6 @@ by transfer simp
 
 lemma Rep_uint8_neg_numeral [simp]: "Rep_uint8 (- numeral n) = - numeral n"
 by(simp only: uminus_uint8_def)(simp add: Abs_uint8_inverse)
-
-end
-
-context includes integer.lifting begin interpretation lifting_syntax .
-
-lemma uint8_neg_numeral_transfer [transfer_rule]:
-  "(op = ===> cr_uint8) (- numeral) (- numeral)"
-by(auto simp add: cr_uint8_def)
 
 lemma neg_numeral_uint8 [code_unfold]: "- numeral n = Uint8 (- numeral n)"
 by transfer(simp add: cr_uint8_def)
