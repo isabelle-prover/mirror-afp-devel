@@ -44,8 +44,29 @@ proof-
   } ultimately show ?thesis by (auto simp: in_lists_conv_set) blast
 qed
 
-lemma in_fold_Deriv: "v \<in> fold Deriv w L \<longleftrightarrow> w @ v \<in> L"
-  by (induct w arbitrary: L) (simp_all add: Deriv_def)
+lemma rtrancl_fold_product1:
+shows "{(r,s). \<exists>a \<in> A. s = f a r}^* =
+       {(r,fold f w r) | r w. w : lists A}" (is "?L = ?R")
+proof-
+  { fix r s
+    have "(r,s) : ?L \<Longrightarrow> (r,s) : ?R"
+    proof(induction rule: converse_rtrancl_induct)
+      case base show ?case by(force intro!: fold_simps(1)[symmetric])
+    next
+      case step thus ?case by(force intro!: fold_simps(2)[symmetric])
+    qed
+  } moreover
+  { fix r s
+    { fix w have "\<forall>x\<in>set w. x \<in> A \<Longrightarrow> (r, fold f w r) :?L"
+      proof(induction w rule: rev_induct)
+        case Nil show ?case by simp
+      next
+        case snoc thus ?case by (auto elim!: rtrancl_into_rtrancl)
+      qed
+    } 
+    hence "(r,s) : ?R \<Longrightarrow> (r,s) : ?L" by auto
+  } ultimately show ?thesis by (auto simp: in_lists_conv_set) blast
+qed
 
 lemma lang_eq_ext_Nil_fold_Deriv:
   fixes r s
@@ -162,6 +183,22 @@ proof -
     using "termination" by fastforce
   with closure_sound_complete[OF this] assms
   show "check_eqv r s" by (simp add: check_eqv_def set_add_atoms)
+qed
+
+lemma finite_rtrancl_delta_Image1:
+  "finite ({(r,s). \<exists>a \<in> A. s = delta a r}^* `` {init r})"
+  unfolding rtrancl_fold_product1 by (auto intro: finite_subset[OF _ fin])
+
+lemma reachable: "reachable as r = {fold delta w (init r) | w. w \<in> lists (set as)}"
+  and finite_reachable: "finite (reachable as r)"
+proof -
+  obtain wsZ where *: "rtrancl_while (\<lambda>_. True) (\<lambda>s. map (\<lambda>a. delta a s) as) (init r) = Some wsZ"
+    by (atomize_elim,intro rtrancl_while_finite_Some Image_mono rtrancl_mono
+      finite_subset[OF _ finite_rtrancl_delta_Image1[of "set as" r]]) auto
+  then show "reachable as r = {fold delta w (init r) | w. w \<in> lists (set as)}"
+    unfolding reachable_def by (cases wsZ)
+      (auto dest!: rtrancl_while_Some split: if_splits simp: rtrancl_fold_product1 image_iff)
+  then show "finite (reachable as r)" by (auto intro: finite_subset[OF _ fin])
 qed
   
 end

@@ -222,12 +222,27 @@ next
     by (intro subsetI, elim CollectE exE) (simp only: fold_delta_a_init_a_mrexps)
   then show "finite {fold delta_a w (init_a s) |w. True}" by (rule finite_subset) simp
 qed
-  
 
-lemma conjecture:
-  "card(reachable_b [True,False] r) \<le> card(reachable_a [True,False] r)"
-(*quickcheck[size=6,timeout=120]*)
-oops
+text {*
+The ``before'' atomaton is a quotient of the ``after'' automaton.
+
+The proof below follows an informal proof given by Helmut Seidl in personal communication. 
+*}
+
+fun hom_ab where
+  "hom_ab (b, r) = (follow b r, final_a (b, r))"
+
+lemma hom_delta[simp]: "hom_ab (fold delta_a w br) = fold delta_b w (hom_ab br)"
+  by (induct w arbitrary: br) (auto simp add: Let_def split: prod.splits)
+
+lemma hom_init[simp]: "hom_ab (init_a r) = init_b r"
+  unfolding init_a_def init_b_def hom_ab.simps by (simp add: nonfinal_empty_mrexp)
+  
+lemma reachable_ab: "reachable_b as r = hom_ab ` reachable_a as r"
+  unfolding after.reachable before.reachable by force
+
+theorem card_reachable_ab: "card (reachable_b as r) \<le> card (reachable_a as r)"
+  unfolding reachable_ab using after.finite_reachable by (rule card_image_le)
 
 text{* The implementation by Fischer et al.: *}
 
