@@ -42,7 +42,7 @@ text {*
 primcorec unfold_llist :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b llist" where
   "p a \<Longrightarrow> unfold_llist p g21 g22 a = LNil" |
   "_ \<Longrightarrow> unfold_llist p g21 g22 a = LCons (g21 a) (unfold_llist p g21 g22 (g22 a))"
-thm unfold_llist.disc
+
 declare
   unfold_llist.ctr(1) [simp]
   llist.corec(1) [simp]
@@ -173,75 +173,11 @@ qed
 
 text {* Setup for quickcheck *}
 
-notation fcomp (infixl "o>" 60)
-notation scomp (infixl "o\<rightarrow>" 60)
-
-definition (in term_syntax) valtermify_LNil ::
-  "'a :: typerep llist \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
-  "valtermify_LNil = Code_Evaluation.valtermify LNil"
-
-definition (in term_syntax) valtermify_LCons ::
-  "'a :: typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a llist \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a llist \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
-  "valtermify_LCons x xs = Code_Evaluation.valtermify LCons {\<cdot>} x {\<cdot>} xs"
-
-instantiation llist :: (random) random begin
-
-primrec random_aux_llist :: 
-  "natural \<Rightarrow> natural \<Rightarrow> Random.seed \<Rightarrow> ('a llist \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
-where
-  "random_aux_llist 0 j = 
-   Quickcheck_Random.collapse (Random.select_weight 
-     [(1, Pair valtermify_LNil)])"
-| "random_aux_llist (Code_Numeral.Suc i) j =
-   Quickcheck_Random.collapse (Random.select_weight
-     [(Code_Numeral.Suc i, Quickcheck_Random.random j o\<rightarrow> (\<lambda>x. random_aux_llist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
-      (1, Pair valtermify_LNil)])"
-definition "Quickcheck_Random.random i = random_aux_llist i i"
-instance ..
-end
-
-lemma random_aux_llist_code [code]:
-  "random_aux_llist i j = Quickcheck_Random.collapse (Random.select_weight
-     [(i, Quickcheck_Random.random j o\<rightarrow> (\<lambda>x. random_aux_llist (i - 1) j o\<rightarrow> (\<lambda>xs. Pair (valtermify_LCons x xs)))),
-      (1, Pair valtermify_LNil)])"
-  apply (cases i rule: natural.exhaust)
-  apply (simp_all only: random_aux_llist.simps natural_zero_minus_one Suc_natural_minus_one)
-  apply (subst select_weight_cons_zero) apply (simp only:)
-  done
-
-no_notation fcomp (infixl "o>" 60)
-no_notation scomp (infixl "o\<rightarrow>" 60)
-
-instantiation llist :: (full_exhaustive) full_exhaustive begin
-
-fun full_exhaustive_llist 
-  ::"('a llist \<times> (unit \<Rightarrow> term) \<Rightarrow> (bool \<times> term list) option) \<Rightarrow> natural \<Rightarrow> (bool \<times> term list) option"
-where
-  "full_exhaustive_llist f i =
-   (let A = Typerep.typerep TYPE('a);
-        Llist = \<lambda>A. Typerep.Typerep (STR ''Coinductive_List.llist'') [A];
-        fun = \<lambda>A B. Typerep.Typerep (STR ''fun'') [A, B]
-    in
-      if 0 < i then 
-        case f (LNil, \<lambda>_. Code_Evaluation.Const (STR ''Coinductive_List.LNil'') (Llist A))
-          of None \<Rightarrow> 
-            Quickcheck_Exhaustive.full_exhaustive (\<lambda>(x, xt). full_exhaustive_llist (\<lambda>(xs, xst). 
-              f (LCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
-                   (Code_Evaluation.Const (STR ''Coinductive_List.LCons'') (fun A (fun (Llist A) (Llist A))))
-                   (xt ())) (xst ())))
-              (i - 1)) (i - 1)
-      | Some ts \<Rightarrow> Some ts
-    else None)"
-
-instance ..
-
-end
+quickcheck_generator llist constructors: LNil, LCons
 
 instantiation llist :: (narrowing) narrowing begin
 
-context 
-includes integer.lifting
-begin
+context includes integer.lifting begin
 
 function narrowing_llist where
   "narrowing_llist n = Quickcheck_Narrowing.sum

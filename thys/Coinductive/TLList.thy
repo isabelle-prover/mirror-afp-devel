@@ -68,83 +68,11 @@ subsection {* Code generator setup *}
 
 text {* Setup for quickcheck *}
 
-notation fcomp (infixl "o>" 60)
-notation scomp (infixl "o\<rightarrow>" 60)
-
-definition (in term_syntax) valtermify_TNil ::
-  "'b :: typerep \<times> (unit \<Rightarrow> Code_Evaluation.term)
-   \<Rightarrow> ('a :: typerep, 'b) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term)" 
-where
-  "valtermify_TNil b = Code_Evaluation.valtermify TNil {\<cdot>} b"
-
-definition (in term_syntax) valtermify_TCons ::
-  "'a :: typerep \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a, 'b :: typerep) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> ('a, 'b) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
-  "valtermify_TCons x xs = Code_Evaluation.valtermify TCons {\<cdot>} x {\<cdot>} xs"
-
-instantiation tllist :: (random, random) random begin
-
-primrec random_aux_tllist :: 
-  "natural \<Rightarrow> natural \<Rightarrow> Random.seed \<Rightarrow> (('a, 'b) tllist \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
-where
-  "random_aux_tllist 0 j = 
-   Quickcheck_Random.collapse (Random.select_weight 
-     [(1, Quickcheck_Random.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
-| "random_aux_tllist (Code_Numeral.Suc i) j =
-   Quickcheck_Random.collapse (Random.select_weight
-     [(Code_Numeral.Suc i, Quickcheck_Random.random j o\<rightarrow> (\<lambda>x. random_aux_tllist i j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
-      (1, Quickcheck_Random.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
-
-definition "Quickcheck_Random.random i = random_aux_tllist i i"
-
-instance ..
-
-end
-
-lemma random_aux_tllist_code [code]:
-  "random_aux_tllist i j = Quickcheck_Random.collapse (Random.select_weight
-     [(i, Quickcheck_Random.random j o\<rightarrow> (\<lambda>x. random_aux_tllist (i - 1) j o\<rightarrow> (\<lambda>xs. Pair (valtermify_TCons x xs)))),
-      (1, Quickcheck_Random.random j o\<rightarrow> (\<lambda>b. Pair (valtermify_TNil b)))])"
-  apply (cases i rule: natural.exhaust)
-  apply (simp_all only: random_aux_tllist.simps natural_zero_minus_one Suc_natural_minus_one)
-  apply (subst select_weight_cons_zero) apply (simp only:)
-  done
-
-no_notation fcomp (infixl "o>" 60)
-no_notation scomp (infixl "o\<rightarrow>" 60)
-
-instantiation tllist :: (full_exhaustive, full_exhaustive) full_exhaustive begin
-
-fun full_exhaustive_tllist 
-  ::"(('a, 'b) tllist \<times> (unit \<Rightarrow> term) \<Rightarrow> (bool \<times> term list) option) \<Rightarrow> natural \<Rightarrow> (bool \<times> term list) option"
-where
-  "full_exhaustive_tllist f i =
-   (let A = Typerep.typerep TYPE('a);
-        B = Typerep.typerep TYPE('b);
-        Tllist = \<lambda>A B. Typerep.Typerep (STR ''TLList.tllist'') [A, B];
-        fun = \<lambda>A B. Typerep.Typerep (STR ''fun'') [A, B]
-    in
-      if 0 < i then 
-        case Quickcheck_Exhaustive.full_exhaustive (\<lambda>(b, bt). f (TNil b, \<lambda>_. Code_Evaluation.App 
-          (Code_Evaluation.Const (STR ''TLList.TNil'') (fun B (Tllist A B)))
-          (bt ()))) (i - 1)
-        of None \<Rightarrow> 
-            Quickcheck_Exhaustive.full_exhaustive (\<lambda>(x, xt). full_exhaustive_tllist (\<lambda>(xs, xst). 
-              f (TCons x xs, \<lambda>_. Code_Evaluation.App (Code_Evaluation.App 
-                   (Code_Evaluation.Const (STR ''TLList.TCons'') (fun A (fun (Tllist A B) (Tllist A B))))
-                   (xt ())) (xst ())))
-              (i - 1)) (i - 1)
-        | Some ts \<Rightarrow> Some ts
-      else None)"
-
-instance ..
-
-end
+quickcheck_generator tllist constructors: "TNil :: _ \<Rightarrow> ('a, 'b) tllist", "TCons :: _ \<Rightarrow> _ \<Rightarrow> ('a, 'b) tllist"
 
 instantiation tllist :: (narrowing, narrowing) narrowing begin
 
-context
-includes integer.lifting
-begin
+context includes integer.lifting begin
 
 function narrowing_tllist
 where
@@ -156,7 +84,6 @@ by pat_completeness auto
 termination by (relation "measure nat_of_integer") (simp_all, transfer, simp)
 
 instance ..
-
 end
 end
 
