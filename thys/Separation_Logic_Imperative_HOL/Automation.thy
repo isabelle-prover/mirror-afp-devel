@@ -484,7 +484,7 @@ structure Seplogic_Auto = struct
   end handle exc =>
     if Exn.is_interrupt exc then reraise exc
     else
-      (tracing ("assn_simproc failed with exception\n:" ^ ML_Compiler.exn_message exc);
+      (tracing ("assn_simproc failed with exception\n:" ^ Runtime.exn_message exc);
         NONE) (* Fail silently *);
   
   val assn_simproc = Simplifier.make_simproc {
