@@ -30,6 +30,11 @@ ML_val {*
   val true = @{code test_uint16_emulation};
 *}
 
+lemma "x AND y = x OR (y :: uint16)"
+quickcheck[random, expect=counterexample]
+quickcheck[exhaustive, expect=counterexample]
+oops
+
 hide_const test_uint16_emulation
 hide_fact test_uint16_emulation_def
 

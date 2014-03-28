@@ -252,6 +252,7 @@ code_printing type_constructor uint8 \<rightharpoonup>
 | constant Uint8 \<rightharpoonup> 
   (SML) "Word8.fromInt" and
   (Haskell) "(Prelude.fromInteger _ :: Uint8.Word8)" and
+  (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint8.Word8)" and
   (Scala) "_.byteValue"
 | constant "0 :: uint8" \<rightharpoonup>
   (SML) "(Word8.fromInt 0)" and
@@ -540,6 +541,31 @@ code_printing
 | constant "integer_of_uint8_signed" \<rightharpoonup>
   (Scala) "BigInt"
 
+section {* Quickcheck setup *}
+
+definition uint8_of_natural :: "natural \<Rightarrow> uint8"
+where "uint8_of_natural x \<equiv> Uint8 (integer_of_natural x)"
+
+instantiation uint8 :: "{random, exhaustive, full_exhaustive}" begin
+definition "random_uint8 \<equiv> qc_random_cnv uint8_of_natural"
+definition "exhaustive_uint8 \<equiv> qc_exhaustive_cnv uint8_of_natural"
+definition "full_exhaustive_uint8 \<equiv> qc_full_exhaustive_cnv uint8_of_natural"
+instance ..
+end
+
+instantiation uint8 :: narrowing begin
+
+interpretation quickcheck_narrowing_samples
+  "\<lambda>i. let x = Uint8 i in (x, 0xFF - x)" "0"
+  "Typerep.Typerep (STR ''Uint8.uint8'') []" .
+
+definition "narrowing_uint8 d = qc_narrowing_drawn_from (narrowing_samples d) d"
+declare [[code drop: "partial_term_of :: uint8 itself \<Rightarrow> _"]]
+lemmas partial_term_of_uint8 [code] = partial_term_of_code
+
+instance ..
+end
+
 section {* Tests *}
 
 definition test_uint8 where
@@ -604,6 +630,19 @@ ML_val {* val true = @{code test_uint8} *}
 definition test_uint8' :: uint8
 where "test_uint8' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
 ML {* val 0wx12 = @{code test_uint8'} *}
+
+lemma "x AND y = x OR (y :: uint8)"
+quickcheck[random, expect=counterexample]
+quickcheck[exhaustive, expect=counterexample]
+oops
+
+lemma "(x :: uint8) AND x = x OR x"
+quickcheck[narrowing, expect=no_counterexample]
+by transfer simp
+
+lemma "(f :: uint8 \<Rightarrow> unit) = g"
+quickcheck[narrowing, size=3, expect=no_counterexample]
+by(simp add: fun_eq_iff)
 
 hide_const test_uint8 test_uint8'
 hide_fact test_uint8_def test_uint8'_def

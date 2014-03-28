@@ -150,7 +150,8 @@ code_printing code_module Data_Bits \<rightharpoonup> (Haskell)
 {-
   The ...Bounded functions assume that the Integer argument for the shift 
   or bit index fits into an Int, is non-negative and (for types of fixed bit width)
-  less than bitSize -}
+  less than bitSize
+-}
 
 infixl 7 .&.;
 infixl 6 `xor`;
@@ -205,6 +206,60 @@ shiftrUnbounded x n
 
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Integer -> a;
 shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);*}
+
+  and -- {* @{theory Quickcheck_Narrowing} maps @{typ integer} to 
+            Haskell's Prelude.Int type instead of Integer. For compatibility
+            with the Haskell target, we nevertheless provide bounded and 
+            unbounded functions. *}
+  (Haskell_Quickcheck)
+{*import qualified Data.Bits;
+
+{-
+  The functions assume that the Int argument for the shift or bit index is 
+  non-negative and (for types of fixed bit width) less than bitSize
+-}
+
+infixl 7 .&.;
+infixl 6 `xor`;
+infixl 5 .|.;
+
+(.&.) :: Data.Bits.Bits a => a -> a -> a;
+(.&.) = (Data.Bits..&.);
+
+xor :: Data.Bits.Bits a => a -> a -> a;
+xor = Data.Bits.xor;
+
+(.|.) :: Data.Bits.Bits a => a -> a -> a;
+(.|.) = (Data.Bits..|.);
+
+complement :: Data.Bits.Bits a => a -> a;
+complement = Data.Bits.complement;
+
+testBitUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool;
+testBitUnbounded = Data.Bits.testBit;
+
+testBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool;
+testBitBounded = Data.Bits.testBit;
+
+setBitUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
+setBitUnbounded x n True = Data.Bits.setBit x n;
+setBitUnbounded x n False = Data.Bits.clearBit x n;
+
+setBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
+setBitBounded x n True = Data.Bits.setBit x n;
+setBitBounded x n False = Data.Bits.clearBit x n;
+
+shiftlUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
+shiftlUnbounded = Data.Bits.shiftL;
+
+shiftlBounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
+shiftlBounded = Data.Bits.shiftL;
+
+shiftrUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
+shiftrUnbounded = Data.Bits.shiftR;
+
+shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Prelude.Int -> a;
+shiftrBounded = Data.Bits.shiftR;*}
 code_reserved Haskell Data_Bits
 
 code_printing code_module Bits_Integer \<rightharpoonup> (OCaml)

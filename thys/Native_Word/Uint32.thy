@@ -314,6 +314,7 @@ code_printing
 | constant Uint32 \<rightharpoonup>
   (SML) "Word32.fromInt" and
   (Haskell) "(Prelude.fromInteger _ :: Uint32.Word32)" and
+  (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint32.Word32)" and
   (Scala) "_.intValue"
 | constant Uint32_signed \<rightharpoonup>
   (OCaml) "Big'_int.int32'_of'_big'_int"
@@ -622,6 +623,31 @@ code_printing
   (OCaml) "Big'_int.big'_int'_of'_int32" and
   (Scala) "BigInt"
 
+section {* Quickcheck setup *}
+
+definition uint32_of_natural :: "natural \<Rightarrow> uint32"
+where "uint32_of_natural x \<equiv> Uint32 (integer_of_natural x)"
+
+instantiation uint32 :: "{random, exhaustive, full_exhaustive}" begin
+definition "random_uint32 \<equiv> qc_random_cnv uint32_of_natural"
+definition "exhaustive_uint32 \<equiv> qc_exhaustive_cnv uint32_of_natural"
+definition "full_exhaustive_uint32 \<equiv> qc_full_exhaustive_cnv uint32_of_natural"
+instance ..
+end
+
+instantiation uint32 :: narrowing begin
+
+interpretation quickcheck_narrowing_samples
+  "\<lambda>i. let x = Uint32 i in (x, 0xFFFFFFFF - x)" "0"
+  "Typerep.Typerep (STR ''Uint32.uint32'') []" .
+
+definition "narrowing_uint32 d = qc_narrowing_drawn_from (narrowing_samples d) d"
+declare [[code drop: "partial_term_of :: uint32 itself \<Rightarrow> _"]]
+lemmas partial_term_of_uint32 [code] = partial_term_of_code
+
+instance ..
+end
+
 section {* Tests *}
 
 definition test_uint32 where
@@ -685,6 +711,19 @@ end
 definition test_uint32' :: uint32 
 where "test_uint32' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
 ML {* val 0wx12 = @{code test_uint32'} *}
+
+lemma "x AND y = x OR (y :: uint32)"
+quickcheck[random, expect=counterexample]
+quickcheck[exhaustive, expect=counterexample]
+oops
+
+lemma "(x :: uint32) AND x = x OR x"
+quickcheck[narrowing, expect=no_counterexample]
+by transfer simp
+
+lemma "(f :: uint32 \<Rightarrow> unit) = g"
+quickcheck[narrowing, size=3, expect=no_counterexample]
+by(simp add: fun_eq_iff)
 
 hide_const test_uint32 test_uint32'
 hide_fact test_uint32_def test_uint32'_def

@@ -251,6 +251,7 @@ code_printing
 | constant Uint16 \<rightharpoonup>
   (SML_word) "Word16.fromInt" and
   (Haskell) "(Prelude.fromInteger _ :: Uint16.Word16)" and
+  (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint16.Word16)" and
   (Scala) "_.charValue"
 | constant "0 :: uint16" \<rightharpoonup>
   (SML_word) "(Word16.fromInt 0)" and
@@ -493,6 +494,31 @@ code_printing
   (Haskell) "Prelude.toInteger" and
   (Scala) "BigInt"
 
+section {* Quickcheck setup *}
+
+definition uint16_of_natural :: "natural \<Rightarrow> uint16"
+where "uint16_of_natural x \<equiv> Uint16 (integer_of_natural x)"
+
+instantiation uint16 :: "{random, exhaustive, full_exhaustive}" begin
+definition "random_uint16 \<equiv> qc_random_cnv uint16_of_natural"
+definition "exhaustive_uint16 \<equiv> qc_exhaustive_cnv uint16_of_natural"
+definition "full_exhaustive_uint16 \<equiv> qc_full_exhaustive_cnv uint16_of_natural"
+instance ..
+end
+
+instantiation uint16 :: narrowing begin
+
+interpretation quickcheck_narrowing_samples
+  "\<lambda>i. let x = Uint16 i in (x, 0xFFFF - x)" "0"
+  "Typerep.Typerep (STR ''Uint16.uint16'') []" .
+
+definition "narrowing_uint16 d = qc_narrowing_drawn_from (narrowing_samples d) d"
+declare [[code drop: "partial_term_of :: uint16 itself \<Rightarrow> _"]]
+lemmas partial_term_of_uint16 [code] = partial_term_of_code
+
+instance ..
+end
+
 section {* Tests *}
 
 definition test_uint16 where
@@ -552,6 +578,14 @@ notepad begin
 have test_uint16 by code_simp
 have test_uint16 by normalization
 end
+
+lemma "(x :: uint16) AND x = x OR x"
+quickcheck[narrowing, expect=no_counterexample]
+by transfer simp
+
+lemma "(f :: uint16 \<Rightarrow> unit) = g"
+quickcheck[narrowing, size=3, expect=no_counterexample]
+by(simp add: fun_eq_iff)
 
 hide_const (open) test_uint16
 hide_fact test_uint16_def

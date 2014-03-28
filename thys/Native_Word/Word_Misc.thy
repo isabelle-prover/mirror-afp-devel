@@ -414,4 +414,51 @@ where
   "qc_full_exhaustive_cnv a_of_natural f d = Quickcheck_Exhaustive.full_exhaustive 
   (%(x, xt). f (a_of_natural x, %_. Code_Evaluation.term_of (a_of_natural x))) d"
 
+declare [[quickcheck_narrowing_ghc_options = "-XTypeSynonymInstances"]]
+
+definition qc_narrowing_drawn_from :: "'a list \<Rightarrow> integer \<Rightarrow> _"
+where
+  "qc_narrowing_drawn_from xs =
+   foldr Quickcheck_Narrowing.sum (map Quickcheck_Narrowing.cons (butlast xs)) (Quickcheck_Narrowing.cons (last xs))"
+
+locale quickcheck_narrowing_samples =
+  fixes a_of_integer :: "integer \<Rightarrow> 'a \<times> 'a :: {partial_term_of, term_of}"
+  and zero :: "'a"
+  and tr :: "typerep"
+begin
+
+function narrowing_samples :: "integer \<Rightarrow> 'a list"
+where
+  "narrowing_samples i = 
+   (if i > 0 then let (a, a') = a_of_integer i in narrowing_samples (i - 1) @ [a, a'] else [zero])"
+by pat_completeness auto
+termination including integer.lifting
+proof(relation "measure nat_of_integer")
+  fix i :: integer
+  assume "0 < i"
+  thus "(i - 1, i) \<in> measure nat_of_integer"
+    by simp(transfer, simp)
+qed simp
+
+definition partial_term_of_sample :: "integer \<Rightarrow> 'a"
+where
+  "partial_term_of_sample i =
+  (if i < 0 then undefined
+   else if i = 0 then zero 
+   else if i mod 2 = 0 then snd (a_of_integer (i div 2))
+   else fst (a_of_integer (i div 2 + 1)))"
+
+lemma partial_term_of_code:
+  "partial_term_of (ty :: 'a itself) (Quickcheck_Narrowing.Narrowing_variable p t) \<equiv>
+    Code_Evaluation.Free (STR ''_'') tr"
+  "partial_term_of (ty :: 'a itself) (Quickcheck_Narrowing.Narrowing_constructor i []) \<equiv>
+   Code_Evaluation.term_of (partial_term_of_sample i)"
+by (rule partial_term_of_anything)+
+
+end
+
+lemmas [code] =
+  quickcheck_narrowing_samples.narrowing_samples.simps
+  quickcheck_narrowing_samples.partial_term_of_sample_def
+
 end
