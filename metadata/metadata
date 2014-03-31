@@ -1711,7 +1711,7 @@ abstract = This development provides a formal model of IEEE-754 floating-point a
 
 [Native_Word]
 title = Native Word
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2013-09-17
 topic = Computer Science/Data Structures
 abstract = This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
@@ -1720,6 +1720,9 @@ extra-history =
   [2013-11-06]:
         added conversion function between native words and characters
         (revision fd23d9a7fe3a)
+  [2014-03-31]:
+        added words of default size in the target language
+        (revision 25caf5065833)
 
 [HereditarilyFinite]
 title = The Hereditarily Finite Sets
