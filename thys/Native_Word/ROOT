@@ -13,6 +13,7 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Uint32
     Uint16_Test
     Uint8_Test
+    Uint
     Native_Cast
     Uint_Userguide
 

@@ -317,7 +317,7 @@ text {*
   Alternatively, this might be an instance of the problem described 
   in \S\ref{section:export_code:exception}.
 
-  For Haskell, you have to enable the extension TypeSynonymInstances
+  For Haskell, you have to enable the extension TypeSynonymInstances with \texttt{-XTypeSynonymInstances}
   if you are using polymorphic bit operations on the native word types.
 *}
 
