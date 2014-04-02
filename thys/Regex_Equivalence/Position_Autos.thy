@@ -232,14 +232,17 @@ The proof below follows an informal proof given by Helmut Seidl in personal comm
 fun hom_ab where
   "hom_ab (b, r) = (follow b r, final_a (b, r))"
 
-lemma hom_delta[simp]: "hom_ab (fold delta_a w br) = fold delta_b w (hom_ab br)"
-  by (induct w arbitrary: br) (auto simp add: Let_def split: prod.splits)
+lemma hom_delta: "hom_ab (delta_a x br) = delta_b x (hom_ab br)"
+by(cases br) (auto simp add: Let_def)
 
-lemma hom_init[simp]: "hom_ab (init_a r) = init_b r"
+lemma hom_deltas: "hom_ab (fold delta_a w br) = fold delta_b w (hom_ab br)"
+  by (induct w arbitrary: br) (auto simp add: hom_delta)
+
+lemma hom_init: "hom_ab (init_a r) = init_b r"
   unfolding init_a_def init_b_def hom_ab.simps by (simp add: nonfinal_empty_mrexp)
   
 lemma reachable_ab: "reachable_b as r = hom_ab ` reachable_a as r"
-  unfolding after.reachable before.reachable by force
+  unfolding after.reachable before.reachable by (force simp: hom_init hom_deltas)
 
 theorem card_reachable_ab: "card (reachable_b as r) \<le> card (reachable_a as r)"
   unfolding reachable_ab using after.finite_reachable by (rule card_image_le)
