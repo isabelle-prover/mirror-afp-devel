@@ -38,7 +38,7 @@ lemma (in approachable_on) diff_chain_componentwise:
   shows "(\<phi> has_derivative (\<lambda>x. (\<Sum>i\<in>Basis. (Dg x \<bullet> i) *\<^sub>R (Df i)))) (at t within J)"
 proof -
   interpret Df: linear Df
-    using f_deriv by (rule derivative_is_linear)
+    using f_deriv by (rule has_derivative_linear)
   have Df: "Df = (\<lambda>h. \<Sum>b\<in>Basis. (h \<bullet> b) *\<^sub>R Df b)"
     by (simp only: Df.scaleR [symmetric] Df.setsum [symmetric] euclidean_representation)
   have "\<phi> = f o g" by (auto simp add: \<phi>_def)

@@ -124,7 +124,7 @@ next
     note f'[has_derivative_intros]
     note x'[simplified has_vector_derivative_def, has_derivative_intros]
     have [simp]: "\<And>c x'. c *\<^sub>R f' (ta, x ta) x' = f' (ta, x ta) (c *\<^sub>R x')"
-      using mta ht assms by (auto intro!: f' linear_cmul[symmetric] derivative_is_linear)
+      using mta ht assms by (auto intro!: f' linear_cmul[symmetric] has_derivative_linear)
     have "((\<lambda>t. f (t, x t)) has_vector_derivative f' (ta, x ta) (1, f (ta, x ta))) (at ta within {t..u})"
       unfolding has_vector_derivative_def
       using assms ht mta by (auto intro!: has_derivative_eq_intros)
@@ -174,7 +174,7 @@ proof -
     apply (rule order_trans)
      apply (rule onorm[OF has_derivative_bounded_linear[OF f']])
        using tx
-       apply (auto intro!: f'_bounded f' derivative_is_linear)
+       apply (auto intro!: f'_bounded f' has_derivative_linear)
     done
   finally show ?thesis .
 qed
@@ -190,7 +190,7 @@ proof
     have "convex ?I" by (intro convex convex_Times)
     moreover have "\<forall>x\<in>?I. (f has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
       using f' f'_bounded
-      by (auto simp add: intro!: f'_bounded derivative_is_linear)
+      by (auto simp add: intro!: f'_bounded has_derivative_linear)
     moreover assume "x \<in> X" "y \<in> X"
     with `t \<in> T` have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
     ultimately have "norm (f (t, x) - f (t, y)) \<le> B' * norm ((t, x) - (t, y))"

@@ -65,7 +65,7 @@ proof -
         has_derivative_subset[OF _ subset]
         has_derivative_in_compose[where f="\<lambda>x. a + x *\<^sub>R u"]
         fderiv line_in
-        simp add: linear.scaleR[OF derivative_is_linear[OF fderiv]])
+        simp add: linear.scaleR[OF has_derivative_linear[OF fderiv]])
     with zero_less_one
     have "\<exists>x\<in>{0<..<1}. f (a + 1 *\<^sub>R u) \<bullet> i - f (a + 0 *\<^sub>R u) \<bullet> i = (1 - 0) *\<^sub>R J (a + x *\<^sub>R u) u \<bullet> i"
       by (rule mvt_simple)

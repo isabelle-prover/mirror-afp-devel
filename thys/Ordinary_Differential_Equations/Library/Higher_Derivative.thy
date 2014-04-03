@@ -122,7 +122,7 @@ locale higher_derivative = approachable_on G for G::"'a::euclidean_space set" +
 begin
 
 lemma linear_Ds: "\<And>a. n \<ge> length ds \<Longrightarrow> a \<in> G \<Longrightarrow> linear (Ds ds a)"
-  by (cases ds) (auto intro!: derivative_is_linear has_derivative_intros)
+  by (cases ds) (auto intro!: has_derivative_linear has_derivative_intros)
 
 end
 
@@ -174,11 +174,11 @@ proof -
   def g \<equiv> "\<lambda>x. f x - f' x0 x"
   have g: "\<And>x. x \<in> S \<Longrightarrow> (g has_derivative (\<lambda>i. f' x i - f' x0 i)) (at x within S)"
     unfolding g_def using assms
-    by (auto intro!: has_derivative_eq_intros bounded_linear.has_derivative[OF derivative_linear, OF f'])
+    by (auto intro!: has_derivative_eq_intros bounded_linear.has_derivative[OF has_derivative_bounded_linear, OF f'])
   from B have B: "\<forall>x\<in>{0..1}. onorm (\<lambda>i. f' (a + x *\<^sub>R (b - a)) i - f' x0 i) \<le> B"
      using assms by (auto simp: fun_diff_def)
   from differentiable_bound_line[OF assms(1) g B] `x0 \<in> S`
-  show ?thesis by (simp add: g_def field_simps linear_sub[OF derivative_is_linear[OF f']])
+  show ?thesis by (simp add: g_def field_simps linear_sub[OF has_derivative_linear[OF f']])
 qed
 
 locale higher_continuous_derivative = higher_derivative +
@@ -196,7 +196,7 @@ lemma continuous_on_first: "\<And>i. continuous_on G (\<lambda>a. f' a i)"
   by (metis (full_types) Derivative.differentiableI differentiable_imp_continuous_on
     differentiable_on_def second_fderiv)
 
-lemmas linear_first = derivative_is_linear[OF first_fderiv]
+lemmas linear_first = has_derivative_linear[OF first_fderiv]
 
 lemmas first_linear_simps [simp] =
   linear_add[OF linear_first]
@@ -214,7 +214,7 @@ lemma bilinear_second: assumes "a \<in> G" shows "bilinear (f'' a)"
   unfolding bilinear_def
 proof safe
   fix j
-  show "linear (f'' a j)" by (rule derivative_is_linear[OF second_fderiv, OF `a \<in> G`])
+  show "linear (f'' a j)" by (rule has_derivative_linear[OF second_fderiv, OF `a \<in> G`])
   have "\<And>i1 i2. (\<lambda>j. f'' a (i1 + i2) j) = (\<lambda>j. f'' a i1 j + f'' a i2 j)"
     using `a \<in> G`  by (intro second_unique[OF has_derivative_transform]) (auto intro!: has_derivative_intros)
   moreover have "\<And>c i1. f'' a (c *\<^sub>R i1) = (\<lambda>j. c *\<^sub>R f'' a i1 j)"
@@ -327,7 +327,7 @@ proof -
           fix t::real assume "t \<in> {0..1}"
           with elim have linear_f': "\<And>c x. f' (?ij t u) (c *\<^sub>R x) = c *\<^sub>R f' (?ij t u) x"
               "\<And>c x. f' (?i t u) (c *\<^sub>R x) = c *\<^sub>R f' (?i t u) x"
-            using linear_cmul[OF derivative_is_linear, OF first_fderiv] by auto
+            using linear_cmul[OF has_derivative_linear, OF first_fderiv] by auto
           have "((?g u) has_derivative ?g' t) (at t within {0..1})"
             using elim `t \<in> {0..1}`
             by (auto intro!: has_derivative_eq_intros has_derivative_in_compose[of  "\<lambda>t. ?ij t u" _ _ _ f]
@@ -337,21 +337,21 @@ proof -
         from elim(1) `i \<noteq> 0` `j \<noteq> 0` `0 < e` have f'ij: "\<And>t. t \<in> {0..1} \<Longrightarrow>
             norm (f' (a + (t * u) *\<^sub>R i + u *\<^sub>R j) i - f' a i - f'' a i ((t * u) *\<^sub>R i + u *\<^sub>R j)) \<le>
             e * norm ((t * u) *\<^sub>R i + u *\<^sub>R j)"
-          using  linear_0[OF derivative_is_linear, OF second_fderiv, OF `a \<in> G`]
+          using  linear_0[OF has_derivative_linear, OF second_fderiv, OF `a \<in> G`]
           by (case_tac "u *\<^sub>R j + (t * u) *\<^sub>R i = 0") (auto simp: field_simps
             simp del: pos_divide_le_eq simp add: pos_divide_le_eq[symmetric])
         from elim(2) have f'i: "\<And>t. t \<in> {0..1} \<Longrightarrow> norm (f' (a + (t * u) *\<^sub>R i) i - f' a i -
           f'' a i ((t * u) *\<^sub>R i)) \<le> e * abs (t * u) * norm i"
-          using `i \<noteq> 0` `j \<noteq> 0` linear_0[OF derivative_is_linear, OF second_fderiv, OF `a \<in> G`]
+          using `i \<noteq> 0` `j \<noteq> 0` linear_0[OF has_derivative_linear, OF second_fderiv, OF `a \<in> G`]
           by (case_tac "t * u = 0") (auto simp: field_simps simp del: pos_divide_le_eq
             simp add: pos_divide_le_eq[symmetric] mult_pos_pos)
         have "norm (?g u 1 - ?g u 0 - (u * u) *\<^sub>R f'' a i j) =
           norm ((?g u 1 - ?g u 0 - u *\<^sub>R (f' (a + u *\<^sub>R j) i - (f' a i)))
             + u *\<^sub>R (f' (a + u *\<^sub>R j) i - f' a i - u *\<^sub>R f'' a i j))"
             (is "_ = norm (?g10 + ?f'i)")
-          by (simp add: algebra_simps linear_cmul[OF derivative_is_linear, OF second_fderiv,
+          by (simp add: algebra_simps linear_cmul[OF has_derivative_linear, OF second_fderiv,
               OF `a \<in> G`]
-            linear_add[OF derivative_is_linear, OF second_fderiv, OF `a \<in> G`])
+            linear_add[OF has_derivative_linear, OF second_fderiv, OF `a \<in> G`])
         also have "\<dots> \<le> norm ?g10 + norm ?f'i"
           by (blast intro: order_trans add_mono norm_triangle_le)
         also
@@ -402,7 +402,7 @@ proof -
         have "norm ?g10 \<le> 2 * u * u * e * (norm i + norm j)" by simp
         also have "norm ?f'i \<le> abs u *
           norm ((f' (a + (u) *\<^sub>R j) i - f' a i - f'' a i ((u) *\<^sub>R j)))"
-          using linear_cmul[OF derivative_is_linear, OF second_fderiv, OF `a \<in> G`]
+          using linear_cmul[OF has_derivative_linear, OF second_fderiv, OF `a \<in> G`]
           by simp
         also have "\<dots> \<le> abs u * (e * norm ((u) *\<^sub>R j))"
           using f'ij[OF `0 \<in> {0..1}`] by (auto intro: mult_left_mono)

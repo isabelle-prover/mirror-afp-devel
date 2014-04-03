@@ -301,7 +301,7 @@ proof (safe)
     by auto
 next
   show "bounded_linear (\<lambda>x. x *\<^sub>R g')"
-    using derivative_linear[OF f'[simplified has_vector_derivative_def], simplified f'g'] assms
+    using has_derivative_bounded_linear[OF f'[simplified has_vector_derivative_def], simplified f'g'] assms
     by simp
 qed
 
@@ -458,7 +458,7 @@ proof -
   have "\<And>t. t \<in> {0..1} \<Longrightarrow>
     ((\<lambda>t. f (x + t *\<^sub>R y)) has_vector_derivative f' (x + t *\<^sub>R y) y) (at t within {0..1})"
     using assms
-    by (auto simp: has_vector_derivative_def linear_cmul[OF derivative_is_linear[OF f'], symmetric]
+    by (auto simp: has_vector_derivative_def linear_cmul[OF has_derivative_linear[OF f'], symmetric]
       intro!: has_derivative_eq_intros)
   from fundamental_theorem_of_calculus[rule_format, OF _ this]
   show ?th1
@@ -476,7 +476,7 @@ proof -
       by (subst setsum_commute[symmetric])
         (simp only: scaleR_setsum_right[symmetric] euclidean_representation)
     also have "\<dots> = (\<Sum>i\<in>Basis. (f' (x + t *\<^sub>R y) y \<bullet> i) *\<^sub>R i)"
-      by (subst Derivative.linear_componentwise[OF derivative_is_linear[OF f'], OF line_in[OF t]])
+      by (subst Derivative.linear_componentwise[OF has_derivative_linear[OF f'], OF line_in[OF t]])
         (simp add: scaleR_setsum_left)
     finally
     show "(\<Sum>i\<in>Basis. (y \<bullet> i) *\<^sub>R f' (x + t *\<^sub>R y) i) = (\<Sum>i\<in>Basis. (f' (x + t *\<^sub>R y) y \<bullet> i) *\<^sub>R i)" .
@@ -510,7 +510,7 @@ lemma Sup_real_mult:
   using assms
 proof cases
   assume "a = 0" with `S \<noteq> {}` show ?thesis
-    by (simp add: SUP_def[symmetric] cSUP_const)
+    by (simp add: cSUP_const)
 next
   assume "a \<noteq> 0"
   with `0 \<le> a` have "0 < a"
