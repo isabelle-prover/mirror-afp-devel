@@ -782,6 +782,11 @@ extra-history =
   [2013-09-20]:
         stream theory uses type and operations from HOL/BNF/Examples/Stream
         (revision 692809b2b262)<br>
+  [2014-04-03]:
+        ccpo structure on codatatypes used to define ldrop, ldropWhile, lfilter, lconcat as least fixpoint;
+        ccpo topology on coinductive lists contributed by Johannes Hölzl;
+        added examples
+        (revision 23cd8156bd42)<br>
 
 [Stream-Fusion]
 title = Stream Fusion
