@@ -165,7 +165,8 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
     hence "card {x. x \<ge> a \<and> poly p x = 0} = card {x. x > a \<and> poly p x = 0}"
     proof (cases rule: disjE)
       assume "p = 0"
-      have "\<not>finite {a<..<a+1}" using real_infinite_interval by simp
+      have "\<not>finite {a<..<a+1}"
+        by (metis infinite_Ioo less_add_one) 
       moreover have "{a<..<a+1} \<subseteq> {x. x \<ge> a \<and> poly p x = 0}"
                     "{a<..<a+1} \<subseteq> {x. x > a \<and> poly p x = 0}" 
           using `p = 0` by auto
@@ -200,7 +201,8 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
     hence "card {x. x < a \<and> poly p x = 0} = card {x. x \<le> a \<and> poly p x = 0}"
     proof (cases rule: disjE)
       assume "p = 0"
-      have "\<not>finite {a - 1<..<a}" using real_infinite_interval by simp
+      have "\<not>finite {a - 1<..<a}" 
+        by (metis infinite_Ioo diff_add_cancel less_add_one) 
       moreover have "{a - 1<..<a} \<subseteq> {x. x \<le> a \<and> poly p x = 0}"
                     "{a - 1<..<a} \<subseteq> {x. x < a \<and> poly p x = 0}" 
           using `p = 0` by auto

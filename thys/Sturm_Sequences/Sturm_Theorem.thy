@@ -1515,7 +1515,7 @@ proof (cases "p \<noteq> 0 \<and> a \<le> b")
       case True
         with False have [simp]: "p = 0" by simp
         have subset: "{a<..<b} \<subseteq> {x. a < x \<and> x \<le> b \<and> poly p x = 0}" by auto
-        from real_infinite_interval[OF True] have "\<not>finite {a<..<b}" .
+        from infinite_Ioo[OF True] have "\<not>finite {a<..<b}" .
         hence "\<not>finite {x. a < x \<and> x \<le> b \<and> poly p x = 0}"
             using finite_subset[OF subset] by blast
         thus ?thesis by simp
@@ -1550,7 +1550,7 @@ lemma count_roots_correct:
   shows "count_roots p = card {x. poly p x = 0}" (is "_ = card ?S")
 proof (cases "p = 0")
   case True
-    with real_infinite_interval[of 0 1] finite_subset[of "{0<..<1}" ?S]
+    with infinite_Ioo[of 0 1] finite_subset[of "{0<..<1}" ?S]
         have "\<not>finite {x. poly p x = 0}" by force
     thus ?thesis by (simp add: count_roots_def True)
 next
@@ -1576,7 +1576,7 @@ lemma count_roots_above_correct:
          (is "_ = card ?S")
 proof (cases "p = 0")
   case True
-    with real_infinite_interval[of a "a+1"] finite_subset[of "{a<..<a+1}" ?S]
+    with infinite_Ioo[of a "a+1"] finite_subset[of "{a<..<a+1}" ?S]
         have "\<not>finite {x. x > a \<and> poly p x = 0}" by force
     thus ?thesis by (simp add: count_roots_above_def True)
 next
@@ -1603,7 +1603,7 @@ lemma count_roots_below_correct:
          (is "_ = card ?S")
 proof (cases "p = 0")
   case True
-    with real_infinite_interval[of "a - 1" a] 
+    with infinite_Ioo[of "a - 1" a] 
          finite_subset[of "{a - 1<..<a}" ?S]
         have "\<not>finite {x. x \<le> a \<and> poly p x = 0}" by force
     thus ?thesis by (simp add: count_roots_below_def True)
