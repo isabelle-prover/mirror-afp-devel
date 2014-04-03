@@ -20,8 +20,7 @@ text {* A sensible requirement for an integral operator is that it be
   classes, see \cite{Nipkow93,wenzelax}} @{text ord} of ordered
   types like this.
 
-  @{prop "mon_conv u f \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and> isLub UNIV (range u)
-  f"}
+  @{prop "mon_conv u f \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and> Sup (range u) = f"}
 
   However, this employs the general concept of a least upper bound.
   For the special types we have in mind, the more specific
