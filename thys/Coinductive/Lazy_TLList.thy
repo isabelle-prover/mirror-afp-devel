@@ -2,14 +2,18 @@
     Author:      Andreas Lochbihler
 *)
 
+header {* Code generator setup to implement terminated lazy lists lazily *}
+
 theory Lazy_TLList imports
   TLList
   Lazy_LList
 begin
 
-code_identifier
-  code_module Lazy_TLList \<rightharpoonup>
-    (SML) TLList and (OCaml) TLList and (Haskell) TLList and (Scala) TLList
+code_identifier code_module Lazy_TLList \<rightharpoonup>
+  (SML) TLList and
+  (OCaml) TLList and
+  (Haskell) TLList and
+  (Scala) TLList
 
 definition Lazy_tllist :: "(unit \<Rightarrow> 'a \<times> ('a, 'b) tllist + 'b) \<Rightarrow> ('a, 'b) tllist"
 where [code del]:
@@ -19,6 +23,10 @@ definition force :: "('a, 'b) tllist \<Rightarrow> 'a \<times> ('a, 'b) tllist +
 where [simp, code del]: "force xs = (case xs of TNil b \<Rightarrow> Inr b | TCons x ys \<Rightarrow> Inl (x, ys))"
 
 code_datatype Lazy_tllist
+
+declare -- {* Restore consistency in code equations between @{const partial_term_of} and @{const narrowing} for @{typ "('a, 'b) tllist"} *}
+   [[code drop: "partial_term_of :: (_, _) tllist itself => _"]]
+   partial_term_of_tllist_code [code]
 
 declare Lazy_tllist_def [simp]
 declare sum.splits [split]
@@ -176,9 +184,9 @@ ML_val {*
   val thd = @{code thd} zeros;
   val ttl = @{code ttl} zeros;
   val ttl' = @{code force} ttl;
-
-  val tdrop = @{code tdropn} (@{code Suc} @{code "0::nat"}) zeros;
-
+  
+  val tdropn = @{code tdropn} (@{code Suc} @{code "0::nat"}) zeros;
+  
   val tfilter = @{code tfilter} 1 (K false) zeros;
 *}
 

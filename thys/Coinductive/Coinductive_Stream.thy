@@ -1,7 +1,7 @@
 (*  Title:      HOL/Library/Coinductive_Stream.thy
     Author:     Peter Gammie and Andreas Lochbihler
 *)
-header {* Coinductive streams *}
+header {* Infinite lists as a codatatype *}
 
 theory Coinductive_Stream
 imports
@@ -55,7 +55,7 @@ lemma unfold_stream_ltl_unroll:
   "unfold_stream SHD STL (STL b) = unfold_stream (SHD \<circ> STL) STL b"
 by(coinduction arbitrary: b) auto
 
-lemma unfold_stream_eq_Stream [simp]:
+lemma unfold_stream_eq_SCons [simp]:
   "unfold_stream SHD STL b = x ## xs \<longleftrightarrow>
   x = SHD b \<and> xs = unfold_stream SHD STL (STL b)"
 by(subst unfold_stream.ctr) auto
@@ -252,7 +252,7 @@ lemma stream_of_llist_transfer [transfer_rule]:
   "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> pcr_stream op =) (\<lambda>xs. xs) stream_of_llist"
 by(simp add: Lifting.invariant_def rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
-lemma Stream_transfer [transfer_rule]:
+lemma SCons_transfer [transfer_rule]:
   "(A ===> pcr_stream A ===> pcr_stream A) LCons op ##"
 by(auto simp add: cr_stream_def pcr_stream_def intro!: rel_funI relcomppI intro: llist_all2_expand)
 
@@ -330,13 +330,13 @@ by transfer (subst inf_llist_rec, simp add: o_def)
 lemma snth_of_seq [simp]: "snth (of_seq f) = f"
 by transfer (simp add: fun_eq_iff)
 
-lemma snth_Stream: "snth (x ## xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> snth xs n')"
+lemma snth_SCons: "snth (x ## xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> snth xs n')"
 by(simp split: nat.split)
 
-lemma snth_Stream_simps [simp]:
-  shows snth_Stream_0: "(x ## xs) !! 0 = x"
-  and snth_Stream_Suc: "(x ## xs) !! Suc n = xs !! n"
-by(simp_all add: snth_Stream)
+lemma snth_SCons_simps [simp]:
+  shows snth_SCons_0: "(x ## xs) !! 0 = x"
+  and snth_SCons_Suc: "(x ## xs) !! Suc n = xs !! n"
+by(simp_all add: snth_SCons)
 
 lemma of_seq_snth [simp]: "of_seq (snth xs) = xs"
 by transfer simp
@@ -361,7 +361,7 @@ lemmas siterate [nitpick_simp] = siterate.code
 lemma smap_iterates: "smap f (siterate f x) = siterate f (f x)"
 by transfer (rule lmap_iterates)
 
-lemma siterate_smap: "siterate f x = SCons x (smap f (siterate f x))"
+lemma siterate_smap: "siterate f x = x ## (smap f (siterate f x))"
 by transfer (rule iterates_lmap)
 
 lemma siterate_conv_of_seq: "siterate f a = of_seq (\<lambda>n. (f ^^ n) a)"

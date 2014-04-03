@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Quotient preservation and respectfulness theorems for terminated coinductive lists *}
+header {* Setup for Isabelle's quotient package for terminated lazy lists *}
 
 theory Quotient_TLList imports
   TLList

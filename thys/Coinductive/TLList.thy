@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Terminated coinductive lists *}
+header {* Terminated coinductive lists and their operations *}
 
 theory TLList imports
   Coinductive_List
@@ -86,6 +86,37 @@ termination by (relation "measure nat_of_integer") (simp_all, transfer, simp)
 instance ..
 end
 end
+
+declare [[code drop: "partial_term_of :: (_, _) tllist itself => _"]]
+
+lemma partial_term_of_tllist_code [code]:
+  fixes tytok :: "('a :: partial_term_of, 'b :: partial_term_of) tllist itself" shows
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
+   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE(('a, 'b) tllist))"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 [b]) \<equiv>
+   Code_Evaluation.App
+     (Code_Evaluation.Const (STR ''TLList.tllist.TNil'') (Typerep.typerep TYPE('b \<Rightarrow> ('a, 'b) tllist)))
+     (partial_term_of TYPE('b) b)"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
+   Code_Evaluation.App
+     (Code_Evaluation.App
+        (Code_Evaluation.Const
+           (STR ''TLList.tllist.TCons'')
+           (Typerep.typerep TYPE('a \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist)))
+        (partial_term_of TYPE('a) head))
+     (partial_term_of TYPE(('a, 'b) tllist) tail)"
+by-(rule partial_term_of_anything)+
+
+text {* Test quickcheck setup *}
+
+lemma "xs = TNil x"
+quickcheck[random, expect=counterexample]
+quickcheck[exhaustive, expect=counterexample]
+oops
+
+lemma "TCons x xs = TCons x xs"
+quickcheck[narrowing, expect=no_counterexample]
+oops
 
 text {* More lemmas about generated constants *}
 
@@ -295,7 +326,6 @@ qed
 lemma tllist_of_llist_inverse [simp]:
   "llist_of_tllist (tllist_of_llist b xs) = xs"
 by(coinduction arbitrary: xs) auto
-
 
 definition cr_tllist :: "('a llist \<times> 'b) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
   where "cr_tllist \<equiv> (\<lambda>(xs, b) ys. tllist_of_llist b xs = ys)"
@@ -508,6 +538,30 @@ by transfer auto
 lemma tappend_TCons [simp, code, nitpick_simp]:
   "tappend (TCons a tr) f = TCons a (tappend tr f)"
 by transfer(auto simp add: apfst_def map_prod_def split: prod.splits)
+
+lemma tappend_TNil2 [simp]:
+  "tappend xs TNil = xs"
+by transfer auto
+
+lemma tappend_assoc: "tappend (tappend xs f) g = tappend xs (\<lambda>b. tappend (f b) g)"
+by transfer(auto simp add: split_beta lappend_assoc)
+
+lemma terminal_tappend:
+  "terminal (tappend xs f) = (if tfinite xs then terminal (f (terminal xs)) else terminal xs)"
+by transfer(auto simp add: split_beta)
+
+lemma tfinite_tappend: "tfinite (tappend xs f) \<longleftrightarrow> tfinite xs \<and> tfinite (f (terminal xs))"
+by transfer auto
+
+lift_definition tcast :: "('a, 'b) tllist \<Rightarrow> ('a, 'c) tllist"
+is "\<lambda>(xs, a). (xs, undefined)" by clarsimp
+
+lemma tappend_inf: "\<not> tfinite xs \<Longrightarrow> tappend xs f = tcast xs"
+by(transfer)(auto simp add: apfst_def map_prod_def split_beta lappend_inf)
+
+text {* @{term tappend} is the monadic bind on @{typ "('a, 'b) tllist"} *}
+
+lemmas tllist_monad = tappend_TNil tappend_TNil2 tappend_assoc
 
 subsection {* Appending a terminated lazy list to a lazy list @{term "lappendt"} *}
 
@@ -1041,10 +1095,12 @@ done
 
 lemma TNil_transfer2 [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"
 by auto
+declare TNil_transfer [transfer_rule]
 
 lemma TCons_transfer2 [transfer_rule]:
   "(A ===> tllist_all2 A B ===> tllist_all2 A B) TCons TCons"
 unfolding rel_fun_def by simp
+declare TCons_transfer [transfer_rule]
 
 lemma case_tllist_transfer [transfer_rule]:
   "((B ===> C) ===> (A ===> tllist_all2 A B ===> C) ===> tllist_all2 A B ===> C)
@@ -1084,6 +1140,7 @@ qed
 lemma ttl_transfer2 [transfer_rule]:
   "(tllist_all2 A B ===> tllist_all2 A B) ttl ttl"
   unfolding ttl_def[abs_def] by transfer_prover
+declare ttl_transfer [transfer_rule]
 
 lemma tset_transfer2 [transfer_rule]:
   "(tllist_all2 A B ===> rel_set A) tset tset"
@@ -1092,46 +1149,56 @@ by (intro rel_funI rel_setI) (auto simp only: in_tset_conv_tnth tllist_all2_conv
 lemma tmap_transfer2 [transfer_rule]:
   "((A ===> B) ===> (C ===> D) ===> tllist_all2 A C ===> tllist_all2 B D) tmap tmap"
 by(auto simp add: rel_fun_def tllist_all2_tmap1 tllist_all2_tmap2 elim: tllist_all2_mono)
+declare tmap_transfer [transfer_rule]
 
 lemma is_TNil_transfer2 [transfer_rule]:
   "(tllist_all2 A B ===> op =) is_TNil is_TNil"
 by(auto dest: tllist_all2_is_TNilD)
+declare is_TNil_transfer [transfer_rule]
 
 lemma tappend_transfer [transfer_rule]:
   "(tllist_all2 A B ===> (B ===> tllist_all2 A C) ===> tllist_all2 A C) tappend tappend"
 by(auto intro: tllist_all2_tappendI elim: rel_funE)
+declare tappend.transfer [transfer_rule]
 
 lemma lappendt_transfer [transfer_rule]:
   "(llist_all2 A ===> tllist_all2 A B ===> tllist_all2 A B) lappendt lappendt"
 unfolding rel_fun_def
 by transfer(auto intro: llist_all2_lappendI)
+declare lappendt.transfer [transfer_rule]
 
 lemma llist_of_tllist_transfer2 [transfer_rule]:
   "(tllist_all2 A B ===> llist_all2 A) llist_of_tllist llist_of_tllist"
 by(auto intro: llist_all2_tllist_of_llistI)
+declare llist_of_tllist_transfer [transfer_rule]
 
 lemma tllist_of_llist_transfer2 [transfer_rule]:
   "(B ===> llist_all2 A ===> tllist_all2 A B) tllist_of_llist tllist_of_llist"
 by(auto intro!: rel_funI)
+declare tllist_of_llist_transfer [transfer_rule]
 
 lemma tlength_transfer [transfer_rule]:
   "(tllist_all2 A B ===> op =) tlength tlength"
 by(auto dest: tllist_all2_tlengthD)
+declare tlength.transfer [transfer_rule]
 
 lemma tdropn_transfer [transfer_rule]:
   "(op = ===> tllist_all2 A B ===> tllist_all2 A B) tdropn tdropn"
 unfolding rel_fun_def
 by transfer(auto intro: llist_all2_ldropnI)
+declare tdropn.transfer [transfer_rule]
 
 lemma tfilter_transfer [transfer_rule]:
   "(B ===> (A ===> op =) ===> tllist_all2 A B ===> tllist_all2 A B) tfilter tfilter"
 unfolding rel_fun_def
 by transfer(auto intro: llist_all2_lfilterI dest: llist_all2_lfiniteD)
+declare tfilter.transfer [transfer_rule]
 
 lemma tconcat_transfer [transfer_rule]:
   "(B ===> tllist_all2 (llist_all2 A) B ===> tllist_all2 A B) tconcat tconcat"
 unfolding rel_fun_def
 by transfer(auto intro: llist_all2_lconcatI dest: llist_all2_lfiniteD)
+declare tconcat.transfer [transfer_rule]
 
 lemma tllist_all2_rsp:
   assumes R1: "\<forall>x y. R1 x y \<longrightarrow> (\<forall>a b. R1 a b \<longrightarrow> S x a = T y b)"
@@ -1161,6 +1228,7 @@ lemma tllist_all2_transfer2 [transfer_rule]:
   "((R1 ===> R1 ===> op =) ===> (R2 ===> R2 ===> op =) ===>
     tllist_all2 R1 R2 ===> tllist_all2 R1 R2 ===> op =) tllist_all2 tllist_all2"
 by (simp add: tllist_all2_rsp rel_fun_def)
+declare tllist_all2_transfer [transfer_rule]
 
 end
 

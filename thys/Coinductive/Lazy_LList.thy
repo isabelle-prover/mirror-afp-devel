@@ -1,15 +1,19 @@
 (*  Title:       Lazy_LList.thy
     Author:      Andreas Lochbihler
 *)
-header {* Explicit laziness in the code generator *}
+header {* Code generator setup to implement lazy lists lazily *}
 
 theory Lazy_LList imports
   Coinductive_List
 begin
 
-code_identifier
-  code_module Lazy_LList \<rightharpoonup>
-    (SML) Coinductive_List and (OCaml) Coinductive_List and (Haskell) Coinductive_List and (Scala) Coinductive_List
+subsection {* Lazy lists *}
+
+code_identifier code_module Lazy_LList \<rightharpoonup>
+  (SML) Coinductive_List and
+  (OCaml) Coinductive_List and
+  (Haskell) Coinductive_List and
+  (Scala) Coinductive_List
 
 definition Lazy_llist :: "(unit \<Rightarrow> ('a \<times> 'a llist) option) \<Rightarrow> 'a llist"
 where [simp]:
@@ -19,6 +23,10 @@ definition force :: "'a llist \<Rightarrow> ('a \<times> 'a llist) option"
 where [simp, code del]: "force xs = (case xs of LNil \<Rightarrow> None | LCons x ys \<Rightarrow> Some (x, ys))"
 
 code_datatype Lazy_llist
+
+declare -- {* Restore consistency in code equations between @{const partial_term_of} and @{const narrowing} for @{typ "'a llist"} *}
+   [[code drop: "partial_term_of :: _ llist itself => _"]]
+   partial_term_of_llist_code [code]
 
 declare option.splits [split]
 

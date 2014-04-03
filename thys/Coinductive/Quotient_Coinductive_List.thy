@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Quotient preservation and respectfulness theorems for coinductive lists *}
+header {* Setup for Isabelle's quotient package for lazy lists *}
 
 theory Quotient_Coinductive_List imports
   "~~/src/HOL/Library/Quotient_List"

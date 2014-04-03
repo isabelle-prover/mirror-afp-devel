@@ -1,7 +1,7 @@
 (*  Author:      Andreas Lochbihler
     Maintainer:  Andreas Lochbihler
 *)
-header {* A codatatype for resumptions *}
+header {* Manual construction of a resumption codatatype *}
 
 theory Resumption imports 
   Main 

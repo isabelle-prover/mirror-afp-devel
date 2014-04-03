@@ -1,6 +1,31 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
 
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<cent>, \<currency>
+
 % this should be the last package used
 \usepackage{pdfsetup}
 
@@ -8,11 +33,14 @@
 \urlstyle{rm}
 \isabellestyle{it}
 
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
 
 \begin{document}
 
-\title{Coinduction}
-\author{Andreas Lochbihler}
+\title{Coinductive}
+\author{Andreas Lochbihler \\ with contributions by Johannes H\"olzl}
 \maketitle
 
 \begin{abstract}
@@ -22,8 +50,9 @@ types and sets. Currently, it contains:
 \item coinductive natural numbers,
 \item coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists,
 \item coinductive terminated lists, i.e. lazy lists with the stop symbol containing data,
+\item coinductive streams,
 \item coinductive resumptions, and
-\item a version of K\"onig's lemma as an application for coinductive lists
+\item numerous examples which include a version of K\"onig's lemma and the Hamming stream.
 \end{itemize}
 
 The initial theory was contributed by Paulson and Wenzel.  Extensions

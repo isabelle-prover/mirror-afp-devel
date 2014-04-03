@@ -5,8 +5,7 @@
 header {* Example: Koenig's lemma *}
 
 theory Koenigslemma imports 
-  Coinductive_List
-  "~~/src/HOL/Library/Infinite_Set"
+  "../Coinductive_List"
 begin
 
 type_synonym 'node graph = "'node \<Rightarrow> 'node \<Rightarrow> bool"
