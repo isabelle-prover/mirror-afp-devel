@@ -194,7 +194,7 @@ end
 
 
 lemma lprefix_lappend2I: "lprefix xs ys \<Longrightarrow> lprefix xs (lappend ys zs)"
-by(auto simp add: lappend_assoc lprefix_def)
+by(auto simp add: lappend_assoc lprefix_conv_lappend)
 
 locale known_addrs_typing' =
   h!: known_addrs_typing
@@ -268,7 +268,7 @@ proof -
 
   from ns E'
   have ns: "non_speculative P (vs_type_all P) (lmap snd (ldropn (length (lift_start_obs h.start_tid h.start_heap_obs)) (ltake (enat w) E)))"
-    by(subst (asm) lappend_ltake_ldrop[where n="enat (length (lift_start_obs h.start_tid h.start_heap_obs))", symmetric])(simp add: non_speculative_lappend min_def ltake_lappend1 w_values_vs_type_all_start_heap_obs[OF wfP] split: split_if_asm)
+    by(subst (asm) lappend_ltake_ldrop[where n="enat (length (lift_start_obs h.start_tid h.start_heap_obs))", symmetric])(simp add: non_speculative_lappend min_def ltake_lappend1 w_values_vs_type_all_start_heap_obs[OF wfP] ldrop_enat split: split_if_asm)
 
   show ?thesis
   proof(cases "w < length ?start_obs")

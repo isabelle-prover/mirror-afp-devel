@@ -839,7 +839,7 @@ unfolding thread_start_actions_ok_def by blast
 
 lemma thread_start_actions_ok_prefix:
   "\<lbrakk> thread_start_actions_ok E'; lprefix E E' \<rbrakk> \<Longrightarrow> thread_start_actions_ok E"
-apply(clarsimp simp add: lprefix_def)
+apply(clarsimp simp add: lprefix_conv_lappend)
 apply(rule thread_start_actions_okI)
 apply(drule_tac a=a in thread_start_actions_okD)
   apply(simp add: actions_def)

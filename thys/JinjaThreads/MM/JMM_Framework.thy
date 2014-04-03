@@ -2245,7 +2245,7 @@ proof -
         unfolding E' by simp
       finally have "ta_seq_consist P ?vs (lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E')))"
         and sc_ta_r: "ta_seq_consist P (mrw_values P ?vs (map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E'))))) (lmap snd (ltake (enat r_n) (ldropn (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) E'')))"
-        unfolding lmap_lappend_distrib by(simp_all add: ta_seq_consist_lappend split_def)
+        unfolding lmap_lappend_distrib by(simp_all add: ta_seq_consist_lappend split_def ldrop_enat)
       note this(1) also
       have "lmap snd (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E')))
             = llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E')))"
@@ -2313,7 +2313,7 @@ proof -
         have take_r'_eq: "ltake (enat ?r) E = ltake (enat ?r) ?E_sc" unfolding r_conv'
           apply(subst (1 2) plus_enat_simps(1)[symmetric])
           apply(subst (1 2) ltake_plus_conv_lappend)
-          apply(simp add: lappend_eq_lappend_conv ltake_lappend1 take_map)
+          apply(simp add: lappend_eq_lappend_conv ltake_lappend1 ldrop_enat take_map)
           done
         hence take_r_eq: "ltake (enat r) E = ltake (enat r) ?E_sc"
           by(rule ltake_eq_ltake_antimono)(simp add: `?P ?r`)
