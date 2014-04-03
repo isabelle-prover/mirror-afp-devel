@@ -138,7 +138,7 @@ qed simp
 lemma prob_until_error: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
   using P_err_probe[of N] pos_neg_q_pn by (simp add: field_simps del: power_Suc)
 
-subsection {* A allocation run terminates almost surely *}
+subsection {* An allocation run terminates almost surely *}
 
 lemma reachable_probe_error:
   "n \<le> N \<Longrightarrow> error \<in> reachable (S - {error, ok}) (probe n)"
