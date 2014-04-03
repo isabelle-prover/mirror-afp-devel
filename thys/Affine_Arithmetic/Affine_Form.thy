@@ -640,7 +640,7 @@ proof -
       y \<in> {(\<Sum>i \<in> {0..<degree_aform X}. e i *\<^sub>R pdevs_apply (snd X) i) | e. e \<in> UNIV \<rightarrow> {-1 .. 1}}}"
     by (auto simp: Affine_def valuate_def aform_val_def pdevs_val_setsum atLeast0LessThan)
   also have "compact \<dots>"
-    by (rule compact_sums) (auto intro!: compact_setsum continuous_on_intros)
+    by (rule compact_sums) (auto intro!: compact_setsum continuous_intros)
   finally show ?thesis .
 qed
 

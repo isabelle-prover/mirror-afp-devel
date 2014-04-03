@@ -33,7 +33,7 @@ interpretation oil!: aform_approximate_ivp
   apply (rule oil[THEN Joints2_JointsI]) apply assumption apply assumption
   apply (rule oil_fderiv)
   apply (rule oil_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (auto intro!: continuous_on_intros simp: split_beta oil_deriv_ok)
+  apply (auto intro!: continuous_intros simp: split_beta oil_deriv_ok)
   done
 
 definition "rough_optns = default_optns

@@ -22,7 +22,7 @@ interpretation e3: aform_approximate_ivp "uncurry_options e3" "uncurry_options e
   apply (rule e3[THEN Joints2_JointsI]) apply assumption apply assumption
   apply (rule e3_fderiv)
   apply (rule e3_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (auto intro!: continuous_on_intros simp: split_beta')
+  apply (auto intro!: continuous_intros simp: split_beta')
   done
 
 definition "e3_optns = default_optns

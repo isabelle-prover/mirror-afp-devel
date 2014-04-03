@@ -76,11 +76,11 @@ lemma norm_Pair_le:
 
 subsection {* Continuity *}
 
-lemma continuous_on_fst[continuous_on_intros]: "continuous_on X fst"
+lemma continuous_on_fst[continuous_intros]: "continuous_on X fst"
   unfolding continuous_on_def
   by (intro ballI tendsto_intros)
 
-lemma continuous_on_snd[continuous_on_intros]: "continuous_on X snd"
+lemma continuous_on_snd[continuous_intros]: "continuous_on X snd"
   unfolding continuous_on_def
   by (intro ballI tendsto_intros)
 
@@ -104,7 +104,7 @@ lemma continuous_at_Pair[continuous_intros]:
   using assms unfolding continuous_def
   by (intro tendsto_intros)
 
-lemma continuous_on_Pair[continuous_on_intros]:
+lemma continuous_on_Pair[continuous_intros]:
   assumes "continuous_on S f"
   assumes "continuous_on S g"
   shows "continuous_on S (\<lambda>x. (f x, g x))"
@@ -453,8 +453,8 @@ proof -
   from assms have subset: "(\<lambda>xa. x + xa *\<^sub>R y) ` {0..1} \<subseteq> S" by auto
   note has_derivative_subset[OF _ subset, has_derivative_intros]
   note has_derivative_in_compose[where f="(\<lambda>xa. x + xa *\<^sub>R y)" and g = f, has_derivative_intros]
-  note continuous_on_compose2[where f="(\<lambda>xa. x + xa *\<^sub>R y)", continuous_on_intros]
-  note continuous_on_subset[OF _ subset, continuous_on_intros]
+  note continuous_on_compose2[where f="(\<lambda>xa. x + xa *\<^sub>R y)", continuous_intros]
+  note continuous_on_subset[OF _ subset, continuous_intros]
   have "\<And>t. t \<in> {0..1} \<Longrightarrow>
     ((\<lambda>t. f (x + t *\<^sub>R y)) has_vector_derivative f' (x + t *\<^sub>R y) y) (at t within {0..1})"
     using assms
@@ -482,11 +482,11 @@ proof -
     show "(\<Sum>i\<in>Basis. (y \<bullet> i) *\<^sub>R f' (x + t *\<^sub>R y) i) = (\<Sum>i\<in>Basis. (f' (x + t *\<^sub>R y) y \<bullet> i) *\<^sub>R i)" .
   qed
   also have "\<dots> = (\<Sum>a\<in>Basis. integral {0..1} (\<lambda>t. (y \<bullet> a) *\<^sub>R f' (x + t *\<^sub>R y) a))"
-    by (subst integral_setsum) (auto intro!: continuous_on_intros f'_cont)
+    by (subst integral_setsum) (auto intro!: continuous_intros f'_cont)
   also have "\<dots> = (\<Sum>a\<in>Basis. (y \<bullet> a) *\<^sub>R integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R y) a))"
     using assms
     by (intro setsum_cong[OF refl], subst integral_cmul)
-      (auto intro!: continuous_on_intros f'_cont simp: integral_cmul)
+      (auto intro!: continuous_intros f'_cont simp: integral_cmul)
   finally show ?th2 .
 qed
 

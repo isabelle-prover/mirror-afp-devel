@@ -452,7 +452,7 @@ proof safe
     from i2.solution_continuous_on[OF z_sol]
     have "continuous_on {t0..x1} z" by (rule continuous_on_subset) (insert x1, simp)
     ultimately have "continuous_on {t0..x1} (\<lambda>x. norm (y x - z x))"
-      by (auto intro: continuous_on_intros)
+      by (auto intro: continuous_intros)
     moreover
     have "closed {t0..x1}" by simp
     ultimately

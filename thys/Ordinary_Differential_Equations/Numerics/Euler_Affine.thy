@@ -109,7 +109,7 @@ end
 lemma tendsto_singleton[tendsto_intros]: "(f ---> f x) (at x within {x})"
   by (auto simp: tendsto_def eventually_at_filter)
 
-lemma continuous_on_singleton[continuous_on_intros]: "continuous_on {x} f"
+lemma continuous_on_singleton[continuous_intros]: "continuous_on {x} f"
   unfolding continuous_on_def
   by (auto intro!: tendsto_singleton)
 
@@ -173,7 +173,7 @@ proof -
   have cnt: "continuous_on {0 .. 1}(\<lambda>t. ode (x (t0 + t * (t1 - t0))))"
     unfolding cmp using ivl
     by (intro continuous_on_compose)
-      (auto intro!: continuous_on_intros simp: image_linear_atLeastAtMost cont_ode_x not_less)
+      (auto intro!: continuous_intros simp: image_linear_atLeastAtMost cont_ode_x not_less)
   have "integral {t0..t1} (\<lambda>t. ode (x t)) =
     (t1 - t0) *\<^sub>R integral {0..1} (\<lambda>t. ode (x (t0 + t * (t1 - t0))))"
     using ivl
@@ -484,7 +484,7 @@ qed
 interpretation continuous T X f
   using iv_defined
   by unfold_locales (auto simp add: step_ivp_def split_beta
-    intro!: continuous_on_compose2[of _ ode _ snd] has_derivative_continuous_on[OF fderiv] continuous_on_intros)
+    intro!: continuous_on_compose2[of _ ode _ snd] has_derivative_continuous_on[OF fderiv] continuous_intros)
 
 interpretation compact_domain X
   by default (auto simp: step_ivp_def set_of_appr_eq compact_interval)
@@ -699,7 +699,7 @@ proof (unfold_locales, safe)
   show "open (ivp_T ?ivp)" "open (ivp_X ?ivp)"
     by (auto simp: global_ivp_def)
   show "continuous_on (ivp_T ?ivp \<times> ivp_X ?ivp) (ivp_f ?ivp)"
-    by (auto simp: global_ivp_def intro!: continuous_on_intros fderiv' has_derivative_continuous_on)
+    by (auto simp: global_ivp_def intro!: continuous_intros fderiv' has_derivative_continuous_on)
   fix I t x
   assume "t \<in> (ivp_T ?ivp)" "x \<in> (ivp_X ?ivp)"
   --{* TODO: make local lipschitz based on open sets *}
@@ -720,7 +720,7 @@ proof (unfold_locales, safe)
     using fderiv' cont_fderiv w'
     by unfold_locales
       (auto intro!: convex_closed_interval compact_interval split_beta'
-        continuous_on_intros add_nonneg_nonneg
+        continuous_intros add_nonneg_nonneg
         intro: continuous_on_subset
         simp: algebra_simps eucl_le[where 'a='a])
   let ?u = w' and ?L = ccd.onorm_bound

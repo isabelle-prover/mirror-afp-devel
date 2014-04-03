@@ -24,7 +24,7 @@ interpretation exp_ivp!: aform_approximate_ivp
   apply (rule exp_ivp[THEN Joints2_JointsI]) apply assumption apply assumption
   apply (rule exp_ivp_fderiv)
   apply (rule exp_ivp_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (auto intro!: continuous_on_intros simp: split_beta)
+  apply (auto intro!: continuous_intros simp: split_beta)
   done
 
 definition "exp_optns = default_optns

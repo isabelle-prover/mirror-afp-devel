@@ -33,7 +33,7 @@ interpretation vanderpol!: aform_approximate_ivp
   apply (rule vanderpol[THEN Joints2_JointsI]) apply assumption apply assumption
   apply (rule vanderpol_fderiv)
   apply (rule vanderpol_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (auto intro!: continuous_on_intros simp: split_beta)
+  apply (auto intro!: continuous_intros simp: split_beta)
   apply intro_locales
   done
 

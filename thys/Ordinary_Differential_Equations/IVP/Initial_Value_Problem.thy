@@ -431,7 +431,7 @@ lemma P_inner_bcontfun:
   shows "(\<lambda>x. P_inner y (clamp t0 t1 x)) \<in> bcontfun"
 proof -
   show ?thesis using interval iv_defined assms
-    by (auto intro!: clamp_bcontfun continuous_on_intros continuous_f indefinite_integral_continuous
+    by (auto intro!: clamp_bcontfun continuous_intros continuous_f indefinite_integral_continuous
       simp add: P_def P_inner_def)
 qed
 
@@ -461,7 +461,7 @@ proof (rule iter_spaceI)
   have cont: "continuous_on {t0..t1} (P_inner (Rep_bcontfun g))"
     using assms Rep_bcontfun[of g, simplified bcontfun_def]
     by (auto simp: interval iter_space_def Abs_bcontfun_inverse P_inner_def interval_notempty
-      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous_real continuous_f)
+      intro!: continuous_intros indefinite_integral_continuous integrable_continuous_real continuous_f)
   from ext_cont_cancel[OF _ cont] assms
   show "Rep_bcontfun (P g) t0 = x0"
      "\<And>t. t \<in> T \<Longrightarrow> Rep_bcontfun (P g) t \<in> X"
@@ -481,7 +481,7 @@ proof (rule ext_cont_cong)
     by (subst integral_spike[OF negligible_empty])
        (auto simp: interval P_inner_def integral_spike[OF negligible_empty])
 qed (insert iv_defined solution_continuous_on assms is_solutionD,
-  auto simp: interval P_inner_def continuous_on_intros indefinite_integral_continuous continuous_f)
+  auto simp: interval P_inner_def continuous_intros indefinite_integral_continuous continuous_f)
 
 lemma
   solution_in_iter_space:
@@ -542,16 +542,16 @@ proof (rule lipschitzI)
         using y
         by (auto simp add: integral_sub P_inner_def)
       also have "... \<le> integral {t0..t} (\<lambda>t. norm (f (t, y t) - f (t, z t)))"
-        by (auto intro!: integral_norm_bound_integral continuous_on_intros)
+        by (auto intro!: integral_norm_bound_integral continuous_intros)
       also have "... \<le> integral {t0..t} (\<lambda>t. L * norm (y t - z t))"
         using y_cont z_cont lipschitz t_bounds interval y_defined z_defined
-        by (auto intro!: integral_le continuous_on_intros
+        by (auto intro!: integral_le continuous_intros
           simp add: dist_norm lipschitz_def Pi_iff)
       also have "... \<le> integral {t0..t} (\<lambda>t. L *
         norm (Abs_bcontfun y - Abs_bcontfun  z))"
         using norm_bounded[of "Abs_bcontfun y - Abs_bcontfun z"]
           y_cont z_cont lipschitz
-        by (intro integral_le) (auto intro!: continuous_on_intros mult_left_mono
+        by (intro integral_le) (auto intro!: continuous_intros mult_left_mono
           simp add: Abs_bcontfun_inverse[OF `y \<in> bcontfun`]
           Abs_bcontfun_inverse[OF `z \<in> bcontfun`])
       also have "... =
@@ -622,7 +622,7 @@ proof
     using interval iv_defined continuous fixed_point_continuous fixed_point
     unfolding P_def P_inner_def[abs_def]
     by (subst ext_cont_cancel) (auto simp add: iter_space_def Abs_bcontfun_inverse
-      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous_real
+      intro!: continuous_intros indefinite_integral_continuous integrable_continuous_real
       continuous_f intro: continuous_on_subset)
   finally show "fixed_point t0 = x0" .
 next
@@ -646,7 +646,7 @@ next
     apply (simp_all)
     using fixed_point fixed_point_continuous continuous interval
     by (subst ext_cont_cancel) (auto simp add: iter_space_def Abs_bcontfun_inverse
-      intro!: continuous_on_intros indefinite_integral_continuous integrable_continuous_real
+      intro!: continuous_intros indefinite_integral_continuous integrable_continuous_real
       continuous_f intro: continuous_on_subset)
   moreover
   have "fixed_point t \<in> X"
@@ -891,7 +891,7 @@ next
   show ?thesis
   proof -
     from cont have closed: "closed {s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}}"
-      by (intro continuous_closed_preimage continuous_on_intros) auto
+      by (intro continuous_closed_preimage continuous_intros) auto
     have exceeding: "{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
     proof (rule ccontr)
       assume "\<not>{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
@@ -964,7 +964,7 @@ next
       ultimately show False by simp
     qed note mvt_result = this
     from cont assms have cont_diff: "continuous_on {t0..t} (\<lambda>xa. x xa - x t0)"
-      by (auto intro!: continuous_on_intros continuous_on_subset[where t="{t0..t}"] simp: interval)
+      by (auto intro!: continuous_intros continuous_on_subset[where t="{t0..t}"] simp: interval)
     have "norm (x t - x t0) \<le> b"
     proof (rule ccontr)
       assume H: "\<not> norm (x t - x t0) \<le> b"
@@ -999,7 +999,7 @@ proof -
     by (intro in_bounds_derivativeI[where y=x and x="\<lambda>t. x0 + ?ix t"])
       (auto simp: interval intro!: cont_f integral_has_vector_derivative
       has_vector_derivative_const has_vector_derivative_add[THEN vector_derivative_eq_rhs]
-      continuous_on_intros indefinite_integral_continuous)
+      continuous_intros indefinite_integral_continuous)
 qed
 
 lemma solution_in_bounds:

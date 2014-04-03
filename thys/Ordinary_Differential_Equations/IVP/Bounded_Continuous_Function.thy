@@ -11,7 +11,7 @@ definition "bcontfun = {f :: 'a::topological_space \<Rightarrow> 'b::metric_spac
 
 typedef ('a, 'b) bcontfun =
     "bcontfun :: ('a::topological_space \<Rightarrow> 'b::metric_space) set"
-  by (auto simp: bcontfun_def intro: continuous_on_intros simp: bounded_def)
+  by (auto simp: bcontfun_def intro: continuous_intros simp: bounded_def)
 
 lemma bcontfunE:
   assumes "f \<in> bcontfun"
@@ -293,7 +293,7 @@ proof -
     thus "dist (a *\<^sub>R f x) 0 \<le> abs a * y"
       by (metis abs_ge_zero comm_semiring_1_class.normalizing_semiring_rules(7) mult_right_mono
         norm_conv_dist norm_scaleR)
-  qed (simp add: continuous_on_intros)
+  qed (simp add: continuous_intros)
 qed
 
 lemma Rep_bcontfun_scaleR[simp]:

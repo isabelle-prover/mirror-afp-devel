@@ -23,7 +23,7 @@ interpretation e1!: aform_approximate_ivp
   apply (rule e1[THEN Joints2_JointsI]) apply assumption apply assumption
   apply (rule e1_fderiv)
   apply (rule e1_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (auto intro!: continuous_on_intros simp: split_beta')
+  apply (auto intro!: continuous_intros simp: split_beta')
   done
 
 definition "e1_optns = default_optns
