@@ -13,7 +13,7 @@ lemma vanderpol_fderiv:
     has_derivative
    (case x of (x, y) \<Rightarrow> \<lambda>(dx, dy). (dy, - (y * (2 * (dx * x))) + dy * (1 + - (x * x)) + - dx)))
    (at x within X)"
-  by (auto intro!: has_derivative_eq_intros simp:  split_beta inverse_eq_divide)
+  by (auto intro!: derivative_eq_intros simp:  split_beta inverse_eq_divide)
 
 approximate_affine vanderpol_d "\<lambda>(x::real, y) (dx, dy). (dy,
         - (y * (2 * (dx * x))) +

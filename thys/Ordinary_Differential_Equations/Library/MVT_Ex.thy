@@ -17,7 +17,7 @@ lemma MVT_wrong: assumes
   shows "False"
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
-    by (auto intro!: has_derivative_eq_intros)
+    by (auto intro!: derivative_eq_intros)
   from assms[OF this, of "(1, 1)" "(1, 1)"] obtain t where t: "0 < t" "t < 1" and
     "cos 1 - cos 2 = sin (1 + t)" "sin 2 - sin 1 = cos (1 + t)"
     by auto
@@ -36,7 +36,7 @@ lemma MVT_wrong2: assumes
   shows "False"
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
-    by (auto intro!: has_derivative_eq_intros)
+    by (auto intro!: derivative_eq_intros)
   from assms[OF this, of "(1, 1)" "(1, 1)"] obtain x where x: "1 \<le> x" "x \<le> 2" and
     "cos 2 - cos 1 = - sin x" "sin 2 - sin 1 = cos x"
     by auto
@@ -61,7 +61,7 @@ proof -
       using line_in by force
     have "\<forall>x\<in> {0 .. 1}. ((\<lambda>b. f (a + b *\<^sub>R u) \<bullet> i) has_derivative (\<lambda>b. b *\<^sub>R J (a + x *\<^sub>R u) u \<bullet> i)) (at x within {0..1})"
       using line_in
-      by (auto intro!: has_derivative_eq_intros
+      by (auto intro!: derivative_eq_intros
         has_derivative_subset[OF _ subset]
         has_derivative_in_compose[where f="\<lambda>x. a + x *\<^sub>R u"]
         fderiv line_in

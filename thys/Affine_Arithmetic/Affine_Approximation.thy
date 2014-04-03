@@ -748,7 +748,7 @@ lemma
 proof -
   have deriv_inv: "\<And>x. x \<in> {a .. b} \<Longrightarrow> (inverse has_field_derivative - inverse (x*x)) (at x within {a .. b})"
     using assms
-    by (auto intro!: DERIV_intros)
+    by (auto intro!: derivative_eq_intros)
   show ?lower
     using assms
     by (intro linear_lower[OF deriv_inv])

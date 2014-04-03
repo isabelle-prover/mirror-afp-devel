@@ -119,15 +119,15 @@ next
     assume mta: "m < 2" "t \<le> ta" "ta \<le> t + h"
     have image_subset: "(\<lambda>xa. (xa, x xa)) ` {t..u} \<subseteq> {t..u} \<times> X"
       using assms by auto
-    note has_derivative_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, has_derivative_intros]
-    note has_derivative_subset[OF _ image_subset, has_derivative_intros]
-    note f'[has_derivative_intros]
-    note x'[simplified has_vector_derivative_def, has_derivative_intros]
+    note has_derivative_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, derivative_intros]
+    note has_derivative_subset[OF _ image_subset, derivative_intros]
+    note f'[derivative_intros]
+    note x'[simplified has_vector_derivative_def, derivative_intros]
     have [simp]: "\<And>c x'. c *\<^sub>R f' (ta, x ta) x' = f' (ta, x ta) (c *\<^sub>R x')"
       using mta ht assms by (auto intro!: f' linear_cmul[symmetric] has_derivative_linear)
     have "((\<lambda>t. f (t, x t)) has_vector_derivative f' (ta, x ta) (1, f (ta, x ta))) (at ta within {t..u})"
       unfolding has_vector_derivative_def
-      using assms ht mta by (auto intro!: has_derivative_eq_intros)
+      using assms ht mta by (auto intro!: derivative_eq_intros)
     hence "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
       using mta ht
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x')

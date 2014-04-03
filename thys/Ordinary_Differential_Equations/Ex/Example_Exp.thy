@@ -11,7 +11,7 @@ text {* TODO: why not exp-ivp "lambda x::real. x"? *}
 approximate_affine exp_ivp "\<lambda>(x::real, y::real). (x, y)"
 
 lemma exp_ivp_fderiv: "((\<lambda>(x::real, y::real). (x, y)) has_derivative (\<lambda>(a, b) (h\<^sub>1, h\<^sub>2). (h\<^sub>1, h\<^sub>2 + 0 *a*b)) x) (at x within X)"
-  by (auto intro!: has_derivative_eq_intros simp: split_beta id_def)
+  by (auto intro!: derivative_eq_intros simp: split_beta id_def)
 
 approximate_affine exp_ivp_d "(\<lambda>(a::real, b::real) (h\<^sub>1::real, h\<^sub>2::real). (h\<^sub>1, h\<^sub>2 + 0 *a*b))"
 

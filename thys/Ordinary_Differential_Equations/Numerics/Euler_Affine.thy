@@ -120,7 +120,7 @@ locale approximate_ivp = approximate_ivp0 + approximate_sets +
     "[x] \<in> set_of_apprs [X'] \<Longrightarrow>
     ode_approx optns X' = Some A \<Longrightarrow>
     [ode x, x] \<in> set_of_apprs [A, X']"
-  assumes fderiv[has_derivative_intros]: "x \<in> X \<Longrightarrow> (ode has_derivative ode_d x) (at x within X)"
+  assumes fderiv[derivative_intros]: "x \<in> X \<Longrightarrow> (ode has_derivative ode_d x) (at x within X)"
   assumes ode_d_approx:
     "[x, dx] \<in> set_of_apprs [X', DX'] \<Longrightarrow>
      ode_d_approx optns X' DX' = (Some D') \<Longrightarrow>
@@ -133,8 +133,8 @@ locale approximate_ivp = approximate_ivp0 + approximate_sets +
       in every step *}
 begin
 
-lemma fderiv'[has_derivative_intros]: "((\<lambda>(t, y). ode y) has_derivative (\<lambda>(t, x) (dt, dx). ode_d x dx) (t, x)) (at (t, x) within X)"
-  by (auto intro!: has_derivative_eq_intros has_derivative_compose[of snd])
+lemma fderiv'[derivative_intros]: "((\<lambda>(t, y). ode y) has_derivative (\<lambda>(t, x) (dt, dx). ode_d x dx) (t, x)) (at (t, x) within X)"
+  by (auto intro!: derivative_eq_intros has_derivative_compose[of snd])
 
 lemma picard_approx:
   assumes appr: "ode_approx optns X = Some Y"
@@ -494,7 +494,7 @@ interpretation derivative_on_convex T X f "\<lambda>(t, x) (dt, dx). ode_d x dx"
     (auto simp: step_ivp_def step_less set_of_appr_eq  nonneg_step less_imp_le convex_real_interval
       convex_closed_interval
       simp del: inf_of_appr sup_of_appr
-      intro!: has_derivative_eq_intros has_derivative_eq_rhs[OF has_derivative_compose, of snd])
+      intro!: derivative_eq_intros has_derivative_eq_rhs[OF has_derivative_compose, of snd])
 
 interpretation unique_on_closed_cont_diff "step_ivp t0 x0 t1 CX" t1 "\<lambda>(t, x) (dt, dx). ode_d x dx"
 proof unfold_locales

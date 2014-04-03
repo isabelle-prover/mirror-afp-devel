@@ -236,15 +236,15 @@ lemma linear_continuation:
   (is "(?h has_vector_derivative ?h' x) _")
 proof -
   have un: "{a .. b} \<union> {b .. c} = {a .. c}" using assms by auto
-  note has_derivative_If_in_closed[has_derivative_intros]
-  note f'[simplified has_vector_derivative_def, has_derivative_intros]
-  note g'[simplified has_vector_derivative_def, has_derivative_intros]
+  note has_derivative_If_in_closed[derivative_intros]
+  note f'[simplified has_vector_derivative_def, derivative_intros]
+  note g'[simplified has_vector_derivative_def, derivative_intros]
   have if': "((\<lambda>x. if x \<in> {a .. b} then f x else g x) has_vector_derivative
     (\<lambda>x. if x \<le> b then f' x else g' x) x) (at x within {a .. b}\<union>{b .. c})"
     unfolding has_vector_derivative_def
     using assms
     apply -
-    apply (rule has_derivative_eq_intros refl | assumption)+
+    apply (rule derivative_eq_intros refl | assumption)+
     apply auto
     done
   show ?thesis
@@ -263,10 +263,10 @@ proof (rule, safe)
   have [simp]:
     "\<And>x. x \<in> {a .. b} \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" "\<And>x. x \<in> {a .. b} \<Longrightarrow> (x \<le> a \<longleftrightarrow> x = a)"
     "\<And>x. x \<le> a \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" using `a \<le> b` by auto
-  note has_derivative_If_in_closed[has_derivative_intros] f'[simplified has_vector_derivative_def, has_derivative_intros]
+  note has_derivative_If_in_closed[derivative_intros] f'[simplified has_vector_derivative_def, derivative_intros]
   have "(?fc has_vector_derivative f' x) (at x within {a .. b} \<union> ({..a} \<union> {b..}))"
     using `x \<in> {a .. b}` `a \<le> b`
-    by (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def
+    by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def
       simp del: atMost_iff atLeastAtMost_iff)
   moreover have "{a .. b} \<union> ({..a} \<union> {b..}) = UNIV" by auto
   ultimately show "(?fc has_vector_derivative f' x) (at x)" by simp
@@ -278,7 +278,7 @@ lemma Pair_has_vector_derivative:
   assumes f: "(f has_vector_derivative f') (at x within s)"
       and g: "(g has_vector_derivative g') (at x within s)"
   shows "((\<lambda>x. (f x, g x)) has_vector_derivative (f', g')) (at x within s)"
-  using assms by (auto simp: has_vector_derivative_def intro!: has_derivative_eq_intros)
+  using assms by (auto simp: has_vector_derivative_def intro!: derivative_eq_intros)
 
 lemma has_vector_derivative_imp:
   assumes "x \<in> s"
@@ -368,10 +368,10 @@ lemma DERIV_compose_FDERIV:
   using assms has_derivative_compose[of g g' x s f "op * f'"]
   by (auto simp: has_field_derivative_def ac_simps)
 
-lemmas has_derivative_sin[has_derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
-  and  has_derivative_cos[has_derivative_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
-  and  has_derivative_exp[has_derivative_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
-  and  has_derivative_ln[has_derivative_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
+lemmas has_derivative_sin[derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
+  and  has_derivative_cos[derivative_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
+  and  has_derivative_exp[derivative_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
+  and  has_derivative_ln[derivative_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
 
 lemma has_derivative_continuous_on:
   "(\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
@@ -418,7 +418,7 @@ proof -
     have DERIV_0: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (diff 0) t \<bullet> i = f t \<bullet> i" using INIT by simp
     have DERIV_Suc: "\<And>m t. m < n \<Longrightarrow> a \<le> t \<Longrightarrow> t \<le> b \<Longrightarrow>
       ((\<lambda>t. (diff m) t \<bullet> i) has_vector_derivative (diff (Suc m) t \<bullet> i)) (at t within {a .. b})"
-      using DERIV by (auto intro!: has_derivative_eq_intros simp: has_vector_derivative_def)
+      using DERIV by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def)
     from taylor_up_within[OF INIT(1) DERIV_0 DERIV_Suc INTERV]
     show "\<exists>t>c. t < b \<and> f b \<bullet> i =
       (\<Sum>m<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
@@ -444,22 +444,22 @@ lemmas integrable_continuous[intro, simp]
 
 lemma mvt_integral:
   fixes f::"'a::euclidean_space\<Rightarrow>'b::euclidean_space"
-  assumes f'[has_derivative_intros]: "\<And>x. x \<in> S \<Longrightarrow> (f has_derivative f' x) (at x within S)"
+  assumes f'[derivative_intros]: "\<And>x. x \<in> S \<Longrightarrow> (f has_derivative f' x) (at x within S)"
   assumes f'_cont: "\<And>i. i \<in> Basis \<Longrightarrow> continuous_on S (\<lambda>t. f' t i)"
   assumes line_in: "\<And>t. t \<in> {0..1} \<Longrightarrow> x + t *\<^sub>R y \<in> S"
   shows "f (x + y) - f x = integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R y) y)" (is ?th1)
    and  "f (x + y) - f x = (\<Sum>a\<in>Basis. (y \<bullet> a) *\<^sub>R integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R y) a))" (is ?th2)
 proof -
   from assms have subset: "(\<lambda>xa. x + xa *\<^sub>R y) ` {0..1} \<subseteq> S" by auto
-  note has_derivative_subset[OF _ subset, has_derivative_intros]
-  note has_derivative_in_compose[where f="(\<lambda>xa. x + xa *\<^sub>R y)" and g = f, has_derivative_intros]
+  note has_derivative_subset[OF _ subset, derivative_intros]
+  note has_derivative_in_compose[where f="(\<lambda>xa. x + xa *\<^sub>R y)" and g = f, derivative_intros]
   note continuous_on_compose2[where f="(\<lambda>xa. x + xa *\<^sub>R y)", continuous_intros]
   note continuous_on_subset[OF _ subset, continuous_intros]
   have "\<And>t. t \<in> {0..1} \<Longrightarrow>
     ((\<lambda>t. f (x + t *\<^sub>R y)) has_vector_derivative f' (x + t *\<^sub>R y) y) (at t within {0..1})"
     using assms
     by (auto simp: has_vector_derivative_def linear_cmul[OF has_derivative_linear[OF f'], symmetric]
-      intro!: has_derivative_eq_intros)
+      intro!: derivative_eq_intros)
   from fundamental_theorem_of_calculus[rule_format, OF _ this]
   show ?th1
     by (auto intro!: integral_unique[symmetric])

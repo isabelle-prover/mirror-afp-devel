@@ -93,7 +93,7 @@ proof -
   moreover from `H \<noteq> 0` H_nonneg have "sumH \<noteq> 0"
     by (subst (asm) euclidean_all_zero_iff[symmetric]) (auto simp: sumH_def)
   ultimately have "sumH > 0" by simp
-  have line_fderiv[has_derivative_intros]: "\<And>t. (line has_derivative (\<lambda>t. t *\<^sub>R H)) (at t within {0..1})"
+  have line_fderiv[derivative_intros]: "\<And>t. (line has_derivative (\<lambda>t. t *\<^sub>R H)) (at t within {0..1})"
     unfolding line_def by (subst add_commute)
       (intro has_derivative_add_const scaleR_left_has_derivative has_derivative_id)
   hence line_deriv: "\<And>t. (line has_vector_derivative H) (at t within {0..1})"
@@ -109,7 +109,7 @@ proof -
         (at t within {0..1})"
       using line_in_G `t \<in> {0..1}` `line t \<in> G`
       by (intro diff_chain_componentwise)
-        (auto intro!: has_derivative_eq_intros simp: symmetric_higher_derivative)
+        (auto intro!: derivative_eq_intros simp: symmetric_higher_derivative)
     have "((\<lambda>t. sumDs k (line t)) has_vector_derivative
         (\<Sum>d\<in>Basis. \<Sum>ds\<in>listsN k Basis. \<Sum>i\<in>Basis.
           ((H \<bullet> i) *\<^sub>R (fold (\<lambda>d p. (H \<bullet> d) * p) (d#ds) 1) *\<^sub>R Ds (i # ds) (line t) d)))
@@ -117,7 +117,7 @@ proof -
         (is "(_ has_vector_derivative ?sumsum) _")
       unfolding has_vector_derivative_def sumDs_def
       using zero_less_Suc[of n] `k < n`
-      by (auto intro!: has_derivative_eq_intros has_derivativeDs_line
+      by (auto intro!: derivative_eq_intros has_derivativeDs_line
         simp: field_simps inverse_eq_divide scaleR_setsum_right)
     also
     have "?sumsum = sumDs (Suc k) (line t)"
