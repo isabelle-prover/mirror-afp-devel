@@ -1,11 +1,11 @@
-(*  Title:       LList_Topology.thy
+(*  Title:       LList_CCPO_Topology.thy
     Author:      Johannes Hölzl, TU Munich
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
 header {* A CCPO topology on lazy lists with examples *}
 
-theory LList_Topology imports
+theory LList_CCPO_Topology imports
   CCPO_Topology
   "../Coinductive_List_Prefix"
 begin

@@ -3,7 +3,7 @@
 *)
 
 theory Coinductive_Examples imports
-  LList_Topology
+  LList_CCPO_Topology
   TLList_CCPO_Examples
   Koenigslemma
   LMirror
