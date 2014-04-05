@@ -239,7 +239,7 @@ proof
   { assume "\<forall>x \<in> EQ f xs. \<not>R.I f (x#xs)"
            "\<not> R.I (inf\<^sub>- f) xs"
     with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^sub>+ f (r,cs)) xs"
-      by (fastforce simp: qe_eps\<^sub>1_def set_ebounds diff_divide_distrib eval_def I_subst `nqfree f`)
+      by (fastforce simp: divide_minus_left qe_eps\<^sub>1_def set_ebounds diff_divide_distrib eval_def I_subst `nqfree f`)
     then obtain leps where "R.I f (leps#xs)"
       using I_subst_peps[OF `nqfree f`] by fastforce
     hence ?EX .. }
@@ -256,7 +256,7 @@ next
   { assume "\<not> R.I (inf\<^sub>- f) xs"
     and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
-      by (force simp:set_ebounds I_subst diff_divide_distrib eval_def split:split_if_asm)
+      by (force simp: divide_minus_left set_ebounds I_subst diff_divide_distrib eval_def split:split_if_asm)
     hence "x \<notin> EQ f xs" using x by fastforce
     obtain l where "l \<in> LB f xs" "l < x"
       using LBex[OF `nqfree f` x `\<not> R.I(inf\<^sub>- f) xs` `x \<notin> EQ f xs`] ..
@@ -271,7 +271,7 @@ next
       by blast
     then have "R.I (subst\<^sub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
       by(auto intro!: I_subst_peps2[OF `nqfree f`]
-        simp:EQ2_def diff_divide_distrib algebra_simps)
+        simp: divide_minus_left EQ2_def diff_divide_distrib algebra_simps)
     with * have ?QE
       by(simp add:qe_eps\<^sub>1_def bex_Un set_lbounds) metis
   } ultimately show ?QE by blast

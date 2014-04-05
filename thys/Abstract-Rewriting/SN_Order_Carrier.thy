@@ -94,7 +94,7 @@ proof
   from fi[of i] have "f i - f 0 \<le> - \<delta> * of_nat (nat (ceiling ((f 0 - a) / \<delta>)))" unfolding i_def by simp
   also have "\<dots> \<le> - \<delta> * ((f 0 - a) / \<delta>)" using ceil_elim[of "(f 0 - a) / \<delta>"] delta
     by (metis le_imp_neg_le minus_mult_commute mult_le_cancel_left_pos)
-  also have "\<dots> = - f 0 + a" using delta by auto
+  also have "\<dots> = - f 0 + a" using delta by (auto simp: divide_minus_left)
   also have "\<dots> < - f 0 + a + \<delta>" using delta by auto
   finally have "\<not> ?gt (f i) a" unfolding delta_gt_def by arith
   thus "\<exists> i. (f i, a) \<notin> ?r" by blast

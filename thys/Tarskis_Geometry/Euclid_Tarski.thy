@@ -680,12 +680,12 @@ proof
     from scaleR_right_distrib [of "1/2" p q] and
       scaleR_right_diff_distrib [of "1/2" q p] and
       scaleR_left_diff_distrib [of "1/2" 1 p]
-    have "?m - p = (1/2) *\<^sub>R (q - p)" by simp
+    have "?m - p = (1/2) *\<^sub>R (q - p)" by (simp add: divide_minus_left)
     with `p \<noteq> q` have "?m - p \<noteq> 0" by simp
     from scaleR_right_distrib [of "1/2" p q] and
       scaleR_right_diff_distrib [of "1/2" p q] and
       scaleR_left_diff_distrib [of "1/2" 1 q]
-    have "?m - q = (1/2) *\<^sub>R (p - q)" by simp
+    have "?m - q = (1/2) *\<^sub>R (p - q)" by (simp add: divide_minus_left)
     with `?m - p = (1/2) *\<^sub>R (q - p)`
       and scaleR_minus_right [of "1/2" "q - p"]
     have "?m - q = -(?m - p)" by simp

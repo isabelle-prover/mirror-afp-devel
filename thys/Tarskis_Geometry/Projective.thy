@@ -2868,7 +2868,7 @@ proof
           scaleR_left_diff_distrib
           algebra_simps)
       hence "(1/?k'') *\<^sub>R ?k'' *\<^sub>R (c - a) = (-?j'' / ?k'') *\<^sub>R (b - a)"
-        by simp
+        by (simp add: divide_minus_left)
       with `?k'' \<noteq> 0` have "c - a = (-?j'' / ?k'') *\<^sub>R (b - a)" by simp
       moreover have "b - a = 1 *\<^sub>R (b - a)" by simp
       ultimately have "\<exists> x t s. b - a = t *\<^sub>R x \<and> c - a = s *\<^sub>R x" by blast
