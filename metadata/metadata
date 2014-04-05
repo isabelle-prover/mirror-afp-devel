@@ -1,3 +1,16 @@
+[GPU_Kernel_PL]
+title = Syntax and semantics of a GPU kernel programming language
+author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
+date = 2014-04-03
+topic = Computer Science/Programming Languages/Language Definitions
+abstract =
+  This document accompanies the article "The Design and 
+  Implementation of a Verification Technique for GPU Kernels" 
+  by Adam Betts, Nathan Chong, Alastair F. Donaldson, Jeroen
+  Ketema, Shaz Qadeer, Paul Thomson and John Wickerson. It
+  formalises all of the definitions provided in Sections 3
+  and 4 of the article.
+
 [AWN]
 title = Mechanization of the Algebra for Wireless Networks (AWN)
 author = Timothy Bourke <http://www.tbrk.org>

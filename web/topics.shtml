@@ -118,7 +118,8 @@
 
 <div class="list">
 
-<strong>Language Definitions:</strong>&nbsp;<a href="entries/LightweightJava.shtml">LightweightJava</a> &nbsp;
+<strong>Language Definitions:</strong>&nbsp;<a href="entries/GPU_Kernel_PL.shtml">GPU_Kernel_PL</a> &nbsp;
+<a href="entries/LightweightJava.shtml">LightweightJava</a> &nbsp;
 <a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
 <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a> &nbsp;
 <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
