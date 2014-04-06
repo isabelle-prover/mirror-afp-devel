@@ -127,7 +127,7 @@ lemma dot2_rearrange_2:
   shows "u = -(u$1 / x$2) *\<^sub>R (rotate2 x)" (is "u = ?u'")
 proof -
   from assms and dot2_rearrange_1 [of "rotate2 u" "rotate2 x"] have
-    "rotate2 u = rotate2 ?u'" by simp
+    "rotate2 u = rotate2 ?u'" by (simp add: divide_minus_right)
   thus "u = ?u'" by blast
 qed
 
