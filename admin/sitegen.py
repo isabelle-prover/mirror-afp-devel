@@ -124,14 +124,22 @@ html_entry_pre_text_wrapper = u"""
         </td></tr>
 """
 
+# wrapper for contributors line
+# {0} formatted contributors list
+html_contributors = u"""
+	<tr><td class="datahead">Contributors:</td>
+        <td class="data">{0}</td></tr>
+"""
+
 # wrapper for the entry header
 # {0}: title
 # {1}: author
-# {2}: date
-# {3}: text columns (html_entry_text_wrapper)
-# {4}: license
-# {5}: entry
-# {6}: depends-on
+# {2}: contributors
+# {3}: date
+# {4}: text columns (html_entry_text_wrapper)
+# {5}: license
+# {6}: entry
+# {7}: depends-on
 # {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = u"""
 <table width="80%" class="data">
@@ -141,13 +149,13 @@ html_entry_header_wrapper = u"""
 
     <tr><td class="datahead">Author:</td>
         <td class="data">{1}</td></tr>
-
+{2}
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">{2}</td></tr>
-{3}
+        <td class="data">{3}</td></tr>
+{4}
     <tr><td class="datahead">License:</td>
-        <td class="data">{4}</td></tr>
-{6}
+        <td class="data">{5}</td></tr>
+{7}
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
@@ -159,7 +167,7 @@ html_entry_header_wrapper = u"""
 
 <p></p>
 
-<!--#set var="name" value="{5}" -->
+<!--#set var="name" value="{6}" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${{name}}" -->
 """
 
@@ -218,6 +226,7 @@ attribute_schema = {
 	'topic': (True, None, None),
 	'date': (False, None, None),
 	'author': (True, "parse_author", None),
+	'contributors': (True, "parse_contributors", ""),
 	'title': (False, None, None),
 	'abstract': (False, None, None),
 	'license': (False, "parse_license", "BSD"),
@@ -544,20 +553,29 @@ def parse_license(license, **kwargs):
 		raise ValueError(u"Unknown license {0}".formate(license))
 	return licenses[license]
 
-# extracts name and URL from 'name <URL>' as a pair
 def parse_author(author, entry, key):
-	if author.find(" and ") != -1:
-		warn(u"In entry {0}: {1} field contains 'and'. Use ',' to separate authors.".format(entry, key))
-	url_start = author.find('<')
-	url_end = author.find('>')
+	return parse_name_url(author, entry, key)
+
+def parse_contributors(contributor, entry, key):
+	if contributor == "":
+		return "", None
+	else:
+	 	return parse_name_url(contributor, entry, key)
+
+# extracts name and URL from 'name <URL>' as a pair
+def parse_name_url(name, entry, key):
+	if name.find(" and ") != -1:
+		warn(u"In entry {0}: {1} field contains 'and'. Use ',' to separate names.".format(entry, key))
+	url_start = name.find('<')
+	url_end = name.find('>')
 	if url_start != -1 and url_end != -1:
-		url = author[url_start+1:url_end].strip()
+		url = name[url_start+1:url_end].strip()
 		if url.startswith("mailto:"):
 			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
-		return author[:url_start].strip(), url
+		return name[:url_start].strip(), url
 	else:
-		notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, author))
-		return author, None
+		notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
+		return name, None
 
 # Extracts parts of a date, used in the bibtex files
 def month_of_date(date):
@@ -663,6 +681,13 @@ def format_depends_on(deps):
 	else:
 		return html_entry_depends_on_wrapper.format(depends_on_string(deps))
 
+def format_opt_contributors(contributors):
+	if contributors == [("",None)]:
+		return ""
+	else:
+		return html_contributors.format(generate_author_list(contributors,
+										', ', ' and ', ignore_mail = False))
+
 # HTML formatting for entry page
 # supports the following parameters:
 #   'header' for entry header (author, title, date etc.)
@@ -692,6 +717,7 @@ def generate_entry(entry, attributes, param):
 		result += html_entry_header_wrapper.format(
 			attributes['title'],
 			generate_author_list(attributes['author'], ', ', ' and ', ignore_mail = False),
+			format_opt_contributors(attributes['contributors']),
 			attributes['date'],
 			text_columns,
 			html_license_link.format(attributes['license'][0], attributes['license'][1]),
