@@ -190,7 +190,7 @@ abstract = We present the Autoref tool for Isabelle/HOL, which automatically
 
 [PseudoHoops]
 title = Pseudo Hoops
-author = George Georgescu, Laurentiu Leustean, Viorel Preoteasa <http://users.abo.fi/vpreotea/>
+author = George Georgescu <>, Laurentiu Leustean <>, Viorel Preoteasa <http://users.abo.fi/vpreotea/>
 topic = Mathematics/Algebra
 date = 2011-09-22
 abstract = Pseudo-hoops are algebraic structures introduced by B. Bosbach under the name of complementary semigroups. In this formalization we prove some properties of pseudo-hoops and we define the basic concepts of filter and normal filter. The lattice of normal filters is isomorphic with the lattice of congruences of a pseudo-hoop. We also study some important classes of pseudo-hoops. Bounded Wajsberg pseudo-hoops are equivalent to pseudo-Wajsberg algebras and bounded basic pseudo-hoops are equivalent to pseudo-BL algebras. Some examples of pseudo-hoops are given in the last section of the formalization.
@@ -310,14 +310,14 @@ abstract =
 
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
-author = Chunhan Wu, Xingyuan Zhang, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
+author = Chunhan Wu <>, Xingyuan Zhang <>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
 topic = Computer Science/Automata and Formal Languages
 date = 2011-08-26
 abstract = There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
 
 [Presburger-Automata]
 title = Formalizing the Logic-Automaton Connection
-author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter
+author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter <>
 date = 2009-12-03
 topic = Computer Science/Automata and Formal Languages, Logic
 abstract = This work presents a formalization of a library for automata on bit strings. It forms the basis of a reflection-based decision procedure for Presburger arithmetic, which is efficiently executable thanks to Isabelle's code generator. With this work, we therefore provide a mechanized proof of a well-known connection between logic and automata theory. The formalization is also described in a publication [TPHOLs 2009].
@@ -392,13 +392,13 @@ depends-on = Collections
 [DPT-SAT-Solver]
 title = A Fast SAT Solver for Isabelle in Standard ML
 topic = Computer Science/Algorithms
-author = Armin Heller
+author = Armin Heller <>
 date = 2009-12-09
 abstract = This contribution contains a fast SAT solver for Isabelle written in Standard ML. By loading the theory <tt>DPT_SAT_Solver</tt>, the SAT solver installs itself (under the name ``dptsat'') and certain Isabelle tools like Refute will start using it automatically. This is a port of the DPT (Decision Procedure Toolkit) SAT Solver written in OCaml.
 
 [Depth-First-Search]
 title = Depth First Search
-author = Toshiaki Nishihara, Yasuhiko Minamide <http://www.score.is.tsukuba.ac.jp/~minamide/>
+author = Toshiaki Nishihara <>, Yasuhiko Minamide <http://www.score.is.tsukuba.ac.jp/~minamide/>
 date = 2004-06-24
 topic = Computer Science/Algorithms
 abstract = Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
@@ -555,7 +555,7 @@ abstract =
 
 [AVL-Trees]
 title = AVL Trees
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Cornelia Pusch
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Cornelia Pusch <>
 date = 2004-03-19
 topic = Computer Science/Data Structures
 abstract = Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.
@@ -565,7 +565,7 @@ extra-history =
 
 [BDD]
 title = BDD Normalisation
-author = Veronika Ortner, Norbert Schirmer
+author = Veronika Ortner <>, Norbert Schirmer <>
 date = 2008-02-29
 topic = Computer Science/Data Structures
 abstract = We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
@@ -640,7 +640,7 @@ extra-history =
 
 [Collections]
 title = Collections Framework
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk <>
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
@@ -944,14 +944,14 @@ abstract = Handling variable binding is one of the main difficulties in formal p
 
 [MiniML]
 title = Mini ML
-author = Wolfgang Naraschewski, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Wolfgang Naraschewski <>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2004-03-19
 topic = Computer Science/Programming Languages/Type Systems
 abstract = This theory defines the type inference rules and the type inference algorithm <i>W</i> for MiniML (simply-typed lambda terms with <tt>let</tt>) due to Milner. It proves the soundness and completeness of <i>W</i> w.r.t. the rules.
 
 [Simpl]
 title = A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment
-author = Norbert Schirmer
+author = Norbert Schirmer <>
 date = 2008-02-29
 topic = Computer Science/Programming Languages/Language Definitions, Computer Science/Programming Languages/Logics
 license = LGPL
@@ -1177,7 +1177,7 @@ abstract = Gill and Hutton formalise the worker/wrapper transformation, building
 
 [JiveDataStoreModel]
 title = Jive Data and Store Model
-author = Nicole Rauch <mailto:rauch@informatik.uni-kl.de>, Norbert Schirmer
+author = Nicole Rauch <mailto:rauch@informatik.uni-kl.de>, Norbert Schirmer <>
 date = 2005-06-20
 license = LGPL
 topic = Computer Science/Programming Languages/Misc
@@ -1192,7 +1192,7 @@ abstract = Two models of an electronic hotel key card system are contrasted: a s
 
 [RSAPSS]
 title = SHA1, RSA, PSS and more
-author = Christina Lindenberg, Kai Wirt
+author = Christina Lindenberg <>, Kai Wirt <>
 date = 2005-05-02
 topic = Computer Science/Security
 abstract = Formal verification is getting more and more important in computer science. However the state of the art formal verification methods in cryptography are very rudimentary. These theories are one step to provide a tool box allowing the use of formal methods in every aspect of cryptography. Moreover we present a proof of concept for the feasibility of verification techniques to a standard signature algorithm.
@@ -1209,14 +1209,14 @@ depends-on = Slicing, HRB-Slicing
 
 [Verified-Prover]
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
-author = Tom Ridge
+author = Tom Ridge <>
 date = 2004-09-28
 topic = Logic
 abstract = Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.
 
 [Completeness]
 title = Completeness theorem
-author = James Margetson, Tom Ridge
+author = James Margetson <>, Tom Ridge <>
 date = 2004-09-20
 topic = Logic
 abstract = The completeness of first-order logic is proved, following the first five pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel et al., CUP, 1992. Their presentation of formulas allows the proofs to use symmetry arguments. Margetson formalized this theorem by early 2000. The Isar conversion is thanks to Tom Ridge. A paper describing the formalization is available <a href="Completeness-paper.pdf">[pdf]</a>.
@@ -1230,7 +1230,7 @@ abstract = This development defines a well-ordered type of countable ordinals. I
 
 [Ordinals_and_Cardinals]
 title = Ordinals and Cardinals
-author = Andrei Popescu
+author = Andrei Popescu <>
 date = 2009-09-01
 topic = Logic
 abstract = We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field.
@@ -1270,7 +1270,7 @@ depends-on = List-Infinite
 
 [Recursion-Theory-I]
 title = Recursion Theory I
-author = Michael Nedzelsky
+author = Michael Nedzelsky <>
 date = 2008-04-05
 topic = Logic
 abstract = This document presents the formalization of introductory material from  recursion theory --- definitions and basic properties of primitive recursive  functions, Cantor pairing function and computably enumerable sets  (including a proof of existence of a one-complete computably enumerable set  and a proof of the Rice's theorem).
@@ -1352,21 +1352,21 @@ abstract = We formalize the usual proof that the group generated by the function
 
 [Group-Ring-Module]
 title = Groups, Rings and Modules
-author = Hidetsune Kobayashi, L. Chen, H. Murao
+author = Hidetsune Kobayashi <>, L. Chen <>, H. Murao <>
 date = 2004-05-18
 topic = Mathematics/Algebra
 abstract = The theory of groups, rings and modules is developed to a great depth. Group theory results include Zassenhaus's theorem and the Jordan-Hoelder theorem. The ring theory development includes ideals, quotient rings and the Chinese remainder theorem. The module development includes the Nakayama lemma, exact sequences and Tensor products.
 
 [Robbins-Conjecture]
 title = A Complete Proof of the Robbins Conjecture
-author = Matthew Wampler-Doty
+author = Matthew Wampler-Doty <>
 date = 2010-05-22
 topic = Mathematics/Algebra
 abstract = This document gives a formalization of the proof of the Robbins conjecture, following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.
 
 [Valuation]
 title = Fundamental Properties of Valuation Theory and Hensel's Lemma
-author = Hidetsune Kobayashi
+author = Hidetsune Kobayashi <>
 date = 2007-08-08
 topic = Mathematics/Algebra
 abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
@@ -1381,7 +1381,7 @@ abstract = In this article we present a proof of the result known in Linear Alge
 
 [Cauchy]
 title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality
-author = Benjamin Porter
+author = Benjamin Porter <>
 date = 2006-03-14
 topic = Mathematics/Analysis
 abstract = This document presents the mechanised proofs of two popular theorems attributed to Augustin Louis Cauchy - Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality.
@@ -1524,7 +1524,7 @@ abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare"
 
 [Topology]
 title = Topology
-author = Stefan Friedrich
+author = Stefan Friedrich <>
 date = 2004-04-26
 topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
@@ -1576,7 +1576,7 @@ abstract = Random graphs are graphs with a fixed number of vertices, where each 
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs
-author = Gertrud Bauer, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+author = Gertrud Bauer <>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 date = 2006-05-22
 topic = Mathematics/Graph Theory
 abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his <i>revised</i> proof of the Kepler Conjecture. The revison concerns the definition of tameness. The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
@@ -1631,14 +1631,14 @@ abstract = A proof of Bondy's theorem following B. Bollabas, Combinatorics, 1986
 
 [Ramsey-Infinite]
 title = Ramsey's theorem, infinitary version
-author = Tom Ridge
+author = Tom Ridge <>
 date = 2004-09-20
 topic = Mathematics/Combinatorics
 abstract = This formalization of Ramsey's theorem (infinitary version) is taken from Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26. It differs slightly from the text by assuming a slightly stronger hypothesis. In particular, the induction hypothesis is stronger, holding for any infinite subset of the naturals. This avoids the rather peculiar mapping argument between kj and aikj on p.263, which is unnecessary and slightly mars this really beautiful result.
 
 [Open_Induction]
 title = Open Induction
-author = Mizuhito Ogawa, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
+author = Mizuhito Ogawa <>, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
 date = 2012-11-02
 topic = Mathematics/Combinatorics
 abstract =
@@ -1679,7 +1679,7 @@ abstract = Tilings are defined inductively. It is shown that one form of mutilat
 
 [Lazy-Lists-II]
 title = Lazy Lists II
-author = Stefan Friedrich
+author = Stefan Friedrich <>
 date = 2004-04-26
 topic = Computer Science/Data Structures
 abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
