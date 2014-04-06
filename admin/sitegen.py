@@ -855,7 +855,7 @@ def handle_template(entries, template, content):
 		os.makedirs(dest_subdir)
 	except Exception as ex:
 		if os.path.exists(dest_subdir):
-			notice(u"In template {0}: directory {1} already existing".format(template, dest_subdir))
+			return
 		else:
 			error(u"In template {0}: directory {1} couldn't be created".format(template, dest_subdir), exception = ex)
 			return
