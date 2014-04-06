@@ -47,21 +47,30 @@ working with the development version of Isabelle, the file is simply
 You can now refer to article <code>ABC</code> from the AFP in some theory of
 yours via</p>
 
-<p><code>imports "$AFP/ABC/Some_ABC_Theory"</code></p>
+<pre>
+    imports "$AFP/ABC/Some_ABC_Theory"
+</pre>
 
 <p>This allows you to distribute your material separately from any AFP
 theories. Users of your distribution also need to install the AFP in the above
 manner.</p>
 
+<p>
 Example: you are using Isabelle2013, and have downloaded your afp directory to
 <code>/home/myself/afp</code>. You would add the line
 <code>/home/myself/afp</code> to the file
 <code>~/.isabelle/Isabelle2013/etc/components</code>. Note that shell expansion,
 e.g. <code>~/afp</code>, will not work in this file.
+</p>
 
-</td></tr>
-</tbody>
-</table>
+Note that referring to another AFP entry from <strong>inside an AFP
+entry</strong> is much easier: just use 
+<pre>
+    imports "../ABC/Some_ABC_Theory"
+</pre> 
+in your theory. This is the preferred
+method for working inside the AFP.
+</td></tr> </tbody> </table>
 
 </div>
 
