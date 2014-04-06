@@ -57,6 +57,7 @@ GenClock
 General-Triangle
 Girth_Chromatic
 GoedelGod
+GPU_Kernel_PL
 GraphMarkingIBP
 Graph_Theory
 Group-Ring-Module
@@ -114,6 +115,7 @@ Polynomials
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata
+Probabilistic_Noninterference
 Program-Conflict-Analysis
 PseudoHoops
 Psi_Calculi

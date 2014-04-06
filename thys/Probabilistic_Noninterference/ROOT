@@ -1,0 +1,12 @@
+chapter AFP
+
+session Probabilistic_Noninterference (AFP) = "HOL-Probability" +
+  theories [document = false]
+    Interface
+  theories
+    Trace_Based
+    Concrete
+  files
+    "document/root.tex"
+    "document/root.bib"
+

@@ -55,6 +55,21 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-04-03:
+<a href="entries/GPU_Kernel_PL.shtml">Syntax and semantics of a GPU kernel programming language</a>
+<br>Author:
+<a href="http://www.doc.ic.ac.uk/~jpw48">John Wickerson</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-03-11:
+<a href="entries/Probabilistic_Noninterference.shtml">Probabilistic Noninterference</a>
+<br>Author:
+<a href="http://www21.in.tum.de/~popescua">Andrei Popescu</a> and 
+<a href="http://home.in.tum.de/~hoelzl">Johannes Hölzl</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-03-08:
 <a href="entries/AWN.shtml">Mechanization of the Algebra for Wireless Networks (AWN)</a>
 <br>Author:

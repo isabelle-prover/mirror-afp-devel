@@ -1,3 +1,16 @@
+[GPU_Kernel_PL]
+title = Syntax and semantics of a GPU kernel programming language
+author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
+date = 2014-04-03
+topic = Computer Science/Programming Languages/Language Definitions
+abstract =
+  This document accompanies the article "The Design and 
+  Implementation of a Verification Technique for GPU Kernels" 
+  by Adam Betts, Nathan Chong, Alastair F. Donaldson, Jeroen
+  Ketema, Shaz Qadeer, Paul Thomson and John Wickerson. It
+  formalises all of the definitions provided in Sections 3
+  and 4 of the article.
+
 [AWN]
 title = Mechanization of the Algebra for Wireless Networks (AWN)
 author = Timothy Bourke <http://www.tbrk.org>
@@ -1579,7 +1592,7 @@ title = Properties of Random Graphs -- Subgraph Containment
 author = Lars Hupel <mailto:hupel@in.tum.de>
 date = 2014-02-13
 topic = Mathematics/Graph Theory, Mathematics/Probability Theory
-abstract = Random graphs are graphs with a fixed number of vertices, where each edge is present with a fixed probability. We are interested in the probability that a random graph contains a certain pattern, for example a cycle or a clique. A very high edge probability gives rise to perhaps too many edges (which degrades performance for many algorithms), whereas a low edge probability might result in a disconnected graph. We prove a theorem about a threshold probability such that a higher edge probability will asymptotically almost surely produce a random graph with the desired subgraph. 
+abstract = Random graphs are graphs with a fixed number of vertices, where each edge is present with a fixed probability. We are interested in the probability that a random graph contains a certain pattern, for example a cycle or a clique. A very high edge probability gives rise to perhaps too many edges (which degrades performance for many algorithms), whereas a low edge probability might result in a disconnected graph. We prove a theorem about a threshold probability such that a higher edge probability will asymptotically almost surely produce a random graph with the desired subgraph.
 
 [Flyspeck-Tame]
 title = Flyspeck I: Tame Graphs
@@ -1852,3 +1865,10 @@ abstract = These theories extend the existing proof of the first Sylow theorem
 		state propositions about the number of Sylow p-subgroups of a group
 		and the fact that they are conjugate to each other. The proofs make
 		use of an implementation of group actions and their properties.
+
+[Probabilistic_Noninterference]
+title = Probabilistic Noninterference
+author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
+date = 2014-03-11
+topic = Computer Science/Security
+abstract = We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
