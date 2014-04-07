@@ -130,14 +130,8 @@ fun rulify_only_asm ctxt thm =
   |> Object_Logic.rulify ctxt (* rulify everything, i.e., by preprocessing only the assms *)
   |> (fn conj => (@{thm conjunct2} OF [conj])) (* drop conjunction again *)
 
-fun instantiate' thy sort vars thm = 
-  let 
-    val tvars = Thm.prop_of thm |> Term.add_tvars |> (fn x => x []) |> rev
-    val inst_tvars = map (fn (n, _) => TFree (fst n,sort) |> ctyp_of thy |> SOME) tvars
-    val cvars = map (cterm_of thy #> SOME) vars
-  in 
-    Drule.instantiate' inst_tvars cvars thm
-  end
+fun instantiate' thy _ vars = 
+  Ctr_Sugar_Util.cterm_instantiate_pos (map (cterm_of thy #> SOME) vars)
 
 fun permute_for_ind_thm ps xs ind_thm =
   let 
