@@ -240,48 +240,28 @@ begin
 
 interpretation lifting_syntax .
 
-lift_definition INF_trash :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a MonoTran) \<Rightarrow> 'a::complete_lattice MonoTran"
-  is INFIMUM
-  unfolding INF_def [abs_def]
-  by (rule mono_Inf) auto -- {* FIXME just a neat trick to get transfer rules for INF *}
+lemma INF_transfer [transfer_rule]: -- {* FIXME move to @{text Lifting_Set.thy} *}
+  "(rel_set A ===> (A ===> HOL.eq) ===> HOL.eq) INFIMUM INFIMUM"
+  unfolding INF_def [abs_def] by transfer_prover
+
+lemma SUP_transfer [transfer_rule]: -- {* FIXME move to @{text Lifting_Set.thy} *}
+  "(rel_set A ===> (A ===> HOL.eq) ===> HOL.eq) SUPREMUM SUPREMUM"
+  unfolding SUP_def [abs_def] by transfer_prover
 
 lemma [transfer_rule]:
-  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"
-proof -
-  have "INF_trash = INFIMUM"
-    apply (rule ext)+
-    unfolding INF_def
-    apply transfer
-    apply simp
-    done
-  from INF_trash.transfer [simplified this] show ?thesis .
-qed
-
-lift_definition SUP_trash :: "'b set \<Rightarrow> ('b \<Rightarrow> 'a MonoTran) \<Rightarrow> 'a::complete_lattice MonoTran"
-  is SUPREMUM
-  unfolding SUP_def [abs_def]
-  by (rule mono_Sup) auto -- {* FIXME just a neat trick to get transfer rules for SUP *}
+  "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"
+  unfolding INF_def [abs_def] by transfer_prover
 
 lemma [transfer_rule]:
-  "(HOL.eq ===> (HOL.eq ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPREMUM SUPREMUM"
-proof -
-  have "SUP_trash = SUPREMUM"
-    apply (rule ext)+
-    unfolding SUP_def
-    apply transfer
-    apply simp
-    done
-  from SUP_trash.transfer [simplified this] show ?thesis .
-qed
+  "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPREMUM SUPREMUM"
+  unfolding SUP_def [abs_def] by transfer_prover
 
 end
 
-hide_const INF_trash SUP_trash
-
 instance MonoTran :: (complete_distrib_lattice) complete_distrib_lattice
   apply intro_classes
-  apply (unfold INF_def SUP_def)
-  apply (transfer, simp add: inf_Sup sup_Inf)+
+  apply transfer apply (simp add: inf_Sup sup_Inf)
+  apply transfer apply (simp add: inf_Sup sup_Inf)
   done
 
 definition
@@ -295,7 +275,7 @@ lemma mono_dual_fun [simp]:
   "mono f \<Longrightarrow> mono (dual_fun f)"
   apply (rule monoI)
   apply (erule monoE)
-  apply (auto)
+  apply auto
   done
 
 lemma (in order) mono_inf_fun [simp]:
