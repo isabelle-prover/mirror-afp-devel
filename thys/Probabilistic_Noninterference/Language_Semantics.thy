@@ -110,7 +110,7 @@ proof-
 qed
 
 lemma lt_take: "n1 < n2 \<Longrightarrow> n2 \<le> length al \<Longrightarrow> take n1 al < take n2 al"
-  by (metis le_eq_less_or_eq length_take min_absorb2 min_max.le_iff_inf take_lt take_take)
+  by (metis inj_take le_less_trans le_take not_less_iff_gr_or_eq order.not_eq_order_implies_strict order.strict_implies_order)
 
 text{* lsum: *}
 

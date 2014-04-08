@@ -51,7 +51,7 @@ qed
 lemma Least_eq_0_iff: "(\<exists>i::nat. P i) \<Longrightarrow> (LEAST i. P i) = 0 \<longleftrightarrow> P 0"
   by (metis LeastI_ex neq0_conv not_less_Least)
 
-lemma nat_case_comp_Suc[simp]: "nat_case x f \<circ> Suc = f"
+lemma case_nat_comp_Suc[simp]: "case_nat x f \<circ> Suc = f"
   by auto
 
 lemma setsum_eq_0_iff:
@@ -206,103 +206,103 @@ lemma E_eq_G[simp]: "cf \<in> reachable st \<Longrightarrow> cf' \<in> E st cf \
   by (auto simp add: emeasure_trans setsum_wt_eq_0 less_le[of 0] reachable_cont_eff reachable'_def
            cong: conj_cong)
 
-definition "validT cf cfT \<longleftrightarrow> (\<forall>i. cfT i \<in> G (nat_case cf cfT i))"
+definition "validT cf cfT \<longleftrightarrow> (\<forall>i. cfT i \<in> G (case_nat cf cfT i))"
 
-lemma validT_D: "validT cf cfT \<Longrightarrow> cfT i \<in> G (nat_case cf cfT i)"
+lemma validT_D: "validT cf cfT \<Longrightarrow> cfT i \<in> G (case_nat cf cfT i)"
   unfolding validT_def by auto
 
-lemma reachable_validT: "cf \<in> reachable st \<Longrightarrow> validT cf cfT \<Longrightarrow> nat_case cf cfT i \<in> reachable st"
+lemma reachable_validT: "cf \<in> reachable st \<Longrightarrow> validT cf cfT \<Longrightarrow> case_nat cf cfT i \<in> reachable st"
   by (induct i) (auto intro: reachable_G simp: validT_def)
 
 lemma all_nat_split: "(\<forall>i::nat. P i) \<longleftrightarrow> P 0 \<and> (\<forall>i. P (Suc i))"
   by (metis nat.exhaust)
 
-lemma validT_nat_case:
-  "validT cf (nat_case cf' cfT) \<longleftrightarrow> cf' \<in> G cf \<and> validT cf' cfT"
+lemma validT_case_nat:
+  "validT cf (case_nat cf' cfT) \<longleftrightarrow> cf' \<in> G cf \<and> validT cf' cfT"
   unfolding validT_def by (subst all_nat_split) auto
 
 lemma AE_validT: assumes cf: "cf \<in> reachable st" shows "AE cfT in paths st cf. validT cf cfT"
   unfolding validT_def
   using AE_all_enabled[OF reachable'[OF assms]]
 proof (eventually_elim, intro allI)
-  fix i cfT assume E: "\<forall>i. cfT i \<in> E st (nat_case cf cfT i)"
-  have "nat_case cf cfT i \<in> reachable st \<and> cfT i \<in> G (nat_case cf cfT i)"
+  fix i cfT assume E: "\<forall>i. cfT i \<in> E st (case_nat cf cfT i)"
+  have "case_nat cf cfT i \<in> reachable st \<and> cfT i \<in> G (case_nat cf cfT i)"
   proof (induct i)
     case 0 with cf E[THEN spec, of 0] show ?case by simp
   next
     case (Suc n) with E[THEN spec, of "Suc n"] show ?case
       by (fastforce simp add: reachable_G)
   qed
-  then show "cfT i \<in> G (nat_case cf cfT i)" ..
+  then show "cfT i \<in> G (case_nat cf cfT i)" ..
 qed
 
 lemma discrCf_mono_Suc:
   assumes cf: "validT cf cfT"
-  and j: "discrCf (nat_case cf cfT j)" shows "discrCf (nat_case cf cfT (Suc j))"
+  and j: "discrCf (case_nat cf cfT j)" shows "discrCf (case_nat cf cfT (Suc j))"
   using discrCf_G[OF validT_D[OF cf] j] by simp
 
 lemma discrCf_mono:
-  assumes 1: "validT cf cfT" and 2: "i \<le> j" "discrCf (nat_case cf cfT i)"
-  shows "discrCf (nat_case cf cfT j)"
+  assumes 1: "validT cf cfT" and 2: "i \<le> j" "discrCf (case_nat cf cfT i)"
+  shows "discrCf (case_nat cf cfT j)"
   using 2 by (rule dec_induct)  (rule discrCf_mono_Suc[OF 1])
 
-lemma discrCf_validT: "validT cf cfT \<Longrightarrow> discrCf cf \<Longrightarrow> discrCf (nat_case cf cfT n)"
+lemma discrCf_validT: "validT cf cfT \<Longrightarrow> discrCf cf \<Longrightarrow> discrCf (case_nat cf cfT n)"
   using discrCf_mono[of cf cfT 0 n] by simp
 
-lemma measurable_nat_case_cf': "(\<lambda>\<omega>. nat_case cf' \<omega> i) \<in> measurable (S_seq st) (count_space (reachable' st \<union> {cf'}))"
-  apply (rule measurable_nat_case)
+lemma measurable_case_nat_cf': "(\<lambda>\<omega>. case_nat cf' \<omega> i) \<in> measurable (S_seq st) (count_space (reachable' st \<union> {cf'}))"
+  apply (rule measurable_case_nat)
   apply simp
   apply (auto simp: measurable_def Pi_iff)
   apply (auto simp add: space_PiM)
   done
 
-lemma measurable_nat_case_cf:
+lemma measurable_case_nat_cf:
   "(\<And>cf'. cf' \<in> reachable' st \<union> {cf} \<Longrightarrow> f cf' \<in> measurable (S_seq st) N) \<Longrightarrow>
    (\<lambda>x. f (case i of 0 \<Rightarrow> cf | Suc xa \<Rightarrow> x xa) x) \<in> measurable (S_seq st) N"
-  by (rule measurable_compose_countable[OF _ measurable_nat_case_cf', of st cf f N i])
+  by (rule measurable_compose_countable[OF _ measurable_case_nat_cf', of st cf f N i])
      simp_all
 
 lemma measurable_validT [measurable]: "Measurable.pred (S_seq st) (validT cf)"
   unfolding validT_def[abs_def]
   apply (intro pred_intros_countable)
-  apply (rule_tac f="\<lambda>x cfT. cfT i \<in> G x" in measurable_nat_case_cf)
+  apply (rule_tac f="\<lambda>x cfT. cfT i \<in> G x" in measurable_case_nat_cf)
   apply simp
   done
 
 lemma validT_E_ex:
   assumes cfT: "validT cf cfT"
-  shows "\<exists>b<brn (fst (nat_case cf cfT i)).
-    0 < wt (fst (nat_case cf cfT i)) (snd (nat_case cf cfT i)) b \<and>
-    cfT i = cont_eff (nat_case cf cfT i) b"
+  shows "\<exists>b<brn (fst (case_nat cf cfT i)).
+    0 < wt (fst (case_nat cf cfT i)) (snd (case_nat cf cfT i)) b \<and>
+    cfT i = cont_eff (case_nat cf cfT i) b"
   using validT_D[OF cfT] by (simp add: G_iff)
 
 lemma validTE:
   assumes "validT cf cfT"
-  obtains bT where "\<And>i. bT i < brn (fst (nat_case cf cfT i))"
-    "\<And>i. 0 < wt (fst (nat_case cf cfT i)) (snd (nat_case cf cfT i)) (bT i)"
-    "\<And>i. cfT i = cont_eff (nat_case cf cfT i) (bT i)"
+  obtains bT where "\<And>i. bT i < brn (fst (case_nat cf cfT i))"
+    "\<And>i. 0 < wt (fst (case_nat cf cfT i)) (snd (case_nat cf cfT i)) (bT i)"
+    "\<And>i. cfT i = cont_eff (case_nat cf cfT i) (bT i)"
   using validT_E_ex[OF assms] by metis
 
 subsection "Quasi strong termination traces"
 
-definition "qstermT cf cfT \<longleftrightarrow> (\<exists>i. discrCf (nat_case cf cfT i))"
-definition "qsend cf cfT = (LEAST i. discrCf (nat_case cf cfT i))"
+definition "qstermT cf cfT \<longleftrightarrow> (\<exists>i. discrCf (case_nat cf cfT i))"
+definition "qsend cf cfT = (LEAST i. discrCf (case_nat cf cfT i))"
 
 lemma measurable_qsend[measurable]: "qsend cf \<in> measurable (S_seq st) (count_space UNIV)"
   unfolding qsend_def[abs_def]
   apply (rule measurable_Least)
-  apply (rule_tac measurable_nat_case_cf)
+  apply (rule_tac measurable_case_nat_cf)
   apply simp_all
   done
 
 lemma measurable_qsterm[measurable]: "qstermT cf \<in> measurable (S_seq st) (count_space UNIV)"
   unfolding qstermT_def[abs_def]
   apply (intro pred_intros_countable)
-  apply (rule_tac measurable_nat_case_cf)
+  apply (rule_tac measurable_case_nat_cf)
   apply simp_all
   done
 
-lemma qsend: "qstermT cf cfT \<Longrightarrow> discrCf (nat_case cf cfT (qsend cf cfT))"
+lemma qsend: "qstermT cf cfT \<Longrightarrow> discrCf (case_nat cf cfT (qsend cf cfT))"
   unfolding qstermT_def qsend_def by (rule LeastI_ex)
 
 lemma qsend_eq_0[simp]: "discrCf cf \<Longrightarrow> qsend cf bT = 0"
@@ -316,14 +316,14 @@ lemma qstermT_Suc:
   shows "qstermT (cfT 0) (cfT \<circ> Suc) \<longleftrightarrow> qstermT cf cfT"
 proof -
   from cfT guess bT by (rule validTE) note bT = this
-  { fix i assume "discrCf (cfT i)" then have "discrCf (nat_case cf cfT (Suc i))"
+  { fix i assume "discrCf (cfT i)" then have "discrCf (case_nat cf cfT (Suc i))"
       by simp }
   moreover
-  { fix i assume "discrCf (nat_case cf cfT i)"
+  { fix i assume "discrCf (case_nat cf cfT i)"
     from discrCf_mono[OF cfT _ this, of "Suc i"]
     have "discrCf (cfT i)" by simp }
   ultimately show "qstermT (cfT 0) (cfT \<circ> Suc) \<longleftrightarrow> qstermT cf cfT"
-    unfolding qstermT_def comp_def nat_case_idem by blast
+    unfolding qstermT_def comp_def case_nat_idem by blast
 qed
 
 lemma qsend_Suc_eq:
@@ -342,7 +342,7 @@ proof -
     assume not_discr: "\<not> discrCf cf"
     from n show ?thesis
       unfolding qsend_def
-      by (subst (2) Least_Suc) (auto simp add: nat_case_idem comp_def not_discr cong: nat.case_cong)
+      by (subst (2) Least_Suc) (auto simp add: case_nat_idem comp_def not_discr cong: nat.case_cong)
   qed
 qed
 
@@ -350,27 +350,27 @@ lemma qsend_eq_0_iff: "qstermT cf cfT \<Longrightarrow> qsend cf cfT = 0 \<longl
   unfolding qstermT_def qsend_def
   by (subst Least_eq_0_iff) auto
 
-lemma measurable_discrCf'[measurable]: "Measurable.pred (S_seq st) (\<lambda>x. discrCf (nat_case cf x i))"
-  by (rule measurable_nat_case_cf) simp
+lemma measurable_discrCf'[measurable]: "Measurable.pred (S_seq st) (\<lambda>x. discrCf (case_nat cf x i))"
+  by (rule measurable_case_nat_cf) simp
 
-lemma measurable_snd'[measurable]: "Measurable.pred (S_seq st) (\<lambda>x. snd (nat_case cf x i) \<approx> s)"
-  by (rule measurable_nat_case_cf) simp
+lemma measurable_snd'[measurable]: "Measurable.pred (S_seq st) (\<lambda>x. snd (case_nat cf x i) \<approx> s)"
+  by (rule measurable_case_nat_cf) simp
 
 lemma AE_T_max_qsend:
   assumes c[simp]: "c \<in> reachable st"
   assumes AE: "AE bT in paths st c. qstermT c bT" and "0 < e"
-  shows "\<exists>N. \<P>(bT in paths st c. \<not> discrCf (nat_case c bT N)) < e" (is "\<exists>N. ?P N < e")
+  shows "\<exists>N. \<P>(bT in paths st c. \<not> discrCf (case_nat c bT N)) < e" (is "\<exists>N. ?P N < e")
 proof -
-  have "(\<lambda>n. \<P>(bT in paths st c. validT c bT \<and> \<not> discrCf (nat_case c bT n))) ---->
-    measure (paths st c) (\<Inter>N. {bT \<in> space (paths st c). validT c bT \<and> \<not> discrCf (nat_case c bT N)})"
+  have "(\<lambda>n. \<P>(bT in paths st c. validT c bT \<and> \<not> discrCf (case_nat c bT n))) ---->
+    measure (paths st c) (\<Inter>N. {bT \<in> space (paths st c). validT c bT \<and> \<not> discrCf (case_nat c bT N)})"
     using discrCf_mono_Suc[of c]
     by (intro finite_Lim_measure_decseq) (auto simp: decseq_Suc_iff)
-  also have "measure (paths st c) (\<Inter>N. {bT \<in> space (paths st c). validT c bT \<and> \<not> discrCf (nat_case c bT N)}) =
+  also have "measure (paths st c) (\<Inter>N. {bT \<in> space (paths st c). validT c bT \<and> \<not> discrCf (case_nat c bT N)}) =
     \<P>(bT in paths st c. \<not> qstermT c bT)"
     using AE_validT[of c st] by (intro finite_measure_eq_AE) (auto simp: qstermT_def)
   also have "\<P>(bT in paths st c. \<not> qstermT c bT) = 0"
     using AE by (intro prob_eq_0_AE) auto
-  also have "(\<lambda>n. \<P>(bT in paths st c. validT c bT \<and> \<not> discrCf (nat_case c bT n))) = ?P"
+  also have "(\<lambda>n. \<P>(bT in paths st c. validT c bT \<and> \<not> discrCf (case_nat c bT n))) = ?P"
     using AE_validT[of c st] by (intro HOL.ext finite_measure_eq_AE) auto
   finally have "\<exists>N. \<forall>n\<ge>N. norm (?P n - 0) < e"
     using `0 < e` by (rule LIMSEQ_D)
@@ -379,33 +379,33 @@ proof -
 qed
 
 lemma qsendI:
-  "qstermT c bT \<Longrightarrow> (\<And>x. discrCf (nat_case c bT x) \<Longrightarrow> P x) \<Longrightarrow> P (qsend c bT)"
+  "qstermT c bT \<Longrightarrow> (\<And>x. discrCf (case_nat c bT x) \<Longrightarrow> P x) \<Longrightarrow> P (qsend c bT)"
   using assms unfolding qsend_def qstermT_def by (rule LeastI2_ex)
 
 lemma less_qsend:
-  assumes bT: "validT cf bT" and c: "\<not> discrCf (nat_case cf bT i)" and *: "qstermT cf bT"
+  assumes bT: "validT cf bT" and c: "\<not> discrCf (case_nat cf bT i)" and *: "qstermT cf bT"
   shows "i < qsend cf bT"
 using * proof (rule qsendI)
-  fix j assume "discrCf (nat_case cf bT j)"
+  fix j assume "discrCf (case_nat cf bT j)"
   from discrCf_mono[OF bT _ this, of i] c
   show "i < j" by (cases "i < j") auto
 qed
 
 lemma qsend_le:
-  "cf \<in> reachable st \<Longrightarrow> validT cf cfT \<Longrightarrow> discrCf (nat_case cf cfT N) \<Longrightarrow> qsend cf cfT \<le> N"
+  "cf \<in> reachable st \<Longrightarrow> validT cf cfT \<Longrightarrow> discrCf (case_nat cf cfT N) \<Longrightarrow> qsend cf cfT \<le> N"
   by (auto intro!: Least_le simp: qsend_def)
 
-lemma qstermT_nat_case:
+lemma qstermT_case_nat:
   assumes "cf' \<in> G cf" "validT cf' cfT"
-  shows "qstermT cf (nat_case cf' cfT) \<longleftrightarrow> qstermT cf' cfT"
-  using assms qstermT_Suc[of cf "nat_case cf' cfT"]
-  by (simp add: validT_nat_case)
+  shows "qstermT cf (case_nat cf' cfT) \<longleftrightarrow> qstermT cf' cfT"
+  using assms qstermT_Suc[of cf "case_nat cf' cfT"]
+  by (simp add: validT_case_nat)
 
-lemma qsend_nat_case:
+lemma qsend_case_nat:
   assumes cf: "cf \<in> reachable st" "cf' \<in> G cf" "validT cf' cfT" and "qstermT cf' cfT"
-  shows "qsend cf' cfT = qsend cf (nat_case cf' cfT) - 1"
-  using assms qsend_Suc_eq[of cf "nat_case cf' cfT"]
-  by (simp add: validT_nat_case qstermT_nat_case)
+  shows "qsend cf' cfT = qsend cf (case_nat cf' cfT) - 1"
+  using assms qsend_Suc_eq[of cf "case_nat cf' cfT"]
+  by (simp add: validT_case_nat qstermT_case_nat)
 
 subsection "Terminating configurations"
 
@@ -414,20 +414,20 @@ definition "qstermCf cf \<longleftrightarrow> (\<forall>cfT. validT cf cfT \<lon
 lemma qstermCf_E:
   "qstermCf cf \<Longrightarrow> cf' \<in> G cf \<Longrightarrow> qstermCf cf'"
   apply (auto simp: qstermCf_def)
-  apply (erule_tac x="nat_case cf' cfT" in allE)
-  apply (simp add: validT_nat_case  qstermT_nat_case)
+  apply (erule_tac x="case_nat cf' cfT" in allE)
+  apply (simp add: validT_case_nat  qstermT_case_nat)
   done
 
-lemma qstermCf_validT: "validT cf cfT \<Longrightarrow> qstermCf cf \<Longrightarrow> qstermCf (nat_case cf cfT i)"
+lemma qstermCf_validT: "validT cf cfT \<Longrightarrow> qstermCf cf \<Longrightarrow> qstermCf (case_nat cf cfT i)"
   by (induct i) (auto dest: validT_D intro: qstermCf_E)
 
-abbreviation "eff_at cf bT n \<equiv> snd (nat_case cf bT n)"
-abbreviation "cont_at cf bT n \<equiv> fst (nat_case cf bT n)"
+abbreviation "eff_at cf bT n \<equiv> snd (case_nat cf bT n)"
+abbreviation "cont_at cf bT n \<equiv> fst (case_nat cf bT n)"
 
 lemma eff_at_indis: "validT cf cfT \<Longrightarrow> discrCf cf \<Longrightarrow> eff_at cf cfT n \<approx> snd cf"
 proof (induct n)
   case (Suc n)
-  then have "discrCf (nat_case cf cfT n)" by (auto intro: discrCf_validT)
+  then have "discrCf (case_nat cf cfT n)" by (auto intro: discrCf_validT)
   then have "eff_at cf cfT (Suc n) \<approx> eff_at cf cfT n"
     using validT_E_ex[OF `validT cf cfT`, of n] by (auto intro: indis_sym)
   moreover have "eff_at cf cfT n \<approx> snd cf"
@@ -439,7 +439,7 @@ lemma eff_at_indis_iff:
   "validT cf cfT \<Longrightarrow> discrCf cf \<Longrightarrow> eff_at cf cfT n \<approx> s \<longleftrightarrow> snd cf \<approx> s"
   using eff_at_indis[of cf cfT n] by (blast intro: indis_trans indis_sym)
 
-lemma validT_shift: "validT cf cfT \<Longrightarrow> validT (nat_case cf cfT n) (\<lambda>i. cfT (n + i))"
+lemma validT_shift: "validT cf cfT \<Longrightarrow> validT (case_nat cf cfT n) (\<lambda>i. cfT (n + i))"
   unfolding validT_def
   apply (rule allI)
   apply (erule_tac x="n + i" in allE)
@@ -447,9 +447,9 @@ lemma validT_shift: "validT cf cfT \<Longrightarrow> validT (nat_case cf cfT n) 
   done
 
 lemma eff_at_discrCf:
-  assumes cfT: "validT cf cfT" and discr: "discrCf (nat_case cf cfT n)"
+  assumes cfT: "validT cf cfT" and discr: "discrCf (case_nat cf cfT n)"
   shows "n \<le> N \<Longrightarrow> eff_at cf cfT N \<approx> eff_at cf cfT n"
-  using eff_at_indis[of "nat_case cf cfT n" "\<lambda>i. cfT (n + i)" "N - n", OF validT_shift[OF cfT] discr]
+  using eff_at_indis[of "case_nat cf cfT n" "\<lambda>i. cfT (n + i)" "N - n", OF validT_shift[OF cfT] discr]
   by (auto simp: le_imp_diff_is_add ac_simps split: nat.splits)
 
 lemma qsend_leD:
@@ -565,24 +565,6 @@ proof -
   qed
 qed
 
-lemma (in linordered_field_inverse_zero) inverse_le_iff:
-  fixes a b c :: 'a
-  shows "inverse a \<le> inverse b \<longleftrightarrow>
-    (0 < a * b \<longrightarrow> b \<le> a) \<and>
-    (a * b \<le> 0 \<longrightarrow> a \<le> b)"
-  by (auto simp add: field_simps inverse_eq_divide divide_le_eq mult_le_0_iff zero_less_mult_iff
-    le_divide_eq)
-
-lemma (in linordered_field_inverse_zero) divide_le_cancel:
-  fixes a b c :: 'a
-  shows "a / c \<le> b / c \<longleftrightarrow> (0 < c \<longrightarrow> a \<le> b) \<and> (c < 0 \<longrightarrow> b \<le> a)"
-  by (simp add: divide_inverse mult_le_cancel_right)
-
-lemma (in linordered_field_inverse_zero) divide_less_cancel:
-  fixes a b c :: 'a
-  shows "a / c < b / c \<longleftrightarrow> (0 < c \<longrightarrow> a < b) \<and> (c < 0 \<longrightarrow> b < a) \<and> c \<noteq> 0"
-  by (auto simp add: divide_inverse mult_less_cancel_right)
-
 lemma part_insert:
   assumes "part A P" assumes "X \<inter> A = {}"
   shows "part (A \<union> X) (insert X P)"
@@ -620,7 +602,7 @@ lemma dist_Ps_upper_bound:
   fixes cf1 cf2 :: "('test, 'atom, 'choice) cmd \<times> 'state" and s :: "'state" and S
   defines "S cf bT \<equiv> qstermT cf bT \<and> eff_at cf bT (qsend cf bT) \<approx> s"
   defines "Ps st cf \<equiv> \<P>(bT in paths st cf. S cf bT)"
-  defines "N st cf n bT \<equiv> \<not> discrCf (nat_case cf bT n)"
+  defines "N st cf n bT \<equiv> \<not> discrCf (case_nat cf bT n)"
   defines "Pn st cf n \<equiv> \<P>(bT in paths st cf. N st cf n bT)"
   assumes bisim: "cf1 \<in> reachable st1" "cf2 \<in> reachable st2" "fst cf1 \<approx>01 fst cf2" "snd cf1 \<approx> snd cf2"
   shows "dist (Ps st1 cf1) (Ps st2 cf2) \<le> Pn st1 cf1 n + Pn st2 cf2 m"
@@ -646,7 +628,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       "\<And>i. i \<in> F I0 \<Longrightarrow> snd cf2 \<approx> eff (fst cf2) (snd cf2) i"
       "\<And>i. i \<in> F I0 \<Longrightarrow> fst cf1 \<approx>01 cont (fst cf2) (snd cf2) i"
     unfolding mC_ZOC_def mC_ZOC_part_def mC_ZOC_eff_cont_def mC_ZOC_eff_cont0_def mC_ZOC_wt_def W_def
-    apply simp_all by blast+
+    by simp_all
 
   have "finite P" "inj_on F (P - {I0})" and FP': "finite (F`P)" "F I0 \<in> F`P"
     using finite_part[OF _ P(2)] finite_part[OF _ FP(2)] `I0 \<in> P` `inj_on F P`
@@ -822,30 +804,30 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       unfolding S_def[abs_def] unfolding K.measurable_paths1
       apply (rule measurable_compose_countable[OF _ measurable_qsend])
       apply simp
-      apply (rule measurable_nat_case_cf)
+      apply (rule measurable_case_nat_cf)
       apply simp
       done
 
     { fix st cf' cf assume cf[simp]: "cf \<in> reachable st" and cf': "cf' \<in> G cf"
-      have "AE bT in paths st cf'. S cf (nat_case cf' bT) = S cf' bT"
+      have "AE bT in paths st cf'. S cf (case_nat cf' bT) = S cf' bT"
         unfolding S_def
         using AE_validT[OF reachable_G[OF cf cf']]
       proof (eventually_elim, intro conj_cong)
         fix bT assume bT: "validT cf' bT"
-        with qstermT_nat_case[OF cf'] show "qstermT cf (nat_case cf' bT) \<longleftrightarrow> qstermT cf' bT" .
+        with qstermT_case_nat[OF cf'] show "qstermT cf (case_nat cf' bT) \<longleftrightarrow> qstermT cf' bT" .
         assume bT': "qstermT cf' bT"
-        have "snd (nat_case cf (nat_case cf' bT) (qsend cf (nat_case cf' bT))) \<approx>
-              snd (nat_case cf' bT (qsend cf (nat_case cf' bT) - 1))"
-        proof (cases "qsend cf (nat_case cf' bT)")
+        have "snd (case_nat cf (case_nat cf' bT) (qsend cf (case_nat cf' bT))) \<approx>
+              snd (case_nat cf' bT (qsend cf (case_nat cf' bT) - 1))"
+        proof (cases "qsend cf (case_nat cf' bT)")
           case 0
-          with qstermT_nat_case[OF cf' bT] bT' have "qstermT cf (nat_case cf' bT)" by simp
+          with qstermT_case_nat[OF cf' bT] bT' have "qstermT cf (case_nat cf' bT)" by simp
           from qsend[OF this] 0 have "discrCf cf" by simp
           with cf' 0 show ?thesis
             by (auto simp add: G_iff)
         qed (auto intro: indis_sym)
-        then show "snd (nat_case cf (nat_case cf' bT) (qsend cf (nat_case cf' bT))) \<approx> s \<longleftrightarrow>
-            snd (nat_case cf' bT (qsend cf' bT)) \<approx> s"
-          unfolding qsend_nat_case[OF cf cf' bT bT'] by (auto intro: indis_trans indis_sym)
+        then show "snd (case_nat cf (case_nat cf' bT) (qsend cf (case_nat cf' bT))) \<approx> s \<longleftrightarrow>
+            snd (case_nat cf' bT (qsend cf' bT)) \<approx> s"
+          unfolding qsend_case_nat[OF cf cf' bT bT'] by (auto intro: indis_trans indis_sym)
       qed }
     note S_sets = this
 
@@ -859,7 +841,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
 
       assume S_sets[measurable]: "\<And>cf n. {bT \<in> space (S_seq st). S cf n bT} \<in> sets (S_seq st)"
         and S_next: "\<And>cf cf' n. cf \<in> reachable st \<Longrightarrow> cf' \<in> G cf \<Longrightarrow>
-          AE bT in paths st cf'. S cf (Suc n) (nat_case cf' bT) = S cf' n bT"
+          AE bT in paths st cf'. S cf (Suc n) (case_nat cf' bT) = S cf' n bT"
       have finite_I: "\<And>I. I \<in> P \<Longrightarrow> finite I"
         using finite_subset[OF part_is_subset[OF P]] by blast
       let ?P = "\<lambda>I. \<Sum>i\<in>I. wt (fst cf) (snd cf) i * \<P>(bT in paths st (cont_eff cf i). S (cont_eff cf i) n bT)"
@@ -1056,7 +1038,7 @@ lemma Ps_eq:
     "cf1 \<in> reachable st1" "cf2 \<in> reachable st2" "fst cf1 \<approx>01 fst cf2" "snd cf1 \<approx> snd cf2"
   shows "Ps st1 cf1 = Ps st2 cf2"
 proof -
-  let ?nT = "\<lambda>cf n bT. \<not> discrCf (nat_case cf bT n)"
+  let ?nT = "\<lambda>cf n bT. \<not> discrCf (case_nat cf bT n)"
   let ?PnT = "\<lambda>st cf n. \<P>(bT in paths st cf. ?nT cf n bT)"
 
   { fix cf st and e :: real assume AE: "cf \<in> reachable st" "AE bT in paths st cf. qstermT cf bT" "0 < e"
@@ -1208,7 +1190,7 @@ proof (unfold eSec_def, intro allI impI)
   proof (rule field_abs_le_zero_epsilon)
     fix e :: real assume "0 < e"
     then have "0 < e / 2" by simp
-    let ?N = "\<lambda>s n bT. \<not> discrCf (nat_case (c,s) bT n)"
+    let ?N = "\<lambda>s n bT. \<not> discrCf (case_nat (c,s) bT n)"
     from AE_T_max_qsend[OF s1 _ `0 < e / 2`] obtain N1 where N1: "\<P>(bT in paths (c,s1) (c, s1). ?N s1 N1 bT) < e / 2"
       using `aeT c` unfolding aeT_def by auto
     from AE_T_max_qsend[OF s2 _ `0 < e / 2`] obtain N2 where N2: "\<P>(bT in paths (c,s2) (c, s2). ?N s2 N2 bT) < e / 2"
@@ -1221,7 +1203,7 @@ proof (unfold eSec_def, intro allI impI)
         \<P>(bT in paths (c, s1) (c, s1). ?N s1 N1 bT)"
       using `aeT c`[unfolded aeT_def, rule_format] AE_validT[OF s1] AE_space
     proof (intro finite_measure_dist, eventually_elim, simp, intro impI)
-      fix bT assume T: "qstermT (c,s1) bT" and bT: "validT (c,s1) bT" "discrCf (nat_case (c,s1) bT N1)"
+      fix bT assume T: "qstermT (c,s1) bT" and bT: "validT (c,s1) bT" "discrCf (case_nat (c,s1) bT N1)"
       with bT have "qsend (c,s1) bT \<le> N1"
         by (auto intro!: reachable_start qsend_le)
       also have "\<dots> \<le> N"
@@ -1236,7 +1218,7 @@ proof (unfold eSec_def, intro allI impI)
         \<P>(bT in paths (c, s2) (c, s2). ?N s2 N2 bT)"
       using `aeT c`[unfolded aeT_def, rule_format] AE_validT[OF s2] AE_space
     proof (intro finite_measure_dist, eventually_elim, simp, intro impI)
-      fix bT assume T: "qstermT (c,s2) bT" and bT: "validT (c,s2) bT" "discrCf (nat_case (c,s2) bT N2)"
+      fix bT assume T: "qstermT (c,s2) bT" and bT: "validT (c,s2) bT" "discrCf (case_nat (c,s2) bT N2)"
       with bT have "qsend (c,s2) bT \<le> N2"
         by (auto intro!: reachable_start qsend_le)
       also have "\<dots> \<le> N"

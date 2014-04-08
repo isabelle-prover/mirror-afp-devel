@@ -615,7 +615,7 @@ unfolding Sretr_def matchC_C_def proof safe
       using c1d1 i j I match unfolding c mC_C_def mC_C_eff_cont_def by auto
       show "eff c s i \<approx> eff d t j \<and> (cont c s i, cont d t j) \<in> thetaSSeqD \<union> Sbis"
       (is "?eff \<and> ?cont") proof
-        show ?eff using match I i j unfolding c d m_defsAll apply simp by blast
+        show ?eff using match I i j unfolding c d m_defsAll by simp
       next
         show ?cont
         proof(cases "finished ?c1'")
