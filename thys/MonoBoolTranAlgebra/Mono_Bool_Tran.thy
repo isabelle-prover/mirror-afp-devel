@@ -240,14 +240,6 @@ begin
 
 interpretation lifting_syntax .
 
-lemma INF_transfer [transfer_rule]: -- {* FIXME move to @{text Lifting_Set.thy} *}
-  "(rel_set A ===> (A ===> HOL.eq) ===> HOL.eq) INFIMUM INFIMUM"
-  unfolding INF_def [abs_def] by transfer_prover
-
-lemma SUP_transfer [transfer_rule]: -- {* FIXME move to @{text Lifting_Set.thy} *}
-  "(rel_set A ===> (A ===> HOL.eq) ===> HOL.eq) SUPREMUM SUPREMUM"
-  unfolding SUP_def [abs_def] by transfer_prover
-
 lemma [transfer_rule]:
   "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"
   unfolding INF_def [abs_def] by transfer_prover
