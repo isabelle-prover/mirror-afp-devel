@@ -1085,7 +1085,7 @@ proof -
   from `p \<noteq> 0` and `?pp \<in> K2`
   have "p \<bullet> (M *v p) < 0" by (subst K2_abs [symmetric])
   hence "p$3 \<noteq> 0" by (rule M_neg_imp_z_non_zero)
-  hence "?t$3 = 0" by (simp add: divide_minus_left)
+  hence "?t$3 = 0" by simp
   hence "?t \<bullet> (M *v ?t) = (?t$1)\<^sup>2 + (?t$2)\<^sup>2"
     unfolding matrix_vector_mult_def and M_def and vector_def
     by (simp add: inner_vec_def setsum_3 power2_eq_square)

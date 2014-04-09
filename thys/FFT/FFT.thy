@@ -379,7 +379,7 @@ proof (unfold IDFT_def)
     txt {* Second pair of sums *}
     apply (simp add: nonzero_power_divide root_nonzero)
     apply (simp add: mbound root_cancel2)
-    apply (simp add: divide_minus_left setsum_divide_distrib)
+    apply (simp add: setsum_divide_distrib)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)

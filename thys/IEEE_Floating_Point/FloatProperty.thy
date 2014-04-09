@@ -336,7 +336,7 @@ proof -
                 valof float_format (topfloat float_format)"
             "-1* (2^Exponent a / 2^bias float_format) * (1 + Fraction a / 2^fracwidth float_format) \<le>
                 valof float_format (topfloat float_format)"
-    using gt0 by (auto simp: divide_minus_left)
+    using gt0 by auto
   then have nzexp: --{*nonzero exponent case*}
     "(-1)^(Sign a) * (2^Exponent a / 2^bias float_format) *
      (1 + Fraction a/2^fracwidth float_format) \<le> valof float_format (topfloat float_format)"
@@ -518,7 +518,7 @@ proof -
     by (auto simp: is_valid_def is_finite_def)
   then have "valof float_format (0, exponent a, fraction a) =
     -valof float_format (1, exponent a, fraction a)"
-    by (auto simp: divide_minus_left)
+    by auto
   then show "?thesis" using A C D Leq
     by (metis diff_0_right exponent.simps fraction.cases fraction.simps
       less_one minus_diff_eq neq0_conv sign.simps zero_less_diff)

@@ -405,7 +405,7 @@ proof -
       using p_bound by (simp add: powr_def exp_add [symmetric])
     also have "\<dots> \<le> n powr (-1 / 2) * exp 1 powr (1 / 2)" by (simp add: powr_mult_base)
     also have "\<dots> = (exp 1 / n) powr (1/2)"
-      by (simp add: divide_minus_left powr_divide powr_minus_divide)
+      by (simp add: powr_divide powr_minus_divide)
     finally show "n * exp (- p n * (real (?nr n) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)" .
   qed
 
