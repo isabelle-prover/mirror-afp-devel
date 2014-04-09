@@ -235,7 +235,7 @@ subsubsection {* @{term "class" } *}
 
 lemma tabulate_class_code [code]:
   "tabulate_class = Mapping.of_alist"
-by(rule ext)(simp add: tabulate_class_def Mapping.of_alist_def)
+  by transfer (simp add: fun_eq_iff)
 
 subsubsection {* @{term "subcls" } *}
 
@@ -398,7 +398,7 @@ apply(rule conjI)
  apply(clarsimp simp add: o_def)
  apply(subst map_of_map2[unfolded split_def])
  apply simp
- apply(clarsimp simp add: Mapping.of_alist_def Mapping_inject)
+ apply transfer
  apply(rule conjI)
   apply clarsimp
   apply(rule ext)
@@ -503,7 +503,7 @@ apply(rule conjI)
  apply(rule sym)
  apply(subst map_of_map2[unfolded split_def])
  apply(simp add: is_class_def)
- apply(simp add: Mapping.of_alist_def Mapping_inject)
+ apply transfer
  apply(rule ext)
  apply(simp add: map_of_map2)
  apply(rule conjI)
