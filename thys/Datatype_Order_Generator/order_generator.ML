@@ -273,21 +273,21 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
                                 end;
                             val xy_case_tac = case_tac_disj ctxt xy xy_tac
                           in 
-                            K (my_print_tac ("another case: ") THEN xy_case_tac)
+                            K (my_print_tac ctxt ("another case: ") THEN xy_case_tac)
                           end
                   in 
-                    K (my_print_tac "recursive case: ") 
+                    K (my_print_tac ctxt "recursive case: ") 
                     THEN' solve_tac xy_disj yz_disj params_x params_y params_z pdtys [] hyps 
                   end
                 ) 1
               end              
           in 
-            my_print_tac ("consider constructor " ^ string_of_int k) THEN 
+            my_print_tac ctxt ("consider constructor " ^ string_of_int k) THEN 
             (if k >= j then case_tac ctxt z sub_sub_case_tac else 
                solve_with_tac ctxt [case_hyp_y,xy]) 
           end (* end sub_case tac *)
       in 
-        my_print_tac ("start induct " ^ string_of_int i) THEN case_tac ctxt y sub_case_tac 
+        my_print_tac ctxt ("start induct " ^ string_of_int i) THEN case_tac ctxt y sub_case_tac 
       end (* end ind_case tac *)
     val trans_thm =  trans_thm_of_tac ind_case_tac
     val (trans_eq_trm,vars) = mk_trans_eq_thm_trm thy info
@@ -521,15 +521,15 @@ fun derive kind dtyp_name _ thy =
           val lthy = Class.instantiation ([tyco],vs,sort) thy'
         
           fun order_tac ctxt = 
-            my_print_tac "enter order" THEN
+            my_print_tac ctxt "enter order" THEN
             unfold_tac ctxt less_thms THEN
-            my_print_tac "after unfolding" THEN
+            my_print_tac ctxt "after unfolding" THEN
             rtac less 1 THEN
-            my_print_tac "after less" THEN
+            my_print_tac ctxt "after less" THEN
             rtac refl 1 THEN
-            my_print_tac "after refl" THEN
+            my_print_tac ctxt "after refl" THEN
             rtac trans_eq 1 THEN atac 1 THEN atac 1 THEN
-            my_print_tac "after trans" THEN
+            my_print_tac ctxt "after trans" THEN
             rtac antisym 1 THEN atac 1 THEN atac 1
           val thy'' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
           val _ = writeln ("registered " ^ base_name ^ " in class order")
