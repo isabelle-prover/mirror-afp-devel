@@ -762,6 +762,7 @@ abstract = We provide a wrapper around the partial-function command that support
 title = Coinductive
 topic = Computer Science/Functional Programming
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+contributors = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2010-02-12
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of König's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
 extra-history =
