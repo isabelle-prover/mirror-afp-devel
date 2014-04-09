@@ -117,8 +117,7 @@ proof -
         (is "(_ has_vector_derivative ?sumsum) _")
       unfolding has_vector_derivative_def sumDs_def
       using zero_less_Suc[of n] `k < n`
-      by (auto intro!: derivative_eq_intros has_derivativeDs_line
-        simp: field_simps inverse_eq_divide scaleR_setsum_right)
+      by (auto intro!: derivative_eq_intros has_derivativeDs_line simp: field_simps scaleR_setsum_right)
     also
     have "?sumsum = sumDs (Suc k) (line t)"
       unfolding sumDs_def

@@ -1162,7 +1162,7 @@ proof -
       from scaleR[of "inverse (norm (a, b))" "(a, b)"]
       have "norm (f' (t, x) (a, b)) =
           norm (f' (t, x) (inverse (norm (a, b)) *\<^sub>R (a, b))) * norm (a, b)" (is "_ = ?f * _")
-        by (auto simp: field_simps inverse_eq_divide) (simp add: zero_prod_def)
+        by (auto simp: field_simps) (simp add: zero_prod_def)
       also
       have uball: "(a, b) /\<^sub>R norm (a, b) \<in> cball 0 1"
         unfolding cball_def

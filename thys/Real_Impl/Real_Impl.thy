@@ -257,8 +257,8 @@ proof (transfer, unfold Let_def, clarsimp)
   thus "inverse (real_of_rat p' + real_of_rat q' * sqrt (of_nat b')) =
        real_of_rat (p' * inverse (p' * p' - of_nat b' * q' * q')) +
        real_of_rat (- (q' * inverse (p' * p' - of_nat b' * q' * q'))) * sqrt (of_nat b')"
-    by (simp add: of_rat_mult field_simps of_rat_inverse of_rat_diff of_rat_minus
-      b_def p_def q_def)
+    by (simp add: divide_simps of_rat_mult of_rat_divide of_rat_diff of_rat_minus b_def p_def q_def
+             split: if_splits)
 qed
 
 lemma ma_sqrt_main: "ma_rat r \<ge> 0 \<Longrightarrow> ma_coeff r = 0 \<Longrightarrow> sqrt (real_of r) = real_of (ma_sqrt r)"

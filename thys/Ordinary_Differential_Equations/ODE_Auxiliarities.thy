@@ -11,8 +11,7 @@ lemma image_mult_atLeastAtMost:
   "(\<lambda>x. x * c::real) ` {x..y} = (if x \<le> y then if c > 0 then {x * c .. y * c} else {y * c .. x * c} else {})"
   apply (cases "c = 0")
    apply force
-  apply (auto simp: field_simps inverse_eq_divide not_less intro!:
-    image_eqI[where x="inverse c * xa" for xa])
+  apply (auto simp: field_simps not_less intro!: image_eqI[where x="inverse c * xa" for xa])
   done
 
 lemma image_add_atLeastAtMost:
