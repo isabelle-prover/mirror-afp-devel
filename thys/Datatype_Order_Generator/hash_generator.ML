@@ -127,11 +127,11 @@ fun derive dtyp_name _ thy =
     val hash_thms = [hash_thm, hashb_thm, hashs_thm]
   
     fun hash_tac ctxt = 
-      my_print_tac "enter hash " THEN
+      my_print_tac ctxt "enter hash " THEN
       unfold_tac ctxt hash_thms THEN
-      my_print_tac "after unfolding" THEN
+      my_print_tac ctxt "after unfolding" THEN
       rtac @{thm hash_mod_lemma} 1 THEN atac 1 THEN
-      my_print_tac "after hash_mod" THEN
+      my_print_tac ctxt "after hash_mod" THEN
       simp_tac ctxt 1
     val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN hash_tac ctxt)) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class hashable")

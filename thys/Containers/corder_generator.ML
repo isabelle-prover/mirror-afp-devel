@@ -67,17 +67,17 @@ fun mk_linorder_thm dtyp_name lthy =
           val [trans_eq,less,refl,antisym] = mk_order_thms thy info
           val linear = mk_linear_thm thy info
           fun order_tac {prems = _, context = ctxt} = 
-            my_print_tac "enter order" THEN
+            my_print_tac ctxt "enter order" THEN
             Locale.intro_locales_tac true ctxt [] THEN
-            my_print_tac "after intro_locale" THEN
+            my_print_tac ctxt "after intro_locale" THEN
             rtac less 1 THEN
-            my_print_tac "after less" THEN
+            my_print_tac ctxt "after less" THEN
             rtac refl 1 THEN
-            my_print_tac "after refl" THEN
+            my_print_tac ctxt "after refl" THEN
             rtac trans_eq 1 THEN atac 1 THEN atac 1 THEN
-            my_print_tac "after trans" THEN
+            my_print_tac ctxt "after trans" THEN
             rtac antisym 1 THEN atac 1 THEN atac 1 THEN
-            my_print_tac "after antisym" THEN
+            my_print_tac ctxt "after antisym" THEN
             rtac linear 1
           val thm = Goal.prove lthy [] [] 
             (HOLogic.mk_Trueprop (Const (@{const_name class.linorder}, class_ty) $ less_eq_term $ less_term)) 
@@ -103,9 +103,9 @@ fun derive_corder_linorder typ_name thy =
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
       THEN unfold_tac ctxt [corder_thm]
-      THEN my_print_tac "after class intro"
+      THEN my_print_tac ctxt "after class intro"
       THEN asm_full_simp_tac ctxt 1
-      THEN my_print_tac "after simp"
+      THEN my_print_tac ctxt "after simp"
       THEN Locale.intro_locales_tac true ctxt []) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class corder")
     val thy'' = derive_is_c_dots_lemma ty @{const_name is_corder} [corder_thm, @{thm is_corder_def}] base_name thy'
@@ -137,9 +137,9 @@ fun derive_some_corder dtyp_name thy = let
       |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac []
-      THEN my_print_tac "after class instance"
+      THEN my_print_tac ctxt "after class instance"
       THEN rtac (@{thm corder_intro} OF [linorder_thm]) 1
-      THEN my_print_tac "after corder_intro"
+      THEN my_print_tac ctxt "after corder_intro"
       THEN unfold_tac ctxt [corder_thm]
       THEN (REPEAT (blast_tac ctxt 1))
       )) lthy

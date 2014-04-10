@@ -53,7 +53,7 @@ sig
   val dt_number_recs : Datatype.dtyp list -> int * (int * int) list
 
 (* like print_tac, but is turned off by default to not exceed tracing limit *)
-  val my_print_tac : string -> tactic 
+  val my_print_tac : Proof.context -> string -> tactic 
 
 (* generates a theorem over two variables, where induction over the first one performed,
    and then in every case one performs immediately a case analysis on the second variable.
@@ -105,7 +105,7 @@ struct
 open Datatype_Aux; open Datatype;
 
 val printing = false
-val my_print_tac = if printing then print_tac else (fn _ => Seq.single) 
+fun my_print_tac ctxt = if printing then print_tac ctxt else (fn _ => Seq.single) 
 
 fun alist_to_string al = map fst al |> commas |> enclose "(" ")"
 
@@ -317,17 +317,17 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Datatype_Aux
             val case_hyp_y = hd prems 
           in 
             if not (j = k) 
-            then my_print_tac ("different constructors ") THEN solve_with_tac ctxt (case_hyp_y :: ihprems) (* different constructor *) 
+            then my_print_tac ctxt ("different constructors ") THEN solve_with_tac ctxt (case_hyp_y :: ihprems) (* different constructor *) 
             else
               let 
                 val params_y = map (snd #> term_of) iparams_y
                 val c_info = nth descr idx |> snd |> (fn (_,_,info) => nth info j)
               in 
-                my_print_tac ("consider constructor " ^ string_of_int k) 
+                my_print_tac ctxt ("consider constructor " ^ string_of_int k) 
                 THEN same_constructor_tac ctxt hyps ihprems case_hyp_y solve_with_tac j params_x params_y c_info mk_binary
               end
           end
-      in my_print_tac ("start induct " ^ string_of_int i) THEN case_tac ctxt sub_case_tac end
+      in my_print_tac ctxt ("start induct " ^ string_of_int i) THEN case_tac ctxt sub_case_tac end
     val prop_thm = prop_thm_of_tac ind_case_tac
   in prop_thm end 
 
