@@ -531,8 +531,7 @@ lemma PR_TAG_intro_prio1:
   "PR_TAG f = (\<lambda>x. poly p x) 
        \<Longrightarrow> PR_TAG (\<lambda>x. f x / a) = (\<lambda>x. poly (smult (inverse a) p) x)"
   "PR_TAG (\<lambda>x. x^n :: real) = (\<lambda>x. poly (monom 1 n) x)"
-using assms by (intro ext, simp_all add: PR_TAG_def field_simps 
-                    poly_monom divide_real_def)
+using assms by (simp_all add: PR_TAG_def field_simps poly_monom)
 
 lemma PR_TAG_intro_prio2:
   "PR_TAG (\<lambda>x. 1 / b) = (\<lambda>x. inverse b)"
@@ -551,8 +550,7 @@ lemma PR_TAG_intro_prio2:
        \<Longrightarrow> PR_TAG (\<lambda>x. f x * (f x)^n :: real) = (\<lambda>x. poly p x)"
   "PR_TAG (\<lambda>x. (f x)^(m+n) :: real) = (\<lambda>x. poly p x)
        \<Longrightarrow> PR_TAG (\<lambda>x. (f x)^m * (f x)^n :: real) = (\<lambda>x. poly p x)"
-using assms by (intro ext, simp_all add: PR_TAG_def field_simps 
-                    poly_monom power_add divide_real_def)
+using assms by (simp_all add: PR_TAG_def field_simps poly_monom power_add)
 
 lemma sturm_meta_spec: "(\<And>x::real. P x) \<Longrightarrow> P x" by simp
 lemma sturm_imp_conv: 
