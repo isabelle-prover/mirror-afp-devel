@@ -9,7 +9,7 @@ theory Uint32 imports
   Bits_Integer
 begin
 
-declare Quotient_prod[transfer_rule]
+declare prod.Quotient[transfer_rule]
 
 section {* Type definition and primitive operations *}
 

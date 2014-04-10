@@ -13,7 +13,7 @@ begin
 
 subsection {* Rules for the Quotient package *}
 
-declare llist_all2_eq[id_simps]
+declare llist.rel_eq[id_simps]
 
 lemma transpD: "\<lbrakk> transp R; R a b; R b c \<rbrakk> \<Longrightarrow> R a c"
   by (erule transpE) blast
@@ -31,6 +31,9 @@ functor lmap: lmap
    by (simp_all add: fun_eq_iff id_def llist.map_comp)
 
 declare lmap_id [id_simps]
+
+lemma reflp_llist_all2: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
+  by (rule reflpI) (auto simp add: llist_all2_conv_all_lnth elim: reflpE)
 
 lemma symp_llist_all2: "symp R \<Longrightarrow> symp (llist_all2 R)"
   by (rule sympI) (auto simp add: llist_all2_conv_all_lnth elim: sympE)
@@ -138,7 +141,7 @@ by(simp add: fun_eq_iff llist_all2_lmap1 llist_all2_lmap2)
 lemma llist_all2_preserve2 [quot_preserve]:
   assumes "Quotient3 R Abs Rep"
   shows "(llist_all2 ((Rep ---> Rep ---> id) R) l m) = (l = m)"
-  by (simp add: map_fun_def [abs_def] Quotient3_rel_rep [OF assms] llist_all2_eq comp_def)
+  by (simp add: map_fun_def [abs_def] Quotient3_rel_rep [OF assms] llist.rel_eq comp_def)
 
 lemma corec_llist_preserve [quot_preserve]:
   assumes q1: "Quotient3 R1 Abs1 Rep1"

@@ -56,7 +56,7 @@ lemma dflt_size[simp]:
   by (simp_all del: len_gt_0)
 end
 
-declare Quotient_prod[transfer_rule]
+declare prod.Quotient[transfer_rule]
 
 section {* Type definition and primitive operations *}
 

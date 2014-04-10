@@ -9,8 +9,8 @@ imports
   Coinductive_List
 begin
 
-lemma invariantI: "P x \<Longrightarrow> Lifting.invariant P x x"
-by(simp add: Lifting.invariant_def)
+lemma eq_onpI: "P x \<Longrightarrow> eq_onp P x x"
+by(simp add: eq_onp_def)
 
 primcorec unfold_stream :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b stream" where
   "unfold_stream g1 g2 a = g1 a ## unfold_stream g1 g2 (g2 a)"
@@ -218,12 +218,12 @@ begin
 interpretation lifting_syntax .
 
 lemma lmap_infinite_transfer [transfer_rule]:
-  "(op = ===> Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> Lifting.invariant (\<lambda>xs. \<not> lfinite xs)) lmap lmap"
-by(simp add: rel_fun_def Lifting.invariant_def)
+  "(op = ===> eq_onp (\<lambda>xs. \<not> lfinite xs) ===> eq_onp (\<lambda>xs. \<not> lfinite xs)) lmap lmap"
+by(simp add: rel_fun_def eq_onp_def)
 
 lemma lset_infinite_transfer [transfer_rule]:
-  "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> op =) lset lset"
-by(simp add: rel_fun_def Lifting.invariant_def)
+  "(eq_onp (\<lambda>xs. \<not> lfinite xs) ===> op =) lset lset"
+by(simp add: rel_fun_def eq_onp_def)
 
 lemma unfold_stream_transfer [transfer_rule]:
   "(op = ===> op = ===> op = ===> pcr_stream op =) (unfold_llist (\<lambda>_. False)) unfold_stream"
@@ -249,8 +249,8 @@ lemma llist_of_stream_transfer [transfer_rule]: "(pcr_stream op = ===> op =) id 
 by(simp add: rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
 lemma stream_of_llist_transfer [transfer_rule]: 
-  "(Lifting.invariant (\<lambda>xs. \<not> lfinite xs) ===> pcr_stream op =) (\<lambda>xs. xs) stream_of_llist"
-by(simp add: Lifting.invariant_def rel_fun_def stream.pcr_cr_eq cr_stream_def)
+  "(eq_onp (\<lambda>xs. \<not> lfinite xs) ===> pcr_stream op =) (\<lambda>xs. xs) stream_of_llist"
+by(simp add: eq_onp_def rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
 lemma SCons_transfer [transfer_rule]:
   "(A ===> pcr_stream A ===> pcr_stream A) LCons op ##"
@@ -273,7 +273,7 @@ by(rule rel_funI)+(clarsimp simp add: stream.pcr_cr_eq cr_stream_def)
 context
   fixes xs
   assumes inf: "\<not> lfinite xs"
-  notes [transfer_rule] = invariantI[where P="\<lambda>xs. \<not> lfinite xs", OF inf]  
+  notes [transfer_rule] = eq_onpI[where P="\<lambda>xs. \<not> lfinite xs", OF inf]  
 begin
 
 lemma smap_stream_of_llist [simp]:

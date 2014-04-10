@@ -16,7 +16,7 @@ text {*
   is imported, the type @{text uint8} is emulated via @{typ "8 word"}.
 *}
 
-declare Quotient_prod[transfer_rule]
+declare prod.Quotient[transfer_rule]
 
 section {* Type definition and primitive operations *}
 

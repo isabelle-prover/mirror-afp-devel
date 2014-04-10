@@ -403,7 +403,7 @@ by(auto simp add: pcr_tllist_def cr_tllist_def rel_prod_def intro!: rel_funI rel
 
 lemma llist_of_tllist_transfer [transfer_rule]:
   "(pcr_tllist op = B ===> op =) fst llist_of_tllist"
-by(auto simp add: pcr_tllist_def cr_tllist_def llist_all2_eq)
+by(auto simp add: pcr_tllist_def cr_tllist_def llist.rel_eq)
 
 lemma tllist_of_llist_transfer [transfer_rule]:
   "(op = ===> op = ===> pcr_tllist op = op =) (\<lambda>b xs. (xs, b)) tllist_of_llist"
@@ -940,133 +940,7 @@ end
 
 subsubsection {* Relator and predicator properties *}
 
-lift_definition tllist_all :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> bool"
-is "\<lambda>P Q (xs, b). llist_all P xs \<and> (lfinite xs \<longrightarrow> Q b)" 
-by auto
-
-declare tllist_all2_eq [relator_eq]
-
-lemma tllist_all2_mono2 [relator_mono]:
-  assumes "A \<le> B" and "C \<le> D"
-  shows "(tllist_all2 A C) \<le> (tllist_all2 B D)"
-using assms by(auto intro: tllist_all2_mono)
-
-lemma tllist_all2_OO [relator_distr]:
-  "tllist_all2 A B OO tllist_all2 A' B' = tllist_all2 (A OO A') (B OO B')"
-by transfer(auto intro!: ext simp add: llist_all2_OO[symmetric] dest: llist_all2_lfiniteD)
-
-lemma Domainp_tllist [relator_domain]:
-  assumes A: "Domainp A = P"
-  and B: "Domainp B = Q"
-  shows "Domainp (tllist_all2 A B) = (tllist_all P Q)"
-  unfolding Domainp_iff[abs_def]
-by(transfer fixing: A B P Q)(clarsimp simp add: fun_eq_iff Domainp_iff[symmetric] Domainp_llist[OF A] B)
-
-lemma reflp_tllist_all2[reflexivity_rule]: 
-  assumes R: "reflp R" and Q: "reflp Q"
-  shows "reflp (tllist_all2 R Q)"
-proof(rule reflpI)
-  fix xs
-  show "tllist_all2 R Q xs xs"
-    apply(coinduction arbitrary: xs)
-    using assms by(auto elim: reflpE)
-qed
-
-lemma tllist_all2_left_total[reflexivity_rule]:
-  assumes R: "left_total R"
-  and S: "left_total S"
-  shows "left_total (tllist_all2 R S)"
-proof (rule left_totalI)
-  fix xs
-  have *: "\<And>x. R x (SOME y. R x y)"
-    using R by(rule left_totalE)(rule someI_ex)
-  have **: "\<And>x. S x (SOME y. S x y)"
-    using S by(rule left_totalE)(rule someI_ex)
-
-  have "tllist_all2 R S xs (tmap (\<lambda>x. SOME y. R x y) (\<lambda>x. SOME y. S x y) xs)"
-    by(coinduction arbitrary: xs)(auto simp add: * **)
-  thus "\<exists>ys. tllist_all2 R S xs ys" ..
-qed
-
-lemma left_unique_tllist_all2 [reflexivity_rule]:
-  assumes A: "left_unique A" and B: "left_unique B"
-  shows "left_unique (tllist_all2 A B)"
-proof(rule left_uniqueI)
-  fix xs ys zs
-  assume "tllist_all2 A B xs zs" "tllist_all2 A B ys zs"
-  thus "xs = ys"
-    by(coinduction arbitrary: xs ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: left_uniqueD[OF A] left_uniqueD[OF B] tllist_all2_is_TNilD tllist_all2_thdD tllist_all2_tfinite1_terminalD intro: tllist_all2_ttlI)
-qed
-
-lemma tllist_all2_right_total[transfer_rule]:
-  assumes R: "right_total R"
-  and S: "right_total S"
-  shows "right_total (tllist_all2 R S)"
-  unfolding right_total_def
-proof
-  fix ys
-  have *: "\<And>y. R (SOME x. R x y) y"
-    using assms unfolding right_total_def by - (rule someI_ex, blast)
-  have **: "\<And>y. S (SOME x. S x y) y"
-    using assms unfolding right_total_def by - (rule someI_ex, blast)
-
-  have "tllist_all2 R S (tmap (\<lambda>y. SOME x. R x y) (\<lambda>y. SOME x. S x y) ys) ys"
-    by(coinduction arbitrary: ys)(auto simp add: * **)
-  thus "\<exists>xs. tllist_all2 R S xs ys" ..
-qed
-
-lemma bi_total_tllist_all2 [transfer_rule]:
-  "\<lbrakk> bi_total A; bi_total B \<rbrakk> \<Longrightarrow> bi_total (tllist_all2 A B)"
-by(simp add: bi_total_conv_left_right tllist_all2_right_total tllist_all2_left_total)
-
-lemma right_unique_tllist_all2 [transfer_rule]:
-  assumes A: "right_unique A" and B: "right_unique B"
-  shows "right_unique (tllist_all2 A B)"
-proof(rule right_uniqueI)
-  fix xs ys zs
-  assume "tllist_all2 A B xs ys" "tllist_all2 A B xs zs"
-  thus "ys = zs"
-    by(coinduction arbitrary: xs ys zs rule: tllist.strong_coinduct)(auto 4 3 dest: tllist_all2_is_TNilD right_uniqueD[OF B] right_uniqueD[OF A] tllist_all2_thdD tllist_all2_tfinite2_terminalD intro: tllist_all2_ttlI)
-qed
-
-lemma bi_unique_tllist_all2 [transfer_rule]:
-  "\<lbrakk> bi_unique A; bi_unique B \<rbrakk> \<Longrightarrow> bi_unique (tllist_all2 A B)"
-by(simp add: bi_unique_conv_left_right left_unique_tllist_all2 right_unique_tllist_all2)
-
-subsubsection {* Quotient theorem for the Lifting package *}
-
-lemma Quotient_llist[quot_map]:
-  assumes "Quotient R1 Abs1 Rep1 T1"
-  and "Quotient R2 Abs2 Rep2 T2"
-  shows "Quotient (tllist_all2 R1 R2) (tmap Abs1 Abs2) (tmap Rep1 Rep2) (tllist_all2 T1 T2)"
-unfolding Quotient_alt_def
-proof(intro conjI strip)
-  from assms have 1: "\<And>x y. T1 x y \<Longrightarrow> Abs1 x = y"
-    and 2: "\<And>x y. T2 x y \<Longrightarrow> Abs2 x = y"
-    unfolding Quotient_alt_def by simp_all
-  fix xs ys
-  assume "tllist_all2 T1 T2 xs ys"
-  thus "tmap Abs1 Abs2 xs = ys"
-    by(coinduction arbitrary: xs ys)(auto simp add: 1 2 dest: tllist_all2_is_TNilD tllist_all2_tfinite1_terminalD tllist_all2_thdD intro: tllist_all2_ttlI)
-next
-  from assms have 1: "\<And>x. T1 (Rep1 x) x"
-    and 2: "\<And>x. T2 (Rep2 x) x"
-    unfolding Quotient_alt_def by simp_all
-  fix xs
-  show "tllist_all2 T1 T2 (tmap Rep1 Rep2 xs) xs"
-    by(simp add: tllist_all2_tmap1 1 2 tllist_all2_refl)
-next
-  from assms have 1: "R1 = (\<lambda>x y. T1 x (Abs1 x) \<and> T1 y (Abs1 y) \<and> Abs1 x = Abs1 y)"
-    and 2: "R2 = (\<lambda>x y. T2 x (Abs2 x) \<and> T2 y (Abs2 y) \<and> Abs2 x = Abs2 y)"
-    unfolding Quotient_alt_def by(simp_all add: fun_eq_iff)
-  fix xs ys
-  show "tllist_all2 R1 R2 xs ys
-    \<longleftrightarrow> tllist_all2 T1 T2 xs (tmap Abs1 Abs2 xs) \<and> 
-    tllist_all2 T1 T2 ys (tmap Abs1 Abs2 ys) \<and> 
-    tmap Abs1 Abs2 xs = tmap Abs1 Abs2 ys"
-    unfolding 1 2 tmap_eq_tmap_conv_tllist_all2
-    by(auto 4 3 simp add: tllist_all2_conv_all_tnth dest: lfinite_llength_enat not_lfinite_llength)
-qed
+abbreviation "tllist_all == pred_tllist"
 
 subsubsection {* Transfer rules for the Transfer package *}
 

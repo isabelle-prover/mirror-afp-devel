@@ -5097,131 +5097,7 @@ subsection {* Setup for lifting and transfer *}
 
 subsubsection {* Relator and predicator properties *}
 
-definition llist_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool"
-where "llist_all P xs = (\<forall>x\<in>lset xs. P x)"
-
-lemmas llist_all2_eq [relator_eq, simp] = llist.rel_eq
-
-lemmas llist_all2_mono2 [relator_mono] = llist.rel_mono
-
-lemmas llist_all2_OO [symmetric, relator_distr] = llist.rel_compp
-
-lemma Domainp_llist [relator_domain]:
-  assumes "Domainp A = P"
-  shows "Domainp (llist_all2 A) = (llist_all P)"
-  unfolding Domainp_iff[abs_def]
-proof
-  fix xs
-  from assms have P: "\<And>x. P x \<longleftrightarrow> (\<exists>y. A x y)"
-    by(auto simp add: Domainp_iff[abs_def])
-
-  show "(\<exists>ys. llist_all2 A xs ys) \<longleftrightarrow> llist_all P xs" (is "?lhs \<longleftrightarrow> ?rhs")
-  proof
-    assume ?lhs thus ?rhs
-      by(auto 4 3 simp add: llist_all_def in_lset_conv_lnth P dest: llist_all2_lnthD)
-  next
-    assume ?rhs
-    hence "llist_all2 A xs (lmap (\<lambda>x. SOME y. A x y) xs)"
-      by(coinduction arbitrary: xs)(auto simp add: llist_all_def P dest: in_lset_ltlD intro: someI)
-    thus ?lhs ..
-  qed
-qed
-
-lemma reflp_llist_all2 [reflexivity_rule]: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
-  by (auto intro!: reflpI elim: reflpE simp add: llist_all2_conv_all_lnth)
-
-lemma llist_all2_left_total [reflexivity_rule]:
-  assumes "left_total R"
-  shows "left_total (llist_all2 R)"
-proof (rule left_totalI)
-  fix xs
-  have *: "\<And>x. R x (SOME y. R x y)"
-    using assms by(rule left_totalE)(rule someI_ex)
-
-  have "llist_all2 R xs (lmap (\<lambda>x. SOME y. R x y) xs)"
-    by(coinduction arbitrary: xs)(auto simp add: *)
-  thus "\<exists>ys. llist_all2 R xs ys" ..
-qed
-
-lemma left_unique_llist_all2 [reflexivity_rule]:
-  assumes "left_unique A"
-  shows "left_unique (llist_all2 A)"
-proof(rule left_uniqueI)
-  fix xs ys zs
-  assume "llist_all2 A xs zs" "llist_all2 A ys zs"
-  thus "xs = ys"
-    by(coinduction arbitrary: xs ys zs rule: llist.strong_coinduct)(auto simp add: not_lnull_conv llist_all2_LCons1 llist_all2_LCons2 dest: left_uniqueD[OF assms] llist_all2_lnullD)
-qed
-
-lemma llist_all2_right_total [transfer_rule]:
-  assumes "right_total R"
-  shows "right_total (llist_all2 R)"
-  unfolding right_total_def
-proof
-  fix ys
-  have *: "\<And>y. R (SOME x. R x y) y"
-    using assms unfolding right_total_def by - (rule someI_ex, blast)
-
-  have "llist_all2 R (lmap (\<lambda>y. SOME x. R x y) ys) ys"
-    by(coinduction arbitrary: ys)(auto simp add: *)
-  thus "\<exists>xs. llist_all2 R xs ys" ..
-qed
-
-lemma bi_total_llist_all2 [transfer_rule]:
-  "bi_total A \<Longrightarrow> bi_total (llist_all2 A)"
-by(simp add: bi_total_conv_left_right llist_all2_right_total llist_all2_left_total)
-
-lemma right_unique_llist_all2 [transfer_rule]:
-  assumes "right_unique A"
-  shows "right_unique (llist_all2 A)"
-proof(rule right_uniqueI)
-  fix xs ys zs
-  assume "llist_all2 A xs ys" "llist_all2 A xs zs"
-  thus "ys = zs"
-    by(coinduction arbitrary: xs ys zs rule: llist.strong_coinduct)(auto simp add: not_lnull_conv llist_all2_LCons1 llist_all2_LCons2 dest: right_uniqueD[OF assms] llist_all2_lnullD)
-qed
-
-lemma bi_unique_list_all2 [transfer_rule]:
-  "bi_unique A \<Longrightarrow> bi_unique (llist_all2 A)"
-unfolding bi_unique_conv_left_right
-by(simp add: right_unique_llist_all2 left_unique_llist_all2)
-
-lemma llist_all2_invariant_commute [invariant_commute]:
-  "llist_all2 (Lifting.invariant P) = Lifting.invariant (llist_all P)" (is "?lhs = ?rhs")
-proof(intro ext iffI)
-  fix xs ys
-  assume "?lhs xs ys"
-  moreover hence "llist_all2 op = xs ys"
-    by(rule llist_all2_mono)(simp add: Lifting.invariant_def)
-  ultimately show "?rhs xs ys" unfolding Lifting.invariant_def
-    by(simp add: llist_all_def)
-qed(simp add: Lifting.invariant_def llist_all_def)
-
-subsubsection {* Quotient theorem for the Lifting package *}
-
-lemma Quotient_llist [quot_map]:
-  assumes "Quotient R Abs Rep T"
-  shows "Quotient (llist_all2 R) (lmap Abs) (lmap Rep) (llist_all2 T)"
-unfolding Quotient_alt_def
-proof(intro conjI strip)
-  from assms have 1: "\<And>x y. T x y \<Longrightarrow> Abs x = y"
-    unfolding Quotient_alt_def by simp
-  fix xs ys
-  assume "llist_all2 T xs ys"
-  thus "lmap Abs xs = ys"
-    by(coinduction arbitrary: xs ys)(auto simp add: not_lnull_conv 1 dest: llist_all2_lnullD)
-next
-  from assms have 2: "\<And>x. T (Rep x) x"
-    unfolding Quotient_alt_def by simp
-  fix xs
-  show "llist_all2 T (lmap Rep xs) xs" by(simp add: llist_all2_lmap1 2)
-next
-  from assms have 3: "R = (\<lambda>x y. T x (Abs x) \<and> T y (Abs y) \<and> Abs x = Abs y)"
-    unfolding Quotient_alt_def by(simp add: fun_eq_iff)
-  fix xs ys
-  show "llist_all2 R xs ys \<longleftrightarrow> llist_all2 T xs (lmap Abs xs) \<and> llist_all2 T ys (lmap Abs ys) \<and> lmap Abs xs = lmap Abs ys"
-    unfolding 3 lmap_eq_lmap_conv_llist_all2 by(auto simp add: llist_all2_conv_all_lnth)
-qed
+abbreviation "llist_all == pred_llist"
 
 subsubsection {* Transfer rules for the Transfer package *}
 
@@ -5372,7 +5248,7 @@ unfolding lsublist_def[abs_def] by transfer_prover
 
 lemma llist_all_transfer [transfer_rule]:
   "((A ===> op =) ===> llist_all2 A ===> op =) llist_all llist_all"
-unfolding llist_all_def[abs_def] by transfer_prover
+unfolding pred_llist_def[abs_def] by transfer_prover
 
 lemma llist_all2_rsp:
   assumes r: "\<forall>x y. R x y \<longrightarrow> (\<forall>a b. R a b \<longrightarrow> S x a = T y b)"

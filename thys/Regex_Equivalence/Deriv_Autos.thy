@@ -64,8 +64,8 @@ lift_definition ACI_nullable :: "'a :: linorder ACI_rexp \<Rightarrow> bool" is 
 lift_definition ACI_lang :: "'a :: linorder ACI_rexp \<Rightarrow> 'a lang" is lang
   by (rule ACI_lang)
 
-lemma [transfer_rule]: "rel_fun (rel_set cr_ACI_rexp) op = (finite o image ACI_norm) finite"
-  unfolding rel_fun_def rel_set_def cr_ACI_rexp_def
+lemma [transfer_rule]: "rel_fun (rel_set (pcr_ACI_rexp op=)) op = (finite o image ACI_norm) finite"
+  unfolding rel_fun_def rel_set_def cr_ACI_rexp_def ACI_rexp.pcr_cr_eq
   apply (auto simp: elim!: finite_surj[of _ _ ACI_class] finite_surj[of _ _ "ACI_norm o rep_ACI_rexp"])
   apply (metis (hide_lams, no_types) ACI_norm_idem ACI_rexp.abs_eq_iff ACI_decidable imageI)
   apply (rule image_eqI)

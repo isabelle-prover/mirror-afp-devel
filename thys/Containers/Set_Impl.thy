@@ -1261,7 +1261,7 @@ lemma set_eq_code [code]:
   (is ?rbt_rbt)
 proof -
   show ?rbt_rbt using corder_mk_eq_eq[where ?'a="'b"]
-    by(auto 4 3 split: option.split simp add: sorted_RBT_Set_keys list_all2_fusion_def unfoldr_rbt_keys_generator RBT_set_conv_keys set_eq_def list_all2_eq' dest!: ID_ceq[THEN equal.equal_eq] intro: linorder.sorted_distinct_set_unique[OF ID_corder])
+    by(auto 4 3 split: option.split simp add: sorted_RBT_Set_keys list_all2_fusion_def unfoldr_rbt_keys_generator RBT_set_conv_keys set_eq_def list.rel_eq dest!: ID_ceq[THEN equal.equal_eq] intro: linorder.sorted_distinct_set_unique[OF ID_corder])
 qed(auto simp add: set_eq_def)
 
 lemma Set_project_code [code]:

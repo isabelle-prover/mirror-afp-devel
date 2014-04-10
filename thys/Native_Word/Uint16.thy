@@ -25,7 +25,7 @@ text {*
   for this type is set up.
 *}
 
-declare Quotient_prod[transfer_rule]
+declare prod.Quotient[transfer_rule]
 
 section {* Type definition and primitive operations *}
 

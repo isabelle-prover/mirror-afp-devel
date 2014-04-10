@@ -57,6 +57,16 @@ by(auto intro: ext)
 functor tmap: tmap
    by(simp_all add: fun_eq_iff tmap_id_id tllist.map_comp)
 
+lemma reflp_tllist_all2: 
+  assumes R: "reflp R" and Q: "reflp Q"
+  shows "reflp (tllist_all2 R Q)"
+proof(rule reflpI)
+  fix xs
+  show "tllist_all2 R Q xs xs"
+    apply(coinduction arbitrary: xs)
+    using assms by(auto elim: reflpE)
+qed
+
 lemma symp_tllist_all2: "\<lbrakk> symp R; symp S \<rbrakk> \<Longrightarrow> symp (tllist_all2 R S)"
 by (rule sympI)(auto 4 3 simp add: tllist_all2_conv_all_tnth elim: sympE dest: lfinite_llength_enat not_lfinite_llength)
 
