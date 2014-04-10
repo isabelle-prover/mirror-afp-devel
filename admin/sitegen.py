@@ -854,9 +854,7 @@ def handle_template(entries, template, content):
 	try:
 		os.makedirs(dest_subdir)
 	except Exception as ex:
-		if os.path.exists(dest_subdir):
-			return
-		else:
+		if not os.path.exists(dest_subdir):
 			error(u"In template {0}: directory {1} couldn't be created".format(template, dest_subdir), exception = ex)
 			return
 
