@@ -1009,11 +1009,11 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         proof (rule add_mono)
           show "dist (?v1 * ?w0 * Ps st1 cf1) (?v1 * ?w0 * ps st2 cf2 (F I0)) \<le> ?v1 * ?w0 * (Pn st1 cf1 n + pn st2 cf2 (F I0) m')"
             using wt_less1 dist_n_m' `I0 \<in> P`
-            by (simp add: mult_nonneg_nonneg setsum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W2_nneg)
+            by (simp add: setsum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W2_nneg)
           show "dist (?w1 * ?v0 * Ps st2 cf2) (?w1 * ?v0 * ps st1 cf1 I0) \<le> ?w1 * ?v0 * (pn st1 cf1 I0 n' + Pn st2 cf2 m)"
             using wt_less1 dist_n'_m `I0 \<in> P`
             by (subst dist_commute)
-               (simp add: mult_nonneg_nonneg setsum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W1_nneg)
+               (simp add: setsum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W1_nneg)
         qed
         finally show "dist ?D ?E \<le> ?v1 * ?w0 * (Pn st1 cf1 n + pn st2 cf2 (F I0) m') + ?w1 * ?v0 * (pn st1 cf1 I0 n' + Pn st2 cf2 m)" .
       qed

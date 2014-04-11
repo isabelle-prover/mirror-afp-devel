@@ -1527,7 +1527,7 @@ proof -
           by auto
         from `proj2_rep p \<bullet> (M *v proj2_rep p) > 0`
         have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2 \<ge> 0"
-          by (simp add: mult_nonneg_nonneg)
+          by simp
         with `proj2_rep p \<bullet> (M *v proj2_rep ?r) = 0`
           and `proj2_rep ?r \<bullet> (M *v proj2_rep ?r) > 0`
         have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2

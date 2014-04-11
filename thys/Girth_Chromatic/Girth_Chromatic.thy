@@ -100,7 +100,7 @@ lemma prob_eq:
 
 lemma integral_finite_singleton: "integral\<^sup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
   using p_prob prob_eq unfolding P_def
-  by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong mult_nonneg_nonneg)
+  by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong)
 
 text {* Probability of cylinder sets: *}
 lemma cylinder_prob:

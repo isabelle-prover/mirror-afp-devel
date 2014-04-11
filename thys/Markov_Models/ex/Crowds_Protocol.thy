@@ -1052,8 +1052,7 @@ proof -
     using log_le_0 by simp
   also have "\<dots> \<le> (1 - ?f) * log 2 h"
     using h_pos `1 \<le> h` 1 `0 < J` p_f
-    by (intro mult_left_mono log_le mult_pos_pos mult_nonneg_nonneg)
-       (auto simp: intro!: mult_nonneg_nonneg)
+    by (intro mult_left_mono log_le mult_pos_pos mult_nonneg_nonneg) auto
   finally have "(\<Sum>i\<in>jondos - colls. ?inner i) \<le> (1 - ?f) * log 2 h" .
   also have "(\<Sum>i\<in>jondos - colls. ?inner i) =
       (\<Sum>(i, l)\<in>(first_jondo`space S_seq) \<times> (last_ncoll`space S_seq). ?il i l * log 2 (?il i l / (?i i * ?l l)))"

@@ -161,7 +161,7 @@ proof -
       apply (rule set_of_apprs_switch)
       apply (rule ode_approx[OF _ appr])
       using t ivl
-      by (auto intro!: mult_nonneg_nonneg x_in ode_approx simp: set_of_apprs_set_of_appr)
+      by (auto intro!: x_in ode_approx simp: set_of_apprs_set_of_appr)
     also from bb inf_of_appr sup_of_appr have "set_of_appr Y \<subseteq> {l..u}" by auto
     finally have "ode (x (t0 + t * (t1 - t0))) \<in> {l..u}" .
   } note ode_lu = this
@@ -179,7 +179,7 @@ proof -
     using ivl
     by (intro mvt_integral(2)[of _ "\<lambda>t1. integral {t0..t1} (\<lambda>t. ode (x t))" "\<lambda>t u. u *\<^sub>R ode (x t)"
         t0 "t1 - t0", simplified, OF _ cont_ode_x])
-      (auto intro!: mult_nonneg_nonneg integral_has_vector_derivative[OF cont_ode_x]
+      (auto intro!: integral_has_vector_derivative[OF cont_ode_x]
       simp: has_vector_derivative_def[symmetric])
   also
   {
@@ -209,7 +209,7 @@ lemma picard_approx_ivl:
   by (intro set_rev_mp[OF picard_approx[OF appr bb x_in continuous_on_subset[OF cont]]])
     (auto simp: eucl_le[where 'a='a] inner_Basis_inf_left inner_Basis_sup_left inf_real_def
       sup_real_def min_def max_def zero_le_mult_iff not_le inner_add_left not_less bb
-      intro: mult_nonneg_nonneg mult_right_mono mult_nonneg_nonpos mult_right_mono_neg)
+      intro: mult_right_mono mult_nonneg_nonpos mult_right_mono_neg)
 
 text {* automatic Picard operator *}
 

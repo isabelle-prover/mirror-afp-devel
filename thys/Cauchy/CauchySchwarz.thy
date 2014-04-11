@@ -266,7 +266,7 @@ proof -
     thus ?thesis by simp
   qed
   moreover have "0 \<le> \<parallel>x\<parallel>*\<parallel>y\<parallel>"
-    by (auto simp add: norm_pos intro: mult_nonneg_nonneg)
+    by (auto simp add: norm_pos)
   ultimately show ?thesis by (rule power2_le_imp_le)
 qed
 

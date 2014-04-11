@@ -147,20 +147,20 @@ proof -
     assume B_pos: "B > 0" assume "L > 0"
     from `0 \<le> T2` `T1 \<ge> T2` have "T1 \<ge> 0" by simp
     hence eg: "(exp (L * T1 + 1) - 1) > 0" using `L > 0`
-      by (auto intro!: mult_nonneg_nonneg add_nonneg_pos simp add: diff_less_iff)
+      by (auto intro!: add_nonneg_pos simp add: diff_less_iff)
     have "B * (h ^ p * (exp (L * T2 + 1) - 1)) / L \<le>
       B * (root p (r * L / B / (exp (L * T1 + 1) - 1)) ^ p
       * (exp (L * T2 + 1) - 1)) / L"
       using assms
       by (auto simp add: ge_iff_diff_ge_0[symmetric]
         intro!: divide_right_mono mult_left_mono mult_right_mono add_nonneg_nonneg
-        power_mono mult_nonneg_nonneg )
+        power_mono)
     also
     have "root p (r * L / B / (exp (L * T1 + 1) - 1)) ^ p =
       (r * L / B / (exp (L * T1 + 1) - 1))"
       using assms B_pos `T1 \<ge> 0` `L > 0` `B > 0`
       by (subst real_root_pow_pos2[OF `p > 0`]) (auto simp add: diff_less_iff
-        intro!: mult_nonneg_nonneg  divide_nonneg_pos add_nonneg_pos mult_pos_pos)
+        intro!: divide_nonneg_pos add_nonneg_pos mult_pos_pos)
     finally
     have "B * (h ^ p * (exp (L * T2 + 1) - 1)) / L \<le>
       r * ((exp (L * T2 + 1) - 1) / (exp (L * T1 + 1) - 1))"
@@ -173,7 +173,7 @@ proof -
         by (intro mult_right_le_one_le `r \<ge> 0`)
       (subst pos_le_divide_eq pos_divide_le_eq,
         auto simp add: diff_le_iff diff_less_iff
-        intro!: add_pos_pos add_nonneg_nonneg mult_nonneg_nonneg mult_pos_pos)+
+        intro!: add_pos_pos mult_pos_pos)+
     qed simp
     finally have ?thesis by (simp add: ac_simps)
   } moreover {
@@ -211,7 +211,7 @@ proof (induct j)
   also have "B * (exp 1 - 1) * stepsize 0 ^ p / L \<le>
     B * (exp 1 - 1) * max_stepsize 0 ^ p / L"
     using grid_stepsize_nonneg `B\<ge>0` `L\<ge>0`
-    by (auto intro!: max_stepsize_ge_stepsize mult_nonneg_nonneg
+    by (auto intro!: max_stepsize_ge_stepsize
       power_mono mult_left_mono divide_right_mono
       simp: diff_le_iff) 
   finally show ?case by simp
@@ -296,7 +296,7 @@ next
   also have "... \<le> B * stepsize j ^ (p + 1) +
     (1 + stepsize j * L) * (B / L * (exp (L * (t j - t 0) + 1) - 1) * max_stepsize j ^ p)"
     using `B \<ge> 0` IH1 IH2 `t (Suc j) \<le> T` `0\<le>L` grid_stepsize_nonneg
-    by (intro add_mono mult_left_mono) (auto intro!: add_nonneg_nonneg mult_nonneg_nonneg)
+    by (intro add_mono mult_left_mono) auto
   finally
   have "dist (x t (Suc j)) (grid_function (discrete_evolution \<psi>) x0 t (Suc j))
     \<le> B * stepsize j ^ (p + 1) +
@@ -381,8 +381,8 @@ proof -
     apply (cases "B = 0", simp)
     apply (cases "L = 0", simp)
     by (auto simp add: mult_le_cancel_left1 diff_le_iff
-      intro!: divide_right_mono mult_nonneg_nonneg add_increasing mult_left_mono
-      mult_pos_pos add_nonneg_nonneg)
+      intro!: divide_right_mono add_increasing mult_left_mono
+      mult_pos_pos)
   finally
   show "max_stepsize j \<le> root p (\<bar>s\<bar> * L / B / (exp (L * (t1 - t 0) + 1) - 1))" .
 qed
@@ -443,7 +443,7 @@ proof -
       max_stepsize_nonneg
       consistence_error lipschitz_grid
     by (intro error_accumulation[OF max_step]) (auto intro!:
-      divide_nonneg_nonneg mult_nonneg_nonneg zero_le_power grid_mono
+      divide_nonneg_nonneg zero_le_power grid_mono
       simp add: lipschitz_def diff_le_iff stepsize_def)
   also have "... \<le>
     (B / L * (exp (L * (t1 - t 0) + 1) - 1)) * max_stepsize j ^ p"

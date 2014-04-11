@@ -98,7 +98,7 @@ next
   assume "h \<noteq> 0"
   from this ht have "t < u" by simp
   from ht have line_subset: "(\<lambda>ta. t + ta * h) ` {0..1} \<subseteq> {t..u}"
-    by (auto intro!: mult_nonneg_nonneg order_trans[OF add_left_mono[OF mult_left_le_one_le]])
+    by (auto intro!: order_trans[OF add_left_mono[OF mult_left_le_one_le]])
   hence line_in: "\<And>s. 0 \<le> s \<Longrightarrow> s \<le> 1 \<Longrightarrow> t + s * h \<in> {t..u}"
     by (rule set_mp) auto
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
@@ -204,7 +204,7 @@ definition euler_C::"real" where "euler_C = (sqrt DIM('a) * (B' * (B + 1) / 2))"
 
 lemma euler_C_nonneg: "euler_C \<ge> 0"
  using f_bounded f_bound_nonneg f'_bound_nonneg
- by (auto intro!: mult_nonneg_nonneg divide_nonneg_nonneg add_nonneg_nonneg simp: euler_C_def)
+ by (auto intro!: divide_nonneg_nonneg add_nonneg_nonneg simp: euler_C_def)
 
 sublocale derivative_set_bounded T X f f' "X \<times> cball 0 B"
     "{- (B' * (B + 1)) *\<^sub>R One.. (B' * (B + 1)) *\<^sub>R One}"
@@ -445,7 +445,7 @@ proof unfold_locales
   ultimately show "One_Step_Method.grid.max_stepsize (\<lambda>x. (t x)) j
         \<le> \<bar>r\<bar> * B' / euler_C / (exp (B' * (t2' - (t 0)) + 1) - 1)"
     using max_step_mono_r lipschitz B_nonneg interval_notempty f'_bound_nonneg
-    by (auto simp: less_eq_float_def euler_C_def mult_nonneg_nonneg)
+    by (auto simp: less_eq_float_def euler_C_def)
 qed
 
 lemma max_step1_mono:
@@ -466,7 +466,7 @@ proof -
     also have "\<dots> \<le> ?x t1"
       using assms
       by (cases "b = 0") (auto intro!: divide_left_mono mult_mono abs_ge_zero add_increasing
-        mult_nonneg_nonneg mult_pos_pos add_strict_increasing2 simp: le_diff_eq less_diff_eq)
+        mult_pos_pos add_strict_increasing2 simp: le_diff_eq less_diff_eq)
     finally show "t2.max_stepsize j \<le> ?x t1" .
   qed
 qed

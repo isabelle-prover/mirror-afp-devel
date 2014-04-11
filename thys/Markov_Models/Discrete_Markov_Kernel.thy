@@ -1343,7 +1343,7 @@ next
   qed
   also have "\<dots> = (\<integral>\<^sup>+ \<omega>. ereal (of_nat (hitting_time \<Phi> \<omega> div n)) \<partial>paths s) * n + Suc n"
     using emeasure_space_1[of s]
-    by (simp add: positive_integral_add positive_integral_multc mult_nonneg_nonneg
+    by (simp add: positive_integral_add positive_integral_multc
              del: plus_ereal.simps times_ereal.simps)
   also have "\<dots> = (\<Sum>t. emeasure (paths s) {\<omega>\<in>space (paths s). t < hitting_time \<Phi> \<omega> div n}) * n + Suc n"
     by (simp add: positive_integral_nat_function)

@@ -63,7 +63,7 @@ subsection {* The allocation run is a rewarded DTMC *}
 sublocale Zeroconf_Analysis \<subseteq> Rewarded_DTMC S start \<tau> \<rho> "\<lambda>s. 0"
   proof
   qed (insert p q r e,
-       auto simp add: mult_nonneg_nonneg S_def \<rho>_def setsum_S setsum_cases field_simps elim!: SE)
+       auto simp add: S_def \<rho>_def setsum_S setsum_cases field_simps elim!: SE)
 
 lemma if_mult:
   "\<And>P a b c. (if P then a else b) * c =  (if P then a * c else b * c)"

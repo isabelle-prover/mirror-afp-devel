@@ -141,7 +141,7 @@ proof (rule convexI, safe)
   assume "u + v = 1" "0 \<le> u" "0 \<le> v" "x \<in> s" "y \<in> s"
   with assms show "u *\<^sub>R (x *\<^sub>R a) + v *\<^sub>R (y *\<^sub>R a) \<in> ((\<lambda>x. x *\<^sub>R a) ` s)"
     by (auto dest!: mem_convex_alt[of s x y u v] intro!: image_eqI[where x="u * x + v * y"]
-      convex_bound_le add_nonneg_nonneg mult_nonneg_nonneg  simp: algebra_simps)
+      convex_bound_le simp: algebra_simps)
 qed
 
 lemma
@@ -273,13 +273,13 @@ proof -
         show "P (?ij' s t x)"
         proof (rule P)
           have "\<And>x y::real. x \<in> {0..1} \<Longrightarrow> y \<in> {0..1} \<Longrightarrow> x * y \<in> {0..1}"
-            by (auto intro!: mult_nonneg_nonneg order_trans[OF mult_left_le_one_le])
+            by (auto intro!: order_trans[OF mult_left_le_one_le])
           hence "s * x \<in> {0..1}" "t * x \<in> {0..1}" using * by (auto simp: dist_norm)
           thus "?ij' s t x \<in> B i j" by (auto simp: B_def)
           have "norm (s *\<^sub>R x *\<^sub>R i + t *\<^sub>R x *\<^sub>R j) \<le> norm (s *\<^sub>R x *\<^sub>R i) + norm (t *\<^sub>R x *\<^sub>R j)"
             by (rule norm_triangle_ineq)
           also have "\<dots> < d / 2 + d / 2" using * `i \<noteq> 0` `j \<noteq> 0`
-            by (intro add_strict_mono) (auto simp: ac_simps dist_norm mult_nonneg_nonneg
+            by (intro add_strict_mono) (auto simp: ac_simps dist_norm
               pos_less_divide_eq le_less_trans[OF mult_left_le_one_le])
           finally show "dist (?ij' s t x) a < d" by (simp add: dist_norm)
         qed
@@ -393,7 +393,7 @@ proof -
             also have "\<dots> \<le> u * u * e * abs x * ((norm (1 *\<^sub>R i) + norm j) + norm (1 *\<^sub>R i) + norm j)"
               using `t \<in> {0..1}` `0 < e`
               by (intro mult_left_mono add_mono) (auto intro!: norm_triangle_le add_right_mono
-                mult_left_le_one_le mult_nonneg_nonneg zero_le_square)
+                mult_left_le_one_le zero_le_square)
             finally show "norm (?d t x) \<le> 2 * u * u * e * (norm i + norm j) * norm x"
               by (simp add: ac_simps)
           qed
@@ -494,7 +494,7 @@ proof atomize_elim
   from local_rectE[OF `a \<in> G`] guess s . note GI = this
   show "\<exists>s. (\<forall>i. i \<in> Basis \<longrightarrow> s i \<noteq> 0) \<and>
         (\<forall>t. t \<in> Basis \<rightarrow> {0..1} \<longrightarrow> a + (\<Sum>i\<in>Basis. (t i * s i) *\<^sub>R i) \<in> G)"
-    by (rule exI[where x=s]) (force intro!: GI mult_nonneg_nonneg
+    by (rule exI[where x=s]) (force intro!: GI
       simp: algebra_simps inner_Basis mult_less_cancel_right2 zero_less_mult_iff Pi_iff not_le)
 qed
 

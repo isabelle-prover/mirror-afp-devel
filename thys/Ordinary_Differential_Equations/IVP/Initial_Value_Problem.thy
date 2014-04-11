@@ -796,8 +796,7 @@ next
     def T \<equiv> "t0 + real (Suc (Suc n)) * b"
     interpret ivp_c: connected_unique_solutions i i1 i2 T1 T2
       using `b > 0` iv_defined ivp1.is_solution_solution
-      by unfold_locales (auto intro: mult_nonneg_nonneg
-        simp: i1_def i2_def i_def T1_def T2_def T_def snb_def)
+      by unfold_locales (auto simp: i1_def i2_def i_def T1_def T2_def T_def snb_def)
     show ?case unfolding i_def[symmetric] by unfold_locales
   qed
   show "unique_solution i"

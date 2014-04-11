@@ -213,12 +213,7 @@ next
         thus "real (n choose ?v) \<le> real (n ^ ?v)"
           by (metis real_of_nat_le_iff)
       next
-        have "0 \<le> real ((?v choose 2) choose ?e)"
-          by simp
-        moreover have "0 \<le> p n ^ ?e"
-          using p by simp
-        ultimately show "0 \<le> ?r"
-          by (fact mult_nonneg_nonneg)
+        show "0 \<le> ?r" using p by simp
       qed
     also have "\<dots> \<le> ((?v choose 2) choose ?e) * (p n ^ ?e * n ^ ?v)" (is "_ \<le> ?factor * _")
       by simp
@@ -645,7 +640,7 @@ next
         proof (rule LIMSEQ_le_zero[OF _ eventually_sequentiallyI eventually_sequentiallyI])
           fix n
           show "0 \<le> 1 / (real n ^ ?v * p n ^ ?e)"
-            using p by (simp add: divide_nonneg_nonneg mult_nonneg_nonneg)
+            using p by (simp add: divide_nonneg_nonneg)
 
           assume n: "1 \<le> n"
           have "1 / (real n ^ ?v * p n ^ ?e) = 1 / (real n powr ?v * p n powr ?e)"

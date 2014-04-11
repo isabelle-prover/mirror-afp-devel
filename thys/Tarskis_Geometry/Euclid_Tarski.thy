@@ -276,7 +276,7 @@ proof
         obtain j where "j \<ge> 0" and "j \<le> 1" and "q - b = j *\<^sub>R (c - b)" by auto
       from `i \<ge> 0` and `i \<le> 1`
         have "1 - i \<ge> 0" and "1 - i \<le> 1" by auto
-      from `j \<ge> 0` and `1 - i \<ge> 0` and mult_nonneg_nonneg
+      from `j \<ge> 0` and `1 - i \<ge> 0`
         have "j * (1 - i) \<ge> 0" by auto
       with `i \<ge> 0` and `i \<noteq> 0` have "i + j * (1 - i) > 0" by simp
       hence "i + j * (1 - i) \<noteq> 0" by simp
