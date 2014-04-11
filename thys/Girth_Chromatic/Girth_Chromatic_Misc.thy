@@ -209,7 +209,7 @@ lemma LIMSEQ_inv_powr:
   assumes "0 < c" "0 < d"
   shows "(\<lambda>n :: nat. (c / n) powr d) ----> 0"
 proof (rule tendsto_zero_powrI)
-  from `0 < c` have "\<And>x. 0 < x \<Longrightarrow> 0 < c / x" by (rule divide_pos_pos) 
+  from `0 < c` have "\<And>x. 0 < x \<Longrightarrow> 0 < c / x" by simp
   then show "eventually (\<lambda>x. 0 < c / real x) sequentially"
      by (rule eventually_sequentiallyI[of 1]) simp
 

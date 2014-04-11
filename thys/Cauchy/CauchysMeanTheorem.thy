@@ -429,7 +429,7 @@ proof
   proof -
     assume "0 < \<Sum>:(x#xs)"
     moreover have "real (length (x#xs)) > 0" by simp
-    ultimately show ?thesis unfolding mean_def by (rule divide_pos_pos)
+    ultimately show ?thesis unfolding mean_def by simp
   qed
 qed
 

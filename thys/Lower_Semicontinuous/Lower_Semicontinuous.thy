@@ -799,7 +799,7 @@ proof-
   hence xz_def: "ereal z >= (SUP e:{0<..}. INF y:ball x e. f y)"
     unfolding Epigraph_def min_Liminf_at by auto
   { fix e::real assume "e>0"
-    hence "e/sqrt 2>0" using `e>0` by (auto intro: divide_pos_pos)
+    hence "e/sqrt 2>0" using `e>0` by simp
     from this obtain e1 where e1_def: "e1<e/sqrt 2 & e1>0" using dense by auto
     hence "(SUP e:{0<..}. INF y:ball x e. f y) >= (INF y:ball x e1. f y)"
       by (auto intro: SUP_upper)

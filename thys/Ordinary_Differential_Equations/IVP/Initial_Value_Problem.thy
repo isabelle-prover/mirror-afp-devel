@@ -705,7 +705,7 @@ next
   then interpret i': ivp_on_interval i "t0 + (Suc n) * b"
     using interval by unfold_locales simp_all
   from b have "b > 0" using interval iv_defined
-    by (auto intro: divide_pos_pos)
+    by auto
   hence "b \<ge> 0" by simp
   from interval have "t0 * (real (Suc n) - 1) \<le> t1 * (real (Suc n) - 1)" by (cases n) auto
   hence ble: "t0 + b \<le> t1" unfolding b by (auto simp add: field_simps)

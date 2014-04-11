@@ -60,7 +60,7 @@ next
         unfolding dist_real_def by simp
     qed (auto simp add: assms)
   qed (rule)
-qed (auto intro: divide_pos_pos simp add: assms DIM_positive)
+qed (auto simp: assms DIM_positive)
 
 locale ivp_open = ivp +
   assumes openT: "open T"
@@ -120,7 +120,7 @@ proof -
   obtain a' where a': "a' > 0" "a' < a / (B+1)" "a' < a"
   proof
     from `B\<ge>0`
-    show "0 < min (a / (B + 2)) (a/2)" using a by (auto intro: divide_pos_pos)
+    show "0 < min (a / (B + 2)) (a/2)" using a by simp
     show "min (a / (B + 2)) (a/2) < a / (B + 1)"
       using a `0\<le>B`
       by (auto intro!: divide_strict_left_mono mult_pos_pos

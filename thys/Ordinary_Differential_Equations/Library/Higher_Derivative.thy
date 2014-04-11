@@ -268,7 +268,7 @@ proof -
       show "eventually (\<lambda>x. \<forall>s\<in>{0..1}. \<forall>t\<in>{0..1}. P (?ij' s t x)) (at_right 0)"
         unfolding eventually_at
       proof (rule exI[where x="?d"], safe)
-        show "0 < ?d" using `0 < d` `i \<noteq> 0` `j \<noteq> 0` by (auto simp: divide_pos_pos)
+        show "0 < ?d" using `0 < d` `i \<noteq> 0` `j \<noteq> 0` by simp
         fix x s t :: real assume *: "s \<in> {0..1}" "t \<in> {0..1}" "0 < x" "dist x 0 < ?d"
         show "P (?ij' s t x)"
         proof (rule P)

@@ -497,7 +497,7 @@ proof -
   have "0 < card (uverts G)" "0 < card (uedges G)"
     using assms unfolding finite_graph_def nonempty_graph_def by auto
   hence "0 < density G"
-    unfolding density_def by (simp add: divide_pos_pos)
+    unfolding density_def by simp
   also have "density G \<le> max_density G"
     using assms by (simp add: max_density_is_max subgraph_refl)
   finally show ?thesis

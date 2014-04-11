@@ -298,8 +298,7 @@ proof -
   def er \<equiv> "\<lambda> x. (x * x / n - 1)" 
   def c \<equiv> "2 * n / \<epsilon>"
   def m \<equiv> "\<lambda> x. nat \<lfloor> c * er x \<rfloor>"
-  have c: "c > 0" unfolding c_def using n \<epsilon>
-    by (auto intro: divide_pos_pos)
+  have c: "c > 0" unfolding c_def using n \<epsilon> by auto
   show ?thesis
   proof
     show "wf (measures [m])" by simp
@@ -309,11 +308,11 @@ proof -
     def y \<equiv> "(n / x + x) / 2"    
     show "((n / x + x) / 2,x) \<in> measures [m]" unfolding y_def[symmetric]
     proof (rule measures_less)
-      from n have inv_n: "1 / n > 0" by (auto intro: divide_pos_pos)
+      from n have inv_n: "1 / n > 0" by auto
       from xe have "x * x - n \<ge> \<epsilon>" by simp
       from this[unfolded mult_le_cancel_left_pos[OF inv_n, of \<epsilon>, symmetric]]
       have erxen: "er x \<ge> \<epsilon> / n" unfolding er_def using n by (simp add: field_simps)
-      have en: "\<epsilon> / n > 0" and ne: "n / \<epsilon> > 0" using \<epsilon> n by (auto intro: divide_pos_pos)
+      have en: "\<epsilon> / n > 0" and ne: "n / \<epsilon> > 0" using \<epsilon> n by auto
       from en erxen have erx: "er x > 0" by linarith
       have pos: "er x * 4 + er x * (er x * 4) > 0" using erx
         by (auto intro: add_pos_nonneg)
@@ -348,7 +347,7 @@ lemma sqrt_approx_main_impl: "x > 0 \<Longrightarrow> sqrt_approx_main_impl \<ep
 proof (induct x rule: sqrt_approx_main.induct)
   case (1 x)
   hence x: "x > 0" by auto
-  hence nx: "0 < (n / x + x) / 2" using n by (auto intro: divide_pos_pos pos_add_strict)
+  hence nx: "0 < (n / x + x) / 2" using n by (auto intro: pos_add_strict)
   note simps = sqrt_approx_main_impl.simps[of _ _ x] sqrt_approx_main.simps[of x]
   show ?case 
   proof (cases "x * x - n < \<epsilon>")
@@ -377,7 +376,7 @@ proof (induct x rule: sqrt_approx_main.induct)
     case False
     let ?y = "(n / x + x) / 2"
     from False simp have simp: "sqrt_approx_main x = sqrt_approx_main ?y" by simp
-    from n x have y: "?y > 0" by (auto intro: divide_pos_pos pos_add_strict)
+    from n x have y: "?y > 0" by (auto intro: pos_add_strict)
     note IH = 1(1)[OF x(1) False y]
     from x have x4: "4 * x * x > 0" by (auto intro: mult_sign_intros)
     show ?thesis unfolding simp

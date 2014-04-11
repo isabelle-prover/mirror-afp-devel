@@ -443,7 +443,7 @@ proof -
       max_stepsize_nonneg
       consistence_error lipschitz_grid
     by (intro error_accumulation[OF max_step]) (auto intro!:
-      divide_nonneg_nonneg zero_le_power grid_mono
+      divide_nonneg_nonneg mult_nonneg_nonneg zero_le_power grid_mono
       simp add: lipschitz_def diff_le_iff stepsize_def)
   also have "... \<le>
     (B / L * (exp (L * (t1 - t 0) + 1) - 1)) * max_stepsize j ^ p"

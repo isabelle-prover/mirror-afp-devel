@@ -243,10 +243,8 @@ next
   --{* We observe that several terms involving $|V(H)|$ are positive. *}
   have v_e_nz: "0 < real ?v" "0 < real ?e"
     using nonempty finite unfolding nonempty_graph_def finite_graph_def by auto
-  hence "0 < real ?v ^ ?v"
-    by simp
-  hence vpowv_inv_gr_z: "0 < 1 / ?v ^ ?v"
-    by (simp add: divide_pos_pos)
+  hence "0 < real ?v ^ ?v" by simp
+  hence vpowv_inv_gr_z: "0 < 1 / ?v ^ ?v" by simp
 
   --{* For a given $n$, let $A$ be a family of events indexed by a set $S$. Each $A$ contains the
        graphs whose induced subgraphs over $S$ contain the selected copy of @{term H} by @{term f}
@@ -655,7 +653,7 @@ next
             by simp
           also have "\<dots> \<le> (real n powr -(1 / max_density H) * p n powr -1) powr ?e"
             apply (rule powr_mono2[OF _ _ mult_right_mono[OF powr_mono[OF le_imp_neg_le[OF divide_left_mono]]]])
-            using n v_e_nz by (auto simp: divide_pos_pos mult_pos_pos
+            using n v_e_nz by (auto simp: mult_pos_pos
               max_density_is_max[unfolded density_def, OF finite finite nonempty wellformed subgraph_refl]
               max_density_gr_zero[OF finite nonempty wellformed])
           also have "\<dots> = (real n powr -(1 / max_density H) * (1 / p n powr 1)) powr ?e"
