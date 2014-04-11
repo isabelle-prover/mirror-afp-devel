@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Native_Word" (AFP) = "HOL-Word" +
-  theories [document=false]
+  theories [document = false]
     "~~/src/HOL/Library/Code_Target_Int"
     "~~/src/HOL/Library/Code_Char"
 
@@ -18,5 +18,5 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Uint_Userguide
 
   files
-    "./document/root.tex"
-    "./document/root.bib"
+    "document/root.tex"
+    "document/root.bib"
