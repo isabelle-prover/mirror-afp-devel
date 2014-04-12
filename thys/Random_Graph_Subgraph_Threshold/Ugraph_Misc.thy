@@ -223,7 +223,7 @@ next
   have "0 \<le> x'"
     using assms by simp
   moreover have "0 < y * y'"
-    using assms by (simp add: mult_pos_pos)
+    using assms by simp
   ultimately show "x' / y \<le> x' / y'"
     using assms by (simp add: divide_left_mono)
 qed

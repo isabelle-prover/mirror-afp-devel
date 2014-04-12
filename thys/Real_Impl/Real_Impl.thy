@@ -400,7 +400,7 @@ proof (transfer, unfold Let_def, clarsimp)
   def z2n1 \<equiv> "z2 * n1"
   def n12 \<equiv> "n1 * n2"
   def r_add \<equiv> "of_int (z2n1) * sqrt (real (int b))"
-  from n1 n2 have n120: "n12 > 0" unfolding n12_def by (metis mult_pos_pos)
+  from n1 n2 have n120: "n12 > 0" unfolding n12_def by simp
   have "floor (of_rat p + of_rat q * sqrt (real_of_nat b)) = floor ((of_int z1n2 + r_add) / of_int n12)" 
     unfolding r_add_def n12_def z1n2_def z2n1_def
     unfolding p q add_divide_distrib of_rat_divide of_rat_of_int_eq real_of_int_of_nat_eq real_eq_of_nat by simp

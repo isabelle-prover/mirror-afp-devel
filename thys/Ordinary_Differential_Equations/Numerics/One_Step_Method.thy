@@ -173,7 +173,7 @@ proof -
         by (intro mult_right_le_one_le `r \<ge> 0`)
       (subst pos_le_divide_eq pos_divide_le_eq,
         auto simp add: diff_le_iff diff_less_iff
-        intro!: add_pos_pos mult_pos_pos)+
+        intro!: add_pos_pos)+
     qed simp
     finally have ?thesis by (simp add: ac_simps)
   } moreover {
@@ -381,8 +381,7 @@ proof -
     apply (cases "B = 0", simp)
     apply (cases "L = 0", simp)
     by (auto simp add: mult_le_cancel_left1 diff_le_iff
-      intro!: divide_right_mono add_increasing mult_left_mono
-      mult_pos_pos)
+      intro!: divide_right_mono add_increasing mult_left_mono)
   finally
   show "max_stepsize j \<le> root p (\<bar>s\<bar> * L / B / (exp (L * (t1 - t 0) + 1) - 1))" .
 qed

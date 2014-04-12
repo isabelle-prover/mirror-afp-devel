@@ -322,7 +322,7 @@ proof -
         by (simp add: field_simps)
       finally have "er y = 1 / 4 * er x * er x / (1 + er x)" .
       also have "\<dots> < 1 / 4 * (1 + er x) * er x / (1 + er x)" using erx erx pos
-        by (auto intro: mult_pos_pos simp: field_simps)
+        by (auto simp: field_simps)
       also have "\<dots> = er x / 4" using erx by (simp add: field_simps)
       finally have er_y_x: "er y \<le> er x / 4" by linarith
       from erxen have "c * er x \<ge> 2" unfolding c_def mult_le_cancel_left_pos[OF ne, of _ "er x", symmetric]

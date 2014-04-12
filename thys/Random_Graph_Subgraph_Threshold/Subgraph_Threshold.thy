@@ -67,7 +67,7 @@ next
   ultimately have "(\<lambda>n. p n * n powr (?v / ?e)) ----> 0"
     unfolding subgraph_threshold_def by simp
   moreover have "\<And>n. 1 \<le> n \<Longrightarrow> 0 < p n * n powr (?v / ?e)"
-    by (rule mult_pos_pos) (auto simp: p_nz)
+    by (auto simp: p_nz)
   ultimately have "(\<lambda>n. (p n * n powr (?v / ?e)) powr ?e) ----> 0"
     using card(2) by (force intro: tendsto_zero_powrI[OF eventually_sequentiallyI])
   hence limit: "(\<lambda>n. p n powr ?e * n powr ?v) ----> 0"
@@ -653,7 +653,7 @@ next
             by simp
           also have "\<dots> \<le> (real n powr -(1 / max_density H) * p n powr -1) powr ?e"
             apply (rule powr_mono2[OF _ _ mult_right_mono[OF powr_mono[OF le_imp_neg_le[OF divide_left_mono]]]])
-            using n v_e_nz by (auto simp: mult_pos_pos
+            using n v_e_nz by (auto simp:
               max_density_is_max[unfolded density_def, OF finite finite nonempty wellformed subgraph_refl]
               max_density_gr_zero[OF finite nonempty wellformed])
           also have "\<dots> = (real n powr -(1 / max_density H) * (1 / p n powr 1)) powr ?e"
