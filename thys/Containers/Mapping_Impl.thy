@@ -131,15 +131,7 @@ done
 
 
 declare [[code drop: Mapping.tabulate]]
-
-lemma tabulate_Mapping [code]:
-  "Mapping.tabulate xs f = fold (\<lambda>k m. Mapping.update k (f k) m) xs Mapping.empty"
-apply(rule sym)
-apply transfer
-apply(unfold tabulate_alt_def)
-apply(induct_tac xs rule: rev_induct)
-apply(auto simp add: fun_eq_iff restrict_map_def)
-done
+declare tabulate_fold [code]
 
 datatype mapping_impl = Mapping_IMPL
 declare
