@@ -49,7 +49,7 @@ next
   case False
   show ?thesis
   proof
-    assume ?R thus ?L using assms False by(simp add: solution_def swap_def)
+    assume ?R thus ?L using assms False by(simp add: solution_def Fun.swap_def)
   next
    assume ?L
    show ?R
@@ -59,18 +59,18 @@ next
      proof cases
        assume "i=p1"
        with `?L` assms False show ?thesis
-         by(fastforce simp add: solution_def swap_def)
+         by(fastforce simp add: solution_def Fun.swap_def)
      next
        assume "i\<noteq>p1"
        show ?thesis
        proof cases
          assume "i=p2"
          with `?L` assms False show ?thesis
-           by(fastforce simp add: solution_def swap_def)
+           by(fastforce simp add: solution_def Fun.swap_def)
        next
          assume "i\<noteq>p2"
          with `i\<noteq>p1` `?L` `i<n` assms False show ?thesis
-           by(fastforce simp add: solution_def swap_def)
+           by(fastforce simp add: solution_def Fun.swap_def)
        qed
      qed
    qed
@@ -130,7 +130,7 @@ next
     by (metis set_upt atLeast0AtMost atLeastLessThanSuc_atLeastAtMost atMost_iff in_set_conv_decomp)
   have "m\<le>n" "m<n" using `Suc m \<le> n` by arith+
   have "unit (Fun.swap p m (?A' p)) m n" using Suc.prems(2) p
-    unfolding unit_def swap_def Suc_le_eq by (auto simp: le_less)
+    unfolding unit_def Fun.swap_def Suc_le_eq by (auto simp: le_less)
   from Suc.hyps[OF `m\<le>n` this rec] `m<n` p
   show ?case
     by(simp add: solution_swap solution_upd1 solution_upd_but1[where A = "A(p := ?Ap' p)"])
@@ -215,7 +215,7 @@ next
     finally have "(\<Sum>j = 0..<m. (A i j - A i m * A p j / A p m) * x j) =
       A i n - A p n * A i m / A p m" . }
   then have "solution2 ?A m n x" using p
-    by (auto simp add: solution2_def swap_def field_simps)
+    by (auto simp add: solution2_def Fun.swap_def field_simps)
   moreover
   { fix y assume a: "solution2 ?A m n y"
     let ?y = "y(m := A p n / A p m - (\<Sum>j = 0..<m. A p j * y j) / A p m)"
@@ -233,7 +233,7 @@ next
           with p `i \<noteq> p` have "p < m" by simp
           with a[unfolded solution2_def, THEN spec, of p] p(2)
           have "A p m * (A m m * A p n + A p m * (\<Sum>j = 0..<m. y j * A m j)) = A p m * (A m n * A p m + A m m * (\<Sum>j = 0..<m. y j * A p j))"
-            by (simp add: swap_def field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib[symmetric]
+            by (simp add: Fun.swap_def field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib[symmetric]
                      split: if_splits)
           with `A p m \<noteq> 0` show ?thesis unfolding `i = m`
             by simp (simp add: field_simps)
@@ -242,7 +242,7 @@ next
           then have "i < m" using `i < Suc m` by simp
           with a[unfolded solution2_def, THEN spec, of i] p(2)
           have "A p m * (A i m * A p n + A p m * (\<Sum>j = 0..<m. y j * A i j)) = A p m * (A i n * A p m + A i m * (\<Sum>j = 0..<m. y j * A p j))"
-            by (simp add: swap_def field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib[symmetric]
+            by (simp add: Fun.swap_def field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib[symmetric]
                      split: if_splits)
           with `A p m \<noteq> 0` show ?thesis
             by simp (simp add: field_simps)
