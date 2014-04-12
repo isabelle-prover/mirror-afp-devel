@@ -1273,9 +1273,8 @@ next
         also have "?L1 \<le> 1 - ?R" using ParT Local cln apply  (auto simp: real_eq_of_nat)
         by (metis (full_types) real_of_nat_def notFinished_WtFT)
         finally have "?L1 * ?L2 \<le> 1 - ?R" .
-        thus ?thesis using Local ParT cln sch apply  (auto simp: real_eq_of_nat)
-        by (metis (hide_lams, no_types) divide_1 eq_divide_imp lt_1_WtFT mult_imp_div_pos_le mult_le_cancel_left_pos
-                  times_divide_eq_right times_divide_times_eq zero_neq_one)
+        thus ?thesis using Local ParT cln sch
+          by (auto simp: real_eq_of_nat pos_divide_le_eq mult_commute)
       qed (insert sch ParT Local, auto)
     qed
   qed

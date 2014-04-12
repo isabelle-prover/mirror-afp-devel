@@ -263,7 +263,7 @@ next
   case (Cons a xs)
   have exp: "\<Prod>:(a#xs) = \<Prod>:xs * a" by simp
   with Cons have "a > 0" by simp
-  with exp Cons show ?case by (simp add: mult_pos_pos)
+  with exp Cons show ?case by simp
 qed
 
 
@@ -422,7 +422,7 @@ proof
     have "mean xs = \<Sum>:xs / real (length xs)" unfolding mean_def by simp
     hence "\<Sum>:xs = mean xs * real (length xs)" by simp
     moreover from lxsgt0 have "real (length xs) > 0" by simp
-    moreover with calculation lxsgt0 mgt0 show ?thesis by (auto intro: mult_pos_pos)
+    moreover with calculation lxsgt0 mgt0 show ?thesis by auto
   qed
   with xgt0 have "\<Sum>:(x#xs) > 0" by simp
   thus "0 < (mean (x#xs))"
@@ -997,7 +997,7 @@ proof -
         ultimately have "\<Prod>:left_over * (\<alpha>*\<beta>) > 0" by simp
         moreover
         from pos_els \<alpha>_mem \<beta>_mem have "\<alpha> > 0" and "\<beta> > 0" by auto
-        hence "\<alpha>*\<beta> > 0" by (rule mult_pos_pos)
+        hence "\<alpha>*\<beta> > 0" by simp
         ultimately show "\<Prod>:left_over > 0"
           apply -
           apply (rule zero_less_mult_pos2 [where a="(\<alpha> * \<beta>)"])

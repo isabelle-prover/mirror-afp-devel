@@ -123,8 +123,7 @@ proof -
     show "0 < min (a / (B + 2)) (a/2)" using a by simp
     show "min (a / (B + 2)) (a/2) < a / (B + 1)"
       using a `0\<le>B`
-      by (auto intro!: divide_strict_left_mono mult_pos_pos
-        simp add: min_less_iff_disj)
+      by (auto intro!: divide_strict_left_mono simp add: min_less_iff_disj)
     show "min (a / (B + 2)) (a / 2) < a" using a by auto
   qed
       --{* new initial value problem *}

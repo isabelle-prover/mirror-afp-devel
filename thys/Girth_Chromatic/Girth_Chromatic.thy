@@ -378,7 +378,7 @@ proof -
         using A by (auto simp: powr_mono2 diff_conv_add_uminus simp del: add_uminus_conv_diff)
       also have "\<dots> = exp (- p n * (?nr n - 1) / 2)" by (auto simp: powr_def)
       finally show ?thesis
-        using A by (auto simp: mult_pos_pos powr_mono2 powr_mult)
+        using A by (auto simp: powr_mono2 powr_mult)
     qed
     finally show "probGn p n (\<lambda>es. ?nr n \<le> \<alpha> (edge_space.edge_ugraph n es))
       \<le> (n * exp (- p n * (real (?nr n) - 1) / 2)) powr ?nr n"
@@ -435,7 +435,7 @@ proof -
       have "?prob_fun_raw n \<le> (n * exp (- p n * (real (?nr n) - 1) / 2)) powr (?nr n)"
         using prob_fun_raw_le by (simp add: r_def)
       also have "\<dots> \<le> ((exp 1 / n) powr (1 / 2)) powr ?nr n"
-        using expr_bound A by (auto simp: powr_mono2 mult_pos_pos)
+        using expr_bound A by (auto simp: powr_mono2)
       also have "\<dots> \<le> ((exp 1 / n) powr (1 / 2))"
         using nr_bounds ep_bound by (auto simp: powr_le_one_le)
       finally show "?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)" .

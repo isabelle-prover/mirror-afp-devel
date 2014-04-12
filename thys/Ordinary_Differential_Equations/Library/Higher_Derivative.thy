@@ -344,7 +344,7 @@ proof -
           f'' a i ((t * u) *\<^sub>R i)) \<le> e * abs (t * u) * norm i"
           using `i \<noteq> 0` `j \<noteq> 0` linear_0[OF has_derivative_linear, OF second_fderiv, OF `a \<in> G`]
           by (case_tac "t * u = 0") (auto simp: field_simps simp del: pos_divide_le_eq
-            simp add: pos_divide_le_eq[symmetric] mult_pos_pos)
+            simp add: pos_divide_le_eq[symmetric])
         have "norm (?g u 1 - ?g u 0 - (u * u) *\<^sub>R f'' a i j) =
           norm ((?g u 1 - ?g u 0 - u *\<^sub>R (f' (a + u *\<^sub>R j) i - (f' a i)))
             + u *\<^sub>R (f' (a + u *\<^sub>R j) i - f' a i - u *\<^sub>R f'' a i j))"

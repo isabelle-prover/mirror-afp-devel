@@ -538,7 +538,7 @@ proof-
     from goal1 have "poly q x \<noteq> 0" and q_sgn: "sgn (poly q x) = 
               (if x < x\<^sub>0 then -sgn (poly p x) else sgn (poly p x))"
         by (auto simp add: sgn_real_def elim: linorder_neqE_linordered_idom
-                 dest: mult_pos_pos mult_neg_neg zero_less_mult_pos 
+                 dest: mult_neg_neg zero_less_mult_pos 
                  zero_less_mult_pos' split: split_if_asm)
      from sign_changes_distrib[OF `poly q x \<noteq> 0`, of "[p]" ps']
         have "sign_changes ps x = sign_changes [p,q] x + sign_changes (q#ps') x"
@@ -1072,7 +1072,7 @@ proof-
       by (metis poly_diff poly_mult)
   with q_0 have r_x: "poly ?r x = -poly ?p x" by simp
   moreover have sqr_pos: "\<And>x::real. x \<noteq> 0 \<Longrightarrow> x * x > 0" apply (case_tac "x \<ge> 0")
-      by (simp_all add: mult_pos_pos mult_neg_neg)
+      by (simp_all add: mult_neg_neg)
   from sturm_adjacent_root_not_squarefree[of i p] assms r_x
       have "poly ?p x * poly ?p x > 0" by (force intro: sqr_pos)
   ultimately show "poly ?r x * poly ?p x < 0" by simp
@@ -1283,7 +1283,7 @@ proof-
   from sturm_squarefree'_adjacent_roots[OF `p \<noteq> 0`] i_in_range q_0
       have "poly ?p x \<noteq> 0" by force
   moreover have sqr_pos: "\<And>x::real. x \<noteq> 0 \<Longrightarrow> x * x > 0" apply (case_tac "x \<ge> 0")
-      by (simp_all add: mult_pos_pos mult_neg_neg)
+      by (simp_all add: mult_neg_neg)
   ultimately show ?thesis using r_x by simp
 qed
 
@@ -1358,10 +1358,10 @@ proof
           "\<And>a (b::real). b \<noteq> 0 \<Longrightarrow> a < 0 \<Longrightarrow> a / (b * b) < 0"
           "\<And>a (b::real). b \<noteq> 0 \<Longrightarrow> a > 0 \<Longrightarrow> a / (b * b) > 0"
           by ((case_tac "b > 0", 
-              auto simp: mult_pos_pos mult_neg_neg field_simps) [])+
+              auto simp: mult_neg_neg field_simps) [])+
     case (goal1 x)
       hence  [simp]: "poly d x * poly d x > 0" 
-           by (cases "poly d x > 0", auto simp: mult_pos_pos mult_neg_neg)
+           by (cases "poly d x > 0", auto simp: mult_neg_neg)
       from poly_div_gcd_squarefree_aux(2)[OF `pderiv p \<noteq> 0`]
           have "poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" by (simp add: d_def)
       moreover have "d dvd p" "d dvd pderiv p" unfolding d_def by simp_all

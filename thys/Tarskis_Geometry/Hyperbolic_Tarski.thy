@@ -4522,7 +4522,7 @@ proof -
    from `k < 1` have "1-k \<noteq> 0" by simp
    with `j < 1` have "(1-j)*(1-k) \<noteq> 0" by simp
 
-   from `j < 1` and `k > 0` have "(1-j)*k > 0" by (simp add: mult_pos_pos)
+   from `j < 1` and `k > 0` have "(1-j)*k > 0" by simp
 
    from `?cb1 = j *\<^sub>R ?cp1 + (1-j) *\<^sub>R ?ca1`
    have "?cb1 = (j+(1-j)*k) *\<^sub>R ?cp1 + ((1-j)*(1-k)) *\<^sub>R ?cq1"
@@ -5060,7 +5060,7 @@ proof -
   have "?ac / ?bc = (?pqda * sqrt ?pqab + sqrt ?pqab) / (?pqda * ?pqab + 1)" .
 
   from `?pqda > 0` and `?pqab > 0`
-  have "?pqda * ?pqab + 1 > 0" by (simp add: mult_pos_pos add_pos_pos)
+  have "?pqda * ?pqab + 1 > 0" by (simp add: add_pos_pos)
   with `?bc > 0`
     and `?ac / ?bc = (?pqda * sqrt ?pqab + sqrt ?pqab) / (?pqda * ?pqab + 1)`
   have "?ac * (?pqda * ?pqab + 1) = ?bc * (?pqda * sqrt ?pqab + sqrt ?pqab)"
