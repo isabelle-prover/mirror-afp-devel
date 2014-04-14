@@ -547,7 +547,7 @@ next
                 hence "density (S \<inter> T, uedges (f S) \<inter> uedges (f T)) = 0"
                   unfolding density_def by simp
                 also have "0 \<le> density (f S)"
-                  unfolding density_def by (simp add: divide_nonneg_nonneg)
+                  unfolding density_def by simp
                 also have "density (f S) \<le> max_density (f S)"
                   using S by (simp add: max_density_is_max subgraph_refl)
                 finally show "density (S \<inter> T, uedges (f S) \<inter> uedges (f T)) \<le> max_density (f S)"
@@ -638,7 +638,7 @@ next
         proof (rule LIMSEQ_le_zero[OF _ eventually_sequentiallyI eventually_sequentiallyI])
           fix n
           show "0 \<le> 1 / (real n ^ ?v * p n ^ ?e)"
-            using p by (simp add: divide_nonneg_nonneg)
+            using p by simp
 
           assume n: "1 \<le> n"
           have "1 / (real n ^ ?v * p n ^ ?e) = 1 / (real n powr ?v * p n powr ?e)"

@@ -233,7 +233,7 @@ lemma less_fun_bounds:
   shows "f \<lless> g"
 proof (rule real_tendsto_sandwich)
   show "\<forall>\<^sup>\<infinity>n. 0 \<le> f n / g n"
-    using assms(4,5) by eventually_elim (simp add: divide_nonneg_pos)
+    using assms(4,5) by eventually_elim simp
 next
   show "\<forall>\<^sup>\<infinity>n. f n / g n \<le> f' n / g' n"
     using assms(2-) by eventually_elim (simp only: quot_bounds)

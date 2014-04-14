@@ -734,7 +734,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         show "(\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b / W cf2 (F I)) = 1"
           "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b / W cf1 I) = 1"
           using W by (auto simp: setsum_divide_distrib[symmetric] setsum_nonneg W_def)
-      qed (auto intro!: divide_nonneg_nonneg) }
+      qed auto }
     note dist_n'_m' = this
 
     { fix I assume "I \<in> P" "I \<noteq> I0" and W: "W cf1 I = 0 \<longleftrightarrow> W cf2 (F I) = 0"
@@ -770,7 +770,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       next
         show "(\<Sum>b\<in>F I0. wt (fst cf2) (snd cf2) b / W cf2 (F I0)) = 1"
           using W `I0 \<in> P` by (auto simp: setsum_divide_distrib[symmetric] setsum_nonneg W_def)
-      qed  (auto intro!: divide_nonneg_nonneg)
+      qed auto
       then have "dist (Ps st1 cf1) (ps st2 cf2 (F I0)) \<le> Pn st1 cf1 n + pn st2 cf2 (F I0) m'"
         by simp }
     note dist_n_m' = this
@@ -795,7 +795,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       next
         show "(\<Sum>b\<in>I0. wt (fst cf1) (snd cf1) b / W cf1 I0) = 1"
           using W `I0 \<in> P` by (auto simp: setsum_divide_distrib[symmetric] setsum_nonneg W_def)
-      qed  (auto intro!: divide_nonneg_nonneg)
+      qed auto
       then have "dist (ps st1 cf1 I0) (Ps st2 cf2) \<le> pn st1 cf1 I0 n' + Pn st2 cf2 m"
         by simp }
     note dist_n'_m = this

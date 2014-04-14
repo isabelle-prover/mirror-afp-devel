@@ -43,7 +43,7 @@ proof (rule approachableI)
   obtain d' where d': "d' > 0" "\<And>y. dist y x < d' \<Longrightarrow> y \<in> G" using open_dist by blast
   def d \<equiv> "(min (d'/(norm i+1)) e)/2"
   have "d \<ge> 0" using `e > 0` `d' > 0`
-    by (auto simp: d_def intro!: divide_nonneg_nonneg add_nonneg_nonneg)
+    by (auto simp: d_def)
   have "dist (x + d *\<^sub>R i) x = norm (d *\<^sub>R i)" by (simp add: dist_norm)
   also have "\<dots> \<le> d * (norm i + 1)" using `d \<ge> 0` by (auto intro!: mult_left_mono)
   also have "\<dots> < d'" using `0 < d'` `0 < e`
@@ -510,7 +510,7 @@ proof (unfold_locales, rule approachableI)
     by (auto simp add: Pi_iff setsum_mono_zero_cong_right[of Basis "{i}"] min_def)
   also have "\<dots> \<in> G"
     using `0 < e` by (intro in_GI[of "\<lambda>k. if k = i then ?i else 0"])
-      (auto simp: Pi_iff intro!: divide_nonneg_nonneg)
+      (auto simp: Pi_iff)
   finally have "a + (?i * s i) *\<^sub>R i \<in> G" .
   moreover have "0 < abs (?i * s i)" using `e > 0` nz `i \<in> Basis` by (simp add: min_def)
   moreover have "abs (?i * s i) < e" using `e > 0` by (simp add: min_def abs_mult)
@@ -548,7 +548,7 @@ proof
     (\<forall>i\<in>Basis. min (a \<bullet> i) (a \<bullet> i + s i) \<le> x \<bullet> i \<and> x \<bullet> i \<le> max (a \<bullet> i) (a \<bullet> i + s i)) \<longrightarrow> x \<in> G"
     using e
     apply (intro bexI[where x="\<lambda>_. e/sqrt(DIM('a))"])
-    apply (simp add: min_def max_def divide_nonneg_nonneg)
+    apply (simp add: min_def max_def)
     apply (auto simp add: dist_real_def min_def max_def field_simps simp del: mem_cball
       intro!: cube_in_cball in_GI)
     done

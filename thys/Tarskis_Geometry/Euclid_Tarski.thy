@@ -48,17 +48,14 @@ proof
       assume "q \<noteq> a"
       hence "norm_dist q a > 0" by simp
       let ?k = "norm_dist b c / norm_dist q a"
-      from `norm_dist q a > 0`
-        and divide_nonneg_pos [of "norm_dist b c" "norm_dist q a"]
-      have "?k \<ge> 0" by simp
       let ?x = "a + ?k *\<^sub>R (a - q)"
       have "B\<^sub>\<real> q a ?x"
       proof -
         let ?l = "1 / (1 + ?k)"
-        from `?k \<ge> 0` have "?l > 0" by simp
+        have "?l > 0" by (simp add: add_pos_nonneg)
         note real_euclid_B_def [of q a ?x]
         moreover
-          from `?k \<ge> 0` have "?l \<ge> 0" and "?l \<le> 1" by auto
+          have "?l \<ge> 0" and "?l \<le> 1" by (auto simp add: add_pos_nonneg)
         moreover
           from scaleR_left_distrib [of 1 ?k "a - q"]
             have "(1 + ?k) *\<^sub>R (a - q) = ?x - q" by simp
@@ -72,8 +69,8 @@ proof
         proof -
           from norm_scaleR [of ?k "a - q"] have
             "norm_dist a ?x = \<bar>?k\<bar> * norm (a - q)" by simp
-          also from `?k \<ge> 0` have
-            "\<dots> = ?k * norm (a - q)" by arith
+          also have
+            "\<dots> = ?k * norm (a - q)" by simp
           also from norm_metric.symm [of q a] have
             "\<dots> = ?k * norm_dist q a" by simp
           finally have

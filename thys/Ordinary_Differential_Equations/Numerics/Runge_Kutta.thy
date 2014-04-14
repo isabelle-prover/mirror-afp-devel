@@ -204,7 +204,7 @@ definition euler_C::"real" where "euler_C = (sqrt DIM('a) * (B' * (B + 1) / 2))"
 
 lemma euler_C_nonneg: "euler_C \<ge> 0"
  using f_bounded f_bound_nonneg f'_bound_nonneg
- by (auto intro!: divide_nonneg_nonneg add_nonneg_nonneg simp: euler_C_def)
+ by (simp add: euler_C_def)
 
 sublocale derivative_set_bounded T X f f' "X \<times> cball 0 B"
     "{- (B' * (B + 1)) *\<^sub>R One.. (B' * (B + 1)) *\<^sub>R One}"

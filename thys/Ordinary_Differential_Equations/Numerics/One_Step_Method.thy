@@ -152,9 +152,8 @@ proof -
       B * (root p (r * L / B / (exp (L * T1 + 1) - 1)) ^ p
       * (exp (L * T2 + 1) - 1)) / L"
       using assms
-      by (auto simp add: ge_iff_diff_ge_0[symmetric]
-        intro!: divide_right_mono mult_left_mono mult_right_mono add_nonneg_nonneg
-        power_mono)
+      by (auto simp add: ge_iff_diff_ge_0[symmetric] divide_simps
+               intro!: mult_left_mono mult_right_mono power_mono)
     also
     have "root p (r * L / B / (exp (L * T1 + 1) - 1)) ^ p =
       (r * L / B / (exp (L * T1 + 1) - 1))"
