@@ -1869,7 +1869,7 @@ abstract = We formalize HyperCTL*, a temporal logic for expressing security prop
 
 [Abstract_Completeness]
 title = Abstract Completeness
-author = Jasmin Christian Blanchette <www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <www21.in.tum.de/~traytel>
+author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <http://www21.in.tum.de/~traytel>
 date = 2014-04-16
 topic = Logic
 abstract = A formalization of an abstract property of possibly infinite derivation trees (modeled by a codatatype),  representing the core of a proof (in Beth/Hintikka style) of the first-order logic completeness theorem, independent of the concrete syntax or inference rules. This work is described in detail in the IJCAR 2014 publication by the authors.
