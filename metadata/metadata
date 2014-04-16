@@ -4,8 +4,8 @@ author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
 date = 2014-04-03
 topic = Computer Science/Programming Languages/Language Definitions
 abstract =
-  This document accompanies the article "The Design and 
-  Implementation of a Verification Technique for GPU Kernels" 
+  This document accompanies the article "The Design and
+  Implementation of a Verification Technique for GPU Kernels"
   by Adam Betts, Nathan Chong, Alastair F. Donaldson, Jeroen
   Ketema, Shaz Qadeer, Paul Thomson and John Wickerson. It
   formalises all of the definitions provided in Sections 3
@@ -1853,3 +1853,16 @@ author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <htt
 date = 2014-03-11
 topic = Computer Science/Security
 abstract = We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
+
+[HyperCTL]
+title = A shallow embedding of HyperCTL*
+author = Markus N. Rabe <http://www.react.uni-saarland.de/people/rabe.html>, Peter Lammich <http://www21.in.tum.de/~lammich>, Andrei Popescu <http://www21.in.tum.de/~popescua>
+date = 2014-04-16
+topic = Computer Science/Security, Logic
+abstract = We formalize HyperCTL*, a temporal logic for expressing security properties. We
+	first define a shallow embedding of HyperCTL*, within which we prove inductive and coinductive
+	rules for the operators. Then we show that a HyperCTL* formula captures Goguen-Meseguer
+	noninterference, a landmark information flow property. We also define a deep embedding and
+	connect it to the shallow embedding by a denotational semantics, for which we prove sanity w.r.t.
+	dependence on the free variables. Finally, we show that under some finiteness assumptions about
+	the model, noninterference is given by a (finitary) syntactic formula.
