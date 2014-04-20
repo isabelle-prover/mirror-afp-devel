@@ -4,8 +4,8 @@ author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
 date = 2014-04-03
 topic = Computer Science/Programming Languages/Language Definitions
 abstract =
-  This document accompanies the article "The Design and 
-  Implementation of a Verification Technique for GPU Kernels" 
+  This document accompanies the article "The Design and
+  Implementation of a Verification Technique for GPU Kernels"
   by Adam Betts, Nathan Chong, Alastair F. Donaldson, Jeroen
   Ketema, Shaz Qadeer, Paul Thomson and John Wickerson. It
   formalises all of the definitions provided in Sections 3
@@ -1658,6 +1658,14 @@ date = 2004-09-20
 topic = Mathematics/Combinatorics
 abstract = This formalization of Ramsey's theorem (infinitary version) is taken from Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26. It differs slightly from the text by assuming a slightly stronger hypothesis. In particular, the induction hypothesis is stronger, holding for any infinite subset of the naturals. This avoids the rather peculiar mapping argument between kj and aikj on p.263, which is unnecessary and slightly mars this really beautiful result.
 
+[Discrete_Summation]
+title = Discrete Summation
+author = Florian Haftmann <http://isabelle.in.tum.de/~haftmann>
+contributors = Amine Chaieb <>
+date = 2014-04-13
+topic = Mathematics/Combinatorics
+abstract = These theories introduce basic concepts and proofs about discrete summation: shifts, formal summation, falling factorials and stirling numbers. As proof of concept, a simple summation conversion is provided.
+
 [Open_Induction]
 title = Open Induction
 author = Mizuhito Ogawa <>, Christian Sternagel <http://www.jaist.ac.jp/~c-sterna/>
@@ -1875,3 +1883,25 @@ author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <htt
 date = 2014-03-11
 topic = Computer Science/Security
 abstract = We formalize a probabilistic noninterference for a multi-threaded language with uniform scheduling, where probabilistic behaviour comes from both the scheduler and the individual threads. We define notions probabilistic noninterference in two variants: resumption-based and trace-based. For the resumption-based notions, we prove compositionality w.r.t. the language constructs and establish sound type-system-like syntactic criteria. This is a formalization of the mathematical development presented at CPP 2013 and CALCO 2013. It is the probabilistic variant of the Possibilistic Noninterference AFP entry.
+
+[HyperCTL]
+title = A shallow embedding of HyperCTL*
+author = Markus N. Rabe <http://www.react.uni-saarland.de/people/rabe.html>, Peter Lammich <http://www21.in.tum.de/~lammich>, Andrei Popescu <http://www21.in.tum.de/~popescua>
+date = 2014-04-16
+topic = Computer Science/Security, Logic
+abstract = We formalize HyperCTL*, a temporal logic for expressing security properties. We
+	first define a shallow embedding of HyperCTL*, within which we prove inductive and coinductive
+	rules for the operators. Then we show that a HyperCTL* formula captures Goguen-Meseguer
+	noninterference, a landmark information flow property. We also define a deep embedding and
+	connect it to the shallow embedding by a denotational semantics, for which we prove sanity w.r.t.
+	dependence on the free variables. Finally, we show that under some finiteness assumptions about
+	the model, noninterference is given by a (finitary) syntactic formula.
+
+[Abstract_Completeness]
+title = Abstract Completeness
+author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <http://www21.in.tum.de/~traytel>
+date = 2014-04-16
+topic = Logic
+abstract = A formalization of an abstract property of possibly infinite derivation trees (modeled by a codatatype),  representing the core of a proof (in Beth/Hintikka style) of the first-order logic completeness theorem, independent of the concrete syntax or inference rules. This work is described in detail in the IJCAR 2014 publication by the authors.
+        The abstract proof can be instantiated for a wide range of Gentzen and tableau systems as well as various flavors of FOL---e.g., with or without predicates, equality, or sorts. Here, we give only a toy example instantiation with classical propositional logic. A more serious instance---many-sorted FOL with equality---is described elsewhere [Blanchette and Popescu, FroCoS 2013].
+
