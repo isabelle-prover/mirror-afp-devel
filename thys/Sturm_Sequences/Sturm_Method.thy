@@ -37,9 +37,10 @@ proof (cases "(a \<le> b \<and> poly p a = 0 \<and> p \<noteq> 0) \<or> (a = b \
       case True
         have "{x. a \<le> x \<and> x \<le> b} = {a..b}"
              "{x. a < x \<and> x \<le> b} = {a<..b}" by auto
+        with True False have "card {x. a < x \<and> x \<le> b} = 0" "card {x. a \<le> x \<and> x \<le> b} = 0"
+          by (auto simp add: card_eq_0_iff infinite_Ioc infinite_Icc)
         with True False show ?thesis
-            using count_roots_between_correct 
-            by (simp add: real_interval_card_eq)
+            using count_roots_between_correct by (simp add: )
     qed
 next
   case True
@@ -73,8 +74,10 @@ proof (cases "poly p b = 0 \<and> a < b \<and> p \<noteq> 0")
       case True
         have [simp]: "{x. a < x \<and> x < b} = {a<..<b}"
                      "{x. a < x \<and> x \<le> b} = {a<..b}" by auto
-        from True False' assms show ?thesis 
-            by (auto simp: count_roots_between_correct real_interval_card_eq)
+        with True False have "card {x. a < x \<and> x \<le> b} = 0" "card {x. a < x \<and> x < b} = 0"
+          by (auto simp add: card_eq_0_iff infinite_Ioo infinite_Ioc)
+        with True False' assms show ?thesis 
+            by (auto simp: count_roots_between_correct)
     next
       case False
         with False' have "{x. a < x \<and> x < b \<and> poly p x = 0} = 
@@ -107,8 +110,10 @@ proof (cases "p = 0 \<or> a \<ge> b")
       case False
         hence "{x. a < x \<and> x \<le> b} = {a<..b}"
               "{x. a \<le> x \<and> x < b} = {a..<b}" by auto
+        with True False have "card {x. a < x \<and> x \<le> b} = 0" "card {x. a \<le> x \<and> x < b} = 0"
+          by (auto simp add: card_eq_0_iff infinite_Ico infinite_Ioc)
         with False True' show ?thesis 
-            by (simp add: count_roots_between_correct real_interval_card_eq)
+            by (simp add: count_roots_between_correct)
     next
       case True
         with True' have "{x. a \<le> x \<and> x < b \<and> poly p x = 0} = 

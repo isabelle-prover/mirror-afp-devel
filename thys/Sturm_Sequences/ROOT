@@ -7,7 +7,6 @@ session Sturm_Sequences (AFP) = HOL +
     "~~/src/HOL/Library/Poly_Deriv"
   theories
     "Lib/Sturm_Library_Document"
-    "Lib/Misc_Analysis"
     "Lib/Misc_Polynomial"
   theories [document = false]
     "Lib/Sturm_Library"

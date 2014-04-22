@@ -1,7 +1,23 @@
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Misc_Polynomial
-imports "~~/src/HOL/Library/Poly_Deriv" Misc_Analysis
+imports "~~/src/HOL/Library/Poly_Deriv"
 begin
+
+subsection {* Analysis *}
+
+lemma fun_eq_in_ivl:
+  assumes "a \<le> b" "\<forall>x::real. a \<le> x \<and> x \<le> b \<longrightarrow> eventually (\<lambda>\<xi>. f \<xi> = f x) (at x)"
+  shows "f a = f b"
+proof (rule connected_local_const)
+  show "connected {a..b}" "a \<in> {a..b}" "b \<in> {a..b}" using `a \<le> b` by (auto intro: connected_Icc)
+  show "\<forall>aa\<in>{a..b}. eventually (\<lambda>b. f aa = f b) (at aa within {a..b})"
+  proof
+    fix x assume "x \<in> {a..b}"
+    with assms(2)[rule_format, of x]
+    show "eventually (\<lambda>b. f x = f b) (at x within {a..b})"
+      by (auto simp: eventually_at_filter elim: eventually_elim1)
+  qed
+qed
 
 subsection {* Polynomials *}
 subsubsection {* General simplification lemmas *}
@@ -563,8 +579,9 @@ proof-
 
   from poly_limit_aux have "(f ---> coeff p (degree p)) at_top"
       using tendsto_mono at_top_le_at_infinity unfolding f_def by blast
-  moreover from x_pow_n_limit_at_top assms 
-      have "LIM x at_top. g x :> at_top" by (simp add: g_def)
+  moreover from assms 
+      have "LIM x at_top. g x :> at_top"
+        by (auto simp add: g_def intro!: filterlim_pow_at_top filterlim_ident)
   ultimately have "LIM x at_top. f x * g x :> at_top"
       using filterlim_tendsto_pos_mult_at_top assms by simp
   also have "eventually (\<lambda>x. f x * g x = poly p x) at_top"
@@ -631,9 +648,9 @@ proof-
   
   from poly_limit_aux have "(f ---> coeff p (degree p)) at_bot"
       using tendsto_mono at_bot_le_at_infinity by (force simp: f_def)
-  moreover from x_pow_n_limit_at_bot assms
+  moreover from assms
       have "LIM x at_bot. g x :> (if even (degree p) then at_top else at_bot)"
-      by (simp add: g_def split: split_if_asm)
+        by (auto simp add: g_def split: split_if_asm intro: filterlim_pow_at_bot_even filterlim_pow_at_bot_odd filterlim_ident)
   ultimately have "LIM x at_bot. f x * g x :> 
                       (if even ?n then at_top else at_bot)"
       by (auto simp: assms intro: filterlim_tendsto_pos_mult_at_top 

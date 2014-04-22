@@ -570,7 +570,7 @@ proof (clarify)
   fix x assume "x > a" "x \<le> b"
   with assms have "\<forall>x'. x \<le> x' \<and> x' \<le> b \<longrightarrow> 
                        eventually (\<lambda>\<xi>. f \<xi> = f x') (at x')" by auto
-  from natfun_eq_in_ivl[OF `x \<le> b` this] show "f x = f b" .
+  from fun_eq_in_ivl[OF `x \<le> b` this] show "f x = f b" .
 qed
 
 text {*
@@ -597,7 +597,7 @@ proof-
                  cases "poly p a = 0")
             case False
               with no_roots show "sign_changes ps a = sign_changes ps b"
-                  by (force intro: natfun_eq_in_ivl `a \<le> b` 
+                  by (force intro: fun_eq_in_ivl `a \<le> b` 
                                    p_nonzero_imp_sign_changes_const)
           next
             case True
