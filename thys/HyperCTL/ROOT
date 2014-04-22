@@ -1,8 +1,8 @@
 chapter AFP
 
-session "HyperCTL" (AFP) = "HOL-BNF" +
+session "HyperCTL" (AFP) = "HOL" +
   theories [document = false]
-    "~~/src/HOL/BNF/Examples/Stream"
+    "~~/src/HOL/BNF_Examples/Stream"
   theories
     HyperCTL
   files 

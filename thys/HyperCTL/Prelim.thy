@@ -2,7 +2,7 @@ header {* Preliminaries *}
 
 (*<*)
 theory Prelim
-imports "~~/src/HOL/BNF/Examples/Stream"
+imports "~~/src/HOL/BNF_Examples/Stream"
 begin
 (*>*)
 
