@@ -9,7 +9,7 @@ section {* Toy instantiation: Propositional Logic *}
 datatype_new fmla = Atom nat | Neg fmla | Conj fmla fmla
 datatype_new_compat fmla
 
-primrec_new max_depth where
+primrec max_depth where
   "max_depth (Atom _) = 0"
 | "max_depth (Neg \<phi>) = Suc (max_depth \<phi>)"
 | "max_depth (Conj \<phi> \<psi>) = Suc (max (max_depth \<phi>) (max_depth \<psi>))"

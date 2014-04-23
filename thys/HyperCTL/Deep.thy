@@ -37,7 +37,7 @@ text{* Well-formed formulas are those that do not have a temporal operator
 outside the scope of any quantifier -- indeed, in HyperCTL* such a situation does not make sense, 
 since the temporal operators refer to previously introduced/quantified paths. *}
 
-primrec_new wff :: "'aprop dfmla \<Rightarrow> bool" where
+primrec wff :: "'aprop dfmla \<Rightarrow> bool" where
  "wff (Atom a p) = True"
 |"wff Fls = True"
 |"wff (Neg \<phi>) = wff \<phi>"
@@ -69,7 +69,7 @@ by (metis assms exE_some finite_fresh_pvar getFresh_def)
 
 text {* The free-variables operator *}
 
-primrec_new FV :: "'aprop dfmla \<Rightarrow> pvar set" where
+primrec FV :: "'aprop dfmla \<Rightarrow> pvar set" where
  "FV (Atom a p) = {p}"
 |"FV Fls = {}"
 |"FV (Neg \<phi>) = FV \<phi>"
@@ -112,7 +112,7 @@ The semantics will only
 be meaningful if the indexes of a formula's free variables are smaller than the length
 of the path list -- we call this property ``compatibility''. *}
 
-primrec_new sem :: "'aprop dfmla \<Rightarrow> env \<Rightarrow> ('state,'aprop) sfmla" where
+primrec sem :: "'aprop dfmla \<Rightarrow> env \<Rightarrow> ('state,'aprop) sfmla" where
  "sem (Atom a p) env = atom a (env p)"
 |"sem Fls env = fls"
 |"sem (Neg \<phi>) env = neg (sem \<phi> env)"

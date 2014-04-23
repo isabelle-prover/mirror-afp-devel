@@ -212,13 +212,13 @@ unfolding getGMUserCom_def by auto
 context GM_sec_model
 begin
 
-primrec_new L :: "('St,'U,'C) state \<Rightarrow> ('U,'C,'Out) aprop set" where
+primrec L :: "('St,'U,'C) state \<Rightarrow> ('U,'C,'Out) aprop set" where
  "L (Idle st) = {Obs u' (out st u') | u'. True}"
 |"L (State st u c) = {Last u c} \<union> {Obs u' (out st u') | u'. True}"
 
 text{* Get the Goguen-Meseguer state: *}
 
-primrec_new getGMState where
+primrec getGMState where
  "getGMState (Idle st) = st"
 |"getGMState (State st u c) = st"
 
@@ -228,7 +228,7 @@ by (cases s) auto
 lemma Obs_in_L[simp]: "Obs u ou \<in> L s \<longleftrightarrow> ou = out (getGMState s) u"
 by (cases s) auto
 
-primrec_new \<delta> :: "('St,'U,'C) state \<Rightarrow> ('St,'U,'C) state set" where
+primrec \<delta> :: "('St,'U,'C) state \<Rightarrow> ('St,'U,'C) state set" where
  "\<delta> (Idle st) = {Idle st} \<union> {State (do st u' c') u' c' | u' c'. True}"
 |"\<delta> (State st u c) = {Idle st} \<union> {State (do st u' c') u' c' | u' c'. True}"
 
