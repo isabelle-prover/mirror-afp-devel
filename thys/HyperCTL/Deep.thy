@@ -2,7 +2,7 @@ header {* Deep representation of HyperCTL* -- syntax and semantics *}
 
 (*<*)
 theory Deep
-imports Shallow
+imports Shallow "~~/src/HOL/Library/Infinite_Set"
 begin
 (*>*)
 
