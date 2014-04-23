@@ -211,8 +211,10 @@ proof -
     have "\<forall>i. (b,c) : ?R i \<longleftrightarrow> (b,a) : ?S i" using `P : Prof` dist
       by(auto simp add:in_below Prof_def Pi_def below_Lin)
     hence bc: "(b,c) : F ?R \<longleftrightarrow> (b,a) : F ?S"
-      using `?R : Prof` `?S : Prof` dist[simplified]
-      apply - apply(rule 2) by fast+
+      using `?R : Prof` `?S : Prof` dist[simplified] 2
+      apply -
+      apply(rule 2)
+      by fast+
     have "\<forall>i. (b,a) : ?S i \<longleftrightarrow> (a,b) : P i" using `P : Prof` dist
       by(auto simp add:in_below Prof_def Pi_def below_Lin)
     hence "\<forall>i. (b,a) : ?S i \<longleftrightarrow> (b,a) : P' i" using iff by blast
@@ -226,8 +228,8 @@ proof -
     hence "\<forall>i. (b,a) : (converse o P)i \<longleftrightarrow> (b,c) : P' i" by simp
     moreover have cP: "converse o P : Prof"
       using `P:Prof` by(simp add:Prof_def Pi_def)
-    ultimately have "(b,a) : F(converse o P) \<longleftrightarrow> (b,c) : F P'" using A
-      apply - apply(rule 2) by fast+
+    ultimately have "(b,a) : F(converse o P) \<longleftrightarrow> (b,c) : F P'" using A 2
+      by metis
     moreover have "(a,b) : F P \<longleftrightarrow> (b,a) : F(converse o P)"
       by (rule 3[OF `a\<noteq>b` `P:Prof` cP]) simp
     ultimately have "(a,b) : F P \<longleftrightarrow> (b,c) : F P'" by blast
