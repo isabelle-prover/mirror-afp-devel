@@ -648,7 +648,7 @@ lemma termination_no_match_ML:
    \<Longrightarrow> listsum (map size vs) < listsum (map size ps)"
 apply(subgoal_tac "C\<^sub>U nm vs : set ps")
  apply(drule listsum_map_remove1[of _ _ size])
- apply (simp add:list_size_conv_listsum)
+ apply (simp add:size_list_conv_listsum)
 apply (metis in_set_conv_nth length_rev set_rev)
 done
 
@@ -1374,7 +1374,7 @@ fun size_tm :: "tm \<Rightarrow> nat" where
 "size_tm (At s t) = size_tm s + size_tm t + 1" |
 "size_tm _ = 0"
 
-lemma size_tm_foldl_At: "size_tm(t \<bullet>\<bullet> ts) = size_tm t + list_size size_tm ts"
+lemma size_tm_foldl_At: "size_tm(t \<bullet>\<bullet> ts) = size_tm t + size_list size_tm ts"
 by (induct ts arbitrary:t) auto
 
 lemma termination_no_match:
@@ -1382,7 +1382,7 @@ lemma termination_no_match:
    \<Longrightarrow> listsum (map size_tm ts) < listsum (map size_tm ss)"
 apply(subgoal_tac "C nm \<bullet>\<bullet> ts : set ss")
  apply(drule listsum_map_remove1[of _ _ size_tm])
-apply(simp add:size_tm_foldl_At list_size_conv_listsum)
+apply(simp add:size_tm_foldl_At size_list_conv_listsum)
 apply (metis in_set_conv_nth)
 done
 

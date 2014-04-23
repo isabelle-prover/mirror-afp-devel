@@ -230,15 +230,15 @@ lemma size:
 
 lemma size_simps [simp]:
   "x \<in> A \<Longrightarrow> ts \<in> trees_list A \<Longrightarrow>
-    size (mk x ts) = Suc (list_size size ts)"
+    size (mk x ts) = Suc (List.size_list size ts)"
   by (induct ts) (auto simp: size)
 
 lemma size_simp1:
-  "s \<in> set ss \<Longrightarrow> subtree t s \<Longrightarrow> size t < size s \<Longrightarrow> size t < Suc (list_size size ss)"
+  "s \<in> set ss \<Longrightarrow> subtree t s \<Longrightarrow> size t < size s \<Longrightarrow> size t < Suc (List.size_list size ss)"
   by (induct ss) auto
 
 lemma size_simp2:
-  "t \<in> set ts \<Longrightarrow> size t < Suc (list_size size ts)"
+  "t \<in> set ts \<Longrightarrow> size t < Suc (List.size_list size ts)"
   by (induct ts) auto
 
 lemmas size_simps' = size_simp1 size_simp2
@@ -324,10 +324,10 @@ lemma trees_induct [consumes 1, case_names mk, induct set: trees]:
 
 lemma sublisteq_size:
   assumes "sublisteq ss ts"
-  shows "list_size size ss \<le> list_size size ts"
+  shows "List.size_list size ss \<le> List.size_list size ts"
   using assms by (induct) auto
 
-lemma not_sublisteq_size: "list_size size ys < list_size size xs \<Longrightarrow> \<not> sublisteq xs ys"
+lemma not_sublisteq_size: "List.size_list size ys < List.size_list size xs \<Longrightarrow> \<not> sublisteq xs ys"
   by (metis sublisteq_size linorder_not_less)
 
 lemma trees_list_insert:
@@ -567,11 +567,11 @@ lemma in_set_size':
   by  (intro less_imp_le in_set_size) auto
 
 lemma mk_size:
-  "mk f ts \<in> terms F \<Longrightarrow> size (mk f ts) = Suc (list_size size ts)"
+  "mk f ts \<in> terms F \<Longrightarrow> size (mk f ts) = Suc (List.size_list size ts)"
   by (auto intro: size_simps dest!: terms_imp_trees)
 
 lemma mk_size' [simp]:
-  "(f, length ts) \<in> F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> size (mk f ts) = Suc (list_size size ts)"
+  "(f, length ts) \<in> F \<Longrightarrow> \<forall>t\<in>set ts. t \<in> terms F \<Longrightarrow> size (mk f ts) = Suc (List.size_list size ts)"
   by (rule mk_size) auto
 
 lemma subtree_terms:
@@ -656,4 +656,3 @@ qed
 end
 
 end
-

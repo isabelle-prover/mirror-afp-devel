@@ -240,11 +240,11 @@ lemma map_ran_cong [fundef_cong]:
   "\<lbrakk> al = al'; \<And>k v. (k, v) \<in> set al \<Longrightarrow> f k v = g k v \<rbrakk> \<Longrightarrow> map_ran f al = map_ran g al'"
 by clarify (induct al', auto)
 
-lemma list_size_delete: "list_size f (AList.delete a al) \<le> list_size f al"
+lemma size_list_delete: "size_list f (AList.delete a al) \<le> size_list f al"
 by(induct al) simp_all
 
-lemma list_size_clearjunk: "list_size f (AList.clearjunk al) \<le> list_size f al"
-by(induct al)(auto simp add: clearjunk_delete intro: le_trans[OF list_size_delete])
+lemma size_list_clearjunk: "size_list f (AList.clearjunk al) \<le> size_list f al"
+by(induct al)(auto simp add: clearjunk_delete intro: le_trans[OF size_list_delete])
 
 lemma set_delete_conv: "set (AList.delete a al) = set al - ({a} \<times> UNIV)"
 proof(induct al)

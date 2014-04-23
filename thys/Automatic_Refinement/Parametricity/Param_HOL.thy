@@ -146,6 +146,7 @@ lemma param_option[param]:
   "(None,None)\<in>\<langle>R\<rangle>option_rel"
   "(Some,Some)\<in>R \<rightarrow> \<langle>R\<rangle>option_rel"
   "(case_option,case_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+  "(rec_option,rec_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
   by (auto split: option.split 
     simp: option_rel_def case_option_def[symmetric]
     dest: fun_relD)
@@ -241,7 +242,7 @@ schematic_lemma param_drop[param]: "(drop,drop)\<in>(?R::(_\<times>_) set)"
 
 schematic_lemma param_length[param]: 
   "(length,length)\<in>(?R::(_\<times>_) set)"
-  unfolding List.list.list_size_overloaded_def 
+  unfolding size_list_overloaded_def size_list_def 
   by (parametricity)
 
 fun list_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" where

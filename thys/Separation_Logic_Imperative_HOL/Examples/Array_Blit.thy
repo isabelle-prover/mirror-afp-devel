@@ -36,7 +36,7 @@ subsection "Definition"
       apply simp
       by (metis Suc.prems(1) add_Suc_right drop_Suc_conv_tl 
         less_Suc_eq_le nat_add_commute not_less_eq take_Suc_Cons 
-        termination_basic_simps(4))
+        Nat.trans_le_add2)
 
     from Suc.prems show ?case
       by (sep_auto simp: take_update_last drop_upd_irrelevant)

@@ -54,7 +54,7 @@ where
 | "compEs1 Vs (e#es) = compE1 Vs e # compEs1 Vs es"
 by pat_completeness auto
 termination
-apply(relation "case_sum (\<lambda>p. size (snd p)) (\<lambda>p. list_size size (snd p)) <*mlex*> {}")
+apply(relation "case_sum (\<lambda>p. size (snd p)) (\<lambda>p. size_list size (snd p)) <*mlex*> {}")
 apply(rule wf_mlex[OF wf_empty])
 apply(rule mlex_less, simp)+
 done

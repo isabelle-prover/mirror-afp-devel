@@ -2251,7 +2251,7 @@ subsubsection {* Miscellaneous *}
     apply(auto)
   done
 
-  lemma list_size_conc[simp]: "list_size f (a@b) = list_size f a + list_size f b"
+  lemma size_list_conc[simp]: "size_list f (a@b) = size_list f a + size_list f b"
     by (induct a) auto
 
 

@@ -307,6 +307,7 @@ context begin interpretation autoref_syn .
       "Some ::\<^sub>i I \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_option"
       "the ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
       "case_option ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
+      "rec_option ::\<^sub>i I \<rightarrow>\<^sub>i (Iv\<rightarrow>\<^sub>iI) \<rightarrow>\<^sub>i \<langle>Iv\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i I"
       "(op = :: _ option \<Rightarrow> _) ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_option \<rightarrow>\<^sub>i i_bool"
       by auto
       *)
@@ -315,6 +316,7 @@ context begin interpretation autoref_syn .
       "(None,None)\<in>\<langle>R\<rangle>option_rel"
       "(Some,Some)\<in>R \<rightarrow> \<langle>R\<rangle>option_rel"
       "(case_option,case_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
+      "(rec_option,rec_option)\<in>Rr\<rightarrow>(R \<rightarrow> Rr)\<rightarrow>\<langle>R\<rangle>option_rel \<rightarrow> Rr"
       by (auto split: option.split 
         simp: option_rel_def case_option_def[symmetric]
         dest: fun_relD)
@@ -464,7 +466,7 @@ context begin interpretation autoref_syn .
     unfolding drop_def by autoref
   schematic_lemma autoref_length[autoref_rules]: 
     "(length,length)\<in>(?R::(_\<times>_) set)"
-    unfolding List.list.list_size_overloaded_def 
+    unfolding size_list_overloaded_def size_list_def 
     by (autoref)
 
   lemma autoref_nth[autoref_rules]: 

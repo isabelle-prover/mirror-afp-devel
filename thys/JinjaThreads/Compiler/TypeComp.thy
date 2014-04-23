@@ -165,7 +165,7 @@ where
                             compTs E (A \<squnion> (\<A> e)) (ty E e # ST) es"
 by pat_completeness simp_all
 termination
-apply(relation "case_sum (\<lambda>p. size (snd (snd (snd p)))) (\<lambda>p. list_size size (snd (snd (snd p)))) <*mlex*> {}")
+apply(relation "case_sum (\<lambda>p. size (snd (snd (snd p)))) (\<lambda>p. size_list size (snd (snd (snd p)))) <*mlex*> {}")
 apply(rule wf_mlex[OF wf_empty])
 apply(rule mlex_less, simp)+
 done

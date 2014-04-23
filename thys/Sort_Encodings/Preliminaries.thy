@@ -231,15 +231,15 @@ by (metis assms list_all2_length)
 lemma list_all2_o: "list_all2 (P o f) al bl = list_all2 P (map f al) bl"
 unfolding list_all2_map1 comp_def ..
 
-lemma set_list_size:
+lemma set_size_list:
 assumes "x \<in> set xs"
-shows "f x \<le> list_size f xs"
-by (metis assms list_size_estimation' order_eq_refl)
+shows "f x \<le> size_list f xs"
+by (metis assms size_list_estimation' order_eq_refl)
 
-lemma nth_list_size:
+lemma nth_size_list:
 assumes "i < length xs"
-shows "f (xs!i) \<le> list_size f xs"
-by (metis assms nth_mem set_list_size)
+shows "f (xs!i) \<le> size_list f xs"
+by (metis assms nth_mem set_size_list)
 
 lemma list_all2_list_all[simp]:
 "list_all2 (\<lambda> x. f) xs ys \<longleftrightarrow>
