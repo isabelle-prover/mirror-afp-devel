@@ -127,7 +127,7 @@ subsubsection {* Count *}
 
 subsubsection {* Union, difference and intersection *}
 
-  lemma size_diff_se: "\<lbrakk>t :# S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_def)
+  lemma size_diff_se: "\<lbrakk>t :# S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
     let ?SIZE = "setsum (count S) (set_of S)"
     assume A: "t :# S"
     from A have SPLITPRE: "finite (set_of S) & {t}\<subseteq>(set_of S)" by auto
