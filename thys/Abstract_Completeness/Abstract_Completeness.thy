@@ -14,28 +14,15 @@ section{* General Tree Concepts *}
 
 codatatype 'a tree = Node (root: 'a) (cont: "'a tree fset")
 
-(*<*)
-code_datatype Node
-
-lemma case_tree_cert:
-  assumes "CASE \<equiv> case_tree c"
-  shows "CASE (Node r ct) \<equiv> c r ct"
-  using assms by simp_all
-
-setup {*
-  Code.add_case @{thm case_tree_cert}
-*}
-(*>*)
-
 inductive tfinite where
   tfinite: "(\<And> t'. t' |\<in>| cont t \<Longrightarrow> tfinite t') \<Longrightarrow> tfinite t"
 
 
-(*<*)(* Intfinite paths in trees. *)(*>*)
+(*<*)(* Infinite paths in trees. *)(*>*)
 coinductive ipath where
   ipath: "\<lbrakk>root t = shd steps; t' |\<in>| cont t; ipath t' (stl steps)\<rbrakk> \<Longrightarrow> ipath t steps"
 
-(*<*)(* Finite trees have no intfinite paths. *)
+(*<*)(* Finite trees have no infinite paths. *)
 lemma ftree_no_ipath: "tfinite t \<Longrightarrow> \<not> ipath t steps"
   by (induct t arbitrary: steps rule: tfinite.induct) (auto elim: ipath.cases)
 (*>*)
