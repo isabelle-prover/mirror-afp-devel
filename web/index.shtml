@@ -50,6 +50,15 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-04-23:
+<a href="entries/SIFUM_Type_Systems.shtml">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a>
+<br>Author:
+Sylvia Grewe,
+Heiko Mantel and 
+Daniel Schoepe
+</td></tr>
+
+<tr><td class="entry">
 2014-04-22:
 <a href="entries/Bounded_Deducibility_Security.shtml">Bounded-Deducibility Security</a>
 <br>Author:

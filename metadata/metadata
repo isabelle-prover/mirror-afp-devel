@@ -1009,6 +1009,28 @@ abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
   about these proofs is published in the proceedings
   of the conference Certified Programs and Proofs 2012.
 
+[SIFUM_Type_Systems]
+title = A Formalization of Assumptions and Guarantees for Compositional Noninterference
+author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Daniel Schoepe <mailto:daniel@mais.informatik.tu-darmstadt.de>
+date = 2014-04-23
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = Research in information-flow security aims at developing methods to
+ identify undesired information leaks within programs from private
+ (high) sources to public (low) sinks. For a concurrent system, it is
+ desirable to have compositional analysis methods that allow for
+ analyzing each thread independently and that nevertheless guarantee
+ that the parallel composition of successfully analyzed threads
+ satisfies a global security guarantee. However, such a compositional
+ analysis should not be overly pessimistic about what an environment
+ might do with shared resources. Otherwise, the analysis will reject
+ many intuitively secure programs.
+ <p>
+ The paper "Assumptions and Guarantees for Compositional
+ Noninterference" by Mantel et. al. presents one solution for this problem:
+ an approach for compositionally reasoning about non-interference in
+ concurrent programs via rely-guarantee-style reasoning.  We present an
+ Isabelle/HOL formalization of the concepts and proofs of this approach.
+
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
 author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php>, Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
