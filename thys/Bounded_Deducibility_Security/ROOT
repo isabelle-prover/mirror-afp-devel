@@ -1,0 +1,7 @@
+chapter AFP
+
+session "Bounded_Deducibility_Security" (AFP) = "HOL-BNF" +
+  options [timeout = 600]
+  theories
+    Bounded_Deducibility_Security
+  files "document/root.tex" "document/intro.tex"

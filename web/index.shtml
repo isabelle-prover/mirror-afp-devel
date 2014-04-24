@@ -50,6 +50,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-04-22:
+<a href="entries/Bounded_Deducibility_Security.shtml">Bounded-Deducibility Security</a>
+<br>Author:
+<a href="http://www21.in.tum.de/~popescua">Andrei Popescu</a> and 
+<a href="http://www21.in.tum.de/~lammich">Peter Lammich</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-04-16:
 <a href="entries/HyperCTL.shtml">A shallow embedding of HyperCTL*</a>
 <br>Author:

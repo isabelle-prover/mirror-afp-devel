@@ -1867,6 +1867,20 @@ abstract = We formalize HyperCTL*, a temporal logic for expressing security prop
 	dependence on the free variables. Finally, we show that under some finiteness assumptions about
 	the model, noninterference is given by a (finitary) syntactic formula.
 
+[Bounded_Deducibility_Security]
+title = Bounded-Deducibility Security
+author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-04-22
+topic = Computer Science/Security
+abstract = This is a formalization of bounded-deducibility security (BD
+ security), a flexible notion of information-flow security applicable
+ to arbitrary input-output automata. It generalizes Sutherland's
+ classic notion of nondeducibility by factoring in declassification
+ bounds and trigger, whereas nondeducibility states that, in a
+ system, information cannot flow between specified sources and sinks,
+ BD security indicates upper bounds for the flow and triggers under
+ which these upper bounds are no longer guaranteed.
+
 [Abstract_Completeness]
 title = Abstract Completeness
 author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <http://www21.in.tum.de/~traytel>
