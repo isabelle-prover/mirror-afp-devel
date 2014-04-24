@@ -1031,6 +1031,34 @@ abstract = Research in information-flow security aims at developing methods to
  concurrent programs via rely-guarantee-style reasoning.  We present an
  Isabelle/HOL formalization of the concepts and proofs of this approach.
 
+[Strong_Security]
+title = A Formalization of Strong Security
+author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>,
+Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel
+<mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
+date = 2014-04-23
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = Research in information-flow security aims at developing methods to
+  identify undesired information leaks within programs from private
+  sources to public sinks. Noninterference captures this
+  intuition. Strong security from Sabelfeld and Sands
+  formalizes noninterference for concurrent systems.
+  <p>
+  We present an Isabelle/HOL formalization of strong security for
+  arbitrary security lattices (Sabelfeld and Sands use
+  a two-element security lattice in the original publication). 
+  The formalization includes
+  compositionality proofs for strong security and a soundness proof
+  for a security type system that checks strong security for programs
+  in a simple while language with dynamic thread creation.
+  <p>
+  Our formalization of the security type system is abstract in the
+  language for expressions and in the semantic side conditions for
+  expressions. It can easily be instantiated with different syntactic
+  approximations for these side conditions. The soundness proof of
+  such an instantiation boils down to showing that these syntactic
+  approximations imply the semantic side conditions.
+
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
 author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php>, Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
