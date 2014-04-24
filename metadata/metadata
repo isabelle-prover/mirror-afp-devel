@@ -1057,7 +1057,7 @@ abstract = Research in information-flow security aims at developing methods to
   such an instantiation boils down to showing that these syntactic
   approximations imply the semantic side conditions.
 
-[Strong_Security]
+[WHATandWHERE_Security]
 title = A Formalization of Declassification with WHAT-and-WHERE-Security
 author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
 date = 2014-04-23
