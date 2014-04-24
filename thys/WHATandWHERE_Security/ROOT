@@ -1,0 +1,22 @@
+chapter AFP
+
+session WHATandWHERE_Security = HOL +
+  description {*
+    An Isabelle/HOL formalization of declassification with WHATandWHERE-Security
+
+    Author: Sylvia Grewe, TU Darmstadt
+    Author: Alexander Lux, TU Darmstadt
+    Author: Heiko Mantel, TU Darmstadt
+    Author: Jens Sauer, TU Darmstadt
+  *}
+  options [timeout = 600]
+  theories 
+    Language_Composition 
+    MWLs 
+    Parallel_Composition 
+    WHATWHERE_Secure_Skip_Assign 
+    WHATWHERE_Security  
+    Type_System 
+    Type_System_example 
+    Up_To_Technique
+  files "document/root.bib" "document/root.tex"
