@@ -92,9 +92,9 @@ lemma fall2_imp_alw:
 by (auto intro!: fall2_intro imp_intro elim!: fall2_elim imp_elim) (metis imp_elim)+
 
 
-lemma wfp_stateOf_shift_stake_same:
+lemma wfp_stateOf_shift_stake_sconst:
 fixes \<pi> i
-defines "\<pi>1 \<equiv> shift (stake (Suc i) \<pi>) (same (toSink (fst (\<pi> !! i)), L (toSink (fst (\<pi> !! i)))))"
+defines "\<pi>1 \<equiv> shift (stake (Suc i) \<pi>) (sconst (toSink (fst (\<pi> !! i)), L (toSink (fst (\<pi> !! i)))))"
 assumes \<pi>: "wfp AP' \<pi>"
 shows "wfp AP' \<pi>1 \<and> stateOf \<pi>1 = stateOf \<pi>"
 proof
@@ -153,10 +153,10 @@ proof-
     and \<pi>\<pi>'[simp]: "wfp AP' \<pi>" "wfp AP' \<pi>'" "stateOf \<pi> = s0" "stateOf \<pi>' = s0"
     and \<phi>: "\<forall>j\<le>i. f (fst (\<pi> !! j)) (fst (\<pi>' !! j))"
     have \<pi>\<pi>'i[simp]: "\<And> i. wfp AP' (sdrop i \<pi>) \<and> wfp AP' (sdrop i \<pi>')" by (metis \<pi>\<pi>' wfp_sdrop)
-    def \<pi>1 \<equiv> "shift (stake (Suc i) \<pi>) (same (toSink (fst (\<pi> !! i)), L (toSink (fst (\<pi> !! i)))))"
-    def \<pi>1' \<equiv> "shift (stake (Suc i) \<pi>') (same (toSink (fst (\<pi>' !! i)), L (toSink (fst (\<pi>' !! i)))))"
+    def \<pi>1 \<equiv> "shift (stake (Suc i) \<pi>) (sconst (toSink (fst (\<pi> !! i)), L (toSink (fst (\<pi> !! i)))))"
+    def \<pi>1' \<equiv> "shift (stake (Suc i) \<pi>') (sconst (toSink (fst (\<pi>' !! i)), L (toSink (fst (\<pi>' !! i)))))"
     have \<pi>1\<pi>1': "wfp AP' \<pi>1 \<and> stateOf \<pi>1 = s0 \<and> wfp AP' \<pi>1' \<and> stateOf \<pi>1' = s0"
-    using wfp_stateOf_shift_stake_same unfolding \<pi>1_def \<pi>1'_def by auto
+    using wfp_stateOf_shift_stake_sconst unfolding \<pi>1_def \<pi>1'_def by auto
     hence \<pi>1\<pi>1'i: "\<And> i. wfp AP' (sdrop i \<pi>1) \<and> wfp AP' (sdrop i \<pi>1')" by (metis \<pi>\<pi>' wfp_sdrop)
     have imp: "imp (alw (\<phi> [])) (alw (\<psi> [])) [\<pi>1,\<pi>1']" using L  \<pi>1\<pi>1' by auto
     moreover have "alw (\<phi> []) [\<pi>1,\<pi>1']" unfolding alw proof
@@ -428,14 +428,14 @@ proof
       using C(2) by(cases sl1) auto
       have wsl: "wffp sl" by (metis C False append_is_Nil_conv list.inject sl wffp.simps)
       show ?thesis using C(1)[OF sl, unfolded sl[symmetric], OF wsl]
-      by (metis (no_types) C False wffp_hdI append_is_Nil_conv hd.simps hd_append
+      by (metis (no_types) C False wffp_hdI append_is_Nil_conv list.sel(1) hd_append
                 last.simps list.inject sl sl1 wffp.simps)
     qed(insert C, auto)
   qed auto
 qed (auto simp: wffp_append)
 
 lemma wffp_to_wfp:
-assumes \<pi>_def: "\<pi> = map (\<lambda> s. (s, L s)) sl @- same (toSink (last sl), L (toSink (last sl)))"
+assumes \<pi>_def: "\<pi> = map (\<lambda> s. (s, L s)) sl @- sconst (toSink (last sl), L (toSink (last sl)))"
 assumes sl: "wffp sl"
 shows
 "wfp UNIV \<pi> \<and>
@@ -596,7 +596,10 @@ n st st1 u c sl1 where
 "sl = map Idle (replicate n st) @ [State st1 u c] @ sl1"
 and "sl1 \<noteq> [] \<Longrightarrow> wffp sl1 \<and> hd sl1 \<in> \<delta> (State st1 u c)"
 using assms apply(cases sl rule: wffp_cases3)
-by (metis append_Cons append_Nil map.simps(1) replicate_0)+
+  apply metis
+ apply (metis append_Cons append_Nil list.map(1) replicate_0)
+apply (metis append_Cons append_Nil)
+done
 
 lemma wffp_Idle_Idle:
 assumes "wffp (sl1 @ [Idle st1] @ [Idle st2] @ sl2)"
@@ -650,8 +653,8 @@ lemma nonintSI_nonintS: "nonintSI \<longleftrightarrow> nonintS"
 proof(unfold nonintS_def nonintSI_def, safe)
   fix sl sl' i
   obtain \<pi> \<pi>' where
-  \<pi>: "\<pi> = map (\<lambda> s. (s, L s)) sl @- same (toSink (last sl), L (toSink (last sl)))" and
-  \<pi>': "\<pi>' = map (\<lambda> s. (s, L s)) sl' @- same (toSink (last sl'), L (toSink (last sl')))"
+  \<pi>: "\<pi> = map (\<lambda> s. (s, L s)) sl @- sconst (toSink (last sl), L (toSink (last sl)))" and
+  \<pi>': "\<pi>' = map (\<lambda> s. (s, L s)) sl' @- sconst (toSink (last sl'), L (toSink (last sl')))"
   by blast
   assume 0: "\<forall> \<pi> \<pi>'.
     wfp UNIV \<pi> \<and> wfp UNIV \<pi>' \<and> stateOf \<pi> = s0 \<and> stateOf \<pi>' = s0
@@ -833,7 +836,7 @@ using assms proof(induction sl rule: wffp_induct2)
   then obtain st u c where s: "s = State st u c" by(cases s ) auto
   have sl: "sl \<noteq> []" and sl1: "sl = hd sl # tl sl" using wffp_NE[OF `wffp sl`] by auto
   with Cons obtain st1 u1 c1 where hsl: "hd sl = State st1 u1 c1"
-  by (metis isState_purgeIdle hd.simps isState_def list.exhaust purgeIdle_Cons_iff)
+  by (metis isState_purgeIdle isState_def purgeIdle_Cons_iff)
   have 1: "getGMState (hd sl) = do st u1 c1" using `hd sl \<in> \<delta> s` unfolding hsl s by simp
   have "doo st (map getGMUserCom sl) = doo (do st u1 c1) (map getGMUserCom (tl sl))"
   by (subst sl1) (simp add: 1 hsl)
@@ -901,7 +904,7 @@ next
     moreover
     {have "f s s'" using u unfolding s'_def st'_def s f_def by simp
      hence "list_all2 f sl sl'" using slsl' hsl hsl' slNE sl'NE
-     by (metis hd.simps list_all2_Cons neq_Nil_conv tl.simps(2))
+     by (metis list.sel(1,3) list_all2_Cons neq_Nil_conv)
     }
     moreover have "map getGMUserCom (purgeIdle sl') = purge GH ucl"
     by (subst hd_Cons_tl[OF sl'NE, symmetric]) (auto simp: hsl' ucl s'_def u m)
@@ -917,7 +920,7 @@ next
     moreover
     {have "f s s'" unfolding s'_def st'_def s f_def by simp
      hence "list_all2 f sl sl'" using slsl' hsl hsl' slNE sl'NE
-     by (metis hd.simps list_all2_Cons neq_Nil_conv tl.simps(2))
+     by (metis list.sel(1,3) list_all2_Cons neq_Nil_conv)
     }
     moreover have "map getGMUserCom (purgeIdle sl') = purge GH ucl"
     by (subst hd_Cons_tl[OF sl'NE, symmetric]) (auto simp: hsl' ucl s'_def u m)
