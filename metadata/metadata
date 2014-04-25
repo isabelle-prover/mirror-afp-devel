@@ -1011,7 +1011,7 @@ abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
 
 [SIFUM_Type_Systems]
 title = A Formalization of Assumptions and Guarantees for Compositional Noninterference
-author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Daniel Schoepe <mailto:daniel@mais.informatik.tu-darmstadt.de>
+author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Daniel Schoepe <mailto:daniel@schoepe.org>
 date = 2014-04-23
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
 abstract = Research in information-flow security aims at developing methods to
