@@ -327,7 +327,7 @@ next
   show ?case
   proof(cases "\<phi> trn")
     case True
-    hence "f trn = hd vl" using Cons by (metis V_simps hd.simps)
+    hence "f trn = hd vl" using Cons by (metis V_simps(3) hd_Cons_tl list.inject vl)
     moreover have "validFrom s [trn]" using `validFrom s (trn # tr)`
     unfolding validFrom_def by auto
     ultimately show ?thesis using Cons True unfolding exit_def
@@ -337,10 +337,11 @@ next
     hence "V tr = vl" using Cons by auto
     moreover have "never T tr" by (metis Cons.prems list_all_simps)
     moreover from `validFrom s (trn # tr)` have "validFrom (tgtOf trn) tr" and s: "s = srcOf trn"
-    by (metis list.distinct(1) Cons.prems(2) hd.simps validFrom_def valid_ConsE)+
+    by (metis list.distinct(1) validFrom_def valid_ConsE Cons.prems(2) 
+              IO_Automaton.validFrom_def list.discI list.sel(1))+    
     moreover have "exit (tgtOf trn) (hd vl)" using `exit s (hd vl)`
     unfolding exit_def s by simp
-    (metis (no_types) Cons.prems(2) Cons.prems(4) append_Cons hd.simps
+    (metis (no_types) Cons.prems(2) Cons.prems(4) append_Cons list.sel(1)
            list.distinct list_all_simps valid.Cons validFrom_def valid_ConsE)
     ultimately show ?thesis using Cons(1) by auto
   qed
@@ -440,7 +441,7 @@ proof-
             then obtain vl' where c: "consume ?trn vl vl'"
             using ex_consume_\<phi> ex_consume_NO by metis
             have V': "V tr' = vl'" using V c unfolding tr trn ss consume_def
-            by (cases "\<phi> ?trn") (simp_all, metis tl.simps)
+            by (cases "\<phi> ?trn") (simp_all, metis list.sel(2-3))
             have "match \<Delta> s s1 vl1 a ou s' vl' \<or> ignore \<Delta> s s1 vl1 a ou s' vl'" (is "?match \<or> ?ignore")
             using react unfolding reaction_def using vtrans Ta c by auto
             thus ?thesis proof safe

@@ -132,22 +132,6 @@ next
   --"condition about IDC and NDC and equal length already proven above by auto tactic!"
 next
   fix V V' i m1 m1' m2 \<alpha> p
-  assume inR: "(V,V') \<in> R"
-  assume irange: "i < length V"
-  assume step: "\<langle>V!i,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m2\<rangle>"
-  assume dhequal: "m1 \<sim>\<^bsub>d,(htchLocSet PP)\<^esub> m1'"
-  assume disjBisimUpTo: "\<forall>(V,V')\<in>R. \<forall>i < length V. \<forall>m1 m1' m2 \<alpha> p.
-    \<langle>V!i,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m2\<rangle> \<and> m1 \<sim>\<^bsub>d,(htchLocSet PP)\<^esub> m1' \<longrightarrow>
-    (\<exists>p' \<alpha>' m2'. \<langle>V'!i,m1'\<rangle> \<rightarrow>\<lhd>\<alpha>'\<rhd> \<langle>p',m2'\<rangle> \<and>
-    stepResultsinR p p' (R \<union> R') \<and> ((\<alpha>, \<alpha>') \<in> R \<or> (\<alpha>, \<alpha>') \<in> R') \<and>
-    dhequality_alternative d PP (pp (V!i)) m2 m2')"
-  from inR irange step dhequal disjBisimUpTo show "\<exists>p' \<alpha>' m2'.
-    \<langle>V'!i,m1'\<rangle> \<rightarrow>\<lhd>\<alpha>'\<rhd> \<langle>p',m2'\<rangle> \<and> stepResultsinR p p' (R \<union> R') \<and>
-    ((\<alpha>,\<alpha>') \<in> R \<or> (\<alpha>,\<alpha>') \<in> R') \<and> 
-    dhequality_alternative d PP (pp (V!i)) m2 m2'"
-    by blast
-next
-  fix V V' i m1 m1' m2 \<alpha> p
   assume inR': "(V,V') \<in> R'"
   assume irange: "i < length V"
   assume step: "\<langle>V!i,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m2\<rangle>"

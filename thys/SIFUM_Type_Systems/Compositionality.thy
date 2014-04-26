@@ -1964,7 +1964,7 @@ proof -
       ?mdss = "replicate ?n mds\<^sub>s"
   let ?X = "differing_vars_lists mem\<^sub>1 mem\<^sub>2 ?mems"
   have diff_empty: "\<forall> i < ?n. ?X i = {}"
-    by (metis differing_vars_initially_empty ex_in_conv min_max.inf_idem zip_replicate)
+    by (metis differing_vars_initially_empty ex_in_conv min.idem zip_replicate)
 
   show ?thesis
     unfolding add_initial_modes_def

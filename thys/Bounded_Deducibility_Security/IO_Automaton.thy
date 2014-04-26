@@ -58,7 +58,7 @@ subsection{* System traces *}
 definition out :: "'state \<Rightarrow> 'act \<Rightarrow> 'out" where "out s a \<equiv> fst (step s a)"
 definition eff :: "'state \<Rightarrow> 'act \<Rightarrow> 'state" where "eff s a \<equiv> snd (step s a)"
 
-primrec_new validTrans :: "('state,'act,'out) trans \<Rightarrow> bool" where
+primrec validTrans :: "('state,'act,'out) trans \<Rightarrow> bool" where
 "validTrans (Trans s a ou s') = (step s a = (ou, s'))"
 
 lemma validTrans:

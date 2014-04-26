@@ -82,7 +82,7 @@ next
       
       from PPc_Vs_at_i step1 step2 PPsc_of_step
       have "set (PPc c) \<subseteq> set (PPV V) \<and> set (PPc c') \<subseteq> set (PPV V)"
-        by (metis (no_types) the.simps xt1(6))
+        by (metis (no_types) option.sel xt1(6))
       
       with inR'_res Rdef have "([c],[c']) \<in> R"
         by auto

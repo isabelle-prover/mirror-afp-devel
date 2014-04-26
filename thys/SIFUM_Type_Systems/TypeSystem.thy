@@ -413,7 +413,7 @@ lemma mode_update_add_anno:
 
 lemma context_le_trans: "\<lbrakk> \<Gamma> \<sqsubseteq>\<^sub>c \<Gamma>' ; \<Gamma>' \<sqsubseteq>\<^sub>c \<Gamma>'' \<rbrakk> \<Longrightarrow> \<Gamma> \<sqsubseteq>\<^sub>c \<Gamma>''"
   apply (auto simp: context_le_def)
-  by (metis domI order_trans the.simps)
+  by (metis domI order_trans option.sel)
 
 lemma context_le_refl [simp]: "\<Gamma> \<sqsubseteq>\<^sub>c \<Gamma>"
   by (metis context_le_def order_refl)
@@ -813,7 +813,7 @@ next (* assign\<^sub>2 *)
     proof (auto)
       assume "to_total (\<Gamma>(x \<mapsto> t)) x = Low"
       with `\<Gamma> \<turnstile>\<^sub>a e \<in> t` have "\<And> x. x \<in> aexp_vars e \<Longrightarrow> to_total \<Gamma> x = Low"
-        by (metis assign\<^sub>2.prems(1) domI fun_upd_same the.simps to_total_def type_low_vars_low)
+        by (metis assign\<^sub>2.prems(1) domI fun_upd_same option.sel to_total_def type_low_vars_low)
       thus "ev\<^sub>A mem\<^sub>1 e = ev\<^sub>A mem\<^sub>2 e"
         by (metis assign\<^sub>2.prems(2) eval_vars_det\<^sub>A tyenv_eq_def)
     next
@@ -987,7 +987,7 @@ next
         apply (rule \<R>\<^sub>2_elim)
         by auto
       hence "\<forall> x \<in> dom \<Gamma>'. \<Gamma>' x = Some High"
-        by (metis Sec.simps(2) `dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'` context_le_def domD less_eq_Sec_def local.sub(4) set_rev_mp the.simps)
+        by (metis Sec.simps(2) `dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'` context_le_def domD less_eq_Sec_def local.sub(4) set_rev_mp option.sel)
       ultimately show ?thesis
         by (metis (no_types) \<R>\<^sub>2.intro \<R>\<^sub>2_elim' `mds_consistent mds \<Lambda>\<^sub>1` `mds_consistent mds \<Lambda>\<^sub>2` r2)
     qed
@@ -1125,7 +1125,7 @@ proof -
         hence "mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2"
           using `mds_consistent mds \<Gamma>` `mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2`
           apply (auto simp: tyenv_eq_def low_mds_eq_def mds_consistent_def)
-          by (metis Sec.simps(1) `\<forall>x\<in>dom \<Gamma>. \<Gamma> x = Some High` `mds' = mds` domI the.simps to_total_def)
+          by (metis Sec.simps(1) `\<forall>x\<in>dom \<Gamma>. \<Gamma> x = Some High` `mds' = mds` domI option.sel to_total_def)
         ultimately have "\<langle>cn, mds, mem\<^sub>1\<rangle> \<R>\<^sup>1\<^bsub>\<Gamma>'\<^esub> \<langle>cn, mds, mem\<^sub>2\<rangle>"
           by (metis (lifting) \<R>\<^sub>1.intro local.intro\<^sub>2(2))
         thus "?thesis"
@@ -1203,7 +1203,7 @@ next
     apply (rule \<R>_elim)
       apply (insert \<R>\<^sub>1_weak_bisim \<R>\<^sub>2_weak_bisim \<R>\<^sub>3_weak_bisim eval weak_bisim_def)
       apply (clarify, blast)+
-    by (metis mem_Collect_eq prod_caseI)
+    by (metis mem_Collect_eq case_prodI)
 qed
 
 lemma Typed_in_\<R>:

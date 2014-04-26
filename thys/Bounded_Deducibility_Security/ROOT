@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Bounded_Deducibility_Security" (AFP) = "HOL-BNF" +
+session "Bounded_Deducibility_Security" (AFP) = HOL +
   options [timeout = 600]
   theories
     Bounded_Deducibility_Security

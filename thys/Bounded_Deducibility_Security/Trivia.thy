@@ -2,7 +2,7 @@ header {* Trivia *}
 
 (*<*)
 theory Trivia
-imports "~~/src/HOL/BNF/BNF"
+imports Main
 begin
 (*>*)
 
