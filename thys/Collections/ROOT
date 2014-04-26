@@ -137,6 +137,8 @@ session Collections (AFP) = Refine_Monadic +
     
     "Examples/ICF/ICF_Examples_Chapter"
     "Examples/ICF/ICF_Examples"
+
+  theories [document = false]  
     "Examples/ICF/PerformanceTest"
 
   theories [document = false] (* Just in case we forgot something *)
