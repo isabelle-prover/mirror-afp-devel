@@ -4,7 +4,7 @@
 *)
 header "Tests"
 theory PerformanceTest
-imports "../Collections" "~~/src/HOL/Library/Efficient_Nat" 
+imports "../../ICF/Collections" "~~/src/HOL/Library/Code_Target_Numeral" 
 begin
 text_raw {*\label{thy:PerformanceTest}*}
 
@@ -122,9 +122,10 @@ text {*
   (*
     Ad-hoc test code:
   *)
+  definition "test_hs_eval a b c = test_hs (nat_of_integer a) (nat_of_integer b) (nat_of_integer c)"
   ML_val {*
     val start = Time.now();
-    @{code test_hs} 1 100000 200000;
+    @{code test_hs_eval} 1 100000 200000;
     val rt = Time.toMilliseconds (Time.now() - start);
     *}
 

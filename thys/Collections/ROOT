@@ -23,6 +23,7 @@ session Collections (AFP) = Refine_Monadic +
     "Lib/Assoc_List"
     "Lib/Diff_Array"
     "Lib/Partial_Equivalence_Relation"
+    "Lib/Robdd"
 
     "ICF/tools/Locale_Code"
     "ICF/tools/ICF_Tools"
@@ -136,6 +137,7 @@ session Collections (AFP) = Refine_Monadic +
     
     "Examples/ICF/ICF_Examples_Chapter"
     "Examples/ICF/ICF_Examples"
+    "Examples/ICF/PerformanceTest"
 
   theories [document = false] (* Just in case we forgot something *)
     "Examples/Collection_Examples"

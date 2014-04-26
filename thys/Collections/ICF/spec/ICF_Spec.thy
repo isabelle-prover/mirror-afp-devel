@@ -1,6 +1,6 @@
 theory ICF_Spec
 imports
-  Spec_Chapter
+  ICF_Spec_Chapter
   ListSpec
   MapSpec
   SetSpec

@@ -353,24 +353,24 @@ proof -
      "m = map_option \<alpha> \<circ> m'" "\<And>k v. m' k = Some v \<Longrightarrow> invar v" 
      by (auto simp add: split_def) 
 
-  have dom_m'_eq[simp]: "dom m' = dom m"
+  have dom_m'_eq: "dom m' = dom m"
     unfolding m'_props by (simp add: dom_def)
 
   show ?thesis
   proof (rule map_iterator_genord_rule_P[OF m'_props(1), of I])
-    case goal1 thus ?case using I0 by simp   
+    case goal1 thus ?case using I0 by (simp add: dom_m'_eq)   
   next
     case goal3 thus ?case using IF by simp   
   next
     case (goal2 k v S \<sigma>) note assms = this
     from IP [of \<sigma> k S v] assms
-    show ?case 
+    show ?case
       by (simp add: m'_props) metis
   next
     case (goal4 \<sigma> S) note assms = this
     show ?case
-      using II[of S \<sigma>] assms m'_props
-      by simp metis
+      using II[of S \<sigma>] assms
+      by (simp add: m'_props) metis
   qed
 qed
 
@@ -397,14 +397,14 @@ proof -
      "m = map_option \<alpha> \<circ> m'" "\<And>k v. m' k = Some v \<Longrightarrow> invar v" 
      by (auto simp add: split_def) 
 
-  have dom_m'_eq[simp]: "dom m' = dom m"
+  have dom_m'_eq: "dom m' = dom m"
     unfolding m'_props by (simp add: dom_def)
 
   show ?thesis
   proof (rule map_iterator_genord_rule_insert_P[OF m'_props(1), of I])
     case goal1 thus ?case using I0 by simp   
   next
-    case goal3 thus ?case using IF by simp   
+    case goal3 thus ?case using IF by (simp add: dom_m'_eq)   
   next
     case (goal2 k v S \<sigma>) note assms = this
     from IP [of \<sigma> k S v] assms
@@ -413,8 +413,8 @@ proof -
   next
     case (goal4 \<sigma> S) note assms = this
     show ?case
-      using II[of S \<sigma>] assms m'_props
-      by simp metis
+      using II[of S \<sigma>] assms
+      by (simp add: m'_props) metis
   qed
 qed
 

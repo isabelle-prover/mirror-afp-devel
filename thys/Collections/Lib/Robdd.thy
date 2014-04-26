@@ -4,7 +4,7 @@
 *)
 header {* \isaheader{ROBDDs} *}
 theory Robdd
-imports Main "../spec/MapSpec" "../iterator/SetIteratorOperations"
+imports Main "../ICF/spec/MapSpec" "../Iterator/SetIteratorOperations"
         
 begin
 
