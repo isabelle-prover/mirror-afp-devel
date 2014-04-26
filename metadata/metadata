@@ -1015,6 +1015,87 @@ abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
   about these proofs is published in the proceedings
   of the conference Certified Programs and Proofs 2012.
 
+[SIFUM_Type_Systems]
+title = A Formalization of Assumptions and Guarantees for Compositional Noninterference
+author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Daniel Schoepe <mailto:daniel@schoepe.org>
+date = 2014-04-23
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = Research in information-flow security aims at developing methods to
+ identify undesired information leaks within programs from private
+ (high) sources to public (low) sinks. For a concurrent system, it is
+ desirable to have compositional analysis methods that allow for
+ analyzing each thread independently and that nevertheless guarantee
+ that the parallel composition of successfully analyzed threads
+ satisfies a global security guarantee. However, such a compositional
+ analysis should not be overly pessimistic about what an environment
+ might do with shared resources. Otherwise, the analysis will reject
+ many intuitively secure programs.
+ <p>
+ The paper "Assumptions and Guarantees for Compositional
+ Noninterference" by Mantel et. al. presents one solution for this problem:
+ an approach for compositionally reasoning about non-interference in
+ concurrent programs via rely-guarantee-style reasoning.  We present an
+ Isabelle/HOL formalization of the concepts and proofs of this approach.
+
+[Strong_Security]
+title = A Formalization of Strong Security
+author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
+date = 2014-04-23
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = Research in information-flow security aims at developing methods to
+  identify undesired information leaks within programs from private
+  sources to public sinks. Noninterference captures this
+  intuition. Strong security from Sabelfeld and Sands
+  formalizes noninterference for concurrent systems.
+  <p>
+  We present an Isabelle/HOL formalization of strong security for
+  arbitrary security lattices (Sabelfeld and Sands use
+  a two-element security lattice in the original publication). 
+  The formalization includes
+  compositionality proofs for strong security and a soundness proof
+  for a security type system that checks strong security for programs
+  in a simple while language with dynamic thread creation.
+  <p>
+  Our formalization of the security type system is abstract in the
+  language for expressions and in the semantic side conditions for
+  expressions. It can easily be instantiated with different syntactic
+  approximations for these side conditions. The soundness proof of
+  such an instantiation boils down to showing that these syntactic
+  approximations imply the semantic side conditions.
+
+[WHATandWHERE_Security]
+title = A Formalization of Declassification with WHAT-and-WHERE-Security
+author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
+date = 2014-04-23
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = Research in information-flow security aims at developing methods to
+  identify undesired information leaks within programs from private
+  sources to public sinks. Noninterference captures this intuition by
+  requiring that no information whatsoever flows from private sources
+  to public sinks. However, in practice this definition is often too
+  strict: Depending on the intuitive desired security policy, the
+  controlled declassification of certain private information (WHAT) at
+  certain points in the program (WHERE) might not result in an
+  undesired information leak.
+  <p>
+  We present an Isabelle/HOL formalization of such a security property
+  for controlled declassification, namely WHAT&WHERE-security from
+  "Scheduler-Independent Declassification" by Lux, Mantel, and Perner. 
+  The formalization includes
+  compositionality proofs for and a soundness proof for a security
+  type system that checks for programs in a simple while language with
+  dynamic thread creation.
+  <p>
+  Our formalization of the security type system is abstract in the
+  language for expressions and in the semantic side conditions for
+  expressions. It can easily be instantiated with different syntactic
+  approximations for these side conditions. The soundness proof of
+  such an instantiation boils down to showing that these syntactic
+  approximations imply the semantic side conditions.
+  <p>
+  This Isabelle/HOL formalization uses theories from the entry
+  Strong Security.
+
 [VolpanoSmith]
 title = A Correctness Proof for the Volpano/Smith Security Typing System
 author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php>, Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
@@ -1896,6 +1977,20 @@ abstract = We formalize HyperCTL*, a temporal logic for expressing security prop
 	connect it to the shallow embedding by a denotational semantics, for which we prove sanity w.r.t.
 	dependence on the free variables. Finally, we show that under some finiteness assumptions about
 	the model, noninterference is given by a (finitary) syntactic formula.
+
+[Bounded_Deducibility_Security]
+title = Bounded-Deducibility Security
+author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-04-22
+topic = Computer Science/Security
+abstract = This is a formalization of bounded-deducibility security (BD
+ security), a flexible notion of information-flow security applicable
+ to arbitrary input-output automata. It generalizes Sutherland's
+ classic notion of nondeducibility by factoring in declassification
+ bounds and trigger, whereas nondeducibility states that, in a
+ system, information cannot flow between specified sources and sinks,
+ BD security indicates upper bounds for the flow and triggers under
+ which these upper bounds are no longer guaranteed.
 
 [Abstract_Completeness]
 title = Abstract Completeness

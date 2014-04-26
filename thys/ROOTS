@@ -13,6 +13,7 @@ BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
 Bondy
+Bounded_Deducibility_Security
 BytecodeLogicJmlTypes
 CCS
 Category
@@ -137,6 +138,7 @@ Ribbon_Proofs
 Robbins-Conjecture
 SATSolverVerification
 SIFPL
+SIFUM_Type_Systems
 Secondary_Sylow
 Selection_Heap_Sort
 SenSocialChoice
@@ -151,6 +153,7 @@ Sort_Encodings
 Sqrt_Babylonian
 Statecharts
 Stream-Fusion
+Strong_Security
 Sturm_Sequences
 Stuttering_Equivalence
 SumSquares
@@ -166,4 +169,5 @@ Valuation
 Verified-Prover
 VolpanoSmith
 Well_Quasi_Orders
+WHATandWHERE_Security
 WorkerWrapper

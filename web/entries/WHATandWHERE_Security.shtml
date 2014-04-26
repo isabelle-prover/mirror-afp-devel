@@ -1,0 +1,141 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">A</font>
+<font class="first">F</font>ormalization
+of
+<font class="first">D</font>eclassification
+with
+<font class="first">W</font>HAT-and-WHERE-Security
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">A Formalization of Declassification with WHAT-and-WHERE-Security</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Sylvia Grewe (grewe /at/ mais /dot/ informatik /dot/ tu-darmstadt /dot/ de), Alexander Lux (lux /at/ mais /dot/ informatik /dot/ tu-darmstadt /dot/ de), Heiko Mantel (mantel /at/ mais /dot/ informatik /dot/ tu-darmstadt /dot/ de) and Jens Sauer (sauer /at/ mais /dot/ informatik /dot/ tu-darmstadt /dot/ de)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-04-23</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+Research in information-flow security aims at developing methods to
+identify undesired information leaks within programs from private
+sources to public sinks. Noninterference captures this intuition by
+requiring that no information whatsoever flows from private sources
+to public sinks. However, in practice this definition is often too
+strict: Depending on the intuitive desired security policy, the
+controlled declassification of certain private information (WHAT) at
+certain points in the program (WHERE) might not result in an
+undesired information leak.
+<p>
+We present an Isabelle/HOL formalization of such a security property
+for controlled declassification, namely WHAT&WHERE-security from
+"Scheduler-Independent Declassification" by Lux, Mantel, and Perner.
+The formalization includes
+compositionality proofs for and a soundness proof for a security
+type system that checks for programs in a simple while language with
+dynamic thread creation.
+<p>
+Our formalization of the security type system is abstract in the
+language for expressions and in the semantic side conditions for
+expressions. It can easily be instantiated with different syntactic
+approximations for these side conditions. The soundness proof of
+such an instantiation boils down to showing that these syntactic
+approximations imply the semantic side conditions.
+<p>
+This Isabelle/HOL formalization uses theories from the entry
+Strong Security.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{WHATandWHERE_Security-AFP,
+  author  = {Sylvia Grewe and Alexander Lux and Heiko Mantel and Jens Sauer},
+  title   = {A Formalization of Declassification with WHAT-and-WHERE-Security},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/WHATandWHERE_Security.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="WHATandWHERE_Security" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

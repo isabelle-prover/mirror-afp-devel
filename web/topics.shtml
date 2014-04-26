@@ -137,6 +137,9 @@
 
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
+<a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;
+<a href="entries/Strong_Security.shtml">Strong_Security</a> &nbsp;
+<a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
 <strong>Logics:</strong>&nbsp;<a href="entries/Circus.shtml">Circus</a> &nbsp;
@@ -174,6 +177,9 @@
 <div class="list">
 <a href="entries/Inductive_Confidentiality.shtml">Inductive_Confidentiality</a> &nbsp;
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
+<a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;
+<a href="entries/Strong_Security.shtml">Strong_Security</a> &nbsp;
+<a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
 <a href="entries/HotelKeyCards.shtml">HotelKeyCards</a> &nbsp;
@@ -182,6 +188,7 @@
 <a href="entries/CryptoBasedCompositionalProperties.shtml">CryptoBasedCompositionalProperties</a> &nbsp;
 <a href="entries/Probabilistic_Noninterference.shtml">Probabilistic_Noninterference</a> &nbsp;
 <a href="entries/HyperCTL.shtml">HyperCTL</a> &nbsp;
+<a href="entries/Bounded_Deducibility_Security.shtml">Bounded_Deducibility_Security</a> &nbsp;
 </div>
 
 <h2>Logic</h2>
