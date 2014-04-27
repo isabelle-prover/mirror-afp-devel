@@ -47,7 +47,7 @@ text {*
         (0::nat,s)
       "
 
-  -- {* Parameters: empty, member, insert, delete, iterate,  seed, N, M \rightarrow count, size *}
+  -- {* Parameters: empty, member, insert, delete, iterate,  seed, N, M $\rightarrow$ count, size *}
   definition 
     test_all :: "(unit \<Rightarrow> 's) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> 's) 
       \<Rightarrow> ('s \<Rightarrow> (nat,nat) set_iterator) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat)"
