@@ -1,6 +1,6 @@
 chapter AFP
 
-session Strong_Security = HOL +
+session Strong_Security (AFP) = HOL +
   description {*
     An Isabelle/HOL formalization of Strong Security
 

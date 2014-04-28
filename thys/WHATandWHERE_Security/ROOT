@@ -1,6 +1,6 @@
 chapter AFP
 
-session WHATandWHERE_Security = HOL +
+session WHATandWHERE_Security (AFP) = HOL +
   description {*
     An Isabelle/HOL formalization of declassification with WHATandWHERE-Security
 
