@@ -33,6 +33,6 @@ session AWN (AFP) = HOL +
     Toy
 
   document_files
+    "mathpartir.sty"
     "root.bib"
     "root.tex"
-
