@@ -9,6 +9,6 @@ session CryptoBasedCompositionalProperties (AFP) = "HOL" +
     Secrecy
     CompLocalSecrets
     KnowledgeKeysSecrets
-  document_files 
-	  "root.bib"
+  document_files
+    "root.bib"
     "root.tex"

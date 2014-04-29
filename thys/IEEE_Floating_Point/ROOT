@@ -1,15 +1,12 @@
 chapter AFP
 
 session IEEE_Floating_Point (AFP) = HOL +
-
   options [timeout = 3600]
-
   theories
     IEEE
     FloatProperty
     RoundError
     Code_Float
-    
   document_files
     "root.bib"
     "root.tex"

@@ -16,7 +16,6 @@ session KAT_and_DRA (AFP) = HOL +
     "SingleSorted/Verification_Tool_Proto"
     "TwoSorted/KAT2"
     "TwoSorted/DRAT2"
-	
   document_files
     "root.tex"
     "root.bib"
