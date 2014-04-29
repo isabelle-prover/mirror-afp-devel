@@ -24,9 +24,9 @@ describes characteristics of both list and heap.
 
 locale Collection = 
   fixes empty :: "'b"
-	-- {* -- Represents empty element of the object (for example, for list it is $[]$) *}
+  -- {* -- Represents empty element of the object (for example, for list it is $[]$) *}
   fixes is_empty :: "'b \<Rightarrow> bool"
-	-- {* -- Function that checks weather the object is empty or not *}
+  -- {* -- Function that checks weather the object is empty or not *}
   fixes of_list :: "'a list \<Rightarrow> 'b"
   -- {* -- Function transforms given list to desired object (for example, 
     for heap sort, function {\em of\_list} transforms list to heap) *}
