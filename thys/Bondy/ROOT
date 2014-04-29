@@ -4,3 +4,6 @@ session Bondy (AFP) = HOL +
   options [timeout = 600]
   theories
     Bondy
+  document_files
+    "root.bib"
+    "root.tex"

@@ -6,3 +6,7 @@ session Possibilistic_Noninterference (AFP) = HOL +
     Interface
   theories
     Concrete
+  document_files
+    "intro.tex"
+    "root.bib"
+    "root.tex"

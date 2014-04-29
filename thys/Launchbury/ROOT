@@ -4,3 +4,8 @@ session Launchbury (AFP) = "Nominal2" +
   options [document_graph]
   theories
     "Everything"
+  document_files
+    "map.tex"
+    "mathpartir.sty"
+    "root.bib"
+    "root.tex"
