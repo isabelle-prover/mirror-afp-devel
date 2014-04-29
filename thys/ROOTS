@@ -26,6 +26,7 @@ Coinductive_Languages
 Collections
 Compiling-Exceptions-Correctly
 Completeness
+ComponentDependencies
 Containers
 CoreC++
 CryptoBasedCompositionalProperties

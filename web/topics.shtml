@@ -142,8 +142,7 @@
 <a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-<strong>Logics:</strong>&nbsp;<a href="entries/Circus.shtml">Circus</a> &nbsp;
-<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
+<strong>Logics:</strong>&nbsp;<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
 <a href="entries/Automatic_Refinement.shtml">Automatic_Refinement</a> &nbsp;
 <a href="entries/MonoBoolTranAlgebra.shtml">MonoBoolTranAlgebra</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
@@ -170,6 +169,13 @@
 <strong>Transformations:</strong>&nbsp;<a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
+</div>
+
+<h3>System Description Languages</h3>
+
+<div class="list">
+<a href="entries/Circus.shtml">Circus</a> &nbsp;
+<a href="entries/ComponentDependencies.shtml">ComponentDependencies</a> &nbsp;
 </div>
 
 <h3>Security</h3>

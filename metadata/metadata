@@ -132,7 +132,7 @@ abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrar
 title = Isabelle/Circus
 author = Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Marie-Claude Gaudel <mailto:mcg@lri.fr>
 date = 2012-05-27
-topic = Computer Science/Process Calculi, Computer Science/Programming Languages/Logics
+topic = Computer Science/Process Calculi, Computer Science/System Description Languages
 abstract = The Circus specification language combines elements for complex data and behavior specifications, using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's Unifying Theories of Programming (UTP). Isabelle/Circus is a formalization of the UTP and the Circus language in Isabelle/HOL. It contains proof rules and tactic support that allows for proofs of refinement for Circus processes (involving both data and behavioral aspects).
  <p>
  The Isabelle/Circus environment supports a syntax for the semantic definitions which is close to textbook presentations of Circus. This article contains an extended version of corresponding VSTTE Paper together with the complete formal development of its underlying commented theories.
@@ -1288,6 +1288,15 @@ topic = Computer Science/Security
 ignore = entry
 abstract = In this contribution, we show how correctness proofs for <a href="Slicing.shtml">intra-</a> and <a href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove that slicing is able to guarantee information flow noninterference.  Moreover, we also illustrate how to lift the control flow graphs of the respective frameworks such that they fulfil the additional assumptions needed in the noninterference proofs. A detailed description of the intraprocedural proof and its interplay with the slicing framework can be found in the PLAS'09 paper by Wasserrab et al.
 depends-on = Slicing, HRB-Slicing
+
+
+[ComponentDependencies]
+title = Formalisation and Analysis of Component Dependencies
+author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
+date = 2014-04-28
+topic = Computer Science/System Description Languages
+abstract = This set of theories presents a formalisation in Isabelle/HOL of data dependencies between components. The approach allows to analyse system structure oriented towards efficient checking of system: it aims at elaborating for a concrete system, which parts of the system are necessary to check a given property.
+
 
 [Verified-Prover]
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
