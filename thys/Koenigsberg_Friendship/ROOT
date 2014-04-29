@@ -16,9 +16,8 @@ session Koenigsberg_Friendship (AFP) = Koenigsberg_Friendship_Base +
 
 session Koenigsberg_Friendship_Base = HOL +
 
-  options [timeout = 3600]
-  
-  theories [document = false]
+  options [timeout = 3600, document = false]
+  theories
     "~~/src/HOL/Algebra/Congruence"
     "~~/src/HOL/Algebra/FiniteProduct"
     "~~/src/HOL/Algebra/Group"

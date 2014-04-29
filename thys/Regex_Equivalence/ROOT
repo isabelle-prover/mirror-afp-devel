@@ -15,6 +15,7 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "root.bib"
 
 session Regex_Equivalence_Examples (AFP) = Regex_Equivalence +
-  theories [document = false]
+  options [document = false]
+  theories
     Examples
     Benchmark
