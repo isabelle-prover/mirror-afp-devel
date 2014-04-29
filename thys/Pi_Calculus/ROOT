@@ -10,6 +10,6 @@ session Pi_Calculus (AFP) = "HOL-Nominal" +
     Weak_Early_Cong_Subst_Pres
     Strong_Late_Axiomatisation
     Weak_Early_Bisim_SC
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

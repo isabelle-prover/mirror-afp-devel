@@ -18,8 +18,8 @@ session WorkerWrapper (AFP) = HOLCF +
     Backtracking
     Nub
     Last
-  files
-    "document/haskell.sty"
-    "document/mathpartir.sty"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "haskell.sty"
+    "mathpartir.sty"
+    "root.bib"
+    "root.tex"

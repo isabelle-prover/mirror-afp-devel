@@ -19,4 +19,4 @@ session WHATandWHERE_Security (AFP) = HOL +
     Type_System 
     Type_System_example 
     Up_To_Technique
-  files "document/root.bib" "document/root.tex"
+  document_files "root.bib" "root.tex"

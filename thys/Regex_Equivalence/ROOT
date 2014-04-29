@@ -10,9 +10,9 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "~~/src/Tools/Permanent_Interpretation"
   theories
     Regex_Equivalence
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"
 
 session Regex_Equivalence_Examples (AFP) = Regex_Equivalence +
   theories [document = false]

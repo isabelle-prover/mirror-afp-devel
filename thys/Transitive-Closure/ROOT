@@ -10,6 +10,6 @@ session "Transitive-Closure" (AFP) = Collections +
     Transitive_Closure_List_Impl
     RBT_Map_Set_Extension
     Transitive_Closure_RBT_Impl
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

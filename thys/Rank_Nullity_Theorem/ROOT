@@ -4,5 +4,5 @@ session "Rank_Nullity_Theorem" (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 600]
   theories
     Dim_Formula
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

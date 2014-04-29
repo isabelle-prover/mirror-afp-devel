@@ -14,6 +14,6 @@ session Inductive_Confidentiality (AFP) = HOL +
     "GeneralAttacker/NS_Public_Bad_GA"
     "GeneralAttacker/ConfidentialityGA"
     "GeneralAttacker/Knowledge"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

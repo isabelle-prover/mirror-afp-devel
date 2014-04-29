@@ -4,5 +4,5 @@ session FFT (AFP) = HOL +
   options [timeout = 600]
   theories
     FFT
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

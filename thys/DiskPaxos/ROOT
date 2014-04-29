@@ -4,13 +4,13 @@ session DiskPaxos (AFP) = HOL +
   options [timeout = 600]
   theories
     DiskPaxos
-  files
-    "document/DiskPaxos.pdf"
-    "document/DiskPaxos.ps"
-    "document/abbrev.sty"
-    "document/body.tex"
-    "document/pf.sty"
-    "document/root.bib"
-    "document/root.tex"
-    "document/tla.sty"
-    "document/tlaspec.tex"
+  document_files
+    "DiskPaxos.pdf"
+    "DiskPaxos.ps"
+    "abbrev.sty"
+    "body.tex"
+    "pf.sty"
+    "root.bib"
+    "root.tex"
+    "tla.sty"
+    "tlaspec.tex"

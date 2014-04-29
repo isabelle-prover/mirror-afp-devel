@@ -5,6 +5,6 @@ session BytecodeLogicJmlTypes (AFP) = HOL +
   theories
     Sound
     Cachera
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

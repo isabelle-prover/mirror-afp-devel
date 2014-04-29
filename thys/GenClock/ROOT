@@ -4,7 +4,7 @@ session GenClock (AFP) = HOL +
   options [timeout = 600]
   theories
     GenClock
-  files
-    "document/fullpage.sty"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "fullpage.sty"
+    "root.bib"
+    "root.tex"

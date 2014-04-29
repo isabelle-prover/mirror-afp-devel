@@ -7,6 +7,6 @@ session Datatype_Order_Generator (AFP) = "HOL-Library" +
   theories
     Derive
     Derive_Examples 
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

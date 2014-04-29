@@ -5,6 +5,6 @@ session "ShortestPath" (AFP) = Graph_Theory +
   theories
     ShortestPath
     ShortestPathNeg
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

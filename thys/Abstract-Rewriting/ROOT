@@ -11,6 +11,6 @@ session "Abstract-Rewriting" (AFP) = HOL +
     Relative_Rewriting
     SN_Orders
     SN_Order_Carrier
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

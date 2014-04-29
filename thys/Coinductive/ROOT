@@ -18,5 +18,5 @@ session Coinductive (AFP) = "HOL-Library" +
     Coinductive
     Lazy_TLList
     "Examples/Coinductive_Examples"
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

@@ -5,6 +5,6 @@ session ArrowImpossibilityGS (AFP) = "HOL-Library" +
   theories
     "Thys/Arrow_Utility"
     "Thys/GS"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

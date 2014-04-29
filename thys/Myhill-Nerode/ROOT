@@ -8,6 +8,6 @@ session "Myhill-Nerode" (AFP) = "HOL-Library" +
     "../Regular-Sets/Derivatives"
   theories
     Closures2
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

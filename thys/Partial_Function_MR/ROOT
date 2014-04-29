@@ -6,6 +6,6 @@ session Partial_Function_MR (AFP) = HOL +
    "~~/src/HOL/Library/Monad_Syntax"
   theories
     Partial_Function_MR_Examples
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

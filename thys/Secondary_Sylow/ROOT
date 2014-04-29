@@ -6,4 +6,4 @@ session Secondary_Sylow (AFP) = "HOL-Algebra" +
     GroupAction
     SubgroupConjugation
     SndSylow
-  files "document/root.tex"
+  document_files "root.tex"

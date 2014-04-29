@@ -7,6 +7,6 @@ session DataRefinementIBP (AFP) = HOL +
     "../LatticeProperties/Conj_Disj"
   theories
     DataRefinement
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

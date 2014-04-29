@@ -8,6 +8,6 @@ session Separation_Algebra (AFP) = "HOL-Word" +
     "ex/VM_Example"
     Sep_Eq
     "ex/capDL/Separation_D"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

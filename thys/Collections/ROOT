@@ -144,11 +144,11 @@ session Collections (AFP) = Refine_Monadic +
   theories [document = false] (* Just in case we forgot something *)
     "Examples/Collection_Examples"
 
-  files
-    "document/conclusion.tex"
-    "document/documentation.tex"
-    "document/intro.tex"
-    "document/root.bib"
-    "document/root.tex"
-    "document/root_userguide.bib"
-    "document/root_userguide.tex"
+  document_files
+    "conclusion.tex"
+    "documentation.tex"
+    "intro.tex"
+    "root.bib"
+    "root.tex"
+    "root_userguide.bib"
+    "root_userguide.tex"

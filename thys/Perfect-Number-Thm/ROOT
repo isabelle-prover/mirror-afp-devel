@@ -4,6 +4,6 @@ session "Perfect-Number-Thm" (AFP) = HOL +
   options [timeout = 600]
   theories
     Perfect
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

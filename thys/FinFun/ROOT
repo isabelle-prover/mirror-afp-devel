@@ -4,5 +4,5 @@ session FinFun (AFP) = HOL +
   options [timeout = 600, document_graph]
   theories
     FinFunPred
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

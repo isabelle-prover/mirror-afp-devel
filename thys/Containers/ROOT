@@ -15,9 +15,9 @@ session Containers (AFP) = "Datatype_Order_Generator" +
     Containers_Userguide
   theories [document = false]
     Card_Datatype_Ex
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"
 
 session "Containers-Benchmarks" (AFP) = Containers +
   options [timeout = 600, document = false]

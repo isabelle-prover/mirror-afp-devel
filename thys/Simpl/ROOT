@@ -4,7 +4,7 @@ session Simpl (AFP) = HOL +
   options [timeout = 600, document_graph]
   theories
     Simpl
-  files
-    "document/mathpartir.sty"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "mathpartir.sty"
+    "root.bib"
+    "root.tex"

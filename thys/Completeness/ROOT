@@ -17,5 +17,5 @@ session Completeness (AFP) = "HOL-Library" +
     Tree
     Completeness
     Soundness
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

@@ -6,6 +6,6 @@ session "Max-Card-Matching" (AFP) = HOL +
     Parity
   theories
     Matching
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

@@ -18,6 +18,6 @@ session Dijkstra_Shortest_Path (AFP) = Refine_Monadic +
     Dijkstra_Impl
     Dijkstra_Impl_Adet
     Test
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

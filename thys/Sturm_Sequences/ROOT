@@ -13,4 +13,4 @@ session Sturm_Sequences (AFP) = HOL +
   theories
     Sturm_Theorem Sturm_Method
     "Examples/Sturm_Ex"
-  files "document/root.tex"
+  document_files "root.tex"

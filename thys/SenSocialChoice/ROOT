@@ -6,6 +6,6 @@ session SenSocialChoice (AFP) = HOL +
     Arrow
     Sen
     May
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

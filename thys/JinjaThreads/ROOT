@@ -6,6 +6,6 @@ session JinjaThreads (AFP) = "HOL-Word" +
     "Basic/Basic_Main"
   theories
     JinjaThreads
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

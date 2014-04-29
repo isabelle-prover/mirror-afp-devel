@@ -12,6 +12,6 @@ session Tail_Recursive_Functions (AFP) = "HOL-Library" +
     CaseStudy1
     CaseStudy2
     
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

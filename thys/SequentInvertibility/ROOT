@@ -6,9 +6,9 @@ session SequentInvertibility (AFP) = "HOL-Nominal" +
     "~~/src/HOL/Library/Multiset"
   theories
     SequentInvertibility
-  files
-    "document/llncs.cls"
-    "document/proof.sty"
-    "document/root.bib"
-    "document/root.tex"
-    "document/stmaryrd.dtx"
+  document_files
+    "llncs.cls"
+    "proof.sty"
+    "root.bib"
+    "root.tex"
+    "stmaryrd.dtx"

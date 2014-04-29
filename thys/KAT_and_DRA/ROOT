@@ -17,6 +17,6 @@ session KAT_and_DRA (AFP) = HOL +
     "TwoSorted/KAT2"
     "TwoSorted/DRAT2"
 	
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"

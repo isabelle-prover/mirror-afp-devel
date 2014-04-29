@@ -12,6 +12,6 @@ session PCF (AFP) = HOLCF +
     PCF
     OpSem
     Continuations
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

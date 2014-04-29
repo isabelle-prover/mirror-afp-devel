@@ -10,6 +10,6 @@ session ClockSynchInst (AFP) = HOL +
   theories
     ICAInstance
     LynchInstance
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

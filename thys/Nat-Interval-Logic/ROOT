@@ -6,5 +6,5 @@ session "Nat-Interval-Logic" (AFP) = "List-Infinite" +
     IL_Interval
     IL_IntervalOperators
     IL_TemporalOperators
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

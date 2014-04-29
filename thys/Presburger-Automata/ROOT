@@ -8,6 +8,6 @@ session "Presburger-Automata" (AFP) = "HOL-Library" +
     Presburger_Automata
   theories [document = false]
     Exec (* Code Generation *)
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

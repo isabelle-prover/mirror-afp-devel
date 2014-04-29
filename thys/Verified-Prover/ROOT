@@ -4,6 +4,6 @@ session "Verified-Prover" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories
     Prover
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

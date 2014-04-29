@@ -7,10 +7,10 @@ session KBPs (AFP) = "HOL-Library" +
     List_local
   theories [show_question_marks = false, names_short]
     KBPs_Main
-  files
-    "document/MC.pdf"
-    "document/Robot.pdf"
-    "document/robot_clock.pdf"
-    "document/robot_spr.pdf"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "MC.pdf"
+    "Robot.pdf"
+    "robot_clock.pdf"
+    "robot_spr.pdf"
+    "root.bib"
+    "root.tex"

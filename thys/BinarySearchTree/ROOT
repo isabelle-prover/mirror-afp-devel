@@ -6,5 +6,5 @@ session BinarySearchTree (AFP) = HOL +
     BinaryTree
     BinaryTree_Map
     BinaryTree_TacticStyle
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

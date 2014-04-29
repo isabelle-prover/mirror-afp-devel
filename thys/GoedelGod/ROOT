@@ -2,4 +2,4 @@ chapter AFP
 
 session "GoedelGod" (AFP) = "HOL" +
   theories GoedelGod
-  files "document/root.tex"
+  document_files "root.tex"

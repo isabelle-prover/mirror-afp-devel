@@ -4,5 +4,5 @@ session Ordinal (AFP) = HOL +
   options [timeout = 600]
   theories
     Ordinal
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

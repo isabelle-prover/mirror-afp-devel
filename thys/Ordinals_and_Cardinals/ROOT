@@ -4,5 +4,5 @@ session Ordinals_and_Cardinals (AFP) = "HOL-Cardinals" +
   options [timeout = 600]
   theories
     Cardinal_Order_Relation_discontinued
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

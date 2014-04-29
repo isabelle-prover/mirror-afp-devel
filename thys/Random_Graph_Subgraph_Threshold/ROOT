@@ -7,5 +7,5 @@ session "Random_Graph_Subgraph_Threshold" (AFP) = "HOL-Probability" +
     "../Girth_Chromatic/Girth_Chromatic_Misc"
   theories
     Subgraph_Threshold
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

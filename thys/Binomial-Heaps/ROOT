@@ -8,6 +8,6 @@ session "Binomial-Heaps" (AFP) = "HOL-Library" +
   theories [document = false]
     (* Keep these in, they are to early detect problems with the code generator *)
     Test 
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

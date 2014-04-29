@@ -13,4 +13,4 @@ session "Selection_Heap_Sort" (AFP) = "HOL-Library" +
     Heap
     HeapFunctional
     HeapImperative
-  files "document/root.tex"
+  document_files "root.tex"

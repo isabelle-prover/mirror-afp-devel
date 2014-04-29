@@ -12,5 +12,5 @@ session "Free-Groups" (AFP) = HOL +
     FreeGroups
     Isomorphisms
     PingPongLemma
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

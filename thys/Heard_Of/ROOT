@@ -23,6 +23,6 @@ session Heard_Of (AFP) = HOL +
     "ate/AteProof"
     "eigbyz/EigbyzProof"
 
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

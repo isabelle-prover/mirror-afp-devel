@@ -9,6 +9,6 @@ session "Decreasing-Diagrams" (AFP) = "Abstract-Rewriting" +
   theories
     Decreasing_Diagrams
     
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

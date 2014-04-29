@@ -4,5 +4,5 @@ session "List-Index" (AFP) = HOL +
   options [timeout = 600]
   theories
     List_Index
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

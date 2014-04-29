@@ -7,6 +7,6 @@ session "Program-Conflict-Analysis" (AFP) = "HOL-Library" +
     Interleave
   theories
     MainResult
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

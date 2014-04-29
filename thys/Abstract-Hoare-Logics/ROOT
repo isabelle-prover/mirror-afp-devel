@@ -6,6 +6,6 @@ session "Abstract-Hoare-Logics" (AFP) = HOL +
     "While/HoareTotal"
     "Proc/PHoareTotal"
     "Procs/PsHoareTotal"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

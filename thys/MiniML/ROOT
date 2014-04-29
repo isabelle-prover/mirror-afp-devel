@@ -4,6 +4,6 @@ session MiniML (AFP) = HOL +
   options [timeout = 600]
   theories
     W
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

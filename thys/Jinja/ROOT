@@ -8,7 +8,7 @@ session Jinja (AFP) = HOL +
     "~~/src/HOL/Library/Code_Target_Numeral"
   theories
     Jinja
-  files
-    "document/introduction.tex"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "introduction.tex"
+    "root.bib"
+    "root.tex"

@@ -8,6 +8,6 @@ session Affine_Arithmetic (AFP) = "HOL-Multivariate_Analysis" +
     "~~/src/HOL/Library/Float"
   theories
     Affine_Arithmetic
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

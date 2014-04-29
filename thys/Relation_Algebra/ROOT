@@ -13,6 +13,6 @@ session Relation_Algebra (AFP) = Kleene_Algebra +
     Relation_Algebra_RTC
     Relation_Algebra_Models
 
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

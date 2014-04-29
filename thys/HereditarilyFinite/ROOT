@@ -7,6 +7,6 @@ session HereditarilyFinite (AFP) = HOL +
     "~~/src/HOL/Library/Nat_Bijection"
   theories
     Rank Finite_Automata
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

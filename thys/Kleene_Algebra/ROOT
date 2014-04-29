@@ -18,6 +18,6 @@ session "Kleene_Algebra" (AFP) = "HOL-Word" +
     Formal_Power_Series
     Inf_Matrix
 
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

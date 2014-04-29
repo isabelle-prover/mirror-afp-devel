@@ -4,7 +4,7 @@ session "CoreC++" (AFP) = "HOL-Library" +
   options [timeout = 1200]
   theories
     "CoreC++"
-  files
-    "document/corec++.png"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "corec++.png"
+    "root.bib"
+    "root.tex"

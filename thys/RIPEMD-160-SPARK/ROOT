@@ -35,6 +35,6 @@ session "RIPEMD-160-SPARK" (AFP) = "HOL-Word" +
     S_R_Spark_Obligation
     Round_Obligation
     Hash_Obligation
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

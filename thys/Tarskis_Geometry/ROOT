@@ -6,6 +6,6 @@ session "Tarskis_Geometry" (AFP) = "HOL-Multivariate_Analysis" +
     "~~/src/HOL/Algebra/Group"
   theories
     Hyperbolic_Tarski
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

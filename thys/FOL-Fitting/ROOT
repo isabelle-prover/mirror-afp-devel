@@ -4,9 +4,9 @@ session "FOL-Fitting" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories
     FOL_Fitting
-  files
-    "document/diag.eps"
-    "document/diag.fig"
-    "document/diag.pdf"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "diag.eps"
+    "diag.fig"
+    "diag.pdf"
+    "root.bib"
+    "root.tex"

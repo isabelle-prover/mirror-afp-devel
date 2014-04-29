@@ -15,6 +15,6 @@ session "Lehmer" (AFP) = "HOL-Number_Theory" +
   theories
     Lehmer
 
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"

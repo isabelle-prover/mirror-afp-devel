@@ -13,8 +13,8 @@ session "Tree-Automata" (AFP) = Refine_Monadic +
     (* Code Generation *)
     Ta_impl_codegen
 
-  files
-    "document/conclusion.tex"
-    "document/intro.tex"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "conclusion.tex"
+    "intro.tex"
+    "root.bib"
+    "root.tex"

@@ -4,5 +4,5 @@ session "Robbins-Conjecture" (AFP) = HOL +
   options [timeout = 600]
   theories
     Robbins_Conjecture
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

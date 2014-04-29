@@ -7,8 +7,8 @@ session Abortable_Linearizable_Modules (AFP) = HOLCF +
     "~~/src/HOL/HOLCF/IOA/meta_theory/IOA"
   theories
     CompositionCorrectness
-  files
-    "document/abstract.tex"
-    "document/introduction.tex"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "abstract.tex"
+    "introduction.tex"
+    "root.bib"
+    "root.tex"

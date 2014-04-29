@@ -7,6 +7,6 @@ session "Pratt_Certificate" (AFP) = "Lehmer" +
   theories
     Pratt_Certificate
 
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"

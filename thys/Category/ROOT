@@ -9,6 +9,6 @@ session Category (AFP) = "HOL-Library" +
     HomFunctors
     NatTrans
     Yoneda
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

@@ -4,6 +4,6 @@ session "Flyspeck-Tame" (AFP) = "HOL-Library" +
   options [timeout = 86400]
   theories
     Completeness
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

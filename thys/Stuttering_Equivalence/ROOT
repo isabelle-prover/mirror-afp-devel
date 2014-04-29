@@ -6,6 +6,6 @@ session Stuttering_Equivalence (AFP) = HOL +
     Samplers
     StutterEquivalence
     PLTL
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

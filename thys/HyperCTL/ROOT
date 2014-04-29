@@ -5,6 +5,6 @@ session "HyperCTL" (AFP) = "HOL" +
     "~~/src/HOL/BNF_Examples/Stream"
   theories
     HyperCTL
-  files 
-    "document/root.tex"
-    "document/intro.tex"
+  document_files 
+    "root.tex"
+    "intro.tex"

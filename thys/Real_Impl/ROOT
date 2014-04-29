@@ -14,6 +14,6 @@ session Real_Impl (AFP) = Cauchy +
     "../Sqrt_Babylonian/Sqrt_Babylonian"
   theories
     Real_Unique_Impl
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

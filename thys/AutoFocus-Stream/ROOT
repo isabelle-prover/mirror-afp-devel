@@ -8,5 +8,5 @@ session "AutoFocus-Stream" (AFP) = "Nat-Interval-Logic" +
     AF_Stream_Exec
     IL_AF_Stream
     IL_AF_Stream_Exec
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

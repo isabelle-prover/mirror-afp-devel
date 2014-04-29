@@ -9,9 +9,9 @@ session Koenigsberg_Friendship (AFP) = Koenigsberg_Friendship_Base +
     KoenigsbergBridge
     FriendshipTheory
     
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"
 
 
 session Koenigsberg_Friendship_Base = HOL +

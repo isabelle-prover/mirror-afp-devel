@@ -4,5 +4,5 @@ session Lower_Semicontinuous (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 600]
   theories
     Lower_Semicontinuous
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

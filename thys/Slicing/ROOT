@@ -4,5 +4,5 @@ session Slicing (AFP) = Jinja +
   options [timeout = 3600, document_graph]
   theories
     Slicing
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

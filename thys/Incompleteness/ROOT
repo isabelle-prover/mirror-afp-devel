@@ -10,6 +10,6 @@ session Incompleteness (AFP) = HOL +
   theories
     Goedel_I
     Goedel_II
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

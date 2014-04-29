@@ -5,6 +5,6 @@ session VolpanoSmith (AFP) = HOL +
   theories
     secTypes
     Execute
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

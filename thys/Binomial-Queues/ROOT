@@ -4,7 +4,7 @@ session "Binomial-Queues" (AFP) = HOL +
   options [timeout = 600]
   theories
     PQ_Implementation
-  files
-    "document/haftmann.sty"
-    "document/llncs.cls"
-    "document/root.tex"
+  document_files
+    "haftmann.sty"
+    "llncs.cls"
+    "root.tex"

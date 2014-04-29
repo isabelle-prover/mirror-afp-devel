@@ -8,6 +8,6 @@ session Sqrt_Babylonian (AFP) = Cauchy +
     "../Real_Impl/NthRoot_Impl"
   theories
     Sqrt_Babylonian
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

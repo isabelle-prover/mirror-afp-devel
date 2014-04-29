@@ -13,6 +13,6 @@ session "Ribbon_Proofs" (AFP) = "HOL-Library" +
     Ribbons_Stratified
     Ribbons_Graphical
     Ribbons_Graphical_Soundness
-  files 
-    "document/root.tex"
-    "document/root.bib"
+  document_files 
+    "root.tex"
+    "root.bib"

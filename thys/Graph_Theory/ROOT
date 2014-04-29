@@ -7,6 +7,6 @@ session "Graph_Theory" (AFP) = "HOL" +
     "~~/src/HOL/Library/Extended_Real"
   theories
     Graph_Theory
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"

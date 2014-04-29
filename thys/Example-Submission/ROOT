@@ -18,6 +18,6 @@ session "Example-Submission" (AFP) = HOL +
     Submission
     
 (* Dependencies on non-Isabelle files: *)
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

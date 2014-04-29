@@ -5,8 +5,8 @@ session Integration (AFP) = HOL +
   theories
     Integral
     Failure
-  files
-    "document/intro.tex"
-    "document/outro.tex"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "intro.tex"
+    "outro.tex"
+    "root.bib"
+    "root.tex"

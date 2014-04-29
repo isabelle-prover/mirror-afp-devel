@@ -4,5 +4,5 @@ session "List-Infinite" (AFP) = "HOL-Library" +
   options [timeout = 600, document_graph]
   theories
     ListInfinite
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

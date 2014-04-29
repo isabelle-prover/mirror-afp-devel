@@ -4,6 +4,6 @@ session CCS (AFP) = "HOL-Nominal" +
   options [timeout = 600]
   theories
     Weak_Cong_Pres
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

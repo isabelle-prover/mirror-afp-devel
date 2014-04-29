@@ -4,7 +4,7 @@ session FeatherweightJava (AFP) = HOL +
   options [timeout = 600]
   theories
     Featherweight_Java
-  files
-    "document/fjsound.pdf"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "fjsound.pdf"
+    "root.bib"
+    "root.tex"

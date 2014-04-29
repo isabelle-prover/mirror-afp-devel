@@ -13,6 +13,6 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "ex/Zeroconf_Analysis"
     "ex/Gossip_Broadcast"
     "ex/Crowds_Protocol"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

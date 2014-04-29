@@ -5,6 +5,6 @@ session Psi_Calculi (AFP) = "HOL-Nominal" +
   theories
     Tau_Laws_Weak
     Tau_Laws_No_Weak
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

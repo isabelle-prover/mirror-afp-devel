@@ -5,6 +5,6 @@ session Fermat3_4 (AFP) = "HOL-Old_Number_Theory" +
   theories
     Fermat4
     Fermat3
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

@@ -17,6 +17,6 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Native_Cast
     Uint_Userguide
 
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"

@@ -11,8 +11,8 @@ session HotelKeyCards (AFP) = HOL +
     NewCard
     Trace
     Equivalence
-  files
-    "document/conclu.tex"
-    "document/intro.tex"
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "conclu.tex"
+    "intro.tex"
+    "root.bib"
+    "root.tex"

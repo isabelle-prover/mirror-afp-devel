@@ -29,7 +29,7 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
     Kruskal_Terms
     Kruskal_Finite
     Wpo_Kruskal_Terms
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"
 

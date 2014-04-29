@@ -10,6 +10,6 @@ session IEEE_Floating_Point (AFP) = HOL +
     RoundError
     Code_Float
     
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

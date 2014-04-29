@@ -9,6 +9,6 @@ session Abstract_Completeness (AFP) = "HOL" +
   theories
     Abstract_Completeness
     Propositional_Logic
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"

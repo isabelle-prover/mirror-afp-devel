@@ -26,6 +26,6 @@ session Ordinary_Differential_Equations (AFP) = "HOL-Multivariate_Analysis" +
   theories [document = false]
     "Library/Higher_Derivative"
     "Library/Multivariate_Taylor"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

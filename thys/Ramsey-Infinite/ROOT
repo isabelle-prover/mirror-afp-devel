@@ -4,5 +4,5 @@ session "Ramsey-Infinite" (AFP) = HOL +
   options [timeout = 600]
   theories
     Ramsey
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

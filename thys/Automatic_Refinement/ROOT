@@ -25,5 +25,5 @@ session Automatic_Refinement (AFP) = HOL +
       "Autoref_Bindings_HOL"
       "Automatic_Refinement"
   
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

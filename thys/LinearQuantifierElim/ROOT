@@ -15,6 +15,6 @@ session LinearQuantifierElim (AFP) = "HOL-Library" +
   theories [document = false]
     "Thys/CertDlo"
     "Thys/CertLin"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

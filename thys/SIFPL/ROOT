@@ -6,6 +6,6 @@ session SIFPL (AFP) = HOL +
     ContextVS
     HuntSands
     ContextOBJ
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

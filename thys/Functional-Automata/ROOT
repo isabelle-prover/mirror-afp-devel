@@ -6,6 +6,6 @@ session "Functional-Automata" (AFP) = "HOL-Library" +
     "../Regular-Sets/Regular_Exp"
   theories
     Functional_Automata
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

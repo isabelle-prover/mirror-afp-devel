@@ -6,7 +6,7 @@ session Probabilistic_Noninterference (AFP) = "HOL-Probability" +
   theories
     Trace_Based
     Concrete
-  files
-    "document/root.tex"
-    "document/root.bib"
+  document_files
+    "root.tex"
+    "root.bib"
 

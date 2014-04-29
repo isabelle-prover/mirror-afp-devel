@@ -6,5 +6,5 @@ session "Locally-Nameless-Sigma" (AFP) = HOL +
     "~~/src/HOL/Proofs/Lambda/Commutation"
   theories
     Locally_Nameless_Sigma
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

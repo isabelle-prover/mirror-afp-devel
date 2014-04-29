@@ -10,6 +10,6 @@ session Refine_Monadic (AFP) = Automatic_Refinement +
   theories
     Refine_Monadic
     "examples/Examples"
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"
