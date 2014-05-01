@@ -6,7 +6,7 @@ session "Native_Word" (AFP) = "HOL-Word" +
     "~~/src/HOL/Library/Code_Char"
 
   theories
-    Bits_Int
+    More_Bits_Int
     Bits_Integer
     Code_Target_Bits_Int
     Word_Misc
