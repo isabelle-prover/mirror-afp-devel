@@ -4,7 +4,7 @@ header "Connection Between Derivatives and Partial Derivatives"
 
 (*<*)
 theory Deriv_PDeriv
-imports Derivatives_Finite "~~/src/HOL/BNF/Ctr_Sugar"
+imports Derivatives_Finite
 begin
 (*>*)
 

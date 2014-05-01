@@ -5,7 +5,7 @@ header {* Linear Time Optimization for ``Mark Before Atom'' (for a Fixed Alphabe
 (*<*)
 theory Before2
 imports
-  Position_Autos "~~/src/HOL/BNF/Ctr_Sugar"
+  Position_Autos
 begin
 (*>*)
 

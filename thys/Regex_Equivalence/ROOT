@@ -6,7 +6,6 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "../Regular-Sets/Derivatives"
     "../Regular-Sets/Regular_Exp"
     "../Regular-Sets/NDerivative"
-    "~~/src/HOL/BNF/Ctr_Sugar"
     "~~/src/Tools/Permanent_Interpretation"
   theories
     Regex_Equivalence

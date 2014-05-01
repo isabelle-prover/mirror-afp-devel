@@ -5,7 +5,7 @@ header {* Linear Time Optimization for ``Mark After Atom'' *}
 (*<*)
 theory After2
 imports
-  Position_Autos "~~/src/HOL/BNF/Ctr_Sugar"
+  Position_Autos
 begin
 (*>*)
 
