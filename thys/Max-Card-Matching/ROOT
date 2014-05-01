@@ -2,8 +2,6 @@ chapter AFP
 
 session "Max-Card-Matching" (AFP) = HOL +
   options [timeout = 600]
-  theories [document = false]
-    Parity
   theories
     Matching
   document_files
