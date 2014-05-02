@@ -511,7 +511,7 @@ subsection{*The base cases: ground atomic formulas *}
 
 lemma ground_prove:
    "\<lbrakk>size t + size u < n; ground t; ground u\<rbrakk>
-    \<Longrightarrow> (\<lbrakk>t\<rbrakk>e \<le> \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t SUBS u) \<and> (\<lbrakk>t\<rbrakk>e ⋿ \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t IN u)"
+    \<Longrightarrow> (\<lbrakk>t\<rbrakk>e \<le> \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t SUBS u) \<and> (\<lbrakk>t\<rbrakk>e \<^bold>\<in> \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t IN u)"
 proof (induction n arbitrary: t u rule: less_induct)
   case (less n t u)
   show ?case
@@ -524,7 +524,7 @@ proof (induction n arbitrary: t u rule: less_induct)
            \<Longrightarrow> {} \<turnstile> t EQ u"
         by (metis Equality_I less.IH nat_add_commute order_refl)
     }
-    thus "\<lbrakk>t\<rbrakk>e ⋿ \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t IN u" using less.prems
+    thus "\<lbrakk>t\<rbrakk>e \<^bold>\<in> \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t IN u" using less.prems
       by (cases u rule: tm.exhaust) (auto simp: Mem_Eats_I1 Mem_Eats_I2 less.IH)
   qed
 qed
@@ -532,7 +532,7 @@ qed
 lemma 
   assumes "ground t" "ground u"
     shows ground_prove_SUBS: "\<lbrakk>t\<rbrakk>e \<le> \<lbrakk>u\<rbrakk>e \<Longrightarrow> {} \<turnstile> t SUBS u"
-      and ground_prove_IN:   "\<lbrakk>t\<rbrakk>e ⋿ \<lbrakk>u\<rbrakk>e \<Longrightarrow> {} \<turnstile> t IN u"
+      and ground_prove_IN:   "\<lbrakk>t\<rbrakk>e \<^bold>\<in> \<lbrakk>u\<rbrakk>e \<Longrightarrow> {} \<turnstile> t IN u"
       and ground_prove_EQ:   "\<lbrakk>t\<rbrakk>e = \<lbrakk>u\<rbrakk>e \<Longrightarrow> {} \<turnstile> t EQ u"
   by (metis Equality_I assms ground_prove [OF lessI] order_refl)+
 

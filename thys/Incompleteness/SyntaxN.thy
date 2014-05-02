@@ -163,7 +163,7 @@ translations
 
 nominal_primrec eval_fm :: "(name, hf) finfun \<Rightarrow> fm \<Rightarrow> bool"
   where
-   "eval_fm e (t IN u) \<longleftrightarrow> \<lbrakk>t\<rbrakk>e ⋿ \<lbrakk>u\<rbrakk>e"
+   "eval_fm e (t IN u) \<longleftrightarrow> \<lbrakk>t\<rbrakk>e \<^bold>\<in> \<lbrakk>u\<rbrakk>e"
  | "eval_fm e (t EQ u) \<longleftrightarrow> \<lbrakk>t\<rbrakk>e = \<lbrakk>u\<rbrakk>e"
  | "eval_fm e (A OR B) \<longleftrightarrow> eval_fm e A \<or> eval_fm e B"
  | "eval_fm e (Neg A) \<longleftrightarrow> (~ eval_fm e A)"
@@ -403,14 +403,14 @@ abbreviation
 
 subsection{*The HF axioms*}
 
-definition HF1 :: fm where  --{*the axiom @{term"z=0 \<longleftrightarrow> (\<forall>x. \<not> x ⋿ z)"}*}
+definition HF1 :: fm where  --{*the axiom @{term"z=0 \<longleftrightarrow> (\<forall>x. \<not> x \<^bold>\<in> z)"}*}
   "HF1 = (Var X0 EQ Zero) IFF (All X1 (Neg (Var X1 IN Var X0)))"
 
 lemma HF1_holds: "eval_fm e HF1"
   by (auto simp: HF1_def)
 
 
-definition HF2 :: fm where  --{*the axiom @{term"z = x \<triangleleft> y \<longleftrightarrow> (\<forall>u. u ⋿ z \<longleftrightarrow> u ⋿ x | u=y)"}*}
+definition HF2 :: fm where  --{*the axiom @{term"z = x \<triangleleft> y \<longleftrightarrow> (\<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x | u=y)"}*}
   "HF2 \<equiv> Var X0 EQ Eats (Var X1) (Var X2) IFF
           All X3 (Var X3 IN Var X0 IFF Var X3 IN Var X1 OR Var X3 EQ Var X2)"
 

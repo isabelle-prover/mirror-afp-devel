@@ -911,10 +911,10 @@ text{*To characterise the concept of a function using only bounded universal qua
 text{*See the note after the proof of Lemma 2.3.*}
 
 definition hfun_sigma where
- "hfun_sigma r \<equiv> \<forall>z ⋿ r. \<forall>z' ⋿ r. \<exists>x y x' y'. z = \<langle>x,y\<rangle> \<and> z' = \<langle>x',y'\<rangle> \<and> (x=x' \<longrightarrow> y=y')"
+ "hfun_sigma r \<equiv> \<forall>z \<^bold>\<in> r. \<forall>z' \<^bold>\<in> r. \<exists>x y x' y'. z = \<langle>x,y\<rangle> \<and> z' = \<langle>x',y'\<rangle> \<and> (x=x' \<longrightarrow> y=y')"
 
 definition hfun_sigma_ord where
- "hfun_sigma_ord r \<equiv> \<forall>z ⋿ r. \<forall>z' ⋿ r. \<exists>x y x' y'. z = \<langle>x,y\<rangle> \<and> z' = \<langle>x',y'\<rangle> \<and> Ord x \<and> Ord x' \<and> (x=x' \<longrightarrow> y=y')"
+ "hfun_sigma_ord r \<equiv> \<forall>z \<^bold>\<in> r. \<forall>z' \<^bold>\<in> r. \<exists>x y x' y'. z = \<langle>x,y\<rangle> \<and> z' = \<langle>x',y'\<rangle> \<and> Ord x \<and> Ord x' \<and> (x=x' \<longrightarrow> y=y')"
 
 nominal_primrec HFun_Sigma :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom z \<sharp> (r,z',x,y,x',y'); atom z' \<sharp> (r,x,y,x',y'); 
@@ -1009,7 +1009,7 @@ qed
     
 section {*The predicate @{text HDomain_Incl}*}
 
-text {*This is an internal version of @{term "\<forall>x ⋿ d. \<exists>y z. z ⋿ r \<and> z = \<langle>x,y\<rangle>"}. *}
+text {*This is an internal version of @{term "\<forall>x \<^bold>\<in> d. \<exists>y z. z \<^bold>\<in> r \<and> z = \<langle>x,y\<rangle>"}. *}
 
 nominal_primrec HDomain_Incl :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom x \<sharp> (r,d,y,z); atom y \<sharp> (r,d,z); atom z \<sharp> (r,d)\<rbrakk> \<Longrightarrow>
@@ -1228,7 +1228,7 @@ lemma hfun_sigma_iff: "hfun_sigma r \<longleftrightarrow> hfunction r \<and> hre
 lemma Seq_iff: "Seq r d \<longleftrightarrow> d \<le> hdomain r \<and> hfun_sigma r"
   by (auto simp: Seq_def hfun_sigma_iff)
 
-lemma LstSeq_iff: "LstSeq s k y \<longleftrightarrow> succ k \<le> hdomain s \<and> \<langle>k,y\<rangle> ⋿ s \<and> hfun_sigma_ord s"
+lemma LstSeq_iff: "LstSeq s k y \<longleftrightarrow> succ k \<le> hdomain s \<and> \<langle>k,y\<rangle> \<^bold>\<in> s \<and> hfun_sigma_ord s"
   by (auto simp: OrdDom_def LstSeq_def Seq_iff hfun_sigma_ord_iff)
 
 nominal_primrec LstSeqP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"

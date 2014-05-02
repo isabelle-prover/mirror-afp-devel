@@ -10,7 +10,7 @@ subsection{*Predicate form, defined on sequences*}
 
 definition SeqWR :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "SeqWR s k y \<equiv> LstSeq s k y \<and> app s 0 = 0 \<and>
-                        (\<forall>l ⋿ k. app s (succ l) = q_Eats (app s l) (app s l))"
+                        (\<forall>l \<^bold>\<in> k. app s (succ l) = q_Eats (app s l) (app s l))"
 
 nominal_primrec SeqWRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl); atom sl \<sharp> (s)\<rbrakk> \<Longrightarrow>

@@ -12,7 +12,7 @@ section {*Predicates for atomic terms*}
 
 subsection {*Free Variables*}
 
-definition is_Var :: "hf \<Rightarrow> bool" where "is_Var x \<equiv> Ord x \<and> 0 ⋿ x"
+definition is_Var :: "hf \<Rightarrow> bool" where "is_Var x \<equiv> Ord x \<and> 0 \<^bold>\<in> x"
 
 definition VarP :: "tm \<Rightarrow> fm" where "VarP x \<equiv> OrdP x AND Zero IN x"
 
