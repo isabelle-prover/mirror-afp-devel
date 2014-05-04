@@ -13,12 +13,12 @@ transitive hull of that relation. Due to confluence, this relation has a normal
 form, allowing for the definition of @{term normalize}.
 *}
 
-subsection {* Auxillary results *}
+subsection {* Auxiliary results *}
 
 text {* Some lemmas that would be useful in a more general setting are
 collected beforehand. *}
 
-subsubsection {* Auxillary results about relations *}
+subsubsection {* Auxiliary results about relations *}
 
 text {*
 These were helpfully provided by Andreas Lochbihler.

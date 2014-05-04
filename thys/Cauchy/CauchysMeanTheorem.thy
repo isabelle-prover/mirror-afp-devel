@@ -24,7 +24,7 @@ arithmetic mean and {\em gmean} to denote the geometric mean.
 {\em Informal Proof}:
 
 This proof is based on the proof presented in [1]. First we need an
-auxillary lemma (the proof of which is presented formally below) that
+auxiliary lemma (the proof of which is presented formally below) that
 states:
 
 Given two pairs of numbers of equal sum, the pair with the greater
@@ -271,9 +271,9 @@ qed
 (* ============================================================================= *)
 (* ============================================================================= *)
 
-subsection {* Auxillary lemma *}
+subsection {* Auxiliary lemma *}
 
-text {* This section presents a proof of the auxillary lemma required
+text {* This section presents a proof of the auxiliary lemma required
 for this theorem. *}
 
 lemma prod_exp:
@@ -1010,7 +1010,7 @@ proof -
     show "gmean new_list > gmean xs" by simp
   qed
 
-  -- "auxillary info"
+  -- "auxiliary info"
   from \<beta>_lt have \<beta>_ne_m: "\<beta> \<noteq> m" by simp
   from mem have
     \<beta>_mem_rmv_\<alpha>: "\<beta> : set (remove1 \<alpha> xs)" and rmv_\<alpha>_ne: "(remove1 \<alpha> xs) \<noteq> []" by auto

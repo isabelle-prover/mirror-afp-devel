@@ -1830,7 +1830,7 @@ declare
 lemma [code]: 
   fixes x :: set_impl
   shows "size x = 0"
-  and "set_impl_size x = 0"
+  and "size_set_impl x = 0"
 by(case_tac [!] x) simp_all
 
 definition set_Choose :: set_impl where [simp]: "set_Choose = Set_IMPL"

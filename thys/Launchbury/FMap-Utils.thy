@@ -4,7 +4,7 @@ begin
 
 default_sort type
 
-text {* Lemmas relating @{theory FMap} to the other auxillary theories. *}
+text {* Lemmas relating @{theory FMap} to the other auxiliary theories. *}
 
 lemma fdom_fix_join_compat:
   assumes "fix_on_cond S (bottom_of S) (\<lambda>\<rho>'. \<rho> \<squnion> F \<rho>')"

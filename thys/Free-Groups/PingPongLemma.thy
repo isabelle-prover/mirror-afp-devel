@@ -13,7 +13,7 @@ elements of the set are passed forth and back between the subsets given there.
 *}
 
 text {*
-We start with two auxillary lemmas, one about the identity of the group of
+We start with two auxiliary lemmas, one about the identity of the group of
 bijections, and one about sets of cardinality larger than one.
 *}
 

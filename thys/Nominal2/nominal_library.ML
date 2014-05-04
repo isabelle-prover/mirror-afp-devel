@@ -364,13 +364,13 @@ val size_ss =
 
 val natT = @{typ nat}
     
-fun prod_size_const T1 T2 = 
+fun size_prod_const T1 T2 = 
   let
     val T1_fun = T1 --> natT
     val T2_fun = T2 --> natT
     val prodT = HOLogic.mk_prodT (T1, T2)
   in
-    Const (@{const_name prod_size}, [T1_fun, T2_fun, prodT] ---> natT)
+    Const (@{const_name size_prod}, [T1_fun, T2_fun, prodT] ---> natT)
   end
 
 fun snd_const T1 T2 =
@@ -408,7 +408,7 @@ let
       (Type (@{type_name Sum_Type.sum}, [T1, T2])) =>
          Sum_Tree.mk_sumcase T1 T2 natT (mk_size_measure T1) (mk_size_measure T2)
     | (Type (@{type_name Product_Type.prod}, [T1, T2])) =>
-         prod_size_const T1 T2 $ (mk_size_measure T1) $ (mk_size_measure T2)
+         size_prod_const T1 T2 $ (mk_size_measure T1) $ (mk_size_measure T2)
     | _ => HOLogic.size_const T
 
   val measure_trm = mk_measure_trm (mk_size_measure) ctxt

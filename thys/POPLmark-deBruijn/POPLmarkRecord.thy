@@ -316,10 +316,10 @@ lemma liftT_liftT' [simp]:
 
 lemma lift_size [simp]:
   "size (\<up>\<^sub>\<tau> n k T) = size T"
-  "size_list (prod_size (size_list char_size) size) (\<up>\<^sub>r\<^sub>\<tau> n k rT) =
-     size_list (prod_size (size_list char_size) size) rT"
-  "prod_size (size_list char_size) size (\<up>\<^sub>f\<^sub>\<tau> n k fT) =
-     prod_size (size_list char_size) size fT"
+  "size_list (size_prod (size_list size_char) size) (\<up>\<^sub>r\<^sub>\<tau> n k rT) =
+     size_list (size_prod (size_list size_char) size) rT"
+  "size_prod (size_list size_char) size (\<up>\<^sub>f\<^sub>\<tau> n k fT) =
+     size_prod (size_list size_char) size fT"
   by (induct T and rT and fT arbitrary: k and k and k) simp_all
 
 lemma liftT0 [simp]:
@@ -959,7 +959,7 @@ lemma subtype_weaken': -- {* A.2 *}
   done
 
 lemma fieldT_size [simp]:
-  "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (size_list (prod_size (size_list char_size) size) fs)"
+  "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (size_list (size_prod (size_list size_char) size) fs)"
   apply (induct fs arbitrary: a T rule: list.induct)
   apply simp
   apply simp
