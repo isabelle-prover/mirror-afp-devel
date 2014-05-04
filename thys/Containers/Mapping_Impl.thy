@@ -142,7 +142,7 @@ declare
 lemma [code]:
   fixes x :: mapping_impl
   shows "size x = 0"
-  and "mapping_impl_size x = 0"
+  and "size_mapping_impl x = 0"
 by(case_tac [!] x) simp_all
 
 definition mapping_Choose :: mapping_impl where [simp]: "mapping_Choose = Mapping_IMPL"

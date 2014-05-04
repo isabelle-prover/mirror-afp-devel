@@ -267,7 +267,7 @@ lemma rbt_generator_induct [case_names empty split shuffle]:
 using assms
 apply(induction_schema)
 apply pat_completeness
-apply(relation "measure (\<lambda>(kts, t). size_list (\<lambda>(k, t). rbt_size (\<lambda>_. 1) (\<lambda>_. 1) t) kts + rbt_size (\<lambda>_. 1) (\<lambda>_. 1) t)")
+apply(relation "measure (\<lambda>(kts, t). size_list (\<lambda>(k, t). size_rbt (\<lambda>_. 1) (\<lambda>_. 1) t) kts + size_rbt (\<lambda>_. 1) (\<lambda>_. 1) t)")
 apply simp_all
 done
 
