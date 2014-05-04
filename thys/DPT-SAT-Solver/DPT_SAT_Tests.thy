@@ -25,14 +25,14 @@ fun test name =
         val name = "cnf/" ^ name
         val timer1 = Timer.startRealTimer ()
         val formula =
-          SatSolver.read_dimacs_cnf_file
+          SAT_Solver.read_dimacs_cnf_file
             (Path.append (Resources.master_directory @{theory}) (Path.explode name))
         val timer2 = Timer.startRealTimer ()
-        val res = SatSolver.invoke_solver solver formula
+        val res = SAT_Solver.invoke_solver solver formula
         val code = case res of
-                     SatSolver.SATISFIABLE _ => "SAT"
-                   | SatSolver.UNSATISFIABLE _ => "UNSAT"
-                   | SatSolver.UNKNOWN => "UNKNOWN"
+                     SAT_Solver.SATISFIABLE _ => "SAT"
+                   | SAT_Solver.UNSATISFIABLE _ => "UNSAT"
+                   | SAT_Solver.UNKNOWN => "UNKNOWN"
         fun show_time timer =
           signed_string_of_int (Time.toMilliseconds (Timer.checkRealTimer timer1)) ^ " ms"
       in

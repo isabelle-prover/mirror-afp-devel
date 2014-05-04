@@ -1658,8 +1658,8 @@ fun init s clauses =
 end;
 
 let
-  open SatSolver ;
-  open Prop_Logic ;
+  open SAT_Solver
+  open Prop_Logic
 
   fun mk_clauses f = 
       let fun mk_clause g = 
@@ -1685,5 +1685,5 @@ let
               SATISFIABLE (DPT_SAT_Solver.assignment s)
           else UNSATISFIABLE NONE) end
 in
-  SatSolver.add_solver ("dptsat", dptsat)
+  SAT_Solver.add_solver ("dptsat", dptsat)
 end
