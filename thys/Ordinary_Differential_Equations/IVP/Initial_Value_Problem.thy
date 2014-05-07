@@ -1154,7 +1154,7 @@ proof -
   proof (rule exI[where x= B], safe)
     fix t x assume "t \<in> T" "x \<in> X"
     interpret bounded_linear "f' (t, x)"
-      by (auto simp: i_def algebra_simps intro!: has_derivative_bounded_linear[OF f'[OF `t \<in> T` `x \<in> X`]])
+      by (auto simp: algebra_simps intro!: has_derivative_bounded_linear[OF f'[OF `t \<in> T` `x \<in> X`]])
     show "onorm (f' (t, x)) \<le> B"
     proof (rule onorm_le, safe)
       fix a b
