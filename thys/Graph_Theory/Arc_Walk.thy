@@ -230,7 +230,7 @@ lemma set_awalk_verts_not_Nil:
   using assms by (intro set_awalk_verts_not_Nil_cas) blast
 
 lemma
-  awhd_of_awalk: "awalk u p v \<Longrightarrow> NOMATCH (awhd u p) u \<Longrightarrow> awhd u p = u" and
+  awhd_of_awalk: "awalk u p v \<Longrightarrow> awhd u p = u" and
   awlast_of_awalk: "awalk u p v \<Longrightarrow> NOMATCH (awlast u p) v \<Longrightarrow> awlast u p = v"
   unfolding NOMATCH_def by auto
 lemmas awends_of_awalk[simp] = awhd_of_awalk awlast_of_awalk
