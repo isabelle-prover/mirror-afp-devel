@@ -22,11 +22,6 @@ text {* We formalise a functional implementation of the FFT algorithm
 
 section {* Preliminaries *}
 
-lemma of_nat_cplx:
-  "of_nat n = Complex (of_nat n) 0"
-  by (induct n) (simp_all add: complex_one_def)
-
-
 text {* The following two lemmas are useful for experimenting with the
   transformations, at a vector length of four. *}
 
@@ -137,24 +132,13 @@ qed
 
 subsection {* Basic Lemmas *}
 
-lemma root_nonzero:
-  "root n ~= 0"
-  apply (unfold root_def)
-  apply (unfold cis_def)
-  apply auto
-  apply (drule sin_zero_abs_cos_one)
-  apply arith
-  done
+lemma root_nonzero: "root n \<noteq> 0"
+  by (auto simp add: complex_eq_iff root_def dest: sin_zero_abs_cos_one)
 
-lemma root_unity:
-  "root n ^ n = 1"
-  apply (unfold root_def)
-  apply (simp add: DeMoivre)
-  apply (simp add: cis_def)
-  done
+lemma root_unity: "root n ^ n = 1"
+  by (simp add: complex_eq_iff root_def DeMoivre)
 
-lemma root_cancel:
-  "0 < d ==> root (d * n) ^ (d * k) = root n ^ k"
+lemma root_cancel: "0 < d ==> root (d * n) ^ (d * k) = root n ^ k"
   apply (unfold root_def)
   apply (simp add: DeMoivre)
   done
@@ -178,7 +162,7 @@ proof -
     apply (unfold root_def)
     apply (simp add: DeMoivre)
     using real0 realk sin_cos_between_zero_two_pi 
-    apply (auto simp add: cis_def complex_one_def)
+    apply (auto simp add: complex_eq_iff)
     done
   also have "... = ((root n ^ n) ^ k - 1) / (root n ^ k - 1)"
     by (simp add: power_mult [THEN sym] mult_ac)
@@ -207,7 +191,7 @@ proof -
     apply (unfold root_def)
     apply (simp add: DeMoivre)
     using real0 realk sin_cos_between_zero_two_pi
-    apply (auto simp add: cis_def complex_one_def)
+    apply (auto simp add: complex_eq_iff)
     done
   also have "... = (((1 / root n) ^ n) ^ k - 1) / ((1 / root n) ^ k - 1)"
     by (simp add: power_mult [THEN sym] mult_ac)
@@ -218,19 +202,19 @@ qed
 
 lemma root0 [simp]:
   "root 0 = 1"
-  by (simp add: root_def cis_def)
+  by (simp add: complex_eq_iff root_def)
 
 lemma root1 [simp]:
   "root 1 = 1"
-  by (simp add: root_def cis_def)
+  by (simp add: complex_eq_iff root_def)
 
 lemma root2 [simp]:
-  "root 2 = Complex -1 0"
-  by (simp add: root_def cis_def)
+  "root 2 = -1"
+  by (simp add: complex_eq_iff root_def)
 
 lemma root4 [simp]:
   "root 4 = ii"
-  by (simp add: root_def cis_def)
+  by (simp add: complex_eq_iff root_def)
 
 
 subsection {* Derived Lemmas *}
@@ -249,9 +233,7 @@ lemma root_cancel2:
   "0 < n ==> root (2 * n) ^ n = - 1"
   txt {* Note the space between @{text "-"} and @{text "1"}. *}
   using root_cancel [where n = 2 and k = 1]
-  apply (simp only: mult_ac)
-  apply (simp add: complex_one_def)
-  done
+  by (simp add: complex_eq_iff mult_ac)
 
 
 section {* Discrete Fourier Transformation *}
@@ -457,7 +439,7 @@ theorem DFT_inverse:
     also from i_less diff_i have "... = ?sum1 i i n"
       by (simp add: root_summation nat_dvd_not_less)
     also from i_less have "... = of_nat n * a i" (is "_ = ?t")
-      by (simp add: of_nat_cplx)
+      by simp
     finally show "?s = ?t" .
   qed
 
