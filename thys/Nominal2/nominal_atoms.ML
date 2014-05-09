@@ -80,6 +80,6 @@ val _ =
   Outer_Syntax.command @{command_spec "atom_decl"}
     "declaration of a concrete atom type" 
       ((Parse.binding -- Scan.option (Args.parens (Parse.binding))) >>
-        (Toplevel.print oo (Toplevel.theory o add_atom_decl)))
+        (Toplevel.theory o add_atom_decl))
 
 end;
