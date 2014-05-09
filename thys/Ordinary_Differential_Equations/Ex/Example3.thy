@@ -153,7 +153,7 @@ notepad begin
   value "1 / (1 - 0.125)"
   have "1/(1-?x) \<in> {1.142857139 .. 1.142857146}" by simp
   moreover
-  value "tan (0.125 + pi/4)"
+  approximate "tan (0.125 + pi/4)"
   have "tan(?x + pi/4) \<in> {1.287426935 .. 1.287426955}"
     by (approximation 40)
   ultimately
@@ -167,10 +167,10 @@ notepad begin
   fix solution::"real\<Rightarrow>real"
   assume Walter: "\<And>x. solution x \<in> {1/(1-x)..16 / (16 - 17*x)}"
   let ?x = "0.125::real"
-  value "1 / (1 - ?x)"
+  approximate "1 / (1 - ?x)"
   have "1/(1-?x) \<in> {1.142857139 .. 1.142857146}" by simp
   moreover
-  value "16 / (16 - 17*?x)"
+  approximate "16 / (16 - 17*?x)"
   have "16 / (16 - 17*?x) \<in> {1.153153151 .. 1.153153155}"
     by (approximation 40)
   ultimately

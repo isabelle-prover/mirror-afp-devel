@@ -13,13 +13,13 @@ definition X'::"(real*real) aform"
 
 fun rotate_aform where "rotate_aform x i = (((the o rotate45' 30 (FloatR 1 -3))^^i) x)"
 
-value [code] "rotate_aform X' 70"
+value "rotate_aform X' 70"
 
 approximate_affine translate "\<lambda>(x, y). (FloatR 1024 -1 + x, FloatR 1024 -1 + y)"
 
 fun translatei where "translatei x i = (((the o translate 7 (FloatR 1 -7))^^i) x)"
 
-value [code] "translatei X' 50"
+value "translatei X' 50"
 
 hide_const (open) X' rotate_aform translate translatei rotate45'
 

@@ -22,7 +22,7 @@ partial_function_mr (tailrec) collatz and even_case and odd_case where
 | "even_case x xs = collatz (x div 2) xs"
 | "odd_case x xs = collatz (3 * x + 1) (x # xs)"
 
-value[code] "collatz (327 :: int) []"
+value "collatz (327 :: int) []"
 
 subsection {* Evaluating expressions *}
 text {* Note that we also provide a least fixpoint operator.
@@ -93,6 +93,6 @@ partial_function_mr (option)
 definition 
   "five_minus_two = a_eval (Mu (\<lambda> x. Eq (AConst 5) (AConst x)) (\<lambda> x. Plus (AConst x) (AConst 1)) (AConst (2 :: rat)))"
 
-value[code] five_minus_two
+value five_minus_two
 
 end

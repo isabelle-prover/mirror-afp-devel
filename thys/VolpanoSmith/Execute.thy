@@ -91,14 +91,14 @@ definition "com = if (Var ''x'' \<guillemotleft>Eq\<guillemotright> Val (Intg 1)
 definition "Env = map_of [(''x'', High), (''y'', High)]"
 
 values "{T. Env \<turnstile> (Var ''x'' \<guillemotleft>Eq\<guillemotright> Val (Intg 1)): T}"
-value [code] "Env, High \<turnstile> com"
-value [code] "Env, Low \<turnstile> com"
+value "Env, High \<turnstile> com"
+value "Env, Low \<turnstile> com"
 values 1 "{T. Env, T \<turnstile> com}"
 
 definition "Env' = map_of [(''x'', Low), (''y'', High)]"
 
-value [code] "Env', Low \<turnstile> com"
-value [code]"Env', High \<turnstile> com"
+value "Env', Low \<turnstile> com"
+value "Env', High \<turnstile> com"
 values 1 "{T. Env, T \<turnstile> com}"
 
   

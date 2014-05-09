@@ -61,6 +61,6 @@ definition "vanderpoltest =
 
 text {* @{term "vanderpoltest [aform_of_ivl (FloatR 5  -2, FloatR 146 -6) (FloatR 49 -5, FloatR 149 -6)]"}
   proves a stable limit-cycle. *}
-value [code] "vanderpoltest [aform_of_ivl (FloatR 5  -2, FloatR 146 -6) (FloatR 49 -5, FloatR 149 -6)]"
+value "vanderpoltest [aform_of_ivl (FloatR 5  -2, FloatR 146 -6) (FloatR 49 -5, FloatR 149 -6)]"
 
 end

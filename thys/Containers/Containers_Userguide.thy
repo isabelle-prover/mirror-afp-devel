@@ -41,7 +41,7 @@ text_raw {*
     (iii)~sets of functions as monad-style lists:
     \par
 *}
-value [code] "({True}, {1 :: int}, - {2 :: int, 3}, {\<lambda>x :: int. x * x, \<lambda>y. y + 1})"
+value "({True}, {1 :: int}, - {2 :: int, 3}, {\<lambda>x :: int. x * x, \<lambda>y. y + 1})"
 text_raw {*
     \isastyletext
     \par
@@ -65,7 +65,7 @@ text {*
   Run the following command, e.g., to check that LC works correctly and implements sets of @{typ int}s as red-black trees (RBT):
 *}
 
-value [code] "{1 :: int}"
+value "{1 :: int}"
 
 text {*
   This should produce @{value [names_short] "{1 :: int}"}.
@@ -86,7 +86,7 @@ fun vars :: "expr \<Rightarrow> vname set" where
 | "vars (Lit i) = {}"
 | "vars (Add e\<^sub>1 e\<^sub>2) = vars e\<^sub>1 \<union> vars e\<^sub>2"
 
-value [code] "vars (Var ''x'')"
+value "vars (Var ''x'')"
 
 text {*
   To illustrate how to deal with type variables, we will use the following variant where variable names are polymorphic:
@@ -98,7 +98,7 @@ fun vars' ::  "'a expr' \<Rightarrow> 'a set" where
 | "vars' (Lit' i) = {}"
 | "vars' (Add' e\<^sub>1 e\<^sub>2) = vars' e\<^sub>1 \<union> vars' e\<^sub>2"
 
-value [code] "vars' (Var' (1 :: int))"
+value "vars' (Var' (1 :: int))"
 
 section {* New types as elements *}
 
@@ -443,12 +443,12 @@ declare (*<*)(in -) (*>*)pretty_sets [code_post]
 (*<*)
   (* The following value commands ensure that the code generator executes @{value ...} above,
      I could not find a way to specify [code] to @{value}. *)
-  value [code] "{} :: expr set"
-  value [code] "empty :: (expr, unit) mapping"
-  value [code] "{} :: string expr' set"
-  value [code] "{} :: (nat \<Rightarrow> nat) expr' set"
-  value [code] "{} :: bool expr' set"
-  value [code] "empty :: (bool expr', unit) mapping"
+  value "{} :: expr set"
+  value "empty :: (expr, unit) mapping"
+  value "{} :: string expr' set"
+  value "{} :: (nat \<Rightarrow> nat) expr' set"
+  value "{} :: bool expr' set"
+  value "empty :: (bool expr', unit) mapping"
 (*>*)
 (*<*)end(*>*)
 
@@ -481,7 +481,7 @@ end
 derive (no) cenum expr'
 
 text_raw {* \par\medskip \isastyletext For example, *}
-value [code] "({b. b = True}, {x. x > Lit 0})"
+value "({b. b = True}, {x. x > Lit 0})"
 text_raw {*
   \isastyletext{}
   yields @{value "({b. b = True}, {x. x > Lit 0})"}
@@ -492,7 +492,7 @@ text {*
   If you want that the complement operation actually computes the elements of the complements, you have to replace the code equations for @{term uminus} as follows:
 *}
 declare Set_uminus_code[code del] Set_uminus_cenum[code]
-(*<*)value [code] "- {b. b = True}"(*>*)
+(*<*)value "- {b. b = True}"(*>*)
 text {*
   Then, @{term "- {b. b = True}"} becomes @{value "- {b. b = True}"}, but this applies to all complement invocations.
   For example, @{term [source] "UNIV :: bool set"} becomes @{value "UNIV :: bool set"}.
@@ -650,9 +650,9 @@ qed simp
 end
 
 (*<*)
-value [code] "{{Lit 1}}"
-value [code] "{{{Lit 1}}}"
-value [code] "{{{{Lit 1}}}}"
+value "{{Lit 1}}"
+value "{{{Lit 1}}}"
+value "{{{{Lit 1}}}}"
 (*>*)
 
 section {* New implementations for containers *}
@@ -934,7 +934,7 @@ lemma mapping_impl_unit_Trie [code]:
   "MAPPING_IMPL(unit) = Phantom(unit) mapping_Trie"
 by(simp add: mapping_impl_unit_def)
 
-value [code] "Mapping.empty :: (unit, int) mapping"
+value "Mapping.empty :: (unit, int) mapping"
 
 text {*
   You can also use your new pseudo-constructor with @{text derive} in instantiations, just give its name as option:
@@ -1045,7 +1045,7 @@ derive (eq) ceq minimal_sorts
 derive (no) corder minimal_sorts
 derive (monad) set_impl minimal_sorts
 derive (no) cenum minimal_sorts
-value [code] "{Minimal_Sorts True} \<union> {} \<inter> Minimal_Sorts ` {True, False}"
+value "{Minimal_Sorts True} \<union> {} \<inter> Minimal_Sorts ` {True, False}"
 (*>*)
 
 subsection {* Exception raised at run-time *}

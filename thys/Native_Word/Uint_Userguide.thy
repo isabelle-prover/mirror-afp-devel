@@ -62,7 +62,7 @@ text {*
   @{text "SML_word"} instead of @{text "SML"};  if you only use native
   word sizes that PolyML supports, you can stick with @{text "SML"}.
   This ensures that code generation within Isabelle as used by 
-  @{text Quickcheck}, @{text "value [code]"} and @\{code\} in ML blocks
+  @{text Quickcheck}, @{text value} and @\{code\} in ML blocks
   continues to work.
 *}
 
@@ -139,7 +139,7 @@ text {*
   and therefore less efficient.
 *}
 
-value [code] "sum_squares_int_uint 40"
+value "sum_squares_int_uint 40"
 
 section {* Storing native words in datatypes *}
 

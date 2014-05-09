@@ -13,10 +13,10 @@ definition stat :: "nat fgraph list \<Rightarrow> nat * nat * nat * nat * nat" w
   foldl (op +) 0 (map nof_vertices A)
  )"
 
-value [code] "stat Tri"
-value [code] "stat Quad"
-value [code] "stat Pent"
-value [code] "stat Hex"
+value "stat Tri"
+value "stat Quad"
+value "stat Pent"
+value "stat Hex"
 
 (* nof graphs, max nof faces, total nof faces, max nof vertices, total nof vertices *)
 (* NEW
@@ -67,10 +67,10 @@ ML "Toplevel.timing := true"
 (* (total number of entries, number of leaves, max number of enries per leaf),
    total number of graphs, number of final graphs
 *)
-value [code] "count 0" (* (9, 6, 3), 312764, 501 *)
-value [code] "count 1" (* (1105, 418, 17), 134291356, 27050 *)
-value [code] "count 2" (* (15991, 5189, 97), 1401437009, 301560 *)
-value [code] "count 3" (* (1657, 498, 35), 334466383, 19120 *)
+value "count 0" (* (9, 6, 3), 312764, 501 *)
+value "count 1" (* (1105, 418, 17), 134291356, 27050 *)
+value "count 2" (* (15991, 5189, 97), 1401437009, 301560 *)
+value "count 3" (* (1657, 498, 35), 334466383, 19120 *)
 (* 11 hours *)
 end
 (* OLD *)

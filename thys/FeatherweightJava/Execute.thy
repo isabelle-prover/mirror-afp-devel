@@ -165,9 +165,9 @@ definition exampleProg :: classTable
   where "exampleProg = (((%x. None)(A := Some classA_Def))(B := Some classB_Def))(cPair := Some classPair_Def)"
 
 
-value [code] "exampleProg \<turnstile> classA_Def OK"
-value [code] "exampleProg \<turnstile> classB_Def OK"
-value [code] "exampleProg \<turnstile> classPair_Def OK"
+value "exampleProg \<turnstile> classA_Def OK"
+value "exampleProg \<turnstile> classB_Def OK"
+value "exampleProg \<turnstile> classPair_Def OK"
 
 
 values "{x. exampleProg \<turnstile> MethodInvk (New cPair [New A [], New B []]) setfst [New B []] \<rightarrow>* x}"

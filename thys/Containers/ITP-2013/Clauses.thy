@@ -41,7 +41,7 @@ where
   (1 and 2) or (3 and 4) or
   (1 and 3) or (2 and 4)"
 
-value [code] "cnf test = {}"
+value "cnf test = {}"
 
 text {* Sanity check for correctness *}
 
