@@ -224,8 +224,8 @@ datatype num = One | Bit0 of num | Bit1 of num;
 
 datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a;
 
-datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list * 'a * 'a list |
-  Circ of 'a * 'a list * 'a list;
+datatype 'a blue_witness = NO_CYC | REACH of 'a * 'a list * 'a * 'a list |
+  CIRC of 'a * 'a list * 'a list;
 
 fun eq A_ a b = equal A_ a b;
 
@@ -255,19 +255,19 @@ fun equal_list A_ [] (x21 :: x22) = false
     eq A_ x21 y21 andalso equal_list A_ x22 y22
   | equal_list A_ [] [] = true;
 
-fun equal_blue_witness A_ (Reach (v1, list1a, v2, list2a))
-  (Circ (v, list1, list2)) = false
-  | equal_blue_witness A_ (Circ (v, list1a, list2a))
-    (Reach (v1, list1, v2, list2)) = false
-  | equal_blue_witness A_ NO_CYC (Circ (v, list1, list2)) = false
-  | equal_blue_witness A_ (Circ (v, list1, list2)) NO_CYC = false
-  | equal_blue_witness A_ NO_CYC (Reach (v1, list1, v2, list2)) = false
-  | equal_blue_witness A_ (Reach (v1, list1, v2, list2)) NO_CYC = false
-  | equal_blue_witness A_ (Circ (va, list1a, list2a)) (Circ (v, list1, list2)) =
+fun equal_blue_witness A_ (REACH (v1, list1a, v2, list2a))
+  (CIRC (v, list1, list2)) = false
+  | equal_blue_witness A_ (CIRC (v, list1a, list2a))
+    (REACH (v1, list1, v2, list2)) = false
+  | equal_blue_witness A_ NO_CYC (CIRC (v, list1, list2)) = false
+  | equal_blue_witness A_ (CIRC (v, list1, list2)) NO_CYC = false
+  | equal_blue_witness A_ NO_CYC (REACH (v1, list1, v2, list2)) = false
+  | equal_blue_witness A_ (REACH (v1, list1, v2, list2)) NO_CYC = false
+  | equal_blue_witness A_ (CIRC (va, list1a, list2a)) (CIRC (v, list1, list2)) =
     eq A_ va v andalso
       (equal_list A_ list1a list1 andalso equal_list A_ list2a list2)
-  | equal_blue_witness A_ (Reach (v1a, list1a, v2a, list2a))
-    (Reach (v1, list1, v2, list2)) =
+  | equal_blue_witness A_ (REACH (v1a, list1a, v2a, list2a))
+    (REACH (v1, list1, v2, list2)) =
     eq A_ v1a v1 andalso
       (equal_list A_ list1a list1 andalso
         (eq A_ v2a v2 andalso equal_list A_ list2a list2))
@@ -318,14 +318,14 @@ fun iam_lookup k a = iam_alpha a k;
 fun iam_delete k a = array_set_oo (fn _ => a) a k NONE;
 
 fun prep_wit_blue A_ u0 NO_CYC = NO_CYC
-  | prep_wit_blue A_ u0 (Reach (v, pa, u, p)) =
-    (if eq A_ u0 u then Circ (v, pa @ u :: p, u0 :: p)
-      else Reach (v, pa, u, u0 :: p))
-  | prep_wit_blue A_ u0 (Circ (v, pc, pr)) = Circ (v, pc, u0 :: pr);
+  | prep_wit_blue A_ u0 (REACH (v, pa, u, p)) =
+    (if eq A_ u0 u then CIRC (v, pa @ u :: p, u0 :: p)
+      else REACH (v, pa, u, u0 :: p))
+  | prep_wit_blue A_ u0 (CIRC (v, pc, pr)) = CIRC (v, pc, u0 :: pr);
 
 fun init_wit_blue A_ u0 NONE = NO_CYC
   | init_wit_blue A_ u0 (SOME (p, u)) =
-    (if eq A_ u u0 then Circ (u0, p, []) else Reach (u0, p, u, []));
+    (if eq A_ u u0 then CIRC (u0, p, []) else REACH (u0, p, u, []));
 
 fun map2set_memb l k s = (case l k s of NONE => false | SOME _ => true);
 
@@ -408,8 +408,8 @@ fun ndfs_impl_0 succi ai x =
   end;
 
 fun extract_res cyc =
-  (case cyc of NO_CYC => NONE | Reach (_, _, _, _) => NONE
-    | Circ (v, pc, pr) => SOME (v, (pc, pr)));
+  (case cyc of NO_CYC => NONE | REACH (_, _, _, _) => NONE
+    | CIRC (v, pc, pr) => SOME (v, (pc, pr)));
 
 fun ndfs_impl succi ai s =
   the_res
