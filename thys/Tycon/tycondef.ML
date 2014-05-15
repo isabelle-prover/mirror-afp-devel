@@ -394,7 +394,7 @@ fun domain_isomorphism
         fun arity (vs, tbind, _, _, _) =
           (Sign.full_name thy tbind, map snd vs, @{sort "tycon"})
       in
-        fold Axclass.axiomatize_arity (map arity doms) tmp_thy
+        fold Axclass.arity_axiomatization (map arity doms) tmp_thy
       end
 
     (* check bifiniteness of right-hand sides *)
@@ -800,7 +800,7 @@ type info =
 fun add_arity ((b, sorts, mx), sort) thy : theory =
   thy
   |> Sign.add_types_global [(b, length sorts, mx)]
-  |> Axclass.axiomatize_arity (Sign.full_name thy b, sorts, sort)
+  |> Axclass.arity_axiomatization (Sign.full_name thy b, sorts, sort)
 
 fun gen_add_tycon
     (prep_sort : theory -> 'a -> sort)
