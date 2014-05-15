@@ -181,7 +181,8 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
           pinducts=snd pinducts', simps=NONE, inducts=NONE, termination=termination',
           fs=fs, R=R, defname=defname, is_partial=true, eqvts=eqvts}
 
-        val _ = Proof_Display.print_consts do_print lthy (K false) (map fst fixes)
+        val _ = Proof_Display.print_consts do_print
+          (Position.thread_data ()) lthy (K false) (map fst fixes)
       in
         (info, 
          lthy |> Local_Theory.declaration {syntax = false, pervasive = false} 
