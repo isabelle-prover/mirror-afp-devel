@@ -28,11 +28,11 @@ lemmas regexp_unfold = trancl_unfold_left subset_Un_eq
 
 method_setup regexp = {*
   let
-    val regexp_conv = Code_Runtime.static_holds_conv @{context}
-      [@{const_name "Nat.zero_nat_inst.zero_nat"}, @{const_name Suc},
+    val regexp_conv = Code_Runtime.static_holds_conv { ctxt = @{context},
+      consts = [@{const_name "Nat.zero_nat_inst.zero_nat"}, @{const_name Suc},
        @{const_name Zero}, @{const_name One}, @{const_name Atom},
        @{const_name Plus}, @{const_name Times}, @{const_name Star}, 
-       @{const_name check_eqv}, @{const_name Trueprop}]
+       @{const_name check_eqv}, @{const_name Trueprop}] }
   in Scan.succeed (fn ctxt =>
       SIMPLE_METHOD' (
         (TRY o etac @{thm rev_subsetD})
