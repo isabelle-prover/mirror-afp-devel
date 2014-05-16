@@ -1379,51 +1379,50 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-structure P = Parse
-
-local structure S = Parse_Spec and K = Keyword in
+local
 
 val valuePar = "val"
 val resultPar = "res"
 
-val var_declP  = P.name -- (P.$$$ "::" |-- P.!!! P.typ_group);
-val var_declP' = P.name >> (fn n => (n,""));
+val var_declP  = Parse.name -- (Parse.$$$ "::" |-- Parse.!!! Parse.typ_group);
+val var_declP' = Parse.name >> (fn n => (n,""));
 
 val localsP = Scan.repeat var_declP;
 
 val argP = var_declP;
 val argP' = var_declP';
 
-val not_eqP = Scan.ahead (Scan.unless (P.$$$ "=") (Scan.one (K true)))
+val not_eqP = Scan.ahead (Scan.unless (Parse.$$$ "=") (Scan.one (K true)))
 
 val proc_decl_statespace =
-  (P.short_ident --| P.$$$ "(") --
-      ((P.list argP) -- (Scan.optional (P.$$$ "|" |-- P.list argP) []) --| P.$$$ ")")
+  (Parse.short_ident --| Parse.$$$ "(") --
+      ((Parse.list argP) -- (Scan.optional (Parse.$$$ "|" |-- Parse.list argP) []) --| Parse.$$$ ")")
       --| not_eqP
 
 val proc_decl_record =
-  (P.short_ident --| P.$$$ "(") --
-      ((P.list argP') -- (Scan.optional (P.$$$ "|" |-- P.list argP') []) --| P.$$$ ")")
-      --| Scan.option (P.$$$ "=")
+  (Parse.short_ident --| Parse.$$$ "(") --
+      ((Parse.list argP') -- (Scan.optional (Parse.$$$ "|" |-- Parse.list argP') []) --| Parse.$$$ ")")
+      --| Scan.option (Parse.$$$ "=")
 
 val proc_decl = proc_decl_statespace >> pair Function || proc_decl_record >> pair Record;
 
-val loc_decl = Scan.optional (P.$$$ "where" |-- localsP --| P.$$$ "in") []
+val loc_decl = Scan.optional (Parse.$$$ "where" |-- localsP --| Parse.$$$ "in") []
 
-val proc_body = P.term_group (*>> BodyTerm*)
+val proc_body = Parse.term_group (*>> BodyTerm*)
 
-val proc_type = P.$$$ "::" |-- P.typ_group >> BodyTyp
+val proc_type = Parse.$$$ "::" |-- Parse.typ_group >> BodyTyp
 
 
-fun proc_specs x = (P.!!! (Scan.repeat (S.thm_name ":" -- P.prop_group))
+fun proc_specs x = (Parse.!!! (Scan.repeat (Parse_Spec.thm_name ":" -- Parse.prop_group))
     >> map (fn ((thm_name, thm_attribs), prop) => (Binding.name_of thm_name, prop))) x
 
-val par_loc = Scan.option (P.$$$ "(" |-- P.$$$ "imports" |-- P.name --| P.$$$ ")");
+val par_loc = Scan.option (Parse.$$$ "(" |-- Parse.$$$ "imports" |-- Parse.name --| Parse.$$$ ")");
 
+in
 
 val _ =
   Outer_Syntax.command @{command_spec "procedures"} "define procedures"
-    (par_loc -- (P.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs))
+    (par_loc -- (Parse.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs))
       >> (fn (loc,decls) =>
           let
             val decls' = map (fn ((((state_kind,(name,(ins,outs))),ls),bdy),specs) =>
@@ -3619,7 +3618,7 @@ fun hoare_rule_tac ctxt thms i st = SUBGOAL (fn _ =>
 
 val hoare_rule = Rule_Insts.method HoareRuleTac hoare_rule_tac;
 
-val argP = Args.name --| P.$$$ "=" -- Args.name
+val argP = Args.name --| Parse.$$$ "=" -- Args.name
 val argsP = Scan.repeat argP
 val default_args = [("spec","spec"),("strip_guards","false")]
 

@@ -700,41 +700,38 @@ end
 ML {* 
 (* nominal datatype parser *)
 local
-  structure P = Parse;
-  structure S = Scan
-
   fun triple1 ((x, y), z) = (x, y, z)
   fun triple2 ((x, y), z) = (y, x, z)
   fun tuple2 (((x, y), z), u) = (x, y, u, z)
   fun tuple3 ((x, y), (z, u)) = (x, y, z, u)
 in
 
-val opt_name = Scan.option (P.binding --| Args.colon)
+val opt_name = Scan.option (Parse.binding --| Args.colon)
 
-val anno_typ = S.option (P.name --| @{keyword "::"}) -- P.typ
+val anno_typ = Scan.option (Parse.name --| @{keyword "::"}) -- Parse.typ
 
 val bind_mode = @{keyword "binds"} |--
-  S.optional (Args.parens 
+  Scan.optional (Args.parens 
     (Args.$$$ "list" >> K Lst || (Args.$$$ "set" -- Args.$$$ "+") >> K Res || Args.$$$ "set" >> K Set)) Lst
 
 val bind_clauses = 
-  P.enum "," (bind_mode -- S.repeat1 P.term -- (@{keyword "in"} |-- S.repeat1 P.name) >> triple1)
+  Parse.enum "," (bind_mode -- Scan.repeat1 Parse.term -- (@{keyword "in"} |-- Scan.repeat1 Parse.name) >> triple1)
 
 val cnstr_parser =
-  P.binding -- S.repeat anno_typ -- bind_clauses -- P.opt_mixfix >> tuple2
+  Parse.binding -- Scan.repeat anno_typ -- bind_clauses -- Parse.opt_mixfix >> tuple2
 
 (* datatype parser *)
 val dt_parser =
-  (P.type_args_constrained -- P.binding -- P.opt_mixfix >> triple2) -- 
-    (@{keyword "="} |-- P.enum1 "|" cnstr_parser)
+  (Parse.type_args_constrained -- Parse.binding -- Parse.opt_mixfix >> triple2) -- 
+    (@{keyword "="} |-- Parse.enum1 "|" cnstr_parser)
 
 (* binding function parser *)
 val bnfun_parser = 
-  S.optional (@{keyword "binder"} |-- P.fixes -- Parse_Spec.where_alt_specs) ([], [])
+  Scan.optional (@{keyword "binder"} |-- Parse.fixes -- Parse_Spec.where_alt_specs) ([], [])
 
 (* main parser *)
 val main_parser =
-  opt_name -- P.and_list1 dt_parser -- bnfun_parser >> tuple3
+  opt_name -- Parse.and_list1 dt_parser -- bnfun_parser >> tuple3
 
 end
 
