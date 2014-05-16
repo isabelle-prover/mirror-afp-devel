@@ -980,9 +980,9 @@ val add_tycon_cmd =
 (** outer syntax **)
 
 val dest_decl : (bool * binding option * string) parser =
-  Parse.$$$ "(" |-- Scan.optional (Parse.$$$ "lazy" >> K true) false --
-    (Parse.binding >> SOME) -- (Parse.$$$ "::" |-- Parse.typ)  --| Parse.$$$ ")" >> Parse.triple1
-    || Parse.$$$ "(" |-- Parse.$$$ "lazy" |-- Parse.typ --| Parse.$$$ ")"
+  @{keyword "("} |-- Scan.optional (@{keyword "lazy"} >> K true) false --
+    (Parse.binding >> SOME) -- (@{keyword "::"} |-- Parse.typ)  --| @{keyword ")"} >> Parse.triple1
+    || @{keyword "("} |-- @{keyword "lazy"} |-- Parse.typ --| @{keyword ")"}
     >> (fn t => (true,NONE,t))
     || Parse.typ >> (fn t => (false,NONE,t))
 
@@ -992,7 +992,7 @@ val cons_decl =
 val tycon_decl =
   (Parse.type_ident --| @{keyword "\<cdot>"} -- Parse.type_args_constrained --
     Parse.binding -- Parse.opt_mixfix) --
-    (Parse.$$$ "=" |-- Parse.enum1 "|" cons_decl)
+    (@{keyword "="} |-- Parse.enum1 "|" cons_decl)
 
 val tycons_decl =
   Parse.and_list1 tycon_decl

@@ -361,9 +361,9 @@ ML {* Outer_Syntax.local_theory
   "Define function from refinement theorem" 
   (Parse.binding 
     -- Parse_Spec.opt_attribs
-    -- Scan.optional (Parse.$$$ "for" |-- Scan.repeat1 Args.var) []
-    --| Parse.$$$ "uses" -- Parse_Spec.xthm
-    -- Scan.optional (Parse.$$$ "is" |-- Scan.repeat1 Args.name_inner_syntax) []
+    -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
+    --| @{keyword "uses"} -- Parse_Spec.xthm
+    -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.name_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
       case Attrib.eval_thms lthy [raw_thm] of

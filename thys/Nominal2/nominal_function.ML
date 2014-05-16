@@ -265,7 +265,7 @@ local
      || ((Parse.reserved "invariant" |-- Parse.term) >> Invariant))
 
   fun config_parser default =
-    (Scan.optional (Parse.$$$ "(" |-- Parse.!!! (Parse.list1 option_parser) --| Parse.$$$ ")") [])
+    (Scan.optional (@{keyword "("} |-- Parse.!!! (Parse.list1 option_parser) --| @{keyword ")"}) [])
      >> (fn opts => fold apply_opt opts default)
 in
   fun nominal_function_parser default_cfg =
