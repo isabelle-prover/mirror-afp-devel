@@ -33,7 +33,7 @@ where
 intro:
 "\<lbrakk>s \<in> S; A \<subseteq> AP'; A \<inter> AP = L s; stateOf \<pi> \<in> \<delta> s; wfp AP' \<pi>\<rbrakk>
  \<Longrightarrow>
- wfp AP' (Stream (s,A) \<pi>)"
+ wfp AP' ((s,A) ## \<pi>)"
 
 lemma wfp:
 "wfp AP' \<pi> \<longleftrightarrow>
@@ -49,15 +49,13 @@ proof (intro iffI allI)
 next
   assume R: "\<forall> i. ?R i"  thus ?L
   apply (coinduct)
-  using s0 fst_conv snd_conv snth.simps stream.sel stream.sel
+  using s0 fst_conv snd_conv snth.simps stream.sel 
   by (metis inf_commute stream.collapse surj_pair)
 qed
 
 lemma wfp_sdrop[simp]:
 "wfp AP' \<pi> \<Longrightarrow> wfp AP' (sdrop i \<pi>)"
 unfolding wfp by simp (metis sdrop_add sdrop_simps(1))
-
-
 
 (*<*)
 end (* context Kripke *)
