@@ -10,7 +10,7 @@ lemma integrableI_nonneg_bounded:
   shows "integrable M f"
 proof (rule integrableI_bounded)
   have "(\<integral>\<^sup>+ x. norm (f x) \<partial>M) = (\<integral>\<^sup>+ x. f x \<partial>M)"
-    using f(1) by (intro positive_integral_cong_AE) auto
+    using f(1) by (intro nn_integral_cong_AE) auto
   also note f(2)
   finally show "(\<integral>\<^sup>+ x. norm (f x) \<partial>M) < \<infinity>" .
 qed fact
@@ -18,7 +18,7 @@ qed fact
 lemma integral_norm_bound1:
   fixes f :: "_ \<Rightarrow> real"
   shows "integrable M f \<Longrightarrow> \<bar>integral\<^sup>L M f\<bar> \<le> (\<integral>x. \<bar>f x\<bar> \<partial>M)"
-  using positive_integral_eq_integral[of M "\<lambda>x. \<bar>f x\<bar>"] integral_norm_bound[of M f]
+  using nn_integral_eq_integral[of M "\<lambda>x. \<bar>f x\<bar>"] integral_norm_bound[of M f]
   by (simp add: integrable_abs)
 
 lemma (in wellorder) smallest:
@@ -382,12 +382,12 @@ lemma measurable_component_singleton_const[measurable_app]:
 context Discrete_Markov_Kernel
 begin
 
-lemma borel_measurable_positive_integral_paths[measurable (raw)]:
+lemma borel_measurable_nn_integral_paths[measurable (raw)]:
   assumes f: "f \<in> measurable M (count_space S)"
   assumes g: "(\<lambda>(x, y). g x y) \<in> borel_measurable (M \<Otimes>\<^sub>M S_seq)"
-  shows "(\<lambda>x. integral\<^sup>P (paths (f x)) (g x)) \<in> borel_measurable M"
+  shows "(\<lambda>x. integral\<^sup>N (paths (f x)) (g x)) \<in> borel_measurable M"
   by (rule measurable_compose_countable[OF countable_space f])
-     (simp add: g borel_measurable_positive_integral cong: measurable_cong_sets)
+     (simp add: g borel_measurable_nn_integral cong: measurable_cong_sets)
 
 lemma borel_measurable_lebesgue_integral_paths[measurable (raw)]:
   fixes g :: "_ \<Rightarrow> _ \<Rightarrow> _::{banach, second_countable_topology}"
@@ -399,24 +399,24 @@ lemma borel_measurable_lebesgue_integral_paths[measurable (raw)]:
 
 subsection {* Show splitting rules *}
 
-lemma positive_integral_split:
+lemma nn_integral_split:
   assumes [simp]: "s \<in> S" and f[measurable]: "f \<in> borel_measurable S_seq"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>paths s) = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>paths (case_nat s \<omega> i)) \<partial>paths s)"
 proof -
   have "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>(paths s)) = (\<integral>\<^sup>+\<omega>. f (path s \<omega>) \<partial>D_seq)"
-    unfolding paths_def positive_integral_distr[OF measurable_path f] ..
+    unfolding paths_def nn_integral_distr[OF measurable_path f] ..
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. f (path s \<omega>) \<partial>distr (D_seq \<Otimes>\<^sub>M D_seq) D_seq (\<lambda>(\<omega>, \<omega>'). comb_seq i \<omega> \<omega>'))"
     unfolding PiM_comb_seq ..
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. f (path s ((\<lambda>(\<omega>, \<omega>'). comb_seq i \<omega> \<omega>') \<omega>)) \<partial>(D_seq \<Otimes>\<^sub>M D_seq))"
-    by (subst positive_integral_distr) auto
+    by (subst nn_integral_distr) auto
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (path s (comb_seq i \<omega> \<omega>')) \<partial>D_seq) \<partial>D_seq)"
-    by (subst P.positive_integral_fst[symmetric]) auto
+    by (subst P.nn_integral_fst[symmetric]) auto
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (comb_seq i (path s \<omega>) (path (case_nat s (path s \<omega>) i) \<omega>')) \<partial>D_seq) \<partial>D_seq)"
-    by (intro positive_integral_cong) (simp add: path_comb_seq)
+    by (intro nn_integral_cong) (simp add: path_comb_seq)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (comb_seq i \<omega> (path (case_nat s \<omega> i) \<omega>')) \<partial>D_seq) \<partial>paths s)"
-    unfolding paths_def by (simp add: positive_integral_distr)
+    unfolding paths_def by (simp add: nn_integral_distr)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>paths (case_nat s \<omega> i)) \<partial>paths s)"
-    unfolding paths_def by (intro positive_integral_cong) (simp add: positive_integral_distr)
+    unfolding paths_def by (intro nn_integral_cong) (simp add: nn_integral_distr)
   finally show ?thesis .
 qed
   
@@ -430,9 +430,9 @@ proof -
 
   have "(\<integral>\<^sup>+ \<omega>. (\<integral>\<^sup>+ \<omega>'. norm (f (comb_seq i \<omega> \<omega>')) \<partial>paths (case_nat s \<omega> i)) \<partial>paths s) \<noteq> \<infinity>"
     using f unfolding integrable_iff_bounded
-    by (subst (asm) positive_integral_split[of s "\<lambda>x. norm (f x)"]) auto
+    by (subst (asm) nn_integral_split[of s "\<lambda>x. norm (f x)"]) auto
   then have "AE \<omega> in paths s. (\<integral>\<^sup>+ \<omega>'. norm (f (comb_seq i \<omega> \<omega>')) \<partial>paths (case_nat s \<omega> i)) \<noteq> \<infinity>"
-    by (rule positive_integral_PInf_AE[rotated]) simp
+    by (rule nn_integral_PInf_AE[rotated]) simp
   then show ?thesis
     unfolding integrable_iff_bounded by auto
 qed
@@ -448,11 +448,11 @@ proof -
     using f by (rule integrable_abs)
   from integrableD[OF this]
   have "(\<integral>\<^sup>+ \<omega>. (\<integral>\<^sup>+ \<omega>'. ereal \<bar>f (comb_seq i \<omega> \<omega>')\<bar> \<partial>paths (case_nat s \<omega> i)) \<partial>paths s) \<noteq> \<infinity>"
-    by (subst positive_integral_split[OF `s\<in>S`, symmetric]) auto
+    by (subst nn_integral_split[OF `s\<in>S`, symmetric]) auto
   also have "(\<integral>\<^sup>+ \<omega>. (\<integral>\<^sup>+ \<omega>'. ereal \<bar>f (comb_seq i \<omega> \<omega>')\<bar> \<partial>paths (case_nat s \<omega> i)) \<partial>paths s) =
       (\<integral>\<^sup>+ \<omega>. ereal (\<integral> \<omega>'. \<bar>f (comb_seq i \<omega> \<omega>')\<bar> \<partial>paths (case_nat s \<omega> i)) \<partial>paths s)"
     using integrable_split_AE[OF `s\<in>S` f_abs, of i]
-    by (intro positive_integral_cong_AE) (auto simp: positive_integral_eq_integral)
+    by (intro nn_integral_cong_AE) (auto simp: nn_integral_eq_integral)
   finally have
       "integrable (paths s) (\<lambda>\<omega>. integral\<^sup>L (paths (case_nat s \<omega> i)) (\<lambda>\<omega>'. \<bar>f (comb_seq i \<omega> \<omega>')\<bar>))"
     apply (intro integrableI_nonneg_bounded)
@@ -485,16 +485,16 @@ proof -
 
   { fix f :: "_ \<Rightarrow> real" assume f: "integrable (paths s) f" and nneg: "\<And>x. 0 \<le> f x"
     then have "(\<integral>\<omega>. f \<omega> \<partial>(paths s)) = real (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>(paths s))"
-      by (rule integral_eq_positive_integral)
+      by (rule integral_eq_nn_integral)
     also have "\<dots> = real (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
-      using integrableD(1)[OF f] by (subst positive_integral_split) auto
+      using integrableD(1)[OF f] by (subst nn_integral_split) auto
     also have "\<dots> = real (\<integral>\<^sup>+\<omega>. (\<integral>\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
       using integrable_split_AE[OF `s\<in>S` f, of i] AE_space
-      by (intro positive_integral_cong_AE arg_cong[where f=real])
-         (auto simp: nneg positive_integral_eq_integral)
+      by (intro nn_integral_cong_AE arg_cong[where f=real])
+         (auto simp: nneg nn_integral_eq_integral)
     also have "\<dots> = (\<integral>\<omega>. (\<integral>\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
       using integrable_split_AE[OF `s \<in> S` f, of i] integrable_split[OF `s \<in> S` f, of i]
-      by (subst positive_integral_eq_integral) (auto intro!: integral_nonneg_AE nneg)
+      by (subst nn_integral_eq_integral) (auto intro!: integral_nonneg_AE nneg)
     finally have "(\<integral>\<omega>. f \<omega> \<partial>(paths s)) =
       (\<integral>\<omega>. (\<integral>\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)" . }
   note nonneg = this
@@ -531,11 +531,11 @@ proof -
   have "emeasure (paths s) A = (\<integral>\<^sup>+ x. indicator A x \<partial>paths s)"
     using A by auto
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. indicator A (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
-    by (subst positive_integral_split) auto
+    by (subst nn_integral_split) auto
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. indicator (comb_seq i \<omega> -` A \<inter> space S_seq) \<omega>' \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
-    by (auto intro!: positive_integral_cong simp: indicator_def)
+    by (auto intro!: nn_integral_cong simp: indicator_def)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. emeasure (paths (case_nat s \<omega> i)) (comb_seq i \<omega> -` A \<inter> space S_seq) \<partial>paths s)"
-    by (auto intro!: positive_integral_cong positive_integral_indicator)
+    by (auto intro!: nn_integral_cong nn_integral_indicator)
   finally show ?thesis .
 qed
 
@@ -545,7 +545,7 @@ lemma emeasure_split_Collect:
       (\<integral>\<^sup>+\<omega>. emeasure (paths (case_nat s \<omega> i)) {\<omega>'\<in>space S_seq. P (comb_seq i \<omega> \<omega>')} \<partial>paths s)"
   using emeasure_split[OF assms, of i]
   using measurable_space[OF measurable_comb_seq, of _ "count_space S" i]
-  by (auto intro!: positive_integral_cong arg_cong2[where f=emeasure]
+  by (auto intro!: nn_integral_cong arg_cong2[where f=emeasure]
            simp: space_PiM `s \<in> S` PiE_iff space_pair_measure split: nat.split)
 
 lemma prob_split:
@@ -572,18 +572,18 @@ lemma AE_split:
   shows "(AE \<omega> in paths s. P \<omega>) \<longleftrightarrow>
     (AE \<omega> in paths s. AE \<omega>' in paths (case_nat s \<omega> i). P (comb_seq i \<omega> \<omega>'))"
 proof -
-  have "(AE x in paths s. P x) \<longleftrightarrow> integral\<^sup>P (paths s) (indicator {x. \<not> P x}) = 0"
-    using P by (subst AE_iff_positive_integral) auto
-  also have "integral\<^sup>P (paths s) (indicator {x. \<not> P x}) =
+  have "(AE x in paths s. P x) \<longleftrightarrow> integral\<^sup>N (paths s) (indicator {x. \<not> P x}) = 0"
+    using P by (subst AE_iff_nn_integral) auto
+  also have "integral\<^sup>N (paths s) (indicator {x. \<not> P x}) =
     (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. indicator {\<omega>. \<not> P \<omega>} (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
-    by (subst positive_integral_split) auto
+    by (subst nn_integral_split) auto
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. indicator {\<omega>'. \<not> P (comb_seq i \<omega> \<omega>')} \<omega>' \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
-    by (auto intro!: positive_integral_cong split: split_indicator)
+    by (auto intro!: nn_integral_cong split: split_indicator)
   also have "((\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. indicator {\<omega>'. \<not> P (comb_seq i \<omega> \<omega>')} \<omega>' \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s) = 0) \<longleftrightarrow>
     (AE \<omega> in paths s. (\<integral>\<^sup>+\<omega>'. indicator {\<omega>'. \<not> P (comb_seq i \<omega> \<omega>')} \<omega>' \<partial>(paths (case_nat s \<omega> i))) = 0)"
-    by (subst positive_integral_0_iff_AE) (simp, simp add: eq_iff positive_integral_positive)
+    by (subst nn_integral_0_iff_AE) (simp, simp add: eq_iff nn_integral_nonneg)
   also have "\<dots> \<longleftrightarrow> (AE \<omega> in paths s. AE \<omega>' in paths (case_nat s \<omega> i). P (comb_seq i \<omega> \<omega>'))"
-    by (intro AE_cong) (simp add: AE_iff_positive_integral)
+    by (intro AE_cong) (simp add: AE_iff_nn_integral)
   finally show ?thesis .
 qed
 
@@ -602,9 +602,9 @@ proof -
     by (subst distr_distr) (auto simp: comp_def)
 qed
 
-lemma positive_integral_paths_0:
+lemma nn_integral_paths_0:
   assumes s[simp]: "s \<in> S" shows "(\<integral>\<^sup>+\<omega>. f (\<omega> 0) \<partial>paths s) = (\<integral>\<^sup>+s'. f s' \<partial>K s)"
-  by (subst distr_K[symmetric, OF s]) (simp add: positive_integral_distr)
+  by (subst distr_K[symmetric, OF s]) (simp add: nn_integral_distr)
 
 lemma emeasure_paths_0:
   assumes s[simp]: "s \<in> S"
@@ -650,11 +650,11 @@ lemma AE_paths_0:
   apply measurable
   done
 
-lemma positive_integral_iterate:
+lemma nn_integral_iterate:
   assumes [simp]: "s \<in> S" and f: "f \<in> borel_measurable S_seq"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>(paths s)) = (\<integral>\<^sup>+s'. (\<integral>\<^sup>+\<omega>. f (case_nat s' \<omega>) \<partial>(paths s')) \<partial>K s)" 
-  by (subst positive_integral_split[OF assms, where i=1])
-     (simp add: positive_integral_paths_0[symmetric])
+  by (subst nn_integral_split[OF assms, where i=1])
+     (simp add: nn_integral_paths_0[symmetric])
 
 lemma integrable_iterate_AE:
   fixes f :: "_ \<Rightarrow> real"
@@ -685,7 +685,7 @@ lemma emeasure_iterate:
   shows "emeasure (paths s) A = (\<integral>\<^sup>+s'. emeasure (paths s') (case_nat s' -` A \<inter> space S_seq) \<partial>K s)"
   apply (subst emeasure_split[OF assms, where i=1])
   apply simp
-  apply (subst positive_integral_paths_0)
+  apply (subst nn_integral_paths_0)
   apply simp_all
   done
 
@@ -751,7 +751,7 @@ lemma fairI:
 lemma measurable_fair[measurable]: "{\<omega>\<in>space S_seq. fair s t \<omega>} \<in> sets S_seq"
   unfolding fair_def by simp
 
-lemma positive_integral_prefixes:
+lemma nn_integral_prefixes:
   assumes s[simp]: "s \<in> S"
   assumes [measurable]: "i \<in> measurable S_seq (count_space UNIV)"
     and [measurable]: "f \<in> borel_measurable S_seq"
@@ -773,29 +773,29 @@ proof -
   { fix \<omega> have "f \<omega> = (\<Sum>n. indicator (?A n) \<omega> * f \<omega>)"
       by (subst suminf_finite[where N="{i \<omega>}"]) (auto split: split_indicator simp: inv_f) }
   then have "(\<integral>\<^sup>+ \<omega>. f \<omega> \<partial>paths s) = (\<integral>\<^sup>+ \<omega>. (\<Sum>n. indicator (?A n) \<omega> * f \<omega>) \<partial>paths s)"
-    by (rule positive_integral_cong)
+    by (rule nn_integral_cong)
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+ \<omega>. indicator (?A n) \<omega> * f \<omega> \<partial>paths s)"
-    using f by (intro positive_integral_suminf) auto
+    using f by (intro nn_integral_suminf) auto
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+ \<omega>. \<integral>\<^sup>+ \<omega>'. indicator (?A n) (comb_seq n \<omega> \<omega>') *
       f (comb_seq n \<omega> \<omega>') \<partial>paths (case_nat s \<omega> n) \<partial>paths s)"
-    by (subst positive_integral_split[symmetric]) simp_all
+    by (subst nn_integral_split[symmetric]) simp_all
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+ \<omega>. \<integral>\<^sup>+ \<omega>'. indicator (?A n) \<omega> *
       f (comb_seq n \<omega> \<omega>') \<partial>paths (case_nat s \<omega> n) \<partial>paths s)"
-    by (intro arg_cong[where f=suminf] ext positive_integral_cong)
+    by (intro arg_cong[where f=suminf] ext nn_integral_cong)
        (auto split: split_indicator intro: inv_f inv_i' inv_i_eq)
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+ \<omega>. indicator (?A n) \<omega> * \<integral>\<^sup>+ \<omega>'.
       f (comb_seq n \<omega> \<omega>') \<partial>paths (case_nat s \<omega> n) \<partial>paths s)"
-    by (intro arg_cong[where f=suminf] ext positive_integral_cong)
-       (simp add: positive_integral_cmult)
+    by (intro arg_cong[where f=suminf] ext nn_integral_cong)
+       (simp add: nn_integral_cmult)
   also have "\<dots> = (\<Sum>n. \<integral>\<^sup>+ \<omega>. indicator (?A n) \<omega> * \<integral>\<^sup>+ \<omega>'.
       f (comb_seq (i \<omega>) \<omega> \<omega>') \<partial>paths (case_nat s \<omega> (i \<omega>)) \<partial>paths s)"
-    by (intro arg_cong[where f=suminf] ext positive_integral_cong) (simp split: split_indicator)
+    by (intro arg_cong[where f=suminf] ext nn_integral_cong) (simp split: split_indicator)
   also have "\<dots> = (\<integral>\<^sup>+ \<omega>. (\<Sum>n. indicator (?A n) \<omega> * \<integral>\<^sup>+ \<omega>'.
       f (comb_seq (i \<omega>) \<omega> \<omega>') \<partial>paths (case_nat s \<omega> (i \<omega>))) \<partial>paths s)"
-    by (simp add: positive_integral_positive positive_integral_suminf)
+    by (simp add: nn_integral_nonneg nn_integral_suminf)
   also have "\<dots> = (\<integral>\<^sup>+ \<omega>. indicator {\<omega>. i \<omega> \<noteq> 0} \<omega> * \<integral>\<^sup>+ \<omega>'.
-      f (comb_seq (i \<omega>) \<omega> \<omega>') \<partial>paths (case_nat s \<omega> (i \<omega>)) \<partial>paths s)" (is "integral\<^sup>P _ ?f = integral\<^sup>P _ ?g")
-  proof (intro positive_integral_cong)
+      f (comb_seq (i \<omega>) \<omega> \<omega>') \<partial>paths (case_nat s \<omega> (i \<omega>)) \<partial>paths s)" (is "integral\<^sup>N _ ?f = integral\<^sup>N _ ?g")
+  proof (intro nn_integral_cong)
     fix \<omega> show "?f \<omega> = ?g \<omega>"
       by (subst suminf_finite[where N="{i \<omega>}"]) (auto split: split_indicator)
   qed
@@ -825,7 +825,7 @@ proof -
       by simp
     also have "\<dots> = (\<integral>\<^sup>+\<omega>. indicator {\<omega>. i \<omega> \<noteq> 0} \<omega> *
         (\<integral>\<^sup>+\<omega>'. indicator (unfair s') (comb_seq (i \<omega>) \<omega> \<omega>') \<partial>paths (case_nat s' \<omega> (i \<omega>))) \<partial>paths s')"
-    proof (rule positive_integral_prefixes)
+    proof (rule nn_integral_prefixes)
       fix \<omega> \<omega>' assume i: "0 < i \<omega>" and le: "\<And>j. j < i \<omega> \<Longrightarrow> \<omega> j = \<omega>' j"
       def j \<equiv> "i \<omega> - 1"
       from i have "\<exists>i. \<omega> i = s"
@@ -844,7 +844,7 @@ proof -
     qed simp_all
     also have "\<dots> = (\<integral>\<^sup>+\<omega>. indicator {\<omega>. i \<omega> \<noteq> 0} \<omega> *
         (\<integral>\<^sup>+\<omega>'. indicator {\<omega>. s' = s \<longrightarrow> \<omega> 0 \<noteq> t} \<omega> * indicator (unfair s) \<omega>' \<partial>paths s) \<partial>paths s')"
-    proof (intro positive_integral_cong ereal_left_mult_cong arg_cong2[where f="integral\<^sup>P"] ext)
+    proof (intro nn_integral_cong ereal_left_mult_cong arg_cong2[where f="integral\<^sup>N"] ext)
       fix \<omega> \<omega>' assume \<omega>: "\<omega> : space (paths s')" and "indicator {\<omega>. i \<omega> \<noteq> 0} \<omega> \<noteq> 0"
       then have "0 < i \<omega>"
         by (simp add: indicator_def split: split_if_asm)
@@ -897,26 +897,26 @@ proof -
     qed
     also have "\<dots> = (\<integral>\<^sup>+\<omega>. indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s' = s \<longrightarrow> \<omega> 0 \<noteq> t)} \<omega> *
         (\<integral>\<^sup>+\<omega>'. indicator (unfair s) \<omega>' \<partial>paths s) \<partial>paths s')"
-      by (auto simp: indicator_def intro!: positive_integral_cong)
+      by (auto simp: indicator_def intro!: nn_integral_cong)
     also have "\<dots> = (\<integral>\<^sup>+\<omega>. indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s' = s \<longrightarrow> \<omega> 0 \<noteq> t)} \<omega> \<partial>paths s') *
         emeasure (paths s) (unfair s)"
-      by (simp add: positive_integral_multc emeasure_nonneg)
+      by (simp add: nn_integral_multc emeasure_nonneg)
     finally have "emeasure (paths s') (unfair s') = \<dots>" . }
   note split_unfair = this
 
-  have "integral\<^sup>P (paths s) (indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s = s \<longrightarrow> \<omega> 0 \<noteq> t)}) \<le>
+  have "integral\<^sup>N (paths s) (indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s = s \<longrightarrow> \<omega> 0 \<noteq> t)}) \<le>
       (\<integral>\<^sup>+ \<omega>. indicator {s. s \<noteq> t} (\<omega> 0) \<partial>paths s)"
-    by (auto split: split_indicator intro!: positive_integral_mono)
+    by (auto split: split_indicator intro!: nn_integral_mono)
   also have "\<dots> = emeasure (K s) (space (K s) - {t})"
-    by (auto simp add: positive_integral_paths_0 positive_integral_indicator'
+    by (auto simp add: nn_integral_paths_0 nn_integral_indicator'
              intro!: arg_cong2[where f=emeasure])
   also have "\<dots> = 1 - emeasure (K s) {t}"
     using K.emeasure_space_1[of s] emeasure_Diff[of "K s" "{t}" S] t unfolding E_def by auto
   also have "\<dots> < 1"
     using t measure_nonneg[of "K s" "{t}"] unfolding E_def by (simp add: K.emeasure_eq_measure one_ereal_def)
-  finally have "integral\<^sup>P (paths s) (indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s = s \<longrightarrow> \<omega> 0 \<noteq> t)}) < 1" .
+  finally have "integral\<^sup>N (paths s) (indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s = s \<longrightarrow> \<omega> 0 \<noteq> t)}) < 1" .
   with split_unfair[of s] have "emeasure (paths s) (unfair s) = 0"
-    by (cases "integral\<^sup>P (paths s) (indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s = s \<longrightarrow> \<omega> 0 \<noteq> t)})")
+    by (cases "integral\<^sup>N (paths s) (indicator {\<omega>. i \<omega> \<noteq> 0 \<and> (s = s \<longrightarrow> \<omega> 0 \<noteq> t)})")
        (auto simp: emeasure_eq_measure one_ereal_def)
 
   let ?P = "\<lambda>s' n \<omega>. (\<forall>i. case_nat s' \<omega> (i + n) = s \<longrightarrow> \<omega> (i + n) \<noteq> t) \<longrightarrow> 
@@ -1246,7 +1246,7 @@ lemma hitting_time_case_nat_0:
   "s \<in> \<Phi> \<Longrightarrow> hitting_time \<Phi> (case_nat s \<omega>) = 0"
   unfolding hitting_time_def by (auto intro!: Least_equality)
 
-lemma positive_integral_hitting_time_finite:
+lemma nn_integral_hitting_time_finite:
   assumes [simp]: "s \<in> S" and \<Phi>: "finite (S - \<Phi>)"
   assumes until: "AE \<omega> in paths s. case_nat s \<omega> \<in> until S \<Phi>"
   shows "(\<integral>\<^sup>+ \<omega>. real (hitting_time \<Phi> (case_nat s \<omega>)) \<partial>paths s) \<noteq> \<infinity>"
@@ -1340,7 +1340,7 @@ next
           (\<integral>\<^sup>+\<omega>. ?M \<omega> (?A \<omega>) \<partial>paths s')"
         by (intro emeasure_split_Collect) auto
       also have "\<dots> \<le> (\<integral>\<^sup>+\<omega>. ereal (d^t) * indicator {\<omega>\<in>space (paths s'). \<forall>i<n. \<omega> i \<notin> \<Phi>} \<omega> \<partial>paths s')"
-        apply (rule positive_integral_mono_AE)
+        apply (rule nn_integral_mono_AE)
         using AE_space AE_all_enabled[OF `s'\<in>S`]
       proof eventually_elim
         fix \<omega> assume \<omega>: "\<omega> \<in> space (paths s')" and E: "\<forall>i. \<omega> i \<in> E (case_nat s' \<omega> i)"
@@ -1363,7 +1363,7 @@ next
         finally show "?M \<omega> (?A \<omega>) \<le> ereal (d^t) * indicator {\<omega>\<in>space (paths s'). \<forall>i<n. \<omega> i \<notin> \<Phi>} \<omega>" .
       qed
       also have "\<dots> = d^t * emeasure (paths s') {\<omega>\<in>space (paths s'). \<forall>i<n. \<omega> i \<notin> \<Phi>}"
-        using `0 \<le> d` by (intro positive_integral_cmult_indicator) auto
+        using `0 \<le> d` by (intro nn_integral_cmult_indicator) auto
       also have "\<dots> \<le> ereal (d^t) * d"
         using d[of s'] `0 \<le> d` Suc(2)
         by (intro ereal_mult_left_mono) (auto simp add: emeasure_eq_measure space_PiM PiE_iff R_def cong: conj_cong)
@@ -1374,7 +1374,7 @@ next
 
   have "(\<integral>\<^sup>+ \<omega>. ereal (of_nat (hitting_time \<Phi> (case_nat s \<omega>))) \<partial>paths s) \<le>
       (\<integral>\<^sup>+ \<omega>. ereal (of_nat (hitting_time \<Phi> \<omega> div n)) * n + Suc n \<partial>paths s)"
-    apply (rule positive_integral_mono_AE)
+    apply (rule nn_integral_mono_AE)
     using until
   proof eventually_elim
     fix \<omega> assume "case_nat s \<omega> \<in> until S \<Phi>"
@@ -1391,10 +1391,10 @@ next
   qed
   also have "\<dots> = (\<integral>\<^sup>+ \<omega>. ereal (of_nat (hitting_time \<Phi> \<omega> div n)) \<partial>paths s) * n + Suc n"
     using emeasure_space_1[of s]
-    by (simp add: positive_integral_add positive_integral_multc
+    by (simp add: nn_integral_add nn_integral_multc
              del: plus_ereal.simps times_ereal.simps)
   also have "\<dots> = (\<Sum>t. emeasure (paths s) {\<omega>\<in>space (paths s). t < hitting_time \<Phi> \<omega> div n}) * n + Suc n"
-    by (simp add: positive_integral_nat_function)
+    by (simp add: nn_integral_nat_function)
   also have "\<dots> \<le> (\<Sum>t. emeasure (paths s) {\<omega>\<in>space (paths s). \<forall>i\<le>t * n. \<omega> i \<notin> \<Phi>}) * n + Suc n"
     by (intro ereal_add_mono ereal_mult_right_mono suminf_le_pos emeasure_mono_AE)
        (auto simp: less_hitting_time)

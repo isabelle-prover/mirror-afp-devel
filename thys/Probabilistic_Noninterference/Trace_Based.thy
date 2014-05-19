@@ -11,7 +11,7 @@ subsection{* Preliminaries *}
 lemma integrable_count_space_finite_support:
   fixes f :: "'a \<Rightarrow> 'b::{banach,second_countable_topology}"
   shows "finite {x\<in>X. f x \<noteq> 0} \<Longrightarrow> integrable (count_space X) f"
-  by (auto simp: positive_integral_count_space integrable_iff_bounded)
+  by (auto simp: nn_integral_count_space integrable_iff_bounded)
 
 lemma lebesgue_integral_point_measure:
   fixes g :: "_ \<Rightarrow> real"

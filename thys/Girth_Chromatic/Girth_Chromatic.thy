@@ -137,10 +137,10 @@ lemma Markov_inequality:
   shows "prob {x \<in> space P. c \<le> f x} \<le> (\<integral>x. f x \<partial> P) / c"
 proof -
   from assms have "(\<integral>\<^sup>+ x. ereal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
-    by (intro positive_integral_eq_integral) auto
+    by (intro nn_integral_eq_integral) auto
   with assms show ?thesis
-    using positive_integral_Markov_inequality[of f P "space P" "1 / c"]
-    by (simp cong: positive_integral_cong add: emeasure_eq_measure one_ereal_def)
+    using nn_integral_Markov_inequality[of f P "space P" "1 / c"]
+    by (simp cong: nn_integral_cong add: emeasure_eq_measure one_ereal_def)
 qed
 
 end
