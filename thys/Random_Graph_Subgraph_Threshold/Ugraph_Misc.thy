@@ -398,18 +398,18 @@ lemma setprod_id_cancel_nat:
 
 lemma (in prob_space) integrable_squareD:
   --"Contributed by Johannes Hölzl"
+  fixes X :: "_ \<Rightarrow> real"
   assumes "integrable M (\<lambda>x. (X x)^2)" "X \<in> borel_measurable M"
   shows "integrable M X"
 proof -
   have "integrable M (\<lambda>x. max 1 ((X x)^2))"
     using assms by (auto simp: integrable_max)
   then show "integrable M X"
-    proof (rule integrable_bound[OF _ always_eventually], clarify)
-      fix x
-      show "\<bar>X x\<bar> \<le> max 1 ((X x)^2)"
-        using real_abs_le_square_iff[of 1 "X x"] power_increasing[of 1 2 "abs (X x)"]
-        by (auto split: split_max)
-    qed (auto intro: assms)
+  proof (rule integrable_bound[OF _ _ always_eventually[OF allI]])
+    fix x show "norm (X x) \<le> norm (max 1 ((X x)^2))"
+      using real_abs_le_square_iff[of 1 "X x"] power_increasing[of 1 2 "abs (X x)"]
+      by (auto split: split_max)
+  qed fact
 qed
 
 end

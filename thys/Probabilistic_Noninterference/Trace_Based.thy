@@ -8,23 +8,25 @@ begin
 
 subsection{* Preliminaries *}
 
+lemma integrable_count_space_finite_support:
+  fixes f :: "'a \<Rightarrow> 'b::{banach,second_countable_topology}"
+  shows "finite {x\<in>X. f x \<noteq> 0} \<Longrightarrow> integrable (count_space X) f"
+  by (auto simp: positive_integral_count_space integrable_iff_bounded)
+
 lemma lebesgue_integral_point_measure:
+  fixes g :: "_ \<Rightarrow> real"
   assumes f: "finite {a\<in>A. 0 < f a \<and> g a \<noteq> 0}"
   shows "integral\<^sup>L (point_measure A f) g = (\<Sum>a|a\<in>A \<and> 0 < f a \<and> g a \<noteq> 0. f a * g a)"
 proof -
-  have *: "\<And>x y. ereal x * max 0 (ereal y) = ereal (x * max 0 y)"
-    by (simp add: max_def)
-  have **: "(\<Sum>a | a \<in> A \<and> 0 < f a \<and> 0 < g a. f a * max 0 (g a)) = (\<Sum>a | a \<in> A \<and> 0 < f a \<and> g a \<noteq> 0. if 0 < g a then f a * g a else 0)"
-    by (auto intro!: setsum_mono_zero_cong_left[OF f] split: split_if_asm)
-  have ***: "(\<Sum>a | a \<in> A \<and> 0 < f a \<and> g a < 0. f a * max 0 (- g a)) = (\<Sum>a | a \<in> A \<and> 0 < f a \<and> g a \<noteq> 0. if g a < 0 then - (f a * g a) else 0)"
-    by (auto intro!: setsum_mono_zero_cong_left[OF f] split: split_if_asm)
+  have eq: "{a \<in> A. max 0 (f a) \<noteq> 0 \<and> g a \<noteq> 0} = {a\<in>A. 0 < f a \<and> g a \<noteq> 0}"
+    by auto
   show ?thesis
-    unfolding lebesgue_integral_def
-    apply (subst (1 2) positive_integral_max_0[symmetric])
-    apply (subst (1 2) positive_integral_point_measure)
-    using f apply (rule rev_finite_subset, simp add: subset_eq max_def)
-    using f apply (rule rev_finite_subset, simp add: subset_eq max_def)
-    apply (auto intro!: setsum_cong simp add: * ** *** less_max_iff_disj setsum_subtractf[symmetric])
+    unfolding point_measure_def
+    using f
+    apply (subst density_ereal_max_0)
+    apply (subst integral_real_density)
+    apply (auto simp add: integral_real_density lebesgue_integral_count_space_finite_support eq
+      intro!: setsum_cong)
     done
 qed
 
@@ -849,6 +851,8 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       have "\<P>(bT in paths st cf. S cf (Suc n) bT) = (\<integral>cf'. \<P>(bT in paths st cf'. S cf' n bT) \<partial>trans st cf)"
         unfolding prob_iterate_Collect[OF reachable'[OF cf] S_sets]
         apply (intro integral_cong_AE)
+        apply simp
+        apply simp
         using AE_enabled[OF reachable'[OF `cf \<in> reachable st`]]
         apply eventually_elim
         apply (rule prob_eq_AE)

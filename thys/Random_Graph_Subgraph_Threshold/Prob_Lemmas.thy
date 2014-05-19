@@ -48,10 +48,8 @@ definition "indep A B \<longleftrightarrow> prob (A \<inter> B) = prob A * prob 
 text{* The probability of an indicator variable is equal to its expectation: *}
 
 lemma expectation_indicator:
-  assumes "A \<in> events"
-  shows "expectation (rind A) = prob A"
-using integral_indicator(1)[OF assms]
-by (metis Sigma_Algebra.measure_def emeasure_finite)
+  "A \<in> events \<Longrightarrow> expectation (rind A) = prob A"
+  by simp
 
 text{* For a non-negative random variable @{term X}, the Markov inequality gives the following
 upper bound: \[ \Pr[X \ge a] \le \frac{\Ex[X]}{a} \] *}
@@ -71,13 +69,6 @@ qed
 
 definition variance :: "('a \<Rightarrow> real) \<Rightarrow> real" where
 "variance X = expectation (\<lambda>x. (X x - expectation X)^2)"
-
-text{* The following lemma is missing from @{thm [source] Lebesgue_Integration.integral_multc}. *}
-
-lemma integral_multc_1: "integrable M f \<Longrightarrow> integrable M (\<lambda>x. f x * c)" (* should be in integral_multc *)
-by (auto simp: ac_simps)
-
-lemmas integral_multc[simp] = integral_multc_1 Lebesgue_Integration.integral_multc
 
 text{* $\Var[X] = \Ex[X^2] - \Ex[X]^2 $ *}
 

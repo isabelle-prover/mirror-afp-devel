@@ -74,7 +74,7 @@ lemma emeasure_eq:
   by (simp add: P_def space_point_measure emeasure_point_measure_finite zero_le_mult_iff
                 zero_le_power_iff sets_point_measure emeasure_notin_sets)
 
-lemma integrable_P[intro, simp]: "integrable P f"
+lemma integrable_P[intro, simp]: "integrable P (f::_ \<Rightarrow> real)"
   using finite_edges by (simp add: integrable_point_measure_finite P_def)
 
 lemma borel_measurable_P[measurable]: "f \<in> borel_measurable P"
