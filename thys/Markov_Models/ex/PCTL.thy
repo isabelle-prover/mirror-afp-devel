@@ -591,7 +591,7 @@ lemma Psi_imp_not_Prob0:
 
 subsubsection {* Finite expected reward *}
 
-lemma positive_integral_reward_finite:
+lemma nn_integral_reward_finite:
   assumes "s \<in> S"
   assumes until: "AE \<omega> in paths s. case_nat s \<omega> \<in> until S (svalid F)"
   shows "(\<integral>\<^sup>+ \<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s) \<noteq> \<infinity>"
@@ -610,7 +610,7 @@ proof -
   have "(\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)
     \<le> (\<integral>\<^sup>+\<omega>. ereal Mr * ereal (((of_nat \<circ> hitting_time ?F) \<circ> case_nat s) \<omega>) \<partial>paths s)"
     using until
-  proof (intro positive_integral_mono_AE, elim AE_mp, intro AE_I2 impI)
+  proof (intro nn_integral_mono_AE, elim AE_mp, intro AE_I2 impI)
     fix \<omega> assume \<omega>: "\<omega> \<in> space (paths s)" "case_nat s \<omega> \<in> until S ?F"
     from untilE[OF \<omega>(2)] guess n . note n = this
         
@@ -627,13 +627,13 @@ proof -
   qed
   also have "\<dots> = Mr * (\<integral>\<^sup>+\<omega>. ereal (((of_nat \<circ> hitting_time ?F) \<circ> case_nat s) \<omega>) \<partial>paths s)"
     using measurable_hitting_time `0 \<le> Mr` `s \<in> S`
-    apply (subst positive_integral_cmult)
+    apply (subst nn_integral_cmult)
     apply (rule borel_measurable_ereal)
     using measurable_comp[OF measurable_case_nat measurable_hitting_time]
     apply (auto simp: comp_def cong: measurable_cong_sets)
     done
   also have "\<dots> < \<infinity>"
-    using positive_integral_hitting_time_finite[OF `s \<in> S` _ until] `0 \<le> Mr`
+    using nn_integral_hitting_time_finite[OF `s \<in> S` _ until] `0 \<le> Mr`
     by (simp add: real_eq_of_nat)
   finally show ?thesis
     by simp
@@ -715,7 +715,7 @@ proof -
   show ?thesis
   proof (rule ccontr)
     assume "\<not> ?thesis"
-    from positive_integral_PInf_AE[OF _ this] `s\<in>S`
+    from nn_integral_PInf_AE[OF _ this] `s\<in>S`
     have "AE x in paths s. reward (Future F) (case_nat s x) \<noteq> \<infinity>"
       by (simp del: reward.simps)
     then have "AE \<omega> in paths s. \<omega> \<in> case_nat s -` until S ?F \<inter> space (paths s)"
@@ -761,9 +761,9 @@ proof -
       with `s \<in> S` `s' \<in> S` have "s' \<in> E s" by (simp add: E_iff)
       from `s \<notin> ?F` AE_until have "AE \<omega> in paths s. \<omega> \<in> until S ?F"
         using svalid_subset_S `s \<in> S` by simp
-      with positive_integral_reward_finite[OF `s' \<in> S`, of F] `s \<in> S` `s' \<in> E s`
+      with nn_integral_reward_finite[OF `s' \<in> S`, of F] `s \<in> S` `s' \<in> E s`
       have "\<bar>?E s'\<bar> \<noteq> \<infinity>"
-        by (simp add: positive_integral_positive AE_iterate[of s] AE_K_iff)
+        by (simp add: nn_integral_nonneg AE_iterate[of s] AE_K_iff)
       then show ?thesis by (cases "?E s'") auto
     qed (simp add: zero_ereal_def[symmetric])
   qed simp
@@ -794,23 +794,23 @@ proof -
   qed
   then have "(\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
     = (\<integral>\<^sup>+\<omega>. (\<rho> s + \<iota> s (\<omega> 0)) + ?R \<omega> \<partial>paths s)"
-    by (rule positive_integral_cong_AE)
+    by (rule nn_integral_cong_AE)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> 0)\<partial>paths s) +
     (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>paths s)"
     using `s \<in> S`
-    by (subst positive_integral_add)
+    by (subst nn_integral_add)
        (auto simp add: space_PiM PiE_iff reward_nonneg simp del: reward.simps)
   also have "\<dots> = ereal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) +
     (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>paths s)"
     using `s \<in> S`
-    by (subst positive_integral_paths_0)
-       (auto simp: field_simps setsum_addf \<tau>_distr positive_integral_K
+    by (subst nn_integral_paths_0)
+       (auto simp: field_simps setsum_addf \<tau>_distr nn_integral_K
                    setsum_right_distrib[symmetric])
   finally show "real (\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
     - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
     (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. ?R (case_nat s' \<omega>) \<partial>paths s'))"
     apply (simp del: reward.simps)
-    apply (subst positive_integral_eq_sum[OF `s \<in> S` reward_measurable])
+    apply (subst nn_integral_eq_sum[OF `s \<in> S` reward_measurable])
     apply (simp del: reward.simps add: *)
     done
 qed
@@ -914,19 +914,19 @@ next
       case (Suc k) 
       have "(\<integral>\<^sup>+\<omega>. ereal (\<Sum>i<Suc k. \<rho> (case_nat s \<omega> i) + \<iota> (case_nat s \<omega> i) (\<omega> i)) \<partial>paths s)
         = (\<integral>\<^sup>+\<omega>. ereal (\<rho> s + \<iota> s (\<omega> 0)) + ereal (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>paths s)"
-        by (auto intro!: positive_integral_cong
+        by (auto intro!: nn_integral_cong
                  simp: setsum_reindex lessThan_Suc_eq_insert_0 zero_notin_Suc_image)
       also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> 0) \<partial>paths s) + 
           (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>paths s)"
         using `s \<in> S`
-        by (intro positive_integral_add AE_I2)
+        by (intro nn_integral_add AE_I2)
            (auto intro!: setsum_nonneg add_nonneg_nonneg simp: space_PiM)
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) + 
         (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>paths s)"
-        using `s \<in> S` by (subst positive_integral_paths_0) (auto simp: positive_integral_K)
+        using `s \<in> S` by (subst nn_integral_paths_0) (auto simp: nn_integral_K)
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) + 
         (\<Sum>s'\<in>S. \<tau> s s' * ExpCumm s' k)"
-        using `s \<in> S` by (subst positive_integral_eq_sum) (auto simp: Suc)
+        using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: Suc)
       also have "\<dots> = ExpCumm s (Suc k)"
         using `s \<in> S`
         by (simp add: field_simps setsum_addf setsum_right_distrib[symmetric] \<tau>_distr setsum_ereal[symmetric]
@@ -943,7 +943,7 @@ next
     proof (induct k arbitrary: s)
       case 0 with emeasure_space_1 show ?case by simp
     next
-      case (Suc k) then show ?case by (simp add: positive_integral_eq_sum[of s])
+      case (Suc k) then show ?case by (simp add: nn_integral_eq_sum[of s])
     qed }
   then show ?case by auto
 
@@ -976,9 +976,9 @@ next
       unfolding Y_def N_def by auto
     then have "AE \<omega> in paths s. case_nat s \<omega> \<in> until S ?F"
       using svalid_subset_S by (auto simp add: Prob1_iff)
-    from positive_integral_reward_finite[OF `s \<in> S`] this positive_integral_positive
+    from nn_integral_reward_finite[OF `s \<in> S`] this nn_integral_nonneg
     have "\<bar>\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s\<bar> \<noteq> \<infinity>"
-      by (simp add: positive_integral_positive)
+      by (simp add: nn_integral_nonneg)
     with l_eq `s \<in> S` have "ereal (l s) = (\<integral>\<^sup>+\<omega>. reward (Future F) (case_nat s \<omega>) \<partial>paths s)"
       by auto }
   moreover

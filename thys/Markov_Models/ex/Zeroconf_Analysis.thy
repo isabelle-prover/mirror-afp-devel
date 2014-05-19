@@ -175,13 +175,13 @@ lemma cost_from_start:
 proof -
   have "\<forall>s\<in>S. \<exists>r. R s = ereal r"
     unfolding R_def
-    using positive_integral_reward_until_finite[OF _ AE_reaches_error_or_ok] by auto
+    using nn_integral_reward_until_finite[OF _ AE_reaches_error_or_ok] by auto
   from bchoice[OF this] obtain R' where R': "\<And>s. s\<in>S \<Longrightarrow> R s = ereal (R' s)" by auto
 
   have R_sum: "\<And>s. s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
     R s = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s s' + R s'))"
     using R' unfolding R_def
-    by (subst positive_integral_reward_until_real[OF _ _ AE_reaches_error_or_ok]) simp_all
+    by (subst nn_integral_reward_until_real[OF _ _ AE_reaches_error_or_ok]) simp_all
        
   then have R'_sum: "\<And>s. s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
     R' s = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s s' + R' s'))"
