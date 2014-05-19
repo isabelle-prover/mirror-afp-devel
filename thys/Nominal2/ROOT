@@ -1,7 +1,7 @@
 (* This session is expected to be merged into the Isabelle distribution
    before the next release *)  (* FIXME since 21-Feb-2013 *)
 
-session "Nominal2" = HOLCF +
+session "Nominal2" = HOL +
   options [document = false]
   theories
     "Nominal2"
