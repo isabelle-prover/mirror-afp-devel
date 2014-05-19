@@ -16,7 +16,7 @@ where "SeqQuote x x' s k \<equiv>
 
 subsection {*Defining the syntax: quantified body*}
 
-nominal_primrec SeqQuoteP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function SeqQuoteP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl,sl',m,n,sm,sm',sn,sn'); 
           atom sl \<sharp> (s,sl',m,n,sm,sm',sn,sn'); atom sl' \<sharp> (s,m,n,sm,sm',sn,sn'); 
           atom m \<sharp> (s,n,sm,sm',sn,sn');  atom n \<sharp> (s,sm,sm',sn,sn');  
@@ -33,7 +33,7 @@ nominal_primrec SeqQuoteP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow>
                        Var sl' EQ Q_Eats (Var sm') (Var sn')))))))))))"
 by (auto simp: eqvt_def SeqQuoteP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -147,12 +147,12 @@ definition Quote :: "hf \<Rightarrow> hf \<Rightarrow> bool"
 
 subsection {*Defining the syntax*}
 
-nominal_primrec QuoteP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function QuoteP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (t,u,k); atom k \<sharp> (t,u)\<rbrakk> \<Longrightarrow>
     QuoteP t u = Ex s (Ex k (SeqQuoteP t u (Var s) (Var k)))"
 by (auto simp: eqvt_def QuoteP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 

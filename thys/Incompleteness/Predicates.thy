@@ -6,11 +6,11 @@ begin
 
 section {*The Subset Relation*}
 
-nominal_primrec Subset :: "tm \<Rightarrow> tm \<Rightarrow> fm"   (infixr "SUBS" 150)
+nominal_function Subset :: "tm \<Rightarrow> tm \<Rightarrow> fm"   (infixr "SUBS" 150)
   where "atom z \<sharp> (t, u) \<Longrightarrow> t SUBS u = All2 z t ((Var z) IN u)"
   by (auto simp: eqvt_def Subset_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 declare Subset.simps [simp del]
@@ -218,11 +218,11 @@ section {*The Disjointness Relation*}
 
 text{*The following predicate is defined in order to prove Lemma 2.3, Foundation*}
 
-nominal_primrec Disjoint :: "tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function Disjoint :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "atom z \<sharp> (t, u) \<Longrightarrow> Disjoint t u = All2 z t (Neg ((Var z) IN u))"
   by (auto simp: eqvt_def Disjoint_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 declare Disjoint.simps [simp del]
@@ -405,12 +405,12 @@ lemma Mem_not_sym: "insert (x IN y) (insert (y IN x) H) \<turnstile> A"
   
 section {*The Ordinal Property*}
 
-nominal_primrec OrdP :: "tm \<Rightarrow> fm"
+nominal_function OrdP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom y \<sharp> (x, z); atom z \<sharp> x\<rbrakk> \<Longrightarrow>
     OrdP x = All2 y x ((Var y) SUBS x AND  All2 z (Var y) ((Var z) SUBS (Var y)))"
   by (auto simp: eqvt_def OrdP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -726,11 +726,11 @@ lemma Zero_In_SUCC: "{OrdP k} \<turnstile> Zero IN SUCC k"
 
 section {*The predicate @{text OrdNotEqP}*}
 
-nominal_primrec OrdNotEqP :: "tm \<Rightarrow> tm \<Rightarrow> fm"  (infixr "NEQ" 150)
+nominal_function OrdNotEqP :: "tm \<Rightarrow> tm \<Rightarrow> fm"  (infixr "NEQ" 150)
   where "OrdNotEqP x y = OrdP x AND OrdP y AND (x IN y OR y IN x)"
   by (auto simp: eqvt_def OrdNotEqP_graph_aux_def)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma OrdNotEqP_fresh_iff [simp]: "a \<sharp> OrdNotEqP x y \<longleftrightarrow> a \<sharp> x \<and> a \<sharp> y"
@@ -916,7 +916,7 @@ definition hfun_sigma where
 definition hfun_sigma_ord where
  "hfun_sigma_ord r \<equiv> \<forall>z \<^bold>\<in> r. \<forall>z' \<^bold>\<in> r. \<exists>x y x' y'. z = \<langle>x,y\<rangle> \<and> z' = \<langle>x',y'\<rangle> \<and> Ord x \<and> Ord x' \<and> (x=x' \<longrightarrow> y=y')"
 
-nominal_primrec HFun_Sigma :: "tm \<Rightarrow> fm"
+nominal_function HFun_Sigma :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom z \<sharp> (r,z',x,y,x',y'); atom z' \<sharp> (r,x,y,x',y'); 
           atom x \<sharp> (r,y,x',y'); atom y \<sharp> (r,x',y'); atom x' \<sharp> (r,y'); atom y' \<sharp> (r) \<rbrakk> \<Longrightarrow>
     HFun_Sigma r = 
@@ -926,7 +926,7 @@ nominal_primrec HFun_Sigma :: "tm \<Rightarrow> fm"
               ((Var x EQ Var x') IMP (Var y EQ Var y'))))))))"
 by (auto simp: eqvt_def HFun_Sigma_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -1011,12 +1011,12 @@ section {*The predicate @{text HDomain_Incl}*}
 
 text {*This is an internal version of @{term "\<forall>x \<^bold>\<in> d. \<exists>y z. z \<^bold>\<in> r \<and> z = \<langle>x,y\<rangle>"}. *}
 
-nominal_primrec HDomain_Incl :: "tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function HDomain_Incl :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom x \<sharp> (r,d,y,z); atom y \<sharp> (r,d,z); atom z \<sharp> (r,d)\<rbrakk> \<Longrightarrow>
     HDomain_Incl r d = All2 x d (Ex y (Ex z (Var z IN r AND Var z EQ HPair (Var x) (Var y))))"
   by (auto simp: eqvt_def HDomain_Incl_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -1231,12 +1231,12 @@ lemma Seq_iff: "Seq r d \<longleftrightarrow> d \<le> hdomain r \<and> hfun_sigm
 lemma LstSeq_iff: "LstSeq s k y \<longleftrightarrow> succ k \<le> hdomain s \<and> \<langle>k,y\<rangle> \<^bold>\<in> s \<and> hfun_sigma_ord s"
   by (auto simp: OrdDom_def LstSeq_def Seq_iff hfun_sigma_ord_iff)
 
-nominal_primrec LstSeqP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function LstSeqP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where
     "LstSeqP s k y = OrdP k AND HDomain_Incl s (SUCC k) AND HFun_Sigma s AND HPair k y IN s"
   by (auto simp: eqvt_def LstSeqP_graph_aux_def)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma

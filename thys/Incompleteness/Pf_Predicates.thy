@@ -19,7 +19,7 @@ definition Sent_axioms :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf
 definition Sent :: "hf set" where
  "Sent \<equiv> {x. \<exists>y z w. Form y \<and> Form z \<and> Form w \<and> Sent_axioms x y z w}"
 
-nominal_primrec SentP :: "tm \<Rightarrow> fm"
+nominal_function SentP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom y \<sharp> (z,w,x); atom z \<sharp> (w,x); atom w \<sharp> x\<rbrakk> \<Longrightarrow>
     SentP x = Ex y (Ex z (Ex w (FormP (Var y) AND FormP (Var z) AND FormP (Var w) AND
                ( (x EQ Q_Imp (Var y) (Var y)) OR
@@ -31,7 +31,7 @@ nominal_primrec SentP :: "tm \<Rightarrow> fm"
                              (Q_Imp (Q_Disj (Q_Neg (Var y)) (Var w)) (Q_Disj (Var z) (Var w)))))))))"
   by (auto simp: eqvt_def SentP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -88,7 +88,7 @@ inductive_set Special_ax :: "hf set" where
 
 subsubsection {*Defining the syntax*}
 
-nominal_primrec Special_axP :: "tm \<Rightarrow> fm" where
+nominal_function Special_axP :: "tm \<Rightarrow> fm" where
   "\<lbrakk>atom v \<sharp> (p,sx,y,ax,x); atom x \<sharp> (p,sx,y,ax);
     atom ax \<sharp> (p,sx,y); atom y \<sharp> (p,sx); atom sx \<sharp> p\<rbrakk> \<Longrightarrow>
   Special_axP p = Ex v (Ex x (Ex ax (Ex y (Ex sx
@@ -98,7 +98,7 @@ nominal_primrec Special_axP :: "tm \<Rightarrow> fm" where
                     p EQ Q_Imp (Var sx) (Q_Ex (Var ax)))))))"
   by (auto simp: eqvt_def Special_axP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -177,7 +177,7 @@ inductive_set Induction_ax :: "hf set" where
 
 subsubsection {*Defining the syntax*}
 
-nominal_primrec Induction_axP :: "tm \<Rightarrow> fm" where
+nominal_function Induction_axP :: "tm \<Rightarrow> fm" where
   "\<lbrakk>atom ax \<sharp> (p,v,w,x,x0,xw,xevw,allw,allvw);
     atom allvw \<sharp> (p,v,w,x,x0,xw,xevw,allw); atom allw \<sharp> (p,v,w,x,x0,xw,xevw);
     atom xevw \<sharp> (p,v,w,x,x0,xw); atom xw \<sharp> (p,v,w,x,x0);
@@ -194,7 +194,7 @@ nominal_primrec Induction_axP :: "tm \<Rightarrow> fm" where
                 p EQ Q_Imp (Var x0) (Q_Imp (Q_All (Var allvw)) (Q_All (Var ax))))))))))))"
   by (auto simp: eqvt_def Induction_axP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -402,7 +402,7 @@ definition Exists :: "hf \<Rightarrow> hf \<Rightarrow> bool" where
  "Exists p q \<equiv> (\<exists>x x' y v. Form x \<and> VarNonOccForm v y \<and> AbstForm v 0 x x' \<and>
                 p = q_Imp x y \<and> q = q_Imp (q_Ex x') y)"
 
-nominal_primrec ExistsP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
+nominal_function ExistsP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
   "\<lbrakk>atom x \<sharp> (p,q,v,y,x'); atom x' \<sharp> (p,q,v,y);
     atom y \<sharp> (p,q,v); atom v \<sharp> (p,q)\<rbrakk> \<Longrightarrow>
   ExistsP p q = Ex x (Ex x' (Ex y (Ex v (FormP (Var x) AND
@@ -412,7 +412,7 @@ nominal_primrec ExistsP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
                     q EQ Q_Imp (Q_Ex (Var x')) (Var y)))))"
   by (auto simp: eqvt_def ExistsP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -487,12 +487,12 @@ text{*This is the inference @{text"H \<turnstile> A \<Longrightarrow> H \<turnst
 definition Subst :: "hf \<Rightarrow> hf \<Rightarrow> bool" where
   "Subst p q \<equiv> (\<exists>v u. SubstForm v u p q)"
 
-nominal_primrec SubstP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
+nominal_function SubstP :: "tm \<Rightarrow> tm \<Rightarrow> fm" where
   "\<lbrakk>atom u \<sharp> (p,q,v); atom v \<sharp> (p,q)\<rbrakk> \<Longrightarrow>
    SubstP p q = Ex v (Ex u (SubstFormP (Var v) (Var u) p q))"
   by (auto simp: eqvt_def SubstP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -538,7 +538,7 @@ subsection {*The predicate @{text PrfP}*}
 definition Prf :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "Prf s k y \<equiv> BuildSeq (\<lambda>x. x \<in> Axiom) (\<lambda>u v w. ModPon v w u \<or> Exists v u \<or> Subst v u) s k y"
 
-nominal_primrec PrfP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function PrfP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,sl,m,n,sm,sn); atom sl \<sharp> (s,m,n,sm,sn);
           atom m \<sharp> (s,n,sm,sn); atom n \<sharp> (s,k,sm,sn);
           atom sm \<sharp> (s,sn); atom sn \<sharp> (s)\<rbrakk> \<Longrightarrow>
@@ -552,7 +552,7 @@ nominal_primrec PrfP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
                         SubstP (Var sm) (Var sn)))))))))"
   by (auto simp: eqvt_def PrfP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -595,12 +595,12 @@ subsection {*The predicate @{text PfP}*}
 definition Pf :: "hf \<Rightarrow> bool"
   where "Pf y \<equiv> (\<exists>s k. Prf s k y)"
 
-nominal_primrec PfP :: "tm \<Rightarrow> fm"
+nominal_function PfP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom k \<sharp> (s,y); atom s \<sharp> y\<rbrakk> \<Longrightarrow>
     PfP y = Ex k (Ex s (PrfP (Var s) (Var k) y))"
   by (auto simp: eqvt_def PfP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
