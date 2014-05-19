@@ -275,7 +275,7 @@ end
 
 (* nominal *)
 val _ =
-  Outer_Syntax.local_theory_to_proof' @{command_spec "nominal_primrec"}
+  Outer_Syntax.local_theory_to_proof' @{command_spec "nominal_function"}
     "define general recursive nominal functions"
        (nominal_function_parser nominal_default_config
           >> (fn ((config, fixes), statements) => nominal_function_cmd fixes statements config))

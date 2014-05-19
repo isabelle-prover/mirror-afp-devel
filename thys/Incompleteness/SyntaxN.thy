@@ -42,14 +42,14 @@ declare tm.supp [simp] fm.supp [simp]
 
 subsection{*Substitution*}
 
-nominal_primrec subst :: "name \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm"
+nominal_function subst :: "name \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm"
   where
    "subst i x Zero       = Zero"
  | "subst i x (Var k)    = (if i=k then x else Var k)"
  | "subst i x (Eats t u) = Eats (subst i x t) (subst i x u)"
 by (auto simp: eqvt_def subst_graph_aux_def) (metis tm.strong_exhaust)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma fresh_subst_if [simp]:
@@ -73,7 +73,7 @@ lemma subst_tm_commute2 [simp]:
 lemma repeat_subst_tm [simp]: "subst i u (subst i t tm) = subst i (subst i u t) tm"
   by (induct tm rule: tm.induct) auto
 
-nominal_primrec  subst_fm :: "fm \<Rightarrow> name \<Rightarrow> tm \<Rightarrow> fm" ("_'(_::=_')" [1000, 0, 0] 200)
+nominal_function  subst_fm :: "fm \<Rightarrow> name \<Rightarrow> tm \<Rightarrow> fm" ("_'(_::=_')" [1000, 0, 0] 200)
   where
     Mem:  "(Mem t u)(i::=x)  = Mem (subst i x t) (subst i x u)"
   | Eq:   "(Eq t u)(i::=x)   = Eq  (subst i x t) (subst i x u)"
@@ -87,7 +87,7 @@ apply (auto simp: eqvt_at_def fresh_star_def fresh_Pair fresh_at_base)
 apply (metis flip_at_base_simps(3) flip_fresh_fresh)
 done
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma size_subst_fm [simp]: "size (A(i::=x)) = size A"
@@ -145,14 +145,14 @@ subsection{*Semantics*}
 definition e0 :: "(name, hf) finfun"    --{*the null environment*}
   where "e0 \<equiv> finfun_const 0"
 
-nominal_primrec eval_tm :: "(name, hf) finfun \<Rightarrow> tm \<Rightarrow> hf"
+nominal_function eval_tm :: "(name, hf) finfun \<Rightarrow> tm \<Rightarrow> hf"
   where
    "eval_tm e Zero = 0"
  | "eval_tm e (Var k) = finfun_apply e k"
  | "eval_tm e (Eats t u) = eval_tm e t \<triangleleft> eval_tm e u"
 by (auto simp: eqvt_def eval_tm_graph_aux_def) (metis tm.strong_exhaust)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 syntax
@@ -161,7 +161,7 @@ syntax
 translations
   "\<lbrakk>tm\<rbrakk>e"    == "CONST eval_tm e tm"
 
-nominal_primrec eval_fm :: "(name, hf) finfun \<Rightarrow> fm \<Rightarrow> bool"
+nominal_function eval_fm :: "(name, hf) finfun \<Rightarrow> fm \<Rightarrow> bool"
   where
    "eval_fm e (t IN u) \<longleftrightarrow> \<lbrakk>t\<rbrakk>e \<^bold>\<in> \<lbrakk>u\<rbrakk>e"
  | "eval_fm e (t EQ u) \<longleftrightarrow> \<lbrakk>t\<rbrakk>e = \<lbrakk>u\<rbrakk>e"
@@ -180,7 +180,7 @@ apply (simp_all add: eqvt_at_def)
 apply (simp_all add: perm_supp_eq)
 done
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma eval_tm_rename:

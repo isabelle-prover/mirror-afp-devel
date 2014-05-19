@@ -48,14 +48,14 @@ lemma lookup_inject [iff]: "(lookup e n x = lookup e n y) \<longleftrightarrow> 
 apply (induct e n x arbitrary: y rule: lookup.induct, force, simp)
 by (metis Suc_n_not_le_n dbtm.distinct(7) dbtm.eq_iff(3) lookup_in lookup_notin)
 
-nominal_primrec trans_tm :: "name list \<Rightarrow> tm \<Rightarrow> dbtm"
+nominal_function trans_tm :: "name list \<Rightarrow> tm \<Rightarrow> dbtm"
   where
    "trans_tm e Zero = DBZero"
  | "trans_tm e (Var k) = lookup e 0 k"
  | "trans_tm e (Eats t u) = DBEats (trans_tm e t) (trans_tm e u)"
 by (auto simp: eqvt_def trans_tm_graph_aux_def) (metis tm.strong_exhaust)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma fresh_trans_tm_iff [simp]: "i \<sharp> trans_tm e t \<longleftrightarrow> i \<sharp> t \<or> i \<in> atom ` set e"
@@ -64,7 +64,7 @@ lemma fresh_trans_tm_iff [simp]: "i \<sharp> trans_tm e t \<longleftrightarrow> 
 lemma trans_tm_forget: "atom i \<sharp> t \<Longrightarrow> trans_tm [i] t = trans_tm [] t"
   by (induct t rule: tm.induct, auto simp: fresh_Pair)
 
-nominal_primrec (invariant "\<lambda>(xs, _) y. atom ` set xs \<sharp>* y")
+nominal_function (invariant "\<lambda>(xs, _) y. atom ` set xs \<sharp>* y")
   trans_fm :: "name list \<Rightarrow> fm \<Rightarrow> dbfm"
   where
    "trans_fm e (Mem t u) = DBMem (trans_tm e t) (trans_tm e u)"
@@ -84,7 +84,7 @@ apply (simp_all add: fresh_star_Pair perm_supp_eq)
 apply (simp add: fresh_star_def)
 done
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma fresh_trans_fm [simp]: "i \<sharp> trans_fm e A \<longleftrightarrow> i \<sharp> A \<or> i \<in> atom ` set e"
@@ -216,7 +216,7 @@ lemma wf_dbtm_trans_tm: "wf_dbtm (trans_tm [] t)"
 theorem wf_dbtm_iff_is_tm: "wf_dbtm x \<longleftrightarrow> (\<exists>t::tm. x = trans_tm [] t)"
   by (metis wf_dbtm_imp_is_tm wf_dbtm_trans_tm)
 
-nominal_primrec abst_dbtm :: "name \<Rightarrow> nat \<Rightarrow> dbtm \<Rightarrow> dbtm"
+nominal_function abst_dbtm :: "name \<Rightarrow> nat \<Rightarrow> dbtm \<Rightarrow> dbtm"
   where
    "abst_dbtm name i DBZero = DBZero"
  | "abst_dbtm name i (DBVar name') = (if name = name' then DBInd i else DBVar name')"
@@ -226,10 +226,10 @@ apply (simp add: eqvt_def abst_dbtm_graph_aux_def, auto)
 apply (metis dbtm.exhaust)
 done
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
-nominal_primrec subst_dbtm :: "dbtm \<Rightarrow> name \<Rightarrow> dbtm \<Rightarrow> dbtm"
+nominal_function subst_dbtm :: "dbtm \<Rightarrow> name \<Rightarrow> dbtm \<Rightarrow> dbtm"
   where
    "subst_dbtm u i DBZero = DBZero"
  | "subst_dbtm u i (DBVar name) = (if i = name then u else DBVar name)"
@@ -237,7 +237,7 @@ nominal_primrec subst_dbtm :: "dbtm \<Rightarrow> name \<Rightarrow> dbtm \<Righ
  | "subst_dbtm u i (DBEats t1 t2) = DBEats (subst_dbtm u i t1) (subst_dbtm u i t2)"
 by (auto simp: eqvt_def subst_dbtm_graph_aux_def) (metis dbtm.exhaust)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma fresh_iff_non_subst_dbtm: "subst_dbtm DBZero i t = t \<longleftrightarrow> atom i \<sharp> t"
@@ -251,7 +251,7 @@ lemma trans_tm_abs: "trans_tm (e@[name]) t = abst_dbtm name (length e) (trans_tm
 
 subsection{*Well-Formed Formulas*}
 
-nominal_primrec abst_dbfm :: "name \<Rightarrow> nat \<Rightarrow> dbfm \<Rightarrow> dbfm"
+nominal_function abst_dbfm :: "name \<Rightarrow> nat \<Rightarrow> dbfm \<Rightarrow> dbfm"
   where
    "abst_dbfm name i (DBMem t1 t2) = DBMem (abst_dbtm name i t1) (abst_dbtm name i t2)"
  | "abst_dbfm name i (DBEq t1 t2) =  DBEq (abst_dbtm name i t1) (abst_dbtm name i t2)"
@@ -262,10 +262,10 @@ apply (simp add: eqvt_def abst_dbfm_graph_aux_def, auto)
 apply (metis dbfm.exhaust)
 done
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
-nominal_primrec subst_dbfm :: "dbtm \<Rightarrow> name \<Rightarrow> dbfm \<Rightarrow> dbfm"
+nominal_function subst_dbfm :: "dbtm \<Rightarrow> name \<Rightarrow> dbfm \<Rightarrow> dbfm"
   where
    "subst_dbfm u i (DBMem t1 t2) = DBMem (subst_dbtm u i t1) (subst_dbtm u i t2)"
  | "subst_dbfm u i (DBEq t1 t2) =  DBEq (subst_dbtm u i t1) (subst_dbtm u i t2)"
@@ -274,7 +274,7 @@ nominal_primrec subst_dbfm :: "dbtm \<Rightarrow> name \<Rightarrow> dbfm \<Righ
  | "subst_dbfm u i (DBEx A) = DBEx (subst_dbfm u i A)"
 by (auto simp: eqvt_def subst_dbfm_graph_aux_def) (metis dbfm.exhaust)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma fresh_iff_non_subst_dbfm: "subst_dbfm DBZero i t = t \<longleftrightarrow> atom i \<sharp> t"

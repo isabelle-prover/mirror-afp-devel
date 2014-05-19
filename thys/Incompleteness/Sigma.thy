@@ -465,13 +465,13 @@ lemma ex_eval_fm_iff_exists_tm':
 by (auto simp: eval_subst_fm) (metis obtain_const_tm)
 
 text{*A ground term defines a finite set of ground terms, its elements.*}
-nominal_primrec elts :: "tm \<Rightarrow> tm set" where
+nominal_function elts :: "tm \<Rightarrow> tm set" where
    "elts Zero       = {}"
  | "elts (Var k)    = {}"
  | "elts (Eats t u) = insert u (elts t)"
 by (auto simp: eqvt_def elts_graph_aux_def) (metis tm.exhaust)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma eval_fm_All2_Eats:

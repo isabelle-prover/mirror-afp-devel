@@ -10,7 +10,7 @@ support nested data type, this redundancy was introduced. The following
 function converts between them. Once Nominal supports nested data types, this
 could be simplified. *}
 
-nominal_primrec asToHeap :: "assn \<Rightarrow> heap" 
+nominal_function asToHeap :: "assn \<Rightarrow> heap" 
  where ANilToHeap: "asToHeap ANil = []"
  | AConsToHeap: "asToHeap (ACons v e as) = (v, e) # asToHeap as"
 unfolding eqvt_def asToHeap_graph_aux_def
@@ -20,7 +20,8 @@ apply rule
 apply(case_tac x rule: exp_assn.exhaust(2))
 apply auto
 done
-termination(eqvt) by lexicographic_order
+
+nominal_termination (eqvt) by lexicographic_order
 
 lemma asToHeap_eqvt: "eqvt asToHeap"
   unfolding eqvt_def

@@ -12,7 +12,7 @@ definition SeqWR :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "SeqWR s k y \<equiv> LstSeq s k y \<and> app s 0 = 0 \<and>
                         (\<forall>l \<^bold>\<in> k. app s (succ l) = q_Eats (app s l) (app s l))"
 
-nominal_primrec SeqWRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function SeqWRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl); atom sl \<sharp> (s)\<rbrakk> \<Longrightarrow>
     SeqWRP s k y = LstSeqP s k y AND
           HPair Zero Zero IN s AND
@@ -20,7 +20,7 @@ nominal_primrec SeqWRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm
                            HPair (SUCC (Var l)) (Q_Succ (Var sl)) IN s))"
   by (auto simp: eqvt_def SeqWRP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -58,12 +58,12 @@ subsection{*Predicate form of W*}
 definition WR :: "hf \<Rightarrow> hf \<Rightarrow> bool"
   where "WR x y \<equiv> (\<exists>s. SeqWR s x y)"
 
-nominal_primrec WRP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function WRP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (x,y)\<rbrakk> \<Longrightarrow>
     WRP x y = Ex s (SeqWRP (Var s) x y)"
   by (auto simp: eqvt_def WRP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -261,7 +261,7 @@ where "SeqHR x x' s k \<equiv>
 
 subsection {*Defining the syntax: quantified body*}
 
-nominal_primrec SeqHRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function SeqHRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl,sl',m,n,sm,sm',sn,sn');
           atom sl \<sharp> (s,sl',m,n,sm,sm',sn,sn');
           atom sl' \<sharp> (s,m,n,sm,sm',sn,sn');
@@ -282,7 +282,7 @@ nominal_primrec SeqHRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm
                        Var sl' EQ Q_HPair (Var sm') (Var sn')))))))))))"
 by (auto simp: eqvt_def SeqHRP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -339,12 +339,12 @@ subsection {*Defining the syntax: main predicate*}
 definition HR :: "hf \<Rightarrow> hf \<Rightarrow> bool"
   where "HR x x' \<equiv> \<exists>s k. SeqHR x x' s k"
 
-nominal_primrec HRP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function HRP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (x,x',k); atom k \<sharp> (x,x')\<rbrakk> \<Longrightarrow>
          HRP x x' = Ex s (Ex k (SeqHRP x x' (Var s) (Var k)))"
   by (auto simp: eqvt_def HRP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma
@@ -566,12 +566,12 @@ lemma prove_HRP: fixes A::fm shows "{} \<turnstile> HRP \<lceil>A\<rceil> \<lcei
 
 section{*The Function K and Lemma 6.3*}
 
-nominal_primrec KRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
+nominal_function KRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "atom y \<sharp> (v,x,x') \<Longrightarrow>
          KRP v x x' = Ex y (HRP x (Var y) AND SubstFormP v (Var y) x x')"
   by (auto simp: eqvt_def KRP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
-termination (eqvt)
+nominal_termination (eqvt)
   by lexicographic_order
 
 lemma KRP_fresh_iff [simp]: "a \<sharp> KRP v x x' \<longleftrightarrow> a \<sharp> v \<and> a \<sharp> x \<and> a \<sharp> x'"

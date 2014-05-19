@@ -74,7 +74,7 @@ lemma projr_permute:
   shows "(p \<bullet> (projr f)) = projr (p \<bullet> f)"
 using a by auto
 
-nominal_primrec  (default "case_sum (\<lambda>x. Inl undefined) (\<lambda>x. Inr undefined)",
+nominal_function  (default "case_sum (\<lambda>x. Inl undefined) (\<lambda>x. Inr undefined)",
                   invariant "\<lambda> a r . (\<forall> as y z . ((a = Inr (as, y, z) \<and> set (bn as) \<sharp>* (y, z)) \<longrightarrow> bn (projr r) = bn as))")
   subst :: "exp \<Rightarrow> var \<Rightarrow> var \<Rightarrow> exp" ("_[_::=_]" [1000,100,100] 1000)
 and
@@ -229,7 +229,7 @@ next case (goal19 x2 y2 z2 e2 x y z e) thus ?case
 }
 qed(auto)
 
-termination (eqvt) by lexicographic_order
+nominal_termination (eqvt) by lexicographic_order
 
 lemma shows
   True and bn_subst[simp]: "set (bn as) \<sharp>* (y, z) \<Longrightarrow> bn (subst_assn as y z) = bn as"
