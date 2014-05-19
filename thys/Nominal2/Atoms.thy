@@ -71,34 +71,6 @@ text {* Custom syntax for concrete atoms of type at *}
 
 term "a:::name"
 
-text {* 
-  a:::name stands for (atom a) with a being of concrete atom 
-  type name. The above lemma can therefore also be stated as
-
-  "sort_of (a:::name) = Sort ''name'' []"
-
-  This does not work for multi-sorted atoms.
-*}
-
-(* fixme 
-lemma supp_of_finite_name_set:
-  fixes S::"name set"
-  assumes "infinte S" "infinite (UNIV - S)"
-  shows "supp S = UNIV"
-proof -
-  { fix a    
-    have "a \<in> supp S"
-    proof (cases "a \<in> atom ` S")
-      assume "a \<in> atom ` S"
-      then have "\<forall>b \<in> UNIV - S. (a \<rightleftharpoons> atom b) \<bullet> S \<noteq> S"
-        apply(clarify)
-        
-      show "a \<in> supp S"
-  }
-  then show "supp S = UNIV" by auto
-qed
-*)
-
 
 section {* Automatic instantiation of class @{text at}. *}
 
