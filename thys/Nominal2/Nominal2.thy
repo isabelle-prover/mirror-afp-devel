@@ -3,7 +3,7 @@ imports
   Nominal2_Base Nominal2_Abs Nominal2_FCB
 keywords
   "nominal_datatype" :: thy_decl and
-  "nominal_primrec" "nominal_inductive" :: thy_goal and
+  "nominal_function" "nominal_inductive" "nominal_termination" :: thy_goal and
   "avoids" "binds"
 begin
 

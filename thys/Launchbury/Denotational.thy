@@ -4,7 +4,7 @@ begin
 
 subsubsection {* The denotational semantics for expressions *}
 
-nominal_primrec
+nominal_function
   ESem :: "exp \<Rightarrow> Env \<Rightarrow> Value" ("\<lbrakk>_\<rbrakk>\<^bsub>_\<^esub>"  [60,60] 60)
 where
   "atom x \<sharp> \<rho> \<Longrightarrow>
@@ -97,7 +97,7 @@ qed auto
 lemma  True and [simp]:"(a, b) \<in> set (asToHeap as) \<Longrightarrow> size b < Suc (size as + size body)"
   by(induct and as rule:exp_assn.inducts, auto simp add: exp_assn.bn_defs fresh_star_insert)
 
-termination (eqvt) by lexicographic_order
+nominal_termination (eqvt) by lexicographic_order
 
 interpretation has_ESem ESem.
 
