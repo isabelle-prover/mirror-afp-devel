@@ -5,18 +5,9 @@ begin
   
 text {* instantiations for unit *}
 
-instantiation unit :: linorder begin
-definition [code_unfold]: "less_eq = (\<lambda>_ _ :: unit. True)"
-definition [code_unfold]: "less = (\<lambda>_ _ :: unit. False)"
-
-lemma not_less_unit [simp]: "\<not> () < ()" by(simp add: less_unit_def)
-lemma le_unit [simp]: "() \<le> ()" by(simp add: less_eq_unit_def)
-
-instance
-  apply intro_classes
-  apply auto
-  done
-end
+declare
+  less_eq_unit_def [abs_def, code_unfold]
+  less_unit_def [abs_def, code_unfold]
 
 instantiation unit :: "wellorder" begin
 instance by intro_classes auto
