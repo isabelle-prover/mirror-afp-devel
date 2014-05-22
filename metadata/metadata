@@ -1149,6 +1149,21 @@ abstract =
  in KAT and its relational model and present a simple formally verified
  program verification tool prototype based on the algebraic approach.
 
+[Regular_Algebras]
+title = Regular Algebras
+author = Simon Foster <http://www-users.cs.york.ac.uk/~simonf>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
+date = 2014-05-21
+topic = Computer Science/Automata and Formal Languages, Mathematics/Algebra
+abstract =
+ Regular algebras axiomatise the equational theory of regular expressions as induced by
+ regular language identity. We use Isabelle/HOL for a detailed systematic study of regular
+ algebras given by Boffa, Conway, Kozen and Salomaa. We investigate the relationships between
+ these classes, formalise a soundness proof for the smallest class (Salomaa's) and obtain
+ completeness of the largest one (Boffa's) relative to a deep result by Krob. In addition
+ we provide a large collection of regular identities in the general setting of Boffa's axiom.
+ Our regular algebra hierarchy is orthogonal to the Kleene algebra hierarchy in the Archive
+ of Formal Proofs; we have not aimed at an integration for pragmatic reasons.
+
 [BytecodeLogicJmlTypes]
 title = A Bytecode Logic for JML and Types
 author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
