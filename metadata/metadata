@@ -1153,6 +1153,7 @@ abstract =
 title = Regular Algebras
 author = Simon Foster <http://www-users.cs.york.ac.uk/~simonf>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-05-21
+depends-on = Kleene_Algebra
 topic = Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
  Regular algebras axiomatise the equational theory of regular expressions as induced by
