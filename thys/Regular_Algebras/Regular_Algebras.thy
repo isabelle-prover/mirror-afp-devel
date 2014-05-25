@@ -760,8 +760,12 @@ lemma setsum_intro' [intro]:
   "\<lbrakk>finite (A :: 'a::join_semilattice_zero set); finite B; \<forall>a\<in>A. \<exists>b\<in>B. a \<le> b \<rbrakk> \<Longrightarrow> \<Sum>A \<le> \<Sum>B"
   by (metis setsum_intro)  
 
-lemma boffa_aux2: "conway_assm1 x \<Longrightarrow> \<Sum>{x\<^bsub>i\<^esub>\<cdot>x\<^bsub>j \<^esub>| i j. i \<in> UNIV \<and> j \<in> UNIV} \<le> \<Sum>{x\<^bsub>i\<cdot>j\<^esub> | i j. i \<in> UNIV \<and> j \<in> UNIV}"
-  by (fastforce simp add:conway_assm1_def)
+lemma boffa_aux2: 
+  "conway_assm1 x \<Longrightarrow>
+  \<Sum>{x\<^bsub>i\<^esub>\<cdot>x\<^bsub>j \<^esub>| i j. i \<in> UNIV \<and> j \<in> UNIV} \<le> \<Sum>{x\<^bsub>i\<cdot>j\<^esub> | i j. i \<in> UNIV \<and> j \<in> UNIV}"
+  unfolding conway_assm1_def
+  using [[simproc add: finite_Collect]]
+  by force
 
 lemma boffa_aux3: 
   assumes "conway_assm1 x"
