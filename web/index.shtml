@@ -55,6 +55,21 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-05-21:
+<a href="entries/Regular_Algebras.shtml">Regular Algebras</a>
+<br>Author:
+<a href="http://www-users.cs.york.ac.uk/~simonf">Simon Foster</a> and 
+<a href="http://www.dcs.shef.ac.uk/~georg">Georg Struth</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-04-28:
+<a href="entries/ComponentDependencies.shtml">Formalisation and Analysis of Component Dependencies</a>
+<br>Author:
+Maria Spichkova
+</td></tr>
+
+<tr><td class="entry">
 2014-04-23:
 <a href="entries/SIFUM_Type_Systems.shtml">A Formalization of Assumptions and Guarantees for Compositional Noninterference</a>
 <br>Author:

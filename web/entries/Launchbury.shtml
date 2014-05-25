@@ -49,7 +49,13 @@ for
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics. We have formalized both semantics and identified an ambiguity in what the join operator should do: If it is understood as the least upper bound, as hinted at in the paper, the original proof fails. We fix the proof by taking a detour via a modified natural semantics with an explicit stack. In addition, we show that the original proof goes through when join is understood to be right-sided update.
+In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics, and outlines an adequacy proof. We have formalized both semantics and machine-checked the correctness proof, clarifying some details. Furthermore, we provide a new and more direct adequacy proof that does not require intermediate operational semantics.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2014-05-24]: Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

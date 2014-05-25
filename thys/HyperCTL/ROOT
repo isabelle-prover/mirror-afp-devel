@@ -2,7 +2,6 @@ chapter AFP
 
 session "HyperCTL" (AFP) = "HOL" +
   options [timeout = 600]
-
   theories [document = false]
     "~~/src/HOL/BNF_Examples/Stream"
   theories

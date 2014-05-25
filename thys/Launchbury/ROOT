@@ -1,9 +1,26 @@
 chapter AFP
 
-session Launchbury (AFP) = "Nominal2" +
-  options [document_graph]
+session "HOLCF-HOL-Library" = HOLCF +
+  options [document = false, timeout=300]
   theories
-    "Everything"
+    "~~/src/HOL/Library/Quotient_Option"
+    "~~/src/HOL/Library/AList"
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Permutation"
+    "~~/src/HOL/Library/LaTeXsugar"
+    "~~/src/HOL/Library/Infinite_Set"
+
+session "HOLCF-Nominal2" in "../Nominal2" = "HOLCF-HOL-Library" +
+  options [document = false, timeout=300]
+  theories
+    "Nominal2"
+    "Atoms"
+    "Eqvt"
+
+session Launchbury (AFP) = "HOLCF-Nominal2" +
+  options [timeout=300]
+  theories
+    "EverythingAdequacy"
   document_files
     "map.tex"
     "mathpartir.sty"

@@ -7,18 +7,23 @@ subsubsection {* Lemmas helping with equivariance proofs *}
 lemma perm_rel_lemma:
   assumes "\<And> \<pi> x y. r (\<pi> \<bullet> x) (\<pi> \<bullet> y) \<Longrightarrow> r x y"
   shows "r (\<pi> \<bullet> x) (\<pi> \<bullet> y) \<longleftrightarrow> r x y" (is "?l \<longleftrightarrow> ?r")
-proof
-  show "?l \<Longrightarrow> ?r" by fact
-next
-  assume "r x y"
-  hence "r (- \<pi> \<bullet> \<pi> \<bullet> x) (- \<pi> \<bullet> \<pi> \<bullet> y)" by simp
-  thus "?l" by (rule assms)
-qed
+by (metis (full_types) assms permute_minus_cancel(2))
+
+lemma perm_rel_lemma2:
+  assumes "\<And> \<pi> x y. r x y \<Longrightarrow> r (\<pi> \<bullet> x) (\<pi> \<bullet> y)"
+  shows "r x y \<longleftrightarrow> r (\<pi> \<bullet> x) (\<pi> \<bullet> y)" (is "?l \<longleftrightarrow> ?r")
+by (metis (full_types) assms permute_minus_cancel(2))
+
 
 lemma eqvt_at_apply:
   assumes "eqvt_at f x"
   shows "(p \<bullet> f) x = f x"
 by (metis (hide_lams, no_types) assms eqvt_at_def permute_fun_def permute_minus_cancel(1))
+
+lemma eqvt_at_apply':
+  assumes "eqvt_at f x"
+  shows "p \<bullet> f x = f (p \<bullet> x)"
+by (metis (hide_lams, no_types) assms eqvt_at_def)
 
 subsubsection {* Freshness via equivariance *}
 
@@ -49,6 +54,12 @@ proof-
   have "a \<sharp> (\<lambda> (x,y). f x y) (x, y)" by (rule fresh_fun_eqvt_app)
   thus ?thesis by simp
 qed
+
+lemma eqvt_fresh_star_cong1:
+  assumes eqvt: "(\<And>p x. p \<bullet> (f x) = f (p \<bullet> x))"
+  and fresh1: "a \<sharp>* x"
+  shows "a \<sharp>* f x"
+  by (metis fresh_star_def eqvt_fresh_cong1 assms)
 
 lemma eqvt_fresh_star_cong2:
   assumes eqvt: "(\<And>p x y. p \<bullet> (f x y) = f (p \<bullet> x) (p \<bullet> y))"
@@ -138,14 +149,6 @@ lemma map_of_eqvt[eqvt]:
 
 subsubsection {* Freshness lemmas *}
 
-lemma fresh_star_Cons:
-  "S \<sharp>* (x # xs) = (S \<sharp>* x \<and> S \<sharp>* xs)"
-by (metis fresh_star_def fresh_Cons)
-
-lemma fresh_star_append:
-  shows "a \<sharp>* (xs @ ys) \<longleftrightarrow> a \<sharp>* xs \<and> a \<sharp>* ys"
-by (metis fresh_star_def fresh_append)
-
 lemma fresh_list_elem:
   assumes "a \<sharp> \<Gamma>"
   and "e \<in> set \<Gamma>"
@@ -153,18 +156,23 @@ lemma fresh_list_elem:
 using assms
 by(induct \<Gamma>)(auto simp add: fresh_Cons)
 
+lemma set_not_fresh:
+  "x \<in> set L \<Longrightarrow> \<not>(atom x \<sharp> L)"
+  by (metis fresh_list_elem not_self_fresh)
+
 lemma pure_fresh_star[simp]: "a \<sharp>* (x :: 'a :: pure)"
   by (simp add: fresh_star_def pure_fresh)
 
 lemma supp_set_mem: "x \<in> set L \<Longrightarrow> supp x \<subseteq> supp L"
-  by (induct L, auto simp add: supp_Cons)
+  by (induct L) (auto simp add: supp_Cons)
+
+lemma set_supp_mono: "set L \<subseteq> set L2 \<Longrightarrow> supp L \<subseteq> supp L2"
+  by (induct L)(auto simp add: supp_Cons supp_Nil dest:supp_set_mem)
 
 subsubsection {* Freshness and support for subsets of variables *}
 
-lemma supp_mono: "finite (B::'a::at_base set) \<Longrightarrow> A \<subseteq> B \<Longrightarrow> supp A \<subseteq> supp B"
-  apply (subst (1 2) supp_finite_set_at_base)
-  apply (auto dest:infinite_super)
-  done
+lemma supp_mono: "finite (B::'a::fs set) \<Longrightarrow> A \<subseteq> B \<Longrightarrow> supp A \<subseteq> supp B"
+  by (metis infinite_super subset_Un_eq supp_of_finite_union)
 
 lemma fresh_subset:
   "finite B \<Longrightarrow> x \<sharp> (B :: 'a::at_base set) \<Longrightarrow> A \<subseteq> B \<Longrightarrow> x \<sharp> A"
@@ -177,4 +185,40 @@ lemma fresh_star_subset:
 lemma fresh_star_set_subset:
   "x \<sharp>* (B :: 'a::at_base list) \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> x \<sharp>* A"
   by (metis fresh_star_set fresh_star_subset[OF finite_set])
+
+subsubsection {* The set of free variables of an expression *}
+
+definition fv :: "'a::pt \<Rightarrow> 'b::at_base set" where "fv e = {v. atom v \<in> supp e}"
+
+lemma fv_eqvt[simp,eqvt]: "\<pi> \<bullet> (fv e) = fv (\<pi> \<bullet> e)"
+  unfolding fv_def by simp
+
+lemma fv_Nil[simp]: "fv [] = {}"
+  by (auto simp add: fv_def supp_Nil)
+lemma fv_Cons[simp]: "fv (x # xs) = fv x \<union> fv xs"
+  by (auto simp add: fv_def supp_Cons)
+lemma fv_Pair[simp]: "fv (x, y) = fv x \<union> fv y"
+  by (auto simp add: fv_def supp_Pair)
+lemma fv_append[simp]: "fv (x @ y) = fv x \<union> fv y"
+  by (auto simp add: fv_def supp_append)
+lemma fv_at_base[simp]: "fv a = {a::'a::at_base}"
+  by (auto simp add: fv_def supp_at_base)
+lemma fv_pure[simp]: "fv (a::'a::pure) = {}"
+  by (auto simp add: fv_def pure_supp)
+
+subsubsection {* Other useful lemmas *}
+
+lemma pure_permute_id: "permute p = (\<lambda> x. (x::'a::pure))"
+  by rule (simp add: permute_pure)
+
+lemma supp_set_elem_finite:
+  assumes "finite S"
+  and "(m::'a::fs) \<in> S"
+  and "y \<in> supp m"
+  shows "y \<in> supp S"
+  using assms supp_of_finite_sets
+  by auto
+
+lemmas fresh_star_Cons = fresh_star_list(2)
+
 end
