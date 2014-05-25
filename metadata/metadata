@@ -90,7 +90,10 @@ title = The Correctness of Launchbury's Natural Semantics for Lazy Evaluation
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
 date = 2013-01-31
 topic = Computer Science/Programming Languages/Lambda Calculi
-abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics. We have formalized both semantics and identified an ambiguity in what the join operator should do: If it is understood as the least upper bound, as hinted at in the paper, the original proof fails. We fix the proof by taking a detour via a modified natural semantics with an explicit stack. In addition, we show that the original proof goes through when join is understood to be right-sided update.
+abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics, and outlines an adequacy proof. We have formalized both semantics and machine-checked the correctness proof, clarifying some details. Furthermore, we provide a new and more direct adequacy proof that does not require intermediate operational semantics.
+extra-history =
+  Change history:
+  [2014-05-24]: Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.
 
 [CCS]
 title = CCS in nominal logic
