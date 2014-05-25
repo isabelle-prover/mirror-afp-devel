@@ -24,45 +24,63 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">A</font>
-<font class="first">G</font>eneral
-<font class="first">M</font>ethod
-for
-the
-<font class="first">P</font>roof
-of
-<font class="first">T</font>heorems
-on
-<font class="first">T</font>ail-recursive
-<font class="first">F</font>unctions
+<h1><font class="first">N</font>oninterference
+<font class="first">S</font>ecurity
+in
+<font class="first">C</font>ommunicating
+<font class="first">S</font>equential
+<font class="first">P</font>rocesses
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">A General Method for the Proof of Theorems on Tail-recursive Functions</td></tr>
+        <td class="data" width="80%">Noninterference Security in Communicating Sequential Processes</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data">Pasquale Noce (pasquale /dot/ noce /dot/ lavoro /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-12-01</td></tr>
+        <td class="data">2014-05-23</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Tail-recursive function definitions are sometimes more straightforward than alternatives, but proving theorems on them may be roundabout because of the peculiar form of the resulting recursion induction rules. This paper describes a proof method that provides a general solution to this problem by means of suitable invariants over inductive sets, and illustrates the application of such method by examining two case studies.
+
+<p>
+An extension of classical noninterference security for deterministic
+state machines, as introduced by Goguen and Meseguer and elegantly
+formalized by Rushby, to nondeterministic systems should satisfy two
+fundamental requirements: it should be based on a mathematically precise
+theory of nondeterminism, and should be equivalent to (or at least not
+weaker than) the classical notion in the degenerate deterministic case.
+</p>
+<p>
+This paper proposes a definition of noninterference security applying
+to Hoare's Communicating Sequential Processes (CSP) in the general case of
+a possibly intransitive noninterference policy, and proves the
+equivalence of this security property to classical noninterference
+security for processes representing deterministic state machines.
+</p>
+<p>
+Furthermore, McCullough's generalized noninterference security is shown
+to be weaker than both the proposed notion of CSP noninterference security
+for a generic process, and classical noninterference security for processes
+representing deterministic state machines. This renders CSP noninterference
+security preferable as an extension of classical noninterference security
+to nondeterministic systems.
+</p>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Tail_Recursive_Functions-AFP,
+			<pre>@article{Noninterference_CSP-AFP,
   author  = {Pasquale Noce},
-  title   = {A General Method for the Proof of Theorems on Tail-recursive Functions},
+  title   = {Noninterference Security in Communicating Sequential Processes},
   journal = {Archive of Formal Proofs},
-  month   = dec,
-  year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Tail_Recursive_Functions.shtml},
+  month   = may,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/Noninterference_CSP.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -82,7 +100,7 @@ Tail-recursive function definitions are sometimes more straightforward than alte
 
 <p></p>
 
-<!--#set var="name" value="Tail_Recursive_Functions" -->
+<!--#set var="name" value="Noninterference_CSP" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -109,10 +127,7 @@ Tail-recursive function definitions are sometimes more straightforward than alte
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-12-02.tar.gz">afp-<!--#echo var="name" -->-2013-12-02.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

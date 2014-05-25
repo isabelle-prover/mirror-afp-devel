@@ -1,3 +1,45 @@
+[Noninterference_CSP]
+title = Noninterference Security in Communicating Sequential Processes
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+date = 2014-05-23
+topic = Computer Science/Security
+abstract = 
+  <p>
+  An extension of classical noninterference security for deterministic
+  state machines, as introduced by Goguen and Meseguer and elegantly
+  formalized by Rushby, to nondeterministic systems should satisfy two
+  fundamental requirements: it should be based on a mathematically precise
+  theory of nondeterminism, and should be equivalent to (or at least not
+  weaker than) the classical notion in the degenerate deterministic case.
+  </p>
+  <p>
+  This paper proposes a definition of noninterference security applying 
+  to Hoare's Communicating Sequential Processes (CSP) in the general case of
+  a possibly intransitive noninterference policy, and proves the 
+  equivalence of this security property to classical noninterference 
+  security for processes representing deterministic state machines.
+  </p>
+  <p>
+  Furthermore, McCullough's generalized noninterference security is shown 
+  to be weaker than both the proposed notion of CSP noninterference security
+  for a generic process, and classical noninterference security for processes
+  representing deterministic state machines. This renders CSP noninterference
+  security preferable as an extension of classical noninterference security
+  to nondeterministic systems.
+  </p>
+
+
+[Roy_Floyd_Warshall]
+title = Transitive closure according to Roy-Floyd-Warshall
+author = Makarius Wenzel <https://www.lri.fr/~wenzel>
+date = 2014-05-23
+topic = Computer Science/Algorithms
+abstract = This formulation of the Roy-Floyd-Warshall algorithm for the
+  transitive closure bypasses matrices and arrays, but uses a more direct
+  mathematical model with adjacency functions for immediate predecessors and
+  successors. This can be implemented efficiently in functional programming
+  languages and is particularly adequate for sparse relations.
+
 [GPU_Kernel_PL]
 title = Syntax and semantics of a GPU kernel programming language
 author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
@@ -1924,7 +1966,7 @@ abstract = Dana Scott's version of Gödel's proof of God's existence is formaliz
 
 [Tail_Recursive_Functions]
 title = A General Method for the Proof of Theorems on Tail-recursive Functions
-author = Pasquale Noce <mailto:pasquale.noce@arjowiggins-it.com>
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2013-12-01
 topic = Computer Science/Functional Programming
 abstract = Tail-recursive function definitions are sometimes more straightforward than alternatives, but proving theorems on them may be roundabout because of the peculiar form of the resulting recursion induction rules. This paper describes a proof method that provides a general solution to this problem by means of suitable invariants over inductive sets, and illustrates the application of such method by examining two case studies.

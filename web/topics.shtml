@@ -52,6 +52,7 @@
 <h3>Algorithms</h3>
 
 <div class="list">
+<a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
@@ -182,6 +183,7 @@
 <h3>Security</h3>
 
 <div class="list">
+<a href="entries/Noninterference_CSP.shtml">Noninterference_CSP</a> &nbsp;
 <a href="entries/Inductive_Confidentiality.shtml">Inductive_Confidentiality</a> &nbsp;
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
 <a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;

@@ -106,6 +106,7 @@ Myhill-Nerode
 Nat-Interval-Logic
 Native_Word
 Nominal2
+Noninterference_CSP
 NormByEval
 Open_Induction
 Ordinal
@@ -138,6 +139,7 @@ Regular-Sets
 Relation_Algebra
 Ribbon_Proofs
 Robbins-Conjecture
+Roy_Floyd_Warshall
 SATSolverVerification
 SIFPL
 SIFUM_Type_Systems
