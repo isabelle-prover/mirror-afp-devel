@@ -18,7 +18,7 @@ session "HOLCF-Nominal2" in "../Nominal2" = "HOLCF-HOL-Library" +
     "Eqvt"
 
 session Launchbury (AFP) = "HOLCF-Nominal2" +
-  options [timeout=300]
+  options [document_graph, timeout=300]
   theories
     "EverythingAdequacy"
   document_files
