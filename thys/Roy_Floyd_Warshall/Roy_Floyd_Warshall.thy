@@ -2,9 +2,9 @@ theory Roy_Floyd_Warshall
 imports Main
 begin
 
-section {* Transitive closure algorithm *}
+section \<open>Transitive closure algorithm\<close>
 
-text {*
+text \<open>
   The Roy-Floyd-Warshall algorithm takes a finite relation as input and produces
   its transitive closure as output. It iterates over all elements of the field
   of the relation and maintains a cumulative approximation of the result: step
@@ -24,7 +24,7 @@ text {*
   structures in a multi-threaded environment. See also the graph implementation
   in the Isabelle sources @{file "$ISABELLE_HOME/src/Pure/General/graph.ML"} and
   @{file "$ISABELLE_HOME/src/Pure/General/graph.scala"}.
-*}
+\<close>
 
 type_synonym relation = "(nat \<times> nat) set"
 
@@ -35,7 +35,7 @@ where
     steps rel n \<union> {(x, y). (x, n) \<in> steps rel n \<and> (n, y) \<in> steps rel n}"
 
 
-text {* Implementation view on the relation: *}
+text \<open>Implementation view on the relation:\<close>
 
 definition preds :: "relation \<Rightarrow> nat \<Rightarrow> nat set"
   where "preds rel y = {x. (x, y) \<in> rel}"
@@ -48,10 +48,10 @@ lemma
     steps rel n \<union> {(x, y). x \<in> preds (steps rel n) n \<and> y \<in> succs (steps rel n) n}"
   by (simp add: preds_def succs_def)
 
-text {*
+text \<open>
   The main function requires an upper bound for the iteration, which
   is left unspecified here (via Hilbert's choice).
-*}
+\<close>
 
 definition is_bound :: "relation \<Rightarrow> nat \<Rightarrow> bool"
   where "is_bound rel n \<longleftrightarrow> (\<forall>m \<in> Field rel. m < n)"
@@ -59,10 +59,9 @@ definition is_bound :: "relation \<Rightarrow> nat \<Rightarrow> bool"
 definition "transitive_closure rel = steps rel (SOME n. is_bound rel n)"
 
 
+section \<open>Correctness proof\<close>
 
-section {* Correctness proof *}
-
-subsection {* Miscellaneous lemmas *}
+subsection \<open>Miscellaneous lemmas\<close>
 
 lemma finite_bound:
   assumes "finite rel"
@@ -96,13 +95,13 @@ lemma steps_rel: "(x, y) \<in> rel \<Longrightarrow> (x, y) \<in> steps rel n"
   by (induct n) auto
 
 
-subsection {* Bounded closure *}
+subsection \<open>Bounded closure\<close>
 
-text {*
+text \<open>
   The bounded closure connects all transitive paths over elements below a given
   bound. For an upper bound of the relation, this coincides with the full
   transitive closure.
-*}
+\<close>
 
 inductive_set Clos :: "relation \<Rightarrow> nat \<Rightarrow> relation"
   for rel :: relation and n :: nat
@@ -137,10 +136,10 @@ lemma Clos_Suc:
   shows "(x, y) \<in> Clos rel (Suc n)"
   using assms by induct (auto intro: Clos.intros)
 
-text {*
+text \<open>
   In each step of the algorithm the approximated relation is exactly the
   bounded closure.
-*}
+\<close>
 
 theorem steps_Clos_equiv: "(x, y) \<in> steps rel n \<longleftrightarrow> (x, y) \<in> Clos rel n"
 proof (induct n arbitrary: x y)
@@ -187,15 +186,15 @@ next
 qed
 
 
-subsection {* Main theorem *}
+subsection \<open>Main theorem\<close>
 
-text {*
+text \<open>
   The main theorem follows immediately from the key observations above. Note
   that the assumption of finiteness gives a bound for the iteration, although
   the details are left unspecified. A concrete implementation could choose the
   the maximum element + 1, or iterate directly over the data structures for
   the @{term preds} and @{term succs} implementation.
-*}
+\<close>
 
 theorem transitive_closure_correctness:
   assumes "finite rel"
@@ -216,13 +215,13 @@ proof -
 qed
 
 
-section {* Alternative formulation *}
+section \<open>Alternative formulation\<close>
 
-text {*
+text \<open>
   The core of the algorithm may be expressed more declaratively as follows,
   using an inductive definition to imitate a logic-program.  This is equivalent
   to the function specification @{term steps} from above.
-*}
+\<close>
 
 inductive Steps :: "relation \<Rightarrow> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   for rel :: relation
