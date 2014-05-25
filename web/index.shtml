@@ -51,6 +51,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 
 <tr><td class="entry">
 2014-05-23:
+<a href="entries/Noninterference_CSP.shtml">Noninterference Security in Communicating Sequential Processes</a>
+<br>Author:
+Pasquale Noce
+</td></tr>
+
+<tr><td class="entry">
+2014-05-23:
 <a href="entries/Roy_Floyd_Warshall.shtml">Transitive closure according to Roy-Floyd-Warshall</a>
 <br>Author:
 <a href="https://www.lri.fr/~wenzel">Makarius Wenzel</a>

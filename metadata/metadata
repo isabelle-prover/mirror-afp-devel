@@ -1,3 +1,34 @@
+[Noninterference_CSP]
+title = Noninterference Security in Communicating Sequential Processes
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+date = 2014-05-23
+topic = Computer Science/Security
+abstract = 
+  <p>
+  An extension of classical noninterference security for deterministic
+  state machines, as introduced by Goguen and Meseguer and elegantly
+  formalized by Rushby, to nondeterministic systems should satisfy two
+  fundamental requirements: it should be based on a mathematically precise
+  theory of nondeterminism, and should be equivalent to (or at least not
+  weaker than) the classical notion in the degenerate deterministic case.
+  </p>
+  <p>
+  This paper proposes a definition of noninterference security applying 
+  to Hoare's Communicating Sequential Processes (CSP) in the general case of
+  a possibly intransitive noninterference policy, and proves the 
+  equivalence of this security property to classical noninterference 
+  security for processes representing deterministic state machines.
+  </p>
+  <p>
+  Furthermore, McCullough's generalized noninterference security is shown 
+  to be weaker than both the proposed notion of CSP noninterference security
+  for a generic process, and classical noninterference security for processes
+  representing deterministic state machines. This renders CSP noninterference
+  security preferable as an extension of classical noninterference security
+  to nondeterministic systems.
+  </p>
+
+
 [Roy_Floyd_Warshall]
 title = Transitive closure according to Roy-Floyd-Warshall
 author = Makarius Wenzel <https://www.lri.fr/~wenzel>
