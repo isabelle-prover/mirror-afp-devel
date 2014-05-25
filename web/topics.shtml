@@ -52,6 +52,7 @@
 <h3>Algorithms</h3>
 
 <div class="list">
+<a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;

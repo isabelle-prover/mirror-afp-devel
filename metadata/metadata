@@ -1,3 +1,14 @@
+[Roy_Floyd_Warshall]
+title = Transitive closure according to Roy-Floyd-Warshall
+author = Makarius Wenzel <https://www.lri.fr/~wenzel>
+date = 2014-05-23
+topic = Computer Science/Algorithms
+abstract = This formulation of the Roy-Floyd-Warshall algorithm for the
+  transitive closure bypasses matrices and arrays, but uses a more direct
+  mathematical model with adjacency functions for immediate predecessors and
+  successors. This can be implemented efficiently in functional programming
+  languages and is particularly adequate for sparse relations.
+
 [GPU_Kernel_PL]
 title = Syntax and semantics of a GPU kernel programming language
 author = John Wickerson <http://www.doc.ic.ac.uk/~jpw48>
