@@ -124,8 +124,8 @@ next
     then show ?case by (rule Clos.base)
   next
     case (step y z)
-    from `(y, z) \<in> rel` have 1: "(y, z) \<in> Clos rel n" by (rule base)
-    from `(y, z) \<in> rel` and `is_bound rel n` have 2: "y < n"
+    from \<open>(y, z) \<in> rel\<close> have 1: "(y, z) \<in> Clos rel n" by (rule base)
+    from \<open>(y, z) \<in> rel\<close> and \<open>is_bound rel n\<close> have 2: "y < n"
       unfolding is_bound_def Field_def by blast
     from step(3) 1 2 show ?case by (rule Clos.step)
   qed
@@ -202,7 +202,7 @@ theorem transitive_closure_correctness:
 proof -
   let ?N = "SOME n. is_bound rel n"
   have is_bound: "is_bound rel ?N"
-    by (rule someI_ex) (rule finite_bound [OF `finite rel`])
+    by (rule someI_ex) (rule finite_bound [OF \<open>finite rel\<close>])
   {
     fix x y
     have "(x, y) \<in> steps rel ?N \<longleftrightarrow> (x, y) \<in> Clos rel ?N"
