@@ -82,7 +82,7 @@ qed
 locale co begin
 
 free_constructors (no_code) case_enat for
-    =: "0::enat" (defaults epred: "0::enat")
+    "0::enat" (defaults epred: "0::enat")
   | eSuc epred
   apply (erule enat_coexhaust, assumption)
  apply (rule eSuc_inject)

@@ -7,8 +7,8 @@ imports Regular_Set
 begin
 
 datatype_new (atoms: 'a) rexp =
-  Zero |
-  One |
+  is_Zero: Zero |
+  is_One: One |
   Atom 'a |
   Plus "('a rexp)" "('a rexp)" |
   Times "('a rexp)" "('a rexp)" |
@@ -37,8 +37,8 @@ lemma lang_subset_lists: "atoms r \<subseteq> S \<Longrightarrow> lang S r \<sub
 by(induction r)(auto simp: conc_subset_lists star_subset_lists)
 
 primrec nullable :: "'a rexp \<Rightarrow> bool" where
-"nullable (Zero) = False" |
-"nullable (One) = True" |
+"nullable Zero = False" |
+"nullable One = True" |
 "nullable (Atom c) = False" |
 "nullable (Plus r1 r2) = (nullable r1 \<or> nullable r2)" |
 "nullable (Times r1 r2) = (nullable r1 \<and> nullable r2)" |

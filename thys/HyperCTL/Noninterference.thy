@@ -200,7 +200,7 @@ The Kripke labels store user-command actions and user-output observations.
 *}
 
 datatype_new ('St,'U,'C) state =
-  isIdle : Idle (getGMState:'St) | isState : State (getGMState:'St) (getGMUser: 'U) (getGMCom: 'C)
+  isIdle: Idle (getGMState: 'St) | isState: State (getGMState: 'St) (getGMUser: 'U) (getGMCom: 'C)
 
 datatype_new ('U,'C,'Out) aprop = Last 'U 'C | Obs 'U 'Out
 
