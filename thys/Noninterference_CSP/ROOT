@@ -2,12 +2,10 @@ chapter AFP
 
 session Noninterference_CSP (AFP) = HOL +
   options [timeout = 300]
-
   theories
     CSPNoninterference
     ClassicalNoninterference
     GeneralizedNoninterference
-
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"
