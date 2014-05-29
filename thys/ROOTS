@@ -18,6 +18,7 @@ CCS
 Category
 Category2
 Cauchy
+CAVA_Automata
 Circus
 ClockSynchInst
 CofGroups
@@ -94,6 +95,7 @@ List-Index
 List-Infinite
 Locally-Nameless-Sigma
 Lower_Semicontinuous
+LTL_to_GBA
 Markov_Models
 Marriage
 Matrix
