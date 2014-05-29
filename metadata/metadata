@@ -1651,6 +1651,24 @@ abstract =
  The CAVA Automata Library is described in the paper: Peter Lammich, The
  CAVA Automata Library, Isabelle Workshop 2014.
 
+[LTL_to_GBA]
+title = Converting Linear-Time Temporal Logic to Generalized Büchi Automata
+author = Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-05-28
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ We formalize linear-time temporal logic (LTL) and the algorithm by Gerth
+ et al. to convert LTL formulas to generalized Büchi automata.
+ We also formalize some syntactic rewrite rules that can be applied to
+ optimize the LTL formula before conversion.
+ Moreover, we integrate the Stuttering Equivalence AFP-Entry by Stefan
+ Merz, adapting the lemma that next-free LTL formula cannot distinguish
+ between stuttering equivalent runs to our setting.
+ <p>
+ We use the Isabelle Refinement and Collection framework, as well as the
+ Autoref tool, to obtain a refined version of our algorithm, from which
+ efficiently executable code can be extracted.
+
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
 author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>

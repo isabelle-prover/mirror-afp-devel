@@ -57,6 +57,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 </td></tr>
 
 <tr><td class="entry">
+2014-05-28:
+<a href="entries/LTL_to_GBA.shtml">Converting Linear-Time Temporal Logic to Generalized Büchi Automata</a>
+<br>Author:
+Alexander Schimpf and 
+<a href="http://www21.in.tum.de/~lammich">Peter Lammich</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-05-23:
 <a href="entries/Noninterference_CSP.shtml">Noninterference Security in Communicating Sequential Processes</a>
 <br>Author:
