@@ -67,6 +67,7 @@
 <a href="entries/Transitive-Closure.shtml">Transitive-Closure</a> &nbsp;
 <a href="entries/Transitive-Closure-II.shtml">Transitive-Closure-II</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
+<a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -308,6 +309,7 @@
 
 <div class="list">
 <a href="entries/ShortestPath.shtml">ShortestPath</a> &nbsp;
+<a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 <a href="entries/Graph_Theory.shtml">Graph_Theory</a> &nbsp;
 <a href="entries/Max-Card-Matching.shtml">Max-Card-Matching</a> &nbsp;
 <a href="entries/Girth_Chromatic.shtml">Girth_Chromatic</a> &nbsp;
