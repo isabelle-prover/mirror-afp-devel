@@ -1684,6 +1684,23 @@ abstract =
  verifying an algorithm for the emptiness check of generalized Büchi
  automata, re-using most of the existing proofs.
 
+[Promela]
+title = Promela Formalization
+author = René Neumann <mailto:rene.neumann@in.tum.de>
+date = 2014-05-28
+topic = Computer Science/System Description Languages
+abstract =
+ We present an executable formalization of the language Promela, the
+ description language for models of the model checker SPIN. This
+ formalization is part of the work for a completely verified model
+ checker (CAVA), but also serves as a useful (and executable!)
+ description of the semantics of the language itself, something that is
+ currently missing.
+ The formalization uses three steps: It takes an abstract syntax tree
+ generated from an SML parser, removes syntactic sugar and enriches it
+ with type information. This further gets translated into a transition
+ system, on which the semantic engine (read: successor function) operates.
+
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
 author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>

@@ -1,0 +1,13 @@
+chapter AFP
+
+session Promela (AFP) = LTL_to_GBA +
+  options [timeout = 600]
+  theories [document = false]
+     "~~/src/HOL/Library/IArray"
+     PromelaStatistics
+  theories
+    Promela
+    PromelaLTL
+  theories [document=false]
+    All_Of_Promela
+  files "document/root.tex" "document/intro.tex" "document/root.bib"
