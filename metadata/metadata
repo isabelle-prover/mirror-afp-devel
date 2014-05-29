@@ -1620,6 +1620,37 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
   checking of pCTL formulas, analysis of IPv4 address allocation in
   ZeroConf and an analysis of the anonymity of the Crowds protocol.
 
+[CAVA_Automata]
+title = The CAVA Automata Library
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-05-28
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ We report on the graph and automata library that is used in the fully
+ verified LTL model checker CAVA.
+ As most components of CAVA use some type of graphs or automata, a common
+ automata library simplifies assembly of the components and reduces
+ redundancy.
+ <p>
+ The CAVA Automata Library provides a hierarchy of graph and automata
+ classes, together with some standard algorithms.
+ Its object oriented design allows for sharing of algorithms, theorems,
+ and implementations between its classes, and also simplifies extensions
+ of the library.
+ Moreover, it is integrated into the Automatic Refinement Framework,
+ supporting automatic refinement of the abstract automata types to
+ efficient data structures.
+ <p>
+ Note that the CAVA Automata Library is work in progress. Currently, it
+ is very specifically tailored towards the requirements of the CAVA model
+ checker.
+ Nevertheless, the formalization techniques presented here allow an
+ extension of the library to a wider scope. Moreover, they are not
+ limited to graph libraries, but apply to class hierarchies in general.
+ <p>
+ The CAVA Automata Library is described in the paper: Peter Lammich, The
+ CAVA Automata Library, Isabelle Workshop 2014.
+
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
 author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
