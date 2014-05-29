@@ -1701,6 +1701,34 @@ abstract =
  with type information. This further gets translated into a transition
  system, on which the semantic engine (read: successor function) operates.
 
+[CAVA_LTL_Modelchecker]
+title = A Fully Verified Executable LTL Model Checker
+author = Javier Esparza <https://www7.in.tum.de/~esparza/>,
+ Peter Lammich <http://www21.in.tum.de/~lammich>,
+ René Neumann <mailto:rene.neumann@in.tum.de>,
+ Tobias Nipkow <http://www.in.tum.de/~nipkow>,
+ Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>,
+ Jan-Georg Smaus <http://www.irit.fr/~Jan-Georg.Smaus> 
+date = 2014-05-28
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ We present an LTL model checker whose code has been completely verified
+ using the Isabelle theorem prover. The checker consists of over 4000
+ lines of ML code. The code is produced using the Isabelle Refinement
+ Framework, which allows us to split its correctness proof into (1) the
+ proof of an abstract version of the checker, consisting of a few hundred
+ lines of ``formalized pseudocode'', and (2) a verified refinement step
+ in which mathematical sets and other abstract structures are replaced by
+ implementations of efficient structures like red-black trees and
+ functional arrays. This leads to a checker that,
+ while still slower than unverified checkers, can already be used as a
+ trusted reference implementation against which advanced implementations
+ can be tested.
+ <p>
+ An early version of this model checker is described in the
+ <a href="http://www.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
+ with the same title.
+
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
 author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
