@@ -548,15 +548,19 @@ lemma emeasure_split_Collect:
   by (auto intro!: nn_integral_cong arg_cong2[where f=emeasure]
            simp: space_PiM `s \<in> S` PiE_iff space_pair_measure split: nat.split)
 
+lemma integral_indicator':
+  "A \<in> sets M \<Longrightarrow> integral\<^sup>L M (indicator A) = measure M A"
+  using integral_indicator[of M A] sets.sets_into_space[of A M] by (simp add: Int_absorb1)
+
 lemma prob_split:
   assumes "s \<in> S" and A: "A \<in> sets S_seq"
   shows "prob s A =
     (\<integral>\<omega>. prob (case_nat s \<omega> i) (comb_seq i \<omega> -` A \<inter> space S_seq) \<partial>paths s)"
   using assms
-  apply (simp add: integral_real_indicator[symmetric] del: integral_real_indicator)
+  apply (simp add: integral_indicator'[symmetric] del: integral_indicator)
   apply (subst integral_split)
   apply (auto intro!: integral_cong split: split_indicator
-              simp add: integral_real_indicator[symmetric] simp del: integral_real_indicator)
+              simp add: integral_indicator'[symmetric] simp del: integral_indicator)
   done
 
 lemma prob_split_Collect:
@@ -693,10 +697,10 @@ lemma prob_iterate:
   assumes "s \<in> S" and A: "A \<in> sets S_seq"
   shows "prob s A = (\<integral>s'. prob s' (case_nat s' -` A \<inter> space S_seq) \<partial>K s)"
   using assms
-  apply (simp add: integral_real_indicator[symmetric] del: integral_real_indicator)
+  apply (simp add: integral_indicator'[symmetric] del: integral_indicator)
   apply (subst integral_iterate)
   apply (auto intro!: integral_cong split: split_indicator
-              simp add: integral_real_indicator[symmetric] simp del: integral_real_indicator)
+              simp add: integral_indicator'[symmetric] simp del: integral_indicator)
   done
   
 lemma prob_iterate_Collect:
