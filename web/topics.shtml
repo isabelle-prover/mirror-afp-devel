@@ -47,6 +47,9 @@
 <a href="entries/KAT_and_DRA.shtml">KAT_and_DRA</a> &nbsp;
 <a href="entries/Regular_Algebras.shtml">Regular_Algebras</a> &nbsp;
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
+<a href="entries/CAVA_Automata.shtml">CAVA_Automata</a> &nbsp;
+<a href="entries/LTL_to_GBA.shtml">LTL_to_GBA</a> &nbsp;
+<a href="entries/CAVA_LTL_Modelchecker.shtml">CAVA_LTL_Modelchecker</a> &nbsp;
 </div>
 
 <h3>Algorithms</h3>
@@ -65,6 +68,7 @@
 <a href="entries/Transitive-Closure.shtml">Transitive-Closure</a> &nbsp;
 <a href="entries/Transitive-Closure-II.shtml">Transitive-Closure-II</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
+<a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -177,6 +181,7 @@
 <div class="list">
 <a href="entries/Circus.shtml">Circus</a> &nbsp;
 <a href="entries/ComponentDependencies.shtml">ComponentDependencies</a> &nbsp;
+<a href="entries/Promela.shtml">Promela</a> &nbsp;
 <a href="entries/Featherweight_OCL.shtml">Featherweight_OCL</a> &nbsp;
 </div>
 
@@ -307,6 +312,7 @@
 
 <div class="list">
 <a href="entries/ShortestPath.shtml">ShortestPath</a> &nbsp;
+<a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 <a href="entries/Graph_Theory.shtml">Graph_Theory</a> &nbsp;
 <a href="entries/Max-Card-Matching.shtml">Max-Card-Matching</a> &nbsp;
 <a href="entries/Girth_Chromatic.shtml">Girth_Chromatic</a> &nbsp;

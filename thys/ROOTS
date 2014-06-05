@@ -19,6 +19,8 @@ CCS
 Category
 Category2
 Cauchy
+CAVA_Automata
+CAVA_LTL_Modelchecker
 Circus
 ClockSynchInst
 CofGroups
@@ -56,6 +58,7 @@ Free-Groups
 FunWithFunctions
 FunWithTilings
 Functional-Automata
+Gabow_SCC
 Gauss-Jordan-Elim-Fun
 GenClock
 General-Triangle
@@ -95,6 +98,7 @@ List-Index
 List-Infinite
 Locally-Nameless-Sigma
 Lower_Semicontinuous
+LTL_to_GBA
 Markov_Models
 Marriage
 Matrix
@@ -123,6 +127,7 @@ Pratt_Certificate
 Presburger-Automata
 Probabilistic_Noninterference
 Program-Conflict-Analysis
+Promela
 PseudoHoops
 Psi_Calculi
 RIPEMD-160-SPARK

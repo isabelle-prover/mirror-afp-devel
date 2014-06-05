@@ -55,6 +55,47 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-05-28:
+<a href="entries/CAVA_Automata.shtml">The CAVA Automata Library</a>
+<br>Author:
+<a href="http://www21.in.tum.de/~lammich">Peter Lammich</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-05-28:
+<a href="entries/LTL_to_GBA.shtml">Converting Linear-Time Temporal Logic to Generalized Büchi Automata</a>
+<br>Author:
+Alexander Schimpf and 
+<a href="http://www21.in.tum.de/~lammich">Peter Lammich</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-05-28:
+<a href="entries/Gabow_SCC.shtml">Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm</a>
+<br>Author:
+<a href="http://www21.in.tum.de/~lammich">Peter Lammich</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-05-28:
+<a href="entries/Promela.shtml">Promela Formalization</a>
+<br>Author:
+René Neumann
+</td></tr>
+
+<tr><td class="entry">
+2014-05-28:
+<a href="entries/CAVA_LTL_Modelchecker.shtml">A Fully Verified Executable LTL Model Checker</a>
+<br>Author:
+<a href="https://www7.in.tum.de/~esparza/">Javier Esparza</a>,
+<a href="http://www21.in.tum.de/~lammich">Peter Lammich</a>,
+René Neumann,
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>,
+Alexander Schimpf and 
+<a href="http://www.irit.fr/~Jan-Georg.Smaus">Jan-Georg Smaus</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-05-23:
 <a href="entries/Noninterference_CSP.shtml">Noninterference Security in Communicating Sequential Processes</a>
 <br>Author:

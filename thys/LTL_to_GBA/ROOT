@@ -1,0 +1,11 @@
+chapter AFP
+
+session LTL_to_GBA (AFP) = CAVA_Automata +
+  options [timeout = 900]
+  theories [document=false]
+    "../Stuttering_Equivalence/PLTL"
+  theories
+    LTL LTL_Rewrite LTL_Stutter LTL_to_GBA LTL_to_GBA_impl
+  theories [document=false]
+    All_Of_LTL_to_GBA
+  files "document/root.tex" "document/intro.tex" "document/root.bib"

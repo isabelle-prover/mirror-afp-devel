@@ -1,0 +1,34 @@
+chapter AFP
+
+session CAVA_buildchain1 = "LTL_to_GBA" +
+  options [document=false]
+  theories "../Gabow_SCC/All_Of_Gabow_SCC"
+
+(*session CAVA_buildchain2 = CAVA_buildchain1 +
+  options [document=false]
+  theories "../Nested_DFS/All_Of_Nested_DFS"*)
+
+session CAVA_buildchain3 = CAVA_buildchain1 +
+  options [document=false]
+  theories "../Promela/All_Of_Promela"
+
+session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
+  options [timeout = 1200]
+  theories [document = false]
+    "Nested_DFS/NDFS_SI_Statistics"
+  theories
+    "Nested_DFS/NDFS_SI"
+  theories
+    CAVA_Abstract
+  theories [document=false]
+    "~~/src/HOL/Library/AList_Mapping"
+  theories
+    "BoolProgs/BoolProgs"
+  theories [document=false]
+    "BoolProgs/BoolProgs_Extras" "BoolProgs/BoolProgs_LTL_Conv"
+    "BoolProgs/Programs/BoolProgs_Programs"
+  theories
+    CAVA_Impl
+  theories [document=false]
+    All_Of_CAVA_LTL_Modelchecker
+  files "document/root.tex"

@@ -1641,6 +1641,115 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
   ZeroConf and an analysis of the anonymity of the Crowds protocol.
   <a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
 
+[CAVA_Automata]
+title = The CAVA Automata Library
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-05-28
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ We report on the graph and automata library that is used in the fully
+ verified LTL model checker CAVA.
+ As most components of CAVA use some type of graphs or automata, a common
+ automata library simplifies assembly of the components and reduces
+ redundancy.
+ <p>
+ The CAVA Automata Library provides a hierarchy of graph and automata
+ classes, together with some standard algorithms.
+ Its object oriented design allows for sharing of algorithms, theorems,
+ and implementations between its classes, and also simplifies extensions
+ of the library.
+ Moreover, it is integrated into the Automatic Refinement Framework,
+ supporting automatic refinement of the abstract automata types to
+ efficient data structures.
+ <p>
+ Note that the CAVA Automata Library is work in progress. Currently, it
+ is very specifically tailored towards the requirements of the CAVA model
+ checker.
+ Nevertheless, the formalization techniques presented here allow an
+ extension of the library to a wider scope. Moreover, they are not
+ limited to graph libraries, but apply to class hierarchies in general.
+ <p>
+ The CAVA Automata Library is described in the paper: Peter Lammich, The
+ CAVA Automata Library, Isabelle Workshop 2014.
+
+[LTL_to_GBA]
+title = Converting Linear-Time Temporal Logic to Generalized Büchi Automata
+author = Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-05-28
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ We formalize linear-time temporal logic (LTL) and the algorithm by Gerth
+ et al. to convert LTL formulas to generalized Büchi automata.
+ We also formalize some syntactic rewrite rules that can be applied to
+ optimize the LTL formula before conversion.
+ Moreover, we integrate the Stuttering Equivalence AFP-Entry by Stefan
+ Merz, adapting the lemma that next-free LTL formula cannot distinguish
+ between stuttering equivalent runs to our setting.
+ <p>
+ We use the Isabelle Refinement and Collection framework, as well as the
+ Autoref tool, to obtain a refined version of our algorithm, from which
+ efficiently executable code can be extracted.
+
+[Gabow_SCC]
+title = Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm
+author = Peter Lammich <http://www21.in.tum.de/~lammich>
+date = 2014-05-28
+topic = Computer Science/Algorithms, Mathematics/Graph Theory
+abstract =
+ We present an Isabelle/HOL formalization of Gabow's algorithm for
+ finding the strongly connected components of a directed graph.
+ Using data refinement techniques, we extract efficient code that
+ performs comparable to a reference implementation in Java.
+ Our style of formalization allows for re-using large parts of the proofs
+ when defining variants of the algorithm. We demonstrate this by
+ verifying an algorithm for the emptiness check of generalized Büchi
+ automata, re-using most of the existing proofs.
+
+[Promela]
+title = Promela Formalization
+author = René Neumann <mailto:rene.neumann@in.tum.de>
+date = 2014-05-28
+topic = Computer Science/System Description Languages
+abstract =
+ We present an executable formalization of the language Promela, the
+ description language for models of the model checker SPIN. This
+ formalization is part of the work for a completely verified model
+ checker (CAVA), but also serves as a useful (and executable!)
+ description of the semantics of the language itself, something that is
+ currently missing.
+ The formalization uses three steps: It takes an abstract syntax tree
+ generated from an SML parser, removes syntactic sugar and enriches it
+ with type information. This further gets translated into a transition
+ system, on which the semantic engine (read: successor function) operates.
+
+[CAVA_LTL_Modelchecker]
+title = A Fully Verified Executable LTL Model Checker
+author = Javier Esparza <https://www7.in.tum.de/~esparza/>,
+ Peter Lammich <http://www21.in.tum.de/~lammich>,
+ René Neumann <mailto:rene.neumann@in.tum.de>,
+ Tobias Nipkow <http://www.in.tum.de/~nipkow>,
+ Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>,
+ Jan-Georg Smaus <http://www.irit.fr/~Jan-Georg.Smaus> 
+date = 2014-05-28
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ We present an LTL model checker whose code has been completely verified
+ using the Isabelle theorem prover. The checker consists of over 4000
+ lines of ML code. The code is produced using the Isabelle Refinement
+ Framework, which allows us to split its correctness proof into (1) the
+ proof of an abstract version of the checker, consisting of a few hundred
+ lines of ``formalized pseudocode'', and (2) a verified refinement step
+ in which mathematical sets and other abstract structures are replaced by
+ implementations of efficient structures like red-black trees and
+ functional arrays. This leads to a checker that,
+ while still slower than unverified checkers, can already be used as a
+ trusted reference implementation against which advanced implementations
+ can be tested.
+ <p>
+ An early version of this model checker is described in the
+ <a href="http://www.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
+ with the same title.
+
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
 author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
