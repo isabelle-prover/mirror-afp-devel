@@ -1,0 +1,11 @@
+chapter AFP
+
+session Boolean_Expression_Checkers (AFP) = HOL +
+
+  options [timeout = 600]
+
+  theories
+    Boolean_Expression_Example
+
+  files
+    "document/root.tex"
