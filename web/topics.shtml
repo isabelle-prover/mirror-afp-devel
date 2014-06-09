@@ -58,6 +58,7 @@
 <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
+<a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
 <a href="entries/FFT.shtml">FFT</a> &nbsp;
@@ -208,6 +209,7 @@
 <h2>Logic</h2>
 
 <div class="list">
+<a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Verified-Prover.shtml">Verified-Prover</a> &nbsp;
 <a href="entries/Completeness.shtml">Completeness</a> &nbsp;
