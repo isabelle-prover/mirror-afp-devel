@@ -1,18 +1,12 @@
-(*  Title:       Isabelle/Circus
-    Author:      Abderrahmane Feliachi, Burkhart Wolff, Marie-Claude Gaudel
-                 Univ. Paris-Sud / LRI
-    Maintainer:  Abderrahmane Feliachi
-*)
+header{* Reactive processes *}
 
 theory Reactive_Processes
 imports Designs "~~/src/HOL/Library/Sublist"
+(* isabelle2012 "~~/src/HOL/Library/List_Prefix" *)
 begin
 
-subsection{* Reactive Processes \label{sec:UTP_Reactive_Processes} *}
-text{*\label{Reactive_Processes}*}
-text {* Following the technique already used to repesent termination by 
-the observational variable \inlineisar+ok+, the UTP 
- describes reactive processes by introducing more observational
+
+text {* Following the way of UTP to describe reactive processes, more observational
 variables are needed to record the interaction with the environment. Three observational 
 variables are defined for this subset of relations: $wait$, $tr$ and $ref$.
 The boolean variable $wait$ records if the process is waiting for an interaction
@@ -20,20 +14,17 @@ or has terminated. $tr$ records the list (trace) of interactions the process has
 performed so far. The variable $ref$ contains the set of interactions (events) the
 process may refuse to perform. *}
 
-
-
-text {* In this subsection, we introduce first some preliminary notions, useful for 
+text {* In this section, we introduce first some preliminary notions, useful for 
  trace manipulations. The definitions of reactive process alphabets and healthiness 
 conditions are also given. Finally, proved lemmas and theorems are listed.*}
 
-subsubsection {* Preliminaries *}
+subsection {* Preliminaries *}
 
 type_synonym '\<alpha> trace = "'\<alpha> list"
 
 fun list_diff::"'\<alpha> list \<Rightarrow> '\<alpha> list \<Rightarrow> '\<alpha> list option" where
-    "list_diff [] [] = Some []"
+   "list_diff l [] = Some l"
   | "list_diff [] l = None"
-  | "list_diff l [] = Some l"
   | "list_diff (x#xs) (y#ys) = (if (x = y) then (list_diff xs ys) else None)"
 
 instantiation  list :: (type) minus
@@ -47,7 +38,7 @@ by (cases l) auto
 
 lemma prefix_diff_empty [simp]: "l  - [] = l"
 by (induct l) (auto simp: list_minus)
- 
+
 lemma prefix_diff_eq [simp]: "l - l = []"
 by (induct l) (auto simp: list_minus)
 
@@ -68,13 +59,74 @@ apply (simp only: append_assoc [symmetric])
 apply (rule prefix_diff1)
 done
 
-class ev_eq = fixes ev_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+lemma prefix_diff3 [simp]: "(l @ m) - (l @ t) = (m - t)"
+by (induct l, auto simp: list_minus)
+
+lemma prefix_diff4 [simp]: "(a # m) - (a # t) = (m - t)"
+by (auto simp: list_minus)
+
+
+class ev_eq = 
+  fixes ev_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+  assumes refl: "ev_eq a a"
+  assumes comm: "ev_eq a b = ev_eq b a"
 
 definition "filter_chan_set a cs = (\<not> (\<exists> e\<in>cs. ev_eq a e))"
+
+lemma in_imp_not_fcs:
+"x\<in>S \<Longrightarrow> \<not> filter_chan_set x S"
+apply (auto simp: filter_chan_set_def)
+apply (rule_tac bexI, auto simp: refl)
+done
+
 fun tr_filter::"'a::ev_eq list \<Rightarrow> 'a set \<Rightarrow> 'a list" where
     "tr_filter [] cs = []"
   | "tr_filter (x#xs) cs = (if (filter_chan_set x cs) then (x#(tr_filter xs cs))
                                                                   else (tr_filter xs cs))"
+
+
+lemma tr_filter_conc: "(tr_filter (a@b) cs) = ((tr_filter a cs) @ (tr_filter b cs))"
+by (induct a, auto)
+
+lemma filter_chan_set_hd_tr_filter:
+"tr_filter l cs \<noteq> [] --> filter_chan_set (hd (tr_filter l cs)) cs"
+by (induct l, auto)
+
+lemma tr_filter_conc_eq1: 
+"(a@b = (tr_filter (a@c) cs)) \<longrightarrow> (b = (tr_filter c cs))"
+apply (induct a, auto)
+apply (case_tac "tr_filter (a2 @ c) cs = []", simp_all)
+apply (drule filter_chan_set_hd_tr_filter[rule_format])
+apply (case_tac "tr_filter (a2 @ c) cs", simp_all)
+done
+
+lemma tr_filter_conc_eq2: 
+"(a@b = (tr_filter (a@c) cs)) \<longrightarrow> (a = (tr_filter a cs))"
+apply (induct a, auto)
+apply (case_tac "tr_filter (a2 @ c) cs = []", simp_all)
+apply (drule filter_chan_set_hd_tr_filter[rule_format])
+apply (case_tac "tr_filter (a2 @ c) cs", simp_all)
+apply (case_tac "tr_filter (a2 @ c) cs = []", simp_all)
+apply (drule filter_chan_set_hd_tr_filter[rule_format])
+apply (case_tac "tr_filter (a2 @ c) cs", simp_all)
+done
+
+lemma tr_filter_conc_eq:
+"(a@b = (tr_filter (a@c) cs)) = (b = (tr_filter c cs) & a = (tr_filter a cs))"
+apply (rule, rule)
+apply (rule tr_filter_conc_eq1[rule_format, of a], clarsimp)
+apply (rule tr_filter_conc_eq2[rule_format, of a b c], clarsimp)
+apply (clarsimp simp: tr_filter_conc)
+done
+
+lemma tr_filter_conc_eq3:
+"(b = (tr_filter (a@c) cs)) = (\<exists> b1 b2. b=b1@b2 & b2 = (tr_filter c cs) & b1 = (tr_filter a cs))"
+by (rule, auto simp: tr_filter_conc)
+
+lemma tr_filter_un:
+"tr_filter l (s1 \<union> s2) = tr_filter (tr_filter l s1) s2"
+by (induct l, auto simp: filter_chan_set_def)
+
 
 instantiation list :: (ev_eq) ev_eq
 begin
@@ -83,19 +135,45 @@ fun ev_eq_list where
   | "ev_eq_list l [] = False"
   | "ev_eq_list [] l = False"
   | "ev_eq_list (x#xs) (y#ys) = (if (ev_eq x y) then (ev_eq_list xs ys) else False)"
-instance ..
+instance 
+  proof
+  fix a::"'a::ev_eq list" show "ev_eq a a"
+  by (induct a, auto simp: ev_eq_class.refl)
+  next
+  fix a b::"'a::ev_eq list" show "ev_eq a b = ev_eq b a"
+  apply (cases a)
+  apply (cases b, simp_all add: ev_eq_class.comm)
+  apply (hypsubst)
+  apply (induct b, simp_all add: ev_eq_class.comm)
+  apply (case_tac "ev_eq aa a", simp_all add: ev_eq_class.comm)
+  apply (case_tac "list = []", simp_all)
+  apply (case_tac "b", simp_all)
+  apply (atomize)
+  apply (erule_tac x="hd list" in allE)
+  apply (erule_tac x="tl list" in allE)
+  apply (subst (asm) hd_Cons_tl, simp_all)
+done
+qed
 end
 
-subsubsection {* Definitions *}
+subsection {* Definitions *}
+
+(* isabelle 2013 *)
+
+abbreviation subl::"'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<le> _") 
+where "l1 \<le> l2 == Sublist.prefixeq l1 l2"
+
+lemma list_diff_empty_eq: "l1 - l2 = [] \<Longrightarrow> l2 \<le> l1 \<Longrightarrow> l1 = l2"
+by (auto simp: prefixeq_def)
+
+
+(* end isabelle 2013 *)
 
 text {* The definitions of reactive process alphabets and healthiness conditions are given
-in the following. The basic step is that the observational variables 
-\inlineisar+wait+, \inlineisar+tr+ and \inlineisar+ref+ are included into the basic 
-alphabet of all reactive processes  called ``\inlineisar+alpha_rp+''. *}
-
+in the following. The healthiness conditions of reactive processes are defined by 
+$R1$, $R2$, $R3$ and their composition $R$.*}
 
 type_synonym '\<theta> refusal = "'\<theta> set"
-
   
 record '\<theta> alpha_rp  = alpha_d + 
                          wait:: bool
@@ -114,34 +192,22 @@ definition "diff_tr s1 s2 = ((tr s1) - (tr s2))"
 definition spec :: "[bool, bool, ('\<theta>,'\<sigma>) relation_rp] \<Rightarrow> ('\<theta>,'\<sigma>) relation_rp"
 where "spec b b' P \<equiv> \<lambda> (A, A'). P (A\<lparr>wait := b'\<rparr>, A'\<lparr>ok := b\<rparr>)"
 
-abbreviation Speciftt ("_\<^sup>t\<^sub>t") where "(P)\<^sup>t\<^sub>t \<equiv> spec True True P"
+abbreviation Speciftt ("_\<^isup>t\<^isub>t") where "(P)\<^isup>t\<^isub>t \<equiv> spec True True P"
 
-abbreviation Specifff ("_\<^sup>f\<^sub>f") where "(P)\<^sup>f\<^sub>f \<equiv> spec False False P"
+abbreviation Specifff ("_\<^isup>f\<^isub>f") where "(P)\<^isup>f\<^isub>f \<equiv> spec False False P"
 
-abbreviation Speciftf ("_\<^sup>t\<^sub>f") where "(P)\<^sup>t\<^sub>f \<equiv> spec True False P"
+abbreviation Speciftf ("_\<^isup>t\<^isub>f") where "(P)\<^isup>t\<^isub>f \<equiv> spec True False P"
 
-abbreviation Specifft ("_\<^sup>f\<^sub>t") where "(P)\<^sup>f\<^sub>t \<equiv> spec False True P"
-
-
-text{* Particular invariants on reactive designs must be introduce
-in order to exclude non-interpretable processes. These invariants
-were traditionally called " healthiness conditions" of reactive processes 
-and are defined by  $R1$, $R2$, $R3$ and their composition $R$.*}
-
-text{*
-Some healthiness conditions are defined over \inlineisar+wait+, 
-\inlineisar+tr+ and \inlineisar+ref+ to ensure that a recative process 
-satisfies some properties \cite{CW06}. *}
-
+abbreviation Specifft ("_\<^isup>f\<^isub>t") where "(P)\<^isup>f\<^isub>t \<equiv> spec False True P"
 
 definition R1::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
-where "R1 (P)  \<equiv>  \<lambda>(A, A'). (P (A, A')) \<and> prefixeq (tr A) (tr A')"
+where "R1 (P)  \<equiv>  \<lambda>(A, A'). (P (A, A')) \<and> (tr A \<le> tr A')"
 
 definition R2::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
-where "R2 (P)  \<equiv> \<lambda>(A, A'). (P (A\<lparr>tr:=[]\<rparr>,A'\<lparr>tr:= tr A' - tr A\<rparr>) \<and> prefixeq (tr A) (tr A'))"
+where "R2 (P)  \<equiv> \<lambda>(A, A'). (P (A\<lparr>tr:=[]\<rparr>,A'\<lparr>tr:= tr A' - tr A\<rparr>) \<and> tr A \<le> tr A')"
 
 definition \<Pi>rea   
-where "\<Pi>rea  \<equiv> \<lambda>(A, A'). (\<not>ok A \<and> prefixeq (tr A) (tr A')) \<or> (ok A' \<and> tr A = tr A' 
+where "\<Pi>rea  \<equiv> \<lambda>(A, A'). (\<not>ok A \<and> tr A \<le> tr A') \<or> (ok A' \<and> tr A = tr A' 
                             \<and> (wait A = wait A') \<and> ref A = ref A' \<and> more A = more A')"
 
 definition R3::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
@@ -152,7 +218,7 @@ where "R  \<equiv> R3 o R2 o R1"
 
 lemmas rp_defs = R1_def R2_def \<Pi>rea_def R3_def R_def spec_def
 
-subsubsection {* Proofs *}
+subsection {* Proofs *}
 
 lemma tr_filter_empty [simp]: "tr_filter l {} = l"
 by (induct l) (auto simp: filter_chan_set_def)
@@ -195,10 +261,10 @@ lemma R1_idem2: "R1 (R1 x) = R1 x"
 by (auto simp: rp_defs design_defs)
 
 lemma R2_idem: "R2 o R2 = R2"
-by (auto simp: rp_defs design_defs)
+by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def)
 
 lemma R2_idem2: "R2 (R2 x) = R2 x"
-by (auto simp: rp_defs design_defs)
+by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def)
 
 lemma R3_idem: "R3 o R3 = R3"
 by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
@@ -206,14 +272,14 @@ by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
 lemma R3_idem2: "R3 (R3 x) = R3 x"
 by (auto simp: R3_idem[simplified Fun.comp_def fun_eq_iff] fun_eq_iff)
 
-lemma R1_R2_commute: "R1 o R2 = R2 o R1"
-by (auto simp: rp_defs prefix_def design_defs fun_eq_iff)
+lemma R1_R2_commute: "(R1 o R2) = (R2 o R1)"
+by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def)
 
-lemma R1_R3_commute: "R1 o R3 = R3 o R1"
+lemma R1_R3_commute: "(R1 o R3) = (R3 o R1)"
 by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
 
 lemma R2_R3_commute: "R2 o R3 = R3 o R2"
-by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits elim: prefixeqE)
+by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def split: cond_splits elim: prefixE)
 
 lemma R_abs_R1: "R o R1 = R"
 apply (auto simp: R_def)
@@ -247,7 +313,7 @@ proof -
     using assms by (simp_all only: Healthy_def)
   moreover
   have "(R P) is R2 healthy"
-    by (auto simp add: design_defs rp_defs fun_eq_iff prefixeq_def split: cond_splits)
+    by (auto simp add: design_defs rp_defs fun_eq_iff prefixeq_def prefix_def split: cond_splits)
   ultimately show ?thesis by simp
 qed
 
@@ -308,7 +374,7 @@ lemma J_is_R1: "J is R1 healthy"
   by (auto simp: rp_defs design_defs fun_eq_iff elim: alpha_d_more_eqE)
 
 lemma J_is_R2: "J is R2 healthy"
-  by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def
+  by (auto simp: rp_defs design_defs fun_eq_iff prefix_def prefixeq_def
     elim!: alpha_d_more_eqE intro!: alpha_d_more_eqI)
 
 lemma R1_H2_commute2: "R1 (H2 P) = H2 (R1 P)"
@@ -319,23 +385,24 @@ lemma R1_H2_commute: "R1 o H2 = H2 o R1"
 by (auto simp: R1_H2_commute2)
 
 lemma R2_H2_commute2: "R2 (H2 P) = H2 (R2 P)"
-apply (auto simp add: fun_eq_iff rp_defs design_defs prefixeq_def)
+apply (auto simp add: fun_eq_iff rp_defs design_defs prefix_def)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro)
-apply (auto simp: fun_eq_iff prefixeq_def
+apply (auto simp: fun_eq_iff prefix_def prefixeq_def
   elim!: alpha_d_more_eqE alpha_rp_eqE intro!: alpha_d_more_eqI alpha_rp.equality)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro,
   auto simp: elim: alpha_d_more_eqE alpha_rp_eqE intro: alpha_d_more_eqI alpha_rp.equality)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro,
   auto simp: elim: alpha_d_more_eqE alpha_rp_eqE intro: alpha_d_more_eqI alpha_rp.equality)
+apply (rule_tac x=zs in exI, auto)+
+
 done
 
 lemma R2_H2_commute: "R2 o H2 = H2 o R2"
 by (auto simp: R2_H2_commute2)
 
 lemma R3_H2_commute2: "R3 (H2 P) = H2 (R3 P)"
-apply (auto simp: fun_eq_iff rp_defs design_defs prefixeq_def 
+apply (auto simp: fun_eq_iff rp_defs design_defs prefix_def 
             elim: alpha_d_more_eqE split: cond_splits)
-apply (rule_tac b="b" in comp_intro, auto split: cond_splits)
 done
 
 lemma R3_H2_commute: "R3 o H2 = H2 o R3"

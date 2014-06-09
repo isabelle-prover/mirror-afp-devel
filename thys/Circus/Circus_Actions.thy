@@ -1,36 +1,27 @@
-(*  Title:       Isabelle/Circus
-    Author:      Abderrahmane Feliachi, Burkhart Wolff, Marie-Claude Gaudel
-                 Univ. Paris-Sud / LRI
-    Maintainer:  Abderrahmane Feliachi
-*)
-
-header {* Isabelle/\Circus *}
+header {* Circus actions *}
 
 theory Circus_Actions
-imports "~~/src/HOL/HOLCF/HOLCF" CSP_Processes
+imports HOLCF CSP_Processes
 begin
 
-subsection{* Circus actions \label{sec:Circus_actions} *}
-
-text {* In this subsection, we introduce definitions for Circus actions with 
+text {* In this section, we introduce definitions for Circus actions with 
 some useful theorems and lemmas. *}
 
-default_sort type   
+default_sort type
 
-subsubsection {* Definitions *}
+subsection {* Definitions *}
 
 text {* The Circus actions type is defined as the set of all the CSP healthy reactive processes. *}
 
-definition "action = {p::('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
-
-typedef ('\<theta>::"ev_eq",'\<sigma>) action =
-  "action :: (('\<theta>, '\<sigma>) alpha_rp_scheme \<times> ('\<theta>, '\<sigma>) alpha_rp_scheme \<Rightarrow> bool) set"
-  morphisms relation_of action_of
+typedef ('\<theta>::"ev_eq",'\<sigma>)  "action" = "{p::('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
+    morphisms relation_of action_of
 proof -
    have "R (false \<turnstile> true) \<in> {p :: ('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
         by (auto intro: rd_is_CSP)
-   thus ?thesis unfolding action_def by auto
+   thus ?thesis by auto
 qed
+
+print_theorems
 
 text {* The type-definition introduces a new type by stating a set. In our case, 
  it is the set of reactive processes that satisfy the healthiness-conditions
@@ -41,7 +32,7 @@ text {* The type-definition introduces a new type by stating a set. In our case,
 
 lemma relation_of_CSP: "is_CSP_process (relation_of x)"
 proof -
-have "(relation_of x) :{p. is_CSP_process p}" by (rule relation_of[simplified action_def])
+have "(relation_of x) :{p. is_CSP_process p}" by (rule relation_of)
 then show "is_CSP_process (relation_of x)" ..
 qed
 
@@ -54,22 +45,20 @@ by (rule CSP_is_CSP2[OF relation_of_CSP])
 lemma relation_of_R: "(relation_of x) is R healthy"
 by (rule CSP_is_R[OF relation_of_CSP])
 
+subsection {* Proofs *}
 
-subsubsection {* Proofs \label{ActionProofs} *}
-
-text {* In the following, Circus actions are proved to be an instance of the $Complete\_Lattice$ 
-class. *}
+text {* In the following, Circus actions are proved to be an instance of the $Complete\_Lattice$ class. *}
 
 lemma relation_of_spec_f_f: 
 "\<forall>a b. (relation_of y \<longrightarrow> relation_of x) (a, b) \<Longrightarrow>
-           (relation_of y)\<^sup>f\<^sub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
-                      (relation_of x)\<^sup>f\<^sub>f (a\<lparr>tr := []\<rparr>, b)"
+           (relation_of y)\<^isup>f\<^isub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
+                      (relation_of x)\<^isup>f\<^isub>f (a\<lparr>tr := []\<rparr>, b)"
 by (auto simp: spec_def)
 
 lemma relation_of_spec_t_f: 
 "\<forall>a b. (relation_of y \<longrightarrow> relation_of x) (a, b) \<Longrightarrow>
-           (relation_of y)\<^sup>t\<^sub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
-                     (relation_of x)\<^sup>t\<^sub>f (a\<lparr>tr := []\<rparr>, b)"
+           (relation_of y)\<^isup>t\<^isub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
+                     (relation_of x)\<^isup>t\<^isub>f (a\<lparr>tr := []\<rparr>, b)"
 by (auto simp: spec_def)
 
 instantiation "action"::(ev_eq, type) below
@@ -120,7 +109,7 @@ proof
     show "inf x y \<le> x"
       apply (auto simp add: less_eq_action inf_action ref_def
         csp_defs design_defs rp_defs)
-      apply (subst action_of_inverse, simp add: action_def Healthy_def)
+      apply (subst action_of_inverse, simp add: Healthy_def)
       apply (insert relation_of_CSP[where x="x"])
       apply (insert relation_of_CSP[where x="y"])
       apply (simp_all add: CSP_join)
@@ -129,7 +118,7 @@ proof
   next
     show "inf x y \<le> y"
       apply (auto simp add: less_eq_action inf_action ref_def csp_defs)
-      apply (subst action_of_inverse, simp add: action_def Healthy_def)
+      apply (subst action_of_inverse, simp add: Healthy_def)
       apply (insert relation_of_CSP[where x="x"])
       apply (insert relation_of_CSP[where x="y"])
       apply (simp_all add: CSP_join)
@@ -142,7 +131,7 @@ proof
       apply (erule_tac x="a" in allE, erule_tac x="a" in allE)
       apply (erule_tac x="b" in allE)+
       apply (subst (asm) action_of_inverse)
-      apply (simp add: action_def Healthy_def)
+      apply (simp add: Healthy_def)
       apply (insert relation_of_CSP[where x="z"])
       apply (insert relation_of_CSP[where x="y"])
       apply (auto simp add: CSP_join)
@@ -152,7 +141,7 @@ proof
       apply (auto simp add: less_eq_action sup_action ref_def 
          impl_def csp_defs)
       apply (subst (asm) action_of_inverse)
-      apply (simp add: action_def Healthy_def)
+      apply (simp add: Healthy_def)
       apply (insert relation_of_CSP[where x="x"])
       apply (insert relation_of_CSP[where x="y"])
       apply (auto simp add: CSP_meet)
@@ -162,7 +151,7 @@ proof
       apply (auto simp add: less_eq_action sup_action ref_def
          impl_def csp_defs)
       apply (subst (asm) action_of_inverse)
-      apply (simp add: action_def Healthy_def)
+      apply (simp add: Healthy_def)
       apply (insert relation_of_CSP[where x="x"])
       apply (insert relation_of_CSP[where x="y"])
       apply (auto simp add: CSP_meet)
@@ -175,7 +164,7 @@ proof
       apply (erule_tac x="a" in allE)
       apply (erule_tac x="b" in allE)+
       apply (subst action_of_inverse)
-      apply (simp add: action_def Healthy_def)
+      apply (simp add: Healthy_def)
       apply (insert relation_of_CSP[where x="z"])
       apply (insert relation_of_CSP[where x="y"])
       apply (auto simp add: CSP_meet)
@@ -185,8 +174,8 @@ qed
 
 end
 
-lemma bot_is_action: "R (false \<turnstile> true) : action"
-  by (auto intro: rd_is_CSP simp: action_def)
+lemma bot_is_action: "R (false \<turnstile> true) \<in> {p. is_CSP_process p}"
+  by (auto intro: rd_is_CSP)
 
 lemma bot_eq_true: "R (false \<turnstile> true) = R true"
   by (auto simp: fun_eq_iff design_defs rp_defs split: cond_splits)
@@ -208,17 +197,17 @@ proof
       apply (subst bot_eq_true)
       apply (subst (asm) CSP_is_rd)
       apply (rule relation_of_CSP)
-      apply (auto simp add: action_def csp_defs rp_defs fun_eq_iff split: cond_splits)
+      apply (auto simp add: csp_defs rp_defs fun_eq_iff split: cond_splits)
       done
   next
     show "x \<le> top"
       apply (auto simp add: less_action less_eq_action ref_def top_action)
       apply (subst (asm) action_of_inverse)
-      apply (simp add: action_def)
+      apply (simp)
       apply (rule rd_is_CSP)
       apply auto
       apply (subst action_of_cases[where x=x], simp_all)
-      apply (subst action_of_inverse, simp_all add: action_def)
+      apply (subst action_of_inverse, simp_all)
       apply (subst CSP_is_rd[where P=y], simp_all)
       apply (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
       done
@@ -230,7 +219,7 @@ end
 lemma relation_of_top: "relation_of top = R(true \<turnstile> false)"
   apply (simp add: top_action)
   apply (subst action_of_inverse)
-  apply (simp add: action_def)
+  apply (simp)
   apply (rule rd_is_CSP)
   apply (auto simp add: utp_defs design_defs rp_defs)
   done
@@ -238,7 +227,7 @@ lemma relation_of_top: "relation_of top = R(true \<turnstile> false)"
 lemma relation_of_bot: "relation_of bot = R true"
   apply (simp add: bot_action)
   apply (subst action_of_inverse)
-  apply (simp add: bot_is_action, rule bot_eq_true)
+  apply (simp add: bot_is_action[simplified], rule bot_eq_true)
   done
 
 lemma non_emptyE: assumes "A \<noteq> {}" obtains x where "x : A"
@@ -263,7 +252,7 @@ proof -
     apply (rule conjI)
     apply (rule_tac x="(relation_of x)" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (auto simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (auto simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     done
   qed
   then show "(\<Sqinter> relation_of ` A) is CSP1 healthy" by (simp add: design_defs)
@@ -290,11 +279,10 @@ proof -
     apply (rule_tac x="Collect Pa" in exI, simp)
     apply (rule conjI)
     apply (rule_tac x="Pa" in exI, simp)
-    apply (rule_tac y="Pa" in relation_of_cases, simp_all)
     apply (erule Set.imageE, simp add: relation_of)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (auto simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (auto simp add: csp_defs rp_defs prefixeq_def design_defs fun_eq_iff split: cond_splits)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
@@ -324,19 +312,19 @@ proof -
     apply (simp_all)
     apply (erule Set.imageE, simp add: relation_of)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (rule_tac x="x" in exI, simp)
     apply (rule conjI)
     apply (rule_tac x="relation_of xa" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (insert *)
     apply (erule non_emptyE)
     apply (rule_tac x="Collect (relation_of x)" in exI, simp)
     apply (rule conjI)
     apply (rule_tac x="(relation_of x)" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (erule exE | erule conjE)+
     apply (simp_all)
     apply (erule Set.imageE, simp add: relation_of)
@@ -344,9 +332,9 @@ proof -
     apply (rule conjI)
     apply (rule_tac x="(relation_of xa)" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
     done
   qed
   then show "(\<Sqinter> relation_of ` A) is R healthy" by (simp add: design_defs)
@@ -359,17 +347,17 @@ lemma CSP_Inf:
   using assms CSP1_Inf CSP2_Inf R_Inf 
   by auto
 
-lemma Inf_is_action: "A \<noteq> {} \<Longrightarrow> \<Sqinter> relation_of ` A \<in> action"
-  by (auto simp: action_def dest!: CSP_Inf)
+lemma Inf_is_action: "A \<noteq> {} \<Longrightarrow> \<Sqinter> relation_of ` A \<in> {p. is_CSP_process p}"
+  by (auto dest!: CSP_Inf)
 
 lemma CSP1_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is CSP1 healthy"
-  apply (auto simp add: action_def design_defs csp_defs fun_eq_iff)
+  apply (auto simp add: design_defs csp_defs fun_eq_iff)
   apply (subst CSP_is_rd, simp add: relation_of_CSP)
-  apply (simp add: csp_defs prefix_def design_defs rp_defs split: cond_splits)
+  apply (simp add: csp_defs prefixeq_def design_defs rp_defs split: cond_splits)
 done
 
 lemma CSP2_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is CSP2 healthy"
-  apply (simp add: action_def design_defs csp_defs fun_eq_iff)
+  apply (simp add: design_defs csp_defs fun_eq_iff)
   apply (rule allI)+
   apply (rule)
   apply (rule_tac b=b in comp_intro, simp_all)
@@ -394,7 +382,7 @@ lemma CSP2_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is
 done
 
 lemma R_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is R healthy"
-  apply (simp add: rp_defs action_def design_defs csp_defs fun_eq_iff)
+  apply (simp add: rp_defs design_defs csp_defs fun_eq_iff)
   apply (rule allI)+
   apply (rule)
   apply (simp split: cond_splits)
@@ -445,8 +433,8 @@ done
 lemma CSP_Sup: "A \<noteq> {} \<Longrightarrow> is_CSP_process (\<Squnion> relation_of ` A)"
   unfolding is_CSP_process_def using CSP1_Sup CSP2_Sup R_Sup by auto
 
-lemma Sup_is_action: "A \<noteq> {} \<Longrightarrow> \<Squnion> relation_of ` A \<in> action"
-  by (auto simp: action_def dest!: CSP_Sup)
+lemma Sup_is_action: "A \<noteq> {} \<Longrightarrow> \<Squnion> relation_of ` A \<in> {p. is_CSP_process p}"
+  by (auto dest!: CSP_Sup)
 
 lemma relation_of_Sup: 
   "A \<noteq> {} \<Longrightarrow> relation_of (action_of \<Squnion> relation_of ` A) = \<Squnion> relation_of ` A"
@@ -461,7 +449,7 @@ definition Inf_action :
 "(Inf (S:: ('a, 'b) action set) \<equiv> if S={} then top else action_of \<Sqinter> (relation_of ` S))"
 
 instance
-proof
+proof 
   fix A::"('a, 'b) action set" and z::"('a, 'b) action"
   {
     fix x::"('a, 'b) action"
@@ -469,8 +457,7 @@ proof
     then show "Inf A \<le> x"
       apply (auto simp add: less_action less_eq_action Inf_action ref_def)
       apply (subst (asm) action_of_inverse)
-      apply (rule Inf_is_action[simplified])
-      apply (auto)
+      apply (auto intro: Inf_is_action[simplified])
       done
   } note rule1 = this
   {
@@ -481,7 +468,7 @@ proof
       then show ?thesis by (simp add: Inf_action)
     next
       case False
-      thus ?thesis
+      show ?thesis
         using *
         apply (auto simp add: Inf_action)
         using `A \<noteq> {}`
@@ -489,19 +476,16 @@ proof
         apply (subst (asm) action_of_inverse)
         apply (subst (asm) ex_in_conv[symmetric])
         apply (erule exE)
-        apply (rule Inf_is_action[simplified])
-        apply (auto simp add: csp_defs less_eq_action ref_def Inf_action)
+        apply (auto intro: Inf_is_action[simplified])
         done
     qed
-  }
-  {
+  }{
     fix x::"('a, 'b) action" 
     assume "x \<in> A"
-    then show "x \<le> Sup A"
+    then show "x \<le> (Sup A)"
       apply (auto simp add: less_action less_eq_action Sup_action ref_def)
       apply (subst (asm) action_of_inverse)
-      apply (rule Sup_is_action[simplified])
-      apply (auto)
+      apply (auto intro: Sup_is_action[simplified])
       done
   } note rule2 = this
   {
@@ -513,20 +497,13 @@ proof
       apply (insert rule2)
       apply (auto simp add: less_action less_eq_action Sup_action ref_def)
       apply (subst (asm) action_of_inverse)
-      apply (rule Sup_is_action[simplified], auto)
+      apply (auto intro: Sup_is_action[simplified])
       apply (subst (asm) action_of_inverse)
-      apply (rule Sup_is_action[simplified])
-      apply (auto)
+      apply (auto intro: Sup_is_action[simplified])
       done
-  }
-  {
-    show "Sup {} = (bot :: ('a,'b) action)"
-      by (auto simp: bot_action Sup_action)
-  }
-  {
-    show "Inf {} = (top :: ('a,'b) action)"
-      by (auto simp: top_action Inf_action)
-  }
+  } 
+  { show "Inf ({}::('a, 'b) action set) = top" by(simp add:Inf_action) }
+  { show "Sup ({}::('a, 'b) action set) = bot" by(simp add:Sup_action) }
 qed
 
 end

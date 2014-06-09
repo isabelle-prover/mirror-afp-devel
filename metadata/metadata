@@ -176,11 +176,15 @@ abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrar
 [Circus]
 title = Isabelle/Circus
 author = Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Marie-Claude Gaudel <mailto:mcg@lri.fr>
+contributors = Makarius Wenzel <mailto:Makarius.wenzel@lri.fr>
 date = 2012-05-27
 topic = Computer Science/Process Calculi, Computer Science/System Description Languages
 abstract = The Circus specification language combines elements for complex data and behavior specifications, using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's Unifying Theories of Programming (UTP). Isabelle/Circus is a formalization of the UTP and the Circus language in Isabelle/HOL. It contains proof rules and tactic support that allows for proofs of refinement for Circus processes (involving both data and behavioral aspects).
  <p>
  The Isabelle/Circus environment supports a syntax for the semantic definitions which is close to textbook presentations of Circus. This article contains an extended version of corresponding VSTTE Paper together with the complete formal development of its underlying commented theories.
+extra-history =
+  Change history:
+  [2014-06-05]: More polishing, shorter proofs, added Circus syntax, added Makarius Wenzel as contributor.
 
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm

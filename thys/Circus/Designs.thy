@@ -1,45 +1,30 @@
-(*  Title:       Isabelle/Circus
-    Author:      Abderrahmane Feliachi, Burkhart Wolff, Marie-Claude Gaudel
-                 Univ. Paris-Sud / LRI
-    Maintainer:  Abderrahmane Feliachi
-*)
+header{* Designs *}
 
 theory Designs
 imports Relations
 begin
 
-subsection{* Designs \label{sec:UTP_Designs}*}
-
-text {* In UTP, in order to explicitly record the termination of a program, a subset
-of alphabetized relations is introduced. These relations are called
-$designs$ and their alphabet should contain the special boolean
-observational variable \inlineisar+ok+. This variable 
+text {* In UTP, in order to explicitly record the termination of a program, 
+a subset of alphabetized relations is introduced. These relations are called 
+designs and their alphabet should contain the special boolean observational variable ok. 
 It is used to record the start and termination of a program. *}
 
-
-subsubsection{* Definitions *}
+subsection{* Definitions *}
 
 text {* In the following, the definitions of designs alphabets, designs and 
 healthiness (well-formedness) conditions are given. The healthiness conditions of
 designs are defined by $H1$, $H2$, $H3$ and $H4$.*}
 
 record alpha_d = ok::bool
+
 type_synonym '\<alpha> alphabet_d  = "'\<alpha> alpha_d_scheme alphabet"
 type_synonym '\<alpha> relation_d = "'\<alpha> alphabet_d relation"
-
-text{* A core notion of the UTP is the \emph{design}.
-In a way, it generalises the concept of a contract satisfaction:
-if a specification $P$ allows the transition from some \inlineisar+ok+ state A
-to A', then the \emph{implementation} Q must enable the same transition
-and, moreover, assure termination in A'. It is is defined as follows: *}
 
 definition design::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d" ("'(_ \<turnstile> _')")
 where " (P \<turnstile> Q) \<equiv> \<lambda> (A, A') .  (ok A \<and> P (A,A')) \<longrightarrow> (ok A' \<and> Q (A,A'))"
 
-text{* A skip-operation is already a consequence: *}
 definition skip_d :: "'\<alpha> relation_d" ("\<Pi>d")
 where "\<Pi>d \<equiv> (true \<turnstile> \<Pi>r)"
-
 
 definition J
 where "J  \<equiv>  \<lambda> (A, A') . (ok A  \<longrightarrow>  ok A') \<and> more A = more A'"
@@ -80,7 +65,7 @@ where "OKAY' \<equiv> \<lambda> (A, A') . ok A'"
 lemmas design_defs = design_def skip_d_def J_def Healthy_def H1_def H2_def H3_def
                      H4_def \<sigma>f_def \<sigma>t_def OKAY_def OKAY'_def
 
-subsubsection{* Proofs *}
+subsection{* Proofs *}
 
 text {* Proof of theorems and properties of designs and their healthiness conditions 
 are given in the following.*}

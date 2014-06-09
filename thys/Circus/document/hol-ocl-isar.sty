@@ -38,6 +38,15 @@
   \newcommand{\rsem}{\rrbracket}
 }
 
+\usepackage{isabellesym}
+\ifthenelse{\boolean{isar@isasymonly}}{%
+  \usepackage{fixisa}
+}{
+  \usepackage{isabelle}
+  \isabellestyle{it}
+  \usepackage{fixisa}
+}
+
 \renewcommand{\isasymrbrakk}{\isamath{\mathclose{\rsem}}}
 \renewcommand{\isasymlbrakk}{\isamath{\mathopen{\lsem}}}
 

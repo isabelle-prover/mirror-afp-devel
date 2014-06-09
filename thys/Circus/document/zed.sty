@@ -69,10 +69,10 @@
 \if@color@
   \@ifpackageloaded{color}{\relax}{%
     \RequirePackage[dvipsnames,usenames]{color}}
-  %\definecolor{ZedBoxColor}{cmyk}{0.99,0,0.52,0}
-  \definecolor{ZedBoxColor}{cmyk}{0,0.61,0.87,0}
-  \definecolor{AnnotationColor}{cmyk}{0.98,0.13,0,0.43}
-  \definecolor{ZedColor}{cmyk}{0.50,1,0,0}
+  \definecolor{ZedBoxColor}{cmyk}{1,1,1,1}
+  %\definecolor{ZedBoxColor}{cmyk}{0,0.61,0.87,0}
+  \definecolor{AnnotationColor}{cmyk}{1,1,1,1}
+  \definecolor{ZedColor}{cmyk}{1,1,1,1}
 \else
   \@ifpackageloaded{color}{\relax}{\def\color#1{\relax}}%
 \fi
@@ -169,7 +169,7 @@
   \global\let"=\@kwote}
 
 \mathchardef\spot="320F
-\mathcode`\@=\spot
+
 \mathcode`\|=\mid
 
 \def\simple@enlarge#1{\mathchoice{%
@@ -348,7 +348,7 @@
 \def\hide{\mathrel{\backslash}}
 \def\id{\mathop{\mathrm{id}}}
 \def\iff{\mathrel{\Leftrightarrow}}
-\def\implies{\mathrel{\Rightarrow}}
+\def\zimplies{\mathrel{\Rightarrow}}
 \def\inbag{\mathrel{\inbag@sym}}
 \def\inseq{\mathrel{\mathsf{in}}}
 \def\inv{^{\inv@sym}}
@@ -362,7 +362,7 @@
 \def\limg{(\mskip-4.5mu|}
 \def\lnot{\neg\;}
 \def\lor{\mathrel{\vee}}
-\def\mod{\mathbin{\mathsf{mod}}}
+\def\zmod{\mathbin{\mathsf{mod}}}
 \def\mu{\strut@op{\mu@sym}}
 \def\nat{{\mathbb{N}}}
 \def\ndres{\mathbin{\ndres@sym}}
@@ -521,7 +521,7 @@
   \noalign{\vskip-\@jot}}
 \let\endargue=\endzed
 
-\def\because#1{\noalign{\vskip-\jot}&{\color{AnnotationColor}#1}\cr}
+\def\zbecause#1{\noalign{\vskip-\jot}&{\color{AnnotationColor}#1}\cr}
 
 \def\syntax{\@zed\@znoskip \halign\bgroup
   \strut$\color{ZedColor}\@zlign##$\hfil

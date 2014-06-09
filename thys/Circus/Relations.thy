@@ -1,37 +1,26 @@
-(*  Title:       Isabelle/Circus
-    Author:      Abderrahmane Feliachi, Burkhart Wolff, Marie-Claude Gaudel
-                 Univ. Paris-Sud / LRI
-    Maintainer:  Abderrahmane Feliachi
-*)
-
-header{* UTP: The Unifying Theories of Programming *}
+header{* Predicates and relations *}
 
 theory Relations
-imports Main
+imports Var
 begin
 default_sort type
 
-subsection{* Predicates and Relations \label{Sec:UTP_Predicates_and_Relations} *}
+text {* Unifying Theories of Programming (UTP) is a semantic framework based on 
+an alphabetized relational calculus. An alphabetized predicate is a pair (alphabet, predicate) 
+where the free variables appearing in the predicate are all in the alphabet. *}
 
-text{*
-Standard predicate calculus operators are used to combine alphabetized
-predicates. The definition of these operators is very similar to the
-standard one, with some additional constraints  on the alphabets.
-*}
+text {* An alphabetized relation is an alphabetized predicate where the alphabet is
+composed of input (undecorated) and output (dashed) variables. In this case the
+predicate describes a relation between input and output variables. *}
 
-
-subsubsection{* UTP Core Definitions *}
-text{*\label{sec:UTP_Core_Definitions} *}
+subsection{* Definitions *}
 
 text {* In this section, the definitions of predicates, relations and 
-standard operators are given. The type of \emph{all alphabets} is in this
-view just the polymorphic type $\alpha$, and the concept of
-an alphabetized predicate therefore just the universal (-lly typed) set: *}
+standard operators are given.*}
 
 type_synonym '\<alpha> "alphabet"  = "'\<alpha>"
 type_synonym '\<alpha> predicate = "'\<alpha> alphabet \<Rightarrow> bool"
 
-text{* This gives already rise to the definitions of the UTP core calculus: *}
 definition  true::"'\<alpha> predicate"
 where "true \<equiv> \<lambda>A. True"
 
@@ -70,36 +59,13 @@ definition comp::"(('\<alpha> \<times> '\<beta>) \<Rightarrow> bool) \<Rightarro
                                                                           (infixr ";;" 25)
 where "P ;; Q \<equiv> \<lambda>r. r : ({p. P p} O {q. Q q})"
 
-text {* In the following, we provide some syntactic infrastructure to allow
-        a smoth representation of UTP variables:
-        semantically, they are characterized by two functions, $select$ and $update$. 
-        The variable type is thus defined as a tuple ($select$ * $update$). *}
-
-type_synonym ('a, 'r) var = "('r \<Rightarrow> 'a) * (('a \<Rightarrow> 'a) \<Rightarrow> 'r \<Rightarrow> 'r)"
-
-text {* The $lookup$ function returns the corrsponding $select$ function of a variable. *}
-
-definition lookup :: "('a, 'r) var \<Rightarrow> 'r \<Rightarrow> 'a"
-  where "lookup f \<equiv> (fst f)"
-
-text {* The $assign$ function uses the $update$ function of a variable to update its value.*}
-
-definition assign :: "('a, 'r) var \<Rightarrow> 'a \<Rightarrow> 'r \<Rightarrow> 'r"
-  where "assign f v \<equiv> (snd f) (\<lambda> _ . v)"
-
-text {* The $VAR$ function allows to retrieve a variable given its name.*}
-
-syntax "_VAR" :: "id \<Rightarrow> ('a, 'r) var"  ("VAR _")
-translations "VAR x" => "(x, _update_name x)"
-
-
 definition Assign::"('a, 'b) var \<Rightarrow> 'a \<Rightarrow> 'b relation" 
   where "Assign x a \<equiv> \<lambda>(A, A'). A' = (assign x a) A"
 
 syntax
-  "_assignment" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  ("_ := _")
+  "_assignment" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  ("_ :== _")
 translations
-  "y := vv"   => "CONST Assign (VAR y) vv"
+  "y :== vv"   => "CONST Assign (VAR y) vv"
 
 abbreviation (input) closure::"'\<alpha> predicate \<Rightarrow> bool" ("[_]")
 where "[ P ] \<equiv> \<forall> A. P A"
@@ -130,7 +96,7 @@ lemmas utp_defs = true_def false_def conj_def disj_def not_def impl_def iff_def
                   ex_def all_def cond_def comp_def Assign_def
 
 
-subsubsection {* Proofs *}
+subsection {* Proofs *}
 
 
 text {* All useful proved lemmas over predicates and relations are presented here.
@@ -138,7 +104,7 @@ First, we introduce the most important lemmas that will be used by automatic too
 proofs. In the second part, other lemmas are proved using these basic ones.*}
 
 
-text{* \textbf{Setup of automated tools.} \medskip *}
+subsubsection {* Setup of automated tools *}
 
 lemma true_intro: "true x" by (simp add: utp_defs)
 lemma false_elim: "false x \<Longrightarrow> C" by (simp add: utp_defs)
@@ -213,8 +179,8 @@ lemma split_cond_asm:
 lemmas cond_splits = split_cond split_cond_asm
 
 
-text{* \textbf{Misc lemmas}. \medskip *}
- 
+subsubsection {* Misc lemmas *}
+
 lemma cond_idem:"(P \<triangleleft> b \<triangleright> P) = P"
   by (rule ext) (auto split: cond_splits)
 
@@ -254,6 +220,10 @@ lemma cond_eq_distr:
   by (rule ext) (auto split: cond_splits)
 
 lemma comp_assoc: "(P ;; (Q ;; R)) = ((P ;; Q) ;; R)"
+  by (rule ext) blast
+
+lemma conj_comp: 
+"(\<And> a b c. P (a, b) = P (a, c)) \<Longrightarrow> (P \<and> (Q ;; R)) = ((P \<and> Q) ;; R)"
   by (rule ext) blast
 
 lemma comp_cond_left_distr:
@@ -478,6 +448,12 @@ lemma closure_conj_distr: "([P] \<and> [Q]) = [P \<and> Q]"
   by blast
 
 lemma closure_imp_distr: "[P \<longrightarrow> Q] \<longrightarrow> [P] \<longrightarrow> [Q]"
+  by blast
+
+lemma true_iff[simp]: "(P \<longleftrightarrow> true) = P"
+  by blast
+
+lemma true_imp[simp]: "(true \<longrightarrow> P) = P"
   by blast
 
 end
