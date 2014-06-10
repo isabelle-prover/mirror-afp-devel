@@ -15,6 +15,7 @@ datatype_new (atoms: 'a) rexp =
   Star "('a rexp)" |
   Not "('a rexp)" |
   Inter "('a rexp)" "('a rexp)"
+
 datatype_compat rexp
 
 context

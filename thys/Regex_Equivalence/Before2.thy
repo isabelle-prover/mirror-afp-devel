@@ -18,6 +18,7 @@ datatype_new 'a mrexp3 =
   Plus3 "'a mrexp3" "'a mrexp3" (fin1: "'a set") (nul: bool) |
   Times3 "'a mrexp3" "'a mrexp3" (fin1: "'a set") (nul: bool) |
   Star3 "'a mrexp3" (fin1: "'a set") (defaults nul: "\<lambda>(_::'a mrexp3) (_::'a set). True")
+
 datatype_compat mrexp3
 
 primrec final3 where
