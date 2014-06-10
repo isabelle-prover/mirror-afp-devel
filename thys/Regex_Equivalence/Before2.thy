@@ -12,12 +12,20 @@ begin
 declare Let_def[simp]
 
 datatype_new 'a mrexp3 =
-  Zero3 (defaults fin1: "{}" nul: False) |
-  One3 (defaults fin1: "{}" nul: True) |
-  Atom3 bool 'a (defaults fin1: "\<lambda>(m::bool) (a::'a). if m then {a} else {}" nul: "\<lambda>(m::bool) (a::'a). False") |
+  Zero3 |
+  One3 |
+  Atom3 bool 'a |
   Plus3 "'a mrexp3" "'a mrexp3" (fin1: "'a set") (nul: bool) |
   Times3 "'a mrexp3" "'a mrexp3" (fin1: "'a set") (nul: bool) |
-  Star3 "'a mrexp3" (fin1: "'a set") (defaults nul: "\<lambda>(_::'a mrexp3) (_::'a set). True")
+  Star3 "'a mrexp3" (fin1: "'a set")
+where
+  "fin1 Zero3 = {}"
+| "nul Zero3 = False"
+| "fin1 One3 = {}"
+| "nul One3 = True"
+| "fin1 (Atom3 m a) = (if m then {a} else {})"
+| "nul (Atom3 _ _) = False"
+| "nul (Star3 _ _) = True"
 
 datatype_compat mrexp3
 

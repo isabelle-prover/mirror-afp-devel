@@ -10,12 +10,19 @@ begin
 (*>*)
 
 datatype_new 'a mrexp2 =
-  Zero2 (defaults fin: False nul: False) |
-  One2 (defaults fin: False nul: True) |
-  Atom2 (fin: bool) 'a  (defaults nul: "\<lambda>(m::bool) (a::'a). False") |
+  Zero2 |
+  One2 |
+  Atom2 (fin: bool) 'a |
   Plus2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
   Times2 "'a mrexp2" "'a mrexp2" (fin: bool) (nul: bool) |
-  Star2 "'a mrexp2" (fin: bool) (defaults nul: "\<lambda>(r::'a mrexp2) (f::bool). True")
+  Star2 "'a mrexp2" (fin: bool)
+where
+  "fin Zero2 = False"
+| "nul Zero2 = False"
+| "fin One2 = False"
+| "nul One2 = True"
+| "nul (Atom2 _ _) = False"
+| "nul (Star2 _ _) = True"
 
 datatype_compat mrexp2
 

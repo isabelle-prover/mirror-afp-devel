@@ -28,9 +28,12 @@ subsection {* Type definition *}
 consts terminal0 :: "'a"
 
 codatatype (tset: 'a, 'b) tllist (map: tmap rel: tllist_all2) =
-    TNil (terminal : 'b) (defaults thd : "\<lambda>_. undefined" ttl: "\<lambda>b. TNil b")
+    TNil (terminal : 'b)
   | TCons (thd : 'a) (ttl : "('a, 'b) tllist")
-    (defaults terminal: "\<lambda>x :: 'a. \<lambda>xs :: ('a, 'b) tllist. (terminal0 xs :: 'b)")
+where
+  "thd (TNil _) = undefined"
+| "ttl (TNil b) = TNil b"
+| "terminal (TCons _ xs) = terminal0 xs"
 
 overloading
   terminal0 == "terminal0::('a, 'b) tllist \<Rightarrow> 'b"

@@ -33,8 +33,11 @@ qed
 subsection {* Type definition *}
 
 codatatype (lset: 'a) llist (map: lmap rel: llist_all2) =
-    lnull: LNil (defaults lhd: undefined ltl: LNil)
+    lnull: LNil
   | LCons (lhd: 'a) (ltl: "'a llist")
+where
+  "lhd LNil = undefined"
+| "ltl LNil = LNil"
 
 text {*
   Coiterator setup.

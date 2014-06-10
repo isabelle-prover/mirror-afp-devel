@@ -82,8 +82,10 @@ qed
 locale co begin
 
 free_constructors (no_code) case_enat for
-    "0::enat" (defaults epred: "0::enat")
+    "0::enat"
   | eSuc epred
+where
+  "epred 0 = 0"
   apply (erule enat_coexhaust, assumption)
  apply (rule eSuc_inject)
 by (rule zero_ne_eSuc)
@@ -761,6 +763,5 @@ by(cases n)(simp_all add: zero_enat_def eSuc_enat)
 
 lemma enat_cocase_inf: "(case \<infinity> of 0 \<Rightarrow> a | eSuc b \<Rightarrow> f b) = f \<infinity>"
 by(auto split: co.enat.split simp add: infinity_eq_eSuc_iff)
-
 
 end
