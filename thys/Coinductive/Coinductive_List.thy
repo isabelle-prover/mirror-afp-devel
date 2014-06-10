@@ -32,9 +32,12 @@ qed
 
 subsection {* Type definition *}
 
-codatatype (lset: 'a) llist (map: lmap rel: llist_all2) =
+codatatype (lset: 'a) llist =
     lnull: LNil
   | LCons (lhd: 'a) (ltl: "'a llist")
+for
+  map: lmap
+  rel: llist_all2
 where
   "lhd LNil = undefined"
 | "ltl LNil = LNil"

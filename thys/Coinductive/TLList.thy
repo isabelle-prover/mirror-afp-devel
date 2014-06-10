@@ -27,9 +27,12 @@ subsection {* Type definition *}
 
 consts terminal0 :: "'a"
 
-codatatype (tset: 'a, 'b) tllist (map: tmap rel: tllist_all2) =
+codatatype (tset: 'a, 'b) tllist =
     TNil (terminal : 'b)
   | TCons (thd : 'a) (ttl : "('a, 'b) tllist")
+for
+  map: tmap
+  rel: tllist_all2
 where
   "thd (TNil _) = undefined"
 | "ttl (TNil b) = TNil b"
