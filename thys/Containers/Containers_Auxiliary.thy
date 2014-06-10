@@ -3,7 +3,6 @@
 
 theory Containers_Auxiliary imports
   "~~/src/HOL/Library/Monad_Syntax"
-  "Unit_Instantiations"
 begin
 
 chapter {* An executable linear order on sets *}

@@ -2,7 +2,6 @@ header {* \isaheader{Miscellanneous Lemmas and Tools} *}
 theory Refine_Misc
 imports 
   "../Automatic_Refinement/Automatic_Refinement"
-  "../Containers/Unit_Instantiations"
 begin
 
 subsection {* ML-level stuff *}
