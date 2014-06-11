@@ -25,6 +25,7 @@ lemma IUF_red_taD:
      (\<exists>s. Red1_mthr.actions_ok s t ta')"
 proof(induct rule: red1_reds1.inducts)
   case Red1InstanceOf thus ?case
+    using [[hypsubst_thin = true]]
     by(auto intro!: exI red1_reds1.Red1InstanceOf simp del: split_paired_Ex)((subst fst_conv snd_conv wset_def)+, simp)
 next
   case Red1CallExternal thus ?case

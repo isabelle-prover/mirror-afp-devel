@@ -208,6 +208,7 @@ done
 lemma safe_roomk_currk[simp]:
  "hotel s \<Longrightarrow> safe\<^sub>0 s r \<Longrightarrow> roomk s r = currk s r"
 apply(clarsimp simp:safe\<^sub>0_def)
+apply(hypsubst_thin)
 apply(erule rev_mp)+
 apply(induct_tac s\<^sub>3)
 apply(auto split:event.split)
@@ -221,6 +222,7 @@ done
 lemma only_owner_enter_normal:
  "\<lbrakk> hotel s; safe\<^sub>0 s r; (k,roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g"
 apply(clarsimp simp:safe\<^sub>0_def)
+apply(hypsubst_thin)
 apply(erule rev_mp)+
 apply(induct_tac s\<^sub>3)
  apply (fastforce)
@@ -230,6 +232,7 @@ done
 (* A short proof *)
 lemma "\<lbrakk> hotel s; safe s r; g \<in> isin s r \<rbrakk> \<Longrightarrow> owns s r = Some g"
 apply(clarsimp simp add:safe_def)
+apply(hypsubst_thin)
 apply(rename_tac g' k k')
 apply(erule rev_mp)+
 apply(induct_tac s\<^sub>3)

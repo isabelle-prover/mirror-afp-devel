@@ -160,7 +160,8 @@ proof-
       ultimately show ?case by simp blast
     next
       case goal3 thus ?case
-        by(clarsimp simp: image_iff split: prod.splits list.splits) metis
+        apply (clarsimp simp: image_iff split: prod.splits list.splits)
+        by hypsubst_thin metis
     qed
   }
   moreover

@@ -221,9 +221,10 @@ apply(induct rule: find_path_rec_f.induct)
  apply(clarsimp simp add: fpr_objI)
 apply(clarsimp) apply(rule)
  apply(simp add: fpr_nullI)
-apply(clarsimp split: option.splits) apply(rule)
+apply(clarsimp split: option.splits)
+apply(rule fpr_nullI)
  apply(simp add: fpr_nullI)
-apply(clarsimp) apply(rule fpr_fqnI) apply(force)+
+apply(rule fpr_fqnI) apply(force)+
 done
 
 definition
@@ -400,6 +401,7 @@ lemma [simp]: "(ftype_in_path P ctxclds f ty_opt) = (ftype_in_path_f P ctxclds f
 apply(rule)
  apply(induct rule: ftype_in_path.induct) apply(simp+)
 apply(induct ctxclds) apply(simp) apply(rule ftip_emptyI)
+apply(hypsubst_thin)
 apply(clarsimp) apply(case_tac "ftype_in_fds_f P a (class_fields_f b) f")
  apply(rename_tac ty_opt) apply(case_tac ty_opt)
   apply(simp add: ftip_cons_falseI[simplified])

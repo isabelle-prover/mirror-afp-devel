@@ -1499,6 +1499,7 @@ lemma iMOD_div: "
 apply (case_tac "m = 0")
  apply (simp add: iMOD_0 iIN_0 iT_Div_singleton)
 apply (clarsimp, rename_tac q)
+apply hypsubst_thin
 thm iMOD_mult[of "r div k" q k]
 apply (cut_tac r="r div k" and k=k and m=q in iMOD_mult)
 thm arg_cong[where f="\<lambda>x. x \<oplus> (r mod k)"]

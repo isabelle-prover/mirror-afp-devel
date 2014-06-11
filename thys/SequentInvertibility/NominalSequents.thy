@@ -689,6 +689,7 @@ with all have "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' n. n\<le>n' \
 then have a2: "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' m. m\<le>n' \<and> (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>',m) \<in> derivable R* \<and> p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> F \<nabla> [x].A)"
                  using num and b' and IH and c'
                  apply (auto simp add:Ball_def) apply (drule_tac x=xa in spec) apply simp
+                 apply hypsubst_thin
                  apply (elim exE conjE) apply (drule_tac x=n in spec) apply simp
                  apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                  apply (simp) apply (elim exE conjE) by (rule_tac x=m' in exI) (arith)
@@ -888,6 +889,7 @@ with all have "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' n. n\<le>n' \
 then have a2: "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' m. m\<le>n' \<and> (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>',m) \<in> derivable R* \<and> p = (\<Phi>' \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Psi>')"
                  using num and b' and IH and c'
                  apply (auto simp add:Ball_def) apply (drule_tac x=xa in spec) apply simp
+                 apply hypsubst_thin
                  apply (elim exE conjE) apply (drule_tac x=n in spec) apply simp
                  apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                  apply (simp) apply (elim exE conjE) by (rule_tac x=m' in exI) (arith)

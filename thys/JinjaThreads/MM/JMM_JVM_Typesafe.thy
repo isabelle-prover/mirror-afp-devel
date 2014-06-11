@@ -269,7 +269,6 @@ apply hypsubst
 apply(rule exI conjI)+
 apply(rule multithreaded_base.redT.redT_acquire)
 apply assumption+
-apply(rule refl)
 done
 
 lemma JVM_legal_typesafe1:

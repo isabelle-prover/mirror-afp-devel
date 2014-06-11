@@ -73,6 +73,7 @@ proof -
 next
   assume "P \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'" and "x \<sharp> P"
   thus "\<exists>P'' P'''. P \<Longrightarrow>\<^sub>\<tau> P''' \<and> P''' \<longmapsto>a<\<nu>x> \<prec> P'' \<and> P'' \<Longrightarrow>\<^sub>\<tau> P'"
+  using [[hypsubst_thin = true]]
     apply(auto simp add: transition_def residualInject name_abs_eq)
     apply(rule_tac x="[(x, y)] \<bullet> P''" in exI)
     apply(rule_tac x=P' in exI)

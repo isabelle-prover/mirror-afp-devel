@@ -31,8 +31,7 @@ proof (rule finite_imageD[OF finite_subset])
   show "inj_on f {m. dom m = A \<and> ran m = B}"
     apply(rule inj_on_inverseI[of _ g])
     unfolding f_def g_def
-    apply (auto simp add: dom_def fun_eq_iff)
-    by (metis not_Some_eq)
+    by (auto simp add: dom_def fun_eq_iff)
 qed
 
 lemma perm_finite: "finite (dom m2) \<Longrightarrow> finite {m1. dom m1 = dom m2 \<and> ran m1 = ran m2}"

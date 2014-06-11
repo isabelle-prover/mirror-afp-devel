@@ -173,6 +173,7 @@ proof(rule invariant3pI)
       done
     from normal x invar show ?thesis
       apply(auto simp add: sc.exec_1_def final_thread.actions_ok_iff jvm_thread_action'_ok_def sc_jvm_state_invar_def)
+      apply hypsubst_thin
       apply(drule sc.exec_correct_state(3)[OF assms correct ok])
       apply(rule ts_okI)
       apply(clarsimp split: split_if_asm simp add: jvm_thread_action'_ok_def)

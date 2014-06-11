@@ -188,10 +188,11 @@ subsection "Dijkstra's Algorithm"
     (* TODO/FIXME: Should we built in such massaging of the goal into 
         refine_rcg ?*)
     apply (simp_all split: prod.split_asm)
-    apply (tactic {* 
-      ALLGOALS (Hypsubst.bound_hyp_subst_tac @{context}
+    apply (tactic {*
+      ALLGOALS ((REPEAT_DETERM o Hypsubst.bound_hyp_subst_tac @{context})
       THEN' asm_full_simp_tac @{context}
       )*})
+
   proof -
     fix wl res v
     assume INV: "dinvar (wl,res)"

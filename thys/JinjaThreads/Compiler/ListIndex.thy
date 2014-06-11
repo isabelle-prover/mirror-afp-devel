@@ -205,6 +205,7 @@ proof -
       have "[xs [\<mapsto>] Ys] V = Some v"
         apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: split_if_asm)
         apply(clarsimp simp add: in_set_conv_decomp)
+        apply(hypsubst_thin)
         apply(erule_tac x="length ys" in allE)
         by(simp)
       with IH[OF this `length xs \<le> length Ys` True] `ys = y # Ys` True

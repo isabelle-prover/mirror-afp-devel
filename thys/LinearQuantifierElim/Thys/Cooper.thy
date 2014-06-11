@@ -302,6 +302,7 @@ apply(case_tac list) apply simp apply(simp split:split_if_asm)
 apply simp
 apply(case_tac list) apply simp
 apply(clarsimp split:split_if_asm)
+apply(hypsubst_thin)
 apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff dvd_mult_div_cancel zlcms0_iff)
@@ -311,6 +312,7 @@ apply(fastforce simp:image_def set_atoms0_iff Bex_def)
 apply simp
 apply(case_tac list) apply simp
 apply(clarsimp split:split_if_asm)
+apply(hypsubst_thin)
 apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff dvd_mult_div_cancel zlcms0_iff)

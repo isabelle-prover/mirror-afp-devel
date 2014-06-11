@@ -60,9 +60,11 @@ lemma increasing5: "increasing (as@bs) \<Longrightarrow> increasing bs"
 proof -
   assume nd: "increasing (as@bs)"
   then have r: "\<And> x y asa bsa. (\<exists>asa bsa. as @ bs = asa @ x # y # bsa) \<Longrightarrow> x \<le> y" by (auto simp: increasing_def)
-  show ?thesis apply (simp add: increasing_def) apply (intro allI impI) apply (rule_tac r)
-    apply auto apply (intro exI) apply (subgoal_tac "as @ asa @ x # y # bs = (as @ asa) @ x # y # bs")
-    by assumption  auto
+  show ?thesis apply (clarsimp simp add: increasing_def)
+    apply (rule_tac r)
+    apply (rule_tac x="as @ ?asa" in exI)
+    apply auto
+    done
 qed
 
 

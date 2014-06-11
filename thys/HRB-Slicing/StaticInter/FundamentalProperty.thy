@@ -174,6 +174,7 @@ proof(atomize_elim)
       `get_proc (sourcenode c') = get_proc (targetnode a)`
     have "valid_call_list cs' (targetnode a)"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c' # cs'" in allE)
       by(case_tac cs')(auto simp:sourcenodes_def)
     moreover
@@ -396,6 +397,7 @@ proof(atomize_elim)
       `get_proc (sourcenode c') = get_proc (targetnode a)`
     have "valid_call_list cs' (targetnode a)"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c' # cs'" in allE)
       by(case_tac cs')(auto simp:sourcenodes_def)
     moreover
@@ -680,6 +682,7 @@ next
       `get_proc (sourcenode c') = get_proc (targetnode a)`
     have "valid_call_list cs' (targetnode a)"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c' # cs'" in allE)
       by(case_tac cs')(auto simp:sourcenodes_def)
     from `valid_return_list rs m` `rs = r' # rs'` `targetnode a = targetnode r'`
@@ -854,6 +857,7 @@ next
     `get_proc (sourcenode c') = get_proc (targetnode a)`
   have "valid_call_list cs' (targetnode a)"
     apply(clarsimp simp:valid_call_list_def)
+    apply(hypsubst_thin)
     apply(erule_tac x="c' # cs'" in allE)
     by(case_tac cs')(auto simp:sourcenodes_def)
   from `length rs = length cs` `cs = c' # cs'` obtain r' rs' 
@@ -2634,6 +2638,7 @@ proof(atomize_elim)
       `get_proc (sourcenode c') = get_proc (targetnode a)`
     have "valid_call_list cs' (targetnode a)"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c' # cs'" in allE)
       by(case_tac cs')(auto simp:sourcenodes_def)
     from `length rs = length cs` `cs = c' # cs'` obtain r' rs' 
@@ -3026,7 +3031,7 @@ proof(atomize_elim)
       by(fastforce elim:observable_moves.cases)
     from `S,slice_kind S \<turnstile> (xs,s'') -ax\<rightarrow> (msx',s')`
     obtain xs' ms'' where [simp]:"xs = sourcenode ax#xs'" "msx' = targetnode ax#ms''"
-      by(cases xs)(auto elim!:observable_move.cases,case_tac list,auto)
+      by (cases xs) (auto elim!:observable_move.cases, cases msx', auto)
     from `S,slice_kind S \<turnstile> (m # ms,s) =as\<Rightarrow> (msx',s')` tom_Cons
     obtain cs'' rs'' where results:"valid_node (targetnode ax)"
       "valid_call_list cs'' (targetnode ax)"
@@ -3470,8 +3475,6 @@ qed
 end
 
 end
-    
-
 
 
 

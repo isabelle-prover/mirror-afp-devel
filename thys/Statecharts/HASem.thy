@@ -581,12 +581,7 @@ lemma OneState_HPT_Target:
      T \<in> States SA; SA \<in> SAs (HA ST) \<rbrakk>
    \<Longrightarrow> S = T"
 apply (unfold Target_def)
-apply auto
-apply (rename_tac SSource STrigger SGuard SAction SUpdate STarget 
-                  TSource TTrigger TGuard TAction TUpdate TTarget)
-apply (frule_tac T="(SSource, (STrigger, SGuard, SAction, SUpdate), STarget)" and 
-                 U="(TSource, (TTrigger, TGuard, TAction, TUpdate), TTarget)" in OneTrans_HPT_SA2)
-apply auto
+apply (auto dest: OneTrans_HPT_SA2[rotated -1])
 done
 
 subsubsection {* Source Transition Set *}
@@ -686,6 +681,7 @@ done
 lemma ChiRel_ChiStar_notmem:
   "\<lbrakk> TS \<in> HPT ST; (S,T) \<in> ChiRel (HA ST); 
      S \<in> ChiStar (HA ST) `` Source TS \<rbrakk> \<Longrightarrow> T \<notin> Source TS"
+using [[hypsubst_thin = true]]
 apply (unfold HPT_def MaxNonConflict_def HigherPriority_def restrict_def)
 apply auto
 apply (rename_tac U)
@@ -1002,6 +998,7 @@ lemma OneState_HPT_Target_ChiRel:
    "\<lbrakk> TS \<in> HPT ST; (U,T) \<in> ChiRel (HA ST);
       U \<in> Target TS; A \<in> SAs (HA ST); T \<in> States A;
       S \<in> States A \<rbrakk> \<Longrightarrow> S \<notin> Target TS"
+using [[hypsubst_thin = true]]
 apply auto
 apply (unfold HigherPriority_def restrict_def HPT_def MaxNonConflict_def Target_def)
 apply auto
@@ -1049,6 +1046,7 @@ lemma OneState_HPT_Target_ChiPlus [rule_format]:
    "\<lbrakk> TS \<in> HPT ST; (U,T) \<in> ChiPlus (HA ST);
       S \<in> Target TS; A \<in> SAs (HA ST); 
       S \<in> States A \<rbrakk> \<Longrightarrow> T \<in> States A \<longrightarrow> U \<notin> Target TS"
+using [[hypsubst_thin = true]]
 apply (unfold ChiPlus_def)
 apply (rule_tac a="U" and b="T" and r="(ChiRel (HA ST))" in converse_trancl_induct)
 apply auto
