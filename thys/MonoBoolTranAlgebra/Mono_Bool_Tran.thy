@@ -104,7 +104,7 @@ proof
 qed
 
 lemma (in complete_lattice) mono_Inf [simp]:
-  assumes "A \<subseteq> {f. mono f}"
+  assumes "A \<subseteq> {f :: 'a \<Rightarrow> 'b:: complete_lattice. mono f}"
   shows "mono (\<Sqinter>A)"
 proof
   fix a b
@@ -120,7 +120,7 @@ proof
 qed
 
 lemma (in complete_lattice) mono_Sup [simp]:
-  assumes "A \<subseteq> {f. mono f}"
+  assumes "A \<subseteq> {f :: 'a \<Rightarrow> 'b:: complete_lattice. mono f}"
   shows "mono (\<Squnion>A)"
 proof
   fix a b
