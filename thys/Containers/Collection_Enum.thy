@@ -233,7 +233,7 @@ definition
         \<lambda>P. enum_all_a (%x. enum_all_b (%y. P (x, y))),
         \<lambda>P. enum_ex_a (%x. enum_ex_b (%y. P (x, y)))))"
 instance
-  by(intro_classes)(auto 4 4 simp add: cEnum_prod_def product_list_set split: option.split_asm dest!: ID_cEnum)
+  by(intro_classes)(auto 4 4 simp add: cEnum_prod_def split: option.split_asm dest!: ID_cEnum)
 end
 
 instantiation sum :: (cenum, cenum) cenum begin
