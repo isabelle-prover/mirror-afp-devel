@@ -36,6 +36,7 @@
 <a href="entries/KBPs.shtml">KBPs</a> &nbsp;
 <a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
 <a href="entries/Regex_Equivalence.shtml">Regex_Equivalence</a> &nbsp;
+<a href="entries/MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a> &nbsp;
 <a href="entries/Myhill-Nerode.shtml">Myhill-Nerode</a> &nbsp;
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
@@ -209,6 +210,7 @@
 <h2>Logic</h2>
 
 <div class="list">
+<a href="entries/MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a> &nbsp;
 <a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Verified-Prover.shtml">Verified-Prover</a> &nbsp;

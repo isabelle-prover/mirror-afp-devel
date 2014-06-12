@@ -50,6 +50,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-06-12:
+<a href="entries/MSO_Regex_Equivalence.shtml">Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</a>
+<br>Author:
+Dmitriy Traytel and 
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-06-08:
 <a href="entries/Boolean_Expression_Checkers.shtml">Boolean Expression Checkers</a>
 <br>Author:

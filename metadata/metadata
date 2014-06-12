@@ -353,6 +353,30 @@ abstract =
  <a href="http://www.in.tum.de/~nipkow/pubs/regex_equiv.html">
  The formalization is described in this paper</a>.
 
+[MSO_Regex_Equivalence]
+title = Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions 
+author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+topic = Computer Science/Automata and Formal Languages, Logic
+date = 2014-06-12
+abstract =
+ Monadic second-order logic on finite words (MSO) is a decidable yet
+ expressive logic into which many decision problems can be encoded. Since MSO
+ formulas correspond to regular languages, equivalence of MSO formulas can be
+ reduced to the equivalence of some regular structures (e.g. automata). We
+ verify an executable decision procedure for MSO formulas that is not based
+ on automata but on regular expressions.
+ <p>
+ Decision procedures for regular expression equivalence have been formalized
+ before, usually based on Brzozowski derivatives. Yet, for a straightforward
+ embedding of MSO formulas into regular expressions an extension of regular
+ expressions with a projection operation is required. We prove total
+ correctness and completeness of an equivalence checker for regular
+ expressions extended in that way. We also define a language-preserving
+ translation of formulas into regular expressions with respect to two
+ different semantics of MSO.
+ <p>
+ The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.
+
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu <>, Xingyuan Zhang <>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>

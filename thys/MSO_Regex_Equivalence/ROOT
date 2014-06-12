@@ -1,0 +1,40 @@
+chapter AFP
+
+session MSO_Regex_Equivalence (AFP) = "HOL-BNF" +
+  options [timeout = 1600]
+  theories [document = false]
+    "~~/src/HOL/Library/Char_ord"
+    "~~/src/HOL/Library/Code_Target_Nat"
+    "~~/src/HOL/Library/List_lexord"
+    "~~/src/HOL/Library/Product_Lexorder"
+    "~~/src/HOL/Library/Simps_Case_Conv"
+    "~~/src/HOL/Library/While_Combinator"
+    "../Datatype_Order_Generator/Order_Generator"
+    "../List-Index/List_Index"
+    List_More
+    Stream
+  theories
+    Pi_Regular_Set
+    Pi_Regular_Exp
+    Pi_Derivatives
+    Pi_Regular_Operators
+    Pi_Regular_Exp_Dual
+    Pi_Equivalence_Checking
+    Init_Normalization
+    PNormalization
+    Formula
+    M2L
+    M2L_Normalization
+    M2L_Equivalence_Checking
+    WS1S
+    WS1S_Normalization
+    WS1S_Equivalence_Checking
+  files
+    "document/root.tex"
+    "document/root.bib"
+    "document/comment.sty"
+
+session "MSO_Examples" (AFP) = "MSO_Regex_Equivalence" +
+  theories [document = false]
+    M2L_Examples
+    WS1S_Examples

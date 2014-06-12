@@ -1,0 +1,138 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">D</font>ecision
+<font class="first">P</font>rocedures
+for
+<font class="first">M</font>SO
+on
+<font class="first">W</font>ords
+<font class="first">B</font>ased
+on
+<font class="first">D</font>erivatives
+of
+<font class="first">R</font>egular
+<font class="first">E</font>xpressions
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Dmitriy Traytel (traytel /at/ in /dot/ tum /dot/ de) and <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-06-12</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+Monadic second-order logic on finite words (MSO) is a decidable yet
+expressive logic into which many decision problems can be encoded. Since MSO
+formulas correspond to regular languages, equivalence of MSO formulas can be
+reduced to the equivalence of some regular structures (e.g. automata). We
+verify an executable decision procedure for MSO formulas that is not based
+on automata but on regular expressions.
+<p>
+Decision procedures for regular expression equivalence have been formalized
+before, usually based on Brzozowski derivatives. Yet, for a straightforward
+embedding of MSO formulas into regular expressions an extension of regular
+expressions with a projection operation is required. We prove total
+correctness and completeness of an equivalence checker for regular
+expressions extended in that way. We also define a language-preserving
+translation of formulas into regular expressions with respect to two
+different semantics of MSO.
+<p>
+The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{MSO_Regex_Equivalence-AFP,
+  author  = {Dmitriy Traytel and Tobias Nipkow},
+  title   = {Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/MSO_Regex_Equivalence.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="MSO_Regex_Equivalence" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
