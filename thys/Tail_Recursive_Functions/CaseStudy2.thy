@@ -151,9 +151,6 @@ record 'a t_type =
  item :: 'a
  subtrees :: "'a bintree list"
 
-rep_datatype t_type_ext
-by (fact t_type.ext_induct) (fact t_type.ext_inject)
-
 function (sequential) t_ins_aux :: "'a::linorder t_type \<Rightarrow> 'a t_type" where
 "t_ins_aux \<lparr>folding = False, item = x, subtrees = Branch y yl yr # ts\<rparr> =
   (if x \<le> y
@@ -796,4 +793,3 @@ proof -
 qed
 
 end
-

@@ -508,4 +508,3 @@ proof -
 qed
 
 end
-
