@@ -8,7 +8,7 @@ imports Pi_Regular_Exp "~~/src/HOL/Library/While_Combinator" List_More
 begin
 (*>*)
 
-lemma image2p_in_rel: "BNF_GFP.image2p f g (in_rel R) =  in_rel (map_pair f g ` R)"
+lemma image2p_in_rel: "BNF_GFP.image2p f g (in_rel R) =  in_rel (map_prod f g ` R)"
   unfolding image2p_def fun_eq_iff by auto
 
 lemma image2p_apply: "BNF_GFP.image2p f g R x y = (\<exists>x' y'. R x' y' \<and> f x' = x \<and> g y' = y)"
@@ -189,7 +189,7 @@ definition invariant where
   "invariant r s = (\<lambda>(ws, ps, N).
      (r, s) \<in> snd ` set ws \<union> set ps \<and>
      distinct (map snd ws @ ps) \<and>
-     bij_betw (map_pair post post) (set (map snd ws @ ps)) N \<and>
+     bij_betw (map_prod post post) (set (map snd ws @ ps)) N \<and>
      (\<forall>(w, r', s') \<in> set ws. fold delta (rev w) r = r' \<and> fold delta (rev w) s = s' \<and>
         wf_word n (rev w) \<and> wf_state r' \<and> wf_state s') \<and>
      (\<forall>(r', s') \<in> set ps. (\<exists>w. fold delta w r = r' \<and> fold delta w s = s') \<and>
@@ -214,20 +214,20 @@ qed (auto split: prod.splits simp: Let_def)
 
 lemma step_invatiant_unfold: "step_invariant (w # ws, ps, N) = (ws', ps', N') \<Longrightarrow> (\<exists>xs r s.
   w = (xs, r, s) \<and> ps' = (r, s) # ps \<and>
-  ws' = ws @ remdups' (map_pair post post o snd) (filter (\<lambda>(_, p). map_pair post post p \<notin> N)
+  ws' = ws @ remdups' (map_prod post post o snd) (filter (\<lambda>(_, p). map_prod post post p \<notin> N)
    (map (\<lambda>a. (a#xs, delta a r, delta a s)) (\<sigma> n))) \<and>
   N' = set (map (\<lambda>a. (post (delta a r), post (delta a s))) (\<sigma> n)) \<union> N)"
   by (auto split: prod.splits dest!: mp_remdups'
   simp: Let_def filter_map set_n_lists image_Collect image_image comp_def)
 
 lemma invariant: "invariant r s st \<Longrightarrow> test_invariant st \<Longrightarrow> invariant r s (step_invariant st)"
-proof (unfold invariant_def, (split prod.splits)+, elim prod_caseE conjE, clarify, intro allI impI conjI)
+proof (unfold invariant_def, (split prod.splits)+, elim case_prodE conjE, clarify, intro allI impI conjI)
   fix ws ps N ws' ps' N'
   assume test_invariant: "test_invariant (ws, ps, N)"
   and step_invariant: "step_invariant (ws, ps, N) = (ws', ps', N')"
   and rs: "(r, s) \<in> snd ` set ws \<union> set ps"
   and distinct: "distinct (map snd ws @ ps)"
-  and bij: "bij_betw (map_pair post post) (set (map snd ws @ ps)) N"
+  and bij: "bij_betw (map_prod post post) (set (map snd ws @ ps)) N"
   and ws: "\<forall>(w, r', s') \<in> set ws. fold delta (rev w) r = r' \<and> fold delta (rev w) s = s' \<and>
     wf_word n (rev w) \<and> wf_state r' \<and> wf_state s'"
       (is "\<forall>(w, r', s') \<in> set ws. ?ws w r' s'")
@@ -237,26 +237,26 @@ proof (unfold invariant_def, (split prod.splits)+, elim prod_caseE conjE, clarif
       (is "\<forall>(r, s) \<in> set ps. ?ps r s N")
   from test_invariant obtain x xs where ws_Cons: "ws = x # xs" by (cases ws) auto
   obtain w r' s' where x: "x = (w, r', s')" and ps': "ps' = (r', s') # ps"
-    and ws': "ws' = xs @ remdups' (map_pair post post o snd)
-      (filter (\<lambda>(_, p). map_pair post post p \<notin> N)
+    and ws': "ws' = xs @ remdups' (map_prod post post o snd)
+      (filter (\<lambda>(_, p). map_prod post post p \<notin> N)
         (map (\<lambda>a. (a # w, delta a r',  delta a s')) (\<sigma> n)))"
     and N': "N' = (set (map (\<lambda>a. (post (delta a r'), post (delta a s'))) (\<sigma> n)) - N) \<union> N"
     using step_invatiant_unfold[OF step_invariant[unfolded ws_Cons]] by blast
   hence ws'ps': "set (map snd ws' @ ps') =
-     set (remdups' (map_pair post post) (filter (\<lambda>p. map_pair post post p \<notin> N)
+     set (remdups' (map_prod post post) (filter (\<lambda>p. map_prod post post p \<notin> N)
     (map (\<lambda>a. (delta a r',  delta a s')) (\<sigma> n)))) \<union> (set (map snd ws @ ps))"
     unfolding ws' ps' ws_Cons x by (auto dest!: mp_remdups' simp: filter_map image_image image_Un o_def)
   from rs step_invariant show "(r, s) \<in> snd ` set ws' \<union> set ps'" by (blast dest: step_invariant_mono)
 (*next*)
   from distinct ps' ws' ws_Cons x bij show "distinct (map snd ws' @ ps')"
     by (auto simp: bij_betw_def
-      intro!: imageI[of _ _ "map_pair post post"] distinct_remdups'_strong
-        map_pair_imageI[of _ _ _ post post]
+      intro!: imageI[of _ _ "map_prod post post"] distinct_remdups'_strong
+        map_prod_imageI[of _ _ _ post post]
       dest!: mp_remdups'
       elim: image_eqI[of _ snd, OF sym[OF snd_conv]])
 (*next*)
-  from ps' ws' N' ws x bij show "bij_betw (map_pair post post) (set (map snd ws' @ ps')) N'"
-  unfolding ws'ps' N' by (intro bij_betw_combine[OF _ bij]) (auto simp: bij_betw_def map_pair_def)
+  from ps' ws' N' ws x bij show "bij_betw (map_prod post post) (set (map snd ws' @ ps')) N'"
+  unfolding ws'ps' N' by (intro bij_betw_combine[OF _ bij]) (auto simp: bij_betw_def map_prod_def)
 (*next*)
   from ws x ws_Cons have wr's': "?ws w r' s'" by auto
   with ws ws_Cons show "\<forall>(w, r', s') \<in> set ws'. ?ws w r' s'" unfolding ws'
@@ -269,16 +269,16 @@ qed
 lemma step_commute: "ws \<noteq> [] \<Longrightarrow>
   (case step_invariant (ws, ps, N) of (ws', ps', N') \<Rightarrow> (map snd ws', N')) = step (map snd ws, N)"
 apply (auto split: prod.splits)
-   apply (auto simp only: step_invariant.simps step.simps Let_def map_apfst_remdups' filter_map list.map_comp apfst_def map_pair_def snd_conv id_def)
+   apply (auto simp only: step_invariant.simps step.simps Let_def map_apfst_remdups' filter_map list.map_comp apfst_def map_prod_def snd_conv id_def)
    apply (auto simp: filter_map comp_def map_tl hd_map)
  apply (intro image_eqI, auto)+
 done
 
 lemma closure_invariant_closure:
-  "Option.map (\<lambda>(ws, ps, N). (map snd ws, N)) (closure_invariant (ws, ps, N)) = closure (map snd ws, N)"
+  "map_option (\<lambda>(ws, ps, N). (map snd ws, N)) (closure_invariant (ws, ps, N)) = closure (map snd ws, N)"
   unfolding closure_invariant_def closure_def
   by (rule trans[OF while_option_commute[of _ test _ _ "step"]])
-   (auto split: list.splits simp del: step_invariant.simps step.simps map.simps simp: step_commute)
+   (auto split: list.splits simp del: step_invariant.simps step.simps list.map simp: step_commute)
 
 lemma
   assumes result: "closure_invariant ([([], init r, init s)], [], {(post (init r), post (init s))}) =
@@ -388,7 +388,7 @@ lemma closure_invariant_termination:
   shows "False"
 proof -
   let ?D =  "post ` Reachable r \<times> post ` Reachable s"
-  let ?X = "\<lambda>ps. ?D - map_pair post post ` set ps"
+  let ?X = "\<lambda>ps. ?D - map_prod post post ` set ps"
   let ?f = "\<lambda>(ws, ps, N). card (?X ps)"
   have "\<exists>st. ?cl = Some st" unfolding closure_invariant_def
   proof (rule measure_while_option_Some[of "invariant ?r ?s" _ _ ?f], intro conjI)
@@ -399,19 +399,19 @@ proof -
     moreover obtain ws' ps' N' where step_invariant: "step_invariant (ws, ps, N) = (ws', ps', N')"
       by (cases "step_invariant (ws, ps, N)") blast
     moreover
-    { have "map_pair post post ` set ps \<subseteq> ?D" using base[unfolded st invariant_def] by fast
+    { have "map_prod post post ` set ps \<subseteq> ?D" using base[unfolded st invariant_def] by fast
       moreover
-      have "map_pair post post ` set ps' \<subseteq> ?D" using step[unfolded st step_invariant invariant_def]
+      have "map_prod post post ` set ps' \<subseteq> ?D" using step[unfolded st step_invariant invariant_def]
         by fast
       moreover
-      { have "distinct (map snd ws @ ps)" "inj_on (map_pair post post) (set (map snd ws @ ps))"
+      { have "distinct (map snd ws @ ps)" "inj_on (map_prod post post) (set (map snd ws @ ps))"
           using base[unfolded st invariant_def] by (auto simp: bij_betw_def)
-        hence "distinct (map (map_pair post post) (map snd ws @ ps))" unfolding distinct_map ..
-        hence "map_pair post post ` set ps \<subset> map_pair post post ` set (snd (hd ws) # ps)"
+        hence "distinct (map (map_prod post post) (map snd ws @ ps))" unfolding distinct_map ..
+        hence "map_prod post post ` set ps \<subset> map_prod post post ` set (snd (hd ws) # ps)"
           using `test_invariant st` st by (cases ws) (simp_all, blast)
-        moreover have "map_pair post post ` set ps' = map_pair post post ` set (snd (hd ws) # ps)"
+        moreover have "map_prod post post ` set ps' = map_prod post post ` set (snd (hd ws) # ps)"
           using step_invariant by (auto split: prod.splits)
-        ultimately have "map_pair post post ` set ps \<subset> map_pair post post ` set ps'" by simp
+        ultimately have "map_prod post post ` set ps \<subset> map_prod post post ` set ps'" by simp
       }
       ultimately have "?X ps' \<subset> ?X ps" by (auto simp add: image_set simp del: set_map)
     }

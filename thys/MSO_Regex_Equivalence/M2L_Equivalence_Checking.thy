@@ -10,7 +10,6 @@ imports
   Init_Normalization
   M2L_Normalization
   Pi_Regular_Exp_Dual
-  (*"~~/src/HOL/Library/RBT_Set"*)
 begin
 (*>*)
 
@@ -109,7 +108,7 @@ definition check_eqv where
 
 definition counterexample where
 "counterexample n \<phi> \<psi> =
-   Option.map (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) w)
+   map_option (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) w)
    (slow.counterexampleRE Enum.enum n (Plus (rexp_of'' n (norm \<phi>)) One) (Plus (rexp_of'' n (norm \<psi>)) One))"
 
 lemma soundness: "slow.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<^sub>M\<^sub>2\<^sub>L n \<phi> = \<Phi>.lang\<^sub>M\<^sub>2\<^sub>L n \<psi>"
@@ -161,14 +160,14 @@ interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> l
     by unfold_locales (auto simp only: comp_apply
       ACI_norm_wf ACI_norm_lang wf_inorm lang_inorm wf_pnorm lang_pnorm wf_lderiv lang_lderiv id_apply
       lang_final fast.rexp_DFA_defs dest!: lang_subset_lists)
-
+export_code fast.step in SML
 definition check_eqv where
 "check_eqv n \<phi> \<psi> \<longleftrightarrow> wf_formula n (FOr \<phi> \<psi>) \<and>
    fast.check_eqvRE Enum.enum n (Plus (rexp_of'' n (norm \<phi>)) One) (Plus (rexp_of'' n (norm \<psi>)) One)"
 
 definition counterexample where
 "counterexample n \<phi> \<psi> =
-   Option.map (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) w)
+   map_option (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) w)
    (fast.counterexampleRE Enum.enum n (Plus (rexp_of'' n (norm \<phi>)) One) (Plus (rexp_of'' n (norm \<psi>)) One))"
 
 lemma soundness: "fast.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<^sub>M\<^sub>2\<^sub>L n \<phi> = \<Phi>.lang\<^sub>M\<^sub>2\<^sub>L n \<psi>"
@@ -222,7 +221,7 @@ definition check_eqv where
 
 definition counterexample where
 "counterexample n \<phi> \<psi> =
-   Option.map (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) w)
+   map_option (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) w)
    (dual.counterexampleRE Enum.enum n (Plus (rexp_of'' n (norm \<phi>)) One) (Plus (rexp_of'' n (norm \<psi>)) One))"
 
 lemma soundness: "dual.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<^sub>M\<^sub>2\<^sub>L n \<phi> = \<Phi>.lang\<^sub>M\<^sub>2\<^sub>L n \<psi>"

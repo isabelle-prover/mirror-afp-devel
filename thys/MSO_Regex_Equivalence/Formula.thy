@@ -6,9 +6,6 @@ header {* Monadic Second-Order Logic Formulas *}
 theory Formula
 imports Pi_Regular_Operators List_More
 begin
-(*
-hide_const (open) RBT.map RBT.fold
-*)
 (*>*)
 
 subsection {* Interpretations and Encodings *}
@@ -60,7 +57,7 @@ datatype_new 'a atom =
   | AQ nat 'a
   | Arbitrary_Except nat bool
   | Arbitrary_Except2 nat nat
-datatype_new_compat atom
+datatype_compat atom
 derive linorder atom
 
 fun wf_atom where

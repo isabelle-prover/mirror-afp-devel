@@ -99,7 +99,7 @@ lemma enc_atom_dec:
   unfolding wf_word dec_interp_def map_filter_def Let_def
   by (auto 0 4 simp: comp_def \<sigma>_def set_n_lists positions_in_row dest: nth_mem[of p w]
     intro!: trans[OF iffD2[OF Pair_eq] pair_collapse] nth_equalityI the_equality[symmetric]
-    intro: the1I2[of "\<lambda>p. p < length w \<and> snd (w ! p) ! i" "\<lambda>p. snd (w ! p) ! i", standard]
+    intro: the1I2[of "\<lambda>p. p < length w \<and> snd (w ! p) ! i" "\<lambda>p. snd (w ! p) ! i" for i]
     elim!: contrapos_np[of _ False])
 
 lemma enc_dec:
@@ -148,9 +148,8 @@ lemma lang_ENC:
 proof (cases "FO = {}")
   case True with assms show ?thesis
     by (force simp: ENC_def dec_word_def wf_word
-      in_set_conv_nth[of _ "dec_interp n {} x", standard] positions_in_row Ball_def
-      intro!: enc_atom_\<sigma> exI[of _ "dec_word x :: 'a list", standard]
-        exI[of _ "dec_interp n {} x", standard]
+      in_set_conv_nth[of _ "dec_interp n {} x" for x] positions_in_row Ball_def
+      intro!: enc_atom_\<sigma> exI[of _ "dec_word x :: 'a list" for x] exI[of _ "dec_interp n {} x" for x]
         enc_dec[of n _ "{}", symmetric, unfolded dec_word_def enc.simps map_index_map])
 next
   case False
@@ -290,7 +289,7 @@ proof -
     with i assms have "\<exists>!p. p < length (enc (w, I)) \<and> snd (enc (w, I) ! p) ! i"
       by (intro enc_unique[of w I i]) (auto intro!: bspec[OF max_idx_vars] split: sum.splits)
   } note * = this
-  have "\<forall>x \<in> set ?dec. sum_case (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w) x"
+  have "\<forall>x \<in> set ?dec. case_sum (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w) x"
   proof (intro ballI, split sum.split, safe)
     fix p assume "Inl p \<in> set ?dec"
     thus "p < length w" using Inl_dec_interp_length[OF ballI[OF *]] by auto
@@ -1045,12 +1044,12 @@ proof -
     assume *: "length I = n + 1" "w \<noteq> []"
       "\<forall>i\<in>X. case I ! i of Inl x \<Rightarrow> True | Inr x \<Rightarrow> False"
       "\<forall>i\<in>?Y. case I ! i of Inl x \<Rightarrow> False | Inr x \<Rightarrow> True"
-      "\<forall>a\<in>set w. a \<in> set \<Sigma>" "Ball (set I) (sum_case (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w))"
+      "\<forall>a\<in>set w. a \<in> set \<Sigma>" "Ball (set I) (case_sum (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w))"
     then obtain p Is where "I = p # Is" by (cases I) auto
     then show "\<exists>w' I'.
       map \<pi> (enc (w, I)) = enc (w', I') \<and>
       length I' = n \<and> (0 < length w' \<and> (\<forall>a\<in>set w'. a \<in> set \<Sigma>) \<and>
-      Ball (set I') (sum_case (\<lambda>p. p < length w') (\<lambda>P. \<forall>p\<in>P. p < length w'))) \<and>
+      Ball (set I') (case_sum (\<lambda>p. p < length w') (\<lambda>P. \<forall>p\<in>P. p < length w'))) \<and>
       (\<forall>i\<in>?fX. case I' ! i of Inl x \<Rightarrow> True | Inr x \<Rightarrow> False) \<and>
       (\<forall>i\<in>?fY. case I' ! i of Inl x \<Rightarrow> False | Inr x \<Rightarrow> True)"
     proof (hypsubst, intro exI[of _ w] exI[of _ Is] conjI ballI project_enc)
@@ -1064,7 +1063,7 @@ proof -
     assume *: "w \<noteq> []" "x \<in> Z" "map \<pi> x = enc (w, I)"
       "\<forall>i\<in>?fX. case I ! i of Inl x \<Rightarrow> True | Inr x \<Rightarrow> False"
       "\<forall>i\<in>{0 ..< length I} - ?fX. case I ! i of Inl x \<Rightarrow> False | Inr x \<Rightarrow> True"
-      "\<forall>a\<in>set w. a \<in> set \<Sigma>" "Ball (set I) (sum_case (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w))"
+      "\<forall>a\<in>set w. a \<in> set \<Sigma>" "Ball (set I) (case_sum (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w))"
     moreover from assms(1) have "\<forall>x \<in> X. x > 0" "\<And>x y. x - Suc 0 = y - Suc 0 \<longleftrightarrow> 
       x = y \<or> (x = 0 \<and> y = Suc 0) \<or> (x = Suc 0 \<and> y = 0)"
       by (metis neq0_conv) (metis One_nat_def Suc_diff_1 diff_0_eq_0 diff_self_eq_0 neq0_conv)
@@ -1073,7 +1072,7 @@ proof -
     moreover from arg_cong[OF *(3), of length] have "length w = length x" by simp
     ultimately show " map \<pi> x \<in> map \<pi> `
       (Z \<inter> {enc (w, I') |w I'. length I' = length I + 1 \<and> (0 < length w \<and> (\<forall>a\<in>set w. a \<in> set \<Sigma>) \<and>
-         Ball (set I') (sum_case (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w))) \<and>
+         Ball (set I') (case_sum (\<lambda>p. p < length w) (\<lambda>P. \<forall>p\<in>P. p < length w))) \<and>
            (\<forall>i\<in>X. case I' ! i of Inl x \<Rightarrow> True | Inr x \<Rightarrow> False) \<and>
            (\<forall>i\<in>{0..<length I + 1} - X. case I' ! i of Inl x \<Rightarrow> False | Inr x \<Rightarrow> True)})"
       by (intro imageI CollectI conjI IntI exI[of _ w] exI[of _ "Inr (positions_in_row x 0) # I"])
