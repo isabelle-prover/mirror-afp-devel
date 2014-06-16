@@ -886,7 +886,7 @@ definition bit_integer_test :: "bool" where
       True, False, True, False,
       False, False, True, True])"
 
-export_code bit_integer_test checking SML Haskell? OCaml? Scala
+export_code bit_integer_test checking SML Haskell? Haskell_Quickcheck? OCaml? Scala
 
 notepad begin
 have bit_integer_test by eval
@@ -894,6 +894,19 @@ have bit_integer_test by normalization
 have bit_integer_test by code_simp
 end
 ML_val {* val true = @{code bit_integer_test} *}
+
+lemma "x AND y = x OR (y :: integer)"
+quickcheck[random, expect=counterexample]
+quickcheck[exhaustive, expect=counterexample]
+oops
+
+lemma "(x :: integer) AND x = x OR x"
+quickcheck[narrowing, expect=no_counterexample]
+oops
+
+lemma "(f :: integer \<Rightarrow> unit) = g"
+quickcheck[narrowing, size=3, expect=no_counterexample]
+by(simp add: fun_eq_iff)
 
 hide_const bit_integer_test
 hide_fact bit_integer_test_def
