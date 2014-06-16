@@ -341,24 +341,29 @@ def testBit(x: BigInt, n: BigInt) : Boolean =
 code_printing
   constant "bitAND :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.andb ((_),/ (_))" and
-  (Haskell) infixl 7 "Data_Bits..&." and
+  (Haskell) "((Data'_Bits..&.) :: Integer -> Integer -> Integer)" and
+  (Haskell_Quickcheck) "((Data'_Bits..&.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 3 "&"
 | constant "bitOR :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.orb ((_),/ (_))" and
-  (Haskell) infixl 5 "Data_Bits..|." and
+  (Haskell) "((Data'_Bits..|.) :: Integer -> Integer -> Integer)" and
+  (Haskell_Quickcheck) "((Data'_Bits..|.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 1 "|"
 | constant "bitXOR :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.xorb ((_),/ (_))" and
-  (Haskell) "Data'_Bits.xor" and
+  (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.xor :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 2 "^"
 | constant "bitNOT :: integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.notb" and
-  (Haskell) "Data'_Bits.complement" and
+  (Haskell) "(Data'_Bits.complement :: Integer -> Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.complement :: Prelude.Int -> Prelude.Int)" and
   (Scala) "_.unary'_~"
 
 code_printing constant bin_rest_integer \<rightharpoonup>
   (SML) "IntInf.div ((_), 2)" and
-  (Haskell) "Data'_Bits.shiftr1" and
+  (Haskell) "(Data'_Bits.shiftrUnbounded _ 1 :: Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.shiftrUnbounded _ 1 :: Prelude.Int)" and
   (Scala) "_ >> 1" and
   (OCaml) "Big'_int.shift'_right'_big'_int _ 1"
 
@@ -420,7 +425,8 @@ by(simp_all add: integer_test_bit_def test_bit_integer_def)
 
 code_printing constant integer_test_bit \<rightharpoonup>
   (SML) "Bits'_Integer.test'_bit" and
-  (Haskell) "Data'_Bits.testBitUnbounded" and
+  (Haskell) "(Data'_Bits.testBitUnbounded :: Integer -> Integer -> Bool)" and
+  (Haskell_Quickcheck) "(Data'_Bits.testBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool)" and
   (OCaml) "Bits'_Integer.test'_bit" and
   (Scala) "Bits'_Integer.testBit"
 
@@ -449,7 +455,8 @@ end
 
 code_printing constant integer_set_bit \<rightharpoonup>
   (SML) "Bits'_Integer.set'_bit" and
-  (Haskell) "Data'_Bits.setBitUnbounded" and
+  (Haskell) "(Data'_Bits.setBitUnbounded :: Integer -> Integer -> Bool -> Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.setBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool -> Prelude.Int)" and
   (Scala) "Bits'_Integer.setBit"
 
 text {* 
@@ -496,7 +503,8 @@ end
 
 code_printing constant integer_shiftl \<rightharpoonup>
   (SML) "Bits'_Integer.shiftl" and
-  (Haskell) "Data'_Bits.shiftlUnbounded" and
+  (Haskell) "(Data'_Bits.shiftlUnbounded :: Integer -> Integer -> Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.shiftlUnbounded :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (OCaml) "Bits'_Integer.shiftl" and
   (Scala) "Bits'_Integer.shiftl"
 
@@ -515,7 +523,8 @@ by(auto simp add: integer_shiftr_def)
 
 code_printing constant integer_shiftr \<rightharpoonup>
   (SML) "Bits'_Integer.shiftr" and
-  (Haskell) "Data'_Bits.shiftrUnbounded" and
+  (Haskell) "(Data'_Bits.shiftrUnbounded :: Integer -> Integer -> Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.shiftrUnbounded :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (OCaml) "Bits'_Integer.shiftr" and
   (Scala) "Bits'_Integer.shiftr"
 
