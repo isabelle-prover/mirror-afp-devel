@@ -21,14 +21,9 @@ abbreviation First where "First x \<equiv> FNot (FExists (FLess 0 (x+1)))"
 abbreviation Last where "Last x \<equiv> FNot (FExists (FLess (x+1) 0))"
 abbreviation Suc where "Suc sucx x \<equiv> FAnd (FLess x sucx) (FNot (FExists (FAnd (FLess (x+1) 0) (FLess 0 (sucx+1)))))"
 
-(*definition "Thm n \<phi> = check_eqv n \<phi> TRUE"*)
-definition "Thm (type :: 'a :: {enum, linorder} itself) n \<phi> = dual.check_eqv n (FNot \<phi> :: 'a formula) FALSE"
-
-declare atom.rec[code]
-declare rexp.rec[code]
-declare rexp_dual.rec[code]
-
-export_code Thm in SML module_name Thm (*file .*)
+definition "Thm (type :: 'a :: {enum, linorder} itself) n \<phi> = fast.check_eqv n (FNot \<phi> :: 'a formula) FALSE"
+definition "Thm_slow (type :: 'a :: {enum, linorder} itself) n \<phi> = slow.check_eqv n (FNot \<phi> :: 'a formula) FALSE"
+definition "Thm_dual (type :: 'a :: {enum, linorder} itself) n \<phi> = dual.check_eqv n (FNot \<phi> :: 'a formula) FALSE"
 
 definition "M2L = (FEXISTS (All (FIn 0 1)) :: Enum.finite_1 formula)"
 
@@ -85,23 +80,33 @@ definition \<Psi> :: "nat \<Rightarrow> Enum.finite_1 formula" where
      foldr (\<lambda>i \<phi>. (\<box>(\<lambda>m. FIn m (2 + i))) \<rightarrow> \<phi>) [0..<n] (\<box>(\<lambda>m. FIn m (n + 2)))) 0)"
 
 definition "Thm1 n = Thm (TYPE(Enum.finite_1)) (n + 1) (\<Psi> n)"
-export_code Thm in SML module_name Thm
+definition "Thm1_slow n = Thm_slow (TYPE(Enum.finite_1)) (n + 1) (\<Psi> n)"
+definition "Thm1_dual n = Thm_dual (TYPE(Enum.finite_1)) (n + 1) (\<Psi> n)"
 
-code_reflect Rexp
-  datatypes nat = Nat
-  and rexp = Zero | One | Full | Atom | Plus | Times | Star | Not | Inter | Pr
-  functions Thm1
-
-lemma "Thm1 0" by eval
-lemma "Thm1 1" by eval
+lemma "Thm1_dual 0" by eval
+lemma "Thm1_dual 1" by eval
 (*
 lemma "Thm1 2" by eval
 *)
 
-lemma "Thm (TYPE(bool)) 0 \<Phi>0" by eval
-lemma "Thm (TYPE(bool * bool)) 0 \<Phi>1" by eval
+lemma "Thm_dual (TYPE(bool)) 0 \<Phi>0" by eval
+lemma "Thm_dual (TYPE(bool * bool)) 0 \<Phi>1" by eval
 (*
 lemma "Thm (TYPE(bool * bool * bool)) 0 \<Phi>2" by eval
+*)
+
+(*
+export_code Thm1 Nat in SML module_name WS1S_Thm1 file "WS1S_Thm1.ML"
+export_code Thm1_slow Nat in SML module_name WS1S_Thm1_slow file "WS1S_Thm1_slow.ML"
+export_code Thm1_dual Nat in SML module_name WS1S_Thm1_dual file "WS1S_Thm1_dual.ML"
+
+ML_file "WS1S_Thm1.ML"
+ML_file "WS1S_Thm1_slow.ML"
+ML_file "WS1S_Thm1_dual.ML"
+
+ML {* PolyML.timing true; open WS1S_Thm1_dual; thm1_dual (Nat 0); thm1_dual (Nat 1); *}
+ML {* PolyML.timing true; open WS1S_Thm1; thm1 (Nat 0); thm1 (Nat 1); *}
+ML {* PolyML.timing true; open WS1S_Thm1_slow; thm1_slow (Nat 0); *}
 *)
 
 end

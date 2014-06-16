@@ -10,7 +10,6 @@ imports
   Init_Normalization
   WS1S_Normalization
   Pi_Regular_Exp_Dual
-  (*"~~/src/HOL/Library/RBT_Set"*)
 begin
 (*>*)
 
@@ -118,7 +117,7 @@ definition check_eqv where
 
 definition counterexample where
 "counterexample n \<phi> \<psi> =
-   Option.map (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) (w @- sconst (any, replicate n False)))
+   map_option (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) (w @- sconst (any, replicate n False)))
    (slow.counterexampleRE Enum.enum n (rexp_of'' n (norm \<phi>)) (rexp_of'' n (norm \<psi>)))"
 
 lemma soundness: "slow.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<phi> = \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<psi>"
@@ -177,7 +176,7 @@ definition check_eqv where
 
 definition counterexample where
 "counterexample n \<phi> \<psi> =
-   Option.map (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) (w @- sconst (any, replicate n False)))
+   map_option (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) (w @- sconst (any, replicate n False)))
    (fast.counterexampleRE Enum.enum n (rexp_of'' n (norm \<phi>)) (rexp_of'' n (norm \<psi>)))"
 
 lemma soundness: "fast.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<phi> = \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<psi>"
@@ -231,7 +230,7 @@ definition check_eqv where
 
 definition counterexample where
 "counterexample n \<phi> \<psi> =
-   Option.map (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) (w @- sconst (any, replicate n False)))
+   map_option (\<lambda>w. dec_interp n (FOV (FOr \<phi> \<psi>)) (w @- sconst (any, replicate n False)))
    (dual.counterexampleRE Enum.enum n (rexp_of'' n (norm \<phi>)) (rexp_of'' n (norm \<psi>)))"
 
 lemma soundness: "dual.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<phi> = \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<psi>"

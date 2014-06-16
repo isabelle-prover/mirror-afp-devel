@@ -5,7 +5,7 @@ header {* $\Pi$-Extended Regular Expressions *}
 (*<*)
 theory Pi_Regular_Exp
 imports Pi_Regular_Set "~~/src/HOL/Library/List_lexord" "~~/src/HOL/Library/Code_Target_Nat"
-  "../Datatype_Order_Generator/Order_Generator" BNF
+  "../Datatype_Order_Generator/Order_Generator"   
 begin
 (*>*)
 subsection {* Syntax of regular expressions *}
@@ -21,7 +21,7 @@ datatype_new 'a rexp =
   Not "('a rexp)" |
   Inter "('a rexp)" "('a rexp)" |
   Pr "('a rexp)"
-datatype_new_compat rexp
+datatype_compat rexp
 derive linorder rexp
 
 text {* Lifting constructors to lists *}
