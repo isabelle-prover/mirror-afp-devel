@@ -1,7 +1,10 @@
 chapter AFP
 
-session Completeness (AFP) = "HOL-Library" +
+session Completeness (AFP) = HOL +
   options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Permutation"
+    "~~/src/HOL/Library/Multiset"
   theories
     Base
     (* NOTES omitted permutations and try to reuse library stuff *)
