@@ -1,5 +1,5 @@
 (*  Title:      Well-Quasi-Orders
-    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
     Maintainer: Christian Sternagel
     License:    LGPL
 *)

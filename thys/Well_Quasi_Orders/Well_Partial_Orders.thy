@@ -1,5 +1,5 @@
 (*  Title:      Well-Quasi-Orders
-    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
     Maintainer: Christian Sternagel
     License:    LGPL
 *)
@@ -146,7 +146,7 @@ proof
   ultimately
   show "?rhs"
     using af
-    unfolding reflp_on_def transp_on_def antisymp_on_def almost_full_on_def
+    unfolding reflp_on_def transp_on_def antisymp_on_def almost_full_on_def Ball_def
     by (unfold_locales) fast+
 next
   assume "?rhs" thus "?lhs"

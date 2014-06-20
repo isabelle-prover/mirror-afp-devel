@@ -1,5 +1,5 @@
 (*  Title:      Well-Quasi-Orders
-    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
     Maintainer: Christian Sternagel
     License:    LGPL
 *)
@@ -83,7 +83,7 @@ proof
   let ?f = "\<lambda>i. x"
   have "\<forall>i. ?f i \<in> A" using `x \<in> A` by simp
   with assms obtain i j :: nat where "i < j"
-    and "P (?f i) (?f j)" by (auto simp: almost_full_on_def good_def)
+    and "P (?f i) (?f j)" by (auto simp: Ball_def almost_full_on_def good_def)
   then show "P x x" by simp
 qed
 

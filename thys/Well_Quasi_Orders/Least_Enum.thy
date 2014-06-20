@@ -1,4 +1,8 @@
-(* Author: Christian Sternagel, JAIST *)
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
 
 header {* Enumerations of Well-Ordered Sets in Increasing Order *}
 

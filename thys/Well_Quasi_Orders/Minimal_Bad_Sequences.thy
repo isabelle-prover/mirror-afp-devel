@@ -1,5 +1,5 @@
 (*  Title:      Well-Quasi-Orders
-    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
     Maintainer: Christian Sternagel
     License:    LGPL
 *)
@@ -18,15 +18,6 @@ definition "SEQ A = {f::'a seq. \<forall>i. f i \<in> A}"
 lemma SEQ_iff [iff]:
   "f \<in> SEQ A \<longleftrightarrow> (\<forall>i. f i \<in> A)"
   by (auto simp: SEQ_def)
-
-(*it is unclear why the following two rules are needed at all*)
-lemma ball_SEQ [simp]:
-  "(\<forall>g \<in> SEQ A. P g) \<longleftrightarrow> (\<forall>g. g \<in> SEQ A \<longrightarrow> P g)"
-  by blast
-
-lemma ball_SEQ_D [dest!]:
-  "Ball (SEQ A) P \<Longrightarrow> \<forall>g. g \<in> SEQ A \<longrightarrow> P g"
-  by (auto)
 
 text {*An infinite sequence is \emph{good} whenever there are indices
 @{term "i < j"} such that @{term "P (f i) (f j)"}.*}

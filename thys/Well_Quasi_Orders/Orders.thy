@@ -1,5 +1,5 @@
 (*  Title:      Well-Quasi-Orders
-    Author:     Christian Sternagel <c-sterna@jaist.ac.jp>
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
     Maintainer: Christian Sternagel
     License:    LGPL
 *)
@@ -28,7 +28,7 @@ proof
     by (rule `wpo_on P A` [THEN wpo_on_imp_almost_full_on])
   ultimately show "almost_full_on Q A"
     unfolding P_def reflp_on_def almost_full_on_def
-    by (auto simp: good_def) (metis)
+    by (auto simp: good_def Ball_def) (metis)
 qed
 
 lemma qo_on_imp_po_on_strict:
