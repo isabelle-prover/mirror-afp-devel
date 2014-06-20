@@ -138,24 +138,28 @@ lemma ith_conv:
   "x \<in> ith B i \<longleftrightarrow> (\<exists>f \<in> B. x = f i)"
   by auto
 
+context
+  fixes B :: "'a set"
+  assumes subset_A: "B \<subseteq> A" and ne: "B \<noteq> {}"
+begin
+
 text {*A minimal element (w.r.t.~@{term less}) from a set.*}
-definition "min_elt B = (SOME x. x \<in> A \<inter> B \<and> (\<forall>y \<in> A. less y x \<longrightarrow> y \<notin> B))"
+definition "min_elt = (SOME x. x \<in> B \<and> (\<forall>y \<in> A. less y x \<longrightarrow> y \<notin> B))"
 
 lemma min_elt_ex:
-  assumes "A \<inter> B \<noteq> {}"
-  shows "\<exists>x. x \<in> A \<inter> B \<and> (\<forall>y \<in> A. less y x \<longrightarrow> y \<notin> B)"
-  using assms using minimal [of _ "\<lambda>x. x \<in> B"] by auto
+  "\<exists>x. x \<in> B \<and> (\<forall>y \<in> A. less y x \<longrightarrow> y \<notin> B)"
+  using subset_A and ne using minimal [of _ "\<lambda>x. x \<in> B"] by auto
 
 lemma min_elt_mem:
-  assumes "A \<inter> B \<noteq> {}"
-  shows "min_elt B \<in> B"
-  using someI_ex [OF min_elt_ex [OF assms]] by (auto simp: min_elt_def)
+  "min_elt \<in> B"
+  using someI_ex [OF min_elt_ex] by (auto simp: min_elt_def)
 
 lemma min_elt_minimal:
-  assumes "A \<inter> B \<noteq> {}"
-    and "y \<in> A" and "less y (min_elt B)"
+  assumes "y \<in> A" and "less y min_elt"
   shows "y \<notin> B"
-  using someI_ex [OF min_elt_ex [OF assms(1)]] and assms(2-) by (auto simp: min_elt_def)
+  using someI_ex [OF min_elt_ex] and assms by (auto simp: min_elt_def)
+
+end
 
 end
 
@@ -222,21 +226,20 @@ next
   case (Suc i)
   then have "?A i \<noteq> {}" by auto
   moreover have "eq_upto (BAD P) lb i \<subseteq> eq_upto (BAD P) lb 0" by auto
-  ultimately have "A \<inter> ?A i \<noteq> {}" by (auto simp: ith_def)
+  ultimately have "?A i \<subseteq> A" and "?A i \<noteq> {}" by (auto simp: ith_def)
   from min_elt_mem [OF this, folded lb] obtain f
     where "f \<in> eq_upto (BAD P) lb (Suc i)" by (auto dest: eq_upto_Suc)
   then show ?case by blast
 qed
 
 lemma non_empty_ith:
-  shows "A \<inter> ith (eq_upto (BAD P) lb i) i \<noteq> {}"
+  shows "ith (eq_upto (BAD P) lb i) i \<subseteq> A"
+  and "ith (eq_upto (BAD P) lb i) i \<noteq> {}"
   using eq_upto_BAD_non_empty [of i] by auto
 
 lemmas
-  lb_minimal = non_empty_ith [THEN min_elt_minimal, of , folded lb]
-
-lemmas
-  lb_mem = non_empty_ith [THEN min_elt_mem, folded lb]
+ lb_minimal = min_elt_minimal [OF non_empty_ith, folded lb] and
+ lb_mem = min_elt_mem [OF non_empty_ith, folded lb]
 
 text {*@{term "lb"} is a infinite bad sequence.*}
 lemma lb_BAD:
