@@ -485,7 +485,7 @@ proof -
 
   { fix f :: "_ \<Rightarrow> real" assume f: "integrable (paths s) f" and nneg: "\<And>x. 0 \<le> f x"
     then have "(\<integral>\<omega>. f \<omega> \<partial>(paths s)) = real (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>(paths s))"
-      by (rule integral_eq_nn_integral)
+      by (intro integral_eq_nn_integral) auto
     also have "\<dots> = real (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"
       using integrableD(1)[OF f] by (subst nn_integral_split) auto
     also have "\<dots> = real (\<integral>\<^sup>+\<omega>. (\<integral>\<omega>'. f (comb_seq i \<omega> \<omega>') \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s)"

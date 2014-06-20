@@ -67,12 +67,10 @@ proof -
     by (auto cong: nn_integral_cong simp: emeasure_eq_measure one_ereal_def)
 qed
 
-definition variance :: "('a \<Rightarrow> real) \<Rightarrow> real" where
-"variance X = expectation (\<lambda>x. (X x - expectation X)^2)"
-
 text{* $\Var[X] = \Ex[X^2] - \Ex[X]^2 $ *}
 
 lemma variance_expectation:
+  fixes X :: "'a \<Rightarrow> real"
   assumes "integrable M (\<lambda>x. (X x)^2)" and "X \<in> borel_measurable M"
   shows
     "integrable M (\<lambda>x. (X x - expectation X)^2)" (is ?integrable)
@@ -86,7 +84,7 @@ proof -
   hence
     "variance X = expectation (\<lambda>x. (X x)^2) + (expectation X)^2 + expectation (\<lambda>x. - (2 * X x * expectation X))"
     ?integrable
-    unfolding variance_def using integral_add by (simp add: int assms prob_space)+
+    using integral_add by (simp add: int assms prob_space)+
 
   thus ?variance ?integrable
     by (simp add: int power2_eq_square)+
@@ -109,10 +107,8 @@ proof -
 
   have "0 < ?t"
     using s_pos by simp
-  hence "prob {a \<in> space M. ?t \<le> ?X a} \<le> expectation ?X / ?t"
-    using markov_inequality variance_expectation[OF Y_int Y_borel] by simp
   hence "prob {a \<in> space M. ?t \<le> ?X a} \<le> variance Y / s^2"
-    unfolding variance_def .
+    using markov_inequality variance_expectation[OF Y_int Y_borel] by (simp add: field_simps)
   moreover have "{a \<in> space M. ?t \<le> ?X a} = {a \<in> space M. s \<le> \<bar>Y a - expectation Y\<bar>}"
     using real_abs_le_square_iff s_pos by force
   ultimately show ?thesis

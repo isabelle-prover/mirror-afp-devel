@@ -403,7 +403,7 @@ lemma (in prob_space) integrable_squareD:
   shows "integrable M X"
 proof -
   have "integrable M (\<lambda>x. max 1 ((X x)^2))"
-    using assms by (auto simp: integrable_max)
+    using assms by auto
   then show "integrable M X"
   proof (rule integrable_bound[OF _ _ always_eventually[OF allI]])
     fix x show "norm (X x) \<le> norm (max 1 ((X x)^2))"
