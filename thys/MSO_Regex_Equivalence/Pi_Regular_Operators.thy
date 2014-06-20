@@ -328,7 +328,7 @@ lemma lang_samequot: "\<lbrakk>wf n r; a \<in> \<Sigma> n\<rbrakk> \<Longrightar
    done
 
 fun rderiv_and_add where
-  "rderiv_and_add as (_, rs) =
+  "rderiv_and_add as (_ :: bool, rs) =
     (let
       r = \<guillemotleft>rderiv as (hd rs)\<guillemotright>
     in if r \<in> set rs then (False, rs) else (True, r # rs))"

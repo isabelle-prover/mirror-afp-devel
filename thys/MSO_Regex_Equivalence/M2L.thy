@@ -45,7 +45,7 @@ definition "dec_word \<equiv> map fst"
 definition "positions_in_row w i =
   Option.these (set (map_index (\<lambda>p a_bs. if nth (snd a_bs) i then Some p else None) w))"
 
-definition "dec_interp n FO w \<equiv> map (\<lambda>i.
+definition "dec_interp n FO (w :: ('a \<times> bool list) list) \<equiv> map (\<lambda>i.
   if i \<in> FO
   then Inl (the_elem (positions_in_row w i))
   else Inr (positions_in_row w i)) [0..<n]"

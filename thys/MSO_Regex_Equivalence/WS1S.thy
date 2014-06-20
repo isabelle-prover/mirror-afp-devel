@@ -339,7 +339,7 @@ definition "dec_word s = cut_same any (smap fst s)"
 lemma dec_word_stream_enc: "dec_word (stream_enc (w, I)) = cut_same any (w @- sconst any)"
   unfolding dec_word_def by (auto intro!: arg_cong[of _ _ "cut_same any"] simp: smap2_alt)
 
-definition "stream_dec n FO s = map (\<lambda>i.
+definition "stream_dec n FO (s :: ('a \<times> bool list) stream) = map (\<lambda>i.
   if i \<in> FO
   then Inl (the_elem (positions_in_row s i))
   else Inr (positions_in_row s i)) [0..<n]"
