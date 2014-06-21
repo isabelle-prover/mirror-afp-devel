@@ -196,7 +196,7 @@ proof (rule wf_no_infinite_down_chainI, simp)
         "(x0',t')\<in>S'" and "(f' (Suc 0),t')\<in>R" by auto
       moreover hence "(x0',t')\<in>S'\<^sup>*" by auto
       ultimately show ?case
-        by (auto intro: someI2 simp: STARTR)
+        by (auto intro: someI2 simp: STARTR simp del: r_into_rtrancl)
     next
       case (Suc i)
       with SIM[OF _ CHAIN'[of "Suc i"]] 
