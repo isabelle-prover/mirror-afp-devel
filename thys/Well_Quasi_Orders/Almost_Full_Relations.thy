@@ -612,6 +612,9 @@ lemma transp_on_list_hembeq:
   using assms and list_hembeq_trans [of A P]
     unfolding transp_on_def by metis
 
+
+subsection {* Higman's Lemma for Almost-Full Relations *}
+
 lemma Nil_imp_good_list_hembeq [simp]:
   assumes "f i = []"
   shows "good (list_hembeq P) f"
@@ -623,32 +626,88 @@ proof (rule ccontr)
     unfolding good_def by auto
 qed
 
-lemma bad_imp_not_Nil:
-  "bad (list_hembeq P) f \<Longrightarrow> f i \<noteq> []"
-  by auto
+lemma wf_length:
+  "wf {(x, y). length x < length y}"
+  unfolding wf_def using length_induct by auto
 
-lemma list_suffix_induct [case_names psuffix]:
-  assumes "\<And>xs. (\<And>zs. suffix zs xs \<Longrightarrow> P zs) \<Longrightarrow> P xs"
-  shows "P xs"
-  using assms [unfolded suffix_def]
-  by (induction_schema) (pat_completeness, lexicographic_order)
+lemma wfp_on_length:
+  "wfp_on (\<lambda>x y. length x < length y) (lists A)"
+  using wf_length [to_pred, unfolded wfp_on_UNIV [symmetric]]
+    and wfp_on_subset [of "lists A" UNIV] by blast
 
-lemma reflp_on_suffixeq:
-  "suffixeq xs ys \<Longrightarrow> reflp_on P (set ys) \<Longrightarrow> reflp_on P (set xs)"
-  using reflp_on_subset [OF suffixeq_set_subset] .
+lemma ne_lists:
+  assumes "xs \<noteq> []" and "xs \<in> lists A"
+  shows "hd xs \<in> A" and "tl xs \<in> lists A"
+  using assms by (case_tac [!] xs) simp_all
 
-lemma wf_suffix:
-  "wf {(x, y). suffix x y}"
-  unfolding wf_def using list_suffix_induct by auto
+lemma almost_full_on_lists:
+  assumes "almost_full_on P A"
+  shows "almost_full_on (list_hembeq P) (lists A)" (is "almost_full_on ?P ?A")
+proof (rule ccontr)
+  interpret mbs "\<lambda>xs ys. length xs < length ys" ?A
+    by (unfold_locales) (auto simp: wfp_on_length)
+  assume "\<not> ?thesis"
+  from mbs' [OF this] obtain m
+    where bad: "m \<in> BAD ?P"
+    and min: "\<forall>g. (m, g) \<in> gseq \<longrightarrow> good ?P g" ..
+  then have lists: "\<And>i. m i \<in> lists A"
+    and ne: "\<And>i. m i \<noteq> []" by auto
 
-lemma wfp_on_suffix:
-  "wfp_on suffix (lists A)"
-  using wf_suffix [to_pred, unfolded wfp_on_UNIV [symmetric]]
-  using wfp_on_subset [of "lists A" UNIV]
-  by blast
+  def h \<equiv> "\<lambda>i. hd (m i)"
+  def t \<equiv> "\<lambda>i. tl (m i)"
 
+  have m: "\<And>i. m i = h i # t i" using ne by (simp add: h_def t_def)
+  
+  have "\<forall>i. h i \<in> A" using ne_lists [OF ne] and lists by (auto simp add: h_def)
+  from almost_full_on_imp_homogeneous_subseq [OF assms this] obtain \<phi> :: "nat \<Rightarrow> nat"
+    where less: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
+      and P: "\<forall>i j. i < j \<longrightarrow> P (h (\<phi> i)) (h (\<phi> j))" by blast
 
-subsection {* Higman's Lemma for Almost-Full Relations *}
+  have bad_t: "bad ?P (t \<circ> \<phi>)"
+  proof
+    assume "good ?P (t \<circ> \<phi>)"
+    then obtain i j where "i < j" and "?P (t (\<phi> i)) (t (\<phi> j))" by auto
+    moreover with P have "P\<^sup>=\<^sup>= (h (\<phi> i)) (h (\<phi> j))" by blast
+    ultimately have "?P (m (\<phi> i)) (m (\<phi> j))"
+      by (subst (1 2) m) (rule list_hembeq_Cons2, auto)
+    with less and `i < j` have "good ?P m" by (auto simp: good_def)
+    with bad show False by blast
+  qed
+  
+  def m' \<equiv> "\<lambda>i. if i < \<phi> 0 then m i else t (\<phi> (i - \<phi> 0))"
+
+  have m'_less: "\<And>i. i < \<phi> 0 \<Longrightarrow> m' i = m i" by (simp add: m'_def)
+  have m'_geq: "\<And>i. i \<ge> \<phi> 0 \<Longrightarrow> m' i = t (\<phi> (i - \<phi> 0))" by (simp add: m'_def)
+
+  have "\<forall>i. m' i \<in> lists A" using ne_lists [OF ne] and lists by (auto simp: m'_def t_def)
+  moreover have "length (m' (\<phi> 0)) < length (m (\<phi> 0))" using ne by (simp add: t_def m'_geq)
+  moreover have "\<forall>j<\<phi> 0. m' j = m j" by (auto simp: m'_less)
+  ultimately have "(m, m') \<in> gseq" using lists by (auto simp: gseq_def)
+  moreover have "bad ?P m'"
+  proof
+    assume "good ?P m'"
+    then obtain i j where "i < j" and emb: "?P (m' i) (m' j)" by (auto simp: good_def)
+    { assume "j < \<phi> 0"
+      with `i < j` and emb have "?P (m i) (m j)" by (auto simp: m'_less)
+      with `i < j` and bad have False by blast }
+    moreover
+    { assume "\<phi> 0 \<le> i"
+      with `i < j` and emb have "?P (t (\<phi> (i - \<phi> 0))) (t (\<phi> (j - \<phi> 0)))"
+        and "i - \<phi> 0 < j - \<phi> 0" by (auto simp: m'_geq)
+      with bad_t have False by auto }
+    moreover
+    { assume "i < \<phi> 0" and "\<phi> 0 \<le> j"
+      with `i < j` and emb have "?P (m i) (t (\<phi> (j - \<phi> 0)))" by (simp add: m'_less m'_geq)
+      from list_hembeq_Cons [OF this, of "h (\<phi> (j - \<phi> 0))"]
+        have "?P (m i) (m (\<phi> (j - \<phi> 0)))" using ne by (simp add: h_def t_def)
+      moreover have "i < \<phi> (j - \<phi> 0)"
+        using less [of 0 "j - \<phi> 0"] and `i < \<phi> 0` and `\<phi> 0 \<le> j`
+        by (cases "j = \<phi> 0") auto
+      ultimately have False using bad by blast }
+    ultimately show False using `i < j` by arith
+  qed
+  ultimately show False using min by blast
+qed
 
 lemma infinite_wo_prefix:
   "infinite {j::nat. j > i}"
@@ -665,159 +724,6 @@ proof -
   qed
   }
   then show ?thesis unfolding infinite_nat_iff_unbounded by auto
-qed
-
-lemma bad_of_special_shape:
-  assumes refl: "reflp_on P {g i | i. True}"
-    and "\<forall>i. f i \<in> {g i | i. True}"
-    and "bad P f"
-  shows "\<exists>\<phi>::nat \<Rightarrow> nat. (\<forall>i. \<phi> 0 \<le> \<phi> i) \<and> bad P (g \<circ> \<phi>)"
-proof -
-  from assms have "\<forall>i. \<exists>j. f i = g j" by blast
-  from choice [OF this] obtain \<phi>
-    where [abs_def]: "\<And>i. f i = g (\<phi> i)" by blast
-  with `bad P f` have "bad P (g \<circ> \<phi>)" by (auto simp: o_def)
-  have "\<forall>i. \<exists>j>i. \<phi> j \<ge> \<phi> 0"
-  proof (rule ccontr)
-    assume "\<not> ?thesis"
-    then obtain i where "\<forall>j>i. \<not> (\<phi> 0 \<le> \<phi> j)" by auto
-    then have "\<phi> ` {j. j > i} \<subseteq> {..< \<phi> 0}" (is "\<phi> ` ?I \<subseteq> _") by auto
-    then have "finite (\<phi> ` ?I)" by (blast intro: finite_subset)
-    moreover have "infinite ?I" by (rule infinite_wo_prefix)
-    ultimately obtain k
-      where "k > i" and "infinite {j. j > i \<and> \<phi> j = \<phi> k}"
-      using pigeonhole_infinite [of ?I \<phi>] by auto
-    then obtain l where "k < l" and "\<phi> l = \<phi> k"
-      by (auto simp: infinite_nat_iff_unbounded)
-    then have "P (g (\<phi> k)) (g (\<phi> l))" using refl by (auto simp: reflp_on_def)
-    with `k < l` and `bad P (g \<circ> \<phi>)` show False by (auto simp: good_def)
-  qed
-  from choice [OF this] obtain \<psi>
-    where \<psi>: "\<forall>i\<ge>0. (\<psi> i) > i" and *: "\<And>i. \<phi> (\<psi> i) \<ge> \<phi> 0" by blast
-  let ?\<psi> = "\<lambda>i. (\<psi> ^^ i) 0"
-  let ?\<phi> = "\<lambda>i. \<phi> (?\<psi> i)"
-  from funpow_mono [OF \<psi>]
-    have **: "\<And>i j. i < j \<Longrightarrow> ?\<psi> i < ?\<psi> j" by auto
-  have "\<forall>i. ?\<phi> i \<ge> ?\<phi> 0" by (rule, induct_tac i) (auto simp: *)
-  moreover have "bad P (g \<circ> ?\<phi>)"
-    using ** and `bad P (g \<circ> \<phi>)` by (auto simp: good_def)
-  ultimately show ?thesis by (blast intro: exI [of _ ?\<phi>])
-qed
-
-lemma no_bad_of_special_shape_imp_good:
-  assumes "\<not> (\<exists>f:: nat seq. (\<forall>i. f 0 \<le> f i) \<and> bad P (B \<circ> f))"
-    and "reflp_on P {B i | i. True}"
-    and "\<forall>i. f i \<in> {B i | i. True}"
-  shows "good P f"
-  using bad_of_special_shape [OF assms(2-)] and assms(1)
-  by blast
-
-lemma almost_full_on_lists:
-  assumes "almost_full_on P A"
-  shows "almost_full_on (list_hembeq P) (lists A)"
-proof (rule ccontr)
-  let ?A = "lists A"
-  let ?P = "list_hembeq P"
-  interpret list_mbs: mbs suffix ?A
-  proof -
-    show "mbs suffix ?A"
-      by (unfold_locales)
-         (auto simp: wfp_on_suffix intro: suffix_trans)
-  qed
-  note refl = reflp_on_list_hembeq [of P A]
-
-  assume "\<not> ?thesis"
-  then obtain f where "f \<in> list_mbs.BAD ?P"
-    unfolding almost_full_on_def by blast
-  from list_mbs.mbs [OF this] obtain m
-    where bad: "m \<in> list_mbs.BAD ?P"
-    and min: "\<forall>g. (m, g) \<in> list_mbs.gseq \<longrightarrow> good ?P g" ..
-  then have non_empty: "\<And>i. m i \<noteq> []" using bad_imp_not_Nil by auto
-  moreover obtain h t where [simp]: "\<And>i. h i = hd (m i)" "\<And>i. t i = tl (m i)" by force
-  ultimately have [simp]: "\<And>i. hd (m i) # tl (m i) = m i" by auto
-  from bad and min have in_lists: "\<And>i. m i \<in> ?A" and "bad ?P m" by auto
-
-  {
-    assume "\<exists>\<phi>::nat seq. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>)"
-    then obtain \<phi> :: "nat seq" where ge: "\<And>i. \<phi> i \<ge> \<phi> 0"
-      and "bad ?P (t \<circ> \<phi>)" by auto
-    let ?n = "\<phi> 0"
-    def c \<equiv> "\<lambda>i. if i < ?n then m i else t (\<phi> (i - ?n))"
-    have [simp]: "\<And>i. i < ?n \<Longrightarrow> c i = m i" by (auto simp: c_def)
-    have [simp]: "\<And>i. ?n \<le> i \<Longrightarrow> c i = t (\<phi> (i - ?n))" by (auto simp: c_def)
-    have "bad ?P c"
-    proof
-      assume "good ?P c"
-      then obtain i j where "i < j" and *: "?P (c i) (c j)" by (auto simp: good_def)
-      {
-        assume "j < ?n" with `i < j` and * have "?P (m i) (m j)" by simp
-        with `i < j` and `bad ?P m` have False by (auto simp: good_def)
-      } moreover {
-        let ?i' = "i - ?n" and ?j' = "j - ?n"
-        assume "?n \<le> i" with `i < j` and * have "?P (t (\<phi> ?i')) (t (\<phi> ?j'))" by simp
-        moreover with `i < j` and `?n \<le> i` have "?i' < ?j'" by auto
-        ultimately have False using `bad ?P (t \<circ> \<phi>)` by (auto simp: good_def)
-      } moreover {
-        let ?j' = "j - ?n"
-        have suffix: "suffixeq (t (\<phi> ?j')) (m (\<phi> ?j'))" by (simp)
-        assume "i < ?n" and "?n \<le> j"
-        with * have "?P (m i) (t (\<phi> ?j'))" by auto
-        with suffix have "?P (m i) (m (\<phi> ?j'))" using list_hembeq_suffixeq [of P] by blast
-        moreover from ge [of ?j'] and `i < ?n` have "i < \<phi> ?j'" by auto
-        ultimately have False using `bad ?P m` by (auto simp: good_def)
-      } ultimately show False by arith
-    qed
-    have "\<forall>i. c i \<in> lists A"
-      using bad and min and non_empty
-      by (auto simp: c_def) (metis in_lists_conv_set suffix_lists suffix_tl)
-    moreover have "\<forall>i<?n. c i = m i" by auto
-    moreover have "suffix (c ?n) (m ?n)" using non_empty by auto
-    ultimately have "good ?P c"
-      using bad and min
-      apply (auto simp: list_mbs.gseq_iff)
-      by (metis `\<And>i. t i = tl (m i)` c_def diff_self_eq_0 less_not_refl)
-    with `bad ?P c` have False by blast
-  }
-  then have no_special_bad_seq: "\<not> (\<exists>\<phi>. (\<forall>i. \<phi> i \<ge> \<phi> 0) \<and> bad ?P (t \<circ> \<phi>))" by blast
-
-  let ?H = "{h i | i. True}"
-  let ?T = "{t i | i. True}"
-  have "almost_full_on P ?H"
-  proof -
-    have "?H \<subseteq> A"
-    proof
-      fix x assume "x \<in> ?H"
-      then obtain i where [simp]: "x = h i" by auto
-      with non_empty have "h i \<in> set (m i)" by simp
-      with in_lists [of i] show "x \<in> A" by auto
-    qed
-    from almost_full_on_subset [OF this assms] show ?thesis .
-  qed
-  moreover
-  have "almost_full_on ?P ?T"
-  proof
-    have "?T \<subseteq> lists A"
-    proof
-      fix B assume "B \<in> ?T"
-      then obtain i where "B = t i" by auto
-      then have "suffixeq B (m i)" by (simp)
-      with in_lists [of i] show "B \<in> lists A" by (auto simp: suffixeq_def)
-    qed
-    from reflp_on_subset [OF this refl] have refl: "reflp_on ?P ?T" .
-    fix f :: "'a list seq" assume "\<forall>i. f i \<in> ?T"
-    from bad_of_special_shape [of ?P t f, OF refl this] and no_special_bad_seq
-      show "good ?P f" by blast
-  qed
-  ultimately
-  have "almost_full_on (prod_le P ?P) (?H \<times> ?T)"
-    by (rule almost_full_on_Sigma)
-  moreover have "\<forall>i. (h i, t i) \<in> (?H \<times> ?T)" by auto
-  ultimately have "good (prod_le P ?P) (\<lambda>i. (h i, t i))" by (auto simp: almost_full_on_def)
-  then obtain i j where "i < j" and "prod_le P ?P (h i, t i) (h j, t j)" by (auto simp: good_def)
-  then have "P\<^sup>=\<^sup>= (h i) (h j)" and "?P (t i) (t j)" by (auto simp: prod_le_def)
-  from list_hembeq_Cons2 [OF this]
-    have "?P (m i) (m j)" by auto
-  with `i < j` and `bad ?P m` show False by (auto simp: good_def)
 qed
 
 definition
