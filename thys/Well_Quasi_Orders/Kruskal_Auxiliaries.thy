@@ -44,6 +44,23 @@ next
   qed
 qed
 
+lemma infinite_wo_prefix:
+  "infinite {j::nat. j > i}"
+proof -
+  {
+  fix m have "\<exists>n>m. i < n"
+  proof (cases "m > i")
+    case True then show ?thesis by auto
+  next
+    case False
+    then have "m \<le> i" by auto
+    then have "Suc i > m" and "i < Suc i" by auto
+    then show ?thesis by blast
+  qed
+  }
+  then show ?thesis unfolding infinite_nat_iff_unbounded by auto
+qed
+
 lemma bad_of_special_shape':
   assumes refl: "reflp_on P (\<Union>(set ` {g i | i. True}))"
     and "\<forall>i. f i \<in> \<Union>(set ` {g i | i. True})"

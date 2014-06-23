@@ -628,23 +628,6 @@ proof (rule ccontr)
   ultimately show False using min by blast
 qed
 
-lemma infinite_wo_prefix:
-  "infinite {j::nat. j > i}"
-proof -
-  {
-  fix m have "\<exists>n>m. i < n"
-  proof (cases "m > i")
-    case True then show ?thesis by auto
-  next
-    case False
-    then have "m \<le> i" by auto
-    then have "Suc i > m" and "i < Suc i" by auto
-    then show ?thesis by blast
-  qed
-  }
-  then show ?thesis unfolding infinite_nat_iff_unbounded by auto
-qed
-
 definition
   list_hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where
