@@ -446,40 +446,6 @@ proof (intro ext)
      (auto simp add: prod_le_def prod_less_def)
 qed
 
-text {*By Ramsey's Theorem every infinite sequence on which @{term "sup P Q"}
-is transitive, contains a (monotone) infinite subsequence on which either
-@{term P} is transitive or @{term Q} is transitive.*}
-lemma trans_subseq:
-  fixes f :: "'a seq"
-    and P (infix "\<le>\<^sub>1" 50)
-    and Q (infix "\<le>\<^sub>2" 50)
-  assumes "\<forall>i j. i < j \<longrightarrow> f i \<le>\<^sub>1 f j \<or> f i \<le>\<^sub>2 f j"
-  shows "\<exists>\<phi>::nat seq. (\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j) \<and>
-    ((\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>1 f (\<phi> j)) \<or>
-     (\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>2 f (\<phi> j)))"
-proof -
-  def h \<equiv> "\<lambda>I. if (\<exists>i j. I = {i, j} \<and> i < j \<and> f i \<le>\<^sub>1 f j) then 0 else Suc 0"
-  have "infinite (UNIV :: nat set)"
-    and "\<forall>i\<in>UNIV. \<forall>j\<in>UNIV. i \<noteq> j \<longrightarrow> h {i, j} < 2" by (auto simp: h_def)
-  from Ramsey2 [OF this] obtain I :: "nat set" and c
-    where "infinite I" and "c < 2" and *: "\<forall>i\<in>I. \<forall>j\<in>I. i \<noteq> j \<longrightarrow> h {i, j} = c" by blast
-  then interpret infinitely_many1 "\<lambda>i. i \<in> I"
-    by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
-  def \<phi> \<equiv> enum
-
-  have less: "\<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j" using enum_less by (simp add: \<phi>_def)
-  then have h: "\<And>i j. i < j \<Longrightarrow> h {\<phi> i, \<phi> j} = c" using enum_P and * by (force simp add: \<phi>_def)
-  { assume "c = 0"
-    then have "\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>1 f (\<phi> j)"
-      using h and less by (auto simp: h_def doubleton_eq_iff) (metis Suc_neq_Zero order_less_not_sym) }
-  moreover
-  { assume "c = 1"
-    then have "\<forall>i j. i < j \<longrightarrow> f (\<phi> i) \<le>\<^sub>2 f (\<phi> j)"
-      using h and less and assms by (auto simp: h_def) (metis n_not_Suc_n) }
-  moreover have "c = 0 \<or> c = 1" using `c < 2` by force
-  ultimately show ?thesis using less by blast
-qed
-
 lemma almost_full_on_Sigma:
   assumes "almost_full_on P1 A1" and "almost_full_on P2 A2"
   shows "almost_full_on (prod_le P1 P2) (A1 \<times> A2)"
@@ -488,28 +454,20 @@ proof (rule ccontr)
   assume "\<not> almost_full_on ?P ?A"
   then obtain f where f: "\<forall>i. f i \<in> ?A"
     and bad: "bad ?P f" by (auto simp: almost_full_on_def)
-  let ?W = "\<lambda>x y. \<not> P1 (fst x) (fst y)"
-  let ?B = "\<lambda>x y. \<not> P2 (snd x) (snd y)"
+  let ?W = "\<lambda>x y. P1 (fst x) (fst y)"
+  let ?B = "\<lambda>x y. P2 (snd x) (snd y)"
   from f have fst: "\<forall>i. fst (f i) \<in> A1" and snd: "\<forall>i. snd (f i) \<in> A2"
     by (metis SigmaE fst_conv, metis SigmaE snd_conv)
-  from bad have "\<forall>i j. i < j \<longrightarrow> \<not> ?P (f i) (f j)" by (auto simp: good_def)
-  then have "\<forall>i j. i < j \<longrightarrow> ?W (f i) (f j) \<or> ?B (f i) (f j)"
-    unfolding prod_le_def by (metis (lifting, mono_tags) case_prod_beta)
-  from trans_subseq [of ?W _ ?B, OF this]
-    obtain g :: "nat seq" where mono: "\<forall>i j. i < j \<longrightarrow> g i < g j"
-      and or: "(\<forall>i j. i < j \<longrightarrow> ?W (f (g i)) (f (g j))) \<or>
-               (\<forall>i j. i < j \<longrightarrow> ?B (f (g i)) (f (g j)))"
-      by blast
-  from or show False
-  proof
-    assume "\<forall>i j. i < j \<longrightarrow> ?W (f (g i)) (f (g j))"
-    then have "bad P1 (fst \<circ> f \<circ> g)" by (auto simp: good_def)
-    with fst and assms(1) show False by (auto simp: almost_full_on_def)
-  next
-    assume "\<forall>i j. i < j \<longrightarrow> ?B (f (g i)) (f (g j))"
-    then have "bad P2 (snd \<circ> f \<circ> g)" by (auto simp: good_def)
-    with snd and assms(2) show False by (auto simp: almost_full_on_def)
-  qed
+  from almost_full_on_imp_homogeneous_subseq [OF assms(1) fst]
+    obtain \<phi> :: "nat seq" where mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
+    and *: "\<And>i j. i < j \<Longrightarrow> ?W (f (\<phi> i)) (f (\<phi> j))" by auto
+  from snd have "\<forall>i. snd (f (\<phi> i)) \<in> A2" by auto
+  then have "snd \<circ> f \<circ> \<phi> \<in> SEQ A2" by auto
+  with assms(2) have "good P2 (snd \<circ> f \<circ> \<phi>)" by (auto simp: almost_full_on_def)
+  then obtain i j :: nat
+    where "i < j" and "?B (f (\<phi> i)) (f (\<phi> j))" by auto
+  with * [OF `i < j`] have "?P (f (\<phi> i)) (f (\<phi> j))" by (simp add: case_prod_beta prod_le_def)
+  with mono [OF `i < j`] and bad show False by auto
 qed
 
 lemma almost_full_on_prod_less:
