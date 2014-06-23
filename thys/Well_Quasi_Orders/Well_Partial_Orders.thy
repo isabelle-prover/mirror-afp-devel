@@ -354,12 +354,12 @@ proof
   show "almost_full_on P'\<^sup>=\<^sup>= A"
   proof
     fix f
-    presume *: "\<And>i::nat. f i \<in> A"
-    from almost_full_on_imp_subchain [OF `almost_full_on P\<^sup>=\<^sup>= A` this, of id] obtain g :: "nat \<Rightarrow> nat"
+    assume *: "\<forall>i::nat. f i \<in> A"
+    from almost_full_on_imp_homogeneous_subseq [OF `almost_full_on P\<^sup>=\<^sup>= A` this]
+      obtain g :: "nat \<Rightarrow> nat"
       where g: "\<And>i j. i < j \<Longrightarrow> g i < g j"
       and **: "\<forall>i. f (g i) \<in> A \<and> P\<^sup>=\<^sup>= (f (g i)) (f (g (Suc i)))"
-      using *
-      by auto
+      using * by auto
     from chain_on_transp_on_less [OF ** `transp_on P\<^sup>=\<^sup>= A`]
       have **: "\<And>i j. i < j \<Longrightarrow> P\<^sup>=\<^sup>= (f (g i)) (f (g j))" .
     let ?g = "\<lambda>i. h (f (g i))"
@@ -370,7 +370,7 @@ proof
     with ** [OF `i < j`] have "P'\<^sup>=\<^sup>= (f (g i)) (f (g j))"
       by (auto simp: P'_def)
     with g [OF `i < j`] show "good P'\<^sup>=\<^sup>= f" by (auto simp: good_def)
-  qed simp
+  qed
 qed
 
 end

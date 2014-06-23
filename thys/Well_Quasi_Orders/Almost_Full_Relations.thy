@@ -140,49 +140,6 @@ proof -
   qed
 qed
 
-text {*Every infinite sequence over a set, on which there is an almost-full relation @{term P},
-has an infinite subsequence that is a chain w.r.t.\ @{term P}.*}
-lemma almost_full_on_imp_subchain:
-  assumes "almost_full_on P A"
-    and *: "\<And>i::nat. f i \<in> A"
-  shows "\<exists>g::nat \<Rightarrow> nat. (\<forall>i j. i < j \<longrightarrow> g i < g j) \<and>
-    (\<forall>i. P (f (g i)) (f (g (Suc i))))"
-proof -
-  let ?A = "{i. \<forall>j>i. \<not> P (f i) (f j)}"
-  show ?thesis
-  proof (cases "finite ?A")
-    assume "infinite ?A"
-    then have "\<forall>i. \<exists>j>i. j \<in> ?A" by (simp add: infinite_nat_iff_unbounded)
-    then interpret infinitely_many1 "\<lambda>i. i \<in> ?A" by (unfold_locales) assumption
-    def [simp]: g \<equiv> "enum"
-    have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (g i)) (f (g j))"
-    proof (intro allI impI)
-      fix i j :: nat
-      assume "i < j"
-      from enum_less [OF this] have "g i < g j" by auto
-      moreover have "g i \<in> ?A" using enum_P by auto
-      ultimately show "\<not> P (f (g i)) (f (g j))" by auto
-    qed
-    then have "bad P (\<lambda>x. f (g x))" by (auto simp: good_def)
-    with assms show ?thesis by (auto simp: almost_full_on_def good_def)
-  next
-    assume "finite ?A"
-    have "\<exists>n. \<forall>i\<ge>n. i \<notin> ?A"
-      using infinite_nat_iff_unbounded_le [symmetric, of ?A]
-      using `finite ?A` by auto
-    then obtain N where "\<forall>i\<in>{i. i \<ge> N}. \<exists>j>i. P (f i) (f j)" by auto
-    from bchoice [OF this] obtain g
-      where seq: "\<forall>i\<ge>N. g i > i \<and> P (f i) (f (g i))" by auto
-    then have mono: "\<forall>i\<ge>N. g i > i" by auto
-    def [simp]: h \<equiv> "\<lambda>i. (g ^^ i) N"
-    from stepfun_imp_chainp [of N g P f, OF seq]
-      have "\<forall>i. P (f (h i)) (f (h (Suc i)))" by auto
-    moreover from funpow_mono [OF mono]
-      have "\<forall>i j. i < j \<longrightarrow> h i < h j" by auto
-    ultimately show ?thesis by blast
-  qed
-qed
-
 text {*Almost full relations do not admit infinite antichains.*}
 lemma almost_full_on_imp_no_antichain_on:
   assumes "almost_full_on P A"
