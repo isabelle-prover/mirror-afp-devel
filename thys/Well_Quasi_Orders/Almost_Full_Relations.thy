@@ -91,6 +91,55 @@ lemma almost_full_on_subset:
   "A \<subseteq> B \<Longrightarrow> almost_full_on P B \<Longrightarrow> almost_full_on P A"
   by (auto simp: almost_full_on_def)
 
+text {*Every sequence over elements of an almost-full set has a homogeneous subsequence.*}
+lemma almost_full_on_imp_homogeneous_subseq:
+  assumes "almost_full_on P A"
+    and "\<forall>i::nat. f i \<in> A"
+  shows "\<exists>\<phi>::nat \<Rightarrow> nat. \<forall>i j. i < j \<longrightarrow> \<phi> i < \<phi> j \<and> P (f (\<phi> i)) (f (\<phi> j))"
+proof -
+  def X \<equiv> "{{i, j} | i j::nat. i < j \<and> P (f i) (f j)}"
+  def Y \<equiv> "- X"
+  def h \<equiv> "\<lambda>Z. if Z \<in> X then 0 else Suc 0"
+
+  have [iff]: "\<And>x y. h {x, y} = 0 \<longleftrightarrow> {x, y} \<in> X" by (auto simp: h_def)
+  have [iff]: "\<And>x y. h {x, y} = Suc 0 \<longleftrightarrow> {x, y} \<in> Y" by (auto simp: h_def Y_def)
+
+  have "\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. x \<noteq> y \<longrightarrow> h {x, y} < 2" by (simp add: h_def)
+  from Ramsey2 [OF infinite_UNIV_nat this] obtain B t
+    where "infinite B" and "t < 2"
+    and *: "\<forall>x\<in>B. \<forall>y\<in>B. x \<noteq> y \<longrightarrow> h {x, y} = t" by blast
+  then interpret infinitely_many1 "\<lambda>i. i \<in> B"
+    by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
+
+  have "t = 0 \<or> t = 1" using `t < 2` by arith
+  then show ?thesis
+  proof
+    assume [simp]: "t = 0"
+    have "\<forall>i j. i < j \<longrightarrow> P (f (enum i)) (f (enum j))"
+    proof (intro allI impI)
+      fix i j :: nat
+      assume "i < j"
+      from * and enum_P and enum_less [OF `i < j`] have "{enum i, enum j} \<in> X" by auto
+      with enum_less [OF `i < j`]
+        show "P (f (enum i)) (f (enum j))" by (auto simp: X_def doubleton_eq_iff)
+    qed
+    then show ?thesis using enum_less by blast
+  next
+    assume [simp]: "t = 1"
+    have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (enum i)) (f (enum j))"
+    proof (intro allI impI)
+      fix i j :: nat
+      assume "i < j"
+      from * and enum_P and enum_less [OF `i < j`] have "{enum i, enum j} \<in> Y" by auto
+      with enum_less [OF `i < j`]
+        show "\<not> P (f (enum i)) (f (enum j))" by (auto simp: Y_def X_def doubleton_eq_iff)
+    qed
+    then have "\<not> good P (f \<circ> enum)" by auto
+    moreover have "\<forall>i. f (enum i) \<in> A" using assms by auto
+    ultimately show ?thesis using `almost_full_on P A` by (simp add: almost_full_on_def)
+  qed
+qed
+
 text {*Every infinite sequence over a set, on which there is an almost-full relation @{term P},
 has an infinite subsequence that is a chain w.r.t.\ @{term P}.*}
 lemma almost_full_on_imp_subchain:
