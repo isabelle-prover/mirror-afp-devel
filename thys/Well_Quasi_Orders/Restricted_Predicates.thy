@@ -209,11 +209,6 @@ lemma antisymp_on_reflclp [simp]:
   "antisymp_on P\<^sup>=\<^sup>= A = antisymp_on P A"
   by (auto simp: antisymp_on_def)
 
-lemma transp_on_imp_transp_on_reflclp:
-  "transp_on P A \<Longrightarrow> transp_on P\<^sup>=\<^sup>= A"
-  unfolding transp_on_def
-  by (metis (hide_lams, mono_tags) sup2CI sup2E)
-
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "qo_on P A = (reflp_on P A \<and> transp_on P A)"
 
@@ -249,7 +244,7 @@ lemma po_on_converse_simp [simp]:
 lemma po_on_imp_qo_on:
   "po_on P A \<Longrightarrow> qo_on (P\<^sup>=\<^sup>=) A"
   unfolding po_on_def qo_on_def
-  by (metis reflp_on_reflclp transp_on_imp_transp_on_reflclp)
+  by (metis reflp_on_reflclp transp_on_reflclp)
 
 lemma po_on_imp_irreflp_on:
   "po_on P A \<Longrightarrow> irreflp_on P A"

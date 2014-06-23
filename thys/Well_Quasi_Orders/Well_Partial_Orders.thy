@@ -337,9 +337,9 @@ proof
 
   from `wpo_on P A` have "transp_on P A"
     by (rule wpo_on_imp_transp_on)
-  then have "transp_on P\<^sup>=\<^sup>= A" by (metis transp_on_imp_transp_on_reflclp)
+  then have "transp_on P\<^sup>=\<^sup>= A" by (metis transp_on_reflclp)
   from `wpo_on Q B` have "transp_on Q\<^sup>=\<^sup>= B"
-    by (metis transp_on_imp_transp_on_reflclp wpo_on_imp_transp_on)
+    by (metis transp_on_reflclp wpo_on_imp_transp_on)
   from transp_on_map [OF this subset]
     have "transp_on ?Q A" .
 
