@@ -15,44 +15,6 @@ imports
   "../Regular-Sets/Regexp_Method"
 begin
 
-
-subsection {* Auxiliary Lemmas *}
-
-lemma funpow_non_decreasing:
-  fixes f :: "'a::order \<Rightarrow> 'a"
-  assumes "\<forall>i\<ge>n. f i \<ge> i"
-  shows "(f ^^ i) n \<ge> n"
-  using assms by (induct i) auto
-
-lemma funpow_mono:
-  assumes "\<forall>i\<ge>n::nat. f i > i" and "j > i"
-  shows "(f ^^ j) n > (f ^^ i) n"
-using assms(2)
-proof (induct "j - i" arbitrary: i j)
-  case 0 then show ?case by simp
-next
-  case (Suc m)
-  then obtain j' where j: "j = Suc j'" by (cases j) auto
-  show ?case
-  proof (cases "i < j'")
-    case True
-    with Suc(1) [of j'] and Suc(2) [unfolded j]
-      have "(f ^^ j') n > (f ^^ i) n" by simp
-    moreover have "(f ^^ j) n > (f ^^ j') n"
-    proof -
-      have "(f ^^ j) n = f ((f ^^ j') n)" by (simp add: j)
-      also have "\<dots> > (f ^^ j') n" using assms and funpow_non_decreasing [of n f j'] by force
-      finally show ?thesis .
-    qed
-    ultimately show ?thesis by auto
-  next
-    case False
-    with Suc have i: "i = j'" unfolding j by (induct i) auto
-    show ?thesis unfolding i j using assms and funpow_non_decreasing [of n f j'] by force
-  qed
-qed
-
-
 subsection {* Basic Definitions and Facts *}
 
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
