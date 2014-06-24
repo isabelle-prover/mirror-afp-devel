@@ -138,20 +138,29 @@ abbreviation "usc c \<equiv> usc' (STR c)"
 
 definition  [code del]: "err' e = undefined"
 abbreviation "err e \<equiv> err' (STR e)"
+abbreviation "errv e v \<equiv> err' (STR e @@ v)"
+
+definition [simp, code del]: "abort' msg f = f ()"
+abbreviation "abort msg f \<equiv> abort' (STR msg) f"
+abbreviation "abortv msg v f \<equiv> abort' (STR msg @@ v) f"
 
 code_printing
   code_module PromelaUtils \<rightharpoonup> (SML) {*
     structure PromelaUtils = struct
       exception UnsupportedConstruct of string
       exception StaticError of string
+      exception RuntimeError of string
       fun warn msg = TextIO.print ("Warning: " ^ msg ^ "\n")
       fun usc  c   = raise (UnsupportedConstruct c)
       fun err  e   = raise (StaticError e)
+      fun abort msg _ = raise (RuntimeError msg)
     end *}
 | constant warn \<rightharpoonup> (SML) "PromelaUtils.warn"
 | constant usc' \<rightharpoonup> (SML) "PromelaUtils.usc"
 | constant err' \<rightharpoonup> (SML) "PromelaUtils.err"
+| constant abort' \<rightharpoonup> (SML) "PromelaUtils.abort"
 code_reserved SML PromelaUtils
+
 
 (*<*)
 ML_val {* @{code hd} *} (* Test code-printing setup. If this fails, the setup is skewed. *)
@@ -159,32 +168,32 @@ ML_val {* @{code hd} *} (* Test code-printing setup. If this fails, the setup is
 
 text {* The preprocessing is done for each type on its own. *}
 
-primrec ppBinOp :: "PromelaAST.binOp \<Rightarrow> binOp"
+primrec ppBinOp :: "AST.binOp \<Rightarrow> binOp"
 where
-  "ppBinOp PromelaAST.BinOpAdd = BinOpAdd"
-| "ppBinOp PromelaAST.BinOpSub = BinOpSub"
-| "ppBinOp PromelaAST.BinOpMul = BinOpMul"
-| "ppBinOp PromelaAST.BinOpDiv = BinOpDiv"
-| "ppBinOp PromelaAST.BinOpMod = BinOpMod"
-| "ppBinOp PromelaAST.BinOpGr = BinOpGr"
-| "ppBinOp PromelaAST.BinOpLe = BinOpLe"
-| "ppBinOp PromelaAST.BinOpGEq = BinOpGEq"
-| "ppBinOp PromelaAST.BinOpLEq = BinOpLEq"
-| "ppBinOp PromelaAST.BinOpEq = BinOpEq"
-| "ppBinOp PromelaAST.BinOpNEq = BinOpNEq"
-| "ppBinOp PromelaAST.BinOpAnd = BinOpAnd"
-| "ppBinOp PromelaAST.BinOpOr = BinOpOr"
-| "ppBinOp PromelaAST.BinOpBitAnd = usc ''BinOpBitAnd''"
-| "ppBinOp PromelaAST.BinOpBitXor = usc ''BinOpBitXor''"
-| "ppBinOp PromelaAST.BinOpBitOr = usc ''BinOpBitOr''"
-| "ppBinOp PromelaAST.BinOpShiftL = usc ''BinOpShiftL''"
-| "ppBinOp PromelaAST.BinOpShiftR = usc ''BinOpShiftR''"
+  "ppBinOp AST.BinOpAdd = BinOpAdd"
+| "ppBinOp AST.BinOpSub = BinOpSub"
+| "ppBinOp AST.BinOpMul = BinOpMul"
+| "ppBinOp AST.BinOpDiv = BinOpDiv"
+| "ppBinOp AST.BinOpMod = BinOpMod"
+| "ppBinOp AST.BinOpGr = BinOpGr"
+| "ppBinOp AST.BinOpLe = BinOpLe"
+| "ppBinOp AST.BinOpGEq = BinOpGEq"
+| "ppBinOp AST.BinOpLEq = BinOpLEq"
+| "ppBinOp AST.BinOpEq = BinOpEq"
+| "ppBinOp AST.BinOpNEq = BinOpNEq"
+| "ppBinOp AST.BinOpAnd = BinOpAnd"
+| "ppBinOp AST.BinOpOr = BinOpOr"
+| "ppBinOp AST.BinOpBitAnd = usc ''BinOpBitAnd''"
+| "ppBinOp AST.BinOpBitXor = usc ''BinOpBitXor''"
+| "ppBinOp AST.BinOpBitOr = usc ''BinOpBitOr''"
+| "ppBinOp AST.BinOpShiftL = usc ''BinOpShiftL''"
+| "ppBinOp AST.BinOpShiftR = usc ''BinOpShiftR''"
 
-primrec ppUnOp :: "PromelaAST.unOp \<Rightarrow> unOp"
+primrec ppUnOp :: "AST.unOp \<Rightarrow> unOp"
 where
-  "ppUnOp PromelaAST.UnOpMinus = UnOpMinus"
-| "ppUnOp PromelaAST.UnOpNeg = UnOpNeg"
-| "ppUnOp PromelaAST.UnOpComp = usc ''UnOpComp''"
+  "ppUnOp AST.UnOpMinus = UnOpMinus"
+| "ppUnOp AST.UnOpNeg = UnOpNeg"
+| "ppUnOp AST.UnOpComp = usc ''UnOpComp''"
 
 text {* The data structure holding all information on variables we found so far. *}
 type_synonym var_data = "
@@ -229,138 +238,138 @@ where
 | "resolveIdx None aliasIdx = aliasIdx"
 | "resolveIdx _   _     = err ''Array subscript used twice (via alias).''"
 
-fun ppExpr :: "var_data \<Rightarrow> PromelaAST.expr \<Rightarrow> expr"
-and ppVarRef :: "var_data \<Rightarrow> PromelaAST.varRef \<Rightarrow> varRef + chanRef"
-and ppRecvArg :: "var_data \<Rightarrow> PromelaAST.recvArg \<Rightarrow> recvArg"
+fun ppExpr :: "var_data \<Rightarrow> AST.expr \<Rightarrow> expr"
+and ppVarRef :: "var_data \<Rightarrow> AST.varRef \<Rightarrow> varRef + chanRef"
+and ppRecvArg :: "var_data \<Rightarrow> AST.recvArg \<Rightarrow> recvArg"
 where
-  "ppVarRef cvm (PromelaAST.VarRef name idx None) = dealWithVar cvm name
-                    (\<lambda>name (_,g) aIdx. let idx = Option.map (ppExpr cvm) idx in 
+  "ppVarRef cvm (AST.VarRef name idx None) = dealWithVar cvm name
+                    (\<lambda>name (_,g) aIdx. let idx = map_option (ppExpr cvm) idx in 
                          Inr (ChanRef (VarRef g name (resolveIdx idx aIdx))))
-                    (\<lambda>name (_,g) aIdx. let idx = Option.map (ppExpr cvm) idx in 
+                    (\<lambda>name (_,g) aIdx. let idx = map_option (ppExpr cvm) idx in 
                          Inl (VarRef g name (resolveIdx idx aIdx)))
                     (\<lambda>_. err ''Variable expected. Got MType.'')"
-| "ppVarRef cvm (PromelaAST.VarRef _ _ (Some _)) = 
+| "ppVarRef cvm (AST.VarRef _ _ (Some _)) = 
      usc ''next operation on variables''"
 
-| "ppExpr cvm PromelaAST.ExprTimeOut = ExprTimeOut"
-| "ppExpr cvm (PromelaAST.ExprConst c) = ExprConst c"
+| "ppExpr cvm AST.ExprTimeOut = ExprTimeOut"
+| "ppExpr cvm (AST.ExprConst c) = ExprConst c"
 
-| "ppExpr cvm (PromelaAST.ExprBinOp bo l r) = 
+| "ppExpr cvm (AST.ExprBinOp bo l r) = 
      ExprBinOp (ppBinOp bo) (ppExpr cvm l) (ppExpr cvm r)"
-| "ppExpr cvm (PromelaAST.ExprUnOp uo e) = 
+| "ppExpr cvm (AST.ExprUnOp uo e) = 
      ExprUnOp (ppUnOp uo) (ppExpr cvm e)"
-| "ppExpr cvm (PromelaAST.ExprCond c t f) = 
+| "ppExpr cvm (AST.ExprCond c t f) = 
      ExprCond (ppExpr cvm c) (ppExpr cvm t) (ppExpr cvm f)"
 
-| "ppExpr cvm (PromelaAST.ExprLen v) = 
+| "ppExpr cvm (AST.ExprLen v) = 
      ExprLen (enforceChan (ppVarRef cvm v))"
-| "ppExpr cvm (PromelaAST.ExprFull v) = 
+| "ppExpr cvm (AST.ExprFull v) = 
      ExprFull (enforceChan (ppVarRef cvm v))"
-| "ppExpr cvm (PromelaAST.ExprEmpty v) = 
+| "ppExpr cvm (AST.ExprEmpty v) = 
      ExprEmpty (enforceChan (ppVarRef cvm v))"
 (* the following two are special constructs in Promela for helping Partial Order Reductions
    we don't have such things (yet), so use simple negation *)
-| "ppExpr cvm (PromelaAST.ExprNFull v) = 
+| "ppExpr cvm (AST.ExprNFull v) = 
      ExprUnOp UnOpNeg (ExprFull (enforceChan (ppVarRef cvm v)))"
-| "ppExpr cvm (PromelaAST.ExprNEmpty v) = 
+| "ppExpr cvm (AST.ExprNEmpty v) = 
      ExprUnOp UnOpNeg (ExprEmpty (enforceChan (ppVarRef cvm v)))"
 
-| "ppExpr cvm (PromelaAST.ExprVarRef v) = (
+| "ppExpr cvm (AST.ExprVarRef v) = (
           let to_exp = \<lambda>_. ExprVarRef (liftChan (ppVarRef cvm v)) in
           case v of 
-              PromelaAST.VarRef name None None \<Rightarrow> 
+              AST.VarRef name None None \<Rightarrow> 
                  dealWithVar cvm name 
                      (\<lambda>_ _ _. to_exp())
                      (\<lambda>_ _ _. to_exp())
                      (\<lambda>i. ExprMConst i name)
              | _ \<Rightarrow> to_exp())"
 
-| "ppExpr cvm (PromelaAST.ExprPoll v es) = 
+| "ppExpr cvm (AST.ExprPoll v es) = 
      ExprPoll (enforceChan (ppVarRef cvm v)) (map (ppRecvArg cvm) es) False"
-| "ppExpr cvm (PromelaAST.ExprRndPoll v es) = 
+| "ppExpr cvm (AST.ExprRndPoll v es) = 
      ExprPoll (enforceChan (ppVarRef cvm v)) (map (ppRecvArg cvm) es) True"
 
-| "ppExpr cvm PromelaAST.ExprNP = usc ''ExprNP''"
-| "ppExpr cvm (PromelaAST.ExprEnabled _) = usc ''ExprEnabled''"
-| "ppExpr cvm (PromelaAST.ExprPC _) = usc ''ExprPC''"
-| "ppExpr cvm (PromelaAST.ExprRemoteRef _ _ _) = usc ''ExprRemoteRef''"
-| "ppExpr cvm (PromelaAST.ExprGetPrio _) = usc ''ExprGetPrio''"
-| "ppExpr cvm (PromelaAST.ExprSetPrio _ _) = usc ''ExprSetPrio''"
+| "ppExpr cvm AST.ExprNP = usc ''ExprNP''"
+| "ppExpr cvm (AST.ExprEnabled _) = usc ''ExprEnabled''"
+| "ppExpr cvm (AST.ExprPC _) = usc ''ExprPC''"
+| "ppExpr cvm (AST.ExprRemoteRef _ _ _) = usc ''ExprRemoteRef''"
+| "ppExpr cvm (AST.ExprGetPrio _) = usc ''ExprGetPrio''"
+| "ppExpr cvm (AST.ExprSetPrio _ _) = usc ''ExprSetPrio''"
 
-| "ppRecvArg cvm (PromelaAST.RecvArgVar v) = (
+| "ppRecvArg cvm (AST.RecvArgVar v) = (
           let to_ra = \<lambda>_. RecvArgVar (liftChan (ppVarRef cvm v)) in
           case v of 
-              PromelaAST.VarRef name None None \<Rightarrow> 
+              AST.VarRef name None None \<Rightarrow> 
                  dealWithVar cvm name 
                      (\<lambda>_ _ _. to_ra())
                      (\<lambda>_ _ _. to_ra())
                      (\<lambda>i. RecvArgMConst i name)
              | _ \<Rightarrow> to_ra())"
-| "ppRecvArg cvm (PromelaAST.RecvArgEval e) = RecvArgEval (ppExpr cvm e)"
-| "ppRecvArg cvm (PromelaAST.RecvArgConst c) = RecvArgConst c"
+| "ppRecvArg cvm (AST.RecvArgEval e) = RecvArgEval (ppExpr cvm e)"
+| "ppRecvArg cvm (AST.RecvArgConst c) = RecvArgConst c"
 
-primrec ppVarType :: "PromelaAST.varType \<Rightarrow> varType" where
-  "ppVarType PromelaAST.VarTypeBit = VTBounded 0 1"
-| "ppVarType PromelaAST.VarTypeBool = VTBounded 0 1"
-| "ppVarType PromelaAST.VarTypeByte = VTBounded 0 255"
-| "ppVarType PromelaAST.VarTypePid = VTBounded 0 255"
-| "ppVarType PromelaAST.VarTypeShort = VTBounded (-(2^15)) ((2^15) - 1)"
-| "ppVarType PromelaAST.VarTypeInt = VTBounded (-(2^31)) ((2^31) - 1)"
-| "ppVarType PromelaAST.VarTypeMType = VTBounded 1 255"
-| "ppVarType PromelaAST.VarTypeChan = VTChan"
-| "ppVarType PromelaAST.VarTypeUnsigned = usc ''VarTypeUnsigned''"
-| "ppVarType (PromelaAST.VarTypeCustom _) = usc ''VarTypeCustom''"
+primrec ppVarType :: "AST.varType \<Rightarrow> varType" where
+  "ppVarType AST.VarTypeBit = VTBounded 0 1"
+| "ppVarType AST.VarTypeBool = VTBounded 0 1"
+| "ppVarType AST.VarTypeByte = VTBounded 0 255"
+| "ppVarType AST.VarTypePid = VTBounded 0 255"
+| "ppVarType AST.VarTypeShort = VTBounded (-(2^15)) ((2^15) - 1)"
+| "ppVarType AST.VarTypeInt = VTBounded (-(2^31)) ((2^31) - 1)"
+| "ppVarType AST.VarTypeMType = VTBounded 1 255"
+| "ppVarType AST.VarTypeChan = VTChan"
+| "ppVarType AST.VarTypeUnsigned = usc ''VarTypeUnsigned''"
+| "ppVarType (AST.VarTypeCustom _) = usc ''VarTypeCustom''"
 
 fun ppVarDecl 
-  :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> PromelaAST.varDecl \<Rightarrow> var_data \<times> varDecl" 
+  :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> AST.varDecl \<Rightarrow> var_data \<times> varDecl" 
 where
   "ppVarDecl (c,v,m,a) (VTBounded l h) g 
-                       (PromelaAST.VarDeclNum name sze init) = (
+                       (AST.VarDeclNum name sze init) = (
      case lm.lookup name v of 
-        Some _ \<Rightarrow> err' (implode (''Duplicate variable '' @ explode name))
+        Some _ \<Rightarrow> errv ''Duplicate variable '' name
        | _ \<Rightarrow> (case lm.lookup name a of 
-               Some _ \<Rightarrow> err' (implode 
-                        (''Variable name clashes with alias: '' @ explode name))
+               Some _ \<Rightarrow> errv
+                         ''Variable name clashes with alias: '' name
                | _ \<Rightarrow> ((c, lm.update name (sze,g) v, m, a), 
                         VarDeclNum l h name sze 
-                          (Option.map (ppExpr (c,v,m,a)) init))))"
-| "ppVarDecl _ _ g (PromelaAST.VarDeclNum name sze init) = 
+                          (map_option (ppExpr (c,v,m,a)) init))))"
+| "ppVarDecl _ _ g (AST.VarDeclNum name sze init) = 
      err ''Assiging num to non-num''"
 
 | "ppVarDecl (c,v,m,a) VTChan g 
-                       (PromelaAST.VarDeclChan name sze cap) = (
-     let cap' = Option.map (apsnd (map ppVarType)) cap in
+                       (AST.VarDeclChan name sze cap) = (
+     let cap' = map_option (apsnd (map ppVarType)) cap in
      case lm.lookup name c of 
-        Some _ \<Rightarrow> err' (implode (''Duplicate variable '' @ explode name))
+        Some _ \<Rightarrow> errv ''Duplicate variable '' name
        | _ \<Rightarrow> (case lm.lookup name a of 
-               Some _ \<Rightarrow> err' (implode 
-                               (''Variable name clashes with alias: '' @ explode name))
+               Some _ \<Rightarrow> errv 
+                         ''Variable name clashes with alias: '' name
               | _ \<Rightarrow> ((lm.update name (sze, g) c, v, m, a), 
                      VarDeclChan name sze cap')))"
-| "ppVarDecl _ _ g (PromelaAST.VarDeclChan name sze init) = 
+| "ppVarDecl _ _ g (AST.VarDeclChan name sze init) = 
      err ''Assiging chan to non-chan''"
 
 | "ppVarDecl (c,v,m,a) (VTBounded l h) g 
-                       (PromelaAST.VarDeclMType name sze init) = (
-     let init = Option.map (\<lambda>mty. 
+                       (AST.VarDeclMType name sze init) = (
+     let init = map_option (\<lambda>mty. 
      case lm.lookup mty m of 
-        None \<Rightarrow> err' (implode (''Unknown MType '' @ explode mty))
+        None \<Rightarrow> errv ''Unknown MType '' mty
       | Some mval \<Rightarrow> ExprMConst mval mty) init in
             case lm.lookup name c of 
-              Some _ \<Rightarrow> err' (implode (''Duplicate variable '' @ explode name))
+              Some _ \<Rightarrow> errv ''Duplicate variable '' name
              | _ \<Rightarrow> (case lm.lookup name a of Some _ 
-                       \<Rightarrow> err' (implode (''Variable name clashes with alias: '' @ explode name))
+                       \<Rightarrow> errv ''Variable name clashes with alias: '' name
              | _ \<Rightarrow> ((c, lm.update name (sze,g) v, m, a), 
                     VarDeclNum l h name sze init)))"
 
-| "ppVarDecl _ _ g (PromelaAST.VarDeclMType name sze init) = 
+| "ppVarDecl _ _ g (AST.VarDeclMType name sze init) = 
      err ''Assiging num to non-num''"
 
-| "ppVarDecl _ _ _ (PromelaAST.VarDeclUnsigned _ _ _) = 
+| "ppVarDecl _ _ _ (AST.VarDeclUnsigned _ _ _) = 
      usc ''VarDeclUnsigned''"
 
 definition ppProcVarDecl 
-  :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> PromelaAST.varDecl \<Rightarrow> var_data \<times> procVarDecl"
+  :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> AST.varDecl \<Rightarrow> var_data \<times> procVarDecl"
 where
   "ppProcVarDecl cvm ty g v = (case ppVarDecl cvm ty g v of
        (cvm, VarDeclNum l h name sze init) \<Rightarrow> (cvm, ProcVarDeclNum l h name sze init)
@@ -368,44 +377,44 @@ where
      | _ \<Rightarrow> err ''Channel initilizations only allowed at the beginning of proctypes.'')"
 
 fun ppProcArg 
-  :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> PromelaAST.varDecl \<Rightarrow> var_data \<times> procArg"
+  :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> AST.varDecl \<Rightarrow> var_data \<times> procArg"
 where
   "ppProcArg (c,v,m,a) (VTBounded l h) g 
-                       (PromelaAST.VarDeclNum name None None) = (
+                       (AST.VarDeclNum name None None) = (
      case lm.lookup name v of 
-        Some _ \<Rightarrow> err' (implode (''Duplicate variable '' @ explode name))
+        Some _ \<Rightarrow> errv ''Duplicate variable '' name
       | _ \<Rightarrow> (case lm.lookup name a of 
-               Some _ \<Rightarrow> err' (implode 
-                          (''Variable name clashes with alias: '' @ explode name))
+               Some _ \<Rightarrow> errv 
+                          ''Variable name clashes with alias: '' name
              | _ \<Rightarrow> ((c, lm.update name (None, g) v, m, a), 
                     ProcArg (VTBounded l h) name)))"
-| "ppProcArg _ _ _ (PromelaAST.VarDeclNum _ _ _) = 
+| "ppProcArg _ _ _ (AST.VarDeclNum _ _ _) = 
      err ''Invalid proctype arguments''"
 
 | "ppProcArg (c,v,m,a) VTChan g 
-                       (PromelaAST.VarDeclChan name None None) = (
+                       (AST.VarDeclChan name None None) = (
      case lm.lookup name c of 
-        Some _ \<Rightarrow> err' (implode (''Duplicate variable '' @ explode name))
+        Some _ \<Rightarrow> errv ''Duplicate variable '' name
       | _ \<Rightarrow> (case lm.lookup name a of 
-               Some _ \<Rightarrow> err' (implode 
-                          (''Variable name clashes with alias: '' @ explode name))
+               Some _ \<Rightarrow> errv
+                          ''Variable name clashes with alias: '' name
              | _ \<Rightarrow> ((lm.update name (None, g) c, v, m, a), ProcArg VTChan name)))"
-| "ppProcArg _ _ _ (PromelaAST.VarDeclChan _ _ _) = 
+| "ppProcArg _ _ _ (AST.VarDeclChan _ _ _) = 
      err ''Invalid proctype arguments''"
 
 | "ppProcArg (c,v,m,a) (VTBounded l h) g 
-                       (PromelaAST.VarDeclMType name None None) = (
+                       (AST.VarDeclMType name None None) = (
      case lm.lookup name v of 
-        Some _ \<Rightarrow> err' (implode (''Duplicate variable '' @ explode name))
+        Some _ \<Rightarrow> errv ''Duplicate variable '' name
        | _ \<Rightarrow> (case lm.lookup name a of 
-               Some _ \<Rightarrow> err' (implode 
-                          (''Variable name clashes with alias: '' @ explode name))
+               Some _ \<Rightarrow> errv
+                          ''Variable name clashes with alias: '' name
               | _ \<Rightarrow> ((c, lm.update name (None, g) v, m, a), 
                      ProcArg (VTBounded l h) name)))"
-| "ppProcArg _ _ _ (PromelaAST.VarDeclMType _ _ _) = 
+| "ppProcArg _ _ _ (AST.VarDeclMType _ _ _) = 
      err ''Invalid proctype arguments''"
 
-| "ppProcArg _ _ _ (PromelaAST.VarDeclUnsigned _ _ _) = usc ''VarDeclUnsigned''"
+| "ppProcArg _ _ _ (AST.VarDeclUnsigned _ _ _) = usc ''VarDeclUnsigned''"
 
 text {* Some preprocessing functions enrich the @{typ var_data} argument and hence return
 a new updated one. When chaining multiple calls to such functions after another, we need to make
@@ -426,23 +435,23 @@ using assms
 by (fastforce intro: foldl_cong split: prod.split)
 
 fun liftDecl where
-  "liftDecl f g cvm (PromelaAST.Decl vis t decls) = (
+  "liftDecl f g cvm (AST.Decl vis t decls) = (
      let _ = the_warn vis ''Visibility in declarations not supported. Ignored.'' in
      let t = ppVarType t in
      cvm_fold (\<lambda>cvm. f cvm t g) cvm decls)"
 
 definition ppDecl 
-  :: "bool \<Rightarrow> var_data \<Rightarrow> PromelaAST.decl \<Rightarrow> var_data \<times> varDecl list" 
+  :: "bool \<Rightarrow> var_data \<Rightarrow> AST.decl \<Rightarrow> var_data \<times> varDecl list" 
 where
   "ppDecl = liftDecl ppVarDecl"
 
 definition ppDeclProc 
-  :: "var_data \<Rightarrow> PromelaAST.decl \<Rightarrow> var_data \<times> procVarDecl list"
+  :: "var_data \<Rightarrow> AST.decl \<Rightarrow> var_data \<times> procVarDecl list"
 where
   "ppDeclProc = liftDecl ppProcVarDecl False"
 
 definition ppDeclProcArg 
-  :: "var_data \<Rightarrow> PromelaAST.decl \<Rightarrow> var_data \<times> procArg list"
+  :: "var_data \<Rightarrow> AST.decl \<Rightarrow> var_data \<times> procArg list"
 where
   "ppDeclProcArg = liftDecl ppProcArg False"
 
@@ -598,86 +607,86 @@ type_synonym inlines =
 type_synonym stmnt_data = 
   " bool \<times> varDecl list \<times> inlines \<times> var_data"
 
-fun ppStep :: "stmnt_data \<Rightarrow> PromelaAST.step \<Rightarrow> stmnt_data * step"
-and ppStmnt :: "stmnt_data \<Rightarrow> PromelaAST.stmnt \<Rightarrow> stmnt_data * stmnt"
+fun ppStep :: "stmnt_data \<Rightarrow> AST.step \<Rightarrow> stmnt_data * step"
+and ppStmnt :: "stmnt_data \<Rightarrow> AST.stmnt \<Rightarrow> stmnt_data * stmnt"
 where
-  "ppStep cvm (PromelaAST.StepStmnt s u) = (
+  "ppStep cvm (AST.StepStmnt s u) = (
      let (cvm', s') = ppStmnt cvm s in
      case u of None \<Rightarrow> (cvm', StepStmnt s' None) 
              | Some u \<Rightarrow> let (cvm'',u') = ppStmnt cvm' u in
                             (cvm'', StepStmnt s' (Some u')))"
-| "ppStep (False, ps, i, cvm) (PromelaAST.StepDecl d) = 
-     map_pair (\<lambda>cvm. (False, ps, i, cvm)) StepDecl (ppDeclProc cvm d)"
-| "ppStep (True, ps, i, cvm) (PromelaAST.StepDecl d) = (
+| "ppStep (False, ps, i, cvm) (AST.StepDecl d) = 
+     map_prod (\<lambda>cvm. (False, ps, i, cvm)) StepDecl (ppDeclProc cvm d)"
+| "ppStep (True, ps, i, cvm) (AST.StepDecl d) = (
              let (cvm', ps') = ppDecl False cvm d 
              in ((True, ps@ps', i, cvm'), StepSkip))"
-| "ppStep (_,cvm) (PromelaAST.StepXR _) = 
+| "ppStep (_,cvm) (AST.StepXR _) = 
      with_warn ''StepXR not supported. Ignored.'' ((False,cvm), StepSkip)"
-| "ppStep (_,cvm) (PromelaAST.StepXS _) = 
+| "ppStep (_,cvm) (AST.StepXS _) = 
      with_warn ''StepXS not supported. Ignored.'' ((False,cvm), StepSkip)"
 
-| "ppStmnt (_,cvm) (PromelaAST.StmntBreak) = ((False,cvm), StmntBreak)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntElse) = ((False,cvm), StmntElse)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntGoTo l) = ((False,cvm), StmntGoTo l)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntLabeled l s) = 
+| "ppStmnt (_,cvm) (AST.StmntBreak) = ((False,cvm), StmntBreak)"
+| "ppStmnt (_,cvm) (AST.StmntElse) = ((False,cvm), StmntElse)"
+| "ppStmnt (_,cvm) (AST.StmntGoTo l) = ((False,cvm), StmntGoTo l)"
+| "ppStmnt (_,cvm) (AST.StmntLabeled l s) = 
      apsnd (StmntLabeled l) (ppStmnt (False,cvm) s)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntCond e) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntCond e) = 
      ((False,ps,i,cvm), StmntCond (ppExpr cvm e))"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntAssert e) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntAssert e) = 
      ((False,ps,i,cvm), StmntAssert (ppExpr cvm e))"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntAssign v e) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntAssign v e) = 
      ((False,ps,i,cvm), StmntAssign (liftChan (ppVarRef cvm v)) (ppExpr cvm e))"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntSend v es) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntSend v es) = 
      ((False,ps,i,cvm), StmntSend (enforceChan (ppVarRef cvm v)) 
                                   (map (ppExpr cvm) es) False)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntSortSend v es) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntSortSend v es) = 
      ((False,ps,i,cvm), StmntSend (enforceChan (ppVarRef cvm v)) 
                                   (map (ppExpr cvm) es) True)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntRecv v rs) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntRecv v rs) = 
      ((False,ps,i,cvm), StmntRecv (enforceChan (ppVarRef cvm v)) 
                                   (map (ppRecvArg cvm) rs) False True)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntRecvX v rs) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntRecvX v rs) = 
      ((False,ps,i,cvm), StmntRecv (enforceChan (ppVarRef cvm v)) 
                                   (map (ppRecvArg cvm) rs) False False)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntRndRecv v rs) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntRndRecv v rs) = 
      ((False,ps,i,cvm), StmntRecv (enforceChan (ppVarRef cvm v)) 
                                   (map (ppRecvArg cvm) rs) True True)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntRndRecvX v rs) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntRndRecvX v rs) = 
      ((False,ps,i,cvm), StmntRecv (enforceChan (ppVarRef cvm v)) 
                                   (map (ppRecvArg cvm) rs) True False)"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntRun n es p) = ( 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntRun n es p) = ( 
      let _ = the_warn p ''Priorities for 'run' not supported. Ignored.'' in
     ((False,ps,i,cvm), StmntRun n (map (ppExpr cvm) es)))"
-| "ppStmnt (_,cvm) (PromelaAST.StmntSeq ss) = 
+| "ppStmnt (_,cvm) (AST.StmntSeq ss) = 
      apsnd StmntSeq (cvm_fold ppStep (False,cvm) ss)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntAtomic ss) = 
+| "ppStmnt (_,cvm) (AST.StmntAtomic ss) = 
      apsnd StmntAtomic (cvm_fold ppStep (False,cvm) ss)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntIf sss) = 
+| "ppStmnt (_,cvm) (AST.StmntIf sss) = 
      apsnd StmntIf (cvm_fold (cvm_fold ppStep) (False,cvm) sss)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntDo sss) = 
+| "ppStmnt (_,cvm) (AST.StmntDo sss) = 
      apsnd StmntDo (cvm_fold (cvm_fold ppStep) (False,cvm) sss)"
 
 (* Replace i++ and i-- by i = i + 1 / i = i - 1 *)
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntIncr v) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntIncr v) = 
      ((False,ps,i,cvm), incr (liftChan (ppVarRef cvm v)))"
-| "ppStmnt (_,ps,i,cvm) (PromelaAST.StmntDecr v) = 
+| "ppStmnt (_,ps,i,cvm) (AST.StmntDecr v) = 
      ((False,ps,i,cvm), decr (liftChan (ppVarRef cvm v)))"
 
-| "ppStmnt (_,cvm) (PromelaAST.StmntPrintF _ _) = 
+| "ppStmnt (_,cvm) (AST.StmntPrintF _ _) = 
      with_warn ''PrintF ignored'' ((False,cvm), StmntSkip)"
-| "ppStmnt (_,cvm) (PromelaAST.StmntPrintM _) = 
+| "ppStmnt (_,cvm) (AST.StmntPrintM _) = 
      with_warn ''PrintM ignored'' ((False,cvm), StmntSkip)"
 
-| "ppStmnt (_,ps,inl,cvm) (PromelaAST.StmntFor 
-                              (PromelaAST.RangeFromTo i lb ub) 
+| "ppStmnt (_,ps,inl,cvm) (AST.StmntFor 
+                              (AST.RangeFromTo i lb ub) 
                               steps) = (
      let 
        i = liftChan (ppVarRef cvm i);
        (lb,ub) = (ppExpr cvm lb, ppExpr cvm ub)
      in
        apsnd (forFromTo i lb ub) (cvm_fold ppStep (False,ps,inl,cvm) steps))"
-| "ppStmnt (_,ps,inl,cvm) (PromelaAST.StmntFor 
-                              (PromelaAST.RangeIn i v) 
+| "ppStmnt (_,ps,inl,cvm) (AST.StmntFor 
+                              (AST.RangeIn i v) 
                               steps) = (
      let
         i = liftChan (ppVarRef cvm i);
@@ -692,23 +701,23 @@ where
               None \<Rightarrow> err ''Iterating over non-array variable.''
             | Some N \<Rightarrow> (cvm', forInArray i N steps)))"
 
-| "ppStmnt (_,ps,inl,cvm) (PromelaAST.StmntSelect 
-                              (PromelaAST.RangeFromTo i lb ub)) = (
+| "ppStmnt (_,ps,inl,cvm) (AST.StmntSelect 
+                              (AST.RangeFromTo i lb ub)) = (
      let
        i = liftChan (ppVarRef cvm i);
        (lb, ub) = (ppExpr cvm lb, ppExpr cvm ub)
      in
        ((False,ps,inl,cvm), select i lb ub))"
-| "ppStmnt (_,cvm) (PromelaAST.StmntSelect (PromelaAST.RangeIn _ _)) = 
+| "ppStmnt (_,cvm) (AST.StmntSelect (AST.RangeIn _ _)) = 
      err ''\"in\" not allowed in select''"
 
-| "ppStmnt (_,ps,inl,cvm) (PromelaAST.StmntCall macro args) = (
+| "ppStmnt (_,ps,inl,cvm) (AST.StmntCall macro args) = (
      let 
        args = map (liftChan \<circ> ppVarRef cvm) args;
        (c,v,m,a) = cvm
      in
        case lm.lookup macro inl of
-        None \<Rightarrow> err' (implode (''Calling unknown macro '' @ explode macro))
+        None \<Rightarrow> errv ''Calling unknown macro '' macro
       | Some (names,sF) \<Rightarrow>
           if length names \<noteq> length args then 
              (err ''Called macro with wrong number of arguments.'') 
@@ -717,13 +726,13 @@ where
              let ((c,v,m,_),steps) = sF (c,v,m,a') in
              ((False,ps,inl,c,v,m,a), StmntSeq steps))"
          
-| "ppStmnt cvm (PromelaAST.StmntDStep _) = usc ''StmntDStep''"
+| "ppStmnt cvm (AST.StmntDStep _) = usc ''StmntDStep''"
 
 fun ppModule 
-  :: "var_data \<times> inlines \<Rightarrow> PromelaAST.module 
+  :: "var_data \<times> inlines \<Rightarrow> AST.module 
       \<Rightarrow> var_data \<times> inlines \<times> (varDecl list + proc + ltl)"
 where
-  "ppModule (cvm, inl) (PromelaAST.ProcType act name args prio prov steps) = (
+  "ppModule (cvm, inl) (AST.ProcType act name args prio prov steps) = (
      let 
         _ = the_warn prio ''Priorities for procs not supported. Ignored.'';
         _ = the_warn prov ''Priov (??) for procs not supported. Ignored.'';
@@ -732,18 +741,18 @@ where
      in
         (cvm, inl, Inr (Inl (ProcType act name (concat args) vars steps))))"
 
-| "ppModule (cvm,inl) (PromelaAST.Init prio steps) = (
+| "ppModule (cvm,inl) (AST.Init prio steps) = (
      let _ = the_warn prio ''Priorities for procs not supported. Ignored.'' in
      let ((_, vars, _, _), steps) = cvm_fold ppStep (True,[],inl,cvm) steps in
      (cvm, inl, Inr (Inl (Init vars steps))))"
 
-| "ppModule (cvm,inl) (PromelaAST.Ltl name formula) = 
+| "ppModule (cvm,inl) (AST.Ltl name formula) = 
      (cvm, inl, Inr (Inr (name, formula)))"
 
-| "ppModule (cvm,inl) (PromelaAST.ModuDecl decl) = 
+| "ppModule (cvm,inl) (AST.ModuDecl decl) = 
      apsnd (\<lambda>ds. (inl,Inl ds)) (ppDecl True cvm decl)"
 
-| "ppModule (cvm,inl) (PromelaAST.MType mtys) = (
+| "ppModule (cvm,inl) (AST.MType mtys) = (
      let (c,v,m,a) = cvm in
      let num = integer_of_nat (lm.size m) + 1 in
      let (m',_) = foldr (\<lambda>mty (m,num). 
@@ -752,20 +761,20 @@ where
      in
          ((c,v,m',a), inl, Inl []))"
 
-| "ppModule (cvm,inl) (PromelaAST.Inline name args steps) = (
+| "ppModule (cvm,inl) (AST.Inline name args steps) = (
      let stepF = (\<lambda>cvm. let ((_,_,_,cvm),steps) = 
                           cvm_fold ppStep (False,[],inl,cvm) steps 
                         in (cvm,steps))
      in let inl = lm.update name (args, stepF) inl
      in (cvm,inl, Inl[]))"
 
-| "ppModule cvm (PromelaAST.DProcType _ _ _ _ _ _) = usc ''DProcType''"
-| "ppModule cvm (PromelaAST.Never _) = usc ''Never''"
-| "ppModule cvm (PromelaAST.Trace _) = usc ''Trace''"
-| "ppModule cvm (PromelaAST.NoTrace _) = usc ''NoTrace''"
-| "ppModule cvm (PromelaAST.TypeDef _ _) = usc ''TypeDef''"
+| "ppModule cvm (AST.DProcType _ _ _ _ _ _) = usc ''DProcType''"
+| "ppModule cvm (AST.Never _) = usc ''Never''"
+| "ppModule cvm (AST.Trace _) = usc ''Trace''"
+| "ppModule cvm (AST.NoTrace _) = usc ''NoTrace''"
+| "ppModule cvm (AST.TypeDef _ _) = usc ''TypeDef''"
 
-definition preprocess :: "PromelaAST.module list \<Rightarrow> promela" where
+definition preprocess :: "AST.module list \<Rightarrow> promela" where
   "preprocess ms = (
      let 
        dflt_vars = [(STR ''_pid'', (None, False)), 
@@ -1074,31 +1083,14 @@ proof -
   with lsl show ?thesis by (simp add: Assoc_List.delete_def Assoc_List.update_def assoc_list.impl_of_inverse impl_of_update_with)
 qed
 
-instantiation assoc_list :: (hashable_uint,hashable_uint) hashable_uint
+instantiation assoc_list :: (hashable,hashable) hashable
 begin
-  definition "def_hashmap_size_uint (_::('a,'b) assoc_list itself) \<equiv> (10 :: nat)"
-  definition [simp]: "hashcode_uint \<equiv> hashcode_uint \<circ> Assoc_List.impl_of"
+  definition "def_hashmap_size (_::('a,'b) assoc_list itself) \<equiv> (10 :: nat)"
+  definition [simp]: "hashcode \<equiv> hashcode \<circ> Assoc_List.impl_of"
   instance 
     apply default
-    apply (simp_all add: def_hashmap_size_uint_assoc_list_def)
+    apply (simp_all add: def_hashmap_size_assoc_list_def)
     done
-end
-
-instantiation assoc_list :: (hashable_uint, hashable_uint) hashable
-begin
-  definition hashcode_assoc_list :: "('a, 'b) assoc_list \<Rightarrow> nat" 
-    where "hashcode_assoc_list \<equiv> hashcode_nat"
-
-  definition bounded_hashcode_assoc_list :: "nat \<Rightarrow> ('a, 'b) assoc_list \<Rightarrow> nat" 
-    where "bounded_hashcode_assoc_list = bounded_hashcode_nat"
-
-  definition def_hashmap_size_assoc_list :: "('a, 'b) assoc_list itself \<Rightarrow> nat" 
-    where "def_hashmap_size_assoc_list \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_assoc_list_def bounded_hashcode_assoc_list_def
-    using hashable_from_hashable_uint by auto
 end
 
 (*
@@ -1176,35 +1168,15 @@ lemma walk_iarray_foldl:
   "walk_iarray f a x = foldl f x (IArray.list_of a)"
 by (cases a) (simp add: walk_iarray_foldl')
 
-instantiation iarray :: (hashable_uint) hashable_uint
+instantiation iarray :: (hashable) hashable
 begin
-  definition [simp]: "hashcode_uint a = foldl (\<lambda>h v. h * 33 + hashcode_uint v) 0 (IArray.list_of a)"
-  definition "def_hashmap_size_uint = (\<lambda>_ :: 'a iarray itself. 10)"
-  instance by default (simp_all add: def_hashmap_size_uint_iarray_def)
+  definition [simp]: "hashcode a = foldl (\<lambda>h v. h * 33 + hashcode v) 0 (IArray.list_of a)"
+  definition "def_hashmap_size = (\<lambda>_ :: 'a iarray itself. 10)"
+  instance by default (simp_all add: def_hashmap_size_iarray_def)
 
-  lemma [code]: "hashcode_uint a = walk_iarray (\<lambda>h v. h * 33 + hashcode_uint v) a 0"
+  lemma [code]: "hashcode a = walk_iarray (\<lambda>h v. h * 33 + hashcode v) a 0"
     by (simp add: walk_iarray_foldl)
 end
-
-instantiation iarray :: (hashable_uint) hashable
-begin
-  definition hashcode_iarray :: "('a) iarray \<Rightarrow> nat" 
-    where "hashcode_iarray \<equiv> hashcode_nat"
-
-  definition bounded_hashcode_iarray :: "nat \<Rightarrow> ('a) iarray \<Rightarrow> nat" 
-    where "bounded_hashcode_iarray = bounded_hashcode_nat"
-
-  definition def_hashmap_size_iarray :: "('a) iarray itself \<Rightarrow> nat" 
-    where "def_hashmap_size_iarray \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_iarray_def bounded_hashcode_iarray_def
-    using hashable_from_hashable_uint by auto
-end
-
-
-
 
 (* Other instantiations for types from Main *)
 instantiation array :: (linorder) linorder
@@ -1249,33 +1221,16 @@ lemma walk_array_foldl:
   "walk_array f a x = foldl f x (list_of_array a)"
 by (cases a) (simp add: walk_array_foldl')
 
-instantiation array :: (hashable_uint) hashable_uint
+(* TODO: Move to array.thy *)
+instantiation array :: (hashable) hashable
 begin
-  definition [simp]: "hashcode_uint a = foldl (\<lambda>h v. h * 33 + hashcode_uint v) 0 (list_of_array a)"
-  definition "def_hashmap_size_uint = (\<lambda>_ :: 'a array itself. 10)"
-  instance by default (simp_all add: def_hashmap_size_uint_array_def)
+  definition [simp]: "hashcode a = foldl (\<lambda>h v. h * 33 + hashcode v) 0 (list_of_array a)"
+  definition "def_hashmap_size = (\<lambda>_ :: 'a array itself. 10)"
+  instance by default (simp_all add: def_hashmap_size_array_def)
 
-  lemma [code]: "hashcode_uint a = walk_array (\<lambda>h v. h * 33 + hashcode_uint v) a 0"
+  lemma [code]: "hashcode a = walk_array (\<lambda>h v. h * 33 + hashcode v) a 0"
     by (simp add: walk_array_foldl)
 end
-
-instantiation array :: (hashable_uint) hashable
-begin
-  definition hashcode_array :: "('a) array \<Rightarrow> nat" 
-    where "hashcode_array \<equiv> hashcode_nat"
-
-  definition bounded_hashcode_array :: "nat \<Rightarrow> ('a) array \<Rightarrow> nat" 
-    where "bounded_hashcode_array = bounded_hashcode_nat"
-
-  definition def_hashmap_size_array :: "('a) array itself \<Rightarrow> nat" 
-    where "def_hashmap_size_array \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_array_def bounded_hashcode_array_def
-    using hashable_from_hashable_uint by auto
-end
-
 
 (*subsection {* Ours *}*)
 
@@ -1283,95 +1238,43 @@ derive linorder varType
 derive linorder variable
 derive linorder channel
 
-instantiation varType :: hashable_uint
-begin
-
-  definition "def_hashmap_size_uint_varType (_::varType itself) \<equiv> (10::nat)"
-  
-  fun hashcode_uint_varType where 
-    "hashcode_uint_varType (VTBounded i1 i2) = hashcode_uint (i1,i2)" |
-    "hashcode_uint_varType VTChan = 23"
-
-  instance by default (simp add: def_hashmap_size_uint_varType_def)
-end
-
 instantiation varType :: hashable
 begin
-  definition hashcode_varType :: "varType \<Rightarrow> nat" 
-    where "hashcode_varType \<equiv> hashcode_nat"
 
-  definition bounded_hashcode_varType :: "nat \<Rightarrow> varType \<Rightarrow> nat" 
-    where "bounded_hashcode_varType = bounded_hashcode_nat"
-
-  definition def_hashmap_size_varType :: "varType itself \<Rightarrow> nat" 
-    where "def_hashmap_size_varType \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_varType_def bounded_hashcode_varType_def
-    using hashable_from_hashable_uint by auto
-end
-
-instantiation variable :: hashable_uint
-begin
+  definition "def_hashmap_size_varType (_::varType itself) \<equiv> (10::nat)"
   
-  definition "def_hashmap_size_uint_variable (_::variable itself) \<equiv> (10::nat)"
+  fun hashcode_varType where 
+    "hashcode_varType (VTBounded i1 i2) = hashcode (i1,i2)" |
+    "hashcode_varType VTChan = 23"
 
-  fun hashcode_uint_variable where 
-    "hashcode_uint_variable (Var i1 i2) = hashcode_uint (i1,i2)" |
-    "hashcode_uint_variable (VArray i1 i2 ia) = hashcode_uint (i1,i2,ia)"
-
-  instance by default (simp add: def_hashmap_size_uint_variable_def)
+  instance by default (simp add: def_hashmap_size_varType_def)
 end
 
 instantiation variable :: hashable
 begin
-  definition hashcode_variable :: "variable \<Rightarrow> nat" 
-    where "hashcode_variable \<equiv> hashcode_nat"
-
-  definition bounded_hashcode_variable :: "nat \<Rightarrow> variable \<Rightarrow> nat" 
-    where "bounded_hashcode_variable = bounded_hashcode_nat"
-
-  definition def_hashmap_size_variable :: "variable itself \<Rightarrow> nat" 
-    where "def_hashmap_size_variable \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_variable_def bounded_hashcode_variable_def
-    using hashable_from_hashable_uint by auto
-end
-
-
-instantiation channel :: hashable_uint
-begin
   
-  definition "def_hashmap_size_uint_channel (_::channel itself) \<equiv> (10::nat)"
+  definition "def_hashmap_size_variable (_::variable itself) \<equiv> (10::nat)"
 
-  fun hashcode_uint_channel where 
-    "hashcode_uint_channel (Channel io vs iss) = hashcode_uint (io, vs, iss)"
-  | "hashcode_uint_channel (HSChannel vs) = 42 * hashcode_uint vs"
-  | "hashcode_uint_channel InvChan = 4711"
+  fun hashcode_variable where 
+    "hashcode_variable (Var i1 i2) = hashcode (i1,i2)" |
+    "hashcode_variable (VArray i1 i2 ia) = hashcode (i1,i2,ia)"
 
-  instance by default (simp add: def_hashmap_size_uint_channel_def)
+  instance by default (simp add: def_hashmap_size_variable_def)
 end
+
 
 instantiation channel :: hashable
 begin
-  definition hashcode_channel :: "channel \<Rightarrow> nat" 
-    where "hashcode_channel \<equiv> hashcode_nat"
+  
+  definition "def_hashmap_size_channel (_::channel itself) \<equiv> (10::nat)"
 
-  definition bounded_hashcode_channel :: "nat \<Rightarrow> channel \<Rightarrow> nat" 
-    where "bounded_hashcode_channel = bounded_hashcode_nat"
+  fun hashcode_channel where 
+    "hashcode_channel (Channel io vs iss) = hashcode (io, vs, iss)"
+  | "hashcode_channel (HSChannel vs) = 42 * hashcode vs"
+  | "hashcode_channel InvChan = 4711"
 
-  definition def_hashmap_size_channel :: "channel itself \<Rightarrow> nat" 
-    where "def_hashmap_size_channel \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_channel_def bounded_hashcode_channel_def
-    using hashable_from_hashable_uint by auto
+  instance by default (simp add: def_hashmap_size_channel_def)
 end
-
 
 function pState2HASH where
   "pState2HASH \<lparr> pid = p, vars = v, pc = c, channels = ch, idx = s, \<dots> = m \<rparr> = (p, v, c, ch, s, m)"
@@ -1390,31 +1293,13 @@ begin
   instance by default (auto simp: pState2HASH_eq)
 end
 
-instantiation pState_ext :: (hashable_uint) hashable_uint
+instantiation pState_ext :: (hashable) hashable
 begin
-  definition "def_hashmap_size_uint_pState_ext (_::'a pState_ext itself) \<equiv> (10::nat)"
-  definition [simp]: "hashcode_uint \<equiv> hashcode_uint \<circ> pState2HASH"
+  definition "def_hashmap_size_pState_ext (_::'a pState_ext itself) \<equiv> (10::nat)"
+  definition [simp]: "hashcode \<equiv> hashcode \<circ> pState2HASH"
 
-  instance by default (simp_all add: def_hashmap_size_uint_pState_ext_def)
+  instance by default (simp_all add: def_hashmap_size_pState_ext_def)
 end
-
-instantiation pState_ext :: (hashable_uint) hashable
-begin
-  definition hashcode_pState_ext :: "('a) pState_ext \<Rightarrow> nat" 
-    where "hashcode_pState_ext \<equiv> hashcode_nat"
-
-  definition bounded_hashcode_pState_ext :: "nat \<Rightarrow> ('a) pState_ext \<Rightarrow> nat" 
-    where "bounded_hashcode_pState_ext = bounded_hashcode_nat"
-
-  definition def_hashmap_size_pState_ext :: "('a) pState_ext itself \<Rightarrow> nat" 
-    where "def_hashmap_size_pState_ext \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_pState_ext_def bounded_hashcode_pState_ext_def
-    using hashable_from_hashable_uint by auto
-end
-
 
 function gState2HASH where
   "gState2HASH \<lparr> gState.vars = v, channels = ch, timeout = t, procs = p, \<dots> = m \<rparr> = (v, ch, t, p, m)"
@@ -1433,29 +1318,13 @@ begin
   instance by default (auto simp: gState2HASH_eq)
 end
 
-instantiation gState_ext :: (hashable_uint) hashable_uint
+instantiation gState_ext :: (hashable) hashable
 begin
-  definition "def_hashmap_size_uint_gState_ext (_::'a gState_ext itself) \<equiv> (10::nat)"
-  definition [simp]: "hashcode_uint \<equiv> hashcode_uint \<circ> gState2HASH"
+  definition "def_hashmap_size_gState_ext (_::'a gState_ext itself) \<equiv> (10::nat)"
+  definition [simp]: "hashcode \<equiv> hashcode \<circ> gState2HASH"
 
-  instance by default (simp_all add: def_hashmap_size_uint_gState_ext_def)
+  instance by default (simp_all add: def_hashmap_size_gState_ext_def)
 end
 
-instantiation gState_ext :: (hashable_uint) hashable
-begin
-  definition hashcode_gState_ext :: "('a) gState_ext \<Rightarrow> nat" 
-    where "hashcode_gState_ext \<equiv> hashcode_nat"
-
-  definition bounded_hashcode_gState_ext :: "nat \<Rightarrow> ('a) gState_ext \<Rightarrow> nat" 
-    where "bounded_hashcode_gState_ext = bounded_hashcode_nat"
-
-  definition def_hashmap_size_gState_ext :: "('a) gState_ext itself \<Rightarrow> nat" 
-    where "def_hashmap_size_gState_ext \<equiv> def_hashmap_size_uint"
-
-  instance
-    apply default
-    unfolding def_hashmap_size_gState_ext_def bounded_hashcode_gState_ext_def
-    using hashable_from_hashable_uint by auto
-end
 (*>*)
 end

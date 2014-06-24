@@ -116,10 +116,10 @@ lemma ht_hash_distinct:
   apply metis
   done
 
-lemma ht_hash_in_dom_in_dom_bounded_hashcode:
+lemma ht_hash_in_dom_in_dom_bounded_hashcode_nat:
   assumes "ht_hash l"
   assumes "k \<in> dom (map_of(concat l))"
-  shows "k \<in> dom (map_of(l!bounded_hashcode (length l) k))"
+  shows "k \<in> dom (map_of(l!bounded_hashcode_nat (length l) k))"
 proof -
   from map_of_concat[OF assms(2)] obtain i 
     where i: "k \<in> dom (map_of (l ! i)) \<and> i < length l" 
@@ -127,51 +127,51 @@ proof -
   thm ht_hash_def
   hence "\<exists>v. (k,v)\<in>set(l!i)" by (auto dest: map_of_SomeD)
   from this obtain v where v: "(k,v)\<in>set(l!i)" by blast
-  from assms(1)[unfolded ht_hash_def] i v bounded_hashcode_bounds 
-  have "bounded_hashcode (length l) k = i"
+  from assms(1)[unfolded ht_hash_def] i v bounded_hashcode_nat_bounds 
+  have "bounded_hashcode_nat (length l) k = i"
     by (metis fst_conv)
   with i show ?thesis by simp
 qed
 
-lemma ht_hash_in_dom_bounded_hashcode_in_dom:
+lemma ht_hash_in_dom_bounded_hashcode_nat_in_dom:
   assumes "ht_hash l"
   assumes "1 < length l"
-  assumes "k \<in> dom (map_of(l!bounded_hashcode (length l) k))"
+  assumes "k \<in> dom (map_of(l!bounded_hashcode_nat (length l) k))"
   shows "k \<in> dom (map_of(concat l))"
-  using map_of_concat'[of k l "bounded_hashcode (length l) k"] 
-    assms(2,3) bounded_hashcode_bounds[of "length l" k]
+  using map_of_concat'[of k l "bounded_hashcode_nat (length l) k"] 
+    assms(2,3) bounded_hashcode_nat_bounds[of "length l" k]
   by simp
 
 
-lemma ht_hash_in_dom_in_dom_bounded_hashcode_eq:
+lemma ht_hash_in_dom_in_dom_bounded_hashcode_nat_eq:
   assumes "ht_hash l"
   assumes "1 < length l"
   shows "(k \<in> dom (map_of(concat l))) 
-  = (k \<in> dom (map_of(l!bounded_hashcode (length l) k)))"
+  = (k \<in> dom (map_of(l!bounded_hashcode_nat (length l) k)))"
   apply rule
-  using ht_hash_in_dom_in_dom_bounded_hashcode[OF assms(1)] 
-    ht_hash_in_dom_bounded_hashcode_in_dom[OF assms]
+  using ht_hash_in_dom_in_dom_bounded_hashcode_nat[OF assms(1)] 
+    ht_hash_in_dom_bounded_hashcode_nat_in_dom[OF assms]
   by simp_all
 
 
-lemma ht_hash_in_dom_i_bounded_hashcode_i:
+lemma ht_hash_in_dom_i_bounded_hashcode_nat_i:
   assumes "ht_hash l"
   assumes "1 < length l"
   assumes "i < length l"
   assumes "k \<in> dom (map_of (l!i))" 
-  shows "i = bounded_hashcode (length l) k"
+  shows "i = bounded_hashcode_nat (length l) k"
   using assms
-  using bounded_hashcode_bounds
+  using bounded_hashcode_nat_bounds
   by (auto simp add: ht_hash_def ht_distinct_def dom_map_of_conv_image_fst)
 
-lemma ht_hash_in_bounded_hashcode_not_i_not_in_dom_i:
+lemma ht_hash_in_bounded_hashcode_nat_not_i_not_in_dom_i:
   assumes "ht_hash l"
   assumes "1 < length l"
   assumes "i < length l"
-  assumes "i \<noteq> bounded_hashcode (length l) k"
+  assumes "i \<noteq> bounded_hashcode_nat (length l) k"
   shows "k \<notin> dom (map_of (l!i))" 
   using assms
-  using bounded_hashcode_bounds
+  using bounded_hashcode_nat_bounds
   by (auto simp add: ht_hash_def ht_distinct_def dom_map_of_conv_image_fst)
 
 lemma ht_hash_ht_distinct_in_dom_unique_value:
@@ -187,18 +187,18 @@ proof -
     \<longrightarrow> v = w"
   proof (intro allI impI, elim conjE)
     case goal1
-    from ht_hash_in_dom_in_dom_bounded_hashcode[OF assms(1,4)] 
-    have a: "k \<in> dom (map_of (l ! bounded_hashcode (length l) k))" .
-    have "\<forall>i. i < length l \<and> i \<noteq> bounded_hashcode (length l) k 
+    from ht_hash_in_dom_in_dom_bounded_hashcode_nat[OF assms(1,4)] 
+    have a: "k \<in> dom (map_of (l ! bounded_hashcode_nat (length l) k))" .
+    have "\<forall>i. i < length l \<and> i \<noteq> bounded_hashcode_nat (length l) k 
       \<longrightarrow> k \<notin> dom(map_of(l!i))"
     proof (intro allI impI, elim conjE)
       case goal1
-      from ht_hash_in_bounded_hashcode_not_i_not_in_dom_i[
+      from ht_hash_in_bounded_hashcode_nat_not_i_not_in_dom_i[
         OF assms(1,3) goal1]
       show ?case .
     qed
     from goal1(1) a 
-    have v: "(k,v) \<in> set (l ! bounded_hashcode (length l) k)"
+    have v: "(k,v) \<in> set (l ! bounded_hashcode_nat (length l) k)"
     proof -
       case goal1
       from goal1(1) have "\<exists>i. i < length l \<and> (k, v) \<in> set (l!i)" 
@@ -207,12 +207,12 @@ proof -
         by blast
       hence "k \<in> dom (map_of (l!i))"
         by (metis (no_types) PairE a assms(1) fst_conv ht_hash_def) 
-      from i ht_hash_in_dom_i_bounded_hashcode_i[OF assms(1,3) _ this] 
-      have "i = bounded_hashcode (length l) k" by simp
+      from i ht_hash_in_dom_i_bounded_hashcode_nat_i[OF assms(1,3) _ this] 
+      have "i = bounded_hashcode_nat (length l) k" by simp
       with i show ?case by simp
     qed
     from goal1(2) a 
-    have w: "(k,w) \<in> set (l ! bounded_hashcode (length l) k)"
+    have w: "(k,w) \<in> set (l ! bounded_hashcode_nat (length l) k)"
     proof -
       case goal1
       from goal1(1) have "\<exists>i. i < length l \<and> (k, w) \<in> set (l!i)" 
@@ -221,13 +221,13 @@ proof -
         by blast
       hence "k \<in> dom (map_of (l!i))"
         by (metis (no_types) PairE a assms(1) fst_conv ht_hash_def) 
-      from i ht_hash_in_dom_i_bounded_hashcode_i[OF assms(1,3) _ this] 
-      have "i = bounded_hashcode (length l) k" by simp
+      from i ht_hash_in_dom_i_bounded_hashcode_nat_i[OF assms(1,3) _ this] 
+      have "i = bounded_hashcode_nat (length l) k" by simp
       with i show ?case by simp
     qed
     from assms(2,3) have 
-      "distinct (map fst (l ! bounded_hashcode (length l) k))"
-      by (simp add: ht_distinct_def bounded_hashcode_bounds)
+      "distinct (map fst (l ! bounded_hashcode_nat (length l) k))"
+      by (simp add: ht_distinct_def bounded_hashcode_nat_bounds)
     from Map.map_of_is_SomeI[OF this v] Map.map_of_is_SomeI[OF this w]
     show "v = w" by simp
   qed    
@@ -240,25 +240,25 @@ lemma ht_hash_ht_distinct_map_of:
   assumes "ht_distinct l"
   assumes "1 < length l"
   shows "map_of (concat l) k 
-  = map_of(l!bounded_hashcode (length l) k) k"
+  = map_of(l!bounded_hashcode_nat (length l) k) k"
 proof (cases "k \<in> dom (map_of(concat l))")
   case False
   hence a: "map_of (concat l) k = None" by auto
-  from ht_hash_in_dom_in_dom_bounded_hashcode_eq[OF assms(1,3)] False 
-  have "k \<notin> dom (map_of (l ! bounded_hashcode (length l) k))" by simp
-  hence "map_of(l!bounded_hashcode (length l) k) k = None" by auto
+  from ht_hash_in_dom_in_dom_bounded_hashcode_nat_eq[OF assms(1,3)] False 
+  have "k \<notin> dom (map_of (l ! bounded_hashcode_nat (length l) k))" by simp
+  hence "map_of(l!bounded_hashcode_nat (length l) k) k = None" by auto
   with a show ?thesis by simp
 next
   case True
   from True obtain y where y: "map_of (concat l) k = Some y" by auto
   hence a: "(k,y) \<in> set (concat l)" by (metis map_of_SomeD)
-  from ht_hash_in_dom_in_dom_bounded_hashcode_eq[OF assms(1,3)] True 
-  have "k \<in> dom (map_of (l ! bounded_hashcode (length l) k))" by simp
+  from ht_hash_in_dom_in_dom_bounded_hashcode_nat_eq[OF assms(1,3)] True 
+  have "k \<in> dom (map_of (l ! bounded_hashcode_nat (length l) k))" by simp
   from this obtain z where 
-    z: "map_of(l!bounded_hashcode (length l) k) k = Some z" by auto
-  hence "(k,z) \<in> set (l ! bounded_hashcode (length l) k)"
+    z: "map_of(l!bounded_hashcode_nat (length l) k) k = Some z" by auto
+  hence "(k,z) \<in> set (l ! bounded_hashcode_nat (length l) k)"
     by (metis map_of_SomeD) 
-  with bounded_hashcode_bounds[OF assms(3), of k] 
+  with bounded_hashcode_nat_bounds[OF assms(3), of k] 
   have b: "(k,z) \<in> set (concat l)" by auto
   from ht_hash_ht_distinct_in_dom_unique_value[OF assms True] a b 
   have "y = z" by auto
@@ -276,17 +276,17 @@ lemma ls_lookup_map_of:
   assumes "ht_hash l"
   assumes "ht_distinct l" 
   assumes "1 < length l" 
-  shows "ls_lookup k (l ! bounded_hashcode (length l) k) 
+  shows "ls_lookup k (l ! bounded_hashcode_nat (length l) k) 
   = map_of (concat l) k"  
 proof -
   from assms(2,3) 
-  have "distinct (map fst (l ! bounded_hashcode (length l) k))" 
-    by (simp add: ht_distinct_def bounded_hashcode_bounds)
+  have "distinct (map fst (l ! bounded_hashcode_nat (length l) k))" 
+    by (simp add: ht_distinct_def bounded_hashcode_nat_bounds)
   from ls_lookup_map_of_pre[OF this] 
-  have "ls_lookup k (l ! bounded_hashcode (length l) k) 
-    = map_of (l ! bounded_hashcode (length l) k) k" .
+  have "ls_lookup k (l ! bounded_hashcode_nat (length l) k) 
+    = map_of (l ! bounded_hashcode_nat (length l) k) k" .
   also from ht_hash_ht_distinct_map_of[OF assms] 
-  have "map_of (l ! bounded_hashcode (length l) k) k 
+  have "map_of (l ! bounded_hashcode_nat (length l) k) k 
     = map_of (concat l) k"
     by simp
   finally show ?thesis .
@@ -326,12 +326,12 @@ proof -
        length_update[OF assms(3)], 
     of k v k]
   have "map_of (concat (abs_update k v l)) k 
-    = map_of ((abs_update k v l) ! bounded_hashcode (length l) k) k"
+    = map_of ((abs_update k v l) ! bounded_hashcode_nat (length l) k) k"
     by (simp add: abs_update_length)
   also have 
     "\<dots> = map_of (fst (ls_update k v 
-                        (l ! bounded_hashcode (length l) k))) k"
-    by (simp add: abs_update_def bounded_hashcode_bounds[OF assms(3)])
+                        (l ! bounded_hashcode_nat (length l) k))) k"
+    by (simp add: abs_update_def bounded_hashcode_nat_bounds[OF assms(3)])
   also have "... = Some v" by (simp add: ls_update_map_of_eq)
   finally show ?thesis .
 qed
@@ -341,8 +341,8 @@ lemma abs_update_map_of_hceq:
   assumes "ht_distinct l"
   assumes "1 < length l"
   assumes "x \<noteq> k"
-  assumes "bounded_hashcode (length l) x 
-    = bounded_hashcode (length l) k"
+  assumes "bounded_hashcode_nat (length l) x 
+    = bounded_hashcode_nat (length l) k"
   shows "map_of (concat (abs_update k v l)) x = map_of (concat l) x"
 proof -
   from ht_hash_ht_distinct_map_of[
@@ -351,14 +351,14 @@ proof -
        length_update[OF assms(3)], 
     of k v x]
   have "map_of (concat (abs_update k v l)) x 
-    = map_of ((abs_update k v l) ! bounded_hashcode (length l) x) x"
+    = map_of ((abs_update k v l) ! bounded_hashcode_nat (length l) x) x"
     by (simp add: abs_update_length)
   also from assms(5) have 
     "\<dots> = map_of (fst (ls_update k v 
-                        (l ! bounded_hashcode (length l) k))) x"
-    by (simp add: abs_update_def bounded_hashcode_bounds[OF assms(3)])
+                        (l ! bounded_hashcode_nat (length l) k))) x"
+    by (simp add: abs_update_def bounded_hashcode_nat_bounds[OF assms(3)])
   also have 
-    "\<dots> = map_of (l ! bounded_hashcode (length l) x) x" 
+    "\<dots> = map_of (l ! bounded_hashcode_nat (length l) x) x" 
     by (simp add: ls_update_map_of_neq[OF assms(4)] assms(5))
   also from ht_hash_ht_distinct_map_of[OF assms(1-3)] have 
     "\<dots> = map_of (concat l) x"
@@ -371,8 +371,8 @@ lemma abs_update_map_of_hcneq:
   assumes "ht_distinct l"
   assumes "1 < length l"
   assumes "x \<noteq> k"
-  assumes "bounded_hashcode (length l) x 
-    \<noteq> bounded_hashcode (length l) k"
+  assumes "bounded_hashcode_nat (length l) x 
+    \<noteq> bounded_hashcode_nat (length l) k"
   shows "map_of (concat (abs_update k v l)) x = map_of (concat l) x"
 proof -
   from ht_hash_ht_distinct_map_of[
@@ -381,11 +381,11 @@ proof -
         length_update[OF assms(3)], 
     of k v x]
   have "map_of (concat (abs_update k v l)) x 
-    = map_of ((abs_update k v l) ! bounded_hashcode (length l) x) x"
+    = map_of ((abs_update k v l) ! bounded_hashcode_nat (length l) x) x"
     by (simp add: abs_update_length)
   also from assms(5) 
-  have "\<dots> = map_of (l ! bounded_hashcode (length l) x) x"
-    by (simp add: abs_update_def bounded_hashcode_bounds[OF assms(3)])
+  have "\<dots> = map_of (l ! bounded_hashcode_nat (length l) x) x"
+    by (simp add: abs_update_def bounded_hashcode_nat_bounds[OF assms(3)])
   also from ht_hash_ht_distinct_map_of[OF assms(1-3)] 
   have "\<dots> = map_of (concat l) x"
     by simp
@@ -400,7 +400,7 @@ lemma abs_update_map_of''':
   assumes "x \<noteq> k"
   shows "map_of (concat (abs_update k v l)) x = map_of (concat l) x"
   apply (cases 
-    "bounded_hashcode (length l) x = bounded_hashcode (length l) k")
+    "bounded_hashcode_nat (length l) x = bounded_hashcode_nat (length l) k")
   by (auto simp add: abs_update_map_of_hceq[OF assms] 
     abs_update_map_of_hcneq[OF assms])
 
@@ -564,45 +564,45 @@ lemma ls_delete_map_of:
 lemma update_ls_delete_map_of: 
   assumes "ht_hash l"
   assumes "ht_distinct l"
-  assumes "ht_hash (l[bounded_hashcode (length l) k 
-  := fst (ls_delete k (l ! bounded_hashcode (length l) k))])"
-  assumes "ht_distinct (l[bounded_hashcode (length l) k 
-  := fst (ls_delete k (l ! bounded_hashcode (length l) k))])"
+  assumes "ht_hash (l[bounded_hashcode_nat (length l) k 
+  := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])"
+  assumes "ht_distinct (l[bounded_hashcode_nat (length l) k 
+  := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])"
   assumes "1 < length l"
-  shows "map_of (concat (l[bounded_hashcode (length l) k 
-    := fst (ls_delete k (l ! bounded_hashcode (length l) k))])) x
+  shows "map_of (concat (l[bounded_hashcode_nat (length l) k 
+    := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])) x
   = ((map_of (concat l)) |` (- {k})) x"
 proof -
-  from assms(2) bounded_hashcode_bounds[OF assms(5)] have 
-    distinct: "distinct (map fst (l ! bounded_hashcode (length l) k))"
+  from assms(2) bounded_hashcode_nat_bounds[OF assms(5)] have 
+    distinct: "distinct (map fst (l ! bounded_hashcode_nat (length l) k))"
     by (auto simp add: ht_distinct_def)
   note id1 = ht_hash_ht_distinct_map_of[OF assms(3,4), simplified, 
     OF assms(5)[simplified], of x]
   note id2 = ht_hash_ht_distinct_map_of[OF assms(1,2,5), of x]
   show ?thesis
   proof (cases 
-      "bounded_hashcode (length l) x = bounded_hashcode (length l) k")
+      "bounded_hashcode_nat (length l) x = bounded_hashcode_nat (length l) k")
     case True
     with id1
-    have "map_of (concat (l[bounded_hashcode (length l) k 
-      := fst (ls_delete k (l ! bounded_hashcode (length l) k))])) x 
+    have "map_of (concat (l[bounded_hashcode_nat (length l) k 
+      := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])) x 
       =
-      map_of (l[bounded_hashcode (length l) k 
-        := fst (ls_delete k (l ! bounded_hashcode (length l) k))] 
-      ! bounded_hashcode (length l) k) x"
+      map_of (l[bounded_hashcode_nat (length l) k 
+        := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))] 
+      ! bounded_hashcode_nat (length l) k) x"
       by simp
     also have 
       "\<dots> = map_of (fst (ls_delete k 
-                          (l ! bounded_hashcode (length l) k))) x"
-      by (simp add: bounded_hashcode_bounds[OF assms(5)])
+                          (l ! bounded_hashcode_nat (length l) k))) x"
+      by (simp add: bounded_hashcode_nat_bounds[OF assms(5)])
     also from ls_delete_map_of[OF distinct] have 
-      "\<dots> = (map_of (l ! bounded_hashcode (length l) k) |` (- {k})) x"
+      "\<dots> = (map_of (l ! bounded_hashcode_nat (length l) k) |` (- {k})) x"
       by simp
     finally show ?thesis
       by (cases "x = k") (simp_all add: id2 True)
   next
     case False
-    with bounded_hashcode_bounds[OF assms(5)] id1 id2[symmetric] 
+    with bounded_hashcode_nat_bounds[OF assms(5)] id1 id2[symmetric] 
     show ?thesis
       by (cases "x = k") simp_all
   qed
@@ -903,8 +903,8 @@ proof (intro allI impI, elim exE)
   next
     assume NE: "ji\<noteq>jj"
     from HM have 
-      "\<forall>x\<in>set (l!ji). bounded_hashcode (length l) (fst x) = ji"
-      "\<forall>x\<in>set (l!jj). bounded_hashcode (length l) (fst x) = jj"
+      "\<forall>x\<in>set (l!ji). bounded_hashcode_nat (length l) (fst x) = ji"
+      "\<forall>x\<in>set (l!jj). bounded_hashcode_nat (length l) (fst x) = jj"
       unfolding is_hashmap'_def is_hashtable_def ht_hash_def
       using JI_LEN JJ_LEN
       by auto
@@ -964,7 +964,7 @@ lemma hm_hashcode_eq:
   assumes "j < length (l!i)"
   assumes "i < length l"
   assumes "h \<Turnstile> is_hashtable l ht"
-  shows "bounded_hashcode (length l) (fst (l!i!j)) = i"
+  shows "bounded_hashcode_nat (length l) (fst (l!i!j)) = i"
   using assms
   unfolding is_hashtable_def ht_hash_def
   apply (cases "l!i!j")
@@ -1021,7 +1021,7 @@ lemma hm_it_next_rule': "l'\<noteq>[] \<Longrightarrow>
   apply sep_auto
 
   apply (cases l, auto) []
-  apply (metis fst_conv imageI)
+  apply (metis SUP_upper fst_image_mp image_mono set_concat)
 
   apply (drule skip_empty_aux, simp_all) []
   defer
@@ -1036,26 +1036,7 @@ lemma hm_it_next_rule': "l'\<noteq>[] \<Longrightarrow>
   apply sep_auto
   apply (auto simp: butlast_append) []
   apply (auto simp: butlast_append) []
-proof -
-  case (goal1 nat _ _ _ aa ba)
-  from `xa\<in>set (take (Suc nat) l)` 
-  obtain i where "i<Suc nat" "xa = l!i"
-    by (auto simp: take_set)
-  moreover with `(aa, ba) \<in> set xa` 
-  have "l!i\<noteq>[]" and "aa\<in>fst`set (l!i)" 
-    apply auto apply force done
-  moreover note `\<forall>i. x < i \<and> i \<le> nat \<longrightarrow> l ! i = []`
-  ultimately have "i \<le> x" by (rule_tac ccontr) auto
-  hence "l!i \<in> set (take (Suc x) l)" using `Suc nat \<le> length l` `x\<le>nat`
-    apply (auto simp: set_conv_nth)
-    apply (rule_tac x=i in exI)
-    apply auto
-    done
-  with `aa\<in>fst\`set (l!i)` have 
-    "aa \<in> fst ` (\<Union>x\<in>set (take (Suc x) l). set x)"
-    by auto
-  with `aa \<notin> fst \` (\<Union>x\<in>set (take (Suc x) l). set x)` show False ..
-qed
+  by (metis Ex_list_of_length Suc_leD concat_take_Suc_app_nth le_neq_implies_less le_trans nat.inject not_less_eq_eq)
 
 subsubsection {* Main Lemmas *}
 

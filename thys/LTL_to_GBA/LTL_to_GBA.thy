@@ -493,7 +493,7 @@ next
       by (cases \<psi>) auto
     have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)" 
       using goal8 by simp+
-    show ?case using goal_assms Q unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms Q unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_nested2)
       case goal1 thus ?case
         by (rule_tac SPEC_rule_param2, rule_tac step) auto
@@ -583,7 +583,7 @@ next
     case (goal2 nm nds)
     have P_x: "?P (n, ns) (nm, nds)" using goal2 by fast
     
-    show ?case unfolding prod_case_unfold `x = (n, ns)`
+    show ?case unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_param2[where P = "?P"])
       case goal1 thus ?case by (rule_tac step)
     next
@@ -737,7 +737,7 @@ next
         case (goal2 nm nds)
           hence P_x: "?P (n, ns) (nm, nds)" by fast
 
-          show ?case unfolding prod_case_unfold
+          show ?case unfolding case_prod_unfold
           proof (rule_tac 
               SPEC_rule_weak[where P = "?P" and Q = "expand_rslt_exist_eq"])
             case goal1 thus ?case 
@@ -778,7 +778,7 @@ next
         let ?x2 = "?x2f r"
 
         assume assm: "(?P ?x1) r"
-        have  "f ?x2 \<le> SPEC (?P (n, ns))" unfolding prod_case_unfold fst_conv
+        have  "f ?x2 \<le> SPEC (?P (n, ns))" unfolding case_prod_unfold fst_conv
         proof(rule_tac SPEC_rule_param2, rule_tac step)
           case (goal1 nm' nds')
             { assume "expand_assm_exist \<xi> (n, ns)"
@@ -790,7 +790,7 @@ next
                   ultimately show ?case using goal9 by auto
               qed auto
               with goal1 have "expand_rslt_exist \<xi> ?x2 (nm', nds')" 
-                unfolding prod_case_unfold fst_conv snd_conv by fast
+                unfolding case_prod_unfold fst_conv snd_conv by fast
               hence "expand_rslt_exist \<xi> (n, ns) (nm', nds')" by (cases r, auto) }
             thus ?case by simp
         qed }
@@ -798,7 +798,7 @@ next
         \<le> SPEC (\<lambda>r. (case r of (nm, nds) => 
             f (?x2f (nm, nds))) \<le> SPEC (?P (n, ns)))" 
         using goal_assms by (rule_tac SPEC_rule) force
-      finally have ?case unfolding prod_case_unfold `x = (n, ns)` by simp }
+      finally have ?case unfolding case_prod_unfold `x = (n, ns)` by simp }
     ultimately show ?case by fast
 qed
 
@@ -1401,7 +1401,7 @@ next
       \<and> expand_rslt_name x r 
       \<and> expand_name_ident (snd r)"
 
-    show ?case using goal_assms QP unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms QP unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
       case goal1 thus ?case 
         by (rule_tac order_trans, rule_tac f_sup, rule_tac expand_name_propag) simp
@@ -1551,7 +1551,7 @@ next
       \<and> expand_rslt_name x r 
       \<and> expand_name_ident (snd r)"
 
-    show ?case using goal_assms Q unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms Q unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
       case goal1 thus ?case by (rule_tac order_trans, 
         rule_tac f_sup, 
@@ -1666,10 +1666,12 @@ begin
 
   lemma create_gba_from_nodes__invar:
     shows "fin_gba (create_gba_from_nodes \<phi> qs)"
+    using [[simproc finite_Collect]]
     apply unfold_locales 
     apply (auto 
       intro!: finite_reachable_restrictedI finite_vimageI subfrmlsn_finite injI
-      simp: create_gba_from_nodes_def)
+      simp: create_gba_from_nodes_def
+      )
     done
 
   sublocale gba!: fin_gba "create_gba_from_nodes \<phi> qs" 
@@ -1771,7 +1773,7 @@ next
     have QP: "?Q (n, ns) \<and> ?P ns" 
       and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" 
       using goal8 by simp+
-    show ?case using goal_assms QP unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms QP unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_nested2)
       case goal1 thus ?case by (rule_tac step) auto
     next
@@ -1821,7 +1823,7 @@ next
     have QP: "?Q (n, ns) \<and> ?P ns" 
       and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" 
       using goal8 by simp+
-    show ?case using goal_assms QP unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms QP unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_nested2)
       case goal1 thus ?case by (rule_tac step) auto
     next
@@ -1944,7 +1946,7 @@ next
     let ?props = "\<lambda>x r. expand_rslt_exist_eq x r 
       \<and> expand_rslt_incoming r \<and> expand_rslt_name x r \<and> expand_name_ident (snd r)"
 
-    show ?case using goal_assms Q unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms Q unfolding case_prod_unfold `x = (n, ns)`
 
     proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
       case goal1 thus ?case
@@ -2145,7 +2147,7 @@ next
     let ?props = "\<lambda>x r. expand_rslt_exist_eq x r 
       \<and> expand_rslt_incoming r \<and> expand_rslt_name x r \<and> expand_name_ident (snd r)"
 
-    show ?case using goal_assms Q unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms Q unfolding case_prod_unfold `x = (n, ns)`
 
     proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
       case goal1 thus ?case
@@ -2336,7 +2338,7 @@ next
     let ?props = "\<lambda>x r. expand_rslt_exist_eq x r 
       \<and> expand_rslt_incoming r \<and> expand_rslt_name x r \<and> expand_name_ident (snd r)"
 
-    show ?case using goal_assms Q unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms Q unfolding case_prod_unfold `x = (n, ns)`
 
     proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
       case goal1 thus ?case
@@ -2474,7 +2476,7 @@ next
       by (cases \<psi>) auto
     have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" 
       using goal8 by simp+
-    show ?case using goal_assms Q unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms Q unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_nested2)
       case goal1 thus ?case 
         by (rule_tac step) (auto 
@@ -2847,7 +2849,7 @@ next
       step: "\<And>x. ?Q x \<and> ?P (snd x) 
       \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))" 
       using goal8 by simp+
-    show ?case using goal_assms QP unfolding prod_case_unfold `x = (n, ns)`
+    show ?case using goal_assms QP unfolding case_prod_unfold `x = (n, ns)`
     proof (rule_tac SPEC_rule_nested2)
       case goal1 thus ?case by (rule_tac step) auto
     next

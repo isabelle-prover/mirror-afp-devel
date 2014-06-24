@@ -255,7 +255,7 @@ proof -
   with A show ?thesis
     unfolding pc_bound_def
     apply -
-    apply (rule min_max.less_supI1)
+    apply (rule max.strict_coboundedI1)
     apply auto
     apply (drule Max_ge[OF finite_max_next_pcs])
     apply simp

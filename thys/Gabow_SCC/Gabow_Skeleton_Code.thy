@@ -72,7 +72,7 @@ lemma node_state_rel_refine[autoref_rules]:
   "(-1,DONE)\<in>node_state_rel"
   "(int,STACK)\<in>nat_rel\<rightarrow>node_state_rel"
   "(\<lambda>i. i<0,is_DONE)\<in>node_state_rel\<rightarrow>bool_rel"
-  "((\<lambda>f g i. if i\<ge>0 then f (nat i) else g),node_state_case)
+  "((\<lambda>f g i. if i\<ge>0 then f (nat i) else g),case_node_state)
     \<in>(nat_rel \<rightarrow> R) \<rightarrow> R \<rightarrow> node_state_rel \<rightarrow> R"
   unfolding node_state_rel_def 
     apply auto [3]

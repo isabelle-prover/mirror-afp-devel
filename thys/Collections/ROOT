@@ -125,6 +125,19 @@ session Collections (AFP) = Refine_Monadic +
       "Userguides/Refine_Monadic_Userguide"
       "Userguides/ICF_Userguide"
 
+  files
+    "document/conclusion.tex"
+    "document/documentation.tex"
+    "document/intro.tex"
+    "document/root.bib"
+    "document/root.tex"
+    "document/root_userguide.bib"
+    "document/root_userguide.tex"
+
+
+session Collections_Examples (AFP) = Collections +
+  options [timeout = 1200]
+
   (* Examples *)
   theories
     "Examples/Examples_Chapter"
@@ -138,7 +151,7 @@ session Collections (AFP) = Refine_Monadic +
     "Examples/ICF/ICF_Examples_Chapter"
     "Examples/ICF/ICF_Examples"
 
-  theories
+  theories [document = false]
     "Examples/ICF/PerformanceTest"
 
   theories [document = false] (* Just in case we forgot something *)

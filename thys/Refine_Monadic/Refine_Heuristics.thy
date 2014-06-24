@@ -152,6 +152,8 @@ lemma prod_rel_iff[refine_hsimp]:
   "((a,b),(a',b'))\<in>\<langle>A,B\<rangle>prod_rel \<longleftrightarrow> (a,a')\<in>A \<and> (b,b')\<in>B"
   by (auto simp: prod_rel_def)
 
+lemmas [refine_hsimp] = prod_rel_id_simp 
+
 lemma option_rel_RELATES[refine_dref_RELATES]: 
   "RELATES Ra \<Longrightarrow> RELATES (\<langle>Ra\<rangle>option_rel)"
   by (simp add: RELATES_def option_rel_def)
@@ -167,6 +169,9 @@ lemma case_option_refine_ext[refine]:
   shows "case_option n f v \<le>\<Down>Rb (case_option n' f' v')"
   using assms
   by (auto split: option.split simp: option_rel_def)
+
+lemmas [refine_hsimp] = option_rel_id_simp
+
 
 lemmas [refine_hsimp] = set_rel_sv set_rel_csv
 

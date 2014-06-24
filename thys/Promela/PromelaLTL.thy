@@ -275,6 +275,7 @@ proof (rule finite_subset)
   
   note gStates_finite[of prog g]
   moreover have "finite {bs. bs_\<alpha> bs \<subseteq> ran (lm.\<alpha> P)}"
+    using [[simproc finite_Collect]]
     apply auto
     apply (intro finite_vimageI)
       apply (simp add: I[unfolded propcs_inv_def])
@@ -325,7 +326,7 @@ Returns:
 
 definition prepare 
   :: "((String.literal \<Rightarrow> String.literal option) \<Rightarrow> propc ltlc)
-      \<Rightarrow> PromelaAST.module list 
+      \<Rightarrow> AST.module list 
       \<Rightarrow> (promela \<times> config) \<times> nat ltlc"
 where 
   "prepare ltlChoose ast = (
@@ -364,8 +365,13 @@ using  prepare_correct'[of ltlChoose ast] assms
 definition printConfig 
   :: "(integer \<Rightarrow> string) \<Rightarrow> promela \<Rightarrow> config option \<Rightarrow> config \<Rightarrow> string" 
 where
-  "printConfig f prom c\<^sub>0 c\<^sub>1 = Promela.printConfig f (fst prom) (Option.map snd c\<^sub>0) (snd c\<^sub>1)"
+  "printConfig f prom c\<^sub>0 c\<^sub>1 = Promela.printConfig f (fst prom) (map_option snd c\<^sub>0) (snd c\<^sub>1)"
 
 export_code nexts_code printConfig prepare checking SML
 
+(* from PromelaDatastructures *)
+hide_const (open) abort abort' abortv 
+                  err err' errv
+                  usc usc'
+                  warn the_warn with_warn
 end

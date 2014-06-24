@@ -195,7 +195,7 @@ definition is_find_ce_algo
 definition gabow_find_ce_code 
   -- "Emptiness check based on Gabow's SCC Algorithm"
   where "gabow_find_ce_code
-  \<equiv> Option.map (Some o lasso_of_prpl) o Gabow_GBG_Code.find_lasso_tr"
+  \<equiv> map_option (Some o lasso_of_prpl) o Gabow_GBG_Code.find_lasso_tr"
 
 lemma gabow_find_ce_code_refine: "is_find_ce_algo 
   (gabow_find_ce_code 
@@ -205,7 +205,7 @@ proof -
     "\<And>gbgi::('a, unit) igbg_impl_scheme. RETURN (gabow_find_ce_code gbgi)
     = (do {
       l \<leftarrow> RETURN (find_lasso_tr gbgi);
-      RETURN (Option.map (Some \<circ> lasso_of_prpl) l)
+      RETURN (map_option (Some \<circ> lasso_of_prpl) l)
     })" by (auto simp: gabow_find_ce_code_def)
 
   show ?thesis
@@ -395,7 +395,7 @@ begin
   concrete_definition (in -) gbav_sys_prod_impl_cava_reorder 
     for eqq Gi Si
     uses cava_inter_impl_loc.vf_prod_impl_aux_cava_reorder[
-    param_fo, standard,unfolded map_concat_map_map_opt]
+    param_fo, unfolded map_concat_map_map_opt]
 
   lemmas [autoref_rules] = 
     gbav_sys_prod_impl_cava_reorder.refine[OF cava_inter_impl_loc_this]
@@ -815,23 +815,50 @@ subsection {* Extraction of SML Code *}
 
 definition "dflt_cfg \<equiv> (CFG_L2B_GERTHS,(),CFG_CE_SCC_GABOW)"
 
-code_identifier 
-  code_module CAVA_Impl_New \<rightharpoonup> (SML) CAVA and (Haskell) CAVA
+export_code (* Cava MC *)
+            cava_bpc cava_promela dflt_cfg CAVA_Impl.CFG_CE_NDFS
+            
+            (* BP *)
+            BoolProgs.print_config ltl_conv chose_prog list_progs
+            BoolProgs_LTL_Conv.CProp BoolProgs_Programs.default_prog 
+            BoolProgs_Programs.keys_of_map
+            BoolProgs_Programs.default_prog BoolProgs_Programs.keys_of_map
+            
+            (* Promela *)
+            printProcesses PromelaLTL.prepare PromelaLTL.printConfig
+            PromelaLTL.CProp PromelaLTL.Ident PromelaLTL.Eq
 
-export_code cava_bpc cava_promela dflt_cfg
-            BoolProgs.print_config ltl_conv chose_prog list_progs (*BP specials*)
-            printProcesses PromelaLTL.prepare PromelaLTL.printConfig (*Promela specials*)
-            frv_export_code
+            (* stat printing *)
+            frv_export_code LTL_to_GBA_impl.create_name_gba_code
+
+            (* Lasso *)
             lasso_v0 lasso_va lasso_reach lasso_cycle
+            
+            (* Arith *)
             nat_of_integer int_of_integer
             integer_of_nat integer_of_int
   checking SML 
 
-export_code cava_bpc cava_promela dflt_cfg
-            BoolProgs.print_config ltl_conv chose_prog list_progs (*BP specials*)
-            printProcesses PromelaLTL.prepare PromelaLTL.printConfig (*Promela specials*)
-            frv_export_code
+export_code (* Cava MC *)
+            cava_bpc cava_promela dflt_cfg CAVA_Impl.CFG_CE_NDFS
+            
+            (* BP *)
+            BoolProgs.print_config ltl_conv chose_prog list_progs
+            BoolProgs_LTL_Conv.CProp BoolProgs_Programs.default_prog 
+            BoolProgs_Programs.keys_of_map
+            BoolProgs_Programs.default_prog BoolProgs_Programs.keys_of_map
+            
+            (* Promela *)
+            printProcesses PromelaLTL.prepare PromelaLTL.printConfig
+            PromelaLTL.CProp PromelaLTL.Ident PromelaLTL.Eq
+
+            (* stat printing *)
+            frv_export_code LTL_to_GBA_impl.create_name_gba_code
+
+            (* Lasso *)
             lasso_v0 lasso_va lasso_reach lasso_cycle
+            
+            (* Arith *)
             nat_of_integer int_of_integer
             integer_of_nat integer_of_int
   in SML 

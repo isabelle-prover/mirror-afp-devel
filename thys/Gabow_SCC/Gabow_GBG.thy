@@ -795,7 +795,7 @@ begin
     show ?thesis
       unfolding find_ce_def find_ce_spec_def select_edge_def select_def
       apply (refine_rcg
-        WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd", standard]
+        WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd" for v0]
         refine_vcg 
       )
       
@@ -804,7 +804,7 @@ begin
       apply (vc_solve
         rec: fgl_invarI fgl_outer_invarI
         intro: invar_from_fgl_invarI outer_invar_from_fgl_invarI
-        dest!: sym[of "collapse a b", standard]
+        dest!: sym[of "collapse a b" for a b]
         simp: collapse_ne
         simp: pE_fin'[OF invar_from_fgl_invarI]
         solve: invar_preserve

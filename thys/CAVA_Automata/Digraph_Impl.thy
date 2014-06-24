@@ -98,7 +98,7 @@ schematic_lemma graph_restrict_impl_aux:
   assumes [autoref_rules]: "(memr, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> bool_rel"
   shows "(?c, op_graph_restrict) \<in> \<langle>R\<rangle>Rsl \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
   unfolding graph_restrict_aimpl[abs_def]
-  apply (autoref (keep_goal, trace))
+  apply (autoref (keep_goal))
   done
 
 schematic_lemma graph_restrict_left_impl_aux:
@@ -221,8 +221,8 @@ lemma [relator_props, simp]:
   unfolding frgv_impl_rel_ext_def by tagged_solver
 
 lemmas [autoref_rules] = gen_frg_refine[where 
-  Rv = "\<langle>Rv\<rangle>list_set_rel" and Re = "\<langle>Rv\<rangle>slg_rel" and ?Rv0.0 = "\<langle>Rv\<rangle>list_set_rel", 
-  standard, folded frgv_impl_rel_ext_def]
+  Rv = "\<langle>Rv\<rangle>list_set_rel" and Re = "\<langle>Rv\<rangle>slg_rel" and ?Rv0.0 = "\<langle>Rv\<rangle>list_set_rel"
+  for Rv, folded frgv_impl_rel_ext_def]
 
 subsubsection {* Implementation with Cfun for Nodes *}
 text {* This implementation allows for the universal node set. *}
@@ -246,8 +246,10 @@ lemma [relator_props, simp]:
   unfolding frg_impl_rel_ext_def by tagged_solver
 
 lemmas [autoref_rules] = gen_frg_refine[where 
-  Rv = "\<langle>Rv\<rangle>fun_set_rel" and Re = "\<langle>Rv\<rangle>slg_rel" and ?Rv0.0 = "\<langle>Rv\<rangle>list_set_rel", 
-  standard, folded frg_impl_rel_ext_def]
+  Rv = "\<langle>Rv\<rangle>fun_set_rel" 
+  and Re = "\<langle>Rv\<rangle>slg_rel" 
+  and ?Rv0.0 = "\<langle>Rv\<rangle>list_set_rel" 
+  for Rv, folded frg_impl_rel_ext_def]
 
 (* HACK: The homgeneity rule heuristics erronously creates a homogeneity rule that
     equalizes Rv and Rv0, out of the frv-implementation, which happens to be the
@@ -507,8 +509,8 @@ qed
 
 schematic_lemma succ_of_list_impl:
   notes [autoref_tyrel] = 
-    ty_REL[where 'a="nat\<rightharpoonup>nat set" and R="\<langle>nat_rel,R\<rangle>iam_map_rel", standard]
-    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>list_set_rel", standard]
+    ty_REL[where 'a="nat\<rightharpoonup>nat set" and R="\<langle>nat_rel,R\<rangle>iam_map_rel" for R]
+    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>list_set_rel"]
 
   shows "(?f::?'c,succ_of_list) \<in> ?R"
   unfolding succ_of_list_def[abs_def]
@@ -516,7 +518,7 @@ schematic_lemma succ_of_list_impl:
   done
 
 concrete_definition succ_of_list_impl uses succ_of_list_impl
-export_code succ_of_list_impl in SML file -
+export_code succ_of_list_impl in SML
 
 lemma succ_of_list_impl_correct: "(succ_of_list_impl,set) \<in> Id \<rightarrow> \<langle>Id\<rangle>slg_rel"
   apply rule

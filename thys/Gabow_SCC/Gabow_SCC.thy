@@ -338,7 +338,7 @@ begin
     show ?thesis
       unfolding compute_SCC_def compute_SCC_spec_def select_edge_def select_def
       apply (refine_rcg
-        WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd", standard]
+        WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd" for v0]
         refine_vcg 
       )
 
@@ -346,7 +346,7 @@ begin
         rec: cscc_invarI cscc_outer_invarI
         solve: cscc_invar_preserve cscc_finI
         intro: invar_from_cscc_invarI outer_invar_from_cscc_invarI
-        dest!: sym[of "pop A", standard]
+        dest!: sym[of "pop A" for A]
         simp: pE_fin'[OF invar_from_cscc_invarI]
       )
       done
@@ -361,11 +361,11 @@ begin
     theorem "compute_SCC \<le> compute_SCC_spec"
       unfolding compute_SCC_def compute_SCC_spec_def select_edge_def select_def
       by (refine_rcg 
-        WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd", standard])
+        WHILEIT_rule[where R="inv_image (abs_wf_rel v0) snd" for v0])
       (vc_solve 
         rec: cscc_invarI cscc_outer_invarI solve: cscc_invar_preserve cscc_finI
         intro: invar_from_cscc_invarI outer_invar_from_cscc_invarI
-        dest!: sym[of "pop A", standard]
+        dest!: sym[of "pop A" for A]
         simp: pE_fin'[OF invar_from_cscc_invarI])
   end
 

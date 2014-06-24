@@ -115,8 +115,7 @@ text {*
     test_hs test_rs test_ls test_ahs test_ias
     test_hs' test_rs' test_ls' test_ahs' test_cg' test_ias'
     test_hs'' test_rs'' test_ls'' test_ahs'' test_cg'' test_ias''
-    in SML 
-    module_name Test
+    checking SML 
     
 
   (*

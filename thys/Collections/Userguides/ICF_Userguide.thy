@@ -6,7 +6,7 @@
 theory ICF_Userguide
 imports 
   "../ICF/Collections"
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "../Lib/Code_Target_ICF"
 begin
 (*>*)
 

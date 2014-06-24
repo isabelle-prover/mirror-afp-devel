@@ -46,7 +46,7 @@ definition ht_size :: "'a list list \<Rightarrow> nat \<Rightarrow> bool" where
 definition ht_hash :: "('k\<Colon>hashable \<times> 'v) list list \<Rightarrow> bool" where
   "ht_hash l 
   \<equiv> \<forall>i<length l. \<forall>x\<in>set (l!i). 
-      bounded_hashcode (length l) (fst x) = i"
+      bounded_hashcode_nat (length l) (fst x) = i"
 
 definition ht_distinct :: "('k \<times> 'v) list list \<Rightarrow> bool" where
   "ht_distinct l \<equiv> \<forall>i<length l. distinct (map fst (l!i))"
@@ -157,7 +157,7 @@ definition ht_lookup
   where
   "ht_lookup x ht = do {
     m \<leftarrow> Array.len (the_array ht);
-    let i = bounded_hashcode m x;
+    let i = bounded_hashcode_nat m x;
     l \<leftarrow> Array.nth (the_array ht) i;
     return (ls_lookup x l)
   }"
@@ -167,7 +167,7 @@ subsubsection {* Complete Correctness *}
 lemma complete_ht_lookup: 
   "<is_hashtable l ht> ht_lookup x ht 
      <\<lambda>r. is_hashtable l ht * 
-        \<up>(r = ls_lookup x (l!(bounded_hashcode (length l) x))) >"
+        \<up>(r = ls_lookup x (l!(bounded_hashcode_nat (length l) x))) >"
   apply (cases ht)
   apply (clarsimp simp: is_hashtable_def)
   apply (simp add: ht_lookup_def)
@@ -176,7 +176,7 @@ lemma complete_ht_lookup:
   apply (rule norm_pre_pure_rule)
   apply (rule bind_rule)
   apply (rule nth_rule)
-  apply (simp add: bounded_hashcode_bounds)
+  apply (simp add: bounded_hashcode_nat_bounds)
   apply (rule norm_pre_pure_rule)
   apply (rule return_cons_rule)
   by simp
@@ -185,10 +185,10 @@ text {* Alternative, more automatic proof *}
 lemma complete_ht_lookup_alt_proof:
   "<is_hashtable l ht> ht_lookup x ht 
     <\<lambda>r. is_hashtable l ht * 
-      \<up>(r = ls_lookup x (l!(bounded_hashcode (length l) x)))>"
+      \<up>(r = ls_lookup x (l!(bounded_hashcode_nat (length l) x)))>"
   unfolding is_hashtable_def ht_lookup_def
   apply (cases ht)
-  apply (sep_auto simp: bounded_hashcode_bounds)
+  apply (sep_auto simp: bounded_hashcode_nat_bounds)
   done
 
 subsection {* Update *}
@@ -208,8 +208,8 @@ definition abs_update
   :: "'k\<Colon>hashable \<Rightarrow> 'v \<Rightarrow> ('k \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list"
   where
   "abs_update k v l = 
-    l[bounded_hashcode (length l) k 
-      := fst (ls_update k v (l ! bounded_hashcode (length l) k))]"
+    l[bounded_hashcode_nat (length l) k 
+      := fst (ls_update k v (l ! bounded_hashcode_nat (length l) k))]"
 
 lemma ls_update_snd_set:
   "snd (ls_update k v l) \<longleftrightarrow> k \<in> set (map fst l)"
@@ -270,7 +270,7 @@ definition ht_upd
   where
   "ht_upd k v ht = do {
       m \<leftarrow> Array.len (the_array ht); 
-      let i = bounded_hashcode m k; 
+      let i = bounded_hashcode_nat m k; 
       l \<leftarrow> Array.nth (the_array ht) i;
       let l = ls_update k v l;
       Array.upd i (fst l) (the_array ht);
@@ -285,7 +285,7 @@ lemma ht_hash_update:
   unfolding ht_hash_def abs_update_def
 proof (intro allI ballI impI, simp)
   case goal1 show ?case
-    proof (cases "i = bounded_hashcode (length ls) k")
+    proof (cases "i = bounded_hashcode_nat (length ls) k")
       case True
       note i = True
       show ?thesis        
@@ -297,16 +297,16 @@ proof (intro allI ballI impI, simp)
         with goal1 i
         have 
           "x \<in> set (fst (ls_update k v 
-                           (ls ! bounded_hashcode (length ls) k)))"
+                           (ls ! bounded_hashcode_nat (length ls) k)))"
           by auto
         with 
           ls_update_fst_set[
-            of k v "ls ! bounded_hashcode (length ls) k"] 
+            of k v "ls ! bounded_hashcode_nat (length ls) k"] 
           False
         have "x \<in> insert (k, v) 
-                    (set (ls ! bounded_hashcode (length ls) k))" 
+                    (set (ls ! bounded_hashcode_nat (length ls) k))" 
           by auto
-        with False have "x \<in> set (ls ! bounded_hashcode (length ls) k)"
+        with False have "x \<in> set (ls ! bounded_hashcode_nat (length ls) k)"
           by auto
         with i goal1 assms[unfolded ht_hash_def] show ?thesis by simp
       qed
@@ -325,10 +325,10 @@ lemma ht_distinct_update:
   unfolding ht_distinct_def abs_update_def
 proof (intro allI impI, simp)
   case goal1 show ?case
-  proof (cases "i = bounded_hashcode (length l) k")
+  proof (cases "i = bounded_hashcode_nat (length l) k")
     case True
     with goal1 assms[unfolded ht_distinct_def]
-    have "distinct (map fst (l ! bounded_hashcode (length l) k))"
+    have "distinct (map fst (l ! bounded_hashcode_nat (length l) k))"
       by simp
     from ls_update_distinct[OF this, of k v] True goal1
     show ?thesis by simp
@@ -392,15 +392,15 @@ lemma complete_ht_upd: "<is_hashtable l ht> ht_upd k v ht
   apply (simp add: Let_def)
   apply (rule bind_rule)
   apply (rule nth_rule)
-  apply (simp add: bounded_hashcode_bounds)
+  apply (simp add: bounded_hashcode_nat_bounds)
   apply (rule norm_pre_pure_rule)
   apply (rule bind_rule)
   apply (rule upd_rule)
-  apply (simp add: bounded_hashcode_bounds)
+  apply (simp add: bounded_hashcode_nat_bounds)
   apply (rule return_cons_rule)
 
   apply (auto 
-    simp add: ht_size_update1 ht_size_update2 bounded_hashcode_bounds
+    simp add: ht_size_update1 ht_size_update2 bounded_hashcode_nat_bounds
               is_hashtable_def ht_hash_update[unfolded abs_update_def]
               ht_distinct_update[unfolded abs_update_def] abs_update_def
   )
@@ -412,7 +412,7 @@ lemma complete_ht_upd_alt_proof:
   unfolding ht_upd_def is_hashtable_def Let_def
   (* TODO: Is this huge simp-step really necessary? *)
   apply (sep_auto
-    simp: ht_size_update1 ht_size_update2 bounded_hashcode_bounds
+    simp: ht_size_update1 ht_size_update2 bounded_hashcode_nat_bounds
               is_hashtable_def ht_hash_update[unfolded abs_update_def]
               ht_distinct_update[unfolded abs_update_def] abs_update_def
     )
@@ -496,7 +496,7 @@ definition ht_delete
   where
   "ht_delete k ht = do {
       m \<leftarrow> Array.len (the_array ht); 
-      let i = bounded_hashcode m k; 
+      let i = bounded_hashcode_nat m k; 
       l \<leftarrow> Array.nth (the_array ht) i;
       let l = ls_delete k l;
       Array.upd i (fst l) (the_array ht);
@@ -510,16 +510,16 @@ subsubsection {* Complete Correctness *}
 lemma ht_hash_delete:
   assumes "ht_hash ls"
   shows "ht_hash (
-    ls[bounded_hashcode (length ls) k 
+    ls[bounded_hashcode_nat (length ls) k 
       := fst (ls_delete k 
-               (ls ! bounded_hashcode (length ls) k)
+               (ls ! bounded_hashcode_nat (length ls) k)
              )
       ]
   )"
   unfolding ht_hash_def
 proof (intro allI ballI impI, simp)
   case goal1 show ?case
-    proof (cases "i = bounded_hashcode (length ls) k")
+    proof (cases "i = bounded_hashcode_nat (length ls) k")
       case True
       note i = True
       show ?thesis        
@@ -531,13 +531,13 @@ proof (intro allI ballI impI, simp)
         with goal1 i
         have 
           "x \<in> set (fst (ls_delete k 
-                          (ls ! bounded_hashcode (length ls) k)))"
+                          (ls ! bounded_hashcode_nat (length ls) k)))"
           by auto
         with 
           ls_delete_fst_set[
-            of k "ls ! bounded_hashcode (length ls) k"] 
+            of k "ls ! bounded_hashcode_nat (length ls) k"] 
           False
-        have "x \<in> (set (ls ! bounded_hashcode (length ls) k))" by auto
+        have "x \<in> (set (ls ! bounded_hashcode_nat (length ls) k))" by auto
         with i goal1 assms[unfolded ht_hash_def] show ?thesis by simp
       qed
     next
@@ -550,15 +550,15 @@ qed
 lemma ht_distinct_delete: 
   assumes "ht_distinct l"
   shows "ht_distinct (
-    l[bounded_hashcode (length l) k 
-      := fst (ls_delete k (l ! bounded_hashcode (length l) k))])"
+    l[bounded_hashcode_nat (length l) k 
+      := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])"
   unfolding ht_distinct_def
 proof (intro allI impI, simp)
   case goal1 show ?case
-  proof (cases "i = bounded_hashcode (length l) k")
+  proof (cases "i = bounded_hashcode_nat (length l) k")
     case True
     with goal1 assms[unfolded ht_distinct_def]
-    have "distinct (map fst (l ! bounded_hashcode (length l) k))"
+    have "distinct (map fst (l ! bounded_hashcode_nat (length l) k))"
       by simp
     from ls_delete_distinct[OF this, of k] True goal1
     show ?thesis by simp
@@ -605,8 +605,8 @@ qed
 
 
 lemma complete_ht_delete: "<is_hashtable l ht> ht_delete k ht 
-  <is_hashtable (l[bounded_hashcode (length l) k 
-    := fst (ls_delete k (l ! bounded_hashcode (length l) k))])>"
+  <is_hashtable (l[bounded_hashcode_nat (length l) k 
+    := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])>"
   unfolding ht_delete_def is_hashtable_def
   apply (rule norm_pre_pure_rule)
   apply (rule bind_rule)
@@ -615,31 +615,31 @@ lemma complete_ht_delete: "<is_hashtable l ht> ht_delete k ht
   apply (simp add: Let_def)
   apply (rule bind_rule)
   apply (rule nth_rule)
-  apply (simp add: bounded_hashcode_bounds)
+  apply (simp add: bounded_hashcode_nat_bounds)
   apply (rule norm_pre_pure_rule)
   apply (rule bind_rule)
   apply (rule upd_rule)
-  apply (simp add: bounded_hashcode_bounds)
+  apply (simp add: bounded_hashcode_nat_bounds)
   apply (rule return_cons_rule)
 
   apply (auto 
-    simp add: ht_size_delete1 ht_size_delete2 bounded_hashcode_bounds
+    simp add: ht_size_delete1 ht_size_delete2 bounded_hashcode_nat_bounds
               is_hashtable_def ht_hash_delete ht_distinct_delete 
               )
 
-  using ht_size_delete1[OF _ bounded_hashcode_bounds[of "length l" k],
+  using ht_size_delete1[OF _ bounded_hashcode_nat_bounds[of "length l" k],
     of "the_size ht"]
   by simp
 
 text {* Alternative, more automatic proof *}
 lemma "<is_hashtable l ht> ht_delete k ht 
-  <is_hashtable (l[bounded_hashcode (length l) 
-    k := fst (ls_delete k (l ! bounded_hashcode (length l) k))])>"
+  <is_hashtable (l[bounded_hashcode_nat (length l) 
+    k := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])>"
   unfolding ht_delete_def is_hashtable_def Let_def
-  using ht_size_delete1[OF _ bounded_hashcode_bounds[of "length l" k],
+  using ht_size_delete1[OF _ bounded_hashcode_nat_bounds[of "length l" k],
     of "the_size ht"]
   apply (sep_auto simp:
-    ht_size_delete1 ht_size_delete2 bounded_hashcode_bounds
+    ht_size_delete1 ht_size_delete2 bounded_hashcode_nat_bounds
     is_hashtable_def ht_hash_delete ht_distinct_delete
     )
   done

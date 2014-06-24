@@ -390,8 +390,7 @@ lemma dres_ne_bot_RECT[rule_format, refine_transfer]:
   apply (intro impI conjI)
   apply simp
   apply (intro impI)
-  apply (erule gfp_cadm_induct[rotated])
-  apply simp
+  apply (erule gfp_cadm_induct[rotated 2])
   apply (intro allI)
   apply (rule A)
   apply simp
@@ -401,9 +400,15 @@ lemma dres_ne_bot_RECT[rule_format, refine_transfer]:
   apply (intro allI)
   apply (drule_tac x=x in point_chainI)
   apply (erule dres_Inf_chain_cases)
-  apply (auto simp: INF_def simp del: Inf_image_eq dest!: subset_singletonD)
-  apply auto
+
+  apply (auto simp: INF_def simp del: Inf_image_eq dest!: subset_singletonD) []
+  apply (auto simp: INF_def simp del: Inf_image_eq) []
+  apply (clarsimp simp: INF_def simp del: Inf_image_eq) []
   apply metis
+
+  apply simp
+
+  apply simp
   done
 
 lemma dres_ne_bot_dWHILEIT[refine_transfer]:

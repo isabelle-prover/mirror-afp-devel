@@ -1173,6 +1173,30 @@ lemma while_eq_nfoldli: "do {
   apply (simp add: WHILET_def)
   done
 
+lemma nfoldli_rule:
+  assumes I0: "I [] l0 \<sigma>0"
+  assumes IS: "\<And>x l1 l2 \<sigma>. \<lbrakk> l0=l1@x#l2; I l1 (x#l2) \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> f x \<sigma> \<le> SPEC (I (l1@[x]) l2)"
+  assumes FNC: "\<And>l1 l2 \<sigma>. \<lbrakk> l0=l1@l2; I l1 l2 \<sigma>; \<not>c \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>"
+  assumes FC: "\<And>\<sigma>. \<lbrakk> I l0 [] \<sigma>; c \<sigma> \<rbrakk> \<Longrightarrow> P \<sigma>"
+  shows "nfoldli l0 c f \<sigma>0 \<le> SPEC P"
+  apply (rule order_trans[OF nfoldli_while[
+    where I="\<lambda>(l2,\<sigma>). \<exists>l1. l0=l1@l2 \<and> I l1 l2 \<sigma>"]])
+  unfolding FOREACH_cond_def FOREACH_body_def
+  apply (refine_rcg WHILEIT_rule[where R="measure (length o fst)"] refine_vcg)
+  apply simp
+  using I0 apply simp
+
+  apply (case_tac a, simp)
+  apply simp
+  apply (elim exE conjE)
+  apply (rule order_trans[OF IS], assumption+)
+  apply auto []
+
+  apply simp
+  apply (elim exE disjE2)
+  using FC apply auto []
+  using FNC apply auto []
+  done
 
 
 (* TODO: Remove --- Hopefully obsolete 
@@ -1334,6 +1358,13 @@ text {*
   @{text "set_to_list"}, @{text "map_to_list"}, @{text "nodes_to_list"}, etc.
 *}
 
+lemma autoref_nfoldli[autoref_rules]:
+  assumes "PREFER single_valued Rb"
+  shows "(nfoldli, nfoldli)
+  \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb \<rightarrow> bool_rel) \<rightarrow> (Ra \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
+  using assms param_nfoldli by simp
+
+
 text {* This constant is a placeholder to be converted to
   custom operations by pattern rules *}
 definition "it_to_sorted_list R s 
@@ -1357,7 +1388,27 @@ text {* Patterns that convert FOREACH-constructs
   to @{text "LIST_FOREACH"}
 *}
 context begin interpretation autoref_syn .
-lemma FOREACH_patterns[autoref_op_pat]: 
+
+lemma FOREACH_patterns[autoref_op_pat]:
+  "FOREACH\<^bsup>I\<^esup> s f \<equiv> FOREACH\<^sub>O\<^sub>C\<^bsup>\<lambda>_ _. True,I\<^esup> s (\<lambda>_. True) f"
+  "FOREACHci I s c f \<equiv> FOREACHoci (\<lambda>_ _. True) I s c f"
+  "FOREACH\<^sub>O\<^sub>C\<^bsup>R,\<Phi>\<^esup> s c f \<equiv> \<lambda>\<sigma>. do {
+    ASSERT (finite s);
+    Autoref_Tagging.OP (LIST_FOREACH \<Phi>) (it_to_sorted_list R s) c f \<sigma>
+  }"
+  "FOREACH s f \<equiv> FOREACHoci (\<lambda>_ _. True) (\<lambda>_ _. True) s (\<lambda>_. True) f"
+  "FOREACHoi R I s f \<equiv> FOREACHoci R I s (\<lambda>_. True) f"
+  "FOREACHc s c f \<equiv> FOREACHoci (\<lambda>_ _. True) (\<lambda>_ _. True) s c f"
+  unfolding 
+    FOREACHoci_by_LIST_FOREACH[abs_def]
+    FOREACHc_def[abs_def] 
+    FOREACH_def[abs_def] 
+    FOREACHci_def[abs_def] 
+    FOREACHi_def[abs_def] 
+    FOREACHoi_def[abs_def] 
+  by simp_all
+
+(*lemma FOREACH_patterns[autoref_op_pat]: 
   "FOREACHoci R \<Phi> s c f \<sigma> \<equiv> do {
     ASSERT (finite s);
     OP (LIST_FOREACH \<Phi>) (it_to_sorted_list R s) c f \<sigma>
@@ -1374,7 +1425,7 @@ lemma FOREACH_patterns[autoref_op_pat]:
     FOREACHci_def[abs_def] 
     FOREACHi_def[abs_def] 
     FOREACHoi_def[abs_def] 
-  by simp_all
+  by simp_all*)
 end
 definition "LIST_FOREACH' tsl c f \<sigma> \<equiv> do {xs \<leftarrow> tsl; nfoldli xs c f \<sigma>}"
 

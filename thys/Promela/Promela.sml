@@ -27,37 +27,6 @@ fun test_bit x n =
 
 end; (* struct Uint *)
 
-(* Test that words can handle numbers between 0 and 3 *)
-val _ = if 3 <= Word.wordSize then () else raise (Fail ("wordSize less than 3"));
-
-structure Uint8 : sig
-  val set_bit : Word8.word -> IntInf.int -> bool -> Word8.word
-  val shiftl : Word8.word -> IntInf.int -> Word8.word
-  val shiftr : Word8.word -> IntInf.int -> Word8.word
-  val shiftr_signed : Word8.word -> IntInf.int -> Word8.word
-  val test_bit : Word8.word -> IntInf.int -> bool
-end = struct
-
-fun set_bit x n b =
-  let val mask = Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word8.orb (x, mask)
-     else Word8.andb (x, Word8.notb mask)
-  end
-
-fun shiftl x n =
-  Word8.<< (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun shiftr x n =
-  Word8.>> (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun shiftr_signed x n =
-  Word8.~>> (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun test_bit x n =
-  Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
-
-end; (* struct Uint8 *)
-
 (* Test that words can handle numbers between 0 and 31 *)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
@@ -378,9 +347,11 @@ end; (*struct Bits_Integer*)
     structure PromelaUtils = struct
       exception UnsupportedConstruct of string
       exception StaticError of string
+      exception RuntimeError of string
       fun warn msg = TextIO.print ("Warning: " ^ msg ^ "\n")
       fun usc  c   = raise (UnsupportedConstruct c)
       fun err  e   = raise (StaticError e)
+      fun abort msg _ = raise (RuntimeError msg)
     end 
 
 
@@ -446,20 +417,18 @@ structure Orderings : sig
   type 'a ord
   val less_eq : 'a ord -> 'a -> 'a -> bool
   val less : 'a ord -> 'a -> 'a -> bool
-  val max : 'a ord -> 'a -> 'a -> 'a
   type 'a preorder
   val ord_preorder : 'a preorder -> 'a ord
   type 'a order
   val preorder_order : 'a order -> 'a preorder
   type 'a linorder
   val order_linorder : 'a linorder -> 'a order
+  val max : 'a ord -> 'a -> 'a -> 'a
 end = struct
 
 type 'a ord = {less_eq : 'a -> 'a -> bool, less : 'a -> 'a -> bool};
 val less_eq = #less_eq : 'a ord -> 'a -> 'a -> bool;
 val less = #less : 'a ord -> 'a -> 'a -> bool;
-
-fun max A_ a b = (if less_eq A_ a b then b else a);
 
 type 'a preorder = {ord_preorder : 'a ord};
 val ord_preorder = #ord_preorder : 'a preorder -> 'a ord;
@@ -470,38 +439,39 @@ val preorder_order = #preorder_order : 'a order -> 'a preorder;
 type 'a linorder = {order_linorder : 'a order};
 val order_linorder = #order_linorder : 'a linorder -> 'a order;
 
+fun max A_ a b = (if less_eq A_ a b then b else a);
+
 end; (*struct Orderings*)
 
 structure Product_Type : sig
-  val fst : 'a * 'b -> 'a
-  val snd : 'a * 'b -> 'b
+  val equal_prod : 'a HOL.equal -> 'b HOL.equal -> ('a * 'b) HOL.equal
+  val equal_unit : unit HOL.equal
   val apfst : ('a -> 'b) -> 'a * 'c -> 'b * 'c
   val apsnd : ('a -> 'b) -> 'c * 'a -> 'c * 'b
-  val map_pair : ('a -> 'b) -> ('c -> 'd) -> 'a * 'c -> 'b * 'd
-  val equal_proda : 'a HOL.equal -> 'b HOL.equal -> 'a * 'b -> 'a * 'b -> bool
-  val equal_prod : 'a HOL.equal -> 'b HOL.equal -> ('a * 'b) HOL.equal
-  val equal_unita : unit -> unit -> bool
-  val equal_unit : unit HOL.equal
+  val map_prod : ('a -> 'b) -> ('c -> 'd) -> 'a * 'c -> 'b * 'd
+  val fst : 'a * 'b -> 'a
+  val snd : 'a * 'b -> 'b
   val equal_bool : bool -> bool -> bool
 end = struct
 
-fun fst (a, b) = a;
-
-fun snd (a, b) = b;
-
-fun apfst f (x, y) = (f x, y);
-
-fun apsnd f (x, y) = (x, f y);
-
-fun map_pair f g (a, b) = (f a, g b);
-
-fun equal_proda A_ B_ (aa, ba) (a, b) = HOL.eq A_ aa a andalso HOL.eq B_ ba b;
+fun equal_proda A_ B_ (x1, x2) (y1, y2) =
+  HOL.eq A_ x1 y1 andalso HOL.eq B_ x2 y2;
 
 fun equal_prod A_ B_ = {equal = equal_proda A_ B_} : ('a * 'b) HOL.equal;
 
 fun equal_unita u v = true;
 
 val equal_unit = {equal = equal_unita} : unit HOL.equal;
+
+fun apfst f (x, y) = (f x, y);
+
+fun apsnd f (x, y) = (x, f y);
+
+fun map_prod f g (a, b) = (f a, g b);
+
+fun fst (x1, x2) = x1;
+
+fun snd (x1, x2) = x2;
 
 fun equal_bool p true = p
   | equal_bool p false = not p
@@ -511,74 +481,50 @@ fun equal_bool p true = p
 end; (*struct Product_Type*)
 
 structure Arith : sig
-  datatype nat = Nat of IntInf.int
+  type nat
   datatype num = One | Bit0 of num | Bit1 of num
+  val one_nata : nat
+  type 'a one
   val integer_of_nat : nat -> IntInf.int
   val plus_nata : nat -> nat -> nat
-  val one_nata : nat
-  val suc : nat -> nat
-  type 'a one
-  val one : 'a one -> 'a
-  val one_nat : nat one
   type 'a plus
-  val plus : 'a plus -> 'a -> 'a -> 'a
-  val plus_nat : nat plus
   type 'a semigroup_add
-  val plus_semigroup_add : 'a semigroup_add -> 'a plus
   type 'a numeral
-  val one_numeral : 'a numeral -> 'a one
-  val semigroup_add_numeral : 'a numeral -> 'a semigroup_add
-  val numeral : 'a numeral -> num -> 'a
+  val numeral_nat : nat numeral
+  val equal_integer : IntInf.int HOL.equal
+  val numeral_integer : IntInf.int numeral
   type 'a times
-  val times : 'a times -> 'a -> 'a -> 'a
   type 'a power
-  val one_power : 'a power -> 'a one
-  val times_power : 'a power -> 'a times
-  val ord_integer : IntInf.int Orderings.ord
+  val power_integer : IntInf.int power
+  val linorder_integer : IntInf.int Orderings.linorder
+  val suc : nat -> nat
   val minus_nat : nat -> nat -> nat
   val equal_nat : nat -> nat -> bool
   val zero_nat : nat
-  val powera : 'a -> ('a -> 'a -> 'a) -> 'a -> nat -> 'a
-  val power : 'a power -> 'a -> nat -> 'a
+  val powera : 'a power -> 'a -> nat -> 'a
   val less_nat : nat -> nat -> bool
-  val semigroup_add_nat : nat semigroup_add
-  val numeral_nat : nat numeral
-  val less_eq_nat : nat -> nat -> bool
-  val one_integera : IntInf.int
-  val one_integer : IntInf.int one
+  val numeral : 'a numeral -> num -> 'a
   val abs_integer : IntInf.int -> IntInf.int
-  val sgn_integer : IntInf.int -> IntInf.int
-  val divmod_integer : IntInf.int -> IntInf.int -> IntInf.int * IntInf.int
+  val nat_of_integer : IntInf.int -> nat
+  val less_eq_nat : nat -> nat -> bool
   val div_integer : IntInf.int -> IntInf.int -> IntInf.int
   val mod_integer : IntInf.int -> IntInf.int -> IntInf.int
-  val plus_integer : IntInf.int plus
-  val equal_integer : IntInf.int HOL.equal
-  val preorder_integer : IntInf.int Orderings.preorder
-  val order_integer : IntInf.int Orderings.order
-  val times_integer : IntInf.int times
-  val power_integer : IntInf.int power
-  val nat_of_integer : IntInf.int -> nat
-  val semigroup_add_integer : IntInf.int semigroup_add
-  val numeral_integer : IntInf.int numeral
-  val linorder_integer : IntInf.int Orderings.linorder
 end = struct
 
 datatype nat = Nat of IntInf.int;
 
 datatype num = One | Bit0 of num | Bit1 of num;
 
-fun integer_of_nat (Nat x) = x;
-
-fun plus_nata m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
-
 val one_nata : nat = Nat (1 : IntInf.int);
-
-fun suc n = plus_nata n one_nata;
 
 type 'a one = {one : 'a};
 val one = #one : 'a one -> 'a;
 
 val one_nat = {one = one_nata} : nat one;
+
+fun integer_of_nat (Nat x) = x;
+
+fun plus_nata m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
 
 type 'a plus = {plus : 'a -> 'a -> 'a};
 val plus = #plus : 'a plus -> 'a -> 'a -> 'a;
@@ -593,6 +539,73 @@ type 'a numeral =
 val one_numeral = #one_numeral : 'a numeral -> 'a one;
 val semigroup_add_numeral = #semigroup_add_numeral :
   'a numeral -> 'a semigroup_add;
+
+val semigroup_add_nat = {plus_semigroup_add = plus_nat} : nat semigroup_add;
+
+val numeral_nat =
+  {one_numeral = one_nat, semigroup_add_numeral = semigroup_add_nat} :
+  nat numeral;
+
+val equal_integer = {equal = (fn a => fn b => ((a : IntInf.int) = b))} :
+  IntInf.int HOL.equal;
+
+val one_integera : IntInf.int = (1 : IntInf.int);
+
+val one_integer = {one = one_integera} : IntInf.int one;
+
+val plus_integer = {plus = (fn a => fn b => IntInf.+ (a, b))} : IntInf.int plus;
+
+val semigroup_add_integer = {plus_semigroup_add = plus_integer} :
+  IntInf.int semigroup_add;
+
+val numeral_integer =
+  {one_numeral = one_integer, semigroup_add_numeral = semigroup_add_integer} :
+  IntInf.int numeral;
+
+type 'a times = {times : 'a -> 'a -> 'a};
+val times = #times : 'a times -> 'a -> 'a -> 'a;
+
+type 'a power = {one_power : 'a one, times_power : 'a times};
+val one_power = #one_power : 'a power -> 'a one;
+val times_power = #times_power : 'a power -> 'a times;
+
+val times_integer = {times = (fn a => fn b => IntInf.* (a, b))} :
+  IntInf.int times;
+
+val power_integer = {one_power = one_integer, times_power = times_integer} :
+  IntInf.int power;
+
+val ord_integer =
+  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
+    less = (fn a => fn b => IntInf.< (a, b))}
+  : IntInf.int Orderings.ord;
+
+val preorder_integer = {ord_preorder = ord_integer} :
+  IntInf.int Orderings.preorder;
+
+val order_integer = {preorder_order = preorder_integer} :
+  IntInf.int Orderings.order;
+
+val linorder_integer = {order_linorder = order_integer} :
+  IntInf.int Orderings.linorder;
+
+fun suc n = plus_nata n one_nata;
+
+fun minus_nat m n =
+  Nat (Orderings.max ord_integer 0
+        (IntInf.- (integer_of_nat m, integer_of_nat n)));
+
+fun equal_nat m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
+
+val zero_nat : nat = Nat 0;
+
+fun power one times a n =
+  (if equal_nat n zero_nat then one
+    else times a (power one times a (minus_nat n one_nata)));
+
+fun powera A_ = power (one (one_power A_)) (times (times_power A_));
+
+fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
 
 fun numeral A_ (Bit1 n) =
   let
@@ -610,52 +623,11 @@ fun numeral A_ (Bit1 n) =
     end
   | numeral A_ One = one (one_numeral A_);
 
-type 'a times = {times : 'a -> 'a -> 'a};
-val times = #times : 'a times -> 'a -> 'a -> 'a;
-
-type 'a power = {one_power : 'a one, times_power : 'a times};
-val one_power = #one_power : 'a power -> 'a one;
-val times_power = #times_power : 'a power -> 'a times;
-
-val ord_integer =
-  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
-    less = (fn a => fn b => IntInf.< (a, b))}
-  : IntInf.int Orderings.ord;
-
-fun minus_nat m n =
-  Nat (Orderings.max ord_integer 0
-        (IntInf.- (integer_of_nat m, integer_of_nat n)));
-
-fun equal_nat m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
-
-val zero_nat : nat = Nat 0;
-
-fun powera one times a n =
-  (if equal_nat n zero_nat then one
-    else times a (powera one times a (minus_nat n one_nata)));
-
-fun power A_ = powera (one (one_power A_)) (times (times_power A_));
-
-fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
-
-val semigroup_add_nat = {plus_semigroup_add = plus_nat} : nat semigroup_add;
-
-val numeral_nat =
-  {one_numeral = one_nat, semigroup_add_numeral = semigroup_add_nat} :
-  nat numeral;
-
-fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
-
-val one_integera : IntInf.int = (1 : IntInf.int);
-
-val one_integer = {one = one_integera} : IntInf.int one;
-
-fun abs_integer k = (if IntInf.< (k, 0) then IntInf.~ k else k);
-
 fun sgn_integer k =
   (if ((k : IntInf.int) = 0) then 0
-    else (if IntInf.< (k, 0) then IntInf.~ (1 : IntInf.int)
-           else (1 : IntInf.int)));
+    else (if IntInf.< (k, 0) then (~1 : IntInf.int) else (1 : IntInf.int)));
+
+fun abs_integer k = (if IntInf.< (k, 0) then IntInf.~ k else k);
 
 fun divmod_integer k l =
   (if ((k : IntInf.int) = 0) then (0, 0)
@@ -673,45 +645,19 @@ fun divmod_integer k l =
                                       IntInf.- (abs_integer l, s)))
                            end)));
 
+fun nat_of_integer k = Nat (Orderings.max ord_integer 0 k);
+
+fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
+
 fun div_integer k l = Product_Type.fst (divmod_integer k l);
 
 fun mod_integer k l = Product_Type.snd (divmod_integer k l);
 
-val plus_integer = {plus = (fn a => fn b => IntInf.+ (a, b))} : IntInf.int plus;
-
-val equal_integer = {equal = (fn a => fn b => ((a : IntInf.int) = b))} :
-  IntInf.int HOL.equal;
-
-val preorder_integer = {ord_preorder = ord_integer} :
-  IntInf.int Orderings.preorder;
-
-val order_integer = {preorder_order = preorder_integer} :
-  IntInf.int Orderings.order;
-
-val times_integer = {times = (fn a => fn b => IntInf.* (a, b))} :
-  IntInf.int times;
-
-val power_integer = {one_power = one_integer, times_power = times_integer} :
-  IntInf.int power;
-
-fun nat_of_integer k = Nat (Orderings.max ord_integer 0 k);
-
-val semigroup_add_integer = {plus_semigroup_add = plus_integer} :
-  IntInf.int semigroup_add;
-
-val numeral_integer =
-  {one_numeral = one_integer, semigroup_add_numeral = semigroup_add_integer} :
-  IntInf.int numeral;
-
-val linorder_integer = {order_linorder = order_integer} :
-  IntInf.int Orderings.linorder;
-
 end; (*struct Arith*)
 
 structure List : sig
-  val hd : 'a list -> 'a
-  val tl : 'a list -> 'a list
-  val map : ('a -> 'b) -> 'a list -> 'b list
+  val equal_lista : 'a HOL.equal -> 'a list -> 'a list -> bool
+  val equal_list : 'a HOL.equal -> ('a list) HOL.equal
   val nth : 'a list -> Arith.nat -> 'a
   val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
   val rev : 'a list -> 'a list
@@ -727,24 +673,24 @@ structure List : sig
   val member : 'a HOL.equal -> 'a list -> 'a -> bool
   val insert : 'a HOL.equal -> 'a -> 'a list -> 'a list
   val butlast : 'a list -> 'a list
+  val hd : 'a list -> 'a
+  val tl : 'a list -> 'a list
+  val map : ('a -> 'b) -> 'a list -> 'b list
   val enumerate : Arith.nat -> 'a list -> (Arith.nat * 'a) list
-  val equal_lista : 'a HOL.equal -> 'a list -> 'a list -> bool
-  val equal_list : 'a HOL.equal -> ('a list) HOL.equal
   val replicate : Arith.nat -> 'a -> 'a list
-  val gen_length : Arith.nat -> 'a list -> Arith.nat
+  val list_update : 'a list -> Arith.nat -> 'a -> 'a list
   val size_list : 'a list -> Arith.nat
   val insort_key :
     'b Orderings.linorder -> ('a -> 'b) -> 'a -> 'a list -> 'a list
-  val list_update : 'a list -> Arith.nat -> 'a -> 'a list
 end = struct
 
-fun hd (x :: xs) = x;
+fun equal_lista A_ [] (x21 :: x22) = false
+  | equal_lista A_ (x21 :: x22) [] = false
+  | equal_lista A_ (x21 :: x22) (y21 :: y22) =
+    HOL.eq A_ x21 y21 andalso equal_lista A_ x22 y22
+  | equal_lista A_ [] [] = true;
 
-fun tl [] = []
-  | tl (x :: xs) = xs;
-
-fun map f [] = []
-  | map f (x :: xs) = f x :: map f xs;
+fun equal_list A_ = {equal = equal_lista A_} : ('a list) HOL.equal;
 
 fun nth (x :: xs) n =
   (if Arith.equal_nat n Arith.zero_nat then x
@@ -788,16 +734,16 @@ fun insert A_ x xs = (if member A_ xs x then xs else x :: xs);
 fun butlast [] = []
   | butlast (x :: xs) = (if null xs then [] else x :: butlast xs);
 
+fun hd (x21 :: x22) = x21;
+
+fun tl [] = []
+  | tl (x21 :: x22) = x22;
+
+fun map fi [] = []
+  | map fi (x21a :: x22) = fi x21a :: map fi x22;
+
 fun enumerate n (x :: xs) = (n, x) :: enumerate (Arith.suc n) xs
   | enumerate n [] = [];
-
-fun equal_lista A_ (a :: lista) [] = false
-  | equal_lista A_ [] (a :: lista) = false
-  | equal_lista A_ (aa :: listaa) (a :: lista) =
-    HOL.eq A_ aa a andalso equal_lista A_ listaa lista
-  | equal_lista A_ [] [] = true;
-
-fun equal_list A_ = {equal = equal_lista A_} : ('a list) HOL.equal;
 
 fun replicate n x =
   (if Arith.equal_nat n Arith.zero_nat then []
@@ -805,6 +751,11 @@ fun replicate n x =
 
 fun gen_length n (x :: xs) = gen_length (Arith.suc n) xs
   | gen_length n [] = n;
+
+fun list_update [] i y = []
+  | list_update (x :: xs) i y =
+    (if Arith.equal_nat i Arith.zero_nat then y :: xs
+      else x :: list_update xs (Arith.minus_nat i Arith.one_nata) y);
 
 fun size_list x = gen_length Arith.zero_nat x;
 
@@ -817,15 +768,10 @@ fun insort_key B_ f x [] = [x]
           (f x) (f y)
       then x :: y :: ys else y :: insort_key B_ f x ys);
 
-fun list_update [] i y = []
-  | list_update (x :: xs) i y =
-    (if Arith.equal_nat i Arith.zero_nat then y :: xs
-      else x :: list_update xs (Arith.minus_nat i Arith.one_nata) y);
-
 end; (*struct List*)
 
 structure Dlist : sig
-  datatype 'a dlist = Dlist of 'a list
+  type 'a dlist
   val empty : 'a dlist
   val list_of_dlist : 'a dlist -> 'a list
   val insert : 'a HOL.equal -> 'a -> 'a dlist -> 'a dlist
@@ -870,18 +816,18 @@ fun equal_iarray A_ asa bs = List.equal_lista A_ (list_of asa) (list_of bs);
 end; (*struct IArray*)
 
 structure Option : sig
-  val map : ('a -> 'b) -> 'a option -> 'b option
-  val the : 'a option -> 'a
   val is_none : 'a option -> bool
+  val the : 'a option -> 'a
+  val map_option : ('a -> 'b) -> 'a option -> 'b option
 end = struct
-
-fun map f (SOME x) = SOME (f x)
-  | map f NONE = NONE;
-
-fun the (SOME x) = x;
 
 fun is_none (SOME x) = false
   | is_none NONE = true;
+
+fun the (SOME x2) = x2;
+
+fun map_option fi NONE = NONE
+  | map_option fi (SOME x2a) = SOME (fi x2a);
 
 end; (*struct Option*)
 
@@ -915,15 +861,6 @@ fun the_res (Refine_Det.DRETURN x) = x;
 end; (*struct Refine_Transfer*)
 
 structure List_lexord : sig
-  val less_eq_list :
-    'a HOL.equal * 'a Orderings.order -> 'a list -> 'a list -> bool
-  val less_list :
-    'a HOL.equal * 'a Orderings.order -> 'a list -> 'a list -> bool
-  val ord_list : 'a HOL.equal * 'a Orderings.order -> ('a list) Orderings.ord
-  val preorder_list :
-    'a HOL.equal * 'a Orderings.order -> ('a list) Orderings.preorder
-  val order_list :
-    'a HOL.equal * 'a Orderings.order -> ('a list) Orderings.order
   val linorder_list :
     'a HOL.equal * 'a Orderings.linorder -> ('a list) Orderings.linorder
 end = struct
@@ -969,8 +906,6 @@ end; (*struct Dlist_add*)
 
 structure ListSetImpl : sig
   val g_sng_ls_basic_ops : 'a HOL.equal -> 'a -> 'a Dlist.dlist
-  val iteratei_bset_op_list_it_ls_basic_ops :
-    'a Dlist.dlist -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
   val g_union_ls_basic_ops :
     'a HOL.equal -> 'a Dlist.dlist -> 'a Dlist.dlist -> 'a Dlist.dlist
   val g_isEmpty_ls_basic_ops : 'a Dlist.dlist -> bool
@@ -990,15 +925,9 @@ fun g_isEmpty_ls_basic_ops s =
 end; (*struct ListSetImpl*)
 
 structure Assoc_List : sig
-  datatype ('a, 'b) assoc_list = Assoc_List of ('a * 'b) list
+  type ('b, 'a) assoc_list
   val empty : ('a, 'b) assoc_list
-  val impl_of : ('a, 'b) assoc_list -> ('a * 'b) list
   val lookup : 'a HOL.equal -> ('a, 'b) assoc_list -> 'a -> 'b option
-  val update_with_aux :
-    'b HOL.equal -> 'a -> 'b -> ('a -> 'a) -> ('b * 'a) list -> ('b * 'a) list
-  val update_with :
-    'a HOL.equal ->
-      'b -> 'a -> ('b -> 'b) -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
   val update :
     'a HOL.equal -> 'a -> 'b -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
   val iteratei :
@@ -1008,7 +937,7 @@ structure Assoc_List : sig
       ('a, 'b) assoc_list -> ('a, 'b) assoc_list -> bool
 end = struct
 
-datatype ('a, 'b) assoc_list = Assoc_List of ('a * 'b) list;
+datatype ('b, 'a) assoc_list = Assoc_List of ('b * 'a) list;
 
 val empty : ('a, 'b) assoc_list = Assoc_List [];
 
@@ -1036,9 +965,6 @@ end; (*struct Assoc_List*)
 structure ListMapImpl : sig
   val g_sng_lm_basic_ops :
     'a HOL.equal -> 'a -> 'b -> ('a, 'b) Assoc_List.assoc_list
-  val iteratei_bmap_op_list_it_lm_basic_ops :
-    ('a, 'b) Assoc_List.assoc_list ->
-      ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
   val g_size_lm_basic_ops : ('a, 'b) Assoc_List.assoc_list -> Arith.nat
   val g_list_to_map_lm_basic_ops :
     'a HOL.equal -> ('a * 'b) list -> ('a, 'b) Assoc_List.assoc_list
@@ -1187,682 +1113,147 @@ datatype ('a, 'b) sum = Inl of 'a | Inr of 'b;
 end; (*struct Sum_Type*)
 
 structure Stringa : sig
+  val equal_literal : string HOL.equal
   datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
     Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC |
     NibbleD | NibbleE | NibbleF
-  val equal_literal : string HOL.equal
 end = struct
+
+val equal_literal = {equal = (fn a => fn b => ((a : string) = b))} :
+  string HOL.equal;
 
 datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
   Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC | NibbleD
   | NibbleE | NibbleF;
 
-val equal_literal = {equal = (fn a => fn b => ((a : string) = b))} :
-  string HOL.equal;
-
 end; (*struct Stringa*)
 
 structure Promela : sig
-  datatype edgeAtomic = NonAtomic | Atomic | InAtomic
-  datatype binOp = BinOpAdd | BinOpSub | BinOpMul | BinOpDiv | BinOpMod |
-    BinOpGr | BinOpLe | BinOpGEq | BinOpLEq | BinOpEq | BinOpNEq | BinOpAnd |
-    BinOpOr
-  datatype unOp = UnOpMinus | UnOpNeg
-  datatype expr = ExprBinOp of binOp * expr * expr | ExprUnOp of unOp * expr |
-    ExprCond of expr * expr * expr | ExprLen of chanRef | ExprVarRef of varRef |
-    ExprConst of IntInf.int | ExprMConst of IntInf.int * string | ExprTimeOut |
-    ExprFull of chanRef | ExprEmpty of chanRef |
-    ExprPoll of chanRef * recvArg list * bool
-  and varRef = VarRef of bool * string * expr option
-  and chanRef = ChanRef of varRef
-  and recvArg = RecvArgVar of varRef | RecvArgEval of expr |
-    RecvArgConst of IntInf.int | RecvArgMConst of IntInf.int * string
-  datatype procVarDecl =
-    ProcVarDeclNum of
-      IntInf.int * IntInf.int * string * IntInf.int option * expr option
-    | ProcVarDeclChan of string * IntInf.int option
-  datatype edgeEffect = EEEnd | EEId | EEGoto | EEAssert of expr |
-    EEAssign of varRef * expr | EEDecl of procVarDecl |
-    EERun of string * expr list | EESend of chanRef * expr list * bool |
-    EERecv of chanRef * recvArg list * bool * bool
-  datatype edgeIndex = Index of Arith.nat |
-    LabelJump of string * Arith.nat option
-  datatype edgeCond = ECElse | ECTrue | ECFalse | ECExpr of expr |
-    ECRun of string | ECSend of chanRef |
-    ECRecv of chanRef * recvArg list * bool
-  datatype 'a edge_ext =
-    Edge_ext of edgeCond * edgeEffect * edgeIndex * IntInf.int * edgeAtomic * 'a
-  val skip :
-    'a * (IntInf.int * (Arith.nat * (edgeIndex * 'b))) ->
-      (unit edge_ext list) list * (edgeIndex * 'a)
-  datatype 'a gState_I_ext =
-    GState_I_ext of Arith.nat * IntInf.int list * Arith.nat * bool * 'a
-  datatype varType = VTBounded of IntInf.int * IntInf.int | VTChan
-  datatype variable = Var of varType * IntInf.int |
-    VArray of varType * Arith.nat * IntInf.int Vector.vector
-  datatype 'a pState_ext =
-    PState_ext of
-      Arith.nat * (string, variable) Assoc_List.assoc_list * Arith.nat *
-        IntInf.int list * Arith.nat * 'a
-  datatype channel =
-    Channel of IntInf.int * varType list * (IntInf.int list) list |
-    HSChannel of varType list | InvChannel
-  datatype 'a gState_ext =
-    GState_ext of
-      (string, variable) Assoc_List.assoc_list * channel list * bool *
-        unit pState_ext list * 'a
-  val to_I : unit gState_ext -> unit gState_I_ext gState_ext
-  val vars_update :
-    ((string, variable) Assoc_List.assoc_list ->
-      (string, variable) Assoc_List.assoc_list) ->
-      'a gState_ext -> 'a gState_ext
-  datatype varDecl =
-    VarDeclNum of
-      IntInf.int * IntInf.int * string * IntInf.int option * expr option
-    | VarDeclChan of
-        string * IntInf.int option * (IntInf.int * varType list) option
-  datatype procArg = ProcArg of varType * string
-  datatype 'a program_ext =
-    Program_ext of
-      (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector *
-        (string, Arith.nat) Assoc_List.assoc_list Vector.vector *
-        ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector *
-        string Vector.vector * (string, Arith.nat) Assoc_List.assoc_list * 'a
-  datatype step = StepStmnt of stmnt * stmnt option |
-    StepDecl of procVarDecl list | StepSkip
-  and stmnt = StmntIf of (step list) list | StmntDo of (step list) list |
-    StmntAtomic of step list | StmntSeq of step list |
-    StmntSend of chanRef * expr list * bool |
-    StmntRecv of chanRef * recvArg list * bool * bool |
-    StmntAssign of varRef * expr | StmntElse | StmntBreak | StmntSkip |
-    StmntGoTo of string | StmntLabeled of string * stmnt |
-    StmntRun of string * expr list | StmntCond of expr | StmntAssert of expr
-  datatype proc =
-    ProcType of
-      (IntInf.int option) option * string * procArg list * varDecl list *
-        step list
-    | Init of varDecl list * step list
-  val max_array_size : 'a Arith.numeral -> 'a
-  val channels : 'a gState_ext -> channel list
-  val min_var_value : IntInf.int
-  val max_var_value : IntInf.int
-  val varType_inv : varType -> bool
-  val for_all : ('a -> bool) -> 'a list -> bool
-  val channel_inv : channel -> bool
-  val checkVarValue : varType -> IntInf.int -> IntInf.int
-  val timeout : 'a gState_ext -> bool
-  val varsa : 'a pState_ext -> (string, variable) Assoc_List.assoc_list
-  val vars : 'a gState_ext -> (string, variable) Assoc_List.assoc_list
-  val lookupVar : variable -> IntInf.int option -> IntInf.int
-  val getVar :
-    bool ->
-      string ->
-        IntInf.int option ->
-          'a gState_ext -> unit pState_ext -> IntInf.int option
-  val withVar :
-    bool ->
-      string ->
-        IntInf.int option ->
-          (IntInf.int -> 'a) -> 'b gState_ext -> unit pState_ext -> 'a
-  val withChannel :
-    bool ->
-      string ->
-        IntInf.int option ->
-          (Arith.nat -> channel -> 'a) -> 'b gState_ext -> unit pState_ext -> 'a
-  val exprArith : 'a gState_ext -> unit pState_ext -> expr -> IntInf.int
-  val recvArgsCheck :
-    'a gState_ext -> unit pState_ext -> recvArg list -> IntInf.int list -> bool
-  val pollCheck :
-    'a gState_ext -> unit pState_ext -> channel -> recvArg list -> bool -> bool
-  val toVariable :
-    'a gState_ext ->
-      unit pState_ext -> varDecl -> string * (variable * channel list)
-  val channels_updatea :
-    (IntInf.int list -> IntInf.int list) -> 'a pState_ext -> 'a pState_ext
-  val channels_update :
-    (channel list -> channel list) -> 'a gState_ext -> 'a gState_ext
-  val channelsa : 'a pState_ext -> IntInf.int list
-  val max_channels : 'a Arith.numeral -> 'a
-  val mkChannels :
-    'a gState_ext ->
-      unit pState_ext -> channel list -> 'a gState_ext * unit pState_ext
-  val mkVarChannel :
-    varDecl ->
-      (((string, variable) Assoc_List.assoc_list ->
-         (string, variable) Assoc_List.assoc_list) ->
-        'a gState_ext * unit pState_ext -> 'a gState_ext * unit pState_ext) ->
-        'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val prio : 'a edge_ext -> IntInf.int
-  val min_prio : unit edge_ext list -> IntInf.int -> IntInf.int
-  val calculatePrios :
-    (unit edge_ext list) list -> (IntInf.int * unit edge_ext list) list
-  val target_update : (edgeIndex -> edgeIndex) -> 'a edge_ext -> 'a edge_ext
-  val atomic_update : (edgeAtomic -> edgeAtomic) -> 'a edge_ext -> 'a edge_ext
-  val atomica : 'a edge_ext -> edgeAtomic
-  val inAtomica : unit edge_ext -> bool
-  val isAtomic : unit edge_ext -> bool
-  val target : 'a edge_ext -> edgeIndex
-  val resolveLabel :
-    string -> (string, Arith.nat) Assoc_List.assoc_list -> Arith.nat
-  val resolveLabels :
-    (unit edge_ext list) list ->
-      (string, Arith.nat) Assoc_List.assoc_list ->
-        unit edge_ext list -> unit edge_ext list
-  val step_folda :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * 'c)))) ->
-        'd list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      'a list ->
-        (string, Arith.nat) Assoc_List.assoc_list ->
-          'b -> Arith.nat ->
-                  edgeIndex ->
-                    edgeIndex option ->
-                      'c -> Arith.nat *
-                              (edgeIndex *
-                                ((string, Arith.nat) Assoc_List.assoc_list *
-                                  'd list))
-  val step_foldL_step :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        'c list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      'b -> edgeIndex option ->
-              'a list ->
-                Arith.nat *
-                  (edgeIndex *
-                    ((string, Arith.nat) Assoc_List.assoc_list *
-                      ('c list * 'c list))) ->
-                  Arith.nat *
-                    (edgeIndex *
-                      ((string, Arith.nat) Assoc_List.assoc_list *
-                        ('c list * 'c list)))
-  val step_foldL :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        'c list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      ('a list) list ->
-        (string, Arith.nat) Assoc_List.assoc_list ->
-          'b -> Arith.nat ->
-                  edgeIndex ->
-                    edgeIndex option ->
-                      Arith.nat *
-                        (edgeIndex *
-                          ((string, Arith.nat) Assoc_List.assoc_list *
-                            ('c list * 'c list)))
-  val step_fold :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * 'c)))) ->
-        'd list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      'a list ->
-        (string, Arith.nat) Assoc_List.assoc_list ->
-          'b -> Arith.nat ->
-                  edgeIndex ->
-                    edgeIndex option ->
-                      'c -> 'd list *
-                              (edgeIndex *
-                                (string, Arith.nat) Assoc_List.assoc_list)
-  val add_label :
-    string ->
-      (string, Arith.nat) Assoc_List.assoc_list ->
-        Arith.nat -> (string, Arith.nat) Assoc_List.assoc_list
-  val atomize :
-    Arith.nat -> Arith.nat -> unit edge_ext list -> unit edge_ext list
-  val stepToState :
-    step ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        (IntInf.int * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        (unit edge_ext list) list *
-          (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)
-  val stmntToState :
-    stmnt ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        (IntInf.int * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        (unit edge_ext list) list *
-          (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)
-  val endState : unit edge_ext list
-  val toStates :
-    step list ->
-      (IntInf.int * unit edge_ext list) Vector.vector *
-        (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)
-  val toProcess :
-    Arith.nat ->
-      proc ->
-        (IntInf.int * unit edge_ext list) Vector.vector *
-          (Arith.nat *
-            (string *
-              ((string, Arith.nat) Assoc_List.assoc_list *
-                (Arith.nat * (edgeIndex * (procArg list * varDecl list))))))
-  val emptyProc : unit pState_ext
-  val procs_update :
-    (unit pState_ext list -> unit pState_ext list) ->
-      'a gState_ext -> 'a gState_ext
-  val processes :
-    'a program_ext ->
-      (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector
-  val proc_data : 'a program_ext -> (string, Arith.nat) Assoc_List.assoc_list
-  val max_procs : 'a Arith.numeral -> 'a
-  val procs : 'a gState_ext -> unit pState_ext list
-  val vars_updatea :
-    ((string, variable) Assoc_List.assoc_list ->
-      (string, variable) Assoc_List.assoc_list) ->
-      'a pState_ext -> 'a pState_ext
-  val modProcArg : procArg * IntInf.int -> string * variable
-  val mkProc :
-    'a gState_ext ->
-      unit pState_ext ->
-        expr list ->
-          Arith.nat * (edgeIndex * (procArg list * varDecl list)) ->
-            Arith.nat -> 'a gState_ext * unit pState_ext
-  val runProc :
-    string ->
-      expr list ->
-        unit program_ext ->
-          'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
+  type varType
+  type channel
+  type variable
+  type 'a pState_ext
+  type 'a gState_ext
+  type expr
+  type varRef
+  type chanRef
+  type recvArg
+  type varDecl
+  type procArg
+  type step
+  type stmnt
+  type proc
+  type edgeIndex
+  type 'a edge_ext
+  type 'a program_ext
+  type 'a gState_I_ext
   val setUp :
     varDecl list * (proc list * (string * string) list) ->
       (string, string) Assoc_List.assoc_list *
         (unit gState_ext * unit program_ext)
-  val from_I : 'a gState_ext -> unit gState_ext
-  val editVar : variable -> IntInf.int option -> IntInf.int -> variable
-  val setVara :
-    bool ->
-      string ->
-        IntInf.int option ->
-          IntInf.int ->
-            'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val liftVar :
-    (bool ->
-      string ->
-        IntInf.int option -> 'a -> 'b gState_ext -> unit pState_ext -> 'c) ->
-      varRef -> 'a -> 'b gState_ext -> unit pState_ext -> 'c
-  val setVar :
-    varRef ->
-      IntInf.int ->
-        'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val reset_I : unit gState_I_ext gState_ext -> unit gState_I_ext gState_ext
-  val handshake : 'a gState_I_ext gState_ext -> Arith.nat
-  val hsdata : 'a gState_I_ext gState_ext -> IntInf.int list
-  val elsea : 'a gState_I_ext gState_ext -> bool
-  val withChannela :
-    chanRef ->
-      (Arith.nat -> channel -> 'a) -> 'b gState_ext -> unit pState_ext -> 'a
-  val evalCond :
-    edgeCond -> unit gState_I_ext gState_ext -> unit pState_ext -> bool
-  val assertVar : varRef
-  val proc_names : 'a program_ext -> string Vector.vector
-  val pid : 'a pState_ext -> Arith.nat
-  val idx : 'a pState_ext -> Arith.nat
-  val procDescr :
-    (IntInf.int -> char list) ->
-      unit program_ext -> unit pState_ext -> char list
-  val exclusive_update :
-    (Arith.nat -> Arith.nat) ->
-      'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val pc_update : (Arith.nat -> Arith.nat) -> 'a pState_ext -> 'a pState_ext
-  val states :
-    'a program_ext ->
-      ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector
-  val effect : 'a edge_ext -> edgeEffect
-  val pc : 'a pState_ext -> Arith.nat
-  val removeProcs :
-    'a pState_ext list -> bool * (bool * ('a pState_ext list * IntInf.int list))
-  val cleanChans : IntInf.int list -> channel list -> channel list
-  val checkDeadProcs : 'a gState_ext -> 'a gState_ext
-  val handshake_update :
-    (Arith.nat -> Arith.nat) ->
-      'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val hsdata_update :
-    (IntInf.int list -> IntInf.int list) ->
-      'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val mkVarChannelProc :
-    procVarDecl ->
-      'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val evalRecvArgs :
-    recvArg list ->
-      IntInf.int list ->
-        unit gState_I_ext gState_ext ->
-          unit pState_ext -> unit gState_I_ext gState_ext * unit pState_ext
-  val find_remove : ('a -> bool) -> 'a list -> 'a option * 'a list
-  val evalEffect :
-    edgeEffect ->
-      unit program_ext ->
-        unit gState_I_ext gState_ext ->
-          unit pState_ext -> unit gState_I_ext gState_ext * unit pState_ext
-  val applyEdge_impl :
-    unit program_ext ->
-      unit edge_ext ->
-        unit pState_ext ->
-          unit gState_I_ext gState_ext -> unit gState_I_ext gState_ext
   val apply_triv :
     unit program_ext ->
       unit gState_I_ext gState_ext ->
         unit edge_ext * unit pState_ext -> unit gState_I_ext gState_ext
-  val cond : 'a edge_ext -> edgeCond
-  val evalHandshake :
-    edgeCond ->
-      Arith.nat -> unit gState_I_ext gState_ext -> unit pState_ext -> bool
-  val getChoices :
-    unit gState_I_ext gState_ext ->
-      unit pState_ext ->
-        unit edge_ext list -> (unit edge_ext * unit pState_ext) list
-  val timeout_update : (bool -> bool) -> 'a gState_ext -> 'a gState_ext
-  val exclusive : 'a gState_I_ext gState_ext -> Arith.nat
-  val else_update :
-    (bool -> bool) -> 'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val sort_by_pri : Arith.nat -> 'a edge_ext list -> ('a edge_ext list) list
-  val executable_impl :
-    ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector ->
-      unit gState_I_ext gState_ext -> (unit edge_ext * unit pState_ext) list
-  val nexts_code_0 :
-    'a HOL.equal ->
-      unit program_ext ->
-        (unit gState_I_ext gState_ext -> 'a) ->
-          unit gState_I_ext gState_ext -> 'a Dlist.dlist Refine_Det.dres
-  val nexts_code :
-    'a HOL.equal ->
-      unit program_ext ->
-        (unit gState_ext -> 'a) ->
-          unit gState_ext -> 'a Dlist.dlist Refine_Det.dres
-  val equal_varTypea : varType -> varType -> bool
-  val equal_variablea : variable -> variable -> bool
-  val equal_variable : variable HOL.equal
-  val equal_pState_exta : 'a HOL.equal -> 'a pState_ext -> 'a pState_ext -> bool
-  val equal_pState_ext : 'a HOL.equal -> 'a pState_ext HOL.equal
-  val equal_varType : varType HOL.equal
-  val equal_channela : channel -> channel -> bool
-  val equal_channel : channel HOL.equal
-  val equal_gState_exta : 'a HOL.equal -> 'a gState_ext -> 'a gState_ext -> bool
-  val equal_gState_ext : 'a HOL.equal -> 'a gState_ext HOL.equal
   val nexts_triv :
-    unit program_ext ->
-      unit gState_ext -> unit gState_ext Dlist.dlist Refine_Det.dres
-  val printList :
-    ('a -> char list) ->
-      'a list -> char list -> char list -> char list -> char list
-  val printBinOp : binOp -> char list
-  val printUnOp : unOp -> char list
-  val printExpr : (IntInf.int -> char list) -> expr -> char list
-  val printVarRef : (IntInf.int -> char list) -> varRef -> char list
-  val printChanRef : (IntInf.int -> char list) -> chanRef -> char list
-  val printFun : (IntInf.int -> char list) -> char list -> chanRef -> char list
-  val printRecvArg : (IntInf.int -> char list) -> recvArg -> char list
-  val printVarDecl : (IntInf.int -> char list) -> procVarDecl -> char list
-  val printEffect : (IntInf.int -> char list) -> edgeEffect -> char list
-  val printIndex : (IntInf.int -> char list) -> edgeIndex -> char list
-  val printCond : (IntInf.int -> char list) -> edgeCond -> char list
-  val printEdge :
-    (IntInf.int -> char list) -> Arith.nat -> unit edge_ext -> char list
-  val printInitial :
-    (IntInf.int -> char list) ->
-      unit program_ext -> unit gState_ext -> char list
-  val replay_code_0 :
-    unit program_ext ->
-      (unit gState_I_ext gState_ext -> bool) ->
-        unit gState_I_ext gState_ext ->
-          ((unit edge_ext * unit pState_ext) list) Refine_Det.dres
-  val replay_code :
-    unit program_ext ->
-      unit gState_ext ->
-        unit gState_ext -> (unit edge_ext * unit pState_ext) list
+    unit program_ext -> unit gState_ext -> unit gState_ext Dlist.dlist
   val printConfig :
     (IntInf.int -> char list) ->
       unit program_ext -> unit gState_ext option -> unit gState_ext -> char list
   val executable_triv :
     'a * ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector ->
       unit gState_I_ext gState_ext -> (unit edge_ext * unit pState_ext) list
-  val decr : varRef -> stmnt
-  val incr : varRef -> stmnt
-  val labels :
-    'a program_ext -> (string, Arith.nat) Assoc_List.assoc_list Vector.vector
-  val ppVarType : PromelaAST.varType -> varType
-  val enforceChan : (varRef, chanRef) Sum_Type.sum -> chanRef
-  val dealWithVar :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      string ->
-        (string -> IntInf.int option * bool -> expr option -> 'a) ->
-          (string -> IntInf.int option * bool -> expr option -> 'a) ->
-            (IntInf.int -> 'a) -> 'a
-  val resolveIdx : expr option -> expr option -> expr option
-  val liftChan : (varRef, chanRef) Sum_Type.sum -> varRef
-  val ppBinOp : PromelaAST.binOp -> binOp
-  val ppUnOp : PromelaAST.unOp -> unOp
-  val ppExpr :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.expr -> expr
-  val ppVarRef :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.varRef -> (varRef, chanRef) Sum_Type.sum
-  val ppRecvArg :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.recvArg -> recvArg
-  val ppVarDecl :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      varType ->
-        bool ->
-          PromelaAST.varDecl ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              varDecl
-  val cvm_fold : ('a -> 'b -> 'a * 'c) -> 'a -> 'b list -> 'a * 'c list
-  val liftDecl :
-    ('a -> varType -> 'b -> PromelaAST.varDecl -> 'a * 'c) ->
-      'b -> 'a -> PromelaAST.decl -> 'a * 'c list
-  val ppDecl :
-    bool ->
-      (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, IntInf.int) Assoc_List.assoc_list *
-            (string, varRef) Assoc_List.assoc_list)) ->
-        PromelaAST.decl ->
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, IntInf.int) Assoc_List.assoc_list *
-                (string, varRef) Assoc_List.assoc_list))) *
-            varDecl list
-  val ppProcVarDecl :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      varType ->
-        bool ->
-          PromelaAST.varDecl ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              procVarDecl
-  val ppDeclProc :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.decl ->
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, IntInf.int) Assoc_List.assoc_list *
-              (string, varRef) Assoc_List.assoc_list))) *
-          procVarDecl list
-  val forInArray : varRef -> IntInf.int -> step list -> stmnt
-  val forInChan : varRef -> chanRef -> step list -> stmnt
-  val forFromTo : varRef -> expr -> expr -> step list -> stmnt
-  val select : varRef -> expr -> expr -> stmnt
-  val ppStep :
-    bool *
-      (varDecl list *
-        ((string,
-           (string list *
-             ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)) ->
-               ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                   ((string, IntInf.int) Assoc_List.assoc_list *
-                     (string, varRef) Assoc_List.assoc_list))) *
-                 step list)))
-           Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, IntInf.int) Assoc_List.assoc_list *
-                (string, varRef) Assoc_List.assoc_list))))) ->
-      PromelaAST.step ->
-        (bool *
-          (varDecl list *
-            ((string,
-               (string list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                    ((string, (IntInf.int option * bool))
-                       Assoc_List.assoc_list *
-                      ((string, IntInf.int) Assoc_List.assoc_list *
-                        (string, varRef) Assoc_List.assoc_list)) ->
-                   ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                     ((string, (IntInf.int option * bool))
-                        Assoc_List.assoc_list *
-                       ((string, IntInf.int) Assoc_List.assoc_list *
-                         (string, varRef) Assoc_List.assoc_list))) *
-                     step list)))
-               Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)))))) *
-          step
-  val ppStmnt :
-    bool *
-      (varDecl list *
-        ((string,
-           (string list *
-             ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)) ->
-               ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                   ((string, IntInf.int) Assoc_List.assoc_list *
-                     (string, varRef) Assoc_List.assoc_list))) *
-                 step list)))
-           Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, IntInf.int) Assoc_List.assoc_list *
-                (string, varRef) Assoc_List.assoc_list))))) ->
-      PromelaAST.stmnt ->
-        (bool *
-          (varDecl list *
-            ((string,
-               (string list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                    ((string, (IntInf.int option * bool))
-                       Assoc_List.assoc_list *
-                      ((string, IntInf.int) Assoc_List.assoc_list *
-                        (string, varRef) Assoc_List.assoc_list)) ->
-                   ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                     ((string, (IntInf.int option * bool))
-                        Assoc_List.assoc_list *
-                       ((string, IntInf.int) Assoc_List.assoc_list *
-                         (string, varRef) Assoc_List.assoc_list))) *
-                     step list)))
-               Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)))))) *
-          stmnt
-  val ppProcArg :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      varType ->
-        bool ->
-          PromelaAST.varDecl ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              procArg
-  val ppDeclProcArg :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.decl ->
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, IntInf.int) Assoc_List.assoc_list *
-              (string, varRef) Assoc_List.assoc_list))) *
-          procArg list
-  val ppModule :
-    ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list))) *
-      (string,
-        (string list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-             ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-               ((string, IntInf.int) Assoc_List.assoc_list *
-                 (string, varRef) Assoc_List.assoc_list)) ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              step list)))
-        Assoc_List.assoc_list ->
-      PromelaAST.module ->
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, IntInf.int) Assoc_List.assoc_list *
-              (string, varRef) Assoc_List.assoc_list))) *
-          ((string,
-             (string list *
-               ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                    ((string, IntInf.int) Assoc_List.assoc_list *
-                      (string, varRef) Assoc_List.assoc_list)) ->
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                   ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                     ((string, IntInf.int) Assoc_List.assoc_list *
-                       (string, varRef) Assoc_List.assoc_list))) *
-                   step list)))
-             Assoc_List.assoc_list *
-            ((varDecl list), (proc, (string * string)) Sum_Type.sum)
-              Sum_Type.sum)
   val preprocess :
     PromelaAST.module list ->
       varDecl list * (proc list * (string * string) list)
-  val printEdges :
-    (IntInf.int -> char list) ->
-      (IntInf.int * unit edge_ext list) Vector.vector -> (char list) list
-  val printLabels :
-    (IntInf.int -> char list) ->
-      (string, Arith.nat) Assoc_List.assoc_list -> (char list) list
   val printProcesses :
     (IntInf.int -> char list) -> unit program_ext -> (char list) list
 end = struct
 
-datatype edgeAtomic = NonAtomic | Atomic | InAtomic;
+datatype varType = VTBounded of IntInf.int * IntInf.int | VTChan;
+
+datatype channel = Channel of IntInf.int * varType list * (IntInf.int list) list
+  | HSChannel of varType list | InvChannel;
+
+fun equal_varTypea (VTBounded (integer1, integer2)) VTChan = false
+  | equal_varTypea VTChan (VTBounded (integer1, integer2)) = false
+  | equal_varTypea (VTBounded (integer1a, integer2a))
+    (VTBounded (integer1, integer2)) =
+    ((integer1a : IntInf.int) = integer1) andalso
+      ((integer2a : IntInf.int) = integer2)
+  | equal_varTypea VTChan VTChan = true;
+
+val equal_varType = {equal = equal_varTypea} : varType HOL.equal;
+
+fun equal_channela (HSChannel lista) InvChannel = false
+  | equal_channela InvChannel (HSChannel lista) = false
+  | equal_channela (Channel (integer, list1, list2)) InvChannel = false
+  | equal_channela InvChannel (Channel (integer, list1, list2)) = false
+  | equal_channela (Channel (integer, list1, list2)) (HSChannel lista) = false
+  | equal_channela (HSChannel lista) (Channel (integer, list1, list2)) = false
+  | equal_channela (HSChannel listaa) (HSChannel lista) =
+    List.equal_lista equal_varType listaa lista
+  | equal_channela (Channel (integera, list1a, list2a))
+    (Channel (integer, list1, list2)) =
+    ((integera : IntInf.int) = integer) andalso
+      (List.equal_lista equal_varType list1a list1 andalso
+        List.equal_lista (List.equal_list Arith.equal_integer) list2a list2)
+  | equal_channela InvChannel InvChannel = true;
+
+val equal_channel = {equal = equal_channela} : channel HOL.equal;
+
+datatype variable = Var of varType * IntInf.int |
+  VArray of varType * Arith.nat * IntInf.int Vector.vector;
+
+fun equal_variablea (Var (varTypea, integer)) (VArray (varType, nat, iarray)) =
+  false
+  | equal_variablea (VArray (varTypea, nat, iarray)) (Var (varType, integer)) =
+    false
+  | equal_variablea (VArray (varTypea, nata, iarraya))
+    (VArray (varType, nat, iarray)) =
+    equal_varTypea varTypea varType andalso
+      (Arith.equal_nat nata nat andalso
+        IArray.equal_iarray Arith.equal_integer iarraya iarray)
+  | equal_variablea (Var (varTypea, integera)) (Var (varType, integer)) =
+    equal_varTypea varTypea varType andalso ((integera : IntInf.int) = integer);
+
+val equal_variable = {equal = equal_variablea} : variable HOL.equal;
+
+datatype 'a pState_ext =
+  PState_ext of
+    Arith.nat * (string, variable) Assoc_List.assoc_list * Arith.nat *
+      IntInf.int list * Arith.nat * 'a;
+
+datatype 'a gState_ext =
+  GState_ext of
+    (string, variable) Assoc_List.assoc_list * channel list * bool *
+      unit pState_ext list * 'a;
+
+fun equal_pState_exta A_ (PState_ext (pida, varsa, pca, channelsa, idxa, morea))
+  (PState_ext (pid, vars, pc, channels, idx, more)) =
+  Arith.equal_nat pida pid andalso
+    (Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
+       vars andalso
+      (Arith.equal_nat pca pc andalso
+        (List.equal_lista Arith.equal_integer channelsa channels andalso
+          (Arith.equal_nat idxa idx andalso HOL.eq A_ morea more))));
+
+fun equal_pState_ext A_ = {equal = equal_pState_exta A_} :
+  'a pState_ext HOL.equal;
+
+fun equal_gState_exta A_
+  (GState_ext (varsa, channelsa, timeouta, procsa, morea))
+  (GState_ext (vars, channels, timeout, procs, more)) =
+  Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
+    vars andalso
+    (List.equal_lista equal_channel channelsa channels andalso
+      (Product_Type.equal_bool timeouta timeout andalso
+        (List.equal_lista (equal_pState_ext Product_Type.equal_unit) procsa
+           procs andalso
+          HOL.eq A_ morea more)));
+
+fun equal_gState_ext A_ = {equal = equal_gState_exta A_} :
+  'a gState_ext HOL.equal;
 
 datatype binOp = BinOpAdd | BinOpSub | BinOpMul | BinOpDiv | BinOpMod | BinOpGr
   | BinOpLe | BinOpGEq | BinOpLEq | BinOpEq | BinOpNEq | BinOpAnd | BinOpOr;
@@ -1879,59 +1270,6 @@ and chanRef = ChanRef of varRef
 and recvArg = RecvArgVar of varRef | RecvArgEval of expr |
   RecvArgConst of IntInf.int | RecvArgMConst of IntInf.int * string;
 
-datatype procVarDecl =
-  ProcVarDeclNum of
-    IntInf.int * IntInf.int * string * IntInf.int option * expr option
-  | ProcVarDeclChan of string * IntInf.int option;
-
-datatype edgeEffect = EEEnd | EEId | EEGoto | EEAssert of expr |
-  EEAssign of varRef * expr | EEDecl of procVarDecl |
-  EERun of string * expr list | EESend of chanRef * expr list * bool |
-  EERecv of chanRef * recvArg list * bool * bool;
-
-datatype edgeIndex = Index of Arith.nat |
-  LabelJump of string * Arith.nat option;
-
-datatype edgeCond = ECElse | ECTrue | ECFalse | ECExpr of expr | ECRun of string
-  | ECSend of chanRef | ECRecv of chanRef * recvArg list * bool;
-
-datatype 'a edge_ext =
-  Edge_ext of edgeCond * edgeEffect * edgeIndex * IntInf.int * edgeAtomic * 'a;
-
-fun skip (lbls, (pri, (pos, (nxt, uu)))) =
-  ([[Edge_ext
-       (ECExpr (ExprConst (1 : IntInf.int)), EEId, nxt, pri, NonAtomic, ())]],
-    (Index pos, lbls));
-
-datatype 'a gState_I_ext =
-  GState_I_ext of Arith.nat * IntInf.int list * Arith.nat * bool * 'a;
-
-datatype varType = VTBounded of IntInf.int * IntInf.int | VTChan;
-
-datatype variable = Var of varType * IntInf.int |
-  VArray of varType * Arith.nat * IntInf.int Vector.vector;
-
-datatype 'a pState_ext =
-  PState_ext of
-    Arith.nat * (string, variable) Assoc_List.assoc_list * Arith.nat *
-      IntInf.int list * Arith.nat * 'a;
-
-datatype channel = Channel of IntInf.int * varType list * (IntInf.int list) list
-  | HSChannel of varType list | InvChannel;
-
-datatype 'a gState_ext =
-  GState_ext of
-    (string, variable) Assoc_List.assoc_list * channel list * bool *
-      unit pState_ext list * 'a;
-
-fun to_I (GState_ext (v, ch, t, p, ())) =
-  GState_ext
-    (v, ch, false, p,
-      GState_I_ext (Arith.zero_nat, [], Arith.zero_nat, false, ()));
-
-fun vars_update varsa (GState_ext (vars, channels, timeout, procs, more)) =
-  GState_ext (varsa vars, channels, timeout, procs, more);
-
 datatype varDecl =
   VarDeclNum of
     IntInf.int * IntInf.int * string * IntInf.int option * expr option
@@ -1940,12 +1278,10 @@ datatype varDecl =
 
 datatype procArg = ProcArg of varType * string;
 
-datatype 'a program_ext =
-  Program_ext of
-    (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector *
-      (string, Arith.nat) Assoc_List.assoc_list Vector.vector *
-      ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector *
-      string Vector.vector * (string, Arith.nat) Assoc_List.assoc_list * 'a;
+datatype procVarDecl =
+  ProcVarDeclNum of
+    IntInf.int * IntInf.int * string * IntInf.int option * expr option
+  | ProcVarDeclChan of string * IntInf.int option;
 
 datatype step = StepStmnt of stmnt * stmnt option | StepDecl of procVarDecl list
   | StepSkip
@@ -1962,6 +1298,42 @@ datatype proc =
     (IntInf.int option) option * string * procArg list * varDecl list *
       step list
   | Init of varDecl list * step list;
+
+datatype edgeCond = ECElse | ECTrue | ECFalse | ECExpr of expr | ECRun of string
+  | ECSend of chanRef | ECRecv of chanRef * recvArg list * bool;
+
+datatype edgeIndex = Index of Arith.nat |
+  LabelJump of string * Arith.nat option;
+
+datatype edgeAtomic = NonAtomic | Atomic | InAtomic;
+
+datatype edgeEffect = EEEnd | EEId | EEGoto | EEAssert of expr |
+  EEAssign of varRef * expr | EEDecl of procVarDecl |
+  EERun of string * expr list | EESend of chanRef * expr list * bool |
+  EERecv of chanRef * recvArg list * bool * bool;
+
+datatype 'a edge_ext =
+  Edge_ext of edgeCond * edgeEffect * edgeIndex * IntInf.int * edgeAtomic * 'a;
+
+datatype 'a program_ext =
+  Program_ext of
+    (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector *
+      (string, Arith.nat) Assoc_List.assoc_list Vector.vector *
+      ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector *
+      string Vector.vector * (string, Arith.nat) Assoc_List.assoc_list * 'a;
+
+datatype 'a gState_I_ext =
+  GState_I_ext of Arith.nat * IntInf.int list * Arith.nat * bool * 'a;
+
+fun skip (lbls, (pri, (pos, (nxt, uu)))) =
+  ([[Edge_ext
+       (ECExpr (ExprConst (1 : IntInf.int)), EEId, nxt, pri, NonAtomic, ())]],
+    (Index pos, lbls));
+
+fun vars_update varsa (GState_ext (vars, channels, timeout, procs, more)) =
+  GState_ext (varsa vars, channels, timeout, procs, more);
+
+fun channels (GState_ext (vars, channels, timeout, procs, more)) = channels;
 
 fun max_array_size A_ =
   Arith.numeral A_
@@ -1980,21 +1352,18 @@ fun max_array_size A_ =
                             (Arith.Bit1
                               (Arith.Bit1 (Arith.Bit1 Arith.One)))))))))))))));
 
-fun channels (GState_ext (vars, channels, timeout, procs, more)) = channels;
-
 val min_var_value : IntInf.int =
   IntInf.~
-    (Arith.power Arith.power_integer (2 : IntInf.int)
+    (Arith.powera Arith.power_integer (2 : IntInf.int)
       (Arith.nat_of_integer (31 : IntInf.int)));
 
 val max_var_value : IntInf.int =
-  IntInf.- (Arith.power Arith.power_integer (2 : IntInf.int)
+  IntInf.- (Arith.powera Arith.power_integer (2 : IntInf.int)
               (Arith.nat_of_integer (31 : IntInf.int)), (1 : IntInf.int));
 
 fun varType_inv (VTBounded (l, h)) =
   IntInf.<= (min_var_value, l) andalso
-    (IntInf.<= (l, 0) andalso
-      (IntInf.<= (h, max_var_value) andalso IntInf.< (l, h)))
+    (IntInf.<= (h, max_var_value) andalso IntInf.< (l, h))
   | varType_inv VTChan = true;
 
 fun for_all f xs = Foldi.foldli xs Fun.id (fn kv => fn _ => f kv) true;
@@ -2024,10 +1393,10 @@ fun checkVarValue (VTBounded (lRange, hRange)) vala =
   (if IntInf.<= (vala, hRange) andalso IntInf.<= (lRange, vala) then vala
     else (if ((lRange : IntInf.int) = 0) andalso IntInf.< (0, vala)
            then Arith.mod_integer vala (IntInf.+ (hRange, (1 : IntInf.int)))
-           else (raise Fail "Value overflow") (fn _ => lRange)))
+           else PromelaUtils.abort "Value overflow" (fn _ => lRange)))
   | checkVarValue VTChan vala =
     (if IntInf.< (vala, min_var_value) orelse IntInf.< (max_var_value, vala)
-      then (raise Fail "Value overflow") (fn _ => 0) else vala);
+      then PromelaUtils.abort "Value overflow" (fn _ => 0) else vala);
 
 fun timeout (GState_ext (vars, channels, timeout, procs, more)) = timeout;
 
@@ -2037,7 +1406,7 @@ fun vars (GState_ext (vars, channels, timeout, procs, more)) = vars;
 
 fun lookupVar (Var (uu, vala)) NONE = vala
   | lookupVar (Var (uv, uw)) (SOME ux) =
-    (raise Fail "Array used on var") (fn _ => 0)
+    PromelaUtils.abort "Array used on var" (fn _ => 0)
   | lookupVar (VArray (uy, uz, vals)) NONE = IArray.sub vals Arith.zero_nat
   | lookupVar (VArray (va, siz, vals)) (SOME idx) =
     IArray.sub vals (Arith.nat_of_integer idx);
@@ -2046,30 +1415,22 @@ fun getVar gl v idx g p =
   let
     val varsb = (if gl then vars g else varsa p);
   in
-    Option.map (fn x => lookupVar x idx)
+    Option.map_option (fn x => lookupVar x idx)
       (Assoc_List.lookup Stringa.equal_literal varsb v)
   end;
 
 fun withVar gl v idx f g p = f (Option.the (getVar gl v idx g p));
 
-fun withChannel gl v idx f g p =
+fun withChannela gl v idx f g p =
   let
     val error =
       (fn _ =>
-        (raise Fail
-          (String.implode
-            ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"i", #"s",
-               #" ", #"n", #"o", #"t", #" ", #"a", #" ", #"c", #"h", #"a", #"n",
-               #"n", #"e", #"l", #":", #" "] @
-              String.explode v)))
+        PromelaUtils.abort ("Variable is not a channel: " ^ v)
           (fn _ => f Arith.zero_nat InvChannel));
-    val msg =
-      String.implode
-        ([#"C", #"h", #"a", #"n", #"n", #"e", #"l", #" ", #"a", #"l", #"r",
-           #"e", #"a", #"d", #"y", #" ", #"c", #"l", #"o", #"s", #"e", #"d",
-           #" ", #"/", #" ", #"i", #"n", #"v", #"a", #"l", #"i", #"d", #":",
-           #" "] @
-          String.explode v);
+    val abort =
+      (fn _ =>
+        PromelaUtils.abort ("Channel already closed / invalid: " ^ v)
+          (fn _ => f Arith.zero_nat InvChannel));
   in
     withVar gl v idx
       (fn i =>
@@ -2081,9 +1442,7 @@ fun withChannel gl v idx f g p =
                    val c = List.nth (channels g) ia;
                  in
                    (case c of Channel (_, _, _) => f ia c
-                     | HSChannel _ => f ia c
-                     | InvChannel =>
-                       (raise Fail msg) (fn _ => f Arith.zero_nat InvChannel))
+                     | HSChannel _ => f ia c | InvChannel => abort ())
                  end)
         end)
       g p
@@ -2093,33 +1452,33 @@ fun exprArith g p (ExprConst x) = x
   | exprArith g p (ExprMConst (x, uu)) = x
   | exprArith g p ExprTimeOut = (if timeout g then (1 : IntInf.int) else 0)
   | exprArith g p (ExprLen (ChanRef (VarRef (gl, name, NONE)))) =
-    withChannel gl name NONE
+    withChannela gl name NONE
       (fn _ => fn a =>
         (case a of Channel (_, _, q) => Arith.integer_of_nat (List.size_list q)
           | HSChannel _ => 0))
       g p
   | exprArith g p (ExprLen (ChanRef (VarRef (gl, name, SOME idx)))) =
-    withChannel gl name (SOME (exprArith g p idx))
+    withChannela gl name (SOME (exprArith g p idx))
       (fn _ => fn a =>
         (case a of Channel (_, _, q) => Arith.integer_of_nat (List.size_list q)
           | HSChannel _ => 0))
       g p
   | exprArith g p (ExprEmpty (ChanRef (VarRef (gl, name, NONE)))) =
-    (if withChannel gl name NONE
+    (if withChannela gl name NONE
           (fn _ => fn a =>
             (case a of Channel (_, _, aa) => List.null aa
               | HSChannel _ => true))
           g p
       then (1 : IntInf.int) else 0)
   | exprArith g p (ExprEmpty (ChanRef (VarRef (gl, name, SOME idx)))) =
-    (if withChannel gl name (SOME (exprArith g p idx))
+    (if withChannela gl name (SOME (exprArith g p idx))
           (fn _ => fn a =>
             (case a of Channel (_, _, aa) => List.null aa
               | HSChannel _ => true))
           g p
       then (1 : IntInf.int) else 0)
   | exprArith g p (ExprFull (ChanRef (VarRef (gl, name, NONE)))) =
-    (if withChannel gl name NONE
+    (if withChannela gl name NONE
           (fn _ => fn a =>
             (case a
               of Channel (cap, _, q) =>
@@ -2128,7 +1487,7 @@ fun exprArith g p (ExprConst x) = x
           g p
       then (1 : IntInf.int) else 0)
   | exprArith g p (ExprFull (ChanRef (VarRef (gl, name, SOME idx)))) =
-    (if withChannel gl name (SOME (exprArith g p idx))
+    (if withChannela gl name (SOME (exprArith g p idx))
           (fn _ => fn a =>
             (case a
               of Channel (cap, _, q) =>
@@ -2185,17 +1544,17 @@ fun exprArith g p (ExprConst x) = x
     (if not (((exprArith g p cexpr) : IntInf.int) = 0) then exprArith g p texpr
       else exprArith g p fexpr)
   | exprArith g p (ExprPoll (ChanRef (VarRef (gl, name, NONE)), rs, srt)) =
-    (if withChannel gl name NONE (fn _ => fn c => pollCheck g p c rs srt) g p
+    (if withChannela gl name NONE (fn _ => fn c => pollCheck g p c rs srt) g p
       then (1 : IntInf.int) else 0)
   | exprArith g p (ExprPoll (ChanRef (VarRef (gl, name, SOME idx)), rs, srt)) =
-    (if withChannel gl name (SOME (exprArith g p idx))
+    (if withChannela gl name (SOME (exprArith g p idx))
           (fn _ => fn c => pollCheck g p c rs srt) g p
       then (1 : IntInf.int) else 0)
 and recvArgsCheck vc vd [] [] = true
   | recvArgsCheck ve vf (v :: va) [] =
-    (raise Fail "Length mismatch on receiving.") (fn _ => false)
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => false)
   | recvArgsCheck vh vi [] (v :: va) =
-    (raise Fail "Length mismatch on receiving.") (fn _ => false)
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => false)
   | recvArgsCheck g p (r :: rs) (v :: vs) =
     (case r of RecvArgVar _ => true
       | RecvArgEval e => (((exprArith g p e) : IntInf.int) = v)
@@ -2203,7 +1562,7 @@ and recvArgsCheck vc vd [] [] = true
       | RecvArgMConst (c, _) => ((c : IntInf.int) = v)) andalso
       recvArgsCheck g p rs vs
 and pollCheck g p InvChannel uv uw =
-  (raise Fail "Channel already closed / invalid.") (fn _ => false)
+  PromelaUtils.abort "Channel already closed / invalid." (fn _ => false)
   | pollCheck g p (HSChannel ux) uy uz = false
   | pollCheck g p (Channel (va, vb, q)) rs srt =
     (if List.null q then false
@@ -2215,7 +1574,7 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
     val typea = VTBounded (lb, hb);
   in
     (if not (varType_inv typea)
-      then (raise Fail "Invalid var def")
+      then PromelaUtils.abort ("Invalid var def (varType_inv failed): " ^ name)
              (fn _ => (name, (Var (VTChan, 0), [])))
       else let
              val inita =
@@ -2229,7 +1588,8 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
                      then VArray
                             (typea, Arith.nat_of_integer s,
                               Vector.tabulate (s, (fn _ => inita)))
-                     else (raise Fail "Invalid var def")
+                     else PromelaUtils.abort
+                            ("Invalid var def (array too large): " ^ name)
                             (fn _ => Var (VTChan, 0))));
            in
              (name, (v, []))
@@ -2248,7 +1608,9 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
                   else Channel (cap, tys, []));
             in
               (if not (channel_inv c)
-                then (raise Fail "Invalid var def") (fn _ => [])
+                then PromelaUtils.abort
+                       ("Invalid var def (channel_inv failed): " ^ name)
+                       (fn _ => [])
                 else List.replicate size c)
             end);
       val cidx =
@@ -2265,7 +1627,9 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
                          (s, (fn i =>
                                (if ((cidx : IntInf.int) = 0) then 0
                                  else IntInf.+ (i, cidx)))))
-              else (raise Fail "Invalid var def") (fn _ => Var (VTChan, 0))));
+              else PromelaUtils.abort
+                     ("Invalid var def (array too large): " ^ name)
+                     (fn _ => Var (VTChan, 0))));
     in
       (name, (v, chans))
     end;
@@ -2303,7 +1667,7 @@ fun mkChannels g p cs =
          in
            (if Arith.less_nat (max_channels Arith.numeral_nat)
                  (Arith.plus_nata l (List.size_list cs))
-             then (raise Fail "Too much channels") (fn _ => (g, p))
+             then PromelaUtils.abort "Too much channels" (fn _ => (g, p))
              else let
                     val cs_p =
                       List.map Arith.integer_of_nat
@@ -2337,25 +1701,20 @@ fun target_update targeta (Edge_ext (cond, effect, target, prio, atomic, more))
 fun atomic_update atomica (Edge_ext (cond, effect, target, prio, atomic, more))
   = Edge_ext (cond, effect, target, prio, atomica atomic, more);
 
-fun atomica (Edge_ext (cond, effect, target, prio, atomic, more)) = atomic;
+fun target (Edge_ext (cond, effect, target, prio, atomic, more)) = target;
 
-fun inAtomica e =
-  (case atomica e of NonAtomic => false | Atomic => true | InAtomic => true);
+fun atomic (Edge_ext (cond, effect, target, prio, atomic, more)) = atomic;
 
 fun isAtomic e =
-  (case atomica e of NonAtomic => false | Atomic => true | InAtomic => false);
+  (case atomic e of NonAtomic => false | Atomic => true | InAtomic => false);
 
-fun target (Edge_ext (cond, effect, target, prio, atomic, more)) = target;
+fun inAtomic e =
+  (case atomic e of NonAtomic => false | Atomic => true | InAtomic => true);
 
 fun resolveLabel l lbls =
   (case Assoc_List.lookup Stringa.equal_literal lbls l
     of NONE =>
-      (raise Fail
-        (String.implode
-          ([#"U", #"n", #"r", #"e", #"s", #"o", #"l", #"v", #"e", #"d", #" ",
-             #"l", #"a", #"b", #"e", #"l", #":", #" "] @
-            String.explode l)))
-        (fn _ => Arith.zero_nat)
+      PromelaUtils.abort ("Unresolved label: " ^ l) (fn _ => Arith.zero_nat)
     | SOME pos => pos);
 
 fun resolveLabels uu uv [] = []
@@ -2363,7 +1722,7 @@ fun resolveLabels uu uv [] = []
     let
       val check_atomic =
         (fn pos =>
-          List.fold (fn ea => fn a => a andalso inAtomica ea)
+          List.fold (fn ea => fn a => a andalso inAtomic ea)
             (List.nth edges pos) true);
     in
       (case target e of Index _ => e
@@ -2373,7 +1732,7 @@ fun resolveLabels uu uv [] = []
           in
             atomic_update
               (fn _ =>
-                (if inAtomica e
+                (if inAtomic e
                   then (if check_atomic pos then Atomic else InAtomic)
                   else NonAtomic))
               (target_update (fn _ => Index pos) e)
@@ -2387,7 +1746,7 @@ fun resolveLabels uu uv [] = []
                 (if isAtomic e
                   then (if check_atomic pos andalso check_atomic via then Atomic
                          else InAtomic)
-                  else atomica e))
+                  else atomic e))
               (target_update (fn _ => Index pos) e)
           end)
     end ::
@@ -2431,13 +1790,7 @@ fun step_fold g steps lbls pri pos nxt onxt iB =
 fun add_label l lbls pos =
   (case Assoc_List.lookup Stringa.equal_literal lbls l
     of NONE => Assoc_List.update Stringa.equal_literal l pos lbls
-    | SOME _ =>
-      (raise Fail
-        (String.implode
-          ([#"L", #"a", #"b", #"e", #"l", #" ", #"g", #"i", #"v", #"e", #"n",
-             #" ", #"t", #"w", #"i", #"c", #"e", #":", #" "] @
-            String.explode l)))
-        (fn _ => lbls));
+    | SOME _ => PromelaUtils.abort ("Label given twice: " ^ l) (fn _ => lbls));
 
 fun atomize lp hp es =
   List.fold
@@ -2503,7 +1856,7 @@ and stmntToState StmntSkip d = skip d
     ([[Edge_ext (ECRun n, EERun (n, args), nxt, pri, NonAtomic, ())]],
       (Index pos, lbls))
   | stmntToState StmntBreak (vh, (vi, (vj, (vk, (NONE, vl))))) =
-    (raise Fail "Misplaced break")
+    PromelaUtils.abort "Misplaced break"
       (fn _ => ([], (Index Arith.zero_nat, Assoc_List.empty)))
   | stmntToState StmntBreak (lbls, (pri, (ve, (vf, (SOME onxt, vg))))) =
     ([[Edge_ext (ECTrue, EEGoto, onxt, pri, NonAtomic, ())]], (onxt, lbls))
@@ -2573,7 +1926,7 @@ fun toStates steps =
   in
     (if Arith.less_nat s (List.size_list statesc)
       then (Vector.fromList statesc, (posa, lbls))
-      else (raise Fail "Oops!")
+      else PromelaUtils.abort "Start index out of bounds"
              (fn _ => (Vector.fromList statesc, (Index Arith.zero_nat, lbls))))
   end;
 
@@ -2609,14 +1962,14 @@ fun proc_data
   (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
   proc_data;
 
+fun procs (GState_ext (vars, channels, timeout, procs, more)) = procs;
+
 fun max_procs A_ =
   Arith.numeral A_
     (Arith.Bit1
       (Arith.Bit1
         (Arith.Bit1
           (Arith.Bit1 (Arith.Bit1 (Arith.Bit1 (Arith.Bit1 Arith.One)))))));
-
-fun procs (GState_ext (vars, channels, timeout, procs, more)) = procs;
 
 fun vars_updatea varsa (PState_ext (pid, vars, pc, channels, idx, more)) =
   PState_ext (pid, varsa vars, pc, channels, idx, more);
@@ -2631,17 +1984,21 @@ fun modProcArg x =
            in
              (name, Var (ty, init))
            end
-      else (raise Fail "Invalid proc arg") (fn _ => (name, Var (VTChan, 0))))
+      else PromelaUtils.abort ("Invalid proc arg (varType_inv failed)" ^ name)
+             (fn _ => (name, Var (VTChan, 0))))
   end;
 
-fun mkProc g p args (sidx, (start, (argDecls, decls))) pidN =
+fun mkProc g p name args (sidx, (start, (argDecls, decls))) pidN =
   let
     val starta =
       (case start of Index x => x
-        | LabelJump (_, _) => (raise Fail "UGH!") (fn _ => Arith.zero_nat));
+        | LabelJump (_, _) =>
+          PromelaUtils.abort ("Process start is not index: " ^ name)
+            (fn _ => Arith.zero_nat));
   in
     (if not (Arith.equal_nat (List.size_list args) (List.size_list argDecls))
-      then (raise Fail "Signature mismatch") (fn _ => (g, emptyProc))
+      then PromelaUtils.abort ("Signature mismatch: " ^ name)
+             (fn _ => (g, emptyProc))
       else let
              val eArgs = List.map (exprArith g p) args;
              val argVars = List.map modProcArg (List.zip argDecls eArgs);
@@ -2662,22 +2019,18 @@ fun mkProc g p args (sidx, (start, (argDecls, decls))) pidN =
 
 fun runProc name args prog g p =
   (if Arith.less_eq_nat (max_procs Arith.numeral_nat) (List.size_list (procs g))
-    then (raise Fail "Too many processes") (fn _ => (g, p))
+    then PromelaUtils.abort "Too many processes" (fn _ => (g, p))
     else let
            val pid = Arith.plus_nata (List.size_list (procs g)) Arith.one_nata;
          in
            (case Assoc_List.lookup Stringa.equal_literal (proc_data prog) name
              of NONE =>
-               (raise Fail
-                 (String.implode
-                   ([#"N", #"o", #" ", #"s", #"u", #"c", #"h", #" ", #"p", #"r",
-                      #"o", #"c", #"e", #"s", #"s", #":", #" "] @
-                     String.explode name)))
-                 (fn _ => (g, p))
+               PromelaUtils.abort ("No such process: " ^ name) (fn _ => (g, p))
              | SOME proc_idx =>
                let
                  val (ga, proc) =
-                   mkProc g p args (IArray.sub (processes prog) proc_idx) pid;
+                   mkProc g p name args (IArray.sub (processes prog) proc_idx)
+                     pid;
                in
                  (procs_update (fn _ => procs g @ [proc]) ga, p)
                end)
@@ -2733,11 +2086,9 @@ fun setUp prom =
     (ltlsa, (gb, prog))
   end;
 
-fun from_I (GState_ext (v, ch, t, p, m)) = GState_ext (v, ch, t, p, ());
-
 fun editVar (Var (typea, uu)) NONE vala = Var (typea, checkVarValue typea vala)
   | editVar (Var (uv, uw)) (SOME ux) uy =
-    (raise Fail "Array used on var") (fn _ => Var (VTChan, 0))
+    PromelaUtils.abort "Array used on var" (fn _ => Var (VTChan, 0))
   | editVar (VArray (typea, siz, vals)) NONE vala =
     let
       val lv = IArray.list_of vals;
@@ -2759,7 +2110,9 @@ fun setVara gl v idx vala g p =
   (if gl
     then (if ((v : string) = "_") then (g, p)
            else (case Assoc_List.lookup Stringa.equal_literal (vars g) v
-                  of NONE => (raise Fail "Unknown variable") (fn _ => (g, p))
+                  of NONE =>
+                    PromelaUtils.abort ("Unknown global variable: " ^ v)
+                      (fn _ => (g, p))
                   | SOME x =>
                     (vars_update
                        (fn _ =>
@@ -2768,7 +2121,8 @@ fun setVara gl v idx vala g p =
                        g,
                       p)))
     else (case Assoc_List.lookup Stringa.equal_literal (varsa p) v
-           of NONE => (raise Fail "Unknown variable") (fn _ => (g, p))
+           of NONE =>
+             PromelaUtils.abort ("Unknown proc variable: " ^ v) (fn _ => (g, p))
            | SOME x =>
              (g, vars_updatea
                    (fn _ =>
@@ -2777,17 +2131,9 @@ fun setVara gl v idx vala g p =
                    p)));
 
 fun liftVar f (VarRef (gl, v, idx)) arg g p =
-  f gl v (Option.map (exprArith g p) idx) arg g p;
+  f gl v (Option.map_option (exprArith g p) idx) arg g p;
 
 fun setVar x = liftVar setVara x;
-
-fun reset_I (GState_ext (v, ch, t, p, GState_I_ext (hs, hsd, uu, uv, ()))) =
-  GState_ext
-    (v, ch, false, p,
-      GState_I_ext
-        (Arith.zero_nat,
-          (if not (Arith.equal_nat hs Arith.zero_nat) then hsd else []),
-          Arith.zero_nat, false, ()));
 
 fun handshake
   (GState_ext
@@ -2807,7 +2153,7 @@ fun elsea
       GState_I_ext (handshake, hsdata, exclusive, elsea, more)))
   = elsea;
 
-fun withChannela (ChanRef v) = liftVar withChannel v;
+fun withChannel (ChanRef v) = liftVar withChannela v;
 
 fun evalCond ECTrue uu uv = true
   | evalCond ECFalse uw ux = false
@@ -2817,7 +2163,7 @@ fun evalCond ECTrue uu uv = true
       (Arith.nat_of_integer (255 : IntInf.int))
   | evalCond ECElse g l = elsea g
   | evalCond (ECSend v) g l =
-    withChannela v
+    withChannel v
       (fn _ => fn a =>
         (case a
           of Channel (cap, _, q) =>
@@ -2825,7 +2171,7 @@ fun evalCond ECTrue uu uv = true
           | HSChannel _ => true))
       g l
   | evalCond (ECRecv (v, rs, srt)) g l =
-    withChannela v
+    withChannel v
       (fn _ => fn c =>
         (case c of Channel (_, _, _) => pollCheck g l c rs srt
           | HSChannel _ =>
@@ -2923,9 +2269,9 @@ fun mkVarChannelProc v g p =
 
 fun evalRecvArgs [] [] g l = (g, l)
   | evalRecvArgs (v :: va) [] g l =
-    (raise Fail "Length mismatch on receiving.") (fn _ => (g, l))
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => (g, l))
   | evalRecvArgs [] (v :: va) g l =
-    (raise Fail "Length mismatch on receiving.") (fn _ => (g, l))
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => (g, l))
   | evalRecvArgs (r :: rs) (v :: vs) g l =
     let
       val (a, b) =
@@ -2950,12 +2296,13 @@ fun evalEffect EEEnd uu g l = (g, l)
     (if (((exprArith g l e) : IntInf.int) = 0)
       then setVar assertVar (1 : IntInf.int) g l else (g, l))
   | evalEffect (EESend (v, es, srt)) va g l =
-    withChannela v
+    withChannel v
       (fn i => fn c =>
         let
-          val aborta =
+          val ab =
             (fn _ =>
-              (raise Fail "Length mismatch on sending.") (fn _ => (g, l)));
+              PromelaUtils.abort "Length mismatch on sending."
+                (fn _ => (g, l)));
           val esa = List.map (exprArith g l) es;
         in
           (if not (for_all
@@ -2963,14 +2310,14 @@ fun evalEffect EEEnd uu g l = (g, l)
                       IntInf.<= (min_var_value, x) andalso
                         IntInf.<= (x, max_var_value))
                     esa)
-            then (raise Fail "Inv Channel") (fn _ => (g, l))
+            then PromelaUtils.abort "Invalid Channel" (fn _ => (g, l))
             else (case c
                    of Channel (cap, ts, q) =>
                      (if not (Arith.equal_nat (List.size_list ts)
                                (List.size_list esa)) orelse
                            not (Arith.less_nat (List.size_list q)
                                  (max_array_size Arith.numeral_nat))
-                       then aborta ()
+                       then ab ()
                        else let
                               val qa =
                                 (if not srt then q @ [esa]
@@ -2989,20 +2336,22 @@ fun evalEffect EEEnd uu g l = (g, l)
                    | HSChannel ts =>
                      (if not (Arith.equal_nat (List.size_list ts)
                                (List.size_list esa))
-                       then aborta ()
+                       then ab ()
                        else (handshake_update (fn _ => i)
                                (hsdata_update (fn _ => esa) g),
                               l))
-                   | InvChannel => (raise Fail "INVALID") (fn _ => (g, l))))
+                   | InvChannel =>
+                     PromelaUtils.abort "Trying to send on invalid channel"
+                       (fn _ => (g, l))))
         end)
       g l
   | evalEffect (EERecv (v, rs, srt, rem)) vb g l =
-    withChannela v
+    withChannel v
       (fn i => fn a =>
         (case a
           of Channel (cap, ts, qs) =>
             (if List.null qs
-              then (raise Fail "Recv from empty channel") (fn _ => (g, l))
+              then PromelaUtils.abort "Recv from empty channel" (fn _ => (g, l))
               else let
                      val (q, qsa) =
                        (if not srt then (List.hd qs, List.tl qs)
@@ -3029,7 +2378,8 @@ fun evalEffect EEEnd uu g l = (g, l)
             in
               (gb, la)
             end
-          | InvChannel => (raise Fail "INVALID") (fn _ => (g, l))))
+          | InvChannel =>
+            PromelaUtils.abort "Receiving on invalid channel" (fn _ => (g, l))))
       g l;
 
 fun applyEdge_impl prog e p g =
@@ -3041,8 +2391,9 @@ fun applyEdge_impl prog e p g =
           (if Arith.less_nat t
                 (IArray.length (IArray.sub (states prog) (idx xa)))
             then pc_update (fn _ => t) xa
-            else (raise Fail "Invalid program") (fn _ => xa))
-        | LabelJump (_, _) => (raise Fail "Invalid program") (fn _ => xa));
+            else PromelaUtils.abort "Edge target out of bounds" (fn _ => xa))
+        | LabelJump (_, _) =>
+          PromelaUtils.abort "Edge target not Index" (fn _ => xa));
     val xb =
       procs_update
         (fn _ =>
@@ -3059,6 +2410,14 @@ fun applyEdge_impl prog e p g =
     xd
   end;
 
+fun reset_I (GState_ext (v, ch, t, p, GState_I_ext (hs, hsd, uu, uv, ()))) =
+  GState_ext
+    (v, ch, false, p,
+      GState_I_ext
+        (Arith.zero_nat,
+          (if not (Arith.equal_nat hs Arith.zero_nat) then hsd else []),
+          Arith.zero_nat, false, ()));
+
 fun apply_triv prog g ep =
   applyEdge_impl prog (Product_Type.fst ep) (Product_Type.snd ep) (reset_I g);
 
@@ -3066,7 +2425,7 @@ fun cond (Edge_ext (cond, effect, target, prio, atomic, more)) = cond;
 
 fun evalHandshake (ECRecv (v, uu, uv)) h g l =
   Arith.equal_nat h Arith.zero_nat orelse
-    withChannela v
+    withChannel v
       (fn i => fn a =>
         (case a of Channel (_, _, _) => false
           | HSChannel _ => Arith.equal_nat i h))
@@ -3086,14 +2445,14 @@ fun getChoices g p =
         then (ea, p) :: e else e))
     [];
 
-fun timeout_update timeouta (GState_ext (vars, channels, timeout, procs, more))
-  = GState_ext (vars, channels, timeouta timeout, procs, more);
-
 fun exclusive
   (GState_ext
     (vars, channels, timeout, procs,
       GState_I_ext (handshake, hsdata, exclusive, elsea, more)))
   = exclusive;
+
+fun timeout_update timeouta (GState_ext (vars, channels, timeout, procs, more))
+  = GState_ext (vars, channels, timeouta timeout, procs, more);
 
 fun else_update elseaa
   (GState_ext
@@ -3109,7 +2468,8 @@ fun sort_by_pri min_pri edges =
       let
         val idx = Arith.nat_of_integer (Arith.abs_integer (prio e));
       in
-        (if Arith.less_nat min_pri idx then (raise Fail "UGH") (fn _ => es)
+        (if Arith.less_nat min_pri idx
+          then PromelaUtils.abort "Invalid priority" (fn _ => es)
           else let
                  val a = e :: List.nth es idx;
                in
@@ -3221,6 +2581,13 @@ fun nexts_code_0 A_ prog b x =
                  (Refine_Det.DRETURN Dlist.empty)
              end));
 
+fun from_I (GState_ext (v, ch, t, p, m)) = GState_ext (v, ch, t, p, ());
+
+fun to_I (GState_ext (v, ch, t, p, ())) =
+  GState_ext
+    (v, ch, false, p,
+      GState_I_ext (Arith.zero_nat, [], Arith.zero_nat, false, ()));
+
 fun nexts_code A_ prog f g =
   let
     val x = f o from_I;
@@ -3233,75 +2600,9 @@ fun nexts_code A_ prog f g =
           else Refine_Det.DRETURN xb))
   end;
 
-fun equal_varTypea VTChan (VTBounded (integer1, integer2)) = false
-  | equal_varTypea (VTBounded (integer1, integer2)) VTChan = false
-  | equal_varTypea (VTBounded (integer1a, integer2a))
-    (VTBounded (integer1, integer2)) =
-    ((integer1a : IntInf.int) = integer1) andalso
-      ((integer2a : IntInf.int) = integer2)
-  | equal_varTypea VTChan VTChan = true;
-
-fun equal_variablea (VArray (varTypea, nat, iarray)) (Var (varType, integer)) =
-  false
-  | equal_variablea (Var (varTypea, integer)) (VArray (varType, nat, iarray)) =
-    false
-  | equal_variablea (VArray (varTypea, nata, iarraya))
-    (VArray (varType, nat, iarray)) =
-    equal_varTypea varTypea varType andalso
-      (Arith.equal_nat nata nat andalso
-        IArray.equal_iarray Arith.equal_integer iarraya iarray)
-  | equal_variablea (Var (varTypea, integera)) (Var (varType, integer)) =
-    equal_varTypea varTypea varType andalso ((integera : IntInf.int) = integer);
-
-val equal_variable = {equal = equal_variablea} : variable HOL.equal;
-
-fun equal_pState_exta A_ (PState_ext (pida, varsa, pca, channelsa, idxa, morea))
-  (PState_ext (pid, vars, pc, channels, idx, more)) =
-  Arith.equal_nat pida pid andalso
-    (Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
-       vars andalso
-      (Arith.equal_nat pca pc andalso
-        (List.equal_lista Arith.equal_integer channelsa channels andalso
-          (Arith.equal_nat idxa idx andalso HOL.eq A_ morea more))));
-
-fun equal_pState_ext A_ = {equal = equal_pState_exta A_} :
-  'a pState_ext HOL.equal;
-
-val equal_varType = {equal = equal_varTypea} : varType HOL.equal;
-
-fun equal_channela InvChannel (HSChannel lista) = false
-  | equal_channela (HSChannel lista) InvChannel = false
-  | equal_channela InvChannel (Channel (integer, list1, list2)) = false
-  | equal_channela (Channel (integer, list1, list2)) InvChannel = false
-  | equal_channela (HSChannel lista) (Channel (integer, list1, list2)) = false
-  | equal_channela (Channel (integer, list1, list2)) (HSChannel lista) = false
-  | equal_channela (HSChannel listaa) (HSChannel lista) =
-    List.equal_lista equal_varType listaa lista
-  | equal_channela (Channel (integera, list1a, list2a))
-    (Channel (integer, list1, list2)) =
-    ((integera : IntInf.int) = integer) andalso
-      (List.equal_lista equal_varType list1a list1 andalso
-        List.equal_lista (List.equal_list Arith.equal_integer) list2a list2)
-  | equal_channela InvChannel InvChannel = true;
-
-val equal_channel = {equal = equal_channela} : channel HOL.equal;
-
-fun equal_gState_exta A_
-  (GState_ext (varsa, channelsa, timeouta, procsa, morea))
-  (GState_ext (vars, channels, timeout, procs, more)) =
-  Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
-    vars andalso
-    (List.equal_lista equal_channel channelsa channels andalso
-      (Product_Type.equal_bool timeouta timeout andalso
-        (List.equal_lista (equal_pState_ext Product_Type.equal_unit) procsa
-           procs andalso
-          HOL.eq A_ morea more)));
-
-fun equal_gState_ext A_ = {equal = equal_gState_exta A_} :
-  'a gState_ext HOL.equal;
-
 fun nexts_triv prog g =
-  nexts_code (equal_gState_ext Product_Type.equal_unit) prog Fun.id g;
+  Refine_Transfer.the_res
+    (nexts_code (equal_gState_ext Product_Type.equal_unit) prog Fun.id g);
 
 fun printList f xs l r sep =
   let
@@ -3455,7 +2756,8 @@ fun replay_code_0 prog a x =
                else (if not (timeout x)
                       then replay_code_0 prog a
                              (timeout_update (fn _ => true) x)
-                      else (raise Fail "Stuttering should not occur on replay")
+                      else PromelaUtils.abort
+                             "Stuttering should not occur on replay"
                              (fn _ => Refine_Det.DRETURN [])))
         else let
                val xb = reset_I x;
@@ -3481,10 +2783,10 @@ fun replay_code_0 prog a x =
                                    (if Arith.less_nat t
  (IArray.length (IArray.sub (states prog) (idx xbb)))
                                      then pc_update (fn _ => t) xbb
-                                     else (raise Fail "Invalid program")
-    (fn _ => xbb))
+                                     else PromelaUtils.abort
+    "Edge target out of bounds" (fn _ => xbb))
                                  | LabelJump (_, _) =>
-                                   (raise Fail "Invalid program")
+                                   PromelaUtils.abort "Edge target not Index"
                                      (fn _ => xbb));
                              val xd =
                                procs_update
@@ -3555,10 +2857,6 @@ fun incr v =
   StmntAssign
     (v, ExprBinOp (BinOpAdd, ExprVarRef v, ExprConst (1 : IntInf.int)));
 
-fun labels
-  (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
-  labels;
-
 fun ppVarType PromelaAST.VarTypeBit = VTBounded (0, (1 : IntInf.int))
   | ppVarType PromelaAST.VarTypeBool = VTBounded (0, (1 : IntInf.int))
   | ppVarType PromelaAST.VarTypeByte = VTBounded (0, (255 : IntInf.int))
@@ -3566,16 +2864,16 @@ fun ppVarType PromelaAST.VarTypeBit = VTBounded (0, (1 : IntInf.int))
   | ppVarType PromelaAST.VarTypeShort =
     VTBounded
       (IntInf.~
-         (Arith.power Arith.power_integer (2 : IntInf.int)
+         (Arith.powera Arith.power_integer (2 : IntInf.int)
            (Arith.nat_of_integer (15 : IntInf.int))),
-        IntInf.- (Arith.power Arith.power_integer (2 : IntInf.int)
+        IntInf.- (Arith.powera Arith.power_integer (2 : IntInf.int)
                     (Arith.nat_of_integer (15 : IntInf.int)), (1 : IntInf.int)))
   | ppVarType PromelaAST.VarTypeInt =
     VTBounded
       (IntInf.~
-         (Arith.power Arith.power_integer (2 : IntInf.int)
+         (Arith.powera Arith.power_integer (2 : IntInf.int)
            (Arith.nat_of_integer (31 : IntInf.int))),
-        IntInf.- (Arith.power Arith.power_integer (2 : IntInf.int)
+        IntInf.- (Arith.powera Arith.power_integer (2 : IntInf.int)
                     (Arith.nat_of_integer (31 : IntInf.int)), (1 : IntInf.int)))
   | ppVarType PromelaAST.VarTypeMType =
     VTBounded ((1 : IntInf.int), (255 : IntInf.int))
@@ -3690,13 +2988,13 @@ and ppVarRef cvm (PromelaAST.VarRef (name, idx, NONE)) =
   dealWithVar cvm name
     (fn namea => fn (_, g) => fn aIdx =>
       let
-        val idxa = Option.map (ppExpr cvm) idx;
+        val idxa = Option.map_option (ppExpr cvm) idx;
       in
         Sum_Type.Inr (ChanRef (VarRef (g, namea, resolveIdx idxa aIdx)))
       end)
     (fn namea => fn (_, g) => fn aIdx =>
       let
-        val idxa = Option.map (ppExpr cvm) idx;
+        val idxa = Option.map_option (ppExpr cvm) idx;
       in
         Sum_Type.Inl (VarRef (g, namea, resolveIdx idxa aIdx))
       end)
@@ -3725,15 +3023,10 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
     (PromelaAST.VarDeclMType (name, sze, init)) =
     let
       val inita =
-        Option.map
+        Option.map_option
           (fn mty =>
             (case Assoc_List.lookup Stringa.equal_literal m mty
-              of NONE =>
-                PromelaUtils.err
-                  (String.implode
-                    ([#"U", #"n", #"k", #"n", #"o", #"w", #"n", #" ", #"M",
-                       #"T", #"y", #"p", #"e", #" "] @
-                      String.explode mty))
+              of NONE => PromelaUtils.err ("Unknown MType " ^ mty)
               | SOME mval => ExprMConst (mval, mty)))
           init;
     in
@@ -3745,19 +3038,8 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
                      (m, a))),
                 VarDeclNum (l, h, name, sze, inita))
             | SOME _ =>
-              PromelaUtils.err
-                (String.implode
-                  ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                     #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                     #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                     #"a", #"s", #":", #" "] @
-                    String.explode name)))
-        | SOME _ =>
-          PromelaUtils.err
-            (String.implode
-              ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ",
-                 #"v", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-                String.explode name)))
+              PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+        | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
     end
   | ppVarDecl uw (VTBounded (v, va)) g
     (PromelaAST.VarDeclChan (name, sze, init)) =
@@ -3765,7 +3047,8 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
   | ppVarDecl (c, (v, (m, a))) VTChan g
     (PromelaAST.VarDeclChan (name, sze, cap)) =
     let
-      val capa = Option.map (Product_Type.apsnd (List.map ppVarType)) cap;
+      val capa =
+        Option.map_option (Product_Type.apsnd (List.map ppVarType)) cap;
     in
       (case Assoc_List.lookup Stringa.equal_literal c name
         of NONE =>
@@ -3775,19 +3058,8 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
                  (v, (m, a))),
                 VarDeclChan (name, sze, capa))
             | SOME _ =>
-              PromelaUtils.err
-                (String.implode
-                  ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                     #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                     #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                     #"a", #"s", #":", #" "] @
-                    String.explode name)))
-        | SOME _ =>
-          PromelaUtils.err
-            (String.implode
-              ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ",
-                 #"v", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-                String.explode name)))
+              PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+        | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
     end
   | ppVarDecl uu VTChan g (PromelaAST.VarDeclNum (name, sze, init)) =
     PromelaUtils.err "Assiging num to non-num"
@@ -3800,21 +3072,11 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
             ((c, (Assoc_List.update Stringa.equal_literal name (sze, g) v,
                    (m, a))),
               VarDeclNum
-                (l, h, name, sze, Option.map (ppExpr (c, (v, (m, a)))) init))
+                (l, h, name, sze,
+                  Option.map_option (ppExpr (c, (v, (m, a)))) init))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)));
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name));
 
 fun cvm_fold g cvm ss =
   List.foldl
@@ -3925,7 +3187,7 @@ fun ppStep cvm (PromelaAST.StepStmnt (s, u)) =
         end)
   end
   | ppStep (false, (ps, (i, cvm))) (PromelaAST.StepDecl d) =
-    Product_Type.map_pair (fn cvma => (false, (ps, (i, cvma)))) StepDecl
+    Product_Type.map_prod (fn cvma => (false, (ps, (i, cvma)))) StepDecl
       (ppDeclProc cvm d)
   | ppStep (true, (ps, (i, cvm))) (PromelaAST.StepDecl d) =
     let
@@ -3952,13 +3214,7 @@ and ppStmnt cvm (PromelaAST.StmntDStep we) = PromelaUtils.usc "StmntDStep"
       val (c, (v, (m, a))) = cvm;
     in
       (case Assoc_List.lookup Stringa.equal_literal inl macro
-        of NONE =>
-          PromelaUtils.err
-            (String.implode
-              ([#"C", #"a", #"l", #"l", #"i", #"n", #"g", #" ", #"u", #"n",
-                 #"k", #"n", #"o", #"w", #"n", #" ", #"m", #"a", #"c", #"r",
-                 #"o", #" "] @
-                String.explode macro))
+        of NONE => PromelaUtils.err ("Calling unknown macro " ^ macro)
         | SOME (names, sF) =>
           (if not (Arith.equal_nat (List.size_list names)
                     (List.size_list argsa))
@@ -4109,19 +3365,8 @@ fun ppProcArg vm vn vo (PromelaAST.VarDeclUnsigned (vp, vq, vr)) =
                    (m, a))),
               ProcArg (VTBounded (l, h), name))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)))
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
   | ppProcArg va vb vc (PromelaAST.VarDeclChan (vd, ve, SOME v)) =
     PromelaUtils.err "Invalid proctype arguments"
   | ppProcArg va vb vc (PromelaAST.VarDeclChan (vd, SOME v, vf)) =
@@ -4138,19 +3383,8 @@ fun ppProcArg vm vn vo (PromelaAST.VarDeclUnsigned (vp, vq, vr)) =
                (v, (m, a))),
               ProcArg (VTChan, name))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)))
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
   | ppProcArg uu uv uw (PromelaAST.VarDeclNum (ux, uy, SOME v)) =
     PromelaUtils.err "Invalid proctype arguments"
   | ppProcArg uu uv uw (PromelaAST.VarDeclNum (ux, SOME v, uz)) =
@@ -4167,19 +3401,8 @@ fun ppProcArg vm vn vo (PromelaAST.VarDeclUnsigned (vp, vq, vr)) =
                    (m, a))),
               ProcArg (VTBounded (l, h), name))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)));
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name));
 
 fun ppDeclProcArg x = liftDecl ppProcArg false x;
 
@@ -4308,6 +3531,10 @@ fun printLabels f ls =
           String.explode k @ [#":", #" "] @ f (Arith.integer_of_nat l)) ::
           a))
     [];
+
+fun labels
+  (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
+  labels;
 
 fun printProcesses f prog =
   ListMapImpl.iteratei_map_op_list_it_lm_ops (proc_data prog) (fn _ => true)

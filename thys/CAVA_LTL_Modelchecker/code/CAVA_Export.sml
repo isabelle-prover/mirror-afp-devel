@@ -27,37 +27,6 @@ fun test_bit x n =
 
 end; (* struct Uint *)
 
-(* Test that words can handle numbers between 0 and 3 *)
-val _ = if 3 <= Word.wordSize then () else raise (Fail ("wordSize less than 3"));
-
-structure Uint8 : sig
-  val set_bit : Word8.word -> IntInf.int -> bool -> Word8.word
-  val shiftl : Word8.word -> IntInf.int -> Word8.word
-  val shiftr : Word8.word -> IntInf.int -> Word8.word
-  val shiftr_signed : Word8.word -> IntInf.int -> Word8.word
-  val test_bit : Word8.word -> IntInf.int -> bool
-end = struct
-
-fun set_bit x n b =
-  let val mask = Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word8.orb (x, mask)
-     else Word8.andb (x, Word8.notb mask)
-  end
-
-fun shiftl x n =
-  Word8.<< (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun shiftr x n =
-  Word8.>> (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun shiftr_signed x n =
-  Word8.~>> (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun test_bit x n =
-  Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
-
-end; (* struct Uint8 *)
-
 (* Test that words can handle numbers between 0 and 31 *)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
@@ -378,9 +347,11 @@ end; (*struct Bits_Integer*)
     structure PromelaUtils = struct
       exception UnsupportedConstruct of string
       exception StaticError of string
+      exception RuntimeError of string
       fun warn msg = TextIO.print ("Warning: " ^ msg ^ "\n")
       fun usc  c   = raise (UnsupportedConstruct c)
       fun err  e   = raise (StaticError e)
+      fun abort msg _ = raise (RuntimeError msg)
     end 
 
 
@@ -513,33 +484,36 @@ end; (*struct Fun*)
 structure HOL : sig
   type 'a equal
   val equal : 'a equal -> 'a -> 'a -> bool
-  val eq : 'a equal -> 'a -> 'a -> bool
   datatype 'a itself = Type
+  val eq : 'a equal -> 'a -> 'a -> bool
 end = struct
 
 type 'a equal = {equal : 'a -> 'a -> bool};
 val equal = #equal : 'a equal -> 'a -> 'a -> bool;
 
-fun eq A_ a b = equal A_ a b;
-
 datatype 'a itself = Type;
+
+fun eq A_ a b = equal A_ a b;
 
 end; (*struct HOL*)
 
 structure LTL : sig
-  datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLNeg of 'a ltl |
-    LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
-    LTLUntil of 'a ltl * 'a ltl | LTLRelease of 'a ltl * 'a ltl
+  datatype 'a ltln = LTLnTrue | LTLnFalse | LTLnProp of 'a | LTLnNProp of 'a |
+    LTLnAnd of 'a ltln * 'a ltln | LTLnOr of 'a ltln * 'a ltln |
+    LTLnNext of 'a ltln | LTLnUntil of 'a ltln * 'a ltln |
+    LTLnRelease of 'a ltln * 'a ltln
+  val equal_ltlna : 'a HOL.equal -> 'a ltln -> 'a ltln -> bool
+  val equal_ltln : 'a HOL.equal -> 'a ltln HOL.equal
+  type 'a ltl
   datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc
     | LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
     LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
     LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
     LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc
-  datatype 'a ltln = LTLnTrue | LTLnFalse | LTLnProp of 'a | LTLnNProp of 'a |
-    LTLnAnd of 'a ltln * 'a ltln | LTLnOr of 'a ltln * 'a ltln |
-    LTLnNext of 'a ltln | LTLnUntil of 'a ltln * 'a ltln |
-    LTLnRelease of 'a ltln * 'a ltln
-  val ltln_rec :
+  val ltl_pushneg : 'a ltl -> 'a ltl
+  val ltl_to_ltln : 'a ltl -> 'a ltln
+  val ltlc_to_ltl : 'a ltlc -> 'a ltl
+  val rec_ltln :
     'a -> 'a -> ('b -> 'a) ->
                   ('b -> 'a) ->
                     ('b ltln -> 'b ltln -> 'a -> 'a -> 'a) ->
@@ -548,125 +522,91 @@ structure LTL : sig
                           ('b ltln -> 'b ltln -> 'a -> 'a -> 'a) ->
                             ('b ltln -> 'b ltln -> 'a -> 'a -> 'a) ->
                               'b ltln -> 'a
-  val equal_ltlna : 'a HOL.equal -> 'a ltln -> 'a ltln -> bool
-  val equal_ltln : 'a HOL.equal -> 'a ltln HOL.equal
-  val ltl_pushneg : 'a ltl -> 'a ltl
-  val ltl_to_ltln : 'a ltl -> 'a ltln
-  val ltlc_to_ltl : 'a ltlc -> 'a ltl
 end = struct
-
-datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLNeg of 'a ltl |
-  LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
-  LTLUntil of 'a ltl * 'a ltl | LTLRelease of 'a ltl * 'a ltl;
-
-datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc |
-  LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
-  LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
-  LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
-  LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc;
 
 datatype 'a ltln = LTLnTrue | LTLnFalse | LTLnProp of 'a | LTLnNProp of 'a |
   LTLnAnd of 'a ltln * 'a ltln | LTLnOr of 'a ltln * 'a ltln |
   LTLnNext of 'a ltln | LTLnUntil of 'a ltln * 'a ltln |
   LTLnRelease of 'a ltln * 'a ltln;
 
-fun ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 LTLnTrue = f1
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 LTLnFalse = f2
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnProp a) = f3 a
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnNProp a) = f4 a
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnAnd (ltln1, ltln2)) =
-    f5 ltln1 ltln2 (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
-      (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2)
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnOr (ltln1, ltln2)) =
-    f6 ltln1 ltln2 (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
-      (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2)
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnNext ltln) =
-    f7 ltln (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln)
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnUntil (ltln1, ltln2)) =
-    f8 ltln1 ltln2 (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
-      (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2)
-  | ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnRelease (ltln1, ltln2)) =
-    f9 ltln1 ltln2 (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
-      (ltln_rec f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2);
-
-fun equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) =
+fun equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnRelease (ltln1, ltln2)) =
   false
-  | equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnRelease (ltln1, ltln2)) =
+  | equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) =
     false
-  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) (LTLnNext ltln) = false
   | equal_ltlna A_ (LTLnNext ltln) (LTLnRelease (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) (LTLnNext ltln) = false
+  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) (LTLnNext ltln) = false
   | equal_ltlna A_ (LTLnNext ltln) (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnOr (ltln1, ltln2)) =
-    false
+  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) (LTLnNext ltln) = false
   | equal_ltlna A_ (LTLnOr (ltln1a, ltln2a)) (LTLnRelease (ltln1, ltln2)) =
     false
-  | equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnOr (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNext ltln) (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) (LTLnNext ltln) = false
-  | equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnAnd (ltln1, ltln2)) =
+  | equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnOr (ltln1, ltln2)) =
     false
+  | equal_ltlna A_ (LTLnOr (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) = false
+  | equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnOr (ltln1, ltln2)) = false
+  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) (LTLnNext ltln) = false
+  | equal_ltlna A_ (LTLnNext ltln) (LTLnOr (ltln1, ltln2)) = false
   | equal_ltlna A_ (LTLnAnd (ltln1a, ltln2a)) (LTLnRelease (ltln1, ltln2)) =
     false
-  | equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnAnd (ltln1, ltln2)) = false
+  | equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnAnd (ltln1, ltln2)) =
+    false
   | equal_ltlna A_ (LTLnAnd (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNext ltln) (LTLnAnd (ltln1, ltln2)) = false
+  | equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnAnd (ltln1, ltln2)) = false
   | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) (LTLnNext ltln) = false
-  | equal_ltlna A_ (LTLnOr (ltln1a, ltln2a)) (LTLnAnd (ltln1, ltln2)) = false
+  | equal_ltlna A_ (LTLnNext ltln) (LTLnAnd (ltln1, ltln2)) = false
   | equal_ltlna A_ (LTLnAnd (ltln1a, ltln2a)) (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) (LTLnNProp a) = false
+  | equal_ltlna A_ (LTLnOr (ltln1a, ltln2a)) (LTLnAnd (ltln1, ltln2)) = false
   | equal_ltlna A_ (LTLnNProp a) (LTLnRelease (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) (LTLnNProp a) = false
+  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) (LTLnNProp a) = false
   | equal_ltlna A_ (LTLnNProp a) (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNext ltln) (LTLnNProp a) = false
+  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) (LTLnNProp a) = false
   | equal_ltlna A_ (LTLnNProp a) (LTLnNext ltln) = false
-  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) (LTLnNProp a) = false
+  | equal_ltlna A_ (LTLnNext ltln) (LTLnNProp a) = false
   | equal_ltlna A_ (LTLnNProp a) (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) (LTLnNProp a) = false
+  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) (LTLnNProp a) = false
   | equal_ltlna A_ (LTLnNProp a) (LTLnAnd (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) (LTLnProp a) = false
+  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) (LTLnNProp a) = false
   | equal_ltlna A_ (LTLnProp a) (LTLnRelease (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) (LTLnProp a) = false
+  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) (LTLnProp a) = false
   | equal_ltlna A_ (LTLnProp a) (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNext ltln) (LTLnProp a) = false
+  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) (LTLnProp a) = false
   | equal_ltlna A_ (LTLnProp a) (LTLnNext ltln) = false
-  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) (LTLnProp a) = false
+  | equal_ltlna A_ (LTLnNext ltln) (LTLnProp a) = false
   | equal_ltlna A_ (LTLnProp a) (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) (LTLnProp a) = false
+  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) (LTLnProp a) = false
   | equal_ltlna A_ (LTLnProp a) (LTLnAnd (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNProp aa) (LTLnProp a) = false
+  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) (LTLnProp a) = false
   | equal_ltlna A_ (LTLnProp aa) (LTLnNProp a) = false
-  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) LTLnFalse = false
+  | equal_ltlna A_ (LTLnNProp aa) (LTLnProp a) = false
   | equal_ltlna A_ LTLnFalse (LTLnRelease (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) LTLnFalse = false
+  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) LTLnFalse = false
   | equal_ltlna A_ LTLnFalse (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNext ltln) LTLnFalse = false
+  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) LTLnFalse = false
   | equal_ltlna A_ LTLnFalse (LTLnNext ltln) = false
-  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) LTLnFalse = false
+  | equal_ltlna A_ (LTLnNext ltln) LTLnFalse = false
   | equal_ltlna A_ LTLnFalse (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) LTLnFalse = false
+  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) LTLnFalse = false
   | equal_ltlna A_ LTLnFalse (LTLnAnd (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNProp a) LTLnFalse = false
+  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) LTLnFalse = false
   | equal_ltlna A_ LTLnFalse (LTLnNProp a) = false
-  | equal_ltlna A_ (LTLnProp a) LTLnFalse = false
+  | equal_ltlna A_ (LTLnNProp a) LTLnFalse = false
   | equal_ltlna A_ LTLnFalse (LTLnProp a) = false
-  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) LTLnTrue = false
+  | equal_ltlna A_ (LTLnProp a) LTLnFalse = false
   | equal_ltlna A_ LTLnTrue (LTLnRelease (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) LTLnTrue = false
+  | equal_ltlna A_ (LTLnRelease (ltln1, ltln2)) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue (LTLnUntil (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNext ltln) LTLnTrue = false
+  | equal_ltlna A_ (LTLnUntil (ltln1, ltln2)) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue (LTLnNext ltln) = false
-  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) LTLnTrue = false
+  | equal_ltlna A_ (LTLnNext ltln) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue (LTLnOr (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) LTLnTrue = false
+  | equal_ltlna A_ (LTLnOr (ltln1, ltln2)) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue (LTLnAnd (ltln1, ltln2)) = false
-  | equal_ltlna A_ (LTLnNProp a) LTLnTrue = false
+  | equal_ltlna A_ (LTLnAnd (ltln1, ltln2)) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue (LTLnNProp a) = false
-  | equal_ltlna A_ (LTLnProp a) LTLnTrue = false
+  | equal_ltlna A_ (LTLnNProp a) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue (LTLnProp a) = false
-  | equal_ltlna A_ LTLnFalse LTLnTrue = false
+  | equal_ltlna A_ (LTLnProp a) LTLnTrue = false
   | equal_ltlna A_ LTLnTrue LTLnFalse = false
+  | equal_ltlna A_ LTLnFalse LTLnTrue = false
   | equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnRelease (ltln1, ltln2)) =
     equal_ltlna A_ ltln1a ltln1 andalso equal_ltlna A_ ltln2a ltln2
   | equal_ltlna A_ (LTLnUntil (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) =
@@ -682,6 +622,16 @@ fun equal_ltlna A_ (LTLnRelease (ltln1a, ltln2a)) (LTLnUntil (ltln1, ltln2)) =
   | equal_ltlna A_ LTLnTrue LTLnTrue = true;
 
 fun equal_ltln A_ = {equal = equal_ltlna A_} : 'a ltln HOL.equal;
+
+datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLNeg of 'a ltl |
+  LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
+  LTLUntil of 'a ltl * 'a ltl | LTLRelease of 'a ltl * 'a ltl;
+
+datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc |
+  LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
+  LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
+  LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
+  LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc;
 
 fun ltl_pushneg LTLTrue = LTLTrue
   | ltl_pushneg LTLFalse = LTLFalse
@@ -742,6 +692,25 @@ fun ltlc_to_ltl LTLcTrue = LTLTrue
   | ltlc_to_ltl (LTLcRelease (phi, psi)) =
     LTLRelease (ltlc_to_ltl phi, ltlc_to_ltl psi);
 
+fun rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 LTLnTrue = f1
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 LTLnFalse = f2
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnProp a) = f3 a
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnNProp a) = f4 a
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnAnd (ltln1, ltln2)) =
+    f5 ltln1 ltln2 (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
+      (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2)
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnOr (ltln1, ltln2)) =
+    f6 ltln1 ltln2 (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
+      (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2)
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnNext ltln) =
+    f7 ltln (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln)
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnUntil (ltln1, ltln2)) =
+    f8 ltln1 ltln2 (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
+      (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2)
+  | rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 (LTLnRelease (ltln1, ltln2)) =
+    f9 ltln1 ltln2 (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln1)
+      (rec_ltln f1 f2 f3 f4 f5 f6 f7 f8 f9 ltln2);
+
 end; (*struct LTL*)
 
 structure Map : sig
@@ -755,35 +724,34 @@ fun map_of A_ ((l, v) :: ps) k =
 end; (*struct Map*)
 
 structure Product_Type : sig
-  val fst : 'a * 'b -> 'a
-  val snd : 'a * 'b -> 'b
+  val equal_prod : 'a HOL.equal -> 'b HOL.equal -> ('a * 'b) HOL.equal
+  val equal_unit : unit HOL.equal
   val apfst : ('a -> 'b) -> 'a * 'c -> 'b * 'c
   val apsnd : ('a -> 'b) -> 'c * 'a -> 'c * 'b
-  val map_pair : ('a -> 'b) -> ('c -> 'd) -> 'a * 'c -> 'b * 'd
-  val equal_proda : 'a HOL.equal -> 'b HOL.equal -> 'a * 'b -> 'a * 'b -> bool
-  val equal_prod : 'a HOL.equal -> 'b HOL.equal -> ('a * 'b) HOL.equal
-  val equal_unita : unit -> unit -> bool
-  val equal_unit : unit HOL.equal
+  val map_prod : ('a -> 'b) -> ('c -> 'd) -> 'a * 'c -> 'b * 'd
+  val fst : 'a * 'b -> 'a
+  val snd : 'a * 'b -> 'b
   val equal_bool : bool -> bool -> bool
 end = struct
 
-fun fst (a, b) = a;
-
-fun snd (a, b) = b;
-
-fun apfst f (x, y) = (f x, y);
-
-fun apsnd f (x, y) = (x, f y);
-
-fun map_pair f g (a, b) = (f a, g b);
-
-fun equal_proda A_ B_ (aa, ba) (a, b) = HOL.eq A_ aa a andalso HOL.eq B_ ba b;
+fun equal_proda A_ B_ (x1, x2) (y1, y2) =
+  HOL.eq A_ x1 y1 andalso HOL.eq B_ x2 y2;
 
 fun equal_prod A_ B_ = {equal = equal_proda A_ B_} : ('a * 'b) HOL.equal;
 
 fun equal_unita u v = true;
 
 val equal_unit = {equal = equal_unita} : unit HOL.equal;
+
+fun apfst f (x, y) = (f x, y);
+
+fun apsnd f (x, y) = (x, f y);
+
+fun map_prod f g (a, b) = (f a, g b);
+
+fun fst (x1, x2) = x1;
+
+fun snd (x1, x2) = x2;
 
 fun equal_bool p true = p
   | equal_bool p false = not p
@@ -796,20 +764,18 @@ structure Orderings : sig
   type 'a ord
   val less_eq : 'a ord -> 'a -> 'a -> bool
   val less : 'a ord -> 'a -> 'a -> bool
-  val max : 'a ord -> 'a -> 'a -> 'a
   type 'a preorder
   val ord_preorder : 'a preorder -> 'a ord
   type 'a order
   val preorder_order : 'a order -> 'a preorder
   type 'a linorder
   val order_linorder : 'a linorder -> 'a order
+  val max : 'a ord -> 'a -> 'a -> 'a
 end = struct
 
 type 'a ord = {less_eq : 'a -> 'a -> bool, less : 'a -> 'a -> bool};
 val less_eq = #less_eq : 'a ord -> 'a -> 'a -> bool;
 val less = #less : 'a ord -> 'a -> 'a -> bool;
-
-fun max A_ a b = (if less_eq A_ a b then b else a);
 
 type 'a preorder = {ord_preorder : 'a ord};
 val ord_preorder = #ord_preorder : 'a preorder -> 'a ord;
@@ -819,6 +785,8 @@ val preorder_order = #preorder_order : 'a order -> 'a preorder;
 
 type 'a linorder = {order_linorder : 'a order};
 val order_linorder = #order_linorder : 'a linorder -> 'a order;
+
+fun max A_ a b = (if less_eq A_ a b then b else a);
 
 end; (*struct Orderings*)
 
@@ -851,110 +819,79 @@ fun part B_ f pivot (x :: xs) =
 end; (*struct Multiset*)
 
 structure Arith : sig
-  datatype int = Int_of_integer of IntInf.int
-  datatype nat = Nat of IntInf.int
-  datatype num = One | Bit0 of num | Bit1 of num
-  val integer_of_int : int -> IntInf.int
-  val ord_integer : IntInf.int Orderings.ord
-  val nat : int -> nat
+  type nat
   val integer_of_nat : nat -> IntInf.int
-  val plus_nata : nat -> nat -> nat
-  val one_nata : nat
-  val suc : nat -> nat
+  val equal_nata : nat -> nat -> bool
+  val equal_nat : nat HOL.equal
+  val times_nata : nat -> nat -> nat
   type 'a times
   val times : 'a times -> 'a -> 'a -> 'a
   type 'a dvd
   val times_dvd : 'a dvd -> 'a times
+  datatype num = One | Bit0 of num | Bit1 of num
+  val one_nata : nat
   type 'a one
   val one : 'a one -> 'a
-  val times_nata : nat -> nat -> nat
-  val times_nat : nat times
-  val dvd_nat : nat dvd
   val one_nat : nat one
-  val less_eq_nat : nat -> nat -> bool
-  val less_nat : nat -> nat -> bool
-  val ord_nat : nat Orderings.ord
+  val abs_integer : IntInf.int -> IntInf.int
+  val mod_integer : IntInf.int -> IntInf.int -> IntInf.int
+  val mod_nat : nat -> nat -> nat
+  val div_integer : IntInf.int -> IntInf.int -> IntInf.int
+  val div_nata : nat -> nat -> nat
   type 'a diva
   val dvd_div : 'a diva -> 'a dvd
   val diva : 'a diva -> 'a -> 'a -> 'a
   val moda : 'a diva -> 'a -> 'a -> 'a
+  val div_nat : nat diva
+  val plus_nata : nat -> nat -> nat
   type 'a plus
   val plus : 'a plus -> 'a -> 'a -> 'a
-  type 'a zero
-  val zero : 'a zero -> 'a
   val plus_nat : nat plus
   val zero_nata : nat
+  type 'a zero
+  val zero : 'a zero -> 'a
   val zero_nat : nat zero
   type 'a semigroup_add
   val plus_semigroup_add : 'a semigroup_add -> 'a plus
   type 'a numeral
   val one_numeral : 'a numeral -> 'a one
   val semigroup_add_numeral : 'a numeral -> 'a semigroup_add
-  val numeral : 'a numeral -> num -> 'a
+  val numeral_nat : nat numeral
+  val less_eq_nat : nat -> nat -> bool
+  val less_nat : nat -> nat -> bool
+  val ord_nat : nat Orderings.ord
+  val linorder_nat : nat Orderings.linorder
+  val equal_integer : IntInf.int HOL.equal
+  val numeral_integer : IntInf.int numeral
   type 'a power
-  val one_power : 'a power -> 'a one
-  val times_power : 'a power -> 'a times
+  val power_integer : IntInf.int power
+  val linorder_integer : IntInf.int Orderings.linorder
+  datatype int = Int_of_integer of IntInf.int
+  val integer_of_int : int -> IntInf.int
+  val nat : int -> nat
+  val suc : nat -> nat
   val minus_nat : nat -> nat -> nat
-  val equal_nata : nat -> nat -> bool
-  val powera : 'a -> ('a -> 'a -> 'a) -> 'a -> nat -> 'a
-  val power : 'a power -> 'a -> nat -> 'a
+  val divmod_nat : nat -> nat -> nat * nat
+  val powera : 'a power -> 'a -> nat -> 'a
   val less_int : int -> int -> bool
+  val numeral : 'a numeral -> num -> 'a
+  val int_of_nat : nat -> int
   val plus_int : int -> int -> int
   val zero_int : int
-  val equal_nat : nat HOL.equal
-  val preorder_nat : nat Orderings.preorder
-  val order_nat : nat Orderings.order
-  val sgn_integer : IntInf.int -> IntInf.int
-  val abs_integer : IntInf.int -> IntInf.int
-  val divmod_integer : IntInf.int -> IntInf.int -> IntInf.int * IntInf.int
-  val mod_integer : IntInf.int -> IntInf.int -> IntInf.int
-  val mod_nat : nat -> nat -> nat
-  val div_integer : IntInf.int -> IntInf.int -> IntInf.int
-  val div_nata : nat -> nat -> nat
-  val div_nat : nat diva
-  val uminus_int : int -> int
-  val semigroup_add_nat : nat semigroup_add
-  val numeral_nat : nat numeral
-  val less_eq_int : int -> int -> bool
-  val linorder_nat : nat Orderings.linorder
-  val divmod_nat : nat -> nat -> nat * nat
-  val one_integera : IntInf.int
-  val one_integer : IntInf.int one
-  val plus_integer : IntInf.int plus
-  val equal_integer : IntInf.int HOL.equal
-  val preorder_integer : IntInf.int Orderings.preorder
-  val order_integer : IntInf.int Orderings.order
-  val times_integer : IntInf.int times
-  val power_integer : IntInf.int power
-  val int_of_nat : nat -> int
   val nat_of_integer : IntInf.int -> nat
-  val semigroup_add_integer : IntInf.int semigroup_add
-  val numeral_integer : IntInf.int numeral
-  val linorder_integer : IntInf.int Orderings.linorder
+  val less_eq_int : int -> int -> bool
+  val uminus_int : int -> int
 end = struct
-
-datatype int = Int_of_integer of IntInf.int;
 
 datatype nat = Nat of IntInf.int;
 
-datatype num = One | Bit0 of num | Bit1 of num;
-
-fun integer_of_int (Int_of_integer k) = k;
-
-val ord_integer =
-  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
-    less = (fn a => fn b => IntInf.< (a, b))}
-  : IntInf.int Orderings.ord;
-
-fun nat k = Nat (Orderings.max ord_integer 0 (integer_of_int k));
-
 fun integer_of_nat (Nat x) = x;
 
-fun plus_nata m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
+fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
 
-val one_nata : nat = Nat (1 : IntInf.int);
+val equal_nat = {equal = equal_nata} : nat HOL.equal;
 
-fun suc n = plus_nata n one_nata;
+fun times_nata m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
 
 type 'a times = {times : 'a -> 'a -> 'a};
 val times = #times : 'a times -> 'a -> 'a -> 'a;
@@ -962,98 +899,22 @@ val times = #times : 'a times -> 'a -> 'a -> 'a;
 type 'a dvd = {times_dvd : 'a times};
 val times_dvd = #times_dvd : 'a dvd -> 'a times;
 
-type 'a one = {one : 'a};
-val one = #one : 'a one -> 'a;
-
-fun times_nata m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
-
 val times_nat = {times = times_nata} : nat times;
 
 val dvd_nat = {times_dvd = times_nat} : nat dvd;
 
+datatype num = One | Bit0 of num | Bit1 of num;
+
+val one_nata : nat = Nat (1 : IntInf.int);
+
+type 'a one = {one : 'a};
+val one = #one : 'a one -> 'a;
+
 val one_nat = {one = one_nata} : nat one;
-
-fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
-
-fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
-
-val ord_nat = {less_eq = less_eq_nat, less = less_nat} : nat Orderings.ord;
-
-type 'a diva = {dvd_div : 'a dvd, diva : 'a -> 'a -> 'a, moda : 'a -> 'a -> 'a};
-val dvd_div = #dvd_div : 'a diva -> 'a dvd;
-val diva = #diva : 'a diva -> 'a -> 'a -> 'a;
-val moda = #moda : 'a diva -> 'a -> 'a -> 'a;
-
-type 'a plus = {plus : 'a -> 'a -> 'a};
-val plus = #plus : 'a plus -> 'a -> 'a -> 'a;
-
-type 'a zero = {zero : 'a};
-val zero = #zero : 'a zero -> 'a;
-
-val plus_nat = {plus = plus_nata} : nat plus;
-
-val zero_nata : nat = Nat 0;
-
-val zero_nat = {zero = zero_nata} : nat zero;
-
-type 'a semigroup_add = {plus_semigroup_add : 'a plus};
-val plus_semigroup_add = #plus_semigroup_add : 'a semigroup_add -> 'a plus;
-
-type 'a numeral =
-  {one_numeral : 'a one, semigroup_add_numeral : 'a semigroup_add};
-val one_numeral = #one_numeral : 'a numeral -> 'a one;
-val semigroup_add_numeral = #semigroup_add_numeral :
-  'a numeral -> 'a semigroup_add;
-
-fun numeral A_ (Bit1 n) =
-  let
-    val m = numeral A_ n;
-  in
-    plus ((plus_semigroup_add o semigroup_add_numeral) A_)
-      (plus ((plus_semigroup_add o semigroup_add_numeral) A_) m m)
-      (one (one_numeral A_))
-  end
-  | numeral A_ (Bit0 n) =
-    let
-      val m = numeral A_ n;
-    in
-      plus ((plus_semigroup_add o semigroup_add_numeral) A_) m m
-    end
-  | numeral A_ One = one (one_numeral A_);
-
-type 'a power = {one_power : 'a one, times_power : 'a times};
-val one_power = #one_power : 'a power -> 'a one;
-val times_power = #times_power : 'a power -> 'a times;
-
-fun minus_nat m n =
-  Nat (Orderings.max ord_integer 0
-        (IntInf.- (integer_of_nat m, integer_of_nat n)));
-
-fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
-
-fun powera one times a n =
-  (if equal_nata n zero_nata then one
-    else times a (powera one times a (minus_nat n one_nata)));
-
-fun power A_ = powera (one (one_power A_)) (times (times_power A_));
-
-fun less_int k l = IntInf.< (integer_of_int k, integer_of_int l);
-
-fun plus_int k l =
-  Int_of_integer (IntInf.+ (integer_of_int k, integer_of_int l));
-
-val zero_int : int = Int_of_integer 0;
-
-val equal_nat = {equal = equal_nata} : nat HOL.equal;
-
-val preorder_nat = {ord_preorder = ord_nat} : nat Orderings.preorder;
-
-val order_nat = {preorder_order = preorder_nat} : nat Orderings.order;
 
 fun sgn_integer k =
   (if ((k : IntInf.int) = 0) then 0
-    else (if IntInf.< (k, 0) then IntInf.~ (1 : IntInf.int)
-           else (1 : IntInf.int)));
+    else (if IntInf.< (k, 0) then (~1 : IntInf.int) else (1 : IntInf.int)));
 
 fun abs_integer k = (if IntInf.< (k, 0) then IntInf.~ k else k);
 
@@ -1081,9 +942,35 @@ fun div_integer k l = Product_Type.fst (divmod_integer k l);
 
 fun div_nata m n = Nat (div_integer (integer_of_nat m) (integer_of_nat n));
 
+type 'a diva = {dvd_div : 'a dvd, diva : 'a -> 'a -> 'a, moda : 'a -> 'a -> 'a};
+val dvd_div = #dvd_div : 'a diva -> 'a dvd;
+val diva = #diva : 'a diva -> 'a -> 'a -> 'a;
+val moda = #moda : 'a diva -> 'a -> 'a -> 'a;
+
 val div_nat = {dvd_div = dvd_nat, diva = div_nata, moda = mod_nat} : nat diva;
 
-fun uminus_int k = Int_of_integer (IntInf.~ (integer_of_int k));
+fun plus_nata m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
+
+type 'a plus = {plus : 'a -> 'a -> 'a};
+val plus = #plus : 'a plus -> 'a -> 'a -> 'a;
+
+val plus_nat = {plus = plus_nata} : nat plus;
+
+val zero_nata : nat = Nat 0;
+
+type 'a zero = {zero : 'a};
+val zero = #zero : 'a zero -> 'a;
+
+val zero_nat = {zero = zero_nata} : nat zero;
+
+type 'a semigroup_add = {plus_semigroup_add : 'a plus};
+val plus_semigroup_add = #plus_semigroup_add : 'a semigroup_add -> 'a plus;
+
+type 'a numeral =
+  {one_numeral : 'a one, semigroup_add_numeral : 'a semigroup_add};
+val one_numeral = #one_numeral : 'a numeral -> 'a one;
+val semigroup_add_numeral = #semigroup_add_numeral :
+  'a numeral -> 'a semigroup_add;
 
 val semigroup_add_nat = {plus_semigroup_add = plus_nat} : nat semigroup_add;
 
@@ -1091,36 +978,26 @@ val numeral_nat =
   {one_numeral = one_nat, semigroup_add_numeral = semigroup_add_nat} :
   nat numeral;
 
-fun less_eq_int k l = IntInf.<= (integer_of_int k, integer_of_int l);
+fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
+
+fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
+
+val ord_nat = {less_eq = less_eq_nat, less = less_nat} : nat Orderings.ord;
+
+val preorder_nat = {ord_preorder = ord_nat} : nat Orderings.preorder;
+
+val order_nat = {preorder_order = preorder_nat} : nat Orderings.order;
 
 val linorder_nat = {order_linorder = order_nat} : nat Orderings.linorder;
 
-fun divmod_nat m n = (div_nata m n, mod_nat m n);
+val equal_integer = {equal = (fn a => fn b => ((a : IntInf.int) = b))} :
+  IntInf.int HOL.equal;
 
 val one_integera : IntInf.int = (1 : IntInf.int);
 
 val one_integer = {one = one_integera} : IntInf.int one;
 
 val plus_integer = {plus = (fn a => fn b => IntInf.+ (a, b))} : IntInf.int plus;
-
-val equal_integer = {equal = (fn a => fn b => ((a : IntInf.int) = b))} :
-  IntInf.int HOL.equal;
-
-val preorder_integer = {ord_preorder = ord_integer} :
-  IntInf.int Orderings.preorder;
-
-val order_integer = {preorder_order = preorder_integer} :
-  IntInf.int Orderings.order;
-
-val times_integer = {times = (fn a => fn b => IntInf.* (a, b))} :
-  IntInf.int times;
-
-val power_integer = {one_power = one_integer, times_power = times_integer} :
-  IntInf.int power;
-
-fun int_of_nat n = Int_of_integer (integer_of_nat n);
-
-fun nat_of_integer k = Nat (Orderings.max ord_integer 0 k);
 
 val semigroup_add_integer = {plus_semigroup_add = plus_integer} :
   IntInf.int semigroup_add;
@@ -1129,15 +1006,86 @@ val numeral_integer =
   {one_numeral = one_integer, semigroup_add_numeral = semigroup_add_integer} :
   IntInf.int numeral;
 
+type 'a power = {one_power : 'a one, times_power : 'a times};
+val one_power = #one_power : 'a power -> 'a one;
+val times_power = #times_power : 'a power -> 'a times;
+
+val times_integer = {times = (fn a => fn b => IntInf.* (a, b))} :
+  IntInf.int times;
+
+val power_integer = {one_power = one_integer, times_power = times_integer} :
+  IntInf.int power;
+
+val ord_integer =
+  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
+    less = (fn a => fn b => IntInf.< (a, b))}
+  : IntInf.int Orderings.ord;
+
+val preorder_integer = {ord_preorder = ord_integer} :
+  IntInf.int Orderings.preorder;
+
+val order_integer = {preorder_order = preorder_integer} :
+  IntInf.int Orderings.order;
+
 val linorder_integer = {order_linorder = order_integer} :
   IntInf.int Orderings.linorder;
+
+datatype int = Int_of_integer of IntInf.int;
+
+fun integer_of_int (Int_of_integer k) = k;
+
+fun nat k = Nat (Orderings.max ord_integer 0 (integer_of_int k));
+
+fun suc n = plus_nata n one_nata;
+
+fun minus_nat m n =
+  Nat (Orderings.max ord_integer 0
+        (IntInf.- (integer_of_nat m, integer_of_nat n)));
+
+fun power one times a n =
+  (if equal_nata n zero_nata then one
+    else times a (power one times a (minus_nat n one_nata)));
+
+fun divmod_nat m n = (div_nata m n, mod_nat m n);
+
+fun powera A_ = power (one (one_power A_)) (times (times_power A_));
+
+fun less_int k l = IntInf.< (integer_of_int k, integer_of_int l);
+
+fun numeral A_ (Bit1 n) =
+  let
+    val m = numeral A_ n;
+  in
+    plus ((plus_semigroup_add o semigroup_add_numeral) A_)
+      (plus ((plus_semigroup_add o semigroup_add_numeral) A_) m m)
+      (one (one_numeral A_))
+  end
+  | numeral A_ (Bit0 n) =
+    let
+      val m = numeral A_ n;
+    in
+      plus ((plus_semigroup_add o semigroup_add_numeral) A_) m m
+    end
+  | numeral A_ One = one (one_numeral A_);
+
+fun int_of_nat n = Int_of_integer (integer_of_nat n);
+
+fun plus_int k l =
+  Int_of_integer (IntInf.+ (integer_of_int k, integer_of_int l));
+
+val zero_int : int = Int_of_integer 0;
+
+fun nat_of_integer k = Nat (Orderings.max ord_integer 0 k);
+
+fun less_eq_int k l = IntInf.<= (integer_of_int k, integer_of_int l);
+
+fun uminus_int k = Int_of_integer (IntInf.~ (integer_of_int k));
 
 end; (*struct Arith*)
 
 structure List : sig
-  val hd : 'a list -> 'a
-  val tl : 'a list -> 'a list
-  val map : ('a -> 'b) -> 'a list -> 'b list
+  val equal_lista : 'a HOL.equal -> 'a list -> 'a list -> bool
+  val equal_list : 'a HOL.equal -> ('a list) HOL.equal
   val nth : 'a list -> Arith.nat -> 'a
   val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
   val rev : 'a list -> 'a list
@@ -1154,27 +1102,27 @@ structure List : sig
   val member : 'a HOL.equal -> 'a list -> 'a -> bool
   val insert : 'a HOL.equal -> 'a -> 'a list -> 'a list
   val butlast : 'a list -> 'a list
+  val hd : 'a list -> 'a
+  val tl : 'a list -> 'a list
   val remdups : 'a HOL.equal -> 'a list -> 'a list
-  val gen_length : Arith.nat -> 'a list -> Arith.nat
-  val size_list : 'a list -> Arith.nat
-  val sort_key : 'b Orderings.linorder -> ('a -> 'b) -> 'a list -> 'a list
+  val map : ('a -> 'b) -> 'a list -> 'b list
   val enumerate : Arith.nat -> 'a list -> (Arith.nat * 'a) list
-  val equal_lista : 'a HOL.equal -> 'a list -> 'a list -> bool
-  val equal_list : 'a HOL.equal -> ('a list) HOL.equal
   val replicate : Arith.nat -> 'a -> 'a list
-  val insort_key :
-    'b Orderings.linorder -> ('a -> 'b) -> 'a -> 'a list -> 'a list
   val list_update : 'a list -> Arith.nat -> 'a -> 'a list
   val all_interval_nat : (Arith.nat -> bool) -> Arith.nat -> Arith.nat -> bool
+  val size_list : 'a list -> Arith.nat
+  val sort_key : 'b Orderings.linorder -> ('a -> 'b) -> 'a list -> 'a list
+  val insort_key :
+    'b Orderings.linorder -> ('a -> 'b) -> 'a -> 'a list -> 'a list
 end = struct
 
-fun hd (x :: xs) = x;
+fun equal_lista A_ [] (x21 :: x22) = false
+  | equal_lista A_ (x21 :: x22) [] = false
+  | equal_lista A_ (x21 :: x22) (y21 :: y22) =
+    HOL.eq A_ x21 y21 andalso equal_lista A_ x22 y22
+  | equal_lista A_ [] [] = true;
 
-fun tl [] = []
-  | tl (x :: xs) = xs;
-
-fun map f [] = []
-  | map f (x :: xs) = f x :: map f xs;
+fun equal_list A_ = {equal = equal_lista A_} : ('a list) HOL.equal;
 
 fun nth (x :: xs) n =
   (if Arith.equal_nata n Arith.zero_nata then x
@@ -1221,12 +1169,35 @@ fun insert A_ x xs = (if member A_ xs x then xs else x :: xs);
 fun butlast [] = []
   | butlast (x :: xs) = (if null xs then [] else x :: butlast xs);
 
+fun hd (x21 :: x22) = x21;
+
+fun tl [] = []
+  | tl (x21 :: x22) = x22;
+
 fun remdups A_ [] = []
   | remdups A_ (x :: xs) =
     (if member A_ xs x then remdups A_ xs else x :: remdups A_ xs);
 
+fun map fi [] = []
+  | map fi (x21a :: x22) = fi x21a :: map fi x22;
+
+fun enumerate n (x :: xs) = (n, x) :: enumerate (Arith.suc n) xs
+  | enumerate n [] = [];
+
+fun replicate n x =
+  (if Arith.equal_nata n Arith.zero_nata then []
+    else x :: replicate (Arith.minus_nat n Arith.one_nata) x);
+
 fun gen_length n (x :: xs) = gen_length (Arith.suc n) xs
   | gen_length n [] = n;
+
+fun list_update [] i y = []
+  | list_update (x :: xs) i y =
+    (if Arith.equal_nata i Arith.zero_nata then y :: xs
+      else x :: list_update xs (Arith.minus_nat i Arith.one_nata) y);
+
+fun all_interval_nat p i j =
+  Arith.less_eq_nat j i orelse p i andalso all_interval_nat p (Arith.suc i) j;
 
 fun size_list x = gen_length Arith.zero_nata x;
 
@@ -1251,21 +1222,6 @@ fun sort_key B_ f xs =
         sort_key B_ f lts @ eqs @ sort_key B_ f gts
       end);
 
-fun enumerate n (x :: xs) = (n, x) :: enumerate (Arith.suc n) xs
-  | enumerate n [] = [];
-
-fun equal_lista A_ (a :: lista) [] = false
-  | equal_lista A_ [] (a :: lista) = false
-  | equal_lista A_ (aa :: listaa) (a :: lista) =
-    HOL.eq A_ aa a andalso equal_lista A_ listaa lista
-  | equal_lista A_ [] [] = true;
-
-fun equal_list A_ = {equal = equal_lista A_} : ('a list) HOL.equal;
-
-fun replicate n x =
-  (if Arith.equal_nata n Arith.zero_nata then []
-    else x :: replicate (Arith.minus_nat n Arith.one_nata) x);
-
 fun insort_key B_ f x [] = [x]
   | insort_key B_ f x (y :: ys) =
     (if Orderings.less_eq
@@ -1274,14 +1230,6 @@ fun insort_key B_ f x [] = [x]
             B_)
           (f x) (f y)
       then x :: y :: ys else y :: insort_key B_ f x ys);
-
-fun list_update [] i y = []
-  | list_update (x :: xs) i y =
-    (if Arith.equal_nata i Arith.zero_nata then y :: xs
-      else x :: list_update xs (Arith.minus_nat i Arith.one_nata) y);
-
-fun all_interval_nat p i j =
-  Arith.less_eq_nat j i orelse p i andalso all_interval_nat p (Arith.suc i) j;
 
 end; (*struct List*)
 
@@ -1323,7 +1271,7 @@ fun update A_ k v [] = [(k, v)]
 end; (*struct AList*)
 
 structure Dlist : sig
-  datatype 'a dlist = Dlist of 'a list
+  type 'a dlist
   val empty : 'a dlist
   val list_of_dlist : 'a dlist -> 'a list
   val insert : 'a HOL.equal -> 'a -> 'a dlist -> 'a dlist
@@ -1350,11 +1298,10 @@ fun foldli [] c f sigma = sigma
 end; (*struct Foldi*)
 
 structure Lasso : sig
-  datatype ('a, 'b) lasso_ext = Lasso_ext of 'a list * 'a * 'a list * 'b
+  type ('a, 'b) lasso_ext
   val lasso_reach : ('a, 'b) lasso_ext -> 'a list
   val lasso_va : ('a, 'b) lasso_ext -> 'a
   val lasso_v0 : ('a, 'b) lasso_ext -> 'a
-  val lasso_cysfx : ('a, 'b) lasso_ext -> 'a list
   val map_lasso : ('a -> 'b) -> ('a, 'c) lasso_ext -> ('b, unit) lasso_ext
   val lasso_cycle : ('a, 'b) lasso_ext -> 'a list
   val lasso_of_prpl : 'a list * 'a list -> ('a, unit) lasso_ext
@@ -1407,23 +1354,23 @@ fun equal_iarray A_ asa bs = List.equal_lista A_ (list_of asa) (list_of bs);
 end; (*struct IArray*)
 
 structure Option : sig
-  val map : ('a -> 'b) -> 'a option -> 'b option
-  val the : 'a option -> 'a
   val is_none : 'a option -> bool
+  val the : 'a option -> 'a
+  val map_option : ('a -> 'b) -> 'a option -> 'b option
   val equal_option : 'a HOL.equal -> 'a option -> 'a option -> bool
 end = struct
-
-fun map f (SOME x) = SOME (f x)
-  | map f NONE = NONE;
-
-fun the (SOME x) = x;
 
 fun is_none (SOME x) = false
   | is_none NONE = true;
 
-fun equal_option A_ (SOME a) NONE = false
-  | equal_option A_ NONE (SOME a) = false
-  | equal_option A_ (SOME aa) (SOME a) = HOL.eq A_ aa a
+fun the (SOME x2) = x2;
+
+fun map_option fi NONE = NONE
+  | map_option fi (SOME x2a) = SOME (fi x2a);
+
+fun equal_option A_ NONE (SOME x2) = false
+  | equal_option A_ (SOME x2) NONE = false
+  | equal_option A_ (SOME x2) (SOME y2) = HOL.eq A_ x2 y2
   | equal_option A_ NONE NONE = true;
 
 end; (*struct Option*)
@@ -1438,6 +1385,14 @@ fun set_bit_integer x i b = Bits_Integer.set_bit x (Arith.integer_of_nat i) b;
 fun test_bit_integer x n = Bits_Integer.test_bit x (Arith.integer_of_nat n);
 
 end; (*struct Bit_Int*)
+
+structure While_Combinator : sig
+  val whilea : ('a -> bool) -> ('a -> 'a) -> 'a -> 'a
+end = struct
+
+fun whilea b c s = (if b s then whilea b c (c s) else s);
+
+end; (*struct While_Combinator*)
 
 structure Gen_Set : sig
   val gen_bex :
@@ -1464,6 +1419,8 @@ structure Gen_Set : sig
       ('c -> 'd -> 'd) -> 'a -> 'd -> 'd
   val gen_subseteq :
     ('a -> ('b -> bool) -> bool) -> ('b -> 'c -> bool) -> 'a -> 'c -> bool
+  val atLeastLessThan_tr :
+    'a -> (Arith.nat -> 'a -> 'a) -> Arith.nat -> Arith.nat -> 'a
 end = struct
 
 fun gen_bex it s p = it s not (fn x => fn _ => p x) false;
@@ -1487,10 +1444,20 @@ fun gen_union it ins a b = it a (fn _ => true) ins b;
 
 fun gen_subseteq ball1 mem2 s1 s2 = ball1 s1 (fn x => mem2 x s2);
 
+fun atLeastLessThan_tr emp ins a b =
+  let
+    val (_, ba) =
+      While_Combinator.whilea (fn (xc, _) => Arith.less_nat xc b)
+        (fn (aa, ba) => (Arith.plus_nata aa Arith.one_nata, ins aa ba))
+        (a, emp);
+  in
+    ba
+  end;
+
 end; (*struct Gen_Set*)
 
 structure Mapping : sig
-  datatype ('a, 'b) mapping = Mapping of ('a * 'b) list
+  type ('a, 'b) mapping
   val empty : ('a, 'b) mapping
   val lookup : 'a HOL.equal -> ('a, 'b) mapping -> 'a -> 'b option
   val update : 'a HOL.equal -> 'a -> 'b -> ('a, 'b) mapping -> ('a, 'b) mapping
@@ -1556,9 +1523,6 @@ end; (*struct Refine_Transfer*)
 
 structure Impl_List_Map : sig
   val list_map_lookup : ('a -> 'a -> bool) -> 'a -> ('a * 'b) list -> 'b option
-  val list_map_update_aux :
-    ('a -> 'a -> bool) ->
-      'a -> 'b -> ('a * 'b) list -> ('a * 'b) list -> ('a * 'b) list
   val list_map_update :
     ('a -> 'a -> bool) -> 'a -> 'b -> ('a * 'b) list -> ('a * 'b) list
   val list_map_isEmpty : ('a * 'b) list -> bool
@@ -1585,10 +1549,6 @@ fun list_map_pick_remove [] = (raise Fail "undefined")
 end; (*struct Impl_List_Map*)
 
 structure Idx_Iterator : sig
-  val idx_iteratei_aux :
-    ('a -> Arith.nat -> 'b) ->
-      Arith.nat ->
-        Arith.nat -> 'a -> ('c -> bool) -> ('b -> 'c -> 'c) -> 'c -> 'c
   val idx_iteratei :
     ('a -> Arith.nat -> 'b) ->
       ('a -> Arith.nat) -> 'a -> ('c -> bool) -> ('b -> 'c -> 'c) -> 'c -> 'c
@@ -1648,40 +1608,11 @@ fun array_shrink a =
 end; (*struct Diff_Array*)
 
 structure Impl_Array_Hash_Map : sig
-  datatype ('a, 'b) hashmap =
-    HashMap of (('a * 'b) list) FArray.IsabelleMapping.ArrayType * Arith.nat
-  val hm_grow : ('a, 'b) hashmap -> Arith.nat
-  val new_hashmap_with : Arith.nat -> ('a, 'b) hashmap
+  type ('a, 'b) hashmap
   val ahm_empty : Arith.nat -> ('a, 'b) hashmap
-  val load_factor : Arith.nat
-  val ahm_filled : ('a, 'b) hashmap -> bool
-  val ahm_lookup_aux :
-    ('a -> 'a -> bool) ->
-      (Arith.nat -> 'a -> Arith.nat) ->
-        'a -> (('a * 'b) list) FArray.IsabelleMapping.ArrayType -> 'b option
   val ahm_lookup :
     ('a -> 'a -> bool) ->
       (Arith.nat -> 'a -> Arith.nat) -> 'a -> ('a, 'b) hashmap -> 'b option
-  val ahm_iteratei_aux :
-    (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-      ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
-  val ahm_rehash_auxa :
-    (Arith.nat -> 'a -> Arith.nat) ->
-      Arith.nat ->
-        'a * 'b ->
-          (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-            (('a * 'b) list) FArray.IsabelleMapping.ArrayType
-  val ahm_rehash_aux :
-    (Arith.nat -> 'a -> Arith.nat) ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-        Arith.nat -> (('a * 'b) list) FArray.IsabelleMapping.ArrayType
-  val ahm_rehash :
-    (Arith.nat -> 'a -> Arith.nat) ->
-      ('a, 'b) hashmap -> Arith.nat -> ('a, 'b) hashmap
-  val ahm_update_aux :
-    ('a -> 'a -> bool) ->
-      (Arith.nat -> 'a -> Arith.nat) ->
-        ('a, 'b) hashmap -> 'a -> 'b -> ('a, 'b) hashmap
   val ahm_update :
     ('a -> 'a -> bool) ->
       (Arith.nat -> 'a -> Arith.nat) ->
@@ -1751,143 +1682,13 @@ fun ahm_update eq bhc k v hm =
 
 end; (*struct Impl_Array_Hash_Map*)
 
-structure HashCode : sig
-  type 'a hashable
-  val hashcode : 'a hashable -> 'a -> Arith.nat
-  val bounded_hashcode : 'a hashable -> Arith.nat -> 'a -> Arith.nat
-  val def_hashmap_size : 'a hashable -> 'a HOL.itself -> Arith.nat
-  val def_hashmap_size_nat : Arith.nat HOL.itself -> Arith.nat
-  val bounded_hashcode_nat : Arith.nat -> Arith.nat -> Arith.nat
-  val hashcode_nat : Arith.nat -> Arith.nat
-  val hashable_nat : Arith.nat hashable
-  val def_hashmap_size_prod :
-    'a hashable -> 'b hashable -> ('a * 'b) HOL.itself -> Arith.nat
-  val bounded_hashcode_prod :
-    'a hashable -> 'b hashable -> Arith.nat -> 'a * 'b -> Arith.nat
-  val hashcode_prod : 'a hashable -> 'b hashable -> 'a * 'b -> Arith.nat
-  val hashable_prod : 'a hashable -> 'b hashable -> ('a * 'b) hashable
-end = struct
-
-type 'a hashable =
-  {hashcode : 'a -> Arith.nat, bounded_hashcode : Arith.nat -> 'a -> Arith.nat,
-    def_hashmap_size : 'a HOL.itself -> Arith.nat};
-val hashcode = #hashcode : 'a hashable -> 'a -> Arith.nat;
-val bounded_hashcode = #bounded_hashcode :
-  'a hashable -> Arith.nat -> 'a -> Arith.nat;
-val def_hashmap_size = #def_hashmap_size :
-  'a hashable -> 'a HOL.itself -> Arith.nat;
-
-fun def_hashmap_size_nat x = (fn _ => Arith.nat_of_integer (16 : IntInf.int)) x;
-
-fun bounded_hashcode_nat na n = Arith.mod_nat n na;
-
-fun hashcode_nat n = n;
-
-val hashable_nat =
-  {hashcode = hashcode_nat, bounded_hashcode = bounded_hashcode_nat,
-    def_hashmap_size = def_hashmap_size_nat}
-  : Arith.nat hashable;
-
-fun def_hashmap_size_prod A_ B_ =
-  (fn _ =>
-    Arith.plus_nata (def_hashmap_size A_ HOL.Type)
-      (def_hashmap_size B_ HOL.Type));
-
-fun bounded_hashcode_prod A_ B_ n x =
-  Arith.mod_nat
-    (Arith.plus_nata
-      (Arith.times_nata (bounded_hashcode A_ n (Product_Type.fst x))
-        (Arith.nat_of_integer (33 : IntInf.int)))
-      (bounded_hashcode B_ n (Product_Type.snd x)))
-    n;
-
-fun hashcode_prod A_ B_ x =
-  Arith.plus_nata
-    (Arith.times_nata (hashcode A_ (Product_Type.fst x))
-      (Arith.nat_of_integer (33 : IntInf.int)))
-    (hashcode B_ (Product_Type.snd x));
-
-fun hashable_prod A_ B_ =
-  {hashcode = hashcode_prod A_ B_,
-    bounded_hashcode = bounded_hashcode_prod A_ B_,
-    def_hashmap_size = def_hashmap_size_prod A_ B_}
-  : ('a * 'b) hashable;
-
-end; (*struct HashCode*)
-
-structure Uint32a : sig
-  val uint32_of_int : Arith.int -> Word32.word
-end = struct
-
-fun uint32_of_int i = Word32.fromInt (Arith.integer_of_int i);
-
-end; (*struct Uint32a*)
-
-structure Stringa : sig
-  datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
-    Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC |
-    NibbleD | NibbleE | NibbleF
-  val equal_char : char HOL.equal
-  val nat_of_char : char -> Arith.nat
-  val equal_literal : string HOL.equal
-end = struct
-
-datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
-  Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC | NibbleD
-  | NibbleE | NibbleF;
-
-val equal_char = {equal = (fn a => fn b => ((a : char) = b))} : char HOL.equal;
-
-fun nat_of_char x = (Arith.nat_of_integer o (IntInf.fromInt o Char.ord)) x;
-
-val equal_literal = {equal = (fn a => fn b => ((a : string) = b))} :
-  string HOL.equal;
-
-end; (*struct Stringa*)
-
-structure Collections_Patch1 : sig
+structure Impl_Bit_Set : sig
   val bs_eq : IntInf.int -> IntInf.int -> bool
   val bs_mem : Arith.nat -> IntInf.int -> bool
   val bs_empty : unit -> IntInf.int
   val bs_union : IntInf.int -> IntInf.int -> IntInf.int
   val bs_insert : Arith.nat -> IntInf.int -> IntInf.int
   val bs_subset_eq : IntInf.int -> IntInf.int -> bool
-  val nat_of_uint32 : Word32.word -> Arith.nat
-  val nat_of_hashcode_uint : Word32.word -> Arith.nat
-  type 'a hashable_uint
-  val hashcode_uint : 'a hashable_uint -> 'a -> Word32.word
-  val def_hashmap_size_uint : 'a hashable_uint -> 'a HOL.itself -> Arith.nat
-  val hashcode_nat : 'a hashable_uint -> 'a -> Arith.nat
-  val def_hashmap_size_uint_integer : IntInf.int HOL.itself -> Arith.nat
-  val def_hashmap_size_integer : IntInf.int HOL.itself -> Arith.nat
-  val hashcode_uint_integer : IntInf.int -> Word32.word
-  val hashable_uint_integer : IntInf.int hashable_uint
-  val bounded_hashcode_nat : 'a hashable_uint -> Arith.nat -> 'a -> Arith.nat
-  val bounded_hashcode_integer : Arith.nat -> IntInf.int -> Arith.nat
-  val hashcode_integer : IntInf.int -> Arith.nat
-  val hashable_integer : IntInf.int HashCode.hashable
-  val def_hashmap_size_uint_nat : Arith.nat HOL.itself -> Arith.nat
-  val hashcode_uint_nat : Arith.nat -> Word32.word
-  val hashable_uint_nat : Arith.nat hashable_uint
-  val def_hashmap_size_uint_bool : bool HOL.itself -> Arith.nat
-  val hashcode_uint_bool : bool -> Word32.word
-  val hashable_uint_bool : bool hashable_uint
-  val def_hashmap_size_uint_char : char HOL.itself -> Arith.nat
-  val hashcode_uint_char : char -> Word32.word
-  val hashable_uint_char : char hashable_uint
-  val def_hashmap_size_uint_list :
-    'a hashable_uint -> ('a list) HOL.itself -> Arith.nat
-  val hashcode_uint_list : 'a hashable_uint -> 'a list -> Word32.word
-  val hashable_uint_list : 'a hashable_uint -> ('a list) hashable_uint
-  val def_hashmap_size_uint_prod :
-    'a hashable_uint -> 'b hashable_uint -> ('a * 'b) HOL.itself -> Arith.nat
-  val hashcode_uint_prod :
-    'a hashable_uint -> 'b hashable_uint -> 'a * 'b -> Word32.word
-  val hashable_uint_prod :
-    'a hashable_uint -> 'b hashable_uint -> ('a * 'b) hashable_uint
-  val def_hashmap_size_uint_unit : unit HOL.itself -> Arith.nat
-  val hashcode_uint_unit : unit -> Word32.word
-  val hashable_uint_unit : unit hashable_uint
 end = struct
 
 fun bs_eq s1 s2 = ((s1 : IntInf.int) = s2);
@@ -1903,119 +1704,7 @@ fun bs_insert i s = Bit_Int.set_bit_integer s i true;
 fun bs_subset_eq s1 s2 =
   (((IntInf.andb (s1, IntInf.notb s2)) : IntInf.int) = 0);
 
-fun nat_of_uint32 x = Arith.nat_of_integer (Word32.toInt x : IntInf.int);
-
-fun nat_of_hashcode_uint x = nat_of_uint32 x;
-
-type 'a hashable_uint =
-  {hashcode_uint : 'a -> Word32.word,
-    def_hashmap_size_uint : 'a HOL.itself -> Arith.nat};
-val hashcode_uint = #hashcode_uint : 'a hashable_uint -> 'a -> Word32.word;
-val def_hashmap_size_uint = #def_hashmap_size_uint :
-  'a hashable_uint -> 'a HOL.itself -> Arith.nat;
-
-fun hashcode_nat A_ = nat_of_hashcode_uint o hashcode_uint A_;
-
-fun def_hashmap_size_uint_integer x =
-  (fn _ => Arith.nat_of_integer (16 : IntInf.int)) x;
-
-fun def_hashmap_size_integer x = def_hashmap_size_uint_integer x;
-
-fun hashcode_uint_integer i = Word32.fromInt i;
-
-val hashable_uint_integer =
-  {hashcode_uint = hashcode_uint_integer,
-    def_hashmap_size_uint = def_hashmap_size_uint_integer}
-  : IntInf.int hashable_uint;
-
-fun bounded_hashcode_nat A_ n x = Arith.mod_nat (hashcode_nat A_ x) n;
-
-fun bounded_hashcode_integer x = bounded_hashcode_nat hashable_uint_integer x;
-
-fun hashcode_integer x = hashcode_nat hashable_uint_integer x;
-
-val hashable_integer =
-  {hashcode = hashcode_integer, bounded_hashcode = bounded_hashcode_integer,
-    def_hashmap_size = def_hashmap_size_integer}
-  : IntInf.int HashCode.hashable;
-
-fun def_hashmap_size_uint_nat x =
-  (fn _ => Arith.nat_of_integer (16 : IntInf.int)) x;
-
-fun hashcode_uint_nat n = Uint32a.uint32_of_int (Arith.int_of_nat n);
-
-val hashable_uint_nat =
-  {hashcode_uint = hashcode_uint_nat,
-    def_hashmap_size_uint = def_hashmap_size_uint_nat}
-  : Arith.nat hashable_uint;
-
-fun def_hashmap_size_uint_bool x =
-  (fn _ => Arith.nat_of_integer (2 : IntInf.int)) x;
-
-fun hashcode_uint_bool b =
-  (if b then (Word32.fromInt 1) else (Word32.fromInt 0));
-
-val hashable_uint_bool =
-  {hashcode_uint = hashcode_uint_bool,
-    def_hashmap_size_uint = def_hashmap_size_uint_bool}
-  : bool hashable_uint;
-
-fun def_hashmap_size_uint_char x =
-  (fn _ => Arith.nat_of_integer (32 : IntInf.int)) x;
-
-fun hashcode_uint_char c =
-  Uint32a.uint32_of_int (Arith.int_of_nat (Stringa.nat_of_char c));
-
-val hashable_uint_char =
-  {hashcode_uint = hashcode_uint_char,
-    def_hashmap_size_uint = def_hashmap_size_uint_char}
-  : char hashable_uint;
-
-fun def_hashmap_size_uint_list A_ =
-  (fn _ =>
-    Arith.times_nata (Arith.nat_of_integer (2 : IntInf.int))
-      (def_hashmap_size_uint A_ HOL.Type));
-
-fun hashcode_uint_list A_ =
-  List.foldl
-    (fn h => fn x =>
-      Word32.+ (Word32.* (h, Word32.fromInt
-                               (33 : IntInf.int)), hashcode_uint A_ x))
-    (Word32.fromInt (5381 : IntInf.int));
-
-fun hashable_uint_list A_ =
-  {hashcode_uint = hashcode_uint_list A_,
-    def_hashmap_size_uint = def_hashmap_size_uint_list A_}
-  : ('a list) hashable_uint;
-
-fun def_hashmap_size_uint_prod A_ B_ =
-  (fn _ =>
-    Arith.plus_nata (def_hashmap_size_uint A_ HOL.Type)
-      (def_hashmap_size_uint B_ HOL.Type));
-
-fun hashcode_uint_prod A_ B_ x =
-  Word32.+ (Word32.* (hashcode_uint A_
-                        (Product_Type.fst
-                          x), Word32.fromInt
-                                (33 : IntInf.int)), hashcode_uint B_
-              (Product_Type.snd x));
-
-fun hashable_uint_prod A_ B_ =
-  {hashcode_uint = hashcode_uint_prod A_ B_,
-    def_hashmap_size_uint = def_hashmap_size_uint_prod A_ B_}
-  : ('a * 'b) hashable_uint;
-
-fun def_hashmap_size_uint_unit x =
-  (fn _ => Arith.nat_of_integer (2 : IntInf.int)) x;
-
-fun hashcode_uint_unit u = (Word32.fromInt 0);
-
-val hashable_uint_unit =
-  {hashcode_uint = hashcode_uint_unit,
-    def_hashmap_size_uint = def_hashmap_size_uint_unit}
-  : unit hashable_uint;
-
-end; (*struct Collections_Patch1*)
+end; (*struct Impl_Bit_Set*)
 
 structure Digraph_Impl : sig
   datatype ('a, 'b, 'c, 'd) gen_frg_impl_ext =
@@ -2047,45 +1736,16 @@ fun graph_restrict_right_impl memr =
 end; (*struct Digraph_Impl*)
 
 structure Automata_Impl : sig
-  datatype ('a, 'b) gen_bg_impl_ext = Gen_bg_impl_ext of 'a * 'b
+  type ('a, 'b) gen_bg_impl_ext
+  datatype ('a, 'b) gen_sa_impl_ext = Gen_sa_impl_ext of 'a * 'b
+  datatype ('a, 'b) gen_gba_impl_ext = Gen_gba_impl_ext of 'a * 'b
+  datatype ('a, 'b) gen_gbg_impl_ext = Gen_gbg_impl_ext of 'a * 'b
+  type ('a, 'b) gen_igba_impl_ext
+  datatype ('a, 'b) gen_igbg_impl_ext = Gen_igbg_impl_ext of Arith.nat * 'a * 'b
   val bgi_F :
     ('a, 'b, 'c, ('d, 'e) gen_bg_impl_ext) Digraph_Impl.gen_frg_impl_ext -> 'd
-  datatype ('a, 'b) gen_sa_impl_ext = Gen_sa_impl_ext of 'a * 'b
   val sai_L :
     ('a, 'b, 'c, ('d, 'e) gen_sa_impl_ext) Digraph_Impl.gen_frg_impl_ext -> 'd
-  datatype ('a, 'b) gen_gbg_impl_ext = Gen_gbg_impl_ext of 'a * 'b
-  datatype ('a, 'b) gen_gba_impl_ext = Gen_gba_impl_ext of 'a * 'b
-  val gbai_L :
-    ('a, 'b, 'c, ('d, ('e, 'f) gen_gba_impl_ext) gen_gbg_impl_ext)
-      Digraph_Impl.gen_frg_impl_ext ->
-      'e
-  val gbgi_F :
-    ('a, 'b, 'c, ('d, 'e) gen_gbg_impl_ext) Digraph_Impl.gen_frg_impl_ext -> 'd
-  datatype ('a, 'b) gen_igbg_impl_ext = Gen_igbg_impl_ext of Arith.nat * 'a * 'b
-  datatype ('a, 'b) gen_igba_impl_ext = Gen_igba_impl_ext of 'a * 'b
-  val igbai_L :
-    ('a, 'b, 'c, ('d, ('e, 'f) gen_igba_impl_ext) gen_igbg_impl_ext)
-      Digraph_Impl.gen_frg_impl_ext ->
-      'e
-  val igbgi_acc :
-    ('a, 'b, 'c, ('d, 'e) gen_igbg_impl_ext) Digraph_Impl.gen_frg_impl_ext -> 'd
-  val igbgi_num_acc :
-    ('a, 'b, 'c, ('d, 'e) gen_igbg_impl_ext) Digraph_Impl.gen_frg_impl_ext ->
-      Arith.nat
-  val gbg_to_idx_ext_code :
-    Arith.nat ->
-      ('a -> 'a -> bool) ->
-        (Arith.nat -> 'a -> Arith.nat) ->
-          ((('a list), ('a -> 'a list), ('a list),
-             ((('a list) list), 'b) gen_gbg_impl_ext)
-             Digraph_Impl.gen_frg_impl_ext ->
-            'c) ->
-            (('a list), ('a -> 'a list), ('a list),
-              ((('a list) list), 'b) gen_gbg_impl_ext)
-              Digraph_Impl.gen_frg_impl_ext ->
-              (('a list), ('a -> 'a list), ('a list),
-                (('a -> IntInf.int), 'c) gen_igbg_impl_ext)
-                Digraph_Impl.gen_frg_impl_ext
   val gba_to_idx_ext_code :
     Arith.nat ->
       ('a -> 'a -> bool) ->
@@ -2103,6 +1763,11 @@ structure Automata_Impl : sig
                 (('a -> IntInf.int), (('a -> 'b -> bool), 'd) gen_igba_impl_ext)
                   gen_igbg_impl_ext)
                 Digraph_Impl.gen_frg_impl_ext
+  val igbgi_num_acc :
+    ('a, 'b, 'c, ('d, 'e) gen_igbg_impl_ext) Digraph_Impl.gen_frg_impl_ext ->
+      Arith.nat
+  val igbgi_acc :
+    ('a, 'b, 'c, ('d, 'e) gen_igbg_impl_ext) Digraph_Impl.gen_frg_impl_ext -> 'd
   val degeneralize_ext_impl :
     (('a -> bool), ('a -> 'a list), ('a list),
       (('a -> IntInf.int), 'b) gen_igbg_impl_ext)
@@ -2115,25 +1780,33 @@ structure Automata_Impl : sig
           (('a * Arith.nat) list),
           (('a * Arith.nat -> bool), 'c) gen_bg_impl_ext)
           Digraph_Impl.gen_frg_impl_ext
+  val igbai_L :
+    ('a, 'b, 'c, ('d, ('e, 'f) gen_igba_impl_ext) gen_igbg_impl_ext)
+      Digraph_Impl.gen_frg_impl_ext ->
+      'e
 end = struct
 
 datatype ('a, 'b) gen_bg_impl_ext = Gen_bg_impl_ext of 'a * 'b;
+
+datatype ('a, 'b) gen_sa_impl_ext = Gen_sa_impl_ext of 'a * 'b;
+
+datatype ('a, 'b) gen_gba_impl_ext = Gen_gba_impl_ext of 'a * 'b;
+
+datatype ('a, 'b) gen_gbg_impl_ext = Gen_gbg_impl_ext of 'a * 'b;
+
+datatype ('a, 'b) gen_igba_impl_ext = Gen_igba_impl_ext of 'a * 'b;
+
+datatype ('a, 'b) gen_igbg_impl_ext = Gen_igbg_impl_ext of Arith.nat * 'a * 'b;
 
 fun bgi_F
   (Digraph_Impl.Gen_frg_impl_ext
     (frgi_V, frgi_E, frgi_V0, Gen_bg_impl_ext (bgi_F, more)))
   = bgi_F;
 
-datatype ('a, 'b) gen_sa_impl_ext = Gen_sa_impl_ext of 'a * 'b;
-
 fun sai_L
   (Digraph_Impl.Gen_frg_impl_ext
     (frgi_V, frgi_E, frgi_V0, Gen_sa_impl_ext (sai_L, more)))
   = sai_L;
-
-datatype ('a, 'b) gen_gbg_impl_ext = Gen_gbg_impl_ext of 'a * 'b;
-
-datatype ('a, 'b) gen_gba_impl_ext = Gen_gba_impl_ext of 'a * 'b;
 
 fun gbai_L
   (Digraph_Impl.Gen_frg_impl_ext
@@ -2145,29 +1818,6 @@ fun gbgi_F
   (Digraph_Impl.Gen_frg_impl_ext
     (frgi_V, frgi_E, frgi_V0, Gen_gbg_impl_ext (gbgi_F, more)))
   = gbgi_F;
-
-datatype ('a, 'b) gen_igbg_impl_ext = Gen_igbg_impl_ext of Arith.nat * 'a * 'b;
-
-datatype ('a, 'b) gen_igba_impl_ext = Gen_igba_impl_ext of 'a * 'b;
-
-fun igbai_L
-  (Digraph_Impl.Gen_frg_impl_ext
-    (frgi_V, frgi_E, frgi_V0,
-      Gen_igbg_impl_ext
-        (igbgi_num_acc, igbgi_acc, Gen_igba_impl_ext (igbai_L, more))))
-  = igbai_L;
-
-fun igbgi_acc
-  (Digraph_Impl.Gen_frg_impl_ext
-    (frgi_V, frgi_E, frgi_V0,
-      Gen_igbg_impl_ext (igbgi_num_acc, igbgi_acc, more)))
-  = igbgi_acc;
-
-fun igbgi_num_acc
-  (Digraph_Impl.Gen_frg_impl_ext
-    (frgi_V, frgi_E, frgi_V0,
-      Gen_igbg_impl_ext (igbgi_num_acc, igbgi_acc, more)))
-  = igbgi_num_acc;
 
 fun gbg_to_idx_ext_code def_size eq bhc ecnv g =
   let
@@ -2186,8 +1836,8 @@ fun gbg_to_idx_ext_code def_size eq bhc ecnv g =
                       Foldi.foldli (Fun.id xc) (fn _ => true)
                         (fn xd => fn sigma =>
                           Impl_Array_Hash_Map.ahm_update eq bhc xd
-                            (Collections_Patch1.bs_insert a
-                              (Misc.the_default (Collections_Patch1.bs_empty ())
+                            (Impl_Bit_Set.bs_insert a
+                              (Misc.the_default (Impl_Bit_Set.bs_empty ())
                                 (Impl_Array_Hash_Map.ahm_lookup eq bhc xd
                                   sigma)))
                             sigma)
@@ -2198,7 +1848,7 @@ fun gbg_to_idx_ext_code def_size eq bhc ecnv g =
                 (Arith.zero_nata, xb);
           in
             (fn xg =>
-              Misc.the_default (Collections_Patch1.bs_empty ())
+              Misc.the_default (Impl_Bit_Set.bs_empty ())
                 (Impl_Array_Hash_Map.ahm_lookup eq bhc xg b))
           end;
       in
@@ -2213,6 +1863,18 @@ fun gbg_to_idx_ext_code def_size eq bhc ecnv g =
 fun gba_to_idx_ext_code eq bhc def_size ecnv g =
   gbg_to_idx_ext_code eq bhc def_size
     (fn xa => Gen_igba_impl_ext (gbai_L xa, ecnv xa)) g;
+
+fun igbgi_num_acc
+  (Digraph_Impl.Gen_frg_impl_ext
+    (frgi_V, frgi_E, frgi_V0,
+      Gen_igbg_impl_ext (igbgi_num_acc, igbgi_acc, more)))
+  = igbgi_num_acc;
+
+fun igbgi_acc
+  (Digraph_Impl.Gen_frg_impl_ext
+    (frgi_V, frgi_E, frgi_V0,
+      Gen_igbg_impl_ext (igbgi_num_acc, igbgi_acc, more)))
+  = igbgi_acc;
 
 fun degeneralize_ext_impl gi x =
   (if Arith.equal_nata (igbgi_num_acc gi) Arith.zero_nata
@@ -2240,7 +1902,7 @@ fun degeneralize_ext_impl gi x =
                (if Arith.less_nat xb (igbgi_num_acc gi)
                  then let
                         val xc =
-                          (if Collections_Patch1.bs_mem xb (igbgi_acc gi xa)
+                          (if Impl_Bit_Set.bs_mem xb (igbgi_acc gi xa)
                             then Arith.mod_nat
                                    (Arith.plus_nata xb Arith.one_nata)
                                    (igbgi_num_acc gi)
@@ -2254,57 +1916,164 @@ fun degeneralize_ext_impl gi x =
              Gen_bg_impl_ext
                ((fn (xa, xb) =>
                   Arith.equal_nata xb Arith.zero_nata andalso
-                    Collections_Patch1.bs_mem Arith.zero_nata
-                      (igbgi_acc gi xa)),
+                    Impl_Bit_Set.bs_mem Arith.zero_nata (igbgi_acc gi xa)),
                  x gi)));
+
+fun igbai_L
+  (Digraph_Impl.Gen_frg_impl_ext
+    (frgi_V, frgi_E, frgi_V0,
+      Gen_igbg_impl_ext
+        (igbgi_num_acc, igbgi_acc, Gen_igba_impl_ext (igbai_L, more))))
+  = igbai_L;
 
 end; (*struct Automata_Impl*)
 
+structure Uint32a : sig
+  val nat_of_uint32 : Word32.word -> Arith.nat
+  val uint32_of_int : Arith.int -> Word32.word
+end = struct
+
+fun nat_of_uint32 x = Arith.nat_of_integer (Word32.toInt x : IntInf.int);
+
+fun uint32_of_int i = Word32.fromInt (Arith.integer_of_int i);
+
+end; (*struct Uint32a*)
+
+structure Stringa : sig
+  val equal_char : char HOL.equal
+  val equal_literal : string HOL.equal
+  datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
+    Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC |
+    NibbleD | NibbleE | NibbleF
+  val nat_of_char : char -> Arith.nat
+end = struct
+
+val equal_char = {equal = (fn a => fn b => ((a : char) = b))} : char HOL.equal;
+
+val equal_literal = {equal = (fn a => fn b => ((a : string) = b))} :
+  string HOL.equal;
+
+datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
+  Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC | NibbleD
+  | NibbleE | NibbleF;
+
+fun nat_of_char x = (Arith.nat_of_integer o (IntInf.fromInt o Char.ord)) x;
+
+end; (*struct Stringa*)
+
+structure HashCode : sig
+  val def_hashmap_size_nat : Arith.nat HOL.itself -> Arith.nat
+  type 'a hashable
+  val hashcode : 'a hashable -> 'a -> Word32.word
+  val def_hashmap_size : 'a hashable -> 'a HOL.itself -> Arith.nat
+  val hashable_nat : Arith.nat hashable
+  val hashable_bool : bool hashable
+  val hashcode_list : 'a hashable -> 'a list -> Word32.word
+  val hashable_list : 'a hashable -> ('a list) hashable
+  val hashable_char : char hashable
+  val hashcode_prod : 'a hashable -> 'b hashable -> 'a * 'b -> Word32.word
+  val hashable_prod : 'a hashable -> 'b hashable -> ('a * 'b) hashable
+  val hashable_unit : unit hashable
+  val hashable_integer : IntInf.int hashable
+  val bounded_hashcode_nat : 'a hashable -> Arith.nat -> 'a -> Arith.nat
+end = struct
+
+fun def_hashmap_size_nat x = (fn _ => Arith.nat_of_integer (16 : IntInf.int)) x;
+
+type 'a hashable =
+  {hashcode : 'a -> Word32.word, def_hashmap_size : 'a HOL.itself -> Arith.nat};
+val hashcode = #hashcode : 'a hashable -> 'a -> Word32.word;
+val def_hashmap_size = #def_hashmap_size :
+  'a hashable -> 'a HOL.itself -> Arith.nat;
+
+fun hashcode_nat n = Uint32a.uint32_of_int (Arith.int_of_nat n);
+
+val hashable_nat =
+  {hashcode = hashcode_nat, def_hashmap_size = def_hashmap_size_nat} :
+  Arith.nat hashable;
+
+fun def_hashmap_size_bool x = (fn _ => Arith.nat_of_integer (2 : IntInf.int)) x;
+
+fun hashcode_bool b = (if b then (Word32.fromInt 1) else (Word32.fromInt 0));
+
+val hashable_bool =
+  {hashcode = hashcode_bool, def_hashmap_size = def_hashmap_size_bool} :
+  bool hashable;
+
+fun def_hashmap_size_list A_ =
+  (fn _ =>
+    Arith.times_nata (Arith.nat_of_integer (2 : IntInf.int))
+      (def_hashmap_size A_ HOL.Type));
+
+fun hashcode_list A_ =
+  List.foldl
+    (fn h => fn x =>
+      Word32.+ (Word32.* (h, Word32.fromInt (33 : IntInf.int)), hashcode A_ x))
+    (Word32.fromInt (5381 : IntInf.int));
+
+fun hashable_list A_ =
+  {hashcode = hashcode_list A_, def_hashmap_size = def_hashmap_size_list A_} :
+  ('a list) hashable;
+
+fun def_hashmap_size_char x =
+  (fn _ => Arith.nat_of_integer (32 : IntInf.int)) x;
+
+fun hashcode_char c =
+  Uint32a.uint32_of_int (Arith.int_of_nat (Stringa.nat_of_char c));
+
+val hashable_char =
+  {hashcode = hashcode_char, def_hashmap_size = def_hashmap_size_char} :
+  char hashable;
+
+fun def_hashmap_size_prod A_ B_ =
+  (fn _ =>
+    Arith.plus_nata (def_hashmap_size A_ HOL.Type)
+      (def_hashmap_size B_ HOL.Type));
+
+fun hashcode_prod A_ B_ x =
+  Word32.+ (Word32.* (hashcode A_
+                        (Product_Type.fst
+                          x), Word32.fromInt
+                                (33 : IntInf.int)), hashcode B_
+              (Product_Type.snd x));
+
+fun hashable_prod A_ B_ =
+  {hashcode = hashcode_prod A_ B_,
+    def_hashmap_size = def_hashmap_size_prod A_ B_}
+  : ('a * 'b) hashable;
+
+fun def_hashmap_size_unit x = (fn _ => Arith.nat_of_integer (2 : IntInf.int)) x;
+
+fun hashcode_unit u = (Word32.fromInt 0);
+
+val hashable_unit =
+  {hashcode = hashcode_unit, def_hashmap_size = def_hashmap_size_unit} :
+  unit hashable;
+
+fun def_hashmap_size_integer x =
+  (fn _ => Arith.nat_of_integer (16 : IntInf.int)) x;
+
+fun hashcode_integer i = Word32.fromInt i;
+
+val hashable_integer =
+  {hashcode = hashcode_integer, def_hashmap_size = def_hashmap_size_integer} :
+  IntInf.int hashable;
+
+fun nat_of_hashcode x = Uint32a.nat_of_uint32 x;
+
+fun bounded_hashcode_nat A_ n x =
+  Arith.mod_nat (nat_of_hashcode (hashcode A_ x)) n;
+
+end; (*struct HashCode*)
+
 structure ArrayHashMap_Impl : sig
-  datatype ('a, 'b) hashmap =
-    HashMap of (('a * 'b) list) FArray.IsabelleMapping.ArrayType * Arith.nat
-  val hm_grow : 'a HashCode.hashable -> ('a, 'b) hashmap -> Arith.nat
-  val ahm_alpha_aux :
-    'a HOL.equal * 'a HashCode.hashable ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType -> 'a -> 'b option
-  val ahm_alpha :
-    'a HOL.equal * 'a HashCode.hashable -> ('a, 'b) hashmap -> 'a -> 'b option
-  val new_hashmap_with : 'a HashCode.hashable -> Arith.nat -> ('a, 'b) hashmap
+  type ('a, 'b) hashmap
   val ahm_empty : 'a HashCode.hashable -> unit -> ('a, 'b) hashmap
   val ahm_delete :
     'a HOL.equal * 'a HashCode.hashable ->
       'a -> ('a, 'b) hashmap -> ('a, 'b) hashmap
-  val load_factor : Arith.nat
-  val ahm_filled : 'a HashCode.hashable -> ('a, 'b) hashmap -> bool
   val ahm_lookup :
     'a HOL.equal * 'a HashCode.hashable -> 'a -> ('a, 'b) hashmap -> 'b option
-  val idx_iteratei_aux_array_get :
-    Arith.nat ->
-      Arith.nat ->
-        'a FArray.IsabelleMapping.ArrayType ->
-          ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  val idx_iteratei_array_length_array_get :
-    'a FArray.IsabelleMapping.ArrayType ->
-      ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  val ahm_iteratei_aux :
-    'a HashCode.hashable ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-        ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
-  val ahm_rehash_auxa :
-    'a HashCode.hashable ->
-      Arith.nat ->
-        'a * 'b ->
-          (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-            (('a * 'b) list) FArray.IsabelleMapping.ArrayType
-  val ahm_rehash_aux :
-    'a HashCode.hashable ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-        Arith.nat -> (('a * 'b) list) FArray.IsabelleMapping.ArrayType
-  val ahm_rehash :
-    'a HashCode.hashable -> ('a, 'b) hashmap -> Arith.nat -> ('a, 'b) hashmap
-  val ahm_update_aux :
-    'a HOL.equal * 'a HashCode.hashable ->
-      ('a, 'b) hashmap -> 'a -> 'b -> ('a, 'b) hashmap
   val ahm_update :
     'a HOL.equal * 'a HashCode.hashable ->
       'a -> 'b -> ('a, 'b) hashmap -> ('a, 'b) hashmap
@@ -2319,14 +2088,6 @@ fun hm_grow A_ (HashMap (a, n)) =
       (Diff_Array.array_length a))
     (Arith.nat_of_integer (3 : IntInf.int));
 
-fun ahm_alpha_aux (A1_, A2_) a k =
-  Map.map_of A1_
-    (Diff_Array.array_get a
-      (HashCode.bounded_hashcode A2_ (Diff_Array.array_length a) k))
-    k;
-
-fun ahm_alpha (A1_, A2_) (HashMap (a, uu)) = ahm_alpha_aux (A1_, A2_) a;
-
 fun new_hashmap_with A_ size =
   HashMap (Diff_Array.new_array [] size, Arith.zero_nata);
 
@@ -2335,7 +2096,7 @@ fun ahm_empty A_ =
 
 fun ahm_delete (A1_, A2_) k (HashMap (a, n)) =
   let
-    val h = HashCode.bounded_hashcode A2_ (Diff_Array.array_length a) k;
+    val h = HashCode.bounded_hashcode_nat A2_ (Diff_Array.array_length a) k;
     val m = Diff_Array.array_get a h;
     val deleted = not (Option.is_none (Map.map_of A1_ m k));
   in
@@ -2349,6 +2110,14 @@ val load_factor : Arith.nat = Arith.nat_of_integer (75 : IntInf.int);
 fun ahm_filled A_ (HashMap (a, n)) =
   Arith.less_eq_nat (Arith.times_nata (Diff_Array.array_length a) load_factor)
     (Arith.times_nata n (Arith.nat_of_integer (100 : IntInf.int)));
+
+fun ahm_alpha_aux (A1_, A2_) a k =
+  Map.map_of A1_
+    (Diff_Array.array_get a
+      (HashCode.bounded_hashcode_nat A2_ (Diff_Array.array_length a) k))
+    k;
+
+fun ahm_alpha (A1_, A2_) (HashMap (a, uu)) = ahm_alpha_aux (A1_, A2_) a;
 
 fun ahm_lookup (A1_, A2_) k hm = ahm_alpha (A1_, A2_) hm k;
 
@@ -2366,7 +2135,7 @@ fun ahm_iteratei_aux A_ a c f sigma =
 
 fun ahm_rehash_auxa A_ n kv a =
   let
-    val h = HashCode.bounded_hashcode A_ n (Product_Type.fst kv);
+    val h = HashCode.bounded_hashcode_nat A_ n (Product_Type.fst kv);
   in
     Diff_Array.array_set a h (kv :: Diff_Array.array_get a h)
   end;
@@ -2379,7 +2148,7 @@ fun ahm_rehash A_ (HashMap (a, n)) sz = HashMap (ahm_rehash_aux A_ a sz, n);
 
 fun ahm_update_aux (A1_, A2_) (HashMap (a, n)) k v =
   let
-    val h = HashCode.bounded_hashcode A2_ (Diff_Array.array_length a) k;
+    val h = HashCode.bounded_hashcode_nat A2_ (Diff_Array.array_length a) k;
     val m = Diff_Array.array_get a h;
     val insert = Option.is_none (Map.map_of A1_ m k);
   in
@@ -2398,11 +2167,7 @@ fun ahm_update (A1_, A2_) k v hm =
 end; (*struct ArrayHashMap_Impl*)
 
 structure ArrayHashMap : sig
-  datatype ('a, 'b) hashmap = HashMap of ('a, 'b) ArrayHashMap_Impl.hashmap
-  val impl_of :
-    'a HashCode.hashable ->
-      ('a, 'b) hashmap -> ('a, 'b) ArrayHashMap_Impl.hashmap
-  val ahm_empty_const : 'a HashCode.hashable -> ('a, 'b) hashmap
+  type ('b, 'a) hashmap
   val ahm_empty : 'a HashCode.hashable -> unit -> ('a, 'b) hashmap
   val ahm_delete :
     'a HOL.equal * 'a HashCode.hashable ->
@@ -2414,9 +2179,9 @@ structure ArrayHashMap : sig
       'a -> 'b -> ('a, 'b) hashmap -> ('a, 'b) hashmap
 end = struct
 
-datatype ('a, 'b) hashmap = HashMap of ('a, 'b) ArrayHashMap_Impl.hashmap;
+datatype ('b, 'a) hashmap = HashMap of ('b, 'a) ArrayHashMap_Impl.hashmap;
 
-fun impl_of A_ (HashMap x) = x;
+fun impl_of B_ (HashMap x) = x;
 
 fun ahm_empty_const A_ = HashMap (ArrayHashMap_Impl.ahm_empty A_ ());
 
@@ -2461,42 +2226,7 @@ fun delete_ahm_basic_ops (A1_, A2_) x s =
 end; (*struct ArrayHashSet*)
 
 structure NDFS_SI : sig
-  datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list |
-    Circ of 'a list * 'a list
-  val extract_res : 'a blue_witness -> ('a list * 'a list) option
-  val prep_wit_red : 'a -> ('a list * 'a) option -> ('a list * 'a) option
-  val init_wit_blue :
-    'a HOL.equal -> 'a -> ('a list * 'a) option -> 'a blue_witness
-  val prep_wit_blue : 'a HOL.equal -> 'a -> 'a blue_witness -> 'a blue_witness
-  val red_init_witness : 'a -> 'a -> ('a list * 'a) option
-  val code_red_dfs_ahs_0 :
-    'a HOL.equal * 'a HashCode.hashable ->
-      ('a -> 'a list) ->
-        ('a, unit) ArrayHashMap.hashmap ->
-          ('a, unit) ArrayHashMap.hashmap * 'a ->
-            (('a, unit) ArrayHashMap.hashmap * ('a list * 'a) option)
-              Refine_Det.dres
-  val code_red_dfs_ahs :
-    'a HOL.equal * 'a HashCode.hashable ->
-      ('a -> 'a list) ->
-        ('a, unit) ArrayHashMap.hashmap ->
-          ('a, unit) ArrayHashMap.hashmap ->
-            'a -> ('a, unit) ArrayHashMap.hashmap * ('a list * 'a) option
-  val init_wit_blue_early : 'a HOL.equal -> 'a -> 'a -> 'a blue_witness
-  val equal_blue_witness :
-    'a HOL.equal -> 'a blue_witness -> 'a blue_witness -> bool
-  val code_blue_dfs_ahs_0 :
-    'a HOL.equal * 'a HashCode.hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) Automata_Impl.gen_bg_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext ->
-        ('a, unit) ArrayHashMap.hashmap *
-          (('a, unit) ArrayHashMap.hashmap *
-            (('a, unit) ArrayHashMap.hashmap * 'a)) ->
-          (('a, unit) ArrayHashMap.hashmap *
-            (('a, unit) ArrayHashMap.hashmap *
-              (('a, unit) ArrayHashMap.hashmap * 'a blue_witness)))
-            Refine_Det.dres
+  type 'a blue_witness
   val code_blue_dfs_ahs :
     'a HOL.equal * 'a HashCode.hashable ->
       (('a -> bool), ('a -> 'a list), ('a list),
@@ -2505,24 +2235,24 @@ structure NDFS_SI : sig
         ('a list * 'a list) option
 end = struct
 
-datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list |
-  Circ of 'a list * 'a list;
+datatype 'a blue_witness = NO_CYC | REACH of 'a * 'a list |
+  CIRC of 'a list * 'a list;
 
 fun extract_res cyc =
-  (case cyc of NO_CYC => NONE | Reach (_, _) => NONE
-    | Circ (pr, pl) => SOME (pr, pl));
+  (case cyc of NO_CYC => NONE | REACH (_, _) => NONE
+    | CIRC (pr, pl) => SOME (pr, pl));
 
 fun prep_wit_red v NONE = NONE
   | prep_wit_red v (SOME (p, u)) = SOME (v :: p, u);
 
 fun init_wit_blue A_ u0 NONE = NO_CYC
   | init_wit_blue A_ u0 (SOME (p, u)) =
-    (if HOL.eq A_ u u0 then Circ ([], p) else Reach (u, p));
+    (if HOL.eq A_ u u0 then CIRC ([], p) else REACH (u, p));
 
 fun prep_wit_blue A_ u0 NO_CYC = NO_CYC
-  | prep_wit_blue A_ u0 (Reach (u, p)) =
-    (if HOL.eq A_ u0 u then Circ ([], u0 :: p) else Reach (u, u0 :: p))
-  | prep_wit_blue A_ u0 (Circ (pr, pl)) = Circ (u0 :: pr, pl);
+  | prep_wit_blue A_ u0 (REACH (u, p)) =
+    (if HOL.eq A_ u0 u then CIRC ([], u0 :: p) else REACH (u, u0 :: p))
+  | prep_wit_blue A_ u0 (CIRC (pr, pl)) = CIRC (u0 :: pr, pl);
 
 fun red_init_witness u v = SOME ([u], v);
 
@@ -2578,20 +2308,20 @@ fun code_red_dfs_ahs_0 (A1_, A2_) e onstack x =
 fun code_red_dfs_ahs (A1_, A2_) e onstack v u =
   Refine_Transfer.the_res (code_red_dfs_ahs_0 (A1_, A2_) e onstack (v, u));
 
-fun init_wit_blue_early A_ s t =
-  (if HOL.eq A_ s t then Circ ([], [s]) else Reach (t, [s]));
-
-fun equal_blue_witness A_ (Circ (list1, list2)) (Reach (v, lista)) = false
-  | equal_blue_witness A_ (Reach (v, lista)) (Circ (list1, list2)) = false
-  | equal_blue_witness A_ (Circ (list1, list2)) NO_CYC = false
-  | equal_blue_witness A_ NO_CYC (Circ (list1, list2)) = false
-  | equal_blue_witness A_ (Reach (v, lista)) NO_CYC = false
-  | equal_blue_witness A_ NO_CYC (Reach (v, lista)) = false
-  | equal_blue_witness A_ (Circ (list1a, list2a)) (Circ (list1, list2)) =
+fun equal_blue_witness A_ (REACH (v, lista)) (CIRC (list1, list2)) = false
+  | equal_blue_witness A_ (CIRC (list1, list2)) (REACH (v, lista)) = false
+  | equal_blue_witness A_ NO_CYC (CIRC (list1, list2)) = false
+  | equal_blue_witness A_ (CIRC (list1, list2)) NO_CYC = false
+  | equal_blue_witness A_ NO_CYC (REACH (v, lista)) = false
+  | equal_blue_witness A_ (REACH (v, lista)) NO_CYC = false
+  | equal_blue_witness A_ (CIRC (list1a, list2a)) (CIRC (list1, list2)) =
     List.equal_lista A_ list1a list1 andalso List.equal_lista A_ list2a list2
-  | equal_blue_witness A_ (Reach (va, listaa)) (Reach (v, lista)) =
+  | equal_blue_witness A_ (REACH (va, listaa)) (REACH (v, lista)) =
     HOL.eq A_ va v andalso List.equal_lista A_ listaa lista
   | equal_blue_witness A_ NO_CYC NO_CYC = true;
+
+fun init_wit_blue_early A_ s t =
+  (if HOL.eq A_ s t then CIRC ([], [s]) else REACH (t, [s]));
 
 fun code_blue_dfs_ahs_0 (A1_, A2_) g x =
   let
@@ -2686,24 +2416,7 @@ fun code_blue_dfs_ahs (A1_, A2_) g =
 
 end; (*struct NDFS_SI*)
 
-structure While_Combinator : sig
-  val whilea : ('a -> bool) -> ('a -> 'a) -> 'a -> 'a
-end = struct
-
-fun whilea b c s = (if b s then whilea b c (c s) else s);
-
-end; (*struct While_Combinator*)
-
 structure List_lexord : sig
-  val less_eq_list :
-    'a HOL.equal * 'a Orderings.order -> 'a list -> 'a list -> bool
-  val less_list :
-    'a HOL.equal * 'a Orderings.order -> 'a list -> 'a list -> bool
-  val ord_list : 'a HOL.equal * 'a Orderings.order -> ('a list) Orderings.ord
-  val preorder_list :
-    'a HOL.equal * 'a Orderings.order -> ('a list) Orderings.preorder
-  val order_list :
-    'a HOL.equal * 'a Orderings.order -> ('a list) Orderings.order
   val linorder_list :
     'a HOL.equal * 'a Orderings.linorder -> ('a list) Orderings.linorder
 end = struct
@@ -2749,12 +2462,9 @@ end; (*struct Dlist_add*)
 
 structure ListSetImpl : sig
   val g_sng_ls_basic_ops : 'a HOL.equal -> 'a -> 'a Dlist.dlist
-  val iteratei_bset_op_list_it_ls_basic_ops :
-    'a Dlist.dlist -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
   val g_union_ls_basic_ops :
     'a HOL.equal -> 'a Dlist.dlist -> 'a Dlist.dlist -> 'a Dlist.dlist
   val g_isEmpty_ls_basic_ops : 'a Dlist.dlist -> bool
-  val g_to_list_ls_basic_ops : 'a Dlist.dlist -> 'a list
 end = struct
 
 fun g_sng_ls_basic_ops A_ x = Dlist.insert A_ x Dlist.empty;
@@ -2768,22 +2478,13 @@ fun g_isEmpty_ls_basic_ops s =
   iteratei_bset_op_list_it_ls_basic_ops s (fn c => c) (fn _ => fn _ => false)
     true;
 
-fun g_to_list_ls_basic_ops s =
-  iteratei_bset_op_list_it_ls_basic_ops s (fn _ => true)
-    (fn a => fn b => a :: b) [];
-
 end; (*struct ListSetImpl*)
 
 structure Assoc_List : sig
-  datatype ('a, 'b) assoc_list = Assoc_List of ('a * 'b) list
+  type ('b, 'a) assoc_list
   val empty : ('a, 'b) assoc_list
-  val impl_of : ('a, 'b) assoc_list -> ('a * 'b) list
+  val impl_of : ('b, 'a) assoc_list -> ('b * 'a) list
   val lookup : 'a HOL.equal -> ('a, 'b) assoc_list -> 'a -> 'b option
-  val update_with_aux :
-    'b HOL.equal -> 'a -> 'b -> ('a -> 'a) -> ('b * 'a) list -> ('b * 'a) list
-  val update_with :
-    'a HOL.equal ->
-      'b -> 'a -> ('b -> 'b) -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
   val update :
     'a HOL.equal -> 'a -> 'b -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
   val iteratei :
@@ -2793,7 +2494,7 @@ structure Assoc_List : sig
       ('a, 'b) assoc_list -> ('a, 'b) assoc_list -> bool
 end = struct
 
-datatype ('a, 'b) assoc_list = Assoc_List of ('a * 'b) list;
+datatype ('b, 'a) assoc_list = Assoc_List of ('b * 'a) list;
 
 val empty : ('a, 'b) assoc_list = Assoc_List [];
 
@@ -2821,9 +2522,6 @@ end; (*struct Assoc_List*)
 structure ListMapImpl : sig
   val g_sng_lm_basic_ops :
     'a HOL.equal -> 'a -> 'b -> ('a, 'b) Assoc_List.assoc_list
-  val iteratei_bmap_op_list_it_lm_basic_ops :
-    ('a, 'b) Assoc_List.assoc_list ->
-      ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
   val g_size_lm_basic_ops : ('a, 'b) Assoc_List.assoc_list -> Arith.nat
   val g_list_to_map_lm_basic_ops :
     'a HOL.equal -> ('a * 'b) list -> ('a, 'b) Assoc_List.assoc_list
@@ -2849,21 +2547,17 @@ fun iteratei_map_op_list_it_lm_ops s = Assoc_List.iteratei s;
 end; (*struct ListMapImpl*)
 
 structure Code_String : sig
-  val def_hashmap_size_uint_literal : string HOL.itself -> Arith.nat
-  val hashcode_uint_literal : string -> Word32.word
-  val hashable_uint_literal : string Collections_Patch1.hashable_uint
+  val hashable_literal : string HashCode.hashable
 end = struct
 
-fun def_hashmap_size_uint_literal uu = Arith.nat_of_integer (10 : IntInf.int);
+fun def_hashmap_size_literal uu = Arith.nat_of_integer (10 : IntInf.int);
 
-fun hashcode_uint_literal s =
-  Collections_Patch1.hashcode_uint_list Collections_Patch1.hashable_uint_char
-    (String.explode s);
+fun hashcode_literal s =
+  HashCode.hashcode_list HashCode.hashable_char (String.explode s);
 
-val hashable_uint_literal =
-  {hashcode_uint = hashcode_uint_literal,
-    def_hashmap_size_uint = def_hashmap_size_uint_literal}
-  : string Collections_Patch1.hashable_uint;
+val hashable_literal =
+  {hashcode = hashcode_literal, def_hashmap_size = def_hashmap_size_literal} :
+  string HashCode.hashable;
 
 end; (*struct Code_String*)
 
@@ -2991,796 +2685,640 @@ datatype ('a, 'b) sum = Inl of 'a | Inr of 'b;
 end; (*struct Sum_Type*)
 
 structure Promela : sig
-  datatype edgeAtomic = NonAtomic | Atomic | InAtomic
   datatype binOp = BinOpAdd | BinOpSub | BinOpMul | BinOpDiv | BinOpMod |
     BinOpGr | BinOpLe | BinOpGEq | BinOpLEq | BinOpEq | BinOpNEq | BinOpAnd |
     BinOpOr
-  datatype unOp = UnOpMinus | UnOpNeg
-  datatype expr = ExprBinOp of binOp * expr * expr | ExprUnOp of unOp * expr |
+  type unOp
+  datatype varRef = VarRef of bool * string * expr option
+  and chanRef = ChanRef of varRef
+  and recvArg = RecvArgVar of varRef | RecvArgEval of expr |
+    RecvArgConst of IntInf.int | RecvArgMConst of IntInf.int * string
+  and expr = ExprBinOp of binOp * expr * expr | ExprUnOp of unOp * expr |
     ExprCond of expr * expr * expr | ExprLen of chanRef | ExprVarRef of varRef |
     ExprConst of IntInf.int | ExprMConst of IntInf.int * string | ExprTimeOut |
     ExprFull of chanRef | ExprEmpty of chanRef |
     ExprPoll of chanRef * recvArg list * bool
-  and varRef = VarRef of bool * string * expr option
-  and chanRef = ChanRef of varRef
-  and recvArg = RecvArgVar of varRef | RecvArgEval of expr |
-    RecvArgConst of IntInf.int | RecvArgMConst of IntInf.int * string
-  datatype procVarDecl =
-    ProcVarDeclNum of
-      IntInf.int * IntInf.int * string * IntInf.int option * expr option
-    | ProcVarDeclChan of string * IntInf.int option
-  datatype edgeEffect = EEEnd | EEId | EEGoto | EEAssert of expr |
-    EEAssign of varRef * expr | EEDecl of procVarDecl |
-    EERun of string * expr list | EESend of chanRef * expr list * bool |
-    EERecv of chanRef * recvArg list * bool * bool
-  datatype edgeIndex = Index of Arith.nat |
-    LabelJump of string * Arith.nat option
-  datatype edgeCond = ECElse | ECTrue | ECFalse | ECExpr of expr |
-    ECRun of string | ECSend of chanRef |
-    ECRecv of chanRef * recvArg list * bool
-  datatype 'a edge_ext =
-    Edge_ext of edgeCond * edgeEffect * edgeIndex * IntInf.int * edgeAtomic * 'a
-  val skip :
-    'a * (IntInf.int * (Arith.nat * (edgeIndex * 'b))) ->
-      (unit edge_ext list) list * (edgeIndex * 'a)
-  datatype 'a gState_I_ext =
-    GState_I_ext of Arith.nat * IntInf.int list * Arith.nat * bool * 'a
-  datatype varType = VTBounded of IntInf.int * IntInf.int | VTChan
-  datatype variable = Var of varType * IntInf.int |
-    VArray of varType * Arith.nat * IntInf.int Vector.vector
-  datatype 'a pState_ext =
-    PState_ext of
-      Arith.nat * (string, variable) Assoc_List.assoc_list * Arith.nat *
-        IntInf.int list * Arith.nat * 'a
-  datatype channel =
-    Channel of IntInf.int * varType list * (IntInf.int list) list |
-    HSChannel of varType list | InvChannel
-  datatype 'a gState_ext =
-    GState_ext of
-      (string, variable) Assoc_List.assoc_list * channel list * bool *
-        unit pState_ext list * 'a
-  val to_I : unit gState_ext -> unit gState_I_ext gState_ext
-  val vars_update :
-    ((string, variable) Assoc_List.assoc_list ->
-      (string, variable) Assoc_List.assoc_list) ->
-      'a gState_ext -> 'a gState_ext
-  datatype varDecl =
-    VarDeclNum of
-      IntInf.int * IntInf.int * string * IntInf.int option * expr option
-    | VarDeclChan of
-        string * IntInf.int option * (IntInf.int * varType list) option
-  datatype procArg = ProcArg of varType * string
-  datatype 'a program_ext =
-    Program_ext of
-      (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector *
-        (string, Arith.nat) Assoc_List.assoc_list Vector.vector *
-        ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector *
-        string Vector.vector * (string, Arith.nat) Assoc_List.assoc_list * 'a
-  datatype step = StepStmnt of stmnt * stmnt option |
-    StepDecl of procVarDecl list | StepSkip
-  and stmnt = StmntIf of (step list) list | StmntDo of (step list) list |
-    StmntAtomic of step list | StmntSeq of step list |
-    StmntSend of chanRef * expr list * bool |
-    StmntRecv of chanRef * recvArg list * bool * bool |
-    StmntAssign of varRef * expr | StmntElse | StmntBreak | StmntSkip |
-    StmntGoTo of string | StmntLabeled of string * stmnt |
-    StmntRun of string * expr list | StmntCond of expr | StmntAssert of expr
-  datatype proc =
-    ProcType of
-      (IntInf.int option) option * string * procArg list * varDecl list *
-        step list
-    | Init of varDecl list * step list
-  val max_array_size : 'a Arith.numeral -> 'a
-  val channels : 'a gState_ext -> channel list
-  val min_var_value : IntInf.int
-  val max_var_value : IntInf.int
-  val varType_inv : varType -> bool
-  val for_all : ('a -> bool) -> 'a list -> bool
-  val channel_inv : channel -> bool
-  val checkVarValue : varType -> IntInf.int -> IntInf.int
-  val timeout : 'a gState_ext -> bool
-  val varsa : 'a pState_ext -> (string, variable) Assoc_List.assoc_list
-  val vars : 'a gState_ext -> (string, variable) Assoc_List.assoc_list
-  val lookupVar : variable -> IntInf.int option -> IntInf.int
-  val getVar :
-    bool ->
-      string ->
-        IntInf.int option ->
-          'a gState_ext -> unit pState_ext -> IntInf.int option
-  val withVar :
-    bool ->
-      string ->
-        IntInf.int option ->
-          (IntInf.int -> 'a) -> 'b gState_ext -> unit pState_ext -> 'a
-  val withChannela :
-    bool ->
-      string ->
-        IntInf.int option ->
-          (Arith.nat -> channel -> 'a) -> 'b gState_ext -> unit pState_ext -> 'a
+  val equal_expr : expr HOL.equal
+  type varType
+  type channel
+  type variable
+  type 'a pState_ext
+  type 'a gState_ext
+  val equal_gState_ext : 'a HOL.equal -> 'a gState_ext HOL.equal
+  val hashable_gState_ext :
+    'a HashCode.hashable -> 'a gState_ext HashCode.hashable
+  type varDecl
+  type procArg
+  type step
+  type stmnt
+  type proc
+  type edgeIndex
+  type 'a edge_ext
+  type 'a program_ext
+  type 'a gState_I_ext
   val exprArith : 'a gState_ext -> unit pState_ext -> expr -> IntInf.int
-  val recvArgsCheck :
-    'a gState_ext -> unit pState_ext -> recvArg list -> IntInf.int list -> bool
-  val pollCheck :
-    'a gState_ext -> unit pState_ext -> channel -> recvArg list -> bool -> bool
-  val toVariable :
-    'a gState_ext ->
-      unit pState_ext -> varDecl -> string * (variable * channel list)
-  val channels_updatea :
-    (IntInf.int list -> IntInf.int list) -> 'a pState_ext -> 'a pState_ext
-  val channels_update :
-    (channel list -> channel list) -> 'a gState_ext -> 'a gState_ext
-  val channelsa : 'a pState_ext -> IntInf.int list
-  val max_channels : 'a Arith.numeral -> 'a
-  val mkChannels :
-    'a gState_ext ->
-      unit pState_ext -> channel list -> 'a gState_ext * unit pState_ext
-  val mkVarChannel :
-    varDecl ->
-      (((string, variable) Assoc_List.assoc_list ->
-         (string, variable) Assoc_List.assoc_list) ->
-        'a gState_ext * unit pState_ext -> 'a gState_ext * unit pState_ext) ->
-        'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val prio : 'a edge_ext -> IntInf.int
-  val min_prio : unit edge_ext list -> IntInf.int -> IntInf.int
-  val calculatePrios :
-    (unit edge_ext list) list -> (IntInf.int * unit edge_ext list) list
-  val target_update : (edgeIndex -> edgeIndex) -> 'a edge_ext -> 'a edge_ext
-  val atomic_update : (edgeAtomic -> edgeAtomic) -> 'a edge_ext -> 'a edge_ext
-  val atomica : 'a edge_ext -> edgeAtomic
-  val inAtomica : unit edge_ext -> bool
-  val isAtomic : unit edge_ext -> bool
-  val target : 'a edge_ext -> edgeIndex
-  val resolveLabel :
-    string -> (string, Arith.nat) Assoc_List.assoc_list -> Arith.nat
-  val resolveLabels :
-    (unit edge_ext list) list ->
-      (string, Arith.nat) Assoc_List.assoc_list ->
-        unit edge_ext list -> unit edge_ext list
-  val step_folda :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * 'c)))) ->
-        'd list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      'a list ->
-        (string, Arith.nat) Assoc_List.assoc_list ->
-          'b -> Arith.nat ->
-                  edgeIndex ->
-                    edgeIndex option ->
-                      'c -> Arith.nat *
-                              (edgeIndex *
-                                ((string, Arith.nat) Assoc_List.assoc_list *
-                                  'd list))
-  val step_foldL_step :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        'c list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      'b -> edgeIndex option ->
-              'a list ->
-                Arith.nat *
-                  (edgeIndex *
-                    ((string, Arith.nat) Assoc_List.assoc_list *
-                      ('c list * 'c list))) ->
-                  Arith.nat *
-                    (edgeIndex *
-                      ((string, Arith.nat) Assoc_List.assoc_list *
-                        ('c list * 'c list)))
-  val step_foldL :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        'c list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      ('a list) list ->
-        (string, Arith.nat) Assoc_List.assoc_list ->
-          'b -> Arith.nat ->
-                  edgeIndex ->
-                    edgeIndex option ->
-                      Arith.nat *
-                        (edgeIndex *
-                          ((string, Arith.nat) Assoc_List.assoc_list *
-                            ('c list * 'c list)))
-  val step_fold :
-    ('a ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        ('b * (Arith.nat * (edgeIndex * (edgeIndex option * 'c)))) ->
-        'd list * (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)) ->
-      'a list ->
-        (string, Arith.nat) Assoc_List.assoc_list ->
-          'b -> Arith.nat ->
-                  edgeIndex ->
-                    edgeIndex option ->
-                      'c -> 'd list *
-                              (edgeIndex *
-                                (string, Arith.nat) Assoc_List.assoc_list)
-  val add_label :
-    string ->
-      (string, Arith.nat) Assoc_List.assoc_list ->
-        Arith.nat -> (string, Arith.nat) Assoc_List.assoc_list
-  val atomize :
-    Arith.nat -> Arith.nat -> unit edge_ext list -> unit edge_ext list
-  val stepToState :
-    step ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        (IntInf.int * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        (unit edge_ext list) list *
-          (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)
-  val stmntToState :
-    stmnt ->
-      (string, Arith.nat) Assoc_List.assoc_list *
-        (IntInf.int * (Arith.nat * (edgeIndex * (edgeIndex option * bool)))) ->
-        (unit edge_ext list) list *
-          (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)
-  val endState : unit edge_ext list
-  val toStates :
-    step list ->
-      (IntInf.int * unit edge_ext list) Vector.vector *
-        (edgeIndex * (string, Arith.nat) Assoc_List.assoc_list)
-  val toProcess :
-    Arith.nat ->
-      proc ->
-        (IntInf.int * unit edge_ext list) Vector.vector *
-          (Arith.nat *
-            (string *
-              ((string, Arith.nat) Assoc_List.assoc_list *
-                (Arith.nat * (edgeIndex * (procArg list * varDecl list))))))
   val emptyProc : unit pState_ext
-  val procs_update :
-    (unit pState_ext list -> unit pState_ext list) ->
-      'a gState_ext -> 'a gState_ext
-  val processes :
-    'a program_ext ->
-      (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector
-  val proc_data : 'a program_ext -> (string, Arith.nat) Assoc_List.assoc_list
-  val max_procs : 'a Arith.numeral -> 'a
-  val procs : 'a gState_ext -> unit pState_ext list
-  val vars_updatea :
-    ((string, variable) Assoc_List.assoc_list ->
-      (string, variable) Assoc_List.assoc_list) ->
-      'a pState_ext -> 'a pState_ext
-  val modProcArg : procArg * IntInf.int -> string * variable
-  val mkProc :
-    'a gState_ext ->
-      unit pState_ext ->
-        expr list ->
-          Arith.nat * (edgeIndex * (procArg list * varDecl list)) ->
-            Arith.nat -> 'a gState_ext * unit pState_ext
-  val runProc :
-    string ->
-      expr list ->
-        unit program_ext ->
-          'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
   val setUp :
     varDecl list * (proc list * (string * string) list) ->
       (string, string) Assoc_List.assoc_list *
         (unit gState_ext * unit program_ext)
-  val from_I : 'a gState_ext -> unit gState_ext
-  val editVar : variable -> IntInf.int option -> IntInf.int -> variable
-  val setVara :
-    bool ->
-      string ->
-        IntInf.int option ->
-          IntInf.int ->
-            'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val liftVar :
-    (bool ->
-      string ->
-        IntInf.int option -> 'a -> 'b gState_ext -> unit pState_ext -> 'c) ->
-      varRef -> 'a -> 'b gState_ext -> unit pState_ext -> 'c
-  val setVar :
-    varRef ->
-      IntInf.int ->
-        'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val reset_I : unit gState_I_ext gState_ext -> unit gState_I_ext gState_ext
-  val handshake : 'a gState_I_ext gState_ext -> Arith.nat
-  val hsdata : 'a gState_I_ext gState_ext -> IntInf.int list
-  val elsea : 'a gState_I_ext gState_ext -> bool
-  val withChannel :
-    chanRef ->
-      (Arith.nat -> channel -> 'a) -> 'b gState_ext -> unit pState_ext -> 'a
-  val evalCond :
-    edgeCond -> unit gState_I_ext gState_ext -> unit pState_ext -> bool
-  val assertVar : varRef
-  val proc_names : 'a program_ext -> string Vector.vector
-  val pid : 'a pState_ext -> Arith.nat
-  val idx : 'a pState_ext -> Arith.nat
-  val procDescr :
-    (IntInf.int -> char list) ->
-      unit program_ext -> unit pState_ext -> char list
-  val cleanChans : IntInf.int list -> channel list -> channel list
-  val handshake_update :
-    (Arith.nat -> Arith.nat) ->
-      'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val hsdata_update :
-    (IntInf.int list -> IntInf.int list) ->
-      'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val mkVarChannelProc :
-    procVarDecl ->
-      'a gState_ext -> unit pState_ext -> 'a gState_ext * unit pState_ext
-  val evalRecvArgs :
-    recvArg list ->
-      IntInf.int list ->
-        unit gState_I_ext gState_ext ->
-          unit pState_ext -> unit gState_I_ext gState_ext * unit pState_ext
-  val find_remove : ('a -> bool) -> 'a list -> 'a option * 'a list
-  val evalEffect :
-    edgeEffect ->
-      unit program_ext ->
-        unit gState_I_ext gState_ext ->
-          unit pState_ext -> unit gState_I_ext gState_ext * unit pState_ext
-  val cond : 'a edge_ext -> edgeCond
-  val evalHandshake :
-    edgeCond ->
-      Arith.nat -> unit gState_I_ext gState_ext -> unit pState_ext -> bool
-  val getChoices :
-    unit gState_I_ext gState_ext ->
-      unit pState_ext ->
-        unit edge_ext list -> (unit edge_ext * unit pState_ext) list
-  val timeout_update : (bool -> bool) -> 'a gState_ext -> 'a gState_ext
-  val exclusive : 'a gState_I_ext gState_ext -> Arith.nat
-  val states :
-    'a program_ext ->
-      ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector
-  val else_update :
-    (bool -> bool) -> 'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val pc : 'a pState_ext -> Arith.nat
-  val sort_by_pri : Arith.nat -> 'a edge_ext list -> ('a edge_ext list) list
-  val executable_impl :
-    ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector ->
-      unit gState_I_ext gState_ext -> (unit edge_ext * unit pState_ext) list
-  val exclusive_update :
-    (Arith.nat -> Arith.nat) ->
-      'a gState_I_ext gState_ext -> 'a gState_I_ext gState_ext
-  val pc_update : (Arith.nat -> Arith.nat) -> 'a pState_ext -> 'a pState_ext
-  val effect : 'a edge_ext -> edgeEffect
-  val removeProcs :
-    'a pState_ext list -> bool * (bool * ('a pState_ext list * IntInf.int list))
-  val checkDeadProcs : 'a gState_ext -> 'a gState_ext
-  val applyEdge_impl :
-    unit program_ext ->
-      unit edge_ext ->
-        unit pState_ext ->
-          unit gState_I_ext gState_ext -> unit gState_I_ext gState_ext
-  val nexts_code_0 :
-    'a HOL.equal ->
-      unit program_ext ->
-        (unit gState_I_ext gState_ext -> 'a) ->
-          unit gState_I_ext gState_ext -> 'a Dlist.dlist Refine_Det.dres
   val nexts_code :
     'a HOL.equal ->
       unit program_ext ->
         (unit gState_ext -> 'a) ->
           unit gState_ext -> 'a Dlist.dlist Refine_Det.dres
-  val equal_varTypea : varType -> varType -> bool
-  val equal_variablea : variable -> variable -> bool
-  val equal_variable : variable HOL.equal
-  val equal_pState_exta : 'a HOL.equal -> 'a pState_ext -> 'a pState_ext -> bool
-  val equal_pState_ext : 'a HOL.equal -> 'a pState_ext HOL.equal
-  val equal_varType : varType HOL.equal
-  val equal_channela : channel -> channel -> bool
-  val equal_channel : channel HOL.equal
-  val equal_gState_exta : 'a HOL.equal -> 'a gState_ext -> 'a gState_ext -> bool
-  val printList :
-    ('a -> char list) ->
-      'a list -> char list -> char list -> char list -> char list
-  val printBinOp : binOp -> char list
-  val printUnOp : unOp -> char list
-  val printExpr : (IntInf.int -> char list) -> expr -> char list
-  val printVarRef : (IntInf.int -> char list) -> varRef -> char list
-  val printChanRef : (IntInf.int -> char list) -> chanRef -> char list
-  val printFun : (IntInf.int -> char list) -> char list -> chanRef -> char list
-  val printRecvArg : (IntInf.int -> char list) -> recvArg -> char list
-  val printVarDecl : (IntInf.int -> char list) -> procVarDecl -> char list
-  val printEffect : (IntInf.int -> char list) -> edgeEffect -> char list
-  val printIndex : (IntInf.int -> char list) -> edgeIndex -> char list
-  val printCond : (IntInf.int -> char list) -> edgeCond -> char list
-  val printEdge :
-    (IntInf.int -> char list) -> Arith.nat -> unit edge_ext -> char list
-  val printInitial :
-    (IntInf.int -> char list) ->
-      unit program_ext -> unit gState_ext -> char list
-  val replay_code_0 :
-    unit program_ext ->
-      (unit gState_I_ext gState_ext -> bool) ->
-        unit gState_I_ext gState_ext ->
-          ((unit edge_ext * unit pState_ext) list) Refine_Det.dres
-  val replay_code :
-    unit program_ext ->
-      unit gState_ext ->
-        unit gState_ext -> (unit edge_ext * unit pState_ext) list
   val printConfig :
     (IntInf.int -> char list) ->
       unit program_ext -> unit gState_ext option -> unit gState_ext -> char list
-  val decr : varRef -> stmnt
-  val incr : varRef -> stmnt
-  val labels :
-    'a program_ext -> (string, Arith.nat) Assoc_List.assoc_list Vector.vector
-  val ppVarType : PromelaAST.varType -> varType
-  val enforceChan : (varRef, chanRef) Sum_Type.sum -> chanRef
-  val dealWithVar :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      string ->
-        (string -> IntInf.int option * bool -> expr option -> 'a) ->
-          (string -> IntInf.int option * bool -> expr option -> 'a) ->
-            (IntInf.int -> 'a) -> 'a
-  val resolveIdx : expr option -> expr option -> expr option
-  val liftChan : (varRef, chanRef) Sum_Type.sum -> varRef
-  val ppBinOp : PromelaAST.binOp -> binOp
-  val ppUnOp : PromelaAST.unOp -> unOp
-  val ppExpr :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.expr -> expr
-  val ppVarRef :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.varRef -> (varRef, chanRef) Sum_Type.sum
-  val ppRecvArg :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.recvArg -> recvArg
-  val ppVarDecl :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      varType ->
-        bool ->
-          PromelaAST.varDecl ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              varDecl
-  val cvm_fold : ('a -> 'b -> 'a * 'c) -> 'a -> 'b list -> 'a * 'c list
-  val liftDecl :
-    ('a -> varType -> 'b -> PromelaAST.varDecl -> 'a * 'c) ->
-      'b -> 'a -> PromelaAST.decl -> 'a * 'c list
-  val ppDecl :
-    bool ->
-      (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, IntInf.int) Assoc_List.assoc_list *
-            (string, varRef) Assoc_List.assoc_list)) ->
-        PromelaAST.decl ->
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, IntInf.int) Assoc_List.assoc_list *
-                (string, varRef) Assoc_List.assoc_list))) *
-            varDecl list
-  val ppProcVarDecl :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      varType ->
-        bool ->
-          PromelaAST.varDecl ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              procVarDecl
-  val ppDeclProc :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.decl ->
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, IntInf.int) Assoc_List.assoc_list *
-              (string, varRef) Assoc_List.assoc_list))) *
-          procVarDecl list
-  val forInArray : varRef -> IntInf.int -> step list -> stmnt
-  val forInChan : varRef -> chanRef -> step list -> stmnt
-  val forFromTo : varRef -> expr -> expr -> step list -> stmnt
-  val select : varRef -> expr -> expr -> stmnt
-  val ppStep :
-    bool *
-      (varDecl list *
-        ((string,
-           (string list *
-             ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)) ->
-               ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                   ((string, IntInf.int) Assoc_List.assoc_list *
-                     (string, varRef) Assoc_List.assoc_list))) *
-                 step list)))
-           Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, IntInf.int) Assoc_List.assoc_list *
-                (string, varRef) Assoc_List.assoc_list))))) ->
-      PromelaAST.step ->
-        (bool *
-          (varDecl list *
-            ((string,
-               (string list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                    ((string, (IntInf.int option * bool))
-                       Assoc_List.assoc_list *
-                      ((string, IntInf.int) Assoc_List.assoc_list *
-                        (string, varRef) Assoc_List.assoc_list)) ->
-                   ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                     ((string, (IntInf.int option * bool))
-                        Assoc_List.assoc_list *
-                       ((string, IntInf.int) Assoc_List.assoc_list *
-                         (string, varRef) Assoc_List.assoc_list))) *
-                     step list)))
-               Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)))))) *
-          step
-  val ppStmnt :
-    bool *
-      (varDecl list *
-        ((string,
-           (string list *
-             ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)) ->
-               ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                   ((string, IntInf.int) Assoc_List.assoc_list *
-                     (string, varRef) Assoc_List.assoc_list))) *
-                 step list)))
-           Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, IntInf.int) Assoc_List.assoc_list *
-                (string, varRef) Assoc_List.assoc_list))))) ->
-      PromelaAST.stmnt ->
-        (bool *
-          (varDecl list *
-            ((string,
-               (string list *
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                    ((string, (IntInf.int option * bool))
-                       Assoc_List.assoc_list *
-                      ((string, IntInf.int) Assoc_List.assoc_list *
-                        (string, varRef) Assoc_List.assoc_list)) ->
-                   ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                     ((string, (IntInf.int option * bool))
-                        Assoc_List.assoc_list *
-                       ((string, IntInf.int) Assoc_List.assoc_list *
-                         (string, varRef) Assoc_List.assoc_list))) *
-                     step list)))
-               Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, IntInf.int) Assoc_List.assoc_list *
-                    (string, varRef) Assoc_List.assoc_list)))))) *
-          stmnt
-  val ppProcArg :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      varType ->
-        bool ->
-          PromelaAST.varDecl ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              procArg
-  val ppDeclProcArg :
-    (string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list)) ->
-      PromelaAST.decl ->
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, IntInf.int) Assoc_List.assoc_list *
-              (string, varRef) Assoc_List.assoc_list))) *
-          procArg list
-  val ppModule :
-    ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-      ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-        ((string, IntInf.int) Assoc_List.assoc_list *
-          (string, varRef) Assoc_List.assoc_list))) *
-      (string,
-        (string list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-             ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-               ((string, IntInf.int) Assoc_List.assoc_list *
-                 (string, varRef) Assoc_List.assoc_list)) ->
-            ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-              ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                ((string, IntInf.int) Assoc_List.assoc_list *
-                  (string, varRef) Assoc_List.assoc_list))) *
-              step list)))
-        Assoc_List.assoc_list ->
-      PromelaAST.module ->
-        ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-          ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-            ((string, IntInf.int) Assoc_List.assoc_list *
-              (string, varRef) Assoc_List.assoc_list))) *
-          ((string,
-             (string list *
-               ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                  ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                    ((string, IntInf.int) Assoc_List.assoc_list *
-                      (string, varRef) Assoc_List.assoc_list)) ->
-                 ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                   ((string, (IntInf.int option * bool)) Assoc_List.assoc_list *
-                     ((string, IntInf.int) Assoc_List.assoc_list *
-                       (string, varRef) Assoc_List.assoc_list))) *
-                   step list)))
-             Assoc_List.assoc_list *
-            ((varDecl list), (proc, (string * string)) Sum_Type.sum)
-              Sum_Type.sum)
-  val equal_binOp : binOp -> binOp -> bool
-  val equal_unOp : unOp -> unOp -> bool
-  val equal_expr : expr HOL.equal
-  val equal_varRef : varRef -> varRef -> bool
-  val equal_chanRef : chanRef -> chanRef -> bool
-  val equal_recvArga : recvArg -> recvArg -> bool
-  val equal_recvArg : recvArg HOL.equal
-  val equal_expra : expr -> expr -> bool
   val preprocess :
     PromelaAST.module list ->
       varDecl list * (proc list * (string * string) list)
-  val printEdges :
-    (IntInf.int -> char list) ->
-      (IntInf.int * unit edge_ext list) Vector.vector -> (char list) list
-  val gState2HASH :
-    'a gState_ext ->
-      (string, variable) Assoc_List.assoc_list *
-        (channel list * (bool * (unit pState_ext list * 'a)))
-  val pState2HASH :
-    'a pState_ext ->
-      Arith.nat *
-        ((string, variable) Assoc_List.assoc_list *
-          (Arith.nat * (IntInf.int list * (Arith.nat * 'a))))
-  val printLabels :
-    (IntInf.int -> char list) ->
-      (string, Arith.nat) Assoc_List.assoc_list -> (char list) list
-  val walk_iarraya :
-    ('a -> 'b -> 'a) -> 'b Vector.vector -> 'a -> Arith.nat -> Arith.nat -> 'a
-  val walk_iarray : ('a -> 'b -> 'a) -> 'b Vector.vector -> 'a -> 'a
   val printProcesses :
     (IntInf.int -> char list) -> unit program_ext -> (char list) list
-  val equal_gState_ext : 'a HOL.equal -> 'a gState_ext HOL.equal
-  val def_hashmap_size_uint_gState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a gState_ext HOL.itself -> Arith.nat
-  val def_hashmap_size_gState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a gState_ext HOL.itself -> Arith.nat
-  val def_hashmap_size_uint_pState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a pState_ext HOL.itself -> Arith.nat
-  val def_hashmap_size_uint_assoc_list :
-    'a Collections_Patch1.hashable_uint ->
-      'b Collections_Patch1.hashable_uint ->
-      ('a, 'b) Assoc_List.assoc_list HOL.itself -> Arith.nat
-  val hashcode_uint_assoc_list :
-    'a Collections_Patch1.hashable_uint ->
-      'b Collections_Patch1.hashable_uint ->
-      ('a, 'b) Assoc_List.assoc_list -> Word32.word
-  val hashable_uint_assoc_list :
-    'a Collections_Patch1.hashable_uint ->
-      'b Collections_Patch1.hashable_uint ->
-      ('a, 'b) Assoc_List.assoc_list Collections_Patch1.hashable_uint
-  val def_hashmap_size_uint_variable : variable HOL.itself -> Arith.nat
-  val def_hashmap_size_uint_varType : varType HOL.itself -> Arith.nat
-  val hashcode_uint_varType : varType -> Word32.word
-  val hashable_uint_varType : varType Collections_Patch1.hashable_uint
-  val def_hashmap_size_uint_iarray :
-    'a Collections_Patch1.hashable_uint ->
-      ('a Vector.vector) HOL.itself -> Arith.nat
-  val hashcode_uint_iarray :
-    'a Collections_Patch1.hashable_uint -> 'a Vector.vector -> Word32.word
-  val hashable_uint_iarray :
-    'a Collections_Patch1.hashable_uint ->
-      ('a Vector.vector) Collections_Patch1.hashable_uint
-  val hashcode_uint_variable : variable -> Word32.word
-  val hashable_uint_variable : variable Collections_Patch1.hashable_uint
-  val hashcode_uint_pState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a pState_ext -> Word32.word
-  val hashable_uint_pState_ext :
-    'a Collections_Patch1.hashable_uint ->
-      'a pState_ext Collections_Patch1.hashable_uint
-  val def_hashmap_size_uint_channel : channel HOL.itself -> Arith.nat
-  val hashcode_uint_channel : channel -> Word32.word
-  val hashable_uint_channel : channel Collections_Patch1.hashable_uint
-  val hashcode_uint_gState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a gState_ext -> Word32.word
-  val hashable_uint_gState_ext :
-    'a Collections_Patch1.hashable_uint ->
-      'a gState_ext Collections_Patch1.hashable_uint
-  val bounded_hashcode_gState_ext :
-    'a Collections_Patch1.hashable_uint ->
-      Arith.nat -> 'a gState_ext -> Arith.nat
-  val hashcode_gState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a gState_ext -> Arith.nat
-  val hashable_gState_ext :
-    'a Collections_Patch1.hashable_uint -> 'a gState_ext HashCode.hashable
 end = struct
 
-datatype edgeAtomic = NonAtomic | Atomic | InAtomic;
+fun def_hashmap_size_iarray A_ =
+  (fn _ => Arith.nat_of_integer (10 : IntInf.int));
+
+fun walk_iarraya uu uv x l uw =
+  (if Arith.equal_nata l Arith.zero_nata then x
+    else let
+           val y = uu x (IArray.sub uv uw);
+         in
+           walk_iarraya uu uv y (Arith.minus_nat l Arith.one_nata)
+             (Arith.plus_nata uw Arith.one_nata)
+         end);
+
+fun walk_iarray f a x = walk_iarraya f a x (IArray.length a) Arith.zero_nata;
+
+fun hashcode_iarray A_ a =
+  walk_iarray
+    (fn h => fn v =>
+      Word32.+ (Word32.* (h, Word32.fromInt
+                               (33 : IntInf.int)), HashCode.hashcode A_ v))
+    a (Word32.fromInt 0);
+
+fun hashable_iarray A_ =
+  {hashcode = hashcode_iarray A_, def_hashmap_size = def_hashmap_size_iarray A_}
+  : ('a Vector.vector) HashCode.hashable;
+
+fun def_hashmap_size_assoc_list A_ B_ uu =
+  Arith.nat_of_integer (10 : IntInf.int);
+
+fun hashcode_assoc_list A_ B_ =
+  HashCode.hashcode_list (HashCode.hashable_prod A_ B_) o Assoc_List.impl_of;
+
+fun hashable_assoc_list A_ B_ =
+  {hashcode = hashcode_assoc_list A_ B_,
+    def_hashmap_size = def_hashmap_size_assoc_list A_ B_}
+  : ('a, 'b) Assoc_List.assoc_list HashCode.hashable;
 
 datatype binOp = BinOpAdd | BinOpSub | BinOpMul | BinOpDiv | BinOpMod | BinOpGr
   | BinOpLe | BinOpGEq | BinOpLEq | BinOpEq | BinOpNEq | BinOpAnd | BinOpOr;
 
 datatype unOp = UnOpMinus | UnOpNeg;
 
-datatype expr = ExprBinOp of binOp * expr * expr | ExprUnOp of unOp * expr |
+datatype varRef = VarRef of bool * string * expr option
+and chanRef = ChanRef of varRef
+and recvArg = RecvArgVar of varRef | RecvArgEval of expr |
+  RecvArgConst of IntInf.int | RecvArgMConst of IntInf.int * string
+and expr = ExprBinOp of binOp * expr * expr | ExprUnOp of unOp * expr |
   ExprCond of expr * expr * expr | ExprLen of chanRef | ExprVarRef of varRef |
   ExprConst of IntInf.int | ExprMConst of IntInf.int * string | ExprTimeOut |
   ExprFull of chanRef | ExprEmpty of chanRef |
-  ExprPoll of chanRef * recvArg list * bool
-and varRef = VarRef of bool * string * expr option
-and chanRef = ChanRef of varRef
-and recvArg = RecvArgVar of varRef | RecvArgEval of expr |
-  RecvArgConst of IntInf.int | RecvArgMConst of IntInf.int * string;
+  ExprPoll of chanRef * recvArg list * bool;
 
-datatype procVarDecl =
-  ProcVarDeclNum of
-    IntInf.int * IntInf.int * string * IntInf.int option * expr option
-  | ProcVarDeclChan of string * IntInf.int option;
+fun equal_binOp BinOpAnd BinOpOr = false
+  | equal_binOp BinOpOr BinOpAnd = false
+  | equal_binOp BinOpNEq BinOpOr = false
+  | equal_binOp BinOpOr BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpNEq = false
+  | equal_binOp BinOpEq BinOpOr = false
+  | equal_binOp BinOpOr BinOpEq = false
+  | equal_binOp BinOpEq BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpEq = false
+  | equal_binOp BinOpEq BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpEq = false
+  | equal_binOp BinOpLEq BinOpOr = false
+  | equal_binOp BinOpOr BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpEq = false
+  | equal_binOp BinOpEq BinOpLEq = false
+  | equal_binOp BinOpGEq BinOpOr = false
+  | equal_binOp BinOpOr BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpEq = false
+  | equal_binOp BinOpEq BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpGEq = false
+  | equal_binOp BinOpLe BinOpOr = false
+  | equal_binOp BinOpOr BinOpLe = false
+  | equal_binOp BinOpLe BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpLe = false
+  | equal_binOp BinOpLe BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpLe = false
+  | equal_binOp BinOpLe BinOpEq = false
+  | equal_binOp BinOpEq BinOpLe = false
+  | equal_binOp BinOpLe BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpLe = false
+  | equal_binOp BinOpLe BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpLe = false
+  | equal_binOp BinOpGr BinOpOr = false
+  | equal_binOp BinOpOr BinOpGr = false
+  | equal_binOp BinOpGr BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpGr = false
+  | equal_binOp BinOpGr BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpGr = false
+  | equal_binOp BinOpGr BinOpEq = false
+  | equal_binOp BinOpEq BinOpGr = false
+  | equal_binOp BinOpGr BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpGr = false
+  | equal_binOp BinOpGr BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpGr = false
+  | equal_binOp BinOpGr BinOpLe = false
+  | equal_binOp BinOpLe BinOpGr = false
+  | equal_binOp BinOpMod BinOpOr = false
+  | equal_binOp BinOpOr BinOpMod = false
+  | equal_binOp BinOpMod BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpMod = false
+  | equal_binOp BinOpMod BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpMod = false
+  | equal_binOp BinOpMod BinOpEq = false
+  | equal_binOp BinOpEq BinOpMod = false
+  | equal_binOp BinOpMod BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpMod = false
+  | equal_binOp BinOpMod BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpMod = false
+  | equal_binOp BinOpMod BinOpLe = false
+  | equal_binOp BinOpLe BinOpMod = false
+  | equal_binOp BinOpMod BinOpGr = false
+  | equal_binOp BinOpGr BinOpMod = false
+  | equal_binOp BinOpDiv BinOpOr = false
+  | equal_binOp BinOpOr BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpEq = false
+  | equal_binOp BinOpEq BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpLe = false
+  | equal_binOp BinOpLe BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpGr = false
+  | equal_binOp BinOpGr BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpMod = false
+  | equal_binOp BinOpMod BinOpDiv = false
+  | equal_binOp BinOpMul BinOpOr = false
+  | equal_binOp BinOpOr BinOpMul = false
+  | equal_binOp BinOpMul BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpMul = false
+  | equal_binOp BinOpMul BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpMul = false
+  | equal_binOp BinOpMul BinOpEq = false
+  | equal_binOp BinOpEq BinOpMul = false
+  | equal_binOp BinOpMul BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpMul = false
+  | equal_binOp BinOpMul BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpMul = false
+  | equal_binOp BinOpMul BinOpLe = false
+  | equal_binOp BinOpLe BinOpMul = false
+  | equal_binOp BinOpMul BinOpGr = false
+  | equal_binOp BinOpGr BinOpMul = false
+  | equal_binOp BinOpMul BinOpMod = false
+  | equal_binOp BinOpMod BinOpMul = false
+  | equal_binOp BinOpMul BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpMul = false
+  | equal_binOp BinOpSub BinOpOr = false
+  | equal_binOp BinOpOr BinOpSub = false
+  | equal_binOp BinOpSub BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpSub = false
+  | equal_binOp BinOpSub BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpSub = false
+  | equal_binOp BinOpSub BinOpEq = false
+  | equal_binOp BinOpEq BinOpSub = false
+  | equal_binOp BinOpSub BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpSub = false
+  | equal_binOp BinOpSub BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpSub = false
+  | equal_binOp BinOpSub BinOpLe = false
+  | equal_binOp BinOpLe BinOpSub = false
+  | equal_binOp BinOpSub BinOpGr = false
+  | equal_binOp BinOpGr BinOpSub = false
+  | equal_binOp BinOpSub BinOpMod = false
+  | equal_binOp BinOpMod BinOpSub = false
+  | equal_binOp BinOpSub BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpSub = false
+  | equal_binOp BinOpSub BinOpMul = false
+  | equal_binOp BinOpMul BinOpSub = false
+  | equal_binOp BinOpAdd BinOpOr = false
+  | equal_binOp BinOpOr BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpAnd = false
+  | equal_binOp BinOpAnd BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpNEq = false
+  | equal_binOp BinOpNEq BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpEq = false
+  | equal_binOp BinOpEq BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpLEq = false
+  | equal_binOp BinOpLEq BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpGEq = false
+  | equal_binOp BinOpGEq BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpLe = false
+  | equal_binOp BinOpLe BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpGr = false
+  | equal_binOp BinOpGr BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpMod = false
+  | equal_binOp BinOpMod BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpDiv = false
+  | equal_binOp BinOpDiv BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpMul = false
+  | equal_binOp BinOpMul BinOpAdd = false
+  | equal_binOp BinOpAdd BinOpSub = false
+  | equal_binOp BinOpSub BinOpAdd = false
+  | equal_binOp BinOpOr BinOpOr = true
+  | equal_binOp BinOpAnd BinOpAnd = true
+  | equal_binOp BinOpNEq BinOpNEq = true
+  | equal_binOp BinOpEq BinOpEq = true
+  | equal_binOp BinOpLEq BinOpLEq = true
+  | equal_binOp BinOpGEq BinOpGEq = true
+  | equal_binOp BinOpLe BinOpLe = true
+  | equal_binOp BinOpGr BinOpGr = true
+  | equal_binOp BinOpMod BinOpMod = true
+  | equal_binOp BinOpDiv BinOpDiv = true
+  | equal_binOp BinOpMul BinOpMul = true
+  | equal_binOp BinOpSub BinOpSub = true
+  | equal_binOp BinOpAdd BinOpAdd = true;
 
-datatype edgeEffect = EEEnd | EEId | EEGoto | EEAssert of expr |
-  EEAssign of varRef * expr | EEDecl of procVarDecl |
-  EERun of string * expr list | EESend of chanRef * expr list * bool |
-  EERecv of chanRef * recvArg list * bool * bool;
+fun equal_unOp UnOpMinus UnOpNeg = false
+  | equal_unOp UnOpNeg UnOpMinus = false
+  | equal_unOp UnOpNeg UnOpNeg = true
+  | equal_unOp UnOpMinus UnOpMinus = true;
 
-datatype edgeIndex = Index of Arith.nat |
-  LabelJump of string * Arith.nat option;
-
-datatype edgeCond = ECElse | ECTrue | ECFalse | ECExpr of expr | ECRun of string
-  | ECSend of chanRef | ECRecv of chanRef * recvArg list * bool;
-
-datatype 'a edge_ext =
-  Edge_ext of edgeCond * edgeEffect * edgeIndex * IntInf.int * edgeAtomic * 'a;
-
-fun skip (lbls, (pri, (pos, (nxt, uu)))) =
-  ([[Edge_ext
-       (ECExpr (ExprConst (1 : IntInf.int)), EEId, nxt, pri, NonAtomic, ())]],
-    (Index pos, lbls));
-
-datatype 'a gState_I_ext =
-  GState_I_ext of Arith.nat * IntInf.int list * Arith.nat * bool * 'a;
+fun equal_expr () = {equal = equal_expra} : expr HOL.equal
+and equal_varRef (VarRef (boolaa, literala, optionaa))
+  (VarRef (boola, literal, optiona)) =
+  Product_Type.equal_bool boolaa boola andalso
+    (((literala : string) = literal) andalso
+      Option.equal_option (equal_expr ()) optionaa optiona)
+and equal_chanRef (ChanRef varRefa) (ChanRef varRef) =
+  equal_varRef varRefa varRef
+and equal_recvArga (RecvArgConst integera) (RecvArgMConst (integer, literal)) =
+  false
+  | equal_recvArga (RecvArgMConst (integera, literal)) (RecvArgConst integer) =
+    false
+  | equal_recvArga (RecvArgEval expr) (RecvArgMConst (integer, literal)) = false
+  | equal_recvArga (RecvArgMConst (integer, literal)) (RecvArgEval expr) = false
+  | equal_recvArga (RecvArgEval expr) (RecvArgConst integer) = false
+  | equal_recvArga (RecvArgConst integer) (RecvArgEval expr) = false
+  | equal_recvArga (RecvArgVar varRef) (RecvArgMConst (integer, literal)) =
+    false
+  | equal_recvArga (RecvArgMConst (integer, literal)) (RecvArgVar varRef) =
+    false
+  | equal_recvArga (RecvArgVar varRef) (RecvArgConst integer) = false
+  | equal_recvArga (RecvArgConst integer) (RecvArgVar varRef) = false
+  | equal_recvArga (RecvArgVar varRef) (RecvArgEval expr) = false
+  | equal_recvArga (RecvArgEval expr) (RecvArgVar varRef) = false
+  | equal_recvArga (RecvArgMConst (integera, literala))
+    (RecvArgMConst (integer, literal)) =
+    ((integera : IntInf.int) = integer) andalso ((literala : string) = literal)
+  | equal_recvArga (RecvArgConst integera) (RecvArgConst integer) =
+    ((integera : IntInf.int) = integer)
+  | equal_recvArga (RecvArgEval expra) (RecvArgEval expr) =
+    equal_expra expra expr
+  | equal_recvArga (RecvArgVar varRefa) (RecvArgVar varRef) =
+    equal_varRef varRefa varRef
+and equal_recvArg () = {equal = equal_recvArga} : recvArg HOL.equal
+and equal_expra (ExprEmpty chanRefa) (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRefa, lista, boola)) (ExprEmpty chanRef) = false
+  | equal_expra (ExprFull chanRefa) (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRefa, lista, boola)) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRefa) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRefa) (ExprFull chanRef) = false
+  | equal_expra ExprTimeOut (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRef, lista, boola)) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) ExprTimeOut = false
+  | equal_expra (ExprMConst (integer, literal))
+    (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRef, lista, boola))
+    (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal)) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal)) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal)) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprConst integer) (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRef, lista, boola)) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprConst integer) = false
+  | equal_expra (ExprConst integera) (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integera, literal)) (ExprConst integer) = false
+  | equal_expra (ExprVarRef varRef) (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRef, lista, boola)) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal)) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprVarRef varRef) = false
+  | equal_expra (ExprLen chanRefa) (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRefa, lista, boola)) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRefa) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRefa) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRefa) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRefa) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal)) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprLen chanRef) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3))
+    (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRef, lista, boola))
+    (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprMConst (integer, literal))
+    = false
+  | equal_expra (ExprMConst (integer, literal)) (ExprCond (expr1, expr2, expr3))
+    = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprPoll (chanRef, lista, boola)) =
+    false
+  | equal_expra (ExprPoll (chanRef, lista, boola)) (ExprUnOp (unOp, expr)) =
+    false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal)) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprUnOp (unOp, expr)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2))
+    (ExprPoll (chanRef, lista, boola)) = false
+  | equal_expra (ExprPoll (chanRef, lista, boola))
+    (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprEmpty chanRef) = false
+  | equal_expra (ExprEmpty chanRef) (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprFull chanRef) = false
+  | equal_expra (ExprFull chanRef) (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) ExprTimeOut = false
+  | equal_expra ExprTimeOut (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2))
+    (ExprMConst (integer, literal)) = false
+  | equal_expra (ExprMConst (integer, literal))
+    (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprConst integer) = false
+  | equal_expra (ExprConst integer) (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprVarRef varRef) = false
+  | equal_expra (ExprVarRef varRef) (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprLen chanRef) = false
+  | equal_expra (ExprLen chanRef) (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1a, expr2a))
+    (ExprCond (expr1, expr2, expr3)) = false
+  | equal_expra (ExprCond (expr1a, expr2a, expr3))
+    (ExprBinOp (binOp, expr1, expr2)) = false
+  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprUnOp (unOp, expr)) =
+    false
+  | equal_expra (ExprUnOp (unOp, expr)) (ExprBinOp (binOp, expr1, expr2)) =
+    false
+  | equal_expra (ExprPoll (chanRefa, listaa, boolaa))
+    (ExprPoll (chanRef, lista, boola)) =
+    equal_chanRef chanRefa chanRef andalso
+      (List.equal_lista (equal_recvArg ()) listaa lista andalso
+        Product_Type.equal_bool boolaa boola)
+  | equal_expra (ExprEmpty chanRefa) (ExprEmpty chanRef) =
+    equal_chanRef chanRefa chanRef
+  | equal_expra (ExprFull chanRefa) (ExprFull chanRef) =
+    equal_chanRef chanRefa chanRef
+  | equal_expra (ExprMConst (integera, literala))
+    (ExprMConst (integer, literal)) =
+    ((integera : IntInf.int) = integer) andalso ((literala : string) = literal)
+  | equal_expra (ExprConst integera) (ExprConst integer) =
+    ((integera : IntInf.int) = integer)
+  | equal_expra (ExprVarRef varRefa) (ExprVarRef varRef) =
+    equal_varRef varRefa varRef
+  | equal_expra (ExprLen chanRefa) (ExprLen chanRef) =
+    equal_chanRef chanRefa chanRef
+  | equal_expra (ExprCond (expr1a, expr2a, expr3a))
+    (ExprCond (expr1, expr2, expr3)) =
+    equal_expra expr1a expr1 andalso
+      (equal_expra expr2a expr2 andalso equal_expra expr3a expr3)
+  | equal_expra (ExprUnOp (unOpa, expra)) (ExprUnOp (unOp, expr)) =
+    equal_unOp unOpa unOp andalso equal_expra expra expr
+  | equal_expra (ExprBinOp (binOpa, expr1a, expr2a))
+    (ExprBinOp (binOp, expr1, expr2)) =
+    equal_binOp binOpa binOp andalso
+      (equal_expra expr1a expr1 andalso equal_expra expr2a expr2)
+  | equal_expra ExprTimeOut ExprTimeOut = true;
+val equal_expr = equal_expr ();
+val equal_recvArg = equal_recvArg ();
 
 datatype varType = VTBounded of IntInf.int * IntInf.int | VTChan;
 
+datatype channel = Channel of IntInf.int * varType list * (IntInf.int list) list
+  | HSChannel of varType list | InvChannel;
+
+fun equal_varTypea (VTBounded (integer1, integer2)) VTChan = false
+  | equal_varTypea VTChan (VTBounded (integer1, integer2)) = false
+  | equal_varTypea (VTBounded (integer1a, integer2a))
+    (VTBounded (integer1, integer2)) =
+    ((integer1a : IntInf.int) = integer1) andalso
+      ((integer2a : IntInf.int) = integer2)
+  | equal_varTypea VTChan VTChan = true;
+
+val equal_varType = {equal = equal_varTypea} : varType HOL.equal;
+
+fun equal_channela (HSChannel lista) InvChannel = false
+  | equal_channela InvChannel (HSChannel lista) = false
+  | equal_channela (Channel (integer, list1, list2)) InvChannel = false
+  | equal_channela InvChannel (Channel (integer, list1, list2)) = false
+  | equal_channela (Channel (integer, list1, list2)) (HSChannel lista) = false
+  | equal_channela (HSChannel lista) (Channel (integer, list1, list2)) = false
+  | equal_channela (HSChannel listaa) (HSChannel lista) =
+    List.equal_lista equal_varType listaa lista
+  | equal_channela (Channel (integera, list1a, list2a))
+    (Channel (integer, list1, list2)) =
+    ((integera : IntInf.int) = integer) andalso
+      (List.equal_lista equal_varType list1a list1 andalso
+        List.equal_lista (List.equal_list Arith.equal_integer) list2a list2)
+  | equal_channela InvChannel InvChannel = true;
+
+val equal_channel = {equal = equal_channela} : channel HOL.equal;
+
+fun def_hashmap_size_channel uu = Arith.nat_of_integer (10 : IntInf.int);
+
+fun def_hashmap_size_varType uu = Arith.nat_of_integer (10 : IntInf.int);
+
+fun hashcode_varType (VTBounded (i1, i2)) =
+  HashCode.hashcode_prod HashCode.hashable_integer HashCode.hashable_integer
+    (i1, i2)
+  | hashcode_varType VTChan = Word32.fromInt (23 : IntInf.int);
+
+val hashable_varType =
+  {hashcode = hashcode_varType, def_hashmap_size = def_hashmap_size_varType} :
+  varType HashCode.hashable;
+
+fun hashcode_channel (Channel (io, vs, iss)) =
+  HashCode.hashcode_prod HashCode.hashable_integer
+    (HashCode.hashable_prod (HashCode.hashable_list hashable_varType)
+      (HashCode.hashable_list
+        (HashCode.hashable_list HashCode.hashable_integer)))
+    (io, (vs, iss))
+  | hashcode_channel (HSChannel vs) =
+    Word32.* (Word32.fromInt
+                (42 : IntInf.int), HashCode.hashcode_list hashable_varType vs)
+  | hashcode_channel InvChannel = Word32.fromInt (4711 : IntInf.int);
+
+val hashable_channel =
+  {hashcode = hashcode_channel, def_hashmap_size = def_hashmap_size_channel} :
+  channel HashCode.hashable;
+
 datatype variable = Var of varType * IntInf.int |
   VArray of varType * Arith.nat * IntInf.int Vector.vector;
+
+fun equal_variablea (Var (varTypea, integer)) (VArray (varType, nat, iarray)) =
+  false
+  | equal_variablea (VArray (varTypea, nat, iarray)) (Var (varType, integer)) =
+    false
+  | equal_variablea (VArray (varTypea, nata, iarraya))
+    (VArray (varType, nat, iarray)) =
+    equal_varTypea varTypea varType andalso
+      (Arith.equal_nata nata nat andalso
+        IArray.equal_iarray Arith.equal_integer iarraya iarray)
+  | equal_variablea (Var (varTypea, integera)) (Var (varType, integer)) =
+    equal_varTypea varTypea varType andalso ((integera : IntInf.int) = integer);
+
+val equal_variable = {equal = equal_variablea} : variable HOL.equal;
+
+fun def_hashmap_size_variable uu = Arith.nat_of_integer (10 : IntInf.int);
+
+fun hashcode_variable (Var (i1, i2)) =
+  HashCode.hashcode_prod hashable_varType HashCode.hashable_integer (i1, i2)
+  | hashcode_variable (VArray (i1, i2, ia)) =
+    HashCode.hashcode_prod hashable_varType
+      (HashCode.hashable_prod HashCode.hashable_nat
+        (hashable_iarray HashCode.hashable_integer))
+      (i1, (i2, ia));
+
+val hashable_variable =
+  {hashcode = hashcode_variable, def_hashmap_size = def_hashmap_size_variable} :
+  variable HashCode.hashable;
 
 datatype 'a pState_ext =
   PState_ext of
     Arith.nat * (string, variable) Assoc_List.assoc_list * Arith.nat *
       IntInf.int list * Arith.nat * 'a;
 
-datatype channel = Channel of IntInf.int * varType list * (IntInf.int list) list
-  | HSChannel of varType list | InvChannel;
-
 datatype 'a gState_ext =
   GState_ext of
     (string, variable) Assoc_List.assoc_list * channel list * bool *
       unit pState_ext list * 'a;
 
-fun to_I (GState_ext (v, ch, t, p, ())) =
-  GState_ext
-    (v, ch, false, p,
-      GState_I_ext (Arith.zero_nata, [], Arith.zero_nata, false, ()));
+fun equal_pState_exta A_ (PState_ext (pida, varsa, pca, channelsa, idxa, morea))
+  (PState_ext (pid, vars, pc, channels, idx, more)) =
+  Arith.equal_nata pida pid andalso
+    (Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
+       vars andalso
+      (Arith.equal_nata pca pc andalso
+        (List.equal_lista Arith.equal_integer channelsa channels andalso
+          (Arith.equal_nata idxa idx andalso HOL.eq A_ morea more))));
 
-fun vars_update varsa (GState_ext (vars, channels, timeout, procs, more)) =
-  GState_ext (varsa vars, channels, timeout, procs, more);
+fun equal_pState_ext A_ = {equal = equal_pState_exta A_} :
+  'a pState_ext HOL.equal;
+
+fun equal_gState_exta A_
+  (GState_ext (varsa, channelsa, timeouta, procsa, morea))
+  (GState_ext (vars, channels, timeout, procs, more)) =
+  Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
+    vars andalso
+    (List.equal_lista equal_channel channelsa channels andalso
+      (Product_Type.equal_bool timeouta timeout andalso
+        (List.equal_lista (equal_pState_ext Product_Type.equal_unit) procsa
+           procs andalso
+          HOL.eq A_ morea more)));
+
+fun equal_gState_ext A_ = {equal = equal_gState_exta A_} :
+  'a gState_ext HOL.equal;
+
+fun def_hashmap_size_gState_ext A_ uu = Arith.nat_of_integer (10 : IntInf.int);
+
+fun gState2HASH (GState_ext (v, ch, t, p, m)) = (v, (ch, (t, (p, m))));
+
+fun def_hashmap_size_pState_ext A_ uu = Arith.nat_of_integer (10 : IntInf.int);
+
+fun pState2HASH (PState_ext (p, v, c, ch, s, m)) = (p, (v, (c, (ch, (s, m)))));
+
+fun hashcode_pState_ext A_ =
+  HashCode.hashcode_prod HashCode.hashable_nat
+    (HashCode.hashable_prod
+      (hashable_assoc_list Code_String.hashable_literal hashable_variable)
+      (HashCode.hashable_prod HashCode.hashable_nat
+        (HashCode.hashable_prod
+          (HashCode.hashable_list HashCode.hashable_integer)
+          (HashCode.hashable_prod HashCode.hashable_nat A_)))) o
+    pState2HASH;
+
+fun hashable_pState_ext A_ =
+  {hashcode = hashcode_pState_ext A_,
+    def_hashmap_size = def_hashmap_size_pState_ext A_}
+  : 'a pState_ext HashCode.hashable;
+
+fun hashcode_gState_ext A_ =
+  HashCode.hashcode_prod
+    (hashable_assoc_list Code_String.hashable_literal hashable_variable)
+    (HashCode.hashable_prod (HashCode.hashable_list hashable_channel)
+      (HashCode.hashable_prod HashCode.hashable_bool
+        (HashCode.hashable_prod
+          (HashCode.hashable_list (hashable_pState_ext HashCode.hashable_unit))
+          A_))) o
+    gState2HASH;
+
+fun hashable_gState_ext A_ =
+  {hashcode = hashcode_gState_ext A_,
+    def_hashmap_size = def_hashmap_size_gState_ext A_}
+  : 'a gState_ext HashCode.hashable;
 
 datatype varDecl =
   VarDeclNum of
@@ -3790,12 +3328,10 @@ datatype varDecl =
 
 datatype procArg = ProcArg of varType * string;
 
-datatype 'a program_ext =
-  Program_ext of
-    (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector *
-      (string, Arith.nat) Assoc_List.assoc_list Vector.vector *
-      ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector *
-      string Vector.vector * (string, Arith.nat) Assoc_List.assoc_list * 'a;
+datatype procVarDecl =
+  ProcVarDeclNum of
+    IntInf.int * IntInf.int * string * IntInf.int option * expr option
+  | ProcVarDeclChan of string * IntInf.int option;
 
 datatype step = StepStmnt of stmnt * stmnt option | StepDecl of procVarDecl list
   | StepSkip
@@ -3812,6 +3348,42 @@ datatype proc =
     (IntInf.int option) option * string * procArg list * varDecl list *
       step list
   | Init of varDecl list * step list;
+
+datatype edgeCond = ECElse | ECTrue | ECFalse | ECExpr of expr | ECRun of string
+  | ECSend of chanRef | ECRecv of chanRef * recvArg list * bool;
+
+datatype edgeIndex = Index of Arith.nat |
+  LabelJump of string * Arith.nat option;
+
+datatype edgeAtomic = NonAtomic | Atomic | InAtomic;
+
+datatype edgeEffect = EEEnd | EEId | EEGoto | EEAssert of expr |
+  EEAssign of varRef * expr | EEDecl of procVarDecl |
+  EERun of string * expr list | EESend of chanRef * expr list * bool |
+  EERecv of chanRef * recvArg list * bool * bool;
+
+datatype 'a edge_ext =
+  Edge_ext of edgeCond * edgeEffect * edgeIndex * IntInf.int * edgeAtomic * 'a;
+
+datatype 'a program_ext =
+  Program_ext of
+    (Arith.nat * (edgeIndex * (procArg list * varDecl list))) Vector.vector *
+      (string, Arith.nat) Assoc_List.assoc_list Vector.vector *
+      ((IntInf.int * unit edge_ext list) Vector.vector) Vector.vector *
+      string Vector.vector * (string, Arith.nat) Assoc_List.assoc_list * 'a;
+
+datatype 'a gState_I_ext =
+  GState_I_ext of Arith.nat * IntInf.int list * Arith.nat * bool * 'a;
+
+fun skip (lbls, (pri, (pos, (nxt, uu)))) =
+  ([[Edge_ext
+       (ECExpr (ExprConst (1 : IntInf.int)), EEId, nxt, pri, NonAtomic, ())]],
+    (Index pos, lbls));
+
+fun vars_update varsa (GState_ext (vars, channels, timeout, procs, more)) =
+  GState_ext (varsa vars, channels, timeout, procs, more);
+
+fun channels (GState_ext (vars, channels, timeout, procs, more)) = channels;
 
 fun max_array_size A_ =
   Arith.numeral A_
@@ -3830,21 +3402,18 @@ fun max_array_size A_ =
                             (Arith.Bit1
                               (Arith.Bit1 (Arith.Bit1 Arith.One)))))))))))))));
 
-fun channels (GState_ext (vars, channels, timeout, procs, more)) = channels;
-
 val min_var_value : IntInf.int =
   IntInf.~
-    (Arith.power Arith.power_integer (2 : IntInf.int)
+    (Arith.powera Arith.power_integer (2 : IntInf.int)
       (Arith.nat_of_integer (31 : IntInf.int)));
 
 val max_var_value : IntInf.int =
-  IntInf.- (Arith.power Arith.power_integer (2 : IntInf.int)
+  IntInf.- (Arith.powera Arith.power_integer (2 : IntInf.int)
               (Arith.nat_of_integer (31 : IntInf.int)), (1 : IntInf.int));
 
 fun varType_inv (VTBounded (l, h)) =
   IntInf.<= (min_var_value, l) andalso
-    (IntInf.<= (l, 0) andalso
-      (IntInf.<= (h, max_var_value) andalso IntInf.< (l, h)))
+    (IntInf.<= (h, max_var_value) andalso IntInf.< (l, h))
   | varType_inv VTChan = true;
 
 fun for_all f xs = Foldi.foldli xs Fun.id (fn kv => fn _ => f kv) true;
@@ -3875,10 +3444,10 @@ fun checkVarValue (VTBounded (lRange, hRange)) vala =
   (if IntInf.<= (vala, hRange) andalso IntInf.<= (lRange, vala) then vala
     else (if ((lRange : IntInf.int) = 0) andalso IntInf.< (0, vala)
            then Arith.mod_integer vala (IntInf.+ (hRange, (1 : IntInf.int)))
-           else (raise Fail "Value overflow") (fn _ => lRange)))
+           else PromelaUtils.abort "Value overflow" (fn _ => lRange)))
   | checkVarValue VTChan vala =
     (if IntInf.< (vala, min_var_value) orelse IntInf.< (max_var_value, vala)
-      then (raise Fail "Value overflow") (fn _ => 0) else vala);
+      then PromelaUtils.abort "Value overflow" (fn _ => 0) else vala);
 
 fun timeout (GState_ext (vars, channels, timeout, procs, more)) = timeout;
 
@@ -3888,7 +3457,7 @@ fun vars (GState_ext (vars, channels, timeout, procs, more)) = vars;
 
 fun lookupVar (Var (uu, vala)) NONE = vala
   | lookupVar (Var (uv, uw)) (SOME ux) =
-    (raise Fail "Array used on var") (fn _ => 0)
+    PromelaUtils.abort "Array used on var" (fn _ => 0)
   | lookupVar (VArray (uy, uz, vals)) NONE = IArray.sub vals Arith.zero_nata
   | lookupVar (VArray (va, siz, vals)) (SOME idx) =
     IArray.sub vals (Arith.nat_of_integer idx);
@@ -3897,7 +3466,7 @@ fun getVar gl v idx g p =
   let
     val varsb = (if gl then vars g else varsa p);
   in
-    Option.map (fn x => lookupVar x idx)
+    Option.map_option (fn x => lookupVar x idx)
       (Assoc_List.lookup Stringa.equal_literal varsb v)
   end;
 
@@ -3907,20 +3476,12 @@ fun withChannela gl v idx f g p =
   let
     val error =
       (fn _ =>
-        (raise Fail
-          (String.implode
-            ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"i", #"s",
-               #" ", #"n", #"o", #"t", #" ", #"a", #" ", #"c", #"h", #"a", #"n",
-               #"n", #"e", #"l", #":", #" "] @
-              String.explode v)))
+        PromelaUtils.abort ("Variable is not a channel: " ^ v)
           (fn _ => f Arith.zero_nata InvChannel));
-    val msg =
-      String.implode
-        ([#"C", #"h", #"a", #"n", #"n", #"e", #"l", #" ", #"a", #"l", #"r",
-           #"e", #"a", #"d", #"y", #" ", #"c", #"l", #"o", #"s", #"e", #"d",
-           #" ", #"/", #" ", #"i", #"n", #"v", #"a", #"l", #"i", #"d", #":",
-           #" "] @
-          String.explode v);
+    val abort =
+      (fn _ =>
+        PromelaUtils.abort ("Channel already closed / invalid: " ^ v)
+          (fn _ => f Arith.zero_nata InvChannel));
   in
     withVar gl v idx
       (fn i =>
@@ -3932,9 +3493,7 @@ fun withChannela gl v idx f g p =
                    val c = List.nth (channels g) ia;
                  in
                    (case c of Channel (_, _, _) => f ia c
-                     | HSChannel _ => f ia c
-                     | InvChannel =>
-                       (raise Fail msg) (fn _ => f Arith.zero_nata InvChannel))
+                     | HSChannel _ => f ia c | InvChannel => abort ())
                  end)
         end)
       g p
@@ -4044,9 +3603,9 @@ fun exprArith g p (ExprConst x) = x
       then (1 : IntInf.int) else 0)
 and recvArgsCheck vc vd [] [] = true
   | recvArgsCheck ve vf (v :: va) [] =
-    (raise Fail "Length mismatch on receiving.") (fn _ => false)
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => false)
   | recvArgsCheck vh vi [] (v :: va) =
-    (raise Fail "Length mismatch on receiving.") (fn _ => false)
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => false)
   | recvArgsCheck g p (r :: rs) (v :: vs) =
     (case r of RecvArgVar _ => true
       | RecvArgEval e => (((exprArith g p e) : IntInf.int) = v)
@@ -4054,7 +3613,7 @@ and recvArgsCheck vc vd [] [] = true
       | RecvArgMConst (c, _) => ((c : IntInf.int) = v)) andalso
       recvArgsCheck g p rs vs
 and pollCheck g p InvChannel uv uw =
-  (raise Fail "Channel already closed / invalid.") (fn _ => false)
+  PromelaUtils.abort "Channel already closed / invalid." (fn _ => false)
   | pollCheck g p (HSChannel ux) uy uz = false
   | pollCheck g p (Channel (va, vb, q)) rs srt =
     (if List.null q then false
@@ -4066,7 +3625,7 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
     val typea = VTBounded (lb, hb);
   in
     (if not (varType_inv typea)
-      then (raise Fail "Invalid var def")
+      then PromelaUtils.abort ("Invalid var def (varType_inv failed): " ^ name)
              (fn _ => (name, (Var (VTChan, 0), [])))
       else let
              val inita =
@@ -4080,7 +3639,8 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
                      then VArray
                             (typea, Arith.nat_of_integer s,
                               Vector.tabulate (s, (fn _ => inita)))
-                     else (raise Fail "Invalid var def")
+                     else PromelaUtils.abort
+                            ("Invalid var def (array too large): " ^ name)
                             (fn _ => Var (VTChan, 0))));
            in
              (name, (v, []))
@@ -4099,7 +3659,9 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
                   else Channel (cap, tys, []));
             in
               (if not (channel_inv c)
-                then (raise Fail "Invalid var def") (fn _ => [])
+                then PromelaUtils.abort
+                       ("Invalid var def (channel_inv failed): " ^ name)
+                       (fn _ => [])
                 else List.replicate size c)
             end);
       val cidx =
@@ -4116,7 +3678,9 @@ fun toVariable g p (VarDeclNum (lb, hb, name, siz, init)) =
                          (s, (fn i =>
                                (if ((cidx : IntInf.int) = 0) then 0
                                  else IntInf.+ (i, cidx)))))
-              else (raise Fail "Invalid var def") (fn _ => Var (VTChan, 0))));
+              else PromelaUtils.abort
+                     ("Invalid var def (array too large): " ^ name)
+                     (fn _ => Var (VTChan, 0))));
     in
       (name, (v, chans))
     end;
@@ -4154,7 +3718,7 @@ fun mkChannels g p cs =
          in
            (if Arith.less_nat (max_channels Arith.numeral_nat)
                  (Arith.plus_nata l (List.size_list cs))
-             then (raise Fail "Too much channels") (fn _ => (g, p))
+             then PromelaUtils.abort "Too much channels" (fn _ => (g, p))
              else let
                     val cs_p =
                       List.map Arith.integer_of_nat
@@ -4188,25 +3752,20 @@ fun target_update targeta (Edge_ext (cond, effect, target, prio, atomic, more))
 fun atomic_update atomica (Edge_ext (cond, effect, target, prio, atomic, more))
   = Edge_ext (cond, effect, target, prio, atomica atomic, more);
 
-fun atomica (Edge_ext (cond, effect, target, prio, atomic, more)) = atomic;
+fun target (Edge_ext (cond, effect, target, prio, atomic, more)) = target;
 
-fun inAtomica e =
-  (case atomica e of NonAtomic => false | Atomic => true | InAtomic => true);
+fun atomic (Edge_ext (cond, effect, target, prio, atomic, more)) = atomic;
 
 fun isAtomic e =
-  (case atomica e of NonAtomic => false | Atomic => true | InAtomic => false);
+  (case atomic e of NonAtomic => false | Atomic => true | InAtomic => false);
 
-fun target (Edge_ext (cond, effect, target, prio, atomic, more)) = target;
+fun inAtomic e =
+  (case atomic e of NonAtomic => false | Atomic => true | InAtomic => true);
 
 fun resolveLabel l lbls =
   (case Assoc_List.lookup Stringa.equal_literal lbls l
     of NONE =>
-      (raise Fail
-        (String.implode
-          ([#"U", #"n", #"r", #"e", #"s", #"o", #"l", #"v", #"e", #"d", #" ",
-             #"l", #"a", #"b", #"e", #"l", #":", #" "] @
-            String.explode l)))
-        (fn _ => Arith.zero_nata)
+      PromelaUtils.abort ("Unresolved label: " ^ l) (fn _ => Arith.zero_nata)
     | SOME pos => pos);
 
 fun resolveLabels uu uv [] = []
@@ -4214,7 +3773,7 @@ fun resolveLabels uu uv [] = []
     let
       val check_atomic =
         (fn pos =>
-          List.fold (fn ea => fn a => a andalso inAtomica ea)
+          List.fold (fn ea => fn a => a andalso inAtomic ea)
             (List.nth edges pos) true);
     in
       (case target e of Index _ => e
@@ -4224,7 +3783,7 @@ fun resolveLabels uu uv [] = []
           in
             atomic_update
               (fn _ =>
-                (if inAtomica e
+                (if inAtomic e
                   then (if check_atomic pos then Atomic else InAtomic)
                   else NonAtomic))
               (target_update (fn _ => Index pos) e)
@@ -4238,7 +3797,7 @@ fun resolveLabels uu uv [] = []
                 (if isAtomic e
                   then (if check_atomic pos andalso check_atomic via then Atomic
                          else InAtomic)
-                  else atomica e))
+                  else atomic e))
               (target_update (fn _ => Index pos) e)
           end)
     end ::
@@ -4282,13 +3841,7 @@ fun step_fold g steps lbls pri pos nxt onxt iB =
 fun add_label l lbls pos =
   (case Assoc_List.lookup Stringa.equal_literal lbls l
     of NONE => Assoc_List.update Stringa.equal_literal l pos lbls
-    | SOME _ =>
-      (raise Fail
-        (String.implode
-          ([#"L", #"a", #"b", #"e", #"l", #" ", #"g", #"i", #"v", #"e", #"n",
-             #" ", #"t", #"w", #"i", #"c", #"e", #":", #" "] @
-            String.explode l)))
-        (fn _ => lbls));
+    | SOME _ => PromelaUtils.abort ("Label given twice: " ^ l) (fn _ => lbls));
 
 fun atomize lp hp es =
   List.fold
@@ -4354,7 +3907,7 @@ and stmntToState StmntSkip d = skip d
     ([[Edge_ext (ECRun n, EERun (n, args), nxt, pri, NonAtomic, ())]],
       (Index pos, lbls))
   | stmntToState StmntBreak (vh, (vi, (vj, (vk, (NONE, vl))))) =
-    (raise Fail "Misplaced break")
+    PromelaUtils.abort "Misplaced break"
       (fn _ => ([], (Index Arith.zero_nata, Assoc_List.empty)))
   | stmntToState StmntBreak (lbls, (pri, (ve, (vf, (SOME onxt, vg))))) =
     ([[Edge_ext (ECTrue, EEGoto, onxt, pri, NonAtomic, ())]], (onxt, lbls))
@@ -4424,7 +3977,7 @@ fun toStates steps =
   in
     (if Arith.less_nat s (List.size_list statesc)
       then (Vector.fromList statesc, (posa, lbls))
-      else (raise Fail "Oops!")
+      else PromelaUtils.abort "Start index out of bounds"
              (fn _ => (Vector.fromList statesc, (Index Arith.zero_nata, lbls))))
   end;
 
@@ -4461,14 +4014,14 @@ fun proc_data
   (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
   proc_data;
 
+fun procs (GState_ext (vars, channels, timeout, procs, more)) = procs;
+
 fun max_procs A_ =
   Arith.numeral A_
     (Arith.Bit1
       (Arith.Bit1
         (Arith.Bit1
           (Arith.Bit1 (Arith.Bit1 (Arith.Bit1 (Arith.Bit1 Arith.One)))))));
-
-fun procs (GState_ext (vars, channels, timeout, procs, more)) = procs;
 
 fun vars_updatea varsa (PState_ext (pid, vars, pc, channels, idx, more)) =
   PState_ext (pid, varsa vars, pc, channels, idx, more);
@@ -4483,17 +4036,21 @@ fun modProcArg x =
            in
              (name, Var (ty, init))
            end
-      else (raise Fail "Invalid proc arg") (fn _ => (name, Var (VTChan, 0))))
+      else PromelaUtils.abort ("Invalid proc arg (varType_inv failed)" ^ name)
+             (fn _ => (name, Var (VTChan, 0))))
   end;
 
-fun mkProc g p args (sidx, (start, (argDecls, decls))) pidN =
+fun mkProc g p name args (sidx, (start, (argDecls, decls))) pidN =
   let
     val starta =
       (case start of Index x => x
-        | LabelJump (_, _) => (raise Fail "UGH!") (fn _ => Arith.zero_nata));
+        | LabelJump (_, _) =>
+          PromelaUtils.abort ("Process start is not index: " ^ name)
+            (fn _ => Arith.zero_nata));
   in
     (if not (Arith.equal_nata (List.size_list args) (List.size_list argDecls))
-      then (raise Fail "Signature mismatch") (fn _ => (g, emptyProc))
+      then PromelaUtils.abort ("Signature mismatch: " ^ name)
+             (fn _ => (g, emptyProc))
       else let
              val eArgs = List.map (exprArith g p) args;
              val argVars = List.map modProcArg (List.zip argDecls eArgs);
@@ -4514,22 +4071,18 @@ fun mkProc g p args (sidx, (start, (argDecls, decls))) pidN =
 
 fun runProc name args prog g p =
   (if Arith.less_eq_nat (max_procs Arith.numeral_nat) (List.size_list (procs g))
-    then (raise Fail "Too many processes") (fn _ => (g, p))
+    then PromelaUtils.abort "Too many processes" (fn _ => (g, p))
     else let
            val pid = Arith.plus_nata (List.size_list (procs g)) Arith.one_nata;
          in
            (case Assoc_List.lookup Stringa.equal_literal (proc_data prog) name
              of NONE =>
-               (raise Fail
-                 (String.implode
-                   ([#"N", #"o", #" ", #"s", #"u", #"c", #"h", #" ", #"p", #"r",
-                      #"o", #"c", #"e", #"s", #"s", #":", #" "] @
-                     String.explode name)))
-                 (fn _ => (g, p))
+               PromelaUtils.abort ("No such process: " ^ name) (fn _ => (g, p))
              | SOME proc_idx =>
                let
                  val (ga, proc) =
-                   mkProc g p args (IArray.sub (processes prog) proc_idx) pid;
+                   mkProc g p name args (IArray.sub (processes prog) proc_idx)
+                     pid;
                in
                  (procs_update (fn _ => procs g @ [proc]) ga, p)
                end)
@@ -4585,11 +4138,9 @@ fun setUp prom =
     (ltlsa, (gb, prog))
   end;
 
-fun from_I (GState_ext (v, ch, t, p, m)) = GState_ext (v, ch, t, p, ());
-
 fun editVar (Var (typea, uu)) NONE vala = Var (typea, checkVarValue typea vala)
   | editVar (Var (uv, uw)) (SOME ux) uy =
-    (raise Fail "Array used on var") (fn _ => Var (VTChan, 0))
+    PromelaUtils.abort "Array used on var" (fn _ => Var (VTChan, 0))
   | editVar (VArray (typea, siz, vals)) NONE vala =
     let
       val lv = IArray.list_of vals;
@@ -4611,7 +4162,9 @@ fun setVara gl v idx vala g p =
   (if gl
     then (if ((v : string) = "_") then (g, p)
            else (case Assoc_List.lookup Stringa.equal_literal (vars g) v
-                  of NONE => (raise Fail "Unknown variable") (fn _ => (g, p))
+                  of NONE =>
+                    PromelaUtils.abort ("Unknown global variable: " ^ v)
+                      (fn _ => (g, p))
                   | SOME x =>
                     (vars_update
                        (fn _ =>
@@ -4620,7 +4173,8 @@ fun setVara gl v idx vala g p =
                        g,
                       p)))
     else (case Assoc_List.lookup Stringa.equal_literal (varsa p) v
-           of NONE => (raise Fail "Unknown variable") (fn _ => (g, p))
+           of NONE =>
+             PromelaUtils.abort ("Unknown proc variable: " ^ v) (fn _ => (g, p))
            | SOME x =>
              (g, vars_updatea
                    (fn _ =>
@@ -4629,17 +4183,9 @@ fun setVara gl v idx vala g p =
                    p)));
 
 fun liftVar f (VarRef (gl, v, idx)) arg g p =
-  f gl v (Option.map (exprArith g p) idx) arg g p;
+  f gl v (Option.map_option (exprArith g p) idx) arg g p;
 
 fun setVar x = liftVar setVara x;
-
-fun reset_I (GState_ext (v, ch, t, p, GState_I_ext (hs, hsd, uu, uv, ()))) =
-  GState_ext
-    (v, ch, false, p,
-      GState_I_ext
-        (Arith.zero_nata,
-          (if not (Arith.equal_nata hs Arith.zero_nata) then hsd else []),
-          Arith.zero_nata, false, ()));
 
 fun handshake
   (GState_ext
@@ -4741,9 +4287,9 @@ fun mkVarChannelProc v g p =
 
 fun evalRecvArgs [] [] g l = (g, l)
   | evalRecvArgs (v :: va) [] g l =
-    (raise Fail "Length mismatch on receiving.") (fn _ => (g, l))
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => (g, l))
   | evalRecvArgs [] (v :: va) g l =
-    (raise Fail "Length mismatch on receiving.") (fn _ => (g, l))
+    PromelaUtils.abort "Length mismatch on receiving." (fn _ => (g, l))
   | evalRecvArgs (r :: rs) (v :: vs) g l =
     let
       val (a, b) =
@@ -4771,9 +4317,10 @@ fun evalEffect EEEnd uu g l = (g, l)
     withChannel v
       (fn i => fn c =>
         let
-          val aborta =
+          val ab =
             (fn _ =>
-              (raise Fail "Length mismatch on sending.") (fn _ => (g, l)));
+              PromelaUtils.abort "Length mismatch on sending."
+                (fn _ => (g, l)));
           val esa = List.map (exprArith g l) es;
         in
           (if not (for_all
@@ -4781,14 +4328,14 @@ fun evalEffect EEEnd uu g l = (g, l)
                       IntInf.<= (min_var_value, x) andalso
                         IntInf.<= (x, max_var_value))
                     esa)
-            then (raise Fail "Inv Channel") (fn _ => (g, l))
+            then PromelaUtils.abort "Invalid Channel" (fn _ => (g, l))
             else (case c
                    of Channel (cap, ts, q) =>
                      (if not (Arith.equal_nata (List.size_list ts)
                                (List.size_list esa)) orelse
                            not (Arith.less_nat (List.size_list q)
                                  (max_array_size Arith.numeral_nat))
-                       then aborta ()
+                       then ab ()
                        else let
                               val qa =
                                 (if not srt then q @ [esa]
@@ -4807,11 +4354,13 @@ fun evalEffect EEEnd uu g l = (g, l)
                    | HSChannel ts =>
                      (if not (Arith.equal_nata (List.size_list ts)
                                (List.size_list esa))
-                       then aborta ()
+                       then ab ()
                        else (handshake_update (fn _ => i)
                                (hsdata_update (fn _ => esa) g),
                               l))
-                   | InvChannel => (raise Fail "INVALID") (fn _ => (g, l))))
+                   | InvChannel =>
+                     PromelaUtils.abort "Trying to send on invalid channel"
+                       (fn _ => (g, l))))
         end)
       g l
   | evalEffect (EERecv (v, rs, srt, rem)) vb g l =
@@ -4820,7 +4369,7 @@ fun evalEffect EEEnd uu g l = (g, l)
         (case a
           of Channel (cap, ts, qs) =>
             (if List.null qs
-              then (raise Fail "Recv from empty channel") (fn _ => (g, l))
+              then PromelaUtils.abort "Recv from empty channel" (fn _ => (g, l))
               else let
                      val (q, qsa) =
                        (if not srt then (List.hd qs, List.tl qs)
@@ -4847,7 +4396,8 @@ fun evalEffect EEEnd uu g l = (g, l)
             in
               (gb, la)
             end
-          | InvChannel => (raise Fail "INVALID") (fn _ => (g, l))))
+          | InvChannel =>
+            PromelaUtils.abort "Receiving on invalid channel" (fn _ => (g, l))))
       g l;
 
 fun cond (Edge_ext (cond, effect, target, prio, atomic, more)) = cond;
@@ -4874,14 +4424,14 @@ fun getChoices g p =
         then (ea, p) :: e else e))
     [];
 
-fun timeout_update timeouta (GState_ext (vars, channels, timeout, procs, more))
-  = GState_ext (vars, channels, timeouta timeout, procs, more);
-
 fun exclusive
   (GState_ext
     (vars, channels, timeout, procs,
       GState_I_ext (handshake, hsdata, exclusive, elsea, more)))
   = exclusive;
+
+fun timeout_update timeouta (GState_ext (vars, channels, timeout, procs, more))
+  = GState_ext (vars, channels, timeouta timeout, procs, more);
 
 fun states
   (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
@@ -4903,7 +4453,8 @@ fun sort_by_pri min_pri edges =
       let
         val idx = Arith.nat_of_integer (Arith.abs_integer (prio e));
       in
-        (if Arith.less_nat min_pri idx then (raise Fail "UGH") (fn _ => es)
+        (if Arith.less_nat min_pri idx
+          then PromelaUtils.abort "Invalid priority" (fn _ => es)
           else let
                  val a = e :: List.nth es idx;
                in
@@ -5005,8 +4556,9 @@ fun applyEdge_impl prog e p g =
           (if Arith.less_nat t
                 (IArray.length (IArray.sub (states prog) (idx xa)))
             then pc_update (fn _ => t) xa
-            else (raise Fail "Invalid program") (fn _ => xa))
-        | LabelJump (_, _) => (raise Fail "Invalid program") (fn _ => xa));
+            else PromelaUtils.abort "Edge target out of bounds" (fn _ => xa))
+        | LabelJump (_, _) =>
+          PromelaUtils.abort "Edge target not Index" (fn _ => xa));
     val xb =
       procs_update
         (fn _ =>
@@ -5022,6 +4574,14 @@ fun applyEdge_impl prog e p g =
   in
     xd
   end;
+
+fun reset_I (GState_ext (v, ch, t, p, GState_I_ext (hs, hsd, uu, uv, ()))) =
+  GState_ext
+    (v, ch, false, p,
+      GState_I_ext
+        (Arith.zero_nata,
+          (if not (Arith.equal_nata hs Arith.zero_nata) then hsd else []),
+          Arith.zero_nata, false, ()));
 
 fun nexts_code_0 A_ prog b x =
   Refine_Det.dbind (Refine_Det.DRETURN (executable_impl (states prog) x))
@@ -5070,6 +4630,13 @@ fun nexts_code_0 A_ prog b x =
                  (Refine_Det.DRETURN Dlist.empty)
              end));
 
+fun from_I (GState_ext (v, ch, t, p, m)) = GState_ext (v, ch, t, p, ());
+
+fun to_I (GState_ext (v, ch, t, p, ())) =
+  GState_ext
+    (v, ch, false, p,
+      GState_I_ext (Arith.zero_nata, [], Arith.zero_nata, false, ()));
+
 fun nexts_code A_ prog f g =
   let
     val x = f o from_I;
@@ -5081,70 +4648,6 @@ fun nexts_code A_ prog f g =
           then Refine_Det.DRETURN (ListSetImpl.g_sng_ls_basic_ops A_ (x xa))
           else Refine_Det.DRETURN xb))
   end;
-
-fun equal_varTypea VTChan (VTBounded (integer1, integer2)) = false
-  | equal_varTypea (VTBounded (integer1, integer2)) VTChan = false
-  | equal_varTypea (VTBounded (integer1a, integer2a))
-    (VTBounded (integer1, integer2)) =
-    ((integer1a : IntInf.int) = integer1) andalso
-      ((integer2a : IntInf.int) = integer2)
-  | equal_varTypea VTChan VTChan = true;
-
-fun equal_variablea (VArray (varTypea, nat, iarray)) (Var (varType, integer)) =
-  false
-  | equal_variablea (Var (varTypea, integer)) (VArray (varType, nat, iarray)) =
-    false
-  | equal_variablea (VArray (varTypea, nata, iarraya))
-    (VArray (varType, nat, iarray)) =
-    equal_varTypea varTypea varType andalso
-      (Arith.equal_nata nata nat andalso
-        IArray.equal_iarray Arith.equal_integer iarraya iarray)
-  | equal_variablea (Var (varTypea, integera)) (Var (varType, integer)) =
-    equal_varTypea varTypea varType andalso ((integera : IntInf.int) = integer);
-
-val equal_variable = {equal = equal_variablea} : variable HOL.equal;
-
-fun equal_pState_exta A_ (PState_ext (pida, varsa, pca, channelsa, idxa, morea))
-  (PState_ext (pid, vars, pc, channels, idx, more)) =
-  Arith.equal_nata pida pid andalso
-    (Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
-       vars andalso
-      (Arith.equal_nata pca pc andalso
-        (List.equal_lista Arith.equal_integer channelsa channels andalso
-          (Arith.equal_nata idxa idx andalso HOL.eq A_ morea more))));
-
-fun equal_pState_ext A_ = {equal = equal_pState_exta A_} :
-  'a pState_ext HOL.equal;
-
-val equal_varType = {equal = equal_varTypea} : varType HOL.equal;
-
-fun equal_channela InvChannel (HSChannel lista) = false
-  | equal_channela (HSChannel lista) InvChannel = false
-  | equal_channela InvChannel (Channel (integer, list1, list2)) = false
-  | equal_channela (Channel (integer, list1, list2)) InvChannel = false
-  | equal_channela (HSChannel lista) (Channel (integer, list1, list2)) = false
-  | equal_channela (Channel (integer, list1, list2)) (HSChannel lista) = false
-  | equal_channela (HSChannel listaa) (HSChannel lista) =
-    List.equal_lista equal_varType listaa lista
-  | equal_channela (Channel (integera, list1a, list2a))
-    (Channel (integer, list1, list2)) =
-    ((integera : IntInf.int) = integer) andalso
-      (List.equal_lista equal_varType list1a list1 andalso
-        List.equal_lista (List.equal_list Arith.equal_integer) list2a list2)
-  | equal_channela InvChannel InvChannel = true;
-
-val equal_channel = {equal = equal_channela} : channel HOL.equal;
-
-fun equal_gState_exta A_
-  (GState_ext (varsa, channelsa, timeouta, procsa, morea))
-  (GState_ext (vars, channels, timeout, procs, more)) =
-  Assoc_List.equal_assoc_list Stringa.equal_literal equal_variable varsa
-    vars andalso
-    (List.equal_lista equal_channel channelsa channels andalso
-      (Product_Type.equal_bool timeouta timeout andalso
-        (List.equal_lista (equal_pState_ext Product_Type.equal_unit) procsa
-           procs andalso
-          HOL.eq A_ morea more)));
 
 fun printList f xs l r sep =
   let
@@ -5298,7 +4801,8 @@ fun replay_code_0 prog a x =
                else (if not (timeout x)
                       then replay_code_0 prog a
                              (timeout_update (fn _ => true) x)
-                      else (raise Fail "Stuttering should not occur on replay")
+                      else PromelaUtils.abort
+                             "Stuttering should not occur on replay"
                              (fn _ => Refine_Det.DRETURN [])))
         else let
                val xb = reset_I x;
@@ -5324,10 +4828,10 @@ fun replay_code_0 prog a x =
                                    (if Arith.less_nat t
  (IArray.length (IArray.sub (states prog) (idx xbb)))
                                      then pc_update (fn _ => t) xbb
-                                     else (raise Fail "Invalid program")
-    (fn _ => xbb))
+                                     else PromelaUtils.abort
+    "Edge target out of bounds" (fn _ => xbb))
                                  | LabelJump (_, _) =>
-                                   (raise Fail "Invalid program")
+                                   PromelaUtils.abort "Edge target not Index"
                                      (fn _ => xbb));
                              val xd =
                                procs_update
@@ -5396,10 +4900,6 @@ fun incr v =
   StmntAssign
     (v, ExprBinOp (BinOpAdd, ExprVarRef v, ExprConst (1 : IntInf.int)));
 
-fun labels
-  (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
-  labels;
-
 fun ppVarType PromelaAST.VarTypeBit = VTBounded (0, (1 : IntInf.int))
   | ppVarType PromelaAST.VarTypeBool = VTBounded (0, (1 : IntInf.int))
   | ppVarType PromelaAST.VarTypeByte = VTBounded (0, (255 : IntInf.int))
@@ -5407,16 +4907,16 @@ fun ppVarType PromelaAST.VarTypeBit = VTBounded (0, (1 : IntInf.int))
   | ppVarType PromelaAST.VarTypeShort =
     VTBounded
       (IntInf.~
-         (Arith.power Arith.power_integer (2 : IntInf.int)
+         (Arith.powera Arith.power_integer (2 : IntInf.int)
            (Arith.nat_of_integer (15 : IntInf.int))),
-        IntInf.- (Arith.power Arith.power_integer (2 : IntInf.int)
+        IntInf.- (Arith.powera Arith.power_integer (2 : IntInf.int)
                     (Arith.nat_of_integer (15 : IntInf.int)), (1 : IntInf.int)))
   | ppVarType PromelaAST.VarTypeInt =
     VTBounded
       (IntInf.~
-         (Arith.power Arith.power_integer (2 : IntInf.int)
+         (Arith.powera Arith.power_integer (2 : IntInf.int)
            (Arith.nat_of_integer (31 : IntInf.int))),
-        IntInf.- (Arith.power Arith.power_integer (2 : IntInf.int)
+        IntInf.- (Arith.powera Arith.power_integer (2 : IntInf.int)
                     (Arith.nat_of_integer (31 : IntInf.int)), (1 : IntInf.int)))
   | ppVarType PromelaAST.VarTypeMType =
     VTBounded ((1 : IntInf.int), (255 : IntInf.int))
@@ -5531,13 +5031,13 @@ and ppVarRef cvm (PromelaAST.VarRef (name, idx, NONE)) =
   dealWithVar cvm name
     (fn namea => fn (_, g) => fn aIdx =>
       let
-        val idxa = Option.map (ppExpr cvm) idx;
+        val idxa = Option.map_option (ppExpr cvm) idx;
       in
         Sum_Type.Inr (ChanRef (VarRef (g, namea, resolveIdx idxa aIdx)))
       end)
     (fn namea => fn (_, g) => fn aIdx =>
       let
-        val idxa = Option.map (ppExpr cvm) idx;
+        val idxa = Option.map_option (ppExpr cvm) idx;
       in
         Sum_Type.Inl (VarRef (g, namea, resolveIdx idxa aIdx))
       end)
@@ -5566,15 +5066,10 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
     (PromelaAST.VarDeclMType (name, sze, init)) =
     let
       val inita =
-        Option.map
+        Option.map_option
           (fn mty =>
             (case Assoc_List.lookup Stringa.equal_literal m mty
-              of NONE =>
-                PromelaUtils.err
-                  (String.implode
-                    ([#"U", #"n", #"k", #"n", #"o", #"w", #"n", #" ", #"M",
-                       #"T", #"y", #"p", #"e", #" "] @
-                      String.explode mty))
+              of NONE => PromelaUtils.err ("Unknown MType " ^ mty)
               | SOME mval => ExprMConst (mval, mty)))
           init;
     in
@@ -5586,19 +5081,8 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
                      (m, a))),
                 VarDeclNum (l, h, name, sze, inita))
             | SOME _ =>
-              PromelaUtils.err
-                (String.implode
-                  ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                     #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                     #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                     #"a", #"s", #":", #" "] @
-                    String.explode name)))
-        | SOME _ =>
-          PromelaUtils.err
-            (String.implode
-              ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ",
-                 #"v", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-                String.explode name)))
+              PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+        | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
     end
   | ppVarDecl uw (VTBounded (v, va)) g
     (PromelaAST.VarDeclChan (name, sze, init)) =
@@ -5606,7 +5090,8 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
   | ppVarDecl (c, (v, (m, a))) VTChan g
     (PromelaAST.VarDeclChan (name, sze, cap)) =
     let
-      val capa = Option.map (Product_Type.apsnd (List.map ppVarType)) cap;
+      val capa =
+        Option.map_option (Product_Type.apsnd (List.map ppVarType)) cap;
     in
       (case Assoc_List.lookup Stringa.equal_literal c name
         of NONE =>
@@ -5616,19 +5101,8 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
                  (v, (m, a))),
                 VarDeclChan (name, sze, capa))
             | SOME _ =>
-              PromelaUtils.err
-                (String.implode
-                  ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                     #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                     #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                     #"a", #"s", #":", #" "] @
-                    String.explode name)))
-        | SOME _ =>
-          PromelaUtils.err
-            (String.implode
-              ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ",
-                 #"v", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-                String.explode name)))
+              PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+        | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
     end
   | ppVarDecl uu VTChan g (PromelaAST.VarDeclNum (name, sze, init)) =
     PromelaUtils.err "Assiging num to non-num"
@@ -5641,21 +5115,11 @@ fun ppVarDecl va vb vc (PromelaAST.VarDeclUnsigned (vd, ve, vf)) =
             ((c, (Assoc_List.update Stringa.equal_literal name (sze, g) v,
                    (m, a))),
               VarDeclNum
-                (l, h, name, sze, Option.map (ppExpr (c, (v, (m, a)))) init))
+                (l, h, name, sze,
+                  Option.map_option (ppExpr (c, (v, (m, a)))) init))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)));
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name));
 
 fun cvm_fold g cvm ss =
   List.foldl
@@ -5766,7 +5230,7 @@ fun ppStep cvm (PromelaAST.StepStmnt (s, u)) =
         end)
   end
   | ppStep (false, (ps, (i, cvm))) (PromelaAST.StepDecl d) =
-    Product_Type.map_pair (fn cvma => (false, (ps, (i, cvma)))) StepDecl
+    Product_Type.map_prod (fn cvma => (false, (ps, (i, cvma)))) StepDecl
       (ppDeclProc cvm d)
   | ppStep (true, (ps, (i, cvm))) (PromelaAST.StepDecl d) =
     let
@@ -5793,13 +5257,7 @@ and ppStmnt cvm (PromelaAST.StmntDStep we) = PromelaUtils.usc "StmntDStep"
       val (c, (v, (m, a))) = cvm;
     in
       (case Assoc_List.lookup Stringa.equal_literal inl macro
-        of NONE =>
-          PromelaUtils.err
-            (String.implode
-              ([#"C", #"a", #"l", #"l", #"i", #"n", #"g", #" ", #"u", #"n",
-                 #"k", #"n", #"o", #"w", #"n", #" ", #"m", #"a", #"c", #"r",
-                 #"o", #" "] @
-                String.explode macro))
+        of NONE => PromelaUtils.err ("Calling unknown macro " ^ macro)
         | SOME (names, sF) =>
           (if not (Arith.equal_nata (List.size_list names)
                     (List.size_list argsa))
@@ -5950,19 +5408,8 @@ fun ppProcArg vm vn vo (PromelaAST.VarDeclUnsigned (vp, vq, vr)) =
                    (m, a))),
               ProcArg (VTBounded (l, h), name))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)))
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
   | ppProcArg va vb vc (PromelaAST.VarDeclChan (vd, ve, SOME v)) =
     PromelaUtils.err "Invalid proctype arguments"
   | ppProcArg va vb vc (PromelaAST.VarDeclChan (vd, SOME v, vf)) =
@@ -5979,19 +5426,8 @@ fun ppProcArg vm vn vo (PromelaAST.VarDeclUnsigned (vp, vq, vr)) =
                (v, (m, a))),
               ProcArg (VTChan, name))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)))
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name))
   | ppProcArg uu uv uw (PromelaAST.VarDeclNum (ux, uy, SOME v)) =
     PromelaUtils.err "Invalid proctype arguments"
   | ppProcArg uu uv uw (PromelaAST.VarDeclNum (ux, SOME v, uz)) =
@@ -6008,19 +5444,8 @@ fun ppProcArg vm vn vo (PromelaAST.VarDeclUnsigned (vp, vq, vr)) =
                    (m, a))),
               ProcArg (VTBounded (l, h), name))
           | SOME _ =>
-            PromelaUtils.err
-              (String.implode
-                ([#"V", #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" ", #"n",
-                   #"a", #"m", #"e", #" ", #"c", #"l", #"a", #"s", #"h", #"e",
-                   #"s", #" ", #"w", #"i", #"t", #"h", #" ", #"a", #"l", #"i",
-                   #"a", #"s", #":", #" "] @
-                  String.explode name)))
-      | SOME _ =>
-        PromelaUtils.err
-          (String.implode
-            ([#"D", #"u", #"p", #"l", #"i", #"c", #"a", #"t", #"e", #" ", #"v",
-               #"a", #"r", #"i", #"a", #"b", #"l", #"e", #" "] @
-              String.explode name)));
+            PromelaUtils.err ("Variable name clashes with alias: " ^ name))
+      | SOME _ => PromelaUtils.err ("Duplicate variable " ^ name));
 
 fun ppDeclProcArg x = liftDecl ppProcArg false x;
 
@@ -6112,373 +5537,6 @@ fun ppModule (cvm, inl)
   | ppModule cvm (PromelaAST.NoTrace vc) = PromelaUtils.usc "NoTrace"
   | ppModule cvm (PromelaAST.TypeDef (vd, ve)) = PromelaUtils.usc "TypeDef";
 
-fun equal_binOp BinOpOr BinOpAnd = false
-  | equal_binOp BinOpAnd BinOpOr = false
-  | equal_binOp BinOpOr BinOpNEq = false
-  | equal_binOp BinOpNEq BinOpOr = false
-  | equal_binOp BinOpAnd BinOpNEq = false
-  | equal_binOp BinOpNEq BinOpAnd = false
-  | equal_binOp BinOpOr BinOpEq = false
-  | equal_binOp BinOpEq BinOpOr = false
-  | equal_binOp BinOpAnd BinOpEq = false
-  | equal_binOp BinOpEq BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpEq = false
-  | equal_binOp BinOpEq BinOpNEq = false
-  | equal_binOp BinOpOr BinOpLEq = false
-  | equal_binOp BinOpLEq BinOpOr = false
-  | equal_binOp BinOpAnd BinOpLEq = false
-  | equal_binOp BinOpLEq BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpLEq = false
-  | equal_binOp BinOpLEq BinOpNEq = false
-  | equal_binOp BinOpEq BinOpLEq = false
-  | equal_binOp BinOpLEq BinOpEq = false
-  | equal_binOp BinOpOr BinOpGEq = false
-  | equal_binOp BinOpGEq BinOpOr = false
-  | equal_binOp BinOpAnd BinOpGEq = false
-  | equal_binOp BinOpGEq BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpGEq = false
-  | equal_binOp BinOpGEq BinOpNEq = false
-  | equal_binOp BinOpEq BinOpGEq = false
-  | equal_binOp BinOpGEq BinOpEq = false
-  | equal_binOp BinOpLEq BinOpGEq = false
-  | equal_binOp BinOpGEq BinOpLEq = false
-  | equal_binOp BinOpOr BinOpLe = false
-  | equal_binOp BinOpLe BinOpOr = false
-  | equal_binOp BinOpAnd BinOpLe = false
-  | equal_binOp BinOpLe BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpLe = false
-  | equal_binOp BinOpLe BinOpNEq = false
-  | equal_binOp BinOpEq BinOpLe = false
-  | equal_binOp BinOpLe BinOpEq = false
-  | equal_binOp BinOpLEq BinOpLe = false
-  | equal_binOp BinOpLe BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpLe = false
-  | equal_binOp BinOpLe BinOpGEq = false
-  | equal_binOp BinOpOr BinOpGr = false
-  | equal_binOp BinOpGr BinOpOr = false
-  | equal_binOp BinOpAnd BinOpGr = false
-  | equal_binOp BinOpGr BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpGr = false
-  | equal_binOp BinOpGr BinOpNEq = false
-  | equal_binOp BinOpEq BinOpGr = false
-  | equal_binOp BinOpGr BinOpEq = false
-  | equal_binOp BinOpLEq BinOpGr = false
-  | equal_binOp BinOpGr BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpGr = false
-  | equal_binOp BinOpGr BinOpGEq = false
-  | equal_binOp BinOpLe BinOpGr = false
-  | equal_binOp BinOpGr BinOpLe = false
-  | equal_binOp BinOpOr BinOpMod = false
-  | equal_binOp BinOpMod BinOpOr = false
-  | equal_binOp BinOpAnd BinOpMod = false
-  | equal_binOp BinOpMod BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpMod = false
-  | equal_binOp BinOpMod BinOpNEq = false
-  | equal_binOp BinOpEq BinOpMod = false
-  | equal_binOp BinOpMod BinOpEq = false
-  | equal_binOp BinOpLEq BinOpMod = false
-  | equal_binOp BinOpMod BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpMod = false
-  | equal_binOp BinOpMod BinOpGEq = false
-  | equal_binOp BinOpLe BinOpMod = false
-  | equal_binOp BinOpMod BinOpLe = false
-  | equal_binOp BinOpGr BinOpMod = false
-  | equal_binOp BinOpMod BinOpGr = false
-  | equal_binOp BinOpOr BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpOr = false
-  | equal_binOp BinOpAnd BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpNEq = false
-  | equal_binOp BinOpEq BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpEq = false
-  | equal_binOp BinOpLEq BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpGEq = false
-  | equal_binOp BinOpLe BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpLe = false
-  | equal_binOp BinOpGr BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpGr = false
-  | equal_binOp BinOpMod BinOpDiv = false
-  | equal_binOp BinOpDiv BinOpMod = false
-  | equal_binOp BinOpOr BinOpMul = false
-  | equal_binOp BinOpMul BinOpOr = false
-  | equal_binOp BinOpAnd BinOpMul = false
-  | equal_binOp BinOpMul BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpMul = false
-  | equal_binOp BinOpMul BinOpNEq = false
-  | equal_binOp BinOpEq BinOpMul = false
-  | equal_binOp BinOpMul BinOpEq = false
-  | equal_binOp BinOpLEq BinOpMul = false
-  | equal_binOp BinOpMul BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpMul = false
-  | equal_binOp BinOpMul BinOpGEq = false
-  | equal_binOp BinOpLe BinOpMul = false
-  | equal_binOp BinOpMul BinOpLe = false
-  | equal_binOp BinOpGr BinOpMul = false
-  | equal_binOp BinOpMul BinOpGr = false
-  | equal_binOp BinOpMod BinOpMul = false
-  | equal_binOp BinOpMul BinOpMod = false
-  | equal_binOp BinOpDiv BinOpMul = false
-  | equal_binOp BinOpMul BinOpDiv = false
-  | equal_binOp BinOpOr BinOpSub = false
-  | equal_binOp BinOpSub BinOpOr = false
-  | equal_binOp BinOpAnd BinOpSub = false
-  | equal_binOp BinOpSub BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpSub = false
-  | equal_binOp BinOpSub BinOpNEq = false
-  | equal_binOp BinOpEq BinOpSub = false
-  | equal_binOp BinOpSub BinOpEq = false
-  | equal_binOp BinOpLEq BinOpSub = false
-  | equal_binOp BinOpSub BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpSub = false
-  | equal_binOp BinOpSub BinOpGEq = false
-  | equal_binOp BinOpLe BinOpSub = false
-  | equal_binOp BinOpSub BinOpLe = false
-  | equal_binOp BinOpGr BinOpSub = false
-  | equal_binOp BinOpSub BinOpGr = false
-  | equal_binOp BinOpMod BinOpSub = false
-  | equal_binOp BinOpSub BinOpMod = false
-  | equal_binOp BinOpDiv BinOpSub = false
-  | equal_binOp BinOpSub BinOpDiv = false
-  | equal_binOp BinOpMul BinOpSub = false
-  | equal_binOp BinOpSub BinOpMul = false
-  | equal_binOp BinOpOr BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpOr = false
-  | equal_binOp BinOpAnd BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpAnd = false
-  | equal_binOp BinOpNEq BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpNEq = false
-  | equal_binOp BinOpEq BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpEq = false
-  | equal_binOp BinOpLEq BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpLEq = false
-  | equal_binOp BinOpGEq BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpGEq = false
-  | equal_binOp BinOpLe BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpLe = false
-  | equal_binOp BinOpGr BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpGr = false
-  | equal_binOp BinOpMod BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpMod = false
-  | equal_binOp BinOpDiv BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpDiv = false
-  | equal_binOp BinOpMul BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpMul = false
-  | equal_binOp BinOpSub BinOpAdd = false
-  | equal_binOp BinOpAdd BinOpSub = false
-  | equal_binOp BinOpOr BinOpOr = true
-  | equal_binOp BinOpAnd BinOpAnd = true
-  | equal_binOp BinOpNEq BinOpNEq = true
-  | equal_binOp BinOpEq BinOpEq = true
-  | equal_binOp BinOpLEq BinOpLEq = true
-  | equal_binOp BinOpGEq BinOpGEq = true
-  | equal_binOp BinOpLe BinOpLe = true
-  | equal_binOp BinOpGr BinOpGr = true
-  | equal_binOp BinOpMod BinOpMod = true
-  | equal_binOp BinOpDiv BinOpDiv = true
-  | equal_binOp BinOpMul BinOpMul = true
-  | equal_binOp BinOpSub BinOpSub = true
-  | equal_binOp BinOpAdd BinOpAdd = true;
-
-fun equal_unOp UnOpNeg UnOpMinus = false
-  | equal_unOp UnOpMinus UnOpNeg = false
-  | equal_unOp UnOpNeg UnOpNeg = true
-  | equal_unOp UnOpMinus UnOpMinus = true;
-
-fun equal_expr () = {equal = equal_expra} : expr HOL.equal
-and equal_varRef (VarRef (boolaa, literala, optionaa))
-  (VarRef (boola, literal, optiona)) =
-  Product_Type.equal_bool boolaa boola andalso
-    (((literala : string) = literal) andalso
-      Option.equal_option (equal_expr ()) optionaa optiona)
-and equal_chanRef (ChanRef varRefa) (ChanRef varRef) =
-  equal_varRef varRefa varRef
-and equal_recvArga (RecvArgMConst (integera, literal)) (RecvArgConst integer) =
-  false
-  | equal_recvArga (RecvArgConst integera) (RecvArgMConst (integer, literal)) =
-    false
-  | equal_recvArga (RecvArgMConst (integer, literal)) (RecvArgEval expr) = false
-  | equal_recvArga (RecvArgEval expr) (RecvArgMConst (integer, literal)) = false
-  | equal_recvArga (RecvArgConst integer) (RecvArgEval expr) = false
-  | equal_recvArga (RecvArgEval expr) (RecvArgConst integer) = false
-  | equal_recvArga (RecvArgMConst (integer, literal)) (RecvArgVar varRef) =
-    false
-  | equal_recvArga (RecvArgVar varRef) (RecvArgMConst (integer, literal)) =
-    false
-  | equal_recvArga (RecvArgConst integer) (RecvArgVar varRef) = false
-  | equal_recvArga (RecvArgVar varRef) (RecvArgConst integer) = false
-  | equal_recvArga (RecvArgEval expr) (RecvArgVar varRef) = false
-  | equal_recvArga (RecvArgVar varRef) (RecvArgEval expr) = false
-  | equal_recvArga (RecvArgMConst (integera, literala))
-    (RecvArgMConst (integer, literal)) =
-    ((integera : IntInf.int) = integer) andalso ((literala : string) = literal)
-  | equal_recvArga (RecvArgConst integera) (RecvArgConst integer) =
-    ((integera : IntInf.int) = integer)
-  | equal_recvArga (RecvArgEval expra) (RecvArgEval expr) =
-    equal_expra expra expr
-  | equal_recvArga (RecvArgVar varRefa) (RecvArgVar varRef) =
-    equal_varRef varRefa varRef
-and equal_recvArg () = {equal = equal_recvArga} : recvArg HOL.equal
-and equal_expra (ExprPoll (chanRefa, lista, boola)) (ExprEmpty chanRef) = false
-  | equal_expra (ExprEmpty chanRefa) (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprPoll (chanRefa, lista, boola)) (ExprFull chanRef) = false
-  | equal_expra (ExprFull chanRefa) (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRefa) (ExprFull chanRef) = false
-  | equal_expra (ExprFull chanRefa) (ExprEmpty chanRef) = false
-  | equal_expra (ExprPoll (chanRef, lista, boola)) ExprTimeOut = false
-  | equal_expra ExprTimeOut (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRef) ExprTimeOut = false
-  | equal_expra ExprTimeOut (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) ExprTimeOut = false
-  | equal_expra ExprTimeOut (ExprFull chanRef) = false
-  | equal_expra (ExprPoll (chanRef, lista, boola))
-    (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprMConst (integer, literal))
-    (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRef) (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprMConst (integer, literal)) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprMConst (integer, literal)) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprMConst (integer, literal)) ExprTimeOut = false
-  | equal_expra (ExprPoll (chanRef, lista, boola)) (ExprConst integer) = false
-  | equal_expra (ExprConst integer) (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRef) (ExprConst integer) = false
-  | equal_expra (ExprConst integer) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) (ExprConst integer) = false
-  | equal_expra (ExprConst integer) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprConst integer) = false
-  | equal_expra (ExprConst integer) ExprTimeOut = false
-  | equal_expra (ExprMConst (integera, literal)) (ExprConst integer) = false
-  | equal_expra (ExprConst integera) (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprPoll (chanRef, lista, boola)) (ExprVarRef varRef) = false
-  | equal_expra (ExprVarRef varRef) (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRef) (ExprVarRef varRef) = false
-  | equal_expra (ExprVarRef varRef) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) (ExprVarRef varRef) = false
-  | equal_expra (ExprVarRef varRef) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprVarRef varRef) = false
-  | equal_expra (ExprVarRef varRef) ExprTimeOut = false
-  | equal_expra (ExprMConst (integer, literal)) (ExprVarRef varRef) = false
-  | equal_expra (ExprVarRef varRef) (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprConst integer) (ExprVarRef varRef) = false
-  | equal_expra (ExprVarRef varRef) (ExprConst integer) = false
-  | equal_expra (ExprPoll (chanRefa, lista, boola)) (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRefa) (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRefa) (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRefa) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRefa) (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRefa) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRef) ExprTimeOut = false
-  | equal_expra (ExprMConst (integer, literal)) (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRef) (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprConst integer) (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRef) (ExprConst integer) = false
-  | equal_expra (ExprVarRef varRef) (ExprLen chanRef) = false
-  | equal_expra (ExprLen chanRef) (ExprVarRef varRef) = false
-  | equal_expra (ExprPoll (chanRef, lista, boola))
-    (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3))
-    (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRef) (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) ExprTimeOut = false
-  | equal_expra (ExprMConst (integer, literal)) (ExprCond (expr1, expr2, expr3))
-    = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprMConst (integer, literal))
-    = false
-  | equal_expra (ExprConst integer) (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprConst integer) = false
-  | equal_expra (ExprVarRef varRef) (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprVarRef varRef) = false
-  | equal_expra (ExprLen chanRef) (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprLen chanRef) = false
-  | equal_expra (ExprPoll (chanRef, lista, boola)) (ExprUnOp (unOp, expr)) =
-    false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprPoll (chanRef, lista, boola)) =
-    false
-  | equal_expra (ExprEmpty chanRef) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) ExprTimeOut = false
-  | equal_expra (ExprMConst (integer, literal)) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprConst integer) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprConst integer) = false
-  | equal_expra (ExprVarRef varRef) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprVarRef varRef) = false
-  | equal_expra (ExprLen chanRef) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprLen chanRef) = false
-  | equal_expra (ExprCond (expr1, expr2, expr3)) (ExprUnOp (unOp, expr)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprPoll (chanRef, lista, boola))
-    (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2))
-    (ExprPoll (chanRef, lista, boola)) = false
-  | equal_expra (ExprEmpty chanRef) (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprEmpty chanRef) = false
-  | equal_expra (ExprFull chanRef) (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprFull chanRef) = false
-  | equal_expra ExprTimeOut (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) ExprTimeOut = false
-  | equal_expra (ExprMConst (integer, literal))
-    (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2))
-    (ExprMConst (integer, literal)) = false
-  | equal_expra (ExprConst integer) (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprConst integer) = false
-  | equal_expra (ExprVarRef varRef) (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprVarRef varRef) = false
-  | equal_expra (ExprLen chanRef) (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprLen chanRef) = false
-  | equal_expra (ExprCond (expr1a, expr2a, expr3))
-    (ExprBinOp (binOp, expr1, expr2)) = false
-  | equal_expra (ExprBinOp (binOp, expr1a, expr2a))
-    (ExprCond (expr1, expr2, expr3)) = false
-  | equal_expra (ExprUnOp (unOp, expr)) (ExprBinOp (binOp, expr1, expr2)) =
-    false
-  | equal_expra (ExprBinOp (binOp, expr1, expr2)) (ExprUnOp (unOp, expr)) =
-    false
-  | equal_expra (ExprPoll (chanRefa, listaa, boolaa))
-    (ExprPoll (chanRef, lista, boola)) =
-    equal_chanRef chanRefa chanRef andalso
-      (List.equal_lista (equal_recvArg ()) listaa lista andalso
-        Product_Type.equal_bool boolaa boola)
-  | equal_expra (ExprEmpty chanRefa) (ExprEmpty chanRef) =
-    equal_chanRef chanRefa chanRef
-  | equal_expra (ExprFull chanRefa) (ExprFull chanRef) =
-    equal_chanRef chanRefa chanRef
-  | equal_expra (ExprMConst (integera, literala))
-    (ExprMConst (integer, literal)) =
-    ((integera : IntInf.int) = integer) andalso ((literala : string) = literal)
-  | equal_expra (ExprConst integera) (ExprConst integer) =
-    ((integera : IntInf.int) = integer)
-  | equal_expra (ExprVarRef varRefa) (ExprVarRef varRef) =
-    equal_varRef varRefa varRef
-  | equal_expra (ExprLen chanRefa) (ExprLen chanRef) =
-    equal_chanRef chanRefa chanRef
-  | equal_expra (ExprCond (expr1a, expr2a, expr3a))
-    (ExprCond (expr1, expr2, expr3)) =
-    equal_expra expr1a expr1 andalso
-      (equal_expra expr2a expr2 andalso equal_expra expr3a expr3)
-  | equal_expra (ExprUnOp (unOpa, expra)) (ExprUnOp (unOp, expr)) =
-    equal_unOp unOpa unOp andalso equal_expra expra expr
-  | equal_expra (ExprBinOp (binOpa, expr1a, expr2a))
-    (ExprBinOp (binOp, expr1, expr2)) =
-    equal_binOp binOpa binOp andalso
-      (equal_expra expr1a expr1 andalso equal_expra expr2a expr2)
-  | equal_expra ExprTimeOut ExprTimeOut = true;
-val equal_expr = equal_expr ();
-val equal_recvArg = equal_recvArg ();
-
 fun preprocess ms =
   let
     val dflt_vars =
@@ -6508,10 +5566,6 @@ fun printEdges f es =
     (fn n => List.map (printEdge f n) (Product_Type.snd (IArray.sub es n)))
     (List.rev (List.upt Arith.zero_nata (IArray.length es)));
 
-fun gState2HASH (GState_ext (v, ch, t, p, m)) = (v, (ch, (t, (p, m))));
-
-fun pState2HASH (PState_ext (p, v, c, ch, s, m)) = (p, (v, (c, (ch, (s, m)))));
-
 fun printLabels f ls =
   ListMapImpl.iteratei_map_op_list_it_lm_ops ls (fn _ => true)
     (fn (k, l) =>
@@ -6521,16 +5575,9 @@ fun printLabels f ls =
           a))
     [];
 
-fun walk_iarraya uu uv x l uw =
-  (if Arith.equal_nata l Arith.zero_nata then x
-    else let
-           val y = uu x (IArray.sub uv uw);
-         in
-           walk_iarraya uu uv y (Arith.minus_nat l Arith.one_nata)
-             (Arith.plus_nata uw Arith.one_nata)
-         end);
-
-fun walk_iarray f a x = walk_iarraya f a x (IArray.length a) Arith.zero_nata;
+fun labels
+  (Program_ext (processes, labels, states, proc_names, proc_data, more)) =
+  labels;
 
 fun printProcesses f prog =
   ListMapImpl.iteratei_map_op_list_it_lm_ops (proc_data prog) (fn _ => true)
@@ -6549,199 +5596,26 @@ fun printProcesses f prog =
       end)
     [];
 
-fun equal_gState_ext A_ = {equal = equal_gState_exta A_} :
-  'a gState_ext HOL.equal;
-
-fun def_hashmap_size_uint_gState_ext A_ uu =
-  Arith.nat_of_integer (10 : IntInf.int);
-
-fun def_hashmap_size_gState_ext A_ = def_hashmap_size_uint_gState_ext A_;
-
-fun def_hashmap_size_uint_pState_ext A_ uu =
-  Arith.nat_of_integer (10 : IntInf.int);
-
-fun def_hashmap_size_uint_assoc_list A_ B_ uu =
-  Arith.nat_of_integer (10 : IntInf.int);
-
-fun hashcode_uint_assoc_list A_ B_ =
-  Collections_Patch1.hashcode_uint_list
-    (Collections_Patch1.hashable_uint_prod A_ B_) o
-    Assoc_List.impl_of;
-
-fun hashable_uint_assoc_list A_ B_ =
-  {hashcode_uint = hashcode_uint_assoc_list A_ B_,
-    def_hashmap_size_uint = def_hashmap_size_uint_assoc_list A_ B_}
-  : ('a, 'b) Assoc_List.assoc_list Collections_Patch1.hashable_uint;
-
-fun def_hashmap_size_uint_variable uu = Arith.nat_of_integer (10 : IntInf.int);
-
-fun def_hashmap_size_uint_varType uu = Arith.nat_of_integer (10 : IntInf.int);
-
-fun hashcode_uint_varType (VTBounded (i1, i2)) =
-  Collections_Patch1.hashcode_uint_prod Collections_Patch1.hashable_uint_integer
-    Collections_Patch1.hashable_uint_integer (i1, i2)
-  | hashcode_uint_varType VTChan = Word32.fromInt (23 : IntInf.int);
-
-val hashable_uint_varType =
-  {hashcode_uint = hashcode_uint_varType,
-    def_hashmap_size_uint = def_hashmap_size_uint_varType}
-  : varType Collections_Patch1.hashable_uint;
-
-fun def_hashmap_size_uint_iarray A_ =
-  (fn _ => Arith.nat_of_integer (10 : IntInf.int));
-
-fun hashcode_uint_iarray A_ a =
-  walk_iarray
-    (fn h => fn v =>
-      Word32.+ (Word32.* (h, Word32.fromInt
-                               (33 : IntInf.int)), Collections_Patch1.hashcode_uint
-             A_ v))
-    a (Word32.fromInt 0);
-
-fun hashable_uint_iarray A_ =
-  {hashcode_uint = hashcode_uint_iarray A_,
-    def_hashmap_size_uint = def_hashmap_size_uint_iarray A_}
-  : ('a Vector.vector) Collections_Patch1.hashable_uint;
-
-fun hashcode_uint_variable (Var (i1, i2)) =
-  Collections_Patch1.hashcode_uint_prod hashable_uint_varType
-    Collections_Patch1.hashable_uint_integer (i1, i2)
-  | hashcode_uint_variable (VArray (i1, i2, ia)) =
-    Collections_Patch1.hashcode_uint_prod hashable_uint_varType
-      (Collections_Patch1.hashable_uint_prod
-        Collections_Patch1.hashable_uint_nat
-        (hashable_uint_iarray Collections_Patch1.hashable_uint_integer))
-      (i1, (i2, ia));
-
-val hashable_uint_variable =
-  {hashcode_uint = hashcode_uint_variable,
-    def_hashmap_size_uint = def_hashmap_size_uint_variable}
-  : variable Collections_Patch1.hashable_uint;
-
-fun hashcode_uint_pState_ext A_ =
-  Collections_Patch1.hashcode_uint_prod Collections_Patch1.hashable_uint_nat
-    (Collections_Patch1.hashable_uint_prod
-      (hashable_uint_assoc_list Code_String.hashable_uint_literal
-        hashable_uint_variable)
-      (Collections_Patch1.hashable_uint_prod
-        Collections_Patch1.hashable_uint_nat
-        (Collections_Patch1.hashable_uint_prod
-          (Collections_Patch1.hashable_uint_list
-            Collections_Patch1.hashable_uint_integer)
-          (Collections_Patch1.hashable_uint_prod
-            Collections_Patch1.hashable_uint_nat A_)))) o
-    pState2HASH;
-
-fun hashable_uint_pState_ext A_ =
-  {hashcode_uint = hashcode_uint_pState_ext A_,
-    def_hashmap_size_uint = def_hashmap_size_uint_pState_ext A_}
-  : 'a pState_ext Collections_Patch1.hashable_uint;
-
-fun def_hashmap_size_uint_channel uu = Arith.nat_of_integer (10 : IntInf.int);
-
-fun hashcode_uint_channel (Channel (io, vs, iss)) =
-  Collections_Patch1.hashcode_uint_prod Collections_Patch1.hashable_uint_integer
-    (Collections_Patch1.hashable_uint_prod
-      (Collections_Patch1.hashable_uint_list hashable_uint_varType)
-      (Collections_Patch1.hashable_uint_list
-        (Collections_Patch1.hashable_uint_list
-          Collections_Patch1.hashable_uint_integer)))
-    (io, (vs, iss))
-  | hashcode_uint_channel (HSChannel vs) =
-    Word32.* (Word32.fromInt
-                (42 : IntInf.int), Collections_Patch1.hashcode_uint_list
-                                     hashable_uint_varType vs)
-  | hashcode_uint_channel InvChannel = Word32.fromInt (4711 : IntInf.int);
-
-val hashable_uint_channel =
-  {hashcode_uint = hashcode_uint_channel,
-    def_hashmap_size_uint = def_hashmap_size_uint_channel}
-  : channel Collections_Patch1.hashable_uint;
-
-fun hashcode_uint_gState_ext A_ =
-  Collections_Patch1.hashcode_uint_prod
-    (hashable_uint_assoc_list Code_String.hashable_uint_literal
-      hashable_uint_variable)
-    (Collections_Patch1.hashable_uint_prod
-      (Collections_Patch1.hashable_uint_list hashable_uint_channel)
-      (Collections_Patch1.hashable_uint_prod
-        Collections_Patch1.hashable_uint_bool
-        (Collections_Patch1.hashable_uint_prod
-          (Collections_Patch1.hashable_uint_list
-            (hashable_uint_pState_ext Collections_Patch1.hashable_uint_unit))
-          A_))) o
-    gState2HASH;
-
-fun hashable_uint_gState_ext A_ =
-  {hashcode_uint = hashcode_uint_gState_ext A_,
-    def_hashmap_size_uint = def_hashmap_size_uint_gState_ext A_}
-  : 'a gState_ext Collections_Patch1.hashable_uint;
-
-fun bounded_hashcode_gState_ext A_ =
-  Collections_Patch1.bounded_hashcode_nat (hashable_uint_gState_ext A_);
-
-fun hashcode_gState_ext A_ =
-  Collections_Patch1.hashcode_nat (hashable_uint_gState_ext A_);
-
-fun hashable_gState_ext A_ =
-  {hashcode = hashcode_gState_ext A_,
-    bounded_hashcode = bounded_hashcode_gState_ext A_,
-    def_hashmap_size = def_hashmap_size_gState_ext A_}
-  : 'a gState_ext HashCode.hashable;
-
 end; (*struct Promela*)
 
 structure RBT_Impl : sig
-  datatype color = R | B
-  datatype compare = Lt | Gt | Eq
+  type color
   datatype ('a, 'b) rbt = Empty |
     Branch of color * ('a, 'b) rbt * 'a * 'b * ('a, 'b) rbt
-  val fold : ('a -> 'b -> 'c -> 'c) -> ('a, 'b) rbt -> 'c -> 'c
-  val paint : color -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val balance : ('a, 'b) rbt -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val gen_entries :
-    (('a * 'b) * ('a, 'b) rbt) list -> ('a, 'b) rbt -> ('a * 'b) list
-  val entries : ('a, 'b) rbt -> ('a * 'b) list
-  val rbt_ins :
-    ('a -> 'a -> bool) ->
-      ('a -> 'b -> 'b -> 'b) -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_insa :
-    'a Orderings.ord ->
-      ('a -> 'b -> 'b -> 'b) -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val skip_red : ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_insert_with_key :
-    ('a -> 'a -> bool) ->
-      ('a -> 'b -> 'b -> 'b) -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val skip_black : ('a, 'b) rbt -> ('a, 'b) rbt
-  val compare_height :
-    ('a, 'b) rbt -> ('a, 'b) rbt -> ('a, 'b) rbt -> ('a, 'b) rbt -> compare
-  val sunion_with :
-    ('a -> 'a -> bool) ->
-      ('a -> 'b -> 'b -> 'b) ->
-        ('a * 'b) list -> ('a * 'b) list -> ('a * 'b) list
-  val rbtreeify_g : Arith.nat -> ('a * 'b) list -> ('a, 'b) rbt * ('a * 'b) list
-  val rbtreeify_f : Arith.nat -> ('a * 'b) list -> ('a, 'b) rbt * ('a * 'b) list
-  val rbtreeify : ('a * 'b) list -> ('a, 'b) rbt
-  val rbt_union_with_key :
-    ('a -> 'a -> bool) ->
-      ('a -> 'b -> 'b -> 'b) -> ('a, 'b) rbt -> ('a, 'b) rbt -> ('a, 'b) rbt
   val rbt_union :
     ('a -> 'a -> bool) -> ('a, 'b) rbt -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_insert_with_keya :
-    'a Orderings.ord ->
-      ('a -> 'b -> 'b -> 'b) -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_insert : 'a Orderings.ord -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_lookup : ('a -> 'a -> bool) -> ('a, 'b) rbt -> 'a -> 'b option
-  val rbt_inserta :
+  val rbt_insert :
     ('a -> 'a -> bool) -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
+  val rbt_lookup : ('a -> 'a -> bool) -> ('a, 'b) rbt -> 'a -> 'b option
+  val rbt_inserta : 'a Orderings.ord -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
 end = struct
 
 datatype color = R | B;
 
-datatype compare = Lt | Gt | Eq;
-
 datatype ('a, 'b) rbt = Empty |
   Branch of color * ('a, 'b) rbt * 'a * 'b * ('a, 'b) rbt;
+
+datatype compare = LT | GT | EQ;
 
 fun fold f (Branch (c, lt, k, v, rt)) x = fold f rt (f k v (fold f lt x))
   | fold f Empty x = x;
@@ -6884,72 +5758,9 @@ fun gen_entries kvts (Branch (c, l, k, v, r)) =
 
 fun entries x = gen_entries [] x;
 
-fun rbt_ins less f k v (Branch (R, l, x, y, r)) =
-  (if less k x then Branch (R, rbt_ins less f k v l, x, y, r)
-    else (if less x k then Branch (R, l, x, y, rbt_ins less f k v r)
-           else Branch (R, l, x, f k y v, r)))
-  | rbt_ins less f k v (Branch (B, l, x, y, r)) =
-    (if less k x then balance (rbt_ins less f k v l) x y r
-      else (if less x k then balance l x y (rbt_ins less f k v r)
-             else Branch (B, l, x, f k y v, r)))
-  | rbt_ins less f k v Empty = Branch (R, Empty, k, v, Empty);
-
-fun rbt_insa A_ f k v Empty = Branch (R, Empty, k, v, Empty)
-  | rbt_insa A_ f k v (Branch (B, l, x, y, r)) =
-    (if Orderings.less A_ k x then balance (rbt_insa A_ f k v l) x y r
-      else (if Orderings.less A_ x k then balance l x y (rbt_insa A_ f k v r)
-             else Branch (B, l, x, f k y v, r)))
-  | rbt_insa A_ f k v (Branch (R, l, x, y, r)) =
-    (if Orderings.less A_ k x then Branch (R, rbt_insa A_ f k v l, x, y, r)
-      else (if Orderings.less A_ x k
-             then Branch (R, l, x, y, rbt_insa A_ f k v r)
-             else Branch (R, l, x, f k y v, r)));
-
 fun skip_red (Branch (R, l, k, v, r)) = l
   | skip_red Empty = Empty
   | skip_red (Branch (B, va, vb, vc, vd)) = Branch (B, va, vb, vc, vd);
-
-fun rbt_insert_with_key less f k v t = paint B (rbt_ins less f k v t);
-
-fun skip_black t =
-  let
-    val ta = skip_red t;
-  in
-    (case ta of Empty => ta | Branch (R, l, _, _, _) => ta
-      | Branch (B, l, _, _, _) => l)
-  end;
-
-fun compare_height sx s t tx =
-  (case (skip_red sx, (skip_red s, (skip_red t, skip_red tx)))
-    of (Empty, (Empty, (_, Empty))) => Eq
-    | (Empty, (Empty, (_, Branch (_, _, _, _, _)))) => Lt
-    | (Empty, (Branch (_, sa, _, _, _), (Empty, b))) => Eq
-    | (Empty, (Branch (_, sa, _, _, _), (Branch (_, ta, _, _, _), Empty))) => Eq
-    | (Empty,
-        (Branch (_, sa, _, _, _),
-          (Branch (_, ta, _, _, _), Branch (_, txa, _, _, _))))
-      => compare_height Empty sa ta (skip_black txa)
-    | (Branch (_, sxa, _, _, _), (Empty, (Empty, Empty))) => Gt
-    | (Branch (_, sxa, _, _, _), (Empty, (Empty, Branch (_, _, _, _, _)))) => Lt
-    | (Branch (_, sxa, _, _, _), (Empty, (Branch (_, _, _, _, _), Empty))) => Eq
-    | (Branch (_, sxa, _, _, _),
-        (Empty, (Branch (_, _, _, _, _), Branch (_, _, _, _, _))))
-      => Lt
-    | (Branch (_, sxa, _, _, _), (Branch (_, sa, _, _, _), (Empty, xf))) => Gt
-    | (Branch (_, sxa, _, _, _),
-        (Branch (_, sa, _, _, _), (Branch (_, ta, _, _, _), Empty)))
-      => compare_height (skip_black sxa) sa ta Empty
-    | (Branch (_, sxa, _, _, _),
-        (Branch (_, sa, _, _, _),
-          (Branch (_, ta, _, _, _), Branch (_, txa, _, _, _))))
-      => compare_height (skip_black sxa) sa ta (skip_black txa));
-
-fun sunion_with less f asa [] = asa
-  | sunion_with less f [] bs = bs
-  | sunion_with less f ((ka, va) :: asa) ((k, v) :: bs) =
-    (if less k ka then (k, v) :: sunion_with less f ((ka, va) :: asa) bs
-      else (if less ka k then (ka, va) :: sunion_with less f asa ((k, v) :: bs)
-             else (ka, f ka va v) :: sunion_with less f asa bs));
 
 fun rbtreeify_g n kvs =
   (if Arith.equal_nata n Arith.zero_nata orelse
@@ -7003,25 +5814,88 @@ and rbtreeify_f n kvs =
 fun rbtreeify kvs =
   Product_Type.fst (rbtreeify_g (Arith.suc (List.size_list kvs)) kvs);
 
+fun skip_black t =
+  let
+    val ta = skip_red t;
+  in
+    (case ta of Empty => ta | Branch (R, l, _, _, _) => ta
+      | Branch (B, l, _, _, _) => l)
+  end;
+
+fun rbt_ins less f k v (Branch (R, l, x, y, r)) =
+  (if less k x then Branch (R, rbt_ins less f k v l, x, y, r)
+    else (if less x k then Branch (R, l, x, y, rbt_ins less f k v r)
+           else Branch (R, l, x, f k y v, r)))
+  | rbt_ins less f k v (Branch (B, l, x, y, r)) =
+    (if less k x then balance (rbt_ins less f k v l) x y r
+      else (if less x k then balance l x y (rbt_ins less f k v r)
+             else Branch (B, l, x, f k y v, r)))
+  | rbt_ins less f k v Empty = Branch (R, Empty, k, v, Empty);
+
+fun rbt_insert_with_key less f k v t = paint B (rbt_ins less f k v t);
+
+fun sunion_with less f asa [] = asa
+  | sunion_with less f [] bs = bs
+  | sunion_with less f ((ka, va) :: asa) ((k, v) :: bs) =
+    (if less k ka then (k, v) :: sunion_with less f ((ka, va) :: asa) bs
+      else (if less ka k then (ka, va) :: sunion_with less f asa ((k, v) :: bs)
+             else (ka, f ka va v) :: sunion_with less f asa bs));
+
+fun compare_height sx s t tx =
+  (case (skip_red sx, (skip_red s, (skip_red t, skip_red tx)))
+    of (Empty, (Empty, (_, Empty))) => EQ
+    | (Empty, (Empty, (_, Branch (_, _, _, _, _)))) => LT
+    | (Empty, (Branch (_, sa, _, _, _), (Empty, b))) => EQ
+    | (Empty, (Branch (_, sa, _, _, _), (Branch (_, ta, _, _, _), Empty))) => EQ
+    | (Empty,
+        (Branch (_, sa, _, _, _),
+          (Branch (_, ta, _, _, _), Branch (_, txa, _, _, _))))
+      => compare_height Empty sa ta (skip_black txa)
+    | (Branch (_, sxa, _, _, _), (Empty, (Empty, Empty))) => GT
+    | (Branch (_, sxa, _, _, _), (Empty, (Empty, Branch (_, _, _, _, _)))) => LT
+    | (Branch (_, sxa, _, _, _), (Empty, (Branch (_, _, _, _, _), Empty))) => EQ
+    | (Branch (_, sxa, _, _, _),
+        (Empty, (Branch (_, _, _, _, _), Branch (_, _, _, _, _))))
+      => LT
+    | (Branch (_, sxa, _, _, _), (Branch (_, sa, _, _, _), (Empty, xf))) => GT
+    | (Branch (_, sxa, _, _, _),
+        (Branch (_, sa, _, _, _), (Branch (_, ta, _, _, _), Empty)))
+      => compare_height (skip_black sxa) sa ta Empty
+    | (Branch (_, sxa, _, _, _),
+        (Branch (_, sa, _, _, _),
+          (Branch (_, ta, _, _, _), Branch (_, txa, _, _, _))))
+      => compare_height (skip_black sxa) sa ta (skip_black txa));
+
 fun rbt_union_with_key less f t1 t2 =
   (case compare_height t1 t1 t2 t2
-    of Lt =>
+    of LT =>
       fold (rbt_insert_with_key less (fn k => fn v => fn w => f k w v)) t1 t2
-    | Gt => fold (rbt_insert_with_key less f) t2 t1
-    | Eq => rbtreeify (sunion_with less f (entries t1) (entries t2)));
+    | GT => fold (rbt_insert_with_key less f) t2 t1
+    | EQ => rbtreeify (sunion_with less f (entries t1) (entries t2)));
 
 fun rbt_union less = rbt_union_with_key less (fn _ => fn _ => fn rv => rv);
 
-fun rbt_insert_with_keya A_ f k v t = paint B (rbt_insa A_ f k v t);
-
-fun rbt_insert A_ = rbt_insert_with_keya A_ (fn _ => fn _ => fn nv => nv);
+fun rbt_insert less = rbt_insert_with_key less (fn _ => fn _ => fn nv => nv);
 
 fun rbt_lookup less (Branch (uu, l, x, y, r)) k =
   (if less k x then rbt_lookup less l k
     else (if less x k then rbt_lookup less r k else SOME y))
   | rbt_lookup less Empty k = NONE;
 
-fun rbt_inserta less = rbt_insert_with_key less (fn _ => fn _ => fn nv => nv);
+fun rbt_insa A_ f k v Empty = Branch (R, Empty, k, v, Empty)
+  | rbt_insa A_ f k v (Branch (B, l, x, y, r)) =
+    (if Orderings.less A_ k x then balance (rbt_insa A_ f k v l) x y r
+      else (if Orderings.less A_ x k then balance l x y (rbt_insa A_ f k v r)
+             else Branch (B, l, x, f k y v, r)))
+  | rbt_insa A_ f k v (Branch (R, l, x, y, r)) =
+    (if Orderings.less A_ k x then Branch (R, rbt_insa A_ f k v l, x, y, r)
+      else (if Orderings.less A_ x k
+             then Branch (R, l, x, y, rbt_insa A_ f k v r)
+             else Branch (R, l, x, f k y v, r)));
+
+fun rbt_insert_with_keya A_ f k v t = paint B (rbt_insa A_ f k v t);
+
+fun rbt_inserta A_ = rbt_insert_with_keya A_ (fn _ => fn _ => fn nv => nv);
 
 end; (*struct RBT_Impl*)
 
@@ -7043,9 +5917,6 @@ fun rm_iterateoi RBT_Impl.Empty c f sigma = sigma
 end; (*struct RBT_add*)
 
 structure Char_ord : sig
-  val ord_char : char Orderings.ord
-  val preorder_char : char Orderings.preorder
-  val order_char : char Orderings.order
   val linorder_char : char Orderings.linorder
 end = struct
 
@@ -7063,24 +5934,11 @@ val linorder_char = {order_linorder = order_char} : char Orderings.linorder;
 end; (*struct Char_ord*)
 
 structure BoolProgs : sig
-  datatype bexp = Tt | Ff | V of Arith.nat | Not of bexp | And of bexp * bexp |
+  datatype bexp = TT | FF | V of Arith.nat | Not of bexp | And of bexp * bexp |
     Or of bexp * bexp
-  datatype com = Skip | Assign of Arith.nat list * bexp list | Seq of com * com
-    | Gc of (bexp * com) list | IfTE of bexp * com * com | While of bexp * com
-  datatype instr = AssI of Arith.nat list * bexp list |
-    TestI of bexp * Arith.int | ChoiceI of (bexp * Arith.int) list |
-    GotoI of Arith.int
-  val opta : instr -> instr list -> instr list
-  val opt : instr list -> instr list
-  val bval : bexp -> IntInf.int -> bool
-  val comp : com -> instr list
-  val exec :
-    instr FArray.IsabelleMapping.ArrayType ->
-      IntInf.int -> Arith.nat -> Arith.nat list
-  val execa : instr -> Arith.nat * IntInf.int -> (Arith.nat * IntInf.int) list
-  val nexts1 :
-    instr FArray.IsabelleMapping.ArrayType ->
-      Arith.nat * IntInf.int -> (Arith.nat * IntInf.int) list
+  datatype com = SKIP | Assign of Arith.nat list * bexp list | Seq of com * com
+    | GC of (bexp * com) list | IfTE of bexp * com * com | While of bexp * com
+  type instr
   val nexts :
     instr FArray.IsabelleMapping.ArrayType ->
       Arith.nat * IntInf.int -> (Arith.nat * IntInf.int) list
@@ -7090,11 +5948,11 @@ structure BoolProgs : sig
       (IntInf.int -> char list) -> Arith.nat * IntInf.int -> char list
 end = struct
 
-datatype bexp = Tt | Ff | V of Arith.nat | Not of bexp | And of bexp * bexp |
+datatype bexp = TT | FF | V of Arith.nat | Not of bexp | And of bexp * bexp |
   Or of bexp * bexp;
 
-datatype com = Skip | Assign of Arith.nat list * bexp list | Seq of com * com |
-  Gc of (bexp * com) list | IfTE of bexp * com * com | While of bexp * com;
+datatype com = SKIP | Assign of Arith.nat list * bexp list | Seq of com * com |
+  GC of (bexp * com) list | IfTE of bexp * com * com | While of bexp * com;
 
 datatype instr = AssI of Arith.nat list * bexp list | TestI of bexp * Arith.int
   | ChoiceI of (bexp * Arith.int) list | GotoI of Arith.int;
@@ -7123,17 +5981,56 @@ fun opta (GotoI d) ys =
 
 fun opt instr = List.foldr opta instr [];
 
-fun bval Tt s = true
-  | bval Ff s = false
-  | bval (V n) s = Collections_Patch1.bs_mem n s
+fun bval TT s = true
+  | bval FF s = false
+  | bval (V n) s = Impl_Bit_Set.bs_mem n s
   | bval (Not b) s = not (bval b s)
   | bval (And (b_1, b_2)) s = bval b_1 s andalso bval b_2 s
   | bval (Or (b_1, b_2)) s = bval b_1 s orelse bval b_2 s;
 
-fun comp Skip = []
+fun exec instr (pc, s) =
+  (case instr
+    of AssI (ns, bs) =>
+      let
+        val bvs = List.zip ns (List.map (fn b => bval b s) bs);
+      in
+        [(Arith.plus_nata pc Arith.one_nata,
+           List.foldl (fn sa => fn (a, b) => Bit_Int.set_bit_integer sa a b) s
+             bvs)]
+      end
+    | TestI (b, d) =>
+      [(if bval b s then (Arith.plus_nata pc Arith.one_nata, s)
+         else (Arith.nat
+                 (Arith.plus_int
+                   (Arith.int_of_nat (Arith.plus_nata pc Arith.one_nata)) d),
+                s))]
+    | ChoiceI bis =>
+      let
+        val succs =
+          List.maps
+            (fn (b, i) =>
+              (if bval b s
+                then [(Arith.nat
+                         (Arith.plus_int
+                           (Arith.int_of_nat
+                             (Arith.plus_nata pc Arith.one_nata))
+                           i),
+                        s)]
+                else []))
+            bis;
+      in
+        (if List.null succs then [(pc, s)] else succs)
+      end
+    | GotoI d =>
+      [(Arith.nat
+          (Arith.plus_int (Arith.int_of_nat (Arith.plus_nata pc Arith.one_nata))
+            d),
+         s)]);
+
+fun comp SKIP = []
   | comp (Assign (n, b)) = [AssI (n, b)]
   | comp (Seq (c1, c2)) = comp c1 @ comp c2
-  | comp (Gc gcs) =
+  | comp (GC gcs) =
     let
       val cgcs = List.map (fn (b, c) => (b, comp c)) gcs;
       val addbc =
@@ -7177,11 +6074,11 @@ fun comp Skip = []
                          (Arith.Int_of_integer (1 : IntInf.int))))]
     end;
 
-fun exec ins s pc =
+fun execa ins s pc =
   (if Arith.less_nat pc (Diff_Array.array_length ins)
     then (case Diff_Array.array_get ins pc of AssI (_, _) => [pc]
            | TestI (b, d) =>
-             (if bval b s then exec ins s (Arith.plus_nata pc Arith.one_nata)
+             (if bval b s then execa ins s (Arith.plus_nata pc Arith.one_nata)
                else let
                       val pca =
                         Arith.nat
@@ -7190,7 +6087,7 @@ fun exec ins s pc =
                               (Arith.plus_nata pc Arith.one_nata))
                             d);
                     in
-                      (if Arith.less_nat pc pca then exec ins s pca else [pca])
+                      (if Arith.less_nat pc pca then execa ins s pca else [pca])
                     end)
            | ChoiceI bis =>
              let
@@ -7209,7 +6106,7 @@ fun exec ins s pc =
                (if List.null succs then [pc]
                  else List.maps
                         (fn pca =>
-                          (if Arith.less_nat pc pca then exec ins s pca
+                          (if Arith.less_nat pc pca then execa ins s pca
                             else [pca]))
                         succs)
              end
@@ -7220,55 +6117,16 @@ fun exec ins s pc =
                    (Arith.plus_int
                      (Arith.int_of_nat (Arith.plus_nata pc Arith.one_nata)) d);
              in
-               (if Arith.less_nat pc pca then exec ins s pca else [pca])
+               (if Arith.less_nat pc pca then execa ins s pca else [pca])
              end)
     else [pc]);
 
-fun execa instr (pc, s) =
-  (case instr
-    of AssI (ns, bs) =>
-      let
-        val bvs = List.zip ns (List.map (fn b => bval b s) bs);
-      in
-        [(Arith.plus_nata pc Arith.one_nata,
-           List.foldl (fn sa => fn (a, b) => Bit_Int.set_bit_integer sa a b) s
-             bvs)]
-      end
-    | TestI (b, d) =>
-      [(if bval b s then (Arith.plus_nata pc Arith.one_nata, s)
-         else (Arith.nat
-                 (Arith.plus_int
-                   (Arith.int_of_nat (Arith.plus_nata pc Arith.one_nata)) d),
-                s))]
-    | ChoiceI bis =>
-      let
-        val succs =
-          List.maps
-            (fn (b, i) =>
-              (if bval b s
-                then [(Arith.nat
-                         (Arith.plus_int
-                           (Arith.int_of_nat
-                             (Arith.plus_nata pc Arith.one_nata))
-                           i),
-                        s)]
-                else []))
-            bis;
-      in
-        (if List.null succs then [(pc, s)] else succs)
-      end
-    | GotoI d =>
-      [(Arith.nat
-          (Arith.plus_int (Arith.int_of_nat (Arith.plus_nata pc Arith.one_nata))
-            d),
-         s)]);
-
 fun nexts1 ins (pc, s) =
   (if Arith.less_nat pc (Diff_Array.array_length ins)
-    then execa (Diff_Array.array_get ins pc) (pc, s) else [(pc, s)]);
+    then exec (Diff_Array.array_get ins pc) (pc, s) else [(pc, s)]);
 
 fun nexts ins (pc, s) =
-  List.maps (fn (pca, sa) => List.map (fn pcb => (pcb, sa)) (exec ins sa pca))
+  List.maps (fn (pca, sa) => List.map (fn pcb => (pcb, sa)) (execa ins sa pca))
     (nexts1 ins (pc, s));
 
 fun optcomp x = (FArray.IsabelleMapping.array_of_list o opt o comp) x;
@@ -7278,10 +6136,6 @@ fun print_config f fx (p, s) = f p @ [#" "] @ fx s;
 end; (*struct BoolProgs*)
 
 structure SetIteratorOperations : sig
-  val set_iterator_image :
-    ('a -> 'b) ->
-      (('c -> bool) -> ('a -> 'c -> 'c) -> 'c -> 'c) ->
-        ('c -> bool) -> ('b -> 'c -> 'c) -> 'c -> 'c
   val map_iterator_dom :
     (('a -> bool) -> ('b * 'c -> 'a -> 'a) -> 'a -> 'a) ->
       ('a -> bool) -> ('b -> 'a -> 'a) -> 'a -> 'a
@@ -7329,18 +6183,10 @@ structure ListSetImpl_Sorted : sig
   val lss_ins_dj :
     'a HOL.equal * 'a Orderings.linorder -> 'a -> 'a list -> 'a list
   val lss_isEmpty : 'a list -> bool
-  val lss_iteratei : 'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
   val lss_union_dj :
     'a HOL.equal * 'a Orderings.linorder -> 'a list -> 'a list -> 'a list
-  val iteratei_bset_op_list_it_lss_basic_ops :
-    'a Orderings.linorder ->
-      'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
   val g_sel_lss_basic_ops :
     'a Orderings.linorder -> 'a list -> ('a -> bool) -> 'a option
-  val g_ball_lss_basic_ops :
-    'a Orderings.linorder -> 'a list -> ('a -> bool) -> bool
-  val g_subset_lss_basic_ops :
-    'a HOL.equal * 'a Orderings.linorder -> 'a list -> 'a list -> bool
   val g_equal_lss_basic_ops :
     'a HOL.equal * 'a Orderings.linorder -> 'a list -> 'a list -> bool
   val iteratei_set_op_list_it_lss_ops :
@@ -7383,13 +6229,13 @@ fun lss_union_dj (A1_, A2_) = lss_union (A1_, A2_);
 
 fun iteratei_bset_op_list_it_lss_basic_ops A_ s = lss_iteratei s;
 
-fun g_sel_lss_basic_ops A_ s p =
-  iteratei_bset_op_list_it_lss_basic_ops A_ s Option.is_none
-    (fn x => fn _ => (if p x then SOME x else NONE)) NONE;
-
 fun g_ball_lss_basic_ops A_ s p =
   iteratei_bset_op_list_it_lss_basic_ops A_ s (fn c => c) (fn x => fn _ => p x)
     true;
+
+fun g_sel_lss_basic_ops A_ s p =
+  iteratei_bset_op_list_it_lss_basic_ops A_ s Option.is_none
+    (fn x => fn _ => (if p x then SOME x else NONE)) NONE;
 
 fun g_subset_lss_basic_ops (A1_, A2_) s1 s2 =
   g_ball_lss_basic_ops A2_ s1 (fn x => lss_memb (A1_, A2_) x s2);
@@ -7413,17 +6259,14 @@ fun it_to_list it s = it s (fn _ => true) (fn x => fn l => l @ [x]) [];
 end; (*struct Proper_Iterator*)
 
 structure Impl_Array_Map : sig
-  val iam_alpha :
-    ('a option) FArray.IsabelleMapping.ArrayType -> Arith.nat -> 'a option
   val iam_empty : unit -> ('a option) FArray.IsabelleMapping.ArrayType
-  val iam_increment : Arith.nat -> Arith.nat -> Arith.nat
   val iam_update :
     Arith.nat ->
       'a -> ('a option) FArray.IsabelleMapping.ArrayType ->
               ('a option) FArray.IsabelleMapping.ArrayType
+  val iam_alpha :
+    ('a option) FArray.IsabelleMapping.ArrayType -> Arith.nat -> 'a option
 end = struct
-
-fun iam_alpha a i = Diff_Array.array_get_oo NONE a i;
 
 fun iam_empty x = (fn _ => FArray.IsabelleMapping.array_of_list []) x;
 
@@ -7445,12 +6288,11 @@ fun iam_update k v a =
       end)
     a k (SOME v);
 
+fun iam_alpha a i = Diff_Array.array_get_oo NONE a i;
+
 end; (*struct Impl_Array_Map*)
 
 structure Impl_List_Set : sig
-  val rev_append : 'a list -> 'a list -> 'a list
-  val glist_delete_aux :
-    ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list -> 'a list
   val glist_delete : ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list
   val glist_member : ('a -> 'a -> bool) -> 'a -> 'a list -> bool
   val glist_insert : ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list
@@ -7494,7 +6336,7 @@ fun stat_set_data ns ni na =
 end; (*struct LTL_to_GBA*)
 
 structure Intf_Comp : sig
-  datatype comp_res = Less | Equal | Greater
+  type comp_res
   val comp2eq : ('a -> 'b -> comp_res) -> 'a -> 'b -> bool
   val comp2lt : ('a -> 'b -> comp_res) -> 'a -> 'b -> bool
   val cmp_prod :
@@ -7504,96 +6346,24 @@ structure Intf_Comp : sig
     ('a -> 'b -> bool) -> ('a -> 'b -> bool) -> 'a -> 'b -> comp_res
 end = struct
 
-datatype comp_res = Less | Equal | Greater;
+datatype comp_res = LESS | EQUAL | GREATER;
 
 fun comp2eq cmp a b =
-  (case cmp a b of Less => false | Equal => true | Greater => false);
+  (case cmp a b of LESS => false | EQUAL => true | GREATER => false);
 
 fun comp2lt cmp a b =
-  (case cmp a b of Less => true | Equal => false | Greater => false);
+  (case cmp a b of LESS => true | EQUAL => false | GREATER => false);
 
 fun cmp_prod cmp1 cmp2 (a1, a2) (b1, b2) =
-  (case cmp1 a1 b1 of Less => Less | Equal => cmp2 a2 b2 | Greater => Greater);
+  (case cmp1 a1 b1 of LESS => LESS | EQUAL => cmp2 a2 b2 | GREATER => GREATER);
 
 fun dflt_cmp le lt a b =
-  (if lt a b then Less else (if le a b then Equal else Greater));
+  (if lt a b then LESS else (if le a b then EQUAL else GREATER));
 
 end; (*struct Intf_Comp*)
 
 structure LTL_to_GBA_impl : sig
-  val less_eq_ltln :
-    'a HOL.equal * 'a Orderings.ord -> 'a LTL.ltln -> 'a LTL.ltln -> bool
-  val less_ltln :
-    'a HOL.equal * 'a Orderings.ord -> 'a LTL.ltln -> 'a LTL.ltln -> bool
-  val ord_ltln : 'a HOL.equal * 'a Orderings.ord -> 'a LTL.ltln Orderings.ord
-  datatype ('a, 'b) node_impl_ext =
-    Node_impl_ext of
-      Arith.nat * (Arith.nat, unit) RBT_Impl.rbt * 'a LTL.ltln list *
-        'a LTL.ltln list * 'a LTL.ltln list * 'b
-  val new_impl : ('a, 'b) node_impl_ext -> 'a LTL.ltln list
-  val old_impl : ('a, 'b) node_impl_ext -> 'a LTL.ltln list
-  val name_impl : ('a, 'b) node_impl_ext -> Arith.nat
-  val next_impl : ('a, 'b) node_impl_ext -> 'a LTL.ltln list
-  val preorder_ltln :
-    'a HOL.equal * 'a Orderings.order -> 'a LTL.ltln Orderings.preorder
-  val order_ltln :
-    'a HOL.equal * 'a Orderings.order -> 'a LTL.ltln Orderings.order
-  val incoming_impl_update :
-    ((Arith.nat, unit) RBT_Impl.rbt -> (Arith.nat, unit) RBT_Impl.rbt) ->
-      ('a, 'b) node_impl_ext -> ('a, 'b) node_impl_ext
-  val incoming_impl : ('a, 'b) node_impl_ext -> (Arith.nat, unit) RBT_Impl.rbt
-  val linorder_ltln :
-    'a HOL.equal * 'a Orderings.linorder -> 'a LTL.ltln Orderings.linorder
-  val upd_incoming_impl :
-    'a HOL.equal * 'a Orderings.linorder ->
-      ('a, 'b) node_impl_ext ->
-        ('a, 'c) node_impl_ext list -> ('a, 'c) node_impl_ext list
-  val next_impl_update :
-    ('a LTL.ltln list -> 'a LTL.ltln list) ->
-      ('a, 'b) node_impl_ext -> ('a, 'b) node_impl_ext
-  val name_impl_update :
-    (Arith.nat -> Arith.nat) -> ('a, 'b) node_impl_ext -> ('a, 'b) node_impl_ext
-  val old_impl_update :
-    ('a LTL.ltln list -> 'a LTL.ltln list) ->
-      ('a, 'b) node_impl_ext -> ('a, 'b) node_impl_ext
-  val new_impl_update :
-    ('a LTL.ltln list -> 'a LTL.ltln list) ->
-      ('a, 'b) node_impl_ext -> ('a, 'b) node_impl_ext
-  val expand_code_0 :
-    'a HOL.equal * 'a Orderings.linorder ->
-      ('a, unit) node_impl_ext * ('a, unit) node_impl_ext list ->
-        (Arith.nat * ('a, unit) node_impl_ext list) Refine_Det.dres
-  val expand_code :
-    'a HOL.equal * 'a Orderings.linorder ->
-      ('a, unit) node_impl_ext * ('a, unit) node_impl_ext list ->
-        Arith.nat * ('a, unit) node_impl_ext list
-  val pn_map_code :
-    'a HOL.equal * 'a Orderings.linorder ->
-      ('a, 'b) node_impl_ext list ->
-        (('a list * 'a list) option) FArray.IsabelleMapping.ArrayType
-  val until_frmlsn_impl :
-    'a HOL.equal * 'a Orderings.linorder ->
-      'a LTL.ltln -> (('a LTL.ltln * 'a LTL.ltln), unit) RBT_Impl.rbt
-  val build_F_impl :
-    'a HOL.equal * 'a Orderings.linorder ->
-      ('a, 'b) node_impl_ext list -> 'a LTL.ltln -> (Arith.nat list) list
-  val build_succ_code :
-    'a Orderings.linorder ->
-      ('a, 'b) node_impl_ext list ->
-        ((Arith.nat list) option) FArray.IsabelleMapping.ArrayType
-  val create_graph_code :
-    'a HOL.equal * 'a Orderings.linorder ->
-      'a LTL.ltln -> ('a, unit) node_impl_ext list
-  val cr_rename_gba_code :
-    'a HOL.equal * 'a Orderings.linorder ->
-      ('a, 'b) node_impl_ext list ->
-        'a LTL.ltln ->
-          ((Arith.nat list), (Arith.nat -> Arith.nat list), (Arith.nat list),
-            (((Arith.nat list) list),
-              ((Arith.nat -> ('a -> bool) -> bool), unit)
-                Automata_Impl.gen_gba_impl_ext)
-              Automata_Impl.gen_gbg_impl_ext)
-            Digraph_Impl.gen_frg_impl_ext
+  type ('a, 'b) node_impl_ext
   val create_name_gba_code :
     'a HOL.equal * 'a Orderings.linorder ->
       'a LTL.ltln ->
@@ -7616,7 +6386,7 @@ end = struct
 
 fun less_eq_ltln (A1_, A2_) =
   (fn x => fn y =>
-    LTL.ltln_rec
+    LTL.rec_ltln
       (fn a =>
         (case a of LTL.LTLnTrue => false | LTL.LTLnFalse => true
           | LTL.LTLnProp _ => true | LTL.LTLnNProp _ => true
@@ -7682,7 +6452,7 @@ fun less_eq_ltln (A1_, A2_) =
       LTL.equal_ltlna A1_ x y);
 
 fun less_ltln (A1_, A2_) =
-  LTL.ltln_rec
+  LTL.rec_ltln
     (fn a =>
       (case a of LTL.LTLnTrue => false | LTL.LTLnFalse => true
         | LTL.LTLnProp _ => true | LTL.LTLnNProp _ => true
@@ -7749,31 +6519,6 @@ fun ord_ltln (A1_, A2_) =
   {less_eq = less_eq_ltln (A1_, A2_), less = less_ltln (A1_, A2_)} :
   'a LTL.ltln Orderings.ord;
 
-datatype ('a, 'b) node_impl_ext =
-  Node_impl_ext of
-    Arith.nat * (Arith.nat, unit) RBT_Impl.rbt * 'a LTL.ltln list *
-      'a LTL.ltln list * 'a LTL.ltln list * 'b;
-
-fun new_impl
-  (Node_impl_ext
-    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
-  = new_impl;
-
-fun old_impl
-  (Node_impl_ext
-    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
-  = old_impl;
-
-fun name_impl
-  (Node_impl_ext
-    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
-  = name_impl;
-
-fun next_impl
-  (Node_impl_ext
-    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
-  = next_impl;
-
 fun preorder_ltln (A1_, A2_) =
   {ord_preorder =
      ord_ltln (A1_, (Orderings.ord_preorder o Orderings.preorder_order) A2_)}
@@ -7782,38 +6527,14 @@ fun preorder_ltln (A1_, A2_) =
 fun order_ltln (A1_, A2_) = {preorder_order = preorder_ltln (A1_, A2_)} :
   'a LTL.ltln Orderings.order;
 
-fun incoming_impl_update incoming_impla
-  (Node_impl_ext
-    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
-  = Node_impl_ext
-      (name_impl, incoming_impla incoming_impl, new_impl, old_impl, next_impl,
-        more);
-
-fun incoming_impl
-  (Node_impl_ext
-    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
-  = incoming_impl;
-
 fun linorder_ltln (A1_, A2_) =
   {order_linorder = order_ltln (A1_, Orderings.order_linorder A2_)} :
   'a LTL.ltln Orderings.linorder;
 
-fun upd_incoming_impl (A1_, A2_) =
-  (fn x =>
-    List.map
-      (fn xa =>
-        (if ListSetImpl_Sorted.g_equal_lss_basic_ops
-              (LTL.equal_ltln A1_, linorder_ltln (A1_, A2_)) (old_impl xa)
-              (old_impl x) andalso
-              ListSetImpl_Sorted.g_equal_lss_basic_ops
-                (LTL.equal_ltln A1_, linorder_ltln (A1_, A2_)) (next_impl xa)
-                (next_impl x)
-          then incoming_impl_update
-                 (fn _ =>
-                   RBT_Impl.rbt_union Arith.less_nat (incoming_impl x)
-                     (incoming_impl xa))
-                 xa
-          else xa)));
+datatype ('a, 'b) node_impl_ext =
+  Node_impl_ext of
+    Arith.nat * (Arith.nat, unit) RBT_Impl.rbt * 'a LTL.ltln list *
+      'a LTL.ltln list * 'a LTL.ltln list * 'b;
 
 fun next_impl_update next_impla
   (Node_impl_ext
@@ -7841,6 +6562,55 @@ fun new_impl_update new_impla
   = Node_impl_ext
       (name_impl, incoming_impl, new_impla new_impl, old_impl, next_impl, more);
 
+fun next_impl
+  (Node_impl_ext
+    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
+  = next_impl;
+
+fun name_impl
+  (Node_impl_ext
+    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
+  = name_impl;
+
+fun old_impl
+  (Node_impl_ext
+    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
+  = old_impl;
+
+fun new_impl
+  (Node_impl_ext
+    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
+  = new_impl;
+
+fun incoming_impl_update incoming_impla
+  (Node_impl_ext
+    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
+  = Node_impl_ext
+      (name_impl, incoming_impla incoming_impl, new_impl, old_impl, next_impl,
+        more);
+
+fun incoming_impl
+  (Node_impl_ext
+    (name_impl, incoming_impl, new_impl, old_impl, next_impl, more))
+  = incoming_impl;
+
+fun upd_incoming_impl (A1_, A2_) =
+  (fn x =>
+    List.map
+      (fn xa =>
+        (if ListSetImpl_Sorted.g_equal_lss_basic_ops
+              (LTL.equal_ltln A1_, linorder_ltln (A1_, A2_)) (old_impl xa)
+              (old_impl x) andalso
+              ListSetImpl_Sorted.g_equal_lss_basic_ops
+                (LTL.equal_ltln A1_, linorder_ltln (A1_, A2_)) (next_impl xa)
+                (next_impl x)
+          then incoming_impl_update
+                 (fn _ =>
+                   RBT_Impl.rbt_union Arith.less_nat (incoming_impl x)
+                     (incoming_impl xa))
+                 xa
+          else xa)));
+
 fun expand_code_0 (A1_, A2_) x =
   let
     val (a, b) = x;
@@ -7860,7 +6630,7 @@ fun expand_code_0 (A1_, A2_) x =
                     (Node_impl_ext
                        (Arith.suc (name_impl a),
                          Gen_Map2Set.map2set_insert
-                           (RBT_Impl.rbt_insert Arith.ord_nat) (name_impl a)
+                           (RBT_Impl.rbt_inserta Arith.ord_nat) (name_impl a)
                            RBT_Impl.Empty,
                          next_impl a, ListSetImpl_Sorted.lss_empty (),
                          ListSetImpl_Sorted.lss_empty (), ()),
@@ -8165,7 +6935,7 @@ fun pn_map_code (A1_, A2_) x =
     (Impl_Array_Map.iam_empty ());
 
 fun until_frmlsn_impl (A1_, A2_) =
-  LTL.ltln_rec RBT_Impl.Empty RBT_Impl.Empty (fn _ => RBT_Impl.Empty)
+  LTL.rec_ltln RBT_Impl.Empty RBT_Impl.Empty (fn _ => RBT_Impl.Empty)
     (fn _ => RBT_Impl.Empty)
     (fn _ => fn _ =>
       RBT_Impl.rbt_union
@@ -8214,7 +6984,7 @@ fun until_frmlsn_impl (A1_, A2_) =
     (fn _ => fn xa => xa)
     (fn x => fn xa => fn xb => fn xc =>
       Gen_Map2Set.map2set_insert
-        (RBT_Impl.rbt_inserta
+        (RBT_Impl.rbt_insert
           (Intf_Comp.comp2lt
             (Intf_Comp.cmp_prod
               (Intf_Comp.dflt_cmp
@@ -8332,7 +7102,7 @@ fun create_graph_code (A1_, A2_) phi =
       expand_code (A1_, A2_)
         (Node_impl_ext
            (Arith.suc Arith.zero_nata,
-             Gen_Map2Set.map2set_insert (RBT_Impl.rbt_insert Arith.ord_nat)
+             Gen_Map2Set.map2set_insert (RBT_Impl.rbt_inserta Arith.ord_nat)
                Arith.zero_nata RBT_Impl.Empty,
              ListSetImpl_Sorted.lss_ins_dj
                (LTL.equal_ltln A1_, linorder_ltln (A1_, A2_)) phi
@@ -8387,7 +7157,8 @@ fun create_name_igba_code (A1_, A2_) phi =
     val x = create_name_gba_code (A1_, A2_) phi;
     val xa =
       Automata_Impl.gba_to_idx_ext_code (HashCode.def_hashmap_size_nat HOL.Type)
-        Arith.equal_nata HashCode.bounded_hashcode_nat (fn _ => ()) x;
+        Arith.equal_nata (HashCode.bounded_hashcode_nat HashCode.hashable_nat)
+        (fn _ => ()) x;
     val _ =
       LTL_to_GBA.stat_set_data
         (Gen_Set.gen_card Arith.zero_nat Foldi.foldli (Digraph_Impl.frgi_V x))
@@ -8402,9 +7173,6 @@ end; (*struct LTL_to_GBA_impl*)
 structure Impl_Array_Stack : sig
   val as_get :
     'a FArray.IsabelleMapping.ArrayType * Arith.nat -> Arith.nat -> 'a
-  val as_shrink :
-    'a FArray.IsabelleMapping.ArrayType * Arith.nat ->
-      'a FArray.IsabelleMapping.ArrayType * Arith.nat
   val as_pop :
     'a FArray.IsabelleMapping.ArrayType * Arith.nat ->
       'a FArray.IsabelleMapping.ArrayType * Arith.nat
@@ -8580,8 +7348,10 @@ fun pop_tr (A1_, A2_) s =
             (fn (ac, bc) =>
               (Arith.suc ac,
                 Impl_Array_Hash_Map.ahm_update (HOL.eq A1_)
-                  (HashCode.bounded_hashcode A2_) (Impl_Array_Stack.as_get a ac)
-                  (Arith.Int_of_integer (~1 : IntInf.int)) bc))
+                  (HashCode.bounded_hashcode_nat A2_)
+                  (Impl_Array_Stack.as_get a ac)
+                  (Arith.uminus_int (Arith.Int_of_integer (1 : IntInf.int)))
+                  bc))
             (Impl_Array_Stack.as_get aa x, ab);
       in
         bc
@@ -8599,7 +7369,7 @@ fun idx_of_tr (A1_, A2_) s v =
       let
         val SOME i =
           Impl_Array_Hash_Map.ahm_lookup (HOL.eq A1_)
-            (HashCode.bounded_hashcode A2_) s ab;
+            (HashCode.bounded_hashcode_nat A2_) s ab;
         val true = Arith.less_eq_int Arith.zero_int i;
       in
         Arith.nat i
@@ -8620,7 +7390,7 @@ fun push_code (A1_, A2_) g_impl =
       val xh = Impl_Array_Stack.as_push xb xf;
       val xi =
         Impl_Array_Hash_Map.ahm_update (HOL.eq A1_)
-          (HashCode.bounded_hashcode A2_) x (Arith.int_of_nat xf) xc;
+          (HashCode.bounded_hashcode_nat A2_) x (Arith.int_of_nat xf) xc;
       val xj =
         (if Autoref_Bindings_HOL.is_Nil (Digraph_Impl.frgi_E g_impl x) then xd
           else Impl_Array_Stack.as_push xd (xf, Digraph_Impl.frgi_E g_impl x));
@@ -8662,23 +7432,6 @@ fun select_edge_tr (A1_, A2_) s =
 
 end; (*struct Gabow_Skeleton_Code*)
 
-structure Collections_Patch2 : sig
-  val atLeastLessThan_tr :
-    'a -> (Arith.nat -> 'a -> 'a) -> Arith.nat -> Arith.nat -> 'a
-end = struct
-
-fun atLeastLessThan_tr emp ins a b =
-  let
-    val (_, ba) =
-      While_Combinator.whilea (fn (xc, _) => Arith.less_nat xc b)
-        (fn (aa, ba) => (Arith.plus_nata aa Arith.one_nata, ins aa ba))
-        (a, emp);
-  in
-    ba
-  end;
-
-end; (*struct Collections_Patch2*)
-
 structure Find_Path_Impl : sig
   val wset_find_path_code :
     'a HOL.equal * 'a HashCode.hashable ->
@@ -8697,7 +7450,7 @@ fun wset_find_path_code (A1_, A2_) e u0 p =
             (fn x => fn (a, b) =>
               (Gen_Map2Set.map2set_insert
                  (Impl_Array_Hash_Map.ahm_update (HOL.eq A1_)
-                   (HashCode.bounded_hashcode A2_))
+                   (HashCode.bounded_hashcode_nat A2_))
                  x a,
                 Impl_List_Map.list_map_update (HOL.eq A1_) x [] b))
             (Impl_Array_Hash_Map.ahm_empty
@@ -8722,13 +7475,13 @@ fun wset_find_path_code (A1_, A2_) e u0 p =
                          (fn xc => fn (ad, bd) =>
                            (if Gen_Map2Set.map2set_memb
                                  (Impl_Array_Hash_Map.ahm_lookup (HOL.eq A1_)
-                                   (HashCode.bounded_hashcode A2_))
+                                   (HashCode.bounded_hashcode_nat A2_))
                                  xc ad
                              then (ad, bd)
                              else (Gen_Map2Set.map2set_insert
                                      (Impl_Array_Hash_Map.ahm_update
                                        (HOL.eq A1_)
-                                       (HashCode.bounded_hashcode A2_))
+                                       (HashCode.bounded_hashcode_nat A2_))
                                      xc ad,
                                     (xc, ac :: bc) :: bd)))
                          (aa, bb);
@@ -8773,50 +7526,6 @@ fun un_set_drop_tr es_impl un_impl i a =
 end; (*struct Gabow_GBG*)
 
 structure Gabow_GBG_Code : sig
-  val go_is_no_brk_code :
-    'a HashCode.hashable ->
-      (('a -> bool) * ('a -> bool)) option *
-        ('a, Arith.int) Impl_Array_Hash_Map.hashmap ->
-        bool
-  val go_is_done_code :
-    'a HOL.equal * 'a HashCode.hashable ->
-      'a -> (('a -> bool) * ('a -> bool)) option *
-              ('a, Arith.int) Impl_Array_Hash_Map.hashmap ->
-              bool
-  val gto_outer_code :
-    'a HashCode.hashable ->
-      (('a -> bool) * ('a -> bool)) option ->
-        (IntInf.int FArray.IsabelleMapping.ArrayType * Arith.nat) *
-          (('a FArray.IsabelleMapping.ArrayType * Arith.nat) *
-            ((Arith.nat FArray.IsabelleMapping.ArrayType * Arith.nat) *
-              (('a, Arith.int) Impl_Array_Hash_Map.hashmap *
-                ((Arith.nat * 'a list) FArray.IsabelleMapping.ArrayType *
-                  Arith.nat)))) ->
-          (('a -> bool) * ('a -> bool)) option *
-            ('a, Arith.int) Impl_Array_Hash_Map.hashmap
-  val goinitial_code :
-    'a HashCode.hashable ->
-      (('a -> bool) * ('a -> bool)) option *
-        ('a, Arith.int) Impl_Array_Hash_Map.hashmap
-  val goBrk_code :
-    'a HashCode.hashable ->
-      (('a -> bool) * ('a -> bool)) option *
-        ('a, Arith.int) Impl_Array_Hash_Map.hashmap ->
-        (('a -> bool) * ('a -> bool)) option
-  val find_ce_tr :
-    'a HOL.equal * 'a HashCode.hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> IntInf.int), 'b) Automata_Impl.gen_igbg_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext ->
-        (('a -> bool) * ('a -> bool)) option
-  val reconstruct_lasso_tr :
-    'a HOL.equal * 'a HashCode.hashable ->
-      ('a -> bool) ->
-        ('a -> bool) ->
-          (('a -> bool), ('a -> 'a list), ('a list),
-            (('a -> IntInf.int), 'b) Automata_Impl.gen_igbg_impl_ext)
-            Digraph_Impl.gen_frg_impl_ext ->
-            'a list * 'a list
   val find_lasso_tr :
     'a HOL.equal * 'a HashCode.hashable ->
       (('a -> bool), ('a -> 'a list), ('a list),
@@ -8831,7 +7540,7 @@ fun go_is_no_brk_code A_ =
 fun go_is_done_code (A1_, A2_) =
   (fn x => fn xa =>
     (case Impl_Array_Hash_Map.ahm_lookup (HOL.eq A1_)
-            (HashCode.bounded_hashcode A2_) x (Product_Type.snd xa)
+            (HashCode.bounded_hashcode_nat A2_) x (Product_Type.snd xa)
       of NONE => false
       | SOME i =>
         (if Arith.less_eq_int Arith.zero_int i then false else true)));
@@ -8861,7 +7570,7 @@ fun find_ce_tr (A1_, A2_) g_impl =
                            (Impl_Array_Stack.as_singleton Arith.one_nat
                               Arith.zero_nata,
                              (Impl_Array_Hash_Map.ahm_update (HOL.eq A1_)
-                                (HashCode.bounded_hashcode A2_) xb
+                                (HashCode.bounded_hashcode_nat A2_) xb
                                 (Arith.int_of_nat Arith.zero_nata)
                                 (Product_Type.snd sigma),
                                (if Autoref_Bindings_HOL.is_Nil
@@ -8905,7 +7614,7 @@ Arith.one_nat (Arith.zero_nata, Digraph_Impl.frgi_E g_impl xb)))))));
                              end
                            | (SOME xf, ba) =>
                              (if (case Impl_Array_Hash_Map.ahm_lookup
- (HOL.eq A1_) (HashCode.bounded_hashcode A2_) xf
+ (HOL.eq A1_) (HashCode.bounded_hashcode_nat A2_) xf
  let
    val (_, (_, (xd, _))) = Product_Type.snd ba;
  in
@@ -8922,8 +7631,8 @@ let
   val xh = Gabow_Skeleton_Code.idx_of_tr (A1_, A2_) xf (ac, (ad, (ae, be)));
   val xi = Impl_Array_Stack.as_take (Arith.plus_nata xh Arith.one_nata) ad;
   val xj =
-    Gabow_GBG.un_set_drop_tr (Collections_Patch1.bs_empty ())
-      Collections_Patch1.bs_union xh ab;
+    Gabow_GBG.un_set_drop_tr (Impl_Bit_Set.bs_empty ()) Impl_Bit_Set.bs_union xh
+      ab;
   val xk = Impl_Array_Stack.as_push (Impl_Array_Stack.as_take xh ab) xj;
 in
   (xk, (ac, (xi, (ae, be))))
@@ -8934,7 +7643,7 @@ let
   val (ab, _) = xg;
 in
   List.all_interval_nat
-    (fn xca => Collections_Patch1.bs_mem xca (Impl_Array_Stack.as_top ab))
+    (fn xca => Impl_Bit_Set.bs_mem xca (Impl_Array_Stack.as_top ab))
     Arith.zero_nata (Automata_Impl.igbgi_num_acc g_impl)
 end
 of true =>
@@ -8943,7 +7652,7 @@ of true =>
     val xj =
       (fn xfa =>
         (case Impl_Array_Hash_Map.ahm_lookup (HOL.eq A1_)
-                (HashCode.bounded_hashcode A2_) xfa ae
+                (HashCode.bounded_hashcode_nat A2_) xfa ae
           of NONE => false
           | SOME i =>
             (if Arith.less_eq_int Arith.zero_int i
@@ -8952,7 +7661,7 @@ of true =>
     val xk =
       (fn xga =>
         (case Impl_Array_Hash_Map.ahm_lookup (HOL.eq A1_)
-                (HashCode.bounded_hashcode A2_) xga ae
+                (HashCode.bounded_hashcode_nat A2_) xga ae
           of NONE => false
           | SOME i =>
             (if Arith.less_eq_int Arith.zero_int i
@@ -8965,7 +7674,7 @@ of true =>
                                     end
                                else (if not
   (case Impl_Array_Hash_Map.ahm_lookup (HOL.eq A1_)
-          (HashCode.bounded_hashcode A2_) xf
+          (HashCode.bounded_hashcode_nat A2_) xf
           let
             val (_, (_, (xd, _))) = Product_Type.snd ba;
           in
@@ -9005,26 +7714,26 @@ fun reconstruct_lasso_tr (A1_, A2_) vr vl g_impl =
         Option.the a
       end;
     val xa =
-      Collections_Patch2.atLeastLessThan_tr (Collections_Patch1.bs_empty ())
-        Collections_Patch1.bs_insert Arith.zero_nata
+      Gen_Set.atLeastLessThan_tr (Impl_Bit_Set.bs_empty ())
+        Impl_Bit_Set.bs_insert Arith.zero_nata
         (Automata_Impl.igbgi_num_acc g_impl);
     val xb =
       Digraph_Impl.graph_restrict_right_impl (fn x => fn f => f x) vl
         (Digraph_Impl.frgi_E g_impl);
     val (aa, (ab, _)) =
       While_Combinator.whilea
-        (fn (_, (_, xi)) => not (Collections_Patch1.bs_eq xi xa))
+        (fn (_, (_, xi)) => not (Impl_Bit_Set.bs_eq xi xa))
         (fn (aa, (ab, bb)) =>
           let
             val xd =
               Find_Path_Impl.wset_find_path_code (A1_, A2_) xb [aa]
                 (fn ac =>
-                  not (Collections_Patch1.bs_subset_eq
+                  not (Impl_Bit_Set.bs_subset_eq
                         (Automata_Impl.igbgi_acc g_impl ac) bb));
             val (ac, bc) = Option.the xd;
           in
             (bc, (ab @ ac,
-                   Collections_Patch1.bs_union bb
+                   Impl_Bit_Set.bs_union bb
                      (Automata_Impl.igbgi_acc g_impl bc)))
           end)
         (b, ([], Automata_Impl.igbgi_acc g_impl b));
@@ -9061,10 +7770,6 @@ fun cfg_l2b (c1, (c2, c3)) = c1;
 end; (*struct CAVA_Abstract*)
 
 structure LTL_Rewrite : sig
-  val ltln_pure_universal_frmls_impl : 'a LTL.ltln -> bool
-  val ltln_pure_eventual_frmls_impl : 'a LTL.ltln -> bool
-  val ltln_rewrite_step_impl : 'a HOL.equal -> 'a LTL.ltln -> 'a LTL.ltln
-  val ltln_rewrite_rec : 'a HOL.equal -> 'a LTL.ltln -> 'a LTL.ltln
   val ltln_rewrite : 'a HOL.equal -> 'a LTL.ltln -> 'a LTL.ltln
 end = struct
 
@@ -9338,21 +8043,6 @@ structure PromelaLTL : sig
   datatype ident = Ident of string * IntInf.int option
   datatype propc = CProp of ident | BProp of binOp * ident * ident |
     BExpProp of binOp * ident * IntInf.int
-  val identConv : ident -> Promela.varRef
-  val ident2expr : ident -> Promela.expr
-  val binOpConv : binOp -> Promela.binOp
-  val propConv : propc -> Promela.expr
-  val ltlConv :
-    (Promela.expr, Arith.nat) Assoc_List.assoc_list ->
-      propc LTL.ltlc -> Arith.nat LTL.ltlc
-  val lm_filter :
-    ('a -> bool) -> ('a, Arith.nat) Assoc_List.assoc_list -> IntInf.int
-  val validPropcs :
-    unit Promela.gState_ext ->
-      (Promela.expr, Arith.nat) Assoc_List.assoc_list -> IntInf.int
-  val ltlPropcsa : propc LTL.ltlc -> propc list -> propc list
-  val ltlPropcs :
-    propc LTL.ltlc -> (Promela.expr, Arith.nat) Assoc_List.assoc_list
   val prepare :
     ((string -> string option) -> propc LTL.ltlc) ->
       PromelaAST.module list ->
@@ -9360,13 +8050,6 @@ structure PromelaLTL : sig
            (Promela.expr, Arith.nat) Assoc_List.assoc_list) *
           (IntInf.int * unit Promela.gState_ext)) *
           Arith.nat LTL.ltlc
-  val nexts_code_aux :
-    unit Promela.program_ext *
-      (Promela.expr, Arith.nat) Assoc_List.assoc_list ->
-      IntInf.int * unit Promela.gState_ext ->
-        (IntInf.int * unit Promela.gState_ext) Dlist.dlist Refine_Det.dres
-  val dSUCCEED_abort :
-    string -> 'a Refine_Det.dres -> 'a Refine_Det.dres -> 'a Refine_Det.dres
   val nexts_code :
     unit Promela.program_ext *
       (Promela.expr, Arith.nat) Assoc_List.assoc_list ->
@@ -9428,8 +8111,8 @@ fun ltlConv p (LTL.LTLcRelease (x, y)) =
 fun lm_filter p m =
   ListMapImpl.iteratei_map_op_list_it_lm_ops m (fn _ => true)
     (fn (k, v) => fn sigma =>
-      (if p k then Collections_Patch1.bs_insert v sigma else sigma))
-    (Collections_Patch1.bs_empty ());
+      (if p k then Impl_Bit_Set.bs_insert v sigma else sigma))
+    (Impl_Bit_Set.bs_empty ());
 
 fun validPropcs g p =
   lm_filter
@@ -9499,103 +8182,13 @@ fun nexts_code prog g =
 
 fun printConfig f prom c_0 c_1 =
   Promela.printConfig f (Product_Type.fst prom)
-    (Option.map Product_Type.snd c_0) (Product_Type.snd c_1);
+    (Option.map_option Product_Type.snd c_0) (Product_Type.snd c_1);
 
 end; (*struct PromelaLTL*)
 
 structure CAVA_Impl : sig
-  val bpc_to_sa_impl :
-    BoolProgs.instr FArray.IsabelleMapping.ArrayType *
-      (Arith.nat * IntInf.int) ->
-      ((Arith.nat * IntInf.int -> bool),
-        (Arith.nat * IntInf.int -> (Arith.nat * IntInf.int) list),
-        ((Arith.nat * IntInf.int) list),
-        ((Arith.nat * IntInf.int -> Arith.nat -> bool), unit)
-          Automata_Impl.gen_sa_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext
-  val gerth_ltl_to_gba_code :
-    'a HOL.equal * 'a Orderings.linorder ->
-      'a LTL.ltlc ->
-        ((Arith.nat list), (Arith.nat -> Arith.nat list), (Arith.nat list),
-          ((Arith.nat -> IntInf.int),
-            ((Arith.nat -> ('a -> bool) -> bool), unit)
-              Automata_Impl.gen_igba_impl_ext)
-            Automata_Impl.gen_igbg_impl_ext)
-          Digraph_Impl.gen_frg_impl_ext
-  datatype config_l2b = CFG_L2B_GERTHS
-  val ltl_to_gba_code :
-    'a HOL.equal * 'a Orderings.linorder ->
-      config_l2b ->
-        'a LTL.ltlc ->
-          ((Arith.nat list), (Arith.nat -> Arith.nat list), (Arith.nat list),
-            ((Arith.nat -> IntInf.int),
-              ((Arith.nat -> ('a -> bool) -> bool), unit)
-                Automata_Impl.gen_igba_impl_ext)
-              Automata_Impl.gen_igbg_impl_ext)
-            Digraph_Impl.gen_frg_impl_ext
-  val gbav_sys_prod_impl_cava_reorder :
-    ('a -> 'a -> bool) ->
-      (('a list), ('a -> 'a list), ('a list),
-        (('a -> IntInf.int),
-          (('a -> 'b -> bool), unit) Automata_Impl.gen_igba_impl_ext)
-          Automata_Impl.gen_igbg_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext ->
-        (('c -> bool), ('c -> 'c list), ('c list),
-          (('c -> 'b), unit) Automata_Impl.gen_sa_impl_ext)
-          Digraph_Impl.gen_frg_impl_ext ->
-          (('a * 'c -> bool), ('a * 'c -> ('a * 'c) list), (('a * 'c) list),
-            (('a * 'c -> IntInf.int), unit) Automata_Impl.gen_igbg_impl_ext)
-            Digraph_Impl.gen_frg_impl_ext
-  val dflt_inter_impl :
-    ('a -> 'a -> bool) ->
-      (('b -> bool), ('b -> 'b list), ('b list),
-        (('b -> 'c), unit) Automata_Impl.gen_sa_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext ->
-        (('a list), ('a -> 'a list), ('a list),
-          (('a -> IntInf.int),
-            (('a -> 'c -> bool), unit) Automata_Impl.gen_igba_impl_ext)
-            Automata_Impl.gen_igbg_impl_ext)
-          Digraph_Impl.gen_frg_impl_ext ->
-          (('a * 'b -> bool), ('a * 'b -> ('a * 'b) list), (('a * 'b) list),
-            (('a * 'b -> IntInf.int), unit) Automata_Impl.gen_igbg_impl_ext)
-            Digraph_Impl.gen_frg_impl_ext *
-            ('a * 'b -> 'b)
-  val gabow_find_ce_code :
-    'a HOL.equal * 'a HashCode.hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> IntInf.int), 'b) Automata_Impl.gen_igbg_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext ->
-        (('a, unit) Lasso.lasso_ext option) option
-  val ndfs_find_ce_code :
-    'a HOL.equal * 'a HashCode.hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> IntInf.int), 'b) Automata_Impl.gen_igbg_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext ->
-        (('a, unit) Lasso.lasso_ext option) option
   datatype config_ce = CFG_CE_SCC_GABOW | CFG_CE_NDFS
-  val find_ce_code :
-    'a HOL.equal * 'a HashCode.hashable ->
-      config_ce ->
-        (('a -> bool), ('a -> 'a list), ('a list),
-          (('a -> IntInf.int), 'b) Automata_Impl.gen_igbg_impl_ext)
-          Digraph_Impl.gen_frg_impl_ext ->
-          (('a, unit) Lasso.lasso_ext option) option
-  val impl_model_check_ltl_to_gba_code_uu_find_ce_code_map_lasso :
-    'a HOL.equal * 'a HashCode.hashable ->
-      'b HOL.equal * 'b Orderings.linorder ->
-      config_l2b * (unit * config_ce) ->
-        (('a -> bool), ('a -> 'a list), ('a list),
-          (('a -> 'b -> bool), unit) Automata_Impl.gen_sa_impl_ext)
-          Digraph_Impl.gen_frg_impl_ext ->
-          'b LTL.ltlc -> (('a, unit) Lasso.lasso_ext option) option
-  val cava_sys_agn :
-    'a HOL.equal * 'a HashCode.hashable ->
-      'b HOL.equal * 'b Orderings.linorder ->
-      config_l2b * (unit * config_ce) ->
-        (('a -> bool), ('a -> 'a list), ('a list),
-          (('a -> 'b -> bool), unit) Automata_Impl.gen_sa_impl_ext)
-          Digraph_Impl.gen_frg_impl_ext ->
-          'b LTL.ltlc -> (('a, unit) Lasso.lasso_ext option) option
+  type config_l2b
   val cava_bpc :
     config_l2b * (unit * config_ce) ->
       BoolProgs.instr FArray.IsabelleMapping.ArrayType *
@@ -9603,17 +8196,6 @@ structure CAVA_Impl : sig
         Arith.nat LTL.ltlc ->
           (((Arith.nat * IntInf.int), unit) Lasso.lasso_ext option) option
   val dflt_cfg : config_l2b * (unit * config_ce)
-  val promela_to_sa_impl :
-    (unit Promela.program_ext *
-      (Promela.expr, Arith.nat) Assoc_List.assoc_list) *
-      (IntInf.int * unit Promela.gState_ext) ->
-      ((IntInf.int * unit Promela.gState_ext -> bool),
-        (IntInf.int * unit Promela.gState_ext ->
-          (IntInf.int * unit Promela.gState_ext) list),
-        ((IntInf.int * unit Promela.gState_ext) list),
-        ((IntInf.int * unit Promela.gState_ext -> Arith.nat -> bool), unit)
-          Automata_Impl.gen_sa_impl_ext)
-        Digraph_Impl.gen_frg_impl_ext
   val cava_promela :
     config_l2b * (unit * config_ce) ->
       (unit Promela.program_ext *
@@ -9622,17 +8204,16 @@ structure CAVA_Impl : sig
         Arith.nat LTL.ltlc ->
           (((IntInf.int * unit Promela.gState_ext), unit)
              Lasso.lasso_ext option) option
-  val frv_edge_set_code :
-    ('a -> 'a -> bool) ->
-      (('a list), ('a -> 'a list), ('a list), 'b)
-        Digraph_Impl.gen_frg_impl_ext ->
-        ('a * 'a) list
   val frv_export_code :
     ('a -> 'a -> bool) ->
       (('a list), ('a -> 'a list), ('a list), 'b)
         Digraph_Impl.gen_frg_impl_ext ->
         'a list * ('a list * ('a * 'a) list)
 end = struct
+
+datatype config_ce = CFG_CE_SCC_GABOW | CFG_CE_NDFS;
+
+datatype config_l2b = CFG_L2B_GERTHS;
 
 fun bpc_to_sa_impl bpc =
   let
@@ -9645,16 +8226,13 @@ fun bpc_to_sa_impl bpc =
           BoolProgs.nexts bp,
         [c0],
         Automata_Impl.Gen_sa_impl_ext
-          ((fn c => fn i => Collections_Patch1.bs_mem i (Product_Type.snd c)),
-            ()))
+          ((fn c => fn i => Impl_Bit_Set.bs_mem i (Product_Type.snd c)), ()))
   end;
 
 fun gerth_ltl_to_gba_code (A1_, A2_) phi =
   LTL_to_GBA_impl.create_name_igba_code (A1_, A2_)
     (LTL_Rewrite.ltln_rewrite A1_
       (LTL.ltl_to_ltln (LTL.ltl_pushneg (LTL.ltlc_to_ltl phi))));
-
-datatype config_l2b = CFG_L2B_GERTHS;
 
 fun ltl_to_gba_code (A1_, A2_) cfg =
   let
@@ -9681,14 +8259,14 @@ fun gbav_sys_prod_impl_cava_reorder eqq gi si =
         (Automata_Impl.igbgi_num_acc gi,
           (fn (x, xa) =>
             (if Digraph_Impl.frgi_V si xa then Automata_Impl.igbgi_acc gi x
-              else Collections_Patch1.bs_empty ())),
+              else Impl_Bit_Set.bs_empty ())),
           ()));
 
 fun dflt_inter_impl eqq si gi =
   (gbav_sys_prod_impl_cava_reorder eqq gi si, Product_Type.snd);
 
 fun gabow_find_ce_code (A1_, A2_) =
-  Option.map (SOME o Lasso.lasso_of_prpl) o
+  Option.map_option (SOME o Lasso.lasso_of_prpl) o
     Gabow_GBG_Code.find_lasso_tr (A1_, A2_);
 
 fun ndfs_find_ce_code (A1_, A2_) g =
@@ -9703,8 +8281,6 @@ fun ndfs_find_ce_code (A1_, A2_) g =
       | SOME xb =>
         SOME (SOME (Lasso.map_lasso Product_Type.fst (Lasso.lasso_of_prpl xb))))
   end;
-
-datatype config_ce = CFG_CE_SCC_GABOW | CFG_CE_NDFS;
 
 fun find_ce_code (A1_, A2_) cfg =
   (case cfg of CFG_CE_SCC_GABOW => gabow_find_ce_code (A1_, A2_)
@@ -9732,8 +8308,7 @@ fun cava_sys_agn (A1_, A2_) (B1_, B2_) =
 fun cava_bpc cfg bpc phi =
   cava_sys_agn
     (Product_Type.equal_prod Arith.equal_nat Arith.equal_integer,
-      HashCode.hashable_prod HashCode.hashable_nat
-        Collections_Patch1.hashable_integer)
+      HashCode.hashable_prod HashCode.hashable_nat HashCode.hashable_integer)
     (Arith.equal_nat, Arith.linorder_nat) cfg (bpc_to_sa_impl bpc) phi;
 
 val dflt_cfg : config_l2b * (unit * config_ce) =
@@ -9744,19 +8319,17 @@ fun promela_to_sa_impl promc =
     val (prom, c_0) = promc;
   in
     Digraph_Impl.Gen_frg_impl_ext
-      ((fn _ => true),
-        ListSetImpl.g_to_list_ls_basic_ops o PromelaLTL.nexts_code prom, [c_0],
+      ((fn _ => true), Dlist.list_of_dlist o PromelaLTL.nexts_code prom, [c_0],
         Automata_Impl.Gen_sa_impl_ext
-          ((fn c => fn i => Collections_Patch1.bs_mem i (Product_Type.fst c)),
-            ()))
+          ((fn c => fn i => Impl_Bit_Set.bs_mem i (Product_Type.fst c)), ()))
   end;
 
 fun cava_promela cfg promc phi =
   cava_sys_agn
     (Product_Type.equal_prod Arith.equal_integer
        (Promela.equal_gState_ext Product_Type.equal_unit),
-      HashCode.hashable_prod Collections_Patch1.hashable_integer
-        (Promela.hashable_gState_ext Collections_Patch1.hashable_uint_unit))
+      HashCode.hashable_prod HashCode.hashable_integer
+        (Promela.hashable_gState_ext HashCode.hashable_unit))
     (Arith.equal_nat, Arith.linorder_nat) cfg (promela_to_sa_impl promc) phi;
 
 fun frv_edge_set_code eq g =
@@ -9787,11 +8360,6 @@ structure BoolProgs_Extras : sig
   val array_check :
     (Arith.nat -> BoolProgs.bexp) ->
       (Arith.nat -> BoolProgs.bexp) -> Arith.nat -> BoolProgs.bexp
-  val dec_counter_toggle :
-    Arith.nat list -> BoolProgs.bexp list -> bool -> Arith.nat -> BoolProgs.com
-  val dec_countera :
-    Arith.nat list ->
-      BoolProgs.bexp list -> bool -> Arith.nat -> Arith.nat -> BoolProgs.com
   val dec_counter :
     Arith.nat list ->
       BoolProgs.bexp list -> Arith.nat -> Arith.nat -> BoolProgs.com
@@ -9810,7 +8378,7 @@ structure BoolProgs_Extras : sig
 end = struct
 
 fun counter_eq pos m n =
-  (if Arith.less_nat m n then BoolProgs.Ff
+  (if Arith.less_nat m n then BoolProgs.FF
     else let
            val posT = List.upt Arith.zero_nata n;
            val posF = List.upt n m;
@@ -9820,7 +8388,7 @@ fun counter_eq pos m n =
                  (fn x => BoolProgs.Not (BoolProgs.V (Arith.plus_nata pos x)))
                  posF;
          in
-           List.foldl (fn aa => fn b => BoolProgs.And (aa, b)) BoolProgs.Tt a
+           List.foldl (fn aa => fn b => BoolProgs.And (aa, b)) BoolProgs.TT a
          end);
 
 fun array_check ctr chk m =
@@ -9829,12 +8397,12 @@ fun array_check ctr chk m =
       BoolProgs.And
         (BoolProgs.Or (BoolProgs.Not (ctr c), chk c),
           BoolProgs.Or (ctr c, bexp)))
-    BoolProgs.Ff (List.upt Arith.zero_nata m);
+    BoolProgs.FF (List.upt Arith.zero_nata m);
 
 fun dec_counter_toggle vs bs false uu = BoolProgs.Assign (vs, bs)
   | dec_counter_toggle vs bs true pos =
     BoolProgs.Assign
-      (Arith.minus_nat pos Arith.one_nata :: vs, BoolProgs.Ff :: bs);
+      (Arith.minus_nat pos Arith.one_nata :: vs, BoolProgs.FF :: bs);
 
 fun dec_countera vs bs start pos n =
   (if Arith.equal_nata n Arith.zero_nata then dec_counter_toggle vs bs start pos
@@ -9851,20 +8419,20 @@ fun inc_counter vs bs pos n =
            (BoolProgs.V pos,
              inc_counter vs bs (Arith.suc pos)
                (Arith.minus_nat n Arith.one_nata),
-             BoolProgs.Assign (pos :: vs, BoolProgs.Tt :: bs)));
+             BoolProgs.Assign (pos :: vs, BoolProgs.TT :: bs)));
 
 fun set_counter vs bs uu l uv =
   (if Arith.equal_nata l Arith.zero_nata then BoolProgs.Assign (vs, bs)
     else (if Arith.equal_nata uv Arith.zero_nata
-           then set_counter (uu :: vs) (BoolProgs.Ff :: bs) (Arith.suc uu)
+           then set_counter (uu :: vs) (BoolProgs.FF :: bs) (Arith.suc uu)
                   (Arith.minus_nat l Arith.one_nata) Arith.zero_nata
-           else set_counter (uu :: vs) (BoolProgs.Tt :: bs) (Arith.suc uu)
+           else set_counter (uu :: vs) (BoolProgs.TT :: bs) (Arith.suc uu)
                   (Arith.minus_nat l Arith.one_nata)
                   (Arith.minus_nat uv Arith.one_nata)));
 
 fun array_access ctr act m =
   List.foldl (fn bexp => fn c => BoolProgs.IfTE (ctr c, act c, bexp))
-    BoolProgs.Skip (List.upt Arith.zero_nata m);
+    BoolProgs.SKIP (List.upt Arith.zero_nata m);
 
 fun mapping_from_list A_ =
   List.foldl (fn m => fn (k, v) => Mapping.update A_ k v m) Mapping.empty;
@@ -9872,8 +8440,6 @@ fun mapping_from_list A_ =
 end; (*struct BoolProgs_Extras*)
 
 structure BoolProgs_Simple : sig
-  val simple_prog :
-    Arith.nat -> Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
   val simple :
     Arith.nat ->
       BoolProgs.instr FArray.IsabelleMapping.ArrayType *
@@ -9887,15 +8453,15 @@ fun simple_prog uu n =
   (if Arith.equal_nata n Arith.zero_nata then []
     else (BoolProgs.V (Arith.minus_nat n Arith.one_nata),
            BoolProgs.Assign
-             ([Arith.minus_nat n Arith.one_nata], [BoolProgs.Ff])) ::
+             ([Arith.minus_nat n Arith.one_nata], [BoolProgs.FF])) ::
            simple_prog uu (Arith.minus_nat n Arith.one_nata));
 
 fun simple n =
   (BoolProgs.optcomp
-     (BoolProgs.While (BoolProgs.Tt, BoolProgs.Gc (simple_prog n n))),
+     (BoolProgs.While (BoolProgs.TT, BoolProgs.GC (simple_prog n n))),
     (Arith.zero_nata,
-      List.foldl (fn xs => fn i => Collections_Patch1.bs_insert i xs)
-        (Collections_Patch1.bs_empty ()) (List.upt Arith.zero_nata n)));
+      List.foldl (fn xs => fn i => Impl_Bit_Set.bs_insert i xs)
+        (Impl_Bit_Set.bs_empty ()) (List.upt Arith.zero_nata n)));
 
 fun simple_fun n =
   BoolProgs_Extras.mapping_from_list (List.equal_list Stringa.equal_char)
@@ -9906,7 +8472,6 @@ fun simple_const n = Mapping.empty;
 end; (*struct BoolProgs_Simple*)
 
 structure BoolProgs_LTL_Conv : sig
-  val b2l : BoolProgs.bexp -> Arith.nat LTL.ltlc
   datatype propc = CProp of char list | FProp of (char list * IntInf.int)
   val ltl_conv :
     ((char list), BoolProgs.bexp) Mapping.mapping ->
@@ -9914,14 +8479,14 @@ structure BoolProgs_LTL_Conv : sig
         propc LTL.ltlc -> (Arith.nat LTL.ltlc, (char list)) Sum_Type.sum
 end = struct
 
-fun b2l BoolProgs.Tt = LTL.LTLcTrue
-  | b2l BoolProgs.Ff = LTL.LTLcFalse
+datatype propc = CProp of char list | FProp of (char list * IntInf.int);
+
+fun b2l BoolProgs.TT = LTL.LTLcTrue
+  | b2l BoolProgs.FF = LTL.LTLcFalse
   | b2l (BoolProgs.V v) = LTL.LTLcProp v
   | b2l (BoolProgs.Not e) = LTL.LTLcNeg (b2l e)
   | b2l (BoolProgs.And (e1, e2)) = LTL.LTLcAnd (b2l e1, b2l e2)
   | b2l (BoolProgs.Or (e1, e2)) = LTL.LTLcOr (b2l e1, b2l e2);
-
-datatype propc = CProp of char list | FProp of (char list * IntInf.int);
 
 fun ltl_conv uu uv LTL.LTLcTrue = Sum_Type.Inl LTL.LTLcTrue
   | ltl_conv uw ux LTL.LTLcFalse = Sum_Type.Inl LTL.LTLcFalse
@@ -9999,38 +8564,9 @@ fun ltl_conv uu uv LTL.LTLcTrue = Sum_Type.Inl LTL.LTLcTrue
 end; (*struct BoolProgs_LTL_Conv*)
 
 structure BoolProgs_LeaderFilters : sig
-  val error : Arith.nat
-  val turn : Arith.nat -> Arith.nat -> Arith.nat
-  val b : Arith.nat -> Arith.nat -> Arith.nat
-  val c : Arith.nat -> Arith.nat -> Arith.nat
-  val curr : Arith.nat -> Arith.nat -> Arith.nat
-  val l_1 : Arith.nat -> Arith.nat -> Arith.nat
-  val l_2 : Arith.nat -> Arith.nat -> Arith.nat
-  val l_3 : Arith.nat -> Arith.nat -> Arith.nat
-  val l_4 : Arith.nat -> Arith.nat -> Arith.nat
-  val l_5 : Arith.nat -> Arith.nat -> Arith.nat
-  val l_8 : Arith.nat -> Arith.nat -> Arith.nat
-  val l_9 : Arith.nat -> Arith.nat -> Arith.nat
   val lf_fun :
     Arith.nat -> ((char list), (Arith.nat -> BoolProgs.bexp)) Mapping.mapping
-  val curr_eq : Arith.nat -> Arith.nat -> Arith.nat -> BoolProgs.bexp
-  val elected : Arith.nat
-  val lf_init : Arith.nat -> IntInf.int
-  val curr_access :
-    Arith.nat -> Arith.nat -> (Arith.nat -> BoolProgs.com) -> BoolProgs.com
-  val curr_check :
-    Arith.nat -> Arith.nat -> (Arith.nat -> BoolProgs.bexp) -> BoolProgs.bexp
-  val set_turn :
-    Arith.nat ->
-      Arith.nat ->
-        Arith.nat -> Arith.nat list -> BoolProgs.bexp list -> BoolProgs.com
-  val inc_curr :
-    Arith.nat ->
-      Arith.nat -> Arith.nat list -> BoolProgs.bexp list -> BoolProgs.com
-  val turn_eq : Arith.nat -> Arith.nat -> Arith.nat -> BoolProgs.bexp
-  val process : Arith.nat -> Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
   val lf_const : Arith.nat -> ((char list), BoolProgs.bexp) Mapping.mapping
-  val processes : Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
   val leader_filters :
     Arith.nat ->
       BoolProgs.instr FArray.IsabelleMapping.ArrayType *
@@ -10072,9 +8608,8 @@ fun curr_eq n i v = BoolProgs_Extras.counter_eq (curr n i) n v;
 val elected : Arith.nat = Arith.zero_nata;
 
 fun lf_init n =
-  List.foldl (fn xs => fn c => Collections_Patch1.bs_insert c xs)
-    (Collections_Patch1.bs_empty ())
-    (List.upt (l_1 n Arith.zero_nata) (l_1 n n));
+  List.foldl (fn xs => fn c => Impl_Bit_Set.bs_insert c xs)
+    (Impl_Bit_Set.bs_empty ()) (List.upt (l_1 n Arith.zero_nata) (l_1 n n));
 
 fun curr_access n i act =
   BoolProgs_Extras.array_access (curr_eq n i) act
@@ -10095,48 +8630,48 @@ fun process n i =
      curr_access n i
        (fn v =>
          set_turn n v (Arith.plus_nata i Arith.one_nata) [l_1 n i, l_2 n i]
-           [BoolProgs.Ff, BoolProgs.Tt])),
+           [BoolProgs.FF, BoolProgs.TT])),
     (BoolProgs.And
        (BoolProgs.V (l_2 n i),
          curr_check n i (fn v => BoolProgs.Not (BoolProgs.V (b n v)))),
-      BoolProgs.Assign ([l_2 n i, l_3 n i], [BoolProgs.Ff, BoolProgs.Tt])),
+      BoolProgs.Assign ([l_2 n i, l_3 n i], [BoolProgs.FF, BoolProgs.TT])),
     (BoolProgs.V (l_3 n i),
       curr_access n i
         (fn v =>
           BoolProgs.Assign
             ([b n v, l_3 n i, l_4 n i],
-              [BoolProgs.Tt, BoolProgs.Ff, BoolProgs.Tt]))),
+              [BoolProgs.TT, BoolProgs.FF, BoolProgs.TT]))),
     (BoolProgs.V (l_4 n i),
       curr_access n i
         (fn v =>
           BoolProgs.IfTE
             (BoolProgs.Not (turn_eq n v (Arith.plus_nata i Arith.one_nata)),
               BoolProgs.Assign
-                ([l_4 n i, l_5 n i], [BoolProgs.Ff, BoolProgs.Tt]),
+                ([l_4 n i, l_5 n i], [BoolProgs.FF, BoolProgs.TT]),
               BoolProgs.Assign
-                ([l_4 n i, l_8 n i], [BoolProgs.Ff, BoolProgs.Tt])))),
+                ([l_4 n i, l_8 n i], [BoolProgs.FF, BoolProgs.TT])))),
     (BoolProgs.V (l_5 n i),
       curr_access n i
         (fn v =>
           BoolProgs.Assign
             ([c n v, b n v, l_5 n i],
-              [BoolProgs.Tt, BoolProgs.Ff, BoolProgs.Ff]))),
+              [BoolProgs.TT, BoolProgs.FF, BoolProgs.FF]))),
     (BoolProgs.V (l_8 n i),
       BoolProgs.IfTE
         (curr_eq n i Arith.zero_nata,
-          inc_curr n i [l_8 n i, l_1 n i] [BoolProgs.Ff, BoolProgs.Tt],
+          inc_curr n i [l_8 n i, l_1 n i] [BoolProgs.FF, BoolProgs.TT],
           curr_access n i
             (fn v =>
               BoolProgs.IfTE
                 (BoolProgs.Not (BoolProgs.V (c n v)),
                   BoolProgs.Assign
-                    ([l_8 n i, l_9 n i], [BoolProgs.Ff, BoolProgs.Tt]),
+                    ([l_8 n i, l_9 n i], [BoolProgs.FF, BoolProgs.TT]),
                   inc_curr n i [l_8 n i, l_1 n i]
-                    [BoolProgs.Ff, BoolProgs.Tt])))),
+                    [BoolProgs.FF, BoolProgs.TT])))),
     (BoolProgs.And (BoolProgs.V (l_9 n i), BoolProgs.V elected),
-      BoolProgs.Assign ([error, l_9 n i], [BoolProgs.Tt, BoolProgs.Ff])),
+      BoolProgs.Assign ([error, l_9 n i], [BoolProgs.TT, BoolProgs.FF])),
     (BoolProgs.V (l_9 n i),
-      BoolProgs.Assign ([elected, l_9 n i], [BoolProgs.Tt, BoolProgs.Ff]))];
+      BoolProgs.Assign ([elected, l_9 n i], [BoolProgs.TT, BoolProgs.FF]))];
 
 fun lf_const n =
   BoolProgs_Extras.mapping_from_list (List.equal_list Stringa.equal_char)
@@ -10147,37 +8682,14 @@ fun processes n = List.maps (process n) (List.upt Arith.zero_nata n);
 
 fun leader_filters n =
   (BoolProgs.optcomp
-     (BoolProgs.While (BoolProgs.Tt, BoolProgs.Gc (processes n))),
+     (BoolProgs.While (BoolProgs.TT, BoolProgs.GC (processes n))),
     (Arith.zero_nata, lf_init n));
 
 end; (*struct BoolProgs_LeaderFilters*)
 
 structure BoolProgs_ReaderWriter : sig
-  val ready : Arith.nat
-  val q_error : Arith.nat
-  val reading : 'a -> 'b -> Arith.nat -> Arith.nat
-  val writing : Arith.nat -> 'a -> Arith.nat -> Arith.nat
-  val activeR : Arith.nat -> Arith.nat -> Arith.nat
-  val activeR_eq : Arith.nat -> Arith.nat -> Arith.nat -> BoolProgs.bexp
   val rw_fun :
     Arith.nat -> ((char list), (Arith.nat -> BoolProgs.bexp)) Mapping.mapping
-  val writers_active : Arith.nat
-  val readers_active : Arith.nat
-  val writer_control :
-    Arith.nat -> 'a -> Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
-  val inc_activeR :
-    Arith.nat ->
-      Arith.nat -> Arith.nat list -> BoolProgs.bexp list -> BoolProgs.com
-  val dec_activeR :
-    Arith.nat ->
-      Arith.nat -> Arith.nat list -> BoolProgs.bexp list -> BoolProgs.com
-  val reader_control :
-    Arith.nat -> Arith.nat -> Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
-  val rw_body :
-    Arith.nat ->
-      Arith.nat ->
-        Arith.nat -> Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
-  val rw_init : 'a -> 'b -> IntInf.int
   val rw_const : Arith.nat -> ((char list), BoolProgs.bexp) Mapping.mapping
   val reader_writer :
     Arith.nat ->
@@ -10215,15 +8727,15 @@ fun writer_control r w i =
   [(BoolProgs.V ready,
      BoolProgs.Assign
        ([ready, writers_active, writing r w i],
-         [BoolProgs.Ff, BoolProgs.Tt, BoolProgs.Tt])),
+         [BoolProgs.FF, BoolProgs.TT, BoolProgs.TT])),
     (BoolProgs.And (BoolProgs.V readers_active, BoolProgs.V (writing r w i)),
       BoolProgs.Assign
         ([readers_active, q_error, writing r w i],
-          [BoolProgs.Ff, BoolProgs.Tt, BoolProgs.Ff])),
+          [BoolProgs.FF, BoolProgs.TT, BoolProgs.FF])),
     (BoolProgs.And (BoolProgs.V writers_active, BoolProgs.V (writing r w i)),
       BoolProgs.Assign
         ([writers_active, ready, writing r w i],
-          [BoolProgs.Ff, BoolProgs.Tt, BoolProgs.Ff]))];
+          [BoolProgs.FF, BoolProgs.TT, BoolProgs.FF]))];
 
 fun inc_activeR r w vs bs = BoolProgs_Extras.inc_counter vs bs (activeR r w) r;
 
@@ -10231,16 +8743,16 @@ fun dec_activeR r w vs bs = BoolProgs_Extras.dec_counter vs bs (activeR r w) r;
 
 fun reader_control r w i =
   [(BoolProgs.V ready,
-     BoolProgs.Assign ([ready, readers_active], [BoolProgs.Ff, BoolProgs.Tt])),
+     BoolProgs.Assign ([ready, readers_active], [BoolProgs.FF, BoolProgs.TT])),
     (BoolProgs.And
        (BoolProgs.V readers_active,
          BoolProgs.Not (BoolProgs.V (reading r w i))),
-      inc_activeR r w [reading r w i] [BoolProgs.Tt]),
+      inc_activeR r w [reading r w i] [BoolProgs.TT]),
     (BoolProgs.And (BoolProgs.V readers_active, BoolProgs.V (reading r w i)),
-      dec_activeR r w [reading r w i] [BoolProgs.Ff]),
+      dec_activeR r w [reading r w i] [BoolProgs.FF]),
     (BoolProgs.And (BoolProgs.V readers_active, activeR_eq r w Arith.zero_nata),
       BoolProgs.Assign
-        ([readers_active, ready], [BoolProgs.Ff, BoolProgs.Tt]))];
+        ([readers_active, ready], [BoolProgs.FF, BoolProgs.TT]))];
 
 fun rw_body uu uv r w =
   (if Arith.equal_nata w Arith.zero_nata
@@ -10251,8 +8763,7 @@ fun rw_body uu uv r w =
     else writer_control uu uv (Arith.minus_nat w Arith.one_nata) @
            rw_body uu uv r (Arith.minus_nat w Arith.one_nata));
 
-fun rw_init r w =
-  Collections_Patch1.bs_insert ready (Collections_Patch1.bs_empty ());
+fun rw_init r w = Impl_Bit_Set.bs_insert ready (Impl_Bit_Set.bs_empty ());
 
 fun rw_const n =
   BoolProgs_Extras.mapping_from_list (List.equal_list Stringa.equal_char)
@@ -10267,22 +8778,14 @@ fun rw_const n =
 
 fun reader_writer r w =
   (BoolProgs.optcomp
-     (BoolProgs.While (BoolProgs.Tt, BoolProgs.Gc (rw_body r w r w))),
+     (BoolProgs.While (BoolProgs.TT, BoolProgs.GC (rw_body r w r w))),
     (Arith.zero_nata, rw_init r w));
 
 end; (*struct BoolProgs_ReaderWriter*)
 
 structure BoolProgs_Philosophers : sig
-  val eata : 'a -> 'b -> 'b
-  val eat : 'a -> Arith.nat -> BoolProgs.bexp
-  val one : 'a Arith.plus -> 'a -> 'a -> 'a
-  val freea : 'a Arith.diva * 'a Arith.numeral -> 'a -> 'a -> 'a
-  val free : Arith.nat -> Arith.nat -> BoolProgs.bexp
-  val onea : Arith.nat -> Arith.nat -> BoolProgs.bexp
-  val dining : Arith.nat -> Arith.nat -> (BoolProgs.bexp * BoolProgs.com) list
   val phil_fun :
     Arith.nat -> ((char list), (Arith.nat -> BoolProgs.bexp)) Mapping.mapping
-  val phil_init : Arith.nat -> IntInf.int
   val phil_const : Arith.nat -> ((char list), BoolProgs.bexp) Mapping.mapping
   val philosophers :
     Arith.nat ->
@@ -10294,7 +8797,9 @@ fun eata m i = i;
 
 fun eat m i = BoolProgs.V (eata m i);
 
-fun one A_ m i = Arith.plus A_ m i;
+fun onea A_ m i = Arith.plus A_ m i;
+
+fun one m i = BoolProgs.V (onea Arith.plus_nat m i);
 
 fun freea (A1_, A2_) m i =
   Arith.plus ((Arith.plus_semigroup_add o Arith.semigroup_add_numeral) A2_)
@@ -10304,30 +8809,28 @@ fun freea (A1_, A2_) m i =
 
 fun free m i = BoolProgs.V (freea (Arith.div_nat, Arith.numeral_nat) m i);
 
-fun onea m i = BoolProgs.V (one Arith.plus_nat m i);
-
 fun dining m i =
   (if Arith.equal_nata i Arith.zero_nata then []
     else [(BoolProgs.And
              (BoolProgs.Not (eat m (Arith.minus_nat i Arith.one_nata)),
                free m (Arith.minus_nat i Arith.one_nata)),
             BoolProgs.Assign
-              ([one Arith.plus_nat m (Arith.minus_nat i Arith.one_nata),
+              ([onea Arith.plus_nat m (Arith.minus_nat i Arith.one_nata),
                  freea (Arith.div_nat, Arith.numeral_nat) m
                    (Arith.minus_nat i Arith.one_nata)],
-                [BoolProgs.Tt, BoolProgs.Ff])),
+                [BoolProgs.TT, BoolProgs.FF])),
            (BoolProgs.And
-              (onea m (Arith.minus_nat i Arith.one_nata),
+              (one m (Arith.minus_nat i Arith.one_nata),
                 free m
                   (Arith.plus_nata (Arith.minus_nat i Arith.one_nata)
                     Arith.one_nata)),
              BoolProgs.Assign
-               ([one Arith.plus_nat m (Arith.minus_nat i Arith.one_nata),
+               ([onea Arith.plus_nat m (Arith.minus_nat i Arith.one_nata),
                   freea (Arith.div_nat, Arith.numeral_nat) m
                     (Arith.plus_nata (Arith.minus_nat i Arith.one_nata)
                       Arith.one_nata),
                   eata m (Arith.minus_nat i Arith.one_nata)],
-                 [BoolProgs.Ff, BoolProgs.Ff, BoolProgs.Tt])),
+                 [BoolProgs.FF, BoolProgs.FF, BoolProgs.TT])),
            (eat m (Arith.minus_nat i Arith.one_nata),
              BoolProgs.Assign
                ([freea (Arith.div_nat, Arith.numeral_nat) m
@@ -10336,42 +8839,30 @@ fun dining m i =
                     (Arith.plus_nata (Arith.minus_nat i Arith.one_nata)
                       Arith.one_nata),
                   eata m (Arith.minus_nat i Arith.one_nata)],
-                 [BoolProgs.Tt, BoolProgs.Tt, BoolProgs.Ff]))] @
+                 [BoolProgs.TT, BoolProgs.TT, BoolProgs.FF]))] @
            dining m (Arith.minus_nat i Arith.one_nata));
 
 fun phil_fun n =
   BoolProgs_Extras.mapping_from_list (List.equal_list Stringa.equal_char)
-    [([#"e", #"a", #"t"], eat n), ([#"o", #"n", #"e"], onea n),
+    [([#"e", #"a", #"t"], eat n), ([#"o", #"n", #"e"], one n),
       ([#"f", #"r", #"e", #"e"], free n)];
 
 fun phil_init n =
   List.foldl
     (fn xs => fn i =>
-      Collections_Patch1.bs_insert
-        (freea (Arith.div_nat, Arith.numeral_nat) n i) xs)
-    (Collections_Patch1.bs_empty ()) (List.upt Arith.zero_nata n);
+      Impl_Bit_Set.bs_insert (freea (Arith.div_nat, Arith.numeral_nat) n i) xs)
+    (Impl_Bit_Set.bs_empty ()) (List.upt Arith.zero_nata n);
 
 fun phil_const n = Mapping.empty;
 
 fun philosophers n =
   (BoolProgs.optcomp
-     (BoolProgs.While (BoolProgs.Tt, BoolProgs.Gc (dining n n))),
+     (BoolProgs.While (BoolProgs.TT, BoolProgs.GC (dining n n))),
     (Arith.zero_nata, phil_init n));
 
 end; (*struct BoolProgs_Philosophers*)
 
 structure BoolProgs_Programs : sig
-  val progs :
-    ((char list),
-      (char list *
-        (char list *
-          (Arith.nat ->
-            (BoolProgs.instr FArray.IsabelleMapping.ArrayType *
-              (Arith.nat * IntInf.int)) *
-              (((char list), BoolProgs.bexp) Mapping.mapping *
-                ((char list), (Arith.nat -> BoolProgs.bexp))
-                  Mapping.mapping)))))
-      Mapping.mapping
   val default_prog : char list
   val chose_prog :
     char list ->

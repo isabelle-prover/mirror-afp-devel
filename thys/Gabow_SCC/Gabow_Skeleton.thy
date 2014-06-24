@@ -1345,7 +1345,7 @@ begin
     show ?thesis
       unfolding skeleton_def select_edge_def select_def
       apply (refine_rcg 
-        WHILEIT_rule[where R="abs_wf_rel v0", standard] refine_vcg)
+        WHILEIT_rule[where R="abs_wf_rel v0" for v0] refine_vcg)
 
       apply (vc_solve solve: invar_preserve simp: pE_fin')
       done
@@ -1357,7 +1357,7 @@ begin
   begin
     theorem "skeleton \<le> SPEC (\<lambda>D. outer_invar {} D)"
       unfolding skeleton_def select_edge_def select_def
-      by (refine_rcg WHILEIT_rule[where R="abs_wf_rel v0", standard])
+      by (refine_rcg WHILEIT_rule[where R="abs_wf_rel v0" for v0])
          (vc_solve solve: invar_preserve simp: pE_fin')
   end
 

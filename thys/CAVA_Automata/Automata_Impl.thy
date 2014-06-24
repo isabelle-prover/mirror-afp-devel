@@ -896,9 +896,9 @@ lemma [autoref_op_pat]:
   "igb_graph.degeneralize_ext \<equiv> \<lambda>G ecnv. op_igb_graph_degeneralize_ext ecnv G"
   by simp
 
-thm igb_graph.degeneralize_ext_impl_aux[param_fo, standard]
+thm igb_graph.degeneralize_ext_impl_aux[param_fo]
 concrete_definition degeneralize_ext_impl
-  uses igb_graph.degeneralize_ext_impl_aux[param_fo, standard]
+  uses igb_graph.degeneralize_ext_impl_aux[param_fo]
 
 thm degeneralize_ext_impl.refine
 
@@ -960,7 +960,6 @@ schematic_lemma prod_impl_aux:
   assumes [autoref_rules]: "(Si,S) \<in> sa_impl_rel_ext Re2 Rs Rl"
   shows "(?c, prod) \<in> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs)"
   unfolding prod_impl_aux_alt[abs_def]
-  using [[autoref_trace_failed_id]]
   apply (autoref (keep_goal))
   done
 
@@ -973,9 +972,9 @@ lemma [autoref_op_pat]:
   "igba_sys_prod_precond.prod \<equiv> op_igba_sys_prod"
   by simp
 
-thm igba_sys_prod_precond.prod_impl_aux[param_fo, standard]
+thm igba_sys_prod_precond.prod_impl_aux[param_fo]
 concrete_definition igba_sys_prod_impl
-  uses igba_sys_prod_precond.prod_impl_aux[param_fo, standard]
+  uses igba_sys_prod_precond.prod_impl_aux[param_fo]
 
 thm igba_sys_prod_impl.refine
 

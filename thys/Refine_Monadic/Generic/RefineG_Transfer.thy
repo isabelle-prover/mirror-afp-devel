@@ -95,7 +95,7 @@ structure RefineG_Transfer = struct
 
   fun transfer_tac thms ctxt i st = let 
     val thms = thms @ transfer.get ctxt;
-    val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_case_prod_simp}
+    val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_prod_case_simp}
   in
     REPEAT_DETERM1 (
       COND (has_fewer_prems (nprems_of st)) no_tac (

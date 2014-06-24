@@ -211,8 +211,6 @@ begin
     uses impl_lasso_loc.find_ce_code_aux
   lemmas [autoref_rules] = find_ce_code.refine[OF locale_this]
 
-  thm find_ce_code_def
-
   schematic_lemma find_ce_tr_aux: "RETURN ?c \<le> find_ce_code G_impl"
     unfolding
       find_ce_code_def

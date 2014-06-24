@@ -919,7 +919,7 @@ begin
   proof -
     assume R0: "r 0 \<in> V0" and RS: "\<forall>i. (r i, r (Suc i)) \<in> E"
 
-    def r'\<equiv>"nat_rec 
+    def r'\<equiv>"rec_nat
       (r 0,0) 
       (\<lambda>i (q,n). (r (Suc i), if n \<in> acc q then (n+1) mod num_acc else n))"
 

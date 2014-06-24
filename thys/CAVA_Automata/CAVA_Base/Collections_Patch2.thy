@@ -1,3 +1,4 @@
+*** Obsolete ***
 theory Collections_Patch2
 imports 
   Collections_Patch1

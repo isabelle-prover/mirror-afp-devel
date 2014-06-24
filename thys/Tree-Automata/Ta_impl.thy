@@ -36,7 +36,6 @@ fun hashcode_of_ta_rule
 
 definition [simp]: "hashcode = hashcode_of_ta_rule"
 
-definition [simp]: "bounded_hashcode n r == hashcode_of_ta_rule r mod n"
 definition "def_hashmap_size::(('a,'b) ta_rule itself \<Rightarrow> nat) == (\<lambda>_. 32)"
 
 instance 
@@ -48,11 +47,10 @@ end
 instantiation ustate_wrapper :: (hashable,hashable) hashable
 begin
   definition "hashcode x == (case x of USW1 a \<Rightarrow> 2 * hashcode a | USW2 b \<Rightarrow> 2 * hashcode b + 1)"
-  definition "bounded_hashcode n x == (case x of USW1 a \<Rightarrow> bounded_hashcode n a | USW2 b \<Rightarrow> (n - 1 - bounded_hashcode n b))"
   definition "def_hashmap_size = (\<lambda>_ :: (('a,'b) ustate_wrapper) itself. def_hashmap_size TYPE('a) + def_hashmap_size TYPE('b))"
 
   instance using def_hashmap_size[where ?'a="'a"] def_hashmap_size[where ?'a="'b"]
-    by(intro_classes)(simp_all add: bounded_hashcode_ustate_wrapper_def bounded_hashcode_bounds def_hashmap_size_ustate_wrapper_def split: ustate_wrapper.split)
+    by(intro_classes)(simp_all add: bounded_hashcode_bounds def_hashmap_size_ustate_wrapper_def split: ustate_wrapper.split)
 
 end
 

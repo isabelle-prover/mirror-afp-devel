@@ -2,7 +2,7 @@ header {* \isaheader{Examples from ITP-2010 slides (adopted to ICF v2)} *}
 theory itp_2010
 imports 
   "../../ICF/Collections" 
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "../../Lib/Code_Target_ICF"
 begin
 
 text {*

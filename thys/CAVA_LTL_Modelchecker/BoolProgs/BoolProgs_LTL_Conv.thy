@@ -2,7 +2,7 @@ theory BoolProgs_LTL_Conv
 imports
   "BoolProgs_Extras"
   "~~/src/HOL/Library/Mapping"
-  "../LTL_to_GBA/LTL"
+  "../../LTL_to_GBA/LTL"
 begin
 
 context begin interpretation LTL_Syntax .

@@ -88,7 +88,7 @@ subsection {* Variables and similar *}
 
 fun varType_inv :: "varType \<Rightarrow> bool" where
   "varType_inv (VTBounded l h) 
-  \<longleftrightarrow> l \<ge> min_var_value \<and> l \<le> 0 \<and> h \<le> max_var_value \<and> l < h"
+  \<longleftrightarrow> l \<ge> min_var_value \<and> h \<le> max_var_value \<and> l < h"
 | "varType_inv VTChan \<longleftrightarrow> True"
 
 fun variable_inv :: "variable \<Rightarrow> bool" where

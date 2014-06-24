@@ -98,10 +98,8 @@ lemma ltln_con_param[param, autoref_rules]:
   "(LTLnRelease, LTLnRelease) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
   by (auto intro: ltln_rel_intros)
 
-term ltln_case
-
-lemma ltln_case_param[param, autoref_rules]: 
-  "(ltln_case,ltln_case) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
+lemma case_ltln_param[param, autoref_rules]: 
+  "(case_ltln,case_ltln) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
                 \<rightarrow> (R \<rightarrow> Rv)
                   \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv)
                     \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv)
@@ -114,8 +112,8 @@ lemma ltln_case_param[param, autoref_rules]:
   apply parametricity+
   done
 
-lemma ltln_rec_param[param, autoref_rules]: 
-  "(ltln_rec,ltln_rec) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
+lemma rec_ltln_param[param, autoref_rules]: 
+  "(rec_ltln,rec_ltln) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
                 \<rightarrow> (R \<rightarrow> Rv)
                   \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
                     \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
@@ -134,7 +132,7 @@ proof clarsimp
     done
 qed
 
-lemma ltln_case_mono[refine_mono]: 
+lemma case_ltln_mono[refine_mono]: 
   assumes "\<phi> = LTLnTrue \<Longrightarrow> a\<le>a'"
   assumes "\<phi> = LTLnFalse \<Longrightarrow> b\<le>b'"
   assumes "\<And>p. \<phi> = LTLnProp p \<Longrightarrow> c p\<le>c' p"
@@ -144,7 +142,7 @@ lemma ltln_case_mono[refine_mono]:
   assumes "\<And>\<mu>. \<phi> = LTLnNext \<mu> \<Longrightarrow> g \<mu>\<le>g' \<mu>"
   assumes "\<And>\<mu> \<nu>. \<phi> = LTLnUntil \<mu> \<nu> \<Longrightarrow> h \<mu> \<nu>\<le>h' \<mu> \<nu>"
   assumes "\<And>\<mu> \<nu>. \<phi> = LTLnRelease \<mu> \<nu> \<Longrightarrow> i \<mu> \<nu>\<le>i' \<mu> \<nu>"
-  shows "ltln_case a b c d e f g h i \<phi> \<le> ltln_case a' b' c' d' e' f' g' h' i' \<phi>"
+  shows "case_ltln a b c d e f g h i \<phi> \<le> case_ltln a' b' c' d' e' f' g' h' i' \<phi>"
   using assms
   apply (cases \<phi>)
   apply simp_all
@@ -213,7 +211,7 @@ type_synonym
 abbreviation (input) "node_name_rel \<equiv> Id :: (node_name_impl\<times>node_name) set"
 
 
-lemma ltln_case_gtransfer:
+lemma case_ltln_gtransfer:
   assumes
   "\<gamma> ai \<le> a"
   "\<gamma> bi \<le> b"
@@ -224,14 +222,14 @@ lemma ltln_case_gtransfer:
   "\<And>ltln. \<gamma> (gi ltln) \<le> g ltln"
   "\<And>ltln1 ltln2. \<gamma> (hi ltln1 ltln2) \<le> h ltln1 ltln2"
   "\<And>ltln1 ltln2. \<gamma> (ii ltln1 ltln2) \<le> i ltln1 ltln2"
-  shows "\<gamma> (ltln_case ai bi ci di ei fi gi hi ii \<phi>) 
-    \<le> (ltln_case a b c d e f g h i \<phi>)"
+  shows "\<gamma> (case_ltln ai bi ci di ei fi gi hi ii \<phi>) 
+    \<le> (case_ltln a b c d e f g h i \<phi>)"
   apply (cases \<phi>)
   apply (auto intro: assms)
   done
 
 lemmas [refine_transfer] 
-  = ltln_case_gtransfer[where \<gamma>=nres_of] ltln_case_gtransfer[where \<gamma>=RETURN]
+  = case_ltln_gtransfer[where \<gamma>=nres_of] case_ltln_gtransfer[where \<gamma>=RETURN]
 
 lemma [refine_transfer]:
   assumes 
@@ -244,7 +242,7 @@ lemma [refine_transfer]:
   "\<And>ltln. gi ltln \<noteq> dSUCCEED"
   "\<And>ltln1 ltln2. hi ltln1 ltln2 \<noteq> dSUCCEED"
   "\<And>ltln1 ltln2. ii ltln1 ltln2 \<noteq> dSUCCEED"
-  shows "ltln_case ai bi ci di ei fi gi hi ii \<phi> \<noteq> dSUCCEED"
+  shows "case_ltln ai bi ci di ei fi gi hi ii \<phi> \<noteq> dSUCCEED"
   apply (cases \<phi>)
   apply (simp_all add: assms)
   done
