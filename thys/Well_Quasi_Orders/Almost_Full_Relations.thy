@@ -20,6 +20,10 @@ subsection {* Basic Definitions and Facts *}
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "almost_full_on P A \<longleftrightarrow> (\<forall>f \<in> SEQ A. good P f)"
 
+lemma almost_full_on_UNIV:
+  "almost_full_on (\<lambda>_ _. True) UNIV"
+  by (auto simp: almost_full_on_def good_def)
+
 lemma (in mbs) mbs':
   assumes "\<not> almost_full_on P A"
   shows "\<exists>m \<in> BAD P. \<forall>g. (m, g) \<in> gseq \<longrightarrow> good P g"
@@ -52,6 +56,12 @@ qed
 lemma almost_full_on_subset:
   "A \<subseteq> B \<Longrightarrow> almost_full_on P B \<Longrightarrow> almost_full_on P A"
   by (auto simp: almost_full_on_def)
+
+lemma almost_full_on_mono:
+  assumes "A \<subseteq> B" and "\<And>x y. Q x y \<Longrightarrow> P x y"
+    and "almost_full_on Q B"
+  shows "almost_full_on P A"
+  using assms by (metis almost_full_on_def almost_full_on_subset good_def)
 
 text {*Every sequence over elements of an almost-full set has a homogeneous subsequence.*}
 lemma almost_full_on_imp_homogeneous_subseq:
@@ -448,8 +458,7 @@ qed
 
 lemma almost_full_on_Sigma:
   assumes "almost_full_on P1 A1" and "almost_full_on P2 A2"
-  shows "almost_full_on (prod_le P1 P2) (A1 \<times> A2)"
-    (is "almost_full_on ?P ?A")
+  shows "almost_full_on (prod_le P1 P2) (A1 \<times> A2)" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
   assume "\<not> almost_full_on ?P ?A"
   then obtain f where f: "\<forall>i. f i \<in> ?A"
@@ -479,8 +488,9 @@ lemma almost_full_on_prod_less:
 subsection {* List Embedding *}
 
 lemma reflp_on_list_hembeq:
+  assumes "reflp_on P A"
   shows "reflp_on (list_hembeq P) (lists A)"
-  using list_hembeq_refl
+  using assms and list_hembeq_refl [of _ P]
   unfolding reflp_on_def by blast
 
 lemma transp_on_list_hembeq:
@@ -544,7 +554,7 @@ proof (rule ccontr)
   proof
     assume "good ?P (t \<circ> \<phi>)"
     then obtain i j where "i < j" and "?P (t (\<phi> i)) (t (\<phi> j))" by auto
-    moreover with P have "P\<^sup>=\<^sup>= (h (\<phi> i)) (h (\<phi> j))" by blast
+    moreover with P have "P (h (\<phi> i)) (h (\<phi> j))" by blast
     ultimately have "?P (m (\<phi> i)) (m (\<phi> j))"
       by (subst (1 2) m) (rule list_hembeq_Cons2, auto)
     with less and `i < j` have "good ?P m" by (auto simp: good_def)
@@ -682,27 +692,6 @@ proof
   qed
   ultimately show "?P xs zs" by (auto simp: list_hemb_def)
 qed
-
-lemma list_hembeq_reflclp [simp]:
-  "list_hembeq (P\<^sup>=\<^sup>=) = list_hembeq P" (is "?l = ?r")
-proof (intro ext)
-  fix s t
-  show "?l s t = ?r s t"
-  proof
-    assume "?l s t" then show "?r s t" by (induct) auto
-  next
-    assume "?r s t" then show "?l s t" by (induct) auto
-  qed
-qed
-
-lemma reflclp_list_hemb [simp]:
-  "(list_hemb P)\<^sup>=\<^sup>= = list_hembeq P" (is "?l = ?r")
-  by (intro ext) (auto simp: list_hemb_def)
-
-lemma almost_full_on_list_hemb:
-  assumes "almost_full_on (P\<^sup>=\<^sup>=) A"
-  shows "almost_full_on ((list_hemb P)\<^sup>=\<^sup>=) (lists A)"
-  using almost_full_on_lists [OF assms] by simp
 
 
 subsection {* Special Case: Finite Sets *}

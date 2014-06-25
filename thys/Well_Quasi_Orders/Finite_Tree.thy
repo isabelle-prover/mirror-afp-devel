@@ -16,7 +16,7 @@ text {*By the interface we are actually not necessarily finite, but just
 finitely branching. However, all interesting properties below are only valid
 on the inductively defined set of trees built from the constructor 'mk'.*}
 locale finite_tree =
-  fixes mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a" -- "constract a tree from a node and a list of trees"
+  fixes mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a" -- "construct a tree from a node and a list of trees"
     and root :: "'a \<Rightarrow> 'b" -- "the root-node of a tree"
     and succs :: "'a \<Rightarrow> 'a list" -- "the direct subtrees of a tree"
   assumes inject: "mk x ts = mk x' ts' \<longleftrightarrow> x = x' \<and> ts = ts'" -- "'mk' behaves like a dataype constructor"
@@ -419,7 +419,7 @@ next
     fix i
     assume i: "i < length ?xs"
     show "?P\<^sup>=\<^sup>= (?xs ! i) (?ys ! i)"
-      using i and ** and `?P\<^sup>=\<^sup>= x z`
+      using i and ** and `?P x z`
       by (cases i) (auto)
   qed
   ultimately show ?case by blast
@@ -488,9 +488,9 @@ proof
   thus "tree_hembeq P t t"
   proof (induct t)
     case (mk x ts)
-    hence "\<forall>t \<in> set ts. tree_hembeq P t t"
+    then have "\<forall>t \<in> set ts. tree_hembeq P t t"
       and "x \<in> A" by (auto simp: trees_def)
-    from list_hembeq_refl
+    with list_hembeq_refl [of ts "tree_hembeq P"]
       have *: "list_hembeq (tree_hembeq P) ts ts" by (auto simp: reflp_on_def)
     moreover have "P\<^sup>=\<^sup>= x x" by simp
     ultimately show ?case by auto
@@ -656,3 +656,4 @@ qed
 end
 
 end
+

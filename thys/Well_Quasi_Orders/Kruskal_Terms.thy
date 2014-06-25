@@ -128,7 +128,7 @@ next
     fix i
     assume i: "i < length ?xs"
     show "?P\<^sup>=\<^sup>= (?xs ! i) (?ys ! i)"
-      using i and ** and `?P\<^sup>=\<^sup>= x z`
+      using i and ** and `?P x z`
       by (cases i) (auto)
   qed
   ultimately show ?case by blast

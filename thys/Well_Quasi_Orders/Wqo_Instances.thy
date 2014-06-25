@@ -133,9 +133,9 @@ instance proof (rule wqo_class.intro)
     unfolding wqo_on_UNIV_conv less_list_def [abs_def] .
   thus "class.wqo_axioms ?P'" by (auto simp: class.wqo_def)
 
-  from reflp_on_list_hembeq
-    have "reflp_on (list_hembeq ?P) (lists UNIV)" .
-  hence refl: "reflp_on ?P' UNIV"
+  from reflp_on_list_hembeq [of ?P UNIV]
+    have "reflp_on (list_hembeq ?P) (lists UNIV)" by (simp add: reflp_on_def)
+  then have refl: "reflp_on ?P' UNIV"
     unfolding reflp_on_def less_eq_list_def by auto
 
   from transp_on_list_hembeq [OF wqo_on_imp_transp_on [OF wqo]]

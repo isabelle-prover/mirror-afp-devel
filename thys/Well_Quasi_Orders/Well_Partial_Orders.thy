@@ -244,14 +244,6 @@ lemma irreflp_on_list_hemb:
   "irreflp_on (list_hemb P) (lists A)"
   by (auto simp: irreflp_on_def list_hemb_def)
 
-lemma wpo_on_lists:
-  assumes "wpo_on P A" shows "wpo_on (list_hemb P) (lists A)"
-  using assms
-    and irreflp_on_list_hemb
-    and almost_full_on_list_hemb
-    and transp_on_list_hemb
-    unfolding po_on_def wpo_on_def by auto
-
 text {*Every irreflexive and transitive relation on a finite set is a wpo.*}
 lemma finite_wpo_on:
   assumes "finite A"
@@ -274,9 +266,6 @@ next
     using finite_almost_full_on [OF finite reflp_on_reflclp, of ?P A]
     by (simp add: almost_full_on_def)
 qed
-
-lemmas wpo_on_lists_over_finite_sets =
-  finite_wpo_on [THEN wpo_on_lists]
 
 (*TODO: move*)
 lemma nat_le_less_eq [simp]:
@@ -372,6 +361,19 @@ proof
     with g [OF `i < j`] show "good P'\<^sup>=\<^sup>= f" by (auto simp: good_def)
   qed
 qed
+
+(*
+lemma wpo_on_lists:
+  assumes "wpo_on P A" shows "wpo_on (list_hemb P) (lists A)"
+  using assms
+    and irreflp_on_list_hemb
+    and almost_full_on_list_hemb
+    and transp_on_list_hemb
+    unfolding po_on_def wpo_on_def by auto
+
+lemmas wpo_on_lists_over_finite_sets =
+  finite_wpo_on [THEN wpo_on_lists]
+*)
 
 end
 
