@@ -439,7 +439,11 @@ text {*When two sets are almost-full, then their Cartesian product is almost-ful
 definition
   prod_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
 where
-  "prod_le P1 P2 \<equiv> \<lambda>(p1, p2) (q1, q2). P1 p1 q1 \<and> P2 p2 q2"
+  "prod_le P1 P2 = (\<lambda>(p1, p2) (q1, q2). P1 p1 q1 \<and> P2 p2 q2)"
+
+lemma prod_le_True [simp]:
+  "prod_le P (\<lambda>_ _. True) a b = P (fst a) (fst b)"
+  by (auto simp: prod_le_def)
 
 definition
   prod_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"

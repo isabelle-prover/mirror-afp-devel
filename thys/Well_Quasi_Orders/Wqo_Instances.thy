@@ -9,7 +9,7 @@ header {* Instances of Well-Quasi-Orders *}
 theory Wqo_Instances
 imports
   Well_Quasi_Orders
-  Kruskal_Tree_Example
+  Kruskal_New_Examples
 begin
 
 subsection {* The Option Type is Well-Quasi-Ordered *}
@@ -155,7 +155,7 @@ embedding relation.*}
 
 instantiation tree :: (wqo) wqo
 begin
-definition "s \<le> t \<longleftrightarrow> hembeq (op \<le>) s t"
+definition "s \<le> t \<longleftrightarrow> tree_emb (op \<le>) s t"
 definition "(s :: 'a tree) < t \<longleftrightarrow> s \<le> t \<and> \<not> (t \<le> s)"
 
 instance proof (rule wqo_class.intro)
@@ -165,7 +165,7 @@ instance proof (rule wqo_class.intro)
   hence wqo: "wqo_on ?P UNIV"
     unfolding wqo_on_UNIV_conv less_le_not_le [abs_def] .
   from wqo_on_trees [OF this]
-    have "wqo_on (hembeq ?P) (trees UNIV)" .
+    have *: "wqo_on (tree_emb ?P) (trees UNIV)" by simp
   hence "wqo_on ?P' UNIV"
     using `wqo_on ?P UNIV`
     unfolding wqo_on_def
@@ -175,13 +175,11 @@ instance proof (rule wqo_class.intro)
     unfolding wqo_on_UNIV_conv less_tree_def [abs_def] .
   thus "class.wqo_axioms ?P'" by (auto simp: class.wqo_def)
 
-  from tree_instance.reflp_on_tree_hembeq [of ?P UNIV]
-    have "reflp_on (hembeq ?P) (trees UNIV)" by simp
+  have "reflp_on (tree_emb ?P) UNIV" using * by (simp add: wqo_on_imp_reflp_on)
   hence refl: "reflp_on ?P' UNIV"
     unfolding reflp_on_def less_eq_tree_def by auto
 
-  from tree_instance.tree_hembeq_trans
-    have "transp_on (hembeq ?P) (trees UNIV)" by (auto simp: transp_on_def)
+  have "transp_on (tree_emb ?P) UNIV" using * by (auto simp: wqo_on_def)
   hence trans: "transp_on ?P' UNIV"
     unfolding transp_on_def less_eq_tree_def by blast
   show "OFCLASS ('a tree, preorder_class)"

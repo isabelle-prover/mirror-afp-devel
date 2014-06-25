@@ -17,6 +17,10 @@ subsection {* Basic Definitions *}
 definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "wqo_on P A \<longleftrightarrow> transp_on P A \<and> almost_full_on P A"
 
+lemma wqo_on_UNIV:
+  "wqo_on (\<lambda>_ _. True) UNIV"
+  using almost_full_on_UNIV by (auto simp: wqo_on_def transp_on_def)
+
 lemma wqo_onI [Pure.intro]:
   "\<lbrakk>transp_on P A; almost_full_on P A\<rbrakk> \<Longrightarrow> wqo_on P A"
   unfolding wqo_on_def almost_full_on_def by blast
