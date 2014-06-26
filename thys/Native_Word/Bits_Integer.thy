@@ -125,20 +125,20 @@ val maxWord = IntInf.pow (2, Word.wordSize);
 
 fun set_bit x n b =
   if n < maxWord then
-    if b then IntInf.orb (x, IntInf.<< (1, Word.fromInt n))
-    else IntInf.andb (x, IntInf.notb (IntInf.<< (1, Word.fromInt n)))
+    if b then IntInf.orb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n)))
+    else IntInf.andb (x, IntInf.notb (IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))))
   else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
 
 fun shiftl x n =
-  if n < maxWord then IntInf.<< (x, Word.fromInt n)
+  if n < maxWord then IntInf.<< (x, Word.fromLargeInt (IntInf.toLarge n))
   else raise (Fail ("Shift operand too large: " ^ IntInf.toString n));
 
 fun shiftr x n =
-  if n < maxWord then IntInf.~>> (x, Word.fromInt n)
+  if n < maxWord then IntInf.~>> (x, Word.fromLargeInt (IntInf.toLarge n))
   else raise (Fail ("Shift operand too large: " ^ IntInf.toString n));
 
 fun test_bit x n =
-  if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromInt n)) <> 0
+  if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))) <> 0
   else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
 
 end; (*struct Bits_Integer*)*}
