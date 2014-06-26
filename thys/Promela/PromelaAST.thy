@@ -9,7 +9,16 @@ text {*
   Isabelle.
 *}
 
-datatype binOp = BinOpAdd
+context
+begin
+
+(* Force everything in this context to start with AST. *)
+local_setup {*
+  Local_Theory.map_naming (Name_Space.mandatory_path "AST")
+*} 
+
+datatype_new binOp = 
+                 BinOpAdd
                | BinOpSub
                | BinOpMul
                | BinOpDiv
@@ -28,11 +37,13 @@ datatype binOp = BinOpAdd
                | BinOpAnd
                | BinOpOr
 
-datatype unOp = UnOpComp
+datatype_new unOp = 
+                UnOpComp
               | UnOpMinus
               | UnOpNeg
 
-datatype expr = ExprBinOp binOp (*left*) expr (*right*) expr
+datatype_new expr = 
+                ExprBinOp binOp (*left*) expr (*right*) expr
               | ExprUnOp unOp expr
               | ExprCond (*cond*) expr (*exprTrue*) expr (*exprFalse*) expr
               | ExprLen varRef
@@ -62,12 +73,14 @@ datatype expr = ExprBinOp binOp (*left*) expr (*right*) expr
                | RecvArgEval expr
                | RecvArgConst integer
 
-datatype range = RangeFromTo (*var*) varRef
+datatype_new range = 
+                RangeFromTo (*var*) varRef
                             (*from*) expr
                              (*to*)  expr
                | RangeIn (*var*) varRef (*inside*) varRef
 
-datatype varType = VarTypeBit
+datatype_new varType = 
+                   VarTypeBit
                  | VarTypeBool
                  | VarTypeByte
                  | VarTypePid
@@ -78,7 +91,8 @@ datatype varType = VarTypeBit
                  | VarTypeUnsigned
                  | VarTypeCustom String.literal
 
-datatype varDecl = VarDeclNum  (*name*) String.literal
+datatype_new varDecl = 
+                   VarDeclNum  (*name*) String.literal
                                (*size*) "integer option"
                                (*init*) "expr option"
                  | VarDeclChan (*name*) String.literal
@@ -92,12 +106,14 @@ datatype varDecl = VarDeclNum  (*name*) String.literal
                                 (*init*) "String.literal option"
 
 
-datatype decl = Decl (*vis*) "bool option"
+datatype_new decl = 
+                 Decl (*vis*) "bool option"
                      (*sort*) varType
                      (*decl*) "varDecl list"
 
 
-datatype stmnt = StmntIf "(step list) list"
+datatype_new stmnt = 
+                 StmntIf "(step list) list"
                | StmntDo "(step list) list"
                | StmntFor range "step list"
                | StmntAtomic "step list"
@@ -131,7 +147,8 @@ datatype stmnt = StmntIf "(step list) list"
            | StepXR "varRef list"
            | StepXS "varRef list"
 
-datatype module = ProcType (*active*) "(integer option) option"
+datatype_new module = 
+                  ProcType (*active*) "(integer option) option"
                            (*name*)   String.literal
                            (*decls*)  "decl list"
                            (*prio*)   "integer option"
@@ -153,31 +170,5 @@ datatype module = ProcType (*active*) "(integer option) option"
                 | ModuDecl decl
                 | Ltl (*name*) String.literal (*formula*) String.literal
 
-(*<*)
-(* TODO: Sic! A proper module system would be great, in particular for bigger projects like CAVA! *)
-text {* For convenience, every constructor and type of this theory is removed from the global
-context, and hence only accessible via @{text "PromelaAST."} prefix. *}
-setup {*
-  let
-    fun hide_const (c,_) thy = Sign.hide_const false c thy;
-    fun hide_type t thy =
-         let
-           val t = Sign.intern_type thy t; 
-           val _ = if not (Sign.declared_tyname thy t) 
-                   then error ("Unknown type: " ^ t)
-                   else ()
-           val thy = case Datatype.get_constrs thy t of
-                       NONE => error ("Type " ^ t ^ " not a datatype")
-                     | SOME xs => fold hide_const xs thy
-         in
-           Sign.hide_type false t thy
-         end
-    fun hide_all ts thy =
-        fold hide_type ts thy
-  in
-    hide_all ["binOp", "unOp", "expr", "varRef", "recvArg", "range", "varType", "varDecl", "decl", "stmnt", "step", "module"]
-  end
-*}
-(*>*)
-
+end
 end

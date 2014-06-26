@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Tree-Automata" (AFP) = Refine_Monadic +
+session "Tree-Automata" (AFP) = Collections +
   options [timeout = 1200]
   theories
     (* Tree Automata *)

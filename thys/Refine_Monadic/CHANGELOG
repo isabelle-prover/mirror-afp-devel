@@ -1,4 +1,12 @@
 Changes of Refinement Framework since 2011-12-24:
+
+2014-06 Peter Lammich
+  * Added vc_solve method
+  * Fine-tuned rcg/vcg setup for ASSERT/ASSUME
+  * Added more convenience lemmas
+  * VCG-rules for nfoldli
+  * Improved Autoref-setup for FOREACH-loops
+
 2013-09 Peter Lammich
   * Made this dependent on Automatic_Refinement
 
@@ -68,7 +76,7 @@ Changes of Refinement Framework since 2011-12-24:
   * Bugfix: FOREACHc_rule was to weak (probably a typo).
   * Added alternative FOREACH??i_rule', that allow for less redundant proofs
     in some cases.
-  * Added support for case_option.
+  * Added support for option_case.
   * More general proof rules for recursion combinator:
     RECT_rule_arb and REC_rule_arb now allow for generalizing over variables
     that occur in the specification, but not in the program.

@@ -836,6 +836,9 @@ lemma SUCCEED_rule[refine_vcg]: "SUCCEED \<le> SPEC \<Phi>" by auto
 lemma FAIL_rule: "False \<Longrightarrow> FAIL \<le> SPEC \<Phi>" by auto
 lemma SPEC_rule[refine_vcg]: "\<lbrakk>\<And>x. \<Phi> x \<Longrightarrow> \<Phi>' x\<rbrakk> \<Longrightarrow> SPEC \<Phi> \<le> SPEC \<Phi>'" by auto
 
+lemma RETURN_to_SPEC_rule[refine_vcg]: "m\<le>SPEC (op = v) \<Longrightarrow> m\<le>RETURN v"
+  by (simp add: pw_le_iff refine_pw_simps)
+
 lemma Sup_img_rule_complete: 
   "(\<forall>x. x\<in>S \<longrightarrow> f x \<le> SPEC \<Phi>) \<longleftrightarrow> Sup (f`S) \<le> SPEC \<Phi>"
   apply rule
@@ -858,7 +861,9 @@ text {* This lemma is just to demonstrate that our rule is complete. *}
 lemma bind_rule_complete: "bind M f \<le> SPEC \<Phi> \<longleftrightarrow> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>)"
   by (auto simp: pw_le_iff refine_pw_simps)
 lemma bind_rule[refine_vcg]: 
-  "\<lbrakk> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>) \<rbrakk> \<Longrightarrow> bind M f \<le> SPEC \<Phi>"
+  "\<lbrakk> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>) \<rbrakk> \<Longrightarrow> bind M (\<lambda>x. f x) \<le> SPEC \<Phi>"
+  -- {* Note: \<eta>-expanded version helps Isabelle's unification to keep meaningful 
+      variable names from the program *}
   by (auto simp: bind_rule_complete)
 
 lemma ASSUME_rule[refine_vcg]: "\<lbrakk>\<Phi> \<Longrightarrow> \<Psi> ()\<rbrakk> \<Longrightarrow> ASSUME \<Phi> \<le> SPEC \<Psi>"
@@ -927,12 +932,14 @@ lemma REC_le_rule:
   shows "REC body x \<le> M x'"
 proof -
   have "\<forall>x x'. (x,x')\<in>R \<longrightarrow> lfp body x \<le> M x'"
-    apply (rule lfp_cadm_induct[OF _ M])
+    apply (rule lfp_cadm_induct[OF _ _ M])
       apply rule+
       unfolding Sup_fun_def
       apply (rule SUP_least)
       apply simp
+
       apply simp
+
       using IS 
       apply blast
     done
@@ -1041,7 +1048,7 @@ lemma bind_refine':
   assumes R2: "\<And>x x'. \<lbrakk> (x,x')\<in>R'; inres M x; inres M' x';
     nofail M; nofail M'
   \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')"
-  shows "bind M f \<le> \<Down> R (bind M' f')"
+  shows "bind M (\<lambda>x. f x) \<le> \<Down> R (bind M' (\<lambda>x'. f' x'))"
   using assms
   apply (simp add: pw_le_iff refine_pw_simps)
   apply fast
@@ -1052,7 +1059,7 @@ lemma bind_refine[refine]:
   assumes R1: "M \<le> \<Down> R' M'"
   assumes R2: "\<And>x x'. \<lbrakk> (x,x')\<in>R' \<rbrakk> 
     \<Longrightarrow> f x \<le> \<Down> R (f' x')"
-  shows "bind M f \<le> \<Down> R (bind M' f')"
+  shows "bind M (\<lambda>x. f x) \<le> \<Down> R (bind M' (\<lambda>x'. f' x'))"
   apply (rule bind_refine') using assms by auto
 
 text {* Special cases for refinement of binding to @{text "RES"}
@@ -1060,15 +1067,15 @@ text {* Special cases for refinement of binding to @{text "RES"}
 lemma bind_refine_RES:
   "\<lbrakk>RES X \<le> \<Down> R' M';
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
-  \<Longrightarrow> RES X \<guillemotright>= f \<le> \<Down> R (M' \<guillemotright>= f')"
+  \<Longrightarrow> RES X \<guillemotright>= (\<lambda>x. f x) \<le> \<Down> R (M' \<guillemotright>= (\<lambda>x'. f' x'))"
 
   "\<lbrakk>M \<le> \<Down> R' (RES X');
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x' \<in> X' \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
-  \<Longrightarrow> M \<guillemotright>= f \<le> \<Down> R (RES X' \<guillemotright>= f')"
+  \<Longrightarrow> M \<guillemotright>= (\<lambda>x. f x) \<le> \<Down> R (RES X' \<guillemotright>= (\<lambda>x'. f' x'))"
 
   "\<lbrakk>RES X \<le> \<Down> R' (RES X');
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X; x' \<in> X'\<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
-  \<Longrightarrow> RES X \<guillemotright>= f \<le> \<Down> R (RES X' \<guillemotright>= f')"
+  \<Longrightarrow> RES X \<guillemotright>= (\<lambda>x. f x) \<le> \<Down> R (RES X' \<guillemotright>= (\<lambda>x'. f' x'))"
   by (auto intro!: bind_refine')
 
 declare bind_refine_RES(1,2)[refine]
@@ -1120,27 +1127,36 @@ lemma ASSUME_refine_left_pres:
 text {* Warning: The order of @{text "[refine]"}-declarations is 
   important here, as preconditions should be generated before 
   additional proof obligations. *}
+lemmas [refine0] = ASSUME_refine_right
+lemmas [refine0] = ASSERT_refine_left
+lemmas [refine0] = ASSUME_refine_left
+lemmas [refine0] = ASSERT_refine_right
+
+text {* For backward compatibility, as @{text "intro refine"} still
+  seems to be used instead of @{text "refine_rcg"}. *}
 lemmas [refine] = ASSUME_refine_right
 lemmas [refine] = ASSERT_refine_left
 lemmas [refine] = ASSUME_refine_left
 lemmas [refine] = ASSERT_refine_right
+
 
 lemma REC_refine[refine]:
   assumes M: "mono body"
   assumes R0: "(x,x')\<in>R"
   assumes RS: "\<And>f f' x x'. \<lbrakk> \<And>x x'. (x,x')\<in>R \<Longrightarrow> f x \<le>\<Down>S (f' x'); (x,x')\<in>R \<rbrakk> 
     \<Longrightarrow> body f x \<le>\<Down>S (body' f' x')"
-  shows "REC body x \<le>\<Down>S (REC body' x')"
+  shows "REC (\<lambda>f x. body f x) x \<le>\<Down>S (REC (\<lambda>f' x'. body' f' x') x')"
   unfolding REC_def
   apply (clarsimp simp add: M)
 proof -
   assume M': "mono body'"
   have "\<forall>x x'. (x,x')\<in>R \<longrightarrow> lfp body x \<le> \<Down>S (lfp body' x')"
-    apply (rule lfp_cadm_induct[OF _ M])
+    apply (rule lfp_cadm_induct[OF _ _ M])
       apply rule+
       unfolding Sup_fun_def
       apply (rule SUP_least)
       apply simp
+
       apply simp
 
       apply (rule)+
@@ -1157,17 +1173,18 @@ lemma RECT_refine[refine]:
   assumes R0: "(x,x')\<in>R"
   assumes RS: "\<And>f f' x x'. \<lbrakk> \<And>x x'. (x,x')\<in>R \<Longrightarrow> f x \<le>\<Down>S (f' x'); (x,x')\<in>R \<rbrakk> 
     \<Longrightarrow> body f x \<le>\<Down>S (body' f' x')"
-  shows "RECT body x \<le>\<Down>S (RECT body' x')"
+  shows "RECT (\<lambda>f x. body f x) x \<le>\<Down>S (RECT (\<lambda>f' x'. body' f' x') x')"
   unfolding RECT_def
   apply (clarsimp simp add: M)
 proof -
   assume M': "mono body'"
   have "\<forall>x x'. (x,x')\<in>R \<longrightarrow> \<Up>S (gfp body x) \<le> (gfp body' x')"
-    apply (rule gfp_cadm_induct[OF _ M'])
+    apply (rule gfp_cadm_induct[OF _ _ M'])
       apply rule+
       unfolding Inf_fun_def
       apply (rule INF_greatest)
       apply simp
+
       apply simp
 
       apply (rule)+
@@ -1195,16 +1212,16 @@ lemma Let_unfold_refine[refine]:
 text {* The next lemma is sometimes more convenient, as it prevents
   large let-expressions from exploding by being completely unfolded. *}
 lemma Let_refine:
-  assumes "(x,x')\<in>R'"
+  assumes "(m,m')\<in>R'"
   assumes "\<And>x x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
-  shows "Let x f \<le>\<Down>R (Let x' f')"
+  shows "Let m (\<lambda>x. f x) \<le>\<Down>R (Let m' (\<lambda>x'. f' x'))"
   using assms by auto
 
 lemma case_option_refine[refine]:
   assumes "(x,x')\<in>Id"
   assumes "fn \<le> \<Down>R fn'"
   assumes "\<And>v v'. \<lbrakk>x=Some v; (v,v')\<in>Id\<rbrakk> \<Longrightarrow> fs v \<le> \<Down>R (fs' v')"
-  shows "case_option fn fs x \<le> \<Down>R (case_option fn' fs' x')"
+  shows "case_option fn (\<lambda>v. fs v) x \<le> \<Down>R (case_option fn' (\<lambda>v'. fs' v') x')"
   using assms by (auto split: option.split)
 
 text {* It is safe to split conjunctions in refinement goals.*}
@@ -1223,16 +1240,24 @@ lemma intro_Let_refine[refine2]:
 lemma bind2let_refine[refine2]:
   assumes "RETURN x \<le> \<Down>R' M'"
   assumes "\<And>x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
-  shows "Let x f \<le> \<Down>R (bind M' f')"
+  shows "Let x f \<le> \<Down>R (bind M' (\<lambda>x'. f' x'))"
   using assms 
   apply (simp add: pw_le_iff refine_pw_simps) 
   apply fast
   done
 
+lemma bind_Let_refine2[refine2]: "\<lbrakk> 
+    m' \<le>\<Down>R' (RETURN x);
+    \<And>x'. \<lbrakk>inres m' x'; (x',x)\<in>R'\<rbrakk> \<Longrightarrow> f' x' \<le> \<Down>R (f x) 
+  \<rbrakk> \<Longrightarrow> m'\<guillemotright>=(\<lambda>x'. f' x') \<le> \<Down>R (Let x (\<lambda>x. f x))"
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply blast
+  done
+
 lemma bind2letRETURN_refine[refine2]:
   assumes "RETURN x \<le> \<Down>R' M'"
   assumes "\<And>x'. (x,x')\<in>R' \<Longrightarrow> RETURN (f x) \<le> \<Down>R (f' x')"
-  shows "RETURN (Let x f) \<le> \<Down>R (bind M' f')"
+  shows "RETURN (Let x f) \<le> \<Down>R (bind M' (\<lambda>x'. f' x'))"
   using assms
   apply (simp add: pw_le_iff refine_pw_simps)
   apply fast
@@ -1245,6 +1270,15 @@ lemma RETURN_as_SPEC_refine_sv[refine2]:
   using assms
   apply (simp add: pw_le_iff refine_pw_simps)
   done
+
+lemma if_RETURN_refine [refine2]:
+  assumes "b \<longleftrightarrow> b'"
+  assumes "\<lbrakk>b;b'\<rbrakk> \<Longrightarrow> RETURN S1 \<le> \<Down>R S1'"
+  assumes "\<lbrakk>\<not>b;\<not>b'\<rbrakk> \<Longrightarrow> RETURN S2 \<le> \<Down>R S2'"
+  shows "RETURN (if b then S1 else S2) \<le> \<Down>R (if b' then S1' else S2')"
+  (* this is nice to have for small functions, hence keep it in refine2 *)
+  using assms
+  by (simp add: pw_le_iff refine_pw_simps)
 
 lemma RES_sng_as_SPEC_refine_sv[refine2]:
   assumes "single_valued R"
@@ -1266,7 +1300,7 @@ lemma intro_spec_refine_iff:
 
 lemma intro_spec_refine[refine2]:
   assumes "\<And>x. x\<in>X \<Longrightarrow> f x \<le> \<Down>R M"
-  shows "bind (RES X) f \<le> \<Down>R M"
+  shows "bind (RES X) (\<lambda>x. f x) \<le> \<Down>R M"
   using assms
   by (simp add: intro_spec_refine_iff)
 
@@ -1279,18 +1313,20 @@ text {* Replacing a let by a deterministic computation *}
 lemma let2bind_refine:
   assumes "m \<le> \<Down>R' (RETURN m')"
   assumes "\<And>x x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
-  shows "bind m f \<le> \<Down>R (Let m' f')"
+  shows "bind m (\<lambda>x. f x) \<le> \<Down>R (Let m' (\<lambda>x'. f' x'))"
   using assms
   apply (simp add: pw_le_iff refine_pw_simps)
   apply blast
   done
+
+
 
 text {* Introduce a new binding, without a structural match in the abstract 
   program *}
 lemma intro_bind_refine:
   assumes "m \<le> \<Down>R' (RETURN m')"
   assumes "\<And>x. (x,m')\<in>R' \<Longrightarrow> f x \<le> \<Down>R m''"
-  shows "bind m f \<le> \<Down>R m''"
+  shows "bind m (\<lambda>x. f x) \<le> \<Down>R m''"
   using assms
   apply (simp add: pw_le_iff refine_pw_simps)
   apply blast
@@ -1510,5 +1546,146 @@ lemma bind_RES_RETURN2_eq: "bind (RES X) (\<lambda>(x,y). RETURN (f x y)) =
   apply (simp add: pw_eq_iff refine_pw_simps)
   apply blast
   done
+
+lemma le_SPEC_bindI: 
+  assumes "\<Phi> x"
+  assumes "m \<le> f x"
+  shows "m \<le> SPEC \<Phi> \<guillemotright>= f"
+  using assms by (auto simp add: pw_le_iff refine_pw_simps)
+
+lemma bind_assert_refine: 
+  assumes "m1 \<le> SPEC \<Phi>"
+  assumes "\<And>x. \<Phi> x \<Longrightarrow> m2 x \<le> m'"
+  shows "do {x\<leftarrow>m1; ASSERT (\<Phi> x); m2 x} \<le> m'"
+  using assms
+  by (simp add: pw_le_iff refine_pw_simps) blast
+
+
+text {* The following rules are useful for massaging programs before the 
+  refinement takes place *}
+lemma let_to_bind_conv: 
+  "Let x f = RETURN x\<guillemotright>=f"
+  by simp
+
+lemmas bind_to_let_conv = let_to_bind_conv[symmetric]
+
+lemma pull_out_let_conv: "RETURN (Let x f) = Let x (\<lambda>x. RETURN (f x))"
+  by simp
+
+lemma push_in_let_conv: 
+  "Let x (\<lambda>x. RETURN (f x)) = RETURN (Let x f)"
+  "Let x (RETURN o f) = RETURN (Let x f)"
+  by simp_all
+
+lemma pull_out_RETURN_case_option: 
+  "case_option (RETURN a) (\<lambda>v. RETURN (f v)) x = RETURN (case_option a f x)"
+  by (auto split: option.splits)
+
+lemma if_bind_cond_refine: 
+  assumes "ci \<le> RETURN b"
+  assumes "b \<Longrightarrow> ti\<le>\<Down>R t"
+  assumes "\<not>b \<Longrightarrow> ei\<le>\<Down>R e"
+  shows "do {b\<leftarrow>ci; if b then ti else ei} \<le> \<Down>R (if b then t else e)"
+  using assms
+  by (auto simp add: refine_pw_simps pw_le_iff)
+
+lemma intro_RETURN_Let_refine:
+  assumes "RETURN (f x) \<le> \<Down>R M'"
+  shows "RETURN (Let x f) \<le> \<Down>R M'" 
+  (* this should be needed very rarely - so don't add it *)
+  using assms by auto
+
+text {* 
+  This rule establishes equality between RECT and REC, using an additional 
+  invariant. Note that the default way is to prove termination in
+  first place, instead of re-proving parts of the invariant just for the
+  termination proof. *}
+lemma RECT_eq_REC':
+  assumes WF: "wf V'"
+  assumes I0: "I x"
+  assumes IS: "\<And>f x. I x \<Longrightarrow> (\<And>x. f x \<le> RECT body x) \<Longrightarrow>
+    body (\<lambda>x'. if (I x' \<and> (x',x)\<in>V') then f x' else top) x \<le> body f x"
+  shows "RECT body x = REC body x"
+proof (cases "mono body")
+  assume "\<not>mono body"
+  thus ?thesis unfolding REC_def RECT_def by simp
+next
+  assume MONO: "mono body"
+
+  have lfp_ubound: "\<And>x. lfp body x \<le> RECT body x"
+  proof -
+    fix x
+    from REC_le_RECT[of body x, unfolded REC_def] MONO
+    show "lfp body x \<le> RECT body x" by auto
+  qed
+
+  from lfp_le_gfp' MONO have "lfp body x \<le> gfp body x" .
+  moreover have "I x \<longrightarrow> gfp body x \<le> lfp body x"
+    using WF
+    apply (induct rule: wf_induct[consumes 1])
+    apply (rule impI)
+    apply (subst lfp_unfold[OF MONO])
+    apply (subst gfp_unfold[OF MONO])
+    apply (rule order_trans[OF _ IS])
+    apply (rule monoD[OF MONO,THEN le_funD])
+    apply (rule le_funI)
+    apply simp
+    apply simp
+    apply (rule lfp_ubound)
+    done
+  ultimately show ?thesis
+    unfolding REC_def RECT_def
+    apply (rule_tac antisym)
+    using I0 MONO by auto
+qed
+
+subsubsection {* Boolean Operations on Specifications *}
+lemma SPEC_iff:
+  assumes "P \<le> SPEC (\<lambda>s. Q s \<longrightarrow> R s)"
+  and "P \<le> SPEC (\<lambda>s. \<not> Q s \<longrightarrow> \<not> R s)"
+  shows "P \<le> SPEC (\<lambda>s. Q s \<longleftrightarrow> R s)"
+  using assms[THEN pw_le_iff[THEN iffD1]]
+  by (auto intro!: pw_leI)
+
+lemma SPEC_rule_conjI:
+  assumes "A \<le> SPEC P" and "A \<le> SPEC Q"
+    shows "A \<le> SPEC (\<lambda>v. P v \<and> Q v)"
+proof -
+  have "A \<le> inf (SPEC P) (SPEC Q)" using assms by (rule_tac inf_greatest) assumption
+  thus ?thesis by (auto simp add:Collect_conj_eq)
+qed
+
+lemma SPEC_rule_conjunct1:
+  assumes "A \<le> SPEC (\<lambda>v. P v \<and> Q v)"
+    shows "A \<le> SPEC P"
+proof -
+  note assms
+  also have "\<dots> \<le> SPEC P" by (rule SPEC_rule) auto
+  finally show ?thesis .
+qed
+
+lemma SPEC_rule_conjunct2:
+  assumes "A \<le> SPEC (\<lambda>v. P v \<and> Q v)"
+    shows "A \<le> SPEC Q"
+proof -
+  note assms
+  also have "\<dots> \<le> SPEC Q" by (rule SPEC_rule) auto
+  finally show ?thesis .
+qed
+
+
+subsubsection {* Pointwise Reasoning *}
+lemma inres_if:
+  "\<lbrakk> inres (if P then Q else R) x; \<lbrakk>P; inres Q x\<rbrakk> \<Longrightarrow> S; \<lbrakk>\<not> P; inres R x\<rbrakk> \<Longrightarrow> S \<rbrakk> \<Longrightarrow> S"
+by (metis (full_types))
+
+lemma inres_SPEC:
+  "inres M x \<Longrightarrow> M \<le> SPEC \<Phi> \<Longrightarrow> \<Phi> x"
+by (auto dest: pwD2)
+
+lemma SPEC_nofail:
+  "X \<le> SPEC \<Phi> \<Longrightarrow> nofail X"
+by (auto dest: pwD1)
+
 
 end

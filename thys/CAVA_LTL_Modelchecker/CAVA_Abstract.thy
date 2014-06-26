@@ -172,7 +172,7 @@ begin
     unfolding abs_model_check_def impl_model_check_def
 
     apply (simp only: let_to_bind_conv pull_out_let_conv 
-      pull_out_RETURN_option_case)
+      pull_out_RETURN_case_option)
 
     apply (refine_rcg
       ltl_to_gba_refine[param_fo, THEN plain_nres_relD]

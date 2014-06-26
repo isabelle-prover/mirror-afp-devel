@@ -70,7 +70,7 @@ lemma ahm_rel_def: "\<langle>Rk, Rv\<rangle> ahm_rel bhc \<equiv>
     unfolding relAPP_def ahm_rel_def_internal .
 lemmas [autoref_rel_intf] = REL_INTFI[of "ahm_rel bhc" i_map] for bhc
 
-abbreviation "dflt_ahm_rel \<equiv> ahm_rel bounded_hashcode"
+abbreviation "dflt_ahm_rel \<equiv> ahm_rel bounded_hashcode_nat"
 
 
 primrec ahm_iteratei_aux :: "(('k\<times>'v) list array) \<Rightarrow> ('k\<times>'v, '\<sigma>) set_iterator"

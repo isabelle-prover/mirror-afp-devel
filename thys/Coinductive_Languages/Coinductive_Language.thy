@@ -39,7 +39,7 @@ yielding an executable decision procedure for the word problem without further a
 *}
 (*<*)
 (* custom coinduction theorem (getting rid of rel_fun) *)
-declare language.coinduct[unfolded rel_fun_def, simplified, case_names Lang, coinduct type: language]
+declare language.coinduct[unfolded rel_fun_def, simplified, case_names Lang, coinduct pred]
 (*>*)
 
 section {* Regular Languages *}

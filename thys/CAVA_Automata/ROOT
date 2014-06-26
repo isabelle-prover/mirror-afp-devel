@@ -13,5 +13,5 @@ session "CAVA_Automata" (AFP) in "." = "CAVA_Base" +
     Digraph Automata Words Lasso Digraph_Impl Automata_Impl
   theories [document=false]
     All_Of_CAVA_Automata
-  files
-    "document/root.tex"
+  document_files
+    "root.tex"

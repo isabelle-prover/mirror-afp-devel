@@ -27,37 +27,6 @@ fun test_bit x n =
 
 end; (* struct Uint *)
 
-(* Test that words can handle numbers between 0 and 3 *)
-val _ = if 3 <= Word.wordSize then () else raise (Fail ("wordSize less than 3"));
-
-structure Uint8 : sig
-  val set_bit : Word8.word -> IntInf.int -> bool -> Word8.word
-  val shiftl : Word8.word -> IntInf.int -> Word8.word
-  val shiftr : Word8.word -> IntInf.int -> Word8.word
-  val shiftr_signed : Word8.word -> IntInf.int -> Word8.word
-  val test_bit : Word8.word -> IntInf.int -> bool
-end = struct
-
-fun set_bit x n b =
-  let val mask = Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word8.orb (x, mask)
-     else Word8.andb (x, Word8.notb mask)
-  end
-
-fun shiftl x n =
-  Word8.<< (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun shiftr x n =
-  Word8.>> (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun shiftr_signed x n =
-  Word8.~>> (x, Word.fromLargeInt (IntInf.toLarge n))
-
-fun test_bit x n =
-  Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
-
-end; (* struct Uint8 *)
-
 (* Test that words can handle numbers between 0 and 31 *)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
@@ -415,350 +384,21 @@ end; (*struct Bits_Integer*)
 
 
 structure HPY_new_hash : sig
-  val id : 'a -> 'a
-  type 'a equal
-  val equal : 'a equal -> 'a -> 'a -> bool
-  val eq : 'a equal -> 'a -> 'a -> bool
-  datatype nat = Nat of IntInf.int
-  datatype num = One | Bit0 of num | Bit1 of num
-  type 'a ord
-  val less_eq : 'a ord -> 'a -> 'a -> bool
-  val less : 'a ord -> 'a -> 'a -> bool
-  type 'a preorder
-  val ord_preorder : 'a preorder -> 'a ord
-  type 'a order
-  val preorder_order : 'a order -> 'a preorder
-  type 'a linorder
-  val order_linorder : 'a linorder -> 'a order
-  datatype color = R | B
-  datatype ('a, 'b) rbta = Empty |
-    Branch of color * ('a, 'b) rbta * 'a * 'b * ('a, 'b) rbta
-  datatype ('a, 'b) rbt = Rbt of ('a, 'b) rbta
+  type nat
   val integer_of_nat : nat -> IntInf.int
-  val plus_nat : nat -> nat -> nat
-  val one_nat : nat
-  val suc : nat -> nat
-  val map : ('a -> 'b) -> 'a list -> 'b list
-  val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-  datatype 'a itself = Type
-  val empty : 'a linorder -> ('a, 'b) rbt
-  val map_of : 'a equal -> ('a * 'b) list -> 'a -> 'b option
-  val less_eq_nat : nat -> nat -> bool
-  val less_nat : nat -> nat -> bool
-  val ord_nat : nat ord
-  val balance : ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val paint : color -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val balance_right :
-    ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val balance_left : ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val combine : ('a, 'b) rbta -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_dela : 'a ord -> 'a -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_del_from_lefta :
-    'a ord -> 'a -> ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_del_from_righta :
-    'a ord -> 'a -> ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_deletea : 'a ord -> 'a -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val impl_of : 'a linorder -> ('a, 'b) rbt -> ('a, 'b) rbta
-  val delete : 'a linorder -> 'a -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_ins :
-    'a ord ->
-      ('a -> 'b -> 'b -> 'b) -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_insert_with_key :
-    'a ord ->
-      ('a -> 'b -> 'b -> 'b) -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_insert : 'a ord -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val insert : 'a linorder -> 'a -> 'b -> ('a, 'b) rbt -> ('a, 'b) rbt
-  val rbt_lookupa : 'a ord -> ('a, 'b) rbta -> 'a -> 'b option
-  val lookup : 'a linorder -> ('a, 'b) rbt -> 'a -> 'b option
-  val filter : ('a -> bool) -> 'a list -> 'a list
-  val deletea : 'a equal -> 'a -> ('a * 'b) list -> ('a * 'b) list
-  val fst : 'a * 'b -> 'a
-  val update : 'a equal -> 'a -> 'b -> ('a * 'b) list -> ('a * 'b) list
-  val foldli : 'a list -> ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list |
-    Circ of 'a list * 'a list
-  val equal_nata : nat -> nat -> bool
-  val equal_nat : nat equal
-  val preorder_nat : nat preorder
-  val order_nat : nat order
-  val zero_nat : nat
-  val ord_integer : IntInf.int ord
-  val max : 'a ord -> 'a -> 'a -> 'a
-  val minus_nat : nat -> nat -> nat
-  val times_nat : nat -> nat -> nat
-  datatype ('a, 'b) assoc_list = Assoc_List of ('a * 'b) list
-  type 'a hashable
-  val hashcode : 'a hashable -> 'a -> nat
-  val bounded_hashcode : 'a hashable -> nat -> 'a -> nat
-  val def_hashmap_size : 'a hashable -> 'a itself -> nat
-  datatype ('a, 'b) hashmap = RBT_HM of (nat, ('a, 'b) assoc_list) rbt
-  val is_none : 'a option -> bool
-  datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a
-  val sgn_integer : IntInf.int -> IntInf.int
-  val abs_integer : IntInf.int -> IntInf.int
-  val apsnd : ('a -> 'b) -> 'c * 'a -> 'c * 'b
-  val divmod_integer : IntInf.int -> IntInf.int -> IntInf.int * IntInf.int
-  val snd : 'a * 'b -> 'b
-  val mod_integer : IntInf.int -> IntInf.int -> IntInf.int
-  val mod_nat : nat -> nat -> nat
-  val gen_set : 'a -> ('b -> 'a -> 'a) -> 'b list -> 'a
-  val equal_list : 'a equal -> 'a list -> 'a list -> bool
-  val linorder_nat : nat linorder
-  val emptya : ('a, 'b) assoc_list
-  val emptyb : 'a hashable -> unit -> (nat, ('a, 'b) assoc_list) rbt
-  val hm_empty_const : 'a hashable -> ('a, 'b) hashmap
-  val hm_empty : 'a hashable -> unit -> ('a, 'b) hashmap
-  val rbt_del : ('a -> 'a -> bool) -> 'a -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_del_from_left :
-    ('a -> 'a -> bool) ->
-      'a -> ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_del_from_right :
-    ('a -> 'a -> bool) ->
-      'a -> ('a, 'b) rbta -> 'a -> 'b -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val dbind : 'a dres -> ('a -> 'b dres) -> 'b dres
-  val delete_aux : 'a equal -> 'a -> ('a * 'b) list -> ('a * 'b) list
-  val impl_ofa : ('a, 'b) assoc_list -> ('a * 'b) list
-  val deleteb : 'a equal -> 'a -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
-  val lookupa : 'a equal -> ('a, 'b) assoc_list -> 'a -> 'b option
-  val update_with_aux :
-    'b equal -> 'a -> 'b -> ('a -> 'a) -> ('b * 'a) list -> ('b * 'a) list
-  val update_with :
-    'a equal ->
-      'b -> 'a -> ('b -> 'b) -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
-  val updatea :
-    'a equal -> 'a -> 'b -> ('a, 'b) assoc_list -> ('a, 'b) assoc_list
-  val impl_of_RBT_HM :
-    'a hashable -> ('a, 'b) hashmap -> (nat, ('a, 'b) assoc_list) rbt
-  val iteratei :
-    ('a, 'b) assoc_list -> ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
-  val iteratei_bmap_op_list_it_lm_basic_ops :
-    ('a, 'b) assoc_list -> ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
-  val g_size_abort_lm_basic_ops : nat -> ('a, 'b) assoc_list -> nat
-  val g_isEmpty_lm_basic_ops : ('a, 'b) assoc_list -> bool
-  val rm_map_entry :
-    nat -> ('a option -> 'a option) -> (nat, 'a) rbt -> (nat, 'a) rbt
-  val deletec :
-    'a equal * 'a hashable ->
-      'a -> (nat, ('a, 'b) assoc_list) rbt -> (nat, ('a, 'b) assoc_list) rbt
-  val hm_delete :
-    'a equal * 'a hashable -> 'a -> ('a, 'b) hashmap -> ('a, 'b) hashmap
-  val lookupb :
-    'a equal * 'a hashable -> 'a -> (nat, ('a, 'b) assoc_list) rbt -> 'b option
-  val hm_lookup : 'a equal * 'a hashable -> 'a -> ('a, 'b) hashmap -> 'b option
-  val updateb :
-    'a equal * 'a hashable ->
-      'a -> 'b -> (nat, ('a, 'b) assoc_list) rbt ->
-                    (nat, ('a, 'b) assoc_list) rbt
-  val hm_update :
-    'a equal * 'a hashable -> 'a -> 'b -> ('a, 'b) hashmap -> ('a, 'b) hashmap
-  datatype ('a, 'b) hashmapb =
-    HashMapa of (('a * 'b) list) FArray.IsabelleMapping.ArrayType * nat
-  datatype ('a, 'b) hashmapa = HashMap of ('a, 'b) hashmapb
-  datatype ('a, 'b, 'c, 'd) gen_frg_impl_ext =
-    Gen_frg_impl_ext of 'a * 'b * 'c * 'd
-  datatype ('a, 'b) gen_bg_impl_ext = Gen_bg_impl_ext of 'a * 'b
-  val bgi_F : ('a, 'b, 'c, ('d, 'e) gen_bg_impl_ext) gen_frg_impl_ext -> 'd
-  val frgi_E : ('a, 'b, 'c, 'd) gen_frg_impl_ext -> 'b
-  val extract_res : 'a blue_witness -> ('a list * 'a list) option
-  val rbt_delete : ('a -> 'a -> bool) -> 'a -> ('a, 'b) rbta -> ('a, 'b) rbta
-  val rbt_lookup : ('a -> 'a -> bool) -> ('a, 'b) rbta -> 'a -> 'b option
-  val impl_ofb : 'a hashable -> ('a, 'b) hashmapa -> ('a, 'b) hashmapb
-  val array_get : 'a FArray.IsabelleMapping.ArrayType -> nat -> 'a
-  val array_set :
-    'a FArray.IsabelleMapping.ArrayType ->
-      nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
-  val new_array : 'a -> nat -> 'a FArray.IsabelleMapping.ArrayType
-  val frgi_V0 : ('a, 'b, 'c, 'd) gen_frg_impl_ext -> 'c
   val nat_of_integer : IntInf.int -> nat
-  val def_hashmap_size_nat : nat itself -> nat
-  val bounded_hashcode_nat : nat -> nat -> nat
-  val hashcode_nat : nat -> nat
-  val hashable_nat : nat hashable
-  val the_res : 'a dres -> 'a
-  val is_None : 'a option -> bool
-  val map2set_insert : ('a -> unit -> 'b -> 'c) -> 'a -> 'b -> 'c
-  val red_init_witness : 'a -> 'a -> ('a list * 'a) option
-  val map2set_memb : ('a -> 'b -> 'c option) -> 'a -> 'b -> bool
-  val prep_wit_red : 'a -> ('a list * 'a) option -> ('a list * 'a) option
-  val code_red_dfs_0 :
-    'a linorder ->
-      ('a -> 'a list) ->
-        ('a, unit) rbta ->
-          ('a, unit) rbta * 'a -> (('a, unit) rbta * ('a list * 'a) option) dres
-  val code_red_dfs :
-    'a linorder ->
-      ('a -> 'a list) ->
-        ('a, unit) rbta ->
-          ('a, unit) rbta -> 'a -> ('a, unit) rbta * ('a list * 'a) option
-  val array_grow :
-    'a FArray.IsabelleMapping.ArrayType ->
-      nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
-  val equal_blue_witness :
-    'a equal -> 'a blue_witness -> 'a blue_witness -> bool
-  val init_wit_blue_early : 'a equal -> 'a -> 'a -> 'a blue_witness
-  val prep_wit_blue : 'a equal -> 'a -> 'a blue_witness -> 'a blue_witness
-  val init_wit_blue : 'a equal -> 'a -> ('a list * 'a) option -> 'a blue_witness
-  val code_blue_dfs_0 :
-    'a equal * 'a linorder ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) gen_bg_impl_ext)
-        gen_frg_impl_ext ->
-        ('a, unit) rbta * (('a, unit) rbta * (('a, unit) rbta * 'a)) ->
-          (('a, unit) rbta *
-            (('a, unit) rbta * (('a, unit) rbta * 'a blue_witness)))
-            dres
-  val code_blue_dfs :
-    'a equal * 'a linorder ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) gen_bg_impl_ext)
-        gen_frg_impl_ext ->
-        ('a list * 'a list) option
-  val new_hashmap_with : 'a hashable -> nat -> ('a, 'b) hashmapb
-  val ahm_emptya : 'a hashable -> unit -> ('a, 'b) hashmapb
-  val ahm_empty_const : 'a hashable -> ('a, 'b) hashmapa
-  val ahm_empty : 'a hashable -> unit -> ('a, 'b) hashmapa
-  val array_length : 'a FArray.IsabelleMapping.ArrayType -> nat
-  val ahm_deletea :
-    'a equal * 'a hashable -> 'a -> ('a, 'b) hashmapb -> ('a, 'b) hashmapb
-  val ahm_delete :
-    'a equal * 'a hashable -> 'a -> ('a, 'b) hashmapa -> ('a, 'b) hashmapa
-  val ahm_alpha_aux :
-    'a equal * 'a hashable ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType -> 'a -> 'b option
-  val ahm_alpha : 'a equal * 'a hashable -> ('a, 'b) hashmapb -> 'a -> 'b option
-  val ahm_lookupa :
-    'a equal * 'a hashable -> 'a -> ('a, 'b) hashmapb -> 'b option
-  val ahm_lookup :
-    'a equal * 'a hashable -> 'a -> ('a, 'b) hashmapa -> 'b option
-  val ahm_update_aux :
-    'a equal * 'a hashable -> ('a, 'b) hashmapb -> 'a -> 'b -> ('a, 'b) hashmapb
-  val idx_iteratei_aux_array_get :
-    nat ->
-      nat ->
-        'a FArray.IsabelleMapping.ArrayType ->
-          ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  val idx_iteratei_array_length_array_get :
-    'a FArray.IsabelleMapping.ArrayType ->
-      ('b -> bool) -> ('a -> 'b -> 'b) -> 'b -> 'b
-  val ahm_iteratei_aux :
-    'a hashable ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-        ('c -> bool) -> ('a * 'b -> 'c -> 'c) -> 'c -> 'c
-  val ahm_rehash_auxa :
-    'a hashable ->
-      nat ->
-        'a * 'b ->
-          (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-            (('a * 'b) list) FArray.IsabelleMapping.ArrayType
-  val ahm_rehash_aux :
-    'a hashable ->
-      (('a * 'b) list) FArray.IsabelleMapping.ArrayType ->
-        nat -> (('a * 'b) list) FArray.IsabelleMapping.ArrayType
-  val ahm_rehash : 'a hashable -> ('a, 'b) hashmapb -> nat -> ('a, 'b) hashmapb
-  val load_factor : nat
-  val ahm_filled : 'a hashable -> ('a, 'b) hashmapb -> bool
-  val hm_grow : 'a hashable -> ('a, 'b) hashmapb -> nat
-  val ahm_updatea :
-    'a equal * 'a hashable -> 'a -> 'b -> ('a, 'b) hashmapb -> ('a, 'b) hashmapb
-  val ahm_update :
-    'a equal * 'a hashable -> 'a -> 'b -> ('a, 'b) hashmapa -> ('a, 'b) hashmapa
-  val array_get_oo : 'a -> 'a FArray.IsabelleMapping.ArrayType -> nat -> 'a
-  val array_set_oo :
-    (unit -> 'a FArray.IsabelleMapping.ArrayType) ->
-      'a FArray.IsabelleMapping.ArrayType ->
-        nat -> 'a -> 'a FArray.IsabelleMapping.ArrayType
-  val ins_hm_basic_ops :
-    'a equal * 'a hashable -> 'a -> ('a, unit) hashmap -> ('a, unit) hashmap
-  val iam_alpha :
-    ('a option) FArray.IsabelleMapping.ArrayType -> nat -> 'a option
-  val iam_empty : unit -> ('a option) FArray.IsabelleMapping.ArrayType
-  val memb_ahm_basic_ops :
-    'a equal * 'a hashable -> 'a -> ('a, unit) hashmapa -> bool
-  val ins_ahm_basic_ops :
-    'a equal * 'a hashable -> 'a -> ('a, unit) hashmapa -> ('a, unit) hashmapa
-  val code_red_dfs_ahs_0 :
-    'a equal * 'a hashable ->
-      ('a -> 'a list) ->
-        ('a, unit) hashmapa ->
-          ('a, unit) hashmapa * 'a ->
-            (('a, unit) hashmapa * ('a list * 'a) option) dres
-  val code_red_dfs_ahs :
-    'a equal * 'a hashable ->
-      ('a -> 'a list) ->
-        ('a, unit) hashmapa ->
-          ('a, unit) hashmapa ->
-            'a -> ('a, unit) hashmapa * ('a list * 'a) option
-  val memb_hm_basic_ops :
-    'a equal * 'a hashable -> 'a -> ('a, unit) hashmap -> bool
-  val iam_lookup :
-    nat -> ('a option) FArray.IsabelleMapping.ArrayType -> 'a option
-  val iam_increment : nat -> nat -> nat
-  val iam_update :
-    nat ->
-      'a -> ('a option) FArray.IsabelleMapping.ArrayType ->
-              ('a option) FArray.IsabelleMapping.ArrayType
-  val empty_ahm_basic_ops : 'a hashable -> unit -> ('a, unit) hashmapa
-  val delete_ahm_basic_ops :
-    'a equal * 'a hashable -> 'a -> ('a, unit) hashmapa -> ('a, unit) hashmapa
-  val code_blue_dfs_ahs_0 :
-    'a equal * 'a hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) gen_bg_impl_ext)
-        gen_frg_impl_ext ->
-        ('a, unit) hashmapa *
-          (('a, unit) hashmapa * (('a, unit) hashmapa * 'a)) ->
-          (('a, unit) hashmapa *
-            (('a, unit) hashmapa * (('a, unit) hashmapa * 'a blue_witness)))
-            dres
-  val code_blue_dfs_ahs :
-    'a equal * 'a hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) gen_bg_impl_ext)
-        gen_frg_impl_ext ->
-        ('a list * 'a list) option
+  type ('a, 'b) gen_bg_impl_ext
+  type ('a, 'b, 'c, 'd) gen_frg_impl_ext
   val code_blue_dfs_nat :
     ((nat -> bool), (nat -> nat list), (nat list),
       ((nat -> bool), 'a) gen_bg_impl_ext)
       gen_frg_impl_ext ->
       (nat list * nat list) option
-  val code_red_dfs_hash_0 :
-    'a equal * 'a hashable ->
-      ('a -> 'a list) ->
-        ('a, unit) hashmap ->
-          ('a, unit) hashmap * 'a ->
-            (('a, unit) hashmap * ('a list * 'a) option) dres
-  val code_red_dfs_hash :
-    'a equal * 'a hashable ->
-      ('a -> 'a list) ->
-        ('a, unit) hashmap ->
-          ('a, unit) hashmap -> 'a -> ('a, unit) hashmap * ('a list * 'a) option
-  val empty_hm_basic_ops : 'a hashable -> unit -> ('a, unit) hashmap
-  val glist_member : ('a -> 'a -> bool) -> 'a -> 'a list -> bool
-  val glist_insert : ('a -> 'a -> bool) -> 'a -> 'a list -> 'a list
-  val delete_hm_basic_ops :
-    'a equal * 'a hashable -> 'a -> ('a, unit) hashmap -> ('a, unit) hashmap
-  val code_blue_dfs_hash_0 :
-    'a equal * 'a hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) gen_bg_impl_ext)
-        gen_frg_impl_ext ->
-        ('a, unit) hashmap * (('a, unit) hashmap * (('a, unit) hashmap * 'a)) ->
-          (('a, unit) hashmap *
-            (('a, unit) hashmap * (('a, unit) hashmap * 'a blue_witness)))
-            dres
-  val code_blue_dfs_hash :
-    'a equal * 'a hashable ->
-      (('a -> bool), ('a -> 'a list), ('a list),
-        (('a -> bool), 'b) gen_bg_impl_ext)
-        gen_frg_impl_ext ->
-        ('a list * 'a list) option
-  val acc_of_list_impl_hash : nat list -> nat -> bool
   val code_blue_dfs_ahs_nat :
     ((nat -> bool), (nat -> nat list), (nat list),
       ((nat -> bool), 'a) gen_bg_impl_ext)
       gen_frg_impl_ext ->
       (nat list * nat list) option
-  val succ_of_list_impl : (nat * nat) list -> nat -> nat list
   val succ_of_list_impl_int : (IntInf.int * IntInf.int) list -> nat -> nat list
   val code_blue_dfs_hash_nat :
     ((nat -> bool), (nat -> nat list), (nat list),
@@ -768,20 +408,26 @@ structure HPY_new_hash : sig
   val acc_of_list_impl_hash_int : IntInf.int list -> nat -> bool
 end = struct
 
-fun id x = (fn xa => xa) x;
+datatype nat = Nat of IntInf.int;
+
+fun integer_of_nat (Nat x) = x;
+
+fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
 
 type 'a equal = {equal : 'a -> 'a -> bool};
 val equal = #equal : 'a equal -> 'a -> 'a -> bool;
 
-fun eq A_ a b = equal A_ a b;
+val equal_nat = {equal = equal_nata} : nat equal;
 
-datatype nat = Nat of IntInf.int;
-
-datatype num = One | Bit0 of num | Bit1 of num;
+fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
 
 type 'a ord = {less_eq : 'a -> 'a -> bool, less : 'a -> 'a -> bool};
 val less_eq = #less_eq : 'a ord -> 'a -> 'a -> bool;
 val less = #less : 'a ord -> 'a -> 'a -> bool;
+
+fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
+
+val ord_nat = {less_eq = less_eq_nat, less = less_nat} : nat ord;
 
 type 'a preorder = {ord_preorder : 'a ord};
 val ord_preorder = #ord_preorder : 'a preorder -> 'a ord;
@@ -789,17 +435,89 @@ val ord_preorder = #ord_preorder : 'a preorder -> 'a ord;
 type 'a order = {preorder_order : 'a preorder};
 val preorder_order = #preorder_order : 'a order -> 'a preorder;
 
+val preorder_nat = {ord_preorder = ord_nat} : nat preorder;
+
+val order_nat = {preorder_order = preorder_nat} : nat order;
+
+fun max A_ a b = (if less_eq A_ a b then b else a);
+
+val ord_integer =
+  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
+    less = (fn a => fn b => IntInf.< (a, b))}
+  : IntInf.int ord;
+
+fun nat_of_integer k = Nat (max ord_integer 0 k);
+
+datatype num = One | Bit0 of num | Bit1 of num;
+
+datatype 'a itself = Type;
+
+fun def_hashmap_size_nat x = (fn _ => nat_of_integer (16 : IntInf.int)) x;
+
+type 'a hashable =
+  {hashcode : 'a -> Word32.word, def_hashmap_size : 'a itself -> nat};
+val hashcode = #hashcode : 'a hashable -> 'a -> Word32.word;
+val def_hashmap_size = #def_hashmap_size : 'a hashable -> 'a itself -> nat;
+
+datatype int = Int_of_integer of IntInf.int;
+
+fun int_of_nat n = Int_of_integer (integer_of_nat n);
+
+fun integer_of_int (Int_of_integer k) = k;
+
+fun uint32_of_int i = Word32.fromInt (integer_of_int i);
+
+fun hashcode_nat n = uint32_of_int (int_of_nat n);
+
+val hashable_nat =
+  {hashcode = hashcode_nat, def_hashmap_size = def_hashmap_size_nat} :
+  nat hashable;
+
 type 'a linorder = {order_linorder : 'a order};
 val order_linorder = #order_linorder : 'a linorder -> 'a order;
+
+val linorder_nat = {order_linorder = order_nat} : nat linorder;
+
+val ord_uint32 =
+  {less_eq = (fn a => fn b => Word32.<= (a, b)),
+    less = (fn a => fn b => Word32.< (a, b))}
+  : Word32.word ord;
+
+val preorder_uint32 = {ord_preorder = ord_uint32} : Word32.word preorder;
+
+val order_uint32 = {preorder_order = preorder_uint32} : Word32.word order;
+
+val linorder_uint32 = {order_linorder = order_uint32} : Word32.word linorder;
 
 datatype color = R | B;
 
 datatype ('a, 'b) rbta = Empty |
   Branch of color * ('a, 'b) rbta * 'a * 'b * ('a, 'b) rbta;
 
-datatype ('a, 'b) rbt = Rbt of ('a, 'b) rbta;
+datatype ('b, 'a) rbt = RBT of ('b, 'a) rbta;
 
-fun integer_of_nat (Nat x) = x;
+datatype ('b, 'a) assoc_list = Assoc_List of ('b * 'a) list;
+
+datatype ('b, 'a) hashmap = RBT_HM of (Word32.word, ('b, 'a) assoc_list) rbt;
+
+datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a;
+
+datatype ('a, 'b) hashmapb =
+  HashMapa of (('a * 'b) list) FArray.IsabelleMapping.ArrayType * nat;
+
+datatype ('b, 'a) hashmapa = HashMap of ('b, 'a) hashmapb;
+
+datatype 'a blue_witness = NO_CYC | REACH of 'a * 'a list |
+  CIRC of 'a list * 'a list;
+
+datatype ('a, 'b) gen_bg_impl_ext = Gen_bg_impl_ext of 'a * 'b;
+
+datatype ('a, 'b, 'c, 'd) gen_frg_impl_ext =
+  Gen_frg_impl_ext of 'a * 'b * 'c * 'd;
+
+fun id x = (fn xa => xa) x;
+
+fun eq A_ a b = equal A_ a b;
 
 fun plus_nat m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
 
@@ -807,24 +525,13 @@ val one_nat : nat = Nat (1 : IntInf.int);
 
 fun suc n = plus_nat n one_nat;
 
-fun map f [] = []
-  | map f (x :: xs) = f x :: map f xs;
-
 fun fold f (x :: xs) s = fold f xs (f x s)
   | fold f [] s = s;
 
-datatype 'a itself = Type;
-
-fun empty A_ = Rbt Empty;
+fun empty A_ = RBT Empty;
 
 fun map_of A_ ((l, v) :: ps) k = (if eq A_ l k then SOME v else map_of A_ ps k)
   | map_of A_ [] k = NONE;
-
-fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
-
-fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
-
-val ord_nat = {less_eq = less_eq_nat, less = less_nat} : nat ord;
 
 fun balance (Branch (R, a, w, x, b)) s t (Branch (R, c, y, z, d)) =
   Branch (R, Branch (B, a, w, x, b), s, t, Branch (B, c, y, z, d))
@@ -1044,11 +751,11 @@ and rbt_del_from_righta A_ x a y s (Branch (B, lt, z, v, rt)) =
 
 fun rbt_deletea A_ k t = paint B (rbt_dela A_ k t);
 
-fun impl_of A_ (Rbt x) = x;
+fun impl_of B_ (RBT x) = x;
 
-fun delete A_ x xa =
-  Rbt (rbt_deletea ((ord_preorder o preorder_order o order_linorder) A_) x
-        (impl_of A_ xa));
+fun delete A_ xb xc =
+  RBT (rbt_deletea ((ord_preorder o preorder_order o order_linorder) A_) xb
+        (impl_of A_ xc));
 
 fun rbt_ins A_ f k v Empty = Branch (R, Empty, k, v, Empty)
   | rbt_ins A_ f k v (Branch (B, l, x, y, r)) =
@@ -1064,9 +771,9 @@ fun rbt_insert_with_key A_ f k v t = paint B (rbt_ins A_ f k v t);
 
 fun rbt_insert A_ = rbt_insert_with_key A_ (fn _ => fn _ => fn nv => nv);
 
-fun insert A_ x xa xb =
-  Rbt (rbt_insert ((ord_preorder o preorder_order o order_linorder) A_) x xa
-        (impl_of A_ xb));
+fun insert A_ xc xd xe =
+  RBT (rbt_insert ((ord_preorder o preorder_order o order_linorder) A_) xc xd
+        (impl_of A_ xe));
 
 fun rbt_lookupa A_ Empty k = NONE
   | rbt_lookupa A_ (Branch (uu, l, x, y, r)) k =
@@ -1082,7 +789,7 @@ fun filter p [] = []
 
 fun deletea A_ k = filter (fn (ka, _) => not (eq A_ k ka));
 
-fun fst (a, b) = a;
+fun fst (x1, x2) = x1;
 
 fun update A_ k v [] = [(k, v)]
   | update A_ k v (p :: ps) =
@@ -1092,111 +799,21 @@ fun foldli [] c f sigma = sigma
   | foldli (x :: xs) c f sigma =
     (if c sigma then foldli xs c f (f x sigma) else sigma);
 
-datatype 'a blue_witness = NO_CYC | Reach of 'a * 'a list |
-  Circ of 'a list * 'a list;
-
-fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
-
-val equal_nat = {equal = equal_nata} : nat equal;
-
-val preorder_nat = {ord_preorder = ord_nat} : nat preorder;
-
-val order_nat = {preorder_order = preorder_nat} : nat order;
-
-val zero_nat : nat = Nat 0;
-
-val ord_integer =
-  {less_eq = (fn a => fn b => IntInf.<= (a, b)),
-    less = (fn a => fn b => IntInf.< (a, b))}
-  : IntInf.int ord;
-
-fun max A_ a b = (if less_eq A_ a b then b else a);
-
-fun minus_nat m n =
-  Nat (max ord_integer 0 (IntInf.- (integer_of_nat m, integer_of_nat n)));
-
-fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
-
-datatype ('a, 'b) assoc_list = Assoc_List of ('a * 'b) list;
-
-type 'a hashable =
-  {hashcode : 'a -> nat, bounded_hashcode : nat -> 'a -> nat,
-    def_hashmap_size : 'a itself -> nat};
-val hashcode = #hashcode : 'a hashable -> 'a -> nat;
-val bounded_hashcode = #bounded_hashcode : 'a hashable -> nat -> 'a -> nat;
-val def_hashmap_size = #def_hashmap_size : 'a hashable -> 'a itself -> nat;
-
-datatype ('a, 'b) hashmap = RBT_HM of (nat, ('a, 'b) assoc_list) rbt;
+fun map fi [] = []
+  | map fi (x21a :: x22) = fi x21a :: map fi x22;
 
 fun is_none (SOME x) = false
   | is_none NONE = true;
 
-datatype 'a dres = DSUCCEEDi | DFAILi | DRETURN of 'a;
-
-fun sgn_integer k =
-  (if ((k : IntInf.int) = 0) then 0
-    else (if IntInf.< (k, 0) then IntInf.~ (1 : IntInf.int)
-           else (1 : IntInf.int)));
-
-fun abs_integer k = (if IntInf.< (k, 0) then IntInf.~ k else k);
-
-fun apsnd f (x, y) = (x, f y);
-
-fun divmod_integer k l =
-  (if ((k : IntInf.int) = 0) then (0, 0)
-    else (if ((l : IntInf.int) = 0) then (0, k)
-           else (apsnd o (fn a => fn b => IntInf.* (a, b)) o sgn_integer) l
-                  (if (((sgn_integer k) : IntInf.int) = (sgn_integer l))
-                    then IntInf.divMod (IntInf.abs k, IntInf.abs l)
-                    else let
-                           val (r, s) =
-                             IntInf.divMod (IntInf.abs k, IntInf.abs l);
-                         in
-                           (if ((s : IntInf.int) = 0) then (IntInf.~ r, 0)
-                             else (IntInf.- (IntInf.~ r, (1 : IntInf.int)),
-                                    IntInf.- (abs_integer l, s)))
-                         end)));
-
-fun snd (a, b) = b;
-
-fun mod_integer k l = snd (divmod_integer k l);
-
-fun mod_nat m n = Nat (mod_integer (integer_of_nat m) (integer_of_nat n));
-
 fun gen_set emp ins l = fold ins l emp;
-
-fun equal_list A_ (a :: lista) [] = false
-  | equal_list A_ [] (a :: lista) = false
-  | equal_list A_ (aa :: listaa) (a :: lista) =
-    eq A_ aa a andalso equal_list A_ listaa lista
-  | equal_list A_ [] [] = true;
-
-val linorder_nat = {order_linorder = order_nat} : nat linorder;
 
 val emptya : ('a, 'b) assoc_list = Assoc_List [];
 
-fun emptyb A_ = (fn _ => empty linorder_nat);
+fun emptyb A_ = (fn _ => empty linorder_uint32);
 
 fun hm_empty_const A_ = RBT_HM (emptyb A_ ());
 
 fun hm_empty A_ = (fn _ => hm_empty_const A_);
-
-fun rbt_del less x (Branch (c, a, y, s, b)) =
-  (if less x y then rbt_del_from_left less x a y s b
-    else (if less y x then rbt_del_from_right less x a y s b else combine a b))
-  | rbt_del less x Empty = Empty
-and rbt_del_from_left less x (Branch (R, va, vb, vc, vd)) y s b =
-  Branch (R, rbt_del less x (Branch (R, va, vb, vc, vd)), y, s, b)
-  | rbt_del_from_left less x Empty y s b =
-    Branch (R, rbt_del less x Empty, y, s, b)
-  | rbt_del_from_left less x (Branch (B, lt, z, v, rt)) y s b =
-    balance_left (rbt_del less x (Branch (B, lt, z, v, rt))) y s b
-and rbt_del_from_right less x a y s (Branch (R, va, vb, vc, vd)) =
-  Branch (R, a, y, s, rbt_del less x (Branch (R, va, vb, vc, vd)))
-  | rbt_del_from_right less x a y s Empty =
-    Branch (R, a, y, s, rbt_del less x Empty)
-  | rbt_del_from_right less x a y s (Branch (B, lt, z, v, rt)) =
-    balance_right a y s (rbt_del less x (Branch (B, lt, z, v, rt)));
 
 fun dbind DFAILi f = DFAILi
   | dbind DSUCCEEDi f = DSUCCEEDi
@@ -1212,6 +829,8 @@ fun deleteb A_ k al = Assoc_List (delete_aux A_ k (impl_ofa al));
 
 fun lookupa A_ al = map_of A_ (impl_ofa al);
 
+fun snd (x1, x2) = x2;
+
 fun update_with_aux B_ v k f [] = [(k, f v)]
   | update_with_aux B_ v k f (p :: ps) =
     (if eq B_ (fst p) k then (k, f (snd p)) :: ps
@@ -1222,11 +841,13 @@ fun update_with A_ v k f al =
 
 fun updatea A_ k v = update_with A_ v k (fn _ => v);
 
-fun impl_of_RBT_HM A_ (RBT_HM x) = x;
+fun impl_of_RBT_HM B_ (RBT_HM x) = x;
 
 fun iteratei al c f = foldli (impl_ofa al) c f;
 
 fun iteratei_bmap_op_list_it_lm_basic_ops s = iteratei s;
+
+val zero_nat : nat = Nat 0;
 
 fun g_size_abort_lm_basic_ops b m =
   iteratei_bmap_op_list_it_lm_basic_ops m (fn s => less_nat s b) (fn _ => suc)
@@ -1236,11 +857,12 @@ fun g_isEmpty_lm_basic_ops m =
   equal_nata (g_size_abort_lm_basic_ops one_nat m) zero_nat;
 
 fun rm_map_entry k f m =
-  (case lookup linorder_nat m k
-    of NONE => (case f NONE of NONE => m | SOME v => insert linorder_nat k v m)
+  (case lookup linorder_uint32 m k
+    of NONE =>
+      (case f NONE of NONE => m | SOME v => insert linorder_uint32 k v m)
     | SOME v =>
-      (case f (SOME v) of NONE => delete linorder_nat k m
-        | SOME va => insert linorder_nat k va m));
+      (case f (SOME v) of NONE => delete linorder_uint32 k m
+        | SOME va => insert linorder_uint32 k va m));
 
 fun deletec (A1_, A2_) k m =
   rm_map_entry (hashcode A2_ k)
@@ -1258,7 +880,7 @@ fun hm_delete (A1_, A2_) k hm =
   RBT_HM (deletec (A1_, A2_) k (impl_of_RBT_HM A2_ hm));
 
 fun lookupb (A1_, A2_) k m =
-  (case lookup linorder_nat m (hashcode A2_ k) of NONE => NONE
+  (case lookup linorder_uint32 m (hashcode A2_ k) of NONE => NONE
     | SOME lm => lookupa A1_ lm k);
 
 fun hm_lookup (A1_, A2_) k hm = lookupb (A1_, A2_) k (impl_of_RBT_HM A2_ hm);
@@ -1267,63 +889,27 @@ fun updateb (A1_, A2_) k v m =
   let
     val hc = hashcode A2_ k;
   in
-    (case lookup linorder_nat m hc
-      of NONE => insert linorder_nat hc (updatea A1_ k v emptya) m
-      | SOME bm => insert linorder_nat hc (updatea A1_ k v bm) m)
+    (case lookup linorder_uint32 m hc
+      of NONE => insert linorder_uint32 hc (updatea A1_ k v emptya) m
+      | SOME bm => insert linorder_uint32 hc (updatea A1_ k v bm) m)
   end;
 
 fun hm_update (A1_, A2_) k v hm =
   RBT_HM (updateb (A1_, A2_) k v (impl_of_RBT_HM A2_ hm));
 
-datatype ('a, 'b) hashmapb =
-  HashMapa of (('a * 'b) list) FArray.IsabelleMapping.ArrayType * nat;
-
-datatype ('a, 'b) hashmapa = HashMap of ('a, 'b) hashmapb;
-
-datatype ('a, 'b, 'c, 'd) gen_frg_impl_ext =
-  Gen_frg_impl_ext of 'a * 'b * 'c * 'd;
-
-datatype ('a, 'b) gen_bg_impl_ext = Gen_bg_impl_ext of 'a * 'b;
-
-fun bgi_F
-  (Gen_frg_impl_ext (frgi_V, frgi_E, frgi_V0, Gen_bg_impl_ext (bgi_F, more))) =
-  bgi_F;
-
-fun frgi_E (Gen_frg_impl_ext (frgi_V, frgi_E, frgi_V0, more)) = frgi_E;
+fun apsnd f (x, y) = (x, f y);
 
 fun extract_res cyc =
-  (case cyc of NO_CYC => NONE | Reach (_, _) => NONE
-    | Circ (pr, pl) => SOME (pr, pl));
+  (case cyc of NO_CYC => NONE | REACH (_, _) => NONE
+    | CIRC (pr, pl) => SOME (pr, pl));
 
-fun rbt_delete less k t = paint B (rbt_del less k t);
-
-fun rbt_lookup less (Branch (uu, l, x, y, r)) k =
-  (if less k x then rbt_lookup less l k
-    else (if less x k then rbt_lookup less r k else SOME y))
-  | rbt_lookup less Empty k = NONE;
-
-fun impl_ofb A_ (HashMap x) = x;
+fun impl_ofb B_ (HashMap x) = x;
 
 fun array_get a = FArray.IsabelleMapping.array_get a o integer_of_nat;
 
 fun array_set a = FArray.IsabelleMapping.array_set a o integer_of_nat;
 
 fun new_array v = FArray.IsabelleMapping.new_array v o integer_of_nat;
-
-fun frgi_V0 (Gen_frg_impl_ext (frgi_V, frgi_E, frgi_V0, more)) = frgi_V0;
-
-fun nat_of_integer k = Nat (max ord_integer 0 k);
-
-fun def_hashmap_size_nat x = (fn _ => nat_of_integer (16 : IntInf.int)) x;
-
-fun bounded_hashcode_nat na n = mod_nat n na;
-
-fun hashcode_nat n = n;
-
-val hashable_nat =
-  {hashcode = hashcode_nat, bounded_hashcode = bounded_hashcode_nat,
-    def_hashmap_size = def_hashmap_size_nat}
-  : nat hashable;
 
 fun the_res (DRETURN x) = x;
 
@@ -1334,6 +920,11 @@ fun map2set_insert i k s = i k () s;
 fun red_init_witness u v = SOME ([u], v);
 
 fun map2set_memb l k s = (case l k s of NONE => false | SOME _ => true);
+
+fun rbt_lookup less (Branch (uu, l, x, y, r)) k =
+  (if less k x then rbt_lookup less l k
+    else (if less x k then rbt_lookup less r k else SOME y))
+  | rbt_lookup less Empty k = NONE;
 
 fun prep_wit_red v NONE = NONE
   | prep_wit_red v (SOME (p, u)) = SOME (v :: p, u);
@@ -1393,31 +984,66 @@ A_))
 fun code_red_dfs A_ e onstack v u =
   the_res (code_red_dfs_0 A_ e onstack (v, u));
 
+fun rbt_del less x (Branch (c, a, y, s, b)) =
+  (if less x y then rbt_del_from_left less x a y s b
+    else (if less y x then rbt_del_from_right less x a y s b else combine a b))
+  | rbt_del less x Empty = Empty
+and rbt_del_from_left less x (Branch (R, va, vb, vc, vd)) y s b =
+  Branch (R, rbt_del less x (Branch (R, va, vb, vc, vd)), y, s, b)
+  | rbt_del_from_left less x Empty y s b =
+    Branch (R, rbt_del less x Empty, y, s, b)
+  | rbt_del_from_left less x (Branch (B, lt, z, v, rt)) y s b =
+    balance_left (rbt_del less x (Branch (B, lt, z, v, rt))) y s b
+and rbt_del_from_right less x a y s (Branch (R, va, vb, vc, vd)) =
+  Branch (R, a, y, s, rbt_del less x (Branch (R, va, vb, vc, vd)))
+  | rbt_del_from_right less x a y s Empty =
+    Branch (R, a, y, s, rbt_del less x Empty)
+  | rbt_del_from_right less x a y s (Branch (B, lt, z, v, rt)) =
+    balance_right a y s (rbt_del less x (Branch (B, lt, z, v, rt)));
+
+fun nat_of_uint32 x = nat_of_integer (Word32.toInt x : IntInf.int);
+
 fun array_grow a = FArray.IsabelleMapping.array_grow a o integer_of_nat;
 
-fun equal_blue_witness A_ (Circ (list1, list2)) (Reach (v, lista)) = false
-  | equal_blue_witness A_ (Reach (v, lista)) (Circ (list1, list2)) = false
-  | equal_blue_witness A_ (Circ (list1, list2)) NO_CYC = false
-  | equal_blue_witness A_ NO_CYC (Circ (list1, list2)) = false
-  | equal_blue_witness A_ (Reach (v, lista)) NO_CYC = false
-  | equal_blue_witness A_ NO_CYC (Reach (v, lista)) = false
-  | equal_blue_witness A_ (Circ (list1a, list2a)) (Circ (list1, list2)) =
+fun equal_list A_ [] (x21 :: x22) = false
+  | equal_list A_ (x21 :: x22) [] = false
+  | equal_list A_ (x21 :: x22) (y21 :: y22) =
+    eq A_ x21 y21 andalso equal_list A_ x22 y22
+  | equal_list A_ [] [] = true;
+
+fun equal_blue_witness A_ (REACH (v, lista)) (CIRC (list1, list2)) = false
+  | equal_blue_witness A_ (CIRC (list1, list2)) (REACH (v, lista)) = false
+  | equal_blue_witness A_ NO_CYC (CIRC (list1, list2)) = false
+  | equal_blue_witness A_ (CIRC (list1, list2)) NO_CYC = false
+  | equal_blue_witness A_ NO_CYC (REACH (v, lista)) = false
+  | equal_blue_witness A_ (REACH (v, lista)) NO_CYC = false
+  | equal_blue_witness A_ (CIRC (list1a, list2a)) (CIRC (list1, list2)) =
     equal_list A_ list1a list1 andalso equal_list A_ list2a list2
-  | equal_blue_witness A_ (Reach (va, listaa)) (Reach (v, lista)) =
+  | equal_blue_witness A_ (REACH (va, listaa)) (REACH (v, lista)) =
     eq A_ va v andalso equal_list A_ listaa lista
   | equal_blue_witness A_ NO_CYC NO_CYC = true;
 
+fun frgi_V0 (Gen_frg_impl_ext (frgi_V, frgi_E, frgi_V0, more)) = frgi_V0;
+
+fun frgi_E (Gen_frg_impl_ext (frgi_V, frgi_E, frgi_V0, more)) = frgi_E;
+
+fun bgi_F
+  (Gen_frg_impl_ext (frgi_V, frgi_E, frgi_V0, Gen_bg_impl_ext (bgi_F, more))) =
+  bgi_F;
+
 fun init_wit_blue_early A_ s t =
-  (if eq A_ s t then Circ ([], [s]) else Reach (t, [s]));
+  (if eq A_ s t then CIRC ([], [s]) else REACH (t, [s]));
+
+fun rbt_delete less k t = paint B (rbt_del less k t);
 
 fun prep_wit_blue A_ u0 NO_CYC = NO_CYC
-  | prep_wit_blue A_ u0 (Reach (u, p)) =
-    (if eq A_ u0 u then Circ ([], u0 :: p) else Reach (u, u0 :: p))
-  | prep_wit_blue A_ u0 (Circ (pr, pl)) = Circ (u0 :: pr, pl);
+  | prep_wit_blue A_ u0 (REACH (u, p)) =
+    (if eq A_ u0 u then CIRC ([], u0 :: p) else REACH (u, u0 :: p))
+  | prep_wit_blue A_ u0 (CIRC (pr, pl)) = CIRC (u0 :: pr, pl);
 
 fun init_wit_blue A_ u0 NONE = NO_CYC
   | init_wit_blue A_ u0 (SOME (p, u)) =
-    (if eq A_ u u0 then Circ ([], p) else Reach (u, p));
+    (if eq A_ u u0 then CIRC ([], p) else REACH (u, p));
 
 fun code_blue_dfs_0 (A1_, A2_) g x =
   let
@@ -1520,11 +1146,43 @@ fun ahm_empty_const A_ = HashMap (ahm_emptya A_ ());
 
 fun ahm_empty A_ = (fn _ => ahm_empty_const A_);
 
+fun sgn_integer k =
+  (if ((k : IntInf.int) = 0) then 0
+    else (if IntInf.< (k, 0) then (~1 : IntInf.int) else (1 : IntInf.int)));
+
+fun abs_integer k = (if IntInf.< (k, 0) then IntInf.~ k else k);
+
+fun divmod_integer k l =
+  (if ((k : IntInf.int) = 0) then (0, 0)
+    else (if ((l : IntInf.int) = 0) then (0, k)
+           else (apsnd o (fn a => fn b => IntInf.* (a, b)) o sgn_integer) l
+                  (if (((sgn_integer k) : IntInf.int) = (sgn_integer l))
+                    then IntInf.divMod (IntInf.abs k, IntInf.abs l)
+                    else let
+                           val (r, s) =
+                             IntInf.divMod (IntInf.abs k, IntInf.abs l);
+                         in
+                           (if ((s : IntInf.int) = 0) then (IntInf.~ r, 0)
+                             else (IntInf.- (IntInf.~ r, (1 : IntInf.int)),
+                                    IntInf.- (abs_integer l, s)))
+                         end)));
+
+fun mod_integer k l = snd (divmod_integer k l);
+
+fun mod_nat m n = Nat (mod_integer (integer_of_nat m) (integer_of_nat n));
+
+fun nat_of_hashcode x = nat_of_uint32 x;
+
+fun bounded_hashcode_nat A_ n x = mod_nat (nat_of_hashcode (hashcode A_ x)) n;
+
+fun minus_nat m n =
+  Nat (max ord_integer 0 (IntInf.- (integer_of_nat m, integer_of_nat n)));
+
 fun array_length x = (nat_of_integer o FArray.IsabelleMapping.array_length) x;
 
 fun ahm_deletea (A1_, A2_) k (HashMapa (a, n)) =
   let
-    val h = bounded_hashcode A2_ (array_length a) k;
+    val h = bounded_hashcode_nat A2_ (array_length a) k;
     val m = array_get a h;
     val deleted = not (is_none (map_of A1_ m k));
   in
@@ -1537,7 +1195,7 @@ fun ahm_delete (A1_, A2_) k hm =
   HashMap (ahm_deletea (A1_, A2_) k (impl_ofb A2_ hm));
 
 fun ahm_alpha_aux (A1_, A2_) a k =
-  map_of A1_ (array_get a (bounded_hashcode A2_ (array_length a) k)) k;
+  map_of A1_ (array_get a (bounded_hashcode_nat A2_ (array_length a) k)) k;
 
 fun ahm_alpha (A1_, A2_) (HashMapa (a, uu)) = ahm_alpha_aux (A1_, A2_) a;
 
@@ -1547,7 +1205,7 @@ fun ahm_lookup (A1_, A2_) k hm = ahm_lookupa (A1_, A2_) k (impl_ofb A2_ hm);
 
 fun ahm_update_aux (A1_, A2_) (HashMapa (a, n)) k v =
   let
-    val h = bounded_hashcode A2_ (array_length a) k;
+    val h = bounded_hashcode_nat A2_ (array_length a) k;
     val m = array_get a h;
     val insert = is_none (map_of A1_ m k);
   in
@@ -1569,7 +1227,7 @@ fun ahm_iteratei_aux A_ a c f sigma =
 
 fun ahm_rehash_auxa A_ n kv a =
   let
-    val h = bounded_hashcode A_ n (fst kv);
+    val h = bounded_hashcode_nat A_ n (fst kv);
   in
     array_set a h (kv :: array_get a h)
   end;
@@ -1581,6 +1239,8 @@ fun ahm_rehash_aux A_ a sz =
 fun ahm_rehash A_ (HashMapa (a, n)) sz = HashMapa (ahm_rehash_aux A_ a sz, n);
 
 val load_factor : nat = nat_of_integer (75 : IntInf.int);
+
+fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
 
 fun ahm_filled A_ (HashMapa (a, n)) =
   less_eq_nat (times_nat (array_length a) load_factor)
@@ -1605,8 +1265,6 @@ fun array_get_oo x a = FArray.IsabelleMapping.array_get_oo x a o integer_of_nat;
 fun array_set_oo f a = FArray.IsabelleMapping.array_set_oo f a o integer_of_nat;
 
 fun ins_hm_basic_ops (A1_, A2_) x s = hm_update (A1_, A2_) x () s;
-
-fun iam_alpha a i = array_get_oo NONE a i;
 
 fun iam_empty x = (fn _ => FArray.IsabelleMapping.array_of_list []) x;
 
@@ -1661,6 +1319,8 @@ fun code_red_dfs_ahs (A1_, A2_) e onstack v u =
   the_res (code_red_dfs_ahs_0 (A1_, A2_) e onstack (v, u));
 
 fun memb_hm_basic_ops (A1_, A2_) x s = not (is_none (hm_lookup (A1_, A2_) x s));
+
+fun iam_alpha a i = array_get_oo NONE a i;
 
 fun iam_lookup k a = iam_alpha a k;
 

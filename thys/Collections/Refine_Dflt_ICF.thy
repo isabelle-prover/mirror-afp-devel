@@ -4,7 +4,7 @@ imports
   "../Refine_Monadic/Refine_Monadic"
   "GenCF/GenCF"
   "ICF/Collections"
-  "~~/src/HOL/Library/Code_Target_Numeral"
+  "Lib/Code_Target_ICF"
 begin
 
 

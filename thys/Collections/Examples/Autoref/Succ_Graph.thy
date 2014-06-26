@@ -16,6 +16,12 @@ lemma slg_rel_def: "\<langle>R\<rangle>slg_rel \<equiv>
   {(succs,G). \<forall>v. (succs v, G``{v}) \<in> \<langle>R\<rangle>list_set_rel}" 
   by (auto simp: slg_rel_def_internal relAPP_def)
 
+lemma [relator_props]: "single_valued R \<Longrightarrow> single_valued (\<langle>R\<rangle>slg_rel)"
+  unfolding slg_rel_def
+  apply (rule single_valuedI)
+  apply (auto dest: single_valuedD[OF list_set_rel_sv])
+  done
+
 consts i_slg :: "interface \<Rightarrow> interface"
 
 lemmas [autoref_rel_intf] =

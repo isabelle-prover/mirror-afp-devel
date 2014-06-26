@@ -280,4 +280,14 @@ lemma length_distinct:
   = (if k \<in> fst ` set xs then length xs - 1 else length xs)"
   by(induct xs)(auto split: split_if_asm simp add: in_set_conv_nth)
 
+lemma finite_Assoc_List_set_image:
+  assumes "finite (Assoc_List.set ` A)"
+  shows "finite A"
+proof -
+  have "Assoc_List.set ` A = set ` Assoc_List.impl_of ` A"
+    by (auto simp add: Assoc_List.set_def)
+  with assms finite_set_image have "finite (Assoc_List.impl_of ` A)" by auto
+  with assoc_list_ext show ?thesis by (metis inj_onI finite_imageD)
+qed
+
 end

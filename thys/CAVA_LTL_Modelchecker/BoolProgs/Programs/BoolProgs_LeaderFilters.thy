@@ -13,7 +13,7 @@ definition "turn n i \<equiv> error + 1 + n*i"
 definition "b n i \<equiv> turn n n + i"
 definition "c n i \<equiv> b n n + i"
 
-definition "curr n i \<equiv> c n n + n * i"
+definition curr where "curr n i \<equiv> c n n + n * i"
 
 definition "L_1 n i = curr n n + i"
 definition "L_2 n i = L_1 n n + i"

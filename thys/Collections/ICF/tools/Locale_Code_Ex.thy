@@ -1,6 +1,8 @@
 header {* Example for locale-code *}
 theory Locale_Code_Ex
-imports Locale_Code "~~/src/HOL/Library/Code_Target_Nat"
+imports 
+  Locale_Code   
+  "../../Lib/Code_Target_ICF"
 begin
 
 definition [simp, code del]: "NOCODE \<equiv> id"

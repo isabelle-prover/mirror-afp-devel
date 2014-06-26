@@ -4,7 +4,7 @@ imports
   "../../Refine_Dflt" 
   Buchi_Graph_Basic
   Succ_Graph
-  "~~/src/HOL/Library/Code_Target_Nat"
+  "../../Lib/Code_Target_ICF"
 begin
 
 text {*

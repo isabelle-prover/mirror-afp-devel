@@ -210,4 +210,44 @@ lemma autoref_detI:
   unfolding nres_rel_def detTAG_def
   by simp
 
+
+subsection {* Relator-Based Transfer *}
+
+definition dres_nres_rel_internal_def: 
+  "dres_nres_rel R \<equiv> {(c,a). nres_of c \<le> \<Down> R a}"
+
+lemma dres_nres_rel_def: "\<langle>R\<rangle>dres_nres_rel \<equiv> {(c,a). nres_of c \<le> \<Down> R a}"
+  by (simp add: dres_nres_rel_internal_def relAPP_def)
+
+lemma dres_nres_relI[intro?]: "nres_of c \<le> \<Down> R a \<Longrightarrow> (c,a)\<in>\<langle>R\<rangle>dres_nres_rel"
+  by (simp add: dres_nres_rel_def)
+
+lemma dres_nres_relD: "(c,a)\<in>\<langle>R\<rangle>dres_nres_rel \<Longrightarrow> nres_of c \<le> \<Down> R a"
+  by (simp add: dres_nres_rel_def)
+
+lemma dres_nres_rel_as_br_conv: 
+  "\<langle>R\<rangle>dres_nres_rel = br nres_of (\<lambda>_. True) O \<langle>R\<rangle>nres_rel"
+  unfolding dres_nres_rel_def br_def nres_rel_def by auto
+
+
+definition plain_nres_rel_internal_def: 
+  "plain_nres_rel R \<equiv> {(c,a). RETURN c \<le> \<Down> R a}"
+
+lemma plain_nres_rel_def: "\<langle>R\<rangle>plain_nres_rel \<equiv> {(c,a). RETURN c \<le> \<Down> R a}"
+  by (simp add: plain_nres_rel_internal_def relAPP_def)
+
+lemma plain_nres_relI[intro?]: "RETURN c \<le> \<Down> R a \<Longrightarrow> (c,a)\<in>\<langle>R\<rangle>plain_nres_rel"
+  by (simp add: plain_nres_rel_def)
+
+lemma plain_nres_relD: "(c,a)\<in>\<langle>R\<rangle>plain_nres_rel \<Longrightarrow> RETURN c \<le> \<Down> R a"
+  by (simp add: plain_nres_rel_def)
+
+lemma plain_nres_rel_as_br_conv: 
+  "\<langle>R\<rangle>plain_nres_rel = br RETURN (\<lambda>_. True) O \<langle>R\<rangle>nres_rel"
+  unfolding plain_nres_rel_def br_def nres_rel_def by auto
+
+(* TODO: Refine_Transfer could be expressed also just as a 
+    parametricity based transfer, and based on the same infrastructure
+    as autoref *)
+
 end

@@ -2777,14 +2777,17 @@ next
   show ?case
   proof (cases "n = v")
     case False with n_le have n_less: "n < v" by simp
-    hence "v - n = Suc (v - (Suc n))" by auto
+    hence "v - n = Suc (v - (Suc n))" by simp
     with indhyp_5 n_less
-    show ?thesis apply (simp add: Ball_def all_conj_distrib)
+    show ?thesis 
+      apply (simp add: Ball_def all_conj_distrib del: Suc_diff)
       apply (cases b)
       apply (simp_all add: image_iff Bex_def ex_disj_distrib all_conj_distrib imp_conjR
                        shift_assignment_def imp_ex all_simps(6)[symmetric]
-                       ll_sem rr_sem 
-                  del: ex_simps all_simps)
+                       ll_sem rr_sem split: nat.split
+                  del: ex_simps all_simps Suc_diff)
+      
+      
     done
   next
     case True note n_eq[simp] = this

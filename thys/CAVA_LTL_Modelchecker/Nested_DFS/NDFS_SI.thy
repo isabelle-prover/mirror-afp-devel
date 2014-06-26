@@ -5,10 +5,10 @@
 header {* Nested DFS using Standard Invariants Approach *}
 theory NDFS_SI
 imports 
-  "../CAVA_Automata/Automata_Impl"
-  "../CAVA_Automata/Lasso"
+  "../../CAVA_Automata/Automata_Impl"
+  "../../CAVA_Automata/Lasso"
   "NDFS_SI_Statistics"
-  "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
+  "../../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
 begin
 
 text {*
@@ -1549,7 +1549,7 @@ text {* Export for benchmarking *}
 
 schematic_lemma acc_of_list_impl_hash:
   notes [autoref_tyrel] = 
-    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel", standard]
+    ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel"]
 
   shows "(?f::?'c,\<lambda>l::nat list. 
     let s=(set l):::\<^sub>r\<langle>nat_rel\<rangle>iam_set_rel 

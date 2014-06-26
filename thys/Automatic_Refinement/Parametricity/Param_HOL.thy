@@ -25,6 +25,8 @@ lemma param_fun_upd[param]: "
   unfolding fun_upd_def[abs_def]
   by (parametricity)
 
+lemma param_unit[param]: "((),())\<in>unit_rel" by auto
+
 lemma rec_bool_is_case: "old.rec_bool = case_bool"
   by (rule ext)+ (auto split: bool.split)
 
@@ -188,6 +190,31 @@ lemma param_case_sum':
      \<And>r r'. \<lbrakk> s=Inr r; s'=Inr r'; (r,r')\<in>Rr \<rbrakk> \<Longrightarrow> (fr r, fr' r')\<in>R
    \<rbrakk> \<Longrightarrow> (case_sum fl fr s, case_sum fl' fr' s')\<in>R"
   by (auto split: sum.split)
+
+primrec is_Inl where "is_Inl (Inl _) = True" | "is_Inl (Inr _) = False"
+primrec is_Inr where "is_Inr (Inr _) = True" | "is_Inr (Inl _) = False"
+
+lemma is_Inl_param[param]: "(is_Inl,is_Inl) \<in> \<langle>Ra,Rb\<rangle>sum_rel \<rightarrow> bool_rel"
+  unfolding is_Inl_def by parametricity
+lemma is_Inr_param[param]: "(is_Inr,is_Inr) \<in> \<langle>Ra,Rb\<rangle>sum_rel \<rightarrow> bool_rel"
+  unfolding is_Inr_def by parametricity
+
+lemma sum_projl_param[param]: 
+  "\<lbrakk>is_Inl s; (s',s)\<in>\<langle>Ra,Rb\<rangle>sum_rel\<rbrakk> 
+  \<Longrightarrow> (Sum_Type.sum.projl s',Sum_Type.sum.projl s) \<in> Ra"
+  apply (cases s)
+  apply (auto elim: sum_relE)
+  done
+
+lemma sum_projr_param[param]: 
+  "\<lbrakk>is_Inr s; (s',s)\<in>\<langle>Ra,Rb\<rangle>sum_rel\<rbrakk> 
+  \<Longrightarrow> (Sum_Type.sum.projr s',Sum_Type.sum.projr s) \<in> Rb"
+  apply (cases s)
+  apply (auto elim: sum_relE)
+  done
+
+
+
 
 lemma param_append[param]: 
   "(append, append)\<in>\<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
@@ -368,6 +395,14 @@ lemma param_concat[param]: "(concat, concat) \<in>
     \<langle>\<langle>R\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
 unfolding concat_def[abs_def] by parametricity
 
+lemma param_all_interval_nat[param]: 
+  "(List.all_interval_nat, List.all_interval_nat) 
+  \<in> (nat_rel \<rightarrow> bool_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
+  unfolding List.all_interval_nat_def[abs_def]
+  apply parametricity
+  apply simp
+  done
+
 
 subsection {*Sets*}
 
@@ -401,7 +436,8 @@ proof
   assume "(l,l')\<in>\<langle>Ra\<rangle>list_rel"
   thus "(set l, set l')\<in>\<langle>Ra\<rangle>set_rel"
     apply (induct)
-    apply simp_all
+    apply simp
+    apply simp
     using A apply (parametricity)
     done
 qed

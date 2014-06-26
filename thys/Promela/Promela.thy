@@ -16,8 +16,7 @@ definition add_label :: "String.literal \<Rightarrow> labels \<Rightarrow> nat \
   "add_label l lbls pos = (
      case lm.lookup l lbls of 
        None \<Rightarrow> lm.update l pos lbls
-     | Some _ \<Rightarrow> Code.abort (implode (''Label given twice: '' @ explode l)) 
-                           (\<lambda>_. lbls))"
+     | Some _ \<Rightarrow> abortv ''Label given twice: '' l (\<lambda>_. lbls))"
 
 definition min_prio :: "edge list \<Rightarrow> integer \<Rightarrow> integer" where
   "min_prio es start = Min ((prio ` set es) \<union> {start})"
@@ -69,7 +68,7 @@ text {*
 
 fun lookupVar :: "variable \<Rightarrow> integer option \<Rightarrow> integer" where
   "lookupVar (Var _ val) None = val"
-| "lookupVar (Var _ _) (Some _) = Code.abort (STR ''Array used on var'') (\<lambda>_.0)"
+| "lookupVar (Var _ _) (Some _) = abort ''Array used on var'' (\<lambda>_.0)"
 | "lookupVar (VArray _ _ vals) None = vals !! 0" (* sic! *)
 | "lookupVar (VArray _ siz vals) (Some idx) = vals !! nat_of_integer idx"
 
@@ -80,10 +79,10 @@ primrec checkVarValue :: "varType \<Rightarrow> integer \<Rightarrow> integer" w
         if lRange = 0 \<and> val > 0 
         then val mod (hRange + 1)
         else (* we do not want to implement C-semantics (ie type casts) *)
-           Code.abort (STR ''Value overflow'') (\<lambda>_. lRange))"
+           abort ''Value overflow'' (\<lambda>_. lRange))"
 | "checkVarValue VTChan val = (
      if val < min_var_value \<or> val > max_var_value 
-     then Code.abort (STR ''Value overflow'') (\<lambda>_. 0) 
+     then abort ''Value overflow'' (\<lambda>_. 0) 
      else val)"
 
 lemma [simp]:
@@ -101,7 +100,7 @@ by (simp add: checkVarValue_bounds)
 
 fun editVar :: "variable \<Rightarrow> integer option \<Rightarrow> integer \<Rightarrow> variable" where
   "editVar (Var type _ ) None val = Var type (checkVarValue type val)"
-| "editVar (Var _ _) (Some _) _ = Code.abort (STR ''Array used on var'') (\<lambda>_. Var VTChan 0)"
+| "editVar (Var _ _) (Some _) _ = abort ''Array used on var'' (\<lambda>_. Var VTChan 0)"
 | "editVar (VArray type siz vals) None val = (
      let lv = IArray.list_of vals in
      let v' = lv[0:=checkVarValue type val] in
@@ -144,7 +143,7 @@ definition getVar'
 where
   "getVar' gl v idx g p = (
           let vars = if gl then gState.vars g else pState.vars p in
-          Option.map (\<lambda>x. lookupVar x idx) (lm.lookup v vars))"
+          map_option (\<lambda>x. lookupVar x idx) (lm.lookup v vars))"
 
 definition setVar' 
   :: "bool \<Rightarrow> String.literal \<Rightarrow> integer option 
@@ -156,13 +155,13 @@ definition setVar'
      if gl then
         if v = STR ''_'' then (g,p) (* '_' is a write-only scratch variable *) 
         else case lm.lookup v (gState.vars g) of
-               None \<Rightarrow> Code.abort (STR ''Unknown variable'') (\<lambda>_. (g,p))
+               None \<Rightarrow> abortv ''Unknown global variable: '' v (\<lambda>_. (g,p))
              | Some x \<Rightarrow> (g\<lparr>gState.vars := lm.update v (editVar x idx val) 
                                                        (gState.vars g)\<rparr>
                          , p)
      else
         case lm.lookup v (pState.vars p) of
-          None \<Rightarrow> Code.abort (STR ''Unknown variable'') (\<lambda>_. (g,p))
+          None \<Rightarrow> abortv ''Unknown proc variable: '' v (\<lambda>_. (g,p))
         | Some x \<Rightarrow> (g, p\<lparr>pState.vars := lm.update v (editVar x idx val) 
                                                      (pState.vars p)\<rparr>))"
 
@@ -242,14 +241,15 @@ definition withChannel'
       \<Rightarrow> 'x"
 where
   "withChannel' gl v idx f g p = ( 
-     let error = \<lambda>_. Code.abort (implode (''Variable is not a channel: '' @ explode v)) 
+     let error = \<lambda>_. abortv ''Variable is not a channel: '' v 
                                 (\<lambda>_. f 0 InvChannel) in
-     let msg = implode (''Channel already closed / invalid: '' @ explode v)
+     let abort = \<lambda>_. abortv ''Channel already closed / invalid: '' v
+                                (\<lambda>_. f 0 InvChannel)
      in withVar' gl v idx (\<lambda>i. let i = nat_of_integer i in 
                                if i \<ge> length (channels g) then error () 
                                else let c = channels g ! i in
                                     case c of
-                                      InvChannel \<Rightarrow> Code.abort msg (\<lambda>_. f 0 InvChannel)
+                                      InvChannel \<Rightarrow> abort ()
                                     | _ \<Rightarrow> f i c) g p)"
 
 subsection {* Expressions *}
@@ -366,7 +366,7 @@ where
        \<lambda>_ c. pollCheck g p c rs srt) g p)"
 
 | "pollCheck g p InvChannel _ _ = 
-     Code.abort (STR ''Channel already closed / invalid.'') (\<lambda>_. False)"
+     abort ''Channel already closed / invalid.'' (\<lambda>_. False)"
 | "pollCheck g p (HSChannel _) _ _ = False"
 | "pollCheck g p (Channel _ _ q) rs srt = (
      if q = [] then False
@@ -375,9 +375,9 @@ where
 
 | "recvArgsCheck _ _ [] [] = True"
 | "recvArgsCheck _ _ _  [] = 
-     Code.abort (STR ''Length mismatch on receiving.'') (\<lambda>_. False)"
+     abort ''Length mismatch on receiving.'' (\<lambda>_. False)"
 | "recvArgsCheck _ _ []  _ = 
-     Code.abort (STR ''Length mismatch on receiving.'') (\<lambda>_. False)"
+     abort ''Length mismatch on receiving.'' (\<lambda>_. False)"
 | "recvArgsCheck g p (r#rs) (v#vs) = ((
        case r of 
           RecvArgConst c \<Rightarrow> c = v
@@ -389,7 +389,7 @@ text {* @{const getVar'} etc.\ do operate on name, index, \ldots directly. Lift 
 
 fun liftVar where
   "liftVar f (VarRef gl v idx) arg g p = 
-      f gl v (Option.map (exprArith g p) idx) arg g p"
+      f gl v (map_option (exprArith g p) idx) arg g p"
 
 definition "getVar v = liftVar (\<lambda>gl v idx arg. getVar' gl v idx) v ()"
 definition "setVar = liftVar setVar'"
@@ -440,8 +440,8 @@ primrec toVariable
 where
   "toVariable g p (VarDeclNum lb hb name siz init) = (
      let type = VTBounded lb hb in
-     if \<not> varType_inv type then Code.abort (STR ''Invalid var def'') 
-                                           (\<lambda>_. (name, Var VTChan 0, []))
+     if \<not> varType_inv type then abortv ''Invalid var def (varType_inv failed): '' name 
+                                       (\<lambda>_. (name, Var VTChan 0, []))
      else
        let 
          init = checkVarValue type (case init of 
@@ -452,8 +452,8 @@ where
               | Some s \<Rightarrow> if nat_of_integer s \<le> max_array_size 
                          then VArray type (nat_of_integer s) 
                                           (IArray.tabulate (s, \<lambda>_. init))
-                         else Code.abort (STR ''Invalid var def'') 
-                                         (\<lambda>_. Var VTChan 0))
+                         else abortv ''Invalid var def (array too large): '' name
+                                      (\<lambda>_. Var VTChan 0))
         in
            (name, v, []))"
 
@@ -466,7 +466,8 @@ where
                     let C = (if cap = 0 then HSChannel tys 
                              else Channel cap tys []) in
                     if \<not> channel_inv C 
-                    then Code.abort (STR ''Invalid var def'') (\<lambda>_. [])
+                    then abortv ''Invalid var def (channel_inv failed): '' 
+                                name (\<lambda>_. [])
                     else replicate size C);
        cidx = (case types of 
                  None \<Rightarrow> 0 
@@ -478,8 +479,8 @@ where
                                           (IArray.tabulate (s, 
                                              \<lambda>i. if cidx = 0 then 0 
                                                  else i + cidx))
-                       else Code.abort (STR ''Invalid var def'') 
-                                       (\<lambda>_. Var VTChan 0))
+                       else abortv ''Invalid var def (array too large): '' 
+                                   name (\<lambda>_. Var VTChan 0))
      in
         (name, v, chans))"
 
@@ -494,6 +495,7 @@ apply (cases v)
       apply (auto intro!: mod_ge mod_le simp add: min_var_value_def)
     apply (simp_all add: assms gState_inv_def 
                max_channels_def max_var_value_def min_var_value_def max_array_size_def)
+    including integer.lifting
     apply (transfer, simp)+
 done
 
@@ -517,7 +519,7 @@ definition mkChannels
      if cs = [] then (g,p) else 
      let l = length (channels g) in
      if l + length cs > max_channels 
-     then Code.abort (STR ''Too much channels'') (\<lambda>_.  (g,p))
+     then abort ''Too much channels'' (\<lambda>_.  (g,p))
      else let
             cs\<^sub>p = map integer_of_nat [l..<l + length cs];
             g' = g\<lparr>channels := channels g @ cs\<rparr>;
@@ -541,8 +543,10 @@ lemma mkChannels_pState_inv:
    \<Longrightarrow> cl_inv (g,p) 
    \<Longrightarrow> pState_inv prog (snd (mkChannels g p cs))"
 unfolding mkChannels_def
-by (auto simp add: pState_inv_def pState.defs gState_inv_def dest!: cl_inv_lengthD) 
-   (transfer', simp)+
+including integer.lifting
+  apply (auto simp add: pState_inv_def pState.defs gState_inv_def dest!: cl_inv_lengthD)
+    apply (transfer', simp)+
+    done
 
 lemma mkChannels_cl_inv:
   "cl_inv (g,p) \<Longrightarrow> cl_inv (mkChannels g p cs)"
@@ -764,8 +768,8 @@ where
        (ProcArg ty name, val) \<Rightarrow> if varType_inv ty 
                                 then let init = checkVarValue ty val 
                                      in (name, Var ty init)
-                                else Code.abort (STR ''Invalid proc arg'') 
-                                                (\<lambda>_. (name, Var VTChan 0)))"
+                                else abortv ''Invalid proc arg (varType_inv failed)'' 
+                                            name (\<lambda>_. (name, Var VTChan 0)))"
 
 definition emptyProc :: "pState"
   -- "The empty process."
@@ -793,17 +797,18 @@ proof -
 qed
 
 fun mkProc 
-  :: "'a gState_scheme \<Rightarrow> pState \<Rightarrow> expr list \<Rightarrow> process \<Rightarrow> nat 
+  :: "'a gState_scheme \<Rightarrow> pState
+    \<Rightarrow> String.literal \<Rightarrow> expr list \<Rightarrow> process \<Rightarrow> nat 
     \<Rightarrow> 'a gState_scheme * pState" 
 where
-  "mkProc g p args (sidx, start, argDecls, decls) pidN = (
+  "mkProc g p name args (sidx, start, argDecls, decls) pidN = (
      let start = case start of 
                    Index x \<Rightarrow> x
-                 | _ \<Rightarrow> Code.abort (STR ''UGH!'') (\<lambda>_. 0) 
+                 | _ \<Rightarrow> abortv ''Process start is not index: '' name (\<lambda>_. 0) 
      in
       (* sanity check *)
       if length args \<noteq> length argDecls 
-      then Code.abort (STR ''Signature mismatch'') (\<lambda>_. (g,emptyProc))
+      then abortv ''Signature mismatch: '' name (\<lambda>_. (g,emptyProc))
       else
         let
           (* evaluate args (in the context of the calling process) *)
@@ -827,7 +832,7 @@ where
 
 lemma mkProc_gState_progress_rel:
   assumes "gState_inv prog g"
-  shows "(g, fst (mkProc g p args (processes prog !! sidx) pidN)) \<in>  
+  shows "(g, fst (mkProc g p name args (processes prog !! sidx) pidN)) \<in>  
           gState_progress_rel prog"
 proof -
   obtain sidx' start argDecls decls  where 
@@ -861,7 +866,7 @@ lemma mkProc_pState_inv:
   and "pidN \<le> max_procs" and "pidN > 0"
   and "sidx < IArray.length (processes prog)"
   and "fst (processes prog !! sidx) = sidx"
-  shows "pState_inv prog (snd (mkProc g p args (processes prog !! sidx) pidN))"
+  shows "pState_inv prog (snd (mkProc g p name args (processes prog !! sidx) pidN))"
 proof -
   obtain sidx' start argDecls decls  where 
     "processes prog !! sidx = (sidx', start, argDecls, decls)"
@@ -885,6 +890,7 @@ proof -
                    pc = s, channels = [], idx = sidx\<rparr>"
     unfolding pState_inv_def
     using assms[unfolded program_inv_def]
+    including integer.lifting
     apply (simp add: p_def)
     apply (intro lm_to_map_vardict_inv)
     apply auto
@@ -972,7 +978,7 @@ qed
 
 lemma mkProc_cl_inv:
   assumes "cl_inv (g,p)"
-  shows "cl_inv (mkProc g p args (processes prog !! sidx) pidN)"
+  shows "cl_inv (mkProc g p name args (processes prog !! sidx) pidN)"
 proof -
   note IArray.sub_def [simp del]
   obtain sidx' start argDecls decls  
@@ -1010,13 +1016,13 @@ definition runProc
 where
   "runProc name args prog g p = (
      if length (procs g) \<ge> max_procs 
-     then Code.abort (STR ''Too many processes'') (\<lambda>_. (g,p))
+     then abort ''Too many processes'' (\<lambda>_. (g,p))
      else let pid = length (procs g) + 1 in
           case lm.lookup name (proc_data prog) of 
-            None \<Rightarrow> Code.abort (implode (''No such process: '' @ explode name)) 
-                              (\<lambda>_. (g,p))
+            None \<Rightarrow> abortv ''No such process: '' name 
+                          (\<lambda>_. (g,p))
           | Some proc_idx \<Rightarrow> 
-               let (g', proc) = mkProc g p args (processes prog !! proc_idx) pid
+               let (g', proc) = mkProc g p name args (processes prog !! proc_idx) pid
                in (g'\<lparr>procs := procs g @ [proc]\<rparr>, p))"
 
 lemma runProc_gState_progress_rel:
@@ -1037,7 +1043,7 @@ proof (cases "length (procs g) < max_procs")
       by (simp_all add: lm.correct program_inv_def)
       
     obtain g' p' where 
-      new: "(g',p') = mkProc g p args (processes prog !! proc_idx) (length (procs g) + 1)"
+      new: "(g',p') = mkProc g p name args (processes prog !! proc_idx) (length (procs g) + 1)"
       by (metis prod.exhaust)
     hence g': "g' = fst ..." and p': "p' = snd ..." 
       by (metis snd_conv fst_conv)+
@@ -1246,7 +1252,7 @@ where
    ([[\<lparr>cond = ECTrue, effect = EEGoto, target = onxt, prio = pri, 
         atomic = NonAtomic \<rparr>]], onxt, lbls)"
 | "stmntToState StmntBreak (_,_,_,_,None,_) = 
-   Code.abort (STR ''Misplaced break'') (\<lambda>_. ([],Index 0,lm.empty()))"
+   abort ''Misplaced break'' (\<lambda>_. ([],Index 0,lm.empty()))"
 
 | "stmntToState (StmntRun n args) (lbls, pri, pos, nxt, onxt, _) =
    ([[\<lparr>cond = ECRun n, effect = EERun n args, target = nxt, prio = pri, 
@@ -1275,7 +1281,7 @@ definition endState :: "edge list" where
 definition resolveLabel :: "String.literal \<Rightarrow> labels \<Rightarrow> nat" where
   "resolveLabel l lbls = (
      case lm.lookup l lbls of 
-       None \<Rightarrow> Code.abort (implode (''Unresolved label: '' @ explode l)) (\<lambda>_. 0)
+       None \<Rightarrow> abortv ''Unresolved label: '' l (\<lambda>_. 0)
      | Some pos \<Rightarrow> pos)"
 
 primrec resolveLabels :: "edge list list \<Rightarrow> labels \<Rightarrow> edge list \<Rightarrow> edge list" where
@@ -1318,7 +1324,7 @@ definition toStates :: "step list \<Rightarrow> states * edgeIndex * labels" whe
     in
     case pos of Index s \<Rightarrow> 
           if s < length states then (IArray states, pos, lbls)
-          else Code.abort (STR ''Oops!'') (\<lambda>_. (IArray states, Index 0, lbls)))"
+          else abort ''Start index out of bounds'' (\<lambda>_. (IArray states, Index 0, lbls)))"
 
 lemma toStates_inv:
   assumes "toStates steps = (ss,start,lbls)"
@@ -1418,8 +1424,10 @@ next
   case goal4 thus ?case
     unfolding setUp_def
     by (auto simp add: lm.correct o_def in_set_enumerate_eq nth_enumerate_eq 
-            dest!: subsetD[OF ran_map_of] toProcess_sidx 
+            dest!: subsetD[OF Misc.ran_map_of] toProcess_sidx 
             split: prod.splits)
+  (* TODO: Change name Misc.ran_map_of \<longrightarrow> ran_map_of_ss, as it collides 
+      with AList.ran_map_of *)
 next
   case goal5 thus ?case
     apply (auto simp add: setUp_def o_def split: prod.splits)
@@ -1505,9 +1513,9 @@ fun evalRecvArgs
 where
   "evalRecvArgs [] [] g l = (g,l)"
 | "evalRecvArgs _  [] g l = 
-     Code.abort (STR ''Length mismatch on receiving.'') (\<lambda>_. (g,l))"
+     abort ''Length mismatch on receiving.'' (\<lambda>_. (g,l))"
 | "evalRecvArgs []  _ g l = 
-     Code.abort (STR ''Length mismatch on receiving.'') (\<lambda>_. (g,l))"
+     abort ''Length mismatch on receiving.'' (\<lambda>_. (g,l))"
 | "evalRecvArgs (r#rs) (v#vs) g l = (
      let (g,l) =
        case r of 
@@ -1559,16 +1567,16 @@ where
      else (g,l))"
 | "evalEffect (EESend v es srt) _ g l = withChannel v (\<lambda>i c. 
      let 
-       abort = \<lambda>_. Code.abort (STR ''Length mismatch on sending.'') (\<lambda>_. (g,l));
+       ab = \<lambda>_. abort ''Length mismatch on sending.'' (\<lambda>_. (g,l));
        es = map (exprArith g l) es
      in
        if \<not> for_all (\<lambda>x. x \<ge> min_var_value \<and> x \<le> max_var_value) es 
-       then Code.abort (STR ''Inv Channel'') (\<lambda>_. (g,l))
+       then abort ''Invalid Channel'' (\<lambda>_. (g,l))
        else
           case c of 
             Channel cap ts q \<Rightarrow> 
               if length ts \<noteq> length es \<or> \<not> (length q < max_array_size) 
-              then abort()
+              then ab()
               else let
                      q' = if \<not> srt then q@[es]
                           else insort es q;
@@ -1576,14 +1584,14 @@ where
                               cs[ i := Channel cap ts q' ]) g
                    in (g,l)
           | HSChannel ts \<Rightarrow>
-              if length ts \<noteq> length es then abort()
+              if length ts \<noteq> length es then ab()
               else (g\<lparr>hsdata := es, handshake := i\<rparr>, l)
-          | InvChannel \<Rightarrow> Code.abort (STR ''INVALID'') (\<lambda>_. (g,l))
+          | InvChannel \<Rightarrow> abort ''Trying to send on invalid channel'' (\<lambda>_. (g,l))
     ) g l"
 | "evalEffect (EERecv v rs srt rem) _ g l = withChannel v (\<lambda>i c. 
      case c of 
        Channel cap ts qs \<Rightarrow>
-          if qs = [] then Code.abort (STR ''Recv from empty channel'') (\<lambda>_. (g,l))
+          if qs = [] then abort ''Recv from empty channel'' (\<lambda>_. (g,l))
           else
              let
                (q', qs') = if \<not> srt then (hd qs, tl qs)
@@ -1598,7 +1606,7 @@ where
              let (g,l) = evalRecvArgs rs (hsdata g) g l in
              let g = g\<lparr> handshake := 0, hsdata := [] \<rparr>
              in (g,l)
-      | InvChannel \<Rightarrow> Code.abort (STR ''INVALID'') (\<lambda>_. (g,l))
+      | InvChannel \<Rightarrow> abort ''Receiving on invalid channel'' (\<lambda>_. (g,l))
    ) g l"
 
 lemma statesDecls_effect:
@@ -1782,8 +1790,8 @@ next
       moreover obtain res q' where 
         "apfst the (find_remove (recvArgsCheck g p rs) q) = (res, q')" 
         by (metis prod.exhaust)
-      moreover hence "q' = snd (find_remove (recvArgsCheck g p rs) q)" 
-        by (simp add: apfst_def map_pair_def split: prod.splits)
+      moreover hence "q' = snd (find_remove (recvArgsCheck g p rs) q)"
+        by (simp add: apfst_def map_prod_def split: prod.splits)
       with find_remove_subset find_remove_length have 
         "set q' \<subseteq> set q" "length q' \<le> length q" 
         by (metis surjective_pairing)+
@@ -1901,7 +1909,7 @@ definition sort_by_pri where
   "sort_by_pri min_pri edges = foldl (\<lambda>es e. 
       let idx = nat_of_integer (abs (prio e))
       in if idx > min_pri 
-         then Code.abort (STR ''UGH'') (\<lambda>_. es)
+         then abort ''Invalid priority'' (\<lambda>_. es)
          else let ep = e # (es ! idx) in es[idx := ep]
       ) (replicate (min_pri + 1) []) edges"
 
@@ -2215,8 +2223,8 @@ definition applyEdge
 
          let p'' = (case target e of Index t \<Rightarrow> 
                      if t < IArray.length (states prog !! pState.idx p') then p'\<lparr>pc := t\<rparr>
-                     else Code.abort (STR ''Invalid program'') (\<lambda>_. p')
-                   | _ \<Rightarrow>  Code.abort (STR ''Invalid program'') (\<lambda>_. p'));
+                     else abort ''Edge target out of bounds'' (\<lambda>_. p')
+                   | _ \<Rightarrow>  abort ''Edge target not Index'' (\<lambda>_. p'));
          ASSERT (pState_inv prog p'');
 
          let g'' = g'\<lparr>procs := list_update (procs g') (pid p'' - 1) p''\<rparr>;
@@ -2438,8 +2446,8 @@ definition replay :: "program \<Rightarrow> gState \<Rightarrow> gState \<Righta
        if E = [] then 
          if check g then RETURN []
          else if \<not> timeout g then D (g\<lparr>timeout := True\<rparr>)
-         else Code.abort (STR ''Stuttering should not occur on replay'') 
-                         (\<lambda>_. RETURN [])
+         else abort ''Stuttering should not occur on replay'' 
+                    (\<lambda>_. RETURN [])
        else
           let g = reset\<^sub>I g in
           nfoldli E (\<lambda>E. E = []) (\<lambda>(e,p) _.
@@ -2455,10 +2463,9 @@ definition replay :: "program \<Rightarrow> gState \<Rightarrow> gState \<Righta
        }) g\<^sub>1
 )"
 
-lemma Code_abort_refine[refine_transfer]:
-  "nres_of (f ()) \<le> F () \<Longrightarrow> nres_of (Code.abort s f) \<le> Code.abort s F"
-  "f() \<noteq> dSUCCEED \<Longrightarrow> Code.abort s f \<noteq> dSUCCEED"
-unfolding Code.abort_def
+lemma abort_refine[refine_transfer]:
+  "nres_of (f ()) \<le> F () \<Longrightarrow> nres_of (abort s f) \<le> abort s F"
+  "f() \<noteq> dSUCCEED \<Longrightarrow> abort s f \<noteq> dSUCCEED"
 by auto
 
 schematic_lemma replay_code_aux:
@@ -2507,7 +2514,7 @@ code_identifier
   code_module "PromelaInvariants" \<rightharpoonup> (SML) Promela
 | code_module "PromelaDatastructures" \<rightharpoonup> (SML) Promela
 
-definition "nexts_triv prog g = nexts_code prog id g"
+definition "nexts_triv prog g = the_res (nexts_code prog id g)"
 definition "executable_triv prog g = executable_impl (snd prog) g"
 definition "apply_triv prog g ep = applyEdge_impl prog (fst ep) (snd ep) (reset\<^sub>I g)"
 

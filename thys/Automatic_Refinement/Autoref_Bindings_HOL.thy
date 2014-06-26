@@ -78,7 +78,8 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
   lemmas [autoref_rel_intf] = REL_INTFI[of bool_rel i_bool]
 
   lemma [autoref_itype]:
-    "(x::bool) ::\<^sub>i i_bool"
+    "True ::\<^sub>i i_bool"
+    "False ::\<^sub>i i_bool"
     "conj ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "op \<longleftrightarrow> ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
     "op \<longrightarrow> ::\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool \<rightarrow>\<^sub>i i_bool"
@@ -102,6 +103,7 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
 
   subsection "Standard Type Classes"
 
+
 context begin interpretation autoref_syn .
   text {*
     We allow these operators for all interfaces.
@@ -117,17 +119,14 @@ context begin interpretation autoref_syn .
     "op * ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
     "0 ::\<^sub>i I"
     "1 ::\<^sub>i I"
-    "- 1 ::\<^sub>i I"
     "numeral x ::\<^sub>i I"
-    "- numeral x ::\<^sub>i I"
+    "uminus ::\<^sub>i I \<rightarrow>\<^sub>i I"
     by auto
 
   lemma pat_num_generic[autoref_op_pat]:
     "0 \<equiv> OP 0 :::\<^sub>i I"
     "1 \<equiv> OP 1 :::\<^sub>i I"
-    "- 1 \<equiv> OP (- 1) :::\<^sub>i I"
     "numeral x \<equiv> (OP (numeral x) :::\<^sub>i I)"
-    "- numeral x \<equiv> (OP (- numeral x) :::\<^sub>i I)"
     by simp_all
 
   lemma [autoref_rules]: 
@@ -136,10 +135,9 @@ context begin interpretation autoref_syn .
     and "(op \<le>, op \<le>) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
     and "(op =, op =) \<in> Id\<rightarrow>Id\<rightarrow>bool_rel"
     and "(numeral x,OP (numeral x) ::: Id) \<in> Id"
-    and "(-numeral x,OP (- numeral x) ::: Id) \<in> Id"
+    and "(uminus,uminus) \<in> Id \<rightarrow> Id"
     and "(0,0) \<in> Id"
     and "(1,1) \<in> Id"
-    and "(- 1,- 1) \<in> Id"
     by auto
 
   subsection "Functional Combinators"
@@ -226,9 +224,8 @@ context begin interpretation autoref_syn .
     lemma pat_num_int[autoref_op_pat]:
       "0::int \<equiv> OP 0 :::\<^sub>i i_int"
       "1::int \<equiv> OP 1 :::\<^sub>i i_int"
-      "- 1::int \<equiv> OP (- 1) :::\<^sub>i i_int"
       "(numeral x)::int \<equiv> (OP (numeral x) :::\<^sub>i i_int)"
-      "(- numeral x)::int \<equiv> (OP (- numeral x) :::\<^sub>i i_int)"
+      "(neg_numeral x)::int \<equiv> (OP (neg_numeral x) :::\<^sub>i i_int)"
       by simp_all
 
     (*lemma [autoref_itype]:
@@ -393,6 +390,19 @@ context begin interpretation autoref_syn .
 
   lemma sum_eq_expand[autoref_struct_expand]: "op = = sum_eq op= op="
     by (auto intro!: ext simp: sum_eq_def split: sum.splits)
+
+  lemmas [autoref_rules] = is_Inl_param is_Inr_param
+
+  lemma autoref_sum_Projl[autoref_rules]: 
+    "\<lbrakk>SIDE_PRECOND (is_Inl s); (s',s)\<in>\<langle>Ra,Rb\<rangle>sum_rel\<rbrakk> 
+    \<Longrightarrow> (Sum_Type.sum.projl s', (OP Sum_Type.sum.projl ::: \<langle>Ra,Rb\<rangle>sum_rel \<rightarrow> Ra)$s)\<in>Ra"
+    by simp parametricity
+
+  lemma autoref_sum_Projr[autoref_rules]: 
+    "\<lbrakk>SIDE_PRECOND (is_Inr s); (s',s)\<in>\<langle>Ra,Rb\<rangle>sum_rel\<rbrakk> 
+    \<Longrightarrow> (Sum_Type.sum.projr s', (OP Sum_Type.sum.projr ::: \<langle>Ra,Rb\<rangle>sum_rel \<rightarrow> Rb)$s)\<in>Rb"
+    by simp parametricity
+
 end
 
 subsection "List"
@@ -584,6 +594,13 @@ context begin interpretation autoref_syn .
 
   declare param_rev[autoref_rules]
 
+  declare param_all_interval_nat[autoref_rules]
+  lemma [autoref_op_pat]: 
+    "(\<forall>i<u. P i) \<equiv> OP List.all_interval_nat P 0 u"
+    "(\<forall>i\<le>u. P i) \<equiv> OP List.all_interval_nat P 0 (Suc u)"
+    "(\<forall>i<u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l u"
+    "(\<forall>i\<le>u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l (Suc u)"
+    by (auto intro!: eq_reflection simp: List.all_interval_nat_def)
 
 end
 

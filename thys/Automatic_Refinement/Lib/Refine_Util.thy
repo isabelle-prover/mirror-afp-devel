@@ -681,6 +681,12 @@ ML {*
          "repeteadly apply elimination rules to all subgoals"
       #> Method.setup @{binding subst_tac} eqsubst_inst_meth
            "single-step substitution (dynamic instantiation)"
+      #> Method.setup @{binding clarsimp_all} (
+           let open Clasimp in
+             Method.sections clasimp_modifiers >> K (fn ctxt => SIMPLE_METHOD (
+               CHANGED_PROP (ALLGOALS (clarsimp_tac ctxt))))
+            end
+         ) "Simplify and clarify all subgoals"
 
   end
 

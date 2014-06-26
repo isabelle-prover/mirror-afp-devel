@@ -164,7 +164,6 @@ apply(induct bq arbitrary: t)
 apply(simp)
 by (metis list.sel(1) hd_in_set list.distinct(1) rank_invar.simps(3))
 
-
 lemma rank_invar_hd_cons: 
   "\<lbrakk>rank_invar bq; rank t < rank (hd bq)\<rbrakk> \<Longrightarrow> rank_invar (t # bq)"
 apply(cases bq)

@@ -15,7 +15,8 @@ text {*
 *}
 
 subsection {* Definition *}
-
+(* TODO: Warning, this is not exactly DFS, as V is not updated in FOREACH.
+  Replace by more accurate example from ICFContainers paper draft! *)
 text {* Recursive DFS-Algorithm. 
   @{text "E"} is the edge relation of the graph, @{text "vd"} the node to 
   search for, and @{text "v0"} the start node.

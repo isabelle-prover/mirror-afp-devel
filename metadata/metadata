@@ -1710,6 +1710,7 @@ abstract =
  <p>
  The CAVA Automata Library is described in the paper: Peter Lammich, The
  CAVA Automata Library, Isabelle Workshop 2014.
+depends-on = Collections
 
 [LTL_to_GBA]
 title = Converting Linear-Time Temporal Logic to Generalized Büchi Automata
@@ -1728,6 +1729,7 @@ abstract =
  We use the Isabelle Refinement and Collection framework, as well as the
  Autoref tool, to obtain a refined version of our algorithm, from which
  efficiently executable code can be extracted.
+depends-on = CAVA_Automata
 
 [Gabow_SCC]
 title = Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm
@@ -1743,6 +1745,7 @@ abstract =
  when defining variants of the algorithm. We demonstrate this by
  verifying an algorithm for the emptiness check of generalized Büchi
  automata, re-using most of the existing proofs.
+depends-on = CAVA_Automata
 
 [Promela]
 title = Promela Formalization
@@ -1760,6 +1763,7 @@ abstract =
  generated from an SML parser, removes syntactic sugar and enriches it
  with type information. This further gets translated into a transition
  system, on which the semantic engine (read: successor function) operates.
+depends-on = CAVA_Automata
 
 [CAVA_LTL_Modelchecker]
 title = A Fully Verified Executable LTL Model Checker
@@ -1788,6 +1792,7 @@ abstract =
  An early version of this model checker is described in the
  <a href="http://www.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
  with the same title.
+depends-on = Gabow_SCC Promela LTL_to_GBA
 
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples

@@ -1,3 +1,4 @@
+*** Obsolete ***
 theory Collections_Patch1
 imports 
   "../../Collections/Refine_Dflt"      

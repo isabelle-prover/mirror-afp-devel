@@ -31,4 +31,4 @@ session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
     CAVA_Impl
   theories [document=false]
     All_Of_CAVA_LTL_Modelchecker
-  files "document/root.tex"
+  document_files "root.tex" "root.bib"
