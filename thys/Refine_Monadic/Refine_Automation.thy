@@ -539,8 +539,8 @@ text {*
 
   This method is specialized to
   solve verification conditions. It first clarsimps all goals, then
-  it tries to apply a set of safe introduction rules (vcs_rec, rec add).
-  Finally, it applies introduction rules (vcs_solve, solve add) and tries
+  it tries to apply a set of safe introduction rules (@{text "vcs_rec"}, @{text "rec add"}).
+  Finally, it applies introduction rules (@{text "vcs_solve"}, @{text "solve add"}) and tries
   to discharge all emerging subgoals by auto. If this does not succeed, it
   backtracks over the application of the solve-rule.
 *}
