@@ -491,46 +491,6 @@ lemma almost_full_on_prod_less:
 
 subsection {* List Embedding *}
 
-(*TODO: move*)
-lemma list_emb_trans:
-  assumes "\<And>x y z. \<lbrakk>x \<in> set xs; y \<in> set ys; z \<in> set zs; P x y; P y z\<rbrakk> \<Longrightarrow> P x z"
-  shows "\<lbrakk>list_emb P xs ys; list_emb P ys zs\<rbrakk> \<Longrightarrow> list_emb P xs zs"
-proof -
-  assume "list_emb P xs ys" and "list_emb P ys zs"
-  then show "list_emb P xs zs" using assms
-  proof (induction arbitrary: zs)
-    case list_emb_Nil show ?case by blast
-  next
-    case (list_emb_Cons xs ys y)
-    from list_emb_ConsD [OF `list_emb P (y#ys) zs`] obtain us v vs
-      where zs: "zs = us @ v # vs" and "P\<^sup>=\<^sup>= y v" and "list_emb P ys vs" by blast
-    then have "list_emb P ys (v#vs)" by blast
-    then have "list_emb P ys zs" unfolding zs by (rule list_emb_append2)
-    from list_emb_Cons.IH [OF this] and list_emb_Cons.prems show ?case by auto
-  next
-    case (list_emb_Cons2 x y xs ys)
-    from list_emb_ConsD [OF `list_emb P (y#ys) zs`] obtain us v vs
-      where zs: "zs = us @ v # vs" and "P y v" and "list_emb P ys vs" by blast
-    with list_emb_Cons2 have "list_emb P xs vs" by auto
-    moreover have "P x v"
-    proof -
-      from zs have "v \<in> set zs" by auto
-      moreover have "x \<in> set (x#xs)" and "y \<in> set (y#ys)" by simp_all
-      ultimately show ?thesis
-        using `P x y` and `P y v` and list_emb_Cons2
-        by blast
-    qed
-    ultimately have "list_emb P (x#xs) (v#vs)" by blast
-    then show ?case unfolding zs by (rule list_emb_append2)
-  qed
-qed
-
-(*TODO:move*)
-lemma list_emb_set:
-  assumes "list_emb P xs ys" and "x \<in> set xs"
-  obtains y where "y \<in> set ys" and "P x y"
-  using assms by (induct) auto
-
 lemma reflp_on_list_emb:
   assumes "reflp_on P A"
   shows "reflp_on (list_emb P) (lists A)"
