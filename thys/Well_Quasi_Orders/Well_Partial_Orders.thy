@@ -240,10 +240,6 @@ qed
 
 subsection {* Higman's Lemma for Well-Partial-Orders *}
 
-lemma irreflp_on_list_hemb:
-  "irreflp_on (list_hemb P) (lists A)"
-  by (auto simp: irreflp_on_def list_hemb_def)
-
 text {*Every irreflexive and transitive relation on a finite set is a wpo.*}
 lemma finite_wpo_on:
   assumes "finite A"
@@ -363,6 +359,11 @@ proof
 qed
 
 (*
+
+lemma irreflp_on_list_hemb:
+  "irreflp_on (list_hemb P) (lists A)"
+  by (auto simp: irreflp_on_def list_hemb_def)
+
 lemma wpo_on_lists:
   assumes "wpo_on P A" shows "wpo_on (list_hemb P) (lists A)"
   using assms

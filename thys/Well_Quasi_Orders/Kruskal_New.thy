@@ -18,6 +18,18 @@ locale kruskal =
     and terms_args: "\<And>s. t \<in> terms \<Longrightarrow> s \<in> set (args t) \<Longrightarrow> s \<in> terms"
 begin
 
+lemma mk_inject [iff]:
+  assumes "(f, length ss) \<in> F" and "(g, length ts) \<in> F"
+  shows "mk f ss = mk g ts \<longleftrightarrow> f = g \<and> ss = ts"
+proof -
+  { assume "mk f ss = mk g ts"
+    then have "root (mk f ss) = root (mk g ts)"
+      and "args (mk f ss) = args (mk g ts)" by auto }
+  show ?thesis
+    using root_mk [OF assms(1)] and root_mk [OF assms(2)]
+      and args_mk [OF assms(1)] and args_mk [OF assms(2)] by auto
+qed
+
 lemma wf_size:
   "wf {(x, y). size x < size y}"
 proof -
@@ -31,14 +43,20 @@ lemma wfp_on_size:
   using wf_size [to_pred, unfolded wfp_on_UNIV [symmetric]]
     and wfp_on_subset [of A UNIV] by blast
 
+(*TODO: move*)
+lemma reflclp_mono:
+  assumes "\<And>x y. P x y \<longrightarrow> Q x y"
+  shows "P\<^sup>=\<^sup>= x y \<longrightarrow> Q\<^sup>=\<^sup>= x y"
+  using assms by auto
+
 inductive emb for P
 where
-  arg: "\<lbrakk>(f, m) \<in> F; length ts = m; \<forall>t\<in>set ts. t \<in> terms; t \<in> set ts\<rbrakk> \<Longrightarrow> emb P t (mk f ts)" |
-  list_hembeq: "\<lbrakk>(f, m) \<in> F; (g, n) \<in> F; P (f, m) (g, n); length ss = m; length ts = n;
-    \<forall>s \<in> set ss. s \<in> terms; \<forall>t \<in> set ts. t \<in> terms;
-    list_hembeq (emb P) ss ts\<rbrakk> \<Longrightarrow> emb P (mk f ss) (mk g ts)" |
-  trans: "\<lbrakk>emb P s t; emb P t u\<rbrakk> \<Longrightarrow> emb P s u"
-monos list_hembeq_mono
+  arg: "\<lbrakk>(f, m) \<in> F; length ts = m; \<forall>t\<in>set ts. t \<in> terms; t \<in> set ts; (emb P)\<^sup>=\<^sup>= s t\<rbrakk>
+    \<Longrightarrow> emb P s (mk f ts)" |
+  list_emb: "\<lbrakk>(f, m) \<in> F; (g, n) \<in> F; P (f, m) (g, n); length ss = m; length ts = n;
+    \<forall>s \<in> set ss. s \<in> terms; \<forall>t \<in> set ts. t \<in> terms; list_emb (emb P) ss ts\<rbrakk>
+    \<Longrightarrow> emb P (mk f ss) (mk g ts)"
+monos list_emb_mono  reflclp_mono
 
 lemma almost_full_on_terms:
   assumes "almost_full_on P F"
@@ -96,11 +114,10 @@ proof (rule ccontr)
         with bad_s have False by auto }
       moreover
       { assume "i < n" and "n \<le> j"
-        with `i < j` and emb have *: "?P (m i) (s (k + (j - n)))" by (auto simp: m'_less m'_geq)
-        with args obtain l where "l \<ge> n" and "s (k + (j - n)) \<in> set (a l)" by blast
-        from emb.arg [OF sig [of l] _ a_terms [of l] this(2), of P]
-          have "?P (s (k + (j - n))) (m l)" by (simp add: m)
-        with * have "?P (m i) (m l)" by (auto elim: emb.trans)
+        with `i < j` and emb have *: "?P\<^sup>=\<^sup>= (m i) (s (k + (j - n)))" by (auto simp: m'_less m'_geq)
+        with args obtain l where "l \<ge> n" and **: "s (k + (j - n)) \<in> set (a l)" by blast
+        from emb.arg [OF sig [of l] _ a_terms [of l] ** *]
+          have "?P (m i) (m l)" by (simp add: m)
         moreover have "i < l" using `i < n` and `n \<le> l` by auto
         ultimately have False using bad by blast }
       ultimately show False using `i < j` by arith
@@ -121,50 +138,48 @@ proof (rule ccontr)
   from almost_full_on_lists [OF this, THEN almost_full_on_imp_homogeneous_subseq, OF lists]
     obtain \<phi> :: "nat \<Rightarrow> nat"
     where less: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
-      and lemb: "\<And>i j. i < j \<Longrightarrow> list_hembeq ?P (a (\<phi> i)) (a (\<phi> j))" by blast
+      and lemb: "\<And>i j. i < j \<Longrightarrow> list_emb ?P (a (\<phi> i)) (a (\<phi> j))" by blast
   have roots: "\<And>i. r (\<phi> i) \<in> F" using terms [THEN terms_root] by (auto simp: r_def)
   then have "r \<circ> \<phi> \<in> SEQ F" by auto
   with assms have "good P (r \<circ> \<phi>)" by (auto simp: almost_full_on_def)
   then obtain i j
     where "i < j" and "P (r (\<phi> i)) (r (\<phi> j))" by auto
   with lemb [OF `i < j`] have "?P (m (\<phi> i)) (m (\<phi> j))"
-    using sig and arity and a_terms by (auto simp: m intro!: emb.list_hembeq)
+    using sig and arity and a_terms by (auto simp: m intro!: emb.list_emb)
   with less [OF `i < j`] and bad show False by blast
 qed
 
+inductive_cases
+  emb_mk2 [consumes 1, case_names arg list_emb]: "emb P s (mk g ts)"
+
+lemma emb_trans:
+  assumes trans: "\<And>f g h. f \<in> F \<Longrightarrow> g \<in> F \<Longrightarrow> h \<in> F \<Longrightarrow> P f g \<Longrightarrow> P g h \<Longrightarrow> P f h"
+  assumes "emb P s t" and "emb P t u"
+  shows "emb P s u"
+using assms(3, 2)
+proof (induct arbitrary: s)
+  case (arg f m ts v)
+  then show ?case by (auto intro: emb.arg)
+next
+  case (list_emb f m g n ss ts)
+  note IH = this
+  from `emb P s (mk f ss)`
+    show ?case
+  proof (cases rule: emb_mk2)
+    case arg
+    then show ?thesis using IH by (auto elim!: list_emb_set intro: emb.arg)
+  next
+    case list_emb
+    then show ?thesis using IH by (auto intro: emb.intros dest: trans list_emb_trans_right)
+  qed
+qed
+
+lemma transp_on_emb:
+  assumes "transp_on P F"
+  shows "transp_on (emb P) terms"
+  using assms and emb_trans [of P] unfolding transp_on_def by blast
+
 end
-
-(*
-inductive tree_hembeq for P
-where
-  arg: "t \<in> set ts \<Longrightarrow> tree_hembeq P t (mk f ts)" |
-  list_hembeq: "P\<^sup>=\<^sup>= f g \<Longrightarrow> list_hembeq (tree_hembeq P) ss ts \<Longrightarrow> tree_hembeq P (mk f ss) (mk g ts)" |
-  trans: "tree_hembeq P s t \<Longrightarrow> tree_hembeq P t u \<Longrightarrow> tree_hembeq P s u" |
-  ctxt: "tree_hembeq P s t \<Longrightarrow> tree_hembeq P (mk f (ss1 @ s # ss2)) (mk f (ss1 @ t # ss2))"
-  monos list_hembeq_mono
-
-definition "trees A = terms (A \<times> UNIV)"
-
-lemma trees_subset:
-  "trees A \<subseteq> terms (A \<times> UNIV)" by (auto simp: trees_def)
-
-lemma emb_imp_tree_hembeq:
-  assumes "emb (A \<times> UNIV) (prod_le P (\<lambda>_ _. True)) s t"
-  shows "tree_hembeq P s t"
-  using assms
-  apply (induct)
-  using list_hembeq_mono [of _ "tree_hembeq P", of "\<lambda>s t. Q s t \<and> tree_hembeq P s t" for Q]
-  by (auto intro: tree_hembeq.intros simp: prod_le_def)
-
-lemma almost_full_on_trees:
-  assumes "almost_full_on P A"
-  shows "almost_full_on (tree_hembeq P) (trees A)"
-apply (rule almost_full_on_mono [of _ _ "emb (A \<times> UNIV) (prod_le P (\<lambda>_ _. True))"])
-apply (rule trees_subset)
-apply (rule emb_imp_tree_hembeq, assumption)
-apply (rule almost_full_on_terms [OF almost_full_on_Sigma [OF assms almost_full_on_UNIV]])
-done
-*)
 
 end
 

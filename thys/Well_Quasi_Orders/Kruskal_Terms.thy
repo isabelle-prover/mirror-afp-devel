@@ -100,23 +100,23 @@ proof -
   then show "?l = ?r" by auto
 qed
 
-lemma list_hembeq_term_hembeq_imp_sublisteq:
-  assumes "list_hembeq (term_hembeq F P) xs zs"
-    (is "list_hembeq ?P xs zs")
+lemma list_emb_term_hembeq_imp_sublisteq:
+  assumes "list_emb (term_hembeq F P) xs zs"
+    (is "list_emb ?P xs zs")
   shows "\<exists>ys. sublisteq ys zs \<and> length ys = length xs \<and>
     (\<forall>i<length xs. term_hembeq F P (xs ! i) (ys ! i))"
 using assms
 proof (induct)
-  case (list_hembeq_Nil ys)
+  case (list_emb_Nil ys)
   thus ?case by auto
 next
-  case (list_hembeq_Cons xs zs z)
+  case (list_emb_Cons xs zs z)
   then obtain ys where *: "sublisteq ys zs" and "length ys = length xs"
     and "\<forall>i<length xs. ?P\<^sup>=\<^sup>= (xs ! i) (ys ! i)" by auto
   moreover have "sublisteq ys (z # zs)" using * by auto
   ultimately show ?case by blast
 next
-  case (list_hembeq_Cons2 x z xs zs)
+  case (list_emb_Cons2 x z xs zs)
   then obtain ys where *: "sublisteq ys zs"
     and len: "length ys = length xs"
     and **: "\<forall>i<length xs. ?P\<^sup>=\<^sup>= (xs ! i) (ys ! i)" by auto
@@ -134,14 +134,14 @@ next
   ultimately show ?case by blast
 qed
 
-lemma term_hembeq_list_hembeq:
+lemma term_hembeq_list_emb:
   assumes "P\<^sup>=\<^sup>= (f, length ss) (g, length ts)"
     and F: "(f, length ss) \<in> F" and G: "(g, length ts) \<in> F"
     and terms: "\<forall>t\<in>set (ss@ts). t \<in> terms F"
-    and list: "list_hembeq (term_hembeq F P) ss ts"
+    and list: "list_emb (term_hembeq F P) ss ts"
   shows "term_hembeq F P (mk f ss) (mk g ts)"
 proof -
-  from list_hembeq_term_hembeq_imp_sublisteq [OF list]
+  from list_emb_term_hembeq_imp_sublisteq [OF list]
     obtain us where sub: "sublisteq us ts" and len: "length ss = length us"
     and *: "\<forall>i<length ss. term_hembeq F P (ss ! i) (us ! i)" by auto
   from sublisteq_set_subset [OF sub]
@@ -278,7 +278,7 @@ proof (rule ccontr)
     qed
     from almost_full_on_subset [OF this assms] show ?thesis .
   qed
-  moreover have "almost_full_on (list_hembeq ?P) ?S"
+  moreover have "almost_full_on (list_emb ?P) ?S"
   proof -
     let ?S' = "\<Union>(set ` ?S)"
     have "almost_full_on ?P ?S'"
@@ -304,21 +304,21 @@ proof (rule ccontr)
         by blast
   qed
   ultimately
-  have "almost_full_on (prod_le P (list_hembeq ?P)) (?R \<times> ?S)"
+  have "almost_full_on (prod_le P (list_emb ?P)) (?R \<times> ?S)"
     by (rule almost_full_on_Sigma)
   moreover have "\<forall>i. ((r i, length (s i)), s i) \<in> (?R \<times> ?S)" by auto
-  ultimately have "good (prod_le P (list_hembeq ?P)) (\<lambda>i. ((r i, length (s i)), s i))"
+  ultimately have "good (prod_le P (list_emb ?P)) (\<lambda>i. ((r i, length (s i)), s i))"
     by (auto simp: almost_full_on_def)
   then obtain i j where "i < j"
-    and "prod_le P (list_hembeq ?P) ((r i, length (s i)), s i) ((r j, length (s j)), s j)"
+    and "prod_le P (list_emb ?P) ((r i, length (s i)), s i) ((r j, length (s j)), s j)"
     by (auto simp: good_def almost_full_on_def)
-  then have "P\<^sup>=\<^sup>= (r i, length (s i)) (r j, length (s j))" and "list_hembeq ?P (s i) (s j)"
+  then have "P\<^sup>=\<^sup>= (r i, length (s i)) (r j, length (s j))" and "list_emb ?P (s i) (s j)"
     by (auto simp: prod_le_def)
   moreover have "(r i, length (s i)) \<in> F" and "(r j, length (s j)) \<in> F"
       and "\<forall>t\<in>set (s i @ s j). t \<in> terms F"
       using terms_root_succs [OF in_terms] by auto
   ultimately have "?P (m i) (m j)"
-    using term_hembeq_list_hembeq [of P "r i" "s i" "r j" "s j" F] by auto
+    using term_hembeq_list_emb [of P "r i" "s i" "r j" "s j" F] by auto
   with `i < j` and bad show False by (auto simp: good_def)
 qed
 
@@ -464,17 +464,17 @@ lemma sublisteq_reflclp_mulex_on:
   shows "(mulex_on P F)\<^sup>=\<^sup>= (funas_list_ms ss) (funas_list_ms ts)"
 using assms
 proof (induct)
-  case (list_hembeq_Nil ys)
+  case (list_emb_Nil ys)
   then show ?case by (force dest: funas_list_ms_multisets)
 next
-  case (list_hembeq_Cons xs ys y)
+  case (list_emb_Cons xs ys y)
   moreover then have "funas_ms y \<noteq> {#}"
     and "funas_ms y \<in> multisets F"
     and "funas_list_ms ys \<in> multisets F"
     by (auto dest: funas_ms_not_empty funas_ms_multisets funas_list_ms_multisets)
   ultimately show ?case by (auto simp: ac_simps)
 next
-  case (list_hembeq_Cons2 x y xs ys)
+  case (list_emb_Cons2 x y xs ys)
   moreover
   then have "\<forall>t\<in>set xs. t \<in> terms F" by (auto dest: sublisteq_aux)
   ultimately

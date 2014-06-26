@@ -491,27 +491,76 @@ lemma almost_full_on_prod_less:
 
 subsection {* List Embedding *}
 
-lemma reflp_on_list_hembeq:
+(*TODO: move*)
+lemma list_emb_trans:
+  assumes "\<And>x y z. \<lbrakk>x \<in> set xs; y \<in> set ys; z \<in> set zs; P x y; P y z\<rbrakk> \<Longrightarrow> P x z"
+  shows "\<lbrakk>list_emb P xs ys; list_emb P ys zs\<rbrakk> \<Longrightarrow> list_emb P xs zs"
+proof -
+  assume "list_emb P xs ys" and "list_emb P ys zs"
+  then show "list_emb P xs zs" using assms
+  proof (induction arbitrary: zs)
+    case list_emb_Nil show ?case by blast
+  next
+    case (list_emb_Cons xs ys y)
+    from list_emb_ConsD [OF `list_emb P (y#ys) zs`] obtain us v vs
+      where zs: "zs = us @ v # vs" and "P\<^sup>=\<^sup>= y v" and "list_emb P ys vs" by blast
+    then have "list_emb P ys (v#vs)" by blast
+    then have "list_emb P ys zs" unfolding zs by (rule list_emb_append2)
+    from list_emb_Cons.IH [OF this] and list_emb_Cons.prems show ?case by auto
+  next
+    case (list_emb_Cons2 x y xs ys)
+    from list_emb_ConsD [OF `list_emb P (y#ys) zs`] obtain us v vs
+      where zs: "zs = us @ v # vs" and "P y v" and "list_emb P ys vs" by blast
+    with list_emb_Cons2 have "list_emb P xs vs" by auto
+    moreover have "P x v"
+    proof -
+      from zs have "v \<in> set zs" by auto
+      moreover have "x \<in> set (x#xs)" and "y \<in> set (y#ys)" by simp_all
+      ultimately show ?thesis
+        using `P x y` and `P y v` and list_emb_Cons2
+        by blast
+    qed
+    ultimately have "list_emb P (x#xs) (v#vs)" by blast
+    then show ?case unfolding zs by (rule list_emb_append2)
+  qed
+qed
+
+(*TODO:move*)
+lemma list_emb_set:
+  assumes "list_emb P xs ys" and "x \<in> set xs"
+  obtains y where "y \<in> set ys" and "P x y"
+  using assms by (induct) auto
+
+lemma reflp_on_list_emb:
   assumes "reflp_on P A"
-  shows "reflp_on (list_hembeq P) (lists A)"
-  using assms and list_hembeq_refl [of _ P]
+  shows "reflp_on (list_emb P) (lists A)"
+  using assms and list_emb_refl [of _ P]
   unfolding reflp_on_def by blast
 
-lemma transp_on_list_hembeq:
+lemma transp_on_list_emb:
   assumes "transp_on P A"
-  shows "transp_on (list_hembeq P) (lists A)"
-  using assms and list_hembeq_trans [of A P]
-    unfolding transp_on_def by metis
+  shows "transp_on (list_emb P) (lists A)"
+  using assms and list_emb_trans [of _ _ _ P]
+    unfolding transp_on_def by blast
+
+inductive_cases
+  list_emb_Nil2_cases: "list_emb P xs []" and
+  list_emb_Cons_cases: "list_emb P xs (y#ys)"
+
+lemma list_emb_trans_right:
+  assumes "list_emb P xs ys" and "list_emb (\<lambda>y z. P y z \<and> (\<forall>x. P x y \<longrightarrow> P x z)) ys zs" 
+  shows "list_emb P xs zs"
+  using assms(2, 1) by (induct arbitrary: xs) (auto elim!: list_emb_Nil2_cases list_emb_Cons_cases)
 
 
 subsection {* Higman's Lemma for Almost-Full Relations *}
 
-lemma Nil_imp_good_list_hembeq [simp]:
+lemma Nil_imp_good_list_emb [simp]:
   assumes "f i = []"
-  shows "good (list_hembeq P) f"
+  shows "good (list_emb P) f"
 proof (rule ccontr)
-  assume "bad (list_hembeq P) f"
-  moreover have "(list_hembeq P) (f i) (f (Suc i))"
+  assume "bad (list_emb P) f"
+  moreover have "(list_emb P) (f i) (f (Suc i))"
     unfolding assms by auto
   ultimately show False
     unfolding good_def by auto
@@ -533,7 +582,7 @@ lemma ne_lists:
 
 lemma almost_full_on_lists:
   assumes "almost_full_on P A"
-  shows "almost_full_on (list_hembeq P) (lists A)" (is "almost_full_on ?P ?A")
+  shows "almost_full_on (list_emb P) (lists A)" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
   interpret mbs "\<lambda>xs ys. length xs < length ys" ?A
     by (unfold_locales) (auto simp: wfp_on_length)
@@ -560,7 +609,7 @@ proof (rule ccontr)
     then obtain i j where "i < j" and "?P (t (\<phi> i)) (t (\<phi> j))" by auto
     moreover with P have "P (h (\<phi> i)) (h (\<phi> j))" by blast
     ultimately have "?P (m (\<phi> i)) (m (\<phi> j))"
-      by (subst (1 2) m) (rule list_hembeq_Cons2, auto)
+      by (subst (1 2) m) (rule list_emb_Cons2, auto)
     with less and `i < j` have "good ?P m" by (auto simp: good_def)
     with bad show False by blast
   qed
@@ -589,7 +638,7 @@ proof (rule ccontr)
     moreover
     { assume "i < \<phi> 0" and "\<phi> 0 \<le> j"
       with `i < j` and emb have "?P (m i) (t (\<phi> (j - \<phi> 0)))" by (simp add: m'_less m'_geq)
-      from list_hembeq_Cons [OF this, of "h (\<phi> (j - \<phi> 0))"]
+      from list_emb_Cons [OF this, of "h (\<phi> (j - \<phi> 0))"]
         have "?P (m i) (m (\<phi> (j - \<phi> 0)))" using ne by (simp add: h_def t_def)
       moreover have "i < \<phi> (j - \<phi> 0)"
         using less [of 0 "j - \<phi> 0"] and `i < \<phi> 0` and `\<phi> 0 \<le> j`
@@ -600,102 +649,28 @@ proof (rule ccontr)
   ultimately show False using min by blast
 qed
 
-definition
-  list_hemb :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
-where
-  "list_hemb P xs ys = (list_hembeq P xs ys \<and> xs \<noteq> ys)"
-
-lemma list_hembeq_eq_length_induct [consumes 2, case_names Nil Cons]:
+lemma list_emb_eq_length_induct [consumes 2, case_names Nil Cons]:
   assumes "length xs = length ys"
-    and "list_hembeq P xs ys"
-    and "\<And>ys. Q [] ys"
-    and "\<And>x y xs ys. \<lbrakk>P\<^sup>=\<^sup>= x y; list_hembeq P xs ys; Q xs ys\<rbrakk> \<Longrightarrow> Q (x#xs) (y#ys)"
+    and "list_emb P xs ys"
+    and "Q [] []"
+    and "\<And>x y xs ys. \<lbrakk>P x y; list_emb P xs ys; Q xs ys\<rbrakk> \<Longrightarrow> Q (x#xs) (y#ys)"
   shows "Q xs ys"
-  using assms(2, 1)
-proof (induct)
-  case (list_hembeq_Nil ys)
-  show ?case by fact
-next
-  case (list_hembeq_Cons xs ys y)
-  with list_hembeq_length have "length xs \<le> length ys" by blast
-  with `length xs = length (y#ys)` show ?case by auto
-next
-  case (list_hembeq_Cons2 x y xs ys)
-  with assms(4) show ?case by auto
-qed
+  using assms(2, 1, 3-) by (induct) (auto dest: list_emb_length)
 
-lemma list_hembeq_eq_length_le:
+lemma list_emb_eq_length_P:
   assumes "length xs = length ys"
-    and "list_hembeq P xs ys"
-  shows "\<forall>i<length xs. P\<^sup>=\<^sup>= (xs ! i) (ys ! i)"
-  using assms
-proof (induct rule: list_hembeq_eq_length_induct)
-  case Nil show ?case by simp
-next
+    and "list_emb P xs ys"
+  shows "\<forall>i<length xs. P (xs ! i) (ys ! i)"
+using assms
+proof (induct rule: list_emb_eq_length_induct)
   case (Cons x y xs ys)
   show ?case
   proof (intro allI impI)
     fix i assume "i < length (x # xs)"
-    with Cons show "P\<^sup>=\<^sup>= ((x#xs)!i) ((y#ys)!i)"
+    with Cons show "P ((x#xs)!i) ((y#ys)!i)"
       by (cases i) simp_all
   qed
-qed
-
-lemma transp_on_list_hemb:
-  assumes irrefl: "irreflp_on P A"
-    and trans: "transp_on P A"
-  shows "transp_on (list_hemb P) (lists A)"
-    (is "transp_on ?P ?A")
-proof
-  fix xs ys zs
-  assume "xs \<in> ?A" and "ys \<in> ?A" and "zs \<in> ?A"
-    and "?P xs ys" and "?P ys zs"
-  moreover then have "list_hembeq P xs ys" and "list_hembeq P ys zs"
-    and "xs \<noteq> ys" and "ys \<noteq> zs" unfolding list_hemb_def by auto
-  ultimately have "list_hembeq P xs zs"
-    using transp_on_list_hembeq [OF trans]
-    unfolding transp_on_def by blast
-  moreover have "xs \<noteq> zs"
-  proof
-    assume "xs = zs"
-    moreover from list_hembeq_length and `list_hembeq P xs ys` and `list_hembeq P ys zs`
-      have "length xs \<le> length ys" and "length ys \<le> length zs" by blast+
-    ultimately have "length xs = length ys" and "length ys = length zs" by auto
-    with list_hembeq_eq_length_le and `list_hembeq P xs ys` and `list_hembeq P ys zs`
-      have *: "\<forall>i<length xs. P\<^sup>=\<^sup>= (xs!i) (ys!i)"
-      and **: "\<forall>i<length ys. P\<^sup>=\<^sup>= (ys!i) (zs!i)" by blast+
-    show False
-    proof (cases "\<exists>i<length xs. P (xs!i) (ys!i) \<and> P (ys!i) (zs!i)")
-      case True
-      then obtain i where "i < length xs"
-        and "P (xs ! i) (ys ! i)" and "P (ys ! i) (zs ! i)" by blast+
-      moreover have "xs ! i \<in> A" and "ys ! i \<in> A" and "zs ! i \<in> A"
-        using `xs \<in> ?A` and `ys \<in> ?A` and `zs \<in> ?A`
-        and `i < length xs`
-        and `length xs = length ys`
-        and `length ys = length zs`
-        by auto
-      ultimately have "P (xs ! i) (zs ! i)"
-        using trans
-        unfolding transp_on_def
-        by blast
-      with irrefl and `xs ! i \<in> A` and `zs ! i \<in> A`
-        have "xs ! i \<noteq> zs ! i" unfolding irreflp_on_def by auto
-      with `xs = zs` and `i < length xs`
-        and `length xs = length ys`
-        and `length ys = length zs`
-        show False by auto
-    next
-      case False
-      with * and ** and `length xs = length ys`
-        have "\<forall>i<length xs. xs ! i = ys ! i \<or> ys ! i = zs ! i" by auto
-      with `xs = zs` and `xs \<noteq> ys` and `ys \<noteq> zs`
-        show False using `length xs = length ys`
-        by (metis list_eq_iff_nth_eq)
-    qed
-  qed
-  ultimately show "?P xs zs" by (auto simp: list_hemb_def)
-qed
+qed simp
 
 
 subsection {* Special Case: Finite Sets *}
@@ -740,7 +715,7 @@ proof -
     fix xs ys :: "bool list"
     assume "?P xs ys"
     then show "length xs \<le> length ys"
-      by (metis list_hembeq_length)
+      by (metis list_emb_length)
   next
     have "finite (UNIV :: bool set)" by auto
     from almost_full_on_lists [OF eq_almost_full_on_finite_set [OF this]]

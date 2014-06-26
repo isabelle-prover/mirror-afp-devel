@@ -198,9 +198,9 @@ lemmas dickson = wqo_on_Sigma
 subsection {* Higman's Lemma *}
 
 lemma wqo_on_lists:
-  assumes "wqo_on P A" shows "wqo_on (list_hembeq P) (lists A)"
+  assumes "wqo_on P A" shows "wqo_on (list_emb P) (lists A)"
   using assms and almost_full_on_lists
-    and transp_on_list_hembeq by (auto simp: wqo_on_def)
+    and transp_on_list_emb by (auto simp: wqo_on_def)
 
 lemmas higman = wqo_on_lists
 
@@ -218,7 +218,7 @@ lemma finite_eq_wqo_on:
   by (auto simp: reflp_on_def transp_on_def)
 
 lemma wqo_on_lists_over_finite_sets:
-  "wqo_on (list_hembeq (op =)) (UNIV::('a::finite) list set)"
+  "wqo_on (list_emb (op =)) (UNIV::('a::finite) list set)"
   using wqo_on_lists [OF finite_eq_wqo_on [OF finite [of "UNIV::('a::finite) set"]]] by simp
 
 end

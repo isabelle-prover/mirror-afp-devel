@@ -335,14 +335,6 @@ lemma trees_list_insert:
   shows "ss @ t # ts \<in> trees_list A"
   using assms by (induct ss) auto
 
-lemma list_hembeq_mono:
-  assumes "\<And>s t. P s t \<longrightarrow> Q s t"
-  shows "list_hembeq P s t \<longrightarrow> list_hembeq Q s t"
-proof
-  assume "list_hembeq P s t" thus "list_hembeq Q s t"
-    by (induct) (auto simp: assms)
-qed
-
 lemma reflclp_mono:
   assumes "\<And>s t. P s t \<longrightarrow> Q s t"
   shows "P\<^sup>=\<^sup>= s t \<longrightarrow> Q\<^sup>=\<^sup>= s t"
@@ -391,23 +383,23 @@ lemma tree_hembeq_subtree:
   using assms(2, 1)
   by (induct rule: subtree.induct) auto
 
-lemma list_hembeq_tree_hembeq_imp_sublisteq:
-  assumes "list_hembeq (tree_hembeq P) xs zs"
-    (is "list_hembeq ?P xs zs")
+lemma list_emb_tree_hembeq_imp_sublisteq:
+  assumes "list_emb (tree_hembeq P) xs zs"
+    (is "list_emb ?P xs zs")
   shows "\<exists>ys. sublisteq ys zs \<and> length ys = length xs \<and>
     (\<forall>i<length xs. (tree_hembeq P)\<^sup>=\<^sup>= (xs ! i) (ys ! i))"
 using assms
 proof (induct)
-  case (list_hembeq_Nil ys)
+  case (list_emb_Nil ys)
   thus ?case by auto
 next
-  case (list_hembeq_Cons xs zs z)
+  case (list_emb_Cons xs zs z)
   then obtain ys where *: "sublisteq ys zs" and "length ys = length xs"
     and "\<forall>i<length xs. ?P\<^sup>=\<^sup>= (xs ! i) (ys ! i)" by auto
   moreover have "sublisteq ys (z # zs)" using * by auto
   ultimately show ?case by blast
 next
-  case (list_hembeq_Cons2 x z xs zs)
+  case (list_emb_Cons2 x z xs zs)
   then obtain ys where *: "sublisteq ys zs"
     and len: "length ys = length xs"
     and **: "\<forall>i<length xs. ?P\<^sup>=\<^sup>= (xs ! i) (ys ! i)" by auto
@@ -490,8 +482,8 @@ proof
     case (mk x ts)
     then have "\<forall>t \<in> set ts. tree_hembeq P t t"
       and "x \<in> A" by (auto simp: trees_def)
-    with list_hembeq_refl [of ts "tree_hembeq P"]
-      have *: "list_hembeq (tree_hembeq P) ts ts" by (auto simp: reflp_on_def)
+    with list_emb_refl [of ts "tree_hembeq P"]
+      have *: "list_emb (tree_hembeq P) ts ts" by (auto simp: reflp_on_def)
     moreover have "P\<^sup>=\<^sup>= x x" by simp
     ultimately show ?case by auto
   qed
@@ -522,11 +514,11 @@ proof -
   then show "?l = ?r" by auto
 qed
 
-lemma tree_hembeq_list_hembeq:
-  assumes "P\<^sup>=\<^sup>= f g" and "list_hembeq (tree_hembeq P) ss ts"
+lemma tree_hembeq_list_emb:
+  assumes "P\<^sup>=\<^sup>= f g" and "list_emb (tree_hembeq P) ss ts"
   shows "tree_hembeq P (mk f ss) (mk g ts)"
 proof -
-  from list_hembeq_tree_hembeq_imp_sublisteq [OF assms(2)]
+  from list_emb_tree_hembeq_imp_sublisteq [OF assms(2)]
     obtain us where "sublisteq us ts" and "length ss = length us"
     and *: "\<forall>i<length ss. (tree_hembeq P)\<^sup>=\<^sup>= (ss ! i) (us ! i)" by auto
   with args_steps_imp_steps have "(tree_hembeq P)\<^sup>*\<^sup>* (mk f ss) (mk f us)" by auto

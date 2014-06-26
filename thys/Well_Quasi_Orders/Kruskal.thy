@@ -13,12 +13,6 @@ imports
   Kruskal_Auxiliaries
 begin
 
-(*TODO: move*)
-lemma list_hembeq_singleton [simp]:
-  assumes "reflp_on P A" and "y \<in> A"
-  shows "list_hembeq P [x] [y] = P x y"
-  using assms by (auto simp: reflp_on_def elim!: list_hembeq.cases)
-
 context finite_tree
 begin
 
@@ -111,7 +105,7 @@ proof (rule ccontr)
     qed
     from almost_full_on_subset [OF this assms] show ?thesis .
   qed
-  moreover have "almost_full_on (list_hembeq ?P) ?S"
+  moreover have "almost_full_on (list_emb ?P) ?S"
   proof -
     let ?S' = "\<Union>(set ` ?S)"
     have "almost_full_on ?P ?S'"
@@ -137,17 +131,17 @@ proof (rule ccontr)
         by blast
   qed
   ultimately
-  have "almost_full_on (prod_le P (list_hembeq ?P)) (?R \<times> ?S)"
+  have "almost_full_on (prod_le P (list_emb ?P)) (?R \<times> ?S)"
     by (rule almost_full_on_Sigma)
   moreover have "\<forall>i. (r i, s i) \<in> (?R \<times> ?S)" by auto
-  ultimately have "good (prod_le P (list_hembeq ?P)) (\<lambda>i. (r i, s i))"
+  ultimately have "good (prod_le P (list_emb ?P)) (\<lambda>i. (r i, s i))"
     by (auto simp: almost_full_on_def)
   then obtain i j where "i < j"
-    and "prod_le P (list_hembeq ?P) (r i, s i) (r j, s j)"
+    and "prod_le P (list_emb ?P) (r i, s i) (r j, s j)"
     by (auto simp: good_def almost_full_on_def)
-  then have "P\<^sup>=\<^sup>= (r i) (r j)" and "list_hembeq ?P (s i) (s j)"
+  then have "P\<^sup>=\<^sup>= (r i) (r j)" and "list_emb ?P (s i) (s j)"
     by (auto simp: prod_le_def)
-  from tree_hembeq_list_hembeq [OF this]
+  from tree_hembeq_list_emb [OF this]
     have "?P (m i) (m j)" by auto
   with `i < j` and bad show False by (auto simp: good_def)
 qed

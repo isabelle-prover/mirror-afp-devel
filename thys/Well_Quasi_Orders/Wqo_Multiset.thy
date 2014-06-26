@@ -12,20 +12,20 @@ imports
   Well_Quasi_Orders
 begin
 
-lemma list_hembeq_imp_reflclp_mulex_on:
+lemma list_emb_imp_reflclp_mulex_on:
   assumes "xs \<in> lists A" and "ys \<in> lists A"
-    and "list_hembeq P xs ys"
+    and "list_emb P xs ys"
   shows "(mulex_on P A)\<^sup>=\<^sup>= (multiset_of xs) (multiset_of ys)"
 using assms(3, 1, 2)
 proof (induct)
-  case (list_hembeq_Nil ys)
+  case (list_emb_Nil ys)
   then show ?case
     by (cases ys) (auto intro!: empty_mulex_on simp: multisets_def)
 next
-  case (list_hembeq_Cons xs ys y)
+  case (list_emb_Cons xs ys y)
   then show ?case by (auto intro!: mulex_on_self_add_right simp: multisets_def)
 next
-  case (list_hembeq_Cons2 x y xs ys)
+  case (list_emb_Cons2 x y xs ys)
   then show ?case
     by (auto intro: union_mulex_on_mono mulex_on_union'
              intro!: singleton_mulex_onI mulex_on_union
@@ -40,7 +40,7 @@ lemma almost_full_on_multisets:
 proof -
   let ?P = "(mulex_on P A)\<^sup>=\<^sup>="
   from almost_full_on_hom [OF _ almost_full_on_lists, of A P ?P multiset_of,
-    OF list_hembeq_imp_reflclp_mulex_on, simplified]
+    OF list_emb_imp_reflclp_mulex_on, simplified]
     show ?thesis using assms by blast
 qed
 

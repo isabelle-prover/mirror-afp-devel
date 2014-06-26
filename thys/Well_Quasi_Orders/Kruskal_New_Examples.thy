@@ -7,8 +7,7 @@ begin
 lemma (in kruskal) kruskal:
   assumes "wqo_on P F"
   shows "wqo_on (emb P) terms"
-  using almost_full_on_terms [of P]
-  by (metis almost_full_on_terms assms emb.trans transp_on_def wqo_onI wqo_on_imp_almost_full_on)
+  using almost_full_on_terms [of P] and assms by (metis transp_on_emb wqo_on_def)
 
 datatype 'a tree = Node 'a "'a tree list"
 
