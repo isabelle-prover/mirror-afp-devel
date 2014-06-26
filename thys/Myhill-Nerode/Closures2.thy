@@ -66,7 +66,7 @@ unfolding SUPSEQ_def by auto
 lemma SUPSEQ_atom [simp]:
   shows "SUPSEQ {[c]} = UNIV \<cdot> {[c]} \<cdot> UNIV"
 unfolding SUPSEQ_def conc_def
-by (auto dest: list_hembeq_ConsD)
+by (auto dest: list_emb_ConsD)
 
 lemma SUPSEQ_union [simp]:
   shows "SUPSEQ (A \<union> B) = SUPSEQ A \<union> SUPSEQ B"
@@ -76,9 +76,9 @@ lemma SUPSEQ_conc [simp]:
   shows "SUPSEQ (A \<cdot> B) = SUPSEQ A \<cdot> SUPSEQ B"
 unfolding SUPSEQ_def conc_def
 apply(auto)
-apply(drule list_hembeq_appendD)
+apply(drule list_emb_appendD)
 apply(auto)
-by (metis list_hembeq_append_mono)
+by (metis list_emb_append_mono)
 
 lemma SUPSEQ_star [simp]:
   shows "SUPSEQ (A\<star>) = UNIV"
