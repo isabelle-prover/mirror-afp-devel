@@ -862,7 +862,7 @@ lemma bind_rule_complete: "bind M f \<le> SPEC \<Phi> \<longleftrightarrow> M \<
   by (auto simp: pw_le_iff refine_pw_simps)
 lemma bind_rule[refine_vcg]: 
   "\<lbrakk> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>) \<rbrakk> \<Longrightarrow> bind M (\<lambda>x. f x) \<le> SPEC \<Phi>"
-  -- {* Note: \<eta>-expanded version helps Isabelle's unification to keep meaningful 
+  -- {* Note: @{text "\<eta>"}-expanded version helps Isabelle's unification to keep meaningful 
       variable names from the program *}
   by (auto simp: bind_rule_complete)
 
