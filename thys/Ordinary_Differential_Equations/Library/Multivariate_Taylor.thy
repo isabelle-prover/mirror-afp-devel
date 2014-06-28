@@ -6,15 +6,15 @@ begin
 subsection {* Multivariate Taylor Series Expansion *}
 
 text {* TODO: move to PiE *}
-lemma setsum_insert_PiE[symmetric]:
+lemma setsum_insert_PiE:
   assumes "a \<notin> A"
-  shows "setsum (\<lambda>x. f (restrict x A) A (x a)) ((insert a A) \<rightarrow>\<^sub>E Basis) =
-    setsum (\<lambda>x. setsum (f x A) Basis) (A \<rightarrow>\<^sub>E Basis)"
-proof -
+  shows "setsum (\<lambda>x. setsum (f x A) Basis) (A \<rightarrow>\<^sub>E Basis) =
+    setsum (\<lambda>x. f (restrict x A) A (x a)) ((insert a A) \<rightarrow>\<^sub>E Basis)" (is "?lhs = ?rhs")
+proof (rule sym)
   let ?f = "(\<lambda>(x, i). (restrict x A) (a:=i))"
   let ?p = "((A \<rightarrow>\<^sub>E Basis) \<times> Basis)"
-  show ?thesis
-  proof (subst setsum_cartesian_product, rule setsum_reindex_cong)
+  show "?rhs = ?lhs"
+  proof (subst setsum.cartesian_product, rule setsum.reindex_cong)
     show "insert a A \<rightarrow>\<^sub>E Basis = ?f ` ?p"
     proof safe
       fix x::"'a\<Rightarrow>'d" assume "x \<in> insert a A \<rightarrow>\<^sub>E Basis"
@@ -121,14 +121,14 @@ proof -
     also
     have "?sumsum = sumDs (Suc k) (line t)"
       unfolding sumDs_def
-      apply (subst setsum_cartesian_product)
+      apply (subst setsum.cartesian_product)
       apply simp
-      apply (subst setsum_reindex)
+      apply (subst setsum.reindex)
       apply (metis inj_split_Cons)
       apply (simp add: field_simps scaleR_setsum_right)
-      apply (rule setsum_cong)
+      apply (rule setsum.cong)
       apply simp
-      apply (rule setsum_cong) apply simp
+      apply (rule setsum.cong) apply simp
       apply (auto simp: ac_simps)
       apply (subst fold_commute_apply[where f="(\<lambda>d. op * (H \<bullet> d))" and g="(\<lambda>d. op * (H \<bullet> d))"
         and h="\<lambda>x. (H \<bullet> b) * x" for b])

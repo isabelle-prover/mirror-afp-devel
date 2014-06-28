@@ -829,7 +829,7 @@ lemma dist_component_le:
   by (auto simp: euclidean_dist_l2[of x y] intro: member_le_setL2)
 
 lemma setsum_inner_Basis_one: "i \<in> Basis \<Longrightarrow> (\<Sum>x\<in>Basis. x \<bullet> i) = 1"
-  by (subst setsum_mono_zero_right[where S="{i}"]) (auto simp: inner_not_same_Basis)
+  by (subst setsum.mono_neutral_right [of _ "{i}"]) (auto simp: inner_not_same_Basis)
 
 lemma cball_in_cube:
   fixes y::"'a::ordered_euclidean_space"

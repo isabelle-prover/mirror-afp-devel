@@ -28,8 +28,8 @@ proof induct
   moreover have "\<And>x. x \<subseteq> S \<Longrightarrow> card (insert s x) = Suc (card x)"
     using insert(1-2) by (subst card.insert) (auto dest: finite_subset)
   ultimately show ?case
-    by (simp add: setsum_reindex setsum_right_distrib[symmetric] ac_simps
-                  insert.hyps setsum_Un_disjoint Pow_insert)
+    by (simp add: setsum.reindex setsum_right_distrib[symmetric] ac_simps
+                  insert.hyps setsum.union_disjoint Pow_insert)
 qed simp
 
 text {* Definition of the probability space on edges: *}
@@ -100,7 +100,7 @@ lemma prob_eq:
 
 lemma integral_finite_singleton: "integral\<^sup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
   using p_prob prob_eq unfolding P_def
-  by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum_cong)
+  by (subst lebesgue_integral_point_measure_finite) (auto intro!: setsum.cong)
 
 text {* Probability of cylinder sets: *}
 lemma cylinder_prob:
@@ -126,7 +126,7 @@ proof -
          "inj_on (\<lambda>x. x - A) (cylinder S_edges A B)"
          "finite (S_edges - A - B)"
       using assms by (auto simp: cylinder_def intro!: inj_onI)
-    with full_sum[of "S_edges - A - B"] show ?thesis by (simp add: setsum_reindex)
+    with full_sum[of "S_edges - A - B"] show ?thesis by (simp add: setsum.reindex)
   qed
   finally show ?thesis by (auto simp add: prob_eq cylinder_def)
 qed
@@ -473,12 +473,12 @@ proof -
     have "(\<Sum>x\<in>space P. card (XG x) * prob {x}) = (\<Sum>x\<in>space P. (\<Sum>c \<in> XG x. prob {x}))"
       by (simp add: real_eq_of_nat)
     also have "\<dots> = (\<Sum>x\<in>space P. (\<Sum>c \<in> C k. if c \<in> XG x then prob {x} else 0))"
-      using fin_C by (simp add: setsum_cases) (simp add: XG_Int_C)
+      using fin_C by (simp add: setsum.If_cases) (simp add: XG_Int_C)
     also have "\<dots> = (\<Sum>c \<in> C k. (\<Sum> x \<in> space P \<inter> XC c. prob {x}))"
-      using finite_edges by (subst setsum_commute) (simp add: setsum_restrict_set XG_def XC_def space_eq)
+      using finite_edges by (subst setsum.commute) (simp add: setsum.inter_restrict XG_def XC_def space_eq)
     also have "\<dots> = (\<Sum>c \<in> C k. prob (XC c))"
       using fin_XC XC_in_sets
-      by (auto simp add: prob_eq sets_eq space_eq intro!: setsum_cong)
+      by (auto simp add: prob_eq sets_eq space_eq intro!: setsum.cong)
     finally show ?thesis by (simp add: XC_cyl)
   qed
   also have "\<dots> = (\<Sum>c\<in>C k. p ^ k)"

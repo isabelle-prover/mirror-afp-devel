@@ -195,7 +195,7 @@ using assms finite_UnionD unfolding part_def by auto
 lemma part_setsum:
   assumes P: "part {..<n::nat} P"
   shows "(\<Sum>i<n. f i) = (\<Sum>p\<in>P. \<Sum>i\<in>p. f i)"
-proof (subst setsum_Union_disjoint[symmetric])
+proof (subst setsum.Union_disjoint [symmetric, simplified])
   show "\<forall>p\<in>P. finite p"
   proof
     fix p assume "p \<in> P"
@@ -1274,13 +1274,13 @@ next
       thus "F I \<inter> F J = {}" using * IJ unfolding mC_C_def mC_C_part_def part_def by auto
     qed
     have "setsum (wt c s) II = setsum (setsum (wt c s)) S"
-    unfolding II using S SS setsum_UN_disjoint[of S id "wt c s"] by simp
+    unfolding II using S SS setsum.UNION_disjoint[of S id "wt c s"] by simp
     also have "... = setsum (% I. setsum (wt d t) (F I)) S"
     apply(rule setsum.cong)
     using S apply force
     unfolding S_def using * unfolding mC_C_def mC_C_part_def mC_C_wt_def by auto
     also have "... = setsum (wt d t) (UN I : S . F I)"
-    unfolding lift_def using S setsum_UN_disjoint[of S F "wt d t"] S SS SSS by simp
+    unfolding lift_def using S setsum.UNION_disjoint[of S F "wt d t"] S SS SSS by simp
     also have "(UN I : S . F I) = lift P F II" unfolding lift_def S_def by auto
     finally show "setsum (wt c s) II = setsum (wt d t) (lift P F II)" .
   qed

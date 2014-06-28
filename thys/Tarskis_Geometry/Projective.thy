@@ -1083,18 +1083,18 @@ proof -
     from `r \<notin> {p,q}` and `p \<noteq> q`
     have "?c r *\<^sub>R proj2_rep r + ?c p *\<^sub>R proj2_rep p + ?c q *\<^sub>R proj2_rep q
       = (\<Sum> t\<in>{r,p,q}. ?c t *\<^sub>R proj2_rep t)"
-      by (simp add: setsum_insert [of _ _ "\<lambda> t. ?c t *\<^sub>R proj2_rep t"])
+      by (simp add: setsum.insert [of _ _ "\<lambda> t. ?c t *\<^sub>R proj2_rep t"])
     also from `finite {r,p,q}` and `?s \<in> {r,p,q}`
     have "\<dots> = ?c ?s *\<^sub>R proj2_rep ?s + (\<Sum> t\<in>{r,p,q}-{?s}. ?c t *\<^sub>R proj2_rep t)"
       by (simp only:
-        setsum_diff1' [of "{r,p,q}" ?s "\<lambda> t. ?c t *\<^sub>R proj2_rep t"])
+        setsum.remove [of "{r,p,q}" ?s "\<lambda> t. ?c t *\<^sub>R proj2_rep t"])
     also have "\<dots>
       = -j *\<^sub>R proj2_rep ?s + (proj2_rep ?s + (\<Sum> t\<in>{r,p,q}-{?s}. proj2_rep t))"
       by (simp add: algebra_simps)
     also from `finite {r,p,q}` and `?s \<in> {r,p,q}`
     have "\<dots> = -j *\<^sub>R proj2_rep ?s + (\<Sum> t\<in>{r,p,q}. proj2_rep t)"
       by (simp only:
-        setsum_diff1' [of "{r,p,q}" ?s "\<lambda> t. proj2_rep t",symmetric])
+        setsum.remove [of "{r,p,q}" ?s "\<lambda> t. proj2_rep t",symmetric])
     also from `(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s`
     have "\<dots> = 0" by simp
     finally
@@ -1133,7 +1133,7 @@ proof -
       from `u \<noteq> ?s` and  `u \<in> ?S` have "u \<in> {r,p,q}" by simp
       hence "(\<Sum> t\<in>{r,p,q}. proj2_rep t)
         = proj2_rep u + (\<Sum> t\<in>{r,p,q}-{u}. proj2_rep t)"
-        by (simp add: setsum_diff1')
+        by (simp add: setsum.remove)
       with `(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s`
       have "proj2_rep u
         = j *\<^sub>R proj2_rep ?s - (\<Sum> t\<in>{r,p,q}-{u}. proj2_rep t)"
@@ -1143,7 +1143,7 @@ proof -
         by (simp add: setsum_negf)
       also from `finite ({r,p,q} - {u})`  and `?s \<notin> {r,p,q} - {u}`
       have "\<dots> = (\<Sum> t\<in>insert ?s ({r,p,q}-{u}). ?d t *\<^sub>R proj2_rep t)"
-        by (simp add: setsum_insert)
+        by (simp add: setsum.insert)
       also from `insert ?s ({r,p,q} - {u}) = ?S - {u}`
       have "\<dots> = (\<Sum> t\<in>?S-{u}. ?d t *\<^sub>R proj2_rep t)" by simp
       finally have "proj2_rep u = (\<Sum> t\<in>?S-{u}. ?d t *\<^sub>R proj2_rep t)" .
@@ -2013,12 +2013,12 @@ proof -
   have "(vector [1,1,1]) v* ?C =
     (\<Sum> i\<in>UNIV. (c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i)))"
     by simp
-  also from setsum_reindex
+  also from setsum.reindex
   [of "op $ a" UNIV "\<lambda> x. (c (proj2_rep x)) *\<^sub>R (proj2_rep x)"]
     and `inj (op $ a)`
   have "\<dots> = (\<Sum> x\<in>(range (op $ a)). (c (proj2_rep x)) *\<^sub>R (proj2_rep x))"
     by simp
-  also from setsum_reindex
+  also from setsum.reindex
   [of proj2_rep "range (op $ a)" "\<lambda> w. (c w) *\<^sub>R w"]
     and proj2_rep_inj and subset_inj_on [of proj2_rep UNIV "range (op $ a)"]
   have "\<dots> = (\<Sum> w\<in>?B. (c w) *\<^sub>R w)" by simp
@@ -2040,7 +2040,7 @@ proof -
     have "\<forall> i\<in>(UNIV-{j}).
       ((axis j 1)$i * c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i)) = 0"
       by (simp add: axis_def)
-    with setsum_mono_zero_left [of UNIV "{j}"
+    with setsum.mono_neutral_left [of UNIV "{j}"
       "\<lambda> i. ((axis j 1)$i * c (proj2_rep (a$i))) *\<^sub>R (proj2_rep (a$i))"]
       and vector_matrix_row [of "axis j 1" ?C]
     have "(axis j 1) v* ?C = ?C$j" by (simp add: scalar_equiv)

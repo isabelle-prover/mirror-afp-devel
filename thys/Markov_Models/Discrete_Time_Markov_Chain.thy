@@ -27,7 +27,7 @@ end
 
 sublocale Discrete_Time_Markov_Chain \<subseteq> K: prob_space "K s" for s
   by default (insert s0_in_S \<tau>_distr K_def, simp add: indicator_def emeasure_point_measure_finite
-    space_point_measure one_ereal_def setsum_cases)
+    space_point_measure one_ereal_def setsum.If_cases)
 
 sublocale Discrete_Time_Markov_Chain \<subseteq> Discrete_Markov_Kernel S K
   by default (insert finite_S s0_in_S,
@@ -138,9 +138,9 @@ proof -
         using A `i < n` p[of i s'] step.prems
         by (subst prob_eq_sum)
            (auto simp: space_PiM PiE_def
-                 intro!: setsum_mono_zero_cong_right arg_cong2[where f="op *"] arg_cong2[where f=measure])
+                 intro!: setsum.mono_neutral_cong_right arg_cong2[where f="op *"] arg_cong2[where f=measure])
       also have "\<dots> = (\<Sum>a\<in>A i. p a i * (\<Prod>i\<in>{Suc i ..< n}. (\<Sum>a\<in>A i. p a i)))"
-        by (intro setsum_cong refl, subst step.IH) auto
+        by (intro setsum.cong refl, subst step.IH) auto
       finally show "\<P>(\<omega> in paths s'. (\<forall>j\<in>{i ..< n}. \<omega> (j - i) \<in> A j)) = (\<Prod>i\<in>{i ..< n}. (\<Sum>a\<in>A i. p a i))"
         by (simp add: eq setsum_left_distrib)
     qed }
@@ -189,7 +189,7 @@ lemma reward_until_measurable[measurable]: "reward_until \<Phi> \<in> borel_meas
 lemma reward_until_case_nat_Suc:
   "s \<in> S \<Longrightarrow> s \<notin> \<Phi> \<Longrightarrow> case_nat s \<omega> \<in> until S \<Phi> \<Longrightarrow>
     reward_until \<Phi> (case_nat s \<omega>) = \<rho> s + \<iota> s (\<omega> 0) + reward_until \<Phi> \<omega>"
-  by (auto simp add: reward_until_def hitting_time_case_nat_Suc lessThan_Suc_eq_insert_0 setsum_reindex zero_notin_Suc_image
+  by (auto simp add: reward_until_def hitting_time_case_nat_Suc lessThan_Suc_eq_insert_0 setsum.reindex zero_notin_Suc_image
            intro!: exI[of _ "hitting_time \<Phi> (case_nat s \<omega>)"])
 
 lemma reward_until_case_nat_0:
@@ -262,7 +262,7 @@ lemma nn_integral_reward_until_real:
    ereal (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s' + real (\<integral>\<^sup>+ \<omega>. reward_until \<Phi> (case_nat s' \<omega>) \<partial>paths s')))"
     (is "?R s = _")
   unfolding nn_integral_reward_until_ereal[OF s ae]
-proof (subst setsum_ereal[symmetric], intro setsum_cong refl)
+proof (subst setsum_ereal[symmetric], intro setsum.cong refl)
   fix s' assume s': "s' \<in> S"
   { assume \<tau>: "\<tau> s s' \<noteq> 0"
     from ae s have "\<forall>s'\<in>E s. AE \<omega> in paths s'. case_nat s' \<omega> \<in> until S \<Phi>"

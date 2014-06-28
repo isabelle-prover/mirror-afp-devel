@@ -130,9 +130,9 @@ proof -
   also have "... = setsum (%x. x) ((op ^ p)`{m . m<= n})"
     by(rule seteq_imp_setsumeq) auto
   moreover with p have "inj_on (op ^p) {m . m<=n}"
-    by (auto simp add: inj_on_def)
+    by (simp add: inj_on_def)
   ultimately have "?l = setsum (op ^ p) {m . m<=n}"
-    by(auto simp only: setsum_reindex_id id_def)
+    by (simp add: setsum.reindex)
   moreover have "{m::nat . m<=n} = {0..n}" by auto
   ultimately show "?l = (\<Sum> i = 0 .. n . p^i)" by auto
 qed

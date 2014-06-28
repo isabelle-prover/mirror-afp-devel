@@ -326,7 +326,7 @@ proof -
       apply(simp_all add: split_beta plus_enat_simps(1)[symmetric] add_Suc_right[symmetric] del: plus_enat_simps(1) add_Suc_right)
       apply(subst setsum_hom[symmetric, where f=enat])
       apply(simp_all add: zero_enat_def min_def le_Suc_eq)
-      apply(rule setsum_cong)
+      apply(rule setsum.cong)
       apply(auto simp add: lnth_ltake less_trans[where y="enat m_w"])
       done
     have prefix: "lprefix ?EE'' (lmap snd E')" unfolding E''

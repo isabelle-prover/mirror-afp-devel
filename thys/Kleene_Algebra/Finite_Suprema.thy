@@ -54,7 +54,7 @@ next
   show "(\<Sum>(insert x F) \<le> z) = (\<forall>a \<in> insert x F. a \<le> z)"
   proof -
     have "\<Sum>(insert x F) \<le> z \<longleftrightarrow> (x + \<Sum>F) \<le> z"
-      by (metis finF setsum_insert xnF)
+      by (metis finF setsum.insert xnF)
     also have "... \<longleftrightarrow> x \<le> z \<and> \<Sum>F \<le> z"
       by (metis add_lub)
     also have "... \<longleftrightarrow> x \<le> z \<and> (\<forall>a \<in> F. a \<le> z)"
@@ -132,7 +132,7 @@ text {* The following lemmas state unfold properties for suprema and
 finite sets. They are subtly different from the non-idempotent case,
 where additional side conditions are required. *}
 
-lemma setsum_insert:
+lemma setsum_insert [simp]:
   assumes "finite (A :: 'a::join_semilattice_zero set)"
   shows "\<Sum>(insert x A) = x + \<Sum>A"
 proof -
@@ -146,7 +146,7 @@ lemma setsum_fun_insert:
   fixes f :: "'a \<Rightarrow> 'b::join_semilattice_zero"
   assumes "finite (A :: 'a set)"
   shows "\<Sum>(f ` (insert x A)) = f x + \<Sum>(f ` A)"
-  by (simp add: setsum_insert assms)
+  by (simp add: assms)
 
 text {* Now we show that set comprehensions with nested suprema can
 be flattened. *}

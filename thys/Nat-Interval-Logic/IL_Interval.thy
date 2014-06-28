@@ -1508,7 +1508,7 @@ apply (drule_tac m=x in less_imp_le_pred)
 apply (simp add: add_commute[of m])
 apply (simp add: div_le_mono)
 done
-thm setsum_UN_disjoint
+thm setsum.UNION_disjoint
 lemma mod_partition_is_disjoint: "
   \<lbrakk> 0 < (m::nat); k \<noteq> k' \<rbrakk> \<Longrightarrow> 
   (A \<inter> [k * m\<dots>,m - Suc 0]) \<inter>  (A \<inter> [k' * m\<dots>,m - Suc 0]) = {}"

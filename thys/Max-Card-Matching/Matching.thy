@@ -306,7 +306,7 @@ proof -
     have "finite V" using assms 
       by (simp add: matching_def finite_graph_def)
     have b: "setsum ?g (?A \<union> ?B) = setsum ?g ?A + setsum ?g ?B"
-      using assms `finite V` by (auto intro: setsum_Un_disjoint)    
+      using assms `finite V` by (auto intro: setsum.union_disjoint)    
     have 1: "?Mi = ?M01+ ?Mgr1" using assms a b 
       by (simp add: matching_def finite_graph_def)
     moreover

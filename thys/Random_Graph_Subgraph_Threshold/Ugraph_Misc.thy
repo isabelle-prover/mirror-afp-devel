@@ -53,7 +53,7 @@ proof -
   have "0 + x < setsum f (I - {i}) + f i"
     using assms by (intro add_le_less_mono setsum_nonneg) auto
   also have "setsum f (I - {i}) + f i = setsum f I"
-    using assms by (simp add: setsum_diff1' ac_simps)
+    using assms by (simp add: setsum.remove ac_simps)
   finally show ?thesis by simp
 qed
 
@@ -65,7 +65,7 @@ proof -
   have "0 + x \<le> setsum f (I - {i}) + f i"
     using assms by (metis Diff_iff add_mono setsum_nonneg)
   also have "setsum f (I - {i}) + f i = setsum f I"
-    using assms by (simp add: setsum_diff1' ac_simps)
+    using assms by (simp add: setsum.remove ac_simps)
   finally show ?thesis by simp
 qed
 
@@ -363,7 +363,7 @@ proof -
         by (rule finite_subset[rotated, OF finite_Collect_subsets]) blast
     qed
   also have "\<dots> = ?C"
-    proof (rule setsum_cong)
+    proof (rule setsum.cong)
       fix a
       assume "a \<in> {a. a \<subseteq> A \<and> card a = n}"
       hence "finite (f a)"
@@ -384,7 +384,7 @@ lemma setprod_cancel_nat:
   assumes "B \<subseteq> A" and "finite A" and "\<forall>x\<in>B. f x \<noteq> 0"
   shows "setprod f A / setprod f B = setprod f (A - B)" (is "?A / ?B = ?C")
 proof-
-  from setprod_subset_diff[OF assms(1,2)] have "?A = ?C * ?B" by auto
+  from setprod.subset_diff[OF assms(1,2)] have "?A = ?C * ?B" by auto
   moreover have "?B \<noteq> 0" using assms by (simp add: finite_subset)
   ultimately show ?thesis by simp
 qed

@@ -17,7 +17,7 @@ lemma add_setsum_int:
   fixes j k l :: int
   shows "j < k \<Longrightarrow> k < l \<Longrightarrow>
     setsum f {j..<k} + setsum f {k..<l} = setsum f {j..<l}"
-  by (simp_all add: setsum_Un_Int [symmetric] ivl_disj_un)
+  by (simp_all add: setsum.union_inter [symmetric] ivl_disj_un)
 
 
 subsection {* The shift operator *}
@@ -98,7 +98,7 @@ lemma \<Sigma>_const:
 
 lemma \<Sigma>_add:
   "\<Sigma> (\<lambda>k. f k + g k) j l = \<Sigma> f j l + \<Sigma> g j l"
-  by (simp add: \<Sigma>_def setsum_addf)
+  by (simp add: \<Sigma>_def setsum.distrib)
 
 lemma \<Sigma>_factor:
   "\<Sigma> (\<lambda>k. c * f k) j l = (c::'a::ring) * \<Sigma> (\<lambda>k. f k) j l"

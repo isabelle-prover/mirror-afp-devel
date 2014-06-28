@@ -186,7 +186,7 @@ proof -
     hence "{j. j \<in> I \<and> ineq_dep i j} = {}"
       using assms by auto
     hence "(\<Sum>j | j \<in> I \<and> ineq_dep i j. prob (A i \<inter> A j)) = 0"
-      using setsum_empty by metis
+      using setsum.empty by metis
   }
   hence "\<Delta>\<^sub>d = (0 :: real) * card I"
     unfolding \<Delta>\<^sub>d_def by simp

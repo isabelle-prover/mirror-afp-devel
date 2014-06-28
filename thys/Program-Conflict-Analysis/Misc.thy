@@ -71,7 +71,7 @@ subsection {* Sets *}
     have 2: "(A-B) \<inter> B = {}" by auto
     from P have 3: "finite B" by (simp add: finite_subset)
     from P have 4: "finite (A-B)" by simp
-    from 2 3 4 setsum_Un_disjoint have "setsum f ((A-B) \<union> B) = setsum f (A-B) + setsum f B" by blast
+    from 2 3 4 setsum.union_disjoint have "setsum f ((A-B) \<union> B) = setsum f (A-B) + setsum f B" by blast
     with 1 show ?thesis by simp
   qed
 

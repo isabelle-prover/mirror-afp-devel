@@ -57,7 +57,7 @@ lemma ListSum_disj_union:
   set C = set A \<union> set B  \<Longrightarrow> 
   set A \<inter> set B = {} \<Longrightarrow>
   (\<Sum>\<^bsub>a \<in> C\<^esub> (f a)) = (\<Sum>\<^bsub>a \<in> A\<^esub> f a) + (\<Sum>\<^bsub>a \<in> B\<^esub> (f a::nat))"
-by (simp add: ListSum_conv_setsum setsum_Un_disjoint)
+by (simp add: ListSum_conv_setsum setsum.union_disjoint)
 
 
 lemma listsum_const[simp]: 

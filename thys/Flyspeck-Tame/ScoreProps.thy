@@ -565,7 +565,7 @@ next
    by (simp add: separating_insert2)
   with fin have "(F a) \<inter> (\<Union>v\<in>V. F v) = {}" by auto 
 
-  ultimately show ?case by (simp add: setsum_Un_disjoint)
+  ultimately show ?case by (simp add: setsum.union_disjoint)
 qed
 
 lemma separated_separating:

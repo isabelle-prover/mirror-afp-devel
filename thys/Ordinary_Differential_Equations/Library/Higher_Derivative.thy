@@ -507,7 +507,7 @@ proof (unfold_locales, rule approachableI)
   let ?i = "min (e / abs (s i) / 2) 1"
   have "a + (?i * s i) *\<^sub>R i = a + (\<Sum>ia\<in>Basis. ((if ia = i then ?i else 0) * s ia) *\<^sub>R ia)"
     using `i \<in> Basis`
-    by (auto simp add: Pi_iff setsum_mono_zero_cong_right[of Basis "{i}"] min_def)
+    by (auto simp add: Pi_iff setsum.mono_neutral_cong_right[of Basis "{i}"] min_def)
   also have "\<dots> \<in> G"
     using `0 < e` by (intro in_GI[of "\<lambda>k. if k = i then ?i else 0"])
       (auto simp: Pi_iff)
@@ -592,7 +592,7 @@ proof -
       assume "0 \<le> t" "t \<le> 1" "0 \<le> u" "u \<le> 1"
       hence "a + (t * s i) *\<^sub>R i + (u * s j) *\<^sub>R j \<in> G"
         using GI[of "((\<lambda>_. 0)(i:=t))(j:=u)"] `i \<in> Basis` `j \<in> Basis` `i \<noteq> j`
-        by (simp add: ac_simps setsum_mono_zero_cong_right[of Basis "{i, j}"])
+        by (simp add: ac_simps setsum.mono_neutral_cong_right[of Basis "{i, j}"])
     }
     hence "f'' a (s i *\<^sub>R i) (s j *\<^sub>R j) = f'' a (s j *\<^sub>R j) (s i *\<^sub>R i)" using ij ne
       by (auto intro!: symmetric_second_derivative_aux[OF ne nz `a \<in> G`])
@@ -604,7 +604,7 @@ proof -
     f'' a (\<Sum>b\<in>Basis. (j \<bullet> b) *\<^sub>R b) (\<Sum>b\<in>Basis. (i \<bullet> b) *\<^sub>R b)"
     using `a \<in> G`
     by (auto simp: ac_simps f''_eq swap_inj_on intro:
-      setsum_reindex_cong[where f="\<lambda>(i, j). (j, i)"])
+      setsum.reindex_cong [of "\<lambda>(i, j). (j, i)"])
   thus ?thesis by (simp add: euclidean_representation)
 qed
 

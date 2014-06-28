@@ -43,7 +43,7 @@ proof (unfold independent_explicit, clarify)
   assume S: "S \<subseteq> A" and v: "v \<in> S" 
   let ?g = "\<lambda>x. if x \<in> S then u x else 0"
   have "(\<Sum>v\<in>A. ?g v *\<^sub>R v) = (\<Sum>v\<in>S. u v *\<^sub>R  v)"
-    using S fin_A by (auto intro!: setsum_mono_zero_cong_right)  
+    using S fin_A by (auto intro!: setsum.mono_neutral_cong_right)  
   also assume "(\<Sum>v\<in>S. u v *\<^sub>R v) = 0"
   finally have "?g v = 0" using v S sum by force
   thus "u v = 0"  unfolding if_P[OF v] .
@@ -122,10 +122,10 @@ proof (unfold inj_on_def, rule+, rule ccontr)
   have "x = y + (\<Sum>v\<in>B. g v *\<^sub>R v)" using sum by auto
   also have "... = h y *\<^sub>R y  + (\<Sum>v\<in>B. g v *\<^sub>R v)" unfolding h_def by simp
   also have "... = h y *\<^sub>R y + (\<Sum>v\<in>B. h v *\<^sub>R v)"
-    by (unfold add_left_cancel, rule setsum_cong2)
+    by (unfold add_left_cancel, rule setsum.cong, rule refl)
        (metis (mono_tags) IntI disj_set empty_iff y h_def)
   also have "... = (\<Sum>v\<in>(insert y B). h v *\<^sub>R v)"
-    by (rule setsum_insert[symmetric], rule fin_B)
+    by (rule setsum.insert[symmetric], rule fin_B)
        (metis (lifting) IntI disj_set empty_iff y)
   finally have x_in_span_yB: "x \<in> span (insert y B)"
     unfolding span_finite[OF fin_yB] by auto
@@ -239,9 +239,9 @@ proof -
             is the basis of the kernel; thus, the image of the elements of 
             $B$ will be equal to zero:"
           have zero_fB: "(\<Sum>x\<in>f ` B. g x *\<^sub>R x) = 0"
-            using B_in_ker by (auto intro!: setsum_0')
+            using B_in_ker by (auto intro!: setsum.neutral)
           have zero_inter: "(\<Sum>x\<in>(f ` B \<inter> f ` W). g x *\<^sub>R x) = 0"
-            using B_in_ker by (auto intro!: setsum_0')
+            using B_in_ker by (auto intro!: setsum.neutral)
           have "f v = (\<Sum>x\<in>f ` C. g x *\<^sub>R x)" using fv .
           also have "... = (\<Sum>x\<in>(f ` B \<union> f ` W). g x *\<^sub>R x)" 
             using eq_fC W_def by simp
@@ -264,7 +264,7 @@ proof -
         assume sum: "(\<Sum>x\<in>f ` W. g x *\<^sub>R x) = 0" and w: "w \<in> f ` W"
         have "0 = (\<Sum>x\<in>f ` W. g x *\<^sub>R x)" using sum by simp
         also have "... = setsum ((\<lambda>x. g x *\<^sub>R x) \<circ> f) W"
-          by (rule setsum_reindex, rule inj_on_extended [of f C B], rule l)
+          by (rule setsum.reindex, rule inj_on_extended [of f C B], rule l)
              (unfold W_def, rule finite_C, rule independent_C, rule C_eq, simp, 
               rule ker_in_span)
         also have "... = (\<Sum>x\<in>W. ((g \<circ> f) x) *\<^sub>R f x)" unfolding o_def ..
@@ -285,9 +285,9 @@ proof -
         also have "... = (\<Sum>v\<in>B. t v *\<^sub>R v) + (\<Sum>x\<in>W. -((g \<circ> f) x *\<^sub>R x))" 
           unfolding add_right_cancel unfolding t_def by simp
         also have "... =  (\<Sum>v\<in>B. t v *\<^sub>R v) + (\<Sum>x\<in>W. t x *\<^sub>R x)"
-          by (unfold add_left_cancel t_def W_def, rule setsum_cong2) simp
+          by (unfold add_left_cancel t_def W_def, rule setsum.cong) simp_all
         also have "... = (\<Sum>v\<in>B \<union> W. t v  *\<^sub>R v)" 
-          by (rule setsum_Un_zero [symmetric], rule finite_B, rule finite_W) 
+          by (rule setsum.union_inter_neutral [symmetric], rule finite_B, rule finite_W) 
              (simp add: W_def)       
         finally have "(\<Sum>v\<in>B \<union> W. t v  *\<^sub>R v) = 0" by simp
         hence coef_zero: "\<forall>x\<in>B \<union> W. t x = 0"
