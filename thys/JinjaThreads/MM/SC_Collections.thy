@@ -52,7 +52,7 @@ definition init_fields :: "((vname \<times> cname) \<times> ty) list \<Rightarro
 where
   "init_fields FDTs \<equiv>
   foldr (\<lambda>((F, D), T) fields. 
-           let F' = explode F
+           let F' = String.explode F
            in tm_update F' (lm_update D (default_val T)
                                       (case tm_lookup F' fields of None \<Rightarrow> lm_empty () | Some lm \<Rightarrow> lm)) fields)
         FDTs (tm_empty ())"
@@ -109,7 +109,7 @@ where "sc_typeof_addr h a = map_option obj_ty (rm_lookup a h)"
 inductive sc_heap_read :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 for h :: heap and a :: addr
 where
-  Obj: "\<lbrakk> rm_lookup a h = \<lfloor>Obj C fs\<rfloor>; tm_lookup (explode F) fs = \<lfloor>fs'\<rfloor>; lm_lookup D fs' = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> sc_heap_read h a (CField D F) v"
+  Obj: "\<lbrakk> rm_lookup a h = \<lfloor>Obj C fs\<rfloor>; tm_lookup (String.explode F) fs = \<lfloor>fs'\<rfloor>; lm_lookup D fs' = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> sc_heap_read h a (CField D F) v"
 | Arr: "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>; n < si \<rbrakk> \<Longrightarrow> sc_heap_read h a (ACell n) (the (rm_lookup n el))"
 | ArrObj: "\<lbrakk> rm_lookup a h = \<lfloor>Arr T si f el\<rfloor>; lm_lookup F f = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> sc_heap_read h a (CField Object F) v"
 
@@ -123,8 +123,8 @@ inductive sc_heap_write :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rig
 for h :: heap and a :: addr
 where
   Obj:
-  "\<lbrakk> rm_lookup a h = \<lfloor>Obj C fs\<rfloor>; F' = explode F;
-     h' = rm_update a (Obj C (tm_update F' (lm_update D v (case tm_lookup (explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs')) fs)) h \<rbrakk>
+  "\<lbrakk> rm_lookup a h = \<lfloor>Obj C fs\<rfloor>; F' = String.explode F;
+     h' = rm_update a (Obj C (tm_update F' (lm_update D v (case tm_lookup (String.explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs')) fs)) h \<rbrakk>
   \<Longrightarrow> sc_heap_write h a (CField D F) v h'"
 
 | Arr:
@@ -258,7 +258,7 @@ where
      Obj C fs \<Rightarrow> 
         is_class P C \<and> 
         (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> 
-           (\<exists>fs' v. tm_\<alpha> fs (explode F) = Some fs' \<and> lm_\<alpha> fs' D = Some v \<and> P,h \<turnstile>sc v :\<le> T))
+           (\<exists>fs' v. tm_\<alpha> fs (String.explode F) = Some fs' \<and> lm_\<alpha> fs' D = Some v \<and> P,h \<turnstile>sc v :\<le> T))
    | Arr T si f el \<Rightarrow> 
       is_type P (T\<lfloor>\<rceil>) \<and> (\<forall>n. n < si \<longrightarrow> (\<exists>v. rm_\<alpha> el n = Some v \<and> P,h \<turnstile>sc v :\<le> T)) \<and>
       (\<forall>F T fm. P \<turnstile> Object has F:T (fm) in Object \<longrightarrow> (\<exists>v. lm_lookup F f = Some v \<and> P,h \<turnstile>sc v :\<le> T)))"
@@ -302,7 +302,7 @@ by(fastforce split: heapobj.split elim: sc.conf_hext)
 
 lemma map_of_fields_init_fields:
   assumes "map_of FDTs (F, D) = \<lfloor>(T, fm)\<rfloor>"
-  shows "\<exists>fs' v. tm_\<alpha> (init_fields (map (\<lambda>(FD, (T, fm)). (FD, T)) FDTs)) (explode F) = \<lfloor>fs'\<rfloor> \<and> lm_\<alpha> fs' D = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
+  shows "\<exists>fs' v. tm_\<alpha> (init_fields (map (\<lambda>(FD, (T, fm)). (FD, T)) FDTs)) (String.explode F) = \<lfloor>fs'\<rfloor> \<and> lm_\<alpha> fs' D = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
 using assms
 by(induct FDTs)(auto simp add: tm.lookup_correct tm.update_correct lm.update_correct init_fields_def explode_inject)
 
@@ -345,8 +345,8 @@ qed
 
 lemma sc_oconf_fupd [intro?]:
   "\<lbrakk> P \<turnstile> C has F:T (fm) in D; P,h \<turnstile>sc v :\<le> T; P,h \<turnstile>sc (Obj C fs) \<surd>;
-    fs' = (case tm_lookup (explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs') \<rbrakk>
-  \<Longrightarrow> P,h \<turnstile>sc (Obj C (tm_update (explode F) (lm_update D v fs') fs)) \<surd>"
+    fs' = (case tm_lookup (String.explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs') \<rbrakk>
+  \<Longrightarrow> P,h \<turnstile>sc (Obj C (tm_update (String.explode F) (lm_update D v fs') fs)) \<surd>"
 unfolding sc_oconf_def has_field_def
 apply(auto dest: has_fields_fun simp add: lm.update_correct tm.update_correct tm.lookup_correct explode_inject)
 apply(drule (1) has_fields_fun, fastforce)
@@ -458,7 +458,7 @@ proof
       have [simp]: "C' = class_type_of U" by(auto simp add: sc_typeof_addr_def)
       from hconf arrobj Obj have "P,h \<turnstile>sc Obj (class_type_of U) fs \<surd>" by(auto dest: sc_hconfD)
       with `P \<turnstile> class_type_of U has F:T (fm) in D` obtain fs' v 
-      where "tm_lookup (explode F) fs = \<lfloor>fs'\<rfloor>" "lm_lookup D fs' = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
+      where "tm_lookup (String.explode F) fs = \<lfloor>fs'\<rfloor>" "lm_lookup D fs' = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
       by(fastforce simp add: sc_oconf_def tm.lookup_correct lm.lookup_correct)
       thus ?thesis using Obj arrobj by(auto intro: sc_heap_read.intros)
     next

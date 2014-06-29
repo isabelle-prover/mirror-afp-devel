@@ -21,7 +21,7 @@ instance proof qed
 end
 
 instantiation char :: toString begin
-definition [code]: "toString (c :: char) = implode [c]"
+definition [code]: "toString (c :: char) = String.implode [c]"
 instance proof qed
 end
 

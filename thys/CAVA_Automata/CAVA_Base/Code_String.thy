@@ -13,7 +13,7 @@ begin
 instantiation String.literal :: hashable
 begin
   definition hashcode_literal :: "String.literal \<Rightarrow> uint32" 
-    where "hashcode_literal s = hashcode (explode s)"
+    where "hashcode_literal s = hashcode (String.explode s)"
 
   definition def_hashmap_size_literal 
     :: "String.literal itself \<Rightarrow> nat" where
