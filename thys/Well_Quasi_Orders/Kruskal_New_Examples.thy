@@ -4,11 +4,6 @@ imports
   Kruskal_New
 begin
 
-lemma (in kruskal) kruskal:
-  assumes "wqo_on P F"
-  shows "wqo_on (emb P) terms"
-  using almost_full_on_terms [of P] and assms by (metis transp_on_emb wqo_on_def)
-
 datatype 'a tree = Node 'a "'a tree list"
 
 fun node
@@ -41,13 +36,26 @@ interpretation kruskal_tree: kruskal size "A \<times> UNIV" Node node succs "tre
 
 thm kruskal_tree.almost_full_on_terms
 
-abbreviation tree_emb where
-  "tree_emb P \<equiv> kruskal_tree.emb UNIV (prod_le P (\<lambda>_ _. True))"
+definition "tree_emb P = kruskal_tree.emb UNIV (prod_le P (\<lambda>_ _. True))"
 
-lemma wqo_on_trees:
+lemma wqo_on_trees [intro]:
   assumes "wqo_on P UNIV"
   shows "wqo_on (tree_emb P) UNIV"
-  using wqo_on_Sigma [OF assms wqo_on_UNIV, THEN kruskal_tree.kruskal] by simp
+  using wqo_on_Sigma [OF assms wqo_on_UNIV, THEN kruskal_tree.kruskal] by (simp add: tree_emb_def)
+
+text {*If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
+trees of type @{typ "'a tree"} are well-quasi-ordered by the homeomorphic
+embedding relation.*}
+
+instantiation tree :: (wqo) wqo
+begin
+definition "s \<le> t \<longleftrightarrow> tree_emb (op \<le>) s t"
+definition "(s :: 'a tree) < t \<longleftrightarrow> s \<le> t \<and> \<not> (t \<le> s)"
+
+instance
+  by (rule class.wqo.of_class.intro)
+     (auto simp: less_eq_tree_def [abs_def] less_tree_def [abs_def])
+end
 
 datatype ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
 
@@ -134,7 +142,6 @@ by auto
 thm kruskal_exp.almost_full_on_terms
 
 hide_const (open) V C Plus v c p
-
 
 end
 
