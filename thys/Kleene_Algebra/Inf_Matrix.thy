@@ -110,7 +110,7 @@ proof -
     also have "... = \<Sum>{x. \<exists>k. (i = k \<and> x = f i j)} + \<Sum>{x. \<exists>k. (i \<noteq> k \<and> x = 0)}"
       by (rule setsum_union, auto)
     finally have "(\<epsilon> \<otimes> f) i j = f i j"
-      by (auto simp add: setsum_0')
+      by (auto simp add: setsum.neutral)
   }
   thus ?thesis
     by auto
@@ -127,7 +127,7 @@ proof -
     also have "... = \<Sum>{x. \<exists>k. (k = j \<and> x = f i j)} + \<Sum>{x. \<exists>k. (k \<noteq> j \<and> x = 0)}"
       by (rule setsum_union, auto)
     finally have "(f \<otimes> \<epsilon>) i j = f i j"
-      by (auto simp add: setsum_0')
+      by (auto simp add: setsum.neutral)
   }
   thus ?thesis
     by auto

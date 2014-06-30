@@ -563,7 +563,7 @@ proof (subst filterlim_cong, rule refl, rule refl)
   qed
   hence "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) ---> (\<Sum>i\<le>n. ?a i)) at_infinity"
       by (force intro: tendsto_setsum)
-  also have "(\<Sum>i\<le>n. ?a i) = coeff p n" by (subst setsum_delta, simp_all)
+  also have "(\<Sum>i\<le>n. ?a i) = coeff p n" by (subst setsum.delta, simp_all)
   finally show "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) ---> coeff p n) at_infinity" .
 qed
 

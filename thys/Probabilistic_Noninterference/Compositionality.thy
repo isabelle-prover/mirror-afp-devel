@@ -2189,7 +2189,7 @@ proof-
   "theFTOne dl cl = theFT cl - theFT dl \<union> theFT dl"
   unfolding theFTOne_def by blast+
   have setsum_vS_wS: "setsum ?vS (theFTOne cl dl) = setsum ?wS (theFTOne dl cl)"
-  unfolding theFTOne_sym[of cl dl] apply (rule setsum_cong)
+  unfolding theFTOne_sym[of cl dl] apply (rule setsum.cong)
   using vSwS l unfolding theFTOne_def theFT_def theNFT_def by auto
   (*  *)
   have II: "II \<in> UNpart1 cl dl P" using II l P UNpart1_UNpart01 by blast
@@ -2207,7 +2207,7 @@ proof-
     (*  *)
     have "setsum ?vP ?II_0 =
     setsum (%n. setsum ?vP {brnL cl n..<+brn (cl ! n)}) (theFTOne cl dl)"
-    unfolding BrnFT_def apply(rule setsum_UN_disjoint)
+    unfolding BrnFT_def apply(rule setsum.UNION_disjoint)
     using brnL_Int l by auto
     also have "... =
     setsum
@@ -2221,14 +2221,14 @@ proof-
     setsum
       (%n. setsum ?vP {brnL cl n..<+brn (cl ! n)})
       (theFT cl)" (is "... = ?L + ?R")
-    apply(rule setsum_Un_disjoint) by auto
-    also have "?R = 0" apply(rule setsum_0') using cldl nf by auto
+    apply(rule setsum.union_disjoint) by auto
+    also have "?R = 0" apply(rule setsum.neutral) using cldl nf by auto
     finally have "setsum ?vP ?II_0 = ?L" by simp
     also have "?L =
     setsum
       (%n. ?vS n / (1 - ?vSF) * setsum (?v n) {..< brn (cl ! n)})
       (theFT dl - theFT cl)"
-    apply(intro setsum_cong) using cldl nf
+    apply(intro setsum.cong) using cldl nf
     using theFT_theNFT setsum_wt_ParT_notWtFT_notFinished[of cl] by metis+
     also have "... =
     setsum
@@ -2236,20 +2236,20 @@ proof-
       (theFT dl - theFT cl) / (1 - ?vSF)" (is "... = ?L / (1 - ?vSF)")
     unfolding times_divide_eq_left setsum_divide_distrib by simp
     also have "?L = setsum ?vS (theFT dl - theFT cl)"
-    apply(intro setsum_cong) by auto
+    apply(intro setsum.cong) by auto
     finally have
     "setsum ?vP ?II_0 = (setsum ?vS (theFT dl - theFT cl)) / (1 - ?vSF)"
     (is "... = ?L / ?R") by simp
     also have "?L = setsum ?vS (theFTOne cl dl) - ?vSF"
     unfolding eq_diff_eq WtFT_def theFTOne
-    apply(rule setsum_Un_disjoint[THEN sym]) by auto
+    apply(rule setsum.union_disjoint[THEN sym]) by auto
     finally have vPII0: "setsum ?vP ?II_0 =
     (setsum ?vS (theFTOne cl dl) - ?vSF) / (1 - ?vSF)" by simp
     (*  *)
     (*  *)
     have "setsum ?wP ?JJ_0 =
     setsum (%n. setsum ?wP {brnL dl n..<+brn (dl ! n)}) (theFTOne dl cl)"
-    unfolding BrnFT_def apply(rule setsum_UN_disjoint)
+    unfolding BrnFT_def apply(rule setsum.UNION_disjoint)
     unfolding theFTOne_def theFT_def apply (force, force, clarify)
     apply(rule brnL_Int) using l by auto
     also have "... =
@@ -2264,14 +2264,14 @@ proof-
     setsum
       (%n. setsum ?wP {brnL dl n..<+brn (dl ! n)})
       (theFT dl)" (is "... = ?L + ?R")
-    apply(rule setsum_Un_disjoint) by auto
-    also have "?R = 0" apply(rule setsum_0') using cldl nf by auto
+    apply(rule setsum.union_disjoint) by auto
+    also have "?R = 0" apply(rule setsum.neutral) using cldl nf by auto
     finally have "setsum ?wP ?JJ_0 = ?L" by simp
     also have "?L =
     setsum
       (%n. ?wS n / (1 - ?wSF) * setsum (?w n) {..< brn (dl ! n)})
       (theFT cl - theFT dl)"
-    apply(intro setsum_cong) using cldl nf
+    apply(intro setsum.cong) using cldl nf
     using theFT_theNFT setsum_wt_ParT_notWtFT_notFinished[of dl] by metis+
     also have "... =
     setsum
@@ -2279,13 +2279,13 @@ proof-
       (theFT cl - theFT dl) / (1 - ?wSF)" (is "... = ?L / (1 - ?wSF)")
     unfolding times_divide_eq_left setsum_divide_distrib by simp
     also have "?L = setsum ?wS (theFT cl - theFT dl)"
-    apply(intro setsum_cong) by auto
+    apply(intro setsum.cong) by auto
     finally have
     "setsum ?wP ?JJ_0 = (setsum ?wS (theFT cl - theFT dl)) / (1 - ?wSF)"
     (is "... = ?L / ?R") by simp
     also have "?L = setsum ?wS (theFTOne dl cl) - ?wSF"
     unfolding eq_diff_eq WtFT_def theFTOne
-    apply(rule setsum_Un_disjoint[THEN sym]) by auto
+    apply(rule setsum.union_disjoint[THEN sym]) by auto
     finally have wPJJ0: "setsum ?wP ?JJ_0 =
     (setsum ?wS (theFTOne dl cl) - ?wSF) / (1 - ?wSF)" by simp
     (*  *)

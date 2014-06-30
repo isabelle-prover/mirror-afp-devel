@@ -11,7 +11,7 @@ text{*\label{sec:rk}*}
 subsection {* Definitions *}
 text{*\label{sec:rk-definition}*}
 
-declare setsum_cong[fundef_cong]
+declare setsum.cong[fundef_cong]
 fun rk_eval :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real\<times>'a::real_vector \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "rk_eval A c f t h x j =
   f (t + h * c j, x + h *\<^sub>R (\<Sum>l=1 ..< j. A j l *\<^sub>R rk_eval A c f t h x l))"
@@ -369,7 +369,7 @@ proof
     by (simp add: scaleR_setsum_right)
   also have "\<dots> \<subseteq> {x0 - (b + \<bar>r\<bar>) *\<^sub>R One..x0 + (b + \<bar>r\<bar>) *\<^sub>R One}"
     using rectangle interval solution_in_D[of t] `t \<in> T`
-    by (auto simp: scaleR_setsum_right algebra_simps setsum_addf)
+    by (auto simp: scaleR_setsum_right algebra_simps setsum.distrib)
   finally show "cball (solution t) \<bar>r\<bar> \<subseteq> {x0 - (b + \<bar>r\<bar>) *\<^sub>R One..x0 + (b + \<bar>r\<bar>) *\<^sub>R One}" .
 qed
 

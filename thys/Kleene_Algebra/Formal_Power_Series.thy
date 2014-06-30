@@ -175,11 +175,11 @@ power series. *}
 
 lemma fps_annil [simp]:
   "0 * (f::('a::type,'b::{comm_monoid_add,mult_zero}) fps) = 0"
-by (rule fps_ext) (simp add: times_fps_def setsum_0')
+by (rule fps_ext) (simp add: times_fps_def setsum.neutral)
 
 lemma fps_annir [simp]:
   "(f::('a::type,'b::{comm_monoid_add,mult_zero}) fps) * 0 = 0"
-by (simp add: fps_ext times_fps_def setsum_0')
+by (simp add: fps_ext times_fps_def setsum.neutral)
 
 lemma fps_distl:
   "(f::('a::type,'b::{join_semilattice_zero,semiring}) fps) * (g + h) = (f * g) + (f * h)"
@@ -345,7 +345,7 @@ proof -
   have "{f ys zs |ys zs. xs = ys @ zs} = {f ys zs |ys zs. xs = ys @ zs \<and> ys = []} \<union> {f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
     by blast
   thus ?thesis using [[simproc add: finite_Collect]]
-    by (simp add: setsum_insert)
+    by (simp add: setsum.insert)
 qed
 
 lemma (in left_kleene_algebra) add_star_eq:

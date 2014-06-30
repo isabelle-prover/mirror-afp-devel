@@ -472,7 +472,7 @@ proof -
     fix t::real assume t: "t \<in> {0 .. 1}"
     have "(\<Sum>i\<in>Basis. (y \<bullet> i) *\<^sub>R f' (x + t *\<^sub>R y) i) =
       (\<Sum>i\<in>Basis. \<Sum>a\<in>Basis. (y \<bullet> a) *\<^sub>R (f' (x + t *\<^sub>R y) a \<bullet> i) *\<^sub>R i)"
-      by (subst setsum_commute[symmetric])
+      by (subst setsum.commute[symmetric])
         (simp only: scaleR_setsum_right[symmetric] euclidean_representation)
     also have "\<dots> = (\<Sum>i\<in>Basis. (f' (x + t *\<^sub>R y) y \<bullet> i) *\<^sub>R i)"
       by (subst Derivative.linear_componentwise[OF has_derivative_linear[OF f'], OF line_in[OF t]])
@@ -484,7 +484,7 @@ proof -
     by (subst integral_setsum) (auto intro!: continuous_intros f'_cont)
   also have "\<dots> = (\<Sum>a\<in>Basis. (y \<bullet> a) *\<^sub>R integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R y) a))"
     using assms
-    by (intro setsum_cong[OF refl], subst integral_cmul)
+    by (intro setsum.cong[OF refl], subst integral_cmul)
       (auto intro!: continuous_intros f'_cont simp: integral_cmul)
   finally show ?th2 .
 qed
@@ -602,7 +602,7 @@ qed
 subsection {* Set(sum) *}
 
 lemma setsum_eq_nonzero: "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) = (\<Sum>a\<in>{a\<in>A. f a \<noteq> 0}. f a)"
-  by (subst setsum_mono_zero_cong_right) auto
+  by (subst setsum.mono_neutral_cong_right) auto
 
 lemma singleton_subsetI:"i \<in> B \<Longrightarrow> {i} \<subseteq> B"
   by auto

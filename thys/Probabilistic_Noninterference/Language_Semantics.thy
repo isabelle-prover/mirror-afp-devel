@@ -335,7 +335,7 @@ qed auto
 lemma setsum_minus[simp]:
 fixes a :: nat
 shows "setsum f {a ..< a + b} = setsum (%x. f (a + x)) {..< b}"
-using setsum_reindex[of "op + a" "{..< b}" f] by auto
+using setsum.reindex[of "op + a" "{..< b}" f] by auto
 
 lemma setsum_Un_introL:
 assumes "A1 = B1 Un C1" and "x = x1 + x2"
@@ -343,7 +343,7 @@ assumes "A1 = B1 Un C1" and "x = x1 + x2"
 "B1 Int C1 = {}" and
 "setsum f1 B1 = x1" and "setsum f1 C1 = x2"
 shows "setsum f1 A1 = x"
-by (metis assms finite_Un setsum_Un_disjoint)
+by (metis assms finite_Un setsum.union_disjoint)
 
 lemma setsum_Un_intro:
 assumes "A1 = B1 Un C1" and "A2 = B2 Un C2" and
@@ -351,7 +351,7 @@ assumes "A1 = B1 Un C1" and "A2 = B2 Un C2" and
 "B1 Int C1 = {}" and "B2 Int C2 = {}" and
 "setsum f1 B1 = setsum f2 B2" and "setsum f1 C1 = setsum f2 C2"
 shows "setsum f1 A1 = setsum f2 A2"
-by (metis assms finite_Un setsum_Un_disjoint)
+by (metis assms finite_Un setsum.union_disjoint)
 
 lemma setsum_UN_introL:
 assumes A1: "A1 = (UN n : N. B1 n)" and a2: "a2 = setsum b2 N" and
@@ -361,7 +361,7 @@ ss: "\<And> n. n \<in> N \<Longrightarrow> setsum f1 (B1 n) = b2 n"
 shows "setsum f1 A1 = a2" (is "?L = a2")
 proof-
   have "?L = setsum (%n. setsum f1 (B1 n)) N"
-  unfolding A1 using setsum_UN_disjoint[of N B1 f1] fin int by simp
+  unfolding A1 using setsum.UNION_disjoint[of N B1 f1] fin int by simp
   also have "... = setsum b2 N" using ss fin by auto
   also have "... = a2" using a2 by simp
   finally show ?thesis .
@@ -375,10 +375,10 @@ ss: "\<And> n. n \<in> N \<Longrightarrow> setsum f1 (B1 n) = setsum f2 (B2 n)"
 shows "setsum f1 A1 = setsum f2 A2" (is "?L = ?R")
 proof-
   have "?L = setsum (%n. setsum f1 (B1 n)) N"
-  unfolding A1 using setsum_UN_disjoint[of N B1 f1] fin int by simp
-  also have "... = setsum (%n. setsum f2 (B2 n)) N" using ss fin setsum_mono_zero_left by auto
+  unfolding A1 using setsum.UNION_disjoint[of N B1 f1] fin int by simp
+  also have "... = setsum (%n. setsum f2 (B2 n)) N" using ss fin setsum.mono_neutral_left by auto
   also have "... = ?R"
-  unfolding A2 using setsum_UN_disjoint[of N B2 f2] fin int by simp
+  unfolding A2 using setsum.UNION_disjoint[of N B2 f2] fin int by simp
   finally show ?thesis .
 qed
 
@@ -393,11 +393,11 @@ proof-
   using assms by blast+
   have "setsum f1 A1 = setsum f1 B1 + f1 a1"
   using 1 by (metis Un_empty_right Un_insert_right assms card_Diff1_less
-  comm_semiring_1_class.normalizing_semiring_rules(24) finite_insert insert_absorb less_irrefl_nat setsum_insert)
+  comm_semiring_1_class.normalizing_semiring_rules(24) finite_insert insert_absorb less_irrefl_nat setsum.insert)
   hence 3: "setsum f1 B1 = setsum f1 A1 - f1 a1" by simp
   have "setsum f2 A2 = setsum f2 B2 + f2 a2"
   using 2 by (metis Un_empty_right Un_insert_right assms card_Diff1_less
-  comm_semiring_1_class.normalizing_semiring_rules(24) finite_insert insert_absorb less_irrefl_nat setsum_insert)
+  comm_semiring_1_class.normalizing_semiring_rules(24) finite_insert insert_absorb less_irrefl_nat setsum.insert)
   hence "setsum f2 B2 = setsum f2 A2 - f2 a2" by simp
   thus ?thesis using 3 assms by simp
 qed
@@ -412,7 +412,7 @@ proof-
   have "A = B Un {a}" unfolding B_def using assms by blast
   moreover have "B Int {a} = {}" unfolding B_def by blast
   ultimately have "setsum f A = setsum f B + setsum f {a}"
-  using assms setsum_Un_disjoint by blast
+  using assms setsum.union_disjoint by blast
   moreover have "\<forall> b \<in> B. f b = 0" using assms unfolding B_def by auto
   ultimately show ?thesis using assms by auto
 qed
@@ -422,7 +422,7 @@ assumes "b = 0"
 and "\<And> a. a \<in> A \<Longrightarrow> f a = 0"
 shows "setsum f A = b"
 apply(cases "finite A")
-by(metis assms setsum.neutral setsum_infinite)+
+by(metis assms setsum.neutral setsum.infinite)+
 
 lemma setsum_1:
 assumes I: "finite I" and ss: "setsum f I = 1" and i: "i \<in> I - I1" and I1: "I1 \<subseteq> I"
@@ -432,7 +432,7 @@ proof-
   have "setsum f I = setsum f ({i} Un (I - {i}))" using i
   by (metis DiffE insert_Diff_single insert_absorb insert_is_Un)
   also have "... = setsum f {i} + setsum f (I - {i})"
-  apply(rule setsum_Un_disjoint) using I by auto
+  apply(rule setsum.union_disjoint) using I by auto
   finally have "1 = f i + setsum f (I - {i})" unfolding ss[THEN sym] by simp
   moreover have "setsum f (I - {i}) \<ge> setsum f I1"
   apply(rule setsum_mono2) using assms by auto
@@ -701,7 +701,7 @@ proof-
   have 1: "{..< length cl} = ?L Un ?Lnot" by auto
   have "?A = setsum ?w ?L + setsum ?w ?Lnot" unfolding WtFT_def WtNFT_def by simp
   also have "... = setsum ?w {..< length cl}" unfolding 1
-  apply(rule setsum_Un_disjoint[THEN sym]) by auto
+  apply(rule setsum.union_disjoint[THEN sym]) by auto
   also have "... = 1" unfolding setsum_equal[OF assms] by auto
   finally show ?thesis .
 qed
@@ -1324,7 +1324,7 @@ shows "setsum (wt (Par cl) s) (op + (brnL cl n) ` I) =
        1 /(length cl) * setsum (wt (cl ! n) s) I" (is "?L = ?wSch * ?R")
 proof-
   have "?L = setsum (%i. ?wSch * wt (cl ! n) s i) I"
-  apply(rule setsum_reindex_cong[of "op + (brnL cl n)"]) using assms by auto
+  apply(rule setsum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
   also have "... = ?wSch * ?R"
   unfolding setsum_right_distrib by simp
   finally show ?thesis .
@@ -1347,16 +1347,16 @@ proof-
   have 0: "I = {0} Un (I - {0})" using I by auto
   have finI: "finite I" using I by (metis finite_nat_iff_bounded)
   have "?L = setsum ?w I"
-  proof(rule setsum_reindex_cong[of "op + (brnL cl ?n)"])
+  proof (rule setsum.reindex_cong [of "plus (brnL cl ?n)"])
     fix i assume i: "i \<in> I"
     have "i < brn (cl ! ?n)" using i I by auto
     note i = this i
-    show "?w i = wt (ParT cl) s (brnL cl ?n + i)"
+    show "wt (ParT cl) s (brnL cl ?n + i) = ?w i"
     using nf n i cl by (cases "i = 0") auto
-  qed(insert assms, auto)
+  qed (insert assms, auto)
   also have "... = setsum ?w ({0} Un (I - {0}))" using 0 by auto
   also have "... = setsum ?w {0::real} + setsum ?w (I - {0})"
-  using setsum_Un_disjoint[of "{0}" "I - {0}" ?w] finI by auto
+  using setsum.union_disjoint[of "{0}" "I - {0}" ?w] finI by auto
   also have "... = 1" by simp
   finally show ?thesis .
 qed
@@ -1372,7 +1372,7 @@ proof-
   have 0: "II = {brnL cl ?n} Un (II - {brnL cl ?n})" using II by auto
   have finI: "finite II" using II by (metis finite_nat_iff_bounded)
   have "?L = setsum ?w II"
-  proof(rule setsum_cong)
+  proof(rule setsum.cong)
     fix ii assume ii: "ii \<in> II"
     hence ii: "ii < brnL cl (length cl)" using II by auto
     from cl ii show "wt (ParT cl) s ii = ?w ii"
@@ -1393,7 +1393,7 @@ proof-
   qed simp
   also have "... = setsum ?w ({brnL cl ?n} Un (II - {brnL cl ?n}))" using 0 by simp
   also have "... = setsum ?w {brnL cl ?n} + setsum ?w (II - {brnL cl ?n})"
-  apply(rule setsum_Un_disjoint) using finI by auto
+  apply(rule setsum.union_disjoint) using finI by auto
   also have "... = 1" by simp
   finally show ?thesis .
 qed
@@ -1404,13 +1404,13 @@ and I: "I \<subseteq> {..< brn (cl ! n)}" and nI: "n = pickFT cl \<longrightarro
 shows "setsum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
 proof-
   have "?L = setsum (%i. 0) I"
-  proof(rule setsum_reindex_cong[of "op + (brnL cl n)"])
+  proof (rule setsum.reindex_cong [of "plus (brnL cl n)"])
     fix i assume i: "i \<in> I"
     hence "n = pickFT cl \<longrightarrow> i \<noteq> 0" using nI by metis
     moreover have "i < brn (cl ! n)" using i I by auto
-    ultimately show "0 = wt (ParT cl) s (brnL cl n + i)"
+    ultimately show "wt (ParT cl) s (brnL cl n + i) = 0"
     using nf n cl by simp
-  qed(insert assms, auto)
+  qed (insert assms, auto)
   also have "... = 0" by simp
   finally show ?thesis .
 qed
@@ -1421,7 +1421,7 @@ and n: "n < length cl" and cln: "finished (cl!n)" and I: "I \<subseteq> {..< brn
 shows "setsum (wt (ParT cl) s) (op + (brnL cl n) ` I) = 0" (is "?L = 0")
 proof-
   have "?L = setsum (%i. 0) I"
-  apply(rule setsum_reindex_cong[of "op + (brnL cl n)"]) using assms by auto
+  apply(rule setsum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
   also have "... = 0" by simp
   finally show ?thesis .
 qed
@@ -1435,7 +1435,7 @@ shows
 (is "?L = ?w / (1 - ?wF) * ?R")
 proof-
   have "?L = setsum (%i. ?w / (1 - ?wF) * wt (cl ! n) s i) I"
-  apply(rule setsum_reindex_cong[of "op + (brnL cl n)"])
+  apply(rule setsum.reindex_cong[of "op + (brnL cl n)"])
   using assms by auto
   also have "... = ?w / (1 - ?wF) * ?R"
   unfolding setsum_right_distrib by simp
@@ -1540,7 +1540,7 @@ next
         hence "{..< length cl} = ?L Un ?Lnot" by auto
         hence "setsum w {..< length cl} = setsum w (?L Un ?Lnot)" by simp
         also have "... = setsum w ?L + setsum w ?Lnot"
-        apply(rule setsum_Un_disjoint) by auto
+        apply(rule setsum.union_disjoint) by auto
         also have "... = 1" unfolding w_def using sch by simp
         finally show ?thesis by simp
       next
@@ -1548,10 +1548,10 @@ next
         let ?L = "theFT cl" let ?Lnot = "theNFT cl"
         have 1: "{..< length cl} = ?L Un ?Lnot" by auto
         have "setsum w {..< length cl} = setsum w ?L + setsum w ?Lnot"
-        unfolding 1 apply(rule setsum_Un_disjoint) by auto
+        unfolding 1 apply(rule setsum.union_disjoint) by auto
         also have "... = setsum w ?Lnot" unfolding w_def using sch by simp
         also have "... = setsum (%n. ?v / (1 - ?wtF)) ?Lnot"
-        apply(rule setsum_cong) using w sch by auto
+        apply(rule setsum.cong) using w sch by auto
         also have "... = setsum (%n. ?v) ?Lnot / (1 - ?wtF)"
         unfolding setsum_divide_distrib by simp
         also have "... = ?wtNF / (1 - ?wtF)" unfolding WtNFT_def by simp

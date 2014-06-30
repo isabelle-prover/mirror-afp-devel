@@ -26,7 +26,7 @@ proof -
     apply (subst density_ereal_max_0)
     apply (subst integral_real_density)
     apply (auto simp add: integral_real_density lebesgue_integral_count_space_finite_support eq
-      intro!: setsum_cong)
+      intro!: setsum.cong)
     done
 qed
 
@@ -138,7 +138,7 @@ lemma emeasure_trans:
 proof -
   have **: "\<And>a. setsum (wt (fst cf) (snd cf)) {i. i < brn (fst cf) \<and> a = cont_eff cf i} =
       setsum (wt (fst cf) (snd cf)) {i. i < brn (fst cf) \<and> a = cont_eff cf i \<and> 0 < wt (fst cf) (snd cf) i}"
-    using cf by (intro setsum_mono_zero_cong_right) (auto simp: less_le)
+    using cf by (intro setsum.mono_neutral_cong_right) (auto simp: less_le)
   have ***: "(SIGMA a:{a \<in> A. \<exists>i<brn (fst cf). 0 < wt (fst cf) (snd cf) i \<and> a = cont_eff cf i}.
                   {i. i < brn (fst cf) \<and> a = cont_eff cf i \<and> 0 < wt (fst cf) (snd cf) i}) =
       (\<lambda>i. (cont_eff cf i, i)) ` {i. i < brn (fst cf) \<and> cont_eff cf i \<in> A \<and> 0 < wt (fst cf) (snd cf) i}"
@@ -149,9 +149,9 @@ proof -
     apply (subst emeasure_point_measure[OF _ A])
     apply (simp_all add: setsum_wt_less_0)
     apply (simp add: **)
-    apply (simp add: setsum_Sigma)
-    apply (simp add: *** setsum_reindex inj_on_def)
-    apply (rule setsum_mono_zero_cong_left)
+    apply (simp add: setsum.Sigma)
+    apply (simp add: *** setsum.reindex inj_on_def)
+    apply (rule setsum.mono_neutral_cong_left)
     apply (auto simp: less_le)
     done
 qed
@@ -469,7 +469,7 @@ lemma integral_trans:
 proof -
   have *: "\<And>a. setsum (wt (fst cf) (snd cf)) {i. i < brn (fst cf) \<and> a = cont_eff cf i} =
       setsum (wt (fst cf) (snd cf)) {i. i < brn (fst cf) \<and> a = cont_eff cf i \<and> 0 < wt (fst cf) (snd cf) i}"
-    using cf by (auto intro!: setsum_mono_zero_cong_right simp: less_le)
+    using cf by (auto intro!: setsum.mono_neutral_cong_right simp: less_le)
   have **: "(SIGMA a:{a \<in> reachable' st. (\<exists>i<brn (fst cf). 0 < wt (fst cf) (snd cf) i \<and> a = cont_eff cf i \<and> 0 < wt (fst cf) (snd cf) i) \<and> f a \<noteq> 0}.
                   {i. i < brn (fst cf) \<and> a = cont_eff cf i \<and> 0 < wt (fst cf) (snd cf) i}) =
       (\<lambda>i. (cont_eff cf i, i)) ` {i. i < brn (fst cf) \<and> 0 < wt (fst cf) (snd cf) i \<and> f (cont_eff cf i) \<noteq> 0}"
@@ -479,8 +479,8 @@ proof -
     apply (subst lebesgue_integral_point_measure)
     apply (simp add: setsum_wt_less_0)
     unfolding *
-    apply (simp add: setsum_wt_less_0 setsum_left_distrib setsum_Sigma ** setsum_reindex inj_on_def)
-    apply (auto intro!: setsum_mono_zero_cong_left simp: less_le)
+    apply (simp add: setsum_wt_less_0 setsum_left_distrib setsum.Sigma ** setsum.reindex inj_on_def)
+    apply (auto intro!: setsum.mono_neutral_cong_left simp: less_le)
     done
 qed
 
@@ -520,14 +520,14 @@ proof -
     have "(\<Sum>j\<in>J. v j * g j) = (\<Sum>i\<in>I. w i) * (\<Sum>j\<in>J. v j * g j)"
       using sum by simp
     also have "\<dots> = ?W (g\<circ>snd)"
-      by (simp add: ac_simps setsum_product setsum_cartesian_product)
+      by (simp add: ac_simps setsum_product setsum.cartesian_product)
     finally have "(\<Sum>j\<in>J. v j * g j) = ?W (g\<circ>snd)" . }
   moreover
   { fix f :: "'a \<Rightarrow> real"
     have "(\<Sum>i\<in>I. w i * f i) = (\<Sum>i\<in>I. w i * f i) * (\<Sum>j\<in>J. v j)"
       using sum by simp
     also have "\<dots> = ?W (f\<circ>fst)"
-      unfolding setsum_product setsum_cartesian_product by (simp add: ac_simps)
+      unfolding setsum_product setsum.cartesian_product by (simp add: ac_simps)
     finally have "(\<Sum>i\<in>I. w i * f i) = ?W (f\<circ>fst)" . }
   moreover
   { have "dist (?W (f\<circ>fst)) (?W (g\<circ>snd)) \<le> ?W (\<lambda>(i,j). d i + e j)"
@@ -535,7 +535,7 @@ proof -
       by (intro dist_setsum)
          (auto simp: mult_le_cancel_left zero_less_mult_iff mult_le_0_iff not_le[symmetric])
     also have "\<dots> = ?W (d \<circ> fst) + ?W (e \<circ> snd)"
-      by (auto simp add: setsum_addf[symmetric] field_simps intro!: setsum_cong)
+      by (auto simp add: setsum.distrib[symmetric] field_simps intro!: setsum.cong)
     finally have "dist (?W (f\<circ>fst)) (?W (g\<circ>snd)) \<le> ?W (d \<circ> fst) + ?W (e \<circ> snd)" by simp }
   ultimately show ?thesis by simp
 qed
@@ -862,9 +862,9 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         unfolding integral_trans[OF cf] by (simp add: part_setsum[OF P])
       also have "\<dots> = (\<Sum>I\<in>P. ?P' I)"
         using `cf \<in> reachable st` finite_I
-        by (auto intro!: setsum_cong simp add: setsum_right_distrib setsum_nonneg_eq_0_iff W_def)
+        by (auto intro!: setsum.cong simp add: setsum_right_distrib setsum_nonneg_eq_0_iff W_def)
       also have "\<dots> = ?P' I0 + (\<Sum>I\<in>P-{I0}. ?P' I)"
-        unfolding setsum_diff1'[OF `finite P` `I0 \<in> P`] ..
+        unfolding setsum.remove[OF `finite P` `I0 \<in> P`] ..
       finally have "\<P>(bT in paths st cf. S cf (Suc n) bT) = \<dots>" . }
     note P_split = this
 
@@ -876,7 +876,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     moreover have F_diff: "F ` P - {F I0} = F ` (P - {I0})"
       by (auto simp: `inj_on F P`[THEN inj_on_eq_iff] `I0 \<in> P`)
     ultimately have Ps2: "Ps st2 cf2 = W cf2 (F I0) * ps st2 cf2 (F I0) + (\<Sum>I\<in>P-{I0}. W cf2 (F I) * ps st2 cf2 (F I))"
-      by (simp add: setsum_reindex `inj_on F (P-{I0})`)
+      by (simp add: setsum.reindex `inj_on F (P-{I0})`)
 
     have Pn1: "Pn st1 cf1 n = W cf1 I0 * pn st1 cf1 I0 n' + (\<Sum>I\<in>P-{I0}. W cf1 I * pn st1 cf1 I n')"
       unfolding Pn_def pn_def nm using P(2) `finite P` `I0 \<in> P` by (intro P_split) (simp_all add: N_def)
@@ -884,7 +884,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     have "Pn st2 cf2 m = W cf2 (F I0) * pn st2 cf2 (F I0) m' + (\<Sum>I\<in>F`P-{F I0}. W cf2 I * pn st2 cf2 I m')"
       unfolding Pn_def pn_def nm using FP(2) `finite P` `I0 \<in> P` by (intro P_split) (simp_all add: N_def)
     with F_diff have Pn2: "Pn st2 cf2 m = W cf2 (F I0) * pn st2 cf2 (F I0) m' + (\<Sum>I\<in>P-{I0}. W cf2 (F I) * pn st2 cf2 (F I) m')"
-      by (simp add: setsum_reindex `inj_on F (P-{I0})`)
+      by (simp add: setsum.reindex `inj_on F (P-{I0})`)
 
     show ?thesis
     proof cases
@@ -895,7 +895,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         then have "W cf1 I0 = W cf1 {..<brn (fst cf1)}" by (simp add: W_def  proper_reachable[where st=st1])
         also have "\<dots> = W cf1 I0 + (\<Sum>I\<in>P - {I0}. W cf1 I)"
           unfolding `part {..<brn (fst cf1)} P`[THEN part_setsum] W_def
-          unfolding setsum_diff1'[OF `finite P` `I0 \<in> P`] ..
+          unfolding setsum.remove[OF `finite P` `I0 \<in> P`] ..
         finally have "(\<Sum>I\<in>P - {I0}. W cf1 I) = 0" by simp
         then have "\<forall>I\<in>P - {I0}. W cf1 I = 0"
           using `finite P` by (subst (asm) setsum_nonneg_eq_0_iff) auto
@@ -908,7 +908,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         then have "W cf2 (F I0) = W cf2 {..<brn (fst cf2)}" by (simp add: W_def proper_reachable[where st=st2])
         also have "\<dots> = W cf2 (F I0) + (\<Sum>I\<in>F ` P - {F I0}. W cf2 I)"
           unfolding FP(2)[THEN part_setsum] W_def
-          unfolding setsum_diff1'[OF FP'] ..
+          unfolding setsum.remove[OF FP'] ..
         finally have "(\<Sum>I\<in>F`P - {F I0}. W cf2 I) = 0" by simp
         then have "\<forall>I\<in>F`P - {F I0}. W cf2 I = 0"
           using `finite P` by (subst (asm) setsum_nonneg_eq_0_iff) auto
@@ -984,7 +984,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
           by (simp, intro dist_setsum)
              (simp add: setsum_nonneg divide_le_cancel mult_le_cancel_left not_le[symmetric] W1_nneg)
         also have "\<dots> = ?e1"
-          unfolding setsum_addf[symmetric] using  wt[OF _ wt_less1]
+          unfolding setsum.distrib[symmetric] using  wt[OF _ wt_less1]
           by (simp add: field_simps add_divide_distrib)
         finally have "dist (?v1 * ?w1 * ?wP) (?v1 * ?w1 * ?wQ) \<le> ?v1 * ?w1 * ?e1"
           using wt_less1 unfolding dist_mult by simp
@@ -1165,7 +1165,7 @@ next
   also have "\<dots> = (\<Sum>I\<in>P. \<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b * ?P st2 (cont_eff cf2 b) n)"
     using sum_eq by simp
   also have "\<dots> = (\<Sum>I\<in>F`P. \<Sum>b\<in>I. wt (fst cf2) (snd cf2) b * ?P st2 (cont_eff cf2 b) n)"
-    using `inj_on F P` by (simp add: setsum_reindex)
+    using `inj_on F P` by (simp add: setsum.reindex)
   also have "\<dots> = ?P st2 cf2 (Suc n)"
     using `cf2 \<in> reachable st2` FP(1) by (rule split[symmetric])
   finally show ?case .

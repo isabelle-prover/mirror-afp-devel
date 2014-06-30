@@ -23,7 +23,7 @@ lemma double_sum_equiv:
   shows
   "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
    (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f j * g k))"
-  by (rule setsum_commute)
+  by (rule setsum.commute)
 
 (*>*)
 
@@ -128,7 +128,7 @@ proof -
   also have
     "\<dots> =
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j + f j * g k))"
-    by (auto simp add: setsum_addf)
+    by (auto simp add: setsum.distrib)
   finally have
     "2 * (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j + f j * g k))" .

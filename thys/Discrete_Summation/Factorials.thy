@@ -76,7 +76,7 @@ next
     by (simp add: setsum_right_distrib algebra_simps)
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact (Suc k) a) +
     (\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a))" 
-    by (simp add: setsum_addf algebra_simps mult_ffact)
+    by (simp add: setsum.distrib algebra_simps mult_ffact)
   also have "\<dots> = (\<Sum>k = 0.. Suc n. of_nat (Stirling n k) * ffact (Suc k) a) + 
     (\<Sum>k = 0..Suc n. of_nat ((Suc k) * (Stirling n (Suc k))) * (ffact (Suc k) a))"
   proof -
@@ -94,7 +94,7 @@ next
     then show ?thesis by simp
   qed
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling (Suc n) (Suc k)) * ffact (Suc k) a)"
-    by (simp add: algebra_simps setsum_addf)
+    by (simp add: algebra_simps setsum.distrib)
   also have "\<dots> = (\<Sum>k = Suc 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
     by (simp only: image_Suc_atLeastAtMost setsum_shift_bounds_cl_Suc_ivl)
   also have "\<dots> = (\<Sum>k = 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"

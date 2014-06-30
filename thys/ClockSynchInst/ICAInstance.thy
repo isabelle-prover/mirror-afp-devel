@@ -166,7 +166,7 @@ proof-
   from hC have "C \<union> ({..<np}-C) = {..<np}" by auto
   ultimately
   show ?thesis
-    using setsum_Un_disjoint[where A=C and B="{..<np} - C"]
+    using setsum.union_disjoint[where A=C and B="{..<np} - C"]
     by auto
 qed
  

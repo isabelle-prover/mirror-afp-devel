@@ -7,7 +7,6 @@ begin
 lemma setsum_mono2_nat: "finite (B::nat set) \<Longrightarrow> A <= B \<Longrightarrow> \<Sum> A <= \<Sum> B"
 by (auto simp add: setsum_mono2)
 
-lemma setsum_0_if_empty: "A={} ==> setsum f A = 0" by simp
 lemma seteq_imp_setsumeq: "A=B ==> \<Sum> A = \<Sum> B" by simp
 
 
@@ -66,7 +65,7 @@ proof (cases)
     by (metis setsum_shift_bounds_cl_Suc_ivl)
   also with n0
   have "... = ((\<Sum>i=Suc 0 .. n. x^i)+x^(Suc n)) - (x^0 + (\<Sum>i=Suc 0 .. n. x^i))"
-    by (auto simp add: setsum_Un_disjoint nat_interval_minus_zero2)
+    by (auto simp add: setsum.union_disjoint nat_interval_minus_zero2)
   finally show "?thesis" by auto
 qed
 

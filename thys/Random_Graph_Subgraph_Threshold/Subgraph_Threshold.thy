@@ -187,14 +187,14 @@ next
           by (rule card_dep_pair_set[where A = "{1..n}" and n = "?v" and f = all_edges])
              (auto simp: finite_subset all_edges_finite)
         also have "\<dots> = (\<Sum>v | v \<subseteq> {1..n} \<and> card v = ?v. (?v choose 2) choose ?e)"
-          proof (rule setsum_cong2)
+          proof (rule setsum.cong)
             fix v
             assume "v \<in> {v. v \<subseteq> {1..n} \<and> card v = ?v}"
             hence "v \<subseteq> {1..n}" "card v = ?v"
               by auto
             thus "card (all_edges v) choose ?e = (?v choose 2) choose ?e"
               by (simp add: card_all_edges finite_subset)
-          qed
+          qed rule
         also have "\<dots> = card ({v. v \<subseteq> {1..n} \<and> card v = ?v}) * ((?v choose 2) choose ?e)"
           by simp
         also have "\<dots> = (n choose ?v) * ((?v choose 2) choose ?e)"
@@ -488,7 +488,7 @@ next
          (as they are nonempty) and at most $|V(H)|$ elements (by definition of $I$). In this step,
          we will partition this sum by cardinality of the intersections. *}
     also have "\<dots> = (\<Sum>S \<in> ?I. \<Sum>T \<in> (\<Union>k \<in> {1..?v}. {T \<in> ?I. card (S \<inter> T) = k}). prob (?A S \<inter> ?A T))"
-      proof (rule setsum_cong2, rule setsum_cong)
+      proof (rule setsum.cong, rule refl, rule setsum.cong)
         fix S
         assume "S \<in> ?I"
         note I(2,3)[OF this]
@@ -498,9 +498,9 @@ next
           by blast
       qed simp
     also have "\<dots> = (\<Sum>S \<in> ?I. \<Sum>k = 1..?v. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
-      by (rule setsum_cong2, rule setsum_UN_disjoint) auto
+      by (rule setsum.cong, rule refl, rule setsum.UNION_disjoint) auto
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>S \<in> ?I. \<Sum>T | T \<in> ?I \<and> card (S \<inter> T) = k. prob (?A S \<inter> ?A T))"
-      by (rule setsum_commute)
+      by (rule setsum.commute)
 
     --{* In this step, we compute an upper bound for the intersection probability and argue that
          it only depends on the cardinality of the intersection. *}
@@ -579,9 +579,9 @@ next
 
     --{* Further rewriting the index sets. *}
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>(S, T) \<in> (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}). p n powr (2 * ?e - max_density H * k))"
-      by (rule setsum_cong2, rule setsum_Sigma) auto
+      by (rule setsum.cong, rule refl, rule setsum.Sigma) auto
     also have "\<dots> = (\<Sum>k = 1..?v. card (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}) * p n powr (2 * ?e - max_density H * k))"
-      unfolding real_of_nat_def by (rule setsum_cong2) auto
+      unfolding real_of_nat_def by (rule setsum.cong) auto
 
     --{* Here, we compute the cardinality of the index sets and use the same upper bounds for
          the binomial coefficients as for the 0-statement. *}

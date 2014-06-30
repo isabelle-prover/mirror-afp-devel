@@ -29,11 +29,11 @@ next
     by (auto simp: PiE_def intro!: image_eqI ext dest: extensional_arb)
   have "(\<Sum>x\<in>Pi\<^sub>E (insert i I) S. \<Prod>i\<in>insert i I. f (x i) i) = 
     setsum ((\<lambda>x. \<Prod>i\<in>insert i I. f (x i) i) \<circ> ((\<lambda>(x, f). f(i := x)))) (S i \<times> Pi\<^sub>E I S)"
-    unfolding * using insert by (intro setsum_reindex) (auto intro!: inj_on_upd_PiE)
+    unfolding * using insert by (intro setsum.reindex) (auto intro!: inj_on_upd_PiE)
   also have "\<dots> = (\<Sum>(a, x)\<in>(S i \<times> Pi\<^sub>E I S). f a i * (\<Prod>i\<in>I. f (x i) i))"
-    using insert by (force intro!: setsum_cong setprod_cong arg_cong2[where f="op *"])
+    using insert by (force intro!: setsum.cong setprod.cong arg_cong2[where f="op *"])
   also have "\<dots> = (\<Sum>a\<in>S i. f a i * (\<Sum>x\<in>Pi\<^sub>E I S. \<Prod>i\<in>I. f (x i) i))"
-    by (simp add: setsum_cartesian_product setsum_right_distrib)
+    by (simp add: setsum.cartesian_product setsum_right_distrib)
   finally show ?case
     using insert by (simp add: setsum_left_distrib)
 qed

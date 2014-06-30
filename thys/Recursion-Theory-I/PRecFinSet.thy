@@ -520,7 +520,7 @@ next
     have S4: "{i. i < Suc n} = (\<lambda> x. x) ` {i. i < Suc n}" by auto
     then have S5: "finite {i. i < Suc n}" by (rule nat_seg_image_imp_finite)
     have S6: "Suc n \<notin> {i. i < Suc n}" by auto
-    from S5 S6 setsum_insert have S7: "setsum ?f ({i. i< Suc n} \<union> {Suc n}) = 2 ^ Suc n + setsum ?f {i. i< Suc n}" by auto
+    from S5 S6 setsum.insert have S7: "setsum ?f ({i. i< Suc n} \<union> {Suc n}) = 2 ^ Suc n + setsum ?f {i. i< Suc n}" by auto
     from S3 have "setsum ?f {i. i< Suc (Suc n)} = setsum ?f ({i. i< Suc n} \<union> {Suc n})" by auto
     also from S7 have "\<dots> = 2 ^ Suc n + setsum ?f {i. i< Suc n}" by auto
     also from A have "\<dots> = 2 ^ Suc n + (((2::nat) ^ Suc n)-(1::nat))" by auto
@@ -535,7 +535,7 @@ proof -
   then show ?thesis by (rule nat_seg_image_imp_finite)
 qed
 
-lemma set_to_nat_at_empty: "set_to_nat {} = 0" by (unfold set_to_nat_def, rule setsum_empty)
+lemma set_to_nat_at_empty: "set_to_nat {} = 0" by (unfold set_to_nat_def, rule setsum.empty)
 
 lemma set_to_nat_of_interval: "set_to_nat {i. (i::nat)<m} = 2 ^ m - 1"
 proof (induct m)
@@ -575,7 +575,7 @@ proof -
       from A1 have S2: "card D = 0" by auto
       from S1 S2 have S3: "D = {}" by auto
       with set_to_nat_def have "set_to_nat D = setsum (\<lambda> x. 2 ^ x) D" by simp
-      with S3 setsum_empty have "set_to_nat D = 0" by auto
+      with S3 setsum.empty have "set_to_nat D = 0" by auto
       with zero_is_empty S3 show "nat_to_set (set_to_nat D) = D" by auto
     qed
   qed
@@ -600,7 +600,7 @@ proof -
         with A_n have S3: "nat_to_set (set_to_nat D1) = D1" by auto
         def u_def: u \<equiv> "set_to_nat D"
         def u1_def: u1 \<equiv> "set_to_nat D1"
-        from S1 m_in have "setsum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + setsum (\<lambda> x. 2 ^ x) (D - {m})" by (rule setsum_diff1')
+        from S1 m_in have "setsum (\<lambda> (x::nat). (2::nat) ^ x) D = 2 ^ m + setsum (\<lambda> x. 2 ^ x) (D - {m})" by (rule setsum.remove)
         with set_to_nat_def have "set_to_nat D = 2 ^ m + set_to_nat (D - {m})" by auto
         with u_def u1_def D1_def have u_u1: "u = u1 + 2 ^ m" by auto
         from S3 u1_def have d1_u1: "nat_to_set u1 = D1" by auto
@@ -663,7 +663,7 @@ proof -
       have S3: "finite {i. i < y}" by (rule finite_interval)
       have S4: "y \<notin> {i. i < y}" by auto
       from S1 S2 have "f (Suc y) = setsum g ({i. (i::nat) < y} \<union> {y})" by auto
-      also from S3 S4 setsum_insert have "\<dots> = g y + setsum g {i. i<y}" by auto
+      also from S3 S4 setsum.insert have "\<dots> = g y + setsum g {i. i<y}" by auto
       also from f_def have "\<dots> = g y + f y" by auto
       also from h_def have "\<dots> = h y (f y)" by auto
       finally show ?thesis by auto
@@ -695,7 +695,7 @@ proof -
       have S4: "y \<notin> {i. i < y}" by auto
       def g1_def: g1 \<equiv> "(\<lambda> z. p z x)"
       from S1 S2 g1_def have "f (Suc y) x = setsum g1 ({i. (i::nat) < y} \<union> {y})" by auto
-      also from S3 S4 setsum_insert have "\<dots> = g1 y + setsum g1 {i. i<y}" by auto
+      also from S3 S4 setsum.insert have "\<dots> = g1 y + setsum g1 {i. i<y}" by auto
       also from f_def g1_def have "\<dots> = g1 y + f y x" by auto
       also from h_def g1_def  have "\<dots> = h y (f y x) x" by auto
       finally show ?thesis by auto
@@ -745,7 +745,7 @@ proof -
       from f_def have "f u = setsum (\<lambda> x. g1 x u) {i. (i::nat) < u}" by auto
       also from U_def have "\<dots> = setsum (\<lambda> x. g1 x u) U" by auto
       also from U_A_B have "\<dots> = setsum (\<lambda> x. g1 x u) (A \<union> B)" by auto
-      also from A_finite B_finite A_B have "\<dots> = setsum (\<lambda> x. g1 x u) A + setsum (\<lambda> x. g1 x u) B" by (rule setsum_Un_disjoint)
+      also from A_finite B_finite A_B have "\<dots> = setsum (\<lambda> x. g1 x u) A + setsum (\<lambda> x. g1 x u) B" by (rule setsum.union_disjoint)
       also from B_z have "\<dots> = setsum (\<lambda> x. g1 x u) A" by auto
       also from A_res have "\<dots> = setsum g (nat_to_set u)" by auto
       finally show ?thesis by auto

@@ -8,6 +8,5 @@ esac
 
 cd ..
 
-isabelle tty -l $l <<"EOF"
-use_thy "CAVA_Code";
-EOF
+isabelle_process -e 'use_thy "CAVA_Code";' -q $l
+

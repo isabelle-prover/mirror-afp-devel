@@ -47,7 +47,7 @@ lemma Init_cut_Mix[simp]:
   by auto
 
 lemma setsum_init_colls[simp]: "setsum init colls = 0"
-  by (auto intro: setsum_0' init_coll)
+  by (auto intro: setsum.neutral init_coll)
 
 lemma setsum_init_jondos_m_colls[simp]: "setsum init (jondos - colls) = 1"
   using colls_smaller by (simp add: setsum_diff init_distr)
@@ -56,7 +56,7 @@ lemma setsum_valid_states[simp]:
   fixes f :: "'a state \<Rightarrow> real"
   shows "(\<Sum>s\<in>valid_states. f s) = f Start + f End +
   (\<Sum>j\<in>jondos - colls. f (Init j)) + (\<Sum>j\<in>jondos. f (Mix j))"
-  by (simp add: valid_states_def image_iff setsum_reindex setsum_Un)
+  by (simp add: valid_states_def image_iff setsum.reindex setsum_Un)
 
 lemma valid_statesE:
   assumes "s \<in> valid_states"
@@ -96,7 +96,7 @@ proof (atomize_elim, rule ccontr)
   with init_coll have "\<forall>j\<in>jondos. init j = 0"
     by auto
   then have "(\<Sum>j\<in>jondos. init j) = 0"
-    by (rule setsum_0')
+    by (rule setsum.neutral)
   with init_distr show False
     by simp
 qed
@@ -377,7 +377,7 @@ proof -
 
     have [simp]: "\<And>f a b. (\<Prod>x\<in>{Suc a ..< Suc b}. f x) = (\<Prod>x\<in>{a ..< b}. f (Suc x))"
       "{.. n} = insert 0 {Suc 0..<Suc n}"
-      unfolding image_Suc_atLeastLessThan[symmetric] by (subst setprod_reindex) auto
+      unfolding image_Suc_atLeastLessThan[symmetric] by (subst setprod.reindex) auto
 
     have "\<P>(\<omega> in \<PP>. len \<omega> = n \<and> ?P \<omega>) = \<P>(\<omega> in \<PP>. (\<forall>i<Suc (Suc (Suc n)). \<omega> i \<in> ?A i))"
       apply (rule prob_eq_AE)
@@ -399,9 +399,9 @@ proof -
     also have "\<dots> = (\<Prod>i<Suc (Suc (Suc n)). (\<Sum>a\<in>?A i. ?p i a))"
       using S I by (intro independent_cylinder) (auto simp: jondo_of_def split: nat.split)
     also have "\<dots> = (\<Prod>i\<in>{0, Suc 0} \<union> {Suc (Suc 0) ..< Suc (Suc n)} \<union> {Suc (Suc n)}. (\<Sum>a\<in>?A i. ?p i a))"
-      by (intro setprod_cong) auto
+      by (intro setprod.cong) auto
     also have "\<dots> = (\<Sum>j\<in>I. init j) * (\<Prod>i\<le>n. card (S n i) * J) * (p_f)^n * (1 - p_f)"
-      by (simp_all add: card_image setsum_reindex jondo_of_def real_eq_of_nat setprod_timesf setprod_constant)
+      by (simp_all add: card_image setsum.reindex jondo_of_def real_eq_of_nat setprod.distrib setprod_constant)
     finally have "\<P>(\<omega> in \<PP>. len \<omega> = n \<and> ?P \<omega>) = \<dots>" . }
   ultimately show ?thesis by simp
 qed
@@ -714,7 +714,7 @@ proof -
       unfolding power_add using p_f
       by (intro sums_mult sums_mult2 geometric_sums) simp
     ultimately have "?P n = (\<Sum>i\<in>I n. init i) * (1 - H) * (\<Prod>i<n. card (S n i) * J * p_f)"
-      using p_f jondos_non_empty H by (simp add: sums_iff power_mult_distrib setprod_timesf setprod_constant) }
+      using p_f jondos_non_empty H by (simp add: sums_iff power_mult_distrib setprod.distrib setprod_constant) }
   ultimately have "(\<lambda>n. (\<Sum>i\<in>I n. init i) * (1 - H) * (\<Prod>i<n. card (S n i) * J * p_f)) sums ?C"
     by simp
   then have "(\<lambda>n. (\<Sum>i\<in>I n. init i) * (1 - H) * (\<Prod>i<n. card (S n i) * J * p_f) / ((1 - H) / (1 - H * p_f))) sums
@@ -853,9 +853,9 @@ proof -
     = (\<Sum>i\<in>jondos - colls. \<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<bar> hit_colls \<omega>))"
     unfolding cond_prob_def setsum_divide_distrib[symmetric] by simp
   also have "\<dots> = (\<Sum>i\<in>jondos - colls. init i * J * p_f + (if i = l then init i * (1 - H * p_f) else 0))"
-    using l by (auto intro!: setsum_cong simp add: P_first_jondo_last_ncoll field_simps)
+    using l by (auto intro!: setsum.cong simp add: P_first_jondo_last_ncoll field_simps)
   also have "\<dots> = J * p_f + init l * (1 - H * p_f)"
-    using l by (simp add: setsum_addf setsum_left_distrib[symmetric] setsum.If_cases)
+    using l by (simp add: setsum.distrib setsum_left_distrib[symmetric] setsum.If_cases)
   finally show ?thesis .
 qed
 
@@ -1038,7 +1038,7 @@ proof -
       J/H * (J * p_f + (1 - H * p_f)) * log 2 ((J * p_f + (1 - H * p_f)) / (J * p_f + J/H * (1 - H * p_f)))"
       using i
       apply (auto simp add: P_first_jondo_last_ncoll P_first_jondo init_H P_last_ncoll simp del: setsum_constant)
-      apply (intro setsum_cong)
+      apply (intro setsum.cong)
       apply auto
       done
     also have "\<dots> = (?f * log 2 (h * J * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h"
@@ -1056,8 +1056,8 @@ proof -
   finally have "(\<Sum>i\<in>jondos - colls. ?inner i) \<le> (1 - ?f) * log 2 h" .
   also have "(\<Sum>i\<in>jondos - colls. ?inner i) =
       (\<Sum>(i, l)\<in>(first_jondo`space S_seq) \<times> (last_ncoll`space S_seq). ?il i l * log 2 (?il i l / (?i i * ?l l)))"
-    unfolding setsum_cartesian_product
-  proof (safe intro!: setsum_mono_zero_cong_left del: DiffE DiffI)
+    unfolding setsum.cartesian_product
+  proof (safe intro!: setsum.mono_neutral_cong_left del: DiffE DiffI)
     show "finite ((first_jondo ` space S_seq) \<times> (last_ncoll ` space S_seq))"
       using sf_fj sf_lnc by (auto simp add: C_def dest!: simple_functionD(1))
   next
@@ -1078,10 +1078,10 @@ proof -
       by (simp add: cond_prob_def)
   qed
   also have "\<dots> = \<I>(first_jondo ; last_ncoll)"
-    unfolding setsum_cartesian_product
+    unfolding setsum.cartesian_product
     apply (subst C.mutual_information_simple_distributed[OF sd_fj sd_lnc sd_fj_lnc])
     apply (simp add: C_def)
-  proof (safe intro!: setsum_mono_zero_right imageI)
+  proof (safe intro!: setsum.mono_neutral_right imageI)
     show "finite ((first_jondo ` space S_seq) \<times> (last_ncoll ` space S_seq))"
       using sf_fj sf_lnc by (auto simp add: C_def dest!: simple_functionD(1))
   next

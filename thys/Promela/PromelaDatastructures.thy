@@ -221,7 +221,7 @@ where
                Some g \<Rightarrow> fV n g idx
              | None \<Rightarrow> (case lm.lookup n c of
                    Some g \<Rightarrow> fC n g idx
-                 | None \<Rightarrow> err' (implode (''Unknown variable referenced: '' @ explode n)))))"
+                 | None \<Rightarrow> err' (String.implode (''Unknown variable referenced: '' @ String.explode n)))))"
 
 primrec enforceChan :: "varRef + chanRef \<Rightarrow> chanRef" where
   "enforceChan (Inl _) = err ''Channel expected. Got normal variable.''"
@@ -935,7 +935,7 @@ and printRecvArg :: "(integer \<Rightarrow> string) \<Rightarrow> recvArg \<Righ
 | "printExpr f (ExprUnOp unOp e) = printUnOp unOp @ printExpr f e"
 | "printExpr f (ExprVarRef varRef) = printVarRef f varRef"
 | "printExpr f (ExprConst i) = f i"
-| "printExpr f (ExprMConst i m) = explode m"
+| "printExpr f (ExprMConst i m) = String.explode m"
 | "printExpr f (ExprCond c l r) = 
      ''( (( '' @ printExpr f c @ '' )) -> '' 
      @ printExpr f l @ '' : '' 
@@ -948,9 +948,9 @@ and printRecvArg :: "(integer \<Rightarrow> string) \<Rightarrow> recvArg \<Righ
      printChanRef f chan @ p 
      @ printList (printRecvArg f) es ''['' '']'' '', '')"
 
-| "printVarRef _ (VarRef _ name None) = explode name"
+| "printVarRef _ (VarRef _ name None) = String.explode name"
 | "printVarRef f (VarRef _ name (Some indx)) = 
-     explode name @ ''['' @ printExpr f indx @ '']''"
+     String.explode name @ ''['' @ printExpr f indx @ '']''"
 
 | "printChanRef f (ChanRef v) = printVarRef f v"
 
@@ -958,28 +958,28 @@ and printRecvArg :: "(integer \<Rightarrow> string) \<Rightarrow> recvArg \<Righ
 
 | "printRecvArg f (RecvArgVar v) = printVarRef f v"
 | "printRecvArg f (RecvArgConst c) = f c"
-| "printRecvArg f (RecvArgMConst _ m) = explode m"
+| "printRecvArg f (RecvArgMConst _ m) = String.explode m"
 | "printRecvArg f (RecvArgEval e) = ''eval('' @ printExpr f e @ '')''"
 
 fun printVarDecl :: "(integer \<Rightarrow> string) \<Rightarrow> procVarDecl \<Rightarrow> string" where
   "printVarDecl f (ProcVarDeclNum _ _ n None None) = 
-    explode n @ '' = 0''"
+    String.explode n @ '' = 0''"
 | "printVarDecl f (ProcVarDeclNum _ _ n None (Some e)) = 
-    explode n @ '' = '' @ printExpr f e"
+    String.explode n @ '' = '' @ printExpr f e"
 | "printVarDecl f (ProcVarDeclNum _ _ n (Some i) None) = 
-    explode n @ ''['' @ f i @ ''] = 0''"
+    String.explode n @ ''['' @ f i @ ''] = 0''"
 | "printVarDecl f (ProcVarDeclNum _ _ n (Some i) (Some e)) = 
-    explode n @ ''[''@ f i @ ''] = '' @ printExpr f e"
+    String.explode n @ ''[''@ f i @ ''] = '' @ printExpr f e"
 | "printVarDecl f (ProcVarDeclChan n None) = 
-    ''chan '' @ explode n"
+    ''chan '' @ String.explode n"
 | "printVarDecl f (ProcVarDeclChan n (Some i)) = 
-    ''chan '' @ explode n @ ''['' @ f i @ '']''"
+    ''chan '' @ String.explode n @ ''['' @ f i @ '']''"
 
 primrec printCond :: "(integer \<Rightarrow> string) \<Rightarrow> edgeCond \<Rightarrow> string" where
   "printCond f ECElse = ''else''"
 | "printCond f ECTrue = ''true''"
 | "printCond f ECFalse = ''false''"
-| "printCond f (ECRun n) = ''run '' @ explode n @ ''(...)''"
+| "printCond f (ECRun n) = ''run '' @ String.explode n @ ''(...)''"
 | "printCond f (ECExpr e) = printExpr f e"
 | "printCond f (ECSend c) = printChanRef f c @ ''! ...''"
 | "printCond f (ECRecv c _ _) = printChanRef f c @ ''? ...''"
@@ -989,7 +989,7 @@ primrec printEffect :: "(integer \<Rightarrow> string) \<Rightarrow> edgeEffect 
 | "printEffect f EEId = ''ID''"
 | "printEffect f EEGoto = ''goto''"
 | "printEffect f (EEAssert e) = ''assert('' @ printExpr f e @'')''"
-| "printEffect f (EERun n _) = ''run '' @ explode n @ ''(...)''"
+| "printEffect f (EERun n _) = ''run '' @ String.explode n @ ''(...)''"
 | "printEffect f (EEAssign v expr) = 
      printVarRef f v @ '' = '' @ printExpr f expr"
 | "printEffect f (EEDecl d) = printVarDecl f d"
@@ -1003,7 +1003,7 @@ primrec printEffect :: "(integer \<Rightarrow> string) \<Rightarrow> edgeEffect 
 
 primrec printIndex :: "(integer \<Rightarrow> string) \<Rightarrow> edgeIndex \<Rightarrow> string" where
   "printIndex f (Index pos) = f (integer_of_nat pos)"
-| "printIndex _ (LabelJump l _) = explode l"
+| "printIndex _ (LabelJump l _) = String.explode l"
 
 definition printEdge :: "(integer \<Rightarrow> string) \<Rightarrow> nat \<Rightarrow> edge \<Rightarrow> string" where
   "printEdge f indx e = (
@@ -1027,14 +1027,14 @@ definition printEdges :: "(integer \<Rightarrow> string) \<Rightarrow> states \<
 
 definition printLabels :: "(integer \<Rightarrow> string) \<Rightarrow> labels \<Rightarrow> string list" where
   "printLabels f ls = lm.iterate ls (\<lambda>(k,l) res. 
-                                      (''Label '' @ explode k @ '': '' 
+                                      (''Label '' @ String.explode k @ '': '' 
                                        @ f (integer_of_nat l)) # res) []"
 
 fun printProcesses :: "(integer \<Rightarrow> string) \<Rightarrow> program \<Rightarrow> string list" where
   "printProcesses f prog = lm.iterate (proc_data prog) 
      (\<lambda>(k,idx) res.
             let (_,start,_,_) = processes prog !! idx in 
-            [] # (''Process '' @ explode k) # [] # printEdges f (states prog !! idx)
+            [] # (''Process '' @ String.explode k) # [] # printEdges f (states prog !! idx)
             @ [''START ---> '' @ printIndex f start, []] 
             @ printLabels f (labels prog !! idx) @ res) []"
 

@@ -28,9 +28,9 @@ lemma single_l:
   shows "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = x \<longleftrightarrow> l s = x"
 proof -
   have "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = (\<Sum>s'\<in>S. (if s' = s then l s' else 0))"
-    using `s \<in> S` by (auto intro!: setsum_cong)
+    using `s \<in> S` by (auto intro!: setsum.cong)
   with `s \<in> S` show ?thesis
-    using finite_S by (auto simp add: setsum_cases)
+    using finite_S by (auto simp add: setsum.If_cases)
 qed
 
 definition "order = (SOME f. bij_betw f {..< card S} S)"
@@ -94,7 +94,7 @@ proof -
     unfolding solution_def M'_def by (simp add: atLeast0LessThan)
   then show ?thesis
     unfolding iorder_image_eq[symmetric] f using inj_iorder
-    by (subst (asm) setsum_reindex) (auto simp: order_iorder)
+    by (subst (asm) setsum.reindex) (auto simp: order_iorder)
 qed
 
 lemma gauss_jordan'_complete:
@@ -114,7 +114,7 @@ proof -
     also have "\<dots> \<longleftrightarrow> (\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * x (iorder s')) = a s)"
       unfolding iorder_image_eq[symmetric] M'_def
       using inj_iorder iorder_neq_card_S
-      by (simp add: setsum_reindex order_iorder)
+      by (simp add: setsum.reindex order_iorder)
     finally have "solution2 M' (card S) (card S) x \<longleftrightarrow>
       (\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * x (iorder s')) = a s)" . }
   note sol2_eq = this
@@ -654,7 +654,7 @@ next
   fix s assume s: "s \<in> S" "s \<notin> Prob0 (svalid F1) (svalid F2) \<union> svalid F2"
   have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') = 
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
-    by (auto intro!: setsum_cong simp: field_simps)
+    by (auto intro!: setsum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
     using `s \<in> S` by (simp add: setsum_subtractf single_l)
   finally show "l s - 0 = (\<Sum>s'\<in>S. \<tau> s s' * l s')"
@@ -753,7 +753,7 @@ proof -
 
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future F) (case_nat s' \<omega>) \<partial>paths s'"
   have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ereal (\<tau> s s' * real (?E s')))"
-  proof (rule setsum_cong)
+  proof (rule setsum.cong)
     fix s' assume "s' \<in> S"
     show "\<tau> s s' * ?E s' = ereal (\<tau> s s' * real (?E s'))"
     proof cases
@@ -789,7 +789,7 @@ proof -
     moreover have "\<exists>i. case_nat s \<omega> i \<in> svalid F"
       using n by (auto intro!: exI[of _ "Suc n"])
     ultimately show "?R (case_nat s \<omega>) = (\<rho> s + \<iota> s (\<omega> 0)) + ?R \<omega>"
-      by (simp add: Suc_n_eq n_eq lessThan_Suc_eq_insert_0 setsum_reindex zero_notin_Suc_image
+      by (simp add: Suc_n_eq n_eq lessThan_Suc_eq_insert_0 setsum.reindex zero_notin_Suc_image
                del: setsum_lessThan_Suc)
   qed
   then have "(\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
@@ -804,7 +804,7 @@ proof -
     (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>paths s)"
     using `s \<in> S`
     by (subst nn_integral_paths_0)
-       (auto simp: field_simps setsum_addf \<tau>_distr nn_integral_K
+       (auto simp: field_simps setsum.distrib \<tau>_distr nn_integral_K
                    setsum_right_distrib[symmetric])
   finally show "real (\<integral>\<^sup>+\<omega>. ?R (case_nat s \<omega>) \<partial>paths s)
     - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
@@ -840,7 +840,7 @@ next
   then have "s \<in> Y" "s \<notin> ?F" by auto
   have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') = 
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
-    by (auto intro!: setsum_cong simp: field_simps)
+    by (auto intro!: setsum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
     using `s \<in> S` by (simp add: setsum_subtractf single_l)
   finally have "l s = (\<Sum>s'\<in>S. \<tau> s s' * l s') - (\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s')"
@@ -875,7 +875,7 @@ proof (induct F rule: Sat.induct)
   case (5 rel r F)
   { fix q assume "q \<in> S" 
     with svalid_subset_S have "setsum (\<tau> q) (svalid F) = \<P>(\<omega> in paths q. \<omega> 0 \<in> svalid F)"
-      by (subst prob_paths_0[OF `q\<in>S`]) (auto simp add: prob_K simp del: space_eq_S intro!: setsum_cong) }
+      by (subst prob_paths_0[OF `q\<in>S`]) (auto simp add: prob_K simp del: space_eq_S intro!: setsum.cong) }
   with 5 show ?case
     by (auto simp: space_PiM PiE_def split: split_option_bind_asm)
 
@@ -915,7 +915,7 @@ next
       have "(\<integral>\<^sup>+\<omega>. ereal (\<Sum>i<Suc k. \<rho> (case_nat s \<omega> i) + \<iota> (case_nat s \<omega> i) (\<omega> i)) \<partial>paths s)
         = (\<integral>\<^sup>+\<omega>. ereal (\<rho> s + \<iota> s (\<omega> 0)) + ereal (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>paths s)"
         by (auto intro!: nn_integral_cong
-                 simp: setsum_reindex lessThan_Suc_eq_insert_0 zero_notin_Suc_image)
+                 simp: setsum.reindex lessThan_Suc_eq_insert_0 zero_notin_Suc_image)
       also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> 0) \<partial>paths s) + 
           (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> i) + \<iota> (\<omega> i) (\<omega> (Suc i))) \<partial>paths s)"
         using `s \<in> S`
@@ -929,9 +929,9 @@ next
         using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: Suc)
       also have "\<dots> = ExpCumm s (Suc k)"
         using `s \<in> S`
-        by (simp add: field_simps setsum_addf setsum_right_distrib[symmetric] \<tau>_distr setsum_ereal[symmetric]
+        by (simp add: field_simps setsum.distrib setsum_right_distrib[symmetric] \<tau>_distr setsum_ereal[symmetric]
                     del: setsum_ereal)
-           (simp add: ereal_pos_distrib setsum_addf ac_simps add_assoc[symmetric])
+           (simp add: ereal_pos_distrib setsum.distrib ac_simps add_assoc[symmetric])
       finally show ?case by simp
     qed }
   then show ?case by auto
@@ -1035,7 +1035,7 @@ proof (induct F rule: Sat.induct)
         
         have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * ?x s') =
           (\<Sum>s'\<in>S. \<tau> s s' * ?x s' - (if s' = s then 1 else 0) * ?x s')"
-          by (auto intro!: setsum_cong simp: field_simps)
+          by (auto intro!: setsum.cong simp: field_simps)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * ?x s') - ?x s"
           using s by (simp add: single_l setsum_subtractf)
         finally show ?thesis
@@ -1083,7 +1083,7 @@ next
 
         have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * real (?E s')) =
           (\<Sum>s'\<in>S. \<tau> s s' * real (?E s') - (if s' = s then 1 else 0) * real (?E s'))"
-          by (auto intro!: setsum_cong simp: field_simps)
+          by (auto intro!: setsum.cong simp: field_simps)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * real (?E s')) - real (?E s)"
           using `s \<in> S` by (simp add: setsum_subtractf single_l)
         finally show ?thesis

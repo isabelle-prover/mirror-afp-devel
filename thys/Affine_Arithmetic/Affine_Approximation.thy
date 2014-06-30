@@ -84,7 +84,7 @@ proof -
     (\<Sum>i <degree (pdevs_of_ivl l u). \<bar>pdevs_apply (pdevs_of_ivl l u) i\<bar>)"
     by (auto simp: tdev_def)
   also have "\<dots> = (\<Sum>i = 0..<length (Basis_list::'a list). \<bar>pdevs_apply (pdevs_of_ivl l u) i\<bar>)"
-    by (rule setsum_mono_zero_cong_left) (auto simp: degree_pdevs_of_ivl_le)
+    by (rule setsum.mono_neutral_cong_left) (auto simp: degree_pdevs_of_ivl_le)
   also have "\<dots> = (\<Sum>i = 0..<length (Basis_list::'a list).
       \<bar>((u - l) \<bullet> Basis_list ! i / 2) *\<^sub>R Basis_list ! i\<bar>)"
     by (auto simp: pdevs_apply_pdevs_of_ivl)
@@ -161,7 +161,7 @@ proof atomize_elim
     by (force simp add: algebra_simps eucl_le[where 'a='a] intro!: euclidean_eqI[where 'a='a])
   also have
     "?dots = (\<Sum>b \<in> Basis. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b) *\<^sub>R b))"
-    by (auto intro!: setsum_cong)
+    by (auto intro!: setsum.cong)
   also have "\<dots> = (\<Sum>b \<leftarrow> ?B. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b) *\<^sub>R b))"
     by (auto simp: listsum_distinct_conv_setsum_set)
   also have "\<dots> =
@@ -173,7 +173,7 @@ proof atomize_elim
         (if (u - l) \<bullet> Basis_list ! i = 0 then 0
         else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> Basis_list ! i) *\<^sub>R Basis_list ! i))"
     using degree_inner_scaleR_pdevs_le[of u l]
-    by (intro setsum_mono_zero_cong_right) (auto dest!: degree)
+    by (intro setsum.mono_neutral_cong_right) (auto dest!: degree)
   also have "(1 / 2) *\<^sub>R (l + u) +
     (\<Sum>i = 0..<degree (inner_scaleR_pdevs (u - l) One_pdevs).
         (if (u - l) \<bullet> Basis_list ! i = 0 then 0
@@ -181,7 +181,7 @@ proof atomize_elim
       aform_val e (aform_of_ivl l u)"
     by (auto simp: aform_val_def aform_of_ivl_def pdevs_of_ivl_def map_of_zip_upto_length_eq_nth
       e_def Let_def pdevs_val_setsum field_simps
-      intro!: setsum_cong)
+      intro!: setsum.cong)
   finally have "k = aform_val e (aform_of_ivl l u)" .
 
   moreover
@@ -303,7 +303,7 @@ lemma tdev': "tdev x \<le> tdev' p x"
   unfolding tdev'_def
 proof -
   have "tdev x = (\<Sum>i = 0 ..< degree x. \<bar>pdevs_apply x i\<bar>)"
-    by (auto intro!: setsum_mono_zero_cong_left simp: tdev_def)
+    by (auto intro!: setsum.mono_neutral_cong_left simp: tdev_def)
   also have "\<dots> = (\<Sum>i \<leftarrow> rev [0 ..< degree x]. \<bar>pdevs_apply x i\<bar>)"
     by (metis atLeastLessThan_upt listsum_rev rev_map setsum_set_upt_conv_listsum_nat)
   also have "\<dots> = listsum (map (\<lambda>xa. \<bar>pdevs_apply x xa\<bar>) [xa\<leftarrow>rev [0..<degree x] . pdevs_apply x xa \<noteq> 0])"
@@ -926,8 +926,8 @@ lemma degree_filter_pdevs_le: "degree (filter_pdevs I x) \<le> degree x"
 
 lemma pdevs_val_filter_pdevs:
   "pdevs_val e (filter_pdevs I x) = (\<Sum>i \<in> {..<degree x} \<inter> {i. I i (pdevs_apply x i)}. e i *\<^sub>R pdevs_apply x i)"
-  by (auto simp: pdevs_val_setsum if_distrib setsum_restrict_set degree_filter_pdevs_le degree_gt
-    intro!: setsum_mono_zero_cong_left split: split_if_asm)
+  by (auto simp: pdevs_val_setsum if_distrib setsum.inter_restrict degree_filter_pdevs_le degree_gt
+    intro!: setsum.mono_neutral_cong_left split: split_if_asm)
 
 definition summarize_pdevs:: "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space pdevs \<Rightarrow> 'a pdevs"
   where "summarize_pdevs p I d x =
@@ -958,7 +958,7 @@ proof atomize_elim
     by metis
   have singleton: "\<And>b. b \<in> Basis \<Longrightarrow> (\<Sum>i\<in>Basis. e i * (k \<bullet> i) * (if i = b then 1 else 0)) =
     (\<Sum>i\<in>{b}. e i * (k \<bullet> i) * (if i = b then 1 else 0))"
-    by (rule setsum_mono_zero_cong_right) auto
+    by (rule setsum.mono_neutral_cong_right) auto
   show "\<exists>e::'a\<Rightarrow>real. err = (\<Sum>i\<in>Basis. (e i * (k \<bullet> i)) *\<^sub>R i) \<and> (e \<in> UNIV \<rightarrow> {-1..1})"
     using e
     by (auto intro!: exI[where x="\<lambda>i. if i \<in> Basis then e i else 0"] euclidean_eqI[where 'a='a]
@@ -974,11 +974,11 @@ lemma summarize_pdevsE:
     "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
 proof atomize_elim
   have "pdevs_val e x = (\<Sum>i<degree x. e i *\<^sub>R pdevs_apply x i)"
-    by (auto simp add: pdevs_val_setsum intro!: setsum_cong)
+    by (auto simp add: pdevs_val_setsum intro!: setsum.cong)
   also have "\<dots> = (\<Sum>i \<in> {..<degree x} \<inter> {i. I i (pdevs_apply x i)}. e i *\<^sub>R pdevs_apply x i) +
     (\<Sum>i\<in> {..<degree x} - {i. I i (pdevs_apply x i)}. e i *\<^sub>R pdevs_apply x i)"
     (is "_ = ?large + ?small")
-    by (subst setsum_Un_disjoint[symmetric]) (auto simp: ac_simps intro!: setsum_cong)
+    by (subst setsum.union_disjoint[symmetric]) (auto simp: ac_simps intro!: setsum.cong)
   also have "?large = pdevs_val e (filter_pdevs I x)"
     by (simp add: pdevs_val_filter_pdevs)
   also have "?small = pdevs_val e (filter_pdevs (-I) x)"
@@ -999,7 +999,7 @@ proof atomize_elim
     by (auto simp: aform_of_ivl_def aform_val_def)
   also
   have "pdevs_val e (filter_pdevs I x) = pdevs_val e' (filter_pdevs I x)"
-    using assms by (auto simp: e'_def pdevs_val_setsum intro!: setsum_cong)
+    using assms by (auto simp: e'_def pdevs_val_setsum intro!: setsum.cong)
   finally have "pdevs_val e x =
       pdevs_val e' (filter_pdevs I x) + pdevs_val (\<lambda>i. e' (i + d)) (pdevs_of_ivl (- ?t) ?t)"
     .
@@ -1118,7 +1118,7 @@ proof (induction ra arbitrary: X d e')
         "interpret_realarith ra1 vs = aform_val e1 Y1" by blast
       from this(2) have "vs = map (\<lambda>x. aform_val e1 x) VS"
         using Add(3,6)
-        by (auto simp: aform_val_def pdevs_val_setsum intro!: setsum_cong)
+        by (auto simp: aform_val_def pdevs_val_setsum intro!: setsum.cong)
           (metis dual_order.order_iff_strict less_trans)
       from Add(2)[OF this e1(1) Y2 order_trans[OF Add(6)]]
       obtain e2 where e2:
@@ -1163,7 +1163,7 @@ next
         "interpret_realarith ra1 vs = aform_val e1 Y1" by blast
       from this(2) have "vs = map (\<lambda>x. aform_val e1 x) VS"
         using Mult(3,6)
-        by (auto simp: aform_val_def pdevs_val_setsum intro!: setsum_cong)
+        by (auto simp: aform_val_def pdevs_val_setsum intro!: setsum.cong)
           (metis dual_order.order_iff_strict less_trans)
       from Mult(2)[OF this e1(1) Y2 order_trans[OF Mult(6)]]
       obtain e2 where e2:
@@ -1303,7 +1303,7 @@ proof (induction ra arbitrary: X d e')
         "interpret_euclarith ra1 vs = aform_val e1 Y1" by blast
       from this(2) have "vs = map (\<lambda>x. aform_val e1 x) VS"
         using AddE(3,6)
-        by (auto simp: aform_val_def pdevs_val_setsum intro!: setsum_cong)
+        by (auto simp: aform_val_def pdevs_val_setsum intro!: setsum.cong)
           (metis dual_order.order_iff_strict less_trans)
       from AddE(2)[OF this e1(1) Y2 order_trans[OF AddE(6)]]
       obtain e2 where e2:
@@ -1683,7 +1683,7 @@ proof -
   also have "(\<Sum>i<degree (pdevs_of_ivl a b). (if i = 0 then e i else 0) * pdevs_apply (pdevs_of_ivl a b) i) =
     (\<Sum>i\<in>{0}. (if i = 0 then e i else 0) * pdevs_apply (pdevs_of_ivl a b) i)"
     by (cases "degree (pdevs_of_ivl a b)", simp)
-      (rule setsum_mono_zero_cong_right, auto)
+      (rule setsum.mono_neutral_cong_right, auto)
   also have "\<dots> = e 0 * (b - a)/2"
     by (simp add: pdevs_of_ivl_def Basis_list_real_def)
   finally have "c = (a + b)/2 + e 0 * (b - a)/2" by simp

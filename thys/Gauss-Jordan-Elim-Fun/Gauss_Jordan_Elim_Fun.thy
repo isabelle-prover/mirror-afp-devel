@@ -116,7 +116,7 @@ proof(induct m arbitrary: A B)
   case 0
   { fix a and b c d :: "'a"
     have "(if a then b else c) * d = (if a then b*d else c*d)" by simp
-  } with 0 show ?case by(simp add: unit_def solution_def setsum_cases)
+  } with 0 show ?case by(simp add: unit_def solution_def setsum.If_cases)
 next
   case (Suc m)
   let "?Ap' p" = "(\<lambda>j. A p j / A p m)"
@@ -157,7 +157,7 @@ proof(rule ccontr)
         by (auto simp: solution2_def usolution_def)
       with 1[OF `i<m`] 2
       have "(\<Sum>j = 0..<m. A i j * y j) = A i n"
-        by (auto intro!: setsum_cong)
+        by (auto intro!: setsum.cong)
     }
     hence "solution2 A m n y" by(simp add: solution2_def)
   }

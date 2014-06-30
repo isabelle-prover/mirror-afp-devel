@@ -4490,7 +4490,8 @@ next
     also have "lappend xs \<dots> = ltake (llength xs + (\<Sum>i<n. llength (lnth xss' i))) (lappend xs (lconcat xss'))"
       by(cases "llength xs")(simp_all add: ltake_plus_conv_lappend ltake_lappend1 ltake_all ldropn_lappend2 lappend_inf lfinite_conv_llength_enat ldrop_enat)
     also have "(\<Sum>i<n. llength (lnth xss' i)) = (\<Sum>i=1..<Suc n. llength (lnth xss i))"
-      by(rule setsum_reindex_cong[symmetric, where f=Suc])(auto simp add: LCons image_iff less_Suc_eq_0_disj)
+      by (rule setsum.reindex_cong [symmetric, of Suc])
+        (auto simp add: LCons image_iff less_Suc_eq_0_disj)
     also have "llength xs + \<dots> = (\<Sum>i<Suc n. llength (lnth xss i))"
       unfolding atLeast0LessThan[symmetric] LCons
       by(subst (2) setsum_head_upt_Suc) simp_all
@@ -4523,7 +4524,7 @@ proof(induct n arbitrary: xss)
   moreover have "enat (length xss') < llength xss" unfolding xss 
     by simp
   moreover have "(\<Sum>i < length xss'. llength (lnth xss i)) = (\<Sum>i < length xss'. 0)"
-  proof(rule setsum_cong)
+  proof(rule setsum.cong)
     show "{..< length xss'} = {..< length xss'}" by simp
   next
     fix i

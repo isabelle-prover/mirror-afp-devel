@@ -249,14 +249,14 @@ proof -
   have "tdev (Pdevs xs) = (\<Sum>i<degree (Pdevs xs). \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
     by (simp add: tdev_def)
   also have "\<dots> = (\<Sum>i <degree (Pdevs xs). if pdevs_apply (Pdevs xs) i = 0 then 0 else \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
-    by (auto intro!: setsum_cong)
+    by (auto intro!: setsum.cong)
   also have "\<dots> = (\<Sum>i\<in>{0..<degree (Pdevs xs)} \<inter> {x. pdevs_apply (Pdevs xs) x \<noteq> 0}. \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
-    by (auto simp: setsum_cases Collect_neg_eq atLeast0LessThan)
+    by (auto simp: setsum.If_cases Collect_neg_eq atLeast0LessThan)
   also have "\<dots> = (\<Sum>x\<in>fst ` set_slist xs. \<bar>pdevs_apply (Pdevs xs) x\<bar>)"
-    by (rule setsum_mono_zero_cong_left)
+    by (rule setsum.mono_neutral_cong_left)
       (force simp: pdevs_apply_Pdevs_eq_0 intro!: imageI degree_gt)+
   also have "\<dots> = (\<Sum>x\<in>set_slist xs. \<bar>pdevs_apply (Pdevs xs) (fst x)\<bar>)"
-    by (rule setsum_reindex_cong[of fst]) (auto simp: inj_on_fst_set_slist)
+    by (rule setsum.reindex_cong[of fst]) (auto simp: inj_on_fst_set_slist)
   also have "\<dots> = tdev_slist xs"
     by (simp add: tdev_slist_setsum pdevs_apply_set_slist)
   finally show ?thesis .

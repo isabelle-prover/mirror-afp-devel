@@ -47,7 +47,7 @@ lemma setsum_add_nat_ivl_singleton:
   shows "f m + setsum f {m<..<n} = setsum f {m..<n}"
 proof -
   have "f m + setsum f {m<..<n} = setsum f ({m} \<union> {m<..<n})"
-    by (simp add: setsum_Un_disjoint ivl_disj_int)
+    by (simp add: setsum.union_disjoint ivl_disj_int)
   also from less have "... = setsum f {m..<n}"
     by (simp only: ivl_disj_un)
   finally show ?thesis .
@@ -58,14 +58,14 @@ lemma setsum_add_split_nat_ivl_singleton:
     and g: "!!i. [| m < i; i < n |] ==> g i = f i"
   shows "f m + setsum g {m<..<n} = setsum f {m..<n}"
   using less g
-  by(simp add: setsum_add_nat_ivl_singleton cong: strong_setsum_cong)
+  by(simp add: setsum_add_nat_ivl_singleton cong: setsum.strong_cong)
 
 lemma setsum_add_split_nat_ivl:
   assumes le: "m <= (k::nat)" "k <= n"
     and g: "!!i. [| m <= i; i < k |] ==> g i = f i"
     and h: "!!i. [| k <= i; i < n |] ==> h i = f i"
   shows "setsum g {m..<k} + setsum h {k..<n} = setsum f {m..<n}"
-  using le g h by (simp add: setsum_add_nat_ivl cong: strong_setsum_cong)
+  using le g h by (simp add: setsum_add_nat_ivl cong: setsum.strong_cong)
 
 lemma ivl_splice_Un:
   "{0..<2*n::nat} = (op * 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"
@@ -91,10 +91,10 @@ lemma setsum_splice:
 proof -
   have "(\<Sum>i::nat = 0..<2*n. f i) =
     setsum f (op * 2 ` {0..<n}) + setsum f ((%i. 2*i+1) ` {0..<n})"
-    by (simp add: ivl_splice_Un ivl_splice_Int setsum_Un_disjoint)
+    by (simp add: ivl_splice_Un ivl_splice_Int setsum.union_disjoint)
   also have "... = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
-    by (simp add: setsum_reindex [OF double_inj_on]
-      setsum_reindex [OF Suc_double_inj_on])
+    by (simp add: setsum.reindex [OF double_inj_on]
+      setsum.reindex [OF Suc_double_inj_on])
   finally show ?thesis .
 qed
 
@@ -407,7 +407,7 @@ theorem DFT_inverse:
   using [[linarith_split_limit = 0]]
   apply (unfold DFT_def IDFT_def)
   apply (simp add: setsum_divide_distrib)
-  apply (subst setsum_commute)
+  apply (subst setsum.commute)
   apply (simp only: times_divide_eq_left [THEN sym])
   apply (simp only: power_divides_special [OF root_nonzero])
   apply (simp add: power_diff_rev_if root_nonzero)
@@ -435,7 +435,7 @@ theorem DFT_inverse:
       by (simp only: ivl_disj_un)
     also have "... =
       (?sum1 i i n + (\<Sum>j\<in>{i<..<n}. ?sum1 i j n))"
-      by (simp add: setsum_Un_disjoint ivl_disj_int)
+      by (simp add: setsum.union_disjoint ivl_disj_int)
     also from i_less diff_i have "... = ?sum1 i i n"
       by (simp add: root_summation nat_dvd_not_less)
     also from i_less have "... = of_nat n * a i" (is "_ = ?t")

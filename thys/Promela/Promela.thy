@@ -2484,7 +2484,7 @@ definition procDescr
 where
   "procDescr f prog p = (
      let 
-        name = explode (proc_names prog !! pState.idx p);
+        name = String.explode (proc_names prog !! pState.idx p);
         id = f (integer_of_nat (pid p))
      in
         name @ '' ('' @ id @ '')'')"

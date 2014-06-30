@@ -2,7 +2,7 @@
 #
 # Author: Florian Haftmann, TU Muenchen
 #
-# DESCRIPTION: pie chart with AFP mercurial churn statistics for specified aliases file
+# DESCRIPTION: pie chart with Mercurial churn statistics
 
 ALIAS="$AFP_BASE/admin/user-aliases"
 

@@ -10,8 +10,8 @@ definition (in plus) plusE :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "+\
 
 definition (in comm_monoid_add) setsumE where "setsumE = setsum"
 
-lemmas setsumE_insert = setsum_insert[simplified plusE_def[symmetric] setsumE_def[symmetric]]
-lemma setsumE_singleton: "setsumE f {a} = f a" by (simp add: setsumE_def setsum_insert)
+lemmas setsumE_insert = setsum.insert[simplified plusE_def[symmetric] setsumE_def[symmetric]]
+lemma setsumE_singleton: "setsumE f {a} = f a" by (simp add: setsumE_def setsum.insert)
 
 lemmas euclidean_representationE =
   euclidean_representation[simplified setsumE_def[symmetric], symmetric]
@@ -54,7 +54,7 @@ lemmas [euclidean_Basis] =
   zero_prod_def
   Basis_real_def
   setsumE_insert setsumE_singleton
-  setsum_insert setsum_empty
+  setsum.insert setsum.empty
   finite_insert finite.emptyI
   Pair_eq
   empty_iff insert_iff

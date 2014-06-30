@@ -165,7 +165,7 @@ qed
 
 lemma setsum_interval_cong:
   "\<lbrakk> \<And> i. \<lbrakk> m \<le> i; i \<le> n \<rbrakk> \<Longrightarrow> P(i) = Q(i) \<rbrakk> \<Longrightarrow> (\<Sum>i=m..n. P(i)) = (\<Sum>i=m..n. Q(i))"
-  by (auto intro: setsum_cong2)
+  by (auto intro: setsum.cong)
 
 lemma setsum_interval_distl:
   fixes f :: "nat \<Rightarrow> 'a::dioid_one_zero"
@@ -193,7 +193,7 @@ lemma setsum_interval_distr:
   also have "... = \<Sum>{x \<cdot> y |x. x \<in> f ` {m..n}}"
     by (metis calculation finite_atLeastAtMost finite_imageI fset_to_im setsum_distr)
   also have "... = \<Sum>((\<lambda>i. f(i) \<cdot> y) ` {m..n})"
-    by (auto intro: setsum_cong)
+    by (auto intro: setsum.cong)
   also have "... = (\<Sum>i=m..n. (f(i) \<cdot> y))"
     by (metis finite_atLeastAtMost setsum_image)
   finally show ?thesis .

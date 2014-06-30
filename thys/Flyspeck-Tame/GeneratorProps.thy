@@ -300,9 +300,9 @@ proof(induct ps rule: length_induct)
       using dist Cons
       apply (auto simp:delAround_def)
       apply(rule_tac x=P in exI)
-      apply(fastforce intro!: setsum_insert[THEN trans,symmetric] elim: finite_subset)
+      apply(fastforce intro!: setsum.insert[THEN trans,symmetric] elim: finite_subset)
       apply(rule_tac x=P in exI)
-      apply(fastforce intro!: setsum_insert[THEN trans] elim: finite_subset)
+      apply(fastforce intro!: setsum.insert[THEN trans] elim: finite_subset)
       done
     also have "\<dots> = {setsum snd P |P.
             P \<subseteq> insert p (set ?ps) \<and> p \<in> P \<and> separated g (fst ` P)}"

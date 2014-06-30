@@ -169,7 +169,7 @@ lemma pdevs_val_pdevs_domain: "pdevs_val e X = (\<Sum>i\<in>pdevs_domain X. e i 
   by (auto simp: pdevs_val_def intro!: suminf_finite)
 
 lemma pdevs_val_setsum: "pdevs_val e X = (\<Sum>i < degree X. e i *\<^sub>R pdevs_apply X i)"
-  by (auto intro!: degree_gt setsum_mono_zero_cong_left simp: pdevs_val_pdevs_domain)
+  by (auto intro!: degree_gt setsum.mono_neutral_cong_left simp: pdevs_val_pdevs_domain)
 
 lemma degree_eqI:
   assumes "pdevs_apply x d \<noteq> 0"
@@ -265,11 +265,11 @@ proof -
   have "pdevs_val e X + pdevs_val e Y = ?sum (degree X) X + ?sum (degree Y) Y"
     by (simp add: pdevs_val_setsum)
   also have "?sum (degree X) X = ?sum ?m X"
-    by (rule setsum_mono_zero_cong_left) auto
+    by (rule setsum.mono_neutral_cong_left) auto
   also have "?sum (degree Y) Y = ?sum ?m Y"
-    by (rule setsum_mono_zero_cong_left) auto
+    by (rule setsum.mono_neutral_cong_left) auto
   also have "?sum ?m X + ?sum ?m Y = (\<Sum>i < ?m. e i *\<^sub>R (pdevs_apply X i + pdevs_apply Y i))"
-    by (simp add: scaleR_right_distrib setsum_addf)
+    by (simp add: scaleR_right_distrib setsum.distrib)
   also have "\<dots> = (\<Sum>i. e i *\<^sub>R (pdevs_apply X i + pdevs_apply Y i))"
     by (rule suminf_finite[symmetric]) auto
   also have "\<dots> = pdevs_val e (add_pdevs X Y)"
@@ -395,7 +395,7 @@ lemma pdevs_apply_pdevs_inner[simp]: "pdevs_apply (pdevs_inner p a) i = pdevs_ap
   by (simp add: pdevs_inner_def)
 
 lemma pdevs_val_pdevs_inner[simp]: "pdevs_val e (pdevs_inner p a) = pdevs_val e p \<bullet> a"
-  by (auto simp add: inner_setsum_left pdevs_val_pdevs_domain intro!: setsum_mono_zero_cong_left)
+  by (auto simp add: inner_setsum_left pdevs_val_pdevs_domain intro!: setsum.mono_neutral_cong_left)
 
 definition inner_aform::"'a::euclidean_space aform \<Rightarrow> 'a \<Rightarrow> real aform"
   where "inner_aform X b = (fst X \<bullet> b, pdevs_inner (snd X) b)"
@@ -527,17 +527,17 @@ proof -
   have "?lhs = (\<Sum>i\<in>{..<degree (msum_pdevs n f g)} \<inter> {i. i < n}. e i (pdevs_apply f i)) +
     (\<Sum>i\<in>{..<degree (msum_pdevs n f g)} \<inter> - {i. i < n}. e i (pdevs_apply g (i - n)))"
     (is "_ = ?sum_f + ?sum_g")
-     by (simp add: setsum_cases if_distrib)
+     by (simp add: setsum.If_cases if_distrib)
   also have "?sum_f = (\<Sum>i = 0..<degree f. e i (pdevs_apply f i))"
     using assms degree_msum_pdevs_ge1[of f n g]
-    by (intro setsum_mono_zero_cong_right) auto
+    by (intro setsum.mono_neutral_cong_right) auto
   also have "?sum_g = (\<Sum>i\<in>{0 + n..<degree (msum_pdevs n f g) - n + n}. e i (pdevs_apply g (i - n)))"
-    by (rule setsum_cong) auto
+    by (rule setsum.cong) auto
   also have "\<dots> = (\<Sum>i = 0..<degree (msum_pdevs n f g) - n. e (i + n) (pdevs_apply g (i + n - n)))"
     by (rule setsum_shift_bounds_nat_ivl)
   also have "\<dots> = (\<Sum>i = 0..<degree g. e (i + n) (pdevs_apply g i))"
     using assms degree_msum_pdevs_ge2[of f n]
-    by (intro setsum_mono_zero_cong_right) (auto intro!: setsum_mono_zero_cong_right)
+    by (intro setsum.mono_neutral_cong_right) (auto intro!: setsum.mono_neutral_cong_right)
   finally show ?thesis
     by (simp add: atLeast0LessThan)
 qed
@@ -624,7 +624,7 @@ next
     assume "s \<in> S a" "x \<in> Pi J S"
     thus "\<exists>xa. f a s + (\<Sum>i\<in>I. f i (x i)) = (\<Sum>i\<in>insert a I. f i (xa i)) \<and> xa \<in> Pi J S"
       using insert
-      by (auto intro!: exI[where x="x(a:=s)"] setsum_cong)
+      by (auto intro!: exI[where x="x(a:=s)"] setsum.cong)
   qed force
   also have "compact \<dots>"
     using insert
@@ -681,12 +681,12 @@ proof (atomize_elim)
       by auto
     have "(\<Sum>i<degree_aform X. e i *\<^sub>R pdevs_apply (snd X) i) =
         (\<Sum>i \<in> {0..<degree_aform X} - {i}. e i *\<^sub>R pdevs_apply (snd X) i) + e i *\<^sub>R pdevs_apply (snd X) i"
-      by (subst rewr, subst setsum_Un_disjoint) auto
+      by (subst rewr, subst setsum.union_disjoint) auto
     finally have "x = fst X + \<dots>" .
     hence "x = aform_val (e(i:=2 * e i - 1)) (snd (split_aform X i))"
         "x = aform_val (e(i:=2 * e i + 1)) (fst (split_aform X i))"
       by (auto simp: aform_val_def split_aform_def Let_def pdevs_val_setsum atLeast0LessThan
-        Diff_eq degree_pdev_upd if_distrib setsum_cases field_simps scaleR_left_distrib[symmetric])
+        Diff_eq degree_pdev_upd if_distrib setsum.If_cases field_simps scaleR_left_distrib[symmetric])
     moreover
     have "2 * e i - 1 \<in> {-1 .. 1} \<or> 2 * e i + 1 \<in> {-1 .. 1}"
       using assms by (auto simp: not_le Pi_iff dest!: spec[where x=i])
@@ -695,7 +695,7 @@ proof (atomize_elim)
 qed
 
 lemma pdevs_val_add: "pdevs_val (\<lambda>i. e i + f i) xs = pdevs_val e xs + pdevs_val f xs"
-  by (auto simp: pdevs_val_pdevs_domain algebra_simps setsum_addf)
+  by (auto simp: pdevs_val_pdevs_domain algebra_simps setsum.distrib)
 
 lemma pdevs_val_cmul: "pdevs_val (\<lambda>i. u * e i) xs = u *\<^sub>R pdevs_val e xs"
   by (auto simp: pdevs_val_pdevs_domain scaleR_setsum_right)
