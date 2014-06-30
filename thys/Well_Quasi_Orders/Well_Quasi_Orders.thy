@@ -115,19 +115,23 @@ text {*In a well-quasi-order (wqo) every infinite sequence is good.*}
 class wqo = preorder +
   assumes good: "good (op \<le>) f"
 
+lemma wqo_on_class [simp, intro]:
+  "wqo_on (op \<le>) (UNIV :: ('a :: wqo) set)"
+  using good by (auto simp: wqo_on_def transp_on_def almost_full_on_def dest: order_trans)
+
+lemma wqo_on_UNIV_class_wqo [intro!]:
+  "wqo_on P UNIV \<Longrightarrow> class.wqo P (strict P)"
+  by (unfold_locales) (auto simp: wqo_on_def almost_full_on_def, unfold transp_on_def, blast)
+
 text {*The following lemma converts between @{const wqo_on} (for the special
 case that the domain is the universe of a type) and the class predicate
 @{const class.wqo}.*}
 lemma wqo_on_UNIV_conv:
   "wqo_on P UNIV \<longleftrightarrow> class.wqo P (strict P)" (is "?lhs = ?rhs")
 proof
-  assume "?lhs" thus "?rhs"
-    unfolding wqo_on_def class.wqo_def class.preorder_def class.wqo_axioms_def
-    using almost_full_on_imp_reflp_on [of P UNIV]
-    by (auto simp: reflp_on_def almost_full_on_def)
-       (unfold transp_on_def, blast)
+  assume "?lhs" then show "?rhs" by auto
 next
-  assume "?rhs" thus "?lhs"
+  assume "?rhs" then show "?lhs"
     unfolding class.wqo_def class.preorder_def class.wqo_axioms_def
     by (auto simp: wqo_on_def almost_full_on_def transp_on_def)
 qed
@@ -144,35 +148,41 @@ qed
 
 lemma wqo_on_with_bot:
   assumes "wqo_on P A"
-  shows "wqo_on (option_le P) A\<^sub>\<bottom>"
-    (is "wqo_on ?P ?A")
+  shows "wqo_on (option_le P) A\<^sub>\<bottom>" (is "wqo_on ?P ?A")
 proof -
-  {
-    from assms have trans [unfolded transp_on_def]: "transp_on P A"
+  { from assms have trans [unfolded transp_on_def]: "transp_on P A"
       by (auto simp: wqo_on_def)
     have "transp_on ?P ?A"
-      unfolding transp_on_def by (auto, insert trans) (blast+)
-  } moreover {
-    from assms and almost_full_on_with_bot
-      have "almost_full_on ?P ?A" by (auto simp: wqo_on_def)
-  } ultimately show ?thesis by (auto simp: wqo_on_def)
+      by (auto simp: transp_on_def, insert trans) (blast+) }
+  moreover
+  { from assms and almost_full_on_with_bot
+      have "almost_full_on ?P ?A" by (auto simp: wqo_on_def) }
+  ultimately
+  show ?thesis by (auto simp: wqo_on_def)
 qed
+
+lemma wqo_on_option_UNIV [intro]:
+  "wqo_on P UNIV \<Longrightarrow> wqo_on (option_le P) UNIV"
+  using wqo_on_with_bot [of P UNIV] by simp
 
 text {*When two sets are wqo, then their disjoint sum is wqo.*}
 lemma wqo_on_Plus:
   assumes "wqo_on P A" and "wqo_on Q B"
-  shows "wqo_on (sum_le P Q) (A <+> B)"
-    (is "wqo_on ?P ?A")
+  shows "wqo_on (sum_le P Q) (A <+> B)" (is "wqo_on ?P ?A")
 proof -
-  {
-    from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
+  { from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
       by (auto simp: wqo_on_def)
     have "transp_on ?P ?A"
-      unfolding transp_on_def by (auto, insert trans) (blast+)
-  } moreover {
-    from assms and almost_full_on_Plus have "almost_full_on ?P ?A" by (auto simp: wqo_on_def)
-  } ultimately show ?thesis by (auto simp: wqo_on_def)
+      unfolding transp_on_def by (auto, insert trans) (blast+) }
+  moreover
+  { from assms and almost_full_on_Plus have "almost_full_on ?P ?A" by (auto simp: wqo_on_def) }
+  ultimately
+  show ?thesis by (auto simp: wqo_on_def)
 qed
+
+lemma wqo_on_sum_UNIV [intro]:
+  "wqo_on P UNIV \<Longrightarrow> wqo_on Q UNIV \<Longrightarrow> wqo_on (sum_le P Q) UNIV"
+  using wqo_on_Plus [of P UNIV Q UNIV] by simp
 
 
 subsection {* Dickson's Lemma *}
@@ -183,16 +193,20 @@ lemma wqo_on_Sigma:
   shows "wqo_on (prod_le P1 P2) (A1 \<times> A2)"
     (is "wqo_on ?P ?A")
 proof -
-  {
-    from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
-    hence "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast
-  } moreover {
-    from assms and almost_full_on_Sigma [of P1 A1 P2 A2]
-      have "almost_full_on ?P ?A" by (auto simp: wqo_on_def)
-  } ultimately show ?thesis by (auto simp: wqo_on_def)
+  { from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
+    hence "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast }
+  moreover
+  { from assms and almost_full_on_Sigma [of P1 A1 P2 A2]
+      have "almost_full_on ?P ?A" by (auto simp: wqo_on_def) }
+  ultimately
+  show ?thesis by (auto simp: wqo_on_def)
 qed
 
 lemmas dickson = wqo_on_Sigma
+
+lemma wqo_on_prod_UNIV [intro]:
+  "wqo_on P UNIV \<Longrightarrow> wqo_on Q UNIV \<Longrightarrow> wqo_on (prod_le P Q) UNIV"
+  using wqo_on_Sigma [of P UNIV Q UNIV] by simp
 
 
 subsection {* Higman's Lemma *}
@@ -203,6 +217,10 @@ lemma wqo_on_lists:
     and transp_on_list_emb by (auto simp: wqo_on_def)
 
 lemmas higman = wqo_on_lists
+
+lemma wqo_on_list_UNIV [intro]:
+  "wqo_on P UNIV \<Longrightarrow> wqo_on (list_emb P) UNIV"
+  using wqo_on_lists [of P UNIV] by simp
 
 text {*Every reflexive and transitive relation on a finite set is a wqo.*}
 lemma finite_wqo_on:

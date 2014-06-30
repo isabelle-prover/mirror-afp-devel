@@ -1,5 +1,13 @@
+(*  Title:      Well-Quasi-Orders
+    Author:     Christian Sternagel <c.sternagel@gmail.com>
+    Maintainer: Christian Sternagel
+    License:    LGPL
+*)
+
+header {* Kruskal's Tree Theorem *}
+
 theory Kruskal_New
-imports Almost_Full_Relations
+imports Well_Quasi_Orders
 begin
 
 locale kruskal =
@@ -178,6 +186,11 @@ lemma transp_on_emb:
   assumes "transp_on P F"
   shows "transp_on (emb P) terms"
   using assms and emb_trans [of P] unfolding transp_on_def by blast
+
+lemma  kruskal:
+  assumes "wqo_on P F"
+  shows "wqo_on (emb P) terms"
+  using almost_full_on_terms [of P] and assms by (metis transp_on_emb wqo_on_def)
 
 end
 
