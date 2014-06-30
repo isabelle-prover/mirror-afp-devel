@@ -7,7 +7,7 @@
 header {* Instances of Well-Quasi-Orders *}
 
 theory Wqo_Instances
-imports Kruskal_New
+imports Kruskal
 begin
 
 

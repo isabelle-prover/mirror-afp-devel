@@ -1,7 +1,7 @@
-theory Kruskal_New_Examples
+theory Kruskal_Examples
 imports
   Well_Quasi_Orders
-  Kruskal_New
+  Kruskal
 begin
 
 datatype 'a tree = Node 'a "'a tree list"

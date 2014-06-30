@@ -22,7 +22,7 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
     Finite_Tree
     Kruskal
     Wqo_Instances
-    Kruskal_Tree_Example
+    Kruskal_Examples
     Multiset_Extension
     Wqo_Multiset
     Kruskal_Terms
