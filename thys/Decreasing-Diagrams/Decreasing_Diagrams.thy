@@ -1704,4 +1704,11 @@ definition LD_conv :: "'b set \<Rightarrow> 'a rel \<Rightarrow> bool"
 lemma sound_conv: assumes "LD_conv L ars" shows "CR ars"
  using assms LT_imp_D D_imp_CR unfolding LD_conv_def by metis
 
+hide_const (open) D
+hide_const (open) seq
+hide_const (open) measure
+hide_const (open) split
+
+hide_fact (open) split
+
 end
