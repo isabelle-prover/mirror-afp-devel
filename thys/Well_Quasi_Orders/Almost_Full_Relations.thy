@@ -385,30 +385,6 @@ proof (rule ccontr)
 qed
 
 
-subsection {* List Embedding *}
-
-lemma reflp_on_list_emb:
-  assumes "reflp_on P A"
-  shows "reflp_on (list_emb P) (lists A)"
-  using assms and list_emb_refl [of _ P]
-  unfolding reflp_on_def by blast
-
-lemma transp_on_list_emb:
-  assumes "transp_on P A"
-  shows "transp_on (list_emb P) (lists A)"
-  using assms and list_emb_trans [of _ _ _ P]
-    unfolding transp_on_def by blast
-
-inductive_cases
-  list_emb_Nil2_cases: "list_emb P xs []" and
-  list_emb_Cons_cases: "list_emb P xs (y#ys)"
-
-lemma list_emb_trans_right:
-  assumes "list_emb P xs ys" and "list_emb (\<lambda>y z. P y z \<and> (\<forall>x. P x y \<longrightarrow> P x z)) ys zs" 
-  shows "list_emb P xs zs"
-  using assms(2, 1) by (induct arbitrary: xs) (auto elim!: list_emb_Nil2_cases list_emb_Cons_cases)
-
-
 subsection {* Higman's Lemma for Almost-Full Relations *}
 
 lemma Nil_imp_good_list_emb [simp]:

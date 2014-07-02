@@ -211,6 +211,12 @@ lemma wqo_on_prod_UNIV [intro]:
 
 subsection {* Higman's Lemma *}
 
+lemma transp_on_list_emb:
+  assumes "transp_on P A"
+  shows "transp_on (list_emb P) (lists A)"
+  using assms and list_emb_trans [of _ _ _ P]
+    unfolding transp_on_def by blast
+
 lemma wqo_on_lists:
   assumes "wqo_on P A" shows "wqo_on (list_emb P) (lists A)"
   using assms and almost_full_on_lists

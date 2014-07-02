@@ -160,6 +160,15 @@ qed
 inductive_cases
   emb_mk2 [consumes 1, case_names arg list_emb]: "emb P s (mk g ts)"
 
+inductive_cases
+  list_emb_Nil2_cases: "list_emb P xs []" and
+  list_emb_Cons_cases: "list_emb P xs (y#ys)"
+
+lemma list_emb_trans_right:
+  assumes "list_emb P xs ys" and "list_emb (\<lambda>y z. P y z \<and> (\<forall>x. P x y \<longrightarrow> P x z)) ys zs" 
+  shows "list_emb P xs zs"
+  using assms(2, 1) by (induct arbitrary: xs) (auto elim!: list_emb_Nil2_cases list_emb_Cons_cases)
+
 lemma emb_trans:
   assumes trans: "\<And>f g h. f \<in> F \<Longrightarrow> g \<in> F \<Longrightarrow> h \<in> F \<Longrightarrow> P f g \<Longrightarrow> P g h \<Longrightarrow> P f h"
   assumes "emb P s t" and "emb P t u"
