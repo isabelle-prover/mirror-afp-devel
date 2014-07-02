@@ -7,17 +7,14 @@ session Gabow_SCC (AFP) in "." = CAVA_Automata +
     Gabow_SCC
     Find_Path
     Gabow_GBG
-
     Gabow_Skeleton_Code
     Gabow_SCC_Code
     Find_Path_Impl
     Gabow_GBG_Code
-
-  theories [document=false]
+  theories [document = false]
     All_Of_Gabow_SCC
-
-  files
-    "document/intro.tex"
-    "document/root.tex"
-    "document/conclusion.tex"
-    "document/root.bib"
+  document_files
+    "intro.tex"
+    "root.tex"
+    "conclusion.tex"
+    "root.bib"
