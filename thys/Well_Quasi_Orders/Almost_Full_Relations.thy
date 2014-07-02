@@ -44,15 +44,7 @@ lemma almost_full_onI [Pure.intro]:
 lemma almost_full_on_imp_reflp_on:
   assumes "almost_full_on P A"
   shows "reflp_on P A"
-proof
-  fix x
-  assume "x \<in> A"
-  let ?f = "\<lambda>i. x"
-  have "\<forall>i. ?f i \<in> A" using `x \<in> A` by simp
-  with assms obtain i j :: nat where "i < j"
-    and "P (?f i) (?f j)" by (auto simp: Ball_def almost_full_on_def good_def)
-  then show "P x x" by simp
-qed
+  using assms by (auto simp: almost_full_on_def reflp_on_def)
 
 lemma almost_full_on_subset:
   "A \<subseteq> B \<Longrightarrow> almost_full_on P B \<Longrightarrow> almost_full_on P A"
