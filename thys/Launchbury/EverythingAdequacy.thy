@@ -265,7 +265,7 @@ text{*
 \subsection{Related work}
 
 Lidia Sánchez-Gil, Mercedes Hidalgo-Herrero and Yolanda Ortega-Mallén have worked on formal aspects
-of Launchbury’s semantics as well.
+of Launchbury's semantics as well.
 
 They identified a step in his adequacy proof
 relating the standard and the resourced denotational semantics that is not as trivial as it seems at
@@ -283,7 +283,7 @@ above in that the application rule works with an indirection on the heap instead
 and that the variable rule has no blackholing and no update. In \cite{indirections}, they relate
 the original semantics with one where indirections have been introduced. The next step, modifying
 the variable rule, is under development. Once that is done they can close the loop and have
-completed Launchbury’s work.
+completed Launchbury's work.
 
 This work proves the adequacy as stated by Launchbury as well, but in contrast to his proof outline no
 alternative operational semantics is introduced. The problems of indirection vs. substitution and

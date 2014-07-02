@@ -629,28 +629,28 @@ proof (rule ccontr)
       assume ih: "?A n"
       show "?A (Suc n)"
       proof (clarsimp)
-	assume y: "P (p - Suc n)"
-	have n: "Suc n < p"
-	proof (rule ccontr)
-	  assume "\<not>(Suc n < p)"
-	  hence "p - Suc n = 0"
-	    by simp
-	  with y contra show "False"
-	    by simp
-	qed
-	hence n2: "Suc (p - Suc n) = p-n" by arith
-	from p have "p - Suc n < p" by arith
-	with y step have z: "P ((Suc (p - Suc n)) mod p)"
-	  by blast
-	show "False"
-	proof (cases "n=0")
-	  case True
-	  with z n2 contra show ?thesis by simp
-	next
-	  case False
-	  with p have "p-n < p" by arith
-	  with z n2 False ih show ?thesis by simp
-	qed
+        assume y: "P (p - Suc n)"
+        have n: "Suc n < p"
+        proof (rule ccontr)
+          assume "\<not>(Suc n < p)"
+          hence "p - Suc n = 0"
+            by simp
+          with y contra show "False"
+            by simp
+        qed
+        hence n2: "Suc (p - Suc n) = p-n" by arith
+        from p have "p - Suc n < p" by arith
+        with y step have z: "P ((Suc (p - Suc n)) mod p)"
+          by blast
+        show "False"
+        proof (cases "n=0")
+          case True
+          with z n2 contra show ?thesis by simp
+        next
+          case False
+          with p have "p-n < p" by arith
+          with z n2 False ih show ?thesis by simp
+        qed
       qed
     qed
   qed
@@ -675,22 +675,22 @@ proof -
     show "j<p \<longrightarrow> P j" (is "?A j")
     proof (induct j)
       from step base i show "?A 0"
-	by (auto elim: mod_induct_0)
+        by (auto elim: mod_induct_0)
     next
       fix k
       assume ih: "?A k"
       show "?A (Suc k)"
       proof
-	assume suc: "Suc k < p"
-	hence k: "k<p" by simp
-	with ih have "P k" ..
-	with step k have "P (Suc k mod p)"
-	  by blast
-	moreover
-	from suc have "Suc k mod p = Suc k"
-	  by simp
-	ultimately
-	show "P (Suc k)" by simp
+        assume suc: "Suc k < p"
+        hence k: "k<p" by simp
+        with ih have "P k" ..
+        with step k have "P (Suc k mod p)"
+          by blast
+        moreover
+        from suc have "Suc k mod p = Suc k"
+          by simp
+        ultimately
+        show "P (Suc k)" by simp
       qed
     qed
   qed
