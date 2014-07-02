@@ -7,13 +7,11 @@
 header {* Constructing Minimal Bad Sequences *}
 
 theory Minimal_Bad_Sequences
-imports
-  "../Abstract-Rewriting/Seq"
-  Restricted_Predicates
+imports Restricted_Predicates
 begin
 
 text {*The set of all sequences over elements from @{term A}.*}
-definition "SEQ A = {f::'a seq. \<forall>i. f i \<in> A}"
+definition "SEQ A = {f::nat \<Rightarrow> 'a. \<forall>i. f i \<in> A}"
 
 lemma SEQ_iff [iff]:
   "f \<in> SEQ A \<longleftrightarrow> (\<forall>i. f i \<in> A)"
@@ -21,7 +19,7 @@ lemma SEQ_iff [iff]:
 
 text {*An infinite sequence is \emph{good} whenever there are indices
 @{term "i < j"} such that @{term "P (f i) (f j)"}.*}
-definition good :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a seq \<Rightarrow> bool" where
+definition good :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
   "good P f \<longleftrightarrow> (\<exists>i j. i < j \<and> P (f i) (f j))"
 
 text {*A sequence that is not good is called \emph{bad}.*}
@@ -53,7 +51,7 @@ locale mbs =
     and less_trans: "\<lbrakk>x \<in> A; y \<in> A; z \<in> A; less x y; less y z\<rbrakk> \<Longrightarrow> less x z"
 begin
 
-abbreviation lesseq where "lesseq \<equiv> less\<^sup>=\<^sup>="
+abbreviation "lesseq \<equiv> less\<^sup>=\<^sup>="
 
 lemma less_induct [consumes 1, case_names IH]:
   assumes "x \<in> A"
@@ -85,19 +83,19 @@ lemma less_not_eq [simp]:
   by (metis minimal)
 
 text {*The set of all bad sequences over @{term A}.*}
-definition "BAD P \<equiv> {f \<in> SEQ A. bad P f}"
+definition "BAD P = {f \<in> SEQ A. bad P f}"
 
 lemma BAD_iff [iff]:
   "f \<in> BAD P \<longleftrightarrow> (\<forall>i. f i \<in> A) \<and> bad P f"
   by (auto simp: BAD_def)
 
 text {*A partial order on infinite bad sequences.*}
-definition geseq :: "('a seq \<times> 'a seq) set" where
+definition geseq :: "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) set" where
   "geseq =
     {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (f = g \<or> (\<exists>i. less (g i) (f i) \<and> (\<forall>j < i. f j = g j)))}"
 
 text {*The strict part of the above order.*}
-definition gseq :: "('a seq \<times> 'a seq) set" where
+definition gseq :: "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) set" where
   "gseq = {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (\<exists>i. less (g i) (f i) \<and> (\<forall>j < i. f j = g j))}"
 
 lemma geseq_iff:
@@ -165,7 +163,7 @@ end
 
 text {*The restriction of a set @{term "B"} of sequences to sequences that are equal to a given
 sequence @{term f} up to position @{term i}.*}
-definition eq_upto :: "'a seq set \<Rightarrow> 'a seq \<Rightarrow> nat \<Rightarrow> 'a seq set"
+definition eq_upto :: "(nat \<Rightarrow> 'a) set \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a) set"
 where
   "eq_upto B f i = {g \<in> B. \<forall>j < i. f j = g j}"
 
@@ -198,7 +196,7 @@ context
 begin
 
 text {*A lower bound to all sequences in a set of sequences @{term B}.*}
-fun lb :: "'a seq" where
+fun lb :: "nat \<Rightarrow> 'a" where
   lb: "lb i = min_elt (ith (eq_upto (BAD P) lb i) i)"
 
 declare lb.simps [simp del]
@@ -210,7 +208,7 @@ lemma eq_upto_BAD_mem:
 
 text {*Assume that there is some infinite bad sequence @{term h}.*}
 context
-  fixes h :: "'a seq"
+  fixes h :: "nat \<Rightarrow> 'a"
   assumes BAD_ex: "h \<in> BAD P"
 begin
 
@@ -238,8 +236,8 @@ lemma non_empty_ith:
   using eq_upto_BAD_non_empty [of i] by auto
 
 lemmas
- lb_minimal = min_elt_minimal [OF non_empty_ith, folded lb] and
- lb_mem = min_elt_mem [OF non_empty_ith, folded lb]
+  lb_minimal = min_elt_minimal [OF non_empty_ith, folded lb] and
+  lb_mem = min_elt_mem [OF non_empty_ith, folded lb]
 
 text {*@{term "lb"} is a infinite bad sequence.*}
 lemma lb_BAD:
