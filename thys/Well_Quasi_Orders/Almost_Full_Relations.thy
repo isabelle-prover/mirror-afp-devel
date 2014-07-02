@@ -273,64 +273,60 @@ where
   "sum_le P Q (Inr x) (Inr y) = Q x y" |
   "sum_le P Q x y = False"
 
+lemma not_sum_le_cases:
+  assumes "\<not> sum_le P Q a b"
+    and "\<And>x y. \<lbrakk>a = Inl x; b = Inl y; \<not> P x y\<rbrakk> \<Longrightarrow> thesis"
+    and "\<And>x y. \<lbrakk>a = Inr x; b = Inr y; \<not> Q x y\<rbrakk> \<Longrightarrow> thesis"
+    and "\<And>x y. \<lbrakk>a = Inl x; b = Inr y\<rbrakk> \<Longrightarrow> thesis"
+    and "\<And>x y. \<lbrakk>a = Inr x; b = Inl y\<rbrakk> \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (cases a b rule: sum.exhaust [case_product sum.exhaust]) auto
+
 text {*When two sets are almost-full, then their disjoint sum is almost-full.*}
 lemma almost_full_on_Plus:
   assumes "almost_full_on P A" and "almost_full_on Q B"
   shows "almost_full_on (sum_le P Q) (A <+> B)" (is "almost_full_on ?P ?A")
 proof
   fix f :: "nat \<Rightarrow> ('a + 'b)"
-  assume *: "\<forall>i. f i \<in> ?A"
-  let ?I = "{i. f i \<in> Inl ` A}"
-  let ?J = "{i. f i \<in> Inr ` B}"
-  have **: "(UNIV::nat set) - ?I = ?J" using * by auto
+  let ?I = "f -` Inl ` A"
+  let ?J = "f -` Inr ` B"
+  assume "\<forall>i. f i \<in> ?A"
+  then have *: "?J = (UNIV::nat set) - ?I" by (fastforce)
   show "good ?P f"
   proof (rule ccontr)
     assume bad: "bad ?P f"
     show False
     proof (cases "finite ?I")
       assume "finite ?I"
-      moreover have "infinite (UNIV::nat set)" by auto
-      ultimately have "infinite ?J" unfolding ** [symmetric] by (rule Diff_infinite_finite)
-      then have "\<forall>i. \<exists>j>i. j \<in> ?J" by (simp add: infinite_nat_iff_unbounded)
-      then interpret infinitely_many1 "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
+      then have "infinite ?J" by (auto simp: *)
+      then interpret infinitely_many1 "\<lambda>i. f i \<in> Inr ` B"
+        by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
+      have [dest]: "\<And>i x. f (enum i) = Inl x \<Longrightarrow> False"
+        using enum_P by (auto simp: image_iff) (metis Inr_Inl_False)
       let ?f = "\<lambda>i. projr (f (enum i))"
-      have ***: "\<forall>i. \<exists>x\<in>B. f (enum i) = Inr x" using enum_P by auto
-      then have B: "\<forall>i. ?f i \<in> B" by (metis sum.sel(2))
+      have B: "\<And>i. ?f i \<in> B" using enum_P by (auto simp: image_iff) (metis sum.sel(2))
       { fix i j :: nat
         assume "i < j"
         then have "enum i < enum j" using enum_less by auto
-        with bad have not: "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
-        have "\<not> Q (?f i) (?f j)"
-        proof
-          assume "Q (?f i) (?f j)"
-          moreover with *** obtain x y where "x \<in> B" and "y \<in> B"
-            and "f (enum i) = Inr x" and "f (enum j) = Inr y" by blast
-          ultimately have "?P (f (enum i)) (f (enum j))" by simp
-          then show False using not by simp
-        qed }
+        with bad have "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
+        then have "\<not> Q (?f i) (?f j)" by (auto elim: not_sum_le_cases) }
       then have "bad Q ?f" by (auto simp: good_def)
       moreover from `almost_full_on Q B` and B
         have "good Q ?f" by (auto simp: good_def almost_full_on_def)
       ultimately show False by blast
     next
       assume "infinite ?I"
-      then have "\<forall>i. \<exists>j>i. j \<in> ?I" by (simp add: infinite_nat_iff_unbounded)
-      then interpret infinitely_many1 "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
+      then interpret infinitely_many1 "\<lambda>i. f i \<in> Inl ` A"
+        by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
+      have [dest]: "\<And>i x. f (enum i) = Inr x \<Longrightarrow> False"
+        using enum_P by (auto simp: image_iff) (metis Inr_Inl_False)
       let ?f = "\<lambda>i. projl (f (enum i))"
-      have ***: "\<forall>i. \<exists>x\<in>A. f (enum i) = Inl x" using enum_P by auto
-      then have A: "\<forall>i. ?f i \<in> A" by (metis sum.sel(1))
+      have A: "\<forall>i. ?f i \<in> A" using enum_P by (auto simp: image_iff) (metis sum.sel(1))
       { fix i j :: nat
         assume "i < j"
         then have "enum i < enum j" using enum_less by auto
-        with bad have not: "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
-        have "\<not> P (?f i) (?f j)"
-        proof
-          assume "P (?f i) (?f j)"
-          moreover with *** obtain x y where "x \<in> A" and "y \<in> A"
-            and "f (enum i) = Inl x" and "f (enum j) = Inl y" by blast
-          ultimately have "?P (f (enum i)) (f (enum j))" by simp
-          then show False using not by simp
-        qed }
+        with bad have "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
+        then have "\<not> P (?f i) (?f j)" by (auto elim: not_sum_le_cases) }
       then have "bad P ?f" by (auto simp: good_def)
       moreover from `almost_full_on P A` and A
         have "good P ?f" by (auto simp: good_def almost_full_on_def)
