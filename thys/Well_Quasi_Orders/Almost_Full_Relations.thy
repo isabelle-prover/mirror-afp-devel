@@ -133,7 +133,7 @@ proof
     show "good ?P f" unfolding good_def comp_def by blast
 qed
 
-text {*The homomorphic image of an almost full set is almost full.*}
+text {*The homomorphic image of an almost-full set is almost-full.*}
 lemma almost_full_on_hom:
   fixes h :: "'a \<Rightarrow> 'b"
   assumes hom: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (h x) (h y)"
@@ -157,7 +157,7 @@ proof
   qed
 qed
 
-text {*The monomorphic preimage of an almost full set is almost full.*}
+text {*The monomorphic preimage of an almost-full set is almost-full.*}
 lemma almost_full_on_mon:
   assumes mon: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> P x y = Q (h x) (h y)" "bij_betw h A B"
     and af: "almost_full_on Q B"
@@ -273,7 +273,7 @@ where
   "sum_le P Q (Inr x) (Inr y) = Q x y" |
   "sum_le P Q x y = False"
 
-text {*When two sets are almost full, then their disjoint sum is almost full.*}
+text {*When two sets are almost-full, then their disjoint sum is almost-full.*}
 lemma almost_full_on_Plus:
   assumes "almost_full_on P A" and "almost_full_on Q B"
   shows "almost_full_on (sum_le P Q) (A <+> B)" (is "almost_full_on ?P ?A")
@@ -499,7 +499,7 @@ qed simp
 
 subsection {* Special Case: Finite Sets *}
 
-text {*Every reflexive relation on a finite set is almost full.*}
+text {*Every reflexive relation on a finite set is almost-full.*}
 lemma finite_almost_full_on:
   assumes finite: "finite A"
   assumes refl: "reflp_on P A"
