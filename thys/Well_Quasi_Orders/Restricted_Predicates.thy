@@ -14,38 +14,34 @@ definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow
   "restrict_to P A = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y)"
 
 definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "reflp_on P A = (\<forall>a\<in>A. P a a)"
+  "reflp_on P A \<longleftrightarrow> (\<forall>a\<in>A. P a a)"
 
 definition transp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "transp_on P A = (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. P x y \<and> P y z \<longrightarrow> P x z)"
+  "transp_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. P x y \<and> P y z \<longrightarrow> P x z)"
 
 definition
   mono_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> bool"
 where
-  "mono_on P Q f A = (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (f x) (f y))"
+  "mono_on P Q f A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (f x) (f y))"
 
 definition total_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "total_on P A = (\<forall>x\<in>A. \<forall>y\<in>A. x = y \<or> P x y \<or> P y x)"
+  "total_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. x = y \<or> P x y \<or> P y x)"
 
 lemma mono_onI [Pure.intro]:
   assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (f x) (f y)"
   shows "mono_on P Q f A"
   using assms by (auto simp: mono_on_def)
 
-abbreviation strict where
-  "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
+abbreviation "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
+
+abbreviation "chain_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
+
+abbreviation "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
+
+abbreviation "antichain_on P f A \<equiv> \<forall>(i::nat) j. f i \<in> A \<and> (i < j \<longrightarrow> incomparable P (f i) (f j))"
 
 lemma strict_reflclp_conv [simp]:
   "strict (P\<^sup>=\<^sup>=) = strict P" by auto
-
-abbreviation chain_on where
-  "chain_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
-
-abbreviation incomparable where
-  "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
-
-abbreviation antichain_on where
-  "antichain_on P f A \<equiv> \<forall>(i::nat) j. f i \<in> A \<and> (i < j \<longrightarrow> incomparable P (f i) (f j))"
 
 lemma reflp_onI [Pure.intro]:
   "(\<And>a. a \<in> A \<Longrightarrow> P a a) \<Longrightarrow> reflp_on P A"
@@ -71,9 +67,7 @@ lemma reflp_on_reflclp:
 lemma transp_on_tranclp:
   assumes "transp_on P A"
   shows "(\<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y)\<^sup>+\<^sup>+ a b \<longleftrightarrow> a \<in> A \<and> b \<in> A \<and> P a b"
-    (is "?lhs = ?rhs")
-  by (rule iffI, induction rule: tranclp.induct)
-     (insert assms, auto simp: transp_on_def)
+  by (rule iffI, induction rule: tranclp.induct) (insert assms, auto simp: transp_on_def)
 
 lemma reflp_on_converse:
   "reflp_on P A \<Longrightarrow> reflp_on P\<inverse>\<inverse> A"
@@ -108,10 +102,10 @@ lemma transp_on_subset:
   by (auto simp: transp_on_def)
 
 definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "wfp_on P A = (\<not> (\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)))"
+  "wfp_on P A \<longleftrightarrow> (\<not> (\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)))"
 
 definition inductive_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "inductive_on P A = (\<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x))"
+  "inductive_on P A \<longleftrightarrow> (\<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x))"
 
 lemma inductive_onI [Pure.intro]:
   assumes "\<And>Q x. \<lbrakk>x \<in> A; (\<And>y. \<lbrakk>y \<in> A; \<And>x. \<lbrakk>x \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x\<rbrakk> \<Longrightarrow> Q y)\<rbrakk> \<Longrightarrow>  Q x"
@@ -135,7 +129,7 @@ proof (rule ccontr)
   proof
     fix i show "?S i \<in> Q" by (induct i) (auto simp: * **)
   qed
-  hence "\<forall>i. ?S i \<in> A" using * by blast
+  then have "\<forall>i. ?S i \<in> A" using * by blast
   moreover have "\<forall>i. P (?S (Suc i)) (?S i)"
   proof
     fix i show "P (?S (Suc i)) (?S i)"
@@ -163,7 +157,7 @@ proof (rule ccontr)
     using assms [THEN spec [of _ ?Q], THEN spec [of _ x]] by blast
   from `z \<in> ?Q` have "z \<in> A" and "\<not> Q z" by auto
   with * obtain y where "y \<in> A" and "P y z" and "\<not> Q y" by auto
-  hence "y \<in> ?Q" by auto
+  then have "y \<in> ?Q" by auto
   with `P y z` and min show False by auto
 qed
 
@@ -190,19 +184,19 @@ proof -
         assume "\<not> ?Q y"
         then obtain f where *: "f 0 = y"
           "\<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)" by auto
-        hence "P (f (Suc 0)) (f 0)" and "f (Suc 0) \<in> A" by auto
+        then have "P (f (Suc 0)) (f 0)" and "f (Suc 0) \<in> A" by auto
         with IH and * have "?Q (f (Suc 0))" by auto
         with * show False by auto
       qed
     qed }
-  thus ?thesis unfolding wfp_on_def by blast
+  then show ?thesis unfolding wfp_on_def by blast
 qed
 
 definition antisymp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "antisymp_on P A = (\<forall>a\<in>A. \<forall>b\<in>A. P a b \<and> P b a \<longrightarrow> a = b)"
+  "antisymp_on P A \<longleftrightarrow> (\<forall>a\<in>A. \<forall>b\<in>A. P a b \<and> P b a \<longrightarrow> a = b)"
 
 lemma antisymp_onI [Pure.intro]:
-  "(\<And>a b. \<lbrakk> a \<in> A; b \<in> A; P a b; P b a\<rbrakk> \<Longrightarrow> a = b) \<Longrightarrow> antisymp_on P A"
+  "(\<And>a b. \<lbrakk>a \<in> A; b \<in> A; P a b; P b a\<rbrakk> \<Longrightarrow> a = b) \<Longrightarrow> antisymp_on P A"
   by (auto simp: antisymp_on_def)
 
 lemma antisymp_on_reflclp [simp]:
@@ -210,16 +204,16 @@ lemma antisymp_on_reflclp [simp]:
   by (auto simp: antisymp_on_def)
 
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "qo_on P A = (reflp_on P A \<and> transp_on P A)"
+  "qo_on P A \<longleftrightarrow> (reflp_on P A \<and> transp_on P A)"
 
 definition orderp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "orderp_on P A = (antisymp_on P A \<and> reflp_on P A \<and> transp_on P A)"
+  "orderp_on P A \<longleftrightarrow> (antisymp_on P A \<and> reflp_on P A \<and> transp_on P A)"
 
 definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "irreflp_on P A = (\<forall>a\<in>A. \<not> P a a)"
+  "irreflp_on P A \<longleftrightarrow> (\<forall>a\<in>A. \<not> P a a)"
 
 definition po_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "po_on P A = (irreflp_on P A \<and> transp_on P A)"
+  "po_on P A \<longleftrightarrow> (irreflp_on P A \<and> transp_on P A)"
 
 lemma po_onI [Pure.intro]:
   "\<lbrakk>irreflp_on P A; transp_on P A\<rbrakk> \<Longrightarrow> po_on P A"
@@ -319,13 +313,13 @@ text {*Quasi-orders are instances of the @{class preorder} class.*}
 lemma qo_on_UNIV_conv:
   "qo_on P UNIV \<longleftrightarrow> class.preorder P (strict P)" (is "?lhs = ?rhs")
 proof
-  assume "?lhs" thus "?rhs"
+  assume "?lhs" then show "?rhs"
     unfolding qo_on_def class.preorder_def
     using qo_on_imp_reflp_on [of P UNIV]
       and qo_on_imp_transp_on [of P UNIV]
     by (auto simp: reflp_on_def) (unfold transp_on_def, blast)
 next
-  assume "?rhs" thus "?lhs"
+  assume "?rhs" then show "?lhs"
     unfolding class.preorder_def
     by (auto simp: qo_on_def reflp_on_def transp_on_def)
 qed
@@ -346,8 +340,8 @@ lemma wfp_on_iff_minimal:
 text {*Every non-empty well-founded set @{term A} has a minimal element, i.e., an
 element that is not greater than any other element.*}
 lemma wfp_on_imp_has_min_elt:
-  assumes "wfp_on (strict P) A" and "A \<noteq> {}"
-  shows "\<exists>x\<in>A. \<forall>y\<in>A. \<not> strict P y x"
+  assumes "wfp_on P A" and "A \<noteq> {}"
+  shows "\<exists>x\<in>A. \<forall>y\<in>A. \<not> P y x"
   using assms unfolding wfp_on_iff_minimal by force
 
 lemma wfp_on_induct [consumes 2, case_names less, induct pred: wfp_on]:
@@ -385,13 +379,11 @@ lemma in_measure_on [simp, code_unfold]:
 
 lemma wfp_on_inv_image_betw [simp, intro!]:
   assumes "wfp_on P B"
-  shows "wfp_on (inv_image_betw P f A B) A"
-    (is "wfp_on ?P A")
+  shows "wfp_on (inv_image_betw P f A B) A" (is "wfp_on ?P A")
 proof (rule ccontr)
   assume "\<not> ?thesis"
-  then obtain g where "\<forall>i. g i \<in> A \<and> ?P (g (Suc i)) (g i)"
-    unfolding wfp_on_def by auto
-  with assms show False unfolding wfp_on_def by auto
+  then obtain g where "\<forall>i. g i \<in> A \<and> ?P (g (Suc i)) (g i)" by (auto simp: wfp_on_def)
+  with assms show False by (auto simp: wfp_on_def)
 qed
 
 lemma wfp_less:
@@ -417,7 +409,7 @@ lemma restrict_to_iff [iff]:
 
 lemma wfp_on_restrict_to [simp]:
   "wfp_on (restrict_to P A) A = wfp_on P A"
-  unfolding wfp_on_def by auto
+  by (auto simp: wfp_on_def)
 
 lemma irreflp_on_strict [simp, intro]:
   "irreflp_on (strict P) A"
@@ -460,7 +452,7 @@ lemma chain_on_transp_on_less:
   shows "P (f i) (f j)"
 using `i < j`
 proof (induct j)
-  case 0 thus ?case by simp
+  case 0 then show ?case by simp
 next
   case (Suc j)
   show ?case
@@ -511,10 +503,7 @@ lemma accessible_on_induct [consumes 1, induct pred: accessible_on]:
   assumes *: "accessible_on P A a"
     and IH: "\<And>x. \<lbrakk>accessible_on P A x; \<And>y. \<lbrakk>y \<in> A; P y x\<rbrakk> \<Longrightarrow> Q y\<rbrakk> \<Longrightarrow> Q x"
   shows "Q a"
-  apply (rule * [THEN accessible_on.induct])
-  apply (rule IH)
-  apply (rule accessible_onI)
-  by auto
+  by (rule * [THEN accessible_on.induct]) (auto intro: IH accessible_onI)
 
 lemma accessible_on_downward:
   "accessible_on P A b \<Longrightarrow> a \<in> A \<Longrightarrow> P a b \<Longrightarrow> accessible_on P A a"
@@ -523,8 +512,7 @@ lemma accessible_on_downward:
 lemma accessible_on_restrict_to_downwards:
   assumes "(restrict_to P A)\<^sup>+\<^sup>+ a b" and "accessible_on P A b"
   shows "accessible_on P A a"
-  using assms
-  by (induct) (auto dest: accessible_on_imp_mem accessible_on_downward)
+  using assms by (induct) (auto dest: accessible_on_imp_mem accessible_on_downward)
 
 lemma accessible_on_imp_inductive_on:
   assumes "\<forall>x\<in>A. accessible_on P A x"
@@ -687,7 +675,6 @@ lemma po_on_predecessors_eq_conv:
     and po_on_imp_antisymp_on [OF `po_on P A`]
     unfolding antisymp_on_def reflp_on_def
     by blast
-
 
 lemma restrict_to_rtranclp:
   assumes "transp_on P A"
