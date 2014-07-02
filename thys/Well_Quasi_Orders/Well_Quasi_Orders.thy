@@ -239,5 +239,52 @@ lemma wqo_on_lists_over_finite_sets:
   "wqo_on (list_emb (op =)) (UNIV::('a::finite) list set)"
   using wqo_on_lists [OF finite_eq_wqo_on [OF finite [of "UNIV::('a::finite) set"]]] by simp
 
+lemma wqo_on_map:
+  fixes P and Q and h
+  defines "P' \<equiv> \<lambda>x y. P x y \<and> Q (h x) (h y)"
+  assumes "wqo_on P A"
+    and "wqo_on Q B"
+    and subset: "h ` A \<subseteq> B"
+  shows "wqo_on P' A"
+proof
+  let ?Q = "\<lambda>x y. Q (h x) (h y)"
+  from `wqo_on P A` have "transp_on P A"
+    by (rule wqo_on_imp_transp_on)
+  then show "transp_on P' A"
+    using `wqo_on Q B` and subset
+    unfolding wqo_on_def transp_on_def P'_def by blast
+
+  from `wqo_on P A` have "almost_full_on P A"
+    by (rule wqo_on_imp_almost_full_on)
+  from `wqo_on Q B` have "almost_full_on Q B"
+    by (rule wqo_on_imp_almost_full_on)
+
+  show "almost_full_on P' A"
+  proof
+    fix f
+    assume *: "\<forall>i::nat. f i \<in> A"
+    from almost_full_on_imp_homogeneous_subseq [OF `almost_full_on P A` this]
+      obtain g :: "nat \<Rightarrow> nat"
+      where g: "\<And>i j. i < j \<Longrightarrow> g i < g j"
+      and **: "\<forall>i. f (g i) \<in> A \<and> P (f (g i)) (f (g (Suc i)))"
+      using * by auto
+    from chain_on_transp_on_less [OF ** `transp_on P A`]
+      have **: "\<And>i j. i < j \<Longrightarrow> P (f (g i)) (f (g j))" .
+    let ?g = "\<lambda>i. h (f (g i))"
+    from * and subset have B: "\<And>i. ?g i \<in> B" by auto
+    with `almost_full_on Q B` [unfolded almost_full_on_def good_def, THEN bspec, of ?g]
+      obtain i j :: nat
+      where "i < j" and "Q (?g i) (?g j)" by blast
+    with ** [OF `i < j`] have "P' (f (g i)) (f (g j))"
+      by (auto simp: P'_def)
+    with g [OF `i < j`] show "good P' f" by (auto simp: good_def)
+  qed
+qed
+
+lemma wqo_on_UNIV_nat:
+  "wqo_on (op \<le>) (UNIV :: nat set)"
+  unfolding wqo_on_def transp_on_def
+  using almost_full_on_UNIV_nat by simp
+
 end
 
