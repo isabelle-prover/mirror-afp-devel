@@ -13,50 +13,47 @@ text {* We define the RSA-PSS signature and verification operations. Moreover we
   show, that messages signed with RSA-PSS can always be verified
   *}
 
-consts rsapss_sign:: "bv \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bv" (* Input: message (an bv), private key, RSA modulus; Output: signature (an bv)*)
-       rsapss_sign_help1:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bv"
-       rsapss_verify:: "bv \<Rightarrow> bv \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" (* Input:  Message, Signature to be verified (an bv), public key, RSA modulus; Output: valid or invalid signature *)
+definition rsapss_sign_help1:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bv"
+  where "rsapss_sign_help1 em_nat e n =
+    nat_to_bv_length (rsa_crypt em_nat e n) (length (nat_to_bv n))"
 
-defs
+definition rsapss_sign:: "bv \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bv" (* Input: message (an bv), private key, RSA modulus; Output: signature (an bv)*)
+  where "rsapss_sign m e n =
+   (if (emsapss_encode m (length (nat_to_bv n) - 1)) = [] 
+    then []
+    else (rsapss_sign_help1 (bv_to_nat (emsapss_encode m (length (nat_to_bv n) - 1)) ) e n))"
 
-  rsapss_sign:
-  "rsapss_sign m e n == if (emsapss_encode m (length (nat_to_bv n) - 1)) = [] 
-                          then []
-                          else (rsapss_sign_help1 (bv_to_nat (emsapss_encode m (length (nat_to_bv n) - 1)) ) e n)"
-
-  rsapss_sign_help1:
-  "rsapss_sign_help1 em_nat e n == nat_to_bv_length (rsa_crypt em_nat e n) (length (nat_to_bv n))"
-
-  rsapss_verify:
-  "rsapss_verify m s d n == if (length s) \<noteq> length(nat_to_bv n)
-                            then False
-                            else let em = nat_to_bv_length (rsa_crypt (bv_to_nat s) d n) ((roundup (length(nat_to_bv n) - 1) 8) * 8) in emsapss_decode m em (length(nat_to_bv n) - 1)"
+definition rsapss_verify:: "bv \<Rightarrow> bv \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" (* Input:  Message, Signature to be verified (an bv), public key, RSA modulus; Output: valid or invalid signature *)
+  where "rsapss_verify m s d n =
+   (if (length s) \<noteq> length(nat_to_bv n)
+    then False
+    else let em = nat_to_bv_length (rsa_crypt (bv_to_nat s) d n) ((roundup (length(nat_to_bv n) - 1) 8) * 8) in emsapss_decode m em (length(nat_to_bv n) - 1))"
 
 lemma length_emsapss_encode:
   "emsapss_encode m x \<noteq> [] \<Longrightarrow> length (emsapss_encode m x) = roundup x 8 * 8"
   apply (atomize (full))
-  apply (simp add: emsapss_encode)
-  apply (simp add: emsapss_encode_help1)
-  apply (simp add: emsapss_encode_help2)
-  apply (simp add: emsapss_encode_help3)
-  apply (simp add: emsapss_encode_help4)
-  apply (simp add: emsapss_encode_help5)
-  apply (simp add: emsapss_encode_help6)
-  apply (simp add: emsapss_encode_help7)
-  apply (simp add: emsapss_encode_help8)
-  apply (simp add: maskedDB_zero)
+  apply (simp add: emsapss_encode_def)
+  apply (simp add: emsapss_encode_help1_def)
+  apply (simp add: emsapss_encode_help2_def)
+  apply (simp add: emsapss_encode_help3_def)
+  apply (simp add: emsapss_encode_help4_def)
+  apply (simp add: emsapss_encode_help5_def)
+  apply (simp add: emsapss_encode_help6_def)
+  apply (simp add: emsapss_encode_help7_def)
+  apply (simp add: emsapss_encode_help8_def)
+  apply (simp add: maskedDB_zero_def)
   apply (simp add: length_generate_DB)
   apply (simp add: sha1len)
   apply (simp add: bvxor)
   apply (simp add: length_generate_PS)
   apply (simp add: length_bv_prepend)
-  apply (simp add: MGF)
-  apply (simp add: MGF1)
+  apply (simp add: MGF_def)
+  apply (simp add: MGF1_def)
   apply (simp add: length_MGF2)
   apply (simp add: sha1len)
   apply (simp add: length_generate_DB)
   apply (simp add: length_generate_PS)
-  apply (simp add: BC)
+  apply (simp add: BC_def)
   apply (insert roundup_ge_emBits [of x 8])
   apply safe
   apply (simp add: max.absorb1)
@@ -89,7 +86,7 @@ lemma length_helper1: shows "length
   (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
   (length (sha1 (generate_M' (sha1 m) salt)))))))) + 168"
 proof -
-  have a: "length BC = 8" by (simp add: BC)
+  have a: "length BC = 8" by (simp add: BC_def)
   have b: "length (sha1 (generate_M' (sha1 m) salt)) = 160" by (simp add: sha1len)
   have c: "\<And> a b c. length (a@b@c) = length a + length b + length c" by simp
   from a and b show ?thesis using c by simp 
@@ -102,11 +99,11 @@ proof (cases "2^32*length (sha1 z) < l")
   then have "MGF z l = []" 
   proof (cases "l=0")
     assume "l=0"
-    then show "MGF z l = []" by (simp add: MGF)
+    then show "MGF z l = []" by (simp add: MGF_def)
   next
     assume "l~=0"
     then have "(l = 0 \<or> 2^32*length(sha1 z) < l) = True" using a by fast
-    then show "MGF z l = []" apply (simp only: MGF) by simp
+    then show "MGF z l = []" apply (simp only: MGF_def) by simp
   qed
   then show ?thesis using x by simp
 next
@@ -146,7 +143,7 @@ proof -
     have "0 < (length
   (generate_DB
   (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
-  (length (sha1 (generate_M' (sha1 m) salt))))))" by (simp add: generate_DB)
+  (length (sha1 (generate_M' (sha1 m) salt))))))" by (simp add: generate_DB_def)
     moreover have "(length
   (generate_DB
   (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
@@ -226,7 +223,8 @@ proof -
           length maskedDB + (length a + length b) + emBits mod 8 - 8" using len by arith
       qed
     qed
-    ultimately show ?thesis using b[of "(drop ((roundup emBits 8)*8 - emBits) maskedDB)@a@b"] by (simp add: maskedDB_zero)
+    ultimately show ?thesis using b[of "(drop ((roundup emBits 8)*8 - emBits) maskedDB)@a@b"]
+      by (simp add: maskedDB_zero_def)
   qed
 qed
 
@@ -242,7 +240,7 @@ lemma length_bound2: "8<=length ( (bvxor
 proof -
   have "8 <= length (generate_DB
   (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
-  (length (sha1 (generate_M' (sha1 m) salt)))))" by (simp add: generate_DB)
+  (length (sha1 (generate_M' (sha1 m) salt)))))" by (simp add: generate_DB_def)
   then show ?thesis using length_bvxor_bound by simp
 qed
 
@@ -269,7 +267,7 @@ lemma length_helper: assumes p: "prime p" and q: "prime q" and x: "(length (nat_
   < length (nat_to_bv (p * q))"
 proof -
   from mgf have round: "168 <= roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8"
-  proof (simp only: sha1len sLen)
+  proof (simp only: sha1len sLen_def)
     from len have "160 + sLen +16 \<le> length (nat_to_bv (p * q)) - Suc 0" by (simp add: sha1len)
     then have len1: "176 <= length (nat_to_bv (p * q)) - Suc 0" by simp
     have "length (nat_to_bv (p*q)) - Suc 0 <= (roundup (length (nat_to_bv (p * q)) - Suc 0) 8) * 8"
@@ -350,17 +348,19 @@ proof -
   assume x: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0"
   have b: " emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)= emsapss_encode_help1 (sha1 m)
     (length (nat_to_bv (p * q)) - Suc 0)"
-  proof (simp only: emsapss_encode)
+  proof (simp only: emsapss_encode_def)
     from a show "(if ((2^64 \<le> length m) \<or> (2^32 * 160 < (length (nat_to_bv (p*q)) - Suc 0)))
       then []
-      else (emsapss_encode_help1 (sha1 m) (length (nat_to_bv (p*q))- Suc 0))) = (emsapss_encode_help1 (sha1 m) (length (nat_to_bv (p*q)) - Suc 0))" by (auto simp add: emsapss_encode)
+      else (emsapss_encode_help1 (sha1 m) (length (nat_to_bv (p*q))- Suc 0))) = (emsapss_encode_help1 (sha1 m) (length (nat_to_bv (p*q)) - Suc 0))"
+      by (auto simp add: emsapss_encode_def)
   qed
   have c: "length (remzero (emsapss_encode_help1 (sha1 m) (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p*q))"
-  proof (simp only: emsapss_encode_help1) 
+  proof (simp only: emsapss_encode_help1_def) 
      from a and b have d: "(if ((length (nat_to_bv (p * q)) - Suc 0) < (length (sha1 m) + sLen + 16))
       then []
       else (emsapss_encode_help2 (generate_M' (sha1 m) salt)
-      (length (nat_to_bv (p * q)) - Suc 0))) = (emsapss_encode_help2 ((generate_M' (sha1 m)) salt) (length (nat_to_bv (p*q)) - Suc 0))" by (auto simp add: emsapss_encode emsapss_encode_help1)
+      (length (nat_to_bv (p * q)) - Suc 0))) = (emsapss_encode_help2 ((generate_M' (sha1 m)) salt) (length (nat_to_bv (p*q)) - Suc 0))"
+        by (auto simp add: emsapss_encode_def emsapss_encode_help1_def)
      from d have len: "length (sha1 m) + sLen + 16 <= (length (nat_to_bv (p*q))) - Suc 0"
      proof (cases "length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16")
        assume "length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16"
@@ -369,20 +369,21 @@ proof -
        assume len2:  "(if length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16 then []
       else emsapss_encode_help2 (generate_M' (sha1 m) salt) (length (nat_to_bv (p * q)) - Suc 0)) =
      emsapss_encode_help2 (generate_M' (sha1 m) salt) (length (nat_to_bv (p * q)) - Suc 0)"
-       from len1 and len2 and a and b show "length (sha1 m) + sLen + 16 \<le> length (nat_to_bv (p * q)) - Suc 0" by (auto simp add: emsapss_encode emsapss_encode_help1)
+       from len1 and len2 and a and b show "length (sha1 m) + sLen + 16 \<le> length (nat_to_bv (p * q)) - Suc 0"
+        by (auto simp add: emsapss_encode_def emsapss_encode_help1_def)
      next
        assume "\<not> length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16"
        then show "length (sha1 m) + sLen + 16 \<le> length (nat_to_bv (p * q)) - Suc 0" by simp
      qed
     have e: "length (remzero (emsapss_encode_help2 (generate_M' (sha1 m) salt)
    (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p * q))"
-      proof (simp only: emsapss_encode_help2)
+      proof (simp only: emsapss_encode_help2_def)
         show "length
           (remzero
           (emsapss_encode_help3 (sha1 (generate_M' (sha1 m) salt))
           (length (nat_to_bv (p * q)) - Suc 0)))
           < length (nat_to_bv (p * q))"
-        proof (simp add: emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5)
+        proof (simp add: emsapss_encode_help3_def emsapss_encode_help4_def emsapss_encode_help5_def)
           show "length
             (remzero
             (emsapss_encode_help6
@@ -397,13 +398,13 @@ proof -
             (sha1 (generate_M' (sha1 m) salt))
             (length (nat_to_bv (p * q)) - Suc 0)))
             < length (nat_to_bv (p * q))"
-          proof (simp only: emsapss_encode_help6)
+          proof (simp only: emsapss_encode_help6_def)
             from a and b and d have mgf: "MGF (sha1 (generate_M' (sha1 m) salt))
               (length
               (generate_DB
               (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
               (length (sha1 (generate_M' (sha1 m) salt)))))) ~=
-              []" by (auto simp add: emsapss_encode emsapss_encode_help1 emsapss_encode_help2 emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5 emsapss_encode_help6)
+              []" by (auto simp add: emsapss_encode_def emsapss_encode_help1_def emsapss_encode_help2_def emsapss_encode_help3_def emsapss_encode_help4_def emsapss_encode_help5_def emsapss_encode_help6_def)
             from a and b and d have f: "(if MGF (sha1 (generate_M' (sha1 m) salt))
               (length
               (generate_DB
@@ -433,7 +434,10 @@ proof -
               (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
               (length (sha1 (generate_M' (sha1 m) salt))))))))
               (sha1 (generate_M' (sha1 m) salt))
-              (length (nat_to_bv (p * q)) - Suc 0))" by (auto simp add: emsapss_encode emsapss_encode_help1 emsapss_encode_help2 emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5 emsapss_encode_help6)
+              (length (nat_to_bv (p * q)) - Suc 0))"
+              by (auto simp add: emsapss_encode_def emsapss_encode_help1_def emsapss_encode_help2_def
+                emsapss_encode_help3_def emsapss_encode_help4_def emsapss_encode_help5_def
+                emsapss_encode_help6_def)
             have "length (remzero (emsapss_encode_help7
               (bvxor
               (generate_DB
@@ -445,7 +449,7 @@ proof -
               (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
               (length (sha1 (generate_M' (sha1 m) salt))))))))
               (sha1 (generate_M' (sha1 m) salt)) (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p * q))"
-            proof (simp add: emsapss_encode_help7 emsapss_encode_help8)
+            proof (simp add: emsapss_encode_help7_def emsapss_encode_help8_def)
               from p and q and x show " length
                 (remzero
                 (maskedDB_zero
@@ -544,8 +548,8 @@ proof -
 qed
 
 lemma rsa_pss_verify: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; e*d mod ((pred p)*(pred q)) = 1; rsapss_sign m e n \<noteq> []; s = rsapss_sign m e n \<rbrakk> \<Longrightarrow> rsapss_verify m s d n = True" 
-  apply (simp only: rsapss_sign rsapss_verify)
-  apply (simp only: rsapss_sign_help1)
+  apply (simp only: rsapss_sign_def rsapss_verify_def)
+  apply (simp only: rsapss_sign_help1_def)
   apply (auto)
   apply (simp add: length_nat_to_bv_length)
   apply (simp add: bv_to_nat_nat_to_bv_length)
@@ -554,7 +558,8 @@ lemma rsa_pss_verify: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; e*d mo
   apply (simp add: cryptinverts)
   apply (insert length_emsapss_encode [of m "(length (nat_to_bv (p * q)) - Suc 0)"])
   apply (insert nat_to_bv_length_bv_to_nat [of "emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)" "roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8"])
-by (simp add: verify)
+  apply (simp add: verify)
+  done
 
 end
 
