@@ -168,29 +168,6 @@ proof -
     show ?thesis unfolding less_le_not_le [abs_def] wfp_on_UNIV .
 qed
 
-lemma wpo_on_with_bot:
-  assumes "wpo_on P A"
-  shows "wpo_on (option_less P) A\<^sub>\<bottom>"
-    (is "wpo_on ?P ?A")
-proof -
-  {
-    from assms have "irreflp_on P A" by (rule wpo_on_imp_irreflp_on)
-    then have "irreflp_on ?P ?A"
-      unfolding irreflp_on_def by (auto split: option.splits)
-  }
-  moreover {
-    from assms have trans [unfolded transp_on_def]: "transp_on P A"
-      by (auto simp: po_on_def wpo_on_def)
-    have "transp_on ?P ?A"
-      unfolding transp_on_def by (auto, insert trans) (blast+)
-  }
-  moreover {
-    from assms have af: "almost_full_on P\<^sup>=\<^sup>= A" by (rule wpo_on_imp_almost_full_on)
-    from almost_full_on_with_bot [OF af]
-      have "almost_full_on ?P\<^sup>=\<^sup>= ?A" by simp
-  } ultimately show ?thesis by (auto simp: po_on_def wpo_on_def)
-qed
-
 text {*When two sets are wpo, then their disjoint sum is wpo.*}
 lemma wpo_on_Plus:
   assumes "wpo_on P A" and "wpo_on Q B"

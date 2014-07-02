@@ -243,22 +243,6 @@ where
   "option_le P (Some x) None = False" |
   "option_le P (Some x) (Some y) = P x y"
 
-fun
-  option_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool"
-where
-  "option_less P None None = False" |
-  "option_less P None (Some y) = True" |
-  "option_less P (Some x) None = False" |
-  "option_less P (Some x) (Some y) = P x y"
-
-lemma reflclp_option_less [simp]:
-  "(option_less P)\<^sup>=\<^sup>= = option_le (P\<^sup>=\<^sup>=)"
-proof (intro ext)
-  fix x y
-  show "(option_less P)\<^sup>=\<^sup>= x y = option_le (P\<^sup>=\<^sup>=) x y"
-  by (cases x, auto) (cases y, auto)+
-qed
-
 lemma reflclp_option_le [simp]:
   "(option_le P)\<^sup>=\<^sup>= = option_le (P\<^sup>=\<^sup>=)"
 proof (intro ext)
@@ -296,11 +280,6 @@ proof
     ultimately show False using assms by (auto simp: almost_full_on_def)
   qed
 qed
-
-lemma almost_full_on_reflclp_option_less:
-  assumes "almost_full_on (P\<^sup>=\<^sup>=) A"
-  shows "almost_full_on ((option_less P)\<^sup>=\<^sup>=) A\<^sub>\<bottom>"
-  using almost_full_on_with_bot [OF assms] by simp
 
 
 subsection {* Disjoint Union of Almost-Full Sets *}
