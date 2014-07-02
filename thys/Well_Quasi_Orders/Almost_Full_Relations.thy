@@ -8,11 +8,12 @@ header {* Almost-Full Relations *}
 
 theory Almost_Full_Relations
 imports
-  Least_Enum
   "~~/src/HOL/Library/Sublist"
   "~~/src/HOL/Library/Ramsey"
-  Minimal_Bad_Sequences
   "../Regular-Sets/Regexp_Method"
+  "../Abstract-Rewriting/Seq"
+  Least_Enum
+  Minimal_Bad_Sequences
 begin
 
 subsection {* Basic Definitions and Facts *}
@@ -130,17 +131,15 @@ text {*If the image of a function is almost-full then also its
 preimage is almost-full.*}
 lemma almost_full_on_map:
   assumes "almost_full_on Q B"
-    and subset: "h ` A \<subseteq> B"
-  shows "almost_full_on (\<lambda>x y. Q (h x) (h y)) A"
-    (is "almost_full_on ?P A")
+    and "h ` A \<subseteq> B"
+  shows "almost_full_on (\<lambda>x y. Q (h x) (h y)) A" (is "almost_full_on ?P A")
 proof
   fix f
-  presume *: "\<And>i::nat. f i \<in> A"
-  let ?f = "\<lambda>i. h (f i)"
-  from * and subset have "\<And>i. h (f i) \<in> B" by auto
-  with `almost_full_on Q B` [unfolded almost_full_on_def, THEN bspec, of ?f]
-    show "good ?P f" unfolding good_def by blast
-qed simp
+  assume "\<forall>i::nat. f i \<in> A"
+  then have "\<And>i. h (f i) \<in> B" using \<open>h ` A \<subseteq> B\<close> by auto
+  with `almost_full_on Q B` [unfolded almost_full_on_def, THEN bspec, of "h \<circ> f"]
+    show "good ?P f" unfolding good_def comp_def by blast
+qed
 
 text {*The homomorphic image of an almost full set is almost full.*}
 lemma almost_full_on_hom:
@@ -149,7 +148,7 @@ lemma almost_full_on_hom:
     and af: "almost_full_on P A"
   shows "almost_full_on Q (h ` A)"
 proof
-  fix f :: "'b seq"
+  fix f :: "nat \<Rightarrow> 'b"
   assume "\<forall>i. f i \<in> h ` A"
   then have "\<forall>i. \<exists>x. x \<in> A \<and> f i = h x" by (auto simp: image_def)
   from choice [OF this] obtain g
@@ -157,12 +156,10 @@ proof
   show "good Q f"
   proof (rule ccontr)
     assume bad: "bad Q f"
-    {
-      fix i j :: nat
+    { fix i j :: nat
       assume "i < j"
       from bad have "\<not> Q (f i) (f j)" using `i < j` by (auto simp: good_def)
-      with hom have "\<not> P (g i) (g j)" using * by auto
-    }
+      with hom have "\<not> P (g i) (g j)" using * by auto }
     then have "bad P g" by (auto simp: good_def)
     with af and * show False by (auto simp: good_def almost_full_on_def)
   qed
@@ -174,19 +171,17 @@ lemma almost_full_on_mon:
     and af: "almost_full_on Q B"
   shows "almost_full_on P A"
 proof
-  fix f :: "'a seq"
+  fix f :: "nat \<Rightarrow> 'a"
   assume *: "\<forall>i. f i \<in> A"
   then have **: "\<forall>i. (h \<circ> f) i \<in> B" using mon by (auto simp: bij_betw_def)
   show "good P f"
   proof (rule ccontr)
     assume bad: "bad P f"
-    {
-      fix i j :: nat
+    { fix i j :: nat
       assume "i < j"
       from bad have "\<not> P (f i) (f j)" using `i < j` by (auto simp: good_def)
       with mon have "\<not> Q (h (f i)) (h (f j))"
-        using * by (auto simp: bij_betw_def inj_on_def)
-    }
+        using * by (auto simp: bij_betw_def inj_on_def) }
     then have "bad Q (h \<circ> f)" by (auto simp: good_def)
     with af and ** show False by (auto simp: good_def almost_full_on_def)
   qed
@@ -213,7 +208,7 @@ qed
 subsection {* Adding a Bottom Element to a Set *}
 
 definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000) where
-  "A\<^sub>\<bottom> \<equiv> {None} \<union> Some ` A"
+  "A\<^sub>\<bottom> = {None} \<union> Some ` A"
 
 lemma SomeI [intro!]:
   "x \<in> A \<Longrightarrow> Some x \<in> A\<^sub>\<bottom>"
@@ -274,10 +269,9 @@ qed
 
 lemma almost_full_on_with_bot:
   assumes "almost_full_on P A"
-  shows "almost_full_on (option_le P) A\<^sub>\<bottom>"
-    (is "almost_full_on ?P ?A")
+  shows "almost_full_on (option_le P) A\<^sub>\<bottom>" (is "almost_full_on ?P ?A")
 proof
-  fix f :: "'a option seq"
+  fix f :: "nat \<Rightarrow> 'a option"
   assume *: "\<forall>i. f i \<in> A\<^sub>\<bottom>"
   show "good ?P f"
   proof (rule ccontr)
@@ -351,7 +345,7 @@ lemma almost_full_on_Plus:
   shows "almost_full_on (sum_le P Q) (A <+> B)"
     (is "almost_full_on ?P ?A")
 proof
-  fix f :: "('a + 'b) seq"
+  fix f :: "nat \<Rightarrow> ('a + 'b)"
   assume *: "\<forall>i. f i \<in> ?A"
   let ?I = "{i. f i \<in> Inl ` A}"
   let ?J = "{i. f i \<in> Inr ` B}"
@@ -472,7 +466,7 @@ proof (rule ccontr)
   from f have fst: "\<forall>i. fst (f i) \<in> A1" and snd: "\<forall>i. snd (f i) \<in> A2"
     by (metis SigmaE fst_conv, metis SigmaE snd_conv)
   from almost_full_on_imp_homogeneous_subseq [OF assms(1) fst]
-    obtain \<phi> :: "nat seq" where mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
+    obtain \<phi> :: "nat \<Rightarrow> nat" where mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
     and *: "\<And>i j. i < j \<Longrightarrow> ?W (f (\<phi> i)) (f (\<phi> j))" by auto
   from snd have "\<forall>i. snd (f (\<phi> i)) \<in> A2" by auto
   then have "snd \<circ> f \<circ> \<phi> \<in> SEQ A2" by auto
@@ -641,7 +635,7 @@ lemma finite_almost_full_on:
   assumes refl: "reflp_on P A"
   shows "almost_full_on P A"
 proof
-  fix f :: "'a seq"
+  fix f :: "nat \<Rightarrow> 'a"
   assume *: "\<forall>i. f i \<in> A"
   let ?I = "UNIV::nat set"
   have "f ` ?I \<subseteq> A" using * by auto
