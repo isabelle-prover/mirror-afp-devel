@@ -210,19 +210,23 @@ subsection {* Adding a Bottom Element to a Set *}
 definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000) where
   "A\<^sub>\<bottom> = {None} \<union> Some ` A"
 
-lemma SomeI [intro!]:
-  "x \<in> A \<Longrightarrow> Some x \<in> A\<^sub>\<bottom>"
-  by (simp add: with_bot_def)
+lemma with_bot_iff [iff]:
+  "Some x \<in> A\<^sub>\<bottom> \<longleftrightarrow> x \<in> A"
+  by (auto simp: with_bot_def)
 
-lemma NoneI [intro!]:
+lemma NoneI [simp, intro]:
   "None \<in> A\<^sub>\<bottom>"
   by (simp add: with_bot_def)
 
-lemma with_botE [elim!]:
-  "u \<in> A\<^sub>\<bottom> \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> u = Some x \<Longrightarrow> P) \<Longrightarrow> (u = None \<Longrightarrow> P) \<Longrightarrow> P"
-  by (auto simp: with_bot_def)
+lemma not_None_the_mem [simp]:
+  "x \<noteq> None \<Longrightarrow> the x \<in> A \<longleftrightarrow> x \<in> A\<^sub>\<bottom>"
+  by auto
 
-lemma with_bot_empty_conv [simp]:
+lemma with_bot_cases [elim]:
+  "u \<in> A\<^sub>\<bottom> \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> u = Some x \<Longrightarrow> P) \<Longrightarrow> (u = None \<Longrightarrow> P) \<Longrightarrow> P"
+  by auto
+
+lemma with_bot_empty_conv [iff]:
   "A\<^sub>\<bottom> = {None} \<longleftrightarrow> A = {}"
   by auto
 
@@ -243,43 +247,29 @@ where
   "option_le P (Some x) None = False" |
   "option_le P (Some x) (Some y) = P x y"
 
-lemma reflclp_option_le [simp]:
-  "(option_le P)\<^sup>=\<^sup>= = option_le (P\<^sup>=\<^sup>=)"
-proof (intro ext)
-  fix x y
-  show "(option_le P)\<^sup>=\<^sup>= x y = option_le (P\<^sup>=\<^sup>=) x y"
-  by (cases x, auto) (cases y, auto)+
-qed
+lemma None_imp_good_option_le [simp]:
+  assumes "f i = None"
+  shows "good (option_le P) f"
+  by (rule goodI [of i "Suc i"]) (auto simp: assms)
 
 lemma almost_full_on_with_bot:
   assumes "almost_full_on P A"
   shows "almost_full_on (option_le P) A\<^sub>\<bottom>" (is "almost_full_on ?P ?A")
 proof
   fix f :: "nat \<Rightarrow> 'a option"
-  assume *: "\<forall>i. f i \<in> A\<^sub>\<bottom>"
+  presume *: "\<And>i. f i \<in> A\<^sub>\<bottom>"
   show "good ?P f"
-  proof (rule ccontr)
-    assume "bad ?P f"
-    then have **: "\<And>i j. i < j \<Longrightarrow> \<not> ?P (f i) (f j)" by (auto simp: good_def)
-    let ?f = "\<lambda>i. Option.the (f i)"
-    have "\<forall>i j. i < j \<longrightarrow> \<not> P (?f i) (?f j)"
-    proof (intro allI impI)
-      fix i j :: nat
-      assume "i < j"
-      from ** [of i] and ** [of j] obtain x y where
-        "f i = Some x" and "f j = Some y" by force
-      with ** [OF `i < j`] show "\<not> P (?f i) (?f j)" by simp
-    qed
-    then have "bad P ?f" by (auto simp: good_def)
-    moreover have "\<forall>i. ?f i \<in> A"
-    proof
-      fix i :: nat
-      from ** [of i] obtain x where "f i = Some x" by force
-      with * [THEN spec, of i] show "?f i \<in> A" by auto
-    qed
-    ultimately show False using assms by (auto simp: almost_full_on_def)
-  qed
-qed
+  proof (cases "\<forall>i. f i \<noteq> None")
+    case True
+    then have **: "\<And>i. Some (the (f i)) = f i"
+      and "\<And>i. the (f i) \<in> A" using * by auto
+    with almost_full_onD [OF assms, of "the \<circ> f"] obtain i j where "i < j"
+      and "P (the (f i)) (the (f j))" by auto
+    then have "option_le P (Some (the (f i))) (Some (the (f j)))" by simp
+    then have "option_le P (f i) (f j)" unfolding ** .
+    with `i < j` show "good ?P f" by (auto simp: good_def)
+  qed auto
+qed simp
 
 
 subsection {* Disjoint Union of Almost-Full Sets *}
