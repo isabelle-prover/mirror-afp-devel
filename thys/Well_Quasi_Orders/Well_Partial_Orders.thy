@@ -169,29 +169,6 @@ proof -
 qed
 
 
-subsection {* Dickson's Lemma for Well-Partial-Orders *}
-
-lemma wpo_on_Sigma:
-  fixes A1 :: "'a set" and A2 :: "'b set"
-  assumes "wpo_on P1 A1" and "wpo_on P2 A2"
-  shows "wpo_on (prod_less P1 P2) (A1 \<times> A2)"
-    (is "wpo_on ?P ?A")
-proof -
-  {
-    from assms have "irreflp_on P1 A1" and "irreflp_on P2 A2" by (auto elim: wpo_on_imp_irreflp_on)
-    then have "irreflp_on ?P ?A" unfolding irreflp_on_def by (auto simp: prod_less_def)
-  } moreover {
-    from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: po_on_def wpo_on_def)
-    hence "transp_on ?P ?A" unfolding transp_on_def prod_less_def by blast
-  } moreover {
-    from assms(1) have af1: "almost_full_on P1\<^sup>=\<^sup>= A1" by (rule wpo_on_imp_almost_full_on)
-    from assms(2) have af2: "almost_full_on P2\<^sup>=\<^sup>= A2" by (rule wpo_on_imp_almost_full_on)
-    from almost_full_on_Sigma [OF af1 af2]
-      have "almost_full_on ?P\<^sup>=\<^sup>= ?A" by simp
-  } ultimately show ?thesis by (auto simp: po_on_def wpo_on_def)
-qed
-
-
 subsection {* Higman's Lemma for Well-Partial-Orders *}
 
 text {*Every irreflexive and transitive relation on a finite set is a wpo.*}
@@ -311,24 +288,6 @@ proof
     with g [OF `i < j`] show "good P'\<^sup>=\<^sup>= f" by (auto simp: good_def)
   qed
 qed
-
-(*
-
-lemma irreflp_on_list_hemb:
-  "irreflp_on (list_hemb P) (lists A)"
-  by (auto simp: irreflp_on_def list_hemb_def)
-
-lemma wpo_on_lists:
-  assumes "wpo_on P A" shows "wpo_on (list_hemb P) (lists A)"
-  using assms
-    and irreflp_on_list_hemb
-    and almost_full_on_list_hemb
-    and transp_on_list_hemb
-    unfolding po_on_def wpo_on_def by auto
-
-lemmas wpo_on_lists_over_finite_sets =
-  finite_wpo_on [THEN wpo_on_lists]
-*)
 
 end
 

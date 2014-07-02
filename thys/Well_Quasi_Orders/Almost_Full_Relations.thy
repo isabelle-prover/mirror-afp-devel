@@ -361,21 +361,6 @@ lemma prod_le_True [simp]:
   "prod_le P (\<lambda>_ _. True) a b = P (fst a) (fst b)"
   by (auto simp: prod_le_def)
 
-definition
-  prod_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
-where
-  "prod_less P1 P2 = (\<lambda>(p1, p2) (q1, q2).
-    (P1\<^sup>=\<^sup>= p1 q1 \<and> P2 p2 q2) \<or> (P1 p1 q1 \<and> P2\<^sup>=\<^sup>= p2 q2))"
-
-lemma reflclp_prod_less [simp]:
-  "(prod_less P Q)\<^sup>=\<^sup>= = prod_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
-proof (intro ext)
-  fix x y
-  show "(prod_less P Q)\<^sup>=\<^sup>= x y = prod_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=) x y"
-  by (cases x, cases y)
-     (auto simp add: prod_le_def prod_less_def)
-qed
-
 lemma almost_full_on_Sigma:
   assumes "almost_full_on P1 A1" and "almost_full_on P2 A2"
   shows "almost_full_on (prod_le P1 P2) (A1 \<times> A2)" (is "almost_full_on ?P ?A")
@@ -398,11 +383,6 @@ proof (rule ccontr)
   with * [OF `i < j`] have "?P (f (\<phi> i)) (f (\<phi> j))" by (simp add: case_prod_beta prod_le_def)
   with mono [OF `i < j`] and bad show False by auto
 qed
-
-lemma almost_full_on_prod_less:
-  assumes "almost_full_on (P1\<^sup>=\<^sup>=) A1" and "almost_full_on (P2\<^sup>=\<^sup>=) A2"
-  shows "almost_full_on ((prod_less P1 P2)\<^sup>=\<^sup>=) (A1 \<times> A2)"
-  using almost_full_on_Sigma [OF assms] by simp
 
 
 subsection {* List Embedding *}
