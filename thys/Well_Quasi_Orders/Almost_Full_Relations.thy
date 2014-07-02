@@ -222,13 +222,13 @@ lemma not_None_the_mem [simp]:
   "x \<noteq> None \<Longrightarrow> the x \<in> A \<longleftrightarrow> x \<in> A\<^sub>\<bottom>"
   by auto
 
-lemma with_bot_cases [elim]:
+lemma with_bot_cases:
   "u \<in> A\<^sub>\<bottom> \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> u = Some x \<Longrightarrow> P) \<Longrightarrow> (u = None \<Longrightarrow> P) \<Longrightarrow> P"
   by auto
 
 lemma with_bot_empty_conv [iff]:
   "A\<^sub>\<bottom> = {None} \<longleftrightarrow> A = {}"
-  by auto
+  by (auto elim: with_bot_cases)
 
 lemma with_bot_UNIV [simp]:
   "UNIV\<^sub>\<bottom> = UNIV"
@@ -257,7 +257,7 @@ lemma almost_full_on_with_bot:
   shows "almost_full_on (option_le P) A\<^sub>\<bottom>" (is "almost_full_on ?P ?A")
 proof
   fix f :: "nat \<Rightarrow> 'a option"
-  presume *: "\<And>i. f i \<in> A\<^sub>\<bottom>"
+  assume *: "\<forall>i. f i \<in> ?A"
   show "good ?P f"
   proof (cases "\<forall>i. f i \<noteq> None")
     case True
@@ -265,11 +265,11 @@ proof
       and "\<And>i. the (f i) \<in> A" using * by auto
     with almost_full_onD [OF assms, of "the \<circ> f"] obtain i j where "i < j"
       and "P (the (f i)) (the (f j))" by auto
-    then have "option_le P (Some (the (f i))) (Some (the (f j)))" by simp
-    then have "option_le P (f i) (f j)" unfolding ** .
+    then have "?P (Some (the (f i))) (Some (the (f j)))" by simp
+    then have "?P (f i) (f j)" unfolding ** .
     with `i < j` show "good ?P f" by (auto simp: good_def)
   qed auto
-qed simp
+qed
 
 
 subsection {* Disjoint Union of Almost-Full Sets *}
@@ -281,38 +281,10 @@ where
   "sum_le P Q (Inr x) (Inr y) = Q x y" |
   "sum_le P Q x y = False"
 
-fun
-  sum_less :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
-where
-  "sum_less P Q (Inl x) (Inl y) = P x y" |
-  "sum_less P Q (Inr x) (Inr y) = Q x y" |
-  "sum_less P Q x y = False"
-
-text {*Note that all proofs below involving @{const sum_le} and @{const sum_less} work as they are,
-when in the last clause of each function definition @{const True} is used instead of @{const False}.
-I'm not sure which variant is preferable.*}
-
-lemma reflclp_sum_less [simp]:
-  "(sum_less P Q)\<^sup>=\<^sup>= = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
-proof (intro ext)
-  fix x y
-  show "(sum_less P Q)\<^sup>=\<^sup>= x y = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=) x y"
-  by (cases x, auto) (cases y, auto)+
-qed
-
-lemma reflclp_sum_le [simp]:
-  "(sum_le P Q)\<^sup>=\<^sup>= = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=)"
-proof (intro ext)
-  fix x y
-  show "(sum_le P Q)\<^sup>=\<^sup>= x y = sum_le (P\<^sup>=\<^sup>=) (Q\<^sup>=\<^sup>=) x y"
-  by (cases x, auto) (cases y, auto)+
-qed
-
 text {*When two sets are almost full, then their disjoint sum is almost full.*}
 lemma almost_full_on_Plus:
   assumes "almost_full_on P A" and "almost_full_on Q B"
-  shows "almost_full_on (sum_le P Q) (A <+> B)"
-    (is "almost_full_on ?P ?A")
+  shows "almost_full_on (sum_le P Q) (A <+> B)" (is "almost_full_on ?P ?A")
 proof
   fix f :: "nat \<Rightarrow> ('a + 'b)"
   assume *: "\<forall>i. f i \<in> ?A"
@@ -331,14 +303,8 @@ proof
       then interpret infinitely_many1 "\<lambda>i. i \<in> ?J" by (unfold_locales) assumption
       let ?f = "\<lambda>i. projr (f (enum i))"
       have ***: "\<forall>i. \<exists>x\<in>B. f (enum i) = Inr x" using enum_P by auto
-      have B: "\<forall>i. ?f i \<in> B"
-      proof
-        fix i
-        from *** obtain x where "x \<in> B" and "f (enum i) = Inr x" by blast
-        then show "?f i \<in> B" by simp
-      qed
-      {
-        fix i j :: nat
+      then have B: "\<forall>i. ?f i \<in> B" by (metis sum.sel(2))
+      { fix i j :: nat
         assume "i < j"
         then have "enum i < enum j" using enum_less by auto
         with bad have not: "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
@@ -349,8 +315,7 @@ proof
             and "f (enum i) = Inr x" and "f (enum j) = Inr y" by blast
           ultimately have "?P (f (enum i)) (f (enum j))" by simp
           then show False using not by simp
-        qed
-      }
+        qed }
       then have "bad Q ?f" by (auto simp: good_def)
       moreover from `almost_full_on Q B` and B
         have "good Q ?f" by (auto simp: good_def almost_full_on_def)
@@ -361,14 +326,8 @@ proof
       then interpret infinitely_many1 "\<lambda>i. i \<in> ?I" by (unfold_locales) assumption
       let ?f = "\<lambda>i. projl (f (enum i))"
       have ***: "\<forall>i. \<exists>x\<in>A. f (enum i) = Inl x" using enum_P by auto
-      have A: "\<forall>i. ?f i \<in> A"
-      proof
-        fix i
-        from *** obtain x where "x \<in> A" and "f (enum i) = Inl x" by blast
-        then show "?f i \<in> A" by simp
-      qed
-      {
-        fix i j :: nat
+      then have A: "\<forall>i. ?f i \<in> A" by (metis sum.sel(1))
+      { fix i j :: nat
         assume "i < j"
         then have "enum i < enum j" using enum_less by auto
         with bad have not: "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
@@ -379,8 +338,7 @@ proof
             and "f (enum i) = Inl x" and "f (enum j) = Inl y" by blast
           ultimately have "?P (f (enum i)) (f (enum j))" by simp
           then show False using not by simp
-        qed
-      }
+        qed }
       then have "bad P ?f" by (auto simp: good_def)
       moreover from `almost_full_on P A` and A
         have "good P ?f" by (auto simp: good_def almost_full_on_def)
@@ -388,11 +346,6 @@ proof
     qed
   qed
 qed
-
-lemma almost_full_on_sum_less:
-  assumes "almost_full_on (P\<^sup>=\<^sup>=) A" and "almost_full_on (Q\<^sup>=\<^sup>=) B"
-  shows "almost_full_on ((sum_less P Q)\<^sup>=\<^sup>=) (A <+> B)"
-  using almost_full_on_Plus [OF assms] by simp
 
 
 subsection {* Dickson's Lemma for Almost-Full Relations *}

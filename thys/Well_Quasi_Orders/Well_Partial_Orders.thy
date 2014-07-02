@@ -168,29 +168,6 @@ proof -
     show ?thesis unfolding less_le_not_le [abs_def] wfp_on_UNIV .
 qed
 
-text {*When two sets are wpo, then their disjoint sum is wpo.*}
-lemma wpo_on_Plus:
-  assumes "wpo_on P A" and "wpo_on Q B"
-  shows "wpo_on (sum_less P Q) (A <+> B)"
-    (is "wpo_on ?P ?A")
-proof -
-  {
-    from assms have "irreflp_on P A" and "irreflp_on Q B" by (auto elim: wpo_on_imp_irreflp_on)
-    then have "irreflp_on ?P ?A"
-      unfolding irreflp_on_def by auto
-  } moreover {
-    from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
-      by (auto simp: po_on_def wpo_on_def)
-    have "transp_on ?P ?A"
-      unfolding transp_on_def by (auto, insert trans) (blast+)
-  } moreover {
-    from assms(1) have af1: "almost_full_on P\<^sup>=\<^sup>= A" by (rule wpo_on_imp_almost_full_on)
-    from assms(2) have af2: "almost_full_on Q\<^sup>=\<^sup>= B" by (rule wpo_on_imp_almost_full_on)
-    from almost_full_on_Plus [OF af1 af2]
-      have "almost_full_on ?P\<^sup>=\<^sup>= ?A" by simp
-  } ultimately show ?thesis by (auto simp: po_on_def wpo_on_def)
-qed
-
 
 subsection {* Dickson's Lemma for Well-Partial-Orders *}
 

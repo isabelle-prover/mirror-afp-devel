@@ -153,7 +153,7 @@ proof -
   { from assms have trans [unfolded transp_on_def]: "transp_on P A"
       by (auto simp: wqo_on_def)
     have "transp_on ?P ?A"
-      by (auto simp: transp_on_def, insert trans) (blast+) }
+      by (auto simp: transp_on_def elim!: with_bot_cases, insert trans) blast }
   moreover
   { from assms and almost_full_on_with_bot
       have "almost_full_on ?P ?A" by (auto simp: wqo_on_def) }
