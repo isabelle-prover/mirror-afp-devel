@@ -32,11 +32,8 @@ begin
 text {*Infinite sequences are represented by functions of type @{typ "nat \<Rightarrow> 'a"}.*}
 type_synonym 'a seq = "nat \<Rightarrow> 'a"
 
-subsection {*Operations on Infinite Sequences*}
 
-text {*Adding a new element at the front.*}
-abbreviation cons :: "'a \<Rightarrow> 'a seq \<Rightarrow> 'a seq" (infixr "#s" 65) where (*FIXME: find better infix symbol*)
-  "x #s S \<equiv> (\<lambda>i. case i of 0 \<Rightarrow> x | Suc n \<Rightarrow> S n)"
+subsection {*Operations on Infinite Sequences*}
 
 text {*An infinite sequence is \emph{linked} by a binary predicate @{term P} if every two
 consecutive elements satisfy it. Such a sequence is called a \emph{@{term P}-chain}. *}
@@ -50,14 +47,14 @@ abbreviation (input) chain :: "'a rel \<Rightarrow> 'a seq \<Rightarrow> bool" w
 text {*Extending a chain at the front.*}
 lemma cons_chainp:
   assumes "P x (S 0)" and "chainp P S"
-  shows "chainp P (x #s S)" (is "chainp P ?S")
+  shows "chainp P (case_nat x S)" (is "chainp P ?S")
 proof
   fix i show "P (?S i) (?S (Suc i))" using assms by (cases i) simp_all
 qed
 
 text {*Special version for relations.*}
 lemma cons_chain:
-  assumes "(x, S 0) \<in> r" and "chain r S" shows "chain r (x #s S)"
+  assumes "(x, S 0) \<in> r" and "chain r S" shows "chain r (case_nat x S)"
   using cons_chainp[of "\<lambda>x y. (x, y) \<in> r", OF assms] .
 
 text {*A chain admits arbitrary transitive steps.*}

@@ -512,7 +512,7 @@ proof
   fix f
   assume "f 0 \<in> r `` A" and chain: "chain r f"
   then obtain a where "a \<in> A" and 1: "(a, f 0) \<in> r" by auto
-  let ?g = "a #s f"
+  let ?g = "case_nat a f"
   from cons_chain [OF 1 chain] have "chain r ?g" .
   moreover have "?g 0 \<in> A" by (simp add: `a \<in> A`)
   ultimately have "\<not> SN_on r A" unfolding SN_defs by best
