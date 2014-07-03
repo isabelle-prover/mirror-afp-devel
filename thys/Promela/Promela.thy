@@ -489,6 +489,8 @@ lemma toVariable_variable_inv:
   shows "variable_inv (fst (snd (toVariable g p v)))"
 using assms
 apply (cases v)
+  prefer 2
+  apply hypsubst_thin
   apply (auto intro!: checkVarValue_Var 
               simp del: variable_inv.simps checkVarValue.simps varType_inv.simps 
               split: if_splits option.splits)

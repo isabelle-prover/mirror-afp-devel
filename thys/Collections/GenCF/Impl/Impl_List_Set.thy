@@ -364,6 +364,7 @@ end
     also have "([ (x,y). x\<leftarrow>xl', y\<leftarrow>yl' ], xs \<times> ys) \<in> br set distinct"
       using XLS YLS
       apply (auto simp: br_def)
+      apply hypsubst_thin
       apply (induction xl')
       apply simp
       apply (induction yl')

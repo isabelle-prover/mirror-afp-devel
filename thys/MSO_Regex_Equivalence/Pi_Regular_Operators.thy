@@ -238,7 +238,7 @@ qed
     
 
 lemma takeWhile_takes_all: "length xs = m \<Longrightarrow> m \<le> length (takeWhile P xs) \<longleftrightarrow> Ball (set xs) P"
-  by hypsubst (induct xs, auto)
+  by hypsubst_thin (induct xs, auto)
 
 lemma fin_cut_same_Cons[simp]: "fin_cut_same x (y # xs) =
   (if fin_cut_same x xs = [] then if x = y then [] else [y] else y # fin_cut_same x xs)"

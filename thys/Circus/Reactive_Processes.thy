@@ -143,7 +143,7 @@ instance
   fix a b::"'a::ev_eq list" show "ev_eq a b = ev_eq b a"
   apply (cases a)
   apply (cases b, simp_all add: ev_eq_class.comm)
-  apply (hypsubst)
+  apply (hypsubst_thin)
   apply (induct b, simp_all add: ev_eq_class.comm)
   apply (case_tac "ev_eq aa a", simp_all add: ev_eq_class.comm)
   apply (case_tac "list = []", simp_all)
