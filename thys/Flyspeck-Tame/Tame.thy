@@ -18,33 +18,33 @@ definition squanderTarget :: "nat" where
 
 definition excessTCount :: "nat" (*<*) ("\<a>")(*>*)where
 
- "\<a> \<equiv> 6300"
+ "\<a> \<equiv> 6295"
 
 definition squanderVertex :: "nat \<Rightarrow> nat \<Rightarrow> nat" (*<*)("\<b>")(*>*)where
 
- "\<b> p q \<equiv> if p = 0 \<and> q = 3 then 6180 
-     else if p = 0 \<and> q = 4 then  9700
-     else if p = 1 \<and> q = 2 then  6560 
-     else if p = 1 \<and> q = 3 then  6180 
-     else if p = 2 \<and> q = 1 then  7970 
-     else if p = 2 \<and> q = 2 then  4120 
-     else if p = 2 \<and> q = 3 then 12851 
-     else if p = 3 \<and> q = 1 then  3110 
-     else if p = 3 \<and> q = 2 then  8170 
-     else if p = 4 \<and> q = 0 then  3470 
-     else if p = 4 \<and> q = 1 then  3660 
-     else if p = 5 \<and> q = 0 then   400 
-     else if p = 5 \<and> q = 1 then 11360 
-     else if p = 6 \<and> q = 0 then  6860 
-     else if p = 7 \<and> q = 0 then 14500 
+ "\<b> p q \<equiv> if p = 0 \<and> q = 3 then 6177 
+     else if p = 0 \<and> q = 4 then  9696
+     else if p = 1 \<and> q = 2 then  6557 
+     else if p = 1 \<and> q = 3 then  6176 
+     else if p = 2 \<and> q = 1 then  7967 
+     else if p = 2 \<and> q = 2 then  4116 
+     else if p = 2 \<and> q = 3 then 12846 
+     else if p = 3 \<and> q = 1 then  3106 
+     else if p = 3 \<and> q = 2 then  8165 
+     else if p = 4 \<and> q = 0 then  3466 
+     else if p = 4 \<and> q = 1 then  3655 
+     else if p = 5 \<and> q = 0 then   395 
+     else if p = 5 \<and> q = 1 then 11354 
+     else if p = 6 \<and> q = 0 then  6854 
+     else if p = 7 \<and> q = 0 then 14493 
      else squanderTarget"
 
 definition squanderFace :: "nat \<Rightarrow> nat" (*<*)("\<d>")(*>*)where
 
  "\<d> n \<equiv> if n = 3 then 0
-     else if n = 4 then 2060
+     else if n = 4 then 2058
      else if n = 5 then 4819
-     else if n = 6 then 7578
+     else if n = 6 then 7120
      else squanderTarget" 
 
 text_raw{* 

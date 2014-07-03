@@ -105,6 +105,7 @@ proof -
     show ?case
       apply(induct n\<equiv>"CFG_node (_Exit_)" rule:sum_SDG_slice2.induct)
       apply(auto dest:Exit_no_sum_SDG_edge_source)
+      apply(hypsubst_thin)
       apply(induct n\<equiv>"CFG_node (_Exit_)" rule:sum_SDG_slice1.induct)
       apply(auto dest:Exit_no_sum_SDG_edge_source)
       done
@@ -371,7 +372,7 @@ proof(rule ccontr)
         with `sourcenode a -xs\<rightarrow>\<^sub>\<iota>* m` have [simp]:"sourcenode a = m"
           by(fastforce simp:intra_path_def)
         with `m \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` 
-        have "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(fastforce elim:obs_intraE)
+        have "m \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" by(metis obs_intraE)
         with `valid_node m` have "obs_intra m \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> = {m}"
           by(rule n_in_obs_intra)
         with `nx \<in> obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `nx \<noteq> m` have False

@@ -455,7 +455,7 @@ next
     then obtain C D fs ms where "Cl = (C, D, fs, ms)"
       by (cases Cl) blast
     with Cons show ?case
-      by auto (induct ms, auto)
+      by hypsubst_thin (induct ms, auto)
   qed
 next
   fix C M P p ins outs
@@ -469,7 +469,7 @@ next
     then obtain C D fs ms where "Cl = (C, D, fs, ms)"
       by (cases Cl) blast
     with Cons show ?case
-      by auto (induct ms, auto)
+      by hypsubst_thin (induct ms, auto)
   qed
 qed
 

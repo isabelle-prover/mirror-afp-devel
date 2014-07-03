@@ -533,7 +533,6 @@ using exec
 proof(cases rule: exec_meth.cases)
   case exec_instr thus ?thesis using jump pc
     apply(cases "ins' ! (pc - length ins)")
-    apply(safe)
     apply(simp_all add: split_beta nth_append split: split_if_asm sum.split_asm)
     apply(force split: extCallRet.splits simp add: min_def extRet2JVM_def dest: jump_ok_GotoD jump_ok_IfFalseD)+
     done

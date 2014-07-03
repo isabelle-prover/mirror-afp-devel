@@ -1519,7 +1519,7 @@ next
 next
   case InstanceOf1Red thus ?case by auto(blast)
 next
-  case Red1InstanceOf thus ?case by auto
+  case Red1InstanceOf thus ?case by hypsubst_thin auto
 next
   case InstanceOf1Throw thus ?case by auto
 qed(simp_all del: fun_upd_apply, (fastforce intro: red_reds.intros simp del: fun_upd_apply simp add: finfun_upd_apply)+)

@@ -1005,6 +1005,7 @@ lemma hm_it_next_rule': "l'\<noteq>[] \<Longrightarrow>
       hm_is_it' l ht (butlast l') it' 
     * \<up>(last l' = (k,v) \<and> distinct (map fst l') )>"
   unfolding hm_it_next_def hm_is_it'_def is_hashmap'_def
+  using [[hypsubst_thin = true]]
   apply (sep_auto (plain)
     split: nat.split list.split 
     heap: hm_it_adjust_rule
@@ -1077,6 +1078,7 @@ lemma hm_it_init_rule:
     simp: is_hashtable_def ht_distinct_def rev_map[symmetric]) []
 
   apply (auto simp: set_conv_nth) []
+  apply (hypsubst_thin)
   apply (drule_tac j=ia in hm_hashcode_eq, simp_all) []
   apply (drule_tac j=ib in hm_hashcode_eq, simp_all) []
 
@@ -1089,6 +1091,7 @@ lemma hm_it_init_rule:
   apply (subst concat_take_Suc_app_nth)
   apply (case_tac l,auto) []
   apply (simp)
+  apply (hypsubst_thin)
   apply (subst (asm) (2) concat_take_Suc_app_nth)
   apply (case_tac l,auto) []
   apply (subst map_of_rev_distinct)

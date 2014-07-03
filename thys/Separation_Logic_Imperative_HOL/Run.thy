@@ -188,6 +188,7 @@ lemma run_heap[run_elims]:
   apply (simp add: execute_simps)
   
   apply (simp only: execute_simps)
+  apply hypsubst_thin
 proof -
   case goal1
   from goal1(2) have "h' = snd (f a)" "res = fst (f a)" by simp_all
@@ -217,6 +218,7 @@ lemma run_new_array[run_elims]:
   apply (auto simp add: run.simps)
   apply (simp add: execute_simps)
   apply (simp add: Array.get_alloc)
+  apply hypsubst_thin
 proof -
   case goal1
   from goal1(2) have "h' = snd (Array.alloc (replicate n x) a)" 
@@ -242,11 +244,12 @@ lemma run_upd[run_elims]:
   apply (simp_all only: execute_simps)
   prefer 3
   apply auto[2]
+  apply hypsubst_thin
 proof -
   case (goal1 aa h')
   from goal1(4) have "h' = Array.update a i x aa" "res = a" by auto
   from goal1(2)[OF this] show ?case .
-qed 
+qed
 
 
 lemma run_nth[run_elims]:
@@ -267,6 +270,7 @@ lemma run_nth[run_elims]:
   apply (simp_all only: execute_simps)
   prefer 3
   apply auto[2]
+  apply hypsubst_thin
 proof -
   case (goal1 aa h')
   from goal1(4) have "r = Array.get aa a ! i" "h' = aa" by auto
@@ -286,6 +290,7 @@ lemma run_of_list[run_elims]:
   apply (auto simp add: run.simps)
   apply (simp add: execute_simps)
   apply (simp add: Array.get_alloc)
+  apply hypsubst_thin
 proof -
   case goal1
   from goal1(2) have "h' = snd (Array.alloc xs a)" 
@@ -317,6 +322,7 @@ lemma run_new_ref[run_elims]:
   apply simp
   apply (auto simp add: run.simps)
   apply (simp add: execute_simps)
+  apply hypsubst_thin
 proof -
   case goal1
   from goal1(2) have 

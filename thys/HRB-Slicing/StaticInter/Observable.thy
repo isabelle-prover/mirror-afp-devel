@@ -265,7 +265,7 @@ proof(atomize_elim)
           from True imp Cons 
           have "\<forall>xs x xs'. nx#nsx = xs @ x # xs' \<and> obs_intra x S \<noteq> {} \<longrightarrow>
             (\<exists>x''\<in>set (xs' @ [n]). \<exists>nx. call_of_return_node x'' nx \<and> nx \<notin> S)"
-            by clarsimp(case_tac xs,clarsimp+,erule_tac x="list" in allE,auto)
+            by clarsimp (hypsubst_thin,case_tac xs,clarsimp+,erule_tac x="list" in allE,auto)
           with split Cons show ?thesis by auto
         next
           case False

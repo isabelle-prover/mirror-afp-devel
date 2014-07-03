@@ -291,7 +291,7 @@ lemma wf_meth_defs_in_wf_class[rule_format]:
 apply(clarsimp)
 apply(erule wf_classE) apply(clarsimp simp: class_methods_f_def)
 apply(erule wf_class_cE) apply(clarsimp simp: class_name_f_def)
-apply(drule_tac x = "(a, b)" in bspec, simp) apply(simp)
+apply(drule(1)bspec, simp)
 done
 
 lemma map_ctxclds: "ctxclds = map ((\<lambda>(ctx_XXX, cld_XXX, dcl_XXX). (ctx_XXX, cld_XXX)) \<circ> (\<lambda>(ctx, cld). (ctx, cld, class_name_f cld))) ctxclds"
@@ -378,6 +378,7 @@ lemma mty_preservation'''':
     find_meth_def_in_path_f ((ctx, cld_def dcl' (cl_fqn (fqn_def dcl'')) fds' mds') # path) m = Some (ctx', meth_def_def (meth_sig_def cl_r' m'' vds') mb');
     wf_program P\<rbrakk>
        \<Longrightarrow> tys' = tys \<and> ty_r' = ty_r"
+using [[hypsubst_thin = true]]
 apply(clarsimp simp add: class_methods_f_def split: option.splits)
 apply(drule wf_cld_from_lu) apply(simp) apply(erule wf_classE) apply(erule wf_class_cE) apply(clarsimp)
 apply(subgoal_tac "m \<in> snd ` set meth_def_meth_list")
@@ -851,7 +852,7 @@ lemma exists_var':
     map (\<lambda>(y, cl, var, var', v). var) y_cl_var_var'_v_list = map (\<lambda>(cl, var, ty). var) cl_var_ty_list;
     map_of (map (\<lambda>(cl, var, ty). (x_var var, ty)) cl_var_ty_list) var_k = Some ty_k\<rbrakk>
       \<Longrightarrow> \<exists>var'_k. map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) var_k = Some (x_var var'_k)"
-apply(drule map_of_is_SomeD) apply(clarsimp) apply(rename_tac cl_k var_k)
+apply(drule map_of_is_SomeD) apply(clarsimp, hypsubst_thin) apply(rename_tac cl_k var_k)
 apply(subgoal_tac "var_k \<in> set (map (\<lambda>(y, cl, var, var', v). var) y_cl_var_var'_v_list)")
  apply(simp (no_asm_use)) apply(clarify) apply(rename_tac y_k cl_k' var_k var'_k v_k)
  apply(rule_tac x = var'_k in exI)
@@ -1603,7 +1604,7 @@ apply(rule wf_config_normalI, assumption+)
 (* s_write *)
 
 apply(force intro: wf_intros)
-apply(clarsimp) apply(erule wf_stmtE) apply(simp_all)
+apply(clarsimp, hypsubst_thin) apply(erule wf_stmtE) apply(simp_all)
 apply(clarsimp split: option.splits) apply(rule)
  apply(erule wf_varstateE) apply(clarsimp) apply(rename_tac \<Gamma> P H)
  apply(drule_tac x = xa in bspec, simp add: domI)
@@ -1743,7 +1744,7 @@ apply(subgoal_tac "x_var var \<in> dom \<Gamma>")
   (* varstate *)
   apply(rule wf_varstateI) apply(simp only: finite_super_varstate) apply(clarsimp) apply(rule)
    apply(rule wf_objectI) apply(simp) apply(rule sty_optionI, simp+)
-  apply(clarsimp) apply(rule) apply(rule) apply(rule wf_objectI) apply(clarsimp) apply(rule sty_optionI, simp+)
+  apply(clarsimp, hypsubst_thin) apply(rule) apply(rule) apply(rule wf_objectI) apply(clarsimp) apply(rule sty_optionI, simp+)
   apply(rule) apply(erule disjE)
    apply(clarsimp) apply(drule map_of_is_SomeD) apply(clarsimp) apply(rename_tac y_k cl_k var_k var'_k v_k y'_k ty_k)
    apply(frule_tac x = "(y_k, cl_k, var_k, var'_k, v_k)" in bspec) apply(force simp add: set_zip) apply(clarsimp)

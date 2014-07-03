@@ -1270,7 +1270,7 @@ theorem diag_le4: "fst (diag n) = Suc x \<Longrightarrow> x < n"
   apply simp
   apply (case_tac nat)
   apply (simp add: Let_def)
-  apply hypsubst
+  apply hypsubst_thin
   apply (drule sym)
   apply (drule ord_eq_less_trans)
   apply (rule diag_le1)

@@ -468,6 +468,7 @@ proof(cases rule: Red1_mthr.redT.cases)
        apply(erule disjE)
         apply(force simp add: expr_locks_inline_call_final add_ac)
        apply(fastforce simp add: expr_locks_inline_call_final)
+      apply hypsubst_thin
       apply(erule_tac x=ta in allE)
       apply fastforce
       done

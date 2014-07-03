@@ -275,13 +275,11 @@ by (induct rule: red_reds.inducts) auto
 
 section{* The reflexive transitive closure *}
 
-consts
-  Red ::  "prog \<Rightarrow> env \<Rightarrow> ((expr      \<times> state) \<times> (expr      \<times> state)) set"
-  Reds :: "prog \<Rightarrow> env \<Rightarrow> ((expr list \<times> state) \<times> (expr list \<times> state)) set"
+definition Red :: "prog \<Rightarrow> env \<Rightarrow> ((expr \<times> state) \<times> (expr \<times> state)) set"
+  where "Red P E = {((e,s),e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>}"
 
-defs
-  Red_def: "Red P E \<equiv>  {((e,s),e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>}"
-  Reds_def:"Reds P E \<equiv> {((es,s),es',s'). P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>}"
+definition Reds :: "prog \<Rightarrow> env \<Rightarrow> ((expr list \<times> state) \<times> (expr list \<times> state)) set"
+  where "Reds P E = {((es,s),es',s'). P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>}"
 
 lemma[simp]: "((e,s),e',s') \<in> Red P E = P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 by (simp add:Red_def)

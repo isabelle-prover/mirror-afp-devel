@@ -1031,6 +1031,7 @@ next
             apply(auto elim: outputCases)
             apply(erule_tac outputCases)
             apply(auto simp add: freeRes.inject)
+            apply hypsubst_thin
             apply(drule_tac pi="[(b, y)]" in pt_bij3)
             by simp
         with PQTrans show ?thesis by simp
@@ -1059,8 +1060,9 @@ next
             apply(auto elim: outputCases)
             apply(erule_tac outputCases)
             apply(auto simp add: freeRes.inject)
+            apply hypsubst_thin
             apply(drule_tac pi="[(b, y)]" in pt_bij3)
-            by simp       
+            by simp
         with PQTrans show ?thesis by simp
       qed
     }

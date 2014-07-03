@@ -227,6 +227,7 @@ apply (simp_all add: cfWriteNoExtend_def cfExtendFile_def Let_def)
 apply force
 apply (simp add: nextFreeBlockInvariant_def)
 apply auto
+apply hypsubst_thin
 apply (subgoal_tac "nextFreeBlock cfile1 = 
   (fileSize cfile1 + blockSize - Suc 0) div blockSize", simp_all)
 apply (subgoal_tac "Suc (index div blockSize) = 

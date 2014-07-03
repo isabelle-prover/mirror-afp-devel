@@ -16,15 +16,14 @@ text {*
   and include a timing for the whole algorithm.
 *}
 
-consts 
-  stat_newnode :: "unit => unit"   -- "Invoked if new node is visited"
-  stat_start :: "unit => unit"     -- "Invoked once if algorithm starts"
-  stat_stop :: "unit => unit"      -- "Invoked once if algorithm stops"
+definition stat_newnode :: "unit => unit"   -- "Invoked if new node is visited"
+  where [code]: "stat_newnode \<equiv> \<lambda>_. ()"
 
-defs
-  stat_newnode_def[code]: "stat_newnode \<equiv> \<lambda>_. ()"
-  stat_start_def[code]: "stat_start \<equiv> \<lambda>_. ()"
-  stat_stop_def[code]: "stat_stop \<equiv> \<lambda>_. ()"
+definition stat_start :: "unit => unit"     -- "Invoked once if algorithm starts"
+  where [code]: "stat_start \<equiv> \<lambda>_. ()"
+
+definition stat_stop :: "unit => unit"      -- "Invoked once if algorithm stops"
+  where [code]: "stat_stop \<equiv> \<lambda>_. ()"
 
 lemma [autoref_rules]: 
   "(stat_newnode,stat_newnode) \<in> unit_rel \<rightarrow> unit_rel"

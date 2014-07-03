@@ -1409,7 +1409,7 @@ proof-
       using quotient_of_unique hypsy
       by blast
   have r3eq: "r^3 - 3 * r = 1" 
-    using hypsy hypsr
+    using hypsy hypsr [[hypsubst_thin = true]]
     by auto (metis (hide_lams, no_types) of_rat_1 of_rat_diff of_rat_eq_iff of_rat_mult of_rat_numeral_eq of_rat_power)
   have l7: "(snd p) ^3 > 0 & coprime ((fst p)^3) ((snd p)^3)"
     by (metis hypsp gcd_exp_int power_one zero_less_power)

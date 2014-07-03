@@ -1624,7 +1624,7 @@ text {* Congruence rule for multiset image *}
 (*MOVE*)
 lemma image_mset_cong[fundef_cong]:
   "\<lbrakk> M=N; !!x. x\<in>#M \<Longrightarrow> f x = g x \<rbrakk> \<Longrightarrow> image_mset f M = image_mset g N"
-  apply (auto)
+  apply hypsubst_thin
   apply (induct N)
   apply auto
   done

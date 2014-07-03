@@ -924,6 +924,7 @@ case 0
                                  defer
                                  apply (rule modRules2.cases, auto)
                                  apply (rule p_e.cases,auto simp add:extendRule_def)
+                                 apply hypsubst_thin
                                  apply (insert p_e_non_empty[where R=R2 and M=M and N=N])
                                  apply (drule_tac x="([], extend ( M \<cdot> \<Gamma> \<Rightarrow>* N \<cdot> \<Delta>) c)" in meta_spec) by auto
  with `r = ([],c)` obtain i where "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>) \<or> c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
@@ -1164,6 +1165,7 @@ proof-
                               p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms)"
                   using num and b' and IH
                   apply (auto simp add:Ball_def) apply (drule_tac x=x in spec) apply simp
+                  apply hypsubst_thin
                   apply (elim exE conjE) apply (drule_tac x=n in spec) apply simp
                   apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                   apply (simp) apply (elim exE conjE) by (rule_tac x=m' in exI) arith
@@ -1408,6 +1410,7 @@ proof-
                   p = (\<Phi>'\<oplus>Modal M Ms \<Rightarrow>* \<Psi>')"
                   using num and b' and IH 
                   apply (auto simp add:Ball_def) apply (drule_tac x=x in spec) apply simp
+                  apply hypsubst_thin
                   apply (elim exE conjE) apply (drule_tac x=n in spec) apply simp
                   apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                   apply (simp) apply (elim exE conjE) by (rule_tac x=m' in exI) (arith)
@@ -1588,7 +1591,8 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                by (rule Ax.cases) (auto simp add:extendRule_def)
          moreover
             {assume "r \<in> upRules"
-             with `r \<in> R` have "r \<in> R1" using rules apply auto apply (insert disjoint) apply auto
+             with `r \<in> R` have "r \<in> R1" using rules [[hypsubst_thin=true]]
+                  apply auto apply (insert disjoint) apply auto
                   apply (insert upRuleCharacterise) apply (rotate_tac 10) apply (drule_tac x="fst r" in meta_spec)
                   apply (rotate_tac 10) apply (drule_tac x="snd r" in meta_spec) apply simp
                   apply (elim exE) 

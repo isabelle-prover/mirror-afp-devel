@@ -116,6 +116,7 @@ next
   from `valid_call_list (c'#cs') m`
   have "valid_call_list cs' (sourcenode c')"
     apply(clarsimp simp:valid_call_list_def)
+    apply(hypsubst_thin)
     apply(erule_tac x="c'#cs'" in allE) apply clarsimp
     by(case_tac cs')(auto simp:sourcenodes_def)
   from `valid_return_list rs m` `rs = r' # rs'` 

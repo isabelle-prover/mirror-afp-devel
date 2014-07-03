@@ -142,12 +142,12 @@ lemma H2_J_2_b :
   apply (auto simp: design_defs fun_eq_iff)
   apply (case_tac "ok b")
   apply (subgoal_tac "b = ba\<lparr>ok:=True\<rparr>", auto intro!: A[simplified, rule_format])
-  apply (rule_tac s=b and t="b\<lparr>ok:=False\<rparr>" in subst, simp_all)
+  apply (rule_tac s=ba and t="ba\<lparr>ok:=False\<rparr>" in subst, simp_all)
   apply (subgoal_tac "b = ba", simp_all)
   apply (case_tac "ok ba")
   apply (subgoal_tac "b = ba", simp_all)
   apply (subgoal_tac "b = ba\<lparr>ok:=True\<rparr>", auto intro!: A[simplified, rule_format])
-  apply (rule_tac s=b and t="b\<lparr>ok:=False\<rparr>" in subst, simp_all)
+  apply (rule_tac s=ba and t="ba\<lparr>ok:=False\<rparr>" in subst, simp_all)
 done  
 
 lemma H2_J_2 :

@@ -546,6 +546,7 @@ proof -
             apply    fastforce
             apply   fastforce
             apply  (case_tac "var p = var q")
+            apply   hypsubst_thin
             apply   fastforce
             apply  fastforce
             apply (rule allI)
@@ -822,6 +823,7 @@ proof -
             apply    fastforce
             apply   fastforce
             apply  (case_tac "var p = var q")
+            apply   hypsubst_thin
             apply   fastforce
             apply  fastforce
             apply (rule allI)
@@ -1294,7 +1296,7 @@ lemma allD: "\<forall>ll. P ll \<Longrightarrow> P ll"
 
 lemma replicate_spec: "\<lbrakk>\<forall>i < n. xs ! i = x; n=length xs\<rbrakk> 
   \<Longrightarrow> replicate (length xs) x = xs"
-apply hypsubst
+apply hypsubst_thin
 apply (induct xs)
 apply  simp
 apply force

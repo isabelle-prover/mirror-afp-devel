@@ -242,7 +242,7 @@ proof -
   then obtain as bs where "ls = as @ x # y # bs" by (auto simp: is_sublist_def)
   then have "(length as) < length ls \<and> (Suc (length as)) < length ls \<and> ls!(length as) = x
        \<and> ls!(Suc (length as)) = y \<and> Suc (length as) = (Suc (length as))"
-    apply auto apply (induct as) by auto
+    apply auto apply hypsubst_thin apply (induct as) by auto
   then show ?thesis by auto
 qed
 
@@ -693,7 +693,7 @@ proof -
     proof (elim exE ex1E)
       fix a b c s
       assume vs: "vs = a @ r1 # b @ r2 # c" and "\<forall>y. vs = fst y @ r1 # snd y \<longrightarrow> y = s"
-      then have  "\<And> y. vs = fst y @ r1 # snd y \<longrightarrow> y = s" by auto
+      then have  "\<And> y. vs = fst y @ r1 # snd y \<longrightarrow> y = s" by (clarify, hypsubst_thin, auto)
       then have single: "\<And> y. vs = fst y @ r1 # snd y \<Longrightarrow> y = s" by auto
       def bc \<equiv> "b @ r2 # c"
       with vs have vs2: "vs = a @ r1 # bc" by auto
@@ -720,7 +720,7 @@ proof -
     proof (elim exE ex1E)
       fix a b c s
       assume vs: "vs = a @ r1 # b @ r2 # c" and "\<forall>y. vs = fst y @ r2 # snd y \<longrightarrow> y = s"
-      then have  "\<And> y. vs = fst y @ r2 # snd y \<longrightarrow> y = s" by auto
+      then have  "\<And> y. vs = fst y @ r2 # snd y \<longrightarrow> y = s" by (clarify, hypsubst_thin, auto)
       then have single: "\<And> y. vs = fst y @ r2 # snd y \<Longrightarrow> y = s" by auto
       def ab \<equiv> "a @ r1 # b"
       with vs have vs2: "vs = ab @ r2 # c" by auto

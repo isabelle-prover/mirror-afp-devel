@@ -764,7 +764,7 @@ apply(rule conjI)
  apply (simp add: nth_append is_relevant_entry_def split: split_if_asm)
   apply (drule_tac x="\<tau>s\<^sub>1!pc" in bspec)
    apply (blast intro: nth_mem) 
-  apply fastforce   
+  apply fastforce
 apply (rule conjI)
  apply clarsimp
  apply (erule disjE, blast)
@@ -1256,6 +1256,7 @@ apply (auto simp add: wt_start_def ty\<^sub>i'_def ty\<^sub>l_def list_all2_conv
 apply (frule (1) TC2.compT_wt_instrs [of P _ _ _ _ "[]" "max_stack e" "Suc (length Ts + max_vars e)" T\<^sub>r])
 apply simp_all
 apply (clarsimp simp: after_def)
+apply hypsubst_thin
 apply (rule conjI)
 apply (clarsimp simp: wt_instrs_def after_def mxl mxs)
 apply clarsimp

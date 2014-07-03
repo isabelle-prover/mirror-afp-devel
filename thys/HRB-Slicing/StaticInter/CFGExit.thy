@@ -262,6 +262,7 @@ next
     with `valid_call_list cs n` `cs = c'#cs'`
     have "valid_call_list cs' (sourcenode c')"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c'#cs'" in allE)
       apply(auto simp:sourcenodes_def)
        apply(case_tac cs') apply auto
@@ -273,6 +274,7 @@ next
     with `valid_call_list cs' (sourcenode c')`
     have "valid_call_list cs' (targetnode a)"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
     apply(erule_tac x="cs'" in allE)
     apply(erule_tac x="c" in allE)
     by(auto split:list.split)

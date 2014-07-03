@@ -560,7 +560,7 @@ lemma transfer_tau:
       moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                     `ns' = NodeS ii s' R'` and `ii = i`
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (metis (full_types, lifting) fun_upd_same option.sel) 
+          unfolding \<sigma>'_def by clarsimp (hypsubst_thin, metis (full_types, lifting) fun_upd_same option.sel) 
       ultimately have "((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using `(s, a, s') \<in> trans (np i)` by (rule trans)
 
@@ -773,7 +773,7 @@ lemma transfer_deliver:
       moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                     `ns' = NodeS ii s' R'` and `ii = i`
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (metis (lifting, full_types) fun_upd_same option.sel)
+          unfolding \<sigma>'_def by clarsimp (hypsubst_thin, metis (lifting, full_types) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), deliver d, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using `(s, deliver d, s') \<in> trans (np i)` by (rule trans)
 

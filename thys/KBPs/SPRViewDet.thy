@@ -1469,7 +1469,7 @@ proof
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
       apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
 
-      apply (rule_tac x=x in exI)
+      apply (rule_tac x=xa in exI)
       apply simp
       apply (subst (asm) spr_simAction)
         apply assumption
@@ -1499,8 +1499,8 @@ proof
         apply (erule tObsC_absI)
          apply (erule spr_jview_tObsC)
         apply simp_all
-       apply (rule_tac x="tFirst xb" in exI)
-       apply (rule_tac x="tLast xb" in exI)
+       apply (rule_tac x="tFirst xc" in exI)
+       apply (rule_tac x="tLast xc" in exI)
        apply (simp add: spr_sim_def)
        apply rule
         apply (drule tObsC_abs_jview_eq)
@@ -1517,7 +1517,7 @@ proof
         apply (rule_tac x=t' in exI)
         apply simp
         apply (erule spr_jview_tObsC)
-       apply (rule_tac x=xb in exI)
+       apply (rule_tac x=xc in exI)
        apply simp
        apply (drule spr_jview_tObsC)
        apply (drule spr_jview_tObsC)
@@ -1612,7 +1612,7 @@ proof
       apply (auto iff: Let_def simp del: split_paired_Ex split_paired_All)
       apply (simp add: listToFuns_ext[OF agents[unfolded toSet_def]])
 
-      apply (rule_tac x=x in exI)
+      apply (rule_tac x=xa in exI)
       apply simp
       apply (subst (asm) spr_simAction)
         apply assumption
@@ -1634,8 +1634,8 @@ proof
         apply (simp_all add: ec)
         apply (erule tObsC_absI)
         apply simp_all
-       apply (rule_tac x="tFirst xb" in exI)
-       apply (rule_tac x="tLast xb" in exI)
+       apply (rule_tac x="tFirst xc" in exI)
+       apply (rule_tac x="tLast xc" in exI)
        apply (simp add: spr_sim_def)
        apply rule
         apply (drule tObsC_abs_jview_eq)
@@ -1650,7 +1650,7 @@ proof
        apply rule
         apply (rule_tac x=t' in exI)
         apply simp
-       apply (rule_tac x=xb in exI)
+       apply (rule_tac x=xc in exI)
        apply simp
        apply (drule spr_jview_tObsC)
        apply simp
@@ -1851,7 +1851,6 @@ next
       by auto
     then have "(\<lambda>s. (sprFst s, sprLst s)) ` x \<in> set ` set (partition (envObs_rel (envObs a)) (spr_trans (fst ec) (snd ec)))"
       apply (simp add: partition[OF envObs_rel_equiv] spr_trans_aec[OF assms] spr_sim_def [abs_def])
-      apply clarsimp
       apply (rule_tac x="(tFirst t', s)" in quotientI2)
        apply auto[1]
       apply (auto dest: spr_jview_tStep_eq_inv)

@@ -264,7 +264,6 @@ apply hypsubst
 apply(rule exI conjI)+
 apply(rule multithreaded_base.redT.redT_acquire)
 apply assumption+
-apply(rule refl)
 done
 
 lemma J_\<E>_heap_read_typedD:

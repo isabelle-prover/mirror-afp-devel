@@ -1025,7 +1025,6 @@ proof -
        = (digitToList sf1 @ nlistToList ts @ digitToList pr2)"
     apply (cases sf1, cases pr2) 
     apply (simp_all add: nlistToList_app)
-    apply (auto)
     apply (cases pr2, auto)
     apply (cases pr2, auto)
     apply (cases pr2, auto)

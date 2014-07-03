@@ -63,7 +63,9 @@ next
 next
   case InstanceOfRed thus ?case by(fastforce intro: red_reds.intros)
 next
-  case RedInstanceOf thus ?case by auto((rule exI conjI red_reds.RedInstanceOf)+, auto)
+  case RedInstanceOf thus ?case
+    using [[hypsubst_thin = true]] 
+    by auto((rule exI conjI red_reds.RedInstanceOf)+, auto)
 next
   case BinOpRed1 thus ?case by(fastforce intro: red_reds.intros)
 next

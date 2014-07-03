@@ -125,14 +125,14 @@ session Collections (AFP) = Refine_Monadic +
       "Userguides/Refine_Monadic_Userguide"
       "Userguides/ICF_Userguide"
 
-  files
-    "document/conclusion.tex"
-    "document/documentation.tex"
-    "document/intro.tex"
-    "document/root.bib"
-    "document/root.tex"
-    "document/root_userguide.bib"
-    "document/root_userguide.tex"
+  document_files
+    "conclusion.tex"
+    "documentation.tex"
+    "intro.tex"
+    "root.bib"
+    "root.tex"
+    "root_userguide.bib"
+    "root_userguide.tex"
 
 
 session Collections_Examples (AFP) = Collections +

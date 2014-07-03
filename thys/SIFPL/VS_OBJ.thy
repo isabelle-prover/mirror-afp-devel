@@ -321,7 +321,7 @@ lemma AssignAux:
       (update (fst t) x (evalE e (fst t)), snd t)"
 apply (simp only: twiddle_def Expr_low_def)
 apply rule apply (simp add: noLowDPs_def) 
-  apply (case_tac s, clarsimp) apply (rename_tac s h y t k l)
+  apply (case_tac s, clarsimp, hypsubst_thin) apply (rename_tac s h y t k l)
   apply (case_tac "x=y", clarsimp) apply (simp add: update_def) 
     apply (erule_tac x=s in allE)
     apply (erule_tac x=t in allE, clarsimp)
@@ -330,7 +330,7 @@ apply rule apply (simp add: noLowDPs_def)
     apply (simp add: twiddleHeap_def) apply (simp add: Pbij_Dom_def) apply fast
   apply (simp add: update_def)
 apply rule apply (simp add: noLowDPs_def)
-  apply (case_tac s, clarsimp) apply (rename_tac s h t k y l) 
+  apply (case_tac s, clarsimp, hypsubst_thin) apply (rename_tac s h t k y l) 
   apply (case_tac "x=y", clarsimp) apply (simp add: update_def) 
     apply (erule_tac x=s in allE)
     apply (erule_tac x=t in allE)

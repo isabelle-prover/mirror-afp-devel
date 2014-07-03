@@ -20,13 +20,12 @@ text {*
 subsection "Definitions"
 
 subsubsection "Prepend and concatenate lifted to sets"
-consts
-  list_set_cons :: "'a \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<cdot>" 65)
-  list_set_append :: "'a list \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<odot>" 65)
 
-defs
-  list_set_cons[simp]: "a\<cdot>S == op # a ` S"
-  list_set_append[simp]: "a\<odot>S == op @ a ` S"
+definition list_set_cons :: "'a \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<cdot>" 65)
+  where [simp]: "a\<cdot>S = op # a ` S"
+
+definition list_set_append :: "'a list \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<odot>" 65)
+  where [simp]: "a\<odot>S = op @ a ` S"
 
 subsubsection "The interleaving operator"
 
