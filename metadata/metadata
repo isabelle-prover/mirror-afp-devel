@@ -1908,8 +1908,8 @@ topic = Mathematics/Graph Theory
 abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his <i>revised</i> proof of the Kepler Conjecture. The revison concerns the definition of tameness. The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
 extra-history =
   Change history:
-  [2010-11-02]: modified theories to reflect the modified
-  definition of tameness in Hales' revised proof.
+  [2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.
+  [2014-07-03]: modified constants in def of tameness and Archive according to the final state of the Flyspeck proof.
 
 [Well_Quasi_Orders]
 title = Well-Quasi-Orders
