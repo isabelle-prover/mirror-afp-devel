@@ -1593,7 +1593,9 @@ next
   note IH = `\<And>n. valid_call_list cs' n \<Longrightarrow> valid_path_rev_aux [] (rev cs')`
   from `valid_call_list (c'#cs') n` have "valid_call_list cs' (sourcenode c')"
     apply(clarsimp simp:valid_call_list_def)
-    apply(erule_tac x="c'#cs'" in allE) apply clarsimp
+    apply hypsubst_thin
+    apply(erule_tac x="c'#cs'" in allE)
+    apply clarsimp
     by(case_tac cs',auto simp:sourcenodes_def)
   from IH[OF this] have "valid_path_rev_aux [] (rev cs')" .
   moreover
@@ -1693,6 +1695,7 @@ next
   with `valid_call_list cs n` `cs = c'#cs'`
   have "valid_call_list cs' (targetnode a')"
     apply(clarsimp simp:valid_call_list_def)
+    apply(hypsubst_thin)
     apply(erule_tac x="c'#cs'" in allE)
     by(case_tac cs',auto simp:sourcenodes_def)
   from IH[OF this `targetnode a' -as'\<rightarrow>* n'`] 
@@ -2675,6 +2678,7 @@ next
       `get_proc (sourcenode c') = get_proc (targetnode a)`
     have "valid_call_list cs' (targetnode a)"
       apply(clarsimp simp:valid_call_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c' # cs'" in allE)
       by(case_tac cs')(auto simp:sourcenodes_def)
     from `get_proc (case cs of [] \<Rightarrow> m | a # list \<Rightarrow> sourcenode (last cs)) = Main`
@@ -3271,6 +3275,7 @@ next
     with `valid_return_list cs n'` `cs = c'#cs'`
     have "valid_return_list cs' (targetnode c')"
       apply(clarsimp simp:valid_return_list_def)
+      apply(hypsubst_thin)
       apply(erule_tac x="c'#cs'" in allE)
       apply(auto simp:targetnodes_def)
        apply(case_tac cs') apply auto
@@ -3282,6 +3287,7 @@ next
     with `valid_return_list cs' (targetnode c')`
     have "valid_return_list cs' (sourcenode a)"
       apply(clarsimp simp:valid_return_list_def)
+      apply(hypsubst_thin)
     apply(erule_tac x="cs'" in allE)
     apply(erule_tac x="c" in allE)
     by(auto split:list.split)

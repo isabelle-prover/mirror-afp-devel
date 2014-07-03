@@ -722,6 +722,7 @@ proof -
       apply (erule JVM_CFG.cases, auto)
       apply (drule sees_method_fun, fastforce, clarsimp)
       using sees_M'
+      apply hypsubst_thin
       apply (auto simp: wt_method_def)
       apply (erule_tac x="pc'" in allE)
       apply (auto simp: bv_conform_def correct_state_def not_less_eq less_Suc_eq)
@@ -751,6 +752,7 @@ proof -
       apply (erule JVM_CFG.cases, auto)
       apply (drule sees_method_fun, fastforce, clarsimp)
       using sees_M'
+      apply hypsubst_thin
       apply (auto simp: wt_method_def)
       apply (erule_tac x="pc'" in allE)
       apply (auto simp: wt_start_def)
@@ -968,7 +970,7 @@ lemma stkss_cong [cong]:
                      (snd(snd(cs ! (length cs - Suc a)))) \<rbrakk>
     \<Longrightarrow> stk (a, b) = stk' (a, b) \<rbrakk>
   \<Longrightarrow> stkss P cs stk = stkss P' cs' stk'"
-  by (auto, induct cs',
+  by (auto, hypsubst_thin, induct cs',
     auto intro!: nth_equalityI simp: nth_Cons' (* nth_stks *))
 
 lemma locss_cong [cong]:
@@ -980,7 +982,7 @@ lemma locss_cong [cong]:
                      (snd(snd(cs ! (length cs - Suc a)))) \<rbrakk>
     \<Longrightarrow> loc (a, b) = loc' (a, b) \<rbrakk>
   \<Longrightarrow> locss P cs loc = locss P' cs' loc'"
-  by (auto, induct cs',
+  by (auto, hypsubst_thin, induct cs',
     auto intro!: nth_equalityI simp: nth_Cons' (* nth_locs *))
 
 lemma hd_tl_equalityI:
@@ -2037,6 +2039,7 @@ proof(unfold_locales)
           apply (drule_tac p="n'" in list_all2_nthD)
            apply simp
           apply (auto simp: nth_Cons' split: split_if_asm)
+          apply hypsubst_thin
           by (induct STn, auto simp: nth_Cons' split: split_if_asm)
         with applicable ST Invoke sees_M
         obtain D' where D': "STs = Class D'"

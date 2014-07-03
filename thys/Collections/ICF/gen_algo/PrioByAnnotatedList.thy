@@ -89,7 +89,6 @@ lemma p_order_trans : "\<lbrakk>p_less_eq x y; p_less_eq y z\<rbrakk> \<Longrigh
   apply(induct x)
   apply (auto simp add: p_le_inf)
   apply (metis p_le_inf p_less_eq.simps(2))
-  apply (metis p_le_inf p_less_eq.simps(2))
   done
 
 lemma p_linear2 : "p_less_eq x y \<or> p_less_eq y x"

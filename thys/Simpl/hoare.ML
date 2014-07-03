@@ -2919,7 +2919,7 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
      fun final_simp_tac i =
           EVERY [full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps [mem_Collect_eq]) i,
                  REPEAT (etac conjE i),
-                 TRY (hyp_subst_tac ctxt i),
+                 TRY (hyp_subst_tac_thin true ctxt i),
                  BasicSimpTac ctxt state_kind true [] tac i]
      fun while_annoG_tac (t,i) = whileAnnoG_tac ctxt strip_guards mode t i;
 
@@ -3331,7 +3331,7 @@ fun record_vanish_tac ctxt state_kind state_space i =
     in EVERY [trace_tac ctxt "record_vanish_tac -- START --",
               REPEAT (etac conjE i),
               trace_tac ctxt "record_vanish_tac -- hyp_subst_tac ctxt --",
-              TRY (hyp_subst_tac ctxt i),
+              TRY (hyp_subst_tac_thin true ctxt i),
               full_simp_tac rem_useless_vars_simpset i,
                (* hyp_subst_tac may have made some state variables unnecessary. We do not
                   want to split them to avoid naming conflicts and increase performance *)

@@ -238,7 +238,7 @@ text {* new lemmas and definitions *}
 
 lemma map_ran_cong [fundef_cong]:
   "\<lbrakk> al = al'; \<And>k v. (k, v) \<in> set al \<Longrightarrow> f k v = g k v \<rbrakk> \<Longrightarrow> map_ran f al = map_ran g al'"
-by clarify (induct al', auto)
+by hypsubst_thin (induct al', auto)
 
 lemma size_list_delete: "size_list f (AList.delete a al) \<le> size_list f al"
 by(induct al) simp_all

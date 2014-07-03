@@ -630,7 +630,7 @@ next
   \<Longrightarrow> \<exists>Q Q'. et = (Q)\<^sub>\<surd> \<and> et\<^sub>2 = (Q')\<^sub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
   from `c\<^sub>1;;c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow> n\<^sub>2'` `c\<^sub>1 \<turnstile> n -et\<rightarrow> n'` `n = n\<^sub>2` `n' \<noteq> n\<^sub>2'`
   have "c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow> n\<^sub>2' \<or> (c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow> (_Exit_) \<and> n\<^sub>2' = (_0_) \<oplus> #:c\<^sub>1)"
-    apply - apply(erule WCFG.While_CFG.cases)
+    apply hypsubst_thin apply(erule WCFG.While_CFG.cases)
     apply(auto intro:WCFG.While_CFG.intros)
     by(case_tac n,auto dest:WCFG_sourcelabel_less_num_nodes)+
   thus ?case
@@ -648,7 +648,7 @@ next
   \<Longrightarrow> \<exists>Q Q'. et = (Q)\<^sub>\<surd> \<and> et\<^sub>2 = (Q')\<^sub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
   from `c\<^sub>1;;c\<^sub>2 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow> n\<^sub>2'` `c\<^sub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` `n = n\<^sub>2` `n \<noteq> (_Entry_)`
     `(_0_) \<oplus> #:c\<^sub>1 \<noteq> n\<^sub>2'` have "c\<^sub>1 \<turnstile> n\<^sub>2 -et\<^sub>2\<rightarrow> n\<^sub>2' \<and> (_Exit_) \<noteq> n\<^sub>2'"
-    apply - apply(erule WCFG.While_CFG.cases)
+    apply hypsubst_thin apply(erule WCFG.While_CFG.cases)
     apply(auto intro:WCFG.While_CFG.intros)
     by(case_tac n,auto dest:WCFG_sourcelabel_less_num_nodes)+
   from IH[OF this[THEN conjunct1] `n = n\<^sub>2` this[THEN conjunct2]]

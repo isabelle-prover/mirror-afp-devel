@@ -234,7 +234,6 @@ lemma seq_elim [elim]:
    apply (metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated)
   apply (subgoal_tac "c\<^sub>1 = c@[mu]")
    apply simp
-   apply auto
    apply (drule cxt_seq_elim)
    apply (metis Stmt.distinct(23) cxt_stmt_seq cxt_to_stmt.simps(1) eval\<^sub>w.decl)
   by (metis Stmt.distinct(23) cxt_seq_elim)

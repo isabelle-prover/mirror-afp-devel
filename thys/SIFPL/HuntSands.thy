@@ -318,7 +318,7 @@ lemma ASSIGN:
     apply clarsimp
   apply (rule, clarsimp) apply (rule_tac x=s in exI, simp)
   apply clarsimp
-    apply (case_tac "x=xa", clarsimp)
+    apply (case_tac "x=xa", clarsimp, hypsubst_thin)
       apply (simp add: update_def upd_def)
         apply (erule_tac x=ra in allE, erule_tac x=s in allE, erule mp, clarsimp)
         apply (erule_tac x=x in allE, erule mp)

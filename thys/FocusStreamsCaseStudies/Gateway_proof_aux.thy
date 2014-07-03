@@ -1366,7 +1366,7 @@ assumes "\<forall>j\<le> D. str (t + j + (Suc y)) = x"
        and "str (t + y) = x"
 shows     "\<forall>j\<le> D. str (t + j + y) = x"
 using assms 
-by (clarify,  simp add: streamValue3)
+by (clarify, hypsubst_thin, simp add: streamValue3)
 
 lemma streamValue5:
 assumes "\<forall>j\<le> D. str (t + j + ((i::nat) + k)) = x"
@@ -1414,7 +1414,8 @@ lemma streamValue8:
 assumes "\<forall>j\<le>d. str (t + i + k + d + Suc j) = x"
        and "str (t + i + k + d) = x" 
 shows "\<forall> j\<le> Suc d. str (t + i + k + d + j) = x"
-using assms by (clarify, simp add: streamValue7)
+using assms streamValue7
+  by metis
 
 lemma arith_streamValue9aux:
 "Suc (t + (j + d) + (i + k)) =  Suc (t + i + k + d + j)" 

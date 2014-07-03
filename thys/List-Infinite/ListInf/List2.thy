@@ -747,6 +747,7 @@ thm take_drop_eq_sublist_list
 by (simp add: sublist_list_if_sublist_list_filter_conv take_drop_eq_sublist_list)
 
 lemma sublist_empty_conv: "(sublist xs I = []) = (\<forall>i\<in>I. length xs \<le> i)"
+  using [[hypsubst_thin = true]]
 by (fastforce simp: set_empty[symmetric] set_sublist linorder_not_le[symmetric])
 
 thm sublist_singleton

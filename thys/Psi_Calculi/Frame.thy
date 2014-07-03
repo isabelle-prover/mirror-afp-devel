@@ -1731,6 +1731,7 @@ proof -
     from `A\<^sub>F \<sharp>* (\<lparr>\<nu>x\<rparr>F)` `x \<sharp> A\<^sub>F` `A\<^sub>F = y#A\<^sub>F'` have "y \<sharp> F" and "A\<^sub>F' \<sharp>* F" and "x \<sharp> A\<^sub>F'"
       apply -
       apply(auto simp add: abs_fresh)
+      apply(hypsubst_thin)
       apply(subst fresh_star_def)
       apply(erule rev_mp)
       apply(subst fresh_star_def)
@@ -1792,6 +1793,7 @@ proof -
     from `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` `A\<^sub>F\<^sub>G \<sharp>* G` have "y \<sharp> G" and "A\<^sub>F\<^sub>G' \<sharp>* G" by simp+
     from `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` `A\<^sub>F\<^sub>G \<sharp>* (\<lparr>\<nu>x\<rparr>F)` `x \<sharp> A\<^sub>F\<^sub>G` have "y \<sharp> F" and "A\<^sub>F\<^sub>G' \<sharp>* F"
       apply(auto simp add: abs_fresh frameResChainFreshSet)
+      apply(hypsubst_thin)
       by(induct A\<^sub>F\<^sub>G') (auto simp add: abs_fresh)
     from `distinct A\<^sub>F\<^sub>G` `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` have "y \<sharp> A\<^sub>F\<^sub>G'" and "distinct A\<^sub>F\<^sub>G'" by auto
     

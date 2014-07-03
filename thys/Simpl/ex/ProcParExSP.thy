@@ -151,7 +151,7 @@ proof -
             \<acute>b :== DYNCALL \<acute>compare (\<acute>n,\<acute>m);;
             IF \<acute>b THEN \<acute>k :== \<acute>n ELSE \<acute>k :== \<acute>m FI
             \<lbrace>\<acute>k = mx leq \<^bsup>\<sigma>\<^esup>n \<^bsup>\<sigma>\<^esup>m\<rbrace>"
-     apply vcg     
+     apply vcg
      apply (clarsimp simp add: mx_def)
      done
  qed

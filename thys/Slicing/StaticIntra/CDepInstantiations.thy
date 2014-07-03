@@ -215,7 +215,7 @@ proof(rule ccontr)
         case Nil
         with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastforce
         with `m \<in> obs (sourcenode a) (PDG_BS S)` 
-        have "m \<in> (PDG_BS S)" by(fastforce elim:obsE)
+        have "m \<in> (PDG_BS S)" by(metis obsE)
         with `valid_node m` have "obs m (PDG_BS S) = {m}"
           by(rule n_in_obs)
         with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
@@ -499,7 +499,7 @@ proof(rule ccontr)
         case Nil
         with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastforce
         with `m \<in> obs (sourcenode a) (PDG_BS S)` 
-        have "m \<in> (PDG_BS S)" by(fastforce elim:obsE)
+        have "m \<in> (PDG_BS S)" by (metis obsE)
         with `valid_node m` have "obs m (PDG_BS S) = {m}"
           by(rule n_in_obs)
         with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False

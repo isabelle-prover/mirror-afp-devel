@@ -500,6 +500,7 @@ lemma normal_2: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply safe
   apply (subst (asm) F_def)
   apply simp_all
+  apply hypsubst_thin
   apply (subgoal_tac "Rep_G x - u \<in> K")
   apply (subgoal_tac "Rep_G x - u + Rep_G a \<in> {Rep_G a} +++ K")
   apply (subst (asm) add_set_def)

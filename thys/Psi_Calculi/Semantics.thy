@@ -987,6 +987,7 @@ apply simp
 apply simp
 apply(subgoal_tac "\<exists>(yvec1::name list) (yvec2::name list). yvec1@yvec2 = list \<and> length xvec1 = length yvec1 \<and> length xvec2 = length yvec2")
 apply(clarify)
+apply hypsubst_thin
 apply simp
 apply(subgoal_tac "\<exists>y (yvec::name list). a # yvec1 = yvec @ [y] \<and> length yvec1 = length yvec")
 apply(clarify)
