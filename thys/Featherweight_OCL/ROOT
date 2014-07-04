@@ -2,7 +2,7 @@ chapter AFP
 
 session Featherweight_OCL (AFP) = HOL +
   description {* Featherweight-OCL *}
-  options [document = pdf, document_variants="document:outline=/proof,/ML"]
+  options [document_variants = "document:outline=/proof,/ML"]
   theories
     "OCL_main"
     "examples/Employee_AnalysisModel_OCLPart"
