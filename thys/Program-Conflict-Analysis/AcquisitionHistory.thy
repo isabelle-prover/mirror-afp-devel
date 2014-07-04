@@ -126,10 +126,15 @@ next
   proof (unfold le_fun_def [where 'b="'a set"], intro allI subsetI)
     fix m x
     assume A: "x\<in>\<alpha>ah (a#l') m"
-    thus "x \<in> \<alpha>ah (b # l) m" proof (cases rule: \<alpha>ah_cons_cases)
-      case hd with mon_pl_ileq[OF take.hyps(2)] and `op =\<^sup>=\<^sup>= a b` show ?thesis by auto
+    thus "x \<in> \<alpha>ah (b # l) m"
+    proof (cases rule: \<alpha>ah_cons_cases)
+      case hd
+      with mon_pl_ileq[OF take.hyps(2)] and `a = b`
+      show ?thesis by auto
     next
-      case tl with take.hyps(3)[unfolded le_fun_def [where 'b="'a set"]] and `op =\<^sup>=\<^sup>= a b` show ?thesis by auto
+      case tl
+      with take.hyps(3)[unfolded le_fun_def [where 'b="'a set"]] and `a = b`
+      show ?thesis by auto
     qed
   qed
 qed
